@@ -2315,6 +2315,16 @@ config TEST_SORT
 
 	  If unsure, say N.
 
+config RUST_SORT_KUNIT_TEST
+	bool "Use Rust for the array-sort KUnit test"
+	depends on RUST && TEST_SORT
+	default n
+	help
+	  Run the translated original lib_sort suite against either C or Rust
+	  sort provider, retaining the original test_sort module identity and
+	  TEST_SORT tristate. The original C suite remains the default.
+	  If unsure, say N.
+
 config TEST_DIV64
 	tristate "64bit/32bit division and modulo test"
 	depends on DEBUG_KERNEL || m

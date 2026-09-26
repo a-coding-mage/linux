@@ -33,12 +33,12 @@ pub const UM_KERN_DEBUG: usize = KERN_DEBUG;
 pub const UM_KERN_CONT: usize = KERN_CONT;
 
 /* IS_ENABLED(CONFIG_PRINTK) is a build-time condition supplied externally. */
-#[cfg(feature = "CONFIG_PRINTK")]
+#[cfg(CONFIG_PRINTK)]
 macro_rules! printk {
     ($($args:tt)*) => { _printk($($args)*) };
 }
 
-#[cfg(feature = "CONFIG_PRINTK")]
+#[cfg(CONFIG_PRINTK)]
 unsafe extern "C" {
     pub fn _printk(fmt: *const ::core::ffi::c_char, ... ) -> ::core::ffi::c_int;
     pub fn print_hex_dump(
@@ -53,12 +53,12 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn printk(_fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn print_hex_dump(
     _level: *const ::core::ffi::c_char,
     _prefix_str: *const ::core::ffi::c_char,

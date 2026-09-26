@@ -14,6 +14,7 @@ unsafe extern "C" {
 unsafe fn sctp_association_init(asoc: *mut sctp_association, ep: *const sctp_endpoint,
     sk: *const sock, scope: sctp_scope, gfp: gfp_t) -> *mut sctp_association {
     let sp = sctp_sk(sk as *mut sock);
+    'stream_free: {
     (*asoc).ep = ep as *mut sctp_endpoint;
     (*asoc).base.sk = sk as *mut sock;
     (*asoc).base.net = sock_net(sk);
@@ -62,7 +63,7 @@ unsafe fn sctp_association_init(asoc: *mut sctp_association, ep: *const sctp_end
     INIT_LIST_HEAD(&mut (*asoc).peer.transport_addr_list); (*asoc).peer.sack_needed = 1; (*asoc).peer.sack_generation = 1;
     sctp_inq_init(&mut (*asoc).base.inqueue); sctp_inq_set_th_handler(&mut (*asoc).base.inqueue, sctp_assoc_bh_rcv);
     sctp_outq_init(asoc, &mut (*asoc).outqueue); sctp_ulpq_init(&mut (*asoc).ulpq, asoc);
-    if sctp_stream_init(&mut (*asoc).stream, (*asoc).c.sinit_num_ostreams, 0, gfp) != 0 { goto stream_free; }
+    if sctp_stream_init(&mut (*asoc).stream, (*asoc).c.sinit_num_ostreams, 0, gfp) != 0 { break 'stream_free; }
     (*asoc).pathmtu = (*sp).pathmtu; sctp_assoc_update_frag_point(asoc);
     (*asoc).peer.ipv4_address = 1; if (*asoc).base.sk.sk_family == PF_INET6 { (*asoc).peer.ipv6_address = 1; }
     INIT_LIST_HEAD(&mut (*asoc).asocs);
@@ -70,7 +71,7 @@ unsafe fn sctp_association_init(asoc: *mut sctp_association, ep: *const sctp_end
     (*asoc).default_flags = (*sp).default_flags; (*asoc).default_context = (*sp).default_context;
     (*asoc).default_timetolive = (*sp).default_timetolive; (*asoc).default_rcv_context = (*sp).default_rcv_context;
     INIT_LIST_HEAD(&mut (*asoc).endpoint_shared_keys);
-    if sctp_auth_asoc_copy_shkeys(ep, asoc, gfp) != 0 { goto stream_free; }
+    if sctp_auth_asoc_copy_shkeys(ep, asoc, gfp) != 0 { break 'stream_free; }
     (*asoc).active_key_id = (*ep).active_key_id; (*asoc).strreset_enable = (*ep).strreset_enable;
     if !(*ep).auth_hmacs_list.is_null() { memcpy((*asoc).c.auth_hmacs.as_mut_ptr() as *mut _, (*ep).auth_hmacs_list as *const _, ntohs((*(*ep).auth_hmacs_list).param_hdr.length) as usize); }
     if !(*ep).auth_chunk_list.is_null() { memcpy((*asoc).c.auth_chunks.as_mut_ptr() as *mut _, (*ep).auth_chunk_list as *const _, ntohs((*(*ep).auth_chunk_list).param_hdr.length) as usize); }
@@ -78,7 +79,8 @@ unsafe fn sctp_association_init(asoc: *mut sctp_association, ep: *const sctp_end
     (*p).r#type = SCTP_PARAM_RANDOM; (*p).length = htons(size_of::<sctp_paramhdr>() as u16 + SCTP_AUTH_RANDOM_LENGTH);
     get_random_bytes(p.add(1) as *mut _, SCTP_AUTH_RANDOM_LENGTH);
     return asoc;
-stream_free:
+    }
+    
     sctp_stream_free(&mut (*asoc).stream); sock_put((*asoc).base.sk); sctp_endpoint_put((*asoc).ep); std::ptr::null_mut()
 }
 

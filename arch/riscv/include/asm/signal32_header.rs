@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 // Conditional on CONFIG_COMPAT being enabled (the C header uses IS_ENABLED).
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe extern "C" {
     pub fn compat_setup_rt_frame(
         ksig: *mut ksignal,
@@ -11,7 +11,7 @@ unsafe extern "C" {
 }
 
 // Fallback when CONFIG_COMPAT is disabled.
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 #[inline]
 pub unsafe fn compat_setup_rt_frame(
     _ksig: *mut ksignal,

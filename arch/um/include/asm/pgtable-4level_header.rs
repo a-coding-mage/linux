@@ -70,7 +70,7 @@ macro_rules! pud_present {
     ($x:expr) => { pud_val($x) & _PAGE_PRESENT };
 }
 macro_rules! pud_populate {
-    ($mm:expr, $pud:expr, $pmd:expr) => { set_pud($pud, __pud(_PAGE_TABLE + __pa($pmd))) };
+    ($mm:expr, $pud:expr, $pmd:expr) => { set_pud!($pud, __pud(_PAGE_TABLE + __pa($pmd))) };
 }
 
 macro_rules! set_pud {
@@ -87,7 +87,7 @@ macro_rules! p4d_present {
     ($x:expr) => { p4d_val($x) & _PAGE_PRESENT };
 }
 macro_rules! p4d_populate {
-    ($mm:expr, $p4d:expr, $pud:expr) => { set_p4d($p4d, __p4d(_PAGE_TABLE + __pa($pud))) };
+    ($mm:expr, $p4d:expr, $pud:expr) => { set_p4d!($p4d, __p4d(_PAGE_TABLE + __pa($pud))) };
 }
 
 macro_rules! set_p4d {

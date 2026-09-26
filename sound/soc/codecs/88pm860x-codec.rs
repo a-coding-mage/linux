@@ -144,9 +144,9 @@ static const DECLARE_TLV_DB_RANGE(st_tlv,
 
 /* Sidetone Gain = M * 2^(-5-N) */
 struct st_gain {
-	unsigned int	db;
-	unsigned int	m;
-	unsigned int	n;
+	core::ffi::c_uint	db;
+	core::ffi::c_uint	m;
+	core::ffi::c_uint	n;
 ];
 
 static mut st_table: [st_gain; 272] = {
@@ -220,14 +220,14 @@ static mut st_table: [st_gain; 272] = {
 	st_gain { db: -86, m: 29, n: 0 }, st_gain { db: -56, m: 30, n: 0 }, st_gain { db: -28, m: 31, n: 0 }, st_gain { db: 0, m: 0, n: 0 },
 ];
 
-static int snd_soc_get_volsw_2r_st(struct snd_kcontrol *kcontrol,
-				   struct snd_ctl_elem_value *ucontrol)
+static int snd_soc_get_volsw_2r_st(snd_kcontrol *kcontrol,
+				   snd_ctl_elem_value *ucontrol)
 {
 	struct soc_mixer_control *mc =
-		(struct soc_mixer_control *)kcontrol->private_value;
+		(*(soc_mixer_control *)kcontrol).private_value;
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-	unsigned int reg = mc->reg;
-	unsigned int reg2 = mc->rreg;
+	core::ffi::c_uint reg = (*mc).reg;
+	core::ffi::c_uint reg2 = (*mc).rreg;
 	int val[2], val2[2], i;
 
 	val[0] = snd_soc_component_read(component, reg) & 0x3f;

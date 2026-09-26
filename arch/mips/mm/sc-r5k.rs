@@ -89,7 +89,7 @@ unsafe fn r5k_sc_probe() -> ::core::ffi::c_int {
     1
 }
 
-static mut r5k_sc_ops: struct bcache_ops = struct bcache_ops {
+static mut r5k_sc_ops: bcache_ops = bcache_ops {
     bc_enable: Some(r5k_sc_enable),
     bc_disable: Some(r5k_sc_disable),
     bc_wback_inv: Some(r5k_dma_cache_inv_sc),

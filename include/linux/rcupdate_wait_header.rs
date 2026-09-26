@@ -99,7 +99,7 @@ macro_rules! synchronize_rcu_mult {
 #[inline]
 pub unsafe fn cond_resched_rcu() {
     /* CONFIG_DEBUG_ATOMIC_SLEEP || !CONFIG_PREEMPT_RCU */
-    #[cfg(any(feature = "CONFIG_DEBUG_ATOMIC_SLEEP", not(feature = "CONFIG_PREEMPT_RCU")))]
+    #[cfg(any(CONFIG_DEBUG_ATOMIC_SLEEP, not(CONFIG_PREEMPT_RCU)))]
     {
         rcu_read_unlock();
         cond_resched();
@@ -112,7 +112,7 @@ pub unsafe fn cond_resched_rcu() {
 #[inline]
 pub unsafe fn has_rcu_reader_blocked() -> bool {
     /* CONFIG_PREEMPT_RCU */
-    #[cfg(feature = "CONFIG_PREEMPT_RCU")]
+    #[cfg(CONFIG_PREEMPT_RCU)]
     {
         return !list_empty(&(*current).rcu_node_entry);
     }

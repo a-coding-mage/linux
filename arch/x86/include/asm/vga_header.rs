@@ -21,7 +21,7 @@ macro_rules! VGA_MAP_MEM {
         let start = phys_to_virt($x) as usize;
 
         // C condition: IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT).
-        if cfg!(feature = "CONFIG_AMD_MEM_ENCRYPT") {
+        if cfg!(CONFIG_AMD_MEM_ENCRYPT) {
             set_memory_decrypted(start, ($s) >> PAGE_SHIFT);
         }
 

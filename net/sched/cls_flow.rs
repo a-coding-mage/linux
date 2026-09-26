@@ -54,9 +54,9 @@ unsafe fn flow_get_iif(skb: *const sk_buff) -> u32 { (*skb).skb_iif }
 unsafe fn flow_get_priority(skb: *const sk_buff) -> u32 { (*skb).priority }
 unsafe fn flow_get_mark(skb: *const sk_buff) -> u32 { (*skb).mark }
 unsafe fn flow_get_nfct(skb: *const sk_buff) -> u32 {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK")]
+    #[cfg(CONFIG_NF_CONNTRACK)]
     { addr_fold(skb_nfct(skb) as *mut _) }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK))]
     { 0 }
 }
 unsafe fn flow_get_nfct_src(skb: *const sk_buff, flow: *const flow_keys) -> u32 {
@@ -76,7 +76,7 @@ unsafe fn flow_get_nfct_dst(skb: *const sk_buff, flow: *const flow_keys) -> u32 
 unsafe fn flow_get_nfct_proto_src(skb: *const sk_buff, flow: *const flow_keys) -> u32 { flow_get_nfct_tuple_port(skb, true).map(ntohs).unwrap_or_else(|| flow_get_proto_src(skb, flow)) as u32 }
 unsafe fn flow_get_nfct_proto_dst(skb: *const sk_buff, flow: *const flow_keys) -> u32 { flow_get_nfct_tuple_port(skb, false).map(ntohs).unwrap_or_else(|| flow_get_proto_dst(skb, flow)) as u32 }
 unsafe fn flow_get_rtclassid(skb: *const sk_buff) -> u32 {
-    #[cfg(feature = "CONFIG_IP_ROUTE_CLASSID")]
+    #[cfg(CONFIG_IP_ROUTE_CLASSID)]
     { if !skb_dst(skb).is_null() { return (*skb_dst(skb)).tclassid; } }
     0
 }

@@ -87,20 +87,20 @@ pub struct drm_ras_error_counter_range {
 /* The C header's `struct drm_device;` forward declaration has no Rust item. */
 
 /* `IS_ENABLED(CONFIG_DRM_RAS)` is a kernel build-time condition. */
-#[cfg(feature = "CONFIG_DRM_RAS")]
+#[cfg(CONFIG_DRM_RAS)]
 unsafe extern "C" {
 	pub fn drm_ras_node_register(node: *mut drm_ras_node) -> c_int;
 	pub fn drm_ras_node_unregister(node: *mut drm_ras_node);
 }
 
 /* Fallback corresponding to the C `#else` branch. */
-#[cfg(not(feature = "CONFIG_DRM_RAS"))]
+#[cfg(not(CONFIG_DRM_RAS))]
 #[inline]
 pub unsafe fn drm_ras_node_register(_node: *mut drm_ras_node) -> c_int {
 	0
 }
 
-#[cfg(not(feature = "CONFIG_DRM_RAS"))]
+#[cfg(not(CONFIG_DRM_RAS))]
 #[inline]
 pub unsafe fn drm_ras_node_unregister(_node: *mut drm_ras_node) {}
 

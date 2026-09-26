@@ -72,16 +72,16 @@ extern "C" {
     pub fn init_hypervisor_platform();
 }
 
-#[cfg(feature = "CONFIG_HYPERVISOR_GUEST")]
+#[cfg(CONFIG_HYPERVISOR_GUEST)]
 pub unsafe fn hypervisor_is_type(type_: x86_hypervisor_type) -> bool {
     x86_hyper_type == type_
 }
 
 /* When CONFIG_HYPERVISOR_GUEST is disabled, the C inline definitions are: */
-#[cfg(not(feature = "CONFIG_HYPERVISOR_GUEST"))]
+#[cfg(not(CONFIG_HYPERVISOR_GUEST))]
 pub unsafe fn init_hypervisor_platform() {}
 
-#[cfg(not(feature = "CONFIG_HYPERVISOR_GUEST"))]
+#[cfg(not(CONFIG_HYPERVISOR_GUEST))]
 pub fn hypervisor_is_type(type_: x86_hypervisor_type) -> bool {
     type_ == x86_hypervisor_type::X86_HYPER_NATIVE
 }

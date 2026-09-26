@@ -113,6 +113,8 @@ unsafe fn sun9i_a80_de_clk_probe(pdev: *mut PlatformDevice) -> i32 {
     let mut rstc: *mut ResetControl;
     let reg: *mut core::ffi::c_void;
     let mut ret: i32;
+    'err_disable_clk: {
+    'err_assert_reset: {
 
     reg = devm_platform_ioremap_resource(pdev, 0);
     if IS_ERR!(reg) { return PTR_ERR!(reg); }
@@ -123,12 +125,14 @@ unsafe fn sun9i_a80_de_clk_probe(pdev: *mut PlatformDevice) -> i32 {
     ret = clk_prepare_enable(bus_clk);
     if ret != 0 { dev_err!(&mut (*pdev).dev, "Couldn't enable bus clk: %d\n", ret); return ret; }
     ret = reset_control_deassert(rstc);
-    if ret != 0 { dev_err!(&mut (*pdev).dev, "Couldn't deassert reset control: %d\n", ret); goto!(err_disable_clk); }
+    if ret != 0 { dev_err!(&mut (*pdev).dev, "Couldn't deassert reset control: %d\n", ret); break 'err_disable_clk; }
     ret = devm_sunxi_ccu_probe(&mut (*pdev).dev, reg, &sun9i_a80_de_clk_desc);
-    if ret != 0 { goto!(err_assert_reset); }
+    if ret != 0 { break 'err_assert_reset; }
     return 0;
-    err_assert_reset: reset_control_assert(rstc);
-    err_disable_clk: clk_disable_unprepare(bus_clk); ret
+    }
+    reset_control_assert(rstc);
+    }
+    clk_disable_unprepare(bus_clk); ret
 }
 
 static sun9i_a80_de_clk_ids: [OfDeviceId; 2] = [

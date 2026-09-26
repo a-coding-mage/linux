@@ -16,7 +16,7 @@ pub struct sensor_device_attribute {
 #[macro_export]
 macro_rules! to_sensor_dev_attr {
     ($dev_attr:expr) => {
-        container_of_const!($dev_attr, sensor_device_attribute, dev_attr)
+        container_of_const!($dev_attr, sensor_device_attribute, $dev_attr)
     };
 }
 
@@ -32,22 +32,22 @@ macro_rules! SENSOR_ATTR {
 
 #[macro_export]
 macro_rules! SENSOR_ATTR_RO {
-    ($name:ident, $func:ident, $index:expr) => {
-        SENSOR_ATTR!($name, 0o444, $func##_show, NULL, $index)
+    ($name:ident, $func:tt, $index:expr) => {
+        SENSOR_ATTR!($name, 0o444, ::kernel::macros::paste!([<$func _show>]), NULL, $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_ATTR_RW {
-    ($name:ident, $func:ident, $index:expr) => {
-        SENSOR_ATTR!($name, 0o644, $func##_show, $func##_store, $index)
+    ($name:ident, $func:tt, $index:expr) => {
+        SENSOR_ATTR!($name, 0o644, ::kernel::macros::paste!([<$func _show>]), ::kernel::macros::paste!([<$func _store>]), $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_ATTR_WO {
-    ($name:ident, $func:ident, $index:expr) => {
-        SENSOR_ATTR!($name, 0o200, NULL, $func##_store, $index)
+    ($name:ident, $func:tt, $index:expr) => {
+        SENSOR_ATTR!($name, 0o200, NULL, ::kernel::macros::paste!([<$func _store>]), $index)
     };
 }
 
@@ -61,22 +61,22 @@ macro_rules! SENSOR_DEVICE_ATTR {
 
 #[macro_export]
 macro_rules! SENSOR_DEVICE_ATTR_RO {
-    ($name:ident, $func:ident, $index:expr) => {
-        SENSOR_DEVICE_ATTR!($name, 0o444, $func##_show, NULL, $index)
+    ($name:ident, $func:tt, $index:expr) => {
+        SENSOR_DEVICE_ATTR!($name, 0o444, ::kernel::macros::paste!([<$func _show>]), NULL, $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_DEVICE_ATTR_RW {
-    ($name:ident, $func:ident, $index:expr) => {
-        SENSOR_DEVICE_ATTR!($name, 0o644, $func##_show, $func##_store, $index)
+    ($name:ident, $func:tt, $index:expr) => {
+        SENSOR_DEVICE_ATTR!($name, 0o644, ::kernel::macros::paste!([<$func _show>]), ::kernel::macros::paste!([<$func _store>]), $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_DEVICE_ATTR_WO {
-    ($name:ident, $func:ident, $index:expr) => {
-        SENSOR_DEVICE_ATTR!($name, 0o200, NULL, $func##_store, $index)
+    ($name:ident, $func:tt, $index:expr) => {
+        SENSOR_DEVICE_ATTR!($name, 0o200, NULL, ::kernel::macros::paste!([<$func _store>]), $index)
     };
 }
 
@@ -90,7 +90,7 @@ pub struct sensor_device_attribute_2 {
 #[macro_export]
 macro_rules! to_sensor_dev_attr_2 {
     ($dev_attr:expr) => {
-        container_of_const!($dev_attr, sensor_device_attribute_2, dev_attr)
+        container_of_const!($dev_attr, sensor_device_attribute_2, $dev_attr)
     };
 }
 
@@ -107,22 +107,22 @@ macro_rules! SENSOR_ATTR_2 {
 
 #[macro_export]
 macro_rules! SENSOR_ATTR_2_RO {
-    ($name:ident, $func:ident, $nr:expr, $index:expr) => {
-        SENSOR_ATTR_2!($name, 0o444, $func##_show, NULL, $nr, $index)
+    ($name:ident, $func:tt, $nr:expr, $index:expr) => {
+        SENSOR_ATTR_2!($name, 0o444, ::kernel::macros::paste!([<$func _show>]), NULL, $nr, $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_ATTR_2_RW {
-    ($name:ident, $func:ident, $nr:expr, $index:expr) => {
-        SENSOR_ATTR_2!($name, 0o644, $func##_show, $func##_store, $nr, $index)
+    ($name:ident, $func:tt, $nr:expr, $index:expr) => {
+        SENSOR_ATTR_2!($name, 0o644, ::kernel::macros::paste!([<$func _show>]), ::kernel::macros::paste!([<$func _store>]), $nr, $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_ATTR_2_WO {
-    ($name:ident, $func:ident, $nr:expr, $index:expr) => {
-        SENSOR_ATTR_2!($name, 0o200, NULL, $func##_store, $nr, $index)
+    ($name:ident, $func:tt, $nr:expr, $index:expr) => {
+        SENSOR_ATTR_2!($name, 0o200, NULL, ::kernel::macros::paste!([<$func _store>]), $nr, $index)
     };
 }
 
@@ -136,22 +136,22 @@ macro_rules! SENSOR_DEVICE_ATTR_2 {
 
 #[macro_export]
 macro_rules! SENSOR_DEVICE_ATTR_2_RO {
-    ($name:ident, $func:ident, $nr:expr, $index:expr) => {
-        SENSOR_DEVICE_ATTR_2!($name, 0o444, $func##_show, NULL, $nr, $index)
+    ($name:ident, $func:tt, $nr:expr, $index:expr) => {
+        SENSOR_DEVICE_ATTR_2!($name, 0o444, ::kernel::macros::paste!([<$func _show>]), NULL, $nr, $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_DEVICE_ATTR_2_RW {
-    ($name:ident, $func:ident, $nr:expr, $index:expr) => {
-        SENSOR_DEVICE_ATTR_2!($name, 0o644, $func##_show, $func##_store, $nr, $index)
+    ($name:ident, $func:tt, $nr:expr, $index:expr) => {
+        SENSOR_DEVICE_ATTR_2!($name, 0o644, ::kernel::macros::paste!([<$func _show>]), ::kernel::macros::paste!([<$func _store>]), $nr, $index)
     };
 }
 
 #[macro_export]
 macro_rules! SENSOR_DEVICE_ATTR_2_WO {
-    ($name:ident, $func:ident, $nr:expr, $index:expr) => {
-        SENSOR_DEVICE_ATTR_2!($name, 0o200, NULL, $func##_store, $nr, $index)
+    ($name:ident, $func:tt, $nr:expr, $index:expr) => {
+        SENSOR_DEVICE_ATTR_2!($name, 0o200, NULL, ::kernel::macros::paste!([<$func _store>]), $nr, $index)
     };
 }
 

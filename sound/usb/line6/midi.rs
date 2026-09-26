@@ -194,7 +194,7 @@ unsafe extern "C" fn midi_sent(urb: *mut std::ffi::c_void) {
     Assumes that line6->line6midi->lock is held
     (i.e., this function is serialized).
 */
-static fn send_midi_async(line6: *mut usb_line6, data: *mut u8, length: i32) -> i32 {
+fn send_midi_async(line6: *mut usb_line6, data: *mut u8, length: i32) -> i32 {
     const GFP_ATOMIC: u32 = 0x20;
     const ENOMEM: i32 = -12;
     const ESHUTDOWN: i32 = -108;
@@ -256,11 +256,11 @@ fn goto_error(urb: *mut std::ffi::c_void, retval: i32) -> i32 {
     retval
 }
 
-static fn line6_midi_output_open(_substream: *mut std::ffi::c_void) -> i32 {
+fn line6_midi_output_open(_substream: *mut std::ffi::c_void) -> i32 {
     0
 }
 
-static fn line6_midi_output_close(_substream: *mut std::ffi::c_void) -> i32 {
+fn line6_midi_output_close(_substream: *mut std::ffi::c_void) -> i32 {
     0
 }
 
@@ -286,11 +286,11 @@ unsafe fn line6_midi_output_drain(substream: *mut std::ffi::c_void) {
     }
 }
 
-static fn line6_midi_input_open(_substream: *mut std::ffi::c_void) -> i32 {
+fn line6_midi_input_open(_substream: *mut std::ffi::c_void) -> i32 {
     0
 }
 
-static fn line6_midi_input_close(_substream: *mut std::ffi::c_void) -> i32 {
+fn line6_midi_input_close(_substream: *mut std::ffi::c_void) -> i32 {
     0
 }
 

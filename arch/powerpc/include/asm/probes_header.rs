@@ -38,9 +38,9 @@ macro_rules! is_trap {
 }
 
 /* CONFIG_PPC_ADV_DEBUG_REGS selects the single-step status bit. */
-#[cfg(feature = "CONFIG_PPC_ADV_DEBUG_REGS")]
+#[cfg(CONFIG_PPC_ADV_DEBUG_REGS)]
 const MSR_SINGLESTEP: u64 = MSR_DE;
-#[cfg(not(feature = "CONFIG_PPC_ADV_DEBUG_REGS"))]
+#[cfg(not(CONFIG_PPC_ADV_DEBUG_REGS))]
 const MSR_SINGLESTEP: u64 = MSR_SE;
 
 unsafe fn can_single_step(inst: u32) -> bool {
@@ -82,7 +82,7 @@ unsafe fn can_single_step(inst: u32) -> bool {
 /* Enable single stepping for the current task */
 unsafe fn enable_single_step(regs: *mut pt_regs) {
     regs_set_return_msr(regs, (*regs).msr | MSR_SINGLESTEP);
-    #[cfg(feature = "CONFIG_PPC_ADV_DEBUG_REGS")]
+    #[cfg(CONFIG_PPC_ADV_DEBUG_REGS)]
     {
         /*
          * We turn off Critical Input Exception(CE) to ensure that the single
@@ -91,7 +91,7 @@ unsafe fn enable_single_step(regs: *mut pt_regs) {
          */
         regs_set_return_msr(regs, (*regs).msr & !MSR_CE);
         mtspr(SPRN_DBCR0, mfspr(SPRN_DBCR0) | DBCR0_IC | DBCR0_IDM);
-        #[cfg(feature = "CONFIG_PPC_47x")]
+        #[cfg(CONFIG_PPC_47x)]
         isync();
     }
 }

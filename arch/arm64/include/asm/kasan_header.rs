@@ -22,14 +22,14 @@ macro_rules! arch_kasan_get_tag {
 }
 
 // Equivalent to: defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 extern "C" {
     pub fn kasan_early_init();
     pub fn kasan_init();
 }
 
 // static inline void kasan_init(void) { }
-#[cfg(not(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS")))]
+#[cfg(not(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS)))]
 #[inline]
 pub fn kasan_init() {}
 

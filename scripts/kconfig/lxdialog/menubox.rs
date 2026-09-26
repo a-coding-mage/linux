@@ -132,11 +132,11 @@ pub unsafe fn dialog_menu(title: *const c_char, prompt: *const c_char,
                 print_item!(scroll + choice, choice, TRUE); print_arrows(dialog, item_count(), scroll, box_y, box_x + ITEM_X + 1, menu_height); wnoutrefresh(dialog); wrefresh(menu); continue;
             }
             match key {
-                KEY_LEFT | TAB | KEY_RIGHT => { button = if (if key == KEY_LEFT { button - 1 } else { button + 1 }) < 0 { 4 } else if button > 4 { 0 } else { button }; print_buttons(dialog, height, width, button); wrefresh(menu); }
-                b' ' as c_int | b's' as c_int | b'y' as c_int | b'n' as c_int | b'm' as c_int | b'/' as c_int | b'h' as c_int | b'?' as c_int | b'z' as c_int | b'\n' as c_int => { *s_scroll = scroll; delwin(menu); delwin(dialog); item_set(scroll + choice); item_set_selected(1); return match key { b'h' as c_int | b'?' as c_int => 2, b's' as c_int | b'y' as c_int => 5, b'n' as c_int => 6, b'm' as c_int => 7, b' ' as c_int => 8, b'/' as c_int => 9, b'z' as c_int => 10, _ => button }; }
-                b'e' as c_int | b'x' as c_int => { key = KEY_ESC; }
-                KEY_ESC => { key = on_key_esc(menu); }
-                KEY_RESIZE => { on_key_resize(); delwin(menu); delwin(dialog); continue 'do_resize; }
+                case if case == KEY_LEFT || case == TAB || case == KEY_RIGHT => { button = if (if key == KEY_LEFT { button - 1 } else { button + 1 }) < 0 { 4 } else if button > 4 { 0 } else { button }; print_buttons(dialog, height, width, button); wrefresh(menu); }
+                case if case == b' ' as c_int || case == b's' as c_int || case == b'y' as c_int || case == b'n' as c_int || case == b'm' as c_int || case == b'/' as c_int || case == b'h' as c_int || case == b'?' as c_int || case == b'z' as c_int || case == b'\n' as c_int => { *s_scroll = scroll; delwin(menu); delwin(dialog); item_set(scroll + choice); item_set_selected(1); return match key { case if case == b'h' as c_int || case == b'?' as c_int => 2, case if case == b's' as c_int || case == b'y' as c_int => 5, case if case == b'n' as c_int => 6, case if case == b'm' as c_int => 7, case if case == b' ' as c_int => 8, case if case == b'/' as c_int => 9, case if case == b'z' as c_int => 10, _ => button }; }
+                case if case == b'e' as c_int || case == b'x' as c_int => { key = KEY_ESC; }
+                case if case == KEY_ESC => { key = on_key_esc(menu); }
+                case if case == KEY_RESIZE => { on_key_resize(); delwin(menu); delwin(dialog); continue 'do_resize; }
                 _ => {}
             }
         }

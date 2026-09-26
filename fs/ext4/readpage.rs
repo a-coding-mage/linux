@@ -99,11 +99,14 @@ unsafe fn ext4_mpage_readpages(
         let mut first_hole: u32;
         let blocks_per_folio: u32;
         let mut folio_pages: u32;
+        'next_page: {
+        'confused: {
+        'submit_and_realloc: {
 
         if !rac.is_null() { folio = readahead_folio(rac); }
         folio_pages = folio_nr_pages(folio);
         prefetchw!(&mut (*folio).flags);
-        if !folio_buffers(folio).is_null() { goto!(confused); }
+        if !folio_buffers(folio).is_null() { break 'confused; }
         blocks_per_folio = (folio_size(folio) >> blkbits) as u32;
         first_hole = blocks_per_folio;
         pos = folio_pos(folio);
@@ -129,15 +132,15 @@ unsafe fn ext4_mpage_readpages(
             if block_in_file < last_block {
                 map.m_lblk = block_in_file; map.m_len = last_block - block_in_file;
                 if ext4_map_blocks(core::ptr::null_mut(), inode, &mut map, 0) < 0 {
-                    folio_zero_segment(folio, 0, folio_size(folio)); folio_unlock(folio); goto!(next_page);
+                    folio_zero_segment(folio, 0, folio_size(folio)); folio_unlock(folio); break 'next_page;
                 }
             }
             if (map.m_flags & EXT4_MAP_MAPPED) == 0 {
                 fully_mapped = false; if first_hole == blocks_per_folio { first_hole = page_block; }
                 page_block += 1; block_in_file += 1; continue;
             }
-            if first_hole != blocks_per_folio { goto!(confused); }
-            if page_block == 0 { first_block = map.m_pblk; } else if first_block + page_block as u64 != map.m_pblk { goto!(confused); }
+            if first_hole != blocks_per_folio { break 'confused; }
+            if page_block == 0 { first_block = map.m_pblk; } else if first_block + page_block as u64 != map.m_pblk { break 'confused; }
             relative_block = 0;
             loop {
                 if relative_block == map.m_len { map.m_flags &= !EXT4_MAP_MAPPED; break; }
@@ -147,9 +150,9 @@ unsafe fn ext4_mpage_readpages(
         }
         if first_hole != blocks_per_folio {
             folio_zero_segment(folio, (first_hole << blkbits) as usize, folio_size(folio));
-            if first_hole == 0 { if !vi.is_null() && !fsverity_verify_folio(vi, folio) { goto!(set_error_page); } folio_end_read(folio, true); continue; }
+            if first_hole == 0 { if !vi.is_null() && !fsverity_verify_folio(vi, folio) { goto set_error_page; } folio_end_read(folio, true); continue; }
         } else if fully_mapped { folio_set_mappedtodisk(folio); }
-        if !bio.is_null() && (last_block_in_bio != first_block - 1 || !fscrypt_mergeable_bio(bio, inode, pos)) { goto!(submit_and_realloc); }
+        if !bio.is_null() && (last_block_in_bio != first_block - 1 || !fscrypt_mergeable_bio(bio, inode, pos)) { break 'submit_and_realloc; }
         if bio.is_null() {
             bio = bio_alloc(bdev, bio_max_segs(nr_pages), REQ_OP_READ, GFP_KERNEL);
             fscrypt_set_bio_crypt_ctx(bio, inode, pos, GFP_KERNEL); ext4_set_verity_work(bio, vi);
@@ -157,12 +160,15 @@ unsafe fn ext4_mpage_readpages(
             if !rac.is_null() { (*bio).bi_opf |= REQ_RAHEAD; }
         }
         length = (first_hole << blkbits) as i32;
-        if !bio_add_folio(bio, folio, length, 0) { goto!(submit_and_realloc); }
+        if !bio_add_folio(bio, folio, length, 0) { break 'submit_and_realloc; }
         if ((map.m_flags & EXT4_MAP_BOUNDARY) != 0 && relative_block == map.m_len) || first_hole != blocks_per_folio { blk_crypto_submit_bio(bio); bio = core::ptr::null_mut(); } else { last_block_in_bio = first_block + blocks_per_folio as u64 - 1; }
         continue;
-        submit_and_realloc: blk_crypto_submit_bio(bio); bio = core::ptr::null_mut(); continue;
-        confused: if !bio.is_null() { blk_crypto_submit_bio(bio); bio = core::ptr::null_mut(); } if !folio_test_uptodate(folio) { block_read_full_folio(folio, ext4_get_block); } else { folio_unlock(folio); }
-        next_page:;
+        }
+        blk_crypto_submit_bio(bio); bio = core::ptr::null_mut(); continue;
+        }
+        if !bio.is_null() { blk_crypto_submit_bio(bio); bio = core::ptr::null_mut(); } if !folio_test_uptodate(folio) { block_read_full_folio(folio, ext4_get_block); } else { folio_unlock(folio); }
+        }
+        ;
         nr_pages -= folio_pages;
     }
     if !bio.is_null() { blk_crypto_submit_bio(bio); }

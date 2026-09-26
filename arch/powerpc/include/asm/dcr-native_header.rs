@@ -79,9 +79,9 @@ macro_rules! mfdcr {
     ($rn:expr) => {{
         let rn: core::ffi::c_uint = $rn;
         if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
-            unsafe { $crate::mfdcrx(rn) }
+            unsafe { $crate::mfdcrx($rn) }
         } else {
-            unsafe { $crate::__mfdcr(rn) }
+            unsafe { $crate::__mfdcr($rn) }
         }
     }};
 }
@@ -92,9 +92,9 @@ macro_rules! mtdcr {
         let rn: core::ffi::c_uint = $rn;
         let v: core::ffi::c_uint = $v;
         if cpu_has_feature(CPU_FTR_INDEXED_DCR) {
-            unsafe { $crate::mtdcrx(rn, v) }
+            unsafe { $crate::mtdcrx($rn, $v) }
         } else {
-            unsafe { $crate::__mtdcr(rn, v) }
+            unsafe { $crate::__mtdcr($rn, $v) }
         }
     }};
 }

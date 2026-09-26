@@ -7,13 +7,13 @@
 
 use core::ffi::c_char;
 
-#[cfg(feature = "CONFIG_SMB_SERVER_KERBEROS5")]
+#[cfg(CONFIG_SMB_SERVER_KERBEROS5)]
 pub const AUTH_GSS_LENGTH: u32 = 96;
-#[cfg(feature = "CONFIG_SMB_SERVER_KERBEROS5")]
+#[cfg(CONFIG_SMB_SERVER_KERBEROS5)]
 pub const AUTH_GSS_PADDING: u32 = 0;
-#[cfg(not(feature = "CONFIG_SMB_SERVER_KERBEROS5"))]
+#[cfg(not(CONFIG_SMB_SERVER_KERBEROS5))]
 pub const AUTH_GSS_LENGTH: u32 = 74;
-#[cfg(not(feature = "CONFIG_SMB_SERVER_KERBEROS5"))]
+#[cfg(not(CONFIG_SMB_SERVER_KERBEROS5))]
 pub const AUTH_GSS_PADDING: u32 = 6;
 
 pub const CIFS_HMAC_MD5_HASH_SIZE: u32 = 16;

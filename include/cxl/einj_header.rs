@@ -22,7 +22,7 @@ pub struct seq_file {
 }
 
 // C conditional: IS_ENABLED(CONFIG_ACPI_APEI_EINJ_CXL)
-#[cfg(feature = "CONFIG_ACPI_APEI_EINJ_CXL")]
+#[cfg(CONFIG_ACPI_APEI_EINJ_CXL)]
 extern "C" {
     pub fn einj_cxl_available_error_type_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> i32;
     pub fn einj_cxl_inject_error(dport_dev: *mut pci_dev, type_: u64) -> i32;
@@ -32,7 +32,7 @@ extern "C" {
 
 // C fallback: !IS_ENABLED(CONFIG_ACPI_APEI_EINJ_CXL)
 // linux/errno.h: ENXIO == 6
-#[cfg(not(feature = "CONFIG_ACPI_APEI_EINJ_CXL"))]
+#[cfg(not(CONFIG_ACPI_APEI_EINJ_CXL))]
 #[inline]
 pub unsafe fn einj_cxl_available_error_type_show(
     _m: *mut seq_file,
@@ -41,19 +41,19 @@ pub unsafe fn einj_cxl_available_error_type_show(
     -6
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_APEI_EINJ_CXL"))]
+#[cfg(not(CONFIG_ACPI_APEI_EINJ_CXL))]
 #[inline]
 pub unsafe fn einj_cxl_inject_error(_dport_dev: *mut pci_dev, _type_: u64) -> i32 {
     -6
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_APEI_EINJ_CXL"))]
+#[cfg(not(CONFIG_ACPI_APEI_EINJ_CXL))]
 #[inline]
 pub unsafe fn einj_cxl_inject_rch_error(_rcrb: u64, _type_: u64) -> i32 {
     -6
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_APEI_EINJ_CXL"))]
+#[cfg(not(CONFIG_ACPI_APEI_EINJ_CXL))]
 #[inline]
 pub unsafe fn einj_cxl_is_initialized() -> bool {
     false

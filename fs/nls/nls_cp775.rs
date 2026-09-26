@@ -265,11 +265,11 @@ const charset2upper: [u8; 256] = {
 	0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff, /* 0xf8-0xff */
 };
 
-static int uni2char(wchar_t uni, unsigned char *out, int boundlen)
+static int uni2char(wchar_t uni, core::ffi::c_uchar *out, int boundlen)
 {
-	const unsigned char *uni2charset;
-	unsigned char cl = uni & 0x00ff;
-	unsigned char ch = (uni & 0xff00) >> 8;
+	const core::ffi::c_uchar *uni2charset;
+	core::ffi::c_uchar cl = uni & 0x00ff;
+	core::ffi::c_uchar ch = (uni & 0xff00) >> 8;
 
 	if (boundlen <= 0)
 		return -ENAMETOOLONG;
@@ -282,7 +282,7 @@ static int uni2char(wchar_t uni, unsigned char *out, int boundlen)
 	return 1;
 }
 
-static int char2uni(const unsigned char *rawstring, int boundlen, wchar_t *uni)
+static int char2uni(const core::ffi::c_uchar *rawstring, int boundlen, wchar_t *uni)
 {
 	*uni = charset2uni[*rawstring];
 	if (*uni == 0x0000)
@@ -291,11 +291,11 @@ static int char2uni(const unsigned char *rawstring, int boundlen, wchar_t *uni)
 }
 
 static struct nls_table table = {
-	.charset	= "cp775",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "cp775",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 };
 
 static int __init init_nls_cp775(void)

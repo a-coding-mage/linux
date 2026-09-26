@@ -27,22 +27,22 @@ pub const KSMBD_COUNTER_READ_BYTES: usize = 13;
 pub const KSMBD_COUNTER_WRITE_BYTES: usize = 14;
 pub const KSMBD_COUNTER_FIRST_REQ: usize = 15;
 pub const KSMBD_COUNTER_LAST_REQ: usize = KSMBD_COUNTER_FIRST_REQ + KSMBD_COUNTER_MAX_REQS - 1;
-pub const KSMBD_COUNTER_MAX: usize = 35;
+pub const KSMBD_COUNTER_MAX: usize = 34;
 
 // CONFIG_PROC_FS conditional declarations from the C header.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 extern "C" {
     pub static mut ksmbd_counters: ksmbd_counters;
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[repr(C)]
 pub struct ksmbd_counters {
     pub counters: [percpu_counter; KSMBD_COUNTER_MAX],
 }
 
 // These types and functions are supplied by the surrounding kernel bindings.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 extern "C" {
     pub fn percpu_counter_inc(counter: *mut percpu_counter);
     pub fn percpu_counter_dec(counter: *mut percpu_counter);
@@ -51,34 +51,34 @@ extern "C" {
     pub fn percpu_counter_sum_positive(counter: *mut percpu_counter) -> i64;
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 pub type __le32 = u32;
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[inline]
 pub unsafe fn ksmbd_counter_inc(type_: i32) {
     percpu_counter_inc(&mut (*core::ptr::addr_of_mut!(ksmbd_counters)).counters[type_ as usize]);
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[inline]
 pub unsafe fn ksmbd_counter_dec(type_: i32) {
     percpu_counter_dec(&mut (*core::ptr::addr_of_mut!(ksmbd_counters)).counters[type_ as usize]);
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[inline]
 pub unsafe fn ksmbd_counter_add(type_: i32, value: i64) {
     percpu_counter_add(&mut (*core::ptr::addr_of_mut!(ksmbd_counters)).counters[type_ as usize], value);
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[inline]
 pub unsafe fn ksmbd_counter_sub(type_: i32, value: i64) {
     percpu_counter_sub(&mut (*core::ptr::addr_of_mut!(ksmbd_counters)).counters[type_ as usize], value);
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[inline]
 pub unsafe fn ksmbd_counter_inc_reqs(cmd: u32, status: __le32) {
     let severity = status >> 30;
@@ -114,28 +114,28 @@ pub unsafe fn ksmbd_counter_inc_reqs(cmd: u32, status: __le32) {
     }
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[inline]
 pub unsafe fn ksmbd_counter_sum(type_: i32) -> i64 {
     percpu_counter_sum_positive(&mut (*core::ptr::addr_of_mut!(ksmbd_counters)).counters[type_ as usize])
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn ksmbd_counter_inc(_type_: i32) {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn ksmbd_counter_dec(_type_: i32) {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn ksmbd_counter_add(_type_: i32, _value: i64) {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn ksmbd_counter_sub(_type_: i32, _value: i64) {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn ksmbd_counter_inc_reqs(_cmd: u32, _status: u32) {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn ksmbd_counter_sum(_type_: i32) -> i64 { 0 }
 

@@ -541,35 +541,35 @@ unsafe fn main_0(argc: c_int, argv: *mut *mut c_char) -> c_int {
         }
 
         match c as u8 as c_char {
-            b'd' as c_char => {
+            case if case == b'd' as c_char => {
                 printf(b"print delayacct stats ON\n\0".as_ptr() as *const c_char);
                 print_delays = 1;
             }
-            b'i' as c_char => {
+            case if case == b'i' as c_char => {
                 printf(b"printing IO accounting\n\0".as_ptr() as *const c_char);
                 print_io_accounting = 1;
             }
-            b'q' as c_char => {
+            case if case == b'q' as c_char => {
                 printf(b"printing task/process context switch rates\n\0".as_ptr() as *const c_char);
                 print_task_context_switch_counts = 1;
             }
-            b'C' as c_char => {
+            case if case == b'C' as c_char => {
                 containerset = 1;
                 containerpath = optarg;
             }
-            b'w' as c_char => {
+            case if case == b'w' as c_char => {
                 logfile = strdup(optarg);
                 printf(b"write to file %s\n\0".as_ptr() as *const c_char, logfile);
                 write_file = 1;
             }
-            b'r' as c_char => {
+            case if case == b'r' as c_char => {
                 rcvbufsz = atoi(optarg);
                 printf(b"receive buf size %d\n\0".as_ptr() as *const c_char, rcvbufsz);
                 if rcvbufsz < 0 {
                     err!(1, b"Invalid rcv buf size\n\0".as_ptr() as *const c_char);
                 }
             }
-            b'm' as c_char => {
+            case if case == b'm' as c_char => {
                 strncpy(cpumask.as_mut_ptr(), optarg, cpumask.len());
                 cpumask[cpumask.len() - 1] = 0;
                 maskset = 1;
@@ -579,21 +579,21 @@ unsafe fn main_0(argc: c_int, argv: *mut *mut c_char) -> c_int {
                     maskset,
                 );
             }
-            b't' as c_char => {
+            case if case == b't' as c_char => {
                 tid = atoi(optarg);
                 if tid == 0 {
                     err!(1, b"Invalid tgid\n\0".as_ptr() as *const c_char);
                 }
                 cmd_type = TASKSTATS_CMD_ATTR_TGID;
             }
-            b'p' as c_char => {
+            case if case == b'p' as c_char => {
                 tid = atoi(optarg);
                 if tid == 0 {
                     err!(1, b"Invalid pid\n\0".as_ptr() as *const c_char);
                 }
                 cmd_type = TASKSTATS_CMD_ATTR_PID;
             }
-            b'c' as c_char => {
+            case if case == b'c' as c_char => {
                 /* Block SIGCHLD for sigwait() later */
                 if sigemptyset(&mut sigset) == -1 {
                     err!(1, b"Failed to empty sigset\0".as_ptr() as *const c_char);
@@ -618,11 +618,11 @@ unsafe fn main_0(argc: c_int, argv: *mut *mut c_char) -> c_int {
                 cmd_type = TASKSTATS_CMD_ATTR_PID;
                 forking = 1;
             }
-            b'v' as c_char => {
+            case if case == b'v' as c_char => {
                 printf(b"debug on\n\0".as_ptr() as *const c_char);
                 dbg = 1;
             }
-            b'l' as c_char => {
+            case if case == b'l' as c_char => {
                 printf(b"listen forever\n\0".as_ptr() as *const c_char);
                 loop_ = 1;
             }

@@ -34,18 +34,18 @@ const ECRYPTFS_TAG_67_PACKET_TYPE: c_char = 67;
 
 #[inline]
 unsafe fn process_request_key_err(err_code: c_long) -> c_int {
-    match err_code {
-        -ENOKEY => { ecryptfs_printk(0, b"No key\0".as_ptr() as _); -ENOENT }
-        -EKEYEXPIRED => { ecryptfs_printk(0, b"Key expired\0".as_ptr() as _); -ETIME }
-        -EKEYREVOKED => { ecryptfs_printk(0, b"Key revoked\0".as_ptr() as _); -EINVAL }
+    match -(err_code) {
+        ENOKEY => { ecryptfs_printk(0, b"No key\0".as_ptr() as _); -ENOENT }
+        EKEYEXPIRED => { ecryptfs_printk(0, b"Key expired\0".as_ptr() as _); -ETIME }
+        EKEYREVOKED => { ecryptfs_printk(0, b"Key revoked\0".as_ptr() as _); -EINVAL }
         _ => { ecryptfs_printk(0, b"Unknown error code\0".as_ptr() as _); -EINVAL }
     }
 }
 
 unsafe fn process_find_global_auth_tok_for_sig_err(err_code: c_int) -> c_int {
-    match err_code {
-        -ENOENT => { ecryptfs_printk(0, b"Missing auth tok\0".as_ptr() as _); err_code }
-        -EINVAL => { ecryptfs_printk(0, b"Invalid auth tok\0".as_ptr() as _); err_code }
+    match -(err_code) {
+        ENOENT => { ecryptfs_printk(0, b"Missing auth tok\0".as_ptr() as _); err_code }
+        EINVAL => { ecryptfs_printk(0, b"Invalid auth tok\0".as_ptr() as _); err_code }
         _ => process_request_key_err(err_code as c_long),
     }
 }

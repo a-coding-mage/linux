@@ -110,7 +110,7 @@ pub unsafe fn kvm_pgtable_offset(
 
 #[inline]
 pub unsafe fn kvm_pgtable_addr_end(ctx: *mut kvm_ptw_ctx, addr: phys_addr_t, end: phys_addr_t) -> phys_addr_t {
-    let size: phys_addr_t = 0x1 as phys_addr_t << (*ctx).pgtable_shift;
+    let size: phys_addr_t = (0x1 as phys_addr_t) << (*ctx).pgtable_shift;
     let boundary = (addr + size) & !(size - 1);
     if boundary - 1 < end - 1 { boundary } else { end }
 }

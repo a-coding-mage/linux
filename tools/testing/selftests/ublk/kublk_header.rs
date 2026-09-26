@@ -417,8 +417,7 @@ extern "C" {
         fd: c_int,
         buf: *mut c_void,
         nbytes: __u32,
-        offset: __u64,
-    );
+        offset: __u64);
 
     pub static mut shmem_table: [ublk_shmem_entry; UBLK_BUF_MAX];
     pub static mut shmem_count: c_int;

@@ -48,7 +48,7 @@ pub struct st33zp24_phy_ops {
 
 // Preserved from CONFIG_PM_SLEEP; enable these declarations when that build
 // configuration is present in the surrounding crate.
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" {
     pub fn st33zp24_pm_suspend(dev: *mut device) -> core::ffi::c_int;
     pub fn st33zp24_pm_resume(dev: *mut device) -> core::ffi::c_int;

@@ -27,7 +27,7 @@ pub static realview_dt_platform_compat: [*const core::ffi::c_char; 5] = [
 #[allow(dead_code)]
 pub const REALVIEW_DT: RealviewDtMachine = RealviewDtMachine {
     name: "ARM RealView Machine (Device Tree Support)",
-    #[cfg(feature = "CONFIG_ZONE_DMA")]
+    #[cfg(CONFIG_ZONE_DMA)]
     dma_zone_size: 256 * 1024 * 1024,
     dt_compat: &realview_dt_platform_compat,
     l2c_aux_val: 0x0,
@@ -39,7 +39,7 @@ pub const REALVIEW_DT: RealviewDtMachine = RealviewDtMachine {
 #[allow(dead_code)]
 pub struct RealviewDtMachine {
     pub name: &'static str,
-    #[cfg(feature = "CONFIG_ZONE_DMA")]
+    #[cfg(CONFIG_ZONE_DMA)]
     pub dma_zone_size: usize,
     pub dt_compat: &'static [*const core::ffi::c_char],
     pub l2c_aux_val: u32,

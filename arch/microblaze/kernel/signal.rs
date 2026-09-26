@@ -110,10 +110,10 @@ unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_r
 }
 
 unsafe fn handle_restart(regs: *mut pt_regs, ka: *mut k_sigaction, has_handler: c_int) {
-    match (*regs).r3 {
-        -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => { if has_handler == 0 { (*regs).pc -= 4; } else { (*regs).r3 = -EINTR; } }
-        -ERESTARTSYS => { if has_handler != 0 && (*ka).sa.sa_flags & SA_RESTART == 0 { (*regs).r3 = -EINTR; } else { (*regs).pc -= 4; } }
-        -ERESTARTNOINTR => (*regs).pc -= 4,
+    match -((*regs).r3) {
+        ERESTART_RESTARTBLOCK | ERESTARTNOHAND => { if has_handler == 0 { (*regs).pc -= 4; } else { (*regs).r3 = -EINTR; } }
+        ERESTARTSYS => { if has_handler != 0 && (*ka).sa.sa_flags & SA_RESTART == 0 { (*regs).r3 = -EINTR; } else { (*regs).pc -= 4; } }
+        ERESTARTNOINTR => (*regs).pc -= 4,
         _ => {}
     }
 }

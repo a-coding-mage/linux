@@ -140,7 +140,7 @@ unsafe fn __netlink_diag_dump(
 
     let mut irq_flags: ulong = 0;
     read_lock_irqsave(&nl_table_lock, &mut irq_flags);
-    sk_for_each_bound(sk, &(*tbl).mc_list) {
+    sk_for_each_bound!(sk, &(*tbl).mc_list, {
         if sk_hashed(sk) { continue; }
         if !net_eq(sock_net(sk), net) { continue; }
         if num < s_num { num += 1; continue; }
@@ -149,7 +149,7 @@ unsafe fn __netlink_diag_dump(
             ret = 1; break;
         }
         num += 1;
-    }
+    });
     read_unlock_irqrestore(&nl_table_lock, irq_flags);
     (*cb).args[0] = num;
     ret

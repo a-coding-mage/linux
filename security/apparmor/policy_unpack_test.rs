@@ -202,12 +202,12 @@ unsafe fn policy_unpack_test_init(test: *mut KunitTest) -> i32 {
     (*puf).e_size = e_size;
     (*puf).e = build_aa_ext_struct(puf, test, e_size);
 
-    (*test).priv = puf as *mut u8;
+    (*test).r#priv = puf as *mut u8;
     0
 }
 
 unsafe fn policy_unpack_test_inbounds_when_inbounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
 
     // KUNIT_EXPECT_TRUE(test, aa_inbounds((*puf).e, 0));
     // KUNIT_EXPECT_TRUE(test, aa_inbounds((*puf).e, (*puf).e_size / 2));
@@ -215,13 +215,13 @@ unsafe fn policy_unpack_test_inbounds_when_inbounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_inbounds_when_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
 
     // KUNIT_EXPECT_FALSE(test, aa_inbounds((*puf).e, (*puf).e_size + 1));
 }
 
 unsafe fn policy_unpack_test_unpack_array_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut array_size: u16 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_ARRAY_BUF_OFFSET);
@@ -233,7 +233,7 @@ unsafe fn policy_unpack_test_unpack_array_with_null_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_array_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut array_size: u16 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_ARRAY_BUF_OFFSET);
@@ -245,7 +245,7 @@ unsafe fn policy_unpack_test_unpack_array_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_array_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut array_size: u16 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_ARRAY_BUF_OFFSET);
@@ -257,7 +257,7 @@ unsafe fn policy_unpack_test_unpack_array_out_of_bounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_blob_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut blob: *mut u8 = ptr::null_mut();
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_BLOB_BUF_OFFSET);
@@ -269,7 +269,7 @@ unsafe fn policy_unpack_test_unpack_blob_with_null_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_blob_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut blob: *mut u8 = ptr::null_mut();
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_BLOB_BUF_OFFSET);
@@ -281,7 +281,7 @@ unsafe fn policy_unpack_test_unpack_blob_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_blob_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut blob: *mut u8 = ptr::null_mut();
     let start = (*(*puf).e).pos;
 
@@ -296,7 +296,7 @@ unsafe fn policy_unpack_test_unpack_blob_out_of_bounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_str_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut string: *const u8 = ptr::null();
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_STRING_BUF_OFFSET);
@@ -307,7 +307,7 @@ unsafe fn policy_unpack_test_unpack_str_with_null_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_str_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut string: *const u8 = ptr::null();
 
     let size = aa_unpack_str((*puf).e, &mut string, TEST_STRING_NAME.as_ptr());
@@ -317,7 +317,7 @@ unsafe fn policy_unpack_test_unpack_str_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_str_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut string: *const u8 = ptr::null();
     let start = (*(*puf).e).pos;
 
@@ -331,7 +331,7 @@ unsafe fn policy_unpack_test_unpack_str_out_of_bounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_strdup_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut string: *mut u8 = ptr::null_mut();
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_STRING_BUF_OFFSET);
@@ -347,7 +347,7 @@ unsafe fn policy_unpack_test_unpack_strdup_with_null_name(test: *mut KunitTest) 
 }
 
 unsafe fn policy_unpack_test_unpack_strdup_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut string: *mut u8 = ptr::null_mut();
 
     let size = aa_unpack_strdup((*puf).e, &mut string, TEST_STRING_NAME.as_ptr());
@@ -362,7 +362,7 @@ unsafe fn policy_unpack_test_unpack_strdup_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_strdup_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let start = (*(*puf).e).pos;
     let mut string: *mut u8 = ptr::null_mut();
 
@@ -379,7 +379,7 @@ unsafe fn policy_unpack_test_unpack_strdup_out_of_bounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_nameX_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_U32_BUF_OFFSET);
 
@@ -391,7 +391,7 @@ unsafe fn policy_unpack_test_unpack_nameX_with_null_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_nameX_with_wrong_code(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_U32_BUF_OFFSET);
 
@@ -403,7 +403,7 @@ unsafe fn policy_unpack_test_unpack_nameX_with_wrong_code(test: *mut KunitTest) 
 }
 
 unsafe fn policy_unpack_test_unpack_nameX_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_U32_BUF_OFFSET);
 
@@ -415,7 +415,7 @@ unsafe fn policy_unpack_test_unpack_nameX_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_nameX_with_wrong_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let name = b"12345678";
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_U32_BUF_OFFSET);
@@ -428,7 +428,7 @@ unsafe fn policy_unpack_test_unpack_nameX_with_wrong_name(test: *mut KunitTest) 
 }
 
 unsafe fn policy_unpack_test_unpack_u16_chunk_basic(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut chunk: *mut u8 = ptr::null_mut();
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_U16_OFFSET);
@@ -446,7 +446,7 @@ unsafe fn policy_unpack_test_unpack_u16_chunk_basic(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_u16_chunk_out_of_bounds_1(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut chunk: *mut u8 = ptr::null_mut();
 
     (*(*puf).e).pos = ((*(*puf).e).end as *mut u8).offset(-1);
@@ -459,7 +459,7 @@ unsafe fn policy_unpack_test_unpack_u16_chunk_out_of_bounds_1(test: *mut KunitTe
 }
 
 unsafe fn policy_unpack_test_unpack_u16_chunk_out_of_bounds_2(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut chunk: *mut u8 = ptr::null_mut();
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_U16_OFFSET);
@@ -477,7 +477,7 @@ unsafe fn policy_unpack_test_unpack_u16_chunk_out_of_bounds_2(test: *mut KunitTe
 }
 
 unsafe fn policy_unpack_test_unpack_u32_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut data: u32 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_U32_BUF_OFFSET);
@@ -491,7 +491,7 @@ unsafe fn policy_unpack_test_unpack_u32_with_null_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_u32_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut data: u32 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_U32_BUF_OFFSET);
@@ -505,7 +505,7 @@ unsafe fn policy_unpack_test_unpack_u32_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_u32_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut data: u32 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_U32_BUF_OFFSET);
@@ -519,7 +519,7 @@ unsafe fn policy_unpack_test_unpack_u32_out_of_bounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_u64_with_null_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut data: u64 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_U64_BUF_OFFSET);
@@ -533,7 +533,7 @@ unsafe fn policy_unpack_test_unpack_u64_with_null_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_u64_with_name(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut data: u64 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_U64_BUF_OFFSET);
@@ -547,7 +547,7 @@ unsafe fn policy_unpack_test_unpack_u64_with_name(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_u64_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let mut data: u64 = 0;
 
     (*(*puf).e).pos = ((*(*puf).e).start as *mut u8).add(TEST_NAMED_U64_BUF_OFFSET);
@@ -561,7 +561,7 @@ unsafe fn policy_unpack_test_unpack_u64_out_of_bounds(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_X_code_match(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let success = aa_unpack_X((*puf).e, AA_NAME);
 
     // KUNIT_EXPECT_TRUE(test, success);
@@ -569,7 +569,7 @@ unsafe fn policy_unpack_test_unpack_X_code_match(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_X_code_mismatch(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
     let success = aa_unpack_X((*puf).e, AA_STRING);
 
     // KUNIT_EXPECT_FALSE(test, success);
@@ -577,7 +577,7 @@ unsafe fn policy_unpack_test_unpack_X_code_mismatch(test: *mut KunitTest) {
 }
 
 unsafe fn policy_unpack_test_unpack_X_out_of_bounds(test: *mut KunitTest) {
-    let puf = (*test).priv as *mut PolicyUnpackFixture;
+    let puf = (*test).r#priv as *mut PolicyUnpackFixture;
 
     (*(*puf).e).pos = (*(*puf).e).end;
     let success = aa_unpack_X((*puf).e, AA_NAME);

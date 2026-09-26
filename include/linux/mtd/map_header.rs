@@ -11,30 +11,30 @@ pub struct mtd_info;
 pub struct list_head;
 pub struct mtd_chip_driver;
 
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_1)]
 pub const MAX_MAP_BANKWIDTH: usize = 1;
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_2")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_2)]
 pub const MAX_MAP_BANKWIDTH: usize = 2;
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_4")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_4)]
 pub const MAX_MAP_BANKWIDTH: usize = 4;
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_8")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_8)]
 pub const MAX_MAP_BANKWIDTH: usize = 8;
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_16")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_16)]
 pub const MAX_MAP_BANKWIDTH: usize = 16;
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_32")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_32)]
 pub const MAX_MAP_BANKWIDTH: usize = 32;
 
-#[cfg(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1")]
+#[cfg(CONFIG_MTD_MAP_BANK_WIDTH_1)]
 #[inline] pub unsafe fn map_bankwidth(_map: *mut map_info) -> usize { 1 }
-#[cfg(all(not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1"), feature = "CONFIG_MTD_MAP_BANK_WIDTH_2"))]
+#[cfg(all(not(CONFIG_MTD_MAP_BANK_WIDTH_1), CONFIG_MTD_MAP_BANK_WIDTH_2))]
 #[inline] pub unsafe fn map_bankwidth(_map: *mut map_info) -> usize { 2 }
-#[cfg(all(not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_2"), feature = "CONFIG_MTD_MAP_BANK_WIDTH_4"))]
+#[cfg(all(not(CONFIG_MTD_MAP_BANK_WIDTH_1), not(CONFIG_MTD_MAP_BANK_WIDTH_2), CONFIG_MTD_MAP_BANK_WIDTH_4))]
 #[inline] pub unsafe fn map_bankwidth(_map: *mut map_info) -> usize { 4 }
-#[cfg(all(not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_2"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_4"), feature = "CONFIG_MTD_MAP_BANK_WIDTH_8"))]
+#[cfg(all(not(CONFIG_MTD_MAP_BANK_WIDTH_1), not(CONFIG_MTD_MAP_BANK_WIDTH_2), not(CONFIG_MTD_MAP_BANK_WIDTH_4), CONFIG_MTD_MAP_BANK_WIDTH_8))]
 #[inline] pub unsafe fn map_bankwidth(_map: *mut map_info) -> usize { 8 }
-#[cfg(all(not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_2"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_4"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_8"), feature = "CONFIG_MTD_MAP_BANK_WIDTH_16"))]
+#[cfg(all(not(CONFIG_MTD_MAP_BANK_WIDTH_1), not(CONFIG_MTD_MAP_BANK_WIDTH_2), not(CONFIG_MTD_MAP_BANK_WIDTH_4), not(CONFIG_MTD_MAP_BANK_WIDTH_8), CONFIG_MTD_MAP_BANK_WIDTH_16))]
 #[inline] pub unsafe fn map_bankwidth(_map: *mut map_info) -> usize { 16 }
-#[cfg(all(not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_1"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_2"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_4"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_8"), not(feature = "CONFIG_MTD_MAP_BANK_WIDTH_16"), feature = "CONFIG_MTD_MAP_BANK_WIDTH_32"))]
+#[cfg(all(not(CONFIG_MTD_MAP_BANK_WIDTH_1), not(CONFIG_MTD_MAP_BANK_WIDTH_2), not(CONFIG_MTD_MAP_BANK_WIDTH_4), not(CONFIG_MTD_MAP_BANK_WIDTH_8), not(CONFIG_MTD_MAP_BANK_WIDTH_16), CONFIG_MTD_MAP_BANK_WIDTH_32))]
 #[inline] pub unsafe fn map_bankwidth(map: *mut map_info) -> usize { (*map).bankwidth as usize }
 
 #[inline] pub unsafe fn map_bankwidth_is_1(map: *mut map_info) -> bool { map_bankwidth(map) == 1 }
@@ -63,13 +63,13 @@ pub struct map_info {
     pub cached: *mut core::ffi::c_void,
     pub swap: i32,
     pub bankwidth: i32,
-    #[cfg(feature = "CONFIG_MTD_COMPLEX_MAPPINGS")]
+    #[cfg(CONFIG_MTD_COMPLEX_MAPPINGS)]
     pub read: Option<unsafe extern "C" fn(*mut map_info, usize) -> map_word>,
-    #[cfg(feature = "CONFIG_MTD_COMPLEX_MAPPINGS")]
+    #[cfg(CONFIG_MTD_COMPLEX_MAPPINGS)]
     pub copy_from: Option<unsafe extern "C" fn(*mut map_info, *mut core::ffi::c_void, usize, isize)>,
-    #[cfg(feature = "CONFIG_MTD_COMPLEX_MAPPINGS")]
+    #[cfg(CONFIG_MTD_COMPLEX_MAPPINGS)]
     pub write: Option<unsafe extern "C" fn(*mut map_info, map_word, usize)>,
-    #[cfg(feature = "CONFIG_MTD_COMPLEX_MAPPINGS")]
+    #[cfg(CONFIG_MTD_COMPLEX_MAPPINGS)]
     pub copy_to: Option<unsafe extern "C" fn(*mut map_info, usize, *const core::ffi::c_void, isize)>,
     pub inval_cache: Option<unsafe extern "C" fn(*mut map_info, usize, isize)>,
     pub set_vpp: Option<unsafe extern "C" fn(*mut map_info, i32)>,
@@ -114,7 +114,7 @@ pub unsafe fn inline_map_write(_map: *mut map_info, _datum: map_word, _ofs: usiz
 pub unsafe fn inline_map_copy_from(_map: *mut map_info, _to: *mut core::ffi::c_void, _from: usize, _len: isize) { todo!("kernel I/O dependency") }
 pub unsafe fn inline_map_copy_to(_map: *mut map_info, _to: usize, _from: *const core::ffi::c_void, _len: isize) { todo!("kernel I/O dependency") }
 
-#[cfg(feature = "CONFIG_MTD_COMPLEX_MAPPINGS")]
+#[cfg(CONFIG_MTD_COMPLEX_MAPPINGS)]
 unsafe extern "C" { pub fn simple_map_init(map: *mut map_info); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

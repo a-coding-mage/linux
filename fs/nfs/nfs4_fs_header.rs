@@ -58,18 +58,18 @@ pub const NFS_LOCK_INITIALIZED: u32 = 0; pub const NFS_LOCK_LOST: u32 = 1; pub c
 #[repr(C)] pub struct nfs4_opendata { pub kref: kref, pub o_arg: nfs_openargs, pub o_res: nfs_openres, pub c_arg: nfs_open_confirmargs, pub c_res: nfs_open_confirmres, pub owner_name: nfs4_string, pub group_name: nfs4_string, pub a_label: *mut nfs4_label, pub f_attr: nfs_fattr, pub dir: *mut dentry, pub dentry: *mut dentry, pub owner: *mut nfs4_state_owner, pub state: *mut nfs4_state, pub attrs: iattr, pub lgp: *mut nfs4_layoutget, pub timestamp: c_ulong, pub rpc_done: bool, pub file_created: bool, pub is_recover: bool, pub cancelled: bool, pub rpc_status: i32 }
 
 extern "C" {
-    pub fn nfs_atomic_open(*mut inode,*mut dentry,*mut file,u32,umode_t)->i32;
-    pub fn nfs4_match_client(*mut nfs_client,*mut nfs_client,*mut *mut nfs_client,*mut nfs_net)->i32;
-    pub fn nfs4_handle_exception(*mut nfs_server,i32,*mut nfs4_exception)->i32;
-    pub fn nfs4_close_state(*mut nfs4_state,fmode_t); pub fn nfs4_close_sync(*mut nfs4_state,fmode_t);
-    pub fn nfs4_state_protect(*mut nfs_client,c_ulong,*mut *mut rpc_clnt,*mut rpc_message);
-    pub fn nfs4_state_protect_write(*mut nfs_client,*mut *mut rpc_clnt,*mut rpc_message,*mut nfs_pgio_header);
-    pub fn nfs4_get_state_owner(*mut nfs_server,*const cred,gfp_t)->*mut nfs4_state_owner;
-    pub fn nfs4_put_state_owner(*mut nfs4_state_owner); pub fn nfs4_put_open_state(*mut nfs4_state);
-    pub fn nfs4_setup_sequence(*mut nfs_client,*mut nfs4_sequence_args,*mut nfs4_sequence_res,*mut rpc_task)->i32;
-    pub fn nfs4_sequence_done(*mut rpc_task,*mut nfs4_sequence_res)->i32;
-    pub fn nfs4_free_lock_state(*mut nfs_server,*mut nfs4_lock_state);
-    pub fn nfs4_proc_commit(*mut file,u64,u32,*mut nfs_commitres)->i32;
+    pub fn nfs_atomic_open(_: *mut inode,_: *mut dentry,_: *mut file,_: u32,_: umode_t)->i32;
+    pub fn nfs4_match_client(_: *mut nfs_client,_: *mut nfs_client,_: *mut *mut nfs_client,_: *mut nfs_net)->i32;
+    pub fn nfs4_handle_exception(_: *mut nfs_server,_: i32,_: *mut nfs4_exception)->i32;
+    pub fn nfs4_close_state(_: *mut nfs4_state,_: fmode_t); pub fn nfs4_close_sync(_: *mut nfs4_state,_: fmode_t);
+    pub fn nfs4_state_protect(_: *mut nfs_client,_: c_ulong,_: *mut *mut rpc_clnt,_: *mut rpc_message);
+    pub fn nfs4_state_protect_write(_: *mut nfs_client,_: *mut *mut rpc_clnt,_: *mut rpc_message,_: *mut nfs_pgio_header);
+    pub fn nfs4_get_state_owner(_: *mut nfs_server,_: *const cred,_: gfp_t)->*mut nfs4_state_owner;
+    pub fn nfs4_put_state_owner(_: *mut nfs4_state_owner); pub fn nfs4_put_open_state(_: *mut nfs4_state);
+    pub fn nfs4_setup_sequence(_: *mut nfs_client,_: *mut nfs4_sequence_args,_: *mut nfs4_sequence_res,_: *mut rpc_task)->i32;
+    pub fn nfs4_sequence_done(_: *mut rpc_task,_: *mut nfs4_sequence_res)->i32;
+    pub fn nfs4_free_lock_state(_: *mut nfs_server,_: *mut nfs4_lock_state);
+    pub fn nfs4_proc_commit(_: *mut file,_: u64,_: u32,_: *mut nfs_commitres)->i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

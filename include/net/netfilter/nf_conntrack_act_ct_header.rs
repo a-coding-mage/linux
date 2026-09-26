@@ -17,12 +17,12 @@ pub unsafe fn nf_conn_act_ct_ext_find(
     ct: *const nf_conn,
 ) -> *mut nf_conn_act_ct_ext {
     // Equivalent of: #if IS_ENABLED(CONFIG_NET_ACT_CT)
-    #[cfg(feature = "CONFIG_NET_ACT_CT")]
+    #[cfg(CONFIG_NET_ACT_CT)]
     {
         nf_ct_ext_find(ct, NF_CT_EXT_ACT_CT) as *mut nf_conn_act_ct_ext
     }
     // Equivalent of the disabled CONFIG_NET_ACT_CT branch.
-    #[cfg(not(feature = "CONFIG_NET_ACT_CT"))]
+    #[cfg(not(CONFIG_NET_ACT_CT))]
     {
         core::ptr::null_mut()
     }
@@ -35,7 +35,7 @@ pub unsafe fn nf_conn_act_ct_ext_fill(
     ctinfo: ip_conntrack_info,
 ) {
     // Equivalent of: #if IS_ENABLED(CONFIG_NET_ACT_CT)
-    #[cfg(feature = "CONFIG_NET_ACT_CT")]
+    #[cfg(CONFIG_NET_ACT_CT)]
     {
         let act_ct_ext: *mut nf_conn_act_ct_ext = nf_conn_act_ct_ext_find(ct);
 
@@ -52,7 +52,7 @@ pub unsafe fn nf_conn_act_ct_ext_add(
     ctinfo: ip_conntrack_info,
 ) -> *mut nf_conn_act_ct_ext {
     // Equivalent of: #if IS_ENABLED(CONFIG_NET_ACT_CT)
-    #[cfg(feature = "CONFIG_NET_ACT_CT")]
+    #[cfg(CONFIG_NET_ACT_CT)]
     {
         let mut act_ct: *mut nf_conn_act_ct_ext =
             nf_ct_ext_find(ct, NF_CT_EXT_ACT_CT) as *mut nf_conn_act_ct_ext;
@@ -67,7 +67,7 @@ pub unsafe fn nf_conn_act_ct_ext_add(
         act_ct
     }
     // Equivalent of the disabled CONFIG_NET_ACT_CT branch.
-    #[cfg(not(feature = "CONFIG_NET_ACT_CT"))]
+    #[cfg(not(CONFIG_NET_ACT_CT))]
     {
         core::ptr::null_mut()
     }

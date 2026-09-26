@@ -5,7 +5,7 @@
  */
 
 /* CONFIG_RV_MON_WIP */
-#[cfg(feature = "CONFIG_RV_MON_WIP")]
+#[cfg(CONFIG_RV_MON_WIP)]
 define_event!(
     event_da_monitor,
     event_wip,
@@ -18,7 +18,7 @@ define_event!(
     tp_args!(state, event, next_state, final_state)
 );
 
-#[cfg(feature = "CONFIG_RV_MON_WIP")]
+#[cfg(CONFIG_RV_MON_WIP)]
 define_event!(
     error_da_monitor,
     error_wip,

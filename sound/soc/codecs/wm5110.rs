@@ -47,31 +47,31 @@ struct wm5110_priv {
 }
 
 static wm5110_dsp1_regions: &[cs_dsp_region] = &[
-	 type: WMFW_ADSP2_PM::new( type: WMFW_ADSP2_PM,  base: 0x100000),
-	 type: WMFW_ADSP2_ZM::new( type: WMFW_ADSP2_ZM,  base: 0x180000),
-	 type: WMFW_ADSP2_XM::new( type: WMFW_ADSP2_XM,  base: 0x190000),
-	 type: WMFW_ADSP2_YM::new( type: WMFW_ADSP2_YM,  base: 0x1a8000),
+	 type: WMFW_ADSP2_PM::new( r#type: WMFW_ADSP2_PM,  base: 0x100000),
+	 r#type: WMFW_ADSP2_ZM::new( r#type: WMFW_ADSP2_ZM,  base: 0x180000),
+	 r#type: WMFW_ADSP2_XM::new( r#type: WMFW_ADSP2_XM,  base: 0x190000),
+	 r#type: WMFW_ADSP2_YM::new( r#type: WMFW_ADSP2_YM,  base: 0x1a8000),
 ];
 
 static wm5110_dsp2_regions: &[cs_dsp_region] = &[
-	 type: WMFW_ADSP2_PM::new( type: WMFW_ADSP2_PM,  base: 0x200000),
-	 type: WMFW_ADSP2_ZM::new( type: WMFW_ADSP2_ZM,  base: 0x280000),
-	 type: WMFW_ADSP2_XM::new( type: WMFW_ADSP2_XM,  base: 0x290000),
-	 type: WMFW_ADSP2_YM::new( type: WMFW_ADSP2_YM,  base: 0x2a8000),
+	 type: WMFW_ADSP2_PM::new( r#type: WMFW_ADSP2_PM,  base: 0x200000),
+	 r#type: WMFW_ADSP2_ZM::new( r#type: WMFW_ADSP2_ZM,  base: 0x280000),
+	 r#type: WMFW_ADSP2_XM::new( r#type: WMFW_ADSP2_XM,  base: 0x290000),
+	 r#type: WMFW_ADSP2_YM::new( r#type: WMFW_ADSP2_YM,  base: 0x2a8000),
 ];
 
 static wm5110_dsp3_regions: &[cs_dsp_region] = &[
-	 type: WMFW_ADSP2_PM::new( type: WMFW_ADSP2_PM,  base: 0x300000),
-	 type: WMFW_ADSP2_ZM::new( type: WMFW_ADSP2_ZM,  base: 0x380000),
-	 type: WMFW_ADSP2_XM::new( type: WMFW_ADSP2_XM,  base: 0x390000),
-	 type: WMFW_ADSP2_YM::new( type: WMFW_ADSP2_YM,  base: 0x3a8000),
+	 type: WMFW_ADSP2_PM::new( r#type: WMFW_ADSP2_PM,  base: 0x300000),
+	 r#type: WMFW_ADSP2_ZM::new( r#type: WMFW_ADSP2_ZM,  base: 0x380000),
+	 r#type: WMFW_ADSP2_XM::new( r#type: WMFW_ADSP2_XM,  base: 0x390000),
+	 r#type: WMFW_ADSP2_YM::new( r#type: WMFW_ADSP2_YM,  base: 0x3a8000),
 ];
 
 static wm5110_dsp4_regions: &[cs_dsp_region] = &[
-	 type: WMFW_ADSP2_PM::new( type: WMFW_ADSP2_PM,  base: 0x400000),
-	 type: WMFW_ADSP2_ZM::new( type: WMFW_ADSP2_ZM,  base: 0x480000),
-	 type: WMFW_ADSP2_XM::new( type: WMFW_ADSP2_XM,  base: 0x490000),
-	 type: WMFW_ADSP2_YM::new( type: WMFW_ADSP2_YM,  base: 0x4a8000),
+	 type: WMFW_ADSP2_PM::new( r#type: WMFW_ADSP2_PM,  base: 0x400000),
+	 r#type: WMFW_ADSP2_ZM::new( r#type: WMFW_ADSP2_ZM,  base: 0x480000),
+	 r#type: WMFW_ADSP2_XM::new( r#type: WMFW_ADSP2_XM,  base: 0x490000),
+	 r#type: WMFW_ADSP2_YM::new( r#type: WMFW_ADSP2_YM,  base: 0x4a8000),
 ];
 
 static wm5110_dsp_regions: &[*const cs_dsp_region] = &[
@@ -156,15 +156,15 @@ static wm5110_sysclk_reve_patch: &[reg_default] = &[
 	0x3281::new(0x3281, 0x3056),
 ];
 
-static unsafe extern "C" fn wm5110_sysclk_ev(w: *mut snd_soc_dapm_widget,
+unsafe extern "C" fn wm5110_sysclk_ev(w: *mut snd_soc_dapm_widget,
 			    kcontrol: *mut snd_kcontrol, let mut event: c_int) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
-	arizona: *mut arizona = dev_get_drvdata(component->dev->parent);
-	regmap: *mut regmap = arizona->regmap;
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
+	arizona: *mut arizona = dev_get_drvdata((*(*component).dev).parent);
+	regmap: *mut regmap = (*arizona).regmap;
 	const patch: *mut reg_default = core::ptr::null_mut();
 	let mut i: c_int, patch_size;
 
-	switch (arizona->rev) {
+	switch ((*arizona).rev) {
 	case 3:
 		patch = wm5110_sysclk_revd_patch;
 		patch_size = ARRAY_SIZE(wm5110_sysclk_revd_patch);
@@ -192,16 +192,16 @@ static unsafe extern "C" fn wm5110_sysclk_ev(w: *mut snd_soc_dapm_widget,
 	return 0;
 }
 
-static unsafe extern "C" fn wm5110_adsp_power_ev(w: *mut snd_soc_dapm_widget,
+unsafe extern "C" fn wm5110_adsp_power_ev(w: *mut snd_soc_dapm_widget,
 				kcontrol: *mut snd_kcontrol, let mut event: c_int) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
-	arizona: *mut arizona = dev_get_drvdata(component->dev->parent);
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
+	arizona: *mut arizona = dev_get_drvdata((*(*component).dev).parent);
 	let mut v: c_uint;
 	let mut ret: c_int;
 
-	ret = regmap_read(arizona->regmap, ARIZONA_SYSTEM_CLOCK_1, &v);
+	ret = regmap_read((*arizona).regmap, ARIZONA_SYSTEM_CLOCK_1, &v);
 	if (ret != 0) {
-		dev_err(component->dev, "Failed to read SYSCLK state: %d\n", ret);
+		dev_err((*component).dev, "Failed to read SYSCLK state: %d\n", ret);
 		return ret;
 	}
 
@@ -284,15 +284,15 @@ static wm5110_dre_right_enable: &[reg_sequence] = &[
 	0x3089::new(0x3089, 0x0B00),
 ];
 
-static unsafe extern "C" fn wm5110_hp_pre_enable(w: *mut snd_soc_dapm_widget) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
+unsafe extern "C" fn wm5110_hp_pre_enable(w: *mut snd_soc_dapm_widget) -> RET_int {
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
 	priv: *mut arizona_priv = snd_soc_component_get_drvdata(component);
-	arizona: *mut arizona = priv->arizona;
+	arizona: *mut arizona = (*priv).arizona;
 	let mut val: c_uint = snd_soc_component_read(component, ARIZONA_DRE_ENABLE);
 	const wseq: *mut reg_sequence;
 	let mut nregs: c_int;
 
-	switch (w->shift) {
+	switch ((*w).shift) {
 	case ARIZONA_OUT1L_ENA_SHIFT:
 		if (val & ARIZONA_DRE1L_ENA_MASK) {
 			wseq = wm5110_dre_left_enable;
@@ -300,7 +300,7 @@ static unsafe extern "C" fn wm5110_hp_pre_enable(w: *mut snd_soc_dapm_widget) ->
 		} else {
 			wseq = wm5110_no_dre_left_enable;
 			nregs = ARRAY_SIZE(wm5110_no_dre_left_enable);
-			priv->out_up_delay += 10000;
+			(*priv).out_up_delay += 10000;
 		}
 		break;
 	case ARIZONA_OUT1R_ENA_SHIFT:
@@ -310,22 +310,22 @@ static unsafe extern "C" fn wm5110_hp_pre_enable(w: *mut snd_soc_dapm_widget) ->
 		} else {
 			wseq = wm5110_no_dre_right_enable;
 			nregs = ARRAY_SIZE(wm5110_no_dre_right_enable);
-			priv->out_up_delay += 10000;
+			(*priv).out_up_delay += 10000;
 		}
 		break;
 	default:
 		return 0;
 	}
 
-	return regmap_multi_reg_write(arizona->regmap, wseq, nregs);
+	return regmap_multi_reg_write((*arizona).regmap, wseq, nregs);
 }
 
-static unsafe extern "C" fn wm5110_hp_pre_disable(w: *mut snd_soc_dapm_widget) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
+unsafe extern "C" fn wm5110_hp_pre_disable(w: *mut snd_soc_dapm_widget) -> RET_int {
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
 	priv: *mut arizona_priv = snd_soc_component_get_drvdata(component);
 	let mut val: c_uint = snd_soc_component_read(component, ARIZONA_DRE_ENABLE);
 
-	switch (w->shift) {
+	switch ((*w).shift) {
 	case ARIZONA_OUT1L_ENA_SHIFT:
 		if (!(val & ARIZONA_DRE1L_ENA_MASK)) {
 			snd_soc_component_update_bits(component,
@@ -335,7 +335,7 @@ static unsafe extern "C" fn wm5110_hp_pre_disable(w: *mut snd_soc_dapm_widget) -
 			snd_soc_component_update_bits(component,
 						      ARIZONA_SPARE_TRIGGERS,
 						      ARIZONA_WS_TRG1, 0);
-			priv->out_down_delay += 27000;
+			(*priv).out_down_delay += 27000;
 		}
 		break;
 	case ARIZONA_OUT1R_ENA_SHIFT:
@@ -347,7 +347,7 @@ static unsafe extern "C" fn wm5110_hp_pre_disable(w: *mut snd_soc_dapm_widget) -
 			snd_soc_component_update_bits(component,
 						      ARIZONA_SPARE_TRIGGERS,
 						      ARIZONA_WS_TRG2, 0);
-			priv->out_down_delay += 27000;
+			(*priv).out_down_delay += 27000;
 		}
 		break;
 	default:
@@ -357,12 +357,12 @@ static unsafe extern "C" fn wm5110_hp_pre_disable(w: *mut snd_soc_dapm_widget) -
 	return 0;
 }
 
-static unsafe extern "C" fn wm5110_hp_ev(w: *mut snd_soc_dapm_widget,
+unsafe extern "C" fn wm5110_hp_ev(w: *mut snd_soc_dapm_widget,
 			kcontrol: *mut snd_kcontrol, let mut event: c_int) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
 	priv: *mut arizona_priv = snd_soc_component_get_drvdata(component);
 
-	switch (priv->arizona->rev) {
+	switch ((*(*priv).arizona).rev) {
 	case 0 ... 3:
 		break;
 	default:
@@ -382,29 +382,29 @@ static unsafe extern "C" fn wm5110_hp_ev(w: *mut snd_soc_dapm_widget,
 	return arizona_hp_ev(w, kcontrol, event);
 }
 
-static unsafe extern "C" fn wm5110_clear_pga_volume(arizona: *mut arizona, let mut output: c_int) -> RET_int {
+unsafe extern "C" fn wm5110_clear_pga_volume(arizona: *mut arizona, let mut output: c_int) -> RET_int {
 	let mut reg: c_uint = ARIZONA_OUTPUT_PATH_CONFIG_1L + output * 4;
 	let mut ret: c_int;
 
-	ret = regmap_write(arizona->regmap, reg, 0x80);
+	ret = regmap_write((*arizona).regmap, reg, 0x80);
 	if (ret)
-		dev_err(arizona->dev, "Failed to clear PGA (0x%x): %d\n",
+		dev_err((*arizona).dev, "Failed to clear PGA (0x%x): %d\n",
 			reg, ret);
 
 	return ret;
 }
 
-static unsafe extern "C" fn wm5110_put_dre(kcontrol: *mut snd_kcontrol,
+unsafe extern "C" fn wm5110_put_dre(kcontrol: *mut snd_kcontrol,
 			  ucontrol: *mut snd_ctl_elem_value) -> RET_int {
 	component: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
 	dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
-	arizona: *mut arizona = dev_get_drvdata(component->dev->parent);
+	arizona: *mut arizona = dev_get_drvdata((*(*component).dev).parent);
 	mc: *mut soc_mixer_control =
-		(struct soc_mixer_control *)kcontrol->private_value;
+		(*(soc_mixer_control *)kcontrol).private_value;
 	let mut ena: c_uint, dre;
-	let mut mask: c_uint = (0x1 << mc->shift) | (0x1 << mc->rshift);
-	let mut lnew: c_uint = (!!ucontrol->value.integer.value[0]) << mc->shift;
-	let mut rnew: c_uint = (!!ucontrol->value.integer.value[1]) << mc->rshift;
+	let mut mask: c_uint = (0x1 << (*mc).shift) | (0x1 << (*mc).rshift);
+	let mut lnew: c_uint = ((*!!ucontrol).value.integer.value[0]) << (*mc).shift;
+	let mut rnew: c_uint = ((*!!ucontrol).value.integer.value[1]) << (*mc).rshift;
 	let mut lold: c_uint, rold;
 	let mut lena: c_uint, rena;
 	let mut change: bool = false;
@@ -412,42 +412,42 @@ static unsafe extern "C" fn wm5110_put_dre(kcontrol: *mut snd_kcontrol,
 
 	snd_soc_dapm_mutex_lock(dapm);
 
-	ret = regmap_read(arizona->regmap, ARIZONA_OUTPUT_ENABLES_1, &ena);
+	ret = regmap_read((*arizona).regmap, ARIZONA_OUTPUT_ENABLES_1, &ena);
 	if (ret) {
-		dev_err(arizona->dev, "Failed to read output state: %d\n", ret);
+		dev_err((*arizona).dev, "Failed to read output state: %d\n", ret);
 		goto err;
 	}
-	ret = regmap_read(arizona->regmap, ARIZONA_DRE_ENABLE, &dre);
+	ret = regmap_read((*arizona).regmap, ARIZONA_DRE_ENABLE, &dre);
 	if (ret) {
-		dev_err(arizona->dev, "Failed to read DRE state: %d\n", ret);
+		dev_err((*arizona).dev, "Failed to read DRE state: %d\n", ret);
 		goto err;
 	}
 
-	lold = dre & (1 << mc->shift);
-	rold = dre & (1 << mc->rshift);
+	lold = dre & (1 << (*mc).shift);
+	rold = dre & (1 << (*mc).rshift);
 	/* Enables are channel wise swapped from the DRE enables */
-	lena = ena & (1 << mc->rshift);
-	rena = ena & (1 << mc->shift);
+	lena = ena & (1 << (*mc).rshift);
+	rena = ena & (1 << (*mc).shift);
 
 	if ((lena && lnew != lold) || (rena && rnew != rold)) {
-		dev_err(arizona->dev, "Can't change DRE on active outputs\n");
+		dev_err((*arizona).dev, "Can't change DRE on active outputs\n");
 		ret = -EBUSY;
 		goto err;
 	}
 
-	ret = regmap_update_bits_check(arizona->regmap, ARIZONA_DRE_ENABLE,
+	ret = regmap_update_bits_check((*arizona).regmap, ARIZONA_DRE_ENABLE,
 				       mask, lnew | rnew, &change);
 	if (ret) {
-		dev_err(arizona->dev, "Failed to set DRE: %d\n", ret);
+		dev_err((*arizona).dev, "Failed to set DRE: %d\n", ret);
 		goto err;
 	}
 
 	/* Force reset of PGA volumes, if turning DRE off */
 	if (!lnew && lold)
-		wm5110_clear_pga_volume(arizona, mc->shift);
+		wm5110_clear_pga_volume(arizona, (*mc).shift);
 
 	if (!rnew && rold)
-		wm5110_clear_pga_volume(arizona, mc->rshift);
+		wm5110_clear_pga_volume(arizona, (*mc).rshift);
 
 	if (change)
 		ret = 1;
@@ -458,7 +458,7 @@ err:
 	return ret;
 }
 
-static unsafe extern "C" fn wm5110_in_pga_get(kcontrol: *mut snd_kcontrol,
+unsafe extern "C" fn wm5110_in_pga_get(kcontrol: *mut snd_kcontrol,
 			     ucontrol: *mut snd_ctl_elem_value) -> RET_int {
 	component: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
 	dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
@@ -477,7 +477,7 @@ static unsafe extern "C" fn wm5110_in_pga_get(kcontrol: *mut snd_kcontrol,
 	return ret;
 }
 
-static unsafe extern "C" fn wm5110_in_pga_put(kcontrol: *mut snd_kcontrol,
+unsafe extern "C" fn wm5110_in_pga_put(kcontrol: *mut snd_kcontrol,
 			     ucontrol: *mut snd_ctl_elem_value) -> RET_int {
 	component: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
 	dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
@@ -496,12 +496,12 @@ static unsafe extern "C" fn wm5110_in_pga_put(kcontrol: *mut snd_kcontrol,
 	return ret;
 }
 
-static unsafe extern "C" fn wm5110_in_analog_ev(w: *mut snd_soc_dapm_widget,
+unsafe extern "C" fn wm5110_in_analog_ev(w: *mut snd_soc_dapm_widget,
 			       kcontrol: *mut snd_kcontrol, let mut event: c_int) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
 	priv: *mut arizona_priv = snd_soc_component_get_drvdata(component);
 	wm5110: *mut wm5110_priv = snd_soc_component_get_drvdata(component);
-	arizona: *mut arizona = priv->arizona;
+	arizona: *mut arizona = (*priv).arizona;
 	let mut reg: c_uint, mask;
 	struct reg_sequence analog_seq[] = {
 		0x80::new(0x80, 0x3),
@@ -509,41 +509,41 @@ static unsafe extern "C" fn wm5110_in_analog_ev(w: *mut snd_soc_dapm_widget,
 		0x80::new(0x80, 0x0),
 	];
 
-	reg = ARIZONA_IN1L_CONTROL + ((w->shift ^ 0x1) * 4);
+	reg = ARIZONA_IN1L_CONTROL + (((*w).shift ^ 0x1) * 4);
 	mask = ARIZONA_IN1L_PGA_VOL_MASK;
 
 	switch (event) {
 	case SND_SOC_DAPM_WILL_PMU:
-		wm5110->in_value |= 0x3 << ((w->shift ^ 0x1) * 2);
-		wm5110->in_pre_pending++;
-		wm5110->in_post_pending++;
+		(*wm5110).in_value |= 0x3 << (((*w).shift ^ 0x1) * 2);
+		(*wm5110).in_pre_pending++;
+		(*wm5110).in_post_pending++;
 		return 0;
 	case SND_SOC_DAPM_PRE_PMU:
-		wm5110->in_pga_cache[w->shift] = snd_soc_component_read(component, reg);
+		(*wm5110).in_pga_cache[(*w).shift] = snd_soc_component_read(component, reg);
 
 		snd_soc_component_update_bits(component, reg, mask,
 				    0x40 << ARIZONA_IN1L_PGA_VOL_SHIFT);
 
-		wm5110->in_pre_pending--;
-		if (wm5110->in_pre_pending == 0) {
-			analog_seq[1] def: wm5110->in_value;
-			regmap_multi_reg_write_bypassed(arizona->regmap,
+		(*wm5110).in_pre_pending--;
+		if ((*wm5110).in_pre_pending == 0) {
+			analog_seq[1] def: (*wm5110).in_value;
+			regmap_multi_reg_write_bypassed((*arizona).regmap,
 							analog_seq,
 							ARRAY_SIZE(analog_seq));
 
 			msleep(55);
 
-			wm5110->in_value = 0;
+			(*wm5110).in_value = 0;
 		}
 
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		snd_soc_component_update_bits(component, reg, mask,
-					      wm5110->in_pga_cache[w->shift]);
+					      (*wm5110).in_pga_cache[(*w).shift]);
 
-		wm5110->in_post_pending--;
-		if (wm5110->in_post_pending == 0)
-			regmap_multi_reg_write_bypassed(arizona->regmap,
+		(*wm5110).in_post_pending--;
+		if ((*wm5110).in_post_pending == 0)
+			regmap_multi_reg_write_bypassed((*arizona).regmap,
 							analog_seq,
 							ARRAY_SIZE(analog_seq));
 		break;
@@ -554,15 +554,15 @@ static unsafe extern "C" fn wm5110_in_analog_ev(w: *mut snd_soc_dapm_widget,
 	return 0;
 }
 
-static unsafe extern "C" fn wm5110_in_ev(w: *mut snd_soc_dapm_widget,
+unsafe extern "C" fn wm5110_in_ev(w: *mut snd_soc_dapm_widget,
 			kcontrol: *mut snd_kcontrol, let mut event: c_int) -> RET_int {
-	component: *mut snd_soc_component = snd_soc_dapm_to_component(w->dapm);
+	component: *mut snd_soc_component = snd_soc_dapm_to_component((*w).dapm);
 	priv: *mut arizona_priv = snd_soc_component_get_drvdata(component);
-	arizona: *mut arizona = priv->arizona;
+	arizona: *mut arizona = (*priv).arizona;
 
-	switch (arizona->rev) {
+	switch ((*arizona).rev) {
 	case 0 ... 4:
-		if (arizona_input_analog(component, w->shift))
+		if (arizona_input_analog(component, (*w).shift))
 			wm5110_in_analog_ev(w, kcontrol, event);
 
 		break;
@@ -582,50 +582,50 @@ static DECLARE_TLV_DB_SCALE(ng_tlv, -10200, 600, 0);
 // C macro translated as a Rust macro dependency placeholder.
 // macro_rules! WM5110_NG_SRC { (name, base) ) => {
 // 	SOC_SINGLE(name " NG HPOUT1L Switch",  base,  0, 1, 0), \
-	SOC_SINGLE(name " NG HPOUT1R Switch",  base,  1, 1, 0), \
-	SOC_SINGLE(name " NG HPOUT2L Switch",  base,  2, 1, 0), \
-	SOC_SINGLE(name " NG HPOUT2R Switch",  base,  3, 1, 0), \
-	SOC_SINGLE(name " NG HPOUT3L Switch",  base,  4, 1, 0), \
-	SOC_SINGLE(name " NG HPOUT3R Switch",  base,  5, 1, 0), \
-	SOC_SINGLE(name " NG SPKOUTL Switch",  base,  6, 1, 0), \
-	SOC_SINGLE(name " NG SPKOUTR Switch",  base,  7, 1, 0), \
-	SOC_SINGLE(name " NG SPKDAT1L Switch", base,  8, 1, 0), \
-	SOC_SINGLE(name " NG SPKDAT1R Switch", base,  9, 1, 0), \
-	SOC_SINGLE(name " NG SPKDAT2L Switch", base, 10, 1, 0), \
-	SOC_SINGLE(name " NG SPKDAT2R Switch", base, 11, 1, 0)
+// 	SOC_SINGLE(name " NG HPOUT1R Switch",  base,  1, 1, 0), \
+// 	SOC_SINGLE(name " NG HPOUT2L Switch",  base,  2, 1, 0), \
+// 	SOC_SINGLE(name " NG HPOUT2R Switch",  base,  3, 1, 0), \
+// 	SOC_SINGLE(name " NG HPOUT3L Switch",  base,  4, 1, 0), \
+// 	SOC_SINGLE(name " NG HPOUT3R Switch",  base,  5, 1, 0), \
+// 	SOC_SINGLE(name " NG SPKOUTL Switch",  base,  6, 1, 0), \
+// 	SOC_SINGLE(name " NG SPKOUTR Switch",  base,  7, 1, 0), \
+// 	SOC_SINGLE(name " NG SPKDAT1L Switch", base,  8, 1, 0), \
+// 	SOC_SINGLE(name " NG SPKDAT1R Switch", base,  9, 1, 0), \
+// 	SOC_SINGLE(name " NG SPKDAT2L Switch", base, 10, 1, 0), \
+// 	SOC_SINGLE(name " NG SPKDAT2R Switch", base, 11, 1, 0)
 
 // } }
 
 // C macro translated as a Rust macro dependency placeholder.
 // macro_rules! WM5110_RXANC_INPUT_ROUTES { (widget, name) ) => {
 // 	widget, core::ptr::null_mut()::new(widget, core::ptr::null_mut(), name " NG Mux"), \
-	name " NG Internal", core::ptr::null_mut()::new(name " NG Internal", core::ptr::null_mut(), "RXANC NG Clock"), \
-	name " NG Internal", core::ptr::null_mut()::new(name " NG Internal", core::ptr::null_mut(), name " Channel"), \
-	name " NG External", core::ptr::null_mut()::new(name " NG External", core::ptr::null_mut(), "RXANC NG External Clock"), \
-	name " NG External", core::ptr::null_mut()::new(name " NG External", core::ptr::null_mut(), name " Channel"), \
-	name " NG Mux", "None"::new(name " NG Mux", "None", name " Channel"), \
-	name " NG Mux", "Internal"::new(name " NG Mux", "Internal", name " NG Internal"), \
-	name " NG Mux", "External"::new(name " NG Mux", "External", name " NG External"), \
-	name " Channel", "Left"::new(name " Channel", "Left", name " Left Input"), \
-	name " Channel", "Combine"::new(name " Channel", "Combine", name " Left Input"), \
-	name " Channel", "Right"::new(name " Channel", "Right", name " Right Input"), \
-	name " Channel", "Combine"::new(name " Channel", "Combine", name " Right Input"), \
-	name " Left Input", "IN1"::new(name " Left Input", "IN1", "IN1L PGA"), \
-	name " Right Input", "IN1"::new(name " Right Input", "IN1", "IN1R PGA"), \
-	name " Left Input", "IN2"::new(name " Left Input", "IN2", "IN2L PGA"), \
-	name " Right Input", "IN2"::new(name " Right Input", "IN2", "IN2R PGA"), \
-	name " Left Input", "IN3"::new(name " Left Input", "IN3", "IN3L PGA"), \
-	name " Right Input", "IN3"::new(name " Right Input", "IN3", "IN3R PGA"), \
-	name " Left Input", "IN4"::new(name " Left Input", "IN4", "IN4L PGA"), \
-	name " Right Input", "IN4"::new(name " Right Input", "IN4", "IN4R PGA")
+// 	name " NG Internal", core::ptr::null_mut()::new(name " NG Internal", core::ptr::null_mut(), "RXANC NG Clock"), \
+// 	name " NG Internal", core::ptr::null_mut()::new(name " NG Internal", core::ptr::null_mut(), name " Channel"), \
+// 	name " NG External", core::ptr::null_mut()::new(name " NG External", core::ptr::null_mut(), "RXANC NG External Clock"), \
+// 	name " NG External", core::ptr::null_mut()::new(name " NG External", core::ptr::null_mut(), name " Channel"), \
+// 	name " NG Mux", "None"::new(name " NG Mux", "None", name " Channel"), \
+// 	name " NG Mux", "Internal"::new(name " NG Mux", "Internal", name " NG Internal"), \
+// 	name " NG Mux", "External"::new(name " NG Mux", "External", name " NG External"), \
+// 	name " Channel", "Left"::new(name " Channel", "Left", name " Left Input"), \
+// 	name " Channel", "Combine"::new(name " Channel", "Combine", name " Left Input"), \
+// 	name " Channel", "Right"::new(name " Channel", "Right", name " Right Input"), \
+// 	name " Channel", "Combine"::new(name " Channel", "Combine", name " Right Input"), \
+// 	name " Left Input", "IN1"::new(name " Left Input", "IN1", "IN1L PGA"), \
+// 	name " Right Input", "IN1"::new(name " Right Input", "IN1", "IN1R PGA"), \
+// 	name " Left Input", "IN2"::new(name " Left Input", "IN2", "IN2L PGA"), \
+// 	name " Right Input", "IN2"::new(name " Right Input", "IN2", "IN2R PGA"), \
+// 	name " Left Input", "IN3"::new(name " Left Input", "IN3", "IN3L PGA"), \
+// 	name " Right Input", "IN3"::new(name " Right Input", "IN3", "IN3R PGA"), \
+// 	name " Left Input", "IN4"::new(name " Left Input", "IN4", "IN4L PGA"), \
+// 	name " Right Input", "IN4"::new(name " Right Input", "IN4", "IN4R PGA")
 
 // } }
 
 // C macro translated as a Rust macro dependency placeholder.
 // macro_rules! WM5110_RXANC_OUTPUT_ROUTES { (widget, name) ) => {
 // 	widget, core::ptr::null_mut()::new(widget, core::ptr::null_mut(), name " ANC Source"), \
-	name " ANC Source", "RXANCL"::new(name " ANC Source", "RXANCL", "RXANCL"), \
-	name " ANC Source", "RXANCR"::new(name " ANC Source", "RXANCR", "RXANCR")
+// 	name " ANC Source", "RXANCL"::new(name " ANC Source", "RXANCL", "RXANCL"), \
+// 	name " ANC Source", "RXANCR"::new(name " ANC Source", "RXANCR", "RXANCR")
 
 // } }
 
@@ -1628,107 +1628,107 @@ SND_SOC_DAPM_OUTPUT("MICSUPP"),
 // C macro translated as a Rust macro dependency placeholder.
 // macro_rules! ARIZONA_MIXER_INPUT_ROUTES { (name)	) => {
 // 	name, "Noise Generator"::new(name, "Noise Generator", "Noise Generator"), \
-	name, "Tone Generator 1"::new(name, "Tone Generator 1", "Tone Generator 1"), \
-	name, "Tone Generator 2"::new(name, "Tone Generator 2", "Tone Generator 2"), \
-	name, "Haptics"::new(name, "Haptics", "HAPTICS"), \
-	name, "AEC"::new(name, "AEC", "AEC Loopback"), \
-	name, "IN1L"::new(name, "IN1L", "IN1L PGA"), \
-	name, "IN1R"::new(name, "IN1R", "IN1R PGA"), \
-	name, "IN2L"::new(name, "IN2L", "IN2L PGA"), \
-	name, "IN2R"::new(name, "IN2R", "IN2R PGA"), \
-	name, "IN3L"::new(name, "IN3L", "IN3L PGA"), \
-	name, "IN3R"::new(name, "IN3R", "IN3R PGA"), \
-	name, "IN4L"::new(name, "IN4L", "IN4L PGA"), \
-	name, "IN4R"::new(name, "IN4R", "IN4R PGA"), \
-	name, "Mic Mute Mixer"::new(name, "Mic Mute Mixer", "Mic Mute Mixer"), \
-	name, "AIF1RX1"::new(name, "AIF1RX1", "AIF1RX1"), \
-	name, "AIF1RX2"::new(name, "AIF1RX2", "AIF1RX2"), \
-	name, "AIF1RX3"::new(name, "AIF1RX3", "AIF1RX3"), \
-	name, "AIF1RX4"::new(name, "AIF1RX4", "AIF1RX4"), \
-	name, "AIF1RX5"::new(name, "AIF1RX5", "AIF1RX5"), \
-	name, "AIF1RX6"::new(name, "AIF1RX6", "AIF1RX6"), \
-	name, "AIF1RX7"::new(name, "AIF1RX7", "AIF1RX7"), \
-	name, "AIF1RX8"::new(name, "AIF1RX8", "AIF1RX8"), \
-	name, "AIF2RX1"::new(name, "AIF2RX1", "AIF2RX1"), \
-	name, "AIF2RX2"::new(name, "AIF2RX2", "AIF2RX2"), \
-	name, "AIF2RX3"::new(name, "AIF2RX3", "AIF2RX3"), \
-	name, "AIF2RX4"::new(name, "AIF2RX4", "AIF2RX4"), \
-	name, "AIF2RX5"::new(name, "AIF2RX5", "AIF2RX5"), \
-	name, "AIF2RX6"::new(name, "AIF2RX6", "AIF2RX6"), \
-	name, "AIF3RX1"::new(name, "AIF3RX1", "AIF3RX1"), \
-	name, "AIF3RX2"::new(name, "AIF3RX2", "AIF3RX2"), \
-	name, "SLIMRX1"::new(name, "SLIMRX1", "SLIMRX1"), \
-	name, "SLIMRX2"::new(name, "SLIMRX2", "SLIMRX2"), \
-	name, "SLIMRX3"::new(name, "SLIMRX3", "SLIMRX3"), \
-	name, "SLIMRX4"::new(name, "SLIMRX4", "SLIMRX4"), \
-	name, "SLIMRX5"::new(name, "SLIMRX5", "SLIMRX5"), \
-	name, "SLIMRX6"::new(name, "SLIMRX6", "SLIMRX6"), \
-	name, "SLIMRX7"::new(name, "SLIMRX7", "SLIMRX7"), \
-	name, "SLIMRX8"::new(name, "SLIMRX8", "SLIMRX8"), \
-	name, "EQ1"::new(name, "EQ1", "EQ1"), \
-	name, "EQ2"::new(name, "EQ2", "EQ2"), \
-	name, "EQ3"::new(name, "EQ3", "EQ3"), \
-	name, "EQ4"::new(name, "EQ4", "EQ4"), \
-	name, "DRC1L"::new(name, "DRC1L", "DRC1L"), \
-	name, "DRC1R"::new(name, "DRC1R", "DRC1R"), \
-	name, "DRC2L"::new(name, "DRC2L", "DRC2L"), \
-	name, "DRC2R"::new(name, "DRC2R", "DRC2R"), \
-	name, "LHPF1"::new(name, "LHPF1", "LHPF1"), \
-	name, "LHPF2"::new(name, "LHPF2", "LHPF2"), \
-	name, "LHPF3"::new(name, "LHPF3", "LHPF3"), \
-	name, "LHPF4"::new(name, "LHPF4", "LHPF4"), \
-	name, "ASRC1L"::new(name, "ASRC1L", "ASRC1L"), \
-	name, "ASRC1R"::new(name, "ASRC1R", "ASRC1R"), \
-	name, "ASRC2L"::new(name, "ASRC2L", "ASRC2L"), \
-	name, "ASRC2R"::new(name, "ASRC2R", "ASRC2R"), \
-	name, "ISRC1DEC1"::new(name, "ISRC1DEC1", "ISRC1DEC1"), \
-	name, "ISRC1DEC2"::new(name, "ISRC1DEC2", "ISRC1DEC2"), \
-	name, "ISRC1DEC3"::new(name, "ISRC1DEC3", "ISRC1DEC3"), \
-	name, "ISRC1DEC4"::new(name, "ISRC1DEC4", "ISRC1DEC4"), \
-	name, "ISRC1INT1"::new(name, "ISRC1INT1", "ISRC1INT1"), \
-	name, "ISRC1INT2"::new(name, "ISRC1INT2", "ISRC1INT2"), \
-	name, "ISRC1INT3"::new(name, "ISRC1INT3", "ISRC1INT3"), \
-	name, "ISRC1INT4"::new(name, "ISRC1INT4", "ISRC1INT4"), \
-	name, "ISRC2DEC1"::new(name, "ISRC2DEC1", "ISRC2DEC1"), \
-	name, "ISRC2DEC2"::new(name, "ISRC2DEC2", "ISRC2DEC2"), \
-	name, "ISRC2DEC3"::new(name, "ISRC2DEC3", "ISRC2DEC3"), \
-	name, "ISRC2DEC4"::new(name, "ISRC2DEC4", "ISRC2DEC4"), \
-	name, "ISRC2INT1"::new(name, "ISRC2INT1", "ISRC2INT1"), \
-	name, "ISRC2INT2"::new(name, "ISRC2INT2", "ISRC2INT2"), \
-	name, "ISRC2INT3"::new(name, "ISRC2INT3", "ISRC2INT3"), \
-	name, "ISRC2INT4"::new(name, "ISRC2INT4", "ISRC2INT4"), \
-	name, "ISRC3DEC1"::new(name, "ISRC3DEC1", "ISRC3DEC1"), \
-	name, "ISRC3DEC2"::new(name, "ISRC3DEC2", "ISRC3DEC2"), \
-	name, "ISRC3DEC3"::new(name, "ISRC3DEC3", "ISRC3DEC3"), \
-	name, "ISRC3DEC4"::new(name, "ISRC3DEC4", "ISRC3DEC4"), \
-	name, "ISRC3INT1"::new(name, "ISRC3INT1", "ISRC3INT1"), \
-	name, "ISRC3INT2"::new(name, "ISRC3INT2", "ISRC3INT2"), \
-	name, "ISRC3INT3"::new(name, "ISRC3INT3", "ISRC3INT3"), \
-	name, "ISRC3INT4"::new(name, "ISRC3INT4", "ISRC3INT4"), \
-	name, "DSP1.1"::new(name, "DSP1.1", "DSP1"), \
-	name, "DSP1.2"::new(name, "DSP1.2", "DSP1"), \
-	name, "DSP1.3"::new(name, "DSP1.3", "DSP1"), \
-	name, "DSP1.4"::new(name, "DSP1.4", "DSP1"), \
-	name, "DSP1.5"::new(name, "DSP1.5", "DSP1"), \
-	name, "DSP1.6"::new(name, "DSP1.6", "DSP1"), \
-	name, "DSP2.1"::new(name, "DSP2.1", "DSP2"), \
-	name, "DSP2.2"::new(name, "DSP2.2", "DSP2"), \
-	name, "DSP2.3"::new(name, "DSP2.3", "DSP2"), \
-	name, "DSP2.4"::new(name, "DSP2.4", "DSP2"), \
-	name, "DSP2.5"::new(name, "DSP2.5", "DSP2"), \
-	name, "DSP2.6"::new(name, "DSP2.6", "DSP2"), \
-	name, "DSP3.1"::new(name, "DSP3.1", "DSP3"), \
-	name, "DSP3.2"::new(name, "DSP3.2", "DSP3"), \
-	name, "DSP3.3"::new(name, "DSP3.3", "DSP3"), \
-	name, "DSP3.4"::new(name, "DSP3.4", "DSP3"), \
-	name, "DSP3.5"::new(name, "DSP3.5", "DSP3"), \
-	name, "DSP3.6"::new(name, "DSP3.6", "DSP3"), \
-	name, "DSP4.1"::new(name, "DSP4.1", "DSP4"), \
-	name, "DSP4.2"::new(name, "DSP4.2", "DSP4"), \
-	name, "DSP4.3"::new(name, "DSP4.3", "DSP4"), \
-	name, "DSP4.4"::new(name, "DSP4.4", "DSP4"), \
-	name, "DSP4.5"::new(name, "DSP4.5", "DSP4"), \
-	name, "DSP4.6"::new(name, "DSP4.6", "DSP4")
+// 	name, "Tone Generator 1"::new(name, "Tone Generator 1", "Tone Generator 1"), \
+// 	name, "Tone Generator 2"::new(name, "Tone Generator 2", "Tone Generator 2"), \
+// 	name, "Haptics"::new(name, "Haptics", "HAPTICS"), \
+// 	name, "AEC"::new(name, "AEC", "AEC Loopback"), \
+// 	name, "IN1L"::new(name, "IN1L", "IN1L PGA"), \
+// 	name, "IN1R"::new(name, "IN1R", "IN1R PGA"), \
+// 	name, "IN2L"::new(name, "IN2L", "IN2L PGA"), \
+// 	name, "IN2R"::new(name, "IN2R", "IN2R PGA"), \
+// 	name, "IN3L"::new(name, "IN3L", "IN3L PGA"), \
+// 	name, "IN3R"::new(name, "IN3R", "IN3R PGA"), \
+// 	name, "IN4L"::new(name, "IN4L", "IN4L PGA"), \
+// 	name, "IN4R"::new(name, "IN4R", "IN4R PGA"), \
+// 	name, "Mic Mute Mixer"::new(name, "Mic Mute Mixer", "Mic Mute Mixer"), \
+// 	name, "AIF1RX1"::new(name, "AIF1RX1", "AIF1RX1"), \
+// 	name, "AIF1RX2"::new(name, "AIF1RX2", "AIF1RX2"), \
+// 	name, "AIF1RX3"::new(name, "AIF1RX3", "AIF1RX3"), \
+// 	name, "AIF1RX4"::new(name, "AIF1RX4", "AIF1RX4"), \
+// 	name, "AIF1RX5"::new(name, "AIF1RX5", "AIF1RX5"), \
+// 	name, "AIF1RX6"::new(name, "AIF1RX6", "AIF1RX6"), \
+// 	name, "AIF1RX7"::new(name, "AIF1RX7", "AIF1RX7"), \
+// 	name, "AIF1RX8"::new(name, "AIF1RX8", "AIF1RX8"), \
+// 	name, "AIF2RX1"::new(name, "AIF2RX1", "AIF2RX1"), \
+// 	name, "AIF2RX2"::new(name, "AIF2RX2", "AIF2RX2"), \
+// 	name, "AIF2RX3"::new(name, "AIF2RX3", "AIF2RX3"), \
+// 	name, "AIF2RX4"::new(name, "AIF2RX4", "AIF2RX4"), \
+// 	name, "AIF2RX5"::new(name, "AIF2RX5", "AIF2RX5"), \
+// 	name, "AIF2RX6"::new(name, "AIF2RX6", "AIF2RX6"), \
+// 	name, "AIF3RX1"::new(name, "AIF3RX1", "AIF3RX1"), \
+// 	name, "AIF3RX2"::new(name, "AIF3RX2", "AIF3RX2"), \
+// 	name, "SLIMRX1"::new(name, "SLIMRX1", "SLIMRX1"), \
+// 	name, "SLIMRX2"::new(name, "SLIMRX2", "SLIMRX2"), \
+// 	name, "SLIMRX3"::new(name, "SLIMRX3", "SLIMRX3"), \
+// 	name, "SLIMRX4"::new(name, "SLIMRX4", "SLIMRX4"), \
+// 	name, "SLIMRX5"::new(name, "SLIMRX5", "SLIMRX5"), \
+// 	name, "SLIMRX6"::new(name, "SLIMRX6", "SLIMRX6"), \
+// 	name, "SLIMRX7"::new(name, "SLIMRX7", "SLIMRX7"), \
+// 	name, "SLIMRX8"::new(name, "SLIMRX8", "SLIMRX8"), \
+// 	name, "EQ1"::new(name, "EQ1", "EQ1"), \
+// 	name, "EQ2"::new(name, "EQ2", "EQ2"), \
+// 	name, "EQ3"::new(name, "EQ3", "EQ3"), \
+// 	name, "EQ4"::new(name, "EQ4", "EQ4"), \
+// 	name, "DRC1L"::new(name, "DRC1L", "DRC1L"), \
+// 	name, "DRC1R"::new(name, "DRC1R", "DRC1R"), \
+// 	name, "DRC2L"::new(name, "DRC2L", "DRC2L"), \
+// 	name, "DRC2R"::new(name, "DRC2R", "DRC2R"), \
+// 	name, "LHPF1"::new(name, "LHPF1", "LHPF1"), \
+// 	name, "LHPF2"::new(name, "LHPF2", "LHPF2"), \
+// 	name, "LHPF3"::new(name, "LHPF3", "LHPF3"), \
+// 	name, "LHPF4"::new(name, "LHPF4", "LHPF4"), \
+// 	name, "ASRC1L"::new(name, "ASRC1L", "ASRC1L"), \
+// 	name, "ASRC1R"::new(name, "ASRC1R", "ASRC1R"), \
+// 	name, "ASRC2L"::new(name, "ASRC2L", "ASRC2L"), \
+// 	name, "ASRC2R"::new(name, "ASRC2R", "ASRC2R"), \
+// 	name, "ISRC1DEC1"::new(name, "ISRC1DEC1", "ISRC1DEC1"), \
+// 	name, "ISRC1DEC2"::new(name, "ISRC1DEC2", "ISRC1DEC2"), \
+// 	name, "ISRC1DEC3"::new(name, "ISRC1DEC3", "ISRC1DEC3"), \
+// 	name, "ISRC1DEC4"::new(name, "ISRC1DEC4", "ISRC1DEC4"), \
+// 	name, "ISRC1INT1"::new(name, "ISRC1INT1", "ISRC1INT1"), \
+// 	name, "ISRC1INT2"::new(name, "ISRC1INT2", "ISRC1INT2"), \
+// 	name, "ISRC1INT3"::new(name, "ISRC1INT3", "ISRC1INT3"), \
+// 	name, "ISRC1INT4"::new(name, "ISRC1INT4", "ISRC1INT4"), \
+// 	name, "ISRC2DEC1"::new(name, "ISRC2DEC1", "ISRC2DEC1"), \
+// 	name, "ISRC2DEC2"::new(name, "ISRC2DEC2", "ISRC2DEC2"), \
+// 	name, "ISRC2DEC3"::new(name, "ISRC2DEC3", "ISRC2DEC3"), \
+// 	name, "ISRC2DEC4"::new(name, "ISRC2DEC4", "ISRC2DEC4"), \
+// 	name, "ISRC2INT1"::new(name, "ISRC2INT1", "ISRC2INT1"), \
+// 	name, "ISRC2INT2"::new(name, "ISRC2INT2", "ISRC2INT2"), \
+// 	name, "ISRC2INT3"::new(name, "ISRC2INT3", "ISRC2INT3"), \
+// 	name, "ISRC2INT4"::new(name, "ISRC2INT4", "ISRC2INT4"), \
+// 	name, "ISRC3DEC1"::new(name, "ISRC3DEC1", "ISRC3DEC1"), \
+// 	name, "ISRC3DEC2"::new(name, "ISRC3DEC2", "ISRC3DEC2"), \
+// 	name, "ISRC3DEC3"::new(name, "ISRC3DEC3", "ISRC3DEC3"), \
+// 	name, "ISRC3DEC4"::new(name, "ISRC3DEC4", "ISRC3DEC4"), \
+// 	name, "ISRC3INT1"::new(name, "ISRC3INT1", "ISRC3INT1"), \
+// 	name, "ISRC3INT2"::new(name, "ISRC3INT2", "ISRC3INT2"), \
+// 	name, "ISRC3INT3"::new(name, "ISRC3INT3", "ISRC3INT3"), \
+// 	name, "ISRC3INT4"::new(name, "ISRC3INT4", "ISRC3INT4"), \
+// 	name, "DSP1.1"::new(name, "DSP1.1", "DSP1"), \
+// 	name, "DSP1.2"::new(name, "DSP1.2", "DSP1"), \
+// 	name, "DSP1.3"::new(name, "DSP1.3", "DSP1"), \
+// 	name, "DSP1.4"::new(name, "DSP1.4", "DSP1"), \
+// 	name, "DSP1.5"::new(name, "DSP1.5", "DSP1"), \
+// 	name, "DSP1.6"::new(name, "DSP1.6", "DSP1"), \
+// 	name, "DSP2.1"::new(name, "DSP2.1", "DSP2"), \
+// 	name, "DSP2.2"::new(name, "DSP2.2", "DSP2"), \
+// 	name, "DSP2.3"::new(name, "DSP2.3", "DSP2"), \
+// 	name, "DSP2.4"::new(name, "DSP2.4", "DSP2"), \
+// 	name, "DSP2.5"::new(name, "DSP2.5", "DSP2"), \
+// 	name, "DSP2.6"::new(name, "DSP2.6", "DSP2"), \
+// 	name, "DSP3.1"::new(name, "DSP3.1", "DSP3"), \
+// 	name, "DSP3.2"::new(name, "DSP3.2", "DSP3"), \
+// 	name, "DSP3.3"::new(name, "DSP3.3", "DSP3"), \
+// 	name, "DSP3.4"::new(name, "DSP3.4", "DSP3"), \
+// 	name, "DSP3.5"::new(name, "DSP3.5", "DSP3"), \
+// 	name, "DSP3.6"::new(name, "DSP3.6", "DSP3"), \
+// 	name, "DSP4.1"::new(name, "DSP4.1", "DSP4"), \
+// 	name, "DSP4.2"::new(name, "DSP4.2", "DSP4"), \
+// 	name, "DSP4.3"::new(name, "DSP4.3", "DSP4"), \
+// 	name, "DSP4.4"::new(name, "DSP4.4", "DSP4"), \
+// 	name, "DSP4.5"::new(name, "DSP4.5", "DSP4"), \
+// 	name, "DSP4.6"::new(name, "DSP4.6", "DSP4")
 
 // } }
 
@@ -2049,20 +2049,20 @@ static wm5110_dapm_routes: &[snd_soc_dapm_route] = &[
 	"DSP3 Voice Trigger", "Switch"::new("DSP3 Voice Trigger", "Switch", "DSP3"),
 ];
 
-static unsafe extern "C" fn wm5110_set_fll(component: *mut snd_soc_component, let mut fll_id: c_int,
+unsafe extern "C" fn wm5110_set_fll(component: *mut snd_soc_component, let mut fll_id: c_int,
 			  let mut source: c_int, let mut Fref: c_uint, let mut Fout: c_uint) -> RET_int {
 	wm5110: *mut wm5110_priv = snd_soc_component_get_drvdata(component);
 
 	switch (fll_id) {
 	case WM5110_FLL1:
-		return arizona_set_fll(&wm5110->fll[0], source, Fref, Fout);
+		return arizona_set_fll((*&wm5110).fll[0], source, Fref, Fout);
 	case WM5110_FLL2:
-		return arizona_set_fll(&wm5110->fll[1], source, Fref, Fout);
+		return arizona_set_fll((*&wm5110).fll[1], source, Fref, Fout);
 	case WM5110_FLL1_REFCLK:
-		return arizona_set_fll_refclk(&wm5110->fll[0], source, Fref,
+		return arizona_set_fll_refclk((*&wm5110).fll[0], source, Fref,
 					      Fout);
 	case WM5110_FLL2_REFCLK:
-		return arizona_set_fll_refclk(&wm5110->fll[1], source, Fref,
+		return arizona_set_fll_refclk((*&wm5110).fll[1], source, Fref,
 					      Fout);
 	default:
 		return -EINVAL;
@@ -2246,36 +2246,36 @@ static mut wm5110_dai: &mut [snd_soc_dai_driver] = &mut [
 	},
 ];
 
-static unsafe extern "C" fn wm5110_open(component: *mut snd_soc_component,
+unsafe extern "C" fn wm5110_open(component: *mut snd_soc_component,
 		       stream: *mut snd_compr_stream) -> RET_int {
-	rtd: *mut snd_soc_pcm_runtime = stream->private_data;
+	rtd: *mut snd_soc_pcm_runtime = (*stream).private_data;
 	priv: *mut wm5110_priv = snd_soc_component_get_drvdata(component);
-	arizona: *mut arizona = priv->core.arizona;
+	arizona: *mut arizona = (*priv).core.arizona;
 	let mut n_adsp: c_int;
 
-	if (strcmp(snd_soc_rtd_to_codec(rtd, 0)->name, "wm5110-dsp-voicectrl") == 0) {
+	if (strcmp((*snd_soc_rtd_to_codec(rtd, 0)).name, "wm5110-dsp-voicectrl") == 0) {
 		n_adsp = 2;
-	} else if (strcmp(snd_soc_rtd_to_codec(rtd, 0)->name, "wm5110-dsp-trace") == 0) {
+	} else if (strcmp((*snd_soc_rtd_to_codec(rtd, 0)).name, "wm5110-dsp-trace") == 0) {
 		n_adsp = 0;
 	} else {
-		dev_err(arizona->dev,
+		dev_err((*arizona).dev,
 			"No suitable compressed stream for DAI '%s'\n",
-			snd_soc_rtd_to_codec(rtd, 0)->name);
+			(*snd_soc_rtd_to_codec(rtd, 0)).name);
 		return -EINVAL;
 	}
 
-	return wm_adsp_compr_open(&priv->core.adsp[n_adsp], stream);
+	return wm_adsp_compr_open((*&priv).core.adsp[n_adsp], stream);
 }
 
-static unsafe extern "C" fn wm5110_adsp2_irq(let mut irq: c_int, data: *mut c_void) -> RET_irqreturn_t {
-	priv: *mut wm5110_priv = data;
-	arizona: *mut arizona = priv->core.arizona;
+unsafe extern "C" fn wm5110_adsp2_irq(let mut irq: c_int, data: *mut c_void) -> RET_irqreturn_t {
+	r#priv: *mut wm5110_priv = data;
+	arizona: *mut arizona = (*priv).core.arizona;
 	struct arizona_voice_trigger_info info;
 	let mut serviced: c_int = 0;
 	let mut i: c_int, ret;
 
 	for (i = 0; i < WM5110_NUM_ADSP; ++i) {
-		ret = wm_adsp_compr_handle_irq(&priv->core.adsp[i]);
+		ret = wm_adsp_compr_handle_irq((*&priv).core.adsp[i]);
 		if (ret != -ENODEV)
 			serviced++;
 		if (ret == WM_ADSP_COMPR_VOICE_TRIGGER) {
@@ -2287,21 +2287,21 @@ static unsafe extern "C" fn wm5110_adsp2_irq(let mut irq: c_int, data: *mut c_vo
 	}
 
 	if (!serviced) {
-		dev_err(arizona->dev, "Spurious compressed data IRQ\n");
+		dev_err((*arizona).dev, "Spurious compressed data IRQ\n");
 		return IRQ_NONE;
 	}
 
 	return IRQ_HANDLED;
 }
 
-static unsafe extern "C" fn wm5110_component_probe(component: *mut snd_soc_component) -> RET_int {
+unsafe extern "C" fn wm5110_component_probe(component: *mut snd_soc_component) -> RET_int {
 	dapm: *mut snd_soc_dapm_context = snd_soc_component_to_dapm(component);
 	priv: *mut wm5110_priv = snd_soc_component_get_drvdata(component);
-	arizona: *mut arizona = priv->core.arizona;
+	arizona: *mut arizona = (*priv).core.arizona;
 	let mut i: c_int, ret;
 
-	arizona->dapm = dapm;
-	snd_soc_component_init_regmap(component, arizona->regmap);
+	(*arizona).dapm = dapm;
+	snd_soc_component_init_regmap(component, (*arizona).regmap);
 
 	ret = arizona_init_spk(component);
 	if (ret < 0)
@@ -2311,7 +2311,7 @@ static unsafe extern "C" fn wm5110_component_probe(component: *mut snd_soc_compo
 	arizona_init_mono(component);
 
 	for (i = 0; i < WM5110_NUM_ADSP; ++i) {
-		ret = wm_adsp2_component_probe(&priv->core.adsp[i], component);
+		ret = wm_adsp2_component_probe((*&priv).core.adsp[i], component);
 		if (ret)
 			goto err_adsp2_codec_probe;
 	}
@@ -2328,19 +2328,19 @@ static unsafe extern "C" fn wm5110_component_probe(component: *mut snd_soc_compo
 
 err_adsp2_codec_probe:
 	for (--i; i >= 0; --i)
-		wm_adsp2_component_remove(&priv->core.adsp[i], component);
+		wm_adsp2_component_remove((*&priv).core.adsp[i], component);
 
 	return ret;
 }
 
-static unsafe extern "C" fn wm5110_component_remove(component: *mut snd_soc_component) -> RET_void {
-	priv: *mut wm5110_priv = snd_soc_component_get_drvdata(component);
+unsafe extern "C" fn wm5110_component_remove(component: *mut snd_soc_component) -> RET_void {
+	r#priv: *mut wm5110_priv = snd_soc_component_get_drvdata(component);
 	let mut i: c_int;
 
 	for (i = 0; i < WM5110_NUM_ADSP; ++i)
-		wm_adsp2_component_remove(&priv->core.adsp[i], component);
+		wm_adsp2_component_remove((*&priv).core.adsp[i], component);
 
-	priv->core.arizona->dapm = core::ptr::null_mut();
+	(*(*priv).core.arizona).dapm = core::ptr::null_mut();
 }
 
 const WM5110_DIG_VU: c_uint = 0x0200;
@@ -2388,88 +2388,91 @@ static soc_component_dev_wm5110: snd_soc_component_driver = {
 	 endianness: 1,
 ];
 
-static unsafe extern "C" fn wm5110_probe(pdev: *mut platform_device) -> RET_int {
-	arizona: *mut arizona = dev_get_drvdata(pdev->dev.parent);
+unsafe extern "C" fn wm5110_probe(pdev: *mut platform_device) -> RET_int {
+	'err_jack_codec_dev: {
+	'err_dsp_irq: {
+	'err_spk_irqs: {
+	arizona: *mut arizona = dev_get_drvdata((*pdev).dev.parent);
 	wm5110: *mut wm5110_priv;
 	let mut i: c_int, ret;
 
-	wm5110 = devm_kzalloc(&pdev->dev, sizeof(struct wm5110_priv),
+	wm5110 = devm_kzalloc((*&pdev).dev, sizeof(wm5110_priv),
 			      GFP_KERNEL);
 	if (wm5110 == core::ptr::null_mut())
 		return -ENOMEM;
 	platform_set_drvdata(pdev, wm5110);
 
 	if (IS_ENABLED(CONFIG_OF)) {
-		if (!dev_get_platdata(arizona->dev)) {
+		if (!dev_get_platdata((*arizona).dev)) {
 			ret = arizona_of_get_audio_pdata(arizona);
 			if (ret < 0)
 				return ret;
 		}
 	}
 
-	wm5110->core arizona: arizona;
-	wm5110->core num_inputs: 8;
+	(*wm5110).core arizona: arizona;
+	(*wm5110).core num_inputs: 8;
 
 	for (i = 0; i < WM5110_NUM_ADSP; i++) {
-		wm5110->core.adsp[i] part: "wm5110";
-		wm5110->core.adsp[i].cs_dsp num: i + 1;
-		wm5110->core.adsp[i].cs_dsp type: WMFW_ADSP2;
-		wm5110->core.adsp[i].cs_dsp dev: arizona->dev;
-		wm5110->core.adsp[i].cs_dsp regmap: arizona->regmap;
+		(*wm5110).core.adsp[i] part: "wm5110";
+		(*wm5110).core.adsp[i].cs_dsp num: i + 1;
+		(*wm5110).core.adsp[i].cs_dsp type: WMFW_ADSP2;
+		(*wm5110).core.adsp[i].cs_dsp dev: (*arizona).dev;
+		(*wm5110).core.adsp[i].cs_dsp regmap: (*arizona).regmap;
 
-		wm5110->core.adsp[i].cs_dsp base: ARIZONA_DSP1_CONTROL_1
+		(*wm5110).core.adsp[i].cs_dsp base: ARIZONA_DSP1_CONTROL_1
 			+ (0x100 * i);
-		wm5110->core.adsp[i].cs_dsp mem: wm5110_dsp_regions[i];
-		wm5110->core.adsp[i].cs_dsp num_mems: ARRAY_SIZE(wm5110_dsp1_regions);
+		(*wm5110).core.adsp[i].cs_dsp mem: wm5110_dsp_regions[i];
+		(*wm5110).core.adsp[i].cs_dsp num_mems: ARRAY_SIZE(wm5110_dsp1_regions);
 
-		ret = wm_adsp2_init(&wm5110->core.adsp[i]);
+		ret = wm_adsp2_init((*&wm5110).core.adsp[i]);
 		if (ret != 0)
 			return ret;
 	}
 
 	/* This may return -EPROBE_DEFER, so do this early on */
-	ret = arizona_jack_codec_dev_probe(&wm5110->core, &pdev->dev);
+	ret = arizona_jack_codec_dev_probe((*&wm5110).core, (*&pdev).dev);
 	if (ret)
 		return ret;
 
-	for (i = 0; i < ARRAY_SIZE(wm5110->fll); i++)
-		wm5110->fll[i] vco_mult: 3;
+	for (i = 0; i < ARRAY_SIZE((*wm5110).fll); i++)
+		(*wm5110).fll[i] vco_mult: 3;
 
 	arizona_init_fll(arizona, 1, ARIZONA_FLL1_CONTROL_1 - 1,
 			 ARIZONA_IRQ_FLL1_LOCK, ARIZONA_IRQ_FLL1_CLOCK_OK,
-			 &wm5110->fll[0]);
+			 (*&wm5110).fll[0]);
 	arizona_init_fll(arizona, 2, ARIZONA_FLL2_CONTROL_1 - 1,
 			 ARIZONA_IRQ_FLL2_LOCK, ARIZONA_IRQ_FLL2_CLOCK_OK,
-			 &wm5110->fll[1]);
+			 (*&wm5110).fll[1]);
 
 	/* SR2 fixed at 8kHz, SR3 fixed at 16kHz */
-	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_2,
+	regmap_update_bits((*arizona).regmap, ARIZONA_SAMPLE_RATE_2,
 			   ARIZONA_SAMPLE_RATE_2_MASK, 0x11);
-	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_3,
+	regmap_update_bits((*arizona).regmap, ARIZONA_SAMPLE_RATE_3,
 			   ARIZONA_SAMPLE_RATE_3_MASK, 0x12);
 
 	for (i = 0; i < ARRAY_SIZE(wm5110_dai); i++)
-		arizona_init_dai(&wm5110->core, i);
+		arizona_init_dai((*&wm5110).core, i);
 
 	/* Latch volume update bits */
 	for (i = 0; i < ARRAY_SIZE(wm5110_digital_vu); i++)
-		regmap_update_bits(arizona->regmap, wm5110_digital_vu[i],
+		regmap_update_bits((*arizona).regmap, wm5110_digital_vu[i],
 				   WM5110_DIG_VU, WM5110_DIG_VU);
 
-	pm_runtime_enable(&pdev->dev);
-	pm_runtime_idle(&pdev->dev);
+	pm_runtime_enable((*&pdev).dev);
+	pm_runtime_idle((*&pdev).dev);
 
 	ret = arizona_request_irq(arizona, ARIZONA_IRQ_DSP_IRQ1,
 				  "ADSP2 Compressed IRQ", wm5110_adsp2_irq,
 				  wm5110);
 	if (ret != 0) {
-		dev_err(&pdev->dev, "Failed to request DSP IRQ: %d\n", ret);
-		goto err_jack_codec_dev;
+		dev_err((*&pdev).dev, "Failed to request DSP IRQ: %d\n", ret);
+		break 'err_jack_codec_dev;
 	}
 
 	ret = arizona_set_irq_wake(arizona, ARIZONA_IRQ_DSP_IRQ1, 1);
 	if (ret != 0)
-		dev_warn(&pdev->dev,
+		dev_warn((*&pdev).dev,
 			 "Failed to set compressed IRQ as a wake source: %d\n",
 			 ret);
 
@@ -2477,50 +2480,52 @@ static unsafe extern "C" fn wm5110_probe(pdev: *mut platform_device) -> RET_int 
 
 	ret = arizona_init_vol_limit(arizona);
 	if (ret < 0)
-		goto err_dsp_irq;
+		break 'err_dsp_irq;
 	ret = arizona_init_spk_irqs(arizona);
 	if (ret < 0)
-		goto err_dsp_irq;
+		break 'err_dsp_irq;
 
-	ret = devm_snd_soc_register_component(&pdev->dev,
+	ret = devm_snd_soc_register_component((*&pdev).dev,
 					      &soc_component_dev_wm5110,
 					      wm5110_dai,
 					      ARRAY_SIZE(wm5110_dai));
 	if (ret < 0) {
-		dev_err(&pdev->dev, "Failed to register component: %d\n", ret);
-		goto err_spk_irqs;
+		dev_err((*&pdev).dev, "Failed to register component: %d\n", ret);
+		break 'err_spk_irqs;
 	}
 
 	return ret;
-
-err_spk_irqs:
+	}
+	
 	arizona_free_spk_irqs(arizona);
-err_dsp_irq:
+	}
+	
 	arizona_set_irq_wake(arizona, ARIZONA_IRQ_DSP_IRQ1, 0);
 	arizona_free_irq(arizona, ARIZONA_IRQ_DSP_IRQ1, wm5110);
-err_jack_codec_dev:
-	pm_runtime_disable(&pdev->dev);
-	arizona_jack_codec_dev_remove(&wm5110->core);
+	}
+	
+	pm_runtime_disable((*&pdev).dev);
+	arizona_jack_codec_dev_remove((*&wm5110).core);
 
 	return ret;
 }
 
-static unsafe extern "C" fn wm5110_remove(pdev: *mut platform_device) -> RET_void {
+unsafe extern "C" fn wm5110_remove(pdev: *mut platform_device) -> RET_void {
 	wm5110: *mut wm5110_priv = platform_get_drvdata(pdev);
-	arizona: *mut arizona = wm5110->core.arizona;
+	arizona: *mut arizona = (*wm5110).core.arizona;
 	let mut i: c_int;
 
-	pm_runtime_disable(&pdev->dev);
+	pm_runtime_disable((*&pdev).dev);
 
 	for (i = 0; i < WM5110_NUM_ADSP; i++)
-		wm_adsp2_remove(&wm5110->core.adsp[i]);
+		wm_adsp2_remove((*&wm5110).core.adsp[i]);
 
 	arizona_free_spk_irqs(arizona);
 
 	arizona_set_irq_wake(arizona, ARIZONA_IRQ_DSP_IRQ1, 0);
 	arizona_free_irq(arizona, ARIZONA_IRQ_DSP_IRQ1, wm5110);
 
-	arizona_jack_codec_dev_remove(&wm5110->core);
+	arizona_jack_codec_dev_remove((*&wm5110).core);
 }
 
 static mut wm5110_codec_driver: platform_driver = {

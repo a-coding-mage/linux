@@ -33,18 +33,20 @@ static mut bpf_crypto_types_sem: rw_semaphore = DECLARE_RWSEM_INIT;
 
 pub unsafe fn bpf_crypto_register_type(r#type: *const bpf_crypto_type) -> c_int {
     let mut err: c_int = -EBUSY;
+    'unlock: {
     down_write(&raw mut bpf_crypto_types_sem);
     let mut node: *mut bpf_crypto_type_list;
     list_for_each_entry!(node, &raw mut bpf_crypto_types, list, {
-        if strcmp((*(*node).r#type).name, (*r#type).name) == 0 { goto!(unlock); }
+        if strcmp((*(*node).r#type).name, (*r#type).name) == 0 { break 'unlock; }
     });
     node = kmalloc_obj::<bpf_crypto_type_list>();
     err = -ENOMEM;
-    if node.is_null() { goto!(unlock); }
+    if node.is_null() { break 'unlock; }
     (*node).r#type = r#type;
     list_add(&raw mut (*node).list, &raw mut bpf_crypto_types);
     err = 0;
-unlock:
+    }
+    
     up_write(&raw mut bpf_crypto_types_sem);
     err
 }
@@ -80,29 +82,35 @@ unsafe fn bpf_crypto_get_type(name: *const c_char) -> *const bpf_crypto_type {
 pub unsafe fn bpf_crypto_ctx_create(params: *const bpf_crypto_params, params__sz: u32, err: *mut c_int) -> *mut bpf_crypto_ctx {
     let mut r#type: *const bpf_crypto_type;
     let ctx: *mut bpf_crypto_ctx;
+    'err_module_put: {
+    'err_free_ctx: {
+    'err_free_tfm: {
     if params.is_null() || (*params).reserved[0] != 0 || (*params).reserved[1] != 0 || params__sz as usize != core::mem::size_of::<bpf_crypto_params>() { *err = -EINVAL; return core::ptr::null_mut(); }
     r#type = bpf_crypto_get_type((*params).r#type.as_ptr());
     if IS_ERR(r#type) { *err = PTR_ERR(r#type); return core::ptr::null_mut(); }
-    if !((*r#type).has_algo)((*params).algo.as_ptr()) { *err = -EOPNOTSUPP; goto!(err_module_put); }
-    if ((!!(*params).authsize) ^ (!!(*r#type).setauthsize)) { *err = -EOPNOTSUPP; goto!(err_module_put); }
-    if (*params).key_len == 0 || (*params).key_len as usize > (*params).key.len() { *err = -EINVAL; goto!(err_module_put); }
+    if !((*r#type).has_algo)((*params).algo.as_ptr()) { *err = -EOPNOTSUPP; break 'err_module_put; }
+    if ((!!(*params).authsize) ^ (!!(*r#type).setauthsize)) { *err = -EOPNOTSUPP; break 'err_module_put; }
+    if (*params).key_len == 0 || (*params).key_len as usize > (*params).key.len() { *err = -EINVAL; break 'err_module_put; }
     ctx = kzalloc_obj::<bpf_crypto_ctx>();
-    if ctx.is_null() { *err = -ENOMEM; goto!(err_module_put); }
+    if ctx.is_null() { *err = -ENOMEM; break 'err_module_put; }
     (*ctx).r#type = r#type;
     (*ctx).tfm = ((*r#type).alloc_tfm)((*params).algo.as_ptr());
-    if IS_ERR((*ctx).tfm) { *err = PTR_ERR((*ctx).tfm); goto!(err_free_ctx); }
-    if (*params).authsize != 0 { *err = ((*r#type).setauthsize)((*ctx).tfm, (*params).authsize); if *err != 0 { goto!(err_free_tfm); } }
+    if IS_ERR((*ctx).tfm) { *err = PTR_ERR((*ctx).tfm); break 'err_free_ctx; }
+    if (*params).authsize != 0 { *err = ((*r#type).setauthsize)((*ctx).tfm, (*params).authsize); if *err != 0 { break 'err_free_tfm; } }
     *err = ((*r#type).setkey)((*ctx).tfm, (*params).key.as_ptr(), (*params).key_len);
-    if *err != 0 { goto!(err_free_tfm); }
-    if ((*r#type).get_flags)((*ctx).tfm) & CRYPTO_TFM_NEED_KEY != 0 { *err = -EINVAL; goto!(err_free_tfm); }
+    if *err != 0 { break 'err_free_tfm; }
+    if ((*r#type).get_flags)((*ctx).tfm) & CRYPTO_TFM_NEED_KEY != 0 { *err = -EINVAL; break 'err_free_tfm; }
     (*ctx).siv_len = ((*r#type).ivsize)((*ctx).tfm) + ((*r#type).statesize)((*ctx).tfm);
     refcount_set(&raw mut (*ctx).usage, 1);
     return ctx;
-err_free_tfm:
+    }
+    
     ((*r#type).free_tfm)((*ctx).tfm);
-err_free_ctx:
+    }
+    
     kfree(ctx as *mut c_void);
-err_module_put:
+    }
+    
     module_put((*r#type).owner);
     core::ptr::null_mut()
 }

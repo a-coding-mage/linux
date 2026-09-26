@@ -42,16 +42,16 @@ extern "C" {
     fn pr_warn(fmt: *const i8, ...); fn pr_info(fmt: *const i8, ...);
     fn pr_debug(fmt: *const i8, ...); fn strcmp(a: *const i8,b: *const i8)->i32;
     fn strstr(a: *const i8,b: *const i8)->*const i8;
-    fn of_get_flat_dt_root()->usize; fn of_get_flat_dt_subnode_by_name(usize,*const i8)->usize;
-    fn of_get_flat_dt_prop(usize,*const i8,*mut i32)->*const u32;
-    fn of_flat_dt_is_compatible(usize,*const i8)->bool;
+    fn of_get_flat_dt_root()->usize; fn of_get_flat_dt_subnode_by_name(_: usize,_: *const i8)->usize;
+    fn of_get_flat_dt_prop(_: usize,_: *const i8,_: *mut i32)->*const u32;
+    fn of_flat_dt_is_compatible(_: usize,_: *const i8)->bool;
     fn be32_to_cpup(p:*const u32)->u32; fn be32_to_cpu(v:u32)->u32;
-    fn of_get_flat_dt_phandle(usize)->u32;
+    fn of_get_flat_dt_phandle(_: usize)->u32;
     fn of_scan_flat_dt(cb:unsafe extern "C" fn(usize,*const i8,i32,*mut core::ffi::c_void)->i32,data:*mut core::ffi::c_void)->i32;
-    fn of_scan_flat_dt_subnodes(usize,cb:unsafe extern "C" fn(usize,*const i8,*mut core::ffi::c_void)->i32,data:*mut core::ffi::c_void)->i32;
-    fn early_init_dt_verify(*mut core::ffi::c_void,usize)->bool;
-    fn memblock_alloc_or_panic(usize,usize)->*mut core::ffi::c_void;
-    fn memblock_free(*mut DtCpuFeature,usize);
+    fn of_scan_flat_dt_subnodes(_: usize,cb:unsafe extern "C" fn(usize,*const i8,*mut core::ffi::c_void)->i32,data:*mut core::ffi::c_void)->i32;
+    fn early_init_dt_verify(_: *mut core::ffi::c_void,_: usize)->bool;
+    fn memblock_alloc_or_panic(_: usize,_: usize)->*mut core::ffi::c_void;
+    fn memblock_free(_: *mut DtCpuFeature,_: usize);
     fn __machine_check_early_realmode_p8(); fn __machine_check_early_realmode_p9();
     fn __machine_check_early_realmode_p10();
 }

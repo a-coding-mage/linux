@@ -19,7 +19,7 @@
  */
 macro_rules! alloca {
     ($size:expr) => {{
-        compile_error!("alloca(size) requires the C compiler builtin __builtin_alloca(size), which has no direct Rust equivalent in this isolated translation");
+        compile_error!("alloca!($size) requires the C compiler builtin __builtin_alloca($size), which has no direct Rust equivalent in this isolated translation");
     }};
 }
 

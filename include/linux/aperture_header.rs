@@ -12,7 +12,7 @@ pub struct platform_device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_APERTURE_HELPERS")]
+#[cfg(CONFIG_APERTURE_HELPERS)]
 extern "C" {
     pub fn devm_aperture_acquire_for_platform_device(
         pdev: *mut platform_device,
@@ -36,7 +36,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_APERTURE_HELPERS"))]
+#[cfg(not(CONFIG_APERTURE_HELPERS))]
 pub unsafe fn devm_aperture_acquire_for_platform_device(
     _pdev: *mut platform_device,
     _base: resource_size_t,
@@ -45,7 +45,7 @@ pub unsafe fn devm_aperture_acquire_for_platform_device(
     0
 }
 
-#[cfg(not(feature = "CONFIG_APERTURE_HELPERS"))]
+#[cfg(not(CONFIG_APERTURE_HELPERS))]
 pub unsafe fn aperture_remove_conflicting_devices(
     _base: resource_size_t,
     _size: resource_size_t,
@@ -54,14 +54,14 @@ pub unsafe fn aperture_remove_conflicting_devices(
     0
 }
 
-#[cfg(not(feature = "CONFIG_APERTURE_HELPERS"))]
+#[cfg(not(CONFIG_APERTURE_HELPERS))]
 pub unsafe fn __aperture_remove_legacy_vga_devices(
     _pdev: *mut pci_dev,
 ) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_APERTURE_HELPERS"))]
+#[cfg(not(CONFIG_APERTURE_HELPERS))]
 pub unsafe fn aperture_remove_conflicting_pci_devices(
     _pdev: *mut pci_dev,
     _name: *const ::core::ffi::c_char,

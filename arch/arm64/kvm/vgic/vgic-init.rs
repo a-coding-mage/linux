@@ -20,21 +20,22 @@ pub unsafe fn kvm_vgic_create(kvm: *mut kvm, ty: u32) -> i32 {
     let mut vcpu: *mut kvm_vcpu = core::ptr::null_mut();
     let mut i: usize = 0;
     let mut ret: i32;
+    'out_unlock: {
     if ty == KVM_DEV_TYPE_ARM_VGIC_V2 && !kvm_vgic_global_state.can_emulate_gicv2 { return -ENODEV; }
     lockdep_assert_held(&(*kvm).lock);
     ret = -EBUSY;
     if kvm_trylock_all_vcpus(kvm) != 0 { return ret; }
     mutex_lock(&mut (*kvm).arch.config_lock);
-    if (*kvm).created_vcpus != atomic_read(&(*kvm).online_vcpus) { goto out_unlock; }
-    if irqchip_in_kernel(kvm) { ret = -EEXIST; goto out_unlock; }
+    if (*kvm).created_vcpus != atomic_read(&(*kvm).online_vcpus) { break 'out_unlock; }
+    if irqchip_in_kernel(kvm) { ret = -EEXIST; break 'out_unlock; }
     kvm_for_each_vcpu!(i, vcpu, kvm, {
-        if vcpu_has_run_once(vcpu) { goto out_unlock; }
+        if vcpu_has_run_once(vcpu) { break 'out_unlock; }
     });
     ret = 0;
     if ty == KVM_DEV_TYPE_ARM_VGIC_V2 { (*kvm).max_vcpus = VGIC_V2_MAX_CPUS; }
     else if ty == KVM_DEV_TYPE_ARM_VGIC_V3 { (*kvm).max_vcpus = VGIC_V3_MAX_CPUS; }
     else if ty == KVM_DEV_TYPE_ARM_VGIC_V5 { (*kvm).max_vcpus = min(VGIC_V5_MAX_CPUS, kvm_vgic_global_state.max_gic_vcpus); }
-    if atomic_read(&(*kvm).online_vcpus) > (*kvm).max_vcpus { ret = -E2BIG; goto out_unlock; }
+    if atomic_read(&(*kvm).online_vcpus) > (*kvm).max_vcpus { ret = -E2BIG; break 'out_unlock; }
     (*kvm).arch.vgic.in_kernel = true;
     (*kvm).arch.vgic.vgic_model = ty;
     (*kvm).arch.vgic.implementation_rev = KVM_VGIC_IMP_REV_LATEST;
@@ -48,11 +49,12 @@ pub unsafe fn kvm_vgic_create(kvm: *mut kvm, ty: u32) -> i32 {
     kvm_for_each_vcpu!(i, vcpu, kvm, { ret = vgic_allocate_private_irqs_locked(vcpu, ty); if ret != 0 { break; } });
     if ret != 0 {
         kvm_for_each_vcpu!(i, vcpu, kvm, { let cpu = &mut (*vcpu).arch.vgic_cpu; kfree(cpu.private_irqs); cpu.private_irqs = core::ptr::null_mut(); });
-        (*kvm).arch.vgic.vgic_model = 0; (*kvm).arch.vgic.in_kernel = false; goto out_unlock;
+        (*kvm).arch.vgic.vgic_model = 0; (*kvm).arch.vgic.in_kernel = false; break 'out_unlock;
     }
     if ty == KVM_DEV_TYPE_ARM_VGIC_V3 { (*kvm).arch.vgic.nassgicap = system_supports_direct_sgis(); }
     if ty == KVM_DEV_TYPE_ARM_VGIC_V5 { kvm_timer_init_vm(kvm); }
-out_unlock:
+    }
+    
     mutex_unlock(&mut (*kvm).arch.config_lock); kvm_unlock_all_vcpus(kvm); ret
 }
 

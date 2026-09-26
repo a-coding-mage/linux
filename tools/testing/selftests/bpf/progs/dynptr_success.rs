@@ -348,7 +348,7 @@ pub unsafe extern "C" fn test_dynptr_data(_ctx: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-static unsafe extern "C" fn ringbuf_callback(index: __u32, data: *mut core::ffi::c_void) -> i32 {
+unsafe extern "C" fn ringbuf_callback(index: __u32, data: *mut core::ffi::c_void) -> i32 {
     let mut sample: *mut ringbuf_sample;
     let ptr: *mut bpf_dynptr = data as *mut bpf_dynptr;
 
@@ -1401,7 +1401,7 @@ pub unsafe extern "C" fn test_copy_from_user_str_dynptr(_ctx: *mut core::ffi::c_
     0
 }
 
-static unsafe extern "C" fn bpf_copy_data_from_user_task(
+unsafe extern "C" fn bpf_copy_data_from_user_task(
     dptr: *const bpf_dynptr,
     off: u64,
     size: u64,
@@ -1412,7 +1412,7 @@ static unsafe extern "C" fn bpf_copy_data_from_user_task(
     bpf_copy_from_user_task_dynptr(dptr, off, size, unsafe_ptr, task)
 }
 
-static unsafe extern "C" fn bpf_copy_data_from_user_task_str(
+unsafe extern "C" fn bpf_copy_data_from_user_task_str(
     dptr: *const bpf_dynptr,
     off: u64,
     size: u64,

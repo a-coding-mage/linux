@@ -106,7 +106,7 @@ int __read_mostly suppress_printk;
 
 // #ifdef CONFIG_LOCKDEP
 static struct lockdep_map console_lock_dep_map = {
-	.name = "console_lock"
+	name: "console_lock"
 };
 
 void lockdep_assert_console_list_lock_held(void)
@@ -139,7 +139,7 @@ enum devkmsg_log_masks {
 /* Keep both the 'on' and 'off' bits clear, i.e. ratelimit by default: */
 // #define DEVKMSG_LOG_MASK_DEFAULT	0
 
-static unsigned int __read_mostly devkmsg_log = DEVKMSG_LOG_MASK_DEFAULT;
+static core::ffi::c_uint __read_mostly devkmsg_log = DEVKMSG_LOG_MASK_DEFAULT;
 
 static int __control_devkmsg(char *str)
 {
@@ -203,7 +203,7 @@ int devkmsg_sysctl_set_loglvl(const struct ctl_table *table, int write,
 			      void *buffer, size_t *lenp, loff_t *ppos)
 {
 	char old_str[DEVKMSG_STR_MAX_SIZE];
-	unsigned int old;
+	core::ffi::c_uint old;
 	int err;
 
 	if (write) {
@@ -311,14 +311,14 @@ EXPORT_SYMBOL(console_srcu_read_unlock);
  * macros instead of functions so that _RET_IP_ contains useful information.
  */
 // #define down_console_sem() do { \
-	down(&console_sem);\
-	mutex_acquire(&console_lock_dep_map, 0, 0, _RET_IP_);\
-} while (0)
+// 	down(&console_sem);\
+// 	mutex_acquire(&console_lock_dep_map, 0, 0, _RET_IP_);\
+// } while (0)
 
-static int __down_trylock_console_sem(unsigned long ip)
+static int __down_trylock_console_sem(ip: core::ffi::c_ulong)
 {
 	int lock_failed;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	/*
 	 * Here and in __up_console_sem() we need to be in safe mode,
@@ -336,9 +336,9 @@ static int __down_trylock_console_sem(unsigned long ip)
 }
 // #define down_trylock_console_sem() __down_trylock_console_sem(_RET_IP_)
 
-static void __up_console_sem(unsigned long ip)
+static void __up_console_sem(ip: core::ffi::c_ulong)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	mutex_release(&console_lock_dep_map, ip);
 
@@ -490,7 +490,7 @@ struct latched_seq {
  * access a valid value. Writers are synchronized by @syslog_lock.
  */
 static struct latched_seq clear_seq = {
-	.latch		= SEQCNT_LATCH_ZERO(clear_seq.latch),
+	latch: SEQCNT_LATCH_ZERO(clear_seq.latch),
 	.val[0]		= 0,
 	.val[1]		= 0,
 };
@@ -536,27 +536,27 @@ bool printk_percpu_data_ready(void)
 }
 
 /* Must be called under syslog_lock. */
-static void latched_seq_write(struct latched_seq *ls, u64 val)
+static void latched_seq_write(latched_seq *ls, val: u64)
 {
-	write_seqcount_latch_begin(&ls->latch);
-	ls->val[0] = val;
-	write_seqcount_latch(&ls->latch);
-	ls->val[1] = val;
-	write_seqcount_latch_end(&ls->latch);
+	write_seqcount_latch_begin((*&ls).latch);
+	(*ls).val[0] = val;
+	write_seqcount_latch((*&ls).latch);
+	(*ls).val[1] = val;
+	write_seqcount_latch_end((*&ls).latch);
 }
 
 /* Can be called from any context. */
-static u64 latched_seq_read_nolock(struct latched_seq *ls)
+static u64 latched_seq_read_nolock(latched_seq *ls)
 {
-	unsigned int seq;
-	unsigned int idx;
+	core::ffi::c_uint seq;
+	core::ffi::c_uint idx;
 	u64 val;
 
 	do {
-		seq = read_seqcount_latch(&ls->latch);
+		seq = read_seqcount_latch((*&ls).latch);
 		idx = seq & 0x1;
-		val = ls->val[idx];
-	} while (read_seqcount_latch_retry(&ls->latch, seq));
+		val = (*ls).val[idx];
+	} while (read_seqcount_latch_retry((*&ls).latch, seq));
 
 	return val;
 }
@@ -616,19 +616,21 @@ static int syslog_action_restricted(int type)
 
 static int check_syslog_permissions(int type, int source)
 {
+	'ok: {
 	/*
 	 * If this is from /proc/kmsg and we've already opened it, then we've
 	 * already done the capabilities checks at open time.
 	 */
 	if (source == SYSLOG_FROM_PROC && type != SYSLOG_ACTION_OPEN)
-		goto ok;
+		break 'ok;
 
 	if (syslog_action_restricted(type)) {
 		if (capable(CAP_SYSLOG))
-			goto ok;
+			break 'ok;
 		return -EPERM;
 	}
-ok:
+	}
+	
 	return security_syslog(type);
 }
 
@@ -639,12 +641,12 @@ static void append_char(char **pp, char *e, char c)
 }
 
 static ssize_t info_print_ext_header(char *buf, size_t size,
-				     struct printk_info *info)
+				     printk_info *info)
 {
-	u64 ts_usec = info->ts_nsec;
+	u64 ts_usec = (*info).ts_nsec;
 	char caller[20];
 // #ifdef CONFIG_PRINTK_CALLER
-	u32 id = info->caller_id;
+	u32 id = (*info).caller_id;
 
 	snprintf(caller, sizeof(caller), ",caller=%c%u",
 		 id & 0x80000000 ? 'C' : 'T', id & ~0x80000000);
@@ -655,20 +657,20 @@ static ssize_t info_print_ext_header(char *buf, size_t size,
 	do_div(ts_usec, 1000);
 
 	return scnprintf(buf, size, "%u,%llu,%llu,%c%s;",
-			 (info->facility << 3) | info->level, info->seq,
-			 ts_usec, info->flags & LOG_CONT ? 'c' : '-', caller);
+			 ((*info).facility << 3) | (*info).level, (*info).seq,
+			 ts_usec, (*info).flags & LOG_CONT ? 'c' : '-', caller);
 }
 
 static ssize_t msg_add_ext_text(char *buf, size_t size,
 				const char *text, size_t text_len,
-				unsigned char endc)
+				endc: core::ffi::c_uchar)
 {
 	char *p = buf, *e = buf + size;
 	size_t i;
 
 	/* escape non-printable characters */
 	for (i = 0; i < text_len; i++) {
-		unsigned char c = text[i];
+		core::ffi::c_uchar c = text[i];
 
 		if (c < ' ' || c >= 127 || c == '\\')
 			p += scnprintf(p, e - p, "\\x%02x", c);
@@ -698,20 +700,22 @@ static ssize_t msg_add_dict_text(char *buf, size_t size,
 
 static ssize_t msg_print_ext_body(char *buf, size_t size,
 				  char *text, size_t text_len,
-				  struct dev_printk_info *dev_info)
+				  dev_printk_info *dev_info)
 {
+	'out: {
 	ssize_t len;
 
 	len = msg_add_ext_text(buf, size, text, text_len, '\n');
 
 	if (!dev_info)
-		goto out;
+		break 'out;
 
 	len += msg_add_dict_text(buf + len, size - len, "SUBSYSTEM",
-				 dev_info->subsystem);
+				 (*dev_info).subsystem);
 	len += msg_add_dict_text(buf + len, size - len, "DEVICE",
-				 dev_info->device);
-out:
+				 (*dev_info).device);
+	}
+	
 	return len;
 }
 
@@ -736,13 +740,13 @@ int devkmsg_emit(int facility, int level, const char *fmt, ...)
 	return r;
 }
 
-static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
+static ssize_t devkmsg_write(kiocb *iocb, iov_iter *from)
 {
 	char *buf, *line;
 	int level = default_message_loglevel;
 	int facility = 1;	/* LOG_USER */
-	struct file *file = iocb->ki_filp;
-	struct devkmsg_user *user = file->private_data;
+	struct file *file = (*iocb).ki_filp;
+	struct devkmsg_user *user = (*file).private_data;
 	size_t len = iov_iter_count(from);
 	ssize_t ret = len;
 
@@ -755,7 +759,7 @@ static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
 
 	/* Ratelimit when not explicitly enabled. */
 	if (!(devkmsg_log & DEVKMSG_LOG_MASK_ON)) {
-		if (!___ratelimit(&user->rs, current->comm))
+		if (!___ratelimit((*&user).rs, (*current).comm))
 			return ret;
 	}
 
@@ -781,7 +785,7 @@ static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
 	line = buf;
 	if (line[0] == '<') {
 		char *endp = NULL;
-		unsigned int u;
+		core::ffi::c_uint u;
 
 		u = simple_strtoul(line + 1, &endp, 10);
 		if (endp && endp[0] == '>') {
@@ -798,24 +802,25 @@ static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
 	return ret;
 }
 
-static ssize_t devkmsg_read(struct file *file, char __user *buf,
+static ssize_t devkmsg_read(file *file, char __user *buf,
 			    size_t count, loff_t *ppos)
 {
-	struct devkmsg_user *user = file->private_data;
-	char *outbuf = &user->pbufs.outbuf[0];
+	'out: {
+	struct devkmsg_user *user = (*file).private_data;
+	char *outbuf = (*&user).pbufs.outbuf[0];
 	struct printk_message pmsg = {
-		.pbufs = &user->pbufs,
+		pbufs: (*&user).pbufs,
 	};
 	ssize_t ret;
 
-	ret = mutex_lock_interruptible(&user->lock);
+	ret = mutex_lock_interruptible((*&user).lock);
 	if (ret)
 		return ret;
 
-	if (!printk_get_next_message(&pmsg, atomic64_read(&user->seq), true, false)) {
-		if (file->f_flags & O_NONBLOCK) {
+	if (!printk_get_next_message(&pmsg, atomic64_read((*&user).seq), true, false)) {
+		if ((*file).f_flags & O_NONBLOCK) {
 			ret = -EAGAIN;
-			goto out;
+			break 'out;
 		}
 
 		/*
@@ -829,33 +834,34 @@ static ssize_t devkmsg_read(struct file *file, char __user *buf,
 		 * This pairs with __wake_up_klogd:A.
 		 */
 		ret = wait_event_interruptible(log_wait,
-				printk_get_next_message(&pmsg, atomic64_read(&user->seq), true,
+				printk_get_next_message(&pmsg, atomic64_read((*&user).seq), true,
 							false)); /* LMM(devkmsg_read:A) */
 		if (ret)
-			goto out;
+			break 'out;
 	}
 
 	if (pmsg.dropped) {
 		/* our last seen message is gone, return error and reset */
-		atomic64_set(&user->seq, pmsg.seq);
+		atomic64_set((*&user).seq, pmsg.seq);
 		ret = -EPIPE;
-		goto out;
+		break 'out;
 	}
 
-	atomic64_set(&user->seq, pmsg.seq + 1);
+	atomic64_set((*&user).seq, pmsg.seq + 1);
 
 	if (pmsg.outbuf_len > count) {
 		ret = -EINVAL;
-		goto out;
+		break 'out;
 	}
 
 	if (copy_to_user(buf, outbuf, pmsg.outbuf_len)) {
 		ret = -EFAULT;
-		goto out;
+		break 'out;
 	}
 	ret = pmsg.outbuf_len;
-out:
-	mutex_unlock(&user->lock);
+	}
+	
+	mutex_unlock((*&user).lock);
 	return ret;
 }
 
@@ -867,9 +873,9 @@ out:
  * returned in the other cases and has been this way for quite some time.
  * User space applications might depend on this behavior.
  */
-static loff_t devkmsg_llseek(struct file *file, loff_t offset, int whence)
+static loff_t devkmsg_llseek(file *file, loff_t offset, int whence)
 {
-	struct devkmsg_user *user = file->private_data;
+	struct devkmsg_user *user = (*file).private_data;
 	loff_t ret = 0;
 
 	if (offset)
@@ -878,7 +884,7 @@ static loff_t devkmsg_llseek(struct file *file, loff_t offset, int whence)
 	switch (whence) {
 	case SEEK_SET:
 		/* the first record */
-		atomic64_set(&user->seq, prb_first_valid_seq(prb));
+		atomic64_set((*&user).seq, prb_first_valid_seq(prb));
 		break;
 	case SEEK_DATA:
 		/*
@@ -886,11 +892,11 @@ static loff_t devkmsg_llseek(struct file *file, loff_t offset, int whence)
 		 * like issued by 'dmesg -c'. Reading /dev/kmsg itself
 		 * changes no global state, and does not clear anything.
 		 */
-		atomic64_set(&user->seq, latched_seq_read_nolock(&clear_seq));
+		atomic64_set((*&user).seq, latched_seq_read_nolock(&clear_seq));
 		break;
 	case SEEK_END:
 		/* after the last record */
-		atomic64_set(&user->seq, prb_next_seq(prb));
+		atomic64_set((*&user).seq, prb_next_seq(prb));
 		break;
 	default:
 		ret = -EINVAL;
@@ -898,17 +904,17 @@ static loff_t devkmsg_llseek(struct file *file, loff_t offset, int whence)
 	return ret;
 }
 
-static __poll_t devkmsg_poll(struct file *file, poll_table *wait)
+static __poll_t devkmsg_poll(file *file, poll_table *wait)
 {
-	struct devkmsg_user *user = file->private_data;
+	struct devkmsg_user *user = (*file).private_data;
 	struct printk_info info;
 	__poll_t ret = 0;
 
 	poll_wait(file, &log_wait, wait);
 
-	if (prb_read_valid_info(prb, atomic64_read(&user->seq), &info, NULL)) {
+	if (prb_read_valid_info(prb, atomic64_read((*&user).seq), &info, NULL)) {
 		/* return error when data has vanished underneath us */
-		if (info.seq != atomic64_read(&user->seq))
+		if (info.seq != atomic64_read((*&user).seq))
 			ret = EPOLLIN|EPOLLRDNORM|EPOLLERR|EPOLLPRI;
 		else
 			ret = EPOLLIN|EPOLLRDNORM;
@@ -917,7 +923,7 @@ static __poll_t devkmsg_poll(struct file *file, poll_table *wait)
 	return ret;
 }
 
-static int devkmsg_open(struct inode *inode, struct file *file)
+static int devkmsg_open(inode *inode, file *file)
 {
 	struct devkmsg_user *user;
 	int err;
@@ -926,46 +932,46 @@ static int devkmsg_open(struct inode *inode, struct file *file)
 		return -EPERM;
 
 	/* write-only does not need any file context */
-	if ((file->f_flags & O_ACCMODE) != O_WRONLY) {
+	if (((*file).f_flags & O_ACCMODE) != O_WRONLY) {
 		err = check_syslog_permissions(SYSLOG_ACTION_READ_ALL,
 					       SYSLOG_FROM_READER);
 		if (err)
 			return err;
 	}
 
-	user = kvmalloc_obj(struct devkmsg_user);
+	user = kvmalloc_obj(devkmsg_user);
 	if (!user)
 		return -ENOMEM;
 
-	ratelimit_default_init(&user->rs);
-	ratelimit_set_flags(&user->rs, RATELIMIT_MSG_ON_RELEASE);
+	ratelimit_default_init((*&user).rs);
+	ratelimit_set_flags((*&user).rs, RATELIMIT_MSG_ON_RELEASE);
 
-	mutex_init(&user->lock);
+	mutex_init((*&user).lock);
 
-	atomic64_set(&user->seq, prb_first_valid_seq(prb));
+	atomic64_set((*&user).seq, prb_first_valid_seq(prb));
 
-	file->private_data = user;
+	(*file).private_data = user;
 	return 0;
 }
 
-static int devkmsg_release(struct inode *inode, struct file *file)
+static int devkmsg_release(inode *inode, file *file)
 {
-	struct devkmsg_user *user = file->private_data;
+	struct devkmsg_user *user = (*file).private_data;
 
-	ratelimit_state_exit(&user->rs);
+	ratelimit_state_exit((*&user).rs);
 
-	mutex_destroy(&user->lock);
+	mutex_destroy((*&user).lock);
 	kvfree(user);
 	return 0;
 }
 
 const struct file_operations kmsg_fops = {
-	.open = devkmsg_open,
-	.read = devkmsg_read,
-	.write_iter = devkmsg_write,
-	.llseek = devkmsg_llseek,
-	.poll = devkmsg_poll,
-	.release = devkmsg_release,
+	open: devkmsg_open,
+	read: devkmsg_read,
+	write_iter: devkmsg_write,
+	llseek: devkmsg_llseek,
+	poll: devkmsg_poll,
+	release: devkmsg_release,
 };
 
 // #ifdef CONFIG_VMCORE_INFO
@@ -1019,9 +1025,9 @@ void log_buf_vmcoreinfo_setup(void)
 
 	VMCOREINFO_STRUCT_SIZE(dev_printk_info);
 	VMCOREINFO_OFFSET(dev_printk_info, subsystem);
-	VMCOREINFO_LENGTH(printk_info_subsystem, sizeof(dev_info->subsystem));
+	VMCOREINFO_LENGTH(printk_info_subsystem, sizeof((*dev_info).subsystem));
 	VMCOREINFO_OFFSET(dev_printk_info, device);
-	VMCOREINFO_LENGTH(printk_info_device, sizeof(dev_info->device));
+	VMCOREINFO_LENGTH(printk_info_device, sizeof((*dev_info).device));
 
 	VMCOREINFO_STRUCT_SIZE(prb_data_ring);
 	VMCOREINFO_OFFSET(prb_data_ring, size_bits);
@@ -1038,10 +1044,10 @@ void log_buf_vmcoreinfo_setup(void)
 // #endif
 
 /* requested log_buf_len from kernel cmdline */
-static unsigned long __initdata new_log_buf_len;
+static core::ffi::c_ulong __initdata new_log_buf_len;
 
 /* we practice scaling the ring buffer by powers of 2 */
-static void __init log_buf_len_update(u64 size)
+static void __init log_buf_len_update(size: u64)
 {
 	if (size > (u64)LOG_BUF_LEN_MAX) {
 		size = (u64)LOG_BUF_LEN_MAX;
@@ -1051,7 +1057,7 @@ static void __init log_buf_len_update(u64 size)
 	if (size)
 		size = roundup_pow_of_two(size);
 	if (size > log_buf_len)
-		new_log_buf_len = (unsigned long)size;
+		new_log_buf_len = (core::ffi::c_ulong)size;
 }
 
 /* save requested log_buf_len since it's too early to process it */
@@ -1075,7 +1081,7 @@ early_param("log_buf_len", log_buf_len_setup);
 
 static void __init log_buf_add_cpu(void)
 {
-	unsigned int cpu_extra;
+	core::ffi::c_uint cpu_extra;
 
 	/*
 	 * archs should set up cpu_possible_bits properly with
@@ -1100,7 +1106,7 @@ static void __init log_buf_add_cpu(void)
 	log_buf_len_update(cpu_extra + __LOG_BUF_LEN);
 }
 // #else /* !CONFIG_SMP */
-static inline void log_buf_add_cpu(void) {}
+void log_buf_add_cpu(void) {}
 // #endif /* CONFIG_SMP */
 
 static void __init set_percpu_data_ready(void)
@@ -1108,25 +1114,25 @@ static void __init set_percpu_data_ready(void)
 	__printk_percpu_data_ready = true;
 }
 
-static unsigned int __init add_to_rb(struct printk_ringbuffer *rb,
-				     struct printk_record *r)
+static core::ffi::c_uint __init add_to_rb(printk_ringbuffer *rb,
+				     printk_record *r)
 {
 	struct prb_reserved_entry e;
 	struct printk_record dest_r;
 
-	prb_rec_init_wr(&dest_r, r->info->text_len);
+	prb_rec_init_wr(&dest_r, (*(*r).info).text_len);
 
 	if (!prb_reserve(&e, rb, &dest_r))
 		return 0;
 
-	memcpy(&dest_r.text_buf[0], &r->text_buf[0], r->info->text_len);
-	dest_r.info->text_len = r->info->text_len;
-	dest_r.info->facility = r->info->facility;
-	dest_r.info->level = r->info->level;
-	dest_r.info->flags = r->info->flags;
-	dest_r.info->ts_nsec = r->info->ts_nsec;
-	dest_r.info->caller_id = r->info->caller_id;
-	memcpy(&dest_r.info->dev_info, &r->info->dev_info, sizeof(dest_r.info->dev_info));
+	memcpy(&dest_r.text_buf[0], (*&r).text_buf[0], (*(*r).info).text_len);
+	(*dest_r.info).text_len = (*(*r).info).text_len;
+	(*dest_r.info).facility = (*(*r).info).facility;
+	(*dest_r.info).level = (*(*r).info).level;
+	(*dest_r.info).flags = (*(*r).info).flags;
+	(*dest_r.info).ts_nsec = (*(*r).info).ts_nsec;
+	(*dest_r.info).caller_id = (*(*r).info).caller_id;
+	memcpy((*&dest_r.info).dev_info, (*(*&r).info).dev_info, sizeof((*dest_r.info).dev_info));
 
 	prb_final_commit(&e);
 
@@ -1137,10 +1143,10 @@ static char setup_text_buf[PRINTKRB_RECORD_MAX] __initdata;
 
 static void print_log_buf_usage_stats(void)
 {
-	unsigned int descs_count = log_buf_len >> PRB_AVGBITS;
+	core::ffi::c_uint descs_count = log_buf_len >> PRB_AVGBITS;
 	size_t meta_data_size;
 
-	meta_data_size = descs_count * (sizeof(struct prb_desc) + sizeof(struct printk_info));
+	meta_data_size = descs_count * (sizeof(prb_desc) + sizeof(printk_info));
 
 	pr_info("log buffer data + meta data: %u + %zu = %zu bytes\n",
 		log_buf_len, meta_data_size, log_buf_len + meta_data_size);
@@ -1148,17 +1154,20 @@ static void print_log_buf_usage_stats(void)
 
 void __init setup_log_buf(int early)
 {
+	'out: {
+	'err_free_log_buf: {
+	'err_free_descs: {
 	struct printk_info *new_infos;
-	unsigned int new_descs_count;
+	core::ffi::c_uint new_descs_count;
 	struct prb_desc *new_descs;
 	struct printk_info info;
 	struct printk_record r;
-	unsigned int text_size;
+	core::ffi::c_uint text_size;
 	size_t new_descs_size;
 	size_t new_infos_size;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	char *new_log_buf;
-	unsigned int free;
+	core::ffi::c_uint free;
 	u64 seq;
 
 	/*
@@ -1178,7 +1187,7 @@ void __init setup_log_buf(int early)
 	if (!new_log_buf_len) {
 		/* Show the memory stats only once. */
 		if (!early)
-			goto out;
+			break 'out;
 
 		return;
 	}
@@ -1186,30 +1195,30 @@ void __init setup_log_buf(int early)
 	new_descs_count = new_log_buf_len >> PRB_AVGBITS;
 	if (new_descs_count == 0) {
 		pr_err("new_log_buf_len: %lu too small\n", new_log_buf_len);
-		goto out;
+		break 'out;
 	}
 
 	new_log_buf = memblock_alloc(new_log_buf_len, LOG_ALIGN);
 	if (unlikely(!new_log_buf)) {
 		pr_err("log_buf_len: %lu text bytes not available\n",
 		       new_log_buf_len);
-		goto out;
+		break 'out;
 	}
 
-	new_descs_size = new_descs_count * sizeof(struct prb_desc);
+	new_descs_size = new_descs_count * sizeof(prb_desc);
 	new_descs = memblock_alloc(new_descs_size, LOG_ALIGN);
 	if (unlikely(!new_descs)) {
 		pr_err("log_buf_len: %zu desc bytes not available\n",
 		       new_descs_size);
-		goto err_free_log_buf;
+		break 'err_free_log_buf;
 	}
 
-	new_infos_size = new_descs_count * sizeof(struct printk_info);
+	new_infos_size = new_descs_count * sizeof(printk_info);
 	new_infos = memblock_alloc(new_infos_size, LOG_ALIGN);
 	if (unlikely(!new_infos)) {
 		pr_err("log_buf_len: %zu info bytes not available\n",
 		       new_infos_size);
-		goto err_free_descs;
+		break 'err_free_descs;
 	}
 
 	prb_rec_init_rd(&r, &info, &setup_text_buf[0], sizeof(setup_text_buf));
@@ -1226,13 +1235,13 @@ void __init setup_log_buf(int early)
 	new_log_buf_len = 0;
 
 	free = __LOG_BUF_LEN;
-	prb_for_each_record(0, &printk_rb_static, seq, &r) {
+	prb_for_each_record!(0, &printk_rb_static, seq, &r, {
 		text_size = add_to_rb(&printk_rb_dynamic, &r);
 		if (text_size > free)
 			free = 0;
 		else
 			free -= text_size;
-	}
+	});
 
 	prb = &printk_rb_dynamic;
 
@@ -1243,13 +1252,13 @@ void __init setup_log_buf(int early)
 	 * NMI context after copying but before switching to the
 	 * dynamic buffer.
 	 */
-	prb_for_each_record(seq, &printk_rb_static, seq, &r) {
+	prb_for_each_record!(seq, &printk_rb_static, seq, &r, {
 		text_size = add_to_rb(&printk_rb_dynamic, &r);
 		if (text_size > free)
 			free = 0;
 		else
 			free -= text_size;
-	}
+	});
 
 	if (seq != prb_next_seq(&printk_rb_static)) {
 		pr_err("dropped %llu messages\n",
@@ -1260,12 +1269,14 @@ void __init setup_log_buf(int early)
 	pr_info("early log buf free: %u(%u%%)\n",
 		free, (free * 100) / __LOG_BUF_LEN);
 	return;
-
-err_free_descs:
+	}
+	
 	memblock_free(new_descs, new_descs_size);
-err_free_log_buf:
+	}
+	
 	memblock_free(new_log_buf, new_log_buf_len);
-out:
+	}
+	
 	print_log_buf_usage_stats();
 }
 
@@ -1292,14 +1303,14 @@ static bool suppress_message_printing(int level)
 // #ifdef CONFIG_BOOT_PRINTK_DELAY
 
 static int boot_delay; /* msecs delay after each printk during bootup */
-static unsigned long long loops_per_msec;	/* based on boot_delay */
+static core::ffi::c_ulonglong loops_per_msec;	/* based on boot_delay */
 
 static int __init boot_delay_setup(char *str)
 {
-	unsigned long lpj;
+	core::ffi::c_ulong lpj;
 
 	lpj = preset_lpj ? preset_lpj : 1000000;	/* some guess */
-	loops_per_msec = (unsigned long long)lpj / 1000 * HZ;
+	loops_per_msec = (core::ffi::c_ulonglong)lpj / 1000 * HZ;
 
 	get_option(&str, &boot_delay);
 	if (boot_delay > 10 * 1000)
@@ -1314,15 +1325,15 @@ early_param("boot_delay", boot_delay_setup);
 
 static void boot_delay_msec(int level)
 {
-	unsigned long long k;
-	unsigned long timeout;
+	core::ffi::c_ulonglong k;
+	core::ffi::c_ulong timeout;
 	bool suppress = !is_printk_force_console() &&
 			suppress_message_printing(level);
 
 	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING) || suppress)
 		return;
 
-	k = (unsigned long long)loops_per_msec * boot_delay;
+	k = (core::ffi::c_ulonglong)loops_per_msec * boot_delay;
 
 	timeout = jiffies + msecs_to_jiffies(boot_delay);
 	while (k) {
@@ -1339,7 +1350,7 @@ static void boot_delay_msec(int level)
 	}
 }
 // #else
-static inline void boot_delay_msec(int level)
+void boot_delay_msec(int level)
 {
 }
 // #endif
@@ -1347,21 +1358,21 @@ static inline void boot_delay_msec(int level)
 static bool printk_time = IS_ENABLED(CONFIG_PRINTK_TIME);
 module_param_named(time, printk_time, bool, S_IRUGO | S_IWUSR);
 
-static size_t print_syslog(unsigned int level, char *buf)
+static size_t print_syslog(level: core::ffi::c_uint, char *buf)
 {
 	return sprintf(buf, "<%u>", level);
 }
 
-static size_t print_time(u64 ts, char *buf)
+static size_t print_time(ts: u64, char *buf)
 {
-	unsigned long rem_nsec = do_div(ts, 1000000000);
+	core::ffi::c_ulong rem_nsec = do_div(ts, 1000000000);
 
 	return sprintf(buf, "[%5lu.%06lu]",
-		       (unsigned long)ts, rem_nsec / 1000);
+		       (core::ffi::c_ulong)ts, rem_nsec / 1000);
 }
 
 // #ifdef CONFIG_PRINTK_CALLER
-static size_t print_caller(u32 id, char *buf)
+static size_t print_caller(id: u32, char *buf)
 {
 	char caller[12];
 
@@ -1373,18 +1384,18 @@ static size_t print_caller(u32 id, char *buf)
 // #define print_caller(id, buf) 0
 // #endif
 
-static size_t info_print_prefix(const struct printk_info  *info, bool syslog,
-				bool time, char *buf)
+static size_t info_print_prefix(const struct printk_info  *info, syslog: bool,
+				time: bool, char *buf)
 {
 	size_t len = 0;
 
 	if (syslog)
-		len = print_syslog((info->facility << 3) | info->level, buf);
+		len = print_syslog(((*info).facility << 3) | (*info).level, buf);
 
 	if (time)
-		len += print_time(info->ts_nsec, buf + len);
+		len += print_time((*info).ts_nsec, buf + len);
 
-	len += print_caller(info->caller_id, buf + len);
+	len += print_caller((*info).caller_id, buf + len);
 
 	if (IS_ENABLED(CONFIG_PRINTK_CALLER) || time) {
 		buf[len++] = ' ';
@@ -1411,12 +1422,12 @@ static size_t info_print_prefix(const struct printk_info  *info, bool syslog,
  * prefixes and the newline. The terminator is not counted. The dropped
  * line(s) are not counted.
  */
-static size_t record_print_text(struct printk_record *r, bool syslog,
-				bool time)
+static size_t record_print_text(printk_record *r, syslog: bool,
+				time: bool)
 {
-	size_t text_len = r->info->text_len;
-	size_t buf_size = r->text_buf_size;
-	char *text = r->text_buf;
+	size_t text_len = (*(*r).info).text_len;
+	size_t buf_size = (*r).text_buf_size;
+	char *text = (*r).text_buf;
 	char prefix[PRINTK_PREFIX_MAX];
 	bool truncated = false;
 	size_t prefix_len;
@@ -1431,7 +1442,7 @@ static size_t record_print_text(struct printk_record *r, bool syslog,
 	if (text_len > buf_size)
 		text_len = buf_size;
 
-	prefix_len = info_print_prefix(r->info, syslog, time, prefix);
+	prefix_len = info_print_prefix((*r).info, syslog, time, prefix);
 
 	/*
 	 * @text_len: bytes of unprocessed text
@@ -1507,14 +1518,14 @@ static size_t record_print_text(struct printk_record *r, bool syslog,
 	 * not counted in the return value.
 	 */
 	if (buf_size > 0)
-		r->text_buf[len] = 0;
+		(*r).text_buf[len] = 0;
 
 	return len;
 }
 
-static size_t get_record_print_text_size(struct printk_info *info,
-					 unsigned int line_count,
-					 bool syslog, bool time)
+static size_t get_record_print_text_size(printk_info *info,
+					 line_count: core::ffi::c_uint,
+					 syslog: bool, time: bool)
 {
 	char prefix[PRINTK_PREFIX_MAX];
 	size_t prefix_len;
@@ -1526,7 +1537,7 @@ static size_t get_record_print_text_size(struct printk_info *info,
 	 * newlines are already within the text, but a final trailing
 	 * newline will be added.
 	 */
-	return ((prefix_len * line_count) + info->text_len + 1);
+	return ((prefix_len * line_count) + (*info).text_len + 1);
 }
 
 /*
@@ -1536,20 +1547,20 @@ static size_t get_record_print_text_size(struct printk_info *info,
  * @max_seq is simply an upper bound and does not need to exist. If the caller
  * does not require an upper bound, -1 can be used for @max_seq.
  */
-static u64 find_first_fitting_seq(u64 start_seq, u64 max_seq, size_t size,
-				  bool syslog, bool time)
+static u64 find_first_fitting_seq(start_seq: u64, max_seq: u64, size_t size,
+				  syslog: bool, time: bool)
 {
 	struct printk_info info;
-	unsigned int line_count;
+	core::ffi::c_uint line_count;
 	size_t len = 0;
 	u64 seq;
 
 	/* Determine the size of the records up to @max_seq. */
-	prb_for_each_info(start_seq, prb, seq, &info, &line_count) {
+	prb_for_each_info!(start_seq, prb, seq, &info, &line_count, {
 		if (info.seq >= max_seq)
 			break;
 		len += get_record_print_text_size(&info, line_count, syslog, time);
-	}
+	});
 
 	/*
 	 * Adjust the upper bound for the next loop to avoid subtracting
@@ -1564,11 +1575,11 @@ static u64 find_first_fitting_seq(u64 start_seq, u64 max_seq, size_t size,
 	 * might appear and get lost in the meantime. This is a best effort
 	 * that prevents an infinite loop that could occur with a retry.
 	 */
-	prb_for_each_info(start_seq, prb, seq, &info, &line_count) {
+	prb_for_each_info!(start_seq, prb, seq, &info, &line_count, {
 		if (len <= size || info.seq >= max_seq)
 			break;
 		len -= get_record_print_text_size(&info, line_count, syslog, time);
-	}
+	});
 
 	return seq;
 }
@@ -1576,6 +1587,7 @@ static u64 find_first_fitting_seq(u64 start_seq, u64 max_seq, size_t size,
 /* The caller is responsible for making sure @size is greater than 0. */
 static int syslog_print(char __user *buf, int size)
 {
+	'out: {
 	struct printk_info info;
 	struct printk_record r;
 	char *text;
@@ -1613,7 +1625,7 @@ static int syslog_print(char __user *buf, int size)
 		mutex_lock(&syslog_lock);
 
 		if (len)
-			goto out;
+			break 'out;
 	} while (syslog_seq != seq);
 
 	/*
@@ -1628,9 +1640,9 @@ static int syslog_print(char __user *buf, int size)
 		if (!prb_read_valid(prb, syslog_seq, &r))
 			break;
 
-		if (r.info->seq != syslog_seq) {
+		if ((*r.info).seq != syslog_seq) {
 			/* message is gone, move to next valid one */
-			syslog_seq = r.info->seq;
+			syslog_seq = (*r.info).seq;
 			syslog_partial = 0;
 		}
 
@@ -1645,7 +1657,7 @@ static int syslog_print(char __user *buf, int size)
 		n = record_print_text(&r, true, syslog_time);
 		if (n - syslog_partial <= size) {
 			/* message fits into buffer, move forward */
-			syslog_seq = r.info->seq + 1;
+			syslog_seq = (*r.info).seq + 1;
 			n -= syslog_partial;
 			syslog_partial = 0;
 		} else if (!len){
@@ -1672,13 +1684,14 @@ static int syslog_print(char __user *buf, int size)
 		size -= n;
 		buf += n;
 	} while (size);
-out:
+	}
+	
 	mutex_unlock(&syslog_lock);
 	kfree(text);
 	return len;
 }
 
-static int syslog_print_all(char __user *buf, int size, bool clear)
+static int syslog_print_all(char __user *buf, int size, clear: bool)
 {
 	struct printk_info info;
 	struct printk_record r;
@@ -1701,7 +1714,7 @@ static int syslog_print_all(char __user *buf, int size, bool clear)
 
 	prb_rec_init_rd(&r, &info, text, PRINTK_MESSAGE_MAX);
 
-	prb_for_each_record(seq, prb, seq, &r) {
+	prb_for_each_record!(seq, prb, seq, &r, {
 		int textlen;
 
 		textlen = record_print_text(&r, true, time);
@@ -1718,7 +1731,7 @@ static int syslog_print_all(char __user *buf, int size, bool clear)
 
 		if (len < 0)
 			break;
-	}
+	});
 
 	if (clear) {
 		mutex_lock(&syslog_lock);
@@ -1825,15 +1838,15 @@ int do_syslog(int type, char __user *buf, int len, int source)
 			error = prb_next_seq(prb) - syslog_seq;
 		} else {
 			bool time = syslog_partial ? syslog_time : printk_time;
-			unsigned int line_count;
+			core::ffi::c_uint line_count;
 			u64 seq;
 
-			prb_for_each_info(syslog_seq, prb, seq, &info,
-					  &line_count) {
+			prb_for_each_info!(syslog_seq, prb, seq, &info,
+					  &line_count, {
 				error += get_record_print_text_size(&info, line_count,
 								    true, time);
 				time = printk_time;
-			}
+			});
 			error -= syslog_partial;
 		}
 		mutex_unlock(&syslog_lock);
@@ -1862,7 +1875,7 @@ SYSCALL_DEFINE3(syslog, int, type, char __user *, buf, int, len)
 
 // #ifdef CONFIG_LOCKDEP
 static struct lockdep_map console_owner_dep_map = {
-	.name = "console_owner"
+	name: "console_owner"
 };
 // #endif
 
@@ -1881,6 +1894,7 @@ static bool console_waiter;
  */
 void console_lock_spinning_enable(void)
 {
+	'lockdep: {
 	/*
 	 * Do not use spinning in panic(). The panic CPU wants to keep the lock.
 	 * Non-panic CPUs abandon the flush anyway.
@@ -1891,13 +1905,13 @@ void console_lock_spinning_enable(void)
 	 * reports without handling races a lockless way.
 	 */
 	if (panic_in_progress())
-		goto lockdep;
+		break 'lockdep;
 
 	raw_spin_lock(&console_owner_lock);
 	console_owner = current;
 	raw_spin_unlock(&console_owner_lock);
-
-lockdep:
+	}
+	
 	/* The waiter may spin on us after setting console_owner */
 	spin_acquire(&console_owner_dep_map, 0, 0, _THIS_IP_);
 }
@@ -1982,7 +1996,7 @@ static int console_trylock_spinning(void)
 	struct task_struct *owner = NULL;
 	bool waiter;
 	bool spin = false;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	if (console_trylock())
 		return 1;
@@ -2094,32 +2108,32 @@ static u8 *__printk_recursion_counter(void)
  * that is passed to printk_exit_irqrestore().
  */
 // #define printk_enter_irqsave(recursion_ptr, flags)	\
-({							\
-	bool success = true;				\
-							\
-	typecheck(u8 *, recursion_ptr);			\
-	local_irq_save(flags);				\
-	(recursion_ptr) = __printk_recursion_counter();	\
-	if (*(recursion_ptr) > PRINTK_MAX_RECURSION) {	\
-		local_irq_restore(flags);		\
-		success = false;			\
-	} else {					\
-		(*(recursion_ptr))++;			\
-	}						\
-	success;					\
-})
+// ({							\
+// 	bool success = true;				\
+// 							\
+// 	typecheck(u8 *, recursion_ptr);			\
+// 	local_irq_save(flags);				\
+// 	(recursion_ptr) = __printk_recursion_counter();	\
+// 	if (*(recursion_ptr) > PRINTK_MAX_RECURSION) {	\
+// 		local_irq_restore(flags);		\
+// 		success = false;			\
+// 	} else {					\
+// 		(*(recursion_ptr))++;			\
+// 	}						\
+// 	success;					\
+// })
 
 /* Exit recursion tracking, restoring interrupts. */
 // #define printk_exit_irqrestore(recursion_ptr, flags)	\
-	do {						\
-		typecheck(u8 *, recursion_ptr);		\
-		(*(recursion_ptr))--;			\
-		local_irq_restore(flags);		\
-	} while (0)
+// 	do {						\
+// 		typecheck(u8 *, recursion_ptr);		\
+// 		(*(recursion_ptr))--;			\
+// 		local_irq_restore(flags);		\
+// 	} while (0)
 
 int printk_delay_msec __read_mostly;
 
-static inline void printk_delay(int level)
+void printk_delay(int level)
 {
 	boot_delay_msec(level);
 
@@ -2135,7 +2149,7 @@ static inline void printk_delay(int level)
 
 // #define CALLER_ID_MASK 0x80000000
 
-static inline u32 printk_caller_id(void)
+u32 printk_caller_id(void)
 {
 	return in_task() ? task_pid_nr(current) :
 		CALLER_ID_MASK + smp_processor_id();
@@ -2151,16 +2165,16 @@ static u32 printk_caller_id2(void)
 
 static pid_t printk_info_get_pid(const struct printk_info *info)
 {
-	u32 caller_id = info->caller_id;
-	u32 caller_id2 = info->caller_id2;
+	u32 caller_id = (*info).caller_id;
+	u32 caller_id2 = (*info).caller_id2;
 
 	return caller_id & CALLER_ID_MASK ? caller_id2 : caller_id;
 }
 
 static int printk_info_get_cpu(const struct printk_info *info)
 {
-	u32 caller_id = info->caller_id;
-	u32 caller_id2 = info->caller_id2;
+	u32 caller_id = (*info).caller_id;
+	u32 caller_id2 = (*info).caller_id2;
 
 	return ((caller_id & CALLER_ID_MASK ?
 		 caller_id : caller_id2) & ~CALLER_ID_MASK);
@@ -2185,7 +2199,7 @@ static int printk_info_get_cpu(const struct printk_info *info)
  * Return: The length of the parsed level and control flags.
  */
 u16 printk_parse_prefix(const char *text, int *level,
-			enum printk_info_flags *flags)
+			printk_info_flags *flags)
 {
 	u16 prefix_len = 0;
 	int kern_level;
@@ -2213,8 +2227,8 @@ u16 printk_parse_prefix(const char *text, int *level,
 }
 
 __printf(5, 0)
-static u16 printk_sprint(char *text, u16 size, int facility,
-			 enum printk_info_flags *flags, const char *fmt,
+static u16 printk_sprint(char *text, size: u16, int facility,
+			 printk_info_flags *flags, const char *fmt,
 			 va_list args)
 {
 	u16 text_len;
@@ -2244,24 +2258,24 @@ static u16 printk_sprint(char *text, u16 size, int facility,
 }
 
 // #ifdef CONFIG_PRINTK_EXECUTION_CTX
-static void printk_store_execution_ctx(struct printk_info *info)
+static void printk_store_execution_ctx(printk_info *info)
 {
-	info->caller_id2 = printk_caller_id2();
-	get_task_comm(info->comm, current);
+	(*info).caller_id2 = printk_caller_id2();
+	get_task_comm((*info).comm, current);
 }
 
-static void pmsg_load_execution_ctx(struct printk_message *pmsg,
+static void pmsg_load_execution_ctx(printk_message *pmsg,
 				    const struct printk_info *info)
 {
-	pmsg->cpu = printk_info_get_cpu(info);
-	pmsg->pid = printk_info_get_pid(info);
-	memcpy(pmsg->comm, info->comm, sizeof(pmsg->comm));
-	static_assert(sizeof(pmsg->comm) == sizeof(info->comm));
+	(*pmsg).cpu = printk_info_get_cpu(info);
+	(*pmsg).pid = printk_info_get_pid(info);
+	memcpy((*pmsg).comm, (*info).comm, sizeof((*pmsg).comm));
+	static_assert(sizeof((*pmsg).comm) == sizeof((*info).comm));
 }
 // #else
-static void printk_store_execution_ctx(struct printk_info *info) {}
+static void printk_store_execution_ctx(printk_info *info) {}
 
-static void pmsg_load_execution_ctx(struct printk_message *pmsg,
+static void pmsg_load_execution_ctx(printk_message *pmsg,
 				    const struct printk_info *info) {}
 // #endif
 
@@ -2270,10 +2284,11 @@ int vprintk_store(int facility, int level,
 		  const struct dev_printk_info *dev_info,
 		  const char *fmt, va_list args)
 {
+	'out: {
 	struct prb_reserved_entry e;
 	enum printk_info_flags flags = 0;
 	struct printk_record r;
-	unsigned long irqflags;
+	core::ffi::c_ulong irqflags;
 	u16 trunc_msg_len = 0;
 	char prefix_buf[8];
 	u8 *recursion_ptr;
@@ -2326,22 +2341,22 @@ int vprintk_store(int facility, int level,
 	if (flags & LOG_CONT) {
 		prb_rec_init_wr(&r, reserve_size);
 		if (prb_reserve_in_last(&e, prb, &r, caller_id, PRINTKRB_RECORD_MAX)) {
-			text_len = printk_sprint(&r.text_buf[r.info->text_len], reserve_size,
+			text_len = printk_sprint(&r.text_buf[(*r.info).text_len], reserve_size,
 						 facility, &flags, fmt, args);
-			r.info->text_len += text_len;
+			(*r.info).text_len += text_len;
 
 			if (flags & LOG_FORCE_CON)
-				r.info->flags |= LOG_FORCE_CON;
+				(*r.info).flags |= LOG_FORCE_CON;
 
 			if (flags & LOG_NEWLINE) {
-				r.info->flags |= LOG_NEWLINE;
+				(*r.info).flags |= LOG_NEWLINE;
 				prb_final_commit(&e);
 			} else {
 				prb_commit(&e);
 			}
 
 			ret = text_len;
-			goto out;
+			break 'out;
 		}
 	}
 
@@ -2357,21 +2372,21 @@ int vprintk_store(int facility, int level,
 
 		prb_rec_init_wr(&r, reserve_size + trunc_msg_len);
 		if (!prb_reserve(&e, prb, &r))
-			goto out;
+			break 'out;
 	}
 
 	/* fill message */
 	text_len = printk_sprint(&r.text_buf[0], reserve_size, facility, &flags, fmt, args);
 	if (trunc_msg_len)
 		memcpy(&r.text_buf[text_len], trunc_msg, trunc_msg_len);
-	r.info->text_len = text_len + trunc_msg_len;
-	r.info->facility = facility;
-	r.info->level = level & 7;
-	r.info->flags = flags & 0x1f;
-	r.info->ts_nsec = ts_nsec;
-	r.info->caller_id = caller_id;
+	(*r.info).text_len = text_len + trunc_msg_len;
+	(*r.info).facility = facility;
+	(*r.info).level = level & 7;
+	(*r.info).flags = flags & 0x1f;
+	(*r.info).ts_nsec = ts_nsec;
+	(*r.info).caller_id = caller_id;
 	if (dev_info)
-		memcpy(&r.info->dev_info, dev_info, sizeof(r.info->dev_info));
+		memcpy((*&r.info).dev_info, dev_info, sizeof((*r.info).dev_info));
 	printk_store_execution_ctx(r.info);
 
 	/* A message without a trailing newline can be continued. */
@@ -2381,7 +2396,8 @@ int vprintk_store(int facility, int level,
 		prb_final_commit(&e);
 
 	ret = text_len + trunc_msg_len;
-out:
+	}
+	
 	printk_exit_irqrestore(recursion_ptr, irqflags);
 	return ret;
 }
@@ -2508,7 +2524,7 @@ asmlinkage __visible int _printk(const char *fmt, ...)
 }
 EXPORT_SYMBOL(_printk);
 
-static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress);
+static bool __pr_flush(console *con, int timeout_ms, reset_on_progress: bool);
 
 // #else /* CONFIG_PRINTK */
 
@@ -2520,7 +2536,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
 
 static u64 syslog_seq;
 
-static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress) { return true; }
+static bool __pr_flush(console *con, int timeout_ms, reset_on_progress: bool) { return true; }
 
 // #endif /* CONFIG_PRINTK */
 
@@ -2540,11 +2556,11 @@ asmlinkage __visible void early_printk(const char *fmt, ...)
 	n = vscnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 
-	early_console->write(early_console, buf, n);
+	(*early_console).write(early_console, buf, n);
 }
 // #endif
 
-static void set_user_specified(struct console_cmdline *c, bool user_specified)
+static void set_user_specified(console_cmdline *c, user_specified: bool)
 {
 	if (!user_specified)
 		return;
@@ -2553,14 +2569,14 @@ static void set_user_specified(struct console_cmdline *c, bool user_specified)
 	 * @c console was defined by the user on the command line.
 	 * Do not clear when added twice also by SPCR or the device tree.
 	 */
-	c->user_specified = true;
+	(*c).user_specified = true;
 	/* At least one console defined by the user on the command line. */
 	console_set_on_cmdline = 1;
 }
 
 static int __add_preferred_console(const char *name, const short idx,
 				   const char *devname, char *options,
-				   char *brl_options, bool user_specified)
+				   char *brl_options, user_specified: bool)
 {
 	struct console_cmdline *c;
 	int i;
@@ -2582,10 +2598,10 @@ static int __add_preferred_console(const char *name, const short idx,
 	 *	if we have a slot free.
 	 */
 	for (i = 0, c = console_cmdline;
-	     i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
+	     i < MAX_CMDLINECONSOLES && ((*c).name[0] || (*c).devname[0]);
 	     i++, c++) {
-		if ((name && strcmp(c->name, name) == 0 && c->index == idx) ||
-		    (devname && strcmp(c->devname, devname) == 0)) {
+		if ((name && strcmp((*c).name, name) == 0 && (*c).index == idx) ||
+		    (devname && strcmp((*c).devname, devname) == 0)) {
 			if (!brl_options)
 				preferred_console = i;
 			set_user_specified(c, user_specified);
@@ -2597,14 +2613,14 @@ static int __add_preferred_console(const char *name, const short idx,
 	if (!brl_options)
 		preferred_console = i;
 	if (name)
-		strscpy(c->name, name);
+		strscpy((*c).name, name);
 	if (devname)
-		strscpy(c->devname, devname);
-	c->options = options;
+		strscpy((*c).devname, devname);
+	(*c).options = options;
 	set_user_specified(c, user_specified);
 	braille_set_options(c, brl_options);
 
-	c->index = idx;
+	(*c).index = idx;
 	return 0;
 }
 
@@ -2736,13 +2752,13 @@ int match_devname_and_update_preferred_console(const char *devname,
 	if (!devname || !strlen(devname) || !name || !strlen(name) || idx < 0)
 		return -EINVAL;
 
-	for (i = 0; i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
+	for (i = 0; i < MAX_CMDLINECONSOLES && ((*c).name[0] || (*c).devname[0]);
 	     i++, c++) {
-		if (!strcmp(devname, c->devname)) {
+		if (!strcmp(devname, (*c).devname)) {
 			pr_info("associate the preferred console \"%s\" with \"%s%d\"\n",
 				devname, name, idx);
-			strscpy(c->name, name);
-			c->index = idx;
+			strscpy((*c).name, name);
+			(*c).index = idx;
 			return 0;
 		}
 	}
@@ -2803,7 +2819,7 @@ void console_suspend_all(void)
 
 	console_list_lock();
 	for_each_console(con)
-		console_srcu_write_flags(con, con->flags | CON_SUSPENDED);
+		console_srcu_write_flags(con, (*con).flags | CON_SUSPENDED);
 	console_list_unlock();
 
 	/*
@@ -2830,7 +2846,7 @@ void console_resume_all(void)
 	if (console_suspend_enabled) {
 		console_list_lock();
 		for_each_console(con)
-			console_srcu_write_flags(con, con->flags & ~CON_SUSPENDED);
+			console_srcu_write_flags(con, (*con).flags & ~CON_SUSPENDED);
 		console_list_unlock();
 
 		/*
@@ -2861,7 +2877,7 @@ void console_resume_all(void)
  * This function is called when a new CPU comes online (or fails to come
  * up) or goes offline.
  */
-static int console_cpu_notify(unsigned int cpu)
+static int console_cpu_notify(cpu: core::ffi::c_uint)
 {
 	struct console_flush_type ft;
 
@@ -2947,13 +2963,13 @@ static void __console_unlock(void)
  * If @pmsg->pbufs->outbuf is modified, @pmsg->outbuf_len is updated.
  */
 __printf(2, 3)
-static void console_prepend_message(struct printk_message *pmsg, const char *fmt, ...)
+static void console_prepend_message(printk_message *pmsg, const char *fmt, ...)
 {
-	struct printk_buffers *pbufs = pmsg->pbufs;
-	const size_t scratchbuf_sz = sizeof(pbufs->scratchbuf);
-	const size_t outbuf_sz = sizeof(pbufs->outbuf);
-	char *scratchbuf = &pbufs->scratchbuf[0];
-	char *outbuf = &pbufs->outbuf[0];
+	struct printk_buffers *pbufs = (*pmsg).pbufs;
+	const size_t scratchbuf_sz = sizeof((*pbufs).scratchbuf);
+	const size_t outbuf_sz = sizeof((*pbufs).outbuf);
+	char *scratchbuf = (*&pbufs).scratchbuf[0];
+	char *outbuf = (*&pbufs).outbuf[0];
 	va_list args;
 	size_t len;
 
@@ -2970,15 +2986,15 @@ static void console_prepend_message(struct printk_message *pmsg, const char *fmt
 	if (WARN_ON_ONCE(len + PRINTK_PREFIX_MAX >= outbuf_sz))
 		return;
 
-	if (pmsg->outbuf_len + len >= outbuf_sz) {
+	if ((*pmsg).outbuf_len + len >= outbuf_sz) {
 		/* Truncate the message, but keep it terminated. */
-		pmsg->outbuf_len = outbuf_sz - (len + 1);
-		outbuf[pmsg->outbuf_len] = 0;
+		(*pmsg).outbuf_len = outbuf_sz - (len + 1);
+		outbuf[(*pmsg).outbuf_len] = 0;
 	}
 
-	memmove(outbuf + len, outbuf, pmsg->outbuf_len + 1);
+	memmove(outbuf + len, outbuf, (*pmsg).outbuf_len + 1);
 	memcpy(outbuf, scratchbuf, len);
-	pmsg->outbuf_len += len;
+	(*pmsg).outbuf_len += len;
 }
 
 /*
@@ -2989,7 +3005,7 @@ static void console_prepend_message(struct printk_message *pmsg, const char *fmt
  *
  * @dropped is the dropped count to report in the dropped message.
  */
-void console_prepend_dropped(struct printk_message *pmsg, unsigned long dropped)
+void console_prepend_dropped(printk_message *pmsg, dropped: core::ffi::c_ulong)
 {
 	console_prepend_message(pmsg, "** %lu printk messages dropped **\n", dropped);
 }
@@ -3000,7 +3016,7 @@ void console_prepend_dropped(struct printk_message *pmsg, unsigned long dropped)
  *
  * @pmsg is the printk message to prepend.
  */
-void console_prepend_replay(struct printk_message *pmsg)
+void console_prepend_replay(printk_message *pmsg)
 {
 	console_prepend_message(pmsg, "** replaying previous printk message **\n");
 }
@@ -3024,14 +3040,15 @@ void console_prepend_replay(struct printk_message *pmsg)
  * of @pmsg are valid. (See the documentation of struct printk_message
  * for information about the @pmsg fields.)
  */
-bool printk_get_next_message(struct printk_message *pmsg, u64 seq,
-			     bool is_extended, bool may_suppress)
+bool printk_get_next_message(printk_message *pmsg, seq: u64,
+			     is_extended: bool, may_suppress: bool)
 {
-	struct printk_buffers *pbufs = pmsg->pbufs;
-	const size_t scratchbuf_sz = sizeof(pbufs->scratchbuf);
-	const size_t outbuf_sz = sizeof(pbufs->outbuf);
-	char *scratchbuf = &pbufs->scratchbuf[0];
-	char *outbuf = &pbufs->outbuf[0];
+	'out: {
+	struct printk_buffers *pbufs = (*pmsg).pbufs;
+	const size_t scratchbuf_sz = sizeof((*pbufs).scratchbuf);
+	const size_t outbuf_sz = sizeof((*pbufs).outbuf);
+	char *scratchbuf = (*&pbufs).scratchbuf[0];
+	char *outbuf = (*&pbufs).outbuf[0];
 	struct printk_info info;
 	struct printk_record r;
 	size_t len = 0;
@@ -3052,27 +3069,28 @@ bool printk_get_next_message(struct printk_message *pmsg, u64 seq,
 	if (!prb_read_valid(prb, seq, &r))
 		return false;
 
-	pmsg->seq = r.info->seq;
-	pmsg->dropped = r.info->seq - seq;
-	force_con = r.info->flags & LOG_FORCE_CON;
+	(*pmsg).seq = (*r.info).seq;
+	(*pmsg).dropped = (*r.info).seq - seq;
+	force_con = (*r.info).flags & LOG_FORCE_CON;
 	pmsg_load_execution_ctx(pmsg, r.info);
 
 	/*
 	 * Skip records that are not forced to be printed on consoles and that
 	 * has level above the console loglevel.
 	 */
-	if (!force_con && may_suppress && suppress_message_printing(r.info->level))
-		goto out;
+	if (!force_con && may_suppress && suppress_message_printing((*r.info).level))
+		break 'out;
 
 	if (is_extended) {
 		len = info_print_ext_header(outbuf, outbuf_sz, r.info);
 		len += msg_print_ext_body(outbuf + len, outbuf_sz - len,
-					  &r.text_buf[0], r.info->text_len, &r.info->dev_info);
+					  &r.text_buf[0], (*r.info).text_len, (*&r.info).dev_info);
 	} else {
 		len = record_print_text(&r, console_msg_format & MSG_FORMAT_SYSLOG, printk_time);
 	}
-out:
-	pmsg->outbuf_len = len;
+	}
+	
+	(*pmsg).outbuf_len = len;
 	return true;
 }
 
@@ -3085,17 +3103,17 @@ out:
  * lockdep that a sleeping spin lock (spinlock_t) is valid here.
  */
 // #ifdef CONFIG_PREEMPT_RT
-static inline void printk_legacy_allow_spinlock_enter(void) { }
-static inline void printk_legacy_allow_spinlock_exit(void) { }
+void printk_legacy_allow_spinlock_enter(void) { }
+void printk_legacy_allow_spinlock_exit(void) { }
 // #else
 static DEFINE_WAIT_OVERRIDE_MAP(printk_legacy_map, LD_WAIT_CONFIG);
 
-static inline void printk_legacy_allow_spinlock_enter(void)
+void printk_legacy_allow_spinlock_enter(void)
 {
 	lock_map_acquire_try(&printk_legacy_map);
 }
 
-static inline void printk_legacy_allow_spinlock_exit(void)
+void printk_legacy_allow_spinlock_exit(void)
 {
 	lock_map_release(&printk_legacy_map);
 }
@@ -3123,31 +3141,32 @@ struct printk_buffers printk_shared_pbufs;
  *
  * Requires the console_lock and the SRCU read lock.
  */
-static bool console_emit_next_record(struct console *con, bool *handover, int cookie)
+static bool console_emit_next_record(console *con, bool *handover, int cookie)
 {
+	'skip: {
 	bool is_extended = console_srcu_read_flags(con) & CON_EXTENDED;
 	char *outbuf = &printk_shared_pbufs.outbuf[0];
 	struct printk_message pmsg = {
-		.pbufs = &printk_shared_pbufs,
+		pbufs: &printk_shared_pbufs,
 	};
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	*handover = false;
 
-	if (!printk_get_next_message(&pmsg, con->seq, is_extended, true))
+	if (!printk_get_next_message(&pmsg, (*con).seq, is_extended, true))
 		return false;
 
-	con->dropped += pmsg.dropped;
+	(*con).dropped += pmsg.dropped;
 
 	/* Skip messages of formatted length 0. */
 	if (pmsg.outbuf_len == 0) {
-		con->seq = pmsg.seq + 1;
-		goto skip;
+		(*con).seq = pmsg.seq + 1;
+		break 'skip;
 	}
 
-	if (con->dropped && !is_extended) {
-		console_prepend_dropped(&pmsg, con->dropped);
-		con->dropped = 0;
+	if ((*con).dropped && !is_extended) {
+		console_prepend_dropped(&pmsg, (*con).dropped);
+		(*con).dropped = 0;
 	}
 
 	/* Write everything out to the hardware. */
@@ -3160,8 +3179,8 @@ static bool console_emit_next_record(struct console *con, bool *handover, int co
 		 * or lockdep complaints.
 		 */
 
-		con->write(con, outbuf, pmsg.outbuf_len);
-		con->seq = pmsg.seq + 1;
+		(*con).write(con, outbuf, pmsg.outbuf_len);
+		(*con).seq = pmsg.seq + 1;
 	} else {
 		/*
 		 * While actively printing out messages, if another printk()
@@ -3180,29 +3199,30 @@ static bool console_emit_next_record(struct console *con, bool *handover, int co
 		stop_critical_timings();
 
 		printk_legacy_allow_spinlock_enter();
-		con->write(con, outbuf, pmsg.outbuf_len);
+		(*con).write(con, outbuf, pmsg.outbuf_len);
 		printk_legacy_allow_spinlock_exit();
 
 		start_critical_timings();
 
-		con->seq = pmsg.seq + 1;
+		(*con).seq = pmsg.seq + 1;
 
 		*handover = console_lock_spinning_disable_and_check(cookie);
 		printk_safe_exit_irqrestore(flags);
 	}
-skip:
+	}
+	
 	return true;
 }
 
 // #else
 
-static bool console_emit_next_record(struct console *con, bool *handover, int cookie)
+static bool console_emit_next_record(console *con, bool *handover, int cookie)
 {
 	*handover = false;
 	return false;
 }
 
-static inline void printk_kthreads_check_locked(void) { }
+void printk_kthreads_check_locked(void) { }
 
 // #endif /* CONFIG_PRINTK */
 
@@ -3231,9 +3251,11 @@ static inline void printk_kthreads_check_locked(void) { }
  *
  * Requires the console_lock.
  */
-static bool console_flush_one_record(bool do_cond_resched, u64 *next_seq, bool *handover,
+static bool console_flush_one_record(do_cond_resched: bool, u64 *next_seq, bool *handover,
 				     bool *try_again)
 {
+	'fail: {
+	'fail_srcu: {
 	struct console_flush_type ft;
 	bool any_usable = false;
 	struct console *con;
@@ -3244,7 +3266,7 @@ static bool console_flush_one_record(bool do_cond_resched, u64 *next_seq, bool *
 	printk_get_console_flush_type(&ft);
 
 	cookie = console_srcu_read_lock();
-	for_each_console_srcu(con) {
+	for_each_console_srcu!(con, {
 		short flags = console_srcu_read_flags(con);
 		u64 printk_seq;
 		bool progress;
@@ -3273,7 +3295,7 @@ static bool console_flush_one_record(bool do_cond_resched, u64 *next_seq, bool *
 		 * is already released.
 		 */
 		if (*handover)
-			goto fail;
+			break 'fail;
 
 		/*
 		 * @con can be used here now that it is certain that this
@@ -3282,7 +3304,7 @@ static bool console_flush_one_record(bool do_cond_resched, u64 *next_seq, bool *
 		if (flags & CON_NBCON)
 			printk_seq = nbcon_seq_read(con);
 		else
-			printk_seq = con->seq;
+			printk_seq = (*con).seq;
 
 		/* Track the next of the highest seq flushed. */
 		if (printk_seq > *next_seq)
@@ -3299,18 +3321,19 @@ static bool console_flush_one_record(bool do_cond_resched, u64 *next_seq, bool *
 
 		/* Allow panic_cpu to take over the consoles safely. */
 		if (panic_on_other_cpu())
-			goto fail_srcu;
+			break 'fail_srcu;
 
 		if (do_cond_resched)
 			cond_resched();
-	}
+	});
 	console_srcu_read_unlock(cookie);
 
 	return any_usable;
-
-fail_srcu:
+	}
+	
 	console_srcu_read_unlock(cookie);
-fail:
+	}
+	
 	*try_again = false;
 	return false;
 }
@@ -3338,7 +3361,7 @@ fail:
  *
  * Requires the console_lock.
  */
-static bool console_flush_all(bool do_cond_resched, u64 *next_seq, bool *handover)
+static bool console_flush_all(do_cond_resched: bool, u64 *next_seq, bool *handover)
 {
 	bool try_again;
 	bool ret;
@@ -3436,15 +3459,15 @@ void console_unblank(void)
 	 * @oops_in_progress is set.
 	 */
 	cookie = console_srcu_read_lock();
-	for_each_console_srcu(c) {
+	for_each_console_srcu!(c, {
 		if (!console_is_usable(c, console_srcu_read_flags(c), true))
 			continue;
 
-		if (c->unblank) {
+		if ((*c).unblank) {
 			found_unblank = true;
 			break;
 		}
-	}
+	});
 	console_srcu_read_unlock(cookie);
 	if (!found_unblank)
 		return;
@@ -3476,13 +3499,13 @@ void console_unblank(void)
 	console_may_schedule = 0;
 
 	cookie = console_srcu_read_lock();
-	for_each_console_srcu(c) {
+	for_each_console_srcu!(c, {
 		if (!console_is_usable(c, console_srcu_read_flags(c), true))
 			continue;
 
-		if (c->unblank)
-			c->unblank();
-	}
+		if ((*c).unblank)
+			(*c).unblank();
+	});
 	console_srcu_read_unlock(cookie);
 
 	console_unlock();
@@ -3508,7 +3531,7 @@ static void __console_rewind_all(void)
 	seq = prb_first_valid_seq(prb);
 
 	cookie = console_srcu_read_lock();
-	for_each_console_srcu(c) {
+	for_each_console_srcu!(c, {
 		flags = console_srcu_read_flags(c);
 
 		if (flags & CON_NBCON) {
@@ -3519,9 +3542,9 @@ static void __console_rewind_all(void)
 			 * console_lock(). On panic, legacy consoles are
 			 * only best effort.
 			 */
-			c->seq = seq;
+			(*c).seq = seq;
 		}
-	}
+	});
 	console_srcu_read_unlock(cookie);
 }
 
@@ -3531,7 +3554,7 @@ static void __console_rewind_all(void)
  *
  * Immediately output all pending messages no matter what.
  */
-void console_flush_on_panic(enum con_flush_mode mode)
+void console_flush_on_panic(con_flush_mode mode)
 {
 	struct console_flush_type ft;
 	bool handover;
@@ -3583,13 +3606,13 @@ struct tty_driver *console_device(int *index)
 	console_lock();
 
 	cookie = console_srcu_read_lock();
-	for_each_console_srcu(c) {
-		if (!c->device)
+	for_each_console_srcu!(c, {
+		if ((*!c).device)
 			continue;
-		driver = c->device(c, index);
+		driver = (*c).device(c, index);
 		if (driver)
 			break;
-	}
+	});
 	console_srcu_read_unlock(cookie);
 
 	console_unlock();
@@ -3601,11 +3624,11 @@ struct tty_driver *console_device(int *index)
  * serial drivers can suspend console output before suspending a port, and can
  * re-enable output afterwards.
  */
-void console_suspend(struct console *console)
+void console_suspend(console *console)
 {
 	__pr_flush(console, 1000, true);
 	console_list_lock();
-	console_srcu_write_flags(console, console->flags & ~CON_ENABLED);
+	console_srcu_write_flags(console, (*console).flags & ~CON_ENABLED);
 	console_list_unlock();
 
 	/*
@@ -3618,14 +3641,14 @@ void console_suspend(struct console *console)
 }
 EXPORT_SYMBOL(console_suspend);
 
-void console_resume(struct console *console)
+void console_resume(console *console)
 {
 	struct console_flush_type ft;
 	bool is_nbcon;
 
 	console_list_lock();
-	console_srcu_write_flags(console, console->flags | CON_ENABLED);
-	is_nbcon = console->flags & CON_NBCON;
+	console_srcu_write_flags(console, (*console).flags | CON_ENABLED);
+	is_nbcon = (*console).flags & CON_NBCON;
 	console_list_unlock();
 
 	/*
@@ -3646,7 +3669,7 @@ void console_resume(struct console *console)
 EXPORT_SYMBOL(console_resume);
 
 // #ifdef CONFIG_PRINTK
-static int unregister_console_locked(struct console *console);
+static int unregister_console_locked(console *console);
 
 /* True when system boot is far enough to create printer threads. */
 bool printk_kthreads_ready __ro_after_init;
@@ -3666,7 +3689,7 @@ static bool legacy_kthread_should_wakeup(void)
 	printk_get_console_flush_type(&ft);
 
 	cookie = console_srcu_read_lock();
-	for_each_console_srcu(con) {
+	for_each_console_srcu!(con, {
 		short flags = console_srcu_read_flags(con);
 		u64 printk_seq;
 
@@ -3688,14 +3711,14 @@ static bool legacy_kthread_should_wakeup(void)
 			 * It is safe to read @seq because only this
 			 * thread context updates @seq.
 			 */
-			printk_seq = con->seq;
+			printk_seq = (*con).seq;
 		}
 
 		if (prb_read_valid(prb, printk_seq, NULL)) {
 			ret = true;
 			break;
 		}
-	}
+	});
 	console_srcu_read_unlock(cookie);
 
 	return ret;
@@ -3705,8 +3728,8 @@ static int legacy_kthread_func(void *unused)
 {
 	bool try_again;
 
-wait_for_event:
-	wait_event_interruptible(legacy_wait, legacy_kthread_should_wakeup());
+    'wait_for_event: loop {
+    wait_event_interruptible(legacy_wait, legacy_kthread_should_wakeup());
 
 	do {
 		bool handover = false;
@@ -3722,7 +3745,9 @@ wait_for_event:
 
 	} while (try_again);
 
-	goto wait_for_event;
+	continue 'wait_for_event;
+        break;
+    }
 }
 
 static bool legacy_kthread_create(void)
@@ -3764,10 +3789,10 @@ static void printk_kthreads_shutdown(void *data)
 	if (printk_kthreads_running) {
 		printk_kthreads_running = false;
 
-		for_each_console(con) {
-			if (con->flags & CON_NBCON)
+		for_each_console!(con, {
+			if ((*con).flags & CON_NBCON)
 				nbcon_kthread_stop(con);
-		}
+		});
 
 		/*
 		 * The threads may have been stopped while printing a
@@ -3779,11 +3804,11 @@ static void printk_kthreads_shutdown(void *data)
 }
 
 static const struct syscore_ops printk_syscore_ops = {
-	.shutdown = printk_kthreads_shutdown,
+	shutdown: printk_kthreads_shutdown,
 };
 
 static struct syscore printk_syscore = {
-	.ops = &printk_syscore_ops,
+	ops: &printk_syscore_ops,
 };
 
 /*
@@ -3812,12 +3837,12 @@ static void printk_kthreads_check_locked(void)
 			 * are any nbcon consoles, they will set up their own
 			 * kthread.
 			 */
-			hlist_for_each_entry_safe(con, tmp, &console_list, node) {
-				if (con->flags & CON_NBCON)
+			hlist_for_each_entry_safe!(con, tmp, &console_list, node, {
+				if ((*con).flags & CON_NBCON)
 					continue;
 
 				unregister_console_locked(con);
-			}
+			});
 		}
 	} else if (printk_legacy_kthread) {
 		kthread_stop(printk_legacy_kthread);
@@ -3840,13 +3865,13 @@ static void printk_kthreads_check_locked(void)
 	if (printk_kthreads_running)
 		return;
 
-	hlist_for_each_entry_safe(con, tmp, &console_list, node) {
-		if (!(con->flags & CON_NBCON))
+	hlist_for_each_entry_safe!(con, tmp, &console_list, node, {
+		if (!((*con).flags & CON_NBCON))
 			continue;
 
 		if (!nbcon_kthread_create(con))
 			unregister_console_locked(con);
-	}
+	});
 
 	printk_kthreads_running = true;
 }
@@ -3877,16 +3902,16 @@ static int __init keep_bootcon_setup(char *str)
 
 early_param("keep_bootcon", keep_bootcon_setup);
 
-static int console_call_setup(struct console *newcon, char *options)
+static int console_call_setup(console *newcon, char *options)
 {
 	int err;
 
-	if (!newcon->setup)
+	if ((*!newcon).setup)
 		return 0;
 
 	/* Synchronize with possible boot console. */
 	console_lock();
-	err = newcon->setup(newcon, options);
+	err = (*newcon).setup(newcon, options);
 	console_unlock();
 
 	return err;
@@ -3898,31 +3923,31 @@ static int console_call_setup(struct console *newcon, char *options)
  * by either the command line or add_preferred_console() and
  * setup/enable it.
  */
-static int try_enable_preferred_console(struct console *newcon,
-					bool user_specified)
+static int try_enable_preferred_console(console *newcon,
+					user_specified: bool)
 {
 	struct console_cmdline *c;
 	int i, err;
 
 	for (i = 0, c = console_cmdline;
-	     i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
+	     i < MAX_CMDLINECONSOLES && ((*c).name[0] || (*c).devname[0]);
 	     i++, c++) {
 		/* Console not yet initialized? */
-		if (!c->name[0])
+		if ((*!c).name[0])
 			continue;
-		if (c->user_specified != user_specified)
+		if ((*c).user_specified != user_specified)
 			continue;
-		if (!newcon->match ||
-		    newcon->match(newcon, c->name, c->index, c->options) != 0) {
+		if ((*!newcon).match ||
+		    (*newcon).match(newcon, (*c).name, (*c).index, (*c).options) != 0) {
 			/* default matching */
-			BUILD_BUG_ON(sizeof(c->name) != sizeof(newcon->name));
-			if (strcmp(c->name, newcon->name) != 0)
+			BUILD_BUG_ON(sizeof((*c).name) != sizeof((*newcon).name));
+			if (strcmp((*c).name, (*newcon).name) != 0)
 				continue;
-			if (newcon->index >= 0 &&
-			    newcon->index != c->index)
+			if ((*newcon).index >= 0 &&
+			    (*newcon).index != (*c).index)
 				continue;
-			if (newcon->index < 0)
-				newcon->index = c->index;
+			if ((*newcon).index < 0)
+				(*newcon).index = c->index;
 
 			if (_braille_register_console(newcon, c))
 				return 0;
@@ -3941,7 +3966,7 @@ static int try_enable_preferred_console(struct console *newcon,
 }
 
 /* Try to enable the console unconditionally */
-static void try_enable_default_console(struct console *newcon)
+static void try_enable_default_console(console *newcon)
 {
 	if (newcon->index < 0)
 		newcon->index = 0;
@@ -3956,7 +3981,7 @@ static void try_enable_default_console(struct console *newcon)
 }
 
 /* Return the starting sequence number for a newly registered console. */
-static u64 get_init_console_seq(struct console *newcon, bool bootcon_registered)
+static u64 get_init_console_seq(console *newcon, bootcon_registered: bool)
 {
 	struct console *con;
 	bool handover;
@@ -4004,7 +4029,7 @@ static u64 get_init_console_seq(struct console *newcon, bool bootcon_registered)
 					console_lock();
 
 				init_seq = prb_next_seq(prb);
-				for_each_console(con) {
+				for_each_console!(con, {
 					u64 seq;
 
 					if (!(con->flags & CON_BOOT) ||
@@ -4019,7 +4044,7 @@ static u64 get_init_console_seq(struct console *newcon, bool bootcon_registered)
 
 					if (seq < init_seq)
 						init_seq = seq;
-				}
+				});
 			}
 
 			console_unlock();
@@ -4030,9 +4055,9 @@ static u64 get_init_console_seq(struct console *newcon, bool bootcon_registered)
 }
 
 // #define console_first()				\
-	hlist_entry(console_list.first, struct console, node)
+// 	hlist_entry(console_list.first, console, node)
 
-static int unregister_console_locked(struct console *console);
+static int unregister_console_locked(console *console);
 
 /*
  * The console driver calls this routine during kernel initialization
@@ -4053,35 +4078,36 @@ static int unregister_console_locked(struct console *console);
  *  - Once a "real" console is registered, any attempt to register a
  *    bootconsoles will be rejected
  */
-void register_console(struct console *newcon)
+void register_console(console *newcon)
 {
+	'unlock: {
 	bool use_device_lock = (newcon->flags & CON_NBCON) && newcon->write_atomic;
 	bool bootcon_registered = false;
 	bool realcon_registered = false;
 	struct console *con;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u64 init_seq;
 	int err;
 
 	console_list_lock();
 
-	for_each_console(con) {
+	for_each_console!(con, {
 		if (WARN(con == newcon, "console '%s%d' already registered\n",
 					 con->name, con->index)) {
-			goto unlock;
+			break 'unlock;
 		}
 
 		if (con->flags & CON_BOOT)
 			bootcon_registered = true;
 		else
 			realcon_registered = true;
-	}
+	});
 
 	/* Do not register boot consoles when there already is a real one. */
 	if ((newcon->flags & CON_BOOT) && realcon_registered) {
 		pr_info("Too late to register bootconsole %s%d\n",
 			newcon->name, newcon->index);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if (newcon->flags & CON_NBCON) {
@@ -4090,7 +4116,7 @@ void register_console(struct console *newcon)
 		 * before modifying any global data.
 		 */
 		if (!nbcon_alloc(newcon))
-			goto unlock;
+			break 'unlock;
 	}
 
 	/*
@@ -4131,7 +4157,7 @@ void register_console(struct console *newcon)
 	if (err || newcon->flags & CON_BRL) {
 		if (newcon->flags & CON_NBCON)
 			nbcon_free(newcon);
-		goto unlock;
+		break 'unlock;
 	}
 
 	/*
@@ -4215,27 +4241,28 @@ void register_console(struct console *newcon)
 	    !keep_bootcon) {
 		struct hlist_node *tmp;
 
-		hlist_for_each_entry_safe(con, tmp, &console_list, node) {
+		hlist_for_each_entry_safe!(con, tmp, &console_list, node, {
 			if (con->flags & CON_BOOT)
 				unregister_console_locked(con);
-		}
+		});
 	}
 
 	/* Changed console list, may require printer threads to start/stop. */
 	printk_kthreads_check_locked();
-unlock:
+	}
+	
 	console_list_unlock();
 }
 EXPORT_SYMBOL(register_console);
 
 /* Must be called under console_list_lock(). */
-static int unregister_console_locked(struct console *console)
+static int unregister_console_locked(console *console)
 {
 	bool use_device_lock = (console->flags & CON_NBCON) && console->write_atomic;
 	bool found_legacy_con = false;
 	bool found_nbcon_con = false;
 	bool found_boot_con = false;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	struct console *c;
 	int res;
 
@@ -4295,7 +4322,7 @@ static int unregister_console_locked(struct console *console)
 	 * With this console gone, the global flags tracking registered
 	 * console types may have changed. Update them.
 	 */
-	for_each_console(c) {
+	for_each_console!(c, {
 		if (c->flags & CON_BOOT)
 			found_boot_con = true;
 
@@ -4303,7 +4330,7 @@ static int unregister_console_locked(struct console *console)
 			found_nbcon_con = true;
 		else
 			found_legacy_con = true;
-	}
+	});
 	if (!found_boot_con)
 		have_boot_console = found_boot_con;
 	if (!found_legacy_con)
@@ -4326,7 +4353,7 @@ static int unregister_console_locked(struct console *console)
 	return res;
 }
 
-int unregister_console(struct console *console)
+int unregister_console(console *console)
 {
 	int res;
 
@@ -4343,7 +4370,7 @@ EXPORT_SYMBOL(unregister_console);
  *
  * Must be called under console_list_lock().
  */
-void console_force_preferred_locked(struct console *con)
+void console_force_preferred_locked(console *con)
 {
 	struct console *cur_pref_con;
 
@@ -4435,7 +4462,7 @@ static int __init printk_late_init(void)
 	int ret;
 
 	console_list_lock();
-	hlist_for_each_entry_safe(con, tmp, &console_list, node) {
+	hlist_for_each_entry_safe!(con, tmp, &console_list, node, {
 		if (!(con->flags & CON_BOOT))
 			continue;
 
@@ -4454,7 +4481,7 @@ static int __init printk_late_init(void)
 				con->name, con->index);
 			unregister_console_locked(con);
 		}
-	}
+	});
 	console_list_unlock();
 
 	ret = cpuhp_setup_state_nocalls(CPUHP_PRINTK_DEAD, "printk:dead", NULL,
@@ -4470,10 +4497,10 @@ late_initcall(printk_late_init);
 
 // #if defined CONFIG_PRINTK
 /* If @con is specified, only wait for that console. Otherwise wait for all. */
-static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progress)
+static bool __pr_flush(console *con, int timeout_ms, reset_on_progress: bool)
 {
-	unsigned long timeout_jiffies = msecs_to_jiffies(timeout_ms);
-	unsigned long remaining_jiffies = timeout_jiffies;
+	core::ffi::c_ulong timeout_jiffies = msecs_to_jiffies(timeout_ms);
+	core::ffi::c_ulong remaining_jiffies = timeout_jiffies;
 	struct console_flush_type ft;
 	struct console *c;
 	u64 last_diff = 0;
@@ -4501,8 +4528,8 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
 	}
 
 	for (;;) {
-		unsigned long begin_jiffies;
-		unsigned long slept_jiffies;
+		core::ffi::c_ulong begin_jiffies;
+		core::ffi::c_ulong slept_jiffies;
 
 		diff = 0;
 
@@ -4521,7 +4548,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
 		console_lock();
 
 		cookie = console_srcu_read_lock();
-		for_each_console_srcu(c) {
+		for_each_console_srcu!(c, {
 			if (con && con != c)
 				continue;
 
@@ -4545,7 +4572,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
 
 			if (printk_seq < seq)
 				diff += seq - printk_seq;
-		}
+		});
 		console_srcu_read_unlock(cookie);
 
 		if (diff != last_diff && reset_on_progress)
@@ -4585,7 +4612,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
  * Context: Process context. May sleep while acquiring console lock.
  * Return: true if all usable printers are caught up.
  */
-bool pr_flush(int timeout_ms, bool reset_on_progress)
+bool pr_flush(int timeout_ms, reset_on_progress: bool)
 {
 	return __pr_flush(NULL, timeout_ms, reset_on_progress);
 }
@@ -4598,7 +4625,7 @@ bool pr_flush(int timeout_ms, bool reset_on_progress)
 
 static DEFINE_PER_CPU(int, printk_pending);
 
-static void wake_up_klogd_work_func(struct irq_work *irq_work)
+static void wake_up_klogd_work_func(irq_work *irq_work)
 {
 	int pending = this_cpu_xchg(printk_pending, 0);
 
@@ -4616,7 +4643,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
 		wake_up_interruptible(&log_wait);
 }
 
-static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
+static DEFINE_PER_CPU(irq_work, wake_up_klogd_work) =
 	IRQ_WORK_INIT_LAZY(wake_up_klogd_work_func);
 
 static void __wake_up_klogd(int val)
@@ -4753,10 +4780,10 @@ EXPORT_SYMBOL(__printk_ratelimit);
  * milliseconds have elapsed since the last time printk_timed_ratelimit()
  * returned true.
  */
-bool printk_timed_ratelimit(unsigned long *caller_jiffies,
-			unsigned int interval_msecs)
+bool printk_timed_ratelimit(core::ffi::c_ulong *caller_jiffies,
+			interval_msecs: core::ffi::c_uint)
 {
-	unsigned long elapsed = jiffies - *caller_jiffies;
+	core::ffi::c_ulong elapsed = jiffies - *caller_jiffies;
 
 	if (*caller_jiffies && elapsed <= msecs_to_jiffies(interval_msecs))
 		return false;
@@ -4777,9 +4804,9 @@ static LIST_HEAD(dump_list);
  * structure will be called when the kernel oopses or panics and must be
  * set. Returns zero on success and %-EINVAL or %-EBUSY otherwise.
  */
-int kmsg_dump_register(struct kmsg_dumper *dumper)
+int kmsg_dump_register(kmsg_dumper *dumper)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int err = -EBUSY;
 
 	/* The dump callback needs to be set */
@@ -4806,9 +4833,9 @@ EXPORT_SYMBOL_GPL(kmsg_dump_register);
  * Removes a dump device from the system. Returns zero on success and
  * %-EINVAL otherwise.
  */
-int kmsg_dump_unregister(struct kmsg_dumper *dumper)
+int kmsg_dump_unregister(kmsg_dumper *dumper)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int err = -EINVAL;
 
 	spin_lock_irqsave(&dump_list_lock, flags);
@@ -4827,7 +4854,7 @@ EXPORT_SYMBOL_GPL(kmsg_dump_unregister);
 static bool always_kmsg_dump;
 module_param_named(always_kmsg_dump, always_kmsg_dump, bool, S_IRUGO | S_IWUSR);
 
-const char *kmsg_dump_reason_str(enum kmsg_dump_reason reason)
+const char *kmsg_dump_reason_str(kmsg_dump_reason reason)
 {
 	switch (reason) {
 	case KMSG_DUMP_PANIC:
@@ -4854,15 +4881,15 @@ EXPORT_SYMBOL_GPL(kmsg_dump_reason_str);
  * retrieve the kmsg records with kmsg_dump_get_line() or
  * kmsg_dump_get_buffer().
  */
-void kmsg_dump_desc(enum kmsg_dump_reason reason, const char *desc)
+void kmsg_dump_desc(kmsg_dump_reason reason, const char *desc)
 {
 	struct kmsg_dumper *dumper;
 	struct kmsg_dump_detail detail = {
-		.reason = reason,
-		.description = desc};
+		reason: reason,
+		description: desc};
 
 	rcu_read_lock();
-	list_for_each_entry_rcu(dumper, &dump_list, list) {
+	list_for_each_entry_rcu!(dumper, &dump_list, list, {
 		enum kmsg_dump_reason max_reason = dumper->max_reason;
 
 		/*
@@ -4878,7 +4905,7 @@ void kmsg_dump_desc(enum kmsg_dump_reason reason, const char *desc)
 
 		/* invoke dumper which will iterate over records */
 		dumper->dump(dumper, &detail);
-	}
+	});
 	rcu_read_unlock();
 }
 
@@ -4899,12 +4926,13 @@ void kmsg_dump_desc(enum kmsg_dump_reason reason, const char *desc)
  * A return value of FALSE indicates that there are no more records to
  * read.
  */
-bool kmsg_dump_get_line(struct kmsg_dump_iter *iter, bool syslog,
+bool kmsg_dump_get_line(kmsg_dump_iter *iter, syslog: bool,
 			char *line, size_t size, size_t *len)
 {
+	'out: {
 	u64 min_seq = latched_seq_read_nolock(&clear_seq);
 	struct printk_info info;
-	unsigned int line_count;
+	core::ffi::c_uint line_count;
 	struct printk_record r;
 	size_t l = 0;
 	bool ret = false;
@@ -4917,12 +4945,12 @@ bool kmsg_dump_get_line(struct kmsg_dump_iter *iter, bool syslog,
 	/* Read text or count text lines? */
 	if (line) {
 		if (!prb_read_valid(prb, iter->cur_seq, &r))
-			goto out;
+			break 'out;
 		l = record_print_text(&r, syslog, printk_time);
 	} else {
 		if (!prb_read_valid_info(prb, iter->cur_seq,
 					 &info, &line_count)) {
-			goto out;
+			break 'out;
 		}
 		l = get_record_print_text_size(&info, line_count, syslog,
 					       printk_time);
@@ -4931,7 +4959,8 @@ bool kmsg_dump_get_line(struct kmsg_dump_iter *iter, bool syslog,
 
 	iter->cur_seq = r.info->seq + 1;
 	ret = true;
-out:
+	}
+	
 	if (len)
 		*len = l;
 	return ret;
@@ -4957,9 +4986,10 @@ EXPORT_SYMBOL_GPL(kmsg_dump_get_line);
  * A return value of FALSE indicates that there are no more records to
  * read.
  */
-bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
+bool kmsg_dump_get_buffer(kmsg_dump_iter *iter, syslog: bool,
 			  char *buf, size_t size, size_t *len_out)
 {
+	'out: {
 	u64 min_seq = latched_seq_read_nolock(&clear_seq);
 	struct printk_info info;
 	struct printk_record r;
@@ -4970,7 +5000,7 @@ bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
 	bool time = printk_time;
 
 	if (!buf || !size)
-		goto out;
+		break 'out;
 
 	if (iter->cur_seq < min_seq)
 		iter->cur_seq = min_seq;
@@ -4984,7 +5014,7 @@ bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
 
 	/* last entry */
 	if (iter->cur_seq >= iter->next_seq)
-		goto out;
+		break 'out;
 
 	/*
 	 * Find first record that fits, including all following records,
@@ -5003,7 +5033,7 @@ bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
 
 	prb_rec_init_rd(&r, &info, buf, size);
 
-	prb_for_each_record(seq, prb, seq, &r) {
+	prb_for_each_record!(seq, prb, seq, &r, {
 		if (r.info->seq >= iter->next_seq)
 			break;
 
@@ -5011,11 +5041,12 @@ bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
 
 		/* Adjust record to store to remaining buffer space. */
 		prb_rec_init_rd(&r, &info, buf + len, size - len);
-	}
+	});
 
 	iter->next_seq = next_seq;
 	ret = true;
-out:
+	}
+	
 	if (len_out)
 		*len_out = len;
 	return ret;
@@ -5030,7 +5061,7 @@ EXPORT_SYMBOL_GPL(kmsg_dump_get_buffer);
  * kmsg_dump_get_buffer() can be called again and used multiple
  * times within the same dumper.dump() callback.
  */
-void kmsg_dump_rewind(struct kmsg_dump_iter *iter)
+void kmsg_dump_rewind(kmsg_dump_iter *iter)
 {
 	iter->cur_seq = latched_seq_read_nolock(&clear_seq);
 	iter->next_seq = prb_next_seq(prb);

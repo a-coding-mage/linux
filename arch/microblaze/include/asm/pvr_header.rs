@@ -93,7 +93,7 @@ pub const PVR11_MMU_PRIVINS: u32 = 0x00010000;
 pub const PVR11_MSR_RESET_VALUE_MASK: u32 = 0x000007FF;
 
 /* PVR access macros. */
-macro_rules! pvr_access { ($name:ident, $index:expr, $expr:expr) => { #[macro_export] macro_rules! $name { ($pvr:expr) => { (($pvr).pvr[$index] $expr) }; } }; }
+macro_rules! pvr_access { ($name:ident, $index:expr, $expr:expr) => { #[macro_export] macro_rules! $name { ($pvr:$expr) => { (($pvr).pvr[$index] $expr) }; } }; }
 
 pub const PVR4_ICACHE_USE_FSL_MASK: u32 = 0;
 pub const PVR5_DCACHE_USE_FSL_MASK: u32 = 0;

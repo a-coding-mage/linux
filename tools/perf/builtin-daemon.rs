@@ -751,7 +751,7 @@ unsafe fn daemon_session__wait(session: *mut daemon_session, daemon: *mut daemon
             perror(b"failed: poll\n\0".as_ptr() as *const c_char);
             return -1;
         }
-        if start + secs as time_t < time(null_mut()) {
+        if start + (secs as time_t) < time(null_mut()) {
             return -1;
         }
         if (*session).pid == -1 {
@@ -784,7 +784,7 @@ unsafe fn daemon__wait(daemon: *mut daemon, secs: c_int) -> c_int {
             perror(b"failed: poll\n\0".as_ptr() as *const c_char);
             return -1;
         }
-        if start + secs as time_t < time(null_mut()) {
+        if start + (secs as time_t) < time(null_mut()) {
             return -1;
         }
         if !daemon__has_alive_session(daemon) {

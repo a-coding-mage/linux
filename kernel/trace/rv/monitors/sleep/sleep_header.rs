@@ -47,7 +47,7 @@ enum ltl_atom {
     LTL_NUM_ATOM,
 }
 
-static fn ltl_atom_str(atom: ltl_atom) -> *const c_char {
+fn ltl_atom_str(atom: ltl_atom) -> *const c_char {
     static NAMES: [&[u8]; 15] = [
         b"ab_sl\0", b"bl_on_rt_mu\0", b"cl_na\0", b"ep_wa\0",
         b"fu_lo_pi\0", b"fu_wa\0", b"na_cl_re\0", b"na_ti_ab\0",

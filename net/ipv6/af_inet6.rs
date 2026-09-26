@@ -28,7 +28,7 @@ unsafe fn inet6_create(net: *mut net, socket: *mut socket, mut protocol: c_int, 
     'lookup: loop {
         err = -ESOCKTNOSUPPORT;
         rcu_read_lock();
-        list_for_each_entry_rcu!(answer, INETSW6[(*socket).type_ as usize], list) {
+        list_for_each_entry_rcu!(answer, INETSW6[(*socket).type_ as usize], list, {
             err = 0;
             if protocol == (*answer).protocol {
                 if protocol != IPPROTO_IP { break; }
@@ -37,7 +37,7 @@ unsafe fn inet6_create(net: *mut net, socket: *mut socket, mut protocol: c_int, 
                 if IPPROTO_IP == (*answer).protocol { break; }
             }
             err = -EPROTONOSUPPORT;
-        }
+        });
         if err == 0 { break; }
         if try_loading_module < 2 {
             rcu_read_unlock();
@@ -84,6 +84,7 @@ unsafe fn inet6_create(net: *mut net, socket: *mut socket, mut protocol: c_int, 
 pub unsafe extern "C" fn __inet6_bind(sk: *mut sock, uaddr: *mut sockaddr_unsized, addr_len: c_int, flags: u32) -> c_int {
     let addr = uaddr as *mut sockaddr_in6; let inet = inet_sk(sk); let np = inet6_sk(sk); let net = sock_net(sk);
     let mut v4addr: __be32 = 0; let snum = ntohs((*addr).sin6_port); let saved_ipv6only; let addr_type = ipv6_addr_type(&(*addr).sin6_addr); let mut err = 0;
+    'out_unlock: {
     if (*addr).sin6_family != AF_INET6 { return -EAFNOSUPPORT; }
     if addr_type & IPV6_ADDR_MULTICAST != 0 && (*sk).sk_type == SOCK_STREAM { return -EINVAL; }
     if flags & BIND_NO_CAP_NET_BIND_SERVICE == 0 && snum != 0 && inet_port_requires_bind_service(net, snum) && !ns_capable((*net).user_ns, CAP_NET_BIND_SERVICE) { return -EACCES; }
@@ -92,15 +93,15 @@ pub unsafe extern "C" fn __inet6_bind(sk: *mut sock, uaddr: *mut sockaddr_unsize
     if addr_type == IPV6_ADDR_MAPPED {
         if ipv6_only_sock(sk) { err = -EINVAL; goto out; }
         rcu_read_lock(); let dev = if (*sk).sk_bound_dev_if != 0 { dev_get_by_index_rcu(net, (*sk).sk_bound_dev_if) } else { core::ptr::null_mut() };
-        if (*sk).sk_bound_dev_if != 0 && dev.is_null() { err = -ENODEV; goto out_unlock; }
+        if (*sk).sk_bound_dev_if != 0 && dev.is_null() { err = -ENODEV; break 'out_unlock; }
         v4addr = (*addr).sin6_addr.s6_addr32[3]; let chk = inet_addr_type_dev_table(net, dev, v4addr); rcu_read_unlock();
         if !inet_addr_valid_or_nonlocal(net, inet, v4addr, chk) { err = -EADDRNOTAVAIL; goto out; }
     } else if addr_type != IPV6_ADDR_ANY {
         rcu_read_lock();
-        if __ipv6_addr_needs_scope_id(addr_type) { if addr_len >= size_of::<sockaddr_in6>() as c_int && (*addr).sin6_scope_id != 0 { (*sk).sk_bound_dev_if = (*addr).sin6_scope_id; } if (*sk).sk_bound_dev_if == 0 { err = -EINVAL; goto out_unlock; } }
-        let dev = if (*sk).sk_bound_dev_if != 0 { dev_get_by_index_rcu(net, (*sk).sk_bound_dev_if) } else { core::ptr::null_mut() }; if (*sk).sk_bound_dev_if != 0 && dev.is_null() { err = -ENODEV; goto out_unlock; }
+        if __ipv6_addr_needs_scope_id(addr_type) { if addr_len >= size_of::<sockaddr_in6>() as c_int && (*addr).sin6_scope_id != 0 { (*sk).sk_bound_dev_if = (*addr).sin6_scope_id; } if (*sk).sk_bound_dev_if == 0 { err = -EINVAL; break 'out_unlock; } }
+        let dev = if (*sk).sk_bound_dev_if != 0 { dev_get_by_index_rcu(net, (*sk).sk_bound_dev_if) } else { core::ptr::null_mut() }; if (*sk).sk_bound_dev_if != 0 && dev.is_null() { err = -ENODEV; break 'out_unlock; }
         v4addr = LOOPBACK4_IPV6;
-        if addr_type & IPV6_ADDR_MULTICAST == 0 && !ipv6_can_nonlocal_bind(net, inet) && !ipv6_chk_addr(net, &(*addr).sin6_addr, dev, 0) { err = -EADDRNOTAVAIL; goto out_unlock; }
+        if addr_type & IPV6_ADDR_MULTICAST == 0 && !ipv6_can_nonlocal_bind(net, inet) && !ipv6_chk_addr(net, &(*addr).sin6_addr, dev, 0) { err = -EADDRNOTAVAIL; break 'out_unlock; }
         rcu_read_unlock();
     }
     (*inet).inet_rcv_saddr = v4addr; (*inet).inet_saddr = v4addr; (*sk).sk_v6_rcv_saddr = (*addr).sin6_addr;
@@ -110,7 +111,8 @@ pub unsafe extern "C" fn __inet6_bind(sk: *mut sock, uaddr: *mut sockaddr_unsize
     if addr_type != IPV6_ADDR_ANY { (*sk).sk_userlocks |= SOCK_BINDADDR_LOCK; } if snum != 0 { (*sk).sk_userlocks |= SOCK_BINDPORT_LOCK; }
     (*inet).inet_sport = htons((*inet).inet_num); (*inet).inet_dport = 0; (*inet).inet_daddr = 0;
 out: if flags & BIND_WITH_LOCK != 0 { release_sock(sk); } return err;
-out_unlock: rcu_read_unlock(); goto out;
+    }
+    rcu_read_unlock(); goto out;
 }
 
 pub unsafe extern "C" fn inet6_bind_sk(sk: *mut sock, uaddr: *mut sockaddr_unsized, addr_len: c_int) -> c_int { let prot = READ_ONCE!((*sk).sk_prot); if let Some(bind) = (*prot).bind { return bind(sk, uaddr, addr_len); } if addr_len < SIN6_LEN_RFC2133 { return -EINVAL; } let mut flags = BIND_WITH_LOCK; let mut len = addr_len; let err = BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, &mut len, CGROUP_INET6_BIND, &mut flags); if err != 0 { return err; } __inet6_bind(sk, uaddr, len, flags) }

@@ -158,7 +158,7 @@ unsafe fn nft_bitmap_init(set: *const nft_set, _desc: *const nft_set_desc, _nla:
     let priv_ = nft_set_priv(set) as *mut nft_bitmap; INIT_LIST_HEAD!(&mut (*priv_).list); (*priv_).bitmap_size = nft_bitmap_size((*set).klen) as u16; 0
 }
 
-unsafe fn nft_bitmap_destroy(ctx: *const nft_ctx, set: *const nft_set) { let priv_ = nft_set_priv(set) as *mut nft_bitmap; let mut be: *mut nft_bitmap_elem; let mut n: *mut nft_bitmap_elem; list_for_each_entry_safe!(be, n, &mut (*priv_).list, head) { nf_tables_set_elem_destroy(ctx, set, &mut (*be).priv_); } }
+unsafe fn nft_bitmap_destroy(ctx: *const nft_ctx, set: *const nft_set) { let priv_ = nft_set_priv(set) as *mut nft_bitmap; let mut be: *mut nft_bitmap_elem; let mut n: *mut nft_bitmap_elem; list_for_each_entry_safe!(be, n, &mut (*priv_).list, head, { nf_tables_set_elem_destroy(ctx, set, &mut (*be).priv_); }); }
 
 unsafe fn nft_bitmap_estimate(desc: *const nft_set_desc, _features: u32, est: *mut nft_set_estimate) -> bool {
     if (*desc).klen > 2 || !(*desc).expr.is_null() { return false; }

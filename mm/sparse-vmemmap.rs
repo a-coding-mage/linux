@@ -64,8 +64,8 @@ pub unsafe fn vmemmap_wrprotect_hvo(a:c_ulong,e:c_ulong,n:c_int,h:c_ulong){let m
 
 pub unsafe fn __populate_section_memmap(pfn:c_ulong,n:c_ulong,nid:c_int,a:*mut vmem_altmap,p:*mut dev_pagemap)->*mut page{let s=pfn_to_page(pfn) as c_ulong;let e=s+n*core::mem::size_of::<page>();if vmemmap_can_optimize(a,p){if vmemmap_populate_range(s,e,nid,a,!0,0)<0{return core::ptr::null_mut()}}else if vmemmap_populate_basepages(s,e,nid,a)<0{return core::ptr::null_mut()}flush_cache_vmap(s,e);pfn_to_page(pfn)}
 unsafe fn subsection_mask_set(map:*mut c_ulong,pfn:c_ulong,n:c_ulong){let i=(pfn>>5)&63;let e=((pfn+n-1)>>5)&63;for x in i..=e{*map.add(x as usize)=!0}}
-#[cfg(feature="CONFIG_SPARSEMEM_VMEMMAP_PREINIT")] pub unsafe fn sparse_vmemmap_init_nid_early(_nid:c_int){}
-#[cfg(feature="CONFIG_MEMORY_HOTPLUG")] pub unsafe fn online_mem_sections(s:c_ulong,e:c_ulong){let mut p=s;while p<e{(*__pfn_to_section(p)).section_mem_map|=1;p+=1<<10}}
-#[cfg(feature="CONFIG_MEMORY_HOTPLUG")] pub unsafe fn offline_mem_sections(s:c_ulong,e:c_ulong){let mut p=s;while p<e{(*__pfn_to_section(p)).section_mem_map&=!1;p+=1<<10}}
+#[cfg(CONFIG_SPARSEMEM_VMEMMAP_PREINIT)] pub unsafe fn sparse_vmemmap_init_nid_early(_nid:c_int){}
+#[cfg(CONFIG_MEMORY_HOTPLUG)] pub unsafe fn online_mem_sections(s:c_ulong,e:c_ulong){let mut p=s;while p<e{(*__pfn_to_section(p)).section_mem_map|=1;p+=1<<10}}
+#[cfg(CONFIG_MEMORY_HOTPLUG)] pub unsafe fn offline_mem_sections(s:c_ulong,e:c_ulong){let mut p=s;while p<e{(*__pfn_to_section(p)).section_mem_map&=!1;p+=1<<10}}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

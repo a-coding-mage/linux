@@ -41,7 +41,7 @@ extern "C" {
     pub fn kvmppc_handle_exit_pr(vcpu: *mut kvm_vcpu, exit_nr: u32) -> i32;
 
     // CONFIG_PPC_TRANSACTIONAL_MEM
-    #[cfg(feature = "CONFIG_PPC_TRANSACTIONAL_MEM")]
+    #[cfg(CONFIG_PPC_TRANSACTIONAL_MEM)]
     pub fn kvmppc_emulate_tabort(vcpu: *mut kvm_vcpu, ra_val: i32);
 
     pub fn kvmppc_set_msr_hv(vcpu: *mut kvm_vcpu, msr: u64);
@@ -50,7 +50,7 @@ extern "C" {
 
 // When CONFIG_PPC_TRANSACTIONAL_MEM is disabled, the C header provides an
 // empty inline implementation instead of the external declaration above.
-#[cfg(not(feature = "CONFIG_PPC_TRANSACTIONAL_MEM"))]
+#[cfg(not(CONFIG_PPC_TRANSACTIONAL_MEM))]
 #[inline]
 pub unsafe fn kvmppc_emulate_tabort(_vcpu: *mut kvm_vcpu, _ra_val: i32) {}
 

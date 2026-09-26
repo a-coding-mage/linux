@@ -915,16 +915,16 @@ unsafe fn CalculatePrefetchSchedule(
 #endif
 	CalculateVupdateAndDynamicMetadataParameters(
 			MaxInterDCNTileRepeaters,
-			myPipe->DPPCLK,
-			myPipe->DISPCLK,
-			myPipe->DCFCLKDeepSleep,
-			myPipe->PixelClock,
-			myPipe->HTotal,
-			myPipe->VBlank,
+			(*myPipe).DPPCLK,
+			(*myPipe).DISPCLK,
+			(*myPipe).DCFCLKDeepSleep,
+			(*myPipe).PixelClock,
+			(*myPipe).HTotal,
+			(*myPipe).VBlank,
 			DynamicMetadataTransmittedBytes,
 			DynamicMetadataLinesBeforeActiveRequired,
-			myPipe->InterlaceEnable,
-			myPipe->ProgressiveToInterlaceUnitInOPP,
+			(*myPipe).InterlaceEnable,
+			(*myPipe).ProgressiveToInterlaceUnitInOPP,
 			TSetup,
 			&Tdmbf,
 			&Tdmec,
@@ -932,7 +932,7 @@ unsafe fn CalculatePrefetchSchedule(
 			VUpdateOffsetPix,
 			VUpdateWidthPix,
 			VReadyOffsetPix);
-	LineTime = myPipe->HTotal / myPipe->PixelClock;
+	LineTime = (*myPipe).HTotal / (*myPipe).PixelClock;
 	trip_to_mem = UrgentLatency;
 	Tvm_trips = UrgentExtraLatency + trip_to_mem * (GPUVMPageTableLevels * (HostVMDynamicLevelsTrips + 1) - 1);
 #ifdef __DML_VBA_ALLOW_DELTA__
@@ -966,31 +966,31 @@ unsafe fn CalculatePrefetchSchedule(
 	}
 
 	*Tdmdl_vm = (DynamicMetadataEnable == true && DynamicMetadataVMEnabled == true && GPUVMEnable == true ? TWait + Tvm_trips : 0);
-	if (myPipe->ScalerEnabled)
+	if ((*myPipe).ScalerEnabled)
 		DPPCycles = (u32)(DPPCLKDelaySubtotalPlusCNVCFormater + DPPCLKDelaySCL);
 	else
 		DPPCycles = (u32)(DPPCLKDelaySubtotalPlusCNVCFormater + DPPCLKDelaySCLLBOnly);
-	DPPCycles = (u32)(DPPCycles + myPipe->NumberOfCursors: *mut DPPCLKDelayCNVCCursor);
+	DPPCycles = (u32)(DPPCycles + (*myPipe).NumberOfCursors: *mut DPPCLKDelayCNVCCursor);
 	DISPCLKCycles = DISPCLKDelaySubtotal as u32;
-	if (myPipe->DPPCLK == 0.0 || myPipe->DISPCLK == 0.0)
+	if ((*myPipe).DPPCLK == 0.0 || (*myPipe).DISPCLK == 0.0)
 		return true;
-	*DSTXAfterScaler = DPPCycles: *mut myPipe->PixelClock / myPipe->DPPCLK + DISPCLKCycles: *mut myPipe->PixelClock / myPipe->DISPCLK + DSCDelay;
+	*DSTXAfterScaler = DPPCycles: *mut (*myPipe).PixelClock / (*myPipe).DPPCLK + DISPCLKCycles: *mut (*myPipe).PixelClock / (*myPipe).DISPCLK + DSCDelay;
 #ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: DPPCycles: %d\n", __func__, DPPCycles);
-	dml_print("DML::%s: PixelClock: %f\n", __func__, myPipe->PixelClock);
-	dml_print("DML::%s: DPPCLK: %f\n", __func__, myPipe->DPPCLK);
+	dml_print("DML::%s: PixelClock: %f\n", __func__, (*myPipe).PixelClock);
+	dml_print("DML::%s: DPPCLK: %f\n", __func__, (*myPipe).DPPCLK);
 	dml_print("DML::%s: DISPCLKCycles: %d\n", __func__, DISPCLKCycles);
-	dml_print("DML::%s: DISPCLK: %f\n", __func__, myPipe->DISPCLK);
+	dml_print("DML::%s: DISPCLK: %f\n", __func__, (*myPipe).DISPCLK);
 	dml_print("DML::%s: DSCDelay: %d\n", __func__, DSCDelay);
 	dml_print("DML::%s: DSTXAfterScaler: %d\n", __func__, *DSTXAfterScaler);
-	dml_print("DML::%s: ODMCombineIsEnabled: %d\n", __func__, myPipe->ODMCombineIsEnabled);
-#endif: *mut DSTXAfterScaler = *DSTXAfterScaler + ((myPipe->ODMCombineIsEnabled) ? 18 : 0) + (myPipe->DPPPerPlane - 1) * DPP_RECOUT_WIDTH;
-	if (OutputFormat == dm_420 || (myPipe->InterlaceEnable && myPipe->ProgressiveToInterlaceUnitInOPP))
+	dml_print("DML::%s: ODMCombineIsEnabled: %d\n", __func__, (*myPipe).ODMCombineIsEnabled);
+#endif: *mut DSTXAfterScaler = *DSTXAfterScaler + (((*myPipe).ODMCombineIsEnabled) ? 18 : 0) + ((*myPipe).DPPPerPlane - 1) * DPP_RECOUT_WIDTH;
+	if (OutputFormat == dm_420 || ((*myPipe).InterlaceEnable && (*myPipe).ProgressiveToInterlaceUnitInOPP))
 		*DSTYAfterScaler = 1;
 	else: *mut DSTYAfterScaler = 0;
-	DSTTotalPixelsAfterScaler = *DSTYAfterScaler: *mut myPipe->HTotal + *DSTXAfterScaler;
-	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / myPipe->HTotal, 1);
-	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - ((f64) (*DSTYAfterScaler: *mut myPipe->HTotal));
+	DSTTotalPixelsAfterScaler = *DSTYAfterScaler: *mut (*myPipe).HTotal + *DSTXAfterScaler;
+	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / (*myPipe).HTotal, 1);
+	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - ((f64) (*DSTYAfterScaler: *mut (*myPipe).HTotal));
 #ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: DSTXAfterScaler: %d (final)\n", __func__, *DSTXAfterScaler);
 #endif
@@ -1000,7 +1000,7 @@ unsafe fn CalculatePrefetchSchedule(
 	Tvm_trips_rounded = dml_ceil(4.0: *mut Tvm_trips / LineTime, 1) / 4: *mut LineTime;
 	Tr0_trips_rounded = dml_ceil(4.0: *mut Tr0_trips / LineTime, 1) / 4: *mut LineTime;
 #ifdef __DML_VBA_ALLOW_DELTA__
-	if (!myPipe->DCCEnable) {
+	if ((*!myPipe).DCCEnable) {
 		Tr0_trips = 0.0;
 		Tr0_trips_rounded = 0.0;
 	}
@@ -1017,21 +1017,21 @@ unsafe fn CalculatePrefetchSchedule(
 		} else {
 			*Tno_bw = 0;
 		}
-	} else if (!myPipe->DCCEnable) {
+	} else if ((*!myPipe).DCCEnable) {
 		*Tno_bw = LineTime;
 	} else {
 		*Tno_bw = LineTime / 4;
 	}
 
-	if (myPipe->SourcePixelFormat == dm_420_8 || myPipe->SourcePixelFormat == dm_420_10 || myPipe->SourcePixelFormat == dm_420_12)
-		bytes_pp = myPipe->BytePerPixelY + myPipe->BytePerPixelC / 4;
+	if ((*myPipe).SourcePixelFormat == dm_420_8 || (*myPipe).SourcePixelFormat == dm_420_10 || (*myPipe).SourcePixelFormat == dm_420_12)
+		bytes_pp = (*myPipe).BytePerPixelY + (*myPipe).BytePerPixelC / 4;
 	else
-		bytes_pp = myPipe->BytePerPixelY + myPipe->BytePerPixelC;
+		bytes_pp = (*myPipe).BytePerPixelY + (*myPipe).BytePerPixelC;
 	/*rev 99*/
-	prefetch_bw_pr = bytes_pp: *mut myPipe->PixelClock / myPipe as f64->DPPPerPlane;
-	prefetch_bw_pr = dml_min(1, myPipe->VRatio) * prefetch_bw_pr;
+	prefetch_bw_pr = bytes_pp: *mut (*myPipe).PixelClock / (*myPipe as f64).DPPPerPlane;
+	prefetch_bw_pr = dml_min(1, (*myPipe).VRatio) * prefetch_bw_pr;
 	max_Tsw = dml_max(PrefetchSourceLinesY, PrefetchSourceLinesC) * LineTime;
-	prefetch_sw_bytes = PrefetchSourceLinesY: *mut swath_width_luma_ub * myPipe->BytePerPixelY + PrefetchSourceLinesC: *mut swath_width_chroma_ub * myPipe->BytePerPixelC;
+	prefetch_sw_bytes = PrefetchSourceLinesY: *mut swath_width_luma_ub * (*myPipe).BytePerPixelY + PrefetchSourceLinesC: *mut swath_width_chroma_ub * (*myPipe).BytePerPixelC;
 	prefetch_bw_oto = dml_max(prefetch_bw_pr, prefetch_sw_bytes / max_Tsw);
 	min_Lsw = dml_max(1, dml_max(PrefetchSourceLinesY, PrefetchSourceLinesC) / max_vratio_pre);
 	Lsw_oto = dml_ceil(4: *mut dml_max(prefetch_sw_bytes / prefetch_bw_oto / LineTime, min_Lsw), 1) / 4;
@@ -1041,11 +1041,11 @@ unsafe fn CalculatePrefetchSchedule(
 
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML: HTotal: %d\n", myPipe->HTotal);
+	dml_print("DML: HTotal: %d\n", (*myPipe).HTotal);
 	dml_print("DML: prefetch_bw_oto: %f\n", prefetch_bw_oto);
 	dml_print("DML: PrefetchSourceLinesY: %f\n", PrefetchSourceLinesY);
 	dml_print("DML: swath_width_luma_ub: %d\n", swath_width_luma_ub);
-	dml_print("DML: BytePerPixelY: %d\n", myPipe->BytePerPixelY);
+	dml_print("DML: BytePerPixelY: %d\n", (*myPipe).BytePerPixelY);
 	dml_print("DML: Tsw_oto: %f\n", Tsw_oto);
 #endif
 
@@ -1053,7 +1053,7 @@ unsafe fn CalculatePrefetchSchedule(
 		Tvm_oto = dml_max3(*Tno_bw + PDEAndMetaPTEBytesFrame: *mut HostVMInefficiencyFactor / prefetch_bw_oto, Tvm_trips, LineTime / 4.0);
 	else
 		Tvm_oto = LineTime / 4.0;
-	if ((GPUVMEnable == true || myPipe->DCCEnable == true)) {
+	if ((GPUVMEnable == true || (*myPipe).DCCEnable == true)) {
 		Tr0_oto = dml_max4((MetaRowByte + PixelPTEBytesPerRow: *mut HostVMInefficiencyFactor) / prefetch_bw_oto, Tr0_trips, // PREVIOUS_ERROR (missing this term)
 				LineTime - Tvm_oto,
 				LineTime / 4);
@@ -1076,7 +1076,7 @@ unsafe fn CalculatePrefetchSchedule(
 	Tvm_oto_lines = dml_ceil(4.0: *mut Tvm_oto / LineTime, 1) / 4.0;
 	Tr0_oto_lines = dml_ceil(4.0: *mut Tr0_oto / LineTime, 1) / 4.0;
 	dst_y_prefetch_oto = Tvm_oto_lines + 2: *mut Tr0_oto_lines + Lsw_oto;
-	dst_y_prefetch_equ =  VStartup - (*TSetup + dml_max(TWait + TCalc, *Tdmdl)) / LineTime - (*DSTYAfterScaler + *DSTXAfterScaler / myPipe->HTotal);
+	dst_y_prefetch_equ =  VStartup - (*TSetup + dml_max(TWait + TCalc, *Tdmdl)) / LineTime - (*DSTYAfterScaler + *DSTXAfterScaler / (*myPipe).HTotal);
 	dst_y_prefetch_equ = dml_min(dst_y_prefetch_equ, 63.75); // limit to the reg limit of U6.2 for DST_Y_PREFETCH
 	dst_y_prefetch_equ = dml_floor(4.0 * (dst_y_prefetch_equ + 0.125), 1) / 4.0;
 	Tpre_rounded = dst_y_prefetch_equ: *mut LineTime;
@@ -1213,7 +1213,7 @@ unsafe fn CalculatePrefetchSchedule(
 					Tvm_equ = LineTime / 4;
 				}
 
-				if ((GPUVMEnable == true || myPipe->DCCEnable == true)) {
+				if ((GPUVMEnable == true || (*myPipe).DCCEnable == true)) {
 					Tr0_equ = dml_max4(
 							(MetaRowByte + PixelPTEBytesPerRow: *mut HostVMInefficiencyFactor) / prefetch_bw_equ,
 							Tr0_trips,
@@ -1247,7 +1247,7 @@ unsafe fn CalculatePrefetchSchedule(
 		LinesToRequestPrefetchPixelData = *DestinationLinesForPrefetch
 		// See note above dated 5/30/2018
 		//                      - ((NumberOfCursors > 0 || GPUVMEnable || DCCEnable) ?
-				- ((GPUVMEnable || myPipe->DCCEnable) ? (*DestinationLinesToRequestVMInVBlank + 2 * *DestinationLinesToRequestRowInVBlank) : 0.0); // TODO: Did someone else add this??
+				- ((GPUVMEnable || (*myPipe).DCCEnable) ? (*DestinationLinesToRequestVMInVBlank + 2 * *DestinationLinesToRequestRowInVBlank) : 0.0); // TODO: Did someone else add this??
 #else
 				LinesToRequestPrefetchPixelData = *DestinationLinesForPrefetch - *DestinationLinesToRequestVMInVBlank - 2 * *DestinationLinesToRequestRowInVBlank;
 #endif
@@ -1315,13 +1315,13 @@ unsafe fn CalculatePrefetchSchedule(
 			}
 
 #ifdef __DML_VBA_DEBUG__
-			dml_print("DML::%s: BytePerPixelY = %d\n", __func__, myPipe->BytePerPixelY);
+			dml_print("DML::%s: BytePerPixelY = %d\n", __func__, (*myPipe).BytePerPixelY);
 			dml_print("DML::%s: swath_width_luma_ub = %d\n", __func__, swath_width_luma_ub);
 			dml_print("DML::%s: LineTime = %f\n", __func__, LineTime);
-#endif: *mut RequiredPrefetchPixDataBWLuma = PrefetchSourceLinesY as f64 / LinesToRequestPrefetchPixelData: *mut myPipe->BytePerPixelY: *mut swath_width_luma_ub / LineTime;
+#endif: *mut RequiredPrefetchPixDataBWLuma = PrefetchSourceLinesY as f64 / LinesToRequestPrefetchPixelData: *mut (*myPipe).BytePerPixelY: *mut swath_width_luma_ub / LineTime;
 #ifdef __DML_VBA_DEBUG__
 			dml_print("DML::%s: RequiredPrefetchPixDataBWLuma = %f\n", __func__, *RequiredPrefetchPixDataBWLuma);
-#endif: *mut RequiredPrefetchPixDataBWChroma = PrefetchSourceLinesC as f64 / LinesToRequestPrefetchPixelData: *mut myPipe->BytePerPixelC: *mut swath_width_chroma_ub
+#endif: *mut RequiredPrefetchPixDataBWChroma = PrefetchSourceLinesC as f64 / LinesToRequestPrefetchPixelData: *mut (*myPipe).BytePerPixelC: *mut swath_width_chroma_ub
 					/ LineTime;
 		} else {
 			MyError = true;
@@ -1343,11 +1343,11 @@ unsafe fn CalculatePrefetchSchedule(
 				LinesToRequestPrefetchPixelData as f64: *mut LineTime);
 		dml_print("DML: To: %fus - time for propagation from scaler to optc\n",
 			  (*DSTYAfterScaler + ((f64) (*DSTXAfterScaler) /
-			  myPipe as f64->HTotal)) * LineTime);
+			  (*myPipe as f64).HTotal)) * LineTime);
 		dml_print("DML: Tvstartup - TSetup - Tcalc - Twait - Tpre - To > 0\n");
 		dml_print("DML: Tslack(pre): %fus - time left over in schedule\n",
 				VStartup: *mut LineTime - TimeForFetchingMetaPTE - 2: *mut TimeForFetchingRowInVBlank
-						- (*DSTYAfterScaler + ((f64) (*DSTXAfterScaler) / myPipe as f64->HTotal)) * LineTime - TWait - TCalc - *TSetup);
+						- (*DSTYAfterScaler + ((f64) (*DSTXAfterScaler) / (*myPipe as f64).HTotal)) * LineTime - TWait - TCalc - *TSetup);
 		dml_print("DML: row_bytes = dpte_row_bytes (per_pipe) = PixelPTEBytesPerRow = : %d\n", PixelPTEBytesPerRow);
 	} else {
 		MyError = true;
@@ -1688,12 +1688,12 @@ static f64 CalculatePrefetchSourceLines(
 		f64: *mut VInitPreFill,
 		u32: *mut MaxNumSwath)
 {
-	vba_vars_st: *mut v = &mode_lib->vba;
+	vba_vars_st: *mut v = (*&mode_lib).vba;
 	u32 MaxPartialSwath;
 	if (ProgressiveToInterlaceUnitInOPP)
 		*VInitPreFill = dml_floor((VRatio + vtaps + 1) / 2.0, 1);
 	else: *mut VInitPreFill = dml_floor((VRatio + vtaps + 1 + Interlace: *mut 0.5: *mut VRatio) / 2.0, 1);
-	if (!v->IgnoreViewportPositioning) {
+	if ((*!v).IgnoreViewportPositioning) {
 
 		*MaxNumSwath = (u32)(dml_ceil((*VInitPreFill - 1.0) / SwathHeight, 1) + 1.0);
 		if (*VInitPreFill > 1.0)
@@ -1717,7 +1717,7 @@ static f64 CalculatePrefetchSourceLines(
 	dml_print("DML::%s: vtaps = %f\n", __func__, vtaps);
 	dml_print("DML::%s: VInitPreFill = %f\n", __func__, *VInitPreFill);
 	dml_print("DML::%s: ProgressiveToInterlaceUnitInOPP = %d\n", __func__, ProgressiveToInterlaceUnitInOPP);
-	dml_print("DML::%s: IgnoreViewportPositioning = %d\n", __func__, v->IgnoreViewportPositioning);
+	dml_print("DML::%s: IgnoreViewportPositioning = %d\n", __func__, (*v).IgnoreViewportPositioning);
 	dml_print("DML::%s: SwathHeight = %d\n", __func__, SwathHeight);
 	dml_print("DML::%s: MaxPartialSwath = %d\n", __func__, MaxPartialSwath);
 	dml_print("DML::%s: MaxNumSwath = %d\n", __func__, *MaxNumSwath);
@@ -1764,7 +1764,7 @@ static u32 CalculateVMAndRowBytes(
 		u32: *mut MetaPTEBytesFrame)
 {
 	(void)SourcePixelFormat;
-	vba_vars_st: *mut v = &mode_lib->vba;
+	vba_vars_st: *mut v = (*&mode_lib).vba;
 	u32 MPDEBytesFrame;
 	u32 DCCMetaSurfaceBytes;
 	u32 MacroTileSizeBytes;
@@ -1798,7 +1798,7 @@ static u32 CalculateVMAndRowBytes(
 	DCCMetaSurfaceBytes = (u32)(DCCMetaPitch * (dml_ceil(ViewportHeight - 1, 64: *mut BlockHeight256Bytes) + 64: *mut BlockHeight256Bytes) * BytePerPixel / 256);
 	if (GPUVMEnable == true) {
 		*MetaPTEBytesFrame = (int)((dml_ceil((f64) (DCCMetaSurfaceBytes - 4.0: *mut 1024.0) / (8: *mut 4.0: *mut 1024), 1) + 1) * 64);
-		MPDEBytesFrame = 128 * (v->GPUVMMaxPageTableLevels - 1);
+		MPDEBytesFrame = 128 * ((*v).GPUVMMaxPageTableLevels - 1);
 	} else {
 		*MetaPTEBytesFrame = 0;
 		MPDEBytesFrame = 0;
@@ -1818,7 +1818,7 @@ static u32 CalculateVMAndRowBytes(
 		MacroTileHeight = 16: *mut BlockHeight256Bytes;
 	}
 	*MacroTileWidth = MacroTileSizeBytes / BytePerPixel / MacroTileHeight;
-	if (GPUVMEnable == true && v->GPUVMMaxPageTableLevels > 1) {
+	if (GPUVMEnable == true && (*v).GPUVMMaxPageTableLevels > 1) {
 		if (ScanDirection != dm_vert) {
 			*DPDE0BytesFrame = (int)(64
 					* (dml_ceil(
@@ -1832,7 +1832,7 @@ static u32 CalculateVMAndRowBytes(
 									/ (8: *mut 2097152),
 							1) + 1));
 		}
-		ExtraDPDEBytesFrame = 128 * (v->GPUVMMaxPageTableLevels - 2);
+		ExtraDPDEBytesFrame = 128 * ((*v).GPUVMMaxPageTableLevels - 2);
 	} else {
 		*DPDE0BytesFrame = 0;
 		ExtraDPDEBytesFrame = 0;
@@ -1923,132 +1923,132 @@ static u32 CalculateVMAndRowBytes(
 
 unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(display_mode_lib: *mut mode_lib)
 {
-	vba_vars_st: *mut v = &mode_lib->vba;
+	vba_vars_st: *mut v = (*&mode_lib).vba;
 	j: u32, k;
 	f64 HostVMInefficiencyFactor = 1.0;
 	bool NoChromaPlanes = true;
 	int ReorderBytes;
 	f64 VMDataOnlyReturnBW;
 	f64 MaxTotalRDBandwidth = 0;
-	int PrefetchMode = v->PrefetchModePerState[v->VoltageLevel][v->maxMpcComb];
-	v->WritebackDISPCLK = 0.0;
-	v->DISPCLKWithRamping = 0;
-	v->DISPCLKWithoutRamping = 0;
-	v->GlobalDPPCLK = 0.0;
+	int PrefetchMode = (*v).PrefetchModePerState[(*v).VoltageLevel][(*v).maxMpcComb];
+	(*v).WritebackDISPCLK = 0.0;
+	(*v).DISPCLKWithRamping = 0;
+	(*v).DISPCLKWithoutRamping = 0;
+	(*v).GlobalDPPCLK = 0.0;
 	/* DAL custom code: need to update ReturnBW in case min dcfclk is overriden */
 	{
 	f64 IdealFabricAndSDPPortBandwidthPerState = dml_min(
-			v->ReturnBusWidth: *mut v->DCFCLKState[v->VoltageLevel][v->maxMpcComb],
-			v->FabricClockPerState[v->VoltageLevel] * v->FabricDatapathToDCNDataReturn);
-	f64 IdealDRAMBandwidthPerState = v->DRAMSpeedPerState[v->VoltageLevel] * v->NumberOfChannels: *mut v->DRAMChannelWidth;
-	if (v->HostVMEnable != true) {
-		v->ReturnBW = dml_min(
-				IdealFabricAndSDPPortBandwidthPerState: *mut v->PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
-				IdealDRAMBandwidthPerState: *mut v->PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelDataOnly / 100.0);
+			(*v).ReturnBusWidth: *mut (*v).DCFCLKState[(*v).VoltageLevel][(*v).maxMpcComb],
+			(*v).FabricClockPerState[(*v).VoltageLevel] * (*v).FabricDatapathToDCNDataReturn);
+	f64 IdealDRAMBandwidthPerState = (*v).DRAMSpeedPerState[(*v).VoltageLevel] * (*v).NumberOfChannels: *mut (*v).DRAMChannelWidth;
+	if ((*v).HostVMEnable != true) {
+		(*v).ReturnBW = dml_min(
+				IdealFabricAndSDPPortBandwidthPerState: *mut (*v).PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
+				IdealDRAMBandwidthPerState: *mut (*v).PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelDataOnly / 100.0);
 	} else {
-		v->ReturnBW = dml_min(
-				IdealFabricAndSDPPortBandwidthPerState: *mut v->PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
-				IdealDRAMBandwidthPerState: *mut v->PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelMixedWithVMData / 100.0);
+		(*v).ReturnBW = dml_min(
+				IdealFabricAndSDPPortBandwidthPerState: *mut (*v).PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
+				IdealDRAMBandwidthPerState: *mut (*v).PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelMixedWithVMData / 100.0);
 	}
 	}
 	/* End DAL custom code */
 
 	// DISPCLK and DPPCLK Calculation
 	//
-	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		if (v->WritebackEnable[k]) {
-			v->WritebackDISPCLK = dml_max(
-					v->WritebackDISPCLK,
+	for (k = 0; k < (*v).NumberOfActivePlanes; ++k) {
+		if ((*v).WritebackEnable[k]) {
+			(*v).WritebackDISPCLK = dml_max(
+					(*v).WritebackDISPCLK,
 					dml31_CalculateWriteBackDISPCLK(
-							v->WritebackPixelFormat[k],
-							v->PixelClock[k],
-							v->WritebackHRatio[k],
-							v->WritebackVRatio[k],
-							v->WritebackHTaps[k],
-							v->WritebackVTaps[k],
-							v->WritebackSourceWidth[k],
-							(long)v->WritebackDestinationWidth[k],
-							v->HTotal[k],
-							v as u32->WritebackLineBufferSize));
+							(*v).WritebackPixelFormat[k],
+							(*v).PixelClock[k],
+							(*v).WritebackHRatio[k],
+							(*v).WritebackVRatio[k],
+							(*v).WritebackHTaps[k],
+							(*v).WritebackVTaps[k],
+							(*v).WritebackSourceWidth[k],
+							(*(long)v).WritebackDestinationWidth[k],
+							(*v).HTotal[k],
+							(*v as u32).WritebackLineBufferSize));
 		}
 	}
 
-	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		if (v->HRatio[k] > 1) {
-			v->PSCL_THROUGHPUT_LUMA[k] = dml_min(
-					v->MaxDCHUBToPSCLThroughput,
-					v->MaxPSCLToLBThroughput: *mut v->HRatio[k] / dml_ceil(v->htaps[k] / 6.0, 1));
+	for (k = 0; k < (*v).NumberOfActivePlanes; ++k) {
+		if ((*v).HRatio[k] > 1) {
+			(*v).PSCL_THROUGHPUT_LUMA[k] = dml_min(
+					(*v).MaxDCHUBToPSCLThroughput,
+					(*v).MaxPSCLToLBThroughput: *mut (*v).HRatio[k] / dml_ceil((*v).htaps[k] / 6.0, 1));
 		} else {
-			v->PSCL_THROUGHPUT_LUMA[k] = dml_min(v->MaxDCHUBToPSCLThroughput, v->MaxPSCLToLBThroughput);
+			(*v).PSCL_THROUGHPUT_LUMA[k] = dml_min((*v).MaxDCHUBToPSCLThroughput, (*v).MaxPSCLToLBThroughput);
 		}
 
-		v->DPPCLKUsingSingleDPPLuma = v->PixelClock[k]
+		(*v).DPPCLKUsingSingleDPPLuma = (*v).PixelClock[k]
 				* dml_max(
-						v->vtaps[k] / 6.0: *mut dml_min(1.0, v->HRatio[k]),
-						dml_max(v->HRatio[k] * v->VRatio[k] / v->PSCL_THROUGHPUT_LUMA[k], 1.0));
-		if ((v->htaps[k] > 6 || v->vtaps[k] > 6) && v->DPPCLKUsingSingleDPPLuma < 2: *mut v->PixelClock[k]) {
-			v->DPPCLKUsingSingleDPPLuma = 2: *mut v->PixelClock[k];
+						(*v).vtaps[k] / 6.0: *mut dml_min(1.0, (*v).HRatio[k]),
+						dml_max((*v).HRatio[k] * (*v).VRatio[k] / (*v).PSCL_THROUGHPUT_LUMA[k], 1.0));
+		if (((*v).htaps[k] > 6 || (*v).vtaps[k] > 6) && (*v).DPPCLKUsingSingleDPPLuma < 2: *mut (*v).PixelClock[k]) {
+			(*v).DPPCLKUsingSingleDPPLuma = 2: *mut (*v).PixelClock[k];
 		}
 
-		if ((v->SourcePixelFormat[k] != dm_420_8 && v->SourcePixelFormat[k] != dm_420_10 && v->SourcePixelFormat[k] != dm_420_12
-				&& v->SourcePixelFormat[k] != dm_rgbe_alpha)) {
-			v->PSCL_THROUGHPUT_CHROMA[k] = 0.0;
-			v->DPPCLKUsingSingleDPP[k] = v->DPPCLKUsingSingleDPPLuma;
+		if (((*v).SourcePixelFormat[k] != dm_420_8 && (*v).SourcePixelFormat[k] != dm_420_10 && (*v).SourcePixelFormat[k] != dm_420_12
+				&& (*v).SourcePixelFormat[k] != dm_rgbe_alpha)) {
+			(*v).PSCL_THROUGHPUT_CHROMA[k] = 0.0;
+			(*v).DPPCLKUsingSingleDPP[k] = (*v).DPPCLKUsingSingleDPPLuma;
 		} else {
-			if (v->HRatioChroma[k] > 1) {
-				v->PSCL_THROUGHPUT_CHROMA[k] = dml_min(
-						v->MaxDCHUBToPSCLThroughput,
-						v->MaxPSCLToLBThroughput: *mut v->HRatioChroma[k] / dml_ceil(v->HTAPsChroma[k] / 6.0, 1.0));
+			if ((*v).HRatioChroma[k] > 1) {
+				(*v).PSCL_THROUGHPUT_CHROMA[k] = dml_min(
+						(*v).MaxDCHUBToPSCLThroughput,
+						(*v).MaxPSCLToLBThroughput: *mut (*v).HRatioChroma[k] / dml_ceil((*v).HTAPsChroma[k] / 6.0, 1.0));
 			} else {
-				v->PSCL_THROUGHPUT_CHROMA[k] = dml_min(v->MaxDCHUBToPSCLThroughput, v->MaxPSCLToLBThroughput);
+				(*v).PSCL_THROUGHPUT_CHROMA[k] = dml_min((*v).MaxDCHUBToPSCLThroughput, (*v).MaxPSCLToLBThroughput);
 			}
-			v->DPPCLKUsingSingleDPPChroma = v->PixelClock[k]
+			(*v).DPPCLKUsingSingleDPPChroma = (*v).PixelClock[k]
 					* dml_max3(
-							v->VTAPsChroma[k] / 6.0: *mut dml_min(1.0, v->HRatioChroma[k]),
-							v->HRatioChroma[k] * v->VRatioChroma[k] / v->PSCL_THROUGHPUT_CHROMA[k],
+							(*v).VTAPsChroma[k] / 6.0: *mut dml_min(1.0, (*v).HRatioChroma[k]),
+							(*v).HRatioChroma[k] * (*v).VRatioChroma[k] / (*v).PSCL_THROUGHPUT_CHROMA[k],
 							1.0);
-			if ((v->HTAPsChroma[k] > 6 || v->VTAPsChroma[k] > 6) && v->DPPCLKUsingSingleDPPChroma < 2: *mut v->PixelClock[k]) {
-				v->DPPCLKUsingSingleDPPChroma = 2: *mut v->PixelClock[k];
+			if (((*v).HTAPsChroma[k] > 6 || (*v).VTAPsChroma[k] > 6) && (*v).DPPCLKUsingSingleDPPChroma < 2: *mut (*v).PixelClock[k]) {
+				(*v).DPPCLKUsingSingleDPPChroma = 2: *mut (*v).PixelClock[k];
 			}
 
-			v->DPPCLKUsingSingleDPP[k] = dml_max(v->DPPCLKUsingSingleDPPLuma, v->DPPCLKUsingSingleDPPChroma);
+			(*v).DPPCLKUsingSingleDPP[k] = dml_max((*v).DPPCLKUsingSingleDPPLuma, (*v).DPPCLKUsingSingleDPPChroma);
 		}
 	}
 
-	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		if (v->BlendingAndTiming[k] != k)
+	for (k = 0; k < (*v).NumberOfActivePlanes; ++k) {
+		if ((*v).BlendingAndTiming[k] != k)
 			continue;
-		if (v->ODMCombineEnabled[k] == dm_odm_combine_mode_4to1) {
-			v->DISPCLKWithRamping = dml_max(
-					v->DISPCLKWithRamping,
-					v->PixelClock[k] / 4 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100)
-							* (1 + v->DISPCLKRampingMargin / 100));
-			v->DISPCLKWithoutRamping = dml_max(
-					v->DISPCLKWithoutRamping,
-					v->PixelClock[k] / 4 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100));
-		} else if (v->ODMCombineEnabled[k] == dm_odm_combine_mode_2to1) {
-			v->DISPCLKWithRamping = dml_max(
-					v->DISPCLKWithRamping,
-					v->PixelClock[k] / 2 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100)
-							* (1 + v->DISPCLKRampingMargin / 100));
-			v->DISPCLKWithoutRamping = dml_max(
-					v->DISPCLKWithoutRamping,
-					v->PixelClock[k] / 2 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100));
+		if ((*v).ODMCombineEnabled[k] == dm_odm_combine_mode_4to1) {
+			(*v).DISPCLKWithRamping = dml_max(
+					(*v).DISPCLKWithRamping,
+					(*v).PixelClock[k] / 4 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100)
+							* (1 + (*v).DISPCLKRampingMargin / 100));
+			(*v).DISPCLKWithoutRamping = dml_max(
+					(*v).DISPCLKWithoutRamping,
+					(*v).PixelClock[k] / 4 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100));
+		} else if ((*v).ODMCombineEnabled[k] == dm_odm_combine_mode_2to1) {
+			(*v).DISPCLKWithRamping = dml_max(
+					(*v).DISPCLKWithRamping,
+					(*v).PixelClock[k] / 2 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100)
+							* (1 + (*v).DISPCLKRampingMargin / 100));
+			(*v).DISPCLKWithoutRamping = dml_max(
+					(*v).DISPCLKWithoutRamping,
+					(*v).PixelClock[k] / 2 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100));
 		} else {
-			v->DISPCLKWithRamping = dml_max(
-					v->DISPCLKWithRamping,
-					v->PixelClock[k] * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100) * (1 + v->DISPCLKRampingMargin / 100));
-			v->DISPCLKWithoutRamping = dml_max(
-					v->DISPCLKWithoutRamping,
-					v->PixelClock[k] * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100));
+			(*v).DISPCLKWithRamping = dml_max(
+					(*v).DISPCLKWithRamping,
+					(*v).PixelClock[k] * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100) * (1 + (*v).DISPCLKRampingMargin / 100));
+			(*v).DISPCLKWithoutRamping = dml_max(
+					(*v).DISPCLKWithoutRamping,
+					(*v).PixelClock[k] * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100));
 		}
 	}
 
-	v->DISPCLKWithRamping = dml_max(v->DISPCLKWithRamping, v->WritebackDISPCLK);
-	v->DISPCLKWithoutRamping = dml_max(v->DISPCLKWithoutRamping, v->WritebackDISPCLK);
-	ASSERT(v->DISPCLKDPPCLKVCOSpeed != 0);
-	v->DISPCLKWithRampingRoundedToDFSGranularity = RoundToDFSGranularityUp(v->DISPCLKWithRamping, v->DISPCLKDPPCLKVCOSpeed);
-	v->DISPCLKWithoutRampingRoundedToDFSGranularity = RoundToDFSGranularityUp(v->DISPCLKWithoutRamping, v->DISPCLKDPPCLKVCOSpeed);
+	(*v).DISPCLKWithRamping = dml_max((*v).DISPCLKWithRamping, (*v).WritebackDISPCLK);
+	(*v).DISPCLKWithoutRamping = dml_max((*v).DISPCLKWithoutRamping, (*v).WritebackDISPCLK);
+	ASSERT((*v).DISPCLKDPPCLKVCOSpeed != 0);
+	(*v).DISPCLKWithRampingRoundedToDFSGranularity = RoundToDFSGranularityUp((*v).DISPCLKWithRamping, (*v).DISPCLKDPPCLKVCOSpeed);
+	(*v).DISPCLKWithoutRampingRoundedToDFSGranularity = RoundToDFSGranularityUp((*v).DISPCLKWithoutRamping, (*v).DISPCLKDPPCLKVCOSpeed);
 	v->MaxDispclkRoundedToDFSGranularity = RoundToDFSGranularityDown(
 			v->soc.clock_limits[v->soc.num_states - 1].dispclk_mhz,
 			v->DISPCLKDPPCLKVCOSpeed);
@@ -2774,7 +2774,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			v->ImmediateFlipSupported = true;
 			if (v->total_dcn_read_bw_with_flip > v->ReturnBW) {
 #ifdef __DML_VBA_DEBUG__
-				dml_print("DML::%s: total_dcn_read_bw_with_flip %f (bw w/ flip too high!)\n", __func__, v->total_dcn_read_bw_with_flip);
+				dml_print("DML::%s: total_dcn_read_bw_with_flip %f (bw w/ flip too high!())\n", __func__, v->total_dcn_read_bw_with_flip);
 #endif
 				v->ImmediateFlipSupported = false;
 				v->total_dcn_read_bw_with_flip = MaxTotalRDBandwidth;

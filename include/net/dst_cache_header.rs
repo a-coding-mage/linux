@@ -46,7 +46,7 @@ extern "C" {
     );
 
     // Preserved from #if IS_ENABLED(CONFIG_IPV6).
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn dst_cache_set_ip6(
         dst_cache: *mut dst_cache,
         dst: *mut dst_entry,
@@ -54,7 +54,7 @@ extern "C" {
     );
 
     // Preserved from #if IS_ENABLED(CONFIG_IPV6).
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn dst_cache_get_ip6(
         dst_cache: *mut dst_cache,
         saddr: *mut in6_addr,

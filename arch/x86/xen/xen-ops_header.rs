@@ -3,7 +3,7 @@
 /* C dependencies: linux/init.h, linux/clocksource.h, linux/irqreturn.h,
  * linux/linkage.h, xen/interface/xenpmu.h, xen/xen-ops.h, asm/page.h. */
 
-#[cfg(feature = "CONFIG_XEN_PV")]
+#[cfg(CONFIG_XEN_PV)]
 extern "C" {
     pub static xen_failsafe_callback: [core::ffi::c_char; 0];
     pub static xen_initial_gdt: *mut core::ffi::c_void;
@@ -61,10 +61,10 @@ extern "C" {
     pub fn xen_hypercall_pv();
 }
 
-#[cfg(not(feature = "CONFIG_XEN_PV"))]
+#[cfg(not(CONFIG_XEN_PV))]
 #[inline]
 pub unsafe fn xen_pv_pre_suspend() {}
-#[cfg(not(feature = "CONFIG_XEN_PV"))]
+#[cfg(not(CONFIG_XEN_PV))]
 #[inline]
 pub unsafe fn xen_pv_post_suspend(_suspend_cancelled: libc::c_int) {}
 
@@ -136,52 +136,52 @@ extern "C" {
     pub fn __xen_hypercall_setfunc() -> *mut core::ffi::c_void;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn xen_smp_init();
     pub fn xen_hvm_smp_init();
 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_smp_init() {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_hvm_smp_init() {}
 
-#[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
+#[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
 extern "C" {
     pub fn xen_init_spinlocks();
     pub fn xen_init_lock_cpu(cpu: libc::c_int);
     pub fn xen_uninit_lock_cpu(cpu: libc::c_int);
 }
-#[cfg(not(feature = "CONFIG_PARAVIRT_SPINLOCKS"))]
+#[cfg(not(CONFIG_PARAVIRT_SPINLOCKS))]
 #[inline] pub unsafe fn xen_init_spinlocks() {}
-#[cfg(not(feature = "CONFIG_PARAVIRT_SPINLOCKS"))]
+#[cfg(not(CONFIG_PARAVIRT_SPINLOCKS))]
 #[inline] pub unsafe fn xen_init_lock_cpu(_cpu: libc::c_int) {}
-#[cfg(not(feature = "CONFIG_PARAVIRT_SPINLOCKS"))]
+#[cfg(not(CONFIG_PARAVIRT_SPINLOCKS))]
 #[inline] pub unsafe fn xen_uninit_lock_cpu(_cpu: libc::c_int) {}
 
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 extern "C" { pub fn xen_init_vga(info: *const dom0_vga_console_info, size: usize, si: *mut screen_info); }
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline] pub unsafe fn xen_init_vga(_info: *const dom0_vga_console_info, _size: usize, _si: *mut screen_info) {}
 
-#[cfg(feature = "CONFIG_XEN_EFI")]
+#[cfg(CONFIG_XEN_EFI)]
 extern "C" { pub fn xen_efi_init(boot_params: *mut boot_params); }
-#[cfg(not(feature = "CONFIG_XEN_EFI"))]
+#[cfg(not(CONFIG_XEN_EFI))]
 #[inline] pub unsafe fn xen_efi_init(_boot_params: *mut boot_params) {}
 
 pub const EXTRA_MEM_RATIO: libc::c_ulong = 10;
 
-#[cfg(feature = "CONFIG_XEN_HAVE_VPMU")]
+#[cfg(CONFIG_XEN_HAVE_VPMU)]
 extern "C" {
     pub fn xen_pmu_init(cpu: libc::c_int);
     pub fn xen_pmu_finish(cpu: libc::c_int);
 }
-#[cfg(not(feature = "CONFIG_XEN_HAVE_VPMU"))]
+#[cfg(not(CONFIG_XEN_HAVE_VPMU))]
 #[inline] pub unsafe fn xen_pmu_init(_cpu: libc::c_int) {}
-#[cfg(not(feature = "CONFIG_XEN_HAVE_VPMU"))]
+#[cfg(not(CONFIG_XEN_HAVE_VPMU))]
 #[inline] pub unsafe fn xen_pmu_finish(_cpu: libc::c_int) {}
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn asm_cpu_bringup_and_idle();
     pub fn cpu_bringup_and_idle();
@@ -208,15 +208,15 @@ pub struct xen_common_irq {
     pub name: *mut core::ffi::c_char,
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_smp_intr_init(_cpu: u32) -> libc::c_int { 0 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_smp_intr_free(_cpu: u32) {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_smp_intr_init_pv(_cpu: u32) -> libc::c_int { 0 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_smp_intr_free_pv(_cpu: u32) {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn xen_smp_count_cpus() {}
 
 /* External types and helper operations are supplied by the translated kernel dependencies. */

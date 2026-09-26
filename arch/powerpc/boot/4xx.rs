@@ -16,7 +16,7 @@
 
 // External declarations and macros are supplied by the translated dependency files.
 
-static unsafe fn chip_11_errata(mut memsize: usize) -> usize {
+unsafe fn chip_11_errata(mut memsize: usize) -> usize {
     let pvr = mfpvr();
     match pvr & 0xf0000ff0 {
         0x40000850 | 0x400008d0 | 0x200008d0 => memsize -= 4096,

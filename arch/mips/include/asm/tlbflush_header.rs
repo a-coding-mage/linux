@@ -38,24 +38,24 @@ unsafe extern "C" {
     pub fn local_flush_tlb_one(vaddr: ::core::ffi::c_ulong);
 
     /* CONFIG_SMP declarations. */
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_all();
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_mm(mm: *mut mm_struct);
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_range(
         vma: *mut vm_area_struct,
         start: ::core::ffi::c_ulong,
         end: ::core::ffi::c_ulong,
     );
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_kernel_range(
         start: ::core::ffi::c_ulong,
         end: ::core::ffi::c_ulong,
     );
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_page(vma: *mut vm_area_struct, page: ::core::ffi::c_ulong);
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_tlb_one(vaddr: ::core::ffi::c_ulong);
 
     /* Supplied by asm/mmu_context.h. */
@@ -63,19 +63,19 @@ unsafe extern "C" {
 }
 
 /* CONFIG_SMP is a build-time condition; these wrappers preserve the !CONFIG_SMP macros. */
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_all() {
     local_flush_tlb_all();
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
     drop_mmu_context(mm);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_range(
     vma: *mut vm_area_struct,
@@ -85,7 +85,7 @@ pub unsafe fn flush_tlb_range(
     local_flush_tlb_range(vma, vmaddr, end);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_kernel_range(
     vmaddr: ::core::ffi::c_ulong,
@@ -94,13 +94,13 @@ pub unsafe fn flush_tlb_kernel_range(
     local_flush_tlb_kernel_range(vmaddr, end);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, page: ::core::ffi::c_ulong) {
     local_flush_tlb_page(vma, page);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_tlb_one(vaddr: ::core::ffi::c_ulong) {
     local_flush_tlb_one(vaddr);

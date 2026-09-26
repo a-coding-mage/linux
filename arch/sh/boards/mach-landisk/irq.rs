@@ -13,18 +13,15 @@
 
 // Dependencies supplied by the Linux SH platform and LANDISK headers.
 
-enum {
-    UNUSED = 0,
-
-    PCI_INTA, // PCI int A
-    PCI_INTB, // PCI int B
-    PCI_INTC, // PCI int C
-    PCI_INTD, // PCI int D
-    ATA,      // ATA
-    FATA,     // CF
-    POWER,    // Power switch
-    BUTTON,   // Button switch
-}
+pub const UNUSED: i32 = 0;
+pub const PCI_INTA: i32 = UNUSED + 1;
+pub const PCI_INTB: i32 = PCI_INTA + 1;
+pub const PCI_INTC: i32 = PCI_INTB + 1;
+pub const PCI_INTD: i32 = PCI_INTC + 1;
+pub const ATA: i32 = PCI_INTD + 1;
+pub const FATA: i32 = ATA + 1;
+pub const POWER: i32 = FATA + 1;
+pub const BUTTON: i32 = POWER + 1;
 
 #[repr(C)]
 pub struct IntcVect {

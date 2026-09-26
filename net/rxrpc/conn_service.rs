@@ -84,7 +84,7 @@ unsafe fn rxrpc_publish_service_conn(peer: *mut rxrpc_peer, conn: *mut rxrpc_con
         } else if (*cursor).proto.index_key > k.index_key {
             pp = &mut (**pp).rb_right;
         } else {
-            if refcount_read(&(*cursor).ref) == 0 {
+            if refcount_read(&(*cursor).r#ref) == 0 {
                 break;
             }
             write_sequnlock(&mut (*peer).service_conn_lock);

@@ -73,8 +73,8 @@ pub unsafe extern "C" fn parse_args(doing: *const i8, mut args: *mut i8, params:
     } err
 }
 
-macro_rules! standard_param_def { ($n:ident, $t:ty, $set:ident, $get:ident) => {
-    #[no_mangle] pub unsafe extern "C" fn $n##_set(val: *const i8, kp: *const KernelParam) -> i32 { $set(val, 0, (*kp).arg as *mut $t) }
+macro_rules! standard_param_def { ($n:tt, $t:ty, $set:ident, $get:ident) => {
+    #[no_mangle] pub unsafe extern "C" fn ::kernel::macros::paste!([<$n _set>])(val: *const i8, kp: *const KernelParam) -> i32 { $set(val, 0, (*kp).arg as *mut $t) }
 }; }
 
 #[no_mangle] pub unsafe extern "C" fn param_set_uint_minmax(val: *const i8, kp: *const KernelParam, min: u32, max: u32) -> i32 { if val.is_null() { return -EINVAL; } let mut n=0; let r=kstrtouint(val,0,&mut n); if r!=0{return r} if n<min||n>max{-EINVAL}else{*( (*kp).arg as *mut u32)=n;0} }
@@ -89,7 +89,7 @@ macro_rules! standard_param_def { ($n:ident, $t:ty, $set:ident, $get:ident) => {
 /* The remaining parameter-array, string, and CONFIG_SYSFS/MODULES routines retain the C ABI and kernel operations. */
 extern "C" {
     fn strlen(_: *const i8)->usize; fn strcmp(_: *const i8,_:*const i8)->i32; fn skip_spaces(_: *mut i8)->*mut i8; fn next_arg(_: *mut i8,_:*mut *mut i8,_:*mut *mut i8)->*mut i8;
-    fn kstrtobool(*const i8,*mut bool)->i32; fn kstrtouint(*const i8,u32,*mut u32)->i32; fn sprintf(*mut i8,*const i8,...)->i32;
+    fn kstrtobool(_: *const i8,_: *mut bool)->i32; fn kstrtouint(_: *const i8,_: u32,_: *mut u32)->i32; fn sprintf(_: *mut i8,_: *const i8,...)->i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -36,6 +36,7 @@ unsafe fn rds_ib_alloc_frmr(
     let mut ibmr: *mut rds_ib_mr = core::ptr::null_mut();
     let frmr: *mut rds_ib_frmr;
     let mut err: i32 = 0;
+    'out_no_cigar: {
 
     if npages <= RDS_MR_8K_MSG_SIZE {
         pool = (*rds_ibdev).mr_8k_pool;
@@ -55,7 +56,7 @@ unsafe fn rds_ib_alloc_frmr(
     );
     if ibmr.is_null() {
         err = -ENOMEM;
-        goto out_no_cigar;
+        break 'out_no_cigar;
     }
 
     frmr = &mut (*ibmr).u.frmr;
@@ -63,7 +64,7 @@ unsafe fn rds_ib_alloc_frmr(
     if IS_ERR((*frmr).mr) {
         pr_warn("RDS/IB: {} failed to allocate MR", __func__);
         err = PTR_ERR((*frmr).mr);
-        goto out_no_cigar;
+        break 'out_no_cigar;
     }
 
     (*ibmr).pool = pool;
@@ -81,8 +82,8 @@ unsafe fn rds_ib_alloc_frmr(
     init_waitqueue_head(&mut (*frmr).fr_inv_done);
     init_waitqueue_head(&mut (*frmr).fr_reg_done);
     return ibmr;
-
-    out_no_cigar:
+    }
+    
     kfree(ibmr);
     atomic_dec(&mut (*pool).item_count);
     ERR_PTR(err)
@@ -112,6 +113,7 @@ unsafe fn rds_ib_post_reg_frmr(ibmr: *mut rds_ib_mr) -> i32 {
     let mut reg_wr: ib_reg_wr = core::mem::zeroed();
     let mut ret: i32;
     let mut off: i32 = 0;
+    'out_inc: {
 
     while atomic_dec_return(&mut (*(*ibmr).ic).i_fastreg_wrs) <= 0 {
         atomic_inc(&mut (*(*ibmr).ic).i_fastreg_wrs);
@@ -121,12 +123,12 @@ unsafe fn rds_ib_post_reg_frmr(ibmr: *mut rds_ib_mr) -> i32 {
     ret = ib_map_mr_sg_zbva((*frmr).mr, (*ibmr).sg, (*ibmr).sg_dma_len, &mut off, PAGE_SIZE);
     if unlikely(ret != (*ibmr).sg_dma_len) {
         ret = if ret < 0 { ret } else { -EINVAL };
-        goto out_inc;
+        break 'out_inc;
     }
 
     if cmpxchg(&mut (*frmr).fr_state, FRMR_IS_FREE, FRMR_IS_INUSE) != FRMR_IS_FREE {
         ret = -EBUSY;
-        goto out_inc;
+        break 'out_inc;
     }
 
     atomic_inc(&mut (*(*ibmr).ic).i_fastreg_inuse_count);
@@ -151,13 +153,13 @@ unsafe fn rds_ib_post_reg_frmr(ibmr: *mut rds_ib_mr) -> i32 {
         if printk_ratelimit() {
             pr_warn("RDS/IB: {} returned error({})\n", __func__, ret);
         }
-        goto out_inc;
+        break 'out_inc;
     }
 
     wait_event(&mut (*frmr).fr_reg_done, !(*frmr).fr_reg);
     return ret;
-
-    out_inc:
+    }
+    
     atomic_inc(&mut (*(*ibmr).ic).i_fastreg_wrs);
     ret
 }
@@ -173,6 +175,7 @@ unsafe fn rds_ib_map_frmr(
     let frmr = &mut (*ibmr).u.frmr;
     let mut len: u32;
     let mut ret: i32 = 0;
+    'out_unmap: {
 
     rds_ib_teardown_mr(ibmr);
     (*ibmr).sg = sg;
@@ -195,21 +198,21 @@ unsafe fn rds_ib_map_frmr(
         let dma_addr = sg_dma_address(&mut (*ibmr).sg.add(i as usize));
         (*frmr).sg_byte_len += dma_len;
         if dma_addr & !PAGE_MASK != 0 {
-            if i > 0 { goto out_unmap; } else { (*frmr).dma_npages += 1; }
+            if i > 0 { break 'out_unmap; } else { (*frmr).dma_npages += 1; }
         }
         if (dma_addr + dma_len as u64) & !PAGE_MASK != 0 {
-            if i < (*ibmr).sg_dma_len - 1 { goto out_unmap; } else { (*frmr).dma_npages += 1; }
+            if i < (*ibmr).sg_dma_len - 1 { break 'out_unmap; } else { (*frmr).dma_npages += 1; }
         }
         len += dma_len;
     }
     (*frmr).dma_npages += len >> PAGE_SHIFT;
-    if (*frmr).dma_npages > (*ibmr).pool.as_ref().unwrap().max_pages { ret = -EMSGSIZE; goto out_unmap; }
+    if (*frmr).dma_npages > (*ibmr).pool.as_ref().unwrap().max_pages { ret = -EMSGSIZE; break 'out_unmap; }
     ret = rds_ib_post_reg_frmr(ibmr);
-    if ret != 0 { goto out_unmap; }
+    if ret != 0 { break 'out_unmap; }
     if (*ibmr).pool.as_ref().unwrap().pool_type == RDS_IB_MR_8K_POOL { rds_ib_stats_inc(s_ib_rdma_mr_8k_used); } else { rds_ib_stats_inc(s_ib_rdma_mr_1m_used); }
     return ret;
-
-    out_unmap:
+    }
+    
     ib_dma_unmap_sg((*rds_ibdev).dev, (*ibmr).sg, (*ibmr).sg_len, DMA_BIDIRECTIONAL);
     (*ibmr).sg_dma_len = 0;
     ret
@@ -259,9 +262,9 @@ pub unsafe fn rds_ib_unreg_frmr(list: *mut list_head, nfreed: *mut u32, unpinned
     let mut freed = *nfreed;
     let mut ret = 0;
     let mut ibmr: *mut rds_ib_mr = core::ptr::null_mut();
-    list_for_each_entry(ibmr, list, unmap_list) { if (*ibmr).sg_dma_len != 0 { let ret2 = rds_ib_post_inv(ibmr); if ret2 != 0 && ret == 0 { ret = ret2; } } }
+    list_for_each_entry!(ibmr, list, unmap_list, { if (*ibmr).sg_dma_len != 0 { let ret2 = rds_ib_post_inv(ibmr); if ret2 != 0 && ret == 0 { ret = ret2; } } });
     if ret != 0 { pr_warn("RDS/IB: {} failed (err={})\n", __func__, ret); }
-    list_for_each_entry_safe(ibmr, list, unmap_list) {
+    list_for_each_entry_safe!(ibmr, list, unmap_list, {
         *unpinned += (*ibmr).sg_len as usize;
         let frmr = &mut (*ibmr).u.frmr;
         __rds_ib_teardown_mr(ibmr);
@@ -273,7 +276,7 @@ pub unsafe fn rds_ib_unreg_frmr(list: *mut list_head, nfreed: *mut u32, unpinned
             kfree(ibmr);
             freed += 1;
         }
-    }
+    });
     *nfreed = freed;
 }
 

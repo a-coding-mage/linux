@@ -29,20 +29,20 @@ unsafe extern "C" {
 }
 
 /* Restore astate to last set */
-#[cfg(feature = "CONFIG_PPC_PASEMI_CPUFREQ")]
+#[cfg(CONFIG_PPC_PASEMI_CPUFREQ)]
 unsafe extern "C" {
     pub fn check_astate() -> ::core::ffi::c_int;
     pub fn restore_astate(cpu: ::core::ffi::c_int);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_PASEMI_CPUFREQ"))]
+#[cfg(not(CONFIG_PPC_PASEMI_CPUFREQ))]
 #[inline]
 pub fn check_astate() -> ::core::ffi::c_int {
     /* Always return >0 so we never power save */
     1
 }
 
-#[cfg(not(feature = "CONFIG_PPC_PASEMI_CPUFREQ"))]
+#[cfg(not(CONFIG_PPC_PASEMI_CPUFREQ))]
 #[inline]
 pub fn restore_astate(_cpu: ::core::ffi::c_int) {}
 

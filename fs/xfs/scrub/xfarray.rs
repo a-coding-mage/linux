@@ -22,16 +22,16 @@ pub type xfarray_cmp_fn = unsafe extern "C" fn(*const c_void, *const c_void) -> 
 }
 
 extern "C" {
-    fn xfile_create(*const i8, u32, *mut *mut xfile) -> i32;
-    fn xfile_destroy(*mut xfile); fn xfile_load(*mut xfile,*mut c_void,usize,loff_t)->i32;
-    fn xfile_store(*mut xfile,*const c_void,usize,loff_t)->i32;
-    fn xfile_seek_data(*mut xfile,loff_t)->loff_t; fn xfile_bytes(*mut xfile)->u64;
-    fn xfile_discard(*mut xfile,loff_t,loff_t); fn xfile_get_folio(*mut xfile,loff_t,u64,u32)->*mut folio;
-    fn xfile_put_folio(*mut xfile,*mut folio); fn folio_address(*mut folio)->*mut u8;
-    fn folio_pos(*mut folio)->loff_t; fn folio_next_pos(*mut folio)->loff_t;
-    fn offset_in_folio(*mut folio,loff_t)->usize; fn xchk_maybe_relax(*mut xchk_relax)->bool;
-    fn sort(*mut c_void,usize,usize,xfarray_cmp_fn,*mut c_void);
-    fn memchr_inv(*const c_void,i32,usize)->*mut c_void;
+    fn xfile_create(_: *const i8, _: u32, _: *mut *mut xfile) -> i32;
+    fn xfile_destroy(_: *mut xfile); fn xfile_load(_: *mut xfile,_: *mut c_void,_: usize,_: loff_t)->i32;
+    fn xfile_store(_: *mut xfile,_: *const c_void,_: usize,_: loff_t)->i32;
+    fn xfile_seek_data(_: *mut xfile,_: loff_t)->loff_t; fn xfile_bytes(_: *mut xfile)->u64;
+    fn xfile_discard(_: *mut xfile,_: loff_t,_: loff_t); fn xfile_get_folio(_: *mut xfile,_: loff_t,_: u64,_: u32)->*mut folio;
+    fn xfile_put_folio(_: *mut xfile,_: *mut folio); fn folio_address(_: *mut folio)->*mut u8;
+    fn folio_pos(_: *mut folio)->loff_t; fn folio_next_pos(_: *mut folio)->loff_t;
+    fn offset_in_folio(_: *mut folio,_: loff_t)->usize; fn xchk_maybe_relax(_: *mut xchk_relax)->bool;
+    fn sort(_: *mut c_void,_: usize,_: usize,_: xfarray_cmp_fn,_: *mut c_void);
+    fn memchr_inv(_: *const c_void,_: i32,_: usize)->*mut c_void;
 }
 
 const PAGE_SIZE: usize = 4096; const MAX_LFS_FILESIZE: loff_t = i64::MAX;
@@ -52,7 +52,7 @@ unsafe fn pos(a:*mut xfarray,i:xfarray_idx_t)->loff_t { if (*a).obj_size_log>=0 
     (*a).obj_size_log=if size.is_power_of_two(){size.trailing_zeros() as i32}else{-1}; (*a).max_nr=idx(a,MAX_LFS_FILESIZE);
     if req>0 {if (*a).max_nr<req as i64 {libc_free(a as *mut c_void);xfile_destroy(x);return -ENOMEM} (*a).max_nr=req as i64;} *out=a;0
 }
-extern "C" { fn libc_alloc(usize)->*mut c_void; fn libc_free(*mut c_void); }
+extern "C" { fn libc_alloc(_: usize)->*mut c_void; fn libc_free(_: *mut c_void); }
 #[no_mangle] pub unsafe extern "C" fn xfarray_destroy(a:*mut xfarray){xfile_destroy((*a).xfile);libc_free(a as *mut c_void)}
 #[no_mangle] pub unsafe extern "C" fn xfarray_load(a:*mut xfarray,i:xfarray_idx_t,p:*mut c_void)->i32{if i>=(*a).nr{-ENODATA}else{xfile_load((*a).xfile,p,(*a).obj_size,pos(a,i))}}
 unsafe fn is_null(a:*mut xfarray,p:*const c_void)->bool{memchr_inv(p,0,(*a).obj_size).is_null()}

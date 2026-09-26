@@ -97,9 +97,9 @@ unsafe extern "C" fn c_show(m: *mut seq_file, _v: *mut c_void) -> c_int {
     let mut cpu: c_int;
 
     // Translation of the kernel's for_each_online_cpu(cpu) macro.
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         smp_call_function_single(cpu, percpu_print, m as *mut c_void, true);
-    }
+    });
 
     // #ifdef CSKY_ARCH_VERSION: retain this build-time conditional for the
     // configuration supplying the architecture version symbol.

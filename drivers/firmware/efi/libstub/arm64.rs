@@ -78,13 +78,13 @@ pub unsafe fn check_platform_features() -> EfiStatus {
 
     // UEFI mandates support for 4 KB granularity, no need to check.
     // Build-time CONFIG_ARM64_4K_PAGES condition is supplied by the kernel build.
-    if cfg!(feature = "CONFIG_ARM64_4K_PAGES") {
+    if cfg!(CONFIG_ARM64_4K_PAGES) {
         return EFI_SUCCESS;
     }
 
     tg = (read_cpuid(0) >> 28) & 0xf;
     if tg < 0 || tg > 0xf {
-        if cfg!(feature = "CONFIG_ARM64_64K_PAGES") {
+        if cfg!(CONFIG_ARM64_64K_PAGES) {
             efi_err(b"This 64 KB granular kernel is not supported by your CPU\n\0".as_ptr());
         } else {
             efi_err(b"This 16 KB granular kernel is not supported by your CPU\n\0".as_ptr());

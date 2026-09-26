@@ -11,7 +11,7 @@
 /* Dependency supplied externally: irqreturn_t from <linux/irqreturn.h>. */
 
 /* CONFIG_XMON conditional. */
-#[cfg(feature = "CONFIG_XMON")]
+#[cfg(CONFIG_XMON)]
 unsafe extern "C" {
     pub fn xmon_setup();
 }
@@ -22,7 +22,7 @@ pub struct pt_regs {
 }
 
 /* CONFIG_XMON conditional. */
-#[cfg(feature = "CONFIG_XMON")]
+#[cfg(CONFIG_XMON)]
 unsafe extern "C" {
     pub fn xmon(excp: *mut pt_regs) -> ::core::ffi::c_int;
     pub fn xmon_irq(irq: ::core::ffi::c_int, dev_id: *mut ::core::ffi::c_void) -> irqreturn_t;
@@ -30,11 +30,11 @@ unsafe extern "C" {
 
 /* CONFIG_XMON inverse conditional. */
 #[inline]
-#[cfg(not(feature = "CONFIG_XMON"))]
+#[cfg(not(CONFIG_XMON))]
 pub fn xmon_setup() {}
 
 /* CONFIG_XMON && CONFIG_SMP conditional. */
-#[cfg(all(feature = "CONFIG_XMON", feature = "CONFIG_SMP"))]
+#[cfg(all(CONFIG_XMON, CONFIG_SMP))]
 unsafe extern "C" {
     pub fn cpus_are_in_xmon() -> ::core::ffi::c_int;
 }

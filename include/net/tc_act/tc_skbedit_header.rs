@@ -36,7 +36,7 @@ pub unsafe fn to_skbedit(a: *const tc_action) -> *const tcf_skbedit {
 #[inline]
 pub unsafe fn is_tcf_skbedit_with_flag(a: *const tc_action, flag: u32) -> bool {
     // C conditional: CONFIG_NET_CLS_ACT
-    #[cfg(feature = "CONFIG_NET_CLS_ACT")]
+    #[cfg(CONFIG_NET_CLS_ACT)]
     {
         let mut flags: u32;
 

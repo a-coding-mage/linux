@@ -296,10 +296,10 @@ static clkout_sels: &'static str = {"audio_pll1_out", "audio_pll2_out", "video_p
 static mut clk_hw_onecell_data *clk_hw_data;
 static mut clk_hw **hws;
 
-unsafe fn imx8mm_clocks_probe(struct platform_device *pdev)
+unsafe fn imx8mm_clocks_probe(platform_device *pdev)
 {
-	struct device *dev = &pdev->dev;
-	struct device_node *np = dev->of_node;
+	struct device *dev = (*&pdev).dev;
+	struct device_node *np = (*dev).of_node;
 	struct clk_hw *audio_pll_hws[2];
 	*mut core::ffi::c_void base;
 	let mut ret: i32;
@@ -308,8 +308,8 @@ unsafe fn imx8mm_clocks_probe(struct platform_device *pdev)
 	if (WARN_ON(!clk_hw_data))
 		return -ENOMEM;
 
-	clk_hw_data->num = IMX8MM_CLK_END;
-	hws = clk_hw_data->hws;
+	(*clk_hw_data).num = IMX8MM_CLK_END;
+	hws = (*clk_hw_data).hws;
 
 	hws[IMX8MM_CLK_DUMMY] = imx_clk_hw_fixed("dummy", 0);
 	hws[IMX8MM_CLK_24M] = imx_get_clk_hw_by_name(np, "osc_24m");
@@ -397,7 +397,7 @@ unsafe fn imx8mm_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MM_CLK_CLKOUT2_DIV] = imx_clk_hw_divider("clkout2_div", "clkout2_sel", base + 0x128, 16, 4);
 	hws[IMX8MM_CLK_CLKOUT2] = imx_clk_hw_gate("clkout2", "clkout2_div", base + 0x128, 24);
 
-	np = dev->of_node;
+	np = (*dev).of_node;
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base)))
 		return PTR_ERR(base);
@@ -596,10 +596,10 @@ unsafe fn imx8mm_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MM_CLK_DRAM_CORE] = imx_clk_hw_mux2_flags("dram_core_clk", base + 0x9800, 24, 1, imx8mm_dram_core_sels, ARRAY_SIZE(imx8mm_dram_core_sels), CLK_IS_CRITICAL);
 
 	hws[IMX8MM_CLK_ARM] = imx_clk_hw_cpu("arm", "arm_a53_core",
-					   hws[IMX8MM_CLK_A53_CORE]->clk,
-					   hws[IMX8MM_CLK_A53_CORE]->clk,
-					   hws[IMX8MM_ARM_PLL_OUT]->clk,
-					   hws[IMX8MM_CLK_A53_DIV]->clk);
+					   (*hws[IMX8MM_CLK_A53_CORE]).clk,
+					   (*hws[IMX8MM_CLK_A53_CORE]).clk,
+					   (*hws[IMX8MM_ARM_PLL_OUT]).clk,
+					   (*hws[IMX8MM_CLK_A53_DIV]).clk);
 
 	imx_check_clk_hws(hws, IMX8MM_CLK_END);
 
@@ -631,15 +631,15 @@ static const struct of_device_id imx8mm_clk_of_match[] = {
 MODULE_DEVICE_TABLE(of, imx8mm_clk_of_match);
 
 static mut platform_driver imx8mm_clk_driver = {
-	.probe = imx8mm_clocks_probe,
-	.driver = {
-		.name = "imx8mm-ccm",
+	probe: imx8mm_clocks_probe,
+	driver: {
+		name: "imx8mm-ccm",
 		/*
 		 * Disable bind attributes: clocks are not removed and
 		 * reloading the driver will crash or break devices.
 		 */
-		.suppress_bind_attrs = true,
-		.of_match_table = imx8mm_clk_of_match,
+		suppress_bind_attrs: true,
+		of_match_table: imx8mm_clk_of_match,
 	},
 };
 module_platform_driver(imx8mm_clk_driver);

@@ -917,7 +917,7 @@ pub unsafe extern "C" fn ui_browser__mark_fused(browser: *mut ui_browser, column
     SLsmg_set_char_set(1);
 
     if arrow_down {
-        if row as u64 + diff as u64 <= (*browser).top_idx {
+        if row as u64 + (diff as u64) <= (*browser).top_idx {
             return;
         }
 
@@ -942,7 +942,7 @@ pub unsafe extern "C" fn ui_browser__mark_fused(browser: *mut ui_browser, column
             SLsmg_draw_hline(2);
         }
     } else {
-        if row as u64 < (*browser).top_idx {
+        if (row as u64) < (*browser).top_idx {
             return;
         }
 

@@ -103,7 +103,7 @@ pub unsafe extern "C" fn tsunami_pci_tbi(hose: *mut pci_controller, start: dma_a
 }
 
 #[cfg(NXM_MACHINE_CHECKS_ON_TSUNAMI)]
-unsafe fn tsunami_probe_read(vaddr: *volatile c_ulong) -> c_long {
+unsafe fn tsunami_probe_read(vaddr: *mut c_ulong) -> c_long {
     let cpu = smp_processor_id();
     let s = swpipl(IPL_MCHECK - 1);
     mcheck_taken(cpu) = 0;
@@ -120,7 +120,7 @@ unsafe fn tsunami_probe_read(vaddr: *volatile c_ulong) -> c_long {
 }
 
 #[cfg(not(NXM_MACHINE_CHECKS_ON_TSUNAMI))]
-unsafe fn tsunami_probe_read(_addr: *volatile c_ulong) -> c_long { 1 }
+unsafe fn tsunami_probe_read(_addr: *mut c_ulong) -> c_long { 1 }
 
 #[cfg(NXM_MACHINE_CHECKS_ON_TSUNAMI)]
 unsafe fn tsunami_probe_write(vaddr: *mut c_ulong) -> c_long {

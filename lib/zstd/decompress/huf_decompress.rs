@@ -30,16 +30,16 @@ pub const HUF_DECOMPRESS_C_SOURCE: &str = R#"// SPDX-License-Identifier: GPL-2.0
 *  Constants
 ****************************************************************/
 
-#define HUF_DECODER_FAST_TABLELOG 11
+pub const HUF_DECODER_FAST_TABLELOG: u32 = 11;
 
 /* **************************************************************
 *  Macros
 ****************************************************************/
 
 #ifdef HUF_DISABLE_FAST_DECODE
-# define HUF_ENABLE_FAST_DECODE 0
+pub const HUF_ENABLE_FAST_DECODE: u32 = 0;
 #else
-# define HUF_ENABLE_FAST_DECODE 1
+pub const HUF_ENABLE_FAST_DECODE: u32 = 1;
 #endif
 
 /* These two optional macros force the use one way or another of the two
@@ -65,9 +65,9 @@ pub const HUF_DECOMPRESS_C_SOURCE: &str = R#"// SPDX-License-Identifier: GPL-2.0
 #define HUF_ASM_DECL HUF_EXTERN_C
 
 #if DYNAMIC_BMI2
-# define HUF_NEED_BMI2_FUNCTION 1
+pub const HUF_NEED_BMI2_FUNCTION: u32 = 1;
 #else
-# define HUF_NEED_BMI2_FUNCTION 0
+pub const HUF_NEED_BMI2_FUNCTION: u32 = 0;
 #endif
 
 /* **************************************************************

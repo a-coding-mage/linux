@@ -86,13 +86,13 @@ pub enum reboot_mode {}
 pub enum syscore {}
 
 // When CONFIG_PXA25x or CONFIG_PXA27x is enabled, this is supplied externally.
-#[cfg(any(feature = "CONFIG_PXA25x", feature = "CONFIG_PXA27x"))]
+#[cfg(any(CONFIG_PXA25x, CONFIG_PXA27x))]
 extern "C" {
     pub fn pxa2xx_clear_reset_status(mask: ::core::ffi::c_uint);
 }
 
 // Otherwise the C header provides an empty static inline function.
-#[cfg(not(any(feature = "CONFIG_PXA25x", feature = "CONFIG_PXA27x")))]
+#[cfg(not(any(CONFIG_PXA25x, CONFIG_PXA27x)))]
 #[inline]
 pub unsafe fn pxa2xx_clear_reset_status(_mask: ::core::ffi::c_uint) {}
 

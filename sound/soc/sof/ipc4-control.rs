@@ -38,8 +38,7 @@ extern "C" {
     fn sof_ipc4_find_swidget_by_ids(
         sdev: *mut snd_sof_dev,
         module_id: u32,
-        instance_id: u32,
-    ) -> *mut snd_sof_widget;
+        instance_id: u32) -> *mut snd_sof_widget;
     fn snd_ctl_notify_one(card: *mut snd_card, mask: c_uint, kc: *mut snd_kcontrol, value: c_int);
 
     fn dev_err(dev: *mut device, fmt: *const c_char, ...);

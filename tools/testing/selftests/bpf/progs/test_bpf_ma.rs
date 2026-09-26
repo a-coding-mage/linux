@@ -47,7 +47,7 @@ macro_rules! define_array_with_kptr {
             pub data: [i8; $size - core::mem::size_of::<*mut c_void>()],
         }
 
-        /* See Commit 5d8d6634ccc, force btf generation for type bin_data_##_size */
+        /* See Commit 5d8d6634ccc, force btf generation for type ::kernel::macros::paste!([<bin_data_ _size>]) */
         pub static mut $bin_ptr: *mut $bin = core::ptr::null_mut();
 
         #[repr(C)]
@@ -63,7 +63,7 @@ macro_rules! define_array_with_kptr {
         // Original C map definition used SEC(".maps") with:
         // __uint(type, BPF_MAP_TYPE_ARRAY);
         // __type(key, int);
-        // __type(value, struct map_value_##_size);
+        // __type($value, struct ::kernel::macros::paste!([<map_value_ _size>]));
         // __uint(max_entries, 128);
         #[unsafe(link_section = ".maps")]
         pub static mut $array: $array = $array { _private: [] };
@@ -92,7 +92,7 @@ macro_rules! define_array_with_percpu_kptr {
         // Original C map definition used SEC(".maps") with:
         // __uint(type, BPF_MAP_TYPE_ARRAY);
         // __type(key, int);
-        // __type(value, struct map_value_percpu_##_size);
+        // __type($value, struct ::kernel::macros::paste!([<map_value_percpu_ _size>]));
         // __uint(max_entries, 128);
         #[unsafe(link_section = ".maps")]
         pub static mut $array: $array = $array { _private: [] };

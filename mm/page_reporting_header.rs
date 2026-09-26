@@ -2,14 +2,14 @@
 
 /* Dependencies supplied by the surrounding kernel translation unit. */
 
-#[cfg(feature = "CONFIG_PAGE_REPORTING")]
+#[cfg(CONFIG_PAGE_REPORTING)]
 extern "C" {
     pub static page_reporting_enabled: StaticKey;
     pub static mut page_reporting_order: ::core::ffi::c_uint;
     pub fn __page_reporting_notify();
 }
 
-#[cfg(feature = "CONFIG_PAGE_REPORTING")]
+#[cfg(CONFIG_PAGE_REPORTING)]
 #[inline]
 pub unsafe fn page_reported(page: *mut page) -> bool {
     static_branch_unlikely(&page_reporting_enabled) && PageReported(page)
@@ -24,7 +24,7 @@ pub unsafe fn page_reported(page: *mut page) -> bool {
  * threshold then it will start the process of pulling some pages and
  * placing them in the batch list for treatment.
  */
-#[cfg(feature = "CONFIG_PAGE_REPORTING")]
+#[cfg(CONFIG_PAGE_REPORTING)]
 #[inline]
 pub unsafe fn page_reporting_notify_free(order: ::core::ffi::c_uint) {
     /* Called from hot path in __free_one_page() */
@@ -41,13 +41,13 @@ pub unsafe fn page_reporting_notify_free(order: ::core::ffi::c_uint) {
     __page_reporting_notify();
 }
 
-#[cfg(not(feature = "CONFIG_PAGE_REPORTING"))]
+#[cfg(not(CONFIG_PAGE_REPORTING))]
 #[inline]
 pub unsafe fn page_reported(_page: *mut page) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_PAGE_REPORTING"))]
+#[cfg(not(CONFIG_PAGE_REPORTING))]
 #[inline]
 pub unsafe fn page_reporting_notify_free(_order: ::core::ffi::c_uint) {}
 

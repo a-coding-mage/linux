@@ -11,7 +11,7 @@ pub struct pt_regs {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 extern "C" {
     pub fn syscall_user_dispatch(regs: *mut pt_regs) -> bool;
 
@@ -39,7 +39,7 @@ extern "C" {
 #[allow(non_camel_case_types)]
 pub enum task_struct {}
 
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 #[inline(always)]
 pub unsafe fn syscall_user_dispatch_clear_on_dispatch() -> bool {
     /* `current->syscall_dispatch.on_dispatch` is provided by the external
@@ -52,39 +52,39 @@ pub unsafe fn syscall_user_dispatch_clear_on_dispatch() -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 extern "C" {
     fn current_syscall_dispatch_on_dispatch() -> bool;
     fn clear_current_syscall_dispatch_on_dispatch();
 }
 
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 #[inline(always)]
 pub unsafe fn clear_syscall_work_syscall_user_dispatch(tsk: *mut task_struct) {
     clear_task_syscall_work(tsk, SYSCALL_USER_DISPATCH);
 }
 
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 extern "C" {
     fn clear_task_syscall_work(tsk: *mut task_struct, work: ::core::ffi::c_ulong);
 }
 
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 pub const SYSCALL_USER_DISPATCH: ::core::ffi::c_ulong = 0;
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline(always)]
 pub unsafe fn syscall_user_dispatch(_regs: *mut pt_regs) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline(always)]
 pub unsafe fn syscall_user_dispatch_clear_on_dispatch() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline]
 pub unsafe fn set_syscall_user_dispatch(
     _mode: ::core::ffi::c_ulong,
@@ -95,11 +95,11 @@ pub unsafe fn set_syscall_user_dispatch(
     -22 /* -EINVAL */
 }
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline]
 pub unsafe fn clear_syscall_work_syscall_user_dispatch(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline]
 pub unsafe fn syscall_user_dispatch_get_config(
     _task: *mut task_struct,
@@ -109,7 +109,7 @@ pub unsafe fn syscall_user_dispatch_get_config(
     -22 /* -EINVAL */
 }
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[inline]
 pub unsafe fn syscall_user_dispatch_set_config(
     _task: *mut task_struct,

@@ -14,7 +14,7 @@ pub struct notifier_block {
 }
 
 /* CONFIG_CXL_MCE is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_CXL_MCE")]
+#[cfg(CONFIG_CXL_MCE)]
 unsafe extern "C" {
     pub fn devm_cxl_register_mce_notifier(
         dev: *mut device,
@@ -22,7 +22,7 @@ unsafe extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_CXL_MCE"))]
+#[cfg(not(CONFIG_CXL_MCE))]
 pub unsafe fn devm_cxl_register_mce_notifier(
     _dev: *mut device,
     _mce_notifier: *mut notifier_block,

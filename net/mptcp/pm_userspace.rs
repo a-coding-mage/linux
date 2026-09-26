@@ -17,16 +17,16 @@ unsafe fn mptcp_userspace_pm_free_local_addr_list(msk: *mut mptcp_sock) {
     spin_unlock_bh(&mut (*msk).pm.lock);
     let mut entry: *mut mptcp_pm_addr_entry = core::ptr::null_mut();
     let mut tmp: *mut mptcp_pm_addr_entry = core::ptr::null_mut();
-    list_for_each_entry_safe(entry, tmp, &mut free_list, list) {
+    list_for_each_entry_safe!(entry, tmp, &mut free_list, list, {
         sock_kfree_s(sk, entry, core::mem::size_of::<mptcp_pm_addr_entry>());
-    }
+    });
 }
 
 unsafe fn mptcp_userspace_pm_lookup_addr(msk: *mut mptcp_sock, addr: *const mptcp_addr_info) -> *mut mptcp_pm_addr_entry {
     let mut entry: *mut mptcp_pm_addr_entry = core::ptr::null_mut();
-    list_for_each_entry(entry, &mut (*msk).pm.userspace_pm_local_addr_list, list) {
+    list_for_each_entry!(entry, &mut (*msk).pm.userspace_pm_local_addr_list, list, {
         if mptcp_addresses_equal(&(*entry).addr, addr, false) { return entry; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -40,13 +40,13 @@ unsafe fn mptcp_userspace_pm_append_new_local_addr(msk: *mut mptcp_sock, entry: 
     bitmap_zero(id_bitmap.as_mut_ptr(), MPTCP_PM_MAX_ADDR_ID + 1);
     spin_lock_bh(&mut (*msk).pm.lock);
     if ((*msk).pm.status & BIT(MPTCP_PM_DESTROYING)) != 0 { ret = -EINVAL; goto_append_err!(); }
-    list_for_each_entry(e, &mut (*msk).pm.userspace_pm_local_addr_list, list) {
+    list_for_each_entry!(e, &mut (*msk).pm.userspace_pm_local_addr_list, list, {
         addr_match = mptcp_addresses_equal(&(*e).addr, &(*entry).addr, true);
         if addr_match && (*entry).addr.id == 0 && needs_id { (*entry).addr.id = (*e).addr.id; }
         id_match = (*e).addr.id == (*entry).addr.id;
         if addr_match || id_match { break; }
         __set_bit((*e).addr.id, id_bitmap.as_mut_ptr());
-    }
+    });
     if !addr_match && !id_match {
         e = sock_kmemdup(sk, entry, core::mem::size_of::<mptcp_pm_addr_entry>(), GFP_ATOMIC);
         if e.is_null() { ret = -ENOMEM; goto_append_err!(); }
@@ -72,9 +72,9 @@ unsafe fn mptcp_userspace_pm_delete_local_addr(msk: *mut mptcp_sock, addr: *mut 
 
 unsafe fn mptcp_userspace_pm_lookup_addr_by_id(msk: *mut mptcp_sock, id: u32) -> *mut mptcp_pm_addr_entry {
     let mut entry: *mut mptcp_pm_addr_entry = core::ptr::null_mut();
-    list_for_each_entry(entry, &mut (*msk).pm.userspace_pm_local_addr_list, list) {
+    list_for_each_entry!(entry, &mut (*msk).pm.userspace_pm_local_addr_list, list, {
         if (*entry).addr.id == id { return entry; }
-    }
+    });
     core::ptr::null_mut()
 }
 

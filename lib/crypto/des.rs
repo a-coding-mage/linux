@@ -552,7 +552,7 @@ static S8[64] = {
 static u32 des_ekey(u32 *pe, const u8 *k)
 {
 	/* K&R: long is at least 32 bits */
-	u32 a, b, c, d, w;
+	a: u32, b, c, d, w;
 	let mut pt = pc2.as_ptr();
 
 	d = k[4]; d &= 0x0e; d <<= 4; d |= k[0] & 0x1e; d = pc1[d];
@@ -630,7 +630,7 @@ unsafe fn des_expand_key(ctx: *mut des_ctx, key: *const u8, keylen: u32) -> i32
 	if (keylen != DES_KEY_SIZE)
 		return -EINVAL;
 
-	return des_ekey(ctx->expkey, key) ? 0 : -ENOKEY;
+	return des_ekey((*ctx).expkey, key) ? 0 : -ENOKEY;
 }
 
 
@@ -643,7 +643,7 @@ unsafe fn des_expand_key(ctx: *mut des_ctx, key: *const u8, keylen: u32) -> i32
 unsafe fn dkey(pe: *mut u32, k: *const u8)
 {
 	/* K&R: long is at least 32 bits */
-	u32 a, b, c, d;
+	a: u32, b, c, d;
 	let mut pt = pc2.as_ptr();
 
 	d = k[4]; d &= 0x0e; d <<= 4; d |= k[0] & 0x1e; d = pc1[d];
@@ -709,7 +709,7 @@ unsafe fn dkey(pe: *mut u32, k: *const u8)
 
 unsafe fn des_encrypt(ctx: *const des_ctx, dst: *mut u8, src: *const u8)
 {
-	let K = ctx->expkey;
+	let K = (*ctx).expkey;
 	u32 L, R, A, B;
 	int i;
 
@@ -730,7 +730,7 @@ unsafe fn des_encrypt(ctx: *const des_ctx, dst: *mut u8, src: *const u8)
 
 unsafe fn des_decrypt(ctx: *const des_ctx, dst: *mut u8, src: *const u8)
 {
-	let K = ctx->expkey + DES_EXPKEY_WORDS - 2;
+	let K = (*ctx).expkey + DES_EXPKEY_WORDS - 2;
 	u32 L, R, A, B;
 	int i;
 
@@ -751,7 +751,7 @@ unsafe fn des_decrypt(ctx: *const des_ctx, dst: *mut u8, src: *const u8)
 
 unsafe fn des3_ede_expand_key(ctx: *mut des3_ede_ctx, key: *const u8, keylen: u32) -> i32
 {
-	u32 *pe = ctx->expkey;
+	u32 *pe = (*ctx).expkey;
 	int err;
 
 	if (keylen != DES3_EDE_KEY_SIZE)
@@ -771,7 +771,7 @@ unsafe fn des3_ede_expand_key(ctx: *mut des3_ede_ctx, key: *const u8, keylen: u3
 
 unsafe fn des3_ede_encrypt(dctx: *const des3_ede_ctx, dst: *mut u8, src: *const u8)
 {
-	let K = dctx->expkey;
+	let K = (*dctx).expkey;
 	u32 L, R, A, B;
 	int i;
 
@@ -800,7 +800,7 @@ unsafe fn des3_ede_encrypt(dctx: *const des3_ede_ctx, dst: *mut u8, src: *const 
 
 unsafe fn des3_ede_decrypt(dctx: *const des3_ede_ctx, dst: *mut u8, src: *const u8)
 {
-	let K = dctx->expkey + DES3_EDE_EXPKEY_WORDS - 2;
+	let K = (*dctx).expkey + DES3_EDE_EXPKEY_WORDS - 2;
 	u32 L, R, A, B;
 	int i;
 

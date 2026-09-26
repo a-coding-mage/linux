@@ -31,13 +31,13 @@
 // #include "ccu-sun4i-a10.h"
 
 static mut ccu_nkmp pll_core_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
-	.k = _SUNXI_CCU_MULT(4, 2),
-	.m = _SUNXI_CCU_DIV(0, 2),
-	.p = _SUNXI_CCU_DIV(16, 2),
-	.common = {
-		.reg = 0x000,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
+	k: _SUNXI_CCU_MULT(4, 2),
+	m: _SUNXI_CCU_DIV(0, 2),
+	p: _SUNXI_CCU_DIV(16, 2),
+	common: {
+		reg: 0x000,
 		.hw.init = CLK_HW_INIT("pll-core",
 					      "hosc",
 					      &ccu_nkmp_ops,
@@ -57,7 +57,7 @@ static mut ccu_nkmp pll_core_clk = {
  * variable divider to 1. This means the clock rates will no longer
  * match the clock names.
  */
-#define SUN4I_PLL_AUDIO_REG	0x008
+pub const SUN4I_PLL_AUDIO_REG: u32 = 0x008;
 
 static mut ccu_sdm_setting pll_audio_sdm_table[] = {
 	{ .rate = 22579200, .pattern = 0xc0010d84, .m = 8, .n = 7 },
@@ -65,14 +65,14 @@ static mut ccu_sdm_setting pll_audio_sdm_table[] = {
 };
 
 static mut ccu_nm pll_audio_base_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 7, 0),
-	.m = _SUNXI_CCU_DIV_OFFSET(0, 5, 0),
-	.sdm = _SUNXI_CCU_SDM(pll_audio_sdm_table, 0,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 7, 0),
+	m: _SUNXI_CCU_DIV_OFFSET(0, 5, 0),
+	sdm: _SUNXI_CCU_SDM(pll_audio_sdm_table, 0,
 					 0x00c, BIT(31)),
-	.common = {
-		.reg = 0x008,
-		.features = CCU_FEATURE_SIGMA_DELTA_MOD,
+	common: {
+		reg: 0x008,
+		features: CCU_FEATURE_SIGMA_DELTA_MOD,
 		.hw.init = CLK_HW_INIT("pll-audio-base",
 					      "hosc",
 					      &ccu_nm_ops,
@@ -82,15 +82,15 @@ static mut ccu_nm pll_audio_base_clk = {
 };
 
 static mut ccu_mult pll_video0_clk = {
-	.enable = BIT(31),
-	.mult = _SUNXI_CCU_MULT_OFFSET_MIN_MAX(0, 7, 0, 9, 127),
-	.frac = _SUNXI_CCU_FRAC(BIT(15), BIT(14),
+	enable: BIT(31),
+	mult: _SUNXI_CCU_MULT_OFFSET_MIN_MAX(0, 7, 0, 9, 127),
+	frac: _SUNXI_CCU_FRAC(BIT(15), BIT(14),
 					  270000000, 297000000),
-	.common = {
-		.reg = 0x010,
-		.features = (CCU_FEATURE_FRACTIONAL |
+	common: {
+		reg: 0x010,
+		features: (CCU_FEATURE_FRACTIONAL |
 				   CCU_FEATURE_ALL_PREDIV),
-		.prediv = 8,
+		prediv: 8,
 		.hw.init = CLK_HW_INIT("pll-video0",
 					      "hosc",
 					      &ccu_mult_ops,
@@ -99,13 +99,13 @@ static mut ccu_mult pll_video0_clk = {
 };
 
 static mut ccu_nkmp pll_ve_sun4i_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
-	.k = _SUNXI_CCU_MULT(4, 2),
-	.m = _SUNXI_CCU_DIV(0, 2),
-	.p = _SUNXI_CCU_DIV(16, 2),
-	.common = {
-		.reg = 0x018,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
+	k: _SUNXI_CCU_MULT(4, 2),
+	m: _SUNXI_CCU_DIV(0, 2),
+	p: _SUNXI_CCU_DIV(16, 2),
+	common: {
+		reg: 0x018,
 		.hw.init = CLK_HW_INIT("pll-ve",
 					      "hosc",
 					      &ccu_nkmp_ops,
@@ -114,11 +114,11 @@ static mut ccu_nkmp pll_ve_sun4i_clk = {
 };
 
 static mut ccu_nk pll_ve_sun7i_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
-	.k = _SUNXI_CCU_MULT(4, 2),
-	.common = {
-		.reg = 0x018,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
+	k: _SUNXI_CCU_MULT(4, 2),
+	common: {
+		reg: 0x018,
 		.hw.init = CLK_HW_INIT("pll-ve",
 					      "hosc",
 					      &ccu_nk_ops,
@@ -127,11 +127,11 @@ static mut ccu_nk pll_ve_sun7i_clk = {
 };
 
 static mut ccu_nk pll_ddr_base_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
-	.k = _SUNXI_CCU_MULT(4, 2),
-	.common = {
-		.reg = 0x020,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
+	k: _SUNXI_CCU_MULT(4, 2),
+	common: {
+		reg: 0x020,
 		.hw.init = CLK_HW_INIT("pll-ddr-base",
 					      "hosc",
 					      &ccu_nk_ops,
@@ -143,9 +143,9 @@ static SUNXI_CCU_M(pll_ddr_clk, "pll-ddr", "pll-ddr-base", 0x020, 0, 2,
 		   CLK_IS_CRITICAL);
 
 static mut ccu_div pll_ddr_other_clk = {
-	.div = _SUNXI_CCU_DIV_FLAGS(16, 2, CLK_DIVIDER_POWER_OF_TWO),
-	.common = {
-		.reg = 0x020,
+	div: _SUNXI_CCU_DIV_FLAGS(16, 2, CLK_DIVIDER_POWER_OF_TWO),
+	common: {
+		reg: 0x020,
 		.hw.init = CLK_HW_INIT("pll-ddr-other", "pll-ddr-base",
 					      &ccu_div_ops,
 					      0),
@@ -153,11 +153,11 @@ static mut ccu_div pll_ddr_other_clk = {
 };
 
 static mut ccu_nk pll_periph_base_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
-	.k = _SUNXI_CCU_MULT(4, 2),
-	.common = {
-		.reg = 0x028,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
+	k: _SUNXI_CCU_MULT(4, 2),
+	common: {
+		reg: 0x028,
 		.hw.init = CLK_HW_INIT("pll-periph-base",
 					      "hosc",
 					      &ccu_nk_ops,
@@ -171,12 +171,12 @@ static CLK_FIXED_FACTOR_HW(pll_periph_clk, "pll-periph",
 
 /* Not documented on A10 */
 static mut ccu_div pll_periph_sata_clk = {
-	.enable = BIT(14),
-	.div = _SUNXI_CCU_DIV(0, 2),
-	.fixed_post_div = 6,
-	.common = {
-		.reg = 0x028,
-		.features = CCU_FEATURE_FIXED_POSTDIV,
+	enable: BIT(14),
+	div: _SUNXI_CCU_DIV(0, 2),
+	fixed_post_div: 6,
+	common: {
+		reg: 0x028,
+		features: CCU_FEATURE_FIXED_POSTDIV,
 		.hw.init = CLK_HW_INIT("pll-periph-sata",
 					      "pll-periph-base",
 					      &ccu_div_ops, 0),
@@ -184,15 +184,15 @@ static mut ccu_div pll_periph_sata_clk = {
 };
 
 static mut ccu_mult pll_video1_clk = {
-	.enable = BIT(31),
-	.mult = _SUNXI_CCU_MULT_OFFSET_MIN_MAX(0, 7, 0, 9, 127),
-	.frac = _SUNXI_CCU_FRAC(BIT(15), BIT(14),
+	enable: BIT(31),
+	mult: _SUNXI_CCU_MULT_OFFSET_MIN_MAX(0, 7, 0, 9, 127),
+	frac: _SUNXI_CCU_FRAC(BIT(15), BIT(14),
 				  270000000, 297000000),
-	.common = {
-		.reg = 0x030,
-		.features = (CCU_FEATURE_FRACTIONAL |
+	common: {
+		reg: 0x030,
+		features: (CCU_FEATURE_FRACTIONAL |
 				   CCU_FEATURE_ALL_PREDIV),
-		.prediv = 8,
+		prediv: 8,
 		.hw.init = CLK_HW_INIT("pll-video1",
 					      "hosc",
 					      &ccu_mult_ops,
@@ -202,11 +202,11 @@ static mut ccu_mult pll_video1_clk = {
 
 /* Not present on A10 */
 static mut ccu_nk pll_gpu_clk = {
-	.enable = BIT(31),
-	.n = _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
-	.k = _SUNXI_CCU_MULT(4, 2),
-	.common = {
-		.reg = 0x040,
+	enable: BIT(31),
+	n: _SUNXI_CCU_MULT_OFFSET(8, 5, 0),
+	k: _SUNXI_CCU_MULT(4, 2),
+	common: {
+		reg: 0x040,
 		.hw.init = CLK_HW_INIT("pll-gpu",
 					      "hosc",
 					      &ccu_nk_ops,
@@ -222,17 +222,17 @@ static ccu_mux_fixed_prediv cpu_predivs[] = {
 	{ .index = 3, .div = 3, },
 };
 
-#define SUN4I_AHB_REG		0x054
+pub const SUN4I_AHB_REG: u32 = 0x054;
 static mut ccu_mux cpu_clk = {
-	.mux = {
-		.shift = 16,
-		.width = 2,
-		.fixed_predivs = cpu_predivs,
-		.n_predivs = ARRAY_SIZE(cpu_predivs),
+	mux: {
+		shift: 16,
+		width: 2,
+		fixed_predivs: cpu_predivs,
+		n_predivs: ARRAY_SIZE(cpu_predivs),
 	},
-	.common = {
-		.reg = 0x054,
-		.features = CCU_FEATURE_FIXED_PREDIV,
+	common: {
+		reg: 0x054,
+		features: CCU_FEATURE_FIXED_PREDIV,
 		.hw.init = CLK_HW_INIT_PARENTS("cpu",
 						      cpu_parents,
 						      &ccu_mux_ops,
@@ -243,9 +243,9 @@ static mut ccu_mux cpu_clk = {
 static SUNXI_CCU_M(axi_clk, "axi", "cpu", 0x054, 0, 2, 0);
 
 static mut ccu_div ahb_sun4i_clk = {
-	.div = _SUNXI_CCU_DIV_FLAGS(4, 2, CLK_DIVIDER_POWER_OF_TWO),
-	.common = {
-		.reg = 0x054,
+	div: _SUNXI_CCU_DIV_FLAGS(4, 2, CLK_DIVIDER_POWER_OF_TWO),
+	common: {
+		reg: 0x054,
 		.hw.init = CLK_HW_INIT("ahb", "axi", &ccu_div_ops, 0),
 	},
 };
@@ -257,16 +257,16 @@ static ccu_mux_fixed_prediv ahb_sun7i_predivs[] = {
 	{ /* Sentinel */ },
 };
 static mut ccu_div ahb_sun7i_clk = {
-	.div = _SUNXI_CCU_DIV_FLAGS(4, 2, CLK_DIVIDER_POWER_OF_TWO),
-	.mux = {
-		.shift = 6,
-		.width = 2,
-		.fixed_predivs = ahb_sun7i_predivs,
-		.n_predivs = ARRAY_SIZE(ahb_sun7i_predivs),
+	div: _SUNXI_CCU_DIV_FLAGS(4, 2, CLK_DIVIDER_POWER_OF_TWO),
+	mux: {
+		shift: 6,
+		width: 2,
+		fixed_predivs: ahb_sun7i_predivs,
+		n_predivs: ARRAY_SIZE(ahb_sun7i_predivs),
 	},
 
-	.common = {
-		.reg = 0x054,
+	common: {
+		reg: 0x054,
 		.hw.init = CLK_HW_INIT_PARENTS("ahb",
 						      ahb_sun7i_parents,
 						      &ccu_div_ops,
@@ -608,12 +608,12 @@ static SUNXI_CCU_MUX_WITH_GATE(spdif_clk, "spdif", audio_parents,
 static keypad_parents[] = { "hosc", "losc"};
 static keypad_table[] = { 0, 2 };
 static mut ccu_mp keypad_clk = {
-	.enable = BIT(31),
-	.m = _SUNXI_CCU_DIV(0, 5),
-	.p = _SUNXI_CCU_DIV(16, 2),
-	.mux = _SUNXI_CCU_MUX_TABLE(24, 2, keypad_table),
-	.common = {
-		.reg = 0x0c4,
+	enable: BIT(31),
+	m: _SUNXI_CCU_DIV(0, 5),
+	p: _SUNXI_CCU_DIV(16, 2),
+	mux: _SUNXI_CCU_MUX_TABLE(24, 2, keypad_table),
+	common: {
+		reg: 0x0c4,
 		.hw.init = CLK_HW_INIT_PARENTS("keypad",
 						      keypad_parents,
 						      &ccu_mp_ops,
@@ -824,18 +824,18 @@ static ccu_mux_fixed_prediv clk_out_predivs[] = {
 };
 
 static mut ccu_mp out_a_clk = {
-	.enable = BIT(31),
-	.m = _SUNXI_CCU_DIV(8, 5),
-	.p = _SUNXI_CCU_DIV(20, 2),
-	.mux = {
-		.shift = 24,
-		.width = 2,
-		.fixed_predivs = clk_out_predivs,
-		.n_predivs = ARRAY_SIZE(clk_out_predivs),
+	enable: BIT(31),
+	m: _SUNXI_CCU_DIV(8, 5),
+	p: _SUNXI_CCU_DIV(20, 2),
+	mux: {
+		shift: 24,
+		width: 2,
+		fixed_predivs: clk_out_predivs,
+		n_predivs: ARRAY_SIZE(clk_out_predivs),
 	},
-	.common = {
-		.reg = 0x1f0,
-		.features = CCU_FEATURE_FIXED_PREDIV,
+	common: {
+		reg: 0x1f0,
+		features: CCU_FEATURE_FIXED_PREDIV,
 		.hw.init = CLK_HW_INIT_PARENTS("out-a",
 						      out_parents,
 						      &ccu_mp_ops,
@@ -843,18 +843,18 @@ static mut ccu_mp out_a_clk = {
 	},
 };
 static mut ccu_mp out_b_clk = {
-	.enable = BIT(31),
-	.m = _SUNXI_CCU_DIV(8, 5),
-	.p = _SUNXI_CCU_DIV(20, 2),
-	.mux = {
-		.shift = 24,
-		.width = 2,
-		.fixed_predivs = clk_out_predivs,
-		.n_predivs = ARRAY_SIZE(clk_out_predivs),
+	enable: BIT(31),
+	m: _SUNXI_CCU_DIV(8, 5),
+	p: _SUNXI_CCU_DIV(20, 2),
+	mux: {
+		shift: 24,
+		width: 2,
+		fixed_predivs: clk_out_predivs,
+		n_predivs: ARRAY_SIZE(clk_out_predivs),
 	},
-	.common = {
-		.reg = 0x1f4,
-		.features = CCU_FEATURE_FIXED_PREDIV,
+	common: {
+		reg: 0x1f4,
+		features: CCU_FEATURE_FIXED_PREDIV,
 		.hw.init = CLK_HW_INIT_PARENTS("out-b",
 						      out_parents,
 						      &ccu_mp_ops,
@@ -1060,7 +1060,7 @@ static CLK_FIXED_FACTOR_HW(pll_video1_2x_clk, "pll-video1-2x",
 
 
 static mut clk_hw_onecell_data sun4i_a10_hw_clks = {
-	.hws = {
+	hws: {
 		[CLK_HOSC]		= &hosc_clk.common.hw,
 		[CLK_PLL_CORE]		= &pll_core_clk.common.hw,
 		[CLK_PLL_AUDIO_BASE]	= &pll_audio_base_clk.common.hw,
@@ -1209,10 +1209,10 @@ static mut clk_hw_onecell_data sun4i_a10_hw_clks = {
 		[CLK_GPU]		= &gpu_sun7i_clk.common.hw,
 		[CLK_MBUS]		= &mbus_sun4i_clk.common.hw,
 	},
-	.num = CLK_NUMBER_SUN4I,
+	num: CLK_NUMBER_SUN4I,
 };
 static mut clk_hw_onecell_data sun7i_a20_hw_clks = {
-	.hws = {
+	hws: {
 		[CLK_HOSC]		= &hosc_clk.common.hw,
 		[CLK_PLL_CORE]		= &pll_core_clk.common.hw,
 		[CLK_PLL_AUDIO_BASE]	= &pll_audio_base_clk.common.hw,
@@ -1382,7 +1382,7 @@ static mut clk_hw_onecell_data sun7i_a20_hw_clks = {
 		[CLK_OUT_A]		= &out_a_clk.common.hw,
 		[CLK_OUT_B]		= &out_b_clk.common.hw,
 	},
-	.num = CLK_NUMBER_SUN7I,
+	num: CLK_NUMBER_SUN7I,
 };
 
 static ccu_reset_map sunxi_a10_a20_ccu_resets[] = {
@@ -1411,32 +1411,32 @@ static ccu_reset_map sunxi_a10_a20_ccu_resets[] = {
 };
 
 static sunxi_ccu_desc sun4i_a10_ccu_desc = {
-	.ccu_clks = sun4i_sun7i_ccu_clks,
-	.num_ccu_clks = ARRAY_SIZE(sun4i_sun7i_ccu_clks),
+	ccu_clks: sun4i_sun7i_ccu_clks,
+	num_ccu_clks: ARRAY_SIZE(sun4i_sun7i_ccu_clks),
 
-	.hw_clks = &sun4i_a10_hw_clks,
+	hw_clks: &sun4i_a10_hw_clks,
 
-	.resets = sunxi_a10_a20_ccu_resets,
-	.num_resets = ARRAY_SIZE(sunxi_a10_a20_ccu_resets),
+	resets: sunxi_a10_a20_ccu_resets,
+	num_resets: ARRAY_SIZE(sunxi_a10_a20_ccu_resets),
 };
 
 static sunxi_ccu_desc sun7i_a20_ccu_desc = {
-	.ccu_clks = sun4i_sun7i_ccu_clks,
-	.num_ccu_clks = ARRAY_SIZE(sun4i_sun7i_ccu_clks),
+	ccu_clks: sun4i_sun7i_ccu_clks,
+	num_ccu_clks: ARRAY_SIZE(sun4i_sun7i_ccu_clks),
 
-	.hw_clks = &sun7i_a20_hw_clks,
+	hw_clks: &sun7i_a20_hw_clks,
 
-	.resets = sunxi_a10_a20_ccu_resets,
-	.num_resets = ARRAY_SIZE(sunxi_a10_a20_ccu_resets),
+	resets: sunxi_a10_a20_ccu_resets,
+	num_resets: ARRAY_SIZE(sunxi_a10_a20_ccu_resets),
 };
 
-unsafe fn sun4i_a10_ccu_probe(struct platform_device *pdev)
+unsafe fn sun4i_a10_ccu_probe(platform_device *pdev)
 {
 	const struct sunxi_ccu_desc *desc;
     let mut reg: *mut core::ffi::c_void;
     let mut val: u32;
 
-	desc = of_device_get_match_data(&pdev->dev);
+	desc = of_device_get_match_data((*&pdev).dev);
 	if (!desc)
 		return -22;
 
@@ -1470,28 +1470,28 @@ unsafe fn sun4i_a10_ccu_probe(struct platform_device *pdev)
 	val &= ~GENMASK(7, 6);
 	unsafe { core::ptr::write_volatile((reg as *mut u8).add(SUN4I_AHB_REG) as *mut u32, val | (2 << 6)) };
 
-	return devm_sunxi_ccu_probe(&pdev->dev, reg, desc);
+	return devm_sunxi_ccu_probe((*&pdev).dev, reg, desc);
 }
 
 static of_device_id sun4i_a10_ccu_ids[] = {
 	{
-		.compatible = "allwinner,sun4i-a10-ccu",
-		.data = &sun4i_a10_ccu_desc,
+		compatible: "allwinner,sun4i-a10-ccu",
+		data: &sun4i_a10_ccu_desc,
 	},
 	{
-		.compatible = "allwinner,sun7i-a20-ccu",
-		.data = &sun7i_a20_ccu_desc,
+		compatible: "allwinner,sun7i-a20-ccu",
+		data: &sun7i_a20_ccu_desc,
 	},
 	{ }
 };
 // MODULE_DEVICE_TABLE(of, sun4i_a10_ccu_ids);
 
 static mut platform_driver sun4i_a10_ccu_driver = {
-	.probe = sun4i_a10_ccu_probe,
-	.driver = {
-		.name = "sun4i-a10-ccu",
-		.suppress_bind_attrs = true,
-		.of_match_table = sun4i_a10_ccu_ids,
+	probe: sun4i_a10_ccu_probe,
+	driver: {
+		name: "sun4i-a10-ccu",
+		suppress_bind_attrs: true,
+		of_match_table: sun4i_a10_ccu_ids,
 	},
 };
 // module_platform_driver(sun4i_a10_ccu_driver);

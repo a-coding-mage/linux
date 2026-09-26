@@ -7,7 +7,7 @@
 
 /*
  * Rust source-level translation of wavefront_synth.c.
- * Kernel/header supplied items from linux/* and sound/snd_wavefront.h are
+ * Kernel/header supplied items from linux/ * and sound/snd_wavefront.h are
  * declared or referenced here as external dependencies.
  */
 

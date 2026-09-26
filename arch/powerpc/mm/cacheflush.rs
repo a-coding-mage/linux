@@ -73,7 +73,7 @@ pub unsafe fn flush_icache_range(start: usize, stop: usize) {
 
 /// flush_dcache_icache_phys() - Flush a page by its physical address
 /// @physaddr: the physical address of the page
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 unsafe fn flush_dcache_icache_phys(physaddr: usize) {
     let bytes = l1_dcache_bytes();
     let nb = PAGE_SIZE / bytes;
@@ -92,7 +92,7 @@ unsafe fn flush_dcache_icache_phys(physaddr: usize) {
     core::hint::black_box((&mut loop1, &mut loop2, nb, msr, msr0, bytes));
 }
 
-#[cfg(not(feature = "CONFIG_HIGHMEM"))]
+#[cfg(not(CONFIG_HIGHMEM))]
 unsafe fn flush_dcache_icache_phys(_physaddr: usize) {}
 
 /// __flush_dcache_icache(): Flush a particular page from the data cache to RAM.

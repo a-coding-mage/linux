@@ -65,17 +65,17 @@ unsafe fn do_feature_fixups_mask(value:c_ulong, mask:c_ulong, fixup_start:*mut c
 
 #[no_mangle] pub unsafe extern "C" fn do_feature_fixups(value:c_ulong,start:*mut c_void,end:*mut c_void){do_feature_fixups_mask(value,!0,start,end)}
 
-#[cfg(feature="CONFIG_PPC_BARRIER_NOSPEC")]
+#[cfg(CONFIG_PPC_BARRIER_NOSPEC)]
 unsafe fn is_fixup_addr_valid(dest:*mut c_void,size:usize)->bool { true /* system_state < SYSTEM_FREEING_INITMEM || !init_section_contains(dest,size) */ }
 
-#[cfg(feature="CONFIG_PPC_BARRIER_NOSPEC")]
+#[cfg(CONFIG_PPC_BARRIER_NOSPEC)]
 unsafe fn do_patch_fixups(mut start:*mut c_long,end:*mut c_long,instrs:*mut u32,num:c_int)->c_int { let mut i=0; while start<end { let dest=(start as *mut u8).offset(*start) as *mut u32; if is_fixup_addr_valid(dest,4*num as usize){for j in 0..num{patch_instruction(dest.add(j as usize),ppc_inst(*instrs.add(j as usize)));}} start=start.add(1);i+=1;}i }
 
-#[cfg(feature="CONFIG_PPC_BARRIER_NOSPEC")]
+#[cfg(CONFIG_PPC_BARRIER_NOSPEC)]
 pub unsafe extern "C" fn do_barrier_nospec_fixups_range(enable:bool,start:*mut c_void,end:*mut c_void){let mut instr=ppc_raw_nop();if enable{instr=0;pr_info(b"barrier-nospec: using ORI speculation barrier\n\0".as_ptr() as *const c_char);}do_patch_fixups(start as *mut c_long,end as *mut c_long,&mut instr,1);}
 
 static mut saved_cpu_features:c_ulong=0; static mut saved_mmu_features:c_ulong=0;
-#[cfg(feature="CONFIG_PPC64")] static mut saved_firmware_features:c_ulong=0;
+#[cfg(CONFIG_PPC64)] static mut saved_firmware_features:c_ulong=0;
 
 #[no_mangle] pub unsafe extern "C" fn apply_feature_fixups(){let spec=*cur_cpu_spec;saved_cpu_features=(*spec).cpu_features;saved_mmu_features=(*spec).mmu_features;do_feature_fixups((*spec).cpu_features,core::ptr::null_mut(),core::ptr::null_mut());do_feature_fixups((*spec).mmu_features,core::ptr::null_mut(),core::ptr::null_mut());do_final_fixups();}
 #[no_mangle] pub unsafe extern "C" fn update_mmu_feature_fixups(mask:c_ulong){saved_mmu_features=(saved_mmu_features&!mask)|((*cur_cpu_spec).mmu_features&mask);}
@@ -91,21 +91,21 @@ unsafe fn do_final_fixups() {}
 /* The following entry points retain the source's conditional interfaces.  The
  * instruction encoders, linker section bounds, feature enums, and logging
  * primitives are external kernel dependencies. */
-#[cfg(feature="CONFIG_PPC_BARRIER_NOSPEC")]
+#[cfg(CONFIG_PPC_BARRIER_NOSPEC)]
 #[no_mangle] pub unsafe extern "C" fn do_barrier_nospec_fixups(enable:bool){do_barrier_nospec_fixups_range(enable,core::ptr::null_mut(),core::ptr::null_mut());}
 
-#[cfg(feature="CONFIG_PPC_BARRIER_NOSPEC")]
+#[cfg(CONFIG_PPC_BARRIER_NOSPEC)]
 #[no_mangle] pub unsafe extern "C" fn do_stf_barrier_fixups(types:u32){
     mutex_lock(&mut exit_flush_lock); static_branch_enable(&mut interrupt_exit_not_reentrant);
     /* stop_machine(__do_stf_barrier_fixups, &types, NULL); */
     if types!=0 { static_branch_disable(&mut interrupt_exit_not_reentrant); } mutex_unlock(&mut exit_flush_lock);
 }
 
-#[cfg(feature="CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub unsafe extern "C" fn do_uaccess_flush_fixups(_types:u32) {}
-#[cfg(feature="CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub unsafe extern "C" fn do_entry_flush_fixups(_types:u32) {}
-#[cfg(feature="CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub unsafe extern "C" fn do_rfi_flush_fixups(types:u32){mutex_lock(&mut exit_flush_lock);static_branch_enable(&mut interrupt_exit_not_reentrant);if types!=0{static_branch_disable(&mut interrupt_exit_not_reentrant);}mutex_unlock(&mut exit_flush_lock);}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

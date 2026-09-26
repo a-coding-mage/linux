@@ -20,23 +20,23 @@ use core::ffi::{c_char, c_int, c_ulong, c_void};
 #[repr(C)] pub struct of_device_id { pub compatible: *const c_char, pub data: *const c_void }
 
 extern "C" {
-    fn regulator_get_voltage(*mut regulator) -> c_int;
-    fn regulator_set_voltage(*mut regulator, c_int, c_int) -> c_int;
-    fn regulator_enable(*mut regulator) -> c_int; fn regulator_disable(*mut regulator) -> c_int; fn regulator_put(*mut regulator);
-    fn clk_get(*mut device, *const c_char) -> *mut clk; fn clk_put(*mut clk); fn clk_get_rate(*mut clk) -> c_ulong;
-    fn clk_prepare_enable(*mut clk) -> c_int; fn clk_disable_unprepare(*mut clk); fn clk_set_parent(*mut clk,*mut clk)->c_int; fn clk_get_parent(*mut clk)->*mut clk; fn clk_set_rate(*mut clk,c_ulong)->c_int;
-    fn device_link_add(*mut device,*mut device,c_ulong)->*mut device_link; fn get_cpu_device(c_int)->*mut device; fn put_device(*mut device);
-    fn of_parse_phandle(*mut device_node,*const c_char,c_int)->*mut device_node; fn of_find_device_by_node(*mut device_node)->*mut platform_device; fn of_node_put(*mut device_node);
-    fn dev_pm_opp_find_freq_ceil(*mut device,*mut c_ulong)->*mut dev_pm_opp; fn dev_pm_opp_get_voltage(*mut dev_pm_opp)->c_int; fn dev_pm_opp_get_freq(*mut dev_pm_opp)->c_ulong; fn dev_pm_opp_put(*mut dev_pm_opp);
-    fn dev_pm_opp_of_get_sharing_cpus(*mut device,*mut cpumask)->c_int; fn dev_pm_opp_of_cpumask_add_table(*mut cpumask)->c_int; fn dev_pm_opp_of_cpumask_remove_table(*mut cpumask); fn dev_pm_opp_register_notifier(*mut device,*mut notifier_block)->c_int; fn dev_pm_opp_unregister_notifier(*mut device,*mut notifier_block);
-    fn cpumask_test_cpu(c_int,*const cpumask)->bool; fn cpumask_copy(*mut cpumask,*const cpumask);
-    fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex); fn mutex_init(*mut mutex);
-    fn cpufreq_generic_frequency_table_verify(*mut cpufreq_policy)->c_int; fn cpufreq_generic_get(*mut cpufreq_policy)->c_ulong; fn cpufreq_register_em_with_opp(*mut cpufreq_policy)->c_int; fn cpufreq_driver_target(*mut cpufreq_policy,c_ulong,c_ulong)->c_int;
-    fn cpufreq_register_driver(*mut cpufreq_driver)->c_int; fn cpufreq_unregister_driver(*mut cpufreq_driver);
-    fn dev_pm_opp_init_cpufreq_table(*mut device,*mut *mut cpufreq_frequency_table)->c_int; fn dev_pm_opp_free_cpufreq_table(*mut device,*mut *mut cpufreq_frequency_table);
-    fn platform_driver_register(*mut platform_driver)->c_int; fn platform_driver_unregister(*mut platform_driver); fn platform_device_register_data(*mut device,*const c_char,c_int,*const c_void,usize)->*mut platform_device; fn platform_device_unregister(*mut platform_device);
-    fn of_machine_get_match_data(*const of_device_id)->*const c_void; fn dev_get_platdata(*mut device)->*const c_void;
-    fn dev_err_probe(*mut device,c_int,*const c_char,...)->c_int; fn dev_err(*mut device,*const c_char,...); fn pr_err(*const c_char,...); fn pr_debug(*const c_char,...);
+    fn regulator_get_voltage(_: *mut regulator) -> c_int;
+    fn regulator_set_voltage(_: *mut regulator, _: c_int, _: c_int) -> c_int;
+    fn regulator_enable(_: *mut regulator) -> c_int; fn regulator_disable(_: *mut regulator) -> c_int; fn regulator_put(_: *mut regulator);
+    fn clk_get(_: *mut device, _: *const c_char) -> *mut clk; fn clk_put(_: *mut clk); fn clk_get_rate(_: *mut clk) -> c_ulong;
+    fn clk_prepare_enable(_: *mut clk) -> c_int; fn clk_disable_unprepare(_: *mut clk); fn clk_set_parent(_: *mut clk,_: *mut clk)->c_int; fn clk_get_parent(_: *mut clk)->*mut clk; fn clk_set_rate(_: *mut clk,_: c_ulong)->c_int;
+    fn device_link_add(_: *mut device,_: *mut device,_: c_ulong)->*mut device_link; fn get_cpu_device(_: c_int)->*mut device; fn put_device(_: *mut device);
+    fn of_parse_phandle(_: *mut device_node,_: *const c_char,_: c_int)->*mut device_node; fn of_find_device_by_node(_: *mut device_node)->*mut platform_device; fn of_node_put(_: *mut device_node);
+    fn dev_pm_opp_find_freq_ceil(_: *mut device,_: *mut c_ulong)->*mut dev_pm_opp; fn dev_pm_opp_get_voltage(_: *mut dev_pm_opp)->c_int; fn dev_pm_opp_get_freq(_: *mut dev_pm_opp)->c_ulong; fn dev_pm_opp_put(_: *mut dev_pm_opp);
+    fn dev_pm_opp_of_get_sharing_cpus(_: *mut device,_: *mut cpumask)->c_int; fn dev_pm_opp_of_cpumask_add_table(_: *mut cpumask)->c_int; fn dev_pm_opp_of_cpumask_remove_table(_: *mut cpumask); fn dev_pm_opp_register_notifier(_: *mut device,_: *mut notifier_block)->c_int; fn dev_pm_opp_unregister_notifier(_: *mut device,_: *mut notifier_block);
+    fn cpumask_test_cpu(_: c_int,_: *const cpumask)->bool; fn cpumask_copy(_: *mut cpumask,_: *const cpumask);
+    fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex); fn mutex_init(_: *mut mutex);
+    fn cpufreq_generic_frequency_table_verify(_: *mut cpufreq_policy)->c_int; fn cpufreq_generic_get(_: *mut cpufreq_policy)->c_ulong; fn cpufreq_register_em_with_opp(_: *mut cpufreq_policy)->c_int; fn cpufreq_driver_target(_: *mut cpufreq_policy,_: c_ulong,_: c_ulong)->c_int;
+    fn cpufreq_register_driver(_: *mut cpufreq_driver)->c_int; fn cpufreq_unregister_driver(_: *mut cpufreq_driver);
+    fn dev_pm_opp_init_cpufreq_table(_: *mut device,_: *mut *mut cpufreq_frequency_table)->c_int; fn dev_pm_opp_free_cpufreq_table(_: *mut device,_: *mut *mut cpufreq_frequency_table);
+    fn platform_driver_register(_: *mut platform_driver)->c_int; fn platform_driver_unregister(_: *mut platform_driver); fn platform_device_register_data(_: *mut device,_: *const c_char,_: c_int,_: *const c_void,_: usize)->*mut platform_device; fn platform_device_unregister(_: *mut platform_device);
+    fn of_machine_get_match_data(_: *const of_device_id)->*const c_void; fn dev_get_platdata(_: *mut device)->*const c_void;
+    fn dev_err_probe(_: *mut device,_: c_int,_: *const c_char,...)->c_int; fn dev_err(_: *mut device,_: *const c_char,...); fn pr_err(_: *const c_char,...); fn pr_debug(_: *const c_char,...);
 }
 
 #[repr(C)] pub struct mtk_cpufreq_platform_data { pub min_volt_shift:c_int, pub max_volt_shift:c_int, pub proc_max_volt:c_int, pub sram_min_volt:c_int, pub sram_max_volt:c_int, pub ccifreq_supported:bool }

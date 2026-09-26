@@ -18,33 +18,33 @@ pub const fn arm64_hw_pgtable_level_shift(n: usize) -> usize {
 pub const PTRS_PER_PTE: usize = 1usize << PTDESC_TABLE_SHIFT;
 
 /* CONFIG_PGTABLE_LEVELS > 2 */
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 pub const PMD_SHIFT: usize = arm64_hw_pgtable_level_shift(2);
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 pub const PMD_SIZE: usize = 1usize << PMD_SHIFT;
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 pub const PMD_MASK: usize = !(PMD_SIZE - 1);
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 pub const PTRS_PER_PMD: usize = 1usize << PTDESC_TABLE_SHIFT;
 
 /* CONFIG_PGTABLE_LEVELS > 3 */
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 pub const PUD_SHIFT: usize = arm64_hw_pgtable_level_shift(1);
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 pub const PUD_SIZE: usize = 1usize << PUD_SHIFT;
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 pub const PUD_MASK: usize = !(PUD_SIZE - 1);
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 pub const PTRS_PER_PUD: usize = 1usize << PTDESC_TABLE_SHIFT;
 
 /* CONFIG_PGTABLE_LEVELS > 4 */
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_4")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_4)]
 pub const P4D_SHIFT: usize = arm64_hw_pgtable_level_shift(0);
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_4")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_4)]
 pub const P4D_SIZE: usize = 1usize << P4D_SHIFT;
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_4")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_4)]
 pub const P4D_MASK: usize = !(P4D_SIZE - 1);
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_4")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_4)]
 pub const PTRS_PER_P4D: usize = 1usize << PTDESC_TABLE_SHIFT;
 
 pub const PGDIR_SHIFT: usize = arm64_hw_pgtable_level_shift(4 - CONFIG_PGTABLE_LEVELS);
@@ -176,16 +176,16 @@ pub const TCR_E0PD1: usize = TCR_EL1_E0PD1;
 pub const TCR_DS: usize = TCR_EL1_DS;
 
 /* CONFIG_ARM64_PA_BITS_52: TTBR_ELx[1] is RES0. */
-#[cfg(feature = "CONFIG_ARM64_PA_BITS_52")]
+#[cfg(CONFIG_ARM64_PA_BITS_52)]
 pub const TTBR_BADDR_MASK_52: u64 = 0x0000_ffff_ffff_fffc;
 /* CONFIG_ARM64_VA_BITS_52 */
-#[cfg(feature = "CONFIG_ARM64_VA_BITS_52")]
+#[cfg(CONFIG_ARM64_VA_BITS_52)]
 pub const PTRS_PER_PGD_52_VA: usize = 1usize << (52 - PGDIR_SHIFT);
-#[cfg(feature = "CONFIG_ARM64_VA_BITS_52")]
+#[cfg(CONFIG_ARM64_VA_BITS_52)]
 pub const PTRS_PER_PGD_48_VA: usize = 1usize << (48 - PGDIR_SHIFT);
-#[cfg(feature = "CONFIG_ARM64_VA_BITS_52")]
+#[cfg(CONFIG_ARM64_VA_BITS_52)]
 pub const PTRS_PER_PGD_EXTRA: usize = PTRS_PER_PGD_52_VA - PTRS_PER_PGD_48_VA;
-#[cfg(feature = "CONFIG_ARM64_VA_BITS_52")]
+#[cfg(CONFIG_ARM64_VA_BITS_52)]
 pub const TTBR1_BADDR_4852_OFFSET: usize = PTRS_PER_PGD_EXTRA << PTDESC_ORDER;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -10,7 +10,7 @@ pub const HDA_CODEC_IDX_CONTROLLER: u32 = HDA_MAX_CODECS;
 // CONFIG_SND_HDA_COMPONENT is a build-time configuration condition.  The
 // enabled declarations are preserved below; select the disabled inline
 // fallbacks when that configuration is absent.
-#[cfg(feature = "CONFIG_SND_HDA_COMPONENT")]
+#[cfg(CONFIG_SND_HDA_COMPONENT)]
 extern "C" {
     pub fn snd_hdac_set_codec_wakeup(bus: *mut hdac_bus, enable: bool) -> i32;
     pub fn snd_hdac_display_power(bus: *mut hdac_bus, idx: u32, enable: bool);
@@ -41,15 +41,15 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_set_codec_wakeup(_bus: *mut hdac_bus, _enable: bool) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_display_power(_bus: *mut hdac_bus, _idx: u32, _enable: bool) {}
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_sync_audio_rate(
     _codec: *mut hdac_device,
     _nid: hda_nid_t,
@@ -59,7 +59,7 @@ pub unsafe fn snd_hdac_sync_audio_rate(
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_acomp_get_eld(
     _codec: *mut hdac_device,
     _nid: hda_nid_t,
@@ -71,7 +71,7 @@ pub unsafe fn snd_hdac_acomp_get_eld(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_acomp_init(
     _bus: *mut hdac_bus,
     _aops: *const drm_audio_component_audio_ops,
@@ -81,12 +81,12 @@ pub unsafe fn snd_hdac_acomp_init(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_acomp_exit(_bus: *mut hdac_bus) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_COMPONENT"))]
+#[cfg(not(CONFIG_SND_HDA_COMPONENT))]
 pub unsafe fn snd_hdac_acomp_register_notifier(
     _bus: *mut hdac_bus,
     _ops: *const drm_audio_component_audio_ops,

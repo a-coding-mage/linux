@@ -84,8 +84,7 @@ unsafe extern "C" {
         target: *const c_char,
         filesystemtype: *const c_char,
         mountflags: usize,
-        data: *const c_void,
-    ) -> c_int;
+        data: *const c_void) -> c_int;
     fn open(pathname: *const c_char, flags: c_int, ...) -> c_int;
     fn reboot(cmd: c_int) -> c_int;
     fn sendfile(out_fd: c_int, in_fd: c_int, offset: *mut off_t, count: size_t) -> ssize_t;

@@ -11,7 +11,7 @@ pub enum FtraceDumpMode {
     DumpParam,
 }
 
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 extern "C" {
     pub fn tracing_on();
     pub fn tracing_off();
@@ -31,11 +31,11 @@ extern "C" {
     pub fn ftrace_dump(oops_dump_mode: FtraceDumpMode);
 }
 
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 #[inline(always)]
 pub unsafe fn ____trace_printk_check_format(_fmt: *const ::core::ffi::c_char, ...) {}
 
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 #[macro_export]
 macro_rules! __trace_printk_check_format {
     ($fmt:expr $(, $args:expr)*) => {{
@@ -47,7 +47,7 @@ macro_rules! __trace_printk_check_format {
 
 /* The original macros use __builtin_constant_p, __stringify, _THIS_IP_,
  * section placement, and compiler attributes supplied by included headers. */
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 #[macro_export]
 macro_rules! trace_printk {
     ($fmt:expr $(, $args:expr)*) => {{
@@ -55,7 +55,7 @@ macro_rules! trace_printk {
     }};
 }
 
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 #[macro_export]
 macro_rules! do_trace_printk {
     ($fmt:expr $(, $args:expr)*) => {{
@@ -64,7 +64,7 @@ macro_rules! do_trace_printk {
     }};
 }
 
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 #[macro_export]
 macro_rules! trace_puts {
     ($str:expr) => {{
@@ -72,7 +72,7 @@ macro_rules! trace_puts {
     }};
 }
 
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 #[macro_export]
 macro_rules! ftrace_vprintk {
     ($fmt:expr, $vargs:expr) => {{
@@ -80,37 +80,37 @@ macro_rules! ftrace_vprintk {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_start() {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_stop() {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn trace_dump_stack(_skip: ::core::ffi::c_int) {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_on() {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_off() {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_is_on() -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_snapshot() {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn tracing_snapshot_alloc() {}
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub unsafe fn trace_printk(_fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub unsafe fn ftrace_vprintk(_fmt: *const ::core::ffi::c_char, _vargs: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline(always)]
 pub fn ftrace_dump(_oops_dump_mode: FtraceDumpMode) {}
 

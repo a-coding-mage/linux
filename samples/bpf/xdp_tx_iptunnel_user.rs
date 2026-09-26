@@ -130,22 +130,22 @@ pub unsafe fn main(argc: i32, argv: *mut *mut i8) -> i32 {
     }
     while { opt = getopt(argc, argv, optstr.as_ptr() as *const i8); opt != -1 } {
         match opt {
-            b'i' as i32 => { ifindex = if_nametoindex(optarg); if ifindex == 0 { ifindex = atoi(optarg); } }
-            b'a' as i32 => { vip.family = parse_ipstr(optarg, vip.daddr.v6.as_mut_ptr()); if vip.family == AF_UNSPEC { return 1; } }
-            b'p' as i32 => { if parse_ports(optarg, &mut min_port, &mut max_port) != 0 { return 1; } }
-            b'P' as i32 => { vip.protocol = atoi(optarg) as _; }
-            b's' as i32 | b'd' as i32 => {
+            case if case == b'i' as i32 => { ifindex = if_nametoindex(optarg); if ifindex == 0 { ifindex = atoi(optarg); } }
+            case if case == b'a' as i32 => { vip.family = parse_ipstr(optarg, vip.daddr.v6.as_mut_ptr()); if vip.family == AF_UNSPEC { return 1; } }
+            case if case == b'p' as i32 => { if parse_ports(optarg, &mut min_port, &mut max_port) != 0 { return 1; } }
+            case if case == b'P' as i32 => { vip.protocol = atoi(optarg) as _; }
+            case if case == b's' as i32 || case == b'd' as i32 => {
                 let v6 = if opt == b's' as i32 { tnl.saddr.v6.as_mut_ptr() } else { tnl.daddr.v6.as_mut_ptr() };
                 let family = parse_ipstr(optarg, v6);
                 if family == AF_UNSPEC { return 1; }
                 if tnl.family == AF_UNSPEC as _ { tnl.family = family as _; }
                 else if tnl.family != family as _ { fprintf(stderr, b"The IP version of the src and dst addresses used in the IP encapsulation does not match\n\0".as_ptr() as *const i8); return 1; }
             }
-            b'm' as i32 => { if ether_aton_r(optarg, &mut *(tnl.dmac.as_mut_ptr() as *mut ether_addr)).is_null() { fprintf(stderr, b"Invalid mac address:%s\n\0".as_ptr() as *const i8, optarg); return 1; } }
-            b'T' as i32 => { kill_after_s = atoi(optarg) as u32; }
-            b'S' as i32 => { xdp_flags |= XDP_FLAGS_SKB_MODE; }
-            b'N' as i32 => {}
-            b'F' as i32 => { xdp_flags &= !XDP_FLAGS_UPDATE_IF_NOEXIST; }
+            case if case == b'm' as i32 => { if ether_aton_r(optarg, &mut *(tnl.dmac.as_mut_ptr() as *mut ether_addr)).is_null() { fprintf(stderr, b"Invalid mac address:%s\n\0".as_ptr() as *const i8, optarg); return 1; } }
+            case if case == b'T' as i32 => { kill_after_s = atoi(optarg) as u32; }
+            case if case == b'S' as i32 => { xdp_flags |= XDP_FLAGS_SKB_MODE; }
+            case if case == b'N' as i32 => {}
+            case if case == b'F' as i32 => { xdp_flags &= !XDP_FLAGS_UPDATE_IF_NOEXIST; }
             _ => { usage(*argv); return 1; }
         }
         opt_flags[opt as usize] = 0;

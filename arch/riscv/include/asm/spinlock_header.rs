@@ -2,10 +2,10 @@
 
 // Translation of the RISC-V spinlock header.
 
-#[cfg(feature = "CONFIG_QUEUED_SPINLOCKS")]
+#[cfg(CONFIG_QUEUED_SPINLOCKS)]
 pub const _Q_PENDING_LOOPS: i32 = 1 << 9;
 
-#[cfg(feature = "CONFIG_RISCV_COMBO_SPINLOCKS")]
+#[cfg(CONFIG_RISCV_COMBO_SPINLOCKS)]
 mod combo_spinlocks {
     // TODO: Use an alternative instead of a static key when we are able to parse
     // the extensions string earlier in the boot process.

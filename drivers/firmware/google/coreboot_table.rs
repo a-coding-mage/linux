@@ -175,7 +175,7 @@ unsafe extern "C" fn coreboot_table_probe(pdev: *mut platform_device) -> i32 {
     if header.is_null() { return -ENOMEM; }
     let mut ret = strncmp((*header).signature.as_ptr(), b"LBIO\0".as_ptr() as *const _, 4);
     let mut table_span = 0usize;
-    if ret == 0 && ((*header).header_bytes as usize < core::mem::size_of::<coreboot_table_header>()
+    if ret == 0 && (((*header).header_bytes as usize) < core::mem::size_of::<coreboot_table_header>()
         || check_add_overflow((*header).header_bytes as usize, (*header).table_bytes as usize, &mut table_span)
         || table_span > len) { ret = -EINVAL; }
     memunmap(header as *mut _);

@@ -25,9 +25,9 @@ extern "C" {
     fn mhi_map_single_use_bb(_: *mut c_void); fn mhi_unmap_single_use_bb(_: *mut c_void);
     fn mhi_map_single_no_bb(_: *mut c_void); fn mhi_unmap_single_no_bb(_: *mut c_void);
     fn mhi_device_get_sync(_: *mut mhi_device) -> c_int; fn mhi_device_put(_: *mut mhi_device);
-    fn mhi_unprepare_from_transfer(_: *mut mhi_device); fn mhi_reset_chan(*mut mhi_controller,*mut mhi_chan);
-    fn mhi_alloc_bhie_table(*mut mhi_controller,*mut *mut c_void,u64);
-    fn mhi_free_bhie_table(*mut mhi_controller,*mut c_void); fn mhi_rddm_prepare(*mut mhi_controller,*mut c_void)->c_int;
+    fn mhi_unprepare_from_transfer(_: *mut mhi_device); fn mhi_reset_chan(_: *mut mhi_controller,_: *mut mhi_chan);
+    fn mhi_alloc_bhie_table(_: *mut mhi_controller,_: *mut *mut c_void,_: u64);
+    fn mhi_free_bhie_table(_: *mut mhi_controller,_: *mut c_void); fn mhi_rddm_prepare(_: *mut mhi_controller,_: *mut c_void)->c_int;
     fn mhi_create_debugfs(_: *mut mhi_controller); fn mhi_destroy_debugfs(_: *mut mhi_controller);
     fn mhi_debugfs_init(); fn mhi_debugfs_exit();
 }
@@ -48,10 +48,10 @@ extern "C" {
  * Their fields, constants, allocator wrappers, and synchronization helpers
  * are provided by internal MHI bindings. */
 extern "C" {
-    fn mhi_alloc_device(*mut mhi_controller)->*mut mhi_device;
-    fn driver_register(*mut device_driver)->c_int; fn driver_unregister(*mut device_driver);
-    fn bus_register(*mut bus_type)->c_int; fn bus_unregister(*mut bus_type);
-    fn add_uevent_var(*mut kobj_uevent_env,*const c_char,...)->c_int;
+    fn mhi_alloc_device(_: *mut mhi_controller)->*mut mhi_device;
+    fn driver_register(_: *mut device_driver)->c_int; fn driver_unregister(_: *mut device_driver);
+    fn bus_register(_: *mut bus_type)->c_int; fn bus_unregister(_: *mut bus_type);
+    fn add_uevent_var(_: *mut kobj_uevent_env,_: *const c_char,...)->c_int;
 }
 
 #[no_mangle]

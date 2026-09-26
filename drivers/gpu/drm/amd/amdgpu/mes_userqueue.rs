@@ -24,32 +24,36 @@ unsafe fn mes_userq_create_wptr_mapping(adev: *mut amdgpu_device, uq_mgr: *mut a
     let vm = (*queue).vm;
     let mut exec: drm_exec = core::mem::zeroed();
     let mut ret: i32;
+    'fail_lock: {
+    'fail_map: {
     wptr &= AMDGPU_GMC_HOLE_MASK;
     drm_exec_init(&mut exec, DRM_EXEC_IGNORE_DUPLICATES, 2);
     drm_exec_until_all_locked!(&mut exec, {
         ret = amdgpu_vm_lock_pd(vm, &mut exec, 1);
         drm_exec_retry_on_contention!(&mut exec);
-        if unlikely(ret != 0) { goto!(fail_lock); }
+        if unlikely(ret != 0) { break 'fail_lock; }
         wptr_mapping = amdgpu_vm_bo_lookup_mapping(vm, wptr >> PAGE_SHIFT);
-        if wptr_mapping.is_null() { ret = -EINVAL; goto!(fail_lock); }
+        if wptr_mapping.is_null() { ret = -EINVAL; break 'fail_lock; }
         obj = (*(*wptr_mapping).bo_va).base.bo;
         ret = drm_exec_lock_obj(&mut exec, &mut (*obj).tbo.base);
         drm_exec_retry_on_contention!(&mut exec);
-        if unlikely(ret != 0) { goto!(fail_lock); }
+        if unlikely(ret != 0) { break 'fail_lock; }
     });
     (*wptr_obj).obj = amdgpu_bo_ref((*(*wptr_mapping).bo_va).base.bo);
-    if (*(*wptr_obj).obj).tbo.base.size > PAGE_SIZE { ret = -EINVAL; goto!(fail_map); }
+    if (*(*wptr_obj).obj).tbo.base.size > PAGE_SIZE { ret = -EINVAL; break 'fail_map; }
     // Keep WPTR BO under eviction-fence control instead of pinning.
     ret = amdgpu_evf_mgr_attach_fence(&mut uq_mgr_to_fpriv(uq_mgr).evf_mgr, (*wptr_obj).obj);
-    if ret != 0 { DRM_ERROR!("Failed to attach eviction fence to wptr bo. ret %d\n", ret); goto!(fail_map); }
+    if ret != 0 { DRM_ERROR!("Failed to attach eviction fence to wptr bo. ret %d\n", ret); break 'fail_map; }
     ret = amdgpu_ttm_alloc_gart(&mut (*wptr_obj).obj.tbo);
-    if ret != 0 { DRM_ERROR!("Failed to bind wptr bo to GART. ret %d\n", ret); goto!(fail_map); }
+    if ret != 0 { DRM_ERROR!("Failed to bind wptr bo to GART. ret %d\n", ret); break 'fail_map; }
     (*queue).wptr_obj.gpu_addr = amdgpu_bo_gpu_offset((*wptr_obj).obj);
     drm_exec_fini(&mut exec);
     return 0;
-fail_map:
+    }
+    
     amdgpu_bo_unref(&mut (*wptr_obj).obj);
-fail_lock:
+    }
+    
     drm_exec_fini(&mut exec);
     ret
 }
@@ -128,34 +132,34 @@ unsafe fn mes_userq_mqd_create(queue: *mut amdgpu_usermode_queue, args_in: *mut 
     let uq_mgr = (*queue).userq_mgr; let adev = (*uq_mgr).adev; let default_mqd = &mut (*adev).mqds[(*queue).queue_type as usize];
     let user = args_in; let props = kzalloc_obj::<amdgpu_mqd_prop>(); if props.is_null() { DRM_ERROR!("Failed to allocate memory for userq_props\n"); return -ENOMEM; }
     let mut r = amdgpu_bo_create_kernel(adev, AMDGPU_MQD_SIZE_ALIGN((*default_mqd).mqd_size), 0, AMDGPU_GEM_DOMAIN_GTT, &mut (*queue).mqd.obj, &mut (*queue).mqd.gpu_addr, &mut (*queue).mqd.cpu_ptr);
-    if r != 0 { DRM_ERROR!("Failed to create MQD object for userqueue\n"); goto!(free_props); }
+    if r != 0 { DRM_ERROR!("Failed to create MQD object for userqueue\n"); goto free_props; }
     memset((*queue).mqd.cpu_ptr, 0, AMDGPU_MQD_SIZE_ALIGN((*default_mqd).mqd_size));
     (*props).wptr_gpu_addr = (*user).wptr_va; (*props).rptr_gpu_addr = (*user).rptr_va; (*props).queue_size = (*user).queue_size;
     (*props).hqd_base_gpu_addr = (*user).queue_va; (*props).mqd_gpu_addr = (*queue).mqd.gpu_addr; (*props).use_doorbell = true;
     (*props).doorbell_index = (*queue).doorbell_index; (*props).fence_address = (*(*queue).fence_drv).gpu_addr;
     if (*queue).queue_type == AMDGPU_HW_IP_COMPUTE {
-        if (*user).mqd_size != core::mem::size_of::<drm_amdgpu_userq_mqd_compute_gfx11>() { DRM_ERROR!("Invalid compute IP MQD size\n"); r = -EINVAL; goto!(free_mqd); }
-        let p = memdup_user(u64_to_user_ptr((*user).mqd), (*user).mqd_size); if IS_ERR!(p) { DRM_ERROR!("Failed to read user MQD\n"); r = -ENOMEM; goto!(free_mqd); }
-        r = amdgpu_bo_reserve((*(*queue).vm).root.bo, false); if r != 0 { kfree(p); goto!(free_mqd); }
+        if (*user).mqd_size != core::mem::size_of::<drm_amdgpu_userq_mqd_compute_gfx11>() { DRM_ERROR!("Invalid compute IP MQD size\n"); r = -EINVAL; goto free_mqd; }
+        let p = memdup_user(u64_to_user_ptr((*user).mqd), (*user).mqd_size); if IS_ERR!(p) { DRM_ERROR!("Failed to read user MQD\n"); r = -ENOMEM; goto free_mqd; }
+        r = amdgpu_bo_reserve((*(*queue).vm).root.bo, false); if r != 0 { kfree(p); goto free_mqd; }
         r = amdgpu_userq_input_va_validate(adev, queue, (*p).eop_va, 2048, &mut (*queue).userq_vas.va.eop); amdgpu_bo_unreserve((*(*queue).vm).root.bo);
-        if r != 0 { kfree(p); goto!(free_mqd); } (*props).eop_gpu_addr = (*p).eop_va; (*props).hqd_pipe_priority = AMDGPU_GFX_PIPE_PRIO_NORMAL; (*props).hqd_queue_priority = AMDGPU_GFX_QUEUE_PRIORITY_MINIMUM; (*props).hqd_active = false; (*props).tmz_queue = (*user).flags & AMDGPU_USERQ_CREATE_FLAGS_QUEUE_SECURE; kfree(p);
+        if r != 0 { kfree(p); goto free_mqd; } (*props).eop_gpu_addr = (*p).eop_va; (*props).hqd_pipe_priority = AMDGPU_GFX_PIPE_PRIO_NORMAL; (*props).hqd_queue_priority = AMDGPU_GFX_QUEUE_PRIORITY_MINIMUM; (*props).hqd_active = false; (*props).tmz_queue = (*user).flags & AMDGPU_USERQ_CREATE_FLAGS_QUEUE_SECURE; kfree(p);
     } else if (*queue).queue_type == AMDGPU_HW_IP_GFX {
-        let mut shadow: amdgpu_gfx_shadow_info = core::mem::zeroed(); if (*adev).gfx.funcs.get_gfx_shadow_info.is_some() { ((*adev).gfx.funcs).get_gfx_shadow_info(adev, &mut shadow, true); } else { r = -EINVAL; goto!(free_mqd); }
-        if (*user).mqd_size != core::mem::size_of::<drm_amdgpu_userq_mqd_gfx11>() || (*user).mqd == 0 { DRM_ERROR!("Invalid GFX MQD\n"); r = -EINVAL; goto!(free_mqd); }
-        let p = memdup_user(u64_to_user_ptr((*user).mqd), (*user).mqd_size); if IS_ERR!(p) { DRM_ERROR!("Failed to read user MQD\n"); r = -ENOMEM; goto!(free_mqd); }
+        let mut shadow: amdgpu_gfx_shadow_info = core::mem::zeroed(); if (*adev).gfx.funcs.get_gfx_shadow_info.is_some() { ((*adev).gfx.funcs).get_gfx_shadow_info(adev, &mut shadow, true); } else { r = -EINVAL; goto free_mqd; }
+        if (*user).mqd_size != core::mem::size_of::<drm_amdgpu_userq_mqd_gfx11>() || (*user).mqd == 0 { DRM_ERROR!("Invalid GFX MQD\n"); r = -EINVAL; goto free_mqd; }
+        let p = memdup_user(u64_to_user_ptr((*user).mqd), (*user).mqd_size); if IS_ERR!(p) { DRM_ERROR!("Failed to read user MQD\n"); r = -ENOMEM; goto free_mqd; }
         (*props).shadow_addr = (*p).shadow_va; (*props).csa_addr = (*p).csa_va; (*props).tmz_queue = (*user).flags & AMDGPU_USERQ_CREATE_FLAGS_QUEUE_SECURE;
-        r = amdgpu_bo_reserve((*(*queue).vm).root.bo, false); if r != 0 { kfree(p); goto!(free_mqd); }
-        r = amdgpu_userq_input_va_validate(adev, queue, (*p).shadow_va, shadow.shadow_size, &mut (*queue).userq_vas.va.shadow); if r != 0 { amdgpu_bo_unreserve((*(*queue).vm).root.bo); kfree(p); goto!(free_mqd); }
-        r = amdgpu_userq_input_va_validate(adev, queue, (*p).csa_va, shadow.csa_size, &mut (*queue).userq_vas.va.csa); amdgpu_bo_unreserve((*(*queue).vm).root.bo); if r != 0 { kfree(p); goto!(free_mqd); } kfree(p);
+        r = amdgpu_bo_reserve((*(*queue).vm).root.bo, false); if r != 0 { kfree(p); goto free_mqd; }
+        r = amdgpu_userq_input_va_validate(adev, queue, (*p).shadow_va, shadow.shadow_size, &mut (*queue).userq_vas.va.shadow); if r != 0 { amdgpu_bo_unreserve((*(*queue).vm).root.bo); kfree(p); goto free_mqd; }
+        r = amdgpu_userq_input_va_validate(adev, queue, (*p).csa_va, shadow.csa_size, &mut (*queue).userq_vas.va.csa); amdgpu_bo_unreserve((*(*queue).vm).root.bo); if r != 0 { kfree(p); goto free_mqd; } kfree(p);
     } else if (*queue).queue_type == AMDGPU_HW_IP_DMA {
-        if (*user).mqd_size != core::mem::size_of::<drm_amdgpu_userq_mqd_sdma_gfx11>() || (*user).mqd == 0 { DRM_ERROR!("Invalid SDMA MQD\n"); r = -EINVAL; goto!(free_mqd); }
-        let p = memdup_user(u64_to_user_ptr((*user).mqd), (*user).mqd_size); if IS_ERR!(p) { DRM_ERROR!("Failed to read sdma user MQD\n"); r = -ENOMEM; goto!(free_mqd); }
-        r = amdgpu_bo_reserve((*(*queue).vm).root.bo, false); if r != 0 { kfree(p); goto!(free_mqd); } r = amdgpu_userq_input_va_validate(adev, queue, (*p).csa_va, 32, &mut (*queue).userq_vas.va.csa); amdgpu_bo_unreserve((*(*queue).vm).root.bo); if r != 0 { kfree(p); goto!(free_mqd); } (*props).csa_addr = (*p).csa_va; kfree(p);
+        if (*user).mqd_size != core::mem::size_of::<drm_amdgpu_userq_mqd_sdma_gfx11>() || (*user).mqd == 0 { DRM_ERROR!("Invalid SDMA MQD\n"); r = -EINVAL; goto free_mqd; }
+        let p = memdup_user(u64_to_user_ptr((*user).mqd), (*user).mqd_size); if IS_ERR!(p) { DRM_ERROR!("Failed to read sdma user MQD\n"); r = -ENOMEM; goto free_mqd; }
+        r = amdgpu_bo_reserve((*(*queue).vm).root.bo, false); if r != 0 { kfree(p); goto free_mqd; } r = amdgpu_userq_input_va_validate(adev, queue, (*p).csa_va, 32, &mut (*queue).userq_vas.va.csa); amdgpu_bo_unreserve((*(*queue).vm).root.bo); if r != 0 { kfree(p); goto free_mqd; } (*props).csa_addr = (*p).csa_va; kfree(p);
     }
-    (*queue).userq_prop = props; r = ((*default_mqd).init_mqd)(adev, (*queue).mqd.cpu_ptr as *mut core::ffi::c_void, props); if r != 0 { DRM_ERROR!("Failed to initialize MQD for userqueue\n"); goto!(free_mqd); }
-    r = mes_userq_create_proc_ctx_space(uq_mgr); if r != 0 { DRM_ERROR!("Failed to allocate MES process context space bo, error: %d\n", r); goto!(free_mqd); }
-    r = mes_userq_create_ctx_space(uq_mgr, queue, user); if r != 0 { DRM_ERROR!("Failed to allocate BO for userqueue (%d)", r); goto!(free_mqd); }
-    r = mes_userq_create_wptr_mapping(adev, uq_mgr, queue, (*props).wptr_gpu_addr); if r != 0 { DRM_ERROR!("Failed to create WPTR mapping\n"); goto!(free_ctx); } return 0;
+    (*queue).userq_prop = props; r = ((*default_mqd).init_mqd)(adev, (*queue).mqd.cpu_ptr as *mut core::ffi::c_void, props); if r != 0 { DRM_ERROR!("Failed to initialize MQD for userqueue\n"); goto free_mqd; }
+    r = mes_userq_create_proc_ctx_space(uq_mgr); if r != 0 { DRM_ERROR!("Failed to allocate MES process context space bo, error: %d\n", r); goto free_mqd; }
+    r = mes_userq_create_ctx_space(uq_mgr, queue, user); if r != 0 { DRM_ERROR!("Failed to allocate BO for userqueue (%d)", r); goto free_mqd; }
+    r = mes_userq_create_wptr_mapping(adev, uq_mgr, queue, (*props).wptr_gpu_addr); if r != 0 { DRM_ERROR!("Failed to create WPTR mapping\n"); goto free_ctx; } return 0;
 free_ctx: amdgpu_bo_free_kernel(&mut (*queue).fw_obj.obj, &mut (*queue).fw_obj.gpu_addr, &mut (*queue).fw_obj.cpu_ptr);
 free_mqd: amdgpu_bo_free_kernel(&mut (*queue).mqd.obj, &mut (*queue).mqd.gpu_addr, &mut (*queue).mqd.cpu_ptr);
 free_props: kfree(props); r

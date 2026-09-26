@@ -41,7 +41,7 @@ extern "C" {
 
 static mut kunit_boot_suites: kunit_suite_set = kunit_suite_set { start: core::ptr::null_mut(), end: core::ptr::null_mut() };
 static mut action_param: *mut c_char = core::ptr::null_mut();
-static mut autorun_param: bool = cfg!(feature = "CONFIG_KUNIT_AUTORUN_ENABLED");
+static mut autorun_param: bool = cfg!(CONFIG_KUNIT_AUTORUN_ENABLED);
 static mut filter_glob_param: *mut c_char = core::ptr::null_mut();
 static mut filter_param: *mut c_char = core::ptr::null_mut();
 static mut filter_action_param: *mut c_char = core::ptr::null_mut();
@@ -113,7 +113,7 @@ pub unsafe fn kunit_merge_suite_sets(init_suite_set: kunit_suite_set,
     kunit_suite_set { start: core::ptr::null_mut(), end: core::ptr::null_mut() }
 }
 
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 pub unsafe fn kunit_run_all_tests() -> c_int {
     let mut suite_set = kunit_suite_set { start: core::ptr::null_mut(), end: core::ptr::null_mut() };
     let init = kunit_suite_set { start: __kunit_init_suites_start, end: __kunit_init_suites_end };
@@ -145,10 +145,10 @@ unsafe fn cstr_eq(mut a: *const c_char, b: &[u8]) -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 static mut kunit_shutdown: *mut c_char = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 unsafe fn kunit_handle_shutdown() {
     if kunit_shutdown.is_null() { return; }
     if cstr_eq(kunit_shutdown, b"poweroff\0") { kernel_power_off(); }

@@ -21,6 +21,8 @@ unsafe fn tcf_sample_init(
     let tn = net_generic(net, (*act_sample_ops).net_id);
     let bind = (flags & TCA_ACT_FLAGS_BIND) != 0;
     let mut tb: [*mut nlattr; TCA_SAMPLE_MAX as usize + 1] = [core::ptr::null_mut(); TCA_SAMPLE_MAX as usize + 1];
+    'release_idr: {
+    'put_chain: {
     let mut psample_group: *mut psample_group;
     let mut psample_group_num: u32;
     let mut rate: u32;
@@ -50,15 +52,15 @@ unsafe fn tcf_sample_init(
         tcf_idr_release(*a, bind); return -EEXIST;
     }
     if tb[TCA_SAMPLE_RATE as usize].is_null() || tb[TCA_SAMPLE_PSAMPLE_GROUP as usize].is_null() {
-        NL_SET_ERR_MSG(extack, "sample rate and group are required"); err = -EINVAL; goto release_idr;
+        NL_SET_ERR_MSG(extack, "sample rate and group are required"); err = -EINVAL; break 'release_idr;
     }
     err = tcf_action_check_ctrlact((*parm).action, tp, &mut goto_ch, extack);
-    if err < 0 { goto release_idr; }
+    if err < 0 { break 'release_idr; }
     rate = nla_get_u32(tb[TCA_SAMPLE_RATE as usize]);
-    if rate == 0 { NL_SET_ERR_MSG(extack, "invalid sample rate"); err = -EINVAL; goto put_chain; }
+    if rate == 0 { NL_SET_ERR_MSG(extack, "invalid sample rate"); err = -EINVAL; break 'put_chain; }
     psample_group_num = nla_get_u32(tb[TCA_SAMPLE_PSAMPLE_GROUP as usize]);
     psample_group = psample_group_get(net, psample_group_num);
-    if psample_group.is_null() { err = -ENOMEM; goto put_chain; }
+    if psample_group.is_null() { err = -ENOMEM; break 'put_chain; }
     s = to_sample(*a);
     spin_lock_bh(&mut (*s).tcf_lock);
     goto_ch = tcf_action_set_ctrlact(*a, (*parm).action, goto_ch);
@@ -70,9 +72,11 @@ unsafe fn tcf_sample_init(
     if !psample_group.is_null() { psample_group_put(psample_group); }
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
     return ret;
-put_chain:
+    }
+    
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
-release_idr:
+    }
+    
     tcf_idr_release(*a, bind); return err;
 }
 
@@ -117,20 +121,22 @@ unsafe fn tcf_sample_dump(skb: *mut sk_buff, a: *mut tc_action, bind: i32, ref_:
     let b = skb_tail_pointer(skb);
     let s = to_sample(a);
     let mut opt: tc_sample = core::mem::zeroed();
+    'nla_put_failure: {
     opt.index = (*s).tcf_index;
     opt.refcnt = refcount_read(&(*s).tcf_refcnt) - ref_;
     opt.bindcnt = atomic_read(&(*s).tcf_bindcnt) - bind;
     let mut t: tcf_t = core::mem::zeroed();
     spin_lock_bh(&mut (*s).tcf_lock);
     opt.action = (*s).tcf_action;
-    if nla_put(skb, TCA_SAMPLE_PARMS, core::mem::size_of::<tc_sample>(), &opt as *const _ as *const core::ffi::c_void) != 0 { goto nla_put_failure; }
+    if nla_put(skb, TCA_SAMPLE_PARMS, core::mem::size_of::<tc_sample>(), &opt as *const _ as *const core::ffi::c_void) != 0 { break 'nla_put_failure; }
     tcf_tm_dump(&mut t, &(*s).tcf_tm);
-    if nla_put_64bit(skb, TCA_SAMPLE_TM, core::mem::size_of::<tcf_t>(), &t, TCA_SAMPLE_PAD) != 0 { goto nla_put_failure; }
-    if nla_put_u32(skb, TCA_SAMPLE_RATE, (*s).rate) != 0 { goto nla_put_failure; }
-    if (*s).truncate && nla_put_u32(skb, TCA_SAMPLE_TRUNC_SIZE, (*s).trunc_size) != 0 { goto nla_put_failure; }
-    if nla_put_u32(skb, TCA_SAMPLE_PSAMPLE_GROUP, (*s).psample_group_num) != 0 { goto nla_put_failure; }
+    if nla_put_64bit(skb, TCA_SAMPLE_TM, core::mem::size_of::<tcf_t>(), &t, TCA_SAMPLE_PAD) != 0 { break 'nla_put_failure; }
+    if nla_put_u32(skb, TCA_SAMPLE_RATE, (*s).rate) != 0 { break 'nla_put_failure; }
+    if (*s).truncate && nla_put_u32(skb, TCA_SAMPLE_TRUNC_SIZE, (*s).trunc_size) != 0 { break 'nla_put_failure; }
+    if nla_put_u32(skb, TCA_SAMPLE_PSAMPLE_GROUP, (*s).psample_group_num) != 0 { break 'nla_put_failure; }
     spin_unlock_bh(&mut (*s).tcf_lock); return (*skb).len as i32;
-nla_put_failure:
+    }
+    
     spin_unlock_bh(&mut (*s).tcf_lock); nlmsg_trim(skb, b); -1
 }
 

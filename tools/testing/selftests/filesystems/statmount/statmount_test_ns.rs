@@ -403,7 +403,7 @@ unsafe fn test_statmount_mnt_ns_id() {
 }
 
 unsafe fn validate_external_listmount(pid: pid_t, child_nr_mounts: u64) -> c_int {
-    let mut list = [0_u64; 256];
+    let mut list = [0u64; 256];
     let mut mnt_ns_id: u64 = 0;
     let nr_mounts: u64;
     let mut buf = [0 as c_char; 256];
@@ -507,7 +507,7 @@ unsafe fn test_listmount_ns() {
 
     if pid == 0 {
         let mut cval: c_char = 0;
-        let mut list = [0_u64; 256];
+        let mut list = [0u64; 256];
 
         close(child_ready_pipe[0]);
         close(parent_ready_pipe[1]);

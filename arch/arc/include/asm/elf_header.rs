@@ -5,7 +5,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-pub const EM_ARC_INUSE: u32 = if cfg!(feature = "CONFIG_ISA_ARCOMPACT") {
+pub const EM_ARC_INUSE: u32 = if cfg!(CONFIG_ISA_ARCOMPACT) {
     EM_ARCOMPACT
 } else {
     EM_ARCV2
@@ -20,9 +20,9 @@ pub const R_ARC_32_PCREL: u32 = 0x31;
 pub const ELF_ARCH: u32 = EM_ARC_INUSE;
 pub const ELF_CLASS: u32 = ELFCLASS32;
 
-#[cfg(feature = "CONFIG_CPU_BIG_ENDIAN")]
+#[cfg(CONFIG_CPU_BIG_ENDIAN)]
 pub const ELF_DATA: u32 = ELFDATA2MSB;
-#[cfg(not(feature = "CONFIG_CPU_BIG_ENDIAN"))]
+#[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
 pub const ELF_DATA: u32 = ELFDATA2LSB;
 
 /*

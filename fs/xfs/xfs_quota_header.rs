@@ -67,7 +67,7 @@ pub struct xfs_dqtrx_hook {
     pub apply_hook: xfs_hook,
 }
 
-#[cfg(all(feature = "CONFIG_XFS_QUOTA", feature = "CONFIG_XFS_LIVE_HOOKS"))]
+#[cfg(all(CONFIG_XFS_QUOTA, CONFIG_XFS_LIVE_HOOKS))]
 extern "C" {
     pub fn xfs_trans_mod_ino_dquot(tp: *mut xfs_trans, ip: *mut xfs_inode, dqp: *mut xfs_dquot, field: u32, delta: i64);
     pub fn xfs_dqtrx_hook_disable();
@@ -77,17 +77,17 @@ extern "C" {
     pub fn xfs_dqtrx_hook_setup(hook: *mut xfs_dqtrx_hook, mod_fn: notifier_fn_t, apply_fn: notifier_fn_t);
 }
 
-#[cfg(all(feature = "CONFIG_XFS_QUOTA", not(feature = "CONFIG_XFS_LIVE_HOOKS")))]
+#[cfg(all(CONFIG_XFS_QUOTA, not(CONFIG_XFS_LIVE_HOOKS)))]
 pub unsafe fn xfs_trans_mod_ino_dquot(tp: *mut xfs_trans, _ip: *mut xfs_inode, dqp: *mut xfs_dquot, field: u32, delta: i64) {
     xfs_trans_mod_dquot(tp, dqp, field, delta);
 }
 
-#[cfg(all(feature = "CONFIG_XFS_QUOTA", not(feature = "CONFIG_XFS_LIVE_HOOKS")))]
+#[cfg(all(CONFIG_XFS_QUOTA, not(CONFIG_XFS_LIVE_HOOKS)))]
 extern "C" { fn xfs_trans_mod_dquot(tp: *mut xfs_trans, dqp: *mut xfs_dquot, field: u32, delta: i64); }
 
-#[cfg(all(not(feature = "CONFIG_XFS_QUOTA"), feature = "CONFIG_XFS_LIVE_HOOKS"))]
+#[cfg(all(not(CONFIG_XFS_QUOTA), CONFIG_XFS_LIVE_HOOKS))]
 pub unsafe fn xfs_dqtrx_hook_enable() {}
-#[cfg(all(not(feature = "CONFIG_XFS_QUOTA"), feature = "CONFIG_XFS_LIVE_HOOKS"))]
+#[cfg(all(not(CONFIG_XFS_QUOTA), CONFIG_XFS_LIVE_HOOKS))]
 pub unsafe fn xfs_dqtrx_hook_disable() {}
 
 pub unsafe fn xfs_quota_chkd_flag(type_: xfs_dqtype_t) -> u32 {
@@ -99,7 +99,7 @@ pub unsafe fn xfs_quota_chkd_flag(type_: xfs_dqtype_t) -> u32 {
     }
 }
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 extern "C" {
     pub fn xfs_trans_dup_dqinfo(tp: *mut xfs_trans, tp2: *mut xfs_trans);
     pub fn xfs_trans_free_dqinfo(tp: *mut xfs_trans);
@@ -132,13 +132,13 @@ extern "C" {
     pub fn xfs_inode_near_dquot_enforcement(ip: *mut xfs_inode, type_: xfs_dqtype_t) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_QUOTA"))]
+#[cfg(not(CONFIG_XFS_QUOTA))]
 pub unsafe fn xfs_qm_vop_dqalloc(_ip: *mut xfs_inode, _kuid: kuid_t, _kgid: kgid_t, _prid: prid_t, _flags: u32,
     udqp: *mut *mut xfs_dquot, gdqp: *mut *mut xfs_dquot, pdqp: *mut *mut xfs_dquot) -> i32 {
     *udqp = core::ptr::null_mut(); *gdqp = core::ptr::null_mut(); *pdqp = core::ptr::null_mut(); 0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_QUOTA"))]
+#[cfg(not(CONFIG_XFS_QUOTA))]
 pub unsafe fn xfs_quota_reserve_blkres(_ip: *mut xfs_inode, _blocks: i64) -> i32 { 0 }
 
 pub unsafe fn xfs_quota_unreserve_blkres(ip: *mut xfs_inode, blocks: u64) {

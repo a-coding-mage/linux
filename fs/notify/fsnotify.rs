@@ -37,17 +37,17 @@ pub unsafe fn fsnotify_set_children_dentry_flags(inode: *mut inode) {
     if !S_ISDIR((*inode).i_mode) { return; }
     spin_lock(&mut (*inode).i_lock);
     let mut alias: *mut dentry = core::ptr::null_mut();
-    for_each_alias(alias, inode) {
+    for_each_alias!(alias, inode, {
         spin_lock(&mut (*alias).d_lock);
         let mut child: *mut dentry = core::ptr::null_mut();
-        hlist_for_each_entry(child, &mut (*alias).d_children, d_sib) {
+        hlist_for_each_entry!(child, &mut (*alias).d_children, d_sib, {
             if (*child).d_inode.is_null() { continue; }
             spin_lock_nested(&mut (*child).d_lock, DENTRY_D_LOCK_NESTED);
             (*child).d_flags |= DCACHE_FSNOTIFY_PARENT_WATCHED;
             spin_unlock(&mut (*child).d_lock);
-        }
+        });
         spin_unlock(&mut (*alias).d_lock);
-    }
+    });
     spin_unlock(&mut (*inode).i_lock);
 }
 

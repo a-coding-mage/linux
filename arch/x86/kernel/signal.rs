@@ -117,10 +117,10 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) {
     let fpu = x86_task_fpu(current());
     if v8086_mode(regs) { save_v86_state(regs as *mut kernel_vm86_regs, VM86_SIGNAL); }
     if syscall_get_nr(current(), regs) != -1 {
-        match syscall_get_error(current(), regs) {
-            -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => (*regs).ax = -EINTR,
-            -ERESTARTSYS => { if ((*ksig).ka.sa.sa_flags & SA_RESTART) == 0 { (*regs).ax = -EINTR; } else { (*regs).ax = (*regs).orig_ax; (*regs).ip = (*regs).ip.wrapping_sub(2); } },
-            -ERESTARTNOINTR => { (*regs).ax = (*regs).orig_ax; (*regs).ip = (*regs).ip.wrapping_sub(2); },
+        match -(syscall_get_error(current(), regs)) {
+            ERESTART_RESTARTBLOCK | ERESTARTNOHAND => (*regs).ax = -EINTR,
+            ERESTARTSYS => { if ((*ksig).ka.sa.sa_flags & SA_RESTART) == 0 { (*regs).ax = -EINTR; } else { (*regs).ax = (*regs).orig_ax; (*regs).ip = (*regs).ip.wrapping_sub(2); } },
+            ERESTARTNOINTR => { (*regs).ax = (*regs).orig_ax; (*regs).ip = (*regs).ip.wrapping_sub(2); },
             _ => {}
         }
     }
@@ -144,9 +144,9 @@ pub unsafe fn arch_do_signal_or_restart(regs: *mut pt_regs) {
     let mut ksig: ksignal = core::mem::zeroed();
     if get_signal(&mut ksig) { handle_signal(&mut ksig, regs); return; }
     if syscall_get_nr(current(), regs) != -1 {
-        match syscall_get_error(current(), regs) {
-            -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => { (*regs).ax = (*regs).orig_ax; (*regs).ip = (*regs).ip.wrapping_sub(2); },
-            -ERESTART_RESTARTBLOCK => { (*regs).ax = get_nr_restart_syscall(regs); (*regs).ip = (*regs).ip.wrapping_sub(2); },
+        match -(syscall_get_error(current(), regs)) {
+            ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => { (*regs).ax = (*regs).orig_ax; (*regs).ip = (*regs).ip.wrapping_sub(2); },
+            ERESTART_RESTARTBLOCK => { (*regs).ax = get_nr_restart_syscall(regs); (*regs).ip = (*regs).ip.wrapping_sub(2); },
             _ => {}
         }
     }

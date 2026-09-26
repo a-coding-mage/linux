@@ -231,7 +231,7 @@ unsafe fn adf_init_bank(accel_dev: *mut adf_accel_dev, bank: *mut adf_etr_bank_d
 // The remaining cleanup and initialization routines retain the source-level API.
 pub unsafe fn adf_cleanup_etr_data(accel_dev: *mut adf_accel_dev) {
     let etr_data = (*accel_dev).transport;
-    if !etr_data.is_null() { adf_cleanup_etr_handles(accel_dev); debugfs_remove((*etr_data).debug); kfree((*etr_data).banks->rings); kfree((*etr_data).banks); kfree(etr_data); (*accel_dev).transport = core::ptr::null_mut(); }
+    if !etr_data.is_null() { adf_cleanup_etr_handles(accel_dev); debugfs_remove((*etr_data).debug); kfree((*(*etr_data).banks).rings); kfree((*etr_data).banks); kfree(etr_data); (*accel_dev).transport = core::ptr::null_mut(); }
 }
 
 unsafe fn cleanup_bank(bank: *mut adf_etr_bank_data) {

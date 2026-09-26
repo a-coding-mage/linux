@@ -91,12 +91,12 @@ macro_rules! to_ccwgroupdrv {
 
 // CONFIG_CCWGROUP selects the external implementation; otherwise this is the
 // header's static inline fallback.
-#[cfg(feature = "CONFIG_CCWGROUP")]
+#[cfg(CONFIG_CCWGROUP)]
 extern "C" {
     pub fn dev_is_ccwgroup(dev: *mut device) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_CCWGROUP"))]
+#[cfg(not(CONFIG_CCWGROUP))]
 #[inline]
 pub unsafe fn dev_is_ccwgroup(_dev: *mut device) -> bool {
     false

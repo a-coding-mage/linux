@@ -160,9 +160,9 @@ extern "C" {
     pub fn amdgpu_ttm_domain_start(adev: *mut amdgpu_device, type_: u32) -> u64;
 }
 
-#[cfg(feature = "CONFIG_DRM_AMDGPU_USERPTR")]
+#[cfg(CONFIG_DRM_AMDGPU_USERPTR)]
 extern "C" { pub fn amdgpu_ttm_tt_get_user_pages(bo: *mut amdgpu_bo, range: *mut amdgpu_hmm_range) -> i32; }
-#[cfg(not(feature = "CONFIG_DRM_AMDGPU_USERPTR"))]
+#[cfg(not(CONFIG_DRM_AMDGPU_USERPTR))]
 pub unsafe fn amdgpu_ttm_tt_get_user_pages(_: *mut amdgpu_bo, _: *mut amdgpu_hmm_range) -> i32 { -1 }
 
 #[inline]

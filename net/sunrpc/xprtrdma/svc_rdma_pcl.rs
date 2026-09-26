@@ -31,21 +31,21 @@ unsafe fn pcl_lookup_position(
     position: u32,
 ) -> *mut svc_rdma_chunk {
     let mut pos: *mut svc_rdma_chunk = core::ptr::null_mut();
-    pcl_for_each_chunk(pos, pcl) {
+    pcl_for_each_chunk!(pos, pcl, {
         if (*pos).ch_position == position {
             return pos;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
 unsafe fn pcl_insert_position(pcl: *mut svc_rdma_pcl, chunk: *mut svc_rdma_chunk) {
     let mut pos: *mut svc_rdma_chunk = core::ptr::null_mut();
-    pcl_for_each_chunk(pos, pcl) {
+    pcl_for_each_chunk!(pos, pcl, {
         if (*pos).ch_position > (*chunk).ch_position {
             break;
         }
-    }
+    });
     __list_add(
         &mut (*chunk).ch_list,
         (*pos).ch_list.prev,
@@ -200,7 +200,7 @@ pub unsafe fn pcl_check_read_chunk_positions(
 
     let mut total_read = 0u32;
     let mut chunk: *mut svc_rdma_chunk = core::ptr::null_mut();
-    pcl_for_each_chunk(chunk, &mut (*rctxt).rc_read_pcl) {
+    pcl_for_each_chunk!(chunk, &mut (*rctxt).rc_read_pcl, {
         if (*chunk).ch_position - total_read > bound || (*chunk).ch_length > max_len {
             return false;
         }
@@ -213,7 +213,7 @@ pub unsafe fn pcl_check_read_chunk_positions(
             return false;
         }
         total_read += (*chunk).ch_length;
-    }
+    });
 
     true
 }

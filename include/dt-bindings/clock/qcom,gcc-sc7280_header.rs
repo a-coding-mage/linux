@@ -3,8 +3,9 @@
  * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
  */
 
+
 /* GCC clocks */
-+pub const GCC_GPLL0: u32 = 0;
+pub const GCC_GPLL0: u32 = 0;
 pub const GCC_GPLL0_OUT_EVEN: u32 = 1;
 pub const GCC_GPLL0_OUT_ODD: u32 = 2;
 pub const GCC_GPLL1: u32 = 3;
@@ -191,7 +192,7 @@ pub const GCC_EDP_CLKREF_EN: u32 = 183;
 pub const GCC_SEC_CTRL_CLK_SRC: u32 = 184;
 
 /* GCC power domains */
-+pub const GCC_PCIE_0_GDSC: u32 = 0;
+pub const GCC_PCIE_0_GDSC: u32 = 0;
 pub const GCC_PCIE_1_GDSC: u32 = 1;
 pub const GCC_UFS_PHY_GDSC: u32 = 2;
 pub const GCC_USB30_PRIM_GDSC: u32 = 3;
@@ -203,7 +204,7 @@ pub const HLOS1_VOTE_TURING_MMU_TBU0_GDSC: u32 = 8;
 pub const HLOS1_VOTE_TURING_MMU_TBU1_GDSC: u32 = 9;
 
 /* GCC resets */
-+pub const GCC_PCIE_0_BCR: u32 = 0;
+pub const GCC_PCIE_0_BCR: u32 = 0;
 pub const GCC_PCIE_0_PHY_BCR: u32 = 1;
 pub const GCC_PCIE_1_BCR: u32 = 2;
 pub const GCC_PCIE_1_PHY_BCR: u32 = 3;

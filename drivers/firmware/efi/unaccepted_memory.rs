@@ -201,23 +201,23 @@ pub unsafe extern "C" fn range_contains_unaccepted_memory(mut start: PhysAddr, s
     false
 }
 
-#[cfg(feature = "CONFIG_PROC_VMCORE")]
+#[cfg(CONFIG_PROC_VMCORE)]
 unsafe extern "C" fn unaccepted_memory_vmcore_pfn_is_ram(_cb: *mut VmcoreCb, pfn: usize) -> bool {
     !pfn_is_unaccepted_memory(pfn)
 }
 
-#[cfg(feature = "CONFIG_PROC_VMCORE")]
+#[cfg(CONFIG_PROC_VMCORE)]
 static mut VMCORE_CB: VmcoreCb = VmcoreCb {
     pfn_is_ram: Some(unaccepted_memory_vmcore_pfn_is_ram),
 };
 
-#[cfg(feature = "CONFIG_PROC_VMCORE")]
+#[cfg(CONFIG_PROC_VMCORE)]
 unsafe extern "C" fn unaccepted_memory_init_kdump() -> c_int {
     register_vmcore_cb(core::ptr::addr_of_mut!(VMCORE_CB));
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_VMCORE")]
+#[cfg(CONFIG_PROC_VMCORE)]
 #[used]
 static UNACCEPTED_MEMORY_INIT_KDUMP: unsafe extern "C" fn() -> c_int = unaccepted_memory_init_kdump;
 

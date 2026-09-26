@@ -12,32 +12,32 @@
 
 // Linux and ColdFire declarations supplied by the surrounding kernel.
 
-#[cfg(feature = "CONFIG_M520x")]
+#[cfg(CONFIG_M520x)]
 const EINT0: u32 = 64;
-#[cfg(feature = "CONFIG_M520x")]
+#[cfg(CONFIG_M520x)]
 const EINT1: u32 = 65;
-#[cfg(feature = "CONFIG_M520x")]
+#[cfg(CONFIG_M520x)]
 const EINT4: u32 = 66;
-#[cfg(feature = "CONFIG_M520x")]
+#[cfg(CONFIG_M520x)]
 const EINT7: u32 = 67;
 
-#[cfg(feature = "CONFIG_M520x")]
+#[cfg(CONFIG_M520x)]
 static IRQEBITMAP: [u32; 4] = [0, 1, 4, 7];
 
-#[cfg(feature = "CONFIG_M520x")]
+#[cfg(CONFIG_M520x)]
 #[inline]
 unsafe fn irq2ebit(irq: u32) -> u32 {
     IRQEBITMAP[(irq - EINT0) as usize]
 }
 
-#[cfg(not(feature = "CONFIG_M520x"))]
+#[cfg(not(CONFIG_M520x))]
 const EINT0: u32 = 64;
-#[cfg(not(feature = "CONFIG_M520x"))]
+#[cfg(not(CONFIG_M520x))]
 const EINT1: u32 = 65;
-#[cfg(not(feature = "CONFIG_M520x"))]
+#[cfg(not(CONFIG_M520x))]
 const EINT7: u32 = 71;
 
-#[cfg(not(feature = "CONFIG_M520x"))]
+#[cfg(not(CONFIG_M520x))]
 #[inline]
 unsafe fn irq2ebit(irq: u32) -> u32 {
     irq - EINT0

@@ -47,7 +47,7 @@ pub fn arch_local_irq_save() -> usize {
 pub fn arch_local_irq_restore(flags: usize) {
     // warn if IRQs are on although they should be off
     // CONFIG_LIGHTWEIGHT_SPINLOCK_CHECK corresponds to this conditional build option.
-    #[cfg(feature = "CONFIG_LIGHTWEIGHT_SPINLOCK_CHECK")]
+    #[cfg(CONFIG_LIGHTWEIGHT_SPINLOCK_CHECK)]
     if arch_local_save_flags() & PSW_I != 0 {
         unsafe {
             asm!("break 6,6", options(nostack)); // SPINLOCK_BREAK_INSN

@@ -125,22 +125,22 @@ macro_rules! declare_event_get_offsets {
 // TRACE_INCLUDE(TRACE_INCLUDE_FILE)
 
 /* Stage 6 callback and buffering logic. */
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 macro_rules! trace_perf_proto { ($call:ident, $proto:tt) => { unsafe fn perf_trace_$call($data: *mut core::ffi::c_void, $proto); }; }
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 macro_rules! trace_perf_init { ($call:ident) => { perf_probe: perf_trace_$call, }; }
-#[cfg(not(feature = "CONFIG_PERF_EVENTS"))]
+#[cfg(not(CONFIG_PERF_EVENTS))]
 macro_rules! trace_perf_proto { ($call:ident, $proto:tt) => {}; }
-#[cfg(not(feature = "CONFIG_PERF_EVENTS"))]
+#[cfg(not(CONFIG_PERF_EVENTS))]
 macro_rules! trace_perf_init { ($call:ident) => {}; }
 
-#[cfg(all(feature = "CONFIG_BPF_EVENTS", feature = "CONFIG_DEBUG_INFO_BTF"))]
+#[cfg(all(CONFIG_BPF_EVENTS, CONFIG_DEBUG_INFO_BTF))]
 macro_rules! trace_btf_ids_declare { ($call:ident) => { /* BTF_ID_LIST(__bpf_trace_btf_ids_$call), FUNC and STRUCT entries. */ }; }
-#[cfg(all(feature = "CONFIG_BPF_EVENTS", feature = "CONFIG_DEBUG_INFO_BTF"))]
+#[cfg(all(CONFIG_BPF_EVENTS, CONFIG_DEBUG_INFO_BTF))]
 macro_rules! trace_btf_ids_init { ($call:ident) => { btf_ids: __bpf_trace_btf_ids_$call, }; }
-#[cfg(not(all(feature = "CONFIG_BPF_EVENTS", feature = "CONFIG_DEBUG_INFO_BTF")))]
+#[cfg(not(all(CONFIG_BPF_EVENTS, CONFIG_DEBUG_INFO_BTF)))]
 macro_rules! trace_btf_ids_declare { ($call:ident) => {}; }
-#[cfg(not(all(feature = "CONFIG_BPF_EVENTS", feature = "CONFIG_DEBUG_INFO_BTF")))]
+#[cfg(not(all(CONFIG_BPF_EVENTS, CONFIG_DEBUG_INFO_BTF)))]
 macro_rules! trace_btf_ids_init { ($call:ident) => {}; }
 
 // TRACE_INCLUDE(TRACE_INCLUDE_FILE)

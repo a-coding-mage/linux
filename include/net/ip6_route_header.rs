@@ -42,9 +42,9 @@ pub unsafe fn rt6_qualify_for_ecmp(f6i: *const fib6_info) -> bool {
     ((*f6i).fib6_flags & RTF_ADDRCONF) == 0 && (*f6i).nh.is_null() && (*(*f6i).fib6_nh).fib_nh_gw_family != 0
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 extern "C" { pub fn ip6_route_input(skb: *mut sk_buff); }
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 #[inline] pub unsafe fn ip6_route_input(_skb: *mut sk_buff) {}
 
 extern "C" {
@@ -104,7 +104,7 @@ extern "C" {
 
 #[repr(C)] pub struct rt6_rtnl_dump_arg { pub skb: *mut sk_buff, pub cb: *mut netlink_callback, pub net: *mut net, pub filter: fib_dump_filter }
 
-#[inline] pub unsafe fn ip6_dst_store(sk: *mut sock, dst: *mut dst_entry, daddr_set: bool, saddr_set: bool) { let np = inet6_sk(sk); (*np).dst_cookie = rt6_get_cookie(dst_rt6_info(dst)); sk_setup_caps(sk, dst); (*np).daddr_cache = daddr_set; #[cfg(feature = "CONFIG_IPV6_SUBTREES")] { (*np).saddr_cache = saddr_set; } }
+#[inline] pub unsafe fn ip6_dst_store(sk: *mut sock, dst: *mut dst_entry, daddr_set: bool, saddr_set: bool) { let np = inet6_sk(sk); (*np).dst_cookie = rt6_get_cookie(dst_rt6_info(dst)); sk_setup_caps(sk, dst); (*np).daddr_cache = daddr_set; #[cfg(CONFIG_IPV6_SUBTREES)] { (*np).saddr_cache = saddr_set; } }
 
 #[inline] pub unsafe fn skb_rt6_info(skb: *const sk_buff) -> *const rt6_info { let dst = skb_dst(skb); if !dst.is_null() { dst_rt6_info(dst) } else { core::ptr::null() } }
 

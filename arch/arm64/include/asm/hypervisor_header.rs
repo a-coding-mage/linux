@@ -21,22 +21,22 @@ extern "C" {
 }
 
 // CONFIG_ARM_PKVM_GUEST is a build-time configuration condition.
-#[cfg(feature = "CONFIG_ARM_PKVM_GUEST")]
+#[cfg(CONFIG_ARM_PKVM_GUEST)]
 extern "C" {
     pub fn pkvm_init_hyp_services();
 }
 
-#[cfg(feature = "CONFIG_ARM_PKVM_GUEST")]
+#[cfg(CONFIG_ARM_PKVM_GUEST)]
 #[inline]
 pub unsafe fn is_protected_kvm_guest() -> bool {
     static_branch_unlikely(&pkvm_guest)
 }
 
-#[cfg(not(feature = "CONFIG_ARM_PKVM_GUEST"))]
+#[cfg(not(CONFIG_ARM_PKVM_GUEST))]
 #[inline]
 pub unsafe fn pkvm_init_hyp_services() {}
 
-#[cfg(not(feature = "CONFIG_ARM_PKVM_GUEST"))]
+#[cfg(not(CONFIG_ARM_PKVM_GUEST))]
 #[inline]
 pub unsafe fn is_protected_kvm_guest() -> bool {
     false

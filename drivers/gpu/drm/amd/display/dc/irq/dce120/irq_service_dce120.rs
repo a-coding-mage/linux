@@ -68,8 +68,8 @@ static mut vupdate_irq_info_funcs: irq_source_info_funcs = irq_source_info_funcs
 // C preprocessor register/address construction is retained as Rust macros.
 macro_rules! base_inner { ($seg:ident) => { DCE_BASE__INST0_SEG$seg }; }
 macro_rules! base { ($seg:ident) => { base_inner!($seg) }; }
-macro_rules! sri { ($reg:ident, $block:ident, $id:literal) => {
-    base!( $id ) + mm$block$id_$reg##_BASE_IDX + mm$block$id_$reg
+macro_rules! sri { ($reg:tt, $block:ident, $id:literal) => {
+    base!( $id ) + mm$block$id_::kernel::macros::paste!([<$reg _BASE_IDX>]) + mm$block$id_$reg
 }; }
 
 // The following table is populated with the same designated entries as the C

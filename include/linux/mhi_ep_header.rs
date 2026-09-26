@@ -117,7 +117,7 @@ pub struct mhi_ep_driver {
 
 // Equivalent helper macros; container_of semantics are provided by the kernel bindings.
 #[macro_export]
-macro_rules! to_mhi_ep_device { ($dev:expr) => { container_of!($dev, mhi_ep_device, dev) }; }
+macro_rules! to_mhi_ep_device { ($dev:expr) => { container_of!($dev, mhi_ep_device, $dev) }; }
 #[macro_export]
 macro_rules! to_mhi_ep_driver { ($drv:expr) => { container_of_const!($drv, mhi_ep_driver, driver) }; }
 

@@ -204,7 +204,7 @@ pub unsafe extern "C" fn read_persistent_clock64(ts: *mut timespec64) {
 
 pub unsafe extern "C" fn time_init() {
     let mut np: *mut device_node = core::ptr::null_mut(); let mut count = 0;
-    for_each_compatible_node!(np, core::ptr::null_mut(), ALTR_TIMER_COMPATIBLE) { count += 1; }
+    for_each_compatible_node!(np, core::ptr::null_mut(), ALTR_TIMER_COMPATIBLE, { count += 1; });
     if count < 2 { panic!("{} timer is found, it needs 2 timers in system\n", count); }
     timer_probe();
 }

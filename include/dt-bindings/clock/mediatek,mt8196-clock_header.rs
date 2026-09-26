@@ -798,7 +798,6 @@ pub const CLK_CPB_ARMPLL_B: u32 = 0;
 /* PTPPLL_PLL_CTRL */
 pub const CLK_PTPPLL: u32 = 0;
 
-#endif /* _DT_BINDINGS_CLK_MT8196_H */
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

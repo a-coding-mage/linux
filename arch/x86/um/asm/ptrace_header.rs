@@ -4,7 +4,7 @@
 #[repr(C)]
 pub enum {
     REGSET_GENERAL,
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     REGSET_FP_LEGACY,
     REGSET_FP,
     REGSET_XSTATE,
@@ -52,22 +52,20 @@ pub unsafe fn regs_return_value(regs: *mut pt_regs) -> c_long {
  */
 pub struct user_desc;
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 extern "C" {
     pub fn ptrace_get_thread_area(
         child: *mut task_struct,
         idx: c_int,
-        user_desc: *mut user_desc,
-    ) -> c_int;
+        user_desc: *mut user_desc) -> c_int;
     pub fn ptrace_set_thread_area(
         child: *mut task_struct,
         idx: c_int,
-        user_desc: *mut user_desc,
-    ) -> c_int;
+        user_desc: *mut user_desc) -> c_int;
     pub fn arch_switch_tls(to: *mut task_struct) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 mod non_32 {
     macro_rules! PT_REGS_R8 { ($r:expr) => { UPT_R8(unsafe { &(*$r).regs }) }; }
     macro_rules! PT_REGS_R9 { ($r:expr) => { UPT_R9(unsafe { &(*$r).regs }) }; }

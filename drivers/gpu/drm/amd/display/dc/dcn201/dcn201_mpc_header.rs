@@ -102,8 +102,7 @@ extern "C" {
         mpc_regs: *const dcn201_mpc_registers,
         mpc_shift: *const dcn201_mpc_shift,
         mpc_mask: *const dcn201_mpc_mask,
-        num_mpcc: ::core::ffi::c_int,
-    );
+        num_mpcc: ::core::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

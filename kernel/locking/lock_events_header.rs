@@ -20,13 +20,13 @@ pub enum lock_events {
     LOCKEVENT_reset_cnts = Self::lockevent_num as isize,
 }
 
-#[cfg(feature = "CONFIG_LOCK_EVENT_COUNTS")]
+#[cfg(CONFIG_LOCK_EVENT_COUNTS)]
 extern "C" {
     /* Per-cpu counters, supplied by the surrounding kernel translation. */
     pub static mut lockevents: *mut usize;
 }
 
-#[cfg(feature = "CONFIG_LOCK_EVENT_COUNTS")]
+#[cfg(CONFIG_LOCK_EVENT_COUNTS)]
 #[inline]
 pub unsafe fn __lockevent_inc(event: lock_events, cond: bool) {
     if cond {
@@ -35,14 +35,14 @@ pub unsafe fn __lockevent_inc(event: lock_events, cond: bool) {
     }
 }
 
-#[cfg(feature = "CONFIG_LOCK_EVENT_COUNTS")]
+#[cfg(CONFIG_LOCK_EVENT_COUNTS)]
 #[inline]
 pub unsafe fn __lockevent_add(event: lock_events, inc: i32) {
     // raw_cpu_add(lockevents[event], inc);
     let _ = (event, inc);
 }
 
-#[cfg(feature = "CONFIG_LOCK_EVENT_COUNTS")]
+#[cfg(CONFIG_LOCK_EVENT_COUNTS)]
 #[macro_export]
 macro_rules! lockevent_inc {
     ($ev:ident) => {
@@ -50,7 +50,7 @@ macro_rules! lockevent_inc {
     };
 }
 
-#[cfg(feature = "CONFIG_LOCK_EVENT_COUNTS")]
+#[cfg(CONFIG_LOCK_EVENT_COUNTS)]
 #[macro_export]
 macro_rules! lockevent_cond_inc {
     ($ev:ident, $c:expr) => {
@@ -58,7 +58,7 @@ macro_rules! lockevent_cond_inc {
     };
 }
 
-#[cfg(feature = "CONFIG_LOCK_EVENT_COUNTS")]
+#[cfg(CONFIG_LOCK_EVENT_COUNTS)]
 #[macro_export]
 macro_rules! lockevent_add {
     ($ev:ident, $c:expr) => {
@@ -66,17 +66,17 @@ macro_rules! lockevent_add {
     };
 }
 
-#[cfg(not(feature = "CONFIG_LOCK_EVENT_COUNTS"))]
+#[cfg(not(CONFIG_LOCK_EVENT_COUNTS))]
 #[macro_export]
 macro_rules! lockevent_inc { ($ev:ident) => {}; }
 
-#[cfg(not(feature = "CONFIG_LOCK_EVENT_COUNTS"))]
+#[cfg(not(CONFIG_LOCK_EVENT_COUNTS))]
 #[macro_export]
 macro_rules! lockevent_add {
     ($ev:ident, $c:expr) => {{ let _ = $c; }};
 }
 
-#[cfg(not(feature = "CONFIG_LOCK_EVENT_COUNTS"))]
+#[cfg(not(CONFIG_LOCK_EVENT_COUNTS))]
 #[macro_export]
 macro_rules! lockevent_cond_inc {
     ($ev:ident, $c:expr) => {{ let _ = $c; }};

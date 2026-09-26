@@ -13,19 +13,19 @@ extern "C" {
 }
 
 // Original condition: defined(CONFIG_CPM) || defined(CONFIG_QUICC_ENGINE).
-#[cfg(any(feature = "CONFIG_CPM", feature = "CONFIG_QUICC_ENGINE"))]
+#[cfg(any(CONFIG_CPM, CONFIG_QUICC_ENGINE))]
 extern "C" {
     pub fn get_brgfreq() -> u32;
     pub fn get_baudrate() -> u32;
 }
 
-#[cfg(not(any(feature = "CONFIG_CPM", feature = "CONFIG_QUICC_ENGINE")))]
+#[cfg(not(any(CONFIG_CPM, CONFIG_QUICC_ENGINE)))]
 #[inline]
 pub fn get_brgfreq() -> u32 {
     u32::MAX
 }
 
-#[cfg(not(any(feature = "CONFIG_CPM", feature = "CONFIG_QUICC_ENGINE")))]
+#[cfg(not(any(CONFIG_CPM, CONFIG_QUICC_ENGINE)))]
 #[inline]
 pub fn get_baudrate() -> u32 {
     u32::MAX

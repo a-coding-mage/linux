@@ -124,17 +124,17 @@ unsafe extern "C" {
     pub fn sysfs_pseries_vas_init(vas_caps: *mut vas_all_caps) -> i32;
 }
 
-#[cfg(feature = "CONFIG_PPC_VAS")]
+#[cfg(CONFIG_PPC_VAS)]
 unsafe extern "C" {
     pub fn vas_migration_handler(action: i32) -> i32;
     pub fn pseries_vas_dlpar_cpu() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PPC_VAS"))]
+#[cfg(not(CONFIG_PPC_VAS))]
 #[inline]
 pub unsafe fn vas_migration_handler(_action: i32) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_PPC_VAS"))]
+#[cfg(not(CONFIG_PPC_VAS))]
 #[inline]
 pub unsafe fn pseries_vas_dlpar_cpu() -> i32 { 0 }
 

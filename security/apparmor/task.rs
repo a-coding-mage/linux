@@ -18,19 +18,6 @@ use std::ffi::c_void;
 
 // External types and functions from other modules/files
 extern "C" {
-    pub struct task_struct;
-    pub struct aa_label;
-    pub struct aa_task_ctx;
-    pub struct cred;
-    pub struct aa_profile;
-    pub struct audit_buffer;
-    pub struct common_audit_data;
-    pub struct apparmor_audit_data;
-    pub struct callback_head;
-    pub struct file;
-    pub struct path;
-    pub struct aa_ruleset;
-    pub struct aa_perms;
     pub type aa_state_t;
 
     pub static mut current: *mut task_struct;
@@ -80,6 +67,19 @@ extern "C" {
     fn xcheck_labels(a: *mut aa_label, b: *mut aa_label, profile: *mut aa_profile, res1: i32, res2: i32) -> i32;
     static aa_g_path_max: i32;
 }
+pub struct task_struct;
+pub struct aa_label;
+pub struct aa_task_ctx;
+pub struct cred;
+pub struct aa_profile;
+pub struct audit_buffer;
+pub struct common_audit_data;
+pub struct apparmor_audit_data;
+pub struct callback_head;
+pub struct file;
+pub struct path;
+pub struct aa_ruleset;
+pub struct aa_perms;
 
 const MAY_READ: u32 = 1;
 const MAY_WRITE: u32 = 2;

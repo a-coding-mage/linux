@@ -105,56 +105,56 @@ pub unsafe fn media_pad_is_streaming(pad: *const media_pad) -> bool { !(*pad).pi
 pub unsafe fn media_entity_is_streaming(entity: *const media_entity) -> bool { for i in 0..(*entity).num_pads { if media_pad_is_streaming((*entity).pads.add(i as usize)) { return true; } } false }
 
 extern "C" {
-    pub fn media_entity_enum_init(*mut media_entity_enum, *mut media_device) -> i32;
-    pub fn media_entity_enum_cleanup(*mut media_entity_enum);
-    pub fn media_gobj_create(*mut media_device, media_gobj_type, *mut media_gobj);
-    pub fn media_gobj_destroy(*mut media_gobj);
-    pub fn media_entity_pads_init(*mut media_entity, u16, *mut media_pad) -> i32;
-    pub fn media_get_pad_index(*mut media_entity, u32, media_pad_signal_type) -> i32;
-    pub fn media_create_pad_link(*mut media_entity, u16, *mut media_entity, u16, u32) -> i32;
-    pub fn media_create_pad_links(*const media_device, u32, *mut media_entity, u16, u32, *mut media_entity, u16, u32, bool) -> i32;
-    pub fn media_entity_remove_links(*mut media_entity);
-    pub fn __media_entity_remove_links(*mut media_entity);
-    pub fn __media_entity_setup_link(*mut media_link, u32) -> i32;
-    pub fn media_entity_setup_link(*mut media_link, u32) -> i32;
-    pub fn media_entity_find_link(*mut media_pad, *mut media_pad) -> *mut media_link;
-    pub fn media_pad_remote_pad_first(*const media_pad) -> *mut media_pad;
-    pub fn media_pad_remote_pad_unique(*const media_pad) -> *mut media_pad;
-    pub fn media_entity_remote_pad_unique(*const media_entity, u32) -> *mut media_pad;
-    pub fn media_entity_pipeline(*mut media_entity) -> *mut media_pipeline;
-    pub fn media_pad_pipeline(*mut media_pad) -> *mut media_pipeline;
-    pub fn media_entity_get_fwnode_pad(*mut media_entity, *const fwnode_handle, ::std::ffi::c_ulong) -> i32;
-    pub fn media_graph_walk_init(*mut media_graph, *mut media_device) -> i32;
-    pub fn media_graph_walk_cleanup(*mut media_graph);
-    pub fn media_graph_walk_start(*mut media_graph, *mut media_entity);
-    pub fn media_graph_walk_next(*mut media_graph) -> *mut media_entity;
-    pub fn media_pipeline_start(*mut media_pad, *mut media_pipeline) -> i32;
-    pub fn __media_pipeline_start(*mut media_pad, *mut media_pipeline) -> i32;
-    pub fn media_pipeline_stop(*mut media_pad);
-    pub fn __media_pipeline_stop(*mut media_pad);
-    pub fn __media_pipeline_pad_iter_next(*mut media_pipeline, *mut media_pipeline_pad_iter, *mut media_pad) -> *mut media_pad;
-    pub fn media_pipeline_entity_iter_init(*mut media_pipeline, *mut media_pipeline_entity_iter) -> i32;
-    pub fn media_pipeline_entity_iter_cleanup(*mut media_pipeline_entity_iter);
-    pub fn __media_pipeline_entity_iter_next(*mut media_pipeline, *mut media_pipeline_entity_iter, *mut media_entity) -> *mut media_entity;
-    pub fn media_pipeline_alloc_start(*mut media_pad) -> i32;
-    pub fn media_devnode_create(*mut media_device, u32, u32, u32, u32) -> *mut media_intf_devnode;
-    pub fn media_devnode_remove(*mut media_intf_devnode);
-    pub fn media_create_intf_link(*mut media_entity, *mut media_interface, u32) -> *mut media_link;
-    pub fn __media_remove_intf_link(*mut media_link);
-    pub fn media_remove_intf_link(*mut media_link);
-    pub fn __media_remove_intf_links(*mut media_interface);
-    pub fn media_remove_intf_links(*mut media_interface);
-    pub fn media_create_ancillary_link(*mut media_entity, *mut media_entity) -> *mut media_link;
-    pub fn __media_entity_next_link(*mut media_entity, *mut media_link, ::std::ffi::c_ulong) -> *mut media_link;
+    pub fn media_entity_enum_init(_: *mut media_entity_enum, _: *mut media_device) -> i32;
+    pub fn media_entity_enum_cleanup(_: *mut media_entity_enum);
+    pub fn media_gobj_create(_: *mut media_device, _: media_gobj_type, _: *mut media_gobj);
+    pub fn media_gobj_destroy(_: *mut media_gobj);
+    pub fn media_entity_pads_init(_: *mut media_entity, _: u16, _: *mut media_pad) -> i32;
+    pub fn media_get_pad_index(_: *mut media_entity, _: u32, _: media_pad_signal_type) -> i32;
+    pub fn media_create_pad_link(_: *mut media_entity, _: u16, _: *mut media_entity, _: u16, _: u32) -> i32;
+    pub fn media_create_pad_links(_: *const media_device, _: u32, _: *mut media_entity, _: u16, _: u32, _: *mut media_entity, _: u16, _: u32, _: bool) -> i32;
+    pub fn media_entity_remove_links(_: *mut media_entity);
+    pub fn __media_entity_remove_links(_: *mut media_entity);
+    pub fn __media_entity_setup_link(_: *mut media_link, _: u32) -> i32;
+    pub fn media_entity_setup_link(_: *mut media_link, _: u32) -> i32;
+    pub fn media_entity_find_link(_: *mut media_pad, _: *mut media_pad) -> *mut media_link;
+    pub fn media_pad_remote_pad_first(_: *const media_pad) -> *mut media_pad;
+    pub fn media_pad_remote_pad_unique(_: *const media_pad) -> *mut media_pad;
+    pub fn media_entity_remote_pad_unique(_: *const media_entity, _: u32) -> *mut media_pad;
+    pub fn media_entity_pipeline(_: *mut media_entity) -> *mut media_pipeline;
+    pub fn media_pad_pipeline(_: *mut media_pad) -> *mut media_pipeline;
+    pub fn media_entity_get_fwnode_pad(_: *mut media_entity, _: *const fwnode_handle, _: ::std::ffi::c_ulong) -> i32;
+    pub fn media_graph_walk_init(_: *mut media_graph, _: *mut media_device) -> i32;
+    pub fn media_graph_walk_cleanup(_: *mut media_graph);
+    pub fn media_graph_walk_start(_: *mut media_graph, _: *mut media_entity);
+    pub fn media_graph_walk_next(_: *mut media_graph) -> *mut media_entity;
+    pub fn media_pipeline_start(_: *mut media_pad, _: *mut media_pipeline) -> i32;
+    pub fn __media_pipeline_start(_: *mut media_pad, _: *mut media_pipeline) -> i32;
+    pub fn media_pipeline_stop(_: *mut media_pad);
+    pub fn __media_pipeline_stop(_: *mut media_pad);
+    pub fn __media_pipeline_pad_iter_next(_: *mut media_pipeline, _: *mut media_pipeline_pad_iter, _: *mut media_pad) -> *mut media_pad;
+    pub fn media_pipeline_entity_iter_init(_: *mut media_pipeline, _: *mut media_pipeline_entity_iter) -> i32;
+    pub fn media_pipeline_entity_iter_cleanup(_: *mut media_pipeline_entity_iter);
+    pub fn __media_pipeline_entity_iter_next(_: *mut media_pipeline, _: *mut media_pipeline_entity_iter, _: *mut media_entity) -> *mut media_entity;
+    pub fn media_pipeline_alloc_start(_: *mut media_pad) -> i32;
+    pub fn media_devnode_create(_: *mut media_device, _: u32, _: u32, _: u32, _: u32) -> *mut media_intf_devnode;
+    pub fn media_devnode_remove(_: *mut media_intf_devnode);
+    pub fn media_create_intf_link(_: *mut media_entity, _: *mut media_interface, _: u32) -> *mut media_link;
+    pub fn __media_remove_intf_link(_: *mut media_link);
+    pub fn media_remove_intf_link(_: *mut media_link);
+    pub fn __media_remove_intf_links(_: *mut media_interface);
+    pub fn media_remove_intf_links(_: *mut media_interface);
+    pub fn media_create_ancillary_link(_: *mut media_entity, _: *mut media_entity) -> *mut media_link;
+    pub fn __media_entity_next_link(_: *mut media_entity, _: *mut media_link, _: ::std::ffi::c_ulong) -> *mut media_link;
 }
 
 /* External types and Linux bitmap/list helpers are supplied by other translated headers. */
 extern "C" {
-    type media_device; type list_head; type fwnode_endpoint; type fwnode_handle;
-    fn bitmap_zero(*mut ::std::ffi::c_ulong, i32); fn __set_bit(i32, *mut ::std::ffi::c_ulong);
-    fn __clear_bit(i32, *mut ::std::ffi::c_ulong); fn test_bit(i32, *mut ::std::ffi::c_ulong) -> bool;
-    fn __test_and_set_bit(i32, *mut ::std::ffi::c_ulong) -> bool; fn bitmap_empty(*mut ::std::ffi::c_ulong, i32) -> bool;
-    fn bitmap_intersects(*mut ::std::ffi::c_ulong, *mut ::std::ffi::c_ulong, i32) -> bool;
+    fn bitmap_zero(_: *mut ::std::ffi::c_ulong, _: i32); fn __set_bit(_: i32, _: *mut ::std::ffi::c_ulong);
+    fn __clear_bit(_: i32, _: *mut ::std::ffi::c_ulong); fn test_bit(_: i32, _: *mut ::std::ffi::c_ulong) -> bool;
+    fn __test_and_set_bit(_: i32, _: *mut ::std::ffi::c_ulong) -> bool; fn bitmap_empty(_: *mut ::std::ffi::c_ulong, _: i32) -> bool;
+    fn bitmap_intersects(_: *mut ::std::ffi::c_ulong, _: *mut ::std::ffi::c_ulong, _: i32) -> bool;
 }
+type media_device; type list_head; type fwnode_endpoint; type fwnode_handle;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -375,22 +375,22 @@ static mt8196_afe_hardware: snd_pcm_hardware = snd_pcm_hardware {
 
 unsafe extern "C" fn mt8196_rate_transform(dev: *mut device, rate: c_uint) -> c_uint {
     match rate {
-        8000 => MTK_AFE_IPM2P0_RATE_8K,
-        11025 => MTK_AFE_IPM2P0_RATE_11K,
-        12000 => MTK_AFE_IPM2P0_RATE_12K,
-        16000 => MTK_AFE_IPM2P0_RATE_16K,
-        22050 => MTK_AFE_IPM2P0_RATE_22K,
-        24000 => MTK_AFE_IPM2P0_RATE_24K,
-        32000 => MTK_AFE_IPM2P0_RATE_32K,
-        44100 => MTK_AFE_IPM2P0_RATE_44K,
-        48000 => MTK_AFE_IPM2P0_RATE_48K,
-        88200 => MTK_AFE_IPM2P0_RATE_88K,
-        96000 => MTK_AFE_IPM2P0_RATE_96K,
-        176400 => MTK_AFE_IPM2P0_RATE_176K,
-        192000 => MTK_AFE_IPM2P0_RATE_192K,
-        /* not support 260K */
+        case if case == 8000 => MTK_AFE_IPM2P0_RATE_8K,
+        case if case == 11025 => MTK_AFE_IPM2P0_RATE_11K,
+        case if case == 12000 => MTK_AFE_IPM2P0_RATE_12K,
+        case if case == 16000 => MTK_AFE_IPM2P0_RATE_16K,
+        case if case == 22050 => MTK_AFE_IPM2P0_RATE_22K,
+        case if case == 24000 => MTK_AFE_IPM2P0_RATE_24K,
+        case if case == 32000 => MTK_AFE_IPM2P0_RATE_32K,
+        case if case == 44100 => MTK_AFE_IPM2P0_RATE_44K,
+        case if case == 48000 => MTK_AFE_IPM2P0_RATE_48K,
+        case if case == 88200 => MTK_AFE_IPM2P0_RATE_88K,
+        case if case == 96000 => MTK_AFE_IPM2P0_RATE_96K,
+        case if case == 176400 => MTK_AFE_IPM2P0_RATE_176K,
+        case if case == 192000 => MTK_AFE_IPM2P0_RATE_192K,
+        case if case == /* not support 260K */
         352800 => MTK_AFE_IPM2P0_RATE_352K,
-        384000 => MTK_AFE_IPM2P0_RATE_384K,
+        case if case == 384000 => MTK_AFE_IPM2P0_RATE_384K,
         _ => {
             dev_err(dev, b"rate %u invalid, use %d!!!\n\0".as_ptr() as *const c_char, rate, MTK_AFE_IPM2P0_RATE_48K);
             MTK_AFE_IPM2P0_RATE_48K
@@ -1415,7 +1415,7 @@ static memif_irq_usage: [c_int; MT8196_MEMIF_NUM as usize] = [
 
 unsafe extern "C" fn mt8196_is_volatile_reg(_dev: *mut device, reg: c_uint) -> bool {
     /* these auto-gen reg has read-only bit, so put it as volatile */
-    /* volatile reg cannot be cached, so cannot be set when power off */
+    /*mut reg cannot be cached, so cannot be set when power off */
     match reg as c_int {
         r if (AUDIO_TOP_CON0..=AUDIO_TOP_CON4).contains(&r) => true,
         AFE_APLL1_TUNER_MON0 | AFE_APLL2_TUNER_MON0 | AFE_SPM_CONTROL_ACK | AUDIO_TOP_IP_VERSION

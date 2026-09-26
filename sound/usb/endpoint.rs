@@ -54,13 +54,13 @@ unsafe fn release_urb_ctx(u: *mut SndUrbCtx) {
 
 fn usb_error_string(err: i32) -> &'static str {
     match err {
-        -libc::ENODEV => "no device",
-        -libc::ENOENT => "endpoint not enabled",
-        -libc::EPIPE => "endpoint stalled",
-        -libc::ENOSPC => "not enough bandwidth",
-        -libc::ESHUTDOWN => "device disabled",
-        -libc::EHOSTUNREACH => "device suspended",
-        -libc::EINVAL | -libc::EAGAIN | -libc::EFBIG | -libc::EMSGSIZE => "internal error",
+        case if case == -libc::ENODEV => "no device",
+        case if case == -libc::ENOENT => "endpoint not enabled",
+        case if case == -libc::EPIPE => "endpoint stalled",
+        case if case == -libc::ENOSPC => "not enough bandwidth",
+        case if case == -libc::ESHUTDOWN => "device disabled",
+        case if case == -libc::EHOSTUNREACH => "device suspended",
+        case if case == -libc::EINVAL || case == -libc::EAGAIN || case == -libc::EFBIG || case == -libc::EMSGSIZE => "internal error",
         _ => "unknown error",
     }
 }
@@ -180,8 +180,7 @@ extern "C" {
     fn snd_usb_handle_sync_urb(
         ep: *mut SndUsbEndpoint,
         sender: *mut SndUsbEndpoint,
-        urb: *const Urb,
-    );
+        urb: *const Urb);
 }
 
 unsafe fn retire_inbound_urb(ep: *mut SndUsbEndpoint, urb_ctx: *mut SndUrbCtx) {

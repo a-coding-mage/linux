@@ -93,12 +93,12 @@ unsafe fn ixp4xx_gpio_irq_set_type(d: *mut irq_data, type_: u32) -> i32 {
 }
 
 static const struct irq_chip ixp4xx_gpio_irqchip = {
-    .name = "IXP4GPIO",
-    .irq_ack = ixp4xx_gpio_irq_ack,
-    .irq_mask = ixp4xx_gpio_mask_irq,
-    .irq_unmask = ixp4xx_gpio_irq_unmask,
-    .irq_set_type = ixp4xx_gpio_irq_set_type,
-    .flags = IRQCHIP_IMMUTABLE,
+    name: "IXP4GPIO",
+    irq_ack: ixp4xx_gpio_irq_ack,
+    irq_mask: ixp4xx_gpio_mask_irq,
+    irq_unmask: ixp4xx_gpio_irq_unmask,
+    irq_set_type: ixp4xx_gpio_irq_set_type,
+    flags: IRQCHIP_IMMUTABLE,
     GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
@@ -161,7 +161,7 @@ unsafe fn ixp4xx_gpio_probe(pdev: *mut platform_device) -> i32 {
     0
 }
 
-static const ixp4xx_gpio_of_match: [of_device_id; 2] = [
+static ixp4xx_gpio_of_match: [of_device_id; 2] = [
     of_device_id { compatible: "intel,ixp4xx-gpio" },
     of_device_id { compatible: "" },
 ];

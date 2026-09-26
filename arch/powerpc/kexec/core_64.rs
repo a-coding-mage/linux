@@ -31,7 +31,7 @@ pub unsafe fn machine_kexec_prepare(image: *mut kimage) -> c_int {
     }
 
     /* We also should not overwrite the tce tables */
-    for_each_node_by_type!(node, "pci") {
+    for_each_node_by_type!(node, "pci", {
         basep = of_get_property(node, "linux,tce-base", core::ptr::null_mut());
         sizep = of_get_property(node, "linux,tce-size", core::ptr::null_mut());
         if basep.is_null() || sizep.is_null() {
@@ -49,7 +49,7 @@ pub unsafe fn machine_kexec_prepare(image: *mut kimage) -> c_int {
             }
             i += 1;
         }
-    }
+    });
     0
 }
 
@@ -139,7 +139,7 @@ unsafe fn kexec_prepare_cpus_wait(wait_state: c_int) {
     let my_cpu = raw_smp_processor_id();
     let mut notified = -1;
     hw_breakpoint_disable();
-    for_each_online_cpu!(i) {
+    for_each_online_cpu!(i, {
         if i == my_cpu { continue; }
         while (*paca_ptrs[i as usize]).kexec_state < wait_state {
             barrier();
@@ -149,7 +149,7 @@ unsafe fn kexec_prepare_cpus_wait(wait_state: c_int) {
                 notified = i;
             }
         }
-    }
+    });
     mb();
 }
 
@@ -167,12 +167,12 @@ unsafe fn kexec_smt_reenable() {}
 unsafe fn wake_offline_cpus() {
     let mut cpu = 0;
     kexec_smt_reenable();
-    for_each_present_cpu!(cpu) {
+    for_each_present_cpu!(cpu, {
         if !cpu_online(cpu) {
             printk!(KERN_INFO "kexec: Waking offline cpu %d.\n", cpu);
             WARN_ON(add_cpu(cpu));
         }
-    }
+    });
 }
 
 #[cfg(CONFIG_SMP)]
@@ -346,13 +346,13 @@ unsafe fn export_htab_values() -> c_int {
 unsafe fn add_node_props(fdt: *mut c_void, node_offset: c_int, dn: *const device_node) -> c_int {
     if dn.is_null() { return -EINVAL; }
     let mut ret = 0;
-    for_each_property_of_node!(dn, pp) {
+    for_each_property_of_node!(dn, pp, {
         ret = fdt_setprop(fdt, node_offset, (*pp).name, (*pp).value, (*pp).length);
         if ret < 0 {
             pr_err!("Unable to add %s property: %s\n", (*pp).name, fdt_strerror(ret));
             return ret;
         }
-    }
+    });
     ret
 }
 
@@ -380,7 +380,7 @@ pub unsafe fn update_cpus_node(fdt: *mut c_void) -> c_int {
     let cpus_node = of_find_node_by_path("/cpus");
     if cpus_node.is_null() { pr_err!("No /cpus node found\n"); return -EINVAL; }
     let mut ret = 0;
-    for_each_child_of_node!(cpus_node, dn) {
+    for_each_child_of_node!(cpus_node, dn, {
         let device_type = of_get_property(dn, "device_type", core::ptr::null_mut());
         if device_type.is_null() || strcmp(device_type, "cpu") != 0 { continue; }
         cpus_subnode_offset = fdt_add_subnode(fdt, cpus_offset, (*dn).full_name);
@@ -391,7 +391,7 @@ pub unsafe fn update_cpus_node(fdt: *mut c_void) -> c_int {
         }
         ret = add_node_props(fdt, cpus_subnode_offset, dn);
         if ret < 0 { break; }
-    }
+    });
     of_node_put(cpus_node);
     of_node_put(dn);
     ret

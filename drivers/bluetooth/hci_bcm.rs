@@ -59,8 +59,8 @@ static mut BCM_DEVICE_LIST: list_head = list_head { next: core::ptr::null_mut(),
 unsafe fn host_set_baudrate(hu:*mut hci_uart, speed:u32) { if !(*hu).serdev.is_null() { serdev_device_set_baudrate((*hu).serdev,speed) } else { hci_uart_set_baudrate(hu,speed) } }
 unsafe extern "C" fn bcm_set_baudrate(hu:*mut hci_uart,speed:u32)->c_int {
     let bcm=(*hu).priv_; let h=(*hu).hdev; let mut skb;
-    if speed>3_000_000 && !(*(*bcm).dev).no_uart_clock_set { let clock=bcm_write_uart_clock_setting{type_: 1}; skb=__hci_cmd_sync(h,0xfc45,1,&clock as *const _ as *const c_void,0); if skb as isize < 0 { return skb as c_int; } kfree_skb(skb); }
-    let param=bcm_update_uart_baud_rate{zero:0,baud_rate:speed.to_le()}; skb=__hci_cmd_sync(h,0xfc18,core::mem::size_of::<bcm_update_uart_baud_rate>(),&param as *const _ as *const c_void,0); if skb as isize < 0 { return skb as c_int; } kfree_skb(skb); 0
+    if speed>3_000_000 && !(*(*bcm).dev).no_uart_clock_set { let clock=bcm_write_uart_clock_setting{type_: 1}; skb=__hci_cmd_sync(h,0xfc45,1,&clock as *const _ as *const c_void,0); if (skb as isize) < 0 { return skb as c_int; } kfree_skb(skb); }
+    let param=bcm_update_uart_baud_rate{zero:0,baud_rate:speed.to_le()}; skb=__hci_cmd_sync(h,0xfc18,core::mem::size_of::<bcm_update_uart_baud_rate>(),&param as *const _ as *const c_void,0); if (skb as isize) < 0 { return skb as c_int; } kfree_skb(skb); 0
 }
 unsafe extern "C" fn bcm_set_diag(hdev:*mut hci_dev,enable:bool)->c_int { let hu=hci_get_drvdata(hdev); let bcm=(*hu).priv_; let skb=bt_skb_alloc(3,0); if skb.is_null(){return -12}; skb_put_u8(skb,BCM_LM_DIAG_PKT); skb_put_u8(skb,0xf0); skb_put_u8(skb,enable as u8); skb_queue_tail(&mut (*bcm).txq,skb); hci_uart_tx_wakeup(hu); 0 }
 unsafe extern "C" fn bcm_open(hu:*mut hci_uart)->c_int { if !hci_uart_has_flow_control(hu){return -95}; let bcm=Box::into_raw(Box::new(core::mem::zeroed::<bcm_data>())); (*hu).priv_=bcm; 0 }

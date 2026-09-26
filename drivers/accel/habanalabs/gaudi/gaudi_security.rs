@@ -486,7 +486,7 @@ unsafe fn gaudi_pb_set_block(hdev, u64 base: *mut hl_device)
 
 unsafe fn gaudi_init_mme_protection_bits(hdev: *mut hl_device)
 {
-	u32 pb_addr, mask;
+	pb_addr: u32, mask;
     let mut word_offset: u8;
 
 	gaudi_pb_set_block(hdev, mmMME0_ACC_BASE);
@@ -1470,7 +1470,7 @@ unsafe fn gaudi_init_mme_protection_bits(hdev: *mut hl_device)
 
 unsafe fn gaudi_init_dma_protection_bits(hdev: *mut hl_device)
 {
-	u32 pb_addr, mask;
+	pb_addr: u32, mask;
     let mut word_offset: u8;
 
 	if !(*hdev).asic_prop.fw_security_enabled {
@@ -5186,7 +5186,7 @@ unsafe fn gaudi_init_dma_protection_bits(hdev: *mut hl_device)
 
 unsafe fn gaudi_init_nic_protection_bits(hdev: *mut hl_device)
 {
-	u32 pb_addr, mask;
+	pb_addr: u32, mask;
     let mut word_offset: u8;
 
 	WREG32(mmNIC0_QM0_BASE - CFG_BASE + PROT_BITS_OFFS + 0x7C, 0);
@@ -9157,7 +9157,7 @@ unsafe fn gaudi_init_nic_protection_bits(hdev: *mut hl_device)
 
 unsafe fn gaudi_init_tpc_protection_bits(hdev: *mut hl_device)
 {
-	u32 pb_addr, mask;
+	pb_addr: u32, mask;
     let mut word_offset: u8;
 
 	if !(*hdev).asic_prop.fw_security_enabled {
@@ -12872,7 +12872,7 @@ unsafe fn gaudi_init_range_registers_lbw(hdev: *mut hl_device)
 {
 	u32 lbw_rng_start[GAUDI_NUMBER_OF_LBW_RANGES];
 	u32 lbw_rng_end[GAUDI_NUMBER_OF_LBW_RANGES];
-	i32 i, j;
+	i: i32, j;
 
 	lbw_rng_start[0]  = (0xFC0E8000 & 0x3FFFFFF) - 1; /* 0x000E7FFF */
 	lbw_rng_end[0]    = (0xFC11FFFF & 0x3FFFFFF) + 1; /* 0x00120000 */

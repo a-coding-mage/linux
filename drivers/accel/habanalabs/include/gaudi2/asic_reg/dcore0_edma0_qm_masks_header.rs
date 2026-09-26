@@ -1,4 +1,3 @@
-1165 dcore0_edma0_qm_masks.h
 /* SPDX-License-Identifier: GPL-2.0
  *
  * Copyright 2016-2020 HabanaLabs, Ltd.
@@ -6,13 +5,11 @@
  *
  */
 
-/************************************
+/***********************************
  ** This is an auto-generated file **
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-// #ifndef ASIC_REG_DCORE0_EDMA0_QM_MASKS_H_
-// #define ASIC_REG_DCORE0_EDMA0_QM_MASKS_H_
 
 /*
  *****************************************
@@ -1162,8 +1159,5 @@ pub const DCORE0_EDMA0_QM_PERF_CNT_CFG_EN_FREE_SHIFT: u32 = 30;
 pub const DCORE0_EDMA0_QM_PERF_CNT_CFG_EN_FREE_MASK: u32 = 0x40000000;
 pub const DCORE0_EDMA0_QM_PERF_CNT_CFG_EN_IDLE_SHIFT: u32 = 31;
 pub const DCORE0_EDMA0_QM_PERF_CNT_CFG_EN_IDLE_MASK: u32 = 0x80000000;
-
-// #endif /* ASIC_REG_DCORE0_EDMA0_QM_MASKS_H_ */
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

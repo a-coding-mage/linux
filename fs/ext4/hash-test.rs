@@ -116,9 +116,9 @@ unsafe fn test_ext4fs_dirhash_signed_unsigned_differ_on_nonascii(test:*mut kunit
 }
 
 // CONFIG_UNICODE-dependent source cases are retained behind the corresponding build condition.
-#[cfg(feature = "CONFIG_UNICODE")]
+#[cfg(CONFIG_UNICODE)]
 unsafe fn test_ext4fs_dirhash_casefolded_names_hash_consistently(_test:*mut kunit) {}
-#[cfg(feature = "CONFIG_UNICODE")]
+#[cfg(CONFIG_UNICODE)]
 unsafe fn test_ext4fs_dirhash_casefold_fallback(_test:*mut kunit) {}
 
 // The remaining KUnit cases and registration preserve the source-level test suite interface.

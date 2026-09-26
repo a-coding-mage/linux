@@ -14,7 +14,7 @@
 
 const EFIKA_PLATFORM_NAME: &str = "Efika";
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn rtas_read_config(
     bus: *mut pci_bus,
     devfn: u32,
@@ -40,7 +40,7 @@ unsafe fn rtas_read_config(
     if rval != 0 { PCIBIOS_DEVICE_NOT_FOUND } else { PCIBIOS_SUCCESSFUL }
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn rtas_write_config(
     bus: *mut pci_bus,
     devfn: u32,
@@ -65,13 +65,13 @@ unsafe fn rtas_write_config(
     if rval != 0 { PCIBIOS_DEVICE_NOT_FOUND } else { PCIBIOS_SUCCESSFUL }
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut RTAS_PCI_OPS: pci_ops = pci_ops {
     read: Some(rtas_read_config),
     write: Some(rtas_write_config),
 };
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn efika_pcisetup() {
     let mut bus_range: *const i32;
     let mut len: i32 = 0;
@@ -117,7 +117,7 @@ unsafe fn efika_pcisetup() {
     pci_process_bridge_OF_ranges(hose, pcictrl, 0);
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 unsafe fn efika_pcisetup() {}
 
 unsafe fn efika_show_cpuinfo(m: *mut seq_file) {
@@ -133,7 +133,7 @@ unsafe fn efika_show_cpuinfo(m: *mut seq_file) {
     of_node_put(root);
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn efika_suspend_prepare(_mbar: *mut core::ffi::c_void) {
     let pin: u8 = 4; // GPIO_WKUP_4 (GPIO_PSC6_0 - IRDA_RX)
     let level: u8 = 1; // wakeup on high level
@@ -144,7 +144,7 @@ unsafe fn efika_suspend_prepare(_mbar: *mut core::ffi::c_void) {
 unsafe fn efika_setup_arch() {
     rtas_initialize();
     mpc52xx_map_common_devices();
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     {
         mpc52xx_suspend.board_suspend_prepare = Some(efika_suspend_prepare);
         mpc52xx_pm_init();
@@ -181,7 +181,7 @@ define_machine!(efika {
     get_rtc_time: rtas_get_rtc_time,
     progress: rtas_progress,
     get_boot_time: rtas_get_boot_time,
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     phys_mem_access_prot: pci_phys_mem_access_prot,
 });
 

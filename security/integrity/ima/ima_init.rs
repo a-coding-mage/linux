@@ -269,7 +269,7 @@ fn ima_add_boot_aggregate_err_out(
     result
 }
 
-#[cfg(feature = "CONFIG_IMA_LOAD_X509")]
+#[cfg(CONFIG_IMA_LOAD_X509)]
 pub fn ima_load_x509() {
     unsafe {
         let unset_flags = IMA_POLICY_FLAG & IMA_APPRAISE;

@@ -107,18 +107,18 @@ pub const MDI_PLANAR_B32_MAP: u32 = 0xa0000000;
  * _IOWR macros; those architecture-dependent encodings remain dependency
  * supplied rather than being guessed here. */
 /*
- * FBIOGTYPE = _IOR('F', 0, struct fbtype)
- * FBIOPUTCMAP = _IOW('F', 3, struct fbcmap)
- * FBIOGETCMAP = _IOW('F', 4, struct fbcmap)
- * FBIOSATTR = _IOW('F', 5, struct fbgattr), FBIOGATTR = _IOR('F', 6, struct fbgattr)
+ * FBIOGTYPE = _IOR('F', 0, fbtype)
+ * FBIOPUTCMAP = _IOW('F', 3, fbcmap)
+ * FBIOGETCMAP = _IOW('F', 4, fbcmap)
+ * FBIOSATTR = _IOW('F', 5, fbgattr), FBIOGATTR = _IOR('F', 6, fbgattr)
  * FBIOSVIDEO = _IOW('F', 7, int), FBIOGVIDEO = _IOR('F', 8, int)
- * FBIOSCURSOR = _IOW('F', 24, struct fbcursor), FBIOGCURSOR = _IOWR('F', 25, struct fbcursor)
- * FBIOSCURPOS = _IOW('F', 26, struct fbcurpos), FBIOGCURPOS = _IOW('F', 27, struct fbcurpos)
- * FBIOGCURMAX = _IOR('F', 28, struct fbcurpos)
- * FBIO_WID_ALLOC = _IOWR('F', 30, struct fb_wid_alloc), FBIO_WID_FREE = _IOW('F', 31, struct fb_wid_alloc)
- * FBIO_WID_PUT = _IOW('F', 32, struct fb_wid_list), FBIO_WID_GET = _IOWR('F', 33, struct fb_wid_list)
- * LEO_CLUTALLOC = _IOWR('L', 53, struct fb_clut_alloc), LEO_CLUTFREE = _IOW('L', 54, struct fb_clut_alloc)
- * LEO_CLUTREAD = _IOW('L', 55, struct fb_clut), LEO_CLUTPOST = _IOW('L', 56, struct fb_clut)
+ * FBIOSCURSOR = _IOW('F', 24, fbcursor), FBIOGCURSOR = _IOWR('F', 25, fbcursor)
+ * FBIOSCURPOS = _IOW('F', 26, fbcurpos), FBIOGCURPOS = _IOW('F', 27, fbcurpos)
+ * FBIOGCURMAX = _IOR('F', 28, fbcurpos)
+ * FBIO_WID_ALLOC = _IOWR('F', 30, fb_wid_alloc), FBIO_WID_FREE = _IOW('F', 31, fb_wid_alloc)
+ * FBIO_WID_PUT = _IOW('F', 32, fb_wid_list), FBIO_WID_GET = _IOWR('F', 33, fb_wid_list)
+ * LEO_CLUTALLOC = _IOWR('L', 53, fb_clut_alloc), LEO_CLUTFREE = _IOW('L', 54, fb_clut_alloc)
+ * LEO_CLUTREAD = _IOW('L', 55, fb_clut), LEO_CLUTPOST = _IOW('L', 56, fb_clut)
  * LEO_SETGAMMA = _IOW('L', 68, int), LEO_GETGAMMA = _IOR('L', 69, int)
  */
 

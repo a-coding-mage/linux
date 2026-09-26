@@ -25,7 +25,7 @@ pub struct amdgpu_ip_block_version {
     _private: [u8; 0],
 }
 
-pub extern "C" {
+extern "C" {
     pub static jpeg_v5_0_1_ip_block: amdgpu_ip_block_version;
 }
 

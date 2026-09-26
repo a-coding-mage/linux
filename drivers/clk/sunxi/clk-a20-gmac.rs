@@ -23,7 +23,7 @@ static mut SUN7I_A20_GMAC_MUX_TABLE: [u32; SUN7I_A20_GMAC_PARENTS] = [
 
 /**
  * sun7i_a20_gmac_clk_setup - Setup function for A20/A31 GMAC clock module
- * @node: &struct device_node for the clock
+ * @node: &device_node for the clock
  *
  * This clock looks something like this
  *                               ________________________

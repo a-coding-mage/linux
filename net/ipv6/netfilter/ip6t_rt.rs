@@ -47,7 +47,7 @@ unsafe fn rt_mt6(skb: *const sk_buff, par: *mut xt_action_param) -> bool {
         && (((*rtinfo).flags & IP6T_RT_LEN) == 0
             || (((*rtinfo).hdrlen == hdrlen) ^ (((*rtinfo).invflags & IP6T_RT_INV_LEN) != 0)))
         && (((*rtinfo).flags & IP6T_RT_TYP) == 0
-            || (((*rtinfo).rt_type == (*rh).type) ^ (((*rtinfo).invflags & IP6T_RT_INV_TYP) != 0)));
+            || (((*rtinfo).rt_type == (*rh).r#type) ^ (((*rtinfo).invflags & IP6T_RT_INV_TYP) != 0)));
 
     if ret && ((*rtinfo).flags & IP6T_RT_RES) != 0 {
         let mut reserved: u32 = 0;

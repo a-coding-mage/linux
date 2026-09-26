@@ -10,7 +10,7 @@
 
 pub static mut acpi_realmode_flags: ::core::ffi::c_ulong = 0;
 
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_64BIT"))]
+#[cfg(all(CONFIG_SMP, CONFIG_64BIT))]
 static mut temp_stack: [::core::ffi::c_char; 4096] = [0; 4096];
 
 /**
@@ -53,7 +53,7 @@ pub unsafe extern "C" fn x86_acpi_suspend_lowlevel() -> ::core::ffi::c_int {
 	header.video_mode = saved_video_mode;
 	header.pmode_behavior = 0;
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 	{
 		native_store_gdt((&mut header.pmode_gdt) as *mut _ as *mut desc_ptr);
 
@@ -87,16 +87,16 @@ pub unsafe extern "C" fn x86_acpi_suspend_lowlevel() -> ::core::ffi::c_int {
 	header.realmode_flags = acpi_realmode_flags;
 	header.real_magic = 0x12345678;
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 	{
 		header.pmode_entry = &wakeup_pmode_return as *const _ as u32;
 		header.pmode_cr3 = __pa_symbol(initial_page_table) as u32;
 		saved_magic = 0x12345678;
 	}
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 	{
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 		{
 			current.thread.sp = temp_stack.as_mut_ptr() as ::core::ffi::c_ulong
 				+ ::core::mem::size_of_val(&temp_stack) as ::core::ffi::c_ulong;
@@ -123,9 +123,9 @@ unsafe extern "C" fn acpi_sleep_setup(mut str_: *mut ::core::ffi::c_char) -> ::c
 		if strncmp(str_, c"s3_bios".as_ptr(), 7) == 0 { acpi_realmode_flags |= 1; }
 		if strncmp(str_, c"s3_mode".as_ptr(), 7) == 0 { acpi_realmode_flags |= 2; }
 		if strncmp(str_, c"s3_beep".as_ptr(), 7) == 0 { acpi_realmode_flags |= 4; }
-#[cfg(feature = "CONFIG_HIBERNATION")]
+#[cfg(CONFIG_HIBERNATION)]
 		if strncmp(str_, c"s4_hwsig".as_ptr(), 8) == 0 { acpi_check_s4_hw_signature = 1; }
-#[cfg(feature = "CONFIG_HIBERNATION")]
+#[cfg(CONFIG_HIBERNATION)]
 		if strncmp(str_, c"s4_nohwsig".as_ptr(), 10) == 0 { acpi_check_s4_hw_signature = 0; }
 		if strncmp(str_, c"nonvs".as_ptr(), 5) == 0 { acpi_nvs_nosave(); }
 		if strncmp(str_, c"nonvs_s3".as_ptr(), 8) == 0 { acpi_nvs_nosave_s3(); }
@@ -139,7 +139,7 @@ unsafe extern "C" fn acpi_sleep_setup(mut str_: *mut ::core::ffi::c_char) -> ::c
 
 // __setup("acpi_sleep=", acpi_sleep_setup);
 
-#[cfg(all(feature = "CONFIG_HIBERNATION", feature = "CONFIG_HYPERVISOR_GUEST"))]
+#[cfg(all(CONFIG_HIBERNATION, CONFIG_HYPERVISOR_GUEST))]
 unsafe extern "C" fn init_s4_sigcheck() -> ::core::ffi::c_int {
 	/*
 	 * If running on a hypervisor, honour the ACPI specification

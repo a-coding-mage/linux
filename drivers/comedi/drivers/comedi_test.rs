@@ -72,7 +72,7 @@ unsafe fn fake_squarewave(dev: *mut comedi_device, range_index: u32, current_tim
     let offset = (*s).maxdata / 2;
     let kr = &(*(*s).range_table).range[range_index as usize];
     let mut value = ((*s).maxdata as u64 * (*p).wf_amplitude as u64) / (kr.max - kr.min) as u64;
-    if current_time < (*p).wf_period / 2 { value = if offset as u64 < value { 0 } else { offset as u64 - value }; }
+    if current_time < (*p).wf_period / 2 { value = if (offset as u64) < value { 0 } else { offset as u64 - value }; }
     else { value += offset as u64; if value > (*s).maxdata as u64 { value = (*s).maxdata as u64; } }
     value as u16
 }

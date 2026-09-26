@@ -39,11 +39,11 @@ type HPI_MIXER_STORE_COMMAND = crate::HPI_MIXER_STORE_COMMAND;
 
 
 struct hpi_handle {
-	unsigned int obj_index:12;
-	unsigned int obj_type:4;
-	unsigned int adapter_index:14;
-	unsigned int spare:1;
-	unsigned int read_only:1;
+	core::ffi::c_uint obj_index:12;
+	core::ffi::c_uint obj_type:4;
+	core::ffi::c_uint adapter_index:14;
+	core::ffi::c_uint spare:1;
+	core::ffi::c_uint read_only:1;
 };
 
 union handle_word {
@@ -92,39 +92,39 @@ pub unsafe extern "C" fn hpi_handle_object(const u32 handle)
 	return (char)uhandle.h.obj_type;
 }
 
-pub unsafe extern "C" fn hpi_format_to_msg(struct hpi_msg_format *pMF,
+pub unsafe extern "C" fn hpi_format_to_msg(hpi_msg_format *pMF,
 	const struct hpi_format *pF)
 {
-	pMF->sample_rate = pF->sample_rate;
-	pMF->bit_rate = pF->bit_rate;
-	pMF->attributes = pF->attributes;
-	pMF->channels = pF->channels;
-	pMF->format = pF->format;
+	(*pMF).sample_rate = (*pF).sample_rate;
+	(*pMF).bit_rate = (*pF).bit_rate;
+	(*pMF).attributes = (*pF).attributes;
+	(*pMF).channels = (*pF).channels;
+	(*pMF).format = (*pF).format;
 }
 
-static pub unsafe extern "C" fn hpi_msg_to_format(struct hpi_format *pF,
-	struct hpi_msg_format *pMF)
+static pub unsafe extern "C" fn hpi_msg_to_format(hpi_format *pF,
+	hpi_msg_format *pMF)
 {
-	pF->sample_rate = pMF->sample_rate;
-	pF->bit_rate = pMF->bit_rate;
-	pF->attributes = pMF->attributes;
-	pF->channels = pMF->channels;
-	pF->format = pMF->format;
-	pF->mode_legacy = 0;
-	pF->unused = 0;
+	(*pF).sample_rate = (*pMF).sample_rate;
+	(*pF).bit_rate = (*pMF).bit_rate;
+	(*pF).attributes = (*pMF).attributes;
+	(*pF).channels = (*pMF).channels;
+	(*pF).format = (*pMF).format;
+	(*pF).mode_legacy = 0;
+	(*pF).unused = 0;
 }
 
-pub unsafe extern "C" fn hpi_stream_response_to_legacy(struct hpi_stream_res *pSR)
+pub unsafe extern "C" fn hpi_stream_response_to_legacy(hpi_stream_res *pSR)
 {
-	pSR->u.legacy_stream_info.auxiliary_data_available =
-		pSR->u.stream_info.auxiliary_data_available;
-	pSR->u.legacy_stream_info.state = pSR->u.stream_info.state;
+	(*pSR).u.legacy_stream_info.auxiliary_data_available =
+		(*pSR).u.stream_info.auxiliary_data_available;
+	(*pSR).u.legacy_stream_info.state = (*pSR).u.stream_info.state;
 }
 
-static inline pub unsafe extern "C" fn hpi_send_recvV1(struct hpi_message_header *m,
-	struct hpi_response_header *r)
+pub unsafe extern "C" fn hpi_send_recvV1(hpi_message_header *m,
+	hpi_response_header *r)
 {
-	hpi_send_recv((struct hpi_message *)m, (struct hpi_response *)r);
+	hpi_send_recv((hpi_message *)m, (hpi_response *)r);
 }
 
 pub unsafe extern "C" fn hpi_subsys_get_version_ex(u32 *pversion_ex)
@@ -165,7 +165,7 @@ pub unsafe extern "C" fn hpi_subsys_get_adapter(int iterator, u32 *padapter_inde
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_open(u16 adapter_index)
+pub unsafe extern "C" fn hpi_adapter_open(adapter_index: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -179,7 +179,7 @@ pub unsafe extern "C" fn hpi_adapter_open(u16 adapter_index)
 
 }
 
-pub unsafe extern "C" fn hpi_adapter_close(u16 adapter_index)
+pub unsafe extern "C" fn hpi_adapter_close(adapter_index: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -192,14 +192,14 @@ pub unsafe extern "C" fn hpi_adapter_close(u16 adapter_index)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_set_mode(u16 adapter_index, u32 adapter_mode)
+pub unsafe extern "C" fn hpi_adapter_set_mode(adapter_index: u16, adapter_mode: u32)
 {
 	return hpi_adapter_set_mode_ex(adapter_index, adapter_mode,
 		HPI_ADAPTER_MODE_SET);
 }
 
-pub unsafe extern "C" fn hpi_adapter_set_mode_ex(u16 adapter_index, u32 adapter_mode,
-	u16 query_or_set)
+pub unsafe extern "C" fn hpi_adapter_set_mode_ex(adapter_index: u16, adapter_mode: u32,
+	query_or_set: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -213,7 +213,7 @@ pub unsafe extern "C" fn hpi_adapter_set_mode_ex(u16 adapter_index, u32 adapter_
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_get_mode(u16 adapter_index, u32 *padapter_mode)
+pub unsafe extern "C" fn hpi_adapter_get_mode(adapter_index: u16, u32 *padapter_mode)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -226,7 +226,7 @@ pub unsafe extern "C" fn hpi_adapter_get_mode(u16 adapter_index, u32 *padapter_m
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_get_info(u16 adapter_index, u16 *pw_num_outstreams,
+pub unsafe extern "C" fn hpi_adapter_get_info(adapter_index: u16, u16 *pw_num_outstreams,
 	u16 *pw_num_instreams, u16 *pw_version, u32 *pserial_number,
 	u16 *pw_adapter_type)
 {
@@ -246,7 +246,7 @@ pub unsafe extern "C" fn hpi_adapter_get_info(u16 adapter_index, u16 *pw_num_out
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_get_module_by_index(u16 adapter_index, u16 module_index,
+pub unsafe extern "C" fn hpi_adapter_get_module_by_index(adapter_index: u16, module_index: u16,
 	u16 *pw_num_outputs, u16 *pw_num_inputs, u16 *pw_version,
 	u32 *pserial_number, u16 *pw_module_type, u32 *ph_module)
 {
@@ -270,8 +270,8 @@ pub unsafe extern "C" fn hpi_adapter_get_module_by_index(u16 adapter_index, u16 
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_set_property(u16 adapter_index, u16 property, u16 parameter1,
-	u16 parameter2)
+pub unsafe extern "C" fn hpi_adapter_set_property(adapter_index: u16, property: u16, parameter1: u16,
+	parameter2: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -287,7 +287,7 @@ pub unsafe extern "C" fn hpi_adapter_set_property(u16 adapter_index, u16 propert
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_get_property(u16 adapter_index, u16 property,
+pub unsafe extern "C" fn hpi_adapter_get_property(adapter_index: u16, property: u16,
 	u16 *pw_parameter1, u16 *pw_parameter2)
 {
 	struct hpi_message hm;
@@ -308,14 +308,14 @@ pub unsafe extern "C" fn hpi_adapter_get_property(u16 adapter_index, u16 propert
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_adapter_enumerate_property(u16 adapter_index, u16 index,
-	u16 what_to_enumerate, u16 property_index, u32 *psetting)
+pub unsafe extern "C" fn hpi_adapter_enumerate_property(adapter_index: u16, index: u16,
+	what_to_enumerate: u16, property_index: u16, u32 *psetting)
 {
 	return 0;
 }
 
-pub unsafe extern "C" fn hpi_format_create(struct hpi_format *p_format, u16 channels, u16 format,
-	u32 sample_rate, u32 bit_rate, u32 attributes)
+pub unsafe extern "C" fn hpi_format_create(hpi_format *p_format, channels: u16, format: u16,
+	sample_rate: u32, bit_rate: u32, attributes: u32)
 {
 	u16 err = 0;
 	struct hpi_msg_format fmt;
@@ -409,8 +409,8 @@ pub unsafe extern "C" fn hpi_format_create(struct hpi_format *p_format, u16 chan
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_stream_estimate_buffer_size(struct hpi_format *p_format,
-	u32 host_polling_rate_in_milli_seconds, u32 *recommended_buffer_size)
+pub unsafe extern "C" fn hpi_stream_estimate_buffer_size(hpi_format *p_format,
+	host_polling_rate_in_milli_seconds: u32, u32 *recommended_buffer_size)
 {
 
 	u32 bytes_per_second;
@@ -418,27 +418,27 @@ pub unsafe extern "C" fn hpi_stream_estimate_buffer_size(struct hpi_format *p_fo
 	u16 channels;
 	struct hpi_format *pF = p_format;
 
-	channels = pF->channels;
+	channels = (*pF).channels;
 
-	switch (pF->format) {
+	switch ((*pF).format) {
 	case HPI_FORMAT_PCM16_BIGENDIAN:
 	case HPI_FORMAT_PCM16_SIGNED:
-		bytes_per_second = pF->sample_rate * 2L * channels;
+		bytes_per_second = (*pF).sample_rate * 2L * channels;
 		break;
 	case HPI_FORMAT_PCM24_SIGNED:
-		bytes_per_second = pF->sample_rate * 3L * channels;
+		bytes_per_second = (*pF).sample_rate * 3L * channels;
 		break;
 	case HPI_FORMAT_PCM32_SIGNED:
 	case HPI_FORMAT_PCM32_FLOAT:
-		bytes_per_second = pF->sample_rate * 4L * channels;
+		bytes_per_second = (*pF).sample_rate * 4L * channels;
 		break;
 	case HPI_FORMAT_PCM8_UNSIGNED:
-		bytes_per_second = pF->sample_rate * 1L * channels;
+		bytes_per_second = (*pF).sample_rate * 1L * channels;
 		break;
 	case HPI_FORMAT_MPEG_L1:
 	case HPI_FORMAT_MPEG_L2:
 	case HPI_FORMAT_MPEG_L3:
-		bytes_per_second = pF->bit_rate / 8L;
+		bytes_per_second = (*pF).bit_rate / 8L;
 		break;
 	case HPI_FORMAT_DOLBY_AC2:
 
@@ -455,7 +455,7 @@ pub unsafe extern "C" fn hpi_stream_estimate_buffer_size(struct hpi_format *p_fo
 	return 0;
 }
 
-pub unsafe extern "C" fn hpi_outstream_open(u16 adapter_index, u16 outstream_index,
+pub unsafe extern "C" fn hpi_outstream_open(adapter_index: u16, outstream_index: u16,
 	u32 *ph_outstream)
 {
 	struct hpi_message hm;
@@ -476,7 +476,7 @@ pub unsafe extern "C" fn hpi_outstream_open(u16 adapter_index, u16 outstream_ind
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_close(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_close(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -501,7 +501,7 @@ pub unsafe extern "C" fn hpi_outstream_close(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_get_info_ex(u32 h_outstream, u16 *pw_state,
+pub unsafe extern "C" fn hpi_outstream_get_info_ex(h_outstream: u32, u16 *pw_state,
 	u32 *pbuffer_size, u32 *pdata_to_play, u32 *psamples_played,
 	u32 *pauxiliary_data_to_play)
 {
@@ -528,8 +528,8 @@ pub unsafe extern "C" fn hpi_outstream_get_info_ex(u32 h_outstream, u16 *pw_stat
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_write_buf(u32 h_outstream, const u8 *pb_data,
-	u32 bytes_to_write, const struct hpi_format *p_format)
+pub unsafe extern "C" fn hpi_outstream_write_buf(h_outstream: u32, const u8 *pb_data,
+	bytes_to_write: u32, const struct hpi_format *p_format)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -547,7 +547,7 @@ pub unsafe extern "C" fn hpi_outstream_write_buf(u32 h_outstream, const u8 *pb_d
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_start(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_start(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -561,7 +561,7 @@ pub unsafe extern "C" fn hpi_outstream_start(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_wait_start(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_wait_start(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -575,7 +575,7 @@ pub unsafe extern "C" fn hpi_outstream_wait_start(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_stop(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_stop(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -589,7 +589,7 @@ pub unsafe extern "C" fn hpi_outstream_stop(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_sinegen(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_sinegen(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -603,7 +603,7 @@ pub unsafe extern "C" fn hpi_outstream_sinegen(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_reset(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_reset(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -617,7 +617,7 @@ pub unsafe extern "C" fn hpi_outstream_reset(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_query_format(u32 h_outstream, struct hpi_format *p_format)
+pub unsafe extern "C" fn hpi_outstream_query_format(h_outstream: u32, hpi_format *p_format)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -634,7 +634,7 @@ pub unsafe extern "C" fn hpi_outstream_query_format(u32 h_outstream, struct hpi_
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_set_format(u32 h_outstream, struct hpi_format *p_format)
+pub unsafe extern "C" fn hpi_outstream_set_format(h_outstream: u32, hpi_format *p_format)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -651,7 +651,7 @@ pub unsafe extern "C" fn hpi_outstream_set_format(u32 h_outstream, struct hpi_fo
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_set_velocity(u32 h_outstream, short velocity)
+pub unsafe extern "C" fn hpi_outstream_set_velocity(h_outstream: u32, short velocity)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -667,8 +667,8 @@ pub unsafe extern "C" fn hpi_outstream_set_velocity(u32 h_outstream, short veloc
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_set_punch_in_out(u32 h_outstream, u32 punch_in_sample,
-	u32 punch_out_sample)
+pub unsafe extern "C" fn hpi_outstream_set_punch_in_out(h_outstream: u32, punch_in_sample: u32,
+	punch_out_sample: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -686,7 +686,7 @@ pub unsafe extern "C" fn hpi_outstream_set_punch_in_out(u32 h_outstream, u32 pun
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_ancillary_reset(u32 h_outstream, u16 mode)
+pub unsafe extern "C" fn hpi_outstream_ancillary_reset(h_outstream: u32, mode: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -700,7 +700,7 @@ pub unsafe extern "C" fn hpi_outstream_ancillary_reset(u32 h_outstream, u16 mode
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_ancillary_get_info(u32 h_outstream, u32 *pframes_available)
+pub unsafe extern "C" fn hpi_outstream_ancillary_get_info(h_outstream: u32, u32 *pframes_available)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -714,15 +714,15 @@ pub unsafe extern "C" fn hpi_outstream_ancillary_get_info(u32 h_outstream, u32 *
 		if (pframes_available)
 			*pframes_available =
 				hr.u.d.u.stream_info.data_available /
-				sizeof(struct hpi_anc_frame);
+				sizeof(hpi_anc_frame);
 	}
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_ancillary_read(u32 h_outstream,
-	struct hpi_anc_frame *p_anc_frame_buffer,
-	u32 anc_frame_buffer_size_in_bytes,
-	u32 number_of_ancillary_frames_to_read)
+pub unsafe extern "C" fn hpi_outstream_ancillary_read(h_outstream: u32,
+	hpi_anc_frame *p_anc_frame_buffer,
+	anc_frame_buffer_size_in_bytes: u32,
+	number_of_ancillary_frames_to_read: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -734,7 +734,7 @@ pub unsafe extern "C" fn hpi_outstream_ancillary_read(u32 h_outstream,
 	hm.u.d.u.data.pb_data = (u8 *)p_anc_frame_buffer;
 	hm.u.d.u.data.data_size =
 		number_of_ancillary_frames_to_read *
-		sizeof(struct hpi_anc_frame);
+		sizeof(hpi_anc_frame);
 	if (hm.u.d.u.data.data_size <= anc_frame_buffer_size_in_bytes)
 		hpi_send_recv(&hm, &hr);
 	else
@@ -742,7 +742,7 @@ pub unsafe extern "C" fn hpi_outstream_ancillary_read(u32 h_outstream,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_set_time_scale(u32 h_outstream, u32 time_scale)
+pub unsafe extern "C" fn hpi_outstream_set_time_scale(h_outstream: u32, time_scale: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -759,7 +759,7 @@ pub unsafe extern "C" fn hpi_outstream_set_time_scale(u32 h_outstream, u32 time_
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_host_buffer_allocate(u32 h_outstream, u32 size_in_bytes)
+pub unsafe extern "C" fn hpi_outstream_host_buffer_allocate(h_outstream: u32, size_in_bytes: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -773,8 +773,8 @@ pub unsafe extern "C" fn hpi_outstream_host_buffer_allocate(u32 h_outstream, u32
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_host_buffer_get_info(u32 h_outstream, u8 **pp_buffer,
-	struct hpi_hostbuffer_status **pp_status)
+pub unsafe extern "C" fn hpi_outstream_host_buffer_get_info(h_outstream: u32, u8 **pp_buffer,
+	hpi_hostbuffer_status **pp_status)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -794,7 +794,7 @@ pub unsafe extern "C" fn hpi_outstream_host_buffer_get_info(u32 h_outstream, u8 
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_host_buffer_free(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_host_buffer_free(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -807,7 +807,7 @@ pub unsafe extern "C" fn hpi_outstream_host_buffer_free(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_group_add(u32 h_outstream, u32 h_stream)
+pub unsafe extern "C" fn hpi_outstream_group_add(h_outstream: u32, h_stream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -840,7 +840,7 @@ pub unsafe extern "C" fn hpi_outstream_group_add(u32 h_outstream, u32 h_stream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_group_get_map(u32 h_outstream, u32 *poutstream_map,
+pub unsafe extern "C" fn hpi_outstream_group_get_map(h_outstream: u32, u32 *poutstream_map,
 	u32 *pinstream_map)
 {
 	struct hpi_message hm;
@@ -860,7 +860,7 @@ pub unsafe extern "C" fn hpi_outstream_group_get_map(u32 h_outstream, u32 *pouts
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_outstream_group_reset(u32 h_outstream)
+pub unsafe extern "C" fn hpi_outstream_group_reset(h_outstream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -873,7 +873,7 @@ pub unsafe extern "C" fn hpi_outstream_group_reset(u32 h_outstream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_open(u16 adapter_index, u16 instream_index, u32 *ph_instream)
+pub unsafe extern "C" fn hpi_instream_open(adapter_index: u16, instream_index: u16, u32 *ph_instream)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -895,7 +895,7 @@ pub unsafe extern "C" fn hpi_instream_open(u16 adapter_index, u16 instream_index
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_close(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_close(h_instream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -919,7 +919,7 @@ pub unsafe extern "C" fn hpi_instream_close(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_query_format(u32 h_instream,
+pub unsafe extern "C" fn hpi_instream_query_format(h_instream: u32,
 	const struct hpi_format *p_format)
 {
 	struct hpi_message hm;
@@ -936,7 +936,7 @@ pub unsafe extern "C" fn hpi_instream_query_format(u32 h_instream,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_set_format(u32 h_instream, const struct hpi_format *p_format)
+pub unsafe extern "C" fn hpi_instream_set_format(h_instream: u32, const struct hpi_format *p_format)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -952,7 +952,7 @@ pub unsafe extern "C" fn hpi_instream_set_format(u32 h_instream, const struct hp
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_read_buf(u32 h_instream, u8 *pb_data, u32 bytes_to_read)
+pub unsafe extern "C" fn hpi_instream_read_buf(h_instream: u32, u8 *pb_data, bytes_to_read: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -969,7 +969,7 @@ pub unsafe extern "C" fn hpi_instream_read_buf(u32 h_instream, u8 *pb_data, u32 
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_start(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_start(h_instream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -984,7 +984,7 @@ pub unsafe extern "C" fn hpi_instream_start(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_wait_start(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_wait_start(h_instream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -999,7 +999,7 @@ pub unsafe extern "C" fn hpi_instream_wait_start(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_stop(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_stop(h_instream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1014,7 +1014,7 @@ pub unsafe extern "C" fn hpi_instream_stop(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_reset(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_reset(h_instream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1029,7 +1029,7 @@ pub unsafe extern "C" fn hpi_instream_reset(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_get_info_ex(u32 h_instream, u16 *pw_state, u32 *pbuffer_size,
+pub unsafe extern "C" fn hpi_instream_get_info_ex(h_instream: u32, u16 *pw_state, u32 *pbuffer_size,
 	u32 *pdata_recorded, u32 *psamples_recorded,
 	u32 *pauxiliary_data_recorded)
 {
@@ -1056,8 +1056,8 @@ pub unsafe extern "C" fn hpi_instream_get_info_ex(u32 h_instream, u16 *pw_state,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_ancillary_reset(u32 h_instream, u16 bytes_per_frame,
-	u16 mode, u16 alignment, u16 idle_bit)
+pub unsafe extern "C" fn hpi_instream_ancillary_reset(h_instream: u32, bytes_per_frame: u16,
+	mode: u16, alignment: u16, idle_bit: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1072,7 +1072,7 @@ pub unsafe extern "C" fn hpi_instream_ancillary_reset(u32 h_instream, u16 bytes_
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_ancillary_get_info(u32 h_instream, u32 *pframe_space)
+pub unsafe extern "C" fn hpi_instream_ancillary_get_info(h_instream: u32, u32 *pframe_space)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1085,14 +1085,14 @@ pub unsafe extern "C" fn hpi_instream_ancillary_get_info(u32 h_instream, u32 *pf
 		*pframe_space =
 			(hr.u.d.u.stream_info.buffer_size -
 			hr.u.d.u.stream_info.data_available) /
-			sizeof(struct hpi_anc_frame);
+			sizeof(hpi_anc_frame);
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_ancillary_write(u32 h_instream,
+pub unsafe extern "C" fn hpi_instream_ancillary_write(h_instream: u32,
 	const struct hpi_anc_frame *p_anc_frame_buffer,
-	u32 anc_frame_buffer_size_in_bytes,
-	u32 number_of_ancillary_frames_to_write)
+	anc_frame_buffer_size_in_bytes: u32,
+	number_of_ancillary_frames_to_write: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1104,7 +1104,7 @@ pub unsafe extern "C" fn hpi_instream_ancillary_write(u32 h_instream,
 	hm.u.d.u.data.pb_data = (u8 *)p_anc_frame_buffer;
 	hm.u.d.u.data.data_size =
 		number_of_ancillary_frames_to_write *
-		sizeof(struct hpi_anc_frame);
+		sizeof(hpi_anc_frame);
 	if (hm.u.d.u.data.data_size <= anc_frame_buffer_size_in_bytes)
 		hpi_send_recv(&hm, &hr);
 	else
@@ -1112,7 +1112,7 @@ pub unsafe extern "C" fn hpi_instream_ancillary_write(u32 h_instream,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_host_buffer_allocate(u32 h_instream, u32 size_in_bytes)
+pub unsafe extern "C" fn hpi_instream_host_buffer_allocate(h_instream: u32, size_in_bytes: u32)
 {
 
 	struct hpi_message hm;
@@ -1127,8 +1127,8 @@ pub unsafe extern "C" fn hpi_instream_host_buffer_allocate(u32 h_instream, u32 s
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_host_buffer_get_info(u32 h_instream, u8 **pp_buffer,
-	struct hpi_hostbuffer_status **pp_status)
+pub unsafe extern "C" fn hpi_instream_host_buffer_get_info(h_instream: u32, u8 **pp_buffer,
+	hpi_hostbuffer_status **pp_status)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1148,7 +1148,7 @@ pub unsafe extern "C" fn hpi_instream_host_buffer_get_info(u32 h_instream, u8 **
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_host_buffer_free(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_host_buffer_free(h_instream: u32)
 {
 
 	struct hpi_message hm;
@@ -1162,7 +1162,7 @@ pub unsafe extern "C" fn hpi_instream_host_buffer_free(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_group_add(u32 h_instream, u32 h_stream)
+pub unsafe extern "C" fn hpi_instream_group_add(h_instream: u32, h_stream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1198,7 +1198,7 @@ pub unsafe extern "C" fn hpi_instream_group_add(u32 h_instream, u32 h_stream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_group_get_map(u32 h_instream, u32 *poutstream_map,
+pub unsafe extern "C" fn hpi_instream_group_get_map(h_instream: u32, u32 *poutstream_map,
 	u32 *pinstream_map)
 {
 	struct hpi_message hm;
@@ -1218,7 +1218,7 @@ pub unsafe extern "C" fn hpi_instream_group_get_map(u32 h_instream, u32 *poutstr
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_instream_group_reset(u32 h_instream)
+pub unsafe extern "C" fn hpi_instream_group_reset(h_instream: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1231,7 +1231,7 @@ pub unsafe extern "C" fn hpi_instream_group_reset(u32 h_instream)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_mixer_open(u16 adapter_index, u32 *ph_mixer)
+pub unsafe extern "C" fn hpi_mixer_open(adapter_index: u16, u32 *ph_mixer)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1249,7 +1249,7 @@ pub unsafe extern "C" fn hpi_mixer_open(u16 adapter_index, u32 *ph_mixer)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_mixer_close(u32 h_mixer)
+pub unsafe extern "C" fn hpi_mixer_close(h_mixer: u32)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1262,9 +1262,9 @@ pub unsafe extern "C" fn hpi_mixer_close(u32 h_mixer)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_mixer_get_control(u32 h_mixer, u16 src_node_type,
-	u16 src_node_type_index, u16 dst_node_type, u16 dst_node_type_index,
-	u16 control_type, u32 *ph_control)
+pub unsafe extern "C" fn hpi_mixer_get_control(h_mixer: u32, src_node_type: u16,
+	src_node_type_index: u16, dst_node_type: u16, dst_node_type_index: u16,
+	control_type: u16, u32 *ph_control)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1289,7 +1289,7 @@ pub unsafe extern "C" fn hpi_mixer_get_control(u32 h_mixer, u16 src_node_type,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_mixer_get_control_by_index(u32 h_mixer, u16 control_index,
+pub unsafe extern "C" fn hpi_mixer_get_control_by_index(h_mixer: u32, control_index: u16,
 	u16 *pw_src_node_type, u16 *pw_src_node_index, u16 *pw_dst_node_type,
 	u16 *pw_dst_node_index, u16 *pw_control_type, u32 *ph_control)
 {
@@ -1323,8 +1323,8 @@ pub unsafe extern "C" fn hpi_mixer_get_control_by_index(u32 h_mixer, u16 control
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_mixer_store(u32 h_mixer, enum HPI_MIXER_STORE_COMMAND command,
-	u16 index)
+pub unsafe extern "C" fn hpi_mixer_store(h_mixer: u32, HPI_MIXER_STORE_COMMAND command,
+	index: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1355,7 +1355,7 @@ pub unsafe extern "C" fn hpi_control_param_set(const u32 h_control, const u16 at
 	return hr.error;
 }
 
-static pub unsafe extern "C" fn hpi_control_log_set2(u32 h_control, u16 attrib, short sv0,
+static pub unsafe extern "C" fn hpi_control_log_set2(h_control: u32, attrib: u16, short sv0,
 	short sv1)
 {
 	struct hpi_message hm;
@@ -1373,8 +1373,8 @@ static pub unsafe extern "C" fn hpi_control_log_set2(u32 h_control, u16 attrib, 
 }
 
 static
-pub unsafe extern "C" fn hpi_control_param_get(const u32 h_control, const u16 attrib, u32 param1,
-	u32 param2, u32 *pparam1, u32 *pparam2)
+pub unsafe extern "C" fn hpi_control_param_get(const u32 h_control, const u16 attrib, param1: u32,
+	param2: u32, u32 *pparam1, u32 *pparam2)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1400,7 +1400,7 @@ pub unsafe extern "C" fn hpi_control_param_get(const u32 h_control, const u16 at
 #define hpi_control_param2_get(h, a, p1, p2) \
 		hpi_control_param_get(h, a, 0, 0, p1, p2)
 
-static pub unsafe extern "C" fn hpi_control_log_get2(u32 h_control, u16 attrib, short *sv0,
+static pub unsafe extern "C" fn hpi_control_log_get2(h_control: u32, attrib: u16, short *sv0,
 	short *sv1)
 {
 	struct hpi_message hm;
@@ -1443,9 +1443,9 @@ pub unsafe extern "C" fn hpi_control_query(const u32 h_control, const u16 attrib
 static pub unsafe extern "C" fn hpi_control_get_string(const u32 h_control, const u16 attribute,
 	char *psz_string, const u32 string_length)
 {
-	unsigned int sub_string_index = 0, j = 0;
+	core::ffi::c_uint sub_string_index = 0, j = 0;
 	char c = 0;
-	unsigned int n = 0;
+	core::ffi::c_uint n = 0;
 	u16 err = 0;
 
 	if ((string_length < 1) || (string_length > 256))
@@ -1510,13 +1510,13 @@ pub unsafe extern "C" fn hpi_aesebu_receiver_query_format(const u32 h_aes_rx, co
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_aesebu_receiver_set_format(u32 h_control, u16 format)
+pub unsafe extern "C" fn hpi_aesebu_receiver_set_format(h_control: u32, format: u16)
 {
 	return hpi_control_param_set(h_control, HPI_AESEBURX_FORMAT, format,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_aesebu_receiver_get_format(u32 h_control, u16 *pw_format)
+pub unsafe extern "C" fn hpi_aesebu_receiver_get_format(h_control: u32, u16 *pw_format)
 {
 	u16 err;
 	u32 param;
@@ -1528,13 +1528,13 @@ pub unsafe extern "C" fn hpi_aesebu_receiver_get_format(u32 h_control, u16 *pw_f
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_aesebu_receiver_get_sample_rate(u32 h_control, u32 *psample_rate)
+pub unsafe extern "C" fn hpi_aesebu_receiver_get_sample_rate(h_control: u32, u32 *psample_rate)
 {
 	return hpi_control_param1_get(h_control, HPI_AESEBURX_SAMPLERATE,
 		psample_rate);
 }
 
-pub unsafe extern "C" fn hpi_aesebu_receiver_get_user_data(u32 h_control, u16 index, u16 *pw_data)
+pub unsafe extern "C" fn hpi_aesebu_receiver_get_user_data(h_control: u32, index: u16, u16 *pw_data)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -1552,7 +1552,7 @@ pub unsafe extern "C" fn hpi_aesebu_receiver_get_user_data(u32 h_control, u16 in
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_aesebu_receiver_get_channel_status(u32 h_control, u16 index,
+pub unsafe extern "C" fn hpi_aesebu_receiver_get_channel_status(h_control: u32, index: u16,
 	u16 *pw_data)
 {
 	struct hpi_message hm;
@@ -1571,7 +1571,7 @@ pub unsafe extern "C" fn hpi_aesebu_receiver_get_channel_status(u32 h_control, u
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_aesebu_receiver_get_error_status(u32 h_control, u16 *pw_error_data)
+pub unsafe extern "C" fn hpi_aesebu_receiver_get_error_status(h_control: u32, u16 *pw_error_data)
 {
 	u32 error_data = 0;
 	u16 err = 0;
@@ -1583,26 +1583,26 @@ pub unsafe extern "C" fn hpi_aesebu_receiver_get_error_status(u32 h_control, u16
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_aesebu_transmitter_set_sample_rate(u32 h_control, u32 sample_rate)
+pub unsafe extern "C" fn hpi_aesebu_transmitter_set_sample_rate(h_control: u32, sample_rate: u32)
 {
 	return hpi_control_param_set(h_control, HPI_AESEBUTX_SAMPLERATE,
 		sample_rate, 0);
 }
 
-pub unsafe extern "C" fn hpi_aesebu_transmitter_set_user_data(u32 h_control, u16 index, u16 data)
+pub unsafe extern "C" fn hpi_aesebu_transmitter_set_user_data(h_control: u32, index: u16, data: u16)
 {
 	return hpi_control_param_set(h_control, HPI_AESEBUTX_USERDATA, index,
 		data);
 }
 
-pub unsafe extern "C" fn hpi_aesebu_transmitter_set_channel_status(u32 h_control, u16 index,
-	u16 data)
+pub unsafe extern "C" fn hpi_aesebu_transmitter_set_channel_status(h_control: u32, index: u16,
+	data: u16)
 {
 	return hpi_control_param_set(h_control, HPI_AESEBUTX_CHANNELSTATUS,
 		index, data);
 }
 
-pub unsafe extern "C" fn hpi_aesebu_transmitter_get_channel_status(u32 h_control, u16 index,
+pub unsafe extern "C" fn hpi_aesebu_transmitter_get_channel_status(h_control: u32, index: u16,
 	u16 *pw_data)
 {
 	return HPI_ERROR_INVALID_OPERATION;
@@ -1619,13 +1619,13 @@ pub unsafe extern "C" fn hpi_aesebu_transmitter_query_format(const u32 h_aes_tx,
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_aesebu_transmitter_set_format(u32 h_control, u16 output_format)
+pub unsafe extern "C" fn hpi_aesebu_transmitter_set_format(h_control: u32, output_format: u16)
 {
 	return hpi_control_param_set(h_control, HPI_AESEBUTX_FORMAT,
 		output_format, 0);
 }
 
-pub unsafe extern "C" fn hpi_aesebu_transmitter_get_format(u32 h_control, u16 *pw_output_format)
+pub unsafe extern "C" fn hpi_aesebu_transmitter_get_format(h_control: u32, u16 *pw_output_format)
 {
 	u16 err;
 	u32 param;
@@ -1637,19 +1637,19 @@ pub unsafe extern "C" fn hpi_aesebu_transmitter_get_format(u32 h_control, u16 *p
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_bitstream_set_clock_edge(u32 h_control, u16 edge_type)
+pub unsafe extern "C" fn hpi_bitstream_set_clock_edge(h_control: u32, edge_type: u16)
 {
 	return hpi_control_param_set(h_control, HPI_BITSTREAM_CLOCK_EDGE,
 		edge_type, 0);
 }
 
-pub unsafe extern "C" fn hpi_bitstream_set_data_polarity(u32 h_control, u16 polarity)
+pub unsafe extern "C" fn hpi_bitstream_set_data_polarity(h_control: u32, polarity: u16)
 {
 	return hpi_control_param_set(h_control, HPI_BITSTREAM_DATA_POLARITY,
 		polarity, 0);
 }
 
-pub unsafe extern "C" fn hpi_bitstream_get_activity(u32 h_control, u16 *pw_clk_activity,
+pub unsafe extern "C" fn hpi_bitstream_get_activity(h_control: u32, u16 *pw_clk_activity,
 	u16 *pw_data_activity)
 {
 	struct hpi_message hm;
@@ -1678,13 +1678,13 @@ pub unsafe extern "C" fn hpi_channel_mode_query_mode(const u32 h_mode, const u32
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_channel_mode_set(u32 h_control, u16 mode)
+pub unsafe extern "C" fn hpi_channel_mode_set(h_control: u32, mode: u16)
 {
 	return hpi_control_param_set(h_control, HPI_CHANNEL_MODE_MODE, mode,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_channel_mode_get(u32 h_control, u16 *mode)
+pub unsafe extern "C" fn hpi_channel_mode_get(h_control: u32, u16 *mode)
 {
 	u32 mode32 = 0;
 	u16 err = hpi_control_param1_get(h_control,
@@ -1694,7 +1694,7 @@ pub unsafe extern "C" fn hpi_channel_mode_get(u32 h_control, u16 *mode)
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_cobranet_hmi_write(u32 h_control, u32 hmi_address, u32 byte_count,
+pub unsafe extern "C" fn hpi_cobranet_hmi_write(h_control: u32, hmi_address: u32, byte_count: u32,
 	u8 *pb_data)
 {
 	struct hpi_msg_cobranet_hmiwrite hm;
@@ -1720,7 +1720,7 @@ pub unsafe extern "C" fn hpi_cobranet_hmi_write(u32 h_control, u32 hmi_address, 
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_cobranet_hmi_read(u32 h_control, u32 hmi_address, u32 max_byte_count,
+pub unsafe extern "C" fn hpi_cobranet_hmi_read(h_control: u32, hmi_address: u32, max_byte_count: u32,
 	u32 *pbyte_count, u8 *pb_data)
 {
 	struct hpi_msg_cobranet_hmiread hm;
@@ -1757,7 +1757,7 @@ pub unsafe extern "C" fn hpi_cobranet_hmi_read(u32 h_control, u32 hmi_address, u
 	return hr.h.error;
 }
 
-pub unsafe extern "C" fn hpi_cobranet_hmi_get_status(u32 h_control, u32 *pstatus,
+pub unsafe extern "C" fn hpi_cobranet_hmi_get_status(h_control: u32, u32 *pstatus,
 	u32 *preadable_size, u32 *pwriteable_size)
 {
 	struct hpi_message hm;
@@ -1784,7 +1784,7 @@ pub unsafe extern "C" fn hpi_cobranet_hmi_get_status(u32 h_control, u32 *pstatus
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_cobranet_get_ip_address(u32 h_control, u32 *pdw_ip_address)
+pub unsafe extern "C" fn hpi_cobranet_get_ip_address(h_control: u32, u32 *pdw_ip_address)
 {
 	u32 byte_count;
 	u32 iP;
@@ -1805,7 +1805,7 @@ pub unsafe extern "C" fn hpi_cobranet_get_ip_address(u32 h_control, u32 *pdw_ip_
 
 }
 
-pub unsafe extern "C" fn hpi_cobranet_set_ip_address(u32 h_control, u32 dw_ip_address)
+pub unsafe extern "C" fn hpi_cobranet_set_ip_address(h_control: u32, dw_ip_address: u32)
 {
 	u32 iP;
 	u16 err;
@@ -1821,7 +1821,7 @@ pub unsafe extern "C" fn hpi_cobranet_set_ip_address(u32 h_control, u32 dw_ip_ad
 
 }
 
-pub unsafe extern "C" fn hpi_cobranet_get_static_ip_address(u32 h_control, u32 *pdw_ip_address)
+pub unsafe extern "C" fn hpi_cobranet_get_static_ip_address(h_control: u32, u32 *pdw_ip_address)
 {
 	u32 byte_count;
 	u32 iP;
@@ -1841,7 +1841,7 @@ pub unsafe extern "C" fn hpi_cobranet_get_static_ip_address(u32 h_control, u32 *
 
 }
 
-pub unsafe extern "C" fn hpi_cobranet_set_static_ip_address(u32 h_control, u32 dw_ip_address)
+pub unsafe extern "C" fn hpi_cobranet_set_static_ip_address(h_control: u32, dw_ip_address: u32)
 {
 	u32 iP;
 	u16 err;
@@ -1857,7 +1857,7 @@ pub unsafe extern "C" fn hpi_cobranet_set_static_ip_address(u32 h_control, u32 d
 
 }
 
-pub unsafe extern "C" fn hpi_cobranet_get_macaddress(u32 h_control, u32 *p_mac_msbs,
+pub unsafe extern "C" fn hpi_cobranet_get_macaddress(h_control: u32, u32 *p_mac_msbs,
 	u32 *p_mac_lsbs)
 {
 	u32 byte_count;
@@ -1892,51 +1892,51 @@ pub unsafe extern "C" fn hpi_cobranet_get_macaddress(u32 h_control, u32 *p_mac_m
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_compander_set_enable(u32 h_control, u32 enable)
+pub unsafe extern "C" fn hpi_compander_set_enable(h_control: u32, enable: u32)
 {
 	return hpi_control_param_set(h_control, HPI_GENERIC_ENABLE, enable,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_compander_get_enable(u32 h_control, u32 *enable)
+pub unsafe extern "C" fn hpi_compander_get_enable(h_control: u32, u32 *enable)
 {
 	return hpi_control_param1_get(h_control, HPI_GENERIC_ENABLE, enable);
 }
 
-pub unsafe extern "C" fn hpi_compander_set_makeup_gain(u32 h_control, short makeup_gain0_01dB)
+pub unsafe extern "C" fn hpi_compander_set_makeup_gain(h_control: u32, short makeup_gain0_01dB)
 {
 	return hpi_control_log_set2(h_control, HPI_COMPANDER_MAKEUPGAIN,
 		makeup_gain0_01dB, 0);
 }
 
-pub unsafe extern "C" fn hpi_compander_get_makeup_gain(u32 h_control, short *makeup_gain0_01dB)
+pub unsafe extern "C" fn hpi_compander_get_makeup_gain(h_control: u32, short *makeup_gain0_01dB)
 {
 	return hpi_control_log_get2(h_control, HPI_COMPANDER_MAKEUPGAIN,
 		makeup_gain0_01dB, ptr::null_mut());
 }
 
-pub unsafe extern "C" fn hpi_compander_set_attack_time_constant(u32 h_control, unsigned int index,
-	u32 attack)
+pub unsafe extern "C" fn hpi_compander_set_attack_time_constant(h_control: u32, index: core::ffi::c_uint,
+	attack: u32)
 {
 	return hpi_control_param_set(h_control, HPI_COMPANDER_ATTACK, attack,
 		index);
 }
 
-pub unsafe extern "C" fn hpi_compander_get_attack_time_constant(u32 h_control, unsigned int index,
+pub unsafe extern "C" fn hpi_compander_get_attack_time_constant(h_control: u32, index: core::ffi::c_uint,
 	u32 *attack)
 {
 	return hpi_control_param_get(h_control, HPI_COMPANDER_ATTACK, 0,
 		index, attack, ptr::null_mut());
 }
 
-pub unsafe extern "C" fn hpi_compander_set_decay_time_constant(u32 h_control, unsigned int index,
-	u32 decay)
+pub unsafe extern "C" fn hpi_compander_set_decay_time_constant(h_control: u32, index: core::ffi::c_uint,
+	decay: u32)
 {
 	return hpi_control_param_set(h_control, HPI_COMPANDER_DECAY, decay,
 		index);
 }
 
-pub unsafe extern "C" fn hpi_compander_get_decay_time_constant(u32 h_control, unsigned int index,
+pub unsafe extern "C" fn hpi_compander_get_decay_time_constant(h_control: u32, index: core::ffi::c_uint,
 	u32 *decay)
 {
 	return hpi_control_param_get(h_control, HPI_COMPANDER_DECAY, 0, index,
@@ -1944,7 +1944,7 @@ pub unsafe extern "C" fn hpi_compander_get_decay_time_constant(u32 h_control, un
 
 }
 
-pub unsafe extern "C" fn hpi_compander_set_threshold(u32 h_control, unsigned int index,
+pub unsafe extern "C" fn hpi_compander_set_threshold(h_control: u32, index: core::ffi::c_uint,
 	short threshold0_01dB)
 {
 	struct hpi_message hm;
@@ -1963,7 +1963,7 @@ pub unsafe extern "C" fn hpi_compander_set_threshold(u32 h_control, unsigned int
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_compander_get_threshold(u32 h_control, unsigned int index,
+pub unsafe extern "C" fn hpi_compander_get_threshold(h_control: u32, index: core::ffi::c_uint,
 	short *threshold0_01dB)
 {
 	struct hpi_message hm;
@@ -1982,19 +1982,19 @@ pub unsafe extern "C" fn hpi_compander_get_threshold(u32 h_control, unsigned int
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_compander_set_ratio(u32 h_control, u32 index, u32 ratio100)
+pub unsafe extern "C" fn hpi_compander_set_ratio(h_control: u32, index: u32, ratio100: u32)
 {
 	return hpi_control_param_set(h_control, HPI_COMPANDER_RATIO, ratio100,
 		index);
 }
 
-pub unsafe extern "C" fn hpi_compander_get_ratio(u32 h_control, u32 index, u32 *ratio100)
+pub unsafe extern "C" fn hpi_compander_get_ratio(h_control: u32, index: u32, u32 *ratio100)
 {
 	return hpi_control_param_get(h_control, HPI_COMPANDER_RATIO, 0, index,
 		ratio100, ptr::null_mut());
 }
 
-pub unsafe extern "C" fn hpi_level_query_range(u32 h_control, short *min_gain_01dB,
+pub unsafe extern "C" fn hpi_level_query_range(h_control: u32, short *min_gain_01dB,
 	short *max_gain_01dB, short *step_gain_01dB)
 {
 	struct hpi_message hm;
@@ -2021,14 +2021,14 @@ pub unsafe extern "C" fn hpi_level_query_range(u32 h_control, short *min_gain_01
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_level_set_gain(u32 h_control, short an_gain0_01dB[HPI_MAX_CHANNELS]
+pub unsafe extern "C" fn hpi_level_set_gain(h_control: u32, short an_gain0_01dB[HPI_MAX_CHANNELS]
 	)
 {
 	return hpi_control_log_set2(h_control, HPI_LEVEL_GAIN,
 		an_gain0_01dB[0], an_gain0_01dB[1]);
 }
 
-pub unsafe extern "C" fn hpi_level_get_gain(u32 h_control, short an_gain0_01dB[HPI_MAX_CHANNELS]
+pub unsafe extern "C" fn hpi_level_get_gain(h_control: u32, short an_gain0_01dB[HPI_MAX_CHANNELS]
 	)
 {
 	return hpi_control_log_get2(h_control, HPI_LEVEL_GAIN,
@@ -2041,7 +2041,7 @@ pub unsafe extern "C" fn hpi_meter_query_channels(const u32 h_meter, u32 *p_chan
 		p_channels);
 }
 
-pub unsafe extern "C" fn hpi_meter_get_peak(u32 h_control, short an_peakdB[HPI_MAX_CHANNELS]
+pub unsafe extern "C" fn hpi_meter_get_peak(h_control: u32, short an_peakdB[HPI_MAX_CHANNELS]
 	)
 {
 	short i = 0;
@@ -2066,7 +2066,7 @@ pub unsafe extern "C" fn hpi_meter_get_peak(u32 h_control, short an_peakdB[HPI_M
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_meter_get_rms(u32 h_control, short an_rmsdB[HPI_MAX_CHANNELS]
+pub unsafe extern "C" fn hpi_meter_get_rms(h_control: u32, short an_rmsdB[HPI_MAX_CHANNELS]
 	)
 {
 	short i = 0;
@@ -2092,13 +2092,13 @@ pub unsafe extern "C" fn hpi_meter_get_rms(u32 h_control, short an_rmsdB[HPI_MAX
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_meter_set_rms_ballistics(u32 h_control, u16 attack, u16 decay)
+pub unsafe extern "C" fn hpi_meter_set_rms_ballistics(h_control: u32, attack: u16, decay: u16)
 {
 	return hpi_control_param_set(h_control, HPI_METER_RMS_BALLISTICS,
 		attack, decay);
 }
 
-pub unsafe extern "C" fn hpi_meter_get_rms_ballistics(u32 h_control, u16 *pn_attack, u16 *pn_decay)
+pub unsafe extern "C" fn hpi_meter_get_rms_ballistics(h_control: u32, u16 *pn_attack, u16 *pn_decay)
 {
 	u32 attack;
 	u32 decay;
@@ -2108,20 +2108,20 @@ pub unsafe extern "C" fn hpi_meter_get_rms_ballistics(u32 h_control, u16 *pn_att
 		&attack, &decay);
 
 	if (pn_attack)
-		*pn_attack = (unsigned short)attack;
+		*pn_attack = (core::ffi::c_ushort)attack;
 	if (pn_decay)
-		*pn_decay = (unsigned short)decay;
+		*pn_decay = (core::ffi::c_ushort)decay;
 
 	return error;
 }
 
-pub unsafe extern "C" fn hpi_meter_set_peak_ballistics(u32 h_control, u16 attack, u16 decay)
+pub unsafe extern "C" fn hpi_meter_set_peak_ballistics(h_control: u32, attack: u16, decay: u16)
 {
 	return hpi_control_param_set(h_control, HPI_METER_PEAK_BALLISTICS,
 		attack, decay);
 }
 
-pub unsafe extern "C" fn hpi_meter_get_peak_ballistics(u32 h_control, u16 *pn_attack,
+pub unsafe extern "C" fn hpi_meter_get_peak_ballistics(h_control: u32, u16 *pn_attack,
 	u16 *pn_decay)
 {
 	u32 attack;
@@ -2139,13 +2139,13 @@ pub unsafe extern "C" fn hpi_meter_get_peak_ballistics(u32 h_control, u16 *pn_at
 	return error;
 }
 
-pub unsafe extern "C" fn hpi_microphone_set_phantom_power(u32 h_control, u16 on_off)
+pub unsafe extern "C" fn hpi_microphone_set_phantom_power(h_control: u32, on_off: u16)
 {
 	return hpi_control_param_set(h_control, HPI_MICROPHONE_PHANTOM_POWER,
 		(u32)on_off, 0);
 }
 
-pub unsafe extern "C" fn hpi_microphone_get_phantom_power(u32 h_control, u16 *pw_on_off)
+pub unsafe extern "C" fn hpi_microphone_get_phantom_power(h_control: u32, u16 *pw_on_off)
 {
 	u16 error = 0;
 	u32 on_off = 0;
@@ -2156,17 +2156,17 @@ pub unsafe extern "C" fn hpi_microphone_get_phantom_power(u32 h_control, u16 *pw
 	return error;
 }
 
-pub unsafe extern "C" fn hpi_multiplexer_set_source(u32 h_control, u16 source_node_type,
-	u16 source_node_index)
+pub unsafe extern "C" fn hpi_multiplexer_set_source(h_control: u32, source_node_type: u16,
+	source_node_index: u16)
 {
 	return hpi_control_param_set(h_control, HPI_MULTIPLEXER_SOURCE,
 		source_node_type, source_node_index);
 }
 
-pub unsafe extern "C" fn hpi_multiplexer_get_source(u32 h_control, u16 *source_node_type,
+pub unsafe extern "C" fn hpi_multiplexer_get_source(h_control: u32, u16 *source_node_type,
 	u16 *source_node_index)
 {
-	u32 node, index;
+	node: u32, index;
 	u16 err = hpi_control_param2_get(h_control,
 		HPI_MULTIPLEXER_SOURCE, &node,
 		&index);
@@ -2177,7 +2177,7 @@ pub unsafe extern "C" fn hpi_multiplexer_get_source(u32 h_control, u16 *source_n
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_multiplexer_query_source(u32 h_control, u16 index,
+pub unsafe extern "C" fn hpi_multiplexer_query_source(h_control: u32, index: u16,
 	u16 *source_node_type, u16 *source_node_index)
 {
 	struct hpi_message hm;
@@ -2198,7 +2198,7 @@ pub unsafe extern "C" fn hpi_multiplexer_query_source(u32 h_control, u16 index,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_parametric_eq_get_info(u32 h_control, u16 *pw_number_of_bands,
+pub unsafe extern "C" fn hpi_parametric_eq_get_info(h_control: u32, u16 *pw_number_of_bands,
 	u16 *pw_on_off)
 {
 	u32 oB = 0;
@@ -2214,13 +2214,13 @@ pub unsafe extern "C" fn hpi_parametric_eq_get_info(u32 h_control, u16 *pw_numbe
 	return error;
 }
 
-pub unsafe extern "C" fn hpi_parametric_eq_set_state(u32 h_control, u16 on_off)
+pub unsafe extern "C" fn hpi_parametric_eq_set_state(h_control: u32, on_off: u16)
 {
 	return hpi_control_param_set(h_control, HPI_EQUALIZER_NUM_FILTERS,
 		on_off, 0);
 }
 
-pub unsafe extern "C" fn hpi_parametric_eq_get_band(u32 h_control, u16 index, u16 *pn_type,
+pub unsafe extern "C" fn hpi_parametric_eq_get_band(h_control: u32, index: u16, u16 *pn_type,
 	u32 *pfrequency_hz, short *pnQ100, short *pn_gain0_01dB)
 {
 	struct hpi_message hm;
@@ -2247,8 +2247,8 @@ pub unsafe extern "C" fn hpi_parametric_eq_get_band(u32 h_control, u16 index, u1
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_parametric_eq_set_band(u32 h_control, u16 index, u16 type,
-	u32 frequency_hz, short q100, short gain0_01dB)
+pub unsafe extern "C" fn hpi_parametric_eq_set_band(h_control: u32, index: u16, r#type: u16,
+	frequency_hz: u32, short q100, short gain0_01dB)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -2269,7 +2269,7 @@ pub unsafe extern "C" fn hpi_parametric_eq_set_band(u32 h_control, u16 index, u1
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_parametric_eq_get_coeffs(u32 h_control, u16 index, short coeffs[5]
+pub unsafe extern "C" fn hpi_parametric_eq_get_coeffs(h_control: u32, index: u16, short coeffs[5]
 	)
 {
 	struct hpi_message hm;
@@ -2305,13 +2305,13 @@ pub unsafe extern "C" fn hpi_sample_clock_query_source(const u32 h_clock, const 
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_set_source(u32 h_control, u16 source)
+pub unsafe extern "C" fn hpi_sample_clock_set_source(h_control: u32, source: u16)
 {
 	return hpi_control_param_set(h_control, HPI_SAMPLECLOCK_SOURCE,
 		source, 0);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_get_source(u32 h_control, u16 *pw_source)
+pub unsafe extern "C" fn hpi_sample_clock_get_source(h_control: u32, u16 *pw_source)
 {
 	u16 err = 0;
 	u32 source = 0;
@@ -2335,13 +2335,13 @@ pub unsafe extern "C" fn hpi_sample_clock_query_source_index(const u32 h_clock, 
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_set_source_index(u32 h_control, u16 source_index)
+pub unsafe extern "C" fn hpi_sample_clock_set_source_index(h_control: u32, source_index: u16)
 {
 	return hpi_control_param_set(h_control, HPI_SAMPLECLOCK_SOURCE_INDEX,
 		source_index, 0);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_get_source_index(u32 h_control, u16 *pw_source_index)
+pub unsafe extern "C" fn hpi_sample_clock_get_source_index(h_control: u32, u16 *pw_source_index)
 {
 	u16 err = 0;
 	u32 source_index = 0;
@@ -2360,13 +2360,13 @@ pub unsafe extern "C" fn hpi_sample_clock_query_local_rate(const u32 h_clock, co
 				 index, 0, prate);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_set_local_rate(u32 h_control, u32 sample_rate)
+pub unsafe extern "C" fn hpi_sample_clock_set_local_rate(h_control: u32, sample_rate: u32)
 {
 	return hpi_control_param_set(h_control,
 		HPI_SAMPLECLOCK_LOCAL_SAMPLERATE, sample_rate, 0);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_get_local_rate(u32 h_control, u32 *psample_rate)
+pub unsafe extern "C" fn hpi_sample_clock_get_local_rate(h_control: u32, u32 *psample_rate)
 {
 	u16 err = 0;
 	u32 sample_rate = 0;
@@ -2378,7 +2378,7 @@ pub unsafe extern "C" fn hpi_sample_clock_get_local_rate(u32 h_control, u32 *psa
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_get_sample_rate(u32 h_control, u32 *psample_rate)
+pub unsafe extern "C" fn hpi_sample_clock_get_sample_rate(h_control: u32, u32 *psample_rate)
 {
 	u16 err = 0;
 	u32 sample_rate = 0;
@@ -2390,125 +2390,125 @@ pub unsafe extern "C" fn hpi_sample_clock_get_sample_rate(u32 h_control, u32 *ps
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_set_auto(u32 h_control, u32 enable)
+pub unsafe extern "C" fn hpi_sample_clock_set_auto(h_control: u32, enable: u32)
 {
 	return hpi_control_param_set(h_control, HPI_SAMPLECLOCK_AUTO, enable,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_get_auto(u32 h_control, u32 *penable)
+pub unsafe extern "C" fn hpi_sample_clock_get_auto(h_control: u32, u32 *penable)
 {
 	return hpi_control_param1_get(h_control, HPI_SAMPLECLOCK_AUTO,
 		penable);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_set_local_rate_lock(u32 h_control, u32 lock)
+pub unsafe extern "C" fn hpi_sample_clock_set_local_rate_lock(h_control: u32, lock: u32)
 {
 	return hpi_control_param_set(h_control, HPI_SAMPLECLOCK_LOCAL_LOCK,
 		lock, 0);
 }
 
-pub unsafe extern "C" fn hpi_sample_clock_get_local_rate_lock(u32 h_control, u32 *plock)
+pub unsafe extern "C" fn hpi_sample_clock_get_local_rate_lock(h_control: u32, u32 *plock)
 {
 	return hpi_control_param1_get(h_control, HPI_SAMPLECLOCK_LOCAL_LOCK,
 		plock);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_get_frequency(u32 h_control, u32 index, u32 *frequency)
+pub unsafe extern "C" fn hpi_tone_detector_get_frequency(h_control: u32, index: u32, u32 *frequency)
 {
 	return hpi_control_param_get(h_control, HPI_TONEDETECTOR_FREQUENCY,
 		index, 0, frequency, ptr::null_mut());
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_get_state(u32 h_control, u32 *state)
+pub unsafe extern "C" fn hpi_tone_detector_get_state(h_control: u32, u32 *state)
 {
 	return hpi_control_param1_get(h_control, HPI_TONEDETECTOR_STATE,
 		state);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_set_enable(u32 h_control, u32 enable)
+pub unsafe extern "C" fn hpi_tone_detector_set_enable(h_control: u32, enable: u32)
 {
 	return hpi_control_param_set(h_control, HPI_GENERIC_ENABLE, enable,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_get_enable(u32 h_control, u32 *enable)
+pub unsafe extern "C" fn hpi_tone_detector_get_enable(h_control: u32, u32 *enable)
 {
 	return hpi_control_param1_get(h_control, HPI_GENERIC_ENABLE, enable);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_set_event_enable(u32 h_control, u32 event_enable)
+pub unsafe extern "C" fn hpi_tone_detector_set_event_enable(h_control: u32, event_enable: u32)
 {
 	return hpi_control_param_set(h_control, HPI_GENERIC_EVENT_ENABLE,
 		(u32)event_enable, 0);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_get_event_enable(u32 h_control, u32 *event_enable)
+pub unsafe extern "C" fn hpi_tone_detector_get_event_enable(h_control: u32, u32 *event_enable)
 {
 	return hpi_control_param1_get(h_control, HPI_GENERIC_EVENT_ENABLE,
 		event_enable);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_set_threshold(u32 h_control, int threshold)
+pub unsafe extern "C" fn hpi_tone_detector_set_threshold(h_control: u32, int threshold)
 {
 	return hpi_control_param_set(h_control, HPI_TONEDETECTOR_THRESHOLD,
 		(u32)threshold, 0);
 }
 
-pub unsafe extern "C" fn hpi_tone_detector_get_threshold(u32 h_control, int *threshold)
+pub unsafe extern "C" fn hpi_tone_detector_get_threshold(h_control: u32, int *threshold)
 {
 	return hpi_control_param1_get(h_control, HPI_TONEDETECTOR_THRESHOLD,
 		(u32 *)threshold);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_get_state(u32 h_control, u32 *state)
+pub unsafe extern "C" fn hpi_silence_detector_get_state(h_control: u32, u32 *state)
 {
 	return hpi_control_param1_get(h_control, HPI_SILENCEDETECTOR_STATE,
 		state);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_set_enable(u32 h_control, u32 enable)
+pub unsafe extern "C" fn hpi_silence_detector_set_enable(h_control: u32, enable: u32)
 {
 	return hpi_control_param_set(h_control, HPI_GENERIC_ENABLE, enable,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_get_enable(u32 h_control, u32 *enable)
+pub unsafe extern "C" fn hpi_silence_detector_get_enable(h_control: u32, u32 *enable)
 {
 	return hpi_control_param1_get(h_control, HPI_GENERIC_ENABLE, enable);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_set_event_enable(u32 h_control, u32 event_enable)
+pub unsafe extern "C" fn hpi_silence_detector_set_event_enable(h_control: u32, event_enable: u32)
 {
 	return hpi_control_param_set(h_control, HPI_GENERIC_EVENT_ENABLE,
 		event_enable, 0);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_get_event_enable(u32 h_control, u32 *event_enable)
+pub unsafe extern "C" fn hpi_silence_detector_get_event_enable(h_control: u32, u32 *event_enable)
 {
 	return hpi_control_param1_get(h_control, HPI_GENERIC_EVENT_ENABLE,
 		event_enable);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_set_delay(u32 h_control, u32 delay)
+pub unsafe extern "C" fn hpi_silence_detector_set_delay(h_control: u32, delay: u32)
 {
 	return hpi_control_param_set(h_control, HPI_SILENCEDETECTOR_DELAY,
 		delay, 0);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_get_delay(u32 h_control, u32 *delay)
+pub unsafe extern "C" fn hpi_silence_detector_get_delay(h_control: u32, u32 *delay)
 {
 	return hpi_control_param1_get(h_control, HPI_SILENCEDETECTOR_DELAY,
 		delay);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_set_threshold(u32 h_control, int threshold)
+pub unsafe extern "C" fn hpi_silence_detector_set_threshold(h_control: u32, int threshold)
 {
 	return hpi_control_param_set(h_control, HPI_SILENCEDETECTOR_THRESHOLD,
 		threshold, 0);
 }
 
-pub unsafe extern "C" fn hpi_silence_detector_get_threshold(u32 h_control, int *threshold)
+pub unsafe extern "C" fn hpi_silence_detector_get_threshold(h_control: u32, int *threshold)
 {
 	return hpi_control_param1_get(h_control,
 		HPI_SILENCEDETECTOR_THRESHOLD, (u32 *)threshold);
@@ -2524,12 +2524,12 @@ pub unsafe extern "C" fn hpi_tuner_query_band(const u32 h_tuner, const u32 index
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_band(u32 h_control, u16 band)
+pub unsafe extern "C" fn hpi_tuner_set_band(h_control: u32, band: u16)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_BAND, band, 0);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_band(u32 h_control, u16 *pw_band)
+pub unsafe extern "C" fn hpi_tuner_get_band(h_control: u32, u16 *pw_band)
 {
 	u32 band = 0;
 	u16 error = 0;
@@ -2546,13 +2546,13 @@ pub unsafe extern "C" fn hpi_tuner_query_frequency(const u32 h_tuner, const u32 
 	return hpi_control_query(h_tuner, HPI_TUNER_FREQ, index, band, pfreq);
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_frequency(u32 h_control, u32 freq_ink_hz)
+pub unsafe extern "C" fn hpi_tuner_set_frequency(h_control: u32, freq_ink_hz: u32)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_FREQ, freq_ink_hz,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_frequency(u32 h_control, u32 *pw_freq_ink_hz)
+pub unsafe extern "C" fn hpi_tuner_get_frequency(h_control: u32, u32 *pw_freq_ink_hz)
 {
 	return hpi_control_param1_get(h_control, HPI_TUNER_FREQ,
 		pw_freq_ink_hz);
@@ -2568,12 +2568,12 @@ pub unsafe extern "C" fn hpi_tuner_query_gain(const u32 h_tuner, const u32 index
 	return err;
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_gain(u32 h_control, short gain)
+pub unsafe extern "C" fn hpi_tuner_set_gain(h_control: u32, short gain)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_GAIN, gain, 0);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_gain(u32 h_control, short *pn_gain)
+pub unsafe extern "C" fn hpi_tuner_get_gain(h_control: u32, short *pn_gain)
 {
 	u32 gain = 0;
 	u16 error = 0;
@@ -2584,7 +2584,7 @@ pub unsafe extern "C" fn hpi_tuner_get_gain(u32 h_control, short *pn_gain)
 	return error;
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_rf_level(u32 h_control, short *pw_level)
+pub unsafe extern "C" fn hpi_tuner_get_rf_level(h_control: u32, short *pw_level)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -2600,7 +2600,7 @@ pub unsafe extern "C" fn hpi_tuner_get_rf_level(u32 h_control, short *pw_level)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_raw_rf_level(u32 h_control, short *pw_level)
+pub unsafe extern "C" fn hpi_tuner_get_raw_rf_level(h_control: u32, short *pw_level)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -2623,13 +2623,13 @@ pub unsafe extern "C" fn hpi_tuner_query_deemphasis(const u32 h_tuner, const u32
 		pdeemphasis);
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_deemphasis(u32 h_control, u32 deemphasis)
+pub unsafe extern "C" fn hpi_tuner_set_deemphasis(h_control: u32, deemphasis: u32)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_DEEMPHASIS,
 		deemphasis, 0);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_deemphasis(u32 h_control, u32 *pdeemphasis)
+pub unsafe extern "C" fn hpi_tuner_get_deemphasis(h_control: u32, u32 *pdeemphasis)
 {
 	return hpi_control_param1_get(h_control, HPI_TUNER_DEEMPHASIS,
 		pdeemphasis);
@@ -2641,32 +2641,32 @@ pub unsafe extern "C" fn hpi_tuner_query_program(const u32 h_tuner, u32 *pbitmap
 		pbitmap_program);
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_program(u32 h_control, u32 program)
+pub unsafe extern "C" fn hpi_tuner_set_program(h_control: u32, program: u32)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_PROGRAM, program,
 		0);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_program(u32 h_control, u32 *pprogram)
+pub unsafe extern "C" fn hpi_tuner_get_program(h_control: u32, u32 *pprogram)
 {
 	return hpi_control_param1_get(h_control, HPI_TUNER_PROGRAM, pprogram);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_hd_radio_dsp_version(u32 h_control, char *psz_dsp_version,
+pub unsafe extern "C" fn hpi_tuner_get_hd_radio_dsp_version(h_control: u32, char *psz_dsp_version,
 	const u32 string_size)
 {
 	return hpi_control_get_string(h_control,
 		HPI_TUNER_HDRADIO_DSP_VERSION, psz_dsp_version, string_size);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_hd_radio_sdk_version(u32 h_control, char *psz_sdk_version,
+pub unsafe extern "C" fn hpi_tuner_get_hd_radio_sdk_version(h_control: u32, char *psz_sdk_version,
 	const u32 string_size)
 {
 	return hpi_control_get_string(h_control,
 		HPI_TUNER_HDRADIO_SDK_VERSION, psz_sdk_version, string_size);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_status(u32 h_control, u16 *pw_status_mask, u16 *pw_status)
+pub unsafe extern "C" fn hpi_tuner_get_status(h_control: u32, u16 *pw_status_mask, u16 *pw_status)
 {
 	u32 status = 0;
 	u16 error = 0;
@@ -2684,36 +2684,36 @@ pub unsafe extern "C" fn hpi_tuner_get_status(u32 h_control, u16 *pw_status_mask
 	return error;
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_mode(u32 h_control, u32 mode, u32 value)
+pub unsafe extern "C" fn hpi_tuner_set_mode(h_control: u32, mode: u32, value: u32)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_MODE, mode, value);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_mode(u32 h_control, u32 mode, u32 *pn_value)
+pub unsafe extern "C" fn hpi_tuner_get_mode(h_control: u32, mode: u32, u32 *pn_value)
 {
 	return hpi_control_param_get(h_control, HPI_TUNER_MODE, mode, 0,
 		pn_value, ptr::null_mut());
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_hd_radio_signal_quality(u32 h_control, u32 *pquality)
+pub unsafe extern "C" fn hpi_tuner_get_hd_radio_signal_quality(h_control: u32, u32 *pquality)
 {
 	return hpi_control_param1_get(h_control,
 		HPI_TUNER_HDRADIO_SIGNAL_QUALITY, pquality);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_hd_radio_signal_blend(u32 h_control, u32 *pblend)
+pub unsafe extern "C" fn hpi_tuner_get_hd_radio_signal_blend(h_control: u32, u32 *pblend)
 {
 	return hpi_control_param1_get(h_control, HPI_TUNER_HDRADIO_BLEND,
 		pblend);
 }
 
-pub unsafe extern "C" fn hpi_tuner_set_hd_radio_signal_blend(u32 h_control, const u32 blend)
+pub unsafe extern "C" fn hpi_tuner_set_hd_radio_signal_blend(h_control: u32, const u32 blend)
 {
 	return hpi_control_param_set(h_control, HPI_TUNER_HDRADIO_BLEND,
 		blend, 0);
 }
 
-pub unsafe extern "C" fn hpi_tuner_get_rds(u32 h_control, char *p_data)
+pub unsafe extern "C" fn hpi_tuner_get_rds(h_control: u32, char *p_data)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -2732,38 +2732,38 @@ pub unsafe extern "C" fn hpi_tuner_get_rds(u32 h_control, char *p_data)
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_pad_get_channel_name(u32 h_control, char *psz_string,
+pub unsafe extern "C" fn hpi_pad_get_channel_name(h_control: u32, char *psz_string,
 	const u32 data_length)
 {
 	return hpi_control_get_string(h_control, HPI_PAD_CHANNEL_NAME,
 		psz_string, data_length);
 }
 
-pub unsafe extern "C" fn hpi_pad_get_artist(u32 h_control, char *psz_string, const u32 data_length)
+pub unsafe extern "C" fn hpi_pad_get_artist(h_control: u32, char *psz_string, const u32 data_length)
 {
 	return hpi_control_get_string(h_control, HPI_PAD_ARTIST, psz_string,
 		data_length);
 }
 
-pub unsafe extern "C" fn hpi_pad_get_title(u32 h_control, char *psz_string, const u32 data_length)
+pub unsafe extern "C" fn hpi_pad_get_title(h_control: u32, char *psz_string, const u32 data_length)
 {
 	return hpi_control_get_string(h_control, HPI_PAD_TITLE, psz_string,
 		data_length);
 }
 
-pub unsafe extern "C" fn hpi_pad_get_comment(u32 h_control, char *psz_string,
+pub unsafe extern "C" fn hpi_pad_get_comment(h_control: u32, char *psz_string,
 	const u32 data_length)
 {
 	return hpi_control_get_string(h_control, HPI_PAD_COMMENT, psz_string,
 		data_length);
 }
 
-pub unsafe extern "C" fn hpi_pad_get_program_type(u32 h_control, u32 *ppTY)
+pub unsafe extern "C" fn hpi_pad_get_program_type(h_control: u32, u32 *ppTY)
 {
 	return hpi_control_param1_get(h_control, HPI_PAD_PROGRAM_TYPE, ppTY);
 }
 
-pub unsafe extern "C" fn hpi_pad_get_rdsPI(u32 h_control, u32 *ppI)
+pub unsafe extern "C" fn hpi_pad_get_rdsPI(h_control: u32, u32 *ppI)
 {
 	return hpi_control_param1_get(h_control, HPI_PAD_PROGRAM_ID, ppI);
 }
@@ -2774,31 +2774,31 @@ pub unsafe extern "C" fn hpi_volume_query_channels(const u32 h_volume, u32 *p_ch
 		p_channels);
 }
 
-pub unsafe extern "C" fn hpi_volume_set_gain(u32 h_control, short an_log_gain[HPI_MAX_CHANNELS]
+pub unsafe extern "C" fn hpi_volume_set_gain(h_control: u32, short an_log_gain[HPI_MAX_CHANNELS]
 	)
 {
 	return hpi_control_log_set2(h_control, HPI_VOLUME_GAIN,
 		an_log_gain[0], an_log_gain[1]);
 }
 
-pub unsafe extern "C" fn hpi_volume_get_gain(u32 h_control, short an_log_gain[HPI_MAX_CHANNELS]
+pub unsafe extern "C" fn hpi_volume_get_gain(h_control: u32, short an_log_gain[HPI_MAX_CHANNELS]
 	)
 {
 	return hpi_control_log_get2(h_control, HPI_VOLUME_GAIN,
 		&an_log_gain[0], &an_log_gain[1]);
 }
 
-pub unsafe extern "C" fn hpi_volume_set_mute(u32 h_control, u32 mute)
+pub unsafe extern "C" fn hpi_volume_set_mute(h_control: u32, mute: u32)
 {
 	return hpi_control_param_set(h_control, HPI_VOLUME_MUTE, mute, 0);
 }
 
-pub unsafe extern "C" fn hpi_volume_get_mute(u32 h_control, u32 *mute)
+pub unsafe extern "C" fn hpi_volume_get_mute(h_control: u32, u32 *mute)
 {
 	return hpi_control_param1_get(h_control, HPI_VOLUME_MUTE, mute);
 }
 
-pub unsafe extern "C" fn hpi_volume_query_range(u32 h_control, short *min_gain_01dB,
+pub unsafe extern "C" fn hpi_volume_query_range(h_control: u32, short *min_gain_01dB,
 	short *max_gain_01dB, short *step_gain_01dB)
 {
 	struct hpi_message hm;
@@ -2825,9 +2825,9 @@ pub unsafe extern "C" fn hpi_volume_query_range(u32 h_control, short *min_gain_0
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_volume_auto_fade_profile(u32 h_control,
-	short an_stop_gain0_01dB[HPI_MAX_CHANNELS], u32 duration_ms,
-	u16 profile)
+pub unsafe extern "C" fn hpi_volume_auto_fade_profile(h_control: u32,
+	short an_stop_gain0_01dB[HPI_MAX_CHANNELS], duration_ms: u32,
+	profile: u16)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -2849,8 +2849,8 @@ pub unsafe extern "C" fn hpi_volume_auto_fade_profile(u32 h_control,
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_volume_auto_fade(u32 h_control,
-	short an_stop_gain0_01dB[HPI_MAX_CHANNELS], u32 duration_ms)
+pub unsafe extern "C" fn hpi_volume_auto_fade(h_control: u32,
+	short an_stop_gain0_01dB[HPI_MAX_CHANNELS], duration_ms: u32)
 {
 	return hpi_volume_auto_fade_profile(h_control, an_stop_gain0_01dB,
 		duration_ms, HPI_VOLUME_AUTOFADE_LOG);
@@ -2866,7 +2866,7 @@ pub unsafe extern "C" fn hpi_volume_query_auto_fade_profile(const u32 h_volume, 
 	return e;
 }
 
-pub unsafe extern "C" fn hpi_vox_set_threshold(u32 h_control, short an_gain0_01dB)
+pub unsafe extern "C" fn hpi_vox_set_threshold(h_control: u32, short an_gain0_01dB)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;
@@ -2883,7 +2883,7 @@ pub unsafe extern "C" fn hpi_vox_set_threshold(u32 h_control, short an_gain0_01d
 	return hr.error;
 }
 
-pub unsafe extern "C" fn hpi_vox_get_threshold(u32 h_control, short *an_gain0_01dB)
+pub unsafe extern "C" fn hpi_vox_get_threshold(h_control: u32, short *an_gain0_01dB)
 {
 	struct hpi_message hm;
 	struct hpi_response hr;

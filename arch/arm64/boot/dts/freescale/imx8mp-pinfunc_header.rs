@@ -1,12 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright 2019 NXP */
-
-/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright 2019 NXP
  */
 
-#define __DTS_IMX8MP_PINFUNC_H
 
 /* Drive Strength */
 pub const MX8MP_DSE_X1: u32 = 0x0;
@@ -36,8 +32,8 @@ pub const MX8MP_PULL_DISABLE: u32 = 0x0;
 pub const MX8MP_SION: u32 = 0x40000000;
 
 /* long defaults */
-pub const MX8MP_USDHC_DATA_DEFAULT: [u32; 7] = [(MX8MP_FSEL_FAST, |, MX8MP_PULL_UP, |, MX8MP_HYS_SCHMITT, |, MX8MP_PULL_ENABLE)];
-pub const MX8MP_I2C_DEFAULT: [u32; 7] = [(MX8MP_PULL_UP, |, MX8MP_HYS_SCHMITT, |, MX8MP_PULL_ENABLE, |, MX8MP_SION)];
+pub const MX8MP_USDHC_DATA_DEFAULT: u32 = MX8MP_FSEL_FAST | MX8MP_PULL_UP | MX8MP_HYS_SCHMITT | MX8MP_PULL_ENABLE;
+pub const MX8MP_I2C_DEFAULT: u32 = MX8MP_PULL_UP | MX8MP_HYS_SCHMITT | MX8MP_PULL_ENABLE | MX8MP_SION;
 
 /*
  * The pin function ID is a tuple of
@@ -828,6 +824,5 @@ pub const MX8MP_IOMUXC_HDMI_HPD__AUDIOMIX_HDMI_HPD_O: [u32; 5] = [0x24C, 0x4AC, 
 pub const MX8MP_IOMUXC_HDMI_HPD__I2C6_SDA: [u32; 5] = [0x24C, 0x4AC, 0x5D0, 0x3, 0x3];
 pub const MX8MP_IOMUXC_HDMI_HPD__CAN2_RX: [u32; 5] = [0x24C, 0x4AC, 0x550, 0x4, 0x3];
 pub const MX8MP_IOMUXC_HDMI_HPD__GPIO3_IO29: [u32; 5] = [0x24C, 0x4AC, 0x000, 0x5, 0x0];
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -19,12 +19,12 @@ unsafe fn cabriolet_update_irq_hw(irq: ::core::primitive::c_uint, mask: ::core::
 
 #[inline]
 unsafe fn cabriolet_enable_irq(d: *mut irq_data) {
-    cached_irq_mask &= !(1 as ::core::primitive::c_ulong << (*d).irq);
+    cached_irq_mask &= !((1 as ::core::primitive::c_ulong) << (*d).irq);
     cabriolet_update_irq_hw((*d).irq, cached_irq_mask);
 }
 
 unsafe fn cabriolet_disable_irq(d: *mut irq_data) {
-    cached_irq_mask |= 1 as ::core::primitive::c_ulong << (*d).irq;
+    cached_irq_mask |= (1 as ::core::primitive::c_ulong) << (*d).irq;
     cabriolet_update_irq_hw((*d).irq, cached_irq_mask);
 }
 

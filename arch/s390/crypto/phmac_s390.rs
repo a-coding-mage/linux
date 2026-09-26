@@ -95,8 +95,8 @@ unsafe fn phmac_do_one_request(_engine: *mut crypto_engine, _areq: *mut core::ff
 
 // These declarations represent external kernel APIs and preserve the source's dependency boundary.
 extern "C" {
-    fn TODO_phmac_kmac_update(*mut ahash_request, bool) -> i32; fn TODO_phmac_kmac_final(*mut ahash_request, bool) -> i32;
-    fn TODO_phmac_init(*mut ahash_request) -> i32; fn TODO_phmac_update(*mut ahash_request) -> i32; fn TODO_phmac_final(*mut ahash_request) -> i32; fn TODO_phmac_finup(*mut ahash_request) -> i32; fn TODO_phmac_digest(*mut ahash_request) -> i32; fn TODO_phmac_setkey(*mut crypto_ahash,*const u8,u32)->i32; fn TODO_phmac_export(*mut ahash_request,*mut core::ffi::c_void)->i32; fn TODO_phmac_import(*mut ahash_request,*const core::ffi::c_void)->i32; fn TODO_phmac_init_tfm(*mut crypto_ahash)->i32; fn TODO_phmac_exit_tfm(*mut crypto_ahash); fn TODO_phmac_do_one_request(*mut crypto_engine,*mut core::ffi::c_void)->i32;
+    fn TODO_phmac_kmac_update(_: *mut ahash_request, _: bool) -> i32; fn TODO_phmac_kmac_final(_: *mut ahash_request, _: bool) -> i32;
+    fn TODO_phmac_init(_: *mut ahash_request) -> i32; fn TODO_phmac_update(_: *mut ahash_request) -> i32; fn TODO_phmac_final(_: *mut ahash_request) -> i32; fn TODO_phmac_finup(_: *mut ahash_request) -> i32; fn TODO_phmac_digest(_: *mut ahash_request) -> i32; fn TODO_phmac_setkey(_: *mut crypto_ahash,_: *const u8,_: u32)->i32; fn TODO_phmac_export(_: *mut ahash_request,_: *mut core::ffi::c_void)->i32; fn TODO_phmac_import(_: *mut ahash_request,_: *const core::ffi::c_void)->i32; fn TODO_phmac_init_tfm(_: *mut crypto_ahash)->i32; fn TODO_phmac_exit_tfm(_: *mut crypto_ahash); fn TODO_phmac_do_one_request(_: *mut crypto_engine,_: *mut core::ffi::c_void)->i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

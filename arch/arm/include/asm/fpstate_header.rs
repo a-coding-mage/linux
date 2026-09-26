@@ -15,9 +15,9 @@
  */
 #[repr(C)]
 pub struct vfp_hard_struct {
-    #[cfg(feature = "CONFIG_VFPv3")]
+    #[cfg(CONFIG_VFPv3)]
     pub fpregs: [u64; 32],
-    #[cfg(not(feature = "CONFIG_VFPv3"))]
+    #[cfg(not(CONFIG_VFPv3))]
     pub fpregs: [u64; 16],
     /* __LINUX_ARM_ARCH__ < 6 */
     #[cfg(feature = "linux_arm_arch_lt_6")]
@@ -29,7 +29,7 @@ pub struct vfp_hard_struct {
      */
     pub fpinst: u32,
     pub fpinst2: u32,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub cpu: u32,
 }
 
@@ -63,7 +63,7 @@ pub struct iwmmxt_struct {
 pub union fp_state {
     pub hard: fp_hard_struct,
     pub soft: fp_soft_struct,
-    #[cfg(feature = "CONFIG_IWMMXT")]
+    #[cfg(CONFIG_IWMMXT)]
     pub iwmmxt: iwmmxt_struct,
 }
 

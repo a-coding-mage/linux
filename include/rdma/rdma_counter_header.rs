@@ -12,8 +12,8 @@ pub struct auto_mode_param {
 
 #[repr(C)]
 pub struct rdma_counter_mode {
-    pub mode: enum rdma_nl_counter_mode,
-    pub mask: enum rdma_nl_counter_mask,
+    pub mode: rdma_nl_counter_mode,
+    pub mask: rdma_nl_counter_mask,
     pub param: auto_mode_param,
     pub bind_opcnt: bool,
 }
@@ -44,16 +44,14 @@ extern "C" {
     pub fn rdma_counter_set_auto_mode(
         dev: *mut ib_device,
         port: u32,
-        mask: enum rdma_nl_counter_mask,
+        mask: rdma_nl_counter_mask,
         bind_opcnt: bool,
-        extack: *mut netlink_ext_ack,
-    ) -> ::std::os::raw::c_int;
+        extack: *mut netlink_ext_ack) -> ::std::os::raw::c_int;
     pub fn rdma_counter_bind_qp_auto(qp: *mut ib_qp, port: u32) -> ::std::os::raw::c_int;
     pub fn rdma_counter_unbind_qp(
         qp: *mut ib_qp,
         port: u32,
-        force: bool,
-    ) -> ::std::os::raw::c_int;
+        force: bool) -> ::std::os::raw::c_int;
 
     pub fn rdma_counter_query_stats(counter: *mut rdma_counter) -> ::std::os::raw::c_int;
     pub fn rdma_counter_get_hwstat_value(dev: *mut ib_device, port: u32, index: u32) -> u64;
@@ -61,34 +59,29 @@ extern "C" {
         dev: *mut ib_device,
         port: u32,
         qp_num: u32,
-        counter_id: u32,
-    ) -> ::std::os::raw::c_int;
+        counter_id: u32) -> ::std::os::raw::c_int;
     pub fn rdma_counter_bind_qpn_alloc(
         dev: *mut ib_device,
         port: u32,
         qp_num: u32,
-        counter_id: *mut u32,
-    ) -> ::std::os::raw::c_int;
+        counter_id: *mut u32) -> ::std::os::raw::c_int;
     pub fn rdma_counter_unbind_qpn(
         dev: *mut ib_device,
         port: u32,
         qp_num: u32,
-        counter_id: u32,
-    ) -> ::std::os::raw::c_int;
+        counter_id: u32) -> ::std::os::raw::c_int;
     pub fn rdma_counter_get_mode(
         dev: *mut ib_device,
         port: u32,
-        mode: *mut enum rdma_nl_counter_mode,
-        mask: *mut enum rdma_nl_counter_mask,
-        opcnt: *mut bool,
-    ) -> ::std::os::raw::c_int;
+        mode: *mut rdma_nl_counter_mode,
+        mask: *mut rdma_nl_counter_mask,
+        opcnt: *mut bool) -> ::std::os::raw::c_int;
 
     pub fn rdma_counter_modify(
         dev: *mut ib_device,
         port: u32,
         index: u32,
-        enable: bool,
-    ) -> ::std::os::raw::c_int;
+        enable: bool) -> ::std::os::raw::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -74,18 +74,18 @@ pub unsafe fn xfs_log_mount(
     num_bblks: i32,
 ) -> i32 {
     extern "C" {
-        fn xfs_log_mount_impl(*mut xfs_mount, *mut xfs_buftarg, xfs_daddr_t, i32) -> i32;
+        fn xfs_log_mount_impl(_: *mut xfs_mount, _: *mut xfs_buftarg, _: xfs_daddr_t, _: i32) -> i32;
     }
     xfs_log_mount_impl(mp, log_target, blk_offset, num_bblks)
 }
 
 pub unsafe fn xfs_log_mount_finish(mp: *mut xfs_mount) -> i32 {
-    extern "C" { fn xfs_log_mount_finish_impl(*mut xfs_mount) -> i32; }
+    extern "C" { fn xfs_log_mount_finish_impl(_: *mut xfs_mount) -> i32; }
     xfs_log_mount_finish_impl(mp)
 }
 
 pub unsafe fn xfs_log_mount_cancel(mp: *mut xfs_mount) {
-    extern "C" { fn xfs_log_mount_cancel_impl(*mut xfs_mount); }
+    extern "C" { fn xfs_log_mount_cancel_impl(_: *mut xfs_mount); }
     xfs_log_mount_cancel_impl(mp)
 }
 

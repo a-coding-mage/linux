@@ -131,7 +131,7 @@ pub unsafe fn acpi_extract_apple_properties(adev: *mut acpi_device) {
     (*newprops).package.elements = newprops.add(1);
     free_space = newprops.add((1 + 3 * numvalid) as usize) as *mut c_void;
 
-    for_each_set_bit!(i, valid, numprops) {
+    for_each_set_bit!(i, valid, numprops, {
         let key = (*props).package.elements.add((i * 2) as usize);
         let val = (*props).package.elements.add((i * 2 + 1) as usize);
         let k: usize = (1 + numvalid + j * 2) as usize;
@@ -162,7 +162,7 @@ pub unsafe fn acpi_extract_apple_properties(adev: *mut acpi_device) {
             free_space = (free_space as *mut u8).add((*val).buffer.length as usize) as *mut c_void;
         }
         j += 1; /* count valid properties */
-    }
+    });
     WARN_ON!(free_space != (newprops as *mut u8).add(newsize as usize) as *mut c_void);
 
     (*adev).data.pointer = newprops as *mut c_void;

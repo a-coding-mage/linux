@@ -41,19 +41,19 @@ static C: &[(&[u8],u32)] = &[
 extern "C" {
  fn acpi_os_printf(fmt:*const i8, ...);
  fn acpi_db_add_to_history(s:*mut i8); fn acpi_db_get_from_history(s:*mut i8)->*mut i8;
- fn acpi_db_execute(*mut i8,*mut *mut i8,*mut acpi_object_type,u32); fn acpi_db_display_arguments();
- fn acpi_db_set_method_breakpoint(*mut i8,*mut acpi_walk_state,*mut acpi_parse_object);
- fn acpi_db_get_bus_info(); fn acpi_db_set_method_call_breakpoint(*mut acpi_parse_object);
- fn acpi_db_decode_and_display_object(*mut i8,*mut i8); fn acpi_db_find_name_in_namespace(*mut i8)->acpi_status;
- fn acpi_db_display_fields(u32)->acpi_status; fn acpi_db_display_handlers(); fn acpi_db_display_history();
- fn acpi_db_display_method_info(*mut acpi_parse_object); fn acpi_db_check_integrity(); fn acpi_db_disassemble_aml(*mut i8,*mut acpi_parse_object);
- fn acpi_db_display_locks(); fn acpi_db_display_locals(); fn acpi_db_display_objects(*mut i8,*mut i8)->acpi_status;
- fn acpi_db_dump_namespace(*mut i8,*mut i8); fn acpi_db_send_notify(*mut i8,u32); fn acpi_db_display_interfaces(*mut i8,*mut i8);
- fn acpi_db_dump_namespace_by_owner(*mut i8,*mut i8); fn acpi_db_dump_namespace_paths(); fn acpi_db_set_scope(*mut i8);
- fn acpi_db_find_references(*mut i8); fn acpi_db_display_resources(*mut i8); fn acpi_db_display_results();
- fn acpi_db_set_method_data(*mut i8,*mut i8,*mut i8); fn acpi_db_display_statistics(*mut i8)->acpi_status;
- fn acpi_db_display_table_info(*mut i8); fn acpi_db_display_template(*mut i8); fn acpi_db_trace(*mut i8,*mut i8,*mut i8);
- fn acpi_db_display_calling_tree(); fn acpi_db_display_object_type(*mut i8);
+ fn acpi_db_execute(_: *mut i8,_: *mut *mut i8,_: *mut acpi_object_type,_: u32); fn acpi_db_display_arguments();
+ fn acpi_db_set_method_breakpoint(_: *mut i8,_: *mut acpi_walk_state,_: *mut acpi_parse_object);
+ fn acpi_db_get_bus_info(); fn acpi_db_set_method_call_breakpoint(_: *mut acpi_parse_object);
+ fn acpi_db_decode_and_display_object(_: *mut i8,_: *mut i8); fn acpi_db_find_name_in_namespace(_: *mut i8)->acpi_status;
+ fn acpi_db_display_fields(_: u32)->acpi_status; fn acpi_db_display_handlers(); fn acpi_db_display_history();
+ fn acpi_db_display_method_info(_: *mut acpi_parse_object); fn acpi_db_check_integrity(); fn acpi_db_disassemble_aml(_: *mut i8,_: *mut acpi_parse_object);
+ fn acpi_db_display_locks(); fn acpi_db_display_locals(); fn acpi_db_display_objects(_: *mut i8,_: *mut i8)->acpi_status;
+ fn acpi_db_dump_namespace(_: *mut i8,_: *mut i8); fn acpi_db_send_notify(_: *mut i8,_: u32); fn acpi_db_display_interfaces(_: *mut i8,_: *mut i8);
+ fn acpi_db_dump_namespace_by_owner(_: *mut i8,_: *mut i8); fn acpi_db_dump_namespace_paths(); fn acpi_db_set_scope(_: *mut i8);
+ fn acpi_db_find_references(_: *mut i8); fn acpi_db_display_resources(_: *mut i8); fn acpi_db_display_results();
+ fn acpi_db_set_method_data(_: *mut i8,_: *mut i8,_: *mut i8); fn acpi_db_display_statistics(_: *mut i8)->acpi_status;
+ fn acpi_db_display_table_info(_: *mut i8); fn acpi_db_display_template(_: *mut i8); fn acpi_db_trace(_: *mut i8,_: *mut i8,_: *mut i8);
+ fn acpi_db_display_calling_tree(); fn acpi_db_display_object_type(_: *mut i8);
  fn acpi_os_wait_command_ready()->acpi_status; fn acpi_os_notify_command_complete()->acpi_status;
 }
 

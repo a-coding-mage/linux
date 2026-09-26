@@ -10,7 +10,9 @@
 // #define ARCH_INIT_USER_FP_ENTRY_FRAME(ws)
 // #endif
 
-// #ifndef unwind_user_at_function_start
+// #ifndef unwind_user_at_function_start: only x86 (with
+// CONFIG_HAVE_UNWIND_USER_FP) provides its own definition.
+#[cfg(not(CONFIG_HAVE_UNWIND_USER_FP))]
 #[inline]
 pub unsafe fn unwind_user_at_function_start(regs: *mut pt_regs) -> bool {
     let _ = regs;

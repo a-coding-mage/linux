@@ -133,7 +133,7 @@ pub unsafe extern "C" fn rds_page_remainder_alloc(
 pub unsafe extern "C" fn rds_page_exit() {
     let mut cpu: c_uint = 0;
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let rem: *mut rds_page_remainder = per_cpu!(&mut rds_page_remainders, cpu);
         rdsdebug(b"cpu %u\0", cpu);
 
@@ -141,7 +141,7 @@ pub unsafe extern "C" fn rds_page_exit() {
             __free_page((*rem).r_page);
         }
         (*rem).r_page = core::ptr::null_mut();
-    }
+    });
 }
 
 

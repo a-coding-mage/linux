@@ -32,13 +32,13 @@ unsafe fn init_irq_scs() -> c_int {
         return 0;
     }
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         s = scs_alloc(early_cpu_to_node(cpu));
         if s.is_null() {
             return -ENOMEM;
         }
         per_cpu!(irq_shadow_call_stack_ptr, cpu) = s;
-    }
+    });
 
     0
 }
@@ -47,13 +47,13 @@ unsafe fn init_irq_stacks() -> c_int {
     let mut cpu: c_int;
     let mut p: *mut c_ulong;
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         p = arch_alloc_vmap_stack(IRQ_STACK_SIZE, early_cpu_to_node(cpu));
         if p.is_null() {
             return -ENOMEM;
         }
         per_cpu!(irq_stack_ptr, cpu) = p;
-    }
+    });
 
     0
 }

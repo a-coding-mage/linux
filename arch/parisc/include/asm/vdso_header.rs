@@ -5,7 +5,7 @@
  * dependencies are intentionally left external to this translation.
  */
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[macro_export]
 macro_rules! VDSO64_SYMBOL {
     ($tsk:expr, $offset:expr) => {
@@ -13,7 +13,7 @@ macro_rules! VDSO64_SYMBOL {
     };
 }
 
-#[cfg(any(not(feature = "CONFIG_64BIT"), feature = "CONFIG_COMPAT"))]
+#[cfg(any(not(CONFIG_64BIT), CONFIG_COMPAT))]
 #[macro_export]
 macro_rules! VDSO32_SYMBOL {
     ($tsk:expr, $offset:expr) => {
@@ -21,7 +21,7 @@ macro_rules! VDSO32_SYMBOL {
     };
 }
 
-#[cfg(all(feature = "CONFIG_64BIT", not(feature = "CONFIG_COMPAT")))]
+#[cfg(all(CONFIG_64BIT, not(CONFIG_COMPAT)))]
 #[macro_export]
 macro_rules! VDSO32_SYMBOL {
     ($tsk:expr, $offset:expr) => {

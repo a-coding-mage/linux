@@ -132,6 +132,7 @@ unsafe extern "C" fn systick_set_oneshot(evt: *mut ClockEventDevice) -> i32 {
 
 unsafe extern "C" fn ralink_systick_init(np: *mut DeviceNode) -> i32 {
     let mut ret: i32;
+    'err_iounmap: {
     SYSTICK.membase = of_iomap(np, 0);
     if SYSTICK.membase.is_null() { return -6; }
     SYSTICK.dev.name = (*np).name;
@@ -141,13 +142,14 @@ unsafe extern "C" fn ralink_systick_init(np: *mut DeviceNode) -> i32 {
     SYSTICK.dev.min_delta_ns = clockevent_delta2ns(0x3, &SYSTICK.dev);
     SYSTICK.dev.min_delta_ticks = 0x3;
     SYSTICK.dev.irq = irq_of_parse_and_map(np, 0);
-    if SYSTICK.dev.irq == 0 { ret = -22; goto err_iounmap; }
+    if SYSTICK.dev.irq == 0 { ret = -22; break 'err_iounmap; }
     ret = clocksource_mmio_init(SYSTICK.membase.add(SYSTICK_COUNT), np.as_ref().unwrap().name,
                                 SYSTICK_FREQ, 301, 16, core::ptr::null());
-    if ret != 0 { irq_dispose_mapping(SYSTICK.dev.irq); goto err_iounmap; }
+    if ret != 0 { irq_dispose_mapping(SYSTICK.dev.irq); break 'err_iounmap; }
     clockevents_register_device(&raw mut SYSTICK.dev);
     return 0;
-err_iounmap:
+    }
+    
     iounmap(SYSTICK.membase);
     ret
 }

@@ -17,7 +17,7 @@ pub struct modversion_info { pub crc: ::core::ffi::c_ulong, pub name: [::core::f
 }
 #[repr(C)] pub struct module_version_attribute { pub mattr: module_attribute, pub module_name: *const ::core::ffi::c_char, pub version: *const ::core::ffi::c_char }
 
-extern "C" { pub fn __modver_version_show(*const module_attribute, *mut module_kobject, *mut ::core::ffi::c_char) -> ssize_t; pub static module_uevent: module_attribute; pub fn init_module() -> ::core::ffi::c_int; pub fn cleanup_module(); }
+extern "C" { pub fn __modver_version_show(_: *const module_attribute, _: *mut module_kobject, _: *mut ::core::ffi::c_char) -> ssize_t; pub static module_uevent: module_attribute; pub fn init_module() -> ::core::ffi::c_int; pub fn cleanup_module(); }
 
 #[repr(C)] pub struct mod_tree_node { pub mod_: *mut module, pub node: latch_tree_node }
 #[repr(C)] pub struct module_memory { pub base: *mut ::core::ffi::c_void, pub is_rox: bool, pub size: ::core::ffi::c_uint, pub mtn: mod_tree_node }

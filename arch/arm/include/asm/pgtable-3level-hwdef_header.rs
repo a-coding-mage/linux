@@ -57,20 +57,20 @@ pub const PHYS_MASK_SHIFT: u32 = 40;
 pub const PHYS_MASK: u64 = (1u64 << PHYS_MASK_SHIFT) - 1;
 
 /* CONFIG_CPU_TTBR0_PAN selects the alternate TTBR1 definitions. */
-#[cfg(not(feature = "CONFIG_CPU_TTBR0_PAN"))]
-#[cfg(feature = "CONFIG_VMSPLIT_2G")]
+#[cfg(not(CONFIG_CPU_TTBR0_PAN))]
+#[cfg(CONFIG_VMSPLIT_2G)]
 pub const TTBR1_OFFSET: u64 = 16;
-#[cfg(not(feature = "CONFIG_CPU_TTBR0_PAN"))]
-#[cfg(all(not(feature = "CONFIG_VMSPLIT_2G"), feature = "CONFIG_VMSPLIT_3G"))]
+#[cfg(not(CONFIG_CPU_TTBR0_PAN))]
+#[cfg(all(not(CONFIG_VMSPLIT_2G), CONFIG_VMSPLIT_3G))]
 pub const TTBR1_OFFSET: u64 = 4096 * (1 + 3);
-#[cfg(not(feature = "CONFIG_CPU_TTBR0_PAN"))]
-#[cfg(all(not(feature = "CONFIG_VMSPLIT_2G"), not(feature = "CONFIG_VMSPLIT_3G")))]
+#[cfg(not(CONFIG_CPU_TTBR0_PAN))]
+#[cfg(all(not(CONFIG_VMSPLIT_2G), not(CONFIG_VMSPLIT_3G)))]
 pub const TTBR1_OFFSET: u64 = 0;
-#[cfg(not(feature = "CONFIG_CPU_TTBR0_PAN"))]
+#[cfg(not(CONFIG_CPU_TTBR0_PAN))]
 pub const TTBR1_SIZE: u64 = ((PAGE_OFFSET >> 30) - 1) << 16;
-#[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+#[cfg(CONFIG_CPU_TTBR0_PAN)]
 pub const TTBR1_OFFSET: u64 = 0;
-#[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+#[cfg(CONFIG_CPU_TTBR0_PAN)]
 pub const TTBR1_SIZE: u64 = 0;
 
 pub const TTBCR_EAE: u32 = 1 << 31;

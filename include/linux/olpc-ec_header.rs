@@ -45,7 +45,7 @@ pub struct olpc_ec_driver {
 }
 
 /* CONFIG_OLPC_EC conditional declarations. */
-#[cfg(feature = "CONFIG_OLPC_EC")]
+#[cfg(CONFIG_OLPC_EC)]
 extern "C" {
     pub fn olpc_ec_driver_register(drv: *mut olpc_ec_driver, arg: *mut core::ffi::c_void);
 
@@ -70,7 +70,7 @@ extern "C" {
 }
 
 /* CONFIG_OLPC_EC disabled branch. ENODEV is supplied by the kernel environment. */
-#[cfg(not(feature = "CONFIG_OLPC_EC"))]
+#[cfg(not(CONFIG_OLPC_EC))]
 pub unsafe fn olpc_ec_cmd(
     _cmd: u8,
     _inbuf: *mut u8,
@@ -81,13 +81,13 @@ pub unsafe fn olpc_ec_cmd(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_OLPC_EC"))]
+#[cfg(not(CONFIG_OLPC_EC))]
 pub unsafe fn olpc_ec_wakeup_set(_value: u16) {}
 
-#[cfg(not(feature = "CONFIG_OLPC_EC"))]
+#[cfg(not(CONFIG_OLPC_EC))]
 pub unsafe fn olpc_ec_wakeup_clear(_value: u16) {}
 
-#[cfg(not(feature = "CONFIG_OLPC_EC"))]
+#[cfg(not(CONFIG_OLPC_EC))]
 pub unsafe fn olpc_ec_wakeup_available() -> bool {
     false
 }

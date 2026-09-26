@@ -515,7 +515,7 @@ pub const SSB_CHIPCO_OTP_LIM_OFF		4: u32 = ;
 pub const SSB_CHIPCO_OTP_SIGNATURE	0x578A: u32 = ;
 pub const SSB_CHIPCO_OTP_MAGIC		0x4E56: u32 = ;
 /* Data for the PMU, if available.
- * Check availability with ((struct ssb_chipcommon)->capabilities & SSB_CHIPCO_CAP_PMU)
+ * Check availability with ((ssb_chipcommon)->capabilities & SSB_CHIPCO_CAP_PMU)
  */
 /* Register access */
 /* Chipcommon GPIO pin access. */

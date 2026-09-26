@@ -50,20 +50,20 @@ static uuid_t *
 xfs_uuid_search(
 	uuid_t		*new_uuid)
 {
-	unsigned long	index = 0;
+	core::ffi::c_ulong	index = 0;
 	uuid_t		*uuid;
 
-	xa_for_each(&xfs_uuid_table, index, uuid) {
+	xa_for_each!(&xfs_uuid_table, index, uuid, {
 		if (uuid_equal(uuid, new_uuid))
 			return uuid;
-	}
+	});
 	return NULL;
 }
 
 static void
 xfs_uuid_delete(
 	uuid_t		*uuid,
-	unsigned int	index)
+	index: core::ffi::c_uint)
 {
 	ASSERT(uuid_equal(xa_load(&xfs_uuid_table, index), uuid));
 	xa_erase(&xfs_uuid_table, index);
@@ -82,13 +82,13 @@ xfs_uuid_table_free(void)
  */
 pub(crate) int
 xfs_uuid_mount(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	uuid_t			*uuid = &mp->m_sb.sb_uuid;
+	uuid_t			*uuid = (*&mp).m_sb.sb_uuid;
 	int			ret;
 
 	/* Publish UUID in struct super_block */
-	super_set_uuid(mp->m_super, uuid->b, sizeof(*uuid));
+	super_set_uuid((*mp).m_super, (*uuid).b, sizeof(*uuid));
 
 	if (xfs_has_nouuid(mp))
 		return 0;
@@ -106,7 +106,7 @@ xfs_uuid_mount(
 		return -EINVAL;
 	}
 
-	ret = xa_alloc(&xfs_uuid_table, &mp->m_uuid_table_index, uuid,
+	ret = xa_alloc(&xfs_uuid_table, (*&mp).m_uuid_table_index, uuid,
 				xa_limit_32b, GFP_KERNEL);
 	mutex_unlock(&xfs_uuid_table_mutex);
 	return ret;
@@ -114,15 +114,15 @@ xfs_uuid_mount(
 
 pub(crate) void
 xfs_uuid_unmount(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	uuid_t			*uuid = &mp->m_sb.sb_uuid;
+	uuid_t			*uuid = (*&mp).m_sb.sb_uuid;
 
 	if (xfs_has_nouuid(mp))
 		return;
 
 	mutex_lock(&xfs_uuid_table_mutex);
-	xfs_uuid_delete(uuid, mp->m_uuid_table_index);
+	xfs_uuid_delete(uuid, (*mp).m_uuid_table_index);
 	mutex_unlock(&xfs_uuid_table_mutex);
 }
 
@@ -137,9 +137,9 @@ xfs_sb_validate_fsb_count(
 {
 	uint64_t		max_bytes;
 
-	ASSERT(sbp->sb_blocklog >= BBSHIFT);
+	ASSERT((*sbp).sb_blocklog >= BBSHIFT);
 
-	if (check_shl_overflow(nblocks, sbp->sb_blocklog, &max_bytes))
+	if (check_shl_overflow(nblocks, (*sbp).sb_blocklog, &max_bytes))
 		return -EFBIG;
 
 	/* Limited by ULONG_MAX of page cache index */
@@ -155,18 +155,19 @@ xfs_sb_validate_fsb_count(
  */
 int
 xfs_readsb(
-	struct xfs_mount *mp,
+	xfs_mount *mp,
 	int		flags)
 {
-	unsigned int	sector_size;
+	'release_buf: {
+	core::ffi::c_uint	sector_size;
 	struct xfs_buf	*bp;
-	struct xfs_sb	*sbp = &mp->m_sb;
+	struct xfs_sb	*sbp = (*&mp).m_sb;
 	int		error;
 	int		loud = !(flags & XFS_MFSI_QUIET);
 	const struct xfs_buf_ops *buf_ops;
 
-	ASSERT(mp->m_sb_bp == NULL);
-	ASSERT(mp->m_ddev_targp != NULL);
+	ASSERT((*mp).m_sb_bp == NULL);
+	ASSERT((*mp).m_ddev_targp != NULL);
 
 	/*
 	 * In the first pass, use the device sector size to just read enough
@@ -176,11 +177,11 @@ xfs_readsb(
 	 * sector size and thus we can always read the superblock.  Once we know
 	 * the XFS sector size, re-read it and run the buffer verifier.
 	 */
-	sector_size = mp->m_ddev_targp->bt_logical_sectorsize;
+	sector_size = (*(*mp).m_ddev_targp).bt_logical_sectorsize;
 	buf_ops = NULL;
 
-reread:
-	error = xfs_buf_read_uncached(mp->m_ddev_targp, XFS_SB_DADDR,
+    'reread: loop {
+    error = xfs_buf_read_uncached((*mp).m_ddev_targp, XFS_SB_DADDR,
 				      BTOBB(sector_size), &bp, buf_ops);
 	if (error) {
 		if (loud)
@@ -194,28 +195,28 @@ reread:
 	/*
 	 * Initialize the mount structure from the superblock.
 	 */
-	xfs_sb_from_disk(sbp, bp->b_addr);
+	xfs_sb_from_disk(sbp, (*bp).b_addr);
 
 	/*
 	 * If we haven't validated the superblock, do so now before we try
 	 * to check the sector size and reread the superblock appropriately.
 	 */
-	if (sbp->sb_magicnum != XFS_SB_MAGIC) {
+	if ((*sbp).sb_magicnum != XFS_SB_MAGIC) {
 		if (loud)
 			xfs_warn(mp, "Invalid superblock magic number");
 		error = -EINVAL;
-		goto release_buf;
+		break 'release_buf;
 	}
 
 	/*
 	 * We must be able to do sector-sized and sector-aligned IO.
 	 */
-	if (sector_size > sbp->sb_sectsize) {
+	if (sector_size > (*sbp).sb_sectsize) {
 		if (loud)
 			xfs_warn(mp, "device supports %u byte sectors (not %u)",
-				sector_size, sbp->sb_sectsize);
+				sector_size, (*sbp).sb_sectsize);
 		error = -ENOSYS;
-		goto release_buf;
+		break 'release_buf;
 	}
 
 	if (buf_ops == NULL) {
@@ -224,33 +225,35 @@ reread:
 		 * and properly verified.
 		 */
 		xfs_buf_relse(bp);
-		sector_size = sbp->sb_sectsize;
+		sector_size = (*sbp).sb_sectsize;
 		buf_ops = loud ? &xfs_sb_buf_ops : &xfs_sb_quiet_buf_ops;
-		goto reread;
+		continue 'reread;
 	}
 
-	mp->m_features |= xfs_sb_version_to_features(sbp);
+	(*mp).m_features |= xfs_sb_version_to_features(sbp);
 	xfs_reinit_percpu_counters(mp);
 
 	/*
 	 * If logged xattrs are enabled after log recovery finishes, then set
 	 * the opstate so that log recovery will work properly.
 	 */
-	if (xfs_sb_version_haslogxattrs(&mp->m_sb))
+	if (xfs_sb_version_haslogxattrs((*&mp).m_sb))
 		xfs_set_using_logged_xattrs(mp);
 
 	/* no need to be quiet anymore, so reset the buf ops */
-	bp->b_ops = &xfs_sb_buf_ops;
+	(*bp).b_ops = &xfs_sb_buf_ops;
 
 	/*
 	 * Keep a pointer of the sb buffer around instead of caching it in the
 	 * buffer cache because we access it frequently.
 	 */
-	mp->m_sb_bp = bp;
+	(*mp).m_sb_bp = bp;
 	xfs_buf_unlock(bp);
 	return 0;
-
-release_buf:
+        break;
+    }
+}
+	
 	xfs_buf_relse(bp);
 	return error;
 }
@@ -264,17 +267,17 @@ release_buf:
 #[inline]
 fn int
 xfs_check_new_dalign(
-	struct xfs_mount	*mp,
+	xfs_mount	*mp,
 	int			new_dalign,
 	bool			*update_sb)
 {
-	struct xfs_sb		*sbp = &mp->m_sb;
+	struct xfs_sb		*sbp = (*&mp).m_sb;
 	xfs_ino_t		calc_ino;
 
 	calc_ino = xfs_ialloc_calc_rootino(mp, new_dalign);
 	trace_xfs_check_new_dalign(mp, new_dalign, calc_ino);
 
-	if (sbp->sb_rootino == calc_ino) {
+	if ((*sbp).sb_rootino == calc_ino) {
 		*update_sb = true;
 		return 0;
 	}
@@ -300,42 +303,42 @@ xfs_check_new_dalign(
  */
 pub(crate) int
 xfs_validate_new_dalign(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	if (mp->m_dalign == 0)
+	if ((*mp).m_dalign == 0)
 		return 0;
 
 	/*
 	 * If stripe unit and stripe width are not multiples
 	 * of the fs blocksize turn off alignment.
 	 */
-	if ((BBTOB(mp->m_dalign) & mp->m_blockmask) ||
-	    (BBTOB(mp->m_swidth) & mp->m_blockmask)) {
+	if ((BBTOB((*mp).m_dalign) & (*mp).m_blockmask) ||
+	    (BBTOB((*mp).m_swidth) & (*mp).m_blockmask)) {
 		xfs_warn(mp,
 	"alignment check failed: sunit/swidth vs. blocksize(%d)",
-			mp->m_sb.sb_blocksize);
+			(*mp).m_sb.sb_blocksize);
 		return -EINVAL;
 	}
 
 	/*
 	 * Convert the stripe unit and width to FSBs.
 	 */
-	mp->m_dalign = XFS_BB_TO_FSBT(mp, mp->m_dalign);
-	if (mp->m_dalign && (mp->m_sb.sb_agblocks % mp->m_dalign)) {
+	(*mp).m_dalign = XFS_BB_TO_FSBT(mp, (*mp).m_dalign);
+	if ((*mp).m_dalign && ((*mp).m_sb.sb_agblocks % (*mp).m_dalign)) {
 		xfs_warn(mp,
 	"alignment check failed: sunit/swidth vs. agsize(%d)",
-			mp->m_sb.sb_agblocks);
+			(*mp).m_sb.sb_agblocks);
 		return -EINVAL;
 	}
 
-	if (!mp->m_dalign) {
+	if ((*!mp).m_dalign) {
 		xfs_warn(mp,
 	"alignment check failed: sunit(%d) less than bsize(%d)",
-			mp->m_dalign, mp->m_sb.sb_blocksize);
+			(*mp).m_dalign, (*mp).m_sb.sb_blocksize);
 		return -EINVAL;
 	}
 
-	mp->m_swidth = XFS_BB_TO_FSBT(mp, mp->m_swidth);
+	(*mp).m_swidth = XFS_BB_TO_FSBT(mp, (*mp).m_swidth);
 
 	if (!xfs_has_dalign(mp)) {
 		xfs_warn(mp,
@@ -349,28 +352,28 @@ xfs_validate_new_dalign(
 /* Update alignment values based on mount options and sb values. */
 pub(crate) int
 xfs_update_alignment(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	struct xfs_sb		*sbp = &mp->m_sb;
+	struct xfs_sb		*sbp = (*&mp).m_sb;
 
-	if (mp->m_dalign) {
+	if ((*mp).m_dalign) {
 		bool		update_sb;
 		int		error;
 
-		if (sbp->sb_unit == mp->m_dalign &&
-		    sbp->sb_width == mp->m_swidth)
+		if ((*sbp).sb_unit == (*mp).m_dalign &&
+		    (*sbp).sb_width == (*mp).m_swidth)
 			return 0;
 
-		error = xfs_check_new_dalign(mp, mp->m_dalign, &update_sb);
+		error = xfs_check_new_dalign(mp, (*mp).m_dalign, &update_sb);
 		if (error || !update_sb)
 			return error;
 
-		sbp->sb_unit = mp->m_dalign;
-		sbp->sb_width = mp->m_swidth;
-		mp->m_update_sb = true;
+		(*sbp).sb_unit = (*mp).m_dalign;
+		(*sbp).sb_width = (*mp).m_swidth;
+		(*mp).m_update_sb = true;
 	} else if (!xfs_has_noalign(mp) && xfs_has_dalign(mp)) {
-		mp->m_dalign = sbp->sb_unit;
-		mp->m_swidth = sbp->sb_width;
+		(*mp).m_dalign = (*sbp).sb_unit;
+		(*mp).m_swidth = (*sbp).sb_width;
 	}
 
 	return 0;
@@ -381,18 +384,18 @@ xfs_update_alignment(
  */
 void
 xfs_set_low_space_thresholds(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	uint64_t		dblocks = mp->m_sb.sb_dblocks;
-	uint64_t		rtexts = mp->m_sb.sb_rextents;
+	uint64_t		dblocks = (*mp).m_sb.sb_dblocks;
+	uint64_t		rtexts = (*mp).m_sb.sb_rextents;
 	int			i;
 
 	do_div(dblocks, 100);
 	do_div(rtexts, 100);
 
 	for (i = 0; i < XFS_LOWSP_MAX; i++) {
-		mp->m_low_space[i] = dblocks * (i + 1);
-		mp->m_low_rtexts[i] = rtexts * (i + 1);
+		(*mp).m_low_space[i] = dblocks * (i + 1);
+		(*mp).m_low_rtexts[i] = rtexts * (i + 1);
 	}
 }
 
@@ -401,18 +404,18 @@ xfs_set_low_space_thresholds(
  */
 pub(crate) int
 xfs_check_sizes(
-	struct xfs_mount *mp)
+	xfs_mount *mp)
 {
 	struct xfs_buf	*bp;
 	xfs_daddr_t	d;
 	int		error;
 
-	d = (xfs_daddr_t)XFS_FSB_TO_BB(mp, mp->m_sb.sb_dblocks);
-	if (XFS_BB_TO_FSB(mp, d) != mp->m_sb.sb_dblocks) {
+	d = (xfs_daddr_t)XFS_FSB_TO_BB(mp, (*mp).m_sb.sb_dblocks);
+	if (XFS_BB_TO_FSB(mp, d) != (*mp).m_sb.sb_dblocks) {
 		xfs_warn(mp, "filesystem size mismatch detected");
 		return -EFBIG;
 	}
-	error = xfs_buf_read_uncached(mp->m_ddev_targp,
+	error = xfs_buf_read_uncached((*mp).m_ddev_targp,
 					d - XFS_FSS_TO_BB(mp, 1),
 					XFS_FSS_TO_BB(mp, 1), &bp, NULL);
 	if (error) {
@@ -421,15 +424,15 @@ xfs_check_sizes(
 	}
 	xfs_buf_relse(bp);
 
-	if (mp->m_logdev_targp == mp->m_ddev_targp)
+	if ((*mp).m_logdev_targp == (*mp).m_ddev_targp)
 		return 0;
 
-	d = (xfs_daddr_t)XFS_FSB_TO_BB(mp, mp->m_sb.sb_logblocks);
-	if (XFS_BB_TO_FSB(mp, d) != mp->m_sb.sb_logblocks) {
+	d = (xfs_daddr_t)XFS_FSB_TO_BB(mp, (*mp).m_sb.sb_logblocks);
+	if (XFS_BB_TO_FSB(mp, d) != (*mp).m_sb.sb_logblocks) {
 		xfs_warn(mp, "log size mismatch detected");
 		return -EFBIG;
 	}
-	error = xfs_buf_read_uncached(mp->m_logdev_targp,
+	error = xfs_buf_read_uncached((*mp).m_logdev_targp,
 					d - XFS_FSB_TO_BB(mp, 1),
 					XFS_FSB_TO_BB(mp, 1), &bp, NULL);
 	if (error) {
@@ -445,16 +448,16 @@ xfs_check_sizes(
  */
 int
 xfs_mount_reset_sbqflags(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	mp->m_qflags = 0;
+	(*mp).m_qflags = 0;
 
 	/* It is OK to look at sb_qflags in the mount path without m_sb_lock. */
-	if (mp->m_sb.sb_qflags == 0)
+	if ((*mp).m_sb.sb_qflags == 0)
 		return 0;
-	spin_lock(&mp->m_sb_lock);
-	mp->m_sb.sb_qflags = 0;
-	spin_unlock(&mp->m_sb_lock);
+	spin_lock((*&mp).m_sb_lock);
+	(*mp).m_sb.sb_qflags = 0;
+	spin_unlock((*&mp).m_sb_lock);
 
 	if (!xfs_fs_writable(mp, SB_FREEZE_WRITE))
 		return 0;
@@ -470,8 +473,8 @@ const char *const xfs_free_pool_name[] = {
 
 uint64_t
 xfs_default_resblks(
-	struct xfs_mount	*mp,
-	enum xfs_free_counter	ctr)
+	xfs_mount	*mp,
+	xfs_free_counter	ctr)
 {
 	switch (ctr) {
 	case XC_FREE_BLOCKS:
@@ -484,7 +487,7 @@ xfs_default_resblks(
 		 * reservation. Hence by default we cover roughly 2000
 		 * concurrent allocation reservations.
 		 */
-		return min(div_u64(mp->m_sb.sb_dblocks, 20), 8192ULL);
+		return min(div_u64((*mp).m_sb.sb_dblocks, 20), 8192ULL);
 	case XC_FREE_RTEXTENTS:
 	case XC_FREE_RTAVAILABLE:
 		if (IS_ENABLED(CONFIG_XFS_RT) && xfs_has_zoned(mp))
@@ -499,7 +502,7 @@ xfs_default_resblks(
 /* Ensure the summary counts are correct. */
 pub(crate) int
 xfs_check_summary_counts(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	int			error = 0;
 
@@ -507,7 +510,7 @@ xfs_check_summary_counts(
 	 * The AG0 superblock verifier rejects in-progress filesystems,
 	 * so we should never see the flag set this far into mounting.
 	 */
-	if (mp->m_sb.sb_inprogress) {
+	if ((*mp).m_sb.sb_inprogress) {
 		xfs_err(mp, "sb_inprogress set after log recovery??");
 		WARN_ON(1);
 		return -EFSCORRUPTED;
@@ -525,9 +528,9 @@ xfs_check_summary_counts(
 	 * them from the AGF headers in the next step.
 	 */
 	if (xfs_is_clean(mp) &&
-	    (mp->m_sb.sb_fdblocks > mp->m_sb.sb_dblocks ||
-	     !xfs_verify_icount(mp, mp->m_sb.sb_icount) ||
-	     mp->m_sb.sb_ifree > mp->m_sb.sb_icount))
+	    ((*mp).m_sb.sb_fdblocks > (*mp).m_sb.sb_dblocks ||
+	     !xfs_verify_icount(mp, (*mp).m_sb.sb_icount) ||
+	     (*mp).m_sb.sb_ifree > (*mp).m_sb.sb_icount))
 		xfs_fs_mark_sick(mp, XFS_SICK_FS_COUNTERS);
 
 	/*
@@ -543,7 +546,7 @@ xfs_check_summary_counts(
 	 */
 	if ((xfs_has_lazysbcount(mp) && !xfs_is_clean(mp)) ||
 	    xfs_fs_has_sickness(mp, XFS_SICK_FS_COUNTERS)) {
-		error = xfs_initialize_perag_data(mp, mp->m_sb.sb_agcount);
+		error = xfs_initialize_perag_data(mp, (*mp).m_sb.sb_agcount);
 		if (error)
 			return error;
 	}
@@ -571,13 +574,13 @@ xfs_check_summary_counts(
 
 static void
 xfs_unmount_check(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	if (xfs_is_shutdown(mp))
 		return;
 
-	if (percpu_counter_sum(&mp->m_ifree) >
-			percpu_counter_sum(&mp->m_icount)) {
+	if (percpu_counter_sum((*&mp).m_ifree) >
+			percpu_counter_sum((*&mp).m_icount)) {
 		xfs_alert(mp, "ifree/icount mismatch at unmount");
 		xfs_fs_mark_sick(mp, XFS_SICK_FS_COUNTERS);
 	}
@@ -612,7 +615,7 @@ xfs_unmount_check(
  */
 static void
 xfs_unmount_flush_inodes(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	xfs_log_force(mp, XFS_LOG_SYNC);
 	xfs_extent_busy_wait_all(mp);
@@ -621,8 +624,8 @@ xfs_unmount_flush_inodes(
 	xfs_set_unmounting(mp);
 
 	xfs_inodegc_stop(mp);
-	cancel_delayed_work_sync(&mp->m_reclaim_work);
-	xfs_ail_push_all_sync(mp->m_ail);
+	cancel_delayed_work_sync((*&mp).m_reclaim_work);
+	xfs_ail_push_all_sync((*mp).m_ail);
 	xfs_reclaim_inodes(mp);
 	xfs_health_unmount(mp);
 	xfs_healthmon_unmount(mp);
@@ -630,12 +633,12 @@ xfs_unmount_flush_inodes(
 
 static void
 xfs_mount_setup_inode_geom(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	struct xfs_ino_geometry *igeo = M_IGEO(mp);
 
-	igeo->attr_fork_offset = xfs_bmap_compute_attr_offset(mp);
-	ASSERT(igeo->attr_fork_offset < XFS_LITINO(mp));
+	(*igeo).attr_fork_offset = xfs_bmap_compute_attr_offset(mp);
+	ASSERT((*igeo).attr_fork_offset < XFS_LITINO(mp));
 
 	xfs_ialloc_setup_geometry(mp);
 }
@@ -643,13 +646,13 @@ xfs_mount_setup_inode_geom(
 /* Mount the metadata directory tree root. */
 pub(crate) int
 xfs_mount_setup_metadir(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	int			error;
 
 	/* Load the metadata directory root inode into memory. */
-	error = xfs_metafile_iget(mp, mp->m_sb.sb_metadirino, XFS_METAFILE_DIR,
-			&mp->m_metadirip);
+	error = xfs_metafile_iget(mp, (*mp).m_sb.sb_metadirino, XFS_METAFILE_DIR,
+			(*&mp).m_metadirip);
 	if (error)
 		xfs_warn(mp, "Failed to load metadir root directory, error %d",
 				error);
@@ -660,18 +663,18 @@ xfs_mount_setup_metadir(
 #[inline]
 fn void
 xfs_agbtree_compute_maxlevels(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	unsigned int		levels;
+	core::ffi::c_uint		levels;
 
-	levels = max(mp->m_alloc_maxlevels, M_IGEO(mp)->inobt_maxlevels);
-	levels = max(levels, mp->m_rmap_maxlevels);
-	mp->m_agbtree_maxlevels = max(levels, mp->m_refc_maxlevels);
+	levels = max((*mp).m_alloc_maxlevels, (*M_IGEO(mp)).inobt_maxlevels);
+	levels = max(levels, (*mp).m_rmap_maxlevels);
+	(*mp).m_agbtree_maxlevels = max(levels, (*mp).m_refc_maxlevels);
 }
 
 /* Maximum atomic write IO size that the kernel allows. */
 #[inline]
-fn xfs_extlen_t xfs_calc_atomic_write_max(struct xfs_mount *mp)
+fn xfs_extlen_t xfs_calc_atomic_write_max(xfs_mount *mp)
 {
 	return rounddown_pow_of_two(XFS_B_TO_FSB(mp, MAX_RW_COUNT));
 }
@@ -689,35 +692,35 @@ fn xfs_extlen_t xfs_calc_atomic_write_max(struct xfs_mount *mp)
  */
 static xfs_extlen_t
 xfs_calc_group_awu_max(
-	struct xfs_mount	*mp,
-	enum xfs_group_type	type)
+	xfs_mount	*mp,
+	xfs_group_type	type)
 {
-	struct xfs_groups	*g = &mp->m_groups[type];
+	struct xfs_groups	*g = (*&mp).m_groups[type];
 	struct xfs_buftarg	*btp = xfs_group_type_buftarg(mp, type);
 
-	if (g->blocks == 0)
+	if ((*g).blocks == 0)
 		return 0;
-	if (btp && btp->bt_awu_min > 0)
-		return max_pow_of_two_factor(g->blocks);
-	return rounddown_pow_of_two(g->blocks);
+	if (btp && (*btp).bt_awu_min > 0)
+		return max_pow_of_two_factor((*g).blocks);
+	return rounddown_pow_of_two((*g).blocks);
 }
 
 /* Compute the maximum atomic write unit size for each section. */
 #[inline]
 fn void
 xfs_calc_atomic_write_unit_max(
-	struct xfs_mount	*mp,
-	enum xfs_group_type	type)
+	xfs_mount	*mp,
+	xfs_group_type	type)
 {
-	struct xfs_groups	*g = &mp->m_groups[type];
+	struct xfs_groups	*g = (*&mp).m_groups[type];
 
 	const xfs_extlen_t	max_write = xfs_calc_atomic_write_max(mp);
 	const xfs_extlen_t	max_ioend = xfs_reflink_max_atomic_cow(mp);
 	const xfs_extlen_t	max_gsize = xfs_calc_group_awu_max(mp, type);
 
-	g->awu_max = min3(max_write, max_ioend, max_gsize);
+	(*g).awu_max = min3(max_write, max_ioend, max_gsize);
 	trace_xfs_calc_atomic_write_unit_max(mp, type, max_write, max_ioend,
-			max_gsize, g->awu_max);
+			max_gsize, (*g).awu_max);
 }
 
 /*
@@ -726,21 +729,22 @@ xfs_calc_atomic_write_unit_max(
  */
 int
 xfs_set_max_atomic_write_opt(
-	struct xfs_mount	*mp,
-	unsigned long long	new_max_bytes)
+	xfs_mount	*mp,
+	new_max_bytes: core::ffi::c_ulonglong)
 {
+	'set_limit: {
 	const xfs_filblks_t	new_max_fsbs = XFS_B_TO_FSBT(mp, new_max_bytes);
 	const xfs_extlen_t	max_write = xfs_calc_atomic_write_max(mp);
 	const xfs_extlen_t	max_group =
-		max(mp->m_groups[XG_TYPE_AG].blocks,
-		    mp->m_groups[XG_TYPE_RTG].blocks);
+		max((*mp).m_groups[XG_TYPE_AG].blocks,
+		    (*mp).m_groups[XG_TYPE_RTG].blocks);
 	const xfs_extlen_t	max_group_write =
 		max(xfs_calc_group_awu_max(mp, XG_TYPE_AG),
 		    xfs_calc_group_awu_max(mp, XG_TYPE_RTG));
 	int			error;
 
 	if (new_max_bytes == 0)
-		goto set_limit;
+		break 'set_limit;
 
 	ASSERT(max_write <= U32_MAX);
 
@@ -752,7 +756,7 @@ xfs_set_max_atomic_write_opt(
 		return -EINVAL;
 	}
 
-	if (new_max_bytes & mp->m_blockmask) {
+	if (new_max_bytes & (*mp).m_blockmask) {
 		xfs_warn(mp,
  "max atomic write size of %llu bytes not aligned with fsblock",
 				new_max_bytes);
@@ -784,11 +788,11 @@ xfs_set_max_atomic_write_opt(
 	}
 
 	if (xfs_has_reflink(mp))
-		goto set_limit;
+		break 'set_limit;
 
 	if (new_max_fsbs == 1) {
-		if (mp->m_ddev_targp->bt_awu_max ||
-		    (mp->m_rtdev_targp && mp->m_rtdev_targp->bt_awu_max)) {
+		if ((*(*mp).m_ddev_targp).bt_awu_max ||
+		    ((*mp).m_rtdev_targp && (*(*mp).m_rtdev_targp).bt_awu_max)) {
 		} else {
 			xfs_warn(mp,
  "cannot support atomic writes of size %lluk with no reflink or HW support",
@@ -801,8 +805,8 @@ xfs_set_max_atomic_write_opt(
 				new_max_bytes >> 10);
 		return -EINVAL;
 	}
-
-set_limit:
+	}
+	
 	error = xfs_calc_atomic_write_reservation(mp, new_max_fsbs);
 	if (error) {
 		xfs_warn(mp,
@@ -813,7 +817,7 @@ set_limit:
 
 	xfs_calc_atomic_write_unit_max(mp, XG_TYPE_AG);
 	xfs_calc_atomic_write_unit_max(mp, XG_TYPE_RTG);
-	mp->m_awu_max_bytes = new_max_bytes;
+	(*mp).m_awu_max_bytes = new_max_bytes;
 	return 0;
 }
 
@@ -821,10 +825,10 @@ set_limit:
 #[inline]
 fn void
 xfs_rtbtree_compute_maxlevels(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	mp->m_rtbtree_maxlevels = max(mp->m_rtrmap_maxlevels,
-				      mp->m_rtrefc_maxlevels);
+	(*mp).m_rtbtree_maxlevels = max((*mp).m_rtrmap_maxlevels,
+				      (*mp).m_rtrefc_maxlevels);
 }
 
 /*
@@ -839,9 +843,23 @@ xfs_rtbtree_compute_maxlevels(
  */
 int
 xfs_mountfs(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
-	struct xfs_sb		*sbp = &(mp->m_sb);
+	'out: {
+	'out_remove_scrub_stats: {
+	'out_remove_sysfs: {
+	'out_remove_errortag: {
+	'out_remove_uuid: {
+	'out_free_dir: {
+	'out_free_perag: {
+	'out_free_rtgroup: {
+	'out_fail_wait: {
+	'out_inodegc_shrinker: {
+	'out_free_metadir: {
+	'out_rele_rip: {
+	'out_rtunmount: {
+	'out_agresv: {
+	struct xfs_sb		*sbp = &((*mp).m_sb);
 	struct xfs_inode	*rip;
 	struct xfs_ino_geometry	*igeo = M_IGEO(mp);
 	uint			quotamount = 0;
@@ -869,16 +887,16 @@ xfs_mountfs(
 	 */
 	if (xfs_sb_has_mismatched_features2(sbp)) {
 		xfs_warn(mp, "correcting sb_features alignment problem");
-		sbp->sb_features2 |= sbp->sb_bad_features2;
-		mp->m_update_sb = true;
+		(*sbp).sb_features2 |= (*sbp).sb_bad_features2;
+		(*mp).m_update_sb = true;
 	}
 
 
 	/* always use v2 inodes by default now */
-	if (!(mp->m_sb.sb_versionnum & XFS_SB_VERSION_NLINKBIT)) {
-		mp->m_sb.sb_versionnum |= XFS_SB_VERSION_NLINKBIT;
-		mp->m_features |= XFS_FEAT_NLINK;
-		mp->m_update_sb = true;
+	if (!((*mp).m_sb.sb_versionnum & XFS_SB_VERSION_NLINKBIT)) {
+		(*mp).m_sb.sb_versionnum |= XFS_SB_VERSION_NLINKBIT;
+		(*mp).m_features |= XFS_FEAT_NLINK;
+		(*mp).m_update_sb = true;
 	}
 
 	/*
@@ -889,7 +907,7 @@ xfs_mountfs(
 	 */
 	error = xfs_validate_new_dalign(mp);
 	if (error)
-		goto out;
+		break 'out;
 
 	xfs_alloc_compute_maxlevels(mp);
 	xfs_bmap_compute_maxlevels(mp, XFS_DATA_FORK);
@@ -912,32 +930,32 @@ xfs_mountfs(
 	 */
 	error = xfs_update_alignment(mp);
 	if (error)
-		goto out;
+		break 'out;
 
 	/* enable fail_at_unmount as default */
-	mp->m_fail_unmount = true;
+	(*mp).m_fail_unmount = true;
 
 	error = xfs_mount_sysfs_init(mp);
 	if (error)
-		goto out_remove_scrub_stats;
+		break 'out_remove_scrub_stats;
 
-	xchk_stats_register(mp->m_scrub_stats, mp->m_debugfs);
+	xchk_stats_register((*mp).m_scrub_stats, (*mp).m_debugfs);
 
 	error = xfs_errortag_init(mp);
 	if (error)
-		goto out_remove_sysfs;
+		break 'out_remove_sysfs;
 
 	error = xfs_uuid_mount(mp);
 	if (error)
-		goto out_remove_errortag;
+		break 'out_remove_errortag;
 
 	/*
 	 * Update the preferred write size based on the information from the
 	 * on-disk superblock.
 	 */
-	mp->m_allocsize_log =
-		max_t(uint32_t, sbp->sb_blocklog, mp->m_allocsize_log);
-	mp->m_allocsize_blocks = 1U << (mp->m_allocsize_log - sbp->sb_blocklog);
+	(*mp).m_allocsize_log =
+		max_t(uint32_t, (*sbp).sb_blocklog, (*mp).m_allocsize_log);
+	(*mp).m_allocsize_blocks = 1U << ((*mp).m_allocsize_log - (*sbp).sb_blocklog);
 
 	/* set the low space thresholds for dynamic preallocation */
 	xfs_set_low_space_thresholds(mp);
@@ -948,14 +966,14 @@ xfs_mountfs(
 	 * but that is checked on sb read verification...
 	 */
 	if (xfs_has_sparseinodes(mp) &&
-	    mp->m_sb.sb_spino_align !=
-			XFS_B_TO_FSBT(mp, igeo->inode_cluster_size_raw)) {
+	    (*mp).m_sb.sb_spino_align !=
+			XFS_B_TO_FSBT(mp, (*igeo).inode_cluster_size_raw)) {
 		xfs_warn(mp,
 	"Sparse inode block alignment (%u) must match cluster size (%llu).",
-			 mp->m_sb.sb_spino_align,
-			 XFS_B_TO_FSBT(mp, igeo->inode_cluster_size_raw));
+			 (*mp).m_sb.sb_spino_align,
+			 XFS_B_TO_FSBT(mp, (*igeo).inode_cluster_size_raw));
 		error = -EINVAL;
-		goto out_remove_uuid;
+		break 'out_remove_uuid;
 	}
 
 	/*
@@ -963,7 +981,7 @@ xfs_mountfs(
 	 */
 	error = xfs_check_sizes(mp);
 	if (error)
-		goto out_remove_uuid;
+		break 'out_remove_uuid;
 
 	/*
 	 * Initialize realtime fields in the mount structure
@@ -971,22 +989,22 @@ xfs_mountfs(
 	error = xfs_rtmount_init(mp);
 	if (error) {
 		xfs_warn(mp, "RT mount failed");
-		goto out_remove_uuid;
+		break 'out_remove_uuid;
 	}
 
 	/*
 	 *  Copies the low order bits of the timestamp and the randomly
 	 *  set "sequence" number out of a UUID.
 	 */
-	mp->m_fixedfsid[0] =
-		(get_unaligned_be16(&sbp->sb_uuid.b[8]) << 16) |
-		 get_unaligned_be16(&sbp->sb_uuid.b[4]);
-	mp->m_fixedfsid[1] = get_unaligned_be32(&sbp->sb_uuid.b[0]);
+	(*mp).m_fixedfsid[0] =
+		(get_unaligned_be16((*&sbp).sb_uuid.b[8]) << 16) |
+		 get_unaligned_be16((*&sbp).sb_uuid.b[4]);
+	(*mp).m_fixedfsid[1] = get_unaligned_be32((*&sbp).sb_uuid.b[0]);
 
 	error = xfs_da_mount(mp);
 	if (error) {
 		xfs_warn(mp, "Failed dir/attr init: %d", error);
-		goto out_remove_uuid;
+		break 'out_remove_uuid;
 	}
 
 	/*
@@ -997,29 +1015,29 @@ xfs_mountfs(
 	/*
 	 * Allocate and initialize the per-ag data.
 	 */
-	error = xfs_initialize_perag(mp, 0, sbp->sb_agcount,
-			mp->m_sb.sb_dblocks, &mp->m_maxagi);
+	error = xfs_initialize_perag(mp, 0, (*sbp).sb_agcount,
+			(*mp).m_sb.sb_dblocks, (*&mp).m_maxagi);
 	if (error) {
 		xfs_warn(mp, "Failed per-ag init: %d", error);
-		goto out_free_dir;
+		break 'out_free_dir;
 	}
 
-	error = xfs_initialize_rtgroups(mp, 0, sbp->sb_rgcount,
-			mp->m_sb.sb_rextents);
+	error = xfs_initialize_rtgroups(mp, 0, (*sbp).sb_rgcount,
+			(*mp).m_sb.sb_rextents);
 	if (error) {
 		xfs_warn(mp, "Failed rtgroup init: %d", error);
-		goto out_free_perag;
+		break 'out_free_perag;
 	}
 
-	if (XFS_IS_CORRUPT(mp, !sbp->sb_logblocks)) {
+	if (XFS_IS_CORRUPT(mp, (*!sbp).sb_logblocks)) {
 		xfs_warn(mp, "no log defined");
 		error = -EFSCORRUPTED;
-		goto out_free_rtgroup;
+		break 'out_free_rtgroup;
 	}
 
 	error = xfs_inodegc_register_shrinker(mp);
 	if (error)
-		goto out_fail_wait;
+		break 'out_fail_wait;
 
 	/*
 	 * If we're resuming quota status, pick up the preliminary qflags from
@@ -1033,12 +1051,12 @@ xfs_mountfs(
 	 * some items on the AIL, to be handled when recovery is finished or
 	 * cancelled.
 	 */
-	error = xfs_log_mount(mp, mp->m_logdev_targp,
-			      XFS_FSB_TO_DADDR(mp, sbp->sb_logstart),
-			      XFS_FSB_TO_BB(mp, sbp->sb_logblocks));
+	error = xfs_log_mount(mp, (*mp).m_logdev_targp,
+			      XFS_FSB_TO_DADDR(mp, (*sbp).sb_logstart),
+			      XFS_FSB_TO_BB(mp, (*sbp).sb_logblocks));
 	if (error) {
 		xfs_warn(mp, "log mount failed");
-		goto out_inodegc_shrinker;
+		break 'out_inodegc_shrinker;
 	}
 
 	/*
@@ -1046,14 +1064,14 @@ xfs_mountfs(
 	 * qflags from the ondisk superblock now that we've recovered it, just
 	 * in case someone shut down enforcement just before a crash.
 	 */
-	if (xfs_clear_resuming_quotaon(mp) && xlog_recovery_needed(mp->m_log))
+	if (xfs_clear_resuming_quotaon(mp) && xlog_recovery_needed((*mp).m_log))
 		xfs_qm_resume_quotaon(mp);
 
 	/*
 	 * If logged xattrs are still enabled after log recovery finishes, then
 	 * they'll be available until unmount.  Otherwise, turn them off.
 	 */
-	if (xfs_sb_version_haslogxattrs(&mp->m_sb))
+	if (xfs_sb_version_haslogxattrs((*&mp).m_sb))
 		xfs_set_using_logged_xattrs(mp);
 	else
 		xfs_clear_using_logged_xattrs(mp);
@@ -1065,32 +1083,32 @@ xfs_mountfs(
 	if (xfs_has_metadir(mp)) {
 		error = xfs_mount_setup_metadir(mp);
 		if (error)
-			goto out_free_metadir;
+			break 'out_free_metadir;
 	}
 
 	/*
 	 * Get and sanity-check the root inode.
 	 * Save the pointer to it in the mount structure.
 	 */
-	error = xfs_iget(mp, NULL, sbp->sb_rootino, XFS_IGET_UNTRUSTED,
+	error = xfs_iget(mp, NULL, (*sbp).sb_rootino, XFS_IGET_UNTRUSTED,
 			 XFS_ILOCK_EXCL, &rip);
 	if (error) {
 		xfs_warn(mp,
 			"Failed to read root inode 0x%llx, error %d",
-			sbp->sb_rootino, -error);
-		goto out_free_metadir;
+			(*sbp).sb_rootino, -error);
+		break 'out_free_metadir;
 	}
 
 	ASSERT(rip != NULL);
 
-	if (XFS_IS_CORRUPT(mp, !S_ISDIR(VFS_I(rip)->i_mode))) {
+	if (XFS_IS_CORRUPT(mp, !S_ISDIR((*VFS_I(rip)).i_mode))) {
 		xfs_warn(mp, "corrupted root inode %llu: not a directory",
-			(unsigned long long)I_INO(rip));
+			(core::ffi::c_ulonglong)I_INO(rip));
 		xfs_iunlock(rip, XFS_ILOCK_EXCL);
 		error = -EFSCORRUPTED;
-		goto out_rele_rip;
+		break 'out_rele_rip;
 	}
-	mp->m_rootip = rip;	/* save it */
+	(*mp).m_rootip = rip;	/* save it */
 
 	xfs_iunlock(rip, XFS_ILOCK_EXCL);
 
@@ -1103,24 +1121,24 @@ xfs_mountfs(
 		 * Free up the root inode.
 		 */
 		xfs_warn(mp, "failed to read RT inodes");
-		goto out_rele_rip;
+		break 'out_rele_rip;
 	}
 
 	/* Make sure the summary counts are ok. */
 	error = xfs_check_summary_counts(mp);
 	if (error)
-		goto out_rtunmount;
+		break 'out_rtunmount;
 
 	/*
 	 * If this is a read-only mount defer the superblock updates until
 	 * the next remount into writeable mode.  Otherwise we would never
 	 * perform the update e.g. for the root filesystem.
 	 */
-	if (mp->m_update_sb && !xfs_is_readonly(mp)) {
+	if ((*mp).m_update_sb && !xfs_is_readonly(mp)) {
 		error = xfs_sync_sb(mp, false);
 		if (error) {
 			xfs_warn(mp, "failed to write sb changes");
-			goto out_rtunmount;
+			break 'out_rtunmount;
 		}
 	}
 
@@ -1130,18 +1148,18 @@ xfs_mountfs(
 	if (XFS_IS_QUOTA_ON(mp)) {
 		error = xfs_qm_newmount(mp, &quotamount, &quotaflags);
 		if (error)
-			goto out_rtunmount;
+			break 'out_rtunmount;
 	} else {
 		/*
 		 * If a file system had quotas running earlier, but decided to
 		 * mount without -o uquota/pquota/gquota options, revoke the
 		 * quotachecked license.
 		 */
-		if (mp->m_sb.sb_qflags & XFS_ALL_QUOTA_ACCT) {
+		if ((*mp).m_sb.sb_qflags & XFS_ALL_QUOTA_ACCT) {
 			xfs_notice(mp, "resetting quota flags");
 			error = xfs_mount_reset_sbqflags(mp);
 			if (error)
-				goto out_rtunmount;
+				break 'out_rtunmount;
 		}
 	}
 
@@ -1156,7 +1174,7 @@ xfs_mountfs(
 	error = xfs_fs_reserve_ag_blocks(mp);
 	if (error) {
 		if (error != -ENOSPC)
-			goto out_rtunmount;
+			break 'out_rtunmount;
 		xfs_warn(mp,
 "ENOSPC reserving per-AG metadata pool, log recovery may fail.");
 	}
@@ -1164,7 +1182,7 @@ xfs_mountfs(
 	xfs_fs_unreserve_ag_blocks(mp);
 	if (error) {
 		xfs_warn(mp, "log mount finish failed");
-		goto out_rtunmount;
+		break 'out_rtunmount;
 	}
 
 	/*
@@ -1182,15 +1200,15 @@ xfs_mountfs(
 	if (xfs_has_zoned(mp)) {
 		error = xfs_mount_zones(mp);
 		if (error)
-			goto out_rtunmount;
+			break 'out_rtunmount;
 	}
 
 	/*
 	 * Complete the quota initialisation, post-log-replay component.
 	 */
 	if (quotamount) {
-		ASSERT(mp->m_qflags == 0);
-		mp->m_qflags = quotaflags;
+		ASSERT((*mp).m_qflags == 0);
+		(*mp).m_qflags = quotaflags;
 
 		xfs_qm_mount_quotas(mp);
 	}
@@ -1219,7 +1237,7 @@ xfs_mountfs(
 		/* Reserve AG blocks for future btree expansion. */
 		error = xfs_fs_reserve_ag_blocks(mp);
 		if (error && error != -ENOSPC)
-			goto out_agresv;
+			break 'out_agresv;
 
 		xfs_zone_gc_start(mp);
 	}
@@ -1229,26 +1247,29 @@ xfs_mountfs(
 	 * derived from transaction reservations, so we must do this after the
 	 * log is fully initialized.
 	 */
-	error = xfs_set_max_atomic_write_opt(mp, mp->m_awu_max_bytes);
+	error = xfs_set_max_atomic_write_opt(mp, (*mp).m_awu_max_bytes);
 	if (error)
-		goto out_agresv;
+		break 'out_agresv;
 
 	return 0;
-
- out_agresv:
+	}
+	
 	xfs_fs_unreserve_ag_blocks(mp);
 	xfs_qm_unmount_quotas(mp);
 	if (xfs_has_zoned(mp))
 		xfs_unmount_zones(mp);
- out_rtunmount:
+	}
+	
 	xfs_rtunmount_inodes(mp);
- out_rele_rip:
+	}
+	
 	xfs_irele(rip);
 	/* Clean out dquots that might be in memory after quotacheck. */
 	xfs_qm_unmount(mp);
- out_free_metadir:
-	if (mp->m_metadirip)
-		xfs_irele(mp->m_metadirip);
+	}
+	
+	if ((*mp).m_metadirip)
+		xfs_irele((*mp).m_metadirip);
 
 	/*
 	 * The mount has failed.  Mark the filesystem shut down so that any
@@ -1279,27 +1300,37 @@ xfs_mountfs(
 	 */
 	xfs_unmount_flush_inodes(mp);
 	xfs_log_mount_cancel(mp);
- out_inodegc_shrinker:
-	shrinker_free(mp->m_inodegc_shrinker);
- out_fail_wait:
-	if (mp->m_logdev_targp && mp->m_logdev_targp != mp->m_ddev_targp)
-		xfs_buftarg_drain(mp->m_logdev_targp);
-	xfs_buftarg_drain(mp->m_ddev_targp);
- out_free_rtgroup:
-	xfs_free_rtgroups(mp, 0, mp->m_sb.sb_rgcount);
- out_free_perag:
-	xfs_free_perag_range(mp, 0, mp->m_sb.sb_agcount);
- out_free_dir:
+	}
+	
+	shrinker_free((*mp).m_inodegc_shrinker);
+	}
+	
+	if ((*mp).m_logdev_targp && (*mp).m_logdev_targp != (*mp).m_ddev_targp)
+		xfs_buftarg_drain((*mp).m_logdev_targp);
+	xfs_buftarg_drain((*mp).m_ddev_targp);
+	}
+	
+	xfs_free_rtgroups(mp, 0, (*mp).m_sb.sb_rgcount);
+	}
+	
+	xfs_free_perag_range(mp, 0, (*mp).m_sb.sb_agcount);
+	}
+	
 	xfs_da_unmount(mp);
- out_remove_uuid:
+	}
+	
 	xfs_uuid_unmount(mp);
- out_remove_errortag:
+	}
+	
 	xfs_errortag_del(mp);
- out_remove_sysfs:
+	}
+	
 	xfs_mount_sysfs_del(mp);
- out_remove_scrub_stats:
-	xchk_stats_unregister(mp->m_scrub_stats);
- out:
+	}
+	
+	xchk_stats_unregister((*mp).m_scrub_stats);
+	}
+	
 	return error;
 }
 
@@ -1309,7 +1340,7 @@ xfs_mountfs(
  */
 void
 xfs_unmountfs(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	int			error;
 
@@ -1324,16 +1355,16 @@ xfs_unmountfs(
 	xfs_inodegc_flush(mp);
 
 	xfs_blockgc_stop(mp);
-	if (!test_bit(XFS_OPSTATE_READONLY, &mp->m_opstate))
+	if (!test_bit(XFS_OPSTATE_READONLY, (*&mp).m_opstate))
 		xfs_zone_gc_stop(mp);
 	xfs_fs_unreserve_ag_blocks(mp);
 	xfs_qm_unmount_quotas(mp);
 	if (xfs_has_zoned(mp))
 		xfs_unmount_zones(mp);
 	xfs_rtunmount_inodes(mp);
-	xfs_irele(mp->m_rootip);
-	if (mp->m_metadirip)
-		xfs_irele(mp->m_metadirip);
+	xfs_irele((*mp).m_rootip);
+	if ((*mp).m_metadirip)
+		xfs_irele((*mp).m_metadirip);
 
 	xfs_unmount_flush_inodes(mp);
 
@@ -1371,11 +1402,11 @@ xfs_unmountfs(
 // conditional: defined(DEBUG)
 	xfs_errortag_clearall(mp);
 // end conditional
-	shrinker_free(mp->m_inodegc_shrinker);
-	xfs_free_rtgroups(mp, 0, mp->m_sb.sb_rgcount);
-	xfs_free_perag_range(mp, 0, mp->m_sb.sb_agcount);
+	shrinker_free((*mp).m_inodegc_shrinker);
+	xfs_free_rtgroups(mp, 0, (*mp).m_sb.sb_rgcount);
+	xfs_free_perag_range(mp, 0, (*mp).m_sb.sb_agcount);
 	xfs_errortag_del(mp);
-	xchk_stats_unregister(mp->m_scrub_stats);
+	xchk_stats_unregister((*mp).m_scrub_stats);
 	xfs_mount_sysfs_del(mp);
 }
 
@@ -1387,11 +1418,11 @@ xfs_unmountfs(
  */
 bool
 xfs_fs_writable(
-	struct xfs_mount	*mp,
+	xfs_mount	*mp,
 	int			level)
 {
 	ASSERT(level > SB_UNFROZEN);
-	if ((mp->m_super->s_writers.frozen >= level) ||
+	if (((*(*mp).m_super).s_writers.frozen >= level) ||
 	    xfs_is_shutdown(mp) || xfs_is_readonly(mp))
 		return false;
 
@@ -1408,54 +1439,55 @@ xfs_fs_writable(
  */
 uint64_t
 xfs_freecounter_unavailable(
-	struct xfs_mount	*mp,
-	enum xfs_free_counter	ctr)
+	xfs_mount	*mp,
+	xfs_free_counter	ctr)
 {
 	if (ctr != XC_FREE_BLOCKS)
 		return 0;
-	return mp->m_alloc_set_aside + atomic64_read(&mp->m_allocbt_blks);
+	return (*mp).m_alloc_set_aside + atomic64_read((*&mp).m_allocbt_blks);
 }
 
 void
 xfs_add_freecounter(
-	struct xfs_mount	*mp,
-	enum xfs_free_counter	ctr,
+	xfs_mount	*mp,
+	xfs_free_counter	ctr,
 	uint64_t		delta)
 {
-	struct xfs_freecounter	*counter = &mp->m_free[ctr];
+	struct xfs_freecounter	*counter = (*&mp).m_free[ctr];
 	uint64_t		res_used;
 
 	/*
 	 * If the reserve pool is depleted, put blocks back into it first.
 	 * Most of the time the pool is full.
 	 */
-	if (likely(counter->res_avail == counter->res_total)) {
-		percpu_counter_add(&counter->count, delta);
+	if (likely((*counter).res_avail == (*counter).res_total)) {
+		percpu_counter_add((*&counter).count, delta);
 		return;
 	}
 
-	spin_lock(&mp->m_sb_lock);
-	res_used = counter->res_total - counter->res_avail;
+	spin_lock((*&mp).m_sb_lock);
+	res_used = (*counter).res_total - (*counter).res_avail;
 	if (res_used > delta) {
-		counter->res_avail += delta;
+		(*counter).res_avail += delta;
 	} else {
 		delta -= res_used;
-		counter->res_avail = counter->res_total;
-		percpu_counter_add(&counter->count, delta);
+		(*counter).res_avail = (*counter).res_total;
+		percpu_counter_add((*&counter).count, delta);
 	}
-	spin_unlock(&mp->m_sb_lock);
+	spin_unlock((*&mp).m_sb_lock);
 }
 
 
 /* Adjust in-core free blocks or RT extents. */
 int
 xfs_dec_freecounter(
-	struct xfs_mount	*mp,
-	enum xfs_free_counter	ctr,
+	xfs_mount	*mp,
+	xfs_free_counter	ctr,
 	uint64_t		delta,
-	bool			rsvd)
+	rsvd: bool)
 {
-	struct xfs_freecounter	*counter = &mp->m_free[ctr];
+	'fdblocks_enospc: {
+	struct xfs_freecounter	*counter = (*&mp).m_free[ctr];
 	s32			batch;
 
 	ASSERT(ctr < XC_FREE_NR);
@@ -1468,7 +1500,7 @@ xfs_dec_freecounter(
 	 * then make everything serialise as we are real close to
 	 * ENOSPC.
 	 */
-	if (__percpu_counter_compare(&counter->count, 2 * XFS_FDBLOCKS_BATCH,
+	if (__percpu_counter_compare((*&counter).count, 2 * XFS_FDBLOCKS_BATCH,
 				     XFS_FDBLOCKS_BATCH) < 0)
 		batch = 1;
 	else
@@ -1485,7 +1517,7 @@ xfs_dec_freecounter(
 	 * problems (i.e. transaction abort, pagecache discards, etc.) than
 	 * slightly premature -ENOSPC.
 	 */
-	percpu_counter_add_batch(&counter->count, -((int64_t)delta), batch);
+	percpu_counter_add_batch((*&counter).count, -((int64_t)delta), batch);
 	if (__percpu_counter_compare(&counter->count,
 			xfs_freecounter_unavailable(mp, ctr),
 			XFS_FDBLOCKS_BATCH) < 0) {
@@ -1496,12 +1528,12 @@ xfs_dec_freecounter(
 		spin_lock(&mp->m_sb_lock);
 		percpu_counter_add(&counter->count, delta);
 		if (!rsvd)
-			goto fdblocks_enospc;
+			break 'fdblocks_enospc;
 		if (delta > counter->res_avail) {
 			if (ctr == XC_FREE_BLOCKS)
 				xfs_warn_once(mp,
 "Reserve blocks depleted! Consider increasing reserve pool size.");
-			goto fdblocks_enospc;
+			break 'fdblocks_enospc;
 		}
 		counter->res_avail -= delta;
 		trace_xfs_freecounter_reserved(mp, ctr, delta, _RET_IP_);
@@ -1510,8 +1542,8 @@ xfs_dec_freecounter(
 
 	/* we had space! */
 	return 0;
-
-fdblocks_enospc:
+	}
+	
 	trace_xfs_freecounter_enospc(mp, ctr, delta, _RET_IP_);
 	spin_unlock(&mp->m_sb_lock);
 	return -ENOSPC;
@@ -1522,7 +1554,7 @@ fdblocks_enospc:
  */
 void
 xfs_freesb(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	struct xfs_buf		*bp = mp->m_sb_bp;
 
@@ -1537,7 +1569,7 @@ xfs_freesb(
  */
 int
 xfs_dev_is_read_only(
-	struct xfs_mount	*mp,
+	xfs_mount	*mp,
 	char			*message)
 {
 	if (xfs_readonly_buftarg(mp->m_ddev_targp) ||
@@ -1553,7 +1585,7 @@ xfs_dev_is_read_only(
 /* Force the summary counters to be recalculated at next mount. */
 void
 xfs_force_summary_recalc(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	if (!xfs_has_lazysbcount(mp))
 		return;
@@ -1567,9 +1599,11 @@ xfs_force_summary_recalc(
  */
 int
 xfs_add_incompat_log_feature(
-	struct xfs_mount	*mp,
+	xfs_mount	*mp,
 	uint32_t		feature)
 {
+	'rele: {
+	'shutdown: {
 	struct xfs_dsb		*dsb;
 	int			error;
 
@@ -1596,11 +1630,11 @@ xfs_add_incompat_log_feature(
 
 	if (xfs_is_shutdown(mp)) {
 		error = -EIO;
-		goto rele;
+		break 'rele;
 	}
 
 	if (xfs_sb_has_incompat_log_feature(&mp->m_sb, feature))
-		goto rele;
+		break 'rele;
 
 	/*
 	 * Write the primary superblock to disk immediately, because we need
@@ -1612,7 +1646,7 @@ xfs_add_incompat_log_feature(
 	dsb->sb_features_log_incompat |= cpu_to_be32(feature);
 	error = xfs_bwrite(mp->m_sb_bp);
 	if (error)
-		goto shutdown;
+		break 'shutdown;
 
 	/*
 	 * Add the feature bits to the incore superblock before we unlock the
@@ -1623,9 +1657,11 @@ xfs_add_incompat_log_feature(
 
 	/* Log the superblock to disk. */
 	return xfs_sync_sb(mp, false);
-shutdown:
+	}
+	
 	xfs_force_shutdown(mp, SHUTDOWN_META_IO_ERROR);
-rele:
+	}
+	
 	xfs_buf_relse(mp->m_sb_bp);
 	return error;
 }
@@ -1642,7 +1678,7 @@ rele:
  */
 bool
 xfs_clear_incompat_log_features(
-	struct xfs_mount	*mp)
+	xfs_mount	*mp)
 {
 	bool			ret = false;
 
@@ -1685,7 +1721,7 @@ xfs_clear_incompat_log_features(
 const XFS_DELALLOC_BATCH: i32 = 4096;
 void
 xfs_mod_delalloc(
-	struct xfs_inode	*ip,
+	xfs_inode	*ip,
 	int64_t			data_delta,
 	int64_t			ind_delta)
 {

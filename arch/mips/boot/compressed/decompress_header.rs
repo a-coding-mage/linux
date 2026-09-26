@@ -7,28 +7,28 @@ unsafe extern "C" {
 }
 
 /* debug interfaces  */
-#[cfg(feature = "CONFIG_DEBUG_ZBOOT")]
+#[cfg(CONFIG_DEBUG_ZBOOT)]
 unsafe extern "C" {
     pub fn putc(c: core::ffi::c_char);
     pub fn puts(s: *const core::ffi::c_char);
     pub fn puthex(val: u64);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_ZBOOT"))]
+#[cfg(not(CONFIG_DEBUG_ZBOOT))]
 macro_rules! putc {
     ($s:expr) => {{
         let _ = &$s;
     }};
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_ZBOOT"))]
+#[cfg(not(CONFIG_DEBUG_ZBOOT))]
 macro_rules! puts {
     ($s:expr) => {{
         let _ = &$s;
     }};
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_ZBOOT"))]
+#[cfg(not(CONFIG_DEBUG_ZBOOT))]
 macro_rules! puthex {
     ($val:expr) => {{
         let _ = &$val;

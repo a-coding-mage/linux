@@ -1650,7 +1650,7 @@ unsafe fn nau8825_fll_apply(nau8825: *mut nau8825, fll_param: *mut nau8825_fll) 
         regmap_write((*nau8825).regmap, NAU8825_REG_FLL2_UPPER, (((*fll_param).fll_frac >> 16) & 0xff) as c_uint);
     }
     regmap_update_bits((*nau8825).regmap, NAU8825_REG_FLL3, NAU8825_FLL_INTEGER_MASK, (*fll_param).fll_int as c_uint);
-    regmap_update_bits((*nau8825).regmap, NAU8825_REG_FLL4, NAU8825_FLL_REF_DIV_MASK, (*fll_param).clk_ref_div as c_uint << NAU8825_FLL_REF_DIV_SFT);
+    regmap_update_bits((*nau8825).regmap, NAU8825_REG_FLL4, NAU8825_FLL_REF_DIV_MASK, ((*fll_param).clk_ref_div as c_uint) << NAU8825_FLL_REF_DIV_SFT);
     regmap_update_bits((*nau8825).regmap, NAU8825_REG_FLL5, NAU8825_FLL_CLK_SW_MASK, NAU8825_FLL_CLK_SW_REF);
     regmap_update_bits((*nau8825).regmap, NAU8825_REG_FLL6, NAU8825_DCO_EN, 0);
     if (*fll_param).fll_frac != 0 {

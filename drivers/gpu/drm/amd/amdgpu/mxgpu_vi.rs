@@ -276,7 +276,7 @@ static xgpu_tonga_golden_common_all: &[u32] = &[
 
 unsafe fn xgpu_vi_init_golden_registers(amdgpu_device *adev)
 {
-	match adev->asic_type {
+	match (*adev).asic_type {
 	case CHIP_FIJI =>
 		amdgpu_device_program_register_sequence(adev,
 							xgpu_fiji_mgcg_cgcg_init,
@@ -306,7 +306,7 @@ unsafe fn xgpu_vi_init_golden_registers(amdgpu_device *adev)
 								xgpu_tonga_golden_common_all));
 		return;
 	_ =>
-		dev_err(adev->dev, "Doesn't support chip type %d\n", adev->asic_type);
+		dev_err((*adev).dev, "Doesn't support chip type %d\n", (*adev).asic_type);
 		return;
 	}
 }
@@ -314,7 +314,7 @@ unsafe fn xgpu_vi_init_golden_registers(amdgpu_device *adev)
 /*
  * Mailbox communication between GPU hypervisor and VFs
  */
-static unsafe fn xgpu_vi_mailbox_send_ack(amdgpu_device *adev)
+unsafe fn xgpu_vi_mailbox_send_ack(amdgpu_device *adev)
 {
 	u32 reg;
 	int timeout = VI_MAILBOX_TIMEDOUT;
@@ -338,7 +338,7 @@ static unsafe fn xgpu_vi_mailbox_send_ack(amdgpu_device *adev)
 	}
 }
 
-static unsafe fn xgpu_vi_mailbox_set_valid(amdgpu_device *adev, bool val)
+unsafe fn xgpu_vi_mailbox_set_valid(amdgpu_device *adev, val: bool)
 {
 	u32 reg;
 
@@ -348,7 +348,7 @@ static unsafe fn xgpu_vi_mailbox_set_valid(amdgpu_device *adev, bool val)
 	WREG32_NO_KIQ(mmMAILBOX_CONTROL, reg);
 }
 
-static unsafe fn xgpu_vi_mailbox_trans_msg(amdgpu_device *adev,
+unsafe fn xgpu_vi_mailbox_trans_msg(amdgpu_device *adev,
 				      idh_request req)
 {
 	u32 reg;
@@ -465,7 +465,7 @@ unsafe fn xgpu_vi_wait_reset_cmpl(amdgpu_device *adev) -> i32
 }
 
 unsafe fn xgpu_vi_request_full_gpu_access(amdgpu_device *adev,
-					   bool init) -> i32
+					   init: bool) -> i32
 {
 	idh_request req;
 
@@ -474,7 +474,7 @@ unsafe fn xgpu_vi_request_full_gpu_access(amdgpu_device *adev,
 }
 
 unsafe fn xgpu_vi_release_full_gpu_access(amdgpu_device *adev,
-					   bool init) -> i32
+					   init: bool) -> i32
 {
 	idh_request req;
 	int r = 0;
@@ -508,7 +508,7 @@ unsafe fn xgpu_vi_set_mailbox_ack_irq(amdgpu_device *adev,
 	return 0;
 }
 
-static unsafe fn xgpu_vi_mailbox_flr_work(work_struct *work)
+unsafe fn xgpu_vi_mailbox_flr_work(work_struct *work)
 {
 	amdgpu_virt *virt = container_of(work, amdgpu_virt, flr_work);
 	amdgpu_device *adev = container_of(virt, amdgpu_device, virt);
@@ -554,8 +554,8 @@ unsafe fn xgpu_vi_mailbox_rcv_irq(amdgpu_device *adev,
 
 		/* only handle FLR_NOTIFY now */
 		if (!r)
-			WARN_ONCE(!amdgpu_reset_domain_schedule(adev->reset_domain,
-								&adev->virt.flr_work),
+			WARN_ONCE(!amdgpu_reset_domain_schedule((*adev).reset_domain,
+								(*&adev).virt.flr_work),
 				  "Failed to queue work! at %s",
 				  __func__);
 	}
@@ -564,34 +564,34 @@ unsafe fn xgpu_vi_mailbox_rcv_irq(amdgpu_device *adev,
 }
 
 static static xgpu_vi_mailbox_ack_irq_funcs: amdgpu_irq_src_funcs = amdgpu_irq_src_funcs {
-	.set = xgpu_vi_set_mailbox_ack_irq,
-	.process = xgpu_vi_mailbox_ack_irq,
+	set: xgpu_vi_set_mailbox_ack_irq,
+	process: xgpu_vi_mailbox_ack_irq,
 };
 
 static static xgpu_vi_mailbox_rcv_irq_funcs: amdgpu_irq_src_funcs = amdgpu_irq_src_funcs {
-	.set = xgpu_vi_set_mailbox_rcv_irq,
-	.process = xgpu_vi_mailbox_rcv_irq,
+	set: xgpu_vi_set_mailbox_rcv_irq,
+	process: xgpu_vi_mailbox_rcv_irq,
 };
 
 unsafe fn xgpu_vi_mailbox_set_irq_funcs(amdgpu_device *adev)
 {
-	adev->virt.ack_irq.num_types = 1;
-	adev->virt.ack_irq.funcs = &xgpu_vi_mailbox_ack_irq_funcs;
-	adev->virt.rcv_irq.num_types = 1;
-	adev->virt.rcv_irq.funcs = &xgpu_vi_mailbox_rcv_irq_funcs;
+	(*adev).virt.ack_irq.num_types = 1;
+	(*adev).virt.ack_irq.funcs = &xgpu_vi_mailbox_ack_irq_funcs;
+	(*adev).virt.rcv_irq.num_types = 1;
+	(*adev).virt.rcv_irq.funcs = &xgpu_vi_mailbox_rcv_irq_funcs;
 }
 
 unsafe fn xgpu_vi_mailbox_add_irq_id(amdgpu_device *adev) -> i32
 {
 	int r;
 
-	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 135, &adev->virt.rcv_irq);
+	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 135, (*&adev).virt.rcv_irq);
 	if (r)
 		return r;
 
-	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 138, &adev->virt.ack_irq);
+	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 138, (*&adev).virt.ack_irq);
 	if (r) {
-		amdgpu_irq_put(adev, &adev->virt.rcv_irq, 0);
+		amdgpu_irq_put(adev, (*&adev).virt.rcv_irq, 0);
 		return r;
 	}
 
@@ -602,32 +602,32 @@ unsafe fn xgpu_vi_mailbox_get_irq(amdgpu_device *adev) -> i32
 {
 	int r;
 
-	r = amdgpu_irq_get(adev, &adev->virt.rcv_irq, 0);
+	r = amdgpu_irq_get(adev, (*&adev).virt.rcv_irq, 0);
 	if (r)
 		return r;
-	r = amdgpu_irq_get(adev, &adev->virt.ack_irq, 0);
+	r = amdgpu_irq_get(adev, (*&adev).virt.ack_irq, 0);
 	if (r) {
-		amdgpu_irq_put(adev, &adev->virt.rcv_irq, 0);
+		amdgpu_irq_put(adev, (*&adev).virt.rcv_irq, 0);
 		return r;
 	}
 
-	INIT_WORK(&adev->virt.flr_work, xgpu_vi_mailbox_flr_work);
+	INIT_WORK((*&adev).virt.flr_work, xgpu_vi_mailbox_flr_work);
 
 	return 0;
 }
 
 unsafe fn xgpu_vi_mailbox_put_irq(amdgpu_device *adev)
 {
-	amdgpu_irq_put(adev, &adev->virt.ack_irq, 0);
-	amdgpu_irq_put(adev, &adev->virt.rcv_irq, 0);
+	amdgpu_irq_put(adev, (*&adev).virt.ack_irq, 0);
+	amdgpu_irq_put(adev, (*&adev).virt.rcv_irq, 0);
 }
 
 static xgpu_vi_virt_ops: amdgpu_virt_ops = amdgpu_virt_ops {
-	.req_full_gpu		= xgpu_vi_request_full_gpu_access,
-	.rel_full_gpu		= xgpu_vi_release_full_gpu_access,
-	.reset_gpu		= xgpu_vi_request_reset,
-	.wait_reset             = xgpu_vi_wait_reset_cmpl,
-	.trans_msg		= core::ptr::null_mut(), /* Does not need to trans VF errors to host. */
+	req_full_gpu: xgpu_vi_request_full_gpu_access,
+	rel_full_gpu: xgpu_vi_release_full_gpu_access,
+	reset_gpu: xgpu_vi_request_reset,
+	wait_reset: xgpu_vi_wait_reset_cmpl,
+	trans_msg: core::ptr::null_mut(), /* Does not need to trans VF errors to host. */
 };
 
 

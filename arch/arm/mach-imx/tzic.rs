@@ -33,7 +33,7 @@ static mut domain: *mut irq_domain = core::ptr::null_mut();
 
 const TZIC_NUM_IRQS: u32 = 128;
 
-#[cfg(feature = "CONFIG_FIQ")]
+#[cfg(CONFIG_FIQ)]
 unsafe fn tzic_set_irq_fiq(hwirq: u32, irq_type: u32) -> i32 {
     let index = hwirq >> 5;
     if index >= 4 { return -22; }
@@ -46,14 +46,14 @@ unsafe fn tzic_set_irq_fiq(hwirq: u32, irq_type: u32) -> i32 {
 
 // Without CONFIG_FIQ, tzic_set_irq_fiq is NULL.
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn tzic_irq_suspend(d: *mut irq_data) {
     let gc = irq_data_get_irq_chip_data(d);
     let idx = (*d).hwirq >> 5;
     imx_writel((*gc).wake_active, tzic_base.add(TZIC_WAKEUP0(idx as usize)));
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn tzic_irq_resume(d: *mut irq_data) {
     let idx = (*d).hwirq >> 5;
     imx_writel(imx_readl(tzic_base.add(TZIC_ENSET0(idx as usize))),
@@ -64,12 +64,12 @@ unsafe fn tzic_irq_resume(d: *mut irq_data) {
 
 #[repr(C)]
 struct mxc_extra_irq {
-    #[cfg(feature = "CONFIG_FIQ")]
+    #[cfg(CONFIG_FIQ)]
     set_irq_fiq: Option<unsafe fn(u32, u32) -> i32>,
 }
 
 static mut tzic_extra_irq: mxc_extra_irq = mxc_extra_irq {
-    #[cfg(feature = "CONFIG_FIQ")]
+    #[cfg(CONFIG_FIQ)]
     set_irq_fiq: Some(tzic_set_irq_fiq),
 };
 
@@ -125,7 +125,7 @@ unsafe fn tzic_init_dt(np: *mut device_node, _p: *mut device_node) -> i32 {
     WARN_ON(domain.is_null());
     for i in 0..4 { tzic_init_gc(i, irq_base as u32); irq_base += 32; }
     set_handle_irq(tzic_handle_irq);
-    #[cfg(feature = "CONFIG_FIQ")]
+    #[cfg(CONFIG_FIQ)]
     init_FIQ(FIQ_START);
     pr_info("TrustZone Interrupt Controller (TZIC) initialized\0".as_ptr() as *const _);
     0

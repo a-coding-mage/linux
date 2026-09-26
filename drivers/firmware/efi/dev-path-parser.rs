@@ -73,7 +73,7 @@ unsafe fn parse_pci_path(
         return -EINVAL as libc::c_long;
     }
 
-    devfn = PCI_DEVFN((*node).pci.dev, (*node).pci.fn);
+    devfn = PCI_DEVFN((*node).pci.dev, (*node).pci.r#fn);
     *child = device_find_child(parent, &devfn as *const _ as *const libc::c_void, match_pci_dev);
     if (*child).is_null() {
         return -ENODEV as libc::c_long;

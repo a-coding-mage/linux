@@ -78,11 +78,11 @@ pub struct Cs2000Priv {
 type c_int = i32; type c_ulong = usize; type c_char = i8;
 
 extern "C" {
-    fn regmap_update_bits(_: *mut regmap,u32,u32,u32)->c_int; fn regmap_read(_: *mut regmap,u32,*mut u32)->c_int; fn regmap_write(_: *mut regmap,u32,u32)->c_int;
-    fn udelay(_: u32); fn devm_clk_get(_: *mut device,*const c_char)->*mut clk; fn clk_get_rate(_: *mut clk)->c_ulong; fn __clk_get_name(_: *mut clk)->*const c_char;
-    fn devm_kzalloc(_: *mut device, _: usize, _: u32)->*mut Cs2000Priv; fn devm_regmap_init_i2c(_: *mut i2c_client,*const regmap_config)->*mut regmap;
-    fn i2c_set_clientdata(_: *mut i2c_client,*mut Cs2000Priv); fn i2c_get_clientdata(_: *mut i2c_client)->*mut Cs2000Priv; fn dev_get_drvdata(_: *mut device)->*mut Cs2000Priv;
-    fn clk_hw_register(_: *mut device,*mut clk_hw)->c_int; fn clk_hw_unregister(_: *mut clk_hw); fn of_clk_add_hw_provider(_: *mut device_node, _: *const (), _: *mut clk_hw)->c_int; fn of_clk_del_provider(_: *mut device_node);
+    fn regmap_update_bits(_: *mut regmap,_: u32,_: u32,_: u32)->c_int; fn regmap_read(_: *mut regmap,_: u32,_: *mut u32)->c_int; fn regmap_write(_: *mut regmap,_: u32,_: u32)->c_int;
+    fn udelay(_: u32); fn devm_clk_get(_: *mut device,_: *const c_char)->*mut clk; fn clk_get_rate(_: *mut clk)->c_ulong; fn __clk_get_name(_: *mut clk)->*const c_char;
+    fn devm_kzalloc(_: *mut device, _: usize, _: u32)->*mut Cs2000Priv; fn devm_regmap_init_i2c(_: *mut i2c_client,_: *const regmap_config)->*mut regmap;
+    fn i2c_set_clientdata(_: *mut i2c_client,_: *mut Cs2000Priv); fn i2c_get_clientdata(_: *mut i2c_client)->*mut Cs2000Priv; fn dev_get_drvdata(_: *mut device)->*mut Cs2000Priv;
+    fn clk_hw_register(_: *mut device,_: *mut clk_hw)->c_int; fn clk_hw_unregister(_: *mut clk_hw); fn of_clk_add_hw_provider(_: *mut device_node, _: *const (), _: *mut clk_hw)->c_int; fn of_clk_del_provider(_: *mut device_node);
 }
 
 unsafe fn cs2000_rate_to_ratio(rate_in:u32, rate_out:u32, lf:bool)->u32 { (((rate_out as u64) << if lf {12} else {20}) / rate_in as u64) as u32 }

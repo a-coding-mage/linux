@@ -64,22 +64,22 @@ pub unsafe fn init_cache_level(cpu: u32) -> i32 {
 unsafe fn fill_cpumask_siblings(cpu: i32, cpu_map: *mut cpumask_t) {
     let mut cpu1: i32;
 
-    for_each_possible_cpu!(cpu1) {
+    for_each_possible_cpu!(cpu1, {
         if cpus_are_siblings(cpu, cpu1) {
             cpumask_set_cpu(cpu1, cpu_map);
         }
-    }
+    });
 }
 
 unsafe fn fill_cpumask_cluster(cpu: i32, cpu_map: *mut cpumask_t) {
     let mut cpu1: i32;
     let cluster = cpu_cluster(&cpu_data[cpu as usize]);
 
-    for_each_possible_cpu!(cpu1) {
+    for_each_possible_cpu!(cpu1, {
         if cpu_cluster(&cpu_data[cpu1 as usize]) == cluster {
             cpumask_set_cpu(cpu1, cpu_map);
         }
-    }
+    });
 }
 
 pub unsafe fn populate_cache_leaves(cpu: u32) -> i32 {

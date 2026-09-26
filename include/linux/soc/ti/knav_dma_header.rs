@@ -126,7 +126,7 @@ pub struct knav_dma_desc {
 }
 
 /* CONFIG_KEYSTONE_NAVIGATOR_DMA controls whether these are external APIs or stubs. */
-#[cfg(feature = "CONFIG_KEYSTONE_NAVIGATOR_DMA")]
+#[cfg(CONFIG_KEYSTONE_NAVIGATOR_DMA)]
 extern "C" {
     pub fn knav_dma_open_channel(dev: *mut device, name: *const core::ffi::c_char,
                                  config: *mut knav_dma_cfg) -> *mut core::ffi::c_void;
@@ -135,24 +135,24 @@ extern "C" {
     pub fn knav_dma_device_ready() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_KEYSTONE_NAVIGATOR_DMA"))]
+#[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
 pub unsafe fn knav_dma_open_channel(_dev: *mut device, _name: *const core::ffi::c_char,
                                     _config: *mut knav_dma_cfg) -> *mut core::ffi::c_void {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_KEYSTONE_NAVIGATOR_DMA"))]
+#[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
 pub unsafe fn knav_dma_close_channel(_channel: *mut core::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_KEYSTONE_NAVIGATOR_DMA"))]
+#[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
 pub unsafe fn knav_dma_get_flow(_channel: *mut core::ffi::c_void) -> core::ffi::c_int {
     -22
 }
 
-#[cfg(not(feature = "CONFIG_KEYSTONE_NAVIGATOR_DMA"))]
+#[cfg(not(CONFIG_KEYSTONE_NAVIGATOR_DMA))]
 #[inline]
 pub unsafe fn knav_dma_device_ready() -> bool { false }
 

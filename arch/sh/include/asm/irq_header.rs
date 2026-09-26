@@ -39,34 +39,34 @@ unsafe extern "C" {
 }
 
 // CONFIG_IRQSTACKS is a build-time condition from the C source.
-#[cfg(feature = "CONFIG_IRQSTACKS")]
+#[cfg(CONFIG_IRQSTACKS)]
 unsafe extern "C" {
     pub fn irq_ctx_init(cpu: ::core::ffi::c_int);
     pub fn irq_ctx_exit(cpu: ::core::ffi::c_int);
 }
 
-#[cfg(not(feature = "CONFIG_IRQSTACKS"))]
+#[cfg(not(CONFIG_IRQSTACKS))]
 #[inline]
 pub fn irq_ctx_init(_cpu: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_IRQSTACKS"))]
+#[cfg(not(CONFIG_IRQSTACKS))]
 #[inline]
 pub fn irq_ctx_exit(_cpu: ::core::ffi::c_int) {}
 
 // CONFIG_INTC_BALANCING is a build-time condition from the C source.
-#[cfg(feature = "CONFIG_INTC_BALANCING")]
+#[cfg(CONFIG_INTC_BALANCING)]
 unsafe extern "C" {
     pub fn irq_lookup(irq: ::core::ffi::c_uint) -> ::core::ffi::c_uint;
     pub fn irq_finish(irq: ::core::ffi::c_uint);
 }
 
-#[cfg(not(feature = "CONFIG_INTC_BALANCING"))]
+#[cfg(not(CONFIG_INTC_BALANCING))]
 #[inline]
 pub fn irq_lookup(irq: ::core::ffi::c_uint) -> ::core::ffi::c_uint {
     irq
 }
 
-#[cfg(not(feature = "CONFIG_INTC_BALANCING"))]
+#[cfg(not(CONFIG_INTC_BALANCING))]
 #[inline]
 pub fn irq_finish(_irq: ::core::ffi::c_uint) {}
 

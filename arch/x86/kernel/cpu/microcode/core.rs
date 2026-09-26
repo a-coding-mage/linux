@@ -6,7 +6,7 @@
 
 static mut microcode_ops: *mut microcode_ops = core::ptr::null_mut();
 static mut dis_ucode_ldr: bool = false;
-pub static mut force_minrev: bool = cfg!(feature = "CONFIG_MICROCODE_LATE_FORCE_MINREV");
+pub static mut force_minrev: bool = cfg!(CONFIG_MICROCODE_LATE_FORCE_MINREV);
 
 pub static mut base_rev: u32 = 0;
 pub static mut microcode_rev: [u32; NR_CPUS] = [0; NR_CPUS];
@@ -30,7 +30,7 @@ unsafe fn amd_check_current_patch_level() -> bool {
 
 pub unsafe fn microcode_loader_disabled() -> bool {
     if dis_ucode_ldr { return true; }
-    if (x86_hypervisor_present && !cfg!(feature = "CONFIG_MICROCODE_DBG")) || amd_check_current_patch_level() {
+    if (x86_hypervisor_present && !cfg!(CONFIG_MICROCODE_DBG)) || amd_check_current_patch_level() {
         dis_ucode_ldr = true;
     }
     dis_ucode_ldr
@@ -41,7 +41,7 @@ unsafe fn early_parse_cmdline() {
     let mut p: *mut i8 = cmd_buf.as_mut_ptr();
     if cmdline_find_option(boot_command_line, c"microcode".as_ptr(), cmd_buf.as_mut_ptr(), 64) > 0 {
         while let Some(s) = strsep(&mut p, c",".as_ptr()) {
-            if cfg!(feature = "CONFIG_MICROCODE_DBG") && strstr(s, c"base_rev=".as_ptr()).is_some() {
+            if cfg!(CONFIG_MICROCODE_DBG) && strstr(s, c"base_rev=".as_ptr()).is_some() {
                 strsep(&mut (s as *mut i8), c"=".as_ptr());
                 let _ = kstrtouint(s, 16, &mut base_rev);
             }
@@ -78,7 +78,7 @@ pub unsafe fn load_ucode_ap() {
 }
 
 pub unsafe fn find_microcode_in_initrd(path: *const i8) -> cpio_data {
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     {
         let mut start: usize = 0;
         let size = (boot_params.ext_ramdisk_size as usize) << 32 | boot_params.hdr.ramdisk_size as usize;
@@ -86,7 +86,7 @@ pub unsafe fn find_microcode_in_initrd(path: *const i8) -> cpio_data {
         if initrd_start != 0 { start = initrd_start; }
         return find_cpio_data(path, start as *const core::ffi::c_void, size, core::ptr::null_mut());
     }
-    #[cfg(not(feature = "CONFIG_BLK_DEV_INITRD"))]
+    #[cfg(not(CONFIG_BLK_DEV_INITRD))]
     { cpio_data { ptr: core::ptr::null_mut(), size: 0, name: c"".as_ptr() } }
 }
 
@@ -100,7 +100,7 @@ unsafe fn reload_early_microcode(cpu: u32) {
 
 // Late loading is retained as a conditional section; its kernel synchronization
 // primitives and structure definitions are external dependencies.
-#[cfg(feature = "CONFIG_MICROCODE_LATE_LOADING")]
+#[cfg(CONFIG_MICROCODE_LATE_LOADING)]
 mod late_loading {
     use super::*;
     #[repr(C)] pub enum sibling_ctrl { SCTRL_WAIT, SCTRL_APPLY, SCTRL_DONE }

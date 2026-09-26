@@ -33,22 +33,22 @@ extern "C" {
 }
 
 // The following aliases correspond to the !CONFIG_SMP preprocessor macros.
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe fn flush_tlb_all() {
     local_flush_tlb_all()
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
     local_flush_tlb_mm(mm)
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, addr: ::core::ffi::c_ulong) {
     local_flush_tlb_page(vma, addr)
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe fn flush_tlb_range(
     vma: *mut vm_area_struct,
     start: ::core::ffi::c_ulong,
@@ -58,7 +58,7 @@ pub unsafe fn flush_tlb_range(
 }
 
 // CONFIG_SMP selects these externally defined operations.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn flush_tlb_all();
     pub fn flush_tlb_mm(mm: *mut mm_struct);

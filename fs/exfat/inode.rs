@@ -217,7 +217,7 @@ unsafe fn exfat_aop_bmap(mapping: *mut address_space, block: sector_t) -> sector
     blocknr
 }
 
-static inline fn exfat_hash(i_pos: loff_t) -> c_ulong { hash_32(i_pos, EXFAT_HASH_BITS) }
+inline fn exfat_hash(i_pos: loff_t) -> c_ulong { hash_32(i_pos, EXFAT_HASH_BITS) }
 
 pub unsafe fn exfat_hash_inode(inode: *mut inode, i_pos: loff_t) {
     let sbi = EXFAT_SB((*inode).i_sb);

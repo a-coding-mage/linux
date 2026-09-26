@@ -10,7 +10,7 @@
 
 /* Corresponds to CONFIG_MMIOWB.  Enable this module when that build-time
  * configuration option is selected. */
-#[cfg(feature = "CONFIG_MMIOWB")]
+#[cfg(CONFIG_MMIOWB)]
 mod mmio_wb {
     use super::mmiowb_state;
 
@@ -54,15 +54,15 @@ mod mmio_wb {
     }
 }
 
-#[cfg(not(feature = "CONFIG_MMIOWB"))]
+#[cfg(not(CONFIG_MMIOWB))]
 #[inline(always)]
 pub fn mmiowb_set_pending() {}
 
-#[cfg(not(feature = "CONFIG_MMIOWB"))]
+#[cfg(not(CONFIG_MMIOWB))]
 #[inline(always)]
 pub fn mmiowb_spin_lock() {}
 
-#[cfg(not(feature = "CONFIG_MMIOWB"))]
+#[cfg(not(CONFIG_MMIOWB))]
 #[inline(always)]
 pub fn mmiowb_spin_unlock() {}
 

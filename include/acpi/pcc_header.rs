@@ -32,7 +32,7 @@ pub const MAX_PCC_SUBSPACES: usize = 256;
 
 // CONFIG_PCC selects the external implementation; the fallback preserves the
 // Linux ERR_PTR(-ENODEV) behavior when PCC support is unavailable.
-#[cfg(feature = "CONFIG_PCC")]
+#[cfg(CONFIG_PCC)]
 unsafe extern "C" {
     pub fn pcc_mbox_request_channel(
         cl: *mut mbox_client,
@@ -41,7 +41,7 @@ unsafe extern "C" {
     pub fn pcc_mbox_free_channel(chan: *mut pcc_mbox_chan);
 }
 
-#[cfg(not(feature = "CONFIG_PCC"))]
+#[cfg(not(CONFIG_PCC))]
 #[inline]
 pub unsafe fn pcc_mbox_request_channel(
     _cl: *mut mbox_client,
@@ -51,7 +51,7 @@ pub unsafe fn pcc_mbox_request_channel(
     core::mem::transmute::<isize, *mut pcc_mbox_chan>(-19)
 }
 
-#[cfg(not(feature = "CONFIG_PCC"))]
+#[cfg(not(CONFIG_PCC))]
 #[inline]
 pub unsafe fn pcc_mbox_free_channel(_chan: *mut pcc_mbox_chan) {}
 

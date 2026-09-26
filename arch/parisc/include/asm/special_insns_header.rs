@@ -15,7 +15,7 @@ macro_rules! lpa {
                 "8: lpa 0({va}), {pa}",
                 "9:",
                 pa = lateout(reg) pa,
-                va = in(reg) $va,
+                $va = in(reg) $va,
                 options(nostack)
             );
         }
@@ -33,7 +33,7 @@ macro_rules! lpa_user {
                 "8: lpa 0(%sr3,{va}), {pa}",
                 "9:",
                 pa = lateout(reg) pa,
-                va = in(reg) $va,
+                $va = in(reg) $va,
                 options(nostack)
             );
         }
@@ -63,8 +63,8 @@ macro_rules! prober_user {
                 "8: ldb 0(%sr{sr},{va}), %r0",
                 "    proberi (%sr{sr},{va}), {priv_user}, {read_allowed}",
                 "9:",
-                sr = const $sr,
-                va = in(reg) $va,
+                $sr = const $sr,
+                $va = in(reg) $va,
                 priv_user = const PRIV_USER,
                 read_allowed = lateout(reg) read_allowed,
                 options(nostack)
@@ -83,7 +83,7 @@ macro_rules! mfctl {
     ($reg:expr) => {{
         let cr: ::core::primitive::usize;
         unsafe {
-            ::core::arch::asm!("mfctl {reg}, {cr}", reg = const $reg, cr = lateout(reg) cr);
+            ::core::arch::asm!("mfctl {reg}, {cr}", $reg = const $reg, cr = lateout($reg) cr);
         }
         cr
     }};
@@ -93,7 +93,7 @@ macro_rules! mfctl {
 macro_rules! mtctl {
     ($gr:expr, $cr:expr) => {{
         unsafe {
-            ::core::arch::asm!("mtctl {gr}, {cr}", gr = in(reg) $gr, cr = const $cr, options(nostack));
+            ::core::arch::asm!("mtctl {gr}, {cr}", $gr = in(reg) $gr, $cr = const $cr, options(nostack));
         }
     }};
 }
@@ -113,7 +113,7 @@ macro_rules! mfsp {
     ($reg:expr) => {{
         let cr: ::core::primitive::usize;
         unsafe {
-            ::core::arch::asm!("mfsp %sr{reg}, {cr}", reg = const $reg, cr = lateout(reg) cr);
+            ::core::arch::asm!("mfsp %sr{reg}, {cr}", $reg = const $reg, cr = lateout($reg) cr);
         }
         cr
     }};
@@ -124,9 +124,9 @@ macro_rules! mtsp {
     ($val:expr, $cr:expr) => {{
         unsafe {
             if ($val) == 0 {
-                ::core::arch::asm!("mtsp %r0, {cr}", cr = const $cr, options(nostack));
+                ::core::arch::asm!("mtsp %r0, {cr}", $cr = const $cr, options(nostack));
             } else {
-                ::core::arch::asm!("mtsp {val}, {cr}", val = in(reg) $val, cr = const $cr, options(nostack));
+                ::core::arch::asm!("mtsp {val}, {cr}", $val = in(reg) $val, $cr = const $cr, options(nostack));
             }
         }
     }};

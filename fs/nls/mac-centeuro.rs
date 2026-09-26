@@ -477,7 +477,7 @@ static charset2upper: [u8; 256] = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, /* 0xf8-0xff */
 };
 
-unsafe fn uni2char(u32 uni, u8 *out, int boundlen)
+unsafe fn uni2char(uni: u32, u8 *out, int boundlen)
 {
 	const u8 *uni2charset;
 	u8 cl = uni & 0x00ff;

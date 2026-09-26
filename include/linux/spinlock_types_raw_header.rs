@@ -22,80 +22,47 @@ pub const SPINLOCK_MAGIC: ::core::ffi::c_uint = 0xdead4ead;
 
 pub const SPINLOCK_OWNER_INIT: *mut ::core::ffi::c_void = (-1isize) as *mut ::core::ffi::c_void;
 
-// CONFIG_DEBUG_LOCK_ALLOC controls the C initializer macros below.
-#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
+/*
+ * C composes the initializer from SPIN_DEBUG_INIT() and *_DEP_MAP_INIT()
+ * field lists; Rust macros expand to whole expressions, so the lock value
+ * is built in one struct literal with the debug fields gated by config.
+ * The lockdep class name is the stringified lock name, like C's #lockname.
+ */
+#[doc(hidden)]
 #[macro_export]
-macro_rules! RAW_SPIN_DEP_MAP_INIT {
-    ($lockname:ident) => {
-        .dep_map = lockdep_map {
-            .name = stringify!($lockname),
-            .wait_type_inner = LD_WAIT_SPIN,
+macro_rules! __raw_spin_lock_value {
+    ($wait_type_inner:expr, $lock_type:expr, $($lockname:tt)+) => {
+        raw_spinlock {
+            raw_lock: __ARCH_SPIN_LOCK_UNLOCKED!(),
+            #[cfg(CONFIG_DEBUG_SPINLOCK)]
+            magic: SPINLOCK_MAGIC,
+            #[cfg(CONFIG_DEBUG_SPINLOCK)]
+            owner_cpu: -1i32 as ::core::ffi::c_uint,
+            #[cfg(CONFIG_DEBUG_SPINLOCK)]
+            owner: SPINLOCK_OWNER_INIT,
+            #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
+            dep_map: lockdep_map {
+                name: concat!(stringify!($($lockname)+), "\0").as_ptr().cast(),
+                wait_type_inner: $wait_type_inner as _,
+                lock_type: $lock_type as _,
+                // SAFETY: the remaining lockdep fields are zero-initialized in C.
+                ..unsafe { ::core::mem::zeroed() }
+            },
         }
     };
 }
-
-#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
-#[macro_export]
-macro_rules! SPIN_DEP_MAP_INIT {
-    ($lockname:ident) => {
-        .dep_map = lockdep_map {
-            .name = stringify!($lockname),
-            .wait_type_inner = LD_WAIT_CONFIG,
-        }
-    };
-}
-
-#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
-#[macro_export]
-macro_rules! LOCAL_SPIN_DEP_MAP_INIT {
-    ($lockname:ident) => {
-        .dep_map = lockdep_map {
-            .name = stringify!($lockname),
-            .wait_type_inner = LD_WAIT_CONFIG,
-            .lock_type = LD_LOCK_PERCPU,
-        }
-    };
-}
-
-#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
-#[macro_export]
-macro_rules! RAW_SPIN_DEP_MAP_INIT { ($lockname:ident) => {}; }
-#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
-#[macro_export]
-macro_rules! SPIN_DEP_MAP_INIT { ($lockname:ident) => {}; }
-#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
-#[macro_export]
-macro_rules! LOCAL_SPIN_DEP_MAP_INIT { ($lockname:ident) => {}; }
-
-#[cfg(CONFIG_DEBUG_SPINLOCK)]
-#[macro_export]
-macro_rules! SPIN_DEBUG_INIT {
-    ($lockname:ident) => {
-        .magic = SPINLOCK_MAGIC,
-        .owner_cpu = (-1i32) as ::core::ffi::c_uint,
-        .owner = SPINLOCK_OWNER_INIT,
-    };
-}
-
-#[cfg(not(CONFIG_DEBUG_SPINLOCK))]
-#[macro_export]
-macro_rules! SPIN_DEBUG_INIT { ($lockname:ident) => {}; }
 
 #[macro_export]
 macro_rules! __RAW_SPIN_LOCK_INITIALIZER {
-    ($lockname:ident) => {
-        raw_spinlock {
-            .raw_lock = __ARCH_SPIN_LOCK_UNLOCKED,
-            SPIN_DEBUG_INIT!($lockname)
-            RAW_SPIN_DEP_MAP_INIT!($lockname)
-        }
+    ($($lockname:tt)+) => {
+        __raw_spin_lock_value!(LD_WAIT_SPIN, 0, $($lockname)+)
     };
 }
 
 #[macro_export]
 macro_rules! __RAW_SPIN_LOCK_UNLOCKED {
-    ($lockname:ident) => {
-        __RAW_SPIN_LOCK_INITIALIZER!($lockname)
+    ($($lockname:tt)+) => {
+        __RAW_SPIN_LOCK_INITIALIZER!($($lockname)+)
     };
 }
 

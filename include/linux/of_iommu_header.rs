@@ -21,7 +21,7 @@ pub struct list_head {
 }
 
 /* CONFIG_OF_IOMMU */
-#[cfg(feature = "CONFIG_OF_IOMMU")]
+#[cfg(CONFIG_OF_IOMMU)]
 unsafe extern "C" {
     pub fn of_iommu_configure(
         dev: *mut device,
@@ -33,7 +33,7 @@ unsafe extern "C" {
 }
 
 /* !CONFIG_OF_IOMMU */
-#[cfg(not(feature = "CONFIG_OF_IOMMU"))]
+#[cfg(not(CONFIG_OF_IOMMU))]
 #[inline]
 pub unsafe fn of_iommu_configure(
     _dev: *mut device,
@@ -43,7 +43,7 @@ pub unsafe fn of_iommu_configure(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_OF_IOMMU"))]
+#[cfg(not(CONFIG_OF_IOMMU))]
 #[inline]
 pub unsafe fn of_iommu_get_resv_regions(_dev: *mut device, _list: *mut list_head) {}
 

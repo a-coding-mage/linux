@@ -103,7 +103,7 @@ extern "C" {
 // declarations depend on external kernel definitions and are intentionally left
 // as conditional declarations for the consuming build.
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 extern "C" {
     pub static mut __appended_dtb: [u8; 0];
     pub static __dtb_start: u8;
@@ -111,10 +111,10 @@ extern "C" {
     pub fn fdt_magic(fdt: *const core::ffi::c_void) -> u32;
 }
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 pub unsafe fn get_fdt() -> *mut core::ffi::c_void {
-    if (cfg!(feature = "CONFIG_MIPS_RAW_APPENDED_DTB")
-        || cfg!(feature = "CONFIG_MIPS_ELF_APPENDED_DTB"))
+    if (cfg!(CONFIG_MIPS_RAW_APPENDED_DTB)
+        || cfg!(CONFIG_MIPS_ELF_APPENDED_DTB))
         && fdt_magic(core::ptr::addr_of!(__appended_dtb) as *const core::ffi::c_void)
             == FDT_MAGIC
     {
@@ -125,27 +125,27 @@ pub unsafe fn get_fdt() -> *mut core::ffi::c_void {
         return fw_arg1 as *mut core::ffi::c_void;
     }
 
-    if cfg!(feature = "CONFIG_BUILTIN_DTB") && core::ptr::addr_of!(__dtb_start) != core::ptr::addr_of!(__dtb_end) {
+    if cfg!(CONFIG_BUILTIN_DTB) && core::ptr::addr_of!(__dtb_start) != core::ptr::addr_of!(__dtb_end) {
         return core::ptr::addr_of!(__dtb_start) as *mut core::ffi::c_void;
     }
 
     core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_SWIOTLB")]
+#[cfg(CONFIG_SWIOTLB)]
 extern "C" {
     pub fn plat_swiotlb_setup();
 }
 
-#[cfg(not(feature = "CONFIG_SWIOTLB"))]
+#[cfg(not(CONFIG_SWIOTLB))]
 pub unsafe extern "C" fn plat_swiotlb_setup() {}
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 extern "C" {
     pub fn plat_get_fdt() -> *mut core::ffi::c_void;
 }
 
-#[cfg(all(feature = "CONFIG_USE_OF", feature = "CONFIG_RELOCATABLE"))]
+#[cfg(all(CONFIG_USE_OF, CONFIG_RELOCATABLE))]
 extern "C" {
     pub fn plat_fdt_relocated(new_location: *mut core::ffi::c_void);
 }

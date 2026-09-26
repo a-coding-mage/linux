@@ -8,7 +8,7 @@
 // The C header is active only when CONFIG_X86 is enabled.  This Rust
 // translation uses the corresponding feature as the build-time condition.
 
-#[cfg(feature = "CONFIG_X86")]
+#[cfg(CONFIG_X86)]
 mod x86_enabled {
     // Supplied by the architecture/device-id dependencies of the original
     // header.  The X86_MATCH_VFM table entries are likewise external to this
@@ -44,37 +44,37 @@ mod x86_enabled {
     }
 }
 
-#[cfg(feature = "CONFIG_X86")]
+#[cfg(CONFIG_X86)]
 pub(crate) use x86_enabled::{
     soc_intel_is_apl, soc_intel_is_byt, soc_intel_is_cht, soc_intel_is_cml,
     soc_intel_is_glk,
 };
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub(crate) fn soc_intel_is_byt() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub(crate) fn soc_intel_is_cht() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub(crate) fn soc_intel_is_apl() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub(crate) fn soc_intel_is_glk() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub(crate) fn soc_intel_is_cml() -> bool {
     false

@@ -57,7 +57,7 @@ unsafe fn amdgpu_sync_keep_later(keep: *mut *mut DmaFence, fence: *mut DmaFence)
 unsafe fn amdgpu_sync_add_later(sync: *mut AmdgpuSync, f: *mut DmaFence) -> bool {
     let mut e: *mut AmdgpuSyncEntry = core::ptr::null_mut();
     // hash_for_each_possible(sync->fences, e, node, f->context)
-    for_each_possible_sync_entry((*sync).fences, (*f).context, &mut e) {
+    for_each_possible_sync_entry!((*sync).fences, (*f).context, &mut e, {
         if dma_fence_is_signaled((*e).fence) {
             dma_fence_put((*e).fence);
             (*e).fence = dma_fence_get(f);
@@ -67,7 +67,7 @@ unsafe fn amdgpu_sync_add_later(sync: *mut AmdgpuSync, f: *mut DmaFence) -> bool
             amdgpu_sync_keep_later(&mut (*e).fence, f);
             return true;
         }
-    }
+    });
     false
 }
 
@@ -108,8 +108,8 @@ pub unsafe fn amdgpu_sync_resv(adev: *mut AmdgpuDevice, sync: *mut AmdgpuSync,
     if resv.is_null() { return -EINVAL; }
     let mut cursor = DmaResvIter::default();
     let mut f: *mut DmaFence = core::ptr::null_mut();
-    dma_resv_for_each_fence(&mut cursor, resv, DMA_RESV_USAGE_READ, &mut f) {
-        dma_fence_chain_for_each(f, f) {
+    dma_resv_for_each_fence!(&mut cursor, resv, DMA_RESV_USAGE_READ, &mut f, {
+        dma_fence_chain_for_each!(f, f, {
             let tmp = dma_fence_chain_contained(f);
             if amdgpu_sync_test_fence(adev, mode, owner, tmp) {
                 let r = amdgpu_sync_fence(sync, f, GFP_KERNEL);
@@ -117,8 +117,8 @@ pub unsafe fn amdgpu_sync_resv(adev: *mut AmdgpuDevice, sync: *mut AmdgpuSync,
                 if r != 0 { return r; }
                 break;
             }
-        }
-    }
+        });
+    });
     0
 }
 
@@ -127,11 +127,11 @@ pub unsafe fn amdgpu_sync_kfd(sync: *mut AmdgpuSync, resv: *mut DmaResv) -> i32 
     let mut f: *mut DmaFence = core::ptr::null_mut();
     let mut r = 0;
     dma_resv_iter_begin(&mut cursor, resv, DMA_RESV_USAGE_BOOKKEEP);
-    dma_resv_for_each_fence_unlocked(&mut cursor, &mut f) {
+    dma_resv_for_each_fence_unlocked!(&mut cursor, &mut f, {
         if amdgpu_sync_get_owner(f) != AMDGPU_FENCE_OWNER_KFD { continue; }
         r = amdgpu_sync_fence(sync, f, GFP_KERNEL);
         if r != 0 { break; }
-    }
+    });
     dma_resv_iter_end(&mut cursor);
     r
 }

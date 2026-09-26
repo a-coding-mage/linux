@@ -38,7 +38,7 @@ pub struct lwtunnel_encap_ops {
     pub owner: *mut module,
 }
 
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 extern "C" {
     pub static nf_hooks_lwtunnel_enabled: static_key_false;
     pub fn lwtstate_free(lws: *mut lwtunnel_state);
@@ -58,80 +58,80 @@ extern "C" {
     pub fn lwtunnel_set_redirect(dst: *mut dst_entry);
 }
 
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 #[inline]
 pub unsafe fn lwtstate_get(lws: *mut lwtunnel_state) -> *mut lwtunnel_state {
     if !lws.is_null() { atomic_inc(&mut (*lws).refcnt); }
     lws
 }
 
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 #[inline]
 pub unsafe fn lwtstate_put(lws: *mut lwtunnel_state) {
     if !lws.is_null() && atomic_dec_and_test(&mut (*lws).refcnt) { lwtstate_free(lws); }
 }
 
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 #[inline]
 pub unsafe fn lwtunnel_output_redirect(s: *mut lwtunnel_state) -> bool {
     !s.is_null() && ((*s).flags & LWTUNNEL_STATE_OUTPUT_REDIRECT) != 0
 }
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 #[inline]
 pub unsafe fn lwtunnel_input_redirect(s: *mut lwtunnel_state) -> bool {
     !s.is_null() && ((*s).flags & LWTUNNEL_STATE_INPUT_REDIRECT) != 0
 }
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 #[inline]
 pub unsafe fn lwtunnel_xmit_redirect(s: *mut lwtunnel_state) -> bool {
     !s.is_null() && ((*s).flags & LWTUNNEL_STATE_XMIT_REDIRECT) != 0
 }
-#[cfg(feature = "CONFIG_LWTUNNEL")]
+#[cfg(CONFIG_LWTUNNEL)]
 #[inline]
 pub unsafe fn lwtunnel_headroom(s: *mut lwtunnel_state, mtu: u32) -> u32 {
-    if (lwtunnel_xmit_redirect(s) || lwtunnel_output_redirect(s)) && (*s).headroom as u32 < mtu { (*s).headroom as u32 } else { 0 }
+    if (lwtunnel_xmit_redirect(s) || lwtunnel_output_redirect(s)) && ((*s).headroom as u32) < mtu { (*s).headroom as u32 } else { 0 }
 }
 
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtstate_free(_: *mut lwtunnel_state) {}
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtstate_get(s: *mut lwtunnel_state) -> *mut lwtunnel_state { s }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtstate_put(_: *mut lwtunnel_state) {}
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_output_redirect(_: *mut lwtunnel_state) -> bool { false }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_input_redirect(_: *mut lwtunnel_state) -> bool { false }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_xmit_redirect(_: *mut lwtunnel_state) -> bool { false }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_headroom(_: *mut lwtunnel_state, _: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_set_redirect(_: *mut dst_entry) {}
 
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_encap_add_ops(_: *const lwtunnel_encap_ops, _: u32) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_encap_del_ops(_: *const lwtunnel_encap_ops, _: u32) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_valid_encap_type(_: u16, _: *mut netlink_ext_ack) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_valid_encap_type_attr(_: *mut nlattr, _: i32, _: *mut netlink_ext_ack) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_build_state(_: *mut net, _: u16, _: *mut nlattr, _: u32, _: *const core::ffi::c_void, _: *mut *mut lwtunnel_state, _: *mut netlink_ext_ack) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_fill_encap(_: *mut sk_buff, _: *mut lwtunnel_state, _: i32, _: i32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_get_encap_size(_: *mut lwtunnel_state) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_state_alloc(_: i32) -> *mut lwtunnel_state { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_cmp_encap(_: *mut lwtunnel_state, _: *mut lwtunnel_state) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_output(_: *mut net, _: *mut sock, _: *mut sk_buff) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_input(_: *mut sk_buff) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_LWTUNNEL"))]
+#[cfg(not(CONFIG_LWTUNNEL))]
 #[inline] pub unsafe fn lwtunnel_xmit(_: *mut sk_buff) -> i32 { -EOPNOTSUPP }
 
 // External dependencies supplied by the surrounding kernel translation.

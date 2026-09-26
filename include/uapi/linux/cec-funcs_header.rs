@@ -9,19 +9,19 @@
  */
 
 /*
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) * /
+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
 /*
  * cec - HDMI Consumer Electronics Control message functions
  *
  * Copyright 2016 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- * /
+ */
 
 #ifndef _CEC_UAPI_FUNCS_H
 #define _CEC_UAPI_FUNCS_H
 
 #include <linux/cec.h>
 
-/* One Touch Play Feature * /
+/* One Touch Play Feature */
 static inline void cec_msg_active_source(struct cec_msg *msg, __u16 phys_addr)
 {
 	msg->len = 4;
@@ -50,7 +50,7 @@ static inline void cec_msg_text_view_on(struct cec_msg *msg)
 }
 
 
-/* Routing Control Feature * /
+/* Routing Control Feature */
 static inline void cec_msg_inactive_source(struct cec_msg *msg,
 					   __u16 phys_addr)
 {
@@ -130,7 +130,7 @@ static inline void cec_ops_set_stream_path(const struct cec_msg *msg,
 }
 
 
-/* Standby Feature * /
+/* Standby Feature */
 static inline void cec_msg_standby(struct cec_msg *msg)
 {
 	msg->len = 2;
@@ -138,7 +138,7 @@ static inline void cec_msg_standby(struct cec_msg *msg)
 }
 
 
-/* One Touch Record Feature * /
+/* One Touch Record Feature */
 static inline void cec_msg_record_off(struct cec_msg *msg, int reply)
 {
 	msg->len = 2;
@@ -376,7 +376,7 @@ static inline void cec_msg_record_tv_screen(struct cec_msg *msg,
 }
 
 
-/* Timer Programming Feature * /
+/* Timer Programming Feature */
 static inline void cec_msg_timer_status(struct cec_msg *msg,
 					__u8 timer_overlap_warning,
 					__u8 media_info,
@@ -458,7 +458,7 @@ static inline void cec_msg_clear_analogue_timer(struct cec_msg *msg,
 	msg->msg[1] = CEC_MSG_CLEAR_ANALOGUE_TIMER;
 	msg->msg[2] = day;
 	msg->msg[3] = month;
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	msg->msg[4] = ((start_hr / 10) << 4) | (start_hr % 10);
 	msg->msg[5] = ((start_min / 10) << 4) | (start_min % 10);
 	msg->msg[6] = ((duration_hr / 10) << 4) | (duration_hr % 10);
@@ -485,7 +485,7 @@ static inline void cec_ops_clear_analogue_timer(const struct cec_msg *msg,
 {
 	*day = msg->msg[2];
 	*month = msg->msg[3];
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	*start_hr = (msg->msg[4] >> 4) * 10 + (msg->msg[4] & 0xf);
 	*start_min = (msg->msg[5] >> 4) * 10 + (msg->msg[5] & 0xf);
 	*duration_hr = (msg->msg[6] >> 4) * 10 + (msg->msg[6] & 0xf);
@@ -512,7 +512,7 @@ static inline void cec_msg_clear_digital_timer(struct cec_msg *msg,
 	msg->msg[1] = CEC_MSG_CLEAR_DIGITAL_TIMER;
 	msg->msg[2] = day;
 	msg->msg[3] = month;
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	msg->msg[4] = ((start_hr / 10) << 4) | (start_hr % 10);
 	msg->msg[5] = ((start_min / 10) << 4) | (start_min % 10);
 	msg->msg[6] = ((duration_hr / 10) << 4) | (duration_hr % 10);
@@ -533,7 +533,7 @@ static inline void cec_ops_clear_digital_timer(const struct cec_msg *msg,
 {
 	*day = msg->msg[2];
 	*month = msg->msg[3];
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	*start_hr = (msg->msg[4] >> 4) * 10 + (msg->msg[4] & 0xf);
 	*start_min = (msg->msg[5] >> 4) * 10 + (msg->msg[5] & 0xf);
 	*duration_hr = (msg->msg[6] >> 4) * 10 + (msg->msg[6] & 0xf);
@@ -559,7 +559,7 @@ static inline void cec_msg_clear_ext_timer(struct cec_msg *msg,
 	msg->msg[1] = CEC_MSG_CLEAR_EXT_TIMER;
 	msg->msg[2] = day;
 	msg->msg[3] = month;
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	msg->msg[4] = ((start_hr / 10) << 4) | (start_hr % 10);
 	msg->msg[5] = ((start_min / 10) << 4) | (start_min % 10);
 	msg->msg[6] = ((duration_hr / 10) << 4) | (duration_hr % 10);
@@ -586,7 +586,7 @@ static inline void cec_ops_clear_ext_timer(const struct cec_msg *msg,
 {
 	*day = msg->msg[2];
 	*month = msg->msg[3];
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	*start_hr = (msg->msg[4] >> 4) * 10 + (msg->msg[4] & 0xf);
 	*start_min = (msg->msg[5] >> 4) * 10 + (msg->msg[5] & 0xf);
 	*duration_hr = (msg->msg[6] >> 4) * 10 + (msg->msg[6] & 0xf);
@@ -614,7 +614,7 @@ static inline void cec_msg_set_analogue_timer(struct cec_msg *msg,
 	msg->msg[1] = CEC_MSG_SET_ANALOGUE_TIMER;
 	msg->msg[2] = day;
 	msg->msg[3] = month;
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	msg->msg[4] = ((start_hr / 10) << 4) | (start_hr % 10);
 	msg->msg[5] = ((start_min / 10) << 4) | (start_min % 10);
 	msg->msg[6] = ((duration_hr / 10) << 4) | (duration_hr % 10);
@@ -641,7 +641,7 @@ static inline void cec_ops_set_analogue_timer(const struct cec_msg *msg,
 {
 	*day = msg->msg[2];
 	*month = msg->msg[3];
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	*start_hr = (msg->msg[4] >> 4) * 10 + (msg->msg[4] & 0xf);
 	*start_min = (msg->msg[5] >> 4) * 10 + (msg->msg[5] & 0xf);
 	*duration_hr = (msg->msg[6] >> 4) * 10 + (msg->msg[6] & 0xf);
@@ -668,7 +668,7 @@ static inline void cec_msg_set_digital_timer(struct cec_msg *msg,
 	msg->msg[1] = CEC_MSG_SET_DIGITAL_TIMER;
 	msg->msg[2] = day;
 	msg->msg[3] = month;
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	msg->msg[4] = ((start_hr / 10) << 4) | (start_hr % 10);
 	msg->msg[5] = ((start_min / 10) << 4) | (start_min % 10);
 	msg->msg[6] = ((duration_hr / 10) << 4) | (duration_hr % 10);
@@ -689,7 +689,7 @@ static inline void cec_ops_set_digital_timer(const struct cec_msg *msg,
 {
 	*day = msg->msg[2];
 	*month = msg->msg[3];
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	*start_hr = (msg->msg[4] >> 4) * 10 + (msg->msg[4] & 0xf);
 	*start_min = (msg->msg[5] >> 4) * 10 + (msg->msg[5] & 0xf);
 	*duration_hr = (msg->msg[6] >> 4) * 10 + (msg->msg[6] & 0xf);
@@ -715,7 +715,7 @@ static inline void cec_msg_set_ext_timer(struct cec_msg *msg,
 	msg->msg[1] = CEC_MSG_SET_EXT_TIMER;
 	msg->msg[2] = day;
 	msg->msg[3] = month;
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	msg->msg[4] = ((start_hr / 10) << 4) | (start_hr % 10);
 	msg->msg[5] = ((start_min / 10) << 4) | (start_min % 10);
 	msg->msg[6] = ((duration_hr / 10) << 4) | (duration_hr % 10);
@@ -742,7 +742,7 @@ static inline void cec_ops_set_ext_timer(const struct cec_msg *msg,
 {
 	*day = msg->msg[2];
 	*month = msg->msg[3];
-	/* Hours and minutes are in BCD format * /
+	/* Hours and minutes are in BCD format */
 	*start_hr = (msg->msg[4] >> 4) * 10 + (msg->msg[4] & 0xf);
 	*start_min = (msg->msg[5] >> 4) * 10 + (msg->msg[5] & 0xf);
 	*duration_hr = (msg->msg[6] >> 4) * 10 + (msg->msg[6] & 0xf);
@@ -776,7 +776,7 @@ static inline void cec_ops_set_timer_program_title(const struct cec_msg *msg,
 	prog_title[len] = '\0';
 }
 
-/* System Information Feature * /
+/* System Information Feature */
 static inline void cec_msg_cec_version(struct cec_msg *msg, __u8 cec_version)
 {
 	msg->len = 3;
@@ -855,7 +855,7 @@ static inline void cec_msg_get_menu_language(struct cec_msg *msg,
  * As of CEC 2.0 no extended features are defined, should those be added
  * in the future, then this function needs to be adapted or a new function
  * should be added.
- * /
+ */
 static inline void cec_msg_report_features(struct cec_msg *msg,
 				__u8 cec_version, __u8 all_device_types,
 				__u8 rc_profile, __u8 dev_features)
@@ -898,7 +898,7 @@ static inline void cec_msg_give_features(struct cec_msg *msg,
 	msg->reply = reply ? CEC_MSG_REPORT_FEATURES : 0;
 }
 
-/* Deck Control Feature * /
+/* Deck Control Feature */
 static inline void cec_msg_deck_control(struct cec_msg *msg,
 					__u8 deck_control_mode)
 {
@@ -959,7 +959,7 @@ static inline void cec_ops_play(const struct cec_msg *msg,
 }
 
 
-/* Tuner Control Feature * /
+/* Tuner Control Feature */
 struct cec_op_tuner_device_info {
 	__u8 rec_flag;
 	__u8 tuner_display_info;
@@ -1099,7 +1099,7 @@ static inline void cec_msg_tuner_step_increment(struct cec_msg *msg)
 }
 
 
-/* Vendor Specific Commands Feature * /
+/* Vendor Specific Commands Feature */
 static inline void cec_msg_device_vendor_id(struct cec_msg *msg, __u32 vendor_id)
 {
 	msg->len = 5;
@@ -1200,7 +1200,7 @@ static inline void cec_msg_vendor_remote_button_up(struct cec_msg *msg)
 }
 
 
-/* OSD Display Feature * /
+/* OSD Display Feature */
 static inline void cec_msg_set_osd_string(struct cec_msg *msg,
 					  __u8 disp_ctl,
 					  const char *osd)
@@ -1229,7 +1229,7 @@ static inline void cec_ops_set_osd_string(const struct cec_msg *msg,
 }
 
 
-/* Device OSD Transfer Feature * /
+/* Device OSD Transfer Feature */
 static inline void cec_msg_set_osd_name(struct cec_msg *msg, const char *name)
 {
 	unsigned int len = strlen(name);
@@ -1261,7 +1261,7 @@ static inline void cec_msg_give_osd_name(struct cec_msg *msg,
 }
 
 
-/* Device Menu Control Feature * /
+/* Device Menu Control Feature */
 static inline void cec_msg_menu_status(struct cec_msg *msg,
 				       __u8 menu_state)
 {
@@ -1321,7 +1321,7 @@ static inline void cec_msg_user_control_pressed(struct cec_msg *msg,
 	case CEC_OP_UI_CMD_SELECT_MEDIA_FUNCTION:
 	case CEC_OP_UI_CMD_SELECT_AV_INPUT_FUNCTION:
 	case CEC_OP_UI_CMD_SELECT_AUDIO_INPUT_FUNCTION:
-		/* The optional operand is one byte for all these ui commands * /
+		/* The optional operand is one byte for all these ui commands */
 		msg->len++;
 		msg->msg[3] = ui_cmd->play_mode;
 		break;
@@ -1350,7 +1350,7 @@ static inline void cec_ops_user_control_pressed(const struct cec_msg *msg,
 	case CEC_OP_UI_CMD_SELECT_MEDIA_FUNCTION:
 	case CEC_OP_UI_CMD_SELECT_AV_INPUT_FUNCTION:
 	case CEC_OP_UI_CMD_SELECT_AUDIO_INPUT_FUNCTION:
-		/* The optional operand is one byte for all these ui commands * /
+		/* The optional operand is one byte for all these ui commands */
 		ui_cmd->play_mode = msg->msg[3];
 		ui_cmd->has_opt_arg = 1;
 		break;
@@ -1371,9 +1371,9 @@ static inline void cec_msg_user_control_released(struct cec_msg *msg)
 	msg->msg[1] = CEC_MSG_USER_CONTROL_RELEASED;
 }
 
-/* Remote Control Passthrough Feature * /
+/* Remote Control Passthrough Feature */
 
-/* Power Status Feature * /
+/* Power Status Feature */
 static inline void cec_msg_report_power_status(struct cec_msg *msg,
 					       __u8 pwr_state)
 {
@@ -1396,7 +1396,7 @@ static inline void cec_msg_give_device_power_status(struct cec_msg *msg,
 	msg->reply = reply ? CEC_MSG_REPORT_POWER_STATUS : 0;
 }
 
-/* General Protocol Messages * /
+/* General Protocol Messages */
 static inline void cec_msg_feature_abort(struct cec_msg *msg,
 					 __u8 abort_msg, __u8 reason)
 {
@@ -1413,7 +1413,7 @@ static inline void cec_ops_feature_abort(const struct cec_msg *msg,
 	*reason = msg->msg[3];
 }
 
-/* This changes the current message into a feature abort message * /
+/* This changes the current message into a feature abort message */
 static inline void cec_msg_reply_feature_abort(struct cec_msg *msg, __u8 reason)
 {
 	cec_msg_set_reply_to(msg, msg);
@@ -1430,7 +1430,7 @@ static inline void cec_msg_abort(struct cec_msg *msg)
 }
 
 
-/* System Audio Control Feature * /
+/* System Audio Control Feature */
 static inline void cec_msg_report_audio_status(struct cec_msg *msg,
 					       __u8 aud_mute_status,
 					       __u8 aud_vol_status)
@@ -1594,7 +1594,7 @@ static inline void cec_ops_set_audio_volume_level(const struct cec_msg *msg,
 }
 
 
-/* Audio Rate Control Feature * /
+/* Audio Rate Control Feature */
 static inline void cec_msg_set_audio_rate(struct cec_msg *msg,
 					  __u8 audio_rate)
 {
@@ -1610,7 +1610,7 @@ static inline void cec_ops_set_audio_rate(const struct cec_msg *msg,
 }
 
 
-/* Audio Return Channel Control Feature * /
+/* Audio Return Channel Control Feature */
 static inline void cec_msg_report_arc_initiated(struct cec_msg *msg)
 {
 	msg->len = 2;
@@ -1656,8 +1656,8 @@ static inline void cec_msg_request_arc_termination(struct cec_msg *msg,
 }
 
 
-/* Dynamic Audio Lipsync Feature * /
-/* Only for CEC 2.0 and up * /
+/* Dynamic Audio Lipsync Feature */
+/* Only for CEC 2.0 and up */
 static inline void cec_msg_report_current_latency(struct cec_msg *msg,
 						  __u16 phys_addr,
 						  __u8 video_latency,
@@ -1712,8 +1712,8 @@ static inline void cec_ops_request_current_latency(const struct cec_msg *msg,
 }
 
 
-/* Latency Indication Protocol Feature * /
-/* Only for CEC 2.0 and up * /
+/* Latency Indication Protocol Feature */
+/* Only for CEC 2.0 and up */
 static inline void cec_msg_request_lip_support(struct cec_msg *msg,
 					       int reply, __u16 phys_addr)
 {
@@ -1894,7 +1894,7 @@ static inline void cec_ops_update_sqid(const struct cec_msg *msg,
 }
 
 
-/* Capability Discovery and Control Feature * /
+/* Capability Discovery and Control Feature */
 static inline void cec_msg_cdc_hec_inquire_state(struct cec_msg *msg,
 						 __u16 phys_addr1,
 						 __u16 phys_addr2)
@@ -1902,7 +1902,7 @@ static inline void cec_msg_cdc_hec_inquire_state(struct cec_msg *msg,
 	msg->len = 9;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_INQUIRE_STATE;
 	msg->msg[5] = phys_addr1 >> 8;
 	msg->msg[6] = phys_addr1 & 0xff;
@@ -1932,7 +1932,7 @@ static inline void cec_msg_cdc_hec_report_state(struct cec_msg *msg,
 	msg->len = has_field ? 10 : 8;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_REPORT_STATE;
 	msg->msg[5] = target_phys_addr >> 8;
 	msg->msg[6] = target_phys_addr & 0xff;
@@ -1977,7 +1977,7 @@ static inline void cec_msg_cdc_hec_set_state(struct cec_msg *msg,
 	msg->len = 10;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_INQUIRE_STATE;
 	msg->msg[5] = phys_addr1 >> 8;
 	msg->msg[6] = phys_addr1 & 0xff;
@@ -2027,7 +2027,7 @@ static inline void cec_msg_cdc_hec_set_state_adjacent(struct cec_msg *msg,
 	msg->len = 8;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_SET_STATE_ADJACENT;
 	msg->msg[5] = phys_addr1 >> 8;
 	msg->msg[6] = phys_addr1 & 0xff;
@@ -2052,7 +2052,7 @@ static inline void cec_msg_cdc_hec_request_deactivation(struct cec_msg *msg,
 	msg->len = 11;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_REQUEST_DEACTIVATION;
 	msg->msg[5] = phys_addr1 >> 8;
 	msg->msg[6] = phys_addr1 & 0xff;
@@ -2079,7 +2079,7 @@ static inline void cec_msg_cdc_hec_notify_alive(struct cec_msg *msg)
 	msg->len = 5;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_NOTIFY_ALIVE;
 }
 
@@ -2094,7 +2094,7 @@ static inline void cec_msg_cdc_hec_discover(struct cec_msg *msg)
 	msg->len = 5;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HEC_DISCOVER;
 }
 
@@ -2111,7 +2111,7 @@ static inline void cec_msg_cdc_hpd_set_state(struct cec_msg *msg,
 	msg->len = 6;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HPD_SET_STATE;
 	msg->msg[5] = (input_port << 4) | hpd_state;
 }
@@ -2133,7 +2133,7 @@ static inline void cec_msg_cdc_hpd_report_state(struct cec_msg *msg,
 	msg->len = 6;
 	msg->msg[0] |= CEC_LOG_ADDR_BROADCAST;
 	msg->msg[1] = CEC_MSG_CDC_MESSAGE;
-	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework * /
+	/* msg[2] and msg[3] (phys_addr) are filled in by the CEC framework */
 	msg->msg[4] = CEC_MSG_CDC_HPD_REPORT_STATE;
 	msg->msg[5] = (hpd_state << 4) | hpd_error;
 }

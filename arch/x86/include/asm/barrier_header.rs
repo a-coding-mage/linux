@@ -58,8 +58,8 @@ macro_rules! array_index_mask_nospec {
         unsafe {
             core::arch::asm!(
                 "cmp {sz}, {idx}; sbb {mask}, {mask}",
-                sz = in(reg) __sz,
-                idx = in(reg) __idx,
+                $sz = in(reg) __sz,
+                $idx = in(reg) __idx,
                 mask = lateout(reg) __mask,
                 options(nostack)
             );

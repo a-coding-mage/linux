@@ -4,7 +4,6 @@
  * Author: Elaine Zhang <zhangqing@rock-chips.com>
  */
 
-#ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3568_H
 
 /* pmucru-clocks indices */
 
@@ -61,7 +60,7 @@ pub const PCLK_PWM0: u32 = 48;
 pub const CLK_PDPMU: u32 = 49;
 pub const SCLK_32K_IOE: u32 = 50;
 
-pub const CLKPMU_NR_CLKS: u32 = (SCLK_32K_IOE + 1);
+pub const CLKPMU_NR_CLKS: u32 = SCLK_32K_IOE + 1;
 
 /* cru-clocks indices */
 
@@ -926,6 +925,5 @@ pub const SRST_OTPC_ARB: u32 = 474;
 pub const SRST_P_PIPEPHY0_GRF: u32 = 475;
 pub const SRST_P_PIPEPHY1_GRF: u32 = 476;
 pub const SRST_P_PIPEPHY2_GRF: u32 = 477;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

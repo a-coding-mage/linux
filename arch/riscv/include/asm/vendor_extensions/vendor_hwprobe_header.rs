@@ -35,7 +35,7 @@ macro_rules! VENDOR_EXTENSION_SUPPORTED {
         for_each_cpu!(cpu, ($cpus), {
             let isainfo: &mut riscv_isavendorinfo =
                 &mut ($per_hart_vendor_bitmap)[cpu];
-            let pair = &mut *$pair;
+            let $pair = &mut *$pair;
             $extension_checks
         });
         (*$pair).value &= !missing;

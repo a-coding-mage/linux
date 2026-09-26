@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* Equivalent of the C CONFIG_TRACE_IRQFLAGS conditional. */
-#[cfg(feature = "CONFIG_TRACE_IRQFLAGS")]
+#[cfg(CONFIG_TRACE_IRQFLAGS)]
 #[repr(C)]
 pub struct irqtrace_events {
 	pub irq_events: core::ffi::c_uint,

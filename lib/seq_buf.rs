@@ -70,7 +70,7 @@ pub unsafe fn seq_buf_vprintf(s: *mut seq_buf, fmt: *const c_char, args: *mut c_
     let mut len: c_int;
     if (*s).size != 0 && (*s).len < (*s).size {
         len = vsnprintf((*s).buffer.add((*s).len), (*s).size - (*s).len, fmt, args);
-        if (*s).len + len as usize < (*s).size {
+        if (*s).len + (len as usize) < (*s).size {
             (*s).len += len as usize;
             return 0;
         }

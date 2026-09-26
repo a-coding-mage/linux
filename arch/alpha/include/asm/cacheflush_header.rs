@@ -15,19 +15,19 @@
    icache is tagged with ASNs and it suffices to allocate a new ASN
    for the process.  */
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_icache_range(_start: usize, _end: usize) {
     unsafe { imb(); }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline(always)]
 pub unsafe fn flush_icache_range(_start: usize, _end: usize) {
     unsafe { smp_imb(); }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     pub fn smp_imb();
 }
@@ -39,12 +39,12 @@ unsafe extern "C" {
    that icache entries are tagged with the ASN and load a new mm context.  */
 /* ??? Ought to use this in arch/alpha/kernel/signal.c too.  */
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe extern "C" {
     pub fn __load_new_mm_context(mm: *mut crate::mm_struct);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_icache_user_page(
     vma: *mut crate::vm_area_struct,
@@ -64,7 +64,7 @@ pub unsafe fn flush_icache_user_page(
     }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     pub fn flush_icache_user_page(
         vma: *mut crate::vm_area_struct,

@@ -48,7 +48,7 @@ macro_rules! VFPFLDMIA {
             // CONFIG_VFPv3:
             // __LINUX_ARM_ARCH__ <= 6 loads elf_hwcap, tests HWCAP_VFPD32,
             // conditionally loads d16-d31, and otherwise advances by 32*4.
-            // On newer ARM targets, VFPFMRX($tmp, MVFR0, ) masks
+            // On newer ARM targets, VFPFMRX!($tmp, MVFR0, ) masks
             // MVFR0_A_SIMD_MASK, compares with 2, and performs the same
             // conditional load or 32*4 advance.
             let _ = (stringify!($tmp), stringify!($base));
@@ -71,7 +71,7 @@ macro_rules! VFPFSTMIA {
             // CONFIG_VFPv3:
             // __LINUX_ARM_ARCH__ <= 6 loads elf_hwcap, tests HWCAP_VFPD32,
             // conditionally stores d16-d31, and otherwise advances by 32*4.
-            // On newer ARM targets, VFPFMRX($tmp, MVFR0, ) masks
+            // On newer ARM targets, VFPFMRX!($tmp, MVFR0, ) masks
             // MVFR0_A_SIMD_MASK, compares with 2, and performs the same
             // conditional store or 32*4 advance.
             let _ = (stringify!($tmp), stringify!($base));

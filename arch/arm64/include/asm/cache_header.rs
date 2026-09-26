@@ -59,10 +59,10 @@ pub const ARCH_KMALLOC_MINALIGN: u32 = 8;
 
 /* The following declarations are excluded for assembler and VDSO builds. */
 
-#[cfg(feature = "CONFIG_KASAN_SW_TAGS")]
+#[cfg(CONFIG_KASAN_SW_TAGS)]
 pub const ARCH_SLAB_MINALIGN: u64 = 1u64 << KASAN_SHADOW_SCALE_SHIFT;
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 #[inline]
 pub fn arch_slab_minalign() -> usize {
     unsafe {

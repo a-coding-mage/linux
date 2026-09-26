@@ -62,7 +62,7 @@ const  usb_device_id btusb_table[] = {
 
 	/* Apple-specific (Broadcom) devices */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x05ac, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_APPLE | BTUSB_IFNUM_2 },
+	  driver_info: BTUSB_BCM_APPLE | BTUSB_IFNUM_2 },
 
 	/* MediaTek MT76x0E */
 	{ USB_DEVICE(0x0e8d, 0x763f) },
@@ -112,47 +112,47 @@ const  usb_device_id btusb_table[] = {
 
 	/* Broadcom BCM43142A0 (Foxconn/Lenovo) */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x105b, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Broadcom BCM920703 (HTC Vive) */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bb4, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Foxconn - Hon Hai */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0489, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Lite-On Technology - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x04ca, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Broadcom devices with vendor specific id */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0a5c, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* ASUSTek Computer - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0b05, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Belkin F8065bf - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x050d, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* IMC Networks - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x13d3, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Dell Computer - Broadcom based  */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x413c, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Toshiba Corp - Broadcom based */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0930, 0xff, 0x01, 0x01),
-	  .driver_info = BTUSB_BCM_PATCHRAM },
+	  driver_info: BTUSB_BCM_PATCHRAM },
 
 	/* Intel Bluetooth USB Bootloader (RAM module) */
 	{ USB_DEVICE(0x8087, 0x0a5a),
-	  .driver_info = BTUSB_INTEL_BOOT | BTUSB_BROKEN_ISOC },
+	  driver_info: BTUSB_INTEL_BOOT | BTUSB_BROKEN_ISOC },
 
 	{ }	/* Terminating entry */
 };
@@ -434,7 +434,7 @@ const  usb_device_id quirks_table[] = {
 
 	/* CONWISE Technology based adapters with buggy SCO support */
 	{ USB_DEVICE(0x0e5e, 0x6622),
-	  .driver_info = BTUSB_BROKEN_ISOC | BTUSB_CW6622},
+	  driver_info: BTUSB_BROKEN_ISOC | BTUSB_CW6622},
 
 	/* Roper Class 1 Bluetooth Dongle (Silicon Wave based) */
 	{ USB_DEVICE(0x1310, 0x0001), .driver_info = BTUSB_SWAVE },
@@ -445,11 +445,11 @@ const  usb_device_id quirks_table[] = {
 
 	/* CSR BlueCore Bluetooth Sniffer */
 	{ USB_DEVICE(0x0a12, 0x0002),
-	  .driver_info = BTUSB_SNIFFER | BTUSB_BROKEN_ISOC },
+	  driver_info: BTUSB_SNIFFER | BTUSB_BROKEN_ISOC },
 
 	/* Frontline ComProbe Bluetooth Sniffer */
 	{ USB_DEVICE(0x16d3, 0x0002),
-	  .driver_info = BTUSB_SNIFFER | BTUSB_BROKEN_ISOC },
+	  driver_info: BTUSB_SNIFFER | BTUSB_BROKEN_ISOC },
 
 	/* Marvell Bluetooth devices */
 	{ USB_DEVICE(0x1286, 0x2044), .driver_info = BTUSB_MARVELL },
@@ -483,7 +483,7 @@ const  usb_device_id quirks_table[] = {
 
 	/* Other Intel Bluetooth devices */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
-	  .driver_info = BTUSB_IGNORE },
+	  driver_info: BTUSB_IGNORE },
 
 	/* Realtek 8821CE Bluetooth devices */
 	{ USB_DEVICE(0x13d3, 0x3529), .driver_info = BTUSB_REALTEK |
@@ -604,11 +604,11 @@ const  usb_device_id quirks_table[] = {
 
 	/* Realtek Bluetooth devices */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
-	  .driver_info = BTUSB_REALTEK },
+	  driver_info: BTUSB_REALTEK },
 
 	/* MediaTek Bluetooth devices */
 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0e8d, 0xe0, 0x01, 0x01),
-	  .driver_info = BTUSB_MEDIATEK |
+	  driver_info: BTUSB_MEDIATEK |
 			 BTUSB_WIDEBAND_SPEECH },
 
 	/* Additional MediaTek MT7615E Bluetooth devices */
@@ -904,21 +904,21 @@ const  usb_device_id quirks_table[] = {
 const  dmi_system_id btusb_needs_reset_resume_table[] = {
 	{
 		/* Dell OptiPlex 3060 (QCA ROME device 0cf3:e007) */
-		.matches = {
+		matches: {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "OptiPlex 3060"),
 		},
 	},
 	{
 		/* Dell XPS 9360 (QCA ROME device 0cf3:e300) */
-		.matches = {
+		matches: {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "XPS 13 9360"),
 		},
 	},
 	{
 		/* Dell Inspiron 5565 (QCA ROME device 0cf3:e009) */
-		.matches = {
+		matches: {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 5565"),
 		},
@@ -972,7 +972,7 @@ struct btusb_data {
 	struct usb_interface *diag;
 	unsigned isoc_ifnum;
 
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	bool poll_sync;
 	int intr_interval;
@@ -1011,51 +1011,51 @@ struct btusb_data {
 	__u8 cmdreq_type;
 	__u8 cmdreq;
 
-	unsigned int sco_num;
-	unsigned int air_mode;
+	core::ffi::c_uint sco_num;
+	core::ffi::c_uint air_mode;
 	bool usb_alt6_packet_flow;
 	int isoc_altsetting;
 	int suspend_count;
 	const struct usb_device_id *match_id;
 
-	int (*recv_event)(struct hci_dev *hdev, struct sk_buff *skb);
-	int (*recv_acl)(struct hci_dev *hdev, struct sk_buff *skb);
-	int (*recv_bulk)(struct btusb_data *data, void *buffer, int count);
+	int (*recv_event)(hci_dev *hdev, sk_buff *skb);
+	int (*recv_acl)(hci_dev *hdev, sk_buff *skb);
+	int (*recv_bulk)(btusb_data *data, void *buffer, int count);
 
-	int (*setup_on_usb)(struct hci_dev *hdev);
+	int (*setup_on_usb)(hci_dev *hdev);
 
-	int (*suspend)(struct hci_dev *hdev);
-	int (*resume)(struct hci_dev *hdev);
-	int (*disconnect)(struct hci_dev *hdev);
+	int (*suspend)(hci_dev *hdev);
+	int (*resume)(hci_dev *hdev);
+	int (*disconnect)(hci_dev *hdev);
 
 	int oob_wake_irq;   /* irq for out-of-band wake-on-bt */
 };
 
-unsafe fn  btusb_reset(struct hci_dev *hdev)
+unsafe fn  btusb_reset(hci_dev *hdev)
 {
 	struct btusb_data *data;
 	int err;
 
 	data = hci_get_drvdata(hdev);
 	/* This is not an unbalanced PM reference since the device will reset */
-	err = usb_autopm_get_interface(data->intf);
+	err = usb_autopm_get_interface((*data).intf);
 	if (err) {
 		bt_dev_err(hdev, "Failed usb_autopm_get_interface: %d", err);
 		return;
 	}
 
 	bt_dev_err(hdev, "Resetting usb device.");
-	usb_queue_reset_device(data->intf);
+	usb_queue_reset_device((*data).intf);
 }
 
-unsafe fn  btusb_intel_reset(struct hci_dev *hdev)
+unsafe fn  btusb_intel_reset(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	struct gpio_desc *reset_gpio = data->reset_gpio;
+	struct gpio_desc *reset_gpio = (*data).reset_gpio;
 	struct btintel_data *intel_data = hci_get_priv(hdev);
 
-	if (intel_data->acpi_reset_method) {
-		if (test_and_set_bit(INTEL_ACPI_RESET_ACTIVE, intel_data->flags)) {
+	if ((*intel_data).acpi_reset_method) {
+		if (test_and_set_bit(INTEL_ACPI_RESET_ACTIVE, (*intel_data).flags)) {
 			bt_dev_err(hdev, "acpi: last reset failed ? Not resetting again");
 			return;
 		}
@@ -1064,7 +1064,7 @@ unsafe fn  btusb_intel_reset(struct hci_dev *hdev)
 		/* If ACPI reset method fails, lets try with legacy GPIO
 		 * toggling
 		 */
-		if (!intel_data->acpi_reset_method(hdev)) {
+		if ((*!intel_data).acpi_reset_method(hdev)) {
 			return;
 		}
 	}
@@ -1081,7 +1081,7 @@ unsafe fn  btusb_intel_reset(struct hci_dev *hdev)
 	 * (standard USB disconnect), and the new device is detected cleanly
 	 * and bound to the driver again like it should be.
 	 */
-	if (test_and_set_bit(BTUSB_HW_RESET_ACTIVE, &data->flags)) {
+	if (test_and_set_bit(BTUSB_HW_RESET_ACTIVE, (*&data).flags)) {
 		bt_dev_err(hdev, "last reset failed? Not resetting again");
 		return;
 	}
@@ -1105,8 +1105,8 @@ struct rtk_dev_coredump_hdr {
 	u8 reserved[2];
 } __packed;
 
-unsafe fn btusb_rtl_alloc_devcoredump(struct hci_dev *hdev,
-		struct rtk_dev_coredump_hdr *hdr, u8 *buf, u32 len)
+unsafe fn btusb_rtl_alloc_devcoredump(hci_dev *hdev,
+		rtk_dev_coredump_hdr *hdr, u8 *buf, len: u32)
 {
 	struct sk_buff *skb;
 
@@ -1118,7 +1118,7 @@ unsafe fn btusb_rtl_alloc_devcoredump(struct hci_dev *hdev,
 	if (len)
 		skb_put_data(skb, buf, len);
 
-	if (!hci_devcd_init(hdev, skb->len)) {
+	if (!hci_devcd_init(hdev, (*skb).len)) {
 		hci_devcd_append(hdev, skb);
 		hci_devcd_complete(hdev);
 	} else {
@@ -1127,12 +1127,12 @@ unsafe fn btusb_rtl_alloc_devcoredump(struct hci_dev *hdev,
 	}
 }
 
-unsafe fn  btusb_rtl_reset(struct hci_dev *hdev)
+unsafe fn  btusb_rtl_reset(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	struct gpio_desc *reset_gpio = data->reset_gpio;
+	struct gpio_desc *reset_gpio = (*data).reset_gpio;
 	struct rtk_dev_coredump_hdr hdr = {
-		.type = RTK_DEVCOREDUMP_CODE_CMD_TIMEOUT,
+		type: RTK_DEVCOREDUMP_CODE_CMD_TIMEOUT,
 	};
 
 	btusb_rtl_alloc_devcoredump(hdev, &hdr, core::ptr::null_mut(), 0);
@@ -1148,7 +1148,7 @@ unsafe fn  btusb_rtl_reset(struct hci_dev *hdev)
 	 * device is detected cleanly and bound to the driver again like
 	 * it should be.
 	 */
-	if (test_and_set_bit(BTUSB_HW_RESET_ACTIVE, &data->flags)) {
+	if (test_and_set_bit(BTUSB_HW_RESET_ACTIVE, (*&data).flags)) {
 		bt_dev_err(hdev, "last reset failed? Not resetting again");
 		return;
 	}
@@ -1159,11 +1159,11 @@ unsafe fn  btusb_rtl_reset(struct hci_dev *hdev)
 	gpiod_set_value_cansleep(reset_gpio, 0);
 }
 
-unsafe fn  btusb_rtl_hw_error(struct hci_dev *hdev, u8 code)
+unsafe fn  btusb_rtl_hw_error(hci_dev *hdev, code: u8)
 {
 	struct rtk_dev_coredump_hdr hdr = {
-		.type = RTK_DEVCOREDUMP_CODE_HW_ERR,
-		.code = code,
+		type: RTK_DEVCOREDUMP_CODE_HW_ERR,
+		code: code,
 	};
 
 	bt_dev_err(hdev, "RTL: hw err, trigger devcoredump (%d)", code);
@@ -1171,12 +1171,12 @@ unsafe fn  btusb_rtl_hw_error(struct hci_dev *hdev, u8 code)
 	btusb_rtl_alloc_devcoredump(hdev, &hdr, core::ptr::null_mut(), 0);
 }
 
-unsafe fn  btusb_qca_reset(struct hci_dev *hdev)
+unsafe fn  btusb_qca_reset(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	struct gpio_desc *reset_gpio = data->reset_gpio;
+	struct gpio_desc *reset_gpio = (*data).reset_gpio;
 
-	if (test_bit(BTUSB_HW_SSR_ACTIVE, &data->flags)) {
+	if (test_bit(BTUSB_HW_SSR_ACTIVE, (*&data).flags)) {
 		bt_dev_info(hdev, "Ramdump in progress, defer reset");
 		return;
 	}
@@ -1190,7 +1190,7 @@ unsafe fn  btusb_qca_reset(struct hci_dev *hdev)
 		 * device is detected cleanly and bound to the driver again like
 		 * it should be.
 		 */
-		if (test_and_set_bit(BTUSB_HW_RESET_ACTIVE, &data->flags)) {
+		if (test_and_set_bit(BTUSB_HW_RESET_ACTIVE, (*&data).flags)) {
 			bt_dev_err(hdev, "last reset failed? Not resetting again");
 			return;
 		}
@@ -1205,15 +1205,15 @@ unsafe fn  btusb_qca_reset(struct hci_dev *hdev)
 	btusb_reset(hdev);
 }
 
-unsafe fn  btusb_classify_qca_pkt_type(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_classify_qca_pkt_type(hci_dev *hdev, sk_buff *skb)
 {
 	/* Some Qualcomm controllers, e.g., QCNFA765 with WCN6855 chip, send debug
 	 * packets as ACL frames with connection handle 0x2EDC. These are not real
 	 * ACL packets and should be reclassified as HCI_DIAG_PKT to prevent
 	 * "ACL packet for unknown connection handle 3804" errors.
 	 */
-	if (skb->len >= 2) {
-		u16 handle = get_unaligned_le16(skb->data);
+	if ((*skb).len >= 2) {
+		u16 handle = get_unaligned_le16((*skb).data);
 
 		if (handle == 0x2EDC)
 			return HCI_DIAG_PKT;
@@ -1223,44 +1223,44 @@ unsafe fn  btusb_classify_qca_pkt_type(struct hci_dev *hdev, struct sk_buff *skb
 	return hci_skb_pkt_type(skb);
 }
 
-unsafe fn btusb_free_frags(struct btusb_data *data)
+unsafe fn btusb_free_frags(btusb_data *data)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&data->rxlock, flags);
+	spin_lock_irqsave((*&data).rxlock, flags);
 
-	dev_kfree_skb_irq(data->evt_skb);
-	data->evt_skb = core::ptr::null_mut();
+	dev_kfree_skb_irq((*data).evt_skb);
+	(*data).evt_skb = core::ptr::null_mut();
 
-	dev_kfree_skb_irq(data->acl_skb);
-	data->acl_skb = core::ptr::null_mut();
+	dev_kfree_skb_irq((*data).acl_skb);
+	(*data).acl_skb = core::ptr::null_mut();
 
-	dev_kfree_skb_irq(data->sco_skb);
-	data->sco_skb = core::ptr::null_mut();
+	dev_kfree_skb_irq((*data).sco_skb);
+	(*data).sco_skb = core::ptr::null_mut();
 
-	spin_unlock_irqrestore(&data->rxlock, flags);
+	spin_unlock_irqrestore((*&data).rxlock, flags);
 }
 
-unsafe fn  btusb_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_recv_event(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
-	if (data->intr_interval) {
+	if ((*data).intr_interval) {
 		/* Trigger dequeue immediately if an event is received */
-		schedule_delayed_work(&data->rx_work, 0);
+		schedule_delayed_work((*&data).rx_work, 0);
 	}
 
-	return data->recv_event(hdev, skb);
+	return (*data).recv_event(hdev, skb);
 }
 
-unsafe fn  btusb_recv_intr(struct btusb_data *data, void *buffer, int count)
+unsafe fn  btusb_recv_intr(btusb_data *data, void *buffer, int count)
 {
 	struct sk_buff *skb;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int err = 0;
 
-	spin_lock_irqsave(&data->rxlock, flags);
-	skb = data->evt_skb;
+	spin_lock_irqsave((*&data).rxlock, flags);
+	skb = (*data).evt_skb;
 
 	while (count) {
 		int len;
@@ -1283,9 +1283,9 @@ unsafe fn  btusb_recv_intr(struct btusb_data *data, void *buffer, int count)
 		buffer += len;
 		hci_skb_expect(skb) -= len;
 
-		if (skb->len == HCI_EVENT_HDR_SIZE) {
+		if ((*skb).len == HCI_EVENT_HDR_SIZE) {
 			/* Complete event header */
-			hci_skb_expect(skb) = hci_event_hdr(skb)->plen;
+			hci_skb_expect(skb) = (*hci_event_hdr(skb)).plen;
 
 			if (skb_tailroom(skb) < hci_skb_expect(skb)) {
 				kfree_skb(skb);
@@ -1303,48 +1303,48 @@ unsafe fn  btusb_recv_intr(struct btusb_data *data, void *buffer, int count)
 			 * controller.
 			 */
 			if (count && count < HCI_EVENT_HDR_SIZE) {
-				bt_dev_warn(data->hdev,
+				bt_dev_warn((*data).hdev,
 					"Unexpected continuation: %d bytes",
 					count);
 				count = 0;
 			}
 
 			/* Complete frame */
-			btusb_recv_event(data->hdev, skb);
+			btusb_recv_event((*data).hdev, skb);
 			skb = core::ptr::null_mut();
 		}
 	}
 
-	data->evt_skb = skb;
-	spin_unlock_irqrestore(&data->rxlock, flags);
+	(*data).evt_skb = skb;
+	spin_unlock_irqrestore((*&data).rxlock, flags);
 
 	return err;
 }
 
-unsafe fn  btusb_recv_acl(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_recv_acl(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
 	/* Only queue ACL packet if intr_interval is set as it means
 	 * force_poll_sync has been enabled.
 	 */
-	if (!data->intr_interval)
-		return data->recv_acl(hdev, skb);
+	if ((*!data).intr_interval)
+		return (*data).recv_acl(hdev, skb);
 
-	skb_queue_tail(&data->acl_q, skb);
-	schedule_delayed_work(&data->rx_work, data->intr_interval);
+	skb_queue_tail((*&data).acl_q, skb);
+	schedule_delayed_work((*&data).rx_work, (*data).intr_interval);
 
 	return 0;
 }
 
-unsafe fn  btusb_recv_bulk(struct btusb_data *data, void *buffer, int count)
+unsafe fn  btusb_recv_bulk(btusb_data *data, void *buffer, int count)
 {
 	struct sk_buff *skb;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int err = 0;
 
-	spin_lock_irqsave(&data->rxlock, flags);
-	skb = data->acl_skb;
+	spin_lock_irqsave((*&data).rxlock, flags);
+	skb = (*data).acl_skb;
 
 	while (count) {
 		int len;
@@ -1367,7 +1367,7 @@ unsafe fn  btusb_recv_bulk(struct btusb_data *data, void *buffer, int count)
 		buffer += len;
 		hci_skb_expect(skb) -= len;
 
-		if (skb->len == HCI_ACL_HDR_SIZE) {
+		if ((*skb).len == HCI_ACL_HDR_SIZE) {
 			/* Complete ACL header */
 			hci_skb_expect(skb) = hci_acl_dlen(skb);
 
@@ -1382,19 +1382,19 @@ unsafe fn  btusb_recv_bulk(struct btusb_data *data, void *buffer, int count)
 
 		if (!hci_skb_expect(skb)) {
 			/* Complete frame */
-			btusb_recv_acl(data->hdev, skb);
+			btusb_recv_acl((*data).hdev, skb);
 			skb = core::ptr::null_mut();
 		}
 	}
 
-	data->acl_skb = skb;
-	spin_unlock_irqrestore(&data->rxlock, flags);
+	(*data).acl_skb = skb;
+	spin_unlock_irqrestore((*&data).rxlock, flags);
 
 	return err;
 }
 
-static mut  btusb_validate_sco_handle(struct hci_dev *hdev,
-				      struct hci_sco_hdr *hdr)
+static mut  btusb_validate_sco_handle(hci_dev *hdev,
+				      hci_sco_hdr *hdr)
 {
 	__u16 handle;
 
@@ -1410,7 +1410,7 @@ static mut  btusb_validate_sco_handle(struct hci_dev *hdev,
 	 * layer will get garbage for a while.
 	 */
 
-	handle = hci_handle(__le16_to_cpu(hdr->handle));
+	handle = hci_handle(__le16_to_cpu((*hdr).handle));
 
 	switch (hci_conn_lookup_type(hdev, handle)) {
 	case SCO_LINK:
@@ -1421,14 +1421,14 @@ static mut  btusb_validate_sco_handle(struct hci_dev *hdev,
 	}
 }
 
-unsafe fn  btusb_recv_isoc(struct btusb_data *data, void *buffer, int count)
+unsafe fn  btusb_recv_isoc(btusb_data *data, void *buffer, int count)
 {
 	struct sk_buff *skb;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int err = 0;
 
-	spin_lock_irqsave(&data->rxlock, flags);
-	skb = data->sco_skb;
+	spin_lock_irqsave((*&data).rxlock, flags);
+	skb = (*data).sco_skb;
 
 	while (count) {
 		int len;
@@ -1451,14 +1451,14 @@ unsafe fn  btusb_recv_isoc(struct btusb_data *data, void *buffer, int count)
 		buffer += len;
 		hci_skb_expect(skb) -= len;
 
-		if (skb->len == HCI_SCO_HDR_SIZE) {
+		if ((*skb).len == HCI_SCO_HDR_SIZE) {
 			/* Complete SCO header */
 			struct hci_sco_hdr *hdr = hci_sco_hdr(skb);
 
-			hci_skb_expect(skb) = hdr->dlen;
+			hci_skb_expect(skb) = (*hdr).dlen;
 
 			if (skb_tailroom(skb) < hci_skb_expect(skb) ||
-			    !btusb_validate_sco_handle(data->hdev, hdr)) {
+			    !btusb_validate_sco_handle((*data).hdev, hdr)) {
 				kfree_skb(skb);
 				skb = core::ptr::null_mut();
 
@@ -1469,47 +1469,47 @@ unsafe fn  btusb_recv_isoc(struct btusb_data *data, void *buffer, int count)
 
 		if (!hci_skb_expect(skb)) {
 			/* Complete frame */
-			hci_recv_frame(data->hdev, skb);
+			hci_recv_frame((*data).hdev, skb);
 			skb = core::ptr::null_mut();
 		}
 	}
 
-	data->sco_skb = skb;
-	spin_unlock_irqrestore(&data->rxlock, flags);
+	(*data).sco_skb = skb;
+	spin_unlock_irqrestore((*&data).rxlock, flags);
 
 	return err;
 }
 
-unsafe fn  btusb_intr_complete(struct urb *urb)
+unsafe fn  btusb_intr_complete(urb *urb)
 {
-	struct hci_dev *hdev = urb->context;
+	struct hci_dev *hdev = (*urb).context;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
-	       urb->actual_length);
+	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, (*urb).status,
+	       (*urb).actual_length);
 
-	if (!test_bit(HCI_RUNNING, &hdev->flags))
+	if (!test_bit(HCI_RUNNING, (*&hdev).flags))
 		return;
 
-	if (urb->status == 0) {
-		hdev->stat.byte_rx += urb->actual_length;
+	if ((*urb).status == 0) {
+		(*hdev).stat.byte_rx += (*urb).actual_length;
 
-		if (btusb_recv_intr(data, urb->transfer_buffer,
-				    urb->actual_length) < 0) {
+		if (btusb_recv_intr(data, (*urb).transfer_buffer,
+				    (*urb).actual_length) < 0) {
 			bt_dev_err(hdev, "corrupted event packet");
-			hdev->stat.err_rx++;
+			(*hdev).stat.err_rx++;
 		}
-	} else if (urb->status == -ENOENT) {
+	} else if ((*urb).status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
 	}
 
-	if (!test_bit(BTUSB_INTR_RUNNING, &data->flags))
+	if (!test_bit(BTUSB_INTR_RUNNING, (*&data).flags))
 		return;
 
-	usb_mark_last_busy(data->udev);
-	usb_anchor_urb(urb, &data->intr_anchor);
+	usb_mark_last_busy((*data).udev);
+	usb_anchor_urb(urb, (*&data).intr_anchor);
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
@@ -1525,27 +1525,28 @@ unsafe fn  btusb_intr_complete(struct urb *urb)
 	}
 }
 
-unsafe fn  btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
+unsafe fn  btusb_submit_intr_urb(hci_dev *hdev, gfp_t mem_flags)
 {
+	'done: {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	unsigned char *buf;
-	unsigned int pipe;
+	core::ffi::c_uchar *buf;
+	core::ffi::c_uint pipe;
 	int err, size;
 
-	BT_DBG("%s", hdev->name);
+	BT_DBG("%s", (*hdev).name);
 
-	if (!data->intr_ep)
+	if ((*!data).intr_ep)
 		return -ENODEV;
 
 	urb = usb_alloc_urb(0, mem_flags);
 	if (!urb)
 		return -ENOMEM;
 
-	if (le16_to_cpu(data->udev->descriptor.idVendor)  == 0x0a12 &&
-	    le16_to_cpu(data->udev->descriptor.idProduct) == 0x0001)
+	if (le16_to_cpu((*(*data).udev).descriptor.idVendor)  == 0x0a12 &&
+	    le16_to_cpu((*(*data).udev).descriptor.idProduct) == 0x0001)
 		/* Fake CSR devices don't seem to support sort-transter */
-		size = le16_to_cpu(data->intr_ep->wMaxPacketSize);
+		size = le16_to_cpu((*(*data).intr_ep).wMaxPacketSize);
 	else
 		/* Use maximum HCI Event size so the USB stack handles
 		 * ZPL/short-transfer automatically.
@@ -1558,14 +1559,14 @@ unsafe fn  btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 		return -ENOMEM;
 	}
 
-	pipe = usb_rcvintpipe(data->udev, data->intr_ep->bEndpointAddress);
+	pipe = usb_rcvintpipe((*data).udev, (*(*data).intr_ep).bEndpointAddress);
 
-	usb_fill_int_urb(urb, data->udev, pipe, buf, size,
-			 btusb_intr_complete, hdev, data->intr_ep->bInterval);
+	usb_fill_int_urb(urb, (*data).udev, pipe, buf, size,
+			 btusb_intr_complete, hdev, (*(*data).intr_ep).bInterval);
 
-	urb->transfer_flags |= URB_FREE_BUFFER;
+	(*urb).transfer_flags |= URB_FREE_BUFFER;
 
-	usb_anchor_urb(urb, &data->intr_anchor);
+	usb_anchor_urb(urb, (*&data).intr_anchor);
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
@@ -1578,8 +1579,8 @@ unsafe fn  btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	}
 
 	/* Only initialize intr_interval if URB poll sync is enabled */
-	if (!data->poll_sync)
-		goto done;
+	if ((*!data).poll_sync)
+		break 'done;
 
 	/* The units are frames (milliseconds) for full and low speed devices,
 	 * and microframes (1/8 millisecond) for highspeed and SuperSpeed
@@ -1588,52 +1589,52 @@ unsafe fn  btusb_submit_intr_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	 * This is done once on open/resume so it shouldn't change even if
 	 * force_poll_sync changes.
 	 */
-	switch (urb->dev->speed) {
+	switch ((*(*urb).dev).speed) {
 	case USB_SPEED_SUPER_PLUS:
 	case USB_SPEED_SUPER:	/* units are 125us */
-		data->intr_interval = usecs_to_jiffies(urb->interval * 125);
+		(*data).intr_interval = usecs_to_jiffies((*urb).interval * 125);
 		break;
 	default:
-		data->intr_interval = msecs_to_jiffies(urb->interval);
+		(*data).intr_interval = msecs_to_jiffies((*urb).interval);
 		break;
 	}
-
-done:
+	}
+	
 	usb_free_urb(urb);
 
 	return err;
 }
 
-unsafe fn  btusb_bulk_complete(struct urb *urb)
+unsafe fn  btusb_bulk_complete(urb *urb)
 {
-	struct hci_dev *hdev = urb->context;
+	struct hci_dev *hdev = (*urb).context;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
-	       urb->actual_length);
+	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, (*urb).status,
+	       (*urb).actual_length);
 
-	if (!test_bit(HCI_RUNNING, &hdev->flags))
+	if (!test_bit(HCI_RUNNING, (*&hdev).flags))
 		return;
 
-	if (urb->status == 0) {
-		hdev->stat.byte_rx += urb->actual_length;
+	if ((*urb).status == 0) {
+		(*hdev).stat.byte_rx += (*urb).actual_length;
 
-		if (data->recv_bulk(data, urb->transfer_buffer,
-				    urb->actual_length) < 0) {
+		if ((*data).recv_bulk(data, (*urb).transfer_buffer,
+				    (*urb).actual_length) < 0) {
 			bt_dev_err(hdev, "corrupted ACL packet");
-			hdev->stat.err_rx++;
+			(*hdev).stat.err_rx++;
 		}
-	} else if (urb->status == -ENOENT) {
+	} else if ((*urb).status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
 	}
 
-	if (!test_bit(BTUSB_BULK_RUNNING, &data->flags))
+	if (!test_bit(BTUSB_BULK_RUNNING, (*&data).flags))
 		return;
 
-	usb_anchor_urb(urb, &data->bulk_anchor);
-	usb_mark_last_busy(data->udev);
+	usb_anchor_urb(urb, (*&data).bulk_anchor);
+	usb_mark_last_busy((*data).udev);
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
@@ -1647,17 +1648,17 @@ unsafe fn  btusb_bulk_complete(struct urb *urb)
 	}
 }
 
-unsafe fn  btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
+unsafe fn  btusb_submit_bulk_urb(hci_dev *hdev, gfp_t mem_flags)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	unsigned char *buf;
-	unsigned int pipe;
+	core::ffi::c_uchar *buf;
+	core::ffi::c_uint pipe;
 	int err, size = HCI_MAX_FRAME_SIZE;
 
-	BT_DBG("%s", hdev->name);
+	BT_DBG("%s", (*hdev).name);
 
-	if (!data->bulk_rx_ep)
+	if ((*!data).bulk_rx_ep)
 		return -ENODEV;
 
 	urb = usb_alloc_urb(0, mem_flags);
@@ -1670,15 +1671,15 @@ unsafe fn  btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 		return -ENOMEM;
 	}
 
-	pipe = usb_rcvbulkpipe(data->udev, data->bulk_rx_ep->bEndpointAddress);
+	pipe = usb_rcvbulkpipe((*data).udev, (*(*data).bulk_rx_ep).bEndpointAddress);
 
-	usb_fill_bulk_urb(urb, data->udev, pipe, buf, size,
+	usb_fill_bulk_urb(urb, (*data).udev, pipe, buf, size,
 			  btusb_bulk_complete, hdev);
 
-	urb->transfer_flags |= URB_FREE_BUFFER;
+	(*urb).transfer_flags |= URB_FREE_BUFFER;
 
-	usb_mark_last_busy(data->udev);
-	usb_anchor_urb(urb, &data->bulk_anchor);
+	usb_mark_last_busy((*data).udev);
+	usb_anchor_urb(urb, (*&data).bulk_anchor);
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
@@ -1693,43 +1694,43 @@ unsafe fn  btusb_submit_bulk_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	return err;
 }
 
-unsafe fn  btusb_isoc_complete(struct urb *urb)
+unsafe fn  btusb_isoc_complete(urb *urb)
 {
-	struct hci_dev *hdev = urb->context;
+	struct hci_dev *hdev = (*urb).context;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int i, err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
-	       urb->actual_length);
+	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, (*urb).status,
+	       (*urb).actual_length);
 
-	if (!test_bit(HCI_RUNNING, &hdev->flags))
+	if (!test_bit(HCI_RUNNING, (*&hdev).flags))
 		return;
 
-	if (urb->status == 0) {
-		for (i = 0; i < urb->number_of_packets; i++) {
-			unsigned int offset = urb->iso_frame_desc[i].offset;
-			unsigned int length = urb->iso_frame_desc[i].actual_length;
+	if ((*urb).status == 0) {
+		for (i = 0; i < (*urb).number_of_packets; i++) {
+			core::ffi::c_uint offset = (*urb).iso_frame_desc[i].offset;
+			core::ffi::c_uint length = (*urb).iso_frame_desc[i].actual_length;
 
-			if (urb->iso_frame_desc[i].status)
+			if ((*urb).iso_frame_desc[i].status)
 				continue;
 
-			hdev->stat.byte_rx += length;
+			(*hdev).stat.byte_rx += length;
 
-			if (btusb_recv_isoc(data, urb->transfer_buffer + offset,
+			if (btusb_recv_isoc(data, (*urb).transfer_buffer + offset,
 					    length) < 0) {
 				bt_dev_err(hdev, "corrupted SCO packet");
-				hdev->stat.err_rx++;
+				(*hdev).stat.err_rx++;
 			}
 		}
-	} else if (urb->status == -ENOENT) {
+	} else if ((*urb).status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
 	}
 
-	if (!test_bit(BTUSB_ISOC_RUNNING, &data->flags))
+	if (!test_bit(BTUSB_ISOC_RUNNING, (*&data).flags))
 		return;
 
-	usb_anchor_urb(urb, &data->isoc_anchor);
+	usb_anchor_urb(urb, (*&data).isoc_anchor);
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
@@ -1743,19 +1744,20 @@ unsafe fn  btusb_isoc_complete(struct urb *urb)
 	}
 }
 
-unsafe fn __fill_isoc_descriptor_msbc(struct urb *urb, int len,
-					       int mtu, struct btusb_data *data)
+unsafe fn __fill_isoc_descriptor_msbc(urb *urb, int len,
+					       int mtu, btusb_data *data)
 {
+	'ignore_usb_alt6_packet_flow: {
 	int i = 0, offset = 0;
-	unsigned int interval;
+	core::ffi::c_uint interval;
 
 	BT_DBG("len %d mtu %d", len, mtu);
 
 	/* For mSBC ALT 6 settings some chips need to transmit the data
 	 * continuously without the zero length of USB packets.
 	 */
-	if (test_bit(BTUSB_ALT6_CONTINUOUS_TX, &data->flags))
-		goto ignore_usb_alt6_packet_flow;
+	if (test_bit(BTUSB_ALT6_CONTINUOUS_TX, (*&data).flags))
+		break 'ignore_usb_alt6_packet_flow;
 
 	/* For mSBC ALT 6 setting the host will send the packet at continuous
 	 * flow. As per core spec 5, vol 4, part B, table 2.1. For ALT setting
@@ -1763,30 +1765,30 @@ unsafe fn __fill_isoc_descriptor_msbc(struct urb *urb, int len,
 	 * To maintain the rate we send 63bytes of usb packets alternatively for
 	 * 7ms and 8ms to maintain the rate as 7.5ms.
 	 */
-	if (data->usb_alt6_packet_flow) {
+	if ((*data).usb_alt6_packet_flow) {
 		interval = 7;
-		data->usb_alt6_packet_flow = false;
+		(*data).usb_alt6_packet_flow = false;
 	} else {
 		interval = 6;
-		data->usb_alt6_packet_flow = true;
+		(*data).usb_alt6_packet_flow = true;
 	}
 
 	for (i = 0; i < interval; i++) {
-		urb->iso_frame_desc[i].offset = offset;
-		urb->iso_frame_desc[i].length = offset;
+		(*urb).iso_frame_desc[i].offset = offset;
+		(*urb).iso_frame_desc[i].length = offset;
 	}
-
-ignore_usb_alt6_packet_flow:
+	}
+	
 	if (len && i < BTUSB_MAX_ISOC_FRAMES) {
-		urb->iso_frame_desc[i].offset = offset;
-		urb->iso_frame_desc[i].length = len;
+		(*urb).iso_frame_desc[i].offset = offset;
+		(*urb).iso_frame_desc[i].length = len;
 		i++;
 	}
 
-	urb->number_of_packets = i;
+	(*urb).number_of_packets = i;
 }
 
-unsafe fn __fill_isoc_descriptor(struct urb *urb, int len, int mtu)
+unsafe fn __fill_isoc_descriptor(urb *urb, int len, int mtu)
 {
 	int i, offset = 0;
 
@@ -1794,37 +1796,37 @@ unsafe fn __fill_isoc_descriptor(struct urb *urb, int len, int mtu)
 
 	for (i = 0; i < BTUSB_MAX_ISOC_FRAMES && len >= mtu;
 					i++, offset += mtu, len -= mtu) {
-		urb->iso_frame_desc[i].offset = offset;
-		urb->iso_frame_desc[i].length = mtu;
+		(*urb).iso_frame_desc[i].offset = offset;
+		(*urb).iso_frame_desc[i].length = mtu;
 	}
 
 	if (len && i < BTUSB_MAX_ISOC_FRAMES) {
-		urb->iso_frame_desc[i].offset = offset;
-		urb->iso_frame_desc[i].length = len;
+		(*urb).iso_frame_desc[i].offset = offset;
+		(*urb).iso_frame_desc[i].length = len;
 		i++;
 	}
 
-	urb->number_of_packets = i;
+	(*urb).number_of_packets = i;
 }
 
-unsafe fn  btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
+unsafe fn  btusb_submit_isoc_urb(hci_dev *hdev, gfp_t mem_flags)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	unsigned char *buf;
-	unsigned int pipe;
+	core::ffi::c_uchar *buf;
+	core::ffi::c_uint pipe;
 	int err, size;
 
-	BT_DBG("%s", hdev->name);
+	BT_DBG("%s", (*hdev).name);
 
-	if (!data->isoc_rx_ep)
+	if ((*!data).isoc_rx_ep)
 		return -ENODEV;
 
 	urb = usb_alloc_urb(BTUSB_MAX_ISOC_FRAMES, mem_flags);
 	if (!urb)
 		return -ENOMEM;
 
-	size = le16_to_cpu(data->isoc_rx_ep->wMaxPacketSize) *
+	size = le16_to_cpu((*(*data).isoc_rx_ep).wMaxPacketSize) *
 						BTUSB_MAX_ISOC_FRAMES;
 
 	buf = kmalloc(size, mem_flags);
@@ -1833,17 +1835,17 @@ unsafe fn  btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 		return -ENOMEM;
 	}
 
-	pipe = usb_rcvisocpipe(data->udev, data->isoc_rx_ep->bEndpointAddress);
+	pipe = usb_rcvisocpipe((*data).udev, (*(*data).isoc_rx_ep).bEndpointAddress);
 
-	usb_fill_int_urb(urb, data->udev, pipe, buf, size, btusb_isoc_complete,
-			 hdev, data->isoc_rx_ep->bInterval);
+	usb_fill_int_urb(urb, (*data).udev, pipe, buf, size, btusb_isoc_complete,
+			 hdev, (*(*data).isoc_rx_ep).bInterval);
 
-	urb->transfer_flags = URB_FREE_BUFFER | URB_ISO_ASAP;
+	(*urb).transfer_flags = URB_FREE_BUFFER | URB_ISO_ASAP;
 
 	__fill_isoc_descriptor(urb, size,
-			       le16_to_cpu(data->isoc_rx_ep->wMaxPacketSize));
+			       le16_to_cpu((*(*data).isoc_rx_ep).wMaxPacketSize));
 
-	usb_anchor_urb(urb, &data->isoc_anchor);
+	usb_anchor_urb(urb, (*&data).isoc_anchor);
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
@@ -1858,34 +1860,34 @@ unsafe fn  btusb_submit_isoc_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	return err;
 }
 
-unsafe fn  btusb_diag_complete(struct urb *urb)
+unsafe fn  btusb_diag_complete(urb *urb)
 {
-	struct hci_dev *hdev = urb->context;
+	struct hci_dev *hdev = (*urb).context;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
-	       urb->actual_length);
+	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, (*urb).status,
+	       (*urb).actual_length);
 
-	if (urb->status == 0) {
+	if ((*urb).status == 0) {
 		struct sk_buff *skb;
 
-		skb = bt_skb_alloc(urb->actual_length, GFP_ATOMIC);
+		skb = bt_skb_alloc((*urb).actual_length, GFP_ATOMIC);
 		if (skb) {
-			skb_put_data(skb, urb->transfer_buffer,
-				     urb->actual_length);
+			skb_put_data(skb, (*urb).transfer_buffer,
+				     (*urb).actual_length);
 			hci_recv_diag(hdev, skb);
 		}
-	} else if (urb->status == -ENOENT) {
+	} else if ((*urb).status == -ENOENT) {
 		/* Avoid suspend failed when usb_kill_urb */
 		return;
 	}
 
-	if (!test_bit(BTUSB_DIAG_RUNNING, &data->flags))
+	if (!test_bit(BTUSB_DIAG_RUNNING, (*&data).flags))
 		return;
 
-	usb_anchor_urb(urb, &data->diag_anchor);
-	usb_mark_last_busy(data->udev);
+	usb_anchor_urb(urb, (*&data).diag_anchor);
+	usb_mark_last_busy((*data).udev);
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
@@ -1899,17 +1901,17 @@ unsafe fn  btusb_diag_complete(struct urb *urb)
 	}
 }
 
-unsafe fn  btusb_submit_diag_urb(struct hci_dev *hdev, gfp_t mem_flags)
+unsafe fn  btusb_submit_diag_urb(hci_dev *hdev, gfp_t mem_flags)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	unsigned char *buf;
-	unsigned int pipe;
+	core::ffi::c_uchar *buf;
+	core::ffi::c_uint pipe;
 	int err, size = HCI_MAX_FRAME_SIZE;
 
-	BT_DBG("%s", hdev->name);
+	BT_DBG("%s", (*hdev).name);
 
-	if (!data->diag_rx_ep)
+	if ((*!data).diag_rx_ep)
 		return -ENODEV;
 
 	urb = usb_alloc_urb(0, mem_flags);
@@ -1922,15 +1924,15 @@ unsafe fn  btusb_submit_diag_urb(struct hci_dev *hdev, gfp_t mem_flags)
 		return -ENOMEM;
 	}
 
-	pipe = usb_rcvbulkpipe(data->udev, data->diag_rx_ep->bEndpointAddress);
+	pipe = usb_rcvbulkpipe((*data).udev, (*(*data).diag_rx_ep).bEndpointAddress);
 
-	usb_fill_bulk_urb(urb, data->udev, pipe, buf, size,
+	usb_fill_bulk_urb(urb, (*data).udev, pipe, buf, size,
 			  btusb_diag_complete, hdev);
 
-	urb->transfer_flags |= URB_FREE_BUFFER;
+	(*urb).transfer_flags |= URB_FREE_BUFFER;
 
-	usb_mark_last_busy(data->udev);
-	usb_anchor_urb(urb, &data->diag_anchor);
+	usb_mark_last_busy((*data).udev);
+	usb_anchor_urb(urb, (*&data).diag_anchor);
 
 	err = usb_submit_urb(urb, mem_flags);
 	if (err < 0) {
@@ -1945,61 +1947,66 @@ unsafe fn  btusb_submit_diag_urb(struct hci_dev *hdev, gfp_t mem_flags)
 	return err;
 }
 
-unsafe fn  btusb_tx_complete(struct urb *urb)
+unsafe fn  btusb_tx_complete(urb *urb)
 {
-	struct sk_buff *skb = urb->context;
-	struct hci_dev *hdev = (struct hci_dev *)skb->dev;
+	'done: {
+	struct sk_buff *skb = (*urb).context;
+	struct hci_dev *hdev = (*(hci_dev *)skb).dev;
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
-	       urb->actual_length);
+	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, (*urb).status,
+	       (*urb).actual_length);
 
-	if (!test_bit(HCI_RUNNING, &hdev->flags))
-		goto done;
+	if (!test_bit(HCI_RUNNING, (*&hdev).flags))
+		break 'done;
 
-	if (!urb->status) {
-		hdev->stat.byte_tx += urb->transfer_buffer_length;
+	if ((*!urb).status) {
+		(*hdev).stat.byte_tx += (*urb).transfer_buffer_length;
 	} else {
 		if (hci_skb_pkt_type(skb) == HCI_COMMAND_PKT)
-			hci_cmd_sync_cancel(hdev, -urb->status);
-		hdev->stat.err_tx++;
+			hci_cmd_sync_cancel(hdev, (*-urb).status);
+		(*hdev).stat.err_tx++;
 	}
+	}
+	
+	spin_lock_irqsave((*&data).txlock, flags);
+	(*data).tx_in_flight--;
+	spin_unlock_irqrestore((*&data).txlock, flags);
 
-done:
-	spin_lock_irqsave(&data->txlock, flags);
-	data->tx_in_flight--;
-	spin_unlock_irqrestore(&data->txlock, flags);
-
-	kfree(urb->setup_packet);
+	kfree((*urb).setup_packet);
 
 	kfree_skb(skb);
 }
 
-unsafe fn  btusb_isoc_tx_complete(struct urb *urb)
+unsafe fn  btusb_isoc_tx_complete(urb *urb)
 {
-	struct sk_buff *skb = urb->context;
-	struct hci_dev *hdev = (struct hci_dev *)skb->dev;
+	'done: {
+	struct sk_buff *skb = (*urb).context;
+	struct hci_dev *hdev = (*(hci_dev *)skb).dev;
 
-	BT_DBG("%s urb %p status %d count %d", hdev->name, urb, urb->status,
+	BT_DBG("%s urb %p status %d count %d", (*hdev).name, urb, urb->status,
 	       urb->actual_length);
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
-		goto done;
+		break 'done;
 
 	if (!urb->status)
 		hdev->stat.byte_tx += urb->transfer_buffer_length;
 	else
 		hdev->stat.err_tx++;
-
-done:
+	}
+	
 	kfree(urb->setup_packet);
 
 	kfree_skb(skb);
 }
 
-unsafe fn  btusb_open(struct hci_dev *hdev)
+unsafe fn  btusb_open(hci_dev *hdev)
 {
+	'setup_fail: {
+	'failed: {
+	'done: {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
@@ -2015,22 +2022,22 @@ unsafe fn  btusb_open(struct hci_dev *hdev)
 	if (data->setup_on_usb) {
 		err = data->setup_on_usb(hdev);
 		if (err < 0)
-			goto setup_fail;
+			break 'setup_fail;
 	}
 
 	data->intf->needs_remote_wakeup = 1;
 
 	if (test_and_set_bit(BTUSB_INTR_RUNNING, &data->flags))
-		goto done;
+		break 'done;
 
 	err = btusb_submit_intr_urb(hdev, GFP_KERNEL);
 	if (err < 0)
-		goto failed;
+		break 'failed;
 
 	err = btusb_submit_bulk_urb(hdev, GFP_KERNEL);
 	if (err < 0) {
 		usb_kill_anchored_urbs(&data->intr_anchor);
-		goto failed;
+		break 'failed;
 	}
 
 	set_bit(BTUSB_BULK_RUNNING, &data->flags);
@@ -2040,19 +2047,20 @@ unsafe fn  btusb_open(struct hci_dev *hdev)
 		if (!btusb_submit_diag_urb(hdev, GFP_KERNEL))
 			set_bit(BTUSB_DIAG_RUNNING, &data->flags);
 	}
-
-done:
+	}
+	
 	usb_autopm_put_interface(data->intf);
 	return 0;
-
-failed:
+	}
+	
 	clear_bit(BTUSB_INTR_RUNNING, &data->flags);
-setup_fail:
+	}
+	
 	usb_autopm_put_interface(data->intf);
 	return err;
 }
 
-unsafe fn  btusb_stop_traffic(struct btusb_data *data)
+unsafe fn  btusb_stop_traffic(btusb_data *data)
 {
 	usb_kill_anchored_urbs(&data->intr_anchor);
 	usb_kill_anchored_urbs(&data->bulk_anchor);
@@ -2061,7 +2069,7 @@ unsafe fn  btusb_stop_traffic(struct btusb_data *data)
 	usb_kill_anchored_urbs(&data->ctrl_anchor);
 }
 
-unsafe fn  btusb_prepare_reset(struct hci_dev *hdev)
+unsafe fn  btusb_prepare_reset(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
@@ -2069,8 +2077,9 @@ unsafe fn  btusb_prepare_reset(struct hci_dev *hdev)
 	usb_kill_anchored_urbs(&data->tx_anchor);
 }
 
-unsafe fn  btusb_close(struct hci_dev *hdev)
+unsafe fn  btusb_close(hci_dev *hdev)
 {
+	'failed: {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
@@ -2092,7 +2101,7 @@ unsafe fn  btusb_close(struct hci_dev *hdev)
 
 	err = usb_autopm_get_interface(data->intf);
 	if (err < 0)
-		goto failed;
+		break 'failed;
 
 	data->intf->needs_remote_wakeup = 0;
 
@@ -2101,13 +2110,13 @@ unsafe fn  btusb_close(struct hci_dev *hdev)
 		data->intf->needs_remote_wakeup = 1;
 
 	usb_autopm_put_interface(data->intf);
-
-failed:
+	}
+	
 	usb_scuttle_anchored_urbs(&data->deferred);
 	return 0;
 }
 
-unsafe fn  btusb_flush(struct hci_dev *hdev)
+unsafe fn  btusb_flush(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
@@ -2123,12 +2132,12 @@ unsafe fn  btusb_flush(struct hci_dev *hdev)
 	return 0;
 }
 
-static mut  urb *alloc_ctrl_urb(struct hci_dev *hdev, struct sk_buff *skb)
+static mut  urb *alloc_ctrl_urb(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct usb_ctrlrequest *dr;
 	struct urb *urb;
-	unsigned int pipe;
+	core::ffi::c_uint pipe;
 
 	urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!urb)
@@ -2156,11 +2165,11 @@ static mut  urb *alloc_ctrl_urb(struct hci_dev *hdev, struct sk_buff *skb)
 	return urb;
 }
 
-static mut  urb *alloc_bulk_urb(struct hci_dev *hdev, struct sk_buff *skb)
+static mut  urb *alloc_bulk_urb(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	unsigned int pipe;
+	core::ffi::c_uint pipe;
 
 	if (!data->bulk_tx_ep)
 		return ERR_PTR(-ENODEV);
@@ -2179,11 +2188,11 @@ static mut  urb *alloc_bulk_urb(struct hci_dev *hdev, struct sk_buff *skb)
 	return urb;
 }
 
-static mut  urb *alloc_isoc_urb(struct hci_dev *hdev, struct sk_buff *skb)
+static mut  urb *alloc_isoc_urb(hci_dev *hdev, sk_buff *skb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
-	unsigned int pipe;
+	core::ffi::c_uint pipe;
 
 	if (!data->isoc_tx_ep)
 		return ERR_PTR(-ENODEV);
@@ -2212,7 +2221,7 @@ static mut  urb *alloc_isoc_urb(struct hci_dev *hdev, struct sk_buff *skb)
 	return urb;
 }
 
-unsafe fn  submit_tx_urb(struct hci_dev *hdev, struct urb *urb)
+unsafe fn  submit_tx_urb(hci_dev *hdev, urb *urb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
@@ -2234,10 +2243,10 @@ unsafe fn  submit_tx_urb(struct hci_dev *hdev, struct urb *urb)
 	return err;
 }
 
-unsafe fn  submit_or_queue_tx_urb(struct hci_dev *hdev, struct urb *urb)
+unsafe fn  submit_or_queue_tx_urb(hci_dev *hdev, urb *urb)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	bool suspending;
 
 	spin_lock_irqsave(&data->txlock, flags);
@@ -2256,7 +2265,7 @@ unsafe fn  submit_or_queue_tx_urb(struct hci_dev *hdev, struct urb *urb)
 	return 0;
 }
 
-unsafe fn  btusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_send_frame(hci_dev *hdev, sk_buff *skb)
 {
 	struct urb *urb;
 
@@ -2302,7 +2311,7 @@ unsafe fn  btusb_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	return -EILSEQ;
 }
 
-unsafe fn  btusb_notify(struct hci_dev *hdev, unsigned int evt)
+unsafe fn  btusb_notify(hci_dev *hdev, evt: core::ffi::c_uint)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
@@ -2315,7 +2324,7 @@ unsafe fn  btusb_notify(struct hci_dev *hdev, unsigned int evt)
 	}
 }
 
-unsafe fn int __set_isoc_interface(struct hci_dev *hdev, int altsetting)
+unsafe fn int __set_isoc_interface(hci_dev *hdev, int altsetting)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct usb_interface *intf = data->isoc;
@@ -2358,13 +2367,13 @@ unsafe fn int __set_isoc_interface(struct hci_dev *hdev, int altsetting)
 	return 0;
 }
 
-unsafe fn  btusb_switch_alt_setting(struct hci_dev *hdev, int new_alts)
+unsafe fn  btusb_switch_alt_setting(hci_dev *hdev, int new_alts)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int err;
 
 	if (data->isoc_altsetting != new_alts) {
-		unsigned long flags;
+		core::ffi::c_ulong flags;
 
 		clear_bit(BTUSB_ISOC_RUNNING, &data->flags);
 		usb_kill_anchored_urbs(&data->isoc_anchor);
@@ -2398,7 +2407,7 @@ unsafe fn  btusb_switch_alt_setting(struct hci_dev *hdev, int new_alts)
 	return 0;
 }
 
-static mut  usb_host_interface *btusb_find_altsetting(struct btusb_data *data,
+static mut  usb_host_interface *btusb_find_altsetting(btusb_data *data,
 							int alt)
 {
 	struct usb_interface *intf = data->isoc;
@@ -2417,9 +2426,9 @@ static mut  usb_host_interface *btusb_find_altsetting(struct btusb_data *data,
 	return core::ptr::null_mut();
 }
 
-unsafe fn  btusb_work(struct work_struct *work)
+unsafe fn  btusb_work(work_struct *work)
 {
-	struct btusb_data *data = container_of(work, struct btusb_data, work);
+	struct btusb_data *data = container_of(work, btusb_data, work);
 	struct hci_dev *hdev = data->hdev;
 	int new_alts = 0;
 	int err;
@@ -2439,9 +2448,9 @@ unsafe fn  btusb_work(struct work_struct *work)
 		if (data->air_mode == HCI_NOTIFY_ENABLE_SCO_CVSD) {
 			if (hdev->voice_setting & 0x0020) {
 				static const int alts[3] = { 2, 4, 5 };
-				unsigned int sco_idx;
+				core::ffi::c_uint sco_idx;
 
-				sco_idx = min_t(unsigned int, data->sco_num - 1,
+				sco_idx = min_t(core::ffi::c_uint, data->sco_num - 1,
 						ARRAY_SIZE(alts) - 1);
 				new_alts = alts[sco_idx];
 			} else {
@@ -2480,9 +2489,9 @@ unsafe fn  btusb_work(struct work_struct *work)
 	}
 }
 
-unsafe fn  btusb_waker(struct work_struct *work)
+unsafe fn  btusb_waker(work_struct *work)
 {
-	struct btusb_data *data = container_of(work, struct btusb_data, waker);
+	struct btusb_data *data = container_of(work, btusb_data, waker);
 	int err;
 
 	err = usb_autopm_get_interface(data->intf);
@@ -2492,9 +2501,9 @@ unsafe fn  btusb_waker(struct work_struct *work)
 	usb_autopm_put_interface(data->intf);
 }
 
-unsafe fn  btusb_rx_work(struct work_struct *work)
+unsafe fn  btusb_rx_work(work_struct *work)
 {
-	struct btusb_data *data = container_of(work, struct btusb_data,
+	struct btusb_data *data = container_of(work, btusb_data,
 					       rx_work.work);
 	struct sk_buff *skb;
 
@@ -2503,7 +2512,7 @@ unsafe fn  btusb_rx_work(struct work_struct *work)
 		data->recv_acl(data->hdev, skb);
 }
 
-unsafe fn  btusb_setup_bcm92035(struct hci_dev *hdev)
+unsafe fn  btusb_setup_bcm92035(hci_dev *hdev)
 {
 	struct sk_buff *skb;
 	u8 val = 0x00;
@@ -2519,7 +2528,7 @@ unsafe fn  btusb_setup_bcm92035(struct hci_dev *hdev)
 	return 0;
 }
 
-unsafe fn  btusb_setup_csr(struct hci_dev *hdev)
+unsafe fn  btusb_setup_csr(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	u16 bcdDevice = le16_to_cpu(data->udev->descriptor.bcdDevice);
@@ -2675,7 +2684,7 @@ unsafe fn  btusb_setup_csr(struct hci_dev *hdev)
 	return 0;
 }
 
-unsafe fn  inject_cmd_complete(struct hci_dev *hdev, __u16 opcode)
+unsafe fn  inject_cmd_complete(hci_dev *hdev, __u16 opcode)
 {
 	struct sk_buff *skb;
 	struct hci_event_hdr *hdr;
@@ -2700,7 +2709,7 @@ unsafe fn  inject_cmd_complete(struct hci_dev *hdev, __u16 opcode)
 	return hci_recv_frame(hdev, skb);
 }
 
-unsafe fn  btusb_recv_bulk_intel(struct btusb_data *data, void *buffer,
+unsafe fn  btusb_recv_bulk_intel(btusb_data *data, void *buffer,
 				 int count)
 {
 	struct hci_dev *hdev = data->hdev;
@@ -2715,7 +2724,7 @@ unsafe fn  btusb_recv_bulk_intel(struct btusb_data *data, void *buffer,
 	return btusb_recv_bulk(data, buffer, count);
 }
 
-unsafe fn  btusb_send_frame_intel(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_send_frame_intel(hci_dev *hdev, sk_buff *skb)
 {
 	struct urb *urb;
 
@@ -2783,7 +2792,7 @@ unsafe fn  btusb_send_frame_intel(struct hci_dev *hdev, struct sk_buff *skb)
 	return -EILSEQ;
 }
 
-unsafe fn  btusb_setup_realtek(struct hci_dev *hdev)
+unsafe fn  btusb_setup_realtek(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	int ret;
@@ -2796,13 +2805,13 @@ unsafe fn  btusb_setup_realtek(struct hci_dev *hdev)
 	return ret;
 }
 
-unsafe fn  btusb_recv_event_realtek(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_recv_event_realtek(hci_dev *hdev, sk_buff *skb)
 {
 	if (skb->len >= HCI_EVENT_HDR_SIZE + 1 &&
 	    skb->data[0] == HCI_EV_VENDOR &&
 	    skb->data[2] == RTK_SUB_EVENT_CODE_COREDUMP) {
 		struct rtk_dev_coredump_hdr hdr = {
-			.code = RTK_DEVCOREDUMP_CODE_MEMDUMP,
+			code: RTK_DEVCOREDUMP_CODE_MEMDUMP,
 		};
 
 		bt_dev_dbg(hdev, "RTL: received coredump vendor evt, len %u",
@@ -2817,7 +2826,7 @@ unsafe fn  btusb_recv_event_realtek(struct hci_dev *hdev, struct sk_buff *skb)
 	return hci_recv_frame(hdev, skb);
 }
 
-unsafe fn  btusb_mtk_claim_iso_intf(struct btusb_data *data)
+unsafe fn  btusb_mtk_claim_iso_intf(btusb_data *data)
 {
 	struct btmtk_data *btmtk_data;
 	int err;
@@ -2853,7 +2862,7 @@ unsafe fn  btusb_mtk_claim_iso_intf(struct btusb_data *data)
 	init_usb_anchor(&btmtk_data->isopkt_anchor);
 }
 
-unsafe fn  btusb_mtk_release_iso_intf(struct hci_dev *hdev)
+unsafe fn  btusb_mtk_release_iso_intf(hci_dev *hdev)
 {
 	struct btmtk_data *btmtk_data;
 
@@ -2884,7 +2893,7 @@ unsafe fn  btusb_mtk_release_iso_intf(struct hci_dev *hdev)
 	clear_bit(BTMTK_ISOPKT_OVER_INTR, &btmtk_data->flags);
 }
 
-unsafe fn  btusb_mtk_disconnect(struct hci_dev *hdev)
+unsafe fn  btusb_mtk_disconnect(hci_dev *hdev)
 {
 	/* This function describes the specific additional steps taken by MediaTek
 	 * when Bluetooth usb driver's resume function is called.
@@ -2894,7 +2903,7 @@ unsafe fn  btusb_mtk_disconnect(struct hci_dev *hdev)
 	return 0;
 }
 
-unsafe fn  btusb_mtk_reset(struct hci_dev *hdev, void *rst_data)
+unsafe fn  btusb_mtk_reset(hci_dev *hdev, void *rst_data)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct btmtk_data *btmtk_data = hci_get_priv(hdev);
@@ -2936,7 +2945,7 @@ unsafe fn  btusb_mtk_reset(struct hci_dev *hdev, void *rst_data)
 	return err;
 }
 
-unsafe fn  btusb_send_frame_mtk(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_send_frame_mtk(hci_dev *hdev, sk_buff *skb)
 {
 	struct urb *urb;
 
@@ -2953,7 +2962,7 @@ unsafe fn  btusb_send_frame_mtk(struct hci_dev *hdev, struct sk_buff *skb)
 	}
 }
 
-unsafe fn  btusb_mtk_setup(struct hci_dev *hdev)
+unsafe fn  btusb_mtk_setup(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct btmtk_data *btmtk_data = hci_get_priv(hdev);
@@ -2976,7 +2985,7 @@ unsafe fn  btusb_mtk_setup(struct hci_dev *hdev)
 	return btmtk_usb_setup(hdev);
 }
 
-unsafe fn  btusb_mtk_shutdown(struct hci_dev *hdev)
+unsafe fn  btusb_mtk_shutdown(hci_dev *hdev)
 {
 	int ret;
 
@@ -2990,12 +2999,12 @@ unsafe fn  btusb_mtk_shutdown(struct hci_dev *hdev)
 
 #ifdef CONFIG_PM
 /* Configure an out-of-band gpio as wake-up pin, if specified in device tree */
-unsafe fn  marvell_config_oob_wake(struct hci_dev *hdev)
+unsafe fn  marvell_config_oob_wake(hci_dev *hdev)
 {
 	struct sk_buff *skb;
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct device *dev = &data->udev->dev;
-	u16 pin, gap, opcode;
+	pin: u16, gap, opcode;
 	int ret;
 	u8 cmd[5];
 
@@ -3031,13 +3040,13 @@ unsafe fn  marvell_config_oob_wake(struct hci_dev *hdev)
 	return 0;
 }
 #else
-unsafe fn int marvell_config_oob_wake(struct hci_dev *hdev)
+unsafe fn int marvell_config_oob_wake(hci_dev *hdev)
 {
 	return 0;
 }
 #endif
 
-unsafe fn  btusb_set_bdaddr_marvell(struct hci_dev *hdev,
+unsafe fn  btusb_set_bdaddr_marvell(hci_dev *hdev,
 				    const bdaddr_t *bdaddr)
 {
 	struct sk_buff *skb;
@@ -3060,7 +3069,7 @@ unsafe fn  btusb_set_bdaddr_marvell(struct hci_dev *hdev,
 	return 0;
 }
 
-unsafe fn  btusb_set_bdaddr_ath3012(struct hci_dev *hdev,
+unsafe fn  btusb_set_bdaddr_ath3012(hci_dev *hdev,
 				    const bdaddr_t *bdaddr)
 {
 	struct sk_buff *skb;
@@ -3084,7 +3093,7 @@ unsafe fn  btusb_set_bdaddr_ath3012(struct hci_dev *hdev,
 	return 0;
 }
 
-unsafe fn  btusb_set_bdaddr_wcn6855(struct hci_dev *hdev,
+unsafe fn  btusb_set_bdaddr_wcn6855(hci_dev *hdev,
 				const bdaddr_t *bdaddr)
 {
 	bdaddr_t bdaddr_swapped;
@@ -3129,7 +3138,7 @@ struct qca_dump_hdr {
 } __packed;
 
 
-unsafe fn  btusb_dump_hdr_qca(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_dump_hdr_qca(hci_dev *hdev, sk_buff *skb)
 {
 	char buf[128];
 	struct btqca_data *btqca_data = hci_get_priv(hdev);
@@ -3156,7 +3165,7 @@ unsafe fn  btusb_dump_hdr_qca(struct hci_dev *hdev, struct sk_buff *skb)
 	skb_put_data(skb, buf, strlen(buf));
 }
 
-unsafe fn  btusb_coredump_qca(struct hci_dev *hdev)
+unsafe fn  btusb_coredump_qca(hci_dev *hdev)
 {
 	int err;
 	static const u8 param[] = { 0x26 };
@@ -3167,10 +3176,11 @@ unsafe fn  btusb_coredump_qca(struct hci_dev *hdev)
 }
 
 /* Return: 0 on success, negative errno on failure. */
-unsafe fn  handle_dump_pkt_qca(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  handle_dump_pkt_qca(hci_dev *hdev, sk_buff *skb)
 {
+	'out: {
 	int ret = 0;
-	unsigned int skip = 0;
+	core::ffi::c_uint skip = 0;
 	u8 pkt_type;
 	u16 seqno;
 	u32 dump_size;
@@ -3182,12 +3192,12 @@ unsafe fn  handle_dump_pkt_qca(struct hci_dev *hdev, struct sk_buff *skb)
 	struct usb_device *udev = btdata->udev;
 
 	pkt_type = hci_skb_pkt_type(skb);
-	skip = sizeof(struct hci_event_hdr);
+	skip = sizeof(hci_event_hdr);
 	if (pkt_type == HCI_ACLDATA_PKT)
-		skip += sizeof(struct hci_acl_hdr);
+		skip += sizeof(hci_acl_hdr);
 
 	skb_pull(skb, skip);
-	dump_hdr = (struct qca_dump_hdr *)skb->data;
+	dump_hdr = (qca_dump_hdr *)skb->data;
 
 	seqno = le16_to_cpu(dump_hdr->seqno);
 	if (seqno == 0) {
@@ -3197,32 +3207,32 @@ unsafe fn  handle_dump_pkt_qca(struct hci_dev *hdev, struct sk_buff *skb)
 			ret = -EILSEQ;
 			bt_dev_err(hdev, "Invalid memdump size(%u)",
 				   dump_size);
-			goto out;
+			break 'out;
 		}
 
 		ret = hci_devcd_init(hdev, dump_size);
 		if (ret < 0) {
 			bt_dev_err(hdev, "memdump init error(%d)", ret);
-			goto out;
+			break 'out;
 		}
 
 		qca_dump_ptr->ram_dump_size = dump_size;
 		qca_dump_ptr->ram_dump_seqno = 0;
 
-		skb_pull(skb, offsetof(struct qca_dump_hdr, data0));
+		skb_pull(skb, offsetof(qca_dump_hdr, data0));
 
 		usb_disable_autosuspend(udev);
 		bt_dev_info(hdev, "%s memdump size(%u)\n",
 			    (pkt_type == HCI_ACLDATA_PKT) ? "ACL" : "event",
 			    dump_size);
 	} else {
-		skb_pull(skb, offsetof(struct qca_dump_hdr, data));
+		skb_pull(skb, offsetof(qca_dump_hdr, data));
 	}
 
 	if (!qca_dump_ptr->ram_dump_size) {
 		ret = -EINVAL;
 		bt_dev_err(hdev, "memdump is not active");
-		goto out;
+		break 'out;
 	}
 
 	if ((seqno > qca_dump_ptr->ram_dump_seqno + 1) && seqno != QCA_LAST_SEQUENCE_NUM) {
@@ -3244,11 +3254,11 @@ unsafe fn  handle_dump_pkt_qca(struct hci_dev *hdev, struct sk_buff *skb)
 				qca_dump_ptr->ram_dump_seqno, qca_dump_ptr->ram_dump_size);
 
 		hci_devcd_complete(hdev);
-		goto out;
+		break 'out;
 	}
 	return ret;
-
-out:
+	}
+	
 	if (qca_dump_ptr->ram_dump_size)
 		usb_enable_autosuspend(udev);
 	qca_dump_ptr->ram_dump_size = 0;
@@ -3261,8 +3271,9 @@ out:
 }
 
 /* Return: true if the ACL packet is a dump packet, false otherwise. */
-static mut  acl_pkt_is_dump_qca(struct hci_dev *hdev, struct sk_buff *skb)
+static mut  acl_pkt_is_dump_qca(hci_dev *hdev, sk_buff *skb)
 {
+	'out: {
 	struct hci_event_hdr *event_hdr;
 	struct hci_acl_hdr *acl_hdr;
 	struct qca_dump_hdr *dump_hdr;
@@ -3274,26 +3285,28 @@ static mut  acl_pkt_is_dump_qca(struct hci_dev *hdev, struct sk_buff *skb)
 
 	acl_hdr = skb_pull_data(clone, sizeof(*acl_hdr));
 	if (!acl_hdr || (le16_to_cpu(acl_hdr->handle) != QCA_MEMDUMP_ACL_HANDLE))
-		goto out;
+		break 'out;
 
 	event_hdr = skb_pull_data(clone, sizeof(*event_hdr));
 	if (!event_hdr || event_hdr->evt != HCI_EV_VENDOR)
-		goto out;
+		break 'out;
 
 	dump_hdr = skb_pull_data(clone, sizeof(*dump_hdr));
 	if (!dump_hdr || (dump_hdr->vse_class != QCA_MEMDUMP_VSE_CLASS) ||
 	   (dump_hdr->msg_type != QCA_MEMDUMP_MSG_TYPE))
-		goto out;
+		break 'out;
 
 	is_dump = true;
-out:
+	}
+	
 	consume_skb(clone);
 	return is_dump;
 }
 
 /* Return: true if the event packet is a dump packet, false otherwise. */
-static mut  evt_pkt_is_dump_qca(struct hci_dev *hdev, struct sk_buff *skb)
+static mut  evt_pkt_is_dump_qca(hci_dev *hdev, sk_buff *skb)
 {
+	'out: {
 	struct hci_event_hdr *event_hdr;
 	struct qca_dump_hdr *dump_hdr;
 	struct sk_buff *clone = skb_clone(skb, GFP_ATOMIC);
@@ -3304,27 +3317,28 @@ static mut  evt_pkt_is_dump_qca(struct hci_dev *hdev, struct sk_buff *skb)
 
 	event_hdr = skb_pull_data(clone, sizeof(*event_hdr));
 	if (!event_hdr || event_hdr->evt != HCI_EV_VENDOR)
-		goto out;
+		break 'out;
 
 	dump_hdr = skb_pull_data(clone, sizeof(*dump_hdr));
 	if (!dump_hdr || (dump_hdr->vse_class != QCA_MEMDUMP_VSE_CLASS) ||
 	   (dump_hdr->msg_type != QCA_MEMDUMP_MSG_TYPE))
-		goto out;
+		break 'out;
 
 	is_dump = true;
-out:
+	}
+	
 	consume_skb(clone);
 	return is_dump;
 }
 
-unsafe fn  btusb_recv_acl_qca(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_recv_acl_qca(hci_dev *hdev, sk_buff *skb)
 {
 	if (acl_pkt_is_dump_qca(hdev, skb))
 		return handle_dump_pkt_qca(hdev, skb);
 	return hci_recv_frame(hdev, skb);
 }
 
-unsafe fn  btusb_recv_evt_qca(struct hci_dev *hdev, struct sk_buff *skb)
+unsafe fn  btusb_recv_evt_qca(hci_dev *hdev, sk_buff *skb)
 {
 	if (evt_pkt_is_dump_qca(hdev, skb))
 		return handle_dump_pkt_qca(hdev, skb);
@@ -3445,8 +3459,8 @@ static const char *qca_get_fw_subdirectory(const struct qca_version *ver)
 	return core::ptr::null_mut();
 }
 
-unsafe fn  btusb_qca_send_vendor_req(struct usb_device *udev, u8 request,
-				     void *data, u16 size)
+unsafe fn  btusb_qca_send_vendor_req(usb_device *udev, request: u8,
+				     void *data, size: u16)
 {
 	int err;
 
@@ -3462,10 +3476,11 @@ unsafe fn  btusb_qca_send_vendor_req(struct usb_device *udev, u8 request,
 	return err;
 }
 
-unsafe fn  btusb_setup_qca_download_fw(struct hci_dev *hdev,
+unsafe fn  btusb_setup_qca_download_fw(hci_dev *hdev,
 				       const struct firmware *firmware,
 				       size_t hdr_size)
 {
+	'done: {
 	struct btusb_data *btdata = hci_get_drvdata(hdev);
 	struct usb_device *udev = btdata->udev;
 	size_t count, size, sent = 0;
@@ -3491,7 +3506,7 @@ unsafe fn  btusb_setup_qca_download_fw(struct hci_dev *hdev,
 			      0, 0, buf, size, USB_CTRL_SET_TIMEOUT);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send headers (%d)", err);
-		goto done;
+		break 'done;
 	}
 
 	sent += size;
@@ -3525,21 +3540,22 @@ unsafe fn  btusb_setup_qca_download_fw(struct hci_dev *hdev,
 		sent  += size;
 		count -= size;
 	}
-
-done:
+	}
+	
 	kfree(buf);
 	return err;
 }
 
-unsafe fn  btusb_setup_qca_load_rampatch(struct hci_dev *hdev,
-					 struct qca_version *ver,
+unsafe fn  btusb_setup_qca_load_rampatch(hci_dev *hdev,
+					 qca_version *ver,
 					 const struct qca_device_info *info)
 {
+	'done: {
 	struct qca_rampatch_version *rver;
 	const struct firmware *fw;
 	const char *fw_subdir;
-	u32 ver_rom, ver_patch, rver_rom;
-	u16 rver_rom_low, rver_rom_high, rver_patch;
+	ver_rom: u32, ver_patch, rver_rom;
+	rver_rom_low: u16, rver_rom_high, rver_patch;
 	char fwname[80];
 	int err;
 
@@ -3563,7 +3579,7 @@ unsafe fn  btusb_setup_qca_load_rampatch(struct hci_dev *hdev,
 
 	bt_dev_info(hdev, "using rampatch file: %s", fwname);
 
-	rver = (struct qca_rampatch_version *)(fw->data + info->ver_offset);
+	rver = (qca_rampatch_version *)(fw->data + info->ver_offset);
 	rver_rom_low = le16_to_cpu(rver->rom_version_low);
 	rver_patch = le16_to_cpu(rver->patch_version);
 
@@ -3587,12 +3603,12 @@ unsafe fn  btusb_setup_qca_load_rampatch(struct hci_dev *hdev,
 	if (rver_rom != ver_rom || rver_patch < ver_patch) {
 		bt_dev_err(hdev, "rampatch file version did not match with firmware");
 		err = -EINVAL;
-		goto done;
+		break 'done;
 	}
 
 	err = btusb_setup_qca_download_fw(hdev, fw, info->rampatch_hdr);
-
-done:
+	}
+	
 	release_firmware(fw);
 
 	return err;
@@ -3632,8 +3648,8 @@ unsafe fn  btusb_generate_qca_nvm_name(char *fwname, size_t max_size,
 	len += snprintf(fwname + len, max_size - len, ".bin");
 }
 
-unsafe fn  btusb_setup_qca_load_nvm(struct hci_dev *hdev,
-				    struct qca_version *ver,
+unsafe fn  btusb_setup_qca_load_nvm(hci_dev *hdev,
+				    qca_version *ver,
 				    const struct qca_device_info *info)
 {
 	const struct firmware *fw;
@@ -3659,7 +3675,7 @@ unsafe fn  btusb_setup_qca_load_nvm(struct hci_dev *hdev,
 }
 
 /* identify the ROM version and check whether patches are needed */
-static mut  btusb_qca_need_patch(struct usb_device *udev)
+static mut  btusb_qca_need_patch(usb_device *udev)
 {
 	struct qca_version ver;
 
@@ -3670,7 +3686,7 @@ static mut  btusb_qca_need_patch(struct usb_device *udev)
 	return !(le32_to_cpu(ver.rom_version) & ~0xffffU);
 }
 
-unsafe fn  btusb_setup_qca(struct hci_dev *hdev)
+unsafe fn  btusb_setup_qca(hci_dev *hdev)
 {
 	struct btusb_data *btdata = hci_get_drvdata(hdev);
 	struct usb_device *udev = btdata->udev;
@@ -3747,7 +3763,7 @@ unsafe fn  btusb_setup_qca(struct hci_dev *hdev)
 	return 0;
 }
 
-unsafe fn int __set_diag_interface(struct hci_dev *hdev)
+unsafe fn int __set_diag_interface(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct usb_interface *intf = data->diag;
@@ -3766,12 +3782,12 @@ unsafe fn int __set_diag_interface(struct hci_dev *hdev)
 	return 0;
 }
 
-static mut  urb *alloc_diag_urb(struct hci_dev *hdev, bool enable)
+static mut  urb *alloc_diag_urb(hci_dev *hdev, enable: bool)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct sk_buff *skb;
 	struct urb *urb;
-	unsigned int pipe;
+	core::ffi::c_uint pipe;
 
 	if (!data->diag_tx_ep)
 		return ERR_PTR(-ENODEV);
@@ -3799,7 +3815,7 @@ static mut  urb *alloc_diag_urb(struct hci_dev *hdev, bool enable)
 	return urb;
 }
 
-unsafe fn  btusb_bcm_set_diag(struct hci_dev *hdev, bool enable)
+unsafe fn  btusb_bcm_set_diag(hci_dev *hdev, enable: bool)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct urb *urb;
@@ -3841,8 +3857,9 @@ const  of_device_id btusb_match_table[] = {
 };
 
 /* Use an oob wakeup pin? */
-unsafe fn  btusb_config_oob_wake(struct hci_dev *hdev)
+unsafe fn  btusb_config_oob_wake(hci_dev *hdev)
 {
+	'err_free_irq: {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 	struct device *dev = &data->udev->dev;
 	int irq, ret;
@@ -3869,40 +3886,40 @@ unsafe fn  btusb_config_oob_wake(struct hci_dev *hdev)
 	ret = device_init_wakeup(dev, true);
 	if (ret) {
 		bt_dev_err(hdev, "%s: failed to init_wakeup", __func__);
-		goto err_free_irq;
+		break 'err_free_irq;
 	}
 
 	data->oob_wake_irq = irq;
 	bt_dev_info(hdev, "OOB Wake-on-BT configured at IRQ %u", irq);
 
 	return 0;
-
-err_free_irq:
+	}
+	
 	free_irq(irq, data);
 
 	return ret;
 }
 #else
-unsafe fn int btusb_config_oob_wake(struct hci_dev *hdev)
+unsafe fn int btusb_config_oob_wake(hci_dev *hdev)
 {
 	return 0;
 }
 #endif
 
-unsafe fn  btusb_check_needs_reset_resume(struct usb_interface *intf)
+unsafe fn  btusb_check_needs_reset_resume(usb_interface *intf)
 {
 	if (dmi_check_system(btusb_needs_reset_resume_table))
 		interface_to_usbdev(intf)->quirks |= USB_QUIRK_RESET_RESUME;
 }
 
-static mut  btusb_wakeup(struct hci_dev *hdev)
+static mut  btusb_wakeup(hci_dev *hdev)
 {
 	struct btusb_data *data = hci_get_drvdata(hdev);
 
 	return device_may_wakeup(&data->udev->dev);
 }
 
-unsafe fn  btusb_shutdown_qca(struct hci_dev *hdev)
+unsafe fn  btusb_shutdown_qca(hci_dev *hdev)
 {
 	int err;
 
@@ -3913,7 +3930,7 @@ unsafe fn  btusb_shutdown_qca(struct hci_dev *hdev)
 	return err;
 }
 
-static ssize_t force_poll_sync_read(struct file *file, char __user *user_buf,
+static ssize_t force_poll_sync_read(file *file, char __user *user_buf,
 				    size_t count, loff_t *ppos)
 {
 	struct btusb_data *data = file->private_data;
@@ -3925,7 +3942,7 @@ static ssize_t force_poll_sync_read(struct file *file, char __user *user_buf,
 	return simple_read_from_buffer(user_buf, count, ppos, buf, 2);
 }
 
-static ssize_t force_poll_sync_write(struct file *file,
+static ssize_t force_poll_sync_write(file *file,
 				     const char __user *user_buf,
 				     size_t count, loff_t *ppos)
 {
@@ -3950,11 +3967,11 @@ static ssize_t force_poll_sync_write(struct file *file,
 }
 
 const  file_operations force_poll_sync_fops = {
-	.owner		= THIS_MODULE,
-	.open		= simple_open,
-	.read		= force_poll_sync_read,
-	.write		= force_poll_sync_write,
-	.llseek		= default_llseek,
+	owner: THIS_MODULE,
+	open: simple_open,
+	read: force_poll_sync_read,
+	write: force_poll_sync_write,
+	llseek: default_llseek,
 };
 
 const BTUSB_HCI_DRV_OP_SUPPORTED_ALTSETTINGS \
@@ -3985,13 +4002,13 @@ const  {
 	{ BTUSB_HCI_DRV_OP_SUPPORTED_ALTSETTINGS, "Supported Altsettings" },
 	{ BTUSB_HCI_DRV_OP_SWITCH_ALTSETTING,     "Switch Altsetting" },
 };
-unsafe fn  btusb_hci_drv_read_info(struct hci_dev *hdev, void *data,
-				   u16 data_len)
+unsafe fn  btusb_hci_drv_read_info(hci_dev *hdev, void *data,
+				   data_len: u16)
 {
 	struct hci_drv_rp_read_info *rp;
 	size_t rp_size;
 	int err, i;
-	u16 opcode, num_supported_commands =
+	opcode: u16, num_supported_commands =
 		ARRAY_SIZE(btusb_hci_drv_supported_commands);
 
 	rp_size = sizeof(*rp) + num_supported_commands * 2;
@@ -4020,9 +4037,10 @@ unsafe fn  btusb_hci_drv_read_info(struct hci_dev *hdev, void *data,
 	return err;
 }
 
-unsafe fn  btusb_hci_drv_supported_altsettings(struct hci_dev *hdev, void *data,
-					       u16 data_len)
+unsafe fn  btusb_hci_drv_supported_altsettings(hci_dev *hdev, void *data,
+					       data_len: u16)
 {
+	'done: {
 	struct btusb_data *drvdata = hci_get_drvdata(hdev);
 	struct btusb_hci_drv_rp_supported_altsettings *rp;
 	size_t rp_size;
@@ -4036,14 +4054,14 @@ unsafe fn  btusb_hci_drv_supported_altsettings(struct hci_dev *hdev, void *data,
 
 	rp->num = 0;
 	if (!drvdata->isoc)
-		goto done;
+		break 'done;
 
 	for (i = 0; i <= 6; i++) {
 		if (btusb_find_altsetting(drvdata, i))
 			rp->altsettings[rp->num++] = i;
 	}
-
-done:
+	}
+	
 	rp_size = sizeof(*rp) + rp->num;
 
 	err = hci_drv_cmd_complete(hdev, BTUSB_HCI_DRV_OP_SUPPORTED_ALTSETTINGS,
@@ -4052,8 +4070,8 @@ done:
 	return err;
 }
 
-unsafe fn  btusb_hci_drv_switch_altsetting(struct hci_dev *hdev, void *data,
-					   u16 data_len)
+unsafe fn  btusb_hci_drv_switch_altsetting(hci_dev *hdev, void *data,
+					   data_len: u16)
 {
 	struct btusb_hci_drv_cmd_switch_altsetting *cmd = data;
 	u8 status;
@@ -4083,15 +4101,21 @@ const  hci_drv_handler btusb_hci_drv_specific_handlers[] = {
 };
 
 static mut  hci_drv btusb_hci_drv = {
-	.common_handler_count	= ARRAY_SIZE(btusb_hci_drv_common_handlers),
-	.common_handlers	= btusb_hci_drv_common_handlers,
-	.specific_handler_count	= ARRAY_SIZE(btusb_hci_drv_specific_handlers),
-	.specific_handlers	= btusb_hci_drv_specific_handlers,
+	common_handler_count: ARRAY_SIZE(btusb_hci_drv_common_handlers),
+	common_handlers: btusb_hci_drv_common_handlers,
+	specific_handler_count: ARRAY_SIZE(btusb_hci_drv_specific_handlers),
+	specific_handlers: btusb_hci_drv_specific_handlers,
 };
 
-unsafe fn  btusb_probe(struct usb_interface *intf,
+unsafe fn  btusb_probe(usb_interface *intf,
 		       const struct usb_device_id *id)
 {
+	'err_free_data: {
+	'err_free_hdev: {
+	'err_put_reset: {
+	'err_disable_wakeup: {
+	'err_kill_tx_urbs: {
+	'err_release_siblings: {
 	struct gpio_desc *reset_gpio;
 	struct btusb_data *data;
 	struct hci_dev *hdev;
@@ -4137,7 +4161,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 	err = usb_find_common_endpoints(intf->cur_altsetting, &data->bulk_rx_ep,
 					&data->bulk_tx_ep, &data->intr_ep, core::ptr::null_mut());
 	if (err)
-		goto err_free_data;
+		break 'err_free_data;
 
 	if (id->driver_info & BTUSB_AMP) {
 		data->cmdreq_type = USB_TYPE_CLASS | 0x01;
@@ -4172,22 +4196,22 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 
 	if (id->driver_info & BTUSB_INTEL_COMBINED) {
 		/* Allocate extra space for Intel device */
-		priv_size += sizeof(struct btintel_data);
+		priv_size += sizeof(btintel_data);
 
 		/* Override the rx handlers */
 		data->recv_event = btintel_recv_event;
 		data->recv_bulk = btusb_recv_bulk_intel;
 	} else if (id->driver_info & BTUSB_REALTEK) {
 		/* Allocate extra space for Realtek device */
-		priv_size += sizeof(struct btrealtek_data);
+		priv_size += sizeof(btrealtek_data);
 
 		data->recv_event = btusb_recv_event_realtek;
 	} else if (id->driver_info & BTUSB_MEDIATEK) {
 		/* Allocate extra space for Mediatek device */
-		priv_size += sizeof(struct btmtk_data);
+		priv_size += sizeof(btmtk_data);
 	} else if (id->driver_info & BTUSB_QCA_WCN6855) {
 		/* Allocate extra space for QCA WCN6855 device */
-		priv_size += sizeof(struct btqca_data);
+		priv_size += sizeof(btqca_data);
 	}
 
 	data->recv_acl = hci_recv_frame;
@@ -4195,7 +4219,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 	hdev = hci_alloc_dev_priv(priv_size);
 	if (!hdev) {
 		err = -ENOMEM;
-		goto err_free_data;
+		break 'err_free_data;
 	}
 
 	hdev->bus = HCI_USB;
@@ -4209,7 +4233,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 					GPIOD_OUT_LOW);
 	if (IS_ERR(reset_gpio)) {
 		err = PTR_ERR(reset_gpio);
-		goto err_free_hdev;
+		break 'err_free_hdev;
 	} else if (reset_gpio) {
 		data->reset_gpio = reset_gpio;
 	}
@@ -4224,13 +4248,13 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 
 	err = btusb_config_oob_wake(hdev);
 	if (err)
-		goto err_put_reset;
+		break 'err_put_reset;
 
 	/* Marvell devices may need a specific chip configuration */
 	if (id->driver_info & BTUSB_MARVELL && data->oob_wake_irq) {
 		err = marvell_config_oob_wake(hdev);
 		if (err)
-			goto err_disable_wakeup;
+			break 'err_disable_wakeup;
 	}
 
 	if (id->driver_info & BTUSB_CW6622)
@@ -4267,7 +4291,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 	if (id->driver_info & BTUSB_INTEL_COMBINED) {
 		err = btintel_configure_setup(hdev, btusb_driver.name);
 		if (err)
-			goto err_kill_tx_urbs;
+			break 'err_kill_tx_urbs;
 
 		/* Transport specific configuration */
 		hdev->send = btusb_send_frame_intel;
@@ -4436,7 +4460,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 		err = usb_set_interface(data->udev, 0, 0);
 		if (err < 0) {
 			BT_ERR("failed to set interface 0, alt 0 %d", err);
-			goto err_kill_tx_urbs;
+			break 'err_kill_tx_urbs;
 		}
 	}
 
@@ -4444,7 +4468,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 		err = usb_driver_claim_interface(&btusb_driver,
 						 data->isoc, data);
 		if (err < 0)
-			goto err_kill_tx_urbs;
+			break 'err_kill_tx_urbs;
 	}
 
 	if (IS_ENABLED(CONFIG_BT_HCIBTUSB_BCM) && data->diag) {
@@ -4462,7 +4486,7 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 
 	err = hci_register_dev(hdev);
 	if (err < 0)
-		goto err_release_siblings;
+		break 'err_release_siblings;
 
 	usb_set_intfdata(intf, data);
 
@@ -4470,8 +4494,8 @@ unsafe fn  btusb_probe(struct usb_interface *intf,
 			    &force_poll_sync_fops);
 
 	return 0;
-
-err_release_siblings:
+	}
+	
 	if (data->diag) {
 		usb_set_intfdata(data->diag, core::ptr::null_mut());
 		usb_driver_release_interface(&btusb_driver, data->diag);
@@ -4480,25 +4504,30 @@ err_release_siblings:
 		usb_set_intfdata(data->isoc, core::ptr::null_mut());
 		usb_driver_release_interface(&btusb_driver, data->isoc);
 	}
-err_kill_tx_urbs:
+	}
+	
 	usb_kill_anchored_urbs(&data->tx_anchor);
-err_disable_wakeup:
+	}
+	
 	if (data->oob_wake_irq) {
 		device_init_wakeup(&data->udev->dev, false);
 		free_irq(data->oob_wake_irq, data);
 	}
-err_put_reset:
+	}
+	
 	if (data->reset_gpio)
 		gpiod_put(data->reset_gpio);
-err_free_hdev:
+	}
+	
 	hci_free_dev(hdev);
-err_free_data:
+	}
+	
 	kfree(data);
 
 	return err;
 }
 
-unsafe fn  btusb_disconnect(struct usb_interface *intf)
+unsafe fn  btusb_disconnect(usb_interface *intf)
 {
 	struct btusb_data *data = usb_get_intfdata(intf);
 	struct hci_dev *hdev;
@@ -4549,7 +4578,7 @@ unsafe fn  btusb_disconnect(struct usb_interface *intf)
 	kfree(data);
 }
 
-unsafe fn  btusb_suspend(struct usb_interface *intf, pm_message_t message)
+unsafe fn  btusb_suspend(usb_interface *intf, pm_message_t message)
 {
 	struct btusb_data *data = usb_get_intfdata(intf);
 
@@ -4608,7 +4637,7 @@ unsafe fn  btusb_suspend(struct usb_interface *intf, pm_message_t message)
 	return 0;
 }
 
-unsafe fn  play_deferred(struct btusb_data *data)
+unsafe fn  play_deferred(btusb_data *data)
 {
 	struct urb *urb;
 	int err;
@@ -4638,8 +4667,10 @@ unsafe fn  play_deferred(struct btusb_data *data)
 	}
 }
 
-unsafe fn  btusb_resume(struct usb_interface *intf)
+unsafe fn  btusb_resume(usb_interface *intf)
 {
+	'done: {
+	'failed: {
 	struct btusb_data *data = usb_get_intfdata(intf);
 	struct hci_dev *hdev = data->hdev;
 	int err = 0;
@@ -4656,13 +4687,13 @@ unsafe fn  btusb_resume(struct usb_interface *intf)
 	}
 
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
-		goto done;
+		break 'done;
 
 	if (test_bit(BTUSB_INTR_RUNNING, &data->flags)) {
 		err = btusb_submit_intr_urb(hdev, GFP_NOIO);
 		if (err < 0) {
 			clear_bit(BTUSB_INTR_RUNNING, &data->flags);
-			goto failed;
+			break 'failed;
 		}
 	}
 
@@ -4670,7 +4701,7 @@ unsafe fn  btusb_resume(struct usb_interface *intf)
 		err = btusb_submit_bulk_urb(hdev, GFP_NOIO);
 		if (err < 0) {
 			clear_bit(BTUSB_BULK_RUNNING, &data->flags);
-			goto failed;
+			break 'failed;
 		}
 
 		btusb_submit_bulk_urb(hdev, GFP_NOIO);
@@ -4693,10 +4724,11 @@ unsafe fn  btusb_resume(struct usb_interface *intf)
 	schedule_work(&data->work);
 
 	return 0;
-
-failed:
+	}
+	
 	usb_scuttle_anchored_urbs(&data->deferred);
-done:
+	}
+	
 	spin_lock_irq(&data->txlock);
 	clear_bit(BTUSB_SUSPENDING, &data->flags);
 	spin_unlock_irq(&data->txlock);
@@ -4705,7 +4737,7 @@ done:
 }
 
 #ifdef CONFIG_DEV_COREDUMP
-unsafe fn  btusb_coredump(struct device *dev)
+unsafe fn  btusb_coredump(device *dev)
 {
 	struct btusb_data *data = dev_get_drvdata(dev);
 	struct hci_dev *hdev = data->hdev;
@@ -4716,18 +4748,18 @@ unsafe fn  btusb_coredump(struct device *dev)
 #endif
 
 static mut  usb_driver btusb_driver = {
-	.name		= "btusb",
-	.probe		= btusb_probe,
-	.disconnect	= btusb_disconnect,
-	.suspend	= pm_ptr(btusb_suspend),
-	.resume		= pm_ptr(btusb_resume),
-	.id_table	= btusb_table,
-	.supports_autosuspend = 1,
-	.disable_hub_initiated_lpm = 1,
+	name: "btusb",
+	probe: btusb_probe,
+	disconnect: btusb_disconnect,
+	suspend: pm_ptr(btusb_suspend),
+	resume: pm_ptr(btusb_resume),
+	id_table: btusb_table,
+	supports_autosuspend: 1,
+	disable_hub_initiated_lpm: 1,
 
 #ifdef CONFIG_DEV_COREDUMP
-	.driver = {
-		.coredump = btusb_coredump,
+	driver: {
+		coredump: btusb_coredump,
 	},
 #endif
 };

@@ -2,12 +2,12 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-#[cfg(feature = "CONFIG_KVM_GUEST")]
+#[cfg(CONFIG_KVM_GUEST)]
 unsafe extern "C" {
     pub fn kvm_check_and_clear_guest_paused() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline]
 pub fn kvm_check_and_clear_guest_paused() -> bool {
     false
@@ -83,7 +83,7 @@ pub unsafe fn kvm_sev_hypercall3(nr: u32, p1: usize, p2: usize, p3: usize) -> is
     ret
 }
 
-#[cfg(feature = "CONFIG_KVM_GUEST")]
+#[cfg(CONFIG_KVM_GUEST)]
 unsafe extern "C" {
     pub fn kvmclock_init();
     pub fn kvmclock_disable();
@@ -97,7 +97,7 @@ unsafe extern "C" {
     pub fn static_branch_unlikely(key: *const bool) -> bool;
 }
 
-#[cfg(feature = "CONFIG_KVM_GUEST")]
+#[cfg(CONFIG_KVM_GUEST)]
 #[inline(always)]
 pub unsafe fn kvm_handle_async_pf(regs: *mut crate::pt_regs, token: u32) -> bool {
     if static_branch_unlikely(&kvm_async_pf_enabled) {
@@ -107,36 +107,36 @@ pub unsafe fn kvm_handle_async_pf(regs: *mut crate::pt_regs, token: u32) -> bool
     }
 }
 
-#[cfg(all(feature = "CONFIG_KVM_GUEST", feature = "CONFIG_PARAVIRT_SPINLOCKS"))]
+#[cfg(all(CONFIG_KVM_GUEST, CONFIG_PARAVIRT_SPINLOCKS))]
 unsafe extern "C" {
     pub fn kvm_spinlock_init();
 }
 
-#[cfg(all(feature = "CONFIG_KVM_GUEST", not(feature = "CONFIG_PARAVIRT_SPINLOCKS")))]
+#[cfg(all(CONFIG_KVM_GUEST, not(CONFIG_PARAVIRT_SPINLOCKS)))]
 #[inline]
 pub fn kvm_spinlock_init() {}
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline]
 pub fn kvm_async_pf_task_wait_schedule(_token: u32) {}
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline]
 pub fn kvm_para_available() -> bool { false }
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline]
 pub fn kvm_arch_para_features() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline]
 pub fn kvm_arch_para_hints() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline]
 pub fn kvm_read_and_reset_apf_flags() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_KVM_GUEST"))]
+#[cfg(not(CONFIG_KVM_GUEST))]
 #[inline(always)]
 pub fn kvm_handle_async_pf(_regs: *mut crate::pt_regs, _token: u32) -> bool { false }
 

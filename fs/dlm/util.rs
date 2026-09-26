@@ -32,27 +32,27 @@ const EINPROGRESS: i32 = 115;
 /* higher errno values are inconsistent across architectures, so select
    one set of values for on the wire */
 pub fn to_dlm_errno(err: i32) -> i32 {
-    match err {
-        -EDEADLK => -DLM_ERRNO_EDEADLK,
-        -EBADR => -DLM_ERRNO_EBADR,
-        -EBADSLT => -DLM_ERRNO_EBADSLT,
-        -EPROTO => -DLM_ERRNO_EPROTO,
-        -EOPNOTSUPP => -DLM_ERRNO_EOPNOTSUPP,
-        -ETIMEDOUT => -DLM_ERRNO_ETIMEDOUT,
-        -EINPROGRESS => -DLM_ERRNO_EINPROGRESS,
+    match -(err) {
+        EDEADLK => -DLM_ERRNO_EDEADLK,
+        EBADR => -DLM_ERRNO_EBADR,
+        EBADSLT => -DLM_ERRNO_EBADSLT,
+        EPROTO => -DLM_ERRNO_EPROTO,
+        EOPNOTSUPP => -DLM_ERRNO_EOPNOTSUPP,
+        ETIMEDOUT => -DLM_ERRNO_ETIMEDOUT,
+        EINPROGRESS => -DLM_ERRNO_EINPROGRESS,
         _ => err,
     }
 }
 
 pub fn from_dlm_errno(err: i32) -> i32 {
-    match err {
-        -DLM_ERRNO_EDEADLK => -EDEADLK,
-        -DLM_ERRNO_EBADR => -EBADR,
-        -DLM_ERRNO_EBADSLT => -EBADSLT,
-        -DLM_ERRNO_EPROTO => -EPROTO,
-        -DLM_ERRNO_EOPNOTSUPP => -EOPNOTSUPP,
-        -DLM_ERRNO_ETIMEDOUT => -ETIMEDOUT,
-        -DLM_ERRNO_EINPROGRESS => -EINPROGRESS,
+    match -(err) {
+        DLM_ERRNO_EDEADLK => -EDEADLK,
+        DLM_ERRNO_EBADR => -EBADR,
+        DLM_ERRNO_EBADSLT => -EBADSLT,
+        DLM_ERRNO_EPROTO => -EPROTO,
+        DLM_ERRNO_EOPNOTSUPP => -EOPNOTSUPP,
+        DLM_ERRNO_ETIMEDOUT => -ETIMEDOUT,
+        DLM_ERRNO_EINPROGRESS => -EINPROGRESS,
         _ => err,
     }
 }

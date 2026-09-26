@@ -197,7 +197,7 @@ unsafe fn ofdt_write(_file: *mut file, buf: *const i8, count: usize, _off: *mut 
     kfree(kbuf as *mut _); if rv != 0 { rv as isize } else { count as isize }
 }
 
-static const ofdt_proc_ops: proc_ops = proc_ops { proc_write: Some(ofdt_write), proc_lseek: Some(noop_llseek) };
+static ofdt_proc_ops: proc_ops = proc_ops { proc_write: Some(ofdt_write), proc_lseek: Some(noop_llseek) };
 
 unsafe fn proc_ppc64_create_ofdt() -> i32 {
     let ent = proc_create(b"powerpc/ofdt\0".as_ptr() as *const i8, 0o200, core::ptr::null_mut(), &ofdt_proc_ops);

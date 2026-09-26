@@ -5,7 +5,7 @@
 
 pub type CpuStopFnT = unsafe extern "C" fn(arg: *mut core::ffi::c_void) -> core::ffi::c_int;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct CpuStopWork {
     pub list: ListHead, // cpu_stopper->works
@@ -15,7 +15,7 @@ pub struct CpuStopWork {
     pub done: *mut CpuStopDone,
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn stop_one_cpu(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void) -> libc::c_int;
     pub fn stop_two_cpus(cpu1: libc::c_uint, cpu2: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void) -> libc::c_int;
@@ -26,7 +26,7 @@ extern "C" {
     pub fn print_stop_info(log_lvl: *const core::ffi::c_char, task: *mut TaskStruct);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[repr(C)]
 pub struct CpuStopWork {
     pub work: WorkStruct,
@@ -34,7 +34,7 @@ pub struct CpuStopWork {
     pub arg: *mut core::ffi::c_void,
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn stop_one_cpu(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void) -> libc::c_int {
     let mut ret: libc::c_int = -libc::ENOENT;
@@ -46,7 +46,7 @@ pub unsafe fn stop_one_cpu(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::f
     ret
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe extern "C" fn stop_one_cpu_nowait_workfn(work: *mut WorkStruct) {
     let stwork = container_of::<CpuStopWork>(work, core::mem::offset_of!(CpuStopWork, work));
     preempt_disable();
@@ -54,7 +54,7 @@ unsafe extern "C" fn stop_one_cpu_nowait_workfn(work: *mut WorkStruct) {
     preempt_enable();
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn stop_one_cpu_nowait(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut core::ffi::c_void, work_buf: *mut CpuStopWork) {
     if warn_on_once(cpu != smp_processor_id()) {
@@ -66,11 +66,11 @@ pub unsafe fn stop_one_cpu_nowait(cpu: libc::c_uint, fn_: CpuStopFnT, arg: *mut 
     schedule_work(&mut (*work_buf).work);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn print_stop_info(_log_lvl: *const core::ffi::c_char, _task: *mut TaskStruct) {}
 
-#[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU))]
 extern "C" {
     pub fn stop_machine(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int;
     pub fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int;
@@ -78,7 +78,7 @@ extern "C" {
     pub fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int;
 }
 
-#[cfg(not(any(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_CPU")))]
+#[cfg(not(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU)))]
 #[inline(always)]
 pub unsafe fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut core::ffi::c_void, _cpus: *const CpuMask) -> libc::c_int {
     let mut flags: libc::c_ulong = 0;
@@ -88,13 +88,13 @@ pub unsafe fn stop_machine_cpuslocked(fn_: CpuStopFnT, data: *mut core::ffi::c_v
     ret
 }
 
-#[cfg(not(any(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_CPU")))]
+#[cfg(not(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU)))]
 #[inline(always)]
 pub unsafe fn stop_machine(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int {
     stop_machine_cpuslocked(fn_, data, cpus)
 }
 
-#[cfg(not(any(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_CPU")))]
+#[cfg(not(any(CONFIG_SMP, CONFIG_HOTPLUG_CPU)))]
 #[inline(always)]
 pub unsafe fn stop_machine_from_inactive_cpu(fn_: CpuStopFnT, data: *mut core::ffi::c_void, cpus: *const CpuMask) -> libc::c_int {
     stop_machine(fn_, data, cpus)

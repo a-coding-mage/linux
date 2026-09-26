@@ -10,12 +10,10 @@
 
 const NFSDBG_FACILITY: u32 = NFSDBG_VFS;
 
-enum {
-    FILEID_HIGH_OFF = 0,
-    FILEID_LOW_OFF,
-    FILE_I_TYPE_OFF,
-    EMBED_FH_OFF,
-}
+pub const FILEID_HIGH_OFF: i32 = 0;
+pub const FILEID_LOW_OFF: i32 = FILEID_HIGH_OFF + 1;
+pub const FILE_I_TYPE_OFF: i32 = FILEID_LOW_OFF + 1;
+pub const EMBED_FH_OFF: i32 = FILE_I_TYPE_OFF + 1;
 
 unsafe fn nfs_exp_embedfh(p: *mut __u32) -> *mut nfs_fh {
     p.add(EMBED_FH_OFF) as *mut nfs_fh

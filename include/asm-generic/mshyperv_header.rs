@@ -127,7 +127,7 @@ extern "C" {
 #[repr(C)] pub struct PtRegs { _private: [u8; 0] }
 
 /* The following declarations are active when CONFIG_HYPERV is enabled. */
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 extern "C" {
     pub static mut hv_vp_index: *mut u32;
     pub static mut hv_max_vp_index: u32;
@@ -142,11 +142,11 @@ extern "C" {
 }
 pub const VP_INVAL: u32 = u32::MAX;
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 pub unsafe fn hv_cpu_number_to_vp_number(cpu_number: c_int) -> c_int { *hv_vp_index.offset(cpu_number as isize) as c_int }
 
 /* Configuration-dependent kernel declarations and logging macros remain external. */
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 extern "C" {
     pub fn hv_result_to_string(hv_status: u64) -> *const c_char;
     pub fn hv_result_to_errno(status: u64) -> c_int;
@@ -164,33 +164,33 @@ extern "C" {
     pub fn hv_query_ext_cap(cap_query: u64) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 pub fn hv_is_hyperv_initialized() -> bool { false }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 pub fn hv_is_hibernation_supported() -> bool { false }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 pub fn hv_is_isolation_supported() -> bool { false }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 pub fn hyperv_cleanup() {}
 
 /* CONFIG_MSHV_ROOT declarations/fallbacks are supplied by the kernel build. */
-#[cfg(feature = "CONFIG_MSHV_ROOT")]
+#[cfg(CONFIG_MSHV_ROOT)]
 pub unsafe fn hv_root_partition() -> bool { hv_curr_partition_type as u32 == HvPartitionType::Root as u32 }
-#[cfg(feature = "CONFIG_MSHV_ROOT")]
+#[cfg(CONFIG_MSHV_ROOT)]
 pub unsafe fn hv_l1vh_partition() -> bool { hv_curr_partition_type as u32 == HvPartitionType::L1Vh as u32 }
-#[cfg(feature = "CONFIG_MSHV_ROOT")]
+#[cfg(CONFIG_MSHV_ROOT)]
 pub unsafe fn hv_parent_partition() -> bool { hv_root_partition() || hv_l1vh_partition() }
 
-#[cfg(not(feature = "CONFIG_MSHV_ROOT"))]
+#[cfg(not(CONFIG_MSHV_ROOT))]
 pub fn hv_root_partition() -> bool { false }
-#[cfg(not(feature = "CONFIG_MSHV_ROOT"))]
+#[cfg(not(CONFIG_MSHV_ROOT))]
 pub fn hv_l1vh_partition() -> bool { false }
-#[cfg(not(feature = "CONFIG_MSHV_ROOT"))]
+#[cfg(not(CONFIG_MSHV_ROOT))]
 pub fn hv_parent_partition() -> bool { false }
 
-#[cfg(feature = "CONFIG_HYPERV_VTL_MODE")]
+#[cfg(CONFIG_HYPERV_VTL_MODE)]
 extern "C" { pub fn get_vtl() -> u8; }
-#[cfg(not(feature = "CONFIG_HYPERV_VTL_MODE"))]
+#[cfg(not(CONFIG_HYPERV_VTL_MODE))]
 pub fn get_vtl() -> u8 { 0 }
 
 /* External Hyper-V constants/types referenced above are provided by hyperv/hvhdk.h. */

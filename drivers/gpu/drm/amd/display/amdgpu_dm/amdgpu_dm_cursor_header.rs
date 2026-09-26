@@ -50,7 +50,7 @@ unsafe extern "C" {
 
 // C condition: IS_ENABLED(CONFIG_DRM_AMD_DC_KUNIT_TEST)
 // The declarations are retained here for builds enabling that configuration.
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 unsafe extern "C" {
     pub fn dm_get_oriented_plane_size(
         plane_state: *mut drm_plane_state,

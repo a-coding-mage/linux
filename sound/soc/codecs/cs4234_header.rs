@@ -6,7 +6,6 @@
  *                    Cirrus Logic International Semiconductor Ltd.
  */
 
-pub const CS4234_H: u32 = ;
 pub const CS4234_DEVID_AB: u32 = 0x01;
 pub const CS4234_DEVID_CD: u32 = 0x02;
 pub const CS4234_DEVID_EF: u32 = 0x03;

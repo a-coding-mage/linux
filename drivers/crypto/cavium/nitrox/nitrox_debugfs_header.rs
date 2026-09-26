@@ -8,17 +8,17 @@ pub struct nitrox_device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn nitrox_debugfs_init(ndev: *mut nitrox_device);
     pub fn nitrox_debugfs_exit(ndev: *mut nitrox_device);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn nitrox_debugfs_init(_ndev: *mut nitrox_device) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn nitrox_debugfs_exit(_ndev: *mut nitrox_device) {}
 

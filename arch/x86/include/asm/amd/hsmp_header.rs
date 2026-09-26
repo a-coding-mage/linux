@@ -8,12 +8,12 @@ use core::ffi::c_int;
 pub struct hsmp_message;
 
 // Equivalent to IS_ENABLED(CONFIG_AMD_HSMP).
-#[cfg(feature = "CONFIG_AMD_HSMP")]
+#[cfg(CONFIG_AMD_HSMP)]
 unsafe extern "C" {
     pub fn hsmp_send_message(msg: *mut hsmp_message) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_AMD_HSMP"))]
+#[cfg(not(CONFIG_AMD_HSMP))]
 #[inline]
 pub unsafe fn hsmp_send_message(_msg: *mut hsmp_message) -> c_int {
     // -ENODEV

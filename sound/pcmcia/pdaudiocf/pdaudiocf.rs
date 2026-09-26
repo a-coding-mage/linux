@@ -42,7 +42,7 @@ unsafe fn pdacf_config(link: *mut pcmcia_device) -> ::std::os::raw::c_int;
 unsafe fn snd_pdacf_detach(p_dev: *mut pcmcia_device);
 
 unsafe fn pdacf_release(link: *mut pcmcia_device) {
-    free_irq((*link).irq, (*link).priv);
+    free_irq((*link).irq, (*link).r#priv);
     pcmcia_disable_device(link);
 }
 
@@ -132,7 +132,7 @@ unsafe fn snd_pdacf_probe(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
     card_list[i as usize] = card;
 
     (*pdacf).p_dev = link;
-    (*link).priv = pdacf as *mut ::std::ffi::c_void;
+    (*link).r#priv = pdacf as *mut ::std::ffi::c_void;
 
     (*(*link).resource[0]).flags |= IO_DATA_PATH_WIDTH_AUTO;
     (*(*link).resource[0]).end = 16;
@@ -219,7 +219,7 @@ unsafe fn snd_pdacf_assign_resources(
  * snd_pdacf_detach - detach callback for cs
  */
 unsafe fn snd_pdacf_detach(link: *mut pcmcia_device) {
-    let chip: *mut snd_pdacf = (*link).priv as *mut snd_pdacf;
+    let chip: *mut snd_pdacf = (*link).r#priv as *mut snd_pdacf;
 
     if (*chip).chip_status & PDAUDIOCF_STAT_IS_CONFIGURED != 0 {
         snd_pdacf_powerdown(chip);
@@ -234,7 +234,7 @@ unsafe fn snd_pdacf_detach(link: *mut pcmcia_device) {
  */
 
 unsafe fn pdacf_config(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
-    let pdacf: *mut snd_pdacf = (*link).priv as *mut snd_pdacf;
+    let pdacf: *mut snd_pdacf = (*link).r#priv as *mut snd_pdacf;
     let mut ret: ::std::os::raw::c_int;
 
     (*link).config_index = 0x5;
@@ -251,7 +251,7 @@ unsafe fn pdacf_config(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
         Some(pdacf_threaded_irq),
         IRQF_SHARED,
         (*link).devname,
-        (*link).priv,
+        (*link).r#priv,
     );
     if ret != 0 {
         return pdacf_config_failed_preirq(link);
@@ -271,7 +271,7 @@ unsafe fn pdacf_config(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
 }
 
 unsafe fn pdacf_config_failed(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
-    free_irq((*link).irq, (*link).priv);
+    free_irq((*link).irq, (*link).r#priv);
     pdacf_config_failed_preirq(link)
 }
 
@@ -284,7 +284,7 @@ unsafe fn pdacf_config_failed_preirq(link: *mut pcmcia_device) -> ::std::os::raw
 // Power-management callbacks are present when CONFIG_PM is enabled in C.
 
 unsafe fn pdacf_suspend(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
-    let chip: *mut snd_pdacf = (*link).priv as *mut snd_pdacf;
+    let chip: *mut snd_pdacf = (*link).r#priv as *mut snd_pdacf;
 
     if !chip.is_null() {
         snd_pdacf_suspend(chip);
@@ -294,7 +294,7 @@ unsafe fn pdacf_suspend(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
 }
 
 unsafe fn pdacf_resume(link: *mut pcmcia_device) -> ::std::os::raw::c_int {
-    let chip: *mut snd_pdacf = (*link).priv as *mut snd_pdacf;
+    let chip: *mut snd_pdacf = (*link).r#priv as *mut snd_pdacf;
 
     if pcmcia_dev_present(link) != 0 {
         if !chip.is_null() {

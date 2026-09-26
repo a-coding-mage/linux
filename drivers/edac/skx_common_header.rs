@@ -85,11 +85,11 @@ extern "C" {
     pub fn skx_mce_check_error(nb: *mut notifier_block, val: usize, data: *mut core::ffi::c_void) -> i32;
 }
 
-#[cfg(feature = "CONFIG_EDAC_DEBUG")]
+#[cfg(CONFIG_EDAC_DEBUG)]
 extern "C" { pub fn skx_setup_debug(name: *const core::ffi::c_char); pub fn skx_teardown_debug(); }
-#[cfg(not(feature = "CONFIG_EDAC_DEBUG"))]
+#[cfg(not(CONFIG_EDAC_DEBUG))]
 #[inline] pub unsafe fn skx_setup_debug(_name: *const core::ffi::c_char) {}
-#[cfg(not(feature = "CONFIG_EDAC_DEBUG"))]
+#[cfg(not(CONFIG_EDAC_DEBUG))]
 #[inline] pub unsafe fn skx_teardown_debug() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

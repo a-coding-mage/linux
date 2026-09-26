@@ -11,55 +11,55 @@
  * conditions from the C header.
  */
 
-#[cfg(feature = "CONFIG_CPUSETS")]
+#[cfg(CONFIG_CPUSETS)]
 SUBSYS!(cpuset);
 
-#[cfg(feature = "CONFIG_CGROUP_SCHED")]
+#[cfg(CONFIG_CGROUP_SCHED)]
 SUBSYS!(cpu);
 
-#[cfg(feature = "CONFIG_CGROUP_CPUACCT")]
+#[cfg(CONFIG_CGROUP_CPUACCT)]
 SUBSYS!(cpuacct);
 
-#[cfg(feature = "CONFIG_BLK_CGROUP")]
+#[cfg(CONFIG_BLK_CGROUP)]
 SUBSYS!(io);
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 SUBSYS!(memory);
 
-#[cfg(feature = "CONFIG_CGROUP_DEVICE")]
+#[cfg(CONFIG_CGROUP_DEVICE)]
 SUBSYS!(devices);
 
-#[cfg(feature = "CONFIG_CGROUP_FREEZER")]
+#[cfg(CONFIG_CGROUP_FREEZER)]
 SUBSYS!(freezer);
 
-#[cfg(feature = "CONFIG_CGROUP_NET_CLASSID")]
+#[cfg(CONFIG_CGROUP_NET_CLASSID)]
 SUBSYS!(net_cls);
 
-#[cfg(feature = "CONFIG_CGROUP_PERF")]
+#[cfg(CONFIG_CGROUP_PERF)]
 SUBSYS!(perf_event);
 
-#[cfg(feature = "CONFIG_CGROUP_NET_PRIO")]
+#[cfg(CONFIG_CGROUP_NET_PRIO)]
 SUBSYS!(net_prio);
 
-#[cfg(feature = "CONFIG_CGROUP_HUGETLB")]
+#[cfg(CONFIG_CGROUP_HUGETLB)]
 SUBSYS!(hugetlb);
 
-#[cfg(feature = "CONFIG_CGROUP_PIDS")]
+#[cfg(CONFIG_CGROUP_PIDS)]
 SUBSYS!(pids);
 
-#[cfg(feature = "CONFIG_CGROUP_RDMA")]
+#[cfg(CONFIG_CGROUP_RDMA)]
 SUBSYS!(rdma);
 
-#[cfg(feature = "CONFIG_CGROUP_MISC")]
+#[cfg(CONFIG_CGROUP_MISC)]
 SUBSYS!(misc);
 
-#[cfg(feature = "CONFIG_CGROUP_DMEM")]
+#[cfg(CONFIG_CGROUP_DMEM)]
 SUBSYS!(dmem);
 
 /*
  * The following subsystems are not supported on the default hierarchy.
  */
-#[cfg(feature = "CONFIG_CGROUP_DEBUG")]
+#[cfg(CONFIG_CGROUP_DEBUG)]
 SUBSYS!(debug);
 
 /*

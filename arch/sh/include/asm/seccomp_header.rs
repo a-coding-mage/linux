@@ -8,10 +8,10 @@ pub const __NR_seccomp_exit: _ = __NR_exit;
 pub const __NR_seccomp_sigreturn: _ = __NR_rt_sigreturn;
 
 // CONFIG_CPU_LITTLE_ENDIAN is a build-time condition from the C source.
-#[cfg(feature = "CONFIG_CPU_LITTLE_ENDIAN")]
+#[cfg(CONFIG_CPU_LITTLE_ENDIAN)]
 pub const __SECCOMP_ARCH_LE: _ = __AUDIT_ARCH_LE;
 
-#[cfg(not(feature = "CONFIG_CPU_LITTLE_ENDIAN"))]
+#[cfg(not(CONFIG_CPU_LITTLE_ENDIAN))]
 pub const __SECCOMP_ARCH_LE: i32 = 0;
 
 pub const SECCOMP_ARCH_NATIVE: _ = AUDIT_ARCH_SH | __SECCOMP_ARCH_LE;

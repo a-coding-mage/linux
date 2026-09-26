@@ -82,7 +82,7 @@ unsafe fn percpu_ref_switch_to_atomic_rcu(rcu: *mut rcu_head) {
     let percpu_count = percpu_count_ptr(ref_);
     static mut underflows: atomic_t = ATOMIC_INIT!(0);
     let mut count: c_ulong = 0;
-    for_each_possible_cpu!(cpu) { count = count.wrapping_add(*per_cpu_ptr(percpu_count, cpu)); }
+    for_each_possible_cpu!(cpu, { count = count.wrapping_add(*per_cpu_ptr(percpu_count, cpu)); });
     pr_debug!("global %lu percpu %lu\n", atomic_long_read(&(*data).count), count);
     atomic_long_add((count as c_long).wrapping_sub(PERCPU_COUNT_BIAS as c_long), &mut (*data).count);
     if WARN_ONCE!(atomic_long_read(&(*data).count) <= 0,
@@ -114,7 +114,7 @@ unsafe fn __percpu_ref_switch_to_percpu(ref_: *mut percpu_ref) {
     if (*ref_).percpu_count_ptr & __PERCPU_REF_ATOMIC == 0 { return; }
     if WARN_ON_ONCE!(!(*(*ref_).data).allow_reinit) { return; }
     atomic_long_add(PERCPU_COUNT_BIAS as c_long, &mut (*(*ref_).data).count);
-    for_each_possible_cpu!(cpu) { *per_cpu_ptr(percpu_count, cpu) = 0; }
+    for_each_possible_cpu!(cpu, { *per_cpu_ptr(percpu_count, cpu) = 0; });
     smp_store_release!(&mut (*ref_).percpu_count_ptr,
                        (*ref_).percpu_count_ptr & !__PERCPU_REF_ATOMIC);
 }

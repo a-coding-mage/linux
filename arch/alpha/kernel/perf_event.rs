@@ -41,7 +41,11 @@ extern "C" {
     fn perf_sample_data_init(d: *mut perf_sample_data, a: u64, b: i64);
 }
 
-enum { EV67_CYCLES = 1, EV67_INSTRUCTIONS, EV67_BCACHEMISS, EV67_MBOXREPLAY, EV67_LAST_ET }
+pub const EV67_CYCLES: i32 = 1;
+pub const EV67_INSTRUCTIONS: i32 = EV67_CYCLES + 1;
+pub const EV67_BCACHEMISS: i32 = EV67_INSTRUCTIONS + 1;
+pub const EV67_MBOXREPLAY: i32 = EV67_BCACHEMISS + 1;
+pub const EV67_LAST_ET: i32 = EV67_MBOXREPLAY + 1;
 const EV67_NUM_EVENT_TYPES: usize = (EV67_LAST_ET - EV67_CYCLES) as usize;
 extern "C" { static ev67_perfmon_event_map: [i32; 4]; static ev67_mapping: [ev67_mapping_t; EV67_NUM_EVENT_TYPES]; }
 

@@ -29,13 +29,13 @@ extern "C" {
     pub fn start_stop_khugepaged() -> ::core::ffi::c_int;
     pub fn __khugepaged_enter(mm: *mut mm_struct);
     pub fn __khugepaged_exit(mm: *mut mm_struct);
-    #[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+    #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
     pub fn khugepaged_enter_vma(vma: *mut vm_area_struct, vm_flags: vm_flags_t);
-    #[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+    #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
     pub fn khugepaged_min_free_kbytes_update();
-    #[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+    #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
     pub fn current_is_khugepaged() -> bool;
-    #[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+    #[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
     pub fn collapse_pte_mapped_thp(
         mm: *mut mm_struct,
         addr: ::core::ffi::c_ulong,
@@ -46,7 +46,7 @@ extern "C" {
 
 /* MMF_VM_HUGEPAGE is supplied by the Linux memory-management headers. */
 
-#[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+#[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
 #[inline]
 pub unsafe fn khugepaged_fork(mm: *mut mm_struct, oldmm: *mut mm_struct) {
     if mm_flags_test(MMF_VM_HUGEPAGE, oldmm) {
@@ -54,7 +54,7 @@ pub unsafe fn khugepaged_fork(mm: *mut mm_struct, oldmm: *mut mm_struct) {
     }
 }
 
-#[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+#[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
 #[inline]
 pub unsafe fn khugepaged_exit(mm: *mut mm_struct) {
     if mm_flags_test(MMF_VM_HUGEPAGE, mm) {
@@ -62,19 +62,19 @@ pub unsafe fn khugepaged_exit(mm: *mut mm_struct) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn khugepaged_fork(_mm: *mut mm_struct, _oldmm: *mut mm_struct) {}
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn khugepaged_exit(_mm: *mut mm_struct) {}
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn khugepaged_enter_vma(_vma: *mut vm_area_struct, _vm_flags: vm_flags_t) {}
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn collapse_pte_mapped_thp(
     _mm: *mut mm_struct,
@@ -83,11 +83,11 @@ pub unsafe fn collapse_pte_mapped_thp(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn khugepaged_min_free_kbytes_update() {}
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn current_is_khugepaged() -> bool {
     false

@@ -9,7 +9,7 @@
 #[repr(C)]
 pub struct lsm_prop_bpf {
     // Preserves the C conditional field under CONFIG_BPF_LSM.
-    #[cfg(feature = "CONFIG_BPF_LSM")]
+    #[cfg(CONFIG_BPF_LSM)]
     pub secid: u32,
 }
 

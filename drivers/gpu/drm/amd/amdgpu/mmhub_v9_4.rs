@@ -28,7 +28,7 @@ Total output lines: 1707
 const MMHUB_NUM_INSTANCES: usize = 2;
 const MMHUB_INSTANCE_REGISTER_OFFSET: u32 = 0x3000;
 
-unsafe fn mmhub_v9_4_get_fb_location(struct amdgpu_device *adev)
+unsafe fn mmhub_v9_4_get_fb_location(amdgpu_device *adev)
 {
 	/* The base should be same b/t 2 mmhubs on Acrturus. Read one here. */
 	u64 base = RREG32_SOC15(MMHUB, 0, mmVMSHAREDVC0_MC_VM_FB_LOCATION_BASE);
@@ -46,8 +46,8 @@ unsafe fn mmhub_v9_4_get_fb_location(struct amdgpu_device *adev)
 	return base;
 }
 
-unsafe fn mmhub_v9_4_setup_hubid_vm_pt_regs(struct amdgpu_device *adev, i32 hubid,
-				u32 vmid, u64 value)
+unsafe fn mmhub_v9_4_setup_hubid_vm_pt_regs(amdgpu_device *adev, hubid: i32,
+				vmid: u32, value: u64)
 {
 	struct amdgpu_vmhub *hub = &adev.vmhub[AMDGPU_MMHUB0(0)];
 
@@ -63,7 +63,7 @@ unsafe fn mmhub_v9_4_setup_hubid_vm_pt_regs(struct amdgpu_device *adev, i32 hubi
 	{ SOC15_REG_ENTRY(MMHUB, 0, mmMMEA7_ERR_STATUS), 0, 0, 0 },
 };
 
-unsafe fn mmhub_v9_4_query_ras_error_status(struct amdgpu_device *adev)
+unsafe fn mmhub_v9_4_query_ras_error_status(amdgpu_device *adev)
 {
 	i32 i;
 	u32 reg_value;
@@ -87,26 +87,26 @@ unsafe fn mmhub_v9_4_query_ras_error_status(struct amdgpu_device *adev)
 }
 
 const amdgpu_ras_block_hw_ops mmhub_v9_4_ras_hw_ops = {
-	.query_ras_error_count = mmhub_v9_4_query_ras_error_count,
-	.reset_ras_error_count = mmhub_v9_4_reset_ras_error_count,
-	.query_ras_error_status = mmhub_v9_4_query_ras_error_status,
+	query_ras_error_count: mmhub_v9_4_query_ras_error_count,
+	reset_ras_error_count: mmhub_v9_4_reset_ras_error_count,
+	query_ras_error_status: mmhub_v9_4_query_ras_error_status,
 };
 
 struct amdgpu_mmhub_ras mmhub_v9_4_ras = {
-	.ras_block = {
-		.hw_ops = &mmhub_v9_4_ras_hw_ops,
+	ras_block: {
+		hw_ops: &mmhub_v9_4_ras_hw_ops,
 	},
 };
 
 const amdgpu_mmhub_funcs mmhub_v9_4_funcs = {
-	.get_fb_location = mmhub_v9_4_get_fb_location,
-	.init = mmhub_v9_4_init,
-	.gart_enable = mmhub_v9_4_gart_enable,
-	.set_fault_enable_default = mmhub_v9_4_set_fault_enable_default,
-	.gart_disable = mmhub_v9_4_gart_disable,
-	.set_clockgating = mmhub_v9_4_set_clockgating,
-	.get_clockgating = mmhub_v9_4_get_clockgating,
-	.setup_vm_pt_regs = mmhub_v9_4_setup_vm_pt_regs,
+	get_fb_location: mmhub_v9_4_get_fb_location,
+	init: mmhub_v9_4_init,
+	gart_enable: mmhub_v9_4_gart_enable,
+	set_fault_enable_default: mmhub_v9_4_set_fault_enable_default,
+	gart_disable: mmhub_v9_4_gart_disable,
+	set_clockgating: mmhub_v9_4_set_clockgating,
+	get_clockgating: mmhub_v9_4_get_clockgating,
+	setup_vm_pt_regs: mmhub_v9_4_setup_vm_pt_regs,
 };
 
 

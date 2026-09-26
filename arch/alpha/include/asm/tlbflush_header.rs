@@ -76,7 +76,7 @@ pub unsafe fn flush_tlb_other(mm: *mut mm_struct) {
 }
 
 /* CONFIG_SMP selects external implementations for these operations. */
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_all() {
     /* Flush everything (kernel mapping may also have changed
@@ -84,7 +84,7 @@ pub unsafe fn flush_tlb_all() {
     tbia();
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
     if mm == (*current).active_mm {
@@ -94,7 +94,7 @@ pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, addr: c_ulong) {
     let mm = (*vma).vm_mm;
@@ -105,7 +105,7 @@ pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, addr: c_ulong) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_range(
     vma: *mut vm_area_struct,
@@ -115,7 +115,7 @@ pub unsafe fn flush_tlb_range(
     flush_tlb_mm((*vma).vm_mm);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn flush_tlb_all();
     pub fn flush_tlb_mm(mm: *mut mm_struct);

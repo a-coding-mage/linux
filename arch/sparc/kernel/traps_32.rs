@@ -87,7 +87,7 @@ pub unsafe fn do_fpe_trap(regs: *mut pt_regs, pc: ::core::ffi::c_ulong, _npc: ::
     #[cfg(not(CONFIG_SMP))] if fpt.is_null() { unsafe { fpsave(fake_regs.as_mut_ptr(), &mut fake_fsr, fake_queue.as_mut_ptr(), &mut fake_depth); (*regs).psr &= !PSR_EF; } return; }
     #[cfg(CONFIG_SMP)] if unsafe { !test_tsk_thread_flag(fpt, TIF_USEDFPU) } { unsafe { fpsave(fake_regs.as_mut_ptr(), &mut fake_fsr, fake_queue.as_mut_ptr(), &mut fake_depth); (*regs).psr &= !PSR_EF; } return; }
     unsafe { fpsave((*fpt).thread.float_regs.as_mut_ptr(), &mut (*fpt).thread.fsr, (*fpt).thread.fpqueue.as_mut_ptr(), &mut (*fpt).thread.fpqdepth); }
-    unsafe { match (*fpt).thread.fsr & 0x1c000 { 2 << 14 | 3 << 14 => { ret = do_mathemu(regs, fpt); }, _ => {} } }
+    unsafe { match (*fpt).thread.fsr & 0x1c000 { case if case == 2 << 14 || case == 3 << 14 => { ret = do_mathemu(regs, fpt); }, _ => {} } }
     if ret != 0 { unsafe { fpload((*current).thread.float_regs.as_mut_ptr(), &mut (*current).thread.fsr); } return; }
     #[cfg(CONFIG_SMP)] unsafe { clear_tsk_thread_flag(fpt, TIF_USEDFPU); }
     unsafe { if psr & PSR_PS != 0 { printk(b"WARNING: FPU exception from kernel mode. at pc=%08lx\n\0".as_ptr(), (*regs).pc); (*regs).pc = (*regs).npc; (*regs).npc += 4; calls += 1; if calls > 2 { die_if_kernel(b"Too many Penguin-FPU traps from kernel mode\0".as_ptr() as *mut _, regs); } return; }

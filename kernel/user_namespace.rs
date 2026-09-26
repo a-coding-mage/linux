@@ -16,7 +16,7 @@ unsafe fn set_cred_user_ns(cred: *mut cred, user_ns: *mut user_namespace) {
     (*cred).cap_effective = CAP_FULL_SET;
     (*cred).cap_ambient = CAP_EMPTY_SET;
     (*cred).cap_bset = CAP_FULL_SET;
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     { key_put((*cred).request_key_auth); (*cred).request_key_auth = core::ptr::null_mut(); }
     (*cred).user_ns = user_ns;
 }
@@ -52,7 +52,7 @@ pub unsafe fn create_user_ns(new: *mut cred) -> int {
     set_userns_rlimit_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
     set_userns_rlimit_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK)); (*ns).ucounts = ucounts;
     mutex_lock(&raw mut USERNS_STATE_MUTEX); (*ns).flags = (*parent_ns).flags; mutex_unlock(&raw mut USERNS_STATE_MUTEX);
-    #[cfg(feature = "CONFIG_KEYS")] { INIT_LIST_HEAD(&mut (*ns).keyring_name_list); init_rwsem(&mut (*ns).keyring_sem); }
+    #[cfg(CONFIG_KEYS)] { INIT_LIST_HEAD(&mut (*ns).keyring_name_list); init_rwsem(&mut (*ns).keyring_sem); }
     if !setup_userns_sysctls(ns) { ns_common_free(ns); kmem_cache_free(USER_NS_CACHEP, ns); dec_user_namespaces(ucounts); return -ENOMEM; }
     set_cred_user_ns(new, ns); ns_tree_add(ns); 0
 }
@@ -70,7 +70,7 @@ unsafe fn free_user_ns(work: *mut work_struct) {
         if (*ns).gid_map.nr_extents > UID_GID_MAP_MAX_BASE_EXTENTS { kfree((*ns).gid_map.forward); kfree((*ns).gid_map.reverse); }
         if (*ns).uid_map.nr_extents > UID_GID_MAP_MAX_BASE_EXTENTS { kfree((*ns).uid_map.forward); kfree((*ns).uid_map.reverse); }
         if (*ns).projid_map.nr_extents > UID_GID_MAP_MAX_BASE_EXTENTS { kfree((*ns).projid_map.forward); kfree((*ns).projid_map.reverse); }
-        #[cfg(feature = "CONFIG_BINFMT_MISC")] kfree((*ns).binfmt_misc);
+        #[cfg(CONFIG_BINFMT_MISC)] kfree((*ns).binfmt_misc);
         retire_userns_sysctls(ns); key_free_user_ns(ns); ns_common_free(ns); kfree_rcu(ns, ns_rcu); dec_user_namespaces(ucounts);
         if !ns_ref_put(parent) { break; } ns = parent;
     }

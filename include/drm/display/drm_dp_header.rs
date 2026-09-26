@@ -60,7 +60,7 @@ pub const DP_MSA_MISC_RAW_14_BPC: u32 = (6 << 5);
 pub const DP_MSA_MISC_RAW_16_BPC: u32 = (7 << 5);
 /* pixel encoding/colorimetry format */
 // C function-like macro preserved: #define _DP_MSA_MISC_COLOR(misc1_7, misc0_21, misc0_3, misc0_4) \
-	((misc1_7) << 15 | (misc0_4) << 4 | (misc0_3) << 3 | ((misc0_21) << 1))
+// 	((misc1_7) << 15 | (misc0_4) << 4 | (misc0_3) << 3 | ((misc0_21) << 1))
 pub const DP_MSA_MISC_COLOR_RGB: u32 = _DP_MSA_MISC_COLOR(0, 0, 0, 0);
 pub const DP_MSA_MISC_COLOR_CEA_RGB: u32 = _DP_MSA_MISC_COLOR(0, 0, 1, 0);
 pub const DP_MSA_MISC_COLOR_RGB_WIDE_FIXED: u32 = _DP_MSA_MISC_COLOR(0, 3, 0, 0);
@@ -1558,26 +1558,26 @@ pub const DP_MAX_LTTPR_COUNT: u32 = DP_PHY_LTTPR8;
 pub const __DP_LTTPR1_BASE: u32 = 0xf0010 /* 1.3 */;
 pub const __DP_LTTPR2_BASE: u32 = 0xf0060 /* 1.3 */;
 // C function-like macro preserved: #define DP_LTTPR_BASE(dp_phy) \
-	(__DP_LTTPR1_BASE + (__DP_LTTPR2_BASE - __DP_LTTPR1_BASE) * \
-		((dp_phy) - DP_PHY_LTTPR1))
+// 	(__DP_LTTPR1_BASE + (__DP_LTTPR2_BASE - __DP_LTTPR1_BASE) * \
+// 		((dp_phy) - DP_PHY_LTTPR1))
 
 // C function-like macro preserved: #define DP_LTTPR_REG(dp_phy, lttpr1_reg) \
-	(DP_LTTPR_BASE(dp_phy) - DP_LTTPR_BASE(DP_PHY_LTTPR1) + (lttpr1_reg))
+// 	(DP_LTTPR_BASE(dp_phy) - DP_LTTPR_BASE(DP_PHY_LTTPR1) + (lttpr1_reg))
 
 pub const DP_TRAINING_PATTERN_SET_PHY_REPEATER1: u32 = 0xf0010 /* 1.3 */;
 // C function-like macro preserved: #define DP_TRAINING_PATTERN_SET_PHY_REPEATER(dp_phy) \
-	DP_LTTPR_REG(dp_phy, DP_TRAINING_PATTERN_SET_PHY_REPEATER1)
+// 	DP_LTTPR_REG(dp_phy, DP_TRAINING_PATTERN_SET_PHY_REPEATER1)
 
 pub const DP_TRAINING_LANE0_SET_PHY_REPEATER1: u32 = 0xf0011 /* 1.3 */;
 // C function-like macro preserved: #define DP_TRAINING_LANE0_SET_PHY_REPEATER(dp_phy) \
-	DP_LTTPR_REG(dp_phy, DP_TRAINING_LANE0_SET_PHY_REPEATER1)
+// 	DP_LTTPR_REG(dp_phy, DP_TRAINING_LANE0_SET_PHY_REPEATER1)
 
 pub const DP_TRAINING_LANE1_SET_PHY_REPEATER1: u32 = 0xf0012 /* 1.3 */;
 pub const DP_TRAINING_LANE2_SET_PHY_REPEATER1: u32 = 0xf0013 /* 1.3 */;
 pub const DP_TRAINING_LANE3_SET_PHY_REPEATER1: u32 = 0xf0014 /* 1.3 */;
 pub const DP_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER1: u32 = 0xf0020 /* 1.4a */;
 // C function-like macro preserved: #define DP_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER(dp_phy)	\
-	DP_LTTPR_REG(dp_phy, DP_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER1)
+// 	DP_LTTPR_REG(dp_phy, DP_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER1)
 
 pub const DP_TRANSMITTER_CAPABILITY_PHY_REPEATER1: u32 = 0xf0021 /* 1.4a */;
 pub const DP_VOLTAGE_SWING_LEVEL_3_SUPPORTED: u32 = BIT(0);
@@ -1585,12 +1585,12 @@ pub const DP_PRE_EMPHASIS_LEVEL_3_SUPPORTED: u32 = BIT(1);
 
 pub const DP_128B132B_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER1: u32 = 0xf0022 /* 2.0 */;
 // C function-like macro preserved: #define DP_128B132B_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER(dp_phy)	\
-	DP_LTTPR_REG(dp_phy, DP_128B132B_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER1)
+// 	DP_LTTPR_REG(dp_phy, DP_128B132B_TRAINING_AUX_RD_INTERVAL_PHY_REPEATER1)
 /* see DP_128B132B_TRAINING_AUX_RD_INTERVAL for values */
 
 pub const DP_LANE0_1_STATUS_PHY_REPEATER1: u32 = 0xf0030 /* 1.3 */;
 // C function-like macro preserved: #define DP_LANE0_1_STATUS_PHY_REPEATER(dp_phy) \
-	DP_LTTPR_REG(dp_phy, DP_LANE0_1_STATUS_PHY_REPEATER1)
+// 	DP_LTTPR_REG(dp_phy, DP_LANE0_1_STATUS_PHY_REPEATER1)
 
 pub const DP_LANE2_3_STATUS_PHY_REPEATER1: u32 = 0xf0031 /* 1.3 */;
 
@@ -1604,20 +1604,20 @@ pub const DP_SYMBOL_ERROR_COUNT_LANE3_PHY_REPEATER1: u32 = 0xf003b /* 1.3 */;
 
 pub const DP_OUI_PHY_REPEATER1: u32 = 0xf003d /* 1.3 */;
 // C function-like macro preserved: #define DP_OUI_PHY_REPEATER(dp_phy) \
-	DP_LTTPR_REG(dp_phy, DP_OUI_PHY_REPEATER1)
+// 	DP_LTTPR_REG(dp_phy, DP_OUI_PHY_REPEATER1)
 
 pub const __DP_FEC1_BASE: u32 = 0xf0290 /* 1.4 */;
 pub const __DP_FEC2_BASE: u32 = 0xf0298 /* 1.4 */;
 // C function-like macro preserved: #define DP_FEC_BASE(dp_phy) \
-	(__DP_FEC1_BASE + ((__DP_FEC2_BASE - __DP_FEC1_BASE) * \
-			   ((dp_phy) - DP_PHY_LTTPR1)))
+// 	(__DP_FEC1_BASE + ((__DP_FEC2_BASE - __DP_FEC1_BASE) * \
+// 			   ((dp_phy) - DP_PHY_LTTPR1)))
 
 // C function-like macro preserved: #define DP_FEC_REG(dp_phy, fec1_reg) \
-	(DP_FEC_BASE(dp_phy) - DP_FEC_BASE(DP_PHY_LTTPR1) + fec1_reg)
+// 	(DP_FEC_BASE(dp_phy) - DP_FEC_BASE(DP_PHY_LTTPR1) + fec1_reg)
 
 pub const DP_FEC_STATUS_PHY_REPEATER1: u32 = 0xf0290 /* 1.4 */;
 // C function-like macro preserved: #define DP_FEC_STATUS_PHY_REPEATER(dp_phy) \
-	DP_FEC_REG(dp_phy, DP_FEC_STATUS_PHY_REPEATER1)
+// 	DP_FEC_REG(dp_phy, DP_FEC_STATUS_PHY_REPEATER1)
 
 pub const DP_FEC_ERROR_COUNT_PHY_REPEATER1: u32 = 0xf0291 /* 1.4 */;
 pub const DP_FEC_CAPABILITY_PHY_REPEATER1: u32 = 0xf0294 /* 1.4a */;
@@ -1636,7 +1636,7 @@ pub const DP_HDCP_2_2_AKE_SEND_CERT_OFFSET: u32 = DP_HDCP_2_2_REG_CERT_RX_OFFSET
 pub const DP_HDCP_2_2_AKE_NO_STORED_KM_OFFSET: u32 = DP_HDCP_2_2_REG_EKPUB_KM_OFFSET;
 pub const DP_HDCP_2_2_AKE_STORED_KM_OFFSET: u32 = DP_HDCP_2_2_REG_EKH_KM_WR_OFFSET;
 pub const DP_HDCP_2_2_AKE_SEND_HPRIME_OFFSET: u32 = DP_HDCP_2_2_REG_HPRIME_OFFSET;
-pub const DP_HDCP_2_2_AKE_SEND_PAIRING_INFO_OFFSET: u32 = ;
+pub const DP_HDCP_2_2_AKE_SEND_PAIRING_INFO_OFFSET: u32 = DP_HDCP_2_2_REG_EKH_KM_RD_OFFSET;
 						DP_HDCP_2_2_REG_EKH_KM_RD_OFFSET
 pub const DP_HDCP_2_2_LC_INIT_OFFSET: u32 = DP_HDCP_2_2_REG_RN_OFFSET;
 pub const DP_HDCP_2_2_LC_SEND_LPRIME_OFFSET: u32 = DP_HDCP_2_2_REG_LPRIME_OFFSET;

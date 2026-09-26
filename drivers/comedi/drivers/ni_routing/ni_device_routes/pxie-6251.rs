@@ -28,8 +28,8 @@
 // #include "all.h"
 
 pub static mut ni_pxie_6251_device_routes: ni_device_routes = ni_device_routes {
-	.device = "pxie-6251",
-	.routes = (struct ni_route_set[]){
+	device: "pxie-6251",
+	routes: (ni_route_set[]){
 		{
 			dest: NI_PFI(0),
 			src: &[

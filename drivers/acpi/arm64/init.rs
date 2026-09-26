@@ -10,19 +10,19 @@ unsafe extern "C" {
 
 pub unsafe fn acpi_arch_init() {
     // Equivalent to IS_ENABLED(CONFIG_ACPI_AGDI).
-    if cfg!(feature = "CONFIG_ACPI_AGDI") {
+    if cfg!(CONFIG_ACPI_AGDI) {
         unsafe { acpi_agdi_init() };
     }
     // Equivalent to IS_ENABLED(CONFIG_ACPI_APMT).
-    if cfg!(feature = "CONFIG_ACPI_APMT") {
+    if cfg!(CONFIG_ACPI_APMT) {
         unsafe { acpi_apmt_init() };
     }
     // Equivalent to IS_ENABLED(CONFIG_ACPI_IORT).
-    if cfg!(feature = "CONFIG_ACPI_IORT") {
+    if cfg!(CONFIG_ACPI_IORT) {
         unsafe { acpi_iort_init() };
     }
     // Equivalent to IS_ENABLED(CONFIG_ARM_AMBA).
-    if cfg!(feature = "CONFIG_ARM_AMBA") {
+    if cfg!(CONFIG_ARM_AMBA) {
         unsafe { acpi_amba_init() };
     }
 }

@@ -68,13 +68,13 @@ pub unsafe fn stackinfo_get_overflow() -> stack_info {
 }
 
 // CONFIG_ARM_SDE_INTERFACE
-#[cfg(feature = "CONFIG_ARM_SDE_INTERFACE")]
+#[cfg(CONFIG_ARM_SDE_INTERFACE)]
 extern "C" {
     pub static mut sdei_stack_normal_ptr: *mut ::core::ffi::c_ulong;
     pub static mut sdei_stack_critical_ptr: *mut ::core::ffi::c_ulong;
 }
 
-#[cfg(feature = "CONFIG_ARM_SDE_INTERFACE")]
+#[cfg(CONFIG_ARM_SDE_INTERFACE)]
 #[inline]
 pub unsafe fn stackinfo_get_sdei_normal() -> stack_info {
     let low: ::core::ffi::c_ulong = raw_cpu_read(sdei_stack_normal_ptr) as ::core::ffi::c_ulong;
@@ -83,7 +83,7 @@ pub unsafe fn stackinfo_get_sdei_normal() -> stack_info {
     stack_info { low, high }
 }
 
-#[cfg(feature = "CONFIG_ARM_SDE_INTERFACE")]
+#[cfg(CONFIG_ARM_SDE_INTERFACE)]
 #[inline]
 pub unsafe fn stackinfo_get_sdei_critical() -> stack_info {
     let low: ::core::ffi::c_ulong = raw_cpu_read(sdei_stack_critical_ptr) as ::core::ffi::c_ulong;
@@ -92,25 +92,25 @@ pub unsafe fn stackinfo_get_sdei_critical() -> stack_info {
     stack_info { low, high }
 }
 
-#[cfg(not(feature = "CONFIG_ARM_SDE_INTERFACE"))]
+#[cfg(not(CONFIG_ARM_SDE_INTERFACE))]
 #[inline]
 pub unsafe fn stackinfo_get_sdei_normal() -> stack_info {
     stackinfo_get_unknown()
 }
 
-#[cfg(not(feature = "CONFIG_ARM_SDE_INTERFACE"))]
+#[cfg(not(CONFIG_ARM_SDE_INTERFACE))]
 #[inline]
 pub unsafe fn stackinfo_get_sdei_critical() -> stack_info {
     stackinfo_get_unknown()
 }
 
 // CONFIG_EFI
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     pub static mut efi_rt_stack_top: *mut u64;
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 #[inline]
 pub unsafe fn stackinfo_get_efi() -> stack_info {
     let high: ::core::ffi::c_ulong = efi_rt_stack_top as ::core::ffi::c_ulong;

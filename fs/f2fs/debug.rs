@@ -7,7 +7,7 @@ use core::ffi::{c_char, c_int, c_uint, c_ulong, c_ulonglong, c_void};
 extern "C" {
     static mut f2fs_stat_list: list_head;
     static mut f2fs_stat_lock: spinlock_t;
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     static mut f2fs_debugfs_root: *mut dentry;
 }
 

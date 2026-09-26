@@ -80,8 +80,8 @@ unsafe fn get_flags(fmt: &mut *const u8) -> i32 {
     let mut flags = 0;
     loop {
         match **fmt {
-            b'-' => flags |= LEFT, b'+' => flags |= PLUS, b' ' => flags |= SPACE,
-            b'#' => flags |= SPECIAL, b'0' => flags |= ZEROPAD,
+            case if case == b'-' => flags |= LEFT, case if case == b'+' => flags |= PLUS, case if case == b' ' => flags |= SPACE,
+            case if case == b'#' => flags |= SPECIAL, case if case == b'0' => flags |= ZEROPAD,
             _ => return flags,
         }
         *fmt = (*fmt).add(1);
@@ -96,11 +96,11 @@ unsafe fn get_int(fmt: &mut *const u8, ap: &mut VaList<'_>) -> i32 {
 
 unsafe fn get_number(sign: i32, qualifier: i32, ap: &mut VaList<'_>) -> u64 {
     if sign != 0 {
-        match qualifier { b'L' as i32 => ap.arg::<i64>() as u64, b'l' as i32 => ap.arg::<i64>() as u64,
-            b'h' as i32 => ap.arg::<i32>() as i16 as i64 as u64, b'H' as i32 => ap.arg::<i32>() as i8 as i64 as u64,
+        match qualifier { case if case == b'L' as i32 => ap.arg::<i64>() as u64, case if case == b'l' as i32 => ap.arg::<i64>() as u64,
+            case if case == b'h' as i32 => ap.arg::<i32>() as i16 as i64 as u64, case if case == b'H' as i32 => ap.arg::<i32>() as i8 as i64 as u64,
             _ => ap.arg::<i32>() as i64 as u64 }
-    } else { match qualifier { b'L' as i32 => ap.arg::<u64>(), b'l' as i32 => ap.arg::<u64>(),
-        b'h' as i32 => ap.arg::<i32>() as u16 as u64, b'H' as i32 => ap.arg::<i32>() as u8 as u64,
+    } else { match qualifier { case if case == b'L' as i32 => ap.arg::<u64>(), case if case == b'l' as i32 => ap.arg::<u64>(),
+        case if case == b'h' as i32 => ap.arg::<i32>() as u16 as u64, case if case == b'H' as i32 => ap.arg::<i32>() as u8 as u64,
         _ => ap.arg::<u32>() as u64 } }
 }
 

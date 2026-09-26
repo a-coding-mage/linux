@@ -6,7 +6,6 @@
 
 // Translated from qcom,gcc-sdm660.h. C header guard omitted.
 
-#define _DT_BINDINGS_CLK_MSM_GCC_660_H
 pub const BLSP1_QUP1_I2C_APPS_CLK_SRC: u32 = 0;
 pub const BLSP1_QUP1_SPI_APPS_CLK_SRC: u32 = 1;
 pub const BLSP1_QUP2_I2C_APPS_CLK_SRC: u32 = 2;

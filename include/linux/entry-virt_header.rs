@@ -7,10 +7,10 @@
 
 /* Transfer to guest mode work */
 // CONFIG_VIRT_XFER_TO_GUEST_WORK is a build-time configuration condition.
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 pub const ARCH_XFER_TO_GUEST_MODE_WORK: ::core::ffi::c_ulong = 0;
 
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 pub const XFER_TO_GUEST_MODE_WORK: ::core::ffi::c_ulong =
     _TIF_NEED_RESCHED
         | _TIF_NEED_RESCHED_LAZY
@@ -28,7 +28,7 @@ pub const XFER_TO_GUEST_MODE_WORK: ::core::ffi::c_ulong =
  * Invoked from xfer_to_guest_mode_handle_work(). Defaults to NOOP. Can be
  * replaced by architecture specific code.
  */
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 pub unsafe extern "C" fn arch_xfer_to_guest_mode_handle_work(
     ti_work: ::core::ffi::c_ulong,
 ) -> ::core::ffi::c_int {
@@ -42,7 +42,7 @@ pub unsafe extern "C" fn arch_xfer_to_guest_mode_handle_work(
  *
  * Returns: 0 or an error code
  */
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 unsafe extern "C" {
     pub fn xfer_to_guest_mode_handle_work() -> ::core::ffi::c_int;
 }
@@ -55,7 +55,7 @@ unsafe extern "C" {
  * Has to be invoked with interrupts disabled before the last call
  * to xfer_to_guest_mode_work_pending().
  */
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 #[inline]
 pub unsafe fn xfer_to_guest_mode_prepare() {
     lockdep_assert_irqs_disabled();
@@ -70,7 +70,7 @@ pub unsafe fn xfer_to_guest_mode_prepare() {
  * Bare variant of xfer_to_guest_mode_work_pending(). Can be called from
  * interrupt enabled code for racy quick checks with care.
  */
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 #[inline]
 pub unsafe fn __xfer_to_guest_mode_work_pending() -> bool {
     let ti_work: ::core::ffi::c_ulong = read_thread_flags();
@@ -87,7 +87,7 @@ pub unsafe fn __xfer_to_guest_mode_work_pending() -> bool {
  * Has to be invoked with interrupts disabled before the transition to
  * guest mode.
  */
-#[cfg(feature = "CONFIG_VIRT_XFER_TO_GUEST_WORK")]
+#[cfg(CONFIG_VIRT_XFER_TO_GUEST_WORK)]
 #[inline]
 pub unsafe fn xfer_to_guest_mode_work_pending() -> bool {
     lockdep_assert_irqs_disabled();

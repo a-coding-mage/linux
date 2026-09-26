@@ -182,27 +182,31 @@ unsafe fn xchk_xattr_walk_node(
     let mut leaf: *mut xfs_attr_leafblock;
     let mut leaf_bp: *mut xfs_buf = core::ptr::null_mut();
     let mut error: i32;
+    'out_bitmap: {
+    'out_leaf: {
     xdab_bitmap_init(&mut seen_dablks);
     error = xchk_xattr_find_leftmost_leaf(sc, ip, &mut seen_dablks, &mut leaf_bp);
-    if error != 0 { goto out_bitmap; }
+    if error != 0 { break 'out_bitmap; }
     loop {
         error = xchk_xattr_walk_leaf_entries(sc, ip, attr_fn, leaf_bp, priv_);
-        if error != 0 { goto out_leaf; }
+        if error != 0 { break 'out_leaf; }
         leaf = (*leaf_bp).b_addr as *mut xfs_attr_leafblock;
         xfs_attr3_leaf_hdr_from_disk((*mp).m_attr_geo, &mut leafhdr, leaf);
-        if leafhdr.forw == 0 { goto out_leaf; }
+        if leafhdr.forw == 0 { break 'out_leaf; }
         xfs_trans_brelse((*sc).tp, leaf_bp);
-        if !leaf_fn.is_none() { error = leaf_fn.unwrap()(sc, priv_); if error != 0 { goto out_bitmap; } }
+        if !leaf_fn.is_none() { error = leaf_fn.unwrap()(sc, priv_); if error != 0 { break 'out_bitmap; } }
         let mut len: xfs_extlen_t = 1;
-        if xdab_bitmap_test(&mut seen_dablks, leafhdr.forw, &mut len) { error = -EFSCORRUPTED; goto out_bitmap; }
+        if xdab_bitmap_test(&mut seen_dablks, leafhdr.forw, &mut len) { error = -EFSCORRUPTED; break 'out_bitmap; }
         error = xfs_attr3_leaf_read((*sc).tp, ip, I_INO(ip), leafhdr.forw, &mut leaf_bp);
-        if error != 0 { goto out_bitmap; }
+        if error != 0 { break 'out_bitmap; }
         error = xdab_bitmap_set(&mut seen_dablks, leafhdr.forw, 1);
-        if error != 0 { goto out_leaf; }
+        if error != 0 { break 'out_leaf; }
     }
-out_leaf:
+    }
+    
     xfs_trans_brelse((*sc).tp, leaf_bp);
-out_bitmap:
+    }
+    
     xdab_bitmap_destroy(&mut seen_dablks);
     error
 }

@@ -101,7 +101,7 @@ pub const MAX98926_PDM_SOURCE_0_MASK: u32 = (1 << 0);
 pub const MAX98926_PDM_SOURCE_1_MASK: u32 = (1 << 4);
 pub const MAX98926_PDM_SOURCE_1_SHIFT: u32 = 4;
 
-/* MAX98926 Register Bit Fields */
+/ * MAX98926 Register Bit Fields */
 
 /* MAX98926_R002_LIVE_STATUS0 */
 pub const MAX98926_THERMWARN_STATUS_MASK: u32 = (1 << 3);

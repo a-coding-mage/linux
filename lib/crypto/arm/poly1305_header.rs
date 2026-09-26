@@ -44,7 +44,7 @@ unsafe fn poly1305_blocks(
 ) {
     // CONFIG_KERNEL_MODE_NEON is a build-time kernel condition.  The
     // static-branch and SIMD-availability checks retain the source intent.
-    if cfg!(feature = "CONFIG_KERNEL_MODE_NEON")
+    if cfg!(CONFIG_KERNEL_MODE_NEON)
         && HAVE_NEON
         && may_use_simd()
     {
@@ -66,7 +66,7 @@ unsafe fn poly1305_blocks(
 }
 
 // CONFIG_KERNEL_MODE_NEON
-#[cfg(feature = "CONFIG_KERNEL_MODE_NEON")]
+#[cfg(CONFIG_KERNEL_MODE_NEON)]
 unsafe fn poly1305_mod_init_arch() {
     if elf_hwcap & HWCAP_NEON != 0 {
         HAVE_NEON = true;

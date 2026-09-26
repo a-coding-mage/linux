@@ -1068,7 +1068,6 @@ extern "C" { pub fn bcm63xx_machine_halt(); }
 
 extern "C" { pub fn bcm63xx_machine_reboot(); }
 
-#endif /* !BCM63XX_CPU_H_ */
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

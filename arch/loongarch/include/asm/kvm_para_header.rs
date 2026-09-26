@@ -100,17 +100,17 @@ pub unsafe fn kvm_hypercall5(
 }
 
 // CONFIG_PARAVIRT selects the external declarations in the C header.
-#[cfg(feature = "CONFIG_PARAVIRT")]
+#[cfg(CONFIG_PARAVIRT)]
 extern "C" {
     pub fn kvm_para_available() -> bool;
     pub fn kvm_arch_para_features() -> u32;
 }
 
-#[cfg(not(feature = "CONFIG_PARAVIRT"))]
+#[cfg(not(CONFIG_PARAVIRT))]
 #[inline]
 pub fn kvm_para_available() -> bool { false }
 
-#[cfg(not(feature = "CONFIG_PARAVIRT"))]
+#[cfg(not(CONFIG_PARAVIRT))]
 #[inline]
 pub fn kvm_arch_para_features() -> u32 { 0 }
 

@@ -57,6 +57,8 @@ unsafe fn fme_pr(pdev: *mut platform_device, arg: usize) -> i32 {
     let mut buf: *mut core::ffi::c_void = std::ptr::null_mut();
     let length: usize;
     let mut ret = 0i32;
+    'free_exit: {
+    'unlock_exit: {
 
     if copy_from_user(&mut port_pr as *mut _ as *mut _, argp, minsz) != 0 { return -EFAULT; }
     if port_pr.argsz < minsz || port_pr.flags != 0 { return -EINVAL; }
@@ -70,16 +72,16 @@ unsafe fn fme_pr(pdev: *mut platform_device, arg: usize) -> i32 {
     buf = vmalloc(length);
     if buf.is_null() { return -ENOMEM; }
     if copy_from_user(buf, port_pr.buffer_address as usize as *mut _, port_pr.buffer_size) != 0 {
-        ret = -EFAULT; goto free_exit;
+        ret = -EFAULT; break 'free_exit;
     }
     info = fpga_image_info_alloc(&mut (*pdev).dev);
-    if info.is_null() { ret = -ENOMEM; goto free_exit; }
+    if info.is_null() { ret = -ENOMEM; break 'free_exit; }
     (*info).flags |= FPGA_MGR_PARTIAL_RECONFIG;
     mutex_lock(&mut (*fdata).lock);
     fme = dfl_fpga_fdata_get_private(fdata);
-    if fme.is_null() { ret = -EINVAL; goto unlock_exit; }
+    if fme.is_null() { ret = -EINVAL; break 'unlock_exit; }
     region = dfl_fme_region_find(fme, port_pr.port_id);
-    if region.is_null() { ret = -EINVAL; goto unlock_exit; }
+    if region.is_null() { ret = -EINVAL; break 'unlock_exit; }
     fpga_image_info_free((*region).info);
     (*info).buf = buf;
     (*info).count = length;
@@ -88,9 +90,11 @@ unsafe fn fme_pr(pdev: *mut platform_device, arg: usize) -> i32 {
     ret = fpga_region_program_fpga(region);
     if !(*region).get_bridges.is_none() { fpga_bridges_put(&mut (*region).bridge_list); }
     put_device(&mut (*region).dev);
-unlock_exit:
+    }
+    
     mutex_unlock(&mut (*fdata).lock);
-free_exit:
+    }
+    
     vfree(buf);
     ret
 }

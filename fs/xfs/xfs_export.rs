@@ -65,21 +65,21 @@ unsafe fn xfs_fs_encode_fh(
             (*fid).i32.parent_ino = (*parent).i_ino;
             (*fid).i32.parent_gen = (*parent).i_generation;
             (*fid).i32.ino = (*inode).i_ino;
-            (*fid).i32.gen = (*inode).i_generation;
+            (*fid).i32.r#gen = (*inode).i_generation;
         }
         FILEID_INO32_GEN => {
             (*fid).i32.ino = (*inode).i_ino;
-            (*fid).i32.gen = (*inode).i_generation;
+            (*fid).i32.r#gen = (*inode).i_generation;
         }
         x if x == (FILEID_INO32_GEN_PARENT | XFS_FILEID_TYPE_64FLAG) => {
             (*fid64).parent_ino = (*parent).i_ino;
             (*fid64).parent_gen = (*parent).i_generation;
             (*fid64).ino = (*inode).i_ino;
-            (*fid64).gen = (*inode).i_generation;
+            (*fid64).r#gen = (*inode).i_generation;
         }
         x if x == (FILEID_INO32_GEN | XFS_FILEID_TYPE_64FLAG) => {
             (*fid64).ino = (*inode).i_ino;
-            (*fid64).gen = (*inode).i_generation;
+            (*fid64).r#gen = (*inode).i_generation;
         }
         _ => {}
     }
@@ -118,8 +118,8 @@ unsafe fn xfs_nfs_get_inode(
          * We don't use ESTALE directly down the chain to not
          * confuse applications using bulkstat that expect EINVAL.
          */
-        match error {
-            -EINVAL | -ENOENT | -EFSCORRUPTED => error = -ESTALE,
+        match -(error) {
+            EINVAL | ENOENT | EFSCORRUPTED => error = -ESTALE,
             _ => {}
         }
         return ERR_PTR(error);
@@ -162,11 +162,11 @@ unsafe fn xfs_fs_fh_to_dentry(
 
     match fileid_type {
         FILEID_INO32_GEN_PARENT | FILEID_INO32_GEN => {
-            inode = xfs_nfs_get_inode(sb, (*fid).i32.ino, (*fid).i32.gen);
+            inode = xfs_nfs_get_inode(sb, (*fid).i32.ino, (*fid).i32.r#gen);
         }
         x if x == (FILEID_INO32_GEN_PARENT | XFS_FILEID_TYPE_64FLAG)
             || x == (FILEID_INO32_GEN | XFS_FILEID_TYPE_64FLAG) => {
-            inode = xfs_nfs_get_inode(sb, (*fid64).ino, (*fid64).gen);
+            inode = xfs_nfs_get_inode(sb, (*fid64).ino, (*fid64).r#gen);
         }
         _ => {}
     }

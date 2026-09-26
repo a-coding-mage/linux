@@ -7,13 +7,13 @@
 // asm/nospec-branch.h
 
 // !CONFIG_X86_CX8
-#[cfg(not(feature = "CONFIG_X86_CX8"))]
+#[cfg(not(CONFIG_X86_CX8))]
 unsafe extern "C" {
     pub fn cmpxchg8b_emu();
 }
 
 // CONFIG_STACKPROTECTOR
-#[cfg(feature = "CONFIG_STACKPROTECTOR")]
+#[cfg(CONFIG_STACKPROTECTOR)]
 unsafe extern "C" {
     pub static mut __ref_stack_chk_guard: ::core::ffi::c_ulong;
 }

@@ -1,5 +1,325 @@
 # Reboot handoff — C-to-Rust migration
 
+## Active continuation — 2026-09-25
+
+The full translation goal remains active and incomplete. The current turn found
+the previous `/tmp` builds absent and no live build jobs. The persistent tooling
+was verified and its compatibility links restored. New outputs are durable at
+`/home/fenhir/.cache/lupos-migration/current-20260925`:
+
+- `x86`, `arm64`: fresh complete Rust-provider image/modules, with
+  `RUST_RBTREE=y`, `RUST_BSEARCH=y`, strict Rust1.85/KCFI/DWARF versions,
+  `RBTREE_TEST=m`, and modular KUnit. Keep these immutable for test fixtures.
+- `x86-c-providers`, `arm64-c-providers`: separate complete baseline builds with
+  rbtree and bsearch selected from C. Original Rust donors were never switched.
+- `x86-metadata`, `arm64-metadata`: independently rebuilt copies with genuine
+  external Rust prime callers. Both prime load/unload/reload VMs pass; the
+  metadata runtime suite passes 21/21 without skips.
+- `host`: all 55 migrated host tools build with Rust1.85 and `-Dwarnings`.
+- `host-current`: expanded 60-tool aggregate builds with the same strict
+  compiler; the original 55-tool donor remains unchanged.
+- `unicode-12.1`: restored official corpus; all eight pinned hashes verified.
+- `logs`: per-command logs, terminal JSON, retained fixture builds and consoles.
+
+Fresh RBTree/bsearch provider discovery passes 27/27 without skips in 137.241s.
+Their runtime checker suites pass 13/13 and 12/12. All 16 provider/caller/architecture
+VMs pass with reload; RBTree also runs the original C test module twice per VM.
+Each caller load executes 150,000 RBTree operations or 23,228 binary-search cases.
+That milestone counted 40/526 lib units and 55/64 host tools; most of the
+full kernel translation and applicable original test coverage remains outstanding.
+
+`test_cmdline.py` now exercises both rbtree language selections rather than
+requiring a C neighbor unconditionally. Its full 12-group native regression passes
+with zero skips and zero donor writes. Root orchestration regression also passes.
+The new three-file binary-search runtime checker is integrated and validated.
+
+The 160-module baseline now has passing evidence for all 2,008 discovered methods:
+1,810 retained original passes, 197 resumed-tail passes, and one corrected
+genksyms retry. This combines the interrupted original run, its exact remaining
+198-method tail, and the retry; it is not one uninterrupted clean run. The tail
+finished with five genksyms subtest errors under one method. A temporary Kconfig
+fixture had written ignored configuration headers into the source checkout;
+those files were quarantined and the fixture now uses its private working
+directory. The exact genksyms method then passed all six native CRC subtests.
+`logs/integrated-regression-combined-coverage.json` records the distinct method
+and subtest accounting and evidence hashes. No unresolved skips or failures
+remain in this baseline. New sort and driver-generator tests are separate.
+
+The shared-source freeze is lifted. Both `sort-shared.patch` and
+`sort-kunit-shared.patch` have been applied to the current checkout, including
+Kconfig/Kbuild selectors, nullable callback bindings and provenance entries.
+All five focused sort groups pass again from the integrated checkout without
+skips (539.971 seconds), including all six scheduler configurations, genuine
+ELF32/ELF64 execution and protected callbacks. The log is
+`logs/integrated-sort-native.log`. Full current-checkout image and module builds
+pass in all eight `sort-kunit-current/{x86,arm64}-{rust,c}-{module,builtin}`
+outputs. All eight selected Rust-suite VMs pass: modules unload/reload framework
+and suite, and built-in suites execute at boot. There are 12 successful suite
+runs, no faults/warnings/skips and no observed donor writes. Selected source,
+metadata, archive, module identity and import-CRC checks pass. The sort provider
+and translated original suite are now counted: 42/526 lib units, 60/64 host tools.
+Per-variant runtime logs and `sort-kunit-selected-*` consoles are retained in
+that directory. All sort build/VM jobs are terminal.
+
+Separate workers reconstructed the missing original-C x86 genksyms/certificate/
+relocation, ARM64 nVHE and MIPS test inputs. Verified future environment mappings
+are in `supplemental-inputs.json`; `missing-inputs.md` records requirements.
+The glob suite-only console is fresh and its exact two-run checker passes.
+
+Continuation checkpoint: the C x86 genksyms/certificate/relocation build and
+39-group regression now pass without skips; ARM64 nVHE passes 11 groups,
+MIPS32 vDSO passes 13 and MIPS64 relocation passes 18. MIPS64 needed a private
+2 MiB relocation reservation; original C independently confirmed the initial
+capacity failure. The original environment snapshot is retained. Its process
+(session 16629, PID 108644) was terminated at the user's pause; the user later
+resumed the work. The resumed tail (session 52098, PID 19256) and corrected
+genksyms retry (session 45897) are also finished. `active-work.json` and
+`paused-work.json` are historical records, not live process state. Eight original
+list-sort failures were traced to an incomplete C donor and an obsolete C-only
+UUID-neighbor assertion. The corrected eight groups pass using `x86-list-sort-c`,
+including in the completed resumed tail. Original failure evidence is retained.
+
+`sort-private/{x86-rust,arm64-rust,x86-c,arm64-c}` contain four complete image
+and module builds from the private patched source, all retaining original
+`TEST_SORT=m`. Actual x86 objtool static-call relocation and final-link checks
+pass. All eight provider/caller/architecture VMs pass with two loads each,
+5,776 independent caller cases per load, and the original C `lib_sort` KUnit
+suite on every load. Eleven runtime-checker groups also pass. This kernel's
+x86/ARM64 configurations permit lazy preemption; the corrected matrix uses it
+and does not claim active rescheduling requests in the guest. Active scheduler
+branches are covered by the focused native tests. The translated original
+`lib/tests/test_sort.rs` now uses actual KUnit bindings and registration, retains
+the original module/suite identity, and passes five focused groups. Its new
+selected module and built-in lifecycle checks now all pass.
+
+The ten-file `tools/build/fixdep` implementation is now integrated and its
+current-checkout suite passes 13/13 without skips in 58.599s. Actual host-header
+bindings preserve default, large-file and 64-bit-time ABIs, including multiword
+HOSTCC and wrapper-selected 32-bit hosts. Its production Python helper probes
+actual host ABI declarations/layout; it provides no C logic shim. Tests include
+genuine i686 mmap/overflow cases, future timestamps and successful traversal
+beyond isize::MAX. See `logs/tools-fixdep-integrated.log`. Earlier real
+objtool/libsubcmd C/Rust switching and no-op checks passed. This bootstrap tool
+is distinct from `scripts/basic/fixdep` and the canonical 64-tool inventory.
+
+Three more canonical host generators are implemented and selected in the current
+branch: `drivers/zorro/gen-devlist`, `drivers/tty/vt/conmakehash`, and
+`drivers/gpu/drm/xe/xe_gen_wa_oob`. Their original-C differential and real Kbuild
+groups pass (five, six and five respectively), including generated C consumers,
+language switching, stream errors and inherited SIGPIPE. Conmakehash also passes
+the original 128 KiB stack budget after retaining its large table in static
+storage; genuine ELF32 output and overflow behavior were checked separately.
+All three have aggregate and provenance entries. An empty source `include/config`
+directory left by the quarantined fixture initially blocked ordinary Kbuild;
+it was removed with rmdir. The expanded host build and migration invariants pass
+all five groups without skips in 411.970 seconds; see
+`logs/integrated-host-and-invariants-clean.log`. Radeon `mkregtable` and logo
+`pnmtologo` are now also integrated, with passing focused checks, independent
+review and aggregate/provenance entries. The updated 60-tool aggregate and all
+three migration invariants pass five groups without skips in 360.654 seconds;
+see `logs/integrated-host-60-and-invariants.log`. A retained normal build in
+`host-current` also passes (`logs/host-current-build-pinned.log`), followed by
+an unchanged no-op (`logs/host-current-noop.log`). Its earlier
+failed invocation used overridden environment defaults instead of command-line
+compiler/library assignments; that log is retained. The current host count is
+60/64. Independent fixdep review
+also found a clean-only toolchain-validation regression; its correction and the
+extended existing test pass. Native errname and bitrev repairs are the next
+native work. Their shared selectors, bindings, public bitrev/union-find modules
+and provenance entries are now integrated, along with argv splitting. New
+combined outputs are being prepared in
+`native-libraries-current/{x86-rust,arm64-rust}` with original printf KUnit as a
+module, plus SMP/cgroups/legacy cpusets for union-find's real C consumer.
+Both configuration audits and complete image/module builds pass: sessions
+76441 (x86) and 4781 (ARM64) are terminal with exit 0. Shared kernel selectors,
+bindings and public modules remain held during native runtime gates. Keep
+completed sort donors immutable. Union-find's selected artifact audit passes
+on both architectures, confirming a sole Rust archive owner, no added module
+exports, and the original cpuset-v1 consumer linked to its functions.
+Union-find's actual configuration/archive-selection checks and the three
+migration invariants pass five groups in 82.198 seconds. Bitrev has nine passes
+from its integrated run plus the corrected real composite-Kbuild group passing
+in 31.415 seconds; the initial failure was a fixture command-line object-list
+override that bypassed normal Kbuild path handling. Its log remains retained.
+
+The existing boot runner now has opt-in original cpuset-v1 base/hotplug tests.
+All 29 Python boot checks and 13 PID1 Rust units pass with the supplied ARM64
+userspace root and no skips. The scripts stay byte-identical;
+root load balancing is disabled and an overlapping sibling forces the real
+union-find path. Legacy hotplug leaves that sibling's mask at CPU0, so the
+fixture checks and explicitly restores it rather than expecting automatic
+restoration. The corrected guests now pass these original scripts. Matching ARM64 Bash, static BusyBox,
+libc and libtinfo were downloaded through signed Ubuntu Noble metadata and
+extracted only into `arm64-cpuset-userspace/root`; package hashes and fetch logs
+are retained, with no host package installation. Explicit-root ARM64 support in
+the same boot runner is complete, including architecture, interpreter and
+recursive dependency checks without executing cross-architecture files on the
+host. Guest prerequisite checks verify GNU Bash and the needed BusyBox applets.
+The first guest runs exposed original-test prerequisites: ARM's single
+scheduler domain rejects the base script's requested relaxation level 2, and
+x86's ACPI-disabled firmware configuration brings up only CPU0. Both failures
+and input provenance are retained in `native-libraries-current/*-first-*`.
+Neither original script nor its strict success checks was relaxed. Corrected
+outputs are complete at `{x86,arm64}-rust-topology`: x86 enables ACPI, ARM enables
+SCHED_SMT. The cpuset runner now explicitly supplies two cores with one thread
+each, giving ARM a singleton SMT domain followed by the package domain. Both
+corrected builds passed (27083 x86, 65778 ARM, exit 0). ARM's combined guest gate
+passes: both unchanged cpuset scripts and cleanup/CPU1 restoration, original
+printf 28/28 with no skips on each load, errname 108,195 cases, bitrev 65,543
+architecture-header cases, and argv 2,352 cases on each of two loads. All four
+modules unload/reload, including the actual KUnit framework. An intermediate
+invocation omitted that modular framework; its failed log is retained as
+`arm64-topology-missing-kunit-*`. The final log is
+`arm64-topology-combined-final.log`; the two console checks pass in 0.018 seconds.
+The guest uses a private build view under `guest-gates`, preserving the completed
+donor's config/image/tool hashes. X86's corrected guest gate also passes, with
+the actual 256-byte generic bitrev table and all the same tests/reloads. Its
+default emulated CPU caused four original printf early-RNG skips; this failed
+attempt remains retained. The passing run uses `-cpu max`, which supplies
+architectural entropy and records CRNG initialization before the tests; the
+kernel, original tests and strict no-skip gate are unchanged. Evidence is in
+`x86-topology-combined-rng-final.log` and `x86-topology-console-final.log`.
+Matching original-C provider builds now pass in `{arm64,x86}-c-topology`
+(sessions 90332 and 17273). Their configuration differences are only the four
+provider selectors. ARM C also passes all native artifact checks and the full
+combined guest gate, with two successful console checks (`logs/arm64-c-*.log`).
+X86 C runtime checks also pass, including both unchanged cpuset scripts,
+all 28 printf cases twice without skips, and both fixture loads/reloads
+(`logs/x86-c-{native-fixtures,boot,console}.log`). The legitimate generic
+bitrev module variants now also pass at `x86-{rust,c}-bitrev-module`
+(build sessions 98519 and 22710, both exit 0). They disable ACPI because its CRC32
+selection forces generic bit reversal built in, plus RD_XZ=n, XZ_DEC=m and
+CRC_ENABLE_ALL_FOR_KUNIT=m. The resulting CRC32/BITREVERSE/GENERIC_BITREVERSE
+all resolve to modules under the actual Kconfig rules. Both native module
+audits verify original identity/GPL metadata, immutable table, dual-gendwarf
+agreement and exact caller import versions. Both guests then pass original
+printf 28/28 twice without skips and errname/bitrev checks twice, unloading
+and reloading all four modules including bitrev itself (VM sessions 3630 and
+17641, both exit 0). Donor hashes remain unchanged. This separate lane does
+not rerun the completed ACPI-dependent cpuset gate. These four libraries are
+now counted: 46/526 (480 remain), with host count still 60/64. Selected-source
+freeze was released for earlycpio integration. Strict earlycpio builds now pass
+in `{x86,arm64}-rust-earlycpio` (77502 and 55836, both exit 0), with sole config
+delta +RUST_EARLYCPIO=y. X86's selected original early Intel consumer proof
+passes both CPU controls in 10.754 seconds: exact first-line MAX18 warning
+with hypervisor=off, none with hypervisor=on, and successful boots. The actual
+prefix archive member is regular and zero-length, so no microcode update is
+fabricated. Evidence is in `fixtures/earlycpio-rust-zxm6qo4r` and
+`logs/x86-earlycpio-native.log`; the original C proof was already passing.
+ARM's selected owner/archive/link audit passes in 0.319 seconds and its
+Image boot passes (95552), with private-view and donor hashes unchanged.
+Earlycpio is now counted: 47/526 lib units, 479 remain. All five-library
+matrix jobs are terminal, with no selected-source freeze remaining.
+The earlier complete
+images and initial unconfigured C copies remain
+retained; they are not passing C-provider matrix evidence.
+
+The next union-find repair uses the actual generated `uf_node` instead of the
+translation's signed-rank copy. It preserves unsigned wrap, tie choice and each
+path-splitting update, with no new module exports. Focused original-C comparisons
+pass on genuine ELF32/ELF64, including normalized KCFI calls, whole-forest state
+and static node/field/array initialization. The final strict groups pass in
+12.035 seconds (`logs/union-find-strict-final.log`). Shared selection is
+integrated; both Rust-provider native kernels and original cpuset gates pass,
+with the remaining combined matrix still pending, so this unit is not counted.
+Argv splitting passes three focused groups in 14.883 seconds,
+two actual x86/ARM64 interface groups in 9.722 seconds, and native fixture checks
+in 17.507 seconds. Its real allocator boundary retains an extra successful
+`kfree(NULL)` tracepoint; allocation tracing is not claimed identical. Actual
+argv/errname selector checks pass four groups in 12.639 seconds.
+Their external native modules are prepared for the completed selected images:
+argv compares 2,352 cases per load through C and Rust callers; the combined
+errname/bitrev fixture covers 108,195 error inputs and 65,543 bit-reversal inputs,
+plus the actual x86 table. Original printf coverage must include all 28 cases,
+including an unskipped `errptr`; both Rust guests and the ARM C guest now satisfy
+these checks. C and Rust DWARF-derived export CRCs differ: rebuilt consumers
+match each selected owner's CRCs, and both gendwarf implementations agree per
+owner. Cross-selection module binary compatibility is not claimed.
+The unselected early-CPIO source/header repair passes three
+focused groups without skips in 19.166 seconds (`logs/earlycpio-final.log`). Its
+old translation had the wrong by-value filename-array size and long width.
+The repaired parser uses the actual header and string backend; coverage includes
+real i686, normalized KCFI, printk configurations/index metadata, malformed
+headers, alignment, bounds and exact diagnostics. It is not selected or counted.
+
+A read-only ownership review confirms that `init/main.rs` needs a complete new
+implementation before selection: the existing 137-line translation panics in
+`start_kernel`, omits most of the 1,701-line original, and falsely imports state
+owned by C. The staged repair begins with actual built-in bindings, global
+ownership and command-line handling. Initcall/setup registration, trace and
+static-key/per-CPU metadata, weak architecture hooks and the complete ordered
+boot path remain required. Early IRQ control must be unconditional; the existing
+runtime Rust interrupt wrapper is a no-op in non-preemptible configurations.
+No wrapper around the C entry point is being substituted for this translation.
+The unselected init-header repair now uses actual kernel configuration and
+unsigned-char FFI, signed entry-relative PREL32 decoding, nullable C callbacks,
+correct built-in guards and linker boundaries. Its three focused groups pass
+without skips in 14.588 seconds (`logs/init-header-unsigned-final.log`), using
+GCC/Clang O0/O2/Os, genuine i686, positive/negative/null entries and protected
+C/Rust initcall and char-pointer setup callbacks. Setup/registration macros and
+the complete main translation are not implemented by this header repair.
+The staged built-in binding header separately passes both native architectures
+in 17.995 seconds, including original C layout/constants, MODULE context
+restoration and explicit rejection of an incorrect include order. Binding and
+global-ownership gates subsequently pass 4/4 in 54.472 seconds, including actual
+original main.o symbols, initial values/relocations, sections, private binding,
+four exports, and alternate real configurations. The setup-record helper passes
+five groups in 29.864 seconds, including actual x86/ARM compiler flags, original
+header metadata, genuine i686 stride, KCFI callbacks, duplicate callback records,
+obsolete null records and module exclusion. The command-line subset separately
+passes three groups in 21.654 seconds with real init=/rdinit= records and the
+original C behavior. These staged helpers remain unselected and do not complete
+the boot entry point. Boot-option routing now passes both native interface
+groups and 80,640 original-C state/buffer/event comparisons, including borrowed
+pointer offsets, plus 96 isolated fatal/order checks. Its final strengthened
+behavior group passes in 18.032 seconds (`logs/init-main-bootoptions-borrowed-final.log`).
+Reset/debug/quiet/loglevel callbacks and their real records pass three groups;
+debug now uses the actual level 10 rather than the old stub's 7. Command-line
+printing matches original C across 8,533 inputs in 11 configurations at O0/O2,
+including printk/index behavior, and both native architectures compile cleanly.
+The init execution/fallback helper passes three final groups in 48.462 seconds,
+including 84 original-C behavior cases, both native architectures and dynamic
+debug/static-key/index metadata. These validated pieces are wired into the
+unselected staged main owner. Early parsing now passes both native interfaces
+and the unchanged-original parser/registry/copy differential at O0/O2 with
+normalized KCFI (`logs/init-main-early-host-fourth.log`, 7.129 seconds).
+Unknown-option notice generation passes 3/3 in 16.970 seconds, including
+400 state/allocation/string-order cases across PRINTK on/off and O0/O2, plus
+both native interfaces. Console opening passes 3/3 in 29.058 seconds,
+including 16,492 original-C pointer/duplication/refcount comparisons. Weak
+boot defaults pass original-C behavior, protected calls and all eight strong
+overrides; both architectures also validate conditional symbol absence
+(`logs/init-main-weak-native-final.log`). The extracted shared debug helper
+preserves the exec metadata/behavior gates, 3/3 in 45.510 seconds.
+The real initcall_debug core parameter now matches original native __param
+records on both architectures, with module exclusion and 516 bool-operation
+cases at O0/O2. Constructors pass 3/3 in 16.157 seconds, including live
+callback-range reads and UML exclusion. These are staged components, not a
+selected boot owner. Bootconfig and blacklist behavior tests are in progress;
+trace callbacks/registration and do_one_initcall still need exact IRQ,
+preemption and tracepoint integration. Blacklist now passes all eight native
+configuration subcases and 448 original-C host comparisons across hardened,
+debug-list and printk settings, retaining copied strings, allocation traces,
+list writes and symbol matching. A minimal forward-only helper in
+`rust/helpers/list.c` preserves the reporter's unsupported preserve_most ABI;
+all list checks and writes remain Rust. Native IR verifies that calling
+convention transition. A shared nonnull InitcallFn fixes real KCFI mismatches
+from using nullable function pointers as incoming callable parameters; nullable
+linker storage remains separate. The staged trace callbacks also pass native
+CFI/section/index checks and 13,520 original-C event comparisons. The sole
+kthreadd_done completion initializer passes both native architectures across
+seven header configurations each (23.491 seconds), including UP debug lock
+state, lockdep metadata and self-link relocations; runtime completion behavior
+is not claimed. Full boot control flow remains missing, and `start_kernel`
+still panics.
+
+Both native builds warn about a zero CRC for core's MaybeUninit copy_from_slice.
+Full original-C and Rust gendwarfksyms replays produce byte-identical output,
+diagnostics and symtypes (624 x86/623 ARM exports). Both omit union-scoped DWARF
+declarations; this is an inherited original-tool limitation, not a discovered
+translation discrepancy. Evidence is under `logs/gendwarf-core-warning-vn6mku81`.
+No fabricated CRC, export suppression or production workaround was added.
+
 ## Active again — 2026-09-24 15:24 UTC / September 25 JST
 
 The user explicitly resumed: "we already restarted, just continue the work".

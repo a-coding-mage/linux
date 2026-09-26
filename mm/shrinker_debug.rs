@@ -19,7 +19,7 @@ unsafe fn shrinker_count_objects(
     let mut total: c_ulong = 0;
     let mut nid: c_int;
 
-    for_each_node!(nid) {
+    for_each_node!(nid, {
         if nid == 0 || ((*shrinker).flags & SHRINKER_NUMA_AWARE) != 0 {
             let mut sc = shrink_control {
                 gfp_mask: GFP_KERNEL,
@@ -38,7 +38,7 @@ unsafe fn shrinker_count_objects(
 
         *count_per_node.add(nid as usize) = nr;
         total = total.wrapping_add(nr);
-    }
+    });
 
     total
 }
@@ -72,9 +72,9 @@ unsafe fn shrinker_debugfs_count_show(m: *mut seq_file, _v: *mut c_void) -> c_in
         );
         if total != 0 {
             seq_printf(m, "%llu", mem_cgroup_id(memcg));
-            for_each_node!(nid) {
+            for_each_node!(nid, {
                 seq_printf(m, " %lu", *count_per_node.add(nid as usize));
-            }
+            });
             seq_putc(m, '\n' as c_int);
         }
 

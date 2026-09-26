@@ -16,20 +16,20 @@
 unsafe fn do_cache_op(
     paddr: phys_addr_t,
     mut size: usize,
-    fn_: unsafe extern "C" fn(unsigned long, unsigned long),
+    fn_: unsafe extern "C" fn(core::ffi::c_ulong, core::ffi::c_ulong),
 ) {
-    let mut off: unsigned long = paddr & (PAGE_SIZE - 1);
-    let pfn: unsigned long = PFN_DOWN(paddr);
+    let mut off: core::ffi::c_ulong = paddr & (PAGE_SIZE - 1);
+    let pfn: core::ffi::c_ulong = PFN_DOWN(paddr);
     let mut page: *mut page = pfn_to_page(pfn);
 
     if !PageHighMem(page) {
-        fn_(phys_to_virt(paddr) as unsigned long, size as unsigned long);
+        fn_(phys_to_virt(paddr) as core::ffi::c_ulong, size as core::ffi::c_ulong);
     } else {
         while size > 0 {
             let sz: usize = core::cmp::min(size, PAGE_SIZE - off as usize);
             let vaddr: *mut core::ffi::c_void = kmap_atomic(page);
 
-            fn_(vaddr as unsigned long + off, sz as unsigned long);
+            fn_(vaddr as core::ffi::c_ulong + off, sz as core::ffi::c_ulong);
             kunmap_atomic(vaddr);
             off = 0;
             page = page.add(1);
@@ -73,7 +73,7 @@ pub unsafe fn arch_sync_dma_for_device(
 }
 
 pub unsafe fn arch_dma_prep_coherent(page: *mut page, size: usize) {
-    __invalidate_dcache_range(page_address(page) as unsigned long, size as unsigned long);
+    __invalidate_dcache_range(page_address(page) as core::ffi::c_ulong, size as core::ffi::c_ulong);
 }
 
 /*

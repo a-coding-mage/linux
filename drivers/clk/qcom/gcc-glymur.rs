@@ -8,7 +8,7 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2025, Qualcomm Technologies, Inc. and/or its subsidiaries.
- * /
+ */
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -8515,14 +8515,14 @@ static const struct clk_rcg_dfs_data gcc_dfs_clocks[] = {
 };
 
 static const u32 gcc_glymur_critical_cbcrs[] = {
-	0x26004, /* GCC_CAMERA_AHB_CLK * /
-	0x26040, /* GCC_CAMERA_XO_CLK * /
-	0x27004, /* GCC_DISP_AHB_CLK * /
-	0x71004, /* GCC_GPU_CFG_AHB_CLK * /
-	0x32004, /* GCC_VIDEO_AHB_CLK * /
-	0x32058, /* GCC_VIDEO_XO_CLK * /
-	0x9b004, /* GCC_EVA_AHB_CLK * /
-	0x9b024, /* GCC_EVA_XO_CLK * /
+	0x26004, /* GCC_CAMERA_AHB_CLK */
+	0x26040, /* GCC_CAMERA_XO_CLK */
+	0x27004, /* GCC_DISP_AHB_CLK */
+	0x71004, /* GCC_GPU_CFG_AHB_CLK */
+	0x32004, /* GCC_VIDEO_AHB_CLK */
+	0x32058, /* GCC_VIDEO_XO_CLK */
+	0x9b004, /* GCC_EVA_AHB_CLK */
+	0x9b024, /* GCC_EVA_XO_CLK */
 };
 
 static const struct regmap_config gcc_glymur_regmap_config = {
@@ -8535,7 +8535,7 @@ static const struct regmap_config gcc_glymur_regmap_config = {
 
 static void clk_glymur_regs_configure(struct device *dev, struct regmap *regmap)
 {
-	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks * /
+	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks */
 	qcom_branch_set_force_mem_core(regmap, gcc_ufs_phy_ice_core_clk, true);
 }
 

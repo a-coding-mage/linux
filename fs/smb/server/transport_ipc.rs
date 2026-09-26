@@ -157,7 +157,7 @@ unsafe fn ipc_msg_send(msg: *mut ksmbd_ipc_msg) -> i32 {
 }
 
 unsafe fn ipc_msg_send_request(msg: *mut ksmbd_ipc_msg, handle: u32) -> *mut core::ffi::c_void {
-    if handle as i32 < 0 { return core::ptr::null_mut(); }
+    if (handle as i32) < 0 { return core::ptr::null_mut(); }
     let mut entry: ipc_msg_table_entry = core::mem::zeroed();
     entry.type_ = (*msg).type_; entry.response = core::ptr::null_mut(); init_waitqueue_head(&mut entry.wait);
     down_write(&mut ipc_msg_table_lock); entry.handle = handle; hash_add!(ipc_msg_table, &mut entry.ipc_table_hlist, entry.handle); up_write(&mut ipc_msg_table_lock);

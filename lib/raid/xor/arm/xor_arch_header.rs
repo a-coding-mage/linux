@@ -22,7 +22,7 @@ unsafe fn arch_xor_init() {
     xor_register(&raw const xor_block_8regs);
     xor_register(&raw const xor_block_32regs);
     // C build-time condition: CONFIG_KERNEL_MODE_NEON.
-    #[cfg(feature = "CONFIG_KERNEL_MODE_NEON")]
+    #[cfg(CONFIG_KERNEL_MODE_NEON)]
     {
         if cpu_has_neon() {
             xor_register(&raw const xor_block_neon);

@@ -176,12 +176,12 @@ pub unsafe extern "C" fn pmsav7_adjust_lowmem_bounds() {
     let mut reg_start: phys_addr_t = 0;
     let mut reg_end: phys_addr_t = 0;
     let mut i: u64 = 0;
-    for_each_mem_range(i, &mut reg_start, &mut reg_end) {
+    for_each_mem_range!(i, &mut reg_start, &mut reg_end, {
         if first {
             if reg_start != PHYS_OFFSET { panic!("First memory bank must be contiguous from PHYS_OFFSET"); }
             mem_start = reg_start; mem_end = reg_end; specified_mem_size = mem_end - mem_start; first = false;
         } else { memblock_remove(reg_start, 0 - reg_start); break; }
-    }
+    });
     memset(MEM.as_mut_ptr() as *mut u8, 0, core::mem::size_of_val(&MEM));
     let num = allocate_region(mem_start, specified_mem_size, mem_max_regions, MEM.as_mut_ptr());
     let mut total_mem_size: phys_addr_t = 0;

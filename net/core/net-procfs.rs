@@ -4,10 +4,10 @@
 unsafe fn dev_seq_from_index(seq: *mut seq_file, pos: *mut loff_t) -> *mut net_device {
     let mut ifindex = *pos as c_ulong;
     let mut dev: *mut net_device = core::ptr::null_mut();
-    for_each_netdev_dump(seq_file_net(seq), dev, ifindex) {
+    for_each_netdev_dump!(seq_file_net(seq), dev, ifindex, {
         *pos = (*dev).ifindex as loff_t;
         return dev;
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -79,13 +79,13 @@ static softnet_seq_ops: seq_operations = seq_operations { start: Some(softnet_se
 
 unsafe fn ptype_get_idx(seq: *mut seq_file, pos: loff_t) -> *mut packet_type {
     let iter = (*seq).private as *mut ptype_iter_state; let mut i = 0; let mut dev: *mut net_device;
-    for_each_netdev_rcu(seq_file_net(seq), dev) { let ptype_list = &mut (*dev).ptype_all; let mut pt: *mut packet_type;
-        list_for_each_entry_rcu(pt, ptype_list, list) { if i == pos { (*iter).dev = dev; return pt; } i += 1; }
-    }
+    for_each_netdev_rcu!(seq_file_net(seq), dev, { let ptype_list = &mut (*dev).ptype_all; let mut pt: *mut packet_type;
+        list_for_each_entry_rcu!(pt, ptype_list, list, { if i == pos { (*iter).dev = dev; return pt; } i += 1; });
+    });
     (*iter).dev = core::ptr::null_mut(); let mut pt: *mut packet_type;
-    list_for_each_entry_rcu(pt, &mut (*seq_file_net(seq)).ptype_all, list) { if i == pos { return pt; } i += 1; }
-    list_for_each_entry_rcu(pt, &mut (*seq_file_net(seq)).ptype_specific, list) { if i == pos { return pt; } i += 1; }
-    for t in 0..PTYPE_HASH_SIZE { list_for_each_entry_rcu(pt, &mut ptype_base[t], list) { if i == pos { return pt; } i += 1; } }
+    list_for_each_entry_rcu!(pt, &mut (*seq_file_net(seq)).ptype_all, list, { if i == pos { return pt; } i += 1; });
+    list_for_each_entry_rcu!(pt, &mut (*seq_file_net(seq)).ptype_specific, list, { if i == pos { return pt; } i += 1; });
+    for t in 0..PTYPE_HASH_SIZE { list_for_each_entry_rcu!(pt, &mut ptype_base[t], list, { if i == pos { return pt; } i += 1; }); }
     core::ptr::null_mut()
 }
 
@@ -95,18 +95,18 @@ unsafe fn ptype_seq_next(seq: *mut seq_file, v: *mut core::ffi::c_void, pos: *mu
     if v == SEQ_START_TOKEN { return ptype_get_idx(seq, 0) as *mut _; }
     let pt = v as *mut packet_type; let mut nxt = READ_ONCE((*pt).list.next); let dev = (*iter).dev; let mut hash: usize;
     if !dev.is_null() { if nxt != &mut (*dev).ptype_all { return list_entry(nxt, packet_type, list); }
-        for_each_netdev_continue_rcu(seq_file_net(seq), dev) { nxt = READ_ONCE((*dev).ptype_all.next); if nxt != &mut (*dev).ptype_all { (*iter).dev = dev; return list_entry(nxt, packet_type, list); } }
+        for_each_netdev_continue_rcu!(seq_file_net(seq), dev, { nxt = READ_ONCE((*dev).ptype_all.next); if nxt != &mut (*dev).ptype_all { (*iter).dev = dev; return list_entry(nxt, packet_type, list); } });
         (*iter).dev = core::ptr::null_mut(); nxt = READ_ONCE((*net).ptype_all.next);
     }
     if !(*pt).af_packet_net.is_null() { if nxt != &mut (*net).ptype_all && nxt != &mut (*net).ptype_specific { return list_entry(nxt, packet_type, list); }
         if nxt == &mut (*net).ptype_all { nxt = READ_ONCE((*net).ptype_specific.next); if nxt != &mut (*net).ptype_specific { return list_entry(nxt, packet_type, list); } }
         hash = 0; nxt = READ_ONCE(ptype_base[0].next);
-    } else { hash = (ntohs((*pt).type) as usize) & PTYPE_HASH_MASK; }
+    } else { hash = (ntohs((*pt).r#type) as usize) & PTYPE_HASH_MASK; }
     while nxt == &mut ptype_base[hash] { hash += 1; if hash >= PTYPE_HASH_SIZE { return core::ptr::null_mut(); } nxt = READ_ONCE(ptype_base[hash].next); }
     list_entry(nxt, packet_type, list)
 }
 unsafe fn ptype_seq_stop(_seq: *mut seq_file, _v: *mut core::ffi::c_void) { rcu_read_unlock(); }
-unsafe fn ptype_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> c_int { let iter = (*seq).private as *mut ptype_iter_state; let pt = v as *mut packet_type; if v == SEQ_START_TOKEN { seq_puts(seq, "Type Device      Function\n"); return 0; } let dev = (*iter).dev; if ((*pt).af_packet_net.is_null() || net_eq((*pt).af_packet_net, seq_file_net(seq))) && (dev.is_null() || net_eq(dev_net(dev), seq_file_net(seq))) { if (*pt).type == htons(ETH_P_ALL) { seq_puts(seq, "ALL "); } else { seq_printf(seq, "%04x", ntohs((*pt).type)); } seq_printf(seq, " %-8s %ps\n", if dev.is_null() { core::ptr::null() } else { (*dev).name }, (*pt).func); } 0 }
+unsafe fn ptype_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> c_int { let iter = (*seq).private as *mut ptype_iter_state; let pt = v as *mut packet_type; if v == SEQ_START_TOKEN { seq_puts(seq, "Type Device      Function\n"); return 0; } let dev = (*iter).dev; if ((*pt).af_packet_net.is_null() || net_eq((*pt).af_packet_net, seq_file_net(seq))) && (dev.is_null() || net_eq(dev_net(dev), seq_file_net(seq))) { if (*pt).r#type == htons(ETH_P_ALL) { seq_puts(seq, "ALL "); } else { seq_printf(seq, "%04x", ntohs((*pt).r#type)); } seq_printf(seq, " %-8s %ps\n", if dev.is_null() { core::ptr::null() } else { (*dev).name }, (*pt).func); } 0 }
 static ptype_seq_ops: seq_operations = seq_operations { start: Some(ptype_seq_start), next: Some(ptype_seq_next), stop: Some(ptype_seq_stop), show: Some(ptype_seq_show) };
 
 // The remaining registration functions retain the C kernel API and lifecycle ordering.
@@ -114,7 +114,7 @@ unsafe fn dev_proc_net_init(net: *mut net) -> c_int { let mut rc = -ENOMEM; if p
 unsafe fn dev_proc_net_exit(net: *mut net) { wext_proc_exit(net); remove_proc_entry(c"ptype", (*net).proc_net); remove_proc_entry(c"softnet_stat", (*net).proc_net); remove_proc_entry(c"dev", (*net).proc_net); }
 static mut dev_proc_ops: pernet_operations = pernet_operations { init: Some(dev_proc_net_init), exit: Some(dev_proc_net_exit) };
 
-unsafe fn dev_mc_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> c_int { if v == SEQ_START_TOKEN { return 0; } let dev = v as *mut net_device; netif_addr_lock_bh(dev); let mut ha: *mut netdev_hw_addr; netdev_for_each_mc_addr!(ha, dev) { seq_printf(seq, "%-4d %-15s %-5d %-5d %*phN\n", (*dev).ifindex, (*dev).name, (*ha).refcount, (*ha).global_use, (*dev).addr_len as c_int, (*ha).addr); } netif_addr_unlock_bh(dev); 0 }
+unsafe fn dev_mc_seq_show(seq: *mut seq_file, v: *mut core::ffi::c_void) -> c_int { if v == SEQ_START_TOKEN { return 0; } let dev = v as *mut net_device; netif_addr_lock_bh(dev); let mut ha: *mut netdev_hw_addr; netdev_for_each_mc_addr!(ha, dev, { seq_printf(seq, "%-4d %-15s %-5d %-5d %*phN\n", (*dev).ifindex, (*dev).name, (*ha).refcount, (*ha).global_use, (*dev).addr_len as c_int, (*ha).addr); }); netif_addr_unlock_bh(dev); 0 }
 static dev_mc_seq_ops: seq_operations = seq_operations { start: Some(dev_seq_start), next: Some(dev_seq_next), stop: Some(dev_seq_stop), show: Some(dev_mc_seq_show) };
 unsafe fn dev_mc_net_init(net: *mut net) -> c_int { if proc_create_net(c"dev_mcast", 0, (*net).proc_net, &dev_mc_seq_ops, core::mem::size_of::<seq_net_private>()).is_null() { -ENOMEM } else { 0 } }
 unsafe fn dev_mc_net_exit(net: *mut net) { remove_proc_entry(c"dev_mcast", (*net).proc_net); }

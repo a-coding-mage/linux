@@ -217,9 +217,9 @@ extern "C" {
 
 // When CONFIG_PCI_ENDPOINT is disabled, these inline C stubs replace the
 // declarations above.
-#[cfg(not(feature = "CONFIG_PCI_ENDPOINT"))]
+#[cfg(not(CONFIG_PCI_ENDPOINT))]
 pub unsafe fn pci_epc_init_notify(_epc: *mut pci_epc) {}
-#[cfg(not(feature = "CONFIG_PCI_ENDPOINT"))]
+#[cfg(not(CONFIG_PCI_ENDPOINT))]
 pub unsafe fn pci_epc_deinit_notify(_epc: *mut pci_epc) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

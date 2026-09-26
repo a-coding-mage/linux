@@ -321,12 +321,12 @@ static mut clcd_rtbl: [frac_rate_tbl; 0] = [
 
 /* i2s prescaler1 masks */
 static i2s_prs1_masks: aux_clk_masks = aux_clk_masks {
-	.eq_sel_mask = AUX_EQ_SEL_MASK, eq_sel_shift: SPEAR1340_I2S_PRS1_EQ_SEL_SHIFT, eq1_mask: AUX_EQ1_SEL, eq2_mask: AUX_EQ2_SEL, xscale_sel_mask: SPEAR1340_I2S_PRS1_CLK_X_MASK, xscale_sel_shift: SPEAR1340_I2S_PRS1_CLK_X_SHIFT, yscale_sel_mask: SPEAR1340_I2S_PRS1_CLK_Y_MASK, yscale_sel_shift: SPEAR1340_I2S_PRS1_CLK_Y_SHIFT,
+	eq_sel_mask: AUX_EQ_SEL_MASK, eq_sel_shift: SPEAR1340_I2S_PRS1_EQ_SEL_SHIFT, eq1_mask: AUX_EQ1_SEL, eq2_mask: AUX_EQ2_SEL, xscale_sel_mask: SPEAR1340_I2S_PRS1_CLK_X_MASK, xscale_sel_shift: SPEAR1340_I2S_PRS1_CLK_X_SHIFT, yscale_sel_mask: SPEAR1340_I2S_PRS1_CLK_Y_MASK, yscale_sel_shift: SPEAR1340_I2S_PRS1_CLK_Y_SHIFT,
 ];
 
 /* i2s sclk (bit clock) syynthesizers masks */
 static i2s_sclk_masks: aux_clk_masks = aux_clk_masks {
-	.eq_sel_mask = AUX_EQ_SEL_MASK, eq_sel_shift: SPEAR1340_I2S_SCLK_EQ_SEL_SHIFT, eq1_mask: AUX_EQ1_SEL, eq2_mask: AUX_EQ2_SEL, xscale_sel_mask: SPEAR1340_I2S_SCLK_X_MASK, xscale_sel_shift: SPEAR1340_I2S_SCLK_X_SHIFT, yscale_sel_mask: SPEAR1340_I2S_SCLK_Y_MASK, yscale_sel_shift: SPEAR1340_I2S_SCLK_Y_SHIFT, enable_bit: SPEAR1340_I2S_SCLK_SYNTH_ENB,
+	eq_sel_mask: AUX_EQ_SEL_MASK, eq_sel_shift: SPEAR1340_I2S_SCLK_EQ_SEL_SHIFT, eq1_mask: AUX_EQ1_SEL, eq2_mask: AUX_EQ2_SEL, xscale_sel_mask: SPEAR1340_I2S_SCLK_X_MASK, xscale_sel_shift: SPEAR1340_I2S_SCLK_X_SHIFT, yscale_sel_mask: SPEAR1340_I2S_SCLK_Y_MASK, yscale_sel_shift: SPEAR1340_I2S_SCLK_Y_SHIFT, enable_bit: SPEAR1340_I2S_SCLK_SYNTH_ENB,
 ];
 
 /* i2s prs1 aux rate configuration table, in ascending order of rates */

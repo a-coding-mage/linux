@@ -78,8 +78,8 @@ unsafe fn meson_debugfs_show(seq: *mut seq_file, _v: *mut core::ffi::c_void) -> 
     let mut i = 0;
     while i < MAXFLOW {
         seq_printf(seq, c"Channel %d: nreq %lu\n", i,
-            #[cfg(feature = "CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG")] { (*mc).chanlist[i].stat_req },
-            #[cfg(not(feature = "CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG"))] { 0u64 });
+            #[cfg(CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG)] { (*mc).chanlist[i].stat_req },
+            #[cfg(not(CONFIG_CRYPTO_DEV_AMLOGIC_GXL_DEBUG))] { 0u64 });
         i += 1;
     }
     i = 0;
@@ -109,6 +109,7 @@ unsafe fn meson_free_chanlist(mc: *mut meson_dev, mut i: i32) {
 unsafe fn meson_allocate_chanlist(mc: *mut meson_dev) -> i32 {
     let mut i: i32;
     let mut err: i32;
+    'error_engine: {
     (*mc).chanlist = devm_kcalloc((*mc).dev, MAXFLOW, core::mem::size_of::<meson_flow>(), GFP_KERNEL);
     if (*mc).chanlist.is_null() { return -ENOMEM; }
     i = 0;
@@ -116,18 +117,19 @@ unsafe fn meson_allocate_chanlist(mc: *mut meson_dev) -> i32 {
         init_completion(&mut (*mc).chanlist[i as usize].complete);
         (*mc).chanlist[i as usize].engine = crypto_engine_alloc_init((*mc).dev, true);
         if (*mc).chanlist[i as usize].engine.is_null() {
-            dev_err((*mc).dev, c"Cannot allocate engine\n"); i -= 1; err = -ENOMEM; goto error_engine;
+            dev_err((*mc).dev, c"Cannot allocate engine\n"); i -= 1; err = -ENOMEM; break 'error_engine;
         }
         err = crypto_engine_start((*mc).chanlist[i as usize].engine);
-        if err != 0 { dev_err((*mc).dev, c"Cannot start engine\n"); goto error_engine; }
+        if err != 0 { dev_err((*mc).dev, c"Cannot start engine\n"); break 'error_engine; }
         (*mc).chanlist[i as usize].tl = dma_alloc_coherent((*mc).dev,
             core::mem::size_of::<meson_desc>() * MAXDESC,
             &mut (*mc).chanlist[i as usize].t_phy, GFP_KERNEL);
-        if (*mc).chanlist[i as usize].tl.is_null() { err = -ENOMEM; goto error_engine; }
+        if (*mc).chanlist[i as usize].tl.is_null() { err = -ENOMEM; break 'error_engine; }
         i += 1;
     }
     return 0;
-error_engine:
+    }
+    
     meson_free_chanlist(mc, i); err
 }
 

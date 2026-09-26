@@ -47,7 +47,8 @@ const EMIF_SYS_ERR: u32 = bit(0);
 const ECC_ENABLED: u32 = bit(31) | bit(28);
 const EDAC_MOD_NAME: &str = "ti-emif-edac";
 
-enum { EMIF_TYPE_DRA7, EMIF_TYPE_K2 }
+pub const EMIF_TYPE_DRA7: i32 = 0;
+pub const EMIF_TYPE_K2: i32 = EMIF_TYPE_DRA7 + 1;
 
 #[repr(C)]
 struct ti_edac {

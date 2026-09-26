@@ -94,17 +94,17 @@ pub unsafe fn rocket_core_init(core: *mut rocket_core) -> i32 {
     }
 
     (*core).pc_iomem = devm_platform_ioremap_resource_byname(pdev, b"pc\0".as_ptr() as *const i8);
-    if (*core).pc_iomem as isize < 0 {
+    if ((*core).pc_iomem as isize) < 0 {
         return (*core).pc_iomem as isize as i32;
     }
 
     (*core).cna_iomem = devm_platform_ioremap_resource_byname(pdev, b"cna\0".as_ptr() as *const i8);
-    if (*core).cna_iomem as isize < 0 {
+    if ((*core).cna_iomem as isize) < 0 {
         return (*core).cna_iomem as isize as i32;
     }
 
     (*core).core_iomem = devm_platform_ioremap_resource_byname(pdev, b"core\0".as_ptr() as *const i8);
-    if (*core).core_iomem as isize < 0 {
+    if ((*core).core_iomem as isize) < 0 {
         return (*core).core_iomem as isize as i32;
     }
 

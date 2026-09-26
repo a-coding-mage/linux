@@ -24,7 +24,7 @@ unsafe fn nlmclnt_put_lockowner(p: *mut nlm_lockowner) {
 }
 unsafe fn nlm_pidbusy(host: *mut nlm_host, pid: u32) -> i32 {
     let mut p: *mut nlm_lockowner;
-    list_for_each_entry!(p, &(*host).h_lockowners, list) { if (*p).pid == pid { return -EBUSY; } }
+    list_for_each_entry!(p, &(*host).h_lockowners, list, { if (*p).pid == pid { return -EBUSY; } });
     0
 }
 unsafe fn __nlm_alloc_pid(host: *mut nlm_host) -> u32 {
@@ -32,7 +32,7 @@ unsafe fn __nlm_alloc_pid(host: *mut nlm_host) -> u32 {
 }
 unsafe fn __nlmclnt_find_lockowner(host: *mut nlm_host, owner: fl_owner_t) -> *mut nlm_lockowner {
     let mut p: *mut nlm_lockowner;
-    list_for_each_entry!(p, &(*host).h_lockowners, list) { if (*p).owner == owner { return nlmclnt_get_lockowner(p); } }
+    list_for_each_entry!(p, &(*host).h_lockowners, list, { if (*p).owner == owner { return nlmclnt_get_lockowner(p); } });
     core::ptr::null_mut()
 }
 unsafe fn nlmclnt_find_lockowner(host: *mut nlm_host, owner: fl_owner_t) -> *mut nlm_lockowner {
@@ -63,7 +63,7 @@ unsafe fn nlmclnt_rpc_release(data:*mut c_void){nlmclnt_release_call(data as *mu
 unsafe fn nlm_wait_on_grace(queue:*mut wait_queue_head_t)->i32{let mut wait=DEFINE_WAIT!();let mut status=-EINTR;prepare_to_wait(queue,&mut wait,TASK_INTERRUPTIBLE);if !signalled(){schedule_timeout(NLMCLNT_GRACE_WAIT);try_to_freeze();if !signalled(){status=0;}}finish_wait(queue,&mut wait);status}
 
 /* Generic synchronous and asynchronous RPC paths. */
-unsafe fn nlmclnt_call(cred:*const cred, req:*mut nlm_rqst, proc:u32)->i32{let host=(*req).a_host;let mut msg=rpc_message{rpc_argp:&mut (*req).a_args as *mut _,rpc_resp:&mut (*req).a_res as *mut _,rpc_cred:cred,rpc_proc:core::ptr::null()};loop{if (*host).h_reclaiming&&!(*req).a_args.reclaim{goto!(in_grace_period);}let clnt=nlm_bind_host(host);if clnt.is_null(){return -ENOLCK;}msg.rpc_proc=&(*clnt).cl_procinfo[proc as usize];let mut status=rpc_call_sync(clnt,&mut msg,0);if status<0{match status{-EPROTONOSUPPORT=>status=-EINVAL,-ECONNREFUSED|-ETIMEDOUT|-ENOTCONN=>{nlm_rebind_host(host);status=-EAGAIN;},-ERESTARTSYS=>return if signalled(){-EINTR}else{status},_=>{}}break;}if (*req).a_res.status==nlm_lck_denied_grace_period{if (*req).a_args.reclaim{return -ENOLCK;}}else{if !(*req).a_args.reclaim{wake_up_all(&mut (*host).h_gracewait);}return 0;}in_grace_period:status=nlm_wait_on_grace(&mut (*host).h_gracewait);if status!=0{return status;}}}
+unsafe fn nlmclnt_call(cred:*const cred, req:*mut nlm_rqst, proc:u32)->i32{let host=(*req).a_host;let mut msg=rpc_message{rpc_argp:&mut (*req).a_args as *mut _,rpc_resp:&mut (*req).a_res as *mut _,rpc_cred:cred,rpc_proc:core::ptr::null()};loop{if (*host).h_reclaiming&&!(*req).a_args.reclaim{goto in_grace_period;}let clnt=nlm_bind_host(host);if clnt.is_null(){return -ENOLCK;}msg.rpc_proc=&(*clnt).cl_procinfo[proc as usize];let mut status=rpc_call_sync(clnt,&mut msg,0);if status<0{match status{case if case == -EPROTONOSUPPORT =>status=-EINVAL,case if case == -ECONNREFUSED || case == -ETIMEDOUT || case == -ENOTCONN =>{nlm_rebind_host(host);status=-EAGAIN;},case if case == -ERESTARTSYS =>return if signalled(){-EINTR}else{status},_=>{}}break;}if (*req).a_res.status==nlm_lck_denied_grace_period{if (*req).a_args.reclaim{return -ENOLCK;}}else{if !(*req).a_args.reclaim{wake_up_all(&mut (*host).h_gracewait);}return 0;}in_grace_period:status=nlm_wait_on_grace(&mut (*host).h_gracewait);if status!=0{return status;}}}
 
 unsafe fn __nlm_async_call(req:*mut nlm_rqst,proc:u32,msg:*mut rpc_message,ops:*const rpc_call_ops)->*mut rpc_task{let clnt=nlm_bind_host((*req).a_host);if clnt.is_null(){((*ops).rpc_release.unwrap())(req as *mut c_void);return ERR_PTR(-ENOLCK);}(*msg).rpc_proc=&(*clnt).cl_procinfo[proc as usize];let setup=rpc_task_setup{rpc_message:msg,callback_ops:ops,callback_data:req as *mut c_void,flags:RPC_TASK_ASYNC,rpc_client:clnt};rpc_run_task(&setup)}
 unsafe fn nlm_do_async_call(req:*mut nlm_rqst,proc:u32,msg:*mut rpc_message,ops:*const rpc_call_ops)->i32{let task=__nlm_async_call(req,proc,msg,ops);if IS_ERR(task){return PTR_ERR(task);}rpc_put_task(task);0}

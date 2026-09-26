@@ -66,6 +66,8 @@ unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: libc::c_l
     let mut retval: libc::c_int = 0;
     let f_dev: *mut device = &mut (*fw_sysfs).dev;
     let fw_priv: *mut fw_priv = (*fw_sysfs).fw_priv;
+    'err_put_dev: {
+    'out: {
 
     /* fall back on userspace loading */
     if (*fw_priv).data.is_null() {
@@ -77,14 +79,14 @@ unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: libc::c_l
     retval = device_add(f_dev);
     if retval != 0 {
         dev_err(f_dev, "%s: device_register failed\n", __func__);
-        goto err_put_dev;
+        break 'err_put_dev;
     }
 
     mutex_lock(&mut fw_lock);
     if fw_load_abort_all || fw_state_is_aborted(fw_priv) {
         mutex_unlock(&mut fw_lock);
         retval = -EINTR;
-        goto out;
+        break 'out;
     }
 
     /*
@@ -93,7 +95,7 @@ unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: libc::c_l
      */
     if fw_state_is_done(fw_priv) {
         mutex_unlock(&mut fw_lock);
-        goto out;
+        break 'out;
     }
 
     list_add(&mut (*fw_priv).pending_list, &mut pending_fw_head);
@@ -122,10 +124,11 @@ unsafe fn fw_load_sysfs_fallback(fw_sysfs: *mut fw_sysfs, mut timeout: libc::c_l
     } else if (*fw_priv).is_paged_buf && (*fw_priv).data.is_null() {
         retval = -ENOMEM;
     }
-
-out:
+    }
+    
     device_del(f_dev);
-err_put_dev:
+    }
+    
     put_device(f_dev);
     retval
 }
@@ -139,6 +142,7 @@ unsafe fn fw_load_from_user_helper(
     let fw_sysfs: *mut fw_sysfs;
     let mut timeout: libc::c_long;
     let mut ret: libc::c_int;
+    'out_unlock: {
 
     timeout = firmware_loading_timeout();
     if opt_flags & FW_OPT_NOWAIT != 0 {
@@ -158,17 +162,17 @@ unsafe fn fw_load_from_user_helper(
     fw_sysfs = fw_create_instance(firmware, name, device, opt_flags);
     if IS_ERR(fw_sysfs) {
         ret = PTR_ERR(fw_sysfs);
-        goto out_unlock;
+        break 'out_unlock;
     }
 
-    (*fw_sysfs).fw_priv = (*firmware).priv;
+    (*fw_sysfs).fw_priv = (*firmware).r#priv;
     ret = fw_load_sysfs_fallback(fw_sysfs, timeout);
 
     if ret == 0 {
         ret = assign_fw(firmware, device);
     }
-
-out_unlock:
+    }
+    
     usermodehelper_read_unlock();
     ret
 }

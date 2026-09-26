@@ -27,7 +27,7 @@ pub struct iio_dev_attr {
 macro_rules! to_iio_dev_attr {
     ($dev_attr:expr) => {
         unsafe {
-            &mut *((($dev_attr as *mut u8).sub(core::mem::offset_of!(iio_dev_attr, dev_attr)))
+            &mut *((($dev_attr as *mut u8).sub(core::mem::offset_of!(iio_dev_attr, $dev_attr)))
                 as *mut iio_dev_attr)
         }
     };
@@ -51,7 +51,7 @@ pub struct iio_const_attr {
 macro_rules! to_iio_const_attr {
     ($dev_attr:expr) => {
         unsafe {
-            &mut *((($dev_attr as *mut u8).sub(core::mem::offset_of!(iio_const_attr, dev_attr)))
+            &mut *((($dev_attr as *mut u8).sub(core::mem::offset_of!(iio_const_attr, $dev_attr)))
                 as *mut iio_const_attr)
         }
     };

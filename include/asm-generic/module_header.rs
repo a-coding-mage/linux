@@ -5,7 +5,7 @@
  * loader without arch specific data.
  */
 /* CONFIG_HAVE_MOD_ARCH_SPECIFIC is a build-time condition from the C header. */
-#[cfg(not(feature = "CONFIG_HAVE_MOD_ARCH_SPECIFIC"))]
+#[cfg(not(CONFIG_HAVE_MOD_ARCH_SPECIFIC))]
 #[repr(C)]
 pub struct mod_arch_specific {}
 

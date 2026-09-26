@@ -53,8 +53,7 @@ unsafe extern "C" {
 		fd: c_int,
 		key: *const c_void,
 		value: *const c_void,
-		flags: u64,
-	) -> c_int;
+		flags: u64) -> c_int;
 	fn bpf_map_lookup_elem(fd: c_int, key: *const c_void, value: *mut c_void) -> c_int;
 
 	fn test_btf_map_in_map__open_and_load() -> *mut test_btf_map_in_map;

@@ -108,7 +108,7 @@ pub unsafe fn ocfs2_find_local_alias(
 ) -> *mut dentry {
     let mut dentry: *mut dentry = core::ptr::null_mut();
     spin_lock(&mut (*inode).i_lock);
-    for_each_alias!(dentry, inode) {
+    for_each_alias!(dentry, inode, {
         spin_lock(&mut (*dentry).d_lock);
         if ocfs2_match_dentry(dentry, parent_blkno, skip_unhashed) != 0 {
             trace_ocfs2_find_local_alias((*dentry).d_name.len, (*dentry).d_name.name);
@@ -118,7 +118,7 @@ pub unsafe fn ocfs2_find_local_alias(
             return dentry;
         }
         spin_unlock(&mut (*dentry).d_lock);
-    }
+    });
     spin_unlock(&mut (*inode).i_lock);
     core::ptr::null_mut()
 }

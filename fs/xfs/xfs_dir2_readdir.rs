@@ -149,7 +149,7 @@ pub unsafe fn xfs_readdir(tp: *mut xfs_trans, dp: *mut xfs_inode, ctx: *mut dir_
     let mut args: xfs_da_args = core::mem::zeroed(); let mut lock_mode: u32; let mut error: i32;
     trace_xfs_readdir(dp); if xfs_is_shutdown((*dp).i_mount) || xfs_ifork_zapped(dp, XFS_DATA_FORK) { return -EIO; }
     ASSERT(S_ISDIR((*VFS_I(dp)).i_mode)); xfs_assert_ilocked(dp, XFS_IOLOCK_SHARED | XFS_IOLOCK_EXCL); XFS_STATS_INC((*dp).i_mount, xs_dir_getdents);
-    args.dp = dp; args.geo = (*dp).i_mount->m_dir_geo; args.trans = tp; args.owner = I_INO(dp);
+    args.dp = dp; args.geo = (*(*dp).i_mount).m_dir_geo; args.trans = tp; args.owner = I_INO(dp);
     if (*dp).i_df.if_format == XFS_DINODE_FMT_LOCAL { return xfs_dir2_sf_getdents(&mut args, ctx); }
     lock_mode = xfs_ilock_data_map_shared(dp); match xfs_dir2_format(&mut args, &mut error) { XFS_DIR2_FMT_BLOCK => error = xfs_dir2_block_getdents(&mut args, ctx, &mut lock_mode), XFS_DIR2_FMT_LEAF | XFS_DIR2_FMT_NODE => error = xfs_dir2_leaf_getdents(&mut args, ctx, bufsize, &mut lock_mode), _ => {} }
     if lock_mode != 0 { xfs_iunlock(dp, lock_mode); } error

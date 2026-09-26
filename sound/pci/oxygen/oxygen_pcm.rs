@@ -9,7 +9,7 @@ use core::ffi::{c_char, c_int, c_uint, c_void};
 
 type snd_pcm_uframes_t = usize;
 
-/* Dependencies from linux/pci.h, sound/*.h, and oxygen.h are external. */
+/* Dependencies from linux/pci.h, sound/ *.h, and oxygen.h are external. */
 
 #[repr(C)]
 pub struct snd_pcm_hardware {

@@ -65,9 +65,11 @@ unsafe fn l3_handle_target(
     }
 
     masterid = (readl_relaxed(l3_targ_mstaddr) & (*l3).mst_addr_mask) >> __ffs((*l3).mst_addr_mask);
-    for k = 0, master = (*l3).l3_masters; k < (*l3).num_masters; k += 1 {
+    k = 0, master = (*l3).l3_masters;
+    while k < (*l3).num_masters {
         if masterid == (*master).id { master_name = (*master).name; break; }
         master = master.add(1);
+        k += 1;
     }
     op_code = (readl_relaxed(l3_targ_hdr) & 0x7) as u8;
     m_req_info = (readl_relaxed(l3_targ_info) & 0xF) as u8;

@@ -1,2 +1,46 @@
 hostprogs	:= fixdep
 fixdep-y	:= fixdep.o
+
+ifeq ($(HOST_TOOLS_LANG),rust)
+# Use HOSTCC's preprocessed headers and check Clang's generated layout against
+# constants compiled by HOSTCC. Do not assume its wrappers use Clang's ABI.
+fixdep_abi := $(srctree)/tools/build/fixdep-abi.py
+quiet_cmd_tools_fixdep_libc = BINDGEN $@
+cmd_tools_fixdep_libc = HOSTCC='$(call escsq,$(HOSTCC))' \
+	KBUILD_HOSTCFLAGS='$(call escsq,$(KBUILD_HOSTCFLAGS))' \
+	HOSTRUSTC='$(call escsq,$(HOSTRUSTC))' \
+	KBUILD_HOSTRUSTFLAGS='$(call escsq,$(KBUILD_HOSTRUSTFLAGS))' \
+	BINDGEN='$(call escsq,$(BINDGEN))' \
+	TOOLS_FIXDEP_BINDGEN_FLAGS='$(call escsq,$(TOOLS_FIXDEP_BINDGEN_FLAGS))' \
+	$(PYTHON3) $(fixdep_abi) bindings --header $< --output $@ --depfile $(depfile)
+
+$(OUTPUT)fixdep-libc.rs: fixdep-libc.h $(fixdep_abi) FORCE
+	$(call rule_mkdir)
+	$(call if_changed_dep,tools_fixdep_libc)
+
+quiet_cmd_tools_fixdep_linker = GEN     $@
+cmd_tools_fixdep_linker = HOSTCC='$(call escsq,$(HOSTCC))' \
+	KBUILD_HOSTLDFLAGS='$(call escsq,$(KBUILD_HOSTLDFLAGS))' \
+	$(PYTHON3) $(fixdep_abi) linker $@
+
+$(OUTPUT)fixdep-linker: $(fixdep_abi) FORCE
+	$(call rule_mkdir)
+	$(call if_changed,tools_fixdep_linker)
+
+-include $(OUTPUT).fixdep-libc.rs.cmd
+-include $(OUTPUT).fixdep-linker.cmd
+
+# Compile a host executable directly, never a kernel/staticlib object. Keep
+# compiler temporaries with OUTPUT even when make's cwd is the source tree.
+quiet_cmd_tools_fixdep_rust = HOSTRUSTC $@
+cmd_tools_fixdep_rust = TOOLS_FIXDEP_LIBC_BINDINGS=$(abspath $(OUTPUT)fixdep-libc.rs) \
+	$(HOSTRUSTC) $(KBUILD_HOSTRUSTFLAGS) -Dwarnings \
+	-Zon-broken-pipe=inherit -Clinker=$(abspath $(OUTPUT)fixdep-linker) \
+	--out-dir $(dir $@) \
+	--emit=dep-info=$(depfile),link=$@ $<; \
+	sed -i '/^$(pound) env-dep:TOOLS_FIXDEP_LIBC_BINDINGS=/d' $(depfile)
+
+$(OUTPUT)fixdep: fixdep.rs $(OUTPUT)fixdep-libc.rs $(OUTPUT)fixdep-linker FORCE
+	$(call rule_mkdir)
+	$(call if_changed_dep,tools_fixdep_rust)
+endif

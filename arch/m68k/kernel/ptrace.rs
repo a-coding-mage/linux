@@ -86,7 +86,7 @@ pub unsafe fn user_enable_single_step(child: *mut task_struct) {
     set_tsk_thread_flag(child, TIF_DELAYED_TRACE);
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe fn user_enable_block_step(child: *mut task_struct) {
     let tmp = (get_reg(child, PT_SR) as c_ulong) & !TRACE_BITS;
     put_reg(child, PT_SR, tmp | T0_BIT);
@@ -108,13 +108,13 @@ pub unsafe fn arch_ptrace(child: *mut task_struct, request: c_long, addr: c_ulon
                 tmp = (*child).thread.fp[(regno - 21) as usize];
                 if FPU_IS_EMU && regno < 45 && regno % 3 == 0 { tmp = ((tmp & 0xffff0000) << 15) | ((tmp & 0x0000ffff) << 16); }
             } else {
-                #[cfg(not(feature = "CONFIG_MMU"))] {
+                #[cfg(not(CONFIG_MMU))] {
                     if regno == 49 { tmp = (*(*child).mm).start_code; }
                     else if regno == 50 { tmp = (*(*child).mm).start_data; }
                     else if regno == 51 { tmp = (*(*child).mm).end_code; }
                     else { return -EIO; }
                 }
-                #[cfg(feature = "CONFIG_MMU")] { return -EIO; }
+                #[cfg(CONFIG_MMU)] { return -EIO; }
             }
             ret = put_user(tmp, datap); 
         }
@@ -148,7 +148,7 @@ pub unsafe fn syscall_trace_enter() -> c_int {
 pub unsafe fn syscall_trace_leave() { if test_thread_flag(TIF_SYSCALL_TRACE) { ptrace_report_syscall_exit(task_pt_regs(current), 0); } }
 
 /* The regset definitions below are enabled only for ELF FDPIC core dumps. */
-#[cfg(all(feature = "CONFIG_BINFMT_ELF_FDPIC", feature = "CONFIG_ELF_CORE"))]
+#[cfg(all(CONFIG_BINFMT_ELF_FDPIC, CONFIG_ELF_CORE))]
 unsafe fn m68k_regset_get(target: *mut task_struct, _regset: *const user_regset, mut to: membuf) -> c_int {
     let ptregs = task_pt_regs(target);
     let mut uregs: [u32; ELF_NGREG] = [0; ELF_NGREG];
@@ -156,15 +156,15 @@ unsafe fn m68k_regset_get(target: *mut task_struct, _regset: *const user_regset,
     membuf_write(&mut to, uregs.as_ptr() as *const _, core::mem::size_of_val(&uregs))
 }
 
-#[cfg(all(feature = "CONFIG_BINFMT_ELF_FDPIC", feature = "CONFIG_ELF_CORE"))]
+#[cfg(all(CONFIG_BINFMT_ELF_FDPIC, CONFIG_ELF_CORE))]
 #[repr(C)]
 enum m68k_regset {
     REGSET_GPR,
-    #[cfg(feature = "CONFIG_FPU")]
+    #[cfg(CONFIG_FPU)]
     REGSET_FPU,
 }
 
-#[cfg(all(feature = "CONFIG_BINFMT_ELF_FDPIC", feature = "CONFIG_ELF_CORE"))]
+#[cfg(all(CONFIG_BINFMT_ELF_FDPIC, CONFIG_ELF_CORE))]
 static M68K_USER_REGSETS: [user_regset; 2] = [
     user_regset {
         core_note_type: PRSTATUS,
@@ -182,7 +182,7 @@ static M68K_USER_REGSETS: [user_regset; 2] = [
     },
 ];
 
-#[cfg(all(feature = "CONFIG_BINFMT_ELF_FDPIC", feature = "CONFIG_ELF_CORE"))]
+#[cfg(all(CONFIG_BINFMT_ELF_FDPIC, CONFIG_ELF_CORE))]
 static USER_M68K_VIEW: user_regset_view = user_regset_view {
     name: "m68k",
     e_machine: EM_68K,
@@ -191,7 +191,7 @@ static USER_M68K_VIEW: user_regset_view = user_regset_view {
     n: M68K_USER_REGSETS.len(),
 };
 
-#[cfg(all(feature = "CONFIG_BINFMT_ELF_FDPIC", feature = "CONFIG_ELF_CORE"))]
+#[cfg(all(CONFIG_BINFMT_ELF_FDPIC, CONFIG_ELF_CORE))]
 pub unsafe fn task_user_regset_view(_task: *mut task_struct) -> *const user_regset_view {
     &USER_M68K_VIEW
 }

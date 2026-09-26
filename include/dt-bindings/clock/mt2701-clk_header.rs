@@ -4,7 +4,7 @@
 /*
 
 
-/* TOPCKGEN */
+/ * TOPCKGEN */
 pub const CLK_TOP_SYSPLL: u32 = 1;
 pub const CLK_TOP_SYSPLL_D2: u32 = 2;
 pub const CLK_TOP_SYSPLL_D3: u32 = 3;

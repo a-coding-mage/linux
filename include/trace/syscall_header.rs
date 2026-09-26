@@ -51,7 +51,7 @@ impl syscall_metadata {
 }
 
 /* CONFIG_TRACEPOINTS && CONFIG_HAVE_SYSCALL_TRACEPOINTS */
-#[cfg(all(feature = "CONFIG_TRACEPOINTS", feature = "CONFIG_HAVE_SYSCALL_TRACEPOINTS"))]
+#[cfg(all(CONFIG_TRACEPOINTS, CONFIG_HAVE_SYSCALL_TRACEPOINTS))]
 #[inline]
 pub unsafe fn syscall_tracepoint_update(p: *mut crate::task_struct) {
     if crate::test_syscall_work(crate::SYSCALL_TRACEPOINT) {
@@ -62,7 +62,7 @@ pub unsafe fn syscall_tracepoint_update(p: *mut crate::task_struct) {
 }
 
 /* !CONFIG_TRACEPOINTS || !CONFIG_HAVE_SYSCALL_TRACEPOINTS */
-#[cfg(not(all(feature = "CONFIG_TRACEPOINTS", feature = "CONFIG_HAVE_SYSCALL_TRACEPOINTS")))]
+#[cfg(not(all(CONFIG_TRACEPOINTS, CONFIG_HAVE_SYSCALL_TRACEPOINTS)))]
 #[inline]
 pub unsafe fn syscall_tracepoint_update(_p: *mut crate::task_struct) {}
 

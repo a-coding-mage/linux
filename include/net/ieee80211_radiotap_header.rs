@@ -255,7 +255,7 @@ pub mod ieee80211_radiotap_timestamp_flags {
 
 #[repr(C, packed)]
 pub struct ieee80211_radiotap_he {
-	u16 data1, data2, data3, data4, data5, data6;
+	data1: u16, data2, data3, data4, data5, data6;
 }
 
 pub mod ieee80211_radiotap_he_bits {
@@ -351,7 +351,7 @@ pub mod ieee80211_radiotap_he_bits {
 
 #[repr(C, packed)]
 pub struct ieee80211_radiotap_he_mu {
-	u16 flags1, flags2;
+	flags1: u16, flags2;
 	u8 ru_ch1[4];
 	u8 ru_ch2[4];
 }
@@ -397,7 +397,7 @@ pub mod ieee80211_radiotap_lsig_data2 {
 
 #[repr(C, packed)]
 pub struct ieee80211_radiotap_lsig {
-	u16 data1, data2;
+	data1: u16, data2;
 }
 
 pub mod ieee80211_radiotap_zero_len_psdu_type {
@@ -641,7 +641,7 @@ pub mod ieee80211_radiotap_eht_usig_tb {
 #[repr(C, packed)]
 pub struct ieee80211_radiotap_uhr_elr {
 	u32 known;
-	u32 sig1, sig2, mark;
+	sig1: u32, sig2, mark;
 } __packed;
 
 pub mod ieee80211_radiotap_uhr_elr_known {
@@ -699,7 +699,7 @@ pub struct ieee80211_radiotap_uhr {
 	u32 known;
 	u32 data[9];
 	struct {
-		u32 known, info;
+		known: u32, info;
 	} user[0; 0];
 } __packed;
 

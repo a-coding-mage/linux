@@ -173,7 +173,7 @@ unsafe extern "C" {
     pub fn bond_opt_get_val(option: u32, val: u64) -> *const bond_opt_value;
     pub fn bond_option_arp_ip_targets_clear(bond: *mut bonding);
     /* Corresponds to #if IS_ENABLED(CONFIG_IPV6). */
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn bond_option_ns_ip6_targets_clear(bond: *mut bonding);
     pub fn bond_slave_ns_maddrs_add(bond: *mut bonding, slave: *mut slave);
     pub fn bond_slave_ns_maddrs_del(bond: *mut bonding, slave: *mut slave);

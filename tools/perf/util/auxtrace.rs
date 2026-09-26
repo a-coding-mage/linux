@@ -787,9 +787,9 @@ unsafe fn get_flag(ptrp: *mut *const c_char, flags: *mut c_uint) -> c_int {
 unsafe fn get_flags(ptrp: *mut *const c_char, plus_flags: *mut c_uint, minus_flags: *mut c_uint) -> c_int {
     loop {
         match **ptrp as u8 {
-            b'+' => { *ptrp = (*ptrp).add(1); if get_flag(ptrp, plus_flags) != 0 { return -1; } }
-            b'-' => { *ptrp = (*ptrp).add(1); if get_flag(ptrp, minus_flags) != 0 { return -1; } }
-            b' ' => *ptrp = (*ptrp).add(1),
+            case if case == b'+' => { *ptrp = (*ptrp).add(1); if get_flag(ptrp, plus_flags) != 0 { return -1; } }
+            case if case == b'-' => { *ptrp = (*ptrp).add(1); if get_flag(ptrp, minus_flags) != 0 { return -1; } }
+            case if case == b' ' => *ptrp = (*ptrp).add(1),
             _ => return 0,
         }
     }
@@ -1226,7 +1226,7 @@ unsafe fn auxtrace_queues__add_indexed_event(queues: *mut auxtrace_queues, sessi
     let err = perf_session__peek_event(session, file_offset, buf.as_mut_ptr(), PERF_SAMPLE_MAX_SIZE, &mut event, ptr::null_mut());
     if err != 0 { return err; }
     if (*event).header.type_ == PERF_RECORD_AUXTRACE {
-        if (*event).header.size as usize  < size_of::<perf_record_auxtrace>() || (*event).header.size as usize != sz { return -EINVAL; }
+        if ((*event).header.size as usize)  < size_of::<perf_record_auxtrace>() || (*event).header.size as usize != sz { return -EINVAL; }
         return auxtrace_queues__add_event(queues, session, event, file_offset + (*event).header.size as off_t, ptr::null_mut());
     }
     0
@@ -1256,7 +1256,7 @@ unsafe fn auxtrace_queues__add_indexed_event(queues: *mut auxtrace_queues, sessi
 unsafe extern "C" fn auxtrace_queue_data_cb(session: *mut perf_session, event: *mut perf_event, mut offset: u64, data: *mut c_void) -> c_int {
     let qd = data as *mut queue_data; let mut sample: perf_sample = zeroed(); let mut err = 0;
     if (*qd).events && (*event).header.type_ == PERF_RECORD_AUXTRACE {
-        if (*event).header.size as usize  < size_of::<perf_record_auxtrace>() { return -EINVAL; }
+        if ((*event).header.size as usize)  < size_of::<perf_record_auxtrace>() { return -EINVAL; }
         offset += (*event).header.size as u64;
         return ((*(*session).auxtrace).queue_data.unwrap())(session, ptr::null_mut(), event, offset);
     }
@@ -1286,7 +1286,7 @@ unsafe fn __auxtrace_mmap__read(map: *mut mmap, itr: *mut auxtrace_record, env: 
     else { head_off = (head % mm.len as u64) as size_t; old_off = (old % mm.len as u64) as size_t; }
     let mut size = if head_off > old_off { head_off - old_off } else { mm.len - (old_off - head_off) };
     if snapshot && size > snapshot_size { size = snapshot_size; }
-    let offset = if head > old || size as u64 <= head || mm.mask != 0 { head - size as u64 } else { let rem = (0u64.wrapping_sub(mm.len as u64)) % mm.len as u64; head - size as u64 - rem };
+    let offset = if head > old || (size as u64) <= head || mm.mask != 0 { head - size as u64 } else { let rem = (0u64.wrapping_sub(mm.len as u64)) % mm.len as u64; head - size as u64 - rem };
     let (mut data1, mut len1, data2, len2) = if size > head_off { ((data.add(mm.len - (size - head_off)) as *mut c_void), size - head_off, data as *mut c_void, head_off) } else { (data.add(head_off - size) as *mut c_void, size, ptr::null_mut(), 0) };
     if (*itr).alignment != 0 { let unwanted = len1 % (*itr).alignment as usize; len1 -= unwanted; size -= unwanted; }
     let mut padding = size as u64 & (PERF_AUXTRACE_RECORD_ALIGNMENT - 1); if padding != 0 { padding = PERF_AUXTRACE_RECORD_ALIGNMENT - padding; }

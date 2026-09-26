@@ -64,7 +64,7 @@ unsafe fn simple_pm_bus_probe(pdev: *mut platform_device) -> i32 {
     }
 
     unsafe { dev_set_drvdata(&(*pdev).dev, bus as *mut core::ffi::c_void) };
-    unsafe { dev_dbg(&(*pdev).dev, c"%s\n".as_ptr(), c"simple_pm_bus_probe\0".as_ptr()) };
+    unsafe { dev_dbg(&(*pdev).dev, c"%s\n".as_ptr(), c"simple_pm_bus_probe".as_ptr()) };
     unsafe { pm_runtime_enable(&(*pdev).dev) };
 
     if !np.is_null() {
@@ -78,7 +78,7 @@ unsafe fn simple_pm_bus_remove(pdev: *mut platform_device) {
     if unsafe { device_has_driver_override(&(*pdev).dev) } || !data.is_null() {
         return;
     }
-    unsafe { dev_dbg(&(*pdev).dev, c"%s\n".as_ptr(), c"simple_pm_bus_remove\0".as_ptr()) };
+    unsafe { dev_dbg(&(*pdev).dev, c"%s\n".as_ptr(), c"simple_pm_bus_remove".as_ptr()) };
     unsafe { pm_runtime_disable(&(*pdev).dev) };
 }
 

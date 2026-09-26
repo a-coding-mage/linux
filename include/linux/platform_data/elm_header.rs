@@ -33,7 +33,7 @@ pub struct elm_errorvec {
 }
 
 /* CONFIG_MTD_NAND_OMAP_BCH is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_MTD_NAND_OMAP_BCH")]
+#[cfg(CONFIG_MTD_NAND_OMAP_BCH)]
 extern "C" {
     pub fn elm_decode_bch_error_page(
         dev: *mut device,
@@ -49,7 +49,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_OMAP_BCH"))]
+#[cfg(not(CONFIG_MTD_NAND_OMAP_BCH))]
 pub unsafe fn elm_decode_bch_error_page(
     _dev: *mut device,
     _ecc_calc: *mut u8,
@@ -57,7 +57,7 @@ pub unsafe fn elm_decode_bch_error_page(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_OMAP_BCH"))]
+#[cfg(not(CONFIG_MTD_NAND_OMAP_BCH))]
 pub unsafe fn elm_config(
     _dev: *mut device,
     _bch_type: bch_ecc,

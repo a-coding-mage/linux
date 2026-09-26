@@ -61,6 +61,8 @@ pub unsafe fn bpf_int_jit_compile(
     let ctx: *mut hppa_jit_context;
 
     let _ = env;
+    'out_err: {
+    'skip_init_ctx: {
     if !(*prog).jit_requested {
         return prog;
     }
@@ -79,13 +81,13 @@ pub unsafe fn bpf_int_jit_compile(
     if !(*ctx).offset.is_null() {
         extra_pass = true;
         prog_size = core::mem::size_of::<u32>() * (*ctx).ninsns as usize;
-        goto_skip_init_ctx!(skip_init_ctx);
+        break 'skip_init_ctx;
     }
 
     (*ctx).prog = prog;
     (*ctx).offset = kzalloc_objs::<i32>((*prog).len as usize);
     if (*ctx).offset.is_null() {
-        goto_out_err!(out_err);
+        break 'out_err;
     }
     i = 0;
     while i < (*prog).len {
@@ -99,7 +101,7 @@ pub unsafe fn bpf_int_jit_compile(
         pass += 1;
         (*ctx).ninsns = 0;
         if build_body(ctx, extra_pass, (*ctx).offset) != 0 {
-            goto_out_err!(out_err);
+            break 'out_err;
         }
         (*ctx).body_len = (*ctx).ninsns;
         bpf_jit_build_prologue(ctx);
@@ -123,7 +125,7 @@ pub unsafe fn bpf_int_jit_compile(
                 bpf_fill_ill_insns,
             );
             if (*jit_data).header.is_null() {
-                goto_out_err!(out_err);
+                break 'out_err;
             }
 
             (*ctx).insns = (*jit_data).image as *mut u32;
@@ -141,21 +143,21 @@ pub unsafe fn bpf_int_jit_compile(
         if !(*jit_data).header.is_null() {
             bpf_jit_binary_free((*jit_data).header);
         }
-        goto_out_err!(out_err);
+        break 'out_err;
     }
 
     if extable_size != 0 {
         (*(*prog).aux).extable = (*ctx).insns.add(prog_size / core::mem::size_of::<u32>()) as *mut core::ffi::c_void;
     }
-
-    skip_init_ctx: {
+    }
+    {
         pass += 1;
         (*ctx).ninsns = 0;
 
         bpf_jit_build_prologue(ctx);
         if build_body(ctx, extra_pass, core::ptr::null_mut()) != 0 {
             bpf_jit_binary_free((*jit_data).header);
-            goto_out_err!(out_err);
+            break 'out_err;
         }
         bpf_jit_build_epilogue(ctx);
 
@@ -171,7 +173,7 @@ pub unsafe fn bpf_int_jit_compile(
         if !(*prog).is_func || extra_pass {
             if bpf_jit_binary_lock_ro((*jit_data).header) != 0 {
                 bpf_jit_binary_free((*jit_data).header);
-                goto_out_err!(out_err);
+                break 'out_err;
             }
             bpf_flush_icache((*jit_data).header, (*ctx).insns.add((*ctx).ninsns as usize));
         }
@@ -199,8 +201,8 @@ pub unsafe fn bpf_int_jit_compile(
     kfree(jit_data as *mut core::ffi::c_void);
     (*(*prog).aux).jit_data = core::ptr::null_mut();
     return prog;
-
-    out_err: {
+    }
+    {
         if extra_pass {
             (*prog).bpf_func = core::ptr::null_mut();
             (*prog).jited = 0;

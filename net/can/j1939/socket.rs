@@ -67,9 +67,9 @@ unsafe fn j1939_sk_get_incomplete_session(jsk: *mut j1939_sock) -> *mut j1939_se
 unsafe fn j1939_sk_queue_drop_all(priv_: *mut j1939_priv, jsk: *mut j1939_sock, err: i32) {
     let mut session = core::ptr::null_mut(); let mut tmp = core::ptr::null_mut();
     spin_lock_bh(&mut (*jsk).sk_session_queue_lock);
-    list_for_each_entry_safe(&mut session, &mut tmp, &mut (*jsk).sk_session_queue) {
+    list_for_each_entry_safe!(&mut session, &mut tmp, &mut (*jsk).sk_session_queue, {
         list_del_init(&mut (*session).sk_session_queue_entry); (*session).err = err; j1939_session_put(session);
-    }
+    });
     spin_unlock_bh(&mut (*jsk).sk_session_queue_lock); let _ = priv_;
 }
 
@@ -106,14 +106,14 @@ unsafe fn j1939_sk_recv_match_one(jsk: *mut j1939_sock, skcb: *const j1939_sk_bu
 #[no_mangle]
 pub unsafe extern "C" fn j1939_sk_recv_match(priv_: *mut j1939_priv, skcb: *mut j1939_sk_buff_cb) -> bool {
     let mut jsk = core::ptr::null_mut(); let mut found = false; read_lock_bh(&mut (*priv_).j1939_socks_lock);
-    list_for_each_entry(&mut jsk, &mut (*priv_).j1939_socks) { if j1939_sk_recv_match_one(jsk, skcb) { found = true; break; } }
+    list_for_each_entry!(&mut jsk, &mut (*priv_).j1939_socks, { if j1939_sk_recv_match_one(jsk, skcb) { found = true; break; } });
     read_unlock_bh(&mut (*priv_).j1939_socks_lock); found
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn j1939_sk_recv(priv_: *mut j1939_priv, skb: *mut sk_buff) {
     let mut jsk = core::ptr::null_mut(); read_lock_bh(&mut (*priv_).j1939_socks_lock);
-    list_for_each_entry(&mut jsk, &mut (*priv_).j1939_socks) { j1939_sk_recv_one(jsk, skb); }
+    list_for_each_entry!(&mut jsk, &mut (*priv_).j1939_socks, { j1939_sk_recv_one(jsk, skb); });
     read_unlock_bh(&mut (*priv_).j1939_socks_lock);
 }
 
@@ -126,10 +126,10 @@ pub unsafe extern "C" fn j1939_sk_recv(priv_: *mut j1939_priv, skb: *mut sk_buff
 
 #[no_mangle] pub unsafe extern "C" fn j1939_sk_netdev_event_netdown(priv_: *mut j1939_priv) {
     let mut jsk = core::ptr::null_mut(); read_lock_bh(&mut (*priv_).j1939_socks_lock);
-    list_for_each_entry(&mut jsk, &mut (*priv_).j1939_socks) {
+    list_for_each_entry!(&mut jsk, &mut (*priv_).j1939_socks, {
         (*jsk).sk.sk_err = ENETDOWN; if !sock_flag(&mut (*jsk).sk, SOCK_DEAD) { sk_error_report(&mut (*jsk).sk); }
         j1939_sk_queue_drop_all(priv_, jsk, ENETDOWN);
-    } read_unlock_bh(&mut (*priv_).j1939_socks_lock);
+    }); read_unlock_bh(&mut (*priv_).j1939_socks_lock);
 }
 
 #[no_mangle] pub static mut j1939_can_proto: can_proto = can_proto { type_: SOCK_DGRAM, protocol: CAN_J1939, ops: core::ptr::null(), prot: core::ptr::null() };

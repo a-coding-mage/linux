@@ -10,11 +10,11 @@ unsafe fn batadv_frag_clear_chain(head: *mut hlist_head, dropped: bool) {
     let mut entry: *mut batadv_frag_list_entry;
     let mut node: *mut hlist_node;
     unsafe {
-        hlist_for_each_entry_safe!(entry, node, head, list) {
+        hlist_for_each_entry_safe!(entry, node, head, list, {
             hlist_del(&mut (*entry).list);
             if dropped { kfree_skb((*entry).skb); } else { consume_skb((*entry).skb); }
             kfree(entry as *mut core::ffi::c_void);
-        }
+        });
     }
 }
 
@@ -84,7 +84,7 @@ unsafe fn batadv_frag_insert_packet(
         spin_unlock_bh(&mut chain.lock);
         return ret;
     }
-    hlist_for_each_entry!(frag_entry_curr, &mut chain.fragment_list, list) {
+    hlist_for_each_entry!(frag_entry_curr, &mut chain.fragment_list, list, {
         if (*frag_entry_curr).no == (*frag_entry_new).no { break; }
         if (*frag_entry_curr).no < (*frag_entry_new).no {
             hlist_add_before(&mut (*frag_entry_new).list, &mut (*frag_entry_curr).list);
@@ -94,7 +94,7 @@ unsafe fn batadv_frag_insert_packet(
             break;
         }
         frag_entry_last = frag_entry_curr;
-    }
+    });
     if !ret && !frag_entry_last.is_null() {
         hlist_add_behind(&mut (*frag_entry_new).list, &mut (*frag_entry_last).list);
         if check_add_overflow!(chain.size, data_len, &mut chain.size) { overflow = true; }
@@ -135,10 +135,10 @@ unsafe fn batadv_frag_merge_packets(chain: *mut hlist_head) -> *mut sk_buff {
         skb_reset_network_header(skb_out);
         skb_reset_transport_header(skb_out);
         let mut e: *mut batadv_frag_list_entry;
-        hlist_for_each_entry!(e, chain, list) {
+        hlist_for_each_entry!(e, chain, list, {
             let n = (*e).skb.len - hdr_size;
             skb_put_data(skb_out, (*e).skb.data.add(hdr_size), n);
-        }
+        });
     }
     batadv_frag_clear_chain(chain, dropped);
     skb_out

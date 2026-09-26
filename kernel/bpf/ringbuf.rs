@@ -90,7 +90,7 @@ unsafe fn ringbuf_avail_data_sz(rb:*mut bpf_ringbuf)->usize { let c=smp_load_acq
 unsafe fn ringbuf_total_data_sz(rb:*const bpf_ringbuf)->usize { (*rb).mask as usize + 1 }
 
 unsafe fn bpf_ringbuf_rec_pg_off(rb:*mut bpf_ringbuf,h:*mut bpf_ringbuf_hdr)->usize { (h as usize - rb as usize)>>PAGE_SHIFT }
-unsafe fn bpf_ringbuf_restore_from_rec(h:*mut bpf_ringbuf_hdr)->*mut bpf_ringbuf { ((h as usize & PAGE_MASK) - ((*h).pg_off as usize<<PAGE_SHIFT)) as *mut bpf_ringbuf }
+unsafe fn bpf_ringbuf_restore_from_rec(h:*mut bpf_ringbuf_hdr)->*mut bpf_ringbuf { ((h as usize & PAGE_MASK) - (((*h).pg_off as usize)<<PAGE_SHIFT)) as *mut bpf_ringbuf }
 unsafe fn bpf_ringbuf_has_space(rb:*const bpf_ringbuf,n:usize,c:usize,p:usize)->bool { if n-p>(*rb).mask as usize{return false;} if (*rb).overwrite_mode{return true;} n-c<=(*rb).mask as usize }
 unsafe fn bpf_ringbuf_round_up_hdr_len(mut n:u32)->u32 { n &= !BPF_RINGBUF_DISCARD_BIT; round_up(n + BPF_RINGBUF_HDR_SZ,8) }
 

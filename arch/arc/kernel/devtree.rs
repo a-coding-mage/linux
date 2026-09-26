@@ -9,15 +9,15 @@
 // linux/init.h, linux/reboot.h, linux/memblock.h, linux/of.h,
 // linux/of_fdt.h, asm/mach_desc.h, and asm/serial.h.
 
-#[cfg(feature = "CONFIG_SERIAL_EARLYCON")]
+#[cfg(CONFIG_SERIAL_EARLYCON)]
 static mut arc_base_baud: ::core::ffi::c_uint = 0;
 
-#[cfg(feature = "CONFIG_SERIAL_EARLYCON")]
+#[cfg(CONFIG_SERIAL_EARLYCON)]
 pub unsafe fn arc_early_base_baud() -> ::core::ffi::c_uint {
     arc_base_baud / 16
 }
 
-#[cfg(feature = "CONFIG_SERIAL_EARLYCON")]
+#[cfg(CONFIG_SERIAL_EARLYCON)]
 unsafe fn arc_set_early_base_baud(dt_root: ::core::ffi::c_ulong) {
     if of_flat_dt_is_compatible(dt_root, b"abilis,arc-tb10x\0".as_ptr() as *const ::core::ffi::c_char) != 0 {
         arc_base_baud = 166666666; /* Fixed 166.6MHz clk (TB10x) */
@@ -30,7 +30,7 @@ unsafe fn arc_set_early_base_baud(dt_root: ::core::ffi::c_ulong) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_SERIAL_EARLYCON"))]
+#[cfg(not(CONFIG_SERIAL_EARLYCON))]
 unsafe fn arc_set_early_base_baud(_dt_root: ::core::ffi::c_ulong) {}
 
 unsafe extern "C" {

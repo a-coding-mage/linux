@@ -240,12 +240,16 @@ unsafe fn extlog_init() -> i32 {
     let mut r: *mut resource;
     let mut cap: u64 = 0;
     let mut rc: i32;
+    'err: {
+    'err_release_l1_hdr: {
+    'err_release_l1_dir: {
+    'err_release_elog: {
     if rdmsrq_safe(MSR_IA32_MCG_CAP, &mut cap) != 0 || cap & MCG_ELOG_P == 0 || !extlog_get_l1addr() { return -ENODEV; }
     rc = -EINVAL;
     r = request_mem_region(l1_dirbase, l1_hdr_size, c"L1 DIR HDR".as_ptr());
     if r.is_null() { pr_warn(EMCA_BUG.as_ptr(), l1_dirbase, l1_dirbase + l1_hdr_size as u64); return rc; }
     extlog_l1_hdr = acpi_os_map_iomem(l1_dirbase, l1_hdr_size);
-    if extlog_l1_hdr.is_null() { rc = -ENOMEM; goto err_release_l1_hdr; }
+    if extlog_l1_hdr.is_null() { rc = -ENOMEM; break 'err_release_l1_hdr; }
     l1_head = extlog_l1_hdr as *mut extlog_l1_head;
     l1_size = (*l1_head).total_len as usize;
     l1_percpu_entry = (*l1_head).entries;
@@ -254,29 +258,33 @@ unsafe fn extlog_init() -> i32 {
     acpi_os_unmap_iomem(extlog_l1_hdr, l1_hdr_size);
     release_mem_region(l1_dirbase, l1_hdr_size);
     r = request_mem_region(l1_dirbase, l1_size, c"L1 Table".as_ptr());
-    if r.is_null() { pr_warn(EMCA_BUG.as_ptr(), l1_dirbase, l1_dirbase + l1_size as u64); goto err; }
+    if r.is_null() { pr_warn(EMCA_BUG.as_ptr(), l1_dirbase, l1_dirbase + l1_size as u64); break 'err; }
     extlog_l1_addr = acpi_os_map_iomem(l1_dirbase, l1_size);
-    if extlog_l1_addr.is_null() { rc = -ENOMEM; goto err_release_l1_dir; }
+    if extlog_l1_addr.is_null() { rc = -ENOMEM; break 'err_release_l1_dir; }
     l1_entry_base = (extlog_l1_addr as *mut u8).add(l1_hdr_size) as *mut u64;
     r = request_mem_region(elog_base, elog_size, c"Elog Table".as_ptr());
-    if r.is_null() { pr_warn(EMCA_BUG.as_ptr(), elog_base, elog_base + elog_size as u64); goto err_release_l1_dir; }
+    if r.is_null() { pr_warn(EMCA_BUG.as_ptr(), elog_base, elog_base + elog_size as u64); break 'err_release_l1_dir; }
     elog_addr = acpi_os_map_iomem(elog_base, elog_size);
-    if elog_addr.is_null() { rc = -ENOMEM; goto err_release_elog; }
+    if elog_addr.is_null() { rc = -ENOMEM; break 'err_release_elog; }
     rc = -ENOMEM;
     elog_buf = kmalloc(ELOG_ENTRY_LEN, GFP_KERNEL);
-    if elog_buf.is_null() { goto err_release_elog; }
+    if elog_buf.is_null() { break 'err_release_elog; }
     mce_register_decode_chain(&mut extlog_mce_dec);
     (*(extlog_l1_addr as *mut extlog_l1_head)).flags |= FLAG_OS_OPTIN;
     return 0;
-err_release_elog:
+    }
+    
     if !elog_addr.is_null() { acpi_os_unmap_iomem(elog_addr, elog_size); }
     release_mem_region(elog_base, elog_size);
-err_release_l1_dir:
+    }
+    
     if !extlog_l1_addr.is_null() { acpi_os_unmap_iomem(extlog_l1_addr, l1_size); }
     release_mem_region(l1_dirbase, l1_size);
-err_release_l1_hdr:
+    }
+    
     release_mem_region(l1_dirbase, l1_hdr_size);
-err:
+    }
+    
     pr_warn(c"Extended error log disabled because of problems parsing f/w tables\n".as_ptr());
     rc
 }

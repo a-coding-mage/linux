@@ -6,17 +6,17 @@
  *      Copyright (C) 2003 Dave Engebretsen <engebret@us.ibm.com>
  */
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 const COMMON_USER_BOOKE: _ = PPC_FEATURE_32
     | PPC_FEATURE_HAS_MMU
     | PPC_FEATURE_HAS_FPU
     | PPC_FEATURE_64
     | PPC_FEATURE_BOOKE;
 
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 const COMMON_USER_BOOKE: _ = PPC_FEATURE_32 | PPC_FEATURE_HAS_MMU | PPC_FEATURE_BOOKE;
 
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 static mut cpu_specs: [cpu_spec; 3] = [
     cpu_spec {
         /* e500mc */
@@ -74,7 +74,7 @@ static mut cpu_specs: [cpu_spec; 3] = [
     },
 ];
 
-#[cfg(not(feature = "CONFIG_PPC32"))]
+#[cfg(not(CONFIG_PPC32))]
 static mut cpu_specs: [cpu_spec; 3] = [
     cpu_spec {
         /* e5500 */

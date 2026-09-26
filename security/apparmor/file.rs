@@ -217,22 +217,19 @@ extern "C" {
         ns: *mut core::ffi::c_void,
         label: *mut aa_label,
         flags: u32,
-        gfp: u32,
-    );
+        gfp: u32);
     pub fn aa_audit(
         audit_type: i32,
         profile: *mut aa_profile,
         ad: *mut apparmor_audit_data,
-        cb: unsafe extern "C" fn(*mut audit_buffer, *mut core::ffi::c_void),
-    ) -> i32;
+        cb: unsafe extern "C" fn(*mut audit_buffer, *mut core::ffi::c_void)) -> i32;
     pub fn aa_path_name(
         path: *const path,
         flags: i32,
         buffer: *mut i8,
         name: *mut *const i8,
         info: *mut *const i8,
-        disconnected: i32,
-    ) -> i32;
+        disconnected: i32) -> i32;
     pub fn aa_dfa_match(dfa: *mut core::ffi::c_void, start: aa_state_t, name: *const i8) -> aa_state_t;
     pub fn aa_dfa_null_transition(dfa: *mut core::ffi::c_void, state: aa_state_t) -> aa_state_t;
     pub fn from_kuid(user_ns: *mut user_namespace, uid: kuid_t) -> u32;
@@ -243,8 +240,7 @@ extern "C" {
     pub fn aa_label_merge(
         old: *mut aa_label,
         new: *mut aa_label,
-        gfp: u32,
-    ) -> *mut aa_label;
+        gfp: u32) -> *mut aa_label;
     pub fn aa_put_label(label: *mut aa_label);
     pub fn aa_label_is_subset(label1: *mut aa_label, label2: *mut aa_label) -> bool;
     pub fn aa_get_newest_label(label: *mut aa_label) -> *mut aa_label;
@@ -253,8 +249,7 @@ extern "C" {
         label: *mut aa_label,
         op: *const i8,
         request: u32,
-        file: *mut file,
-    ) -> i32;
+        file: *mut file) -> i32;
     pub fn aa_map_file_to_perms(file: *mut file) -> u32;
     pub fn aa_get_newest_cred_label(cred: *const cred) -> *mut aa_label;
     pub fn get_current_tty() -> *mut tty_struct;

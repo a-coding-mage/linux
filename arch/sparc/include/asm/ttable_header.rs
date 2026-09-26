@@ -53,9 +53,9 @@ FILL_6_NORMAL; FILL_7_NORMAL; FILL_0_OTHER; FILL_1_OTHER; FILL_2_OTHER;
 FILL_3_OTHER; FILL_4_OTHER; FILL_5_OTHER; FILL_6_OTHER; FILL_7_OTHER;
 "#;
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 macro_rules! LINUX_32BIT_SYSCALL_TRAP { () => { SYSCALL_TRAP!(linux_sparc_syscall32, sys_call_table32) }; }
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 macro_rules! LINUX_32BIT_SYSCALL_TRAP { () => { BTRAP!(0x110) }; }
 macro_rules! LINUX_64BIT_SYSCALL_TRAP { () => { SYSCALL_TRAP!(linux_sparc_syscall, sys_call_table64) }; }
 

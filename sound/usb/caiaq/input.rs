@@ -8,7 +8,7 @@
 use std::ptr;
 
 // External types and constants from device.h and input.h
-// struct snd_usb_caiaqdev, struct input_dev, etc. are defined in other modules.
+// struct snd_usb_caiaqdev, input_dev, etc. are defined in other modules.
 // Key code constants like KEY_C, KEY_B, KEY_A, etc. are provided by external dependencies.
 
 static KEYCODE_AK1: &[u16] = &[KEY_C, KEY_B, KEY_A];
@@ -194,7 +194,7 @@ unsafe fn snd_caiaq_input_read_analog(cdev: *mut snd_usb_caiaqdev,
     let input_dev = (*cdev).input_dev;
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL2) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL2) => {
         if len < 6 {
             return;
         }
@@ -202,9 +202,7 @@ unsafe fn snd_caiaq_input_read_analog(cdev: *mut snd_usb_caiaqdev,
         snd_caiaq_input_report_abs(cdev, ABS_Y, buf, 0);
         snd_caiaq_input_report_abs(cdev, ABS_Z, buf, 1);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL3) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL3) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
         if len < 6 {
             return;
         }
@@ -212,7 +210,7 @@ unsafe fn snd_caiaq_input_read_analog(cdev: *mut snd_usb_caiaqdev,
         snd_caiaq_input_report_abs(cdev, ABS_Y, buf, 1);
         snd_caiaq_input_report_abs(cdev, ABS_Z, buf, 2);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
         if len < 16 {
             return;
         }
@@ -237,7 +235,7 @@ unsafe fn snd_caiaq_input_read_erp(cdev: *mut snd_usb_caiaqdev,
     let input_dev = (*cdev).input_dev;
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1) => {
         if len < 2 {
             return;
         }
@@ -245,8 +243,7 @@ unsafe fn snd_caiaq_input_read_erp(cdev: *mut snd_usb_caiaqdev,
         input_report_abs(input_dev, ABS_X, i as i32);
         input_sync(input_dev);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
         if len < 16 {
             return;
         }
@@ -268,7 +265,7 @@ unsafe fn snd_caiaq_input_read_erp(cdev: *mut snd_usb_caiaqdev,
         input_report_abs(input_dev, ABS_HAT3Y, i as i32);
         input_sync(input_dev);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
         if len < 22 {
             return;
         }
@@ -323,14 +320,13 @@ unsafe fn snd_caiaq_input_read_io(cdev: *mut snd_usb_caiaqdev,
     }
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
         if len < 5 {
             return;
         }
         input_report_abs((*cdev).input_dev, ABS_MISC, (255 - *buf.add(4) as i32));
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
         if len < 7 {
             return;
         }
@@ -510,7 +506,7 @@ unsafe extern "C" fn snd_usb_caiaq_ep4_reply_dispatch(urb: *mut urb) {
     }
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
         if (*urb).actual_length < 24 {
             goto_requeue;
         }
@@ -523,10 +519,10 @@ unsafe extern "C" fn snd_usb_caiaq_ep4_reply_dispatch(urb: *mut urb) {
             snd_caiaq_input_read_analog(cdev, buf.add(8), 16);
         }
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) => {
         snd_usb_caiaq_tks4_dispatch(cdev, buf, (*urb).actual_length as u32);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
         if (*urb).actual_length < (MASCHINE_PADS * MASCHINE_MSGBLOCK_SIZE) as u32 {
             goto_requeue;
         }
@@ -553,9 +549,7 @@ unsafe fn snd_usb_caiaq_input_open(idev: *mut input_dev) -> i32 {
     }
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
         if usb_submit_urb((*cdev).ep4_in_urb, GFP_KERNEL) != 0 {
             return -EIO;
         }
@@ -574,9 +568,7 @@ unsafe fn snd_usb_caiaq_input_close(idev: *mut input_dev) {
     }
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
         usb_kill_urb((*cdev).ep4_in_urb);
     },
     _ => {}
@@ -624,7 +616,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
     let mut ret: i32 = 0;
 
     match (*cdev).chip.usb_id {
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL2) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL2) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         (*input).absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) |
             BIT_MASK(ABS_Z);
@@ -636,7 +628,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
         input_set_abs_params(input, ABS_Z, 0, 4096, 0, 10);
         snd_usb_caiaq_set_auto_msg(cdev, 1, 10, 0);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL3) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL3) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         (*input).absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) |
             BIT_MASK(ABS_Z);
@@ -648,7 +640,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
         input_set_abs_params(input, ABS_Z, 0, 1024, 0, 10);
         snd_usb_caiaq_set_auto_msg(cdev, 1, 10, 0);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         (*input).absbit[0] = BIT_MASK(ABS_X);
         // BUILD_BUG_ON(sizeof(cdev->keycode) < sizeof(keycode_ak1));
@@ -657,8 +649,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
         input_set_abs_params(input, ABS_X, 0, 999, 0, 10);
         snd_usb_caiaq_set_auto_msg(cdev, 1, 0, 5);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) |
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER) || case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_KORECONTROLLER2) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         (*input).absbit[0] = BIT_MASK(ABS_HAT0X) | BIT_MASK(ABS_HAT0Y) |
                    BIT_MASK(ABS_HAT1X) | BIT_MASK(ABS_HAT1Y) |
@@ -684,7 +675,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
         input_set_abs_params(input, ABS_MISC, 0, 255, 0, 1);
         snd_usb_caiaq_set_auto_msg(cdev, 1, 10, 5);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLX1) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         (*input).absbit[0] = BIT_MASK(ABS_HAT0X) | BIT_MASK(ABS_HAT0Y) |
                    BIT_MASK(ABS_HAT1X) | BIT_MASK(ABS_HAT1Y) |
@@ -732,7 +723,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
 
         snd_usb_caiaq_set_auto_msg(cdev, 1, 10, 5);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_TRAKTORKONTROLS4) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         // BUILD_BUG_ON(sizeof(cdev->keycode) < KONTROLS4_BUTTONS);
         for i in 0..KONTROLS4_BUTTONS {
@@ -776,7 +767,7 @@ pub unsafe fn snd_usb_caiaq_input_init(cdev: *mut snd_usb_caiaqdev) -> i32 {
 
         snd_usb_caiaq_set_auto_msg(cdev, 1, 10, 5);
     },
-    USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
+    case if case == USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_MASCHINECONTROLLER) => {
         (*input).evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
         (*input).absbit[0] = BIT_MASK(ABS_HAT0X) | BIT_MASK(ABS_HAT0Y) |
             BIT_MASK(ABS_HAT1X) | BIT_MASK(ABS_HAT1Y) |

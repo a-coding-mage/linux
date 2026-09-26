@@ -25,10 +25,10 @@ macro_rules! umul_ppmm {
         unsafe {
             core::arch::asm!(
                 "dmulu.l {u},{v}\n\tsts macl,{w0}\n\tsts mach,{w1}",
-                u = in(reg) ($u as u32),
-                v = in(reg) ($v as u32),
-                w0 = out(reg) ($w0 as u32),
-                w1 = out(reg) ($w1 as u32),
+                $u = in(reg) ($u as u32),
+                $v = in(reg) ($v as u32),
+                $w0 = out(reg) ($w0 as u32),
+                $w1 = out(reg) ($w1 as u32),
                 clobber_abi("C"),
             );
         }

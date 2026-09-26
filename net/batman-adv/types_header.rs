@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Faithful Rust translation of types.h; external kernel/project types are dependencies. */
 
-#[cfg(feature = "CONFIG_BATMAN_ADV_DAT")]
+#[cfg(CONFIG_BATMAN_ADV_DAT)]
 pub type batadv_dat_addr_t = u16;
 
 #[repr(C)]
@@ -22,7 +22,7 @@ pub const BATADV_TT_SYNC_MASK: u16 = 0x00F0;
     pub if_status: i8, pub num_bcasts: u8, pub net_dev: *mut net_device, pub dev_tracker: netdevice_tracker, pub refcount: kref,
     pub batman_adv_ptype: packet_type, pub mesh_iface: *mut net_device, pub meshif_dev_tracker: netdevice_tracker, pub rcu: rcu_head,
     pub hop_penalty: u8, pub bat_iv: batadv_hard_iface_bat_iv,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_BATMAN_V")] pub bat_v: batadv_hard_iface_bat_v,
+    #[cfg(CONFIG_BATMAN_ADV_BATMAN_V)] pub bat_v: batadv_hard_iface_bat_v,
     pub neigh_list: hlist_head, pub neigh_list_lock: spinlock_t,
 }
 #[repr(C)] pub struct batadv_orig_ifinfo_bat_iv { pub bcast_own: [ulong; BATADV_TQ_LOCAL_WINDOW_SIZE as usize], pub bcast_own_sum: u8 }
@@ -35,15 +35,15 @@ pub const BATADV_TT_SYNC_MASK: u16 = 0x00F0;
 
 #[repr(C)] pub struct batadv_orig_node {
     pub orig: [u8; ETH_ALEN], pub ifinfo_list: hlist_head, pub last_bonding_candidate: *mut batadv_orig_ifinfo,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")] pub dat_addr: batadv_dat_addr_t,
+    #[cfg(CONFIG_BATMAN_ADV_DAT)] pub dat_addr: batadv_dat_addr_t,
     pub last_seen: ulong, pub bcast_seqno_reset: ulong,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_handler_lock: spinlock_t,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_flags: u8,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_want_all_unsnoopables_node: hlist_node,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_want_all_ipv4_node: hlist_node,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_want_all_ipv6_node: hlist_node,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_want_all_rtr4_node: hlist_node,
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] pub mcast_want_all_rtr6_node: hlist_node,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_handler_lock: spinlock_t,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_flags: u8,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_want_all_unsnoopables_node: hlist_node,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_want_all_ipv4_node: hlist_node,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_want_all_ipv6_node: hlist_node,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_want_all_rtr4_node: hlist_node,
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)] pub mcast_want_all_rtr6_node: hlist_node,
     pub capabilities: ulong, pub capa_initialized: ulong, pub last_ttvn: u8, pub tt_buff: *mut u8, pub tt_buff_len: u16,
     pub tt_buff_lock: spinlock_t, pub tt_lock: spinlock_t, pub bcast_bits: [ulong; BATADV_TQ_LOCAL_WINDOW_SIZE as usize], pub last_bcast_seqno: u32,
     pub neigh_list: hlist_head, pub neigh_list_lock: spinlock_t, pub hash_entry: hlist_node, pub bat_priv: *mut batadv_priv,
@@ -53,15 +53,15 @@ pub const BATADV_TT_SYNC_MASK: u16 = 0x00F0;
 #[repr(C)] pub enum batadv_orig_capabilities { BATADV_ORIG_CAPA_HAS_DAT, BATADV_ORIG_CAPA_HAS_TT, BATADV_ORIG_CAPA_HAS_MCAST }
 #[repr(C)] pub struct batadv_gw_node { pub list: hlist_node, pub orig_node: *mut batadv_orig_node, pub bandwidth_down: u32, pub bandwidth_up: u32, pub refcount: kref, pub rcu: rcu_head }
 #[repr(C)] pub struct batadv_hardif_neigh_node_bat_v { pub throughput: ewma_throughput, pub elp_interval: u32, pub elp_latest_seqno: u32, pub last_unicast_tx: ulong }
-#[repr(C)] pub struct batadv_hardif_neigh_node { pub list: hlist_node, pub addr: [u8; ETH_ALEN], pub orig: [u8; ETH_ALEN], pub if_incoming: *mut batadv_hard_iface, pub last_seen: ulong, #[cfg(feature = "CONFIG_BATMAN_ADV_BATMAN_V")] pub bat_v: batadv_hardif_neigh_node_bat_v, pub refcount: kref, pub rcu: rcu_head }
-#[repr(C)] pub struct batadv_neigh_node { pub list: hlist_node, #[cfg(feature = "CONFIG_BATMAN_ADV_BATMAN_V")] pub orig_node_id: *mut batadv_orig_node, pub addr: [u8; ETH_ALEN], pub ifinfo_list: hlist_head, pub ifinfo_lock: spinlock_t, pub if_incoming: *mut batadv_hard_iface, pub last_seen: ulong, pub hardif_neigh: *mut batadv_hardif_neigh_node, pub refcount: kref, pub rcu: rcu_head }
+#[repr(C)] pub struct batadv_hardif_neigh_node { pub list: hlist_node, pub addr: [u8; ETH_ALEN], pub orig: [u8; ETH_ALEN], pub if_incoming: *mut batadv_hard_iface, pub last_seen: ulong, #[cfg(CONFIG_BATMAN_ADV_BATMAN_V)] pub bat_v: batadv_hardif_neigh_node_bat_v, pub refcount: kref, pub rcu: rcu_head }
+#[repr(C)] pub struct batadv_neigh_node { pub list: hlist_node, #[cfg(CONFIG_BATMAN_ADV_BATMAN_V)] pub orig_node_id: *mut batadv_orig_node, pub addr: [u8; ETH_ALEN], pub ifinfo_list: hlist_head, pub ifinfo_lock: spinlock_t, pub if_incoming: *mut batadv_hard_iface, pub last_seen: ulong, pub hardif_neigh: *mut batadv_hardif_neigh_node, pub refcount: kref, pub rcu: rcu_head }
 #[repr(C)] pub struct batadv_neigh_ifinfo_bat_iv { pub tq_recv: [u8; BATADV_TQ_GLOBAL_WINDOW_SIZE as usize], pub tq_index: u8, pub tq_avg: u8, pub real_bits: [ulong; BATADV_TQ_LOCAL_WINDOW_SIZE as usize], pub real_packet_count: u8 }
 #[repr(C)] pub struct batadv_neigh_ifinfo_bat_v { pub throughput: u32, pub last_seqno: u32 }
-#[repr(C)] pub struct batadv_neigh_ifinfo { pub list: hlist_node, pub if_outgoing: *mut batadv_hard_iface, pub bat_iv: batadv_neigh_ifinfo_bat_iv, #[cfg(feature = "CONFIG_BATMAN_ADV_BATMAN_V")] pub bat_v: batadv_neigh_ifinfo_bat_v, pub last_ttl: u8, pub refcount: kref, pub rcu: rcu_head }
+#[repr(C)] pub struct batadv_neigh_ifinfo { pub list: hlist_node, pub if_outgoing: *mut batadv_hard_iface, pub bat_iv: batadv_neigh_ifinfo_bat_iv, #[cfg(CONFIG_BATMAN_ADV_BATMAN_V)] pub bat_v: batadv_neigh_ifinfo_bat_v, pub last_ttl: u8, pub refcount: kref, pub rcu: rcu_head }
 
-#[cfg(feature = "CONFIG_BATMAN_ADV_BLA")]
+#[cfg(CONFIG_BATMAN_ADV_BLA)]
 #[repr(C)] pub struct batadv_bcast_duplist_entry { pub orig: [u8; ETH_ALEN], pub crc: u32, pub entrytime: ulong }
-#[repr(C)] pub enum batadv_counters { BATADV_CNT_TX, BATADV_CNT_TX_BYTES, BATADV_CNT_TX_DROPPED, BATADV_CNT_RX, BATADV_CNT_RX_BYTES, BATADV_CNT_FORWARD, BATADV_CNT_FORWARD_BYTES, BATADV_CNT_MGMT_TX, BATADV_CNT_MGMT_TX_BYTES, BATADV_CNT_MGMT_RX, BATADV_CNT_MGMT_RX_BYTES, BATADV_CNT_FRAG_TX, BATADV_CNT_FRAG_TX_BYTES, BATADV_CNT_FRAG_RX, BATADV_CNT_FRAG_RX_BYTES, BATADV_CNT_FRAG_FWD, BATADV_CNT_FRAG_FWD_BYTES, BATADV_CNT_TT_REQUEST_TX, BATADV_CNT_TT_REQUEST_RX, BATADV_CNT_TT_RESPONSE_TX, BATADV_CNT_TT_RESPONSE_RX, BATADV_CNT_TT_ROAM_ADV_TX, BATADV_CNT_TT_ROAM_ADV_RX, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_TX, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_TX_BYTES, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_TX_LOCAL, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_TX_LOCAL_BYTES, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_RX, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_RX_BYTES, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_RX_LOCAL, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_RX_LOCAL_BYTES, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_FWD, #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")] BATADV_CNT_MCAST_FWD_BYTES, #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")] BATADV_CNT_DAT_GET_TX, #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")] BATADV_CNT_DAT_GET_RX, #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")] BATADV_CNT_DAT_PUT_TX, #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")] BATADV_CNT_DAT_PUT_RX, #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")] BATADV_CNT_DAT_CACHED_REPLY_TX, BATADV_CNT_NUM }
+#[repr(C)] pub enum batadv_counters { BATADV_CNT_TX, BATADV_CNT_TX_BYTES, BATADV_CNT_TX_DROPPED, BATADV_CNT_RX, BATADV_CNT_RX_BYTES, BATADV_CNT_FORWARD, BATADV_CNT_FORWARD_BYTES, BATADV_CNT_MGMT_TX, BATADV_CNT_MGMT_TX_BYTES, BATADV_CNT_MGMT_RX, BATADV_CNT_MGMT_RX_BYTES, BATADV_CNT_FRAG_TX, BATADV_CNT_FRAG_TX_BYTES, BATADV_CNT_FRAG_RX, BATADV_CNT_FRAG_RX_BYTES, BATADV_CNT_FRAG_FWD, BATADV_CNT_FRAG_FWD_BYTES, BATADV_CNT_TT_REQUEST_TX, BATADV_CNT_TT_REQUEST_RX, BATADV_CNT_TT_RESPONSE_TX, BATADV_CNT_TT_RESPONSE_RX, BATADV_CNT_TT_ROAM_ADV_TX, BATADV_CNT_TT_ROAM_ADV_RX, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_TX, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_TX_BYTES, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_TX_LOCAL, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_TX_LOCAL_BYTES, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_RX, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_RX_BYTES, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_RX_LOCAL, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_RX_LOCAL_BYTES, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_FWD, #[cfg(CONFIG_BATMAN_ADV_MCAST)] BATADV_CNT_MCAST_FWD_BYTES, #[cfg(CONFIG_BATMAN_ADV_DAT)] BATADV_CNT_DAT_GET_TX, #[cfg(CONFIG_BATMAN_ADV_DAT)] BATADV_CNT_DAT_GET_RX, #[cfg(CONFIG_BATMAN_ADV_DAT)] BATADV_CNT_DAT_PUT_TX, #[cfg(CONFIG_BATMAN_ADV_DAT)] BATADV_CNT_DAT_PUT_RX, #[cfg(CONFIG_BATMAN_ADV_DAT)] BATADV_CNT_DAT_CACHED_REPLY_TX, BATADV_CNT_NUM }
 
 /* Remaining declarations retain C layout and external kernel types. */
 #[repr(C)] pub struct batadv_priv_tt { pub vn: atomic_t, pub ogm_append_cnt: atomic_t, pub local_changes: usize, pub changes_list: list_head, pub local_hash: *mut batadv_hashtable, pub global_hash: *mut batadv_hashtable, pub req_list: hlist_head, pub roam_list: list_head, pub changes_list_lock: spinlock_t, pub req_list_lock: spinlock_t, pub roam_list_lock: spinlock_t, pub last_changeset: *mut u8, pub last_changeset_len: u16, pub last_changeset_lock: spinlock_t, pub commit_lock: spinlock_t, pub work: delayed_work }

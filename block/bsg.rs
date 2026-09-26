@@ -23,7 +23,7 @@ pub struct bsg_device {
 
 #[inline]
 unsafe fn to_bsg_device(inode: *mut inode) -> *mut bsg_device {
-    // container_of(inode->i_cdev, struct bsg_device, cdev)
+    // container_of(inode->i_cdev, bsg_device, cdev)
     container_of((*inode).i_cdev, core::mem::offset_of!(bsg_device, cdev))
 }
 

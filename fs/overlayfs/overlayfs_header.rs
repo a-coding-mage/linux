@@ -32,7 +32,7 @@ pub struct ovl_metacopy { pub version: u8, pub len: u8, pub flags: u8, pub diges
 pub const OVL_METACOPY_MAX_SIZE: usize = core::mem::size_of::<ovl_metacopy>();
 pub const OVL_METACOPY_MIN_SIZE: usize = OVL_METACOPY_MAX_SIZE - FS_VERITY_MAX_DIGEST_SIZE;
 
-pub unsafe fn ovl_metadata_digest_size(m: *const ovl_metacopy) -> i32 { if (*m).len as usize < OVL_METACOPY_MIN_SIZE { 0 } else { (*m).len as i32 - OVL_METACOPY_MIN_SIZE as i32 } }
+pub unsafe fn ovl_metadata_digest_size(m: *const ovl_metacopy) -> i32 { if ((*m).len as usize) < OVL_METACOPY_MIN_SIZE { 0 } else { (*m).len as i32 - OVL_METACOPY_MIN_SIZE as i32 } }
 pub const OVL_OPEN_FLAGS: u32 = O_NOATIME;
 
 extern "C" {

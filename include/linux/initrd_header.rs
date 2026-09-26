@@ -31,17 +31,17 @@ extern "C" {
 
 // CONFIG_BLK_DEV_INITRD controls whether these functions are external
 // declarations or empty inline functions in the C header.
-#[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+#[cfg(CONFIG_BLK_DEV_INITRD)]
 extern "C" {
     pub fn reserve_initrd_mem();
     pub fn wait_for_initramfs();
 }
 
-#[cfg(not(feature = "CONFIG_BLK_DEV_INITRD"))]
+#[cfg(not(CONFIG_BLK_DEV_INITRD))]
 #[inline]
 pub unsafe fn reserve_initrd_mem() {}
 
-#[cfg(not(feature = "CONFIG_BLK_DEV_INITRD"))]
+#[cfg(not(CONFIG_BLK_DEV_INITRD))]
 #[inline]
 pub unsafe fn wait_for_initramfs() {}
 

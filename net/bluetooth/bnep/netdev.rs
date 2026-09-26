@@ -142,10 +142,10 @@ unsafe fn bnep_net_xmit(skb: *mut sk_buff, dev: *mut net_device) -> netdev_tx_t 
 }
 
 static bnep_netdev_ops: net_device_ops = net_device_ops {
-	.ndo_open: Some(bnep_net_open), .ndo_stop: Some(bnep_net_close),
-	.ndo_start_xmit: Some(bnep_net_xmit), .ndo_validate_addr: Some(eth_validate_addr),
-	.ndo_set_rx_mode: Some(bnep_net_set_mc_list), .ndo_set_mac_address: Some(bnep_net_set_mac_addr),
-	.ndo_tx_timeout: Some(bnep_net_timeout),
+	ndo_open: Some(bnep_net_open), .ndo_stop: Some(bnep_net_close),
+	ndo_start_xmit: Some(bnep_net_xmit), .ndo_validate_addr: Some(eth_validate_addr),
+	ndo_set_rx_mode: Some(bnep_net_set_mc_list), .ndo_set_mac_address: Some(bnep_net_set_mac_addr),
+	ndo_tx_timeout: Some(bnep_net_timeout),
 };
 
 unsafe fn bnep_net_setup(dev: *mut net_device) {

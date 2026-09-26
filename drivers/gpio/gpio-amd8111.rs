@@ -163,10 +163,10 @@ unsafe fn amd_gpio_init() -> i32 {
      * main driver that binds to the pci_device is an smbus
      * driver and have to find & bind to the device this way.
      */
-    for_each_pci_dev!(pdev) {
+    for_each_pci_dev!(pdev, {
         ent = pci_match_id(pci_tbl.as_ptr(), pdev);
         if !ent.is_null() { break; }
-    }
+    });
     if ent.is_null() { pci_dev_put(pdev); return err; }
 
     'found: {

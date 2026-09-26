@@ -45,21 +45,21 @@ pub struct usb_ctlr {
 }
 
 /* Function code bits, usually generic to devices. */
-#[cfg(feature = "CONFIG_CPM1")]
+#[cfg(CONFIG_CPM1)]
 pub const CPMFCR_GBL: u8 = 0x00;
-#[cfg(feature = "CONFIG_CPM1")]
+#[cfg(CONFIG_CPM1)]
 pub const CPMFCR_TC2: u8 = 0x00;
-#[cfg(feature = "CONFIG_CPM1")]
+#[cfg(CONFIG_CPM1)]
 pub const CPMFCR_DTB: u8 = 0x00;
-#[cfg(feature = "CONFIG_CPM1")]
+#[cfg(CONFIG_CPM1)]
 pub const CPMFCR_BDB: u8 = 0x00;
-#[cfg(not(feature = "CONFIG_CPM1"))]
+#[cfg(not(CONFIG_CPM1))]
 pub const CPMFCR_GBL: u8 = 0x20;
-#[cfg(not(feature = "CONFIG_CPM1"))]
+#[cfg(not(CONFIG_CPM1))]
 pub const CPMFCR_TC2: u8 = 0x04;
-#[cfg(not(feature = "CONFIG_CPM1"))]
+#[cfg(not(CONFIG_CPM1))]
 pub const CPMFCR_DTB: u8 = 0x02;
-#[cfg(not(feature = "CONFIG_CPM1"))]
+#[cfg(not(CONFIG_CPM1))]
 pub const CPMFCR_BDB: u8 = 0x01;
 pub const CPMFCR_EB: u8 = 0x10;
 
@@ -135,12 +135,12 @@ pub const BD_ENET_TX_STATS: u16 = 0x03ff;
 pub const BD_SCC_TX_LAST: u16 = 0x0800;
 pub const BD_I2C_START: u16 = 0x0400;
 
-#[cfg(feature = "CONFIG_CPM")]
+#[cfg(CONFIG_CPM)]
 extern "C" {
     pub fn cpm_command(command: u32, opcode: u8) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_CPM"))]
+#[cfg(not(CONFIG_CPM))]
 #[inline]
 pub fn cpm_command(_command: u32, _opcode: u8) -> i32 {
     -38

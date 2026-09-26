@@ -133,6 +133,7 @@ pub unsafe fn rds_bind(sock: *mut socket, uaddr: *mut sockaddr_unsized, addr_len
     let mut scope_id: __u32 = 0;
     let mut ret = 0;
     let mut port: __be16;
+    'out: {
     if addr_len < offsetofend!(sockaddr, sa_family) { return -EINVAL; }
     if (*uaddr).sa_family == AF_INET {
         let sin = uaddr as *mut sockaddr_in;
@@ -156,20 +157,21 @@ pub unsafe fn rds_bind(sock: *mut socket, uaddr: *mut sockaddr_unsized, addr_len
         port = (*sin6).sin6_port;
     } else { return -EINVAL; }
     lock_sock(sk);
-    if !ipv6_addr_any(&(*rs).rs_bound_addr) { ret = -EINVAL; goto out; }
-    if !ipv6_addr_any(&(*rs).rs_conn_addr) && scope_id != 0 && (*rs).rs_bound_scope_id != 0 && scope_id != (*rs).rs_bound_scope_id { ret = -EINVAL; goto out; }
+    if !ipv6_addr_any(&(*rs).rs_bound_addr) { ret = -EINVAL; break 'out; }
+    if !ipv6_addr_any(&(*rs).rs_conn_addr) && scope_id != 0 && (*rs).rs_bound_scope_id != 0 && scope_id != (*rs).rs_bound_scope_id { ret = -EINVAL; break 'out; }
     if !(*rs).rs_transport.is_null() {
         trans = (*rs).rs_transport;
-        if (*trans).laddr_check.is_none() || ((*trans).laddr_check.unwrap())(sock_net((*sock).sk), binding_addr, scope_id) != 0 { ret = -ENOPROTOOPT; goto out; }
+        if (*trans).laddr_check.is_none() || ((*trans).laddr_check.unwrap())(sock_net((*sock).sk), binding_addr, scope_id) != 0 { ret = -ENOPROTOOPT; break 'out; }
     } else {
         trans = rds_trans_get_preferred(sock_net((*sock).sk), binding_addr, scope_id);
-        if trans.is_null() { ret = -EADDRNOTAVAIL; pr_info_ratelimited!("RDS: %s could not find a transport for %pI6c, load rds_tcp or rds_rdma?\n", __func__, binding_addr); goto out; }
+        if trans.is_null() { ret = -EADDRNOTAVAIL; pr_info_ratelimited!("RDS: %s could not find a transport for %pI6c, load rds_tcp or rds_rdma?\n", __func__, binding_addr); break 'out; }
         (*rs).rs_transport = trans;
     }
     sock_set_flag(sk, SOCK_RCU_FREE);
     ret = rds_add_bound(rs, binding_addr, &mut port, scope_id);
     if ret != 0 { (*rs).rs_transport = core::ptr::null_mut(); }
-out:
+    }
+    
     release_sock(sk);
     ret
 }

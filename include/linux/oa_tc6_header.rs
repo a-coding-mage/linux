@@ -44,7 +44,7 @@ pub const OA_TC6_INT_MASK0_HEADER_ERR_MASK: u32 = 1 << 5;
 pub const OA_TC6_INT_MASK0_LOSS_OF_FRAME_ERR_MASK: u32 = 1 << 4;
 pub const OA_TC6_INT_MASK0_RX_BUFFER_OVERFLOW_ERR_MASK: u32 = 1 << 3;
 pub const OA_TC6_INT_MASK0_TX_PROTOCOL_ERR_MASK: u32 = 1 << 0;
-pub const OA_TC6_INT_MASK0_ALL_INTERRUPTS: u32 = 0x1F << 0 | 0x7F << 7;
+pub const OA_TC6_INT_MASK0_ALL_INTERRUPTS: u32 = 0x3F | 0x3F << 7; // GENMASK(5, 0) | GENMASK(12, 7)
 
 /* PHY Clause 22 registers base address and mask */
 pub const OA_TC6_PHY_STD_REG_ADDR_BASE: u32 = 0xFF00;

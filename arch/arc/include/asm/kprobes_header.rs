@@ -7,20 +7,20 @@
 // asm-generic/kprobes.h
 
 // C build-time condition: CONFIG_KPROBES
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub type kprobe_opcode_t = u16;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const UNIMP_S_INSTRUCTION: u16 = 0x79e0;
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const TRAP_S_2_INSTRUCTION: u16 = 0x785e;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const MAX_INSN_SIZE: usize = 8;
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const MAX_STACK_SIZE: usize = 64;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct arch_specific_insn {
     pub is_short: ::core::ffi::c_int,
@@ -30,31 +30,31 @@ pub struct arch_specific_insn {
     pub t2_opcode: kprobe_opcode_t,
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[macro_export]
 macro_rules! flush_insn_slot {
     ($p:expr) => {{}};
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const kretprobe_blacklist_size: usize = 0;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub struct kprobe;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 unsafe extern "C" {
     pub fn arch_remove_kprobe(p: *mut kprobe);
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
     pub status: ::core::ffi::c_ulong,
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe_ctlblk {
     pub kprobe_status: ::core::ffi::c_uint,
@@ -62,7 +62,7 @@ pub struct kprobe_ctlblk {
 }
 
 // Dependency supplied by the surrounding translation unit: struct pt_regs.
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 unsafe extern "C" {
     pub fn kprobe_fault_handler(
         regs: *mut pt_regs,
@@ -72,7 +72,7 @@ unsafe extern "C" {
     pub fn trap_is_kprobe(address: ::core::ffi::c_ulong, regs: *mut pt_regs);
 }
 
-#[cfg(not(feature = "CONFIG_KPROBES"))]
+#[cfg(not(CONFIG_KPROBES))]
 #[macro_export]
 macro_rules! trap_is_kprobe {
     ($address:expr, $regs:expr) => {{}};

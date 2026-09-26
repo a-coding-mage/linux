@@ -60,14 +60,14 @@ macro_rules! expect_for_each_cpu_wrap_eq {
 }
 
 macro_rules! expect_for_each_cpu_builtin_eq {
-    ($test:expr, $name:ident) => {{
-        let mask_weight = num_$name##_cpus();
+    ($test:expr, $name:tt) => {{
+        let mask_weight = num_::kernel::macros::paste!([<$name _cpus>])();
         let mut iter = 0;
-        for_each_$name##_cpu!(cpu, {
+        for_each_::kernel::macros::paste!([<$name _cpu>])!(cpu, {
             let _ = cpu;
             iter += 1;
         });
-        kunit_expect_eq_msg!($test, mask_weight, iter, mask_msg!(cpu_$name##_mask));
+        kunit_expect_eq_msg!($test, mask_weight, iter, mask_msg!(cpu_::kernel::macros::paste!([<$name _mask>])));
     }};
 }
 

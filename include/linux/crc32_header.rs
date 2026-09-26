@@ -96,12 +96,12 @@ pub const CRC32_BE_OPTIMIZATION: u32 = 1 << 1; /* crc32_be() is optimized */
 pub const CRC32C_OPTIMIZATION: u32 = 1 << 2; /* crc32c() is optimized */
 
 // IS_ENABLED(CONFIG_CRC32_ARCH) is represented here by the build feature.
-#[cfg(feature = "CONFIG_CRC32_ARCH")]
+#[cfg(CONFIG_CRC32_ARCH)]
 unsafe extern "C" {
     pub fn crc32_optimizations() -> u32;
 }
 
-#[cfg(not(feature = "CONFIG_CRC32_ARCH"))]
+#[cfg(not(CONFIG_CRC32_ARCH))]
 #[inline]
 pub const fn crc32_optimizations() -> u32 { 0 }
 

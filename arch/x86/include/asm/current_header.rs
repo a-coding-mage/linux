@@ -31,7 +31,7 @@ extern "C" {
 #[inline(always)]
 pub unsafe fn get_current() -> *mut task_struct {
     /* IS_ENABLED(CONFIG_USE_X86_SEG_SUPPORT) */
-    if cfg!(feature = "CONFIG_USE_X86_SEG_SUPPORT") {
+    if cfg!(CONFIG_USE_X86_SEG_SUPPORT) {
         this_cpu_read_const(const_current_task)
     } else {
         this_cpu_read_stable(current_task)

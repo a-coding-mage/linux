@@ -3,7 +3,7 @@
 // Dependency declarations supplied by the corresponding kernel headers are
 // intentionally left external to this translation.
 
-#[cfg(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS")]
+#[cfg(CONFIG_KEXEC_HANDOVER_DEBUGFS)]
 #[repr(C)]
 pub struct kho_debugfs {
     pub dir: *mut dentry,
@@ -11,7 +11,7 @@ pub struct kho_debugfs {
     pub fdt_list: list_head,
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[repr(C)]
 pub struct kho_debugfs {}
 
@@ -20,7 +20,7 @@ extern "C" {
     pub static mut kho_scratch_cnt: core::ffi::c_uint;
 }
 
-#[cfg(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS")]
+#[cfg(CONFIG_KEXEC_HANDOVER_DEBUGFS)]
 extern "C" {
     pub fn kho_debugfs_init() -> core::ffi::c_int;
     pub fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const core::ffi::c_void);
@@ -35,23 +35,23 @@ extern "C" {
     pub fn kho_debugfs_blob_remove(dbg: *mut kho_debugfs, blob: *mut core::ffi::c_void);
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
 pub fn kho_debugfs_init() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
 pub fn kho_in_debugfs_init(_dbg: *mut kho_debugfs, _fdt: *const core::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
 pub fn kho_out_debugfs_init(_dbg: *mut kho_debugfs) -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
 pub fn kho_debugfs_blob_add(
     _dbg: *mut kho_debugfs,
@@ -63,7 +63,7 @@ pub fn kho_debugfs_blob_add(
     0
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER_DEBUGFS"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER_DEBUGFS))]
 #[inline]
 pub fn kho_debugfs_blob_remove(_dbg: *mut kho_debugfs, _blob: *mut core::ffi::c_void) {}
 

@@ -9,7 +9,6 @@
 //  * Author: Catalin Marinas <catalin.marinas@arm.com>
 //  */
 // Conditional from source: #ifndef __ASM_SYSREG_H
-pub const __ASM_SYSREG_H: u64 = ;
 // #include <linux/bits.h>
 // #include <linux/stringify.h>
 // #include <linux/kasan-tags.h>
@@ -899,7 +898,7 @@ pub const GCS_CAP_TOKEN_WIDTH: u64 = 12;
 macro_rules! GCS_CAP_TOKEN { (x) => { FIELD_GET(GCS_CAP_TOKEN_MASK, $x) }; }
 pub const GCS_CAP_VALID_TOKEN: u64 = 0x1;
 pub const GCS_CAP_IN_PROGRESS_TOKEN: u64 = 0x5;
-macro_rules! GCS_CAP { (x) => { ((((unsigned long)$x) & GCS_CAP_ADDR_MASK) | \ }; }
+macro_rules! GCS_CAP { (x) => { ((((core::ffi::c_ulong)$x) & GCS_CAP_ADDR_MASK) | \ }; }
 // 					       GCS_CAP_VALID_TOKEN)
 // /*
 //  * Definitions for GICv5 instructions

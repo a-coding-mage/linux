@@ -28,7 +28,7 @@ unsafe fn integrator_lm_populate(num: i32, dev: *mut device) -> i32 {
     );
 
     /* Walk over the child nodes and see what chipselects we use */
-    for_each_available_child_of_node!(np, child) {
+    for_each_available_child_of_node!(np, child, {
         let mut res: resource = core::mem::zeroed();
 
         ret = of_address_to_resource(child, 0, &mut res);
@@ -47,7 +47,7 @@ unsafe fn integrator_lm_populate(num: i32, dev: *mut device) -> i32 {
                 return ret;
             }
         }
-    }
+    });
 
     0
 }

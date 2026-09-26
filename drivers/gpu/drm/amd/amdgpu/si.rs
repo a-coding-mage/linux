@@ -928,77 +928,77 @@ static const u32 hainan_mgcg_cgcg_init[] =
 static const struct amdgpu_video_codec_info tahiti_video_codecs_encode_array[] =
 {
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 0,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 0,
 	},
 };
 
 static const struct amdgpu_video_codecs tahiti_video_codecs_encode =
 {
-	.codec_count = ARRAY_SIZE(tahiti_video_codecs_encode_array),
-	.codec_array = tahiti_video_codecs_encode_array,
+	codec_count: ARRAY_SIZE(tahiti_video_codecs_encode_array),
+	codec_array: tahiti_video_codecs_encode_array,
 };
 
 /* oland and hainan don't support encode */
 static const struct amdgpu_video_codecs hainan_video_codecs_encode =
 {
-	.codec_count = 0,
-	.codec_array = core::ptr::null_mut(),
+	codec_count: 0,
+	codec_array: core::ptr::null_mut(),
 };
 
 /* tahiti, pitcairn, verde, oland */
 static const struct amdgpu_video_codec_info tahiti_video_codecs_decode_array[] =
 {
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 3,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 3,
 	},
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 5,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 5,
 	},
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 41,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 41,
 	},
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_VC1,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 4,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_VC1,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 4,
 	},
 };
 
 static const struct amdgpu_video_codecs tahiti_video_codecs_decode =
 {
-	.codec_count = ARRAY_SIZE(tahiti_video_codecs_decode_array),
-	.codec_array = tahiti_video_codecs_decode_array,
+	codec_count: ARRAY_SIZE(tahiti_video_codecs_decode_array),
+	codec_array: tahiti_video_codecs_decode_array,
 };
 
 /* hainan doesn't support decode */
 static const struct amdgpu_video_codecs hainan_video_codecs_decode =
 {
-	.codec_count = 0,
-	.codec_array = core::ptr::null_mut(),
+	codec_count: 0,
+	codec_array: core::ptr::null_mut(),
 };
 
-static int si_query_video_codecs(struct amdgpu_device *adev, bool encode,
+static int si_query_video_codecs(amdgpu_device *adev, encode: bool,
 				 const struct amdgpu_video_codecs **codecs)
 {
-	switch (adev->asic_type) {
+	switch ((*adev).asic_type) {
 	case CHIP_VERDE:
 	case CHIP_TAHITI:
 	case CHIP_PITCAIRN:
@@ -1024,98 +1024,98 @@ static int si_query_video_codecs(struct amdgpu_device *adev, bool encode,
 	}
 }
 
-static u32 si_pcie_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 si_pcie_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u32 r;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(AMDGPU_PCIE_INDEX, reg);
 	(void)RREG32(AMDGPU_PCIE_INDEX);
 	r = RREG32(AMDGPU_PCIE_DATA);
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 	return r;
 }
 
-static void si_pcie_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void si_pcie_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(AMDGPU_PCIE_INDEX, reg);
 	(void)RREG32(AMDGPU_PCIE_INDEX);
 	WREG32(AMDGPU_PCIE_DATA, v);
 	(void)RREG32(AMDGPU_PCIE_DATA);
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 }
 
-static u32 si_pciep_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 si_pciep_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u32 r;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(PCIE_PORT_INDEX, ((reg) & 0xff));
 	(void)RREG32(PCIE_PORT_INDEX);
 	r = RREG32(PCIE_PORT_DATA);
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 	return r;
 }
 
-static void si_pciep_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void si_pciep_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(PCIE_PORT_INDEX, ((reg) & 0xff));
 	(void)RREG32(PCIE_PORT_INDEX);
 	WREG32(PCIE_PORT_DATA, (v));
 	(void)RREG32(PCIE_PORT_DATA);
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 }
 
-static u32 si_smc_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 si_smc_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u32 r;
 
-	spin_lock_irqsave(&adev->reg.smc.lock, flags);
+	spin_lock_irqsave((*&adev).reg.smc.lock, flags);
 	WREG32(mmSMC_IND_INDEX_0, (reg));
 	r = RREG32(mmSMC_IND_DATA_0);
-	spin_unlock_irqrestore(&adev->reg.smc.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.smc.lock, flags);
 	return r;
 }
 
-static void si_smc_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void si_smc_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&adev->reg.smc.lock, flags);
+	spin_lock_irqsave((*&adev).reg.smc.lock, flags);
 	WREG32(mmSMC_IND_INDEX_0, (reg));
 	WREG32(mmSMC_IND_DATA_0, (v));
-	spin_unlock_irqrestore(&adev->reg.smc.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.smc.lock, flags);
 }
 
-static u32 si_uvd_ctx_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 si_uvd_ctx_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u32 r;
 
-	spin_lock_irqsave(&adev->reg.uvd_ctx.lock, flags);
+	spin_lock_irqsave((*&adev).reg.uvd_ctx.lock, flags);
 	WREG32(mmUVD_CTX_INDEX, ((reg) & 0x1ff));
 	r = RREG32(mmUVD_CTX_DATA);
-	spin_unlock_irqrestore(&adev->reg.uvd_ctx.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.uvd_ctx.lock, flags);
 	return r;
 }
 
-static void si_uvd_ctx_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void si_uvd_ctx_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&adev->reg.uvd_ctx.lock, flags);
+	spin_lock_irqsave((*&adev).reg.uvd_ctx.lock, flags);
 	WREG32(mmUVD_CTX_INDEX, ((reg) & 0x1ff));
 	WREG32(mmUVD_CTX_DATA, (v));
-	spin_unlock_irqrestore(&adev->reg.uvd_ctx.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.uvd_ctx.lock, flags);
 }
 
 static struct amdgpu_allowed_register_entry si_allowed_read_registers[] = {
@@ -1170,9 +1170,9 @@ static struct amdgpu_allowed_register_entry si_allowed_read_registers[] = {
 	{mmPA_SC_RASTER_CONFIG, true},
 };
 
-static uint32_t si_get_register_value(struct amdgpu_device *adev,
-				      bool indexed, u32 se_num,
-				      u32 sh_num, u32 reg_offset)
+static uint32_t si_get_register_value(amdgpu_device *adev,
+				      indexed: bool, se_num: u32,
+				      sh_num: u32, reg_offset: u32)
 {
 	if (indexed) {
 		uint32_t val;
@@ -1181,14 +1181,14 @@ static uint32_t si_get_register_value(struct amdgpu_device *adev,
 
 		switch (reg_offset) {
 		case mmCC_RB_BACKEND_DISABLE:
-			return adev->gfx.config.rb_config[se_idx][sh_idx].rb_backend_disable;
+			return (*adev).gfx.config.rb_config[se_idx][sh_idx].rb_backend_disable;
 		case mmGC_USER_RB_BACKEND_DISABLE:
-			return adev->gfx.config.rb_config[se_idx][sh_idx].user_rb_backend_disable;
+			return (*adev).gfx.config.rb_config[se_idx][sh_idx].user_rb_backend_disable;
 		case mmPA_SC_RASTER_CONFIG:
-			return adev->gfx.config.rb_config[se_idx][sh_idx].raster_config;
+			return (*adev).gfx.config.rb_config[se_idx][sh_idx].raster_config;
 		}
 
-		mutex_lock(&adev->grbm_idx_mutex);
+		mutex_lock((*&adev).grbm_idx_mutex);
 		if (se_num != 0xffffffff || sh_num != 0xffffffff)
 			amdgpu_gfx_select_se_sh(adev, se_num, sh_num, 0xffffffff, 0);
 
@@ -1196,16 +1196,16 @@ static uint32_t si_get_register_value(struct amdgpu_device *adev,
 
 		if (se_num != 0xffffffff || sh_num != 0xffffffff)
 			amdgpu_gfx_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff, 0);
-		mutex_unlock(&adev->grbm_idx_mutex);
+		mutex_unlock((*&adev).grbm_idx_mutex);
 		return val;
 	} else {
 		unsigned idx;
 
 		switch (reg_offset) {
 		case mmGB_ADDR_CONFIG:
-			return adev->gfx.config.gb_addr_config;
+			return (*adev).gfx.config.gb_addr_config;
 		case mmMC_ARB_RAMCFG:
-			return adev->gfx.config.mc_arb_ramcfg;
+			return (*adev).gfx.config.mc_arb_ramcfg;
 		case mmGB_TILE_MODE0:
 		case mmGB_TILE_MODE1:
 		case mmGB_TILE_MODE2:
@@ -1239,14 +1239,14 @@ static uint32_t si_get_register_value(struct amdgpu_device *adev,
 		case mmGB_TILE_MODE30:
 		case mmGB_TILE_MODE31:
 			idx = (reg_offset - mmGB_TILE_MODE0);
-			return adev->gfx.config.tile_mode_array[idx];
+			return (*adev).gfx.config.tile_mode_array[idx];
 		default:
 			return RREG32(reg_offset);
 		}
 	}
 }
-static int si_read_register(struct amdgpu_device *adev, u32 se_num,
-			     u32 sh_num, u32 reg_offset, u32 *value)
+static int si_read_register(amdgpu_device *adev, se_num: u32,
+			     sh_num: u32, reg_offset: u32, u32 *value)
 {
 	uint32_t i;
 
@@ -1264,7 +1264,7 @@ static int si_read_register(struct amdgpu_device *adev, u32 se_num,
 	return -EINVAL;
 }
 
-static bool si_read_disabled_bios(struct amdgpu_device *adev)
+static bool si_read_disabled_bios(amdgpu_device *adev)
 {
 	u32 bus_cntl;
 	u32 d1vga_control = 0;
@@ -1274,7 +1274,7 @@ static bool si_read_disabled_bios(struct amdgpu_device *adev)
 	bool r;
 
 	bus_cntl = RREG32(mmBUS_CNTL);
-	if (adev->mode_info.num_crtc) {
+	if ((*adev).mode_info.num_crtc) {
 		d1vga_control = RREG32(mmD1VGA_CONTROL);
 		d2vga_control = RREG32(mmD2VGA_CONTROL);
 		vga_render_control = RREG32(mmVGA_RENDER_CONTROL);
@@ -1283,7 +1283,7 @@ static bool si_read_disabled_bios(struct amdgpu_device *adev)
 
 	/* enable the rom */
 	WREG32(mmBUS_CNTL, (bus_cntl & ~BUS_CNTL__BIOS_ROM_DIS_MASK));
-	if (adev->mode_info.num_crtc) {
+	if ((*adev).mode_info.num_crtc) {
 		/* Disable VGA mode */
 		WREG32(mmD1VGA_CONTROL,
 		       (d1vga_control & ~(D1VGA_CONTROL__D1VGA_MODE_ENABLE_MASK |
@@ -1300,7 +1300,7 @@ static bool si_read_disabled_bios(struct amdgpu_device *adev)
 
 	/* restore regs */
 	WREG32(mmBUS_CNTL, bus_cntl);
-	if (adev->mode_info.num_crtc) {
+	if ((*adev).mode_info.num_crtc) {
 		WREG32(mmD1VGA_CONTROL, d1vga_control);
 		WREG32(mmD2VGA_CONTROL, d2vga_control);
 		WREG32(mmVGA_RENDER_CONTROL, vga_render_control);
@@ -1309,21 +1309,21 @@ static bool si_read_disabled_bios(struct amdgpu_device *adev)
 	return r;
 }
 
-#define mmROM_INDEX 0x2A
-#define mmROM_DATA  0x2B
+pub const mmROM_INDEX: u32 = 0x2A;
+pub const mmROM_DATA: u32 = 0x2B;
 
-static bool si_read_bios_from_rom(struct amdgpu_device *adev,
-				  u8 *bios, u32 length_bytes)
+static bool si_read_bios_from_rom(amdgpu_device *adev,
+				  u8 *bios, length_bytes: u32)
 {
 	u32 *dw_ptr;
-	u32 i, length_dw;
+	i: u32, length_dw;
 
 	if (bios == core::ptr::null_mut())
 		return false;
 	if (length_bytes == 0)
 		return false;
 	/* APU vbios image is part of sbios image */
-	if (adev->flags & AMD_IS_APU)
+	if ((*adev).flags & AMD_IS_APU)
 		return false;
 
 	dw_ptr = (u32 *)bios;
@@ -1336,9 +1336,9 @@ static bool si_read_bios_from_rom(struct amdgpu_device *adev,
 	return true;
 }
 
-static void si_set_clk_bypass_mode(struct amdgpu_device *adev)
+static void si_set_clk_bypass_mode(amdgpu_device *adev)
 {
-	u32 tmp, i;
+	tmp: u32, i;
 
 	tmp = RREG32(mmCG_SPLL_FUNC_CNTL);
 	tmp |= CG_SPLL_FUNC_CNTL__SPLL_BYPASS_EN_MASK;
@@ -1348,7 +1348,7 @@ static void si_set_clk_bypass_mode(struct amdgpu_device *adev)
 	tmp |= CG_SPLL_FUNC_CNTL_2__SPLL_CTLREQ_CHG_MASK;
 	WREG32(mmCG_SPLL_FUNC_CNTL_2, tmp);
 
-	for (i = 0; i < adev->usec_timeout; i++) {
+	for (i = 0; i < (*adev).usec_timeout; i++) {
 		if (RREG32(mmCG_SPLL_STATUS) & CG_SPLL_STATUS__SPLL_CHG_STATUS_MASK)
 			break;
 		udelay(1);
@@ -1364,7 +1364,7 @@ static void si_set_clk_bypass_mode(struct amdgpu_device *adev)
 	WREG32(MPLL_CNTL_MODE, tmp);
 }
 
-static void si_spll_powerdown(struct amdgpu_device *adev)
+static void si_spll_powerdown(amdgpu_device *adev)
 {
 	u32 tmp;
 
@@ -1385,7 +1385,7 @@ static void si_spll_powerdown(struct amdgpu_device *adev)
 	WREG32(mmSPLL_CNTL_MODE, tmp);
 }
 
-static int si_gpu_pci_config_reset(struct amdgpu_device *adev)
+static int si_gpu_pci_config_reset(amdgpu_device *adev)
 {
 	u32 i;
 	int r = -EINVAL;
@@ -1397,18 +1397,18 @@ static int si_gpu_pci_config_reset(struct amdgpu_device *adev)
 	/* powerdown spll */
 	si_spll_powerdown(adev);
 	/* disable BM */
-	pci_clear_master(adev->pdev);
+	pci_clear_master((*adev).pdev);
 	/* reset */
 	amdgpu_device_pci_config_reset(adev);
 
 	udelay(100);
 
 	/* wait for asic to come out of reset */
-	for (i = 0; i < adev->usec_timeout; i++) {
+	for (i = 0; i < (*adev).usec_timeout; i++) {
 		if (RREG32(mmCONFIG_MEMSIZE) != 0xffffffff) {
 			/* enable BM */
-			pci_set_master(adev->pdev);
-			adev->has_hw_reset = true;
+			pci_set_master((*adev).pdev);
+			(*adev).has_hw_reset = true;
 			r = 0;
 			break;
 		}
@@ -1419,35 +1419,35 @@ static int si_gpu_pci_config_reset(struct amdgpu_device *adev)
 	return r;
 }
 
-static int si_asic_supports_baco(struct amdgpu_device *adev)
+static int si_asic_supports_baco(amdgpu_device *adev)
 {
 	return 0;
 }
 
 static enum amd_reset_method
-si_asic_reset_method(struct amdgpu_device *adev)
+si_asic_reset_method(amdgpu_device *adev)
 {
 	if (amdgpu_reset_method == AMD_RESET_METHOD_PCI)
 		return amdgpu_reset_method;
 	else if (amdgpu_reset_method != AMD_RESET_METHOD_LEGACY &&
 		 amdgpu_reset_method != -1)
-		dev_warn(adev->dev, "Specified reset method:%d isn't supported, using AUTO instead.\n",
+		dev_warn((*adev).dev, "Specified reset method:%d isn't supported, using AUTO instead.\n",
 			 amdgpu_reset_method);
 
 	return AMD_RESET_METHOD_LEGACY;
 }
 
-static int si_asic_reset(struct amdgpu_device *adev)
+static int si_asic_reset(amdgpu_device *adev)
 {
 	int r;
 
 	switch (si_asic_reset_method(adev)) {
 	case AMD_RESET_METHOD_PCI:
-		dev_info(adev->dev, "PCI reset\n");
+		dev_info((*adev).dev, "PCI reset\n");
 		r = amdgpu_device_pci_reset(adev);
 		break;
 	default:
-		dev_info(adev->dev, "PCI CONFIG reset\n");
+		dev_info((*adev).dev, "PCI CONFIG reset\n");
 		r = si_gpu_pci_config_reset(adev);
 		break;
 	}
@@ -1455,12 +1455,12 @@ static int si_asic_reset(struct amdgpu_device *adev)
 	return r;
 }
 
-static u32 si_get_config_memsize(struct amdgpu_device *adev)
+static u32 si_get_config_memsize(amdgpu_device *adev)
 {
 	return RREG32(mmCONFIG_MEMSIZE);
 }
 
-static void si_vga_set_state(struct amdgpu_device *adev, bool state)
+static void si_vga_set_state(amdgpu_device *adev, state: bool)
 {
 	uint32_t temp;
 
@@ -1474,9 +1474,9 @@ static void si_vga_set_state(struct amdgpu_device *adev, bool state)
 	WREG32(mmCONFIG_CNTL, temp);
 }
 
-static u32 si_get_xclk(struct amdgpu_device *adev)
+static u32 si_get_xclk(amdgpu_device *adev)
 {
-	u32 reference_clock = adev->clock.spll.reference_freq;
+	u32 reference_clock = (*adev).clock.spll.reference_freq;
 	u32 tmp;
 
 	tmp = RREG32(mmCG_CLKPIN_CNTL_2);
@@ -1490,9 +1490,9 @@ static u32 si_get_xclk(struct amdgpu_device *adev)
 	return reference_clock;
 }
 
-static void si_flush_hdp(struct amdgpu_device *adev, struct amdgpu_ring *ring)
+static void si_flush_hdp(amdgpu_device *adev, amdgpu_ring *ring)
 {
-	if (!ring || !ring->funcs->emit_wreg) {
+	if (!ring || (*(*!ring).funcs).emit_wreg) {
 		WREG32(mmHDP_MEM_COHERENCY_FLUSH_CNTL, 1);
 		RREG32(mmHDP_MEM_COHERENCY_FLUSH_CNTL);
 	} else {
@@ -1500,10 +1500,10 @@ static void si_flush_hdp(struct amdgpu_device *adev, struct amdgpu_ring *ring)
 	}
 }
 
-static void si_invalidate_hdp(struct amdgpu_device *adev,
-			      struct amdgpu_ring *ring)
+static void si_invalidate_hdp(amdgpu_device *adev,
+			      amdgpu_ring *ring)
 {
-	if (!ring || !ring->funcs->emit_wreg) {
+	if (!ring || (*(*!ring).funcs).emit_wreg) {
 		WREG32(mmHDP_DEBUG0, 1);
 		RREG32(mmHDP_DEBUG0);
 	} else {
@@ -1511,16 +1511,16 @@ static void si_invalidate_hdp(struct amdgpu_device *adev,
 	}
 }
 
-static bool si_need_reset_on_init(struct amdgpu_device *adev)
+static bool si_need_reset_on_init(amdgpu_device *adev)
 {
 	return false;
 }
 
-static int si_get_pcie_lanes(struct amdgpu_device *adev)
+static int si_get_pcie_lanes(amdgpu_device *adev)
 {
 	u32 link_width_cntl;
 
-	if (adev->flags & AMD_IS_APU)
+	if ((*adev).flags & AMD_IS_APU)
 		return 0;
 
 	link_width_cntl = RREG32_PCIE_PORT(ixPCIE_LC_LINK_WIDTH_CNTL);
@@ -1541,11 +1541,11 @@ static int si_get_pcie_lanes(struct amdgpu_device *adev)
 	}
 }
 
-static void si_set_pcie_lanes(struct amdgpu_device *adev, int lanes)
+static void si_set_pcie_lanes(amdgpu_device *adev, int lanes)
 {
-	u32 link_width_cntl, mask;
+	link_width_cntl: u32, mask;
 
-	if (adev->flags & AMD_IS_APU)
+	if ((*adev).flags & AMD_IS_APU)
 		return;
 
 	switch (lanes) {
@@ -1581,7 +1581,7 @@ static void si_set_pcie_lanes(struct amdgpu_device *adev, int lanes)
 	WREG32_PCIE_PORT(ixPCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
 }
 
-static void si_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0,
+static void si_get_pcie_usage(amdgpu_device *adev, uint64_t *count0,
 			      uint64_t *count1)
 {
 	uint32_t perfctr = 0;
@@ -1591,7 +1591,7 @@ static void si_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0,
 	/* This reports 0 on APUs, so return to avoid writing/reading registers
 	 * that may or may not be different from their GPU counterparts
 	 */
-	if (adev->flags & AMD_IS_APU)
+	if ((*adev).flags & AMD_IS_APU)
 		return;
 
 	/* Set the 2 events that we wish to watch, defined above */
@@ -1627,7 +1627,7 @@ static void si_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0,
 	*count1 = RREG32_PCIE(ixPCIE_PERF_COUNT1_TXCLK) | (cnt1_of << 32);
 }
 
-static uint64_t si_get_pcie_replay_count(struct amdgpu_device *adev)
+static uint64_t si_get_pcie_replay_count(amdgpu_device *adev)
 {
 	uint64_t nak_r, nak_g;
 
@@ -1639,7 +1639,7 @@ static uint64_t si_get_pcie_replay_count(struct amdgpu_device *adev)
 	return (nak_r + nak_g);
 }
 
-static int si_uvd_send_upll_ctlreq(struct amdgpu_device *adev,
+static int si_uvd_send_upll_ctlreq(amdgpu_device *adev,
 				   unsigned cg_upll_func_cntl)
 {
 	unsigned i;
@@ -1714,7 +1714,7 @@ static unsigned si_uvd_calc_upll_post_div(unsigned vco_freq,
  * Calculate dividers for UVDs UPLL (except APUs).
  * Returns zero on success; -EINVAL on error.
  */
-static int si_calc_upll_dividers(struct amdgpu_device *adev,
+static int si_calc_upll_dividers(amdgpu_device *adev,
 				 unsigned vclk, unsigned dclk,
 				 unsigned vco_min, unsigned vco_max,
 				 unsigned fb_factor, unsigned fb_mask,
@@ -1724,7 +1724,7 @@ static int si_calc_upll_dividers(struct amdgpu_device *adev,
 				 unsigned *optimal_vclk_div,
 				 unsigned *optimal_dclk_div)
 {
-	unsigned vco_freq, ref_freq = adev->clock.spll.reference_freq;
+	unsigned vco_freq, ref_freq = (*adev).clock.spll.reference_freq;
 
 	/* Start off with something large */
 	unsigned optimal_score = ~0;
@@ -1776,7 +1776,7 @@ static int si_calc_upll_dividers(struct amdgpu_device *adev,
 	return 0;
 }
 
-static int si_set_uvd_clocks(struct amdgpu_device *adev, u32 vclk, u32 dclk)
+static int si_set_uvd_clocks(amdgpu_device *adev, vclk: u32, dclk: u32)
 {
 	unsigned fb_div = 0, vclk_div = 0, dclk_div = 0;
 	int r;
@@ -1867,7 +1867,7 @@ static int si_set_uvd_clocks(struct amdgpu_device *adev, u32 vclk, u32 dclk)
 	return 0;
 }
 
-static int si_vce_send_vcepll_ctlreq(struct amdgpu_device *adev)
+static int si_vce_send_vcepll_ctlreq(amdgpu_device *adev)
 {
 	unsigned i;
 
@@ -1899,7 +1899,7 @@ static int si_vce_send_vcepll_ctlreq(struct amdgpu_device *adev)
 	return 0;
 }
 
-static int si_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
+static int si_set_vce_clocks(amdgpu_device *adev, evclk: u32, ecclk: u32)
 {
 	unsigned fb_div = 0, evclk_div = 0, ecclk_div = 0;
 	int r;
@@ -1919,7 +1919,7 @@ static int si_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
 		 * sleep mode, causing a timeout waiting on CTLACK/CTLACK2.
 		 * Leave the PLL running in bypass mode.
 		 */
-		if (adev->pdev->device == 0x6780)
+		if ((*(*adev).pdev).device == 0x6780)
 			return 0;
 
 		/* Keep the Bypass mode, put PLL to sleep */
@@ -2001,53 +2001,53 @@ static int si_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
 
 static const struct amdgpu_asic_funcs si_asic_funcs =
 {
-	.read_disabled_bios = &si_read_disabled_bios,
-	.read_bios_from_rom = &si_read_bios_from_rom,
-	.read_register = &si_read_register,
-	.reset = &si_asic_reset,
-	.reset_method = &si_asic_reset_method,
-	.set_vga_state = &si_vga_set_state,
-	.get_xclk = &si_get_xclk,
-	.set_uvd_clocks = &si_set_uvd_clocks,
-	.set_vce_clocks = &si_set_vce_clocks,
-	.get_pcie_lanes = &si_get_pcie_lanes,
-	.set_pcie_lanes = &si_set_pcie_lanes,
-	.get_config_memsize = &si_get_config_memsize,
-	.flush_hdp = &si_flush_hdp,
-	.invalidate_hdp = &si_invalidate_hdp,
-	.get_pcie_usage = &si_get_pcie_usage,
-	.need_reset_on_init = &si_need_reset_on_init,
-	.get_pcie_replay_count = &si_get_pcie_replay_count,
-	.supports_baco = &si_asic_supports_baco,
-	.query_video_codecs = &si_query_video_codecs,
+	read_disabled_bios: &si_read_disabled_bios,
+	read_bios_from_rom: &si_read_bios_from_rom,
+	read_register: &si_read_register,
+	reset: &si_asic_reset,
+	reset_method: &si_asic_reset_method,
+	set_vga_state: &si_vga_set_state,
+	get_xclk: &si_get_xclk,
+	set_uvd_clocks: &si_set_uvd_clocks,
+	set_vce_clocks: &si_set_vce_clocks,
+	get_pcie_lanes: &si_get_pcie_lanes,
+	set_pcie_lanes: &si_set_pcie_lanes,
+	get_config_memsize: &si_get_config_memsize,
+	flush_hdp: &si_flush_hdp,
+	invalidate_hdp: &si_invalidate_hdp,
+	get_pcie_usage: &si_get_pcie_usage,
+	need_reset_on_init: &si_need_reset_on_init,
+	get_pcie_replay_count: &si_get_pcie_replay_count,
+	supports_baco: &si_asic_supports_baco,
+	query_video_codecs: &si_query_video_codecs,
 };
 
-static uint32_t si_get_rev_id(struct amdgpu_device *adev)
+static uint32_t si_get_rev_id(amdgpu_device *adev)
 {
 	return (RREG32(mmCC_DRM_ID_STRAPS) & CC_DRM_ID_STRAPS__ATI_REV_ID_MASK)
 		>> CC_DRM_ID_STRAPS__ATI_REV_ID__SHIFT;
 }
 
-static int si_common_early_init(struct amdgpu_ip_block *ip_block)
+static int si_common_early_init(amdgpu_ip_block *ip_block)
 {
-	struct amdgpu_device *adev = ip_block->adev;
+	struct amdgpu_device *adev = (*ip_block).adev;
 
-	adev->reg.smc.rreg = si_smc_rreg;
-	adev->reg.smc.wreg = si_smc_wreg;
-	adev->reg.pcie.rreg = &si_pcie_rreg;
-	adev->reg.pcie.wreg = &si_pcie_wreg;
-	adev->reg.pcie.port_rreg = &si_pciep_rreg;
-	adev->reg.pcie.port_wreg = &si_pciep_wreg;
-	adev->reg.uvd_ctx.rreg = &si_uvd_ctx_rreg;
-	adev->reg.uvd_ctx.wreg = &si_uvd_ctx_wreg;
+	(*adev).reg.smc.rreg = si_smc_rreg;
+	(*adev).reg.smc.wreg = si_smc_wreg;
+	(*adev).reg.pcie.rreg = &si_pcie_rreg;
+	(*adev).reg.pcie.wreg = &si_pcie_wreg;
+	(*adev).reg.pcie.port_rreg = &si_pciep_rreg;
+	(*adev).reg.pcie.port_wreg = &si_pciep_wreg;
+	(*adev).reg.uvd_ctx.rreg = &si_uvd_ctx_rreg;
+	(*adev).reg.uvd_ctx.wreg = &si_uvd_ctx_wreg;
 
-	adev->asic_funcs = &si_asic_funcs;
+	(*adev).asic_funcs = &si_asic_funcs;
 
-	adev->rev_id = si_get_rev_id(adev);
-	adev->external_rev_id = 0xFF;
-	switch (adev->asic_type) {
+	(*adev).rev_id = si_get_rev_id(adev);
+	(*adev).external_rev_id = 0xFF;
+	switch ((*adev).asic_type) {
 	case CHIP_TAHITI:
-		adev->cg_flags =
+		(*adev).cg_flags =
 			AMD_CG_SUPPORT_GFX_MGCG |
 			AMD_CG_SUPPORT_GFX_MGLS |
 			/*AMD_CG_SUPPORT_GFX_CGCG |*/
@@ -2061,12 +2061,12 @@ static int si_common_early_init(struct amdgpu_ip_block *ip_block)
 			AMD_CG_SUPPORT_UVD_MGCG |
 			AMD_CG_SUPPORT_HDP_LS |
 			AMD_CG_SUPPORT_HDP_MGCG;
-		adev->pg_flags = 0;
-		adev->external_rev_id = (adev->rev_id == 0) ? 1 :
-					(adev->rev_id == 1) ? 5 : 6;
+		(*adev).pg_flags = 0;
+		(*adev).external_rev_id = ((*adev).rev_id == 0) ? 1 :
+					((*adev).rev_id == 1) ? 5 : 6;
 		break;
 	case CHIP_PITCAIRN:
-		adev->cg_flags =
+		(*adev).cg_flags =
 			AMD_CG_SUPPORT_GFX_MGCG |
 			AMD_CG_SUPPORT_GFX_MGLS |
 			/*AMD_CG_SUPPORT_GFX_CGCG |*/
@@ -2082,12 +2082,12 @@ static int si_common_early_init(struct amdgpu_ip_block *ip_block)
 			AMD_CG_SUPPORT_UVD_MGCG |
 			AMD_CG_SUPPORT_HDP_LS |
 			AMD_CG_SUPPORT_HDP_MGCG;
-		adev->pg_flags = 0;
-		adev->external_rev_id = adev->rev_id + 20;
+		(*adev).pg_flags = 0;
+		(*adev).external_rev_id = (*adev).rev_id + 20;
 		break;
 
 	case CHIP_VERDE:
-		adev->cg_flags =
+		(*adev).cg_flags =
 			AMD_CG_SUPPORT_GFX_MGCG |
 			AMD_CG_SUPPORT_GFX_MGLS |
 			AMD_CG_SUPPORT_GFX_CGLS |
@@ -2103,12 +2103,12 @@ static int si_common_early_init(struct amdgpu_ip_block *ip_block)
 			AMD_CG_SUPPORT_UVD_MGCG |
 			AMD_CG_SUPPORT_HDP_LS |
 			AMD_CG_SUPPORT_HDP_MGCG;
-		adev->pg_flags = 0;
+		(*adev).pg_flags = 0;
 		//???
-		adev->external_rev_id = adev->rev_id + 40;
+		(*adev).external_rev_id = (*adev).rev_id + 40;
 		break;
 	case CHIP_OLAND:
-		adev->cg_flags =
+		(*adev).cg_flags =
 			AMD_CG_SUPPORT_GFX_MGCG |
 			AMD_CG_SUPPORT_GFX_MGLS |
 			/*AMD_CG_SUPPORT_GFX_CGCG |*/
@@ -2123,11 +2123,11 @@ static int si_common_early_init(struct amdgpu_ip_block *ip_block)
 			AMD_CG_SUPPORT_UVD_MGCG |
 			AMD_CG_SUPPORT_HDP_LS |
 			AMD_CG_SUPPORT_HDP_MGCG;
-		adev->pg_flags = 0;
-		adev->external_rev_id = 60;
+		(*adev).pg_flags = 0;
+		(*adev).external_rev_id = 60;
 		break;
 	case CHIP_HAINAN:
-		adev->cg_flags =
+		(*adev).cg_flags =
 			AMD_CG_SUPPORT_GFX_MGCG |
 			AMD_CG_SUPPORT_GFX_MGLS |
 			/*AMD_CG_SUPPORT_GFX_CGCG |*/
@@ -2141,8 +2141,8 @@ static int si_common_early_init(struct amdgpu_ip_block *ip_block)
 			AMD_CG_SUPPORT_BIF_LS |
 			AMD_CG_SUPPORT_HDP_LS |
 			AMD_CG_SUPPORT_HDP_MGCG;
-		adev->pg_flags = 0;
-		adev->external_rev_id = 70;
+		(*adev).pg_flags = 0;
+		(*adev).external_rev_id = 70;
 		break;
 
 	default:
@@ -2152,9 +2152,9 @@ static int si_common_early_init(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-static void si_init_golden_registers(struct amdgpu_device *adev)
+static void si_init_golden_registers(amdgpu_device *adev)
 {
-	switch (adev->asic_type) {
+	switch ((*adev).asic_type) {
 	case CHIP_TAHITI:
 		amdgpu_device_program_register_sequence(adev,
 							tahiti_golden_registers,
@@ -2223,36 +2223,36 @@ static void si_init_golden_registers(struct amdgpu_device *adev)
 	}
 }
 
-static void si_pcie_gen3_enable(struct amdgpu_device *adev)
+static void si_pcie_gen3_enable(amdgpu_device *adev)
 {
-	struct pci_dev *root = adev->pdev->bus->self;
-	u32 speed_cntl, current_data_rate;
+	struct pci_dev *root = (*(*(*adev).pdev).bus).self;
+	speed_cntl: u32, current_data_rate;
 	int i;
 	u16 tmp16;
 
-	if (pci_is_root_bus(adev->pdev->bus))
+	if (pci_is_root_bus((*(*adev).pdev).bus))
 		return;
 
 	if (amdgpu_pcie_gen2 == 0)
 		return;
 
-	if (adev->flags & AMD_IS_APU)
+	if ((*adev).flags & AMD_IS_APU)
 		return;
 
-	if (!(adev->pm.pcie_gen_mask & (CAIL_PCIE_LINK_SPEED_SUPPORT_GEN2 |
+	if (!((*adev).pm.pcie_gen_mask & (CAIL_PCIE_LINK_SPEED_SUPPORT_GEN2 |
 					CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3)))
 		return;
 
 	speed_cntl = RREG32_PCIE_PORT(ixPCIE_LC_SPEED_CNTL);
 	current_data_rate = (speed_cntl & PCIE_LC_SPEED_CNTL__LC_CURRENT_DATA_RATE_MASK) >>
 		PCIE_LC_SPEED_CNTL__LC_CURRENT_DATA_RATE__SHIFT;
-	if (adev->pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3) {
+	if ((*adev).pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3) {
 		if (current_data_rate == 2) {
 			drm_info(adev_to_drm(adev), "PCIE gen 3 link speeds already enabled\n");
 			return;
 		}
 		drm_info(adev_to_drm(adev), "enabling PCIE gen 3 link speeds, disable with amdgpu.pcie_gen2=0\n");
-	} else if (adev->pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN2) {
+	} else if ((*adev).pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN2) {
 		if (current_data_rate == 1) {
 			drm_info(adev_to_drm(adev), "PCIE gen 2 link speeds already enabled\n");
 			return;
@@ -2260,17 +2260,17 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 		drm_info(adev_to_drm(adev), "enabling PCIE gen 2 link speeds, disable with amdgpu.pcie_gen2=0\n");
 	}
 
-	if (!pci_is_pcie(root) || !pci_is_pcie(adev->pdev))
+	if (!pci_is_pcie(root) || !pci_is_pcie((*adev).pdev))
 		return;
 
-	if (adev->pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3) {
+	if ((*adev).pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3) {
 		if (current_data_rate != 2) {
-			u16 bridge_cfg, gpu_cfg;
-			u16 bridge_cfg2, gpu_cfg2;
-			u32 max_lw, current_lw, tmp;
+			bridge_cfg: u16, gpu_cfg;
+			bridge_cfg2: u16, gpu_cfg2;
+			max_lw: u32, current_lw, tmp;
 
 			pcie_capability_set_word(root, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_HAWD);
-			pcie_capability_set_word(adev->pdev, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_HAWD);
+			pcie_capability_set_word((*adev).pdev, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_HAWD);
 
 			tmp = RREG32_PCIE(ixPCIE_LC_STATUS1);
 			max_lw = (tmp & PCIE_LC_STATUS1__LC_DETECTED_LINK_WIDTH_MASK) >> PCIE_LC_STATUS1__LC_DETECTED_LINK_WIDTH__SHIFT;
@@ -2287,7 +2287,7 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 			}
 
 			for (i = 0; i < 10; i++) {
-				pcie_capability_read_word(adev->pdev,
+				pcie_capability_read_word((*adev).pdev,
 							  PCI_EXP_DEVSTA,
 							  &tmp16);
 				if (tmp16 & PCI_EXP_DEVSTA_TRPND)
@@ -2295,13 +2295,13 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 
 				pcie_capability_read_word(root, PCI_EXP_LNKCTL,
 							  &bridge_cfg);
-				pcie_capability_read_word(adev->pdev,
+				pcie_capability_read_word((*adev).pdev,
 							  PCI_EXP_LNKCTL,
 							  &gpu_cfg);
 
 				pcie_capability_read_word(root, PCI_EXP_LNKCTL2,
 							  &bridge_cfg2);
-				pcie_capability_read_word(adev->pdev,
+				pcie_capability_read_word((*adev).pdev,
 							  PCI_EXP_LNKCTL2,
 							  &gpu_cfg2);
 
@@ -2319,7 +2319,7 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 								   PCI_EXP_LNKCTL_HAWD,
 								   bridge_cfg &
 								   PCI_EXP_LNKCTL_HAWD);
-				pcie_capability_clear_and_set_word(adev->pdev, PCI_EXP_LNKCTL,
+				pcie_capability_clear_and_set_word((*adev).pdev, PCI_EXP_LNKCTL,
 								   PCI_EXP_LNKCTL_HAWD,
 								   gpu_cfg &
 								   PCI_EXP_LNKCTL_HAWD);
@@ -2330,7 +2330,7 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 								   bridge_cfg2 &
 								   (PCI_EXP_LNKCTL2_ENTER_COMP |
 								    PCI_EXP_LNKCTL2_TX_MARGIN));
-				pcie_capability_clear_and_set_word(adev->pdev, PCI_EXP_LNKCTL2,
+				pcie_capability_clear_and_set_word((*adev).pdev, PCI_EXP_LNKCTL2,
 								   PCI_EXP_LNKCTL2_ENTER_COMP |
 								   PCI_EXP_LNKCTL2_TX_MARGIN,
 								   gpu_cfg2 &
@@ -2349,20 +2349,20 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 	WREG32_PCIE_PORT(ixPCIE_LC_SPEED_CNTL, speed_cntl);
 
 	tmp16 = 0;
-	if (adev->pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3)
+	if ((*adev).pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3)
 		tmp16 |= PCI_EXP_LNKCTL2_TLS_8_0GT; /* gen3 */
-	else if (adev->pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN2)
+	else if ((*adev).pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN2)
 		tmp16 |= PCI_EXP_LNKCTL2_TLS_5_0GT; /* gen2 */
 	else
 		tmp16 |= PCI_EXP_LNKCTL2_TLS_2_5GT; /* gen1 */
-	pcie_capability_clear_and_set_word(adev->pdev, PCI_EXP_LNKCTL2,
+	pcie_capability_clear_and_set_word((*adev).pdev, PCI_EXP_LNKCTL2,
 					   PCI_EXP_LNKCTL2_TLS, tmp16);
 
 	speed_cntl = RREG32_PCIE_PORT(ixPCIE_LC_SPEED_CNTL);
 	speed_cntl |= PCIE_LC_SPEED_CNTL__LC_INITIATE_LINK_SPEED_CHANGE_MASK;
 	WREG32_PCIE_PORT(ixPCIE_LC_SPEED_CNTL, speed_cntl);
 
-	for (i = 0; i < adev->usec_timeout; i++) {
+	for (i = 0; i < (*adev).usec_timeout; i++) {
 		speed_cntl = RREG32_PCIE_PORT(ixPCIE_LC_SPEED_CNTL);
 		if ((speed_cntl & PCIE_LC_SPEED_CNTL__LC_INITIATE_LINK_SPEED_CHANGE_MASK) == 0)
 			break;
@@ -2370,52 +2370,52 @@ static void si_pcie_gen3_enable(struct amdgpu_device *adev)
 	}
 }
 
-static inline u32 si_pif_phy0_rreg(struct amdgpu_device *adev, u32 reg)
+u32 si_pif_phy0_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u32 r;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(EVERGREEN_PIF_PHY0_INDEX, ((reg) & 0xffff));
 	r = RREG32(EVERGREEN_PIF_PHY0_DATA);
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 	return r;
 }
 
-static inline void si_pif_phy0_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+void si_pif_phy0_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(EVERGREEN_PIF_PHY0_INDEX, ((reg) & 0xffff));
 	WREG32(EVERGREEN_PIF_PHY0_DATA, (v));
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 }
 
-static inline u32 si_pif_phy1_rreg(struct amdgpu_device *adev, u32 reg)
+u32 si_pif_phy1_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	u32 r;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(EVERGREEN_PIF_PHY1_INDEX, ((reg) & 0xffff));
 	r = RREG32(EVERGREEN_PIF_PHY1_DATA);
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 	return r;
 }
 
-static inline void si_pif_phy1_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+void si_pif_phy1_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
-	spin_lock_irqsave(&adev->reg.pcie.lock, flags);
+	spin_lock_irqsave((*&adev).reg.pcie.lock, flags);
 	WREG32(EVERGREEN_PIF_PHY1_INDEX, ((reg) & 0xffff));
 	WREG32(EVERGREEN_PIF_PHY1_DATA, (v));
-	spin_unlock_irqrestore(&adev->reg.pcie.lock, flags);
+	spin_unlock_irqrestore((*&adev).reg.pcie.lock, flags);
 }
-static void si_program_aspm(struct amdgpu_device *adev)
+static void si_program_aspm(amdgpu_device *adev)
 {
-	u32 data, orig;
+	data: u32, orig;
 	bool disable_l0s = false, disable_l1 = false, disable_plloff_in_l1 = false;
 	bool disable_clkreq = false;
 
@@ -2477,7 +2477,7 @@ static void si_program_aspm(struct amdgpu_device *adev)
 			if (orig != data)
 				si_pif_phy1_wreg(adev,ixPB1_PIF_PWRDOWN_1, data);
 
-			if ((adev->asic_type != CHIP_OLAND) && (adev->asic_type != CHIP_HAINAN)) {
+			if (((*adev).asic_type != CHIP_OLAND) && ((*adev).asic_type != CHIP_HAINAN)) {
 				orig = data = si_pif_phy0_rreg(adev,ixPB0_PIF_PWRDOWN_0);
 				data &= ~PB0_PIF_PWRDOWN_0__PLL_RAMP_UP_TIME_0_MASK;
 				if (orig != data)
@@ -2526,21 +2526,21 @@ static void si_program_aspm(struct amdgpu_device *adev)
 
 			orig = data = si_pif_phy0_rreg(adev,ixPB0_PIF_CNTL);
 			data &= ~PB0_PIF_CNTL__LS2_EXIT_TIME_MASK;
-			if ((adev->asic_type == CHIP_OLAND) || (adev->asic_type == CHIP_HAINAN))
+			if (((*adev).asic_type == CHIP_OLAND) || ((*adev).asic_type == CHIP_HAINAN))
 				data |= (5 << PB0_PIF_CNTL__LS2_EXIT_TIME__SHIFT);
 			if (orig != data)
 				si_pif_phy0_wreg(adev,ixPB0_PIF_CNTL, data);
 
 			orig = data = si_pif_phy1_rreg(adev,ixPB1_PIF_CNTL);
 			data &= ~PB1_PIF_CNTL__LS2_EXIT_TIME_MASK;
-			if ((adev->asic_type == CHIP_OLAND) || (adev->asic_type == CHIP_HAINAN))
+			if (((*adev).asic_type == CHIP_OLAND) || ((*adev).asic_type == CHIP_HAINAN))
 				data |= (5 << PB1_PIF_CNTL__LS2_EXIT_TIME__SHIFT);
 			if (orig != data)
 				si_pif_phy1_wreg(adev,ixPB1_PIF_CNTL, data);
 
 			if (!disable_clkreq &&
-			    !pci_is_root_bus(adev->pdev->bus)) {
-				struct pci_dev *root = adev->pdev->bus->self;
+			    !pci_is_root_bus((*(*adev).pdev).bus)) {
+				struct pci_dev *root = (*(*(*adev).pdev).bus).self;
 				u32 lnkcap;
 
 				clk_req_support = false;
@@ -2615,20 +2615,20 @@ static void si_program_aspm(struct amdgpu_device *adev)
 	}
 }
 
-static void si_fix_pci_max_read_req_size(struct amdgpu_device *adev)
+static void si_fix_pci_max_read_req_size(amdgpu_device *adev)
 {
 	int readrq;
 	u16 v;
 
-	readrq = pcie_get_readrq(adev->pdev);
+	readrq = pcie_get_readrq((*adev).pdev);
 	v = ffs(readrq) - 8;
 	if ((v == 0) || (v == 6) || (v == 7))
-		pcie_set_readrq(adev->pdev, 512);
+		pcie_set_readrq((*adev).pdev, 512);
 }
 
-static int si_common_hw_init(struct amdgpu_ip_block *ip_block)
+static int si_common_hw_init(amdgpu_ip_block *ip_block)
 {
-	struct amdgpu_device *adev = ip_block->adev;
+	struct amdgpu_device *adev = (*ip_block).adev;
 
 	si_fix_pci_max_read_req_size(adev);
 	si_init_golden_registers(adev);
@@ -2638,56 +2638,56 @@ static int si_common_hw_init(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-static int si_common_hw_fini(struct amdgpu_ip_block *ip_block)
+static int si_common_hw_fini(amdgpu_ip_block *ip_block)
 {
 	return 0;
 }
 
-static int si_common_resume(struct amdgpu_ip_block *ip_block)
+static int si_common_resume(amdgpu_ip_block *ip_block)
 {
 	return si_common_hw_init(ip_block);
 }
 
-static bool si_common_is_idle(struct amdgpu_ip_block *ip_block)
+static bool si_common_is_idle(amdgpu_ip_block *ip_block)
 {
 	return true;
 }
 
-static int si_common_set_clockgating_state(struct amdgpu_ip_block *ip_block,
-					    enum amd_clockgating_state state)
+static int si_common_set_clockgating_state(amdgpu_ip_block *ip_block,
+					    amd_clockgating_state state)
 {
 	return 0;
 }
 
-static int si_common_set_powergating_state(struct amdgpu_ip_block *ip_block,
-					    enum amd_powergating_state state)
+static int si_common_set_powergating_state(amdgpu_ip_block *ip_block,
+					    amd_powergating_state state)
 {
 	return 0;
 }
 
 static const struct amd_ip_funcs si_common_ip_funcs = {
-	.name = "si_common",
-	.early_init = si_common_early_init,
-	.hw_init = si_common_hw_init,
-	.hw_fini = si_common_hw_fini,
-	.resume = si_common_resume,
-	.is_idle = si_common_is_idle,
-	.set_clockgating_state = si_common_set_clockgating_state,
-	.set_powergating_state = si_common_set_powergating_state,
+	name: "si_common",
+	early_init: si_common_early_init,
+	hw_init: si_common_hw_init,
+	hw_fini: si_common_hw_fini,
+	resume: si_common_resume,
+	is_idle: si_common_is_idle,
+	set_clockgating_state: si_common_set_clockgating_state,
+	set_powergating_state: si_common_set_powergating_state,
 };
 
 static const struct amdgpu_ip_block_version si_common_ip_block =
 {
-	.type = AMD_IP_BLOCK_TYPE_COMMON,
-	.major = 1,
-	.minor = 0,
-	.rev = 0,
-	.funcs = &si_common_ip_funcs,
+	type: AMD_IP_BLOCK_TYPE_COMMON,
+	major: 1,
+	minor: 0,
+	rev: 0,
+	funcs: &si_common_ip_funcs,
 };
 
-int si_set_ip_blocks(struct amdgpu_device *adev)
+int si_set_ip_blocks(amdgpu_device *adev)
 {
-	switch (adev->asic_type) {
+	switch ((*adev).asic_type) {
 	case CHIP_VERDE:
 	case CHIP_TAHITI:
 	case CHIP_PITCAIRN:
@@ -2697,7 +2697,7 @@ int si_set_ip_blocks(struct amdgpu_device *adev)
 		amdgpu_device_ip_block_add(adev, &gfx_v6_0_ip_block);
 		amdgpu_device_ip_block_add(adev, &si_dma_ip_block);
 		amdgpu_device_ip_block_add(adev, &si_smu_ip_block);
-		if (adev->enable_virtual_display)
+		if ((*adev).enable_virtual_display)
 			amdgpu_device_ip_block_add(adev, &amdgpu_vkms_ip_block);
 #if defined(CONFIG_DRM_AMD_DC) && defined(CONFIG_DRM_AMD_DC_SI)
 		else if (amdgpu_device_has_dc_support(adev))
@@ -2715,7 +2715,7 @@ int si_set_ip_blocks(struct amdgpu_device *adev)
 		amdgpu_device_ip_block_add(adev, &gfx_v6_0_ip_block);
 		amdgpu_device_ip_block_add(adev, &si_dma_ip_block);
 		amdgpu_device_ip_block_add(adev, &si_smu_ip_block);
-		if (adev->enable_virtual_display)
+		if ((*adev).enable_virtual_display)
 			amdgpu_device_ip_block_add(adev, &amdgpu_vkms_ip_block);
 #if defined(CONFIG_DRM_AMD_DC) && defined(CONFIG_DRM_AMD_DC_SI)
 		else if (amdgpu_device_has_dc_support(adev))
@@ -2732,7 +2732,7 @@ int si_set_ip_blocks(struct amdgpu_device *adev)
 		amdgpu_device_ip_block_add(adev, &gfx_v6_0_ip_block);
 		amdgpu_device_ip_block_add(adev, &si_dma_ip_block);
 		amdgpu_device_ip_block_add(adev, &si_smu_ip_block);
-		if (adev->enable_virtual_display)
+		if ((*adev).enable_virtual_display)
 			amdgpu_device_ip_block_add(adev, &amdgpu_vkms_ip_block);
 		break;
 	default:

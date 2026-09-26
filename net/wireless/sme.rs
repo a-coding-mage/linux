@@ -9,7 +9,7 @@ pub type u32 = core::primitive::u32;
 pub type usize_t = usize;
 
 extern "C" {
-void cfg80211_conn_work(struct work_struct *work)
+void cfg80211_conn_work(work_struct *work)
 {
 }
 
@@ -67,7 +67,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	bool auto_auth, prev_bssid_valid;
  * };
  * 
- * static void cfg80211_sme_free(struct wireless_dev *wdev)
+ * static void cfg80211_sme_free(wireless_dev *wdev)
  * {
  * 	if (!wdev->conn)
  * 		return;
@@ -77,7 +77,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	wdev->conn = NULL;
  * }
  * 
- * static int cfg80211_conn_scan(struct wireless_dev *wdev)
+ * static int cfg80211_conn_scan(wireless_dev *wdev)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_scan_request_int *request;
@@ -159,7 +159,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return err;
  * }
  * 
- * static int cfg80211_conn_do_work(struct wireless_dev *wdev,
+ * static int cfg80211_conn_do_work(wireless_dev *wdev,
  * 				 enum nl80211_timeout_reason *treason)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
@@ -259,10 +259,10 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	}
  * }
  * 
- * void cfg80211_conn_work(struct work_struct *work)
+ * void cfg80211_conn_work(work_struct *work)
  * {
  * 	struct cfg80211_registered_device *rdev =
- * 		container_of(work, struct cfg80211_registered_device, conn_work);
+ * 		container_of(work, cfg80211_registered_device, conn_work);
  * 	struct wireless_dev *wdev;
  * 	u8 bssid_buf[ETH_ALEN], *bssid = NULL;
  * 	enum nl80211_timeout_reason treason;
@@ -297,7 +297,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	}
  * }
  * 
- * static void cfg80211_step_auth_next(struct cfg80211_conn *conn,
+ * static void cfg80211_step_auth_next(cfg80211_conn *conn,
  * 				    struct cfg80211_bss *bss)
  * {
  * 	memcpy(conn->bssid, bss->bssid, ETH_ALEN);
@@ -307,7 +307,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * }
  * 
  * /* Returned bss is reference counted and must be cleaned up appropriately. */
- * static struct cfg80211_bss *cfg80211_get_conn_bss(struct wireless_dev *wdev)
+ * static struct cfg80211_bss *cfg80211_get_conn_bss(wireless_dev *wdev)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_bss *bss;
@@ -329,7 +329,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return bss;
  * }
  * 
- * void cfg80211_sme_scan_done(struct net_device *dev)
+ * void cfg80211_sme_scan_done(net_device *dev)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
@@ -351,11 +351,11 @@ void cfg80211_conn_work(struct work_struct *work)
  * 		schedule_work(&rdev->conn_work);
  * }
  * 
- * void cfg80211_sme_rx_auth(struct wireless_dev *wdev, const u8 *buf, size_t len)
+ * void cfg80211_sme_rx_auth(wireless_dev *wdev, const u8 *buf, size_t len)
  * {
  * 	struct wiphy *wiphy = wdev->wiphy;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
- * 	struct ieee80211_mgmt *mgmt = (struct ieee80211_mgmt *)buf;
+ * 	struct ieee80211_mgmt *mgmt = (ieee80211_mgmt *)buf;
  * 	u16 status_code = le16_to_cpu(mgmt->u.auth.status_code);
  * 
  * 	lockdep_assert_wiphy(wdev->wiphy);
@@ -402,7 +402,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	}
  * }
  * 
- * bool cfg80211_sme_rx_assoc_resp(struct wireless_dev *wdev, u16 status)
+ * bool cfg80211_sme_rx_assoc_resp(wireless_dev *wdev, u16 status)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 
@@ -431,12 +431,12 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return false;
  * }
  * 
- * void cfg80211_sme_deauth(struct wireless_dev *wdev)
+ * void cfg80211_sme_deauth(wireless_dev *wdev)
  * {
  * 	cfg80211_sme_free(wdev);
  * }
  * 
- * void cfg80211_sme_auth_timeout(struct wireless_dev *wdev)
+ * void cfg80211_sme_auth_timeout(wireless_dev *wdev)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 
@@ -447,7 +447,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	schedule_work(&rdev->conn_work);
  * }
  * 
- * void cfg80211_sme_disassoc(struct wireless_dev *wdev)
+ * void cfg80211_sme_disassoc(wireless_dev *wdev)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 
@@ -458,7 +458,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	schedule_work(&rdev->conn_work);
  * }
  * 
- * void cfg80211_sme_assoc_timeout(struct wireless_dev *wdev)
+ * void cfg80211_sme_assoc_timeout(wireless_dev *wdev)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 
@@ -469,7 +469,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	schedule_work(&rdev->conn_work);
  * }
  * 
- * void cfg80211_sme_abandon_assoc(struct wireless_dev *wdev)
+ * void cfg80211_sme_abandon_assoc(wireless_dev *wdev)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 
@@ -480,9 +480,9 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	schedule_work(&rdev->conn_work);
  * }
  * 
- * static void cfg80211_wdev_release_bsses(struct wireless_dev *wdev)
+ * static void cfg80211_wdev_release_bsses(wireless_dev *wdev)
  * {
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 
  * 	for_each_valid_link(wdev, link) {
  * 		if (!wdev->links[link].client.current_bss)
@@ -494,9 +494,9 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	}
  * }
  * 
- * void cfg80211_wdev_release_link_bsses(struct wireless_dev *wdev, u16 link_mask)
+ * void cfg80211_wdev_release_link_bsses(wireless_dev *wdev, u16 link_mask)
  * {
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 
  * 	for_each_valid_link(wdev, link) {
  * 		if (!wdev->links[link].client.current_bss ||
@@ -509,7 +509,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	}
  * }
  * 
- * static int cfg80211_sme_get_conn_ies(struct wireless_dev *wdev,
+ * static int cfg80211_sme_get_conn_ies(wireless_dev *wdev,
  * 				     const u8 *ies, size_t ies_len,
  * 				     const u8 **out_ies, size_t *out_ies_len)
  * {
@@ -565,7 +565,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return 0;
  * }
  * 
- * static int cfg80211_sme_connect(struct wireless_dev *wdev,
+ * static int cfg80211_sme_connect(wireless_dev *wdev,
  * 				struct cfg80211_connect_params *connect,
  * 				const u8 *prev_bssid)
  * {
@@ -661,7 +661,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return err;
  * }
  * 
- * static int cfg80211_sme_disconnect(struct wireless_dev *wdev, u16 reason)
+ * static int cfg80211_sme_disconnect(wireless_dev *wdev, u16 reason)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	int err;
@@ -718,7 +718,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return is_all_idle;
  * }
  * 
- * static void disconnect_work(struct work_struct *work)
+ * static void disconnect_work(work_struct *work)
  * {
  * 	rtnl_lock();
  * 	if (cfg80211_is_all_idle())
@@ -729,10 +729,10 @@ void cfg80211_conn_work(struct work_struct *work)
  * DECLARE_WORK(cfg80211_disconnect_work, disconnect_work);
  * 
  * static void
- * cfg80211_connect_result_release_bsses(struct wireless_dev *wdev,
+ * cfg80211_connect_result_release_bsses(wireless_dev *wdev,
  * 				      struct cfg80211_connect_resp_params *cr)
  * {
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 
  * 	for_each_valid_link(cr, link) {
  * 		if (!cr->links[link].bss)
@@ -748,7 +748,7 @@ void cfg80211_conn_work(struct work_struct *work)
  *  */
  * 
  * /* This method must consume bss one way or another */
- * void __cfg80211_connect_result(struct net_device *dev,
+ * void __cfg80211_connect_result(net_device *dev,
  * 			       struct cfg80211_connect_resp_params *cr,
  * 			       bool wextev)
  * {
@@ -760,7 +760,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * #ifdef CONFIG_CFG80211_WEXT
  * 	union iwreq_data wrqu;
  * #endif
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 	const u8 *connected_addr;
  * 	bool bss_not_found = false;
  * 
@@ -938,7 +938,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 		cfg80211_put_bss(wdev->wiphy, cr->links[link].bss);
  * }
  * 
- * static void cfg80211_update_link_bss(struct wireless_dev *wdev,
+ * static void cfg80211_update_link_bss(wireless_dev *wdev,
  * 				     struct cfg80211_bss **bss)
  * {
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
@@ -981,17 +981,17 @@ void cfg80211_conn_work(struct work_struct *work)
  * }
  * 
  * /* Consumes bss object(s) one way or another */
- * void cfg80211_connect_done(struct net_device *dev,
+ * void cfg80211_connect_done(net_device *dev,
  * 			   struct cfg80211_connect_resp_params *params,
  * 			   gfp_t gfp)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	unsigned long flags;
+ * 	core::ffi::c_ulong flags;
  * 	u8 *next;
  * 	size_t link_info_size = 0;
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 
  * 	for_each_valid_link(params, link) {
  * 		cfg80211_update_link_bss(wdev, &params->links[link].bss);
@@ -1092,13 +1092,13 @@ void cfg80211_conn_work(struct work_struct *work)
  * EXPORT_SYMBOL(cfg80211_connect_done);
  * 
  * /* Consumes bss object one way or another */
- * void __cfg80211_roamed(struct wireless_dev *wdev,
+ * void __cfg80211_roamed(wireless_dev *wdev,
  * 		       struct cfg80211_roam_info *info)
  * {
  * #ifdef CONFIG_CFG80211_WEXT
  * 	union iwreq_data wrqu;
  * #endif
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 	const u8 *connected_addr;
  * 
  * 	lockdep_assert_wiphy(wdev->wiphy);
@@ -1180,15 +1180,15 @@ void cfg80211_conn_work(struct work_struct *work)
  * }
  * 
  * /* Consumes info->links.bss object(s) one way or another */
- * void cfg80211_roamed(struct net_device *dev, struct cfg80211_roam_info *info,
+ * void cfg80211_roamed(net_device *dev, cfg80211_roam_info *info,
  * 		     gfp_t gfp)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	unsigned long flags;
+ * 	core::ffi::c_ulong flags;
  * 	u8 *next;
- * 	unsigned int link;
+ * 	core::ffi::c_uint link;
  * 	size_t link_info_size = 0;
  * 	bool bss_not_found = false;
  * 
@@ -1302,7 +1302,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * }
  * EXPORT_SYMBOL(cfg80211_roamed);
  * 
- * void __cfg80211_port_authorized(struct wireless_dev *wdev, const u8 *peer_addr,
+ * void __cfg80211_port_authorized(wireless_dev *wdev, const u8 *peer_addr,
  * 					const u8 *td_bitmap, u8 td_bitmap_len)
  * {
  * 	lockdep_assert_wiphy(wdev->wiphy);
@@ -1324,13 +1324,13 @@ void cfg80211_conn_work(struct work_struct *work)
  * 				     peer_addr, td_bitmap, td_bitmap_len);
  * }
  * 
- * void cfg80211_port_authorized(struct net_device *dev, const u8 *peer_addr,
+ * void cfg80211_port_authorized(net_device *dev, const u8 *peer_addr,
  * 			      const u8 *td_bitmap, u8 td_bitmap_len, gfp_t gfp)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	unsigned long flags;
+ * 	core::ffi::c_ulong flags;
  * 
  * 	if (WARN_ON(!peer_addr))
  * 		return;
@@ -1356,7 +1356,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * }
  * EXPORT_SYMBOL(cfg80211_port_authorized);
  * 
- * void __cfg80211_disconnected(struct net_device *dev, const u8 *ie,
+ * void __cfg80211_disconnected(net_device *dev, const u8 *ie,
  * 			     size_t ie_len, u16 reason, bool from_ap)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
@@ -1420,14 +1420,14 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	cfg80211_schedule_channels_check(wdev);
  * }
  * 
- * void cfg80211_disconnected(struct net_device *dev, u16 reason,
+ * void cfg80211_disconnected(net_device *dev, u16 reason,
  * 			   const u8 *ie, size_t ie_len,
  * 			   bool locally_generated, gfp_t gfp)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
  * 	struct cfg80211_event *ev;
- * 	unsigned long flags;
+ * 	core::ffi::c_ulong flags;
  * 
  * 	ev = kzalloc(sizeof(*ev) + ie_len, gfp);
  * 	if (!ev)
@@ -1450,7 +1450,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * /*
  *  * API calls for nl80211/wext compatibility code
  *  */
- * int cfg80211_connect(struct cfg80211_registered_device *rdev,
+ * int cfg80211_connect(cfg80211_registered_device *rdev,
  * 		     struct net_device *dev,
  * 		     struct cfg80211_connect_params *connect,
  * 		     struct cfg80211_cached_keys *connkeys,
@@ -1559,7 +1559,7 @@ void cfg80211_conn_work(struct work_struct *work)
  * 	return 0;
  * }
  * 
- * int cfg80211_disconnect(struct cfg80211_registered_device *rdev,
+ * int cfg80211_disconnect(cfg80211_registered_device *rdev,
  * 			struct net_device *dev, u16 reason, bool wextev)
  * {
  * 	struct wireless_dev *wdev = dev->ieee80211_ptr;
@@ -1594,10 +1594,10 @@ void cfg80211_conn_work(struct work_struct *work)
  *  * Used to clean up after the connection / connection attempt owner socket
  *  * disconnects
  *  */
- * void cfg80211_autodisconnect_wk(struct wiphy *wiphy, struct wiphy_work *work)
+ * void cfg80211_autodisconnect_wk(wiphy *wiphy, wiphy_work *work)
  * {
  * 	struct wireless_dev *wdev =
- * 		container_of(work, struct wireless_dev, disconnect_wk);
+ * 		container_of(work, wireless_dev, disconnect_wk);
  * 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wiphy);
  * 
  * 	if (wdev->conn_owner_nlportid) {

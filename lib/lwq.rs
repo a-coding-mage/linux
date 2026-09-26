@@ -105,7 +105,7 @@ pub unsafe extern "C" fn lwq_dequeue_all(q: *mut lwq) -> *mut llist_node {
 /* EXPORT_SYMBOL_GPL(lwq_dequeue_all); */
 
 /* CONFIG_LWQ_TEST is a build-time condition from the Linux kernel environment. */
-#[cfg(feature = "CONFIG_LWQ_TEST")]
+#[cfg(CONFIG_LWQ_TEST)]
 mod lwq_test {
     use super::*;
 

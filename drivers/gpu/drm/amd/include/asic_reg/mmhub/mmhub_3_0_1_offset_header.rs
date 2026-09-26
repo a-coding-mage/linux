@@ -20,7 +20,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-pub const _mmhub_3_0_1_OFFSET_HEADER: u32 = ;
 
 
 

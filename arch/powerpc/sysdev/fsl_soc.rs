@@ -59,7 +59,7 @@ pub unsafe fn fsl_get_sys_freq() -> u32 {
 // EXPORT_SYMBOL(fsl_get_sys_freq);
 
 // CONFIG_CPM || CONFIG_QUICC_ENGINE
-#[cfg(any(feature = "CONFIG_CPM", feature = "CONFIG_QUICC_ENGINE"))]
+#[cfg(any(CONFIG_CPM, CONFIG_QUICC_ENGINE))]
 pub unsafe fn get_brgfreq() -> u32 {
     static mut brgfreq: u32 = (-1i32) as u32;
     let mut node: *mut device_node;
@@ -99,7 +99,7 @@ pub unsafe fn get_brgfreq() -> u32 {
 
 // EXPORT_SYMBOL(get_brgfreq);
 
-#[cfg(any(feature = "CONFIG_CPM", feature = "CONFIG_QUICC_ENGINE"))]
+#[cfg(any(CONFIG_CPM, CONFIG_QUICC_ENGINE))]
 pub unsafe fn get_baudrate() -> u32 {
     static mut fs_baudrate: u32 = (-1i32) as u32;
     let node: *mut device_node;
@@ -120,10 +120,10 @@ pub unsafe fn get_baudrate() -> u32 {
 // EXPORT_SYMBOL(get_baudrate);
 
 // CONFIG_FSL_SOC_BOOKE || CONFIG_PPC_86xx
-#[cfg(any(feature = "CONFIG_FSL_SOC_BOOKE", feature = "CONFIG_PPC_86xx"))]
+#[cfg(any(CONFIG_FSL_SOC_BOOKE, CONFIG_PPC_86xx))]
 static mut rstcr: *mut __be32 = core::ptr::null_mut();
 
-#[cfg(any(feature = "CONFIG_FSL_SOC_BOOKE", feature = "CONFIG_PPC_86xx"))]
+#[cfg(any(CONFIG_FSL_SOC_BOOKE, CONFIG_PPC_86xx))]
 unsafe fn fsl_rstcr_restart(_this: *mut notifier_block, _mode: c_ulong, _cmd: *mut c_void) -> c_int {
     local_irq_disable();
     /* set reset control register */
@@ -131,7 +131,7 @@ unsafe fn fsl_rstcr_restart(_this: *mut notifier_block, _mode: c_ulong, _cmd: *m
     NOTIFY_DONE
 }
 
-#[cfg(any(feature = "CONFIG_FSL_SOC_BOOKE", feature = "CONFIG_PPC_86xx"))]
+#[cfg(any(CONFIG_FSL_SOC_BOOKE, CONFIG_PPC_86xx))]
 unsafe fn setup_rstcr() -> c_int {
     let mut np: *mut device_node = core::ptr::null_mut();
     static mut restart_handler: notifier_block = notifier_block {
@@ -159,19 +159,19 @@ unsafe fn setup_rstcr() -> c_int {
 // arch_initcall(setup_rstcr);
 
 // CONFIG_FB_FSL_DIU || CONFIG_FB_FSL_DIU_MODULE
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 pub static mut diu_ops: platform_diu_data_ops = platform_diu_data_ops {};
 // EXPORT_SYMBOL(diu_ops);
 
 // CONFIG_EPAPR_PARAVIRT
-#[cfg(feature = "CONFIG_EPAPR_PARAVIRT")]
+#[cfg(CONFIG_EPAPR_PARAVIRT)]
 pub unsafe fn fsl_hv_restart(_cmd: *mut c_char) -> ! {
     pr_info(c"hv restart\n".as_ptr());
     fh_partition_restart(-1);
     loop {}
 }
 
-#[cfg(feature = "CONFIG_EPAPR_PARAVIRT")]
+#[cfg(CONFIG_EPAPR_PARAVIRT)]
 pub unsafe fn fsl_hv_halt() -> ! {
     pr_info(c"hv exit\n".as_ptr());
     fh_partition_stop(-1);

@@ -48,9 +48,9 @@ unsafe fn release_system_zone(system_blks: *mut ext4_system_blocks) {
     let mut entry: *mut ext4_system_zone;
     let mut n: *mut ext4_system_zone;
 
-    rbtree_postorder_for_each_entry_safe!(entry, n, &mut (*system_blks).root, node) {
+    rbtree_postorder_for_each_entry_safe!(entry, n, &mut (*system_blks).root, node, {
         kmem_cache_free(ext4_system_zone_cachep, entry as *mut c_void);
-    }
+    });
 }
 
 /*
@@ -126,19 +126,19 @@ unsafe fn debug_print_tree(sbi: *mut ext4_sb_info) {
     let system_blks: *mut ext4_system_blocks;
     let mut first = 1;
 
-    printk!(KERN_INFO "System zones: ");
+    printk!(c"\x016System zones: ".as_ptr());
     rcu_read_lock();
     system_blks = rcu_dereference!((*sbi).s_system_blks);
     node = rb_first(&mut (*system_blks).root);
     while !node.is_null() {
         entry = rb_entry!(node, ext4_system_zone, node);
-        printk!(KERN_CONT "{}{}-{}", if first != 0 { "" } else { ", " }, (*entry).start_blk,
+        printk!(c"\x01c{}{}-{}".as_ptr(), if first != 0 { "" } else { ", " }, (*entry).start_blk,
                 (*entry).start_blk + (*entry).count as ext4_fsblk_t - 1);
         first = 0;
         node = rb_next(node);
     }
     rcu_read_unlock();
-    printk!(KERN_CONT "\n");
+    printk!(c"\x01c\n".as_ptr());
 }
 
 unsafe fn ext4_protect_reserved_inode(

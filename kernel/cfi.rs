@@ -7,7 +7,7 @@
 
 // Linux dependencies supplied by other files.
 
-pub static mut cfi_warn: bool = cfg!(feature = "CONFIG_CFI_PERMISSIVE");
+pub static mut cfi_warn: bool = cfg!(CONFIG_CFI_PERMISSIVE);
 
 pub unsafe fn report_cfi_failure(
     regs: *mut pt_regs,
@@ -59,12 +59,12 @@ extern "C" {
 // DEFINE_CFI_TYPE(cfi_bpf_hash, __bpf_prog_runX);
 // DEFINE_CFI_TYPE(cfi_bpf_subprog_hash, __bpf_callback_fn);
 
-#[cfg(feature = "CONFIG_ARCH_USES_CFI_TRAPS")]
+#[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
 unsafe fn trap_address(p: *mut i32) -> libc::c_ulong {
     (p as libc::c_long).wrapping_add(*p as libc::c_long) as libc::c_ulong
 }
 
-#[cfg(feature = "CONFIG_ARCH_USES_CFI_TRAPS")]
+#[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
 unsafe fn is_trap(
     addr: libc::c_ulong,
     mut start: *mut i32,
@@ -79,7 +79,7 @@ unsafe fn is_trap(
     false
 }
 
-#[cfg(all(feature = "CONFIG_ARCH_USES_CFI_TRAPS", feature = "CONFIG_MODULES"))]
+#[cfg(all(CONFIG_ARCH_USES_CFI_TRAPS, CONFIG_MODULES))]
 pub unsafe fn module_cfi_finalize(
     hdr: *const Elf_Ehdr,
     sechdrs: *const Elf_Shdr,
@@ -107,7 +107,7 @@ pub unsafe fn module_cfi_finalize(
     }
 }
 
-#[cfg(all(feature = "CONFIG_ARCH_USES_CFI_TRAPS", feature = "CONFIG_MODULES"))]
+#[cfg(all(CONFIG_ARCH_USES_CFI_TRAPS, CONFIG_MODULES))]
 unsafe fn is_module_cfi_trap(addr: libc::c_ulong) -> bool {
     let mod_ = __module_address(addr);
     if !mod_.is_null() {
@@ -116,18 +116,18 @@ unsafe fn is_module_cfi_trap(addr: libc::c_ulong) -> bool {
     false
 }
 
-#[cfg(all(feature = "CONFIG_ARCH_USES_CFI_TRAPS", not(feature = "CONFIG_MODULES")))]
+#[cfg(all(CONFIG_ARCH_USES_CFI_TRAPS, not(CONFIG_MODULES)))]
 unsafe fn is_module_cfi_trap(_addr: libc::c_ulong) -> bool {
     false
 }
 
-#[cfg(feature = "CONFIG_ARCH_USES_CFI_TRAPS")]
+#[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
 extern "C" {
     static mut __start___kcfi_traps: i32;
     static mut __stop___kcfi_traps: i32;
 }
 
-#[cfg(feature = "CONFIG_ARCH_USES_CFI_TRAPS")]
+#[cfg(CONFIG_ARCH_USES_CFI_TRAPS)]
 pub unsafe fn is_cfi_trap(addr: libc::c_ulong) -> bool {
     if is_trap(
         addr,

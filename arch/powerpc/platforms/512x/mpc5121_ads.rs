@@ -46,7 +46,7 @@ extern "C" {
 
 // CONFIG_PCI controls this declaration and the PCI setup body in the kernel
 // build, as in the original preprocessor conditional.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     fn for_each_compatible_node(
         np: *mut *mut DeviceNode,
@@ -67,7 +67,7 @@ unsafe extern "C" fn mpc5121_ads_setup_arch() {
 }
 
 unsafe extern "C" fn mpc5121_ads_setup_pci() {
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     {
         let mut np: *mut DeviceNode = core::ptr::null_mut();
 

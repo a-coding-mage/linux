@@ -10,7 +10,7 @@
 // Dependency declarations and preprocessor-derived macros are supplied by
 // ieee754sp.h and the surrounding translation unit.
 
-pub unsafe fn ieee754sp_tlong(mut x: union ieee754sp) -> i64 {
+pub unsafe fn ieee754sp_tlong(mut x: ieee754sp) -> i64 {
     let mut residue: u32;
     let mut round: i32;
     let mut sticky: i32;

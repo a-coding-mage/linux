@@ -148,9 +148,9 @@ pub unsafe fn font_data_export(fd: *mut FontData, font: *mut ConsoleFont, vpitch
 #[repr(C)]
 pub struct ConsoleFont { pub width: u32, pub height: u32, pub charcount: u32, pub data: *mut u8 }
 
-#[cfg(feature = "CONFIG_FONT_8x8")] static FONTS_8X8: *const FontDesc = unsafe { &font_vga_8x8 };
+#[cfg(CONFIG_FONT_8x8)] static FONTS_8X8: *const FontDesc = unsafe { &font_vga_8x8 };
 static FONTS: &[*const FontDesc] = &[
-    #[cfg(feature = "CONFIG_FONT_8x8")] FONTS_8X8,
+    #[cfg(CONFIG_FONT_8x8)] FONTS_8X8,
 ];
 
 pub unsafe fn find_font(name: *const c_char) -> *const FontDesc {

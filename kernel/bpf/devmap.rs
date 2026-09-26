@@ -20,20 +20,20 @@ extern "C" {
     fn synchronize_rcu(); fn rcu_barrier(); fn bpf_prog_put(_: *mut bpf_prog); fn dev_put(_: *mut net_device); fn kfree(_: *mut core::ffi::c_void);
     fn rcu_dereference_raw<T>(p:T)->T; fn rcu_dereference_check<T>(p:T,_:bool)->T;
     fn call_rcu(_: *mut rcu_head, f: unsafe extern "C" fn(*mut rcu_head));
-    fn bpf_prog_run_xdp(_: *mut bpf_prog, _: *mut xdp_buff)->u32; fn bpf_warn_invalid_xdp_action(_: *mut core::ffi::c_void,*mut bpf_prog,u32);
-    fn trace_xdp_exception(*mut net_device,*mut bpf_prog,u32); fn xdp_convert_frame_to_buff(*mut xdp_frame,*mut xdp_buff);
-    fn xdp_update_frame_from_buff(*mut xdp_buff,*mut xdp_frame)->i32; fn xdp_return_frame_rx_napi(*mut xdp_frame);
-    fn xdp_ok_fwd_dev(*mut net_device,u32)->i32; fn xdp_get_frame_len(*mut xdp_frame)->u32; fn xdp_frame_has_frags(*mut xdp_frame)->bool;
-    fn xdpf_clone(*mut xdp_frame)->*mut xdp_frame; fn bpf_net_ctx_get_dev_flush_list()->*mut list_head;
+    fn bpf_prog_run_xdp(_: *mut bpf_prog, _: *mut xdp_buff)->u32; fn bpf_warn_invalid_xdp_action(_: *mut core::ffi::c_void,_: *mut bpf_prog,_: u32);
+    fn trace_xdp_exception(_: *mut net_device,_: *mut bpf_prog,_: u32); fn xdp_convert_frame_to_buff(_: *mut xdp_frame,_: *mut xdp_buff);
+    fn xdp_update_frame_from_buff(_: *mut xdp_buff,_: *mut xdp_frame)->i32; fn xdp_return_frame_rx_napi(_: *mut xdp_frame);
+    fn xdp_ok_fwd_dev(_: *mut net_device,_: u32)->i32; fn xdp_get_frame_len(_: *mut xdp_frame)->u32; fn xdp_frame_has_frags(_: *mut xdp_frame)->bool;
+    fn xdpf_clone(_: *mut xdp_frame)->*mut xdp_frame; fn bpf_net_ctx_get_dev_flush_list()->*mut list_head;
     fn local_lock_nested_bh(_: *mut local_lock_t); fn local_unlock_nested_bh(_: *mut local_lock_t); fn this_cpu_ptr<T>(_:*mut T)->*mut T;
-    fn prefetch<T>(_:*mut T); fn trace_xdp_devmap_xmit(*mut net_device,*mut net_device,i32,u32,i32);
-    fn __skb_pull(*mut sk_buff,u32); fn __skb_push(*mut sk_buff,u32); fn bpf_prog_run_generic_xdp(*mut sk_buff,*mut xdp_buff,*mut bpf_prog)->u32;
-    fn kfree_skb(*mut sk_buff); fn skb_cloned(*mut sk_buff)->bool; fn skb_copy(*mut sk_buff,u32)->*mut sk_buff; fn consume_skb(*mut sk_buff);
-    fn generic_xdp_tx(*mut sk_buff,*const bpf_prog); fn skb_is_nonlinear(*mut sk_buff)->bool; fn skb_clone(*mut sk_buff,u32)->*mut sk_buff;
-    fn netdev_for_each_upper_dev_rcu(*mut net_device,*mut *mut net_device,*mut *mut list_head)->bool;
-    fn dev_get_by_index(*mut net,u32)->*mut net_device; fn bpf_prog_get_type_dev(i32,u32,bool)->*mut bpf_prog;
-    fn bpf_prog_map_compatible(*mut bpf_map,*mut bpf_prog)->bool; fn bpf_map_kmalloc_node(*mut bpf_map,u64,u32,i32)->*mut core::ffi::c_void;
-    fn current_net()->*mut net; fn __bpf_xdp_redirect_map(*mut bpf_map,u64,u64,u64,unsafe extern "C" fn(*mut bpf_map,u32)->*mut core::ffi::c_void)->i64;
+    fn prefetch<T>(_:*mut T); fn trace_xdp_devmap_xmit(_: *mut net_device,_: *mut net_device,_: i32,_: u32,_: i32);
+    fn __skb_pull(_: *mut sk_buff,_: u32); fn __skb_push(_: *mut sk_buff,_: u32); fn bpf_prog_run_generic_xdp(_: *mut sk_buff,_: *mut xdp_buff,_: *mut bpf_prog)->u32;
+    fn kfree_skb(_: *mut sk_buff); fn skb_cloned(_: *mut sk_buff)->bool; fn skb_copy(_: *mut sk_buff,_: u32)->*mut sk_buff; fn consume_skb(_: *mut sk_buff);
+    fn generic_xdp_tx(_: *mut sk_buff,_: *const bpf_prog); fn skb_is_nonlinear(_: *mut sk_buff)->bool; fn skb_clone(_: *mut sk_buff,_: u32)->*mut sk_buff;
+    fn netdev_for_each_upper_dev_rcu(_: *mut net_device,_: *mut *mut net_device,_: *mut *mut list_head)->bool;
+    fn dev_get_by_index(_: *mut net,_: u32)->*mut net_device; fn bpf_prog_get_type_dev(_: i32,_: u32,_: bool)->*mut bpf_prog;
+    fn bpf_prog_map_compatible(_: *mut bpf_map,_: *mut bpf_prog)->bool; fn bpf_map_kmalloc_node(_: *mut bpf_map,_: u64,_: u32,_: i32)->*mut core::ffi::c_void;
+    fn current_net()->*mut net; fn __bpf_xdp_redirect_map(_: *mut bpf_map,_: u64,_: u64,_: u64,_: unsafe extern "C" fn(*mut bpf_map,u32)->*mut core::ffi::c_void)->i64;
 }
 
 /* External kernel ABI types. */

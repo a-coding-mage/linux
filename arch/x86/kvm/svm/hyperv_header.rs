@@ -6,7 +6,7 @@
 // Dependencies supplied by the surrounding translation unit:
 // asm/mshyperv.h, ../hyperv.h, and svm.h.
 
-#[cfg(feature = "CONFIG_KVM_HYPERV")]
+#[cfg(CONFIG_KVM_HYPERV)]
 #[inline]
 pub unsafe fn nested_svm_hv_update_vm_vp_ids(vcpu: *mut kvm_vcpu) {
     let svm: *mut vcpu_svm = to_svm(vcpu);
@@ -23,7 +23,7 @@ pub unsafe fn nested_svm_hv_update_vm_vp_ids(vcpu: *mut kvm_vcpu) {
     (*hv_vcpu).nested.vp_id = (*hve).hv_vp_id;
 }
 
-#[cfg(feature = "CONFIG_KVM_HYPERV")]
+#[cfg(CONFIG_KVM_HYPERV)]
 #[inline]
 pub unsafe fn nested_svm_l2_tlb_flush_enabled(vcpu: *mut kvm_vcpu) -> bool {
     let svm: *mut vcpu_svm = to_svm(vcpu);
@@ -42,7 +42,7 @@ pub unsafe fn nested_svm_l2_tlb_flush_enabled(vcpu: *mut kvm_vcpu) -> bool {
     (*hv_vcpu).vp_assist_page.nested_control.features.directhypercall
 }
 
-#[cfg(feature = "CONFIG_KVM_HYPERV")]
+#[cfg(CONFIG_KVM_HYPERV)]
 #[inline]
 pub unsafe fn nested_svm_is_l2_tlb_flush_hcall(vcpu: *mut kvm_vcpu) -> bool {
     guest_hv_cpuid_has_l2_tlb_flush(vcpu)
@@ -50,23 +50,23 @@ pub unsafe fn nested_svm_is_l2_tlb_flush_hcall(vcpu: *mut kvm_vcpu) -> bool {
         && kvm_hv_is_tlb_flush_hcall(vcpu)
 }
 
-#[cfg(feature = "CONFIG_KVM_HYPERV")]
+#[cfg(CONFIG_KVM_HYPERV)]
 unsafe extern "C" {
     pub fn svm_hv_inject_synthetic_vmexit_post_tlb_flush(vcpu: *mut kvm_vcpu);
 }
 
 // CONFIG_KVM_HYPERV disabled: retain the no-op and false inline definitions.
-#[cfg(not(feature = "CONFIG_KVM_HYPERV"))]
+#[cfg(not(CONFIG_KVM_HYPERV))]
 #[inline]
 pub unsafe fn nested_svm_hv_update_vm_vp_ids(_vcpu: *mut kvm_vcpu) {}
 
-#[cfg(not(feature = "CONFIG_KVM_HYPERV"))]
+#[cfg(not(CONFIG_KVM_HYPERV))]
 #[inline]
 pub unsafe fn nested_svm_is_l2_tlb_flush_hcall(_vcpu: *mut kvm_vcpu) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_KVM_HYPERV"))]
+#[cfg(not(CONFIG_KVM_HYPERV))]
 #[inline]
 pub unsafe fn svm_hv_inject_synthetic_vmexit_post_tlb_flush(_vcpu: *mut kvm_vcpu) {}
 

@@ -79,7 +79,7 @@ pub struct aspeed_clk_gate {
 #[macro_export]
 macro_rules! to_aspeed_clk_gate {
     ($hw:expr) => {
-        (($hw as *mut u8).sub(core::mem::offset_of!($crate::aspeed_clk_gate, hw))
+        (($hw as *mut u8).sub(core::mem::offset_of!($crate::aspeed_clk_gate, $hw))
             as *mut $crate::aspeed_clk_gate)
     };
 }

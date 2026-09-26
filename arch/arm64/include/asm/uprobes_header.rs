@@ -33,12 +33,12 @@ extern "C" {
 }
 
 // CONFIG_UPROBES conditionally selects the external single-step handler.
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 extern "C" {
     pub fn uprobe_single_step_handler(regs: *mut pt_regs, esr: c_ulong) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 #[inline]
 pub unsafe fn uprobe_single_step_handler(regs: *mut pt_regs, esr: c_ulong) -> c_int {
     let _ = (regs, esr);

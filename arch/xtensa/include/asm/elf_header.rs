@@ -108,24 +108,24 @@ pub const ELF_PLATFORM: *const core::ffi::c_char = core::ptr::null();
 
 macro_rules! ELF_PLAT_INIT {
     ($r:expr, $load_addr:expr) => {{
-        let r = $r;
-        r.areg[0] = 0;
-        r.areg[2] = 0; r.areg[3] = 0;
-        r.areg[4] = 0; r.areg[5] = 0;
-        r.areg[6] = 0; r.areg[7] = 0;
-        r.areg[8] = 0; r.areg[9] = 0;
-        r.areg[10] = 0; r.areg[11] = 0;
-        r.areg[12] = 0; r.areg[13] = 0;
-        r.areg[14] = 0; r.areg[15] = 0;
+        let $r = $r;
+        $r.areg[0] = 0;
+        $r.areg[2] = 0; $r.areg[3] = 0;
+        $r.areg[4] = 0; $r.areg[5] = 0;
+        $r.areg[6] = 0; $r.areg[7] = 0;
+        $r.areg[8] = 0; $r.areg[9] = 0;
+        $r.areg[10] = 0; $r.areg[11] = 0;
+        $r.areg[12] = 0; $r.areg[13] = 0;
+        $r.areg[14] = 0; $r.areg[15] = 0;
     }};
 }
 
 macro_rules! ELF_FDPIC_PLAT_INIT {
     ($r:expr, $exec_map_addr:expr, $interp_map_addr:expr, $dynamic_addr:expr) => {{
-        let r = $r;
-        r.areg[4] = $exec_map_addr;
-        r.areg[5] = $interp_map_addr;
-        r.areg[6] = $dynamic_addr;
+        let $r = $r;
+        $r.areg[4] = $exec_map_addr;
+        $r.areg[5] = $interp_map_addr;
+        $r.areg[6] = $dynamic_addr;
     }};
 }
 

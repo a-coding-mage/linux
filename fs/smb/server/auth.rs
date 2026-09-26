@@ -61,7 +61,7 @@ pub unsafe fn ksmbd_decode_ntlmssp_auth_blob(authblob: *mut authenticate_message
     if blob_len < core::mem::size_of::<authenticate_message>() as i32 { return -EINVAL; }
     if memcmp((*authblob).Signature.as_ptr(), b"NTLMSSP\0", 8) != 0 { return -EINVAL; }
     let nt_off = le32_to_cpu((*authblob).NtChallengeResponse.BufferOffset) as usize; let nt_len = le16_to_cpu((*authblob).NtChallengeResponse.Length) as usize; let dn_off = le32_to_cpu((*authblob).DomainName.BufferOffset) as usize; let dn_len = le16_to_cpu((*authblob).DomainName.Length) as usize;
-    if blob_len as usize < dn_off + dn_len || blob_len as usize < nt_off + nt_len || nt_len < CIFS_ENCPWD_SIZE { return -EINVAL; }
+    if (blob_len as usize) < dn_off + dn_len || (blob_len as usize) < nt_off + nt_len || nt_len < CIFS_ENCPWD_SIZE { return -EINVAL; }
     let domain_name = smb_strndup_from_utf16((authblob as *mut u8).add(dn_off) as *const i8, dn_len, true, (*conn).local_nls); if IS_ERR(domain_name) { return PTR_ERR(domain_name); }
     let ret = ksmbd_auth_ntlmv2(conn, sess, (authblob as *mut u8).add(nt_off) as *mut ntlmv2_resp, (nt_len - CIFS_ENCPWD_SIZE) as i32, domain_name, (*conn).ntlmssp.cryptkey.as_mut_ptr(), sess_key); kfree(domain_name as *mut _); ret
 }

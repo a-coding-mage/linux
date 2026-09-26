@@ -9,14 +9,14 @@
  */
 
 // CONFIG_MACH_MVEBU_V7 selects the external implementation.
-#[cfg(feature = "CONFIG_MACH_MVEBU_V7")]
+#[cfg(CONFIG_MACH_MVEBU_V7)]
 extern "C" {
     pub fn mvebu_pmsu_dfs_request(cpu: ::core::ffi::c_int) -> ::core::ffi::c_int;
 }
 
 // When CONFIG_MACH_MVEBU_V7 is not enabled, the C header provides this
 // static inline fallback. `ENODEV` is supplied by the surrounding system.
-#[cfg(not(feature = "CONFIG_MACH_MVEBU_V7"))]
+#[cfg(not(CONFIG_MACH_MVEBU_V7))]
 #[inline]
 pub fn mvebu_pmsu_dfs_request(cpu: ::core::ffi::c_int) -> ::core::ffi::c_int {
     let _ = cpu;

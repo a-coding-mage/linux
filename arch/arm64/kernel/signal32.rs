@@ -160,7 +160,7 @@ unsafe fn compat_setup_sigframe(sf: *mut compat_sigframe, regs: *mut pt_regs, se
 /* Compile-time assertions for siginfo_t offsets are retained as a dependency note. */
 
 pub unsafe fn compat_sigreturn() -> u64 {
-    let regs = current_pt_regs(); (*current).restart_block.fn = do_no_restart_syscall;
+    let regs = current_pt_regs(); (*current).restart_block.r#fn = do_no_restart_syscall;
     if (*regs).compat_sp & 7 != 0 { arm64_notify_segfault((*regs).compat_sp); return 0; }
     let frame = (*regs).compat_sp as *mut compat_sigframe;
     if !access_ok(frame, core::mem::size_of::<compat_sigframe>()) || compat_restore_sigframe(regs, frame) != 0 { arm64_notify_segfault((*regs).compat_sp); return 0; }
@@ -168,7 +168,7 @@ pub unsafe fn compat_sigreturn() -> u64 {
 }
 
 pub unsafe fn compat_rt_sigreturn() -> u64 {
-    let regs = current_pt_regs(); (*current).restart_block.fn = do_no_restart_syscall;
+    let regs = current_pt_regs(); (*current).restart_block.r#fn = do_no_restart_syscall;
     if (*regs).compat_sp & 7 != 0 { arm64_notify_segfault((*regs).compat_sp); return 0; }
     let frame = (*regs).compat_sp as *mut compat_rt_sigframe;
     if !access_ok(frame, core::mem::size_of::<compat_rt_sigframe>()) || compat_restore_sigframe(regs, &mut (*frame).sig) != 0 || compat_restore_altstack(&(*frame).sig.uc.uc_stack) != 0 { arm64_notify_segfault((*regs).compat_sp); return 0; }

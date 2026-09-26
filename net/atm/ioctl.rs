@@ -80,14 +80,14 @@ unsafe fn do_vcc_ioctl(
 
     error = -ENOIOCTLCMD;
     mutex_lock(&raw mut ioctl_mutex);
-    list_for_each(pos, &raw mut ioctl_list) {
+    list_for_each!(pos, &raw mut ioctl_list, {
         let ic = list_entry!(pos, atm_ioctl, list);
         if try_module_get((*ic).owner) {
             error = ((*ic).ioctl)(sock, cmd, arg);
             module_put((*ic).owner);
             if error != -ENOIOCTLCMD { break; }
         }
-    }
+    });
     mutex_unlock(&raw mut ioctl_mutex);
 
     if error != -ENOIOCTLCMD { return error; }

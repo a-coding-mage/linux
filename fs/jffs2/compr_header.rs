@@ -83,41 +83,41 @@ extern "C" {
 // Compressor modules. These functions are called by jffs2_compressors_init/exit.
 
 // CONFIG_JFFS2_RUBIN controls whether the external declarations are available.
-#[cfg(feature = "CONFIG_JFFS2_RUBIN")]
+#[cfg(CONFIG_JFFS2_RUBIN)]
 extern "C" {
     pub fn jffs2_rubinmips_init() -> i32;
     pub fn jffs2_rubinmips_exit();
     pub fn jffs2_dynrubin_init() -> i32;
     pub fn jffs2_dynrubin_exit();
 }
-#[cfg(not(feature = "CONFIG_JFFS2_RUBIN"))]
+#[cfg(not(CONFIG_JFFS2_RUBIN))]
 pub unsafe fn jffs2_rubinmips_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_RUBIN"))]
+#[cfg(not(CONFIG_JFFS2_RUBIN))]
 pub unsafe fn jffs2_rubinmips_exit() {}
-#[cfg(not(feature = "CONFIG_JFFS2_RUBIN"))]
+#[cfg(not(CONFIG_JFFS2_RUBIN))]
 pub unsafe fn jffs2_dynrubin_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_RUBIN"))]
+#[cfg(not(CONFIG_JFFS2_RUBIN))]
 pub unsafe fn jffs2_dynrubin_exit() {}
 
-#[cfg(feature = "CONFIG_JFFS2_RTIME")]
+#[cfg(CONFIG_JFFS2_RTIME)]
 extern "C" { pub fn jffs2_rtime_init() -> i32; pub fn jffs2_rtime_exit(); }
-#[cfg(not(feature = "CONFIG_JFFS2_RTIME"))]
+#[cfg(not(CONFIG_JFFS2_RTIME))]
 pub unsafe fn jffs2_rtime_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_RTIME"))]
+#[cfg(not(CONFIG_JFFS2_RTIME))]
 pub unsafe fn jffs2_rtime_exit() {}
 
-#[cfg(feature = "CONFIG_JFFS2_ZLIB")]
+#[cfg(CONFIG_JFFS2_ZLIB)]
 extern "C" { pub fn jffs2_zlib_init() -> i32; pub fn jffs2_zlib_exit(); }
-#[cfg(not(feature = "CONFIG_JFFS2_ZLIB"))]
+#[cfg(not(CONFIG_JFFS2_ZLIB))]
 pub unsafe fn jffs2_zlib_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_ZLIB"))]
+#[cfg(not(CONFIG_JFFS2_ZLIB))]
 pub unsafe fn jffs2_zlib_exit() {}
 
-#[cfg(feature = "CONFIG_JFFS2_LZO")]
+#[cfg(CONFIG_JFFS2_LZO)]
 extern "C" { pub fn jffs2_lzo_init() -> i32; pub fn jffs2_lzo_exit(); }
-#[cfg(not(feature = "CONFIG_JFFS2_LZO"))]
+#[cfg(not(CONFIG_JFFS2_LZO))]
 pub unsafe fn jffs2_lzo_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_LZO"))]
+#[cfg(not(CONFIG_JFFS2_LZO))]
 pub unsafe fn jffs2_lzo_exit() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

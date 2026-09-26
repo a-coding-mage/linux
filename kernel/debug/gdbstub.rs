@@ -138,7 +138,7 @@ pub unsafe fn gdb_serial_stub(ks: *mut kgdb_state) -> i32 {
 }
 
 pub unsafe fn gdbstub_state(ks: *mut kgdb_state, cmd: *const i8) -> i32 {
-    match *cmd { b'e' as i8 => kgdb_arch_handle_exception((*ks).ex_vector, (*ks).signo, (*ks).err_code, remcom_in_buffer.as_mut_ptr(), remcom_out_buffer.as_mut_ptr(), (*ks).linux_regs), b's' as i8 | b'c' as i8 => { strscpy(remcom_in_buffer.as_mut_ptr(), cmd, BUFMAX); 0 }, b'$' as i8 => { strscpy(remcom_in_buffer.as_mut_ptr(), cmd, BUFMAX); gdbstub_use_prev_in_buf = strlen(remcom_in_buffer.as_ptr()) as i32; gdbstub_prev_in_buf_pos = 0; 0 }, _ => { dbg_io_ops.write_char(b'+' as i8); put_packet(remcom_out_buffer.as_ptr()); 0 } }
+    match *cmd { case if case == b'e' as i8 => kgdb_arch_handle_exception((*ks).ex_vector, (*ks).signo, (*ks).err_code, remcom_in_buffer.as_mut_ptr(), remcom_out_buffer.as_mut_ptr(), (*ks).linux_regs), case if case == b's' as i8 || case == b'c' as i8 => { strscpy(remcom_in_buffer.as_mut_ptr(), cmd, BUFMAX); 0 }, case if case == b'$' as i8 => { strscpy(remcom_in_buffer.as_mut_ptr(), cmd, BUFMAX); gdbstub_use_prev_in_buf = strlen(remcom_in_buffer.as_ptr()) as i32; gdbstub_prev_in_buf_pos = 0; 0 }, _ => { dbg_io_ops.write_char(b'+' as i8); put_packet(remcom_out_buffer.as_ptr()); 0 } }
 }
 
 pub unsafe fn gdbstub_exit(status: i32) {

@@ -25,17 +25,17 @@ const CACHE_DEFAULT_TTL: i32 = 300;
 extern "C" {
     static mut cache_cp: *mut nls_table;
     static mut dfs_cache_ttl: c_int;
-    fn strlen(*const c_char)->usize; fn strcmp(*const c_char,*const c_char)->c_int; fn strcasecmp(*const c_char,*const c_char)->c_int;
-    fn kstrdup(*const c_char,c_uint)->*mut c_char; fn kfree(*mut c_void); fn kmem_cache_free(*mut c_void,*mut c_void);
-    fn cifs_strndup_to_utf16(*const c_char,usize,*mut c_int,*const nls_table,c_int)->*mut c_char;
-    fn cifs_strndup_from_utf16(*const c_char,c_int,bool,*mut nls_table)->*mut c_char;
-    fn convert_delimiter(*mut c_char,c_char); fn cifs_toupper(u32)->u32; fn jhash(*const c_void,usize,c_uint)->c_uint;
-    fn ktime_get_coarse_real_ts64(*mut timespec64); fn timespec64_compare(*const timespec64,*const timespec64)->c_int;
-    fn timespec64_add(timespec64,timespec64)->timespec64; fn cifs_dbg(c_int,*const c_char,...);
-    fn atomic_read(*const c_int)->c_int; fn atomic_set(*mut c_int,c_int); fn atomic_inc(*mut c_int); fn atomic_dec(*mut c_int);
-    fn load_nls(*const c_char)->*mut nls_table; fn load_nls_default()->*mut nls_table; fn unload_nls(*mut nls_table);
-    fn free_dfs_info_array(*mut dfs_info3_param,c_int); fn get_user(*mut c_char,*const c_char)->c_int;
-    fn strpbrk(*const c_char,*const c_char)->*const c_char; fn strcspn(*const c_char,*const c_char)->usize; fn strspn(*const c_char,*const c_char)->usize;
+    fn strlen(_: *const c_char)->usize; fn strcmp(_: *const c_char,_: *const c_char)->c_int; fn strcasecmp(_: *const c_char,_: *const c_char)->c_int;
+    fn kstrdup(_: *const c_char,_: c_uint)->*mut c_char; fn kfree(_: *mut c_void); fn kmem_cache_free(_: *mut c_void,_: *mut c_void);
+    fn cifs_strndup_to_utf16(_: *const c_char,_: usize,_: *mut c_int,_: *const nls_table,_: c_int)->*mut c_char;
+    fn cifs_strndup_from_utf16(_: *const c_char,_: c_int,_: bool,_: *mut nls_table)->*mut c_char;
+    fn convert_delimiter(_: *mut c_char,_: c_char); fn cifs_toupper(_: u32)->u32; fn jhash(_: *const c_void,_: usize,_: c_uint)->c_uint;
+    fn ktime_get_coarse_real_ts64(_: *mut timespec64); fn timespec64_compare(_: *const timespec64,_: *const timespec64)->c_int;
+    fn timespec64_add(_: timespec64,_: timespec64)->timespec64; fn cifs_dbg(_: c_int,_: *const c_char,...);
+    fn atomic_read(_: *const c_int)->c_int; fn atomic_set(_: *mut c_int,_: c_int); fn atomic_inc(_: *mut c_int); fn atomic_dec(_: *mut c_int);
+    fn load_nls(_: *const c_char)->*mut nls_table; fn load_nls_default()->*mut nls_table; fn unload_nls(_: *mut nls_table);
+    fn free_dfs_info_array(_: *mut dfs_info3_param,_: c_int); fn get_user(_: *mut c_char,_: *const c_char)->c_int;
+    fn strpbrk(_: *const c_char,_: *const c_char)->*const c_char; fn strcspn(_: *const c_char,_: *const c_char)->usize; fn strspn(_: *const c_char,_: *const c_char)->usize;
 }
 
 static mut cache_count: c_int = 0;

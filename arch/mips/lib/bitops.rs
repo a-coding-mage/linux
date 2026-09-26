@@ -32,7 +32,7 @@ unsafe fn bit_word(nr: c_ulong) -> usize {
 pub unsafe fn __mips_set_bit(nr: c_ulong, addr: *mut c_ulong) {
     let a = addr.add(bit_word(nr));
     let bit = nr % (BITS_PER_LONG as c_ulong);
-    let mask = 1 as c_ulong << bit;
+    let mask = (1 as c_ulong) << bit;
     let mut flags = 0 as c_ulong;
     raw_local_irq_save(&mut flags);
     a.write_volatile(a.read_volatile() | mask);
@@ -48,7 +48,7 @@ pub unsafe fn __mips_set_bit(nr: c_ulong, addr: *mut c_ulong) {
 pub unsafe fn __mips_clear_bit(nr: c_ulong, addr: *mut c_ulong) {
     let a = addr.add(bit_word(nr));
     let bit = nr % (BITS_PER_LONG as c_ulong);
-    let mask = 1 as c_ulong << bit;
+    let mask = (1 as c_ulong) << bit;
     let mut flags = 0 as c_ulong;
     raw_local_irq_save(&mut flags);
     a.write_volatile(a.read_volatile() & !mask);
@@ -64,7 +64,7 @@ pub unsafe fn __mips_clear_bit(nr: c_ulong, addr: *mut c_ulong) {
 pub unsafe fn __mips_change_bit(nr: c_ulong, addr: *mut c_ulong) {
     let a = addr.add(bit_word(nr));
     let bit = nr % (BITS_PER_LONG as c_ulong);
-    let mask = 1 as c_ulong << bit;
+    let mask = (1 as c_ulong) << bit;
     let mut flags = 0 as c_ulong;
     raw_local_irq_save(&mut flags);
     a.write_volatile(a.read_volatile() ^ mask);
@@ -80,7 +80,7 @@ pub unsafe fn __mips_change_bit(nr: c_ulong, addr: *mut c_ulong) {
 pub unsafe fn __mips_test_and_set_bit_lock(nr: c_ulong, addr: *mut c_ulong) -> i32 {
     let a = addr.add(bit_word(nr));
     let bit = nr % (BITS_PER_LONG as c_ulong);
-    let mask = 1 as c_ulong << bit;
+    let mask = (1 as c_ulong) << bit;
     let mut flags = 0 as c_ulong;
     raw_local_irq_save(&mut flags);
     let res = (mask & a.read_volatile()) != 0;
@@ -98,7 +98,7 @@ pub unsafe fn __mips_test_and_set_bit_lock(nr: c_ulong, addr: *mut c_ulong) -> i
 pub unsafe fn __mips_test_and_clear_bit(nr: c_ulong, addr: *mut c_ulong) -> i32 {
     let a = addr.add(bit_word(nr));
     let bit = nr % (BITS_PER_LONG as c_ulong);
-    let mask = 1 as c_ulong << bit;
+    let mask = (1 as c_ulong) << bit;
     let mut flags = 0 as c_ulong;
     raw_local_irq_save(&mut flags);
     let res = (mask & a.read_volatile()) != 0;
@@ -116,7 +116,7 @@ pub unsafe fn __mips_test_and_clear_bit(nr: c_ulong, addr: *mut c_ulong) -> i32 
 pub unsafe fn __mips_test_and_change_bit(nr: c_ulong, addr: *mut c_ulong) -> i32 {
     let a = addr.add(bit_word(nr));
     let bit = nr % (BITS_PER_LONG as c_ulong);
-    let mask = 1 as c_ulong << bit;
+    let mask = (1 as c_ulong) << bit;
     let mut flags = 0 as c_ulong;
     raw_local_irq_save(&mut flags);
     let res = (mask & a.read_volatile()) != 0;
@@ -131,7 +131,7 @@ pub unsafe fn __mips_xor_is_negative_byte(mask: c_ulong, addr: *mut c_ulong) -> 
     let data = addr.read_volatile();
     addr.write_volatile(data ^ mask);
     raw_local_irq_restore(flags);
-    (data & (1 as c_ulong << 7)) != 0
+    (data & ((1 as c_ulong) << 7)) != 0
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

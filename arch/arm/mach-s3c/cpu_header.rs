@@ -31,29 +31,29 @@ pub unsafe fn is_samsung_s3c6410() -> ::core::ffi::c_int {
 }
 
 /* CONFIG_CPU_S3C6400 or CONFIG_CPU_S3C6410 selects the runtime checks. */
-#[cfg(any(feature = "CONFIG_CPU_S3C6400", feature = "CONFIG_CPU_S3C6410"))]
+#[cfg(any(CONFIG_CPU_S3C6400, CONFIG_CPU_S3C6410))]
 #[inline]
 pub unsafe fn soc_is_s3c6400() -> ::core::ffi::c_int { is_samsung_s3c6400() }
 
-#[cfg(not(any(feature = "CONFIG_CPU_S3C6400", feature = "CONFIG_CPU_S3C6410")))]
+#[cfg(not(any(CONFIG_CPU_S3C6400, CONFIG_CPU_S3C6410)))]
 #[inline]
 pub fn soc_is_s3c6400() -> ::core::ffi::c_int { 0 }
 
-#[cfg(feature = "CONFIG_CPU_S3C6410")]
+#[cfg(CONFIG_CPU_S3C6410)]
 #[inline]
 pub unsafe fn soc_is_s3c6410() -> ::core::ffi::c_int { is_samsung_s3c6410() }
 
-#[cfg(not(feature = "CONFIG_CPU_S3C6410"))]
+#[cfg(not(CONFIG_CPU_S3C6410))]
 #[inline]
 pub fn soc_is_s3c6410() -> ::core::ffi::c_int { 0 }
 
-#[cfg(any(feature = "CONFIG_CPU_S3C6400", feature = "CONFIG_CPU_S3C6410"))]
+#[cfg(any(CONFIG_CPU_S3C6400, CONFIG_CPU_S3C6410))]
 #[inline]
 pub unsafe fn soc_is_s3c64xx() -> ::core::ffi::c_int {
     if is_samsung_s3c6400() != 0 || is_samsung_s3c6410() != 0 { 1 } else { 0 }
 }
 
-#[cfg(not(any(feature = "CONFIG_CPU_S3C6400", feature = "CONFIG_CPU_S3C6410")))]
+#[cfg(not(any(CONFIG_CPU_S3C6400, CONFIG_CPU_S3C6410)))]
 #[inline]
 pub fn soc_is_s3c64xx() -> ::core::ffi::c_int { 0 }
 

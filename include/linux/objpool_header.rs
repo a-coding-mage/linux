@@ -30,8 +30,8 @@ pub struct objpool_head {
     pub context: *mut c_void,
 }
 
-pub const OBJPOOL_NR_OBJECT_MAX: c_ulong = 1 as c_ulong << 24;
-pub const OBJPOOL_OBJECT_SIZE_MAX: c_ulong = 1 as c_ulong << 16;
+pub const OBJPOOL_NR_OBJECT_MAX: c_ulong = (1 as c_ulong) << 24;
+pub const OBJPOOL_OBJECT_SIZE_MAX: c_ulong = (1 as c_ulong) << 16;
 
 extern "C" {
     pub fn objpool_init(

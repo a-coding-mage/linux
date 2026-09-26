@@ -40,10 +40,10 @@ macro_rules! __read_mostly { () => {}; }
 macro_rules! __ro_after_init { () => {}; }
 
 /* CONFIG_SMP selects the aligned form in the C build. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! ____cacheline_aligned_in_smp { () => { ____cacheline_aligned!() }; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! ____cacheline_aligned_in_smp { () => {}; }
 
@@ -52,10 +52,10 @@ macro_rules! __cacheline_aligned {
     () => { #[repr(align(SMP_CACHE_BYTES))] };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! __cacheline_aligned_in_smp { () => { __cacheline_aligned!() }; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! __cacheline_aligned_in_smp { () => {}; }
 
@@ -63,12 +63,12 @@ macro_rules! __cacheline_aligned_in_smp { () => {}; }
 macro_rules! INTERNODE_CACHE_SHIFT { () => { L1_CACHE_SHIFT }; }
 
 /* ____cacheline_internodealigned_in_smp is empty when CONFIG_SMP is absent. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! ____cacheline_internodealigned_in_smp {
     () => { #[repr(align(1usize << INTERNODE_CACHE_SHIFT))] };
 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! ____cacheline_internodealigned_in_smp { () => {}; }
 
@@ -118,19 +118,19 @@ macro_rules! CACHELINE_ASSERT_GROUP_SIZE {
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[repr(C, align(1))]
 pub struct cacheline_padding {
     pub x: [i8; 0],
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! CACHELINE_PADDING {
     ($name:ident) => { $name: cacheline_padding };
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! CACHELINE_PADDING {
     ($name:ident) => {};

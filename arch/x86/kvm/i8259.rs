@@ -40,13 +40,13 @@ unsafe fn pic_unlock(s: *mut kvm_pic) {
     if wakeup {
         let mut vcpu: *mut kvm_vcpu = core::ptr::null_mut();
         let mut i: c_ulong = 0;
-        kvm_for_each_vcpu(i, vcpu, (*s).kvm) {
+        kvm_for_each_vcpu!(i, vcpu, (*s).kvm, {
             if kvm_apic_accept_pic_intr(vcpu) {
                 kvm_make_request(KVM_REQ_EVENT, vcpu);
                 kvm_vcpu_kick(vcpu);
                 return;
             }
-        }
+        });
     }
 }
 
@@ -129,7 +129,7 @@ unsafe fn kvm_pic_reset(s: *mut kvm_kpic_state) {
     (*s).last_irr = 0; (*s).irr &= (*s).elcr; (*s).imr = 0; (*s).priority_add = 0; (*s).special_mask = 0; (*s).read_reg_select = 0;
     if (*s).init4 == 0 { (*s).special_fully_nested_mode = 0; (*s).auto_eoi = 0; } (*s).init_state = 1;
     let mut vcpu: *mut kvm_vcpu = core::ptr::null_mut(); let mut i: c_ulong = 0;
-    kvm_for_each_vcpu(i, vcpu, (*(*s).pics_state).kvm) { if kvm_apic_accept_pic_intr(vcpu) { found = true; break; } }
+    kvm_for_each_vcpu!(i, vcpu, (*(*s).pics_state).kvm, { if kvm_apic_accept_pic_intr(vcpu) { found = true; break; } });
     if !found { return; }
     for irq in 0..PIC_NUM_PINS / 2 { if edge_irr & (1u8 << irq) != 0 { pic_clear_isr(s, irq as c_int); } }
 }

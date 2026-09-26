@@ -78,7 +78,7 @@ macro_rules! arr6 {
 macro_rules! exp {
     ($($x:expr),* $(,)?) => {
         {
-            let mut a = [0_u32; VPHN_ASSOC_BUFSIZE];
+            let mut a = [0u32; VPHN_ASSOC_BUFSIZE];
             let vals = [$($x as U32),*];
             let mut i = 0;
             while i < vals.len() {

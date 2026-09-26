@@ -83,7 +83,7 @@ pub unsafe fn ieee802154_alloc_hw(
     local = wpan_phy_priv(phy);
     (*local).phy = phy;
     (*local).hw.phy = (*local).phy;
-    (*local).hw.priv = (local as *mut u8).add(
+    (*local).hw.r#priv = (local as *mut u8).add(
         ALIGN!(core::mem::size_of::<ieee802154_local>(), NETDEV_ALIGN),
     ) as *mut core::ffi::c_void;
     (*local).ops = ops;
@@ -183,14 +183,18 @@ unsafe fn ieee802154_setup_wpan_phy_pib(wpan_phy: *mut wpan_phy) {
 pub unsafe fn ieee802154_register_hw(hw: *mut ieee802154_hw) -> i32 {
     let local = hw_to_local(hw);
     let mut mac_wq_name = [0u8; IFNAMSIZ + 10];
+    'out: {
+    'out_wq: {
+    'out_mac_wq: {
+    'out_phy: {
     let mut dev: *mut net_device;
     let mut rc: i32 = -ENOSYS;
 
     (*local).workqueue = create_singlethread_workqueue(wpan_phy_name((*local).phy));
-    if (*local).workqueue.is_null() { rc = -ENOMEM; goto!(out); }
+    if (*local).workqueue.is_null() { rc = -ENOMEM; break 'out; }
     snprintf!(mac_wq_name.as_mut_ptr(), IFNAMSIZ + 10, "%s-mac-cmds", wpan_phy_name((*local).phy));
     (*local).mac_wq = create_singlethread_workqueue(mac_wq_name.as_mut_ptr() as *const i8);
-    if (*local).mac_wq.is_null() { rc = -ENOMEM; goto!(out_wq); }
+    if (*local).mac_wq.is_null() { rc = -ENOMEM; break 'out_wq; }
     hrtimer_setup!(&mut (*local).ifs_timer, ieee802154_xmit_ifs_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
     wpan_phy_set_dev((*local).phy, (*local).hw.parent);
     ieee802154_setup_wpan_phy_pib((*local).phy);
@@ -211,18 +215,22 @@ pub unsafe fn ieee802154_register_hw(hw: *mut ieee802154_hw) -> i32 {
         (*local).phy.supported.iftypes |= BIT!(NL802154_IFTYPE_MONITOR);
     }
     rc = wpan_phy_register((*local).phy);
-    if rc < 0 { goto!(out_mac_wq); }
+    if rc < 0 { break 'out_mac_wq; }
     rtnl_lock();
     dev = ieee802154_if_add(local, "wpan%d", NET_NAME_ENUM, NL802154_IFTYPE_NODE, cpu_to_le64!(0));
     if IS_ERR!(dev) {
-        rtnl_unlock(); rc = PTR_ERR!(dev); goto!(out_phy);
+        rtnl_unlock(); rc = PTR_ERR!(dev); break 'out_phy;
     }
     rtnl_unlock();
     return 0;
-out_phy: wpan_phy_unregister((*local).phy);
-out_mac_wq: destroy_workqueue((*local).mac_wq);
-out_wq: destroy_workqueue((*local).workqueue);
-out: rc
+    }
+    wpan_phy_unregister((*local).phy);
+    }
+    destroy_workqueue((*local).mac_wq);
+    }
+    destroy_workqueue((*local).workqueue);
+    }
+    rc
 }
 
 pub unsafe fn ieee802154_unregister_hw(hw: *mut ieee802154_hw) {

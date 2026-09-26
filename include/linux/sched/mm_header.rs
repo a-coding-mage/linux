@@ -32,14 +32,14 @@ pub unsafe fn mmdrop(mm: *mut mm_struct) {
 }
 
 // CONFIG_PREEMPT_RT: RCU callback for delayed mm drop.
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 #[inline]
 pub unsafe fn __mmdrop_delayed(rhp: *mut rcu_head) {
     let mm = container_of!(rhp, mm_struct, delayed_drop);
     __mmdrop(mm);
 }
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 #[inline]
 pub unsafe fn mmdrop_sched(mm: *mut mm_struct) {
     // Provides a full memory barrier.
@@ -48,7 +48,7 @@ pub unsafe fn mmdrop_sched(mm: *mut mm_struct) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 #[inline]
 pub unsafe fn mmdrop_sched(mm: *mut mm_struct) {
     mmdrop(mm);
@@ -92,22 +92,22 @@ pub unsafe fn mmget_not_zero(mm: *mut mm_struct) -> bool {
 }
 
 // CONFIG_MMU || CONFIG_FUTEX_PRIVATE_HASH
-#[cfg(any(feature = "CONFIG_MMU", feature = "CONFIG_FUTEX_PRIVATE_HASH"))]
+#[cfg(any(CONFIG_MMU, CONFIG_FUTEX_PRIVATE_HASH))]
 extern "C" {
     pub fn mmput_async(mm: *mut mm_struct);
 }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 extern "C" {
     pub fn mm_update_next_owner(mm: *mut mm_struct);
 }
 
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 #[inline]
 pub unsafe fn mm_update_next_owner(_mm: *mut mm_struct) {}
 
 // CONFIG_MMU
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 extern "C" {
     pub fn arch_pick_mmap_layout(mm: *mut mm_struct, rlim_stack: *const rlimit);
     pub fn arch_get_unmapped_area(
@@ -137,19 +137,19 @@ extern "C" {
 }
 
 // Fallbacks for architectures that do not define these C macros.
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn arch_get_mmap_end(_addr: c_ulong, _len: c_ulong, _flags: c_ulong) -> c_ulong {
     TASK_SIZE
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn arch_get_mmap_base(_addr: c_ulong, base: c_ulong) -> c_ulong {
     base
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn arch_pick_mmap_layout(_mm: *mut mm_struct, _rlim_stack: *const rlimit) {}
 

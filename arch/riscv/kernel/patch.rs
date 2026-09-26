@@ -49,7 +49,7 @@ const FIX_TEXT_POKE1: i32 = 1;
 const SYSTEM_RUNNING: i32 = 0;
 const EINVAL: i32 = 22;
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline(always)]
 unsafe fn is_kernel_exittext(addr: usize) -> bool {
     system_state < SYSTEM_RUNNING
@@ -57,7 +57,7 @@ unsafe fn is_kernel_exittext(addr: usize) -> bool {
         && addr < (&__exittext_end as *const u8 as usize)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline(always)]
 unsafe fn patch_map(addr: *mut core::ffi::c_void, fixmap: u32) -> *mut core::ffi::c_void {
     let uintaddr = addr as usize;
@@ -65,7 +65,7 @@ unsafe fn patch_map(addr: *mut core::ffi::c_void, fixmap: u32) -> *mut core::ffi
 
     if core_kernel_text(uintaddr) || is_kernel_exittext(uintaddr) {
         phys = __pa_symbol(addr);
-    } else if cfg!(feature = "CONFIG_STRICT_MODULE_RWX") {
+    } else if cfg!(CONFIG_STRICT_MODULE_RWX) {
         let page = vmalloc_to_page(addr);
         assert!(!page.is_null());
         phys = page_to_phys(page) + offset_in_page(addr);
@@ -76,12 +76,12 @@ unsafe fn patch_map(addr: *mut core::ffi::c_void, fixmap: u32) -> *mut core::ffi
     set_fixmap_offset(fixmap as i32, phys)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn patch_unmap(fixmap: i32) {
     clear_fixmap(fixmap);
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn __patch_insn_set(addr: *mut core::ffi::c_void, c: u8, len: usize) -> i32 {
     let across_pages = offset_in_page(addr) + len > PAGE_SIZE;
     let mut waddr = addr;
@@ -97,13 +97,13 @@ unsafe fn __patch_insn_set(addr: *mut core::ffi::c_void, c: u8, len: usize) -> i
     0
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 unsafe fn __patch_insn_set(addr: *mut core::ffi::c_void, c: u8, len: usize) -> i32 {
     core::ptr::write_bytes(addr as *mut u8, c, len);
     0
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn __patch_insn_write(addr: *mut core::ffi::c_void, insn: *const core::ffi::c_void, len: usize) -> i32 {
     let across_pages = offset_in_page(addr) + len > PAGE_SIZE;
     let mut waddr = addr;
@@ -118,7 +118,7 @@ unsafe fn __patch_insn_write(addr: *mut core::ffi::c_void, insn: *const core::ff
     ret
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 unsafe fn __patch_insn_write(addr: *mut core::ffi::c_void, insn: *const core::ffi::c_void, len: usize) -> i32 {
     copy_to_kernel_nofault(addr, insn, len)
 }

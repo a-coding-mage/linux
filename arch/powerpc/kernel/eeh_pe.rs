@@ -70,9 +70,9 @@ pub unsafe fn eeh_wait_state(pe: *mut eeh_pe, mut max_wait: i32) -> i32 {
 
 pub unsafe fn eeh_phb_pe_get(phb: *mut pci_controller) -> *mut eeh_pe {
     let mut pe: *mut eeh_pe;
-    list_for_each_entry!(pe, &mut eeh_phb_pe, child) {
+    list_for_each_entry!(pe, &mut eeh_phb_pe, child, {
         if ((*pe).typ & EEH_PE_PHB) != 0 && (*pe).phb == phb { return pe; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -92,10 +92,10 @@ pub unsafe fn eeh_pe_next(mut pe: *mut eeh_pe, root: *mut eeh_pe) -> *mut eeh_pe
 pub unsafe fn eeh_pe_traverse(root: *mut eeh_pe, fn_: eeh_pe_traverse_func, flag: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
     let mut pe: *mut eeh_pe;
     let mut ret;
-    eeh_for_each_pe!(root, pe) {
+    eeh_for_each_pe!(root, pe, {
         ret = fn_(pe, flag);
         if !ret.is_null() { return ret; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -104,7 +104,7 @@ pub unsafe fn eeh_pe_dev_traverse(root: *mut eeh_pe, fn_: eeh_edev_traverse_func
     let mut pe: *mut eeh_pe;
     let mut edev: *mut eeh_dev;
     let mut tmp: *mut eeh_dev;
-    eeh_for_each_pe!(root, pe) { eeh_pe_for_each_dev!(pe, edev, tmp) { fn_(edev, flag); } }
+    eeh_for_each_pe!(root, pe, { eeh_pe_for_each_dev!(pe, edev, tmp, { fn_(edev, flag); }); });
 }
 
 unsafe fn __eeh_pe_get(pe: *mut eeh_pe, flag: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
@@ -148,7 +148,7 @@ pub unsafe fn eeh_pe_tree_remove(edev: *mut eeh_dev) -> i32 {
         if !keep && !recover {
             if list_empty(&(*pe).edevs) && list_empty(&(*pe).child_list) { list_del(&mut (*pe).child); kfree(pe); } else { break; }
         } else if list_empty(&(*pe).edevs) {
-            let mut cnt = 0; let mut child: *mut eeh_pe; list_for_each_entry!(child, &mut (*pe).child_list, child) { if ((*child).typ & EEH_PE_INVALID) == 0 { cnt += 1; break; } }
+            let mut cnt = 0; let mut child: *mut eeh_pe; list_for_each_entry!(child, &mut (*pe).child_list, child, { if ((*child).typ & EEH_PE_INVALID) == 0 { cnt += 1; break; } });
             if cnt == 0 { (*pe).typ |= EEH_PE_INVALID; } else { break; }
         }
         pe = parent;

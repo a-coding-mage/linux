@@ -3,7 +3,7 @@
 // Dependencies supplied by the corresponding architecture and kernel headers:
 // asm/ptrace.h, asm/asm.h, and linux/stringify.h.
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 extern "C" {
     pub static mut raw_show_trace: ::core::ffi::c_int;
     pub fn unwind_stack(
@@ -20,10 +20,10 @@ extern "C" {
     ) -> ::core::ffi::c_ulong;
 }
 
-#[cfg(not(feature = "CONFIG_KALLSYMS"))]
+#[cfg(not(CONFIG_KALLSYMS))]
 pub const raw_show_trace: ::core::ffi::c_int = 1;
 
-#[cfg(not(feature = "CONFIG_KALLSYMS"))]
+#[cfg(not(CONFIG_KALLSYMS))]
 #[inline(always)]
 pub unsafe fn unwind_stack(
     _task: *mut task_struct,
@@ -53,7 +53,7 @@ macro_rules! STORE_ONE_REG {
 
 #[inline(always)]
 pub unsafe fn prepare_frametrace(regs: *mut pt_regs) {
-    #[cfg(not(feature = "CONFIG_KALLSYMS"))]
+    #[cfg(not(CONFIG_KALLSYMS))]
     {
         /* Remove garbage in regs, especially function addresses, before the raw backtrace. */
         ::core::ptr::write_bytes(regs, 0, 1);

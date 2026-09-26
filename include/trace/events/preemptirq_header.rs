@@ -3,19 +3,19 @@
 //! The tracepoint registration and formatting machinery referenced by the
 //! original header is provided by the surrounding kernel tracepoint system.
 
-#[cfg(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS")]
+#[cfg(CONFIG_PREEMPTIRQ_TRACEPOINTS)]
 #[repr(C)]
 pub struct PreemptirqEntry {
     pub caller_offs: i32,
     pub parent_offs: i32,
 }
 
-#[cfg(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS")]
+#[cfg(CONFIG_PREEMPTIRQ_TRACEPOINTS)]
 extern "C" {
     static _stext: u8;
 }
 
-#[cfg(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS")]
+#[cfg(CONFIG_PREEMPTIRQ_TRACEPOINTS)]
 #[inline]
 pub unsafe fn preemptirq_assign_entry(
     entry: *mut PreemptirqEntry,
@@ -28,14 +28,14 @@ pub unsafe fn preemptirq_assign_entry(
         (parent_ip.wrapping_sub((&_stext as *const u8) as usize)) as i32;
 }
 
-#[cfg(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS")]
+#[cfg(CONFIG_PREEMPTIRQ_TRACEPOINTS)]
 #[inline]
 pub unsafe fn preemptirq_caller_address(entry: *const PreemptirqEntry) -> *const u8 {
     ((&_stext as *const u8 as usize)
         .wrapping_add((*entry).caller_offs as isize as usize)) as *const u8
 }
 
-#[cfg(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS")]
+#[cfg(CONFIG_PREEMPTIRQ_TRACEPOINTS)]
 #[inline]
 pub unsafe fn preemptirq_parent_address(entry: *const PreemptirqEntry) -> *const u8 {
     ((&_stext as *const u8 as usize)
@@ -47,8 +47,8 @@ pub unsafe fn preemptirq_parent_address(entry: *const PreemptirqEntry) -> *const
 // are tracepoint declarations supplied by the kernel tracepoint subsystem.
 
 #[cfg(all(
-    feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS",
-    feature = "CONFIG_TRACE_IRQFLAGS"
+    CONFIG_PREEMPTIRQ_TRACEPOINTS,
+    CONFIG_TRACE_IRQFLAGS
 ))]
 extern "C" {
     pub fn trace_irq_disable(ip: usize, parent_ip: usize);
@@ -56,22 +56,22 @@ extern "C" {
 }
 
 #[cfg(all(
-    feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS",
-    not(feature = "CONFIG_TRACE_IRQFLAGS")
+    CONFIG_PREEMPTIRQ_TRACEPOINTS,
+    not(CONFIG_TRACE_IRQFLAGS)
 ))]
 #[inline]
 pub fn trace_irq_disable(_ip: usize, _parent_ip: usize) {}
 
 #[cfg(all(
-    feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS",
-    not(feature = "CONFIG_TRACE_IRQFLAGS")
+    CONFIG_PREEMPTIRQ_TRACEPOINTS,
+    not(CONFIG_TRACE_IRQFLAGS)
 ))]
 #[inline]
 pub fn trace_irq_enable(_ip: usize, _parent_ip: usize) {}
 
 #[cfg(all(
-    feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS",
-    feature = "CONFIG_TRACE_PREEMPT_TOGGLE"
+    CONFIG_PREEMPTIRQ_TRACEPOINTS,
+    CONFIG_TRACE_PREEMPT_TOGGLE
 ))]
 extern "C" {
     pub fn trace_preempt_disable(ip: usize, parent_ip: usize);
@@ -79,34 +79,34 @@ extern "C" {
 }
 
 #[cfg(all(
-    feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS",
-    not(feature = "CONFIG_TRACE_PREEMPT_TOGGLE")
+    CONFIG_PREEMPTIRQ_TRACEPOINTS,
+    not(CONFIG_TRACE_PREEMPT_TOGGLE)
 ))]
 #[inline]
 pub fn trace_preempt_disable(_ip: usize, _parent_ip: usize) {}
 
 #[cfg(all(
-    feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS",
-    not(feature = "CONFIG_TRACE_PREEMPT_TOGGLE")
+    CONFIG_PREEMPTIRQ_TRACEPOINTS,
+    not(CONFIG_TRACE_PREEMPT_TOGGLE)
 ))]
 #[inline]
 pub fn trace_preempt_enable(_ip: usize, _parent_ip: usize) {}
 
 // !CONFIG_PREEMPTIRQ_TRACEPOINTS: the original variadic trace macros expand
 // to no-ops. These Rust functions provide the corresponding call surface.
-#[cfg(not(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS"))]
+#[cfg(not(CONFIG_PREEMPTIRQ_TRACEPOINTS))]
 #[inline]
 pub fn trace_irq_enable(_ip: usize, _parent_ip: usize) {}
 
-#[cfg(not(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS"))]
+#[cfg(not(CONFIG_PREEMPTIRQ_TRACEPOINTS))]
 #[inline]
 pub fn trace_irq_disable(_ip: usize, _parent_ip: usize) {}
 
-#[cfg(not(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS"))]
+#[cfg(not(CONFIG_PREEMPTIRQ_TRACEPOINTS))]
 #[inline]
 pub fn trace_preempt_enable(_ip: usize, _parent_ip: usize) {}
 
-#[cfg(not(feature = "CONFIG_PREEMPTIRQ_TRACEPOINTS"))]
+#[cfg(not(CONFIG_PREEMPTIRQ_TRACEPOINTS))]
 #[inline]
 pub fn trace_preempt_disable(_ip: usize, _parent_ip: usize) {}
 

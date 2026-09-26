@@ -111,7 +111,7 @@ pub unsafe fn int cec_msg_is_broadcast(const pub struct cec_msg (*msg))
  * message) and the initiator and destination are filled in.
  */
 pub unsafe fn void cec_msg_init(pub struct cec_msg (*msg),
-				u8 initiator, u8 destination)
+				initiator: u8, destination: u8)
 {
 	memset(msg, 0, sizeof((*msg)));
 	(*msg).msg[0] = (initiator << 4) | destination;
@@ -250,47 +250,47 @@ pub const CEC_LOG_ADDR_MASK_BACKUP: u32 = ((1 << CEC_LOG_ADDR_BACKUP_1) | \;
 pub const CEC_LOG_ADDR_MASK_SPECIFIC: u32 = (1 << CEC_LOG_ADDR_SPECIFIC);
 pub const CEC_LOG_ADDR_MASK_UNREGISTERED: u32 = (1 << CEC_LOG_ADDR_UNREGISTERED);
 
-pub unsafe fn int cec_has_tv(u16 log_addr_mask)
+pub unsafe fn int cec_has_tv(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_TV;
 }
 
-pub unsafe fn int cec_has_record(u16 log_addr_mask)
+pub unsafe fn int cec_has_record(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_RECORD;
 }
 
-pub unsafe fn int cec_has_tuner(u16 log_addr_mask)
+pub unsafe fn int cec_has_tuner(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_TUNER;
 }
 
-pub unsafe fn int cec_has_playback(u16 log_addr_mask)
+pub unsafe fn int cec_has_playback(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_PLAYBACK;
 }
 
-pub unsafe fn int cec_has_audiosystem(u16 log_addr_mask)
+pub unsafe fn int cec_has_audiosystem(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_AUDIOSYSTEM;
 }
 
-pub unsafe fn int cec_has_backup(u16 log_addr_mask)
+pub unsafe fn int cec_has_backup(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_BACKUP;
 }
 
-pub unsafe fn int cec_has_specific(u16 log_addr_mask)
+pub unsafe fn int cec_has_specific(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_SPECIFIC;
 }
 
-pub unsafe fn int cec_is_unregistered(u16 log_addr_mask)
+pub unsafe fn int cec_is_unregistered(log_addr_mask: u16)
 {
 	return log_addr_mask & CEC_LOG_ADDR_MASK_UNREGISTERED;
 }
 
-pub unsafe fn int cec_is_unconfigured(u16 log_addr_mask)
+pub unsafe fn int cec_is_unconfigured(log_addr_mask: u16)
 {
 	return log_addr_mask == 0;
 }

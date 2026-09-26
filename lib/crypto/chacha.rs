@@ -47,7 +47,7 @@ unsafe fn chacha_crypt_generic(
 
 // CONFIG_CRYPTO_LIB_CHACHA_ARCH selects architecture-specific implementations
 // when enabled; otherwise the generic implementations are used.
-#[cfg(feature = "CONFIG_CRYPTO_LIB_CHACHA_ARCH")]
+#[cfg(CONFIG_CRYPTO_LIB_CHACHA_ARCH)]
 extern "C" {
     fn chacha_crypt_arch(
         state: *mut chacha_state,
@@ -59,7 +59,7 @@ extern "C" {
     fn hchacha_block_arch(state: *const chacha_state, out: *mut u32, nrounds: i32);
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_LIB_CHACHA_ARCH"))]
+#[cfg(not(CONFIG_CRYPTO_LIB_CHACHA_ARCH))]
 unsafe fn chacha_crypt_arch(
     state: *mut chacha_state,
     dst: *mut u8,
@@ -70,7 +70,7 @@ unsafe fn chacha_crypt_arch(
     chacha_crypt_generic(state, dst, src, bytes, nrounds);
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_LIB_CHACHA_ARCH"))]
+#[cfg(not(CONFIG_CRYPTO_LIB_CHACHA_ARCH))]
 unsafe fn hchacha_block_arch(state: *const chacha_state, out: *mut u32, nrounds: i32) {
     hchacha_block_generic(state, out, nrounds);
 }

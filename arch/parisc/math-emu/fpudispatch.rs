@@ -38,7 +38,7 @@
  * END_DESC
 */
 
-#define FPUDEBUG 0
+pub const FPUDEBUG: u32 = 0;
 
 #include "float.h"
 #include <linux/bug.h>
@@ -47,7 +47,7 @@
 /* #include <sys/debug.h> */
 /* #include <machine/sys/mdep_private.h> */
 
-#define COPR_INST 0x30000000
+pub const COPR_INST: u32 = 0x30000000;
 
 /*
  * definition of extru macro.  If pos and len are constants, the compiler
@@ -55,45 +55,45 @@
  */
 #define extru(r,pos,len)	(((r) >> (31-(pos))) & (( 1 << (len)) - 1))
 /* definitions of bit field locations in the instruction */
-#define fpmajorpos 5
-#define fpr1pos	10
-#define fpr2pos 15
-#define fptpos	31
-#define fpsubpos 18
-#define fpclass1subpos 16
-#define fpclasspos 22
-#define fpfmtpos 20
-#define fpdfpos 18
-#define fpnulpos 26
+pub const fpmajorpos: u32 = 5;
+pub const fpr1pos: u32 = 10;
+pub const fpr2pos: u32 = 15;
+pub const fptpos: u32 = 31;
+pub const fpsubpos: u32 = 18;
+pub const fpclass1subpos: u32 = 16;
+pub const fpclasspos: u32 = 22;
+pub const fpfmtpos: u32 = 20;
+pub const fpdfpos: u32 = 18;
+pub const fpnulpos: u32 = 26;
 /*
  * the following are the extra bits for the 0E major op
  */
-#define fpxr1pos 24
-#define fpxr2pos 19
-#define fpxtpos 25
-#define fpxpos 23
-#define fp0efmtpos 20
+pub const fpxr1pos: u32 = 24;
+pub const fpxr2pos: u32 = 19;
+pub const fpxtpos: u32 = 25;
+pub const fpxpos: u32 = 23;
+pub const fp0efmtpos: u32 = 20;
 /*
  * the following are for the multi-ops
  */
-#define fprm1pos 10
-#define fprm2pos 15
-#define fptmpos 31
-#define fprapos 25
-#define fptapos 20
-#define fpmultifmt 26
+pub const fprm1pos: u32 = 10;
+pub const fprm2pos: u32 = 15;
+pub const fptmpos: u32 = 31;
+pub const fprapos: u32 = 25;
+pub const fptapos: u32 = 20;
+pub const fpmultifmt: u32 = 26;
 /*
  * the following are for the fused FP instructions
  */
      /* fprm1pos 10 */
      /* fprm2pos 15 */
-#define fpraupos 18
-#define fpxrm2pos 19
+pub const fpraupos: u32 = 18;
+pub const fpxrm2pos: u32 = 19;
      /* fpfmtpos 20 */
-#define fpralpos 23
-#define fpxrm1pos 24
+pub const fpralpos: u32 = 23;
+pub const fpxrm1pos: u32 = 24;
      /* fpxtpos 25 */
-#define fpfusedsubop 26
+pub const fpfusedsubop: u32 = 26;
      /* fptpos	31 */
 
 /*
@@ -123,12 +123,12 @@
 #define get_subop1_PA2_0(op) extru(op,fpclass1subpos,3)	/* PA 2.0 fmt */
 
 /* definitions of unimplemented exceptions */
-#define MAJOR_0C_EXCP	0x09
-#define MAJOR_0E_EXCP	0x0b
-#define MAJOR_06_EXCP	0x03
-#define MAJOR_26_EXCP	0x23
-#define MAJOR_2E_EXCP	0x2b
-#define PA83_UNIMP_EXCP	0x01
+pub const MAJOR_0C_EXCP: u32 = 0x09;
+pub const MAJOR_0E_EXCP: u32 = 0x0b;
+pub const MAJOR_06_EXCP: u32 = 0x03;
+pub const MAJOR_26_EXCP: u32 = 0x23;
+pub const MAJOR_2E_EXCP: u32 = 0x2b;
+pub const PA83_UNIMP_EXCP: u32 = 0x01;
 
 /*
  * Special Defines for TIMEX specific code

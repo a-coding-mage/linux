@@ -27,7 +27,7 @@ unsafe fn get_early_cmdline(dtb_pa: usize) -> *mut c_char {
     let mut chosen_node: i32;
 
     // !IS_ENABLED(CONFIG_CMDLINE_FORCE)
-    if !cfg!(feature = "CONFIG_CMDLINE_FORCE") {
+    if !cfg!(CONFIG_CMDLINE_FORCE) {
         chosen_node = fdt_path_offset(dtb_pa as *const c_void, b"/chosen\0".as_ptr() as *const c_char);
         if chosen_node >= 0 {
             fdt_cmdline = fdt_getprop(
@@ -45,8 +45,8 @@ unsafe fn get_early_cmdline(dtb_pa: usize) -> *mut c_char {
         }
     }
 
-    if cfg!(feature = "CONFIG_CMDLINE_EXTEND")
-        || cfg!(feature = "CONFIG_CMDLINE_FORCE")
+    if cfg!(CONFIG_CMDLINE_EXTEND)
+        || cfg!(CONFIG_CMDLINE_FORCE)
         || fdt_cmdline_size == 0 // CONFIG_CMDLINE_FALLBACK
     {
         strscpy(

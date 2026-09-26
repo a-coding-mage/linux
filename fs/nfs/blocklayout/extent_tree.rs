@@ -80,10 +80,10 @@ unsafe fn ext_try_to_merge_right(root: *mut rb_root, be: *mut pnfs_block_extent)
 unsafe fn __ext_put_deviceids(head: *mut list_head) {
     let mut be: *mut pnfs_block_extent;
     let mut tmp: *mut pnfs_block_extent = core::ptr::null_mut();
-    list_for_each_entry_safe!(be, tmp, head, be_list) {
+    list_for_each_entry_safe!(be, tmp, head, be_list, {
         nfs4_put_deviceid_node((*be).be_device);
         kfree(be as *mut core::ffi::c_void);
-    }
+    });
 }
 
 unsafe fn __ext_tree_insert(root: *mut rb_root, new: *mut pnfs_block_extent, merge_ok: bool) {

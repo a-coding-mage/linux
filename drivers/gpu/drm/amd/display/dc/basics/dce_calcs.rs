@@ -81,6 +81,9 @@ unsafe fn calculate_bandwidth(
 	*mut bw_calcs_datadata)
 
 {
+	'free_yclk: {
+	'free_sclk: {
+	'free_tiling_mode: {
 	const int32_t pixels_per_chunk = 512;
 	const int32_t high = 2;
 	const int32_t mid = 1;
@@ -129,15 +132,15 @@ unsafe fn calculate_bandwidth(
 
 	sclk = kzalloc_objs(*sclk, 8);
 	if (!sclk)
-		goto free_yclk;
+		break 'free_yclk;
 
 	tiling_mode = kzalloc_objs(*tiling_mode, maximum_number_of_surfaces);
 	if (!tiling_mode)
-		goto free_sclk;
+		break 'free_sclk;
 
 	surface_type = kzalloc_objs(*surface_type, maximum_number_of_surfaces);
 	if (!surface_type)
-		goto free_tiling_mode;
+		break 'free_tiling_mode;
 
 	yclk[low] = vbios.low_yclk;
 	yclk[mid] = vbios.mid_yclk;
@@ -2032,11 +2035,14 @@ unsafe fn calculate_bandwidth(
 	}
 
 	kfree(surface_type);
-free_tiling_mode:
+	}
+	
 	kfree(tiling_mode);
-free_sclk:
+	}
+	
 	kfree(sclk);
-free_yclk:
+	}
+	
 	kfree(yclk);
 }
 
@@ -2914,7 +2920,7 @@ unsafe fn populate_initial_data(
 
 	/* Pipes without underlay after */
 	for (i = 0; i < pipe_count; i++) {
-		unsigned int pixel_clock_100hz;
+		core::ffi::c_uint pixel_clock_100hz;
 		if (!pipe[i].stream || pipe[i].bottom_pipe)
 			continue;
 

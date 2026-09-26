@@ -1987,7 +1987,7 @@ const struct of_device_id disp_cc_0_nord_match_table[] = {
 };
 
 
-pub static int disp_cc_0_nord_probe(struct platform_device *pdev)
+pub static int disp_cc_0_nord_probe(platform_device *pdev)
 {
 	return qcom_cc_probe(pdev, &disp_cc_0_nord_desc);
 }

@@ -28,18 +28,18 @@ pub struct cred {
     pub cap_bset: kernel_cap_t,
     pub cap_ambient: kernel_cap_t,
     // CONFIG_KEYS fields are present when that build option is enabled.
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     pub jit_keyring: u8,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     pub session_keyring: *mut key,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     pub process_keyring: *mut key,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     pub thread_keyring: *mut key,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     pub request_key_auth: *mut key,
     // CONFIG_SECURITY field.
-    #[cfg(feature = "CONFIG_SECURITY")]
+    #[cfg(CONFIG_SECURITY)]
     pub security: *mut core::ffi::c_void,
     pub user: *mut user_struct,
     pub user_ns: *mut user_namespace,
@@ -65,7 +65,7 @@ pub unsafe fn put_group_info(group_info: *mut group_info) {
     }
 }
 
-#[cfg(feature = "CONFIG_MULTIUSER")]
+#[cfg(CONFIG_MULTIUSER)]
 extern "C" {
     pub fn groups_alloc(n: i32) -> *mut group_info;
     pub fn groups_free(gi: *mut group_info);
@@ -78,13 +78,13 @@ extern "C" {
     pub fn groups_sort(gi: *mut group_info);
 }
 
-#[cfg(not(feature = "CONFIG_MULTIUSER"))]
+#[cfg(not(CONFIG_MULTIUSER))]
 pub unsafe fn groups_free(_group_info: *mut group_info) {}
-#[cfg(not(feature = "CONFIG_MULTIUSER"))]
+#[cfg(not(CONFIG_MULTIUSER))]
 pub unsafe fn in_group_p(_grp: kgid_t) -> i32 { 1 }
-#[cfg(not(feature = "CONFIG_MULTIUSER"))]
+#[cfg(not(CONFIG_MULTIUSER))]
 pub unsafe fn in_egroup_p(_grp: kgid_t) -> i32 { 1 }
-#[cfg(not(feature = "CONFIG_MULTIUSER"))]
+#[cfg(not(CONFIG_MULTIUSER))]
 pub unsafe fn groups_search(_group_info: *const group_info, _grp: kgid_t) -> i32 { 1 }
 
 extern "C" {

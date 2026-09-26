@@ -13,7 +13,7 @@ extern "C" {
 }
 
 // The following items are selected by the C build-time CONFIG_ZSWAP condition.
-#[cfg(feature = "CONFIG_ZSWAP")]
+#[cfg(CONFIG_ZSWAP)]
 #[repr(C)]
 pub struct zswap_lruvec_state {
     /*
@@ -28,7 +28,7 @@ pub struct zswap_lruvec_state {
     pub nr_disk_swapins: atomic_long_t,
 }
 
-#[cfg(feature = "CONFIG_ZSWAP")]
+#[cfg(CONFIG_ZSWAP)]
 extern "C" {
     pub fn zswap_total_pages() -> c_ulong;
     pub fn zswap_store(folio: *mut folio) -> bool;
@@ -43,56 +43,56 @@ extern "C" {
     pub fn zswap_never_enabled() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[repr(C)]
 pub struct zswap_lruvec_state {}
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_store(_folio: *mut folio) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_load(_folio: *mut folio) -> c_int {
     // -ENOENT; errno is supplied by the external Linux dependency.
     -ENOENT
 }
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_invalidate(_swp: swp_entry_t) {}
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_swapon(_type: c_int, _nr_pages: c_ulong) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_swapoff(_type: c_int) {}
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_memcg_offline_cleanup(_memcg: *mut mem_cgroup) {}
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_lruvec_state_init(_lruvec: *mut lruvec) {}
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_folio_swapin(_folio: *mut folio) {}
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_is_enabled() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_ZSWAP"))]
+#[cfg(not(CONFIG_ZSWAP))]
 #[inline]
 pub unsafe fn zswap_never_enabled() -> bool {
     true

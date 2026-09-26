@@ -48,20 +48,20 @@ unsafe fn filelayout_async_handle_error(task: *mut rpc_task, _state: *mut nfs4_s
     let devid = FILELAYOUT_DEVID_NODE(lseg);
     let tbl = &mut (*(*clp).cl_session).fc_slot_table;
     if (*task).tk_status >= 0 { return 0; }
-    match (*task).tk_status {
-        -NFS4ERR_BADSESSION | -NFS4ERR_BADSLOT | -NFS4ERR_BAD_HIGH_SLOT |
-        -NFS4ERR_DEADSESSION | -NFS4ERR_CONN_NOT_BOUND_TO_SESSION |
-        -NFS4ERR_SEQ_FALSE_RETRY | -NFS4ERR_SEQ_MISORDERED => {
+    match -((*task).tk_status) {
+        NFS4ERR_BADSESSION | NFS4ERR_BADSLOT | NFS4ERR_BAD_HIGH_SLOT |
+        NFS4ERR_DEADSESSION | NFS4ERR_CONN_NOT_BOUND_TO_SESSION |
+        NFS4ERR_SEQ_FALSE_RETRY | NFS4ERR_SEQ_MISORDERED => {
             nfs4_schedule_session_recovery((*clp).cl_session, (*task).tk_status);
         }
-        -NFS4ERR_DELAY | -NFS4ERR_GRACE => rpc_delay(task, FILELAYOUT_POLL_RETRY_MAX as _),
-        -NFS4ERR_RETRY_UNCACHED_REP => (),
-        -NFS4ERR_ACCESS | -NFS4ERR_PNFS_NO_LAYOUT | -ESTALE | -EBADHANDLE |
-        -EISDIR | -NFS4ERR_FHEXPIRED | -NFS4ERR_WRONG_TYPE => {
+        NFS4ERR_DELAY | NFS4ERR_GRACE => rpc_delay(task, FILELAYOUT_POLL_RETRY_MAX as _),
+        NFS4ERR_RETRY_UNCACHED_REP => (),
+        NFS4ERR_ACCESS | NFS4ERR_PNFS_NO_LAYOUT | ESTALE | EBADHANDLE |
+        EISDIR | NFS4ERR_FHEXPIRED | NFS4ERR_WRONG_TYPE => {
             pnfs_destroy_layout(NFS_I(inode)); rpc_wake_up(&mut tbl.slot_tbl_waitq); return -NFS4ERR_RESET_TO_MDS;
         }
-        -ECONNREFUSED | -EHOSTDOWN | -EHOSTUNREACH | -ENETUNREACH | -EIO |
-        -ETIMEDOUT | -EPIPE | -EPROTO | -ENODEV => {
+        ECONNREFUSED | EHOSTDOWN | EHOSTUNREACH | ENETUNREACH | EIO |
+        ETIMEDOUT | EPIPE | EPROTO | ENODEV => {
             nfs4_mark_deviceid_unavailable(devid); pnfs_error_mark_layout_for_return(inode, lseg); pnfs_set_lo_fail(lseg); rpc_wake_up(&mut tbl.slot_tbl_waitq);
             return -NFS4ERR_RESET_TO_MDS;
         }
@@ -72,9 +72,9 @@ unsafe fn filelayout_async_handle_error(task: *mut rpc_task, _state: *mut nfs4_s
 
 unsafe fn filelayout_read_done_cb(task: *mut rpc_task, hdr: *mut nfs_pgio_header) -> c_int {
     trace_nfs4_pnfs_read(hdr, (*task).tk_status);
-    match filelayout_async_handle_error(task, (*(*hdr).args.context).state, (*hdr).ds_clp, (*hdr).lseg) {
-        -NFS4ERR_RESET_TO_MDS => { filelayout_reset_read(hdr); (*task).tk_status },
-        -EAGAIN => { rpc_restart_call_prepare(task); -EAGAIN },
+    match -(filelayout_async_handle_error(task, (*(*hdr).args.context).state, (*hdr).ds_clp, (*hdr).lseg)) {
+        NFS4ERR_RESET_TO_MDS => { filelayout_reset_read(hdr); (*task).tk_status },
+        EAGAIN => { rpc_restart_call_prepare(task); -EAGAIN },
         _ => 0,
     }
 }

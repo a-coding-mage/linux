@@ -126,7 +126,7 @@ unsafe extern "C" fn hp6x0_pm_enter(_state: suspend_state_t) -> i32 {
     let stbcr: u8;
     let stbcr2: u8;
 
-    #[cfg(feature = "CONFIG_HD64461_ENABLER")]
+    #[cfg(CONFIG_HD64461_ENABLER)]
     {
         let mut scr: u8;
         let mut hd64461_stbcr: u16;
@@ -156,7 +156,7 @@ unsafe extern "C" fn hp6x0_pm_enter(_state: suspend_state_t) -> i32 {
     __raw_writeb(stbcr, STBCR);
     __raw_writeb(stbcr2, STBCR2);
 
-    #[cfg(feature = "CONFIG_HD64461_ENABLER")]
+    #[cfg(CONFIG_HD64461_ENABLER)]
     {
         let mut hd64461_stbcr = inw(HD64461_STBCR);
         hd64461_stbcr &= !HD64461_STBCR_SPC1ST;

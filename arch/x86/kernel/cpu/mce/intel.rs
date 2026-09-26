@@ -10,9 +10,9 @@
 
 /* Support for Intel Correct Machine Check Interrupts. */
 
-static DEFINE_PER_CPU!(mce_banks_t, mce_banks_owned);
-static DEFINE_RAW_SPINLOCK!(cmci_discover_lock);
-static DEFINE_SPINLOCK!(cmci_poll_lock);
+DEFINE_PER_CPU!(mce_banks_t, mce_banks_owned);
+DEFINE_RAW_SPINLOCK!(cmci_discover_lock);
+DEFINE_SPINLOCK!(cmci_poll_lock);
 
 const CMCI_THRESHOLD: u16 = 1;
 static mut cmci_threshold: [u16; MAX_NR_BANKS] = [0; MAX_NR_BANKS];

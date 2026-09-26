@@ -83,7 +83,7 @@ pub unsafe extern "C" fn raw_pci_write(
 }
 
 // CONFIG_NUMA conditional retained from the source build configuration.
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe extern "C" fn pcibus_to_node(bus: *mut pci_bus) -> i32 {
     unsafe { dev_to_node(&(*bus).dev as *const device) }
 }

@@ -109,13 +109,13 @@ pub unsafe fn dcn31_smu_set_dprefclk(clk_mgr: *mut clk_mgr_internal) -> i32 {
 }
 
 pub unsafe fn dcn31_smu_set_hard_min_dcfclk(clk_mgr: *mut clk_mgr_internal, requested_dcfclk_khz: i32) -> i32 {
-    if !(*clk_mgr).base.ctx->dc.debug.pstate_enabled { return -1; }
+    if (*!(*clk_mgr).base.ctx).dc.debug.pstate_enabled { return -1; }
     if !(*clk_mgr).smu_present { return requested_dcfclk_khz; }
     dcn31_smu_send_msg_with_param(clk_mgr, VBIOSSMC_MSG_SET_HARD_MIN_DCFCLK_BY_FREQ, khz_to_mhz_ceil(requested_dcfclk_khz)) * 1000
 }
 
 pub unsafe fn dcn31_smu_set_min_deep_sleep_dcfclk(clk_mgr: *mut clk_mgr_internal, requested_min_ds_dcfclk_khz: i32) -> i32 {
-    if !(*clk_mgr).base.ctx->dc.debug.pstate_enabled { return -1; }
+    if (*!(*clk_mgr).base.ctx).dc.debug.pstate_enabled { return -1; }
     if !(*clk_mgr).smu_present { return requested_min_ds_dcfclk_khz; }
     dcn31_smu_send_msg_with_param(clk_mgr, VBIOSSMC_MSG_SET_MIN_DEEP_SLEEP_DCFCLK, khz_to_mhz_ceil(requested_min_ds_dcfclk_khz)) * 1000
 }
@@ -126,7 +126,7 @@ pub unsafe fn dcn31_smu_set_dppclk(clk_mgr: *mut clk_mgr_internal, requested_dpp
 }
 
 pub unsafe fn dcn31_smu_set_display_idle_optimization(clk_mgr: *mut clk_mgr_internal, idle_info: u32) {
-    if !(*clk_mgr).base.ctx->dc.debug.pstate_enabled || !(*clk_mgr).smu_present { return; }
+    if (*!(*clk_mgr).base.ctx).dc.debug.pstate_enabled || !(*clk_mgr).smu_present { return; }
     dcn31_smu_send_msg_with_param(clk_mgr, VBIOSSMC_MSG_SET_DISPLAY_IDLE_OPTIMIZATIONS, idle_info);
 }
 
@@ -145,7 +145,7 @@ pub unsafe fn dcn31_smu_transfer_wm_table_dram_2_smu(clk_mgr: *mut clk_mgr_inter
 
 pub unsafe fn dcn31_smu_set_zstate_support(clk_mgr: *mut clk_mgr_internal, mut support: dcn_zstate_support_state) {
     if !(*clk_mgr).smu_present { return; }
-    if !(*clk_mgr).base.ctx->dc.debug.enable_z9_disable_interface && support == DCN_ZSTATE_SUPPORT_ALLOW_Z10_ONLY { support = DCN_ZSTATE_SUPPORT_DISALLOW; }
+    if (*!(*clk_mgr).base.ctx).dc.debug.enable_z9_disable_interface && support == DCN_ZSTATE_SUPPORT_ALLOW_Z10_ONLY { support = DCN_ZSTATE_SUPPORT_DISALLOW; }
     let param = if support == DCN_ZSTATE_SUPPORT_ALLOW_Z10_ONLY || support == DCN_ZSTATE_SUPPORT_ALLOW_Z8_Z10_ONLY { 1 } else { 0 };
     let msg_id = if support == DCN_ZSTATE_SUPPORT_DISALLOW { VBIOSSMC_MSG_DISALLOW_ZSTATES_ENTRY } else { VBIOSSMC_MSG_ALLOW_ZSTATES_ENTRY };
     dcn31_smu_send_msg_with_param(clk_mgr, msg_id, param);

@@ -62,12 +62,12 @@ pub struct map_desc {
 unsafe extern "C" {
     static mut pl080_plat_data: c_void;
     static mut pl022_plat_data: c_void;
-    unsafe fn pl08x_filter_id(*mut c_void, *mut c_void) -> bool;
-    unsafe fn of_platform_default_populate(*mut c_void, *mut of_dev_auxdata, *mut c_void);
-    unsafe fn iotable_init(*mut map_desc, usize);
+    unsafe fn pl08x_filter_id(_: *mut c_void, _: *mut c_void) -> bool;
+    unsafe fn of_platform_default_populate(_: *mut c_void, _: *mut of_dev_auxdata, _: *mut c_void);
+    unsafe fn iotable_init(_: *mut map_desc, _: usize);
     unsafe fn spear3xx_map_io();
     unsafe fn spear3xx_timer_init();
-    unsafe fn spear_restart(*mut c_void);
+    unsafe fn spear_restart(_: *mut c_void);
 }
 
 const AHB1: u32 = 1;

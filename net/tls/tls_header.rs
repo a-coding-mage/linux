@@ -134,7 +134,7 @@ pub unsafe fn tls_strp_msg_ready(ctx: *mut tls_sw_context_rx) -> bool { READ_ONC
 #[inline]
 pub unsafe fn tls_strp_msg_mixed_decrypted(ctx: *mut tls_sw_context_rx) -> bool { (*ctx).strp.mixed_decrypted }
 
-#[cfg(feature = "CONFIG_TLS_DEVICE")]
+#[cfg(CONFIG_TLS_DEVICE)]
 unsafe extern "C" {
     pub fn tls_device_init() -> c_int;
     pub fn tls_device_cleanup();
@@ -145,21 +145,21 @@ unsafe extern "C" {
     pub fn tls_device_rx_resync_new_rec(sk: *mut sock, rcd_len: u32, seq: u32);
     pub fn tls_device_decrypted(sk: *mut sock, tls_ctx: *mut tls_context) -> c_int;
 }
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_device_init() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_device_cleanup() {}
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_set_device_offload(_sk: *mut sock) -> c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_device_free_resources_tx(_sk: *mut sock) {}
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_set_device_offload_rx(_sk: *mut sock, _ctx: *mut tls_context) -> c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_device_offload_cleanup_rx(_sk: *mut sock) {}
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_device_rx_resync_new_rec(_sk: *mut sock, _rcd_len: u32, _seq: u32) {}
-#[cfg(not(feature = "CONFIG_TLS_DEVICE"))]
+#[cfg(not(CONFIG_TLS_DEVICE))]
 pub unsafe fn tls_device_decrypted(_sk: *mut sock, _tls_ctx: *mut tls_context) -> c_int { 0 }
 
 unsafe extern "C" {

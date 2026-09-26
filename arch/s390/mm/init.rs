@@ -148,25 +148,25 @@ pub unsafe fn setup_per_cpu_areas() {
     }
 
     delta = pcpu_base_addr as c_ulong - __per_cpu_start as c_ulong;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         __per_cpu_offset[cpu as usize] = delta + pcpu_unit_offsets[cpu as usize];
-    }
+    });
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 mod memory_hotplug {
-    #[cfg(feature = "CONFIG_CMA")]
+    #[cfg(CONFIG_CMA)]
     #[repr(C)]
     struct s390_cma_mem_data { start: c_ulong, end: c_ulong }
 
-    #[cfg(feature = "CONFIG_CMA")]
+    #[cfg(CONFIG_CMA)]
     unsafe fn s390_cma_check_range(cma: *mut cma, data: *mut c_void) -> c_int {
         let mem_data = data as *mut s390_cma_mem_data;
         if cma_intersects(cma, (*mem_data).start, (*mem_data).end) { return -EBUSY; }
         0
     }
 
-    #[cfg(feature = "CONFIG_CMA")]
+    #[cfg(CONFIG_CMA)]
     unsafe fn s390_cma_mem_notifier(_nb: *mut notifier_block, action: c_ulong, data: *mut c_void) -> c_int {
         let arg = data as *mut memory_notify;
         let mut mem_data = s390_cma_mem_data { start: (*arg).start_pfn << PAGE_SHIFT, end: 0 };
@@ -176,10 +176,10 @@ mod memory_hotplug {
         notifier_from_errno(rc)
     }
 
-    #[cfg(feature = "CONFIG_CMA")]
+    #[cfg(CONFIG_CMA)]
     static mut s390_cma_mem_nb: notifier_block = notifier_block { notifier_call: Some(s390_cma_mem_notifier) };
 
-    #[cfg(feature = "CONFIG_CMA")]
+    #[cfg(CONFIG_CMA)]
     unsafe fn s390_cma_mem_init() -> c_int { register_memory_notifier(&mut s390_cma_mem_nb) }
 
     pub unsafe fn arch_add_memory(nid: c_int, start: u64, size: u64, params: *mut mhp_params) -> c_int {
@@ -200,10 +200,10 @@ mod memory_hotplug {
     }
 }
 
-#[cfg(feature = "CONFIG_EXECMEM")]
+#[cfg(CONFIG_EXECMEM)]
 static mut execmem_info: execmem_info = execmem_info { ranges: unsafe { core::mem::zeroed() } };
 
-#[cfg(feature = "CONFIG_EXECMEM")]
+#[cfg(CONFIG_EXECMEM)]
 pub unsafe fn execmem_arch_setup() -> *mut execmem_info {
     let mut module_load_offset: c_ulong = 0;
     if kaslr_enabled() { module_load_offset = get_random_u32_inclusive(1, 1024) as c_ulong * PAGE_SIZE; }

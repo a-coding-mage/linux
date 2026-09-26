@@ -32,15 +32,15 @@ pub unsafe fn __phys_mem_access_prot(
     vma_prot
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 static mut linear_mapping_mutex: DEFINE_MUTEX!(()) = DEFINE_MUTEX!();
 
-#[cfg(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA))]
 pub unsafe fn memory_add_physaddr_to_nid(start: u64) -> c_int {
     hot_add_scn_to_nid(start)
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn create_section_mapping(
     _start: c_ulong,
     _end: c_ulong,
@@ -50,12 +50,12 @@ pub unsafe fn create_section_mapping(
     -ENODEV
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn remove_section_mapping(_start: c_ulong, _end: c_ulong) -> c_int {
     -ENODEV
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn arch_create_linear_mapping(
     nid: c_int,
     mut start: u64,
@@ -73,7 +73,7 @@ pub unsafe fn arch_create_linear_mapping(
     0
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn arch_remove_linear_mapping(mut start: u64, size: u64) {
     start = __va(start) as c_ulong as u64;
     mutex_lock(&raw mut linear_mapping_mutex);
@@ -85,7 +85,7 @@ pub unsafe fn arch_remove_linear_mapping(mut start: u64, size: u64) {
     vm_unmap_aliases();
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn update_end_of_memory_vars(start: u64, size: u64) {
     let end_pfn = PFN_UP(start + size);
     if end_pfn > max_pfn {
@@ -95,7 +95,7 @@ unsafe fn update_end_of_memory_vars(start: u64, size: u64) {
     }
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn add_pages(nid: c_int, start_pfn: c_ulong, nr_pages: c_ulong, params: *mut mhp_params) -> c_int {
     let ret = __add_pages(nid, start_pfn, nr_pages, params);
     if ret != 0 { return ret; }
@@ -103,7 +103,7 @@ pub unsafe fn add_pages(nid: c_int, start_pfn: c_ulong, nr_pages: c_ulong, param
     ret
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn arch_add_memory(nid: c_int, start: u64, size: u64, params: *mut mhp_params) -> c_int {
     let start_pfn = start >> PAGE_SHIFT;
     let nr_pages = size >> PAGE_SHIFT;
@@ -114,22 +114,22 @@ pub unsafe fn arch_add_memory(nid: c_int, start: u64, size: u64, params: *mut mh
     rc
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn arch_remove_memory(start: u64, size: u64, altmap: *mut vmem_altmap, pgmap: *mut dev_pagemap) {
     __remove_pages(start >> PAGE_SHIFT, size >> PAGE_SHIFT, altmap, pgmap);
     arch_remove_linear_mapping(start, size);
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 pub unsafe fn mem_topology_setup() {
     max_low_pfn = max_pfn = memblock_end_of_DRAM() >> PAGE_SHIFT;
     min_low_pfn = MEMORY_START >> PAGE_SHIFT;
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     { max_low_pfn = lowmem_end_addr >> PAGE_SHIFT; }
     memblock_set_node(0, PHYS_ADDR_MAX, &raw mut memblock.memory, 0);
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 unsafe fn mark_nonram_nosave() -> c_int {
     let (mut spfn, mut epfn, mut prev) = (0, 0, 0);
     for_each_mem_pfn_range!(i, MAX_NUMNODES, &mut spfn, &mut epfn, core::ptr::null_mut(), {
@@ -139,14 +139,14 @@ unsafe fn mark_nonram_nosave() -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 unsafe fn mark_nonram_nosave() -> c_int { 0 }
 
 pub unsafe fn arch_zone_limits_init(max_zone_pfns: *mut c_ulong) {
-    #[cfg(feature = "CONFIG_ZONE_DMA")]
+    #[cfg(CONFIG_ZONE_DMA)]
     { *max_zone_pfns.add(ZONE_DMA) = min((zone_dma_limit >> PAGE_SHIFT) + 1, max_low_pfn); }
     *max_zone_pfns.add(ZONE_NORMAL) = max_low_pfn;
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     { *max_zone_pfns.add(ZONE_HIGHMEM) = max_pfn; }
 }
 
@@ -154,7 +154,7 @@ pub unsafe fn paging_init() {
     let total_ram: u64 = memblock_phys_mem_size();
     let top_of_ram: phys_addr_t = memblock_end_of_DRAM();
     let zone_dma_bits: c_int;
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         let mut v = __fix_to_virt(FIX_KMAP_END);
         let end = __fix_to_virt(FIX_KMAP_BEGIN);
@@ -164,7 +164,7 @@ pub unsafe fn paging_init() {
     }
     printk!(KERN_DEBUG "Top of RAM: 0x{:x}, Total RAM: 0x{:x}\n", top_of_ram, total_ram);
     printk!(KERN_DEBUG "Memory hole size: {}MB\n", ((top_of_ram - total_ram) >> 20) as c_long);
-    if cfg!(feature = "CONFIG_PPC32") { zone_dma_bits = 30; } else { zone_dma_bits = 31; }
+    if cfg!(CONFIG_PPC32) { zone_dma_bits = 30; } else { zone_dma_bits = 31; }
     zone_dma_limit = DMA_BIT_MASK(zone_dma_bits);
     mark_nonram_nosave();
 }
@@ -172,10 +172,10 @@ pub unsafe fn paging_init() {
 pub unsafe fn arch_mm_preinit() {
     fadump_cma_init(); kdump_cma_reserve(); kvm_cma_reserve();
     BUILD_BUG_ON!(MMU_PAGE_COUNT > 16);
-    #[cfg(feature = "CONFIG_SWIOTLB")]
+    #[cfg(CONFIG_SWIOTLB)]
     { memblock_set_bottom_up(true); swiotlb_init(ppc_swiotlb_enable, ppc_swiotlb_flags); }
     kasan_late_init();
-    #[cfg(all(feature = "CONFIG_PPC_E500", not(feature = "CONFIG_SMP")))]
+    #[cfg(all(CONFIG_PPC_E500, not(CONFIG_SMP)))]
     { per_cpu!(next_tlbcam_idx, smp_processor_id()) = (mfspr(SPRN_TLB1CFG) & TLBnCFG_N_ENTRY) - 1; }
 }
 
@@ -194,7 +194,7 @@ unsafe fn add_system_ram_resources() -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_STRICT_DEVMEM")]
+#[cfg(CONFIG_STRICT_DEVMEM)]
 pub unsafe fn devmem_is_allowed(pfn: c_ulong) -> c_int {
     if page_is_rtas_user_buf(pfn) { return 1; }
     if iomem_is_exclusive(PFN_PHYS(pfn)) { return 0; }
@@ -202,19 +202,19 @@ pub unsafe fn devmem_is_allowed(pfn: c_ulong) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_EXECMEM")]
+#[cfg(CONFIG_EXECMEM)]
 static mut execmem_info: execmem_info = execmem_info_zeroed!();
 
-#[cfg(all(feature = "CONFIG_EXECMEM", any(feature = "CONFIG_PPC_8xx", feature = "CONFIG_PPC_BOOK3S_603")))]
+#[cfg(all(CONFIG_EXECMEM, any(CONFIG_PPC_8xx, CONFIG_PPC_BOOK3S_603)))]
 unsafe fn prealloc_execmem_pgtable() {
     let mut va = ALIGN_DOWN(MODULES_VADDR, PGDIR_SIZE);
     while va < MODULES_END { pte_alloc_kernel(pmd_off_k(va), va); va += PGDIR_SIZE; }
 }
 
-#[cfg(all(feature = "CONFIG_EXECMEM", not(any(feature = "CONFIG_PPC_8xx", feature = "CONFIG_PPC_BOOK3S_603"))))]
+#[cfg(all(CONFIG_EXECMEM, not(any(CONFIG_PPC_8xx, CONFIG_PPC_BOOK3S_603))))]
 unsafe fn prealloc_execmem_pgtable() {}
 
-#[cfg(feature = "CONFIG_EXECMEM")]
+#[cfg(CONFIG_EXECMEM)]
 pub unsafe fn execmem_arch_setup() -> *mut execmem_info {
     let kprobes_prot = if strict_module_rwx_enabled() { PAGE_KERNEL_ROX } else { PAGE_KERNEL_EXEC };
     let prot = if strict_module_rwx_enabled() { PAGE_KERNEL } else { PAGE_KERNEL_EXEC };

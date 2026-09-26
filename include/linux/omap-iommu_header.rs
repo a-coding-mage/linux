@@ -22,7 +22,7 @@ pub struct device {
 }
 
 // CONFIG_OMAP_IOMMU is a build-time configuration condition.
-#[cfg(feature = "CONFIG_OMAP_IOMMU")]
+#[cfg(CONFIG_OMAP_IOMMU)]
 extern "C" {
     pub fn omap_iommu_save_ctx(dev: *mut device);
     pub fn omap_iommu_restore_ctx(dev: *mut device);
@@ -31,21 +31,21 @@ extern "C" {
     pub fn omap_iommu_domain_activate(domain: *mut iommu_domain) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_IOMMU"))]
+#[cfg(not(CONFIG_OMAP_IOMMU))]
 #[inline]
 pub unsafe fn omap_iommu_save_ctx(_dev: *mut device) {}
 
-#[cfg(not(feature = "CONFIG_OMAP_IOMMU"))]
+#[cfg(not(CONFIG_OMAP_IOMMU))]
 #[inline]
 pub unsafe fn omap_iommu_restore_ctx(_dev: *mut device) {}
 
-#[cfg(not(feature = "CONFIG_OMAP_IOMMU"))]
+#[cfg(not(CONFIG_OMAP_IOMMU))]
 #[inline]
 pub unsafe fn omap_iommu_domain_deactivate(_domain: *mut iommu_domain) -> i32 {
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_IOMMU"))]
+#[cfg(not(CONFIG_OMAP_IOMMU))]
 #[inline]
 pub unsafe fn omap_iommu_domain_activate(_domain: *mut iommu_domain) -> i32 {
     -ENODEV

@@ -44,25 +44,25 @@ extern "C" {
 }
 
 /* Function descriptor handling (if any) is selected by CONFIG_HAVE_FUNCTION_DESCRIPTORS. */
-#[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+#[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 extern "C" {
     pub fn dereference_function_descriptor(ptr: *mut c_void) -> *mut c_void;
     pub fn dereference_kernel_function_descriptor(ptr: *mut c_void) -> *mut c_void;
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS"))]
+#[cfg(not(CONFIG_HAVE_FUNCTION_DESCRIPTORS))]
 #[repr(C)]
 pub struct func_desc_t {
     pub addr: usize,
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS"))]
+#[cfg(not(CONFIG_HAVE_FUNCTION_DESCRIPTORS))]
 #[inline]
 pub unsafe fn dereference_function_descriptor(ptr: *mut c_void) -> *mut c_void {
     ptr
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS"))]
+#[cfg(not(CONFIG_HAVE_FUNCTION_DESCRIPTORS))]
 #[inline]
 pub unsafe fn dereference_kernel_function_descriptor(ptr: *mut c_void) -> *mut c_void {
     ptr
@@ -70,7 +70,7 @@ pub unsafe fn dereference_kernel_function_descriptor(ptr: *mut c_void) -> *mut c
 
 #[inline]
 pub const fn have_function_descriptors() -> bool {
-    cfg!(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")
+    cfg!(CONFIG_HAVE_FUNCTION_DESCRIPTORS)
 }
 
 #[inline]

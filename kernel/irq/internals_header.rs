@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Translated from internals.h; included dependencies and configuration are supplied elsewhere. */
 
-#[cfg(feature = "CONFIG_SPARSE_IRQ")]
+#[cfg(CONFIG_SPARSE_IRQ)]
 pub const MAX_SPARSE_IRQS: i32 = i32::MAX;
-#[cfg(not(feature = "CONFIG_SPARSE_IRQ"))]
+#[cfg(not(CONFIG_SPARSE_IRQ))]
 pub const MAX_SPARSE_IRQS: u32 = NR_IRQS;
 
 pub const IRQ_RESEND: bool = true;
@@ -73,23 +73,23 @@ extern "C" {
     pub fn __irq_put_desc_unlock(desc: *mut irq_desc, flags: u64, bus: bool);
 }
 
-#[cfg(feature = "CONFIG_SPARSE_IRQ")]
+#[cfg(CONFIG_SPARSE_IRQ)]
 #[inline(always)] pub unsafe fn irq_mark_irq_noop(_irq: u32) {}
-#[cfg(feature = "CONFIG_SPARSE_IRQ")]
+#[cfg(CONFIG_SPARSE_IRQ)]
 #[inline(always)] pub unsafe fn irq_desc_get_ref(_desc: *mut irq_desc) -> bool { true }
-#[cfg(feature = "CONFIG_SPARSE_IRQ")]
+#[cfg(CONFIG_SPARSE_IRQ)]
 #[inline(always)] pub unsafe fn irq_desc_put_ref(_desc: *mut irq_desc) {}
-#[cfg(not(feature = "CONFIG_SPARSE_IRQ"))]
+#[cfg(not(CONFIG_SPARSE_IRQ))]
 #[inline(always)] pub unsafe fn irq_desc_get_ref(_desc: *mut irq_desc) -> bool { true }
-#[cfg(not(feature = "CONFIG_SPARSE_IRQ"))]
+#[cfg(not(CONFIG_SPARSE_IRQ))]
 #[inline(always)] pub unsafe fn irq_desc_put_ref(_desc: *mut irq_desc) {}
 
 #[inline] pub unsafe fn irq_desc_is_chained(desc: *mut irq_desc) -> bool { !(*desc).action.is_null() && (*desc).action == &mut chained_action }
 #[inline] pub unsafe fn irq_is_nmi(desc: *mut irq_desc) -> bool { (*desc).istate & IRQS_NMI != 0 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" { pub fn irq_setup_affinity(desc: *mut irq_desc) -> i32; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn irq_setup_affinity(_desc: *mut irq_desc) -> i32 { 0 }
 
 #[inline] pub unsafe fn chip_bus_lock(desc: *mut irq_desc) {
@@ -110,18 +110,18 @@ extern "C" { pub fn irq_setup_affinity(desc: *mut irq_desc) -> i32; }
 #[inline] pub unsafe fn irqd_set_managed_shutdown(d: *mut irq_data) { irqd_set(d, IRQD_MANAGED_SHUTDOWN); }
 #[inline] pub unsafe fn irqd_clr_managed_shutdown(d: *mut irq_data) { irqd_clear(d, IRQD_MANAGED_SHUTDOWN); }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 extern "C" { pub fn irq_pm_handle_wakeup(desc: *mut irq_desc); pub fn irq_pm_install_action(desc: *mut irq_desc, action: *mut irqaction); pub fn irq_pm_remove_action(desc: *mut irq_desc, action: *mut irqaction); }
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 #[inline] pub unsafe fn irq_pm_handle_wakeup(_desc: *mut irq_desc) {}
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 #[inline] pub unsafe fn irq_pm_install_action(_desc: *mut irq_desc, _action: *mut irqaction) {}
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 #[inline] pub unsafe fn irq_pm_remove_action(_desc: *mut irq_desc, _action: *mut irqaction) {}
 
 #[inline] pub unsafe fn irqd_get_parent_data(irqd: *mut irq_data) -> *mut irq_data {
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")] { (*irqd).parent_data }
-    #[cfg(not(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY"))] { core::ptr::null_mut() }
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)] { (*irqd).parent_data }
+    #[cfg(not(CONFIG_IRQ_DOMAIN_HIERARCHY))] { core::ptr::null_mut() }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

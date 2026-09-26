@@ -5,7 +5,7 @@
 
 /* C dependencies: linux/elf.h, linux/uaccess.h, and asm-generic/sections.h. */
 
-#[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+#[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 pub type func_desc_t = func_desc;
 
 extern "C" {
@@ -33,13 +33,13 @@ extern "C" {
     #[cfg(target_pointer_width = "64")]
     pub static mut __end_interrupts: [core::ffi::c_char; 0];
 
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_PPC_POWERNV"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
     pub static mut start_real_trampolines: [core::ffi::c_char; 0];
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_PPC_POWERNV"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
     pub static mut end_real_trampolines: [core::ffi::c_char; 0];
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_PPC_POWERNV"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
     pub static mut start_virt_trampolines: [core::ffi::c_char; 0];
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_PPC_POWERNV"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_PPC_POWERNV))]
     pub static mut end_virt_trampolines: [core::ffi::c_char; 0];
 }
 
@@ -48,12 +48,12 @@ extern "C" {
 #[cfg(target_pointer_width = "64")]
 #[inline]
 pub unsafe fn kernel_toc_addr() -> usize {
-    #[cfg(feature = "CONFIG_PPC_KERNEL_PCREL")]
+    #[cfg(CONFIG_PPC_KERNEL_PCREL)]
     {
         /* BUILD_BUG(); */
         return usize::MAX;
     }
-    #[cfg(not(feature = "CONFIG_PPC_KERNEL_PCREL"))]
+    #[cfg(not(CONFIG_PPC_KERNEL_PCREL))]
     {
         let toc_ptr: usize;
         core::arch::asm!("mr {0}, 2", out(reg) toc_ptr);

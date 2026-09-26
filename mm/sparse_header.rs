@@ -11,13 +11,13 @@
 /*
  * mm/sparse.c
  */
-#[cfg(feature = "CONFIG_SPARSEMEM")]
+#[cfg(CONFIG_SPARSEMEM)]
 extern "C" {
     pub fn sparse_init();
     pub fn sparse_index_init(section_nr: ::core::ffi::c_ulong, nid: ::core::ffi::c_int) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_SPARSEMEM")]
+#[cfg(CONFIG_SPARSEMEM)]
 #[inline]
 pub unsafe fn sparse_init_one_section(
     ms: *mut mem_section,
@@ -44,7 +44,7 @@ pub unsafe fn sparse_init_one_section(
     (*ms).usage = usage;
 }
 
-#[cfg(feature = "CONFIG_SPARSEMEM")]
+#[cfg(CONFIG_SPARSEMEM)]
 #[inline]
 pub unsafe fn __section_mark_present(
     ms: *mut mem_section,
@@ -57,7 +57,7 @@ pub unsafe fn __section_mark_present(
     (*ms).section_mem_map |= SECTION_MARKED_PRESENT;
 }
 
-#[cfg(feature = "CONFIG_SPARSEMEM")]
+#[cfg(CONFIG_SPARSEMEM)]
 #[inline]
 pub const fn mem_section_usage_size() -> usize {
     struct_size_t(
@@ -66,19 +66,19 @@ pub const fn mem_section_usage_size() -> usize {
     )
 }
 
-#[cfg(not(feature = "CONFIG_SPARSEMEM"))]
+#[cfg(not(CONFIG_SPARSEMEM))]
 #[inline]
 pub fn sparse_init() {}
 
 /*
  * mm/sparse-vmemmap.c
  */
-#[cfg(feature = "CONFIG_SPARSEMEM_VMEMMAP")]
+#[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
 extern "C" {
     pub fn sparse_init_subsection_map();
 }
 
-#[cfg(not(feature = "CONFIG_SPARSEMEM_VMEMMAP"))]
+#[cfg(not(CONFIG_SPARSEMEM_VMEMMAP))]
 #[inline]
 pub fn sparse_init_subsection_map() {}
 

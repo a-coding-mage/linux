@@ -65,7 +65,7 @@ pub struct cipso_v4_std_map_part {
     pub local_size: u32,
 }
 
-#[cfg(feature = "CONFIG_NETLABEL")]
+#[cfg(CONFIG_NETLABEL)]
 extern "C" {
     pub static mut cipso_v4_cache_enabled: i32;
     pub static mut cipso_v4_cache_bucketsize: i32;
@@ -95,44 +95,44 @@ extern "C" {
     pub fn cipso_v4_validate(skb: *const sk_buff, option: *mut *mut u8) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_doi_add(_: *mut cipso_v4_doi, _: *mut netlbl_audit) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_doi_free(_: *mut cipso_v4_doi) {}
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_doi_remove(_: u32, _: *mut netlbl_audit) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_doi_getdef(_: u32) -> *mut cipso_v4_doi { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_doi_walk(_: *mut u32, _: Option<unsafe extern "C" fn(*mut cipso_v4_doi, *mut core::ffi::c_void) -> i32>, _: *mut core::ffi::c_void) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_cache_invalidate() {}
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_cache_add(_: *const u8, _: *const netlbl_lsm_secattr) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_error(_: *mut sk_buff, _: i32, _: u32) {}
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_getattr(_: *const u8, _: *mut netlbl_lsm_secattr) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_sock_setattr(_: *mut sock, _: *const cipso_v4_doi, _: *const netlbl_lsm_secattr, _: bool) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_sock_delattr(_: *mut sock) {}
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_sock_getattr(_: *mut sock, _: *mut netlbl_lsm_secattr) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_req_setattr(_: *mut request_sock, _: *const cipso_v4_doi, _: *const netlbl_lsm_secattr) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_req_delattr(_: *mut request_sock) {}
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_skbuff_setattr(_: *mut sk_buff, _: *const cipso_v4_doi, _: *const netlbl_lsm_secattr) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_skbuff_delattr(_: *mut sk_buff) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_skbuff_getattr(_: *const sk_buff, _: *mut netlbl_lsm_secattr) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_optptr(_: *const sk_buff) -> *mut u8 { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NETLABEL"))]
+#[cfg(not(CONFIG_NETLABEL))]
 pub unsafe fn cipso_v4_validate(_: *const sk_buff, option: *mut *mut u8) -> i32 {
     let opt = *option;
     let mut err_offset: u8 = 0;

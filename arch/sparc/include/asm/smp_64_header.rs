@@ -9,7 +9,7 @@
  * linux/atomic.h, and asm/percpu.h are supplied externally.
  */
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub static mut cpu_sibling_map: cpumask_t;
     pub static mut cpu_core_map: [cpumask_t; NR_CPUS];
@@ -37,19 +37,19 @@ extern "C" {
     pub fn smp_capture();
     pub fn smp_release();
 
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub fn __cpu_disable() -> i32;
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub fn __cpu_die(cpu: u32);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct seq_file {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! raw_smp_processor_id {
     () => {
@@ -57,37 +57,37 @@ macro_rules! raw_smp_processor_id {
     };
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub const fn hard_smp_processor_id() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_fill_in_sib_core_maps {
     () => {{ }};
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_fetch_global_regs {
     () => {{ }};
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_fetch_global_pmu {
     () => {{ }};
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_init_cpu_poke {
     () => {{ }};
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! scheduler_poke {
     () => {{ }};

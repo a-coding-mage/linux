@@ -9,7 +9,7 @@
 /*
  * Functions to change memory attributes.
  */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 extern "C" {
     pub fn set_memory_ro(addr: ::core::ffi::c_ulong, numpages: ::core::ffi::c_int) -> ::core::ffi::c_int;
     pub fn set_memory_rw(addr: ::core::ffi::c_ulong, numpages: ::core::ffi::c_int) -> ::core::ffi::c_int;
@@ -18,7 +18,7 @@ extern "C" {
     pub fn set_memory_rw_nx(addr: ::core::ffi::c_ulong, numpages: ::core::ffi::c_int) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline(always)]
 pub unsafe fn set_kernel_memory(
     startp: *mut ::core::ffi::c_char,
@@ -32,22 +32,22 @@ pub unsafe fn set_kernel_memory(
     set_memory(start, num_pages as ::core::ffi::c_int)
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn set_memory_ro(_addr: ::core::ffi::c_ulong, _numpages: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn set_memory_rw(_addr: ::core::ffi::c_ulong, _numpages: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn set_memory_x(_addr: ::core::ffi::c_ulong, _numpages: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn set_memory_nx(_addr: ::core::ffi::c_ulong, _numpages: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn set_memory_rw_nx(_addr: ::core::ffi::c_ulong, _numpages: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn set_kernel_memory(
     _startp: *mut ::core::ffi::c_char,
@@ -65,13 +65,13 @@ extern "C" {
 /* `struct page` is supplied by the surrounding kernel bindings. */
 pub type page = ::core::ffi::c_void;
 
-#[cfg(feature = "CONFIG_STRICT_KERNEL_RWX")]
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_STRICT_KERNEL_RWX)]
+#[cfg(CONFIG_64BIT)]
 pub const SECTION_ALIGN: u32 = 1 << 21;
-#[cfg(feature = "CONFIG_STRICT_KERNEL_RWX")]
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(CONFIG_STRICT_KERNEL_RWX)]
+#[cfg(not(CONFIG_64BIT))]
 pub const SECTION_ALIGN: u32 = 1 << 22;
-#[cfg(not(feature = "CONFIG_STRICT_KERNEL_RWX"))]
+#[cfg(not(CONFIG_STRICT_KERNEL_RWX))]
 pub const SECTION_ALIGN: usize = L1_CACHE_BYTES;
 
 pub const PECOFF_SECTION_ALIGNMENT: u32 = 0x1000;

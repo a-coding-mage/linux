@@ -415,7 +415,7 @@ unsafe fn virtsnd_pcm_notify_cb(queue: *mut VirtioSndQueue) {
 #[no_mangle]
 pub extern "C" fn virtsnd_pcm_tx_notify_cb(vqueue: *mut Virtqueue) {
     unsafe {
-        let snd = (*(*vqueue).vdev).priv as *mut VirtioSnd;
+        let snd = (*(*vqueue).vdev).r#priv as *mut VirtioSnd;
 
         virtsnd_pcm_notify_cb(virtsnd_tx_queue(snd));
     }
@@ -431,7 +431,7 @@ pub extern "C" fn virtsnd_pcm_tx_notify_cb(vqueue: *mut Virtqueue) {
 #[no_mangle]
 pub extern "C" fn virtsnd_pcm_rx_notify_cb(vqueue: *mut Virtqueue) {
     unsafe {
-        let snd = (*(*vqueue).vdev).priv as *mut VirtioSnd;
+        let snd = (*(*vqueue).vdev).r#priv as *mut VirtioSnd;
 
         virtsnd_pcm_notify_cb(virtsnd_rx_queue(snd));
     }
@@ -539,7 +539,7 @@ extern "C" {
     ) -> *mut VirtioSndMsg;
     pub fn virtsnd_ctl_msg_request(msg: *mut VirtioSndMsg) -> *mut u8;
 
-    pub const SNDRV_PCM_STREAM_PLAYBACK: u32;
 }
+pub const SNDRV_PCM_STREAM_PLAYBACK: u32;
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

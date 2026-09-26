@@ -27,7 +27,7 @@
 
 pub const NFSDBG_FACILITY: i32 = NFSDBG_PROC;
 
-static unsafe fn nfs_proc_get_root(server: *mut nfs_server, fhandle: *mut nfs_fh, info: *mut nfs_fsinfo) -> i32 {
+unsafe fn nfs_proc_get_root(server: *mut nfs_server, fhandle: *mut nfs_fh, info: *mut nfs_fsinfo) -> i32 {
     let fattr = (*info).fattr;
     let mut fsinfo: nfs2_fsstat = core::mem::zeroed();
     let mut msg: rpc_message = rpc_message { rpc_proc: &nfs_procedures[NFSPROC_GETATTR], rpc_argp: fhandle, rpc_resp: fattr, ..core::mem::zeroed() };
@@ -49,7 +49,7 @@ static unsafe fn nfs_proc_get_root(server: *mut nfs_server, fhandle: *mut nfs_fh
     (*info).change_attr_type = NFS4_CHANGE_TYPE_IS_UNDEFINED; (*info).xattr_support = 0; 0
 }
 
-static unsafe fn nfs_proc_getattr(server: *mut nfs_server, fhandle: *mut nfs_fh, fattr: *mut nfs_fattr, inode: *mut inode) -> i32 {
+unsafe fn nfs_proc_getattr(server: *mut nfs_server, fhandle: *mut nfs_fh, fattr: *mut nfs_fattr, inode: *mut inode) -> i32 {
     let mut msg: rpc_message = rpc_message { rpc_proc: &nfs_procedures[NFSPROC_GETATTR], rpc_argp: fhandle, rpc_resp: fattr, ..core::mem::zeroed() };
     let mut task_flags: u16 = 0;
     if !inode.is_null() && (*server).flags & NFS_MOUNT_SOFTREVAL != 0 { task_flags |= RPC_TASK_TIMEOUT; }
@@ -57,7 +57,7 @@ static unsafe fn nfs_proc_getattr(server: *mut nfs_server, fhandle: *mut nfs_fh,
     let status = rpc_call_sync((*server).client, &mut msg, task_flags); dprintk!("NFS reply getattr: %d\n", status); status
 }
 
-static unsafe fn nfs_proc_setattr(dentry: *mut dentry, fattr: *mut nfs_fattr, sattr: *mut iattr) -> i32 {
+unsafe fn nfs_proc_setattr(dentry: *mut dentry, fattr: *mut nfs_fattr, sattr: *mut iattr) -> i32 {
     let inode = d_inode(dentry); let mut arg: nfs_sattrargs = nfs_sattrargs { fh: NFS_FH(inode), sattr, ..core::mem::zeroed() };
     let mut msg: rpc_message = rpc_message { rpc_proc: &nfs_procedures[NFSPROC_SETATTR], rpc_argp: &mut arg as *mut _ as *mut _, rpc_resp: fattr, ..core::mem::zeroed() };
     (*sattr).ia_mode &= S_IALLUGO;
@@ -66,7 +66,7 @@ static unsafe fn nfs_proc_setattr(dentry: *mut dentry, fattr: *mut nfs_fattr, sa
     if status == 0 { nfs_setattr_update_inode(inode, sattr, fattr); } dprintk!("NFS reply setattr: %d\n", status); status
 }
 
-static unsafe fn nfs_proc_lookup(dir: *mut inode, dentry: *mut dentry, name: *const qstr, fhandle: *mut nfs_fh, fattr: *mut nfs_fattr) -> i32 {
+unsafe fn nfs_proc_lookup(dir: *mut inode, dentry: *mut dentry, name: *const qstr, fhandle: *mut nfs_fh, fattr: *mut nfs_fattr) -> i32 {
     let mut arg: nfs_diropargs = nfs_diropargs { fh: NFS_FH(dir), name: (*name).name, len: (*name).len };
     let mut res: nfs_diropok = nfs_diropok { fh: fhandle, fattr, ..core::mem::zeroed() };
     let mut msg: rpc_message = rpc_message { rpc_proc: &nfs_procedures[NFSPROC_LOOKUP], rpc_argp: &mut arg as *mut _ as *mut _, rpc_resp: &mut res as *mut _ as *mut _, ..core::mem::zeroed() };

@@ -15,7 +15,7 @@ pub struct xfsb_bitmap {
 }
 
 // CONFIG_XFS_RT controls whether the realtime implementation is available.
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 extern "C" {
     pub fn xrep_reap_rtblocks(
         sc: *mut xfs_scrub,
@@ -24,7 +24,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 macro_rules! xrep_reap_rtblocks {
     ($($arg:tt)*) => { -EOPNOTSUPP };
 }

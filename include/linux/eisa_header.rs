@@ -38,7 +38,7 @@ pub struct eisa_device {
     pub res: [resource; EISA_MAX_RESOURCES],
     pub dma_mask: u64,
     pub dev: device, /* generic device */
-    #[cfg(feature = "CONFIG_EISA_NAMES")]
+    #[cfg(CONFIG_EISA_NAMES)]
     pub pretty_name: [::core::ffi::c_char; EISA_DEVICE_INFO_NAME_SIZE],
 }
 
@@ -71,19 +71,19 @@ macro_rules! to_eisa_driver {
 }
 
 /* These external functions are only available when EISA support is enabled. */
-#[cfg(feature = "CONFIG_EISA")]
+#[cfg(CONFIG_EISA)]
 extern "C" {
     pub static eisa_bus_type: bus_type;
     pub fn eisa_driver_register(edrv: *mut eisa_driver) -> ::core::ffi::c_int;
     pub fn eisa_driver_unregister(edrv: *mut eisa_driver);
 }
 
-#[cfg(not(feature = "CONFIG_EISA"))]
+#[cfg(not(CONFIG_EISA))]
 pub unsafe fn eisa_driver_register(_edrv: *mut eisa_driver) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_EISA"))]
+#[cfg(not(CONFIG_EISA))]
 pub unsafe fn eisa_driver_unregister(_edrv: *mut eisa_driver) {}
 
 /* Mimics pci.h... */
@@ -113,12 +113,12 @@ extern "C" {
     pub fn eisa_root_register(root: *mut eisa_root_device) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_EISA")]
+#[cfg(CONFIG_EISA)]
 extern "C" {
     pub static mut EISA_bus: ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_EISA"))]
+#[cfg(not(CONFIG_EISA))]
 pub const EISA_bus: ::core::ffi::c_int = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

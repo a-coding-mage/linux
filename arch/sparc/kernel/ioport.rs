@@ -173,13 +173,13 @@ pub unsafe extern "C" fn arch_sync_dma_for_cpu(_paddr: PhysAddr, _size: usize, d
 }
 
 // CONFIG_SBUS conditional section.
-#[cfg(feature = "CONFIG_SBUS")]
+#[cfg(CONFIG_SBUS)]
 #[no_mangle]
 pub unsafe extern "C" fn sbus_set_sbus64(_dev: *mut Device, _x: i32) {
     printk(b"sbus_set_sbus64: unsupported\0".as_ptr() as *const i8);
 }
 
-#[cfg(feature = "CONFIG_SBUS")]
+#[cfg(CONFIG_SBUS)]
 unsafe extern "C" fn sparc_register_ioport() -> i32 {
     register_proc_sparc_ioport();
     0
@@ -188,7 +188,7 @@ unsafe extern "C" fn sparc_register_ioport() -> i32 {
 // arch_initcall(sparc_register_ioport) is a build-system registration hook.
 
 // CONFIG_PROC_FS conditional section.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe extern "C" fn sparc_io_proc_show(m: *mut SeqFile, _v: *mut core::ffi::c_void) -> i32 {
     let root = (*m).private as *mut Resource;
     let mut r = (*root).child;
@@ -202,7 +202,7 @@ unsafe extern "C" fn sparc_io_proc_show(m: *mut SeqFile, _v: *mut core::ffi::c_v
 }
 
 unsafe fn register_proc_sparc_ioport() {
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     {
         proc_create_single_data(b"io_map\0".as_ptr() as *const i8, 0, core::ptr::null_mut(), sparc_io_proc_show, core::ptr::addr_of_mut!(sparc_iomap) as *mut _);
         proc_create_single_data(b"dvma_map\0".as_ptr() as *const i8, 0, core::ptr::null_mut(), sparc_io_proc_show, core::ptr::addr_of_mut!(SPARC_DVMA) as *mut _);

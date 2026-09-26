@@ -55,10 +55,10 @@ extern "C" { fn kernel_oom_order(_: *mut oom_control) -> i32; }
 #[no_mangle]
 pub unsafe extern "C" fn process_shares_mm(p: *const task_struct, mm: *const mm_struct) -> bool {
     let mut t: *const task_struct = core::ptr::null();
-    for_each_thread(p, t) {
+    for_each_thread!(p, t, {
         let t_mm = read_once_mm(t);
         if !t_mm.is_null() { return t_mm == mm; }
-    }
+    });
     false
 }
 
@@ -155,8 +155,8 @@ extern "C" { fn pr_warn(_: *const u8); }
 #[no_mangle]
 pub unsafe extern "C" fn process_mrelease(pidfd: i32, flags: u32) -> isize {
     if flags != 0 { return -22; }
-    #[cfg(not(feature = "CONFIG_MMU"))] { return -38; }
-    #[cfg(feature = "CONFIG_MMU")]
+    #[cfg(not(CONFIG_MMU))] { return -38; }
+    #[cfg(CONFIG_MMU)]
     {
         let mut ff = 0; let task = pidfd_get_task(pidfd, &mut ff);
         if task.is_null() { return -3; }

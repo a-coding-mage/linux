@@ -140,7 +140,8 @@ unsafe fn efivarfs_callback(name16: *mut efi_char16_t, vendor: efi_guid_t, name_
     efivarfs_create_dentry(data as *mut super_block, name16, name_size, vendor, name)
 }
 
-enum { Opt_uid, Opt_gid }
+pub const Opt_uid: i32 = 0;
+pub const Opt_gid: i32 = Opt_uid + 1;
 
 static EFIVARFS_PARAMETERS: [fs_parameter_spec; 3] = [fsparam_uid!(c"uid", Opt_uid), fsparam_gid!(c"gid", Opt_gid), fsparam_empty!()];
 

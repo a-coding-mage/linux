@@ -20,7 +20,7 @@ pub struct btrfs_ref {
 }
 
 // CONFIG_BTRFS_DEBUG is represented here by the corresponding Rust cfg feature.
-#[cfg(feature = "CONFIG_BTRFS_DEBUG")]
+#[cfg(CONFIG_BTRFS_DEBUG)]
 extern "C" {
     pub fn btrfs_build_ref_tree(fs_info: *mut btrfs_fs_info) -> c_int;
     pub fn btrfs_free_ref_cache(fs_info: *mut btrfs_fs_info);
@@ -31,7 +31,7 @@ extern "C" {
     pub fn btrfs_free_ref_tree_range(fs_info: *mut btrfs_fs_info, start: u64, len: u64);
 }
 
-#[cfg(feature = "CONFIG_BTRFS_DEBUG")]
+#[cfg(CONFIG_BTRFS_DEBUG)]
 #[inline]
 pub unsafe fn btrfs_init_ref_verify(fs_info: *mut btrfs_fs_info) {
     // C: spin_lock_init(&fs_info->ref_verify_lock);
@@ -41,17 +41,17 @@ pub unsafe fn btrfs_init_ref_verify(fs_info: *mut btrfs_fs_info) {
     let _ = fs_info;
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_DEBUG"))]
+#[cfg(not(CONFIG_BTRFS_DEBUG))]
 #[inline]
 pub unsafe fn btrfs_build_ref_tree(_fs_info: *mut btrfs_fs_info) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_DEBUG"))]
+#[cfg(not(CONFIG_BTRFS_DEBUG))]
 #[inline]
 pub unsafe fn btrfs_free_ref_cache(_fs_info: *mut btrfs_fs_info) {}
 
-#[cfg(not(feature = "CONFIG_BTRFS_DEBUG"))]
+#[cfg(not(CONFIG_BTRFS_DEBUG))]
 #[inline]
 pub unsafe fn btrfs_ref_tree_mod(
     _fs_info: *mut btrfs_fs_info,
@@ -60,7 +60,7 @@ pub unsafe fn btrfs_ref_tree_mod(
     0
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_DEBUG"))]
+#[cfg(not(CONFIG_BTRFS_DEBUG))]
 #[inline]
 pub unsafe fn btrfs_free_ref_tree_range(
     _fs_info: *mut btrfs_fs_info,
@@ -69,7 +69,7 @@ pub unsafe fn btrfs_free_ref_tree_range(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_DEBUG"))]
+#[cfg(not(CONFIG_BTRFS_DEBUG))]
 #[inline]
 pub unsafe fn btrfs_init_ref_verify(_fs_info: *mut btrfs_fs_info) {}
 

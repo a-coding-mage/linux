@@ -74,7 +74,7 @@ pub unsafe fn s3c_gpio_cfgall_range(mut start:u32,mut nr:u32,cfg:u32,p:samsung_g
 ];
 
 // CONFIG_S3C_GPIO_TRACK is a build-time option in the C source.
-#[cfg(feature="CONFIG_S3C_GPIO_TRACK")]
+#[cfg(CONFIG_S3C_GPIO_TRACK)]
 pub static mut s3c_gpios:*mut samsung_gpio_chip = core::ptr::null_mut();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

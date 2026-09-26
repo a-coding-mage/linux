@@ -6,7 +6,7 @@
 // Kernel headers and symbols referenced by this translation are supplied by
 // the surrounding kernel bindings.
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 extern "C" {
     fn put_f32_reg(fp_reg: libc::c_ulong, value: libc::c_ulong);
     fn put_f64_reg(fp_reg: libc::c_ulong, value: libc::c_ulong);
@@ -17,21 +17,21 @@ extern "C" {
     fn get_f64_reg(fp_reg: libc::c_ulong, value: *mut u64);
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn set_f32_rd(insn: libc::c_ulong, regs: *mut pt_regs, val: libc::c_ulong) -> i32 {
     put_f32_reg((insn >> 7) & 0x1f, val);
     (*regs).status |= SR_FS_DIRTY;
     0
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn set_f64_rd(insn: libc::c_ulong, regs: *mut pt_regs, val: u64) -> i32 {
     put_f64_reg((insn >> 7) & 0x1f, val as libc::c_ulong);
     (*regs).status |= SR_FS_DIRTY;
     0
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn get_f64_rs(insn: libc::c_ulong, off: u8, regs: *mut pt_regs) -> libc::c_ulong {
     let fp_reg = (insn >> off) & 0x1f;
     #[cfg(target_pointer_width = "64")]
@@ -42,20 +42,20 @@ unsafe fn get_f64_rs(insn: libc::c_ulong, off: u8, regs: *mut pt_regs) -> libc::
     val
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn get_f32_rs(insn: libc::c_ulong, off: u8, regs: *mut pt_regs) -> libc::c_ulong {
     let val = get_f32_reg((insn >> off) & 0x1f);
     (*regs).status |= SR_FS_DIRTY;
     val
 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn set_f32_rd(_: libc::c_ulong, _: *mut pt_regs, _: libc::c_ulong) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn set_f64_rd(_: libc::c_ulong, _: *mut pt_regs, _: u64) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn get_f64_rs(_: libc::c_ulong, _: u8, _: *mut pt_regs) -> libc::c_ulong { 0 }
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn get_f32_rs(_: libc::c_ulong, _: u8, _: *mut pt_regs) -> libc::c_ulong { 0 }
 
 #[repr(C)]

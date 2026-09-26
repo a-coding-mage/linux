@@ -127,7 +127,7 @@ unsafe fn esp6_xmit(x: *mut xfrm_state, skb: *mut sk_buff, features: netdev_feat
     if !hw_offload || !skb_is_gso(skb) { esp.nfrags = esp6_output_head(x, skb, &mut esp); if esp.nfrags < 0 { return esp.nfrags; } }
     let seq = (*xo).seq.low; esp.esph = ip_esp_hdr(skb); (*esp.esph).spi = (*x).id.spi; skb_push(skb, -skb_network_offset(skb));
     if (*xo).flags & XFRM_GSO_SEGMENT != 0 { (*esp.esph).seq_no = htonl(seq); if !skb_is_gso(skb) { (*xo).seq.low += 1; } else { (*xo).seq.low += (*skb_shinfo(skb)).gso_segs; } }
-    if (*xo).seq.low < seq { (*xo).seq.hi += 1; } esp.seqno = cpu_to_be64((*xo).seq.low as u64 + ((*xo).seq.hi as u64 << 32));
+    if (*xo).seq.low < seq { (*xo).seq.hi += 1; } esp.seqno = cpu_to_be64((*xo).seq.low as u64 + (((*xo).seq.hi as u64) << 32));
     let mut len = (*skb).len - core::mem::size_of::<ipv6hdr>(); if len > IPV6_MAXPLEN { len = 0; } (*ipv6_hdr(skb)).payload_len = htons(len as _);
     if hw_offload { if skb_ext_add(skb, SKB_EXT_SEC_PATH).is_null() { return -ENOMEM; } let xo2 = xfrm_offload(skb); if xo2.is_null() { return -EINVAL; } (*xo2).flags |= XFRM_XMIT; return 0; }
     let err = esp6_output_tail(x, skb, &mut esp); if err != 0 { return err; } secpath_reset(skb); if skb_needs_linearize(skb, (*(*skb).dev).features) != 0 && __skb_linearize(skb) != 0 { return -ENOMEM; } 0

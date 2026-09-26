@@ -13,25 +13,22 @@ unsafe extern "C" {
         rndkeys: *mut u32,
         inv_rndkeys: *mut u32,
         in_key: *const u8,
-        key_len: ::core::ffi::c_int,
-    );
+        key_len: ::core::ffi::c_int);
     pub fn __aes_arm_encrypt(
         rk: *const u32,
         rounds: ::core::ffi::c_int,
         input: *const u8,
-        out: *mut u8,
-    );
+        out: *mut u8);
     pub fn __aes_arm_decrypt(
         inv_rk: *const u32,
         rounds: ::core::ffi::c_int,
         input: *const u8,
-        out: *mut u8,
-    );
+        out: *mut u8);
 }
 
 unsafe fn aes_preparekey_arch(
-    k: *mut union aes_enckey_arch,
-    inv_k: *mut union aes_invkey_arch,
+    k: *mut aes_enckey_arch,
+    inv_k: *mut aes_invkey_arch,
     in_key: *const u8,
     key_len: ::core::ffi::c_int,
     _nrounds: ::core::ffi::c_int,

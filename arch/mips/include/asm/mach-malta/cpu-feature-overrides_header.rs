@@ -12,7 +12,7 @@
  */
 // The following conditional configurations correspond to the C preprocessor
 // symbols CONFIG_CPU_MIPS32 and CONFIG_CPU_MIPS64.
-#[cfg(feature = "CONFIG_CPU_MIPS32")]
+#[cfg(CONFIG_CPU_MIPS32)]
 mod config_cpu_mips32 {
     pub const cpu_has_tlb: i32 = 1;
     pub const cpu_has_4kex: i32 = 1;
@@ -40,7 +40,7 @@ mod config_cpu_mips32 {
     pub const cpu_icache_snoops_remote_store: i32 = 1;
 }
 
-#[cfg(feature = "CONFIG_CPU_MIPS64")]
+#[cfg(CONFIG_CPU_MIPS64)]
 mod config_cpu_mips64 {
     pub const cpu_has_tlb: i32 = 1;
     pub const cpu_has_4kex: i32 = 1;

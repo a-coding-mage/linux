@@ -713,7 +713,7 @@ unsafe fn test_statmount_string(mask: uint64_t, off: size_t, name: *const c_char
         free(sm as *mut c_void);
         return;
     }
-    if (*sm).size as usize  < size_of::<statmount>() {
+    if ((*sm).size as usize)  < size_of::<statmount>() {
         ksft_test_result_fail(c"unexpected size: %u < %u\n".as_ptr(), (*sm).size, size_of::<statmount>() as uint32_t);
         free(sm as *mut c_void);
         return;
@@ -876,7 +876,7 @@ unsafe fn test_statmount_by_fd() {
         goto_out(&mut sm, fd, tmproot.as_ptr(), subdir.as_ptr(), tmpdir.as_ptr());
         return;
     }
-    if (*sm).size as usize  < size_of::<statmount>() {
+    if ((*sm).size as usize)  < size_of::<statmount>() {
         ksft_test_result_fail(c"unexpected size: %u < %u\n".as_ptr(), (*sm).size, size_of::<statmount>() as uint32_t);
         chroot(c".".as_ptr());
         goto_out(&mut sm, fd, tmproot.as_ptr(), subdir.as_ptr(), tmpdir.as_ptr());
@@ -914,7 +914,7 @@ unsafe fn test_statmount_by_fd() {
         goto_err_fd(&mut sm, fd, tmproot.as_ptr(), subdir.as_ptr(), tmpdir.as_ptr());
         return;
     }
-    if (*sm).size as usize  < size_of::<statmount>() {
+    if ((*sm).size as usize)  < size_of::<statmount>() {
         ksft_test_result_fail(c"unexpected size: %u < %u\n".as_ptr(), (*sm).size, size_of::<statmount>() as uint32_t);
         goto_out(&mut sm, fd, tmproot.as_ptr(), subdir.as_ptr(), tmpdir.as_ptr());
         return;
@@ -1042,7 +1042,7 @@ unsafe fn test_statmount_by_fd_unmounted() {
         rmdir(tmpdir.as_ptr());
         return;
     }
-    if (*sm).size as usize  < size_of::<statmount>() {
+    if ((*sm).size as usize)  < size_of::<statmount>() {
         ksft_test_result_fail(c"unexpected size: %u < %u\n".as_ptr(), (*sm).size, size_of::<statmount>() as uint32_t);
         free(sm as *mut c_void);
         close(fd);

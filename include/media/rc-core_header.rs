@@ -83,15 +83,15 @@ pub struct rc_dev {
     pub min_timeout: u32,
     pub max_timeout: u32,
     pub rx_resolution: u32,
-    #[cfg(feature = "CONFIG_LIRC")]
+    #[cfg(CONFIG_LIRC)]
     pub lirc_dev: device,
-    #[cfg(feature = "CONFIG_LIRC")]
+    #[cfg(CONFIG_LIRC)]
     pub lirc_cdev: cdev,
-    #[cfg(feature = "CONFIG_LIRC")]
+    #[cfg(CONFIG_LIRC)]
     pub gap_start: ktime_t,
-    #[cfg(feature = "CONFIG_LIRC")]
+    #[cfg(CONFIG_LIRC)]
     pub lirc_fh_lock: spinlock_t,
-    #[cfg(feature = "CONFIG_LIRC")]
+    #[cfg(CONFIG_LIRC)]
     pub lirc_fh: list_head,
     pub change_protocol: Option<unsafe extern "C" fn(*mut rc_dev, *mut u64) -> i32>,
     pub open: Option<unsafe extern "C" fn(*mut rc_dev) -> i32>,

@@ -165,7 +165,7 @@ unsafe fn test_lsm(skel: *mut lsm) -> c_int {
 
 	syscall(__NR_setdomainname, &buf as *const c_int, -2_i64 as c_long);
 	syscall(__NR_setdomainname, 0 as c_long, -3_i64 as c_long);
-	syscall(__NR_setdomainname, !0_i64 as c_long, -4_i64 as c_long);
+	syscall(__NR_setdomainname, !0i64 as c_long, -4_i64 as c_long);
 
 	ASSERT_EQ((*(*skel).bss).copy_test, 3, b"copy_test\0".as_ptr() as *const c_char);
 

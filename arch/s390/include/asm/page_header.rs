@@ -60,83 +60,83 @@ pub unsafe fn copy_user_page(to: *mut core::ffi::c_void, from: *mut core::ffi::c
 // vma_alloc_zeroed_movable_folio(vma, vaddr) expands to
 // vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr).
 
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[repr(C)] pub struct pgprot_t { pub pgprot: usize }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[repr(C)] pub struct pte_t { pub pte: usize }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[repr(C)] pub struct pmd_t { pub pmd: usize }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[repr(C)] pub struct pud_t { pub pud: usize }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[repr(C)] pub struct p4d_t { pub p4d: usize }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[repr(C)] pub struct pgd_t { pub pgd: usize }
 
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 pub type pgprot_t = usize;
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 pub type pte_t = usize;
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 pub type pmd_t = usize;
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 pub type pud_t = usize;
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 pub type p4d_t = usize;
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 pub type pgd_t = usize;
 
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn pgprot_val(v: pgprot_t) -> usize { v.pgprot }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn pte_val(v: pte_t) -> usize { v.pte }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn pmd_val(v: pmd_t) -> usize { v.pmd }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn pud_val(v: pud_t) -> usize { v.pud }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn p4d_val(v: p4d_t) -> usize { v.p4d }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn pgd_val(v: pgd_t) -> usize { v.pgd }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn pgprot_val(v: pgprot_t) -> usize { v }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn pte_val(v: pte_t) -> usize { v }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn pmd_val(v: pmd_t) -> usize { v }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn pud_val(v: pud_t) -> usize { v }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn p4d_val(v: p4d_t) -> usize { v }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn pgd_val(v: pgd_t) -> usize { v }
 
 pub type pgtable_t = *mut pte_t;
 
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn __pgprot(x: usize) -> pgprot_t { x }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn __pte(x: usize) -> pte_t { x }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn __pmd(x: usize) -> pmd_t { x }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn __pud(x: usize) -> pud_t { x }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn __p4d(x: usize) -> p4d_t { x }
-#[cfg(not(feature = "CONFIG_STRICT_MM_TYPECHECKS"))]
+#[cfg(not(CONFIG_STRICT_MM_TYPECHECKS))]
 #[inline] pub const fn __pgd(x: usize) -> pgd_t { x }
 
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn __pgprot(x: usize) -> pgprot_t { pgprot_t { pgprot: x } }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn __pte(x: usize) -> pte_t { pte_t { pte: x } }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn __pmd(x: usize) -> pmd_t { pmd_t { pmd: x } }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn __pud(x: usize) -> pud_t { pud_t { pud: x } }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn __p4d(x: usize) -> p4d_t { p4d_t { p4d: x } }
-#[cfg(feature = "CONFIG_STRICT_MM_TYPECHECKS")]
+#[cfg(CONFIG_STRICT_MM_TYPECHECKS)]
 #[inline] pub const fn __pgd(x: usize) -> pgd_t { pgd_t { pgd: x } }
 
 #[inline]
@@ -190,9 +190,9 @@ extern "C" { pub static mut vm_layout: vm_layout; }
 
 #[inline] pub unsafe fn __kaslr_offset() -> usize { vm_layout.kaslr_offset }
 #[inline] pub unsafe fn __kaslr_offset_phys() -> usize { vm_layout.kaslr_offset_phys }
-#[cfg(feature = "CONFIG_RANDOMIZE_IDENTITY_BASE")]
+#[cfg(CONFIG_RANDOMIZE_IDENTITY_BASE)]
 #[inline] pub unsafe fn __identity_base() -> usize { vm_layout.identity_base }
-#[cfg(not(feature = "CONFIG_RANDOMIZE_IDENTITY_BASE"))]
+#[cfg(not(CONFIG_RANDOMIZE_IDENTITY_BASE))]
 #[inline] pub const fn __identity_base() -> usize { 0 }
 #[inline] pub unsafe fn ident_map_size() -> usize { vm_layout.identity_size }
 

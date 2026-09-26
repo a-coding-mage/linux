@@ -3,7 +3,7 @@
 
 // External ACPI declarations and macros are supplied by the surrounding crate.
 
-static unsafe fn acpi_tb_get_root_table_entry(
+unsafe fn acpi_tb_get_root_table_entry(
     table_entry: *mut u8,
     table_entry_size: u32,
 ) -> acpi_physical_address {

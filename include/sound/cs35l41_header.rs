@@ -1,4 +1,3 @@
-#define __CS35L41_H
 pub const CS35L41_FIRSTREG: u32 = 0x00000000;
 pub const CS35L41_LASTREG: u32 = 0x03804FE8;
 pub const CS35L41_DEVID: u32 = 0x00000000;

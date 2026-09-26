@@ -98,6 +98,7 @@ unsafe fn el0_svc_common(
     syscall_table: *const syscall_fn_t,
 ) {
     let mut flags = read_thread_flags();
+    'trace_exit: {
 
     (*regs).orig_x0 = (*regs).regs[0];
     (*regs).syscallno = scno;
@@ -113,7 +114,7 @@ unsafe fn el0_svc_common(
         }
         scno = syscall_trace_enter(regs);
         if scno == NO_SYSCALL {
-            goto trace_exit;
+            break 'trace_exit;
         }
     }
 
@@ -125,8 +126,8 @@ unsafe fn el0_svc_common(
             return;
         }
     }
-
-trace_exit:
+    }
+    
     syscall_trace_exit(regs);
 }
 

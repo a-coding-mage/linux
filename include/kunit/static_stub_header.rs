@@ -78,7 +78,7 @@ macro_rules! KUNIT_STATIC_STUB_REDIRECT {
 #[macro_export]
 macro_rules! kunit_activate_static_stub {
     ($test:expr, $real_fn_addr:expr, $replacement_addr:expr) => {{
-        /* C's typecheck_fn(typeof(&replacement_addr), real_fn_addr). */
+        /* C's typecheck_fn(typeof(&$replacement_addr), $real_fn_addr). */
         unsafe {
             $crate::__kunit_activate_static_stub(
                 $test,

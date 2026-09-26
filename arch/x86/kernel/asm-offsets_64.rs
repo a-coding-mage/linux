@@ -6,19 +6,19 @@
 // `offset!` emits an offset declaration and `blank!` emits a blank separator.
 
 pub fn main() -> i32 {
-    #[cfg(all(feature = "CONFIG_PARAVIRT", feature = "CONFIG_PARAVIRT_XXL", feature = "CONFIG_DEBUG_ENTRY"))]
+    #[cfg(all(CONFIG_PARAVIRT, CONFIG_PARAVIRT_XXL, CONFIG_DEBUG_ENTRY))]
     {
         unsafe {
             offset!("PV_IRQ_save_fl", paravirt_patch_template, irq.save_fl);
         }
     }
 
-    #[cfg(feature = "CONFIG_PARAVIRT")]
+    #[cfg(CONFIG_PARAVIRT)]
     {
         blank!();
     }
 
-    #[cfg(feature = "CONFIG_KVM_GUEST")]
+    #[cfg(CONFIG_KVM_GUEST)]
     {
         unsafe {
             offset!("KVM_STEAL_TIME_preempted", kvm_steal_time, preempted);

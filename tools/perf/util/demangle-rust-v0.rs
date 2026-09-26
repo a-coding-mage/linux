@@ -1759,7 +1759,7 @@ unsafe fn rust_demangle_legacy_display_demangle(
             i += (*rest - b'0' as c_char) as usize;
             rest = rest.add(1);
         }
-        if res.mangled.add(res.mangled_len).offset_from(rest) as usize as size_t < i {
+        if (res.mangled.add(res.mangled_len).offset_from(rest) as usize as size_t) < i {
             // safety: shouldn't reach this place if the input string is validated. bail out.
             // safety: we knwo rest <= res.mangled + res.mangled_len from the for-loop above
             break;

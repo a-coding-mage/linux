@@ -86,7 +86,7 @@ extern "C" {
 }
 
 // CONFIG_PCI controls whether these helpers access PCI subsystem fields.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn snd_soc_card_set_pci_ssid(
     card: *mut snd_soc_card,
@@ -98,7 +98,7 @@ pub unsafe fn snd_soc_card_set_pci_ssid(
     (*card).pci_subsystem_set = true;
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn snd_soc_card_get_pci_ssid(
     card: *mut snd_soc_card,
@@ -113,7 +113,7 @@ pub unsafe fn snd_soc_card_get_pci_ssid(
     0
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub unsafe fn snd_soc_card_set_pci_ssid(
     _card: *mut snd_soc_card,
@@ -121,7 +121,7 @@ pub unsafe fn snd_soc_card_set_pci_ssid(
     _device: ::std::os::raw::c_ushort,
 ) {}
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub unsafe fn snd_soc_card_get_pci_ssid(
     _card: *mut snd_soc_card,
@@ -150,11 +150,11 @@ pub unsafe fn snd_soc_card_get_codec_dai(
     let mut rtd: *mut snd_soc_pcm_runtime;
 
     // for_each_card_rtds(card, rtd)
-    for_each_card_rtds!(card, rtd) {
+    for_each_card_rtds!(card, rtd, {
         if strcmp((*snd_soc_rtd_to_codec(rtd, 0)).name, dai_name) == 0 {
             return snd_soc_rtd_to_codec(rtd, 0);
         }
-    }
+    });
 
     ::std::ptr::null_mut()
 }

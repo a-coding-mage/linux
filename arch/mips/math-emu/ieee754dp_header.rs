@@ -39,7 +39,7 @@ macro_rules! DPMANT {
     ($dp:expr) => { ($dp).mant };
 }
 
-pub unsafe fn ieee754dp_finite(x: union ieee754dp) -> bool {
+pub unsafe fn ieee754dp_finite(x: ieee754dp) -> bool {
     DPBEXP!(x) != DP_EMAX + 1 + DP_EBIAS
 }
 
@@ -91,8 +91,8 @@ macro_rules! DPDNORMZ {
     ($zm:ident, $ze:ident) => { DPDNORMx!($zm, $ze) };
 }
 
-pub unsafe fn builddp(s: i32, bx: i32, m: u64) -> union ieee754dp {
-    let mut r: union ieee754dp = core::mem::zeroed();
+pub unsafe fn builddp(s: i32, bx: i32, m: u64) -> ieee754dp {
+    let mut r: ieee754dp = core::mem::zeroed();
 
     assert!((s) == 0 || (s) == 1);
     assert!((bx) >= DP_EMIN - 1 + DP_EBIAS && (bx) <= DP_EMAX + 1 + DP_EBIAS);
@@ -106,8 +106,8 @@ pub unsafe fn builddp(s: i32, bx: i32, m: u64) -> union ieee754dp {
 }
 
 extern "C" {
-    pub fn ieee754dp_nanxcpt(x: union ieee754dp) -> union ieee754dp;
-    pub fn ieee754dp_format(s: i32, bexp: i32, mant: u64) -> union ieee754dp;
+    pub fn ieee754dp_nanxcpt(x: ieee754dp) -> ieee754dp;
+    pub fn ieee754dp_format(s: i32, bexp: i32, mant: u64) -> ieee754dp;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

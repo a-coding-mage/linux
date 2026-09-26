@@ -67,8 +67,8 @@ pub struct kernel_param_ops {
 
 extern "C" {
     fn sysfs_streq(a: *const i8, b: *const i8) -> bool;
-    fn param_set_bint(*const i8, *const kernel_param) -> i32;
-    fn param_get_bool(*mut i8, *const kernel_param) -> i32;
+    fn param_set_bint(_: *const i8, _: *const kernel_param) -> i32;
+    fn param_get_bool(_: *mut i8, _: *const kernel_param) -> i32;
 }
 
 unsafe extern "C" fn avic_param_set(val: *const i8, kp: *const kernel_param) -> i32 {

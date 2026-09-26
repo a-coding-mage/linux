@@ -7,7 +7,7 @@ pub const CGROUP_WEIGHT_MIN: u32 = 1;
 pub const CGROUP_WEIGHT_DFL: u32 = 100;
 pub const CGROUP_WEIGHT_MAX: u32 = 10000;
 
-#[cfg(feature = "CONFIG_CGROUPS")]
+#[cfg(CONFIG_CGROUPS)]
 pub const CGROUP_HAS_SUBSYS_CONFIG: bool = cfg!(feature = "CGROUP_SUBSYS_COUNT_GT_0");
 
 #[repr(u32)]
@@ -181,9 +181,9 @@ extern "C" {
 #[macro_export] macro_rules! css_for_each_descendant_pre { ($pos:ident, $css:expr, $body:block) => { for $pos in core::iter::successors(Some(unsafe { css_next_descendant_pre(core::ptr::null_mut(), $css) }), |p| { if p.is_null() { None } else { Some(unsafe { css_next_descendant_pre(*p, $css) }) } }) $body }; }
 #[macro_export] macro_rules! css_for_each_descendant_post { ($pos:ident, $css:expr, $body:block) => { for $pos in core::iter::successors(Some(unsafe { css_next_descendant_post(core::ptr::null_mut(), $css) }), |p| { if p.is_null() { None } else { Some(unsafe { css_next_descendant_post(*p, $css) }) } }) $body }; }
 
-#[cfg(not(feature = "CONFIG_CGROUPS"))]
+#[cfg(not(CONFIG_CGROUPS))]
 #[inline] pub unsafe fn cgroup_id_disabled(_cgrp: *const Cgroup) -> U64 { 1 }
-#[cfg(not(feature = "CONFIG_CGROUPS"))]
+#[cfg(not(CONFIG_CGROUPS))]
 #[inline] pub unsafe fn task_under_cgroup_hierarchy(_task: *mut TaskStruct, _ancestor: *mut Cgroup) -> bool { true }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

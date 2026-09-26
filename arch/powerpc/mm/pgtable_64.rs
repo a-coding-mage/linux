@@ -18,56 +18,56 @@
 
 // C header dependencies are supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 pub static mut process_tb: *mut prtb_entry = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 pub static mut partition_tb: *mut patb_entry = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pte_index_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pmd_index_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pud_index_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pgd_index_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pud_cache_index: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pte_table_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pmd_table_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pud_table_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pgd_table_size: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pmd_val_bits: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pud_val_bits: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pgd_val_bits: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __kernel_virt_start: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __vmalloc_start: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __vmalloc_end: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __kernel_io_start: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 pub static mut __kernel_io_end: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut vmemmap: *mut page = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pte_frag_nr: c_ulong = 0;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[no_mangle] pub static mut __pte_frag_size_shift: c_ulong = 0;
 
 #[cfg(not(feature = "__PAGETABLE_PUD_FOLDED"))]
 pub unsafe fn p4d_page(p4d: p4d_t) -> *mut page {
     if p4d_leaf(p4d) {
-        if !cfg!(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP") {
+        if !cfg!(CONFIG_HAVE_ARCH_HUGE_VMAP) {
             VM_WARN_ON(!p4d_leaf(p4d));
         }
         return pte_page(p4d_pte(p4d));
@@ -77,7 +77,7 @@ pub unsafe fn p4d_page(p4d: p4d_t) -> *mut page {
 
 pub unsafe fn pud_page(pud: pud_t) -> *mut page {
     if pud_leaf(pud) {
-        if !cfg!(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP") {
+        if !cfg!(CONFIG_HAVE_ARCH_HUGE_VMAP) {
             VM_WARN_ON(!pud_leaf(pud));
         }
         return pte_page(pud_pte(pud));
@@ -96,7 +96,7 @@ pub unsafe fn pmd_page(pmd: pmd_t) -> *mut page {
          * vmalloc), and it uses pmd_page() etc., when huge vmap is
          * enabled so these checks can't be used.
          */
-        if !cfg!(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP") {
+        if !cfg!(CONFIG_HAVE_ARCH_HUGE_VMAP) {
             VM_WARN_ON(!pmd_leaf(pmd));
         }
         return pte_page(pmd_pte(pmd));
@@ -104,7 +104,7 @@ pub unsafe fn pmd_page(pmd: pmd_t) -> *mut page {
     virt_to_page(pmd_page_vaddr(pmd))
 }
 
-#[cfg(feature = "CONFIG_STRICT_KERNEL_RWX")]
+#[cfg(CONFIG_STRICT_KERNEL_RWX)]
 pub unsafe fn mark_rodata_ro() {
     if !mmu_has_feature(MMU_FTR_KERNEL_RO) {
         pr_warn("Warning: Unable to mark rodata read only on this CPU.\n");
@@ -118,7 +118,7 @@ pub unsafe fn mark_rodata_ro() {
     }
 }
 
-#[cfg(feature = "CONFIG_STRICT_KERNEL_RWX")]
+#[cfg(CONFIG_STRICT_KERNEL_RWX)]
 pub unsafe fn mark_initmem_nx() {
     if radix_enabled() {
         radix__mark_initmem_nx();

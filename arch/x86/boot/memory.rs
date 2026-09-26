@@ -15,7 +15,7 @@
 
 const SMAP: u32 = 0x534d4150; /* ASCII "SMAP" */
 
-static unsafe fn detect_memory_e820() {
+unsafe fn detect_memory_e820() {
     let mut count = 0;
     let mut ireg: biosregs = core::mem::zeroed();
     let mut oreg: biosregs = core::mem::zeroed();
@@ -75,7 +75,7 @@ static unsafe fn detect_memory_e820() {
     boot_params.e820_entries = count;
 }
 
-static unsafe fn detect_memory_e801() {
+unsafe fn detect_memory_e801() {
     let mut ireg: biosregs = core::mem::zeroed();
     let mut oreg: biosregs = core::mem::zeroed();
 
@@ -109,7 +109,7 @@ static unsafe fn detect_memory_e801() {
     }
 }
 
-static unsafe fn detect_memory_88() {
+unsafe fn detect_memory_88() {
     let mut ireg: biosregs = core::mem::zeroed();
     let mut oreg: biosregs = core::mem::zeroed();
 

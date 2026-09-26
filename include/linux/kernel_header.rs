@@ -88,7 +88,7 @@ pub enum system_states {
 }
 
 /* Rebuild everything on CONFIG_DYNAMIC_FTRACE. */
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 pub const REBUILD_DUE_TO_DYNAMIC_FTRACE: () = ();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

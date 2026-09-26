@@ -61,20 +61,20 @@ unsafe fn acpi_prepare_root_resources(ci: *mut acpi_pci_root_info) -> i32 {
             return status;
         }
 
-        resource_list_for_each_entry_safe!(entry, tmp, &mut (*ci).resources) {
+        resource_list_for_each_entry_safe!(entry, tmp, &mut (*ci).resources, {
             if (*(*entry).res).flags & IORESOURCE_MEM != 0 {
                 (*entry).offset = (*(*ci).root).mcfg_addr & GENMASK_ULL(63, 40);
                 (*(*entry).res).start |= (*entry).offset;
                 (*(*entry).res).end |= (*entry).offset;
             }
-        }
+        });
         return status;
     }
 
-    resource_list_for_each_entry_safe!(entry, tmp, &mut (*ci).resources) {
+    resource_list_for_each_entry_safe!(entry, tmp, &mut (*ci).resources, {
         dev_dbg!(&(*device).dev, "host bridge window %pR (ignored)\n", (*entry).res);
         resource_list_destroy_entry(entry);
-    }
+    });
 
     0
 }
@@ -96,6 +96,8 @@ unsafe fn arch_pci_ecam_create(
     let mut err: i32;
     let mut conflict: *mut resource;
     let cfg: *mut pci_config_window = kzalloc_obj!();
+    'err_exit: {
+    'err_exit_iomap: {
 
     if (*busr).start > (*busr).end {
         return ERR_PTR!(-EINVAL);
@@ -121,27 +123,28 @@ unsafe fn arch_pci_ecam_create(
     if !conflict.is_null() {
         err = -EBUSY;
         dev_err!(dev, "can't claim ECAM area %pR: address conflict with %s %pR\n", &(*cfg).res, (*conflict).name, conflict);
-        goto!(err_exit);
+        break 'err_exit;
     }
 
     (*cfg).win = pci_remap_cfgspace((*cfgres).start, bus_range * bsz as usize);
     if (*cfg).win.is_null() {
-        goto!(err_exit_iomap);
+        break 'err_exit_iomap;
     }
 
     if let Some(init) = (*ops).init {
         err = init(cfg);
         if err != 0 {
-            goto!(err_exit);
+            break 'err_exit;
         }
     }
     dev_info!(dev, "ECAM at %pR for %pR\n", &(*cfg).res, &(*cfg).busr);
     return cfg;
-
-err_exit_iomap:
+    }
+    
     err = -ENOMEM;
     dev_err!(dev, "ECAM ioremap failed\n");
-err_exit:
+    }
+    
     pci_ecam_free(cfg);
     ERR_PTR!(err)
 }
@@ -228,9 +231,9 @@ pub unsafe fn pci_acpi_scan_root(root: *mut acpi_pci_root) -> *mut pci_bus {
             pci_bus_claim_resources(bus);
         }
         pci_assign_unassigned_root_bus_resources(bus);
-        list_for_each_entry!(child, &mut (*bus).children, node) {
+        list_for_each_entry!(child, &mut (*bus).children, node, {
             pcie_bus_configure_settings(child);
-        }
+        });
         return bus;
     }
     bus

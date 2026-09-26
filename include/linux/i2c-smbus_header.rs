@@ -31,13 +31,13 @@ extern "C" {
 }
 
 // Corresponds to: IS_ENABLED(CONFIG_I2C_SMBUS) && IS_ENABLED(CONFIG_I2C_SLAVE)
-#[cfg(all(feature = "CONFIG_I2C_SMBUS", feature = "CONFIG_I2C_SLAVE"))]
+#[cfg(all(CONFIG_I2C_SMBUS, CONFIG_I2C_SLAVE))]
 extern "C" {
     pub fn i2c_new_slave_host_notify_device(adapter: *mut i2c_adapter) -> *mut i2c_client;
     pub fn i2c_free_slave_host_notify_device(client: *mut i2c_client);
 }
 
-#[cfg(not(all(feature = "CONFIG_I2C_SMBUS", feature = "CONFIG_I2C_SLAVE")))]
+#[cfg(not(all(CONFIG_I2C_SMBUS, CONFIG_I2C_SLAVE)))]
 pub unsafe fn i2c_new_slave_host_notify_device(
     _adapter: *mut i2c_adapter,
 ) -> *mut i2c_client {
@@ -46,20 +46,20 @@ pub unsafe fn i2c_new_slave_host_notify_device(
     ERR_PTR(-ENOSYS)
 }
 
-#[cfg(not(all(feature = "CONFIG_I2C_SMBUS", feature = "CONFIG_I2C_SLAVE")))]
+#[cfg(not(all(CONFIG_I2C_SMBUS, CONFIG_I2C_SLAVE)))]
 pub unsafe fn i2c_free_slave_host_notify_device(_client: *mut i2c_client) {}
 
 // Corresponds to: IS_ENABLED(CONFIG_I2C_SMBUS) && IS_ENABLED(CONFIG_DMI)
-#[cfg(all(feature = "CONFIG_I2C_SMBUS", feature = "CONFIG_DMI"))]
+#[cfg(all(CONFIG_I2C_SMBUS, CONFIG_DMI))]
 extern "C" {
     pub fn i2c_register_spd_write_disable(adap: *mut i2c_adapter);
     pub fn i2c_register_spd_write_enable(adap: *mut i2c_adapter);
 }
 
-#[cfg(not(all(feature = "CONFIG_I2C_SMBUS", feature = "CONFIG_DMI")))]
+#[cfg(not(all(CONFIG_I2C_SMBUS, CONFIG_DMI)))]
 pub unsafe fn i2c_register_spd_write_disable(_adap: *mut i2c_adapter) {}
 
-#[cfg(not(all(feature = "CONFIG_I2C_SMBUS", feature = "CONFIG_DMI")))]
+#[cfg(not(all(CONFIG_I2C_SMBUS, CONFIG_DMI)))]
 pub unsafe fn i2c_register_spd_write_enable(_adap: *mut i2c_adapter) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

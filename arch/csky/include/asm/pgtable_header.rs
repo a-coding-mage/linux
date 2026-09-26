@@ -49,7 +49,7 @@ pub const PAGE_KERNEL: pgprot_t = __pgprot(_PAGE_BASE | _PAGE_READ | _PAGE_VALID
 pub const _PAGE_IOREMAP: usize = _PAGE_BASE | _PAGE_READ | _PAGE_VALID | _PAGE_WRITE | _PAGE_DIRTY | _PAGE_MODIFIED | _PAGE_GLOBAL | _CACHE_UNCACHED | _PAGE_SO;
 pub const _PAGE_CHG_MASK: usize = !(_PAGE_PRESENT | _PAGE_READ | _PAGE_WRITE | _CACHE_MASK | _PAGE_GLOBAL);
 
-pub unsafe extern "C" { pub fn load_pgd(pg_dir: usize); pub static mut invalid_pte_table: [pte_t; PTRS_PER_PTE]; }
+unsafe extern "C" { pub fn load_pgd(pg_dir: usize); pub static mut invalid_pte_table: [pte_t; PTRS_PER_PTE]; }
 
 #[inline]
 pub unsafe fn set_pte(p: *mut pte_t, pte: pte_t) { *p = pte; #[cfg(CONFIG_CPU_NEED_TLBSYNC)] dcache_wb_line(p as u32); smp_mb(); }
@@ -79,12 +79,12 @@ pub unsafe fn set_pmd(p: *mut pmd_t, pmd: pmd_t) { *p = pmd; #[cfg(CONFIG_CPU_NE
 
 pub struct file;
 pub const __HAVE_PHYS_MEM_ACCESS_PROT: bool = true;
-pub unsafe extern "C" { pub fn phys_mem_access_prot(file: *mut file, pfn: usize, size: usize, vma_prot: pgprot_t) -> pgprot_t; }
+unsafe extern "C" { pub fn phys_mem_access_prot(file: *mut file, pfn: usize, size: usize, vma_prot: pgprot_t) -> pgprot_t; }
 #[inline] pub fn pgprot_noncached(mut prot: pgprot_t) -> pgprot_t { let mut v = pgprot_val(prot); v = (v & !_CACHE_MASK) | _CACHE_UNCACHED | _PAGE_SO; __pgprot(v) }
 #[inline] pub fn pgprot_writecombine(mut prot: pgprot_t) -> pgprot_t { let mut v = pgprot_val(prot); v = (v & !_CACHE_MASK) | _CACHE_UNCACHED; __pgprot(v) }
 #[inline] pub fn pte_modify(pte: pte_t, newprot: pgprot_t) -> pte_t { __pte((pte_val(pte) & _PAGE_CHG_MASK) | pgprot_val(newprot)) }
 
-pub unsafe extern "C" { pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD]; pub fn paging_init(); pub fn update_mmu_cache_range(vmf: *mut vm_fault, vma: *mut vm_area_struct, address: usize, pte: *mut pte_t, nr: u32); }
+unsafe extern "C" { pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD]; pub fn paging_init(); pub fn update_mmu_cache_range(vmf: *mut vm_fault, vma: *mut vm_area_struct, address: usize, pte: *mut pte_t, nr: u32); }
 #[inline] pub unsafe fn update_mmu_cache(vma: *mut vm_area_struct, addr: usize, ptep: *mut pte_t) { update_mmu_cache_range(core::ptr::null_mut(), vma, addr, ptep, 1); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

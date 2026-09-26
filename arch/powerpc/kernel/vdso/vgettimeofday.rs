@@ -28,7 +28,7 @@ pub unsafe fn __c_kernel_clock_getres(
 #[cfg(not(target_arch = "powerpc64"))]
 // CONFIG_COMPAT_32BIT_TIME is represented here by the corresponding Cargo
 // feature when the surrounding build system exposes it to Rust.
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 pub unsafe fn __c_kernel_clock_gettime(
     clock: clockid_t,
     ts: *mut old_timespec32,
@@ -38,7 +38,7 @@ pub unsafe fn __c_kernel_clock_gettime(
 }
 
 #[cfg(not(target_arch = "powerpc64"))]
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 pub unsafe fn __c_kernel_clock_getres(
     clock_id: clockid_t,
     res: *mut old_timespec32,
@@ -65,7 +65,7 @@ pub unsafe fn __c_kernel_clock_getres_time64(
     __cvdso_clock_getres_data(vd, clock_id, res)
 }
 
-#[cfg(any(target_arch = "powerpc64", feature = "CONFIG_COMPAT_32BIT_TIME"))]
+#[cfg(any(target_arch = "powerpc64", CONFIG_COMPAT_32BIT_TIME))]
 pub unsafe fn __c_kernel_gettimeofday(
     tv: *mut __kernel_old_timeval,
     tz: *mut timezone,
@@ -74,7 +74,7 @@ pub unsafe fn __c_kernel_gettimeofday(
     __cvdso_gettimeofday_data(vd, tv, tz)
 }
 
-#[cfg(any(target_arch = "powerpc64", feature = "CONFIG_COMPAT_32BIT_TIME"))]
+#[cfg(any(target_arch = "powerpc64", CONFIG_COMPAT_32BIT_TIME))]
 pub unsafe fn __c_kernel_time(
     time: *mut __kernel_old_time_t,
     vd: *const vdso_time_data,

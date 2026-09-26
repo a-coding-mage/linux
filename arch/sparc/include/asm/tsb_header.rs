@@ -69,19 +69,19 @@ pub const KERNEL_TSB4M_NENTRIES: usize = 4096;
 #[macro_export]
 macro_rules! KERN_PGTABLE_WALK { ($vaddr:tt, $reg1:tt, $reg2:tt, $fail:tt) => { $crate::tsb_asm!("sethi/or swapper_pg_dir; walk PGD, PUD and PMD with ASI_PHYS_USE_EC; handle huge mappings; branch FAIL_LABEL") }; }
 
-#[cfg(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE))]
 #[macro_export]
 macro_rules! USER_PGTABLE_CHECK_PUD_HUGE { ($vaddr:tt, $reg1:tt, $reg2:tt, $fail:tt, $pte:tt) => { $crate::tsb_asm!("check PUD validity and _PAGE_PUD_HUGE; propagate VADDR bits 32:22; branch FAIL_LABEL or PTE_LABEL") }; }
 
-#[cfg(not(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE")))]
+#[cfg(not(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE)))]
 #[macro_export]
 macro_rules! USER_PGTABLE_CHECK_PUD_HUGE { ($vaddr:tt, $reg1:tt, $reg2:tt, $fail:tt, $pte:tt) => { $crate::tsb_asm!("brz,pn REG1, FAIL_LABEL; nop") }; }
 
-#[cfg(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE))]
 #[macro_export]
 macro_rules! USER_PGTABLE_CHECK_PMD_HUGE { ($vaddr:tt, $reg1:tt, $reg2:tt, $fail:tt, $pte:tt) => { $crate::tsb_asm!("check PMD validity and _PAGE_PMD_HUGE; propagate 4MB VADDR bit; branch FAIL_LABEL or PTE_LABEL") }; }
 
-#[cfg(not(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE")))]
+#[cfg(not(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE)))]
 #[macro_export]
 macro_rules! USER_PGTABLE_CHECK_PMD_HUGE { ($vaddr:tt, $reg1:tt, $reg2:tt, $fail:tt, $pte:tt) => { $crate::tsb_asm!("brz,pn REG1, FAIL_LABEL; nop") }; }
 
@@ -92,7 +92,7 @@ macro_rules! OBP_TRANS_LOOKUP { ($vaddr:tt, $reg1:tt, $reg2:tt, $reg3:tt, $fail:
 #[macro_export]
 macro_rules! KERN_TSB_LOOKUP_TL1 { ($vaddr:tt, $tag:tt, $reg1:tt, $reg2:tt, $reg3:tt, $reg4:tt, $ok:tt) => { $crate::tsb_asm!("compute swapper_tsb index; load quad; compare TAG; branch OK_LABEL on hit") }; }
 
-#[cfg(not(feature = "CONFIG_DEBUG_PAGEALLOC"))]
+#[cfg(not(CONFIG_DEBUG_PAGEALLOC))]
 #[macro_export]
 macro_rules! KERN_TSB4M_LOOKUP_TL1 { ($tag:tt, $reg1:tt, $reg2:tt, $reg3:tt, $reg4:tt, $ok:tt) => { $crate::tsb_asm!("compute swapper_4m_tsb index from TAG; load quad; compare TAG; branch OK_LABEL on hit") }; }
 

@@ -42,7 +42,7 @@ pub const ACCEL_MAX_MINORS: i32 = 256;
 // file_operations named `name`, initialized with THIS_MODULE and DRM_ACCEL_FOPS.
 
 // IS_ENABLED(CONFIG_DRM_ACCEL) is a build-time kernel configuration condition.
-#[cfg(feature = "CONFIG_DRM_ACCEL")]
+#[cfg(CONFIG_DRM_ACCEL)]
 extern "C" {
     pub static mut accel_minors_xa: xarray;
 
@@ -53,21 +53,21 @@ extern "C" {
     pub fn accel_debugfs_register(dev: *mut drm_device);
 }
 
-#[cfg(not(feature = "CONFIG_DRM_ACCEL"))]
+#[cfg(not(CONFIG_DRM_ACCEL))]
 pub unsafe fn accel_core_exit() {
 }
 
-#[cfg(not(feature = "CONFIG_DRM_ACCEL"))]
+#[cfg(not(CONFIG_DRM_ACCEL))]
 pub unsafe fn accel_core_init() -> i32 {
     /* Return 0 to allow drm_core_init to complete successfully */
     0
 }
 
-#[cfg(not(feature = "CONFIG_DRM_ACCEL"))]
+#[cfg(not(CONFIG_DRM_ACCEL))]
 pub unsafe fn accel_set_device_instance_params(_kdev: *mut device, _index: i32) {
 }
 
-#[cfg(not(feature = "CONFIG_DRM_ACCEL"))]
+#[cfg(not(CONFIG_DRM_ACCEL))]
 pub unsafe fn accel_debugfs_register(_dev: *mut drm_device) {
 }
 

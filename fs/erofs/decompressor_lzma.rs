@@ -203,13 +203,13 @@ unsafe fn z_erofs_lzma_decompress(
     xz_dec_microlzma_reset((*strm).state, (*rq).inputsize, (*rq).outputsize, !(*rq).partial_decoding);
     buf.in_size = min((*rq).inputsize, PAGE_SIZE - (*rq).pageofs_in);
     (*rq).inputsize -= buf.in_size;
-    buf.in = dctx.kin.add((*rq).pageofs_in);
+    buf.r#in = dctx.kin.add((*rq).pageofs_in);
     dctx.bounce = (*strm).bounce.as_mut_ptr();
     loop {
         dctx.avail_out = buf.out_size - buf.out_pos;
         dctx.inbuf_sz = buf.in_size;
         dctx.inbuf_pos = buf.in_pos;
-        reason = z_erofs_stream_switch_bufs(&mut dctx, &mut buf.out, &mut buf.in, pgpl);
+        reason = z_erofs_stream_switch_bufs(&mut dctx, &mut buf.out, &mut buf.r#in, pgpl);
         if !reason.is_null() { break; }
         if buf.out_size == buf.out_pos {
             buf.out_size = dctx.avail_out;

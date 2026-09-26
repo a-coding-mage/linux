@@ -35,12 +35,12 @@ unsafe fn psci_ops_check() -> i32 {
         || migrate_type == PSCI_0_2_TOS_UP_NO_MIGRATE
     {
         /* There is a UP Trusted OS, find on which core it resides. */
-        for_each_online_cpu!(cpu) {
+        for_each_online_cpu!(cpu, {
             if psci_tos_resident_on(cpu) {
                 TOS_RESIDENT_CPU = cpu;
                 break;
             }
-        }
+        });
         if TOS_RESIDENT_CPU == -1 {
             pr_warn!("UP Trusted OS resides on no online CPU\n");
         }
@@ -55,7 +55,7 @@ unsafe fn down_and_up_cpus(cpus: *const cpumask, offlined_cpus: *mut cpumask) ->
 
     cpumask_clear(offlined_cpus);
 
-    for_each_cpu!(cpu, cpus) {
+    for_each_cpu!(cpu, cpus, {
         let ret = remove_cpu(cpu);
         if cpumask_weight(offlined_cpus) + 1 == NB_AVAILABLE_CPUS {
             if ret != -EBUSY {
@@ -72,9 +72,9 @@ unsafe fn down_and_up_cpus(cpus: *const cpumask, offlined_cpus: *mut cpumask) ->
             err += 1;
         }
         if ret == 0 { cpumask_set_cpu(cpu, offlined_cpus); }
-    }
+    });
 
-    for_each_cpu!(cpu, offlined_cpus) {
+    for_each_cpu!(cpu, offlined_cpus, {
         let ret = add_cpu(cpu);
         if ret != 0 {
             pr_err!("Error occurred ({}) while trying to power up CPU {}\n", ret, cpu);
@@ -82,7 +82,7 @@ unsafe fn down_and_up_cpus(cpus: *const cpumask, offlined_cpus: *mut cpumask) ->
         } else {
             cpumask_clear_cpu(cpu, offlined_cpus);
         }
-    }
+    });
 
     WARN_ON!( !cpumask_empty(offlined_cpus) || num_online_cpus() != NB_AVAILABLE_CPUS );
     err as u32
@@ -189,13 +189,13 @@ unsafe fn suspend_tests() -> i32 {
     if threads.is_null() { return -ENOMEM; }
     cpuidle_pause_and_lock();
     let mut nb_threads = 0;
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         let dev = per_cpu!(cpuidle_devices, cpu);
         let drv = cpuidle_get_cpu_driver(dev);
         if dev.is_null() || drv.is_null() { pr_warn!("cpuidle not available on CPU {}\n", cpu); continue; }
         let thread = kthread_create_on_cpu(suspend_test_thread, cpu as isize as *mut _, cpu, c"psci_suspend_test".as_ptr());
         if IS_ERR(thread) { pr_err!("Failed to create kthread on CPU {}\n", cpu); } else { *threads.add(nb_threads as usize) = thread; nb_threads += 1; }
-    }
+    });
     if nb_threads < 1 { cpuidle_resume_and_unlock(); kfree(threads); return -ENODEV; }
     atomic_set(&mut NB_ACTIVE_THREADS, nb_threads);
     for i in 0..nb_threads { wake_up_process(*threads.add(i as usize)); }
@@ -212,7 +212,7 @@ unsafe fn psci_checker() -> i32 {
     if ret == 0 { pr_info!("Hotplug tests passed OK\n"); } else if ret > 0 { pr_err!("{} error(s) encountered in hotplug tests\n", ret); } else { pr_err!("Out of memory\n"); return ret; }
     pr_info!("Starting suspend tests ({} cycles per state)\n", NUM_SUSPEND_CYCLE);
     ret = suspend_tests();
-    if ret == 0 { pr_info!("Suspend tests passed OK\n"); } else if ret > 0 { pr_err!("{} error(s) encountered in suspend tests\n", ret); } else { match ret { -ENOMEM => pr_err!("Out of memory\n"), -ENODEV => pr_warn!("Could not start suspend tests on any CPU\n"), _ => {} } }
+    if ret == 0 { pr_info!("Suspend tests passed OK\n"); } else if ret > 0 { pr_err!("{} error(s) encountered in suspend tests\n", ret); } else { match ret { case if case == -ENOMEM => pr_err!("Out of memory\n"), case if case == -ENODEV => pr_warn!("Could not start suspend tests on any CPU\n"), _ => {} } }
     pr_info!("PSCI checker completed\n"); if ret < 0 { ret } else { 0 }
 }
 

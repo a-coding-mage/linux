@@ -19,7 +19,7 @@
 /* Kernel headers supplying the following types, constants, and functions are
  * intentionally external to this translation. */
 
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 mod diu {
     use super::*;
 
@@ -67,9 +67,9 @@ mod diu {
     pub const BR_BA: u32 = 0xffff8000;
 
     unsafe fn lbc_br_to_phys(ecm: *const u8, count: u32, br: u32) -> u64 {
-        #[cfg(not(feature = "CONFIG_PHYS_64BIT"))]
+        #[cfg(not(CONFIG_PHYS_64BIT))]
         { return (br & BR_BA) as u64; }
-        #[cfg(feature = "CONFIG_PHYS_64BIT")]
+        #[cfg(CONFIG_PHYS_64BIT)]
         {
             let law = ecm.add(0xc08) as *const FslLaw;
             for i in 0..count as usize {
@@ -123,10 +123,10 @@ unsafe fn p1022_ds_pic_init() {
     mpic_init(mpic);
 }
 
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 static mut FSLFB: bool = false;
 
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 unsafe fn early_video_setup(options: *mut i8) -> i32 {
     FSLFB = strncmp(options, b"fslfb:\0".as_ptr() as *const i8, 6) == 0;
     0
@@ -134,7 +134,7 @@ unsafe fn early_video_setup(options: *mut i8) -> i32 {
 
 unsafe fn p1022_ds_setup_arch() {
     if !ppc_md.progress.is_none() { ppc_md.progress.unwrap()(b"p1022_ds_setup_arch()\0".as_ptr() as *const i8, 0); }
-    #[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+    #[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
     { diu_ops.set_monitor_port = Some(diu::p1022ds_set_monitor_port); diu_ops.set_pixel_clock = Some(diu::p1022ds_set_pixel_clock); diu_ops.valid_monitor_port = Some(diu::p1022ds_valid_monitor_port); }
     mpc85xx_smp_init();
     fsl_pci_assign_primary();

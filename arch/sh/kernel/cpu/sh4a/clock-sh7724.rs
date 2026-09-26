@@ -81,7 +81,12 @@ static mut div4_table: clk_div4_table = clk_div4_table {
     div_mult_table: &mut div4_div_mult_table, kick: Some(div4_kick),
 };
 
-enum { DIV4_I, DIV4_SH, DIV4_B, DIV4_P, DIV4_M1, DIV4_NR }
+pub const DIV4_I: i32 = 0;
+pub const DIV4_SH: i32 = DIV4_I + 1;
+pub const DIV4_B: i32 = DIV4_SH + 1;
+pub const DIV4_P: i32 = DIV4_B + 1;
+pub const DIV4_M1: i32 = DIV4_P + 1;
+pub const DIV4_NR: i32 = DIV4_M1 + 1;
 macro_rules! DIV4 { ($reg:expr, $bit:expr, $mask:expr, $flags:expr) => { SH_CLK_DIV4!(&mut pll_clk, $reg, $bit, $mask, $flags) }; }
 #[no_mangle] pub static mut div4_clks: [clk; DIV4_NR] = [
     DIV4!(FRQCRA, 20, 0x2f7d, CLK_ENABLE_ON_INIT), DIV4!(FRQCRA, 12, 0x2f7c, CLK_ENABLE_ON_INIT),
@@ -89,7 +94,12 @@ macro_rules! DIV4 { ($reg:expr, $bit:expr, $mask:expr, $flags:expr) => { SH_CLK_
     DIV4!(FRQCRB, 4, 0x2f7c, CLK_ENABLE_ON_INIT),
 ];
 
-enum { DIV6_V, DIV6_I, DIV6_S, DIV6_FA, DIV6_FB, DIV6_NR }
+pub const DIV6_V: i32 = 0;
+pub const DIV6_I: i32 = DIV6_V + 1;
+pub const DIV6_S: i32 = DIV6_I + 1;
+pub const DIV6_FA: i32 = DIV6_S + 1;
+pub const DIV6_FB: i32 = DIV6_FA + 1;
+pub const DIV6_NR: i32 = DIV6_FB + 1;
 static mut common_parent: [*mut clk; 2] = [&mut div3_clk, core::ptr::null_mut()];
 static mut vclkcr_parent: [*mut clk; 8] = [&mut div3_clk, core::ptr::null_mut(), &mut sh7724_dv_clki, core::ptr::null_mut(), &mut extal_clk, core::ptr::null_mut(), core::ptr::null_mut(), core::ptr::null_mut()];
 static mut fclkacr_parent: [*mut clk; 4] = [&mut div3_clk, core::ptr::null_mut(), &mut sh7724_fsimcka_clk, core::ptr::null_mut()];

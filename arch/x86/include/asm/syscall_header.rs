@@ -28,7 +28,7 @@ pub unsafe fn syscall_rollback(_task: *mut TaskStruct, regs: *mut PtRegs) {
 
 pub unsafe fn syscall_get_error(task: *mut TaskStruct, regs: *mut PtRegs) -> libc::c_long {
     let mut error = (*regs).ax as libc::c_ulong;
-    #[cfg(feature = "CONFIG_IA32_EMULATION")]
+    #[cfg(CONFIG_IA32_EMULATION)]
     {
         /* TS_COMPAT is set for 32-bit syscall entries and remains set until
          * we return to user mode. */
@@ -49,7 +49,7 @@ pub unsafe fn syscall_set_return_value(
     (*regs).ax = if error != 0 { error as libc::c_long } else { val } as _;
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub unsafe fn syscall_get_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, args: *mut libc::c_ulong) {
     *args.add(0) = (*regs).bx;
     *args.add(1) = (*regs).cx;
@@ -59,7 +59,7 @@ pub unsafe fn syscall_get_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, a
     *args.add(5) = (*regs).bp;
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub unsafe fn syscall_set_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, args: *const libc::c_ulong) {
     (*regs).bx = *args.add(0);
     (*regs).cx = *args.add(1);
@@ -69,12 +69,12 @@ pub unsafe fn syscall_set_arguments(_task: *mut TaskStruct, regs: *mut PtRegs, a
     (*regs).bp = *args.add(5);
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub unsafe fn syscall_get_arch(_task: *mut TaskStruct) -> libc::c_int { AUDIT_ARCH_I386 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 pub unsafe fn syscall_get_arguments(task: *mut TaskStruct, regs: *mut PtRegs, args: *mut libc::c_ulong) {
-    #[cfg(feature = "CONFIG_IA32_EMULATION")]
+    #[cfg(CONFIG_IA32_EMULATION)]
     if ((*task).thread_info.status & TS_COMPAT) != 0 {
         *args.add(0) = (*regs).bx; *args.add(1) = (*regs).cx; *args.add(2) = (*regs).dx;
         *args.add(3) = (*regs).si; *args.add(4) = (*regs).di; *args.add(5) = (*regs).bp;
@@ -84,9 +84,9 @@ pub unsafe fn syscall_get_arguments(task: *mut TaskStruct, regs: *mut PtRegs, ar
     *args.add(3) = (*regs).r10; *args.add(4) = (*regs).r8; *args.add(5) = (*regs).r9;
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 pub unsafe fn syscall_set_arguments(task: *mut TaskStruct, regs: *mut PtRegs, args: *const libc::c_ulong) {
-    #[cfg(feature = "CONFIG_IA32_EMULATION")]
+    #[cfg(CONFIG_IA32_EMULATION)]
     if ((*task).thread_info.status & TS_COMPAT) != 0 {
         (*regs).bx = *args.add(0); (*regs).cx = *args.add(1); (*regs).dx = *args.add(2);
         (*regs).si = *args.add(3); (*regs).di = *args.add(4); (*regs).bp = *args.add(5);
@@ -96,14 +96,14 @@ pub unsafe fn syscall_set_arguments(task: *mut TaskStruct, regs: *mut PtRegs, ar
     (*regs).r10 = *args.add(3); (*regs).r8 = *args.add(4); (*regs).r9 = *args.add(5);
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 pub unsafe fn syscall_get_arch(task: *mut TaskStruct) -> libc::c_int {
-    #[cfg(feature = "CONFIG_IA32_EMULATION")]
+    #[cfg(CONFIG_IA32_EMULATION)]
     { if ((*task).thread_info.status & TS_COMPAT) != 0 { return AUDIT_ARCH_I386; } }
     AUDIT_ARCH_X86_64
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 extern "C" {
     pub fn do_syscall_64(regs: *mut PtRegs, nr: libc::c_long) -> bool;
     pub fn do_int80_emulation(regs: *mut PtRegs);

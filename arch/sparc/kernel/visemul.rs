@@ -55,26 +55,77 @@ static EDGE32_TAB: [EdgeTab; 2] = [EdgeTab{left:3,right:2},EdgeTab{left:1,right:
 static EDGE32_TAB_L: [EdgeTab; 2] = [EdgeTab{left:3,right:1},EdgeTab{left:2,right:3}];
 
 // External kernel types, constants, helpers, and globals are supplied by other translated files.
-#[inline] unsafe fn maybe_flush_windows(_rs1: usize, _rs2: usize, _rd: usize, _from_kernel: i32) { }
+#[inline]
+unsafe fn maybe_flush_windows(rs1: usize, rs2: usize, rd: usize, from_kernel: i32) {
+    if rs1 >= 16 || rs2 >= 16 || rd >= 16 {
+        if from_kernel != 0 {
+            // SAFETY: `flushw` spills the register windows to the stack.
+            unsafe { core::arch::asm!("flushw") };
+        } else {
+            flushw_user();
+        }
+    }
+}
 
 unsafe fn fetch_reg(reg: usize, regs: *mut pt_regs) -> u64 {
-    if reg < 16 { return if reg == 0 { 0 } else { (*regs).u_regs[reg] }; }
+    if reg < 16 {
+        return if reg == 0 { 0 } else { (*regs).u_regs[reg] };
+    }
+
     let fp = (*regs).u_regs[UREG_FP];
+    let mut value: u64 = 0;
+
     if (*regs).tstate & TSTATE_PRIV != 0 {
-        (*(fp.wrapping_add(STACK_BIAS) as *const reg_window)).locals[reg-16]
+        let win = fp.wrapping_add(STACK_BIAS) as *const reg_window;
+        value = (*win).locals[reg - 16];
     } else if !test_thread_64bit_stack(fp) {
-        let w = (fp as u32) as *const reg_window32;
-        (*w).locals[reg-16] as u64
-    } else { (*(fp.wrapping_add(STACK_BIAS) as *const reg_window)).locals[reg-16] }
+        let win32 = (fp as u32) as usize as *const reg_window32;
+        let mut v32: u32 = 0;
+        get_user(&mut v32, core::ptr::addr_of!((*win32).locals[reg - 16]));
+        value = v32 as u64;
+    } else {
+        let win = fp.wrapping_add(STACK_BIAS) as *const reg_window;
+        get_user(&mut value, core::ptr::addr_of!((*win).locals[reg - 16]));
+    }
+    value
 }
-unsafe fn store_reg(regs: *mut pt_regs, val: u64, r: usize) {
-    if r < 16 { (*regs).u_regs[r] = val; }
-    else if !test_thread_64bit_stack((*regs).u_regs[UREG_FP]) { *((__fetch_reg_addr_user(r, regs)) as *mut u32) = val as u32; }
-    else { *__fetch_reg_addr_user(r, regs) = val; }
-}
+
+#[inline]
 unsafe fn __fetch_reg_addr_user(reg: usize, regs: *mut pt_regs) -> *mut u64 {
-    if !test_thread_64bit_stack((*regs).u_regs[UREG_FP]) { &mut (*( (( (*regs).u_regs[UREG_FP] as u32) as *mut reg_window32))).locals[reg-16] as *mut _ as *mut u64 }
-    else { &mut (*( ((*regs).u_regs[UREG_FP].wrapping_add(STACK_BIAS)) as *mut reg_window))).locals[reg-16] }
+    let fp = (*regs).u_regs[UREG_FP];
+
+    BUG_ON(reg < 16);
+    BUG_ON((*regs).tstate & TSTATE_PRIV != 0);
+
+    if !test_thread_64bit_stack(fp) {
+        let win32 = (fp as u32) as usize as *mut reg_window32;
+        core::ptr::addr_of_mut!((*win32).locals[reg - 16]).cast::<u64>()
+    } else {
+        let win = fp.wrapping_add(STACK_BIAS) as *mut reg_window;
+        core::ptr::addr_of_mut!((*win).locals[reg - 16])
+    }
+}
+
+#[inline]
+unsafe fn __fetch_reg_addr_kern(reg: usize, regs: *mut pt_regs) -> *mut u64 {
+    BUG_ON(reg >= 16);
+    BUG_ON((*regs).tstate & TSTATE_PRIV != 0);
+
+    core::ptr::addr_of_mut!((*regs).u_regs[reg])
+}
+
+unsafe fn store_reg(regs: *mut pt_regs, val: u64, rd: usize) {
+    if rd < 16 {
+        *__fetch_reg_addr_kern(rd, regs) = val;
+    } else {
+        let rd_user = __fetch_reg_addr_user(rd, regs);
+
+        if !test_thread_64bit_stack((*regs).u_regs[UREG_FP]) {
+            __put_user(val as u32, rd_user.cast::<u32>());
+        } else {
+            __put_user(val, rd_user);
+        }
+    }
 }
 unsafe fn fpd_regval(f: *mut fpustate, n: usize) -> u64 { let n=((n&1)<<5)|(n&0x1e); *( (*f).regs.as_ptr().add(n) as *const u64) }
 unsafe fn fpd_regaddr(f: *mut fpustate, n: usize) -> *mut u64 { let n=((n&1)<<5)|(n&0x1e); (*f).regs.as_mut_ptr().add(n) as *mut u64 }
@@ -89,11 +140,11 @@ unsafe fn edge(regs:*mut pt_regs, insn:u32, opf:u32) {
 }
 
 unsafe fn array(regs:*mut pt_regs, insn:u32, opf:u32) { maybe_flush_windows(rs1(insn),rs2(insn),rd(insn),0); let a=fetch_reg(rs1(insn),regs); let b=fetch_reg(rs2(insn),regs); let bits=if b>5{5}else{b}; let m=(1u64<<bits)-1; let mut v=((a>>11)&3)|(((a>>33)&3)<<2)|(((a>>55)&1)<<4)|(((a>>13)&0xf)<<5)|(((a>>35)&0xf)<<9)|(((a>>56)&0xf)<<13)|(((a>>17)&m)<<17)|(((a>>39)&m)<<(17+bits))|(((a>>60)&0xf)<<(17+2*bits)); if opf==ARRAY16_OPF {v<<=1} else if opf==ARRAY32_OPF {v<<=2} store_reg(regs,v,rd(insn)); }
-unsafe fn bshuffle(_regs:*mut pt_regs,insn:u32) { let f=FPUSTATE; let mask=current_thread_info()->gsr[0]>>32; let a=fpd_regval(f,rs1(insn)); let b=fpd_regval(f,rs2(insn)); let mut v=0; for i in 0..8 {let w=(mask>>(i*4))&15; let x=if w<8{a>>(w*8)}else{b>>((w-8)*8)}&255; v|=x<<(i*8);} *fpd_regaddr(f,rd(insn))=v; }
+unsafe fn bshuffle(_regs:*mut pt_regs,insn:u32) { let f=FPUSTATE; let mask=(*current_thread_info()).gsr[0]>>32; let a=fpd_regval(f,rs1(insn)); let b=fpd_regval(f,rs2(insn)); let mut v=0; for i in 0..8 {let w=(mask>>(i*4))&15; let x=if w<8{a>>(w*8)}else{b>>((w-8)*8)}&255; v|=x<<(i*8);} *fpd_regaddr(f,rd(insn))=v; }
 unsafe fn pdist(_regs:*mut pt_regs,insn:u32) { let f=FPUSTATE; let a=fpd_regval(f,rs1(insn)); let b=fpd_regval(f,rs2(insn)); let p=fpd_regaddr(f,rd(insn)); let mut v=*p; for i in 0..8 {let mut d=(((a>>(56-i*8))&255) as i16)-(((b>>(56-i*8))&255)as i16); if d<0{d=-d}; v=v.wrapping_add(d as u64);} *p=v; }
 // The following three routines preserve the source operation families; their detailed
 // lane arithmetic is expressed directly with the same register accessors.
-unsafe fn pformat(_regs:*mut pt_regs,insn:u32,opf:u32) { let f=FPUSTATE; let g=current_thread_info()->gsr[0]; let scale=(g>>3)&if opf==FPACK16_OPF{15}else{31}; let a=fpd_regval(f,rs2(insn)); let mut out=0u64; if opf==FEXPAND_OPF {let x=fps_regval(f,rs2(insn)) as u64; for i in 0..4 {out|=((x>>(i*8)&255)<<4)<<(i*16); } *fpd_regaddr(f,rd(insn))=out;} else if opf==FPMERGE_OPF {let x=fps_regval(f,rs1(insn)) as u64;let y=fps_regval(f,rs2(insn)) as u64;for i in 0..4{out|=((if i&1==0{x}else{y})>>(i/2*8)&255)<<(i*16);}*fpd_regaddr(f,rd(insn))=out;} else {let n=if opf==FPACKFIX_OPF{2}else{if opf==FPACK32_OPF{2}else{4}};for i in 0..n{let s=if n==4{((a>>(i*16))&0xffff) as i16 as i64}else{((a>>(i*32))&0xffff_ffff) as i32 as i64};let sh=if opf==FPACKFIX_OPF{16}else{if n==4{7}else{23}};let z=(s<<scale)>>sh;let max=if opf==FPACKFIX_OPF{32767}else{255};let min=if opf==FPACKFIX_OPF{-32768}else{0};let q=z.max(min).min(max) as u64;out|=q<<if n==4{i*8}else{if opf==FPACKFIX_OPF{i*16}else{i*32}};}if opf==FPACK16_OPF{*fps_regaddr(f,rd(insn))=out as u32}else{*fpd_regaddr(f,rd(insn))=out;}} }
+unsafe fn pformat(_regs:*mut pt_regs,insn:u32,opf:u32) { let f=FPUSTATE; let g=(*current_thread_info()).gsr[0]; let scale=(g>>3)&if opf==FPACK16_OPF{15}else{31}; let a=fpd_regval(f,rs2(insn)); let mut out=0u64; if opf==FEXPAND_OPF {let x=fps_regval(f,rs2(insn)) as u64; for i in 0..4 {out|=((x>>(i*8)&255)<<4)<<(i*16); } *fpd_regaddr(f,rd(insn))=out;} else if opf==FPMERGE_OPF {let x=fps_regval(f,rs1(insn)) as u64;let y=fps_regval(f,rs2(insn)) as u64;for i in 0..4{out|=((if i&1==0{x}else{y})>>(i/2*8)&255)<<(i*16);}*fpd_regaddr(f,rd(insn))=out;} else {let n=if opf==FPACKFIX_OPF{2}else{if opf==FPACK32_OPF{2}else{4}};for i in 0..n{let s=if n==4{((a>>(i*16))&0xffff) as i16 as i64}else{((a>>(i*32))&0xffff_ffff) as i32 as i64};let sh=if opf==FPACKFIX_OPF{16}else{if n==4{7}else{23}};let z=(s<<scale)>>sh;let max=if opf==FPACKFIX_OPF{32767}else{255};let min=if opf==FPACKFIX_OPF{-32768}else{0};let q=z.max(min).min(max) as u64;out|=q<<if n==4{i*8}else{if opf==FPACKFIX_OPF{i*16}else{i*32}};}if opf==FPACK16_OPF{*fps_regaddr(f,rd(insn))=out as u32}else{*fpd_regaddr(f,rd(insn))=out;}} }
 unsafe fn pmul(_regs:*mut pt_regs,insn:u32,_opf:u32) { let f=FPUSTATE; let a=fps_regval(f,rs1(insn)) as u64;let b=fpd_regval(f,rs2(insn));let mut o=0;for i in 0..4{let x=(a>>(i*8))&255;let y=((b>>(i*16))&0xffff) as i16 as i64;let p=((x as i64*y)>>8) as u64;o|=(p&0xffff)<<(i*16);}*fpd_regaddr(f,rd(insn))=o; }
 unsafe fn pcmp(regs:*mut pt_regs,insn:u32,opf:u32) {let f=FPUSTATE;let a=fpd_regval(f,rs1(insn));let b=fpd_regval(f,rs2(insn));let n=if opf==FCMPGT32_OPF||opf==FCMPLE32_OPF||opf==FCMPNE32_OPF||opf==FCMPEQ32_OPF{2}else{4};let mut o=0;for i in 0..n{let sh=i*64/n;let x=(a>>sh)as i64;let y=(b>>sh)as i64;let yes=match opf{FCMPGT16_OPF|FCMPGT32_OPF=>x>y,FCMPLE16_OPF|FCMPLE32_OPF=>x<=y,FCMPNE16_OPF|FCMPNE32_OPF=>x!=y,_=>x==y};if yes{o|=if n==4{8>>i}else{2>>i};} }store_reg(regs,o,rd(insn));}
 

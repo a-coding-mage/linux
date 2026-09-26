@@ -74,19 +74,19 @@ pub struct rtc_device {
     pub start_secs: time64_t,
     pub offset_secs: time64_t,
     pub set_start_time: bool,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub uie_task: work_struct,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub uie_timer: timer_list,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub oldsecs: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub uie_irq_active: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub stop_uie_polling: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub uie_task_active: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_RTC_INTF_DEV_UIE_EMUL")]
+    #[cfg(CONFIG_RTC_INTF_DEV_UIE_EMUL)]
     pub uie_timer_active: ::core::ffi::c_uint,
 }
 
@@ -159,22 +159,22 @@ pub unsafe fn rtc_bound_alarmtime(rtc: *mut rtc_device, requested: ktime_t) -> k
     } else { requested }
 }
 
-#[cfg(not(feature = "CONFIG_RTC_HCTOSYS_DEVICE"))]
+#[cfg(not(CONFIG_RTC_HCTOSYS_DEVICE))]
 pub const rtc_hctosys_ret: ::core::ffi::c_int = -ENODEV;
 
-#[cfg(feature = "CONFIG_RTC_NVMEM")]
+#[cfg(CONFIG_RTC_NVMEM)]
 unsafe extern "C" { pub fn devm_rtc_nvmem_register(rtc: *mut rtc_device, nvmem_config: *mut nvmem_config) -> ::core::ffi::c_int; }
-#[cfg(not(feature = "CONFIG_RTC_NVMEM"))]
+#[cfg(not(CONFIG_RTC_NVMEM))]
 #[inline] pub unsafe fn devm_rtc_nvmem_register(_: *mut rtc_device, _: *mut nvmem_config) -> ::core::ffi::c_int { 0 }
 
-#[cfg(feature = "CONFIG_RTC_INTF_SYSFS")]
+#[cfg(CONFIG_RTC_INTF_SYSFS)]
 unsafe extern "C" {
     pub fn rtc_add_group(rtc: *mut rtc_device, grp: *const attribute_group) -> ::core::ffi::c_int;
     pub fn rtc_add_groups(rtc: *mut rtc_device, grps: *const *const attribute_group) -> ::core::ffi::c_int;
 }
-#[cfg(not(feature = "CONFIG_RTC_INTF_SYSFS"))]
+#[cfg(not(CONFIG_RTC_INTF_SYSFS))]
 #[inline] pub unsafe fn rtc_add_group(_: *mut rtc_device, _: *const attribute_group) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_RTC_INTF_SYSFS"))]
+#[cfg(not(CONFIG_RTC_INTF_SYSFS))]
 #[inline] pub unsafe fn rtc_add_groups(_: *mut rtc_device, _: *const *const attribute_group) -> ::core::ffi::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

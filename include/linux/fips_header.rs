@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* CONFIG_CRYPTO_FIPS */
-#[cfg(feature = "CONFIG_CRYPTO_FIPS")]
+#[cfg(CONFIG_CRYPTO_FIPS)]
 extern "C" {
     pub static mut fips_enabled: ::core::ffi::c_int;
     pub static mut fips_fail_notif_chain: atomic_notifier_head;
@@ -9,10 +9,10 @@ extern "C" {
     pub fn fips_fail_notify();
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 pub const fips_enabled: ::core::ffi::c_int = 0;
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 #[inline]
 pub fn fips_fail_notify() {}
 

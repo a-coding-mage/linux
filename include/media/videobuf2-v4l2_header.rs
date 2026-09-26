@@ -79,9 +79,9 @@ pub fn vb2_fop_get_unmapped_area(file: *mut file, addr: c_ulong, len: c_ulong,
 
 pub fn vb2_video_unregister_device(vdev: *mut video_device);
 
-pub struct media_request;
 pub fn vb2_request_validate(req: *mut media_request) -> i32;
 pub fn vb2_request_queue(req: *mut media_request);
 }
+pub struct media_request;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

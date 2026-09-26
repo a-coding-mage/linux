@@ -40,10 +40,10 @@ extern "C" {
         sufile: *mut inode, segnum: u64, create: i32,
         dofunc: Option<unsafe extern "C" fn(*mut inode, u64, *mut buffer_head, *mut buffer_head)>,
     ) -> i32;
-    pub fn nilfs_sufile_do_scrap(*mut inode, u64, *mut buffer_head, *mut buffer_head);
-    pub fn nilfs_sufile_do_free(*mut inode, u64, *mut buffer_head, *mut buffer_head);
-    pub fn nilfs_sufile_do_cancel_free(*mut inode, u64, *mut buffer_head, *mut buffer_head);
-    pub fn nilfs_sufile_do_set_error(*mut inode, u64, *mut buffer_head, *mut buffer_head);
+    pub fn nilfs_sufile_do_scrap(_: *mut inode, _: u64, _: *mut buffer_head, _: *mut buffer_head);
+    pub fn nilfs_sufile_do_free(_: *mut inode, _: u64, _: *mut buffer_head, _: *mut buffer_head);
+    pub fn nilfs_sufile_do_cancel_free(_: *mut inode, _: u64, _: *mut buffer_head, _: *mut buffer_head);
+    pub fn nilfs_sufile_do_set_error(_: *mut inode, _: u64, _: *mut buffer_head, _: *mut buffer_head);
     pub fn nilfs_sufile_resize(sufile: *mut inode, newnsegs: u64) -> i32;
     pub fn nilfs_sufile_read(
         sb: *mut super_block, susize: usize, raw_inode: *mut nilfs_inode,

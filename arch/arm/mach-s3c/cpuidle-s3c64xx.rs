@@ -9,7 +9,7 @@
 // linux/export.h, linux/time.h, asm/cpuidle.h, cpu.h, map.h,
 // regs-sys-s3c64xx.h, and regs-syscon-power-s3c64xx.h.
 
-static unsafe extern "C" {
+unsafe extern "C" {
     fn __raw_readl(addr: usize) -> usize;
     fn __raw_writel(value: usize, addr: usize);
     fn cpu_do_idle();

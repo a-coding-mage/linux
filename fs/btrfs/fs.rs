@@ -73,12 +73,12 @@ pub const fn btrfs_supported_blocksize(blocksize: u32) -> bool {
     // @blocksize should be validated first.
     if blocksize <= PAGE_SIZE { return true; }
     // CONFIG_BTRFS_EXPERIMENTAL: larger folio support is build-time gated.
-    #[cfg(feature = "CONFIG_BTRFS_EXPERIMENTAL")]
+    #[cfg(CONFIG_BTRFS_EXPERIMENTAL)]
     {
         if blocksize > PAGE_SIZE {
-            #[cfg(feature = "CONFIG_HIGHMEM")]
+            #[cfg(CONFIG_HIGHMEM)]
             { return false; }
-            #[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+            #[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
             { return false; }
         }
         return true;

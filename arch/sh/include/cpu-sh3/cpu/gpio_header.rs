@@ -8,7 +8,7 @@
  */
 
 // Original C conditional: CONFIG_CPU_SUBTYPE_SH7720 || CONFIG_CPU_SUBTYPE_SH7721
-#[cfg(any(feature = "CONFIG_CPU_SUBTYPE_SH7720", feature = "CONFIG_CPU_SUBTYPE_SH7721"))]
+#[cfg(any(CONFIG_CPU_SUBTYPE_SH7720, CONFIG_CPU_SUBTYPE_SH7721))]
 mod sh7720_sh7721 {
     /* Control registers */
     pub const PORT_PACR: usize = 0xA4050100;
@@ -59,7 +59,7 @@ mod sh7720_sh7721 {
 }
 
 // Original C conditional: CONFIG_CPU_SUBTYPE_SH7709
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7709")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7709)]
 mod sh7709 {
     /* Control registers */
     pub const PORT_PACR: usize = 0xA4000100;

@@ -139,7 +139,7 @@ pub unsafe fn x509_check_for_self_signed(cert: *mut x509_certificate) -> i32 {
         return 0;
     }
 
-    ret = public_key_verify_signature((*cert).pub, (*cert).sig);
+    ret = public_key_verify_signature((*cert).r#pub, (*cert).sig);
     if ret < 0 {
         if ret == -ENOPKG {
             (*cert).unsupported_sig = true;

@@ -53,19 +53,19 @@ static mut macio_gpio_handlers: pmf_handlers = pmf_handlers {
 unsafe fn macio_gpio_init_one(macio: *mut macio_chip) {
     let mut gparent: *mut device_node = core::ptr::null_mut();
     let mut gp: *mut device_node;
-    for_each_child_of_node!((*macio).of_node, gparent) {
+    for_each_child_of_node!((*macio).of_node, gparent, {
         if of_node_name_eq(gparent, c"gpio") { break; }
-    }
+    });
     if gparent.is_null() { return; }
-    for_each_child_of_node!(gparent, gp) {
+    for_each_child_of_node!(gparent, gp, {
         let reg = of_get_property(gp, c"reg", core::ptr::null_mut());
         if reg.is_null() { continue; }
         let mut offset = *reg as usize;
         if offset < 0x50 { offset += 0x50; }
         offset += (*macio).base as usize;
         pmf_register_driver(gp, &mut macio_gpio_handlers, offset as *mut core::ffi::c_void);
-    }
-    for_each_child_of_node!(gparent, gp) { pmf_do_functions(gp, core::ptr::null_mut(), 0, PMF_FLAGS_ON_INIT, core::ptr::null_mut()); }
+    });
+    for_each_child_of_node!(gparent, gp, { pmf_do_functions(gp, core::ptr::null_mut(), 0, PMF_FLAGS_ON_INIT, core::ptr::null_mut()); });
     of_node_put(gparent);
 }
 
@@ -90,7 +90,7 @@ unsafe fn macio_mmio_init_one(macio:*mut macio_chip) { pmf_register_driver((*mac
 static mut macio_mmio_handlers: pmf_handlers = pmf_handlers { write_reg32:Some(macio_do_write_reg32),read_reg32:Some(macio_do_read_reg32),write_reg8:Some(macio_do_write_reg8),read_reg8:Some(macio_do_read_reg8),read_reg32_msrx:Some(macio_do_read_reg32_msrx),read_reg8_msrx:Some(macio_do_read_reg8_msrx),write_reg32_slm:Some(macio_do_write_reg32_slm),write_reg8_slm:Some(macio_do_write_reg8_slm),delay:Some(macio_do_delay) };
 static mut unin_mmio_handlers: pmf_handlers = pmf_handlers { write_reg32:Some(unin_do_write_reg32), delay:Some(macio_do_delay) };
 
-unsafe fn uninorth_install_pfunc() { pmf_register_driver(uninorth_node,&mut unin_mmio_handlers,core::ptr::null_mut()); pmf_do_functions(uninorth_node,core::ptr::null_mut(),0,PMF_FLAGS_ON_INIT,core::ptr::null_mut()); let mut np=core::ptr::null_mut(); for_each_child_of_node!(uninorth_node,np){if of_node_name_eq(np,c"hw-clock"){unin_hwclock=np;break;}} if !unin_hwclock.is_null(){pmf_register_driver(unin_hwclock,&mut unin_mmio_handlers,core::ptr::null_mut());pmf_do_functions(unin_hwclock,core::ptr::null_mut(),0,PMF_FLAGS_ON_INIT,core::ptr::null_mut());} }
+unsafe fn uninorth_install_pfunc() { pmf_register_driver(uninorth_node,&mut unin_mmio_handlers,core::ptr::null_mut()); pmf_do_functions(uninorth_node,core::ptr::null_mut(),0,PMF_FLAGS_ON_INIT,core::ptr::null_mut()); let mut np=core::ptr::null_mut(); for_each_child_of_node!(uninorth_node,np, {if of_node_name_eq(np,c"hw-clock"){unin_hwclock=np;break;}}); if !unin_hwclock.is_null(){pmf_register_driver(unin_hwclock,&mut unin_mmio_handlers,core::ptr::null_mut());pmf_do_functions(unin_hwclock,core::ptr::null_mut(),0,PMF_FLAGS_ON_INIT,core::ptr::null_mut());} }
 
 pub unsafe fn pmac_pfunc_base_install() -> i32 { static mut pfbase_inited: i32=0; if pfbase_inited!=0{return 0;} pfbase_inited=1; if !machine_is!(powermac){return 0;} for i in 0..MAX_MACIO_CHIPS { if !macio_chips[i].of_node.is_null(){macio_mmio_init_one(&mut macio_chips[i]);macio_gpio_init_one(&mut macio_chips[i]);} } if !uninorth_node.is_null()&&!uninorth_base.is_null(){uninorth_install_pfunc();} 0 }
 

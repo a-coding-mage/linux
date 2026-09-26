@@ -10,16 +10,16 @@
 
 extern "C" {
     static mut _init_sp: ::core::ffi::c_ulong;
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     static mut initrd_start: ::core::ffi::c_ulong;
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     static mut initrd_end: ::core::ffi::c_ulong;
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     static mut ROOT_DEV: ::core::ffi::c_ulong;
 
     fn strscpy(dst: *mut ::core::ffi::c_char, src: *const ::core::ffi::c_char, count: usize) -> isize;
     fn strnlen(s: *const ::core::ffi::c_char, maxlen: usize) -> usize;
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     fn pr_info(fmt: *const ::core::ffi::c_char, ...) -> ::core::ffi::c_int;
 }
 
@@ -63,7 +63,7 @@ unsafe fn parse_uboot_commandline(commandp: *mut ::core::ffi::c_char, size: ::co
         strscpy(commandp, uboot_cmd_start as *const ::core::ffi::c_char, size as usize);
     }
 
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     {
         let uboot_initrd_start = *sp.add(2);
         let uboot_initrd_end = *sp.add(3);

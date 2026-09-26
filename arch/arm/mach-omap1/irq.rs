@@ -19,8 +19,12 @@
 // C headers and local headers provide the external kernel, architecture, and
 // OMAP symbols referenced below.
 
-const IRQ_BANK = |irq: i32| irq >> 5;
-const IRQ_BIT = |irq: i32| irq & 0x1f;
+const fn IRQ_BANK(irq: i32) -> i32 {
+    irq >> 5
+}
+const fn IRQ_BIT(irq: i32) -> i32 {
+    irq & 0x1f
+}
 
 #[repr(C)]
 struct omap_irq_bank {

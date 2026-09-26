@@ -58,7 +58,7 @@ pub static ASP_V1_DMA_DATA: K3DmaSocData = K3DmaSocData { flags: K3_FLAG_NOCLK a
 
 // CONFIG_PM_SLEEP conditional is preserved by leaving these declarations
 // available to the platform integration that supplies clock/device helpers.
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 extern "C" { pub fn k3_dma_suspend_dev(dev:*mut Opaque)->i32; pub fn k3_dma_resume_dev(dev:*mut Opaque)->i32; }
 
 // module_platform_driver(k3_pdma_driver), MODULE_DESCRIPTION, MODULE_LICENSE,

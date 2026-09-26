@@ -54,7 +54,7 @@ pub struct dax_device_driver {
 #[macro_export]
 macro_rules! to_dax_drv {
     ($drv:expr) => {
-        container_of_const!($drv, dax_device_driver, drv)
+        container_of_const!($drv, dax_device_driver, $drv)
     };
 }
 

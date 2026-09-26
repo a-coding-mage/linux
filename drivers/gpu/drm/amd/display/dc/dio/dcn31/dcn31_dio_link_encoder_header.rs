@@ -222,8 +222,7 @@ extern "C" {
         aux_regs: *const dcn10_link_enc_aux_registers,
         hpd_regs: *const dcn10_link_enc_hpd_registers,
         link_shift: *const dcn10_link_enc_shift,
-        link_mask: *const dcn10_link_enc_mask,
-    );
+        link_mask: *const dcn10_link_enc_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

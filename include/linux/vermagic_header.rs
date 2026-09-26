@@ -5,32 +5,32 @@
 // <generated/utsrelease.h> and <asm/vermagic.h>.
 
 /* Simply sanity version stamp for modules. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const MODULE_VERMAGIC_SMP: &str = "SMP ";
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const MODULE_VERMAGIC_SMP: &str = "";
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 pub const MODULE_VERMAGIC_PREEMPT: &str = "preempt_rt ";
 #[cfg(all(
-    not(feature = "CONFIG_PREEMPT_RT"),
-    feature = "CONFIG_PREEMPT_BUILD"
+    not(CONFIG_PREEMPT_RT),
+    CONFIG_PREEMPT_BUILD
 ))]
 pub const MODULE_VERMAGIC_PREEMPT: &str = "preempt ";
 #[cfg(all(
-    not(feature = "CONFIG_PREEMPT_RT"),
-    not(feature = "CONFIG_PREEMPT_BUILD")
+    not(CONFIG_PREEMPT_RT),
+    not(CONFIG_PREEMPT_BUILD)
 ))]
 pub const MODULE_VERMAGIC_PREEMPT: &str = "";
 
-#[cfg(feature = "CONFIG_MODULE_UNLOAD")]
+#[cfg(CONFIG_MODULE_UNLOAD)]
 pub const MODULE_VERMAGIC_MODULE_UNLOAD: &str = "mod_unload ";
-#[cfg(not(feature = "CONFIG_MODULE_UNLOAD"))]
+#[cfg(not(CONFIG_MODULE_UNLOAD))]
 pub const MODULE_VERMAGIC_MODULE_UNLOAD: &str = "";
 
-#[cfg(feature = "CONFIG_MODVERSIONS")]
+#[cfg(CONFIG_MODVERSIONS)]
 pub const MODULE_VERMAGIC_MODVERSIONS: &str = "modversions ";
-#[cfg(not(feature = "CONFIG_MODVERSIONS"))]
+#[cfg(not(CONFIG_MODVERSIONS))]
 pub const MODULE_VERMAGIC_MODVERSIONS: &str = "";
 
 #[cfg(feature = "RANDSTRUCT")]

@@ -27,8 +27,8 @@ unsafe fn show_signal_msg(regs: *mut pt_regs, sig: i32, code: i32,
         if task_pid_nr(tsk) > 1 { KERN_INFO } else { KERN_EMERG }, (*tsk).comm,
         task_pid_nr(tsk), address, (*regs).pc as *mut _, (*regs).u_regs[UREG_I7] as *mut _,
         (*regs).u_regs[UREG_FP] as *mut _, code);
-    print_vma_addr(KERN_CONT " in ", (*regs).pc);
-    printk(KERN_CONT "\n");
+    print_vma_addr(c"\x01c in ".as_ptr(), (*regs).pc);
+    printk(c"\x01c\n".as_ptr());
 }
 
 unsafe fn __do_fault_siginfo(code: i32, sig: i32, regs: *mut pt_regs, addr: libc::c_ulong) {

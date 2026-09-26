@@ -13,7 +13,7 @@ unsafe fn acpi_system_wakeup_device_seq_show(
     seq_printf(seq, "Device\tS-state\t  Status   Sysfs node\n");
 
     mutex_lock(&acpi_device_lock);
-    list_for_each_entry_safe(dev, tmp, &mut acpi_wakeup_device_list, wakeup_list) {
+    list_for_each_entry_safe!(dev, tmp, &mut acpi_wakeup_device_list, wakeup_list, {
         let mut entry: *mut acpi_device_physical_node;
 
         if !(*dev).wakeup.flags.valid {
@@ -38,7 +38,7 @@ unsafe fn acpi_system_wakeup_device_seq_show(
             );
         } else {
             let mut ldev: *mut device;
-            list_for_each_entry!(entry, &(*dev).physical_node_list, node) {
+            list_for_each_entry!(entry, &(*dev).physical_node_list, node, {
                 ldev = get_device((*entry).dev);
                 if ldev.is_null() {
                     continue;
@@ -66,11 +66,11 @@ unsafe fn acpi_system_wakeup_device_seq_show(
                     dev_name(ldev),
                 );
                 put_device(ldev);
-            }
+            });
         }
 
         mutex_unlock(&(*dev).physical_node_lock);
-    }
+    });
     mutex_unlock(&acpi_device_lock);
     0
 }
@@ -80,12 +80,12 @@ unsafe fn physical_device_enable_wakeup(adev: *mut acpi_device) {
 
     mutex_lock(&(*adev).physical_node_lock);
 
-    list_for_each_entry!(entry, &(*adev).physical_node_list, node) {
+    list_for_each_entry!(entry, &(*adev).physical_node_list, node, {
         if !(*entry).dev.is_null() && device_can_wakeup((*entry).dev) {
             let enable = !device_may_wakeup((*entry).dev);
             device_set_wakeup_enable((*entry).dev, enable);
         }
-    }
+    });
 
     mutex_unlock(&(*adev).physical_node_lock);
 }
@@ -112,7 +112,7 @@ unsafe fn acpi_system_write_wakeup_device(
     sscanf(strbuf.as_ptr(), "%s", str_.as_mut_ptr());
 
     mutex_lock(&acpi_device_lock);
-    list_for_each_entry_safe(dev, tmp, &mut acpi_wakeup_device_list, wakeup_list) {
+    list_for_each_entry_safe!(dev, tmp, &mut acpi_wakeup_device_list, wakeup_list, {
         if !(*dev).wakeup.flags.valid {
             continue;
         }
@@ -126,7 +126,7 @@ unsafe fn acpi_system_write_wakeup_device(
             }
             break;
         }
-    }
+    });
     mutex_unlock(&acpi_device_lock);
     count as isize
 }

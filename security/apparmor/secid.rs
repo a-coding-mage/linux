@@ -145,11 +145,6 @@ pub unsafe extern "C" fn aa_free_secid(secid: u32) {
 }
 
 extern "C" {
-    pub struct aa_label { pub secid: u32 }
-    pub struct lsm_context { pub context: *mut u8, pub len: i32, pub id: i32 }
-    pub struct lsm_prop { pub apparmor: AppArmorProp }
-    pub struct AppArmorProp { pub label: *mut aa_label }
-    pub struct xa_struct {}
     pub static mut root_ns: *mut ();
     pub fn xa_load(xa: *const xa_struct, index: usize) -> *const ();
     pub fn xa_lock_irqsave(xa: *mut xa_struct, flags: *mut u64);
@@ -163,6 +158,11 @@ extern "C" {
     pub fn IS_ERR(ptr: *const ()) -> i32;
     pub fn PTR_ERR(ptr: *const ()) -> i32;
 }
+pub struct aa_label { pub secid: u32 }
+pub struct lsm_context { pub context: *mut u8, pub len: i32, pub id: i32 }
+pub struct lsm_prop { pub apparmor: AppArmorProp }
+pub struct AppArmorProp { pub label: *mut aa_label }
+pub struct xa_struct {}
 
 const FLAG_VIEW_SUBNS: i32 = 1;
 const FLAG_HIDDEN_UNCONFINED: i32 = 2;

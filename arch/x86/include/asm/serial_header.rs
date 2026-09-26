@@ -9,14 +9,14 @@ pub const BASE_BAUD: i32 = 1_843_200 / 16;
 
 // Standard COM flags (except for COM4, because of the 8514 problem).
 // The CONFIG_SERIAL_8250_DETECT_IRQ build condition is supplied externally.
-#[cfg(feature = "CONFIG_SERIAL_8250_DETECT_IRQ")]
+#[cfg(CONFIG_SERIAL_8250_DETECT_IRQ)]
 pub const STD_COMX_FLAGS: u32 = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_AUTO_IRQ;
-#[cfg(feature = "CONFIG_SERIAL_8250_DETECT_IRQ")]
+#[cfg(CONFIG_SERIAL_8250_DETECT_IRQ)]
 pub const STD_COM4_FLAGS: u32 = UPF_BOOT_AUTOCONF | UPF_AUTO_IRQ;
 
-#[cfg(not(feature = "CONFIG_SERIAL_8250_DETECT_IRQ"))]
+#[cfg(not(CONFIG_SERIAL_8250_DETECT_IRQ))]
 pub const STD_COMX_FLAGS: u32 = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST;
-#[cfg(not(feature = "CONFIG_SERIAL_8250_DETECT_IRQ"))]
+#[cfg(not(CONFIG_SERIAL_8250_DETECT_IRQ))]
 pub const STD_COM4_FLAGS: u32 = UPF_BOOT_AUTOCONF;
 
 // The flag constants above are supplied by the serial-port implementation.

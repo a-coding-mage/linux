@@ -32,7 +32,7 @@
 /*
  * IO end handler for temporary buffer_heads handling writes to the journal.
  */
-unsafe fn journal_end_buffer_io_sync(struct biobio)
+unsafe fn journal_end_buffer_io_sync(biobio)
 {
 	struct buffer_headbh;
 	bool uptodate = bio_endio_bh(bio, &bh);
@@ -63,21 +63,22 @@ unsafe fn journal_end_buffer_io_sync(struct biobio)
  * Called under j_list_lock. The caller provided us with a ref against the
  * buffer, and we drop that here.
  */
-unsafe fn release_buffer_page(struct buffer_headbh)
+unsafe fn release_buffer_page(buffer_headbh)
 {
+	'nope: {
 	struct foliofolio;
 
 	if (buffer_dirty(bh))
-		goto nope;
+		break 'nope;
 	if (atomic_read(&bh.b_count) != 1)
-		goto nope;
+		break 'nope;
 	folio = bh.b_folio;
 	if (folio.mapping)
-		goto nope;
+		break 'nope;
 
 	/* OK, it's a truncated page */
 	if (!folio_trylock(folio))
-		goto nope;
+		break 'nope;
 
 	folio_get(folio);
 	__brelse(bh);
@@ -85,12 +86,12 @@ unsafe fn release_buffer_page(struct buffer_headbh)
 	folio_unlock(folio);
 	folio_put(folio);
 	return;
-
-nope:
+	}
+	
 	__brelse(bh);
 }
 
-unsafe fn jbd2_commit_block_csum_set(journal_t *j, struct buffer_headbh)
+unsafe fn jbd2_commit_block_csum_set(journal_t *j, buffer_headbh)
 {
 	struct commit_headerh;
 	u32 csum;
@@ -98,7 +99,7 @@ unsafe fn jbd2_commit_block_csum_set(journal_t *j, struct buffer_headbh)
 	if (!jbd2_journal_has_csum_v2or3(j))
 		return;
 
-	h = (struct commit_header)(bh.b_data);
+	h = (commit_header)(bh.b_data);
 	h.h_chksum_type = 0;
 	h.h_chksum_size = 0;
 	h.h_chksum[0] = 0;
@@ -116,8 +117,8 @@ unsafe fn jbd2_commit_block_csum_set(journal_t *j, struct buffer_headbh)
  */
 unsafe fn journal_submit_commit_record(journal_t *journal,
 					transaction_t *commit_transaction,
-					struct buffer_head*cbh,
-					u32 crc32_sum)
+					buffer_head*cbh,
+					crc32_sum: u32)
 {
 	struct commit_headertmp;
 	struct buffer_headbh;
@@ -134,7 +135,7 @@ unsafe fn journal_submit_commit_record(journal_t *journal,
 	if (!bh)
 		return 1;
 
-	tmp = (struct commit_header)bh.b_data;
+	tmp = (commit_header)bh.b_data;
 	ktime_get_coarse_real_ts64(&now);
 	tmp.h_commit_sec = cpu_to_be64(now.tv_sec);
 	tmp.h_commit_nsec = cpu_to_be32(now.tv_nsec);
@@ -165,7 +166,7 @@ unsafe fn journal_submit_commit_record(journal_t *journal,
  * allows to write the commit record asynchronously.
  */
 unsafe fn journal_wait_on_commit_record(journal_t *journal,
-					 struct buffer_headbh)
+					 buffer_headbh)
 {
 	int ret = 0;
 
@@ -180,9 +181,9 @@ unsafe fn journal_wait_on_commit_record(journal_t *journal,
 }
 
 /* Send all the data buffers related to an inode */
-pub unsafe fn jbd2_submit_inode_data(journal_t *journal, struct jbd2_inodejinode)
+pub unsafe fn jbd2_submit_inode_data(journal_t *journal, jbd2_inodejinode)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	if (!jinode)
 		return 0;
@@ -197,12 +198,12 @@ pub unsafe fn jbd2_submit_inode_data(journal_t *journal, struct jbd2_inodejinode
 }
 
 
-pub unsafe fn jbd2_wait_inode_data(journal_t *journal, struct jbd2_inodejinode)
+pub unsafe fn jbd2_wait_inode_data(journal_t *journal, jbd2_inodejinode)
 {
 	struct address_spacemapping;
 	struct inodeinode;
-	unsigned long flags;
-	i64 start_byte, end_byte;
+	core::ffi::c_ulong flags;
+	start_byte: i64, end_byte;
 
 	if (!jinode)
 		return 0;
@@ -241,7 +242,7 @@ unsafe fn journal_submit_data_buffers(journal_t *journal,
 	int err, ret = 0;
 
 	spin_lock(&journal.j_list_lock);
-	list_for_each_entry(jinode, &commit_transaction.t_inode_list, i_list) {
+	list_for_each_entry!(jinode, &commit_transaction.t_inode_list, i_list, {
 		if (!(jinode.i_flags & JI_WRITE_DATA))
 			continue;
 		WRITE_ONCE(jinode.i_flags,
@@ -260,15 +261,15 @@ unsafe fn journal_submit_data_buffers(journal_t *journal,
 			   jinode.i_flags & ~JI_COMMIT_RUNNING);
 		smp_mb();
 		wake_up_bit(&jinode.i_flags, __JI_COMMIT_RUNNING);
-	}
+	});
 	spin_unlock(&journal.j_list_lock);
 	return ret;
 }
 
-pub unsafe fn jbd2_journal_finish_inode_data_buffers(struct jbd2_inodejinode)
+pub unsafe fn jbd2_journal_finish_inode_data_buffers(jbd2_inodejinode)
 {
 	struct address_spacemapping = jinode.i_vfs_inode.i_mapping;
-	i64 start_byte, end_byte;
+	start_byte: i64, end_byte;
 
 	if (!jbd2_jinode_get_dirty_range(jinode, &start_byte, &end_byte))
 		return 0;
@@ -290,7 +291,7 @@ unsafe fn journal_finish_inode_data_buffers(journal_t *journal,
 
 	/* For locking, see the comment in journal_submit_data_buffers() */
 	spin_lock(&journal.j_list_lock);
-	list_for_each_entry(jinode, &commit_transaction.t_inode_list, i_list) {
+	list_for_each_entry!(jinode, &commit_transaction.t_inode_list, i_list, {
 		if (!(jinode.i_flags & JI_WAIT_DATA))
 			continue;
 		WRITE_ONCE(jinode.i_flags, jinode.i_flags | JI_COMMIT_RUNNING);
@@ -306,11 +307,11 @@ unsafe fn journal_finish_inode_data_buffers(journal_t *journal,
 		WRITE_ONCE(jinode.i_flags, jinode.i_flags & ~JI_COMMIT_RUNNING);
 		smp_mb();
 		wake_up_bit(&jinode.i_flags, __JI_COMMIT_RUNNING);
-	}
+	});
 
 	/* Now refile inode to proper lists */
-	list_for_each_entry_safe(jinode, next_i,
-				 &commit_transaction.t_inode_list, i_list) {
+	list_for_each_entry_safe!(jinode, next_i,
+				 &commit_transaction.t_inode_list, i_list, {
 		list_del(&jinode.i_list);
 		if (jinode.i_next_transaction) {
 			jinode.i_transaction = jinode.i_next_transaction;
@@ -322,13 +323,13 @@ unsafe fn journal_finish_inode_data_buffers(journal_t *journal,
 			WRITE_ONCE(jinode.i_dirty_start_page, 0);
 			WRITE_ONCE(jinode.i_dirty_end_page, 0);
 		}
-	}
+	});
 	spin_unlock(&journal.j_list_lock);
 
 	return ret;
 }
 
-unsafe fn jbd2_checksum_data(u32 crc32_sum, struct buffer_headbh)
+unsafe fn jbd2_checksum_data(crc32_sum: u32, buffer_headbh)
 {
 	charaddr;
 	u32 checksum;
@@ -341,7 +342,7 @@ unsafe fn jbd2_checksum_data(u32 crc32_sum, struct buffer_headbh)
 }
 
 unsafe fn write_tag_block(journal_t *j, journal_block_tag_t *tag,
-				   unsigned long long block)
+				   block: core::ffi::c_ulonglong)
 {
 	tag.t_blocknr = cpu_to_be32(block & (u32)~0);
 	if (jbd2_has_feature_64bit(j))
@@ -349,7 +350,7 @@ unsafe fn write_tag_block(journal_t *j, journal_block_tag_t *tag,
 }
 
 unsafe fn jbd2_block_tag_csum_set(journal_t *j, journal_block_tag_t *tag,
-				    struct buffer_headbh, u32 sequence)
+				    buffer_headbh, sequence: u32)
 {
 	journal_block_tag3_t *tag3 = (journal_block_tag3_t *)tag;
 	__u8addr;
@@ -386,7 +387,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 	int bufs;
 	int escape;
 	int err;
-	unsigned long long blocknr;
+	core::ffi::c_ulonglong blocknr;
 	i64 start_time;
 	u64 commit_time;
 	chartagp = core::ptr::null_mut();
@@ -400,7 +401,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 	u32 crc32_sum = ~0;
 	struct blk_plug plug;
 	/* Tail of the journal */
-	unsigned long first_block;
+	core::ffi::c_ulong first_block;
 	u32 first_tid;
 	int update_tail;
 	int csum_size = 0;
@@ -408,7 +409,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 	let mut log_bufs = unsafe { core::mem::zeroed() };
 
 	if (jbd2_journal_has_csum_v2or3(journal))
-		csum_size = core::mem::size_of::<struct jbd2_journal_block_tail>();
+		csum_size = core::mem::size_of::<jbd2_journal_block_tail>();
 
 	/*
 	 * First job: lock down the current transaction and wait for
@@ -645,7 +646,7 @@ pub unsafe fn jbd2_journal_commit_transaction(journal_t *journal)
 			}
 
 			jbd2_debug(4, "JBD2: got buffer %llu (%p)\n",
-				(unsigned long long)descriptor.b_blocknr,
+				(core::ffi::c_ulonglong)descriptor.b_blocknr,
 				descriptor.b_data);
 			tagp = &descriptor.b_data[core::mem::size_of::<journal_header_t>()];
 			space_left = descriptor.b_size -
@@ -831,7 +832,7 @@ start_journal_io:
 
 	while (!list_empty(&io_bufs)) {
 		struct buffer_headbh = list_entry(io_bufs.prev,
-						    struct buffer_head,
+						    buffer_head,
 						    b_assoc_buffers);
 
 		wait_on_buffer(bh);
@@ -876,7 +877,7 @@ start_journal_io:
 	while (!list_empty(&log_bufs)) {
 		struct buffer_headbh;
 
-		bh = list_entry(log_bufs.prev, struct buffer_head, b_assoc_buffers);
+		bh = list_entry(log_bufs.prev, buffer_head, b_assoc_buffers);
 		wait_on_buffer(bh);
 		cond_resched();
 
@@ -940,8 +941,8 @@ start_journal_io:
 	J_ASSERT(commit_transaction.t_checkpoint_list == core::ptr::null_mut());
 	J_ASSERT(commit_transaction.t_shadow_list == core::ptr::null_mut());
 
-restart_loop:
-	/*
+    'restart_loop: loop {
+    /*
 	 * As there are other places (journal_unmap_buffer()) adding buffers
 	 * to this list we have to be careful and hold the j_list_lock.
 	 */
@@ -1086,7 +1087,7 @@ restart_loop:
 	if (commit_transaction.t_forget) {
 		spin_unlock(&journal.j_list_lock);
 		write_unlock(&journal.j_state_lock);
-		goto restart_loop;
+		continue 'restart_loop;
 	}
 
 	/* Add the transaction to the checkpoint list
@@ -1186,6 +1187,8 @@ restart_loop:
 	journal.j_stats.run.rs_blocks += stats.run.rs_blocks;
 	journal.j_stats.run.rs_blocks_logged += stats.run.rs_blocks_logged;
 	spin_unlock(&journal.j_history_lock);
+        break;
+    }
 }
 
 

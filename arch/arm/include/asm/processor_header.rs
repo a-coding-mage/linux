@@ -17,7 +17,7 @@ macro_rules! STACK_TOP_MAX { () => { TASK_SIZE }; }
 
 #[repr(C)]
 pub struct debug_info {
-    #[cfg(feature = "CONFIG_HAVE_HW_BREAKPOINT")]
+    #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
     pub hbp: [*mut perf_event; ARM_MAX_HBP_SLOTS],
 }
 
@@ -52,7 +52,7 @@ macro_rules! start_thread {
         let mut r7: ::core::ffi::c_ulong = 0;
         let mut r8: ::core::ffi::c_ulong = 0;
         let mut r9: ::core::ffi::c_ulong = 0;
-        if cfg!(feature = "CONFIG_BINFMT_ELF_FDPIC") {
+        if cfg!(CONFIG_BINFMT_ELF_FDPIC) {
             r7 = $regs.ARM_r7;
             r8 = $regs.ARM_r8;
             r9 = $regs.ARM_r9;
@@ -60,18 +60,18 @@ macro_rules! start_thread {
         unsafe {
             core::ptr::write_bytes($regs.uregs.as_mut_ptr(), 0, $regs.uregs.len());
         }
-        if cfg!(feature = "CONFIG_BINFMT_ELF_FDPIC") && ((*current).personality & FDPIC_FUNCPTRS) != 0 {
+        if cfg!(CONFIG_BINFMT_ELF_FDPIC) && ((*current).personality & FDPIC_FUNCPTRS) != 0 {
             $regs.ARM_r7 = r7;
             $regs.ARM_r8 = r8;
             $regs.ARM_r9 = r9;
             $regs.ARM_r10 = (*(*current).mm).start_data;
-        } else if !cfg!(feature = "CONFIG_MMU") {
+        } else if !cfg!(CONFIG_MMU) {
             $regs.ARM_r10 = (*(*current).mm).start_data;
         }
         if ((*current).personality & ADDR_LIMIT_32BIT) != 0 { $regs.ARM_cpsr = USR_MODE; }
         else { $regs.ARM_cpsr = USR26_MODE; }
         if (elf_hwcap & HWCAP_THUMB) != 0 && ($pc & 1) != 0 { $regs.ARM_cpsr |= PSR_T_BIT; }
-        if cfg!(feature = "CONFIG_CPU_ENDIAN_BE8") { $regs.ARM_cpsr |= PSR_E_BIT; }
+        if cfg!(CONFIG_CPU_ENDIAN_BE8) { $regs.ARM_cpsr |= PSR_E_BIT; }
         $regs.ARM_pc = $pc & !1;
         $regs.ARM_sp = $sp;
     }};
@@ -86,9 +86,9 @@ macro_rules! KSTK_EIP { ($tsk:expr) => { (*task_pt_regs!($tsk)).ARM_pc }; }
 macro_rules! KSTK_ESP { ($tsk:expr) => { (*task_pt_regs!($tsk)).ARM_sp }; }
 
 /* CONFIG_SMP selects the alternate SMP assembly string. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! __ALT_SMP_ASM { ($smp:expr, $up:expr) => { concat!("9998: ", $smp, "\n\t.pushsection \".alt.smp.init\", \"a\"\n\t.align\t2\n\t.long\t9998b - .\n\t", $up, "\n\t.popsection\n") }; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! __ALT_SMP_ASM { ($smp:expr, $up:expr) => { $up }; }
 
 /* Prefetching support is available only for ARMv5 and later. */
@@ -98,7 +98,7 @@ pub unsafe fn prefetch(ptr: *const ::core::ffi::c_void) {
     core::arch::asm!("pld {0}", in(reg) ptr, options(nostack));
 }
 
-#[cfg(all(feature = "ARM_ARCH_7", feature = "CONFIG_SMP"))]
+#[cfg(all(feature = "ARM_ARCH_7", CONFIG_SMP))]
 #[inline]
 pub unsafe fn prefetchw(ptr: *const ::core::ffi::c_void) {
     core::arch::asm!("pldw {0}", in(reg) ptr, options(nostack));

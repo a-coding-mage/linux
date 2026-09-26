@@ -196,16 +196,16 @@ unsafe fn uic_init_one(node: *mut device_node) -> *mut uic {
 unsafe fn uic_init_tree() {
     let mut np: *mut device_node = core::ptr::null_mut();
     let mut interrupts: *const u32;
-    for_each_compatible_node!(np, "ibm,uic") {
+    for_each_compatible_node!(np, "ibm,uic", {
         interrupts = of_get_property(np, "interrupts", core::ptr::null_mut());
         if interrupts.is_null() { break; }
-    }
+    });
     BUG_ON(np.is_null());
     primary_uic = uic_init_one(np);
     if primary_uic.is_null() { panic!("Unable to initialize primary UIC %pOF\n", np); }
     irq_set_default_domain((*primary_uic).irqhost);
     of_node_put(np);
-    for_each_compatible_node!(np, "ibm,uic") {
+    for_each_compatible_node!(np, "ibm,uic", {
         interrupts = of_get_property(np, "interrupts", core::ptr::null_mut());
         if !interrupts.is_null() {
             let uic = uic_init_one(np);
@@ -214,7 +214,7 @@ unsafe fn uic_init_tree() {
             irq_set_chained_handler_and_data(cascade_virq, uic_irq_cascade, uic);
             /* FIXME: setup critical cascade?? */
         }
-    }
+    });
 }
 
 /* Return an interrupt vector or 0 if no interrupt is pending. */

@@ -57,11 +57,11 @@ extern "C" {
 #[macro_export]
 macro_rules! udelay {
     ($n:expr) => {{
-        let n = $n;
-        if n / $crate::__MAX_UDELAY >= 1 {
+        let $n = $n;
+        if $n / $crate::__MAX_UDELAY >= 1 {
             unsafe { $crate::__bad_udelay() }
         } else {
-            unsafe { $crate::__udelay(n.wrapping_mul(19u32.wrapping_mul(HZ as u32))) }
+            unsafe { $crate::__udelay($n.wrapping_mul(19u32.wrapping_mul(HZ as u32))) }
         }
     }};
 }
@@ -69,11 +69,11 @@ macro_rules! udelay {
 #[macro_export]
 macro_rules! ndelay {
     ($n:expr) => {{
-        let n = $n;
-        if n / $crate::__MAX_NDELAY >= 1 {
+        let $n = $n;
+        if $n / $crate::__MAX_NDELAY >= 1 {
             unsafe { $crate::__bad_ndelay() }
         } else {
-            unsafe { $crate::__udelay(n.wrapping_mul(HZ as u32)) }
+            unsafe { $crate::__udelay($n.wrapping_mul(HZ as u32)) }
         }
     }};
 }

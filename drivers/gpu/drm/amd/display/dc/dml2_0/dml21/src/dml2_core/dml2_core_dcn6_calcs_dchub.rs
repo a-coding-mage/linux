@@ -12,12 +12,12 @@
 // dependency: "dml_top_types.h"
 
 u32 dcn6_calculate_max_vstartup(
-		bool ptoi_supported,
-		u32 vblank_nom_default_us,
+		ptoi_supported: bool,
+		vblank_nom_default_us: u32,
 		*const dml2_timing_cfgtiming,
-		enum dml2_uclk_pstate_change_strategy pstate_strategy,
+		dml2_uclk_pstate_change_strategy pstate_strategy,
 		f64 write_back_delay_us,
-		u32 svp_lines)
+		svp_lines: u32)
 {
 	u32 vblank_size = 0;
 	u32 max_vstartup_lines = 0;
@@ -50,14 +50,15 @@ u32 dcn6_calculate_max_vstartup(
 
 unsafe fn dcn6_calculate_alternate_svp_lines(dml2_core_calcs_calculate_alternate_svp_lines *p)
 {
-	u32 i, j;
+	i: u32, j;
 	f64 line_time_us, max_line_time_us = 0, svp0_time_us, svp1_time_us, vratio, vratio_c, swath_time_us, swath_time_c_us;
 	f64 max_swath_time_all_planes_us = 0;
 	f64 pad_us = 0;
 
 	for i = 0;  i < p.display_cfg.num_streams;  i++ { {
 		line_time_us = ((f64)p.display_cfg.stream_descriptors[i].timing.h_total * 1000 / p.display_cfg.stream_descriptors[i].timing.pixel_clock_khz);
-		for j = 0;  j < p.display_cfg.num_planes;  j++ { {
+		j = 0;
+		while j < p.display_cfg.num_planes { {
 			if (p.display_cfg.plane_descriptors[j].stream_index == i) {
 				vratio = p.display_cfg.plane_descriptors[j].composition.scaler_info.plane0.v_ratio;
 				vratio_c = p.display_cfg.plane_descriptors[j].composition.scaler_info.plane1.v_ratio;
@@ -71,12 +72,14 @@ unsafe fn dcn6_calculate_alternate_svp_lines(dml2_core_calcs_calculate_alternate
 		}
 		if (line_time_us > max_line_time_us)
 			max_line_time_us = line_time_us;
-	}
+		    j++;
+		}
 	pad_us = max_swath_time_all_planes_us + max_line_time_us;
 	svp0_time_us = p.dram_blackout_us + pad_us + max_swath_time_all_planes_us;
 	svp1_time_us = p.dram_blackout_us + pad_us;
 
-	for i = 0;  i < p.display_cfg.num_streams;  i++ { {
+	i = 0;
+	while i < p.display_cfg.num_streams { {
 		line_time_us = ((f64)p.display_cfg.stream_descriptors[i].timing.h_total * 1000 / p.display_cfg.stream_descriptors[i].timing.pixel_clock_khz);
 		p.svp0_dst_lines[i] = (u32)math_ceil(svp0_time_us / line_time_us);
 		p.svp1_dst_lines[i] = (u32)math_ceil(svp1_time_us / line_time_us);
@@ -86,7 +89,8 @@ unsafe fn dcn6_calculate_alternate_svp_lines(dml2_core_calcs_calculate_alternate
 	dml_log_verbose!("DML::%s: svp1_time_us = %f\n", __func__, svp1_time_us);
 	dml_log_verbose!("DML::%s: max_swath_time_all_planes_us = %f\n", __func__, max_swath_time_all_planes_us);
 	dml_log_verbose!("DML::%s: pad_us = %f\n", __func__, pad_us);
-}
+	    i++;
+	}
 
 plane_params {
     u32 viewport_start;
@@ -103,10 +107,10 @@ plane_params {
  * get_plane_params: Get plane related params for chroma vs. luma depending on the chroma flag
  * *****************************************************************************************************************************
  */
-static unsafe fn get_plane_params(
+unsafe fn get_plane_params(
     *const dml2_core_calcs_calculate_alternate_paramsp,
-    u32 plane_idx,
-    bool chroma,
+    plane_idx: u32,
+    chroma: bool,
     plane_params *out)
 {
 	*const dml2_plane_parametersplane = &p.display_cfg.plane_descriptors[plane_idx];
@@ -136,11 +140,11 @@ static unsafe fn get_plane_params(
  * compute_pre_rec_first_hdl: Computes the first hdl position of pre and rec swath given the input params
  * *****************************************************************************************************************************
  */
-static unsafe fn compute_pre_rec_first_hdl(
+unsafe fn compute_pre_rec_first_hdl(
 	*const dml2_core_calcs_calculate_alternate_paramsp,
-	bool chroma,
-	u32 stream_idx,
-	u32 plane_idx,
+	chroma: bool,
+	stream_idx: u32,
+	plane_idx: u32,
     f64 *pre_first_hdl_out,
     f64 *rec_first_hdl_out)
 {
@@ -183,11 +187,11 @@ unsafe fn calculate_copy_swaths(f64 pre_first_hdl,
 		f64 rec_first_hdl,
 		f64 pre_hdl_delta,
 		f64 rec_hdl_delta,
-		u32 prefetch_swaths,
-		u32 total_swaths,
-		u32 svp0_dst_lines,
-		u32 svp1_dst_lines,
-		u32 vtotal)
+		prefetch_swaths: u32,
+		total_swaths: u32,
+		svp0_dst_lines: u32,
+		svp1_dst_lines: u32,
+		vtotal: u32)
 {
 	u32 svp_dst_lines = svp0_dst_lines + svp1_dst_lines;
 	f64 prefetch_dst_lines = (prefetch_swaths - 1) * pre_hdl_delta + 1;
@@ -217,7 +221,7 @@ unsafe fn calculate_copy_swaths(f64 pre_first_hdl,
   *
   * *******************************************************************************************************************************************************
   */
-unsafe fn calculate_max_mem_size_per_plane_per_dpp(*const dml2_core_calcs_calculate_alternate_paramsp, u32 plane_idx, u32 copy_swaths, bool chroma)
+unsafe fn calculate_max_mem_size_per_plane_per_dpp(*const dml2_core_calcs_calculate_alternate_paramsp, plane_idx: u32, copy_swaths: u32, chroma: bool)
 {
 	bool vertical_access = p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_90 || p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_270;
 	u32 h_active = p.display_cfg.stream_descriptors[p.display_cfg.plane_descriptors[plane_idx].stream_index].timing.h_active;
@@ -265,7 +269,7 @@ unsafe fn calculate_max_mem_size_per_plane_per_dpp(*const dml2_core_calcs_calcul
   *
   * ****************************************************************************************************************************************
   */
-unsafe fn calculate_ub_copy_size_per_plane_per_dpp(*const dml2_core_calcs_calculate_alternate_paramsp, u32 plane_idx, u32 copy_swaths, bool chroma)
+unsafe fn calculate_ub_copy_size_per_plane_per_dpp(*const dml2_core_calcs_calculate_alternate_paramsp, plane_idx: u32, copy_swaths: u32, chroma: bool)
 {
 	bool vertical_access = p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_90 || p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_270;
 	u32 copy_src_lines = copy_swaths * (chroma ? p.SwathHeightC[plane_idx] : p.SwathHeightY[plane_idx]);
@@ -295,12 +299,12 @@ unsafe fn calculate_ub_copy_size_per_plane_per_dpp(*const dml2_core_calcs_calcul
  */
 unsafe fn calculate_alt_copy_time_us(*const dml2_core_calcs_calculate_alternate_paramsp)
 {
-    u32 i, j;
+    i: u32, j;
     f64 pre_first_hdl = 0.0, rec_first_hdl = 0.0;
     f64 pre_first_hdl_c = 0.0, rec_first_hdl_c = 0.0;
 	f64 rec_hdl_delta, rec_hdl_delta_c;
 	f64 pre_hdl_delta, pre_hdl_delta_c;
-	u32 copy_swaths, copy_swaths_c;
+	copy_swaths: u32, copy_swaths_c;
 	u32 vtotal;
 	u32 copy_size_bytes = 0;
 
@@ -346,7 +350,7 @@ unsafe fn calculate_alt_copy_time_us(*const dml2_core_calcs_calculate_alternate_
  *
  * *****************************************************************************************************************************
  */
-unsafe fn calculate_ub_copy_size_per_plane_per_dpp_per_svp(*const dml2_core_calcs_calculate_alternate_paramsp, u32 svp_dst_lines, u32 plane_idx, bool chroma)
+unsafe fn calculate_ub_copy_size_per_plane_per_dpp_per_svp(*const dml2_core_calcs_calculate_alternate_paramsp, svp_dst_lines: u32, plane_idx: u32, chroma: bool)
 {
 	u32 svp_lines_for_va;
 	u32 copy_swaths;
@@ -392,7 +396,7 @@ swath_params {
  *
  * ***********************************************************************************************************
  */
-static unsafe fn calculate_swath_params(*const dml2_core_calcs_calculate_alternate_paramsp, u32 plane_idx, bool chroma, swath_params *out)
+unsafe fn calculate_swath_params(*const dml2_core_calcs_calculate_alternate_paramsp, plane_idx: u32, chroma: bool, swath_params *out)
 {
 	bool vertical_access = p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_90 || p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_270;
 	bool access_direction = (p.display_cfg.plane_descriptors[plane_idx].composition.rotation_angle == dml2_rotation_90 && !p.display_cfg.plane_descriptors[plane_idx].composition.mirrored) ||
@@ -408,7 +412,7 @@ static unsafe fn calculate_swath_params(*const dml2_core_calcs_calculate_alterna
 	u32 vinit = chroma ? p.VInitPrefillC[plane_idx] : p.VInitPrefillY[plane_idx];
 	u32 viewport_start = vertical_access ? vp_x_start : vp_y_start;
 	u32 viewport_size = vertical_access ? vp_width : vp_height;
-	u32 src_y_last_pref_sw_algn, src_y_first_sw_algn, src_y_last_va_sw_algn;
+	src_y_last_pref_sw_algn: u32, src_y_first_sw_algn, src_y_last_va_sw_algn;
 
 	if (access_direction) {
 		src_y_first_sw_algn = (u32)math_floor2(viewport_start + viewport_size - 1, swath_height);
@@ -425,14 +429,14 @@ static unsafe fn calculate_swath_params(*const dml2_core_calcs_calculate_alterna
 	out.prefetch_hdl_delta = (f64)swath_height / vratio_pre;
 }
 
-unsafe fn calc_svp_size_64kb_aligned(u32 total_size_bytes)
+unsafe fn calc_svp_size_64kb_aligned(total_size_bytes: u32)
 {
 	return ((total_size_bytes + 0xFFFF) >> 16) << 16; // Round up to nearest 64KB boundary
 }
 
 unsafe fn dcn6_calculate_alternate_params(dml2_core_calcs_calculate_alternate_params *p)
 {
-	u32 i, j, k;
+	i: u32, j, k;
 	f64 line_time_us = 0, prefetch_time_us, max_prefetch_time_us = 0;
 	u32 svp_max_bytes[2];
 	u32 svp_max_bytes_per_dpp[2];
@@ -453,12 +457,14 @@ unsafe fn dcn6_calculate_alternate_params(dml2_core_calcs_calculate_alternate_pa
 		line_time_us = ((f64)p.display_cfg.stream_descriptors[i].timing.h_total * 1000 / p.display_cfg.stream_descriptors[i].timing.pixel_clock_khz);
 		if (p.svp_req_limit[i] * line_time_us > svp_req_lim_us)
 			svp_req_lim_us = p.svp_req_limit[i] * line_time_us;
-		for j = 0;  j < p.display_cfg.num_planes;  j++ { {
+		j = 0;
+		while j < p.display_cfg.num_planes { {
 			prefetch_time_us = line_time_us * p.dst_y_prefetch[j];
 			if (prefetch_time_us > max_prefetch_time_us)
 				max_prefetch_time_us = prefetch_time_us;
 		}
-	}
+		    j++;
+		}
 
 	for i = 0;  i < p.display_cfg.num_streams;  i++ { {
 		svp_dst_lines[0] = p.svp0_dst_lines[i];
@@ -472,7 +478,8 @@ unsafe fn dcn6_calculate_alternate_params(dml2_core_calcs_calculate_alternate_pa
 				p.total_swaths[j] = swath_params.total_swaths;
 				p.recout_hdl_delta[j] = swath_params.recout_hdl_delta;
 				p.prefetch_hdl_delta[j] = swath_params.prefetch_hdl_delta;
-				for k = 0;  k < 2;  k++ { {
+				k = 0;
+				while k < 2 { {
 					svp_max_bytes_per_dpp[k] = calculate_ub_copy_size_per_plane_per_dpp_per_svp(p, svp_dst_lines[k], j, false);
 					svp_max_bytes[k] += calc_svp_size_64kb_aligned(svp_max_bytes_per_dpp[k]) * p.NoOfDPP[j];
 				}
@@ -486,18 +493,21 @@ unsafe fn dcn6_calculate_alternate_params(dml2_core_calcs_calculate_alternate_pa
 					p.recout_hdl_delta_c[j] = swath_params.recout_hdl_delta;
 					p.prefetch_hdl_delta_c[j] = swath_params.prefetch_hdl_delta;
 
-					for k = 0;  k < 2;  k++ { {
+					k = 0;
+					while k < 2 { {
 						svp_max_bytes_per_dpp[k] = calculate_ub_copy_size_per_plane_per_dpp_per_svp(p, svp_dst_lines[k], j, true);
 						svp_max_bytes[k] += calc_svp_size_64kb_aligned(svp_max_bytes_per_dpp[k]) * p.NoOfDPP[j];
 					}
 					p.svp0_max_bytes_per_dpp_c[j] = svp_max_bytes_per_dpp[0];
 					p.svp1_max_bytes_per_dpp_c[j] = svp_max_bytes_per_dpp[1];
-				} else {
+					    k++;
+					} else {
 					p.svp0_max_bytes_per_dpp_c[j] = 0;
 					p.svp1_max_bytes_per_dpp_c[j] = 0;
 				}
 			}
-		}
+				    k++;
+				}
 	}
 
 	*p.svp0_max_bytes = svp_max_bytes[0];
@@ -505,20 +515,22 @@ unsafe fn dcn6_calculate_alternate_params(dml2_core_calcs_calculate_alternate_pa
 	*p.lsdma_bw_req_for_alt_kbps = p.dcn_non_urgent_bandwidth_kbps;
 	copy_time_us = p.display_cfg.overrides.hw.force_alt_chan_copy_time.enable ? p.display_cfg.overrides.hw.force_alt_chan_copy_time.copy_time_us : calculate_alt_copy_time_us(p);
 	fw_delay =  p.display_cfg.overrides.hw.force_alt_chan_fw_delay.enable ? p.display_cfg.overrides.hw.force_alt_chan_fw_delay.fw_delay_us : p.alt_chan_fw_delay_us;
-	for i = 0;  i < p.display_cfg.num_streams;  i++ { {
+	i = 0;
+	while i < p.display_cfg.num_streams { {
 		line_time_us = ((f64)p.display_cfg.stream_descriptors[i].timing.h_total * 1000 / p.display_cfg.stream_descriptors[i].timing.pixel_clock_khz);
 		/* If copy_time is very short then clamp nom_req_limit to be equal to svp_req_limit. This is to prevent underflow
 		 * because a short nom_req_limit prevents DCN from being able to request ahead. */
 		p.nom_req_limit_alt[i] = (u32)math_max2(p.svp_req_limit[i], math_ceil((copy_time_us) / line_time_us));
 		p.min_lead_dst_lines[i] = (u32)math_ceil((copy_time_us + fw_delay + math_max2(svp_req_lim_us, max_prefetch_time_us)) / line_time_us);
 	}
-}
+	    i++;
+	}
 
 unsafe fn dcn6_calculate_flip_schedule(
 	dml2_core_internal_scratch *s,
-	bool iflip_enable,
-	bool ihostvm_enable,
-	bool iffbmm_enable,
+	iflip_enable: bool,
+	ihostvm_enable: bool,
+	iffbmm_enable: bool,
 	f64 HostVMInefficiencyFactor,
 	f64 Tvm_trips_flip,
 	f64 Tr0_trips_flip,
@@ -532,12 +544,12 @@ unsafe fn dcn6_calculate_flip_schedule(
 	f64 VRatio,
 	f64 VRatioChroma,
 	f64 Tno_bw_flip,
-	u32 dpte_row_height,
-	u32 dpte_row_height_chroma,
-	u32 max_flip_time_us,
-	u32 max_flip_time_lines,
-	u32 meta_row_height,
-	u32 meta_row_height_chroma,
+	dpte_row_height: u32,
+	dpte_row_height_chroma: u32,
+	max_flip_time_us: u32,
+	max_flip_time_lines: u32,
+	meta_row_height: u32,
+	meta_row_height_chroma: u32,
 
 	// Output
 	f64 *dst_y_per_vm_flip,
@@ -676,7 +688,7 @@ unsafe fn dcn6_calculate_flip_schedule(
 	dml_log_verbose!("DML::%s: ImmediateFlipSupportedForPipe = %u\n", __func__, *ImmediateFlipSupportedForPipe);
 }
 
-static unsafe fn dcn6_rq_dlg_get_dlg_reg(
+unsafe fn dcn6_rq_dlg_get_dlg_reg(
 		dml2_core_internal_scratch *s,
 		dml2_display_dlg_regs *disp_dlg_regs,
 		dml2_display_ttu_regs *disp_ttu_regs,
@@ -1007,7 +1019,7 @@ static unsafe fn dcn6_rq_dlg_get_dlg_reg(
 	}
 }
 
-static unsafe fn dcn6_rq_dlg_get_wm_regs(*const dml2_display_cfgdisplay_cfg, *const dml2_core_internal_display_mode_libmode_lib, *const dml2_utm_soc_bbutm_soc_bb, dml2_dchub_watermark_regs *wm_regs)
+unsafe fn dcn6_rq_dlg_get_wm_regs(*const dml2_display_cfgdisplay_cfg, *const dml2_core_internal_display_mode_libmode_lib, *const dml2_utm_soc_bbutm_soc_bb, dml2_dchub_watermark_regs *wm_regs)
 {
 	f64 refclk_freq_in_mhz = (display_cfg.overrides.hw.dlg_ref_clk_mhz > 0) ? (f64)display_cfg.overrides.hw.dlg_ref_clk_mhz : utm_soc_bb.dchub_refclk_mhz;
 
@@ -1041,12 +1053,12 @@ unsafe fn dcn6_get_pipe_regs(*const dml2_display_cfgdisplay_cfg,
 }
 
 unsafe fn dcn6_calculate_pstate_support_method(
-		enum dml2_pstate_method method,
+		dml2_pstate_method method,
 		f64 peak_vactive_p_vblank_latency_hiding_margin_us,
 		f64 vactive_margin_us,
 		f64 reserved_vblank_us,
 		f64 blackout_us,
-		bool all_streams_blanked,
+		all_streams_blanked: bool,
 		/* output */
 		enum dml2_pstate_change_support *surface_pstate_change_support)
 {
@@ -1656,7 +1668,8 @@ unsafe fn dcn6_calculate_excess_vactive_bandwidth_required(
 		excess_vactive_fill_bw_l[plane_index] = 0.0;
 		excess_vactive_fill_bw_c[plane_index] = 0.0;
 
-		for pstate_type = 0;  pstate_type < dml2_pstate_type_count;  pstate_type++ { {
+		pstate_type = 0;
+		while pstate_type < dml2_pstate_type_count { {
 			if (display_cfg.plane_descriptors[plane_index].overrides.max_vactive_det_fill_delay_us[pstate_type] > 0) {
 				excess_vactive_fill_bw_l[plane_index] = math_max2(
 					(f64)bytes_required_l[pstate_type][plane_index] /
@@ -1668,7 +1681,8 @@ unsafe fn dcn6_calculate_excess_vactive_bandwidth_required(
 					excess_vactive_fill_bw_c[plane_index]);
 			}
 		}
-	}
+		    pstate_type++;
+		}
 }
 
 unsafe fn dcn6_calculate_pstate_schedule_windows(
@@ -1697,7 +1711,8 @@ unsafe fn dcn6_calculate_pstate_schedule_windows(
 	 * |<-- det fill delay .|<----- allow window ----.|<----------- blackout -----------.|
 	 * |                     |allow start      allow end|              |<- reserved blank .|
 	 */
-	for k = 0;  k < num_active_planes;  k++ { {
+	k = 0;
+	while k < num_active_planes { {
 		/* Calculate the allow window in units of vlines */
 		blackout_otg_vlines = (int)(math_ceil(blackout_us / otg_vline_time_us[k]));
 		det_fill_delay_otg_vlines = (int)(math_ceil(det_fill_delay_us[k] / otg_vline_time_us[k]));
@@ -1710,7 +1725,8 @@ unsafe fn dcn6_calculate_pstate_schedule_windows(
 		allow_start_us[k] = allow_start_otg_vlines * otg_vline_time_us[k];
 		allow_end_us[k] = allow_end_otg_vlines * otg_vline_time_us[k];
 	}
-}
+	    k++;
+	}
 
 unsafe fn dcn6_calculate_pstate_schedule_admissibility(
 		uint32_t num_active_planes,
@@ -1867,14 +1883,17 @@ unsafe fn dcn6_calculate_pstate_schedule_admissibility(
 			sorted[cur_id] = cur_id;
 		for cur_id = 0;  cur_id < timing_group_count;  cur_id++ { {
 			f64 cur_frame_time_us = allow_window_us[cur_id] + disallow_window_us[cur_id];
-			for other_id = cur_id + 1;  other_id < timing_group_count;  other_id++ { {
+			other_id = cur_id + 1;
+			while other_id < timing_group_count { {
 				f64 other_frame_time_us = allow_window_us[other_id] + disallow_window_us[other_id];
 				if (cur_frame_time_us < other_frame_time_us)
 					swap(sorted[cur_id], sorted[other_id]);
 			}
-		}
+			    other_id++;
+			}
 		/* Check nesting */
-		for cur_id = 0;  cur_id < timing_group_count - 1;  cur_id++ { {
+		cur_id = 0;
+		while cur_id < timing_group_count - 1 { {
 			other_id = cur_id + 1;
 			if (allow_window_us[sorted[cur_id]] < allow_window_us[sorted[other_id]] + disallow_window_us[sorted[other_id]]) {
 				*pstate_admissible = false;
@@ -1883,7 +1902,8 @@ unsafe fn dcn6_calculate_pstate_schedule_admissibility(
 		}
 
 		/* Starting from the first nested group, check DRR support */
-		for cur_id = 1;  cur_id < timing_group_count;  cur_id++ {
+		cur_id = 1;
+		while cur_id < timing_group_count {
 			if (is_drr[sorted[cur_id]]) {
 				*pstate_admissible = false;
 				break;
@@ -1891,7 +1911,8 @@ unsafe fn dcn6_calculate_pstate_schedule_admissibility(
 
 		if (*pstate_admissible)
 			return;
-	}
+		    cur_id++;
+		}
 
 	/**
 	 * Schedulable Case 4 - Non-harmonic phase drifting.
@@ -1942,6 +1963,7 @@ unsafe fn dcn6_calculate_pstate_schedule_admissibility(
 	}
 
 	return;
-}
+		    cur_id++;
+		}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -23,11 +23,11 @@ unsafe fn get_region_by_index(
 ) -> *mut dfl_afu_mmio_region {
     let mut region: *mut dfl_afu_mmio_region = core::ptr::null_mut();
     // Equivalent to for_each_region(region, afu).
-    list_for_each_entry(region, &mut (*afu).regions, node) {
+    list_for_each_entry!(region, &mut (*afu).regions, node, {
         if (*region).index == region_index {
             return region;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -72,12 +72,12 @@ pub unsafe fn afu_mmio_region_destroy(fdata: *mut dfl_feature_dev_data) {
     let afu = dfl_fpga_fdata_get_private(fdata);
     let mut tmp: *mut dfl_afu_mmio_region = core::ptr::null_mut();
     let mut region: *mut dfl_afu_mmio_region = core::ptr::null_mut();
-    list_for_each_entry_safe(region, tmp, &mut (*afu).regions, node) {
+    list_for_each_entry_safe!(region, tmp, &mut (*afu).regions, node, {
         devm_kfree(
             &mut (*(*fdata).dev).dev,
             region as *mut core::ffi::c_void,
         );
-    }
+    });
 }
 
 pub unsafe fn afu_mmio_region_get_by_index(
@@ -106,7 +106,7 @@ pub unsafe fn afu_mmio_region_get_by_offset(
     mutex_lock(&mut (*fdata).lock);
     let afu = dfl_fpga_fdata_get_private(fdata);
     let mut region: *mut dfl_afu_mmio_region = core::ptr::null_mut();
-    list_for_each_entry(region, &mut (*afu).regions, node) {
+    list_for_each_entry!(region, &mut (*afu).regions, node, {
         if (*region).offset <= offset
             && (*region).offset.wrapping_add((*region).size)
                 >= offset.wrapping_add(size)
@@ -115,7 +115,7 @@ pub unsafe fn afu_mmio_region_get_by_offset(
             mutex_unlock(&mut (*fdata).lock);
             return 0;
         }
-    }
+    });
     mutex_unlock(&mut (*fdata).lock);
     -EINVAL
 }

@@ -8,7 +8,7 @@
 // virt_to_phys, ALT_CMO_OP, riscv_cbom_block_size, and unlikely.
 
 pub unsafe fn arch_wb_cache_pmem(addr: *mut core::ffi::c_void, size: usize) {
-    #[cfg(feature = "CONFIG_RISCV_NONSTANDARD_CACHE_OPS")]
+    #[cfg(CONFIG_RISCV_NONSTANDARD_CACHE_OPS)]
     {
         if unlikely(noncoherent_cache_ops.wback) {
             (noncoherent_cache_ops.wback)(virt_to_phys(addr), size);
@@ -22,7 +22,7 @@ pub unsafe fn arch_wb_cache_pmem(addr: *mut core::ffi::c_void, size: usize) {
 // EXPORT_SYMBOL_GPL(arch_wb_cache_pmem);
 
 pub unsafe fn arch_invalidate_pmem(addr: *mut core::ffi::c_void, size: usize) {
-    #[cfg(feature = "CONFIG_RISCV_NONSTANDARD_CACHE_OPS")]
+    #[cfg(CONFIG_RISCV_NONSTANDARD_CACHE_OPS)]
     {
         if unlikely(noncoherent_cache_ops.inv) {
             (noncoherent_cache_ops.inv)(virt_to_phys(addr), size);

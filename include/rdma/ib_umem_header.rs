@@ -98,7 +98,7 @@ pub unsafe fn ib_umem_num_pages(umem: *mut ib_umem) -> usize {
     ib_umem_num_dma_blocks(umem, PAGE_SIZE)
 }
 
-#[cfg(feature = "CONFIG_INFINIBAND_USER_MEM")]
+#[cfg(CONFIG_INFINIBAND_USER_MEM)]
 extern "C" {
     pub fn ib_umem_get_desc(device: *mut ib_device, desc: *const ib_uverbs_buffer_desc, access: i32) -> *mut ib_umem;
     pub fn ib_umem_get_attr(device: *mut ib_device, attrs: *const uverbs_attr_bundle, attr_id: u16, size: usize, access: i32) -> *mut ib_umem;
@@ -123,26 +123,26 @@ extern "C" {
     pub fn sg_dma_address(sg: *mut scatterlist) -> dma_addr_t;
 }
 
-#[cfg(feature = "CONFIG_INFINIBAND_USER_MEM")]
+#[cfg(CONFIG_INFINIBAND_USER_MEM)]
 #[inline]
 pub unsafe fn ib_umem_get_va(device: *mut ib_device, addr: usize, size: usize, access: i32) -> *mut ib_umem {
     ib_umem_get_attr_or_va(device, core::ptr::null(), 0, addr as u64, size, access)
 }
 
-#[cfg(feature = "CONFIG_INFINIBAND_USER_MEM")]
+#[cfg(CONFIG_INFINIBAND_USER_MEM)]
 #[inline]
 pub unsafe fn ib_umem_find_best_pgoff(umem: *mut ib_umem, pgsz_bitmap: usize, pgoff_bitmask: u64) -> usize {
     ib_umem_find_best_pgsz(umem, pgsz_bitmap, ib_umem_start_dma_addr(umem) & pgoff_bitmask)
 }
 
-#[cfg(feature = "CONFIG_INFINIBAND_USER_MEM")]
+#[cfg(CONFIG_INFINIBAND_USER_MEM)]
 #[inline]
 pub unsafe fn ib_umem_is_contiguous(umem: *mut ib_umem) -> bool {
     let pgsz = ib_umem_find_best_pgsz(umem, usize::MAX, ib_umem_start_dma_addr(umem));
     pgsz != 0 && ib_umem_num_dma_blocks(umem, pgsz) == 1
 }
 
-#[cfg(not(feature = "CONFIG_INFINIBAND_USER_MEM"))]
+#[cfg(not(CONFIG_INFINIBAND_USER_MEM))]
 mod user_mem_disabled {
     use super::*;
     #[inline] pub unsafe fn ib_umem_get_desc(_: *mut ib_device, _: *const ib_uverbs_buffer_desc, _: i32) -> *mut ib_umem { (-95isize) as *mut ib_umem }

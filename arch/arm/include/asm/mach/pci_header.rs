@@ -65,12 +65,12 @@ pub unsafe fn pci_common_init(hw: *mut hw_pci) {
 }
 
 /* Setup early fixed I/O mapping. */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn pci_map_io_early(pfn: usize);
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn pci_map_io_early(_pfn: usize) {}
 

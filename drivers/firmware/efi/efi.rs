@@ -74,7 +74,7 @@ early_param!("efi", parse_efi_cmdline);
 
 pub static mut efi_kobj: *mut kobject = core::ptr::null_mut();
 
-static unsafe fn systab_show(kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t {
+unsafe fn systab_show(kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t {
     if kobj.is_null() || buf.is_null() { return -EINVAL as ssize_t; }
     let mut str_ = buf;
     if efi.acpi20 != EFI_INVALID_TABLE_ADDR { str_ = str_.add(sprintf!(str_, "ACPI20=0x%lx\n", efi.acpi20)); }
@@ -84,7 +84,7 @@ static unsafe fn systab_show(kobj: *mut kobject, _attr: *mut kobj_attribute, buf
     str_.offset_from(buf) as ssize_t
 }
 
-static unsafe fn fw_platform_size_show(_kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t {
+unsafe fn fw_platform_size_show(_kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t {
     sprintf!(buf, "%d\n", if efi_enabled(EFI_64BIT) { 64 } else { 32 })
 }
 
@@ -140,7 +140,7 @@ unsafe fn efi_debugfs_init() {
     if IS_ERR(efi_debugfs) { return; }
     let mut type_count = [0; EFI_BOOT_SERVICES_DATA as usize + 1];
     let mut i = 0;
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         let name = match md.type_ {
             EFI_BOOT_SERVICES_CODE => { let n = format!("boot_services_code{}", type_count[md.type_ as usize]); type_count[md.type_ as usize] += 1; n },
             EFI_BOOT_SERVICES_DATA => { let n = format!("boot_services_data{}", type_count[md.type_ as usize]); type_count[md.type_ as usize] += 1; n },
@@ -152,7 +152,7 @@ unsafe fn efi_debugfs_init() {
         if debugfs_blob[i].data.is_null() { continue; }
         debugfs_create_blob(name.as_ptr(), 0o400, efi_debugfs, &mut debugfs_blob[i]);
         i += 1;
-    }
+    });
 }
 #[cfg(not(CONFIG_DEBUG_FS))]
 unsafe fn efi_debugfs_init() {}
@@ -190,18 +190,18 @@ subsys_initcall!(efisubsys_init);
 pub unsafe fn efi_find_mirror() {
     if !efi_enabled(EFI_MEMMAP) { return; }
     let mut mirror_size: u64 = 0; let mut total_size: u64 = 0;
-    for_each_efi_memory_desc!(md) { let start = md.phys_addr; let size = md.num_pages << EFI_PAGE_SHIFT; total_size += size; if md.attribute & EFI_MEMORY_MORE_RELIABLE != 0 { memblock_mark_mirror(start, size); mirror_size += size; } }
+    for_each_efi_memory_desc!(md, { let start = md.phys_addr; let size = md.num_pages << EFI_PAGE_SHIFT; total_size += size; if md.attribute & EFI_MEMORY_MORE_RELIABLE != 0 { memblock_mark_mirror(start, size); mirror_size += size; } });
     if mirror_size != 0 { pr_info!("Memory: %lldM/%lldM mirrored memory\n", mirror_size >> 20, total_size >> 20); }
 }
 
 pub unsafe fn __efi_mem_desc_lookup(phys_addr: u64, out_md: *mut efi_memory_desc_t) -> c_int {
     if !efi_enabled(EFI_MEMMAP) { pr_err_once!("EFI_MEMMAP is not enabled.\n"); return -EINVAL; }
     if out_md.is_null() { pr_err_once!("out_md is null.\n"); return -EINVAL; }
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         if (md.phys_addr & (EFI_PAGE_SIZE - 1)) != 0 || md.num_pages <= 0 || md.num_pages > (U64_MAX - md.phys_addr) >> EFI_PAGE_SHIFT { continue; }
         let size = md.num_pages << EFI_PAGE_SHIFT; let end = md.phys_addr + size;
         if phys_addr >= md.phys_addr && phys_addr < end { core::ptr::copy_nonoverlapping(md, out_md, 1); return 0; }
-    }
+    });
     -ENOENT
 }
 

@@ -410,11 +410,11 @@ static void a3dsrc_GetGainCurrent(a3dsrc_t * a, short *left, short *right)
 		   a3d_addrB(a->slice, a->source, A3D_B_GainCurrent));
 }
 
-/* CA3dIO this func seems to be inlined all over this place. */
-static void CA3dIO_WriteReg(a3dsrc_t * a, unsigned long addr, short aa, short b)
+/ * CA3dIO this func seems to be inlined all over this place. */
+static void CA3dIO_WriteReg(a3dsrc_t * a, addr: core::ffi::c_ulong, short aa, short b)
 {
-	vortex_t *vortex = (vortex_t *) (a->vortex);
-	hwwrite(vortex->mmio, addr, (aa << 0x10) | b);
+	vortex_t *vortex = (vortex_t *) ((*a).vortex);
+	hwwrite((*vortex).mmio, addr, (aa << 0x10) | b);
 }
 
 #endif
@@ -466,7 +466,7 @@ static void a3dsrc_GetA3DSampleRate(a3dsrc_t * a, int *sr)
 	vortex_t *vortex = (vortex_t *) (a->vortex);
 	*sr = ((hwread(vortex->mmio, A3D_SLICE_Control + (a->slice << 0xd))
 		>> 3) & 0x1f);
-	//*sr = ((hwread(vortex->mmio, 0x19C38 + (this08<<0xd))>>3)&0x1f);
+	// *sr = ((hwread(vortex->mmio, 0x19C38 + (this08<<0xd))>>3)&0x1f);
 }
 
 static void a3dsrc_GetA3DControlReg(a3dsrc_t * a, unsigned long *ctrl)
@@ -590,7 +590,7 @@ static void a3dsrc_ClearVDBData(a3dsrc_t * a, unsigned long aa)
 	hwwrite(vortex->mmio,
 		a3d_addrS(a->slice,
 			  A3D_SLICE_VDBDest + 4) + (a->source << 2), 0);
-	/*
+	/ *
 	   hwwrite(vortex->mmio, 0x19c00 + (((aa>>2)*255*4)+aa)*8, 0);
 	   hwwrite(vortex->mmio, 0x19c04 + (((aa>>2)*255*4)+aa)*8, 0);
 	 */

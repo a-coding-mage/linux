@@ -541,7 +541,7 @@ macro_rules! NISTC_RTSI_TRIG {
 }
 
 macro_rules! NISTC_RTSI_TRIG_MASK {
-    () => { (_c) NISTC_RTSI_TRIG((_c), 0xf) };
+    () => { (_c) NISTC_RTSI_TRIG!((_c), 0xf) };
 }
 
 macro_rules! NISTC_RTSI_TRIG_TO_SRC {
@@ -701,7 +701,7 @@ macro_rules! NI_E_DMA_G0_G1_SEL {
 }
 
 macro_rules! NI_E_DMA_G0_G1_SEL_MASK {
-    () => { (_g) NI_E_DMA_G0_G1_SEL((_g), 0xf) };
+    () => { (_g) NI_E_DMA_G0_G1_SEL!((_g), 0xf) };
 }
 
 
@@ -977,7 +977,7 @@ macro_rules! NI_M_PFI_FILTER_SEL {
 }
 
 macro_rules! NI_M_PFI_FILTER_SEL_MASK {
-    () => { (_c) NI_M_PFI_FILTER_SEL((_c), 0x3) };
+    () => { (_c) NI_M_PFI_FILTER_SEL!((_c), 0x3) };
 }
 
 pub const NI_M_RTSI_FILTER_REG: u32 = 0x0b4;
@@ -1060,15 +1060,15 @@ macro_rules! NI_M_PFI_CHAN {
 }
 
 macro_rules! NI_M_PFI_OUT_SEL {
-    () => { (_c, _s) (((_s) & 0x1f) << NI_M_PFI_CHAN(_c)) };
+    () => { (_c, _s) (((_s) & 0x1f) << NI_M_PFI_CHAN!(_c)) };
 }
 
 macro_rules! NI_M_PFI_OUT_SEL_MASK {
-    () => { (_c) (0x1f << NI_M_PFI_CHAN(_c)) };
+    () => { (_c) (0x1f << NI_M_PFI_CHAN!(_c)) };
 }
 
 macro_rules! NI_M_PFI_OUT_SEL_TO_SRC {
-    () => { (_c, _b) (((_b) >> NI_M_PFI_CHAN(_c)) & 0x1f) };
+    () => { (_c, _b) (((_b) >> NI_M_PFI_CHAN!(_c)) & 0x1f) };
 }
 
 pub const NI_M_PFI_DI_REG: u32 = 0x1dc;
@@ -1207,16 +1207,14 @@ macro_rules! NI_M_AO_REF_ATTENUATION_REG {
 
 pub const NI_M_AO_REF_ATTENUATION_X5: u32 = BIT(0);
 
-enum {
-	ai_gain_16 = 0,
-	ai_gain_8,
-	ai_gain_14,
-	ai_gain_4,
-	ai_gain_611x,
-	ai_gain_622x,
-	ai_gain_628x,
-	ai_gain_6143
-};
+pub const ai_gain_16: i32 = 0;
+pub const ai_gain_8: i32 = ai_gain_16 + 1;
+pub const ai_gain_14: i32 = ai_gain_8 + 1;
+pub const ai_gain_4: i32 = ai_gain_14 + 1;
+pub const ai_gain_611x: i32 = ai_gain_4 + 1;
+pub const ai_gain_622x: i32 = ai_gain_611x + 1;
+pub const ai_gain_628x: i32 = ai_gain_622x + 1;
+pub const ai_gain_6143: i32 = ai_gain_628x + 1;
 
 enum caldac_enum {
 	caldac_none = 0,
@@ -1251,23 +1249,23 @@ struct ni_board_struct {
 	int isapnp_id;
 
 	int n_adchan;
-	unsigned int ai_maxdata;
+	core::ffi::c_uint ai_maxdata;
 
 	int ai_fifo_depth;
-	unsigned int alwaysdither:1;
+	core::ffi::c_uint alwaysdither:1;
 	int gainlkup;
 	int ai_speed;
 
 	int n_aochan;
-	unsigned int ao_maxdata;
+	core::ffi::c_uint ao_maxdata;
 	int ao_fifo_depth;
 	const struct comedi_lrange *ao_range_table;
-	unsigned int ao_speed;
+	core::ffi::c_uint ao_speed;
 
 	int reg_type;
-	unsigned int has_8255:1;
-	unsigned int has_32dio_chan:1;
-	unsigned int dio_speed; /* not for e-series */
+	core::ffi::c_uint has_8255:1;
+	core::ffi::c_uint has_32dio_chan:1;
+	core::ffi::c_uint dio_speed; /* not for e-series */
 
 	enum caldac_enum caldac[3];
 };
@@ -1283,11 +1281,11 @@ pub const M_SERIES_EEPROM_SIZE: u32 = 1024;
 
 #[repr(C)]
 struct ni_private {
-	unsigned short dio_output;
-	unsigned short dio_control;
+	core::ffi::c_ushort dio_output;
+	core::ffi::c_ushort dio_control;
 	int aimode;
-	unsigned int ai_calib_source;
-	unsigned int ai_calib_source_enabled;
+	core::ffi::c_uint ai_calib_source;
+	core::ffi::c_uint ai_calib_source_enabled;
 	/* protects access to windowed registers */
 	spinlock_t window_lock;
 	/* protects interrupt/dma register access */
@@ -1296,48 +1294,48 @@ struct ni_private {
 	spinlock_t mite_channel_lock;
 
 	int changain_state;
-	unsigned int changain_spec;
+	core::ffi::c_uint changain_spec;
 
-	unsigned int caldac_maxdata_list[MAX_N_CALDACS];
-	unsigned short caldacs[MAX_N_CALDACS];
+	core::ffi::c_uint caldac_maxdata_list[MAX_N_CALDACS];
+	core::ffi::c_ushort caldacs[MAX_N_CALDACS];
 
-	unsigned short ai_cmd2;
+	core::ffi::c_ushort ai_cmd2;
 
-	unsigned short ao_conf[MAX_N_AO_CHAN];
-	unsigned short ao_mode1;
-	unsigned short ao_mode2;
-	unsigned short ao_mode3;
-	unsigned short ao_cmd1;
-	unsigned short ao_cmd2;
+	core::ffi::c_ushort ao_conf[MAX_N_AO_CHAN];
+	core::ffi::c_ushort ao_mode1;
+	core::ffi::c_ushort ao_mode2;
+	core::ffi::c_ushort ao_mode3;
+	core::ffi::c_ushort ao_cmd1;
+	core::ffi::c_ushort ao_cmd2;
 
 	struct ni_gpct_device *counter_dev;
-	unsigned short an_trig_etc_reg;
+	core::ffi::c_ushort an_trig_etc_reg;
 
-	unsigned int ai_offset[512];
+	core::ffi::c_uint ai_offset[512];
 
-	unsigned long serial_interval_ns;
-	unsigned char serial_hw_mode;
-	unsigned short clock_and_fout;
-	unsigned short clock_and_fout2;
+	core::ffi::c_ulong serial_interval_ns;
+	core::ffi::c_uchar serial_hw_mode;
+	core::ffi::c_ushort clock_and_fout;
+	core::ffi::c_ushort clock_and_fout2;
 
-	unsigned short int_a_enable_reg;
-	unsigned short int_b_enable_reg;
-	unsigned short io_bidirection_pin_reg;
-	unsigned short rtsi_trig_direction_reg;
-	unsigned short rtsi_trig_a_output_reg;
-	unsigned short rtsi_trig_b_output_reg;
-	unsigned short pfi_output_select_reg[NUM_PFI_OUTPUT_SELECT_REGS];
-	unsigned short ai_ao_select_reg;
-	unsigned short g0_g1_select_reg;
-	unsigned short cdio_dma_select_reg;
+	core::ffi::c_ushort int_a_enable_reg;
+	core::ffi::c_ushort int_b_enable_reg;
+	core::ffi::c_ushort io_bidirection_pin_reg;
+	core::ffi::c_ushort rtsi_trig_direction_reg;
+	core::ffi::c_ushort rtsi_trig_a_output_reg;
+	core::ffi::c_ushort rtsi_trig_b_output_reg;
+	core::ffi::c_ushort pfi_output_select_reg[NUM_PFI_OUTPUT_SELECT_REGS];
+	core::ffi::c_ushort ai_ao_select_reg;
+	core::ffi::c_ushort g0_g1_select_reg;
+	core::ffi::c_ushort cdio_dma_select_reg;
 
-	unsigned int clock_ns;
-	unsigned int clock_source;
+	core::ffi::c_uint clock_ns;
+	core::ffi::c_uint clock_source;
 
-	unsigned short pwm_up_count;
-	unsigned short pwm_down_count;
+	core::ffi::c_ushort pwm_up_count;
+	core::ffi::c_ushort pwm_down_count;
 
-	unsigned short ai_fifo_buffer[0x2000];
+	core::ffi::c_ushort ai_fifo_buffer[0x2000];
 	u8 eeprom_buffer[M_SERIES_EEPROM_SIZE];
 
 	struct mite *mite;
@@ -1350,16 +1348,16 @@ struct ni_private {
 	struct mite_ring *gpct_mite_ring[NUM_GPCT];
 
 	/* ni_pcimio board type flags (based on the boardinfo reg_type) */
-	unsigned int is_m_series:1;
-	unsigned int is_6xxx:1;
-	unsigned int is_611x:1;
-	unsigned int is_6143:1;
-	unsigned int is_622x:1;
-	unsigned int is_625x:1;
-	unsigned int is_628x:1;
-	unsigned int is_67xx:1;
-	unsigned int is_6711:1;
-	unsigned int is_6713:1;
+	core::ffi::c_uint is_m_series:1;
+	core::ffi::c_uint is_6xxx:1;
+	core::ffi::c_uint is_611x:1;
+	core::ffi::c_uint is_6143:1;
+	core::ffi::c_uint is_622x:1;
+	core::ffi::c_uint is_625x:1;
+	core::ffi::c_uint is_628x:1;
+	core::ffi::c_uint is_67xx:1;
+	core::ffi::c_uint is_6711:1;
+	core::ffi::c_uint is_6713:1;
 
 	/*
 	 * Boolean value of whether device needs to be armed.
@@ -1373,7 +1371,7 @@ struct ni_private {
 	 * This variable helps to ensure that multiple DMA allocations are not
 	 * possible.
 	 */
-	unsigned int ao_needs_arming:1;
+	core::ffi::c_uint ao_needs_arming:1;
 
 	/* device signal route tables */
 	struct ni_route_tables routing_tables;

@@ -68,15 +68,15 @@ macro_rules! ELF_FDPIC_PLAT_INIT {
 }
 
 /* CONFIG_SUN3 or CONFIG_COLDFIRE selects the 8192-byte page size. */
-#[cfg(any(feature = "CONFIG_SUN3", feature = "CONFIG_COLDFIRE"))]
+#[cfg(any(CONFIG_SUN3, CONFIG_COLDFIRE))]
 pub const ELF_EXEC_PAGESIZE: usize = 8192;
-#[cfg(not(any(feature = "CONFIG_SUN3", feature = "CONFIG_COLDFIRE")))]
+#[cfg(not(any(CONFIG_SUN3, CONFIG_COLDFIRE)))]
 pub const ELF_EXEC_PAGESIZE: usize = 4096;
 
 /* CONFIG_SUN3 selects the alternate ET_DYN load base. */
-#[cfg(not(feature = "CONFIG_SUN3"))]
+#[cfg(not(CONFIG_SUN3))]
 pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0xD0000000;
-#[cfg(feature = "CONFIG_SUN3")]
+#[cfg(CONFIG_SUN3)]
 pub const ELF_ET_DYN_BASE: ::core::ffi::c_ulong = 0x0D800000;
 
 #[macro_export]

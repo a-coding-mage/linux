@@ -74,13 +74,13 @@ const ZPCI_FN_STATE_CONFIGURED: u32 = 1;
 const CLP_UTIL_STR_LEN: usize = 0;
 
 macro_rules! zpci_attr {
-    ($name:ident, $fmt:literal, $member:ident) => {
-        unsafe extern "C" fn $name##_show(dev: *mut device, _attr: *mut device_attribute,
+    ($name:tt, $fmt:literal, $member:ident) => {
+        unsafe extern "C" fn ::kernel::macros::paste!([<$name _show>])(dev: *mut device, _attr: *mut device_attribute,
                                           buf: *mut c_char) -> isize {
             let zdev = to_zpci(to_pci_dev(dev));
             sysfs_emit(buf, concat!($fmt, "\0").as_ptr() as *const c_char, (*zdev).$member)
         }
-        static mut $name##_attr: device_attribute = device_attribute { attr: attribute { mode: 0 } };
+        static mut ::kernel::macros::paste!([<$name _attr>]): device_attribute = device_attribute { attr: attribute { mode: 0 } };
     };
 }
 

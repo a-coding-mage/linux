@@ -123,12 +123,12 @@ pub struct pl08x_platform_data {
 }
 
 /* CONFIG_AMBA_PL08X is a build-time condition from the original header. */
-#[cfg(feature = "CONFIG_AMBA_PL08X")]
+#[cfg(CONFIG_AMBA_PL08X)]
 unsafe extern "C" {
     pub fn pl08x_filter_id(chan: *mut dma_chan, chan_id: *mut c_void) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_AMBA_PL08X"))]
+#[cfg(not(CONFIG_AMBA_PL08X))]
 #[inline]
 pub unsafe fn pl08x_filter_id(_chan: *mut dma_chan, _chan_id: *mut c_void) -> bool {
     false

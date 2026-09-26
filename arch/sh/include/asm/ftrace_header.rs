@@ -59,11 +59,11 @@ pub fn arch_ftrace_nmi_exit();
 }
 
 /* When CONFIG_DYNAMIC_FTRACE is not enabled, these are empty inline functions. */
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 #[inline]
 pub fn arch_ftrace_nmi_enter() {}
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 #[inline]
 pub fn arch_ftrace_nmi_exit() {}
 

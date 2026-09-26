@@ -18,7 +18,7 @@ pub struct mutex_waiter {
     pub list: list_head,
     pub task: *mut task_struct,
     pub ww_ctx: *mut ww_acquire_ctx,
-    #[cfg(feature = "CONFIG_DEBUG_MUTEXES")]
+    #[cfg(CONFIG_DEBUG_MUTEXES)]
     pub magic: *mut core::ffi::c_void,
 }
 
@@ -56,7 +56,7 @@ pub unsafe fn get_task_blocked_on(p: *mut task_struct) -> *mut mutex {
     __get_task_blocked_on(p)
 }
 
-#[cfg(feature = "CONFIG_DEBUG_MUTEXES")]
+#[cfg(CONFIG_DEBUG_MUTEXES)]
 extern "C" {
     pub fn debug_mutex_lock_common(lock: *mut mutex, waiter: *mut mutex_waiter);
     pub fn debug_mutex_wake_waiter(lock: *mut mutex, waiter: *mut mutex_waiter);
@@ -75,19 +75,19 @@ extern "C" {
     pub fn debug_mutex_init(lock: *mut mutex);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_lock_common(_lock: *mut mutex, _waiter: *mut mutex_waiter) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_wake_waiter(_lock: *mut mutex, _waiter: *mut mutex_waiter) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_free_waiter(_waiter: *mut mutex_waiter) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_add_waiter(
     _lock: *mut mutex,
@@ -95,7 +95,7 @@ pub unsafe fn debug_mutex_add_waiter(
     _task: *mut task_struct,
 ) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_remove_waiter(
     _lock: *mut mutex,
@@ -103,11 +103,11 @@ pub unsafe fn debug_mutex_remove_waiter(
     _task: *mut task_struct,
 ) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_unlock(_lock: *mut mutex) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_MUTEXES"))]
+#[cfg(not(CONFIG_DEBUG_MUTEXES))]
 #[inline]
 pub unsafe fn debug_mutex_init(_lock: *mut mutex) {}
 

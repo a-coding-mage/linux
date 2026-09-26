@@ -3,10 +3,10 @@
 // The C header includes <uapi/asm-generic/bitsperlong.h>, which supplies
 // __BITS_PER_LONG. That external dependency is intentionally not redefined here.
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const BITS_PER_LONG: usize = 64;
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub const BITS_PER_LONG: usize = 32;
 
 /*

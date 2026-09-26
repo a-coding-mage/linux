@@ -78,14 +78,14 @@ unsafe extern "C" fn ps3_panic(str_: *mut core::ffi::c_char) {
     loop { lv1_pause(1); }
 }
 
-#[cfg(any(feature = "CONFIG_FB_PS3", feature = "CONFIG_FB_PS3_MODULE", feature = "CONFIG_PS3_FLASH", feature = "CONFIG_PS3_FLASH_MODULE"))]
+#[cfg(any(CONFIG_FB_PS3, CONFIG_FB_PS3_MODULE, CONFIG_PS3_FLASH, CONFIG_PS3_FLASH_MODULE))]
 unsafe fn prealloc(p: *mut ps3_prealloc) {
     if (*p).size == 0 { return; }
     (*p).address = memblock_alloc_or_panic((*p).size, (*p).align);
-    printk(KERN_INFO "%s: %lu bytes at %p\n", (*p).name, (*p).size, (*p).address);
+    printk(c"\x016%s: %lu bytes at %p\n".as_ptr(), (*p).name, (*p).size, (*p).address);
 }
 
-#[cfg(any(feature = "CONFIG_FB_PS3", feature = "CONFIG_FB_PS3_MODULE"))]
+#[cfg(any(CONFIG_FB_PS3, CONFIG_FB_PS3_MODULE))]
 #[no_mangle]
 pub static mut ps3fb_videomemory: ps3_prealloc = ps3_prealloc {
     name: "ps3fb videomemory\0".as_ptr() as *const core::ffi::c_char,
@@ -94,12 +94,12 @@ pub static mut ps3fb_videomemory: ps3_prealloc = ps3_prealloc {
     address: core::ptr::null_mut(),
 };
 
-#[cfg(any(feature = "CONFIG_FB_PS3", feature = "CONFIG_FB_PS3_MODULE"))]
+#[cfg(any(CONFIG_FB_PS3, CONFIG_FB_PS3_MODULE))]
 unsafe fn prealloc_ps3fb_videomemory() { prealloc(&mut ps3fb_videomemory); }
-#[cfg(not(any(feature = "CONFIG_FB_PS3", feature = "CONFIG_FB_PS3_MODULE")))]
+#[cfg(not(any(CONFIG_FB_PS3, CONFIG_FB_PS3_MODULE)))]
 unsafe fn prealloc_ps3fb_videomemory() {}
 
-#[cfg(any(feature = "CONFIG_PS3_FLASH", feature = "CONFIG_PS3_FLASH_MODULE"))]
+#[cfg(any(CONFIG_PS3_FLASH, CONFIG_PS3_FLASH_MODULE))]
 #[no_mangle]
 pub static mut ps3flash_bounce_buffer: ps3_prealloc = ps3_prealloc {
     name: "ps3flash bounce buffer\0".as_ptr() as *const core::ffi::c_char,
@@ -108,9 +108,9 @@ pub static mut ps3flash_bounce_buffer: ps3_prealloc = ps3_prealloc {
     address: core::ptr::null_mut(),
 };
 
-#[cfg(any(feature = "CONFIG_PS3_FLASH", feature = "CONFIG_PS3_FLASH_MODULE"))]
+#[cfg(any(CONFIG_PS3_FLASH, CONFIG_PS3_FLASH_MODULE))]
 unsafe fn prealloc_ps3flash_bounce_buffer() { prealloc(&mut ps3flash_bounce_buffer); }
-#[cfg(not(any(feature = "CONFIG_PS3_FLASH", feature = "CONFIG_PS3_FLASH_MODULE")))]
+#[cfg(not(any(CONFIG_PS3_FLASH, CONFIG_PS3_FLASH_MODULE)))]
 unsafe fn prealloc_ps3flash_bounce_buffer() {}
 
 unsafe fn ps3_set_dabr(mut dabr: c_ulong, mut dabrx: c_ulong) -> i32 {
@@ -138,9 +138,9 @@ unsafe fn ps3_setup_arch() {
     DBG!(" -> %s:%d\n", "ps3_setup_arch", line!());
     lv1_get_version_info(&mut ps3_firmware_version.raw, &mut tmp);
     snprintf(ps3_firmware_version_str.as_mut_ptr(), ps3_firmware_version_str.len(), "%u.%u.%u\0".as_ptr() as *const c_char, ps3_firmware_version.major, ps3_firmware_version.minor, ps3_firmware_version.rev);
-    printk(KERN_INFO "PS3 firmware version %s\n", ps3_firmware_version_str.as_ptr());
+    printk(c"\x016PS3 firmware version %s\n".as_ptr(), ps3_firmware_version_str.as_ptr());
     ps3_spu_set_platform();
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     smp_init_ps3();
     prealloc_ps3fb_videomemory();
     prealloc_ps3flash_bounce_buffer();
@@ -156,7 +156,7 @@ pub unsafe extern "C" fn ps3_early_mm_init() { let mut htab_size = 0; ps3_mm_ini
 
 unsafe fn ps3_probe() -> i32 { DBG!(" -> %s:%d\n", "ps3_probe", line!()); ps3_os_area_save_params(); pm_power_off = Some(ps3_power_off); DBG!(" <- %s:%d\n", "ps3_probe", line!()); 1 }
 
-#[cfg(feature = "CONFIG_KEXEC_CORE")]
+#[cfg(CONFIG_KEXEC_CORE)]
 unsafe fn ps3_kexec_cpu_down(_crash_shutdown: i32, _secondary: i32) {
     let cpu = smp_processor_id();
     DBG!(" -> %s:%d: (%d)\n", "ps3_kexec_cpu_down", line!(), cpu);
@@ -178,7 +178,7 @@ unsafe fn ps3_kexec_cpu_down(_crash_shutdown: i32, _secondary: i32) {
 //     .progress = ps3_progress,
 //     .restart = ps3_restart,
 //     .halt = ps3_halt,
-//     #[cfg(feature = "CONFIG_KEXEC_CORE")]
+//     #[cfg(CONFIG_KEXEC_CORE)]
 //     .kexec_cpu_down = ps3_kexec_cpu_down,
 // }
 

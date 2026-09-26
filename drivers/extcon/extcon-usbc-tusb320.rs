@@ -51,10 +51,10 @@ pub enum tusb320_mode { TUSB320_MODE_PORT, TUSB320_MODE_UFP, TUSB320_MODE_DFP, T
 #[repr(C)] pub struct tusb320_priv { pub dev: *mut device, pub regmap: *mut regmap, pub edev: *mut extcon_dev, pub ops: *mut tusb320_ops, pub state: tusb320_attached_state, pub port: *mut typec_port, pub cap: typec_capability, pub port_type: i32, pub pwr_opmode: i32, pub connector_fwnode: *mut fwnode_handle, pub role_sw: *mut usb_role_switch }
 
 extern "C" {
-    fn regmap_read(*mut regmap, u32, *mut u32) -> i32; fn regmap_write_bits(*mut regmap, u32, u32, u32) -> i32;
-    fn msleep(u32); fn dev_err(*mut device, *const u8, ...); fn dev_warn(*mut device, *const u8, ...); fn dev_dbg(*mut device, *const u8, ...); fn dev_info(*mut device, *const u8, ...);
-    fn extcon_set_state(*mut extcon_dev, u32, bool) -> i32; fn extcon_set_property(*mut extcon_dev, u32, u32, u32) -> i32; fn extcon_sync(*mut extcon_dev, u32) -> i32;
-    fn typec_get_drvdata(*mut typec_port) -> *mut tusb320_priv; fn typec_set_orientation(*mut typec_port, i32); fn typec_set_vconn_role(*mut typec_port, i32); fn typec_set_pwr_role(*mut typec_port, i32); fn typec_set_data_role(*mut typec_port, i32); fn typec_set_mode(*mut typec_port, i32); fn typec_set_pwr_opmode(*mut typec_port, i32); fn usb_role_switch_set_role(*mut usb_role_switch, i32) -> i32;
+    fn regmap_read(_: *mut regmap, _: u32, _: *mut u32) -> i32; fn regmap_write_bits(_: *mut regmap, _: u32, _: u32, _: u32) -> i32;
+    fn msleep(_: u32); fn dev_err(_: *mut device, _: *const u8, ...); fn dev_warn(_: *mut device, _: *const u8, ...); fn dev_dbg(_: *mut device, _: *const u8, ...); fn dev_info(_: *mut device, _: *const u8, ...);
+    fn extcon_set_state(_: *mut extcon_dev, _: u32, _: bool) -> i32; fn extcon_set_property(_: *mut extcon_dev, _: u32, _: u32, _: u32) -> i32; fn extcon_sync(_: *mut extcon_dev, _: u32) -> i32;
+    fn typec_get_drvdata(_: *mut typec_port) -> *mut tusb320_priv; fn typec_set_orientation(_: *mut typec_port, _: i32); fn typec_set_vconn_role(_: *mut typec_port, _: i32); fn typec_set_pwr_role(_: *mut typec_port, _: i32); fn typec_set_data_role(_: *mut typec_port, _: i32); fn typec_set_mode(_: *mut typec_port, _: i32); fn typec_set_pwr_opmode(_: *mut typec_port, _: i32); fn usb_role_switch_set_role(_: *mut usb_role_switch, _: i32) -> i32;
 }
 
 static TUSB_ATTACHED_STATES: [&[u8]; 4] = [b"not attached\0", b"downstream facing port\0", b"upstream facing port\0", b"accessory\0"];

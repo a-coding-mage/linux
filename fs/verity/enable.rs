@@ -50,6 +50,7 @@ unsafe fn build_merkle_tree(filp: *mut file, params: *const merkle_tree_params,
     let data_size = unsafe { (*inode).i_size };
     let num_levels = unsafe { (*params).num_levels };
     let mut buffers = [block_buffer { filled: 0, is_root_hash: false, data: core::ptr::null_mut() }; 1 + FS_VERITY_MAX_LEVELS + 1];
+    'out: {
     let base = unsafe { buffers.as_mut_ptr().add(1) };
     let mut level_offset = [0usize; FS_VERITY_MAX_LEVELS];
     let mut level: i32;
@@ -102,7 +103,8 @@ unsafe fn build_merkle_tree(filp: *mut file, params: *const merkle_tree_params,
     }
     if unsafe { (*base.add(num_levels as usize)).filled != (*params).digest_size } { err = -EINVAL; goto_out!(out, err); }
     err = 0;
-out:
+    }
+    
     level = -1;
     while level < num_levels { unsafe { kfree((*base.offset(level as isize)).data as *mut core::ffi::c_void); } level += 1; }
     err

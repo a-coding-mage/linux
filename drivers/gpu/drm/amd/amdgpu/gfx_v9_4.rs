@@ -89,8 +89,8 @@ static mut gfx_v9_4_edc_counter_regs[] = {
 	{ SOC15_REG_ENTRY(GC, 0, mmRLC_EDC_CNT2), 0, 1, 1 },
 };
 
-static unsafe fn gfx_v9_4_select_se_sh(struct amdgpu_device *adev, u32 se_num,
-				  u32 sh_num, u32 instance)
+unsafe fn gfx_v9_4_select_se_sh(amdgpu_device *adev, se_num: u32,
+				  sh_num: u32, instance: u32)
 {
 	u32 data;
 
@@ -685,11 +685,11 @@ static atc_l2_cache_4k_mems[] = {
 	"UTC_ATCL2_CACHE_4K_BANK1_WAY1_MEM7",
 };
 
-static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
-					 struct ras_err_data *err_data)
+unsafe fn gfx_v9_4_query_utc_edc_status(amdgpu_device *adev,
+					 ras_err_data *err_data)
 {
-	u32 i, data;
-	u32 sec_count, ded_count;
+	i: u32, data;
+	sec_count: u32, ded_count;
 
 	WREG32_SOC15(GC, 0, mmVML2_MEM_ECC_INDEX, 255);
 	WREG32_SOC15(GC, 0, mmVML2_MEM_ECC_CNTL, 0);
@@ -709,18 +709,18 @@ static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
 
 		sec_count = REG_GET_FIELD(data, VML2_MEM_ECC_CNTL, SEC_COUNT);
 		if (sec_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, SEC %d\n", i,
 				 vml2_mems[i], sec_count);
-			err_data->ce_count += sec_count;
+			(*err_data).ce_count += sec_count;
 		}
 
 		ded_count = REG_GET_FIELD(data, VML2_MEM_ECC_CNTL, DED_COUNT);
 		if (ded_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, DED %d\n", i,
 				 vml2_mems[i], ded_count);
-			err_data->ue_count += ded_count;
+			(*err_data).ue_count += ded_count;
 		}
 	}
 
@@ -731,19 +731,19 @@ static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
 		sec_count = REG_GET_FIELD(data, VML2_WALKER_MEM_ECC_CNTL,
 					  SEC_COUNT);
 		if (sec_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, SEC %d\n", i,
 				 vml2_walker_mems[i], sec_count);
-			err_data->ce_count += sec_count;
+			(*err_data).ce_count += sec_count;
 		}
 
 		ded_count = REG_GET_FIELD(data, VML2_WALKER_MEM_ECC_CNTL,
 					  DED_COUNT);
 		if (ded_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, DED %d\n", i,
 				 vml2_walker_mems[i], ded_count);
-			err_data->ue_count += ded_count;
+			(*err_data).ue_count += ded_count;
 		}
 	}
 
@@ -753,18 +753,18 @@ static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
 
 		sec_count = REG_GET_FIELD(data, UTCL2_MEM_ECC_CNTL, SEC_COUNT);
 		if (sec_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, SEC %d\n", i,
 				 utcl2_router_mems[i], sec_count);
-			err_data->ce_count += sec_count;
+			(*err_data).ce_count += sec_count;
 		}
 
 		ded_count = REG_GET_FIELD(data, UTCL2_MEM_ECC_CNTL, DED_COUNT);
 		if (ded_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, DED %d\n", i,
 				 utcl2_router_mems[i], ded_count);
-			err_data->ue_count += ded_count;
+			(*err_data).ue_count += ded_count;
 		}
 	}
 
@@ -775,19 +775,19 @@ static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
 		sec_count = REG_GET_FIELD(data, ATC_L2_CACHE_2M_DSM_CNTL,
 					  SEC_COUNT);
 		if (sec_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, SEC %d\n", i,
 				 atc_l2_cache_2m_mems[i], sec_count);
-			err_data->ce_count += sec_count;
+			(*err_data).ce_count += sec_count;
 		}
 
 		ded_count = REG_GET_FIELD(data, ATC_L2_CACHE_2M_DSM_CNTL,
 					  DED_COUNT);
 		if (ded_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, DED %d\n", i,
 				 atc_l2_cache_2m_mems[i], ded_count);
-			err_data->ue_count += ded_count;
+			(*err_data).ue_count += ded_count;
 		}
 	}
 
@@ -798,19 +798,19 @@ static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
 		sec_count = REG_GET_FIELD(data, ATC_L2_CACHE_4K_DSM_CNTL,
 					  SEC_COUNT);
 		if (sec_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, SEC %d\n", i,
 				 atc_l2_cache_4k_mems[i], sec_count);
-			err_data->ce_count += sec_count;
+			(*err_data).ce_count += sec_count;
 		}
 
 		ded_count = REG_GET_FIELD(data, ATC_L2_CACHE_4K_DSM_CNTL,
 					  DED_COUNT);
 		if (ded_count) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "Instance[%d]: SubBlock %s, DED %d\n", i,
 				 atc_l2_cache_4k_mems[i], ded_count);
-			err_data->ue_count += ded_count;
+			(*err_data).ue_count += ded_count;
 		}
 	}
 
@@ -823,25 +823,25 @@ static unsafe fn gfx_v9_4_query_utc_edc_status(struct amdgpu_device *adev,
 	return 0;
 }
 
-static unsafe fn gfx_v9_4_ras_error_count(struct amdgpu_device *adev,
+unsafe fn gfx_v9_4_ras_error_count(amdgpu_device *adev,
 				    const struct soc15_reg_entry *reg,
-				    u32 se_id, u32 inst_id,
-				    u32 value, u32 *sec_count,
+				    se_id: u32, inst_id: u32,
+				    value: u32, u32 *sec_count,
 				    u32 *ded_count)
 {
 	u32 i;
-	u32 sec_cnt, ded_cnt;
+	sec_cnt: u32, ded_cnt;
 
 	for (i = 0; i < ARRAY_SIZE(gfx_v9_4_ras_fields); i++) {
-		if (gfx_v9_4_ras_fields[i].reg_offset != reg->reg_offset ||
-		    gfx_v9_4_ras_fields[i].seg != reg->seg ||
-		    gfx_v9_4_ras_fields[i].inst != reg->inst)
+		if (gfx_v9_4_ras_fields[i].reg_offset != (*reg).reg_offset ||
+		    gfx_v9_4_ras_fields[i].seg != (*reg).seg ||
+		    gfx_v9_4_ras_fields[i].inst != (*reg).inst)
 			continue;
 
 		sec_cnt = (value & gfx_v9_4_ras_fields[i].sec_count_mask) >>
 			  gfx_v9_4_ras_fields[i].sec_count_shift;
 		if (sec_cnt) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "GFX SubBlock %s, Instance[%d][%d], SEC %d\n",
 				 gfx_v9_4_ras_fields[i].name, se_id, inst_id,
 				 sec_cnt);
@@ -851,7 +851,7 @@ static unsafe fn gfx_v9_4_ras_error_count(struct amdgpu_device *adev,
 		ded_cnt = (value & gfx_v9_4_ras_fields[i].ded_count_mask) >>
 			  gfx_v9_4_ras_fields[i].ded_count_shift;
 		if (ded_cnt) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "GFX SubBlock %s, Instance[%d][%d], DED %d\n",
 				 gfx_v9_4_ras_fields[i].name, se_id, inst_id,
 				 ded_cnt);
@@ -862,21 +862,21 @@ static unsafe fn gfx_v9_4_ras_error_count(struct amdgpu_device *adev,
 	return 0;
 }
 
-static unsafe fn gfx_v9_4_query_ras_error_count(struct amdgpu_device *adev,
+unsafe fn gfx_v9_4_query_ras_error_count(amdgpu_device *adev,
 					  void *ras_error_status)
 {
-	struct ras_err_data *err_data = (struct ras_err_data *)ras_error_status;
+	struct ras_err_data *err_data = (ras_err_data *)ras_error_status;
 	u32 sec_count = 0, ded_count = 0;
-	u32 i, j, k;
+	i: u32, j, k;
 	u32 reg_value;
 
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__GFX))
 		return;
 
-	err_data->ue_count = 0;
-	err_data->ce_count = 0;
+	(*err_data).ue_count = 0;
+	(*err_data).ce_count = 0;
 
-	mutex_lock(&adev->grbm_idx_mutex);
+	mutex_lock((*&adev).grbm_idx_mutex);
 
 	for (i = 0; i < ARRAY_SIZE(gfx_v9_4_edc_counter_regs); i++) {
 		for (j = 0; j < gfx_v9_4_edc_counter_regs[i].se_num; j++) {
@@ -894,24 +894,24 @@ static unsafe fn gfx_v9_4_query_ras_error_count(struct amdgpu_device *adev,
 		}
 	}
 
-	err_data->ce_count += sec_count;
-	err_data->ue_count += ded_count;
+	(*err_data).ce_count += sec_count;
+	(*err_data).ue_count += ded_count;
 
 	gfx_v9_4_select_se_sh(adev, 0xffff_ffff, 0xffff_ffff, 0xffff_ffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 
 	gfx_v9_4_query_utc_edc_status(adev, err_data);
 
 }
 
-static unsafe fn gfx_v9_4_reset_ras_error_count(struct amdgpu_device *adev)
+unsafe fn gfx_v9_4_reset_ras_error_count(amdgpu_device *adev)
 {
 	int i, j, k;
 
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__GFX))
 		return;
 
-	mutex_lock(&adev->grbm_idx_mutex);
+	mutex_lock((*&adev).grbm_idx_mutex);
 	for (i = 0; i < ARRAY_SIZE(gfx_v9_4_edc_counter_regs); i++) {
 		for (j = 0; j < gfx_v9_4_edc_counter_regs[i].se_num; j++) {
 			for (k = 0; k < gfx_v9_4_edc_counter_regs[i].instance;
@@ -923,7 +923,7 @@ static unsafe fn gfx_v9_4_reset_ras_error_count(struct amdgpu_device *adev)
 		}
 	}
 	WREG32_SOC15(GC, 0, mmGRBM_GFX_INDEX, 0xe000_0000);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 
 	WREG32_SOC15(GC, 0, mmVML2_MEM_ECC_INDEX, 255);
 	WREG32_SOC15(GC, 0, mmVML2_MEM_ECC_CNTL, 0);
@@ -973,15 +973,15 @@ static mut gfx_v9_4_ea_err_status_regs = {
 	SOC15_REG_ENTRY(GC, 0, mmGCEA_ERR_STATUS), 0, 1, 32
 };
 
-static unsafe fn gfx_v9_4_query_ras_error_status(struct amdgpu_device *adev)
+unsafe fn gfx_v9_4_query_ras_error_status(amdgpu_device *adev)
 {
-	u32 i, j;
+	i: u32, j;
 	u32 reg_value;
 
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__GFX))
 		return;
 
-	mutex_lock(&adev->grbm_idx_mutex);
+	mutex_lock((*&adev).grbm_idx_mutex);
 
 	for (i = 0; i < gfx_v9_4_ea_err_status_regs.se_num; i++) {
 		for (j = 0; j < gfx_v9_4_ea_err_status_regs.instance;
@@ -995,26 +995,26 @@ static unsafe fn gfx_v9_4_query_ras_error_status(struct amdgpu_device *adev)
 				/* SDP read/write error/parity error in FUE_IS_FATAL mode
 				 * can cause system fatal error in arcturas. Harvest the error
 				 * status before GPU reset */
-				dev_warn(adev->dev, "GCEA err detected at instance: %d, status: 0x%x!\n",
+				dev_warn((*adev).dev, "GCEA err detected at instance: %d, status: 0x%x!\n",
 						j, reg_value);
 			}
 		}
 	}
 
 	gfx_v9_4_select_se_sh(adev, 0xffff_ffff, 0xffff_ffff, 0xffff_ffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 }
 
 
 const  gfx_v9_4_ras_ops = {
-	.query_ras_error_count = &gfx_v9_4_query_ras_error_count,
-	.reset_ras_error_count = &gfx_v9_4_reset_ras_error_count,
-	.query_ras_error_status = &gfx_v9_4_query_ras_error_status,
+	query_ras_error_count: &gfx_v9_4_query_ras_error_count,
+	reset_ras_error_count: &gfx_v9_4_reset_ras_error_count,
+	query_ras_error_status: &gfx_v9_4_query_ras_error_status,
 };
 
 const gfx_v9_4_ras = {
-	.ras_block = {
-		.hw_ops = &gfx_v9_4_ras_ops,
+	ras_block: {
+		hw_ops: &gfx_v9_4_ras_ops,
 	},
 };
 

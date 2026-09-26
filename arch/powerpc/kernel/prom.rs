@@ -42,7 +42,7 @@ extern "C" {
 }
 
 static mut first_memblock_size: u64 = 0;
-#[cfg(feature="CONFIG_PPC64")] static mut iommu_is_off: c_int = 0;
+#[cfg(CONFIG_PPC64)] static mut iommu_is_off: c_int = 0;
 
 unsafe fn early_parse_mem(p:*mut c_char)->c_int { if p.is_null(){return 1;} memory_limit=memparse(p,ptr::null_mut()); 0 }
 unsafe fn overlaps_initrd(_start:u64,_size:u64)->bool { false }
@@ -83,7 +83,7 @@ pub unsafe fn early_init_devtree(params:*mut c_void) {
 unsafe fn early_reserve_mem() { early_init_fdt_reserve_self(); early_init_fdt_scan_reserved_mem(); }
 unsafe fn tm_init() { pnv_tm_init(); }
 
-#[cfg(feature="CONFIG_RELOCATABLE")] pub unsafe fn early_get_first_memblock_info(params:*mut c_void,size:*mut u64){initial_boot_params=params; early_init_dt_scan_root(); let _=early_init_dt_scan_memory(); if !size.is_null(){*size=first_memblock_size;}}
+#[cfg(CONFIG_RELOCATABLE)] pub unsafe fn early_get_first_memblock_info(params:*mut c_void,size:*mut u64){initial_boot_params=params; early_init_dt_scan_root(); let _=early_init_dt_scan_memory(); if !size.is_null(){*size=first_memblock_size;}}
 
 #[no_mangle] pub unsafe extern "C" fn of_get_ibm_chip_id(mut np:*mut c_void)->c_int { of_node_get(np); while !np.is_null(){let mut id=0u32; if of_property_read_u32(np,b"ibm,chip-id\0".as_ptr() as _,&mut id)==0{of_node_put(np);return id as c_int;} np=of_get_next_parent(np);} -1 }
 #[no_mangle] pub unsafe extern "C" fn cpu_to_chip_id(cpu:c_int)->c_int { let idx=cpu/threads_per_core; if !chip_id_lookup_table.is_null() && *chip_id_lookup_table.add(idx as usize)!=-1{return *chip_id_lookup_table.add(idx as usize);} let np=of_get_cpu_node(cpu,ptr::null_mut()); if np.is_null(){return -1;} let r=of_get_ibm_chip_id(np); of_node_put(np); if !chip_id_lookup_table.is_null(){*chip_id_lookup_table.add(idx as usize)=r;} r }

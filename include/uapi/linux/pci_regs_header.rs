@@ -299,7 +299,7 @@ pub const PCI_AGP_SIZEOF: u64 = 12;
 
 /* Vital Product Data */
 
-pub const PCI_VPD_ADDR: u64 = 2	/* Address to access (15 bits!) */;
+pub const PCI_VPD_ADDR: u64 = 2	/* Address to access (15 bits!()) */;
 pub const PCI_VPD_ADDR_MASK: u64 = 0x7fff	/* Address mask */;
 pub const PCI_VPD_ADDR_F: u64 = 0x8000	/* Write 0, 1 indicates completion */;
 pub const PCI_VPD_DATA: u64 = 4	/* 32-bits of data returned here */;

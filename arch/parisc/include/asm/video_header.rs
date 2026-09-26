@@ -7,7 +7,7 @@ pub struct device;
 
 // Preserved build-time condition: this declaration is available only when
 // CONFIG_STI_CORE and CONFIG_VIDEO are both enabled.
-#[cfg(all(feature = "CONFIG_STI_CORE", feature = "CONFIG_VIDEO"))]
+#[cfg(all(CONFIG_STI_CORE, CONFIG_VIDEO))]
 pub fn video_is_primary_device(dev: *mut device) -> bool;
 
 // Dependency intent: asm-generic/video.h

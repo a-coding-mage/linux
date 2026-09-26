@@ -15,19 +15,19 @@ extern "C" {
 }
 
 // Preserves the CONFIG_NF_CT_PROTO_SCTP conditional declaration.
-#[cfg(feature = "CONFIG_NF_CT_PROTO_SCTP")]
+#[cfg(CONFIG_NF_CT_PROTO_SCTP)]
 extern "C" {
     pub static nf_conntrack_l4proto_sctp: nf_conntrack_l4proto;
 }
 
 // Preserves the CONFIG_NF_CT_PROTO_GRE conditional declaration.
-#[cfg(feature = "CONFIG_NF_CT_PROTO_GRE")]
+#[cfg(CONFIG_NF_CT_PROTO_GRE)]
 extern "C" {
     pub static nf_conntrack_l4proto_gre: nf_conntrack_l4proto;
 }
 
 // Preserves IS_ENABLED(CONFIG_NF_CONNTRACK_PPTP).
-#[cfg(feature = "CONFIG_NF_CONNTRACK_PPTP")]
+#[cfg(CONFIG_NF_CONNTRACK_PPTP)]
 extern "C" {
     pub fn gre_pptp_destroy_siblings(ct: *mut nf_conn);
 }

@@ -16,11 +16,9 @@ static mut orangefs_superblocks: list_head = list_head::new();
 
 static mut orangefs_superblocks_lock: spinlock_t = spinlock_t::new();
 
-enum {
-    Opt_acl,
-    Opt_intr,
-    Opt_local_lock,
-}
+pub const Opt_acl: i32 = 0;
+pub const Opt_intr: i32 = Opt_acl + 1;
+pub const Opt_local_lock: i32 = Opt_intr + 1;
 
 const orangefs_fs_param_spec: [fs_parameter_spec; 4] = [
     fsparam_flag!("acl", Opt_acl),

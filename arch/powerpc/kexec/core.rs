@@ -9,7 +9,7 @@
 
 // C headers and build-time configuration are supplied by the surrounding kernel.
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe extern "C" fn machine_crash_shutdown(regs: *mut pt_regs) {
     default_machine_crash_shutdown(regs);
 }
@@ -39,24 +39,24 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     loop {}
 }
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut crashk_cma_size: u64 = 0;
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 unsafe extern "C" fn get_crash_base(crash_base: u64) -> u64 {
-    #[cfg(not(feature = "CONFIG_NONSTATIC_KERNEL"))]
+    #[cfg(not(CONFIG_NONSTATIC_KERNEL))]
     {
         if crash_base != KDUMP_KERNELBASE as u64 {
-            printk(c"Crash kernel location must be 0x%x\0");
+            printk(c"Crash kernel location must be 0x%x");
         }
         return KDUMP_KERNELBASE as u64;
     }
 
-    #[cfg(feature = "CONFIG_NONSTATIC_KERNEL")]
+    #[cfg(CONFIG_NONSTATIC_KERNEL)]
     {
         let mut crash_base = crash_base;
         if crash_base == 0 {
-            #[cfg(feature = "CONFIG_PPC64")]
+            #[cfg(CONFIG_PPC64)]
             {
                 /* On LPAR place the crash kernel in the middle of the RMA. */
                 if firmware_has_feature(FW_FEATURE_LPAR) {
@@ -65,7 +65,7 @@ unsafe extern "C" fn get_crash_base(crash_base: u64) -> u64 {
                     crash_base = core::cmp::min(ppc64_rma_size / 2, SZ_128M as u64);
                 }
             }
-            #[cfg(not(feature = "CONFIG_PPC64"))]
+            #[cfg(not(CONFIG_PPC64))]
             {
                 crash_base = KDUMP_KERNELBASE as u64;
             }
@@ -73,13 +73,13 @@ unsafe extern "C" fn get_crash_base(crash_base: u64) -> u64 {
 
         let crash_base_align = PAGE_ALIGN(crash_base);
         if crash_base != crash_base_align {
-            pr_warn(c"Crash kernel base must be aligned to 0x%lx\0", PAGE_SIZE);
+            pr_warn(c"Crash kernel base must be aligned to 0x%lx", PAGE_SIZE);
         }
         crash_base_align
     }
 }
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 pub unsafe extern "C" fn arch_reserve_crashkernel() {
     let mut crash_size: u64 = 0;
     let mut crash_base: u64 = 0;
@@ -95,53 +95,53 @@ pub unsafe extern "C" fn arch_reserve_crashkernel() {
     kernel_start = __pa(_stext);
     kernel_size = _end - _stext;
     if kernel_start + kernel_size > crash_base && kernel_start <= crash_end {
-        pr_warn(c"Crash kernel can not overlap current kernel\0");
+        pr_warn(c"Crash kernel can not overlap current kernel");
         return;
     }
     reserve_crashkernel_generic(crash_size, crash_base, 0, false);
 }
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 pub unsafe extern "C" fn kdump_cma_reserve() {
     if crashk_cma_size != 0 { reserve_crashkernel_cma(crashk_cma_size); }
 }
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 pub unsafe extern "C" fn overlaps_crashkernel(start: c_ulong, size: c_ulong) -> i32 {
     if start + size > crashk_res.start && start <= crashk_res.end { 1 } else { 0 }
 }
 
 // Values exported to the second kernel via the device tree.
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut crashk_base: __be_word = 0;
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut crashk_size: __be_word = 0;
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut mem_limit: __be_word = 0;
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut crashk_base_prop: property = property {
     name: c"linux,crashkernel-base",
     length: core::mem::size_of::<__be_word>() as u32,
     value: unsafe { &raw mut crashk_base as *mut _ as *mut c_void },
 };
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut crashk_size_prop: property = property {
     name: c"linux,crashkernel-size",
     length: core::mem::size_of::<__be_word>() as u32,
     value: unsafe { &raw mut crashk_size as *mut _ as *mut c_void },
 };
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 static mut memory_limit_prop: property = property {
     name: c"linux,memory-limit",
     length: core::mem::size_of::<__be_word>() as u32,
     value: unsafe { &raw mut mem_limit as *mut _ as *mut c_void },
 };
 
-#[cfg(feature = "CONFIG_CRASH_RESERVE")]
+#[cfg(CONFIG_CRASH_RESERVE)]
 unsafe fn export_crashk_values(node: *mut device_node) {
-    of_remove_property(node, of_find_property(node, c"linux,crashkernel-base\0", core::ptr::null_mut()));
-    of_remove_property(node, of_find_property(node, c"linux,crashkernel-size\0", core::ptr::null_mut()));
+    of_remove_property(node, of_find_property(node, c"linux,crashkernel-base", core::ptr::null_mut()));
+    of_remove_property(node, of_find_property(node, c"linux,crashkernel-size", core::ptr::null_mut()));
     if crashk_res.start != 0 {
         crashk_base = cpu_to_be_ulong(crashk_res.start);
         of_add_property(node, &mut crashk_base_prop);
@@ -161,12 +161,12 @@ static mut kernel_end_prop: property = property {
 };
 
 unsafe extern "C" fn kexec_setup() -> i32 {
-    let node = of_find_node_by_path(c"/chosen\0");
+    let node = of_find_node_by_path(c"/chosen");
     if node.is_null() { return -ENOENT; }
     of_remove_property(node, of_find_property(node, kernel_end_prop.name, core::ptr::null_mut()));
     kernel_end = cpu_to_be_ulong(__pa(_end));
     of_add_property(node, &mut kernel_end_prop);
-    #[cfg(feature = "CONFIG_CRASH_RESERVE")]
+    #[cfg(CONFIG_CRASH_RESERVE)]
     export_crashk_values(node);
     of_node_put(node);
     0

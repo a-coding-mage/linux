@@ -17,7 +17,7 @@ unsafe extern "C" {
 }
 
 // The following declaration is present only when CONFIG_CRASH_DUMP is enabled.
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe extern "C" {
     pub fn copy_oldmem_kernel(
         dst: *mut core::ffi::c_void,

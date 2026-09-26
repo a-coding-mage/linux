@@ -11,9 +11,9 @@
 
 pub const HAVE_FUNCTION_GRAPH_FP_TEST: bool = true;
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 pub const ARCH_SUPPORTS_FTRACE_OPS: i32 = 1;
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE_WITH_ARGS))]
 pub const MCOUNT_ADDR: usize = _mcount as usize;
 
 /* The BL at the callsite's adjusted rec->ip */
@@ -55,21 +55,21 @@ pub struct dyn_arch_ftrace {
     /* No extra data needed for arm64 */
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 pub struct dyn_ftrace;
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 pub struct ftrace_ops;
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 pub struct ftrace_regs;
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[repr(C)]
 pub struct __arch_ftrace_regs {
     /* x0 - x8 */
     pub regs: [c_ulong; 9],
-    #[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS")]
+    #[cfg(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS)]
     pub direct_tramp: c_ulong,
-    #[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS"))]
+    #[cfg(not(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS))]
     pub __unused: c_ulong,
     pub fp: c_ulong,
     pub lr: c_ulong,
@@ -77,61 +77,61 @@ pub struct __arch_ftrace_regs {
     pub pc: c_ulong,
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_get_instruction_pointer(fregs: *const ftrace_regs) -> c_ulong {
     (*(fregs as *const __arch_ftrace_regs)).pc
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_set_instruction_pointer(fregs: *mut ftrace_regs, pc: c_ulong) {
     (*(fregs as *mut __arch_ftrace_regs)).pc = pc;
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_get_stack_pointer(fregs: *const ftrace_regs) -> c_ulong {
     (*(fregs as *const __arch_ftrace_regs)).sp
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_get_argument(fregs: *mut ftrace_regs, n: c_uint) -> c_ulong {
     if n < 8 { (*(fregs as *const __arch_ftrace_regs)).regs[n as usize] } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_get_return_value(fregs: *const ftrace_regs) -> c_ulong {
     (*(fregs as *const __arch_ftrace_regs)).regs[0]
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_set_return_value(fregs: *mut ftrace_regs, ret: c_ulong) {
     (*(fregs as *mut __arch_ftrace_regs)).regs[0] = ret;
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_override_function_with_return(fregs: *mut ftrace_regs) {
     (*(fregs as *mut __arch_ftrace_regs)).pc = (*(fregs as *mut __arch_ftrace_regs)).lr;
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_get_frame_pointer(fregs: *const ftrace_regs) -> c_ulong {
     (*(fregs as *const __arch_ftrace_regs)).fp
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_regs_get_return_address(fregs: *const ftrace_regs) -> c_ulong {
     (*(fregs as *const __arch_ftrace_regs)).lr
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn ftrace_partial_regs(fregs: *const ftrace_regs, regs: *mut pt_regs) -> *mut pt_regs {
     let afregs = fregs as *const __arch_ftrace_regs;
@@ -149,7 +149,7 @@ pub unsafe fn ftrace_partial_regs(fregs: *const ftrace_regs, regs: *mut pt_regs)
     regs
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 #[inline(always)]
 pub unsafe fn arch_ftrace_fill_perf_regs(fregs: *const ftrace_regs, regs: *mut pt_regs) {
     let afregs = fregs as *const __arch_ftrace_regs;
@@ -160,14 +160,14 @@ pub unsafe fn arch_ftrace_fill_perf_regs(fregs: *const ftrace_regs, regs: *mut p
 }
 
 // The following declarations depend on the corresponding kernel types and constants.
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 extern "C" {
     pub fn ftrace_regs_query_register_offset(name: *const i8) -> i32;
     pub fn ftrace_init_nop(mod_: *mut module, rec: *mut dyn_ftrace) -> i32;
     pub fn ftrace_graph_func(ip: c_ulong, parent_ip: c_ulong, op: *mut ftrace_ops, fregs: *mut ftrace_regs);
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS)]
 #[inline]
 pub unsafe fn arch_ftrace_set_direct_caller(fregs: *mut ftrace_regs, addr: c_ulong) {
     /* The ftrace trampoline will return to this address instead of the instrumented function. */
@@ -188,7 +188,7 @@ pub unsafe fn arch_syscall_match_sym_name(sym: *const i8, name: *const i8) -> bo
     strcmp(sym.add(8), name) != 0
 }
 
-#[cfg(feature = "CONFIG_FUNCTION_GRAPH_TRACER")]
+#[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
 extern "C" {
     pub fn prepare_ftrace_return(self_addr: c_ulong, parent: *mut c_ulong, frame_pointer: c_ulong);
 }

@@ -240,7 +240,7 @@ unsafe extern "C" fn handle_backtrace(_info: *mut c_void) {
 
 unsafe extern "C" fn raise_backtrace(mask: *mut cpumask) {
     let mut cpu: c_int = 0;
-    for_each_cpu!(cpu, mask) {
+    for_each_cpu!(cpu, mask, {
         if cpumask_test_and_set_cpu(cpu, &mut backtrace_csd_busy) {
             pr_warn!("Unable to send backtrace IPI to CPU%u - perhaps it hung?\n", cpu);
             continue;
@@ -248,7 +248,7 @@ unsafe extern "C" fn raise_backtrace(mask: *mut cpumask) {
         let csd = &mut per_cpu!(backtrace_csd, cpu);
         csd.func = Some(handle_backtrace);
         smp_call_function_single_async(cpu, csd);
-    }
+    });
 }
 
 #[no_mangle]

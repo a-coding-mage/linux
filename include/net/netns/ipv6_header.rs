@@ -11,15 +11,15 @@ pub struct ctl_table_header;
 #[repr(C)]
 pub struct netns_sysctl_ipv6 {
     // CONFIG_SYSCTL fields are present when CONFIG_SYSCTL is enabled.
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub route_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub icmp_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub frags_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub xfrm6_hdr: *mut ctl_table_header,
     pub flush_delay: ::core::ffi::c_int,
     pub ip6_rt_max_size: ::core::ffi::c_int,
@@ -86,19 +86,19 @@ pub struct netns_ipv6 {
     pub ip6_rt_last_gc: ::core::ffi::c_ulong,
     pub flowlabel_has_excl: u8,
     // CONFIG_IPV6_MULTIPLE_TABLES fields are present when enabled.
-    #[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
     pub fib6_has_custom_rules: bool,
-    #[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
     pub fib6_rules_require_fldissect: ::core::ffi::c_uint,
-    #[cfg(all(feature = "CONFIG_IPV6_MULTIPLE_TABLES", feature = "CONFIG_IPV6_SUBTREES"))]
+    #[cfg(all(CONFIG_IPV6_MULTIPLE_TABLES, CONFIG_IPV6_SUBTREES))]
     pub fib6_routes_require_src: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
     pub ip6_prohibit_entry: *mut rt6_info,
-    #[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
     pub ip6_blk_hole_entry: *mut rt6_info,
-    #[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
     pub fib6_local_tbl: *mut fib6_table,
-    #[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
     pub fib6_rules_ops: *mut fib_rules_ops,
     pub ndisc_sk: *mut sock,
     pub tcp_sk: *mut sock,
@@ -108,17 +108,17 @@ pub struct netns_ipv6 {
     pub addrconf_hash_lock: spinlock_t,
     pub addr_chk_work: delayed_work,
     // CONFIG_IPV6_MROUTE fields are present when enabled.
-    #[cfg(all(feature = "CONFIG_IPV6_MROUTE", not(feature = "CONFIG_IPV6_MROUTE_MULTIPLE_TABLES")))]
+    #[cfg(all(CONFIG_IPV6_MROUTE, not(CONFIG_IPV6_MROUTE_MULTIPLE_TABLES)))]
     pub mrt6: *mut mr_table,
-    #[cfg(all(feature = "CONFIG_IPV6_MROUTE", feature = "CONFIG_IPV6_MROUTE_MULTIPLE_TABLES"))]
+    #[cfg(all(CONFIG_IPV6_MROUTE, CONFIG_IPV6_MROUTE_MULTIPLE_TABLES))]
     pub mr6_tables: list_head,
-    #[cfg(all(feature = "CONFIG_IPV6_MROUTE", feature = "CONFIG_IPV6_MROUTE_MULTIPLE_TABLES"))]
+    #[cfg(all(CONFIG_IPV6_MROUTE, CONFIG_IPV6_MROUTE_MULTIPLE_TABLES))]
     pub mr6_rules_ops: *mut fib_rules_ops,
-    #[cfg(feature = "CONFIG_IPV6_MROUTE")]
+    #[cfg(CONFIG_IPV6_MROUTE)]
     pub ip6mr_notifier_ops: *mut fib_notifier_ops,
-    #[cfg(feature = "CONFIG_IPV6_MROUTE")]
+    #[cfg(CONFIG_IPV6_MROUTE)]
     pub ipmr_seq: atomic_t,
-    #[cfg(feature = "CONFIG_IPV6_MROUTE")]
+    #[cfg(CONFIG_IPV6_MROUTE)]
     pub mfc_mutex: mutex,
     pub dev_addr_genid: atomic_t,
     pub fib6_sernum: atomic_t,
@@ -136,7 +136,7 @@ pub struct ip6addrlbl_table {
     pub seq: u32,
 }
 
-#[cfg(feature = "CONFIG_NF_DEFRAG_IPV6")]
+#[cfg(CONFIG_NF_DEFRAG_IPV6)]
 #[repr(C)]
 pub struct netns_nf_frag {
     pub fqdir: *mut fqdir,

@@ -76,8 +76,8 @@ pub const SIGEMT_MASK:usize=0; pub const SIG_KERNEL_ONLY_MASK:usize=rt_sigmask(S
 pub const SIG_KERNEL_COREDUMP_MASK:usize=rt_sigmask(3)|rt_sigmask(4)|rt_sigmask(5)|rt_sigmask(6)|rt_sigmask(8)|rt_sigmask(11)|rt_sigmask(7)|rt_sigmask(31)|rt_sigmask(24)|rt_sigmask(25)|SIGEMT_MASK;
 pub const SIG_SPECIFIC_SICODES_MASK:usize=rt_sigmask(4)|rt_sigmask(8)|rt_sigmask(11)|rt_sigmask(7)|rt_sigmask(5)|rt_sigmask(17)|rt_sigmask(29)|rt_sigmask(31)|SIGEMT_MASK;
 #[inline] pub fn sig_kernel_only(sig:usize)->bool{siginmask(sig,SIG_KERNEL_ONLY_MASK)} #[inline] pub fn sig_kernel_coredump(sig:usize)->bool{siginmask(sig,0)} #[inline] pub fn sig_kernel_ignore(sig:usize)->bool{siginmask(sig,SIG_KERNEL_IGNORE_MASK)} #[inline] pub fn sig_kernel_stop(sig:usize)->bool{siginmask(sig,SIG_KERNEL_STOP_MASK)} #[inline] pub fn sig_specific_sicodes(sig:usize)->bool{siginmask(sig,0)}
-#[cfg(feature="CONFIG_DYNAMIC_SIGFRAME")] pub unsafe fn sigaltstack_size_valid(size:usize)->bool { extern "C" { fn sigaltstack_size_valid(size:usize)->bool; } sigaltstack_size_valid(size) }
-#[cfg(not(feature="CONFIG_DYNAMIC_SIGFRAME"))] pub const fn sigaltstack_size_valid(_size:usize)->bool { true }
+#[cfg(CONFIG_DYNAMIC_SIGFRAME)] pub unsafe fn sigaltstack_size_valid(size:usize)->bool { extern "C" { fn sigaltstack_size_valid(size:usize)->bool; } sigaltstack_size_valid(size) }
+#[cfg(not(CONFIG_DYNAMIC_SIGFRAME))] pub const fn sigaltstack_size_valid(_size:usize)->bool { true }
 pub const SIG_IGN:__sighandler_t=1; pub const SIG_DFL:__sighandler_t=0; pub const SIGKILL:usize=9; pub const SIGSTOP:usize=19; pub const SIGTSTP:usize=20; pub const SIGTTIN:usize=21; pub const SIGTTOU:usize=22; pub const SIGCONT:usize=18; pub const SIGCHLD:usize=17; pub const SIGWINCH:usize=28; pub const SIGURG:usize=23; pub const SIGRTMIN:usize=32; pub const _NSIG:usize=64; pub const _NSIG_WORDS:usize=4; pub const _NSIG_BPW:usize=64;
 #[inline] pub unsafe fn arch_untagged_si_addr(addr:*mut ::core::ffi::c_void,_sig:usize,_si_code:usize)->*mut ::core::ffi::c_void{addr}
 

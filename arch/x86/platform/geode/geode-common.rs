@@ -99,6 +99,10 @@ pub unsafe fn geode_create_leds(
     n_leds: c_uint,
 ) -> c_int {
     let mut group: [*const software_node; MAX_LEDS + 2] = [core::ptr::null(); MAX_LEDS + 2];
+    'err_free_swnodes: {
+    'err_free_props: {
+    'err_free_names: {
+    'err_unregister_group: {
     let mut swnodes: *mut software_node;
     let mut props: *mut property_entry;
     let mut gpio_refs: *mut software_node_ref_args;
@@ -129,13 +133,13 @@ pub unsafe fn geode_create_leds(
     props = kzalloc_objs!(property_entry, n_leds as usize * 3);
     if props.is_null() {
         err = -ENOMEM;
-        goto!(err_free_swnodes);
+        break 'err_free_swnodes;
     }
 
     gpio_refs = kzalloc_objs!(software_node_ref_args, n_leds as usize);
     if gpio_refs.is_null() {
         err = -ENOMEM;
-        goto!(err_free_props);
+        break 'err_free_props;
     }
 
     group[0] = &geode_gpio_leds_node;
@@ -144,7 +148,7 @@ pub unsafe fn geode_create_leds(
         node_name = kasprintf!(GFP_KERNEL, "%s:%d", label, i);
         if node_name.is_null() {
             err = -ENOMEM;
-            goto!(err_free_names);
+            break 'err_free_names;
         }
 
         *gpio_refs.add(i as usize) = SOFTWARE_NODE_REFERENCE!(
@@ -173,7 +177,7 @@ pub unsafe fn geode_create_leds(
     err = software_node_register_node_group(group.as_ptr());
     if err != 0 {
         pr_err!("failed to register LED software nodes: %d\n", err);
-        goto!(err_free_names);
+        break 'err_free_names;
     }
 
     led_info.fwnode = software_node_fwnode(&geode_gpio_leds_node);
@@ -182,21 +186,24 @@ pub unsafe fn geode_create_leds(
     err = PTR_ERR_OR_ZERO(led_dev);
     if err != 0 {
         pr_err!("failed to create LED device: %d\n", err);
-        goto!(err_unregister_group);
+        break 'err_unregister_group;
     }
 
     return 0;
-
-err_unregister_group:
+    }
+    
     software_node_unregister_node_group(group.as_ptr());
-err_free_names:
+    }
+    
     while { i -= 1; i >= 0 } {
         kfree((*swnodes.add(i as usize)).name as *mut c_void);
     }
     kfree(gpio_refs as *mut c_void);
-err_free_props:
+    }
+    
     kfree(props as *mut c_void);
-err_free_swnodes:
+    }
+    
     kfree(swnodes as *mut c_void);
     err
 }

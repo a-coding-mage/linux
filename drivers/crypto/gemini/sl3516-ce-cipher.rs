@@ -106,17 +106,19 @@ unsafe fn sl3516_ce_cipher(areq: *mut skcipher_request) -> c_int {
     let mut nr_sgd: c_int = 0;
     let mut err: c_int = 0;
     let mut i: c_int;
+    '__theend: {
+    '__theend_sgs: {
 
     (*algt).stat_req += 1;
     if (*areq).src == (*areq).dst {
         nr_sgs = dma_map_sg((*ce).dev, (*areq).src, sg_nents((*areq).src), DMA_BIDIRECTIONAL);
-        if nr_sgs <= 0 || nr_sgs > MAXDESC / 2 { err = -EINVAL; goto!(__theend); }
+        if nr_sgs <= 0 || nr_sgs > MAXDESC / 2 { err = -EINVAL; break '__theend; }
         nr_sgd = nr_sgs;
     } else {
         nr_sgs = dma_map_sg((*ce).dev, (*areq).src, sg_nents((*areq).src), DMA_TO_DEVICE);
-        if nr_sgs <= 0 || nr_sgs > MAXDESC / 2 { err = -EINVAL; goto!(__theend); }
+        if nr_sgs <= 0 || nr_sgs > MAXDESC / 2 { err = -EINVAL; break '__theend; }
         nr_sgd = dma_map_sg((*ce).dev, (*areq).dst, sg_nents((*areq).dst), DMA_FROM_DEVICE);
-        if nr_sgd <= 0 || nr_sgd > MAXDESC { err = -EINVAL; goto!(__theend_sgs); }
+        if nr_sgd <= 0 || nr_sgd > MAXDESC { err = -EINVAL; break '__theend_sgs; }
     }
 
     len = (*areq).cryptlen; i = 0; sg = (*areq).src;
@@ -126,7 +128,7 @@ unsafe fn sl3516_ce_cipher(areq: *mut skcipher_request) -> c_int {
         todo = core::cmp::min(len, sg_dma_len(sg));
         (*rctx).t_src[i as usize].len = todo; len -= todo; i += 1; sg = sg_next(sg);
     }
-    if len > 0 { err = -EINVAL; goto!(__theend_sgs); }
+    if len > 0 { err = -EINVAL; break '__theend_sgs; }
 
     len = (*areq).cryptlen; i = 0; sg = (*areq).dst;
     while i < nr_sgd && !sg.is_null() && len != 0 {
@@ -135,7 +137,7 @@ unsafe fn sl3516_ce_cipher(areq: *mut skcipher_request) -> c_int {
         todo = core::cmp::min(len, sg_dma_len(sg));
         (*rctx).t_dst[i as usize].len = todo; len -= todo; i += 1; sg = sg_next(sg);
     }
-    if len > 0 { err = -EINVAL; goto!(__theend_sgs); }
+    if len > 0 { err = -EINVAL; break '__theend_sgs; }
 
     match (*algt).mode {
         ECB_AES => {
@@ -155,8 +157,8 @@ unsafe fn sl3516_ce_cipher(areq: *mut skcipher_request) -> c_int {
     }
     (*rctx).nr_sgs = nr_sgs; (*rctx).nr_sgd = nr_sgd;
     err = sl3516_ce_run_task(ce, rctx, crypto_tfm_alg_name((*areq).base.tfm));
-
-    __theend_sgs: {
+    }
+    {
         if (*areq).src == (*areq).dst {
             dma_unmap_sg((*ce).dev, (*areq).src, sg_nents((*areq).src), DMA_BIDIRECTIONAL);
         } else {
@@ -164,7 +166,8 @@ unsafe fn sl3516_ce_cipher(areq: *mut skcipher_request) -> c_int {
             dma_unmap_sg((*ce).dev, (*areq).dst, sg_nents((*areq).dst), DMA_FROM_DEVICE);
         }
     }
-    __theend: err
+    }
+    err
 }
 
 pub unsafe fn sl3516_ce_handle_cipher_request(engine: *mut crypto_engine, areq: *mut c_void) -> c_int {

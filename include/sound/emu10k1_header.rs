@@ -2,7 +2,7 @@
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
  *		     Creative Labs, Inc.
- *  Definitions for EMU10K1 (SB Live!) chips
+ *  Definitions for EMU10K1 (SB Live!()) chips
  */
 // #ifndef __SOUND_EMU10K1_H
 // C declaration: #define __SOUND_EMU10K1_H
@@ -1512,16 +1512,16 @@ extern "C" { pub static mut snd_emu10k1_audigy_outs: [*const core::ffi::c_char; 
 // C declaration: 	EMU10K1_NUM_TYPES
 // C declaration: };
 
-// C declaration: struct snd_emu10k1;
+// C declaration: snd_emu10k1;
 
-// C declaration: struct snd_emu10k1_voice {
+// C declaration: snd_emu10k1_voice {
 // C declaration: 	unsigned char number;
 // C declaration: 	unsigned char use;
 // C declaration: 	unsigned char dirty;
 // C declaration: 	unsigned char last;
-// C declaration: 	void (*interrupt)(struct snd_emu10k1 *emu, struct snd_emu10k1_voice *pvoice);
+// C declaration: 	void (*interrupt)(snd_emu10k1 *emu, snd_emu10k1_voice *pvoice);
 
-// C declaration: 	struct snd_emu10k1_pcm *epcm;
+// C declaration: 	snd_emu10k1_pcm *epcm;
 // C declaration: };
 
 // C declaration: enum {
@@ -1532,16 +1532,16 @@ extern "C" { pub static mut snd_emu10k1_audigy_outs: [*const core::ffi::c_char; 
 // C declaration: 	CAPTURE_EFX
 // C declaration: };
 
-// C declaration: struct snd_emu10k1_pcm {
-// C declaration: 	struct snd_emu10k1 *emu;
+// C declaration: snd_emu10k1_pcm {
+// C declaration: 	snd_emu10k1 *emu;
 // C declaration: 	int type;
-// C declaration: 	struct snd_pcm_substream *substream;
-// C declaration: 	struct snd_emu10k1_voice *voices[NUM_EFX_PLAYBACK];
-// C declaration: 	struct snd_emu10k1_voice *extra;
+// C declaration: 	snd_pcm_substream *substream;
+// C declaration: 	snd_emu10k1_voice *voices[NUM_EFX_PLAYBACK];
+// C declaration: 	snd_emu10k1_voice *extra;
 // C declaration: 	unsigned short running;
 // C declaration: 	unsigned short first_ptr;
 // C declaration: 	snd_pcm_uframes_t resume_pos;
-// C declaration: 	struct snd_util_memblk *memblk;
+// C declaration: 	snd_util_memblk *memblk;
 // C declaration: 	unsigned int pitch_target;
 // C declaration: 	unsigned int start_addr;
 // C declaration: 	unsigned int ccca_start_addr;
@@ -1556,14 +1556,14 @@ extern "C" { pub static mut snd_emu10k1_audigy_outs: [*const core::ffi::c_char; 
 // C declaration: 	unsigned int capture_bufsize;	/* buffer size in bytes */
 // C declaration: };
 
-// C declaration: struct snd_emu10k1_pcm_mixer {
+// C declaration: snd_emu10k1_pcm_mixer {
 // C declaration: 	/* mono, left, right x 8 sends (4 on emu10k1) */
 // C declaration: 	unsigned char send_routing[3][8];
 // C declaration: 	unsigned char send_volume[3][8];
 // C declaration: 	// 0x8000 is neutral. The mixer code rescales it to 0xffff to maintain
 // C declaration: 	// backwards compatibility with user space.
 // C declaration: 	unsigned short attn[3];
-// C declaration: 	struct snd_emu10k1_pcm *epcm;
+// C declaration: 	snd_emu10k1_pcm *epcm;
 // C declaration: };
 
 // C declaration: #define snd_emu10k1_compose_send_routing(route) \
@@ -1578,21 +1578,21 @@ extern "C" { pub static mut snd_emu10k1_audigy_outs: [*const core::ffi::c_char; 
 // C declaration: #define snd_emu10k1_compose_audigy_sendamounts(vol) \
 // C declaration: (((unsigned int)vol[4] << 24) | ((unsigned int)vol[5] << 16) | ((unsigned int)vol[6] << 8) | (unsigned int)vol[7])
 
-// C declaration: struct snd_emu10k1_memblk {
-// C declaration: 	struct snd_util_memblk mem;
+// C declaration: snd_emu10k1_memblk {
+// C declaration: 	snd_util_memblk mem;
 // C declaration: 	/* private part */
 // C declaration: 	int first_page, last_page, pages, mapped_page;
 // C declaration: 	unsigned int map_locked;
-// C declaration: 	struct list_head mapped_link;
-// C declaration: 	struct list_head mapped_order_link;
+// C declaration: 	list_head mapped_link;
+// C declaration: 	list_head mapped_order_link;
 // C declaration: };
 
 // C declaration: #define snd_emu10k1_memblk_offset(blk)	(((blk)->mapped_page << PAGE_SHIFT) | ((blk)->mem.offset & (PAGE_SIZE - 1)))
 
 pub const EMU10K1_MAX_TRAM_BLOCKS_PER_CODE: u64 = 16;
 
-// C declaration: struct snd_emu10k1_fx8010_ctl {
-// C declaration: 	struct list_head list;		/* list link container */
+// C declaration: snd_emu10k1_fx8010_ctl {
+// C declaration: 	list_head list;		/* list link container */
 // C declaration: 	unsigned int vcount;
 // C declaration: 	unsigned int count;		/* count of GPR (1..16) */
 // C declaration: 	unsigned short gpr[32];		/* GPR number(s) */
@@ -1600,19 +1600,19 @@ pub const EMU10K1_MAX_TRAM_BLOCKS_PER_CODE: u64 = 16;
 // C declaration: 	int min;			/* minimum range */
 // C declaration: 	int max;			/* maximum range */
 // C declaration: 	unsigned int translation;	/* translation type (EMU10K1_GPR_TRANSLATION*) */
-// C declaration: 	struct snd_kcontrol *kcontrol;
+// C declaration: 	snd_kcontrol *kcontrol;
 // C declaration: };
 
-// C declaration: typedef void (snd_fx8010_irq_handler_t)(struct snd_emu10k1 *emu, void *private_data);
+// C declaration: typedef void (snd_fx8010_irq_handler_t)(snd_emu10k1 *emu, void *private_data);
 
-// C declaration: struct snd_emu10k1_fx8010_irq {
-// C declaration: 	struct snd_emu10k1_fx8010_irq *next;
+// C declaration: snd_emu10k1_fx8010_irq {
+// C declaration: 	snd_emu10k1_fx8010_irq *next;
 // C declaration: 	snd_fx8010_irq_handler_t *handler;
 // C declaration: 	unsigned short gpr_running;
 // C declaration: 	void *private_data;
 // C declaration: };
 
-// C declaration: struct snd_emu10k1_fx8010_pcm {
+// C declaration: snd_emu10k1_fx8010_pcm {
 // C declaration: 	unsigned int valid: 1,
 // C declaration: 		     opened: 1,
 // C declaration: 		     active: 1;
@@ -1626,33 +1626,33 @@ pub const EMU10K1_MAX_TRAM_BLOCKS_PER_CODE: u64 = 16;
 // C declaration: 	unsigned short gpr_trigger;	/* GPR containing trigger (activate) information (host) */
 // C declaration: 	unsigned short gpr_running;	/* GPR containing info if PCM is running (FX8010) */
 // C declaration: 	unsigned char etram[32];	/* external TRAM address & data */
-// C declaration: 	struct snd_pcm_indirect pcm_rec;
+// C declaration: 	snd_pcm_indirect pcm_rec;
 // C declaration: 	unsigned int tram_pos;
 // C declaration: 	unsigned int tram_shift;
-// C declaration: 	struct snd_emu10k1_fx8010_irq irq;
+// C declaration: 	snd_emu10k1_fx8010_irq irq;
 // C declaration: };
 
-// C declaration: struct snd_emu10k1_fx8010 {
+// C declaration: snd_emu10k1_fx8010 {
 // C declaration: 	unsigned short extin_mask;	/* used external inputs (bitmask); not used for Audigy */
 // C declaration: 	unsigned short extout_mask;	/* used external outputs (bitmask); not used for Audigy */
 // C declaration: 	unsigned int itram_size;	/* internal TRAM size in samples */
-// C declaration: 	struct snd_dma_buffer etram_pages; /* external TRAM pages and size */
+// C declaration: 	snd_dma_buffer etram_pages; /* external TRAM pages and size */
 // C declaration: 	unsigned int dbg;		/* FX debugger register */
 // C declaration: 	unsigned char name[128];
 // C declaration: 	int gpr_size;			/* size of allocated GPR controls */
 // C declaration: 	int gpr_count;			/* count of used kcontrols */
-// C declaration: 	struct list_head gpr_ctl;	/* GPR controls */
-// C declaration: 	struct mutex lock;
-// C declaration: 	struct snd_emu10k1_fx8010_pcm pcm[8];
+// C declaration: 	list_head gpr_ctl;	/* GPR controls */
+// C declaration: 	mutex lock;
+// C declaration: 	snd_emu10k1_fx8010_pcm pcm[8];
 // C declaration: 	spinlock_t irq_lock;
-// C declaration: 	struct snd_emu10k1_fx8010_irq *irq_handlers;
+// C declaration: 	snd_emu10k1_fx8010_irq *irq_handlers;
 // C declaration: };
 
-// C declaration: struct snd_emu10k1_midi {
-// C declaration: 	struct snd_emu10k1 *emu;
-// C declaration: 	struct snd_rawmidi *rmidi;
-// C declaration: 	struct snd_rawmidi_substream *substream_input;
-// C declaration: 	struct snd_rawmidi_substream *substream_output;
+// C declaration: snd_emu10k1_midi {
+// C declaration: 	snd_emu10k1 *emu;
+// C declaration: 	snd_rawmidi *rmidi;
+// C declaration: 	snd_rawmidi_substream *substream_input;
+// C declaration: 	snd_rawmidi_substream *substream_output;
 // C declaration: 	unsigned int midi_mode;
 // C declaration: 	spinlock_t input_lock;
 // C declaration: 	spinlock_t output_lock;
@@ -1660,7 +1660,7 @@ pub const EMU10K1_MAX_TRAM_BLOCKS_PER_CODE: u64 = 16;
 // C declaration: 	int tx_enable, rx_enable;
 // C declaration: 	int port;
 // C declaration: 	int ipr_tx, ipr_rx;
-// C declaration: 	void (*interrupt)(struct snd_emu10k1 *emu, unsigned int status);
+// C declaration: 	void (*interrupt)(snd_emu10k1 *emu, unsigned int status);
 // C declaration: };
 
 // C declaration: enum {
@@ -1681,7 +1681,7 @@ pub const EMU10K1_MAX_TRAM_BLOCKS_PER_CODE: u64 = 16;
 //   - Approximately a CA0102 with an on-chip CA0151 (P17V)
 // - Audigy 2 ZS NB uses CA0109 "Tina2"
 //   - Cardbus version of CA0108
-// C declaration: struct snd_emu_chip_details {
+// C declaration: snd_emu_chip_details {
 // C declaration: 	u32 vendor;
 // C declaration: 	u32 device;
 // C declaration: 	u32 subsystem;
@@ -1714,7 +1714,7 @@ pub const EMU10K1_MAX_TRAM_BLOCKS_PER_CODE: u64 = 16;
 pub const NUM_OUTPUT_DESTS: u64 = 28;
 pub const NUM_INPUT_DESTS: u64 = 22;
 
-// C declaration: struct snd_emu1010 {
+// C declaration: snd_emu1010 {
 // C declaration: 	unsigned char output_source[NUM_OUTPUT_DESTS];
 // C declaration: 	unsigned char input_source[NUM_INPUT_DESTS];
 // C declaration: 	unsigned int adc_pads; /* bit mask */
@@ -1725,11 +1725,11 @@ pub const NUM_INPUT_DESTS: u64 = 22;
 // C declaration: 	unsigned int clock_fallback;
 // C declaration: 	unsigned int optical_in; /* 0:SPDIF, 1:ADAT */
 // C declaration: 	unsigned int optical_out; /* 0:SPDIF, 1:ADAT */
-// C declaration: 	struct work_struct work;
-// C declaration: 	struct mutex lock;
+// C declaration: 	work_struct work;
+// C declaration: 	mutex lock;
 // C declaration: };
 
-// C declaration: struct snd_emu10k1 {
+// C declaration: snd_emu10k1 {
 // C declaration: 	int irq;
 
 // C declaration: 	unsigned long port;			/* I/O port number */
@@ -1748,15 +1748,15 @@ pub const NUM_INPUT_DESTS: u64 = 22;
 // C declaration: 	unsigned long dma_mask;			/* PCI DMA mask */
 // C declaration: 	bool iommu_workaround;			/* IOMMU workaround needed */
 // C declaration: 	int max_cache_pages;			/* max memory size / PAGE_SIZE */
-// C declaration: 	struct snd_dma_buffer silent_page;	/* silent page */
-// C declaration: 	struct snd_dma_buffer ptb_pages;	/* page table pages */
-// C declaration: 	struct snd_dma_device p16v_dma_dev;
-// C declaration: 	struct snd_dma_buffer *p16v_buffer;
+// C declaration: 	snd_dma_buffer silent_page;	/* silent page */
+// C declaration: 	snd_dma_buffer ptb_pages;	/* page table pages */
+// C declaration: 	snd_dma_device p16v_dma_dev;
+// C declaration: 	snd_dma_buffer *p16v_buffer;
 
-// C declaration: 	struct snd_util_memhdr *memhdr;		/* page allocation list */
+// C declaration: 	snd_util_memhdr *memhdr;		/* page allocation list */
 
-// C declaration: 	struct list_head mapped_link_head;
-// C declaration: 	struct list_head mapped_order_link_head;
+// C declaration: 	list_head mapped_link_head;
+// C declaration: 	list_head mapped_order_link_head;
 // C declaration: 	void **page_ptr_table;
 // C declaration: 	unsigned long *page_addr_table;
 // C declaration: 	spinlock_t memblk_lock;
@@ -1765,22 +1765,22 @@ pub const NUM_INPUT_DESTS: u64 = 22;
 // C declaration: 	unsigned int i2c_capture_source;
 // C declaration: 	u8 i2c_capture_volume[4][2];
 
-// C declaration: 	struct snd_emu10k1_fx8010 fx8010;		/* FX8010 info */
+// C declaration: 	snd_emu10k1_fx8010 fx8010;		/* FX8010 info */
 // C declaration: 	int gpr_base;
 	
-// C declaration: 	struct snd_ac97 *ac97;
+// C declaration: 	snd_ac97 *ac97;
 
-// C declaration: 	struct pci_dev *pci;
-// C declaration: 	struct snd_card *card;
-// C declaration: 	struct snd_pcm *pcm;
-// C declaration: 	struct snd_pcm *pcm_mic;
-// C declaration: 	struct snd_pcm *pcm_efx;
-// C declaration: 	struct snd_pcm *pcm_multi;
-// C declaration: 	struct snd_pcm *pcm_p16v;
+// C declaration: 	pci_dev *pci;
+// C declaration: 	snd_card *card;
+// C declaration: 	snd_pcm *pcm;
+// C declaration: 	snd_pcm *pcm_mic;
+// C declaration: 	snd_pcm *pcm_efx;
+// C declaration: 	snd_pcm *pcm_multi;
+// C declaration: 	snd_pcm *pcm_p16v;
 
 // C declaration: 	spinlock_t synth_lock;
 // C declaration: 	void *synth;
-// C declaration: 	int (*get_synth_voice)(struct snd_emu10k1 *emu);
+// C declaration: 	int (*get_synth_voice)(snd_emu10k1 *emu);
 
 // C declaration: 	spinlock_t reg_lock;  // high-level driver lock
 // C declaration: 	spinlock_t emu_lock;  // low-level i/o lock
@@ -1788,38 +1788,38 @@ pub const NUM_INPUT_DESTS: u64 = 22;
 // C declaration: 	spinlock_t spi_lock; /* serialises access to spi port */
 // C declaration: 	spinlock_t i2c_lock; /* serialises access to i2c port */
 
-// C declaration: 	struct snd_emu10k1_voice voices[NUM_G];
+// C declaration: 	snd_emu10k1_voice voices[NUM_G];
 // C declaration: 	int p16v_device_offset;
 // C declaration: 	u32 p16v_capture_source;
 // C declaration: 	u32 p16v_capture_channel;
-// C declaration:         struct snd_emu1010 emu1010;
-// C declaration: 	struct snd_emu10k1_pcm_mixer pcm_mixer[32];
-// C declaration: 	struct snd_emu10k1_pcm_mixer efx_pcm_mixer[NUM_EFX_PLAYBACK];
-// C declaration: 	struct snd_kcontrol *ctl_send_routing;
-// C declaration: 	struct snd_kcontrol *ctl_send_volume;
-// C declaration: 	struct snd_kcontrol *ctl_attn;
-// C declaration: 	struct snd_kcontrol *ctl_efx_send_routing;
-// C declaration: 	struct snd_kcontrol *ctl_efx_send_volume;
-// C declaration: 	struct snd_kcontrol *ctl_efx_attn;
-// C declaration: 	struct snd_kcontrol *ctl_clock_source;
+// C declaration:         snd_emu1010 emu1010;
+// C declaration: 	snd_emu10k1_pcm_mixer pcm_mixer[32];
+// C declaration: 	snd_emu10k1_pcm_mixer efx_pcm_mixer[NUM_EFX_PLAYBACK];
+// C declaration: 	snd_kcontrol *ctl_send_routing;
+// C declaration: 	snd_kcontrol *ctl_send_volume;
+// C declaration: 	snd_kcontrol *ctl_attn;
+// C declaration: 	snd_kcontrol *ctl_efx_send_routing;
+// C declaration: 	snd_kcontrol *ctl_efx_send_volume;
+// C declaration: 	snd_kcontrol *ctl_efx_attn;
+// C declaration: 	snd_kcontrol *ctl_clock_source;
 
-// C declaration: 	void (*hwvol_interrupt)(struct snd_emu10k1 *emu, unsigned int status);
-// C declaration: 	void (*capture_interrupt)(struct snd_emu10k1 *emu, unsigned int status);
-// C declaration: 	void (*capture_mic_interrupt)(struct snd_emu10k1 *emu, unsigned int status);
-// C declaration: 	void (*capture_efx_interrupt)(struct snd_emu10k1 *emu, unsigned int status);
-// C declaration: 	void (*spdif_interrupt)(struct snd_emu10k1 *emu, unsigned int status);
-// C declaration: 	void (*dsp_interrupt)(struct snd_emu10k1 *emu);
-// C declaration: 	void (*gpio_interrupt)(struct snd_emu10k1 *emu);
-// C declaration: 	void (*p16v_interrupt)(struct snd_emu10k1 *emu);
+// C declaration: 	void (*hwvol_interrupt)(snd_emu10k1 *emu, unsigned int status);
+// C declaration: 	void (*capture_interrupt)(snd_emu10k1 *emu, unsigned int status);
+// C declaration: 	void (*capture_mic_interrupt)(snd_emu10k1 *emu, unsigned int status);
+// C declaration: 	void (*capture_efx_interrupt)(snd_emu10k1 *emu, unsigned int status);
+// C declaration: 	void (*spdif_interrupt)(snd_emu10k1 *emu, unsigned int status);
+// C declaration: 	void (*dsp_interrupt)(snd_emu10k1 *emu);
+// C declaration: 	void (*gpio_interrupt)(snd_emu10k1 *emu);
+// C declaration: 	void (*p16v_interrupt)(snd_emu10k1 *emu);
 
-// C declaration: 	struct snd_pcm_substream *pcm_capture_substream;
-// C declaration: 	struct snd_pcm_substream *pcm_capture_mic_substream;
-// C declaration: 	struct snd_pcm_substream *pcm_capture_efx_substream;
+// C declaration: 	snd_pcm_substream *pcm_capture_substream;
+// C declaration: 	snd_pcm_substream *pcm_capture_mic_substream;
+// C declaration: 	snd_pcm_substream *pcm_capture_efx_substream;
 
-// C declaration: 	struct snd_timer *timer;
+// C declaration: 	snd_timer *timer;
 
-// C declaration: 	struct snd_emu10k1_midi midi;
-// C declaration: 	struct snd_emu10k1_midi midi2; /* for audigy */
+// C declaration: 	snd_emu10k1_midi midi;
+// C declaration: 	snd_emu10k1_midi midi2; /* for audigy */
 
 // C declaration: 	unsigned int efx_voices_mask[2];
 // C declaration: 	unsigned int next_free_voice;
@@ -1840,116 +1840,116 @@ pub const NUM_INPUT_DESTS: u64 = 22;
 
 // C declaration: };
 
-// C declaration: int snd_emu10k1_create(struct snd_card *card,
-// C declaration: 		       struct pci_dev *pci,
+// C declaration: int snd_emu10k1_create(snd_card *card,
+// C declaration: 		       pci_dev *pci,
 // C declaration: 		       unsigned short extin_mask,
 // C declaration: 		       unsigned short extout_mask,
 // C declaration: 		       long max_cache_bytes,
 // C declaration: 		       int enable_ir,
 // C declaration: 		       uint subsystem);
 
-// C declaration: int snd_emu10k1_pcm(struct snd_emu10k1 *emu, int device);
-// C declaration: int snd_emu10k1_pcm_mic(struct snd_emu10k1 *emu, int device);
-// C declaration: int snd_emu10k1_pcm_efx(struct snd_emu10k1 *emu, int device);
-// C declaration: int snd_p16v_pcm(struct snd_emu10k1 *emu, int device);
-// C declaration: int snd_p16v_mixer(struct snd_emu10k1 * emu);
-// C declaration: int snd_emu10k1_pcm_multi(struct snd_emu10k1 *emu, int device);
-// C declaration: int snd_emu10k1_fx8010_pcm(struct snd_emu10k1 *emu, int device);
-// C declaration: int snd_emu10k1_mixer(struct snd_emu10k1 * emu, int pcm_device, int multi_device);
-// C declaration: int snd_emu10k1_timer(struct snd_emu10k1 * emu, int device);
-// C declaration: int snd_emu10k1_fx8010_new(struct snd_emu10k1 *emu, int device);
+// C declaration: int snd_emu10k1_pcm(snd_emu10k1 *emu, int device);
+// C declaration: int snd_emu10k1_pcm_mic(snd_emu10k1 *emu, int device);
+// C declaration: int snd_emu10k1_pcm_efx(snd_emu10k1 *emu, int device);
+// C declaration: int snd_p16v_pcm(snd_emu10k1 *emu, int device);
+// C declaration: int snd_p16v_mixer(snd_emu10k1 * emu);
+// C declaration: int snd_emu10k1_pcm_multi(snd_emu10k1 *emu, int device);
+// C declaration: int snd_emu10k1_fx8010_pcm(snd_emu10k1 *emu, int device);
+// C declaration: int snd_emu10k1_mixer(snd_emu10k1 * emu, int pcm_device, int multi_device);
+// C declaration: int snd_emu10k1_timer(snd_emu10k1 * emu, int device);
+// C declaration: int snd_emu10k1_fx8010_new(snd_emu10k1 *emu, int device);
 
 // C declaration: irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id);
 
-// C declaration: void snd_emu10k1_voice_init(struct snd_emu10k1 * emu, int voice);
-// C declaration: int snd_emu10k1_init_efx(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu10k1_free_efx(struct snd_emu10k1 *emu);
-// C declaration: int snd_emu10k1_fx8010_tram_setup(struct snd_emu10k1 *emu, u32 size);
-// C declaration: int snd_emu10k1_done(struct snd_emu10k1 * emu);
+// C declaration: void snd_emu10k1_voice_init(snd_emu10k1 * emu, int voice);
+// C declaration: int snd_emu10k1_init_efx(snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_free_efx(snd_emu10k1 *emu);
+// C declaration: int snd_emu10k1_fx8010_tram_setup(snd_emu10k1 *emu, u32 size);
+// C declaration: int snd_emu10k1_done(snd_emu10k1 * emu);
 
 /* I/O functions */
-// C declaration: unsigned int snd_emu10k1_ptr_read(struct snd_emu10k1 * emu, unsigned int reg, unsigned int chn);
-// C declaration: void snd_emu10k1_ptr_write(struct snd_emu10k1 *emu, unsigned int reg, unsigned int chn, unsigned int data);
-// C declaration: void snd_emu10k1_ptr_write_multiple(struct snd_emu10k1 *emu, unsigned int chn, ...);
-// C declaration: unsigned int snd_emu10k1_ptr20_read(struct snd_emu10k1 * emu, unsigned int reg, unsigned int chn);
-// C declaration: void snd_emu10k1_ptr20_write(struct snd_emu10k1 *emu, unsigned int reg, unsigned int chn, unsigned int data);
-// C declaration: int snd_emu10k1_spi_write(struct snd_emu10k1 * emu, unsigned int data);
-// C declaration: int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu, u32 reg, u32 value);
-// C declaration: DEFINE_GUARD(snd_emu1010_fpga_lock, struct snd_emu10k1 *, mutex_lock(&(_T)->emu1010.lock), mutex_unlock(&(_T)->emu1010.lock))
-// C declaration: void snd_emu1010_fpga_write_lock(struct snd_emu10k1 *emu, u32 reg, u32 value);
-// C declaration: void snd_emu1010_fpga_write(struct snd_emu10k1 *emu, u32 reg, u32 value);
-// C declaration: void snd_emu1010_fpga_read(struct snd_emu10k1 *emu, u32 reg, u32 *value);
-// C declaration: void snd_emu1010_fpga_link_dst_src_write(struct snd_emu10k1 *emu, u32 dst, u32 src);
-// C declaration: u32 snd_emu1010_fpga_link_dst_src_read(struct snd_emu10k1 *emu, u32 dst);
-// C declaration: int snd_emu1010_get_raw_rate(struct snd_emu10k1 *emu, u8 src);
-// C declaration: void snd_emu1010_update_clock(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu1010_load_firmware_entry(struct snd_emu10k1 *emu, int dock, const struct firmware *fw_entry);
-// C declaration: unsigned int snd_emu10k1_efx_read(struct snd_emu10k1 *emu, unsigned int pc);
-// C declaration: void snd_emu10k1_intr_enable(struct snd_emu10k1 *emu, unsigned int intrenb);
-// C declaration: void snd_emu10k1_intr_disable(struct snd_emu10k1 *emu, unsigned int intrenb);
-// C declaration: void snd_emu10k1_voice_intr_enable(struct snd_emu10k1 *emu, unsigned int voicenum);
-// C declaration: void snd_emu10k1_voice_intr_disable(struct snd_emu10k1 *emu, unsigned int voicenum);
-// C declaration: void snd_emu10k1_voice_intr_ack(struct snd_emu10k1 *emu, unsigned int voicenum);
-// C declaration: void snd_emu10k1_voice_half_loop_intr_enable(struct snd_emu10k1 *emu, unsigned int voicenum);
-// C declaration: void snd_emu10k1_voice_half_loop_intr_disable(struct snd_emu10k1 *emu, unsigned int voicenum);
-// C declaration: void snd_emu10k1_voice_half_loop_intr_ack(struct snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: unsigned int snd_emu10k1_ptr_read(snd_emu10k1 * emu, unsigned int reg, unsigned int chn);
+// C declaration: void snd_emu10k1_ptr_write(snd_emu10k1 *emu, unsigned int reg, unsigned int chn, unsigned int data);
+// C declaration: void snd_emu10k1_ptr_write_multiple(snd_emu10k1 *emu, unsigned int chn, ...);
+// C declaration: unsigned int snd_emu10k1_ptr20_read(snd_emu10k1 * emu, unsigned int reg, unsigned int chn);
+// C declaration: void snd_emu10k1_ptr20_write(snd_emu10k1 *emu, unsigned int reg, unsigned int chn, unsigned int data);
+// C declaration: int snd_emu10k1_spi_write(snd_emu10k1 * emu, unsigned int data);
+// C declaration: int snd_emu10k1_i2c_write(snd_emu10k1 *emu, u32 reg, u32 value);
+// C declaration: DEFINE_GUARD(snd_emu1010_fpga_lock, snd_emu10k1 *, mutex_lock(&(_T)->emu1010.lock), mutex_unlock(&(_T)->emu1010.lock))
+// C declaration: void snd_emu1010_fpga_write_lock(snd_emu10k1 *emu, u32 reg, u32 value);
+// C declaration: void snd_emu1010_fpga_write(snd_emu10k1 *emu, u32 reg, u32 value);
+// C declaration: void snd_emu1010_fpga_read(snd_emu10k1 *emu, u32 reg, u32 *value);
+// C declaration: void snd_emu1010_fpga_link_dst_src_write(snd_emu10k1 *emu, u32 dst, u32 src);
+// C declaration: u32 snd_emu1010_fpga_link_dst_src_read(snd_emu10k1 *emu, u32 dst);
+// C declaration: int snd_emu1010_get_raw_rate(snd_emu10k1 *emu, u8 src);
+// C declaration: void snd_emu1010_update_clock(snd_emu10k1 *emu);
+// C declaration: void snd_emu1010_load_firmware_entry(snd_emu10k1 *emu, int dock, const struct firmware *fw_entry);
+// C declaration: unsigned int snd_emu10k1_efx_read(snd_emu10k1 *emu, unsigned int pc);
+// C declaration: void snd_emu10k1_intr_enable(snd_emu10k1 *emu, unsigned int intrenb);
+// C declaration: void snd_emu10k1_intr_disable(snd_emu10k1 *emu, unsigned int intrenb);
+// C declaration: void snd_emu10k1_voice_intr_enable(snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_intr_disable(snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_intr_ack(snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_half_loop_intr_enable(snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_half_loop_intr_disable(snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_half_loop_intr_ack(snd_emu10k1 *emu, unsigned int voicenum);
 // C declaration: #if 0
-// C declaration: void snd_emu10k1_voice_set_loop_stop(struct snd_emu10k1 *emu, unsigned int voicenum);
-// C declaration: void snd_emu10k1_voice_clear_loop_stop(struct snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_set_loop_stop(snd_emu10k1 *emu, unsigned int voicenum);
+// C declaration: void snd_emu10k1_voice_clear_loop_stop(snd_emu10k1 *emu, unsigned int voicenum);
 // #endif
-// C declaration: void snd_emu10k1_voice_set_loop_stop_multiple(struct snd_emu10k1 *emu, u64 voices);
-// C declaration: void snd_emu10k1_voice_clear_loop_stop_multiple(struct snd_emu10k1 *emu, u64 voices);
-// C declaration: int snd_emu10k1_voice_clear_loop_stop_multiple_atomic(struct snd_emu10k1 *emu, u64 voices);
-// C declaration: void snd_emu10k1_wait(struct snd_emu10k1 *emu, unsigned int wait);
-// C declaration: static inline unsigned int snd_emu10k1_wc(struct snd_emu10k1 *emu) { return (inl(emu->port + WC) >> 6) & 0xfffff; }
-// C declaration: unsigned short snd_emu10k1_ac97_read(struct snd_ac97 *ac97, unsigned short reg);
-// C declaration: void snd_emu10k1_ac97_write(struct snd_ac97 *ac97, unsigned short reg, unsigned short data);
+// C declaration: void snd_emu10k1_voice_set_loop_stop_multiple(snd_emu10k1 *emu, u64 voices);
+// C declaration: void snd_emu10k1_voice_clear_loop_stop_multiple(snd_emu10k1 *emu, u64 voices);
+// C declaration: int snd_emu10k1_voice_clear_loop_stop_multiple_atomic(snd_emu10k1 *emu, u64 voices);
+// C declaration: void snd_emu10k1_wait(snd_emu10k1 *emu, unsigned int wait);
+// C declaration: static inline unsigned int snd_emu10k1_wc(snd_emu10k1 *emu) { return (inl(emu->port + WC) >> 6) & 0xfffff; }
+// C declaration: unsigned short snd_emu10k1_ac97_read(snd_ac97 *ac97, unsigned short reg);
+// C declaration: void snd_emu10k1_ac97_write(snd_ac97 *ac97, unsigned short reg, unsigned short data);
 
 // C declaration: #ifdef CONFIG_PM_SLEEP
-// C declaration: void snd_emu10k1_suspend_regs(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu10k1_resume_init(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu10k1_resume_regs(struct snd_emu10k1 *emu);
-// C declaration: int snd_emu10k1_efx_alloc_pm_buffer(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu10k1_efx_free_pm_buffer(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu10k1_efx_suspend(struct snd_emu10k1 *emu);
-// C declaration: void snd_emu10k1_efx_resume(struct snd_emu10k1 *emu);
-// C declaration: int snd_p16v_alloc_pm_buffer(struct snd_emu10k1 *emu);
-// C declaration: void snd_p16v_free_pm_buffer(struct snd_emu10k1 *emu);
-// C declaration: void snd_p16v_suspend(struct snd_emu10k1 *emu);
-// C declaration: void snd_p16v_resume(struct snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_suspend_regs(snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_resume_init(snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_resume_regs(snd_emu10k1 *emu);
+// C declaration: int snd_emu10k1_efx_alloc_pm_buffer(snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_efx_free_pm_buffer(snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_efx_suspend(snd_emu10k1 *emu);
+// C declaration: void snd_emu10k1_efx_resume(snd_emu10k1 *emu);
+// C declaration: int snd_p16v_alloc_pm_buffer(snd_emu10k1 *emu);
+// C declaration: void snd_p16v_free_pm_buffer(snd_emu10k1 *emu);
+// C declaration: void snd_p16v_suspend(snd_emu10k1 *emu);
+// C declaration: void snd_p16v_resume(snd_emu10k1 *emu);
 // #endif
 
 /* memory allocation */
-// C declaration: struct snd_util_memblk *snd_emu10k1_alloc_pages(struct snd_emu10k1 *emu, struct snd_pcm_substream *substream);
-// C declaration: int snd_emu10k1_free_pages(struct snd_emu10k1 *emu, struct snd_util_memblk *blk);
-// C declaration: int snd_emu10k1_alloc_pages_maybe_wider(struct snd_emu10k1 *emu, size_t size,
-// C declaration: 					struct snd_dma_buffer *dmab);
-// C declaration: struct snd_util_memblk *snd_emu10k1_synth_alloc(struct snd_emu10k1 *emu, unsigned int size);
-// C declaration: int snd_emu10k1_synth_free(struct snd_emu10k1 *emu, struct snd_util_memblk *blk);
-// C declaration: int snd_emu10k1_synth_memset(struct snd_emu10k1 *emu, struct snd_util_memblk *blk, int offset, int size, u8 value);
-// C declaration: int snd_emu10k1_synth_copy_from_user(struct snd_emu10k1 *emu, struct snd_util_memblk *blk, int offset, const char __user *data, int size, u32 xor);
-// C declaration: int snd_emu10k1_memblk_map(struct snd_emu10k1 *emu, struct snd_emu10k1_memblk *blk);
+// C declaration: snd_util_memblk *snd_emu10k1_alloc_pages(snd_emu10k1 *emu, snd_pcm_substream *substream);
+// C declaration: int snd_emu10k1_free_pages(snd_emu10k1 *emu, snd_util_memblk *blk);
+// C declaration: int snd_emu10k1_alloc_pages_maybe_wider(snd_emu10k1 *emu, size_t size,
+// C declaration: 					snd_dma_buffer *dmab);
+// C declaration: snd_util_memblk *snd_emu10k1_synth_alloc(snd_emu10k1 *emu, unsigned int size);
+// C declaration: int snd_emu10k1_synth_free(snd_emu10k1 *emu, snd_util_memblk *blk);
+// C declaration: int snd_emu10k1_synth_memset(snd_emu10k1 *emu, snd_util_memblk *blk, int offset, int size, u8 value);
+// C declaration: int snd_emu10k1_synth_copy_from_user(snd_emu10k1 *emu, snd_util_memblk *blk, int offset, const char __user *data, int size, u32 xor);
+// C declaration: int snd_emu10k1_memblk_map(snd_emu10k1 *emu, snd_emu10k1_memblk *blk);
 
 /* voice allocation */
-// C declaration: int snd_emu10k1_voice_alloc(struct snd_emu10k1 *emu, int type, int count, int channels,
-// C declaration: 			    struct snd_emu10k1_pcm *epcm, struct snd_emu10k1_voice **rvoice);
-// C declaration: int snd_emu10k1_voice_free(struct snd_emu10k1 *emu, struct snd_emu10k1_voice *pvoice);
+// C declaration: int snd_emu10k1_voice_alloc(snd_emu10k1 *emu, int type, int count, int channels,
+// C declaration: 			    snd_emu10k1_pcm *epcm, snd_emu10k1_voice **rvoice);
+// C declaration: int snd_emu10k1_voice_free(snd_emu10k1 *emu, snd_emu10k1_voice *pvoice);
 
 /* MIDI uart */
-// C declaration: int snd_emu10k1_midi(struct snd_emu10k1 * emu);
-// C declaration: int snd_emu10k1_audigy_midi(struct snd_emu10k1 * emu);
+// C declaration: int snd_emu10k1_midi(snd_emu10k1 * emu);
+// C declaration: int snd_emu10k1_audigy_midi(snd_emu10k1 * emu);
 
 /* proc interface */
-// C declaration: int snd_emu10k1_proc_init(struct snd_emu10k1 * emu);
+// C declaration: int snd_emu10k1_proc_init(snd_emu10k1 * emu);
 
 /* fx8010 irq handler */
-// C declaration: int snd_emu10k1_fx8010_register_irq_handler(struct snd_emu10k1 *emu,
+// C declaration: int snd_emu10k1_fx8010_register_irq_handler(snd_emu10k1 *emu,
 // C declaration: 					    snd_fx8010_irq_handler_t *handler,
 // C declaration: 					    unsigned char gpr_running,
 // C declaration: 					    void *private_data,
-// C declaration: 					    struct snd_emu10k1_fx8010_irq *irq);
-// C declaration: int snd_emu10k1_fx8010_unregister_irq_handler(struct snd_emu10k1 *emu,
-// C declaration: 					      struct snd_emu10k1_fx8010_irq *irq);
+// C declaration: 					    snd_emu10k1_fx8010_irq *irq);
+// C declaration: int snd_emu10k1_fx8010_unregister_irq_handler(snd_emu10k1 *emu,
+// C declaration: 					      snd_emu10k1_fx8010_irq *irq);
 
 // #endif	/* __SOUND_EMU10K1_H */
 

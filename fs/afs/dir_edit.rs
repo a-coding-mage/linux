@@ -11,13 +11,13 @@
 unsafe fn afs_find_contig_bits(block: *mut afs_xdr_dir_block, nr_slots: u32) -> i32 {
     let mut bitmap: u64 = 0;
     bitmap |= (*block).hdr.bitmap[0] as u64;
-    bitmap |= (*block).hdr.bitmap[1] as u64 << 8;
-    bitmap |= (*block).hdr.bitmap[2] as u64 << 16;
-    bitmap |= (*block).hdr.bitmap[3] as u64 << 24;
-    bitmap |= (*block).hdr.bitmap[4] as u64 << 32;
-    bitmap |= (*block).hdr.bitmap[5] as u64 << 40;
-    bitmap |= (*block).hdr.bitmap[6] as u64 << 48;
-    bitmap |= (*block).hdr.bitmap[7] as u64 << 56;
+    bitmap |= ((*block).hdr.bitmap[1] as u64) << 8;
+    bitmap |= ((*block).hdr.bitmap[2] as u64) << 16;
+    bitmap |= ((*block).hdr.bitmap[3] as u64) << 24;
+    bitmap |= ((*block).hdr.bitmap[4] as u64) << 32;
+    bitmap |= ((*block).hdr.bitmap[5] as u64) << 40;
+    bitmap |= ((*block).hdr.bitmap[6] as u64) << 48;
+    bitmap |= ((*block).hdr.bitmap[7] as u64) << 56;
     bitmap >>= 1;
     let mut bit: i32 = 1;
     let mask: u64 = (1u64 << nr_slots) - 1;
@@ -84,7 +84,7 @@ unsafe fn afs_dir_get_block_fail(iter: *mut afs_dir_iter) -> *mut afs_xdr_dir_bl
 
 unsafe fn afs_dir_scan_block(block: *const afs_xdr_dir_block, name: *const qstr, blocknum: u32) -> i32 {
     let mut bitmap = 0u64;
-    for i in 0..8 { bitmap |= (*block).hdr.bitmap[i] as u64 << (i * 8); }
+    for i in 0..8 { bitmap |= ((*block).hdr.bitmap[i] as u64) << (i * 8); }
     let mut d = if blocknum == 0 { AFS_DIR_RESV_BLOCKS0 } else { AFS_DIR_RESV_BLOCKS };
     while d < AFS_DIR_SLOTS_PER_BLOCK {
         if ((bitmap >> d) & 1) != 0 {

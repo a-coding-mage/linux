@@ -110,7 +110,7 @@ pub unsafe fn drm_suballoc_size(sa: *mut drm_suballoc) -> usize {
     (*sa).eoffset - (*sa).soffset
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn drm_suballoc_dump_debug_info(
         sa_manager: *mut drm_suballoc_manager,
@@ -119,7 +119,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drm_suballoc_dump_debug_info(
     _sa_manager: *mut drm_suballoc_manager,

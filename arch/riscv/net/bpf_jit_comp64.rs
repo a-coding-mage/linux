@@ -29,30 +29,28 @@ const regmap[] = {
 };
 
 const pt_regmap[] = {
-	[RV_REG_A0] = offsetof(struct pt_regs, a0),
-	[RV_REG_A1] = offsetof(struct pt_regs, a1),
-	[RV_REG_A2] = offsetof(struct pt_regs, a2),
-	[RV_REG_A3] = offsetof(struct pt_regs, a3),
-	[RV_REG_A4] = offsetof(struct pt_regs, a4),
-	[RV_REG_A5] = offsetof(struct pt_regs, a5),
-	[RV_REG_S1] = offsetof(struct pt_regs, s1),
-	[RV_REG_S2] = offsetof(struct pt_regs, s2),
-	[RV_REG_S3] = offsetof(struct pt_regs, s3),
-	[RV_REG_S4] = offsetof(struct pt_regs, s4),
-	[RV_REG_S5] = offsetof(struct pt_regs, s5),
-	[RV_REG_T0] = offsetof(struct pt_regs, t0),
+	[RV_REG_A0] = offsetof(pt_regs, a0),
+	[RV_REG_A1] = offsetof(pt_regs, a1),
+	[RV_REG_A2] = offsetof(pt_regs, a2),
+	[RV_REG_A3] = offsetof(pt_regs, a3),
+	[RV_REG_A4] = offsetof(pt_regs, a4),
+	[RV_REG_A5] = offsetof(pt_regs, a5),
+	[RV_REG_S1] = offsetof(pt_regs, s1),
+	[RV_REG_S2] = offsetof(pt_regs, s2),
+	[RV_REG_S3] = offsetof(pt_regs, s3),
+	[RV_REG_S4] = offsetof(pt_regs, s4),
+	[RV_REG_S5] = offsetof(pt_regs, s5),
+	[RV_REG_T0] = offsetof(pt_regs, t0),
 };
 
-enum {
-	RV_CTX_F_SEEN_CALL =		RV_REG_RA,
-	RV_CTX_F_SEEN_S1 =		RV_REG_S1,
-	RV_CTX_F_SEEN_S2 =		RV_REG_S2,
-	RV_CTX_F_SEEN_S3 =		RV_REG_S3,
-	RV_CTX_F_SEEN_S4 =		RV_REG_S4,
-	RV_CTX_F_SEEN_S5 =		RV_REG_S5,
-};
+pub const RV_CTX_F_SEEN_CALL: i32 = RV_REG_RA;
+pub const RV_CTX_F_SEEN_S1: i32 = RV_REG_S1;
+pub const RV_CTX_F_SEEN_S2: i32 = RV_REG_S2;
+pub const RV_CTX_F_SEEN_S3: i32 = RV_REG_S3;
+pub const RV_CTX_F_SEEN_S4: i32 = RV_REG_S4;
+pub const RV_CTX_F_SEEN_S5: i32 = RV_REG_S5;
 
-unsafe fn bpf_to_rv_reg(int bpf_reg, struct rv_jit_context *ctx)
+unsafe fn bpf_to_rv_reg(int bpf_reg, rv_jit_context *ctx)
 {
 	u8 reg = regmap[bpf_reg];
 
@@ -62,12 +60,12 @@ unsafe fn bpf_to_rv_reg(int bpf_reg, struct rv_jit_context *ctx)
 	case RV_CTX_F_SEEN_S3:
 	case RV_CTX_F_SEEN_S4:
 	case RV_CTX_F_SEEN_S5:
-		__set_bit(reg, &ctx->flags);
+		__set_bit(reg, (*&ctx).flags);
 	}
 	return reg;
 };
 
-unsafe fn seen_reg(int reg, struct rv_jit_context *ctx)
+unsafe fn seen_reg(int reg, rv_jit_context *ctx)
 {
 	switch (reg) {
 	case RV_CTX_F_SEEN_CALL:
@@ -76,19 +74,19 @@ unsafe fn seen_reg(int reg, struct rv_jit_context *ctx)
 	case RV_CTX_F_SEEN_S3:
 	case RV_CTX_F_SEEN_S4:
 	case RV_CTX_F_SEEN_S5:
-		return test_bit(reg, &ctx->flags);
+		return test_bit(reg, (*&ctx).flags);
 	}
 	return false;
 }
 
-unsafe fn mark_fp(struct rv_jit_context *ctx)
+unsafe fn mark_fp(rv_jit_context *ctx)
 {
-	__set_bit(RV_CTX_F_SEEN_S5, &ctx->flags);
+	__set_bit(RV_CTX_F_SEEN_S5, (*&ctx).flags);
 }
 
-unsafe fn mark_call(struct rv_jit_context *ctx)
+unsafe fn mark_call(rv_jit_context *ctx)
 {
-	__set_bit(RV_CTX_F_SEEN_CALL, &ctx->flags);
+	__set_bit(RV_CTX_F_SEEN_CALL, (*&ctx).flags);
 }
 
 unsafe fn is_32b_int(s64 val)
@@ -107,26 +105,26 @@ unsafe fn in_auipc_jalr_range(s64 val)
 }
 
 /* Modify rd pointer to alternate reg to avoid corrupting original reg */
-unsafe fn emit_sextw_alt(u8 *rd, u8 ra, struct rv_jit_context *ctx)
+unsafe fn emit_sextw_alt(u8 *rd, ra: u8, rv_jit_context *ctx)
 {
 	emit_sextw(ra, *rd, ctx);
 	*rd = ra;
 }
 
-unsafe fn emit_zextw_alt(u8 *rd, u8 ra, struct rv_jit_context *ctx)
+unsafe fn emit_zextw_alt(u8 *rd, ra: u8, rv_jit_context *ctx)
 {
 	emit_zextw(ra, *rd, ctx);
 	*rd = ra;
 }
 
 /* Emit fixed-length instructions for address */
-unsafe fn emit_addr(u8 rd, u64 addr, bool extra_pass, struct rv_jit_context *ctx)
+unsafe fn emit_addr(rd: u8, addr: u64, extra_pass: bool, rv_jit_context *ctx)
 {
 	/*
 	 * Use the ro_insns(RX) to calculate the offset as the BPF program will
 	 * finally run from this memory region.
 	 */
-	u64 ip = (u64)(ctx->ro_insns + ctx->ninsns);
+	u64 ip = (u64)((*ctx).ro_insns + (*ctx).ninsns);
 	s64 off = addr - ip;
 	s64 upper = (off + (1 << 11)) >> 12;
 	s64 lower = off & 0xfff;
@@ -142,7 +140,7 @@ unsafe fn emit_addr(u8 rd, u64 addr, bool extra_pass, struct rv_jit_context *ctx
 }
 
 /* Emit variable-length instructions for 32-bit and 64-bit imm */
-unsafe fn emit_imm(u8 rd, s64 val, struct rv_jit_context *ctx)
+unsafe fn emit_imm(rd: u8, s64 val, rv_jit_context *ctx)
 {
 	/* Note that the immediate from the add is sign-extended,
 	 * which means that we need to compensate this by adding 2^12,
@@ -185,9 +183,9 @@ unsafe fn emit_imm(u8 rd, s64 val, struct rv_jit_context *ctx)
 		emit_addi(rd, rd, lower, ctx);
 }
 
-unsafe fn __build_epilogue(bool is_tail_call, struct rv_jit_context *ctx)
+unsafe fn __build_epilogue(is_tail_call: bool, rv_jit_context *ctx)
 {
-	int stack_adjust = ctx->stack_size, store_offset = stack_adjust - 8;
+	int stack_adjust = (*ctx).stack_size, store_offset = stack_adjust - 8;
 
 	if (seen_reg(RV_REG_RA, ctx)) {
 		emit_ld(RV_REG_RA, store_offset, RV_REG_SP, ctx);
@@ -215,13 +213,13 @@ unsafe fn __build_epilogue(bool is_tail_call, struct rv_jit_context *ctx)
 		emit_ld(RV_REG_S5, store_offset, RV_REG_SP, ctx);
 		store_offset -= 8;
 	}
-	if (ctx->arena_vm_start) {
+	if ((*ctx).arena_vm_start) {
 		emit_ld(RV_REG_ARENA, store_offset, RV_REG_SP, ctx);
 		store_offset -= 8;
 	}
 
 	/* restore TCC from stack to RV_REG_TCC */
-	emit_ld(RV_REG_TCC, ctx->tcc_offset, RV_REG_SP, ctx);
+	emit_ld(RV_REG_TCC, (*ctx).tcc_offset, RV_REG_SP, ctx);
 
 	emit_addi(RV_REG_SP, RV_REG_SP, stack_adjust, ctx);
 	/* Set return value. */
@@ -231,8 +229,8 @@ unsafe fn __build_epilogue(bool is_tail_call, struct rv_jit_context *ctx)
 		  is_tail_call ? RV_TAILCALL_OFFSET : 0, ctx);
 }
 
-unsafe fn emit_bcc(u8 cond, u8 rd, u8 rs, int rvoff,
-		     struct rv_jit_context *ctx)
+unsafe fn emit_bcc(cond: u8, rd: u8, rs: u8, int rvoff,
+		     rv_jit_context *ctx)
 {
 	switch (cond) {
 	case BPF_JEQ:
@@ -267,8 +265,8 @@ unsafe fn emit_bcc(u8 cond, u8 rd, u8 rs, int rvoff,
 	}
 }
 
-unsafe fn emit_branch(u8 cond, u8 rd, u8 rs, int rvoff,
-			struct rv_jit_context *ctx)
+unsafe fn emit_branch(cond: u8, rd: u8, rs: u8, int rvoff,
+			rv_jit_context *ctx)
 {
 	s64 upper, lower;
 
@@ -306,9 +304,9 @@ unsafe fn emit_branch(u8 cond, u8 rd, u8 rs, int rvoff,
 	emit(rv_jalr(RV_REG_ZERO, RV_REG_T1, lower), ctx);
 }
 
-unsafe fn emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
+unsafe fn emit_bpf_tail_call(int insn, rv_jit_context *ctx)
 {
-	int tc_ninsn, off, start_insn = ctx->ninsns;
+	int tc_ninsn, off, start_insn = (*ctx).ninsns;
 
 	/* a0: &ctx
 	 * a1: &array
@@ -317,23 +315,23 @@ unsafe fn emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
 	 * if (index >= array->map.max_entries)
 	 *	goto out;
 	 */
-	tc_ninsn = insn ? ctx->offset[insn] - ctx->offset[insn - 1] :
-		   ctx->offset[0];
+	tc_ninsn = insn ? (*ctx).offset[insn] - (*ctx).offset[insn - 1] :
+		   (*ctx).offset[0];
 	emit_zextw(RV_REG_A2, RV_REG_A2, ctx);
 
-	off = offsetof(struct bpf_array, map.max_entries);
+	off = offsetof(bpf_array, map.max_entries);
 	if (is_12b_check(off, insn))
 		return -1;
 	emit(rv_lwu(RV_REG_T1, off, RV_REG_A1), ctx);
-	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
+	off = ninsns_rvoff(tc_ninsn - ((*ctx).ninsns - start_insn));
 	emit_branch(BPF_JGE, RV_REG_A2, RV_REG_T1, off, ctx);
 
 	/* if (--TCC < 0)
 	 *     goto out;
 	 */
-	emit_ld(RV_REG_TCC, ctx->tcc_offset, RV_REG_SP, ctx);
+	emit_ld(RV_REG_TCC, (*ctx).tcc_offset, RV_REG_SP, ctx);
 	emit_addi(RV_REG_TCC, RV_REG_TCC, -1, ctx);
-	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
+	off = ninsns_rvoff(tc_ninsn - ((*ctx).ninsns - start_insn));
 	emit_branch(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
 
 	/* prog = array->ptrs[index];
@@ -341,18 +339,18 @@ unsafe fn emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
 	 *     goto out;
 	 */
 	emit_sh3add(RV_REG_T2, RV_REG_A2, RV_REG_A1, ctx);
-	off = offsetof(struct bpf_array, ptrs);
+	off = offsetof(bpf_array, ptrs);
 	if (is_12b_check(off, insn))
 		return -1;
 	emit_ld(RV_REG_T2, off, RV_REG_T2, ctx);
-	off = ninsns_rvoff(tc_ninsn - (ctx->ninsns - start_insn));
+	off = ninsns_rvoff(tc_ninsn - ((*ctx).ninsns - start_insn));
 	emit_branch(BPF_JEQ, RV_REG_T2, RV_REG_ZERO, off, ctx);
 
 	/* store updated TCC back to stack */
-	emit_sd(RV_REG_SP, ctx->tcc_offset, RV_REG_TCC, ctx);
+	emit_sd(RV_REG_SP, (*ctx).tcc_offset, RV_REG_TCC, ctx);
 
 	/* goto *(prog->bpf_func + RV_TAILCALL_OFFSET); */
-	off = offsetof(struct bpf_prog, bpf_func);
+	off = offsetof(bpf_prog, bpf_func);
 	if (is_12b_check(off, insn))
 		return -1;
 	emit_ld(RV_REG_T3, off, RV_REG_T2, ctx);
@@ -361,9 +359,9 @@ unsafe fn emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
 }
 
 unsafe fn init_regs(u8 *rd, u8 *rs, const struct bpf_insn *insn,
-		      struct rv_jit_context *ctx)
+		      rv_jit_context *ctx)
 {
-	u8 code = insn->code;
+	u8 code = (*insn).code;
 
 	switch (code) {
 	case BPF_JMP | BPF_JA:
@@ -372,17 +370,17 @@ unsafe fn init_regs(u8 *rd, u8 *rs, const struct bpf_insn *insn,
 	case BPF_JMP | BPF_TAIL_CALL:
 		break;
 	default:
-		*rd = bpf_to_rv_reg(insn->dst_reg, ctx);
+		*rd = bpf_to_rv_reg((*insn).dst_reg, ctx);
 	}
 
 	if (code & (BPF_ALU | BPF_X) || code & (BPF_ALU64 | BPF_X) ||
 	    code & (BPF_JMP | BPF_X) || code & (BPF_JMP32 | BPF_X) ||
 	    code & BPF_LDX || code & BPF_STX)
-		*rs = bpf_to_rv_reg(insn->src_reg, ctx);
+		*rs = bpf_to_rv_reg((*insn).src_reg, ctx);
 }
 
-unsafe fn emit_jump_and_link(u8 rd, s64 rvoff, bool fixed_addr,
-			      struct rv_jit_context *ctx)
+unsafe fn emit_jump_and_link(rd: u8, s64 rvoff, fixed_addr: bool,
+			      rv_jit_context *ctx)
 {
 	s64 upper, lower;
 
@@ -401,23 +399,23 @@ unsafe fn emit_jump_and_link(u8 rd, s64 rvoff, bool fixed_addr,
 	return -ERANGE;
 }
 
-unsafe fn is_signed_bpf_cond(u8 cond)
+unsafe fn is_signed_bpf_cond(cond: u8)
 {
 	return cond == BPF_JSGT || cond == BPF_JSLT ||
 		cond == BPF_JSGE || cond == BPF_JSLE;
 }
 
-unsafe fn emit_call(u64 addr, bool fixed_addr, struct rv_jit_context *ctx)
+unsafe fn emit_call(addr: u64, fixed_addr: bool, rv_jit_context *ctx)
 {
 	s64 off = 0;
 	u64 ip;
 
-	if (addr && ctx->insns && ctx->ro_insns) {
+	if (addr && (*ctx).insns && (*ctx).ro_insns) {
 		/*
 		 * Use the ro_insns(RX) to calculate the offset as the BPF
 		 * program will finally run from this memory region.
 		 */
-		ip = (u64)(long)(ctx->ro_insns + ctx->ninsns);
+		ip = (u64)(long)((*ctx).ro_insns + (*ctx).ninsns);
 		off = addr - ip;
 	}
 
@@ -425,14 +423,14 @@ unsafe fn emit_call(u64 addr, bool fixed_addr, struct rv_jit_context *ctx)
 }
 
 #[inline]
-unsafe fn void emit_kcfi(u32 hash, struct rv_jit_context *ctx)
+unsafe fn void emit_kcfi(hash: u32, rv_jit_context *ctx)
 {
 	if (IS_ENABLED(CONFIG_CFI))
 		emit(hash, ctx);
 }
 
-unsafe fn emit_ldx_insn(u8 rd, s16 off, u8 rs, u8 size, bool sign_ext,
-			  struct rv_jit_context *ctx)
+unsafe fn emit_ldx_insn(rd: u8, s16 off, rs: u8, size: u8, sign_ext: bool,
+			  rv_jit_context *ctx)
 {
 	switch (size) {
 	case BPF_B:
@@ -451,7 +449,7 @@ unsafe fn emit_ldx_insn(u8 rd, s16 off, u8 rs, u8 size, bool sign_ext,
 
 }
 
-unsafe fn emit_stx_insn(u8 rd, s16 off, u8 rs, u8 size, struct rv_jit_context *ctx)
+unsafe fn emit_stx_insn(rd: u8, s16 off, rs: u8, size: u8, rv_jit_context *ctx)
 {
 	switch (size) {
 	case BPF_B:
@@ -469,62 +467,62 @@ unsafe fn emit_stx_insn(u8 rd, s16 off, u8 rs, u8 size, struct rv_jit_context *c
 	}
 }
 
-unsafe fn emit_ldx(u8 rd, s16 off, u8 rs, u8 size, bool sign_ext,
-		    struct rv_jit_context *ctx)
+unsafe fn emit_ldx(rd: u8, s16 off, rs: u8, size: u8, sign_ext: bool,
+		    rv_jit_context *ctx)
 {
 	if (is_12b_int(off)) {
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit_ldx_insn(rd, off, rs, size, sign_ext, ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		return;
 	}
 
 	emit_imm(RV_REG_T1, off, ctx);
 	emit_add(RV_REG_T1, RV_REG_T1, rs, ctx);
-	ctx->ex_insn_off = ctx->ninsns;
+	(*ctx).ex_insn_off = (*ctx).ninsns;
 	emit_ldx_insn(rd, 0, RV_REG_T1, size, sign_ext, ctx);
-	ctx->ex_jmp_off = ctx->ninsns;
+	(*ctx).ex_jmp_off = (*ctx).ninsns;
 }
 
-unsafe fn emit_st(u8 rd, s16 off, s32 imm, u8 size, struct rv_jit_context *ctx)
+unsafe fn emit_st(rd: u8, s16 off, s32 imm, size: u8, rv_jit_context *ctx)
 {
 	emit_imm(RV_REG_T1, imm, ctx);
 	if (is_12b_int(off)) {
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit_stx_insn(rd, off, RV_REG_T1, size, ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		return;
 	}
 
 	emit_imm(RV_REG_T2, off, ctx);
 	emit_add(RV_REG_T2, RV_REG_T2, rd, ctx);
-	ctx->ex_insn_off = ctx->ninsns;
+	(*ctx).ex_insn_off = (*ctx).ninsns;
 	emit_stx_insn(RV_REG_T2, 0, RV_REG_T1, size, ctx);
-	ctx->ex_jmp_off = ctx->ninsns;
+	(*ctx).ex_jmp_off = (*ctx).ninsns;
 }
 
-unsafe fn emit_stx(u8 rd, s16 off, u8 rs, u8 size, struct rv_jit_context *ctx)
+unsafe fn emit_stx(rd: u8, s16 off, rs: u8, size: u8, rv_jit_context *ctx)
 {
 	if (is_12b_int(off)) {
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit_stx_insn(rd, off, rs, size, ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		return;
 	}
 
 	emit_imm(RV_REG_T1, off, ctx);
 	emit_add(RV_REG_T1, RV_REG_T1, rd, ctx);
-	ctx->ex_insn_off = ctx->ninsns;
+	(*ctx).ex_insn_off = (*ctx).ninsns;
 	emit_stx_insn(RV_REG_T1, 0, rs, size, ctx);
-	ctx->ex_jmp_off = ctx->ninsns;
+	(*ctx).ex_jmp_off = (*ctx).ninsns;
 }
 
-unsafe fn emit_atomic_ld_st(u8 rd, u8 rs, const struct bpf_insn *insn,
-			     struct rv_jit_context *ctx)
+unsafe fn emit_atomic_ld_st(rd: u8, rs: u8, const struct bpf_insn *insn,
+			     rv_jit_context *ctx)
 {
-	u8 code = insn->code;
-	s32 imm = insn->imm;
-	s16 off = insn->off;
+	u8 code = (*insn).code;
+	s32 imm = (*insn).imm;
+	s16 off = (*insn).off;
 
 	switch (imm) {
 	/* dst_reg = load_acquire(src_reg + off16) */
@@ -561,12 +559,12 @@ unsafe fn emit_atomic_ld_st(u8 rd, u8 rs, const struct bpf_insn *insn,
 	return 0;
 }
 
-unsafe fn emit_atomic_rmw(u8 rd, u8 rs, const struct bpf_insn *insn,
-			   struct rv_jit_context *ctx)
+unsafe fn emit_atomic_rmw(rd: u8, rs: u8, const struct bpf_insn *insn,
+			   rv_jit_context *ctx)
 {
-	u8 code = insn->code;
-	s16 off = insn->off;
-	s32 imm = insn->imm;
+	u8 code = (*insn).code;
+	s16 off = (*insn).off;
+	s32 imm = (*insn).imm;
 	bool is64 = BPF_SIZE(code) == BPF_DW;
 
 	if (BPF_SIZE(code) != BPF_W && BPF_SIZE(code) != BPF_DW) {
@@ -592,68 +590,68 @@ unsafe fn emit_atomic_rmw(u8 rd, u8 rs, const struct bpf_insn *insn,
 	switch (imm) {
 	/* lock *(u32/u64 *)(dst_reg + off16) <op>= src_reg */
 	case BPF_ADD:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoadd_d(RV_REG_ZERO, rs, rd, 0, 0) :
 		     rv_amoadd_w(RV_REG_ZERO, rs, rd, 0, 0), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		break;
 	case BPF_AND:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoand_d(RV_REG_ZERO, rs, rd, 0, 0) :
 		     rv_amoand_w(RV_REG_ZERO, rs, rd, 0, 0), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		break;
 	case BPF_OR:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoor_d(RV_REG_ZERO, rs, rd, 0, 0) :
 		     rv_amoor_w(RV_REG_ZERO, rs, rd, 0, 0), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		break;
 	case BPF_XOR:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoxor_d(RV_REG_ZERO, rs, rd, 0, 0) :
 		     rv_amoxor_w(RV_REG_ZERO, rs, rd, 0, 0), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		break;
 	/* src_reg = atomic_fetch_<op>(dst_reg + off16, src_reg) */
 	case BPF_ADD | BPF_FETCH:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoadd_d(rs, rs, rd, 1, 1) :
 		     rv_amoadd_w(rs, rs, rd, 1, 1), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		if (!is64)
 			emit_zextw(rs, rs, ctx);
 		break;
 	case BPF_AND | BPF_FETCH:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoand_d(rs, rs, rd, 1, 1) :
 		     rv_amoand_w(rs, rs, rd, 1, 1), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		if (!is64)
 			emit_zextw(rs, rs, ctx);
 		break;
 	case BPF_OR | BPF_FETCH:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoor_d(rs, rs, rd, 1, 1) :
 		     rv_amoor_w(rs, rs, rd, 1, 1), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		if (!is64)
 			emit_zextw(rs, rs, ctx);
 		break;
 	case BPF_XOR | BPF_FETCH:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoxor_d(rs, rs, rd, 1, 1) :
 		     rv_amoxor_w(rs, rs, rd, 1, 1), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		if (!is64)
 			emit_zextw(rs, rs, ctx);
 		break;
 	/* src_reg = atomic_xchg(dst_reg + off16, src_reg); */
 	case BPF_XCHG:
-		ctx->ex_insn_off = ctx->ninsns;
+		(*ctx).ex_insn_off = (*ctx).ninsns;
 		emit(is64 ? rv_amoswap_d(rs, rs, rd, 1, 1) :
 		     rv_amoswap_w(rs, rs, rd, 1, 1), ctx);
-		ctx->ex_jmp_off = ctx->ninsns;
+		(*ctx).ex_jmp_off = (*ctx).ninsns;
 		if (!is64)
 			emit_zextw(rs, rs, ctx);
 		break;
@@ -672,7 +670,7 @@ unsafe fn emit_atomic_rmw(u8 rd, u8 rs, const struct bpf_insn *insn,
 /*
  * Sign-extend the register if necessary
  */
-unsafe fn sign_extend(u8 rd, u8 rs, u8 sz, bool sign, struct rv_jit_context *ctx)
+unsafe fn sign_extend(rd: u8, rs: u8, sz: u8, sign: bool, rv_jit_context *ctx)
 {
 	if (!sign && (sz == 1 || sz == 2)) {
 		if (rd != rs)
@@ -707,45 +705,45 @@ const BPF_FIXUP_REG_MASK: usize = GENMASK(31, 27);
 const REG_DONT_CLEAR_MARKER: usize = 0	/* RV_REG_ZERO unused in pt_regmap */;
 
 bool ex_handler_bpf(const struct exception_table_entry *ex,
-		    struct pt_regs *regs)
+		    pt_regs *regs)
 {
-	off_t offset = FIELD_GET(BPF_FIXUP_OFFSET_MASK, ex->fixup);
-	int regs_offset = FIELD_GET(BPF_FIXUP_REG_MASK, ex->fixup);
+	off_t offset = FIELD_GET(BPF_FIXUP_OFFSET_MASK, (*ex).fixup);
+	int regs_offset = FIELD_GET(BPF_FIXUP_REG_MASK, (*ex).fixup);
 
 	if (regs_offset != REG_DONT_CLEAR_MARKER)
-		*(unsigned long *)((void *)regs + pt_regmap[regs_offset]) = 0;
-	regs->epc = (unsigned long)&ex->fixup - offset;
+		*(core::ffi::c_ulong *)((void *)regs + pt_regmap[regs_offset]) = 0;
+	(*regs).epc = (core::ffi::c_ulong)&(*ex).fixup - offset;
 
 	return true;
 }
 
 /* For accesses to BTF pointers, add an entry to the exception table */
 unsafe fn add_exception_handler(const struct bpf_insn *insn, int dst_reg,
-				 struct rv_jit_context *ctx)
+				 rv_jit_context *ctx)
 {
 	struct exception_table_entry *ex;
-	unsigned long pc;
+	core::ffi::c_ulong pc;
 	off_t ins_offset;
 	off_t fixup_offset;
 
-	if (!ctx->insns || !ctx->ro_insns || !ctx->prog->aux->extable ||
-	    ctx->ex_insn_off <= 0 || ctx->ex_jmp_off <= 0)
+	if ((*!ctx).insns || (*!ctx).ro_insns || (*(*(*!ctx).prog).aux).extable ||
+	    (*ctx).ex_insn_off <= 0 || (*ctx).ex_jmp_off <= 0)
 		return 0;
 
-	if (BPF_MODE(insn->code) != BPF_PROBE_MEM &&
-	    BPF_MODE(insn->code) != BPF_PROBE_MEMSX &&
-	    BPF_MODE(insn->code) != BPF_PROBE_MEM32 &&
-	    BPF_MODE(insn->code) != BPF_PROBE_ATOMIC)
+	if (BPF_MODE((*insn).code) != BPF_PROBE_MEM &&
+	    BPF_MODE((*insn).code) != BPF_PROBE_MEMSX &&
+	    BPF_MODE((*insn).code) != BPF_PROBE_MEM32 &&
+	    BPF_MODE((*insn).code) != BPF_PROBE_ATOMIC)
 		return 0;
 
-	if (WARN_ON_ONCE(ctx->nexentries >= ctx->prog->aux->num_exentries))
+	if (WARN_ON_ONCE((*ctx).nexentries >= (*(*(*ctx).prog).aux).num_exentries))
 		return -EINVAL;
 
-	if (WARN_ON_ONCE(ctx->ex_insn_off > ctx->ninsns || ctx->ex_jmp_off > ctx->ninsns))
+	if (WARN_ON_ONCE((*ctx).ex_insn_off > (*ctx).ninsns || (*ctx).ex_jmp_off > (*ctx).ninsns))
 		return -EINVAL;
 
-	ex = &ctx->prog->aux->extable[ctx->nexentries];
-	pc = (unsigned long)&ctx->ro_insns[ctx->ex_insn_off];
+	ex = (*(*(*&ctx).prog).aux).extable[(*ctx).nexentries];
+	pc = (core::ffi::c_ulong)&(*ctx).ro_insns[(*ctx).ex_insn_off];
 
 	/*
 	 * This is the relative offset of the instruction that may fault from
@@ -753,7 +751,7 @@ unsafe fn add_exception_handler(const struct bpf_insn *insn, int dst_reg,
 	 * table and if this instruction faults, the destination register will
 	 * be set to '0' and the execution will jump to the next instruction.
 	 */
-	ins_offset = pc - (long)&ex->insn;
+	ins_offset = pc - (long)&(*ex).insn;
 	if (WARN_ON_ONCE(ins_offset >= 0 || ins_offset < INT_MIN))
 		return -ERANGE;
 
@@ -769,7 +767,7 @@ unsafe fn add_exception_handler(const struct bpf_insn *insn, int dst_reg,
 	 * that may fault. The execution will jump to this after handling the
 	 * fault.
 	 */
-	fixup_offset = (long)&ex->fixup - (long)&ctx->ro_insns[ctx->ex_jmp_off];
+	fixup_offset = (long)&(*ex).fixup - (long)&(*ctx).ro_insns[(*ctx).ex_jmp_off];
 	if (!FIELD_FIT(BPF_FIXUP_OFFSET_MASK, fixup_offset))
 		return -ERANGE;
 
@@ -778,21 +776,21 @@ unsafe fn add_exception_handler(const struct bpf_insn *insn, int dst_reg,
 	 * need to use the R/W buffer for writes.
 	 * switch ex to rw buffer for writing.
 	 */
-	ex = (void *)ctx->insns + ((void *)ex - (void *)ctx->ro_insns);
+	ex = (*(void *)ctx).insns + ((void *)ex - (*(void *)ctx).ro_insns);
 
-	ex->insn = ins_offset;
+	(*ex).insn = ins_offset;
 
-	ex->fixup = FIELD_PREP(BPF_FIXUP_OFFSET_MASK, fixup_offset) |
+	(*ex).fixup = FIELD_PREP(BPF_FIXUP_OFFSET_MASK, fixup_offset) |
 		FIELD_PREP(BPF_FIXUP_REG_MASK, dst_reg);
-	ex->type = EX_TYPE_BPF;
+	(*ex).type = EX_TYPE_BPF;
 
-	ctx->ex_insn_off = 0;
-	ctx->ex_jmp_off = 0;
-	ctx->nexentries++;
+	(*ctx).ex_insn_off = 0;
+	(*ctx).ex_jmp_off = 0;
+	(*ctx).nexentries++;
 	return 0;
 }
 
-unsafe fn gen_jump_or_nops(void *target, void *ip, u32 *insns, bool is_call)
+unsafe fn gen_jump_or_nops(void *target, void *ip, u32 *insns, is_call: bool)
 {
 	s64 rvoff;
 	struct rv_jit_context ctx;
@@ -810,16 +808,16 @@ unsafe fn gen_jump_or_nops(void *target, void *ip, u32 *insns, bool is_call)
 	return emit_jump_and_link(is_call ? RV_REG_T0 : RV_REG_ZERO, rvoff, false, &ctx);
 }
 
-int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type old_t,
-		       enum bpf_text_poke_type new_t, void *old_addr,
+int bpf_arch_text_poke(void *ip, bpf_text_poke_type old_t,
+		       bpf_text_poke_type new_t, void *old_addr,
 		       void *new_addr)
 {
 	u32 old_insns[RV_FENTRY_NINSNS], new_insns[RV_FENTRY_NINSNS];
 	bool is_call;
 	int ret;
 
-	if (!is_kernel_text((unsigned long)ip) &&
-	    !is_bpf_text_address((unsigned long)ip))
+	if (!is_kernel_text((core::ffi::c_ulong)ip) &&
+	    !is_bpf_text_address((core::ffi::c_ulong)ip))
 		return -ENOTSUPP;
 
 	is_call = old_t == BPF_MOD_CALL;
@@ -845,7 +843,7 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type old_t,
 	return ret;
 }
 
-unsafe fn store_args(int nr_arg_slots, int args_off, struct rv_jit_context *ctx)
+unsafe fn store_args(int nr_arg_slots, int args_off, rv_jit_context *ctx)
 {
 	int i;
 
@@ -861,7 +859,7 @@ unsafe fn store_args(int nr_arg_slots, int args_off, struct rv_jit_context *ctx)
 	}
 }
 
-unsafe fn restore_args(int nr_reg_args, int args_off, struct rv_jit_context *ctx)
+unsafe fn restore_args(int nr_reg_args, int args_off, rv_jit_context *ctx)
 {
 	int i;
 
@@ -872,7 +870,7 @@ unsafe fn restore_args(int nr_reg_args, int args_off, struct rv_jit_context *ctx
 }
 
 unsafe fn restore_stack_args(int nr_stack_args, int args_off, int stk_arg_off,
-			       struct rv_jit_context *ctx)
+			       rv_jit_context *ctx)
 {
 	int i;
 
@@ -884,23 +882,23 @@ unsafe fn restore_stack_args(int nr_stack_args, int args_off, int stk_arg_off,
 	}
 }
 
-unsafe fn emit_store_stack_imm64(u8 reg, int stack_off, u64 imm64,
-				   struct rv_jit_context *ctx)
+unsafe fn emit_store_stack_imm64(reg: u8, int stack_off, imm64: u64,
+				   rv_jit_context *ctx)
 {
 	/* Load imm64 into reg and store it at [FP + stack_off]. */
 	emit_imm(reg, (s64)imm64, ctx);
 	emit_sd(RV_REG_FP, stack_off, reg, ctx);
 }
 
-unsafe fn invoke_bpf_prog(struct bpf_tramp_node *node, int args_off, int retval_off,
-			   int run_ctx_off, bool save_ret, struct rv_jit_context *ctx)
+unsafe fn invoke_bpf_prog(bpf_tramp_node *node, int args_off, int retval_off,
+			   int run_ctx_off, save_ret: bool, rv_jit_context *ctx)
 {
 	int ret, branch_off;
-	struct bpf_prog *p = node->link->prog;
-	int cookie_off = offsetof(struct bpf_tramp_run_ctx, bpf_cookie);
+	struct bpf_prog *p = (*(*node).link).prog;
+	int cookie_off = offsetof(bpf_tramp_run_ctx, bpf_cookie);
 
-	if (node->cookie)
-		emit_store_stack_imm64(RV_REG_T1, -run_ctx_off + cookie_off, node->cookie, ctx);
+	if ((*node).cookie)
+		emit_store_stack_imm64(RV_REG_T1, -run_ctx_off + cookie_off, (*node).cookie, ctx);
 	else
 		emit_sd(RV_REG_FP, -run_ctx_off + cookie_off, RV_REG_ZERO, ctx);
 
@@ -918,16 +916,16 @@ unsafe fn invoke_bpf_prog(struct bpf_tramp_node *node, int args_off, int retval_
 	/* if (__bpf_prog_enter(prog) == 0)
 	 *	goto skip_exec_of_prog;
 	 */
-	branch_off = ctx->ninsns;
+	branch_off = (*ctx).ninsns;
 	/* nop reserved for conditional jump */
 	emit(rv_nop(), ctx);
 
 	/* arg1: &args_off */
 	emit_addi(RV_REG_A0, RV_REG_FP, -args_off, ctx);
-	if (!p->jited)
+	if ((*!p).jited)
 		/* arg2: progs[i]->insnsi for interpreter */
-		emit_imm(RV_REG_A1, (const s64)p->insnsi, ctx);
-	ret = emit_call((const u64)p->bpf_func, true, ctx);
+		emit_imm(RV_REG_A1, (*(const s64)p).insnsi, ctx);
+	ret = emit_call((*(const u64)p).bpf_func, true, ctx);
 	if (ret)
 		return ret;
 
@@ -937,10 +935,10 @@ unsafe fn invoke_bpf_prog(struct bpf_tramp_node *node, int args_off, int retval_
 	}
 
 	/* update branch with beqz */
-	if (ctx->insns) {
-		int offset = ninsns_rvoff(ctx->ninsns - branch_off);
+	if ((*ctx).insns) {
+		int offset = ninsns_rvoff((*ctx).ninsns - branch_off);
 		u32 insn = rv_beq(RV_REG_A0, RV_REG_ZERO, offset >> 1);
-		*(u32 *)(ctx->insns + branch_off) = insn;
+		*(u32 *)((*ctx).insns + branch_off) = insn;
 	}
 
 	/* arg1: prog */
@@ -954,22 +952,22 @@ unsafe fn invoke_bpf_prog(struct bpf_tramp_node *node, int args_off, int retval_
 	return ret;
 }
 
-unsafe fn invoke_bpf(struct bpf_tramp_nodes *tn, int args_off, int retval_off,
-		      int run_ctx_off, int func_meta_off, bool save_ret, u64 func_meta,
-		      int cookie_off, struct rv_jit_context *ctx)
+unsafe fn invoke_bpf(bpf_tramp_nodes *tn, int args_off, int retval_off,
+		      int run_ctx_off, int func_meta_off, save_ret: bool, func_meta: u64,
+		      int cookie_off, rv_jit_context *ctx)
 {
 	int i, cur_cookie = (cookie_off - args_off) / 8;
 
-	for (i = 0; i < tn->nr_nodes; i++) {
+	for (i = 0; i < (*tn).nr_nodes; i++) {
 		int err;
 
-		if (bpf_prog_calls_session_cookie(tn->nodes[i])) {
+		if (bpf_prog_calls_session_cookie((*tn).nodes[i])) {
 			u64 meta = func_meta | ((u64)cur_cookie << BPF_TRAMP_COOKIE_INDEX_SHIFT);
 
 			emit_store_stack_imm64(RV_REG_T1, -func_meta_off, meta, ctx);
 			cur_cookie--;
 		}
-		err = invoke_bpf_prog(tn->nodes[i], args_off, retval_off, run_ctx_off,
+		err = invoke_bpf_prog((*tn).nodes[i], args_off, retval_off, run_ctx_off,
 				      save_ret, ctx);
 		if (err)
 			return err;
@@ -977,12 +975,13 @@ unsafe fn invoke_bpf(struct bpf_tramp_nodes *tn, int args_off, int retval_off,
 	return 0;
 }
 
-unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
+unsafe fn __arch_prepare_bpf_trampoline(bpf_tramp_image *im,
 					 const struct btf_func_model *m,
-					 struct bpf_tramp_nodes *tnodes,
-					 void *func_addr, u32 flags,
-					 struct rv_jit_context *ctx)
+					 bpf_tramp_nodes *tnodes,
+					 void *func_addr, flags: u32,
+					 rv_jit_context *ctx)
 {
+	'out: {
 	int i, ret, offset;
 	int *branches_off = NULL;
 	int stack_size = 0, nr_arg_slots = 0;
@@ -1050,11 +1049,11 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 	if (flags & (BPF_TRAMP_F_ORIG_STACK | BPF_TRAMP_F_SHARE_IPMODIFY))
 		return -ENOTSUPP;
 
-	if (m->nr_args > MAX_BPF_FUNC_ARGS)
+	if ((*m).nr_args > MAX_BPF_FUNC_ARGS)
 		return -ENOTSUPP;
 
-	for (i = 0; i < m->nr_args; i++)
-		nr_arg_slots += round_up(m->arg_size[i], 8) / 8;
+	for (i = 0; i < (*m).nr_args; i++)
+		nr_arg_slots += round_up((*m).arg_size[i], 8) / 8;
 
 	/* room of trampoline frame to store return address and frame pointer */
 	stack_size += 16;
@@ -1081,7 +1080,7 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 	stack_size += cookie_cnt * 8;
 	cookie_off = stack_size;
 
-	stack_size += round_up(sizeof(struct bpf_tramp_run_ctx), 8);
+	stack_size += round_up(sizeof(bpf_tramp_run_ctx), 8);
 	run_ctx_off = stack_size;
 
 	stack_size += 8;
@@ -1151,33 +1150,33 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 	}
 
 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
-		emit_imm(RV_REG_A0, ctx->insns ? (const s64)im : RV_MAX_COUNT_IMM, ctx);
+		emit_imm(RV_REG_A0, (*ctx).insns ? (const s64)im : RV_MAX_COUNT_IMM, ctx);
 		ret = emit_call((const u64)__bpf_tramp_enter, true, ctx);
 		if (ret)
 			return ret;
 	}
 
-	if (fentry->nr_nodes) {
+	if ((*fentry).nr_nodes) {
 		ret = invoke_bpf(fentry, args_off, retval_off, run_ctx_off, func_meta_off,
 				 flags & BPF_TRAMP_F_RET_FENTRY_RET, func_meta, cookie_off, ctx);
 		if (ret)
 			return ret;
 	}
 
-	if (fmod_ret->nr_nodes) {
-		branches_off = kvzalloc_objs(int, fmod_ret->nr_nodes);
+	if ((*fmod_ret).nr_nodes) {
+		branches_off = kvzalloc_objs(int, (*fmod_ret).nr_nodes);
 		if (!branches_off)
 			return -ENOMEM;
 
 		/* cleanup to avoid garbage return value confusion */
 		emit_sd(RV_REG_FP, -retval_off, RV_REG_ZERO, ctx);
-		for (i = 0; i < fmod_ret->nr_nodes; i++) {
-			ret = invoke_bpf_prog(fmod_ret->nodes[i], args_off, retval_off,
+		for (i = 0; i < (*fmod_ret).nr_nodes; i++) {
+			ret = invoke_bpf_prog((*fmod_ret).nodes[i], args_off, retval_off,
 					      run_ctx_off, true, ctx);
 			if (ret)
-				goto out;
+				break 'out;
 			emit_ld(RV_REG_T1, -retval_off, RV_REG_FP, ctx);
-			branches_off[i] = ctx->ninsns;
+			branches_off[i] = (*ctx).ninsns;
 			/* nop reserved for conditional jump */
 			emit(rv_nop(), ctx);
 		}
@@ -1193,23 +1192,23 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 			emit_ld(RV_REG_TCC, -tcc_off, RV_REG_FP, ctx);
 		ret = emit_call((const u64)orig_call, true, ctx);
 		if (ret)
-			goto out;
+			break 'out;
 		/* store updated TCC back to stack after calling the orig bpf func */
 		if (flags & BPF_TRAMP_F_TAIL_CALL_CTX)
 			emit_sd(RV_REG_FP, -tcc_off, RV_REG_TCC, ctx);
 		emit_sd(RV_REG_FP, -retval_off, RV_REG_A0, ctx);
 		emit_sd(RV_REG_FP, -(retval_off - 8), regmap[BPF_REG_0], ctx);
-		im->ip_after_call = ctx->ro_insns + ctx->ninsns;
+		(*im).ip_after_call = (*ctx).ro_insns + (*ctx).ninsns;
 		/* 2 nops reserved for auipc+jalr pair */
 		emit(rv_nop(), ctx);
 		emit(rv_nop(), ctx);
 	}
 
 	/* update branches saved in invoke_bpf_mod_ret with bnez */
-	for (i = 0; ctx->insns && i < fmod_ret->nr_nodes; i++) {
-		offset = ninsns_rvoff(ctx->ninsns - branches_off[i]);
+	for (i = 0; (*ctx).insns && i < (*fmod_ret).nr_nodes; i++) {
+		offset = ninsns_rvoff((*ctx).ninsns - branches_off[i]);
 		insn = rv_bne(RV_REG_T1, RV_REG_ZERO, offset >> 1);
-		*(u32 *)(ctx->insns + branches_off[i]) = insn;
+		*(u32 *)((*ctx).insns + branches_off[i]) = insn;
 	}
 
 	/* set "is_return" flag for fsession */
@@ -1217,19 +1216,19 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 	if (bpf_fsession_cnt(tnodes))
 		emit_store_stack_imm64(RV_REG_T1, -func_meta_off, func_meta, ctx);
 
-	if (fexit->nr_nodes) {
+	if ((*fexit).nr_nodes) {
 		ret = invoke_bpf(fexit, args_off, retval_off, run_ctx_off, func_meta_off,
 				 false, func_meta, cookie_off, ctx);
 		if (ret)
-			goto out;
+			break 'out;
 	}
 
 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
-		im->ip_epilogue = ctx->ro_insns + ctx->ninsns;
-		emit_imm(RV_REG_A0, ctx->insns ? (const s64)im : RV_MAX_COUNT_IMM, ctx);
+		(*im).ip_epilogue = (*ctx).ro_insns + (*ctx).ninsns;
+		emit_imm(RV_REG_A0, (*ctx).insns ? (const s64)im : RV_MAX_COUNT_IMM, ctx);
 		ret = emit_call((const u64)__bpf_tramp_exit, true, ctx);
 		if (ret)
-			goto out;
+			break 'out;
 	}
 
 	if (flags & BPF_TRAMP_F_RESTORE_REGS)
@@ -1238,10 +1237,10 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 	if (save_ret) {
 		emit_ld(regmap[BPF_REG_0], -(retval_off - 8), RV_REG_FP, ctx);
 		if (is_struct_ops) {
-			ret = sign_extend(RV_REG_A0, regmap[BPF_REG_0], m->ret_size,
-					  m->ret_flags & BTF_FMODEL_SIGNED_ARG, ctx);
+			ret = sign_extend(RV_REG_A0, regmap[BPF_REG_0], (*m).ret_size,
+					  (*m).ret_flags & BTF_FMODEL_SIGNED_ARG, ctx);
 			if (ret)
-				goto out;
+				break 'out;
 		} else {
 			emit_ld(RV_REG_A0, -retval_off, RV_REG_FP, ctx);
 		}
@@ -1278,14 +1277,15 @@ unsafe fn __arch_prepare_bpf_trampoline(struct bpf_tramp_image *im,
 		emit_jalr(RV_REG_ZERO, RV_REG_RA, 0, ctx);
 	}
 
-	ret = ctx->ninsns;
-out:
+	ret = (*ctx).ninsns;
+	}
+	
 	kvfree(branches_off);
 	return ret;
 }
 
-int arch_bpf_trampoline_size(const struct btf_func_model *m, u32 flags,
-			     struct bpf_tramp_nodes *tnodes, void *func_addr)
+int arch_bpf_trampoline_size(const struct btf_func_model *m, flags: u32,
+			     bpf_tramp_nodes *tnodes, void *func_addr)
 {
 	struct bpf_tramp_image im;
 	struct rv_jit_context ctx;
@@ -1299,21 +1299,22 @@ int arch_bpf_trampoline_size(const struct btf_func_model *m, u32 flags,
 	return ret < 0 ? ret : ninsns_rvoff(ctx.ninsns);
 }
 
-void *arch_alloc_bpf_trampoline(unsigned int size)
+void *arch_alloc_bpf_trampoline(size: core::ffi::c_uint)
 {
 	return bpf_prog_pack_alloc(size, bpf_fill_ill_insns, false);
 }
 
-void arch_free_bpf_trampoline(void *image, unsigned int size)
+void arch_free_bpf_trampoline(void *image, size: core::ffi::c_uint)
 {
 	bpf_prog_pack_free(image, size);
 }
 
-int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *ro_image,
+int arch_prepare_bpf_trampoline(bpf_tramp_image *im, void *ro_image,
 				void *ro_image_end, const struct btf_func_model *m,
-				u32 flags, struct bpf_tramp_nodes *tnodes,
+				flags: u32, bpf_tramp_nodes *tnodes,
 				void *func_addr)
 {
+	'out: {
 	int ret;
 	void *image, *res;
 	struct rv_jit_context ctx;
@@ -1328,34 +1329,34 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *ro_image,
 	ctx.ro_insns = ro_image;
 	ret = __arch_prepare_bpf_trampoline(im, m, tnodes, func_addr, flags, &ctx);
 	if (ret < 0)
-		goto out;
+		break 'out;
 
 	if (WARN_ON(size < ninsns_rvoff(ctx.ninsns))) {
 		ret = -E2BIG;
-		goto out;
+		break 'out;
 	}
 
 	res = bpf_arch_text_copy(ro_image, image, size);
 	if (IS_ERR(res)) {
 		ret = PTR_ERR(res);
-		goto out;
+		break 'out;
 	}
-
-out:
+	}
+	
 	kvfree(image);
 	return ret < 0 ? ret : size;
 }
 
-int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
-		      bool extra_pass)
+int bpf_jit_emit_insn(const struct bpf_insn *insn, rv_jit_context *ctx,
+		      extra_pass: bool)
 {
-	bool is64 = BPF_CLASS(insn->code) == BPF_ALU64 ||
-		    BPF_CLASS(insn->code) == BPF_JMP;
-	int s, e, rvoff, ret, i = insn - ctx->prog->insnsi;
-	struct bpf_prog_aux *aux = ctx->prog->aux;
-	u8 rd = -1, rs = -1, code = insn->code;
-	s16 off = insn->off;
-	s32 imm = insn->imm;
+	bool is64 = BPF_CLASS((*insn).code) == BPF_ALU64 ||
+		    BPF_CLASS((*insn).code) == BPF_JMP;
+	int s, e, rvoff, ret, i = insn - (*(*ctx).prog).insnsi;
+	struct bpf_prog_aux *aux = (*(*ctx).prog).aux;
+	u8 rd = -1, rs = -1, code = (*insn).code;
+	s16 off = (*insn).off;
+	s32 imm = (*insn).imm;
 
 	init_regs(&rd, &rs, insn, ctx);
 
@@ -1366,7 +1367,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 		if (insn_is_cast_user(insn)) {
 			emit_mv(RV_REG_T1, rs, ctx);
 			emit_zextw(RV_REG_T1, RV_REG_T1, ctx);
-			emit_imm(rd, (ctx->user_vm_start >> 32) << 32, ctx);
+			emit_imm(rd, ((*ctx).user_vm_start >> 32) << 32, ctx);
 			emit(rv_beq(RV_REG_T1, RV_REG_ZERO, 4), ctx);
 			emit_or(RV_REG_T1, rd, RV_REG_T1, ctx);
 			emit_mv(rd, RV_REG_T1, ctx);
@@ -1376,7 +1377,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 				emit_mv(rd, rs, ctx);
 #ifdef CONFIG_SMP
 			/* Load current CPU number in T1 */
-			emit_lw(RV_REG_T1, offsetof(struct thread_info, cpu),
+			emit_lw(RV_REG_T1, offsetof(thread_info, cpu),
 				RV_REG_TP, ctx);
 			/* Load address of __per_cpu_offset array in T2 */
 			emit_addr(RV_REG_T2, (u64)&__per_cpu_offset, extra_pass, ctx);
@@ -1393,7 +1394,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit_zextw(rd, rd, ctx);
 			break;
 		}
-		switch (insn->off) {
+		switch ((*insn).off) {
 		case 0:
 			emit_mv(rd, rs, ctx);
 			break;
@@ -1407,7 +1408,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit_sextw(rd, rs, ctx);
 			break;
 		}
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 
@@ -1415,7 +1416,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 	case BPF_ALU | BPF_ADD | BPF_X:
 	case BPF_ALU64 | BPF_ADD | BPF_X:
 		emit_add(rd, rd, rs, ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_SUB | BPF_X:
@@ -1425,31 +1426,31 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 		else
 			emit_subw(rd, rd, rs, ctx);
 
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_AND | BPF_X:
 	case BPF_ALU64 | BPF_AND | BPF_X:
 		emit_and(rd, rd, rs, ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_OR | BPF_X:
 	case BPF_ALU64 | BPF_OR | BPF_X:
 		emit_or(rd, rd, rs, ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_XOR | BPF_X:
 	case BPF_ALU64 | BPF_XOR | BPF_X:
 		emit_xor(rd, rd, rs, ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_MUL | BPF_X:
 	case BPF_ALU64 | BPF_MUL | BPF_X:
 		emit(is64 ? rv_mul(rd, rd, rs) : rv_mulw(rd, rd, rs), ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_DIV | BPF_X:
@@ -1458,7 +1459,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit(is64 ? rv_div(rd, rd, rs) : rv_divw(rd, rd, rs), ctx);
 		else
 			emit(is64 ? rv_divu(rd, rd, rs) : rv_divuw(rd, rd, rs), ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_MOD | BPF_X:
@@ -1467,25 +1468,25 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit(is64 ? rv_rem(rd, rd, rs) : rv_remw(rd, rd, rs), ctx);
 		else
 			emit(is64 ? rv_remu(rd, rd, rs) : rv_remuw(rd, rd, rs), ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_LSH | BPF_X:
 	case BPF_ALU64 | BPF_LSH | BPF_X:
 		emit(is64 ? rv_sll(rd, rd, rs) : rv_sllw(rd, rd, rs), ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_RSH | BPF_X:
 	case BPF_ALU64 | BPF_RSH | BPF_X:
 		emit(is64 ? rv_srl(rd, rd, rs) : rv_srlw(rd, rd, rs), ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_ARSH | BPF_X:
 	case BPF_ALU64 | BPF_ARSH | BPF_X:
 		emit(is64 ? rv_sra(rd, rd, rs) : rv_sraw(rd, rd, rs), ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 
@@ -1493,7 +1494,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 	case BPF_ALU | BPF_NEG:
 	case BPF_ALU64 | BPF_NEG:
 		emit_sub(rd, RV_REG_ZERO, rd, ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 
@@ -1504,7 +1505,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit_zexth(rd, rd, ctx);
 			break;
 		case 32:
-			if (!aux->verifier_zext)
+			if ((*!aux).verifier_zext)
 				emit_zextw(rd, rd, ctx);
 			break;
 		case 64:
@@ -1521,7 +1522,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 	case BPF_ALU | BPF_MOV | BPF_K:
 	case BPF_ALU64 | BPF_MOV | BPF_K:
 		emit_imm(rd, imm, ctx);
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 
@@ -1534,7 +1535,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit_imm(RV_REG_T1, imm, ctx);
 			emit_add(rd, rd, RV_REG_T1, ctx);
 		}
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_SUB | BPF_K:
@@ -1545,7 +1546,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit_imm(RV_REG_T1, imm, ctx);
 			emit_sub(rd, rd, RV_REG_T1, ctx);
 		}
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_AND | BPF_K:
@@ -1556,7 +1557,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 			emit_imm(RV_REG_T1, imm, ctx);
 			emit_and(rd, rd, RV_REG_T1, ctx);
 		}
-		if (!is64 && !aux->verifier_zext)
+		if (!is64 && (*!aux).verifier_zext)
 			emit_zextw(rd, rd, ctx);
 		break;
 	case BPF_ALU | BPF_OR | BPF_K:
@@ -1777,13 +1778,13 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 		 * RV_REG_TP holds the address of the current CPU's task_struct and thread_info is
 		 * at offset 0 in task_struct.
 		 * Load cpu from thread_info:
-		 *     Set R0 to ((struct thread_info *)(RV_REG_TP))->cpu
+		 *     Set R0 to ((thread_info *)(RV_REG_TP))->cpu
 		 *
 		 * This replicates the implementation of raw_smp_processor_id() on RISCV
 		 */
 		if (insn->src_reg == 0 && insn->imm == BPF_FUNC_get_smp_processor_id) {
 			/* Load current CPU number in R0 */
-			emit_lw(bpf_to_rv_reg(BPF_REG_0, ctx), offsetof(struct thread_info, cpu),
+			emit_lw(bpf_to_rv_reg(BPF_REG_0, ctx), offsetof(thread_info, cpu),
 				RV_REG_TP, ctx);
 			break;
 		}
@@ -2007,7 +2008,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
 	return 0;
 }
 
-void bpf_jit_build_prologue(struct rv_jit_context *ctx, bool is_subprog)
+void bpf_jit_build_prologue(rv_jit_context *ctx, is_subprog: bool)
 {
 	int i, stack_adjust = 0, store_offset, bpf_stack_adjust;
 
@@ -2099,7 +2100,7 @@ void bpf_jit_build_prologue(struct rv_jit_context *ctx, bool is_subprog)
 		emit_imm(RV_REG_ARENA, ctx->arena_vm_start, ctx);
 }
 
-void bpf_jit_build_epilogue(struct rv_jit_context *ctx)
+void bpf_jit_build_epilogue(rv_jit_context *ctx)
 {
 	__build_epilogue(false, ctx);
 }
@@ -2119,7 +2120,7 @@ bool bpf_jit_supports_arena(void)
 	return true;
 }
 
-bool bpf_jit_supports_insn(struct bpf_insn *insn, bool in_arena)
+bool bpf_jit_supports_insn(bpf_insn *insn, in_arena: bool)
 {
 	if (in_arena) {
 		switch (insn->code) {

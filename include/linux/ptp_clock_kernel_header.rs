@@ -117,7 +117,7 @@ pub unsafe fn adjust_by_scaled_ppm(base: u64, scaled_ppm: ::core::ffi::c_long) -
 }
 
 // The following declarations are enabled by CONFIG_PTP_1588_CLOCK in the C header.
-#[cfg(feature = "CONFIG_PTP_1588_CLOCK")]
+#[cfg(CONFIG_PTP_1588_CLOCK)]
 extern "C" {
     pub fn ptp_clock_register(info: *mut ptp_clock_info, parent: *mut device) -> *mut ptp_clock;
     pub fn ptp_clock_unregister(ptp: *mut ptp_clock) -> ::core::ffi::c_int;
@@ -131,35 +131,35 @@ extern "C" {
     pub fn ptp_cancel_worker_sync(ptp: *mut ptp_clock);
 }
 
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_register(_: *mut ptp_clock_info, _: *mut device) -> *mut ptp_clock { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_unregister(_: *mut ptp_clock) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_event(_: *mut ptp_clock, _: *mut ptp_clock_event) {}
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_index(_: *mut ptp_clock) -> ::core::ffi::c_int { -1 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_index_by_of_node(_: *mut device_node) -> ::core::ffi::c_int { -1 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_clock_index_by_dev(_: *mut device) -> ::core::ffi::c_int { -1 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_find_pin(_: *mut ptp_clock, _: ptp_pin_function, _: ::core::ffi::c_uint) -> ::core::ffi::c_int { -1 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_find_pin_unlocked(_: *mut ptp_clock, _: ptp_pin_function, _: ::core::ffi::c_uint) -> ::core::ffi::c_int { -1 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_schedule_worker(_: *mut ptp_clock, _: ::core::ffi::c_ulong) -> ::core::ffi::c_int { -95 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK))]
 #[inline] pub unsafe fn ptp_cancel_worker_sync(_: *mut ptp_clock) {}
 
-#[cfg(feature = "CONFIG_PTP_1588_CLOCK_BUILTIN")]
+#[cfg(CONFIG_PTP_1588_CLOCK_BUILTIN)]
 extern "C" {
     pub fn ptp_get_vclocks_index(pclock_index: ::core::ffi::c_int, vclock_index: *mut *mut ::core::ffi::c_int) -> ::core::ffi::c_int;
     pub fn ptp_convert_timestamp(hwtstamp: *const ktime_t, vclock_index: ::core::ffi::c_int) -> ktime_t;
 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK_BUILTIN"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK_BUILTIN))]
 #[inline] pub unsafe fn ptp_get_vclocks_index(_: ::core::ffi::c_int, _: *mut *mut ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK_BUILTIN"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK_BUILTIN))]
 #[inline] pub unsafe fn ptp_convert_timestamp(_: *const ktime_t, _: ::core::ffi::c_int) -> ktime_t { 0 }
 
 #[inline]

@@ -77,9 +77,7 @@ const PWRSTS_OFF_ON: u32 = 0;
 const POLL_CFG_GDSCR: u32 = 0;
 const RETAIN_FF_ENABLE: u32 = 0;
 
-enum {
-    DT_BI_TCXO,
-}
+pub const DT_BI_TCXO: i32 = 0;
 
 static mut GX_CLKCTL_GX_GDSC: Gdsc = Gdsc {
     gdscr: 0x4024,

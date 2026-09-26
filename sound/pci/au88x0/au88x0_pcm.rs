@@ -384,7 +384,7 @@ unsafe fn snd_vortex_pcm_trigger(substream: *mut snd_pcm_substream, cmd: i32) ->
         match cmd {
             SNDRV_PCM_TRIGGER_START => {
                 // do something to start the PCM engine
-                //printk(KERN_INFO "vortex: start %d\n", dma);
+                //printk(c"\x016vortex: start %d\n".as_ptr(), dma);
                 (*stream).fifo_enabled = 1;
                 if *VORTEX_PCM_TYPE((*substream).pcm) as i32 != VORTEX_PCM_WT {
                     vortex_adbdma_resetup(chip, dma);
@@ -398,7 +398,7 @@ unsafe fn snd_vortex_pcm_trigger(substream: *mut snd_pcm_substream, cmd: i32) ->
             }
             SNDRV_PCM_TRIGGER_STOP => {
                 // do something to stop the PCM engine
-                //printk(KERN_INFO "vortex: stop %d\n", dma);
+                //printk(c"\x016vortex: stop %d\n".as_ptr(), dma);
                 (*stream).fifo_enabled = 0;
                 if *VORTEX_PCM_TYPE((*substream).pcm) as i32 != VORTEX_PCM_WT {
                     vortex_adbdma_stopfifo(chip, dma);
@@ -410,7 +410,7 @@ unsafe fn snd_vortex_pcm_trigger(substream: *mut snd_pcm_substream, cmd: i32) ->
                 }
             }
             SNDRV_PCM_TRIGGER_PAUSE_PUSH => {
-                //printk(KERN_INFO "vortex: pause %d\n", dma);
+                //printk(c"\x016vortex: pause %d\n".as_ptr(), dma);
                 if *VORTEX_PCM_TYPE((*substream).pcm) as i32 != VORTEX_PCM_WT {
                     vortex_adbdma_pausefifo(chip, dma);
                 }
@@ -420,7 +420,7 @@ unsafe fn snd_vortex_pcm_trigger(substream: *mut snd_pcm_substream, cmd: i32) ->
                 }
             }
             SNDRV_PCM_TRIGGER_PAUSE_RELEASE => {
-                //printk(KERN_INFO "vortex: resume %d\n", dma);
+                //printk(c"\x016vortex: resume %d\n".as_ptr(), dma);
                 if *VORTEX_PCM_TYPE((*substream).pcm) as i32 != VORTEX_PCM_WT {
                     vortex_adbdma_resumefifo(chip, dma);
                 }
@@ -455,7 +455,7 @@ unsafe fn snd_vortex_pcm_pointer(substream: *mut snd_pcm_substream) -> snd_pcm_u
         else {
             current_ptr = vortex_wtdma_getlinearpos(chip, dma);
         }
-        //printk(KERN_INFO "vortex: pointer = 0x%x\n", current_ptr);
+        //printk(c"\x016vortex: pointer = 0x%x\n".as_ptr(), current_ptr);
         spin_unlock(&mut (*chip).lock);
         current_ptr = bytes_to_frames((*substream).runtime, current_ptr);
         if current_ptr >= (*(*substream).runtime).buffer_size {
@@ -734,7 +734,7 @@ unsafe fn snd_vortex_new_pcm(chip: *mut vortex_t, idx: i32, nr: i32) -> i32 {
         );
 
         match *VORTEX_PCM_TYPE(pcm) as i32 {
-            VORTEX_PCM_ADB => {
+            case if case == VORTEX_PCM_ADB => {
                 err = snd_pcm_add_chmap_ctls(
                     pcm,
                     SNDRV_PCM_STREAM_PLAYBACK,
@@ -758,7 +758,7 @@ unsafe fn snd_vortex_new_pcm(chip: *mut vortex_t, idx: i32, nr: i32) -> i32 {
                     return err;
                 }
             }
-            #[cfg(CHIP_AU8830)]
+            case if case == #[cfg(CHIP_AU8830)]
             VORTEX_PCM_A3D => {
                 err = snd_pcm_add_chmap_ctls(
                     pcm,

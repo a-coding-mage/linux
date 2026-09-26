@@ -21,7 +21,7 @@ pub unsafe fn vexpress_smp_init_ops() -> bool {
          * port control is available.
          * Override the default vexpress_smp_ops if so.
          */
-        for_each_possible_cpu!(cpu) {
+        for_each_possible_cpu!(cpu, {
             let available: bool;
 
             cpu_node = of_get_cpu_node(cpu, ::core::ptr::null_mut());
@@ -37,7 +37,7 @@ pub unsafe fn vexpress_smp_init_ops() -> bool {
             if !available {
                 return false;
             }
-        }
+        });
 
         mcpm_smp_set_ops();
         return true;

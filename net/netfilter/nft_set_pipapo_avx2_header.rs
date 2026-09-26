@@ -3,16 +3,16 @@
 // C conditional: defined(CONFIG_X86_64) && !defined(CONFIG_UML)
 // The declarations below are available only for x86_64 builds outside UML.
 
-#[cfg(all(target_arch = "x86_64", not(feature = "CONFIG_UML")))]
+#[cfg(all(target_arch = "x86_64", not(CONFIG_UML)))]
 pub const NFT_PIPAPO_ALIGN: usize = XSAVE_YMM_SIZE / BITS_PER_BYTE;
 
-#[cfg(all(target_arch = "x86_64", not(feature = "CONFIG_UML")))]
+#[cfg(all(target_arch = "x86_64", not(CONFIG_UML)))]
 #[repr(C)]
 pub struct nft_pipapo_match {
     _private: [u8; 0],
 }
 
-#[cfg(all(target_arch = "x86_64", not(feature = "CONFIG_UML")))]
+#[cfg(all(target_arch = "x86_64", not(CONFIG_UML)))]
 extern "C" {
     pub fn nft_pipapo_avx2_estimate(
         desc: *const nft_set_desc,

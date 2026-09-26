@@ -9,10 +9,10 @@
  * pgtable-2level_types.h depending on CONFIG_X86_PAE. Those dependencies
  * are supplied externally.
  */
-#[cfg(feature = "CONFIG_X86_PAE")]
+#[cfg(CONFIG_X86_PAE)]
 pub const PMD_SIZE: usize = 1usize << PMD_SHIFT;
 
-#[cfg(feature = "CONFIG_X86_PAE")]
+#[cfg(CONFIG_X86_PAE)]
 pub const PMD_MASK: usize = !(PMD_SIZE - 1usize);
 
 pub const fn pgtable_l5_enabled() -> i32 {

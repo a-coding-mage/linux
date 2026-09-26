@@ -13,29 +13,29 @@
 macro_rules! __loop_cache_unroll {
     ($ar:tt, $at:tt, $insn:tt, $size:tt, $line_width:tt, $max_immed:tt) => {{
         // Original assembler logic:
-        // if (1 << line_width) > max_immed: reps = 1;
-        // else if (2 << line_width) > max_immed: reps = 2;
+        // if (1 << $line_width) > max_immed: reps = 1;
+        // else if (2 << $line_width) > max_immed: reps = 2;
         // else: reps = 4;
-        // __loopi ar, at, size, (reps << line_width);
-        // for index = 0 .. reps: insn ar, index << line_width;
-        // __endla ar, at, reps << line_width;
+        // __loopi $ar, $at, $size, (reps << $line_width);
+        // for index = 0 .. reps: $insn $ar, index << $line_width;
+        // __endla $ar, $at, reps << $line_width;
     }};
 }
 
 macro_rules! __loop_cache_all {
     ($ar:tt, $at:tt, $insn:tt, $size:tt, $line_width:tt, $max_immed:tt) => {{
-        // movi ar, 0;
+        // movi $ar, 0;
         __loop_cache_unroll!($ar, $at, $insn, $size, $line_width, $max_immed);
     }};
 }
 
 macro_rules! __loop_cache_range {
     ($ar:tt, $as:tt, $at:tt, $insn:tt, $line_width:tt) => {{
-        // extui at, ar, 0, line_width;
-        // add as, as, at;
-        // __loops ar, as, at, line_width;
-        // insn ar, 0;
-        // __endla ar, at, (1 << line_width);
+        // extui $at, $ar, 0, $line_width;
+        // add $as, $as, $at;
+        // __loops $ar, $as, $at, $line_width;
+        // $insn $ar, 0;
+        // __endla $ar, $at, (1 << $line_width);
     }};
 }
 

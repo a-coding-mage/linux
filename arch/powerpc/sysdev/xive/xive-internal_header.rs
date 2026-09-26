@@ -18,10 +18,10 @@ pub const XIVE_MAX_IRQ: u32 = XIVE_BAD_IRQ - 1;
 /* Each CPU carry one of these with various per-CPU state */
 #[repr(C)]
 pub struct xive_cpu {
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     /* HW irq number and data of IPI */
     pub hw_ipi: u32,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub ipi_data: xive_irq_data,
 
     pub chip_id: i32,
@@ -58,9 +58,9 @@ pub struct xive_ops {
     pub update_pending: Option<unsafe extern "C" fn(*mut xive_cpu)>,
     pub sync_source: Option<unsafe extern "C" fn(u32)>,
     pub esb_rw: Option<unsafe extern "C" fn(u32, u32, u64, bool) -> u64>,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub get_ipi: Option<unsafe extern "C" fn(u32, *mut xive_cpu) -> i32>,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub put_ipi: Option<unsafe extern "C" fn(u32, *mut xive_cpu)>,
     pub debug_show: Option<unsafe extern "C" fn(*mut seq_file, *mut c_void) -> i32>,
     pub debug_create: Option<unsafe extern "C" fn(*mut dentry) -> i32>,

@@ -20,7 +20,7 @@ unsafe extern "C" {
 }
 
 /* CONFIG_UML_TIME_TRAVEL_SUPPORT selects the external declaration below. */
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 unsafe extern "C" {
     pub fn um_request_irq_tt(
         irq: i32,
@@ -41,7 +41,7 @@ unsafe extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT"))]
+#[cfg(not(CONFIG_UML_TIME_TRAVEL_SUPPORT))]
 pub unsafe fn um_request_irq_tt(
     irq: i32,
     fd: i32,

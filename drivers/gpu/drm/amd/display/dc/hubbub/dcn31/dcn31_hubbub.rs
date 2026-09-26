@@ -25,15 +25,15 @@
 
 
 // #define CTX \
-	hubbub2.base.ctx
+// 	hubbub2.base.ctx
 // #define DC_LOGGER \
-	hubbub2.base.ctx.logger
+// 	hubbub2.base.ctx.logger
 // #define REG(reg)\
-	hubbub2.regs.reg
+// 	hubbub2.regs.reg
 
 // #undef FN
 // #define FN(reg_name, field_name) \
-	hubbub2.shifts.field_name, hubbub2.masks.field_name
+// 	hubbub2.shifts.field_name, hubbub2.masks.field_name
 
 #ifdef NUM_VMID
 // #undef NUM_VMID
@@ -67,7 +67,7 @@ unsafe fn dcn31_init_crb(*hubbub hubbub)
 	REG_UPDATE!(DCHUBBUB_DEBUG_CTRL_0, DET_DEPTH, 0x17F);
 }
 
-unsafe fn dcn31_program_det_size(*hubbub hubbub, i32 hubp_inst, unsigned i32 det_buffer_size_in_kbyte)
+unsafe fn dcn31_program_det_size(*hubbub hubbub, hubp_inst: i32, unsigned i32 det_buffer_size_in_kbyte)
 {
 	*dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB!(hubbub);
 
@@ -103,8 +103,7 @@ unsafe fn dcn31_program_det_size(*hubbub hubbub, i32 hubp_inst, unsigned i32 det
 			+ hubbub2.det3_size + hubbub2.compbuf_size_segments <= hubbub2.crb_size_segs);
 }
 
-unsafe fn dcn31_wait_for_det_apply(*hubbub hubbub, i32 hubp_inst)
-{
+unsafe fn dcn31_wait_for_det_apply(*hubbub hubbub, hubp_inst: i32) {
 	*dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB!(hubbub);
 
 	switch (hubp_inst) {
@@ -125,7 +124,7 @@ unsafe fn dcn31_wait_for_det_apply(*hubbub hubbub, i32 hubp_inst)
 	}
 }
 
-unsafe fn dcn31_program_compbuf_size(*hubbub hubbub, unsigned i32 compbuf_size_kb, bool safe_to_increase)
+unsafe fn dcn31_program_compbuf_size(*hubbub hubbub, unsigned i32 compbuf_size_kb, safe_to_increase: bool)
 {
 	*dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB!(hubbub);
 	unsigned i32 compbuf_size_segments = (compbuf_size_kb + DCN31_CRB_SEGMENT_SIZE_KB - 1) / DCN31_CRB_SEGMENT_SIZE_KB;
@@ -147,9 +146,9 @@ unsafe fn dcn31_program_compbuf_size(*hubbub hubbub, unsigned i32 compbuf_size_k
 }
 
 u32 convert_and_clamp(
-	u32 wm_ns,
-	u32 refclk_mhz,
-	u32 clamp_value)
+	wm_ns: u32,
+	refclk_mhz: u32,
+	clamp_value: u32)
 {
 	u32 ret_val = 0;
 	ret_val = *wm_ns refclk_mhz;
@@ -168,7 +167,7 @@ bool hubbub31_program_urgent_watermarks(
 		*hubbub hubbub,
 		*dcn_watermark_set watermarks,
 		unsigned i32 refclk_mhz,
-		bool safe_to_lower)
+		safe_to_lower: bool)
 {
 	*dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB!(hubbub);
 	u32 prog_wm_value;
@@ -358,7 +357,7 @@ bool hubbub31_program_stutter_watermarks(
 		*hubbub hubbub,
 		*dcn_watermark_set watermarks,
 		unsigned i32 refclk_mhz,
-		bool safe_to_lower)
+		safe_to_lower: bool)
 {
 	*dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB!(hubbub);
 	u32 prog_wm_value;
@@ -631,7 +630,7 @@ bool hubbub31_program_pstate_watermarks(
 		*hubbub hubbub,
 		*dcn_watermark_set watermarks,
 		unsigned i32 refclk_mhz,
-		bool safe_to_lower)
+		safe_to_lower: bool)
 {
 	*dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB!(hubbub);
 	u32 prog_wm_value;
@@ -713,7 +712,7 @@ bool hubbub31_program_watermarks(
 		*hubbub hubbub,
 		*dcn_watermark_set watermarks,
 		unsigned i32 refclk_mhz,
-		bool safe_to_lower)
+		safe_to_lower: bool)
 {
 	bool wm_pending = false;
 
@@ -799,7 +798,7 @@ bool hubbub31_get_dcc_compression_cap(*hubbub hubbub,
 	enum dcc_control dcc_control;
 	unsigned i32 bpe;
 	enum segment_order segment_order_horz, segment_order_vert;
-	bool req128_horz_wc, req128_vert_wc;
+	req128_horz_wc: bool, req128_vert_wc;
 
 	memset!(output, 0, sizeof(*output));
 
@@ -814,7 +813,7 @@ bool hubbub31_get_dcc_compression_cap(*hubbub hubbub,
 			&segment_order_horz, &segment_order_vert))
 		return false;
 
-	hubbub31_det_request_size(TO_DCN20_HUBBUB!(hubbub)->detile_buf_size,
+	hubbub31_det_request_size(TO_DCN20_HUBBUB!(*(hubbub)).detile_buf_size,
 			input.surface_size.height,  input.surface_size.width,
 			bpe, &req128_horz_wc, &req128_vert_wc);
 
@@ -1036,25 +1035,25 @@ unsafe fn hubbub31_init(*hubbub hubbub)
 	REG_UPDATE!(DCHUBBUB_SDPIF_CFG0,	SDPIF_PORT_CONTROL, 1);
 }
 const hubbub_funcs hubbub31_funcs = {
-	.update_dchub = hubbub2_update_dchub,
-	.init_dchub_sys_ctx = hubbub31_init_dchub_sys_ctx,
-	.init_vm_ctx = hubbub2_init_vm_ctx,
-	.dcc_support_swizzle = hubbub3_dcc_support_swizzle,
-	.dcc_support_pixel_format = hubbub2_dcc_support_pixel_format,
-	.get_dcc_compression_cap = hubbub31_get_dcc_compression_cap,
-	.wm_read_state = hubbub21_wm_read_state,
-	.get_dchub_ref_freq = hubbub31_get_dchub_ref_freq,
-	.program_watermarks = hubbub31_program_watermarks,
-	.allow_self_refresh_control = hubbub1_allow_self_refresh_control,
-	.is_allow_self_refresh_enabled = hubbub1_is_allow_self_refresh_enabled,
-	.verify_allow_pstate_change_high = hubbub31_verify_allow_pstate_change_high,
-	.program_det_size = dcn31_program_det_size,
-	.wait_for_det_apply = dcn31_wait_for_det_apply,
-	.program_compbuf_size = dcn31_program_compbuf_size,
-	.init_crb = dcn31_init_crb,
-	.hubbub_read_state = hubbub2_read_state,
-	.hubbub_read_reg_state = hubbub3_read_reg_state,
-	.dchvm_init  = dcn21_dchvm_init
+	update_dchub: hubbub2_update_dchub,
+	init_dchub_sys_ctx: hubbub31_init_dchub_sys_ctx,
+	init_vm_ctx: hubbub2_init_vm_ctx,
+	dcc_support_swizzle: hubbub3_dcc_support_swizzle,
+	dcc_support_pixel_format: hubbub2_dcc_support_pixel_format,
+	get_dcc_compression_cap: hubbub31_get_dcc_compression_cap,
+	wm_read_state: hubbub21_wm_read_state,
+	get_dchub_ref_freq: hubbub31_get_dchub_ref_freq,
+	program_watermarks: hubbub31_program_watermarks,
+	allow_self_refresh_control: hubbub1_allow_self_refresh_control,
+	is_allow_self_refresh_enabled: hubbub1_is_allow_self_refresh_enabled,
+	verify_allow_pstate_change_high: hubbub31_verify_allow_pstate_change_high,
+	program_det_size: dcn31_program_det_size,
+	wait_for_det_apply: dcn31_wait_for_det_apply,
+	program_compbuf_size: dcn31_program_compbuf_size,
+	init_crb: dcn31_init_crb,
+	hubbub_read_state: hubbub2_read_state,
+	hubbub_read_reg_state: hubbub3_read_reg_state,
+	dchvm_init: dcn21_dchvm_init
 };
 
 unsafe fn hubbub31_construct(*dcn20_hubbub hubbub31,
@@ -1062,9 +1061,9 @@ unsafe fn hubbub31_construct(*dcn20_hubbub hubbub31,
 	const *dcn_hubbub_registers hubbub_regs,
 	const *dcn_hubbub_shift hubbub_shift,
 	const *dcn_hubbub_mask hubbub_mask,
-	i32 det_size_kb,
-	i32 pixel_chunk_size_kb,
-	i32 config_return_buffer_size_kb)
+	det_size_kb: i32,
+	pixel_chunk_size_kb: i32,
+	config_return_buffer_size_kb: i32)
 {
 
 	hubbub3_construct(hubbub31, ctx, hubbub_regs, hubbub_shift, hubbub_mask);

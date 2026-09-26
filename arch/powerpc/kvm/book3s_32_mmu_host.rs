@@ -20,7 +20,7 @@ pub unsafe fn kvmppc_mmu_invalidate_pte(vcpu: *mut kvm_vcpu, pte: *mut hpte_cach
     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);
 }
 
-static unsafe fn kvmppc_sid_hash(vcpu: *mut kvm_vcpu, gvsid: u64) -> u16 {
+unsafe fn kvmppc_sid_hash(vcpu: *mut kvm_vcpu, gvsid: u64) -> u16 {
     (((gvsid >> (SID_MAP_BITS * 7)) & SID_MAP_MASK as u64)
         ^ ((gvsid >> (SID_MAP_BITS * 6)) & SID_MAP_MASK as u64)
         ^ ((gvsid >> (SID_MAP_BITS * 5)) & SID_MAP_MASK as u64)

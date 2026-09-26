@@ -120,7 +120,7 @@ pub unsafe fn acpi_ex_create_region(
 ) -> acpi_status {
     let mut status: acpi_status;
     let obj_desc: *mut acpi_operand_object;
-    let node: *mut acpi_namespace_node = (*walk_state).op->common.node;
+    let node: *mut acpi_namespace_node = (*(*walk_state).op).common.node;
     let region_obj2: *mut acpi_operand_object;
 
     if !acpi_ns_get_attached_object(node).is_null() {
@@ -147,7 +147,7 @@ pub unsafe fn acpi_ex_create_region(
         (*region_obj2).extra.aml_length = aml_length;
         (*region_obj2).extra.method_REG = core::ptr::null_mut();
         (*region_obj2).extra.scope_node = if !(*walk_state).scope_info.is_null() {
-            (*walk_state).scope_info->scope.node
+            (*(*walk_state).scope_info).scope.node
         } else {
             node
         };

@@ -9,7 +9,7 @@ pub struct NodeAccessNodes {
     pub dev: Device,
     pub list_node: ListHead,
     pub access: u32,
-    #[cfg(feature = "CONFIG_HMEM_REPORTING")]
+    #[cfg(CONFIG_HMEM_REPORTING)]
     pub coord: AccessCoordinate,
 }
 
@@ -98,22 +98,22 @@ extern "C" {
     fn panic(fmt: *const i8, ...);
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 static mut node_chain: BlockingNotifierHead = BlockingNotifierHead::new();
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[no_mangle]
 pub unsafe extern "C" fn register_node_notifier_export(nb: *mut NotifierBlock) -> i32 {
     blocking_notifier_chain_register(&mut node_chain, nb)
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[no_mangle]
 pub unsafe extern "C" fn unregister_node_notifier_export(nb: *mut NotifierBlock) {
     blocking_notifier_chain_unregister(&mut node_chain, nb);
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[no_mangle]
 pub unsafe extern "C" fn node_notify(val: u64, v: *mut core::ffi::c_void) -> i32 {
     blocking_notifier_call_chain(&mut node_chain, val, v)
@@ -157,7 +157,7 @@ unsafe fn node_init_node_access(node: *mut Node, access: AccessCoordinateClass) 
     access_node
 }
 
-#[cfg(feature = "CONFIG_HMEM_REPORTING")]
+#[cfg(CONFIG_HMEM_REPORTING)]
 #[no_mangle]
 pub unsafe extern "C" fn node_set_perf_attrs(nid: u32, coord: *mut AccessCoordinate, access: AccessCoordinateClass) {
     if !node_online(nid) { return; }
@@ -167,7 +167,7 @@ pub unsafe extern "C" fn node_set_perf_attrs(nid: u32, coord: *mut AccessCoordin
     if access == AccessCoordinateClass::Cpu && mempolicy_set_node_perf(nid, coord) != 0 { }
 }
 
-#[cfg(feature = "CONFIG_HMEM_REPORTING")]
+#[cfg(CONFIG_HMEM_REPORTING)]
 #[no_mangle]
 pub unsafe extern "C" fn node_update_perf_attrs(nid: u32, coord: *mut AccessCoordinate, access: AccessCoordinateClass) {
     if !node_online(nid) { return; }
@@ -184,17 +184,17 @@ pub unsafe extern "C" fn node_update_perf_attrs(nid: u32, coord: *mut AccessCoor
 unsafe extern "C" fn node_cache_release(dev: *mut Device) { kfree(dev as *mut core::ffi::c_void); }
 unsafe extern "C" fn node_cacheinfo_release(dev: *mut Device) { kfree(dev as *mut core::ffi::c_void); }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn node_init_caches(nid: u32) { INIT_LIST_HEAD(&mut (*node_devices[nid as usize]).cache_attrs); }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 unsafe fn node_init_caches(_nid: u32) {}
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe fn node_remove_caches(node: *mut Node) {
     if (*node).cache_dev.is_null() { return; }
     device_unregister((*node).cache_dev);
 }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 unsafe fn node_remove_caches(_node: *mut Node) {}
 
 unsafe extern "C" fn node_device_release(dev: *mut Device) { kfree(dev as *mut core::ffi::c_void); }

@@ -35,7 +35,13 @@ static pty_table: [ctl_table; 3] = [
 #[repr(C)]
 pub struct pts_mount_opts { pub setuid: i32, pub setgid: i32, pub uid: kuid_t, pub gid: kgid_t, pub mode: umode_t, pub ptmxmode: umode_t, pub reserve: i32, pub max: i32 }
 
-enum { Opt_uid, Opt_gid, Opt_mode, Opt_ptmxmode, Opt_newinstance, Opt_max, Opt_err }
+pub const Opt_uid: i32 = 0;
+pub const Opt_gid: i32 = Opt_uid + 1;
+pub const Opt_mode: i32 = Opt_gid + 1;
+pub const Opt_ptmxmode: i32 = Opt_mode + 1;
+pub const Opt_newinstance: i32 = Opt_ptmxmode + 1;
+pub const Opt_max: i32 = Opt_newinstance + 1;
+pub const Opt_err: i32 = Opt_max + 1;
 
 static devpts_param_specs: [fs_parameter_spec; 7] = [
     fsparam_gid!("gid", Opt_gid), fsparam_s32!("max", Opt_max), fsparam_u32oct!("mode", Opt_mode),

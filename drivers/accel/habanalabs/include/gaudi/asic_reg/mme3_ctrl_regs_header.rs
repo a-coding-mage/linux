@@ -5,21 +5,11 @@
  *
  */
 
-/* Auto-generated register definitions translated from the C header. */
-
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
+/***********************************
  ** This is an auto-generated file **
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#ifndef ASIC_REG_MME3_CTRL_REGS_H_
 
 /*
  *****************************************
@@ -1460,6 +1450,5 @@ pub const mmMME3_CTRL_SHADOW_3_DESC_META_DATA_AGU_O_REMOTE: u32 = 0x1E0D9C;
 pub const mmMME3_CTRL_SHADOW_3_DESC_PCU_RL_SATURATION: u32 = 0x1E0DA0;
 
 pub const mmMME3_CTRL_SHADOW_3_DESC_DUMMY: u32 = 0x1E0DA4;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -61,14 +61,14 @@ unsafe fn crc32c_arch(mut crc: u32, mut p: *const u8, len: usize) -> u32 {
         return crc;
     }
 
-    for num_longs = len / core::mem::size_of::<usize>(); num_longs != 0;
-        num_longs -= 1
-    {
+    num_longs = len / core::mem::size_of::<usize>();
+    while num_longs != 0 {
         #[cfg(target_arch = "x86_64")]
         core::arch::asm!("crc32 {value}, {crc}", value = in(reg) *(p as *const usize), crc = inout(reg) crc);
         #[cfg(not(target_arch = "x86_64"))]
         core::arch::asm!("crc32l {value}, {crc}", value = in(reg) *(p as *const u32), crc = inout(reg) crc);
         p = p.add(core::mem::size_of::<usize>());
+        num_longs -= 1;
     }
     if core::mem::size_of::<usize>() > 4 && (len & 4) != 0 {
         core::arch::asm!("crc32l {value}, {crc}", value = in(reg) *(p as *const u32), crc = inout(reg) crc);

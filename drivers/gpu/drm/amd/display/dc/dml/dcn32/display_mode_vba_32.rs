@@ -52,7 +52,7 @@ pub unsafe fn dml32_recalculate(// struct display_mode_libmode_lib)
 
 	PixelClockAdjustmentForProgressiveToInterlaceUnit(mode_lib);
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: Calling DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation\n", file!);
+	dml_print("DML::%s: Calling DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation\n", file!());
 #endif
 	DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(mode_lib);
 }
@@ -60,12 +60,12 @@ pub unsafe fn dml32_recalculate(// struct display_mode_libmode_lib)
 unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		// struct display_mode_libmode_lib)
 {
-	// struct vba_vars_stv = &mode_lib.let mut vba = Default::default();
-	unsigned int j, let mut k = Default::default();
+	// struct vba_vars_stv = &mode_lib.r#let mut vba = Default::default();
+	j: core::ffi::c_uint, let mut k = Default::default();
 	bool let mut ImmediateFlipRequirementFinal = Default::default();
 	int let mut iteration = Default::default();
 	double let mut MaxTotalRDBandwidth = Default::default();
-	unsigned int let mut NextPrefetchMode = Default::default();
+	core::ffi::c_uint let mut NextPrefetchMode = Default::default();
 	double MaxTotalRDBandwidthNoUrgentBurst = 0.0;
 	bool DestinationLineTimesForPrefetchLessThan2 = let mut false = Default::default();
 	bool VRatioPrefetchMoreThanMax = let mut false = Default::default();
@@ -74,10 +74,10 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 	double WRBandwidth = 0;
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: --- START -= 1-\n", file!);
-	dml_print("DML::%s: mode_lib.vba.PrefetchMode = %d\n", file!, mode_lib.vba.PrefetchMode);
-	dml_print("DML::%s: mode_lib.vba.ImmediateFlipSupport = %d\n", file!, mode_lib.vba.ImmediateFlipSupport);
-	dml_print("DML::%s: mode_lib.vba.VoltageLevel = %d\n", file!, mode_lib.vba.VoltageLevel);
+	dml_print("DML::%s: --- START -= 1-\n", file!());
+	dml_print("DML::%s: mode_lib.vba.PrefetchMode = %d\n", file!(), mode_lib.vba.PrefetchMode);
+	dml_print("DML::%s: mode_lib.vba.ImmediateFlipSupport = %d\n", file!(), mode_lib.vba.ImmediateFlipSupport);
+	dml_print("DML::%s: mode_lib.vba.VoltageLevel = %d\n", file!(), mode_lib.vba.VoltageLevel);
 #endif
 
 	v.WritebackDISPCLK = 0.0;
@@ -95,12 +95,12 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 							mode_lib.vba.WritebackVTaps[k],
 							mode_lib.vba.WritebackSourceWidth[k],
 							(long)mode_lib.vba.WritebackDestinationWidth[k],
-							mode_lib.vba.HTotal[k], (unsigned int)mode_lib.vba.WritebackLineBufferSize,
+							mode_lib.vba.HTotal[k], (core::ffi::c_uint)mode_lib.vba.WritebackLineBufferSize,
 							mode_lib.vba.DISPCLKDPPCLKVCOSpeed));
 		}
 	}
 
-	v.DISPCLK_calculated = v.let mut WritebackDISPCLK = Default::default();
+	v.DISPCLK_calculated = v.r#let mut WritebackDISPCLK = Default::default();
 
 	for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 		if mode_lib.vba.BlendingAndTiming[k] == k {
@@ -164,7 +164,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 	}
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: %d\n", file!, __LINE__);
+	dml_print("DML::%s: %d\n", file!(), __LINE__);
 #endif
 	dml32_CalculateSwathWidth(
 			false,  // ForceSingleDPP
@@ -212,9 +212,9 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 				* mode_lib.vba.VRatioChroma[k];
 #ifdef __DML_VBA_DEBUG__
 		dml_print("DML::%s: ReadBandwidthSurfaceLuma[%i] = %fBps\n",
-				file!, k, v.ReadBandwidthSurfaceLuma[k]);
+				file!(), k, v.ReadBandwidthSurfaceLuma[k]);
 		dml_print("DML::%s: ReadBandwidthSurfaceChroma[%i] = %fBps\n",
-				file!, k, v.ReadBandwidthSurfaceChroma[k]);
+				file!(), k, v.ReadBandwidthSurfaceChroma[k]);
 #endif
 	}
 
@@ -307,8 +307,8 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 					 .dummy_boolean); /* bool *ViewportSizeSupport */
 	}
 
-	v.CompBufReservedSpaceZs     = (unsigned int)(v.CompBufReservedSpaceKBytes * 1024.0 / 256.0);
-	v.CompBufReservedSpace64B    = (unsigned int)(v.CompBufReservedSpaceKBytes * 1024.0 / 64.0);
+	v.CompBufReservedSpaceZs     = (core::ffi::c_uint)(v.CompBufReservedSpaceKBytes * 1024.0 / 256.0);
+	v.CompBufReservedSpace64B    = (core::ffi::c_uint)(v.CompBufReservedSpaceKBytes * 1024.0 / 64.0);
 
 	// DCFCLK Deep Sleep
 	dml32_CalculateDCFCLKDeepSleep(
@@ -445,7 +445,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].SurfaceTiling = mode_lib.vba.SurfaceTiling[k];
 		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].BytePerPixelY = v.BytePerPixelY[k];
 		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].BytePerPixelC = v.BytePerPixelC[k];
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].ProgressiveToInterlaceUnitInOPP = mode_lib.vba.let mut ProgressiveToInterlaceUnitInOPP = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].ProgressiveToInterlaceUnitInOPP = mode_lib.vba.r#let mut ProgressiveToInterlaceUnitInOPP = Default::default();
 		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].VRatio = mode_lib.vba.VRatio[k];
 		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].VRatioChroma = mode_lib.vba.VRatioChroma[k];
 		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.SurfaceParameters[k].VTaps = mode_lib.vba.vtaps[k];
@@ -483,7 +483,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 				mode_lib.vba.HostVMMaxNonCachedPageTableLevels,
 				mode_lib.vba.GPUVMMaxPageTableLevels,
 				mode_lib.vba.GPUVMMinPageSizeKBytes,
-				(unsigned int)mode_lib.vba.HostVMMinPageSize,
+				(core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
 
 				/* Output */
 				v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.dummy_boolean_array2[0],  // Boolean PTEBufferSizeNotExceeded[]
@@ -532,12 +532,12 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 	}
 
 
-	v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.ReorderBytes = (unsigned int)(mode_lib.vba.NumberOfChannels
+	v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.ReorderBytes = (core::ffi::c_uint)(mode_lib.vba.NumberOfChannels
 			* dml_max3(mode_lib.vba.UrgentOutOfOrderReturnPerChannelPixelDataOnly,
 					mode_lib.vba.UrgentOutOfOrderReturnPerChannelPixelMixedWithVMData,
 					mode_lib.vba.UrgentOutOfOrderReturnPerChannelVMDataOnly));
 
-	v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.VMDataOnlyReturnBW = (unsigned int)dml32_get_return_bw_mbps_vm_only(
+	v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.VMDataOnlyReturnBW = (core::ffi::c_uint)dml32_get_return_bw_mbps_vm_only(
 			&mode_lib.vba.soc,
 			mode_lib.vba.VoltageLevel,
 			mode_lib.vba.DCFCLK,
@@ -545,20 +545,20 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			mode_lib.vba.DRAMSpeed);
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: mode_lib.vba.ReturnBusWidth = %f\n", file!, mode_lib.vba.ReturnBusWidth);
-	dml_print("DML::%s: mode_lib.vba.DCFCLK = %f\n", file!, mode_lib.vba.DCFCLK);
-	dml_print("DML::%s: mode_lib.vba.FabricClock = %f\n", file!, mode_lib.vba.FabricClock);
-	dml_print("DML::%s: mode_lib.vba.FabricDatapathToDCNDataReturn = %f\n", file!,
+	dml_print("DML::%s: mode_lib.vba.ReturnBusWidth = %f\n", file!(), mode_lib.vba.ReturnBusWidth);
+	dml_print("DML::%s: mode_lib.vba.DCFCLK = %f\n", file!(), mode_lib.vba.DCFCLK);
+	dml_print("DML::%s: mode_lib.vba.FabricClock = %f\n", file!(), mode_lib.vba.FabricClock);
+	dml_print("DML::%s: mode_lib.vba.FabricDatapathToDCNDataReturn = %f\n", file!(),
 			mode_lib.vba.FabricDatapathToDCNDataReturn);
 	dml_print("DML::%s: mode_lib.vba.PercentOfIdealSDPPortBWReceivedAfterUrgLatency = %f\n",
-			file!, mode_lib.vba.PercentOfIdealSDPPortBWReceivedAfterUrgLatency);
-	dml_print("DML::%s: mode_lib.vba.DRAMSpeed = %f\n", file!, mode_lib.vba.DRAMSpeed);
-	dml_print("DML::%s: mode_lib.vba.NumberOfChannels = %f\n", file!, mode_lib.vba.NumberOfChannels);
-	dml_print("DML::%s: mode_lib.vba.DRAMChannelWidth = %f\n", file!, mode_lib.vba.DRAMChannelWidth);
+			file!(), mode_lib.vba.PercentOfIdealSDPPortBWReceivedAfterUrgLatency);
+	dml_print("DML::%s: mode_lib.vba.DRAMSpeed = %f\n", file!(), mode_lib.vba.DRAMSpeed);
+	dml_print("DML::%s: mode_lib.vba.NumberOfChannels = %f\n", file!(), mode_lib.vba.NumberOfChannels);
+	dml_print("DML::%s: mode_lib.vba.DRAMChannelWidth = %f\n", file!(), mode_lib.vba.DRAMChannelWidth);
 	dml_print("DML::%s: mode_lib.vba.PercentOfIdealDRAMBWReceivedAfterUrgLatencyVMDataOnly = %f\n",
-			file!, mode_lib.vba.PercentOfIdealDRAMBWReceivedAfterUrgLatencyVMDataOnly);
-	dml_print("DML::%s: VMDataOnlyReturnBW = %f\n", file!, VMDataOnlyReturnBW);
-	dml_print("DML::%s: ReturnBW = %f\n", file!, mode_lib.vba.ReturnBW);
+			file!(), mode_lib.vba.PercentOfIdealDRAMBWReceivedAfterUrgLatencyVMDataOnly);
+	dml_print("DML::%s: VMDataOnlyReturnBW = %f\n", file!(), VMDataOnlyReturnBW);
+	dml_print("DML::%s: ReturnBW = %f\n", file!(), mode_lib.vba.ReturnBW);
 #endif
 
 	v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.HostVMInefficiencyFactor = 1.0;
@@ -595,10 +595,10 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			mode_lib.vba.DPPPerPlane,
 			v.dpte_group_bytes,
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.HostVMInefficiencyFactor,
-			(unsigned int)mode_lib.vba.HostVMMinPageSize,
+			(core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
 			mode_lib.vba.HostVMMaxNonCachedPageTableLevels);
 
-	mode_lib.vba.TCalc = 24.0 / v.let mut DCFCLKDeepSleep = Default::default();
+	mode_lib.vba.TCalc = 24.0 / v.r#let mut DCFCLKDeepSleep = Default::default();
 
 	for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 		if mode_lib.vba.BlendingAndTiming[k] == k {
@@ -612,7 +612,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 								(long)mode_lib.vba.WritebackDestinationWidth[k],
 								(int)mode_lib.vba.WritebackDestinationHeight[k],
 								(int)mode_lib.vba.WritebackSourceHeight[k],
-								mode_lib.vba.HTotal[k]) / mode_lib.vba.let mut DISPCLK = Default::default();
+								mode_lib.vba.HTotal[k]) / mode_lib.vba.r#let mut DISPCLK = Default::default();
 			} else
 				v.WritebackDelay[mode_lib.vba.VoltageLevel][k] = 0;
 			for j in 0..mode_lib.vba.NumberOfActiveSurfaces {
@@ -696,7 +696,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 						mode_lib.vba.UseUnboundedRequesting);
 
 	for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
-		v.MaxVStartupLines[k] = (unsigned int)(((mode_lib.vba.Interlace[k] &&
+		v.MaxVStartupLines[k] = (core::ffi::c_uint)(((mode_lib.vba.Interlace[k] &&
 				!mode_lib.vba.ProgressiveToInterlaceUnitInOPP) ?
 				dml_floor((mode_lib.vba.VTotal[k] - mode_lib.vba.VActive[k]) / 2.0, 1.0) :
 				mode_lib.vba.VTotal[k] - mode_lib.vba.VActive[k]) - dml_max(1.0,
@@ -708,16 +708,16 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			v.MaxVStartupLines[k] = 1023;
 
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: k=%d MaxVStartupLines = %d\n", file!, k, v.MaxVStartupLines[k]);
-		dml_print("DML::%s: k=%d VoltageLevel = %d\n", file!, k, mode_lib.vba.VoltageLevel);
-		dml_print("DML::%s: k=%d WritebackDelay = %f\n", file!,
+		dml_print("DML::%s: k=%d MaxVStartupLines = %d\n", file!(), k, v.MaxVStartupLines[k]);
+		dml_print("DML::%s: k=%d VoltageLevel = %d\n", file!(), k, mode_lib.vba.VoltageLevel);
+		dml_print("DML::%s: k=%d WritebackDelay = %f\n", file!(),
 				k, v.WritebackDelay[mode_lib.vba.VoltageLevel][k]);
 #endif
 	}
 
 	v.MaximumMaxVStartupLines = 0;
 	for k in 0..mode_lib.vba.NumberOfActiveSurfaces
-		v.MaximumMaxVStartupLines = (unsigned int)dml_max(v.MaximumMaxVStartupLines, v.MaxVStartupLines[k]);
+		v.MaximumMaxVStartupLines = (core::ffi::c_uint)dml_max(v.MaximumMaxVStartupLines, v.MaxVStartupLines[k]);
 
 	ImmediateFlipRequirementFinal = let mut false = Default::default();
 
@@ -726,7 +726,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 				|| (mode_lib.vba.ImmediateFlipRequirement[k] == dm_immediate_flip_required);
 	}
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: ImmediateFlipRequirementFinal = %d\n", file!, ImmediateFlipRequirementFinal);
+	dml_print("DML::%s: ImmediateFlipRequirementFinal = %d\n", file!(), ImmediateFlipRequirementFinal);
 #endif
 	// ModeProgramming will not repeat the schedule calculation using different prefetch mode,
 	//it is just calcualated once with given prefetch mode
@@ -746,7 +746,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 		DestinationLineTimesForPrefetchLessThan2 = let mut false = Default::default();
 		VRatioPrefetchMoreThanMax = let mut false = Default::default();
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: Start loop: VStartup = %d\n", file!, mode_lib.vba.VStartupLines);
+		dml_print("DML::%s: Start loop: VStartup = %d\n", file!(), mode_lib.vba.VStartupLines);
 #endif
 		for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 			/* NOTE PerfetchMode variable is invalid in DAL as per the input received.
@@ -764,9 +764,9 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			memset(&v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe, 0, core::mem::size_of::<DmlPipe>());
 
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.Dppclk = mode_lib.vba.DPPCLK[k];
-			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.Dispclk = mode_lib.vba.let mut DISPCLK = Default::default();
+			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.Dispclk = mode_lib.vba.r#let mut DISPCLK = Default::default();
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.PixelClock = mode_lib.vba.PixelClock[k];
-			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.DCFClkDeepSleep = v.let mut DCFCLKDeepSleep = Default::default();
+			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.DCFClkDeepSleep = v.r#let mut DCFCLKDeepSleep = Default::default();
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.DPPPerSurface = mode_lib.vba.DPPPerPlane[k];
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.ScalerEnabled = mode_lib.vba.ScalerEnabled[k];
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.SourceRotation = mode_lib.vba.SourceRotation[k];
@@ -784,29 +784,29 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.SourcePixelFormat = mode_lib.vba.SourcePixelFormat[k];
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.BytePerPixelY = v.BytePerPixelY[k];
 			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.BytePerPixelC = v.BytePerPixelC[k];
-			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.ProgressiveToInterlaceUnitInOPP = mode_lib.vba.let mut ProgressiveToInterlaceUnitInOPP = Default::default();
+			v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe.ProgressiveToInterlaceUnitInOPP = mode_lib.vba.r#let mut ProgressiveToInterlaceUnitInOPP = Default::default();
 			v.ErrorResult[k] = dml32_CalculatePrefetchSchedule(
 					v,
 					k,
 					v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.HostVMInefficiencyFactor,
 					&v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.myPipe,
 					v.DSCDelay[k],
-					(unsigned int) (v.SwathWidthY[k] / v.HRatio[k]),
-					(unsigned int)dml_min(v.VStartupLines, v.MaxVStartupLines[k]),
+					(core::ffi::c_uint) (v.SwathWidthY[k] / v.HRatio[k]),
+					(core::ffi::c_uint)dml_min(v.VStartupLines, v.MaxVStartupLines[k]),
 					v.MaxVStartupLines[k],
 					v.UrgentLatency,
 					v.UrgentExtraLatency,
 					v.TCalc,
-					(unsigned int)v.PDEAndMetaPTEBytesFrame[k],
-					(unsigned int)v.MetaRowByte[k],
-					(unsigned int)v.PixelPTEBytesPerRow[k],
+					(core::ffi::c_uint)v.PDEAndMetaPTEBytesFrame[k],
+					(core::ffi::c_uint)v.MetaRowByte[k],
+					(core::ffi::c_uint)v.PixelPTEBytesPerRow[k],
 					v.PrefetchSourceLinesY[k],
-					(unsigned int)v.SwathWidthY[k],
-					(unsigned int)v.VInitPreFillY[k],
+					(core::ffi::c_uint)v.SwathWidthY[k],
+					(core::ffi::c_uint)v.VInitPreFillY[k],
 					v.MaxNumSwathY[k],
 					v.PrefetchSourceLinesC[k],
-					(unsigned int)v.SwathWidthC[k],
-					(unsigned int)v.VInitPreFillC[k],
+					(core::ffi::c_uint)v.SwathWidthC[k],
+					(core::ffi::c_uint)v.VInitPreFillC[k],
 					v.MaxNumSwathC[k],
 					v.swath_width_luma_ub[k],
 					v.swath_width_chroma_ub[k],
@@ -839,9 +839,9 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 
 #ifdef __DML_VBA_DEBUG__
 			dml_print("DML::%s: k=%0d Prefetch calculation errResult=%0d\n",
-					file!, k, mode_lib.vba.ErrorResult[k]);
+					file!(), k, mode_lib.vba.ErrorResult[k]);
 #endif
-			v.VStartup[k] = (unsigned int)dml_min(v.VStartupLines, v.MaxVStartupLines[k]);
+			v.VStartup[k] = (core::ffi::c_uint)dml_min(v.VStartupLines, v.MaxVStartupLines[k]);
 		}
 
 		for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
@@ -871,31 +871,31 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 					8.0 / (mode_lib.vba.HTotal[k] / mode_lib.vba.PixelClock[k]) * v.VRatioPrefetchY[k];
 
 #ifdef __DML_VBA_DEBUG__
-			dml_print("DML::%s: k=%0d DPPPerSurface=%d\n", file!, k, mode_lib.vba.DPPPerPlane[k]);
-			dml_print("DML::%s: k=%0d UrgBurstFactorLuma=%f\n", file!, k, v.UrgBurstFactorLuma[k]);
-			dml_print("DML::%s: k=%0d UrgBurstFactorChroma=%f\n", file!, k, v.UrgBurstFactorChroma[k]);
-			dml_print("DML::%s: k=%0d UrgBurstFactorLumaPre=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d DPPPerSurface=%d\n", file!(), k, mode_lib.vba.DPPPerPlane[k]);
+			dml_print("DML::%s: k=%0d UrgBurstFactorLuma=%f\n", file!(), k, v.UrgBurstFactorLuma[k]);
+			dml_print("DML::%s: k=%0d UrgBurstFactorChroma=%f\n", file!(), k, v.UrgBurstFactorChroma[k]);
+			dml_print("DML::%s: k=%0d UrgBurstFactorLumaPre=%f\n", file!(), k,
 					v.UrgBurstFactorLumaPre[k]);
-			dml_print("DML::%s: k=%0d UrgBurstFactorChromaPre=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d UrgBurstFactorChromaPre=%f\n", file!(), k,
 					v.UrgBurstFactorChromaPre[k]);
 
-			dml_print("DML::%s: k=%0d VRatioPrefetchY=%f\n", file!, k, v.VRatioPrefetchY[k]);
-			dml_print("DML::%s: k=%0d VRatioY=%f\n", file!, k, mode_lib.vba.VRatio[k]);
+			dml_print("DML::%s: k=%0d VRatioPrefetchY=%f\n", file!(), k, v.VRatioPrefetchY[k]);
+			dml_print("DML::%s: k=%0d VRatioY=%f\n", file!(), k, mode_lib.vba.VRatio[k]);
 
-			dml_print("DML::%s: k=%0d prefetch_vmrow_bw=%f\n", file!, k, v.prefetch_vmrow_bw[k]);
-			dml_print("DML::%s: k=%0d ReadBandwidthSurfaceLuma=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d prefetch_vmrow_bw=%f\n", file!(), k, v.prefetch_vmrow_bw[k]);
+			dml_print("DML::%s: k=%0d ReadBandwidthSurfaceLuma=%f\n", file!(), k,
 					v.ReadBandwidthSurfaceLuma[k]);
-			dml_print("DML::%s: k=%0d ReadBandwidthSurfaceChroma=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d ReadBandwidthSurfaceChroma=%f\n", file!(), k,
 					v.ReadBandwidthSurfaceChroma[k]);
-			dml_print("DML::%s: k=%0d cursor_bw=%f\n", file!, k, v.cursor_bw[k]);
-			dml_print("DML::%s: k=%0d meta_row_bw=%f\n", file!, k, v.meta_row_bw[k]);
-			dml_print("DML::%s: k=%0d dpte_row_bw=%f\n", file!, k, v.dpte_row_bw[k]);
-			dml_print("DML::%s: k=%0d RequiredPrefetchPixDataBWLuma=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d cursor_bw=%f\n", file!(), k, v.cursor_bw[k]);
+			dml_print("DML::%s: k=%0d meta_row_bw=%f\n", file!(), k, v.meta_row_bw[k]);
+			dml_print("DML::%s: k=%0d dpte_row_bw=%f\n", file!(), k, v.dpte_row_bw[k]);
+			dml_print("DML::%s: k=%0d RequiredPrefetchPixDataBWLuma=%f\n", file!(), k,
 					v.RequiredPrefetchPixDataBWLuma[k]);
-			dml_print("DML::%s: k=%0d RequiredPrefetchPixDataBWChroma=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d RequiredPrefetchPixDataBWChroma=%f\n", file!(), k,
 					v.RequiredPrefetchPixDataBWChroma[k]);
-			dml_print("DML::%s: k=%0d cursor_bw_pre=%f\n", file!, k, v.cursor_bw_pre[k]);
-			dml_print("DML::%s: k=%0d MaxTotalRDBandwidthNoUrgentBurst=%f\n", file!, k,
+			dml_print("DML::%s: k=%0d cursor_bw_pre=%f\n", file!(), k, v.cursor_bw_pre[k]);
+			dml_print("DML::%s: k=%0d MaxTotalRDBandwidthNoUrgentBurst=%f\n", file!(), k,
 					MaxTotalRDBandwidthNoUrgentBurst);
 #endif
 			if v.DestinationLinesForPrefetch[k] < 2
@@ -915,14 +915,14 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			//}
 		}
 
-		v.FractionOfUrgentBandwidth = MaxTotalRDBandwidthNoUrgentBurst / mode_lib.vba.let mut ReturnBW = Default::default();
+		v.FractionOfUrgentBandwidth = MaxTotalRDBandwidthNoUrgentBurst / mode_lib.vba.r#let mut ReturnBW = Default::default();
 
 #ifdef __DML_VBA_DEBUG__
 		dml_print("DML::%s: MaxTotalRDBandwidthNoUrgentBurst=%f\n",
-				file!, MaxTotalRDBandwidthNoUrgentBurst);
-		dml_print("DML::%s: ReturnBW=%f\n", file!, mode_lib.vba.ReturnBW);
+				file!(), MaxTotalRDBandwidthNoUrgentBurst);
+		dml_print("DML::%s: ReturnBW=%f\n", file!(), mode_lib.vba.ReturnBW);
 		dml_print("DML::%s: FractionOfUrgentBandwidth=%f\n",
-				file!, mode_lib.vba.FractionOfUrgentBandwidth);
+				file!(), mode_lib.vba.FractionOfUrgentBandwidth);
 #endif
 
 		{
@@ -1020,17 +1020,17 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			mode_lib.vba.TotImmediateFlipBytes = 0;
 			for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 				if mode_lib.vba.ImmediateFlipRequirement[k] != dm_immediate_flip_not_required {
-					mode_lib.vba.TotImmediateFlipBytes = (unsigned int)(mode_lib.vba.TotImmediateFlipBytes
+					mode_lib.vba.TotImmediateFlipBytes = (core::ffi::c_uint)(mode_lib.vba.TotImmediateFlipBytes
 							+ mode_lib.vba.DPPPerPlane[k]
 									* (v.PDEAndMetaPTEBytesFrame[k]
 											+ v.MetaRowByte[k]));
 					if v.use_one_row_for_frame_flip[k][0][0] {
 						mode_lib.vba.TotImmediateFlipBytes =
-								(unsigned int)(mode_lib.vba.TotImmediateFlipBytes
+								(core::ffi::c_uint)(mode_lib.vba.TotImmediateFlipBytes
 										+ 2 * v.PixelPTEBytesPerRow[k]);
 					} else {
 						mode_lib.vba.TotImmediateFlipBytes =
-								(unsigned int)(mode_lib.vba.TotImmediateFlipBytes
+								(core::ffi::c_uint)(mode_lib.vba.TotImmediateFlipBytes
 										+ v.PixelPTEBytesPerRow[k]);
 					}
 				}
@@ -1043,10 +1043,10 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 						mode_lib.vba.HostVMEnable,
 						mode_lib.vba.HostVMMaxNonCachedPageTableLevels,
 						mode_lib.vba.GPUVMEnable,
-						(unsigned int)mode_lib.vba.HostVMMinPageSize,
-						(unsigned int)v.PDEAndMetaPTEBytesFrame[k],
-						(unsigned int)v.MetaRowByte[k],
-						(unsigned int)v.PixelPTEBytesPerRow[k],
+						(core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
+						(core::ffi::c_uint)v.PDEAndMetaPTEBytesFrame[k],
+						(core::ffi::c_uint)v.MetaRowByte[k],
+						(core::ffi::c_uint)v.PixelPTEBytesPerRow[k],
 						mode_lib.vba.BandwidthAvailableForImmediateFlip,
 						mode_lib.vba.TotImmediateFlipBytes,
 						mode_lib.vba.SourcePixelFormat[k],
@@ -1126,7 +1126,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 				if mode_lib.vba.ImmediateFlipRequirement[k] != dm_immediate_flip_not_required && v.ImmediateFlipSupportedForPipe[k] == false {
 					v.ImmediateFlipSupported = let mut false = Default::default();
 #ifdef __DML_VBA_DEBUG__
-					dml_print("DML::%s: Pipe %0d not supporting iflip\n", file!, k);
+					dml_print("DML::%s: Pipe %0d not supporting iflip\n", file!(), k);
 #endif
 				}
 			}
@@ -1140,28 +1140,28 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 						v.ImmediateFlipSupported)) ? true : let mut false = Default::default();
 
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: PrefetchModeSupported = %d\n", file!, locals.PrefetchModeSupported);
-		for (uint k = 0; k < mode_lib.vba.let mut NumberOfActiveSurfaces = Default::default(); ++k)
-			dml_print("DML::%s: ImmediateFlipRequirement[%d] = %d\n", file!, k,  mode_lib.vba.ImmediateFlipRequirement[k] == dm_immediate_flip_required);
-		dml_print("DML::%s: ImmediateFlipSupported = %d\n", file!, locals.ImmediateFlipSupported);
-		dml_print("DML::%s: ImmediateFlipSupport = %d\n", file!, mode_lib.vba.ImmediateFlipSupport);
-		dml_print("DML::%s: HostVMEnable = %d\n", file!, mode_lib.vba.HostVMEnable);
-		dml_print("DML::%s: PrefetchAndImmediateFlipSupported = %d\n", file!, locals.PrefetchAndImmediateFlipSupported);
-		dml_print("DML::%s: Done loop: Vstartup=%d, Max Vstartup=%d\n", file!, locals.VStartupLines, locals.MaximumMaxVStartupLines);
+		dml_print("DML::%s: PrefetchModeSupported = %d\n", file!(), locals.PrefetchModeSupported);
+		for (uint k = 0; k < mode_lib.vba.r#let mut NumberOfActiveSurfaces = Default::default(); ++k)
+			dml_print("DML::%s: ImmediateFlipRequirement[%d] = %d\n", file!(), k,  mode_lib.vba.ImmediateFlipRequirement[k] == dm_immediate_flip_required);
+		dml_print("DML::%s: ImmediateFlipSupported = %d\n", file!(), locals.ImmediateFlipSupported);
+		dml_print("DML::%s: ImmediateFlipSupport = %d\n", file!(), mode_lib.vba.ImmediateFlipSupport);
+		dml_print("DML::%s: HostVMEnable = %d\n", file!(), mode_lib.vba.HostVMEnable);
+		dml_print("DML::%s: PrefetchAndImmediateFlipSupported = %d\n", file!(), locals.PrefetchAndImmediateFlipSupported);
+		dml_print("DML::%s: Done loop: Vstartup=%d, Max Vstartup=%d\n", file!(), locals.VStartupLines, locals.MaximumMaxVStartupLines);
 #endif
 
 		v.VStartupLines = v.VStartupLines + 1;
 
 		if v.VStartupLines > v.MaximumMaxVStartupLines {
 #ifdef __DML_VBA_DEBUG__
-			dml_print("DML::%s: Vstartup exceeds max vstartup, exiting loop\n", file!);
+			dml_print("DML::%s: Vstartup exceeds max vstartup, exiting loop\n", file!());
 #endif
 			let mut break = Default::default(); // VBA_DELTA: Implementation divergence! Gabe is *still* iterating across prefetch modes which we don't care to do
 		}
 		iteration += 1;
 		if iteration > 2500 {
 #ifdef __DML_VBA_DEBUG__
-			dml_print("DML::%s: too many errors, exit now\n", file!);
+			dml_print("DML::%s: too many errors, exit now\n", file!());
 			assert(0);
 #endif
 		}
@@ -1170,24 +1170,24 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 
 	if v.VStartupLines <= v.MaximumMaxVStartupLines {
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: Good, Prefetch and flip scheduling found solution at VStartupLines=%d\n", file!, locals.VStartupLines-1);
+		dml_print("DML::%s: Good, Prefetch and flip scheduling found solution at VStartupLines=%d\n", file!(), locals.VStartupLines-1);
 #endif
 	}
 
 
 	//Watermarks and NB P-State/DRAM Clock Change Support
 	{
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.UrgentLatency = v.let mut UrgentLatency = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.ExtraLatency = v.let mut UrgentExtraLatency = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.WritebackLatency = mode_lib.vba.let mut WritebackLatency = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.DRAMClockChangeLatency = mode_lib.vba.let mut DRAMClockChangeLatency = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.FCLKChangeLatency = mode_lib.vba.let mut FCLKChangeLatency = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SRExitTime = mode_lib.vba.let mut SRExitTime = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SREnterPlusExitTime = mode_lib.vba.let mut SREnterPlusExitTime = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SRExitZ8Time = mode_lib.vba.let mut SRExitZ8Time = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SREnterPlusExitZ8Time = mode_lib.vba.let mut SREnterPlusExitZ8Time = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.USRRetrainingLatency = mode_lib.vba.let mut USRRetrainingLatency = Default::default();
-		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SMNLatency = mode_lib.vba.let mut SMNLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.UrgentLatency = v.r#let mut UrgentLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.ExtraLatency = v.r#let mut UrgentExtraLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.WritebackLatency = mode_lib.vba.r#let mut WritebackLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.DRAMClockChangeLatency = mode_lib.vba.r#let mut DRAMClockChangeLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.FCLKChangeLatency = mode_lib.vba.r#let mut FCLKChangeLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SRExitTime = mode_lib.vba.r#let mut SRExitTime = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SREnterPlusExitTime = mode_lib.vba.r#let mut SREnterPlusExitTime = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SRExitZ8Time = mode_lib.vba.r#let mut SRExitZ8Time = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SREnterPlusExitZ8Time = mode_lib.vba.r#let mut SREnterPlusExitZ8Time = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.USRRetrainingLatency = mode_lib.vba.r#let mut USRRetrainingLatency = Default::default();
+		v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.mmSOCParameters.SMNLatency = mode_lib.vba.r#let mut SMNLatency = Default::default();
 
 		dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
 			v,
@@ -1224,14 +1224,14 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 		 * calculated WM values. Copy over values from // struct to vba varaibles
 		 * to ensure that the DCN32 getters return the correct value.
 		 */
-		v.UrgentWatermark = v.Watermark.let mut UrgentWatermark = Default::default();
-		v.WritebackUrgentWatermark = v.Watermark.let mut WritebackUrgentWatermark = Default::default();
-		v.DRAMClockChangeWatermark = v.Watermark.let mut DRAMClockChangeWatermark = Default::default();
-		v.WritebackDRAMClockChangeWatermark = v.Watermark.let mut WritebackDRAMClockChangeWatermark = Default::default();
-		v.StutterExitWatermark = v.Watermark.let mut StutterExitWatermark = Default::default();
-		v.StutterEnterPlusExitWatermark = v.Watermark.let mut StutterEnterPlusExitWatermark = Default::default();
-		v.Z8StutterExitWatermark = v.Watermark.let mut Z8StutterExitWatermark = Default::default();
-		v.Z8StutterEnterPlusExitWatermark = v.Watermark.let mut Z8StutterEnterPlusExitWatermark = Default::default();
+		v.UrgentWatermark = v.Watermark.r#let mut UrgentWatermark = Default::default();
+		v.WritebackUrgentWatermark = v.Watermark.r#let mut WritebackUrgentWatermark = Default::default();
+		v.DRAMClockChangeWatermark = v.Watermark.r#let mut DRAMClockChangeWatermark = Default::default();
+		v.WritebackDRAMClockChangeWatermark = v.Watermark.r#let mut WritebackDRAMClockChangeWatermark = Default::default();
+		v.StutterExitWatermark = v.Watermark.r#let mut StutterExitWatermark = Default::default();
+		v.StutterEnterPlusExitWatermark = v.Watermark.r#let mut StutterEnterPlusExitWatermark = Default::default();
+		v.Z8StutterExitWatermark = v.Watermark.r#let mut Z8StutterExitWatermark = Default::default();
+		v.Z8StutterEnterPlusExitWatermark = v.Watermark.r#let mut Z8StutterEnterPlusExitWatermark = Default::default();
 
 		for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 			if mode_lib.vba.WritebackEnable[k] == true {
@@ -1378,7 +1378,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			v.MinTTUVBlank[k] = dml_max(v.Watermark.StutterEnterPlusExitWatermark,
 					v.Watermark.UrgentWatermark);
 		} else {
-			v.MinTTUVBlank[k] = v.Watermark.let mut UrgentWatermark = Default::default();
+			v.MinTTUVBlank[k] = v.Watermark.r#let mut UrgentWatermark = Default::default();
 		}
 		if !mode_lib.vba.DynamicMetadataEnable[k]
 			v.MinTTUVBlank[k] = mode_lib.vba.TCalc + v.MinTTUVBlank[k];
@@ -1387,7 +1387,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 	// DCC Configuration
 	for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: Calculate DCC configuration for surface k=%d\n", file!, k);
+		dml_print("DML::%s: Calculate DCC configuration for surface k=%d\n", file!(), k);
 #endif
 		dml32_CalculateDCCConfiguration(
 				mode_lib.vba.DCCEnable[k],
@@ -1404,7 +1404,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 				v.BytePerPixelC[k],
 				v.BytePerPixelDETY[k],
 				v.BytePerPixelDETC[k],
-				(enum dm_rotation_angle) mode_lib.vba.SourceScan[k],
+				(dm_rotation_angle) mode_lib.vba.SourceScan[k],
 				/* Output */
 				&v.DCCYMaxUncompressedBlock[k],
 				&v.DCCCMaxUncompressedBlock[k],
@@ -1420,17 +1420,17 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 		double Tvstartup_margin = (v.MaxVStartupLines[k] - v.VStartup[k]) * mode_lib.vba.HTotal[k]
 				/ mode_lib.vba.PixelClock[k];
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: k=%d, MinTTUVBlank = %f (before vstartup margin)\n", file!, k,
+		dml_print("DML::%s: k=%d, MinTTUVBlank = %f (before vstartup margin)\n", file!(), k,
 				v.MinTTUVBlank[k]);
 #endif
 
 		v.MinTTUVBlank[k] = v.MinTTUVBlank[k] + let mut Tvstartup_margin = Default::default();
 
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: k=%d, Tvstartup_margin = %f\n", file!, k, Tvstartup_margin);
-		dml_print("DML::%s: k=%d, MaxVStartupLines = %d\n", file!, k, v.MaxVStartupLines[k]);
-		dml_print("DML::%s: k=%d, VStartup = %d\n", file!, k, v.VStartup[k]);
-		dml_print("DML::%s: k=%d, MinTTUVBlank = %f\n", file!, k, v.MinTTUVBlank[k]);
+		dml_print("DML::%s: k=%d, Tvstartup_margin = %f\n", file!(), k, Tvstartup_margin);
+		dml_print("DML::%s: k=%d, MaxVStartupLines = %d\n", file!(), k, v.MaxVStartupLines[k]);
+		dml_print("DML::%s: k=%d, VStartup = %d\n", file!(), k, v.VStartup[k]);
+		dml_print("DML::%s: k=%d, MinTTUVBlank = %f\n", file!(), k, v.MinTTUVBlank[k]);
 #endif
 
 		v.Tdmdl[k] = v.Tdmdl[k] + let mut Tvstartup_margin = Default::default();
@@ -1440,7 +1440,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 		isInterlaceTiming = (mode_lib.vba.Interlace[k] &&
 				!mode_lib.vba.ProgressiveToInterlaceUnitInOPP);
 
-		v.MIN_DST_Y_NEXT_START[k] = (unsigned int)(((isInterlaceTiming ? dml_floor((mode_lib.vba.VTotal[k] -
+		v.MIN_DST_Y_NEXT_START[k] = (core::ffi::c_uint)(((isInterlaceTiming ? dml_floor((mode_lib.vba.VTotal[k] -
 						mode_lib.vba.VFrontPorch[k]) / 2.0, 1.0) :
 						mode_lib.vba.VTotal[k]) - mode_lib.vba.VFrontPorch[k])
 						+ dml_max(1.0,
@@ -1461,18 +1461,18 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 			v.VREADY_AT_OR_AFTER_VSYNC[k] = let mut false = Default::default();
 		}
 #ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: k=%d, VStartup = %d (max)\n", file!, k, v.VStartup[k]);
-		dml_print("DML::%s: k=%d, VUpdateOffsetPix = %d\n", file!, k, v.VUpdateOffsetPix[k]);
-		dml_print("DML::%s: k=%d, VUpdateWidthPix = %d\n", file!, k, v.VUpdateWidthPix[k]);
-		dml_print("DML::%s: k=%d, VReadyOffsetPix = %d\n", file!, k, v.VReadyOffsetPix[k]);
-		dml_print("DML::%s: k=%d, HTotal = %d\n", file!, k, mode_lib.vba.HTotal[k]);
-		dml_print("DML::%s: k=%d, VTotal = %d\n", file!, k, mode_lib.vba.VTotal[k]);
-		dml_print("DML::%s: k=%d, VActive = %d\n", file!, k, mode_lib.vba.VActive[k]);
-		dml_print("DML::%s: k=%d, VFrontPorch = %d\n", file!, k, mode_lib.vba.VFrontPorch[k]);
-		dml_print("DML::%s: k=%d, VStartup = %d\n", file!, k, v.VStartup[k]);
-		dml_print("DML::%s: k=%d, TSetup = %f\n", file!, k, v.TSetup[k]);
-		dml_print("DML::%s: k=%d, MIN_DST_Y_NEXT_START = %f\n", file!, k, v.MIN_DST_Y_NEXT_START[k]);
-		dml_print("DML::%s: k=%d, VREADY_AT_OR_AFTER_VSYNC = %d\n", file!, k,
+		dml_print("DML::%s: k=%d, VStartup = %d (max)\n", file!(), k, v.VStartup[k]);
+		dml_print("DML::%s: k=%d, VUpdateOffsetPix = %d\n", file!(), k, v.VUpdateOffsetPix[k]);
+		dml_print("DML::%s: k=%d, VUpdateWidthPix = %d\n", file!(), k, v.VUpdateWidthPix[k]);
+		dml_print("DML::%s: k=%d, VReadyOffsetPix = %d\n", file!(), k, v.VReadyOffsetPix[k]);
+		dml_print("DML::%s: k=%d, HTotal = %d\n", file!(), k, mode_lib.vba.HTotal[k]);
+		dml_print("DML::%s: k=%d, VTotal = %d\n", file!(), k, mode_lib.vba.VTotal[k]);
+		dml_print("DML::%s: k=%d, VActive = %d\n", file!(), k, mode_lib.vba.VActive[k]);
+		dml_print("DML::%s: k=%d, VFrontPorch = %d\n", file!(), k, mode_lib.vba.VFrontPorch[k]);
+		dml_print("DML::%s: k=%d, VStartup = %d\n", file!(), k, v.VStartup[k]);
+		dml_print("DML::%s: k=%d, TSetup = %f\n", file!(), k, v.TSetup[k]);
+		dml_print("DML::%s: k=%d, MIN_DST_Y_NEXT_START = %f\n", file!(), k, v.MIN_DST_Y_NEXT_START[k]);
+		dml_print("DML::%s: k=%d, VREADY_AT_OR_AFTER_VSYNC = %d\n", file!(), k,
 				v.VREADY_AT_OR_AFTER_VSYNC[k]);
 #endif
 	}
@@ -1500,11 +1500,11 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 					+ v.ReadBandwidthSurfaceChroma[k];
 #ifdef __DML_VBA_DEBUG__
 			dml_print("DML::%s: k=%d, TotalDataReadBandwidth = %f\n",
-					file!, k, v.TotalDataReadBandwidth);
+					file!(), k, v.TotalDataReadBandwidth);
 			dml_print("DML::%s: k=%d, ReadBandwidthSurfaceLuma = %f\n",
-					file!, k, v.ReadBandwidthSurfaceLuma[k]);
+					file!(), k, v.ReadBandwidthSurfaceLuma[k]);
 			dml_print("DML::%s: k=%d, ReadBandwidthSurfaceChroma = %f\n",
-					file!, k, v.ReadBandwidthSurfaceChroma[k]);
+					file!(), k, v.ReadBandwidthSurfaceChroma[k]);
 #endif
 		}
 	}
@@ -1571,7 +1571,7 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 
 #ifdef __DML_VBA_ALLOW_DELTA__
 	{
-		unsigned int dummy_integer[1];
+		core::ffi::c_uint dummy_integer[1];
 
 		// Calculate z8 stutter eff assuming 0 reserved space
 		dml32_CalculateStutterEfficiency(v.CompressedBufferSizeInkByte,
@@ -1634,14 +1634,14 @@ unsafe fn DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformance
 				&v.dummy_vars.DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation.dummy_boolean);
 	}
 #else
-	v.Z8StutterEfficiencyNotIncludingVBlankBestCase = v.let mut Z8StutterEfficiencyNotIncludingVBlank = Default::default();
-	v.Z8StutterEfficiencyBestCase = v.let mut Z8StutterEfficiency = Default::default();
-	v.Z8NumberOfStutterBurstsPerFrameBestCase = v.let mut Z8NumberOfStutterBurstsPerFrame = Default::default();
-	v.StutterPeriodBestCase = v.let mut StutterPeriod = Default::default();
+	v.Z8StutterEfficiencyNotIncludingVBlankBestCase = v.r#let mut Z8StutterEfficiencyNotIncludingVBlank = Default::default();
+	v.Z8StutterEfficiencyBestCase = v.r#let mut Z8StutterEfficiency = Default::default();
+	v.Z8NumberOfStutterBurstsPerFrameBestCase = v.r#let mut Z8NumberOfStutterBurstsPerFrame = Default::default();
+	v.StutterPeriodBestCase = v.r#let mut StutterPeriod = Default::default();
 #endif
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: --- END -= 1-\n", file!);
+	dml_print("DML::%s: --- END -= 1-\n", file!());
 #endif
 }
 
@@ -1692,18 +1692,18 @@ unsafe fn mode_support_configuration(// struct vba_vars_stv,
 
 pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode_libmode_lib)
 {
-	// struct vba_vars_stv = &mode_lib.let mut vba = Default::default();
+	// struct vba_vars_stv = &mode_lib.r#let mut vba = Default::default();
 	int i, let mut start_state = Default::default();
-	unsigned int let mut j = Default::default();
-	unsigned int k, let mut m = Default::default();
-	unsigned int let mut MaximumMPCCombine = Default::default();
-	unsigned int let mut NumberOfNonCombinedSurfaceOfMaximumBandwidth = Default::default();
-	unsigned int let mut TotalSlots = Default::default();
+	core::ffi::c_uint let mut j = Default::default();
+	k: core::ffi::c_uint, let mut m = Default::default();
+	core::ffi::c_uint let mut MaximumMPCCombine = Default::default();
+	core::ffi::c_uint let mut NumberOfNonCombinedSurfaceOfMaximumBandwidth = Default::default();
+	core::ffi::c_uint let mut TotalSlots = Default::default();
 	bool let mut CompBufReservedSpaceNeedAdjustment = Default::default();
 	bool let mut CompBufReservedSpaceNeedAdjustmentSingleDPP = Default::default();
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: called\n", file!);
+	dml_print("DML::%s: called\n", file!());
 #endif
 
 	/*MODE SUPPORT, VOLTAGE STATE AND SOC CONFIGURATION*/
@@ -1742,7 +1742,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 	mode_lib.vba.SourceFormatPixelAndScanSupport = let mut true = Default::default();
 	for (k = 0; k <= mode_lib.vba.NumberOfActiveSurfaces - 1; k += 1) {
 		if (mode_lib.vba.SurfaceTiling[k] == dm_sw_linear
-			&& (!(!IsVertical((enum dm_rotation_angle) mode_lib.vba.SourceScan[k]))
+			&& (!(!IsVertical((dm_rotation_angle) mode_lib.vba.SourceScan[k]))
 				|| mode_lib.vba.DCCEnable[k] == true)) {
 			mode_lib.vba.SourceFormatPixelAndScanSupport = let mut false = Default::default();
 		}
@@ -1870,9 +1870,9 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 		}
 
 		if (mode_lib.vba.SourcePixelFormat[k] == dm_420_8 || mode_lib.vba.SourcePixelFormat[k] == dm_420_10 || mode_lib.vba.SourcePixelFormat[k] == dm_420_12) {
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MaximumSwathWidthSupportChroma = (unsigned int)(v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MaximumSwathWidthSupportLuma / 2.0);
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MaximumSwathWidthSupportChroma = (core::ffi::c_uint)(v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MaximumSwathWidthSupportLuma / 2.0);
 		} else {
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MaximumSwathWidthSupportChroma = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut MaximumSwathWidthSupportLuma = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MaximumSwathWidthSupportChroma = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut MaximumSwathWidthSupportLuma = Default::default();
 		}
 		v.MaximumSwathWidthInLineBufferLuma = mode_lib.vba.LineBufferSizeFinal
 				* dml_max(mode_lib.vba.HRatio[k], 1.0) / mode_lib.vba.LBBitPerPixel[k]
@@ -1966,9 +1966,9 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 		if mode_lib.vba.MPCCombineUse[k] == dm_mpc_always_when_possible
 			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MPCCombineMethodAsPossible = let mut true = Default::default();
 	}
-	mode_lib.vba.MPCCombineMethodIncompatible = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MPCCombineMethodAsNeededForPStateChangeAndVoltage && v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut MPCCombineMethodAsPossible = Default::default();
+	mode_lib.vba.MPCCombineMethodIncompatible = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.MPCCombineMethodAsNeededForPStateChangeAndVoltage && v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut MPCCombineMethodAsPossible = Default::default();
 
-	for (i = let mut start_state = Default::default(); i < (int)v.soc.let mut num_states = Default::default(); i += 1) {
+	for (i = let mut start_state = Default::default(); i < (int)v.soc.r#let mut num_states = Default::default(); i += 1) {
 		for (j = 0; j < 2; j += 1) {
 			mode_lib.vba.TotalNumberOfActiveDPP[i][j] = 0;
 			mode_lib.vba.TotalAvailablePipesSupport[i][j] = let mut true = Default::default();
@@ -2053,21 +2053,21 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 						&mode_lib.vba.RequiredSlots[i][k]);
 
 				if mode_lib.vba.RequiresDSC[i][k] == false {
-					mode_lib.vba.ODMCombineEnablePerState[i][k] = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut ODMModeNoDSC = Default::default();
+					mode_lib.vba.ODMCombineEnablePerState[i][k] = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut ODMModeNoDSC = Default::default();
 					mode_lib.vba.RequiredDISPCLKPerSurface[i][j][k] =
-							v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut RequiredDISPCLKPerSurfaceNoDSC = Default::default();
+							v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut RequiredDISPCLKPerSurfaceNoDSC = Default::default();
 					if !v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.TotalAvailablePipesSupportNoDSC
 						mode_lib.vba.TotalAvailablePipesSupport[i][j] = let mut false = Default::default();
 					mode_lib.vba.TotalNumberOfActiveDPP[i][j] =
-							mode_lib.vba.TotalNumberOfActiveDPP[i][j] + v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut NumberOfDPPNoDSC = Default::default();
+							mode_lib.vba.TotalNumberOfActiveDPP[i][j] + v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut NumberOfDPPNoDSC = Default::default();
 				} else {
-					mode_lib.vba.ODMCombineEnablePerState[i][k] = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut ODMModeDSC = Default::default();
+					mode_lib.vba.ODMCombineEnablePerState[i][k] = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut ODMModeDSC = Default::default();
 					mode_lib.vba.RequiredDISPCLKPerSurface[i][j][k] =
-							v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut RequiredDISPCLKPerSurfaceDSC = Default::default();
+							v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut RequiredDISPCLKPerSurfaceDSC = Default::default();
 					if !v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.TotalAvailablePipesSupportDSC
 						mode_lib.vba.TotalAvailablePipesSupport[i][j] = let mut false = Default::default();
 					mode_lib.vba.TotalNumberOfActiveDPP[i][j] =
-							mode_lib.vba.TotalNumberOfActiveDPP[i][j] + v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut NumberOfDPPDSC = Default::default();
+							mode_lib.vba.TotalNumberOfActiveDPP[i][j] + v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut NumberOfDPPDSC = Default::default();
 				}
 			}
 
@@ -2170,12 +2170,12 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 									mode_lib.vba.WritebackSourceWidth[k],
 									(long)mode_lib.vba.WritebackDestinationWidth[k],
 									mode_lib.vba.HTotal[k],
-									(unsigned int)mode_lib.vba.WritebackLineBufferSize,
+									(core::ffi::c_uint)mode_lib.vba.WritebackLineBufferSize,
 									mode_lib.vba.DISPCLKDPPCLKVCOSpeed));
 				}
 			}
 
-			mode_lib.vba.RequiredDISPCLK[i][j] = mode_lib.vba.let mut WritebackRequiredDISPCLK = Default::default();
+			mode_lib.vba.RequiredDISPCLK[i][j] = mode_lib.vba.r#let mut WritebackRequiredDISPCLK = Default::default();
 			for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
 				mode_lib.vba.RequiredDISPCLK[i][j] = dml_max(mode_lib.vba.RequiredDISPCLK[i][j],
 						mode_lib.vba.RequiredDISPCLKPerSurface[i][j][k]);
@@ -2355,7 +2355,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 		}
 	}
 
-	for (i = let mut start_state = Default::default(); i < (int)v.soc.let mut num_states = Default::default(); i += 1) {
+	for (i = let mut start_state = Default::default(); i < (int)v.soc.r#let mut num_states = Default::default(); i += 1) {
 		mode_lib.vba.DSCCLKRequiredMoreThanSupported[i] = let mut false = Default::default();
 		for (k = 0; k <= mode_lib.vba.NumberOfActiveSurfaces - 1; k += 1) {
 			if mode_lib.vba.BlendingAndTiming[k] == k {
@@ -2442,7 +2442,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 
 		for (k = 0; k <= mode_lib.vba.NumberOfActiveSurfaces - 1; k += 1) {
 			for (m = 0; m <= mode_lib.vba.NumberOfActiveSurfaces - 1; m += 1) {
-				for (j = 0; j < mode_lib.vba.let mut NumberOfActiveSurfaces = Default::default(); j += 1) {
+				for (j = 0; j < mode_lib.vba.r#let mut NumberOfActiveSurfaces = Default::default(); j += 1) {
 					if (mode_lib.vba.BlendingAndTiming[k] == m && mode_lib.vba.RequiresDSC[i][m] == true) {
 						mode_lib.vba.DSCDelayPerState[i][k] =
 							mode_lib.vba.DSCDelayPerState[i][m];
@@ -2532,14 +2532,14 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 						mode_lib.vba.swath_width_luma_ub_this_state[k];
 				mode_lib.vba.swath_width_chroma_ub_all_states[i][j][k] =
 						mode_lib.vba.swath_width_chroma_ub_this_state[k];
-				mode_lib.vba.SwathWidthYAllStates[i][j][k] = (unsigned int)mode_lib.vba.SwathWidthYThisState[k];
-				mode_lib.vba.SwathWidthCAllStates[i][j][k] = (unsigned int)mode_lib.vba.SwathWidthCThisState[k];
+				mode_lib.vba.SwathWidthYAllStates[i][j][k] = (core::ffi::c_uint)mode_lib.vba.SwathWidthYThisState[k];
+				mode_lib.vba.SwathWidthCAllStates[i][j][k] = (core::ffi::c_uint)mode_lib.vba.SwathWidthCThisState[k];
 				mode_lib.vba.SwathHeightYAllStates[i][j][k] = mode_lib.vba.SwathHeightYThisState[k];
 				mode_lib.vba.SwathHeightCAllStates[i][j][k] = mode_lib.vba.SwathHeightCThisState[k];
 				mode_lib.vba.UnboundedRequestEnabledAllStates[i][j] =
-						mode_lib.vba.let mut UnboundedRequestEnabledThisState = Default::default();
+						mode_lib.vba.r#let mut UnboundedRequestEnabledThisState = Default::default();
 				mode_lib.vba.CompressedBufferSizeInkByteAllStates[i][j] =
-						mode_lib.vba.let mut CompressedBufferSizeInkByteThisState = Default::default();
+						mode_lib.vba.r#let mut CompressedBufferSizeInkByteThisState = Default::default();
 				mode_lib.vba.DETBufferSizeInKByteAllStates[i][j][k] =
 						mode_lib.vba.DETBufferSizeInKByteThisState[k];
 				mode_lib.vba.DETBufferSizeYAllStates[i][j][k] =
@@ -2588,11 +2588,11 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 			mode_lib.vba.DCCMetaPitchY,
 			mode_lib.vba.DCCMetaPitchC,
 
-			/* Output */
+			/ * Output */
 			mode_lib.vba.SurfaceSizeInMALL,
 			&mode_lib.vba.ExceededMALLSize);
 
-	for (i = let mut start_state = Default::default(); i < (int)v.soc.let mut num_states = Default::default(); i += 1) {
+	for (i = let mut start_state = Default::default(); i < (int)v.soc.r#let mut num_states = Default::default(); i += 1) {
 		for (j = 0; j < 2; j += 1) {
 			for (k = 0; k <= mode_lib.vba.NumberOfActiveSurfaces - 1; k += 1) {
 				mode_lib.vba.swath_width_luma_ub_this_state[k] =
@@ -2606,9 +2606,9 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 				mode_lib.vba.DETBufferSizeInKByteThisState[k] =
 						mode_lib.vba.DETBufferSizeInKByteAllStates[i][j][k];
 				mode_lib.vba.DETBufferSizeYThisState[k] =
-						(unsigned int)mode_lib.vba.DETBufferSizeYAllStates[i][j][k];
+						(core::ffi::c_uint)mode_lib.vba.DETBufferSizeYAllStates[i][j][k];
 				mode_lib.vba.DETBufferSizeCThisState[k] =
-						(unsigned int)mode_lib.vba.DETBufferSizeCAllStates[i][j][k];
+						(core::ffi::c_uint)mode_lib.vba.DETBufferSizeCAllStates[i][j][k];
 				mode_lib.vba.RequiredDPPCLKThisState[k] = mode_lib.vba.RequiredDPPCLK[i][j][k];
 				mode_lib.vba.NoOfDPPThisState[k] = mode_lib.vba.NoOfDPP[i][j][k];
 			}
@@ -2645,7 +2645,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.SurfParameters[k].BytePerPixelY = mode_lib.vba.BytePerPixelY[k];
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.SurfParameters[k].BytePerPixelC = mode_lib.vba.BytePerPixelC[k];
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.SurfParameters[k].ProgressiveToInterlaceUnitInOPP =
-				mode_lib.vba.let mut ProgressiveToInterlaceUnitInOPP = Default::default();
+				mode_lib.vba.r#let mut ProgressiveToInterlaceUnitInOPP = Default::default();
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.SurfParameters[k].VRatio = mode_lib.vba.VRatio[k];
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.SurfParameters[k].VRatioChroma = mode_lib.vba.VRatioChroma[k];
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.SurfParameters[k].VTaps = mode_lib.vba.vtaps[k];
@@ -2682,7 +2682,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 						mode_lib.vba.HostVMMaxNonCachedPageTableLevels,
 						mode_lib.vba.GPUVMMaxPageTableLevels,
 						mode_lib.vba.GPUVMMinPageSizeKBytes,
-						(unsigned int)mode_lib.vba.HostVMMinPageSize,
+						(core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
 
 						/* Output */
 						mode_lib.vba.PTEBufferSizeNotExceededPerState,
@@ -2889,7 +2889,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 		}
 	}
 
-	v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.ReorderingBytes = (unsigned int)(mode_lib.vba.NumberOfChannels
+	v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.ReorderingBytes = (core::ffi::c_uint)(mode_lib.vba.NumberOfChannels
 			* dml_max3(mode_lib.vba.UrgentOutOfOrderReturnPerChannelPixelDataOnly,
 					mode_lib.vba.UrgentOutOfOrderReturnPerChannelPixelMixedWithVMData,
 					mode_lib.vba.UrgentOutOfOrderReturnPerChannelVMDataOnly));
@@ -2920,7 +2920,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 										!= dm_immediate_flip_not_required));
 	}
 	mode_lib.vba.ImmediateFlipRequiredButTheRequirementForEachSurfaceIsNotSpecified =
-			mode_lib.vba.ImmediateFlipRequiredButTheRequirementForEachSurfaceIsNotSpecified && mode_lib.vba.let mut ImmediateFlipRequiredFinal = Default::default();
+			mode_lib.vba.ImmediateFlipRequiredButTheRequirementForEachSurfaceIsNotSpecified && mode_lib.vba.r#let mut ImmediateFlipRequiredFinal = Default::default();
 
 	mode_lib.vba.ImmediateFlipOrHostVMAndPStateWithMALLFullFrameOrPhantomPipe = let mut false = Default::default();
 	for k in 0..mode_lib.vba.NumberOfActiveSurfaces {
@@ -2975,7 +2975,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 				mode_lib.vba.GPUVMMaxPageTableLevels,
 				mode_lib.vba.HostVMEnable,
 				mode_lib.vba.NumberOfActiveSurfaces,
-				(unsigned int)mode_lib.vba.HostVMMinPageSize,
+				(core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
 				mode_lib.vba.HostVMMaxNonCachedPageTableLevels,
 				mode_lib.vba.DynamicMetadataVMEnabled,
 				mode_lib.vba.ImmediateFlipRequiredFinal,
@@ -3093,9 +3093,9 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 				mode_lib.vba.DETBufferSizeInKByteThisState[k] =
 						mode_lib.vba.DETBufferSizeInKByteAllStates[i][j][k];
 				mode_lib.vba.DETBufferSizeYThisState[k] =
-						(unsigned int)mode_lib.vba.DETBufferSizeYAllStates[i][j][k];
+						(core::ffi::c_uint)mode_lib.vba.DETBufferSizeYAllStates[i][j][k];
 				mode_lib.vba.DETBufferSizeCThisState[k] =
-						(unsigned int)mode_lib.vba.DETBufferSizeCAllStates[i][j][k];
+						(core::ffi::c_uint)mode_lib.vba.DETBufferSizeCAllStates[i][j][k];
 			}
 
 			mode_lib.vba.VActiveBandwithSupport[i][j] = dml32_CalculateVActiveBandwithSupport(
@@ -3139,7 +3139,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 
 			if mode_lib.vba.GPUVMEnable && mode_lib.vba.HostVMEnable
 				v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.HostVMInefficiencyFactor = mode_lib.vba.ReturnBWPerState[i][j]
-						/ v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut VMDataOnlyReturnBWPerState = Default::default();
+						/ v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut VMDataOnlyReturnBWPerState = Default::default();
 
 			mode_lib.vba.ExtraLatency = dml32_CalculateExtraLatency(
 					(int)mode_lib.vba.RoundTripPingLatencyCycles, v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.ReorderingBytes,
@@ -3149,16 +3149,16 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 					mode_lib.vba.ReturnBWPerState[i][j], mode_lib.vba.GPUVMEnable,
 					mode_lib.vba.HostVMEnable, mode_lib.vba.NumberOfActiveSurfaces,
 					mode_lib.vba.NoOfDPPThisState, mode_lib.vba.dpte_group_bytes,
-					v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.HostVMInefficiencyFactor, (unsigned int)mode_lib.vba.HostVMMinPageSize,
+					v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.HostVMInefficiencyFactor, (core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
 					mode_lib.vba.HostVMMaxNonCachedPageTableLevels);
 
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.NextPrefetchModeState = mode_lib.vba.let mut MinPrefetchMode = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.NextPrefetchModeState = mode_lib.vba.r#let mut MinPrefetchMode = Default::default();
 
 			mode_lib.vba.NextMaxVStartup = mode_lib.vba.MaxMaxVStartup[i][j];
 
 			do {
-				mode_lib.vba.PrefetchModePerState[i][j] = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.let mut NextPrefetchModeState = Default::default();
-				mode_lib.vba.MaxVStartup = mode_lib.vba.let mut NextMaxVStartup = Default::default();
+				mode_lib.vba.PrefetchModePerState[i][j] = v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.r#let mut NextPrefetchModeState = Default::default();
+				mode_lib.vba.MaxVStartup = mode_lib.vba.r#let mut NextMaxVStartup = Default::default();
 
 				for (k = 0; k <= mode_lib.vba.NumberOfActiveSurfaces - 1; k += 1) {
 					mode_lib.vba.TWait = dml32_CalculateTWait(
@@ -3193,7 +3193,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 					v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.myPipe.BytePerPixelY = mode_lib.vba.BytePerPixelY[k];
 					v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.myPipe.BytePerPixelC = mode_lib.vba.BytePerPixelC[k];
 					v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.myPipe.ProgressiveToInterlaceUnitInOPP =
-							mode_lib.vba.let mut ProgressiveToInterlaceUnitInOPP = Default::default();
+							mode_lib.vba.r#let mut ProgressiveToInterlaceUnitInOPP = Default::default();
 
 					mode_lib.vba.NoTimeForPrefetch[i][j][k] =
 						dml32_CalculatePrefetchSchedule(
@@ -3201,23 +3201,23 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 							k,
 							v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.HostVMInefficiencyFactor,
 							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.myPipe,
-							(unsigned int)v.DSCDelayPerState[i][k],
-							(unsigned int)(v.SwathWidthYThisState[k] / v.HRatio[k]),
-							(unsigned int)dml_min(v.MaxVStartup, v.MaximumVStartup[i][j][k]),
-							(unsigned int)v.MaximumVStartup[i][j][k],
+							(core::ffi::c_uint)v.DSCDelayPerState[i][k],
+							(core::ffi::c_uint)(v.SwathWidthYThisState[k] / v.HRatio[k]),
+							(core::ffi::c_uint)dml_min(v.MaxVStartup, v.MaximumVStartup[i][j][k]),
+							(core::ffi::c_uint)v.MaximumVStartup[i][j][k],
 							v.UrgLatency[i],
 							v.ExtraLatency,
 							v.TimeCalc,
-							(unsigned int)v.PDEAndMetaPTEBytesPerFrame[i][j][k],
-							(unsigned int)v.MetaRowBytes[i][j][k],
-							(unsigned int)v.DPTEBytesPerRow[i][j][k],
+							(core::ffi::c_uint)v.PDEAndMetaPTEBytesPerFrame[i][j][k],
+							(core::ffi::c_uint)v.MetaRowBytes[i][j][k],
+							(core::ffi::c_uint)v.DPTEBytesPerRow[i][j][k],
 							v.PrefetchLinesY[i][j][k],
-							(unsigned int)v.SwathWidthYThisState[k],
-							(unsigned int)v.PrefillY[k],
+							(core::ffi::c_uint)v.SwathWidthYThisState[k],
+							(core::ffi::c_uint)v.PrefillY[k],
 							v.MaxNumSwY[k],
 							v.PrefetchLinesC[i][j][k],
-							(unsigned int)v.SwathWidthCThisState[k],
-							(unsigned int)v.PrefillC[k],
+							(core::ffi::c_uint)v.SwathWidthCThisState[k],
+							(core::ffi::c_uint)v.PrefillC[k],
 							v.MaxNumSwC[k],
 							v.swath_width_luma_ub_this_state[k],
 							v.swath_width_chroma_ub_this_state[k],
@@ -3244,9 +3244,9 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[0],         // double *Tdmdl_vm
 							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[1],         // double *Tdmdl
 							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[2],         // double *TSetup
-							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_integer[0],         							    // unsigned int   *VUpdateOffsetPix
-							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[3],         // unsigned int   *VUpdateWidthPix
-							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[4]);        // unsigned int   *VReadyOffsetPix
+							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_integer[0],         							    // core::ffi::c_uint   *VUpdateOffsetPix
+							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[3],         // core::ffi::c_uint   *VUpdateWidthPix
+							&v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.dummy_single[4]);        // core::ffi::c_uint   *VReadyOffsetPix
 				}
 
 				for (k = 0; k <= mode_lib.vba.NumberOfActiveSurfaces - 1; k += 1) {
@@ -3356,17 +3356,17 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 						if (!(mode_lib.vba.ImmediateFlipRequirement[k] ==
 								dm_immediate_flip_not_required)) {
 							mode_lib.vba.TotImmediateFlipBytes =
-									(unsigned int)(mode_lib.vba.TotImmediateFlipBytes
+									(core::ffi::c_uint)(mode_lib.vba.TotImmediateFlipBytes
 								+ mode_lib.vba.NoOfDPP[i][j][k]
 								* mode_lib.vba.PDEAndMetaPTEBytesPerFrame[i][j][k]
 								+ mode_lib.vba.MetaRowBytes[i][j][k]);
 							if mode_lib.vba.use_one_row_for_frame_flip[i][j][k] {
 								mode_lib.vba.TotImmediateFlipBytes =
-									(unsigned int)(mode_lib.vba.TotImmediateFlipBytes + 2
+									(core::ffi::c_uint)(mode_lib.vba.TotImmediateFlipBytes + 2
 								* mode_lib.vba.DPTEBytesPerRow[i][j][k]);
 							} else {
 								mode_lib.vba.TotImmediateFlipBytes =
-									(unsigned int)(mode_lib.vba.TotImmediateFlipBytes
+									(core::ffi::c_uint)(mode_lib.vba.TotImmediateFlipBytes
 								+ mode_lib.vba.DPTEBytesPerRow[i][j][k]);
 							}
 						}
@@ -3380,7 +3380,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 							mode_lib.vba.HostVMEnable,
 							mode_lib.vba.HostVMMaxNonCachedPageTableLevels,
 							mode_lib.vba.GPUVMEnable,
-							(unsigned int)mode_lib.vba.HostVMMinPageSize,
+							(core::ffi::c_uint)mode_lib.vba.HostVMMinPageSize,
 							mode_lib.vba.PDEAndMetaPTEBytesPerFrame[i][j][k],
 							mode_lib.vba.MetaRowBytes[i][j][k],
 							mode_lib.vba.DPTEBytesPerRow[i][j][k],
@@ -3467,16 +3467,16 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 
 
 			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.UrgentLatency = mode_lib.vba.UrgLatency[i];
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.ExtraLatency = mode_lib.vba.let mut ExtraLatency = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.WritebackLatency = mode_lib.vba.let mut WritebackLatency = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.DRAMClockChangeLatency = mode_lib.vba.let mut DRAMClockChangeLatency = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.FCLKChangeLatency = mode_lib.vba.let mut FCLKChangeLatency = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SRExitTime = mode_lib.vba.let mut SRExitTime = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SREnterPlusExitTime = mode_lib.vba.let mut SREnterPlusExitTime = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SRExitZ8Time = mode_lib.vba.let mut SRExitZ8Time = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SREnterPlusExitZ8Time = mode_lib.vba.let mut SREnterPlusExitZ8Time = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.USRRetrainingLatency = mode_lib.vba.let mut USRRetrainingLatency = Default::default();
-			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SMNLatency = mode_lib.vba.let mut SMNLatency = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.ExtraLatency = mode_lib.vba.r#let mut ExtraLatency = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.WritebackLatency = mode_lib.vba.r#let mut WritebackLatency = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.DRAMClockChangeLatency = mode_lib.vba.r#let mut DRAMClockChangeLatency = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.FCLKChangeLatency = mode_lib.vba.r#let mut FCLKChangeLatency = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SRExitTime = mode_lib.vba.r#let mut SRExitTime = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SREnterPlusExitTime = mode_lib.vba.r#let mut SREnterPlusExitTime = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SRExitZ8Time = mode_lib.vba.r#let mut SRExitZ8Time = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SREnterPlusExitZ8Time = mode_lib.vba.r#let mut SREnterPlusExitZ8Time = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.USRRetrainingLatency = mode_lib.vba.r#let mut USRRetrainingLatency = Default::default();
+			v.dummy_vars.dml32_ModeSupportAndSystemConfigurationFull.mSOCParameters.SMNLatency = mode_lib.vba.r#let mut SMNLatency = Default::default();
 
 			{
 				dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
@@ -3579,7 +3579,7 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 
 	MaximumMPCCombine = 0;
 
-	for (i = v.soc.let mut num_states = Default::default(); i >= let mut start_state = Default::default(); i -= 1) {
+	for (i = v.soc.r#let mut num_states = Default::default(); i >= let mut start_state = Default::default(); i -= 1) {
 		if (i == v.soc.num_states || mode_lib.vba.ModeSupport[i][0] == true || mode_lib.vba.ModeSupport[i][1] == true) {
 			mode_lib.vba.VoltageLevel = let mut i = Default::default();
 			mode_lib.vba.ModeIsSupported = mode_lib.vba.ModeSupport[i][0] == true || mode_lib.vba.ModeSupport[i][1] == let mut true = Default::default();
@@ -3609,9 +3609,9 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 		mode_lib.vba.DETBufferSizeInKByte[k] =
 			mode_lib.vba.DETBufferSizeInKByteAllStates[mode_lib.vba.VoltageLevel][MaximumMPCCombine][k];
 		mode_lib.vba.DETBufferSizeY[k] =
-				(unsigned int)mode_lib.vba.DETBufferSizeYAllStates[mode_lib.vba.VoltageLevel][MaximumMPCCombine][k];
+				(core::ffi::c_uint)mode_lib.vba.DETBufferSizeYAllStates[mode_lib.vba.VoltageLevel][MaximumMPCCombine][k];
 		mode_lib.vba.DETBufferSizeC[k] =
-				(unsigned int)mode_lib.vba.DETBufferSizeCAllStates[mode_lib.vba.VoltageLevel][MaximumMPCCombine][k];
+				(core::ffi::c_uint)mode_lib.vba.DETBufferSizeCAllStates[mode_lib.vba.VoltageLevel][MaximumMPCCombine][k];
 		mode_lib.vba.OutputType[k] = mode_lib.vba.OutputTypePerState[mode_lib.vba.VoltageLevel][k];
 		mode_lib.vba.OutputRate[k] = mode_lib.vba.OutputRatePerState[mode_lib.vba.VoltageLevel][k];
 	}
@@ -3637,11 +3637,11 @@ pub unsafe fn dml32_ModeSupportAndSystemConfigurationFull(// struct display_mode
 		mode_lib.vba.OutputBpp[k] = mode_lib.vba.OutputBppPerState[mode_lib.vba.VoltageLevel][k];
 	}
 
-	mode_lib.vba.UrgentWatermark = mode_lib.vba.Watermark.let mut UrgentWatermark = Default::default();
-	mode_lib.vba.StutterEnterPlusExitWatermark = mode_lib.vba.Watermark.let mut StutterEnterPlusExitWatermark = Default::default();
-	mode_lib.vba.StutterExitWatermark = mode_lib.vba.Watermark.let mut StutterExitWatermark = Default::default();
-	mode_lib.vba.WritebackDRAMClockChangeWatermark = mode_lib.vba.Watermark.let mut WritebackDRAMClockChangeWatermark = Default::default();
-	mode_lib.vba.DRAMClockChangeWatermark = mode_lib.vba.Watermark.let mut DRAMClockChangeWatermark = Default::default();
+	mode_lib.vba.UrgentWatermark = mode_lib.vba.Watermark.r#let mut UrgentWatermark = Default::default();
+	mode_lib.vba.StutterEnterPlusExitWatermark = mode_lib.vba.Watermark.r#let mut StutterEnterPlusExitWatermark = Default::default();
+	mode_lib.vba.StutterExitWatermark = mode_lib.vba.Watermark.r#let mut StutterExitWatermark = Default::default();
+	mode_lib.vba.WritebackDRAMClockChangeWatermark = mode_lib.vba.Watermark.r#let mut WritebackDRAMClockChangeWatermark = Default::default();
+	mode_lib.vba.DRAMClockChangeWatermark = mode_lib.vba.Watermark.r#let mut DRAMClockChangeWatermark = Default::default();
 	mode_lib.vba.UrgentLatency = mode_lib.vba.UrgLatency[mode_lib.vba.VoltageLevel];
 	mode_lib.vba.DCFCLKDeepSleep = mode_lib.vba.ProjectedDCFCLKDeepSleep[mode_lib.vba.VoltageLevel][MaximumMPCCombine];
 

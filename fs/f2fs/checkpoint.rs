@@ -1,6 +1,6 @@
 // Faithful source-level translation scaffold; external kernel symbols remain unresolved by design.
 // The original implementation is preserved below while Rust bindings are supplied by the surrounding crate.
-+// // SPDX-License-Identifier: GPL-2.0
+// // SPDX-License-Identifier: GPL-2.0
 // /*
 //  * fs/f2fs/checkpoint.c
 //  *
@@ -26,7 +26,7 @@
 // #include "iostat.h"
 // #include <trace/events/f2fs.h>
 // 
-// static inline void get_lock_elapsed_time(struct f2fs_time_stat *ts)
+// static inline void get_lock_elapsed_time(f2fs_time_stat *ts)
 // {
 // 	ts->total_time = ktime_get();
 // #ifdef CONFIG_64BIT
@@ -41,7 +41,7 @@
 // #endif
 // }
 // 
-// static inline void trace_lock_elapsed_time_start(struct f2fs_rwsem *sem,
+// static inline void trace_lock_elapsed_time_start(f2fs_rwsem *sem,
 // 						struct f2fs_lock_context *lc)
 // {
 // 	lc->lock_trace = trace_f2fs_lock_elapsed_time_enabled();
@@ -51,7 +51,7 @@
 // 	get_lock_elapsed_time(&lc->ts);
 // }
 // 
-// static inline void trace_lock_elapsed_time_end(struct f2fs_rwsem *sem,
+// static inline void trace_lock_elapsed_time_end(f2fs_rwsem *sem,
 // 				struct f2fs_lock_context *lc, bool is_write)
 // {
 // 	struct f2fs_time_stat tts;
@@ -92,7 +92,7 @@
 // 			runnable_time, io_sleep_time, other_time);
 // }
 // 
-// static bool need_uplift_priority(struct f2fs_rwsem *sem, bool is_write)
+// static bool need_uplift_priority(f2fs_rwsem *sem, bool is_write)
 // {
 // 	if (!(sem->sbi->adjust_lock_priority & BIT(sem->name - 1)))
 // 		return false;
@@ -117,7 +117,7 @@
 // 	return false;
 // }
 // 
-// static void uplift_priority(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc,
+// static void uplift_priority(f2fs_rwsem *sem, f2fs_lock_context *lc,
 // 						bool is_write)
 // {
 // 	lc->need_restore = false;
@@ -138,7 +138,7 @@
 // 		NICE_TO_PRIO(lc->orig_nice), NICE_TO_PRIO(lc->new_nice));
 // }
 // 
-// static void restore_priority(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc,
+// static void restore_priority(f2fs_rwsem *sem, f2fs_lock_context *lc,
 // 						bool is_write)
 // {
 // 	if (!lc->need_restore)
@@ -152,14 +152,14 @@
 // 		NICE_TO_PRIO(lc->orig_nice), NICE_TO_PRIO(lc->new_nice));
 // }
 // 
-// void f2fs_down_read_trace(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc)
+// void f2fs_down_read_trace(f2fs_rwsem *sem, f2fs_lock_context *lc)
 // {
 // 	uplift_priority(sem, lc, false);
 // 	f2fs_down_read(sem);
 // 	trace_lock_elapsed_time_start(sem, lc);
 // }
 // 
-// int f2fs_down_read_trylock_trace(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc)
+// int f2fs_down_read_trylock_trace(f2fs_rwsem *sem, f2fs_lock_context *lc)
 // {
 // 	uplift_priority(sem, lc, false);
 // 	if (!f2fs_down_read_trylock(sem)) {
@@ -170,21 +170,21 @@
 // 	return 1;
 // }
 // 
-// void f2fs_up_read_trace(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc)
+// void f2fs_up_read_trace(f2fs_rwsem *sem, f2fs_lock_context *lc)
 // {
 // 	f2fs_up_read(sem);
 // 	restore_priority(sem, lc, false);
 // 	trace_lock_elapsed_time_end(sem, lc, false);
 // }
 // 
-// void f2fs_down_write_trace(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc)
+// void f2fs_down_write_trace(f2fs_rwsem *sem, f2fs_lock_context *lc)
 // {
 // 	uplift_priority(sem, lc, true);
 // 	f2fs_down_write(sem);
 // 	trace_lock_elapsed_time_start(sem, lc);
 // }
 // 
-// int f2fs_down_write_trylock_trace(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc)
+// int f2fs_down_write_trylock_trace(f2fs_rwsem *sem, f2fs_lock_context *lc)
 // {
 // 	uplift_priority(sem, lc, true);
 // 	if (!f2fs_down_write_trylock(sem)) {
@@ -195,19 +195,19 @@
 // 	return 1;
 // }
 // 
-// void f2fs_up_write_trace(struct f2fs_rwsem *sem, struct f2fs_lock_context *lc)
+// void f2fs_up_write_trace(f2fs_rwsem *sem, f2fs_lock_context *lc)
 // {
 // 	f2fs_up_write(sem);
 // 	restore_priority(sem, lc, true);
 // 	trace_lock_elapsed_time_end(sem, lc, true);
 // }
 // 
-// void f2fs_lock_op(struct f2fs_sb_info *sbi, struct f2fs_lock_context *lc)
+// void f2fs_lock_op(f2fs_sb_info *sbi, f2fs_lock_context *lc)
 // {
 // 	f2fs_down_read_trace(&sbi->cp_rwsem, lc);
 // }
 // 
-// int f2fs_trylock_op(struct f2fs_sb_info *sbi, struct f2fs_lock_context *lc)
+// int f2fs_trylock_op(f2fs_sb_info *sbi, f2fs_lock_context *lc)
 // {
 // 	if (time_to_inject(sbi, FAULT_LOCK_OP))
 // 		return 0;
@@ -215,17 +215,17 @@
 // 	return f2fs_down_read_trylock_trace(&sbi->cp_rwsem, lc);
 // }
 // 
-// void f2fs_unlock_op(struct f2fs_sb_info *sbi, struct f2fs_lock_context *lc)
+// void f2fs_unlock_op(f2fs_sb_info *sbi, f2fs_lock_context *lc)
 // {
 // 	f2fs_up_read_trace(&sbi->cp_rwsem, lc);
 // }
 // 
-// static inline void f2fs_lock_all(struct f2fs_sb_info *sbi)
+// static inline void f2fs_lock_all(f2fs_sb_info *sbi)
 // {
 // 	f2fs_down_write(&sbi->cp_rwsem);
 // }
 // 
-// static inline void f2fs_unlock_all(struct f2fs_sb_info *sbi)
+// static inline void f2fs_unlock_all(f2fs_sb_info *sbi)
 // {
 // 	f2fs_up_write(&sbi->cp_rwsem);
 // }
@@ -238,7 +238,7 @@
 // /*
 //  * We guarantee no failure on the returned page.
 //  */
-// struct folio *f2fs_grab_meta_folio(struct f2fs_sb_info *sbi, pgoff_t index)
+// struct folio *f2fs_grab_meta_folio(f2fs_sb_info *sbi, pgoff_t index)
 // {
 // 	struct address_space *mapping = META_MAPPING(sbi);
 // 	struct folio *folio;
@@ -254,7 +254,7 @@
 // 	return folio;
 // }
 // 
-// static struct folio *__get_meta_folio(struct f2fs_sb_info *sbi, pgoff_t index,
+// static struct folio *__get_meta_folio(f2fs_sb_info *sbi, pgoff_t index,
 // 							bool is_meta)
 // {
 // 	struct address_space *mapping = META_MAPPING(sbi);
@@ -307,12 +307,12 @@
 // 	return folio;
 // }
 // 
-// struct folio *f2fs_get_meta_folio(struct f2fs_sb_info *sbi, pgoff_t index)
+// struct folio *f2fs_get_meta_folio(f2fs_sb_info *sbi, pgoff_t index)
 // {
 // 	return __get_meta_folio(sbi, index, true);
 // }
 // 
-// struct folio *f2fs_get_meta_folio_retry(struct f2fs_sb_info *sbi, pgoff_t index)
+// struct folio *f2fs_get_meta_folio_retry(f2fs_sb_info *sbi, pgoff_t index)
 // {
 // 	struct folio *folio;
 // 	int count = 0;
@@ -329,12 +329,12 @@
 // }
 // 
 // /* for POR only */
-// struct folio *f2fs_get_tmp_folio(struct f2fs_sb_info *sbi, pgoff_t index)
+// struct folio *f2fs_get_tmp_folio(f2fs_sb_info *sbi, pgoff_t index)
 // {
 // 	return __get_meta_folio(sbi, index, false);
 // }
 // 
-// static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
+// static bool __is_bitmap_valid(f2fs_sb_info *sbi, block_t blkaddr,
 // 							int type)
 // {
 // 	struct seg_entry *se;
@@ -371,7 +371,7 @@
 // 	return exist;
 // }
 // 
-// static bool __f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
+// static bool __f2fs_is_valid_blkaddr(f2fs_sb_info *sbi,
 // 					block_t blkaddr, int type)
 // {
 // 	switch (type) {
@@ -432,7 +432,7 @@
 // 	return false;
 // }
 // 
-// bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
+// bool f2fs_is_valid_blkaddr(f2fs_sb_info *sbi,
 // 					block_t blkaddr, int type)
 // {
 // 	if (time_to_inject(sbi, FAULT_BLKADDR_VALIDITY))
@@ -440,7 +440,7 @@
 // 	return __f2fs_is_valid_blkaddr(sbi, blkaddr, type);
 // }
 // 
-// bool f2fs_is_valid_blkaddr_raw(struct f2fs_sb_info *sbi,
+// bool f2fs_is_valid_blkaddr_raw(f2fs_sb_info *sbi,
 // 					block_t blkaddr, int type)
 // {
 // 	return __f2fs_is_valid_blkaddr(sbi, blkaddr, type);
@@ -449,7 +449,7 @@
 // /*
 //  * Readahead CP/NAT/SIT/SSA/POR pages
 //  */
-// int f2fs_ra_meta_pages(struct f2fs_sb_info *sbi, block_t start, int nrpages,
+// int f2fs_ra_meta_pages(f2fs_sb_info *sbi, block_t start, int nrpages,
 // 							int type, bool sync)
 // {
 // 	block_t blkno = start;
@@ -522,7 +522,7 @@
 // 	return blkno - start;
 // }
 // 
-// void f2fs_ra_meta_pages_cond(struct f2fs_sb_info *sbi, pgoff_t index,
+// void f2fs_ra_meta_pages_cond(f2fs_sb_info *sbi, pgoff_t index,
 // 							unsigned int ra_blocks)
 // {
 // 	struct folio *folio;
@@ -540,7 +540,7 @@
 // 		f2fs_ra_meta_pages(sbi, index, ra_blocks, META_POR, true);
 // }
 // 
-// static bool __f2fs_write_meta_folio(struct folio *folio,
+// static bool __f2fs_write_meta_folio(folio *folio,
 // 				struct writeback_control *wbc,
 // 				enum iostat_type io_type)
 // {
@@ -575,7 +575,7 @@
 // 	return false;
 // }
 // 
-// static int f2fs_write_meta_pages(struct address_space *mapping,
+// static int f2fs_write_meta_pages(address_space *mapping,
 // 				struct writeback_control *wbc)
 // {
 // 	struct f2fs_sb_info *sbi = F2FS_M_SB(mapping);
@@ -608,7 +608,7 @@
 // 	return 0;
 // }
 // 
-// long f2fs_sync_meta_pages(struct f2fs_sb_info *sbi, long nr_to_write,
+// long f2fs_sync_meta_pages(f2fs_sb_info *sbi, long nr_to_write,
 // 				enum iostat_type io_type)
 // {
 // 	struct address_space *mapping = META_MAPPING(sbi);
@@ -677,7 +677,7 @@
 // 	return nwritten;
 // }
 // 
-// static bool f2fs_dirty_meta_folio(struct address_space *mapping,
+// static bool f2fs_dirty_meta_folio(address_space *mapping,
 // 		struct folio *folio)
 // {
 // 	trace_f2fs_set_page_dirty(folio, META);
@@ -700,7 +700,7 @@
 // 	.migrate_folio	= filemap_migrate_folio,
 // };
 // 
-// static void __add_ino_entry(struct f2fs_sb_info *sbi, nid_t ino,
+// static void __add_ino_entry(f2fs_sb_info *sbi, nid_t ino,
 // 						unsigned int devidx, int type)
 // {
 // 	struct inode_management *im = &sbi->im[type];
@@ -733,7 +733,7 @@
 // 		if (unlikely(radix_tree_insert(&im->ino_root, ino, e)))
 // 			f2fs_bug_on(sbi, 1);
 // 
-// 		memset(e, 0, sizeof(struct ino_entry));
+// 		memset(e, 0, sizeof(ino_entry));
 // 		e->ino = ino;
 // 
 // 		list_add_tail(&e->list, &im->ino_list);
@@ -751,7 +751,7 @@
 // 		kmem_cache_free(ino_entry_slab, new);
 // }
 // 
-// static void __remove_ino_entry(struct f2fs_sb_info *sbi, nid_t ino, int type)
+// static void __remove_ino_entry(f2fs_sb_info *sbi, nid_t ino, int type)
 // {
 // 	struct inode_management *im = &sbi->im[type];
 // 	struct ino_entry *e;
@@ -769,7 +769,7 @@
 // 	spin_unlock(&im->ino_lock);
 // }
 // 
-// static void __set_ino_bitmap(struct f2fs_sb_info *sbi, nid_t ino, int type)
+// static void __set_ino_bitmap(f2fs_sb_info *sbi, nid_t ino, int type)
 // {
 // 	struct inode_management *im = &sbi->im[type];
 // 	unsigned long index = INO_SLOT_INDEX(ino);
@@ -801,7 +801,7 @@
 // 	radix_tree_preload_end();
 // }
 // 
-// static void __clear_ino_bitmap(struct f2fs_sb_info *sbi, nid_t ino, int type)
+// static void __clear_ino_bitmap(f2fs_sb_info *sbi, nid_t ino, int type)
 // {
 // 	struct inode_management *im = &sbi->im[type];
 // 	unsigned long index = INO_SLOT_INDEX(ino);
@@ -827,7 +827,7 @@
 // 	spin_unlock(&im->ino_lock);
 // }
 // 
-// static void f2fs_wait_for_inode_record(struct f2fs_sb_info *sbi, int mode)
+// static void f2fs_wait_for_inode_record(f2fs_sb_info *sbi, int mode)
 // {
 // 	if (mode != APPEND_INO && mode != UPDATE_INO)
 // 		return;
@@ -836,7 +836,7 @@
 // 	flush_workqueue(sbi->evict_wq);
 // }
 // 
-// static void __f2fs_add_ino_entry(struct f2fs_sb_info *sbi, nid_t ino,
+// static void __f2fs_add_ino_entry(f2fs_sb_info *sbi, nid_t ino,
 // 					unsigned int devidx, int type)
 // {
 // 	if (type <= FLUSH_INO)
@@ -845,12 +845,12 @@
 // 		__set_ino_bitmap(sbi, ino, type);
 // }
 // 
-// void f2fs_add_ino_entry(struct f2fs_sb_info *sbi, nid_t ino, int type)
+// void f2fs_add_ino_entry(f2fs_sb_info *sbi, nid_t ino, int type)
 // {
 // 	__f2fs_add_ino_entry(sbi, ino, 0, type);
 // }
 // 
-// void f2fs_remove_ino_entry(struct f2fs_sb_info *sbi, nid_t ino, int type)
+// void f2fs_remove_ino_entry(f2fs_sb_info *sbi, nid_t ino, int type)
 // {
 // 	if (type <= FLUSH_INO)
 // 		__remove_ino_entry(sbi, ino, type);
@@ -859,7 +859,7 @@
 // }
 // 
 // /* mode should be APPEND_INO, UPDATE_INO, TRANS_DIR_INO and XATTR_DIR_INO */
-// bool f2fs_exist_written_data(struct f2fs_sb_info *sbi, nid_t ino, int mode)
+// bool f2fs_exist_written_data(f2fs_sb_info *sbi, nid_t ino, int mode)
 // {
 // 	struct inode_management *im = &sbi->im[mode];
 // 	unsigned long index = INO_SLOT_INDEX(ino);
@@ -881,7 +881,7 @@
 // 	return bitmap & (1UL << ofs);
 // }
 // 
-// void f2fs_release_ino_entry(struct f2fs_sb_info *sbi, bool all)
+// void f2fs_release_ino_entry(f2fs_sb_info *sbi, bool all)
 // {
 // 	struct ino_entry *e, *tmp;
 // 	int i;
@@ -910,13 +910,13 @@
 // 	}
 // }
 // 
-// void f2fs_set_dirty_device(struct f2fs_sb_info *sbi, nid_t ino,
+// void f2fs_set_dirty_device(f2fs_sb_info *sbi, nid_t ino,
 // 					unsigned int devidx, int type)
 // {
 // 	__f2fs_add_ino_entry(sbi, ino, devidx, type);
 // }
 // 
-// bool f2fs_is_dirty_device(struct f2fs_sb_info *sbi, nid_t ino,
+// bool f2fs_is_dirty_device(f2fs_sb_info *sbi, nid_t ino,
 // 					unsigned int devidx, int type)
 // {
 // 	struct inode_management *im = &sbi->im[type];
@@ -931,7 +931,7 @@
 // 	return is_dirty;
 // }
 // 
-// int f2fs_acquire_orphan_inode(struct f2fs_sb_info *sbi)
+// int f2fs_acquire_orphan_inode(f2fs_sb_info *sbi)
 // {
 // 	struct inode_management *im = &sbi->im[ORPHAN_INO];
 // 	int err = 0;
@@ -952,7 +952,7 @@
 // 	return err;
 // }
 // 
-// void f2fs_release_orphan_inode(struct f2fs_sb_info *sbi)
+// void f2fs_release_orphan_inode(f2fs_sb_info *sbi)
 // {
 // 	struct inode_management *im = &sbi->im[ORPHAN_INO];
 // 
@@ -962,20 +962,20 @@
 // 	spin_unlock(&im->ino_lock);
 // }
 // 
-// void f2fs_add_orphan_inode(struct inode *inode)
+// void f2fs_add_orphan_inode(inode *inode)
 // {
 // 	/* add new orphan ino entry into list */
 // 	f2fs_add_ino_entry(F2FS_I_SB(inode), inode->i_ino, ORPHAN_INO);
 // 	f2fs_update_inode_page(inode);
 // }
 // 
-// void f2fs_remove_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
+// void f2fs_remove_orphan_inode(f2fs_sb_info *sbi, nid_t ino)
 // {
 // 	/* remove orphan entry from orphan list */
 // 	f2fs_remove_ino_entry(sbi, ino, ORPHAN_INO);
 // }
 // 
-// static int recover_orphan_inode(struct f2fs_sb_info *sbi, nid_t ino)
+// static int recover_orphan_inode(f2fs_sb_info *sbi, nid_t ino)
 // {
 // 	struct inode *inode;
 // 	struct node_info ni;
@@ -1020,7 +1020,7 @@
 // 	return err;
 // }
 // 
-// int f2fs_recover_orphan_inodes(struct f2fs_sb_info *sbi)
+// int f2fs_recover_orphan_inodes(f2fs_sb_info *sbi)
 // {
 // 	block_t start_blk, orphan_blocks, i, j;
 // 	int err = 0;
@@ -1083,7 +1083,7 @@
 // 	return err;
 // }
 // 
-// static void write_orphan_inodes(struct f2fs_sb_info *sbi, block_t start_blk)
+// static void write_orphan_inodes(f2fs_sb_info *sbi, block_t start_blk)
 // {
 // 	struct list_head *head;
 // 	struct f2fs_orphan_block *orphan_blk = NULL;
@@ -1139,7 +1139,7 @@
 // 	}
 // }
 // 
-// static __u32 f2fs_checkpoint_chksum(struct f2fs_checkpoint *ckpt)
+// static __u32 f2fs_checkpoint_chksum(f2fs_checkpoint *ckpt)
 // {
 // 	unsigned int chksum_ofs = le32_to_cpu(ckpt->checksum_offset);
 // 	__u32 chksum;
@@ -1153,8 +1153,8 @@
 // 	return chksum;
 // }
 // 
-// static int get_checkpoint_version(struct f2fs_sb_info *sbi, block_t cp_addr,
-// 		struct f2fs_checkpoint **cp_block, struct folio **cp_folio,
+// static int get_checkpoint_version(f2fs_sb_info *sbi, block_t cp_addr,
+// 		struct f2fs_checkpoint **cp_block, folio **cp_folio,
 // 		unsigned long long *version)
 // {
 // 	size_t crc_offset = 0;
@@ -1185,7 +1185,7 @@
 // 	return 0;
 // }
 // 
-// static struct folio *validate_checkpoint(struct f2fs_sb_info *sbi,
+// static struct folio *validate_checkpoint(f2fs_sb_info *sbi,
 // 				block_t cp_addr, unsigned long long *version)
 // {
 // 	struct folio *cp_folio_1 = NULL, *cp_folio_2 = NULL;
@@ -1226,7 +1226,7 @@
 // 	return NULL;
 // }
 // 
-// int f2fs_get_valid_checkpoint(struct f2fs_sb_info *sbi)
+// int f2fs_get_valid_checkpoint(f2fs_sb_info *sbi)
 // {
 // 	struct f2fs_checkpoint *cp_block;
 // 	struct f2fs_super_block *fsb = sbi->raw_super;
@@ -1316,7 +1316,7 @@
 // 	return err;
 // }
 // 
-// static void __add_dirty_inode(struct inode *inode, enum inode_type type)
+// static void __add_dirty_inode(inode *inode, enum inode_type type)
 // {
 // 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 // 	int flag = (type == DIR_INODE) ? FI_DIRTY_DIR : FI_DIRTY_FILE;
@@ -1329,7 +1329,7 @@
 // 	stat_inc_dirty_inode(sbi, type);
 // }
 // 
-// static void __remove_dirty_inode(struct inode *inode, enum inode_type type)
+// static void __remove_dirty_inode(inode *inode, enum inode_type type)
 // {
 // 	int flag = (type == DIR_INODE) ? FI_DIRTY_DIR : FI_DIRTY_FILE;
 // 
@@ -1341,7 +1341,7 @@
 // 	stat_dec_dirty_inode(F2FS_I_SB(inode), type);
 // }
 // 
-// void f2fs_update_dirty_folio(struct inode *inode, struct folio *folio)
+// void f2fs_update_dirty_folio(inode *inode, folio *folio)
 // {
 // 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 // 	enum inode_type type = S_ISDIR(inode->i_mode) ? DIR_INODE : FILE_INODE;
@@ -1359,7 +1359,7 @@
 // 	folio_set_f2fs_reference(folio);
 // }
 // 
-// void f2fs_remove_dirty_inode(struct inode *inode)
+// void f2fs_remove_dirty_inode(inode *inode)
 // {
 // 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 // 	enum inode_type type = S_ISDIR(inode->i_mode) ? DIR_INODE : FILE_INODE;
@@ -1376,7 +1376,7 @@
 // 	spin_unlock(&sbi->inode_lock[type]);
 // }
 // 
-// int f2fs_sync_dirty_inodes(struct f2fs_sb_info *sbi, enum inode_type type,
+// int f2fs_sync_dirty_inodes(f2fs_sb_info *sbi, enum inode_type type,
 // 						bool from_cp)
 // {
 // 	struct list_head *head;
@@ -1406,7 +1406,7 @@
 // 				F2FS_DIRTY_DENTS : F2FS_DIRTY_DATA));
 // 		return 0;
 // 	}
-// 	fi = list_first_entry(head, struct f2fs_inode_info, dirty_list);
+// 	fi = list_first_entry(head, f2fs_inode_info, dirty_list);
 // 	inode = igrab(&fi->vfs_inode);
 // 	spin_unlock(&sbi->inode_lock[type]);
 // 	if (inode) {
@@ -1439,7 +1439,7 @@
 // 	goto retry;
 // }
 // 
-// static int f2fs_sync_inode_meta(struct f2fs_sb_info *sbi)
+// static int f2fs_sync_inode_meta(f2fs_sb_info *sbi)
 // {
 // 	struct list_head *head = &sbi->inode_list[DIRTY_META];
 // 	struct inode *inode;
@@ -1455,7 +1455,7 @@
 // 			spin_unlock(&sbi->inode_lock[DIRTY_META]);
 // 			return 0;
 // 		}
-// 		fi = list_first_entry(head, struct f2fs_inode_info,
+// 		fi = list_first_entry(head, f2fs_inode_info,
 // 							gdirty_list);
 // 		inode = igrab(&fi->vfs_inode);
 // 		spin_unlock(&sbi->inode_lock[DIRTY_META]);
@@ -1471,7 +1471,7 @@
 // 	return 0;
 // }
 // 
-// static void __prepare_cp_block(struct f2fs_sb_info *sbi)
+// static void __prepare_cp_block(f2fs_sb_info *sbi)
 // {
 // 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
 // 	struct f2fs_nm_info *nm_i = NM_I(sbi);
@@ -1489,7 +1489,7 @@
 // 	percpu_counter_set(&sbi->rf_node_block_count, 0);
 // }
 // 
-// static bool __need_flush_quota(struct f2fs_sb_info *sbi)
+// static bool __need_flush_quota(f2fs_sb_info *sbi)
 // {
 // 	bool ret = false;
 // 
@@ -1515,7 +1515,7 @@
 // /*
 //  * Freeze all the FS-operations for checkpoint.
 //  */
-// static int block_operations(struct f2fs_sb_info *sbi)
+// static int block_operations(f2fs_sb_info *sbi)
 // {
 // 	struct writeback_control wbc = {
 // 		.sync_mode = WB_SYNC_ALL,
@@ -1604,13 +1604,13 @@
 // 	return err;
 // }
 // 
-// static void unblock_operations(struct f2fs_sb_info *sbi)
+// static void unblock_operations(f2fs_sb_info *sbi)
 // {
 // 	f2fs_up_write(&sbi->node_write);
 // 	f2fs_unlock_all(sbi);
 // }
 // 
-// void f2fs_wait_on_all_pages(struct f2fs_sb_info *sbi, int type)
+// void f2fs_wait_on_all_pages(f2fs_sb_info *sbi, int type)
 // {
 // 	DEFINE_WAIT(wait);
 // 
@@ -1633,7 +1633,7 @@
 // 	finish_wait(&sbi->cp_wait, &wait);
 // }
 // 
-// static void update_ckpt_flags(struct f2fs_sb_info *sbi, struct cp_control *cpc)
+// static void update_ckpt_flags(f2fs_sb_info *sbi, cp_control *cpc)
 // {
 // 	unsigned long orphan_num = sbi->im[ORPHAN_INO].ino_num;
 // 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
@@ -1699,7 +1699,7 @@
 // 	spin_unlock_irqrestore(&sbi->cp_lock, flags);
 // }
 // 
-// static void commit_checkpoint(struct f2fs_sb_info *sbi,
+// static void commit_checkpoint(f2fs_sb_info *sbi,
 // 	void *src, block_t blk_addr)
 // {
 // 	struct writeback_control wbc = {};
@@ -1732,12 +1732,12 @@
 // 	f2fs_submit_merged_write(sbi, META_FLUSH);
 // }
 // 
-// static inline u64 get_sectors_written(struct block_device *bdev)
+// static inline u64 get_sectors_written(block_device *bdev)
 // {
 // 	return (u64)part_stat_read(bdev, sectors[STAT_WRITE]);
 // }
 // 
-// u64 f2fs_get_sectors_written(struct f2fs_sb_info *sbi)
+// u64 f2fs_get_sectors_written(f2fs_sb_info *sbi)
 // {
 // 	if (f2fs_is_multi_device(sbi)) {
 // 		u64 sectors = 0;
@@ -1752,12 +1752,12 @@
 // 	return get_sectors_written(sbi->sb->s_bdev);
 // }
 // 
-// static inline void stat_cp_time(struct cp_control *cpc, enum cp_time type)
+// static inline void stat_cp_time(cp_control *cpc, enum cp_time type)
 // {
 // 	cpc->stats.times[type] = ktime_get();
 // }
 // 
-// static inline void check_cp_time(struct f2fs_sb_info *sbi, struct cp_control *cpc)
+// static inline void check_cp_time(f2fs_sb_info *sbi, cp_control *cpc)
 // {
 // 	unsigned long long sb_diff, cur_diff;
 // 	enum cp_time ct;
@@ -1780,7 +1780,7 @@
 // 	}
 // }
 // 
-// static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
+// static int do_checkpoint(f2fs_sb_info *sbi, cp_control *cpc)
 // {
 // 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
 // 	struct f2fs_nm_info *nm_i = NM_I(sbi);
@@ -1953,7 +1953,7 @@
 // 	return unlikely(f2fs_cp_error(sbi)) ? -EIO : 0;
 // }
 // 
-// int f2fs_write_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
+// int f2fs_write_checkpoint(f2fs_sb_info *sbi, cp_control *cpc)
 // {
 // 	struct f2fs_checkpoint *ckpt = F2FS_CKPT(sbi);
 // 	struct f2fs_lock_context lc;
@@ -2067,7 +2067,7 @@
 // 	return err;
 // }
 // 
-// void f2fs_init_ino_entry_info(struct f2fs_sb_info *sbi)
+// void f2fs_init_ino_entry_info(f2fs_sb_info *sbi)
 // {
 // 	int i;
 // 
@@ -2088,11 +2088,11 @@
 // int __init f2fs_create_checkpoint_caches(void)
 // {
 // 	ino_entry_slab = f2fs_kmem_cache_create("f2fs_ino_entry",
-// 			sizeof(struct ino_entry));
+// 			sizeof(ino_entry));
 // 	if (!ino_entry_slab)
 // 		return -ENOMEM;
 // 	f2fs_inode_entry_slab = f2fs_kmem_cache_create("f2fs_inode_entry",
-// 			sizeof(struct inode_entry));
+// 			sizeof(inode_entry));
 // 	if (!f2fs_inode_entry_slab) {
 // 		kmem_cache_destroy(ino_entry_slab);
 // 		return -ENOMEM;
@@ -2106,7 +2106,7 @@
 // 	kmem_cache_destroy(f2fs_inode_entry_slab);
 // }
 // 
-// static int __write_checkpoint_sync(struct f2fs_sb_info *sbi)
+// static int __write_checkpoint_sync(f2fs_sb_info *sbi)
 // {
 // 	struct cp_control cpc = { .reason = CP_SYNC, };
 // 	struct f2fs_lock_context lc;
@@ -2119,7 +2119,7 @@
 // 	return err;
 // }
 // 
-// static void __checkpoint_and_complete_reqs(struct f2fs_sb_info *sbi)
+// static void __checkpoint_and_complete_reqs(f2fs_sb_info *sbi)
 // {
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
 // 	struct ckpt_req *req, *next;
@@ -2171,7 +2171,7 @@
 // 	goto repeat;
 // }
 // 
-// static void flush_remained_ckpt_reqs(struct f2fs_sb_info *sbi,
+// static void flush_remained_ckpt_reqs(f2fs_sb_info *sbi,
 // 		struct ckpt_req *wait_req)
 // {
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
@@ -2185,15 +2185,15 @@
 // 	}
 // }
 // 
-// static void init_ckpt_req(struct ckpt_req *req)
+// static void init_ckpt_req(ckpt_req *req)
 // {
-// 	memset(req, 0, sizeof(struct ckpt_req));
+// 	memset(req, 0, sizeof(ckpt_req));
 // 
 // 	init_completion(&req->wait);
 // 	req->queue_time = ktime_get();
 // }
 // 
-// int f2fs_issue_checkpoint(struct f2fs_sb_info *sbi)
+// int f2fs_issue_checkpoint(f2fs_sb_info *sbi)
 // {
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
 // 	struct ckpt_req req;
@@ -2244,7 +2244,7 @@
 // 	return req.ret;
 // }
 // 
-// int f2fs_start_ckpt_thread(struct f2fs_sb_info *sbi)
+// int f2fs_start_ckpt_thread(f2fs_sb_info *sbi)
 // {
 // 	dev_t dev = sbi->sb->s_bdev->bd_dev;
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
@@ -2268,7 +2268,7 @@
 // 	return 0;
 // }
 // 
-// void f2fs_stop_ckpt_thread(struct f2fs_sb_info *sbi)
+// void f2fs_stop_ckpt_thread(f2fs_sb_info *sbi)
 // {
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
 // 	struct task_struct *ckpt_task;
@@ -2283,7 +2283,7 @@
 // 	f2fs_flush_ckpt_thread(sbi);
 // }
 // 
-// void f2fs_flush_ckpt_thread(struct f2fs_sb_info *sbi)
+// void f2fs_flush_ckpt_thread(f2fs_sb_info *sbi)
 // {
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
 // 
@@ -2294,7 +2294,7 @@
 // 		io_schedule_timeout(DEFAULT_SCHEDULE_TIMEOUT);
 // }
 // 
-// void f2fs_init_ckpt_req_control(struct f2fs_sb_info *sbi)
+// void f2fs_init_ckpt_req_control(f2fs_sb_info *sbi)
 // {
 // 	struct ckpt_req_control *cprc = &sbi->cprc_info;
 // 

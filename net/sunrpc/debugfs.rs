@@ -43,11 +43,11 @@ unsafe fn tasks_start(f: *mut seq_file, ppos: *mut loff_t) -> *mut core::ffi::c_
     let mut task: *mut rpc_task;
 
     spin_lock(&mut (*clnt).cl_lock);
-    list_for_each_entry!(task, &mut (*clnt).cl_tasks, tk_task) {
+    list_for_each_entry!(task, &mut (*clnt).cl_tasks, tk_task, {
         if { pos -= 1; pos + 1 == 0 } {
             return task as *mut core::ffi::c_void;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 

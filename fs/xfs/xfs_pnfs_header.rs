@@ -14,7 +14,7 @@ pub struct exportfs_block_ops {
 }
 
 /* CONFIG_EXPORTFS_BLOCK_OPS */
-#[cfg(feature = "CONFIG_EXPORTFS_BLOCK_OPS")]
+#[cfg(CONFIG_EXPORTFS_BLOCK_OPS)]
 extern "C" {
     pub fn xfs_break_leased_layouts(
         inode: *mut inode,
@@ -23,7 +23,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_EXPORTFS_BLOCK_OPS"))]
+#[cfg(not(CONFIG_EXPORTFS_BLOCK_OPS))]
 #[inline]
 pub unsafe fn xfs_break_leased_layouts(
     _inode: *mut inode,

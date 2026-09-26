@@ -80,8 +80,7 @@ extern "C" {
         argv: *mut *mut c_char,
         optstring: *const c_char,
         longopts: *const option,
-        longindex: *mut c_int,
-    ) -> c_int;
+        longindex: *mut c_int) -> c_int;
     fn uname(buf: *mut utsname) -> c_int;
     fn setlocale(category: c_int, locale: *const c_char) -> *mut c_char;
     fn textdomain(domainname: *const c_char) -> *mut c_char;

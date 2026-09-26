@@ -129,7 +129,7 @@ pub unsafe fn bcma_chipco_gpio_pullup(cc: *mut bcma_drv_cc, m: u32, v: u32) -> u
 pub unsafe fn bcma_chipco_gpio_pulldown(cc: *mut bcma_drv_cc, m: u32, v: u32) -> u32 { if (*(*cc).core).id.rev < 20 { 0 } else { gpio_masked(cc, BCMA_CC_GPIOPULLDOWN, m, v) } }
 
 /* CONFIG_BCMA_DRIVER_MIPS */
-#[cfg(feature = "CONFIG_BCMA_DRIVER_MIPS")]
+#[cfg(CONFIG_BCMA_DRIVER_MIPS)]
 pub unsafe fn bcma_chipco_serial_init(cc: *mut bcma_drv_cc) {
     let ccrev = (*cc).core.id.rev;
     let baud_base: u32;

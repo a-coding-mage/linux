@@ -41,8 +41,7 @@ pub struct dcn35_resource_pool {
 extern "C" {
     pub fn dcn35_create_resource_pool(
         init_data: *const dc_init_data,
-        dc: *mut dc,
-    ) -> *mut resource_pool;
+        dc: *mut dc) -> *mut resource_pool;
 }
 
 // Defs for runtime init of registers. These macros preserve the original

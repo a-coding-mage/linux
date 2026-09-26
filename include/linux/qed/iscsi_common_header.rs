@@ -941,10 +941,10 @@ pub const USTORM_ISCSI_TASK_ST_CTX_RESERVED0_SHIFT: u32 = 7;
 pub struct iscsi_task_context {
     pub ystorm_st_context: ystorm_iscsi_task_st_ctx,
     pub ystorm_ag_context: ystorm_iscsi_task_ag_ctx,
-	struct regpair ystorm_ag_padding[2];
+	regpair ystorm_ag_padding[2];
     pub tdif_context: tdif_task_context,
     pub mstorm_ag_context: mstorm_iscsi_task_ag_ctx,
-	struct regpair mstorm_ag_padding[2];
+	regpair mstorm_ag_padding[2];
     pub ustorm_ag_context: ustorm_iscsi_task_ag_ctx,
     pub mstorm_st_context: mstorm_iscsi_task_st_ctx,
     pub ustorm_st_context: ustorm_iscsi_task_st_ctx,

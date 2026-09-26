@@ -9402,7 +9402,7 @@ static int uni2char(const u16 uni,
 static int char2uni(const u8 *rawstring, int boundlen,
 			u16 *uni)
 {
-	u8 ch, cl;
+	ch: u8, cl;
 	const u16 *charset2uni;
 	int n;
 
@@ -9431,12 +9431,12 @@ static int char2uni(const u8 *rawstring, int boundlen,
 }
 
 static struct nls_table table = {
-	.charset	= "cp949",
-	.alias		= "euc-kr",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "cp949",
+	alias: "euc-kr",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 ];
 
 static int __init init_nls_cp949(void)

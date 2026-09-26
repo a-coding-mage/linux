@@ -105,12 +105,12 @@ pub unsafe fn mips_cdmm_set_drvdata(d: *mut mips_cdmm_device, p: *mut ::core::ff
 /* drivers/tty/mips_ejtag_fdc.c */
 
 // CONFIG_MIPS_EJTAG_FDC_EARLYCON selects the external implementation.
-#[cfg(feature = "CONFIG_MIPS_EJTAG_FDC_EARLYCON")]
+#[cfg(CONFIG_MIPS_EJTAG_FDC_EARLYCON)]
 unsafe extern "C" {
     pub fn setup_early_fdc_console() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_MIPS_EJTAG_FDC_EARLYCON"))]
+#[cfg(not(CONFIG_MIPS_EJTAG_FDC_EARLYCON))]
 #[inline]
 pub fn setup_early_fdc_console() -> ::core::ffi::c_int {
     -19 /* -ENODEV */

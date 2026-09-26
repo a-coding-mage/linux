@@ -64,8 +64,8 @@ macro_rules! cache_coherency_ops_instance_alloc {
     ($ops:expr, $drv_struct:ty, $member:ident) => {{
         const _: () = {
             // C: static_assert(__same_type(struct cache_coherency_ops_inst,
-            //                              ((drv_struct *)NULL)->member));
-            // C: static_assert(offsetof(drv_struct, member) == 0);
+            //                              (($drv_struct *)NULL)->$member));
+            // C: static_assert(offsetof($drv_struct, $member) == 0);
         };
         unsafe {
             _cache_coherency_ops_instance_alloc(

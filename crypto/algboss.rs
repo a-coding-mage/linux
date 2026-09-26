@@ -102,11 +102,11 @@ unsafe fn cryptomgr_schedule_probe(larval: *mut crypto_larval) -> c_int {
         if *p == b')' as c_char { break; }
     }
     (*param).tb[i + 1] = ptr::null_mut();
-    (*param).type.attr.rta_len = size_of::<rtattr_type>() as _;
-    (*param).type.attr.rta_type = CRYPTOA_TYPE;
-    (*param).type.data.r#type = (*larval).alg.cra_flags & !CRYPTO_ALG_TESTED;
-    (*param).type.data.mask = (*larval).mask & !CRYPTO_ALG_TESTED;
-    (*param).tb[0] = &mut (*param).type.attr;
+    (*param).r#type.attr.rta_len = size_of::<rtattr_type>() as _;
+    (*param).r#type.attr.rta_type = CRYPTOA_TYPE;
+    (*param).r#type.data.r#type = (*larval).alg.cra_flags & !CRYPTO_ALG_TESTED;
+    (*param).r#type.data.mask = (*larval).mask & !CRYPTO_ALG_TESTED;
+    (*param).tb[0] = &mut (*param).r#type.attr;
     (*param).otype = (*larval).alg.cra_flags;
     (*param).omask = (*larval).mask;
     crypto_alg_get(&mut (*larval).alg);

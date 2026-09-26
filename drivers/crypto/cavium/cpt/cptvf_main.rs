@@ -40,21 +40,21 @@ unsafe fn cleanup_worker_threads(cptvf: *mut cpt_vf) {
 
 unsafe fn free_pending_queues(pqinfo: *mut pending_qinfo) {
     let mut queue: *mut pending_queue = core::ptr::null_mut(); let mut i = 0;
-    for_each_pending_queue!(pqinfo, queue, i) {
+    for_each_pending_queue!(pqinfo, queue, i, {
         if (*queue).head.is_null() { continue; }
         kfree_sensitive((*queue).head); (*queue).front = 0; (*queue).rear = 0; return;
-    }
+    });
     (*pqinfo).qlen = 0; (*pqinfo).nr_queues = 0;
 }
 
 unsafe fn alloc_pending_queues(pqinfo: *mut pending_qinfo, qlen: u32, nr_queues: u32) -> i32 {
     (*pqinfo).nr_queues = nr_queues; (*pqinfo).qlen = qlen;
     let mut queue: *mut pending_queue = core::ptr::null_mut(); let mut i = 0;
-    for_each_pending_queue!(pqinfo, queue, i) {
+    for_each_pending_queue!(pqinfo, queue, i, {
         (*queue).head = kzalloc_objs::<pending_queue_entry>(qlen);
         if (*queue).head.is_null() { free_pending_queues(pqinfo); return -ENOMEM; }
         (*queue).front = 0; (*queue).rear = 0; atomic64_set(&mut (*queue).pending_count, 0); spin_lock_init(&mut (*queue).lock);
-    }
+    });
     0
 }
 
@@ -69,7 +69,7 @@ unsafe fn cleanup_pending_queues(cptvf: *mut cpt_vf) { if (*cptvf).nr_queues != 
 unsafe fn free_command_queues(cptvf: *mut cpt_vf, cqinfo: *mut command_qinfo) {
     for i in 0..(*cptvf).nr_queues { let q = &mut (*cqinfo).queue[i as usize]; if hlist_empty(&q.chead) { continue; }
         let mut chunk: *mut command_chunk = core::ptr::null_mut(); let mut node: *mut hlist_node = core::ptr::null_mut();
-        hlist_for_each_entry_safe!(chunk, node, &mut q.chead, nextchunk) { dma_free_coherent(&(*(*cptvf).pdev).dev, (*chunk).size + CPT_NEXT_CHUNK_PTR_SIZE, (*chunk).head, (*chunk).dma_addr); (*chunk).head = core::ptr::null_mut(); (*chunk).dma_addr = 0; hlist_del(&mut (*chunk).nextchunk); kfree_sensitive(chunk); }
+        hlist_for_each_entry_safe!(chunk, node, &mut q.chead, nextchunk, { dma_free_coherent(&(*(*cptvf).pdev).dev, (*chunk).size + CPT_NEXT_CHUNK_PTR_SIZE, (*chunk).head, (*chunk).dma_addr); (*chunk).head = core::ptr::null_mut(); (*chunk).dma_addr = 0; hlist_del(&mut (*chunk).nextchunk); kfree_sensitive(chunk); });
         q.nchunks = 0; q.idx = 0;
     } (*cqinfo).cmd_size = 0;
 }

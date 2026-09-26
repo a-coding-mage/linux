@@ -62,11 +62,11 @@ pub struct clk_icst {
 }
 
 extern "C" {
-    fn regmap_read(*mut regmap, u32, *mut u32) -> c_int;
-    fn regmap_write(*mut regmap, u32, u32) -> c_int;
-    fn regmap_update_bits(*mut regmap, u32, u32, u32) -> c_int;
-    fn icst_hz(*const icst_params, icst_vco) -> c_ulong;
-    fn icst_hz_to_vco(*const icst_params, c_ulong) -> icst_vco;
+    fn regmap_read(_: *mut regmap, _: u32, _: *mut u32) -> c_int;
+    fn regmap_write(_: *mut regmap, _: u32, _: u32) -> c_int;
+    fn regmap_update_bits(_: *mut regmap, _: u32, _: u32, _: u32) -> c_int;
+    fn icst_hz(_: *const icst_params, _: icst_vco) -> c_ulong;
+    fn icst_hz_to_vco(_: *const icst_params, _: c_ulong) -> icst_vco;
     fn pr_err(fmt: *const c_char, ...);
     fn pr_debug(fmt: *const c_char, ...);
 }

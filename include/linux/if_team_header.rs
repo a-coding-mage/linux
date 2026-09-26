@@ -90,7 +90,7 @@ pub unsafe fn team_port_dev_txable(dev: *const net_device) -> bool {
     pub port_tx_disabled: Option<unsafe extern "C" fn(*mut team, *mut team_port)>,
 }
 pub type rx_handler_result_t = c_int;
-extern "C" { pub fn team_modeop_port_enter(*mut team, *mut team_port) -> c_int; pub fn team_modeop_port_change_dev_addr(*mut team, *mut team_port); }
+extern "C" { pub fn team_modeop_port_enter(_: *mut team, _: *mut team_port) -> c_int; pub fn team_modeop_port_change_dev_addr(_: *mut team, _: *mut team_port); }
 
 #[repr(C)] pub enum team_option_type { TEAM_OPTION_TYPE_U32, TEAM_OPTION_TYPE_STRING, TEAM_OPTION_TYPE_BINARY, TEAM_OPTION_TYPE_BOOL, TEAM_OPTION_TYPE_S32 }
 #[repr(C)] pub struct team_option_inst_info { pub array_index: u32, pub port: *mut team_port }
@@ -103,7 +103,7 @@ extern "C" { pub fn team_modeop_port_enter(*mut team, *mut team_port) -> c_int; 
     pub getter: Option<unsafe extern "C" fn(*mut team, *mut team_gsetter_ctx)>,
     pub setter: Option<unsafe extern "C" fn(*mut team, *mut team_gsetter_ctx) -> c_int>,
 }
-extern "C" { pub fn team_option_inst_set_change(*mut team_option_inst_info); pub fn team_options_change_check(*mut team); }
+extern "C" { pub fn team_option_inst_set_change(_: *mut team_option_inst_info); pub fn team_options_change_check(_: *mut team); }
 
 #[repr(C)] pub struct team_mode { pub kind: *const c_char, pub owner: *mut module, pub priv_size: usize, pub port_priv_size: usize, pub ops: *const team_mode_ops, pub lag_tx_type: c_int }
 pub const TEAM_PORT_HASHBITS: usize = 4;
@@ -123,8 +123,8 @@ pub const TEAM_DEFAULT_NUM_RX_QUEUES: usize = 16;
 }
 #[repr(C)] pub struct team_timer { pub count: u32, pub interval: u32, pub count_pending: atomic_t, pub dw: delayed_work }
 
-extern "C" { pub fn team_options_register(*mut team, *const team_option, usize) -> c_int; pub fn team_options_unregister(*mut team, *const team_option, usize); pub fn team_mode_register(*const team_mode) -> c_int; pub fn team_mode_unregister(*const team_mode); }
-extern "C" { pub fn dev_queue_xmit(*mut sk_buff) -> c_int; }
+extern "C" { pub fn team_options_register(_: *mut team, _: *const team_option, _: usize) -> c_int; pub fn team_options_unregister(_: *mut team, _: *const team_option, _: usize); pub fn team_mode_register(_: *const team_mode) -> c_int; pub fn team_mode_unregister(_: *const team_mode); }
+extern "C" { pub fn dev_queue_xmit(_: *mut sk_buff) -> c_int; }
 // Preprocessor configuration, kernel list-iteration helpers, and skb/netpoll helpers remain external.
 pub const TEAM_MODE_PRIV_SIZE: usize = core::mem::size_of::<c_long>() * TEAM_MODE_PRIV_LONGS;
 
@@ -157,9 +157,9 @@ pub unsafe fn team_tx_port_index_hash(team: *mut team, tx_port_index: c_int) -> 
 // hlist_for_each_entry[_rcu] and list_for_each_entry[_continue]_rcu are kernel macros;
 // their declaration-level control flow is preserved here through external helpers.
 extern "C" {
-    pub fn team_get_port_by_tx_index_impl(*mut team, c_int) -> *mut team_port;
-    pub fn team_get_port_by_tx_index_rcu_impl(*mut team, c_int) -> *mut team_port;
-    pub fn team_get_first_port_txable_rcu_impl(*mut team, *mut team_port) -> *mut team_port;
+    pub fn team_get_port_by_tx_index_impl(_: *mut team, _: c_int) -> *mut team_port;
+    pub fn team_get_port_by_tx_index_rcu_impl(_: *mut team, _: c_int) -> *mut team_port;
+    pub fn team_get_first_port_txable_rcu_impl(_: *mut team, _: *mut team_port) -> *mut team_port;
 }
 pub unsafe fn team_get_port_by_tx_index(team: *mut team, index: c_int) -> *mut team_port { team_get_port_by_tx_index_impl(team, index) }
 pub unsafe fn team_get_port_by_tx_index_rcu(team: *mut team, index: c_int) -> *mut team_port { team_get_port_by_tx_index_rcu_impl(team, index) }

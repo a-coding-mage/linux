@@ -76,7 +76,7 @@ unsafe fn ip_tunnel_find(itn: *mut ip_tunnel_net, parms: *mut ip_tunnel_parm_ker
     let flags = ip_tunnel_flags_copy!((*parms).i_flags); let key = (*parms).i_key;
     hlist_for_each_entry_rcu!(t, head, hash_node, lockdep_rtnl_is_held(), {
         if (*parms).iph.saddr == (*t).parms.iph.saddr && (*parms).iph.daddr == (*t).parms.iph.daddr &&
-           (*parms).link == READ_ONCE!((*t).parms.link) && typ == (*(*t).dev).type && ip_tunnel_key_match(&(*t).parms, &flags, key) { break; }
+           (*parms).link == READ_ONCE!((*t).parms.link) && typ == (*(*t).dev).r#type && ip_tunnel_key_match(&(*t).parms, &flags, key) { break; }
     }); t
 }
 
@@ -93,16 +93,16 @@ unsafe fn __ip_tunnel_create(net: *mut net, ops: *const rtnl_link_ops, parms: *m
 unsafe fn ip_tunnel_bind_dev(dev: *mut net_device) -> c_int {
     let tunnel = netdev_priv(dev); let mut tdev: *mut net_device = core::ptr::null_mut(); let iph = &(*tunnel).parms.iph;
     let mut hlen = LL_MAX_HEADER; let mut mtu = ETH_DATA_LEN; let th = (*tunnel).hlen + core::mem::size_of::<iphdr>() as c_int;
-    if iph.daddr != 0 { let mut fl4 = core::mem::zeroed(); ip_tunnel_init_flow(&mut fl4, iph.protocol, iph.daddr, iph.saddr, (*tunnel).parms.o_key, iph.tos & INET_DSCP_MASK, (*tunnel).net, (*tunnel).parms.link, (*tunnel).fwmark, 0, 0); let rt = ip_route_output_key((*tunnel).net, &mut fl4); if !IS_ERR(rt) { tdev = (*rt).dst.dev; ip_rt_put(rt); } if (*dev).type != ARPHRD_ETHER { (*dev).flags |= IFF_POINTOPOINT; } dst_cache_reset(&mut (*tunnel).dst_cache); }
+    if iph.daddr != 0 { let mut fl4 = core::mem::zeroed(); ip_tunnel_init_flow(&mut fl4, iph.protocol, iph.daddr, iph.saddr, (*tunnel).parms.o_key, iph.tos & INET_DSCP_MASK, (*tunnel).net, (*tunnel).parms.link, (*tunnel).fwmark, 0, 0); let rt = ip_route_output_key((*tunnel).net, &mut fl4); if !IS_ERR(rt) { tdev = (*rt).dst.dev; ip_rt_put(rt); } if (*dev).r#type != ARPHRD_ETHER { (*dev).flags |= IFF_POINTOPOINT; } dst_cache_reset(&mut (*tunnel).dst_cache); }
     if tdev.is_null() && (*tunnel).parms.link != 0 { tdev = __dev_get_by_index((*tunnel).net, (*tunnel).parms.link); }
     if !tdev.is_null() { hlen = (*tdev).hard_header_len + (*tdev).needed_headroom; mtu = core::cmp::min((*tdev).mtu, IP_MAX_MTU); }
-    (*dev).needed_headroom = ip_tunnel_limit_headroom(th + hlen); mtu -= th + if (*dev).type == ARPHRD_ETHER { (*dev).hard_header_len } else { 0 }; if mtu < IPV4_MIN_MTU { mtu = IPV4_MIN_MTU; } mtu
+    (*dev).needed_headroom = ip_tunnel_limit_headroom(th + hlen); mtu -= th + if (*dev).r#type == ARPHRD_ETHER { (*dev).hard_header_len } else { 0 }; if mtu < IPV4_MIN_MTU { mtu = IPV4_MIN_MTU; } mtu
 }
 
 unsafe fn ip_tunnel_create(net: *mut net, itn: *mut ip_tunnel_net, p: *mut ip_tunnel_parm_kern) -> *mut ip_tunnel {
     let dev = __ip_tunnel_create(net, (*itn).rtnl_link_ops, p); if IS_ERR(dev) { return ERR_CAST(dev); }
     let mtu = ip_tunnel_bind_dev(dev); let err = dev_set_mtu(dev, mtu); if err != 0 { unregister_netdevice(dev); return ERR_PTR(err); }
-    let t = netdev_priv(dev); let th = (*t).hlen + core::mem::size_of::<iphdr>() as c_int; (*dev).min_mtu = ETH_MIN_MTU; (*dev).max_mtu = IP_MAX_MTU - th; if (*dev).type == ARPHRD_ETHER { (*dev).max_mtu -= (*dev).hard_header_len; } ip_tunnel_add(itn, t); t
+    let t = netdev_priv(dev); let th = (*t).hlen + core::mem::size_of::<iphdr>() as c_int; (*dev).min_mtu = ETH_MIN_MTU; (*dev).max_mtu = IP_MAX_MTU - th; if (*dev).r#type == ARPHRD_ETHER { (*dev).max_mtu -= (*dev).hard_header_len; } ip_tunnel_add(itn, t); t
 }
 
 pub unsafe extern "C" fn ip_tunnel_md_udp_encap(skb: *mut sk_buff, info: *mut ip_tunnel_info) { let iph = ip_hdr(skb); if (*iph).protocol != IPPROTO_UDP { return; } let udph = ((iph as *mut u8).add(((*iph).ihl << 2) as usize)) as *mut udphdr; (*info).encap.sport = (*udph).source; (*info).encap.dport = (*udph).dest; }
@@ -110,9 +110,9 @@ pub unsafe extern "C" fn ip_tunnel_md_udp_encap(skb: *mut sk_buff, info: *mut ip
 pub unsafe extern "C" fn ip_tunnel_rcv(tunnel: *mut ip_tunnel, skb: *mut sk_buff, tpi: *const tnl_ptk_info, tun_dst: *mut metadata_dst, log_ecn_error: bool) -> c_int {
     let mut iph = ip_hdr(skb); if test_bit(IP_TUNNEL_CSUM_BIT, (*tunnel).parms.i_flags) != test_bit(IP_TUNNEL_CSUM_BIT, (*tpi).flags) { DEV_STATS_INC!((*tunnel).dev, rx_crc_errors); DEV_STATS_INC!((*tunnel).dev, rx_errors); goto_drop!(skb, tun_dst); return 0; }
     if test_bit(IP_TUNNEL_SEQ_BIT, (*tunnel).parms.i_flags) { if !test_bit(IP_TUNNEL_SEQ_BIT, (*tpi).flags) || ((*tunnel).i_seqno != 0 && (ntohl((*tpi).seq) as i32 - (*tunnel).i_seqno as i32) < 0) { DEV_STATS_INC!((*tunnel).dev, rx_fifo_errors); DEV_STATS_INC!((*tunnel).dev, rx_errors); goto_drop!(skb, tun_dst); return 0; } (*tunnel).i_seqno = ntohl((*tpi).seq) + 1; }
-    let nh = skb_network_header(skb).offset_from((*skb).head) as isize; skb_set_network_header(skb, if (*(*tunnel).dev).type == ARPHRD_ETHER { ETH_HLEN } else { 0 }); if !pskb_inet_may_pull(skb) { DEV_STATS_INC!((*tunnel).dev, rx_length_errors); DEV_STATS_INC!((*tunnel).dev, rx_errors); goto_drop!(skb, tun_dst); return 0; } iph = ((*skb).head.offset(nh)) as *mut iphdr;
+    let nh = skb_network_header(skb).offset_from((*skb).head) as isize; skb_set_network_header(skb, if (*(*tunnel).dev).r#type == ARPHRD_ETHER { ETH_HLEN } else { 0 }); if !pskb_inet_may_pull(skb) { DEV_STATS_INC!((*tunnel).dev, rx_length_errors); DEV_STATS_INC!((*tunnel).dev, rx_errors); goto_drop!(skb, tun_dst); return 0; } iph = ((*skb).head.offset(nh)) as *mut iphdr;
     let err = IP_ECN_decapsulate(iph, skb); if unlikely(err != 0) && err > 1 { DEV_STATS_INC!((*tunnel).dev, rx_frame_errors); DEV_STATS_INC!((*tunnel).dev, rx_errors); goto_drop!(skb, tun_dst); return 0; }
-    dev_sw_netstats_rx_add((*tunnel).dev, (*skb).len); skb_scrub_packet(skb, !net_eq((*tunnel).net, dev_net((*tunnel).dev))); if (*(*tunnel).dev).type == ARPHRD_ETHER { (*skb).protocol = eth_type_trans(skb, (*tunnel).dev); skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN); } else { (*skb).dev = (*tunnel).dev; } if !tun_dst.is_null() { skb_dst_set(skb, tun_dst as *mut dst_entry); } gro_cells_receive(&mut (*tunnel).gro_cells, skb); 0
+    dev_sw_netstats_rx_add((*tunnel).dev, (*skb).len); skb_scrub_packet(skb, !net_eq((*tunnel).net, dev_net((*tunnel).dev))); if (*(*tunnel).dev).r#type == ARPHRD_ETHER { (*skb).protocol = eth_type_trans(skb, (*tunnel).dev); skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN); } else { (*skb).dev = (*tunnel).dev; } if !tun_dst.is_null() { skb_dst_set(skb, tun_dst as *mut dst_entry); } gro_cells_receive(&mut (*tunnel).gro_cells, skb); 0
 }
 
 // The remaining exported helpers retain the kernel ABI and direct operation ordering.
@@ -122,7 +122,7 @@ pub unsafe fn ip_tunnel_encap_setup(t: *mut ip_tunnel, e: *mut ip_tunnel_encap) 
 
 // Direct translations of the remaining large transmit/control/netns routines.
 // Their external kernel operations and conditional IPv6 branches are preserved verbatim in structure.
-pub unsafe fn ip_tunnel_change_mtu(dev: *mut net_device, new_mtu: c_int) -> c_int { let t = netdev_priv(dev); let th = (*t).hlen + core::mem::size_of::<iphdr>() as c_int; let mut max = IP_MAX_MTU - th - if (*dev).type == ARPHRD_ETHER { (*dev).hard_header_len } else { 0 }; if new_mtu < ETH_MIN_MTU || new_mtu > max { return -EINVAL; } WRITE_ONCE!((*dev).mtu, new_mtu); 0 }
+pub unsafe fn ip_tunnel_change_mtu(dev: *mut net_device, new_mtu: c_int) -> c_int { let t = netdev_priv(dev); let th = (*t).hlen + core::mem::size_of::<iphdr>() as c_int; let mut max = IP_MAX_MTU - th - if (*dev).r#type == ARPHRD_ETHER { (*dev).hard_header_len } else { 0 }; if new_mtu < ETH_MIN_MTU || new_mtu > max { return -EINVAL; } WRITE_ONCE!((*dev).mtu, new_mtu); 0 }
 pub unsafe fn ip_tunnel_get_link_net(dev: *const net_device) -> *mut net { READ_ONCE!((*netdev_priv(dev as *mut net_device)).net) }
 pub unsafe fn ip_tunnel_get_iflink(dev: *const net_device) -> c_int { READ_ONCE!((*netdev_priv(dev as *mut net_device)).parms.link) }
 pub unsafe fn ip_tunnel_setup(dev: *mut net_device, net_id: c_uint) { (*netdev_priv(dev)).ip_tnl_net_id = net_id; }

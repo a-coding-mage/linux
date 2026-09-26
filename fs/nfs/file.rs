@@ -105,8 +105,8 @@ unsafe fn nfs_check_dirty_writeback(folio:*mut folio,dirty:*mut bool,writeback:*
 unsafe fn nfs_launder_folio(folio:*mut folio)->i32{let inode=(*(*folio).mapping).host;folio_wait_private_2(folio);nfs_wb_folio(inode,folio)}
 
 // CONFIG_SWAP-dependent callbacks and the remaining kernel operation tables.
-#[cfg(feature="CONFIG_SWAP")] unsafe fn nfs_swap_submit_write(ctx:*mut swap_io_ctx){let sio=(*ctx).sio;let mut iter=core::mem::zeroed();swap_fs_prepare_rw(ctx,WRITE,&mut iter);let ret=nfs_file_direct_write(&mut (*sio).iocb,&mut iter,true);if ret!=-EIOCBQUEUED{((*sio).iocb.ki_complete)(&mut (*sio).iocb,ret);}}
-#[cfg(feature="CONFIG_SWAP")] unsafe fn nfs_swap_submit_read(ctx:*mut swap_io_ctx){let sio=(*ctx).sio;let mut iter=core::mem::zeroed();swap_fs_prepare_rw(ctx,READ,&mut iter);let ret=nfs_file_direct_read(&mut (*sio).iocb,&mut iter,true);if ret!=-EIOCBQUEUED{((*sio).iocb.ki_complete)(&mut (*sio).iocb,ret);}}
+#[cfg(CONFIG_SWAP)] unsafe fn nfs_swap_submit_write(ctx:*mut swap_io_ctx){let sio=(*ctx).sio;let mut iter=core::mem::zeroed();swap_fs_prepare_rw(ctx,WRITE,&mut iter);let ret=nfs_file_direct_write(&mut (*sio).iocb,&mut iter,true);if ret!=-EIOCBQUEUED{((*sio).iocb.ki_complete)(&mut (*sio).iocb,ret);}}
+#[cfg(CONFIG_SWAP)] unsafe fn nfs_swap_submit_read(ctx:*mut swap_io_ctx){let sio=(*ctx).sio;let mut iter=core::mem::zeroed();swap_fs_prepare_rw(ctx,READ,&mut iter);let ret=nfs_file_direct_read(&mut (*sio).iocb,&mut iter,true);if ret!=-EIOCBQUEUED{((*sio).iocb.ki_complete)(&mut (*sio).iocb,ret);}}
 
 pub static NFS_FILE_AOPS: address_space_operations = address_space_operations { read_folio:Some(nfs_read_folio), readahead:Some(nfs_readahead), dirty_folio:Some(filemap_dirty_folio), writepages:Some(nfs_writepages), write_begin:Some(nfs_write_begin), write_end:Some(nfs_write_end), invalidate_folio:Some(nfs_invalidate_folio), release_folio:Some(nfs_release_folio), migrate_folio:Some(nfs_migrate_folio), launder_folio:Some(nfs_launder_folio), is_dirty_writeback:Some(nfs_check_dirty_writeback), error_remove_folio:Some(generic_error_remove_folio), swap_activate:None, swap_deactivate:None };
 

@@ -69,8 +69,8 @@ extern "C" {
  */
 #[macro_export]
 macro_rules! IRQCHIP_PLATFORM_DRIVER_BEGIN {
-    ($drv_name:ident) => {
-        static $drv_name##_irqchip_match_table: [of_device_id; 1] = [];
+    ($drv_name:tt) => {
+        static ::kernel::macros::paste!([<$drv_name _irqchip_match_table>]): [of_device_id; 1] = [];
     };
 }
 

@@ -52,14 +52,14 @@ pub const LOST_IN_BURST_PERIOD: u8 = 4;
 }
 
 extern "C" {
- fn get_random_u32()->u32; fn prandom_u32_state(*mut rnd_state)->u32; fn get_random_u64()->u64;
- fn ktime_get_ns()->u64; fn reciprocal_divide(u64,reciprocal_value)->u32; fn div64_u64(u64,u64)->u64;
- fn qdisc_priv(*mut Qdisc)->*mut netem_sched_data; fn qdisc_pkt_len(*mut sk_buff)->u32;
- fn qdisc_cb_private_validate(*mut sk_buff,usize); fn qdisc_skb_cb(*mut sk_buff)->*mut netem_skb_cb;
- fn rb_first(*mut rb_root)->*mut rb_node; fn rb_next(*mut rb_node)->*mut rb_node; fn rb_erase(*mut rb_node,*mut rb_root);
- fn rtnl_kfree_skbs(*mut sk_buff,*mut sk_buff); fn qdisc_qlen_inc(*mut Qdisc); fn qdisc_qlen_dec(*mut Qdisc);
- fn rb_to_skb(*mut rb_node)->*mut sk_buff; fn rb_link_node(*mut rb_node,*mut rb_node,*mut *mut rb_node); fn rb_insert_color(*mut rb_node,*mut rb_root);
- fn prandom_seed_state(*mut rnd_state,u64); fn mul_u64_u32_shr(u64,u64,u32)->i64;
+ fn get_random_u32()->u32; fn prandom_u32_state(_: *mut rnd_state)->u32; fn get_random_u64()->u64;
+ fn ktime_get_ns()->u64; fn reciprocal_divide(_: u64,_: reciprocal_value)->u32; fn div64_u64(_: u64,_: u64)->u64;
+ fn qdisc_priv(_: *mut Qdisc)->*mut netem_sched_data; fn qdisc_pkt_len(_: *mut sk_buff)->u32;
+ fn qdisc_cb_private_validate(_: *mut sk_buff,_: usize); fn qdisc_skb_cb(_: *mut sk_buff)->*mut netem_skb_cb;
+ fn rb_first(_: *mut rb_root)->*mut rb_node; fn rb_next(_: *mut rb_node)->*mut rb_node; fn rb_erase(_: *mut rb_node,_: *mut rb_root);
+ fn rtnl_kfree_skbs(_: *mut sk_buff,_: *mut sk_buff); fn qdisc_qlen_inc(_: *mut Qdisc); fn qdisc_qlen_dec(_: *mut Qdisc);
+ fn rb_to_skb(_: *mut rb_node)->*mut sk_buff; fn rb_link_node(_: *mut rb_node,_: *mut rb_node,_: *mut *mut rb_node); fn rb_insert_color(_: *mut rb_node,_: *mut rb_root);
+ fn prandom_seed_state(_: *mut rnd_state,_: u64); fn mul_u64_u32_shr(_: u64,_: u64,_: u32)->i64;
 }
 
 #[inline] unsafe fn netem_skb_cb(skb:*mut sk_buff)->*mut netem_skb_cb { qdisc_cb_private_validate(skb, core::mem::size_of::<netem_skb_cb>()); qdisc_skb_cb(skb) }

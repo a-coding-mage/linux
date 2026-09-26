@@ -5,7 +5,7 @@ use core::ffi::{c_char, c_int, c_long, c_ulong};
 
 pub const FADUMP_MAX_MEM_REGS: usize = 128;
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const MAX_BOOT_MEM_RATIO: c_int = 4;
 
 /* C macro: (memblock.memblock_type.cnt). */
@@ -14,14 +14,14 @@ macro_rules! memblock_num_regions {
     ($memblock_type:ident) => { memblock.$memblock_type.cnt };
 }
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_REGISTER: c_int = 1;
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_UNREGISTER: c_int = 2;
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_INVALIDATE: c_int = 3;
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 #[inline]
 pub unsafe fn fadump_str_to_u64(mut str_: *const c_char) -> u64 {
     let mut val: u64 = 0;
@@ -39,19 +39,19 @@ pub unsafe fn fadump_str_to_u64(mut str_: *const c_char) -> u64 {
     val
 }
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_CPU_UNKNOWN: u32 = !0u32;
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_HEADER_VERSION: u32 = 1;
 pub const RNG_NAME_SZ: usize = 16;
 
 /* The C macros below invoke fadump_str_to_u64 on string literals. */
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_CRASH_INFO_MAGIC_OLD: u64 = 0x4641_444d_5049_4e46;
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 pub const FADUMP_CRASH_INFO_MAGIC: u64 = 0x4641_444d_5053_4947;
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 #[repr(C)]
 pub struct fadump_crash_info_header {
     pub magic_number: u64,
@@ -65,14 +65,14 @@ pub struct fadump_crash_info_header {
     pub cpu_mask: cpumask,
 }
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 #[repr(C)]
 pub struct fadump_memory_range {
     pub base: u64,
     pub size: u64,
 }
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 #[repr(C)]
 pub struct fadump_mrange_info {
     pub name: [c_char; RNG_NAME_SZ],
@@ -83,7 +83,7 @@ pub struct fadump_mrange_info {
     pub is_static: bool,
 }
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 #[repr(C)]
 pub struct fw_dump {
     pub reserve_dump_area_start: c_ulong,
@@ -119,7 +119,7 @@ pub struct fw_dump {
 }
 
 /* C function pointer declarations are represented as nullable C ABI pointers. */
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 #[repr(C)]
 pub struct fadump_ops {
     pub fadump_init_mem_struct: Option<unsafe extern "C" fn(*mut fw_dump) -> u64>,
@@ -136,7 +136,7 @@ pub struct fadump_ops {
     pub fadump_max_boot_mem_rgns: Option<unsafe extern "C" fn() -> c_int>,
 }
 
-#[cfg(not(feature = "CONFIG_PRESERVE_FA_DUMP"))]
+#[cfg(not(CONFIG_PRESERVE_FA_DUMP))]
 extern "C" {
     pub fn fadump_setup_cpu_notes_buf(num_cpus: u32) -> i32;
     pub fn fadump_free_cpu_notes_buf();
@@ -145,21 +145,21 @@ extern "C" {
     pub fn is_fadump_reserved_mem_contiguous() -> bool;
 }
 
-#[cfg(feature = "CONFIG_PRESERVE_FA_DUMP")]
+#[cfg(CONFIG_PRESERVE_FA_DUMP)]
 #[repr(C)]
 pub struct fw_dump {
     pub boot_mem_top: u64,
     pub dump_active: u64,
 }
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 extern "C" { pub fn rtas_fadump_dt_scan(fadump_conf: *mut fw_dump, node: u64); }
-#[cfg(not(feature = "CONFIG_PPC_PSERIES"))]
+#[cfg(not(CONFIG_PPC_PSERIES))]
 #[inline] pub unsafe fn rtas_fadump_dt_scan(_: *mut fw_dump, _: u64) {}
 
-#[cfg(feature = "CONFIG_PPC_POWERNV")]
+#[cfg(CONFIG_PPC_POWERNV)]
 extern "C" { pub fn opal_fadump_dt_scan(fadump_conf: *mut fw_dump, node: u64); }
-#[cfg(not(feature = "CONFIG_PPC_POWERNV"))]
+#[cfg(not(CONFIG_PPC_POWERNV))]
 #[inline] pub unsafe fn opal_fadump_dt_scan(_: *mut fw_dump, _: u64) {}
 
 /* External types supplied by other headers. */

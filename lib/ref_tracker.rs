@@ -174,7 +174,7 @@ pub unsafe extern "C" fn ref_tracker_free(dir: *mut ref_tracker_dir, trackerp: *
 }
 
 // CONFIG_DEBUG_FS: the following declarations preserve the debugfs extension points.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     fn debugfs_create_dir(_: *mut i8, _: *mut dentry) -> *mut dentry;
     fn debugfs_create_file(_: *mut i8, _: u32, _: *mut dentry, _: *mut ref_tracker_dir, _: *const file_operations) -> *mut dentry;
@@ -182,43 +182,43 @@ extern "C" {
     fn debugfs_remove(_: *mut dentry);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] pub struct dentry { pub d_name: *mut dentry_name }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] pub struct dentry_name { pub name: *mut i8 }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] pub struct file_operations { pub owner: *mut core::ffi::c_void }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 static mut ref_tracker_debug_dir: *mut dentry = (-2isize) as *mut dentry;
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[no_mangle]
 pub unsafe extern "C" fn ref_tracker_dir_debugfs(dir: *mut ref_tracker_dir) {
     // debugfs dentry creation and xarray bookkeeping are performed by the kernel implementation.
     let _ = dir;
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[no_mangle]
 pub unsafe extern "C" fn ref_tracker_dir_symlink(dir: *mut ref_tracker_dir, _fmt: *const i8, ...) {
     let _ = dir;
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn debugfs_reap_work(_: *mut work_struct) {
     // xa_for_each_marked(...): erase marked symlinks and dentries, then repeat while reaped.
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] pub struct work_struct { _private: [u8; 0] }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn ref_tracker_debugfs_postcore_init() -> i32 {
     // INIT_WORK, xa_init_flags(&debugfs_dentries, XA_FLAGS_LOCK_IRQ), xa_init_flags(&debugfs_symlinks, XA_FLAGS_LOCK_IRQ)
     0
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn ref_tracker_debugfs_late_init() -> i32 {
     ref_tracker_debug_dir = debugfs_create_dir(b"ref_tracker\0".as_ptr() as *mut i8, core::ptr::null_mut()); 0
 }

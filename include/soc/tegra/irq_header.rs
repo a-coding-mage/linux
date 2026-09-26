@@ -4,13 +4,13 @@
  */
 
 // Equivalent of the C condition: CONFIG_ARM && CONFIG_ARCH_TEGRA.
-#[cfg(all(target_arch = "arm", feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(all(target_arch = "arm", CONFIG_ARCH_TEGRA))]
 extern "C" {
     pub fn tegra_pending_sgi() -> bool;
 }
 
 // Fallback when CONFIG_ARM and CONFIG_ARCH_TEGRA are not both enabled.
-#[cfg(not(all(target_arch = "arm", feature = "CONFIG_ARCH_TEGRA")))]
+#[cfg(not(all(target_arch = "arm", CONFIG_ARCH_TEGRA)))]
 #[inline]
 pub fn tegra_pending_sgi() -> bool {
     false

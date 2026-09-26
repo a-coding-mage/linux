@@ -10,7 +10,7 @@
 pub const PHYS_OFFSET: u64 = 0x20000000u64;
 
 /* CONFIG_64BIT build-time condition preserved from the source header. */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const CAC_BASE: u64 = 0xA800000000000000u64;
 
 /* Dependency supplied by the corresponding asm/mach-generic/spaces.h translation. */

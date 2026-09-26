@@ -17,7 +17,7 @@
 #[allow(dead_code)]
 unsafe fn common() {
     // Equivalent to IS_ENABLED(CONFIG_HYPERV_VTL_MODE).
-    #[cfg(feature = "CONFIG_HYPERV_VTL_MODE")]
+    #[cfg(CONFIG_HYPERV_VTL_MODE)]
     {
         OFFSET!(MSHV_VTL_CPU_CONTEXT_rax, mshv_vtl_cpu_context, rax);
         OFFSET!(MSHV_VTL_CPU_CONTEXT_rcx, mshv_vtl_cpu_context, rcx);

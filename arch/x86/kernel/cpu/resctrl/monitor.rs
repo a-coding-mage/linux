@@ -82,11 +82,11 @@ pub unsafe fn resctrl_arch_reset_rmid(r: *mut rdt_resource, d: *mut rdt_l3_mon_d
 pub unsafe fn resctrl_arch_reset_rmid_all(r: *mut rdt_resource, d: *mut rdt_l3_mon_domain) {
     let hw_dom = resctrl_to_arch_mon_dom(d);
     let mut eventid: resctrl_event_id = core::mem::zeroed();
-    for_each_mbm_event_id!(eventid) {
+    for_each_mbm_event_id!(eventid, {
         if !resctrl_is_mon_event_enabled(eventid) { continue; }
         let idx = MBM_STATE_IDX(eventid);
         core::ptr::write_bytes((*hw_dom).arch_mbm_states[idx], 0, (*r).mon.num_rmid as usize);
-    }
+    });
 }
 
 unsafe fn mbm_overflow_count(prev_msr: u64, cur_msr: u64, width: u32) -> u64 {
@@ -165,10 +165,10 @@ unsafe fn resctrl_abmc_set_one_amd(arg: *mut core::ffi::c_void) { let enable = a
 unsafe fn _resctrl_abmc_enable(r: *mut rdt_resource, enable: bool) {
     lockdep_assert_cpus_held!();
     let mut d: *mut rdt_l3_mon_domain = core::ptr::null_mut();
-    list_for_each_entry_rcu!(d, &(*r).mon_domains, hdr.list, lockdep_is_cpus_held!()) {
+    list_for_each_entry_rcu!(d, &(*r).mon_domains, hdr.list, lockdep_is_cpus_held!(), {
         on_each_cpu_mask(&(*d).hdr.cpu_mask, resctrl_abmc_set_one_amd, &enable as *const bool as *mut _, 1);
         resctrl_arch_reset_rmid_all(r, d);
-    }
+    });
 }
 
 pub unsafe fn resctrl_arch_mbm_cntr_assign_set(r: *mut rdt_resource, enable: bool) -> i32 {

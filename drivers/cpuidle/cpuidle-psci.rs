@@ -98,7 +98,7 @@ unsafe fn psci_idle_syscore_switch(suspend: bool) {
     let mut cleared = false;
     let mut dev: *mut Device;
     let mut cpu: c_int;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         dev = per_cpu_ptr(&psci_cpuidle_data, cpu).as_ref().unwrap().dev;
         if !dev.is_null() && suspend { dev_pm_genpd_suspend(dev); }
         else if !dev.is_null() {
@@ -108,7 +108,7 @@ unsafe fn psci_idle_syscore_switch(suspend: bool) {
             /* Clear domain state to re-start fresh. */
             if !cleared { psci_clear_domain_state(); cleared = true; }
         }
-    }
+    });
 }
 
 unsafe fn psci_idle_syscore_suspend(data: *mut c_void) -> c_int { psci_idle_syscore_switch(true); 0 }
@@ -215,7 +215,7 @@ unsafe fn psci_idle_init_cpu(dev: *mut Device, cpu: c_int) -> c_int {
 unsafe fn psci_cpuidle_probe(fdev: *mut FauxDevice) -> c_int {
     let mut cpu: c_int = 0;
     let mut ret;
-    for_each_present_cpu!(cpu) { ret = psci_idle_init_cpu(&mut (*fdev).dev, cpu); if ret != 0 { while cpu > 0 { cpu -= 1; let dev = per_cpu(cpuidle_devices, cpu); let drv = cpuidle_get_cpu_driver(dev); cpuidle_unregister(drv); psci_cpu_deinit_idle(cpu); } return ret; } }
+    for_each_present_cpu!(cpu, { ret = psci_idle_init_cpu(&mut (*fdev).dev, cpu); if ret != 0 { while cpu > 0 { cpu -= 1; let dev = per_cpu(cpuidle_devices, cpu); let drv = cpuidle_get_cpu_driver(dev); cpuidle_unregister(drv); psci_cpu_deinit_idle(cpu); } return ret; } });
     psci_idle_init_syscore(); psci_idle_init_cpuhp(); 0
 }
 

@@ -24,12 +24,12 @@ unsafe fn __alloc_atm_dev(type_: *const c_char) -> *mut atm_dev {
 
 unsafe fn __atm_dev_lookup(number: c_int) -> *mut atm_dev {
     let mut dev: *mut atm_dev = core::ptr::null_mut();
-    list_for_each_entry!(dev, &mut atm_devs, dev_list) {
+    list_for_each_entry!(dev, &mut atm_devs, dev_list, {
         if (*dev).number == number {
             atm_dev_hold(dev);
             return dev;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -104,12 +104,12 @@ unsafe fn fetch_stats(dev: *mut atm_dev, arg: *mut atm_dev_stats, zero: bool) ->
 pub unsafe fn atm_getnames(buf: *mut c_void, iobuf_len: *mut c_int) -> c_int {
     let len = get_user(iobuf_len); let mut size = 0usize;
     mutex_lock(&mut atm_dev_mutex);
-    list_for_each!(p, &atm_devs) { size += core::mem::size_of::<c_int>(); }
+    list_for_each!(p, &atm_devs, { size += core::mem::size_of::<c_int>(); });
     if size > len as usize { mutex_unlock(&mut atm_dev_mutex); return -E2BIG; }
     let tmp_buf = kmalloc(size, GFP_ATOMIC) as *mut c_int;
     if tmp_buf.is_null() { mutex_unlock(&mut atm_dev_mutex); return -ENOMEM; }
     let mut tmp_p = tmp_buf;
-    list_for_each_entry!(dev, &mut atm_devs, dev_list) { *tmp_p = (*dev).number; tmp_p = tmp_p.add(1); }
+    list_for_each_entry!(dev, &mut atm_devs, dev_list, { *tmp_p = (*dev).number; tmp_p = tmp_p.add(1); });
     mutex_unlock(&mut atm_dev_mutex);
     let error = if copy_to_user(buf, tmp_buf, size) != 0 || put_user(size as c_int, iobuf_len) != 0 { -EFAULT } else { 0 };
     kfree(tmp_buf as *mut c_void); error

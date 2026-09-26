@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#[cfg(feature = "CONFIG_USER_RETURN_NOTIFIER")]
+#[cfg(CONFIG_USER_RETURN_NOTIFIER)]
 #[repr(C)]
 pub struct UserReturnNotifier {
     pub on_user_return: Option<unsafe extern "C" fn(urn: *mut UserReturnNotifier)>,
     pub link: HListNode,
 }
 
-#[cfg(feature = "CONFIG_USER_RETURN_NOTIFIER")]
+#[cfg(CONFIG_USER_RETURN_NOTIFIER)]
 extern "C" {
     pub fn user_return_notifier_register(urn: *mut UserReturnNotifier);
     pub fn user_return_notifier_unregister(urn: *mut UserReturnNotifier);
@@ -19,7 +19,7 @@ extern "C" {
     pub fn fire_user_return_notifiers();
 }
 
-#[cfg(feature = "CONFIG_USER_RETURN_NOTIFIER")]
+#[cfg(CONFIG_USER_RETURN_NOTIFIER)]
 #[inline]
 pub unsafe fn propagate_user_return_notify(
     prev: *mut TaskStruct,
@@ -31,17 +31,17 @@ pub unsafe fn propagate_user_return_notify(
     }
 }
 
-#[cfg(feature = "CONFIG_USER_RETURN_NOTIFIER")]
+#[cfg(CONFIG_USER_RETURN_NOTIFIER)]
 #[inline]
 pub unsafe fn clear_user_return_notifier(p: *mut TaskStruct) {
     clear_tsk_thread_flag(p, TIF_USER_RETURN_NOTIFY);
 }
 
-#[cfg(not(feature = "CONFIG_USER_RETURN_NOTIFIER"))]
+#[cfg(not(CONFIG_USER_RETURN_NOTIFIER))]
 #[repr(C)]
 pub struct UserReturnNotifier {}
 
-#[cfg(not(feature = "CONFIG_USER_RETURN_NOTIFIER"))]
+#[cfg(not(CONFIG_USER_RETURN_NOTIFIER))]
 #[inline]
 pub unsafe fn propagate_user_return_notify(
     _prev: *mut TaskStruct,
@@ -49,11 +49,11 @@ pub unsafe fn propagate_user_return_notify(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_USER_RETURN_NOTIFIER"))]
+#[cfg(not(CONFIG_USER_RETURN_NOTIFIER))]
 #[inline]
 pub fn fire_user_return_notifiers() {}
 
-#[cfg(not(feature = "CONFIG_USER_RETURN_NOTIFIER"))]
+#[cfg(not(CONFIG_USER_RETURN_NOTIFIER))]
 #[inline]
 pub unsafe fn clear_user_return_notifier(_p: *mut TaskStruct) {}
 

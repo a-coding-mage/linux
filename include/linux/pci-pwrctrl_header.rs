@@ -58,7 +58,7 @@ unsafe extern "C" {
 }
 
 /* IS_ENABLED(CONFIG_PCI_PWRCTRL) selects these declarations at build time. */
-#[cfg(feature = "CONFIG_PCI_PWRCTRL")]
+#[cfg(CONFIG_PCI_PWRCTRL)]
 unsafe extern "C" {
     pub fn pci_pwrctrl_create_devices(parent: *mut device) -> i32;
     pub fn pci_pwrctrl_destroy_devices(parent: *mut device);
@@ -66,23 +66,23 @@ unsafe extern "C" {
     pub fn pci_pwrctrl_power_off_devices(parent: *mut device);
 }
 
-#[cfg(not(feature = "CONFIG_PCI_PWRCTRL"))]
+#[cfg(not(CONFIG_PCI_PWRCTRL))]
 #[inline]
 pub unsafe fn pci_pwrctrl_create_devices(_parent: *mut device) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PCI_PWRCTRL"))]
+#[cfg(not(CONFIG_PCI_PWRCTRL))]
 #[inline]
 pub unsafe fn pci_pwrctrl_destroy_devices(_parent: *mut device) {}
 
-#[cfg(not(feature = "CONFIG_PCI_PWRCTRL"))]
+#[cfg(not(CONFIG_PCI_PWRCTRL))]
 #[inline]
 pub unsafe fn pci_pwrctrl_power_on_devices(_parent: *mut device) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PCI_PWRCTRL"))]
+#[cfg(not(CONFIG_PCI_PWRCTRL))]
 #[inline]
 pub unsafe fn pci_pwrctrl_power_off_devices(_parent: *mut device) {}
 

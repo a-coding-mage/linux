@@ -36,10 +36,10 @@ unsafe extern "C" fn show_smt_snooze_delay(
 
 macro_rules! __sysfs_sprsetup_read_write {
     ($name:ident, $address:expr, $extra:block) => {
-        unsafe extern "C" fn concat_idents!(read_, $name)(val: *mut c_void) {
+        unsafe extern "C" fn concat_idents(read_, $name) read_, $name(val: *mut c_void) {
             *(val as *mut c_ulong) = mfspr($address);
         }
-        unsafe extern "C" fn concat_idents!(write_, $name)(val: *mut c_void) {
+        unsafe extern "C" fn concat_idents(write_, $name) write_, $name(val: *mut c_void) {
             $extra
             mtspr($address, *(val as *mut c_ulong));
         }
@@ -48,7 +48,7 @@ macro_rules! __sysfs_sprsetup_read_write {
 
 macro_rules! __sysfs_sprsetup_show_store {
     ($name:ident) => {
-        unsafe extern "C" fn concat_idents!(show_, $name)(dev: *mut device,
+        unsafe extern "C" fn concat_idents(show_, $name) show_, $name(dev: *mut device,
             _attr: *mut device_attribute, buf: *mut c_char) -> isize {
             let cpu = container_of_cpu(dev);
             let mut val: c_ulong = 0;
@@ -56,7 +56,7 @@ macro_rules! __sysfs_sprsetup_show_store {
                                      &mut val as *mut _ as *mut c_void, 1);
             sysfs_emit!(buf, "%lx\n", val)
         }
-        unsafe extern "C" fn concat_idents!(store_, $name)(dev: *mut device,
+        unsafe extern "C" fn concat_idents(store_, $name) store_, $name(dev: *mut device,
             _attr: *mut device_attribute, buf: *const c_char, count: usize) -> isize {
             let cpu = container_of_cpu(dev);
             let mut val: c_ulong = 0;
@@ -111,10 +111,10 @@ unsafe extern "C" fn store_dscr_default(_dev: *mut device, _attr: *mut device_at
     count as isize
 }
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 const MAX_BIT: u32 = 63;
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 unsafe fn get_idle_ticks_bit(ns: u64) -> u32 {
     let cycle = if ns >= 10000 {
         div_u64(ns + 500, 1000) * tb_ticks_per_usec
@@ -124,12 +124,12 @@ unsafe fn get_idle_ticks_bit(ns: u64) -> u32 {
     if cycle == 0 { 0 } else { ilog2(cycle) }
 }
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 unsafe extern "C" fn do_show_pwrmgtcr0(val: *mut c_void) {
     *(val as *mut u32) = mfspr(SPRN_PWRMGTCR0) as u32;
 }
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 unsafe extern "C" fn show_pw20_state(dev: *mut device, _attr: *mut device_attribute,
                                       buf: *mut c_char) -> isize {
     let mut value = 0u32;
@@ -139,7 +139,7 @@ unsafe extern "C" fn show_pw20_state(dev: *mut device, _attr: *mut device_attrib
     sysfs_emit!(buf, "%u\n", if value != 0 { 1 } else { 0 })
 }
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 unsafe extern "C" fn do_store_pw20_state(val: *mut c_void) {
     let value = *(val as *mut u32);
     let mut state = mfspr(SPRN_PWRMGTCR0) as u32;
@@ -163,7 +163,7 @@ unsafe extern "C" fn register_cpu_online(cpu: c_uint) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn unregister_cpu_online(cpu: c_uint) -> c_int {
     let c = per_cpu_cpu_device(cpu);
     if WARN_RATELIMIT!(!c.hotpluggable, "cpu %d can't be offlined\n", cpu) { return -EBUSY; }
@@ -173,13 +173,13 @@ unsafe extern "C" fn unregister_cpu_online(cpu: c_uint) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_ARCH_CPU_PROBE_RELEASE")]
+#[cfg(CONFIG_ARCH_CPU_PROBE_RELEASE)]
 pub unsafe extern "C" fn arch_cpu_probe(buf: *const c_char, count: usize) -> isize {
     if !ppc_md.cpu_probe.is_none() { return ppc_md.cpu_probe.unwrap()(buf, count); }
     -EINVAL
 }
 
-#[cfg(feature = "CONFIG_ARCH_CPU_PROBE_RELEASE")]
+#[cfg(CONFIG_ARCH_CPU_PROBE_RELEASE)]
 pub unsafe extern "C" fn arch_cpu_release(buf: *const c_char, count: usize) -> isize {
     if !ppc_md.cpu_release.is_none() { return ppc_md.cpu_release.unwrap()(buf, count); }
     -EINVAL
@@ -215,13 +215,13 @@ pub unsafe extern "C" fn cpu_remove_dev_attr_group(attrs: *mut attribute_group) 
     mutex_unlock(&cpu_mutex);
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe extern "C" fn sysfs_add_device_to_node(dev: *mut device, nid: c_int) -> c_int {
     let node = node_devices[nid as usize];
     sysfs_create_link(&mut (*node).dev.kobj, &mut (*dev).kobj, kobject_name(&(*dev).kobj))
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe extern "C" fn sysfs_remove_device_from_node(dev: *mut device, nid: c_int) {
     let node = node_devices[nid as usize];
     sysfs_remove_link(&mut (*node).dev.kobj, kobject_name(&(*dev).kobj));
@@ -236,7 +236,7 @@ unsafe extern "C" fn show_physical_id(dev: *mut device, _attr: *mut device_attri
 unsafe extern "C" fn topology_init() -> c_int {
     for_each_possible_cpu!(cpu, {
         let c = per_cpu_cpu_device(cpu);
-        #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+        #[cfg(CONFIG_HOTPLUG_CPU)]
         if !smp_ops.is_null() && (*smp_ops).cpu_offline_self.is_some() { c.hotpluggable = 1; }
         if cpu_online(cpu) || c.hotpluggable != 0 {
             register_cpu(c, cpu);

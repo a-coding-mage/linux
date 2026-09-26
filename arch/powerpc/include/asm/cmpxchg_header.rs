@@ -71,7 +71,7 @@ macro_rules! simple_xchg {
         pub unsafe fn $name(p: *mut $t, val: usize) -> usize {
             let mut prev: usize;
             core::arch::asm!("1: {load} {prev},0,{ptr}", "{store} {val},0,{ptr}", "bne- 1b",
-                load=$load, store=$store, prev=out(reg) prev, ptr=in(reg) p, val=in(reg) val,
+                $load=$load, $store=$store, prev=out(reg) prev, ptr=in(reg) p, val=in(reg) val,
                 options(nostack)); prev
         }
     };

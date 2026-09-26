@@ -45,13 +45,13 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
 
 /* Original source translated line-for-line context follows.
  * // SPDX-License-Identifier: GPL-2.0
- * /*
+ * / *
  *  * builtin-record.c
  *  *
  *  * Builtin record command: Record the profile of a workload
  *  * (or a CPU, or a PID) into the perf.data output file - for
  *  * later analysis via perf report.
- *  * /
+ *  */
  * #include "builtin.h"
  * 
  * #include "util/build-id.h"
@@ -134,8 +134,8 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * struct switch_output {
  * 	bool		 enabled;
  * 	bool		 signal;
- * 	unsigned long	 size;
- * 	unsigned long	 time;
+ * 	core::ffi::c_ulong	 size;
+ * 	core::ffi::c_ulong	 time;
  * 	const char	*str;
  * 	bool		 set;
  * 	char		 **filenames;
@@ -161,8 +161,8 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	struct mmap		**maps;
  * 	struct mmap		**overwrite_maps;
  * 	struct record		*rec;
- * 	unsigned long long	samples;
- * 	unsigned long		waking;
+ * 	core::ffi::c_ulonglong	samples;
+ * 	core::ffi::c_ulong		waking;
  * 	u64			bytes_written;
  * 	u64			bytes_transferred;
  * 	u64			bytes_compressed;
@@ -226,8 +226,8 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	const char		*filter_action;
  * 	const char		*uid_str;
  * 	struct switch_output	switch_output;
- * 	unsigned long long	samples;
- * 	unsigned long		output_max_size;	/* = 0: unlimited * /
+ * 	core::ffi::c_ulonglong	samples;
+ * 	core::ffi::c_ulong		output_max_size;	/* = 0: unlimited */
  * 	struct perf_debuginfod	debuginfod;
  * 	int			nr_threads;
  * 	struct thread_mask	*thread_masks;
@@ -247,10 +247,10 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	"SYS", "NODE", "CPU"
  * };
  * 
- * static int build_id__process_mmap(const struct perf_tool *tool, union perf_event *event,
- * 				  struct perf_sample *sample, struct machine *machine);
- * static int build_id__process_mmap2(const struct perf_tool *tool, union perf_event *event,
- * 				   struct perf_sample *sample, struct machine *machine);
+ * static int build_id__process_mmap(const struct perf_tool *tool, perf_event *event,
+ * 				  struct perf_sample *sample, machine *machine);
+ * static int build_id__process_mmap2(const struct perf_tool *tool, perf_event *event,
+ * 				   struct perf_sample *sample, machine *machine);
  * static int process_timestamp_boundary(const struct perf_tool *tool,
  * 				      union perf_event *event,
  * 				      struct perf_sample *sample,
@@ -263,59 +263,59 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * }
  * #endif
  * 
- * static int record__threads_enabled(struct record *rec)
+ * static int record__threads_enabled(record *rec)
  * {
- * 	return rec->opts.threads_spec;
+ * 	return (*rec).opts.threads_spec;
  * }
  * 
- * static bool switch_output_signal(struct record *rec)
+ * static bool switch_output_signal(record *rec)
  * {
- * 	return rec->switch_output.signal &&
+ * 	return (*rec).switch_output.signal &&
  * 	       trigger_is_ready(&switch_output_trigger);
  * }
  * 
- * static bool switch_output_size(struct record *rec)
+ * static bool switch_output_size(record *rec)
  * {
- * 	return rec->switch_output.size &&
+ * 	return (*rec).switch_output.size &&
  * 	       trigger_is_ready(&switch_output_trigger) &&
- * 	       (rec->bytes_written >= rec->switch_output.size);
+ * 	       ((*rec).bytes_written >= (*rec).switch_output.size);
  * }
  * 
- * static bool switch_output_time(struct record *rec)
+ * static bool switch_output_time(record *rec)
  * {
- * 	return rec->switch_output.time &&
+ * 	return (*rec).switch_output.time &&
  * 	       trigger_is_ready(&switch_output_trigger);
  * }
  * 
- * static u64 record__bytes_written(struct record *rec)
+ * static u64 record__bytes_written(record *rec)
  * {
- * 	return rec->bytes_written + rec->thread_bytes_written;
+ * 	return (*rec).bytes_written + (*rec).thread_bytes_written;
  * }
  * 
- * static bool record__output_max_size_exceeded(struct record *rec)
+ * static bool record__output_max_size_exceeded(record *rec)
  * {
- * 	return rec->output_max_size &&
- * 	       (record__bytes_written(rec) >= rec->output_max_size);
+ * 	return (*rec).output_max_size &&
+ * 	       (record__bytes_written(rec) >= (*rec).output_max_size);
  * }
  * 
- * static int record__write(struct record *rec, struct mmap *map __maybe_unused,
+ * static int record__write(record *rec, mmap *map __maybe_unused,
  * 			 void *bf, size_t size)
  * {
- * 	struct perf_data_file *file = &rec->session->data->file;
+ * 	struct perf_data_file *file = (*(*(*&rec).session).data).file;
  * 
- * 	if (map && map->file)
- * 		file = map->file;
+ * 	if (map && (*map).file)
+ * 		file = (*map).file;
  * 
  * 	if (perf_data_file__write(file, bf, size) < 0) {
  * 		pr_err("failed to write perf data, error: %m\n");
  * 		return -1;
  * 	}
  * 
- * 	if (map && map->file) {
- * 		thread->bytes_written += size;
- * 		rec->thread_bytes_written += size;
+ * 	if (map && (*map).file) {
+ * 		(*thread).bytes_written += size;
+ * 		(*rec).thread_bytes_written += size;
  * 	} else {
- * 		rec->bytes_written += size;
+ * 		(*rec).bytes_written += size;
  * 	}
  * 
  * 	if (record__output_max_size_exceeded(rec) && !done) {
@@ -331,29 +331,29 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__aio_enabled(struct record *rec);
- * static int record__comp_enabled(struct record *rec);
- * static ssize_t zstd_compress(struct perf_session *session, struct mmap *map,
+ * static int record__aio_enabled(record *rec);
+ * static int record__comp_enabled(record *rec);
+ * static ssize_t zstd_compress(perf_session *session, mmap *map,
  * 			    void *dst, size_t dst_size, void *src, size_t src_size);
  * 
  * #ifdef HAVE_AIO_SUPPORT
- * static int record__aio_write(struct aiocb *cblock, int trace_fd,
+ * static int record__aio_write(aiocb *cblock, int trace_fd,
  * 		void *buf, size_t size, off_t off)
  * {
  * 	int rc;
  * 
- * 	cblock->aio_fildes = trace_fd;
- * 	cblock->aio_buf    = buf;
- * 	cblock->aio_nbytes = size;
- * 	cblock->aio_offset = off;
- * 	cblock->aio_sigevent.sigev_notify = SIGEV_NONE;
+ * 	(*cblock).aio_fildes = trace_fd;
+ * 	(*cblock).aio_buf    = buf;
+ * 	(*cblock).aio_nbytes = size;
+ * 	(*cblock).aio_offset = off;
+ * 	(*cblock).aio_sigevent.sigev_notify = SIGEV_NONE;
  * 
  * 	do {
  * 		rc = aio_write(cblock);
  * 		if (rc == 0) {
  * 			break;
  * 		} else if (errno != EAGAIN) {
- * 			cblock->aio_fildes = -1;
+ * 			(*cblock).aio_fildes = -1;
  * 			pr_err("failed to queue perf data, error: %m\n");
  * 			break;
  * 		}
@@ -362,7 +362,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return rc;
  * }
  * 
- * static int record__aio_complete(struct mmap *md, struct aiocb *cblock)
+ * static int record__aio_complete(mmap *md, aiocb *cblock)
  * {
  * 	void *rem_buf;
  * 	off_t rem_off;
@@ -381,26 +381,26 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		written = 0;
  * 	}
  * 
- * 	rem_size = cblock->aio_nbytes - written;
+ * 	rem_size = (*cblock).aio_nbytes - written;
  * 
  * 	if (rem_size == 0) {
- * 		cblock->aio_fildes = -1;
+ * 		(*cblock).aio_fildes = -1;
  * 		/*
  * 		 * md->refcount is incremented in record__aio_pushfn() for
  * 		 * every aio write request started in record__aio_push() so
  * 		 * decrement it because the request is now complete.
- * 		 * /
- * 		perf_mmap__put(&md->core);
+ * 		 */
+ * 		perf_mmap__put((*&md).core);
  * 		rc = 1;
  * 	} else {
  * 		/*
  * 		 * aio write request may require restart with the
  * 		 * remainder if the kernel didn't write whole
  * 		 * chunk at once.
- * 		 * /
- * 		rem_off = cblock->aio_offset + written;
- * 		rem_buf = (void *)(cblock->aio_buf + written);
- * 		record__aio_write(cblock, cblock->aio_fildes,
+ * 		 */
+ * 		rem_off = (*cblock).aio_offset + written;
+ * 		rem_buf = (void *)((*cblock).aio_buf + written);
+ * 		record__aio_write(cblock, (*cblock).aio_fildes,
  * 				rem_buf, rem_size, rem_off);
  * 		rc = 0;
  * 	}
@@ -408,16 +408,16 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return rc;
  * }
  * 
- * static int record__aio_sync(struct mmap *md, bool sync_all)
+ * static int record__aio_sync(mmap *md, bool sync_all)
  * {
- * 	struct aiocb **aiocb = md->aio.aiocb;
- * 	struct aiocb *cblocks = md->aio.cblocks;
- * 	struct timespec timeout = { 0, 1000 * 1000  * 1 }; /* 1ms * /
+ * 	struct aiocb **aiocb = (*md).aio.aiocb;
+ * 	struct aiocb *cblocks = (*md).aio.cblocks;
+ * 	struct timespec timeout = { 0, 1000 * 1000  * 1 }; /* 1ms */
  * 	int i, do_suspend;
  * 
  * 	do {
  * 		do_suspend = 0;
- * 		for (i = 0; i < md->aio.nr_cblocks; ++i) {
+ * 		for (i = 0; i < (*md).aio.nr_cblocks; ++i) {
  * 			if (cblocks[i].aio_fildes == -1 || record__aio_complete(md, &cblocks[i])) {
  * 				if (sync_all)
  * 					aiocb[i] = NULL;
@@ -428,7 +428,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				 * Started aio write is not complete yet
  * 				 * so it has to be waited before the
  * 				 * next allocation.
- * 				 * /
+ * 				 */
  * 				aiocb[i] = &cblocks[i];
  * 				do_suspend = 1;
  * 			}
@@ -436,7 +436,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		if (!do_suspend)
  * 			return -1;
  * 
- * 		while (aio_suspend((const struct aiocb **)aiocb, md->aio.nr_cblocks, &timeout)) {
+ * 		while (aio_suspend((const struct aiocb **)aiocb, (*md).aio.nr_cblocks, &timeout)) {
  * 			if (!(errno == EAGAIN || errno == EINTR))
  * 				pr_err("failed to sync perf data, error: %m\n");
  * 		}
@@ -449,7 +449,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	size_t		size;
  * };
  * 
- * static int record__aio_pushfn(struct mmap *map, void *to, void *buf, size_t size)
+ * static int record__aio_pushfn(mmap *map, void *to, void *buf, size_t size)
  * {
  * 	struct record_aio *aio = to;
  * 
@@ -465,21 +465,21 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 * crosses the upper bound of the kernel buffer. In this case we first move
  * 	 * part of data from map->start till the upper bound and then the remainder
  * 	 * from the beginning of the kernel buffer till the end of the data chunk.
- * 	 * /
+ * 	 */
  * 
- * 	if (record__comp_enabled(aio->rec)) {
- * 		ssize_t compressed = zstd_compress(aio->rec->session, NULL, aio->data + aio->size,
- * 						   mmap__mmap_len(map) - aio->size,
+ * 	if (record__comp_enabled((*aio).rec)) {
+ * 		ssize_t compressed = zstd_compress((*(*aio).rec).session, NULL, (*aio).data + (*aio).size,
+ * 						   mmap__mmap_len(map) - (*aio).size,
  * 						   buf, size);
  * 		if (compressed < 0)
  * 			return (int)compressed;
  * 
  * 		size = compressed;
  * 	} else {
- * 		memcpy(aio->data + aio->size, buf, size);
+ * 		memcpy((*aio).data + (*aio).size, buf, size);
  * 	}
  * 
- * 	if (!aio->size) {
+ * 	if ((*!aio).size) {
  * 		/*
  * 		 * Increment map->refcount to guard map->aio.data[] buffer
  * 		 * from premature deallocation because map object can be
@@ -489,37 +489,37 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * perf_mmap__put() is done at record__aio_complete()
  * 		 * after started aio request completion or at record__aio_push()
  * 		 * if the request failed to start.
- * 		 * /
- * 		perf_mmap__get(&map->core);
+ * 		 */
+ * 		perf_mmap__get((*&map).core);
  * 	}
  * 
- * 	aio->size += size;
+ * 	(*aio).size += size;
  * 
  * 	return size;
  * }
  * 
- * static int record__aio_push(struct record *rec, struct mmap *map, off_t *off)
+ * static int record__aio_push(record *rec, mmap *map, off_t *off)
  * {
  * 	int ret, idx;
- * 	int trace_fd = perf_data__fd(rec->session->data);
+ * 	int trace_fd = perf_data__fd((*(*rec).session).data);
  * 	struct record_aio aio = { .rec = rec, .size = 0 };
  * 
  * 	/*
  * 	 * Call record__aio_sync() to wait till map->aio.data[] buffer
  * 	 * becomes available after previous aio write operation.
- * 	 * /
+ * 	 */
  * 
  * 	idx = record__aio_sync(map, false);
- * 	aio.data = map->aio.data[idx];
+ * 	aio.data = (*map).aio.data[idx];
  * 	ret = perf_mmap__push(map, &aio, record__aio_pushfn);
- * 	if (ret != 0) /* ret > 0 - no data, ret < 0 - error * /
+ * 	if (ret != 0) /* ret > 0 - no data, ret < 0 - error */
  * 		return ret;
  * 
- * 	rec->samples++;
- * 	ret = record__aio_write(&(map->aio.cblocks[idx]), trace_fd, aio.data, aio.size, *off);
+ * 	(*rec).samples++;
+ * 	ret = record__aio_write(&((*map).aio.cblocks[idx]), trace_fd, aio.data, aio.size, *off);
  * 	if (!ret) {
  * 		*off += aio.size;
- * 		rec->bytes_written += aio.size;
+ * 		(*rec).bytes_written += aio.size;
  * 		if (switch_output_size(rec))
  * 			trigger_hit(&switch_output_trigger);
  * 	} else {
@@ -528,8 +528,8 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * back if record__aio_write() operation failed to start, otherwise
  * 		 * map->refcount is decremented in record__aio_complete() after
  * 		 * aio write operation finishes successfully.
- * 		 * /
- * 		perf_mmap__put(&map->core);
+ * 		 */
+ * 		perf_mmap__put((*&map).core);
  * 	}
  * 
  * 	return ret;
@@ -545,19 +545,19 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	lseek(trace_fd, pos, SEEK_SET);
  * }
  * 
- * static void record__aio_mmap_read_sync(struct record *rec)
+ * static void record__aio_mmap_read_sync(record *rec)
  * {
  * 	int i;
- * 	struct evlist *evlist = rec->evlist;
+ * 	struct evlist *evlist = (*rec).evlist;
  * 	struct mmap *maps = evlist__mmap(evlist);
  * 
  * 	if (!record__aio_enabled(rec))
  * 		return;
  * 
- * 	for (i = 0; i < evlist__core(evlist)->nr_mmaps; i++) {
+ * 	for (i = 0; i < (*evlist__core(evlist)).nr_mmaps; i++) {
  * 		struct mmap *map = &maps[i];
  * 
- * 		if (map->core.base)
+ * 		if ((*map).core.base)
  * 			record__aio_sync(map, true);
  * 	}
  * }
@@ -569,23 +569,23 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			     const char *str,
  * 			     int unset)
  * {
- * 	struct record_opts *opts = (struct record_opts *)opt->value;
+ * 	struct record_opts *opts = (*(record_opts *)opt).value;
  * 
  * 	if (unset) {
- * 		opts->nr_cblocks = 0;
+ * 		(*opts).nr_cblocks = 0;
  * 	} else {
  * 		if (str)
- * 			opts->nr_cblocks = strtol(str, NULL, 0);
- * 		if (!opts->nr_cblocks)
- * 			opts->nr_cblocks = nr_cblocks_default;
+ * 			(*opts).nr_cblocks = strtol(str, NULL, 0);
+ * 		if ((*!opts).nr_cblocks)
+ * 			(*opts).nr_cblocks = nr_cblocks_default;
  * 	}
  * 
  * 	return 0;
  * }
- * #else /* HAVE_AIO_SUPPORT * /
+ * #else /* HAVE_AIO_SUPPORT */
  * static int nr_cblocks_max = 0;
  * 
- * static int record__aio_push(struct record *rec __maybe_unused, struct mmap *map __maybe_unused,
+ * static int record__aio_push(record *rec __maybe_unused, mmap *map __maybe_unused,
  * 			    off_t *off __maybe_unused)
  * {
  * 	return -1;
@@ -600,14 +600,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * {
  * }
  * 
- * static void record__aio_mmap_read_sync(struct record *rec __maybe_unused)
+ * static void record__aio_mmap_read_sync(record *rec __maybe_unused)
  * {
  * }
  * #endif
  * 
- * static int record__aio_enabled(struct record *rec)
+ * static int record__aio_enabled(record *rec)
  * {
- * 	return rec->opts.nr_cblocks > 0;
+ * 	return (*rec).opts.nr_cblocks > 0;
  * }
  * 
  * #define MMAP_FLUSH_DEFAULT 1
@@ -616,7 +616,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				    int unset)
  * {
  * 	int flush_max;
- * 	struct record_opts *opts = (struct record_opts *)opt->value;
+ * 	struct record_opts *opts = (*(record_opts *)opt).value;
  * 	static struct parse_tag tags[] = {
  * 			{ .tag  = 'B', .mult = 1       },
  * 			{ .tag  = 'K', .mult = 1 << 10 },
@@ -629,46 +629,46 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		return 0;
  * 
  * 	if (str) {
- * 		opts->mmap_flush = parse_tag_value(str, tags);
- * 		if (opts->mmap_flush == (int)-1)
- * 			opts->mmap_flush = strtol(str, NULL, 0);
+ * 		(*opts).mmap_flush = parse_tag_value(str, tags);
+ * 		if ((*opts).mmap_flush == (int)-1)
+ * 			(*opts).mmap_flush = strtol(str, NULL, 0);
  * 	}
  * 
- * 	if (!opts->mmap_flush)
- * 		opts->mmap_flush = MMAP_FLUSH_DEFAULT;
+ * 	if ((*!opts).mmap_flush)
+ * 		(*opts).mmap_flush = MMAP_FLUSH_DEFAULT;
  * 
- * 	flush_max = evlist__mmap_size(opts->mmap_pages);
+ * 	flush_max = evlist__mmap_size((*opts).mmap_pages);
  * 	flush_max /= 4;
- * 	if (opts->mmap_flush > flush_max)
- * 		opts->mmap_flush = flush_max;
+ * 	if ((*opts).mmap_flush > flush_max)
+ * 		(*opts).mmap_flush = flush_max;
  * 
  * 	return 0;
  * }
  * 
  * #ifdef HAVE_ZSTD_SUPPORT
- * static unsigned int comp_level_default = 1;
+ * static core::ffi::c_uint comp_level_default = 1;
  * 
  * static int record__parse_comp_level(const struct option *opt, const char *str, int unset)
  * {
- * 	struct record_opts *opts = opt->value;
+ * 	struct record_opts *opts = (*opt).value;
  * 
  * 	if (unset) {
- * 		opts->comp_level = 0;
+ * 		(*opts).comp_level = 0;
  * 	} else {
  * 		if (str)
- * 			opts->comp_level = strtol(str, NULL, 0);
- * 		if (!opts->comp_level)
- * 			opts->comp_level = comp_level_default;
+ * 			(*opts).comp_level = strtol(str, NULL, 0);
+ * 		if ((*!opts).comp_level)
+ * 			(*opts).comp_level = comp_level_default;
  * 	}
  * 
  * 	return 0;
  * }
  * #endif
- * static unsigned int comp_level_max = 22;
+ * static core::ffi::c_uint comp_level_max = 22;
  * 
- * static int record__comp_enabled(struct record *rec)
+ * static int record__comp_enabled(record *rec)
  * {
- * 	return rec->opts.comp_level > 0;
+ * 	return (*rec).opts.comp_level > 0;
  * }
  * 
  * static int process_synthesized_event(const struct perf_tool *tool,
@@ -676,8 +676,8 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				     struct perf_sample *sample __maybe_unused,
  * 				     struct machine *machine __maybe_unused)
  * {
- * 	struct record *rec = container_of(tool, struct record, tool);
- * 	return record__write(rec, NULL, event, event->header.size);
+ * 	struct record *rec = container_of(tool, record, tool);
+ * 	return record__write(rec, NULL, event, (*event).header.size);
  * }
  * 
  * static struct mutex synth_lock;
@@ -695,22 +695,22 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__pushfn(struct mmap *map, void *to, void *bf, size_t size)
+ * static int record__pushfn(mmap *map, void *to, void *bf, size_t size)
  * {
  * 	struct record *rec = to;
  * 
  * 	if (record__comp_enabled(rec)) {
- * 		ssize_t compressed = zstd_compress(rec->session, map, map->data,
+ * 		ssize_t compressed = zstd_compress((*rec).session, map, (*map).data,
  * 						   mmap__mmap_len(map), bf, size);
  * 
  * 		if (compressed < 0)
  * 			return (int)compressed;
  * 
- * 		thread->samples++;
- * 		return record__write(rec, map, map->data, compressed);
+ * 		(*thread).samples++;
+ * 		return record__write(rec, map, (*map).data, compressed);
  * 	}
  * 
- * 	thread->samples++;
+ * 	(*thread).samples++;
  * 	return record__write(rec, map, bf, size);
  * }
  * 
@@ -741,7 +741,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * another signal is received, or the counters are ready for
  * 		 * read. To ensure the poll() doesn't sleep when done is set,
  * 		 * use an eventfd (done_fd) to wake up the poll().
- * 		 * /
+ * 		 */
  * 		if (write(done_fd, &tmp, sizeof(tmp)) < 0)
  * 			pr_err("failed to signal wakeup fd, error: %m\n");
  * 
@@ -770,8 +770,8 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				    union perf_event *event, void *data1,
  * 				    size_t len1, void *data2, size_t len2)
  * {
- * 	struct record *rec = container_of(tool, struct record, tool);
- * 	struct perf_data *data = &rec->data;
+ * 	struct record *rec = container_of(tool, record, tool);
+ * 	struct perf_data *data = (*&rec).data;
  * 	size_t padding;
  * 	u8 pad[8] = {0};
  * 
@@ -783,18 +783,18 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		file_offset = lseek(fd, 0, SEEK_CUR);
  * 		if (file_offset == -1)
  * 			return -1;
- * 		err = auxtrace_index__auxtrace_event(&rec->session->auxtrace_index,
+ * 		err = auxtrace_index__auxtrace_event((*(*&rec).session).auxtrace_index,
  * 						     event, file_offset);
  * 		if (err)
  * 			return err;
  * 	}
  * 
- * 	/* event.auxtrace.size includes padding, see __auxtrace_mmap__read() * /
+ * 	/* event.auxtrace.size includes padding, see __auxtrace_mmap__read() */
  * 	padding = (len1 + len2) & 7;
  * 	if (padding)
  * 		padding = 8 - padding;
  * 
- * 	record__write(rec, map, event, event->header.size);
+ * 	record__write(rec, map, event, (*event).header.size);
  * 	record__write(rec, map, data1, len1);
  * 	if (len2)
  * 		record__write(rec, map, data2, len2);
@@ -803,52 +803,52 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__auxtrace_mmap_read(struct record *rec,
+ * static int record__auxtrace_mmap_read(record *rec,
  * 				      struct mmap *map)
  * {
  * 	int ret;
  * 
- * 	ret = auxtrace_mmap__read(map, rec->itr,
- * 				  perf_session__env(rec->session),
- * 				  &rec->tool,
+ * 	ret = auxtrace_mmap__read(map, (*rec).itr,
+ * 				  perf_session__env((*rec).session),
+ * 				  (*&rec).tool,
  * 				  record__process_auxtrace);
  * 	if (ret < 0)
  * 		return ret;
  * 
  * 	if (ret)
- * 		rec->samples++;
+ * 		(*rec).samples++;
  * 
  * 	return 0;
  * }
  * 
- * static int record__auxtrace_mmap_read_snapshot(struct record *rec,
+ * static int record__auxtrace_mmap_read_snapshot(record *rec,
  * 					       struct mmap *map)
  * {
  * 	int ret;
  * 
- * 	ret = auxtrace_mmap__read_snapshot(map, rec->itr,
- * 					   perf_session__env(rec->session),
- * 					   &rec->tool,
+ * 	ret = auxtrace_mmap__read_snapshot(map, (*rec).itr,
+ * 					   perf_session__env((*rec).session),
+ * 					   (*&rec).tool,
  * 					   record__process_auxtrace,
- * 					   rec->opts.auxtrace_snapshot_size);
+ * 					   (*rec).opts.auxtrace_snapshot_size);
  * 	if (ret < 0)
  * 		return ret;
  * 
  * 	if (ret)
- * 		rec->samples++;
+ * 		(*rec).samples++;
  * 
  * 	return 0;
  * }
  * 
- * static int record__auxtrace_read_snapshot_all(struct record *rec)
+ * static int record__auxtrace_read_snapshot_all(record *rec)
  * {
  * 	int i;
  * 	int rc = 0;
  * 
- * 	for (i = 0; i < evlist__core(rec->evlist)->nr_mmaps; i++) {
- * 		struct mmap *map = &evlist__mmap(rec->evlist)[i];
+ * 	for (i = 0; i < (*evlist__core((*rec).evlist)).nr_mmaps; i++) {
+ * 		struct mmap *map = &evlist__mmap((*rec).evlist)[i];
  * 
- * 		if (!map->auxtrace_mmap.base)
+ * 		if ((*!map).auxtrace_mmap.base)
  * 			continue;
  * 
  * 		if (record__auxtrace_mmap_read_snapshot(rec, map) != 0) {
@@ -860,26 +860,26 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return rc;
  * }
  * 
- * static void record__read_auxtrace_snapshot(struct record *rec, bool on_exit)
+ * static void record__read_auxtrace_snapshot(record *rec, bool on_exit)
  * {
  * 	pr_debug("Recording AUX area tracing snapshot\n");
  * 	if (record__auxtrace_read_snapshot_all(rec) < 0) {
  * 		trigger_error(&auxtrace_snapshot_trigger);
  * 	} else {
- * 		if (auxtrace_record__snapshot_finish(rec->itr, on_exit))
+ * 		if (auxtrace_record__snapshot_finish((*rec).itr, on_exit))
  * 			trigger_error(&auxtrace_snapshot_trigger);
  * 		else
  * 			trigger_ready(&auxtrace_snapshot_trigger);
  * 	}
  * }
  * 
- * static int record__auxtrace_snapshot_exit(struct record *rec)
+ * static int record__auxtrace_snapshot_exit(record *rec)
  * {
  * 	if (trigger_is_error(&auxtrace_snapshot_trigger))
  * 		return 0;
  * 
  * 	if (!auxtrace_record__snapshot_started &&
- * 	    auxtrace_record__snapshot_start(rec->itr))
+ * 	    auxtrace_record__snapshot_start((*rec).itr))
  * 		return -1;
  * 
  * 	record__read_auxtrace_snapshot(rec, true);
@@ -889,47 +889,47 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__auxtrace_init(struct record *rec)
+ * static int record__auxtrace_init(record *rec)
  * {
  * 	int err;
  * 
- * 	if ((rec->opts.auxtrace_snapshot_opts || rec->opts.auxtrace_sample_opts)
+ * 	if (((*rec).opts.auxtrace_snapshot_opts || (*rec).opts.auxtrace_sample_opts)
  * 	    && record__threads_enabled(rec)) {
  * 		pr_err("AUX area tracing options are not available in parallel streaming mode.\n");
  * 		return -EINVAL;
  * 	}
  * 
- * 	if (!rec->itr) {
+ * 	if ((*!rec).itr) {
  * 		err = -EINVAL;
- * 		rec->itr = auxtrace_record__init(rec->evlist, &err);
+ * 		(*rec).itr = auxtrace_record__init((*rec).evlist, &err);
  * 		if (err)
  * 			return err;
  * 	}
  * 
- * 	err = auxtrace_parse_snapshot_options(rec->itr, &rec->opts,
- * 					      rec->opts.auxtrace_snapshot_opts);
+ * 	err = auxtrace_parse_snapshot_options((*rec).itr, (*&rec).opts,
+ * 					      (*rec).opts.auxtrace_snapshot_opts);
  * 	if (err)
  * 		return err;
  * 
- * 	err = auxtrace_parse_sample_options(rec->itr, rec->evlist, &rec->opts,
- * 					    rec->opts.auxtrace_sample_opts);
+ * 	err = auxtrace_parse_sample_options((*rec).itr, (*rec).evlist, (*&rec).opts,
+ * 					    (*rec).opts.auxtrace_sample_opts);
  * 	if (err)
  * 		return err;
  * 
- * 	err = auxtrace_parse_aux_action(rec->evlist);
+ * 	err = auxtrace_parse_aux_action((*rec).evlist);
  * 	if (err)
  * 		return err;
  * 
- * 	return auxtrace_parse_filters(rec->evlist);
+ * 	return auxtrace_parse_filters((*rec).evlist);
  * }
  * 
- * static int record__config_text_poke(struct evlist *evlist)
+ * static int record__config_text_poke(evlist *evlist)
  * {
  * 	struct evsel *evsel;
  * 
- * 	/* Nothing to do if text poke is already configured * /
+ * 	/* Nothing to do if text poke is already configured */
  * 	evlist__for_each_entry(evlist, evsel) {
- * 		if (evsel->core.attr.text_poke)
+ * 		if ((*evsel).core.attr.text_poke)
  * 			return 0;
  * 	}
  * 
@@ -937,22 +937,22 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	if (!evsel)
  * 		return -ENOMEM;
  * 
- * 	evsel->core.attr.text_poke = 1;
- * 	evsel->core.attr.ksymbol = 1;
- * 	evsel->immediate = true;
+ * 	(*evsel).core.attr.text_poke = 1;
+ * 	(*evsel).core.attr.ksymbol = 1;
+ * 	(*evsel).immediate = true;
  * 	evsel__set_sample_bit(evsel, TIME);
  * 
  * 	return 0;
  * }
  * 
- * static int record__config_off_cpu(struct record *rec)
+ * static int record__config_off_cpu(record *rec)
  * {
- * 	return off_cpu_prepare(rec->evlist, &rec->opts.target, &rec->opts);
+ * 	return off_cpu_prepare((*rec).evlist, (*&rec).opts.target, (*&rec).opts);
  * }
  * 
- * static bool record__tracking_system_wide(struct record *rec)
+ * static bool record__tracking_system_wide(record *rec)
  * {
- * 	struct evlist *evlist = rec->evlist;
+ * 	struct evlist *evlist = (*rec).evlist;
  * 	struct evsel *evsel;
  * 
  * 	/*
@@ -960,7 +960,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 * help parse sample information.
  * 	 * For example, PERF_EVENT_MMAP event to help parse symbol,
  * 	 * and PERF_EVENT_COMM event to help parse task executable name.
- * 	 * /
+ * 	 */
  * 	evlist__for_each_entry(evlist, evsel) {
  * 		if (!evsel__is_dummy_event(evsel))
  * 			return true;
@@ -969,10 +969,10 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return false;
  * }
  * 
- * static int record__config_tracking_events(struct record *rec)
+ * static int record__config_tracking_events(record *rec)
  * {
- * 	struct record_opts *opts = &rec->opts;
- * 	struct evlist *evlist = rec->evlist;
+ * 	struct record_opts *opts = (*&rec).opts;
+ * 	struct evlist *evlist = (*rec).evlist;
  * 	bool system_wide = false;
  * 	struct evsel *evsel;
  * 
@@ -980,14 +980,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 * For initial_delay, system wide or a hybrid system, we need to add
  * 	 * tracking event so that we can track PERF_RECORD_MMAP to cover the
  * 	 * delay of waiting or event synthesis.
- * 	 * /
- * 	if (opts->target.initial_delay || target__has_cpu(&opts->target) ||
+ * 	 */
+ * 	if ((*opts).target.initial_delay || target__has_cpu((*&opts).target) ||
  * 	    perf_pmus__num_core_pmus() > 1) {
  * 		/*
  * 		 * User space tasks can migrate between CPUs, so when tracing
  * 		 * selected CPUs, sideband for all CPUs is still needed.
- * 		 * /
- * 		if (!!opts->target.cpu_list && record__tracking_system_wide(rec))
+ * 		 */
+ * 		if ((*!!opts).target.cpu_list && record__tracking_system_wide(rec))
  * 			system_wide = true;
  * 
  * 		evsel = evlist__findnew_tracking_event(evlist, system_wide);
@@ -997,23 +997,23 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		/*
  * 		 * Enable the tracking event when the process is forked for
  * 		 * initial_delay, immediately for system wide.
- * 		 * /
- * 		if (opts->target.initial_delay && !evsel->immediate &&
- * 		    !target__has_cpu(&opts->target))
- * 			evsel->core.attr.enable_on_exec = 1;
+ * 		 */
+ * 		if ((*opts).target.initial_delay && (*!evsel).immediate &&
+ * 		    !target__has_cpu((*&opts).target))
+ * 			(*evsel).core.attr.enable_on_exec = 1;
  * 		else
- * 			evsel->immediate = 1;
+ * 			(*evsel).immediate = 1;
  * 	}
  * 
  * 	return 0;
  * }
  * 
- * static bool record__kcore_readable(struct machine *machine)
+ * static bool record__kcore_readable(machine *machine)
  * {
  * 	char kcore[PATH_MAX];
  * 	int fd;
  * 
- * 	scnprintf(kcore, sizeof(kcore), "%s/proc/kcore", machine->root_dir);
+ * 	scnprintf(kcore, sizeof(kcore), "%s/proc/kcore", (*machine).root_dir);
  * 
  * 	fd = open(kcore, O_RDONLY);
  * 	if (fd < 0)
@@ -1024,13 +1024,13 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return true;
  * }
  * 
- * static int record__kcore_copy(struct machine *machine, struct perf_data *data)
+ * static int record__kcore_copy(machine *machine, perf_data *data)
  * {
  * 	char from_dir[PATH_MAX];
  * 	char kcore_dir[PATH_MAX];
  * 	int ret;
  * 
- * 	snprintf(from_dir, sizeof(from_dir), "%s/proc", machine->root_dir);
+ * 	snprintf(from_dir, sizeof(from_dir), "%s/proc", (*machine).root_dir);
  * 
  * 	ret = perf_data__make_kcore_dir(data, kcore_dir, sizeof(kcore_dir));
  * 	if (ret)
@@ -1039,97 +1039,97 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return kcore_copy(from_dir, kcore_dir);
  * }
  * 
- * static void record__thread_data_init_pipes(struct record_thread *thread_data)
+ * static void record__thread_data_init_pipes(record_thread *thread_data)
  * {
- * 	thread_data->pipes.msg[0] = -1;
- * 	thread_data->pipes.msg[1] = -1;
- * 	thread_data->pipes.ack[0] = -1;
- * 	thread_data->pipes.ack[1] = -1;
+ * 	(*thread_data).pipes.msg[0] = -1;
+ * 	(*thread_data).pipes.msg[1] = -1;
+ * 	(*thread_data).pipes.ack[0] = -1;
+ * 	(*thread_data).pipes.ack[1] = -1;
  * }
  * 
- * static int record__thread_data_open_pipes(struct record_thread *thread_data)
+ * static int record__thread_data_open_pipes(record_thread *thread_data)
  * {
- * 	if (pipe(thread_data->pipes.msg))
+ * 	if (pipe((*thread_data).pipes.msg))
  * 		return -EINVAL;
  * 
- * 	if (pipe(thread_data->pipes.ack)) {
- * 		close(thread_data->pipes.msg[0]);
- * 		thread_data->pipes.msg[0] = -1;
- * 		close(thread_data->pipes.msg[1]);
- * 		thread_data->pipes.msg[1] = -1;
+ * 	if (pipe((*thread_data).pipes.ack)) {
+ * 		close((*thread_data).pipes.msg[0]);
+ * 		(*thread_data).pipes.msg[0] = -1;
+ * 		close((*thread_data).pipes.msg[1]);
+ * 		(*thread_data).pipes.msg[1] = -1;
  * 		return -EINVAL;
  * 	}
  * 
  * 	pr_debug2("thread_data[%p]: msg=[%d,%d], ack=[%d,%d]\n", thread_data,
- * 		 thread_data->pipes.msg[0], thread_data->pipes.msg[1],
- * 		 thread_data->pipes.ack[0], thread_data->pipes.ack[1]);
+ * 		 (*thread_data).pipes.msg[0], (*thread_data).pipes.msg[1],
+ * 		 (*thread_data).pipes.ack[0], (*thread_data).pipes.ack[1]);
  * 
  * 	return 0;
  * }
  * 
- * static void record__thread_data_close_pipes(struct record_thread *thread_data)
+ * static void record__thread_data_close_pipes(record_thread *thread_data)
  * {
- * 	if (thread_data->pipes.msg[0] != -1) {
- * 		close(thread_data->pipes.msg[0]);
- * 		thread_data->pipes.msg[0] = -1;
+ * 	if ((*thread_data).pipes.msg[0] != -1) {
+ * 		close((*thread_data).pipes.msg[0]);
+ * 		(*thread_data).pipes.msg[0] = -1;
  * 	}
- * 	if (thread_data->pipes.msg[1] != -1) {
- * 		close(thread_data->pipes.msg[1]);
- * 		thread_data->pipes.msg[1] = -1;
+ * 	if ((*thread_data).pipes.msg[1] != -1) {
+ * 		close((*thread_data).pipes.msg[1]);
+ * 		(*thread_data).pipes.msg[1] = -1;
  * 	}
- * 	if (thread_data->pipes.ack[0] != -1) {
- * 		close(thread_data->pipes.ack[0]);
- * 		thread_data->pipes.ack[0] = -1;
+ * 	if ((*thread_data).pipes.ack[0] != -1) {
+ * 		close((*thread_data).pipes.ack[0]);
+ * 		(*thread_data).pipes.ack[0] = -1;
  * 	}
- * 	if (thread_data->pipes.ack[1] != -1) {
- * 		close(thread_data->pipes.ack[1]);
- * 		thread_data->pipes.ack[1] = -1;
+ * 	if ((*thread_data).pipes.ack[1] != -1) {
+ * 		close((*thread_data).pipes.ack[1]);
+ * 		(*thread_data).pipes.ack[1] = -1;
  * 	}
  * }
  * 
- * static bool evlist__per_thread(struct evlist *evlist)
+ * static bool evlist__per_thread(evlist *evlist)
  * {
- * 	return cpu_map__is_dummy(evlist__core(evlist)->user_requested_cpus);
+ * 	return cpu_map__is_dummy((*evlist__core(evlist)).user_requested_cpus);
  * }
  * 
- * static int record__thread_data_init_maps(struct record_thread *thread_data, struct evlist *evlist)
+ * static int record__thread_data_init_maps(record_thread *thread_data, evlist *evlist)
  * {
- * 	int m, tm, nr_mmaps = evlist__core(evlist)->nr_mmaps;
+ * 	int m, tm, nr_mmaps = (*evlist__core(evlist)).nr_mmaps;
  * 	struct mmap *mmap = evlist__mmap(evlist);
  * 	struct mmap *overwrite_mmap = evlist__overwrite_mmap(evlist);
- * 	struct perf_cpu_map *cpus = evlist__core(evlist)->all_cpus;
+ * 	struct perf_cpu_map *cpus = (*evlist__core(evlist)).all_cpus;
  * 	bool per_thread = evlist__per_thread(evlist);
  * 
  * 	if (per_thread)
- * 		thread_data->nr_mmaps = nr_mmaps;
+ * 		(*thread_data).nr_mmaps = nr_mmaps;
  * 	else
- * 		thread_data->nr_mmaps = bitmap_weight(thread_data->mask->maps.bits,
- * 						      thread_data->mask->maps.nbits);
+ * 		(*thread_data).nr_mmaps = bitmap_weight((*(*thread_data).mask).maps.bits,
+ * 						      (*(*thread_data).mask).maps.nbits);
  * 	if (mmap) {
- * 		thread_data->maps = calloc(thread_data->nr_mmaps, sizeof(struct mmap *));
- * 		if (!thread_data->maps)
+ * 		(*thread_data).maps = calloc((*thread_data).nr_mmaps, sizeof(mmap *));
+ * 		if ((*!thread_data).maps)
  * 			return -ENOMEM;
  * 	}
  * 	if (overwrite_mmap) {
- * 		thread_data->overwrite_maps = calloc(thread_data->nr_mmaps, sizeof(struct mmap *));
- * 		if (!thread_data->overwrite_maps) {
- * 			zfree(&thread_data->maps);
+ * 		(*thread_data).overwrite_maps = calloc((*thread_data).nr_mmaps, sizeof(mmap *));
+ * 		if ((*!thread_data).overwrite_maps) {
+ * 			zfree((*&thread_data).maps);
  * 			return -ENOMEM;
  * 		}
  * 	}
  * 	pr_debug2("thread_data[%p]: nr_mmaps=%d, maps=%p, ow_maps=%p\n", thread_data,
- * 		 thread_data->nr_mmaps, thread_data->maps, thread_data->overwrite_maps);
+ * 		 (*thread_data).nr_mmaps, (*thread_data).maps, (*thread_data).overwrite_maps);
  * 
- * 	for (m = 0, tm = 0; m < nr_mmaps && tm < thread_data->nr_mmaps; m++) {
+ * 	for (m = 0, tm = 0; m < nr_mmaps && tm < (*thread_data).nr_mmaps; m++) {
  * 		if (per_thread ||
- * 		    test_bit(perf_cpu_map__cpu(cpus, m).cpu, thread_data->mask->maps.bits)) {
- * 			if (thread_data->maps) {
- * 				thread_data->maps[tm] = &mmap[m];
+ * 		    test_bit(perf_cpu_map__cpu(cpus, m).cpu, (*(*thread_data).mask).maps.bits)) {
+ * 			if ((*thread_data).maps) {
+ * 				(*thread_data).maps[tm] = &mmap[m];
  * 				pr_debug2("thread_data[%p]: cpu%d: maps[%d] -> mmap[%d]\n",
  * 					  thread_data, perf_cpu_map__cpu(cpus, m).cpu, tm, m);
  * 			}
- * 			if (thread_data->overwrite_maps) {
- * 				thread_data->overwrite_maps[tm] = &overwrite_mmap[m];
+ * 			if ((*thread_data).overwrite_maps) {
+ * 				(*thread_data).overwrite_maps[tm] = &overwrite_mmap[m];
  * 				pr_debug2("thread_data[%p]: cpu%d: ow_maps[%d] -> ow_mmap[%d]\n",
  * 					  thread_data, perf_cpu_map__cpu(cpus, m).cpu, tm, m);
  * 			}
@@ -1140,29 +1140,29 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__thread_data_init_pollfd(struct record_thread *thread_data, struct evlist *evlist)
+ * static int record__thread_data_init_pollfd(record_thread *thread_data, evlist *evlist)
  * {
  * 	int f, tm, pos;
  * 	struct mmap *map, *overwrite_map;
  * 
- * 	fdarray__init(&thread_data->pollfd, 64);
+ * 	fdarray__init((*&thread_data).pollfd, 64);
  * 
- * 	for (tm = 0; tm < thread_data->nr_mmaps; tm++) {
- * 		map = thread_data->maps ? thread_data->maps[tm] : NULL;
- * 		overwrite_map = thread_data->overwrite_maps ?
- * 				thread_data->overwrite_maps[tm] : NULL;
+ * 	for (tm = 0; tm < (*thread_data).nr_mmaps; tm++) {
+ * 		map = (*thread_data).maps ? (*thread_data).maps[tm] : NULL;
+ * 		overwrite_map = (*thread_data).overwrite_maps ?
+ * 				(*thread_data).overwrite_maps[tm] : NULL;
  * 
- * 		for (f = 0; f < evlist__core(evlist)->pollfd.nr; f++) {
- * 			void *ptr = evlist__core(evlist)->pollfd.priv[f].ptr;
+ * 		for (f = 0; f < (*evlist__core(evlist)).pollfd.nr; f++) {
+ * 			void *ptr = (*evlist__core(evlist)).pollfd.r#priv[f].ptr;
  * 
  * 			if ((map && ptr == map) || (overwrite_map && ptr == overwrite_map)) {
- * 				pos = fdarray__dup_entry_from(&thread_data->pollfd, f,
- * 							      &evlist__core(evlist)->pollfd);
+ * 				pos = fdarray__dup_entry_from((*&thread_data).pollfd, f,
+ * 							      (*&evlist__core(evlist)).pollfd);
  * 				if (pos < 0)
  * 					return pos;
  * 				pr_debug2("thread_data[%p]: pollfd[%d] <- event_fd=%d\n",
  * 					 thread_data, pos,
- * 					 evlist__core(evlist)->pollfd.entries[f].fd);
+ * 					 (*evlist__core(evlist)).pollfd.entries[f].fd);
  * 			}
  * 		}
  * 	}
@@ -1170,10 +1170,10 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static void record__free_thread_data(struct record *rec)
+ * static void record__free_thread_data(record *rec)
  * {
  * 	int t;
- * 	struct record_thread *thread_data = rec->thread_data;
+ * 	struct record_thread *thread_data = (*rec).thread_data;
  * 
  * 	if (thread_data == NULL)
  * 		return;
@@ -1188,7 +1188,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	zfree(&rec->thread_data);
  * }
  * 
- * static int record__map_thread_evlist_pollfd_indexes(struct record *rec,
+ * static int record__map_thread_evlist_pollfd_indexes(record *rec,
  * 						    int evlist_pollfd_index,
  * 						    int thread_pollfd_index)
  * {
@@ -1202,7 +1202,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__update_evlist_pollfd_from_thread(struct record *rec,
+ * static int record__update_evlist_pollfd_from_thread(record *rec,
  * 						    struct evlist *evlist,
  * 						    struct record_thread *thread_data)
  * {
@@ -1226,7 +1226,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return err;
  * }
  * 
- * static int record__dup_non_perf_events(struct record *rec,
+ * static int record__dup_non_perf_events(record *rec,
  * 				       struct evlist *evlist,
  * 				       struct record_thread *thread_data)
  * {
@@ -1252,7 +1252,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__alloc_thread_data(struct record *rec, struct evlist *evlist)
+ * static int record__alloc_thread_data(record *rec, evlist *evlist)
  * {
  * 	int t, ret;
  * 	struct record_thread *thread_data;
@@ -1304,7 +1304,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			if (ret < 0)
  * 				goto out_free;
  * 
- * 			thread_data[t].ctlfd_pos = -1; /* Not used * /
+ * 			thread_data[t].ctlfd_pos = -1; /* Not used */
  * 		}
  * 	}
  * 
@@ -1316,7 +1316,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__mmap_evlist(struct record *rec,
+ * static int record__mmap_evlist(record *rec,
  * 			       struct evlist *evlist)
  * {
  * 	int i, ret;
@@ -1374,12 +1374,12 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__mmap(struct record *rec)
+ * static int record__mmap(record *rec)
  * {
  * 	return record__mmap_evlist(rec, rec->evlist);
  * }
  * 
- * static int record__open(struct record *rec)
+ * static int record__open(record *rec)
  * {
  * 	char msg[BUFSIZ];
  * 	struct evsel *pos;
@@ -1397,7 +1397,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			 * for sideband data like mmaps. If this event is
  * 			 * removed, make sure to add tracking to the next
  * 			 * processed event.
- * 			 * /
+ * 			 */
  * 			if (!pos->tracking) {
  * 				pos->tracking = true;
  * 				evsel__config(pos, opts, &callchain_param);
@@ -1428,7 +1428,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				 * cache which don't support sampling. Only
  * 				 * display such failures to open when there is
  * 				 * only 1 cycles event or verbose is enabled.
- * 				 * /
+ * 				 */
  * 				evlist__for_each_entry(evlist, pos2) {
  * 					if (pos2 == pos)
  * 						continue;
@@ -1457,7 +1457,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		int idx = 0;
  * 		bool evlist_empty = true;
  * 
- * 		/* Remove evsels that failed to open and update indices. * /
+ * 		/* Remove evsels that failed to open and update indices. */
  * 		evlist__for_each_entry_safe(evlist, tmp, pos) {
  * 			if (pos->skippable) {
  * 				evlist__remove(evlist, pos);
@@ -1472,14 +1472,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			 * line and opened along with other events that fail,
  * 			 * will still fail as if the dummy events were tool
  * 			 * added events for the sake of code simplicity.
- * 			 * /
+ * 			 */
  * 			if (!evsel__is_dummy_event(pos))
  * 				evlist_empty = false;
  * 		}
  * 		evlist__for_each_entry(evlist, pos) {
  * 			pos->core.idx = idx++;
  * 		}
- * 		/* If list is empty then fail. * /
+ * 		/* If list is empty then fail. */
  * 		if (evlist_empty) {
  * 			ui__error("Failure to open any events for recording.\n");
  * 			rc = -1;
@@ -1514,7 +1514,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return rc;
  * }
  * 
- * static void set_timestamp_boundary(struct record *rec, u64 sample_time)
+ * static void set_timestamp_boundary(record *rec, u64 sample_time)
  * {
  * 	if (evlist__first_sample_time(rec->evlist) == 0)
  * 		evlist__set_first_sample_time(rec->evlist, sample_time);
@@ -1528,7 +1528,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				struct perf_sample *sample,
  * 				struct machine *machine)
  * {
- * 	struct record *rec = container_of(tool, struct record, tool);
+ * 	struct record *rec = container_of(tool, record, tool);
  * 
  * 	set_timestamp_boundary(rec, sample->time);
  * 
@@ -1539,14 +1539,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return build_id__mark_dso_hit(tool, event, sample, machine);
  * }
  * 
- * static int process_buildids(struct record *rec)
+ * static int process_buildids(record *rec)
  * {
  * 	struct perf_session *session = rec->session;
  * 
  * 	if (perf_data__size(&rec->data) == 0)
  * 		return 0;
  * 
- * 	/* A single DSO is needed and not all inline frames. * /
+ * 	/* A single DSO is needed and not all inline frames. */
  * 	symbol_conf.inline_name = false;
  * 	/*
  * 	 * During this process, it'll load kernel map and replace the
@@ -1556,21 +1556,21 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 *
  * 	 * rather than build-id path (in debug directory).
  * 	 *   $HOME/.debug/.build-id/f0/6e17aa50adf4d00b88925e03775de107611551
- * 	 * /
+ * 	 */
  * 	symbol_conf.ignore_vmlinux_buildid = true;
  * 	/*
  * 	 * If --buildid-all is given, it marks all DSO regardless of hits,
  * 	 * so no need to process samples. But if timestamp_boundary is enabled,
  * 	 * it still needs to walk on all samples to get the timestamps of
  * 	 * first/last samples.
- * 	 * /
+ * 	 */
  * 	if (rec->buildid_all && !rec->timestamp_boundary)
  * 		rec->tool.sample = process_event_sample_stub;
  * 
  * 	return perf_session__process_events(session);
  * }
  * 
- * static void perf_event__synthesize_guest_os(struct machine *machine, void *data)
+ * static void perf_event__synthesize_guest_os(machine *machine, void *data)
  * {
  * 	int err;
  * 	struct perf_tool *tool = data;
@@ -1581,7 +1581,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 *from guest kallsyms instead of /lib/modules/XXX/XXX. This
  * 	 *method is used to avoid symbol missing when the first addr is
  * 	 *in module instead of in guest kernel.
- * 	 * /
+ * 	 */
  * 	err = perf_event__synthesize_modules(tool, process_synthesized_event,
  * 					     machine);
  * 	if (err < 0)
@@ -1591,7 +1591,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * We use _stext for guest kernel because guest kernel's /proc/kallsyms
  * 	 * have no _text sometimes.
- * 	 * /
+ * 	 */
  * 	err = perf_event__synthesize_kernel_mmap(tool, process_synthesized_event,
  * 						 machine);
  * 	if (err < 0)
@@ -1600,16 +1600,16 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * }
  * 
  * static struct perf_event_header finished_round_event = {
- * 	.size = sizeof(struct perf_event_header),
+ * 	.size = sizeof(perf_event_header),
  * 	.type = PERF_RECORD_FINISHED_ROUND,
  * };
  * 
  * static struct perf_event_header finished_init_event = {
- * 	.size = sizeof(struct perf_event_header),
+ * 	.size = sizeof(perf_event_header),
  * 	.type = PERF_RECORD_FINISHED_INIT,
  * };
  * 
- * static void record__adjust_affinity(struct record *rec, struct mmap *map)
+ * static void record__adjust_affinity(record *rec, mmap *map)
  * {
  * 	if (rec->opts.affinity != PERF_AFFINITY_SYS &&
  * 	    !bitmap_equal(thread->mask->affinity.bits, map->affinity_mask.bits,
@@ -1631,7 +1631,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  *  * data_size == compressed payload size to finalize and 8-byte-pad it
  *  * (unaligned records trip ASan in the reader).
  *  * Returns the bytes written, or -1 if it won't fit.
- *  * /
+ *  */
  * static ssize_t process_comp_header(void *record, size_t dst_size,
  * 				   size_t data_size)
  * {
@@ -1653,23 +1653,23 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	if (size > dst_size)
  * 		return -1;
  * 
- * 	event->header.type = PERF_RECORD_COMPRESSED2;
+ * 	event->header.r#type = PERF_RECORD_COMPRESSED2;
  * 	event->header.size = size;
  * 	event->data_size = 0;
  * 
  * 	return size;
  * }
  * 
- * static ssize_t zstd_compress(struct perf_session *session, struct mmap *map,
+ * static ssize_t zstd_compress(perf_session *session, mmap *map,
  * 			    void *dst, size_t dst_size, void *src, size_t src_size)
  * {
  * 	ssize_t compressed;
  * 	/*
  * 	 * Reserve space so per-record PERF_ALIGN() padding keeps header.size
  * 	 * within u16.
- * 	 * /
+ * 	 */
  * 	size_t max_record_size = PERF_SAMPLE_MAX_SIZE
- * 		- sizeof(struct perf_record_compressed2) - sizeof(u64);
+ * 		- sizeof(perf_record_compressed2) - sizeof(u64);
  * 	struct zstd_data *zstd_data = &session->zstd_data;
  * 
  * 	if (map && map->file)
@@ -1691,7 +1691,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return compressed;
  * }
  * 
- * static int record__mmap_read_evlist(struct record *rec, struct evlist *evlist,
+ * static int record__mmap_read_evlist(record *rec, evlist *evlist,
  * 				    bool overwrite, bool synch)
  * {
  * 	u64 bytes_written = rec->bytes_written;
@@ -1765,7 +1765,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 * No need for round events in directory mode,
  * 	 * because per-cpu maps and files have data
  * 	 * sorted by kernel.
- * 	 * /
+ * 	 */
  * 	if (!record__threads_enabled(rec) && bytes_written != rec->bytes_written)
  * 		rc = record__write(rec, NULL, &finished_round_event, sizeof(finished_round_event));
  * 
@@ -1775,7 +1775,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return rc;
  * }
  * 
- * static int record__mmap_read_all(struct record *rec, bool synch)
+ * static int record__mmap_read_all(record *rec, bool synch)
  * {
  * 	int err;
  * 
@@ -1786,7 +1786,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return record__mmap_read_evlist(rec, rec->evlist, true, synch);
  * }
  * 
- * static void record__thread_munmap_filtered(struct fdarray *fda, int fd,
+ * static void record__thread_munmap_filtered(fdarray *fda, int fd,
  * 					   void *arg __maybe_unused)
  * {
  * 	struct perf_mmap *map = fda->priv[fd].ptr;
@@ -1815,7 +1815,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	ctlfd_pos = thread->ctlfd_pos;
  * 
  * 	for (;;) {
- * 		unsigned long long hits = thread->samples;
+ * 		core::ffi::c_ulonglong hits = thread->samples;
  * 
  * 		if (record__mmap_read_all(thread->rec, false) < 0 || terminate)
  * 			break;
@@ -1826,7 +1826,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			/*
  * 			 * Propagate error, only if there's any. Ignore positive
  * 			 * number of returned events and interrupt error.
- * 			 * /
+ * 			 */
  * 			if (err > 0 || (err < 0 && errno == EINTR))
  * 				err = 0;
  * 			thread->waking++;
@@ -1855,7 +1855,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return NULL;
  * }
  * 
- * static void record__init_features(struct record *rec)
+ * static void record__init_features(record *rec)
  * {
  * 	struct perf_session *session = rec->session;
  * 	int feat;
@@ -1891,14 +1891,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * }
  * 
  * static void
- * record__finish_output(struct record *rec)
+ * record__finish_output(record *rec)
  * {
  * 	int i;
  * 	struct perf_data *data = &rec->data;
  * 	int fd = perf_data__fd(data);
  * 
  * 	if (data->is_pipe) {
- * 		/* Just to display approx. size * /
+ * 		/* Just to display approx. size */
  * 		data->file.size = rec->bytes_written;
  * 		return;
  * 	}
@@ -1912,7 +1912,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		}
  * 	}
  * 
- * 	/* Buildid scanning disabled or build ID in kernel and synthesized map events. * /
+ * 	/* Buildid scanning disabled or build ID in kernel and synthesized map events. */
  * 	if (!rec->no_buildid || !rec->no_buildid_cache) {
  * 		process_buildids(rec);
  * 
@@ -1923,7 +1923,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	perf_session__cache_build_ids(rec->session);
  * }
  * 
- * static int record__synthesize_workload(struct record *rec, bool tail)
+ * static int record__synthesize_workload(record *rec, bool tail)
  * {
  * 	int err;
  * 	struct perf_thread_map *thread_map;
@@ -1945,7 +1945,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return err;
  * }
  * 
- * static int write_finished_init(struct record *rec, bool tail)
+ * static int write_finished_init(record *rec, bool tail)
  * {
  * 	if (rec->opts.tail_synthesize != tail)
  * 		return 0;
@@ -1953,16 +1953,16 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return record__write(rec, NULL, &finished_init_event, sizeof(finished_init_event));
  * }
  * 
- * static int record__synthesize(struct record *rec, bool tail);
+ * static int record__synthesize(record *rec, bool tail);
  * 
  * static int
- * record__switch_output(struct record *rec, bool at_exit)
+ * record__switch_output(record *rec, bool at_exit)
  * {
  * 	struct perf_data *data = &rec->data;
  * 	char *new_filename = NULL;
  * 	int fd, err;
  * 
- * 	/* Same Size:      "2015122520103046"* /
+ * 	/* Same Size:      "2015122520103046"*/
  * 	char timestamp[] = "InvalidTimestamp";
  * 
  * 	record__aio_mmap_read_sync(rec);
@@ -2009,7 +2009,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		free(new_filename);
  * 	}
  * 
- * 	/* Output tracking events * /
+ * 	/* Output tracking events */
  * 	if (!at_exit) {
  * 		record__synthesize(rec, false);
  * 
@@ -2021,7 +2021,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * contain map and comm information.
  * 		 * Create a fake thread_map and directly call
  * 		 * perf_event__synthesize_thread_map() for those events.
- * 		 * /
+ * 		 */
  * 		if (target__none(&rec->opts.target))
  * 			record__synthesize_workload(rec, false);
  * 		write_finished_init(rec, false);
@@ -2029,7 +2029,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return fd;
  * }
  * 
- * static void __record__save_lost_samples(struct record *rec, struct evsel *evsel,
+ * static void __record__save_lost_samples(record *rec, evsel *evsel,
  * 					struct perf_record_lost_samples *lost,
  * 					int cpu_idx, int thread_idx, u64 lost_count,
  * 					u16 misc_flag)
@@ -2053,13 +2053,13 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	perf_sample__exit(&sample);
  * }
  * 
- * static void record__read_lost_samples(struct record *rec)
+ * static void record__read_lost_samples(record *rec)
  * {
  * 	struct perf_session *session = rec->session;
  * 	struct perf_record_lost_samples_and_ids lost;
  * 	struct evsel *evsel;
  * 
- * 	/* there was an error during record__open * /
+ * 	/ * there was an error during record__open */
  * 	if (session->evlist == NULL)
  * 		return;
  * 
@@ -2086,7 +2086,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 
  * 				if (count.lost) {
  * 					memset(&lost, 0, sizeof(lost));
- * 					lost.lost.header.type = PERF_RECORD_LOST_SAMPLES;
+ * 					lost.lost.header.r#type = PERF_RECORD_LOST_SAMPLES;
  * 					__record__save_lost_samples(rec, evsel, &lost.lost,
  * 								    x, y, count.lost, 0);
  * 				}
@@ -2096,7 +2096,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		lost_count = perf_bpf_filter__lost_count(evsel);
  * 		if (lost_count) {
  * 			memset(&lost, 0, sizeof(lost));
- * 			lost.lost.header.type = PERF_RECORD_LOST_SAMPLES;
+ * 			lost.lost.header.r#type = PERF_RECORD_LOST_SAMPLES;
  * 			__record__save_lost_samples(rec, evsel, &lost.lost, 0, 0, lost_count,
  * 						    PERF_RECORD_MISC_LOST_SAMPLES_BPF);
  * 		}
@@ -2109,7 +2109,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  *  * evlist__prepare_workload will send a SIGUSR1
  *  * if the fork fails, since we asked by setting its
  *  * want_signal to true.
- *  * /
+ *  */
  * static void workload_exec_failed_signal(int signo __maybe_unused,
  * 					siginfo_t *info,
  * 					void *ucontext __maybe_unused)
@@ -2122,7 +2122,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * static void snapshot_sig_handler(int sig);
  * static void alarm_sig_handler(int sig);
  * 
- * static const struct perf_event_mmap_page *evlist__pick_pc(struct evlist *evlist)
+ * static const struct perf_event_mmap_page *evlist__pick_pc(evlist *evlist)
  * {
  * 	if (evlist) {
  * 		if (evlist__mmap(evlist) && evlist__mmap(evlist)[0].core.base)
@@ -2133,7 +2133,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return NULL;
  * }
  * 
- * static const struct perf_event_mmap_page *record__pick_pc(struct record *rec)
+ * static const struct perf_event_mmap_page *record__pick_pc(record *rec)
  * {
  * 	const struct perf_event_mmap_page *pc = evlist__pick_pc(rec->evlist);
  * 	if (pc)
@@ -2141,7 +2141,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return NULL;
  * }
  * 
- * static int record__synthesize(struct record *rec, bool tail)
+ * static int record__synthesize(record *rec, bool tail)
  * {
  * 	struct perf_session *session = rec->session;
  * 	struct machine *machine = &session->machines.host;
@@ -2168,7 +2168,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	if (err)
  * 		goto out;
  * 
- * 	/* Synthesize id_index before auxtrace_info * /
+ * 	/* Synthesize id_index before auxtrace_info */
  * 	err = perf_event__synthesize_id_index(tool,
  * 					      process_synthesized_event,
  * 					      session->evlist, machine);
@@ -2263,7 +2263,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return err;
  * }
  * 
- * static void record__synthesize_final_bpf_metadata(struct record *rec __maybe_unused)
+ * static void record__synthesize_final_bpf_metadata(record *rec __maybe_unused)
  * {
  * #ifdef HAVE_LIBBPF_SUPPORT
  * 	perf_event__synthesize_final_bpf_metadata(rec->session,
@@ -2271,14 +2271,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * #endif
  * }
  * 
- * static int record__process_signal_event(union perf_event *event __maybe_unused, void *data)
+ * static int record__process_signal_event(perf_event *event __maybe_unused, void *data)
  * {
  * 	struct record *rec = data;
  * 	pthread_kill(rec->thread_id, SIGUSR2);
  * 	return 0;
  * }
  * 
- * static int record__setup_sb_evlist(struct record *rec)
+ * static int record__setup_sb_evlist(record *rec)
  * {
  * 	struct record_opts *opts = &rec->opts;
  * 
@@ -2287,7 +2287,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * We get here if --switch-output-event populated the
  * 		 * sb_evlist, so associate a callback that will send a SIGUSR2
  * 		 * to the main thread.
- * 		 * /
+ * 		 */
  * 		evlist__set_cb(rec->sb_evlist, record__process_signal_event, rec);
  * 		rec->thread_id = pthread_self();
  * 	}
@@ -2318,7 +2318,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__init_clock(struct record *rec)
+ * static int record__init_clock(record *rec)
  * {
  * 	struct perf_session *session = rec->session;
  * 	struct timespec ref_clockid;
@@ -2356,7 +2356,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static void hit_auxtrace_snapshot_trigger(struct record *rec)
+ * static void hit_auxtrace_snapshot_trigger(record *rec)
  * {
  * 	if (trigger_is_ready(&auxtrace_snapshot_trigger)) {
  * 		trigger_hit(&auxtrace_snapshot_trigger);
@@ -2366,7 +2366,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	}
  * }
  * 
- * static int record__terminate_thread(struct record_thread *thread_data)
+ * static int record__terminate_thread(record_thread *thread_data)
  * {
  * 	int err;
  * 	enum thread_msg ack = THREAD_MSG__UNDEFINED;
@@ -2384,7 +2384,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__start_threads(struct record *rec)
+ * static int record__start_threads(record *rec)
  * {
  * 	int t, tt, err, ret = 0, nr_threads = rec->nr_threads;
  * 	struct record_thread *thread_data = rec->thread_data;
@@ -2447,7 +2447,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__stop_threads(struct record *rec)
+ * static int record__stop_threads(record *rec)
  * {
  * 	int t;
  * 	struct record_thread *thread_data = rec->thread_data;
@@ -2473,10 +2473,10 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static unsigned long record__waking(struct record *rec)
+ * static core::ffi::c_ulong record__waking(record *rec)
  * {
  * 	int t;
- * 	unsigned long waking = 0;
+ * 	core::ffi::c_ulong waking = 0;
  * 	struct record_thread *thread_data = rec->thread_data;
  * 
  * 	for (t = 0; t < rec->nr_threads; t++)
@@ -2485,7 +2485,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return waking;
  * }
  * 
- * static int __cmd_record(struct record *rec, int argc, const char **argv)
+ * static int __cmd_record(record *rec, int argc, const char **argv)
  * {
  * 	int err;
  * 	int status = 0;
@@ -2598,12 +2598,12 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		}
  * 	}
  * 
- * 	/*
+ * 	/ *
  * 	 * If we have just single event and are sending data
  * 	 * through pipe, we need to force the ids allocation,
  * 	 * because we synthesize event name through the pipe
  * 	 * and need the id for that.
- * 	 * /
+ * 	 */
  * 	if (data->is_pipe && evlist__nr_entries(rec->evlist) == 1)
  * 		rec->opts.sample_id = true;
  * 
@@ -2615,18 +2615,18 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * Use global stat_config that is zero meaning aggr_mode is AGGR_NONE
  * 	 * and hybrid_merge is false.
- * 	 * /
+ * 	 */
  * 	evlist__uniquify_evsel_names(rec->evlist, &stat_config);
  * 
  * 	evlist__config(rec->evlist, opts, &callchain_param);
  * 
- * 	/* Debug message used by test scripts * /
+ * 	/* Debug message used by test scripts */
  * 	pr_debug3("perf record opening and mmapping events\n");
  * 	if (record__open(rec) != 0) {
  * 		err = -1;
  * 		goto out_free_threads;
  * 	}
- * 	/* Debug message used by test scripts * /
+ * 	/* Debug message used by test scripts */
  * 	pr_debug3("perf record done opening and mmapping events\n");
  * 	env->comp_mmap_len = evlist__core(session->evlist)->mmap_len;
  * 
@@ -2641,7 +2641,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * Normally perf_session__new would do this, but it doesn't have the
  * 	 * evlist.
- * 	 * /
+ * 	 */
  * 	if (rec->tool.ordered_events && !evlist__sample_id_all(rec->evlist)) {
  * 		pr_warning("WARNING: No sample_id_all support, falling back to unordered processing\n");
  * 		rec->tool.ordered_events = false;
@@ -2697,20 +2697,20 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 * When perf is starting the traced process, all the events
  * 	 * (apart from group members) have enable_on_exec=1 set,
  * 	 * so don't spoil it by prematurely enabling them.
- * 	 * /
+ * 	 */
  * 	if (!target__none(&opts->target) && !opts->target.initial_delay)
  * 		evlist__enable(rec->evlist);
  * 
  * 	/*
  * 	 * offcpu-time does not call execve, so enable_on_exe wouldn't work
  * 	 * when recording a workload, do it manually
- * 	 * /
+ * 	 */
  * 	if (rec->off_cpu)
  * 		evlist__enable_evsel(rec->evlist, (char *)OFFCPU_EVENT);
  * 
  * 	/*
  * 	 * Let the child rip
- * 	 * /
+ * 	 */
  * 	if (forks) {
  * 		struct machine *machine = &session->machines.host;
  * 		union perf_event *event;
@@ -2727,7 +2727,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * which is emitted during exec(), so perf script
  * 		 * cannot see a correct process name for those events.
  * 		 * Synthesize COMM event to prevent it.
- * 		 * /
+ * 		 */
  * 		tgid = perf_event__synthesize_comm(tool, event,
  * 						   evlist__workload_pid(rec->evlist),
  * 						   process_synthesized_event,
@@ -2738,7 +2738,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			goto out_child;
  * 
  * 		event = malloc(sizeof(event->namespaces) +
- * 			       (NR_NAMESPACES * sizeof(struct perf_ns_link_info)) +
+ * 			       (NR_NAMESPACES * sizeof(perf_ns_link_info)) +
  * 			       machine->id_hdr_size);
  * 		if (event == NULL) {
  * 			err = -ENOMEM;
@@ -2747,7 +2747,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 
  * 		/*
  * 		 * Synthesize NAMESPACES event for the command specified.
- * 		 * /
+ * 		 */
  * 		perf_event__synthesize_namespaces(tool, event,
  * 						  evlist__workload_pid(rec->evlist),
  * 						  tgid, process_synthesized_event,
@@ -2770,7 +2770,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	if (err)
  * 		goto out_child;
  * 
- * 	/* Debug message used by test scripts * /
+ * 	/* Debug message used by test scripts */
  * 	pr_debug3("perf record has started\n");
  * 	fflush(stderr);
  * 
@@ -2781,13 +2781,13 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * Must write FINISHED_INIT so it will be seen after all other
  * 	 * synthesized user events, but before any regular events.
- * 	 * /
+ * 	 */
  * 	err = write_finished_init(rec, false);
  * 	if (err < 0)
  * 		goto out_child;
  * 
  * 	for (;;) {
- * 		unsigned long long hits = thread->samples;
+ * 		core::ffi::c_ulonglong hits = thread->samples;
  * 
  * 		/*
  * 		 * rec->evlist->bkw_mmap_state is possible to be
@@ -2796,7 +2796,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 *
  * 		 * evlist__toggle_bkw_mmap ensure we never
  * 		 * convert BKW_MMAP_EMPTY to BKW_MMAP_DATA_PENDING.
- * 		 * /
+ * 		 */
  * 		if (trigger_is_hit(&switch_output_trigger) || done || draining)
  * 			evlist__toggle_bkw_mmap(rec->evlist, BKW_MMAP_DATA_PENDING);
  * 
@@ -2827,7 +2827,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			 * If SIGUSR2 raise after or during record__mmap_read_all(),
  * 			 * record__mmap_read_all() didn't collect data from
  * 			 * overwritable ring buffer. Read again.
- * 			 * /
+ * 			 */
  * 			if (evlist__bkw_mmap_state(rec->evlist) == BKW_MMAP_RUNNING)
  * 				continue;
  * 			trigger_ready(&switch_output_trigger);
@@ -2836,7 +2836,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			 * Reenable events in overwrite ring buffer after
  * 			 * record__mmap_read_all(): we should have collected
  * 			 * data from it.
- * 			 * /
+ * 			 */
  * 			evlist__toggle_bkw_mmap(rec->evlist, BKW_MMAP_RUNNING);
  * 
  * 			if (!quiet)
@@ -2851,7 +2851,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				goto out_child;
  * 			}
  * 
- * 			/* re-arm the alarm * /
+ * 			/* re-arm the alarm */
  * 			if (rec->switch_output.time)
  * 				alarm(rec->switch_output.time);
  * 		}
@@ -2863,7 +2863,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			/*
  * 			 * Propagate error, only if there's any. Ignore positive
  * 			 * number of returned events and interrupt error.
- * 			 * /
+ * 			 */
  * 			if (err > 0 || (err < 0 && errno == EINTR))
  * 				err = 0;
  * 			thread->waking++;
@@ -2909,7 +2909,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * When perf is starting the traced process, at the end events
  * 		 * die with the process and we wait for that. Thus no need to
  * 		 * disable events in this case.
- * 		 * /
+ * 		 */
  * 		if (done && !disabled && !target__none(&opts->target)) {
  * 			trigger_off(&auxtrace_snapshot_trigger);
  * 			evlist__disable(rec->evlist);
@@ -2954,7 +2954,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	record__mmap_read_all(rec, true);
  * 	goto out_free_threads;
  * out_child_no_flush:
- * 	/* mmap read already failed — retrying would just fail again * /
+ * 	/* mmap read already failed — retrying would just fail again */
  * 	evlist__disable(rec->evlist);
  * 	record__stop_threads(rec);
  * out_free_threads:
@@ -2988,7 +2988,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		rec->bytes_written += off_cpu_write(rec->session);
  * 
  * 	record__read_lost_samples(rec);
- * 	/* this will be recalculated during process_buildids() * /
+ * 	/* this will be recalculated during process_buildids() */
  * 	rec->samples = 0;
  * 
  * 	if (!err) {
@@ -3059,7 +3059,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * The -g option only sets the callchain if not already configured by
  * 	 * .perfconfig. It does, however, enable it.
- * 	 * /
+ * 	 */
  * 	if (callchain_param.record_mode != CALLCHAIN_NONE) {
  * 		callchain_param.enabled = true;
  * 		return 0;
@@ -3113,14 +3113,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 
  * static int record__parse_event_enable_time(const struct option *opt, const char *str, int unset)
  * {
- * 	struct record *rec = (struct record *)opt->value;
+ * 	struct record *rec = (record *)opt->value;
  * 
  * 	return evlist__parse_event_enable_time(rec->evlist, &rec->opts, str, unset);
  * }
  * 
  * static int record__parse_affinity(const struct option *opt, const char *str, int unset)
  * {
- * 	struct record_opts *opts = (struct record_opts *)opt->value;
+ * 	struct record_opts *opts = (record_opts *)opt->value;
  * 
  * 	if (unset || !str)
  * 		return 0;
@@ -3133,7 +3133,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__mmap_cpu_mask_alloc(struct mmap_cpu_mask *mask, int nr_bits)
+ * static int record__mmap_cpu_mask_alloc(mmap_cpu_mask *mask, int nr_bits)
  * {
  * 	mask->nbits = nr_bits;
  * 	mask->bits = bitmap_zalloc(mask->nbits);
@@ -3143,14 +3143,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static void record__mmap_cpu_mask_free(struct mmap_cpu_mask *mask)
+ * static void record__mmap_cpu_mask_free(mmap_cpu_mask *mask)
  * {
  * 	bitmap_free(mask->bits);
  * 	mask->bits = NULL;
  * 	mask->nbits = 0;
  * }
  * 
- * static int record__thread_mask_alloc(struct thread_mask *mask, int nr_bits)
+ * static int record__thread_mask_alloc(thread_mask *mask, int nr_bits)
  * {
  * 	int ret;
  * 
@@ -3169,7 +3169,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static void record__thread_mask_free(struct thread_mask *mask)
+ * static void record__thread_mask_free(thread_mask *mask)
  * {
  * 	record__mmap_cpu_mask_free(&mask->maps);
  * 	record__mmap_cpu_mask_free(&mask->affinity);
@@ -3209,7 +3209,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * static int parse_output_max_size(const struct option *opt,
  * 				 const char *str, int unset)
  * {
- * 	unsigned long *s = (unsigned long *)opt->value;
+ * 	core::ffi::c_ulong *s = (core::ffi::c_ulong *)opt->value;
  * 	static struct parse_tag tags_size[] = {
  * 		{ .tag  = 'B', .mult = 1       },
  * 		{ .tag  = 'K', .mult = 1 << 10 },
@@ -3217,7 +3217,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		{ .tag  = 'G', .mult = 1 << 30 },
  * 		{ .tag  = 0 },
  * 	};
- * 	unsigned long val;
+ * 	core::ffi::c_ulong val;
  * 
  * 	if (unset) {
  * 		*s = 0;
@@ -3225,7 +3225,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	}
  * 
  * 	val = parse_tag_value(str, tags_size);
- * 	if (val != (unsigned long) -1) {
+ * 	if (val != (core::ffi::c_ulong) -1) {
  * 		*s = val;
  * 		return 0;
  * 	}
@@ -3239,7 +3239,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * {
  * 	struct record_opts *opts = opt->value;
  * 	char *s, *p;
- * 	unsigned int mmap_pages;
+ * 	core::ffi::c_uint mmap_pages;
  * 	int ret;
  * 
  * 	if (!str)
@@ -3289,7 +3289,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 
  * 	off_cpu_thresh_ms = strtoull(str, &endptr, 10);
  * 
- * 	/* the threshold isn't string "0", yet strtoull() returns 0, parsing failed * /
+ * 	/* the threshold isn't string "0", yet strtoull() returns 0, parsing failed */
  * 	if (*endptr || (off_cpu_thresh_ms == 0 && strcmp(str, "0")))
  * 		return -EINVAL;
  * 	else
@@ -3307,7 +3307,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return evlist__parse_control(str, &opts->ctl_fd, &opts->ctl_fd_ack, &opts->ctl_fd_close);
  * }
  * 
- * static void switch_output_size_warn(struct record *rec)
+ * static void switch_output_size_warn(record *rec)
  * {
  * 	u64 wakeup_size = evlist__mmap_size(rec->opts.mmap_pages);
  * 	struct switch_output *s = &rec->switch_output;
@@ -3324,7 +3324,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	}
  * }
  * 
- * static int switch_output_setup(struct record *rec)
+ * static int switch_output_setup(record *rec)
  * {
  * 	struct switch_output *s = &rec->switch_output;
  * 	static struct parse_tag tags_size[] = {
@@ -3341,13 +3341,13 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		{ .tag  = 'd', .mult = 60*60*24 },
  * 		{ .tag  = 0 },
  * 	};
- * 	unsigned long val;
+ * 	core::ffi::c_ulong val;
  * 
  * 	/*
  * 	 * If we're using --switch-output-events, then we imply its
  * 	 * --switch-output=signal, as we'll send a SIGUSR2 from the side band
  * 	 *  thread to its parent.
- * 	 * /
+ * 	 */
  * 	if (rec->switch_output_event_set) {
  * 		if (record__threads_enabled(rec)) {
  * 			pr_warning("WARNING: --switch-output-event option is not available in parallel streaming mode.\n");
@@ -3372,14 +3372,14 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	}
  * 
  * 	val = parse_tag_value(s->str, tags_size);
- * 	if (val != (unsigned long) -1) {
+ * 	if (val != (core::ffi::c_ulong) -1) {
  * 		s->size = val;
  * 		pr_debug("switch-output with %s size threshold\n", s->str);
  * 		goto enabled;
  * 	}
  * 
  * 	val = parse_tag_value(s->str, tags_time);
- * 	if (val != (unsigned long) -1) {
+ * 	if (val != (core::ffi::c_ulong) -1) {
  * 		s->time = val;
  * 		pr_debug("switch-output with %s time threshold (%lu seconds)\n",
  * 			 s->str, s->time);
@@ -3405,25 +3405,25 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * };
  * const char * const *record_usage = __record_usage;
  * 
- * static int build_id__process_mmap(const struct perf_tool *tool, union perf_event *event,
- * 				  struct perf_sample *sample, struct machine *machine)
+ * static int build_id__process_mmap(const struct perf_tool *tool, perf_event *event,
+ * 				  struct perf_sample *sample, machine *machine)
  * {
  * 	/*
  * 	 * We already have the kernel maps, put in place via perf_session__create_kernel_maps()
  * 	 * no need to add them twice.
- * 	 * /
+ * 	 */
  * 	if (!(event->header.misc & PERF_RECORD_MISC_USER))
  * 		return 0;
  * 	return perf_event__process_mmap(tool, event, sample, machine);
  * }
  * 
- * static int build_id__process_mmap2(const struct perf_tool *tool, union perf_event *event,
- * 				   struct perf_sample *sample, struct machine *machine)
+ * static int build_id__process_mmap2(const struct perf_tool *tool, perf_event *event,
+ * 				   struct perf_sample *sample, machine *machine)
  * {
  * 	/*
  * 	 * We already have the kernel maps, put in place via perf_session__create_kernel_maps()
  * 	 * no need to add them twice.
- * 	 * /
+ * 	 */
  * 	if (!(event->header.misc & PERF_RECORD_MISC_USER))
  * 		return 0;
  * 
@@ -3435,7 +3435,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 				      struct perf_sample *sample,
  * 				      struct machine *machine __maybe_unused)
  * {
- * 	struct record *rec = container_of(tool, struct record, tool);
+ * 	struct record *rec = container_of(tool, record, tool);
  * 
  * 	set_timestamp_boundary(rec, sample->time);
  * 	return 0;
@@ -3470,7 +3470,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  *  * At least we don't ouch it in all the other functions here directly.
  *  *
  *  * Just say no to tons of global variables, sigh.
- *  * /
+ *  */
  * static struct record record = {
  * 	.opts = {
  * 		.sample_time	     = true,
@@ -3511,7 +3511,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  *  * from builtin-record.c, i.e. use record_opts,
  *  * evlist__prepare_workload, etc instead of fork+exec'in 'perf record',
  *  * using pipes, etc.
- *  * /
+ *  */
  * static struct option __record_options[] = {
  * 	OPT_CALLBACK('e', "event", &parse_events_option_args, "event",
  * 		     "event selector. use 'perf list' to list available events",
@@ -3726,17 +3726,17 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 
  * struct option *record_options = __record_options;
  * 
- * static int record__mmap_cpu_mask_init(struct mmap_cpu_mask *mask, struct perf_cpu_map *cpus)
+ * static int record__mmap_cpu_mask_init(mmap_cpu_mask *mask, perf_cpu_map *cpus)
  * {
  * 	struct perf_cpu cpu;
- * 	unsigned int idx;
+ * 	core::ffi::c_uint idx;
  * 
  * 	if (cpu_map__is_dummy(cpus))
  * 		return 0;
  * 
  * 	perf_cpu_map__for_each_cpu_skip_any(cpu, idx, cpus) {
- * 		/* Return ENODEV is input cpu is greater than max cpu * /
- * 		if ((unsigned long)cpu.cpu > mask->nbits)
+ * 		/* Return ENODEV is input cpu is greater than max cpu */
+ * 		if ((core::ffi::c_ulong)cpu.cpu > mask->nbits)
  * 			return -ENODEV;
  * 		__set_bit(cpu.cpu, mask->bits);
  * 	}
@@ -3744,7 +3744,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__mmap_cpu_mask_init_spec(struct mmap_cpu_mask *mask, const char *mask_spec)
+ * static int record__mmap_cpu_mask_init_spec(mmap_cpu_mask *mask, const char *mask_spec)
  * {
  * 	struct perf_cpu_map *cpus;
  * 
@@ -3761,7 +3761,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static void record__free_thread_masks(struct record *rec, int nr_threads)
+ * static void record__free_thread_masks(record *rec, int nr_threads)
  * {
  * 	int t;
  * 
@@ -3772,7 +3772,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	zfree(&rec->thread_masks);
  * }
  * 
- * static int record__alloc_thread_masks(struct record *rec, int nr_threads, int nr_bits)
+ * static int record__alloc_thread_masks(record *rec, int nr_threads, int nr_bits)
  * {
  * 	int t, ret;
  * 
@@ -3798,7 +3798,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__init_thread_cpu_masks(struct record *rec, struct perf_cpu_map *cpus)
+ * static int record__init_thread_cpu_masks(record *rec, perf_cpu_map *cpus)
  * {
  * 	int t, ret, nr_cpus = perf_cpu_map__nr(cpus);
  * 
@@ -3823,7 +3823,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__init_thread_masks_spec(struct record *rec, struct perf_cpu_map *cpus,
+ * static int record__init_thread_masks_spec(record *rec, perf_cpu_map *cpus,
  * 					  const char **maps_spec, const char **affinity_spec,
  * 					  u32 nr_spec)
  * {
@@ -3868,7 +3868,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			goto out_free;
  * 		}
  * 
- * 		/* ignore invalid CPUs but do not allow empty masks * /
+ * 		/* ignore invalid CPUs but do not allow empty masks */
  * 		if (!bitmap_and(thread_mask.maps.bits, thread_mask.maps.bits,
  * 				cpus_mask.bits, thread_mask.maps.nbits)) {
  * 			pr_err("Empty maps mask: %s\n", maps_spec[s]);
@@ -3882,7 +3882,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			goto out_free;
  * 		}
  * 
- * 		/* do not allow intersection with other masks (full_mask) * /
+ * 		/* do not allow intersection with other masks (full_mask) */
  * 		if (bitmap_intersects(thread_mask.maps.bits, full_mask.maps.bits,
  * 				      thread_mask.maps.nbits)) {
  * 			pr_err("Intersecting maps mask: %s\n", maps_spec[s]);
@@ -3901,7 +3901,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		bitmap_or(full_mask.affinity.bits, full_mask.affinity.bits,
  * 			  thread_mask.affinity.bits, full_mask.maps.nbits);
  * 
- * 		thread_masks = realloc(rec->thread_masks, (t + 1) * sizeof(struct thread_mask));
+ * 		thread_masks = realloc(rec->thread_masks, (t + 1) * sizeof(thread_mask));
  * 		if (!thread_masks) {
  * 			pr_err("Failed to reallocate thread masks\n");
  * 			ret = -ENOMEM;
@@ -3937,7 +3937,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__init_thread_core_masks(struct record *rec, struct perf_cpu_map *cpus)
+ * static int record__init_thread_core_masks(record *rec, perf_cpu_map *cpus)
  * {
  * 	int ret;
  * 	struct cpu_topology *topo;
@@ -3955,7 +3955,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__init_thread_package_masks(struct record *rec, struct perf_cpu_map *cpus)
+ * static int record__init_thread_package_masks(record *rec, perf_cpu_map *cpus)
  * {
  * 	int ret;
  * 	struct cpu_topology *topo;
@@ -3973,7 +3973,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__init_thread_numa_masks(struct record *rec, struct perf_cpu_map *cpus)
+ * static int record__init_thread_numa_masks(record *rec, perf_cpu_map *cpus)
  * {
  * 	u32 s;
  * 	int ret;
@@ -4005,7 +4005,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__init_thread_user_masks(struct record *rec, struct perf_cpu_map *cpus)
+ * static int record__init_thread_user_masks(record *rec, perf_cpu_map *cpus)
  * {
  * 	int t, ret;
  * 	u32 s, nr_spec = 0;
@@ -4075,7 +4075,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return ret;
  * }
  * 
- * static int record__init_thread_default_masks(struct record *rec, struct perf_cpu_map *cpus)
+ * static int record__init_thread_default_masks(record *rec, perf_cpu_map *cpus)
  * {
  * 	int ret;
  * 
@@ -4091,7 +4091,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	return 0;
  * }
  * 
- * static int record__init_thread_masks(struct record *rec)
+ * static int record__init_thread_masks(record *rec)
  * {
  * 	int ret = 0;
  * 	struct perf_cpu_map *cpus = evlist__core(rec->evlist)->all_cpus;
@@ -4141,7 +4141,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * # undef set_nobuild
  * #endif
  * 
- * 	/* Disable eager loading of kernel symbols that adds overhead to perf record. * /
+ * 	/* Disable eager loading of kernel symbols that adds overhead to perf record. */
  * 	symbol_conf.lazy_load_kernel_maps = true;
  * 	rec->opts.affinity = PERF_AFFINITY_SYS;
  * 
@@ -4167,7 +4167,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * Use system wide (-a) for the default target (ie. when no
  * 	 * workload). User ID filtering also implies system-wide.
- * 	 * /
+ * 	 */
  * 	if ((!argc && target__none(&rec->opts.target)) || rec->uid_str)
  * 		rec->opts.target.system_wide = true;
  * 
@@ -4184,7 +4184,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * and details are to be defined.
  * 		 * See the following thread for details:
  * 		 * https://lore.kernel.org/all/Z4XDJyvjiie3howF@google.com/
- * 		 * /
+ * 		 */
  * 		if (record.opts.target.system_wide) {
  * 			pr_err("Failed: latency profiling is not supported with system-wide collection.\n");
  * 			err = -EINVAL;
@@ -4200,9 +4200,9 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	}
  * 
  * 	if (rec->buildid_mmap) {
- * 		/* Enable perf_event_attr::build_id bit. * /
+ * 		/* Enable perf_event_attr::build_id bit. */
  * 		rec->opts.build_id = true;
- * 		/* Disable build-ID table in the header. * /
+ * 		/* Disable build-ID table in the header. */
  * 		rec->no_buildid = true;
  * 	} else {
  * 		pr_debug("Disabling build id in synthesized mmap2 events.\n");
@@ -4210,7 +4210,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	}
  * 
  * 	if (rec->no_buildid_set && rec->no_buildid) {
- * 		/* -B implies -N for historic reasons. * /
+ * 		/* -B implies -N for historic reasons. */
  * 		rec->no_buildid_cache = true;
  * 	}
  * 
@@ -4287,7 +4287,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		goto out_opts;
  * 	}
  * 
- * 	/* For backward compatibility, -d implies --mem-info and --data-mmap * /
+ * 	/* For backward compatibility, -d implies --mem-info and --data-mmap */
  * 	if (rec->opts.sample_address) {
  * 		rec->opts.sample_data_src = true;
  * 		if (!rec->opts.record_data_mmap_set)
@@ -4297,7 +4297,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	/*
  * 	 * Allow aliases to facilitate the lookup of symbols for address
  * 	 * filters. Refer to auxtrace_parse_filters().
- * 	 * /
+ * 	 */
  * 	symbol_conf.allow_aliases = true;
  * 
  * 	symbol__init(NULL);
@@ -4328,7 +4328,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 		 * if ((rec->no_buildid || !rec->no_buildid_set) &&
  * 		 *     (rec->no_buildid_cache || !rec->no_buildid_cache_set))
  * 		 *         disable_buildid_cache();
- * 		 * /
+ * 		 */
  * 		bool disable = true;
  * 
  * 		if (rec->no_buildid_set && !rec->no_buildid)
@@ -4378,7 +4378,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 			goto out;
  * 	}
  * 
- * 	/* Enable ignoring missing threads when -p option is defined. * /
+ * 	/* Enable ignoring missing threads when -p option is defined. */
  * 	rec->opts.ignore_missing_thread = rec->opts.target.pid;
  * 
  * 	evlist__warn_user_requested_cpus(rec->evlist, rec->opts.target.cpu_list);
@@ -4407,7 +4407,7 @@ unsafe extern "C" { pub fn cmd_record(argc: c_int, argv: *const *const c_char) -
  * 	 * We take all buildids when the file contains
  * 	 * AUX area tracing data because we do not decode the
  * 	 * trace because it would take too long.
- * 	 * /
+ * 	 */
  * 	if (rec->opts.full_auxtrace)
  * 		rec->buildid_all = true;
  * 

@@ -22,7 +22,7 @@
 pub struct PowerState {
     pub pwrdm: *mut powerdomain,
     pub next_state: u32,
-    #[cfg(feature = "CONFIG_SUSPEND")]
+    #[cfg(CONFIG_SUSPEND)]
     pub saved_state: u32,
     pub node: list_head,
 }
@@ -137,20 +137,20 @@ pub unsafe fn omap_sram_idle(rcuidle: bool) {
 
 unsafe fn omap3_pm_idle() { if !omap_irq_pending() { omap3_do_wfi(); } }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 unsafe fn omap3_pm_suspend() -> i32 {
     let mut ret = 0;
     let mut pwrst: *mut PowerState;
-    list_for_each_entry!(pwrst, &mut pwrst_list, node) { (*pwrst).saved_state = pwrdm_read_next_pwrst((*pwrst).pwrdm); }
-    list_for_each_entry!(pwrst, &mut pwrst_list, node) {
+    list_for_each_entry!(pwrst, &mut pwrst_list, node, { (*pwrst).saved_state = pwrdm_read_next_pwrst((*pwrst).pwrdm); });
+    list_for_each_entry!(pwrst, &mut pwrst_list, node, {
         if omap_set_pwrdm_state((*pwrst).pwrdm, (*pwrst).next_state) != 0 || pwrdm_clear_all_prev_pwrst((*pwrst).pwrdm) != 0 { break; }
-    }
+    });
     omap3_intc_suspend(); omap_sram_idle(false);
-    list_for_each_entry!(pwrst, &mut pwrst_list, node) {
+    list_for_each_entry!(pwrst, &mut pwrst_list, node, {
         let state = pwrdm_read_prev_pwrst((*pwrst).pwrdm);
         if state > (*pwrst).next_state { pr_info!("Powerdomain (%s) didn't enter target state %d\n", (*pwrst).pwrdm.name, (*pwrst).next_state); ret = -1; }
         omap_set_pwrdm_state((*pwrst).pwrdm, (*pwrst).saved_state);
-    }
+    });
     if ret != 0 { pr_err!("Could not enter target state in pm_suspend\n"); } else { pr_info!("Successfully put all powerdomains to target state\n"); }
     ret
 }
@@ -162,23 +162,23 @@ unsafe fn prcm_setup_regs() { omap3_ctrl_init(); omap3_prm_init_pm(cpu_is_omap36
 pub unsafe fn omap3_pm_off_mode_enable(enable: i32) {
     let state = if enable != 0 { PWRDM_POWER_OFF } else { PWRDM_POWER_RET };
     let mut pwrst: *mut PowerState;
-    list_for_each_entry!(pwrst, &mut pwrst_list, node) {
+    list_for_each_entry!(pwrst, &mut pwrst_list, node, {
         if IS_PM34XX_ERRATUM(PM_SDRC_WAKEUP_ERRATUM_i583) && (*pwrst).pwrdm == core_pwrdm && state == PWRDM_POWER_OFF {
             (*pwrst).next_state = PWRDM_POWER_RET; pr_warn!("%s: Core OFF disabled due to errata i583\n", "omap3_pm_off_mode_enable");
         } else { (*pwrst).next_state = state; }
         omap_set_pwrdm_state((*pwrst).pwrdm, (*pwrst).next_state);
-    }
+    });
 }
 
 pub unsafe fn omap3_pm_get_suspend_state(pwrdm: *mut powerdomain) -> i32 {
     let mut pwrst: *mut PowerState;
-    list_for_each_entry!(pwrst, &mut pwrst_list, node) { if (*pwrst).pwrdm == pwrdm { return (*pwrst).next_state; } }
+    list_for_each_entry!(pwrst, &mut pwrst_list, node, { if (*pwrst).pwrdm == pwrdm { return (*pwrst).next_state; } });
     -EINVAL
 }
 
 pub unsafe fn omap3_pm_set_suspend_state(pwrdm: *mut powerdomain, state: i32) -> i32 {
     let mut pwrst: *mut PowerState;
-    list_for_each_entry!(pwrst, &mut pwrst_list, node) { if (*pwrst).pwrdm == pwrdm { (*pwrst).next_state = state; return 0; } }
+    list_for_each_entry!(pwrst, &mut pwrst_list, node, { if (*pwrst).pwrdm == pwrdm { (*pwrst).next_state = state; return 0; } });
     -EINVAL
 }
 
@@ -226,9 +226,9 @@ pub unsafe fn omap3_pm_init() -> i32 {
     let mpu_clkdm = clkdm_lookup("mpu_clkdm");
     let per_clkdm = clkdm_lookup("per_clkdm");
     let wkup_clkdm = clkdm_lookup("wkup_clkdm");
-    #[cfg(feature = "CONFIG_SUSPEND")]
+    #[cfg(CONFIG_SUSPEND)]
     omap_common_suspend_init(Some(omap3_pm_suspend));
-    #[cfg(not(feature = "CONFIG_SUSPEND"))]
+    #[cfg(not(CONFIG_SUSPEND))]
     omap_common_suspend_init(None);
     arm_pm_idle = Some(omap3_pm_idle);
     omap3_idle_init();

@@ -7,9 +7,7 @@
 
 // Dependencies supplied by the surrounding kernel clock framework and device-tree bindings.
 
-enum {
-    DT_BI_TCXO_PAD,
-}
+pub const DT_BI_TCXO_PAD: i32 = 0;
 
 static mut tcsr_pcie_0_clkref_en: clk_branch = clk_branch {
     halt_reg: 0x31100,

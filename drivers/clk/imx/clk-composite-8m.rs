@@ -114,8 +114,8 @@ unsafe fn imx8m_clk_composite_divider_set_rate(
         & !((clk_div_mask((*divider).width) << (*divider).shift)
             | (clk_div_mask(PCG_DIV_WIDTH) << PCG_DIV_SHIFT));
 
-    val |= (prediv_value - 1) as u32 << (*divider).shift;
-    val |= (div_value - 1) as u32 << PCG_DIV_SHIFT;
+    val |= ((prediv_value - 1) as u32) << (*divider).shift;
+    val |= ((div_value - 1) as u32) << PCG_DIV_SHIFT;
 
     if val != orig {
         writel(val, (*divider).reg);

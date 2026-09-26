@@ -98,7 +98,7 @@ pub unsafe fn write_scoop_reg(dev: *mut device, reg: u16, data: u16) {
     iowrite16(data, (*sdev).base.wrapping_add(reg as usize));
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn check_scoop_reg(sdev: *mut scoop_dev) {
     let mcr = ioread16((*sdev).base.wrapping_add(SCOOP_MCR as usize));
     if mcr & 0x100 == 0 {
@@ -106,7 +106,7 @@ unsafe fn check_scoop_reg(sdev: *mut scoop_dev) {
     }
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn scoop_suspend(dev: *mut platform_device, _state: pm_message_t) -> i32 {
     let sdev = platform_get_drvdata(dev) as *mut scoop_dev;
     check_scoop_reg(sdev);
@@ -116,7 +116,7 @@ unsafe fn scoop_suspend(dev: *mut platform_device, _state: pm_message_t) -> i32 
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn scoop_resume(dev: *mut platform_device) -> i32 {
     let sdev = platform_get_drvdata(dev) as *mut scoop_dev;
     check_scoop_reg(sdev);
@@ -124,9 +124,9 @@ unsafe fn scoop_resume(dev: *mut platform_device) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const scoop_suspend: Option<unsafe fn(*mut platform_device, pm_message_t) -> i32> = None;
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const scoop_resume: Option<unsafe fn(*mut platform_device) -> i32> = None;
 
 unsafe fn scoop_probe(pdev: *mut platform_device) -> i32 {

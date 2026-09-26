@@ -163,7 +163,7 @@ pub unsafe fn translate_SPL_in_params_from_pipe_ctx(pipe_ctx: *mut pipe_ctx, spl
     (*spl_in).upsp_mode = (*pipe_ctx).plane_res.scl_data.upsp;
     if (*(*(*stream).ctx).dc).debug.force_cositing != 0 { (*spl_in).basic_in.cositing = (*(*(*stream).ctx).dc).debug.force_cositing - 1; }
     else { (*spl_in).basic_in.cositing = (*plane_state).cositing; }
-    (*spl_in).basic_in.tf_type = (*plane_state).in_transfer_func.type as spl_transfer_func_type;
+    (*spl_in).basic_in.tf_type = (*plane_state).in_transfer_func.r#type as spl_transfer_func_type;
     (*spl_in).basic_in.tf_predefined_type = (*plane_state).in_transfer_func.tf as spl_transfer_func_predefined;
     (*spl_in).h_active = (*pipe_ctx).plane_res.scl_data.h_active;
     (*spl_in).v_active = (*pipe_ctx).plane_res.scl_data.v_active;

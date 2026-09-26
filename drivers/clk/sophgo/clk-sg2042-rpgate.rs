@@ -157,11 +157,13 @@ unsafe fn sg2042_rpgate_probe(pdev: *mut PlatformDevice) -> i32 {
     let mut clk_data: *mut Sg2042ClkData = core::ptr::null_mut();
     let num_clks = SG2042_GATE_RP.len() as i32;
     let mut ret = sg2042_init_clkdata(pdev, num_clks, &mut clk_data);
-    if ret != 0 { goto_error!(error_out); }
+    'error_out: {
+    if ret != 0 { break 'error_out; }
     ret = sg2042_clk_register_rpgates(&mut (*pdev).dev, clk_data, SG2042_GATE_RP.as_ptr(), num_clks);
-    if ret != 0 { goto_error!(error_out); }
+    if ret != 0 { break 'error_out; }
     return devm_of_clk_add_hw_provider(&mut (*pdev).dev, of_clk_hw_onecell_get, &mut (*clk_data).onecell_data);
-error_out:
+    }
+    
     pr_err!("%s failed error number %d\n", "sg2042_rpgate_probe", ret);
     ret
 }

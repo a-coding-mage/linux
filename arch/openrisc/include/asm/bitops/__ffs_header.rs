@@ -7,7 +7,7 @@
 
 use core::ffi::{c_int, c_ulong};
 
-#[cfg(feature = "CONFIG_OPENRISC_HAVE_INST_FF1")]
+#[cfg(CONFIG_OPENRISC_HAVE_INST_FF1)]
 #[inline]
 pub unsafe fn __ffs(x: c_ulong) -> c_ulong {
     let ret: c_int;
@@ -21,7 +21,7 @@ pub unsafe fn __ffs(x: c_ulong) -> c_ulong {
     (ret as c_ulong).wrapping_sub(1)
 }
 
-#[cfg(not(feature = "CONFIG_OPENRISC_HAVE_INST_FF1"))]
+#[cfg(not(CONFIG_OPENRISC_HAVE_INST_FF1))]
 // The C header includes <asm-generic/bitops/__ffs.h>; this declaration is
 // supplied by the corresponding generic bit-operations dependency.
 unsafe extern "C" {

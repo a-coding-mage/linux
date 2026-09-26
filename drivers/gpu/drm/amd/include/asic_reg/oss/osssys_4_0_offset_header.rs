@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Advanced Micro Devices, Inc.
+ * Copyright (C) 2017  Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -13,14 +13,16 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+
 
 // addressBlock: osssys_osssysdec
 // base address: 0x4280
-
-+pub const _osssys_4_0_OFFSET_HEADER: u32 = ;
 pub const mmIH_VMID_0_LUT: u32 = 0x0000;
 pub const mmIH_VMID_0_LUT_BASE_IDX: u32 = 0;
 pub const mmIH_VMID_1_LUT: u32 = 0x0001;

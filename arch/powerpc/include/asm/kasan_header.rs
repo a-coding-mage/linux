@@ -12,11 +12,11 @@
 
 pub const KASAN_SHADOW_SCALE_SHIFT: u32 = 3;
 
-#[cfg(all(feature = "CONFIG_EXECMEM", feature = "CONFIG_PPC32"))]
+#[cfg(all(CONFIG_EXECMEM, CONFIG_PPC32))]
 pub const KASAN_KERN_START: usize =
     (PAGE_OFFSET - SZ_256M) & !(SZ_256M - 1);
 
-#[cfg(not(all(feature = "CONFIG_EXECMEM", feature = "CONFIG_PPC32")))]
+#[cfg(not(all(CONFIG_EXECMEM, CONFIG_PPC32)))]
 pub const KASAN_KERN_START: usize = PAGE_OFFSET;
 
 pub const KASAN_SHADOW_START: usize =
@@ -24,20 +24,20 @@ pub const KASAN_SHADOW_START: usize =
 
 pub const KASAN_SHADOW_OFFSET: usize = CONFIG_KASAN_SHADOW_OFFSET;
 
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 pub const KASAN_SHADOW_END: usize =
     (0usize.wrapping_sub(KASAN_SHADOW_START) >> KASAN_SHADOW_SCALE_SHIFT);
 
-#[cfg(all(not(feature = "CONFIG_PPC32"), feature = "CONFIG_PPC_BOOK3S_64"))]
+#[cfg(all(not(CONFIG_PPC32), CONFIG_PPC_BOOK3S_64))]
 pub const KASAN_SHADOW_END: u64 = 0xc00fc00000000000u64;
 
 #[cfg(all(
-    not(feature = "CONFIG_PPC32"),
-    not(feature = "CONFIG_PPC_BOOK3S_64")
+    not(CONFIG_PPC32),
+    not(CONFIG_PPC_BOOK3S_64)
 ))]
 pub const KASAN_SHADOW_END: u64 = 0xc000200000000000u64;
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 extern "C" {
     pub fn kasan_early_init();
     pub fn kasan_mmu_init();
@@ -45,15 +45,15 @@ extern "C" {
     pub fn kasan_late_init();
 }
 
-#[cfg(not(feature = "CONFIG_KASAN"))]
+#[cfg(not(CONFIG_KASAN))]
 #[inline]
 pub fn kasan_init() {}
 
-#[cfg(not(feature = "CONFIG_KASAN"))]
+#[cfg(not(CONFIG_KASAN))]
 #[inline]
 pub fn kasan_mmu_init() {}
 
-#[cfg(not(feature = "CONFIG_KASAN"))]
+#[cfg(not(CONFIG_KASAN))]
 #[inline]
 pub fn kasan_late_init() {}
 

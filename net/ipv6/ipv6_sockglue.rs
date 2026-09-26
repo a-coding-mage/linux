@@ -40,10 +40,10 @@ pub type sockptr_t = *mut c_void;
 
 // External kernel entry points used by this implementation.
 extern "C" {
-    fn ip_setsockopt(*mut sock, i32, i32, sockptr_t, u32) -> i32;
-    fn ip_getsockopt(*mut sock, i32, i32, *mut i8, *mut i32) -> i32;
-    fn do_ipv6_setsockopt(*mut sock, i32, i32, sockptr_t, u32) -> i32;
-    fn do_ipv6_getsockopt(*mut sock, i32, i32, sockptr_t, sockptr_t) -> i32;
+    fn ip_setsockopt(_: *mut sock, _: i32, _: i32, _: sockptr_t, _: u32) -> i32;
+    fn ip_getsockopt(_: *mut sock, _: i32, _: i32, _: *mut i8, _: *mut i32) -> i32;
+    fn do_ipv6_setsockopt(_: *mut sock, _: i32, _: i32, _: sockptr_t, _: u32) -> i32;
+    fn do_ipv6_getsockopt(_: *mut sock, _: i32, _: i32, _: sockptr_t, _: sockptr_t) -> i32;
 }
 
 // The original implementation is intentionally kept as an exact source-level

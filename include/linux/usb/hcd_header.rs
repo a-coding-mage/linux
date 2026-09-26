@@ -24,7 +24,7 @@ pub const USB_PID_MDATA: u8 = 0x0f;
 #[repr(C)] pub struct usb_hcd {
     pub self_: usb_bus, pub kref: kref, pub product_desc: *const c_char, pub speed: c_int,
     pub irq_descr: [c_char; 24], pub rh_timer: timer_list, pub status_urb: *mut urb,
-    #[cfg(feature = "CONFIG_PM")] pub wakeup_work: work_struct,
+    #[cfg(CONFIG_PM)] pub wakeup_work: work_struct,
     pub died_work: work_struct, pub driver: *const hc_driver, pub usb_phy: *mut usb_phy,
     pub phy_roothub: *mut usb_phy_roothub, pub flags: c_ulong, pub dev_policy: usb_dev_authorize_policy,
     pub rh_registered: u32, pub rh_pollable: u32, pub msix_enabled: u32, pub msi_enabled: u32,
@@ -95,19 +95,19 @@ pub type c_char=i8; pub type c_int=i32; pub type c_uint=u32; pub type c_ulong=us
 // External kernel declarations and configuration-dependent APIs.
 extern "C" {
  pub static mut usb_bus_idr: idr; pub static mut usb_bus_idr_lock: mutex; pub static mut usb_kill_urb_queue: wait_queue_head_t;
- pub fn usb_hcd_link_urb_to_ep(*mut usb_hcd,*mut urb)->c_int; pub fn usb_hcd_check_unlink_urb(*mut usb_hcd,*mut urb,c_int)->c_int; pub fn usb_hcd_unlink_urb_from_ep(*mut usb_hcd,*mut urb);
- pub fn usb_hcd_submit_urb(*mut urb,gfp_t)->c_int; pub fn usb_hcd_unlink_urb(*mut urb,c_int)->c_int; pub fn usb_hcd_giveback_urb(*mut usb_hcd,*mut urb,c_int);
- pub fn usb_hcd_map_urb_for_dma(*mut usb_hcd,*mut urb,gfp_t)->c_int; pub fn usb_hcd_unmap_urb_setup_for_dma(*mut usb_hcd,*mut urb); pub fn usb_hcd_unmap_urb_for_dma(*mut usb_hcd,*mut urb);
- pub fn usb_hcd_flush_endpoint(*mut usb_device,*mut usb_host_endpoint); pub fn usb_hcd_disable_endpoint(*mut usb_device,*mut usb_host_endpoint); pub fn usb_hcd_reset_endpoint(*mut usb_device,*mut usb_host_endpoint); pub fn usb_hcd_synchronize_unlinks(*mut usb_device);
- pub fn usb_hcd_get_frame_number(*mut usb_device)->c_int; pub fn usb_hc_died(*mut usb_hcd); pub fn usb_hcd_poll_rh_status(*mut usb_hcd); pub fn usb_wakeup_notification(*mut usb_device,c_uint);
- pub fn usb_hcd_start_port_resume(*mut usb_bus,c_int); pub fn usb_hcd_end_port_resume(*mut usb_bus,c_int); pub fn usb_hub_clear_tt_buffer(*mut urb)->c_int; pub fn usb_ep0_reinit(*mut usb_device);
- pub fn usb_create_hcd(*const hc_driver,*mut device,*const c_char)->*mut usb_hcd;
- pub fn usb_create_shared_hcd(*const hc_driver,*mut device,*const c_char,*mut usb_hcd)->*mut usb_hcd;
- pub fn usb_get_hcd(*mut usb_hcd)->*mut usb_hcd; pub fn usb_put_hcd(*mut usb_hcd); pub fn usb_hcd_is_primary_hcd(*mut usb_hcd)->c_int;
- pub fn usb_add_hcd(*mut usb_hcd,c_uint,c_ulong)->c_int; pub fn usb_remove_hcd(*mut usb_hcd); pub fn usb_hcd_find_raw_port_number(*mut usb_hcd,c_int)->c_int;
- pub fn usb_init_pool_max(); pub fn hcd_buffer_create(*mut usb_hcd)->c_int; pub fn hcd_buffer_destroy(*mut usb_hcd);
- pub fn usb_hcd_irq(c_int,*mut c_void)->irqreturn_t; pub fn usb_alloc_dev(*mut usb_device,*mut usb_bus,c_uint)->*mut usb_device; pub fn usb_new_device(*mut usb_device)->c_int; pub fn usb_disconnect(*mut *mut usb_device);
- pub fn usb_get_configuration(*mut usb_device)->c_int; pub fn usb_destroy_configuration(*mut usb_device); pub fn usb_set_device_state(*mut usb_device,usb_device_state);
+ pub fn usb_hcd_link_urb_to_ep(_: *mut usb_hcd,_: *mut urb)->c_int; pub fn usb_hcd_check_unlink_urb(_: *mut usb_hcd,_: *mut urb,_: c_int)->c_int; pub fn usb_hcd_unlink_urb_from_ep(_: *mut usb_hcd,_: *mut urb);
+ pub fn usb_hcd_submit_urb(_: *mut urb,_: gfp_t)->c_int; pub fn usb_hcd_unlink_urb(_: *mut urb,_: c_int)->c_int; pub fn usb_hcd_giveback_urb(_: *mut usb_hcd,_: *mut urb,_: c_int);
+ pub fn usb_hcd_map_urb_for_dma(_: *mut usb_hcd,_: *mut urb,_: gfp_t)->c_int; pub fn usb_hcd_unmap_urb_setup_for_dma(_: *mut usb_hcd,_: *mut urb); pub fn usb_hcd_unmap_urb_for_dma(_: *mut usb_hcd,_: *mut urb);
+ pub fn usb_hcd_flush_endpoint(_: *mut usb_device,_: *mut usb_host_endpoint); pub fn usb_hcd_disable_endpoint(_: *mut usb_device,_: *mut usb_host_endpoint); pub fn usb_hcd_reset_endpoint(_: *mut usb_device,_: *mut usb_host_endpoint); pub fn usb_hcd_synchronize_unlinks(_: *mut usb_device);
+ pub fn usb_hcd_get_frame_number(_: *mut usb_device)->c_int; pub fn usb_hc_died(_: *mut usb_hcd); pub fn usb_hcd_poll_rh_status(_: *mut usb_hcd); pub fn usb_wakeup_notification(_: *mut usb_device,_: c_uint);
+ pub fn usb_hcd_start_port_resume(_: *mut usb_bus,_: c_int); pub fn usb_hcd_end_port_resume(_: *mut usb_bus,_: c_int); pub fn usb_hub_clear_tt_buffer(_: *mut urb)->c_int; pub fn usb_ep0_reinit(_: *mut usb_device);
+ pub fn usb_create_hcd(_: *const hc_driver,_: *mut device,_: *const c_char)->*mut usb_hcd;
+ pub fn usb_create_shared_hcd(_: *const hc_driver,_: *mut device,_: *const c_char,_: *mut usb_hcd)->*mut usb_hcd;
+ pub fn usb_get_hcd(_: *mut usb_hcd)->*mut usb_hcd; pub fn usb_put_hcd(_: *mut usb_hcd); pub fn usb_hcd_is_primary_hcd(_: *mut usb_hcd)->c_int;
+ pub fn usb_add_hcd(_: *mut usb_hcd,_: c_uint,_: c_ulong)->c_int; pub fn usb_remove_hcd(_: *mut usb_hcd); pub fn usb_hcd_find_raw_port_number(_: *mut usb_hcd,_: c_int)->c_int;
+ pub fn usb_init_pool_max(); pub fn hcd_buffer_create(_: *mut usb_hcd)->c_int; pub fn hcd_buffer_destroy(_: *mut usb_hcd);
+ pub fn usb_hcd_irq(_: c_int,_: *mut c_void)->irqreturn_t; pub fn usb_alloc_dev(_: *mut usb_device,_: *mut usb_bus,_: c_uint)->*mut usb_device; pub fn usb_new_device(_: *mut usb_device)->c_int; pub fn usb_disconnect(_: *mut *mut usb_device);
+ pub fn usb_get_configuration(_: *mut usb_device)->c_int; pub fn usb_destroy_configuration(_: *mut usb_device); pub fn usb_set_device_state(_: *mut usb_device,_: usb_device_state);
 }
 
 pub const __ACTIVE:c_int=0x01; pub const __SUSPEND:c_int=0x04; pub const __TRANSIENT:c_int=0x80;
@@ -120,7 +120,7 @@ pub type gfp_t=usize; pub type resource_size_t=usize; pub type irqreturn_t=c_int
 pub enum usb3_link_state {} pub enum usb_device_state {}
 pub enum usb_bus {} pub enum urb {} pub enum usb_host_endpoint {} pub enum usb_phy {} pub enum usb_phy_roothub {} pub enum kref {} pub enum spinlock_t {} pub enum list_head {} pub enum work_struct {} pub enum timer_list {} pub enum mutex {} pub enum dma_pool {} pub enum gen_pool {} pub enum device {} pub enum idr {} pub enum wait_queue_head_t {} pub enum usb_device {} pub enum usb_host_config {} pub enum usb_host_interface {} pub enum usb_tt_type {}
 pub const USB_DIR_IN:u32=0x80;
-#[cfg(feature="CONFIG_USB_HCD_TEST_MODE")] extern "C" { pub fn ehset_single_step_set_feature(*mut usb_hcd,c_int)->c_int; }
-#[cfg(not(feature="CONFIG_USB_HCD_TEST_MODE"))] #[inline] pub unsafe fn ehset_single_step_set_feature(_: *mut usb_hcd,_:c_int)->c_int { 0 }
+#[cfg(CONFIG_USB_HCD_TEST_MODE)] extern "C" { pub fn ehset_single_step_set_feature(_: *mut usb_hcd,_: c_int)->c_int; }
+#[cfg(not(CONFIG_USB_HCD_TEST_MODE))] #[inline] pub unsafe fn ehset_single_step_set_feature(_: *mut usb_hcd,_:c_int)->c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -173,7 +173,7 @@ struct of_device_id {
     compatible: *const u8,
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 static UBX_OF_MATCH: &[of_device_id] = &[
     of_device_id { compatible: b"u-blox,neo-6m\0".as_ptr() },
     of_device_id { compatible: b"u-blox,neo-8\0".as_ptr() },
@@ -186,7 +186,7 @@ struct serdev_device_driver {
     name: *const u8,
     probe: Option<unsafe extern "C" fn(*mut serdev_device) -> i32>,
     remove: Option<unsafe extern "C" fn(*mut serdev_device)>,
-    #[cfg(feature = "CONFIG_OF")]
+    #[cfg(CONFIG_OF)]
     of_match_table: *const of_device_id,
 }
 
@@ -194,7 +194,7 @@ static mut UBX_DRIVER: serdev_device_driver = serdev_device_driver {
     name: b"gnss-ubx\0".as_ptr(),
     probe: Some(ubx_probe),
     remove: Some(ubx_remove),
-    #[cfg(feature = "CONFIG_OF")]
+    #[cfg(CONFIG_OF)]
     of_match_table: UBX_OF_MATCH.as_ptr(),
 };
 

@@ -136,7 +136,7 @@ pub const BPF_LOCAL_STORAGE_MAX_VALUE_SIZE: u32 =
 #[macro_export]
 macro_rules! SELEM {
     ($sdata:expr) => {
-        container_of!($sdata, bpf_local_storage_elem, sdata)
+        container_of!($sdata, bpf_local_storage_elem, $sdata)
     };
 }
 

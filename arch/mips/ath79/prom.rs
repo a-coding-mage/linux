@@ -20,7 +20,7 @@ pub unsafe extern "C" fn prom_init() {
     fw_init_cmdline();
 
     // CONFIG_BLK_DEV_INITRD: read the initrd address from the firmware environment.
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     {
         initrd_start = fw_getenvl(b"initrd_start\0".as_ptr() as *const core::ffi::c_char);
         if initrd_start != 0 {

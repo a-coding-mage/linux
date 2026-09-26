@@ -39,7 +39,7 @@ macro_rules! futex_op_func {
                 uaddr = inout(reg) *uaddr => *uaddr,
                 rc = lateout(reg) rc,
                 oparg = in(reg) oparg,
-                operation = const $operation,
+                $operation = const $operation,
                 options(nostack)
             );
             disable_sacf_uaccess(sacf_flag);

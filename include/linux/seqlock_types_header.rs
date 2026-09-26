@@ -31,7 +31,7 @@
 pub struct seqcount {
     pub sequence: ::core::ffi::c_uint,
     // Present in C when CONFIG_DEBUG_LOCK_ALLOC is enabled.
-    #[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+    #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub dep_map: lockdep_map,
 }
 pub type seqcount_t = seqcount;
@@ -57,7 +57,7 @@ pub type seqcount_t = seqcount;
 pub struct seqcount_raw_spinlock {
     pub seqcount: seqcount_t,
     // __SEQ_LOCK(locktype *lock) is present for CONFIG_LOCKDEP or CONFIG_PREEMPT_RT.
-    #[cfg(any(feature = "CONFIG_LOCKDEP", feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(any(CONFIG_LOCKDEP, CONFIG_PREEMPT_RT))]
     pub lock: *mut raw_spinlock_t,
 }
 pub type seqcount_raw_spinlock_t = seqcount_raw_spinlock;
@@ -65,7 +65,7 @@ pub type seqcount_raw_spinlock_t = seqcount_raw_spinlock;
 #[repr(C)]
 pub struct seqcount_spinlock {
     pub seqcount: seqcount_t,
-    #[cfg(any(feature = "CONFIG_LOCKDEP", feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(any(CONFIG_LOCKDEP, CONFIG_PREEMPT_RT))]
     pub lock: *mut spinlock_t,
 }
 pub type seqcount_spinlock_t = seqcount_spinlock;
@@ -73,7 +73,7 @@ pub type seqcount_spinlock_t = seqcount_spinlock;
 #[repr(C)]
 pub struct seqcount_rwlock {
     pub seqcount: seqcount_t,
-    #[cfg(any(feature = "CONFIG_LOCKDEP", feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(any(CONFIG_LOCKDEP, CONFIG_PREEMPT_RT))]
     pub lock: *mut rwlock_t,
 }
 pub type seqcount_rwlock_t = seqcount_rwlock;
@@ -81,7 +81,7 @@ pub type seqcount_rwlock_t = seqcount_rwlock;
 #[repr(C)]
 pub struct seqcount_mutex {
     pub seqcount: seqcount_t,
-    #[cfg(any(feature = "CONFIG_LOCKDEP", feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(any(CONFIG_LOCKDEP, CONFIG_PREEMPT_RT))]
     pub lock: *mut mutex,
 }
 pub type seqcount_mutex_t = seqcount_mutex;

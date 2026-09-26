@@ -17,8 +17,8 @@
 
 pub const vmpressure_win: ::core::ffi::c_ulong = SWAP_CLUSTER_MAX * 16;
 
-static const vmpressure_level_med: ::core::ffi::c_uint = 60;
-static const vmpressure_level_critical: ::core::ffi::c_uint = 95;
+static vmpressure_level_med: ::core::ffi::c_uint = 60;
+static vmpressure_level_critical: ::core::ffi::c_uint = 95;
 
 unsafe fn vmpressure_level(pressure: ::core::ffi::c_ulong) -> vmpressure_levels {
 	if pressure >= vmpressure_level_critical as ::core::ffi::c_ulong {

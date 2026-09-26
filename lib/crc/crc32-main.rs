@@ -59,7 +59,7 @@ unsafe fn crc32c_base(mut crc: u32, mut p: *const u8, mut len: usize) -> u32 {
 }
 
 // CONFIG_CRC32_ARCH selects architecture-provided implementations.
-#[cfg(feature = "CONFIG_CRC32_ARCH")]
+#[cfg(CONFIG_CRC32_ARCH)]
 extern "C" {
     fn crc32_optimizations_arch() -> u32;
     fn crc32_le_arch(crc: u32, p: *const u8, len: usize) -> u32;
@@ -67,22 +67,22 @@ extern "C" {
     fn crc32c_arch(crc: u32, p: *const u8, len: usize) -> u32;
 }
 
-#[cfg(feature = "CONFIG_CRC32_ARCH")]
+#[cfg(CONFIG_CRC32_ARCH)]
 pub unsafe fn crc32_optimizations() -> u32 {
     crc32_optimizations_arch()
 }
 
-#[cfg(not(feature = "CONFIG_CRC32_ARCH"))]
+#[cfg(not(CONFIG_CRC32_ARCH))]
 unsafe fn crc32_le_arch(crc: u32, p: *const u8, len: usize) -> u32 {
     crc32_le_base(crc, p, len)
 }
 
-#[cfg(not(feature = "CONFIG_CRC32_ARCH"))]
+#[cfg(not(CONFIG_CRC32_ARCH))]
 unsafe fn crc32_be_arch(crc: u32, p: *const u8, len: usize) -> u32 {
     crc32_be_base(crc, p, len)
 }
 
-#[cfg(not(feature = "CONFIG_CRC32_ARCH"))]
+#[cfg(not(CONFIG_CRC32_ARCH))]
 unsafe fn crc32c_arch(crc: u32, p: *const u8, len: usize) -> u32 {
     crc32c_base(crc, p, len)
 }

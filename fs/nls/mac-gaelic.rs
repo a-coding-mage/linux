@@ -519,7 +519,7 @@ static charset2upper: [u8; 256] = {
 
 unsafe fn uni2char(uni: u16, out: *mut u8, boundlen: i32) -> i32
 {
-	const unsigned char *uni2charset;
+	const core::ffi::c_uchar *uni2charset;
 	u8 cl = uni & 0x00ff;
 	u8 ch = (uni & 0xff00) >> 8;
 

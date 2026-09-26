@@ -385,7 +385,7 @@ unsafe fn is_dmr_plus_platform() -> c_int {
 }
 
 unsafe fn update_cpu_model() -> c_int {
-    let (mut ebx, mut ecx, mut edx, mut fms) = (0_u32, 0_u32, 0_u32, 0_u32);
+    let (mut ebx, mut ecx, mut edx, mut fms) = (0u32, 0u32, 0u32, 0u32);
     __cpuid(1, fms, ebx, ecx, edx);
     cpu_family = ((fms >> 8) & 0xf) as c_int;
     if cpu_family == 0xf { cpu_family += ((fms >> 20) & 0xff) as c_int; }
@@ -648,7 +648,7 @@ pub unsafe extern "C" fn for_each_online_power_domain_in_set(
 {
     let mut id: isst_id = zeroed();
     let mut cpus = [[[-1_i32; MAX_PUNIT_PER_DIE]; MAX_DIE_PER_PACKAGE]; MAX_PACKAGE_COUNT];
-    let mut valid_mask = [[0_i32; MAX_DIE_PER_PACKAGE]; MAX_PACKAGE_COUNT];
+    let mut valid_mask = [[0i32; MAX_DIE_PER_PACKAGE]; MAX_PACKAGE_COUNT];
     let cb = match callback { Some(c) => c, None => return };
     let mut i = 0;
     while i < topo_max_cpus {

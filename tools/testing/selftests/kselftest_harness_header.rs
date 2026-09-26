@@ -255,8 +255,8 @@ macro_rules! __EXPECT {
 #[macro_export]
 macro_rules! TEST {
     ($test_name:ident $body:block) => {
-        /* C version declares test_name, wrapper_test_name, static metadata,
-         * constructor registration, then the test body. */
+        /* C version declares $test_name, wrapper_test_name, static metadata,
+         * constructor registration, then the test $body. */
         unsafe fn $test_name(_metadata: *mut $crate::__test_metadata) $body
     };
 }

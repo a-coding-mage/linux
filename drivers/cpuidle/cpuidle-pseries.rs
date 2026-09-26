@@ -55,16 +55,6 @@ unsafe extern "C" {
     static cpuidle_devices: *mut cpuidle_device;
     static cpuidle_disable: i32;
     static tb_ticks_per_usec: u64;
-    const IDLE_NO_OVERRIDE: i32;
-    const FW_FEATURE_SPLPAR: u64;
-    const CPU_FTR_ARCH_31: u64;
-    const PVR_POWER10: u32;
-    const CPUHP_AP_ONLINE_DYN: i32;
-    const CPUHP_CPUIDLE_DEAD: i32;
-    const CPUIDLE_FLAG_POLLING: u32;
-    const MSR_EE: u64;
-    const UINT_MAX: u64;
-    const NSEC_PER_USEC: u64;
     static THIS_MODULE: *mut c_void;
     fn set_thread_flag(flag: i32);
     fn clear_thread_flag(flag: i32);
@@ -95,6 +85,16 @@ unsafe extern "C" {
         online: Option<unsafe extern "C" fn(u32) -> i32>,
         dead: Option<unsafe extern "C" fn(u32) -> i32>) -> i32;
 }
+const IDLE_NO_OVERRIDE: i32;
+const FW_FEATURE_SPLPAR: u64;
+const CPU_FTR_ARCH_31: u64;
+const PVR_POWER10: u32;
+const CPUHP_AP_ONLINE_DYN: i32;
+const CPUHP_CPUIDLE_DEAD: i32;
+const CPUIDLE_FLAG_POLLING: u32;
+const MSR_EE: u64;
+const UINT_MAX: u64;
+const NSEC_PER_USEC: u64;
 
 #[repr(C)] struct cpuidle_device { poll_time_limit: bool, _rest: [u8; 0] }
 #[repr(C)] struct cpuidle_state {

@@ -57,26 +57,26 @@ struct TraceRemoteIterator {
 }
 
 extern "C" {
-    fn ring_buffer_alloc_remote(*mut RingBufferRemote)->*mut TraceBuffer;
-    fn ring_buffer_free(*mut TraceBuffer); fn ring_buffer_empty(*mut TraceBuffer)->bool;
-    fn ring_buffer_reset(*mut TraceBuffer); fn ring_buffer_reset_cpu(*mut TraceBuffer,c_int);
-    fn ring_buffer_poll_remote(*mut TraceBuffer,c_int)->c_int;
-    fn ring_buffer_empty_cpu(*mut TraceBuffer,c_int)->bool;
-    fn ring_buffer_peek(*mut TraceBuffer,c_int,*mut u64,*mut usize)->*mut RingBufferEvent;
-    fn ring_buffer_event_data(*mut RingBufferEvent)->*mut RemoteEventHdr;
-    fn ring_buffer_consume(*mut TraceBuffer,c_int,*mut c_void,*mut c_void);
-    fn ring_buffer_read_start(*mut TraceBuffer,c_int,c_int)->*mut RingBufferIter;
-    fn ring_buffer_read_finish(*mut RingBufferIter); fn ring_buffer_iter_peek(*mut RingBufferIter,*mut u64)->*mut RingBufferEvent;
-    fn ring_buffer_iter_dropped(*mut RingBufferIter)->usize; fn ring_buffer_iter_advance(*mut RingBufferIter);
-    fn trace_seq_init(*mut TraceSeq); fn trace_seq_printf(*mut TraceSeq,*const c_char,...)->c_int;
-    fn trace_seq_has_overflowed(*mut TraceSeq)->bool; fn trace_seq_to_user(*mut TraceSeq,*mut c_char,usize)->c_int;
-    fn trace_print_seq(*mut SeqFile,*mut TraceSeq)->c_int; fn trace_seq_used(*mut TraceSeq)->usize;
-    fn seq_printf(*mut SeqFile,*const c_char,...)->c_int; fn seq_puts(*mut SeqFile,*const c_char)->c_int;
-    fn kstrtoul_from_user(*const c_char,usize,u32,*mut usize)->c_int; fn kstrtou8_from_user(*const c_char,usize,u32,*mut u8)->c_int;
-    fn tracing_get_cpu(*mut Inode)->c_int; fn seq_open(*mut File,*const FileOperations)->c_int; fn seq_release(*mut Inode,*mut File)->c_int;
-    fn seq_read(*mut File,*mut c_char,usize,*mut i64)->isize; fn seq_read_iter(*mut File,*mut c_void)->isize;
-    fn simple_read_from_buffer(*mut c_char,usize,*mut i64,*const c_void,usize)->isize;
-    fn trace_remote_find_event(*mut TraceRemote,u16)->*mut RemoteEvent;
+    fn ring_buffer_alloc_remote(_: *mut RingBufferRemote)->*mut TraceBuffer;
+    fn ring_buffer_free(_: *mut TraceBuffer); fn ring_buffer_empty(_: *mut TraceBuffer)->bool;
+    fn ring_buffer_reset(_: *mut TraceBuffer); fn ring_buffer_reset_cpu(_: *mut TraceBuffer,_: c_int);
+    fn ring_buffer_poll_remote(_: *mut TraceBuffer,_: c_int)->c_int;
+    fn ring_buffer_empty_cpu(_: *mut TraceBuffer,_: c_int)->bool;
+    fn ring_buffer_peek(_: *mut TraceBuffer,_: c_int,_: *mut u64,_: *mut usize)->*mut RingBufferEvent;
+    fn ring_buffer_event_data(_: *mut RingBufferEvent)->*mut RemoteEventHdr;
+    fn ring_buffer_consume(_: *mut TraceBuffer,_: c_int,_: *mut c_void,_: *mut c_void);
+    fn ring_buffer_read_start(_: *mut TraceBuffer,_: c_int,_: c_int)->*mut RingBufferIter;
+    fn ring_buffer_read_finish(_: *mut RingBufferIter); fn ring_buffer_iter_peek(_: *mut RingBufferIter,_: *mut u64)->*mut RingBufferEvent;
+    fn ring_buffer_iter_dropped(_: *mut RingBufferIter)->usize; fn ring_buffer_iter_advance(_: *mut RingBufferIter);
+    fn trace_seq_init(_: *mut TraceSeq); fn trace_seq_printf(_: *mut TraceSeq,_: *const c_char,...)->c_int;
+    fn trace_seq_has_overflowed(_: *mut TraceSeq)->bool; fn trace_seq_to_user(_: *mut TraceSeq,_: *mut c_char,_: usize)->c_int;
+    fn trace_print_seq(_: *mut SeqFile,_: *mut TraceSeq)->c_int; fn trace_seq_used(_: *mut TraceSeq)->usize;
+    fn seq_printf(_: *mut SeqFile,_: *const c_char,...)->c_int; fn seq_puts(_: *mut SeqFile,_: *const c_char)->c_int;
+    fn kstrtoul_from_user(_: *const c_char,_: usize,_: u32,_: *mut usize)->c_int; fn kstrtou8_from_user(_: *const c_char,_: usize,_: u32,_: *mut u8)->c_int;
+    fn tracing_get_cpu(_: *mut Inode)->c_int; fn seq_open(_: *mut File,_: *const FileOperations)->c_int; fn seq_release(_: *mut Inode,_: *mut File)->c_int;
+    fn seq_read(_: *mut File,_: *mut c_char,_: usize,_: *mut i64)->isize; fn seq_read_iter(_: *mut File,_: *mut c_void)->isize;
+    fn simple_read_from_buffer(_: *mut c_char,_: usize,_: *mut i64,_: *const c_void,_: usize)->isize;
+    fn trace_remote_find_event(_: *mut TraceRemote,_: u16)->*mut RemoteEvent;
 }
 
 unsafe fn loaded(r:*mut TraceRemote)->bool { !(*r).trace_buffer.is_null() }

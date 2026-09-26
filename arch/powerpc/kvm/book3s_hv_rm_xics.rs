@@ -14,14 +14,14 @@ unsafe fn ics_rm_check_resend(xics: *mut kvmppc_xics, ics: *mut kvmppc_ics,
     }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn icp_send_hcore_msg(hcore: i32, vcpu: *mut kvm_vcpu) {
     let hcpu = hcore << threads_shift;
     (*kvmppc_host_rm_ops_hv).rm_core[hcore as usize].rm_data = vcpu;
     smp_muxed_ipi_set_message(hcpu, PPC_MSG_RM_HOST_ACTION);
     kvmppc_set_host_ipi(hcpu); smp_mb(); kvmhv_rm_send_ipi(hcpu);
 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe fn icp_send_hcore_msg(_hcore: i32, _vcpu: *mut kvm_vcpu) {}
 
 unsafe fn grab_next_hostcore(start: i32, rm_core: *mut kvmppc_host_rm_core,

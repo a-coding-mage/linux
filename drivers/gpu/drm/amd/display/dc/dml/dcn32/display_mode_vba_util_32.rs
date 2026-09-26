@@ -34,10 +34,10 @@
 const DCN32_MAX_FMT_420_BUFFER_WIDTH: u32 = 4096;
 
 u32 dml32_dscceComputeDelay(
-		u32 bpc,
+		bpc: u32,
 		double BPP,
-		u32 sliceWidth,
-		u32 numSlices,
+		sliceWidth: u32,
+		numSlices: u32,
 		output_format_class pixelFormat,
 		output_encoder_class Output)
 {
@@ -54,7 +54,7 @@ u32 dml32_dscceComputeDelay(
 	u32 rcModelSize = 8192;
 
 	// N422/N420 operate at 2 pixels per clock
-	u32 pixelsPerClock, lstall, D, initalXmitDelay, w, s, ix, wx, p, l0, a, ax, L,
+	pixelsPerClock: u32, lstall, D, initalXmitDelay, w, s, ix, wx, p, l0, a, ax, L,
 	Delay, pixels;
 
 	if (pixelFormat == dm_420)
@@ -408,7 +408,7 @@ void dml32_CalculateSwathAndDETConfiguration(
 		u32 MinCompressedBufferSizeInKByte,
 		double ForceSingleDPP,
 		u32 NumberOfActiveSurfaces,
-		u32 nomDETInKByte,
+		nomDETInKByte: u32,
 		unbounded_requesting_policy UseUnboundedRequestingFinal,
 		bool DisableUnboundRequestIfCompBufReservedSpaceNeedAdjustment,
 		u32 PixelChunkSizeKBytes,
@@ -726,7 +726,7 @@ void dml32_CalculateSwathWidth(
 		\*mut u32 /* swath_width_chroma_ub[] */) // per-pipe
 {
 	(void)BytePerPixY;
-	u32 k, j;
+	k: u32, j;
 	odm_combine_mode MainSurfaceODMMode;
 
 	u32 surface_width_ub_l;
@@ -920,7 +920,7 @@ void dml32_CalculateDETBufferSize(
 		bool ForceSingleDPP,
 		u32 NumberOfActiveSurfaces,
 		bool UnboundedRequestEnabled,
-		u32 nomDETInKByte,
+		nomDETInKByte: u32,
 		u32 MaxTotalDETInKByte,
 		u32 ConfigReturnBufferSizeInKByte,
 		u32 MinCompressedBufferSizeInKByte,
@@ -945,7 +945,7 @@ void dml32_CalculateDETBufferSize(
 	u32 max_minDET;
 	u32 minDET;
 	u32 minDET_pipe;
-	u32 j, k;
+	j: u32, k;
 
 // conditional: ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: ForceSingleDPP = %d\n", __func__, ForceSingleDPP);
@@ -1332,7 +1332,7 @@ double dml32_CalculateRequiredDispclk(
 	return RequiredDispclk;
 }
 
-double dml32_RoundToDFSGranularity(double Clock, bool round_up, double VCOSpeed)
+double dml32_RoundToDFSGranularity(double Clock, round_up: bool, double VCOSpeed)
 {
 	if (Clock <= 0.0)
 		return 0.0;
@@ -2797,12 +2797,12 @@ void dml32_CalculateRowBandwidth(
 		double LineTime,
 		u32 MetaRowByteLuma,
 		u32 MetaRowByteChroma,
-		u32 meta_row_height_luma,
-		u32 meta_row_height_chroma,
+		meta_row_height_luma: u32,
+		meta_row_height_chroma: u32,
 		u32 PixelPTEBytesPerRowLuma,
 		u32 PixelPTEBytesPerRowChroma,
-		u32 dpte_row_height_luma,
-		u32 dpte_row_height_chroma,
+		dpte_row_height_luma: u32,
+		dpte_row_height_chroma: u32,
 		/* Output */
 		double *meta_row_bw,
 		double *dpte_row_bw)
@@ -2849,8 +2849,8 @@ double dml32_CalculateUrgentLatency(
 
 void dml32_CalculateUrgentBurstFactor(
 		dm_use_mall_for_pstate_change_mode UseMALLForPStateChange,
-		u32    swath_width_luma_ub,
-		u32    swath_width_chroma_ub,
+		swath_width_luma_ub: u32,
+		swath_width_chroma_ub: u32,
 		u32 SwathHeightY,
 		u32 SwathHeightC,
 		double  LineTime,
@@ -3108,7 +3108,7 @@ void dml32_UseMinimumDCFCLK(
 	(void)MaxAveragePercentOfIdealSDPPortBWDisplayCanUseInNormalSystemOperation;
 	(void)ReadBandwidthLuma;
 	(void)ReadBandwidthChroma;
-	u32 i, j, k;
+	i: u32, j, k;
 	u32     dummy1;
 	double dummy2, dummy3;
 	double   NormalEfficiency;
@@ -3419,17 +3419,17 @@ double dml32_get_return_bw_mbps(const soc_bounding_box_st *soc,
 		const double DRAMSpeed)
 {
 	double ReturnBW = 0.;
-	double IdealSDPPortBandwidth    = soc->return_bus_width_bytes /*mode_lib->vba.ReturnBusWidth*/ * DCFCLK;
-	double IdealFabricBandwidth     = FabricClock * soc->fabric_datapath_to_dcn_data_return_bytes;
-	double IdealDRAMBandwidth       = DRAMSpeed * soc->num_chans * soc->dram_channel_width_bytes;
-	double PixelDataOnlyReturnBW    = dml_min3(IdealSDPPortBandwidth * soc->pct_ideal_sdp_bw_after_urgent / 100,
-			IdealFabricBandwidth * soc->pct_ideal_fabric_bw_after_urgent / 100,
-			IdealDRAMBandwidth * (VoltageLevel < 2 ? soc->pct_ideal_dram_bw_after_urgent_strobe  :
-					soc->pct_ideal_dram_sdp_bw_after_urgent_pixel_only) / 100);
-	double PixelMixedWithVMDataReturnBW = dml_min3(IdealSDPPortBandwidth * soc->pct_ideal_sdp_bw_after_urgent / 100,
-			IdealFabricBandwidth * soc->pct_ideal_fabric_bw_after_urgent / 100,
-			IdealDRAMBandwidth * (VoltageLevel < 2 ? soc->pct_ideal_dram_bw_after_urgent_strobe :
-					soc->pct_ideal_dram_sdp_bw_after_urgent_pixel_only) / 100);
+	double IdealSDPPortBandwidth    = (*soc).return_bus_width_bytes /*mode_lib->vba.ReturnBusWidth*/ * DCFCLK;
+	double IdealFabricBandwidth     = FabricClock * (*soc).fabric_datapath_to_dcn_data_return_bytes;
+	double IdealDRAMBandwidth       = DRAMSpeed * (*soc).num_chans * (*soc).dram_channel_width_bytes;
+	double PixelDataOnlyReturnBW    = dml_min3(IdealSDPPortBandwidth * (*soc).pct_ideal_sdp_bw_after_urgent / 100,
+			IdealFabricBandwidth * (*soc).pct_ideal_fabric_bw_after_urgent / 100,
+			IdealDRAMBandwidth * (VoltageLevel < 2 ? (*soc).pct_ideal_dram_bw_after_urgent_strobe  :
+					(*soc).pct_ideal_dram_sdp_bw_after_urgent_pixel_only) / 100);
+	double PixelMixedWithVMDataReturnBW = dml_min3(IdealSDPPortBandwidth * (*soc).pct_ideal_sdp_bw_after_urgent / 100,
+			IdealFabricBandwidth * (*soc).pct_ideal_fabric_bw_after_urgent / 100,
+			IdealDRAMBandwidth * (VoltageLevel < 2 ? (*soc).pct_ideal_dram_bw_after_urgent_strobe :
+					(*soc).pct_ideal_dram_sdp_bw_after_urgent_pixel_only) / 100);
 
 	if (HostVMEnable != true)
 		ReturnBW = PixelDataOnlyReturnBW;
@@ -3461,13 +3461,13 @@ double dml32_get_return_bw_mbps_vm_only(const soc_bounding_box_st *soc,
 		const double DRAMSpeed)
 {
 	double VMDataOnlyReturnBW = dml_min3(
-			soc->return_bus_width_bytes * DCFCLK * soc->pct_ideal_sdp_bw_after_urgent / 100.0,
-			FabricClock * soc->fabric_datapath_to_dcn_data_return_bytes
-					* soc->pct_ideal_sdp_bw_after_urgent / 100.0,
-			DRAMSpeed * soc->num_chans * soc->dram_channel_width_bytes
+			(*soc).return_bus_width_bytes * DCFCLK * (*soc).pct_ideal_sdp_bw_after_urgent / 100.0,
+			FabricClock * (*soc).fabric_datapath_to_dcn_data_return_bytes
+					* (*soc).pct_ideal_sdp_bw_after_urgent / 100.0,
+			DRAMSpeed * (*soc).num_chans * (*soc).dram_channel_width_bytes
 					* (VoltageLevel < 2 ?
-							soc->pct_ideal_dram_bw_after_urgent_strobe :
-							soc->pct_ideal_dram_sdp_bw_after_urgent_vm_only) / 100.0);
+							(*soc).pct_ideal_dram_bw_after_urgent_strobe :
+							(*soc).pct_ideal_dram_sdp_bw_after_urgent_vm_only) / 100.0);
 // conditional: ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: VoltageLevel = %d\n", __func__, VoltageLevel);
 	dml_print("DML::%s: DCFCLK       = %f\n", __func__, DCFCLK);
@@ -3528,8 +3528,8 @@ double dml32_CalculateExtraLatency(
 } // CalculateExtraLatency
 
 bool dml32_CalculatePrefetchSchedule(
-		struct vba_vars_st *v,
-		u32 k,
+		vba_vars_st *v,
+		k: u32,
 		double HostVMInefficiencyFactor,
 		DmlPipe *myPipe,
 		u32 DSCDelay,
@@ -3550,8 +3550,8 @@ bool dml32_CalculatePrefetchSchedule(
 		u32 SwathWidthC,
 		u32 VInitPreFillC,
 		u32 MaxNumSwathC,
-		u32 swath_width_luma_ub,
-		u32 swath_width_chroma_ub,
+		swath_width_luma_ub: u32,
+		swath_width_chroma_ub: u32,
 		u32 SwathHeightY,
 		u32 SwathHeightC,
 		double TWait,
@@ -3580,7 +3580,7 @@ bool dml32_CalculatePrefetchSchedule(
 {
 	(void)SwathWidthY;
 	(void)SwathWidthC;
-	double DPPCLKDelaySubtotalPlusCNVCFormater = v->DPPCLKDelaySubtotal + v->DPPCLKDelayCNVCFormater;
+	double DPPCLKDelaySubtotalPlusCNVCFormater = (*v).DPPCLKDelaySubtotal + (*v).DPPCLKDelayCNVCFormater;
 	bool MyError = false;
 	u32 DPPCycles, DISPCLKCycles;
 	double DSTTotalPixelsAfterScaler;
@@ -3613,34 +3613,34 @@ bool dml32_CalculatePrefetchSchedule(
 	double  prefetch_sw_bytes;
 	double  bytes_pp;
 	double  dep_bytes;
-	u32 max_vratio_pre = (u32)v->MaxVRatioPre;
+	u32 max_vratio_pre = (*(u32)v).MaxVRatioPre;
 	double  min_Lsw;
 	double  Tsw_est1 = 0;
 	double  Tsw_est3 = 0;
 
-	if (v->GPUVMEnable == true && v->HostVMEnable == true)
-		HostVMDynamicLevelsTrips = v->HostVMMaxNonCachedPageTableLevels;
+	if ((*v).GPUVMEnable == true && (*v).HostVMEnable == true)
+		HostVMDynamicLevelsTrips = (*v).HostVMMaxNonCachedPageTableLevels;
 	else
 		HostVMDynamicLevelsTrips = 0;
 // conditional: ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: v->GPUVMEnable = %d\n", __func__, v->GPUVMEnable);
-	dml_print("DML::%s: v->GPUVMMaxPageTableLevels = %d\n", __func__, v->GPUVMMaxPageTableLevels);
-	dml_print("DML::%s: DCCEnable = %d\n", __func__, myPipe->DCCEnable);
+	dml_print("DML::%s: v->GPUVMEnable = %d\n", __func__, (*v).GPUVMEnable);
+	dml_print("DML::%s: v->GPUVMMaxPageTableLevels = %d\n", __func__, (*v).GPUVMMaxPageTableLevels);
+	dml_print("DML::%s: DCCEnable = %d\n", __func__, (*myPipe).DCCEnable);
 	dml_print("DML::%s: v->HostVMEnable=%d HostVMInefficiencyFactor=%f\n",
-			__func__, v->HostVMEnable, HostVMInefficiencyFactor);
+			__func__, (*v).HostVMEnable, HostVMInefficiencyFactor);
 // conditional: endif
 	dml32_CalculateVUpdateAndDynamicMetadataParameters(
-			v->MaxInterDCNTileRepeaters,
-			myPipe->Dppclk,
-			myPipe->Dispclk,
-			myPipe->DCFClkDeepSleep,
-			myPipe->PixelClock,
-			myPipe->HTotal,
-			myPipe->VBlank,
-			v->DynamicMetadataTransmittedBytes[k],
-			v->DynamicMetadataLinesBeforeActiveRequired[k],
-			myPipe->InterlaceEnable,
-			myPipe->ProgressiveToInterlaceUnitInOPP,
+			(*v).MaxInterDCNTileRepeaters,
+			(*myPipe).Dppclk,
+			(*myPipe).Dispclk,
+			(*myPipe).DCFClkDeepSleep,
+			(*myPipe).PixelClock,
+			(*myPipe).HTotal,
+			(*myPipe).VBlank,
+			(*v).DynamicMetadataTransmittedBytes[k],
+			(*v).DynamicMetadataLinesBeforeActiveRequired[k],
+			(*myPipe).InterlaceEnable,
+			(*myPipe).ProgressiveToInterlaceUnitInOPP,
 			TSetup,
 
 			/* output */
@@ -3651,21 +3651,21 @@ bool dml32_CalculatePrefetchSchedule(
 			VUpdateWidthPix,
 			VReadyOffsetPix);
 
-	LineTime = myPipe->HTotal / myPipe->PixelClock;
+	LineTime = (*myPipe).HTotal / (*myPipe).PixelClock;
 	trip_to_mem = UrgentLatency;
-	Tvm_trips = UrgentExtraLatency + trip_to_mem * (v->GPUVMMaxPageTableLevels * (HostVMDynamicLevelsTrips + 1) - 1);
+	Tvm_trips = UrgentExtraLatency + trip_to_mem * ((*v).GPUVMMaxPageTableLevels * (HostVMDynamicLevelsTrips + 1) - 1);
 
-	if (v->DynamicMetadataVMEnabled == true)
+	if ((*v).DynamicMetadataVMEnabled == true)
 		*Tdmdl = TWait + Tvm_trips + trip_to_mem;
 	else
 		*Tdmdl = TWait + UrgentExtraLatency;
 
 // conditional: ifdef __DML_VBA_ALLOW_DELTA__
-	if (v->DynamicMetadataEnable[k] == false)
+	if ((*v).DynamicMetadataEnable[k] == false)
 		*Tdmdl = 0.0;
 // conditional: endif
 
-	if (v->DynamicMetadataEnable[k] == true) {
+	if ((*v).DynamicMetadataEnable[k] == true) {
 		if (VStartup * LineTime < *TSetup + *Tdmdl + Tdmbf + Tdmec + Tdmsks) {
 			*NotEnoughTimeForDynamicMetadata = true;
 // conditional: ifdef __DML_VBA_DEBUG__
@@ -3685,50 +3685,50 @@ bool dml32_CalculatePrefetchSchedule(
 		*NotEnoughTimeForDynamicMetadata = false;
 	}
 
-	*Tdmdl_vm =  (v->DynamicMetadataEnable[k] == true && v->DynamicMetadataVMEnabled == true &&
-			v->GPUVMEnable == true ? TWait + Tvm_trips : 0);
+	*Tdmdl_vm =  ((*v).DynamicMetadataEnable[k] == true && (*v).DynamicMetadataVMEnabled == true &&
+			(*v).GPUVMEnable == true ? TWait + Tvm_trips : 0);
 
-	if (myPipe->ScalerEnabled)
-		DPPCycles = (u32)(DPPCLKDelaySubtotalPlusCNVCFormater + v->DPPCLKDelaySCL);
+	if ((*myPipe).ScalerEnabled)
+		DPPCycles = (u32)(DPPCLKDelaySubtotalPlusCNVCFormater + (*v).DPPCLKDelaySCL);
 	else
-		DPPCycles = (u32)(DPPCLKDelaySubtotalPlusCNVCFormater + v->DPPCLKDelaySCLLBOnly);
+		DPPCycles = (u32)(DPPCLKDelaySubtotalPlusCNVCFormater + (*v).DPPCLKDelaySCLLBOnly);
 
-	DPPCycles = (u32)(DPPCycles + myPipe->NumberOfCursors * v->DPPCLKDelayCNVCCursor);
+	DPPCycles = (u32)(DPPCycles + (*myPipe).NumberOfCursors * (*v).DPPCLKDelayCNVCCursor);
 
-	DISPCLKCycles = (u32)v->DISPCLKDelaySubtotal;
+	DISPCLKCycles = (*(u32)v).DISPCLKDelaySubtotal;
 
-	if (myPipe->Dppclk == 0.0 || myPipe->Dispclk == 0.0)
+	if ((*myPipe).Dppclk == 0.0 || (*myPipe).Dispclk == 0.0)
 		return true;
 
-	*DSTXAfterScaler = DPPCycles * myPipe->PixelClock / myPipe->Dppclk + DISPCLKCycles *
-			myPipe->PixelClock / myPipe->Dispclk + DSCDelay;
+	*DSTXAfterScaler = DPPCycles * (*myPipe).PixelClock / (*myPipe).Dppclk + DISPCLKCycles *
+			(*myPipe).PixelClock / (*myPipe).Dispclk + DSCDelay;
 
-	*DSTXAfterScaler = *DSTXAfterScaler + (myPipe->ODMMode != dm_odm_combine_mode_disabled ? 18 : 0)
-			+ (myPipe->DPPPerSurface - 1) * DPP_RECOUT_WIDTH
-			+ ((myPipe->ODMMode == dm_odm_split_mode_1to2 || myPipe->ODMMode == dm_odm_mode_mso_1to2) ?
-					myPipe->HActive / 2 : 0)
-			+ ((myPipe->ODMMode == dm_odm_mode_mso_1to4) ? myPipe->HActive * 3 / 4 : 0);
+	*DSTXAfterScaler = *DSTXAfterScaler + ((*myPipe).ODMMode != dm_odm_combine_mode_disabled ? 18 : 0)
+			+ ((*myPipe).DPPPerSurface - 1) * DPP_RECOUT_WIDTH
+			+ (((*myPipe).ODMMode == dm_odm_split_mode_1to2 || (*myPipe).ODMMode == dm_odm_mode_mso_1to2) ?
+					(*myPipe).HActive / 2 : 0)
+			+ (((*myPipe).ODMMode == dm_odm_mode_mso_1to4) ? (*myPipe).HActive * 3 / 4 : 0);
 
 // conditional: ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: DPPCycles: %d\n", __func__, DPPCycles);
-	dml_print("DML::%s: PixelClock: %f\n", __func__, myPipe->PixelClock);
-	dml_print("DML::%s: Dppclk: %f\n", __func__, myPipe->Dppclk);
+	dml_print("DML::%s: PixelClock: %f\n", __func__, (*myPipe).PixelClock);
+	dml_print("DML::%s: Dppclk: %f\n", __func__, (*myPipe).Dppclk);
 	dml_print("DML::%s: DISPCLKCycles: %d\n", __func__, DISPCLKCycles);
-	dml_print("DML::%s: DISPCLK: %f\n", __func__,  myPipe->Dispclk);
+	dml_print("DML::%s: DISPCLK: %f\n", __func__,  (*myPipe).Dispclk);
 	dml_print("DML::%s: DSCDelay: %d\n", __func__,  DSCDelay);
-	dml_print("DML::%s: ODMMode: %d\n", __func__,  myPipe->ODMMode);
+	dml_print("DML::%s: ODMMode: %d\n", __func__,  (*myPipe).ODMMode);
 	dml_print("DML::%s: DPP_RECOUT_WIDTH: %d\n", __func__, DPP_RECOUT_WIDTH);
 	dml_print("DML::%s: DSTXAfterScaler: %d\n", __func__,  *DSTXAfterScaler);
 // conditional: endif
 
-	if (v->OutputFormat[k] == dm_420 || (myPipe->InterlaceEnable && myPipe->ProgressiveToInterlaceUnitInOPP))
+	if ((*v).OutputFormat[k] == dm_420 || ((*myPipe).InterlaceEnable && (*myPipe).ProgressiveToInterlaceUnitInOPP))
 		*DSTYAfterScaler = 1;
 	else
 		*DSTYAfterScaler = 0;
 
-	DSTTotalPixelsAfterScaler = *DSTYAfterScaler * myPipe->HTotal + *DSTXAfterScaler;
-	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / myPipe->HTotal, 1);
-	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - (as f64 (*DSTYAfterScaler * myPipe->HTotal));
+	DSTTotalPixelsAfterScaler = *DSTYAfterScaler * (*myPipe).HTotal + *DSTXAfterScaler;
+	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / (*myPipe).HTotal, 1);
+	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - (as f64 (*DSTYAfterScaler * (*myPipe).HTotal));
 // conditional: ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: DSTXAfterScaler: %d (final)\n", __func__,  *DSTXAfterScaler);
 	dml_print("DML::%s: DSTYAfterScaler: %d (final)\n", __func__, *DSTYAfterScaler);
@@ -3738,20 +3738,20 @@ bool dml32_CalculatePrefetchSchedule(
 
 	Tr0_trips = trip_to_mem * (HostVMDynamicLevelsTrips + 1);
 
-	if (v->GPUVMEnable == true) {
+	if ((*v).GPUVMEnable == true) {
 		Tvm_trips_rounded = dml_ceil(4.0 * Tvm_trips / LineTime, 1.0) / 4.0 * LineTime;
 		Tr0_trips_rounded = dml_ceil(4.0 * Tr0_trips / LineTime, 1.0) / 4.0 * LineTime;
-		if (v->GPUVMMaxPageTableLevels >= 3) {
+		if ((*v).GPUVMMaxPageTableLevels >= 3) {
 			*Tno_bw = UrgentExtraLatency + trip_to_mem *
-					as f64 ((v->GPUVMMaxPageTableLevels - 2) * (HostVMDynamicLevelsTrips + 1) - 1);
-		} else if (v->GPUVMMaxPageTableLevels == 1 && myPipe->DCCEnable != true) {
+					as f64 (((*v).GPUVMMaxPageTableLevels - 2) * (HostVMDynamicLevelsTrips + 1) - 1);
+		} else if ((*v).GPUVMMaxPageTableLevels == 1 && (*myPipe).DCCEnable != true) {
 			Tr0_trips_rounded = dml_ceil(4.0 * UrgentExtraLatency / LineTime, 1.0) /
 					4.0 * LineTime; // VBA_ERROR
 			*Tno_bw = UrgentExtraLatency;
 		} else {
 			*Tno_bw = 0;
 		}
-	} else if (myPipe->DCCEnable == true) {
+	} else if ((*myPipe).DCCEnable == true) {
 		Tvm_trips_rounded = LineTime / 4.0;
 		Tr0_trips_rounded = dml_ceil(4.0 * Tr0_trips / LineTime, 1.0) / 4.0 * LineTime;
 		*Tno_bw = 0;
@@ -3763,23 +3763,23 @@ bool dml32_CalculatePrefetchSchedule(
 	Tvm_trips_rounded = dml_max(Tvm_trips_rounded, LineTime / 4.0);
 	Tr0_trips_rounded = dml_max(Tr0_trips_rounded, LineTime / 4.0);
 
-	if (myPipe->SourcePixelFormat == dm_420_8 || myPipe->SourcePixelFormat == dm_420_10
-			|| myPipe->SourcePixelFormat == dm_420_12) {
-		bytes_pp = myPipe->BytePerPixelY + myPipe->BytePerPixelC / 4;
+	if ((*myPipe).SourcePixelFormat == dm_420_8 || (*myPipe).SourcePixelFormat == dm_420_10
+			|| (*myPipe).SourcePixelFormat == dm_420_12) {
+		bytes_pp = (*myPipe).BytePerPixelY + (*myPipe).BytePerPixelC / 4;
 	} else {
-		bytes_pp = myPipe->BytePerPixelY + myPipe->BytePerPixelC;
+		bytes_pp = (*myPipe).BytePerPixelY + (*myPipe).BytePerPixelC;
 	}
 
-	prefetch_sw_bytes = PrefetchSourceLinesY * swath_width_luma_ub * myPipe->BytePerPixelY
-			+ PrefetchSourceLinesC * swath_width_chroma_ub * myPipe->BytePerPixelC;
-	prefetch_bw_oto = dml_max(bytes_pp * myPipe->PixelClock / myPipe->DPPPerSurface,
+	prefetch_sw_bytes = PrefetchSourceLinesY * swath_width_luma_ub * (*myPipe).BytePerPixelY
+			+ PrefetchSourceLinesC * swath_width_chroma_ub * (*myPipe).BytePerPixelC;
+	prefetch_bw_oto = dml_max(bytes_pp * (*myPipe).PixelClock / (*myPipe).DPPPerSurface,
 			prefetch_sw_bytes / (dml_max(PrefetchSourceLinesY, PrefetchSourceLinesC) * LineTime));
 
 	min_Lsw = dml_max(PrefetchSourceLinesY, PrefetchSourceLinesC) / max_vratio_pre;
 	min_Lsw = dml_max(min_Lsw, 1.0);
 	Lsw_oto = dml_ceil(4.0 * dml_max(prefetch_sw_bytes / prefetch_bw_oto / LineTime, min_Lsw), 1.0) / 4.0;
 
-	if (v->GPUVMEnable == true) {
+	if ((*v).GPUVMEnable == true) {
 		Tvm_oto = dml_max3(
 				Tvm_trips,
 				*Tno_bw + PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor / prefetch_bw_oto,
@@ -3787,7 +3787,7 @@ bool dml32_CalculatePrefetchSchedule(
 	} else
 		Tvm_oto = LineTime / 4.0;
 
-	if ((v->GPUVMEnable == true || myPipe->DCCEnable == true)) {
+	if (((*v).GPUVMEnable == true || (*myPipe).DCCEnable == true)) {
 		Tr0_oto = dml_max4(
 				Tr0_trips,
 				(MetaRowByte + PixelPTEBytesPerRow * HostVMInefficiencyFactor) / prefetch_bw_oto,
@@ -3808,19 +3808,19 @@ bool dml32_CalculatePrefetchSchedule(
 	dst_y_prefetch_oto = Tvm_oto_lines + 2 * Tr0_oto_lines + Lsw_oto;
 
 	dst_y_prefetch_equ = VStartup - (*TSetup + dml_max(TWait + TCalc, *Tdmdl)) / LineTime -
-			(*DSTYAfterScaler + as *mut f64 /* DSTXAfterScaler */ / as f64 myPipe->HTotal);
+			(*DSTYAfterScaler + as *mut f64 /* DSTXAfterScaler */ / as f64 (*myPipe).HTotal);
 
 	dst_y_prefetch_equ = dml_min(dst_y_prefetch_equ, __DML_VBA_MAX_DST_Y_PRE__);
 // conditional: ifdef __DML_VBA_DEBUG__
-	dml_print("DML::%s: HTotal = %d\n", __func__, myPipe->HTotal);
+	dml_print("DML::%s: HTotal = %d\n", __func__, (*myPipe).HTotal);
 	dml_print("DML::%s: min_Lsw = %f\n", __func__, min_Lsw);
 	dml_print("DML::%s: *Tno_bw = %f\n", __func__, *Tno_bw);
 	dml_print("DML::%s: UrgentExtraLatency = %f\n", __func__, UrgentExtraLatency);
 	dml_print("DML::%s: trip_to_mem = %f\n", __func__, trip_to_mem);
-	dml_print("DML::%s: BytePerPixelY = %d\n", __func__, myPipe->BytePerPixelY);
+	dml_print("DML::%s: BytePerPixelY = %d\n", __func__, (*myPipe).BytePerPixelY);
 	dml_print("DML::%s: PrefetchSourceLinesY = %f\n", __func__, PrefetchSourceLinesY);
 	dml_print("DML::%s: swath_width_luma_ub = %d\n", __func__, swath_width_luma_ub);
-	dml_print("DML::%s: BytePerPixelC = %d\n", __func__, myPipe->BytePerPixelC);
+	dml_print("DML::%s: BytePerPixelC = %d\n", __func__, (*myPipe).BytePerPixelC);
 	dml_print("DML::%s: PrefetchSourceLinesC = %f\n", __func__, PrefetchSourceLinesC);
 	dml_print("DML::%s: swath_width_chroma_ub = %d\n", __func__, swath_width_chroma_ub);
 	dml_print("DML::%s: prefetch_sw_bytes = %f\n", __func__, prefetch_sw_bytes);
@@ -3992,7 +3992,7 @@ bool dml32_CalculatePrefetchSchedule(
 // conditional: endif
 
 			if (prefetch_bw_equ > 0) {
-				if (v->GPUVMEnable == true) {
+				if ((*v).GPUVMEnable == true) {
 					Tvm_equ = dml_max3(*Tno_bw + PDEAndMetaPTEBytesFrame *
 							HostVMInefficiencyFactor / prefetch_bw_equ,
 							Tvm_trips, LineTime / 4);
@@ -4000,7 +4000,7 @@ bool dml32_CalculatePrefetchSchedule(
 					Tvm_equ = LineTime / 4;
 				}
 
-				if ((v->GPUVMEnable == true || myPipe->DCCEnable == true)) {
+				if (((*v).GPUVMEnable == true || (*myPipe).DCCEnable == true)) {
 					Tr0_equ = dml_max4((MetaRowByte + PixelPTEBytesPerRow *
 							HostVMInefficiencyFactor) / prefetch_bw_equ, Tr0_trips,
 							(LineTime - Tvm_equ) / 2, LineTime / 4);
@@ -4132,11 +4132,11 @@ bool dml32_CalculatePrefetchSchedule(
 			}
 
 			*RequiredPrefetchPixDataBWLuma = as f64 PrefetchSourceLinesY
-					/ LinesToRequestPrefetchPixelData * myPipe->BytePerPixelY * swath_width_luma_ub
+					/ LinesToRequestPrefetchPixelData * (*myPipe).BytePerPixelY * swath_width_luma_ub
 					/ LineTime;
 
 // conditional: ifdef __DML_VBA_DEBUG__
-			dml_print("DML::%s: BytePerPixelY = %d\n", __func__, myPipe->BytePerPixelY);
+			dml_print("DML::%s: BytePerPixelY = %d\n", __func__, (*myPipe).BytePerPixelY);
 			dml_print("DML::%s: swath_width_luma_ub = %d\n", __func__, swath_width_luma_ub);
 			dml_print("DML::%s: LineTime = %f\n", __func__, LineTime);
 			dml_print("DML::%s: RequiredPrefetchPixDataBWLuma = %f\n",
@@ -4144,7 +4144,7 @@ bool dml32_CalculatePrefetchSchedule(
 // conditional: endif
 			*RequiredPrefetchPixDataBWChroma = as f64 PrefetchSourceLinesC /
 					LinesToRequestPrefetchPixelData
-					* myPipe->BytePerPixelC
+					* (*myPipe).BytePerPixelC
 					* swath_width_chroma_ub / LineTime;
 		} else {
 			MyError = true;
@@ -4163,11 +4163,11 @@ bool dml32_CalculatePrefetchSchedule(
 			2.0*TimeForFetchingRowInVBlank + TimeForFetchingMetaPTE);
 		dml_print("DML:  Tvm: %fus - time to fetch page tables for meta surface\n", TimeForFetchingMetaPTE);
 		dml_print("DML: To: %fus - time for propagation from scaler to optc\n",
-			(*DSTYAfterScaler + (as f64 (*DSTXAfterScaler) / as f64 myPipe->HTotal)) * LineTime);
+			(*DSTYAfterScaler + (as f64 (*DSTXAfterScaler) / as f64 (*myPipe).HTotal)) * LineTime);
 		dml_print("DML: Tvstartup - TSetup - Tcalc - Twait - Tpre - To > 0\n");
 		dml_print("DML: Tslack(pre): %fus - time left over in schedule\n", VStartup * LineTime -
 			TimeForFetchingMetaPTE - 2*TimeForFetchingRowInVBlank - (*DSTYAfterScaler +
-			(as f64 (*DSTXAfterScaler) / as f64 myPipe->HTotal)) * LineTime - TWait - TCalc - *TSetup);
+			(as f64 (*DSTXAfterScaler) / as f64 (*myPipe).HTotal)) * LineTime - TWait - TCalc - *TSetup);
 		dml_print("DML: row_bytes = dpte_row_bytes (per_pipe) = PixelPTEBytesPerRow = : %d\n",
 				PixelPTEBytesPerRow);
 // conditional: endif
@@ -4266,11 +4266,11 @@ void dml32_CalculateFlipSchedule(
 		double VRatioChroma,
 		double Tno_bw,
 		bool DCCEnable,
-		u32 dpte_row_height,
-		u32 meta_row_height,
-		u32 dpte_row_height_chroma,
-		u32 meta_row_height_chroma,
-		bool    use_one_row_for_frame_flip,
+		dpte_row_height: u32,
+		meta_row_height: u32,
+		dpte_row_height_chroma: u32,
+		meta_row_height_chroma: u32,
+		use_one_row_for_frame_flip: bool,
 
 		/* Output */
 		double *DestinationLinesToRequestVMInImmediateFlip,
@@ -4391,7 +4391,7 @@ void dml32_CalculateFlipSchedule(
 } // CalculateFlipSchedule
 
 void dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
-		struct vba_vars_st *v,
+		vba_vars_st *v,
 		u32 PrefetchMode,
 		double DCFCLK,
 		double ReturnBW,
@@ -4423,7 +4423,7 @@ void dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
 {
 	(void)DCFCLK;
 	(void)ReturnBW;
-	u32 i, j, k;
+	i: u32, j, k;
 	u32 SurfaceWithMinActiveFCLKChangeMargin = 0;
 	u32 DRAMClockChangeSupportNumber = 0;
 	u32 LastSurfaceWithoutMargin = 0;
@@ -4456,132 +4456,132 @@ void dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
 	u32 LBLatencyHidingSourceLinesY[DC__NUM_DPP__MAX];
 	u32 LBLatencyHidingSourceLinesC[DC__NUM_DPP__MAX];
 
-	v->Watermark.UrgentWatermark = mmSOCParameters.UrgentLatency + mmSOCParameters.ExtraLatency;
-	v->Watermark.USRRetrainingWatermark = mmSOCParameters.UrgentLatency + mmSOCParameters.ExtraLatency
+	(*v).Watermark.UrgentWatermark = mmSOCParameters.UrgentLatency + mmSOCParameters.ExtraLatency;
+	(*v).Watermark.USRRetrainingWatermark = mmSOCParameters.UrgentLatency + mmSOCParameters.ExtraLatency
 			+ mmSOCParameters.USRRetrainingLatency + mmSOCParameters.SMNLatency;
-	v->Watermark.DRAMClockChangeWatermark = mmSOCParameters.DRAMClockChangeLatency + v->Watermark.UrgentWatermark;
-	v->Watermark.FCLKChangeWatermark = mmSOCParameters.FCLKChangeLatency + v->Watermark.UrgentWatermark;
-	v->Watermark.StutterExitWatermark = mmSOCParameters.SRExitTime + mmSOCParameters.ExtraLatency
+	(*v).Watermark.DRAMClockChangeWatermark = mmSOCParameters.DRAMClockChangeLatency + (*v).Watermark.UrgentWatermark;
+	(*v).Watermark.FCLKChangeWatermark = mmSOCParameters.FCLKChangeLatency + (*v).Watermark.UrgentWatermark;
+	(*v).Watermark.StutterExitWatermark = mmSOCParameters.SRExitTime + mmSOCParameters.ExtraLatency
 			+ 10 / DCFClkDeepSleep;
-	v->Watermark.StutterEnterPlusExitWatermark = mmSOCParameters.SREnterPlusExitTime + mmSOCParameters.ExtraLatency
+	(*v).Watermark.StutterEnterPlusExitWatermark = mmSOCParameters.SREnterPlusExitTime + mmSOCParameters.ExtraLatency
 			+ 10 / DCFClkDeepSleep;
-	v->Watermark.Z8StutterExitWatermark = mmSOCParameters.SRExitZ8Time + mmSOCParameters.ExtraLatency
+	(*v).Watermark.Z8StutterExitWatermark = mmSOCParameters.SRExitZ8Time + mmSOCParameters.ExtraLatency
 			+ 10 / DCFClkDeepSleep;
-	v->Watermark.Z8StutterEnterPlusExitWatermark = mmSOCParameters.SREnterPlusExitZ8Time
+	(*v).Watermark.Z8StutterEnterPlusExitWatermark = mmSOCParameters.SREnterPlusExitZ8Time
 			+ mmSOCParameters.ExtraLatency + 10 / DCFClkDeepSleep;
 
 // conditional: ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: UrgentLatency = %f\n", __func__, mmSOCParameters.UrgentLatency);
 	dml_print("DML::%s: ExtraLatency = %f\n", __func__, mmSOCParameters.ExtraLatency);
 	dml_print("DML::%s: DRAMClockChangeLatency = %f\n", __func__, mmSOCParameters.DRAMClockChangeLatency);
-	dml_print("DML::%s: UrgentWatermark = %f\n", __func__, v->Watermark.UrgentWatermark);
-	dml_print("DML::%s: USRRetrainingWatermark = %f\n", __func__, v->Watermark.USRRetrainingWatermark);
-	dml_print("DML::%s: DRAMClockChangeWatermark = %f\n", __func__, v->Watermark.DRAMClockChangeWatermark);
-	dml_print("DML::%s: FCLKChangeWatermark = %f\n", __func__, v->Watermark.FCLKChangeWatermark);
-	dml_print("DML::%s: StutterExitWatermark = %f\n", __func__, v->Watermark.StutterExitWatermark);
-	dml_print("DML::%s: StutterEnterPlusExitWatermark = %f\n", __func__, v->Watermark.StutterEnterPlusExitWatermark);
-	dml_print("DML::%s: Z8StutterExitWatermark = %f\n", __func__, v->Watermark.Z8StutterExitWatermark);
+	dml_print("DML::%s: UrgentWatermark = %f\n", __func__, (*v).Watermark.UrgentWatermark);
+	dml_print("DML::%s: USRRetrainingWatermark = %f\n", __func__, (*v).Watermark.USRRetrainingWatermark);
+	dml_print("DML::%s: DRAMClockChangeWatermark = %f\n", __func__, (*v).Watermark.DRAMClockChangeWatermark);
+	dml_print("DML::%s: FCLKChangeWatermark = %f\n", __func__, (*v).Watermark.FCLKChangeWatermark);
+	dml_print("DML::%s: StutterExitWatermark = %f\n", __func__, (*v).Watermark.StutterExitWatermark);
+	dml_print("DML::%s: StutterEnterPlusExitWatermark = %f\n", __func__, (*v).Watermark.StutterEnterPlusExitWatermark);
+	dml_print("DML::%s: Z8StutterExitWatermark = %f\n", __func__, (*v).Watermark.Z8StutterExitWatermark);
 	dml_print("DML::%s: Z8StutterEnterPlusExitWatermark = %f\n",
-			__func__, v->Watermark.Z8StutterEnterPlusExitWatermark);
+			__func__, (*v).Watermark.Z8StutterEnterPlusExitWatermark);
 // conditional: endif
 
 
 	TotalActiveWriteback = 0;
-	for (k = 0; k < v->NumberOfActiveSurfaces; ++k) {
-		if (v->WritebackEnable[k] == true)
+	for (k = 0; k < (*v).NumberOfActiveSurfaces; ++k) {
+		if ((*v).WritebackEnable[k] == true)
 			TotalActiveWriteback = TotalActiveWriteback + 1;
 	}
 
 	if (TotalActiveWriteback <= 1) {
-		v->Watermark.WritebackUrgentWatermark = mmSOCParameters.WritebackLatency;
+		(*v).Watermark.WritebackUrgentWatermark = mmSOCParameters.WritebackLatency;
 	} else {
-		v->Watermark.WritebackUrgentWatermark = mmSOCParameters.WritebackLatency
-				+ v->WritebackChunkSize * 1024.0 / 32.0 / SOCCLK;
+		(*v).Watermark.WritebackUrgentWatermark = mmSOCParameters.WritebackLatency
+				+ (*v).WritebackChunkSize * 1024.0 / 32.0 / SOCCLK;
 	}
-	if (v->USRRetrainingRequiredFinal)
-		v->Watermark.WritebackDRAMClockChangeWatermark = v->Watermark.WritebackDRAMClockChangeWatermark
+	if ((*v).USRRetrainingRequiredFinal)
+		(*v).Watermark.WritebackDRAMClockChangeWatermark = (*v).Watermark.WritebackDRAMClockChangeWatermark
 				+ mmSOCParameters.USRRetrainingLatency;
 
 	if (TotalActiveWriteback <= 1) {
-		v->Watermark.WritebackDRAMClockChangeWatermark = mmSOCParameters.DRAMClockChangeLatency
+		(*v).Watermark.WritebackDRAMClockChangeWatermark = mmSOCParameters.DRAMClockChangeLatency
 				+ mmSOCParameters.WritebackLatency;
-		v->Watermark.WritebackFCLKChangeWatermark = mmSOCParameters.FCLKChangeLatency
+		(*v).Watermark.WritebackFCLKChangeWatermark = mmSOCParameters.FCLKChangeLatency
 				+ mmSOCParameters.WritebackLatency;
 	} else {
-		v->Watermark.WritebackDRAMClockChangeWatermark = mmSOCParameters.DRAMClockChangeLatency
-				+ mmSOCParameters.WritebackLatency + v->WritebackChunkSize * 1024.0 / 32.0 / SOCCLK;
-		v->Watermark.WritebackFCLKChangeWatermark = mmSOCParameters.FCLKChangeLatency
-				+ mmSOCParameters.WritebackLatency + v->WritebackChunkSize * 1024 / 32 / SOCCLK;
+		(*v).Watermark.WritebackDRAMClockChangeWatermark = mmSOCParameters.DRAMClockChangeLatency
+				+ mmSOCParameters.WritebackLatency + (*v).WritebackChunkSize * 1024.0 / 32.0 / SOCCLK;
+		(*v).Watermark.WritebackFCLKChangeWatermark = mmSOCParameters.FCLKChangeLatency
+				+ mmSOCParameters.WritebackLatency + (*v).WritebackChunkSize * 1024 / 32 / SOCCLK;
 	}
 
-	if (v->USRRetrainingRequiredFinal)
-		v->Watermark.WritebackDRAMClockChangeWatermark = v->Watermark.WritebackDRAMClockChangeWatermark
+	if ((*v).USRRetrainingRequiredFinal)
+		(*v).Watermark.WritebackDRAMClockChangeWatermark = (*v).Watermark.WritebackDRAMClockChangeWatermark
 				+ mmSOCParameters.USRRetrainingLatency;
 
-	if (v->USRRetrainingRequiredFinal)
-		v->Watermark.WritebackFCLKChangeWatermark = v->Watermark.WritebackFCLKChangeWatermark
+	if ((*v).USRRetrainingRequiredFinal)
+		(*v).Watermark.WritebackFCLKChangeWatermark = (*v).Watermark.WritebackFCLKChangeWatermark
 				+ mmSOCParameters.USRRetrainingLatency;
 
 // conditional: ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: WritebackDRAMClockChangeWatermark = %f\n",
-			__func__, v->Watermark.WritebackDRAMClockChangeWatermark);
-	dml_print("DML::%s: WritebackFCLKChangeWatermark = %f\n", __func__, v->Watermark.WritebackFCLKChangeWatermark);
-	dml_print("DML::%s: WritebackUrgentWatermark = %f\n", __func__, v->Watermark.WritebackUrgentWatermark);
-	dml_print("DML::%s: v->USRRetrainingRequiredFinal = %d\n", __func__, v->USRRetrainingRequiredFinal);
+			__func__, (*v).Watermark.WritebackDRAMClockChangeWatermark);
+	dml_print("DML::%s: WritebackFCLKChangeWatermark = %f\n", __func__, (*v).Watermark.WritebackFCLKChangeWatermark);
+	dml_print("DML::%s: WritebackUrgentWatermark = %f\n", __func__, (*v).Watermark.WritebackUrgentWatermark);
+	dml_print("DML::%s: v->USRRetrainingRequiredFinal = %d\n", __func__, (*v).USRRetrainingRequiredFinal);
 	dml_print("DML::%s: USRRetrainingLatency = %f\n", __func__, mmSOCParameters.USRRetrainingLatency);
 // conditional: endif
 
-	for (k = 0; k < v->NumberOfActiveSurfaces; ++k) {
-		TotalPixelBW = TotalPixelBW + DPPPerSurface[k] * (SwathWidthY[k] * BytePerPixelDETY[k] * v->VRatio[k] +
-				SwathWidthC[k] * BytePerPixelDETC[k] * v->VRatioChroma[k]) / (v->HTotal[k] / v->PixelClock[k]);
+	for (k = 0; k < (*v).NumberOfActiveSurfaces; ++k) {
+		TotalPixelBW = TotalPixelBW + DPPPerSurface[k] * (SwathWidthY[k] * BytePerPixelDETY[k] * (*v).VRatio[k] +
+				SwathWidthC[k] * BytePerPixelDETC[k] * (*v).VRatioChroma[k]) / ((*v).HTotal[k] / (*v).PixelClock[k]);
 	}
 
-	for (k = 0; k < v->NumberOfActiveSurfaces; ++k) {
+	for (k = 0; k < (*v).NumberOfActiveSurfaces; ++k) {
 
-		LBLatencyHidingSourceLinesY[k] = (u32)(dml_min(as f64 v->MaxLineBufferLines, dml_floor(v->LineBufferSizeFinal / v->LBBitPerPixel[k] / (SwathWidthY[k] / dml_max(v->HRatio[k], 1.0)), 1)) - (v->vtaps[k] - 1));
-		LBLatencyHidingSourceLinesC[k] = (u32)(dml_min(as f64 v->MaxLineBufferLines, dml_floor(v->LineBufferSizeFinal / v->LBBitPerPixel[k] / (SwathWidthC[k] / dml_max(v->HRatioChroma[k], 1.0)), 1)) - (v->VTAPsChroma[k] - 1));
+		LBLatencyHidingSourceLinesY[k] = (u32)(dml_min(as f64 (*v).MaxLineBufferLines, dml_floor((*v).LineBufferSizeFinal / (*v).LBBitPerPixel[k] / (SwathWidthY[k] / dml_max((*v).HRatio[k], 1.0)), 1)) - ((*v).vtaps[k] - 1));
+		LBLatencyHidingSourceLinesC[k] = (u32)(dml_min(as f64 (*v).MaxLineBufferLines, dml_floor((*v).LineBufferSizeFinal / (*v).LBBitPerPixel[k] / (SwathWidthC[k] / dml_max((*v).HRatioChroma[k], 1.0)), 1)) - ((*v).VTAPsChroma[k] - 1));
 
 
 // conditional: ifdef __DML_VBA_DEBUG__
-		dml_print("DML::%s: k=%d, v->MaxLineBufferLines = %d\n", __func__, k, v->MaxLineBufferLines);
-		dml_print("DML::%s: k=%d, v->LineBufferSizeFinal     = %d\n", __func__, k, v->LineBufferSizeFinal);
-		dml_print("DML::%s: k=%d, v->LBBitPerPixel      = %d\n", __func__, k, v->LBBitPerPixel[k]);
-		dml_print("DML::%s: k=%d, v->HRatio             = %f\n", __func__, k, v->HRatio[k]);
-		dml_print("DML::%s: k=%d, v->vtaps              = %d\n", __func__, k, v->vtaps[k]);
+		dml_print("DML::%s: k=%d, v->MaxLineBufferLines = %d\n", __func__, k, (*v).MaxLineBufferLines);
+		dml_print("DML::%s: k=%d, v->LineBufferSizeFinal     = %d\n", __func__, k, (*v).LineBufferSizeFinal);
+		dml_print("DML::%s: k=%d, v->LBBitPerPixel      = %d\n", __func__, k, (*v).LBBitPerPixel[k]);
+		dml_print("DML::%s: k=%d, v->HRatio             = %f\n", __func__, k, (*v).HRatio[k]);
+		dml_print("DML::%s: k=%d, v->vtaps              = %d\n", __func__, k, (*v).vtaps[k]);
 // conditional: endif
 
-		EffectiveLBLatencyHidingY = LBLatencyHidingSourceLinesY[k] / v->VRatio[k] * (v->HTotal[k] / v->PixelClock[k]);
-		EffectiveLBLatencyHidingC = LBLatencyHidingSourceLinesC[k] / v->VRatioChroma[k] * (v->HTotal[k] / v->PixelClock[k]);
+		EffectiveLBLatencyHidingY = LBLatencyHidingSourceLinesY[k] / (*v).VRatio[k] * ((*v).HTotal[k] / (*v).PixelClock[k]);
+		EffectiveLBLatencyHidingC = LBLatencyHidingSourceLinesC[k] / (*v).VRatioChroma[k] * ((*v).HTotal[k] / (*v).PixelClock[k]);
 		EffectiveDETBufferSizeY = DETBufferSizeY[k];
 
 		if (UnboundedRequestEnabled) {
 			EffectiveDETBufferSizeY = EffectiveDETBufferSizeY
 					+ CompressedBufferSizeInkByte * 1024
-							* (SwathWidthY[k] * BytePerPixelDETY[k] * v->VRatio[k])
-							/ (v->HTotal[k] / v->PixelClock[k]) / TotalPixelBW;
+							* (SwathWidthY[k] * BytePerPixelDETY[k] * (*v).VRatio[k])
+							/ ((*v).HTotal[k] / (*v).PixelClock[k]) / TotalPixelBW;
 		}
 
 		LinesInDETY[k] = as f64 EffectiveDETBufferSizeY / BytePerPixelDETY[k] / SwathWidthY[k];
 		LinesInDETYRoundedDownToSwath[k] = (u32)dml_floor(LinesInDETY[k], SwathHeightY[k]);
-		FullDETBufferingTimeY = LinesInDETYRoundedDownToSwath[k] * (v->HTotal[k] / v->PixelClock[k]) / v->VRatio[k];
+		FullDETBufferingTimeY = LinesInDETYRoundedDownToSwath[k] * ((*v).HTotal[k] / (*v).PixelClock[k]) / (*v).VRatio[k];
 
 		ActiveClockChangeLatencyHidingY = EffectiveLBLatencyHidingY + FullDETBufferingTimeY
-				- (DSTXAfterScaler[k] / v->HTotal[k] + DSTYAfterScaler[k]) * v->HTotal[k] / v->PixelClock[k];
+				- (DSTXAfterScaler[k] / (*v).HTotal[k] + DSTYAfterScaler[k]) * (*v).HTotal[k] / (*v).PixelClock[k];
 
-		if (v->NumberOfActiveSurfaces > 1) {
+		if ((*v).NumberOfActiveSurfaces > 1) {
 			ActiveClockChangeLatencyHidingY = ActiveClockChangeLatencyHidingY
-					- (1.0 - 1.0 / v->NumberOfActiveSurfaces) * SwathHeightY[k] * v->HTotal[k]
-							/ v->PixelClock[k] / v->VRatio[k];
+					- (1.0 - 1.0 / (*v).NumberOfActiveSurfaces) * SwathHeightY[k] * (*v).HTotal[k]
+							/ (*v).PixelClock[k] / (*v).VRatio[k];
 		}
 
 		if (BytePerPixelDETC[k] > 0) {
 			LinesInDETC[k] = DETBufferSizeC[k] / BytePerPixelDETC[k] / SwathWidthC[k];
 			LinesInDETCRoundedDownToSwath[k] = (u32)dml_floor(LinesInDETC[k], SwathHeightC[k]);
-			FullDETBufferingTimeC = LinesInDETCRoundedDownToSwath[k] * (v->HTotal[k] / v->PixelClock[k])
-					/ v->VRatioChroma[k];
+			FullDETBufferingTimeC = LinesInDETCRoundedDownToSwath[k] * ((*v).HTotal[k] / (*v).PixelClock[k])
+					/ (*v).VRatioChroma[k];
 			ActiveClockChangeLatencyHidingC = EffectiveLBLatencyHidingC + FullDETBufferingTimeC
-					- (DSTXAfterScaler[k] / v->HTotal[k] + DSTYAfterScaler[k]) * v->HTotal[k]
-							/ v->PixelClock[k];
+					- (DSTXAfterScaler[k] / (*v).HTotal[k] + DSTYAfterScaler[k]) * (*v).HTotal[k]
+							/ (*v).PixelClock[k];
 			if (v->NumberOfActiveSurfaces > 1) {
 				ActiveClockChangeLatencyHidingC = ActiveClockChangeLatencyHidingC
 						- (1 - 1 / v->NumberOfActiveSurfaces) * SwathHeightC[k] * v->HTotal[k]
@@ -4734,7 +4734,7 @@ void dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
 		u32 dst_y_pstate;
 		u32 src_y_pstate_l;
 		u32 src_y_pstate_c;
-		u32 src_y_ahead_l, src_y_ahead_c, sub_vp_lines_l, sub_vp_lines_c;
+		src_y_ahead_l: u32, src_y_ahead_c, sub_vp_lines_l, sub_vp_lines_c;
 
 		dst_y_pstate = (u32)dml_ceil((mmSOCParameters.DRAMClockChangeLatency + mmSOCParameters.UrgentLatency) / (v->HTotal[k] / v->PixelClock[k]), 1);
 		src_y_pstate_l = (u32)dml_ceil(dst_y_pstate * v->VRatio[k], SwathHeightY[k]);
@@ -5444,7 +5444,7 @@ void dml32_CalculateDCCConfiguration(
 		u32             SurfaceWidthChroma,
 		u32             SurfaceHeightLuma,
 		u32             SurfaceHeightChroma,
-		u32                nomDETInKByte,
+		nomDETInKByte: u32,
 		u32             RequestHeight256ByteLuma,
 		u32             RequestHeight256ByteChroma,
 		dm_swizzle_mode     TilingFormat,
@@ -6218,8 +6218,8 @@ void dml32_CalculateMaxDETAndMinCompressedBufferSize(
 		u32    ConfigReturnBufferSizeInKByte,
 		u32    ROBBufferSizeInKByte,
 		u32 MaxNumDPP,
-		bool nomDETInKByteOverrideEnable, // VBA_DELTA, allow DV to override default DET size
-		u32 nomDETInKByteOverrideValue,  // VBA_DELTA
+		nomDETInKByteOverrideEnable: bool, // VBA_DELTA, allow DV to override default DET size
+		nomDETInKByteOverrideValue: u32,  // VBA_DELTA
 
 		/* Output */
 		*mut u32 /* MaxTotalDETInKByte */,

@@ -5,7 +5,7 @@
 // Dependency intent: declarations from "dml2_external_lib_deps.h" are supplied
 // by the surrounding translation unit.
 
-pub extern "C" {
+extern "C" {
     pub static DML2_FRL_CHK_TB_BORROWED_MAX: ::core::ffi::c_int;
 }
 

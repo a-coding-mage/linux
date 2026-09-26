@@ -50,7 +50,7 @@ pub const PTRS_PER_PGD: ::core::ffi::c_ulong = 512;
 pub const P4D_SHIFT: u32 = 39;
 pub const MAX_PTRS_PER_P4D: ::core::ffi::c_ulong = 512;
 #[inline]
-pub unsafe fn P4D_SIZE() -> ::core::ffi::c_ulong { 1u64 as ::core::ffi::c_ulong << P4D_SHIFT }
+pub unsafe fn P4D_SIZE() -> ::core::ffi::c_ulong { (1u64 as ::core::ffi::c_ulong) << P4D_SHIFT }
 #[inline]
 pub unsafe fn P4D_MASK() -> ::core::ffi::c_ulong { !(P4D_SIZE() - 1) }
 
@@ -66,33 +66,33 @@ pub const PTRS_PER_PMD: ::core::ffi::c_ulong = 512;
 pub const PTRS_PER_PTE: ::core::ffi::c_ulong = 512;
 
 #[inline]
-pub unsafe fn PMD_SIZE() -> ::core::ffi::c_ulong { 1u64 as ::core::ffi::c_ulong << PMD_SHIFT }
+pub unsafe fn PMD_SIZE() -> ::core::ffi::c_ulong { (1u64 as ::core::ffi::c_ulong) << PMD_SHIFT }
 #[inline]
 pub unsafe fn PMD_MASK() -> ::core::ffi::c_ulong { !(PMD_SIZE() - 1) }
 #[inline]
-pub unsafe fn PUD_SIZE() -> ::core::ffi::c_ulong { 1u64 as ::core::ffi::c_ulong << PUD_SHIFT }
+pub unsafe fn PUD_SIZE() -> ::core::ffi::c_ulong { (1u64 as ::core::ffi::c_ulong) << PUD_SHIFT }
 #[inline]
 pub unsafe fn PUD_MASK() -> ::core::ffi::c_ulong { !(PUD_SIZE() - 1) }
 #[inline]
 pub unsafe fn PGDIR_SHIFT() -> ::core::ffi::c_uint { pgdir_shift }
 #[inline]
-pub unsafe fn PGDIR_SIZE() -> ::core::ffi::c_ulong { 1u64 as ::core::ffi::c_ulong << PGDIR_SHIFT() }
+pub unsafe fn PGDIR_SIZE() -> ::core::ffi::c_ulong { (1u64 as ::core::ffi::c_ulong) << PGDIR_SHIFT() }
 #[inline]
 pub unsafe fn PGDIR_MASK() -> ::core::ffi::c_ulong { !(PGDIR_SIZE() - 1) }
 
 // Build-time symbols and configuration-dependent macros are preserved as
 // expressions; their definitions are supplied by other translated headers.
 pub const MAX_POSSIBLE_PHYSMEM_BITS: u32 = 52;
-pub const MAXMEM: ::core::ffi::c_ulong = 1u64 as ::core::ffi::c_ulong << MAX_PHYSMEM_BITS;
+pub const MAXMEM: ::core::ffi::c_ulong = (1u64 as ::core::ffi::c_ulong) << MAX_PHYSMEM_BITS;
 
 pub const GUARD_HOLE_PGD_ENTRY: ::core::ffi::c_ulong = (-256i64) as ::core::ffi::c_ulong;
-pub const GUARD_HOLE_SIZE: ::core::ffi::c_ulong = 16u64 as ::core::ffi::c_ulong << unsafe { pgdir_shift };
+pub const GUARD_HOLE_SIZE: ::core::ffi::c_ulong = (16u64 as ::core::ffi::c_ulong) << unsafe { pgdir_shift };
 pub const GUARD_HOLE_BASE_ADDR: ::core::ffi::c_ulong = GUARD_HOLE_PGD_ENTRY << unsafe { pgdir_shift };
 pub const GUARD_HOLE_END_ADDR: ::core::ffi::c_ulong = GUARD_HOLE_BASE_ADDR + GUARD_HOLE_SIZE;
 
 pub const LDT_PGD_ENTRY: ::core::ffi::c_ulong = (-240i64) as ::core::ffi::c_ulong;
 pub const LDT_BASE_ADDR: ::core::ffi::c_ulong = LDT_PGD_ENTRY << unsafe { pgdir_shift };
-pub const LDT_END_ADDR: ::core::ffi::c_ulong = LDT_BASE_ADDR + (1u64 as ::core::ffi::c_ulong << unsafe { pgdir_shift });
+pub const LDT_END_ADDR: ::core::ffi::c_ulong = LDT_BASE_ADDR + ((1u64 as ::core::ffi::c_ulong) << unsafe { pgdir_shift });
 
 pub const __VMALLOC_BASE_L4: ::core::ffi::c_ulong = 0xffffc90000000000;
 pub const __VMALLOC_BASE_L5: ::core::ffi::c_ulong = 0xffa0000000000000;

@@ -29,7 +29,7 @@ struct DtParams {
 }
 
 static DT_PARAMS: &[DtParams] = &[
-    #[cfg(feature = "CONFIG_XEN")]
+    #[cfg(CONFIG_XEN)]
     DtParams {
         path: "/hypervisor/uefi",
         paravirt: 1,

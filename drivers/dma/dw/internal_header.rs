@@ -21,41 +21,41 @@ extern "C" {
 }
 
 // CONFIG_ACPI controls whether these are external hooks or empty inline stubs.
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 extern "C" {
     pub fn dw_dma_acpi_controller_register(dw: *mut dw_dma);
     pub fn dw_dma_acpi_controller_free(dw: *mut dw_dma);
 }
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 #[inline]
 pub unsafe fn dw_dma_acpi_controller_register(_dw: *mut dw_dma) {}
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 #[inline]
 pub unsafe fn dw_dma_acpi_controller_free(_dw: *mut dw_dma) {}
 
 pub enum platform_device {}
 
 // CONFIG_OF controls whether device-tree helpers are external hooks or stubs.
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 extern "C" {
     pub fn dw_dma_parse_dt(pdev: *mut platform_device) -> *mut dw_dma_platform_data;
     pub fn dw_dma_of_controller_register(dw: *mut dw_dma);
     pub fn dw_dma_of_controller_free(dw: *mut dw_dma);
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn dw_dma_parse_dt(_pdev: *mut platform_device) -> *mut dw_dma_platform_data {
     ::core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn dw_dma_of_controller_register(_dw: *mut dw_dma) {}
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn dw_dma_of_controller_free(_dw: *mut dw_dma) {}
 

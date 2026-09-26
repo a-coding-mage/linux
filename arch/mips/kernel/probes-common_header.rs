@@ -36,7 +36,7 @@ pub unsafe fn __insn_has_delay_slot(insn: mips_instruction) -> ::core::ffi::c_in
         cop1_op => 1,
 
         // CONFIG_CPU_CAVIUM_OCTEON condition from the original build.
-        #[cfg(feature = "CONFIG_CPU_CAVIUM_OCTEON")]
+        #[cfg(CONFIG_CPU_CAVIUM_OCTEON)]
         lwc2_op | ldc2_op | swc2_op | sdc2_op => 1,
 
         _ => 0,

@@ -23,11 +23,11 @@ static mut priv_list: list_head = LIST_HEAD_INIT;
 
 unsafe fn cpufreq_dt_find_data(cpu: i32) -> *mut private_data {
     let mut priv_: *mut private_data;
-    list_for_each_entry!(priv_, &mut priv_list, node) {
+    list_for_each_entry!(priv_, &mut priv_list, node, {
         if cpumask_test_cpu(cpu, (*priv_).cpus) {
             return priv_;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -127,6 +127,8 @@ unsafe fn dt_cpufreq_early_init(dev: *mut device, cpu: i32) -> i32 {
     let cpu_dev: *mut device;
     let mut fallback = false;
     let mut reg_name: [*const i8; 2] = [core::ptr::null(), core::ptr::null()];
+    'free_cpumask: {
+    'out: {
     let mut ret: i32;
 
     if !cpufreq_dt_find_data(cpu).is_null() { return 0; }
@@ -142,22 +144,22 @@ unsafe fn dt_cpufreq_early_init(dev: *mut device, cpu: i32) -> i32 {
         (*priv_).opp_token = dev_pm_opp_set_regulators(cpu_dev, reg_name.as_mut_ptr());
         if (*priv_).opp_token < 0 {
             ret = dev_err_probe(cpu_dev, (*priv_).opp_token, c"failed to set regulators\n".as_ptr());
-            goto free_cpumask;
+            break 'free_cpumask;
         }
     }
     ret = dev_pm_opp_of_get_sharing_cpus(cpu_dev, (*priv_).cpus);
     if ret != 0 {
-        if ret != -ENOENT { goto out; }
+        if ret != -ENOENT { break 'out; }
         if dev_pm_opp_get_sharing_cpus(cpu_dev, (*priv_).cpus) != 0 { fallback = true; }
     }
     ret = dev_pm_opp_of_cpumask_add_table((*priv_).cpus);
     if ret == 0 { (*priv_).have_static_opps = true; }
-    else if ret == -EPROBE_DEFER { goto out; }
+    else if ret == -EPROBE_DEFER { break 'out; }
     ret = dev_pm_opp_get_opp_count(cpu_dev);
     if ret <= 0 {
         dev_err(cpu_dev, c"OPP table can't be empty\n".as_ptr());
         ret = -ENODEV;
-        goto out;
+        break 'out;
     }
     if fallback {
         cpumask_setall((*priv_).cpus);
@@ -165,13 +167,15 @@ unsafe fn dt_cpufreq_early_init(dev: *mut device, cpu: i32) -> i32 {
         if ret != 0 { dev_err(cpu_dev, c"%s: failed to mark OPPs as shared: %d\n".as_ptr(), __func__, ret); }
     }
     ret = dev_pm_opp_init_cpufreq_table(cpu_dev, &mut (*priv_).freq_table);
-    if ret != 0 { dev_err(cpu_dev, c"failed to init cpufreq table: %d\n".as_ptr(), ret); goto out; }
+    if ret != 0 { dev_err(cpu_dev, c"failed to init cpufreq table: %d\n".as_ptr(), ret); break 'out; }
     list_add(&mut (*priv_).node, &mut priv_list);
     return 0;
-out:
+    }
+    
     if (*priv_).have_static_opps { dev_pm_opp_of_cpumask_remove_table((*priv_).cpus); }
     dev_pm_opp_put_regulators((*priv_).opp_token);
-free_cpumask:
+    }
+    
     free_cpumask_var((*priv_).cpus);
     ret
 }
@@ -179,23 +183,24 @@ free_cpumask:
 unsafe fn dt_cpufreq_release() {
     let mut priv_: *mut private_data;
     let mut tmp: *mut private_data;
-    list_for_each_entry_safe!(priv_, tmp, &mut priv_list, node) {
+    list_for_each_entry_safe!(priv_, tmp, &mut priv_list, node, {
         dev_pm_opp_free_cpufreq_table((*priv_).cpu_dev, &mut (*priv_).freq_table);
         if (*priv_).have_static_opps { dev_pm_opp_of_cpumask_remove_table((*priv_).cpus); }
         dev_pm_opp_put_regulators((*priv_).opp_token);
         free_cpumask_var((*priv_).cpus);
         list_del(&mut (*priv_).node);
-    }
+    });
 }
 
 unsafe fn dt_cpufreq_probe(pdev: *mut platform_device) -> i32 {
     let data: *mut cpufreq_dt_platform_data = dev_get_platdata(&mut (*pdev).dev);
     let mut ret: i32 = 0;
     let mut cpu: i32;
-    for_each_present_cpu!(cpu) {
+    'err: {
+    for_each_present_cpu!(cpu, {
         ret = dt_cpufreq_early_init(&mut (*pdev).dev, cpu);
-        if ret != 0 { goto err; }
-    }
+        if ret != 0 { break 'err; }
+    });
     if !data.is_null() {
         if (*data).have_governor_per_policy { dt_cpufreq_driver.flags |= CPUFREQ_HAVE_GOVERNOR_PER_POLICY; }
         dt_cpufreq_driver.resume = (*data).resume;
@@ -206,9 +211,10 @@ unsafe fn dt_cpufreq_probe(pdev: *mut platform_device) -> i32 {
         }
     }
     ret = cpufreq_register_driver(&mut dt_cpufreq_driver);
-    if ret != 0 { dev_err(&mut (*pdev).dev, c"failed register driver: %d\n".as_ptr(), ret); goto err; }
+    if ret != 0 { dev_err(&mut (*pdev).dev, c"failed register driver: %d\n".as_ptr(), ret); break 'err; }
     return 0;
-err:
+    }
+    
     dt_cpufreq_release();
     ret
 }

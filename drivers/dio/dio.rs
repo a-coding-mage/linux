@@ -20,13 +20,13 @@ pub static mut dio_bus: struct_dio_bus = struct_dio_bus {
 
 /* not a real config option yet! */
 
-#[cfg(feature = "CONFIG_DIO_CONSTANTS")]
+#[cfg(CONFIG_DIO_CONSTANTS)]
 struct dioname {
     id: i32,
     name: *const i8,
 }
 
-#[cfg(feature = "CONFIG_DIO_CONSTANTS")]
+#[cfg(CONFIG_DIO_CONSTANTS)]
 static mut names: [dioname; 47] = [
     dioname { id: DIO_ID_DCA0, name: DIO_DESC_DCA0 }, dioname { id: DIO_ID_DCA0REM, name: DIO_DESC_DCA0REM },
     dioname { id: DIO_ID_DCA1, name: DIO_DESC_DCA1 }, dioname { id: DIO_ID_DCA1REM, name: DIO_DESC_DCA1REM },
@@ -58,10 +58,10 @@ static mut names: [dioname; 47] = [
     dioname { id: DIO_ENCODE_ID(DIO_ID_FBUFFER, DIO_ID2_YGENESIS), name: DIO_DESC2_YGENESIS },
 ];
 
-#[cfg(feature = "CONFIG_DIO_CONSTANTS")]
+#[cfg(CONFIG_DIO_CONSTANTS)]
 static unknowndioname: &[u8] = b"unknown DIO board, please email linux-m68k@lists.linux-m68k.org\0";
 
-#[cfg(feature = "CONFIG_DIO_CONSTANTS")]
+#[cfg(CONFIG_DIO_CONSTANTS)]
 unsafe fn dio_getname(id: i32) -> *const i8 {
     for name in names.iter() {
         if name.id == id { return name.name; }
@@ -69,10 +69,10 @@ unsafe fn dio_getname(id: i32) -> *const i8 {
     unknowndioname.as_ptr() as *const i8
 }
 
-#[cfg(not(feature = "CONFIG_DIO_CONSTANTS"))]
+#[cfg(not(CONFIG_DIO_CONSTANTS))]
 static mut dio_no_name: [i8; 1] = [0];
 
-#[cfg(not(feature = "CONFIG_DIO_CONSTANTS"))]
+#[cfg(not(CONFIG_DIO_CONSTANTS))]
 unsafe fn dio_getname(_id: i32) -> *const i8 { dio_no_name.as_ptr() }
 
 unsafe fn dio_dev_release(dev: *mut device) {

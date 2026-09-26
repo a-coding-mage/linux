@@ -49,7 +49,7 @@ pub unsafe fn fpu_libc_helper(regs: *mut pt_regs) -> i32 {
         tmp = tinstr & 0x1f;
         if tmp > 2 { return 0; }
         // `a0` through `a13` are consecutive fields in struct pt_regs.
-        regx = *(&(*regs).a0 as *const _ .add(index));
+        regx = *((&(*regs).a0 as *const _).add(index));
         if tmp == 1 {
             mtcr(b"cr<1, 2>\0".as_ptr(), regx);
         } else if tmp == 2 {
@@ -69,7 +69,7 @@ pub unsafe fn fpu_libc_helper(regs: *mut pt_regs) -> i32 {
         } else if tmp == 2 {
             regx = mfcr(b"cr<2, 2>\0".as_ptr());
         } else { return 0; }
-        *(&mut (*regs).a0 as *mut _ .add(index)) = regx;
+        *((&mut (*regs).a0 as *mut _).add(index)) = regx;
         (*regs).pc += 4;
         return 1;
     }

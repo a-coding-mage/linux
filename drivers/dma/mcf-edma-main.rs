@@ -118,7 +118,7 @@ unsafe fn mcf_edma_probe(pdev: *mut platform_device) -> i32 {
     (*mcf_edma).dma_dev.dev = &mut (*pdev).dev;
     (*mcf_edma).dma_dev.device_alloc_chan_resources = Some(fsl_edma_alloc_chan_resources); (*mcf_edma).dma_dev.device_free_chan_resources = Some(fsl_edma_free_chan_resources); (*mcf_edma).dma_dev.device_config = Some(fsl_edma_slave_config); (*mcf_edma).dma_dev.device_prep_dma_cyclic = Some(fsl_edma_prep_dma_cyclic); (*mcf_edma).dma_dev.device_prep_slave_sg = Some(fsl_edma_prep_slave_sg); (*mcf_edma).dma_dev.device_tx_status = Some(fsl_edma_tx_status); (*mcf_edma).dma_dev.device_pause = Some(fsl_edma_pause); (*mcf_edma).dma_dev.device_resume = Some(fsl_edma_resume); (*mcf_edma).dma_dev.device_terminate_all = Some(fsl_edma_terminate_all); (*mcf_edma).dma_dev.device_issue_pending = Some(fsl_edma_issue_pending);
     (*mcf_edma).dma_dev.src_addr_widths = FSL_EDMA_BUSWIDTHS; (*mcf_edma).dma_dev.dst_addr_widths = FSL_EDMA_BUSWIDTHS; (*mcf_edma).dma_dev.directions = (1 << DMA_DEV_TO_MEM) | (1 << DMA_MEM_TO_DEV);
-    (*mcf_edma).dma_dev.filter.fn = Some(mcf_edma_filter_fn); (*mcf_edma).dma_dev.filter.map = (*pdata).slave_map; (*mcf_edma).dma_dev.filter.mapcnt = (*pdata).slavecnt;
+    (*mcf_edma).dma_dev.filter.r#fn = Some(mcf_edma_filter_fn); (*mcf_edma).dma_dev.filter.map = (*pdata).slave_map; (*mcf_edma).dma_dev.filter.mapcnt = (*pdata).slavecnt;
     platform_set_drvdata(pdev, mcf_edma as *mut _); let ret = dma_async_device_register(&mut (*mcf_edma).dma_dev); if ret != 0 { dev_err(&(*pdev).dev, c"Can't register Freescale eDMA engine. (%d)\n".as_ptr(), ret); return ret; }
     iowrite32(EDMA_CR_ERGA | EDMA_CR_ERCA, regs.cr as *mut _); 0
 }

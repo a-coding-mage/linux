@@ -50,26 +50,26 @@ pub type drm_gpuvm_ops = drm_gpuvm_ops_callbacks;
 #[repr(C)] #[derive(Copy, Clone)] pub enum drm_gpuva_op_type { DRM_GPUVA_OP_MAP, DRM_GPUVA_OP_REMAP, DRM_GPUVA_OP_UNMAP, DRM_GPUVA_OP_PREFETCH, DRM_GPUVA_OP_DRIVER }
 
 extern "C" {
-    pub fn drm_gpuva_insert(*mut drm_gpuvm, *mut drm_gpuva) -> i32; pub fn drm_gpuva_remove(*mut drm_gpuva);
-    pub fn drm_gpuva_link(*mut drm_gpuva, *mut drm_gpuvm_bo); pub fn drm_gpuva_unlink(*mut drm_gpuva); pub fn drm_gpuva_unlink_defer(*mut drm_gpuva);
-    pub fn drm_gpuva_find(*mut drm_gpuvm, u64, u64) -> *mut drm_gpuva; pub fn drm_gpuva_find_first(*mut drm_gpuvm, u64, u64) -> *mut drm_gpuva;
-    pub fn drm_gpuvm_init(*mut drm_gpuvm, *const c_char, drm_gpuvm_flags, *mut drm_device, *mut drm_gem_object, u64, u64, u64, u64, *const drm_gpuvm_ops);
-    pub fn drm_gpuvm_put(*mut drm_gpuvm); pub fn drm_gpuvm_range_valid(*mut drm_gpuvm, u64, u64) -> bool; pub fn drm_gpuvm_interval_empty(*mut drm_gpuvm, u64, u64) -> bool;
-    pub fn drm_gpuvm_resv_object_alloc(*mut drm_device) -> *mut drm_gem_object;
-    pub fn drm_gpuvm_prepare_vm(*mut drm_gpuvm, *mut drm_exec, u32) -> i32; pub fn drm_gpuvm_prepare_objects(*mut drm_gpuvm, *mut drm_exec, u32) -> i32; pub fn drm_gpuvm_prepare_range(*mut drm_gpuvm, *mut drm_exec, u64, u64, u32) -> i32;
-    pub fn drm_gpuvm_exec_lock(*mut drm_gpuvm_exec) -> i32; pub fn drm_gpuvm_exec_lock_array(*mut drm_gpuvm_exec, *mut *mut drm_gem_object, u32) -> i32; pub fn drm_gpuvm_exec_lock_range(*mut drm_gpuvm_exec, u64, u64) -> i32;
-    pub fn drm_gpuvm_validate(*mut drm_gpuvm, *mut drm_exec) -> i32; pub fn drm_gpuvm_resv_add_fence(*mut drm_gpuvm, *mut drm_exec, *mut dma_fence, dma_resv_usage, dma_resv_usage);
-    pub fn drm_gpuvm_bo_create(*mut drm_gpuvm, *mut drm_gem_object) -> *mut drm_gpuvm_bo; pub fn drm_gpuvm_bo_obtain_locked(*mut drm_gpuvm, *mut drm_gem_object) -> *mut drm_gpuvm_bo; pub fn drm_gpuvm_bo_obtain_prealloc(*mut drm_gpuvm_bo) -> *mut drm_gpuvm_bo;
-    pub fn drm_gpuvm_bo_put(*mut drm_gpuvm_bo) -> bool; pub fn drm_gpuvm_bo_put_deferred(*mut drm_gpuvm_bo) -> bool; pub fn drm_gpuvm_bo_deferred_cleanup(*mut drm_gpuvm);
-    pub fn drm_gpuvm_bo_find(*mut drm_gpuvm, *mut drm_gem_object) -> *mut drm_gpuvm_bo; pub fn drm_gpuvm_bo_evict(*mut drm_gpuvm_bo, bool); pub fn drm_gpuvm_bo_extobj_add(*mut drm_gpuvm_bo);
-    pub fn drm_gpuvm_sm_map_ops_create(*mut drm_gpuvm, *const drm_gpuvm_map_req) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_madvise_ops_create(*mut drm_gpuvm, *const drm_gpuvm_map_req) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_sm_unmap_ops_create(*mut drm_gpuvm, u64, u64) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_prefetch_ops_create(*mut drm_gpuvm, u64, u64) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_bo_unmap_ops_create(*mut drm_gpuvm_bo) -> *mut drm_gpuva_ops; pub fn drm_gpuva_ops_free(*mut drm_gpuvm, *mut drm_gpuva_ops);
-    pub fn drm_gpuvm_sm_map(*mut drm_gpuvm, *mut c_void, *const drm_gpuvm_map_req) -> i32; pub fn drm_gpuvm_sm_unmap(*mut drm_gpuvm, *mut c_void, u64, u64) -> i32; pub fn drm_gpuvm_sm_map_exec_lock(*mut drm_gpuvm, *mut drm_exec, u32, *mut drm_gpuvm_map_req) -> i32; pub fn drm_gpuvm_sm_unmap_exec_lock(*mut drm_gpuvm, *mut drm_exec, u64, u64) -> i32;
-    pub fn drm_gpuva_map(*mut drm_gpuvm, *mut drm_gpuva, *const drm_gpuva_op_map); pub fn drm_gpuva_remap(*mut drm_gpuva, *mut drm_gpuva, *const drm_gpuva_op_remap); pub fn drm_gpuva_unmap(*const drm_gpuva_op_unmap);
+    pub fn drm_gpuva_insert(_: *mut drm_gpuvm, _: *mut drm_gpuva) -> i32; pub fn drm_gpuva_remove(_: *mut drm_gpuva);
+    pub fn drm_gpuva_link(_: *mut drm_gpuva, _: *mut drm_gpuvm_bo); pub fn drm_gpuva_unlink(_: *mut drm_gpuva); pub fn drm_gpuva_unlink_defer(_: *mut drm_gpuva);
+    pub fn drm_gpuva_find(_: *mut drm_gpuvm, _: u64, _: u64) -> *mut drm_gpuva; pub fn drm_gpuva_find_first(_: *mut drm_gpuvm, _: u64, _: u64) -> *mut drm_gpuva;
+    pub fn drm_gpuvm_init(_: *mut drm_gpuvm, _: *const c_char, _: drm_gpuvm_flags, _: *mut drm_device, _: *mut drm_gem_object, _: u64, _: u64, _: u64, _: u64, _: *const drm_gpuvm_ops);
+    pub fn drm_gpuvm_put(_: *mut drm_gpuvm); pub fn drm_gpuvm_range_valid(_: *mut drm_gpuvm, _: u64, _: u64) -> bool; pub fn drm_gpuvm_interval_empty(_: *mut drm_gpuvm, _: u64, _: u64) -> bool;
+    pub fn drm_gpuvm_resv_object_alloc(_: *mut drm_device) -> *mut drm_gem_object;
+    pub fn drm_gpuvm_prepare_vm(_: *mut drm_gpuvm, _: *mut drm_exec, _: u32) -> i32; pub fn drm_gpuvm_prepare_objects(_: *mut drm_gpuvm, _: *mut drm_exec, _: u32) -> i32; pub fn drm_gpuvm_prepare_range(_: *mut drm_gpuvm, _: *mut drm_exec, _: u64, _: u64, _: u32) -> i32;
+    pub fn drm_gpuvm_exec_lock(_: *mut drm_gpuvm_exec) -> i32; pub fn drm_gpuvm_exec_lock_array(_: *mut drm_gpuvm_exec, _: *mut *mut drm_gem_object, _: u32) -> i32; pub fn drm_gpuvm_exec_lock_range(_: *mut drm_gpuvm_exec, _: u64, _: u64) -> i32;
+    pub fn drm_gpuvm_validate(_: *mut drm_gpuvm, _: *mut drm_exec) -> i32; pub fn drm_gpuvm_resv_add_fence(_: *mut drm_gpuvm, _: *mut drm_exec, _: *mut dma_fence, _: dma_resv_usage, _: dma_resv_usage);
+    pub fn drm_gpuvm_bo_create(_: *mut drm_gpuvm, _: *mut drm_gem_object) -> *mut drm_gpuvm_bo; pub fn drm_gpuvm_bo_obtain_locked(_: *mut drm_gpuvm, _: *mut drm_gem_object) -> *mut drm_gpuvm_bo; pub fn drm_gpuvm_bo_obtain_prealloc(_: *mut drm_gpuvm_bo) -> *mut drm_gpuvm_bo;
+    pub fn drm_gpuvm_bo_put(_: *mut drm_gpuvm_bo) -> bool; pub fn drm_gpuvm_bo_put_deferred(_: *mut drm_gpuvm_bo) -> bool; pub fn drm_gpuvm_bo_deferred_cleanup(_: *mut drm_gpuvm);
+    pub fn drm_gpuvm_bo_find(_: *mut drm_gpuvm, _: *mut drm_gem_object) -> *mut drm_gpuvm_bo; pub fn drm_gpuvm_bo_evict(_: *mut drm_gpuvm_bo, _: bool); pub fn drm_gpuvm_bo_extobj_add(_: *mut drm_gpuvm_bo);
+    pub fn drm_gpuvm_sm_map_ops_create(_: *mut drm_gpuvm, _: *const drm_gpuvm_map_req) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_madvise_ops_create(_: *mut drm_gpuvm, _: *const drm_gpuvm_map_req) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_sm_unmap_ops_create(_: *mut drm_gpuvm, _: u64, _: u64) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_prefetch_ops_create(_: *mut drm_gpuvm, _: u64, _: u64) -> *mut drm_gpuva_ops; pub fn drm_gpuvm_bo_unmap_ops_create(_: *mut drm_gpuvm_bo) -> *mut drm_gpuva_ops; pub fn drm_gpuva_ops_free(_: *mut drm_gpuvm, _: *mut drm_gpuva_ops);
+    pub fn drm_gpuvm_sm_map(_: *mut drm_gpuvm, _: *mut c_void, _: *const drm_gpuvm_map_req) -> i32; pub fn drm_gpuvm_sm_unmap(_: *mut drm_gpuvm, _: *mut c_void, _: u64, _: u64) -> i32; pub fn drm_gpuvm_sm_map_exec_lock(_: *mut drm_gpuvm, _: *mut drm_exec, _: u32, _: *mut drm_gpuvm_map_req) -> i32; pub fn drm_gpuvm_sm_unmap_exec_lock(_: *mut drm_gpuvm, _: *mut drm_exec, _: u64, _: u64) -> i32;
+    pub fn drm_gpuva_map(_: *mut drm_gpuvm, _: *mut drm_gpuva, _: *const drm_gpuva_op_map); pub fn drm_gpuva_remap(_: *mut drm_gpuva, _: *mut drm_gpuva, _: *const drm_gpuva_op_remap); pub fn drm_gpuva_unmap(_: *const drm_gpuva_op_unmap);
 }
 
 #[repr(C)] #[derive(Copy, Clone)] pub enum dma_resv_usage { DMA_RESV_USAGE_BOOKKEEP = 0, DMA_RESV_USAGE_READ, DMA_RESV_USAGE_WRITE, DMA_RESV_USAGE_KERNEL }
 
-extern "C" { fn kref_get(*mut kref); fn drm_exec_fini(*mut drm_exec); }
+extern "C" { fn kref_get(_: *mut kref); fn drm_exec_fini(_: *mut drm_exec); }
 pub unsafe fn drm_gpuva_invalidate(va: *mut drm_gpuva, invalidate: bool) { if invalidate { (*va).flags = core::mem::transmute(((*va).flags as u32) | 1); } else { (*va).flags = core::mem::transmute(((*va).flags as u32) & !1); } }
 pub unsafe fn drm_gpuva_invalidated(va: *mut drm_gpuva) -> bool { ((*va).flags as u32 & 1) != 0 }
 pub unsafe fn drm_gpuvm_get(gpuvm: *mut drm_gpuvm) -> *mut drm_gpuvm { kref_get(&mut (*gpuvm).kref); gpuvm }

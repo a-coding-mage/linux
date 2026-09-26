@@ -119,7 +119,7 @@ impl Mutex { const fn new() -> Self { Mutex } }
 #[repr(C)] struct UmPciDeviceOps {
     cfgspace_read: Option<unsafe extern "C" fn(*mut UmPciDevice, u32, i32) -> core::ffi::c_ulong>, cfgspace_write: Option<unsafe extern "C" fn(*mut UmPciDevice, u32, i32, core::ffi::c_ulong)>, bar_read: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, i32) -> core::ffi::c_ulong>, bar_write: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, i32, core::ffi::c_ulong)>, bar_copy_from: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, *mut core::ffi::c_void, u32, i32)>, bar_copy_to: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, *const core::ffi::c_void, i32)>, bar_set: Option<unsafe extern "C" fn(*mut UmPciDevice, u8, u32, u8, i32)>
 }
-extern "C" { fn irq_alloc_desc(i32) -> i32; fn irq_free_desc(i32); fn numa_node_id() -> i32; fn pci_get_slot(*mut PciBus, i32) -> *mut core::ffi::c_void; fn pci_stop_and_remove_bus_device_locked(*mut core::ffi::c_void); }
+extern "C" { fn irq_alloc_desc(_: i32) -> i32; fn irq_free_desc(_: i32); fn numa_node_id() -> i32; fn pci_get_slot(_: *mut PciBus, _: i32) -> *mut core::ffi::c_void; fn pci_stop_and_remove_bus_device_locked(_: *mut core::ffi::c_void); }
 
 #[no_mangle]
 pub unsafe extern "C" fn um_pci_platform_device_register(dev: *mut UmPciDevice) -> i32 {

@@ -9,7 +9,7 @@
  */
 
 /* CONFIG_PERF_EVENTS */
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 macro_rules! perf_arch_bpf_user_pt_regs {
     ($regs:expr) => {
         unsafe { &mut (*$regs).user_regs }

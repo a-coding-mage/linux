@@ -15,9 +15,9 @@ const PLL_CFG0: usize = 0x0;
 const PLL_CFG1: usize = 0x4;
 const PLL_CFG2: usize = 0x8;
 const PLL_DIVF1_MASK: u32 = 0x7e000;
-const PLL_DIVF2_MASK: u32 = 0x1f800;
+const PLL_DIVF2_MASK: u32 = 0x1f80;
 const PLL_DIVR1_MASK: u32 = 0x0e000000;
-const PLL_DIVR2_MASK: u32 = 0x01fc0000;
+const PLL_DIVR2_MASK: u32 = 0x1f80000;
 const PLL_DIVQ_MASK: u32 = 0x7e;
 const PLL_REF_MASK: u32 = 0x7;
 const PLL_LOCK_MASK: u32 = 1 << 31;
@@ -106,8 +106,8 @@ unsafe fn clk_sscg_divq_lookup(s: *mut ClkSscgPllSetup, t: *mut ClkSscgPllSetup)
 unsafe fn clk_sscg_divf2_lookup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup)->i32 {let mut r=-22;for f in 0..=63{(*t).divf2=f;r=clk_sscg_divq_lookup(s,t);if r==0{return 0;}}r}
 unsafe fn clk_sscg_divr2_lookup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup)->i32 {let mut r=-22;for x in 0..=63{(*t).divr2=x;(*t).ref_div2=(*t).vco1/(x as u64+1);if (*t).ref_div2>=PLL_STAGE2_REF_MIN_FREQ&&(*t).ref_div2<=PLL_STAGE2_REF_MAX_FREQ{r=clk_sscg_divf2_lookup(s,t);if r==0{return 0;}}}r}
 unsafe fn clk_sscg_pll2_find_setup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup,r:u64)->i32{if r<PLL_STAGE1_MIN_FREQ||r>PLL_STAGE1_MAX_FREQ{return -22;}(*t).vco1=r;clk_sscg_divr2_lookup(s,t)}
-unsafe fn clk_sscg_divf1_lookup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup)->i32{let mut r=-22;for f in 0..=63{(*t).divf1=f;let v=(*t).ref/((*t).divr1 as u64+1)*2*(f as u64+1);r=clk_sscg_pll2_find_setup(s,t,v);if r==0{(*t).bypass=PLL_BYPASS_NONE;return 0;}}r}
-unsafe fn clk_sscg_divr1_lookup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup)->i32{let mut r=-22;for x in 0..=7{(*t).divr1=x;(*t).ref_div1=(*t).ref/(x as u64+1);if (*t).ref_div1>=PLL_STAGE1_REF_MIN_FREQ&&(*t).ref_div1<=PLL_STAGE1_REF_MAX_FREQ{r=clk_sscg_divf1_lookup(s,t);if r==0{return 0;}}}r}
+unsafe fn clk_sscg_divf1_lookup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup)->i32{let mut r=-22;for f in 0..=63{(*t).divf1=f;let v=(*t).r#ref/((*t).divr1 as u64+1)*2*(f as u64+1);r=clk_sscg_pll2_find_setup(s,t,v);if r==0{(*t).bypass=PLL_BYPASS_NONE;return 0;}}r}
+unsafe fn clk_sscg_divr1_lookup(s:*mut ClkSscgPllSetup,t:*mut ClkSscgPllSetup)->i32{let mut r=-22;for x in 0..=7{(*t).divr1=x;(*t).ref_div1=(*t).r#ref/(x as u64+1);if (*t).ref_div1>=PLL_STAGE1_REF_MIN_FREQ&&(*t).ref_div1<=PLL_STAGE1_REF_MAX_FREQ{r=clk_sscg_divf1_lookup(s,t);if r==0{return 0;}}}r}
 unsafe fn clk_sscg_pll_find_setup(s:*mut ClkSscgPllSetup,pr:u64,rate:u64,b:i32)->i32{let mut t=core::mem::zeroed::<ClkSscgPllSetup>();(*s)=core::mem::zeroed();t.fout_error=PLL_OUT_MAX_FREQ as i32;t.fout_request=rate;match b{PLL_BYPASS2=>if pr==rate{(*s).bypass=b;(*s).fout=rate;0}else{-22},PLL_BYPASS1=>clk_sscg_pll2_find_setup(s,&mut t,pr),_=>{if pr<PLL_REF_MIN_FREQ||pr>PLL_REF_MAX_FREQ{-22}else{t.ref_=pr;clk_sscg_divr1_lookup(s,&mut t)}}}}
 
 #[no_mangle]

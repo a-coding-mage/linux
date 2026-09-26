@@ -72,7 +72,7 @@ unsafe extern "C" fn cpm_gpio_probe(ofdev: *mut platform_device) -> c_int {
 }
 
 // The following entries are enabled when CONFIG_8xx_GPIO is configured.
-#[cfg(feature = "CONFIG_8xx_GPIO")]
+#[cfg(CONFIG_8xx_GPIO)]
 static CPM_GPIO_MATCH_8XX: [of_device_id; 6] = [
     of_device_id {
         compatible: b"fsl,cpm1-pario-bank-a\0".as_ptr() as *const c_char,
@@ -101,7 +101,7 @@ static CPM_GPIO_MATCH_8XX: [of_device_id; 6] = [
     },
 ];
 
-#[cfg(not(feature = "CONFIG_8xx_GPIO"))]
+#[cfg(not(CONFIG_8xx_GPIO))]
 static CPM_GPIO_MATCH_8XX: [of_device_id; 1] = [];
 
 static mut cpm_gpio_match: [of_device_id; 2] = [

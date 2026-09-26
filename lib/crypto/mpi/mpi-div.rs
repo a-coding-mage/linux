@@ -72,6 +72,7 @@ pub unsafe fn mpi_tdiv_qr(quot: MPI, rem: MPI, num: MPI, den: MPI) -> i32 {
     let mut normalization_steps: u32;
     let mut q_limb: mpi_limb_t;
     let mut marker: [mpi_ptr_t; 5] = [core::ptr::null_mut(); 5];
+    'out_free_marker: {
     let mut markidx: usize = 0;
     let mut err: i32;
 
@@ -136,7 +137,7 @@ pub unsafe fn mpi_tdiv_qr(quot: MPI, rem: MPI, num: MPI, den: MPI) -> i32 {
             marker[markidx] = np;
             markidx += 1;
             if np.is_null() {
-                goto out_free_marker;
+                break 'out_free_marker;
             }
             MPN_COPY(np, qp, nsize);
         }
@@ -151,7 +152,7 @@ pub unsafe fn mpi_tdiv_qr(quot: MPI, rem: MPI, num: MPI, den: MPI) -> i32 {
         marker[markidx] = tp;
         markidx += 1;
         if tp.is_null() {
-            goto out_free_marker;
+            break 'out_free_marker;
         }
         mpihelp_lshift(tp, dp, dsize, normalization_steps);
         dp = tp;
@@ -169,7 +170,7 @@ pub unsafe fn mpi_tdiv_qr(quot: MPI, rem: MPI, num: MPI, den: MPI) -> i32 {
             marker[markidx] = tp;
             markidx += 1;
             if tp.is_null() {
-                goto out_free_marker;
+                break 'out_free_marker;
             }
             MPN_COPY(tp, dp, dsize);
             dp = tp;
@@ -204,8 +205,8 @@ pub unsafe fn mpi_tdiv_qr(quot: MPI, rem: MPI, num: MPI, den: MPI) -> i32 {
     (*rem).nlimbs = rsize;
     (*rem).sign = sign_remainder;
     err = 0;
-
-out_free_marker:
+    }
+    
     while markidx != 0 {
         markidx -= 1;
         mpi_free_limb_space(marker[markidx]);

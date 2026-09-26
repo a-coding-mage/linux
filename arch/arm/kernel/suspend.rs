@@ -54,7 +54,7 @@ pub struct task_struct {
 }
 
 // CONFIG_MMU conditional implementation.
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe fn cpu_suspend(
     arg: ::core::ffi::c_ulong,
     fn_: Option<unsafe extern "C" fn(::core::ffi::c_ulong) -> ::core::ffi::c_int>,
@@ -69,7 +69,7 @@ pub unsafe fn cpu_suspend(
 
     // Needed for the MMU disabling/enabling code to be able to run from TTBR0 addresses.
     // CONFIG_CPU_TTBR0_PAN is a build-time kernel condition.
-    #[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+    #[cfg(CONFIG_CPU_TTBR0_PAN)]
     uaccess_save_and_enable();
 
     // Disable graph tracing while executing suspend finishers, which never return.
@@ -87,7 +87,7 @@ pub unsafe fn cpu_suspend(
     ret
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub unsafe fn cpu_suspend(
     arg: ::core::ffi::c_ulong,
     fn_: Option<unsafe extern "C" fn(::core::ffi::c_ulong) -> ::core::ffi::c_int>,

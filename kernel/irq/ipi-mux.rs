@@ -97,24 +97,30 @@ pub unsafe fn ipi_mux_create(nr_ipi: u32, mux_send: Option<unsafe extern "C" fn(
     let mut fwnode: *mut fwnode_handle;
     let mut domain: *mut irq_domain;
     let mut rc: i32;
+    'fail_free_cpu: {
+    'fail_free_fwnode: {
+    'fail_free_domain: {
     if !ipi_mux_domain.is_null() { return -EEXIST; }
     if BITS_PER_TYPE_INT < nr_ipi || mux_send.is_none() { return -EINVAL; }
     ipi_mux_pcpu = alloc_percpu();
     if ipi_mux_pcpu.is_null() { return -ENOMEM; }
     fwnode = irq_domain_alloc_named_fwnode(c"IPI-Mux".as_ptr());
-    if fwnode.is_null() { pr_err!("unable to create IPI Mux fwnode\n"); rc = -ENOMEM; goto fail_free_cpu; }
+    if fwnode.is_null() { pr_err!("unable to create IPI Mux fwnode\n"); rc = -ENOMEM; break 'fail_free_cpu; }
     domain = irq_domain_create_linear(fwnode, nr_ipi, &ipi_mux_domain_ops, core::ptr::null_mut());
-    if domain.is_null() { pr_err!("unable to add IPI Mux domain\n"); rc = -ENOMEM; goto fail_free_fwnode; }
+    if domain.is_null() { pr_err!("unable to add IPI Mux domain\n"); rc = -ENOMEM; break 'fail_free_fwnode; }
     (*domain).flags |= IRQ_DOMAIN_FLAG_IPI_SINGLE;
     irq_domain_update_bus_token(domain, DOMAIN_BUS_IPI);
     rc = irq_domain_alloc_irqs(domain, nr_ipi, NUMA_NO_NODE, core::ptr::null_mut());
-    if rc <= 0 { pr_err!("unable to alloc IRQs from IPI Mux domain\n"); goto fail_free_domain; }
+    if rc <= 0 { pr_err!("unable to alloc IRQs from IPI Mux domain\n"); break 'fail_free_domain; }
     ipi_mux_domain = domain;
     ipi_mux_send = mux_send;
     return rc;
-fail_free_domain: irq_domain_remove(domain);
-fail_free_fwnode: irq_domain_free_fwnode(fwnode);
-fail_free_cpu: free_percpu(ipi_mux_pcpu); rc
+    }
+    irq_domain_remove(domain);
+    }
+    irq_domain_free_fwnode(fwnode);
+    }
+    free_percpu(ipi_mux_pcpu); rc
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

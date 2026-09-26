@@ -23,7 +23,7 @@ pub struct meson_vclk_gate_data {
     pub flags: u8,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static meson_vclk_gate_ops: clk_ops;
 }
 
@@ -47,7 +47,7 @@ pub struct meson_vclk_div_data {
     pub flags: u8,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static meson_vclk_div_ops: clk_ops;
 }
 

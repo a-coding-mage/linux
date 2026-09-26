@@ -58,7 +58,6 @@ pub struct clk_fixup_div {
 extern "C" {
     pub static imx_ccm_lock: spinlock_t;
     pub static clk_divider_ops: clk_ops;
-    pub const CLK_SET_RATE_PARENT: u32;
     pub fn to_clk_divider(hw: *mut clk_hw) -> *mut clk_divider;
     pub fn readl(reg: *mut core::ffi::c_void) -> u32;
     pub fn writel(val: u32, reg: *mut core::ffi::c_void);
@@ -68,6 +67,7 @@ extern "C" {
     pub fn kzalloc_obj<T>() -> *mut T;
     pub fn kfree(ptr: *mut core::ffi::c_void);
 }
+pub const CLK_SET_RATE_PARENT: u32;
 
 #[inline]
 unsafe fn div_mask(d: *mut clk_divider) -> u32 {

@@ -1,44 +1,47 @@
 // SPDX-License-Identifier: GPL-2.0
-// Dependencies supplied by the included Linux and architecture headers.
+// Dependencies: linux/sched.h, linux/sched/clock.h, asm/cpu.h,
+// asm/cpufeature.h, asm/cpuid/api.h, asm/msr.h, "cpu.h".
 
-const MSR_ZHAOXIN_FCR57: u32 = 0x0000_1257;
+use core::ffi::c_uint;
+
+const MSR_ZHAOXIN_FCR57: u32 = 0x00001257;
 
 const ACE_PRESENT: u32 = 1 << 6;
 const ACE_ENABLED: u32 = 1 << 7;
-const ACE_FCR: u32 = 1 << 7; // MSR_ZHAOXIN_FCR
+const ACE_FCR: u64 = 1 << 7; /* MSR_ZHAOXIN_FCR */
 
 const RNG_PRESENT: u32 = 1 << 2;
 const RNG_ENABLED: u32 = 1 << 3;
-const RNG_ENABLE: u32 = 1 << 8; // MSR_ZHAOXIN_RNG
+const RNG_ENABLE: u64 = 1 << 8; /* MSR_ZHAOXIN_RNG */
 
-unsafe fn init_zhaoxin_cap(c: *mut cpuinfo_x86) {
-    let mut msr: u64;
+unsafe extern "C" fn init_zhaoxin_cap(c: *mut cpuinfo_x86) {
+    let mut msr: u64 = 0;
 
-    // Test for Extended Feature Flags presence
-    if cpuid_eax(0xC000_0000) >= 0xC000_0001 {
-        let tmp: u32 = cpuid_edx(0xC000_0001);
+    /* Test for Extended Feature Flags presence */
+    if cpuid_eax(0xC0000000) >= 0xC0000001 {
+        let tmp: u32 = cpuid_edx(0xC0000001);
 
-        // Enable ACE unit, if present and disabled
+        /* Enable ACE unit, if present and disabled */
         if (tmp & (ACE_PRESENT | ACE_ENABLED)) == ACE_PRESENT {
             rdmsrq(MSR_ZHAOXIN_FCR57, &mut msr);
-            // Enable ACE unit
+            /* Enable ACE unit */
             wrmsrq(MSR_ZHAOXIN_FCR57, msr | ACE_FCR);
-            pr_info("CPU: Enabled ACE h/w crypto\0");
+            pr_info!("CPU: Enabled ACE h/w crypto\n");
         }
 
-        // Enable RNG unit, if present and disabled
+        /* Enable RNG unit, if present and disabled */
         if (tmp & (RNG_PRESENT | RNG_ENABLED)) == RNG_PRESENT {
             rdmsrq(MSR_ZHAOXIN_FCR57, &mut msr);
-            // Enable RNG unit
+            /* Enable RNG unit */
             wrmsrq(MSR_ZHAOXIN_FCR57, msr | RNG_ENABLE);
-            pr_info("CPU: Enabled h/w RNG\0");
+            pr_info!("CPU: Enabled h/w RNG\n");
         }
 
         /*
          * Store Extended Feature Flags as word 5 of the CPU
          * capability bit array
          */
-        (*c).x86_capability[CPUID_C000_0001_EDX] = cpuid_edx(0xC000_0001);
+        (*c).x86_capability[CPUID_C000_0001_EDX as usize] = cpuid_edx(0xC0000001);
     }
 
     if (*c).x86 >= 0x6 {
@@ -46,7 +49,7 @@ unsafe fn init_zhaoxin_cap(c: *mut cpuinfo_x86) {
     }
 }
 
-unsafe fn early_init_zhaoxin(c: *mut cpuinfo_x86) {
+unsafe extern "C" fn early_init_zhaoxin(c: *mut cpuinfo_x86) {
     if (*c).x86 >= 0x6 {
         set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
     }
@@ -57,12 +60,12 @@ unsafe fn early_init_zhaoxin(c: *mut cpuinfo_x86) {
     }
 }
 
-unsafe fn init_zhaoxin(c: *mut cpuinfo_x86) {
+unsafe extern "C" fn init_zhaoxin(c: *mut cpuinfo_x86) {
     early_init_zhaoxin(c);
     init_intel_cacheinfo(c);
 
     if (*c).cpuid_level > 9 {
-        let eax: u32 = cpuid_eax(10);
+        let eax: c_uint = cpuid_eax(10);
 
         /*
          * Check for version and the number of counters
@@ -77,31 +80,33 @@ unsafe fn init_zhaoxin(c: *mut cpuinfo_x86) {
     if (*c).x86 >= 0x6 {
         init_zhaoxin_cap(c);
     }
-
-    // CONFIG_X86_64
-    #[cfg(target_pointer_width = "64")]
+    #[cfg(CONFIG_X86_64)]
     set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
 
     init_ia32_feat_ctl(c);
 }
 
-// CONFIG_X86_32
-#[cfg(target_pointer_width = "32")]
-unsafe fn zhaoxin_size_cache(_c: *mut cpuinfo_x86, size: u32) -> u32 {
+#[cfg(CONFIG_X86_32)]
+unsafe extern "C" fn zhaoxin_size_cache(_c: *mut cpuinfo_x86, size: c_uint) -> c_uint {
     size
 }
 
-static ZHAOXIN_CPU_DEV: cpu_dev = cpu_dev {
-    c_vendor: "zhaoxin",
-    c_ident: ["  Shanghai  "],
+static zhaoxin_cpu_dev: cpu_dev = cpu_dev {
+    c_vendor: c"zhaoxin".as_ptr(),
+    c_ident: [c"  Shanghai  ".as_ptr(), core::ptr::null()],
     c_early_init: Some(early_init_zhaoxin),
+    c_bsp_init: None,
     c_init: Some(init_zhaoxin),
-    // CONFIG_X86_32
-    #[cfg(target_pointer_width = "32")]
+    c_identify: None,
+    c_detect_tlb: None,
+    c_x86_vendor: X86_VENDOR_ZHAOXIN as _,
+    #[cfg(CONFIG_X86_32)]
     legacy_cache_size: Some(zhaoxin_size_cache),
-    c_x86_vendor: X86_VENDOR_ZHAOXIN,
+    #[cfg(CONFIG_X86_32)]
+    // SAFETY: an all-zero model table is the C default (no named models).
+    legacy_models: unsafe { core::mem::zeroed() },
 };
 
-cpu_dev_register(ZHAOXIN_CPU_DEV);
+cpu_dev_register!(zhaoxin_cpu_dev);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

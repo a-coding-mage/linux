@@ -30,13 +30,13 @@ pub struct line {
     pub work: delayed_work,
     pub sw_debounced: c_uint,
     pub level: c_uint,
-    #[cfg(feature = "CONFIG_HTE")]
+    #[cfg(CONFIG_HTE)]
     pub hdesc: hte_ts_desc,
-    #[cfg(feature = "CONFIG_HTE")]
+    #[cfg(CONFIG_HTE)]
     pub raw_level: c_int,
-    #[cfg(feature = "CONFIG_HTE")]
+    #[cfg(CONFIG_HTE)]
     pub total_discard_seq: u32,
-    #[cfg(feature = "CONFIG_HTE")]
+    #[cfg(CONFIG_HTE)]
     pub last_seqno: u32,
 }
 

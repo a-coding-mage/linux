@@ -8,7 +8,7 @@ pub struct thread_info {
     pub flags: ::core::ffi::c_ulong,
     /* 0=premptable, <0=BUG; will also serve as bh-counter */
     pub preempt_count: ::core::ffi::c_int,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub cpu: ::core::ffi::c_uint,
 }
 
@@ -25,9 +25,9 @@ macro_rules! INIT_THREAD_INFO {
 
 /* Build-time configuration conditions from the C header are represented by
  * Cargo configuration features. */
-#[cfg(feature = "CONFIG_IRQSTACKS")]
+#[cfg(CONFIG_IRQSTACKS)]
 pub const THREAD_SIZE_ORDER: u32 = 2; /* PA-RISC requires at least 16k stack */
-#[cfg(not(feature = "CONFIG_IRQSTACKS"))]
+#[cfg(not(CONFIG_IRQSTACKS))]
 pub const THREAD_SIZE_ORDER: u32 = 3; /* PA-RISC requires at least 32k stack */
 
 /* Be sure to hunt all references to this down when you change the size of
@@ -69,15 +69,15 @@ pub const _TIF_USER_WORK_MASK: usize = _TIF_SIGPENDING | _TIF_NOTIFY_RESUME |
 pub const _TIF_SYSCALL_TRACE_MASK: usize = _TIF_SYSCALL_TRACE | _TIF_SINGLESTEP |
     _TIF_BLOCKSTEP | _TIF_SYSCALL_AUDIT | _TIF_SECCOMP | _TIF_SYSCALL_TRACEPOINT;
 
-#[cfg(all(feature = "CONFIG_64BIT", feature = "CONFIG_COMPAT"))]
+#[cfg(all(CONFIG_64BIT, CONFIG_COMPAT))]
 #[macro_export]
 macro_rules! is_32bit_task { () => { test_thread_flag(TIF_32BIT) }; }
 
-#[cfg(all(feature = "CONFIG_64BIT", not(feature = "CONFIG_COMPAT")))]
+#[cfg(all(CONFIG_64BIT, not(CONFIG_COMPAT)))]
 #[macro_export]
 macro_rules! is_32bit_task { () => { 0 }; }
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 #[macro_export]
 macro_rules! is_32bit_task { () => { 1 }; }
 

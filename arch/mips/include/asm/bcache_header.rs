@@ -28,36 +28,36 @@ unsafe extern "C" {
 }
 
 // The following items are active when CONFIG_BOARD_SCACHE is defined.
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 extern "C" {
     pub static mut bcops: *mut bcache_ops;
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_enable() {
     ((*bcops).bc_enable.unwrap())();
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_disable() {
     ((*bcops).bc_disable.unwrap())();
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_wback_inv(page: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) {
     ((*bcops).bc_wback_inv.unwrap())(page, size);
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_inv(page: ::core::ffi::c_ulong, size: ::core::ffi::c_ulong) {
     ((*bcops).bc_inv.unwrap())(page, size);
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_prefetch_enable() {
     if let Some(f) = (*bcops).bc_prefetch_enable {
@@ -65,7 +65,7 @@ pub unsafe fn bc_prefetch_enable() {
     }
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_prefetch_disable() {
     if let Some(f) = (*bcops).bc_prefetch_disable {
@@ -73,7 +73,7 @@ pub unsafe fn bc_prefetch_disable() {
     }
 }
 
-#[cfg(feature = "CONFIG_BOARD_SCACHE")]
+#[cfg(CONFIG_BOARD_SCACHE)]
 #[inline]
 pub unsafe fn bc_prefetch_is_enabled() -> bool {
     if let Some(f) = (*bcops).bc_prefetch_is_enabled {
@@ -85,31 +85,31 @@ pub unsafe fn bc_prefetch_is_enabled() -> bool {
 
 // Not R4000 / R4400 / R4600 / R5000. These are no-op macro equivalents when
 // CONFIG_BOARD_SCACHE is not defined.
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_enable() {}
 
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_disable() {}
 
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_wback_inv(_page: ::core::ffi::c_ulong, _size: ::core::ffi::c_ulong) {}
 
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_inv(_page: ::core::ffi::c_ulong, _size: ::core::ffi::c_ulong) {}
 
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_prefetch_enable() {}
 
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_prefetch_disable() {}
 
-#[cfg(not(feature = "CONFIG_BOARD_SCACHE"))]
+#[cfg(not(CONFIG_BOARD_SCACHE))]
 #[inline]
 pub fn bc_prefetch_is_enabled() -> bool {
     false

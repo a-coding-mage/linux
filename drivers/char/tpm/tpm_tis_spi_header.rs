@@ -46,27 +46,27 @@ extern "C" {
 }
 
 // CONFIG_TCG_TIS_SPI_CR50 controls whether this external implementation is available.
-#[cfg(feature = "CONFIG_TCG_TIS_SPI_CR50")]
+#[cfg(CONFIG_TCG_TIS_SPI_CR50)]
 extern "C" {
     pub fn cr50_spi_probe(spi: *mut spi_device) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_TCG_TIS_SPI_CR50"))]
+#[cfg(not(CONFIG_TCG_TIS_SPI_CR50))]
 #[inline]
 pub unsafe fn cr50_spi_probe(_spi: *mut spi_device) -> ::core::ffi::c_int {
     -19 // -ENODEV
 }
 
 // CONFIG_PM_SLEEP and CONFIG_TCG_TIS_SPI_CR50 select the resume interface.
-#[cfg(all(feature = "CONFIG_PM_SLEEP", feature = "CONFIG_TCG_TIS_SPI_CR50"))]
+#[cfg(all(CONFIG_PM_SLEEP, CONFIG_TCG_TIS_SPI_CR50))]
 extern "C" {
     pub fn tpm_tis_spi_resume(dev: *mut device) -> ::core::ffi::c_int;
 }
 
-#[cfg(all(feature = "CONFIG_PM_SLEEP", not(feature = "CONFIG_TCG_TIS_SPI_CR50")))]
+#[cfg(all(CONFIG_PM_SLEEP, not(CONFIG_TCG_TIS_SPI_CR50)))]
 pub use tpm_tis_resume as tpm_tis_spi_resume;
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub const tpm_tis_spi_resume: Option<unsafe extern "C" fn(*mut device) -> ::core::ffi::c_int> = None;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -4,40 +4,40 @@
  * intentionally left as external dependencies.
  */
 
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const NODE_SIZE_BITS: u32 = 31;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const NODE_SIZE_BITS: u32 = 32;
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const BWIN_SIZE_BITS: u32 = 28;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const BWIN_SIZE_BITS: u32 = 29;
 
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const NASID_BITS: u32 = 9;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const NASID_BITS: u32 = 8;
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const NASID_BITMASK: u64 = 0x1ff;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const NASID_BITMASK: u64 = 0xff;
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const NASID_SHFT: u32 = 31;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const NASID_SHFT: u32 = 32;
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const NASID_META_BITS: u32 = 5;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const NASID_META_BITS: u32 = 4;
 pub const NASID_LOCAL_BITS: u32 = 4;
 
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const BDDIR_UPPER_MASK: u64 = 0x7ffff << 10;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const BDDIR_UPPER_MASK: u64 = 0xfffff << 10;
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const BDECC_UPPER_MASK: u64 = 0x3ffffff << 3;
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const BDECC_UPPER_MASK: u64 = 0x7ffffff << 3;
 
 pub const NODE_ADDRSPACE_SIZE: u64 = 1u64 << NODE_SIZE_BITS;

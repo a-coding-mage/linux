@@ -40,7 +40,7 @@ unsafe fn plock_lookup_waiter(info: *const DlmPlockInfo) -> *mut PlockOp {
     let mut op: *mut PlockOp = core::ptr::null_mut();
     let mut iter: *mut PlockOp;
 
-    list_for_each_entry!(iter, &raw mut RECV_LIST, list) {
+    list_for_each_entry!(iter, &raw mut RECV_LIST, list, {
         if (*iter).info.fsid == (*info).fsid
             && (*iter).info.number == (*info).number
             && (*iter).info.owner == (*info).owner
@@ -53,7 +53,7 @@ unsafe fn plock_lookup_waiter(info: *const DlmPlockInfo) -> *mut PlockOp {
             op = iter;
             break;
         }
-    }
+    });
     op
 }
 

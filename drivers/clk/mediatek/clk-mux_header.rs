@@ -121,6 +121,6 @@ pub struct mtk_mux_nb {
 }
 
 #[macro_export]
-macro_rules! to_mtk_mux_nb { ($nb:expr) => { container_of!($nb, mtk_mux_nb, nb) }; }
+macro_rules! to_mtk_mux_nb { ($nb:expr) => { container_of!($nb, mtk_mux_nb, $nb) }; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

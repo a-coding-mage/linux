@@ -30,14 +30,14 @@ const RGATE_TIMEOUT:u32=10000;
 
 extern "C" { static mut base:*mut u8; static mut hws:*mut *mut clk_hw; static mut stm32rcc_lock:spinlock_t;
     fn readl(p:*mut u32)->u32; fn writel(v:u32,p:*mut u32); fn udelay(v:u32);
-    fn clk_gate_is_enabled(*mut clk_hw)->c_int; fn clk_hw_register(*mut device,*mut clk_hw)->c_int;
-    fn clk_hw_get_parent(*mut clk_hw)->*mut clk_hw; fn __clk_hw_set_clk(*mut clk_hw,*mut clk_hw);
-    fn clk_hw_register_divider_table(*mut device,*const c_char,*const c_char,u32,*mut u32,u8,u8,u8,*const clk_div_table,*mut spinlock_t)->*mut clk_hw;
-    fn clk_hw_register_fixed_factor(*mut device,*const c_char,*const c_char,u32,u32,u32)->*mut clk_hw;
-    fn clk_hw_register_fixed_rate(*mut device,*const c_char,*const c_char,u32,usize)->*mut clk_hw;
-    fn clk_hw_register_mux(*mut device,*const c_char,*const *const c_char,usize,u32,*mut u8,u8,u8,u8,*mut spinlock_t)->*mut clk_hw;
-    fn clk_hw_register_gate(*mut device,*const c_char,*const c_char,u32,*mut u8,u8,u32,*mut spinlock_t)->*mut clk_hw;
-    fn clk_hw_register_composite(*mut device,*const c_char,*const *const c_char,usize,*mut clk_hw,*const clk_ops,*mut clk_hw,*const clk_ops,*mut clk_hw,*const clk_ops,u32)->*mut clk_hw;
+    fn clk_gate_is_enabled(_: *mut clk_hw)->c_int; fn clk_hw_register(_: *mut device,_: *mut clk_hw)->c_int;
+    fn clk_hw_get_parent(_: *mut clk_hw)->*mut clk_hw; fn __clk_hw_set_clk(_: *mut clk_hw,_: *mut clk_hw);
+    fn clk_hw_register_divider_table(_: *mut device,_: *const c_char,_: *const c_char,_: u32,_: *mut u32,_: u8,_: u8,_: u8,_: *const clk_div_table,_: *mut spinlock_t)->*mut clk_hw;
+    fn clk_hw_register_fixed_factor(_: *mut device,_: *const c_char,_: *const c_char,_: u32,_: u32,_: u32)->*mut clk_hw;
+    fn clk_hw_register_fixed_rate(_: *mut device,_: *const c_char,_: *const c_char,_: u32,_: usize)->*mut clk_hw;
+    fn clk_hw_register_mux(_: *mut device,_: *const c_char,_: *const *const c_char,_: usize,_: u32,_: *mut u8,_: u8,_: u8,_: u8,_: *mut spinlock_t)->*mut clk_hw;
+    fn clk_hw_register_gate(_: *mut device,_: *const c_char,_: *const c_char,_: u32,_: *mut u8,_: u8,_: u32,_: *mut spinlock_t)->*mut clk_hw;
+    fn clk_hw_register_composite(_: *mut device,_: *const c_char,_: *const *const c_char,_: usize,_: *mut clk_hw,_: *const clk_ops,_: *mut clk_hw,_: *const clk_ops,_: *mut clk_hw,_: *const clk_ops,_: u32)->*mut clk_hw;
 }
 
 #[repr(C)] pub struct stm32_ready_gate { pub gate:clk_gate, pub bit_rdy:u8 }

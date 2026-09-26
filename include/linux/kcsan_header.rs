@@ -8,7 +8,7 @@
  */
 
 /* Translated from the C header. CONFIG_KCSAN is a build-time configuration. */
-#[cfg(feature = "CONFIG_KCSAN")]
+#[cfg(CONFIG_KCSAN)]
 #[repr(C)]
 pub struct kcsan_ctx {
     pub disable_count: i32, /* disable counter */
@@ -28,7 +28,7 @@ pub struct kcsan_ctx {
     /* List of scoped accesses; likely to be empty. */
     pub scoped_accesses: list_head,
 
-    #[cfg(feature = "CONFIG_KCSAN_WEAK_MEMORY")]
+    #[cfg(CONFIG_KCSAN_WEAK_MEMORY)]
     /* Scoped access for modeling access reordering to detect missing memory barriers. */
     pub reorder_access: kcsan_scoped_access,
 }
@@ -36,12 +36,12 @@ pub struct kcsan_ctx {
 /**
  * kcsan_init - initialize KCSAN runtime
  */
-#[cfg(feature = "CONFIG_KCSAN")]
+#[cfg(CONFIG_KCSAN)]
 unsafe extern "C" {
     pub fn kcsan_init();
 }
 
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline]
 pub const fn kcsan_init() {}
 

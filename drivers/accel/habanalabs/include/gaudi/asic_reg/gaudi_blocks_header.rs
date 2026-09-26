@@ -1,4 +1,3 @@
-pub const GAUDI_BLOCKS_H_: u32 = ;
 pub const mmNIC0_PHY0_BASE: u64 = 0x0;
 pub const NIC0_PHY0_MAX_OFFSET: u32 = 0x9F13;
 pub const mmMME0_ACC_BASE: u64 = 0x7FFC020000;

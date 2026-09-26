@@ -78,17 +78,17 @@ pub static mut lowcore_ptr: [*mut lowcore; 256] = [core::ptr::null_mut(); 256];
 pub static mut mio_wb_bit_mask: usize = 0;
 
 extern "C" {
-    fn simple_strtoul(*const u8, *mut *const u8, u32) -> usize; fn strcmp(*const u8,*const u8)->i32;
-    fn add_preferred_console(*const u8,u32,*const u8)->i32; fn machine_is_vm()->bool; fn machine_is_kvm()->bool; fn machine_is_lpar()->bool;
-    fn cpcmd(*const u8,*mut u8,usize,*mut u8); fn strstr(*const u8,*const u8)->*mut u8; fn str_has_prefix(*const u8,*const u8)->bool;
-    fn in_interrupt()->bool; fn in_atomic()->bool; fn console_unblank(); fn _machine_restart(*mut u8); fn _machine_halt(); fn _machine_power_off();
-    fn __vmalloc_node(usize,usize,u32,i32,*const u8)->*mut u8; fn kmemleak_not_leak(*mut u8); fn vfree(*mut u8);
-    fn memblock_alloc_or_panic(usize,usize)->*mut u8; fn memblock_alloc_low(usize,usize)->*mut lowcore; fn panic(*const u8,...)->!;
-    fn get_lowcore()->*mut lowcore; fn get_abs_lowcore()->*mut lowcore; fn put_abs_lowcore(*mut lowcore); fn abs_lowcore_map(i32,*mut lowcore,bool)->i32;
-    fn storage_key_init_range(usize,usize); fn psw_set_key(u32); fn memmove(*mut u8,*const u8,usize); fn memset(*mut u8,i32,usize);
-    fn stsi(*mut sysinfo_3_2_2,u32,u32,u32)->i32; fn add_device_randomness(*const u8,usize); fn cpacf_query_func(u32,u32)->bool;
-    fn diag_stat_inc(u32); fn boot_rb_foreach(fn(*const u8)); fn printk_get_level(*const u8)->i32; fn printk(*const u8,...);
-    fn skip_timestamp(*const u8)->*const u8; fn printk_skip_level(*const u8)->*const u8; fn bootdebug_filter_match(*const u8)->bool;
+    fn simple_strtoul(_: *const u8, _: *mut *const u8, _: u32) -> usize; fn strcmp(_: *const u8,_: *const u8)->i32;
+    fn add_preferred_console(_: *const u8,_: u32,_: *const u8)->i32; fn machine_is_vm()->bool; fn machine_is_kvm()->bool; fn machine_is_lpar()->bool;
+    fn cpcmd(_: *const u8,_: *mut u8,_: usize,_: *mut u8); fn strstr(_: *const u8,_: *const u8)->*mut u8; fn str_has_prefix(_: *const u8,_: *const u8)->bool;
+    fn in_interrupt()->bool; fn in_atomic()->bool; fn console_unblank(); fn _machine_restart(_: *mut u8); fn _machine_halt(); fn _machine_power_off();
+    fn __vmalloc_node(_: usize,_: usize,_: u32,_: i32,_: *const u8)->*mut u8; fn kmemleak_not_leak(_: *mut u8); fn vfree(_: *mut u8);
+    fn memblock_alloc_or_panic(_: usize,_: usize)->*mut u8; fn memblock_alloc_low(_: usize,_: usize)->*mut lowcore; fn panic(_: *const u8,...)->!;
+    fn get_lowcore()->*mut lowcore; fn get_abs_lowcore()->*mut lowcore; fn put_abs_lowcore(_: *mut lowcore); fn abs_lowcore_map(_: i32,_: *mut lowcore,_: bool)->i32;
+    fn storage_key_init_range(_: usize,_: usize); fn psw_set_key(_: u32); fn memmove(_: *mut u8,_: *const u8,_: usize); fn memset(_: *mut u8,_: i32,_: usize);
+    fn stsi(_: *mut sysinfo_3_2_2,_: u32,_: u32,_: u32)->i32; fn add_device_randomness(_: *const u8,_: usize); fn cpacf_query_func(_: u32,_: u32)->bool;
+    fn diag_stat_inc(_: u32); fn boot_rb_foreach(_: fn(*const u8)); fn printk_get_level(_: *const u8)->i32; fn printk(_: *const u8,...);
+    fn skip_timestamp(_: *const u8)->*const u8; fn printk_skip_level(_: *const u8)->*const u8; fn bootdebug_filter_match(_: *const u8)->bool;
 }
 
 pub unsafe fn condev_setup(s: *mut u8) -> i32 { let v = simple_strtoul(s, core::ptr::null_mut(), 0); if v < 65536 { console_devno=v as u32; console_irq=u32::MAX; } 1 }
@@ -111,7 +111,7 @@ unsafe fn reserve_physmem_info() { let(mut a,mut s)=(0,0); if get_physmem_reserv
 unsafe fn free_physmem_info() { let(mut a,mut s)=(0,0); if get_physmem_reserved(RR_MEM_DETECT_EXT,&mut a,&mut s){memblock_phys_free(a,s);} }
 unsafe fn setup_high_memory() { high_memory=__va(ident_map_size); }
 unsafe fn setup_memory_end() { max_pfn=PFN_DOWN(ident_map_size); max_low_pfn=max_pfn; }
-unsafe fn setup_memory() { let(mut i,mut s,mut e)=(0,0,0); for_each_mem_range(&mut i,&mut s,&mut e){storage_key_init_range(s,e);} psw_set_key(PAGE_DEFAULT_KEY); }
+unsafe fn setup_memory() { let(mut i,mut s,mut e)=(0,0,0); for_each_mem_range!(&mut i,&mut s,&mut e, {storage_key_init_range(s,e);}); psw_set_key(PAGE_DEFAULT_KEY); }
 unsafe fn setup_randomness() { let p=memblock_alloc_or_panic(PAGE_SIZE,PAGE_SIZE) as *mut sysinfo_3_2_2; if stsi(p,3,2,2)==0 && (*p).count!=0 { add_device_randomness((*p).vm.as_ptr(), core::mem::size_of::<u8>()*(*p).count as usize); } memblock_free(p as *mut u8,PAGE_SIZE); }
 unsafe fn log_component_list() { if early_ipl_comp_list_addr==0{return;} let mut p=__va(early_ipl_comp_list_addr) as *mut ipl_rb_component_entry; let e=(p as usize+early_ipl_comp_list_size) as *mut ipl_rb_component_entry; while p<e { p=p.add(1); } }
 unsafe fn print_rb_entry(buf:*const u8) { let level=printk_get_level(buf); let b=skip_timestamp(printk_skip_level(buf)); if level==KERN_DEBUG && (!bootdebug||!bootdebug_filter_match(b)){return;} printk(b"%s\0".as_ptr(),b); }

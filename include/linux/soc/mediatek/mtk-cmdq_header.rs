@@ -52,7 +52,7 @@ pub struct cmdq_client { pub client: mbox_client, pub chan: *mut mbox_chan }
 #[repr(C)]
 pub struct cmdq_pkt { _private: [u8; 0] }
 
-#[cfg(feature = "CONFIG_MTK_CMDQ")]
+#[cfg(CONFIG_MTK_CMDQ)]
 extern "C" {
     pub fn cmdq_dev_get_client_reg(dev: *mut device, client_reg: *mut cmdq_client_reg, idx: i32) -> i32;
     pub fn cmdq_mbox_create(dev: *mut device, index: i32) -> *mut cmdq_client;
@@ -85,37 +85,37 @@ extern "C" {
     pub fn cmdq_pkt_eoc(pkt: *mut cmdq_pkt) -> i32;
 }
 
-#[cfg(feature = "CONFIG_MTK_CMDQ")]
+#[cfg(CONFIG_MTK_CMDQ)]
 #[inline]
 pub unsafe fn cmdq_pkt_jump(pkt: *mut cmdq_pkt, addr: dma_addr_t, shift_pa: u8) -> i32 { cmdq_pkt_jump_abs(pkt, addr, shift_pa) }
 
-#[cfg(feature = "CONFIG_MTK_CMDQ")]
+#[cfg(CONFIG_MTK_CMDQ)]
 #[inline]
 pub unsafe fn cmdq_pkt_jump_rel_temp(pkt: *mut cmdq_pkt, offset: i32, shift_pa: u8) -> i32 { cmdq_pkt_jump_rel(pkt, offset, shift_pa) }
 
 // When CONFIG_MTK_CMDQ is disabled, the C header supplies inline stubs returning -ENODEV,
 // -EINVAL, or -ENOENT. Their exact errno values are provided by the dependent Linux bindings.
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline]
 pub unsafe fn cmdq_dev_get_client_reg(_: *mut device, _: *mut cmdq_client_reg, _: i32) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline]
 pub unsafe fn cmdq_mbox_create(_: *mut device, _: i32) -> *mut cmdq_client { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline]
 pub unsafe fn cmdq_mbox_destroy(_: *mut cmdq_client) {}
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline]
 pub unsafe fn cmdq_pkt_create(_: *mut cmdq_client, _: *mut cmdq_pkt, _: usize) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline]
 pub unsafe fn cmdq_pkt_destroy(_: *mut cmdq_client, _: *mut cmdq_pkt) {}
 
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 macro_rules! cmdq_noent { ($($name:ident ($($arg:ident : $ty:ty),*)),* $(,)?) => { $(
     #[inline] pub unsafe fn $name($($arg: $ty),*) -> i32 { -2 }
 )* } }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 cmdq_noent! {
     cmdq_pkt_write(pkt: *mut cmdq_pkt, subsys: u8, offset: u16, value: u32),
     cmdq_pkt_write_pa(pkt: *mut cmdq_pkt, subsys: u8, pa_base: u32, offset: u16, value: u32),
@@ -130,29 +130,29 @@ cmdq_noent! {
     cmdq_pkt_write_s_mask_value(pkt: *mut cmdq_pkt, high_addr_reg_idx: u8, addr_low: u16, value: u32, mask: u32),
 }
 
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_wfe(_: *mut cmdq_pkt, _: u16, _: bool) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_clear_event(_: *mut cmdq_pkt, _: u16) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_set_event(_: *mut cmdq_pkt, _: u16) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_poll(_: *mut cmdq_pkt, _: u8, _: u16, _: u32) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_poll_mask(_: *mut cmdq_pkt, _: u8, _: u16, _: u32, _: u32) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_assign(_: *mut cmdq_pkt, _: u16, _: u32) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_poll_addr(_: *mut cmdq_pkt, _: dma_addr_t, _: u32, _: u32) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_jump_abs(_: *mut cmdq_pkt, _: dma_addr_t, _: u8) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_jump(_: *mut cmdq_pkt, _: dma_addr_t, _: u8) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_jump_rel(_: *mut cmdq_pkt, _: i32, _: u8) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_jump_rel_temp(_: *mut cmdq_pkt, _: i32, _: u8) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_MTK_CMDQ"))]
+#[cfg(not(CONFIG_MTK_CMDQ))]
 #[inline] pub unsafe fn cmdq_pkt_eoc(_: *mut cmdq_pkt) -> i32 { -22 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -10,16 +10,16 @@
 // In case of a 32 bit VDSO for a 64 bit kernel fake a 32 bit kernel
 // configuration. CONFIG_64BIT is intentionally undefined in this
 // configuration.
-#[cfg(any(feature = "CONFIG_MIPS32_O32", feature = "CONFIG_MIPS32_N32"))]
+#[cfg(any(CONFIG_MIPS32_O32, CONFIG_MIPS32_N32))]
 pub const BUILD_VDSO32: bool = true;
 
-#[cfg(any(feature = "CONFIG_MIPS32_O32", feature = "CONFIG_MIPS32_N32"))]
+#[cfg(any(CONFIG_MIPS32_O32, CONFIG_MIPS32_N32))]
 pub const CONFIG_32BIT: u32 = 1;
 
-#[cfg(any(feature = "CONFIG_MIPS32_O32", feature = "CONFIG_MIPS32_N32"))]
+#[cfg(any(CONFIG_MIPS32_O32, CONFIG_MIPS32_N32))]
 pub const CONFIG_GENERIC_ATOMIC64: u32 = 1;
 
-#[cfg(any(feature = "CONFIG_MIPS32_O32", feature = "CONFIG_MIPS32_N32"))]
+#[cfg(any(CONFIG_MIPS32_O32, CONFIG_MIPS32_N32))]
 pub const BUILD_VDSO32_64: bool = true;
 
 

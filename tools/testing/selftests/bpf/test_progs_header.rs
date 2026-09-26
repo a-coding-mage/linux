@@ -717,8 +717,7 @@ unsafe extern "C" {
     pub fn test_loader__run_subtests(
         tester: *mut test_loader,
         skel_name: *const c_char,
-        elf_bytes_factory: skel_elf_bytes_fn,
-    );
+        elf_bytes_factory: skel_elf_bytes_fn);
 
     pub fn test_loader_fini(tester: *mut test_loader);
 }
@@ -757,8 +756,7 @@ unsafe extern "C" {
     pub fn validate_msgs(
         log_buf: *const c_char,
         msgs: *mut expected_msgs,
-        emit_fn: Option<unsafe extern "C" fn(buf: *const c_char, force: bool)>,
-    );
+        emit_fn: Option<unsafe extern "C" fn(buf: *const c_char, force: bool)>);
     pub fn free_msgs(msgs: *mut expected_msgs);
     pub fn verify_test_stderr(obj: *mut bpf_object, prog: *mut bpf_program);
 }

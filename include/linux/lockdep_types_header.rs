@@ -10,9 +10,9 @@ pub enum lockdep_wait_type {
     LD_WAIT_INV = 0,
     LD_WAIT_FREE,
     LD_WAIT_SPIN,
-    #[cfg(feature = "CONFIG_PROVE_RAW_LOCK_NESTING")]
+    #[cfg(CONFIG_PROVE_RAW_LOCK_NESTING)]
     LD_WAIT_CONFIG,
-    #[cfg(not(feature = "CONFIG_PROVE_RAW_LOCK_NESTING"))]
+    #[cfg(not(CONFIG_PROVE_RAW_LOCK_NESTING))]
     LD_WAIT_CONFIG = LD_WAIT_SPIN as isize,
     LD_WAIT_SLEEP,
     LD_WAIT_MAX,
@@ -77,17 +77,17 @@ pub struct lock_class {
     pub wait_type_inner: u8,
     pub wait_type_outer: u8,
     pub lock_type: u8,
-    #[cfg(feature = "CONFIG_LOCK_STAT")]
+    #[cfg(CONFIG_LOCK_STAT)]
     pub contention_point: [usize; LOCKSTAT_POINTS],
-    #[cfg(feature = "CONFIG_LOCK_STAT")]
+    #[cfg(CONFIG_LOCK_STAT)]
     pub contending_point: [usize; LOCKSTAT_POINTS],
 }
 
-#[cfg(feature = "CONFIG_LOCK_STAT")]
+#[cfg(CONFIG_LOCK_STAT)]
 #[repr(C)]
 pub struct lock_time { pub min: i64, pub max: i64, pub total: i64, pub nr: usize }
 
-#[cfg(feature = "CONFIG_LOCK_STAT")]
+#[cfg(CONFIG_LOCK_STAT)]
 #[repr(C)]
 pub enum bounce_type {
     bounce_acquired_write,
@@ -97,12 +97,12 @@ pub enum bounce_type {
     nr_bounce_types,
 }
 
-#[cfg(feature = "CONFIG_LOCK_STAT")]
+#[cfg(CONFIG_LOCK_STAT)]
 pub const bounce_acquired: bounce_type = bounce_type::bounce_acquired_write;
-#[cfg(feature = "CONFIG_LOCK_STAT")]
+#[cfg(CONFIG_LOCK_STAT)]
 pub const bounce_contended: bounce_type = bounce_type::bounce_contended_write;
 
-#[cfg(feature = "CONFIG_LOCK_STAT")]
+#[cfg(CONFIG_LOCK_STAT)]
 #[repr(C)]
 pub struct lock_class_stats {
     pub contention_point: [usize; LOCKSTAT_POINTS],
@@ -114,7 +114,7 @@ pub struct lock_class_stats {
     pub bounces: [usize; 4],
 }
 
-#[cfg(feature = "CONFIG_LOCK_STAT")]
+#[cfg(CONFIG_LOCK_STAT)]
 extern "C" {
     pub fn lock_stats(class: *mut lock_class, stats: *mut lock_class_stats);
     pub fn clear_lock_stats(class: *mut lock_class);
@@ -128,9 +128,9 @@ pub struct lockdep_map {
     pub wait_type_outer: u8,
     pub wait_type_inner: u8,
     pub lock_type: u8,
-    #[cfg(feature = "CONFIG_LOCK_STAT")]
+    #[cfg(CONFIG_LOCK_STAT)]
     pub cpu: i32,
-    #[cfg(feature = "CONFIG_LOCK_STAT")]
+    #[cfg(CONFIG_LOCK_STAT)]
     pub ip: usize,
 }
 
@@ -147,9 +147,9 @@ pub struct held_lock {
     pub acquire_ip: usize,
     pub instance: *mut lockdep_map,
     pub nest_lock: *mut lockdep_map,
-    #[cfg(feature = "CONFIG_LOCK_STAT")]
+    #[cfg(CONFIG_LOCK_STAT)]
     pub waittime_stamp: u64,
-    #[cfg(feature = "CONFIG_LOCK_STAT")]
+    #[cfg(CONFIG_LOCK_STAT)]
     pub holdtime_stamp: u64,
     /* C bit-fields are kept in their containing integer representation. */
     pub class_idx: u32,
@@ -164,15 +164,15 @@ pub struct held_lock {
     pub seq_count: u32,
 }
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[repr(C)]
 pub struct lock_class_key_disabled {}
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[repr(C)]
 pub struct lockdep_map_disabled {}
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[repr(C)]
 pub struct pin_cookie_disabled {}
 

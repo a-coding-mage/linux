@@ -44,7 +44,7 @@ clk_alpha_pll gpll0 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll0",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -114,7 +114,7 @@ clk_alpha_pll gpll10 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (10)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll10",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -168,7 +168,7 @@ clk_alpha_pll gpll11 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (11)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll11",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -208,7 +208,7 @@ clk_alpha_pll gpll3 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (3)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll3",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -227,7 +227,7 @@ clk_alpha_pll gpll4 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (4)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll4",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -266,7 +266,7 @@ clk_alpha_pll gpll6 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (6)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll6",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -305,7 +305,7 @@ clk_alpha_pll gpll7 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (7)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll7",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -362,7 +362,7 @@ clk_alpha_pll gpll8 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (8)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll8",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -414,7 +414,7 @@ clk_alpha_pll gpll9 = {
 	clkr: {
 		enable_reg: 0x79000,
 		enable_mask: (1u32 << (9)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gpll9",
 			parent_data: &(clk_parent_data ){
 				fw_name: "bi_tcxo",
@@ -1486,7 +1486,7 @@ clk_branch gcc_ahb2phy_csi_clk = {
 	clkr: {
 		enable_reg: 0x1d004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ahb2phy_csi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1501,7 +1501,7 @@ clk_branch gcc_ahb2phy_usb_clk = {
 	clkr: {
 		enable_reg: 0x1d008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ahb2phy_usb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1516,7 +1516,7 @@ clk_branch gcc_bimc_gpu_axi_clk = {
 	clkr: {
 		enable_reg: 0x71154,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_bimc_gpu_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1531,7 +1531,7 @@ clk_branch gcc_boot_rom_ahb_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (10)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_boot_rom_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1546,7 +1546,7 @@ clk_branch gcc_cam_throttle_nrt_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (27)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_cam_throttle_nrt_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1561,7 +1561,7 @@ clk_branch gcc_cam_throttle_rt_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (26)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_cam_throttle_rt_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1576,7 +1576,7 @@ clk_branch gcc_camera_ahb_clk = {
 	clkr: {
 		enable_reg: 0x17008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camera_ahb_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -1590,7 +1590,7 @@ clk_branch gcc_camera_xo_clk = {
 	clkr: {
 		enable_reg: 0x17028,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camera_xo_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -1604,7 +1604,7 @@ clk_branch gcc_camss_axi_clk = {
 	clkr: {
 		enable_reg: 0x58044,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_axi_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_axi_clk_src.clkr.hw,
@@ -1624,7 +1624,7 @@ clk_branch gcc_camss_camnoc_atb_clk = {
 	clkr: {
 		enable_reg: 0x5804c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_camnoc_atb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1639,7 +1639,7 @@ clk_branch gcc_camss_camnoc_nts_xo_clk = {
 	clkr: {
 		enable_reg: 0x58050,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_camnoc_nts_xo_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1652,7 +1652,7 @@ clk_branch gcc_camss_cci_0_clk = {
 	clkr: {
 		enable_reg: 0x56018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_cci_0_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_cci_clk_src.clkr.hw,
@@ -1670,7 +1670,7 @@ clk_branch gcc_camss_cphy_0_clk = {
 	clkr: {
 		enable_reg: 0x52088,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_cphy_0_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_cphy_rx_clk_src.clkr.hw,
@@ -1688,7 +1688,7 @@ clk_branch gcc_camss_cphy_1_clk = {
 	clkr: {
 		enable_reg: 0x5208c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_cphy_1_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_cphy_rx_clk_src.clkr.hw,
@@ -1706,7 +1706,7 @@ clk_branch gcc_camss_cphy_2_clk = {
 	clkr: {
 		enable_reg: 0x52090,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_cphy_2_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_cphy_rx_clk_src.clkr.hw,
@@ -1724,7 +1724,7 @@ clk_branch gcc_camss_csi0phytimer_clk = {
 	clkr: {
 		enable_reg: 0x59018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_csi0phytimer_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_csi0phytimer_clk_src.clkr.hw,
@@ -1742,7 +1742,7 @@ clk_branch gcc_camss_csi1phytimer_clk = {
 	clkr: {
 		enable_reg: 0x59034,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_csi1phytimer_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_csi1phytimer_clk_src.clkr.hw,
@@ -1760,7 +1760,7 @@ clk_branch gcc_camss_csi2phytimer_clk = {
 	clkr: {
 		enable_reg: 0x59050,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_csi2phytimer_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_csi2phytimer_clk_src.clkr.hw,
@@ -1778,7 +1778,7 @@ clk_branch gcc_camss_mclk0_clk = {
 	clkr: {
 		enable_reg: 0x51018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_mclk0_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_mclk0_clk_src.clkr.hw,
@@ -1796,7 +1796,7 @@ clk_branch gcc_camss_mclk1_clk = {
 	clkr: {
 		enable_reg: 0x51034,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_mclk1_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_mclk1_clk_src.clkr.hw,
@@ -1814,7 +1814,7 @@ clk_branch gcc_camss_mclk2_clk = {
 	clkr: {
 		enable_reg: 0x51050,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_mclk2_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_mclk2_clk_src.clkr.hw,
@@ -1832,7 +1832,7 @@ clk_branch gcc_camss_mclk3_clk = {
 	clkr: {
 		enable_reg: 0x5106c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_mclk3_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_mclk3_clk_src.clkr.hw,
@@ -1850,7 +1850,7 @@ clk_branch gcc_camss_nrt_axi_clk = {
 	clkr: {
 		enable_reg: 0x58054,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_nrt_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1863,7 +1863,7 @@ clk_branch gcc_camss_ope_ahb_clk = {
 	clkr: {
 		enable_reg: 0x5503c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_ope_ahb_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_ope_ahb_clk_src.clkr.hw,
@@ -1881,7 +1881,7 @@ clk_branch gcc_camss_ope_clk = {
 	clkr: {
 		enable_reg: 0x5501c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_ope_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_ope_clk_src.clkr.hw,
@@ -1899,7 +1899,7 @@ clk_branch gcc_camss_rt_axi_clk = {
 	clkr: {
 		enable_reg: 0x5805c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_rt_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1912,7 +1912,7 @@ clk_branch gcc_camss_tfe_0_clk = {
 	clkr: {
 		enable_reg: 0x5201c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_0_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_0_clk_src.clkr.hw,
@@ -1930,7 +1930,7 @@ clk_branch gcc_camss_tfe_0_cphy_rx_clk = {
 	clkr: {
 		enable_reg: 0x5207c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_0_cphy_rx_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_cphy_rx_clk_src.clkr.hw,
@@ -1948,7 +1948,7 @@ clk_branch gcc_camss_tfe_0_csid_clk = {
 	clkr: {
 		enable_reg: 0x520ac,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_0_csid_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_0_csid_clk_src.clkr.hw,
@@ -1966,7 +1966,7 @@ clk_branch gcc_camss_tfe_1_clk = {
 	clkr: {
 		enable_reg: 0x5203c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_1_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_1_clk_src.clkr.hw,
@@ -1984,7 +1984,7 @@ clk_branch gcc_camss_tfe_1_cphy_rx_clk = {
 	clkr: {
 		enable_reg: 0x52080,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_1_cphy_rx_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_cphy_rx_clk_src.clkr.hw,
@@ -2002,7 +2002,7 @@ clk_branch gcc_camss_tfe_1_csid_clk = {
 	clkr: {
 		enable_reg: 0x520cc,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_1_csid_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_1_csid_clk_src.clkr.hw,
@@ -2020,7 +2020,7 @@ clk_branch gcc_camss_tfe_2_clk = {
 	clkr: {
 		enable_reg: 0x5205c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_2_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_2_clk_src.clkr.hw,
@@ -2038,7 +2038,7 @@ clk_branch gcc_camss_tfe_2_cphy_rx_clk = {
 	clkr: {
 		enable_reg: 0x52084,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_2_cphy_rx_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_cphy_rx_clk_src.clkr.hw,
@@ -2056,7 +2056,7 @@ clk_branch gcc_camss_tfe_2_csid_clk = {
 	clkr: {
 		enable_reg: 0x520ec,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_tfe_2_csid_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_tfe_2_csid_clk_src.clkr.hw,
@@ -2074,7 +2074,7 @@ clk_branch gcc_camss_top_ahb_clk = {
 	clkr: {
 		enable_reg: 0x58028,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_camss_top_ahb_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_camss_top_ahb_clk_src.clkr.hw,
@@ -2094,7 +2094,7 @@ clk_branch gcc_cfg_noc_usb3_prim_axi_clk = {
 	clkr: {
 		enable_reg: 0x1a084,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_cfg_noc_usb3_prim_axi_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_usb30_prim_master_clk_src.clkr.hw,
@@ -2114,7 +2114,7 @@ clk_branch gcc_cpuss_gnoc_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (22)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_cpuss_gnoc_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -2130,7 +2130,7 @@ clk_branch gcc_disp_ahb_clk = {
 	clkr: {
 		enable_reg: 0x1700c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_disp_ahb_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -2155,7 +2155,7 @@ clk_branch gcc_disp_gpll0_div_clk_src = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (20)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_disp_gpll0_div_clk_src",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_disp_gpll0_clk_src.clkr.hw,
@@ -2175,7 +2175,7 @@ clk_branch gcc_disp_hf_axi_clk = {
 	clkr: {
 		enable_reg: 0x17020,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_disp_hf_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2190,7 +2190,7 @@ clk_branch gcc_disp_throttle_core_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (5)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_disp_throttle_core_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2203,7 +2203,7 @@ clk_branch gcc_disp_xo_clk = {
 	clkr: {
 		enable_reg: 0x1702c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_disp_xo_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -2217,7 +2217,7 @@ clk_branch gcc_gp1_clk = {
 	clkr: {
 		enable_reg: 0x4d000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gp1_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_gp1_clk_src.clkr.hw,
@@ -2235,7 +2235,7 @@ clk_branch gcc_gp2_clk = {
 	clkr: {
 		enable_reg: 0x4e000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gp2_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_gp2_clk_src.clkr.hw,
@@ -2253,7 +2253,7 @@ clk_branch gcc_gp3_clk = {
 	clkr: {
 		enable_reg: 0x4f000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gp3_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_gp3_clk_src.clkr.hw,
@@ -2273,7 +2273,7 @@ clk_branch gcc_gpu_cfg_ahb_clk = {
 	clkr: {
 		enable_reg: 0x36004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_cfg_ahb_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -2286,7 +2286,7 @@ clk_branch gcc_gpu_gpll0_clk_src = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (15)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_gpll0_clk_src",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gpll0.clkr.hw,
@@ -2303,7 +2303,7 @@ clk_branch gcc_gpu_gpll0_div_clk_src = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (16)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_gpll0_div_clk_src",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gpll0_out_aux2.clkr.hw,
@@ -2321,7 +2321,7 @@ clk_branch gcc_gpu_iref_clk = {
 	clkr: {
 		enable_reg: 0x36100,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_iref_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2336,7 +2336,7 @@ clk_branch gcc_gpu_memnoc_gfx_clk = {
 	clkr: {
 		enable_reg: 0x3600c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_memnoc_gfx_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2349,7 +2349,7 @@ clk_branch gcc_gpu_snoc_dvm_gfx_clk = {
 	clkr: {
 		enable_reg: 0x36018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_snoc_dvm_gfx_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2364,7 +2364,7 @@ clk_branch gcc_gpu_throttle_core_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (31)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_gpu_throttle_core_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2377,7 +2377,7 @@ clk_branch gcc_pdm2_clk = {
 	clkr: {
 		enable_reg: 0x2000c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_pdm2_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_pdm2_clk_src.clkr.hw,
@@ -2397,7 +2397,7 @@ clk_branch gcc_pdm_ahb_clk = {
 	clkr: {
 		enable_reg: 0x20004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_pdm_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2410,7 +2410,7 @@ clk_branch gcc_pdm_xo4_clk = {
 	clkr: {
 		enable_reg: 0x20008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_pdm_xo4_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2425,7 +2425,7 @@ clk_branch gcc_prng_ahb_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (13)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_prng_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2440,7 +2440,7 @@ clk_branch gcc_qmip_camera_nrt_ahb_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qmip_camera_nrt_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2455,7 +2455,7 @@ clk_branch gcc_qmip_camera_rt_ahb_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (2)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qmip_camera_rt_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2470,7 +2470,7 @@ clk_branch gcc_qmip_disp_ahb_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (1)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qmip_disp_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2485,7 +2485,7 @@ clk_branch gcc_qmip_gpu_cfg_ahb_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (4)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qmip_gpu_cfg_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2500,7 +2500,7 @@ clk_branch gcc_qmip_video_vcodec_ahb_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (25)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qmip_video_vcodec_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2513,7 +2513,7 @@ clk_branch gcc_qupv3_wrap0_core_2x_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (9)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_core_2x_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2526,7 +2526,7 @@ clk_branch gcc_qupv3_wrap0_core_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (8)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_core_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2539,7 +2539,7 @@ clk_branch gcc_qupv3_wrap0_s0_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (10)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_s0_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_qupv3_wrap0_s0_clk_src.clkr.hw,
@@ -2557,7 +2557,7 @@ clk_branch gcc_qupv3_wrap0_s1_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (11)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_s1_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_qupv3_wrap0_s1_clk_src.clkr.hw,
@@ -2575,7 +2575,7 @@ clk_branch gcc_qupv3_wrap0_s2_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (12)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_s2_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_qupv3_wrap0_s2_clk_src.clkr.hw,
@@ -2593,7 +2593,7 @@ clk_branch gcc_qupv3_wrap0_s3_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (13)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_s3_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_qupv3_wrap0_s3_clk_src.clkr.hw,
@@ -2611,7 +2611,7 @@ clk_branch gcc_qupv3_wrap0_s4_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (14)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_s4_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_qupv3_wrap0_s4_clk_src.clkr.hw,
@@ -2629,7 +2629,7 @@ clk_branch gcc_qupv3_wrap0_s5_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (15)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap0_s5_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_qupv3_wrap0_s5_clk_src.clkr.hw,
@@ -2649,7 +2649,7 @@ clk_branch gcc_qupv3_wrap_0_m_ahb_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (6)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap_0_m_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2664,7 +2664,7 @@ clk_branch gcc_qupv3_wrap_0_s_ahb_clk = {
 	clkr: {
 		enable_reg: 0x7900c,
 		enable_mask: (1u32 << (7)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_qupv3_wrap_0_s_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2677,7 +2677,7 @@ clk_branch gcc_sdcc1_ahb_clk = {
 	clkr: {
 		enable_reg: 0x38008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sdcc1_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2690,7 +2690,7 @@ clk_branch gcc_sdcc1_apps_clk = {
 	clkr: {
 		enable_reg: 0x38004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sdcc1_apps_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_sdcc1_apps_clk_src.clkr.hw,
@@ -2710,7 +2710,7 @@ clk_branch gcc_sdcc1_ice_core_clk = {
 	clkr: {
 		enable_reg: 0x3800c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sdcc1_ice_core_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_sdcc1_ice_core_clk_src.clkr.hw,
@@ -2728,7 +2728,7 @@ clk_branch gcc_sdcc2_ahb_clk = {
 	clkr: {
 		enable_reg: 0x1e008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sdcc2_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2741,7 +2741,7 @@ clk_branch gcc_sdcc2_apps_clk = {
 	clkr: {
 		enable_reg: 0x1e004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sdcc2_apps_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_sdcc2_apps_clk_src.clkr.hw,
@@ -2761,7 +2761,7 @@ clk_branch gcc_sys_noc_cpuss_ahb_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sys_noc_cpuss_ahb_clk",
 			flags: CLK_IS_CRITICAL,
 			ops: &clk_branch2_ops,
@@ -2775,7 +2775,7 @@ clk_branch gcc_sys_noc_ufs_phy_axi_clk = {
 	clkr: {
 		enable_reg: 0x45098,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sys_noc_ufs_phy_axi_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_ufs_phy_axi_clk_src.clkr.hw,
@@ -2795,7 +2795,7 @@ clk_branch gcc_sys_noc_usb3_prim_axi_clk = {
 	clkr: {
 		enable_reg: 0x1a080,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_sys_noc_usb3_prim_axi_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_usb30_prim_master_clk_src.clkr.hw,
@@ -2813,7 +2813,7 @@ clk_branch gcc_ufs_clkref_clk = {
 	clkr: {
 		enable_reg: 0x8c000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_clkref_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2828,7 +2828,7 @@ clk_branch gcc_ufs_phy_ahb_clk = {
 	clkr: {
 		enable_reg: 0x45014,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2843,7 +2843,7 @@ clk_branch gcc_ufs_phy_axi_clk = {
 	clkr: {
 		enable_reg: 0x45010,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_axi_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_ufs_phy_axi_clk_src.clkr.hw,
@@ -2863,7 +2863,7 @@ clk_branch gcc_ufs_phy_ice_core_clk = {
 	clkr: {
 		enable_reg: 0x45044,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_ice_core_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_ufs_phy_ice_core_clk_src.clkr.hw,
@@ -2883,7 +2883,7 @@ clk_branch gcc_ufs_phy_phy_aux_clk = {
 	clkr: {
 		enable_reg: 0x45078,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_phy_aux_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_ufs_phy_phy_aux_clk_src.clkr.hw,
@@ -2901,7 +2901,7 @@ clk_branch gcc_ufs_phy_rx_symbol_0_clk = {
 	clkr: {
 		enable_reg: 0x4501c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_rx_symbol_0_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2914,7 +2914,7 @@ clk_branch gcc_ufs_phy_tx_symbol_0_clk = {
 	clkr: {
 		enable_reg: 0x45018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_tx_symbol_0_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2929,7 +2929,7 @@ clk_branch gcc_ufs_phy_unipro_core_clk = {
 	clkr: {
 		enable_reg: 0x45040,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_ufs_phy_unipro_core_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_ufs_phy_unipro_core_clk_src.clkr.hw,
@@ -2947,7 +2947,7 @@ clk_branch gcc_usb30_prim_master_clk = {
 	clkr: {
 		enable_reg: 0x1a010,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_usb30_prim_master_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_usb30_prim_master_clk_src.clkr.hw,
@@ -2965,7 +2965,7 @@ clk_branch gcc_usb30_prim_mock_utmi_clk = {
 	clkr: {
 		enable_reg: 0x1a018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_usb30_prim_mock_utmi_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_usb30_prim_mock_utmi_postdiv_clk_src.clkr.hw,
@@ -2983,7 +2983,7 @@ clk_branch gcc_usb30_prim_sleep_clk = {
 	clkr: {
 		enable_reg: 0x1a014,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_usb30_prim_sleep_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -2996,7 +2996,7 @@ clk_branch gcc_usb3_prim_clkref_clk = {
 	clkr: {
 		enable_reg: 0x9f000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_usb3_prim_clkref_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3009,7 +3009,7 @@ clk_branch gcc_usb3_prim_phy_com_aux_clk = {
 	clkr: {
 		enable_reg: 0x1a054,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_usb3_prim_phy_com_aux_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_usb3_prim_phy_aux_clk_src.clkr.hw,
@@ -3029,7 +3029,7 @@ clk_branch gcc_usb3_prim_phy_pipe_clk = {
 	clkr: {
 		enable_reg: 0x1a058,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_usb3_prim_phy_pipe_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3042,7 +3042,7 @@ clk_branch gcc_vcodec0_axi_clk = {
 	clkr: {
 		enable_reg: 0x6e008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_vcodec0_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3055,7 +3055,7 @@ clk_branch gcc_venus_ahb_clk = {
 	clkr: {
 		enable_reg: 0x6e010,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_venus_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3068,7 +3068,7 @@ clk_branch gcc_venus_ctl_axi_clk = {
 	clkr: {
 		enable_reg: 0x6e004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_venus_ctl_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3083,7 +3083,7 @@ clk_branch gcc_video_ahb_clk = {
 	clkr: {
 		enable_reg: 0x17004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_video_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3098,7 +3098,7 @@ clk_branch gcc_video_axi0_clk = {
 	clkr: {
 		enable_reg: 0x1701c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_video_axi0_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3113,7 +3113,7 @@ clk_branch gcc_video_throttle_core_clk = {
 	clkr: {
 		enable_reg: 0x79004,
 		enable_mask: (1u32 << (28)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_video_throttle_core_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -3128,7 +3128,7 @@ clk_branch gcc_video_vcodec0_sys_clk = {
 	clkr: {
 		enable_reg: 0x580a4,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_video_vcodec0_sys_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_video_venus_clk_src.clkr.hw,
@@ -3146,7 +3146,7 @@ clk_branch gcc_video_venus_ctl_clk = {
 	clkr: {
 		enable_reg: 0x5808c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_video_venus_ctl_clk",
 			parent_hws: (*mut [clk_hw; 0]){
 				&gcc_video_venus_clk_src.clkr.hw,
@@ -3164,7 +3164,7 @@ clk_branch gcc_video_xo_clk = {
 	clkr: {
 		enable_reg: 0x17024,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(clk_init_data ){
+		hwinit: &(clk_init_data ){
 			name: "gcc_video_xo_clk",
 			ops: &clk_branch2_ops,
 		},

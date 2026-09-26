@@ -117,7 +117,7 @@ unsafe fn pefile_digest_pe_contents(pebuf: *const c_void, pelen: u32, ctx: *mut 
     }
     let mut hashed = (*ctx).header_size as usize;
     for &i in &canon { let sec = &*(*ctx).secs.add(i); if sec.raw_data_size == 0 { continue; } ret = crypto_shash_update(desc, (pebuf as *const u8).add(sec.data_addr as usize), sec.raw_data_size as usize); if ret < 0 { return ret; } hashed += sec.raw_data_size as usize; }
-    if pelen as usize > hashed { tmp = hashed + (*ctx).certs_size as usize; if tmp <= hashed || pelen as usize < tmp { return -ELIBBAD; } ret = crypto_shash_update(desc, (pebuf as *const u8).add(hashed), pelen as usize - tmp); }
+    if pelen as usize > hashed { tmp = hashed + (*ctx).certs_size as usize; if tmp <= hashed || (pelen as usize) < tmp { return -ELIBBAD; } ret = crypto_shash_update(desc, (pebuf as *const u8).add(hashed), pelen as usize - tmp); }
     ret
 }
 

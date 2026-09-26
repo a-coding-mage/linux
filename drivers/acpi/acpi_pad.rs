@@ -69,9 +69,9 @@ unsafe fn round_robin_cpu(tsk_index: u32) {
     if !alloc_cpumask_var(&mut tmp, GFP_KERNEL) { return; }
     mutex_lock(&mut round_robin_lock);
     cpumask_clear(tmp);
-    for_each_cpu!(cpu, pad_busy_cpus) {
+    for_each_cpu!(cpu, pad_busy_cpus, {
         cpumask_or(tmp, tmp, topology_sibling_cpumask(cpu));
-    }
+    });
     cpumask_andnot(tmp, cpu_online_mask, tmp);
     /* avoid HT siblings if possible */
     if cpumask_empty(tmp) { cpumask_andnot(tmp, cpu_online_mask, pad_busy_cpus); }
@@ -80,12 +80,12 @@ unsafe fn round_robin_cpu(tsk_index: u32) {
         free_cpumask_var(tmp);
         return;
     }
-    for_each_cpu!(cpu, tmp) {
+    for_each_cpu!(cpu, tmp, {
         if cpu_weight[cpu as usize] < min_weight {
             min_weight = cpu_weight[cpu as usize];
             preferred_cpu = cpu;
         }
-    }
+    });
     if tsk_in_cpu[tsk_index as usize] != -1 {
         cpumask_clear_cpu(tsk_in_cpu[tsk_index as usize], pad_busy_cpus);
     }
@@ -182,7 +182,7 @@ unsafe extern "C" fn rrtime_store(_dev: *mut device, _attr: *mut device_attribut
     mutex_lock(&mut isolated_cpus_lock); round_robin_time = num as u32; mutex_unlock(&mut isolated_cpus_lock); count as isize
 }
 unsafe extern "C" fn rrtime_show(_dev: *mut device, _attr: *mut device_attribute, buf: *mut c_char) -> isize { sysfs_emit(buf, c_str!("%d\n"), round_robin_time) }
-static DEVICE_ATTR_RW!(rrtime);
+DEVICE_ATTR_RW!(rrtime);
 
 unsafe extern "C" fn idlepct_store(_dev: *mut device, _attr: *mut device_attribute, buf: *const c_char, count: usize) -> isize {
     let mut num: c_ulong = 0;
@@ -190,7 +190,7 @@ unsafe extern "C" fn idlepct_store(_dev: *mut device, _attr: *mut device_attribu
     mutex_lock(&mut isolated_cpus_lock); idle_pct = num as u32; mutex_unlock(&mut isolated_cpus_lock); count as isize
 }
 unsafe extern "C" fn idlepct_show(_dev: *mut device, _attr: *mut device_attribute, buf: *mut c_char) -> isize { sysfs_emit(buf, c_str!("%d\n"), idle_pct) }
-static DEVICE_ATTR_RW!(idlepct);
+DEVICE_ATTR_RW!(idlepct);
 
 unsafe extern "C" fn idlecpus_store(_dev: *mut device, _attr: *mut device_attribute, buf: *const c_char, count: usize) -> isize {
     let mut num: c_ulong = 0;
@@ -198,7 +198,7 @@ unsafe extern "C" fn idlecpus_store(_dev: *mut device, _attr: *mut device_attrib
     mutex_lock(&mut isolated_cpus_lock); acpi_pad_idle_cpus(num as u32); mutex_unlock(&mut isolated_cpus_lock); count as isize
 }
 unsafe extern "C" fn idlecpus_show(_dev: *mut device, _attr: *mut device_attribute, buf: *mut c_char) -> isize { sysfs_emit(buf, c_str!("%*pb\n"), cpumask_pr_args(to_cpumask(&mut pad_busy_cpus_bits))) }
-static DEVICE_ATTR_RW!(idlecpus);
+DEVICE_ATTR_RW!(idlecpus);
 
 static acpi_pad_attrs: [*mut attribute; 4] = [
     &dev_attr_idlecpus.attr, &dev_attr_idlepct.attr, &dev_attr_rrtime.attr, core::ptr::null_mut(),

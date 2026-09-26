@@ -8,7 +8,7 @@
 
 #![allow(dead_code, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 
-+// // SPDX-License-Identifier: GPL-2.0-or-later
+// // SPDX-License-Identifier: GPL-2.0-or-later
 // /* -*- linux-c -*-
 //  * APM BIOS driver for Linux
 //  * Copyright 1994-2001 Stephen Rothwell (sfr@canb.auug.org.au)
@@ -364,7 +364,7 @@
 // #endif
 // #define DEFAULT_IDLE_PERIOD	(100 / 3)
 // 
-// static int apm_cpu_idle(struct cpuidle_device *dev,
+// static int apm_cpu_idle(cpuidle_device *dev,
 // 			struct cpuidle_driver *drv, int index);
 // 
 // static struct cpuidle_driver apm_idle_driver = {
@@ -628,7 +628,7 @@
 // }
 // 
 // /* Run __apm_bios_call or __apm_bios_call_simple on CPU 0 */
-// static int on_cpu0(long (*fn)(void *), struct apm_bios_call *call)
+// static int on_cpu0(long (*fn)(void *), apm_bios_call *call)
 // {
 // 	int ret;
 // 
@@ -657,7 +657,7 @@
 //  *
 //  *	If there is an error, it is returned in @call.err.
 //  */
-// static int apm_bios_call(struct apm_bios_call *call)
+// static int apm_bios_call(apm_bios_call *call)
 // {
 // 	return on_cpu0(__apm_bios_call, call);
 // }
@@ -907,7 +907,7 @@
 //  * Furthermore it calls the system default idle routine.
 //  */
 // 
-// static int apm_cpu_idle(struct cpuidle_device *dev,
+// static int apm_cpu_idle(cpuidle_device *dev,
 // 	struct cpuidle_driver *drv, int index)
 // {
 // 	static int use_apm_idle; /* = 0 */
@@ -1142,19 +1142,19 @@
 // }
 // #endif
 // 
-// static int queue_empty(struct apm_user *as)
+// static int queue_empty(apm_user *as)
 // {
 // 	return as->event_head == as->event_tail;
 // }
 // 
-// static apm_event_t get_queued_event(struct apm_user *as)
+// static apm_event_t get_queued_event(apm_user *as)
 // {
 // 	if (++as->event_tail >= APM_MAX_EVENTS)
 // 		as->event_tail = 0;
 // 	return as->events[as->event_tail];
 // }
 // 
-// static void queue_event(apm_event_t event, struct apm_user *sender)
+// static void queue_event(apm_event_t event, apm_user *sender)
 // {
 // 	struct apm_user *as;
 // 
@@ -1431,7 +1431,7 @@
 // 	remove_wait_queue(&apm_waitqueue, &wait);
 // }
 // 
-// static int check_apm_user(struct apm_user *as, const char *func)
+// static int check_apm_user(apm_user *as, const char *func)
 // {
 // 	if (as == NULL || as->magic != APM_BIOS_MAGIC) {
 // 		pr_err("%s passed bad filp\n", func);
@@ -1440,7 +1440,7 @@
 // 	return 0;
 // }
 // 
-// static ssize_t do_read(struct file *fp, char __user *buf, size_t count, loff_t *ppos)
+// static ssize_t do_read(file *fp, char __user *buf, size_t count, loff_t *ppos)
 // {
 // 	struct apm_user *as;
 // 	int i;
@@ -1483,7 +1483,7 @@
 // 	return 0;
 // }
 // 
-// static __poll_t do_poll(struct file *fp, poll_table *wait)
+// static __poll_t do_poll(file *fp, poll_table *wait)
 // {
 // 	struct apm_user *as;
 // 
@@ -1496,7 +1496,7 @@
 // 	return 0;
 // }
 // 
-// static long do_ioctl(struct file *filp, u_int cmd, u_long arg)
+// static long do_ioctl(file *filp, u_int cmd, u_long arg)
 // {
 // 	struct apm_user *as;
 // 	int ret;
@@ -1544,7 +1544,7 @@
 // 	return 0;
 // }
 // 
-// static int do_release(struct inode *inode, struct file *filp)
+// static int do_release(inode *inode, file *filp)
 // {
 // 	struct apm_user *as;
 // 
@@ -1582,7 +1582,7 @@
 // 	return 0;
 // }
 // 
-// static int do_open(struct inode *inode, struct file *filp)
+// static int do_open(inode *inode, file *filp)
 // {
 // 	struct apm_user *as;
 // 
@@ -1613,7 +1613,7 @@
 // }
 // 
 // #ifdef CONFIG_PROC_FS
-// static int proc_apm_show(struct seq_file *m, void *v)
+// static int proc_apm_show(seq_file *m, void *v)
 // {
 // 	unsigned short	bx;
 // 	unsigned short	cx;

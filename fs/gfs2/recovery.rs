@@ -28,9 +28,9 @@ pub unsafe fn gfs2_revoke_add(jd: *mut gfs2_jdesc, blkno: u64, where_: u32) -> i
     let head = &mut (*jd).jd_revoke_list;
     let mut rr: *mut gfs2_revoke_replay = core::ptr::null_mut();
     let mut iter: *mut gfs2_revoke_replay;
-    list_for_each_entry!(iter, head, rr_list) {
+    list_for_each_entry!(iter, head, rr_list, {
         if (*iter).rr_blkno == blkno { rr = iter; break; }
-    }
+    });
     if !rr.is_null() { (*rr).rr_where = where_; return 0; }
     rr = kmalloc_obj::<gfs2_revoke_replay>(GFP_NOFS);
     if rr.is_null() { return -ENOMEM; }
@@ -43,9 +43,9 @@ pub unsafe fn gfs2_revoke_add(jd: *mut gfs2_jdesc, blkno: u64, where_: u32) -> i
 pub unsafe fn gfs2_revoke_check(jd: *mut gfs2_jdesc, blkno: u64, where_: u32) -> i32 {
     let mut rr: *mut gfs2_revoke_replay = core::ptr::null_mut();
     let mut iter: *mut gfs2_revoke_replay;
-    list_for_each_entry!(iter, &mut (*jd).jd_revoke_list, rr_list) {
+    list_for_each_entry!(iter, &mut (*jd).jd_revoke_list, rr_list, {
         if (*iter).rr_blkno == blkno { rr = iter; break; }
-    }
+    });
     if rr.is_null() { return 0; }
     let wrap = (*rr).rr_where < (*jd).jd_replay_tail;
     let a = (*jd).jd_replay_tail < where_;

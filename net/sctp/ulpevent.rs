@@ -92,16 +92,16 @@ pub unsafe extern "C" fn sctp_ulpevent_get_notification_type(event: *const sctp_
 unsafe fn sctp_ulpevent_receive_data(event: *mut sctp_ulpevent, asoc: *mut sctp_association) {
     let skb = sctp_event2skb(event); sctp_ulpevent_set_owner(event, asoc); sctp_assoc_rwnd_decrease(asoc, skb_headlen(skb));
     if (*skb).data_len == 0 { return; }
-    let mut frag = core::ptr::null_mut(); skb_walk_frags(skb, &mut frag) { sctp_ulpevent_receive_data(sctp_skb2event(frag), asoc); }
+    let mut frag = core::ptr::null_mut(); skb_walk_frags!(skb, &mut frag, { sctp_ulpevent_receive_data(sctp_skb2event(frag), asoc); });
 }
 
 unsafe fn sctp_ulpevent_release_data(event: *mut sctp_ulpevent) {
     let skb = sctp_event2skb(event); let len = (*skb).len;
-    if (*skb).data_len != 0 { let mut frag = core::ptr::null_mut(); skb_walk_frags(skb, &mut frag) { sctp_ulpevent_release_frag_data(sctp_skb2event(frag)); } }
+    if (*skb).data_len != 0 { let mut frag = core::ptr::null_mut(); skb_walk_frags!(skb, &mut frag, { sctp_ulpevent_release_frag_data(sctp_skb2event(frag)); }); }
     sctp_assoc_rwnd_increase((*event).asoc, len); sctp_chunk_put((*event).chunk); sctp_ulpevent_release_owner(event);
 }
 unsafe fn sctp_ulpevent_release_frag_data(event: *mut sctp_ulpevent) {
-    let skb = sctp_event2skb(event); if (*skb).data_len != 0 { let mut frag = core::ptr::null_mut(); skb_walk_frags(skb, &mut frag) { sctp_ulpevent_release_frag_data(sctp_skb2event(frag)); } }
+    let skb = sctp_event2skb(event); if (*skb).data_len != 0 { let mut frag = core::ptr::null_mut(); skb_walk_frags!(skb, &mut frag, { sctp_ulpevent_release_frag_data(sctp_skb2event(frag)); }); }
     sctp_chunk_put((*event).chunk); sctp_ulpevent_release_owner(event);
 }
 

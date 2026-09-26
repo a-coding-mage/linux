@@ -32,7 +32,7 @@ macro_rules! A64_RET { ($r:expr) => { aarch64_insn_gen_branch_reg($r, AARCH64_IN
 
 macro_rules! A64_SIZE { ($sf:expr) => { if $sf { AARCH64_INSN_SIZE_64 } else { AARCH64_INSN_SIZE_32 } }; }
 macro_rules! A64_LS_REG { ($rt:expr,$rn:expr,$rm:expr,$size:ident,$ty:ident) => { aarch64_insn_gen_load_store_reg($rt,$rn,$rm,AARCH64_INSN_SIZE_$size,AARCH64_INSN_LDST_$ty_REG_OFFSET) }; }
-macro_rules! A64_LS_IMM { ($rt:expr,$rn:expr,$imm:expr,$size:ident,$ty:ident) => { aarch64_insn_gen_load_store_imm($rt,$rn,$imm,AARCH64_INSN_SIZE_$size,AARCH64_INSN_LDST_$ty##_IMM_OFFSET) }; }
+macro_rules! A64_LS_IMM { ($rt:expr,$rn:expr,$imm:expr,$size:ident,$ty:tt) => { aarch64_insn_gen_load_store_imm($rt,$rn,$imm,AARCH64_INSN_SIZE_$size,AARCH64_INSN_LDST_::kernel::macros::paste!([<$ty _IMM_OFFSET>])) }; }
 
 /* Register-offset and immediate-offset load/store aliases. */
 macro_rules! A64_STRB { ($a:expr,$b:expr,$c:expr) => { A64_LS_REG!($a,$b,$c,8,STORE) }; }
@@ -49,7 +49,7 @@ macro_rules! A64_LDR64 { ($a:expr,$b:expr,$c:expr) => { A64_LS_REG!($a,$b,$c,64,
 
 macro_rules! A64_LDR32LIT { ($t:expr,$o:expr) => { aarch64_insn_gen_load_literal(0,$o,$t,false) }; }
 macro_rules! A64_LDR64LIT { ($t:expr,$o:expr) => { aarch64_insn_gen_load_literal(0,$o,$t,true) }; }
-macro_rules! A64_LS_PAIR { ($a:expr,$b:expr,$c:expr,$o:expr,$ls:ident,$ty:ident) => { aarch64_insn_gen_load_store_pair($a,$b,$c,$o,AARCH64_INSN_VARIANT_64BIT,AARCH64_INSN_LDST_$ls##_PAIR_$ty) }; }
+macro_rules! A64_LS_PAIR { ($a:expr,$b:expr,$c:expr,$o:expr,$ls:tt,$ty:ident) => { aarch64_insn_gen_load_store_pair($a,$b,$c,$o,AARCH64_INSN_VARIANT_64BIT,AARCH64_INSN_LDST_::kernel::macros::paste!([<$ls _PAIR_>])$ty) }; }
 macro_rules! A64_PUSH { ($a:expr,$b:expr,$c:expr) => { A64_LS_PAIR!($a,$b,$c,-16,STORE,PRE_INDEX) }; }
 macro_rules! A64_POP { ($a:expr,$b:expr,$c:expr) => { A64_LS_PAIR!($a,$b,$c,16,LOAD,POST_INDEX) }; }
 

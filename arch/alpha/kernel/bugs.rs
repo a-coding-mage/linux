@@ -8,50 +8,50 @@
 #![allow(non_snake_case)]
 #![allow(dead_code)]
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 use core::ffi::{c_char, c_int, c_void};
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 type ssize_t = isize;
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 #[repr(C)]
 pub struct percpu_struct {
     pub type_: u64,
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 #[repr(C)]
 pub struct hwrpb_struct {
     pub processor_offset: u64,
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 #[repr(C)]
 pub struct device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 #[repr(C)]
 pub struct device_attribute {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 unsafe extern "C" {
     static mut hwrpb: *mut hwrpb_struct;
     fn sprintf(buf: *mut c_char, format: *const c_char, ...) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 unsafe extern "C" {
     pub static EV6_CPU: u64;
     pub static EV67_CPU: u64;
     pub static EV69_CPU: u64;
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 unsafe fn cpu_is_ev6_or_later() -> c_int {
     let cpu: *mut percpu_struct;
     let cputype: u64;
@@ -63,7 +63,7 @@ unsafe fn cpu_is_ev6_or_later() -> c_int {
     ((cputype == EV6_CPU) || ((cputype >= EV67_CPU) && (cputype <= EV69_CPU))) as c_int
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 pub unsafe extern "C" fn cpu_show_meltdown(
     _dev: *mut device,
     _attr: *mut device_attribute,
@@ -76,7 +76,7 @@ pub unsafe extern "C" fn cpu_show_meltdown(
     }
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 pub unsafe extern "C" fn cpu_show_spectre_v1(
     _dev: *mut device,
     _attr: *mut device_attribute,
@@ -89,7 +89,7 @@ pub unsafe extern "C" fn cpu_show_spectre_v1(
     }
 }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 pub unsafe extern "C" fn cpu_show_spectre_v2(
     _dev: *mut device,
     _attr: *mut device_attribute,

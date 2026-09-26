@@ -52,12 +52,12 @@ unsafe fn mctp_lookup_key(net: *mut net, skb: *mut sk_buff, netid: u32, peer: mc
     let mh = mctp_hdr(skb); let tag = (*mh).flags_seq_tag & (MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
     let mut ret = core::ptr::null_mut(); let mut flags = 0usize;
     spin_lock_irqsave!(&mut (*net).mctp.keys_lock, flags);
-    hlist_for_each_entry!(key, (*net).mctp.keys, hlist) {
+    hlist_for_each_entry!(key, (*net).mctp.keys, hlist, {
         if !mctp_key_match(key, netid, (*mh).dest, peer, tag) { continue; }
         spin_lock!(&mut (*key).lock);
         if (*key).valid { refcount_inc!(&mut (*key).refs); ret = key; break; }
         spin_unlock!(&mut (*key).lock);
-    }
+    });
     if !ret.is_null() { spin_unlock!(&mut (*net).mctp.keys_lock); *irqflags = flags; }
     else { spin_unlock_irqrestore!(&mut (*net).mctp.keys_lock, flags); }
     ret
@@ -82,11 +82,11 @@ unsafe fn mctp_key_add(key: *mut mctp_sk_key, msk: *mut mctp_sock) -> i32 {
     let net = sock_net(&mut (*msk).sk); let mut flags = 0usize; let mut rc = 0;
     spin_lock_irqsave!(&mut (*net).mctp.keys_lock, flags);
     if sock_flag(&mut (*msk).sk, SOCK_DEAD) { rc = -EINVAL; }
-    else { hlist_for_each_entry!(tmp, (*net).mctp.keys, hlist) {
+    else { hlist_for_each_entry!(tmp, (*net).mctp.keys, hlist, {
         if mctp_key_match(tmp, (*key).net, (*key).local_addr, (*key).peer_addr, (*key).tag) {
             spin_lock!(&mut (*tmp).lock); if (*tmp).valid { rc = -EEXIST; } spin_unlock!(&mut (*tmp).lock); if rc != 0 { break; }
         }
-    } }
+    }); }
     if rc == 0 { refcount_inc!(&mut (*key).refs); (*key).expiry = jiffies() + MCTP_KEY_LIFETIME; timer_reduce!(&mut (*msk).key_expiry, (*key).expiry); hlist_add_head!(&mut (*key).hlist, &mut (*net).mctp.keys); hlist_add_head!(&mut (*key).sklist, &mut (*msk).keys); }
     spin_unlock_irqrestore!(&mut (*net).mctp.keys_lock, flags); rc
 }
@@ -99,9 +99,9 @@ unsafe fn __mctp_key_done_in(key: *mut mctp_sk_key, net: *mut net, mut flags: us
     mctp_key_unref(key); kfree_skb(skb);
 }
 
-#[cfg(feature = "CONFIG_MCTP_FLOWS")]
+#[cfg(CONFIG_MCTP_FLOWS)]
 unsafe fn mctp_skb_set_flow(skb: *mut sk_buff, key: *mut mctp_sk_key) { let flow = skb_ext_add(skb, SKB_EXT_MCTP); if flow.is_null() { return; } refcount_inc!(&mut (*key).refs); (*flow).key = key; }
-#[cfg(not(feature = "CONFIG_MCTP_FLOWS"))] unsafe fn mctp_skb_set_flow(_skb: *mut sk_buff, _key: *mut mctp_sk_key) {}
+#[cfg(not(CONFIG_MCTP_FLOWS))] unsafe fn mctp_skb_set_flow(_skb: *mut sk_buff, _key: *mut mctp_sk_key) {}
 
 unsafe fn mctp_frag_queue(key: *mut mctp_sk_key, skb: *mut sk_buff) -> i32 {
     let hdr = mctp_hdr(skb); let this_seq = ((*hdr).flags_seq_tag >> MCTP_HDR_SEQ_SHIFT) & MCTP_HDR_SEQ_MASK;
@@ -151,7 +151,7 @@ unsafe fn mctp_reserve_tag(net: *mut net, key: *mut mctp_sk_key, msk: *mut mctp_
 pub unsafe fn mctp_alloc_local_tag(msk: *mut mctp_sock, netid: u32, local: mctp_eid_t, mut peer: mctp_eid_t, manual: bool, tagp: *mut u8) -> *mut mctp_sk_key {
     if peer == MCTP_ADDR_NULL { peer = MCTP_ADDR_ANY; } let net = sock_net(&mut (*msk).sk); let key = mctp_key_alloc(msk, netid, local, peer, 0, GFP_KERNEL); if key.is_null() { return ERR_PTR!(-ENOMEM); }
     let mut tagbits: u8 = 0xff; let mut flags = 0usize; spin_lock_irqsave!(&mut (*net).mctp.keys_lock, flags);
-    hlist_for_each_entry!(tmp, (*net).mctp.keys, hlist) { if (*tmp).net != netid || (*tmp).tag & MCTP_HDR_FLAG_TO != 0 { continue; } if peer != MCTP_ADDR_ANY && !mctp_address_matches((*tmp).peer_addr, peer) { continue; } if local != MCTP_ADDR_ANY && !mctp_address_matches((*tmp).local_addr, local) { continue; } spin_lock!(&mut (*tmp).lock); if (*tmp).valid { tagbits &= !(1u8 << (*tmp).tag); } spin_unlock!(&mut (*tmp).lock); if tagbits == 0 { break; } }
+    hlist_for_each_entry!(tmp, (*net).mctp.keys, hlist, { if (*tmp).net != netid || (*tmp).tag & MCTP_HDR_FLAG_TO != 0 { continue; } if peer != MCTP_ADDR_ANY && !mctp_address_matches((*tmp).peer_addr, peer) { continue; } if local != MCTP_ADDR_ANY && !mctp_address_matches((*tmp).local_addr, local) { continue; } spin_lock!(&mut (*tmp).lock); if (*tmp).valid { tagbits &= !(1u8 << (*tmp).tag); } spin_unlock!(&mut (*tmp).lock); if tagbits == 0 { break; } });
     if tagbits != 0 { (*key).tag = tagbits.trailing_zeros() as u8; mctp_reserve_tag(net, key, msk); trace_mctp_key_acquire(key); (*key).manual_alloc = manual; *tagp = (*key).tag; } spin_unlock_irqrestore!(&mut (*net).mctp.keys_lock, flags); if tagbits == 0 { mctp_key_unref(key); return ERR_PTR!(-EBUSY); } key
 }
 

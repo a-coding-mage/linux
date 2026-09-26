@@ -11,7 +11,7 @@ extern "C" {
 #[no_mangle]
 pub unsafe extern "C" fn mtfsb1(crbD: c_int) -> c_int {
     if (crbD != 1) && (crbD != 2) {
-        __FPU_FPSCR |= 1 as c_ulong << (31 - crbD);
+        __FPU_FPSCR |= (1 as c_ulong) << (31 - crbD);
     }
 
     // The C source conditionally compiles this diagnostic under DEBUG.

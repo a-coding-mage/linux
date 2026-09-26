@@ -9,13 +9,11 @@
 
 // Dependencies are supplied by the surrounding kernel translation.
 
-enum {
-    GP_IDLE = 0,
-    GP_ENTER,
-    GP_PASSED,
-    GP_EXIT,
-    GP_REPLAY,
-}
+pub const GP_IDLE: i32 = 0;
+pub const GP_ENTER: i32 = GP_IDLE + 1;
+pub const GP_PASSED: i32 = GP_ENTER + 1;
+pub const GP_EXIT: i32 = GP_PASSED + 1;
+pub const GP_REPLAY: i32 = GP_EXIT + 1;
 
 unsafe fn rcu_sync_init(rsp: *mut rcu_sync) {
     core::ptr::write_bytes(rsp.cast::<u8>(), 0, core::mem::size_of::<rcu_sync>());

@@ -73,7 +73,7 @@ unsafe fn cachefiles_put_object(object: *mut cachefiles_object,
         _debug!("- kill object OBJ%x", object_debug_id);
         ASSERTCMP!((*object).file, ==, core::ptr::null_mut());
         kfree((*object).d_name);
-        cache = (*(*object).volume).cache->cache;
+        cache = (*(*(*object).volume).cache).cache;
         fscache_put_cookie((*object).cookie, fscache_cookie_put_object);
         (*object).cookie = core::ptr::null_mut();
         kmem_cache_free(cachefiles_object_jar, object);
@@ -133,7 +133,7 @@ unsafe fn cachefiles_lookup_cookie(cookie: *mut fscache_cookie) -> bool {
     if object.is_null() { return false; }
     if !cachefiles_cook_key(object) { cachefiles_put_object(object, cachefiles_obj_put_alloc_fail); return false; }
     (*cookie).cache_priv = object;
-    let cache = (*(*cookie).volume).cache->cache_priv;
+    let cache = (*(*(*cookie).volume).cache).cache_priv;
     let mut saved_cred: *const cred = core::ptr::null();
     cachefiles_begin_secure(cache, &mut saved_cred);
     if !cachefiles_look_up_object(object) {

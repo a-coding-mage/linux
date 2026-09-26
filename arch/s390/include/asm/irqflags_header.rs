@@ -43,7 +43,7 @@ pub unsafe fn __arch_local_irq_ssm(flags: usize) {
 // Under CONFIG_KMSAN (except in the decompressor), these are externally
 // provided declarations.  Otherwise the original macros alias them to the
 // architecture-local implementations below.
-#[cfg(all(feature = "CONFIG_KMSAN", not(feature = "__DECOMPRESSOR")))]
+#[cfg(all(CONFIG_KMSAN, not(feature = "__DECOMPRESSOR")))]
 unsafe extern "C" {
     pub fn arch_local_save_flags() -> usize;
     pub fn arch_local_irq_save() -> usize;
@@ -61,13 +61,13 @@ pub unsafe fn __arch_local_irq_save() -> usize {
     __arch_local_irq_stnsm(0xfc)
 }
 
-#[cfg(any(not(feature = "CONFIG_KMSAN"), feature = "__DECOMPRESSOR"))]
+#[cfg(any(not(CONFIG_KMSAN), feature = "__DECOMPRESSOR"))]
 #[inline(always)]
 pub unsafe fn arch_local_save_flags() -> usize {
     __arch_local_save_flags()
 }
 
-#[cfg(any(not(feature = "CONFIG_KMSAN"), feature = "__DECOMPRESSOR"))]
+#[cfg(any(not(CONFIG_KMSAN), feature = "__DECOMPRESSOR"))]
 #[inline(always)]
 pub unsafe fn arch_local_irq_save() -> usize {
     __arch_local_irq_save()
@@ -88,13 +88,13 @@ pub unsafe fn __arch_local_irq_enable() {
     __arch_local_irq_stosm(0x03);
 }
 
-#[cfg(any(not(feature = "CONFIG_KMSAN"), feature = "__DECOMPRESSOR"))]
+#[cfg(any(not(CONFIG_KMSAN), feature = "__DECOMPRESSOR"))]
 #[inline(always)]
 pub unsafe fn arch_local_irq_enable_external() {
     __arch_local_irq_enable_external();
 }
 
-#[cfg(any(not(feature = "CONFIG_KMSAN"), feature = "__DECOMPRESSOR"))]
+#[cfg(any(not(CONFIG_KMSAN), feature = "__DECOMPRESSOR"))]
 #[inline(always)]
 pub unsafe fn arch_local_irq_enable() {
     __arch_local_irq_enable();

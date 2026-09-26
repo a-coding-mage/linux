@@ -44,11 +44,11 @@ unsafe fn diag0c_store(count: *mut u32) -> *mut hypfs_diag0c_data {
     }
     i = 0;
     /* Fill CPU vector for each online CPU */
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         (*diag0c_data).entry.add(i as usize).as_mut().unwrap().cpu = cpu;
         *cpu_vec.add(cpu as usize) = (*diag0c_data).entry.add(i as usize) as *mut core::ffi::c_void;
         i = i.wrapping_add(1);
-    }
+    });
     /* Collect data all CPUs */
     on_each_cpu(Some(diag0c_fn), cpu_vec as *mut core::ffi::c_void, 1);
     *count = cpu_count;

@@ -59,12 +59,12 @@ const IP6_OUTPUT_C_SOURCE: &str = r###"(
 #include <net/lwtunnel.h>
 #include <net/ip_tunnels.h>
 
-static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *skb)
+static int ip6_finish_output2(net *net, sock *sk, sk_buff *skb)
 {
 	struct dst_entry *dst = skb_dst(skb);
 	struct net_device *dev = dst_dev_rcu(dst);
 	struct inet6_dev *idev = ip6_dst_idev(dst);
-	unsigned int hh_len = LL_RESERVED_SPACE(dev);
+	core::ffi::c_uint hh_len = LL_RESERVED_SPACE(dev);
 	const struct in6_addr *daddr, *nexthop;
 	struct ipv6hdr *hdr;
 	struct neighbour *neigh;
@@ -142,8 +142,8 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
 }
 
 static int
-ip6_finish_output_gso_slowpath_drop(struct net *net, struct sock *sk,
-				    struct sk_buff *skb, unsigned int mtu)
+ip6_finish_output_gso_slowpath_drop(net *net, sock *sk,
+				    sk_buff *skb, mtu: core::ffi::c_uint)
 {
 	struct sk_buff *segs, *nskb;
 	netdev_features_t features;
@@ -162,7 +162,7 @@ ip6_finish_output_gso_slowpath_drop(struct net *net, struct sock *sk,
 
 	consume_skb(skb);
 
-	skb_list_walk_safe(segs, segs, nskb) {
+	skb_list_walk_safe!(segs, segs, nskb, {
 		int err;
 
 		skb_mark_not_on_list(segs);
@@ -175,13 +175,13 @@ ip6_finish_output_gso_slowpath_drop(struct net *net, struct sock *sk,
 			ip6_finish_output2(net, sk, segs);
 		if (err && ret == 0)
 			ret = err;
-	}
+	});
 
 	return ret;
 }
 
-static int ip6_finish_output_gso(struct net *net, struct sock *sk,
-				 struct sk_buff *skb, unsigned int mtu)
+static int ip6_finish_output_gso(net *net, sock *sk,
+				 sk_buff *skb, mtu: core::ffi::c_uint)
 {
 	if (unlikely(!skb_gso_validate_network_len(skb, mtu)))
 		return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
@@ -189,9 +189,9 @@ static int ip6_finish_output_gso(struct net *net, struct sock *sk,
 	return ip6_finish_output2(net, sk, skb);
 }
 
-static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+static int __ip6_finish_output(net *net, sock *sk, sk_buff *skb)
 {
-	unsigned int mtu;
+	core::ffi::c_uint mtu;
 
 #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
 	/* Policy lookup after SNAT yielded a new policy */
@@ -212,7 +212,7 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff 
 	return ip6_finish_output2(net, sk, skb);
 }
 
-static int ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+static int ip6_finish_output(net *net, sock *sk, sk_buff *skb)
 {
 	int ret;
 
@@ -227,7 +227,7 @@ static int ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
 	}
 }
 
-int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+int ip6_output(net *net, sock *sk, sk_buff *skb)
 {
 	struct dst_entry *dst = skb_dst(skb);
 	struct net_device *dev, *indev = skb->dev;
@@ -256,14 +256,14 @@ int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 }
 EXPORT_SYMBOL(ip6_output);
 
-bool ip6_autoflowlabel(struct net *net, const struct sock *sk)
+bool ip6_autoflowlabel(net *net, const struct sock *sk)
 {
 	if (!inet6_test_bit(AUTOFLOWLABEL_SET, sk))
 		return ip6_default_np_autolabel(net);
 	return inet6_test_bit(AUTOFLOWLABEL, sk);
 }
 
-int ip6_dst_hoplimit(struct dst_entry *dst)
+int ip6_dst_hoplimit(dst_entry *dst)
 {
 	int hoplimit = dst_metric_raw(dst, RTAX_HOPLIMIT);
 
@@ -290,15 +290,15 @@ EXPORT_SYMBOL(ip6_dst_hoplimit);
  * by calls to skb_set_owner_w() and ipv6_local_error(),
  * which are using proper atomic operations or spinlocks.
  */
-int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
-	     __u32 mark, struct ipv6_txoptions *opt, int tclass, u32 priority)
+int ip6_xmit(const struct sock *sk, sk_buff *skb, flowi6 *fl6,
+	     __u32 mark, ipv6_txoptions *opt, int tclass, priority: u32)
 {
 	const struct ipv6_pinfo *np = inet6_sk(sk);
 	struct in6_addr *first_hop = &fl6->daddr;
 	struct dst_entry *dst = skb_dst(skb);
 	struct inet6_dev *idev = ip6_dst_idev(dst);
 	struct net *net = sock_net(sk);
-	unsigned int head_room;
+	core::ffi::c_uint head_room;
 	struct net_device *dev;
 	struct ipv6hdr *hdr;
 	u8  proto = fl6->flowi6_proto;
@@ -309,7 +309,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 	rcu_read_lock();
 
 	dev = dst_dev_rcu(dst);
-	head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dev);
+	head_room = sizeof(ipv6hdr) + LL_RESERVED_SPACE(dev);
 	if (opt)
 		head_room += opt->opt_nflen + opt->opt_flen;
 
@@ -338,7 +338,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 	if (unlikely(seg_len > IPV6_MAXPLEN))
 		seg_len = 0;
 
-	__skb_push(skb, sizeof(struct ipv6hdr));
+	__skb_push(skb, sizeof(ipv6hdr));
 	skb_reset_network_header(skb);
 	hdr = ipv6_hdr(skb);
 
@@ -371,7 +371,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 		/* if egress device is enslaved to an L3 master device pass the
 		 * skb to its handler for processing
 		 */
-		skb = l3mdev_ip6_out((struct sock *)sk, skb);
+		skb = l3mdev_ip6_out((sock *)sk, skb);
 		if (unlikely(!skb)) {
 			ret = 0;
 			goto unlock;
@@ -381,7 +381,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 		 * we promote our socket to non const
 		 */
 		ret = NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT,
-			      net, (struct sock *)sk, skb, NULL, dev,
+			      net, (sock *)sk, skb, NULL, dev,
 			      dst_output);
 		goto unlock;
 	}
@@ -391,7 +391,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 	/* ipv6_local_error() does not require socket lock,
 	 * we promote our socket to non const
 	 */
-	ipv6_local_error((struct sock *)sk, EMSGSIZE, fl6, mtu);
+	ipv6_local_error((sock *)sk, EMSGSIZE, fl6, mtu);
 
 	IP6_INC_STATS(net, idev, IPSTATS_MIB_FRAGFAILS);
 	kfree_skb_reason(skb, SKB_DROP_REASON_PKT_TOO_BIG);
@@ -401,7 +401,7 @@ unlock:
 }
 EXPORT_SYMBOL(ip6_xmit);
 
-static int ip6_call_ra_chain(struct sk_buff *skb, int sel)
+static int ip6_call_ra_chain(sk_buff *skb, int sel)
 {
 	struct ip6_ra_chain *ra;
 	struct sock *last = NULL;
@@ -435,7 +435,7 @@ static int ip6_call_ra_chain(struct sk_buff *skb, int sel)
 	return 0;
 }
 
-static int ip6_forward_proxy_check(struct sk_buff *skb)
+static int ip6_forward_proxy_check(sk_buff *skb)
 {
 	struct ipv6hdr *hdr = ipv6_hdr(skb);
 	u8 nexthdr = hdr->nexthdr;
@@ -447,7 +447,7 @@ static int ip6_forward_proxy_check(struct sk_buff *skb)
 		if (offset < 0)
 			return 0;
 	} else
-		offset = sizeof(struct ipv6hdr);
+		offset = sizeof(ipv6hdr);
 
 	if (nexthdr == IPPROTO_ICMPV6) {
 		struct icmp6hdr *icmp6;
@@ -456,7 +456,7 @@ static int ip6_forward_proxy_check(struct sk_buff *skb)
 					 offset + 1 - skb->data)))
 			return 0;
 
-		icmp6 = (struct icmp6hdr *)(skb_network_header(skb) + offset);
+		icmp6 = (icmp6hdr *)(skb_network_header(skb) + offset);
 
 		switch (icmp6->icmp6_type) {
 		case NDISC_ROUTER_SOLICITATION:
@@ -488,8 +488,8 @@ static int ip6_forward_proxy_check(struct sk_buff *skb)
 	return 0;
 }
 
-static inline int ip6_forward_finish(struct net *net, struct sock *sk,
-				     struct sk_buff *skb)
+int ip6_forward_finish(net *net, sock *sk,
+				     sk_buff *skb)
 {
 #ifdef CONFIG_NET_SWITCHDEV
 	if (skb->offload_l3_fwd_mark) {
@@ -502,7 +502,7 @@ static inline int ip6_forward_finish(struct net *net, struct sock *sk,
 	return dst_output(net, sk, skb);
 }
 
-static bool ip6_pkt_too_big(const struct sk_buff *skb, unsigned int mtu)
+static bool ip6_pkt_too_big(const struct sk_buff *skb, mtu: core::ffi::c_uint)
 {
 	if (skb->len <= mtu)
 		return false;
@@ -520,7 +520,7 @@ static bool ip6_pkt_too_big(const struct sk_buff *skb, unsigned int mtu)
 	return true;
 }
 
-int ip6_forward(struct sk_buff *skb)
+int ip6_forward(sk_buff *skb)
 {
 	struct dst_entry *dst = skb_dst(skb);
 	struct ipv6hdr *hdr = ipv6_hdr(skb);
@@ -703,7 +703,7 @@ drop:
 	return -EINVAL;
 }
 
-static void ip6_copy_metadata(struct sk_buff *to, struct sk_buff *from)
+static void ip6_copy_metadata(sk_buff *to, sk_buff *from)
 {
 	to->pkt_type = from->pkt_type;
 	to->priority = from->priority;
@@ -723,11 +723,11 @@ static void ip6_copy_metadata(struct sk_buff *to, struct sk_buff *from)
 	skb_copy_secmark(to, from);
 }
 
-int ip6_fraglist_init(struct sk_buff *skb, unsigned int hlen, u8 *prevhdr,
-		      u8 nexthdr, __be32 frag_id,
-		      struct ip6_fraglist_iter *iter)
+int ip6_fraglist_init(sk_buff *skb, hlen: core::ffi::c_uint, u8 *prevhdr,
+		      nexthdr: u8, __be32 frag_id,
+		      ip6_fraglist_iter *iter)
 {
-	unsigned int first_len;
+	core::ffi::c_uint first_len;
 	struct frag_hdr *fh;
 
 	/* BUILD HEADER */
@@ -745,7 +745,7 @@ int ip6_fraglist_init(struct sk_buff *skb, unsigned int hlen, u8 *prevhdr,
 	iter->nexthdr = nexthdr;
 
 	__skb_pull(skb, hlen);
-	fh = __skb_push(skb, sizeof(struct frag_hdr));
+	fh = __skb_push(skb, sizeof(frag_hdr));
 	__skb_push(skb, hlen);
 	skb_reset_network_header(skb);
 	memcpy(skb_network_header(skb), iter->tmp_hdr, hlen);
@@ -758,40 +758,40 @@ int ip6_fraglist_init(struct sk_buff *skb, unsigned int hlen, u8 *prevhdr,
 	first_len = skb_pagelen(skb);
 	skb->data_len = first_len - skb_headlen(skb);
 	skb->len = first_len;
-	ipv6_hdr(skb)->payload_len = htons(first_len - sizeof(struct ipv6hdr));
+	ipv6_hdr(skb)->payload_len = htons(first_len - sizeof(ipv6hdr));
 
 	return 0;
 }
 EXPORT_SYMBOL(ip6_fraglist_init);
 
-void ip6_fraglist_prepare(struct sk_buff *skb,
-			  struct ip6_fraglist_iter *iter)
+void ip6_fraglist_prepare(sk_buff *skb,
+			  ip6_fraglist_iter *iter)
 {
 	struct sk_buff *frag = iter->frag;
-	unsigned int hlen = iter->hlen;
+	core::ffi::c_uint hlen = iter->hlen;
 	struct frag_hdr *fh;
 
 	frag->ip_summed = CHECKSUM_NONE;
 	skb_reset_transport_header(frag);
-	fh = __skb_push(frag, sizeof(struct frag_hdr));
+	fh = __skb_push(frag, sizeof(frag_hdr));
 	__skb_push(frag, hlen);
 	skb_reset_network_header(frag);
 	memcpy(skb_network_header(frag), iter->tmp_hdr, hlen);
-	iter->offset += skb->len - hlen - sizeof(struct frag_hdr);
+	iter->offset += skb->len - hlen - sizeof(frag_hdr);
 	fh->nexthdr = iter->nexthdr;
 	fh->reserved = 0;
 	fh->frag_off = htons(iter->offset);
 	if (frag->next)
 		fh->frag_off |= htons(IP6_MF);
 	fh->identification = iter->frag_id;
-	ipv6_hdr(frag)->payload_len = htons(frag->len - sizeof(struct ipv6hdr));
+	ipv6_hdr(frag)->payload_len = htons(frag->len - sizeof(ipv6hdr));
 	ip6_copy_metadata(frag, skb);
 }
 EXPORT_SYMBOL(ip6_fraglist_prepare);
 
-void ip6_frag_init(struct sk_buff *skb, unsigned int hlen, unsigned int mtu,
-		   unsigned short needed_tailroom, int hdr_room, u8 *prevhdr,
-		   u8 nexthdr, __be32 frag_id, struct ip6_frag_state *state)
+void ip6_frag_init(sk_buff *skb, hlen: core::ffi::c_uint, mtu: core::ffi::c_uint,
+		   needed_tailroom: core::ffi::c_ushort, int hdr_room, u8 *prevhdr,
+		   nexthdr: u8, __be32 frag_id, ip6_frag_state *state)
 {
 	state->prevhdr = prevhdr;
 	state->nexthdr = nexthdr;
@@ -810,12 +810,12 @@ void ip6_frag_init(struct sk_buff *skb, unsigned int hlen, unsigned int mtu,
 }
 EXPORT_SYMBOL(ip6_frag_init);
 
-struct sk_buff *ip6_frag_next(struct sk_buff *skb, struct ip6_frag_state *state)
+struct sk_buff *ip6_frag_next(sk_buff *skb, ip6_frag_state *state)
 {
 	u8 *prevhdr = state->prevhdr, *fragnexthdr_offset;
 	struct sk_buff *frag;
 	struct frag_hdr *fh;
-	unsigned int len;
+	core::ffi::c_uint len;
 
 	len = state->left;
 	/* IF: it doesn't fit, use 'mtu' - the data space left */
@@ -827,7 +827,7 @@ struct sk_buff *ip6_frag_next(struct sk_buff *skb, struct ip6_frag_state *state)
 		len &= ~7;
 
 	/* Allocate buffer */
-	frag = alloc_skb(len + state->hlen + sizeof(struct frag_hdr) +
+	frag = alloc_skb(len + state->hlen + sizeof(frag_hdr) +
 			 state->hroom + state->troom, GFP_ATOMIC);
 	if (!frag)
 		return ERR_PTR(-ENOMEM);
@@ -838,11 +838,11 @@ struct sk_buff *ip6_frag_next(struct sk_buff *skb, struct ip6_frag_state *state)
 
 	ip6_copy_metadata(frag, skb);
 	skb_reserve(frag, state->hroom);
-	skb_put(frag, len + state->hlen + sizeof(struct frag_hdr));
+	skb_put(frag, len + state->hlen + sizeof(frag_hdr));
 	skb_reset_network_header(frag);
-	fh = (struct frag_hdr *)(skb_network_header(frag) + state->hlen);
+	fh = (frag_hdr *)(skb_network_header(frag) + state->hlen);
 	frag->transport_header = (frag->network_header + state->hlen +
-				  sizeof(struct frag_hdr));
+				  sizeof(frag_hdr));
 
 	/*
 	 *	Charge the memory for the fragment to any owner
@@ -877,7 +877,7 @@ struct sk_buff *ip6_frag_next(struct sk_buff *skb, struct ip6_frag_state *state)
 	fh->frag_off = htons(state->offset);
 	if (state->left > 0)
 		fh->frag_off |= htons(IP6_MF);
-	ipv6_hdr(frag)->payload_len = htons(frag->len - sizeof(struct ipv6hdr));
+	ipv6_hdr(frag)->payload_len = htons(frag->len - sizeof(ipv6hdr));
 
 	state->ptr += len;
 	state->offset += len;
@@ -886,8 +886,8 @@ struct sk_buff *ip6_frag_next(struct sk_buff *skb, struct ip6_frag_state *state)
 }
 EXPORT_SYMBOL(ip6_frag_next);
 
-int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
-		 int (*output)(struct net *, struct sock *, struct sk_buff *))
+int ip6_fragment(net *net, sock *sk, sk_buff *skb,
+		 int (*output)(net *, sock *, sk_buff *))
 {
 	struct sk_buff *frag;
 	struct rt6_info *rt = dst_rt6_info(skb_dst(skb));
@@ -895,7 +895,7 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 				inet6_sk(skb->sk) : NULL;
 	u8 tstamp_type = skb->tstamp_type;
 	struct ip6_frag_state state;
-	unsigned int mtu, hlen, nexthdr_offset;
+	mtu: core::ffi::c_uint, hlen, nexthdr_offset;
 	ktime_t tstamp = skb->tstamp;
 	int hroom, err = 0;
 	__be32 frag_id;
@@ -937,9 +937,9 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		if (frag_size && frag_size < mtu)
 			mtu = frag_size;
 	}
-	if (mtu < hlen + sizeof(struct frag_hdr) + 8)
+	if (mtu < hlen + sizeof(frag_hdr) + 8)
 		goto fail_toobig;
-	mtu -= hlen + sizeof(struct frag_hdr);
+	mtu -= hlen + sizeof(frag_hdr);
 
 	frag_id = ipv6_select_ident(net, &ipv6_hdr(skb)->daddr,
 				    &ipv6_hdr(skb)->saddr);
@@ -951,21 +951,21 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 	prevhdr = skb_network_header(skb) + nexthdr_offset;
 	hroom = LL_RESERVED_SPACE(rt->dst.dev);
 	if (skb_has_frag_list(skb)) {
-		unsigned int first_len = skb_pagelen(skb);
+		core::ffi::c_uint first_len = skb_pagelen(skb);
 		struct ip6_fraglist_iter iter;
 		struct sk_buff *frag2;
 
 		if (first_len - hlen > mtu ||
 		    ((first_len - hlen) & 7) ||
 		    skb_cloned(skb) ||
-		    skb_headroom(skb) < (hroom + sizeof(struct frag_hdr)))
+		    skb_headroom(skb) < (hroom + sizeof(frag_hdr)))
 			goto slow_path;
 
-		skb_walk_frags(skb, frag) {
+		skb_walk_frags!(skb, frag, {
 			/* Correct geometry. */
 			if (frag->len > mtu ||
 			    ((frag->len & 7) && frag->next) ||
-			    skb_headroom(frag) < (hlen + hroom + sizeof(struct frag_hdr)))
+			    skb_headroom(frag) < (hlen + hroom + sizeof(frag_hdr)))
 				goto slow_path_clean;
 
 			/* Partially cloned skb? */
@@ -978,7 +978,7 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 				frag->destructor = sock_wfree;
 			}
 			skb->truesize -= frag->truesize;
-		}
+		});
 
 		err = ip6_fraglist_init(skb, hlen, prevhdr, nexthdr, frag_id,
 					&iter);
@@ -1023,13 +1023,13 @@ int ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		return err;
 
 slow_path_clean:
-		skb_walk_frags(skb, frag2) {
+		skb_walk_frags!(skb, frag2, {
 			if (frag2 == frag)
 				break;
 			frag2->sk = NULL;
 			frag2->destructor = NULL;
 			skb->truesize += frag2->truesize;
-		}
+		});
 	}
 
 slow_path:
@@ -1080,7 +1080,7 @@ fail:
 }
 EXPORT_SYMBOL_GPL(ip6_fragment);
 
-static inline int ip6_rt_check(const struct rt6key *rt_key,
+int ip6_rt_check(const struct rt6key *rt_key,
 			       const struct in6_addr *fl_addr,
 			       const struct in6_addr *addr_cache)
 {
@@ -1088,8 +1088,8 @@ static inline int ip6_rt_check(const struct rt6key *rt_key,
 		(!addr_cache || !ipv6_addr_equal(fl_addr, addr_cache));
 }
 
-static struct dst_entry *ip6_sk_dst_check(struct sock *sk,
-					  struct dst_entry *dst,
+static struct dst_entry *ip6_sk_dst_check(sock *sk,
+					  dst_entry *dst,
 					  const struct flowi6 *fl6)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
@@ -1136,8 +1136,8 @@ out:
 	return dst;
 }
 
-static int ip6_dst_lookup_tail(struct net *net, const struct sock *sk,
-			       struct dst_entry **dst, struct flowi6 *fl6)
+static int ip6_dst_lookup_tail(net *net, const struct sock *sk,
+			       dst_entry **dst, flowi6 *fl6)
 {
 #ifdef CONFIG_IPV6_OPTIMISTIC_DAD
 	struct neighbour *n;
@@ -1227,8 +1227,8 @@ static int ip6_dst_lookup_tail(struct net *net, const struct sock *sk,
 			 * default router instead
 			 */
 			dst_release(*dst);
-			memcpy(&fl_gw6, fl6, sizeof(struct flowi6));
-			memset(&fl_gw6.daddr, 0, sizeof(struct in6_addr));
+			memcpy(&fl_gw6, fl6, sizeof(flowi6));
+			memset(&fl_gw6.daddr, 0, sizeof(in6_addr));
 			*dst = ip6_route_output(net, sk, &fl_gw6);
 			err = (*dst)->error;
 			if (err)
@@ -1264,8 +1264,8 @@ out_err_release:
  *
  *	It returns zero on success, or a standard errno code on error.
  */
-int ip6_dst_lookup(struct net *net, struct sock *sk, struct dst_entry **dst,
-		   struct flowi6 *fl6)
+int ip6_dst_lookup(net *net, sock *sk, dst_entry **dst,
+		   flowi6 *fl6)
 {
 	*dst = NULL;
 	return ip6_dst_lookup_tail(net, sk, dst, fl6);
@@ -1284,7 +1284,7 @@ EXPORT_SYMBOL_GPL(ip6_dst_lookup);
  *	It returns a valid dst pointer on success, or a pointer encoded
  *	error code.
  */
-struct dst_entry *ip6_dst_lookup_flow(struct net *net, const struct sock *sk, struct flowi6 *fl6,
+struct dst_entry *ip6_dst_lookup_flow(net *net, const struct sock *sk, flowi6 *fl6,
 				      const struct in6_addr *final_dst)
 {
 	struct dst_entry *dst = NULL;
@@ -1320,9 +1320,9 @@ EXPORT_SYMBOL_GPL(ip6_dst_lookup_flow);
  *	It returns a valid dst pointer on success, or a pointer encoded
  *	error code.
  */
-struct dst_entry *ip6_sk_dst_lookup_flow(struct sock *sk, struct flowi6 *fl6,
+struct dst_entry *ip6_sk_dst_lookup_flow(sock *sk, flowi6 *fl6,
 					 const struct in6_addr *final_dst,
-					 bool connected)
+					 connected: bool)
 {
 	struct dst_entry *dst = sk_dst_check(sk, inet6_sk(sk)->dst_cookie);
 
@@ -1337,24 +1337,24 @@ struct dst_entry *ip6_sk_dst_lookup_flow(struct sock *sk, struct flowi6 *fl6,
 	return dst;
 }
 
-static inline struct ipv6_opt_hdr *ip6_opt_dup(struct ipv6_opt_hdr *src,
+struct ipv6_opt_hdr *ip6_opt_dup(ipv6_opt_hdr *src,
 					       gfp_t gfp)
 {
 	return src ? kmemdup(src, (src->hdrlen + 1) * 8, gfp) : NULL;
 }
 
-static inline struct ipv6_rt_hdr *ip6_rthdr_dup(struct ipv6_rt_hdr *src,
+struct ipv6_rt_hdr *ip6_rthdr_dup(ipv6_rt_hdr *src,
 						gfp_t gfp)
 {
 	return src ? kmemdup(src, (src->hdrlen + 1) * 8, gfp) : NULL;
 }
 
-static void ip6_append_data_mtu(unsigned int *mtu,
+static void ip6_append_data_mtu(core::ffi::c_uint *mtu,
 				int *maxfraglen,
-				unsigned int fragheaderlen,
-				struct sk_buff *skb,
-				struct rt6_info *rt,
-				unsigned int orig_mtu)
+				fragheaderlen: core::ffi::c_uint,
+				sk_buff *skb,
+				rt6_info *rt,
+				orig_mtu: core::ffi::c_uint)
 {
 	if (!(rt->dst.flags & DST_XFRM_TUNNEL)) {
 		if (!skb) {
@@ -1369,18 +1369,18 @@ static void ip6_append_data_mtu(unsigned int *mtu,
 			*mtu = orig_mtu;
 		}
 		*maxfraglen = ((*mtu - fragheaderlen) & ~7)
-			      + fragheaderlen - sizeof(struct frag_hdr);
+			      + fragheaderlen - sizeof(frag_hdr);
 	}
 }
 
-static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
-			  struct ipcm6_cookie *ipc6,
-			  struct rt6_info *rt)
+static int ip6_setup_cork(sock *sk, inet_cork_full *cork,
+			  ipcm6_cookie *ipc6,
+			  rt6_info *rt)
 {
 	struct ipv6_txoptions *nopt, *opt = ipc6->opt;
 	struct inet6_cork *v6_cork = &cork->base6;
 	struct ipv6_pinfo *np = inet6_sk(sk);
-	unsigned int mtu, frag_size;
+	mtu: core::ffi::c_uint, frag_size;
 
 	/* callers pass dst together with a reference, set it first so
 	 * ip6_cork_release() can put it down even in case of an error.
@@ -1450,16 +1450,16 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
 	return 0;
 }
 
-static int __ip6_append_data(struct sock *sk,
-			     struct sk_buff_head *queue,
-			     struct inet_cork_full *cork_full,
-			     struct page_frag *pfrag,
+static int __ip6_append_data(sock *sk,
+			     sk_buff_head *queue,
+			     inet_cork_full *cork_full,
+			     page_frag *pfrag,
 			     int getfrag(void *from, char *to, int offset,
-					 int len, int odd, struct sk_buff *skb),
+					 int len, int odd, sk_buff *skb),
 			     void *from, size_t length, int transhdrlen,
-			     unsigned int flags)
+			     flags: core::ffi::c_uint)
 {
-	unsigned int maxfraglen, fragheaderlen, mtu, orig_mtu, pmtu;
+	maxfraglen: core::ffi::c_uint, fragheaderlen, mtu, orig_mtu, pmtu;
 	struct inet6_cork *v6_cork = &cork_full->base6;
 	struct inet_cork *cork = &cork_full->base;
 	struct flowi6 *fl6 = &cork_full->fl.u.ip6;
@@ -1474,11 +1474,11 @@ static int __ip6_append_data(struct sock *sk,
 	bool zc = false;
 	u32 tskey = 0;
 	struct rt6_info *rt = dst_rt6_info(cork->dst);
-	bool paged, hold_tskey = false, extra_uref = false;
+	paged: bool, hold_tskey = false, extra_uref = false;
 	struct ipv6_txoptions *opt = v6_cork->opt;
 	int csummode = CHECKSUM_NONE;
-	unsigned int maxnonfragsize, headersize;
-	unsigned int wmem_alloc_delta = 0;
+	maxnonfragsize: core::ffi::c_uint, headersize;
+	core::ffi::c_uint wmem_alloc_delta = 0;
 
 	skb = skb_peek_tail(queue);
 	if (!skb) {
@@ -1492,19 +1492,19 @@ static int __ip6_append_data(struct sock *sk,
 
 	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
 
-	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
+	fragheaderlen = sizeof(ipv6hdr) + rt->rt6i_nfheader_len +
 			(opt ? opt->opt_nflen : 0);
 
-	headersize = sizeof(struct ipv6hdr) +
+	headersize = sizeof(ipv6hdr) +
 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
 		     rt->rt6i_nfheader_len;
 
 	if (mtu <= fragheaderlen ||
-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(frag_hdr))
 		goto emsgsize;
 
 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
-		     sizeof(struct frag_hdr);
+		     sizeof(frag_hdr);
 
 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
 	 * the first fragment
@@ -1517,18 +1517,18 @@ static int __ip6_append_data(struct sock *sk,
 	     sk->sk_protocol == IPPROTO_ICMPV6 ||
 	     sk->sk_protocol == IPPROTO_RAW)) {
 		ipv6_local_rxpmtu(sk, fl6, mtu - headersize +
-				sizeof(struct ipv6hdr));
+				sizeof(ipv6hdr));
 		goto emsgsize;
 	}
 
 	if (ip6_sk_ignore_df(sk))
-		maxnonfragsize = sizeof(struct ipv6hdr) + IPV6_MAXPLEN;
+		maxnonfragsize = sizeof(ipv6hdr) + IPV6_MAXPLEN;
 	else
 		maxnonfragsize = mtu;
 
 	if (cork->length + length > maxnonfragsize - headersize) {
 emsgsize:
-		pmtu = max_t(int, mtu - headersize + sizeof(struct ipv6hdr), 0);
+		pmtu = max_t(int, mtu - headersize + sizeof(ipv6hdr), 0);
 		ipv6_local_error(sk, EMSGSIZE, fl6, pmtu);
 		return -EMSGSIZE;
 	}
@@ -1537,7 +1537,7 @@ emsgsize:
 	 * we are not going to fragment
 	 */
 	if (transhdrlen && sk->sk_protocol == IPPROTO_UDP &&
-	    headersize == sizeof(struct ipv6hdr) &&
+	    headersize == sizeof(ipv6hdr) &&
 	    length <= mtu - headersize &&
 	    (!(flags & MSG_MORE) || cork->gso_size) &&
 	    rt->dst.dev->features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
@@ -1623,11 +1623,11 @@ emsgsize:
 
 		if (copy <= 0) {
 			char *data;
-			unsigned int datalen;
-			unsigned int fraglen;
-			unsigned int fraggap;
-			unsigned int alloclen, alloc_extra;
-			unsigned int pagedlen;
+			core::ffi::c_uint datalen;
+			core::ffi::c_uint fraglen;
+			core::ffi::c_uint fraggap;
+			alloclen: core::ffi::c_uint, alloc_extra;
+			core::ffi::c_uint pagedlen;
 alloc_new_skb:
 			/* There's no room in the current skb */
 			if (skb)
@@ -1661,7 +1661,7 @@ alloc_new_skb:
 			 * Note: this may be overallocation if the message
 			 * (without MSG_MORE) fits into the MTU.
 			 */
-			alloc_extra += sizeof(struct frag_hdr);
+			alloc_extra += sizeof(frag_hdr);
 
 			if ((flags & MSG_MORE) &&
 			    !(rt->dst.dev->features&NETIF_F_SG))
@@ -1712,7 +1712,7 @@ alloc_new_skb:
 			skb->ip_summed = csummode;
 			skb->csum = 0;
 			/* reserve for fragmentation and ipsec header */
-			skb_reserve(skb, hh_len + sizeof(struct frag_hdr) +
+			skb_reserve(skb, hh_len + sizeof(frag_hdr) +
 				    dst_exthdrlen);
 
 			/*
@@ -1776,7 +1776,7 @@ alloc_new_skb:
 
 		if (!(rt->dst.dev->features&NETIF_F_SG) &&
 		    skb_tailroom(skb) >= copy) {
-			unsigned int off;
+			core::ffi::c_uint off;
 
 			off = skb->len;
 			if (INDIRECT_CALL_1(getfrag, ip_generic_getfrag,
@@ -1857,12 +1857,12 @@ error:
 	return err;
 }
 
-int ip6_append_data(struct sock *sk,
+int ip6_append_data(sock *sk,
 		    int getfrag(void *from, char *to, int offset, int len,
-				int odd, struct sk_buff *skb),
+				int odd, sk_buff *skb),
 		    void *from, size_t length, int transhdrlen,
-		    struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
-		    struct rt6_info *rt, unsigned int flags)
+		    ipcm6_cookie *ipc6, flowi6 *fl6,
+		    rt6_info *rt, flags: core::ffi::c_uint)
 {
 	struct inet_sock *inet = inet_sk(sk);
 	int exthdrlen;
@@ -1894,7 +1894,7 @@ int ip6_append_data(struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(ip6_append_data);
 
-static void ip6_cork_steal_dst(struct sk_buff *skb, struct inet_cork_full *cork)
+static void ip6_cork_steal_dst(sk_buff *skb, inet_cork_full *cork)
 {
 	struct dst_entry *dst = cork->base.dst;
 
@@ -1902,7 +1902,7 @@ static void ip6_cork_steal_dst(struct sk_buff *skb, struct inet_cork_full *cork)
 	skb_dst_set(skb, dst);
 }
 
-static void ip6_cork_release(struct inet_cork_full *cork)
+static void ip6_cork_release(inet_cork_full *cork)
 {
 	struct inet6_cork *v6_cork = &cork->base6;
 
@@ -1923,9 +1923,9 @@ static void ip6_cork_release(struct inet_cork_full *cork)
 	}
 }
 
-struct sk_buff *__ip6_make_skb(struct sock *sk,
-			       struct sk_buff_head *queue,
-			       struct inet_cork_full *cork)
+struct sk_buff *__ip6_make_skb(sock *sk,
+			       sk_buff_head *queue,
+			       inet_cork_full *cork)
 {
 	struct sk_buff *skb, *tmp_skb;
 	struct sk_buff **tail_skb;
@@ -1935,7 +1935,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
 	struct ipv6_txoptions *opt;
 	struct rt6_info *rt = dst_rt6_info(cork->base.dst);
 	struct flowi6 *fl6 = &cork->fl.u.ip6;
-	unsigned char proto = fl6->flowi6_proto;
+	core::ffi::c_uchar proto = fl6->flowi6_proto;
 
 	skb = __skb_dequeue(queue);
 	if (!skb)
@@ -1969,7 +1969,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
 			proto = ipv6_push_nfrag_opts(skb, opt, proto,
 						     &final_dst, &fl6->saddr);
 	}
-	skb_push(skb, sizeof(struct ipv6hdr));
+	skb_push(skb, sizeof(ipv6hdr));
 	skb_reset_network_header(skb);
 	hdr = ipv6_hdr(skb);
 
@@ -2008,7 +2008,7 @@ out:
 	return skb;
 }
 
-int ip6_send_skb(struct sk_buff *skb)
+int ip6_send_skb(sk_buff *skb)
 {
 	struct net *net = sock_net(skb->sk);
 	struct rt6_info *rt = dst_rt6_info(skb_dst(skb));
@@ -2028,7 +2028,7 @@ int ip6_send_skb(struct sk_buff *skb)
 	return err;
 }
 
-int ip6_push_pending_frames(struct sock *sk)
+int ip6_push_pending_frames(sock *sk)
 {
 	struct sk_buff *skb;
 
@@ -2040,9 +2040,9 @@ int ip6_push_pending_frames(struct sock *sk)
 }
 EXPORT_SYMBOL_GPL(ip6_push_pending_frames);
 
-static void __ip6_flush_pending_frames(struct sock *sk,
-				       struct sk_buff_head *queue,
-				       struct inet_cork_full *cork)
+static void __ip6_flush_pending_frames(sock *sk,
+				       sk_buff_head *queue,
+				       inet_cork_full *cork)
 {
 	struct sk_buff *skb;
 
@@ -2056,19 +2056,19 @@ static void __ip6_flush_pending_frames(struct sock *sk,
 	ip6_cork_release(cork);
 }
 
-void ip6_flush_pending_frames(struct sock *sk)
+void ip6_flush_pending_frames(sock *sk)
 {
 	__ip6_flush_pending_frames(sk, &sk->sk_write_queue,
 				   &inet_sk(sk)->cork);
 }
 EXPORT_SYMBOL_GPL(ip6_flush_pending_frames);
 
-struct sk_buff *ip6_make_skb(struct sock *sk,
+struct sk_buff *ip6_make_skb(sock *sk,
 			     int getfrag(void *from, char *to, int offset,
-					 int len, int odd, struct sk_buff *skb),
+					 int len, int odd, sk_buff *skb),
 			     void *from, size_t length, int transhdrlen,
-			     struct ipcm6_cookie *ipc6, struct rt6_info *rt,
-			     unsigned int flags, struct inet_cork_full *cork)
+			     ipcm6_cookie *ipc6, rt6_info *rt,
+			     flags: core::ffi::c_uint, inet_cork_full *cork)
 {
 	int exthdrlen = (ipc6->opt ? ipc6->opt->opt_flen : 0);
 	struct sk_buff_head queue;

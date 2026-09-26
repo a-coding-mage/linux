@@ -7,12 +7,12 @@
  */
 
 /* Equivalent of the C CONFIG_PM conditional. */
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" {
     pub fn kirkwood_pm_init();
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn kirkwood_pm_init() {}
 

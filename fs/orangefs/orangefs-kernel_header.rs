@@ -25,7 +25,7 @@ pub enum orangefs_vfs_op_states {
     OP_VFS_STATE_GIVEN_UP = 16,
 }
 
-pub extern "C" {
+extern "C" {
     pub static orangefs_xattr_handlers: *const *const xattr_handler;
     pub fn orangefs_get_acl(inode: *mut inode, ty: i32, rcu: bool) -> *mut posix_acl;
     pub fn orangefs_set_acl(idmap: *mut mnt_idmap, dentry: *mut dentry, acl: *mut posix_acl, ty: i32) -> i32;
@@ -59,7 +59,7 @@ pub unsafe fn op_state_purged(op: *const orangefs_kernel_op_s) -> bool { (*op).o
 pub unsafe fn op_state_given_up(op: *const orangefs_kernel_op_s) -> bool { (*op).op_state as i32 & 16 != 0 }
 pub unsafe fn op_is_cancel(op: *const orangefs_kernel_op_s) -> bool { (*op).upcall.type_ == ORANGEFS_VFS_OP_CANCEL }
 
-pub extern "C" { pub fn op_release(op: *mut orangefs_kernel_op_s); pub fn orangefs_bufmap_put(slot: i32); }
+extern "C" { pub fn op_release(op: *mut orangefs_kernel_op_s); pub fn orangefs_bufmap_put(slot: i32); }
 pub unsafe fn put_cancel(op: *mut orangefs_kernel_op_s) { orangefs_bufmap_put((*op)._bindgen_union.slot_to_free); op_release(op); }
 pub unsafe fn set_op_state_purged(op: *mut orangefs_kernel_op_s) {
     spin_lock(&mut (*op).lock);
@@ -75,7 +75,7 @@ pub const ORANGEFS_OPT_LOCAL_LOCK: i32 = 0x02;
 #[repr(C)] pub struct orangefs_cached_xattr { pub node: hlist_node, pub key: [u8; ORANGEFS_MAX_XATTR_NAMELEN as usize], pub val: [u8; ORANGEFS_MAX_XATTR_VALUELEN as usize], pub length: ssize_t, pub timeout: c_ulong }
 #[repr(C)] pub struct orangefs_write_range { pub pos: loff_t, pub len: usize, pub uid: kuid_t, pub gid: kgid_t }
 
-pub extern "C" { pub static mut orangefs_stats: orangefs_stats; }
+extern "C" { pub static mut orangefs_stats: orangefs_stats; }
 pub unsafe fn ORANGEFS_I(inode: *mut inode) -> *mut orangefs_inode_s { container_of(inode, orangefs_inode_s, vfs_inode) }
 pub unsafe fn ORANGEFS_SB(sb: *mut super_block) -> *mut orangefs_sb_info_s { (*sb).s_fs_info as *mut orangefs_sb_info_s }
 pub unsafe fn orangefs_khandle_to_ino(khandle: *mut orangefs_khandle) -> ino_t {
@@ -89,7 +89,7 @@ pub unsafe fn is_root_handle(inode: *mut inode) -> i32 { if ORANGEFS_khandle_cmp
 pub unsafe fn match_handle(resp_handle: orangefs_khandle, inode: *mut inode) -> i32 { if ORANGEFS_khandle_cmp(&resp_handle, get_khandle_from_ino(inode)) != 0 { 0 } else { 1 } }
 
 /* Function declarations from the remaining OrangeFS kernel translation units. */
-pub extern "C" {
+extern "C" {
     pub fn op_cache_initialize() -> i32; pub fn op_cache_finalize() -> i32; pub fn op_alloc(ty: i32) -> *mut orangefs_kernel_op_s; pub fn orangefs_new_tag(op: *mut orangefs_kernel_op_s); pub fn get_opname_string(op: *mut orangefs_kernel_op_s) -> *mut c_char;
     pub fn orangefs_inode_cache_initialize() -> i32; pub fn orangefs_inode_cache_finalize() -> i32; pub fn purge_inprogress_ops(); pub fn purge_waiting_ops();
     pub static mut orangefs_features: u64; pub static orangefs_fs_param_spec: *const fs_parameter_spec; pub fn orangefs_init_fs_context(fc: *mut fs_context) -> i32; pub fn orangefs_kill_sb(sb: *mut super_block); pub fn orangefs_remount(sb: *mut orangefs_sb_info_s) -> i32; pub fn fsid_key_table_initialize() -> i32; pub fn fsid_key_table_finalize();

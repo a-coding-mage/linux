@@ -14,19 +14,19 @@
 /* Build-time assembler configuration from the C header is preserved here. */
 
 /* LoongArch pref instruction. */
-#[cfg(feature = "CONFIG_CPU_HAS_PREFETCH")]
+#[cfg(CONFIG_CPU_HAS_PREFETCH)]
 #[macro_export]
 macro_rules! PREF { ($hint:tt, $addr:tt, $offs:tt) => { concat!("preld ", stringify!($hint), ", ", stringify!($addr), ", ", stringify!($offs), ";") }; }
 
-#[cfg(feature = "CONFIG_CPU_HAS_PREFETCH")]
+#[cfg(CONFIG_CPU_HAS_PREFETCH)]
 #[macro_export]
 macro_rules! PREFX { ($hint:tt, $addr:tt, $index:tt) => { concat!("preldx ", stringify!($hint), ", ", stringify!($addr), ", ", stringify!($index), ";") }; }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_PREFETCH"))]
+#[cfg(not(CONFIG_CPU_HAS_PREFETCH))]
 #[macro_export]
 macro_rules! PREF { ($hint:tt, $addr:tt, $offs:tt) => {}; }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_PREFETCH"))]
+#[cfg(not(CONFIG_CPU_HAS_PREFETCH))]
 #[macro_export]
 macro_rules! PREFX { ($hint:tt, $addr:tt, $index:tt) => {}; }
 
@@ -118,10 +118,10 @@ pub mod ptr {
 }
 
 /* Annotate a function as being unsuitable for kprobes. */
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[macro_export]
 macro_rules! _ASM_NOKPROBE { ($name:tt) => { stringify!($name) }; }
-#[cfg(not(feature = "CONFIG_KPROBES"))]
+#[cfg(not(CONFIG_KPROBES))]
 #[macro_export]
 macro_rules! _ASM_NOKPROBE { ($name:tt) => {}; }
 

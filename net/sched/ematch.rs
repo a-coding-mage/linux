@@ -11,7 +11,7 @@ unsafe fn tcf_em_lookup(kind: u16) -> *mut tcf_ematch_ops {
     let mut e: *mut tcf_ematch_ops = core::ptr::null_mut();
 
     read_lock(&raw mut ematch_mod_lock);
-    list_for_each_entry(e, &raw mut ematch_ops, link) {
+    list_for_each_entry!(e, &raw mut ematch_ops, link, {
         if kind == (*e).kind {
             if !try_module_get((*e).owner) {
                 e = core::ptr::null_mut();
@@ -19,7 +19,7 @@ unsafe fn tcf_em_lookup(kind: u16) -> *mut tcf_ematch_ops {
             read_unlock(&raw mut ematch_mod_lock);
             return e;
         }
-    }
+    });
     read_unlock(&raw mut ematch_mod_lock);
     core::ptr::null_mut()
 }
@@ -27,21 +27,23 @@ unsafe fn tcf_em_lookup(kind: u16) -> *mut tcf_ematch_ops {
 pub unsafe fn tcf_em_register(ops: *mut tcf_ematch_ops) -> i32 {
     let mut err: i32 = -EEXIST;
     let mut e: *mut tcf_ematch_ops = core::ptr::null_mut();
+    'errout: {
 
     if (*ops).match_.is_none() {
         return -EINVAL;
     }
 
     write_lock(&raw mut ematch_mod_lock);
-    list_for_each_entry(e, &raw mut ematch_ops, link) {
+    list_for_each_entry!(e, &raw mut ematch_ops, link, {
         if (*ops).kind == (*e).kind {
-            goto!(errout);
+            break 'errout;
         }
-    }
+    });
 
     list_add_tail(&mut (*ops).link, &raw mut ematch_ops);
     err = 0;
-errout:
+    }
+    
     write_unlock(&raw mut ematch_mod_lock);
     err
 }
@@ -69,15 +71,16 @@ unsafe fn tcf_em_validate(
     let data_len = nla_len(nla) - core::mem::size_of::<tcf_ematch_hdr>() as i32;
     let data = (em_hdr as *mut u8).add(core::mem::size_of::<tcf_ematch_hdr>()) as *mut core::ffi::c_void;
     let net = (*(*(*tp).chain).block).net;
+    'errout: {
 
-    if !TCF_EM_REL_VALID((*em_hdr).flags) { goto!(errout); }
+    if !TCF_EM_REL_VALID((*em_hdr).flags) { break 'errout; }
 
     if (*em_hdr).kind == TCF_EM_CONTAINER {
         let ref_: u32;
-        if data_len < core::mem::size_of::<u32>() as i32 { goto!(errout); }
+        if data_len < core::mem::size_of::<u32>() as i32 { break 'errout; }
         ref_ = *(data as *const u32);
-        if ref_ >= (*tree_hdr).nmatches { goto!(errout); }
-        if ref_ <= idx as u32 { goto!(errout); }
+        if ref_ >= (*tree_hdr).nmatches { break 'errout; }
+        if ref_ <= idx as u32 { break 'errout; }
         (*em).data = ref_ as usize;
     } else {
         (*em).ops = tcf_em_lookup((*em_hdr).kind);
@@ -94,21 +97,21 @@ unsafe fn tcf_em_validate(
                     err = -EAGAIN;
                 }
             }
-            goto!(errout);
+            break 'errout;
         }
-        if (*(*em).ops).datalen != 0 && data_len < (*(*em).ops).datalen as i32 { goto!(errout); }
+        if (*(*em).ops).datalen != 0 && data_len < (*(*em).ops).datalen as i32 { break 'errout; }
         if let Some(change) = (*(*em).ops).change {
             err = -EINVAL;
-            if (*em_hdr).flags & TCF_EM_SIMPLE != 0 { goto!(errout); }
+            if (*em_hdr).flags & TCF_EM_SIMPLE != 0 { break 'errout; }
             err = change(net, data, data_len, em);
-            if err < 0 { goto!(errout); }
+            if err < 0 { break 'errout; }
         } else if data_len > 0 {
             if (*em_hdr).flags & TCF_EM_SIMPLE != 0 {
-                if (*(*em).ops).datalen > 0 || data_len < core::mem::size_of::<u32>() as i32 { goto!(errout); }
+                if (*(*em).ops).datalen > 0 || data_len < core::mem::size_of::<u32>() as i32 { break 'errout; }
                 (*em).data = *(data as *const u32) as usize;
             } else {
                 let v = kmemdup(data, data_len as usize, GFP_KERNEL);
-                if v.is_null() { err = -ENOBUFS; goto!(errout); }
+                if v.is_null() { err = -ENOBUFS; break 'errout; }
                 (*em).data = v as usize;
             }
             (*em).datalen = data_len as u32;
@@ -118,7 +121,8 @@ unsafe fn tcf_em_validate(
     (*em).flags = (*em_hdr).flags;
     (*em).net = net;
     err = 0;
-errout:
+    }
+    
     err
 }
 
@@ -130,6 +134,7 @@ pub unsafe fn tcf_em_tree_validate(tp: *mut tcf_proto, nla: *mut nlattr, tree: *
     let mut matches_len: usize;
     let mut err: i32;
     let mut tb: [*mut nlattr; TCA_EMATCH_TREE_MAX as usize + 1] = [core::ptr::null_mut(); TCA_EMATCH_TREE_MAX as usize + 1];
+    'errout_abort: {
     let mut rt_match: *mut nlattr;
     let rt_hdr: *mut nlattr;
     let rt_list: *mut nlattr;
@@ -151,14 +156,15 @@ pub unsafe fn tcf_em_tree_validate(tp: *mut tcf_proto, nla: *mut nlattr, tree: *
     if (*tree).matches.is_null() { return err; }
     while nla_ok(rt_match, list_len) {
         err = -EINVAL;
-        if (*rt_match).nla_type != (idx + 1) as u16 || idx >= (*tree_hdr).nmatches as i32 || nla_len(rt_match) < core::mem::size_of::<tcf_ematch_hdr>() as i32 { goto!(errout_abort); }
+        if (*rt_match).nla_type != (idx + 1) as u16 || idx >= (*tree_hdr).nmatches as i32 || nla_len(rt_match) < core::mem::size_of::<tcf_ematch_hdr>() as i32 { break 'errout_abort; }
         err = tcf_em_validate(tp, tree_hdr, tcf_em_get_match(tree, idx), rt_match, idx);
-        if err < 0 { goto!(errout_abort); }
+        if err < 0 { break 'errout_abort; }
         rt_match = nla_next(rt_match, &mut list_len); idx += 1;
     }
-    if idx != (*tree_hdr).nmatches as i32 { err = -EINVAL; goto!(errout_abort); }
+    if idx != (*tree_hdr).nmatches as i32 { err = -EINVAL; break 'errout_abort; }
     return 0;
-errout_abort:
+    }
+    
     tcf_em_tree_destroy(tree); err
 }
 

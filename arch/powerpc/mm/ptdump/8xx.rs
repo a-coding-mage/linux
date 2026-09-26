@@ -10,13 +10,13 @@
 
 static flag_array: [flag_info; 11] = [
     flag_info {
-        #[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+        #[cfg(CONFIG_PPC_16K_PAGES)]
         mask: _PAGE_HUGE,
-        #[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+        #[cfg(CONFIG_PPC_16K_PAGES)]
         val: _PAGE_HUGE,
-        #[cfg(not(feature = "CONFIG_PPC_16K_PAGES"))]
+        #[cfg(not(CONFIG_PPC_16K_PAGES))]
         mask: _PAGE_SPS,
-        #[cfg(not(feature = "CONFIG_PPC_16K_PAGES"))]
+        #[cfg(not(CONFIG_PPC_16K_PAGES))]
         val: _PAGE_SPS,
         set: "huge\0".as_ptr() as *const i8,
         clear: "    \0".as_ptr() as *const i8,

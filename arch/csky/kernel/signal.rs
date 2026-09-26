@@ -165,10 +165,11 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) {
     let mut ret: i32;
     if in_syscall(regs) {
         forget_syscall(regs);
-        match (*regs).a0 {
-            -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => (*regs).a0 = -EINTR,
-            -ERESTARTSYS if ((*ksig).ka.sa.sa_flags & SA_RESTART) == 0 => (*regs).a0 = -EINTR,
-            -ERESTARTSYS | -ERESTARTNOINTR => { (*regs).a0 = (*regs).orig_a0; (*regs).pc -= TRAP0_SIZE; },
+        // The syscall return value is a negated errno; match on the errno itself.
+        match -(*regs).a0 {
+            ERESTART_RESTARTBLOCK | ERESTARTNOHAND => (*regs).a0 = -EINTR,
+            ERESTARTSYS if ((*ksig).ka.sa.sa_flags & SA_RESTART) == 0 => (*regs).a0 = -EINTR,
+            ERESTARTSYS | ERESTARTNOINTR => { (*regs).a0 = (*regs).orig_a0; (*regs).pc -= TRAP0_SIZE; },
             _ => {}
         }
     }
@@ -181,9 +182,9 @@ unsafe fn do_signal(regs: *mut pt_regs) {
     if get_signal(&mut ksig) { handle_signal(&mut ksig, regs); return; }
     if in_syscall(regs) {
         forget_syscall(regs);
-        match (*regs).a0 {
-            -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => { (*regs).a0 = (*regs).orig_a0; (*regs).pc -= TRAP0_SIZE; },
-            -ERESTART_RESTARTBLOCK => { (*regs).a0 = (*regs).orig_a0; *regs_syscallid(regs) = __NR_restart_syscall; (*regs).pc -= TRAP0_SIZE; },
+        match -((*regs).a0) {
+            ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => { (*regs).a0 = (*regs).orig_a0; (*regs).pc -= TRAP0_SIZE; },
+            ERESTART_RESTARTBLOCK => { (*regs).a0 = (*regs).orig_a0; *regs_syscallid(regs) = __NR_restart_syscall; (*regs).pc -= TRAP0_SIZE; },
             _ => {}
         }
     }

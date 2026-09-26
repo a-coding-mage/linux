@@ -138,21 +138,21 @@ unsafe fn ocfs2_filecheck_args_parse(name: *const c_char, buf: *const c_char, co
 
 unsafe fn ocfs2_filecheck_is_dup_entry(ent: *mut ocfs2_filecheck_sysfs_entry, ino: c_ulong) -> c_int {
     let mut p: *mut ocfs2_filecheck_entry;
-    list_for_each_entry!(p, &mut (*(*ent).fs_fcheck).fc_head, fe_list) {
+    list_for_each_entry!(p, &mut (*(*ent).fs_fcheck).fc_head, fe_list, {
         if (*p).fe_done == 0 && (*p).fe_ino == ino { return 1; }
-    }
+    });
     0
 }
 
 unsafe fn ocfs2_filecheck_erase_entry(ent: *mut ocfs2_filecheck_sysfs_entry) -> c_int {
     let mut p: *mut ocfs2_filecheck_entry;
-    list_for_each_entry!(p, &mut (*(*ent).fs_fcheck).fc_head, fe_list) {
+    list_for_each_entry!(p, &mut (*(*ent).fs_fcheck).fc_head, fe_list, {
         if (*p).fe_done != 0 {
             list_del(&mut (*p).fe_list); kfree(p as *mut c_void);
             (*(*ent).fs_fcheck).fc_size -= 1; (*(*ent).fs_fcheck).fc_done -= 1;
             return 1;
         }
-    }
+    });
     0
 }
 

@@ -79,9 +79,9 @@ unsafe fn krait_mux_get_parent(hw: *mut clk_hw) -> u8 {
 
 #[no_mangle]
 pub static krait_mux_clk_ops: clk_ops = clk_ops {
-    .set_parent = Some(krait_mux_set_parent),
-    .get_parent = Some(krait_mux_get_parent),
-    .determine_rate = Some(__clk_mux_determine_rate_closest),
+    set_parent: Some(krait_mux_set_parent),
+    get_parent: Some(krait_mux_get_parent),
+    determine_rate: Some(__clk_mux_determine_rate_closest),
 };
 
 /* The divider can divide by 2, 4, 6 and 8. But we only really need div-2. */
@@ -139,9 +139,9 @@ unsafe fn krait_div2_recalc_rate(
 
 #[no_mangle]
 pub static krait_div2_clk_ops: clk_ops = clk_ops {
-    .determine_rate = Some(krait_div2_determine_rate),
-    .set_rate = Some(krait_div2_set_rate),
-    .recalc_rate = Some(krait_div2_recalc_rate),
+    determine_rate: Some(krait_div2_determine_rate),
+    set_rate: Some(krait_div2_set_rate),
+    recalc_rate: Some(krait_div2_recalc_rate),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -13,7 +13,7 @@ extern "C" {
     fn smp_send_stop();
     fn do_kernel_power_off();
     fn stop_this_cpu(arg: *mut core::ffi::c_void);
-    #[cfg(feature = "CONFIG_KEXEC_CORE")]
+    #[cfg(CONFIG_KEXEC_CORE)]
     fn native_machine_crash_shutdown(regs: *mut pt_regs);
 }
 
@@ -28,7 +28,7 @@ pub struct machine_ops {
     pub shutdown: unsafe extern "C" fn(),
     pub restart: unsafe extern "C" fn(*mut core::ffi::c_char),
     pub halt: unsafe extern "C" fn(),
-    #[cfg(feature = "CONFIG_KEXEC_CORE")]
+    #[cfg(CONFIG_KEXEC_CORE)]
     pub crash_shutdown: unsafe extern "C" fn(*mut pt_regs),
 }
 
@@ -82,7 +82,7 @@ pub static mut machine_ops: machine_ops = machine_ops {
     shutdown: native_machine_shutdown,
     restart: native_machine_restart,
     halt: native_machine_halt,
-    #[cfg(feature = "CONFIG_KEXEC_CORE")]
+    #[cfg(CONFIG_KEXEC_CORE)]
     crash_shutdown: native_machine_crash_shutdown,
 };
 
@@ -107,7 +107,7 @@ pub unsafe extern "C" fn machine_halt() {
 }
 
 // Preserved build-time condition: CONFIG_KEXEC_CORE.
-#[cfg(feature = "CONFIG_KEXEC_CORE")]
+#[cfg(CONFIG_KEXEC_CORE)]
 #[no_mangle]
 pub unsafe extern "C" fn machine_crash_shutdown(regs: *mut pt_regs) {
     (machine_ops.crash_shutdown)(regs);

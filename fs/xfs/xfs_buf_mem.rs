@@ -37,6 +37,8 @@ pub unsafe fn xmbuf_alloc(
     let mut inode: *mut inode;
     let btp: *mut xfs_buftarg = kzalloc_obj::<xfs_buftarg>();
     let mut error: c_int;
+    'out_free_btp: {
+    'out_file: {
 
     if btp.is_null() {
         return -ENOMEM;
@@ -45,7 +47,7 @@ pub unsafe fn xmbuf_alloc(
     file = shmem_kernel_file_setup(descr, 0, EMPTY_VMA_FLAGS);
     if IS_ERR(file) {
         error = PTR_ERR(file);
-        goto out_free_btp;
+        break 'out_free_btp;
     }
     inode = file_inode(file);
 
@@ -69,16 +71,17 @@ pub unsafe fn xmbuf_alloc(
 
     error = xfs_init_buftarg(btp, XMBUF_BLOCKSIZE, descr);
     if error != 0 {
-        goto out_file;
+        break 'out_file;
     }
 
     trace_xmbuf_create(btp);
     *btpp = btp;
     return 0;
-
-out_file:
+    }
+    
     fput(file);
-out_free_btp:
+    }
+    
     kfree(btp);
     return error;
 }

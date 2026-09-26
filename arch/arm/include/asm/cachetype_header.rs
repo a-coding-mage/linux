@@ -44,22 +44,22 @@ const __CACHEID_ARCH_MIN: u32 = !CACHEID_VIVT;
 #[cfg(not(any(feature = "linux_arm_arch_ge_7", feature = "linux_arm_arch_ge_6")))]
 const __CACHEID_ARCH_MIN: u32 = !0;
 
-#[cfg(all(feature = "CONFIG_CPU_CACHE_VIVT", not(feature = "CONFIG_CPU_CACHE_VIPT")))]
+#[cfg(all(CONFIG_CPU_CACHE_VIVT, not(CONFIG_CPU_CACHE_VIPT)))]
 const __CACHEID_ALWAYS: u32 = CACHEID_VIVT;
-#[cfg(all(feature = "CONFIG_CPU_CACHE_VIVT", not(feature = "CONFIG_CPU_CACHE_VIPT")))]
+#[cfg(all(CONFIG_CPU_CACHE_VIVT, not(CONFIG_CPU_CACHE_VIPT)))]
 const __CACHEID_NEVER: u32 = !CACHEID_VIVT;
-#[cfg(all(not(feature = "CONFIG_CPU_CACHE_VIVT"), feature = "CONFIG_CPU_CACHE_VIPT"))]
+#[cfg(all(not(CONFIG_CPU_CACHE_VIVT), CONFIG_CPU_CACHE_VIPT))]
 const __CACHEID_ALWAYS: u32 = 0;
-#[cfg(all(not(feature = "CONFIG_CPU_CACHE_VIVT"), feature = "CONFIG_CPU_CACHE_VIPT"))]
+#[cfg(all(not(CONFIG_CPU_CACHE_VIVT), CONFIG_CPU_CACHE_VIPT))]
 const __CACHEID_NEVER: u32 = CACHEID_VIVT;
 #[cfg(not(any(
-    all(feature = "CONFIG_CPU_CACHE_VIVT", not(feature = "CONFIG_CPU_CACHE_VIPT")),
-    all(not(feature = "CONFIG_CPU_CACHE_VIVT"), feature = "CONFIG_CPU_CACHE_VIPT")
+    all(CONFIG_CPU_CACHE_VIVT, not(CONFIG_CPU_CACHE_VIPT)),
+    all(not(CONFIG_CPU_CACHE_VIVT), CONFIG_CPU_CACHE_VIPT)
 )))]
 const __CACHEID_ALWAYS: u32 = 0;
 #[cfg(not(any(
-    all(feature = "CONFIG_CPU_CACHE_VIVT", not(feature = "CONFIG_CPU_CACHE_VIPT")),
-    all(not(feature = "CONFIG_CPU_CACHE_VIVT"), feature = "CONFIG_CPU_CACHE_VIPT")
+    all(CONFIG_CPU_CACHE_VIVT, not(CONFIG_CPU_CACHE_VIPT)),
+    all(not(CONFIG_CPU_CACHE_VIVT), CONFIG_CPU_CACHE_VIPT)
 )))]
 const __CACHEID_NEVER: u32 = 0;
 
@@ -74,13 +74,13 @@ pub const CSSELR_L6: u32 = 5 << 1;
 pub const CSSELR_L7: u32 = 6 << 1;
 
 /* CONFIG_CPU_V7M selects the alternate MMIO implementations in the C header. */
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 #[inline]
 pub unsafe fn set_csselr(cache_selector: u32) {
     core::arch::asm!("mcr p15, 2, {0}, c0, c0, 0", in(reg) cache_selector);
 }
 
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 #[inline]
 pub unsafe fn read_ccsidr() -> u32 {
     let val: u32;
@@ -88,7 +88,7 @@ pub unsafe fn read_ccsidr() -> u32 {
     val
 }
 
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 #[inline]
 pub unsafe fn read_clidr() -> u32 {
     let val: u32;

@@ -78,15 +78,11 @@ unsafe fn unwind_user_next_fp(state: *mut unwind_user_state) -> ::core::ffi::c_i
     let regs = task_pt_regs(current);
 
     if (*state).topmost && unwind_user_at_function_start(regs) {
-        let fp_entry_frame = unwind_user_frame {
-            ARCH_INIT_USER_FP_ENTRY_FRAME!( (*state).ws )
-        };
+        let fp_entry_frame: unwind_user_frame = ARCH_INIT_USER_FP_ENTRY_FRAME!((*state).ws);
         return unwind_user_next_common(state, &fp_entry_frame);
     }
 
-    let fp_frame = unwind_user_frame {
-        ARCH_INIT_USER_FP_FRAME!( (*state).ws )
-    };
+    let fp_frame: unwind_user_frame = ARCH_INIT_USER_FP_FRAME!((*state).ws);
     unwind_user_next_common(state, &fp_frame)
 }
 

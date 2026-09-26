@@ -19,7 +19,7 @@ pub type iova_bitmap_fn_t = unsafe extern "C" fn(
 ) -> libc::c_int;
 
 /* Equivalent build-time condition for IS_ENABLED(CONFIG_IOMMUFD_DRIVER). */
-#[cfg(feature = "CONFIG_IOMMUFD_DRIVER")]
+#[cfg(CONFIG_IOMMUFD_DRIVER)]
 extern "C" {
     pub fn iova_bitmap_alloc(
         iova: libc::c_ulong,
@@ -43,7 +43,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_IOMMUFD_DRIVER"))]
+#[cfg(not(CONFIG_IOMMUFD_DRIVER))]
 #[inline]
 pub unsafe fn iova_bitmap_alloc(
     _iova: libc::c_ulong,
@@ -54,11 +54,11 @@ pub unsafe fn iova_bitmap_alloc(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_IOMMUFD_DRIVER"))]
+#[cfg(not(CONFIG_IOMMUFD_DRIVER))]
 #[inline]
 pub unsafe fn iova_bitmap_free(_bitmap: *mut iova_bitmap) {}
 
-#[cfg(not(feature = "CONFIG_IOMMUFD_DRIVER"))]
+#[cfg(not(CONFIG_IOMMUFD_DRIVER))]
 #[inline]
 pub unsafe fn iova_bitmap_for_each(
     _bitmap: *mut iova_bitmap,
@@ -68,7 +68,7 @@ pub unsafe fn iova_bitmap_for_each(
     -95
 }
 
-#[cfg(not(feature = "CONFIG_IOMMUFD_DRIVER"))]
+#[cfg(not(CONFIG_IOMMUFD_DRIVER))]
 #[inline]
 pub unsafe fn iova_bitmap_set(
     _bitmap: *mut iova_bitmap,

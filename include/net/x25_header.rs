@@ -174,11 +174,11 @@ extern "C" {
 #[inline] pub unsafe fn x25_route_hold(rt: *mut x25_route) { refcount_inc(&mut (*rt).refcnt); }
 #[inline] pub unsafe fn x25_route_put(rt: *mut x25_route) { if refcount_dec_and_test(&mut (*rt).refcnt) { kfree(rt as *mut c_void); } }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 extern "C" { pub fn x25_register_sysctl() -> c_int; pub fn x25_unregister_sysctl(); }
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 #[inline] pub fn x25_register_sysctl() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 #[inline] pub fn x25_unregister_sysctl() {}
 
 extern "C" {

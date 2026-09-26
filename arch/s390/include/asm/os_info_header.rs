@@ -63,12 +63,12 @@ extern "C" {
 }
 
 // CONFIG_CRASH_DUMP conditional from the original header.
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 extern "C" {
     pub fn os_info_old_entry(nr: i32, size: *mut core::ffi::c_ulong) -> *mut core::ffi::c_void;
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
 pub unsafe fn os_info_old_value(nr: i32) -> core::ffi::c_ulong {
     let mut size: core::ffi::c_ulong = 0;
@@ -76,7 +76,7 @@ pub unsafe fn os_info_old_value(nr: i32) -> core::ffi::c_ulong {
         as usize as core::ffi::c_ulong
 }
 
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn os_info_old_entry(
     _nr: i32,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Translated from fdinfo.c. Kernel and project dependencies are supplied externally.
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 unsafe fn common_tracking_show_fdinfo(
     ctx: *mut io_ring_ctx,
     m: *mut seq_file,
@@ -17,7 +17,7 @@ unsafe fn common_tracking_show_fdinfo(
     }
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 unsafe fn napi_show_fdinfo(ctx: *mut io_ring_ctx, m: *mut seq_file) {
     let mode: u32 = read_once(&(*ctx).napi_track_mode);
     match mode {
@@ -28,7 +28,7 @@ unsafe fn napi_show_fdinfo(ctx: *mut io_ring_ctx, m: *mut seq_file) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 unsafe fn napi_show_fdinfo(_ctx: *mut io_ring_ctx, _m: *mut seq_file) {}
 
 unsafe fn __io_uring_show_fdinfo(ctx: *mut io_ring_ctx, m: *mut seq_file) {

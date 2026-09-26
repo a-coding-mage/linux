@@ -75,10 +75,10 @@ pub const FTRUNCATE_LFS: u32 = 1u32 << 0;
 
 #[cfg(target_endian = "little")]
 #[macro_export]
-macro_rules! SC_ARG64 { ($name:ident) => { u32, $name##_lo, u32, $name##_hi }; }
+macro_rules! SC_ARG64 { ($name:tt) => { u32, ::kernel::macros::paste!([<$name _lo>]), u32, ::kernel::macros::paste!([<$name _hi>]) }; }
 #[cfg(target_endian = "big")]
 #[macro_export]
-macro_rules! SC_ARG64 { ($name:ident) => { u32, $name##_hi, u32, $name##_lo }; }
+macro_rules! SC_ARG64 { ($name:tt) => { u32, ::kernel::macros::paste!([<$name _hi>]), u32, ::kernel::macros::paste!([<$name _lo>]) }; }
 
 #[inline]
 pub const unsafe fn SC_VAL64<T: Into<u64>>(hi: T, lo: u32) -> u64 { (hi.into() << 32) | lo as u64 }

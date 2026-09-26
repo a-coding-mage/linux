@@ -10,26 +10,26 @@ pub struct ref_tracker {
 
 #[repr(C)]
 pub struct ref_tracker_dir {
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub lock: spinlock_t,
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub quarantine_avail: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub untracked: refcount_t,
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub no_tracker: refcount_t,
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub dead: bool,
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub list: list_head, // List of active trackers
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub quarantine: list_head, // List of dead trackers
-    #[cfg(feature = "CONFIG_REF_TRACKER")]
+    #[cfg(CONFIG_REF_TRACKER)]
     pub class: *const ::core::ffi::c_char, // object classname
 }
 
-#[cfg(feature = "CONFIG_REF_TRACKER")]
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_REF_TRACKER)]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn ref_tracker_dir_debugfs(dir: *mut ref_tracker_dir);
     pub fn ref_tracker_dir_symlink(
@@ -39,13 +39,13 @@ extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_REF_TRACKER")]
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(CONFIG_REF_TRACKER)]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn ref_tracker_dir_debugfs(_dir: *mut ref_tracker_dir) {}
 
-#[cfg(feature = "CONFIG_REF_TRACKER")]
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(CONFIG_REF_TRACKER)]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe extern "C" fn ref_tracker_dir_symlink(
     _dir: *mut ref_tracker_dir,
@@ -54,7 +54,7 @@ pub unsafe extern "C" fn ref_tracker_dir_symlink(
 ) {
 }
 
-#[cfg(feature = "CONFIG_REF_TRACKER")]
+#[cfg(CONFIG_REF_TRACKER)]
 #[inline]
 pub unsafe fn ref_tracker_dir_init(
     dir: *mut ref_tracker_dir,
@@ -73,7 +73,7 @@ pub unsafe fn ref_tracker_dir_init(
     stack_depot_init();
 }
 
-#[cfg(feature = "CONFIG_REF_TRACKER")]
+#[cfg(CONFIG_REF_TRACKER)]
 extern "C" {
     pub fn ref_tracker_dir_exit(dir: *mut ref_tracker_dir);
     pub fn ref_tracker_dir_print_locked(
@@ -100,7 +100,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_init(
     _dir: *mut ref_tracker_dir,
@@ -109,11 +109,11 @@ pub unsafe fn ref_tracker_dir_init(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_debugfs(_dir: *mut ref_tracker_dir) {}
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe extern "C" fn ref_tracker_dir_symlink(
     _dir: *mut ref_tracker_dir,
@@ -122,11 +122,11 @@ pub unsafe extern "C" fn ref_tracker_dir_symlink(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_exit(_dir: *mut ref_tracker_dir) {}
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_print_locked(
     _dir: *mut ref_tracker_dir,
@@ -134,7 +134,7 @@ pub unsafe fn ref_tracker_dir_print_locked(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_print(
     _dir: *mut ref_tracker_dir,
@@ -142,7 +142,7 @@ pub unsafe fn ref_tracker_dir_print(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_dir_snprint(
     _dir: *mut ref_tracker_dir,
@@ -152,7 +152,7 @@ pub unsafe fn ref_tracker_dir_snprint(
     0
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_alloc(
     _dir: *mut ref_tracker_dir,
@@ -162,7 +162,7 @@ pub unsafe fn ref_tracker_alloc(
     0
 }
 
-#[cfg(not(feature = "CONFIG_REF_TRACKER"))]
+#[cfg(not(CONFIG_REF_TRACKER))]
 #[inline]
 pub unsafe fn ref_tracker_free(
     _dir: *mut ref_tracker_dir,

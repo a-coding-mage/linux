@@ -52,7 +52,7 @@ unsafe fn dmae_halt(c:*mut sh_dmae_chan){let d=to_sh_dev(c);let v=chcr_read(c)&!
 unsafe fn sh_dmae_halt(s:*mut shdma_chan){dmae_halt(container_of_chan(s));}
 unsafe fn sh_dmae_desc_setup(s:*mut shdma_chan,sd:*mut shdma_desc,src:dma_addr_t,dst:dma_addr_t,len:*mut usize)->i32{let d=container_of_desc(sd);if *len>(*s).max_xfer_len{*len=(*s).max_xfer_len;}(*d).hw.sar=src;(*d).hw.dar=dst;(*d).hw.tcr=*len;0}
 unsafe fn sh_dmae_chan_irq(s:*mut shdma_chan,_irq:i32)->bool{let c=container_of_chan(s);if chcr_read(c)&CHCR_TE==0{return false;}dmae_halt(c);true}
-unsafe fn sh_dmae_get_partial(s:*mut shdma_chan,sd:*mut shdma_desc)->usize{let c=container_of_chan(s);let d=container_of_desc(sd);(*d).hw.tcr-(sh_dmae_readl(c,TCR) as usize<<(*c).xmit_shift)}
+unsafe fn sh_dmae_get_partial(s:*mut shdma_chan,sd:*mut shdma_desc)->usize{let c=container_of_chan(s);let d=container_of_desc(sd);(*d).hw.tcr-((sh_dmae_readl(c,TCR) as usize)<<(*c).xmit_shift)}
 unsafe fn sh_dmae_desc_completed(s:*mut shdma_chan,sd:*mut shdma_desc)->bool{let c=container_of_chan(s);let d=container_of_desc(sd);let sar=sh_dmae_readl(c,SAR) as dma_addr_t;let dar=sh_dmae_readl(c,DAR) as dma_addr_t;((*sd).direction==DMA_DEV_TO_MEM&&(*d).hw.dar+(*d).hw.tcr==dar)||((*sd).direction!=DMA_DEV_TO_MEM&&(*d).hw.sar+(*d).hw.tcr==sar)}
 
 // Remaining Linux driver registration, PM, IRQ, notifier, probe, remove, and module metadata

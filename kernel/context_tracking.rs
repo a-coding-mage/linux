@@ -199,7 +199,7 @@ pub unsafe fn ct_cpu_track_user(cpu: i32) {
 #[cfg(all(feature = "context_tracking_user", feature = "context_tracking_user_force"))]
 pub unsafe fn context_tracking_init() {
     let mut cpu = 0;
-    for_each_possible_cpu!(cpu) { ct_cpu_track_user(cpu); }
+    for_each_possible_cpu!(cpu, { ct_cpu_track_user(cpu); });
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

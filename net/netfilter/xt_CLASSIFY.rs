@@ -48,7 +48,7 @@ static mut classify_tg_reg: [xt_target; 3] = [
         me: THIS_MODULE,
     },
     // Preserved from CONFIG_IP6_NF_IPTABLES conditional compilation.
-    #[cfg(feature = "CONFIG_IP6_NF_IPTABLES")]
+    #[cfg(CONFIG_IP6_NF_IPTABLES)]
     xt_target {
         name: *b"CLASSIFY\0",
         revision: 0,

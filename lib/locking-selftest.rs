@@ -44,8 +44,8 @@
 /*
  * Change this to 1 if you want to see the failure printouts:
  */
-static unsigned int debug_locks_verbose;
-unsigned int force_read_lock_recursive;
+static core::ffi::c_uint debug_locks_verbose;
+core::ffi::c_uint force_read_lock_recursive;
 
 static DEFINE_WD_CLASS(ww_lockdep);
 
@@ -163,7 +163,7 @@ static DEFINE_PER_CPU(local_lock_t, local_A);
 macro_rules! INIT_CLASS_FUNC(class) 				\
 static noinline void					\
 init_class_##class(spinlock_t *lock, rwlock_t *rwlock, \
-	struct mutex *mutex, struct rw_semaphore *rwsem)\
+	struct mutex *mutex, rw_semaphore *rwsem)\
 {							\
 	spin_lock_init(lock);			\
 	rwlock_init(rwlock);				\
@@ -267,7 +267,7 @@ macro_rules! RWSI(x)			init_rwsem(&rwsem_##x)
 // conditional: CONFIG_DEBUG_WW_MUTEX_SLOWPATH
 macro_rules! WWAI(x)			ww_acquire_init(x, &ww_lockdep)
 // conditional else
-macro_rules! WWAI(x)			do { ww_acquire_init(x, &ww_lockdep); (x)->deadlock_inject_countdown = ~0U; } while (0)
+macro_rules! WWAI(x)			do { ww_acquire_init(x, &ww_lockdep); (*(x)).deadlock_inject_countdown = ~0U; } while (0)
 // conditional end
 macro_rules! WWAD(x)			ww_acquire_done(x)
 macro_rules! WWAF(x)			ww_acquire_fini(x)
@@ -1440,9 +1440,9 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 {
 	long saved_preempt_count = preempt_count();
 // conditional: CONFIG_PREEMPT_RT
-	int saved_mgd_count = current->migration_disabled;
-	int saved_rcu_count = current->rcu_read_lock_nesting;
-	int saved_sched_rt_mutex = current->sched_rt_mutex;
+	int saved_mgd_count = (*current).migration_disabled;
+	int saved_rcu_count = (*current).rcu_read_lock_nesting;
+	int saved_sched_rt_mutex = (*current).sched_rt_mutex;
 // conditional end
 
 	WARN_ON(irqs_disabled());
@@ -1479,21 +1479,21 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 	preempt_count_set(saved_preempt_count);
 
 // conditional: CONFIG_PREEMPT_RT
-	current->sched_rt_mutex = saved_sched_rt_mutex;
+	(*current).sched_rt_mutex = saved_sched_rt_mutex;
 
-	while (current->migration_disabled > saved_mgd_count)
+	while ((*current).migration_disabled > saved_mgd_count)
 		migrate_enable();
 
-	while (current->rcu_read_lock_nesting > saved_rcu_count)
+	while ((*current).rcu_read_lock_nesting > saved_rcu_count)
 		rcu_read_unlock();
-	WARN_ON_ONCE(current->rcu_read_lock_nesting < saved_rcu_count);
+	WARN_ON_ONCE((*current).rcu_read_lock_nesting < saved_rcu_count);
 // conditional end
 
 // conditional: CONFIG_TRACE_IRQFLAGS
 	if (softirq_count())
-		current->softirqs_enabled = 0;
+		(*current).softirqs_enabled = 0;
 	else
-		current->softirqs_enabled = 1;
+		(*current).softirqs_enabled = 1;
 // conditional end
 
 	reset_locks();
@@ -1505,7 +1505,7 @@ macro_rules! dotest_rt(fn, e, m)	dotest((fn), (e), (m))
 macro_rules! dotest_rt(fn, e, m)
 // conditional end
 
-static inline void print_testname(const char *testname)
+void print_testname(const char *testname)
 {
 	printk("%33s:", testname);
 }
@@ -2486,7 +2486,7 @@ static void fs_reclaim_wrong_nesting(void)
 
 static void fs_reclaim_protected_nesting(void)
 {
-	unsigned int flags;
+	core::ffi::c_uint flags;
 
 	fs_reclaim_acquire(GFP_KERNEL);
 	flags = memalloc_nofs_save();
@@ -2719,12 +2719,12 @@ static void local_lock_3B(void)
 }
 
 // conditional: CONFIG_DEBUG_LOCK_ALLOC
-static inline const char *rw_semaphore_lockdep_name(struct rw_semaphore *rwsem)
+const char *rw_semaphore_lockdep_name(rw_semaphore *rwsem)
 {
-	return rwsem->dep_map.name;
+	return (*rwsem).dep_map.name;
 }
 // conditional else
-static inline const char *rw_semaphore_lockdep_name(struct rw_semaphore *rwsem)
+const char *rw_semaphore_lockdep_name(rw_semaphore *rwsem)
 {
 	return NULL;
 }

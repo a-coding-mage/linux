@@ -46,7 +46,7 @@ macro_rules! DECLARE_STATIC_CALL {
 }
 
 // CONFIG_HAVE_STATIC_CALL
-#[cfg(feature = "CONFIG_HAVE_STATIC_CALL_INLINE")]
+#[cfg(CONFIG_HAVE_STATIC_CALL_INLINE)]
 #[repr(C)]
 pub union static_call_key_target {
     /* bit 0: 0 = mods, 1 = sites */
@@ -55,20 +55,20 @@ pub union static_call_key_target {
     pub sites: *mut static_call_site,
 }
 
-#[cfg(feature = "CONFIG_HAVE_STATIC_CALL_INLINE")]
+#[cfg(CONFIG_HAVE_STATIC_CALL_INLINE)]
 #[repr(C)]
 pub struct static_call_key {
     pub func: *mut (),
     pub target: static_call_key_target,
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_STATIC_CALL_INLINE"))]
+#[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 #[repr(C)]
 pub struct static_call_key {
     pub func: *mut (),
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_STATIC_CALL"))]
+#[cfg(not(CONFIG_HAVE_STATIC_CALL))]
 #[repr(C)]
 pub struct static_call_key_no_static_call {
     pub func: *mut (),
@@ -77,14 +77,14 @@ pub struct static_call_key_no_static_call {
 // __ADDRESSABLE() is an external compiler/object-tool facility; these macros
 // preserve the original call structure where the corresponding configuration
 // is enabled.
-#[cfg(feature = "CONFIG_HAVE_STATIC_CALL_INLINE")]
+#[cfg(CONFIG_HAVE_STATIC_CALL_INLINE)]
 macro_rules! __STATIC_CALL_ADDRESSABLE {
     ($name:ident) => {{
         let _ = stringify!(__SCK__$name);
     }};
 }
 
-#[cfg(feature = "CONFIG_HAVE_STATIC_CALL_INLINE")]
+#[cfg(CONFIG_HAVE_STATIC_CALL_INLINE)]
 macro_rules! __static_call {
     ($name:ident) => {{
         __STATIC_CALL_ADDRESSABLE!($name);
@@ -92,12 +92,12 @@ macro_rules! __static_call {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_STATIC_CALL_INLINE"))]
+#[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 macro_rules! __STATIC_CALL_ADDRESSABLE {
     ($name:ident) => {{}};
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_STATIC_CALL_INLINE"))]
+#[cfg(not(CONFIG_HAVE_STATIC_CALL_INLINE))]
 macro_rules! __static_call {
     ($name:ident) => {{ unsafe { &__SCT__$name } }};
 }

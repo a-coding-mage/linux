@@ -130,7 +130,7 @@ unsafe fn qnx6_mmi_fill_super(s: *mut super_block, silent: i32) -> *mut qnx6_sup
     if fs64_to_cpu!(sbi, (*sb1).sb_serial) > fs64_to_cpu!(sbi, (*sb2).sb_serial) {
         /* superblock #1 active */
         qnx6_mmi_copy_sb(qsb, sb1);
-        #[cfg(feature = "CONFIG_QNX6FS_DEBUG")]
+        #[cfg(CONFIG_QNX6FS_DEBUG)]
         qnx6_superblock_debug(qsb, s);
         core::ptr::copy_nonoverlapping(
             qsb as *const u8,
@@ -144,7 +144,7 @@ unsafe fn qnx6_mmi_fill_super(s: *mut super_block, silent: i32) -> *mut qnx6_sup
     } else {
         /* superblock #2 active */
         qnx6_mmi_copy_sb(qsb, sb2);
-        #[cfg(feature = "CONFIG_QNX6FS_DEBUG")]
+        #[cfg(CONFIG_QNX6FS_DEBUG)]
         qnx6_superblock_debug(qsb, s);
         core::ptr::copy_nonoverlapping(
             qsb as *const u8,

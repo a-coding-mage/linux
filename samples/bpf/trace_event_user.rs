@@ -128,7 +128,7 @@ unsafe fn print_stack(key: *mut key_t, count: u64) {
     else { for i in (0..PERF_MAX_STACK_DEPTH).rev() { print_addr(ip[i]); } }
     if count < 6 { printf(b"\r\0".as_ptr() as _); } else { printf(b"\n\0".as_ptr() as _); }
     if (*key).kernstack as i32 == -EEXIST && !WARNED { printf(b"stackmap collisions seen. Consider increasing size\n\0".as_ptr() as _); WARNED = true; }
-    else if (*key).kernstack as i32 as i32 < 0 && (*key).userstack as i32 < 0 { printf(b"err stackid %d %d\n\0".as_ptr() as _, (*key).kernstack, (*key).userstack); }
+    else if ((*key).kernstack as i32 as i32) < 0 && ((*key).userstack as i32) < 0 { printf(b"err stackid %d %d\n\0".as_ptr() as _, (*key).kernstack, (*key).userstack); }
 }
 
 unsafe fn err_exit(err: i32) { kill(PID, SIGKILL); exit(err); }

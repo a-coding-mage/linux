@@ -75,7 +75,7 @@ unsafe fn print_split(s: *mut SplitState) -> i32 {
         }
         if (pte_val(*pte) & _PAGE_NX) == 0 {
             (*s).exec += 1;
-            if (addr as i64 < (*s).min_exec) { (*s).min_exec = addr as i64; }
+            if ((addr as i64) < (*s).min_exec) { (*s).min_exec = addr as i64; }
             if (addr as i64 > (*s).max_exec) { (*s).max_exec = addr as i64; }
         }
     }
@@ -152,7 +152,7 @@ unsafe fn pageattr_test() -> i32 {
         if pte.is_null() || pte_testbit(*pte) != 0 { printk(KERN_ERR, "CPA %lx: bad pte after revert\n", ADDR[i]); failed += 1; }
     }
     failed += print_split(&mut sc);
-    if failed != 0 { WARN(1, KERN_ERR "NOT PASSED. Please report.\n"); -EINVAL }
+    if failed != 0 { WARN(1, c"\x013NOT PASSED. Please report.\n".as_ptr()); -EINVAL }
     else { if PRINT != 0 { printk(KERN_INFO, "ok.\n"); } 0 }
 }
 

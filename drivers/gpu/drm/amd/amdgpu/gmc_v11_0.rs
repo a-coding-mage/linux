@@ -38,7 +38,7 @@ unsafe fn gmc_v11_0_process_interrupt(adev: *mut amdgpu_device, _source: *mut am
         let task_info = amdgpu_vm_get_task_info_pasid(adev, (*entry).pasid);
         if !task_info.is_null() { amdgpu_vm_print_task_info(adev, task_info); amdgpu_vm_put_task_info(task_info); }
         dev_err((*adev).dev, "  in page starting at address 0x%016llx from client %d\n", addr, (*entry).client_id);
-        if status != 0 { ((*hub).vmhub_funcs->print_l2_protection_fault_status)(adev, status); }
+        if status != 0 { ((*(*hub).vmhub_funcs).print_l2_protection_fault_status)(adev, status); }
     }
     0
 }
@@ -48,7 +48,7 @@ unsafe fn gmc_v11_0_use_invalidate_semaphore(adev: *mut amdgpu_device, vmhub: u3
 unsafe fn gmc_v11_0_get_vmid_pasid_mapping_info(adev: *mut amdgpu_device, vmid: u8, p_pasid: *mut u16) -> bool { *p_pasid = (RREG32(SOC15_REG_OFFSET(OSSSYS, 0, regIH_VMID_0_LUT) + vmid as u32) & 0xffff) as u16; *p_pasid != 0 }
 
 unsafe fn gmc_v11_0_flush_gpu_tlb(adev: *mut amdgpu_device, vmid: u32, vmhub: u32, flush_type: u32) {
-    let use_semaphore = gmc_v11_0_use_invalidate_semaphore(adev, vmhub); let hub = &mut (*adev).vmhub[vmhub as usize]; let mut inv_req = ((*hub).vmhub_funcs->get_invalidate_req)(vmid, flush_type); let eng = 17u32;
+    let use_semaphore = gmc_v11_0_use_invalidate_semaphore(adev, vmhub); let hub = &mut (*adev).vmhub[vmhub as usize]; let mut inv_req = ((*(*hub).vmhub_funcs).get_invalidate_req)(vmid, flush_type); let eng = 17u32;
     if vmhub == AMDGPU_GFXHUB(0) && !(*adev).gfx.is_poweron { return; }
     let sem = (*hub).vm_inv_eng0_sem + (*hub).eng_distance * eng; let req = (*hub).vm_inv_eng0_req + (*hub).eng_distance * eng; let ack = (*hub).vm_inv_eng0_ack + (*hub).eng_distance * eng;
     amdgpu_device_flush_hdp(adev, core::ptr::null_mut());
@@ -65,7 +65,7 @@ unsafe fn gmc_v11_0_flush_gpu_tlb(adev: *mut amdgpu_device, vmid: u32, vmhub: u3
 
 unsafe fn gmc_v11_0_flush_gpu_tlb_pasid(adev: *mut amdgpu_device, pasid: u16, flush_type: u32, all_hub: bool, _inst: u32) { let mut queried=0u16; for vmid in 1..16 { if !gmc_v11_0_get_vmid_pasid_mapping_info(adev, vmid, &mut queried) || queried != pasid { continue; } if all_hub { for i in 0..AMDGPU_MAX_VMHUBS { if (*adev).vmhubs_mask & (1<<i) != 0 { gmc_v11_0_flush_gpu_tlb(adev, vmid, i as u32, flush_type); } } } else { gmc_v11_0_flush_gpu_tlb(adev, vmid, AMDGPU_GFXHUB(0), flush_type); } } }
 
-unsafe fn gmc_v11_0_emit_flush_gpu_tlb(ring: *mut amdgpu_ring, vmid: u32, pd_addr: u64) -> u64 { let hub=&mut (*(*ring).adev).vmhub[(*ring).vm_hub as usize]; let req=((*hub).vmhub_funcs->get_invalidate_req)(vmid,0); let eng=(*ring).vm_inv_eng; if gmc_v11_0_use_invalidate_semaphore((*ring).adev,(*ring).vm_hub) { amdgpu_ring_emit_reg_wait(ring,(*hub).vm_inv_eng0_sem+(*hub).eng_distance*eng,1,1); } amdgpu_ring_emit_wreg(ring,(*hub).ctx0_ptb_addr_lo32+(*hub).ctx_addr_distance*vmid,lower_32_bits(pd_addr)); amdgpu_ring_emit_wreg(ring,(*hub).ctx0_ptb_addr_hi32+(*hub).ctx_addr_distance*vmid,upper_32_bits(pd_addr)); amdgpu_ring_emit_reg_write_reg_wait(ring,(*hub).vm_inv_eng0_req+(*hub).eng_distance*eng,(*hub).vm_inv_eng0_ack+(*hub).eng_distance*eng,req,1<<vmid); if gmc_v11_0_use_invalidate_semaphore((*ring).adev,(*ring).vm_hub) { amdgpu_ring_emit_wreg(ring,(*hub).vm_inv_eng0_sem+(*hub).eng_distance*eng,0); } pd_addr }
+unsafe fn gmc_v11_0_emit_flush_gpu_tlb(ring: *mut amdgpu_ring, vmid: u32, pd_addr: u64) -> u64 { let hub=&mut (*(*ring).adev).vmhub[(*ring).vm_hub as usize]; let req=((*(*hub).vmhub_funcs).get_invalidate_req)(vmid,0); let eng=(*ring).vm_inv_eng; if gmc_v11_0_use_invalidate_semaphore((*ring).adev,(*ring).vm_hub) { amdgpu_ring_emit_reg_wait(ring,(*hub).vm_inv_eng0_sem+(*hub).eng_distance*eng,1,1); } amdgpu_ring_emit_wreg(ring,(*hub).ctx0_ptb_addr_lo32+(*hub).ctx_addr_distance*vmid,lower_32_bits(pd_addr)); amdgpu_ring_emit_wreg(ring,(*hub).ctx0_ptb_addr_hi32+(*hub).ctx_addr_distance*vmid,upper_32_bits(pd_addr)); amdgpu_ring_emit_reg_write_reg_wait(ring,(*hub).vm_inv_eng0_req+(*hub).eng_distance*eng,(*hub).vm_inv_eng0_ack+(*hub).eng_distance*eng,req,1<<vmid); if gmc_v11_0_use_invalidate_semaphore((*ring).adev,(*ring).vm_hub) { amdgpu_ring_emit_wreg(ring,(*hub).vm_inv_eng0_sem+(*hub).eng_distance*eng,0); } pd_addr }
 
 unsafe fn gmc_v11_0_emit_pasid_mapping(ring:*mut amdgpu_ring,vmid:u32,pasid:u32){let reg=if (*ring).vm_hub==AMDGPU_GFXHUB(0){SOC15_REG_OFFSET(OSSSYS,0,regIH_VMID_0_LUT)+vmid}else{SOC15_REG_OFFSET(OSSSYS,0,regIH_VMID_0_LUT_MM)+vmid};amdgpu_ring_emit_wreg(ring,reg,pasid);}
 
@@ -82,10 +82,10 @@ unsafe fn gmc_v11_0_wait_for_idle(_ip:*mut amdgpu_ip_block)->i32{0}
 unsafe fn gmc_v11_0_set_powergating_state(_ip:*mut amdgpu_ip_block,_state:amd_powergating_state)->i32{0}
 unsafe fn gmc_v11_0_suspend(ip:*mut amdgpu_ip_block)->i32{gmc_v11_0_hw_fini(ip);0}
 unsafe fn gmc_v11_0_resume(ip:*mut amdgpu_ip_block)->i32{let r=gmc_v11_0_hw_init(ip);if r!=0{return r;}amdgpu_vmid_reset_all((*ip).adev);0}
-unsafe fn gmc_v11_0_hw_fini(ip:*mut amdgpu_ip_block)->i32{let adev=(*ip).adev;if amdgpu_sriov_vf(adev){return 0;}amdgpu_irq_put(adev,&mut (*adev).gmc.vm_fault,0);if !(*adev).gmc.ecc_irq.funcs.is_null()&&amdgpu_ras_is_supported(adev,AMDGPU_RAS_BLOCK__UMC){amdgpu_irq_put(adev,&mut (*adev).gmc.ecc_irq,0);}(*adev).mmhub.funcs->gart_disable(adev);0}
+unsafe fn gmc_v11_0_hw_fini(ip:*mut amdgpu_ip_block)->i32{let adev=(*ip).adev;if amdgpu_sriov_vf(adev){return 0;}amdgpu_irq_put(adev,&mut (*adev).gmc.vm_fault,0);if !(*adev).gmc.ecc_irq.funcs.is_null()&&amdgpu_ras_is_supported(adev,AMDGPU_RAS_BLOCK__UMC){amdgpu_irq_put(adev,&mut (*adev).gmc.ecc_irq,0);}(*(*adev).mmhub.funcs).gart_disable(adev);0}
 unsafe fn gmc_v11_0_hw_init(_ip:*mut amdgpu_ip_block)->i32{0}
-unsafe fn gmc_v11_0_set_clockgating_state(ip:*mut amdgpu_ip_block,state:amd_clockgating_state)->i32{let adev=(*ip).adev;let r=((*adev).mmhub.funcs->set_clockgating)(adev,state);if r!=0{return r;}athub_v3_0_set_clockgating(adev,state)}
-unsafe fn gmc_v11_0_get_clockgating_state(ip:*mut amdgpu_ip_block,flags:*mut u64){let adev=(*ip).adev;((*adev).mmhub.funcs->get_clockgating)(adev,flags);athub_v3_0_get_clockgating(adev,flags);}
+unsafe fn gmc_v11_0_set_clockgating_state(ip:*mut amdgpu_ip_block,state:amd_clockgating_state)->i32{let adev=(*ip).adev;let r=((*(*adev).mmhub.funcs).set_clockgating)(adev,state);if r!=0{return r;}athub_v3_0_set_clockgating(adev,state)}
+unsafe fn gmc_v11_0_get_clockgating_state(ip:*mut amdgpu_ip_block,flags:*mut u64){let adev=(*ip).adev;((*(*adev).mmhub.funcs).get_clockgating)(adev,flags);athub_v3_0_get_clockgating(adev,flags);}
 
 #[allow(non_camel_case_types)] extern "C" { static gmc_v11_0_irq_funcs: amdgpu_irq_src_funcs; static gmc_v11_0_ecc_funcs: amdgpu_irq_src_funcs; }
 

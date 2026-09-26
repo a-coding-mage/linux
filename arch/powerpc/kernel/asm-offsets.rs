@@ -113,8 +113,8 @@ fn main() {
     	OFFSET(PACAPROCSTART, paca_struct, cpu_start);
     	OFFSET(PACAKSAVE, paca_struct, kstack);
     	OFFSET(PACACURRENT, paca_struct, __current);
-    	DEFINE(PACA_THREAD_INFO, offsetof(struct paca_struct, __current) +
-    				 offsetof(struct task_struct, thread_info));
+    	DEFINE(PACA_THREAD_INFO, offsetof(paca_struct, __current) +
+    				 offsetof(task_struct, thread_info));
     	OFFSET(PACASAVEDMSR, paca_struct, saved_msr);
     	OFFSET(PACAR1, paca_struct, saved_r1);
     // #ifndef CONFIG_PPC_KERNEL_PCREL
@@ -279,7 +279,7 @@ fn main() {
     // #endif
     
     // #ifdef CONFIG_BUG
-    	DEFINE(BUG_ENTRY_SIZE, sizeof(struct bug_entry));
+    	DEFINE(BUG_ENTRY_SIZE, sizeof(bug_entry));
     // #endif
     
     // #ifdef CONFIG_KVM
@@ -422,7 +422,7 @@ fn main() {
     	OFFSET(VCORE_VTB, kvmppc_vcore, vtb);
     	OFFSET(VCPU_SLB_E, kvmppc_slb, orige);
     	OFFSET(VCPU_SLB_V, kvmppc_slb, origv);
-    	DEFINE(VCPU_SLB_SIZE, sizeof(struct kvmppc_slb));
+    	DEFINE(VCPU_SLB_SIZE, sizeof(kvmppc_slb));
     // #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
     	OFFSET(VCPU_TFHAR, kvm_vcpu, arch.tfhar);
     	OFFSET(VCPU_TFIAR, kvm_vcpu, arch.tfiar);
@@ -445,14 +445,14 @@ fn main() {
     // #ifdef CONFIG_PPC_BOOK3S_64
     // #ifdef CONFIG_KVM_BOOK3S_PR_POSSIBLE
     	OFFSET(PACA_SVCPU, paca_struct, shadow_vcpu);
-    // # define SVCPU_FIELD(x, f)	DEFINE(x, offsetof(struct paca_struct, shadow_vcpu.f))
+    // # define SVCPU_FIELD(x, f)	DEFINE(x, offsetof(paca_struct, shadow_vcpu.f))
     // #else
     // # define SVCPU_FIELD(x, f)
     // #endif
-    // # define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(struct paca_struct, kvm_hstate.f))
+    // # define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(paca_struct, kvm_hstate.f))
     // #else	/* 32-bit */
-    // # define SVCPU_FIELD(x, f)	DEFINE(x, offsetof(struct kvmppc_book3s_shadow_vcpu, f))
-    // # define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(struct kvmppc_book3s_shadow_vcpu, hstate.f))
+    // # define SVCPU_FIELD(x, f)	DEFINE(x, offsetof(kvmppc_book3s_shadow_vcpu, f))
+    // # define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(kvmppc_book3s_shadow_vcpu, hstate.f))
     // #endif
     
     	SVCPU_FIELD(SVCPU_CR, cr);
@@ -567,7 +567,7 @@ fn main() {
     	DEFINE(PTE_T_LOG2, PTE_T_LOG2);
     // #endif
     // #ifdef CONFIG_PPC_E500
-    	DEFINE(TLBCAM_SIZE, sizeof(struct tlbcam));
+    	DEFINE(TLBCAM_SIZE, sizeof(tlbcam));
     	OFFSET(TLBCAM_MAS0, tlbcam, MAS0);
     	OFFSET(TLBCAM_MAS1, tlbcam, MAS1);
     	OFFSET(TLBCAM_MAS2, tlbcam, MAS2);
@@ -605,7 +605,7 @@ fn main() {
     // #endif
     
     // #ifdef CONFIG_PPC_FTRACE_OUT_OF_LINE
-    	DEFINE(FTRACE_OOL_STUB_SIZE, sizeof(struct ftrace_ool_stub));
+    	DEFINE(FTRACE_OOL_STUB_SIZE, sizeof(ftrace_ool_stub));
     // #endif
     
     // #ifdef CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS

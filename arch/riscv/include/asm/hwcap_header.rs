@@ -125,18 +125,18 @@ pub const RISCV_ISA_EXT_XLINUXENVCFG: usize = 127;
 pub const RISCV_ISA_EXT_MAX: usize = 128;
 pub const RISCV_ISA_EXT_INVALID: u32 = u32::MAX;
 
-#[cfg(feature = "CONFIG_RISCV_M_MODE")]
+#[cfg(CONFIG_RISCV_M_MODE)]
 pub const RISCV_ISA_EXT_SxAIA: usize = RISCV_ISA_EXT_SMAIA;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")]
+#[cfg(CONFIG_RISCV_M_MODE)]
 pub const RISCV_ISA_EXT_SUPM: usize = RISCV_ISA_EXT_SMNPM;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")]
+#[cfg(CONFIG_RISCV_M_MODE)]
 pub const RISCV_ISA_EXT_SxCSRIND: usize = RISCV_ISA_EXT_SMCSRIND;
 
-#[cfg(not(feature = "CONFIG_RISCV_M_MODE"))]
+#[cfg(not(CONFIG_RISCV_M_MODE))]
 pub const RISCV_ISA_EXT_SxAIA: usize = RISCV_ISA_EXT_SSAIA;
-#[cfg(not(feature = "CONFIG_RISCV_M_MODE"))]
+#[cfg(not(CONFIG_RISCV_M_MODE))]
 pub const RISCV_ISA_EXT_SUPM: usize = RISCV_ISA_EXT_SSNPM;
-#[cfg(not(feature = "CONFIG_RISCV_M_MODE"))]
+#[cfg(not(CONFIG_RISCV_M_MODE))]
 pub const RISCV_ISA_EXT_SxCSRIND: usize = RISCV_ISA_EXT_SSCSRIND;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

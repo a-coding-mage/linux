@@ -56,7 +56,7 @@
 }
 
 #[inline(always)] u8 
-addcarryx_u25(u8  c, u32 a, u32 b, u32 *low)
+addcarryx_u25(c: u8, a: u32, b: u32, u32 *low)
 {
 	/* This function extracts 25 bits of result and 1 bit of carry
 	 * (26 total), so a 32-bit intermediate is sufficient.
@@ -67,7 +67,7 @@ addcarryx_u25(u8  c, u32 a, u32 b, u32 *low)
 }
 
 #[inline(always)] u8 
-addcarryx_u26(u8  c, u32 a, u32 b, u32 *low)
+addcarryx_u26(c: u8, a: u32, b: u32, u32 *low)
 {
 	/* This function extracts 26 bits of result and 1 bit of carry
 	 * (27 total), so a 32-bit intermediate is sufficient.
@@ -78,7 +78,7 @@ addcarryx_u26(u8  c, u32 a, u32 b, u32 *low)
 }
 
 #[inline(always)] u8 
-subborrow_u25(u8  c, u32 a, u32 b, u32 *low)
+subborrow_u25(c: u8, a: u32, b: u32, u32 *low)
 {
 	/* This function extracts 25 bits of result and 1 bit of borrow
 	 * (26 total), so a 32-bit intermediate is sufficient.
@@ -89,7 +89,7 @@ subborrow_u25(u8  c, u32 a, u32 b, u32 *low)
 }
 
 #[inline(always)] u8 
-subborrow_u26(u8  c, u32 a, u32 b, u32 *low)
+subborrow_u26(c: u8, a: u32, b: u32, u32 *low)
 {
 	/* This function extracts 26 bits of result and 1 bit of borrow
 	 *(27 total), so a 32-bit intermediate is sufficient.
@@ -99,7 +99,7 @@ subborrow_u26(u8  c, u32 a, u32 b, u32 *low)
 	return x >> 31;
 }
 
-#[inline(always)] u32 cmovznz32(u32 t, u32 z, u32 nz)
+#[inline(always)] u32 cmovznz32(t: u32, z: u32, nz: u32)
 {
 	t = -!!t; /* all set if nonzero, 0 if 0 */
 	return (t&nz) | ((~t)&z);
@@ -619,7 +619,7 @@ fe_mul_tll(fe *h, const fe_loose *f, const fe_loose *g)
  *
  * Preconditions: b in {0,1}
  */
-#[inline(never)] () fe_cswap(fe *f, fe *g, u32 b)
+#[inline(never)] () fe_cswap(fe *f, fe *g, b: u32)
 {
 	u32 i;
 	b = 0 - b;

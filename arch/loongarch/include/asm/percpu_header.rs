@@ -9,7 +9,7 @@
  * the loading address of main kernel image, but far from where the modules are
  * loaded.  Preserve the explicit-relocation/model conditional here.
  */
-#[cfg(all(feature = "MODULE", feature = "CONFIG_AS_HAS_EXPLICIT_RELOCS", feature = "CONFIG_64BIT"))]
+#[cfg(all(feature = "MODULE", CONFIG_AS_HAS_EXPLICIT_RELOCS, CONFIG_64BIT))]
 // PER_CPU_ATTRIBUTES is the C compiler model("extreme") attribute.
 pub const PER_CPU_ATTRIBUTES: &str = "model(\"extreme\")";
 
@@ -44,7 +44,7 @@ pub unsafe fn __my_cpu_offset_value() -> usize {
     core::ptr::read_volatile(&__my_cpu_offset)
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 #[inline(always)]
 pub unsafe fn __percpu_add(ptr: *mut u8, val: usize, size: i32) -> usize {
     match size {
@@ -64,7 +64,7 @@ pub unsafe fn __percpu_add(ptr: *mut u8, val: usize, size: i32) -> usize {
     }
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 #[inline(always)]
 pub unsafe fn __percpu_and(ptr: *mut u8, val: usize, size: i32) -> usize {
     match size {
@@ -74,7 +74,7 @@ pub unsafe fn __percpu_and(ptr: *mut u8, val: usize, size: i32) -> usize {
     }
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 #[inline(always)]
 pub unsafe fn __percpu_or(ptr: *mut u8, val: usize, size: i32) -> usize {
     match size {
@@ -84,13 +84,13 @@ pub unsafe fn __percpu_or(ptr: *mut u8, val: usize, size: i32) -> usize {
     }
 }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[inline]
 pub unsafe fn _percpu_read<T: Copy>(pcp: *const T) -> T {
     core::ptr::read_volatile(pcp)
 }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[inline]
 pub unsafe fn _percpu_write<T>(pcp: *mut T, val: T) {
     core::ptr::write_volatile(pcp, val);
@@ -115,31 +115,31 @@ pub unsafe fn _pcp_protect<T: Copy>(operation: unsafe extern "C" fn(*mut u8, usi
     core::mem::transmute_copy(&ret)
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 macro_rules! _percpu_add { ($pcp:expr, $val:expr) => { unsafe { __percpu_add($pcp as *mut _ as *mut u8, $val as usize, core::mem::size_of_val(&$pcp) as i32) } }; }
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 macro_rules! _percpu_add_return { ($pcp:expr, $val:expr) => { _percpu_add!($pcp, $val) }; }
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 macro_rules! _percpu_and { ($pcp:expr, $val:expr) => { unsafe { __percpu_and($pcp as *mut _ as *mut u8, $val as usize, core::mem::size_of_val(&$pcp) as i32) } }; }
-#[cfg(feature = "CONFIG_CPU_HAS_AMO")]
+#[cfg(CONFIG_CPU_HAS_AMO)]
 macro_rules! _percpu_or { ($pcp:expr, $val:expr) => { unsafe { __percpu_or($pcp as *mut _ as *mut u8, $val as usize, core::mem::size_of_val(&$pcp) as i32) } }; }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_read_1 { ($pcp:expr) => { unsafe { _percpu_read($pcp as *const _) } }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_read_2 { ($pcp:expr) => { unsafe { _percpu_read($pcp as *const _) } }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_read_4 { ($pcp:expr) => { unsafe { _percpu_read($pcp as *const _) } }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_read_8 { ($pcp:expr) => { unsafe { _percpu_read($pcp as *const _) } }; }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_write_1 { ($pcp:expr, $val:expr) => { unsafe { _percpu_write($pcp as *mut _, $val) } }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_write_2 { ($pcp:expr, $val:expr) => { unsafe { _percpu_write($pcp as *mut _, $val) } }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_write_4 { ($pcp:expr, $val:expr) => { unsafe { _percpu_write($pcp as *mut _, $val) } }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! this_cpu_write_8 { ($pcp:expr, $val:expr) => { unsafe { _percpu_write($pcp as *mut _, $val) } }; }
 
 macro_rules! _percpu_xchg { ($pcp:expr, $val:expr) => { unsafe { __percpu_xchg($pcp as *mut _, $val) } }; }

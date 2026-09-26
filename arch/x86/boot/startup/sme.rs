@@ -200,7 +200,7 @@ pub unsafe fn sme_enable(bp: *mut boot_params) {
     const AMD_SEV_BIT: u32 = BIT(1);
     eax = 0x8000001f; ecx = 0; native_cpuid(&mut eax, &mut ebx, &mut ecx, &mut edx);
     if (eax & (AMD_SEV_BIT | AMD_SME_BIT)) == 0 { return; }
-    me_mask = 1 as c_ulong << (ebx & 0x3f);
+    me_mask = (1 as c_ulong) << (ebx & 0x3f);
     sev_snp_needs_sfw = (ebx & BIT(31)) == 0;
     sev_status = native_rdmsrq(MSR_AMD64_SEV); let msr = sev_status;
     feature_mask = if (msr & MSR_AMD64_SEV_ENABLED) != 0 { AMD_SEV_BIT as c_ulong } else { AMD_SME_BIT as c_ulong };

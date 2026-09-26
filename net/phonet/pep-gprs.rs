@@ -184,7 +184,7 @@ unsafe extern "C" fn gprs_xmit(skb: *mut sk_buff, dev: *mut net_device) -> netde
     NETDEV_TX_OK
 }
 
-static const gprs_netdev_ops: net_device_ops = net_device_ops {
+static gprs_netdev_ops: net_device_ops = net_device_ops {
     ndo_open: Some(gprs_open),
     ndo_stop: Some(gprs_close),
     ndo_start_xmit: Some(gprs_xmit),

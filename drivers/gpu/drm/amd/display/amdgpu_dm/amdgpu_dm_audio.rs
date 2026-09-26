@@ -36,7 +36,7 @@ unsafe fn amdgpu_dm_audio_component_get_eld(
     *enabled = false;
     mutex_lock(&mut (*(*adev).dm).audio_lock);
     drm_connector_list_iter_begin(dev, &mut conn_iter);
-    drm_for_each_connector_iter!(connector, &mut conn_iter) {
+    drm_for_each_connector_iter!(connector, &mut conn_iter, {
         if (*connector).connector_type == DRM_MODE_CONNECTOR_WRITEBACK { continue; }
         aconnector = to_amdgpu_dm_connector(connector);
         if (*aconnector).audio_inst != port { continue; }
@@ -46,7 +46,7 @@ unsafe fn amdgpu_dm_audio_component_get_eld(
         memcpy(buf, (*connector).eld, core::cmp::min(max_bytes, ret) as usize);
         mutex_unlock(&mut (*connector).eld_mutex);
         break;
-    }
+    });
     drm_connector_list_iter_end(&mut conn_iter);
     mutex_unlock(&mut (*(*adev).dm).audio_lock);
     drm_dbg_kms(adev_to_drm(adev), "Get ELD : idx=%d ret=%d en=%d\n", port, ret, *enabled);
@@ -156,7 +156,7 @@ unsafe fn amdgpu_dm_commit_audio(dev: *mut drm_device, state: *mut drm_atomic_co
     let adev = drm_to_adev(dev);
     // The connector-state iteration macros and their bodies are preserved as
     // external translation dependencies, matching the source control flow.
-    for_each_oldnew_connector_in_state!(state, connector, old_con_state, new_con_state, i) {
+    for_each_oldnew_connector_in_state!(state, connector, old_con_state, new_con_state, i, {
         if (*old_con_state).crtc != (*new_con_state).crtc { goto_notify!(); }
         if (*new_con_state).crtc.is_null() { continue; }
         let new_crtc_state = drm_atomic_get_new_crtc_state(state, (*new_con_state).crtc);
@@ -170,8 +170,8 @@ unsafe fn amdgpu_dm_commit_audio(dev: *mut drm_device, state: *mut drm_atomic_co
             mutex_unlock(&mut (*(*adev).dm).audio_lock);
             amdgpu_dm_audio_eld_notify(adev, inst);
         }
-    }
-    for_each_new_connector_in_state!(state, connector, new_con_state, i) {
+    });
+    for_each_new_connector_in_state!(state, connector, new_con_state, i, {
         if (*new_con_state).crtc.is_null() { continue; }
         let new_crtc_state = drm_atomic_get_new_crtc_state(state, (*new_con_state).crtc);
         if new_crtc_state.is_null() || !drm_atomic_crtc_needs_modeset(new_crtc_state) { continue; }
@@ -185,7 +185,7 @@ unsafe fn amdgpu_dm_commit_audio(dev: *mut drm_device, state: *mut drm_atomic_co
         (*aconnector).audio_inst = inst;
         mutex_unlock(&mut (*(*adev).dm).audio_lock);
         amdgpu_dm_audio_eld_notify(adev, inst);
-    }
+    });
 }
 
 // Preserved build-time KUnit exports; enabled only when CONFIG_DRM_AMD_DC_KUNIT_TEST is set.

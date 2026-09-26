@@ -28,36 +28,36 @@ extern "C" {
 #[repr(C)] pub struct mdesc_notifier_client { pub add: Option<unsafe extern "C" fn(*mut mdesc_handle,u64,*const c_char)>, pub remove: Option<unsafe extern "C" fn(*mut mdesc_handle,u64,*const c_char)>, pub node_name: *const c_char }
 
 extern "C" {
-    fn of_find_in_proplist(*const c_char, *const c_char, c_int) -> c_int;
-    fn to_vio_dev(*mut device) -> *mut vio_dev;
-    fn to_vio_driver(*const device_driver) -> *mut vio_driver;
-    fn add_uevent_var(*mut kobj_uevent_env, *const c_char, ...) -> c_int;
-    fn sun4v_build_virq(u64, u64) -> u64;
-    fn sun4v_vintr_set_valid(u64, u64, c_int) -> c_int;
-    fn sysfs_emit(*mut c_char, *const c_char, ...) -> isize;
-    fn driver_register(*mut device_driver) -> c_int;
-    fn driver_unregister(*mut device_driver);
-    fn kfree(*mut c_void);
-    fn mdesc_arc_target(*mut mdesc_handle,u64)->u64;
-    fn mdesc_get_property(*mut mdesc_handle,u64,*const c_char,*mut c_int)->*const u64;
-    fn mdesc_get_node(*mut mdesc_handle,*const c_char,*mut u64)->u64;
-    fn mdesc_get_node_info(*mut mdesc_handle,u64,*const c_char,*mut u64)->c_int;
-    fn mdesc_node_name(*mut mdesc_handle,u64)->*const c_char;
+    fn of_find_in_proplist(_: *const c_char, _: *const c_char, _: c_int) -> c_int;
+    fn to_vio_dev(_: *mut device) -> *mut vio_dev;
+    fn to_vio_driver(_: *const device_driver) -> *mut vio_driver;
+    fn add_uevent_var(_: *mut kobj_uevent_env, _: *const c_char, ...) -> c_int;
+    fn sun4v_build_virq(_: u64, _: u64) -> u64;
+    fn sun4v_vintr_set_valid(_: u64, _: u64, _: c_int) -> c_int;
+    fn sysfs_emit(_: *mut c_char, _: *const c_char, ...) -> isize;
+    fn driver_register(_: *mut device_driver) -> c_int;
+    fn driver_unregister(_: *mut device_driver);
+    fn kfree(_: *mut c_void);
+    fn mdesc_arc_target(_: *mut mdesc_handle,_: u64)->u64;
+    fn mdesc_get_property(_: *mut mdesc_handle,_: u64,_: *const c_char,_: *mut c_int)->*const u64;
+    fn mdesc_get_node(_: *mut mdesc_handle,_: *const c_char,_: *mut u64)->u64;
+    fn mdesc_get_node_info(_: *mut mdesc_handle,_: u64,_: *const c_char,_: *mut u64)->c_int;
+    fn mdesc_node_name(_: *mut mdesc_handle,_: u64)->*const c_char;
     fn mdesc_grab()->*mut mdesc_handle;
-    fn mdesc_release(*mut mdesc_handle);
-    fn mdesc_node_by_name(*mut mdesc_handle,u64,*const c_char)->u64;
-    fn mdesc_register_notifier(*mut mdesc_notifier_client);
-    fn of_find_node_by_name(*mut device_node,*const c_char)->*mut device_node;
-    fn of_node_is_type(*mut device_node,*const c_char)->c_int;
-    fn dev_name(*const device)->*const c_char;
-    fn dev_set_name(*mut device,*const c_char,...)->c_int;
-    fn device_register(*mut device)->c_int;
-    fn device_unregister(*mut device);
-    fn put_device(*mut device);
-    fn sysfs_create_file(*mut kobject,*const attribute)->c_int;
-    fn bus_register(*const bus_type)->c_int;
-    fn device_find_child(*mut device,*const c_void,unsafe extern "C" fn(*mut device,*const c_void)->c_int)->*mut device;
-    fn printk(*const c_char,...)->c_int;
+    fn mdesc_release(_: *mut mdesc_handle);
+    fn mdesc_node_by_name(_: *mut mdesc_handle,_: u64,_: *const c_char)->u64;
+    fn mdesc_register_notifier(_: *mut mdesc_notifier_client);
+    fn of_find_node_by_name(_: *mut device_node,_: *const c_char)->*mut device_node;
+    fn of_node_is_type(_: *mut device_node,_: *const c_char)->c_int;
+    fn dev_name(_: *const device)->*const c_char;
+    fn dev_set_name(_: *mut device,_: *const c_char,...)->c_int;
+    fn device_register(_: *mut device)->c_int;
+    fn device_unregister(_: *mut device);
+    fn put_device(_: *mut device);
+    fn sysfs_create_file(_: *mut kobject,_: *const attribute)->c_int;
+    fn bus_register(_: *const bus_type)->c_int;
+    fn device_find_child(_: *mut device,_: *const c_void,_: unsafe extern "C" fn(*mut device,*const c_void)->c_int)->*mut device;
+    fn printk(_: *const c_char,...)->c_int;
 }
 
 const MDESC_NODE_NULL: u64 = !0;

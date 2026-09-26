@@ -57,6 +57,7 @@ unsafe fn clk_super_set_parent(hw: *mut clk_hw, mut index: u8) -> i32 {
     let mux = to_clk_super_mux(hw);
     let mut err: i32 = 0;
     let mut flags: c_ulong = 0;
+    'out: {
     if !(*mux).lock.is_null() { spin_lock_irqsave((*mux).lock, &mut flags); }
 
     let mut val = readl_relaxed((*mux).reg);
@@ -71,7 +72,7 @@ unsafe fn clk_super_set_parent(hw: *mut clk_hw, mut index: u8) -> i32 {
         let parent_index = clk_super_get_parent(hw);
         if parent_index == (*mux).div2_index || parent_index == (*mux).pllx_index {
             err = -EINVAL;
-            goto out;
+            break 'out;
         }
         val ^= SUPER_LP_DIV2_BYPASS;
         writel_relaxed(val, (*mux).reg);
@@ -91,7 +92,8 @@ unsafe fn clk_super_set_parent(hw: *mut clk_hw, mut index: u8) -> i32 {
         index != CCLK_SRC_PLLP_OUT0 && index != CCLK_SRC_PLLP_OUT4 {
         tegra_clk_set_pllp_out_cpu(false);
     }
-out:
+    }
+    
     if !(*mux).lock.is_null() { spin_unlock_irqrestore((*mux).lock, flags); }
     err
 }

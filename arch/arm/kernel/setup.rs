@@ -10,10 +10,10 @@
 /* C kernel headers and configuration macros are supplied by the surrounding
  * translation unit; their declarations are intentionally not reimplemented. */
 
-#[cfg(any(feature = "CONFIG_FPE_NWFPE", feature = "CONFIG_FPE_FASTFPE"))]
+#[cfg(any(CONFIG_FPE_NWFPE, CONFIG_FPE_FASTFPE))]
 static mut fpe_type: [u8; 8] = [0; 8];
 
-#[cfg(any(feature = "CONFIG_FPE_NWFPE", feature = "CONFIG_FPE_FASTFPE"))]
+#[cfg(any(CONFIG_FPE_NWFPE, CONFIG_FPE_FASTFPE))]
 unsafe fn fpe_setup(line: *mut i8) -> i32 {
     core::ptr::copy_nonoverlapping(line as *const u8, fpe_type.as_mut_ptr(), 8);
     1
@@ -38,14 +38,14 @@ static mut cpu_tlb: cpu_tlb_fns = unsafe { core::mem::zeroed() };
 static mut cpu_user: cpu_user_fns = unsafe { core::mem::zeroed() };
 #[cfg(feature = "MULTI_CACHE")]
 static mut cpu_cache: cpu_cache_fns = unsafe { core::mem::zeroed() };
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 static mut outer_cache: outer_cache_fns = unsafe { core::mem::zeroed() };
 
 pub static mut __cpu_architecture: i32 = CPU_ARCH_UNKNOWN;
 
 #[repr(C)]
 struct stack { irq: [u32; 4], abt: [u32; 4], und: [u32; 4], fiq: [u32; 4] }
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 static mut stacks: [stack; NR_CPUS] = unsafe { core::mem::zeroed() };
 
 pub static mut elf_platform: [i8; ELF_PLATFORM_SIZE] = [0; ELF_PLATFORM_SIZE];
@@ -74,9 +74,9 @@ static mut io_res: [stack_resource; 3] = [
 static proc_arch: [&[u8]; 17] = [b"undefined/unknown", b"3", b"4", b"4T", b"5", b"5T", b"5TE", b"5TEJ", b"6TEJ", b"7", b"7M", b"?(12)", b"?(13)", b"?(14)", b"?(15)", b"?(16)", b"?(17)"];
 
 unsafe fn __get_cpu_architecture() -> i32 {
-    #[cfg(feature = "CONFIG_CPU_V7M")]
+    #[cfg(CONFIG_CPU_V7M)]
     { return CPU_ARCH_ARMv7M; }
-    #[cfg(not(feature = "CONFIG_CPU_V7M"))]
+    #[cfg(not(CONFIG_CPU_V7M))]
     {
         let id = read_cpuid_id();
         if id & 0x0008f000 == 0 { CPU_ARCH_UNKNOWN }
@@ -103,7 +103,7 @@ unsafe fn cacheid_init() {
     if arch >= CPU_ARCH_ARMv6 {
         let ct = read_cpuid_cachetype();
         if arch == CPU_ARCH_ARMv7M && ct & 0xf000f == 0 { cacheid = 0; }
-        else if ct & (7 << 29) == 4 << 29 { arch = CPU_ARCH_ARMv7; cacheid = CACHEID_VIPT_NONALIASING; match ct & (3 << 14) { 1 << 14 => cacheid |= CACHEID_ASID_TAGGED, 3 << 14 => cacheid |= CACHEID_PIPT, _ => {} } }
+        else if ct & (7 << 29) == 4 << 29 { arch = CPU_ARCH_ARMv7; cacheid = CACHEID_VIPT_NONALIASING; match (ct >> 14) & 3 { 1 => cacheid |= CACHEID_ASID_TAGGED, 3 => cacheid |= CACHEID_PIPT, _ => {} } }
         else { arch = CPU_ARCH_ARMv6; cacheid = if ct & (1 << 23) != 0 { CACHEID_VIPT_ALIASING } else { CACHEID_VIPT_NONALIASING }; }
         if cpu_has_aliasing_icache(arch as u32) != 0 { cacheid |= CACHEID_VIPT_I_ALIASING; }
     } else { cacheid = CACHEID_VIVT; }
@@ -127,7 +127,7 @@ unsafe fn smp_setup_processor_id() { let mpidr = if is_smp() { read_cpuid_mpidr(
 
 unsafe fn arm_add_memory(mut start: u64, mut size: u64) -> i32 { let aligned = PAGE_ALIGN(start); if aligned > start + size { size = 0; } else { size -= aligned - start; } if aligned < PHYS_OFFSET { if aligned + size <= PHYS_OFFSET { return -EINVAL; } size -= PHYS_OFFSET - aligned; start = PHYS_OFFSET; } else { start = aligned; } size &= !(PAGE_SIZE as u64 - 1); if size == 0 { return -EINVAL; } memblock_add(start, size); 0 }
 
-unsafe fn hyp_mode_check() { #[cfg(feature = "CONFIG_ARM_VIRT_EXT")] { sync_boot_mode(); if is_hyp_mode_available() { pr_info!("CPU: All CPU(s) started in HYP mode.\n"); pr_info!("CPU: Virtualization extensions available.\n"); } else if is_hyp_mode_mismatched() { pr_warn!("CPU: WARNING: CPU(s) started in wrong/inconsistent modes\n"); } else { pr_info!("CPU: All CPU(s) started in SVC mode.\n"); } } }
+unsafe fn hyp_mode_check() { #[cfg(CONFIG_ARM_VIRT_EXT)] { sync_boot_mode(); if is_hyp_mode_available() { pr_info!("CPU: All CPU(s) started in HYP mode.\n"); pr_info!("CPU: Virtualization extensions available.\n"); } else if is_hyp_mode_mismatched() { pr_warn!("CPU: WARNING: CPU(s) started in wrong/inconsistent modes\n"); } else { pr_info!("CPU: All CPU(s) started in SVC mode.\n"); } } }
 
 unsafe fn customize_machine() -> i32 { if !machine_desc.is_null() && (*machine_desc).init_machine.is_some() { ((*machine_desc).init_machine.unwrap())(); } 0 }
 unsafe fn init_machine_late() -> i32 { if !machine_desc.is_null() && (*machine_desc).init_late.is_some() { ((*machine_desc).init_late.unwrap())(); } 0 }

@@ -7,7 +7,7 @@ use core::ffi::c_void;
 #[repr(C)]
 pub union gpio_irq_fwspec {
     pub fwspec: irq_fwspec,
-    #[cfg(feature = "CONFIG_GENERIC_MSI_IRQ")]
+    #[cfg(CONFIG_GENERIC_MSI_IRQ)]
     pub msiinfo: msi_alloc_info_t,
 }
 
@@ -15,17 +15,17 @@ pub union gpio_irq_fwspec {
 pub struct gpio_irq_chip {
     pub chip: *mut irq_chip,
     pub domain: *mut irq_domain,
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
     pub fwnode: *mut fwnode_handle,
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
     pub parent_domain: *mut irq_domain,
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
     pub child_to_parent_hwirq: Option<unsafe extern "C" fn(*mut gpio_chip, u32, u32, *mut u32, *mut u32) -> i32>,
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
     pub populate_parent_alloc_arg: Option<unsafe extern "C" fn(*mut gpio_chip, *mut gpio_irq_fwspec, u32, u32) -> i32>,
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
     pub child_offset_to_irq: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> u32>,
-    #[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+    #[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
     pub child_irq_domain_ops: irq_domain_ops,
     pub handler: irq_flow_handler_t,
     pub default_type: u32,
@@ -78,13 +78,13 @@ pub struct gpio_chip {
     pub offset: u16,
     pub names: *const *const i8,
     pub can_sleep: bool,
-    #[cfg(feature = "CONFIG_GPIOLIB_IRQCHIP")]
+    #[cfg(CONFIG_GPIOLIB_IRQCHIP)]
     pub irq: gpio_irq_chip,
-    #[cfg(feature = "CONFIG_OF_GPIO")]
+    #[cfg(CONFIG_OF_GPIO)]
     pub of_gpio_n_cells: u32,
-    #[cfg(feature = "CONFIG_OF_GPIO")]
+    #[cfg(CONFIG_OF_GPIO)]
     pub of_node_instance_match: Option<unsafe extern "C" fn(*mut gpio_chip, u32) -> bool>,
-    #[cfg(feature = "CONFIG_OF_GPIO")]
+    #[cfg(CONFIG_OF_GPIO)]
     pub of_xlate: Option<unsafe extern "C" fn(*mut gpio_chip, *const of_phandle_args, *mut u32) -> i32>,
 }
 
@@ -94,7 +94,7 @@ pub struct _gpiochip_for_each_data {
     pub i: *mut u32,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn gpiochip_dup_line_label(gc: *mut gpio_chip, offset: u32) -> *mut i8;
     pub fn gpiochip_add_data_with_key(gc: *mut gpio_chip, data: *mut c_void, lock_key: *mut lock_class_key, request_key: *mut lock_class_key) -> i32;
     pub fn gpiochip_remove(gc: *mut gpio_chip);
@@ -144,12 +144,12 @@ pub struct gpio_pin_range {
     pub range: pinctrl_gpio_range,
 }
 
-#[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+#[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
 pub unsafe extern "C" fn gpiochip_populate_parent_fwspec_twocell(gc: *mut gpio_chip, gfwspec: *mut gpio_irq_fwspec, parent_hwirq: u32, parent_type: u32) -> i32;
-#[cfg(feature = "CONFIG_IRQ_DOMAIN_HIERARCHY")]
+#[cfg(CONFIG_IRQ_DOMAIN_HIERARCHY)]
 pub unsafe extern "C" fn gpiochip_populate_parent_fwspec_fourcell(gc: *mut gpio_chip, gfwspec: *mut gpio_irq_fwspec, parent_hwirq: u32, parent_type: u32) -> i32;
 
-#[cfg(feature = "CONFIG_GPIOLIB")]
+#[cfg(CONFIG_GPIOLIB)]
 pub unsafe extern "C" fn gpiochip_irqchip_add_domain(gc: *mut gpio_chip, domain: *mut irq_domain) -> i32;
 
 // C macros preserved in intent; callers may provide equivalent Rust iteration:
@@ -157,19 +157,19 @@ pub unsafe extern "C" fn gpiochip_irqchip_add_domain(gc: *mut gpio_chip, domain:
 // for_each_requested_gpio, gpiochip_add_data, devm_gpiochip_add_data,
 // GPIOCHIP_IRQ_RESOURCE_HELPERS, and for_each_gpiochip_node.
 
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 pub unsafe fn gpiochip_add_pin_range(gc: *mut gpio_chip, pinctl_name: *const i8, gpio_offset: u32, pin_offset: u32, npins: u32) -> i32 {
     gpiochip_add_pin_range_with_pins(gc, pinctl_name, gpio_offset, pin_offset, core::ptr::null(), npins)
 }
 
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 pub unsafe fn gpiochip_add_sparse_pin_range(gc: *mut gpio_chip, pinctl_name: *const i8, gpio_offset: u32, pins: *const u32, npins: u32) -> i32 {
     gpiochip_add_pin_range_with_pins(gc, pinctl_name, gpio_offset, 0, pins, npins)
 }
 
-#[cfg(feature = "CONFIG_GPIOLIB")]
+#[cfg(CONFIG_GPIOLIB)]
 pub unsafe extern "C" fn gpiochip_node_count(_dev: *mut device) -> u32;
-#[cfg(feature = "CONFIG_GPIOLIB")]
+#[cfg(CONFIG_GPIOLIB)]
 pub unsafe extern "C" fn gpiochip_node_get_first(_dev: *mut device) -> *mut fwnode_handle;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -7,7 +7,7 @@
  * C header dependencies are supplied by the surrounding kernel translation.
  */
 
-#[cfg(feature = "CONFIG_CONSOLE_TRANSLATIONS")]
+#[cfg(CONFIG_CONSOLE_TRANSLATIONS)]
 extern "C" {
     pub fn kd_mksound(hz: u32, ticks: u32);
     pub fn kbd_rate(rep: *mut kbd_repeat) -> i32;
@@ -74,27 +74,27 @@ extern "C" {
     pub fn vt_kbd_con_stop(console: u32);
 }
 
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_set_trans_old(_table: *mut u8) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_get_trans_old(_table: *mut u8) -> i32 { -EINVAL }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_set_trans_new(_table: *mut u16) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_get_trans_new(_table: *mut u16) -> i32 { -EINVAL }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_clear_unimap(_vc: *mut vc_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_set_unimap(_vc: *mut vc_data, _ct: u16, _list: *mut unipair) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_get_unimap(_vc: *mut vc_data, _ct: u16, _uct: *mut u16, _list: *mut unipair) -> i32 { -EINVAL }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_set_default_unimap(_vc: *mut vc_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_free_unimap(_vc: *mut vc_data) {}
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_protect_unimap(_vc: *mut vc_data, _rdonly: i32) {}
-#[cfg(not(feature = "CONFIG_CONSOLE_TRANSLATIONS"))]
+#[cfg(not(CONFIG_CONSOLE_TRANSLATIONS))]
 pub unsafe fn con_copy_unimap(_dst_vc: *mut vc_data, _src_vc: *mut vc_data) -> i32 { 0 }
 
 extern "C" {

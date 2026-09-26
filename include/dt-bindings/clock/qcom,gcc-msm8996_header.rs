@@ -3,9 +3,7 @@
  * Copyright (c) 2015, The Linux Foundation. All rights reserved.
  */
 
-// Translated from qcom,gcc-msm8996.h. C preprocessor header guards removed.
 
-+pub const _DT_BINDINGS_CLK_MSM_GCC_8996_H: u32 = ;
 pub const GPLL0_EARLY: u32 = 0;
 pub const GPLL0: u32 = 1;
 pub const GPLL1_EARLY: u32 = 2;
@@ -236,6 +234,7 @@ pub const GCC_DCC_AHB_CLK: u32 = 226;
 pub const GCC_AGGRE0_NOC_MPU_CFG_AHB_CLK: u32 = 227;
 pub const GCC_MMSS_GPLL0_DIV_CLK: u32 = 228;
 pub const GCC_MSS_GPLL0_DIV_CLK: u32 = 229;
+
 pub const GCC_SYSTEM_NOC_BCR: u32 = 0;
 pub const GCC_CONFIG_NOC_BCR: u32 = 1;
 pub const GCC_PERIPH_NOC_BCR: u32 = 2;
@@ -342,6 +341,9 @@ pub const GCC_PCIE_PHY_COM_NOCSR_BCR: u32 = 102;
 pub const GCC_USB3_PHY_BCR: u32 = 103;
 pub const GCC_USB3PHY_PHY_BCR: u32 = 104;
 pub const GCC_MSS_RESTART: u32 = 105;
+
+
+/* Indexes for GDSCs */
 pub const AGGRE0_NOC_GDSC: u32 = 0;
 pub const HLOS1_VOTE_AGGRE0_NOC_GDSC: u32 = 1;
 pub const HLOS1_VOTE_LPASS_ADSP_GDSC: u32 = 2;

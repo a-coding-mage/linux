@@ -658,7 +658,7 @@ pub struct hubp_disable_control_params {
 #[repr(C)]
 pub struct hubbub_soft_reset_params {
 	*mut hubbubhubbub;
-	void (*hubbub_soft_reset)(*mut hubbubhubbub, bool reset);
+	void (*hubbub_soft_reset)(*mut hubbubhubbub, reset: bool);
 	bool reset;
 };
 
@@ -1547,8 +1547,8 @@ pub const MAX_HWSS_BLOCK_SEQUENCE_SIZE: usize = HWSS_BLOCK_SEQUENCE_FUNC_COUNT *
 pub struct hw_sequencer_funcs {
 	void (*hardware_release)(*mut dcdc);
 	/* Embedded Display Related */
-	void (*edp_power_control)(*mut dc_linklink, bool enable);
-	void (*edp_wait_for_hpd_ready)(*mut dc_linklink, bool power_up);
+	void (*edp_power_control)(*mut dc_linklink, enable: bool);
+	void (*edp_wait_for_hpd_ready)(*mut dc_linklink, power_up: bool);
 	void (*edp_wait_for_T12)(*mut dc_linklink);
 
 	/* Pipe Programming Related */
@@ -1561,7 +1561,7 @@ pub struct hw_sequencer_funcs {
 	void (*disable_plane)(*mut dcdc, *mut dc_statestate, *mut pipe_ctxpipe_ctx);
 	void (*disable_plane_sequence)(*mut dcdc, *mut dc_statestate, *mut pipe_ctxpipe_ctx,
 		*mut block_sequence_stateseq_state);
-	void (*disable_pixel_data)(*mut dcdc, *mut pipe_ctxpipe_ctx, bool blank);
+	void (*disable_pixel_data)(*mut dcdc, *mut pipe_ctxpipe_ctx, blank: bool);
 	void (*apply_ctx_for_surface)(*mut dcdc,
 			const *mut dc_stream_statestream,
 			int num_planes, *mut dc_statecontext);
@@ -1584,12 +1584,12 @@ pub struct hw_sequencer_funcs {
 			*mut block_sequence_stateseq_state);
 	void (*edp_backlight_control)(
 			*mut dc_linklink,
-			bool enable);
+			enable: bool);
 	void (*program_triplebuffer)(const *mut dcdc,
 		*mut pipe_ctxpipe_ctx, bool enableTripleBuffer);
 	void (*update_pending_status)(*mut pipe_ctxpipe_ctx);
-	void (*update_dsc_pg)(*mut dcdc, *mut dc_statecontext, bool safe_to_disable);
-	void (*clear_surface_dcc_and_tiling)(*mut pipe_ctxpipe_ctx, *mut dc_plane_stateplane_state, bool clear_tiling);
+	void (*update_dsc_pg)(*mut dcdc, *mut dc_statecontext, safe_to_disable: bool);
+	void (*clear_surface_dcc_and_tiling)(*mut pipe_ctxpipe_ctx, *mut dc_plane_stateplane_state, clear_tiling: bool);
 
 	/* Pipe Lock Related */
 	void (*pipe_control_lock)(*mut dcdc,
@@ -1597,8 +1597,8 @@ pub struct hw_sequencer_funcs {
 	void (*interdependent_update_lock)(*mut dcdc,
 			*mut dc_statecontext, bool lock);
 	void (*set_flip_control_gsl)(*mut pipe_ctxpipe_ctx,
-			bool flip_immediate);
-	void (*cursor_lock)(*mut dcdc, *mut pipe_ctxpipe, bool lock);
+			flip_immediate: bool);
+	void (*cursor_lock)(*mut dcdc, *mut pipe_ctxpipe, lock: bool);
 
 	/* Timing Related */
 	void (*get_position)(*mut pipe_ctx*pipe_ctx, int num_pipes,
@@ -1621,7 +1621,7 @@ pub struct hw_sequencer_funcs {
 	void (*setup_periodic_interrupt)(*mut dcdc,
 			*mut pipe_ctxpipe_ctx);
 	void (*set_drr)(*mut pipe_ctx*pipe_ctx, int num_pipes,
-			struct dc_crtc_timing_adjust adjust);
+			dc_crtc_timing_adjust adjust);
 	void (*set_static_screen_control)(*mut pipe_ctx*pipe_ctx,
 			int num_pipes,
 			const *mut dc_static_screen_paramsevents);
@@ -1645,11 +1645,11 @@ pub struct hw_sequencer_funcs {
 			*mut block_sequence_stateseq_state);
 
 	/* Infopacket Related */
-	void (*set_avmute)(*mut pipe_ctxpipe_ctx, bool enable);
+	void (*set_avmute)(*mut pipe_ctxpipe_ctx, enable: bool);
 	void (*send_immediate_sdp_message)(
 			*mut pipe_ctxpipe_ctx,
 			const u8 *custom_sdp_message,
-			u32 sdp_message_size);
+			sdp_message_size: u32);
 	void (*update_info_frame)(*mut pipe_ctxpipe_ctx);
 	void (*set_dmdata_attributes)(*mut pipe_ctxpipe);
 	void (*program_dmdata_engine)(*mut pipe_ctxpipe_ctx);
@@ -1670,7 +1670,7 @@ pub struct hw_sequencer_funcs {
 	/* Colour Related */
 	void (*program_gamut_remap)(*mut program_gamut_remap_paramsparams);
 	void (*program_output_csc)(*mut dcdc, *mut pipe_ctxpipe_ctx,
-			enum dc_color_space colorspace,
+			dc_color_space colorspace,
 			u16 *matrix, int opp_id);
 	void (*trigger_3dlut_dma_load)(*mut pipe_ctxpipe_ctx);
 
@@ -1691,13 +1691,13 @@ pub struct hw_sequencer_funcs {
 			*mut dc_writeback_infowb_info,
 			*mut dc_statecontext);
 	void (*disable_writeback)(*mut dcdc,
-			u32 dwb_pipe_inst);
+			dwb_pipe_inst: u32);
 
 	/* Clock Related */
 	enum dc_status (*set_clock)(*mut dcdc,
-			enum dc_clock_type clock_type,
-			u32 clk_khz, u32 stepping);
-	void (*get_clock)(*mut dcdc, enum dc_clock_type clock_type,
+			dc_clock_type clock_type,
+			clk_khz: u32, stepping: u32);
+	void (*get_clock)(*mut dcdc, dc_clock_type clock_type,
 			*mut dc_clock_configclock_cfg);
 	void (*optimize_pwr_state)(const *mut dcdc,
 			*mut dc_statecontext);
@@ -1719,8 +1719,8 @@ pub struct hw_sequencer_funcs {
 	void (*log_color_state)(*mut dcdc,
 				*mut dc_log_buffer_ctxlog_ctx);
 	void (*get_hw_state)(*mut dcdc, char *pBuf,
-			u32 bufSize, u32 mask);
-	void (*clear_status_bits)(*mut dcdc, u32 mask);
+			bufSize: u32, mask: u32);
+	void (*clear_status_bits)(*mut dcdc, mask: u32);
 
 	bool (*set_backlight_level)(*mut pipe_ctxpipe_ctx,
 		*mut set_backlight_level_paramsparams);
@@ -1731,24 +1731,24 @@ pub struct hw_sequencer_funcs {
 
 	void (*enable_dp_link_output)(*mut dc_linklink,
 			const *mut link_resourcelink_res,
-			enum signal_type signal,
-			enum clock_source_id clock_source,
+			signal_type signal,
+			clock_source_id clock_source,
 			const *mut dc_link_settingslink_settings);
 	void (*enable_tmds_link_output)(*mut dc_linklink,
 			const *mut link_resourcelink_res,
-			enum signal_type signal,
-			enum clock_source_id clock_source,
-			enum dc_color_depth color_depth,
-			u32 pixel_clock);
+			signal_type signal,
+			clock_source_id clock_source,
+			dc_color_depth color_depth,
+			pixel_clock: u32);
 	void (*enable_lvds_link_output)(*mut dc_linklink,
 			const *mut link_resourcelink_res,
-			enum clock_source_id clock_source,
-			u32 pixel_clock);
+			clock_source_id clock_source,
+			pixel_clock: u32);
 	void (*enable_analog_link_output)(*mut dc_linklink,
-			u32 pixel_clock);
+			pixel_clock: u32);
 	void (*disable_link_output)(*mut dc_linklink,
 			const *mut link_resourcelink_res,
-			enum signal_type signal);
+			signal_type signal);
 	bool (*dac_load_detect)(*mut dc_linklink);
 	void (*prepare_ddc)(*mut dc_linklink);
 
@@ -1757,28 +1757,28 @@ pub struct hw_sequencer_funcs {
 	enum dc_status (*setup_hdmi_frl_link)(
 			*mut dc_linklink,
 			int hpo_inst,
-			enum clock_source_id frl_phy_clock_source_id);
+			clock_source_id frl_phy_clock_source_id);
 
 	u32 (*get_max_dispclk_mhz)(*mut dcdc,
 			*mut dc_statecontext);
 
 	/* Idle Optimization Related */
-	bool (*apply_idle_power_optimizations)(*mut dcdc, bool enable);
+	bool (*apply_idle_power_optimizations)(*mut dcdc, enable: bool);
 
 	bool (*does_plane_fit_in_mall)(*mut dcdc,
-			u32 pitch,
-			u32 height,
-			enum surface_pixel_format format,
+			pitch: u32,
+			height: u32,
+			surface_pixel_format format,
 			*mut dc_cursor_attributescursor_attr);
 	void (*commit_subvp_config)(*mut dcdc, *mut dc_statecontext);
 	void (*enable_phantom_streams)(*mut dcdc, *mut dc_statecontext);
 	void (*disable_phantom_streams)(*mut dcdc, *mut dc_statecontext);
 	void (*subvp_pipe_control_lock)(*mut dcdc,
 			*mut dc_statecontext,
-			bool lock,
-			bool should_lock_all_pipes,
+			lock: bool,
+			should_lock_all_pipes: bool,
 			*mut pipe_ctxtop_pipe_to_program,
-			bool subvp_prev_use);
+			subvp_prev_use: bool);
 	void (*subvp_pipe_control_lock_fast)(*mut block_sequence_paramsparams);
 
 	void (*z10_restore)(const *mut dcdc);
@@ -1788,9 +1788,9 @@ pub struct hw_sequencer_funcs {
 
 	void (*set_disp_pattern_generator)(const *mut dcdc,
 			*mut pipe_ctxpipe_ctx,
-			enum controller_dp_test_pattern test_pattern,
-			enum controller_dp_color_space color_space,
-			enum dc_color_depth color_depth,
+			controller_dp_test_pattern test_pattern,
+			controller_dp_color_space color_space,
+			dc_color_depth color_depth,
 			const *mut tg_colorsolid_color,
 			int width, int height, int offset);
 	void (*blank_phantom)(*mut dcdc,
@@ -1822,15 +1822,15 @@ pub struct hw_sequencer_funcs {
 		const *mut pipe_ctxtop_pipe_to_program);
 	void (*dmub_hw_control_lock)(*mut dcdc,
 			*mut dc_statecontext,
-			bool lock);
+			lock: bool);
 	void (*fams2_update_config)(*mut dcdc,
 			*mut dc_statecontext,
-			bool enable);
+			enable: bool);
 	void (*dmub_hw_control_lock_fast)(*mut block_sequence_paramsparams);
-	void (*set_long_vtotal)(*mut pipe_ctx*pipe_ctx, int num_pipes, u32 v_total_min, u32 v_total_max);
+	void (*set_long_vtotal)(*mut pipe_ctx*pipe_ctx, int num_pipes, v_total_min: u32, v_total_max: u32);
 	void (*program_outstanding_updates)(*mut dcdc,
 			*mut dc_statecontext);
-	void (*setup_hpo_hw_control)(const *mut dce_hwseqhws, bool enable);
+	void (*setup_hpo_hw_control)(const *mut dce_hwseqhws, enable: bool);
 	void (*wait_for_all_pending_updates)(const *mut pipe_ctxpipe_ctx);
 	void (*detect_pipe_changes)(*mut dc_stateold_state,
 			*mut dc_statenew_state,
@@ -1876,14 +1876,14 @@ pub struct hw_sequencer_funcs {
 
 void color_space_to_black_color(
 	const *mut dcdc,
-	enum dc_color_space colorspace,
+	dc_color_space colorspace,
 	*mut tg_colorblack_color);
 
 bool hwss_wait_for_blank_complete(
 		*mut timing_generatortg);
 
 const u16 *find_color_matrix(
-		enum dc_color_space color_space,
+		dc_color_space color_space,
 		u32 *array_size);
 
 void get_surface_tile_visual_confirm_color(
@@ -1942,25 +1942,25 @@ void set_drr_and_clear_adjust_pending(
 		*mut drr_paramsparams);
 
 void hwss_execute_sequence(*mut dcdc,
-		struct block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
+		block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
 		int num_steps);
 
 void hwss_build_fast_sequence(*mut dcdc,
 		*mut dc_dmub_cmddc_dmub_cmd,
-		u32 dmub_cmd_count,
-		struct block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
+		dmub_cmd_count: u32,
+		block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
 		u32 *num_steps,
 		*mut pipe_ctxpipe_ctx,
 		*mut dc_stream_statusstream_status,
 		*mut dc_statecontext);
 
 void hwss_build_full_sequence(*mut dcdc,
-	struct block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
+	block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
 	u32 *num_steps,
 	*mut dc_statecontext, bool program_phantom_pipe);
 
 void hwss_build_post_unlock_full_sequence(*mut dcdc,
-	struct block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
+	block_sequence block_sequence[MAX_HWSS_BLOCK_SEQUENCE_SIZE],
 	u32 *num_steps,
 	*mut dc_statecontext);
 
@@ -2319,13 +2319,13 @@ void hwss_add_mpc_power_on_mpc_mem_pwr(*mut block_sequence_stateseq_state,
 		*mut mpcmpc, int mpcc_id, bool power_on);
 
 void hwss_add_mpc_set_output_csc(*mut block_sequence_stateseq_state,
-		*mut mpcmpc, int opp_id, const u16 *regval, enum mpc_output_csc_mode ocsc_mode);
+		*mut mpcmpc, int opp_id, const u16 *regval, mpc_output_csc_mode ocsc_mode);
 
 void hwss_add_mpc_set_ocsc_default(*mut block_sequence_stateseq_state,
-		*mut mpcmpc, int opp_id, enum dc_color_space colorspace, enum mpc_output_csc_mode ocsc_mode);
+		*mut mpcmpc, int opp_id, dc_color_space colorspace, mpc_output_csc_mode ocsc_mode);
 
 void hwss_add_dmub_send_dmcub_cmd(*mut block_sequence_stateseq_state,
-		*mut dc_contextctx, *mut dmub_rb_cmdcmd, enum dm_dmub_wait_type wait_type);
+		*mut dc_contextctx, *mut dmub_rb_cmdcmd, dm_dmub_wait_type wait_type);
 
 void hwss_add_dmub_subvp_save_surf_addr(*mut block_sequence_stateseq_state,
 		*mut dc_dmub_srvdc_dmub_srv, *mut dc_plane_addressaddr, u8 subvp_index);
@@ -2352,13 +2352,13 @@ void hwss_add_optc_set_odm_bypass(*mut block_sequence_stateseq_state,
 void hwss_add_tg_program_global_sync(*mut block_sequence_stateseq_state,
 		*mut timing_generatortg,
 		int vready_offset,
-		u32 vstartup_lines,
-		u32 vupdate_offset_pixels,
-		u32 vupdate_vupdate_width_pixels,
-		u32 pstate_keepout_start_lines);
+		vstartup_lines: u32,
+		vupdate_offset_pixels: u32,
+		vupdate_vupdate_width_pixels: u32,
+		pstate_keepout_start_lines: u32);
 
 void hwss_add_tg_wait_for_state(*mut block_sequence_stateseq_state,
-		*mut timing_generatortg, enum crtc_state state);
+		*mut timing_generatortg, crtc_state state);
 
 void hwss_add_tg_set_vtg_params(*mut block_sequence_stateseq_state,
 		*mut timing_generatortg, *mut dc_crtc_timingdc_crtc_timing, bool program_fp2);
@@ -2385,8 +2385,8 @@ void hwss_add_hubp_program_det_segments(*mut block_sequence_stateseq_state,
 		*mut hubbubhubbub, u32 hubp_inst, u32 det_size);
 
 void hwss_add_opp_set_dyn_expansion(*mut block_sequence_stateseq_state,
-		*mut output_pixel_processoropp, enum dc_color_space color_sp,
-		enum dc_color_depth color_dpth, enum signal_type signal);
+		*mut output_pixel_processoropp, dc_color_space color_sp,
+		dc_color_depth color_dpth, signal_type signal);
 
 void hwss_add_opp_program_fmt(*mut block_sequence_stateseq_state,
 		*mut output_pixel_processoropp, *mut bit_depth_reduction_paramsfmt_bit_depth,
@@ -2436,28 +2436,28 @@ void hwss_add_abm_set_immediate_disable(*mut block_sequence_stateseq_state,
 
 void hwss_add_opp_set_disp_pattern_generator(*mut block_sequence_stateseq_state,
 		*mut output_pixel_processoropp,
-		enum controller_dp_test_pattern test_pattern,
-		enum controller_dp_color_space color_space,
-		enum dc_color_depth color_depth,
-		struct tg_color solid_color,
-		bool use_solid_color,
+		controller_dp_test_pattern test_pattern,
+		controller_dp_color_space color_space,
+		dc_color_depth color_depth,
+		tg_color solid_color,
+		use_solid_color: bool,
 		int width,
 		int height,
 		int offset);
 
 void hwss_add_opp_program_bit_depth_reduction(*mut block_sequence_stateseq_state,
 		*mut output_pixel_processoropp,
-		bool use_default_params,
+		use_default_params: bool,
 		*mut pipe_ctxpipe_ctx);
 
 void hwss_add_dpp_program_cm_hist(*mut block_sequence_stateseq_state,
 		*mut dppdpp,
-		struct cm_hist_control cm_hist_control,
-		enum dc_color_space color_space);
+		cm_hist_control cm_hist_control,
+		dc_color_space color_space);
 
 void hwss_add_dc_ip_request_cntl(*mut block_sequence_stateseq_state,
 		*mut dcdc,
-		bool enable);
+		enable: bool);
 
 void hwss_add_dwbc_update(*mut block_sequence_stateseq_state,
 		*mut dwbcdwb,
@@ -2466,7 +2466,7 @@ void hwss_add_dwbc_update(*mut block_sequence_stateseq_state,
 void hwss_add_mcif_wb_config_buf(*mut block_sequence_stateseq_state,
 		*mut mcif_wbmcif_wb,
 		*mut mcif_buf_paramsmcif_buf_params,
-		u32 dest_height);
+		dest_height: u32);
 
 void hwss_add_mcif_wb_config_arb(*mut block_sequence_stateseq_state,
 		*mut mcif_wbmcif_wb,
@@ -2485,7 +2485,7 @@ void hwss_add_mpc_set_dwb_mux(*mut block_sequence_stateseq_state,
 
 void hwss_add_mpc_disable_dwb_mux(*mut block_sequence_stateseq_state,
 		*mut mpcmpc,
-		u32 dwb_id);
+		dwb_id: u32);
 
 void hwss_add_dwbc_enable(*mut block_sequence_stateseq_state,
 		*mut dwbcdwb,
@@ -2496,34 +2496,34 @@ void hwss_add_dwbc_disable(*mut block_sequence_stateseq_state,
 
 void hwss_add_tg_set_gsl(*mut block_sequence_stateseq_state,
 		*mut timing_generatortg,
-		struct gsl_params gsl);
+		gsl_params gsl);
 
 void hwss_add_tg_set_gsl_source_select(*mut block_sequence_stateseq_state,
 		*mut timing_generatortg,
 		int group_idx,
-		u32 gsl_ready_signal);
+		gsl_ready_signal: u32);
 
 void hwss_add_hubp_update_mall_sel(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		u32 mall_sel,
-		bool cache_cursor);
+		mall_sel: u32,
+		cache_cursor: bool);
 
 void hwss_add_hubp_prepare_subvp_buffering(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		bool enable);
+		enable: bool);
 
 void hwss_add_hubp_set_blank_en(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		bool enable);
+		enable: bool);
 
 void hwss_add_hubp_disable_control(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		bool disable);
+		disable: bool);
 
 void hwss_add_hubbub_soft_reset(*mut block_sequence_stateseq_state,
 		*mut hubbubhubbub,
-		void (*hubbub_soft_reset)(*mut hubbubhubbub, bool reset),
-		bool reset);
+		void (*hubbub_soft_reset)(*mut hubbubhubbub, reset: bool),
+		reset: bool);
 
 void hwss_add_hubbub_perfmon_reset(*mut block_sequence_stateseq_state,
 		*mut hubbubhubbub);
@@ -2575,12 +2575,12 @@ void hwss_add_hubbub_perfmon_get_urgent_ramp_latency(*mut block_sequence_statese
 
 void hwss_add_hubp_clk_cntl(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		bool enable);
+		enable: bool);
 
 void hwss_add_dpp_dppclk_control(*mut block_sequence_stateseq_state,
 		*mut dppdpp,
-		bool dppclk_div,
-		bool enable);
+		dppclk_div: bool,
+		enable: bool);
 
 void hwss_add_disable_phantom_crtc(*mut block_sequence_stateseq_state,
 		*mut timing_generatortg);
@@ -2588,7 +2588,7 @@ void hwss_add_disable_phantom_crtc(*mut block_sequence_stateseq_state,
 void hwss_add_dsc_pg_status(*mut block_sequence_stateseq_state,
 		*mut dce_hwseqhws,
 		int dsc_inst,
-		bool is_ungated);
+		is_ungated: bool);
 
 void hwss_add_dsc_wait_disconnect_pending_clear(*mut block_sequence_stateseq_state,
 		*mut display_stream_compressordsc,
@@ -2605,22 +2605,22 @@ void hwss_add_dccg_set_ref_dscclk(*mut block_sequence_stateseq_state,
 
 void hwss_add_dpp_root_clock_control(*mut block_sequence_stateseq_state,
 		*mut dce_hwseqhws,
-		u32 dpp_inst,
-		bool clock_on);
+		dpp_inst: u32,
+		clock_on: bool);
 
 void hwss_add_dpp_pg_control(*mut block_sequence_stateseq_state,
 		*mut dce_hwseqhws,
-		u32 dpp_inst,
-		bool power_on);
+		dpp_inst: u32,
+		power_on: bool);
 
 void hwss_add_hubp_pg_control(*mut block_sequence_stateseq_state,
 		*mut dce_hwseqhws,
-		u32 hubp_inst,
-		bool power_on);
+		hubp_inst: u32,
+		power_on: bool);
 
 void hwss_add_hubp_set_blank(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		bool blank);
+		blank: bool);
 
 void hwss_add_hubp_init(*mut block_sequence_stateseq_state,
 		*mut hubphubp);
@@ -2633,7 +2633,7 @@ void hwss_add_dpp_reset(*mut block_sequence_stateseq_state,
 
 void hwss_add_opp_pipe_clock_control(*mut block_sequence_stateseq_state,
 		*mut output_pixel_processoropp,
-		bool enable);
+		enable: bool);
 
 void hwss_add_hubp_set_vm_system_aperture_settings(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
@@ -2651,7 +2651,7 @@ void hwss_add_dccg_update_dpp_dto(*mut block_sequence_stateseq_state,
 
 void hwss_add_hubp_vtg_sel(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		u32 otg_inst);
+		otg_inst: u32);
 
 void hwss_add_hubp_setup2(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
@@ -2668,7 +2668,7 @@ void hwss_add_hubp_setup(*mut block_sequence_stateseq_state,
 
 void hwss_add_hubp_set_unbounded_requesting(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		bool unbounded_req);
+		unbounded_req: bool);
 
 void hwss_add_hubp_setup_interdependent2(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
@@ -2680,12 +2680,12 @@ void hwss_add_hubp_setup_interdependent(*mut block_sequence_stateseq_state,
 		*mut _vcs_dpi_display_ttu_regs_stttu_regs);
 void hwss_add_hubp_program_surface_config(*mut block_sequence_stateseq_state,
 		*mut hubphubp,
-		enum surface_pixel_format format,
+		surface_pixel_format format,
 		*mut dc_tiling_infotiling_info,
-		struct plane_size plane_size,
-		enum dc_rotation_angle rotation,
+		plane_size plane_size,
+		dc_rotation_angle rotation,
 		*mut dc_plane_dcc_paramdcc,
-		bool horizontal_mirror,
+		horizontal_mirror: bool,
 		int compat_level);
 
 void hwss_add_dpp_setup_dpp(*mut block_sequence_stateseq_state,
@@ -2693,12 +2693,12 @@ void hwss_add_dpp_setup_dpp(*mut block_sequence_stateseq_state,
 
 void hwss_add_dpp_set_cursor_matrix(*mut block_sequence_stateseq_state,
 		*mut dppdpp,
-		enum dc_color_space color_space,
+		dc_color_space color_space,
 		*mut dc_csc_transformcursor_csc_color_matrix);
 
 void hwss_add_mpc_update_blending(*mut block_sequence_stateseq_state,
 		*mut mpcmpc,
-		struct mpcc_blnd_cfg blnd_cfg,
+		mpcc_blnd_cfg blnd_cfg,
 		int mpcc_id);
 
 void hwss_add_mpc_assert_idle_mpcc(*mut block_sequence_stateseq_state,
@@ -2708,7 +2708,7 @@ void hwss_add_mpc_assert_idle_mpcc(*mut block_sequence_stateseq_state,
 void hwss_add_mpc_insert_plane(*mut block_sequence_stateseq_state,
 		*mut mpcmpc,
 		*mut mpc_treempc_tree_params,
-		struct mpcc_blnd_cfg blnd_cfg,
+		mpcc_blnd_cfg blnd_cfg,
 		*mut mpcc_sm_cfgsm_cfg,
 		*mut mpccinsert_above_mpcc,
 		int dpp_id,
@@ -2750,7 +2750,7 @@ void hwss_add_set_cursor_sdr_white_level(*mut block_sequence_stateseq_state,
 void hwss_add_program_output_csc(*mut block_sequence_stateseq_state,
 		*mut dcdc,
 		*mut pipe_ctxpipe_ctx,
-		enum dc_color_space colorspace,
+		dc_color_space colorspace,
 		u16 *matrix,
 		int opp_id);
 
@@ -2766,7 +2766,7 @@ void hwss_add_hubbub_apply_dedcn21_147_wa(*mut block_sequence_stateseq_state,
 
 void hwss_add_hubbub_allow_self_refresh_control(*mut block_sequence_stateseq_state,
 		*mut hubbubhubbub,
-		bool allow,
+		allow: bool,
 		bool *disallow_self_refresh_applied);
 
 void hwss_add_tg_get_frame_count(*mut block_sequence_stateseq_state,
@@ -2776,12 +2776,12 @@ void hwss_add_tg_get_frame_count(*mut block_sequence_stateseq_state,
 void hwss_add_tg_set_dsc_config(*mut block_sequence_stateseq_state,
 		*mut timing_generatortg,
 		*mut dsc_optc_configdsc_optc_cfg,
-		bool enable);
+		enable: bool);
 
 void hwss_add_opp_program_left_edge_extra_pixel(*mut block_sequence_stateseq_state,
 		*mut output_pixel_processoropp,
-		enum dc_pixel_encoding pixel_encoding,
-		bool is_otg_master);
+		dc_pixel_encoding pixel_encoding,
+		is_otg_master: bool);
 
 void hwss_add_hubp_enable_3dlut_fl(*mut block_sequence_stateseq_state,
 		*mut hubphubp);
@@ -2793,7 +2793,7 @@ void hwss_add_begin_cursor_offload_update(*mut block_sequence_stateseq_state,
 void hwss_add_cursor_lock(*mut block_sequence_stateseq_state,
 		*mut dcdc,
 		*mut pipe_ctxpipe_ctx,
-		bool lock);
+		lock: bool);
 
 void hwss_add_send_update_cursor_info_to_dmu(*mut block_sequence_stateseq_state,
 		*mut pipe_ctxpipe_ctx,
@@ -2836,15 +2836,15 @@ void hwss_add_stream_enc_dp_set_dsc_config(*mut block_sequence_stateseq_state,
 
 void hwss_add_hpo_dp_stream_enc_dp_set_dsc_pps_info_packet(*mut block_sequence_stateseq_state,
 		*mut hpo_dp_stream_encoderhpo_dp_stream_enc,
-		bool immediate_update,
+		immediate_update: bool,
 		u8 *dsc_packed_pps,
-		bool pps_sdp_stream);
+		pps_sdp_stream: bool);
 
 void hwss_add_stream_enc_dp_set_dsc_pps_info_packet(*mut block_sequence_stateseq_state,
 		*mut stream_encoderstream_enc,
-		bool immediate_update,
+		immediate_update: bool,
 		u8 *dsc_packed_pps,
-		bool pps_sdp_stream);
+		pps_sdp_stream: bool);
 
 void hwss_add_hpo_frl_stream_enc_set_dsc_config(*mut block_sequence_stateseq_state,
 		*mut hpo_frl_stream_encoderhpo_frl_stream_enc,
@@ -2857,26 +2857,26 @@ void hwss_add_setup_periodic_interrupt(*mut block_sequence_stateseq_state,
 
 void hwss_add_dp_trace_source_sequence(*mut block_sequence_stateseq_state,
 		*mut dc_linklink,
-		enum dpcd_source_sequence source);
+		dpcd_source_sequence source);
 
 void hwss_add_set_dmdata_attributes(*mut block_sequence_stateseq_state,
 		*mut pipe_ctxpipe_ctx);
 
 void hwss_add_link_increase_mst_payload(*mut block_sequence_stateseq_state,
 		*mut pipe_ctxpipe_ctx,
-		u32 mst_stream_bw);
+		mst_stream_bw: u32);
 
 void hwss_add_link_reduce_mst_payload(*mut block_sequence_stateseq_state,
 		*mut pipe_ctxpipe_ctx,
-		u32 mst_stream_bw);
+		mst_stream_bw: u32);
 
 void hwss_add_dp_set_test_pattern(*mut block_sequence_stateseq_state,
 		*mut dc_linklink,
-		enum dp_test_pattern test_pattern,
-		enum dp_test_pattern_color_space test_pattern_color_space,
+		dp_test_pattern test_pattern,
+		dp_test_pattern_color_space test_pattern_color_space,
 		const *mut link_training_settingsp_link_settings,
 		const u8 *p_custom_pattern,
-		u32 cust_pattern_size);
+		cust_pattern_size: u32);
 
 void hwss_add_link_set_dpms_off(*mut block_sequence_stateseq_state,
 		*mut pipe_ctxpipe_ctx);
@@ -2905,7 +2905,7 @@ void hwss_hubbub_program_compbuf_segments(*mut block_sequence_paramsparams);
 /* Clock manager BLS add-helper functions */
 void hwss_add_clk_mgr_set_max_memclk(*mut block_sequence_stateseq_state,
 		*mut clk_mgrclk_mgr,
-		u32 memclk_mhz);
+		memclk_mhz: u32);
 
 void hwss_add_clk_mgr_update_clocks(*mut block_sequence_stateseq_state,
 		*mut clk_mgrclk_mgr);
@@ -2914,19 +2914,19 @@ void hwss_add_hubbub_program_watermarks(*mut block_sequence_stateseq_state,
 		*mut dcdc,
 		*mut hubbubhubbub,
 		*mut dcn_watermark_setwatermarks,
-		u32 refclk_mhz,
-		bool safe_to_lower);
+		refclk_mhz: u32,
+		safe_to_lower: bool);
 
 void hwss_add_hubbub_program_arbiter(*mut block_sequence_stateseq_state,
 		*mut dcdc,
 		*mut hubbubhubbub,
 		*mut dml2_display_arb_regsarb_regs,
-		bool safe_to_lower);
+		safe_to_lower: bool);
 
 void hwss_add_hubbub_program_compbuf_segments(*mut block_sequence_stateseq_state,
 		*mut hubbubhubbub,
-		u32 compbuf_size,
-		bool safe_to_lower);
+		compbuf_size: u32,
+		safe_to_lower: bool);
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -44,7 +44,7 @@ unsafe fn sha512_blocks(
 ) {
     // `IS_ENABLED(CONFIG_KERNEL_MODE_NEON)`, `static_branch_likely`, and
     // `likely` retain their kernel build/runtime conditional intent here.
-    if cfg!(feature = "CONFIG_KERNEL_MODE_NEON")
+    if cfg!(CONFIG_KERNEL_MODE_NEON)
         && unsafe { HAVE_NEON }
         && unsafe { may_use_simd() }
     {
@@ -56,7 +56,7 @@ unsafe fn sha512_blocks(
     }
 }
 
-#[cfg(feature = "CONFIG_KERNEL_MODE_NEON")]
+#[cfg(CONFIG_KERNEL_MODE_NEON)]
 unsafe fn sha512_mod_init_arch() {
     if unsafe { cpu_has_neon() } {
         // Equivalent of `static_branch_enable(&have_neon)`.

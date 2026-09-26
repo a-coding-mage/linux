@@ -10,7 +10,7 @@
 macro_rules! MEMCPY_FN {
     ($fn:ident, $init:expr, $fini:expr, $name:expr, $desc:expr) => {
         unsafe extern "C" {
-            pub fn $fn(
+            pub $fn $fn(
                 arg0: *mut core::ffi::c_void,
                 arg1: *const core::ffi::c_void,
                 arg2: usize,

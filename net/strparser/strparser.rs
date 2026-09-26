@@ -104,7 +104,7 @@ unsafe fn __strp_recv(desc: *mut read_descriptor_t, mut orig_skb: *mut sk_buff,
             if len == 0 { if (*stm).accum_len == 0 { strp_start_timer(strp, timeo); } (*stm).accum_len += cand_len; eaten += cand_len; STRP_STATS_INCR!((*strp).stats.need_more_hdr); WARN_ON!(eaten != orig_len); break; }
             if len < 0 { if len == -ESTRPIPE && (*stm).accum_len != 0 { len = -ENODATA; (*strp).unrecov_intr = 1; } else { (*strp).interrupted = 1; } strp_parser_err(strp, len, desc); break; }
             if (len as usize) > max_msg_size { STRP_STATS_INCR!((*strp).stats.msg_too_big); strp_parser_err(strp, -EMSGSIZE, desc); break; }
-            if len as isize <= (*head).len as isize - (*skb).len as isize - (*stm).strp.offset as isize { STRP_STATS_INCR!((*strp).stats.bad_hdr_len); strp_parser_err(strp, -EPROTO, desc); break; }
+            if (len as isize) <= (*head).len as isize - (*skb).len as isize - (*stm).strp.offset as isize { STRP_STATS_INCR!((*strp).stats.bad_hdr_len); strp_parser_err(strp, -EPROTO, desc); break; }
             (*stm).strp.full_len = len as usize;
         }
         extra = ((*stm).accum_len + cand_len) as isize - (*stm).strp.full_len as isize;

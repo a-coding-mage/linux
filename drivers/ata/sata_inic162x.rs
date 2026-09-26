@@ -164,7 +164,7 @@ extern "C" { static mut inic_port_ops:c_void; static inic_port_info_obj:inic_por
 // PCI probe/resume and module registration preserve the original externally visible entry points.
 extern "C" {
     fn inic_init_one(pdev:*mut pci_dev, ent:*const pci_device_id)->i32;
-    #[cfg(feature="CONFIG_PM_SLEEP")] fn inic_pci_device_resume(pdev:*mut pci_dev)->i32;
+    #[cfg(CONFIG_PM_SLEEP)] fn inic_pci_device_resume(pdev:*mut pci_dev)->i32;
 }
 
 unsafe fn inic_port_base(ap: *mut ata_port) -> *mut u8 {
@@ -228,8 +228,8 @@ unsafe fn inic_interrupt(_irq: i32, dev_instance: *mut c_void) -> irqreturn_t {
 
 // Remaining operations retain the original kernel ABI and are declared below as external dependencies.
 extern "C" {
-    fn ata_qc_from_tag(*mut ata_port, u32) -> *mut ata_queued_cmd;
-    fn ata_qc_complete(*mut ata_queued_cmd); fn ata_port_freeze(*mut ata_port); fn ata_port_abort(*mut ata_port);
+    fn ata_qc_from_tag(_: *mut ata_port, _: u32) -> *mut ata_queued_cmd;
+    fn ata_qc_complete(_: *mut ata_queued_cmd); fn ata_port_freeze(_: *mut ata_port); fn ata_port_abort(_: *mut ata_port);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

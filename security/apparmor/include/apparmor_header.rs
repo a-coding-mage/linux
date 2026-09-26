@@ -53,28 +53,28 @@ extern "C" {
 }
 
 // Conditional: CONFIG_SECURITY_APPARMOR_EXPORT_BINARY
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
+#[cfg(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY)]
 extern "C" {
     pub fn zstd_min_clevel() -> i32;
     pub fn zstd_max_clevel() -> i32;
     pub static ZSTD_CLEVEL_DEFAULT: i32;
 }
 
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
+#[cfg(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY)]
 #[allow(non_snake_case)]
 pub unsafe fn AA_MIN_CLEVEL() -> i32 { zstd_min_clevel() }
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
+#[cfg(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY)]
 #[allow(non_snake_case)]
 pub unsafe fn AA_MAX_CLEVEL() -> i32 { zstd_max_clevel() }
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
+#[cfg(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY)]
 #[allow(non_snake_case)]
 pub unsafe fn AA_DEFAULT_CLEVEL() -> i32 { ZSTD_CLEVEL_DEFAULT }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub const AA_MIN_CLEVEL: i32 = 0;
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub const AA_MAX_CLEVEL: i32 = 0;
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub const AA_DEFAULT_CLEVEL: i32 = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

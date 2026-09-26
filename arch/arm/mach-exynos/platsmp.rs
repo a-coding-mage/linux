@@ -16,7 +16,7 @@ extern "C" {
 /* XXX exynos_pen_release is cargo culted code - DO NOT COPY XXX */
 pub static mut exynos_pen_release: i32 = -1;
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 #[inline]
 unsafe fn cpu_leave_lowpower(_core_id: u32) {
     // ARM coprocessor assembly from the original source; preserve its intent here.
@@ -32,7 +32,7 @@ unsafe fn cpu_leave_lowpower(_core_id: u32) {
     );
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 #[inline]
 unsafe fn platform_do_lowpower(cpu: u32, spurious: *mut i32) {
     let mpidr = cpu_logical_map(cpu);
@@ -206,7 +206,7 @@ unsafe fn exynos_smp_prepare_cpus(_max_cpus: u32) {
     if read_cpuid_part() == ARM_CPU_PART_CORTEX_A9 { exynos_scu_enable(); }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn exynos_cpu_die(cpu: u32) {
     let mut spurious = 0;
     let mpidr = cpu_logical_map(cpu);
@@ -222,7 +222,7 @@ pub static exynos_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(exynos_smp_prepare_cpus),
     smp_secondary_init: Some(exynos_secondary_init),
     smp_boot_secondary: Some(exynos_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(exynos_cpu_die),
 };
 

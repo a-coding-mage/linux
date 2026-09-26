@@ -25,7 +25,7 @@ unsafe extern "C" {
 
     fn __pa(addr: unsafe extern "C" fn()) -> usize;
     fn cpu_pm_enter();
-    fn cpu_suspend(arg: u32, fnptr: unsafe extern "C" fn(unsigned long) -> i32) -> i32;
+    fn cpu_suspend(arg: u32, fnptr: unsafe extern "C" fn(core::ffi::c_ulong) -> i32) -> i32;
     fn cpu_pm_exit();
     fn cpuidle_register(driver: *mut CpuidleDriver, device: *mut CpuidleDevice) -> i32;
     fn platform_driver_register(driver: *mut PlatformDriver) -> i32;

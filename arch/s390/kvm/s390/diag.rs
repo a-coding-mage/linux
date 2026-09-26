@@ -17,7 +17,7 @@ unsafe fn do_discard_gfn_range(vcpu: *mut kvm_vcpu, gfn_start: gfn_t, gfn_end: g
 
     slots = kvm_vcpu_memslots(vcpu);
 
-    kvm_for_each_memslot_in_gfn_range(&mut iter, slots, gfn_start, gfn_end) {
+    kvm_for_each_memslot_in_gfn_range!(&mut iter, slots, gfn_start, gfn_end, {
         slot = iter.slot;
         start = __gfn_to_hva_memslot(slot, core::cmp::max(gfn_start, (*slot).base_gfn));
         end = __gfn_to_hva_memslot(
@@ -25,7 +25,7 @@ unsafe fn do_discard_gfn_range(vcpu: *mut kvm_vcpu, gfn_start: gfn_t, gfn_end: g
             core::cmp::min(gfn_end, (*slot).base_gfn + (*slot).npages),
         );
         gmap_helper_discard((*vcpu).kvm.mm, start, end);
-    }
+    });
 }
 
 unsafe fn diag_release_pages(vcpu: *mut kvm_vcpu) -> c_int {
@@ -153,28 +153,32 @@ unsafe fn __diag_time_slice_end_directed(vcpu: *mut kvm_vcpu) -> c_int {
     let result: *const c_char;
     let mut tcpu_cpu: c_int = -1;
     let tid: c_int;
+    'out: {
+    'no_yield: {
 
     tid = (*vcpu).run.s.regs.gprs[(((*vcpu).arch.sie_block).ipa & 0xf0) >> 4] as c_int;
     (*vcpu).stat.instruction_diagnose_9c += 1;
-    if tid == (*vcpu).vcpu_id { goto no_yield; }
+    if tid == (*vcpu).vcpu_id { break 'no_yield; }
     tcpu = kvm_get_vcpu_by_id((*vcpu).kvm, tid);
-    if tcpu.is_null() { goto no_yield; }
+    if tcpu.is_null() { break 'no_yield; }
     tcpu_cpu = READ_ONCE((*tcpu).cpu);
     if tcpu_cpu >= 0 {
-        if diag9c_forwarding_hz == 0 || diag9c_forwarding_overrun() != 0 { goto no_yield; }
-        if !vcpu_is_preempted(tcpu_cpu) { goto no_yield; }
+        if diag9c_forwarding_hz == 0 || diag9c_forwarding_overrun() != 0 { break 'no_yield; }
+        if !vcpu_is_preempted(tcpu_cpu) { break 'no_yield; }
         smp_yield_cpu(tcpu_cpu);
         (*vcpu).stat.diag_9c_forward += 1;
         result = c"yield forwarded".as_ptr();
-        goto out;
+        break 'out;
     }
-    if kvm_vcpu_yield_to(tcpu) <= 0 { goto no_yield; }
+    if kvm_vcpu_yield_to(tcpu) <= 0 { break 'no_yield; }
     result = c"done".as_ptr();
-    goto out;
-no_yield:
+    break 'out;
+    }
+    
     (*vcpu).stat.diag_9c_ignored += 1;
     result = c"ignored".as_ptr();
-out:
+    }
+    
     VCPU_EVENT(vcpu, 5, "diag time slice end directed to %d: %s", tid, result);
     trace_kvm_s390_diag_9c(vcpu, tid, tcpu_cpu, result);
     0

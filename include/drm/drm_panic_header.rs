@@ -47,7 +47,7 @@ pub struct drm_scanout_buffer {
 
 // Under CONFIG_DRM_PANIC these operations access
 // dev->mode_config.panic_lock through the corresponding raw-spinlock helpers.
-#[cfg(feature = "CONFIG_DRM_PANIC")]
+#[cfg(CONFIG_DRM_PANIC)]
 #[macro_export]
 macro_rules! drm_panic_trylock {
     ($dev:expr, $flags:expr) => {
@@ -55,7 +55,7 @@ macro_rules! drm_panic_trylock {
     };
 }
 
-#[cfg(feature = "CONFIG_DRM_PANIC")]
+#[cfg(CONFIG_DRM_PANIC)]
 #[macro_export]
 macro_rules! drm_panic_lock {
     ($dev:expr, $flags:expr) => {
@@ -63,7 +63,7 @@ macro_rules! drm_panic_lock {
     };
 }
 
-#[cfg(feature = "CONFIG_DRM_PANIC")]
+#[cfg(CONFIG_DRM_PANIC)]
 #[macro_export]
 macro_rules! drm_panic_unlock {
     ($dev:expr, $flags:expr) => {
@@ -71,21 +71,21 @@ macro_rules! drm_panic_unlock {
     };
 }
 
-#[cfg(not(feature = "CONFIG_DRM_PANIC"))]
+#[cfg(not(CONFIG_DRM_PANIC))]
 #[inline]
 pub unsafe fn drm_panic_trylock(_dev: *mut drm_device, _flags: core::ffi::c_ulong) -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_DRM_PANIC"))]
+#[cfg(not(CONFIG_DRM_PANIC))]
 #[inline]
 pub unsafe fn drm_panic_lock(_dev: *mut drm_device, _flags: core::ffi::c_ulong) {}
 
-#[cfg(not(feature = "CONFIG_DRM_PANIC"))]
+#[cfg(not(CONFIG_DRM_PANIC))]
 #[inline]
 pub unsafe fn drm_panic_unlock(_dev: *mut drm_device, _flags: core::ffi::c_ulong) {}
 
-#[cfg(feature = "CONFIG_DRM_PANIC_SCREEN_QR_CODE")]
+#[cfg(CONFIG_DRM_PANIC_SCREEN_QR_CODE)]
 extern "C" {
     pub fn drm_panic_qr_max_data_size(version: u8, url_len: usize) -> usize;
 

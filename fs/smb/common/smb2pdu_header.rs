@@ -182,7 +182,7 @@ pub #[repr(C, packed)] pub struct smb3_hdr_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_pdu {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize2: u16, /* size of wct area (varies, request specific) */
 } ,
 
@@ -190,7 +190,7 @@ pub const SMB2_ERROR_STRUCTURE_SIZE2: u64 = 9,
 pub const SMB2_ERROR_STRUCTURE_SIZE2_LE: u64 = (SMB2_ERROR_STRUCTURE_SIZE2),
 
 pub #[repr(C, packed)] pub struct smb2_err_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,
 	pub ErrorContextCount: u8,
 	pub Reserved: u8,
@@ -342,7 +342,7 @@ pub const SMB2_TREE_CONNECT_FLAG_REDIRECT_TO_OWNER: u64 = (0x0002),
 pub const SMB2_TREE_CONNECT_FLAG_EXTENSION_PRESENT: u64 = (0x0004),
 
 pub #[repr(C, packed)] pub struct smb2_tree_connect_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 9 */
 	pub Flags: u16,		/* Flags in SMB3.1.1 */
 	pub PathOffset: u16,
@@ -389,7 +389,7 @@ pub const SMB2_SHARE_CAP_ASYMMETRIC: u64 = (0x00000080) /* 3.02 */,
 pub const SMB2_SHARE_CAP_REDIRECT_TO_OWNER: u64 = (0x00000100) /* 3.1.1 */,
 
 pub #[repr(C, packed)] pub struct smb2_tree_connect_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 16 */
 	pub ShareType: u8,	/* see below */
 	pub Reserved: u8,
@@ -399,13 +399,13 @@ pub #[repr(C, packed)] pub struct smb2_tree_connect_rsp {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_tree_disconnect_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 4 */
 	pub Reserved: u16
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_tree_disconnect_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 4 */
 	pub Reserved: u16
 } ,
@@ -611,7 +611,7 @@ pub #[repr(C, packed)] pub struct smb2_posix_neg_context {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_negotiate_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 36 */
 	pub DialectCount: u16,
 	pub SecurityMode: u16,
@@ -626,7 +626,7 @@ pub #[repr(C, packed)] pub struct smb2_negotiate_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_negotiate_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 65 */
 	pub SecurityMode: u16,
 	pub DialectRevision: u16,
@@ -653,7 +653,7 @@ pub const SMB2_SESSION_REQ_FLAG_BINDING: u64 = 0x01,
 pub const SMB2_SESSION_REQ_FLAG_ENCRYPT_DATA: u64 = 0x04,
 
 pub #[repr(C, packed)] pub struct smb2_sess_setup_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 25 */
 	pub Flags: u8,
 	pub SecurityMode: u8,
@@ -674,7 +674,7 @@ pub const SMB2_SESSION_FLAG_ENCRYPT_DATA: u64 = 0x0004,
 pub const SMB2_SESSION_FLAG_ENCRYPT_DATA_LE: u64 = (0x0004),
 
 pub #[repr(C, packed)] pub struct smb2_sess_setup_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 9 */
 	pub SessionFlags: u16,
 	pub SecurityBufferOffset: u16,
@@ -688,13 +688,13 @@ pub #[repr(C, packed)] pub struct smb2_sess_setup_rsp {
  */
 
 pub #[repr(C, packed)] pub struct smb2_logoff_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 4 */
 	pub Reserved: u16
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_logoff_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 4 */
 	pub Reserved: u16
 } ,
@@ -707,7 +707,7 @@ pub #[repr(C, packed)] pub struct smb2_logoff_rsp {
 pub const SMB2_CLOSE_FLAG_POSTQUERY_ATTRIB: u64 = (0x0001),
 
 pub #[repr(C, packed)] pub struct smb2_close_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 24 */
 	pub Flags: u16,
 	pub Reserved: u32,
@@ -721,7 +721,7 @@ pub #[repr(C, packed)] pub struct smb2_close_req {
 pub const MAX_SMB2_CLOSE_RESPONSE_SIZE: u64 = 124,
 
 pub #[repr(C, packed)] pub struct smb2_close_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* 60 */
 	pub Flags: u16,
 	pub Reserved: u32,
@@ -777,7 +777,7 @@ pub #[repr(C, packed)] pub struct smb2_rdma_crypto_transform {
 /* SMB2 read request without RFC1001 length at the beginning */
 
 pub #[repr(C, packed)] pub struct smb2_read_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 49 */
 	pub Padding: u8, /* offset from start of SMB2 header to place read */
 	pub Flags: u8, /* MBZ unless SMB3.02 or later */
@@ -798,7 +798,7 @@ pub const SMB2_READFLAG_RESPONSE_NONE: u64 = (0x00000000),
 pub const SMB2_READFLAG_RESPONSE_RDMA_TRANSFORM: u64 = (0x00000001),
 
 pub #[repr(C, packed)] pub struct smb2_read_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 17 */
 	pub DataOffset: u8,
 	pub Reserved: u8,
@@ -817,7 +817,7 @@ pub const SMB2_WRITEFLAG_WRITE_THROUGH: u64 = 0x00000001	/* SMB2.1 or later */,
 pub const SMB2_WRITEFLAG_WRITE_UNBUFFERED: u64 = 0x00000002	/* SMB3.02 or later */,
 
 pub #[repr(C, packed)] pub struct smb2_write_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 49 */
 	pub DataOffset: u16, /* offset from start of SMB2 header to write data */
 	pub Length: u32,
@@ -833,7 +833,7 @@ pub #[repr(C, packed)] pub struct smb2_write_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_write_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 17 */
 	pub DataOffset: u8,
 	pub Reserved: u8,
@@ -849,7 +849,7 @@ pub #[repr(C, packed)] pub struct smb2_write_rsp {
  */
 
 pub #[repr(C, packed)] pub struct smb2_flush_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 24 */
 	pub Reserved1: u16,
 	pub Reserved2: u32,
@@ -858,7 +858,7 @@ pub #[repr(C, packed)] pub struct smb2_flush_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_flush_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,
 	pub Reserved: u16
 } ,
@@ -877,7 +877,7 @@ pub #[repr(C, packed)] pub struct smb2_lock_element {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_lock_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 48 */
 	pub LockCount: u16,
 	/*
@@ -889,25 +889,25 @@ pub #[repr(C, packed)] pub struct smb2_lock_req {
 	pub VolatileFileId: u64,
 	/* Followed by at least one */
 	#[repr(C)] pub #[repr(C)] pub union AnonymousUnion {
-		pub lock: struct smb2_lock_element,
+		pub lock: smb2_lock_element,
 		locks: [u8, 0]
 }
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_lock_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 4 */
 	pub Reserved: u16
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_echo_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 4 */
 	pub Reserved: u16
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_echo_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 4 */
 	pub Reserved: u16
 } ,
@@ -935,7 +935,7 @@ pub const SMB2_INDEX_SPECIFIED: u64 = 0x04,
 pub const SMB2_REOPEN: u64 = 0x10,
 
 pub #[repr(C, packed)] pub struct smb2_query_directory_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 33 */
 	pub FileInformationClass: u8,
 	pub Flags: u8,
@@ -949,7 +949,7 @@ pub #[repr(C, packed)] pub struct smb2_query_directory_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_query_directory_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 9 */
 	pub OutputBufferOffset: u16,
 	pub OutputBufferLength: u32,
@@ -993,14 +993,14 @@ pub const FILE_DEVICE_ALLOW_APPCONTAINER_TRAVERSAL: u64 = 0x00020000,
 /*
  * Maximum number of iovs we need for a set-info request.
  * The largest one is rename/hardlink
- * [0] : struct smb2_set_info_req + smb2_file_[rename|link]_info
+ * [0] : smb2_set_info_req + smb2_file_[rename|link]_info
  * [1] : path
  * [2] : compound padding
  */
 pub const SMB2_SET_INFO_IOV_SIZE: u64 = 3,
 
 pub #[repr(C, packed)] pub struct smb2_set_info_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 33 */
 	pub InfoType: u8,
 	pub FileInfoClass: u8,
@@ -1014,7 +1014,7 @@ pub #[repr(C, packed)] pub struct smb2_set_info_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_set_info_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 2 */
 } ,
 
@@ -1042,7 +1042,7 @@ pub const FILE_NOTIFY_CHANGE_STREAM_WRITE: u64 = 0x00000800,
 /* See MS-SMB2 2.2.35 */
 
 pub #[repr(C, packed)] pub struct smb2_change_notify_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,
 	pub Flags: u16,
 	pub OutputBufferLength: u32,
@@ -1055,7 +1055,7 @@ pub #[repr(C, packed)] pub struct smb2_change_notify_req {
 /* See MS-SMB2 2.2.36 */
 
 pub #[repr(C, packed)] pub struct smb2_change_notify_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,  /* Must be 9 */
 	pub OutputBufferOffset: u16,
 	pub OutputBufferLength: u32,
@@ -1069,7 +1069,7 @@ pub #[repr(C, packed)] pub struct smb2_change_notify_rsp {
 pub const SMB2_NOTIFY_SESSION_CLOSED: u64 = 0x0000,
 
 pub #[repr(C, packed)] pub struct smb2_server_client_notification {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,
 	pub Reserved: u16, /* MBZ */
 	pub NotificationType: u32,
@@ -1211,7 +1211,7 @@ pub #[repr(C, packed)] pub struct create_context {
 
 
 pub #[repr(C, packed)] pub struct smb2_create_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 57 */
 	pub SecurityFlags: u8,
 	pub RequestedOplockLevel: u8,
@@ -1231,7 +1231,7 @@ pub #[repr(C, packed)] pub struct smb2_create_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_create_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16,	/* Must be 89 */
 	pub OplockLevel: u8,
 	pub Flags: u8,  /* 0x01 if reparse point */
@@ -1252,7 +1252,7 @@ pub #[repr(C, packed)] pub struct smb2_create_rsp {
 } ,
 
 pub #[repr(C, packed)] pub struct create_posix {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8    Name[16],
 	pub Mode: u32,
 	pub Reserved: u32
@@ -1260,7 +1260,7 @@ pub #[repr(C, packed)] pub struct create_posix {
 
 /* See MS-SMB2 2.2.13.2.3 and MS-SMB2 2.2.13.2.4 */
 pub #[repr(C, packed)] pub struct TmpTypedef {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
 	#[repr(C)] pub #[repr(C)] pub union AnonymousUnion {
 		u8  Reserved[16],
@@ -1274,7 +1274,7 @@ pub #[repr(C, packed)] pub struct TmpTypedef {
 /* See MS-SMB2 2.2.13.2.5 */
 
 pub #[repr(C, packed)] pub struct create_mxac_req {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
 	pub Timestamp: u64
 } ,
@@ -1329,9 +1329,9 @@ pub #[repr(C, packed)] pub struct durable_context_v2_req {
 } ,
 
 pub #[repr(C, packed)] pub struct create_durable_req_v2 {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
-	pub dcontext: struct durable_context_v2_req
+	pub dcontext: durable_context_v2_req
 } ,
 
 /* See MS-SMB2 2.2.13.2.12 */
@@ -1346,9 +1346,9 @@ pub #[repr(C, packed)] pub struct durable_reconnect_context_v2 {
 } ,
 
 pub #[repr(C, packed)] pub struct create_durable_handle_reconnect_v2 {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
-	pub dcontext: struct durable_reconnect_context_v2,
+	pub dcontext: durable_reconnect_context_v2,
 	u8 Pad[4]
 } ,
 
@@ -1360,15 +1360,15 @@ pub #[repr(C, packed)] pub struct durable_context_v2_rsp {
 } ,
 
 pub #[repr(C, packed)] pub struct create_durable_rsp_v2 {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
-	pub dcontext: struct durable_context_v2_rsp
+	pub dcontext: durable_context_v2_rsp
 } ,
 
 /* See MS-SMB2 2.2.14.2.5 */
 
 pub #[repr(C, packed)] pub struct create_mxac_rsp {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
 	pub QueryStatus: u32,
 	pub MaximalAccess: u32
@@ -1406,22 +1406,22 @@ pub #[repr(C, packed)] pub struct lease_context_v2 {
 } ,
 
 pub #[repr(C, packed)] pub struct create_lease {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
-	pub lcontext: struct lease_context
+	pub lcontext: lease_context
 } ,
 
 pub #[repr(C, packed)] pub struct create_lease_v2 {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
-	pub lcontext: struct lease_context_v2,
+	pub lcontext: lease_context_v2,
 	u8   Pad[4]
 } ,
 
 /* See MS-SMB2 2.2.14.2.9 */
 
 pub #[repr(C, packed)] pub struct create_disk_id_rsp {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8   Name[8],
 	pub DiskFileId: u64,
 	pub VolumeId: u64,
@@ -1431,7 +1431,7 @@ pub #[repr(C, packed)] pub struct create_disk_id_rsp {
 /* See MS-SMB2 2.2.13.2.13 */
 
 pub #[repr(C, packed)] pub struct create_app_inst_id {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8 Name[16],
 	pub StructureSize: u32, /* Must be 20 */
 	pub Reserved: u16,
@@ -1441,7 +1441,7 @@ pub #[repr(C, packed)] pub struct create_app_inst_id {
 /* See MS-SMB2 2.2.13.2.15 */
 
 pub #[repr(C, packed)] pub struct create_app_inst_id_vers {
-	pub ccontext: struct create_context_hdr,
+	pub ccontext: create_context_hdr,
 	u8 Name[16],
 	pub StructureSize: u32, /* Must be 24 */
 	pub Reserved: u16,
@@ -1453,7 +1453,7 @@ pub #[repr(C, packed)] pub struct create_app_inst_id_vers {
 /* See MS-SMB2 2.2.31 and 2.2.32 */
 
 pub #[repr(C, packed)] pub struct smb2_ioctl_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 57 */
 	pub Reserved: u16, /* offset from start of SMB2 header to write data */
 	pub CtlCode: u32,
@@ -1491,7 +1491,7 @@ pub #[repr(C, packed)] pub struct copychunk_ioctl_req {
 },
 	pub ChunkCount: u32,
 	pub Reserved: u32,
-	struct srv_copychunk Chunks[] 
+	srv_copychunk Chunks[] 
 } ,
 
 /* See MS-SMB2 2.2.32.1 */
@@ -1514,7 +1514,7 @@ pub #[repr(C, packed)] pub struct resume_key_ioctl_rsp {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_ioctl_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 49 */
 	pub Reserved: u16,
 	pub CtlCode: u32,
@@ -1675,7 +1675,7 @@ pub const SL_RETURN_SINGLE_ENTRY: u64 = 0x00000002,
 pub const SL_INDEX_SPECIFIED: u64 = 0x00000004,
 
 pub #[repr(C, packed)] pub struct smb2_query_info_req {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 41 */
 	pub InfoType: u8,
 	pub FileInfoClass: u8,
@@ -1691,7 +1691,7 @@ pub #[repr(C, packed)] pub struct smb2_query_info_req {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_query_info_rsp {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 9 */
 	pub OutputBufferOffset: u16,
 	pub OutputBufferLength: u32,
@@ -1727,7 +1727,7 @@ pub #[repr(C, packed)] pub struct smb311_posix_qinfo {
 /* See MS-SMB2 2.2.23 through 2.2.25 */
 
 pub #[repr(C, packed)] pub struct smb2_oplock_break {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 24 */
 	pub OplockLevel: u8,
 	pub Reserved: u8,
@@ -1739,7 +1739,7 @@ pub #[repr(C, packed)] pub struct smb2_oplock_break {
 pub const SMB2_NOTIFY_BREAK_LEASE_FLAG_ACK_REQUIRED: u64 = (0x01),
 
 pub #[repr(C, packed)] pub struct smb2_lease_break {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 44 */
 	pub Epoch: u16,
 	pub Flags: u32,
@@ -1752,7 +1752,7 @@ pub #[repr(C, packed)] pub struct smb2_lease_break {
 } ,
 
 pub #[repr(C, packed)] pub struct smb2_lease_ack {
-	pub hdr: struct smb2_hdr,
+	pub hdr: smb2_hdr,
 	pub StructureSize: u16, /* Must be 36 */
 	pub Reserved: u16,
 	pub Flags: u32,

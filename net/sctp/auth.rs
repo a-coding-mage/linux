@@ -59,10 +59,10 @@ pub unsafe fn sctp_auth_destroy_keys(keys: *mut list_head) {
     if list_empty(keys) { return; }
     let mut ep_key: *mut sctp_shared_key = core::ptr::null_mut();
     let mut tmp: *mut sctp_shared_key = core::ptr::null_mut();
-    key_for_each_safe!(ep_key, tmp, keys) {
+    key_for_each_safe!(ep_key, tmp, keys, {
         list_del_init(&mut (*ep_key).key_list);
         sctp_auth_shkey_release(ep_key);
-    }
+    });
 }
 
 unsafe fn sctp_auth_compare_vectors(vector1: *mut sctp_auth_bytes, vector2: *mut sctp_auth_bytes) -> i32 {
@@ -112,10 +112,10 @@ unsafe fn sctp_auth_asoc_create_secret(asoc: *const sctp_association, ep_key: *m
 pub unsafe fn sctp_auth_asoc_copy_shkeys(ep: *const sctp_endpoint, asoc: *mut sctp_association, gfp: gfp_t) -> i32 {
     BUG_ON!(!list_empty(&(*asoc).endpoint_shared_keys));
     let mut sh_key = core::ptr::null_mut();
-    key_for_each!(sh_key, &(*ep).endpoint_shared_keys) {
+    key_for_each!(sh_key, &(*ep).endpoint_shared_keys, {
         let new = sctp_auth_shkey_create((*sh_key).key_id, gfp); if new.is_null() { sctp_auth_destroy_keys(&mut (*asoc).endpoint_shared_keys); return -ENOMEM; }
         (*new).key = (*sh_key).key; sctp_auth_key_hold((*new).key); list_add(&mut (*new).key_list, &mut (*asoc).endpoint_shared_keys);
-    }
+    });
     0
 }
 
@@ -139,7 +139,7 @@ pub unsafe fn sctp_auth_get_hmac(hmac_id: __u16) -> *const sctp_hmac { &SCTP_HMA
 
 pub unsafe fn sctp_auth_get_shkey(asoc: *const sctp_association, key_id: __u16) -> *mut sctp_shared_key {
     let mut key = core::ptr::null_mut();
-    key_for_each!(key, &(*asoc).endpoint_shared_keys) { if (*key).key_id == key_id { if !(*key).deactivated { return key; } break; } }
+    key_for_each!(key, &(*asoc).endpoint_shared_keys, { if (*key).key_id == key_id { if !(*key).deactivated { return key; } break; } });
     core::ptr::null_mut()
 }
 
@@ -177,9 +177,9 @@ pub unsafe fn sctp_auth_init(ep: *mut sctp_endpoint, gfp: gfp_t) -> i32 { if (*e
 pub unsafe fn sctp_auth_free(ep: *mut sctp_endpoint) { kfree((*ep).auth_hmacs_list as *mut _); kfree((*ep).auth_chunk_list as *mut _); (*ep).auth_hmacs_list=core::ptr::null_mut(); (*ep).auth_chunk_list=core::ptr::null_mut(); }
 
 pub unsafe fn sctp_auth_asoc_init_active_key(a: *mut sctp_association, gfp:gfp_t)->i32 { if !(*a).peer.auth_capable{return 0;} let e=sctp_auth_get_shkey(a,(*a).active_key_id); if e.is_null(){BUG_ON!(true);} let s=sctp_auth_asoc_create_secret(a,e,gfp);if s.is_null(){return -ENOMEM;}sctp_auth_key_put((*a).asoc_shared_key);(*a).asoc_shared_key=s;(*a).shkey=e;0 }
-pub unsafe fn sctp_auth_set_key(ep:*mut sctp_endpoint,a:*mut sctp_association,k:*mut sctp_authkey)->i32 { let list=if !a.is_null(){if !(*a).peer.auth_capable{return -EACCES;}&mut (*a).endpoint_shared_keys}else{if !(*ep).auth_enable{return -EACCES;}&mut (*ep).endpoint_shared_keys};let mut old=core::ptr::null_mut();key_for_each!(x,list){if (*x).key_id==(*k).sca_keynumber{old=x;break;}}let n=sctp_auth_shkey_create((*k).sca_keynumber,GFP_KERNEL);if n.is_null(){return -ENOMEM;}let b=sctp_auth_create_key((*k).sca_keylength,GFP_KERNEL);if b.is_null(){return -ENOMEM;}memcpy((*b).data.as_mut_ptr(),(*k).sca_key.as_ptr() as *const _,(*k).sca_keylength as usize);(*n).key=b;if old.is_null(){list_add(&mut (*n).key_list,list);}else{list_del_init(&mut (*old).key_list);list_add(&mut (*n).key_list,list);sctp_auth_shkey_release(old);}0 }
-pub unsafe fn sctp_auth_set_active_key(ep:*mut sctp_endpoint,a:*mut sctp_association,id:__u16)->i32 {let list=if !a.is_null(){if !(*a).peer.auth_capable{return -EACCES;}&mut (*a).endpoint_shared_keys}else{if !(*ep).auth_enable{return -EACCES;}&mut (*ep).endpoint_shared_keys};let mut k=core::ptr::null_mut();key_for_each!(x,list){if (*x).key_id==id{k=x;break;}}if k.is_null()||(*k).deactivated{return -EINVAL;}if !a.is_null(){(*a).active_key_id=id;if sctp_auth_asoc_init_active_key(a,GFP_KERNEL)!=0{return -ENOMEM;}}else{(*ep).active_key_id=id;}0}
-pub unsafe fn sctp_auth_del_key_id(ep:*mut sctp_endpoint,a:*mut sctp_association,id:__u16)->i32 {let list=if !a.is_null(){if !(*a).peer.auth_capable||(*a).active_key_id==id{return -EACCES;}&mut (*a).endpoint_shared_keys}else{if !(*ep).auth_enable||(*ep).active_key_id==id{return -EACCES;}&mut (*ep).endpoint_shared_keys};let mut k=core::ptr::null_mut();key_for_each!(x,list){if (*x).key_id==id{k=x;break;}}if k.is_null(){return -EINVAL;}list_del_init(&mut (*k).key_list);sctp_auth_shkey_release(k);0}
-pub unsafe fn sctp_auth_deact_key_id(ep:*mut sctp_endpoint,a:*mut sctp_association,id:__u16)->i32 {let list=if !a.is_null(){&mut (*a).endpoint_shared_keys}else{&mut (*ep).endpoint_shared_keys};let mut k=core::ptr::null_mut();key_for_each!(x,list){if (*x).key_id==id{k=x;break;}}if k.is_null(){return -EINVAL;}(*k).deactivated=1;0}
+pub unsafe fn sctp_auth_set_key(ep:*mut sctp_endpoint,a:*mut sctp_association,k:*mut sctp_authkey)->i32 { let list=if !a.is_null(){if !(*a).peer.auth_capable{return -EACCES;}&mut (*a).endpoint_shared_keys}else{if !(*ep).auth_enable{return -EACCES;}&mut (*ep).endpoint_shared_keys};let mut old=core::ptr::null_mut();key_for_each!(x,list, {if (*x).key_id==(*k).sca_keynumber{old=x;break;}});let n=sctp_auth_shkey_create((*k).sca_keynumber,GFP_KERNEL);if n.is_null(){return -ENOMEM;}let b=sctp_auth_create_key((*k).sca_keylength,GFP_KERNEL);if b.is_null(){return -ENOMEM;}memcpy((*b).data.as_mut_ptr(),(*k).sca_key.as_ptr() as *const _,(*k).sca_keylength as usize);(*n).key=b;if old.is_null(){list_add(&mut (*n).key_list,list);}else{list_del_init(&mut (*old).key_list);list_add(&mut (*n).key_list,list);sctp_auth_shkey_release(old);}0 }
+pub unsafe fn sctp_auth_set_active_key(ep:*mut sctp_endpoint,a:*mut sctp_association,id:__u16)->i32 {let list=if !a.is_null(){if !(*a).peer.auth_capable{return -EACCES;}&mut (*a).endpoint_shared_keys}else{if !(*ep).auth_enable{return -EACCES;}&mut (*ep).endpoint_shared_keys};let mut k=core::ptr::null_mut();key_for_each!(x,list, {if (*x).key_id==id{k=x;break;}});if k.is_null()||(*k).deactivated{return -EINVAL;}if !a.is_null(){(*a).active_key_id=id;if sctp_auth_asoc_init_active_key(a,GFP_KERNEL)!=0{return -ENOMEM;}}else{(*ep).active_key_id=id;}0}
+pub unsafe fn sctp_auth_del_key_id(ep:*mut sctp_endpoint,a:*mut sctp_association,id:__u16)->i32 {let list=if !a.is_null(){if !(*a).peer.auth_capable||(*a).active_key_id==id{return -EACCES;}&mut (*a).endpoint_shared_keys}else{if !(*ep).auth_enable||(*ep).active_key_id==id{return -EACCES;}&mut (*ep).endpoint_shared_keys};let mut k=core::ptr::null_mut();key_for_each!(x,list, {if (*x).key_id==id{k=x;break;}});if k.is_null(){return -EINVAL;}list_del_init(&mut (*k).key_list);sctp_auth_shkey_release(k);0}
+pub unsafe fn sctp_auth_deact_key_id(ep:*mut sctp_endpoint,a:*mut sctp_association,id:__u16)->i32 {let list=if !a.is_null(){&mut (*a).endpoint_shared_keys}else{&mut (*ep).endpoint_shared_keys};let mut k=core::ptr::null_mut();key_for_each!(x,list, {if (*x).key_id==id{k=x;break;}});if k.is_null(){return -EINVAL;}(*k).deactivated=1;0}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

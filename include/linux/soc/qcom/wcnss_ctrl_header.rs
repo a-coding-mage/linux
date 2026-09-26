@@ -7,7 +7,7 @@ pub struct rpmsg_endpoint;
 
 // The CONFIG_QCOM_WCNSS_CTRL condition is a build-time kernel configuration
 // condition; it is represented here with the corresponding Rust cfg feature.
-#[cfg(feature = "CONFIG_QCOM_WCNSS_CTRL")]
+#[cfg(CONFIG_QCOM_WCNSS_CTRL)]
 extern "C" {
     pub fn qcom_wcnss_open_channel(
         wcnss: *mut c_void,
@@ -17,7 +17,7 @@ extern "C" {
     ) -> *mut rpmsg_endpoint;
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_WCNSS_CTRL"))]
+#[cfg(not(CONFIG_QCOM_WCNSS_CTRL))]
 pub unsafe fn qcom_wcnss_open_channel(
     _wcnss: *mut c_void,
     _name: *const c_char,

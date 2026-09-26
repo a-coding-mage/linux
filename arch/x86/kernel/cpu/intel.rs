@@ -57,7 +57,7 @@ unsafe fn early_init_intel(c:*mut cpuinfo_x86) {
     if (*c).x86_vfm==INTEL_ATOM_BONNELL&&(*c).x86_stepping<=2&&(*c).microcode<0x20e{pr_warn!("Atom PSE erratum detected, BIOS microcode update recommended\n");clear_cpu_cap(c,X86_FEATURE_PSE);}
     if (*c).x86_vfm==INTEL_P4_PRESCOTT&&((*c).x86_stepping==3||(*c).x86_stepping==4){(*c).x86_phys_bits=36;}
     if (*c).x86_power&(1<<8)!=0{set_cpu_cap(c,X86_FEATURE_CONSTANT_TSC);set_cpu_cap(c,X86_FEATURE_NONSTOP_TSC);}else if ((*c).x86_vfm>=INTEL_P4_PRESCOTT&&(*c).x86_vfm<=INTEL_P4_CEDARMILL)||((*c).x86_vfm>=INTEL_CORE_YONAH&&(*c).x86_vfm<=INTEL_IVYBRIDGE){set_cpu_cap(c,X86_FEATURE_CONSTANT_TSC);}
-    match (*c).x86_vfm{INTEL_ATOM_SALTWELL_MID|INTEL_ATOM_SALTWELL_TABLET|INTEL_ATOM_SILVERMONT_MID|INTEL_ATOM_AIRMONT_NP=>set_cpu_cap(c,X86_FEATURE_NONSTOP_TSC_S3),_-> {}}
+    match (*c).x86_vfm{INTEL_ATOM_SALTWELL_MID|INTEL_ATOM_SALTWELL_TABLET|INTEL_ATOM_SILVERMONT_MID|INTEL_ATOM_AIRMONT_NP=>set_cpu_cap(c,X86_FEATURE_NONSTOP_TSC_S3),_ => {}}
     if (*c).x86_vfm>=INTEL_PENTIUM_PRO&&(*c).x86_vfm<=INTEL_CORE_YONAH{clear_cpu_cap(c,X86_FEATURE_PAT);}
     if (*c).x86_vfm>=INTEL_PENTIUM_M_DOTHAN{let mut m=0;rdmsrq(MSR_IA32_MISC_ENABLE,&mut m);if m&MSR_IA32_MISC_ENABLE_FAST_STRING!=0{set_cpu_cap(c,X86_FEATURE_REP_GOOD);}else{pr_info!("Disabled fast string operations\n");setup_clear_cpu_cap(X86_FEATURE_REP_GOOD);setup_clear_cpu_cap(X86_FEATURE_ERMS);}}
     if (*c).x86_vfm==INTEL_QUARK_X1000{pr_info!("Disabling PGE capability bit\n");setup_clear_cpu_cap(X86_FEATURE_PGE);} check_memory_type_self_snoop_errata(c); if cpu_has(c,X86_FEATURE_TME){detect_tme_early(c);}

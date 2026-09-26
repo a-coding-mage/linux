@@ -85,7 +85,7 @@ unsafe fn hl_dio_fd_unregister(f: *mut hl_dio_fd) { fput((*f).filp); }
 unsafe fn hl_dio_count_io(hdev: *mut hl_device) -> i64 {
     let mut sum: i64 = 0;
     let mut i: i32 = 0;
-    for_each_possible_cpu!(i) { sum += *per_cpu!((*hdev).hldio.inflight_ios, i); }
+    for_each_possible_cpu!(i, { sum += *per_cpu!((*hdev).hldio.inflight_ios, i); });
     sum
 }
 

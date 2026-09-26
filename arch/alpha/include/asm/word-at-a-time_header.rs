@@ -52,13 +52,13 @@ pub const fn create_zero_mask(bits: u64) -> u64 {
 pub unsafe fn find_zero(mut bits: u64) -> u64 {
     // The original condition is CONFIG_ALPHA_EV6 && CONFIG_ALPHA_EV67.
     // Define both cfg features when the Alpha CIX instructions are available.
-    #[cfg(all(feature = "CONFIG_ALPHA_EV6", feature = "CONFIG_ALPHA_EV67"))]
+    #[cfg(all(CONFIG_ALPHA_EV6, CONFIG_ALPHA_EV67))]
     {
         /* Simple if have CIX instructions */
         return __kernel_cttz(bits);
     }
 
-    #[cfg(not(all(feature = "CONFIG_ALPHA_EV6", feature = "CONFIG_ALPHA_EV67")))]
+    #[cfg(not(all(CONFIG_ALPHA_EV6, CONFIG_ALPHA_EV67)))]
     {
         let mut t1: u64;
         let mut t2: u64;

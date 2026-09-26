@@ -18,7 +18,7 @@ use core::ffi::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
 use core::ptr;
 
 /* C include dependencies intentionally remain external: linux/delay.h,
- * linux/interrupt.h, linux/pci.h, linux/io.h, linux/nospec.h, sound/*,
+ * linux/interrupt.h, linux/pci.h, linux/io.h, linux/nospec.h, sound/ *,
  * asm/current.h.
  */
 

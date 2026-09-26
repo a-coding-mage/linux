@@ -12,7 +12,9 @@
  * QNAP TS-x09 specific power off method via UART1-attached PIC
  *****************************************************************************/
 
-const UART1_REG = |x: u32| UART1_VIRT_BASE + ((x) << 2);
+const fn UART1_REG(x: u32) -> u32 {
+    UART1_VIRT_BASE + ((x) << 2)
+}
 
 pub unsafe fn qnap_tsx09_power_off() {
     /* 19200 baud divisor */

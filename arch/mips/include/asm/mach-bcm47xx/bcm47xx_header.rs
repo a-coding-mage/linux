@@ -14,20 +14,20 @@
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum bcm47xx_bus_type {
     // Preserved from CONFIG_BCM47XX_SSB.
-    #[cfg(feature = "CONFIG_BCM47XX_SSB")]
+    #[cfg(CONFIG_BCM47XX_SSB)]
     BCM47XX_BUS_TYPE_SSB,
     // Preserved from CONFIG_BCM47XX_BCMA.
-    #[cfg(feature = "CONFIG_BCM47XX_BCMA")]
+    #[cfg(CONFIG_BCM47XX_BCMA)]
     BCM47XX_BUS_TYPE_BCMA,
 }
 
 #[repr(C)]
 pub union bcm47xx_bus {
     // Preserved from CONFIG_BCM47XX_SSB.
-    #[cfg(feature = "CONFIG_BCM47XX_SSB")]
+    #[cfg(CONFIG_BCM47XX_SSB)]
     pub ssb: core::mem::ManuallyDrop<ssb_bus>,
     // Preserved from CONFIG_BCM47XX_BCMA.
-    #[cfg(feature = "CONFIG_BCM47XX_BCMA")]
+    #[cfg(CONFIG_BCM47XX_BCMA)]
     pub bcma: core::mem::ManuallyDrop<bcma_soc>,
 }
 

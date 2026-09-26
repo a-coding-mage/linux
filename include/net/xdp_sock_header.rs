@@ -100,7 +100,7 @@ pub struct xsk_tx_metadata_ops {
     pub tmo_request_launch_time: Option<unsafe extern "C" fn(launch_time: u64, priv_: *mut core::ffi::c_void)>,
 }
 
-#[cfg(feature = "CONFIG_XDP_SOCKETS")]
+#[cfg(CONFIG_XDP_SOCKETS)]
 extern "C" {
     pub fn xsk_generic_rcv(xs: *mut xdp_sock, xdp: *mut xdp_buff) -> i32;
     pub fn __xsk_map_redirect(xs: *mut xdp_sock, xdp: *mut xdp_buff) -> i32;
@@ -108,7 +108,7 @@ extern "C" {
     pub fn xsk_destruct_skb(skb: *mut sk_buff);
 }
 
-#[cfg(feature = "CONFIG_XDP_SOCKETS")]
+#[cfg(CONFIG_XDP_SOCKETS)]
 #[inline]
 pub unsafe fn xsk_tx_metadata_to_compl(meta: *mut xsk_tx_metadata, compl: *mut xsk_tx_metadata_compl) {
     (*compl).tx_timestamp = core::ptr::null_mut();
@@ -116,34 +116,34 @@ pub unsafe fn xsk_tx_metadata_to_compl(meta: *mut xsk_tx_metadata, compl: *mut x
     (*compl).tx_timestamp = &mut (*meta).completion.tx_timestamp;
 }
 
-#[cfg(feature = "CONFIG_XDP_SOCKETS")]
+#[cfg(CONFIG_XDP_SOCKETS)]
 #[inline]
 pub unsafe fn xsk_tx_metadata_complete(compl: *mut xsk_tx_metadata_compl, ops: *const xsk_tx_metadata_ops, priv_: *mut core::ffi::c_void) {
     if compl.is_null() || (*compl).tx_timestamp.is_null() { return; }
     *(*compl).tx_timestamp = ((*ops).tmo_fill_timestamp.unwrap())(priv_);
 }
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 #[inline]
 pub unsafe fn xsk_generic_rcv(_xs: *mut xdp_sock, _xdp: *mut xdp_buff) -> i32 { -ENOTSUPP }
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 #[inline]
 pub unsafe fn __xsk_map_redirect(_xs: *mut xdp_sock, _xdp: *mut xdp_buff) -> i32 { -EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 #[inline]
 pub unsafe fn __xsk_map_flush(_flush_list: *mut list_head) {}
 
-#[cfg(all(not(feature = "CONFIG_XDP_SOCKETS"), feature = "CONFIG_MITIGATION_RETPOLINE"))]
+#[cfg(all(not(CONFIG_XDP_SOCKETS), CONFIG_MITIGATION_RETPOLINE))]
 #[inline]
 pub unsafe fn xsk_destruct_skb(_skb: *mut sk_buff) {}
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 #[inline]
 pub unsafe fn xsk_tx_metadata_to_compl(_meta: *mut xsk_tx_metadata, _compl: *mut xsk_tx_metadata_compl) {}
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 #[inline]
 pub unsafe fn xsk_tx_metadata_complete(_compl: *mut xsk_tx_metadata_compl, _ops: *const xsk_tx_metadata_ops, _priv_: *mut core::ffi::c_void) {}
 

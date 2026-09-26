@@ -110,19 +110,21 @@ unsafe fn hub_master_probe(fsi_dev: *mut fsi_device) -> i32 {
     let dev = &mut (*fsi_dev).dev as *mut device;
     let mut hub: *mut fsi_master_hub;
     let mut reg: u32 = 0; let mut links: u32; let mut raw: u32 = 0; let mut rc: i32;
+    'err_release: {
     rc = fsi_device_read(fsi_dev, FSI_MVER, &mut raw as *mut _ as *mut core::ffi::c_void, 4); if rc != 0 { return rc; }
     reg = be32_to_cpu(raw); links = (reg >> 8) & 0xff;
     dev_dbg(dev, "hub version %08x (%d links)\n", reg, links);
     rc = fsi_slave_claim_range((*fsi_dev).slave, FSI_HUB_LINK_OFFSET, FSI_HUB_LINK_SIZE * links); if rc != 0 { dev_err(dev, "can't claim slave address range for links"); return rc; }
-    hub = kzalloc_obj(); if hub.is_null() { rc = -ENOMEM; goto err_release; }
+    hub = kzalloc_obj(); if hub.is_null() { rc = -ENOMEM; break 'err_release; }
     (*hub).addr = FSI_HUB_LINK_OFFSET; (*hub).size = FSI_HUB_LINK_SIZE * links; (*hub).upstream = fsi_dev;
     (*hub).master.dev.parent = dev; (*hub).master.dev.release = Some(hub_master_release); (*hub).master.dev.of_node = of_node_get(dev_of_node(dev));
     (*hub).master.n_links = links; (*hub).master.read = Some(hub_master_read); (*hub).master.write = Some(hub_master_write); (*hub).master.send_break = Some(hub_master_break); (*hub).master.link_enable = Some(hub_master_link_enable);
     fsi_set_drvdata(fsi_dev, hub as *mut core::ffi::c_void);
     hub_master_init(hub);
-    rc = fsi_master_register(&mut (*hub).master); if rc != 0 { goto err_release; }
+    rc = fsi_master_register(&mut (*hub).master); if rc != 0 { break 'err_release; }
     get_device(&mut (*hub).master.dev); return 0;
-err_release:
+    }
+    
     fsi_slave_release_range((*fsi_dev).slave, FSI_HUB_LINK_OFFSET, FSI_HUB_LINK_SIZE * links); rc
 }
 

@@ -34,7 +34,7 @@ unsafe extern "C" {
     pub static sparc32_cachetlb_ops: *const sparc32_cachetlb_ops;
 
     // Preserved build-time condition: declared only when CONFIG_SMP is enabled.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub static local_ops: *const sparc32_cachetlb_ops;
 }
 

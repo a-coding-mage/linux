@@ -13,7 +13,7 @@
 
 // CONFIG_PSERIES_PLPKS_SED is a build-time configuration condition from the
 // original header and is represented here with a Rust cfg feature.
-#[cfg(feature = "CONFIG_PSERIES_PLPKS_SED")]
+#[cfg(CONFIG_PSERIES_PLPKS_SED)]
 unsafe extern "C" {
     pub fn sed_read_key(keyname: *mut core::ffi::c_char,
                         key: *mut core::ffi::c_char,
@@ -23,15 +23,15 @@ unsafe extern "C" {
                          keylen: u_int) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PSERIES_PLPKS_SED"))]
+#[cfg(not(CONFIG_PSERIES_PLPKS_SED))]
 #[allow(non_camel_case_types)]
 pub type u_int = u32;
 
-#[cfg(feature = "CONFIG_PSERIES_PLPKS_SED")]
+#[cfg(CONFIG_PSERIES_PLPKS_SED)]
 #[allow(non_camel_case_types)]
 pub type u_int = u32;
 
-#[cfg(not(feature = "CONFIG_PSERIES_PLPKS_SED"))]
+#[cfg(not(CONFIG_PSERIES_PLPKS_SED))]
 pub unsafe fn sed_read_key(
     _keyname: *mut core::ffi::c_char,
     _key: *mut core::ffi::c_char,
@@ -40,7 +40,7 @@ pub unsafe fn sed_read_key(
     -(EOPNOTSUPP as i32)
 }
 
-#[cfg(not(feature = "CONFIG_PSERIES_PLPKS_SED"))]
+#[cfg(not(CONFIG_PSERIES_PLPKS_SED))]
 pub unsafe fn sed_write_key(
     _keyname: *mut core::ffi::c_char,
     _key: *mut core::ffi::c_char,

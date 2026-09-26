@@ -32,7 +32,7 @@ type uintptr_t = usize;
  */
 const __NR_map_shadow_stack: c_long = 453;
 
-const SHADOW_STACK_SET_TOKEN: c_ulong = 1u64 as c_ulong << 0;
+const SHADOW_STACK_SET_TOKEN: c_ulong = (1u64 as c_ulong) << 0;
 
 const ARCH_SHSTK_ENABLE: c_long = 0x5001;
 const ARCH_SHSTK_DISABLE: c_long = 0x5002;
@@ -40,8 +40,8 @@ const ARCH_SHSTK_LOCK: c_long = 0x5003;
 const ARCH_SHSTK_UNLOCK: c_long = 0x5004;
 const ARCH_SHSTK_STATUS: c_long = 0x5005;
 
-const ARCH_SHSTK_SHSTK: c_ulong = 1u64 as c_ulong << 0;
-const ARCH_SHSTK_WRSS: c_ulong = 1u64 as c_ulong << 1;
+const ARCH_SHSTK_SHSTK: c_ulong = (1u64 as c_ulong) << 0;
+const ARCH_SHSTK_WRSS: c_ulong = (1u64 as c_ulong) << 1;
 
 const NT_X86_SHSTK: c_int = 0x204;
 

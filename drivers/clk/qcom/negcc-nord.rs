@@ -22,26 +22,22 @@
 // dependency: "gdsc.h"
 // dependency: "reset.h"
 
-enum {
-	DT_BI_TCXO,
-	DT_SLEEP_CLK,
-	DT_UFS_PHY_RX_SYMBOL_0_CLK,
-	DT_UFS_PHY_RX_SYMBOL_1_CLK,
-	DT_UFS_PHY_TX_SYMBOL_0_CLK,
-	DT_USB3_PHY_SEC_WRAPPER_NE_GCC_USB31_PIPE_CLK,
-	DT_USB3_PHY_WRAPPER_NE_GCC_USB31_PIPE_CLK,
-};
+pub const DT_BI_TCXO: i32 = 0;
+pub const DT_SLEEP_CLK: i32 = DT_BI_TCXO + 1;
+pub const DT_UFS_PHY_RX_SYMBOL_0_CLK: i32 = DT_SLEEP_CLK + 1;
+pub const DT_UFS_PHY_RX_SYMBOL_1_CLK: i32 = DT_UFS_PHY_RX_SYMBOL_0_CLK + 1;
+pub const DT_UFS_PHY_TX_SYMBOL_0_CLK: i32 = DT_UFS_PHY_RX_SYMBOL_1_CLK + 1;
+pub const DT_USB3_PHY_SEC_WRAPPER_NE_GCC_USB31_PIPE_CLK: i32 = DT_UFS_PHY_TX_SYMBOL_0_CLK + 1;
+pub const DT_USB3_PHY_WRAPPER_NE_GCC_USB31_PIPE_CLK: i32 = DT_USB3_PHY_SEC_WRAPPER_NE_GCC_USB31_PIPE_CLK + 1;
 
-enum {
-	P_BI_TCXO,
-	P_NE_GCC_GPLL0_OUT_EVEN,
-	P_NE_GCC_GPLL0_OUT_MAIN,
-	P_NE_GCC_GPLL2_OUT_MAIN,
-	P_SLEEP_CLK,
-	P_UFS_PHY_RX_SYMBOL_0_CLK,
-	P_UFS_PHY_RX_SYMBOL_1_CLK,
-	P_UFS_PHY_TX_SYMBOL_0_CLK,
-};
+pub const P_BI_TCXO: i32 = 0;
+pub const P_NE_GCC_GPLL0_OUT_EVEN: i32 = P_BI_TCXO + 1;
+pub const P_NE_GCC_GPLL0_OUT_MAIN: i32 = P_NE_GCC_GPLL0_OUT_EVEN + 1;
+pub const P_NE_GCC_GPLL2_OUT_MAIN: i32 = P_NE_GCC_GPLL0_OUT_MAIN + 1;
+pub const P_SLEEP_CLK: i32 = P_NE_GCC_GPLL2_OUT_MAIN + 1;
+pub const P_UFS_PHY_RX_SYMBOL_0_CLK: i32 = P_SLEEP_CLK + 1;
+pub const P_UFS_PHY_RX_SYMBOL_1_CLK: i32 = P_UFS_PHY_RX_SYMBOL_0_CLK + 1;
+pub const P_UFS_PHY_TX_SYMBOL_0_CLK: i32 = P_UFS_PHY_RX_SYMBOL_1_CLK + 1;
 
 static mut clk_alpha_pll ne_gcc_gpll0 = {
 	offset: 0x0,
@@ -49,7 +45,7 @@ static mut clk_alpha_pll ne_gcc_gpll0 = {
 	clkr: {
 		enable_reg: 0x0,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gpll0",
 			parent_data: &(const  clk_parent_data) {
 				index: DT_BI_TCXO,
@@ -88,7 +84,7 @@ static mut clk_alpha_pll ne_gcc_gpll2 = {
 	clkr: {
 		enable_reg: 0x0,
 		enable_mask: (1u32 << (2)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gpll2",
 			parent_data: &(const  clk_parent_data) {
 				index: DT_BI_TCXO,
@@ -166,7 +162,7 @@ static mut clk_parent_data ne_gcc_parent_data_5[] = {
 static mut clk_regmap_phy_mux ne_gcc_ufs_phy_rx_symbol_0_clk_src = {
 	reg: 0x33068,
 	clkr: {
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_rx_symbol_0_clk_src",
 			parent_data: &(const  clk_parent_data){
 				index: DT_UFS_PHY_RX_SYMBOL_0_CLK,
@@ -180,7 +176,7 @@ static mut clk_regmap_phy_mux ne_gcc_ufs_phy_rx_symbol_0_clk_src = {
 static mut clk_regmap_phy_mux ne_gcc_ufs_phy_rx_symbol_1_clk_src = {
 	reg: 0x330f0,
 	clkr: {
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_rx_symbol_1_clk_src",
 			parent_data: &(const  clk_parent_data){
 				index: DT_UFS_PHY_RX_SYMBOL_1_CLK,
@@ -194,7 +190,7 @@ static mut clk_regmap_phy_mux ne_gcc_ufs_phy_rx_symbol_1_clk_src = {
 static mut clk_regmap_phy_mux ne_gcc_ufs_phy_tx_symbol_0_clk_src = {
 	reg: 0x33058,
 	clkr: {
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_tx_symbol_0_clk_src",
 			parent_data: &(const  clk_parent_data){
 				index: DT_UFS_PHY_TX_SYMBOL_0_CLK,
@@ -208,7 +204,7 @@ static mut clk_regmap_phy_mux ne_gcc_ufs_phy_tx_symbol_0_clk_src = {
 static mut clk_regmap_phy_mux ne_gcc_usb3_prim_phy_pipe_clk_src = {
 	reg: 0x2a078,
 	clkr: {
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_prim_phy_pipe_clk_src",
 			parent_data: &(const  clk_parent_data){
 				index: DT_USB3_PHY_WRAPPER_NE_GCC_USB31_PIPE_CLK,
@@ -222,7 +218,7 @@ static mut clk_regmap_phy_mux ne_gcc_usb3_prim_phy_pipe_clk_src = {
 static mut clk_regmap_phy_mux ne_gcc_usb3_sec_phy_pipe_clk_src = {
 	reg: 0x2c078,
 	clkr: {
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_sec_phy_pipe_clk_src",
 			parent_data: &(const  clk_parent_data){
 				index: DT_USB3_PHY_SEC_WRAPPER_NE_GCC_USB31_PIPE_CLK,
@@ -731,7 +727,7 @@ static mut clk_branch ne_gcc_aggre_noc_ufs_phy_axi_clk = {
 	clkr: {
 		enable_reg: 0x330f4,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_aggre_noc_ufs_phy_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_axi_clk_src.clkr.hw,
@@ -751,7 +747,7 @@ static mut clk_branch ne_gcc_aggre_noc_usb2_axi_clk = {
 	clkr: {
 		enable_reg: 0x31068,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_aggre_noc_usb2_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb20_master_clk_src.clkr.hw,
@@ -771,7 +767,7 @@ static mut clk_branch ne_gcc_aggre_noc_usb3_prim_axi_clk = {
 	clkr: {
 		enable_reg: 0x2a098,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_aggre_noc_usb3_prim_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_prim_master_clk_src.clkr.hw,
@@ -791,7 +787,7 @@ static mut clk_branch ne_gcc_aggre_noc_usb3_sec_axi_clk = {
 	clkr: {
 		enable_reg: 0x2c098,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_aggre_noc_usb3_sec_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_sec_master_clk_src.clkr.hw,
@@ -811,7 +807,7 @@ static mut clk_branch ne_gcc_ahb2phy_clk = {
 	clkr: {
 		enable_reg: 0x30004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ahb2phy_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -826,7 +822,7 @@ static mut clk_branch ne_gcc_cnoc_usb2_axi_clk = {
 	clkr: {
 		enable_reg: 0x31064,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_cnoc_usb2_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb20_master_clk_src.clkr.hw,
@@ -846,7 +842,7 @@ static mut clk_branch ne_gcc_cnoc_usb3_prim_axi_clk = {
 	clkr: {
 		enable_reg: 0x2a094,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_cnoc_usb3_prim_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_prim_master_clk_src.clkr.hw,
@@ -866,7 +862,7 @@ static mut clk_branch ne_gcc_cnoc_usb3_sec_axi_clk = {
 	clkr: {
 		enable_reg: 0x2c094,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_cnoc_usb3_sec_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_sec_master_clk_src.clkr.hw,
@@ -884,7 +880,7 @@ static mut clk_branch ne_gcc_frq_measure_ref_clk = {
 	clkr: {
 		enable_reg: 0x20008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_frq_measure_ref_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -897,7 +893,7 @@ static mut clk_branch ne_gcc_gp1_clk = {
 	clkr: {
 		enable_reg: 0x21000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gp1_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_gp1_clk_src.clkr.hw,
@@ -915,7 +911,7 @@ static mut clk_branch ne_gcc_gp2_clk = {
 	clkr: {
 		enable_reg: 0x22000,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gp2_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_gp2_clk_src.clkr.hw,
@@ -932,7 +928,7 @@ static mut clk_branch ne_gcc_gpu_2_gpll0_clk_src = {
 	clkr: {
 		enable_reg: 0x57000,
 		enable_mask: (1u32 << (19)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gpu_2_gpll0_clk_src",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_gpll0.clkr.hw,
@@ -949,7 +945,7 @@ static mut clk_branch ne_gcc_gpu_2_gpll0_div_clk_src = {
 	clkr: {
 		enable_reg: 0x57000,
 		enable_mask: (1u32 << (20)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gpu_2_gpll0_div_clk_src",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_gpll0_out_even.clkr.hw,
@@ -969,7 +965,7 @@ static mut clk_branch ne_gcc_gpu_2_hscnoc_gfx_clk = {
 	clkr: {
 		enable_reg: 0x34014,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gpu_2_hscnoc_gfx_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -982,7 +978,7 @@ static mut clk_branch ne_gcc_gpu_2_smmu_vote_clk = {
 	clkr: {
 		enable_reg: 0x57028,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_gpu_2_smmu_vote_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -995,7 +991,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_core_2x_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (1)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_core_2x_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1008,7 +1004,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_core_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_core_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1023,7 +1019,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_m_ahb_clk = {
 	clkr: {
 		enable_reg: 0x57000,
 		enable_mask: (1u32 << (30)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_m_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1036,7 +1032,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s0_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (2)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s0_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s0_clk_src.clkr.hw,
@@ -1054,7 +1050,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s1_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (3)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s1_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s1_clk_src.clkr.hw,
@@ -1072,7 +1068,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s2_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (4)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s2_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s2_clk_src.clkr.hw,
@@ -1090,7 +1086,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s3_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (5)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s3_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s3_clk_src.clkr.hw,
@@ -1108,7 +1104,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s4_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (6)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s4_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s4_clk_src.clkr.hw,
@@ -1126,7 +1122,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s5_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (7)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s5_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s5_clk_src.clkr.hw,
@@ -1144,7 +1140,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s6_clk = {
 	clkr: {
 		enable_reg: 0x57008,
 		enable_mask: (1u32 << (8)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s6_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_qupv3_wrap2_s6_clk_src.clkr.hw,
@@ -1164,7 +1160,7 @@ static mut clk_branch ne_gcc_qupv3_wrap2_s_ahb_clk = {
 	clkr: {
 		enable_reg: 0x57000,
 		enable_mask: (1u32 << (31)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_qupv3_wrap2_s_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1177,7 +1173,7 @@ static mut clk_branch ne_gcc_sdcc4_apps_clk = {
 	clkr: {
 		enable_reg: 0x18004,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_sdcc4_apps_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_sdcc4_apps_clk_src.clkr.hw,
@@ -1195,7 +1191,7 @@ static mut clk_branch ne_gcc_sdcc4_axi_clk = {
 	clkr: {
 		enable_reg: 0x18014,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_sdcc4_axi_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1210,7 +1206,7 @@ static mut clk_branch ne_gcc_ufs_phy_ahb_clk = {
 	clkr: {
 		enable_reg: 0x33028,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1225,7 +1221,7 @@ static mut clk_branch ne_gcc_ufs_phy_axi_clk = {
 	clkr: {
 		enable_reg: 0x33018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_axi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_axi_clk_src.clkr.hw,
@@ -1245,7 +1241,7 @@ static mut clk_branch ne_gcc_ufs_phy_ice_core_clk = {
 	clkr: {
 		enable_reg: 0x3307c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_ice_core_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_ice_core_clk_src.clkr.hw,
@@ -1265,7 +1261,7 @@ static mut clk_branch ne_gcc_ufs_phy_phy_aux_clk = {
 	clkr: {
 		enable_reg: 0x330bc,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_phy_aux_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_phy_aux_clk_src.clkr.hw,
@@ -1283,7 +1279,7 @@ static mut clk_branch ne_gcc_ufs_phy_rx_symbol_0_clk = {
 	clkr: {
 		enable_reg: 0x33030,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_rx_symbol_0_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_rx_symbol_0_clk_src.clkr.hw,
@@ -1301,7 +1297,7 @@ static mut clk_branch ne_gcc_ufs_phy_rx_symbol_1_clk = {
 	clkr: {
 		enable_reg: 0x330d8,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_rx_symbol_1_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_rx_symbol_1_clk_src.clkr.hw,
@@ -1319,7 +1315,7 @@ static mut clk_branch ne_gcc_ufs_phy_tx_symbol_0_clk = {
 	clkr: {
 		enable_reg: 0x3302c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_tx_symbol_0_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_tx_symbol_0_clk_src.clkr.hw,
@@ -1339,7 +1335,7 @@ static mut clk_branch ne_gcc_ufs_phy_unipro_core_clk = {
 	clkr: {
 		enable_reg: 0x3306c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_ufs_phy_unipro_core_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_ufs_phy_unipro_core_clk_src.clkr.hw,
@@ -1357,7 +1353,7 @@ static mut clk_branch ne_gcc_usb20_master_clk = {
 	clkr: {
 		enable_reg: 0x31018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb20_master_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb20_master_clk_src.clkr.hw,
@@ -1375,7 +1371,7 @@ static mut clk_branch ne_gcc_usb20_mock_utmi_clk = {
 	clkr: {
 		enable_reg: 0x3102c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb20_mock_utmi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb20_mock_utmi_postdiv_clk_src.clkr.hw,
@@ -1393,7 +1389,7 @@ static mut clk_branch ne_gcc_usb20_sleep_clk = {
 	clkr: {
 		enable_reg: 0x31028,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb20_sleep_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1406,7 +1402,7 @@ static mut clk_branch ne_gcc_usb31_prim_atb_clk = {
 	clkr: {
 		enable_reg: 0x2a018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_prim_atb_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_prim_master_clk_src.clkr.hw,
@@ -1426,7 +1422,7 @@ static mut clk_branch ne_gcc_usb31_prim_eud_ahb_clk = {
 	clkr: {
 		enable_reg: 0x2a02c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_prim_eud_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1439,7 +1435,7 @@ static mut clk_branch ne_gcc_usb31_prim_master_clk = {
 	clkr: {
 		enable_reg: 0x2a01c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_prim_master_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_prim_master_clk_src.clkr.hw,
@@ -1457,7 +1453,7 @@ static mut clk_branch ne_gcc_usb31_prim_mock_utmi_clk = {
 	clkr: {
 		enable_reg: 0x2a034,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_prim_mock_utmi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_prim_mock_utmi_postdiv_clk_src.clkr.hw,
@@ -1475,7 +1471,7 @@ static mut clk_branch ne_gcc_usb31_prim_sleep_clk = {
 	clkr: {
 		enable_reg: 0x2a030,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_prim_sleep_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1488,7 +1484,7 @@ static mut clk_branch ne_gcc_usb31_sec_atb_clk = {
 	clkr: {
 		enable_reg: 0x2c018,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_sec_atb_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_prim_master_clk_src.clkr.hw,
@@ -1508,7 +1504,7 @@ static mut clk_branch ne_gcc_usb31_sec_eud_ahb_clk = {
 	clkr: {
 		enable_reg: 0x2c02c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_sec_eud_ahb_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1521,7 +1517,7 @@ static mut clk_branch ne_gcc_usb31_sec_master_clk = {
 	clkr: {
 		enable_reg: 0x2c01c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_sec_master_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_sec_master_clk_src.clkr.hw,
@@ -1539,7 +1535,7 @@ static mut clk_branch ne_gcc_usb31_sec_mock_utmi_clk = {
 	clkr: {
 		enable_reg: 0x2c034,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_sec_mock_utmi_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb31_sec_mock_utmi_postdiv_clk_src.clkr.hw,
@@ -1557,7 +1553,7 @@ static mut clk_branch ne_gcc_usb31_sec_sleep_clk = {
 	clkr: {
 		enable_reg: 0x2c030,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb31_sec_sleep_clk",
 			ops: &clk_branch2_ops,
 		},
@@ -1570,7 +1566,7 @@ static mut clk_branch ne_gcc_usb3_prim_phy_aux_clk = {
 	clkr: {
 		enable_reg: 0x2a06c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_prim_phy_aux_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb3_prim_phy_aux_clk_src.clkr.hw,
@@ -1588,7 +1584,7 @@ static mut clk_branch ne_gcc_usb3_prim_phy_com_aux_clk = {
 	clkr: {
 		enable_reg: 0x2a070,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_prim_phy_com_aux_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb3_prim_phy_aux_clk_src.clkr.hw,
@@ -1608,7 +1604,7 @@ static mut clk_branch ne_gcc_usb3_prim_phy_pipe_clk = {
 	clkr: {
 		enable_reg: 0x2a074,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_prim_phy_pipe_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb3_prim_phy_pipe_clk_src.clkr.hw,
@@ -1626,7 +1622,7 @@ static mut clk_branch ne_gcc_usb3_sec_phy_aux_clk = {
 	clkr: {
 		enable_reg: 0x2c06c,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_sec_phy_aux_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb3_sec_phy_aux_clk_src.clkr.hw,
@@ -1644,7 +1640,7 @@ static mut clk_branch ne_gcc_usb3_sec_phy_com_aux_clk = {
 	clkr: {
 		enable_reg: 0x2c070,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_sec_phy_com_aux_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb3_sec_phy_aux_clk_src.clkr.hw,
@@ -1664,7 +1660,7 @@ static mut clk_branch ne_gcc_usb3_sec_phy_pipe_clk = {
 	clkr: {
 		enable_reg: 0x2c074,
 		enable_mask: (1u32 << (0)),
-		.hwinit: &(const  clk_init_data) {
+		hwinit: &(const  clk_init_data) {
 			name: "ne_gcc_usb3_sec_phy_pipe_clk",
 			parent_hws: (const  clk_hw*[]) {
 				&ne_gcc_usb3_sec_phy_pipe_clk_src.clkr.hw,

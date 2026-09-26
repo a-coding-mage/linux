@@ -17,7 +17,7 @@ const _XFS_BUF_C_SOURCE: &str = r#"
 /*
  * Copyright (c) 2000-2006 Silicon Graphics, Inc.
  * All Rights Reserved.
- * /
+ */
 #include "xfs_platform.h"
 #include <linux/backing-dev.h>
 #include <linux/dax.h>
@@ -60,7 +60,7 @@ struct kmem_cache *xfs_buf_cache;
  * xfs_buftarg_isolate
  *	lru_lock
  *	  b_lockref.lock (trylock due to inversion)
- * /
+ */
 
 static void xfs_buf_submit(struct xfs_buf *bp);
 static int xfs_buf_iowait(struct xfs_buf *bp);
@@ -100,7 +100,7 @@ xfs_buf_set_uptodate(
  * to remove the reference that LRU holds on the buffer.
  *
  * This prevents build-up of stale buffers on the LRU.
- * /
+ */
 void
 xfs_buf_stale(
 	struct xfs_buf	*bp)
@@ -113,7 +113,7 @@ xfs_buf_stale(
 	 * Clear the delwri status so that a delwri queue walker will not
 	 * flush this buffer to disk now that it is stale. The delwri queue has
 	 * a reference to the buffer, so this is safe to do.
-	 * /
+	 */
 	xfs_buf_clear_flags(bp, _XBF_DELWRI_Q);
 
 	spin_lock(&bp->b_lockref.lock);
@@ -199,7 +199,7 @@ xfs_buf_alloc_kmem(
 	 * Slab guarantees that we get back naturally aligned allocations for
 	 * power of two sizes.  Keep this check as the canary in the coal mine
 	 * if anything changes in slab.
-	 * /
+	 */
 	if (WARN_ON_ONCE(!IS_ALIGNED((unsigned long)bp->b_addr, size))) {
 		kfree(bp->b_addr);
 		bp->b_addr = NULL;
@@ -249,7 +249,7 @@ xfs_buf_alloc_vmalloc(
  * The third type of buffer is the vmalloc()d buffer. This provides the buffer
  * with the required contiguous memory region but backed by discontiguous
  * physical pages.
- * /
+ */
 static int
 xfs_buf_alloc_backing_mem(
 	struct xfs_buf	*bp,
@@ -261,7 +261,7 @@ xfs_buf_alloc_backing_mem(
 	if (xfs_buftarg_is_mem(bp->b_target))
 		return xmbuf_map_backing_mem(bp);
 
-	/* Assure zeroed buffer for non-read cases. * /
+	/* Assure zeroed buffer for non-read cases. */
 	if (!(flags & XBF_READ))
 		gfp_mask |= __GFP_ZERO;
 
@@ -278,7 +278,7 @@ xfs_buf_alloc_backing_mem(
 	 * The exception here are user xattr data buffers, which can be arbitrarily
 	 * sized up to 64kB plus structure metadata, skip straight to the vmalloc
 	 * path for them instead of wasting memory here.
-	 * /
+	 */
 	if (size > PAGE_SIZE) {
 		if (is_power_of_2(size)) {
 			gfp_t folio_gfp = gfp_mask;
@@ -299,7 +299,7 @@ xfs_buf_alloc_backing_mem(
 	 *
 	 * Don't bother with the vmalloc fallback for allocations of page size
 	 * or less: vmalloc won't do any better.
-	 * /
+	 */
 	if (!(gfp_mask & __GFP_NORETRY))
 		gfp_mask |= __GFP_NOFAIL;
 	if (size < PAGE_SIZE && is_power_of_2(size))
@@ -326,10 +326,10 @@ xfs_buf_alloc(
 	/*
 	 * We don't want certain flags to appear in b_flags unless they are
 	 * specifically set by later operations on the buffer.
-	 * /
+	 */
 	flags &= ~(XBF_TRYLOCK | XBF_ASYNC | XBF_READ_AHEAD);
 	lockref_init(&bp->b_lockref);
-	sema_init(&bp->b_sema, 1); /* unlocked * /
+	sema_init(&bp->b_sema, 1); /* unlocked */
 	atomic_set(&bp->b_lru_ref, 1);
 	init_completion(&bp->b_iowait);
 	INIT_LIST_HEAD(&bp->b_lru);
@@ -370,7 +370,7 @@ xfs_buf_alloc(
 
 /*
  *	Finding and Reading Buffers
- * /
+ */
 static int
 _xfs_buf_obj_cmp(
 	struct rhashtable_compare_arg	*arg,
@@ -382,7 +382,7 @@ _xfs_buf_obj_cmp(
 	/*
 	 * The key hashing in the lookup path depends on the key being the
 	 * first element of the compare_arg, make sure to assert this.
-	 * /
+	 */
 	BUILD_BUG_ON(offsetof(struct xfs_buf_map, bm_bn) != 0);
 
 	if (bp->b_rhash_key != map->bm_bn)
@@ -399,7 +399,7 @@ _xfs_buf_obj_cmp(
 		 *
 		 * Note: If we're scanning for incore buffers to stale, don't
 		 * complain if we find non-stale buffers.
-		 * /
+		 */
 		if (!(map->bm_flags & XBM_LIVESCAN))
 			ASSERT(bp->b_flags & XBF_STALE);
 		return 1;
@@ -408,7 +408,7 @@ _xfs_buf_obj_cmp(
 }
 
 static const struct rhashtable_params xfs_buf_hash_params = {
-	.min_size		= 32,	/* empty AGs have minimal footprint * /
+	.min_size		= 32,	/* empty AGs have minimal footprint */
 	.nelem_hint		= 16,
 	.key_len		= sizeof(xfs_daddr_t),
 	.key_offset		= offsetof(struct xfs_buf, b_rhash_key),
@@ -422,14 +422,14 @@ xfs_buf_map_verify(
 	struct xfs_buftarg	*btp,
 	struct xfs_buf_map	*map)
 {
-	/* Check for IOs smaller than the sector size / not sector aligned * /
+	/* Check for IOs smaller than the sector size / not sector aligned */
 	ASSERT(!(BBTOB(map->bm_len) < btp->bt_meta_sectorsize));
 	ASSERT(!(BBTOB(map->bm_bn) & (xfs_off_t)btp->bt_meta_sectormask));
 
 	/*
 	 * Corrupted block numbers can get through to here, unfortunately, so we
 	 * have to check that the buffer falls within the filesystem bounds.
-	 * /
+	 */
 	if (map->bm_bn < 0 || map->bm_bn >= btp->bt_nr_sectors) {
 		xfs_alert(btp->bt_mount,
 			  "%s: daddr 0x%llx out of range, EOFS 0x%llx",
@@ -459,7 +459,7 @@ xfs_buf_find_lock(
 	 * if the buffer is stale, clear all the external state associated with
 	 * it. We need to keep flags such as how we allocated the buffer memory
 	 * intact here.
-	 * /
+	 */
 	if (bp->b_flags & XBF_STALE) {
 		if (flags & XBF_LIVESCAN) {
 			xfs_buf_unlock(bp);
@@ -496,7 +496,7 @@ xfs_buf_lookup(
 /*
  * Insert the new_bp into the hash table. This consumes the perag reference
  * taken for the lookup regardless of the result of the insert.
- * /
+ */
 static int
 xfs_buf_find_insert(
 	struct xfs_buftarg	*btp,
@@ -514,7 +514,7 @@ xfs_buf_find_insert(
 	if (error)
 		return error;
 
-	/* The new buffer keeps the perag reference until it is freed. * /
+	/* The new buffer keeps the perag reference until it is freed. */
 	if (!xfs_buftarg_is_mem(btp)) {
 		new_bp->b_pag = xfs_perag_get(btp->bt_mount,
 			xfs_daddr_to_agno(btp->bt_mount, cmap->bm_bn));
@@ -533,7 +533,7 @@ retry:
 		/*
 		 * If there is an existing buffer with a dead lockref, retry
 		 * until the new buffer is added, or a usable buffer is found.
-		 * /
+		 */
 		if (!lockref_get_not_dead(&bp->b_lockref)) {
 			rcu_read_unlock();
 			cpu_relax();
@@ -559,7 +559,7 @@ out_free_buf:
  * Assembles a buffer covering the specified range. The code is optimised for
  * cache hits, as metadata intensive workloads will see 3 orders of magnitude
  * more hits than misses.
- * /
+ */
 static int
 xfs_find_get_buf(
 	struct xfs_buftarg	*btp,
@@ -582,7 +582,7 @@ xfs_find_get_buf(
 	if (error)
 		return error;
 
-	/* cache hits always outnumber misses by at least 10:1 * /
+	/* cache hits always outnumber misses by at least 10:1 */
 	bp = xfs_buf_lookup(btp, &cmap);
 	if (unlikely(!bp)) {
 		if (flags & XBF_INCORE)
@@ -612,7 +612,7 @@ xfs_buf_get_map(
 	/*
 	 * Zero the buffer and clear b_error as xfs_buf_get_map callers don't
 	 * expect valid data to be found in the buffer.
-	 * /
+	 */
 	error = xfs_find_get_buf(btp, map, nmaps, flags, bpp);
 	if (error)
 		return error;
@@ -689,7 +689,7 @@ xfs_buf_read_map(
 		 *	order to establish buffer type.  If repair can't
 		 *	establish that, the buffer will be left in memory with
 		 *	NULL buffer ops.
-		 * /
+		 */
 		if (ops && !bp->b_ops) {
 			bp->b_ops = ops;
 			bp->b_ops->verify_read(bp);
@@ -697,16 +697,16 @@ xfs_buf_read_map(
 			 * If verification failed, clear XBF_DONE as we assume
 			 * that buffers have no recorded errors when in XBF_DONE
 			 * state.
-			 * /
+			 */
 			error = bp->b_error;
 			if (error)
 				xfs_buf_clear_flags(bp, XBF_DONE);
 		}
 
-		/* We do not want read in the flags * /
+		/* We do not want read in the flags */
 		xfs_buf_clear_flags(bp, XBF_READ);
 	} else {
-		/* Initiate the buffer read and wait. * /
+		/* Initiate the buffer read and wait. */
 		XFS_STATS_INC(target->bt_mount, xb_get_read);
 		bp->b_ops = ops;
 		error = _xfs_buf_read(bp);
@@ -725,7 +725,7 @@ out_ioerror:
 	 * metadata writeback until the log is shut down.  High level
 	 * transaction read functions already check against mount shutdown, so
 	 * we only need to be concerned about low level/ IO interactions here.
-	 * /
+	 */
 	if (!xlog_is_shutdown(target->bt_mount->m_log))
 		xfs_buf_ioerror_alert(bp, fa);
 
@@ -737,12 +737,12 @@ out_ioerror:
 	 * reference to the buffer will interpret it's contents correctly and
 	 * future cache lookups will also treat it as an empty, uninitialised
 	 * buffer.
-	 * /
+	 */
 	xfs_buf_clear_flags(bp, XBF_DONE);
 	xfs_buf_stale(bp);
 	xfs_buf_relse(bp);
 
-	/* bad CRC means corrupted metadata * /
+	/* bad CRC means corrupted metadata */
 	if (error == -EFSBADCRC)
 		return -EFSCORRUPTED;
 	return error;
@@ -751,7 +751,7 @@ out_ioerror:
 /*
  *	If we are not low on memory then do the readahead in a deadlock
  *	safe manner.
- * /
+ */
 void
 xfs_buf_readahead_map(
 	struct xfs_buftarg	*target,
@@ -765,7 +765,7 @@ xfs_buf_readahead_map(
 	/*
 	 * Currently we don't have a good means or justification for performing
 	 * xmbuf_map_page asynchronously, so we don't do readahead.
-	 * /
+	 */
 	if (xfs_buftarg_is_mem(target))
 		return;
 
@@ -775,15 +775,15 @@ xfs_buf_readahead_map(
 	/*
 	 * Do a lockless fast path check for a valid uptodate buffer and avoid
 	 * locking entirely in this case.
-	 * /
+	 */
 	if ((READ_ONCE(bp->b_flags) & (XBF_DONE | XBF_STALE)) == XBF_DONE)
 		goto out_rele;
 
-	/* Otherwise lock the buffer to stabilize the state * /
+	/* Otherwise lock the buffer to stabilize the state */
 	if (!xfs_buf_trylock(bp))
 		goto out_rele;
 
-	/* Let the actual reader deal with stale buffers. * /
+	/* Let the actual reader deal with stale buffers. */
 	if (bp->b_flags & (XBF_STALE | XBF_DONE))
 		goto out_unlock;
 
@@ -806,7 +806,7 @@ out_rele:
  * buffer containing the disk contents or nothing. Uncached buffers always have
  * a cache index of XFS_BUF_DADDR_NULL so we can easily determine if the buffer
  * is cached or uncached during fault diagnosis.
- * /
+ */
 int
 xfs_buf_read_uncached(
 	struct xfs_buftarg	*target,
@@ -824,7 +824,7 @@ xfs_buf_read_uncached(
 	if (error)
 		return error;
 
-	/* set up the buffer for a read IO * /
+	/* set up the buffer for a read IO */
 	ASSERT(bp->b_map_count == 1);
 	bp->b_rhash_key = XFS_BUF_DADDR_NULL;
 	bp->b_maps[0].bm_bn = daddr;
@@ -863,7 +863,7 @@ xfs_buf_get_uncached(
  *	Increment reference count on buffer, to hold the buffer concurrently
  *	with another thread which may release (free) the buffer asynchronously.
  *	Must hold the buffer already to call this function.
- * /
+ */
 void
 xfs_buf_hold(
 	struct xfs_buf		*bp)
@@ -898,7 +898,7 @@ xfs_buf_kill(
 
 /*
  * Release a hold on the specified buffer.
- * /
+ */
 void
 xfs_buf_rele(
 	struct xfs_buf		*bp)
@@ -933,7 +933,7 @@ kill:
  *	fail until someone else pushes the log, push it ourselves before
  *	returning.  This means that the xfsaild will not get stuck trying
  *	to push on stale inode buffers.
- * /
+ */
 int
 xfs_buf_trylock(
 	struct xfs_buf		*bp)
@@ -956,7 +956,7 @@ xfs_buf_trylock(
  *	it is pinned, we know that the log has not been pushed to disk and
  *	hence it will still be locked. Rather than sleeping until someone
  *	else pushes the log, push it ourselves before trying to get the lock.
- * /
+ */
 void
 xfs_buf_lock(
 	struct xfs_buf		*bp)
@@ -1018,7 +1018,7 @@ xfs_buf_ioerror_alert_ratelimited(
 /*
  * Account for this latest trip around the retry handler, and decide if
  * we've failed enough times to constitute a permanent failure.
- * /
+ */
 static bool
 xfs_buf_ioerror_permanent(
 	struct xfs_buf		*bp,
@@ -1033,7 +1033,7 @@ xfs_buf_ioerror_permanent(
 	    time_after(jiffies, cfg->retry_timeout + bp->b_first_retry_time))
 		return true;
 
-	/* At unmount we may treat errors differently * /
+	/* At unmount we may treat errors differently */
 	if (xfs_is_unmounting(mp) && mp->m_fail_unmount)
 		return true;
 
@@ -1056,7 +1056,7 @@ xfs_buf_ioerror_permanent(
  * Returns true if this function took care of error handling and the caller must
  * not touch the buffer again.  Return false if the caller should proceed with
  * normal I/O completion handling.
- * /
+ */
 static bool
 xfs_buf_ioend_handle_error(
 	struct xfs_buf		*bp)
@@ -1068,7 +1068,7 @@ xfs_buf_ioend_handle_error(
 	/*
 	 * If we've already shutdown the journal because of I/O errors, there's
 	 * no point in giving this a retry.
-	 * /
+	 */
 	if (xlog_is_shutdown(mp->m_log))
 		goto out_stale;
 
@@ -1077,7 +1077,7 @@ xfs_buf_ioend_handle_error(
 	/*
 	 * We're not going to bother about retrying this during recovery.
 	 * One strike!
-	 * /
+	 */
 	if (mp->m_log && xlog_in_recovery(mp->m_log)) {
 		xfs_force_shutdown(mp, SHUTDOWN_META_IO_ERROR);
 		return false;
@@ -1085,7 +1085,7 @@ xfs_buf_ioend_handle_error(
 
 	/*
 	 * Synchronous writes will have callers process the error.
-	 * /
+	 */
 	if (!(bp->b_flags & XBF_ASYNC))
 		goto out_stale;
 
@@ -1104,13 +1104,13 @@ xfs_buf_ioend_handle_error(
 	/*
 	 * Permanent error - we need to trigger a shutdown if we haven't already
 	 * to indicate that inconsistency will result from this action.
-	 * /
+	 */
 	if (xfs_buf_ioerror_permanent(bp, cfg)) {
 		xfs_force_shutdown(mp, SHUTDOWN_META_IO_ERROR);
 		goto out_stale;
 	}
 
-	/* Still considered a transient error. Caller will schedule retries. * /
+	/* Still considered a transient error. Caller will schedule retries. */
 	list_for_each_entry(lip, &bp->b_li_list, li_bio_list) {
 		set_bit(XFS_LI_FAILED, &lip->li_flags);
 		clear_bit(XFS_LI_FLUSHING, &lip->li_flags);
@@ -1138,7 +1138,7 @@ out_stale:
  * Complete a buffer read or write.
  *
  * Releases the buffer if the I/O was asynchronous.
- * /
+ */
 static void
 xfs_buf_ioend(
 	struct xfs_buf	*bp)
@@ -1168,7 +1168,7 @@ xfs_buf_ioend(
 			xfs_buf_set_flags(bp, XBF_DONE);
 		}
 
-		/* clear the retry state * /
+		/* clear the retry state */
 		bp->b_last_error = 0;
 		bp->b_retries = 0;
 		bp->b_first_retry_time = 0;
@@ -1177,7 +1177,7 @@ xfs_buf_ioend(
 		 * Note that for things like remote attribute buffers, there may
 		 * not be a buffer log item here, so processing the buffer log
 		 * item must remain optional.
-		 * /
+		 */
 		if (bp->b_log_item)
 			xfs_buf_item_done(bp);
 
@@ -1224,7 +1224,7 @@ xfs_buf_ioerror_alert(
  *
  * The caller transfers a reference which will be released after processing the
  * error.
- * /
+ */
 void
 xfs_buf_fail(
 	struct xfs_buf	*bp)
@@ -1319,7 +1319,7 @@ xfs_buf_submit_bio(
 	 * If there is more than one map segment, split out a new bio for each
 	 * map except of the last one.  The last map is handled by the
 	 * remainder of the original bio outside the loop.
-	 * /
+	 */
 	blk_start_plug(&plug);
 	for (map = 0; map < bp->b_map_count - 1; map++) {
 		struct bio	*split;
@@ -1337,7 +1337,7 @@ xfs_buf_submit_bio(
 
 /*
  * Wait for I/O completion of a sync buffer and return the I/O error code.
- * /
+ */
 static int
 xfs_buf_iowait(
 	struct xfs_buf	*bp)
@@ -1355,7 +1355,7 @@ xfs_buf_iowait(
 /*
  * Run the write verifier callback function if it exists. If this fails, mark
  * the buffer with an error and do not dispatch the I/O.
- * /
+ */
 static bool
 xfs_buf_verify_write(
 	struct xfs_buf		*bp)
@@ -1368,7 +1368,7 @@ xfs_buf_verify_write(
 		/*
 		 * Non-crc filesystems don't attach verifiers during log
 		 * recovery, so don't warn for such filesystems.
-		 * /
+		 */
 		if (xfs_has_crc(bp->b_mount)) {
 			xfs_warn(bp->b_mount,
 				"%s: no buf ops on daddr 0x%llx len %d",
@@ -1387,7 +1387,7 @@ xfs_buf_verify_write(
  * the buffer lock ownership and the current reference to the IO. It is not
  * safe to reference the buffer after a call to this function unless the caller
  * holds an additional reference itself.
- * /
+ */
 static void
 xfs_buf_submit(
 	struct xfs_buf	*bp)
@@ -1410,7 +1410,7 @@ xfs_buf_submit(
 	 * to disk before the log is shutdown. Hence we check log shutdown
 	 * state here rather than mount state to avoid corrupting the log tail
 	 * on shutdown.
-	 * /
+	 */
 	if (bp->b_mount->m_log && xlog_is_shutdown(bp->b_mount->m_log)) {
 		xfs_buf_ioerror(bp, -EIO);
 		goto ioerror;
@@ -1422,16 +1422,16 @@ xfs_buf_submit(
 	/*
 	 * Make sure we capture only current IO errors rather than stale errors
 	 * left over from previous use of the buffer (e.g. failed readahead).
-	 * /
+	 */
 	bp->b_error = 0;
 
 	if ((bp->b_flags & XBF_WRITE) && !xfs_buf_verify_write(bp)) {
-		/* ->verify_write should have set b_error already * /
+		/* ->verify_write should have set b_error already */
 		xfs_force_shutdown(bp->b_mount, SHUTDOWN_CORRUPT_INCORE);
 		goto ioerror;
 	}
 
-	/* In-memory targets are directly mapped, no I/O required. * /
+	/* In-memory targets are directly mapped, no I/O required. */
 	if (xfs_buftarg_is_mem(bp->b_target))
 		goto end_io;
 
@@ -1458,7 +1458,7 @@ end_io:
  * The buffer must be XBF_DONE prior to the call.  Afterwards, the buffer will
  * be marked stale, but b_error will not be set.  The caller is responsible for
  * releasing the buffer or fixing it.
- * /
+ */
 void
 __xfs_buf_mark_corrupt(
 	struct xfs_buf		*bp,
@@ -1472,13 +1472,13 @@ __xfs_buf_mark_corrupt(
 
 /*
  *	Handling of buffer targets (buftargs).
- * /
+ */
 
 /*
  * Wait for any bufs with callbacks that have been submitted but have not yet
  * returned. These buffers will have an elevated hold count, so wait on those
  * while freeing all the buffers only held by the LRU.
- * /
+ */
 static enum lru_status
 xfs_buftarg_drain_rele(
 	struct list_head	*item,
@@ -1492,7 +1492,7 @@ xfs_buftarg_drain_rele(
 	if (!spin_trylock(&bp->b_lockref.lock))
 		return LRU_SKIP;
 	if (bp->b_lockref.count > 0) {
-		/* need to wait, so skip it this pass * /
+		/* need to wait, so skip it this pass */
 		spin_unlock(&bp->b_lockref.lock);
 		trace_xfs_buf_drain_buftarg(bp, _RET_IP_);
 		return LRU_SKIP;
@@ -1506,7 +1506,7 @@ xfs_buftarg_drain_rele(
 
 /*
  * Wait for outstanding I/O on the buftarg to complete.
- * /
+ */
 void
 xfs_buftarg_wait(
 	struct xfs_buftarg	*btp)
@@ -1521,7 +1521,7 @@ xfs_buftarg_wait(
 	 * after the buffer lock is dropped. Hence we need to ensure here that
 	 * all reference counts have been dropped before we start walking the
 	 * LRU list.
-	 * /
+	 */
 	while (percpu_counter_sum(&btp->bt_readahead_count))
 		delay(100);
 	flush_workqueue(btp->bt_mount->m_buf_workqueue);
@@ -1537,7 +1537,7 @@ xfs_buftarg_drain(
 
 	xfs_buftarg_wait(btp);
 
-	/* loop until there is nothing left on the lru list. * /
+	/* loop until there is nothing left on the lru list. */
 	while (list_lru_count(&btp->bt_lru)) {
 		list_lru_walk(&btp->bt_lru, xfs_buftarg_drain_rele,
 			      &dispose, LONG_MAX);
@@ -1564,7 +1564,7 @@ xfs_buftarg_drain(
 	 * was thrown away. This should only ever happen after I/O completion
 	 * handling has elevated I/O error(s) to permanent failures and shuts
 	 * down the journal.
-	 * /
+	 */
 	if (write_fail) {
 		ASSERT(xlog_is_shutdown(btp->bt_mount->m_log));
 		xfs_alert(btp->bt_mount,
@@ -1584,7 +1584,7 @@ xfs_buftarg_isolate(
 	/*
 	 * We are inverting the lru lock vs bp->b_lockref.lock order here, so
 	 * use a trylock.  If we fail to get the lock, just skip the buffer.
-	 * /
+	 */
 	if (!spin_trylock(&bp->b_lockref.lock))
 		return LRU_SKIP;
 
@@ -1593,7 +1593,7 @@ xfs_buftarg_isolate(
 	 * free it while someone is using it, and we should also not count
 	 * eviction passed for it, just as if it hadn't been added to the LRU
 	 * yet.
-	 * /
+	 */
 	if (bp->b_lockref.count > 0) {
 		list_lru_isolate(lru, &bp->b_lru);
 		spin_unlock(&bp->b_lockref.lock);
@@ -1604,7 +1604,7 @@ xfs_buftarg_isolate(
 	 * Decrement the b_lru_ref count unless the value is already
 	 * zero. If the value is already zero, we need to reclaim the
 	 * buffer, otherwise it gets another trip through the LRU.
-	 * /
+	 */
 	if (atomic_add_unless(&bp->b_lru_ref, -1, 0)) {
 		spin_unlock(&bp->b_lockref.lock);
 		return LRU_ROTATE;
@@ -1664,7 +1664,7 @@ xfs_free_buftarg(
 {
 	xfs_destroy_buftarg(btp);
 	fs_put_dax(btp->bt_daxdev, btp->bt_mount);
-	/* the main block device is closed by kill_block_super * /
+	/* the main block device is closed by kill_block_super */
 	if (btp->bt_bdev != btp->bt_mount->m_super->s_bdev)
 		fs_bdev_file_release(btp->bt_file, btp->bt_mount->m_super);
 	kfree(btp);
@@ -1673,7 +1673,7 @@ xfs_free_buftarg(
 /*
  * Configure this buffer target for hardware-assisted atomic writes if the
  * underlying block device supports is congruent with the filesystem geometry.
- * /
+ */
 static inline void
 xfs_configure_buftarg_atomic_writes(
 	struct xfs_buftarg	*btp)
@@ -1687,7 +1687,7 @@ xfs_configure_buftarg_atomic_writes(
 	/*
 	 * Ignore atomic write geometry that is nonsense or doesn't even cover
 	 * a single fsblock.
-	 * /
+	 */
 	if (min_bytes > max_bytes ||
 	    min_bytes > mp->m_sb.sb_blocksize ||
 	    max_bytes < mp->m_sb.sb_blocksize) {
@@ -1699,7 +1699,7 @@ xfs_configure_buftarg_atomic_writes(
 	btp->bt_awu_max = max_bytes;
 }
 
-/* Configure a buffer target that abstracts a block device. * /
+/* Configure a buffer target that abstracts a block device. */
 int
 xfs_configure_buftarg(
 	struct xfs_buftarg	*btp,
@@ -1725,7 +1725,7 @@ xfs_configure_buftarg(
 
 	btp->bt_meta_sectorsize = sectorsize;
 	btp->bt_meta_sectormask = sectorsize - 1;
-	/* m_blkbb_log is not set up yet * /
+	/* m_blkbb_log is not set up yet */
 	btp->bt_nr_sectors = nr_blocks << (mp->m_sb.sb_blocklog - BBSHIFT);
 	return 0;
 }
@@ -1736,17 +1736,17 @@ xfs_init_buftarg(
 	size_t				logical_sectorsize,
 	const char			*descr)
 {
-	/* The maximum size of the buftarg is only known once the sb is read. * /
+	/* The maximum size of the buftarg is only known once the sb is read. */
 	btp->bt_nr_sectors = XFS_BUF_DADDR_MAX;
 
-	/* Set up device logical sector size mask * /
+	/* Set up device logical sector size mask */
 	btp->bt_logical_sectorsize = logical_sectorsize;
 	btp->bt_logical_sectormask = logical_sectorsize - 1;
 
 	/*
 	 * Buffer IO error rate limiting. Limit it to no more than 10 messages
 	 * per 30 seconds so as to not spam logs too much on repeated errors.
-	 * /
+	 */
 	ratelimit_state_init(&btp->bt_ioerror_rl, 30 * HZ,
 			     DEFAULT_RATELIMIT_BURST);
 
@@ -1801,7 +1801,7 @@ xfs_alloc_buftarg(
 	/*
 	 * Flush and invalidate all devices' pagecaches before reading any
 	 * metadata because XFS doesn't use the bdev pagecache.
-	 * /
+	 */
 	error = sync_blockdev(btp->bt_bdev);
 	if (error)
 		goto error_free;
@@ -1809,7 +1809,7 @@ xfs_alloc_buftarg(
 	/*
 	 * When allocating the buftargs we have not yet read the super block and
 	 * thus don't know the file system sector size yet.
-	 * /
+	 */
 	btp->bt_meta_sectorsize = bdev_logical_block_size(btp->bt_bdev);
 	btp->bt_meta_sectormask = btp->bt_meta_sectorsize - 1;
 
@@ -1839,7 +1839,7 @@ xfs_buf_list_del(
  *
  * Remove each buffer from the list, clear the delwri queue flag and drop the
  * associated buffer reference.
- * /
+ */
 void
 xfs_buf_delwri_cancel(
 	struct list_head	*list)
@@ -1866,7 +1866,7 @@ xfs_buf_delwri_cancel(
  *
  * Returns true if we queued up the buffer, or false if it already had
  * been on the buffer list.
- * /
+ */
 bool
 xfs_buf_delwri_queue(
 	struct xfs_buf		*bp,
@@ -1879,7 +1879,7 @@ xfs_buf_delwri_queue(
 	 * If the buffer is already marked delwri it already is queued up
 	 * by someone else for imediate writeout.  Just ignore it in that
 	 * case.
-	 * /
+	 */
 	if (bp->b_flags & _XBF_DELWRI_Q) {
 		trace_xfs_buf_delwri_queued(bp, _RET_IP_);
 		return false;
@@ -1894,7 +1894,7 @@ xfs_buf_delwri_queue(
 	 * It remains referenced and on the list.  In a rare corner case it
 	 * might get readded to a delwri list after the synchronous writeout, in
 	 * which case we need just need to re-add the flag here.
-	 * /
+	 */
 	xfs_buf_set_flags(bp, _XBF_DELWRI_Q);
 	if (list_empty(&bp->b_list)) {
 		xfs_buf_hold(bp);
@@ -1909,7 +1909,7 @@ xfs_buf_delwri_queue(
  * If the buffer is on any other delwri list, we'll wait for that to clear
  * so that the caller can submit the buffer for IO and wait for the result.
  * Callers must ensure the buffer is not already on the list.
- * /
+ */
 void
 xfs_buf_delwri_queue_here(
 	struct xfs_buf		*bp,
@@ -1920,7 +1920,7 @@ xfs_buf_delwri_queue_here(
 	 * old list.  This can happen if the buffer is marked stale (which
 	 * clears DELWRI_Q) after the AIL queues the buffer to its list but
 	 * before the AIL has a chance to submit the list.
-	 * /
+	 */
 	while (!list_empty(&bp->b_list)) {
 		xfs_buf_unlock(bp);
 		wait_var_event(&bp->b_list, list_empty(&bp->b_list));
@@ -1936,7 +1936,7 @@ xfs_buf_delwri_queue_here(
  * Compare function is more complex than it needs to be because
  * the return value is only 32 bits and we are doing comparisons
  * on 64 bit values
- * /
+ */
 static int
 xfs_buf_cmp(
 	void			*priv,
@@ -1964,7 +1964,7 @@ xfs_buf_delwri_submit_prep(
 	 * stale in the meantime.  In that case only the _XBF_DELWRI_Q flag got
 	 * cleared, and we have to drop the reference and remove it from the
 	 * list here.
-	 * /
+	 */
 	if (!(bp->b_flags & _XBF_DELWRI_Q)) {
 		xfs_buf_list_del(bp);
 		xfs_buf_relse(bp);
@@ -1992,7 +1992,7 @@ xfs_buf_delwri_submit_prep(
  * cancelled appropriately when they are finished with the list. Failure to
  * cancel or resubmit the list until it is empty will result in leaked buffers
  * at unmount time.
- * /
+ */
 int
 xfs_buf_delwri_submit_nowait(
 	struct list_head	*buffer_list)
@@ -2030,7 +2030,7 @@ xfs_buf_delwri_submit_nowait(
  * completion on all of the buffers. @buffer_list is consumed by the function,
  * so callers must have some other way of tracking buffers if they require such
  * functionality.
- * /
+ */
 int
 xfs_buf_delwri_submit(
 	struct list_head	*buffer_list)
@@ -2053,7 +2053,7 @@ xfs_buf_delwri_submit(
 	}
 	blk_finish_plug(&plug);
 
-	/* Wait for IO to complete. * /
+	/* Wait for IO to complete. */
 	while (!list_empty(&wait_list)) {
 		bp = list_first_entry(&wait_list, struct xfs_buf, b_list);
 
@@ -2062,7 +2062,7 @@ xfs_buf_delwri_submit(
 		/*
 		 * Wait on the locked buffer, check for errors and unlock and
 		 * release the delwri queue reference.
-		 * /
+		 */
 		error2 = xfs_buf_iowait(bp);
 		xfs_buf_relse(bp);
 		if (!error)
@@ -2078,7 +2078,7 @@ void xfs_buf_set_ref(struct xfs_buf *bp, int lru_ref)
 	 * Set the lru reference count to 0 based on the error injection tag.
 	 * This allows userspace to disrupt buffer caching for debug/testing
 	 * purposes.
-	 * /
+	 */
 	if (XFS_TEST_ERROR(bp->b_mount, XFS_ERRTAG_BUF_LRU_REF))
 		lru_ref = 0;
 
@@ -2089,7 +2089,7 @@ void xfs_buf_set_ref(struct xfs_buf *bp, int lru_ref)
  * Verify an on-disk magic value against the magic value specified in the
  * verifier structure. The verifier magic is in disk byte order so the caller is
  * expected to pass the value directly from disk.
- * /
+ */
 bool
 xfs_verify_magic(
 	struct xfs_buf		*bp,
@@ -2107,7 +2107,7 @@ xfs_verify_magic(
  * Verify an on-disk magic value against the magic value specified in the
  * verifier structure. The verifier magic is in disk byte order so the caller is
  * expected to pass the value directly from disk.
- * /
+ */
 bool
 xfs_verify_magic16(
 	struct xfs_buf		*bp,

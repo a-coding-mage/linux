@@ -9,23 +9,23 @@
 // linux/soc/ti/omap1-usb.h
 
 // C build condition: IS_ENABLED(CONFIG_USB_OMAP)
-#[cfg(feature = "CONFIG_USB_OMAP")]
+#[cfg(CONFIG_USB_OMAP)]
 pub const fn is_usb0_device(_config: *const omap_usb_config) -> i32 {
     1
 }
 
-#[cfg(not(feature = "CONFIG_USB_OMAP"))]
+#[cfg(not(CONFIG_USB_OMAP))]
 pub const fn is_usb0_device(_config: *const omap_usb_config) -> i32 {
     0
 }
 
 // C build condition: IS_ENABLED(CONFIG_USB_SUPPORT)
-#[cfg(feature = "CONFIG_USB_SUPPORT")]
+#[cfg(CONFIG_USB_SUPPORT)]
 extern "C" {
     pub fn omap1_usb_init(pdata: *mut omap_usb_config);
 }
 
-#[cfg(not(feature = "CONFIG_USB_SUPPORT"))]
+#[cfg(not(CONFIG_USB_SUPPORT))]
 pub unsafe fn omap1_usb_init(_pdata: *mut omap_usb_config) {}
 
 pub const OMAP1_OHCI_BASE: u32 = 0xfffba000;

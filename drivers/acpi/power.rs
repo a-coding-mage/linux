@@ -127,7 +127,7 @@ pub unsafe fn acpi_turn_off_unused_power_resources() {}
 pub unsafe fn acpi_power_resources_init() {}
 
 // Build-time CONFIG_ACPI_SLEEP section from the C source.
-#[cfg(feature="CONFIG_ACPI_SLEEP")]
+#[cfg(CONFIG_ACPI_SLEEP)]
 pub unsafe fn acpi_resume_power_resources() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

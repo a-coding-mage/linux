@@ -18,14 +18,14 @@ use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 
 extern "C" {
     static mut pcibios_assign_bus_offset: c_int; static mut k2_skiplist: [*mut device_node; 2];
-    fn of_get_property(*mut device_node,*const c_char,*mut c_int)->*const u32; fn of_find_property(*mut device_node,*const c_char,*mut c_int)->*mut property;
-    fn of_pci_find_child_device(*mut device_node,c_uint)->*mut device_node; fn pci_bus_to_host(*mut pci_bus)->*mut pci_controller;
-    fn ioremap(c_ulong,c_ulong)->*mut u8; fn in_le32(*mut u8)->u32; fn out_le32(*mut u8,u32); fn in_be32(*mut u8)->u32; fn in_8(*mut u8)->u8; fn in_le16(*mut u8)->u16; fn in_be16(*mut u8)->u16; fn out_8(*mut u8,u32); fn out_le16(*mut u8,u32); fn out_be16(*mut u8,u32); fn out_le32(*mut u8,u32); fn out_be32(*mut u8,u32); fn udelay(c_uint);
-    fn pcibios_alloc_controller(*mut device_node)->*mut pci_controller; fn pci_process_bridge_OF_ranges(*mut pci_controller,*mut device_node,c_int); fn pci_devs_phb_init_dynamic(*mut pci_controller); fn pcibios_get_phb_of_node(*mut pci_bus)->*mut device_node;
-    fn pci_generic_config_read()->c_int; fn pci_generic_config_write()->c_int; fn irq_create_mapping(*mut c_void,c_uint)->c_int; fn irq_set_irq_type(c_int,c_uint);
-    fn printk(*const c_char,...); fn machine_is_powermac()->bool; fn pci_set_flags(c_uint); fn pci_has_flag(c_uint)->bool;
-    fn pci_read_config_word(*mut pci_dev,c_uint,*mut u16)->c_int; fn pci_write_config_word(*mut pci_dev,c_uint,u16); fn pci_read_config_byte(*mut pci_dev,c_uint,*mut u8)->c_int; fn pci_write_config_byte(*mut pci_dev,c_uint,u8); fn pci_write_config_dword(*mut pci_dev,c_uint,u32);
-    fn pci_device_to_OF_node(*mut pci_dev)->*mut device_node; fn pmac_call_feature(c_uint,*mut device_node,c_int,c_int); fn resource_size(*mut resource)->c_ulong;
+    fn of_get_property(_: *mut device_node,_: *const c_char,_: *mut c_int)->*const u32; fn of_find_property(_: *mut device_node,_: *const c_char,_: *mut c_int)->*mut property;
+    fn of_pci_find_child_device(_: *mut device_node,_: c_uint)->*mut device_node; fn pci_bus_to_host(_: *mut pci_bus)->*mut pci_controller;
+    fn ioremap(_: c_ulong,_: c_ulong)->*mut u8; fn in_le32(_: *mut u8)->u32; fn out_le32(_: *mut u8,_: u32); fn in_be32(_: *mut u8)->u32; fn in_8(_: *mut u8)->u8; fn in_le16(_: *mut u8)->u16; fn in_be16(_: *mut u8)->u16; fn out_8(_: *mut u8,_: u32); fn out_le16(_: *mut u8,_: u32); fn out_be16(_: *mut u8,_: u32); fn out_le32(_: *mut u8,_: u32); fn out_be32(_: *mut u8,_: u32); fn udelay(_: c_uint);
+    fn pcibios_alloc_controller(_: *mut device_node)->*mut pci_controller; fn pci_process_bridge_OF_ranges(_: *mut pci_controller,_: *mut device_node,_: c_int); fn pci_devs_phb_init_dynamic(_: *mut pci_controller); fn pcibios_get_phb_of_node(_: *mut pci_bus)->*mut device_node;
+    fn pci_generic_config_read()->c_int; fn pci_generic_config_write()->c_int; fn irq_create_mapping(_: *mut c_void,_: c_uint)->c_int; fn irq_set_irq_type(_: c_int,_: c_uint);
+    fn printk(_: *const c_char,...); fn machine_is_powermac()->bool; fn pci_set_flags(_: c_uint); fn pci_has_flag(_: c_uint)->bool;
+    fn pci_read_config_word(_: *mut pci_dev,_: c_uint,_: *mut u16)->c_int; fn pci_write_config_word(_: *mut pci_dev,_: c_uint,_: u16); fn pci_read_config_byte(_: *mut pci_dev,_: c_uint,_: *mut u8)->c_int; fn pci_write_config_byte(_: *mut pci_dev,_: c_uint,_: u8); fn pci_write_config_dword(_: *mut pci_dev,_: c_uint,_: u32);
+    fn pci_device_to_OF_node(_: *mut pci_dev)->*mut device_node; fn pmac_call_feature(_: c_uint,_: *mut device_node,_: c_int,_: c_int); fn resource_size(_: *mut resource)->c_ulong;
 }
 
 static mut has_uninorth: c_int = 0;

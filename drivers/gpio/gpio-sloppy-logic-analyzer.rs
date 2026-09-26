@@ -108,7 +108,7 @@ unsafe fn fops_capture_set(data: *mut core::ffi::c_void, val: u64) -> i32 {
         delay = (*priv_).delay_ns - (*priv_).acq_delay;
         i = 0;
         while i < (*priv_).trig_len { loop { ret = gpio_la_get_array((*priv_).descs, &mut state); if ret != 0 { break; } ndelay(delay); if (state & *((*priv_).trig_data.add(i as usize) as *const libc_ulong)) == 0 { break; } } if ret != 0 { break; } i += 2; }
-        if ret == 0 { if (*priv_).trig_len != 0 { *la_buf.add((*priv_).buf_idx as usize) = state as u8; (*priv_).buf_idx += 1; } while (*priv_).buf_idx as usize < (*priv_).blob.size { ret = gpio_la_get_array((*priv_).descs, &mut state); if ret != 0 { break; } *la_buf.add((*priv_).buf_idx as usize) = state as u8; (*priv_).buf_idx += 1; ndelay(delay); } }
+        if ret == 0 { if (*priv_).trig_len != 0 { *la_buf.add((*priv_).buf_idx as usize) = state as u8; (*priv_).buf_idx += 1; } while ((*priv_).buf_idx as usize) < (*priv_).blob.size { ret = gpio_la_get_array((*priv_).descs, &mut state); if ret != 0 { break; } *la_buf.add((*priv_).buf_idx as usize) = state as u8; (*priv_).buf_idx += 1; ndelay(delay); } }
     }
     preempt_enable_notrace(); local_irq_enable();
     if ret != 0 { dev_err((*priv_).dev, b"couldn't read GPIOs: %d\n\0".as_ptr(), ret); }

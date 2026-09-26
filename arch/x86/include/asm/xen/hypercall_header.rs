@@ -50,7 +50,7 @@ macro_rules! _hypercall2 { ($ty:ty, $call:expr, $a1:expr, $a2:expr) => {{ xen_si
 macro_rules! _hypercall3 { ($ty:ty, $call:expr, $a1:expr, $a2:expr, $a3:expr) => {{ xen_single_call($call, $a1 as usize, $a2 as usize, $a3 as usize, 0, 0) as $ty }}; }
 macro_rules! _hypercall4 { ($ty:ty, $call:expr, $a1:expr, $a2:expr, $a3:expr, $a4:expr) => {{ xen_single_call($call, $a1 as usize, $a2 as usize, $a3 as usize, $a4 as usize, 0) as $ty }}; }
 
-#[cfg(feature = "CONFIG_XEN_PV")]
+#[cfg(CONFIG_XEN_PV)]
 #[inline]
 pub unsafe fn HYPERVISOR_set_trap_table(table: *mut trap_info) -> i32 { _hypercall1!(i32, __HYPERVISOR_set_trap_table, table) }
 

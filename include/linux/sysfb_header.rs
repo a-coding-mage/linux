@@ -86,7 +86,7 @@ pub struct efifb_dmi_info {
 pub struct sysfb_display_info {
     pub screen: screen_info,
     /* Present only when CONFIG_FIRMWARE_EDID is enabled. */
-    #[cfg(feature = "CONFIG_FIRMWARE_EDID")]
+    #[cfg(CONFIG_FIRMWARE_EDID)]
     pub edid: edid_info,
 }
 
@@ -95,40 +95,40 @@ extern "C" {
 }
 
 /* CONFIG_SYSFB controls whether the external implementations are present. */
-#[cfg(feature = "CONFIG_SYSFB")]
+#[cfg(CONFIG_SYSFB)]
 extern "C" {
     pub fn sysfb_disable(dev: *mut device);
     pub fn sysfb_handles_screen_info() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_SYSFB"))]
+#[cfg(not(CONFIG_SYSFB))]
 #[inline]
 pub unsafe fn sysfb_disable(_dev: *mut device) {}
 
-#[cfg(not(feature = "CONFIG_SYSFB"))]
+#[cfg(not(CONFIG_SYSFB))]
 #[inline]
 pub unsafe fn sysfb_handles_screen_info() -> bool {
     false
 }
 
 /* CONFIG_EFI controls whether the external implementations are present. */
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     pub static mut efifb_dmi_list: efifb_dmi_info;
     pub fn sysfb_apply_efi_quirks(si: *mut screen_info);
     pub fn sysfb_set_efifb_fwnode(si: *const screen_info, pd: *mut platform_device);
 }
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[inline]
 pub unsafe fn sysfb_apply_efi_quirks(_si: *mut screen_info) {}
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[inline]
 pub unsafe fn sysfb_set_efifb_fwnode(_si: *const screen_info, _pd: *mut platform_device) {}
 
 /* CONFIG_SYSFB_SIMPLEFB controls whether the external implementations are present. */
-#[cfg(feature = "CONFIG_SYSFB_SIMPLEFB")]
+#[cfg(CONFIG_SYSFB_SIMPLEFB)]
 extern "C" {
     pub fn sysfb_parse_mode(si: *const screen_info, mode: *mut simplefb_platform_data) -> bool;
     pub fn sysfb_create_simplefb(
@@ -138,13 +138,13 @@ extern "C" {
     ) -> *mut platform_device;
 }
 
-#[cfg(not(feature = "CONFIG_SYSFB_SIMPLEFB"))]
+#[cfg(not(CONFIG_SYSFB_SIMPLEFB))]
 #[inline]
 pub unsafe fn sysfb_parse_mode(_si: *const screen_info, _mode: *mut simplefb_platform_data) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_SYSFB_SIMPLEFB"))]
+#[cfg(not(CONFIG_SYSFB_SIMPLEFB))]
 #[inline]
 pub unsafe fn sysfb_create_simplefb(
     _si: *const screen_info,

@@ -9,24 +9,24 @@
 
 pub static mut vectors_base: ::core::ffi::c_ulong = 0;
 
-#[cfg(feature = "CONFIG_ARM_MPU")]
+#[cfg(CONFIG_ARM_MPU)]
 pub static mut mpu_rgn_info: mpu_rgn_info = unsafe { core::mem::zeroed() };
 
-#[cfg(all(feature = "CONFIG_CPU_CP15", feature = "CONFIG_CPU_HIGH_VECTOR"))]
+#[cfg(all(CONFIG_CPU_CP15, CONFIG_CPU_HIGH_VECTOR))]
 pub unsafe fn setup_vectors_base() -> ::core::ffi::c_ulong {
     let reg = get_cr();
     set_cr(reg | CR_V);
     0xffff0000
 }
 
-#[cfg(all(feature = "CONFIG_CPU_CP15", not(feature = "CONFIG_CPU_HIGH_VECTOR")))]
+#[cfg(all(CONFIG_CPU_CP15, not(CONFIG_CPU_HIGH_VECTOR)))]
 #[inline]
 unsafe fn set_vbar(val: ::core::ffi::c_ulong) {
     // Write exception base address to VBAR.
     core::arch::asm!("mcr p15, 0, {0}, c12, c0, 0", in(reg) val, options(nostack));
 }
 
-#[cfg(all(feature = "CONFIG_CPU_CP15", not(feature = "CONFIG_CPU_HIGH_VECTOR")))]
+#[cfg(all(CONFIG_CPU_CP15, not(CONFIG_CPU_HIGH_VECTOR)))]
 #[inline]
 unsafe fn security_extensions_enabled() -> bool {
     // Check CPUID Identification Scheme before ID_PFR1 read.
@@ -37,17 +37,17 @@ unsafe fn security_extensions_enabled() -> bool {
     false
 }
 
-#[cfg(all(feature = "CONFIG_CPU_CP15", not(feature = "CONFIG_CPU_HIGH_VECTOR")))]
+#[cfg(all(CONFIG_CPU_CP15, not(CONFIG_CPU_HIGH_VECTOR)))]
 pub unsafe fn setup_vectors_base() -> ::core::ffi::c_ulong {
     let mut base: ::core::ffi::c_ulong = 0;
     let reg = get_cr();
     set_cr(reg & !CR_V);
     if security_extensions_enabled() {
-        if cfg!(feature = "CONFIG_REMAP_VECTORS_TO_RAM") {
+        if cfg!(CONFIG_REMAP_VECTORS_TO_RAM) {
             base = CONFIG_DRAM_BASE;
         }
         set_vbar(base);
-    } else if cfg!(feature = "CONFIG_REMAP_VECTORS_TO_RAM") {
+    } else if cfg!(CONFIG_REMAP_VECTORS_TO_RAM) {
         if CONFIG_DRAM_BASE != 0 {
             pr_err("Security extensions not enabled, vectors cannot be remapped to RAM, vectors base will be 0x00000000\n");
         }
@@ -56,9 +56,9 @@ pub unsafe fn setup_vectors_base() -> ::core::ffi::c_ulong {
 }
 
 pub unsafe fn arm_mm_memblock_reserve() {
-    #[cfg(not(feature = "CONFIG_CPU_V7M"))]
+    #[cfg(not(CONFIG_CPU_V7M))]
     {
-        vectors_base = if cfg!(feature = "CONFIG_CPU_CP15") {
+        vectors_base = if cfg!(CONFIG_CPU_CP15) {
             setup_vectors_base()
         } else {
             0
@@ -68,7 +68,7 @@ pub unsafe fn arm_mm_memblock_reserve() {
         // alloc_page breaks with error, although it is not NULL, but "0."
         memblock_reserve(vectors_base, 2 * PAGE_SIZE);
     }
-    #[cfg(feature = "CONFIG_CPU_V7M")]
+    #[cfg(CONFIG_CPU_V7M)]
     {
         // There is no dedicated vector page on V7-M. So nothing needs to be
         // reserved here.
@@ -170,7 +170,7 @@ pub unsafe fn ioremap_wc(res_cookie: resource_size_t, size: usize) -> *mut core:
     __arm_ioremap_caller(res_cookie, size, MT_DEVICE_WC, core::ptr::null_mut())
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 pub unsafe fn pci_remap_cfgspace(res_cookie: resource_size_t, size: usize) -> *mut core::ffi::c_void {
     (arch_ioremap_caller.unwrap())(res_cookie, size, MT_UNCACHED, core::ptr::null_mut())
 }

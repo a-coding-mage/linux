@@ -1149,19 +1149,19 @@ static top_gate_clks: &[samsung_gate_clock]  = {
 };
 
 static top_cmu_info: samsung_cmu_info  = {
-	.pll_clks = top_pll_clks,
-	.nr_pll_clks = ARRAY_SIZE(top_pll_clks),
-	.mux_clks = top_mux_clks,
-	.nr_mux_clks = ARRAY_SIZE(top_mux_clks),
-	.div_clks = top_div_clks,
-	.nr_div_clks = ARRAY_SIZE(top_div_clks),
-	.fixed_factor_clks = cmu_top_ffactor,
-	.nr_fixed_factor_clks = ARRAY_SIZE(cmu_top_ffactor),
-	.gate_clks = top_gate_clks,
-	.nr_gate_clks = ARRAY_SIZE(top_gate_clks),
-	.nr_clk_ids = CLKS_NR_TOP,
-	.clk_regs = top_clk_regs,
-	.nr_clk_regs = ARRAY_SIZE(top_clk_regs),
+	pll_clks: top_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(top_pll_clks),
+	mux_clks: top_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(top_mux_clks),
+	div_clks: top_div_clks,
+	nr_div_clks: ARRAY_SIZE(top_div_clks),
+	fixed_factor_clks: cmu_top_ffactor,
+	nr_fixed_factor_clks: ARRAY_SIZE(cmu_top_ffactor),
+	gate_clks: top_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(top_gate_clks),
+	nr_clk_ids: CLKS_NR_TOP,
+	clk_regs: top_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(top_clk_regs),
 };
 
 unsafe fn exynos990_cmu_top_init(np: *mut device_node)
@@ -1334,14 +1334,14 @@ static hsi0_gate_clks: &[samsung_gate_clock]  = {
 };
 
 static hsi0_cmu_info: samsung_cmu_info  = {
-	.mux_clks = hsi0_mux_clks,
-	.nr_mux_clks = ARRAY_SIZE(hsi0_mux_clks),
-	.gate_clks = hsi0_gate_clks,
-	.nr_gate_clks = ARRAY_SIZE(hsi0_gate_clks),
-	.nr_clk_ids = CLKS_NR_HSI0,
-	.clk_regs = hsi0_clk_regs,
-	.nr_clk_regs = ARRAY_SIZE(hsi0_clk_regs),
-	.clk_name		= "bus",
+	mux_clks: hsi0_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(hsi0_mux_clks),
+	gate_clks: hsi0_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(hsi0_gate_clks),
+	nr_clk_ids: CLKS_NR_HSI0,
+	clk_regs: hsi0_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(hsi0_clk_regs),
+	clk_name: "bus",
 };
 
 /* ---- CMU_PERIC0 --------------------------------------------------------- */
@@ -1857,16 +1857,16 @@ static peric0_gate_clks: &[samsung_gate_clock]  = {
 };
 
 static peric0_cmu_info: samsung_cmu_info  = {
-	.mux_clks	= peric0_mux_clks,
-	.nr_mux_clks	= ARRAY_SIZE(peric0_mux_clks),
-	.div_clks	= peric0_div_clks,
-	.nr_div_clks	= ARRAY_SIZE(peric0_div_clks),
-	.gate_clks	= peric0_gate_clks,
-	.nr_gate_clks	= ARRAY_SIZE(peric0_gate_clks),
-	.nr_clk_ids	= CLKS_NR_PERIC0,
-	.clk_regs	= peric0_clk_regs,
-	.nr_clk_regs	= ARRAY_SIZE(peric0_clk_regs),
-	.clk_name	= "bus",
+	mux_clks: peric0_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(peric0_mux_clks),
+	div_clks: peric0_div_clks,
+	nr_div_clks: ARRAY_SIZE(peric0_div_clks),
+	gate_clks: peric0_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(peric0_gate_clks),
+	nr_clk_ids: CLKS_NR_PERIC0,
+	clk_regs: peric0_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(peric0_clk_regs),
+	clk_name: "bus",
 };
 
 /* ---- CMU_PERIC1 --------------------------------------------------------- */
@@ -2455,16 +2455,16 @@ static peric1_gate_clks: &[samsung_gate_clock]  = {
 };
 
 static peric1_cmu_info: samsung_cmu_info  = {
-	.mux_clks	= peric1_mux_clks,
-	.nr_mux_clks	= ARRAY_SIZE(peric1_mux_clks),
-	.div_clks	= peric1_div_clks,
-	.nr_div_clks	= ARRAY_SIZE(peric1_div_clks),
-	.gate_clks	= peric1_gate_clks,
-	.nr_gate_clks	= ARRAY_SIZE(peric1_gate_clks),
-	.nr_clk_ids	= CLKS_NR_PERIC1,
-	.clk_regs	= peric1_clk_regs,
-	.nr_clk_regs	= ARRAY_SIZE(peric1_clk_regs),
-	.clk_name	= "bus",
+	mux_clks: peric1_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(peric1_mux_clks),
+	div_clks: peric1_div_clks,
+	nr_div_clks: ARRAY_SIZE(peric1_div_clks),
+	gate_clks: peric1_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(peric1_gate_clks),
+	nr_clk_ids: CLKS_NR_PERIC1,
+	clk_regs: peric1_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(peric1_clk_regs),
+	clk_name: "bus",
 };
 
 /* ---- CMU_PERIS ----------------------------------------------------------- */
@@ -2629,13 +2629,13 @@ static peris_gate_clks: &[samsung_gate_clock]  = {
 };
 
 static peris_cmu_info: samsung_cmu_info  = {
-	.mux_clks = peris_mux_clks,
-	.nr_mux_clks = ARRAY_SIZE(peris_mux_clks),
-	.gate_clks = peris_gate_clks,
-	.nr_gate_clks = ARRAY_SIZE(peris_gate_clks),
-	.nr_clk_ids = CLKS_NR_PERIS,
-	.clk_regs = peris_clk_regs,
-	.nr_clk_regs = ARRAY_SIZE(peris_clk_regs),
+	mux_clks: peris_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(peris_mux_clks),
+	gate_clks: peris_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(peris_gate_clks),
+	nr_clk_ids: CLKS_NR_PERIS,
+	clk_regs: peris_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(peris_clk_regs),
 };
 
 unsafe fn exynos990_cmu_peris_init(np: *mut device_node)
@@ -2652,35 +2652,35 @@ CLK_OF_DECLARE(exynos990_cmu_peris, "samsung,exynos990-cmu-peris",
 unsafe fn exynos990_cmu_probe(pdev: *mut platform_device) -> i32
 {
 	let info: *const samsung_cmu_info;
-	dev: *mut device = &pdev->dev;
+	dev: *mut device = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }
 
 static exynos990_cmu_of_match: &[of_device_id] = {
 	{
-		.compatible = "samsung,exynos990-cmu-hsi0",
-		.data = &hsi0_cmu_info,
+		compatible: "samsung,exynos990-cmu-hsi0",
+		data: &hsi0_cmu_info,
 	}, {
-		.compatible = "samsung,exynos990-cmu-peric0",
-		.data = &peric0_cmu_info,
+		compatible: "samsung,exynos990-cmu-peric0",
+		data: &peric0_cmu_info,
 	}, {
-		.compatible = "samsung,exynos990-cmu-peric1",
-		.data = &peric1_cmu_info,
+		compatible: "samsung,exynos990-cmu-peric1",
+		data: &peric1_cmu_info,
 	},
 	{ },
 };
 
 static mut exynos990_cmu_driver: platform_driver  = {
-	.driver	= {
-		.name = "exynos990-cmu",
-		.of_match_table = exynos990_cmu_of_match,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "exynos990-cmu",
+		of_match_table: exynos990_cmu_of_match,
+		suppress_bind_attrs: true,
 	},
-	.probe = exynos990_cmu_probe,
+	probe: exynos990_cmu_probe,
 };
 
 unsafe fn exynos990_cmu_init(void) -> i32

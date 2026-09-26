@@ -66,7 +66,7 @@ pub fn zero_bytemask(mask: usize) -> usize {
 #[cfg(target_endian = "big")]
 /* The big-endian implementation is supplied by asm-generic/word-at-a-time.h. */
 
-#[cfg(all(feature = "CONFIG_DCACHE_WORD_ACCESS", target_arch = "arm"))]
+#[cfg(all(CONFIG_DCACHE_WORD_ACCESS, target_arch = "arm"))]
 #[inline]
 pub unsafe fn load_unaligned_zeropad(addr: *const core::ffi::c_void) -> usize {
     let mut ret: usize;

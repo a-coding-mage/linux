@@ -112,7 +112,7 @@ pub unsafe extern "C" fn decompress_kernel(boot_heap_start: c_ulong) {
         error,
     );
 
-    if cfg!(feature = "CONFIG_MIPS_RAW_APPENDED_DTB")
+    if cfg!(CONFIG_MIPS_RAW_APPENDED_DTB)
         && fdt_magic(&__appended_dtb as *const u8 as *const core::ffi::c_void) == FDT_MAGIC
     {
         let dtb_size = fdt_totalsize(&__appended_dtb as *const u8 as *const core::ffi::c_void);

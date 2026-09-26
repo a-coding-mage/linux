@@ -6226,149 +6226,149 @@ pub const ixDPCSSYS_CR2_RAWLANEX_DIG_PCS_XF_TX_OVRD_IN_2: u32 = 0xe0c8;
 // addressBlock: dpcssys_dcio_dcio_dispdec
 // base address: 0x0
 pub const regDC_GENERICA: u32 = 0x2868;
-#define regDC_GENERICA_BASE_IDX                                                                         2
+pub const regDC_GENERICA_BASE_IDX: u32 = 2;
 pub const regDC_GENERICB: u32 = 0x2869;
-#define regDC_GENERICB_BASE_IDX                                                                         2
+pub const regDC_GENERICB_BASE_IDX: u32 = 2;
 pub const regDCIO_CLOCK_CNTL: u32 = 0x286a;
-#define regDCIO_CLOCK_CNTL_BASE_IDX                                                                     2
+pub const regDCIO_CLOCK_CNTL_BASE_IDX: u32 = 2;
 pub const regDC_REF_CLK_CNTL: u32 = 0x286b;
-#define regDC_REF_CLK_CNTL_BASE_IDX                                                                     2
+pub const regDC_REF_CLK_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYA_LINK_CNTL: u32 = 0x286d;
-#define regUNIPHYA_LINK_CNTL_BASE_IDX                                                                   2
+pub const regUNIPHYA_LINK_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYA_CHANNEL_XBAR_CNTL: u32 = 0x286e;
-#define regUNIPHYA_CHANNEL_XBAR_CNTL_BASE_IDX                                                           2
+pub const regUNIPHYA_CHANNEL_XBAR_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYB_LINK_CNTL: u32 = 0x286f;
-#define regUNIPHYB_LINK_CNTL_BASE_IDX                                                                   2
+pub const regUNIPHYB_LINK_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYB_CHANNEL_XBAR_CNTL: u32 = 0x2870;
-#define regUNIPHYB_CHANNEL_XBAR_CNTL_BASE_IDX                                                           2
+pub const regUNIPHYB_CHANNEL_XBAR_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYC_LINK_CNTL: u32 = 0x2871;
-#define regUNIPHYC_LINK_CNTL_BASE_IDX                                                                   2
+pub const regUNIPHYC_LINK_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYC_CHANNEL_XBAR_CNTL: u32 = 0x2872;
-#define regUNIPHYC_CHANNEL_XBAR_CNTL_BASE_IDX                                                           2
+pub const regUNIPHYC_CHANNEL_XBAR_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYD_CHANNEL_XBAR_CNTL: u32 = 0x2874;
-#define regUNIPHYD_CHANNEL_XBAR_CNTL_BASE_IDX                                                           2
+pub const regUNIPHYD_CHANNEL_XBAR_CNTL_BASE_IDX: u32 = 2;
 pub const regUNIPHYE_CHANNEL_XBAR_CNTL: u32 = 0x2876;
-#define regUNIPHYE_CHANNEL_XBAR_CNTL_BASE_IDX                                                           2
+pub const regUNIPHYE_CHANNEL_XBAR_CNTL_BASE_IDX: u32 = 2;
 pub const regDCIO_WRCMD_DELAY: u32 = 0x287e;
-#define regDCIO_WRCMD_DELAY_BASE_IDX                                                                    2
+pub const regDCIO_WRCMD_DELAY_BASE_IDX: u32 = 2;
 pub const regDC_PINSTRAPS: u32 = 0x2880;
-#define regDC_PINSTRAPS_BASE_IDX                                                                        2
+pub const regDC_PINSTRAPS_BASE_IDX: u32 = 2;
 pub const regINTERCEPT_STATE: u32 = 0x2884;
-#define regINTERCEPT_STATE_BASE_IDX                                                                     2
+pub const regINTERCEPT_STATE_BASE_IDX: u32 = 2;
 pub const regDCIO_BL_PWM_FRAME_START_DISP_SEL: u32 = 0x288b;
-#define regDCIO_BL_PWM_FRAME_START_DISP_SEL_BASE_IDX                                                    2
+pub const regDCIO_BL_PWM_FRAME_START_DISP_SEL_BASE_IDX: u32 = 2;
 pub const regDCIO_GSL_GENLK_PAD_CNTL: u32 = 0x288c;
-#define regDCIO_GSL_GENLK_PAD_CNTL_BASE_IDX                                                             2
+pub const regDCIO_GSL_GENLK_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const regDCIO_GSL_SWAPLOCK_PAD_CNTL: u32 = 0x288d;
-#define regDCIO_GSL_SWAPLOCK_PAD_CNTL_BASE_IDX                                                          2
+pub const regDCIO_GSL_SWAPLOCK_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const regDCIO_SOFT_RESET: u32 = 0x289e;
-#define regDCIO_SOFT_RESET_BASE_IDX                                                                     2
+pub const regDCIO_SOFT_RESET_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dcio_dcio_chip_dispdec
 // base address: 0x0
 pub const regDC_GPIO_GENERIC_MASK: u32 = 0x28c8;
-#define regDC_GPIO_GENERIC_MASK_BASE_IDX                                                                2
+pub const regDC_GPIO_GENERIC_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENERIC_A: u32 = 0x28c9;
-#define regDC_GPIO_GENERIC_A_BASE_IDX                                                                   2
+pub const regDC_GPIO_GENERIC_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENERIC_EN: u32 = 0x28ca;
-#define regDC_GPIO_GENERIC_EN_BASE_IDX                                                                  2
+pub const regDC_GPIO_GENERIC_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENERIC_Y: u32 = 0x28cb;
-#define regDC_GPIO_GENERIC_Y_BASE_IDX                                                                   2
+pub const regDC_GPIO_GENERIC_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC1_MASK: u32 = 0x28d0;
-#define regDC_GPIO_DDC1_MASK_BASE_IDX                                                                   2
+pub const regDC_GPIO_DDC1_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC1_A: u32 = 0x28d1;
-#define regDC_GPIO_DDC1_A_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC1_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC1_EN: u32 = 0x28d2;
-#define regDC_GPIO_DDC1_EN_BASE_IDX                                                                     2
+pub const regDC_GPIO_DDC1_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC1_Y: u32 = 0x28d3;
-#define regDC_GPIO_DDC1_Y_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC1_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC2_MASK: u32 = 0x28d4;
-#define regDC_GPIO_DDC2_MASK_BASE_IDX                                                                   2
+pub const regDC_GPIO_DDC2_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC2_A: u32 = 0x28d5;
-#define regDC_GPIO_DDC2_A_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC2_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC2_EN: u32 = 0x28d6;
-#define regDC_GPIO_DDC2_EN_BASE_IDX                                                                     2
+pub const regDC_GPIO_DDC2_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC2_Y: u32 = 0x28d7;
-#define regDC_GPIO_DDC2_Y_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC2_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC3_MASK: u32 = 0x28d8;
-#define regDC_GPIO_DDC3_MASK_BASE_IDX                                                                   2
+pub const regDC_GPIO_DDC3_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC3_A: u32 = 0x28d9;
-#define regDC_GPIO_DDC3_A_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC3_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC3_EN: u32 = 0x28da;
-#define regDC_GPIO_DDC3_EN_BASE_IDX                                                                     2
+pub const regDC_GPIO_DDC3_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC3_Y: u32 = 0x28db;
-#define regDC_GPIO_DDC3_Y_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC3_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC4_MASK: u32 = 0x28dc;
-#define regDC_GPIO_DDC4_MASK_BASE_IDX                                                                   2
+pub const regDC_GPIO_DDC4_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC4_A: u32 = 0x28dd;
-#define regDC_GPIO_DDC4_A_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC4_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC4_EN: u32 = 0x28de;
-#define regDC_GPIO_DDC4_EN_BASE_IDX                                                                     2
+pub const regDC_GPIO_DDC4_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC4_Y: u32 = 0x28df;
-#define regDC_GPIO_DDC4_Y_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC4_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC5_MASK: u32 = 0x28e0;
-#define regDC_GPIO_DDC5_MASK_BASE_IDX                                                                   2
+pub const regDC_GPIO_DDC5_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC5_A: u32 = 0x28e1;
-#define regDC_GPIO_DDC5_A_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC5_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC5_EN: u32 = 0x28e2;
-#define regDC_GPIO_DDC5_EN_BASE_IDX                                                                     2
+pub const regDC_GPIO_DDC5_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDC5_Y: u32 = 0x28e3;
-#define regDC_GPIO_DDC5_Y_BASE_IDX                                                                      2
+pub const regDC_GPIO_DDC5_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDCVGA_MASK: u32 = 0x28e8;
-#define regDC_GPIO_DDCVGA_MASK_BASE_IDX                                                                 2
+pub const regDC_GPIO_DDCVGA_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDCVGA_A: u32 = 0x28e9;
-#define regDC_GPIO_DDCVGA_A_BASE_IDX                                                                    2
+pub const regDC_GPIO_DDCVGA_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDCVGA_EN: u32 = 0x28ea;
-#define regDC_GPIO_DDCVGA_EN_BASE_IDX                                                                   2
+pub const regDC_GPIO_DDCVGA_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_DDCVGA_Y: u32 = 0x28eb;
-#define regDC_GPIO_DDCVGA_Y_BASE_IDX                                                                    2
+pub const regDC_GPIO_DDCVGA_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENLK_MASK: u32 = 0x28f0;
-#define regDC_GPIO_GENLK_MASK_BASE_IDX                                                                  2
+pub const regDC_GPIO_GENLK_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENLK_A: u32 = 0x28f1;
-#define regDC_GPIO_GENLK_A_BASE_IDX                                                                     2
+pub const regDC_GPIO_GENLK_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENLK_EN: u32 = 0x28f2;
-#define regDC_GPIO_GENLK_EN_BASE_IDX                                                                    2
+pub const regDC_GPIO_GENLK_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_GENLK_Y: u32 = 0x28f3;
-#define regDC_GPIO_GENLK_Y_BASE_IDX                                                                     2
+pub const regDC_GPIO_GENLK_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_HPD_MASK: u32 = 0x28f4;
-#define regDC_GPIO_HPD_MASK_BASE_IDX                                                                    2
+pub const regDC_GPIO_HPD_MASK_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_HPD_A: u32 = 0x28f5;
-#define regDC_GPIO_HPD_A_BASE_IDX                                                                       2
+pub const regDC_GPIO_HPD_A_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_HPD_EN: u32 = 0x28f6;
-#define regDC_GPIO_HPD_EN_BASE_IDX                                                                      2
+pub const regDC_GPIO_HPD_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_HPD_Y: u32 = 0x28f7;
-#define regDC_GPIO_HPD_Y_BASE_IDX                                                                       2
+pub const regDC_GPIO_HPD_Y_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_PWRSEQ0_EN: u32 = 0x28fa;
-#define regDC_GPIO_PWRSEQ0_EN_BASE_IDX                                                                  2
+pub const regDC_GPIO_PWRSEQ0_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_PAD_STRENGTH_1: u32 = 0x28fc;
-#define regDC_GPIO_PAD_STRENGTH_1_BASE_IDX                                                              2
+pub const regDC_GPIO_PAD_STRENGTH_1_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_PAD_STRENGTH_2: u32 = 0x28fd;
-#define regDC_GPIO_PAD_STRENGTH_2_BASE_IDX                                                              2
+pub const regDC_GPIO_PAD_STRENGTH_2_BASE_IDX: u32 = 2;
 pub const regPHY_AUX_CNTL: u32 = 0x28ff;
-#define regPHY_AUX_CNTL_BASE_IDX                                                                        2
+pub const regPHY_AUX_CNTL_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_PWRSEQ1_EN: u32 = 0x2902;
-#define regDC_GPIO_PWRSEQ1_EN_BASE_IDX                                                                  2
+pub const regDC_GPIO_PWRSEQ1_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_TX12_EN: u32 = 0x2915;
-#define regDC_GPIO_TX12_EN_BASE_IDX                                                                     2
+pub const regDC_GPIO_TX12_EN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_AUX_CTRL_0: u32 = 0x2916;
-#define regDC_GPIO_AUX_CTRL_0_BASE_IDX                                                                  2
+pub const regDC_GPIO_AUX_CTRL_0_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_AUX_CTRL_1: u32 = 0x2917;
-#define regDC_GPIO_AUX_CTRL_1_BASE_IDX                                                                  2
+pub const regDC_GPIO_AUX_CTRL_1_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_AUX_CTRL_2: u32 = 0x2918;
-#define regDC_GPIO_AUX_CTRL_2_BASE_IDX                                                                  2
+pub const regDC_GPIO_AUX_CTRL_2_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_RXEN: u32 = 0x2919;
-#define regDC_GPIO_RXEN_BASE_IDX                                                                        2
+pub const regDC_GPIO_RXEN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_PULLUPEN: u32 = 0x291a;
-#define regDC_GPIO_PULLUPEN_BASE_IDX                                                                    2
+pub const regDC_GPIO_PULLUPEN_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_AUX_CTRL_3: u32 = 0x291b;
-#define regDC_GPIO_AUX_CTRL_3_BASE_IDX                                                                  2
+pub const regDC_GPIO_AUX_CTRL_3_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_AUX_CTRL_4: u32 = 0x291c;
-#define regDC_GPIO_AUX_CTRL_4_BASE_IDX                                                                  2
+pub const regDC_GPIO_AUX_CTRL_4_BASE_IDX: u32 = 2;
 pub const regDC_GPIO_AUX_CTRL_5: u32 = 0x291d;
-#define regDC_GPIO_AUX_CTRL_5_BASE_IDX                                                                  2
+pub const regDC_GPIO_AUX_CTRL_5_BASE_IDX: u32 = 2;
 pub const regAUXI2C_PAD_ALL_PWR_OK: u32 = 0x291e;
-#define regAUXI2C_PAD_ALL_PWR_OK_BASE_IDX                                                               2
+pub const regAUXI2C_PAD_ALL_PWR_OK_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dcio_dcio_uniphy0_dispdec
@@ -6378,836 +6378,836 @@ pub const regAUXI2C_PAD_ALL_PWR_OK: u32 = 0x291e;
 // addressBlock: dpcssys_dpcs0_rdpcstx0_dispdec
 // base address: 0x0
 pub const regRDPCSTX0_RDPCSTX_CNTL: u32 = 0x2930;
-#define regRDPCSTX0_RDPCSTX_CNTL_BASE_IDX                                                               2
+pub const regRDPCSTX0_RDPCSTX_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_CLOCK_CNTL: u32 = 0x2931;
-#define regRDPCSTX0_RDPCSTX_CLOCK_CNTL_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_CLOCK_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_INTERRUPT_CONTROL: u32 = 0x2932;
-#define regRDPCSTX0_RDPCSTX_INTERRUPT_CONTROL_BASE_IDX                                                  2
+pub const regRDPCSTX0_RDPCSTX_INTERRUPT_CONTROL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA: u32 = 0x2933;
-#define regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_BASE_IDX                                                   2
+pub const regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_TX_CR_ADDR: u32 = 0x2934;
-#define regRDPCSTX0_RDPCS_TX_CR_ADDR_BASE_IDX                                                           2
+pub const regRDPCSTX0_RDPCS_TX_CR_ADDR_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_TX_CR_DATA: u32 = 0x2935;
-#define regRDPCSTX0_RDPCS_TX_CR_DATA_BASE_IDX                                                           2
+pub const regRDPCSTX0_RDPCS_TX_CR_DATA_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_TX_SRAM_CNTL: u32 = 0x2936;
-#define regRDPCSTX0_RDPCS_TX_SRAM_CNTL_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCS_TX_SRAM_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_SCRATCH: u32 = 0x2937;
-#define regRDPCSTX0_RDPCSTX_SCRATCH_BASE_IDX                                                            2
+pub const regRDPCSTX0_RDPCSTX_SCRATCH_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_SPARE: u32 = 0x2938;
-#define regRDPCSTX0_RDPCSTX_SPARE_BASE_IDX                                                              2
+pub const regRDPCSTX0_RDPCSTX_SPARE_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_CNTL2: u32 = 0x2939;
-#define regRDPCSTX0_RDPCSTX_CNTL2_BASE_IDX                                                              2
+pub const regRDPCSTX0_RDPCSTX_CNTL2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG: u32 = 0x293c;
-#define regRDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG_BASE_IDX                                           2
+pub const regRDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL0: u32 = 0x2940;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL0_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL0_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL1: u32 = 0x2941;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL1_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL1_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL2: u32 = 0x2942;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL2_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL3: u32 = 0x2943;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL3_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL4: u32 = 0x2944;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL4_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL4_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL5: u32 = 0x2945;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL5_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL5_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL6: u32 = 0x2946;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL6_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL6_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL7: u32 = 0x2947;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL7_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL7_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL8: u32 = 0x2948;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL8_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL8_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL9: u32 = 0x2949;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL9_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL9_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL10: u32 = 0x294a;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL10_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL10_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL11: u32 = 0x294b;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL11_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL11_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL12: u32 = 0x294c;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL12_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL12_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL13: u32 = 0x294d;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL13_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL13_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL14: u32 = 0x294e;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL14_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL14_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_FUSE0: u32 = 0x294f;
-#define regRDPCSTX0_RDPCSTX_PHY_FUSE0_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_FUSE0_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_FUSE1: u32 = 0x2950;
-#define regRDPCSTX0_RDPCSTX_PHY_FUSE1_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_FUSE1_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_FUSE2: u32 = 0x2951;
-#define regRDPCSTX0_RDPCSTX_PHY_FUSE2_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_FUSE2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_FUSE3: u32 = 0x2952;
-#define regRDPCSTX0_RDPCSTX_PHY_FUSE3_BASE_IDX                                                          2
+pub const regRDPCSTX0_RDPCSTX_PHY_FUSE3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_RX_LD_VAL: u32 = 0x2953;
-#define regRDPCSTX0_RDPCSTX_PHY_RX_LD_VAL_BASE_IDX                                                      2
+pub const regRDPCSTX0_RDPCSTX_PHY_RX_LD_VAL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3: u32 = 0x2954;
-#define regRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3_BASE_IDX                                               2
+pub const regRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6: u32 = 0x2955;
-#define regRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
+pub const regRDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_DPALT_CONTROL_REG: u32 = 0x2956;
-#define regRDPCSTX0_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
+pub const regRDPCSTX0_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL15: u32 = 0x2958;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL15_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL15_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL16: u32 = 0x2959;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL16_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL16_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCSTX_PHY_CNTL17: u32 = 0x295a;
-#define regRDPCSTX0_RDPCSTX_PHY_CNTL17_BASE_IDX                                                         2
+pub const regRDPCSTX0_RDPCSTX_PHY_CNTL17_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_CNTL3: u32 = 0x295c;
-#define regRDPCSTX0_RDPCS_CNTL3_BASE_IDX                                                                2
+pub const regRDPCSTX0_RDPCS_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD: u32 = 0x295d;
-#define regRDPCSTX0_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX                                             2
+pub const regRDPCSTX0_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX: u32 = 2;
 pub const regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_OVRRD: u32 = 0x295e;
-#define regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX                                             2
+pub const regRDPCSTX0_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcssys_cr0_dispdec
 // base address: 0x0
 pub const regDPCSSYS_CR0_DPCSSYS_CR_ADDR: u32 = 0x2934;
-#define regDPCSSYS_CR0_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
+pub const regDPCSSYS_CR0_DPCSSYS_CR_ADDR_BASE_IDX: u32 = 2;
 pub const regDPCSSYS_CR0_DPCSSYS_CR_DATA: u32 = 0x2935;
-#define regDPCSSYS_CR0_DPCSSYS_CR_DATA_BASE_IDX                                                         2
+pub const regDPCSSYS_CR0_DPCSSYS_CR_DATA_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dcio_dcio_uniphy1_dispdec
 // base address: 0x360
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED0: u32 = 0x2a00;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED1: u32 = 0x2a01;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED2: u32 = 0x2a02;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED3: u32 = 0x2a03;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED4: u32 = 0x2a04;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED5: u32 = 0x2a05;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED6: u32 = 0x2a06;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED7: u32 = 0x2a07;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED8: u32 = 0x2a08;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED9: u32 = 0x2a09;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX                                            2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED10: u32 = 0x2a0a;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED11: u32 = 0x2a0b;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED12: u32 = 0x2a0c;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED13: u32 = 0x2a0d;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED14: u32 = 0x2a0e;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED15: u32 = 0x2a0f;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED16: u32 = 0x2a10;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED17: u32 = 0x2a11;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED18: u32 = 0x2a12;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED19: u32 = 0x2a13;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED20: u32 = 0x2a14;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED21: u32 = 0x2a15;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED22: u32 = 0x2a16;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED23: u32 = 0x2a17;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED24: u32 = 0x2a18;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED25: u32 = 0x2a19;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED26: u32 = 0x2a1a;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED27: u32 = 0x2a1b;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED28: u32 = 0x2a1c;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED29: u32 = 0x2a1d;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED30: u32 = 0x2a1e;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED31: u32 = 0x2a1f;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED32: u32 = 0x2a20;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED33: u32 = 0x2a21;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED34: u32 = 0x2a22;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED35: u32 = 0x2a23;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED36: u32 = 0x2a24;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED37: u32 = 0x2a25;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED38: u32 = 0x2a26;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED39: u32 = 0x2a27;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED40: u32 = 0x2a28;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED41: u32 = 0x2a29;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED42: u32 = 0x2a2a;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED43: u32 = 0x2a2b;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED44: u32 = 0x2a2c;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED45: u32 = 0x2a2d;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED46: u32 = 0x2a2e;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED47: u32 = 0x2a2f;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED48: u32 = 0x2a30;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED49: u32 = 0x2a31;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED50: u32 = 0x2a32;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED51: u32 = 0x2a33;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED52: u32 = 0x2a34;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED53: u32 = 0x2a35;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED54: u32 = 0x2a36;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED55: u32 = 0x2a37;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED56: u32 = 0x2a38;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED57: u32 = 0x2a39;
-#define regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
+pub const regDCIO_UNIPHY1_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcs0_rdpcstx1_dispdec
 // base address: 0x360
 pub const regRDPCSTX1_RDPCSTX_CNTL: u32 = 0x2a08;
-#define regRDPCSTX1_RDPCSTX_CNTL_BASE_IDX                                                               2
+pub const regRDPCSTX1_RDPCSTX_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_CLOCK_CNTL: u32 = 0x2a09;
-#define regRDPCSTX1_RDPCSTX_CLOCK_CNTL_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_CLOCK_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_INTERRUPT_CONTROL: u32 = 0x2a0a;
-#define regRDPCSTX1_RDPCSTX_INTERRUPT_CONTROL_BASE_IDX                                                  2
+pub const regRDPCSTX1_RDPCSTX_INTERRUPT_CONTROL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA: u32 = 0x2a0b;
-#define regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_BASE_IDX                                                   2
+pub const regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_TX_CR_ADDR: u32 = 0x2a0c;
-#define regRDPCSTX1_RDPCS_TX_CR_ADDR_BASE_IDX                                                           2
+pub const regRDPCSTX1_RDPCS_TX_CR_ADDR_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_TX_CR_DATA: u32 = 0x2a0d;
-#define regRDPCSTX1_RDPCS_TX_CR_DATA_BASE_IDX                                                           2
+pub const regRDPCSTX1_RDPCS_TX_CR_DATA_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_TX_SRAM_CNTL: u32 = 0x2a0e;
-#define regRDPCSTX1_RDPCS_TX_SRAM_CNTL_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCS_TX_SRAM_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_SCRATCH: u32 = 0x2a0f;
-#define regRDPCSTX1_RDPCSTX_SCRATCH_BASE_IDX                                                            2
+pub const regRDPCSTX1_RDPCSTX_SCRATCH_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_SPARE: u32 = 0x2a10;
-#define regRDPCSTX1_RDPCSTX_SPARE_BASE_IDX                                                              2
+pub const regRDPCSTX1_RDPCSTX_SPARE_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_CNTL2: u32 = 0x2a11;
-#define regRDPCSTX1_RDPCSTX_CNTL2_BASE_IDX                                                              2
+pub const regRDPCSTX1_RDPCSTX_CNTL2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG: u32 = 0x2a14;
-#define regRDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG_BASE_IDX                                           2
+pub const regRDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL0: u32 = 0x2a18;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL0_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL0_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL1: u32 = 0x2a19;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL1_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL1_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL2: u32 = 0x2a1a;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL2_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL3: u32 = 0x2a1b;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL3_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL4: u32 = 0x2a1c;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL4_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL4_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL5: u32 = 0x2a1d;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL5_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL5_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL6: u32 = 0x2a1e;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL6_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL6_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL7: u32 = 0x2a1f;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL7_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL7_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL8: u32 = 0x2a20;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL8_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL8_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL9: u32 = 0x2a21;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL9_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL9_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL10: u32 = 0x2a22;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL10_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL10_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL11: u32 = 0x2a23;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL11_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL11_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL12: u32 = 0x2a24;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL12_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL12_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL13: u32 = 0x2a25;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL13_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL13_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL14: u32 = 0x2a26;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL14_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL14_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_FUSE0: u32 = 0x2a27;
-#define regRDPCSTX1_RDPCSTX_PHY_FUSE0_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_FUSE0_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_FUSE1: u32 = 0x2a28;
-#define regRDPCSTX1_RDPCSTX_PHY_FUSE1_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_FUSE1_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_FUSE2: u32 = 0x2a29;
-#define regRDPCSTX1_RDPCSTX_PHY_FUSE2_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_FUSE2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_FUSE3: u32 = 0x2a2a;
-#define regRDPCSTX1_RDPCSTX_PHY_FUSE3_BASE_IDX                                                          2
+pub const regRDPCSTX1_RDPCSTX_PHY_FUSE3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_RX_LD_VAL: u32 = 0x2a2b;
-#define regRDPCSTX1_RDPCSTX_PHY_RX_LD_VAL_BASE_IDX                                                      2
+pub const regRDPCSTX1_RDPCSTX_PHY_RX_LD_VAL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3: u32 = 0x2a2c;
-#define regRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3_BASE_IDX                                               2
+pub const regRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6: u32 = 0x2a2d;
-#define regRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
+pub const regRDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_DPALT_CONTROL_REG: u32 = 0x2a2e;
-#define regRDPCSTX1_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
+pub const regRDPCSTX1_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL15: u32 = 0x2a30;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL15_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL15_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL16: u32 = 0x2a31;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL16_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL16_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCSTX_PHY_CNTL17: u32 = 0x2a32;
-#define regRDPCSTX1_RDPCSTX_PHY_CNTL17_BASE_IDX                                                         2
+pub const regRDPCSTX1_RDPCSTX_PHY_CNTL17_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_CNTL3: u32 = 0x2a34;
-#define regRDPCSTX1_RDPCS_CNTL3_BASE_IDX                                                                2
+pub const regRDPCSTX1_RDPCS_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD: u32 = 0x2a35;
-#define regRDPCSTX1_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX                                             2
+pub const regRDPCSTX1_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX: u32 = 2;
 pub const regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_OVRRD: u32 = 0x2a36;
-#define regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX                                             2
+pub const regRDPCSTX1_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcssys_cr1_dispdec
 // base address: 0x360
 pub const regDPCSSYS_CR1_DPCSSYS_CR_ADDR: u32 = 0x2a0c;
-#define regDPCSSYS_CR1_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
+pub const regDPCSSYS_CR1_DPCSSYS_CR_ADDR_BASE_IDX: u32 = 2;
 pub const regDPCSSYS_CR1_DPCSSYS_CR_DATA: u32 = 0x2a0d;
-#define regDPCSSYS_CR1_DPCSSYS_CR_DATA_BASE_IDX                                                         2
+pub const regDPCSSYS_CR1_DPCSSYS_CR_DATA_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcs0_rdpcspipe0_dispdec
 // base address: 0x6c0
 pub const regRDPCSPIPE0_RDPCSPIPE_PHY_CNTL6: u32 = 0x2aeb;
-#define regRDPCSPIPE0_RDPCSPIPE_PHY_CNTL6_BASE_IDX                                                      2
+pub const regRDPCSPIPE0_RDPCSPIPE_PHY_CNTL6_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dcio_dcio_uniphy2_dispdec
 // base address: 0x6c0
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED0: u32 = 0x2ad8;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED1: u32 = 0x2ad9;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED2: u32 = 0x2ada;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED3: u32 = 0x2adb;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED4: u32 = 0x2adc;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED5: u32 = 0x2add;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED6: u32 = 0x2ade;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED7: u32 = 0x2adf;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED8: u32 = 0x2ae0;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED9: u32 = 0x2ae1;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX                                            2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED10: u32 = 0x2ae2;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED11: u32 = 0x2ae3;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED12: u32 = 0x2ae4;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED13: u32 = 0x2ae5;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED14: u32 = 0x2ae6;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED15: u32 = 0x2ae7;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED16: u32 = 0x2ae8;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED17: u32 = 0x2ae9;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED18: u32 = 0x2aea;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED19: u32 = 0x2aeb;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED20: u32 = 0x2aec;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED21: u32 = 0x2aed;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED22: u32 = 0x2aee;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED23: u32 = 0x2aef;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED24: u32 = 0x2af0;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED25: u32 = 0x2af1;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED26: u32 = 0x2af2;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED27: u32 = 0x2af3;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED28: u32 = 0x2af4;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED29: u32 = 0x2af5;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED30: u32 = 0x2af6;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED31: u32 = 0x2af7;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED32: u32 = 0x2af8;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED33: u32 = 0x2af9;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED34: u32 = 0x2afa;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED35: u32 = 0x2afb;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED36: u32 = 0x2afc;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED37: u32 = 0x2afd;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED38: u32 = 0x2afe;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED39: u32 = 0x2aff;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED40: u32 = 0x2b00;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED41: u32 = 0x2b01;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED42: u32 = 0x2b02;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED43: u32 = 0x2b03;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED44: u32 = 0x2b04;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED45: u32 = 0x2b05;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED46: u32 = 0x2b06;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED47: u32 = 0x2b07;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED48: u32 = 0x2b08;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED49: u32 = 0x2b09;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED50: u32 = 0x2b0a;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED51: u32 = 0x2b0b;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED52: u32 = 0x2b0c;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED53: u32 = 0x2b0d;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED54: u32 = 0x2b0e;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED55: u32 = 0x2b0f;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED56: u32 = 0x2b10;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED57: u32 = 0x2b11;
-#define regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
+pub const regDCIO_UNIPHY2_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcs0_rdpcspipe1_dispdec
 // base address: 0xa20
 pub const regRDPCSPIPE1_RDPCSPIPE_PHY_CNTL6: u32 = 0x2bc3;
-#define regRDPCSPIPE1_RDPCSPIPE_PHY_CNTL6_BASE_IDX                                                      2
+pub const regRDPCSPIPE1_RDPCSPIPE_PHY_CNTL6_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dcio_dcio_uniphy3_dispdec
 // base address: 0xa20
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED0: u32 = 0x2bb0;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED1: u32 = 0x2bb1;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED2: u32 = 0x2bb2;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED3: u32 = 0x2bb3;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED4: u32 = 0x2bb4;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED5: u32 = 0x2bb5;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED6: u32 = 0x2bb6;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED7: u32 = 0x2bb7;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED8: u32 = 0x2bb8;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED9: u32 = 0x2bb9;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX                                            2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED10: u32 = 0x2bba;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED11: u32 = 0x2bbb;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED12: u32 = 0x2bbc;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED13: u32 = 0x2bbd;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED14: u32 = 0x2bbe;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED15: u32 = 0x2bbf;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED16: u32 = 0x2bc0;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED17: u32 = 0x2bc1;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED18: u32 = 0x2bc2;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED19: u32 = 0x2bc3;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED20: u32 = 0x2bc4;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED21: u32 = 0x2bc5;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED22: u32 = 0x2bc6;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED23: u32 = 0x2bc7;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED24: u32 = 0x2bc8;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED25: u32 = 0x2bc9;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED26: u32 = 0x2bca;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED27: u32 = 0x2bcb;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED28: u32 = 0x2bcc;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED29: u32 = 0x2bcd;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED30: u32 = 0x2bce;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED31: u32 = 0x2bcf;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED32: u32 = 0x2bd0;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED33: u32 = 0x2bd1;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED34: u32 = 0x2bd2;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED35: u32 = 0x2bd3;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED36: u32 = 0x2bd4;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED37: u32 = 0x2bd5;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED38: u32 = 0x2bd6;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED39: u32 = 0x2bd7;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED40: u32 = 0x2bd8;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED41: u32 = 0x2bd9;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED42: u32 = 0x2bda;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED43: u32 = 0x2bdb;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED44: u32 = 0x2bdc;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED45: u32 = 0x2bdd;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED46: u32 = 0x2bde;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED47: u32 = 0x2bdf;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED48: u32 = 0x2be0;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED49: u32 = 0x2be1;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED50: u32 = 0x2be2;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED51: u32 = 0x2be3;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED52: u32 = 0x2be4;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED53: u32 = 0x2be5;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED54: u32 = 0x2be6;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED55: u32 = 0x2be7;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED56: u32 = 0x2be8;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED57: u32 = 0x2be9;
-#define regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
+pub const regDCIO_UNIPHY3_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dcio_dcio_uniphy4_dispdec
 // base address: 0xd80
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED0: u32 = 0x2c88;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED0_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED1: u32 = 0x2c89;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED1_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED2: u32 = 0x2c8a;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED2_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED3: u32 = 0x2c8b;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED3_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED4: u32 = 0x2c8c;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED4_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED5: u32 = 0x2c8d;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED5_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED6: u32 = 0x2c8e;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED6_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED7: u32 = 0x2c8f;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED7_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED8: u32 = 0x2c90;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED8_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED9: u32 = 0x2c91;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX                                            2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED9_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED10: u32 = 0x2c92;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED10_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED11: u32 = 0x2c93;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED11_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED12: u32 = 0x2c94;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED12_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED13: u32 = 0x2c95;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED13_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED14: u32 = 0x2c96;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED14_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED15: u32 = 0x2c97;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED15_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED16: u32 = 0x2c98;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED16_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED17: u32 = 0x2c99;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED17_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED18: u32 = 0x2c9a;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED18_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED19: u32 = 0x2c9b;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED19_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED20: u32 = 0x2c9c;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED20_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED21: u32 = 0x2c9d;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED21_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED22: u32 = 0x2c9e;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED22_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED23: u32 = 0x2c9f;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED23_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED24: u32 = 0x2ca0;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED24_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED25: u32 = 0x2ca1;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED25_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED26: u32 = 0x2ca2;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED26_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED27: u32 = 0x2ca3;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED27_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED28: u32 = 0x2ca4;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED28_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED29: u32 = 0x2ca5;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED29_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED30: u32 = 0x2ca6;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED30_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED31: u32 = 0x2ca7;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED31_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED32: u32 = 0x2ca8;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED32_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED33: u32 = 0x2ca9;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED33_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED34: u32 = 0x2caa;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED34_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED35: u32 = 0x2cab;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED35_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED36: u32 = 0x2cac;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED36_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED37: u32 = 0x2cad;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED37_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED38: u32 = 0x2cae;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED38_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED39: u32 = 0x2caf;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED39_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED40: u32 = 0x2cb0;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED40_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED41: u32 = 0x2cb1;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED41_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED42: u32 = 0x2cb2;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED42_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED43: u32 = 0x2cb3;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED43_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED44: u32 = 0x2cb4;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED44_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED45: u32 = 0x2cb5;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED45_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED46: u32 = 0x2cb6;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED46_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED47: u32 = 0x2cb7;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED47_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED48: u32 = 0x2cb8;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED48_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED49: u32 = 0x2cb9;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED49_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED50: u32 = 0x2cba;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED50_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED51: u32 = 0x2cbb;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED51_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED52: u32 = 0x2cbc;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED52_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED53: u32 = 0x2cbd;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED53_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED54: u32 = 0x2cbe;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED54_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED55: u32 = 0x2cbf;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED55_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED56: u32 = 0x2cc0;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED56_BASE_IDX: u32 = 2;
 pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED57: u32 = 0x2cc1;
-#define regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX                                           2
+pub const regDCIO_UNIPHY4_UNIPHY_MACRO_CNTL_RESERVED57_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcs0_rdpcstx2_dispdec
 // base address: 0xd80
 pub const regRDPCSTX2_RDPCSTX_CNTL: u32 = 0x2c90;
-#define regRDPCSTX2_RDPCSTX_CNTL_BASE_IDX                                                               2
+pub const regRDPCSTX2_RDPCSTX_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_CLOCK_CNTL: u32 = 0x2c91;
-#define regRDPCSTX2_RDPCSTX_CLOCK_CNTL_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_CLOCK_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_INTERRUPT_CONTROL: u32 = 0x2c92;
-#define regRDPCSTX2_RDPCSTX_INTERRUPT_CONTROL_BASE_IDX                                                  2
+pub const regRDPCSTX2_RDPCSTX_INTERRUPT_CONTROL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA: u32 = 0x2c93;
-#define regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_BASE_IDX                                                   2
+pub const regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_TX_CR_ADDR: u32 = 0x2c94;
-#define regRDPCSTX2_RDPCS_TX_CR_ADDR_BASE_IDX                                                           2
+pub const regRDPCSTX2_RDPCS_TX_CR_ADDR_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_TX_CR_DATA: u32 = 0x2c95;
-#define regRDPCSTX2_RDPCS_TX_CR_DATA_BASE_IDX                                                           2
+pub const regRDPCSTX2_RDPCS_TX_CR_DATA_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_TX_SRAM_CNTL: u32 = 0x2c96;
-#define regRDPCSTX2_RDPCS_TX_SRAM_CNTL_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCS_TX_SRAM_CNTL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_SCRATCH: u32 = 0x2c97;
-#define regRDPCSTX2_RDPCSTX_SCRATCH_BASE_IDX                                                            2
+pub const regRDPCSTX2_RDPCSTX_SCRATCH_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_SPARE: u32 = 0x2c98;
-#define regRDPCSTX2_RDPCSTX_SPARE_BASE_IDX                                                              2
+pub const regRDPCSTX2_RDPCSTX_SPARE_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_CNTL2: u32 = 0x2c99;
-#define regRDPCSTX2_RDPCSTX_CNTL2_BASE_IDX                                                              2
+pub const regRDPCSTX2_RDPCSTX_CNTL2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG: u32 = 0x2c9c;
-#define regRDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG_BASE_IDX                                           2
+pub const regRDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL0: u32 = 0x2ca0;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL0_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL0_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL1: u32 = 0x2ca1;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL1_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL1_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL2: u32 = 0x2ca2;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL2_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL3: u32 = 0x2ca3;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL3_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL4: u32 = 0x2ca4;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL4_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL4_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL5: u32 = 0x2ca5;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL5_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL5_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL6: u32 = 0x2ca6;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL6_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL6_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL7: u32 = 0x2ca7;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL7_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL7_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL8: u32 = 0x2ca8;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL8_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL8_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL9: u32 = 0x2ca9;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL9_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL9_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL10: u32 = 0x2caa;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL10_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL10_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL11: u32 = 0x2cab;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL11_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL11_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL12: u32 = 0x2cac;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL12_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL12_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL13: u32 = 0x2cad;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL13_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL13_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL14: u32 = 0x2cae;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL14_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL14_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_FUSE0: u32 = 0x2caf;
-#define regRDPCSTX2_RDPCSTX_PHY_FUSE0_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_FUSE0_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_FUSE1: u32 = 0x2cb0;
-#define regRDPCSTX2_RDPCSTX_PHY_FUSE1_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_FUSE1_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_FUSE2: u32 = 0x2cb1;
-#define regRDPCSTX2_RDPCSTX_PHY_FUSE2_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_FUSE2_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_FUSE3: u32 = 0x2cb2;
-#define regRDPCSTX2_RDPCSTX_PHY_FUSE3_BASE_IDX                                                          2
+pub const regRDPCSTX2_RDPCSTX_PHY_FUSE3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_RX_LD_VAL: u32 = 0x2cb3;
-#define regRDPCSTX2_RDPCSTX_PHY_RX_LD_VAL_BASE_IDX                                                      2
+pub const regRDPCSTX2_RDPCSTX_PHY_RX_LD_VAL_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3: u32 = 0x2cb4;
-#define regRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3_BASE_IDX                                               2
+pub const regRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6: u32 = 0x2cb5;
-#define regRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX                                               2
+pub const regRDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_DPALT_CONTROL_REG: u32 = 0x2cb6;
-#define regRDPCSTX2_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX                                                  2
+pub const regRDPCSTX2_RDPCSTX_DPALT_CONTROL_REG_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL15: u32 = 0x2cb8;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL15_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL15_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL16: u32 = 0x2cb9;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL16_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL16_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCSTX_PHY_CNTL17: u32 = 0x2cba;
-#define regRDPCSTX2_RDPCSTX_PHY_CNTL17_BASE_IDX                                                         2
+pub const regRDPCSTX2_RDPCSTX_PHY_CNTL17_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_CNTL3: u32 = 0x2cbc;
-#define regRDPCSTX2_RDPCS_CNTL3_BASE_IDX                                                                2
+pub const regRDPCSTX2_RDPCS_CNTL3_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD: u32 = 0x2cbd;
-#define regRDPCSTX2_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX                                             2
+pub const regRDPCSTX2_RDPCS_TX_PLL_UPDATE_ADDR_OVRRD_BASE_IDX: u32 = 2;
 pub const regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_OVRRD: u32 = 0x2cbe;
-#define regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX                                             2
+pub const regRDPCSTX2_RDPCS_TX_PLL_UPDATE_DATA_OVRRD_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_dpcssys_cr2_dispdec
 // base address: 0xd80
 pub const regDPCSSYS_CR2_DPCSSYS_CR_ADDR: u32 = 0x2c94;
-#define regDPCSSYS_CR2_DPCSSYS_CR_ADDR_BASE_IDX                                                         2
+pub const regDPCSSYS_CR2_DPCSSYS_CR_ADDR_BASE_IDX: u32 = 2;
 pub const regDPCSSYS_CR2_DPCSSYS_CR_DATA: u32 = 0x2c95;
-#define regDPCSSYS_CR2_DPCSSYS_CR_DATA_BASE_IDX                                                         2
+pub const regDPCSSYS_CR2_DPCSSYS_CR_DATA_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_pwrseq0_dispdec_pwrseq_dispdec
 // base address: 0x0
 pub const regPWRSEQ0_DC_GPIO_PWRSEQ_EN: u32 = 0x2f10;
-#define regPWRSEQ0_DC_GPIO_PWRSEQ_EN_BASE_IDX                                                           2
+pub const regPWRSEQ0_DC_GPIO_PWRSEQ_EN_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_DC_GPIO_PWRSEQ_CTRL: u32 = 0x2f11;
-#define regPWRSEQ0_DC_GPIO_PWRSEQ_CTRL_BASE_IDX                                                         2
+pub const regPWRSEQ0_DC_GPIO_PWRSEQ_CTRL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_DC_GPIO_PWRSEQ_MASK: u32 = 0x2f12;
-#define regPWRSEQ0_DC_GPIO_PWRSEQ_MASK_BASE_IDX                                                         2
+pub const regPWRSEQ0_DC_GPIO_PWRSEQ_MASK_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_DC_GPIO_PWRSEQ_A_Y: u32 = 0x2f13;
-#define regPWRSEQ0_DC_GPIO_PWRSEQ_A_Y_BASE_IDX                                                          2
+pub const regPWRSEQ0_DC_GPIO_PWRSEQ_A_Y_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PANEL_PWRSEQ_CNTL: u32 = 0x2f14;
-#define regPWRSEQ0_PANEL_PWRSEQ_CNTL_BASE_IDX                                                           2
+pub const regPWRSEQ0_PANEL_PWRSEQ_CNTL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PANEL_PWRSEQ_STATE: u32 = 0x2f15;
-#define regPWRSEQ0_PANEL_PWRSEQ_STATE_BASE_IDX                                                          2
+pub const regPWRSEQ0_PANEL_PWRSEQ_STATE_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PANEL_PWRSEQ_DELAY1: u32 = 0x2f16;
-#define regPWRSEQ0_PANEL_PWRSEQ_DELAY1_BASE_IDX                                                         2
+pub const regPWRSEQ0_PANEL_PWRSEQ_DELAY1_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PANEL_PWRSEQ_DELAY2: u32 = 0x2f17;
-#define regPWRSEQ0_PANEL_PWRSEQ_DELAY2_BASE_IDX                                                         2
+pub const regPWRSEQ0_PANEL_PWRSEQ_DELAY2_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PANEL_PWRSEQ_REF_DIV1: u32 = 0x2f18;
-#define regPWRSEQ0_PANEL_PWRSEQ_REF_DIV1_BASE_IDX                                                       2
+pub const regPWRSEQ0_PANEL_PWRSEQ_REF_DIV1_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_BL_PWM_CNTL: u32 = 0x2f19;
-#define regPWRSEQ0_BL_PWM_CNTL_BASE_IDX                                                                 2
+pub const regPWRSEQ0_BL_PWM_CNTL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_BL_PWM_CNTL2: u32 = 0x2f1a;
-#define regPWRSEQ0_BL_PWM_CNTL2_BASE_IDX                                                                2
+pub const regPWRSEQ0_BL_PWM_CNTL2_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_BL_PWM_PERIOD_CNTL: u32 = 0x2f1b;
-#define regPWRSEQ0_BL_PWM_PERIOD_CNTL_BASE_IDX                                                          2
+pub const regPWRSEQ0_BL_PWM_PERIOD_CNTL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_BL_PWM_GRP1_REG_LOCK: u32 = 0x2f1c;
-#define regPWRSEQ0_BL_PWM_GRP1_REG_LOCK_BASE_IDX                                                        2
+pub const regPWRSEQ0_BL_PWM_GRP1_REG_LOCK_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PANEL_PWRSEQ_REF_DIV2: u32 = 0x2f1d;
-#define regPWRSEQ0_PANEL_PWRSEQ_REF_DIV2_BASE_IDX                                                       2
+pub const regPWRSEQ0_PANEL_PWRSEQ_REF_DIV2_BASE_IDX: u32 = 2;
 pub const regPWRSEQ0_PWRSEQ_SPARE: u32 = 0x2f21;
-#define regPWRSEQ0_PWRSEQ_SPARE_BASE_IDX                                                                2
+pub const regPWRSEQ0_PWRSEQ_SPARE_BASE_IDX: u32 = 2;
 
 
 // addressBlock: dpcssys_pwrseq1_dispdec_pwrseq_dispdec
 // base address: 0x1b0
 pub const regPWRSEQ1_DC_GPIO_PWRSEQ_EN: u32 = 0x2f7c;
-#define regPWRSEQ1_DC_GPIO_PWRSEQ_EN_BASE_IDX                                                           2
+pub const regPWRSEQ1_DC_GPIO_PWRSEQ_EN_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_DC_GPIO_PWRSEQ_CTRL: u32 = 0x2f7d;
-#define regPWRSEQ1_DC_GPIO_PWRSEQ_CTRL_BASE_IDX                                                         2
+pub const regPWRSEQ1_DC_GPIO_PWRSEQ_CTRL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_DC_GPIO_PWRSEQ_MASK: u32 = 0x2f7e;
-#define regPWRSEQ1_DC_GPIO_PWRSEQ_MASK_BASE_IDX                                                         2
+pub const regPWRSEQ1_DC_GPIO_PWRSEQ_MASK_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_DC_GPIO_PWRSEQ_A_Y: u32 = 0x2f7f;
-#define regPWRSEQ1_DC_GPIO_PWRSEQ_A_Y_BASE_IDX                                                          2
+pub const regPWRSEQ1_DC_GPIO_PWRSEQ_A_Y_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PANEL_PWRSEQ_CNTL: u32 = 0x2f80;
-#define regPWRSEQ1_PANEL_PWRSEQ_CNTL_BASE_IDX                                                           2
+pub const regPWRSEQ1_PANEL_PWRSEQ_CNTL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PANEL_PWRSEQ_STATE: u32 = 0x2f81;
-#define regPWRSEQ1_PANEL_PWRSEQ_STATE_BASE_IDX                                                          2
+pub const regPWRSEQ1_PANEL_PWRSEQ_STATE_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PANEL_PWRSEQ_DELAY1: u32 = 0x2f82;
-#define regPWRSEQ1_PANEL_PWRSEQ_DELAY1_BASE_IDX                                                         2
+pub const regPWRSEQ1_PANEL_PWRSEQ_DELAY1_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PANEL_PWRSEQ_DELAY2: u32 = 0x2f83;
-#define regPWRSEQ1_PANEL_PWRSEQ_DELAY2_BASE_IDX                                                         2
+pub const regPWRSEQ1_PANEL_PWRSEQ_DELAY2_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PANEL_PWRSEQ_REF_DIV1: u32 = 0x2f84;
-#define regPWRSEQ1_PANEL_PWRSEQ_REF_DIV1_BASE_IDX                                                       2
+pub const regPWRSEQ1_PANEL_PWRSEQ_REF_DIV1_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_BL_PWM_CNTL: u32 = 0x2f85;
-#define regPWRSEQ1_BL_PWM_CNTL_BASE_IDX                                                                 2
+pub const regPWRSEQ1_BL_PWM_CNTL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_BL_PWM_CNTL2: u32 = 0x2f86;
-#define regPWRSEQ1_BL_PWM_CNTL2_BASE_IDX                                                                2
+pub const regPWRSEQ1_BL_PWM_CNTL2_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_BL_PWM_PERIOD_CNTL: u32 = 0x2f87;
-#define regPWRSEQ1_BL_PWM_PERIOD_CNTL_BASE_IDX                                                          2
+pub const regPWRSEQ1_BL_PWM_PERIOD_CNTL_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_BL_PWM_GRP1_REG_LOCK: u32 = 0x2f88;
-#define regPWRSEQ1_BL_PWM_GRP1_REG_LOCK_BASE_IDX                                                        2
+pub const regPWRSEQ1_BL_PWM_GRP1_REG_LOCK_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PANEL_PWRSEQ_REF_DIV2: u32 = 0x2f89;
-#define regPWRSEQ1_PANEL_PWRSEQ_REF_DIV2_BASE_IDX                                                       2
+pub const regPWRSEQ1_PANEL_PWRSEQ_REF_DIV2_BASE_IDX: u32 = 2;
 pub const regPWRSEQ1_PWRSEQ_SPARE: u32 = 0x2f8d;
-#define regPWRSEQ1_PWRSEQ_SPARE_BASE_IDX                                                                2
+pub const regPWRSEQ1_PWRSEQ_SPARE_BASE_IDX: u32 = 2;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

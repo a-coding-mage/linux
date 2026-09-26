@@ -6,7 +6,7 @@ use crate::adf_accel_dev;
 
 // CONFIG_PCI_IOV is a build-time C configuration condition.  The equivalent
 // Rust configuration feature is used here to preserve the conditional API.
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 extern "C" {
     pub fn adf_pf2vf_notify_restarting(accel_dev: *mut adf_accel_dev);
     pub fn adf_pf2vf_wait_for_restarting_complete(accel_dev: *mut adf_accel_dev);
@@ -14,19 +14,19 @@ extern "C" {
     pub fn adf_pf2vf_notify_fatal_error(accel_dev: *mut adf_accel_dev);
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub fn adf_pf2vf_notify_restarting(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub fn adf_pf2vf_wait_for_restarting_complete(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub fn adf_pf2vf_notify_restarted(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub fn adf_pf2vf_notify_fatal_error(_accel_dev: *mut adf_accel_dev) {}
 

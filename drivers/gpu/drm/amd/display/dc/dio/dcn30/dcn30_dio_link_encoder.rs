@@ -21,7 +21,7 @@
 
 // C dependencies are supplied by the surrounding translation unit.
 
-static unsafe fn dcn30_link_encoder_validate_hdmi_frl_output(
+unsafe fn dcn30_link_encoder_validate_hdmi_frl_output(
     enc10: *const dcn10_link_encoder,
     crtc_timing: *const dc_crtc_timing,
 ) -> bool {

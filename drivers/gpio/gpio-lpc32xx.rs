@@ -75,7 +75,7 @@ unsafe fn set_level_gpo(g:*mut lpc32xx_gpio_chip,p:u32,high:bool){set_level(g,p,
 unsafe fn get_state(g:*mut lpc32xx_gpio_chip,p:u32)->c_int{((gpreg_read(g,(*g).gpio_grp.read().inp_state)>>p)&1) as c_int}
 
 // File-local callback behavior, including probe and platform registration, depends on Linux kernel bindings.
-extern "C" { fn devm_platform_ioremap_resource(_: *mut platform_device, _: c_uint)->*mut c_void; fn devm_gpiochip_add_data(_: *mut device,*mut gpio_chip,*mut c_void)->c_int; }
+extern "C" { fn devm_platform_ioremap_resource(_: *mut platform_device, _: c_uint)->*mut c_void; fn devm_gpiochip_add_data(_: *mut device,_: *mut gpio_chip,_: *mut c_void)->c_int; }
 #[repr(C)] struct platform_device { dev: device }
 #[repr(C)] struct device;
 #[allow(non_camel_case_types)] type c_ulong=usize; type c_void=core::ffi::c_void; type c_char=i8; type c_int=i32; type c_uint=u32;

@@ -50,25 +50,25 @@ pub enum btrfs_lockdep_trans_states {
 /* Lockdep annotation and protection macros for wait events. */
 #[macro_export]
 macro_rules! btrfs_might_wait_for_event {
-    ($owner:expr, $lock:ident) => {{
+    ($owner:expr, $lock:tt) => {{
         unsafe {
-            rwsem_acquire(&(*$owner).$lock##_map, 0, 0, _THIS_IP_());
-            rwsem_release(&(*$owner).$lock##_map, _THIS_IP_());
+            rwsem_acquire(&(*$owner).::kernel::macros::paste!([<$lock _map>]), 0, 0, _THIS_IP_());
+            rwsem_release(&(*$owner).::kernel::macros::paste!([<$lock _map>]), _THIS_IP_());
         }
     }};
 }
 
 #[macro_export]
 macro_rules! btrfs_lockdep_acquire {
-    ($owner:expr, $lock:ident) => {{
-        unsafe { rwsem_acquire_read(&(*$owner).$lock##_map, 0, 0, _THIS_IP_()); }
+    ($owner:expr, $lock:tt) => {{
+        unsafe { rwsem_acquire_read(&(*$owner).::kernel::macros::paste!([<$lock _map>]), 0, 0, _THIS_IP_()); }
     }};
 }
 
 #[macro_export]
 macro_rules! btrfs_lockdep_release {
-    ($owner:expr, $lock:ident) => {{
-        unsafe { rwsem_release(&(*$owner).$lock##_map, _THIS_IP_()); }
+    ($owner:expr, $lock:tt) => {{
+        unsafe { rwsem_release(&(*$owner).::kernel::macros::paste!([<$lock _map>]), _THIS_IP_()); }
     }};
 }
 

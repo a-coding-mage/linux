@@ -136,22 +136,22 @@ unsafe fn scmi_cpufreq_init(policy: *mut cpufreq_policy) -> i32 {
         kfree(priv_ as *mut core::ffi::c_void); return -ENOMEM;
     }
     let mut ret = scmi_get_sharing_cpus(cpu_dev, domain, (*policy).cpus);
-    if ret != 0 { dev_warn!(cpu_dev, "failed to get sharing cpumask\n"); goto!(out_free_cpumask); }
+    if ret != 0 { dev_warn!(cpu_dev, "failed to get sharing cpumask\n"); goto out_free_cpumask; }
     ret = dev_pm_opp_of_get_sharing_cpus(cpu_dev, (*priv_).opp_shared_cpus);
     if ret != 0 || cpumask_empty((*priv_).opp_shared_cpus) { cpumask_copy((*priv_).opp_shared_cpus, (*policy).cpus); }
     let mut nr_opp = dev_pm_opp_get_opp_count(cpu_dev);
     if nr_opp <= 0 {
         ret = ((*perf_ops).device_opps_add)(ph, cpu_dev, domain);
-        if ret != 0 { dev_warn!(cpu_dev, "failed to add opps to the device\n"); goto!(out_free_cpumask); }
+        if ret != 0 { dev_warn!(cpu_dev, "failed to add opps to the device\n"); goto out_free_cpumask; }
         nr_opp = dev_pm_opp_get_opp_count(cpu_dev);
-        if nr_opp <= 0 { dev_err!(cpu_dev, "{}: No OPPs for this device: {}\n", __func__, nr_opp); ret = -ENODEV; goto!(out_free_opp); }
+        if nr_opp <= 0 { dev_err!(cpu_dev, "{}: No OPPs for this device: {}\n", __func__, nr_opp); ret = -ENODEV; goto out_free_opp; }
         ret = dev_pm_opp_set_sharing_cpus(cpu_dev, (*priv_).opp_shared_cpus);
-        if ret != 0 { dev_err!(cpu_dev, "{}: failed to mark OPPs as shared: {}\n", __func__, ret); goto!(out_free_opp); }
+        if ret != 0 { dev_err!(cpu_dev, "{}: failed to mark OPPs as shared: {}\n", __func__, ret); goto out_free_opp; }
         (*priv_).nr_opp = nr_opp;
     }
     let mut freq_table: *mut cpufreq_frequency_table = core::ptr::null_mut();
     ret = dev_pm_opp_init_cpufreq_table(cpu_dev, &mut freq_table);
-    if ret != 0 { dev_err!(cpu_dev, "failed to init cpufreq table: {}\n", ret); goto!(out_free_opp); }
+    if ret != 0 { dev_err!(cpu_dev, "failed to init cpufreq table: {}\n", ret); goto out_free_opp; }
     (*priv_).cpu_dev = cpu_dev; (*priv_).domain_id = domain;
     (*policy).driver_data = priv_ as *mut core::ffi::c_void; (*policy).freq_table = freq_table;
     (*policy).dvfs_possible_from_any_cpu = true;
@@ -161,7 +161,7 @@ unsafe fn scmi_cpufreq_init(policy: *mut cpufreq_policy) -> i32 {
     (*policy).fast_switch_possible = ((*perf_ops).fast_switch_possible)(ph, domain);
     (*policy).transition_delay_us = scmi_get_rate_limit(domain as u32, (*policy).fast_switch_possible);
     ret = freq_qos_add_request(&mut (*policy).constraints, &mut (*priv_).limits_freq_req, FREQ_QOS_MAX, FREQ_QOS_MAX_DEFAULT_VALUE);
-    if ret < 0 { dev_err!(cpu_dev, "failed to add qos limits request: {}\n", ret); goto!(out_free_table); }
+    if ret < 0 { dev_err!(cpu_dev, "failed to add qos limits request: {}\n", ret); goto out_free_table; }
     (*priv_).limit_notify_nb.notifier_call = Some(scmi_limit_notify_cb);
     let sdev = cpufreq_get_driver_data() as *mut scmi_device;
     ret = ((*(*sdev).handle).notify_ops.event_notifier_register)((*sdev).handle, SCMI_PROTOCOL_PERF, SCMI_EVENT_PERFORMANCE_LIMITS_CHANGED, &mut (*priv_).domain_id, &mut (*priv_).limit_notify_nb);

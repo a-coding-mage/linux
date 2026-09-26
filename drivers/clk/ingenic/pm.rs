@@ -59,7 +59,7 @@ static mut ingenic_cgu_pm: syscore = syscore {
 
 pub unsafe extern "C" fn ingenic_cgu_register_syscore(cgu: *mut ingenic_cgu) {
     // Equivalent to IS_ENABLED(CONFIG_PM_SLEEP); preserve the build-time condition.
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     {
         ingenic_cgu_base = (*cgu).base;
         register_syscore(&raw mut ingenic_cgu_pm);

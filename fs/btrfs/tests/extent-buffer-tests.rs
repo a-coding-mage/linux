@@ -52,7 +52,7 @@ unsafe fn test_btrfs_split_item(sectorsize: u32, nodesize: u32) -> i32 {
     (*path).slots[0] = 0;
 
     key.objectid = 0;
-    key.type = BTRFS_EXTENT_CSUM_KEY;
+    key.r#type = BTRFS_EXTENT_CSUM_KEY;
     key.offset = 0;
 
     /*

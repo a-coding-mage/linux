@@ -205,8 +205,7 @@ unsafe extern "C" {
         query_flags: c_uint,
         attach_flags: *mut __u32,
         prog_ids: *mut __u32,
-        prog_cnt: *mut __u32,
-    ) -> c_int;
+        prog_cnt: *mut __u32) -> c_int;
     fn bpf_prog_query_opts(target_fd: c_int, attach_type: c_int, opts: *mut bpf_prog_query_opts) -> c_int;
     fn bpf_prog_attach(prog_fd: c_int, target_fd: c_int, attach_type: c_int, flags: c_int) -> c_int;
     fn bpf_prog_detach2(prog_fd: c_int, target_fd: c_int, attach_type: c_int) -> c_int;

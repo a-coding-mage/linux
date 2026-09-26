@@ -73,7 +73,7 @@ pub struct kvm_mips_cop0 {
 
 pub unsafe fn kvm_mips_dump_stats(vcpu: *mut kvm_vcpu) {
     /* CONFIG_KVM_MIPS_DEBUG_COP0_COUNTERS is a build-time condition. */
-    #[cfg(feature = "CONFIG_KVM_MIPS_DEBUG_COP0_COUNTERS")]
+    #[cfg(CONFIG_KVM_MIPS_DEBUG_COP0_COUNTERS)]
     {
         kvm_info(
             b"\nKVM VCPU[%d] COP0 Access Profile:\n\0".as_ptr() as *const c_char,

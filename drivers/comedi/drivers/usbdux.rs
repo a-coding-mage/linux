@@ -52,7 +52,7 @@ struct UsbduxPrivate {
 #[repr(C)] struct ComediAsync { cmd: ComediCmd, events: u32, scans_done: u32, inttrig: Option<unsafe extern "C" fn(*mut ComediDevice,*mut ComediSubdevice,u32)->i32> }
 #[repr(C)] struct ComediCmd { chanlist_len: i32, chanlist: *mut u32, start_src:u32, scan_begin_src:u32, convert_src:u32, scan_end_src:u32, stop_src:u32, start_arg:u32, scan_begin_arg:u32, convert_arg:u32, scan_end_arg:u32, stop_arg:u32 }
 #[repr(C)] struct ComediInsn { n:i32, chanspec:u32 }
-extern "C" { fn usb_kill_urb(*mut Urb); fn usb_submit_urb(*mut Urb,*mut core::ffi::c_void)->i32; fn mutex_lock(*mut Mutex); fn mutex_unlock(*mut Mutex); fn usb_bulk_msg(*mut UsbDevice,u32,*mut u8,usize,*mut i32,i32)->i32; fn usbduxsub_pwm_irq(*mut Urb); }
+extern "C" { fn usb_kill_urb(_: *mut Urb); fn usb_submit_urb(_: *mut Urb,_: *mut core::ffi::c_void)->i32; fn mutex_lock(_: *mut Mutex); fn mutex_unlock(_: *mut Mutex); fn usb_bulk_msg(_: *mut UsbDevice,_: u32,_: *mut u8,_: usize,_: *mut i32,_: i32)->i32; fn usbduxsub_pwm_irq(_: *mut Urb); }
 
 unsafe fn usbdux_unlink_urbs(urbs:*mut *mut Urb, n:i32) { for i in 0..n { usb_kill_urb(*urbs.add(i as usize)); } }
 unsafe fn usbdux_ai_stop(dev:*mut ComediDevice, unlink:i32) { let p=(*dev).private; if unlink!=0 && !(*p).ai_urbs.is_null(){usbdux_unlink_urbs((*p).ai_urbs,(*p).n_ai_urbs);} (*p).ai_cmd_running=0; }

@@ -5,7 +5,6 @@
  * Authors: AMD
  */
 
-#ifndef _dcn_3_0_3_OFFSET_HEADER
 
 // addressBlock: dce_dc_mmhubbub_vga_dispdec
 // base address: 0x0
@@ -7332,1251 +7331,1250 @@ pub const mmAZENDPOINT_IMMEDIATE_COMMAND_INPUT_INTERFACE_INDEX_BASE_IDX: u32 = 0
 
 // addressBlock: vga_vgaseqind
 // base address: 0x0
-#define ixSEQ00                                                                                        0x0000
-#define ixSEQ01                                                                                        0x0001
-#define ixSEQ02                                                                                        0x0002
-#define ixSEQ03                                                                                        0x0003
-#define ixSEQ04                                                                                        0x0004
+pub const ixSEQ00: u32 = 0x0000;
+pub const ixSEQ01: u32 = 0x0001;
+pub const ixSEQ02: u32 = 0x0002;
+pub const ixSEQ03: u32 = 0x0003;
+pub const ixSEQ04: u32 = 0x0004;
 
 
 // addressBlock: vga_vgacrtind
 // base address: 0x0
-#define ixCRT00                                                                                        0x0000
-#define ixCRT01                                                                                        0x0001
-#define ixCRT02                                                                                        0x0002
-#define ixCRT03                                                                                        0x0003
-#define ixCRT04                                                                                        0x0004
-#define ixCRT05                                                                                        0x0005
-#define ixCRT06                                                                                        0x0006
-#define ixCRT07                                                                                        0x0007
-#define ixCRT08                                                                                        0x0008
-#define ixCRT09                                                                                        0x0009
-#define ixCRT0A                                                                                        0x000a
-#define ixCRT0B                                                                                        0x000b
-#define ixCRT0C                                                                                        0x000c
-#define ixCRT0D                                                                                        0x000d
-#define ixCRT0E                                                                                        0x000e
-#define ixCRT0F                                                                                        0x000f
-#define ixCRT10                                                                                        0x0010
-#define ixCRT11                                                                                        0x0011
-#define ixCRT12                                                                                        0x0012
-#define ixCRT13                                                                                        0x0013
-#define ixCRT14                                                                                        0x0014
-#define ixCRT15                                                                                        0x0015
-#define ixCRT16                                                                                        0x0016
-#define ixCRT17                                                                                        0x0017
-#define ixCRT18                                                                                        0x0018
-#define ixCRT1E                                                                                        0x001e
-#define ixCRT1F                                                                                        0x001f
-#define ixCRT22                                                                                        0x0022
+pub const ixCRT00: u32 = 0x0000;
+pub const ixCRT01: u32 = 0x0001;
+pub const ixCRT02: u32 = 0x0002;
+pub const ixCRT03: u32 = 0x0003;
+pub const ixCRT04: u32 = 0x0004;
+pub const ixCRT05: u32 = 0x0005;
+pub const ixCRT06: u32 = 0x0006;
+pub const ixCRT07: u32 = 0x0007;
+pub const ixCRT08: u32 = 0x0008;
+pub const ixCRT09: u32 = 0x0009;
+pub const ixCRT0A: u32 = 0x000a;
+pub const ixCRT0B: u32 = 0x000b;
+pub const ixCRT0C: u32 = 0x000c;
+pub const ixCRT0D: u32 = 0x000d;
+pub const ixCRT0E: u32 = 0x000e;
+pub const ixCRT0F: u32 = 0x000f;
+pub const ixCRT10: u32 = 0x0010;
+pub const ixCRT11: u32 = 0x0011;
+pub const ixCRT12: u32 = 0x0012;
+pub const ixCRT13: u32 = 0x0013;
+pub const ixCRT14: u32 = 0x0014;
+pub const ixCRT15: u32 = 0x0015;
+pub const ixCRT16: u32 = 0x0016;
+pub const ixCRT17: u32 = 0x0017;
+pub const ixCRT18: u32 = 0x0018;
+pub const ixCRT1E: u32 = 0x001e;
+pub const ixCRT1F: u32 = 0x001f;
+pub const ixCRT22: u32 = 0x0022;
 
 
 // addressBlock: vga_vgagrphind
 // base address: 0x0
-#define ixGRA00                                                                                        0x0000
-#define ixGRA01                                                                                        0x0001
-#define ixGRA02                                                                                        0x0002
-#define ixGRA03                                                                                        0x0003
-#define ixGRA04                                                                                        0x0004
-#define ixGRA05                                                                                        0x0005
-#define ixGRA06                                                                                        0x0006
-#define ixGRA07                                                                                        0x0007
-#define ixGRA08                                                                                        0x0008
+pub const ixGRA00: u32 = 0x0000;
+pub const ixGRA01: u32 = 0x0001;
+pub const ixGRA02: u32 = 0x0002;
+pub const ixGRA03: u32 = 0x0003;
+pub const ixGRA04: u32 = 0x0004;
+pub const ixGRA05: u32 = 0x0005;
+pub const ixGRA06: u32 = 0x0006;
+pub const ixGRA07: u32 = 0x0007;
+pub const ixGRA08: u32 = 0x0008;
 
 
 // addressBlock: vga_vgaattrind
 // base address: 0x0
-#define ixATTR00                                                                                       0x0000
-#define ixATTR01                                                                                       0x0001
-#define ixATTR02                                                                                       0x0002
-#define ixATTR03                                                                                       0x0003
-#define ixATTR04                                                                                       0x0004
-#define ixATTR05                                                                                       0x0005
-#define ixATTR06                                                                                       0x0006
-#define ixATTR07                                                                                       0x0007
-#define ixATTR08                                                                                       0x0008
-#define ixATTR09                                                                                       0x0009
-#define ixATTR0A                                                                                       0x000a
-#define ixATTR0B                                                                                       0x000b
-#define ixATTR0C                                                                                       0x000c
-#define ixATTR0D                                                                                       0x000d
-#define ixATTR0E                                                                                       0x000e
-#define ixATTR0F                                                                                       0x000f
-#define ixATTR10                                                                                       0x0010
-#define ixATTR11                                                                                       0x0011
-#define ixATTR12                                                                                       0x0012
-#define ixATTR13                                                                                       0x0013
-#define ixATTR14                                                                                       0x0014
+pub const ixATTR00: u32 = 0x0000;
+pub const ixATTR01: u32 = 0x0001;
+pub const ixATTR02: u32 = 0x0002;
+pub const ixATTR03: u32 = 0x0003;
+pub const ixATTR04: u32 = 0x0004;
+pub const ixATTR05: u32 = 0x0005;
+pub const ixATTR06: u32 = 0x0006;
+pub const ixATTR07: u32 = 0x0007;
+pub const ixATTR08: u32 = 0x0008;
+pub const ixATTR09: u32 = 0x0009;
+pub const ixATTR0A: u32 = 0x000a;
+pub const ixATTR0B: u32 = 0x000b;
+pub const ixATTR0C: u32 = 0x000c;
+pub const ixATTR0D: u32 = 0x000d;
+pub const ixATTR0E: u32 = 0x000e;
+pub const ixATTR0F: u32 = 0x000f;
+pub const ixATTR10: u32 = 0x0010;
+pub const ixATTR11: u32 = 0x0011;
+pub const ixATTR12: u32 = 0x0012;
+pub const ixATTR13: u32 = 0x0013;
+pub const ixATTR14: u32 = 0x0014;
 
 
 // addressBlock: azendpoint_f2codecind
 // base address: 0x0
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                                           0x2200
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                                          0x2706
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                                          0x270d
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_2                                        0x270e
-#define ixAZALIA_F2_CODEC_CONVERTER_STRIPE_CONTROL                                                     0x2724
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3                                        0x273e
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_RAMP_RATE                                                  0x2770
-#define ixAZALIA_F2_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                              0x2771
-#define ixAZALIA_F2_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                                0x2f09
-#define ixAZALIA_F2_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                                     0x2f0a
-#define ixAZALIA_F2_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                                           0x2f0b
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONNECTION_LIST_ENTRY                                   0x3702
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL                                                   0x3707
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                                             0x3708
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                               0x3709
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                                   0x371c
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_2                                 0x371d
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_3                                 0x371e
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_4                                 0x371f
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_SPEAKER_ALLOCATION                                      0x3770
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_CHANNEL_ALLOCATION                                               0x3771
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_INFO                                                    0x3772
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR                                                 0x3776
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_DATA                                            0x3776
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE                                            0x3777
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE                                            0x3778
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE                                            0x3779
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE                                            0x377a
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_LIPSYNC                                                          0x377b
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_HBR                                                              0x377c
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_SINK_INFO_INDEX                                            0x3780
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_SINK_INFO_DATA                                             0x3781
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE                                             0x3785
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE                                             0x3786
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE                                             0x3787
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE                                             0x3788
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                                0x3789
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                                    0x378a
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                                    0x378b
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                                    0x378c
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                                    0x378d
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                                    0x378e
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                                    0x378f
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                                    0x3790
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                                    0x3791
-#define ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                                    0x3792
-#define ixAZALIA_F2_CODEC_PIN_ASSOCIATION_INFO                                                         0x3793
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                                            0x3797
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                                            0x3798
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_LPIB                                                             0x3799
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                              0x379a
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_CODING_TYPE                                                      0x379b
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_FORMAT_CHANGED                                                   0x379c
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                                  0x379d
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                                 0x379e
-#define ixAZALIA_F2_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                                      0x3f09
-#define ixAZALIA_F2_CODEC_PIN_PARAMETER_CAPABILITIES                                                   0x3f0c
-#define ixAZALIA_F2_CODEC_PIN_PARAMETER_CONNECTION_LIST_LENGTH                                         0x3f0e
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x2200;
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x2706;
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x270d;
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_2: u32 = 0x270e;
+pub const ixAZALIA_F2_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x2724;
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3: u32 = 0x273e;
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x2770;
+pub const ixAZALIA_F2_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x2771;
+pub const ixAZALIA_F2_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x2f09;
+pub const ixAZALIA_F2_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x2f0a;
+pub const ixAZALIA_F2_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x2f0b;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONNECTION_LIST_ENTRY: u32 = 0x3702;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x3707;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x3708;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x3709;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x371c;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_2: u32 = 0x371d;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_3: u32 = 0x371e;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_4: u32 = 0x371f;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_RESPONSE_SPEAKER_ALLOCATION: u32 = 0x3770;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x3771;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_INFO: u32 = 0x3772;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR: u32 = 0x3776;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_DATA: u32 = 0x3776;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE: u32 = 0x3777;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE: u32 = 0x3778;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE: u32 = 0x3779;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE: u32 = 0x377a;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_LIPSYNC: u32 = 0x377b;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_HBR: u32 = 0x377c;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_SINK_INFO_INDEX: u32 = 0x3780;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_AUDIO_SINK_INFO_DATA: u32 = 0x3781;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE: u32 = 0x3785;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE: u32 = 0x3786;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE: u32 = 0x3787;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE: u32 = 0x3788;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x3789;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x378a;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x378b;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x378c;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x378d;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x378e;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x378f;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x3790;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x3791;
+pub const ixAZALIA_F2_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x3792;
+pub const ixAZALIA_F2_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x3793;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x3797;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x3798;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_LPIB: u32 = 0x3799;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x379a;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x379b;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x379c;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x379d;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x379e;
+pub const ixAZALIA_F2_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x3f09;
+pub const ixAZALIA_F2_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x3f0c;
+pub const ixAZALIA_F2_CODEC_PIN_PARAMETER_CONNECTION_LIST_LENGTH: u32 = 0x3f0e;
 
 
 // addressBlock: azendpoint_descriptorind
 // base address: 0x0
-#define ixAUDIO_DESCRIPTOR0                                                                            0x0001
-#define ixAUDIO_DESCRIPTOR1                                                                            0x0002
-#define ixAUDIO_DESCRIPTOR2                                                                            0x0003
-#define ixAUDIO_DESCRIPTOR3                                                                            0x0004
-#define ixAUDIO_DESCRIPTOR4                                                                            0x0005
-#define ixAUDIO_DESCRIPTOR5                                                                            0x0006
-#define ixAUDIO_DESCRIPTOR6                                                                            0x0007
-#define ixAUDIO_DESCRIPTOR7                                                                            0x0008
-#define ixAUDIO_DESCRIPTOR8                                                                            0x0009
-#define ixAUDIO_DESCRIPTOR9                                                                            0x000a
-#define ixAUDIO_DESCRIPTOR10                                                                           0x000b
-#define ixAUDIO_DESCRIPTOR11                                                                           0x000c
-#define ixAUDIO_DESCRIPTOR12                                                                           0x000d
-#define ixAUDIO_DESCRIPTOR13                                                                           0x000e
+pub const ixAUDIO_DESCRIPTOR0: u32 = 0x0001;
+pub const ixAUDIO_DESCRIPTOR1: u32 = 0x0002;
+pub const ixAUDIO_DESCRIPTOR2: u32 = 0x0003;
+pub const ixAUDIO_DESCRIPTOR3: u32 = 0x0004;
+pub const ixAUDIO_DESCRIPTOR4: u32 = 0x0005;
+pub const ixAUDIO_DESCRIPTOR5: u32 = 0x0006;
+pub const ixAUDIO_DESCRIPTOR6: u32 = 0x0007;
+pub const ixAUDIO_DESCRIPTOR7: u32 = 0x0008;
+pub const ixAUDIO_DESCRIPTOR8: u32 = 0x0009;
+pub const ixAUDIO_DESCRIPTOR9: u32 = 0x000a;
+pub const ixAUDIO_DESCRIPTOR10: u32 = 0x000b;
+pub const ixAUDIO_DESCRIPTOR11: u32 = 0x000c;
+pub const ixAUDIO_DESCRIPTOR12: u32 = 0x000d;
+pub const ixAUDIO_DESCRIPTOR13: u32 = 0x000e;
 
 
 // addressBlock: azendpoint_sinkinfoind
 // base address: 0x0
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_MANUFACTURER_ID                                                  0x0000
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_PRODUCT_ID                                                       0x0001
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_SINK_DESCRIPTION_LEN                                             0x0002
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_PORTID0                                                          0x0003
-#define ixAZALIA_F2_CODEC_PIN_CONTROL_PORTID1                                                          0x0004
-#define ixSINK_DESCRIPTION0                                                                            0x0005
-#define ixSINK_DESCRIPTION1                                                                            0x0006
-#define ixSINK_DESCRIPTION2                                                                            0x0007
-#define ixSINK_DESCRIPTION3                                                                            0x0008
-#define ixSINK_DESCRIPTION4                                                                            0x0009
-#define ixSINK_DESCRIPTION5                                                                            0x000a
-#define ixSINK_DESCRIPTION6                                                                            0x000b
-#define ixSINK_DESCRIPTION7                                                                            0x000c
-#define ixSINK_DESCRIPTION8                                                                            0x000d
-#define ixSINK_DESCRIPTION9                                                                            0x000e
-#define ixSINK_DESCRIPTION10                                                                           0x000f
-#define ixSINK_DESCRIPTION11                                                                           0x0010
-#define ixSINK_DESCRIPTION12                                                                           0x0011
-#define ixSINK_DESCRIPTION13                                                                           0x0012
-#define ixSINK_DESCRIPTION14                                                                           0x0013
-#define ixSINK_DESCRIPTION15                                                                           0x0014
-#define ixSINK_DESCRIPTION16                                                                           0x0015
-#define ixSINK_DESCRIPTION17                                                                           0x0016
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_MANUFACTURER_ID: u32 = 0x0000;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_PRODUCT_ID: u32 = 0x0001;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_SINK_DESCRIPTION_LEN: u32 = 0x0002;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_PORTID0: u32 = 0x0003;
+pub const ixAZALIA_F2_CODEC_PIN_CONTROL_PORTID1: u32 = 0x0004;
+pub const ixSINK_DESCRIPTION0: u32 = 0x0005;
+pub const ixSINK_DESCRIPTION1: u32 = 0x0006;
+pub const ixSINK_DESCRIPTION2: u32 = 0x0007;
+pub const ixSINK_DESCRIPTION3: u32 = 0x0008;
+pub const ixSINK_DESCRIPTION4: u32 = 0x0009;
+pub const ixSINK_DESCRIPTION5: u32 = 0x000a;
+pub const ixSINK_DESCRIPTION6: u32 = 0x000b;
+pub const ixSINK_DESCRIPTION7: u32 = 0x000c;
+pub const ixSINK_DESCRIPTION8: u32 = 0x000d;
+pub const ixSINK_DESCRIPTION9: u32 = 0x000e;
+pub const ixSINK_DESCRIPTION10: u32 = 0x000f;
+pub const ixSINK_DESCRIPTION11: u32 = 0x0010;
+pub const ixSINK_DESCRIPTION12: u32 = 0x0011;
+pub const ixSINK_DESCRIPTION13: u32 = 0x0012;
+pub const ixSINK_DESCRIPTION14: u32 = 0x0013;
+pub const ixSINK_DESCRIPTION15: u32 = 0x0014;
+pub const ixSINK_DESCRIPTION16: u32 = 0x0015;
+pub const ixSINK_DESCRIPTION17: u32 = 0x0016;
 
 
 // addressBlock: azf0controller_azinputcrc0resultind
 // base address: 0x0
-#define ixAZALIA_INPUT_CRC0_CHANNEL0                                                                   0x0000
-#define ixAZALIA_INPUT_CRC0_CHANNEL1                                                                   0x0001
-#define ixAZALIA_INPUT_CRC0_CHANNEL2                                                                   0x0002
-#define ixAZALIA_INPUT_CRC0_CHANNEL3                                                                   0x0003
-#define ixAZALIA_INPUT_CRC0_CHANNEL4                                                                   0x0004
-#define ixAZALIA_INPUT_CRC0_CHANNEL5                                                                   0x0005
-#define ixAZALIA_INPUT_CRC0_CHANNEL6                                                                   0x0006
-#define ixAZALIA_INPUT_CRC0_CHANNEL7                                                                   0x0007
+pub const ixAZALIA_INPUT_CRC0_CHANNEL0: u32 = 0x0000;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL1: u32 = 0x0001;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL2: u32 = 0x0002;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL3: u32 = 0x0003;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL4: u32 = 0x0004;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL5: u32 = 0x0005;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL6: u32 = 0x0006;
+pub const ixAZALIA_INPUT_CRC0_CHANNEL7: u32 = 0x0007;
 
 
 // addressBlock: azf0controller_azinputcrc1resultind
 // base address: 0x0
-#define ixAZALIA_INPUT_CRC1_CHANNEL0                                                                   0x0000
-#define ixAZALIA_INPUT_CRC1_CHANNEL1                                                                   0x0001
-#define ixAZALIA_INPUT_CRC1_CHANNEL2                                                                   0x0002
-#define ixAZALIA_INPUT_CRC1_CHANNEL3                                                                   0x0003
-#define ixAZALIA_INPUT_CRC1_CHANNEL4                                                                   0x0004
-#define ixAZALIA_INPUT_CRC1_CHANNEL5                                                                   0x0005
-#define ixAZALIA_INPUT_CRC1_CHANNEL6                                                                   0x0006
-#define ixAZALIA_INPUT_CRC1_CHANNEL7                                                                   0x0007
+pub const ixAZALIA_INPUT_CRC1_CHANNEL0: u32 = 0x0000;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL1: u32 = 0x0001;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL2: u32 = 0x0002;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL3: u32 = 0x0003;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL4: u32 = 0x0004;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL5: u32 = 0x0005;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL6: u32 = 0x0006;
+pub const ixAZALIA_INPUT_CRC1_CHANNEL7: u32 = 0x0007;
 
 
 // addressBlock: azf0controller_azcrc0resultind
 // base address: 0x0
-#define ixAZALIA_CRC0_CHANNEL0                                                                         0x0000
-#define ixAZALIA_CRC0_CHANNEL1                                                                         0x0001
-#define ixAZALIA_CRC0_CHANNEL2                                                                         0x0002
-#define ixAZALIA_CRC0_CHANNEL3                                                                         0x0003
-#define ixAZALIA_CRC0_CHANNEL4                                                                         0x0004
-#define ixAZALIA_CRC0_CHANNEL5                                                                         0x0005
-#define ixAZALIA_CRC0_CHANNEL6                                                                         0x0006
-#define ixAZALIA_CRC0_CHANNEL7                                                                         0x0007
+pub const ixAZALIA_CRC0_CHANNEL0: u32 = 0x0000;
+pub const ixAZALIA_CRC0_CHANNEL1: u32 = 0x0001;
+pub const ixAZALIA_CRC0_CHANNEL2: u32 = 0x0002;
+pub const ixAZALIA_CRC0_CHANNEL3: u32 = 0x0003;
+pub const ixAZALIA_CRC0_CHANNEL4: u32 = 0x0004;
+pub const ixAZALIA_CRC0_CHANNEL5: u32 = 0x0005;
+pub const ixAZALIA_CRC0_CHANNEL6: u32 = 0x0006;
+pub const ixAZALIA_CRC0_CHANNEL7: u32 = 0x0007;
 
 
 // addressBlock: azf0controller_azcrc1resultind
 // base address: 0x0
-#define ixAZALIA_CRC1_CHANNEL0                                                                         0x0000
-#define ixAZALIA_CRC1_CHANNEL1                                                                         0x0001
-#define ixAZALIA_CRC1_CHANNEL2                                                                         0x0002
-#define ixAZALIA_CRC1_CHANNEL3                                                                         0x0003
-#define ixAZALIA_CRC1_CHANNEL4                                                                         0x0004
-#define ixAZALIA_CRC1_CHANNEL5                                                                         0x0005
-#define ixAZALIA_CRC1_CHANNEL6                                                                         0x0006
-#define ixAZALIA_CRC1_CHANNEL7                                                                         0x0007
+pub const ixAZALIA_CRC1_CHANNEL0: u32 = 0x0000;
+pub const ixAZALIA_CRC1_CHANNEL1: u32 = 0x0001;
+pub const ixAZALIA_CRC1_CHANNEL2: u32 = 0x0002;
+pub const ixAZALIA_CRC1_CHANNEL3: u32 = 0x0003;
+pub const ixAZALIA_CRC1_CHANNEL4: u32 = 0x0004;
+pub const ixAZALIA_CRC1_CHANNEL5: u32 = 0x0005;
+pub const ixAZALIA_CRC1_CHANNEL6: u32 = 0x0006;
+pub const ixAZALIA_CRC1_CHANNEL7: u32 = 0x0007;
 
 
 // addressBlock: azinputendpoint_f2codecind
 // base address: 0x0
-#define ixAZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                                     0x6200
-#define ixAZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                                    0x6706
-#define ixAZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                                    0x670d
-#define ixAZALIA_F2_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                          0x6f09
-#define ixAZALIA_F2_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                               0x6f0a
-#define ixAZALIA_F2_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                                     0x6f0b
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                                             0x7707
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                                       0x7708
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_PIN_SENSE                                         0x7709
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                             0x771c
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_2                           0x771d
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_3                           0x771e
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_4                           0x771f
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                                         0x7771
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE                                       0x7777
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE                                       0x7778
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE                                       0x7779
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE                                       0x777a
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_HBR                                                        0x777c
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE                                       0x7785
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE                                       0x7786
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE                                       0x7787
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE                                       0x7788
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                                      0x7798
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_LPIB                                                       0x7799
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                        0x779a
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                                       0x779b
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_INFOFRAME                                                  0x779c
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_CHANNEL_STATUS_L                                           0x779d
-#define ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_CHANNEL_STATUS_H                                           0x779e
-#define ixAZALIA_F2_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                                0x7f09
-#define ixAZALIA_F2_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                                             0x7f0c
+pub const ixAZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x6200;
+pub const ixAZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x6706;
+pub const ixAZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x670d;
+pub const ixAZALIA_F2_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x6f09;
+pub const ixAZALIA_F2_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x6f0a;
+pub const ixAZALIA_F2_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x6f0b;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x7707;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x7708;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x7709;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x771c;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_2: u32 = 0x771d;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_3: u32 = 0x771e;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT_4: u32 = 0x771f;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x7771;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE: u32 = 0x7777;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE: u32 = 0x7778;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE: u32 = 0x7779;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE: u32 = 0x777a;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_HBR: u32 = 0x777c;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE: u32 = 0x7785;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE: u32 = 0x7786;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE: u32 = 0x7787;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE: u32 = 0x7788;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x7798;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x7799;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x779a;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x779b;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x779c;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_CHANNEL_STATUS_L: u32 = 0x779d;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_CONTROL_CHANNEL_STATUS_H: u32 = 0x779e;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x7f09;
+pub const ixAZALIA_F2_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x7f0c;
 
 
 // addressBlock: azroot_f2codecind
 // base address: 0x0
-#define ixAZALIA_F2_CODEC_ROOT_PARAMETER_VENDOR_AND_DEVICE_ID                                          0x0f00
-#define ixAZALIA_F2_CODEC_ROOT_PARAMETER_REVISION_ID                                                   0x0f02
-#define ixAZALIA_F2_CODEC_ROOT_PARAMETER_SUBORDINATE_NODE_COUNT                                        0x0f04
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_POWER_STATE                                                 0x1705
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID                                       0x1720
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID_2                                     0x1721
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID_3                                     0x1722
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID_4                                     0x1723
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_CONVERTER_SYNCHRONIZATION                                   0x1770
-#define ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESET                                                       0x17ff
-#define ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_SUBORDINATE_NODE_COUNT                                    0x1f04
-#define ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_GROUP_TYPE                                                0x1f05
-#define ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_SUPPORTED_SIZE_RATES                                      0x1f0a
-#define ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_STREAM_FORMATS                                            0x1f0b
-#define ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_POWER_STATES                                              0x1f0f
+pub const ixAZALIA_F2_CODEC_ROOT_PARAMETER_VENDOR_AND_DEVICE_ID: u32 = 0x0f00;
+pub const ixAZALIA_F2_CODEC_ROOT_PARAMETER_REVISION_ID: u32 = 0x0f02;
+pub const ixAZALIA_F2_CODEC_ROOT_PARAMETER_SUBORDINATE_NODE_COUNT: u32 = 0x0f04;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_POWER_STATE: u32 = 0x1705;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID: u32 = 0x1720;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID_2: u32 = 0x1721;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID_3: u32 = 0x1722;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESPONSE_SUBSYSTEM_ID_4: u32 = 0x1723;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_CONVERTER_SYNCHRONIZATION: u32 = 0x1770;
+pub const ixAZALIA_F2_CODEC_FUNCTION_CONTROL_RESET: u32 = 0x17ff;
+pub const ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_SUBORDINATE_NODE_COUNT: u32 = 0x1f04;
+pub const ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_GROUP_TYPE: u32 = 0x1f05;
+pub const ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x1f0a;
+pub const ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_STREAM_FORMATS: u32 = 0x1f0b;
+pub const ixAZALIA_F2_CODEC_FUNCTION_PARAMETER_POWER_STATES: u32 = 0x1f0f;
 
 
 // addressBlock: azf0stream0_streamind
 // base address: 0x0
-#define ixAZF0STREAM0_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM0_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM0_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM0_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM0_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM0_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM0_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM0_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM0_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM0_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream1_streamind
 // base address: 0x0
-#define ixAZF0STREAM1_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM1_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM1_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM1_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM1_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM1_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM1_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM1_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM1_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM1_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream2_streamind
 // base address: 0x0
-#define ixAZF0STREAM2_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM2_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM2_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM2_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM2_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM2_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM2_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM2_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM2_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM2_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream3_streamind
 // base address: 0x0
-#define ixAZF0STREAM3_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM3_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM3_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM3_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM3_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM3_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM3_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM3_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM3_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM3_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream4_streamind
 // base address: 0x0
-#define ixAZF0STREAM4_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM4_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM4_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM4_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM4_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM4_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM4_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM4_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM4_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM4_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream5_streamind
 // base address: 0x0
-#define ixAZF0STREAM5_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM5_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM5_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM5_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM5_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM5_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM5_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM5_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM5_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM5_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream6_streamind
 // base address: 0x0
-#define ixAZF0STREAM6_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM6_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM6_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM6_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM6_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM6_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM6_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM6_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM6_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM6_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream7_streamind
 // base address: 0x0
-#define ixAZF0STREAM7_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM7_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM7_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM7_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM7_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM7_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM7_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM7_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM7_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM7_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream8_streamind
 // base address: 0x0
-#define ixAZF0STREAM8_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM8_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM8_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM8_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM8_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM8_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM8_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM8_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM8_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM8_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream9_streamind
 // base address: 0x0
-#define ixAZF0STREAM9_AZALIA_FIFO_SIZE_CONTROL                                                         0x0000
-#define ixAZF0STREAM9_AZALIA_LATENCY_COUNTER_CONTROL                                                   0x0001
-#define ixAZF0STREAM9_AZALIA_WORSTCASE_LATENCY_COUNT                                                   0x0002
-#define ixAZF0STREAM9_AZALIA_CUMULATIVE_LATENCY_COUNT                                                  0x0003
-#define ixAZF0STREAM9_AZALIA_CUMULATIVE_REQUEST_COUNT                                                  0x0004
+pub const ixAZF0STREAM9_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM9_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM9_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM9_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM9_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream10_streamind
 // base address: 0x0
-#define ixAZF0STREAM10_AZALIA_FIFO_SIZE_CONTROL                                                        0x0000
-#define ixAZF0STREAM10_AZALIA_LATENCY_COUNTER_CONTROL                                                  0x0001
-#define ixAZF0STREAM10_AZALIA_WORSTCASE_LATENCY_COUNT                                                  0x0002
-#define ixAZF0STREAM10_AZALIA_CUMULATIVE_LATENCY_COUNT                                                 0x0003
-#define ixAZF0STREAM10_AZALIA_CUMULATIVE_REQUEST_COUNT                                                 0x0004
+pub const ixAZF0STREAM10_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM10_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM10_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM10_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM10_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream11_streamind
 // base address: 0x0
-#define ixAZF0STREAM11_AZALIA_FIFO_SIZE_CONTROL                                                        0x0000
-#define ixAZF0STREAM11_AZALIA_LATENCY_COUNTER_CONTROL                                                  0x0001
-#define ixAZF0STREAM11_AZALIA_WORSTCASE_LATENCY_COUNT                                                  0x0002
-#define ixAZF0STREAM11_AZALIA_CUMULATIVE_LATENCY_COUNT                                                 0x0003
-#define ixAZF0STREAM11_AZALIA_CUMULATIVE_REQUEST_COUNT                                                 0x0004
+pub const ixAZF0STREAM11_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM11_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM11_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM11_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM11_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream12_streamind
 // base address: 0x0
-#define ixAZF0STREAM12_AZALIA_FIFO_SIZE_CONTROL                                                        0x0000
-#define ixAZF0STREAM12_AZALIA_LATENCY_COUNTER_CONTROL                                                  0x0001
-#define ixAZF0STREAM12_AZALIA_WORSTCASE_LATENCY_COUNT                                                  0x0002
-#define ixAZF0STREAM12_AZALIA_CUMULATIVE_LATENCY_COUNT                                                 0x0003
-#define ixAZF0STREAM12_AZALIA_CUMULATIVE_REQUEST_COUNT                                                 0x0004
+pub const ixAZF0STREAM12_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM12_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM12_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM12_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM12_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream13_streamind
 // base address: 0x0
-#define ixAZF0STREAM13_AZALIA_FIFO_SIZE_CONTROL                                                        0x0000
-#define ixAZF0STREAM13_AZALIA_LATENCY_COUNTER_CONTROL                                                  0x0001
-#define ixAZF0STREAM13_AZALIA_WORSTCASE_LATENCY_COUNT                                                  0x0002
-#define ixAZF0STREAM13_AZALIA_CUMULATIVE_LATENCY_COUNT                                                 0x0003
-#define ixAZF0STREAM13_AZALIA_CUMULATIVE_REQUEST_COUNT                                                 0x0004
+pub const ixAZF0STREAM13_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM13_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM13_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM13_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM13_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream14_streamind
 // base address: 0x0
-#define ixAZF0STREAM14_AZALIA_FIFO_SIZE_CONTROL                                                        0x0000
-#define ixAZF0STREAM14_AZALIA_LATENCY_COUNTER_CONTROL                                                  0x0001
-#define ixAZF0STREAM14_AZALIA_WORSTCASE_LATENCY_COUNT                                                  0x0002
-#define ixAZF0STREAM14_AZALIA_CUMULATIVE_LATENCY_COUNT                                                 0x0003
-#define ixAZF0STREAM14_AZALIA_CUMULATIVE_REQUEST_COUNT                                                 0x0004
+pub const ixAZF0STREAM14_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM14_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM14_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM14_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM14_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0stream15_streamind
 // base address: 0x0
-#define ixAZF0STREAM15_AZALIA_FIFO_SIZE_CONTROL                                                        0x0000
-#define ixAZF0STREAM15_AZALIA_LATENCY_COUNTER_CONTROL                                                  0x0001
-#define ixAZF0STREAM15_AZALIA_WORSTCASE_LATENCY_COUNT                                                  0x0002
-#define ixAZF0STREAM15_AZALIA_CUMULATIVE_LATENCY_COUNT                                                 0x0003
-#define ixAZF0STREAM15_AZALIA_CUMULATIVE_REQUEST_COUNT                                                 0x0004
+pub const ixAZF0STREAM15_AZALIA_FIFO_SIZE_CONTROL: u32 = 0x0000;
+pub const ixAZF0STREAM15_AZALIA_LATENCY_COUNTER_CONTROL: u32 = 0x0001;
+pub const ixAZF0STREAM15_AZALIA_WORSTCASE_LATENCY_COUNT: u32 = 0x0002;
+pub const ixAZF0STREAM15_AZALIA_CUMULATIVE_LATENCY_COUNT: u32 = 0x0003;
+pub const ixAZF0STREAM15_AZALIA_CUMULATIVE_REQUEST_COUNT: u32 = 0x0004;
 
 
 // addressBlock: azf0endpoint0_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint1_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint2_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT2_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint3_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT3_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint4_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT4_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint5_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT5_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint6_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT6_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0endpoint7_endpointind
 // base address: 0x0
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER                            0x0004
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS                             0x0005
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES                       0x0006
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL                                       0x0007
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE                                    0x0008
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING                                0x0009
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA                                    0x000c
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN                                0x000d
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX                                0x000e
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES                        0x0020
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES                                     0x0021
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE                               0x0022
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE                                 0x0023
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL                                     0x0024
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER                                    0x0025
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0                                  0x0028
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1                                  0x0029
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2                                  0x002a
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3                                  0x002b
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4                                  0x002c
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5                                  0x002d
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6                                  0x002e
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7                                  0x002f
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8                                  0x0030
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9                                  0x0031
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10                                 0x0032
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11                                 0x0033
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12                                 0x0034
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13                                 0x0035
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE                                0x0036
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC                                   0x0037
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR                                       0x0038
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0                                         0x003a
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1                                         0x003b
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2                                         0x003c
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3                                         0x003d
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4                                         0x003e
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5                                         0x003f
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6                                         0x0040
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7                                         0x0041
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8                                         0x0042
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL                                   0x0054
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE                         0x0055
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT                     0x0056
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2                               0x0057
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE                                  0x0058
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0                                      0x0059
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1                                      0x005a
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2                                      0x005b
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3                                      0x005c
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4                                      0x005d
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5                                      0x005e
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6                                      0x005f
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7                                      0x0060
-#define ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8                                      0x0061
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO                                           0x0062
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS                              0x0063
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                              0x0064
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_LPIB                                               0x0065
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                                0x0066
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE                                        0x0067
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED                                     0x0068
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION                    0x0069
-#define ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE                                   0x006a
-#define ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_ENABLE_STATUS                                                  0x006b
-#define ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_ENABLED_INT_STATUS                                             0x006c
-#define ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_DISABLED_INT_STATUS                                            0x006d
-#define ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_STRIPE_CONTROL: u32 = 0x0007;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_RAMP_RATE: u32 = 0x0008;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_CONTROL_GTC_EMBEDDING: u32 = 0x0009;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA: u32 = 0x000c;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MIN: u32 = 0x000d;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_CONVERTER_GTC_COUNTER_DELTA_MAX: u32 = 0x000e;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_CHANNEL_SPEAKER: u32 = 0x0025;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR0: u32 = 0x0028;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR1: u32 = 0x0029;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR2: u32 = 0x002a;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR3: u32 = 0x002b;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR4: u32 = 0x002c;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR5: u32 = 0x002d;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR6: u32 = 0x002e;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR7: u32 = 0x002f;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR8: u32 = 0x0030;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR9: u32 = 0x0031;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR10: u32 = 0x0032;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR11: u32 = 0x0033;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR12: u32 = 0x0034;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR13: u32 = 0x0035;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_LIPSYNC: u32 = 0x0037;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO0: u32 = 0x003a;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO1: u32 = 0x003b;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO2: u32 = 0x003c;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO3: u32 = 0x003d;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO4: u32 = 0x003e;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO5: u32 = 0x003f;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO6: u32 = 0x0040;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO7: u32 = 0x0041;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_SINK_INFO8: u32 = 0x0042;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0057;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE: u32 = 0x0058;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_0: u32 = 0x0059;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_1: u32 = 0x005a;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_2: u32 = 0x005b;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_3: u32 = 0x005c;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_4: u32 = 0x005d;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_5: u32 = 0x005e;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_6: u32 = 0x005f;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_7: u32 = 0x0060;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_PIN_CONTROL_CODEC_CS_OVERRIDE_8: u32 = 0x0061;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_ASSOCIATION_INFO: u32 = 0x0062;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_DIGITAL_OUTPUT_STATUS: u32 = 0x0063;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_CODING_TYPE: u32 = 0x0067;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_FORMAT_CHANGED: u32 = 0x0068;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_WIRELESS_DISPLAY_IDENTIFICATION: u32 = 0x0069;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_CODEC_PIN_CONTROL_REMOTE_KEEPALIVE: u32 = 0x006a;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_ENABLE_STATUS: u32 = 0x006b;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_ENABLED_INT_STATUS: u32 = 0x006c;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_DISABLED_INT_STATUS: u32 = 0x006d;
+pub const ixAZF0ENDPOINT7_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS: u32 = 0x006e;
 
 
 // addressBlock: azf0inputendpoint0_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint1_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint2_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT2_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint3_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT3_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint4_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT4_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint5_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT5_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint6_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT6_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 
 // addressBlock: azf0inputendpoint7_inputendpointind
 // base address: 0x0
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER                 0x0004
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS                  0x0005
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES            0x0006
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES             0x0020
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES                          0x0021
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE                    0x0022
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE                0x0023
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL                          0x0024
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE                     0x0036
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2                    0x0037
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR                            0x0038
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION                      0x0053
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL                        0x0054
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE              0x0055
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT          0x0056
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL                   0x0064
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB                                    0x0065
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT                     0x0066
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL                    0x0067
-#define ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
-
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0001;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT: u32 = 0x0002;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID: u32 = 0x0003;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER: u32 = 0x0004;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_STREAM_FORMATS: u32 = 0x0005;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_SUPPORTED_SIZE_RATES: u32 = 0x0006;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES: u32 = 0x0020;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES: u32 = 0x0021;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE: u32 = 0x0022;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_INPUT_PIN_SENSE: u32 = 0x0023;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL: u32 = 0x0024;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE: u32 = 0x0036;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL_ENABLE2: u32 = 0x0037;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR: u32 = 0x0038;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_CHANNEL_ALLOCATION: u32 = 0x0053;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_HOT_PLUG_CONTROL: u32 = 0x0054;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_FORCE: u32 = 0x0055;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT: u32 = 0x0056;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_SNAPSHOT_CONTROL: u32 = 0x0064;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB: u32 = 0x0065;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_LPIB_TIMER_SNAPSHOT: u32 = 0x0066;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INPUT_STATUS_CONTROL: u32 = 0x0067;
+pub const ixAZF0INPUTENDPOINT7_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME: u32 = 0x0068;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -246,7 +246,7 @@ pub unsafe extern "C" fn dump_stack_cb(cookie: *mut core::ffi::c_void, ip: u64, 
 
 pub unsafe fn bpf_stream_stage_dump_stack(ss: *mut bpf_stream_stage) -> i32 {
     let mut ctx = dump_stack_ctx { ss, err: 0 };
-    let mut ret = bpf_stream_stage_printk(ss, c"CPU: %d UID: %d PID: %d Comm: %s\n".as_ptr(), raw_smp_processor_id(), __kuid_val(current_real_cred()->euid), current->pid, current->comm);
+    let mut ret = bpf_stream_stage_printk(ss, c"CPU: %d UID: %d PID: %d Comm: %s\n".as_ptr(), raw_smp_processor_id(), __kuid_val((*current_real_cred()).euid), (*current).pid, (*current).comm);
     if ret != 0 { return ret; }
     ret = bpf_stream_stage_printk(ss, c"Call trace:\n".as_ptr());
     if ret != 0 { return ret; }

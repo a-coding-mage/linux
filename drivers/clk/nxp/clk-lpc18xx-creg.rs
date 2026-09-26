@@ -14,11 +14,9 @@ const LPC18XX_CREG_CREG0_EN32KHZ: u32 = 1 << 1;
 const LPC18XX_CREG_CREG0_RESET32KHZ: u32 = 1 << 2;
 const LPC18XX_CREG_CREG0_PD32KHZ: u32 = 1 << 3;
 
-enum {
-    CREG_CLK_1KHZ,
-    CREG_CLK_32KHZ,
-    CREG_CLK_MAX,
-}
+pub const CREG_CLK_1KHZ: i32 = 0;
+pub const CREG_CLK_32KHZ: i32 = CREG_CLK_1KHZ + 1;
+pub const CREG_CLK_MAX: i32 = CREG_CLK_32KHZ + 1;
 
 #[repr(C)]
 struct clk_creg_data {

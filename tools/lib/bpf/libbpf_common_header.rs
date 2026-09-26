@@ -39,7 +39,7 @@ macro_rules! LIBBPF_DEPRECATED_SINCE {
     };
     ($major:literal, $minor:literal, $msg:expr) => {
         /* No file-local Rust equivalent for the C preprocessor token-pasting
-         * dispatch to an undeclared __LIBBPF_MARK_DEPRECATED_{major}_{minor}.
+         * dispatch to an undeclared __LIBBPF_MARK_DEPRECATED_{$major}_{$minor}.
          */
     };
 }

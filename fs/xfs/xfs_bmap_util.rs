@@ -17,9 +17,9 @@ pub unsafe fn xfs_bmap_count_leaves(ifp: *mut xfs_ifork, count: *mut xfs_filblks
     let mut n: xfs_extnum_t = 0;
     let mut icur = core::mem::zeroed::<xfs_iext_cursor>();
     let mut got = core::mem::zeroed::<xfs_bmbt_irec>();
-    for_each_xfs_iext(ifp, &mut icur, &mut got) {
+    for_each_xfs_iext!(ifp, &mut icur, &mut got, {
         if !isnullstartblock(got.br_startblock) { *count += got.br_blockcount; n += 1; }
-    }
+    });
     n
 }
 

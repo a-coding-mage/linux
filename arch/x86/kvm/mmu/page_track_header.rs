@@ -29,7 +29,7 @@ extern "C" {
 
 // Preserves CONFIG_KVM_EXTERNAL_WRITE_TRACKING. The external declarations are
 // available when the corresponding build configuration is enabled.
-#[cfg(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING")]
+#[cfg(CONFIG_KVM_EXTERNAL_WRITE_TRACKING)]
 extern "C" {
     pub fn kvm_page_track_init(kvm: *mut kvm) -> ::core::ffi::c_int;
     pub fn kvm_page_track_cleanup(kvm: *mut kvm);
@@ -43,24 +43,24 @@ extern "C" {
     pub fn kvm_page_track_delete_slot(kvm: *mut kvm, slot: *mut kvm_memory_slot);
 }
 
-#[cfg(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING")]
+#[cfg(CONFIG_KVM_EXTERNAL_WRITE_TRACKING)]
 #[inline]
 pub unsafe fn kvm_page_track_has_external_user(kvm: *mut kvm) -> bool {
     // Equivalent to: !hlist_empty(&kvm->arch.track_notifier_head.track_notifier_list)
     !hlist_empty(&(*kvm).arch.track_notifier_head.track_notifier_list)
 }
 
-#[cfg(not(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING"))]
+#[cfg(not(CONFIG_KVM_EXTERNAL_WRITE_TRACKING))]
 #[inline]
 pub unsafe fn kvm_page_track_init(_kvm: *mut kvm) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING"))]
+#[cfg(not(CONFIG_KVM_EXTERNAL_WRITE_TRACKING))]
 #[inline]
 pub unsafe fn kvm_page_track_cleanup(_kvm: *mut kvm) {}
 
-#[cfg(not(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING"))]
+#[cfg(not(CONFIG_KVM_EXTERNAL_WRITE_TRACKING))]
 #[inline]
 pub unsafe fn __kvm_page_track_write(
     _kvm: *mut kvm,
@@ -70,11 +70,11 @@ pub unsafe fn __kvm_page_track_write(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING"))]
+#[cfg(not(CONFIG_KVM_EXTERNAL_WRITE_TRACKING))]
 #[inline]
 pub unsafe fn kvm_page_track_delete_slot(_kvm: *mut kvm, _slot: *mut kvm_memory_slot) {}
 
-#[cfg(not(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING"))]
+#[cfg(not(CONFIG_KVM_EXTERNAL_WRITE_TRACKING))]
 #[inline]
 pub unsafe fn kvm_page_track_has_external_user(_kvm: *mut kvm) -> bool {
     false

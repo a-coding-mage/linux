@@ -122,11 +122,11 @@ unsafe fn __arch_write_trylock(rw: *mut arch_rwlock_t) -> isize {
     tmp
 }
 
-#[cfg(feature = "CONFIG_PPC_SPLPAR")]
+#[cfg(CONFIG_PPC_SPLPAR)]
 extern "C" { fn splpar_spin_yield(lock: *mut arch_spinlock_t); fn splpar_rw_yield(lock: *mut arch_rwlock_t); }
-#[cfg(not(feature = "CONFIG_PPC_SPLPAR"))]
+#[cfg(not(CONFIG_PPC_SPLPAR))]
 #[inline] unsafe fn splpar_spin_yield(_: *mut arch_spinlock_t) {}
-#[cfg(not(feature = "CONFIG_PPC_SPLPAR"))]
+#[cfg(not(CONFIG_PPC_SPLPAR))]
 #[inline] unsafe fn splpar_rw_yield(_: *mut arch_rwlock_t) {}
 
 #[inline] unsafe fn spin_yield(lock: *mut arch_spinlock_t) { if is_shared_processor() { splpar_spin_yield(lock) } else { barrier() } }

@@ -41,7 +41,7 @@ static OMAP5_CFG: OmapSmpConfig = OmapSmpConfig { cpu1_rstctrl_pa: 0x48243810, c
 
 pub unsafe extern "C" fn omap4_get_scu_base() -> *mut core::ffi::c_void { CFG.scu_base }
 
-#[cfg(feature = "CONFIG_OMAP5_ERRATA_801819")]
+#[cfg(CONFIG_OMAP5_ERRATA_801819)]
 unsafe fn omap5_erratum_workaround_801819() {
     let mut acr: u32;
     let revidr: u32;
@@ -54,10 +54,10 @@ unsafe fn omap5_erratum_workaround_801819() {
     omap_smc1(OMAP5_DRA7_MON_SET_ACR_INDEX, acr);
     pr_debug("%s: ARM erratum workaround 801819 applied on CPU%d\n", "omap5_erratum_workaround_801819", smp_processor_id());
 }
-#[cfg(not(feature = "CONFIG_OMAP5_ERRATA_801819"))]
+#[cfg(not(CONFIG_OMAP5_ERRATA_801819))]
 unsafe fn omap5_erratum_workaround_801819() {}
 
-#[cfg(feature = "CONFIG_HARDEN_BRANCH_PREDICTOR")]
+#[cfg(CONFIG_HARDEN_BRANCH_PREDICTOR)]
 unsafe fn omap5_secondary_harden_predictor() {
     let acr: u32;
     core::arch::asm!("mrc p15, 0, {0}, c1, c0, 1", out(reg) acr);
@@ -66,7 +66,7 @@ unsafe fn omap5_secondary_harden_predictor() {
     omap_smc1(OMAP5_DRA7_MON_SET_ACR_INDEX, acr | acr_mask);
     pr_debug("%s: ARM ACR setup for CVE_2017_5715 applied on CPU%d\n", "omap5_secondary_harden_predictor", smp_processor_id());
 }
-#[cfg(not(feature = "CONFIG_HARDEN_BRANCH_PREDICTOR"))]
+#[cfg(not(CONFIG_HARDEN_BRANCH_PREDICTOR))]
 unsafe fn omap5_secondary_harden_predictor() {}
 
 unsafe fn omap4_secondary_init(_cpu: u32) {

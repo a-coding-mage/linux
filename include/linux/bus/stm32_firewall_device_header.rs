@@ -34,7 +34,7 @@ pub struct stm32_firewall {
 }
 
 // CONFIG_STM32_FIREWALL is a build-time kernel configuration condition.
-#[cfg(feature = "CONFIG_STM32_FIREWALL")]
+#[cfg(CONFIG_STM32_FIREWALL)]
 extern "C" {
     pub fn stm32_firewall_get_firewall(
         np: *mut device_node,
@@ -58,7 +58,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_STM32_FIREWALL"))]
+#[cfg(not(CONFIG_STM32_FIREWALL))]
 pub unsafe fn stm32_firewall_get_firewall(
     _np: *mut device_node,
     _firewall: *mut stm32_firewall,
@@ -67,15 +67,15 @@ pub unsafe fn stm32_firewall_get_firewall(
     -19 /* -ENODEV */
 }
 
-#[cfg(not(feature = "CONFIG_STM32_FIREWALL"))]
+#[cfg(not(CONFIG_STM32_FIREWALL))]
 pub unsafe fn stm32_firewall_grant_access(_firewall: *mut stm32_firewall) -> i32 {
     -19 /* -ENODEV */
 }
 
-#[cfg(not(feature = "CONFIG_STM32_FIREWALL"))]
+#[cfg(not(CONFIG_STM32_FIREWALL))]
 pub unsafe fn stm32_firewall_release_access(_firewall: *mut stm32_firewall) {}
 
-#[cfg(not(feature = "CONFIG_STM32_FIREWALL"))]
+#[cfg(not(CONFIG_STM32_FIREWALL))]
 pub unsafe fn stm32_firewall_grant_access_by_id(
     _firewall: *mut stm32_firewall,
     _subsystem_id: u32,
@@ -83,14 +83,14 @@ pub unsafe fn stm32_firewall_grant_access_by_id(
     -19 /* -ENODEV */
 }
 
-#[cfg(not(feature = "CONFIG_STM32_FIREWALL"))]
+#[cfg(not(CONFIG_STM32_FIREWALL))]
 pub unsafe fn stm32_firewall_release_access_by_id(
     _firewall: *mut stm32_firewall,
     _subsystem_id: u32,
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_STM32_FIREWALL"))]
+#[cfg(not(CONFIG_STM32_FIREWALL))]
 pub unsafe fn stm32_firewall_get_grant_all_access(
     _dev: *mut device,
     _firewall: *mut *mut stm32_firewall,

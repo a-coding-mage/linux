@@ -19,7 +19,7 @@ pub const HUGETLB_PAGE_ORDER: usize = HPAGE_SHIFT - PAGE_SHIFT;
  */
 pub const ARCH_PFN_OFFSET: usize = PFN_UP(PHYS_OFFSET);
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn clear_page(page: *mut core::ffi::c_void);
     pub fn copy_page(to: *mut core::ffi::c_void, from: *mut core::ffi::c_void);
     pub static mut shm_align_mask: usize;
@@ -108,7 +108,7 @@ pub fn pfn_to_kaddr(pfn: usize) -> *mut core::ffi::c_void { __va(pfn << PAGE_SHI
 #[inline]
 pub fn sym_to_pfn<T>(x: *const T) -> usize { __phys_to_pfn(__pa_symbol(x)) }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dmw_virt_to_page(kaddr: usize) -> *mut Page;
     pub fn tlb_virt_to_page(kaddr: usize) -> *mut Page;
 }
@@ -120,26 +120,26 @@ pub fn pfn_to_phys(pfn: usize) -> usize { __pfn_to_phys(pfn) }
 pub fn phys_to_pfn(paddr: usize) -> usize { __phys_to_pfn(paddr) }
 
 // CONFIG_KFENCE selects the alternate page_to_virt/virt_to_page definitions.
-#[cfg(not(feature = "CONFIG_KFENCE"))]
+#[cfg(not(CONFIG_KFENCE))]
 #[inline]
 pub fn page_to_virt(page: *mut Page) -> *mut core::ffi::c_void {
     __va(page_to_phys(page))
 }
 
-#[cfg(not(feature = "CONFIG_KFENCE"))]
+#[cfg(not(CONFIG_KFENCE))]
 #[inline]
 pub fn virt_to_page(kaddr: usize) -> *mut Page { phys_to_page(__pa(kaddr)) }
 
-#[cfg(feature = "CONFIG_KFENCE")]
+#[cfg(CONFIG_KFENCE)]
 pub const WANT_PAGE_VIRTUAL: bool = true;
 
-#[cfg(feature = "CONFIG_KFENCE")]
+#[cfg(CONFIG_KFENCE)]
 #[inline]
 pub unsafe fn page_to_virt(page: *mut Page) -> *mut core::ffi::c_void {
     if __kfence_pool.is_null() { __va(page_to_phys(page)) } else { page_address(page) }
 }
 
-#[cfg(feature = "CONFIG_KFENCE")]
+#[cfg(CONFIG_KFENCE)]
 #[inline]
 pub unsafe fn virt_to_page(kaddr: usize) -> *mut Page {
     if kaddr < vm_map_base { dmw_virt_to_page(kaddr) } else { tlb_virt_to_page(kaddr) }

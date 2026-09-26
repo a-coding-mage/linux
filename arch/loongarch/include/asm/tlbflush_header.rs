@@ -32,7 +32,7 @@ unsafe extern "C" {
 }
 
 // CONFIG_SMP selects the externally implemented cross-CPU operations.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     pub fn flush_tlb_all();
     pub fn flush_tlb_mm(mm: *mut mm_struct);
@@ -43,37 +43,37 @@ unsafe extern "C" {
 }
 
 // !CONFIG_SMP: the C macros alias the public operations to their local forms.
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_all() {
     local_flush_tlb_all()
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_mm(mm: *mut mm_struct) {
     local_flush_tlb_mm(mm)
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_range(vma: *mut vm_area_struct, vmaddr: c_ulong, end: c_ulong) {
     local_flush_tlb_range(vma, vmaddr, end)
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_kernel_range(vmaddr: c_ulong, end: c_ulong) {
     local_flush_tlb_kernel_range(vmaddr, end)
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_page(vma: *mut vm_area_struct, page: c_ulong) {
     local_flush_tlb_page(vma, page)
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_tlb_one(vaddr: c_ulong) {
     local_flush_tlb_one(vaddr)

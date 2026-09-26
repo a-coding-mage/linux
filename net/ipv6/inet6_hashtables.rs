@@ -78,7 +78,7 @@ pub unsafe fn __inet6_lookup_established(
     let head = &(*hashinfo).ehash[slot as usize];
     let mut sk: *mut sock;
     'begin: loop {
-        sk_nulls_for_each_rcu!(sk, node, &head.chain) {
+        sk_nulls_for_each_rcu!(sk, node, &head.chain, {
             if (*sk).sk_hash != hash { continue; }
             if !inet6_match(net, sk, saddr, daddr, ports, dif, sdif) { continue; }
             if !refcount_inc_not_zero(&mut (*sk).sk_refcnt) { break; }
@@ -87,7 +87,7 @@ pub unsafe fn __inet6_lookup_established(
                 continue 'begin;
             }
             return sk;
-        }
+        });
         if get_nulls_value(node) != slot { continue 'begin; }
         return core::ptr::null_mut();
     }
@@ -123,7 +123,7 @@ unsafe fn inet6_lhash2_lookup(net: *const net, ilb2: *mut inet_listen_hashbucket
     let mut hiscore = 0;
     let mut node = core::ptr::null_mut();
     let mut sk: *mut sock;
-    sk_nulls_for_each_rcu!(sk, node, &(*ilb2).nulls_head) {
+    sk_nulls_for_each_rcu!(sk, node, &(*ilb2).nulls_head, {
         let score = compute_score(sk, net, hnum, daddr, dif, sdif);
         if score > hiscore {
             result = inet6_lookup_reuseport(net, sk, skb, doff, saddr, sport, daddr, hnum, Some(inet6_ehashfn));
@@ -131,7 +131,7 @@ unsafe fn inet6_lhash2_lookup(net: *const net, ilb2: *mut inet_listen_hashbucket
             result = sk;
             hiscore = score;
         }
-    }
+    });
     result
 }
 
@@ -187,16 +187,16 @@ unsafe fn __inet6_check_established(death_row: *mut inet_timewait_death_row, sk:
     let mut node = core::ptr::null();
     let mut sk2: *mut sock;
     if rcu_lookup {
-        sk_nulls_for_each!(sk2, node, &(*head).chain) {
+        sk_nulls_for_each!(sk2, node, &(*head).chain, {
             if (*sk2).sk_hash != hash || !inet6_match(net, sk2, saddr, daddr, ports, dif, sdif) { continue; }
             if (*sk2).sk_state == TCP_TIME_WAIT { break; }
             return -EADDRNOTAVAIL;
-        }
+        });
         return 0;
     }
     let lock = inet_ehash_lockp(hinfo, hash);
     spin_lock(lock);
-    sk_nulls_for_each!(sk2, node, &(*head).chain) {
+    sk_nulls_for_each!(sk2, node, &(*head).chain, {
         if (*sk2).sk_hash != hash { continue; }
         if inet6_match(net, sk2, saddr, daddr, ports, dif, sdif) {
             if (*sk2).sk_state == TCP_TIME_WAIT {
@@ -206,7 +206,7 @@ unsafe fn __inet6_check_established(death_row: *mut inet_timewait_death_row, sk:
             spin_unlock(lock);
             return -EADDRNOTAVAIL;
         }
-    }
+    });
     (*inet).inet_num = lport;
     (*inet).inet_sport = htons(lport);
     (*sk).sk_hash = hash;

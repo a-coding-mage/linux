@@ -25,7 +25,7 @@ unsafe fn enforced_min_show(
     sysfs_emit(buf, "%u\n", svn as core::ffi::c_uint)
 }
 
-static DEVICE_ATTR_RO!(enforced_min, enforced_min_show);
+DEVICE_ATTR_RO!(enforced_min, enforced_min_show);
 
 unsafe fn active_show(
     dev: *mut device,
@@ -48,7 +48,7 @@ unsafe fn active_show(
     sysfs_emit(buf, "%u\n", svn as core::ffi::c_uint)
 }
 
-static DEVICE_ATTR_RO!(active, active_show);
+DEVICE_ATTR_RO!(active, active_show);
 
 unsafe fn permanent_min_show(
     dev: *mut device,
@@ -71,7 +71,7 @@ unsafe fn permanent_min_show(
     sysfs_emit(buf, "%u\n", svn as core::ffi::c_uint)
 }
 
-static DEVICE_ATTR_RO!(permanent_min, permanent_min_show);
+DEVICE_ATTR_RO!(permanent_min, permanent_min_show);
 
 unsafe fn commit_store(
     dev: *mut device,
@@ -104,7 +104,7 @@ unsafe fn commit_store(
     count as ssize_t
 }
 
-static DEVICE_ATTR_WO!(commit, commit_store);
+DEVICE_ATTR_WO!(commit, commit_store);
 
 static mut qat_svn_attrs: [*mut attribute; 5] = [
     unsafe { &mut dev_attr_commit.attr },

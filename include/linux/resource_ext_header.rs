@@ -71,11 +71,11 @@ pub unsafe fn resource_list_first_type(
 ) -> *mut resource_entry {
     let mut entry: *mut resource_entry;
 
-    resource_list_for_each_entry!(entry, list) {
+    resource_list_for_each_entry!(entry, list, {
         if resource_type((*entry).res) == type_ {
             return entry;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 

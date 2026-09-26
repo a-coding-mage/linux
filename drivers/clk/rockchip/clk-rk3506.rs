@@ -68,28 +68,28 @@ static mut rockchip_pll_rate_table rk3506_pll_rates[] = {
 // C macro: #define RK3506_DIV_PCLK_CORE_SHIFT	0
 
 // C macro: #define RK3506_CLKSEL15(_aclk_core_div)					\
-{									\
-	.reg = RK3506_CLKSEL_CON(15),					\
-	.val = HIWORD_UPDATE(_aclk_core_div, RK3506_DIV_ACLK_CORE_MASK,	\
-			     RK3506_DIV_ACLK_CORE_SHIFT),		\
-}
+// {									\
+// 	reg: RK3506_CLKSEL_CON(15),					\
+// 	val: HIWORD_UPDATE(_aclk_core_div, RK3506_DIV_ACLK_CORE_MASK,	\
+// 			     RK3506_DIV_ACLK_CORE_SHIFT),		\
+// }
 
 // C macro: #define RK3506_CLKSEL16(_pclk_core_div)					\
-{									\
-	.reg = RK3506_CLKSEL_CON(16),					\
-	.val = HIWORD_UPDATE(_pclk_core_div, RK3506_DIV_PCLK_CORE_MASK,	\
-			     RK3506_DIV_PCLK_CORE_SHIFT),		\
-}
+// {									\
+// 	reg: RK3506_CLKSEL_CON(16),					\
+// 	val: HIWORD_UPDATE(_pclk_core_div, RK3506_DIV_PCLK_CORE_MASK,	\
+// 			     RK3506_DIV_PCLK_CORE_SHIFT),		\
+// }
 
 /* SIGN-OFF: aclk_core: 500M, pclk_core: 125M, */
 // C macro: #define RK3506_CPUCLK_RATE(_prate, _aclk_core_div, _pclk_core_div)	\
-{									\
-	.prate = _prate,						\
-	.divs = {							\
-		RK3506_CLKSEL15(_aclk_core_div),			\
-		RK3506_CLKSEL16(_pclk_core_div),			\
-	},								\
-}
+// {									\
+// 	prate: _prate,						\
+// 	divs: {							\
+// 		RK3506_CLKSEL15(_aclk_core_div),			\
+// 		RK3506_CLKSEL16(_pclk_core_div),			\
+// 	},								\
+// }
 
 static mut rockchip_cpuclk_rate_table rk3506_cpuclk_rates[] __initdata = {
 	RK3506_CPUCLK_RATE(1608000000, 3, 12),
@@ -834,13 +834,13 @@ struct clk_rk3506_inits {
 };
 
 static clk_rk3506_inits clk_rk3506_cru_init = {
-	.inits = rk3506_clk_init,
+	inits: rk3506_clk_init,
 };
 
 static of_device_id clk_rk3506_match_table[] = {
 	{
-		.compatible = "rockchip,rk3506-cru",
-		.data = &clk_rk3506_cru_init,
+		compatible: "rockchip,rk3506-cru",
+		data: &clk_rk3506_cru_init,
 	},
 	{ }
 };
@@ -848,24 +848,24 @@ static of_device_id clk_rk3506_match_table[] = {
 unsafe fn clk_rk3506_probe(*mut platform_device pdev)
 {
 	const clk_rk3506_inits *init_data;
-	*mut device dev = &pdev->dev;
+	*mut device dev = (*&pdev).dev;
 
 	init_data = device_get_match_data(dev);
 	if (!init_data)
 		return -EINVAL;
 
-	if (init_data->inits)
-		init_data->inits(dev->of_node);
+	if ((*init_data).inits)
+		(*init_data).inits((*dev).of_node);
 
 	return 0;
 }
 
 static mut platform_driver clk_rk3506_driver = {
-	.probe		= clk_rk3506_probe,
-	.driver		= {
-		.name	= "clk-rk3506",
-		.of_match_table = clk_rk3506_match_table,
-		.suppress_bind_attrs = true,
+	probe: clk_rk3506_probe,
+	driver: {
+		name: "clk-rk3506",
+		of_match_table: clk_rk3506_match_table,
+		suppress_bind_attrs: true,
 	},
 };
 builtin_platform_driver_probe(clk_rk3506_driver, clk_rk3506_probe);

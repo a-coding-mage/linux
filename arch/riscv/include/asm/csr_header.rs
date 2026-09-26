@@ -10,20 +10,20 @@ pub const SR_SPIE: usize = 0x00000020; pub const SR_MPIE: usize = 0x00000080;
 pub const SR_SPP: usize = 0x00000100; pub const SR_MPP: usize = 0x00001800;
 pub const SR_SUM: usize = 0x00040000;
 pub const SR_SPELP: u64 = 0x00800000; pub const SR_MPELP: u64 = 0x020000000000;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const SR_ELP: u64 = SR_MPELP;
-#[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const SR_ELP: u64 = SR_SPELP;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const SR_ELP: u64 = SR_MPELP;
+#[cfg(not(CONFIG_RISCV_M_MODE))] pub const SR_ELP: u64 = SR_SPELP;
 pub const SR_FS: usize = 0x6000; pub const SR_FS_OFF: usize = 0; pub const SR_FS_INITIAL: usize = 0x2000; pub const SR_FS_CLEAN: usize = 0x4000; pub const SR_FS_DIRTY: usize = 0x6000;
 pub const SR_VS: usize = 0x600; pub const SR_VS_OFF: usize = 0; pub const SR_VS_INITIAL: usize = 0x200; pub const SR_VS_CLEAN: usize = 0x400; pub const SR_VS_DIRTY: usize = 0x600;
 pub const SR_VS_THEAD: usize = 0x01800000; pub const SR_VS_OFF_THEAD: usize = 0; pub const SR_VS_INITIAL_THEAD: usize = 0x00800000; pub const SR_VS_CLEAN_THEAD: usize = 0x01000000; pub const SR_VS_DIRTY_THEAD: usize = 0x01800000;
 pub const SR_XS: usize = 0x18000; pub const SR_XS_OFF: usize = 0; pub const SR_XS_INITIAL: usize = 0x8000; pub const SR_XS_CLEAN: usize = 0x10000; pub const SR_XS_DIRTY: usize = 0x18000;
 pub const SR_FS_VS: usize = SR_FS | SR_VS;
-#[cfg(not(feature = "CONFIG_64BIT"))] pub const SR_SD: u64 = 0x80000000;
-#[cfg(feature = "CONFIG_64BIT")] pub const SR_SD: u64 = 0x8000000000000000;
-#[cfg(feature = "CONFIG_64BIT")] pub const SR_UXL: u64 = 0x300000000; pub const SR_UXL_32: u64 = 0x100000000; pub const SR_UXL_64: u64 = 0x200000000;
+#[cfg(not(CONFIG_64BIT))] pub const SR_SD: u64 = 0x80000000;
+#[cfg(CONFIG_64BIT)] pub const SR_SD: u64 = 0x8000000000000000;
+#[cfg(CONFIG_64BIT)] pub const SR_UXL: u64 = 0x300000000; pub const SR_UXL_32: u64 = 0x100000000; pub const SR_UXL_64: u64 = 0x200000000;
 
 /* SATP flags */
-#[cfg(not(feature = "CONFIG_64BIT"))] { pub const SATP_PPN: u64 = 0x003fffff; pub const SATP_MODE_32: u64 = 0x80000000; pub const SATP_MODE_SHIFT: usize = 31; pub const SATP_ASID_BITS: usize = 9; pub const SATP_ASID_SHIFT: usize = 22; pub const SATP_ASID_MASK: u64 = 0x1ff; }
-#[cfg(feature = "CONFIG_64BIT")] { pub const SATP_PPN: u64 = 0x00000fffffffffff; pub const SATP_MODE_39: u64 = 0x8000000000000000; pub const SATP_MODE_48: u64 = 0x9000000000000000; pub const SATP_MODE_57: u64 = 0xa000000000000000; pub const SATP_MODE_SHIFT: usize = 60; pub const SATP_ASID_BITS: usize = 16; pub const SATP_ASID_SHIFT: usize = 44; pub const SATP_ASID_MASK: u64 = 0xffff; }
+#[cfg(not(CONFIG_64BIT))] { pub const SATP_PPN: u64 = 0x003fffff; pub const SATP_MODE_32: u64 = 0x80000000; pub const SATP_MODE_SHIFT: usize = 31; pub const SATP_ASID_BITS: usize = 9; pub const SATP_ASID_SHIFT: usize = 22; pub const SATP_ASID_MASK: u64 = 0x1ff; }
+#[cfg(CONFIG_64BIT)] { pub const SATP_PPN: u64 = 0x00000fffffffffff; pub const SATP_MODE_39: u64 = 0x8000000000000000; pub const SATP_MODE_48: u64 = 0x9000000000000000; pub const SATP_MODE_57: u64 = 0xa000000000000000; pub const SATP_MODE_SHIFT: usize = 60; pub const SATP_ASID_BITS: usize = 16; pub const SATP_ASID_SHIFT: usize = 44; pub const SATP_ASID_MASK: u64 = 0xffff; }
 
 pub const SRMCFG_RCID_MASK: u64 = (1 << 12) - 1; pub const SRMCFG_MCID_MASK: u64 = ((1 << 12) - 1) << 16;
 pub const HSTATUS_VTSR:u64=0x00400000; pub const HSTATUS_VTW:u64=0x00200000; pub const HSTATUS_VTVM:u64=0x00100000; pub const HSTATUS_VGEIN:u64=0x0003f000; pub const HSTATUS_VGEIN_SHIFT:usize=12; pub const HSTATUS_HU:u64=0x200; pub const HSTATUS_SPVP:u64=0x100; pub const HSTATUS_SPV:u64=0x80; pub const HSTATUS_GVA:u64=0x40; pub const HSTATUS_VSBE:u64=0x20;
@@ -55,20 +55,20 @@ pub const VTYPE_VLMUL: usize=7; pub const VTYPE_VLMUL_FRAC: usize=4; pub const V
 pub const VTYPE_VLMUL_THEAD: usize=3; pub const VTYPE_VSEW_THEAD_SHIFT: usize=2; pub const VTYPE_VSEW_THEAD: usize=7<<2; pub const VTYPE_VEDIV_THEAD_SHIFT: usize=5; pub const VTYPE_VEDIV_THEAD: usize=3<<5;
 pub const SEED_OPST_MASK:u64=0xc0000000; pub const SEED_OPST_BIST:u64=0; pub const SEED_OPST_WAIT:u64=0x40000000; pub const SEED_OPST_ES16:u64=0x80000000; pub const SEED_OPST_DEAD:u64=0xc0000000; pub const SEED_ENTROPY_MASK:u64=0xffff;
 
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_STATUS:usize=CSR_MSTATUS; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_STATUS:usize=CSR_SSTATUS;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_IE:usize=CSR_MIE; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_IE:usize=CSR_SIE;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_TVEC:usize=CSR_MTVEC; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_TVEC:usize=CSR_STVEC;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_EPC:usize=CSR_MEPC; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_EPC:usize=CSR_SEPC;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_CAUSE:usize=CSR_MCAUSE; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_CAUSE:usize=CSR_SCAUSE;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_TVAL:usize=CSR_MTVAL; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_TVAL:usize=CSR_STVAL;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const CSR_IP:usize=CSR_MIP; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const CSR_IP:usize=CSR_SIP;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const SR_IE:usize=SR_MIE; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const SR_IE:usize=SR_SIE;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const SR_PIE:usize=SR_MPIE; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const SR_PIE:usize=SR_SPIE;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const SR_PP:usize=SR_MPP; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const SR_PP:usize=SR_SPP;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const RV_IRQ_SOFT:usize=IRQ_M_SOFT; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const RV_IRQ_SOFT:usize=IRQ_S_SOFT;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const RV_IRQ_TIMER:usize=IRQ_M_TIMER; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const RV_IRQ_TIMER:usize=IRQ_S_TIMER;
-#[cfg(feature = "CONFIG_RISCV_M_MODE")] pub const RV_IRQ_EXT:usize=IRQ_M_EXT; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const RV_IRQ_EXT:usize=IRQ_S_EXT;
-#[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const RV_IRQ_PMU:usize=IRQ_PMU_OVF; #[cfg(not(feature = "CONFIG_RISCV_M_MODE"))] pub const SIP_LCOFIP:usize=1<<IRQ_PMU_OVF;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_STATUS:usize=CSR_MSTATUS; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_STATUS:usize=CSR_SSTATUS;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_IE:usize=CSR_MIE; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_IE:usize=CSR_SIE;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_TVEC:usize=CSR_MTVEC; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_TVEC:usize=CSR_STVEC;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_EPC:usize=CSR_MEPC; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_EPC:usize=CSR_SEPC;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_CAUSE:usize=CSR_MCAUSE; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_CAUSE:usize=CSR_SCAUSE;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_TVAL:usize=CSR_MTVAL; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_TVAL:usize=CSR_STVAL;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const CSR_IP:usize=CSR_MIP; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const CSR_IP:usize=CSR_SIP;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const SR_IE:usize=SR_MIE; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const SR_IE:usize=SR_SIE;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const SR_PIE:usize=SR_MPIE; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const SR_PIE:usize=SR_SPIE;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const SR_PP:usize=SR_MPP; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const SR_PP:usize=SR_SPP;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const RV_IRQ_SOFT:usize=IRQ_M_SOFT; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const RV_IRQ_SOFT:usize=IRQ_S_SOFT;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const RV_IRQ_TIMER:usize=IRQ_M_TIMER; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const RV_IRQ_TIMER:usize=IRQ_S_TIMER;
+#[cfg(CONFIG_RISCV_M_MODE)] pub const RV_IRQ_EXT:usize=IRQ_M_EXT; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const RV_IRQ_EXT:usize=IRQ_S_EXT;
+#[cfg(not(CONFIG_RISCV_M_MODE))] pub const RV_IRQ_PMU:usize=IRQ_PMU_OVF; #[cfg(not(CONFIG_RISCV_M_MODE))] pub const SIP_LCOFIP:usize=1<<IRQ_PMU_OVF;
 pub const IE_SIE:usize=1<<RV_IRQ_SOFT; pub const IE_TIE:usize=1<<RV_IRQ_TIMER; pub const IE_EIE:usize=1<<RV_IRQ_EXT;
 
 // The C header's CSR inline-assembly macros are represented as exported Rust

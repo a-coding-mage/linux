@@ -21,10 +21,10 @@
  */
 #[macro_export]
 macro_rules! rv_attach_trace_probe {
-    ($monitor:ident, $tp:ident, $rv_handler:expr, $check_trace_callback_type:path, $register_trace:path) => {{
+    ($monitor:ident, $tp:tt, $rv_handler:expr, $check_trace_callback_type:path, $register_trace:path) => {{
         $check_trace_callback_type($rv_handler);
         if $register_trace($rv_handler, core::ptr::null_mut()) != 0 {
-            // Equivalent to WARN_ONCE(register_trace_##tp(...), ...).
+            // Equivalent to WARN_ONCE(::kernel::macros::paste!([<register_trace_ $tp>])(...), ...).
             // The kernel WARN_ONCE implementation is supplied externally.
             $crate::WARN_ONCE(
                 true,

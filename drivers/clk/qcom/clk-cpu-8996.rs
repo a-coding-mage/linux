@@ -47,8 +47,8 @@ extern "C" {
     fn kryo_l2_get_indirect_reg(_: u64) -> u32;
     fn kryo_l2_set_indirect_reg(_: u64, _: u32);
     fn read_cpuid_mpidr() -> u64;
-    fn spin_lock_irqsave(_: *mut spinlock_t, _: *mut unsigned long);
-    fn spin_unlock_irqrestore(_: *mut spinlock_t, _: unsigned long);
+    fn spin_lock_irqsave(_: *mut spinlock_t, _: *mut core::ffi::c_ulong);
+    fn spin_unlock_irqrestore(_: *mut spinlock_t, _: core::ffi::c_ulong);
     fn clk_cpu_8996_pmux_set_parent(_: *mut clk_hw, _: u8) -> i32;
 }
 

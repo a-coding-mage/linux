@@ -4,13 +4,13 @@
 // asm/asm-offsets.h, asm/domain.h, asm/page.h, and asm/thread_info.h; their
 // symbols are intentionally left as external dependencies.
 
-#[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+#[cfg(CONFIG_THUMB2_KERNEL)]
 #[macro_export]
 macro_rules! csdb {
     () => { unsafe { core::arch::asm!(".inst.w 0xf3af8014") } };
 }
 
-#[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+#[cfg(not(CONFIG_THUMB2_KERNEL))]
 #[macro_export]
 macro_rules! csdb {
     () => { unsafe { core::arch::asm!(".inst 0xe320f014") } };
@@ -22,17 +22,17 @@ macro_rules! csdb {
 #[macro_export]
 macro_rules! check_uaccess {
     ($addr:tt, $size:tt, $limit:tt, $tmp:tt, $bad:tt) => {{
-        #[cfg(not(feature = "CONFIG_CPU_USE_DOMAINS"))]
+        #[cfg(not(CONFIG_CPU_USE_DOMAINS))]
         unsafe {
             core::arch::asm!(
                 "adds {tmp}, {addr}, #{size} - 1",
                 "sbcscc {tmp}, {tmp}, {limit}",
                 "bcs {bad}",
-                tmp = inout(reg) $tmp,
-                addr = inout(reg) $addr,
-                limit = in(reg) $limit,
-                bad = sym $bad,
-                size = const $size,
+                $tmp = inout(reg) $tmp,
+                $addr = inout(reg) $addr,
+                $limit = in(reg) $limit,
+                $bad = sym $bad,
+                $size = const $size,
             );
         }
     }};
@@ -41,7 +41,7 @@ macro_rules! check_uaccess {
 #[macro_export]
 macro_rules! uaccess_mask_range_ptr {
     ($addr:tt, $size:tt, $limit:tt, $tmp:tt) => {{
-        #[cfg(feature = "CONFIG_CPU_SPECTRE")]
+        #[cfg(CONFIG_CPU_SPECTRE)]
         unsafe {
             core::arch::asm!(
                 "sub {tmp}, {limit}, #1",
@@ -50,10 +50,10 @@ macro_rules! uaccess_mask_range_ptr {
                 "subshs {tmp}, {tmp}, {size}",
                 "movlo {addr}, #0",
                 "csdb",
-                tmp = inout(reg) $tmp,
-                addr = inout(reg) $addr,
-                limit = in(reg) $limit,
-                size = const $size,
+                $tmp = inout(reg) $tmp,
+                $addr = inout(reg) $addr,
+                $limit = in(reg) $limit,
+                $size = const $size,
             );
         }
     }};
@@ -62,7 +62,7 @@ macro_rules! uaccess_mask_range_ptr {
 // uaccess_disable/uaccess_enable are configuration-selected assembler
 // macros in the source.  Keep their exact instruction sequences available as
 // Rust macro bodies; constants such as DACR_UACCESS_* and TTBCR_* are external.
-#[cfg(feature = "CONFIG_CPU_SW_DOMAIN_PAN")]
+#[cfg(CONFIG_CPU_SW_DOMAIN_PAN)]
 #[macro_export]
 macro_rules! uaccess_disable {
     ($tmp:tt $(, $isb:tt)?) => {{ unsafe { core::arch::asm!(
@@ -73,7 +73,7 @@ macro_rules! uaccess_disable {
     ); } }};
 }
 
-#[cfg(feature = "CONFIG_CPU_SW_DOMAIN_PAN")]
+#[cfg(CONFIG_CPU_SW_DOMAIN_PAN)]
 #[macro_export]
 macro_rules! uaccess_enable {
     ($tmp:tt $(, $isb:tt)?) => {{ unsafe { core::arch::asm!(
@@ -84,7 +84,7 @@ macro_rules! uaccess_enable {
     ); } }};
 }
 
-#[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+#[cfg(CONFIG_CPU_TTBR0_PAN)]
 #[macro_export]
 macro_rules! uaccess_disable_ttbr0_pan {
     ($tmp:tt $(, $isb:tt)?) => {{ unsafe { core::arch::asm!(
@@ -96,7 +96,7 @@ macro_rules! uaccess_disable_ttbr0_pan {
     ); } }};
 }
 
-#[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+#[cfg(CONFIG_CPU_TTBR0_PAN)]
 #[macro_export]
 macro_rules! uaccess_enable_ttbr0_pan {
     ($tmp:tt $(, $isb:tt)?) => {{ unsafe { core::arch::asm!(
@@ -111,17 +111,17 @@ macro_rules! uaccess_enable_ttbr0_pan {
 // The source's DACR/PAN variadic preprocessor macros expand either to their
 // arguments or to nothing; Rust's cfg attributes express the same intent at
 // call sites.
-#[cfg(any(feature = "CONFIG_CPU_SW_DOMAIN_PAN", feature = "CONFIG_CPU_USE_DOMAINS"))]
+#[cfg(any(CONFIG_CPU_SW_DOMAIN_PAN, CONFIG_CPU_USE_DOMAINS))]
 #[macro_export]
 macro_rules! DACR { ($($x:tt)*) => { $($x)* }; }
-#[cfg(not(any(feature = "CONFIG_CPU_SW_DOMAIN_PAN", feature = "CONFIG_CPU_USE_DOMAINS")))]
+#[cfg(not(any(CONFIG_CPU_SW_DOMAIN_PAN, CONFIG_CPU_USE_DOMAINS)))]
 #[macro_export]
 macro_rules! DACR { ($($x:tt)*) => {}; }
 
-#[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+#[cfg(CONFIG_CPU_TTBR0_PAN)]
 #[macro_export]
 macro_rules! PAN { ($($x:tt)*) => { $($x)* }; }
-#[cfg(not(feature = "CONFIG_CPU_TTBR0_PAN"))]
+#[cfg(not(CONFIG_CPU_TTBR0_PAN))]
 #[macro_export]
 macro_rules! PAN { ($($x:tt)*) => {}; }
 

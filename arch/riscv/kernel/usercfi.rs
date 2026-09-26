@@ -74,21 +74,21 @@ pub unsafe fn set_indir_lp_lock(task: *mut task_struct, lock: bool) {
     (*task).thread_info.user_cfi_state.ufcfi_locked = lock;
 }
 
-static unsafe fn calc_shstk_size(size: c_ulong) -> c_ulong {
+unsafe fn calc_shstk_size(size: c_ulong) -> c_ulong {
     if size != 0 { return PAGE_ALIGN(size); }
     PAGE_ALIGN(core::cmp::min(rlimit(RLIMIT_STACK) / 8, SZ_512M))
 }
 
 // The C implementation uses an inline ssamoswap.d instruction with an exception table.
 // Preserve the operation and fault result through the external low-level helper.
-static unsafe fn amo_user_shstk(addr: *mut c_ulong, val: c_ulong) -> c_ulong {
+unsafe fn amo_user_shstk(addr: *mut c_ulong, val: c_ulong) -> c_ulong {
     __enable_user_access();
     let swap = arch_amo_user_shstk(addr, val);
     __disable_user_access();
     swap
 }
 
-static unsafe fn create_rstor_token(ssp: c_ulong, token_addr: *mut c_ulong) -> c_int {
+unsafe fn create_rstor_token(ssp: c_ulong, token_addr: *mut c_ulong) -> c_int {
     if !IS_ALIGNED(ssp, SHSTK_ENTRY_SIZE as c_ulong) { return -EINVAL; }
     let addr = ssp - SHSTK_ENTRY_SIZE as c_ulong;
     if amo_user_shstk(addr as *mut c_ulong, ssp) == !0 { return -EFAULT; }
@@ -116,7 +116,7 @@ pub unsafe fn restore_user_shstk(tsk: *mut task_struct, shstk_ptr: c_ulong) -> c
     0
 }
 
-static unsafe fn allocate_shadow_stack(mut addr: c_ulong, size: c_ulong, token_offset: c_ulong, set_tok: bool) -> c_ulong {
+unsafe fn allocate_shadow_stack(mut addr: c_ulong, size: c_ulong, token_offset: c_ulong, set_tok: bool) -> c_ulong {
     addr = vm_mmap_shadow_stack(addr, size, 0);
     if !set_tok || IS_ERR_VALUE(addr) { return addr; }
     if create_rstor_token(addr + token_offset, core::ptr::null_mut()) != 0 { vm_munmap(addr, size); return -EINVAL; }
@@ -206,7 +206,7 @@ pub unsafe fn arch_prctl_lock_branch_landing_pad_state(task: *mut task_struct) -
 pub unsafe fn is_user_shstk_enabled() -> bool { cpu_supports_shadow_stack() && (riscv_nousercfi & CMDLINE_DISABLE_RISCV_USERCFI_BCFI == 0) }
 pub unsafe fn is_user_lpad_enabled() -> bool { cpu_supports_indirect_br_lp_instr() && (riscv_nousercfi & CMDLINE_DISABLE_RISCV_USERCFI_FCFI == 0) }
 
-static unsafe fn setup_global_riscv_enable(str_: *const c_char) -> c_int {
+unsafe fn setup_global_riscv_enable(str_: *const c_char) -> c_int {
     if strcmp(str_, b"all\0".as_ptr() as *const c_char) == 0 { riscv_nousercfi = CMDLINE_DISABLE_RISCV_USERCFI; }
     if strcmp(str_, b"fcfi\0".as_ptr() as *const c_char) == 0 { riscv_nousercfi |= CMDLINE_DISABLE_RISCV_USERCFI_FCFI; }
     if strcmp(str_, b"bcfi\0".as_ptr() as *const c_char) == 0 { riscv_nousercfi |= CMDLINE_DISABLE_RISCV_USERCFI_BCFI; }

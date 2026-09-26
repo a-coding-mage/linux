@@ -6,13 +6,13 @@
 // adf_accel_devices.h, adf_common_drv.h
 
 // #ifdef CONFIG_PCI_IOV
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 extern "C" {
     pub fn adf_gen4_init_pf_pfvf_ops(pfvf_ops: *mut adf_pfvf_ops);
 }
 
 // #else
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn adf_gen4_init_pf_pfvf_ops(pfvf_ops: *mut adf_pfvf_ops) {
     (*pfvf_ops).enable_comms = adf_pfvf_comms_disabled;

@@ -4,9 +4,9 @@
 pub const MAX_CPUS_PER_CLUSTER: usize = 4;
 
 /* CONFIG_MCPM_QUAD_CLUSTER selects four clusters; otherwise there are two. */
-#[cfg(feature = "CONFIG_MCPM_QUAD_CLUSTER")]
+#[cfg(CONFIG_MCPM_QUAD_CLUSTER)]
 pub const MAX_NR_CLUSTERS: usize = 4;
-#[cfg(not(feature = "CONFIG_MCPM_QUAD_CLUSTER"))]
+#[cfg(not(CONFIG_MCPM_QUAD_CLUSTER))]
 pub const MAX_NR_CLUSTERS: usize = 2;
 
 extern "C" {

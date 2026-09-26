@@ -52,17 +52,17 @@ unsafe extern "C" {
 
     // Preserved from IS_ENABLED(CONFIG_DRM_AMD_DC_KUNIT_TEST): these
     // declarations are available only when the KUnit test configuration is enabled.
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn link_supports_psrsu(link: *mut dc_link) -> bool;
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_psr_fill_caps(link: *mut dc_link, caps: *mut psr_caps);
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_psr_get_dc_feature_mask() -> u32;
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_psr_set_dc_feature_mask(feature_mask: u32);
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_psr_get_dc_debug_mask() -> u32;
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_psr_set_dc_debug_mask(debug_mask: u32);
 }
 

@@ -143,7 +143,7 @@ pub unsafe extern "C" fn sq_unmap(vaddr: usize) {
     {
         let vma = remove_vm_area(((*map).sq_addr & PAGE_MASK) as *mut core::ffi::c_void);
         if vma.is_null() {
-            printk(KERN_ERR "%s: bad address 0x%08lx\n", __func__, (*map).sq_addr);
+            printk(c"\x013%s: bad address 0x%08lx\n".as_ptr(), __func__, (*map).sq_addr);
             return;
         }
     }

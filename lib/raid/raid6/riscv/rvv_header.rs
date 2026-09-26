@@ -13,8 +13,7 @@
 // therefore supplied explicitly at the invocation site.
 #[macro_export]
 macro_rules! RAID6_RVV_WRAPPER {
-    (
-        $gen_syndrome:ident,
+    ($gen_syndrome:ident,
         $xor_syndrome:ident,
         $gen_syndrome_real:ident,
         $xor_syndrome_real:ident,

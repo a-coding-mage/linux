@@ -15,9 +15,9 @@ use core::ffi::c_void;
 pub struct sigframe {
     pub sctx: sigcontext,
     pub mctx: mcontext,
-    #[cfg(feature = "CONFIG_PPC_TRANSACTIONAL_MEM")]
+    #[cfg(CONFIG_PPC_TRANSACTIONAL_MEM)]
     pub sctx_transact: sigcontext,
-    #[cfg(feature = "CONFIG_PPC_TRANSACTIONAL_MEM")]
+    #[cfg(CONFIG_PPC_TRANSACTIONAL_MEM)]
     pub mctx_transact: mcontext,
     pub abigap: [core::ffi::c_int; 56],
 }
@@ -26,7 +26,7 @@ pub struct sigframe {
 pub struct rt_sigframe {
     pub info: compat_siginfo_t,
     pub uc: ucontext,
-    #[cfg(feature = "CONFIG_PPC_TRANSACTIONAL_MEM")]
+    #[cfg(CONFIG_PPC_TRANSACTIONAL_MEM)]
     pub uc_transact: ucontext,
     pub abigap: [core::ffi::c_int; 56],
 }

@@ -147,7 +147,7 @@ pub struct file_lock_context {
     pub flc_lease: list_head,
 }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 extern "C" {
     pub fn fcntl_getlk(file: *mut file, cmd: core::ffi::c_uint, user: *mut flock) -> i32;
     pub fn fcntl_setlk(fd: core::ffi::c_uint, file: *mut file, cmd: core::ffi::c_uint, user: *mut flock) -> i32;
@@ -188,9 +188,9 @@ extern "C" {
     pub fn locks_owner_has_blockers(flctx: *mut file_lock_context, owner: fl_owner_t) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 pub unsafe fn fcntl_getlk(_: *mut file, _: core::ffi::c_uint, _: *mut flock) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 pub unsafe fn fcntl_setlk(_: core::ffi::c_uint, _: *mut file, _: core::ffi::c_uint, _: *mut flock) -> i32 { -13 }
 
 pub const F_UNLCK: u8 = 2;
@@ -204,17 +204,17 @@ pub unsafe fn lock_is_read(fl: *mut file_lock) -> bool { (*fl).c.flc_type == F_R
 #[inline]
 pub unsafe fn lock_is_write(fl: *mut file_lock) -> bool { (*fl).c.flc_type == F_WRLCK }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub unsafe fn locks_inode_context(_: *const inode) -> *mut file_lock_context { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline]
 pub unsafe fn locks_inode_context(_: *const inode) -> *mut file_lock_context { core::ptr::null_mut() }
 
 #[inline]
 pub unsafe fn locks_lock_file_wait(_: *mut file, _: *mut file_lock) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub fn openmode_to_lease_flags(mode: u32) -> u32 {
     let mut flags = 0;
@@ -223,14 +223,14 @@ pub fn openmode_to_lease_flags(mode: u32) -> u32 {
     flags
 }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub unsafe fn break_lease(inode: *mut inode, mode: u32) -> i32 {
     let _ = (inode, mode);
     0
 }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub unsafe fn break_deleg(inode: *mut inode, flags: u32) -> i32 { let _ = (inode, flags); 0 }
 
@@ -240,7 +240,7 @@ pub struct delegated_inode { pub di_inode: *mut inode }
 #[inline]
 pub unsafe fn is_delegated(di: *mut delegated_inode) -> bool { !(*di).di_inode.is_null() }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub unsafe fn try_break_deleg(inode: *mut inode, flags: u32, di: *mut delegated_inode) -> i32 {
     let ret = break_deleg(inode, flags | LEASE_BREAK_NONBLOCK);
@@ -248,27 +248,27 @@ pub unsafe fn try_break_deleg(inode: *mut inode, flags: u32, di: *mut delegated_
     ret
 }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub unsafe fn break_deleg_wait(di: *mut delegated_inode) -> i32 { let ret = break_deleg((*di).di_inode, 0); (*di).di_inode = core::ptr::null_mut(); ret }
 
-#[cfg(feature = "CONFIG_FILE_LOCKING")]
+#[cfg(CONFIG_FILE_LOCKING)]
 #[inline]
 pub unsafe fn break_layout(inode: *mut inode, wait: bool) -> i32 { let _ = (inode, wait); 0 }
 
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 pub struct delegated_inode;
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline] pub unsafe fn is_delegated(_: *mut delegated_inode) -> bool { false }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline] pub unsafe fn break_lease(_: *mut inode, _: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline] pub unsafe fn break_deleg(_: *mut inode, _: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline] pub unsafe fn try_break_deleg(_: *mut inode, _: u32, _: *mut delegated_inode) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline] pub unsafe fn break_deleg_wait(_: *mut delegated_inode) -> i32 { panic!("BUG") }
-#[cfg(not(feature = "CONFIG_FILE_LOCKING"))]
+#[cfg(not(CONFIG_FILE_LOCKING))]
 #[inline] pub unsafe fn break_layout(_: *mut inode, _: bool) -> i32 { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

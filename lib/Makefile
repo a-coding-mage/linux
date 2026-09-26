@@ -56,13 +56,29 @@ else
 rbtree-provider := rbtree.o
 endif
 
+# Keep argv_split at its original archive position and ownership identity.
+ifeq ($(CONFIG_RUST_ARGV_SPLIT),y)
+argv-split-provider := argv_split_rust.o
+$(obj)/argv_split_rust.o: modfile := lib/argv_split
+else
+argv-split-provider := argv_split.o
+endif
+
+# Preserve the early parser's original archive slot and built-in identity.
+ifeq ($(CONFIG_RUST_EARLYCPIO),y)
+earlycpio-provider := earlycpio_rust.o
+$(obj)/earlycpio_rust.o: modfile := lib/earlycpio
+else
+earlycpio-provider := earlycpio.o
+endif
+
 # Keep the providers at their original positions in lib.a.
 lib-y += string.o vsprintf.o $(cmdline-provider) \
 	 $(rbtree-provider) radix-tree.o timerqueue.o xarray.o \
-	 maple_tree.o idr.o extable.o irq_regs.o argv_split.o \
+	 maple_tree.o idr.o extable.o irq_regs.o $(argv-split-provider) \
 	 flex_proportions.o ratelimit.o \
 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
-	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
+	 $(earlycpio-provider) seq_buf.o siphash.o dec_and_lock.o \
 	 nmi_backtrace.o
 ifeq ($(CONFIG_RUST_WIN_MINMAX),y)
 lib-y += win_minmax_rust.o
@@ -72,7 +88,12 @@ endif
 lib-y += memcat_p.o \
 	 buildid.o objpool.o iomem_copy.o sys_info.o
 
+ifeq ($(CONFIG_RUST_UNION_FIND),y)
+lib-$(CONFIG_UNION_FIND) += union_find_rust.o
+$(obj)/union_find_rust.o: modfile := lib/union_find
+else
 lib-$(CONFIG_UNION_FIND) += union_find.o
+endif
 lib-$(CONFIG_PRINTK) += dump_stack.o
 lib-$(CONFIG_SMP) += cpumask.o
 lib-$(CONFIG_MIN_HEAP) += min_heap.o
@@ -88,7 +109,13 @@ else
 obj-y += bcd.o
 endif
 
+ifeq ($(CONFIG_RUST_SORT),y)
+obj-y += sort_rust.o
+$(obj)/sort_rust.o: modfile := lib/sort
+RUSTFLAGS_sort_rust.o += --extern bindings
+else
 obj-y += sort.o
+endif
 ifeq ($(CONFIG_RUST_PARSER),y)
 obj-y += parser_rust.o
 $(obj)/parser_rust.o: private __modname := parser
@@ -227,6 +254,9 @@ obj-$(CONFIG_LIST_HARDENED) += list_debug.o
 obj-$(CONFIG_DEBUG_OBJECTS) += debugobjects.o
 
 obj-$(CONFIG_GENERIC_BITREVERSE) += bitrev.o
+ifeq ($(CONFIG_RUST_BITREV),y)
+bitrev-y := bitrev_rust.o
+endif
 obj-$(CONFIG_LINEAR_RANGES) += linear_ranges.o
 obj-$(CONFIG_PACKING)	+= packing.o
 obj-$(CONFIG_PACKING_KUNIT_TEST) += packing_test.o
@@ -287,7 +317,12 @@ obj-$(CONFIG_DYNAMIC_DEBUG_CORE) += dynamic_debug.o
 #ensure exported functions have prototypes
 CFLAGS_dynamic_debug.o := -DDYNAMIC_DEBUG_MODULE
 
+ifeq ($(CONFIG_RUST_ERRNAME),y)
+obj-$(CONFIG_SYMBOLIC_ERRNAME) += errname_rust.o
+$(obj)/errname_rust.o: modfile := lib/errname
+else
 obj-$(CONFIG_SYMBOLIC_ERRNAME) += errname.o
+endif
 
 obj-$(CONFIG_NLATTR) += nlattr.o
 

@@ -9,8 +9,8 @@
 use std::os::raw::{c_char, c_int, c_uint, c_ulong, c_ulonglong};
 
 /* Dependencies from C headers:
- * - helpers/bitmask.h: struct bitmask
- * - pci/pci.h on x86: struct pci_access, struct pci_dev
+ * - helpers/bitmask.h: bitmask
+ * - pci/pci.h on x86: pci_access, pci_dev
  * - cpupower.h
  */
 #[repr(C)]
@@ -66,7 +66,7 @@ unsafe extern "C" {
 /* Global verbose (-d) stuff *********************************/
 /*
  * define DEBUG via global Makefile variable
- * Debug output is sent to stderr, do:
+ * Debug output is sent to stderr, r#do:
  * cpupower monitor 2>/tmp/debug
  * to split debug output away from normal output
  */
@@ -173,13 +173,11 @@ unsafe extern "C" {
         slot: c_int,
         func: c_int,
         vendor: c_int,
-        dev: c_int,
-    ) -> *mut pci_dev;
+        dev: c_int) -> *mut pci_dev;
     pub fn pci_slot_func_init(
         pacc: *mut *mut pci_access,
         slot: c_int,
-        func: c_int,
-    ) -> *mut pci_dev;
+        func: c_int) -> *mut pci_dev;
 
     /* PCI stuff ****************************/
 
@@ -188,8 +186,7 @@ unsafe extern "C" {
         cpu: c_uint,
         boost_states: c_int,
         pstates: *mut c_ulong,
-        no: *mut c_int,
-    ) -> c_int;
+        no: *mut c_int) -> c_int;
 
     /* AMD HW pstate decoding **************************/
 
@@ -197,8 +194,7 @@ unsafe extern "C" {
         cpu: c_uint,
         support: *mut c_int,
         active: *mut c_int,
-        states: *mut c_int,
-    ) -> c_int;
+        states: *mut c_int) -> c_int;
     pub fn cpupower_set_intel_turbo_boost(turbo_boost: c_int) -> c_int;
 
     /* AMD P-State stuff **************************/

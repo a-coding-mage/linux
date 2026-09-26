@@ -86,7 +86,7 @@ unsafe fn kmmpd(data: *mut core::ffi::c_void) -> i32 {
     (*mmp).mmp_time = cpu_to_le64(ktime_get_real_seconds());
     mmp_check_interval = max(EXT4_MMP_CHECK_MULT * mmp_update_interval as c_uint, EXT4_MMP_MIN_CHECK_INTERVAL);
     (*mmp).mmp_check_interval = cpu_to_le16(mmp_check_interval as u16);
-    memcpy((*mmp).mmp_nodename.as_mut_ptr(), init_utsname()->nodename.as_ptr(), core::mem::size_of_val(&(*mmp).mmp_nodename));
+    memcpy((*mmp).mmp_nodename.as_mut_ptr(), (*init_utsname()).nodename.as_ptr(), core::mem::size_of_val(&(*mmp).mmp_nodename));
     while !kthread_should_stop() && !ext4_emergency_state(sb) {
         if !ext4_has_feature_mmp(sb) { ext4_warning(sb, "kmmpd being stopped since MMP feature has been disabled."); break; }
         seq += 1; if seq > EXT4_MMP_SEQ_MAX { seq = 1; }

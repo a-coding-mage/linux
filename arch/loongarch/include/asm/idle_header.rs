@@ -2,7 +2,7 @@
 
 // Dependency: linux/linkage.h (asmlinkage).
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn __arch_cpu_idle();
 }
 

@@ -14,7 +14,7 @@ pub const READ_PLUS_SCRATCH_SIZE: i32 = 16;
 
 /* nfs4.2proc.c */
 /* Preserves the C CONFIG_NFS_V4_2 conditional. */
-#[cfg(feature = "CONFIG_NFS_V4_2")]
+#[cfg(CONFIG_NFS_V4_2)]
 extern "C" {
     pub fn nfs42_proc_allocate(file: *mut file, offset: loff_t, len: loff_t) -> i32;
     pub fn nfs42_proc_copy(
@@ -76,7 +76,7 @@ extern "C" {
 }
 
 /* The following inline functions are available when CONFIG_NFS_V4_2 is set. */
-#[cfg(feature = "CONFIG_NFS_V4_2")]
+#[cfg(CONFIG_NFS_V4_2)]
 #[inline]
 pub unsafe fn nfs42_files_from_same_server(input: *mut file, output: *mut file) -> bool {
     let c_in = (*NFS_SERVER(file_inode(input))).nfs_client;
@@ -95,7 +95,7 @@ pub unsafe fn nfs42_files_from_same_server(input: *mut file, output: *mut file) 
  * Include the trailing eof word as well and make the result a multiple
  * of 4 bytes.
  */
-#[cfg(feature = "CONFIG_NFS_V4_2")]
+#[cfg(CONFIG_NFS_V4_2)]
 #[inline]
 pub fn nfs42_listxattr_xdrsize(buflen: u32) -> u32 {
     let size = 8 * buflen / (XATTR_USER_PREFIX_LEN + 2) + 4;

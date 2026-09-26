@@ -101,7 +101,7 @@ pub unsafe fn topology_init() -> c_int {
 
     // Preserve the CONFIG_NUMA && !CONFIG_SMP conditional from the source.
     // In the UP case, retain CPU association registration under each node.
-    #[cfg(all(feature = "CONFIG_NUMA", not(feature = "CONFIG_SMP")))]
+    #[cfg(all(CONFIG_NUMA, not(CONFIG_SMP)))]
     {
         i = 0;
         while i < online_node_count() {

@@ -13,7 +13,7 @@ pub enum tms9914_holdoff_mode {
 #[repr(C)]
 pub struct tms9914_priv {
     /* CONFIG_HAS_IOPORT controls whether this field is present in C. */
-    #[cfg(feature = "CONFIG_HAS_IOPORT")]
+    #[cfg(CONFIG_HAS_IOPORT)]
     pub iobase: u32,
     pub mmiobase: *mut core::ffi::c_void,
     pub offset: core::ffi::c_uint,

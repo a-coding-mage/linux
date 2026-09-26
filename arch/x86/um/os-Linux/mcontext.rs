@@ -136,7 +136,7 @@ pub unsafe fn get_stub_state(regs: *mut uml_pt_regs, data: *mut stub_data, fp_si
 
 pub unsafe fn set_stub_state(regs: *mut uml_pt_regs, data: *mut stub_data, single_stepping: c_int) -> c_int {
     let mcontext = (&mut (*data).sigstack[(*data).mctx_offset as usize]) as *mut _ as *mut mcontext_t;
-    if mcontext as usize < &(*data).sigstack as *const _ as usize || mcontext as usize > (&(*data).sigstack as *const _ as usize + core::mem::size_of_val(&(*data).sigstack) - core::mem::size_of::<mcontext_t>()) { return -EINVAL; }
+    if (mcontext as usize) < &(*data).sigstack as *const _ as usize || mcontext as usize > (&(*data).sigstack as *const _ as usize + core::mem::size_of_val(&(*data).sigstack) - core::mem::size_of::<mcontext_t>()) { return -EINVAL; }
     get_mc_from_regs(regs, mcontext, single_stepping);
     let mut fp_size = 0; let fpstate_stub = get_fpstate(data, mcontext, &mut fp_size);
     if fpstate_stub.is_null() { return -EINVAL; }

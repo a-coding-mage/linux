@@ -15,14 +15,14 @@ pub struct ksignal {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")]
+#[cfg(CONFIG_X86_USER_SHADOW_STACK)]
 #[repr(C)]
 pub struct thread_shstk {
     pub base: u64,
     pub size: u64,
 }
 
-#[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")]
+#[cfg(CONFIG_X86_USER_SHADOW_STACK)]
 extern "C" {
     pub fn shstk_prctl(task: *mut task_struct, option: c_int, arg2: usize) -> isize;
     pub fn reset_thread_features();
@@ -40,17 +40,17 @@ extern "C" {
     pub fn shstk_push(val: u64) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_prctl(_task: *mut task_struct, _option: c_int, _arg2: usize) -> isize {
     -EINVAL as isize
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn reset_thread_features() {}
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_alloc_thread_stack(
     _p: *mut task_struct,
@@ -60,41 +60,41 @@ pub unsafe fn shstk_alloc_thread_stack(
     0
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_free(_p: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn setup_signal_shadow_stack(_ksig: *mut ksignal) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn restore_signal_shadow_stack() -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_update_last_frame(_val: usize) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_is_enabled() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_pop(_val: *mut u64) -> c_int {
     -ENOTSUPP as c_int
 }
 
-#[cfg(not(feature = "CONFIG_X86_USER_SHADOW_STACK"))]
+#[cfg(not(CONFIG_X86_USER_SHADOW_STACK))]
 #[inline]
 pub unsafe fn shstk_push(_val: u64) -> c_int {
     -ENOTSUPP as c_int

@@ -29,23 +29,23 @@ unsafe fn batadv_v_elp_get_throughput(neigh: *mut batadv_hardif_neigh_node,
 
     let wifi_flags = batadv_hardif_get_wifi_flags(hard_iface);
     if batadv_is_wifi(wifi_flags) {
-        if !batadv_is_cfg80211(wifi_flags) { goto_default!(default_throughput); }
+        if !batadv_is_cfg80211(wifi_flags) { goto default_throughput; }
         if !rtnl_trylock() { return false; }
         let real_netdev = __batadv_get_real_netdev((*hard_iface).net_dev);
         rtnl_unlock();
-        if real_netdev.is_null() { goto_default!(default_throughput); }
+        if real_netdev.is_null() { goto default_throughput; }
         let ret = cfg80211_get_station(real_netdev, (*neigh).addr, &mut sinfo);
         if ret == 0 { cfg80211_sinfo_release_content(&mut sinfo); }
         dev_put(real_netdev);
         if ret == -ENOENT { *pthroughput = 0; return true; }
-        if ret != 0 { goto_default!(default_throughput); }
+        if ret != 0 { goto default_throughput; }
         if sinfo.filled & BIT(NL80211_STA_INFO_EXPECTED_THROUGHPUT) != 0 {
             *pthroughput = sinfo.expected_throughput / 100; return true;
         }
         if sinfo.filled & BIT(NL80211_STA_INFO_TX_BITRATE) != 0 {
             *pthroughput = cfg80211_calculate_bitrate(&sinfo.txrate) / 3; return true;
         }
-        goto_default!(default_throughput);
+        goto default_throughput;
     }
 
     if !rtnl_trylock() { return false; }

@@ -4,14 +4,14 @@
 
 // Preserved from CONFIG_HUGETLB_PAGE. These declarations are enabled when
 // the corresponding build-time configuration is enabled.
-#[cfg(feature = "CONFIG_HUGETLB_PAGE")]
+#[cfg(CONFIG_HUGETLB_PAGE)]
 #[repr(C)]
 pub struct pud_huge_patch_entry {
     pub addr: ::core::ffi::c_uint,
     pub insn: ::core::ffi::c_uint,
 }
 
-#[cfg(feature = "CONFIG_HUGETLB_PAGE")]
+#[cfg(CONFIG_HUGETLB_PAGE)]
 extern "C" {
     pub static mut __pud_huge_patch: pud_huge_patch_entry;
     pub static mut __pud_huge_patch_end: pud_huge_patch_entry;

@@ -58,8 +58,8 @@ unsafe fn omap4_dpllmx_deny_gatectrl(clk: *mut clk_hw_omap) {
 }
 
 pub static clkhwops_omap4_dpllmx: clk_hw_omap_ops = clk_hw_omap_ops {
-    .allow_idle: Some(omap4_dpllmx_allow_gatectrl),
-    .deny_idle: Some(omap4_dpllmx_deny_gatectrl),
+    allow_idle: Some(omap4_dpllmx_allow_gatectrl),
+    deny_idle: Some(omap4_dpllmx_deny_gatectrl),
 };
 
 /// omap4_dpll_lpmode_recalc - compute DPLL low-power setting

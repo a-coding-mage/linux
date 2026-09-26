@@ -4,7 +4,7 @@
  */
 
 /* C conditional: IS_ENABLED(CONFIG_BT_LEDS). */
-#[cfg(feature = "CONFIG_BT_LEDS")]
+#[cfg(CONFIG_BT_LEDS)]
 extern "C" {
     pub fn hci_leds_update_powered(hdev: *mut hci_dev, enabled: bool);
     pub fn hci_leds_init(hdev: *mut hci_dev);
@@ -13,19 +13,19 @@ extern "C" {
     pub fn bt_leds_cleanup();
 }
 
-#[cfg(not(feature = "CONFIG_BT_LEDS"))]
+#[cfg(not(CONFIG_BT_LEDS))]
 #[inline]
 pub unsafe fn hci_leds_update_powered(_hdev: *mut hci_dev, _enabled: bool) {}
 
-#[cfg(not(feature = "CONFIG_BT_LEDS"))]
+#[cfg(not(CONFIG_BT_LEDS))]
 #[inline]
 pub unsafe fn hci_leds_init(_hdev: *mut hci_dev) {}
 
-#[cfg(not(feature = "CONFIG_BT_LEDS"))]
+#[cfg(not(CONFIG_BT_LEDS))]
 #[inline]
 pub unsafe fn bt_leds_init() {}
 
-#[cfg(not(feature = "CONFIG_BT_LEDS"))]
+#[cfg(not(CONFIG_BT_LEDS))]
 #[inline]
 pub unsafe fn bt_leds_cleanup() {}
 

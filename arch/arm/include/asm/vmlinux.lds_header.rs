@@ -3,59 +3,59 @@
 // linker-script fragments as data because Rust has no native linker-script
 // declaration syntax.
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub const ARM_CPU_DISCARD: &str = "";
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 pub const ARM_CPU_DISCARD: &str = "x";
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub const ARM_CPU_KEEP: &str = "x";
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 pub const ARM_CPU_KEEP: &str = "";
 
 #[cfg(any(
-    all(feature = "CONFIG_SMP_ON_UP", not(feature = "CONFIG_DEBUG_SPINLOCK")),
-    feature = "CONFIG_GENERIC_BUG",
-    feature = "CONFIG_JUMP_LABEL"
+    all(CONFIG_SMP_ON_UP, not(CONFIG_DEBUG_SPINLOCK)),
+    CONFIG_GENERIC_BUG,
+    CONFIG_JUMP_LABEL
 ))]
 pub const ARM_EXIT_KEEP: &str = "x";
 #[cfg(not(any(
-    all(feature = "CONFIG_SMP_ON_UP", not(feature = "CONFIG_DEBUG_SPINLOCK")),
-    feature = "CONFIG_GENERIC_BUG",
-    feature = "CONFIG_JUMP_LABEL"
+    all(CONFIG_SMP_ON_UP, not(CONFIG_DEBUG_SPINLOCK)),
+    CONFIG_GENERIC_BUG,
+    CONFIG_JUMP_LABEL
 )))]
 pub const ARM_EXIT_KEEP: &str = "";
 #[cfg(any(
-    all(feature = "CONFIG_SMP_ON_UP", not(feature = "CONFIG_DEBUG_SPINLOCK")),
-    feature = "CONFIG_GENERIC_BUG",
-    feature = "CONFIG_JUMP_LABEL"
+    all(CONFIG_SMP_ON_UP, not(CONFIG_DEBUG_SPINLOCK)),
+    CONFIG_GENERIC_BUG,
+    CONFIG_JUMP_LABEL
 ))]
 pub const ARM_EXIT_DISCARD: &str = "";
 #[cfg(not(any(
-    all(feature = "CONFIG_SMP_ON_UP", not(feature = "CONFIG_DEBUG_SPINLOCK")),
-    feature = "CONFIG_GENERIC_BUG",
-    feature = "CONFIG_JUMP_LABEL"
+    all(CONFIG_SMP_ON_UP, not(CONFIG_DEBUG_SPINLOCK)),
+    CONFIG_GENERIC_BUG,
+    CONFIG_JUMP_LABEL
 )))]
 pub const ARM_EXIT_DISCARD: &str = "x";
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const ARM_MMU_KEEP: &str = "KEEP(x)";
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const ARM_MMU_KEEP: &str = "";
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const ARM_MMU_DISCARD: &str = "";
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const ARM_MMU_DISCARD: &str = "x";
 
 // ld.lld does not support NOCROSSREFS:
 // https://github.com/ClangBuiltLinux/linux/issues/1609
-#[cfg(not(feature = "CONFIG_LD_IS_LLD"))]
+#[cfg(not(CONFIG_LD_IS_LLD))]
 pub const NOCROSSREFS: &str = "NOCROSSREFS";
-#[cfg(feature = "CONFIG_LD_IS_LLD")]
+#[cfg(CONFIG_LD_IS_LLD)]
 pub const NOCROSSREFS: &str = "";
 
-#[cfg(feature = "CONFIG_LD_CAN_USE_KEEP_IN_OVERLAY")]
+#[cfg(CONFIG_LD_CAN_USE_KEEP_IN_OVERLAY)]
 pub const OVERLAY_KEEP: &str = "KEEP(x)";
-#[cfg(not(feature = "CONFIG_LD_CAN_USE_KEEP_IN_OVERLAY"))]
+#[cfg(not(CONFIG_LD_CAN_USE_KEEP_IN_OVERLAY))]
 pub const OVERLAY_KEEP: &str = "x";
 
 // Set start/end symbol names to the LMA for the section.

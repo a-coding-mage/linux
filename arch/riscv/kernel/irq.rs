@@ -87,12 +87,12 @@ pub unsafe extern "C" fn riscv_get_hart_index(
     )
 }
 
-#[cfg(feature = "CONFIG_IRQ_STACKS")]
+#[cfg(CONFIG_IRQ_STACKS)]
 mod irq_stacks {
     use super::*;
 
     // DECLARE_PER_CPU(ulong *, irq_shadow_call_stack_ptr)
-    #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+    #[cfg(CONFIG_SHADOW_CALL_STACK)]
     #[no_mangle]
     pub static mut irq_shadow_call_stack_ptr: *mut c_void = core::ptr::null_mut();
 
@@ -113,7 +113,7 @@ mod irq_stacks {
     #[no_mangle]
     pub static mut irq_stack_ptr: *mut c_void = core::ptr::null_mut();
 
-    #[cfg(feature = "CONFIG_VMAP_STACK")]
+    #[cfg(CONFIG_VMAP_STACK)]
     unsafe fn init_irq_stacks() {
         for_each_possible_cpu!(cpu, {
             let p = arch_alloc_vmap_stack(IRQ_STACK_SIZE, cpu_to_node(cpu));
@@ -124,7 +124,7 @@ mod irq_stacks {
         });
     }
 
-    #[cfg(not(feature = "CONFIG_VMAP_STACK"))]
+    #[cfg(not(CONFIG_VMAP_STACK))]
     unsafe fn init_irq_stacks() {
         // irq stack only needs to be 16 byte aligned - not IRQ_STACK_SIZE aligned.
         for_each_possible_cpu!(cpu, {
@@ -132,12 +132,12 @@ mod irq_stacks {
         });
     }
 
-    #[cfg(feature = "CONFIG_SOFTIRQ_ON_OWN_STACK")]
+    #[cfg(CONFIG_SOFTIRQ_ON_OWN_STACK)]
     unsafe extern "C" fn ___do_softirq(_regs: *mut pt_regs) {
         __do_softirq();
     }
 
-    #[cfg(feature = "CONFIG_SOFTIRQ_ON_OWN_STACK")]
+    #[cfg(CONFIG_SOFTIRQ_ON_OWN_STACK)]
     #[no_mangle]
     pub unsafe extern "C" fn do_softirq_own_stack() {
         if on_thread_stack() {
@@ -156,9 +156,9 @@ mod irq_stacks {
     }
 }
 
-#[cfg(not(feature = "CONFIG_IRQ_STACKS"))]
+#[cfg(not(CONFIG_IRQ_STACKS))]
 unsafe fn init_irq_scs() {}
-#[cfg(not(feature = "CONFIG_IRQ_STACKS"))]
+#[cfg(not(CONFIG_IRQ_STACKS))]
 unsafe fn init_irq_stacks() {}
 
 #[no_mangle]

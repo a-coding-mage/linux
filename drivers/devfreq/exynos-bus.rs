@@ -236,12 +236,12 @@ struct Device; struct PlatformDevice; struct Devfreq; struct DevfreqEventDev; st
 #[repr(C)] #[derive(Default)] struct DevfreqEventData { load_count: CULong, total_count: CULong }
 #[repr(C)] struct DevfreqDevStatus { current_frequency: CULong, busy_time: CULong, total_time: CULong }
 extern "C" {
-    fn dev_get_drvdata(*mut Device) -> *mut CVoid; fn dev_err(*mut Device, *const str, ...); fn dev_warn(*mut Device, *const str, ...); fn dev_dbg(*mut Device, *const str, ...);
-    fn devfreq_event_enable_edev(*mut DevfreqEventDev) -> CInt; fn devfreq_event_disable_edev(*mut DevfreqEventDev) -> CInt; fn devfreq_event_set_event(*mut DevfreqEventDev) -> CInt; fn devfreq_event_get_event(*mut DevfreqEventDev, *mut DevfreqEventData) -> CInt;
-    fn dev_pm_opp_put(*mut DevPmOpp); fn dev_pm_opp_set_rate(*mut Device, CULong) -> CInt; fn dev_pm_opp_set_regulators(*mut Device, *const *const CChar) -> CInt; fn dev_pm_opp_put_regulators(CInt); fn dev_pm_opp_of_remove_table(*mut Device);
-    fn devfreq_recommended_opp(*mut Device, *mut CULong, U32) -> *mut DevPmOpp; fn is_err(*mut CVoid) -> bool; fn ptr_err(*mut CVoid) -> CInt;
-    fn mutex_lock(*mut Mutex); fn mutex_unlock(*mut Mutex); fn devm_kzalloc(*mut Device, usize, U32) -> *mut CVoid; fn devfreq_event_get_edev_count(*mut Device,*const CChar)->CInt; fn devfreq_event_get_edev_by_phandle(*mut Device,*const CChar,CInt)->*mut DevfreqEventDev; fn of_property_read_u32(*mut DeviceNode,*const CChar,*mut U32)->CInt;
-    fn platform_device_unregister(*mut PlatformDevice);
+    fn dev_get_drvdata(_: *mut Device) -> *mut CVoid; fn dev_err(_: *mut Device, _: *const str, ...); fn dev_warn(_: *mut Device, _: *const str, ...); fn dev_dbg(_: *mut Device, _: *const str, ...);
+    fn devfreq_event_enable_edev(_: *mut DevfreqEventDev) -> CInt; fn devfreq_event_disable_edev(_: *mut DevfreqEventDev) -> CInt; fn devfreq_event_set_event(_: *mut DevfreqEventDev) -> CInt; fn devfreq_event_get_event(_: *mut DevfreqEventDev, _: *mut DevfreqEventData) -> CInt;
+    fn dev_pm_opp_put(_: *mut DevPmOpp); fn dev_pm_opp_set_rate(_: *mut Device, _: CULong) -> CInt; fn dev_pm_opp_set_regulators(_: *mut Device, _: *const *const CChar) -> CInt; fn dev_pm_opp_put_regulators(_: CInt); fn dev_pm_opp_of_remove_table(_: *mut Device);
+    fn devfreq_recommended_opp(_: *mut Device, _: *mut CULong, _: U32) -> *mut DevPmOpp; fn is_err(_: *mut CVoid) -> bool; fn ptr_err(_: *mut CVoid) -> CInt;
+    fn mutex_lock(_: *mut Mutex); fn mutex_unlock(_: *mut Mutex); fn devm_kzalloc(_: *mut Device, _: usize, _: U32) -> *mut CVoid; fn devfreq_event_get_edev_count(_: *mut Device,_: *const CChar)->CInt; fn devfreq_event_get_edev_by_phandle(_: *mut Device,_: *const CChar,_: CInt)->*mut DevfreqEventDev; fn of_property_read_u32(_: *mut DeviceNode,_: *const CChar,_: *mut U32)->CInt;
+    fn platform_device_unregister(_: *mut PlatformDevice);
 }
 struct DevPmOpp;
 struct DevfreqDevProfile { polling_ms: u32, target: Option<unsafe extern "C" fn(*mut Device,*mut CULong,U32)->CInt>, get_dev_status: Option<unsafe extern "C" fn(*mut Device,*mut DevfreqDevStatus)->CInt>, exit: Option<unsafe extern "C" fn(*mut Device)> }

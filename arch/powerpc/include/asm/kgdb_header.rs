@@ -25,24 +25,24 @@ pub const BREAK_INSTR: u32 = 0x7d82_1008; /* twge r2, r2 */
 
 /* NUMREGBYTES is supplied by the selected PowerPC configuration below. */
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const NUMREGBYTES: usize = (68 * 8) + (3 * 4);
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const NUMCRITREGBYTES: usize = 184;
 
 pub const DBG_MAX_REG_NUM: usize = 70;
 
-#[cfg(all(not(feature = "CONFIG_PPC64"), not(feature = "CONFIG_PPC_E500")))]
+#[cfg(all(not(CONFIG_PPC64), not(CONFIG_PPC_E500)))]
 pub const MAXREG: usize = (PT_FPSCR + 1);
 
-#[cfg(all(not(feature = "CONFIG_PPC64"), feature = "CONFIG_PPC_E500"))]
+#[cfg(all(not(CONFIG_PPC64), CONFIG_PPC_E500))]
 pub const MAXREG: usize = ((32 * 2) + 6 + 2 + 1);
 
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 pub const NUMREGBYTES: usize = MAXREG * core::mem::size_of::<i32>();
 
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 pub const NUMCRITREGBYTES: usize = 23 * core::mem::size_of::<i32>();
 
 pub const BUFMAX: usize = (NUMREGBYTES * 2) + 512;

@@ -53,16 +53,16 @@ unsafe fn btrfs_state_to_string(info: *const btrfs_fs_info, buf: *mut i8) {
 }
 
 pub unsafe fn btrfs_decode_error(error: i32) -> *const i8 {
-    match error {
-        -ENOENT => b"No such entry\0".as_ptr() as *const i8,
-        -EIO => b"IO failure\0".as_ptr() as *const i8,
-        -ENOMEM => b"Out of memory\0".as_ptr() as *const i8,
-        -EEXIST => b"Object already exists\0".as_ptr() as *const i8,
-        -ENOSPC => b"No space left\0".as_ptr() as *const i8,
-        -EROFS => b"Readonly filesystem\0".as_ptr() as *const i8,
-        -EOPNOTSUPP => b"Operation not supported\0".as_ptr() as *const i8,
-        -EUCLEAN => b"Filesystem corrupted\0".as_ptr() as *const i8,
-        -EDQUOT => b"Quota exceeded\0".as_ptr() as *const i8,
+    match -(error) {
+        ENOENT => b"No such entry\0".as_ptr() as *const i8,
+        EIO => b"IO failure\0".as_ptr() as *const i8,
+        ENOMEM => b"Out of memory\0".as_ptr() as *const i8,
+        EEXIST => b"Object already exists\0".as_ptr() as *const i8,
+        ENOSPC => b"No space left\0".as_ptr() as *const i8,
+        EROFS => b"Readonly filesystem\0".as_ptr() as *const i8,
+        EOPNOTSUPP => b"Operation not supported\0".as_ptr() as *const i8,
+        EUCLEAN => b"Filesystem corrupted\0".as_ptr() as *const i8,
+        EDQUOT => b"Quota exceeded\0".as_ptr() as *const i8,
         _ => b"unknown\0".as_ptr() as *const i8,
     }
 }

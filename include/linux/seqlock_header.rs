@@ -51,8 +51,8 @@ extern "C" {
 #[inline] pub unsafe fn __seqprop_preemptible(_: *const seqcount_t)->bool{false}
 #[inline] pub unsafe fn __seqprop_assert(_: *const seqcount_t){lockdep_assert_preemption_disabled()}
 
-macro_rules! seqcount_lockname { ($n:ident,$t:ty,$p:expr,$base:ident) => {
-    #[inline] pub unsafe fn $n##_sequence(s:*const seqcount_##$n##_t)->u32 { smp_load_acquire(&(*s).seqcount.sequence) }
+macro_rules! seqcount_lockname { ($n:tt,$t:ty,$p:expr,$base:ident) => {
+    #[inline] pub unsafe fn ::kernel::macros::paste!([<$n _sequence>])(s:*const ::kernel::macros::paste!([<seqcount_ $n>])##_t)->u32 { smp_load_acquire(&(*s).seqcount.sequence) }
 }; }
 
 #[inline] pub unsafe fn raw_read_seqcount_begin(s:*const seqcount_t)->u32 { let mut q; loop { q=__seqprop_sequence(s); if q&1==0{break} cpu_relax(); } kcsan_atomic_next(KCSAN_SEQLOCK_REGION_MAX); q }

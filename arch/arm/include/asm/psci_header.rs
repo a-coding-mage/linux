@@ -11,12 +11,12 @@ unsafe extern "C" {
 }
 
 // Corresponds to CONFIG_SMP && CONFIG_ARM_PSCI.
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_ARM_PSCI"))]
+#[cfg(all(CONFIG_SMP, CONFIG_ARM_PSCI))]
 unsafe extern "C" {
     pub fn psci_smp_available() -> bool;
 }
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_ARM_PSCI")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_ARM_PSCI)))]
 #[inline]
 pub const fn psci_smp_available() -> bool {
     false

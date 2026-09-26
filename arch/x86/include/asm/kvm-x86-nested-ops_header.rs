@@ -29,7 +29,7 @@ KVM_X86_NESTED_OP_OPTIONAL_RET0!(write_log_dirty);
 KVM_X86_NESTED_OP!(translate_nested_gpa);
 
 // Corresponds to the C CONFIG_KVM_HYPERV build-time condition.
-#[cfg(feature = "CONFIG_KVM_HYPERV")]
+#[cfg(CONFIG_KVM_HYPERV)]
 mod config_kvm_hyperv {
     KVM_X86_NESTED_OP_OPTIONAL!(enable_evmcs);
     KVM_X86_NESTED_OP_OPTIONAL_RET0!(get_evmcs_version);

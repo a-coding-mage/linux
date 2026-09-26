@@ -28,7 +28,7 @@ pub unsafe fn relocate_kernel(offset: u64) {
     }
 
     // Equivalent to: if (!IS_ENABLED(CONFIG_RELR) || !offset)
-    #[cfg(not(feature = "CONFIG_RELR"))]
+    #[cfg(not(CONFIG_RELR))]
     {
         return;
     }

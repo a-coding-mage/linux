@@ -71,12 +71,12 @@ pub const NLBL_CALIPSO_A_MAX: u32 =
 
 /* NetLabel protocol functions. The CONFIG_IPV6 condition is supplied by the
  * build configuration. */
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 extern "C" {
     pub fn netlbl_calipso_genl_init() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 #[inline]
 pub fn netlbl_calipso_genl_init() -> i32 {
     0

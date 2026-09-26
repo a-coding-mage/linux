@@ -213,7 +213,7 @@ unsafe fn dcn5_ms_calculate_writeback_bandwidth(
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib)
 {
-	u32 k, j;
+	k: u32, j;
 	*const dml2_plane_parametersplane;
 	*const dml2_stream_parametersstream;
 
@@ -249,7 +249,7 @@ unsafe fn dcn5_ms_check_writeback_bandwidth_latency_support(
 		*const dml2_utm_soc_bbutm_soc_bb) . bool
 {
 	/*Writeback Latency support check*/
-	u32 k, j;
+	k: u32, j;
 	bool support = true;
 	*const dml2_stream_parametersstream;
 
@@ -536,8 +536,7 @@ unsafe fn dcn5_ms_check_surface_alginment_requirements(
 unsafe fn dcn5_ms_calculate_swath_and_det_configuration_for_single_dpp(
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib,
-		*dml2_core_calcs_mode_support_localss)
-{
+		*dml2_core_calcs_mode_support_localss) {
 	/*
 	 * FIXME - The whole point of this call seems to be to figure out SingleDPPViewportSizeSupportPerSurface, which
 	 * if 0, means you need 2 DPPs.
@@ -604,7 +603,7 @@ unsafe fn dcn5_ms_calculate_swath_and_det_configuration_for_single_dpp(
 }
 
 unsafe fn dcn5_ms_calculate_dsc_slices_per_plane(
-		u32 k,
+		k: u32,
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib)
 {
@@ -637,7 +636,7 @@ unsafe fn dcn5_ms_calculate_dsc_slices_per_plane(
 }
 
 unsafe fn dcn5_ms_calculate_odm_mode_per_plane(
-		u32 k,
+		k: u32,
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib)
 {
@@ -690,7 +689,7 @@ unsafe fn dcn5_ms_calculate_odm_mode_per_plane(
 }
 
 unsafe fn dcn5_ms_calculate_output_link(
-		u32 k,
+		k: u32,
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib,
 		*const dml2_utm_soc_bbutm_soc_bb)
@@ -730,7 +729,7 @@ unsafe fn dcn5_ms_calculate_output_link(
 		mode_lib.ms.DesiredOutputBpp[k] = mode_lib.ms.OutputBpp[k];
 }
 
-unsafe fn dcn5_ms_calculate_final_odm_mode_per_plane(u32 k, *dml2_core_internal_display_mode_libmode_lib)
+unsafe fn dcn5_ms_calculate_final_odm_mode_per_plane(k: u32, *dml2_core_internal_display_mode_libmode_lib)
 {
 	if (mode_lib.ms.RequiresDSC[k] == false) {
 		mode_lib.ms.ODMMode[k] = mode_lib.ms.ODMModeNoDSC;
@@ -751,7 +750,7 @@ unsafe fn dcn5_ms_calculate_final_odm_mode_per_plane(u32 k, *dml2_core_internal_
 	DML_LOG_VERBOSE("DML::%s: k=%d ODMMode = %d\n", __func__, k, mode_lib.ms.ODMMode[k]);
 }
 
-unsafe fn dcn5_ms_calculate_final_dsc_slices_per_plane(u32 k,
+unsafe fn dcn5_ms_calculate_final_dsc_slices_per_plane(k: u32,
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib)
 {
@@ -856,7 +855,7 @@ unsafe fn dcn5_ms_calculate_dispclk_and_dppclk_required(
 		*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib)
 {
-	u32 k, j;
+	k: u32, j;
 	*const dml2_stream_parametersstream;
 	f64 writeback_required_dispclk;
 
@@ -1672,7 +1671,7 @@ unsafe fn dcn5_ms_calculate_mcache_setting(*const dml2_display_cfgdisplay_cfg,
 		}
 	} else {
 		p = &mut mode_lib.scratch.calculate_mcache_setting_params;
-		memset(p, 0, sizeof(struct dml2_core_calcs_calculate_mcache_setting_params));
+		memset(p, 0, sizeof(dml2_core_calcs_calculate_mcache_setting_params));
 		for (k = 0; k < mode_lib.ms.num_active_planes; k++) {
 			plane = &mut display_cfg.plane_descriptors[k];
 			p.dcc_enable = plane.surface.dcc.enable;
@@ -2057,8 +2056,7 @@ unsafe fn dcn5_ms_check_v_ratio_in_prefetch_support(
 }
 
 unsafe fn dcn5_ms_calculate_urgent_burst_factor_for_prefetch(
-		*const dml2_display_cfgdisplay_cfg, *dml2_core_internal_display_mode_libmode_lib)
-{
+		*const dml2_display_cfgdisplay_cfg, *dml2_core_internal_display_mode_libmode_lib) {
 	u32 k;
 	f64 line_time_us;
 	*const dml2_stream_parametersstream;
@@ -2211,8 +2209,7 @@ unsafe fn dcn5_ms_calculate_flip_schedule(*const dml2_display_cfgdisplay_cfg,
 
 unsafe fn dcn5_ms_calculate_bandwidth_required_for_flip(*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_calcs_mode_support_localss,
-		*dml2_core_internal_display_mode_libmode_lib)
-{
+		*dml2_core_internal_display_mode_libmode_lib) {
 	*dml2_core_calcs_calculate_peak_bandwidth_required_paramsp =
 			&mut mode_lib.scratch.calculate_peak_bandwidth_params;
 
@@ -2290,6 +2287,7 @@ unsafe fn dcn5_ms_calculate_vactive_det_fill_latency(*const dml2_display_cfgdisp
 unsafe fn dcn5_ms_check_mode_support(*const dml2_display_cfgdisplay_cfg,
 		*dml2_core_internal_display_mode_libmode_lib) . bool
 {
+	'fail: {
 	u32 k;
 	bool immediateFlipRequired = false;
 
@@ -2299,97 +2297,98 @@ unsafe fn dcn5_ms_check_mode_support(*const dml2_display_cfgdisplay_cfg,
 
 	/*Mode Support, Voltage State and SOC Configuration*/
 	if (mode_lib.ms.support.ScaleRatioAndTapsSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.SourceFormatPixelAndScanSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.ViewportSizeSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.LinkRateDoesNotMatchDPVersion)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.LinkRateForMultistreamNotIndicated)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.BPPForMultistreamNotIndicated)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.MultistreamWithHDMIOreDP)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.ExceededMultistreamSlots)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.MSOOrODMSplitWithNonDPLink)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.NotEnoughLanesForMSO)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.P2IWith420)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DSC422NativeNotSupported)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DSCSlicesODMModeSupported == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.NotEnoughDSCUnits)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.NotEnoughDSCSlices)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DSCCLKRequiredMoreThanSupported)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.PixelsPerLinePerDSCUnitSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DTBCLKRequiredMoreThanSupported)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.ROBSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.OutstandingRequestsSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.OutstandingRequestsUrgencyAvoidance == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DISPCLK_DPPCLK_Support == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.TotalAvailablePipesSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.NumberOfOTGSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.NumberOfHDMIFRLSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.NumberOfDP2p0Support == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.EnoughWritebackUnits == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.WritebackLatencySupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.WritebackScaleRatioAndTapsSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.CursorSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.PitchSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.ViewportExceedsSurface)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.PrefetchSupported == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.EnoughUrgentLatencyHidingSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.AvgBandwidthSupport == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DynamicMetadataSupported == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.VRatioInPrefetchSupported == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.PTEBufferSizeNotExceeded == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.DCCMetaBufferSizeNotExceeded == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.global_temp_read_or_ppt_supported == false)
-		goto fail;
+		break 'fail;
 	if (mode_lib.ms.support.global_dram_clock_change_supported == false)
 		if (mode_lib.ms.support.global_dram_clock_change_support_required)
-			goto fail;
+			break 'fail;
 	if (mode_lib.ms.support.ImmediateFlipSupport == false) {
 		if (immediateFlipRequired)
-			goto fail;
+			break 'fail;
 		if (display_cfg.hostvm_enable)
-			goto fail;
+			break 'fail;
 	}
 	DML_LOG_VERBOSE("DML::%s: mode is supported\n", __func__);
 	return true;
-fail:
+	}
+	
 	dml2_core_utils_print_mode_support_info(&mut mode_lib.ms.support, true);
 	DML_LOG_VERBOSE("DML::%s: mode is NOT supported\n", __func__);
 	return false;
@@ -2462,9 +2461,9 @@ unsafe fn dcn5_ms_setup_mode_lib_constants(*dml2_core_calcs_mode_support_exin_ou
 	 * so it becomes obvious that these are constants that must/will always be valid when calling calcs
 	 */
 	memset(&mut mode_lib.scratch, 0,
-			sizeof(struct dml2_core_internal_scratch));
+			sizeof(dml2_core_internal_scratch));
 	memset(&mut mode_lib.ms, 0,
-			sizeof(struct dml2_core_internal_mode_support));
+			sizeof(dml2_core_internal_mode_support));
 	mode_lib.ms.use_legacy_dsc_delay_formula = mode_lib.ip.use_legacy_dsc_delay_formula;
 	mode_lib.ms.num_active_planes = display_cfg.num_planes;
 	mode_lib.ms.max_dispclk_freq_mhz = (f64) utm_soc_bb.max_dispclk_khz / 1000;
@@ -2495,7 +2494,7 @@ unsafe fn dcn5_ms_populate_mode_support_result(
 		*dml2_core_calcs_mode_support_exmode_support_ex_params,
 		*dml2_core_mode_support_resultresult)
 {
-	u32 i, stream_index, stream_bitmask;
+	i: u32, stream_index, stream_bitmask;
 	int unsigned odm_count, num_odm_output_segments, dpp_count;
 
 	*mode_support_ex_params.out_evaluation_info = mode_support_ex_params.mode_lib.ms.support;
@@ -2509,11 +2508,11 @@ unsafe fn dcn5_ms_populate_mode_support_result(
 	result.global.active.average_bw_sdp_kbps = 0;
 	result.global.active.urgent_bw_dram_kbps = 0;
 
-	result.global.active.average_bw_sdp_kbps = (unsigned long)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
-	result.global.active.urgent_bw_sdp_kbps = (unsigned long)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
+	result.global.active.average_bw_sdp_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
+	result.global.active.urgent_bw_sdp_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000), 1.0);
 
-	result.global.active.average_bw_dram_kbps = (unsigned long)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
-	result.global.active.urgent_bw_dram_kbps = (unsigned long)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
+	result.global.active.average_bw_dram_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.avg_bandwidth_required[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
+	result.global.active.urgent_bw_dram_kbps = (core::ffi::c_ulong)math_ceil2((mode_support_ex_params.out_evaluation_info.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_dram] * 1000), 1.0);
 	DML_LOG_VERBOSE("DML::%s: result.global.active.urgent_bw_sdp_kbps = %ld\n", __func__, result.global.active.urgent_bw_sdp_kbps);
 	DML_LOG_VERBOSE("DML::%s: result.global.active.urgent_bw_dram_kbps = %ld\n", __func__, result.global.active.urgent_bw_dram_kbps);
 
@@ -2577,8 +2576,8 @@ unsafe fn dcn5_ms_populate_mode_support_result(
 			stream_bitmask |= 0x1 << stream_index;
 		}
 	}
-	result.bandwidth_upper_bound.dcn5.urgent_bandwidth_kbps = (unsigned long)(mode_support_ex_params.mode_lib.ms.support.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
-	result.bandwidth_upper_bound.dcn5.non_urgent_bandwidth_kbps = (unsigned long)(mode_support_ex_params.mode_lib.ms.support.non_urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
+	result.bandwidth_upper_bound.dcn5.urgent_bandwidth_kbps = (core::ffi::c_ulong)(mode_support_ex_params.mode_lib.ms.support.urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
+	result.bandwidth_upper_bound.dcn5.non_urgent_bandwidth_kbps = (core::ffi::c_ulong)(mode_support_ex_params.mode_lib.ms.support.non_urg_bandwidth_required_flip[dml2_core_internal_soc_state_sys_active][dml2_core_internal_bw_sdp] * 1000);
 }
 
 unsafe fn dcn5_ms_calculate_watermarks(*const dml2_display_cfgdisplay_cfg,
@@ -2929,7 +2928,7 @@ enum dml2_status dml2_core_dcn5_funcs_validate_solution(*dml2_core_instancecore,
 		result.is_mcache_allocation_valid = true;
 		for (i = 0; i < solution.dispcfg.num_planes; i++) {
 			if (!solution.dispcfg.plane_descriptors[i].surface.dcc.enable) {
-				memset(&mut result.mcache_allocations[i], 0, sizeof(struct dml2_mcache_surface_allocation));
+				memset(&mut result.mcache_allocations[i], 0, sizeof(dml2_mcache_surface_allocation));
 				continue;
 			}
 

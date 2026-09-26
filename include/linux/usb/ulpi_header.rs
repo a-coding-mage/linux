@@ -48,7 +48,7 @@ pub const ULPI_FC_SUSPM: u32 = 1 << 26;
 // The CONFIG_USB_ULPI condition is a build-time configuration supplied by
 // the surrounding kernel translation.
 #[cfg(CONFIG_USB_ULPI)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn devm_otg_ulpi_create(
         dev: *mut device,
         ops: *mut usb_phy_io_ops,
@@ -68,7 +68,7 @@ pub unsafe fn devm_otg_ulpi_create(
 
 // Access operations for controllers with a viewport register.
 #[cfg(CONFIG_USB_ULPI_VIEWPORT)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut ulpi_viewport_access_ops: usb_phy_io_ops;
 }
 

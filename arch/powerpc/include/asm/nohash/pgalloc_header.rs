@@ -9,12 +9,12 @@ extern "C" {
 
 // CONFIG_PPC64 provides this declaration.  For non-CONFIG_PPC64 builds the
 // C header provides an empty inline implementation instead.
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 extern "C" {
     pub fn tlb_flush_pgtable(tlb: *mut mmu_gather, address: c_ulong);
 }
 
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 #[inline]
 pub unsafe fn tlb_flush_pgtable(_tlb: *mut mmu_gather, _address: c_ulong) {
 }
@@ -27,7 +27,7 @@ pub unsafe fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t {
     ) as *mut pgd_t;
 
     // CONFIG_PPC_8xx: copy the kernel portion of the page directory.
-    #[cfg(feature = "CONFIG_PPC_8xx")]
+    #[cfg(CONFIG_PPC_8xx)]
     {
         core::ptr::copy_nonoverlapping(
             swapper_pg_dir.add(USER_PTRS_PER_PGD),

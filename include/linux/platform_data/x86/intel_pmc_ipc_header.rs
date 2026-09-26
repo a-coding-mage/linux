@@ -41,7 +41,7 @@ pub unsafe fn intel_pmc_ipc(
     ipc_cmd: *mut pmc_ipc_cmd,
     rbuf: *mut pmc_ipc_rbuf,
 ) -> i32 {
-    #[cfg(feature = "CONFIG_ACPI")]
+    #[cfg(CONFIG_ACPI)]
     {
         let mut buffer: acpi_buffer = acpi_buffer {
             length: ACPI_ALLOCATE_BUFFER,
@@ -111,7 +111,7 @@ pub unsafe fn intel_pmc_ipc(
         0
     }
 
-    #[cfg(not(feature = "CONFIG_ACPI"))]
+    #[cfg(not(CONFIG_ACPI))]
     {
         -ENODEV
     }

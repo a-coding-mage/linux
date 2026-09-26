@@ -21,7 +21,7 @@ static mut nr_files: percpu_counter = unsafe { core::mem::zeroed() };
 struct backing_file {
     file: file,
     user_path_or_freeptr: backing_file_union,
-    #[cfg(feature = "CONFIG_SECURITY")]
+    #[cfg(CONFIG_SECURITY)]
     security: *mut core::ffi::c_void,
 }
 
@@ -45,12 +45,12 @@ pub unsafe extern "C" fn backing_file_set_user_path(f: *mut file, path_: *const 
     (*backing_file(f)).user_path_or_freeptr.user_path = *path_;
 }
 
-#[cfg(feature = "CONFIG_SECURITY")]
+#[cfg(CONFIG_SECURITY)]
 pub unsafe extern "C" fn backing_file_security(f: *const file) -> *mut core::ffi::c_void {
     (*backing_file(f)).security
 }
 
-#[cfg(feature = "CONFIG_SECURITY")]
+#[cfg(CONFIG_SECURITY)]
 pub unsafe extern "C" fn backing_file_set_security(f: *mut file, security: *mut core::ffi::c_void) {
     (*backing_file(f)).security = security;
 }
@@ -77,14 +77,14 @@ unsafe fn get_nr_files() -> i64 { percpu_counter_read_positive(&nr_files) }
 #[no_mangle]
 pub unsafe extern "C" fn get_max_files() -> u64 { files_stat.max_files }
 
-#[cfg(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_PROC_FS"))]
+#[cfg(all(CONFIG_SYSCTL, CONFIG_PROC_FS))]
 unsafe fn proc_nr_files(table: *const ctl_table, write: i32, buffer: *mut core::ffi::c_void,
                         lenp: *mut usize, ppos: *mut loff_t) -> i32 {
     files_stat.nr_files = percpu_counter_sum_positive(&nr_files);
     proc_doulongvec_minmax(table, write, buffer, lenp, ppos)
 }
 
-#[cfg(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_PROC_FS"))]
+#[cfg(all(CONFIG_SYSCTL, CONFIG_PROC_FS))]
 static fs_stat_sysctls: [ctl_table; 4] = [
     ctl_table { procname: "file-nr", data: core::ptr::addr_of_mut!(files_stat) as *mut _, maxlen: core::mem::size_of::<files_stat_struct>(), mode: 0o444, proc_handler: Some(proc_nr_files), extra1: core::ptr::null_mut(), extra2: core::ptr::null_mut() },
     ctl_table { procname: "file-max", data: core::ptr::addr_of_mut!(files_stat.max_files) as *mut _, maxlen: core::mem::size_of::<u64>(), mode: 0o644, proc_handler: Some(proc_doulongvec_minmax), extra1: SYSCTL_LONG_ZERO, extra2: SYSCTL_LONG_MAX },
@@ -109,7 +109,7 @@ unsafe fn init_file(f: *mut file, flags: i32, cred: *const cred) -> i32 {
     (*f).private_data = core::ptr::null_mut();
     (*f).f_inode = core::ptr::null_mut();
     (*f).f_owner = core::ptr::null_mut();
-    #[cfg(feature = "CONFIG_EPOLL")]
+    #[cfg(CONFIG_EPOLL)]
     { (*f).f_ep = core::ptr::null_mut(); }
     (*f).f_iocb_flags = 0;
     (*f).f_pos = 0;

@@ -90,7 +90,7 @@ unsafe extern "C" fn userspace_tramp(p:*mut c_void)->c_int { let t=p as *mut tra
     if stack as isize == -1 { return -*errno_location(); }
     if socketpair(1,1,0,td.sockpair.as_mut_ptr())!=0 { return -*errno_location(); }
     if using_seccomp!=0 { (*td.stub_data).futex=1; }
-    (*mm).pid=clone(userspace_tramp,stack as *mut u8.add(0x1000) as *mut c_void,0x500011, &mut td as *mut _ as *mut c_void);
+    (*mm).pid=clone(userspace_tramp,(stack as *mut u8).add(0x1000) as *mut c_void,0x500011, &mut td as *mut _ as *mut c_void);
     if (*mm).pid<0 { close(td.sockpair[0]);close(td.sockpair[1]);(*mm).pid=-1;return -*errno_location(); }
     munmap(stack,0x1000); close(td.sockpair[0]); if using_seccomp!=0 {(*mm).sock=td.sockpair[1]} else {close(td.sockpair[1])}; 0
 }

@@ -25,14 +25,14 @@ pub static mut fw_cache: firmware_cache = firmware_cache { lock: spinlock_t{_x:[
 pub static mut fw_load_abort_all: bool = false;
 
 extern "C" {
-    fn init_completion(*mut completion); fn __fw_state_wait_common(*mut fw_priv, isize)->c_int; fn kzalloc(usize,u32)->*mut c_void; fn kfree(*mut c_void); fn kstrdup_const(*const c_char,u32)->*const c_char; fn kfree_const(*const c_char);
-    fn kref_init(*mut kref); fn kref_get(*mut kref); fn kref_put(*mut kref, unsafe extern "C" fn(*mut kref))->bool; fn spin_lock(*mut spinlock_t); fn spin_unlock(*mut spinlock_t); fn spin_lock_init(*mut spinlock_t);
-    fn INIT_LIST_HEAD(*mut list_head); fn list_add(*mut list_head,*mut list_head); fn list_add_tail(*mut list_head,*mut list_head); fn list_del(*mut list_head); fn list_del_init(*mut list_head); fn list_empty(*const list_head);
-    fn strcmp(*const c_char,*const c_char)->c_int; fn memcpy(*mut c_void,*const c_void,usize)->*mut c_void; fn memset(*mut c_void,c_int,usize)->*mut c_void; fn vfree(*mut c_void); fn kvfree(*mut c_void); fn vunmap(*mut c_void); fn vmap(*mut *mut page,c_int,c_int,usize)->*mut c_void; fn alloc_page(u32)->*mut page; fn __free_page(*mut page);
-    fn fw_state_done(*mut fw_priv); fn fw_state_is_aborted(*mut fw_priv)->bool; fn fw_state_aborted(*mut fw_priv); fn fw_free_paged_buf(*mut fw_priv); fn fw_is_paged_buf(*mut fw_priv)->bool;
-    fn firmware_request_builtin_buf(*mut firmware,*const c_char,*mut c_void,usize)->bool; fn firmware_is_builtin(*const firmware)->bool; fn release_firmware(*const firmware); fn firmware_free_data(*const firmware);
-    fn firmware_fallback_platform(*mut fw_priv)->c_int; fn firmware_fallback_sysfs(*mut firmware,*const c_char,*mut device,u32,c_int)->c_int; fn name_contains_dotdot(*const c_char)->bool; fn fw_get_filesystem_firmware(*mut device,*mut fw_priv,*const c_char,*mut c_void)->c_int;
-    fn mutex_lock(*mut c_void); fn mutex_unlock(*mut c_void); fn __module_get(*mut module); fn module_put(*mut module); fn register_sysfs_loader()->c_int; fn unregister_sysfs_loader();
+    fn init_completion(_: *mut completion); fn __fw_state_wait_common(_: *mut fw_priv, _: isize)->c_int; fn kzalloc(_: usize,_: u32)->*mut c_void; fn kfree(_: *mut c_void); fn kstrdup_const(_: *const c_char,_: u32)->*const c_char; fn kfree_const(_: *const c_char);
+    fn kref_init(_: *mut kref); fn kref_get(_: *mut kref); fn kref_put(_: *mut kref, _: unsafe extern "C" fn(*mut kref))->bool; fn spin_lock(_: *mut spinlock_t); fn spin_unlock(_: *mut spinlock_t); fn spin_lock_init(_: *mut spinlock_t);
+    fn INIT_LIST_HEAD(_: *mut list_head); fn list_add(_: *mut list_head,_: *mut list_head); fn list_add_tail(_: *mut list_head,_: *mut list_head); fn list_del(_: *mut list_head); fn list_del_init(_: *mut list_head); fn list_empty(_: *const list_head);
+    fn strcmp(_: *const c_char,_: *const c_char)->c_int; fn memcpy(_: *mut c_void,_: *const c_void,_: usize)->*mut c_void; fn memset(_: *mut c_void,_: c_int,_: usize)->*mut c_void; fn vfree(_: *mut c_void); fn kvfree(_: *mut c_void); fn vunmap(_: *mut c_void); fn vmap(_: *mut *mut page,_: c_int,_: c_int,_: usize)->*mut c_void; fn alloc_page(_: u32)->*mut page; fn __free_page(_: *mut page);
+    fn fw_state_done(_: *mut fw_priv); fn fw_state_is_aborted(_: *mut fw_priv)->bool; fn fw_state_aborted(_: *mut fw_priv); fn fw_free_paged_buf(_: *mut fw_priv); fn fw_is_paged_buf(_: *mut fw_priv)->bool;
+    fn firmware_request_builtin_buf(_: *mut firmware,_: *const c_char,_: *mut c_void,_: usize)->bool; fn firmware_is_builtin(_: *const firmware)->bool; fn release_firmware(_: *const firmware); fn firmware_free_data(_: *const firmware);
+    fn firmware_fallback_platform(_: *mut fw_priv)->c_int; fn firmware_fallback_sysfs(_: *mut firmware,_: *const c_char,_: *mut device,_: u32,_: c_int)->c_int; fn name_contains_dotdot(_: *const c_char)->bool; fn fw_get_filesystem_firmware(_: *mut device,_: *mut fw_priv,_: *const c_char,_: *mut c_void)->c_int;
+    fn mutex_lock(_: *mut c_void); fn mutex_unlock(_: *mut c_void); fn __module_get(_: *mut module); fn module_put(_: *mut module); fn register_sysfs_loader()->c_int; fn unregister_sysfs_loader();
 }
 
 pub unsafe fn fw_state_init(p:*mut fw_priv) { init_completion(&mut (*p).fw_st.completion); (*p).fw_st.status=0; }

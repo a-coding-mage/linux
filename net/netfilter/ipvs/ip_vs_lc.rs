@@ -36,7 +36,7 @@ unsafe fn ip_vs_lc_schedule(
      * served, but no new connection is assigned to the server.
      */
 
-    list_for_each_entry_rcu!(dest, (*svc).destinations, n_list) {
+    list_for_each_entry_rcu!(dest, (*svc).destinations, n_list, {
         if (((*dest).flags & IP_VS_DEST_F_OVERLOAD) != 0
             || atomic_read!(&(*dest).weight) == 0)
         {
@@ -47,7 +47,7 @@ unsafe fn ip_vs_lc_schedule(
             least = dest;
             loh = doh;
         }
-    }
+    });
 
     if least.is_null() {
         ip_vs_scheduler_err(svc, "no destination available");

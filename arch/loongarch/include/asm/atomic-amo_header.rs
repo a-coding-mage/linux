@@ -16,7 +16,7 @@ macro_rules! atomic_op {
                 core::arch::asm!(
                     concat!("am", stringify!($asm_op), ".w $zero, {i}, {counter}\n"),
                     counter = inout(reg) (*v).counter => _,
-                    i = in(reg) $i,
+                    $i = in(reg) $i,
                     options(nostack)
                 );
             }
@@ -34,7 +34,7 @@ macro_rules! atomic_op_return {
                     concat!("am", stringify!($asm_op), $mb, ".w {result}, {i}, {counter}\n"),
                     counter = inout(reg) (*v).counter => _,
                     result = lateout(reg) result,
-                    i = in(reg) $i,
+                    $i = in(reg) $i,
                     options(nostack)
                 );
                 result $c_op $i
@@ -53,7 +53,7 @@ macro_rules! atomic_fetch_op {
                     concat!("am", stringify!($asm_op), $mb, ".w {result}, {i}, {counter}\n"),
                     counter = inout(reg) (*v).counter => _,
                     result = lateout(reg) result,
-                    i = in(reg) $i,
+                    $i = in(reg) $i,
                     options(nostack)
                 );
                 result
@@ -86,7 +86,7 @@ mod atomic64 {
             paste::paste! {
                 #[inline]
                 pub unsafe fn [<arch_atomic64_ $op>](i: i64, v: *mut atomic64_t) {
-                    core::arch::asm!(concat!("am", stringify!($asm_op), ".d $zero, {i}, {counter}\n"), counter = inout(reg) (*v).counter => _, i = in(reg) $i, options(nostack));
+                    core::arch::asm!(concat!("am", stringify!($asm_op), ".d $zero, {i}, {counter}\n"), counter = inout(reg) (*v).counter => _, $i = in(reg) $i, options(nostack));
                 }
             }
         };
@@ -98,7 +98,7 @@ mod atomic64 {
                 #[inline]
                 pub unsafe fn [<arch_atomic64_fetch_ $op $suffix>](i: i64, v: *mut atomic64_t) -> i64 {
                     let result: i64;
-                    core::arch::asm!(concat!("am", stringify!($asm_op), $mb, ".d {result}, {i}, {counter}\n"), counter = inout(reg) (*v).counter => _, result = lateout(reg) result, i = in(reg) $i, options(nostack));
+                    core::arch::asm!(concat!("am", stringify!($asm_op), $mb, ".d {result}, {i}, {counter}\n"), counter = inout(reg) (*v).counter => _, result = lateout(reg) result, $i = in(reg) $i, options(nostack));
                     result
                 }
             }
@@ -111,7 +111,7 @@ mod atomic64 {
                 #[inline]
                 pub unsafe fn [<arch_atomic64_ $op _return $suffix>](i: i64, v: *mut atomic64_t) -> i64 {
                     let result: i64;
-                    core::arch::asm!(concat!("am", stringify!($asm_op), $mb, ".d {result}, {i}, {counter}\n"), counter = inout(reg) (*v).counter => _, result = lateout(reg) result, i = in(reg) $i, options(nostack));
+                    core::arch::asm!(concat!("am", stringify!($asm_op), $mb, ".d {result}, {i}, {counter}\n"), counter = inout(reg) (*v).counter => _, result = lateout(reg) result, $i = in(reg) $i, options(nostack));
                     result $c_op $i
                 }
             }

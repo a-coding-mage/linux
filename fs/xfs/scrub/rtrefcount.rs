@@ -52,24 +52,24 @@ pub unsafe fn xchk_rtrefcountbt_process_rmap_fragments(c: *mut xchk_rtrefcnt_che
     let mut worklist: list_head = core::mem::zeroed(); INIT_LIST_HEAD(&mut worklist);
     let mut rbno = NULLRGBLOCK; let mut bno = 0;
     let mut frag: *mut xchk_rtrefcnt_frag; let mut n: *mut xchk_rtrefcnt_frag;
-    list_for_each_entry!(frag, &(*c).fragments, list) { if (*frag).rm.rm_startblock < bno { break 'done; } bno = (*frag).rm.rm_startblock; }
+    list_for_each_entry!(frag, &(*c).fragments, list, { if (*frag).rm.rm_startblock < bno { break 'done; } bno = (*frag).rm.rm_startblock; });
     let mut nr = 0;
-    list_for_each_entry_safe!(frag, n, &(*c).fragments, list) {
+    list_for_each_entry_safe!(frag, n, &(*c).fragments, list, {
         if (*frag).rm.rm_startblock > (*c).bno || nr > target_nr { break; }
         bno = (*frag).rm.rm_startblock + (*frag).rm.rm_blockcount; if bno < rbno { rbno = bno; }
         list_move_tail(&mut (*frag).list, &mut worklist); nr += 1;
-    }
+    });
     if nr != target_nr { break 'done; }
     while !list_empty(&(*c).fragments) {
         nr = 0; let mut next_rbno = NULLRGBLOCK;
-        list_for_each_entry_safe!(frag, n, &worklist, list) { bno = (*frag).rm.rm_startblock + (*frag).rm.rm_blockcount; if bno < next_rbno { next_rbno = bno; } if bno == rbno { list_del(&mut (*frag).list); kfree(frag); nr += 1; } }
-        list_for_each_entry_safe!(frag, n, &(*c).fragments, list) { bno = (*frag).rm.rm_startblock + (*frag).rm.rm_blockcount; if (*frag).rm.rm_startblock != rbno { break 'done; } list_move_tail(&mut (*frag).list, &mut worklist); if next_rbno > bno { next_rbno = bno; } nr -= 1; if nr == 0 { break; } }
+        list_for_each_entry_safe!(frag, n, &worklist, list, { bno = (*frag).rm.rm_startblock + (*frag).rm.rm_blockcount; if bno < next_rbno { next_rbno = bno; } if bno == rbno { list_del(&mut (*frag).list); kfree(frag); nr += 1; } });
+        list_for_each_entry_safe!(frag, n, &(*c).fragments, list, { bno = (*frag).rm.rm_startblock + (*frag).rm.rm_blockcount; if (*frag).rm.rm_startblock != rbno { break 'done; } list_move_tail(&mut (*frag).list, &mut worklist); if next_rbno > bno { next_rbno = bno; } nr -= 1; if nr == 0 { break; } });
         if nr != 0 { break 'done; } rbno = next_rbno;
     }
     if rbno < (*c).bno + (*c).len { break 'done; } (*c).seen = (*c).refcount;
     'done: {
-        list_for_each_entry_safe!(frag, n, &worklist, list) { list_del(&mut (*frag).list); kfree(frag); }
-        list_for_each_entry_safe!(frag, n, &(*c).fragments, list) { list_del(&mut (*frag).list); kfree(frag); }
+        list_for_each_entry_safe!(frag, n, &worklist, list, { list_del(&mut (*frag).list); kfree(frag); });
+        list_for_each_entry_safe!(frag, n, &(*c).fragments, list, { list_del(&mut (*frag).list); kfree(frag); });
     }
 }
 

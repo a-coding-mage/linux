@@ -14,7 +14,7 @@
 const HDMI_CODEC_CHMAP_IDX_UNKNOWN: i32 = -1;
 
 const fn BIT(n: u32) -> c_ulong {
-    1 as c_ulong << n
+    (1 as c_ulong) << n
 }
 
 /*

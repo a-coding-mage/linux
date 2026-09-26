@@ -21,7 +21,7 @@ unsafe fn __crypto_memneq_generic(a: *const core::ffi::c_void,
     let mut a = a as *const u8;
     let mut b = b as *const u8;
 
-    #[cfg(feature = "CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS")]
+    #[cfg(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)]
     {
         while size >= core::mem::size_of::<usize>() {
             neq |= core::ptr::read_unaligned(a as *const usize)
@@ -50,7 +50,7 @@ unsafe fn __crypto_memneq_16(a: *const core::ffi::c_void,
     let a = a as *const u8;
     let b = b as *const u8;
 
-    #[cfg(feature = "CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS")]
+    #[cfg(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)]
     {
         if core::mem::size_of::<usize>() == 8 {
             neq |= core::ptr::read_unaligned(a as *const usize)
@@ -76,7 +76,7 @@ unsafe fn __crypto_memneq_16(a: *const core::ffi::c_void,
             return __crypto_memneq_16_bytes(a, b, neq);
         }
     }
-    #[cfg(not(feature = "CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS"))]
+    #[cfg(not(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))]
     {
         return __crypto_memneq_16_bytes(a, b, neq);
     }

@@ -65,7 +65,7 @@ pub unsafe fn __gen_sigismember(set: *mut sigset_t, _sig: core::ffi::c_int) -> c
 #[macro_export]
 macro_rules! sigismember {
     ($set:expr, $sig:expr) => {{
-        // C uses __builtin_constant_p(sig) to select the constant path.
+        // C uses __builtin_constant_p($sig) to select the constant path.
         unsafe { $crate::__gen_sigismember($set, $sig) }
     }};
 }

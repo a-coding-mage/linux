@@ -64,7 +64,7 @@ pub struct acpi_fan {
     // A value of 0 means that trippoint-related functions are not supported
     pub fan_trip_granularity: u32,
     // Conditional on IS_REACHABLE(CONFIG_HWMON) in the C source.
-    #[cfg(feature = "CONFIG_HWMON")]
+    #[cfg(CONFIG_HWMON)]
     pub hdev: *mut device,
     pub cdev: *mut thermal_cooling_device,
     pub fst_speed: device_attribute,
@@ -94,19 +94,19 @@ unsafe extern "C" {
 }
 
 // Conditional on IS_REACHABLE(CONFIG_HWMON) in the C source.
-#[cfg(feature = "CONFIG_HWMON")]
+#[cfg(CONFIG_HWMON)]
 unsafe extern "C" {
     pub fn devm_acpi_fan_create_hwmon(dev: *mut device) -> core::ffi::c_int;
     pub fn acpi_fan_notify_hwmon(dev: *mut device);
 }
 
-#[cfg(not(feature = "CONFIG_HWMON"))]
+#[cfg(not(CONFIG_HWMON))]
 #[inline]
 pub unsafe fn devm_acpi_fan_create_hwmon(_dev: *mut device) -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_HWMON"))]
+#[cfg(not(CONFIG_HWMON))]
 #[inline]
 pub unsafe fn acpi_fan_notify_hwmon(_dev: *mut device) {}
 

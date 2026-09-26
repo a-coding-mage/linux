@@ -7,7 +7,7 @@
  * Copyright (C) 2007 - 2010  Paul Mundt
  */
 
-static mut heartbeat_resources: [struct resource; 1] = [
+static mut heartbeat_resources: [resource; 1] = [
     resource {
         start: 0xb8140020,
         end: 0xb8140020,
@@ -15,18 +15,18 @@ static mut heartbeat_resources: [struct resource; 1] = [
     },
 ];
 
-static mut heartbeat_device: struct platform_device = platform_device {
+static mut heartbeat_device: platform_device = platform_device {
     name: "heartbeat",
     id: -1,
     num_resources: ARRAY_SIZE(heartbeat_resources),
     resource: heartbeat_resources.as_mut_ptr(),
 };
 
-static mut smc91x_info: struct smc91x_platdata = smc91x_platdata {
+static mut smc91x_info: smc91x_platdata = smc91x_platdata {
     flags: SMC91X_USE_16BIT | SMC91X_NOWAIT,
 };
 
-static mut smc91x_resources: [struct resource; 2] = [
+static mut smc91x_resources: [resource; 2] = [
     resource {
         start: 0x18000300,
         end: 0x18000300 + 0x10 - 1,
@@ -38,7 +38,7 @@ static mut smc91x_resources: [struct resource; 2] = [
     },
 ];
 
-static mut smc91x_device: struct platform_device = platform_device {
+static mut smc91x_device: platform_device = platform_device {
     name: "smc91x",
     id: -1,
     resource: smc91x_resources.as_mut_ptr(),
@@ -48,12 +48,12 @@ static mut smc91x_device: struct platform_device = platform_device {
     },
 };
 
-static mut r8a66597_data: struct r8a66597_platdata = r8a66597_platdata {
+static mut r8a66597_data: r8a66597_platdata = r8a66597_platdata {
     xtal: R8A66597_PLATDATA_XTAL_12MHZ,
     vif: 1,
 };
 
-static mut r8a66597_usb_host_resources: [struct resource; 2] = [
+static mut r8a66597_usb_host_resources: [resource; 2] = [
     resource {
         start: 0x18040000,
         end: 0x18080000 - 1,
@@ -65,7 +65,7 @@ static mut r8a66597_usb_host_resources: [struct resource; 2] = [
     },
 ];
 
-static mut r8a66597_usb_host_device: struct platform_device = platform_device {
+static mut r8a66597_usb_host_device: platform_device = platform_device {
     name: "r8a66597_hcd",
     id: -1,
     dev: platform_device_dev {
@@ -77,12 +77,12 @@ static mut r8a66597_usb_host_device: struct platform_device = platform_device {
     resource: r8a66597_usb_host_resources.as_mut_ptr(),
 };
 
-static mut usbf_platdata: struct m66592_platdata = m66592_platdata {
+static mut usbf_platdata: m66592_platdata = m66592_platdata {
     xtal: M66592_PLATDATA_XTAL_24MHZ,
     vif: 1,
 };
 
-static mut m66592_usb_peripheral_resources: [struct resource; 2] = [
+static mut m66592_usb_peripheral_resources: [resource; 2] = [
     resource {
         name: "m66592_udc",
         start: 0x18080000,
@@ -96,7 +96,7 @@ static mut m66592_usb_peripheral_resources: [struct resource; 2] = [
     },
 ];
 
-static mut m66592_usb_peripheral_device: struct platform_device = platform_device {
+static mut m66592_usb_peripheral_device: platform_device = platform_device {
     name: "m66592_udc",
     id: -1,
     dev: platform_device_dev {
@@ -108,7 +108,7 @@ static mut m66592_usb_peripheral_device: struct platform_device = platform_devic
     resource: m66592_usb_peripheral_resources.as_mut_ptr(),
 };
 
-static mut baseboard_buttons: [struct gpio_keys_button; NR_BASEBOARD_GPIOS] = [
+static mut baseboard_buttons: [gpio_keys_button; NR_BASEBOARD_GPIOS] = [
     gpio_keys_button { desc: "key44", code: KEY_POWER, active_low: 1, wakeup: 1 },
     gpio_keys_button { desc: "key43", code: KEY_SUSPEND, active_low: 1, wakeup: 1 },
     gpio_keys_button { desc: "key42", code: KEY_KATAKANAHIRAGANA, active_low: 1 },
@@ -127,12 +127,12 @@ static mut baseboard_buttons: [struct gpio_keys_button; NR_BASEBOARD_GPIOS] = [
     gpio_keys_button { desc: "key11", code: KEY_F1, active_low: 1 },
 ];
 
-static mut baseboard_buttons_data: struct gpio_keys_platform_data = gpio_keys_platform_data {
+static mut baseboard_buttons_data: gpio_keys_platform_data = gpio_keys_platform_data {
     buttons: baseboard_buttons.as_mut_ptr(),
     nbuttons: ARRAY_SIZE(baseboard_buttons),
 };
 
-static mut baseboard_buttons_device: struct platform_device = platform_device {
+static mut baseboard_buttons_device: platform_device = platform_device {
     name: "gpio-keys",
     id: -1,
     dev: platform_device_dev {
@@ -140,7 +140,7 @@ static mut baseboard_buttons_device: struct platform_device = platform_device {
     },
 };
 
-static mut x3proto_devices: [*mut struct platform_device; 5] = [
+static mut x3proto_devices: [*mut platform_device; 5] = [
     &mut heartbeat_device,
     &mut smc91x_device,
     &mut r8a66597_usb_host_device,
@@ -186,7 +186,7 @@ unsafe fn x3proto_setup(_cmdline_p: *mut *mut u8) {
     register_smp_ops(&shx3_smp_ops);
 }
 
-static mut mv_x3proto: struct sh_machine_vector = sh_machine_vector {
+static mut mv_x3proto: sh_machine_vector = sh_machine_vector {
     mv_name: "x3proto",
     mv_setup: Some(x3proto_setup),
 };

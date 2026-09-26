@@ -60,21 +60,22 @@ unsafe fn meson_cipher(areq: *mut skcipher_request) -> i32 {
     let mut src_sg = (*areq).src; let mut dst_sg = (*areq).dst;
     let mut err = 0; let mut backup_iv: *mut core::ffi::c_void = core::ptr::null_mut();
     let mut bkeyiv: *mut u8 = kzalloc(48, GFP_KERNEL | GFP_DMA);
+    'theend: {
     if bkeyiv.is_null() { return -ENOMEM; }
     memcpy(bkeyiv, (*op).key, (*op).keylen); let mut keyivlen = (*op).keylen;
     let ivsize = crypto_skcipher_ivsize(tfm);
     if !(*areq).iv.is_null() && ivsize > 0 {
-        if ivsize > (*areq).cryptlen { err = -EINVAL; goto theend; }
+        if ivsize > (*areq).cryptlen { err = -EINVAL; break 'theend; }
         memcpy(bkeyiv.add(32), (*areq).iv, ivsize); keyivlen = 48;
         if (*rctx).op_dir == MESON_DECRYPT {
             backup_iv = kzalloc(ivsize, GFP_KERNEL);
-            if backup_iv.is_null() { err = -ENOMEM; goto theend; }
+            if backup_iv.is_null() { err = -ENOMEM; break 'theend; }
             scatterwalk_map_and_copy(backup_iv, (*areq).src, (*areq).cryptlen - ivsize, ivsize, 0);
         }
     }
     if keyivlen == 24 { keyivlen = 32; }
     let phykeyiv = dma_map_single((*mc).dev, bkeyiv, keyivlen, DMA_TO_DEVICE);
-    err = dma_mapping_error((*mc).dev, phykeyiv); if err != 0 { goto theend; }
+    err = dma_mapping_error((*mc).dev, phykeyiv); if err != 0 { break 'theend; }
     let mut tloffset = 0; let mut eat = 0; let mut i = 0;
     while keyivlen > eat {
         let desc = &mut (*mc).chanlist[flow as usize].tl[tloffset];
@@ -86,10 +87,10 @@ unsafe fn meson_cipher(areq: *mut skcipher_request) -> i32 {
     }
     let nr_sgs = dma_map_sg((*mc).dev, (*areq).src, sg_nents((*areq).src),
                             if (*areq).src == (*areq).dst { DMA_BIDIRECTIONAL } else { DMA_TO_DEVICE });
-    if nr_sgs == 0 || (*areq).src != (*areq).dst && nr_sgs > MAXDESC - 3 { err = -EINVAL; goto theend; }
+    if nr_sgs == 0 || (*areq).src != (*areq).dst && nr_sgs > MAXDESC - 3 { err = -EINVAL; break 'theend; }
     let nr_sgd = if (*areq).src == (*areq).dst { nr_sgs } else {
         let n = dma_map_sg((*mc).dev, (*areq).dst, sg_nents((*areq).dst), DMA_FROM_DEVICE);
-        if n == 0 || n > MAXDESC - 3 { err = -EINVAL; goto theend; } n
+        if n == 0 || n > MAXDESC - 3 { err = -EINVAL; break 'theend; } n
     };
     let _ = nr_sgd;
     let mut len = (*areq).cryptlen;
@@ -110,7 +111,8 @@ unsafe fn meson_cipher(areq: *mut skcipher_request) -> i32 {
     if (*areq).src == (*areq).dst { dma_unmap_sg((*mc).dev, (*areq).src, sg_nents((*areq).src), DMA_BIDIRECTIONAL); }
     else { dma_unmap_sg((*mc).dev, (*areq).src, sg_nents((*areq).src), DMA_TO_DEVICE); dma_unmap_sg((*mc).dev, (*areq).dst, sg_nents((*areq).dst), DMA_FROM_DEVICE); }
     if !(*areq).iv.is_null() && ivsize > 0 { if (*rctx).op_dir == MESON_DECRYPT { memcpy((*areq).iv, backup_iv, ivsize); } else { scatterwalk_map_and_copy((*areq).iv, (*areq).dst, (*areq).cryptlen - ivsize, ivsize, 0); } }
-theend:
+    }
+    
     kfree_sensitive(bkeyiv); kfree_sensitive(backup_iv); err
 }
 

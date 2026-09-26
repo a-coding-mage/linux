@@ -13,10 +13,10 @@ pub const PADLOCK_CRA_PRIORITY: i32 = 300;
 pub const PADLOCK_COMPOSITE_PRIORITY: i32 = 400;
 
 // The original condition is the build-time C CONFIG_64BIT setting.
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const STACK_ALIGN: usize = 16;
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub const STACK_ALIGN: usize = 4;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

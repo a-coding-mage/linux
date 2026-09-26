@@ -103,7 +103,7 @@ pub unsafe fn mac_partition(state: *mut parsed_partitions) -> i32 {
             be32_to_cpu((*part).block_count) * (secsize / 512),
         );
 
-        if strncasecmp((*part).type.as_ptr(), b"Linux_RAID\0".as_ptr(), 10) == 0 {
+        if strncasecmp((*part).r#type.as_ptr(), b"Linux_RAID\0".as_ptr(), 10) == 0 {
             (*state).parts[slot as usize].flags = ADDPART_FLAG_RAID;
         }
         #[cfg(CONFIG_PPC_PMAC)]
@@ -113,15 +113,15 @@ pub unsafe fn mac_partition(state: *mut parsed_partitions) -> i32 {
                 let mut goodness = 0;
                 mac_fix_string((*part).processor.as_mut_ptr(), 16);
                 mac_fix_string((*part).name.as_mut_ptr(), 32);
-                mac_fix_string((*part).type.as_mut_ptr(), 32);
+                mac_fix_string((*part).r#type.as_mut_ptr(), 32);
                 if (be32_to_cpu((*part).status) & MAC_STATUS_BOOTABLE) != 0
                     && strcasecmp((*part).processor.as_ptr(), b"powerpc\0".as_ptr()) == 0
                 {
                     goodness += 1;
                 }
-                if strcasecmp((*part).type.as_ptr(), b"Apple_UNIX_SVR2\0".as_ptr()) == 0
-                    || (strncasecmp((*part).type.as_ptr(), b"Linux\0".as_ptr(), 5) == 0
-                        && strcasecmp((*part).type.as_ptr(), b"Linux_swap\0".as_ptr()) != 0)
+                if strcasecmp((*part).r#type.as_ptr(), b"Apple_UNIX_SVR2\0".as_ptr()) == 0
+                    || (strncasecmp((*part).r#type.as_ptr(), b"Linux\0".as_ptr(), 5) == 0
+                        && strcasecmp((*part).r#type.as_ptr(), b"Linux_swap\0".as_ptr()) != 0)
                 {
                     goodness += 1;
                     let l = strnlen((*part).name.as_ptr(), core::mem::size_of_val(&(*part).name));

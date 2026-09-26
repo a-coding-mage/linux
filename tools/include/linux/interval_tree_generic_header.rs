@@ -27,8 +27,7 @@
 
 #[macro_export]
 macro_rules! INTERVAL_TREE_DEFINE {
-    (
-        $ITSTRUCT:ty,
+    ($ITSTRUCT:ty,
         $ITRB:ident,
         $ITTYPE:ty,
         $ITSUBTREE:ident,
@@ -98,9 +97,9 @@ macro_rules! INTERVAL_TREE_DEFINE {
              * Iterate over intervals intersecting [start;last]
              *
              * Note that a node's interval intersects [start;last] iff:
-             *   Cond1: ITSTART(node) <= last
+             *   Cond1: $ITSTART(node) <= last
              * and
-             *   Cond2: start <= ITLAST(node)
+             *   Cond2: start <= $ITLAST(node)
              */
 
             $ITSTATIC unsafe fn [<$ITPREFIX _subtree_search>](
@@ -110,7 +109,7 @@ macro_rules! INTERVAL_TREE_DEFINE {
             ) -> *mut $ITSTRUCT {
                 loop {
                     /*
-                     * Loop invariant: start <= node->ITSUBTREE
+                     * Loop invariant: start <= node->$ITSUBTREE
                      * (Cond2 is satisfied by one of the subtree nodes)
                      */
                     if !(*node).$ITRB.rb_left.is_null() {
@@ -191,8 +190,8 @@ macro_rules! INTERVAL_TREE_DEFINE {
                 loop {
                     /*
                      * Loop invariants:
-                     *   Cond1: ITSTART(node) <= last
-                     *   rb == node->ITRB.rb_right
+                     *   Cond1: $ITSTART(node) <= last
+                     *   rb == node->$ITRB.rb_right
                      *
                      * First, search right subtree if suitable
                      */

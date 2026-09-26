@@ -16,7 +16,7 @@ unsafe extern "C" {
 
 #[inline]
 pub unsafe fn kvm_para_available() -> ::core::ffi::c_int {
-    (cfg!(feature = "CONFIG_KVM_GUEST") && unsafe { is_kvm_guest() }) as ::core::ffi::c_int
+    (cfg!(CONFIG_KVM_GUEST) && unsafe { is_kvm_guest() }) as ::core::ffi::c_int
 }
 
 #[inline]

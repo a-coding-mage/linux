@@ -22,7 +22,7 @@
 
 // CONFIG_AMD_MEM_ENCRYPT selects the masked forms below.  In a C build where
 // it is not selected, these macros are the identity operations.
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 #[macro_export]
 macro_rules! __sme_set {
     ($x:expr) => {
@@ -30,7 +30,7 @@ macro_rules! __sme_set {
     };
 }
 
-#[cfg(not(feature = "CONFIG_AMD_MEM_ENCRYPT"))]
+#[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[macro_export]
 macro_rules! __sme_set {
     ($x:expr) => {
@@ -38,7 +38,7 @@ macro_rules! __sme_set {
     };
 }
 
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 #[macro_export]
 macro_rules! __sme_clr {
     ($x:expr) => {
@@ -46,7 +46,7 @@ macro_rules! __sme_clr {
     };
 }
 
-#[cfg(not(feature = "CONFIG_AMD_MEM_ENCRYPT"))]
+#[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[macro_export]
 macro_rules! __sme_clr {
     ($x:expr) => {
@@ -54,7 +54,7 @@ macro_rules! __sme_clr {
     };
 }
 
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 #[macro_export]
 macro_rules! dma_addr_encrypted {
     ($x:expr) => {
@@ -62,7 +62,7 @@ macro_rules! dma_addr_encrypted {
     };
 }
 
-#[cfg(not(feature = "CONFIG_AMD_MEM_ENCRYPT"))]
+#[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[macro_export]
 macro_rules! dma_addr_encrypted {
     ($x:expr) => {
@@ -77,7 +77,7 @@ macro_rules! dma_addr_unencrypted {
     };
 }
 
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 #[macro_export]
 macro_rules! dma_addr_canonical {
     ($x:expr) => {
@@ -85,7 +85,7 @@ macro_rules! dma_addr_canonical {
     };
 }
 
-#[cfg(not(feature = "CONFIG_AMD_MEM_ENCRYPT"))]
+#[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[macro_export]
 macro_rules! dma_addr_canonical {
     ($x:expr) => {

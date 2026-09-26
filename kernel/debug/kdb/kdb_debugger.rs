@@ -127,7 +127,7 @@ pub unsafe extern "C" fn kdb_stub(ks: *mut KgdbState) -> i32 {
     kdb_state_clear_kgdb_trans(); kdb_common_init_state(ks); kdb_bp_remove();
     kdb_state_clear_doing_ss(); kdb_state_set_pager();
     if (*ks).err_code == 8 || reason == 1 { (*ks).pass_exception = 1; kdb_flag_set_catastrophic(); }
-    for_each_online_cpu_body(&mut i) { if (*kgdb_info.add(i as usize)).enter_kgdb == 0 { kdb_flag_set_catastrophic(); } }
+    for_each_online_cpu_body!(&mut i, { if (*kgdb_info.add(i as usize)).enter_kgdb == 0 { kdb_flag_set_catastrophic(); } });
     if kdb_state_ssbpt() && reason == 7 { kdb_state_clear_ssbpt(); kdb_state_clear_doing_ss(); }
     else { error = kdb_main_loop(9, reason, (*ks).err_code, db_result, (*ks).linux_regs); }
     kdb_common_deinit_state(); kdb_state_clear_pager();

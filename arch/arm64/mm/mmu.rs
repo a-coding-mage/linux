@@ -13,7 +13,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
  * units. The C control flow and comments are preserved verbatim to keep the
  * implementation available for direct binding translation.
  */
-+// // SPDX-License-Identifier: GPL-2.0-only
+// // SPDX-License-Identifier: GPL-2.0-only
 // /*
 //  * Based on arch/arm/mm/mmu.c
 //  *
@@ -67,7 +67,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	spin_unlock(&swapper_pgdir_lock);
 // }
 // 
-// pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+// pgprot_t phys_mem_access_prot(file *file, unsigned long pfn,
 // 			      unsigned long size, pgprot_t vma_prot)
 // {
 // 	if (!pfn_is_map_memory(pfn))
@@ -515,7 +515,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 		panic(\"Failed to create page tables\\n\");
 // }
 // 
-// static phys_addr_t __pgd_pgtable_alloc(struct mm_struct *mm, gfp_t gfp,
+// static phys_addr_t __pgd_pgtable_alloc(mm_struct *mm, gfp_t gfp,
 // 				       enum pgtable_level pgtable_level)
 // {
 // 	/* Page is zeroed by init_clear_pgtable() so don't duplicate effort. */
@@ -844,7 +844,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // }
 // 
 // static int split_to_ptes_pud_entry(pud_t *pudp, unsigned long addr,
-// 				   unsigned long next, struct mm_walk *walk)
+// 				   unsigned long next, mm_walk *walk)
 // {
 // 	gfp_t gfp = *(gfp_t *)walk->private;
 // 	pud_t pud = pudp_get(pudp);
@@ -857,7 +857,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // }
 // 
 // static int split_to_ptes_pmd_entry(pmd_t *pmdp, unsigned long addr,
-// 				   unsigned long next, struct mm_walk *walk)
+// 				   unsigned long next, mm_walk *walk)
 // {
 // 	gfp_t gfp = *(gfp_t *)walk->private;
 // 	pmd_t pmd = pmdp_get(pmdp);
@@ -879,7 +879,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // }
 // 
 // static int split_to_ptes_pte_entry(pte_t *ptep, unsigned long addr,
-// 				   unsigned long next, struct mm_walk *walk)
+// 				   unsigned long next, mm_walk *walk)
 // {
 // 	pte_t pte = __ptep_get(ptep);
 // 
@@ -998,7 +998,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	early_create_pgd_mapping(init_mm.pgd, phys, virt, size, prot, NULL, 0);
 // }
 // 
-// void __init create_pgd_mapping(struct mm_struct *mm, phys_addr_t phys,
+// void __init create_pgd_mapping(mm_struct *mm, phys_addr_t phys,
 // 			       unsigned long virt, phys_addr_t size,
 // 			       pgprot_t prot, bool page_mappings_only)
 // {
@@ -1042,7 +1042,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 			 valid);
 // }
 // 
-// static int arm64_hibernate_pm_notify(struct notifier_block *nb,
+// static int arm64_hibernate_pm_notify(notifier_block *nb,
 // 				     unsigned long mode, void *unused)
 // {
 // 	switch (mode) {
@@ -1243,7 +1243,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	mark_linear_data_alias_valid(false);
 // }
 // 
-// static void __init declare_vma(struct vm_struct *vma,
+// static void __init declare_vma(vm_struct *vma,
 // 			       void *va_start, void *va_end,
 // 			       unsigned long vm_flags)
 // {
@@ -1449,7 +1449,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	declare_kernel_vmas();
 // }
 // 
-// static void free_hotplug_page_range(struct page *page, size_t size,
+// static void free_hotplug_page_range(page *page, size_t size,
 // 				    struct vmem_altmap *altmap)
 // {
 // 	if (altmap) {
@@ -1460,7 +1460,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	}
 // }
 // 
-// static void free_hotplug_pgtable_page(struct page *page)
+// static void free_hotplug_pgtable_page(page *page)
 // {
 // 	pagetable_dtor(page_ptdesc(page));
 // 	free_hotplug_page_range(page, PAGE_SIZE, NULL);
@@ -1599,7 +1599,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // }
 // 
 // static void unmap_hotplug_range(unsigned long addr, unsigned long end,
-// 				bool free_mapped, struct vmem_altmap *altmap)
+// 				bool free_mapped, vmem_altmap *altmap)
 // {
 // 	unsigned long start = addr;
 // 	unsigned long next;
@@ -1808,10 +1808,10 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // {
 // 	WARN_ON((start < VMEMMAP_START) || (end > VMEMMAP_END));
 // 	/* [start, end] should be within one section */
-// 	WARN_ON_ONCE(end - start > PAGES_PER_SECTION * sizeof(struct page));
+// 	WARN_ON_ONCE(end - start > PAGES_PER_SECTION * sizeof(page));
 // 
 // 	if (!IS_ENABLED(CONFIG_ARM64_4K_PAGES) ||
-// 	    (end - start < PAGES_PER_SECTION * sizeof(struct page)))
+// 	    (end - start < PAGES_PER_SECTION * sizeof(page)))
 // 		return vmemmap_populate_basepages(start, end, node, altmap);
 // 	else
 // 		return vmemmap_populate_hugepages(start, end, node, altmap);
@@ -2000,7 +2000,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	return ret;
 // }
 // 
-// void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap,
+// void arch_remove_memory(u64 start, u64 size, vmem_altmap *altmap,
 // 			struct dev_pagemap *pgmap)
 // {
 // 	unsigned long start_pfn = start >> PAGE_SHIFT;
@@ -2123,7 +2123,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 //  * This also blocks any memory remove that would have caused a split
 //  * in leaf entry in kernel linear or vmemmap mapping.
 //  */
-// static int prevent_memory_remove_notifier(struct notifier_block *nb,
+// static int prevent_memory_remove_notifier(notifier_block *nb,
 // 					   unsigned long action, void *data)
 // {
 // 	struct mem_section *ms;
@@ -2243,7 +2243,7 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // }
 // early_initcall(prevent_memory_remove_init);
 // 
-// pte_t modify_prot_start_ptes(struct vm_area_struct *vma, unsigned long addr,
+// pte_t modify_prot_start_ptes(vm_area_struct *vma, unsigned long addr,
 // 			     pte_t *ptep, unsigned int nr)
 // {
 // 	pte_t pte = get_and_clear_ptes(vma->vm_mm, addr, ptep, nr);
@@ -2262,19 +2262,19 @@ pub const NO_EXEC_MAPPINGS: u32 = 1 << 2;
 // 	return pte;
 // }
 // 
-// pte_t ptep_modify_prot_start(struct vm_area_struct *vma, unsigned long addr, pte_t *ptep)
+// pte_t ptep_modify_prot_start(vm_area_struct *vma, unsigned long addr, pte_t *ptep)
 // {
 // 	return modify_prot_start_ptes(vma, addr, ptep, 1);
 // }
 // 
-// void modify_prot_commit_ptes(struct vm_area_struct *vma, unsigned long addr,
+// void modify_prot_commit_ptes(vm_area_struct *vma, unsigned long addr,
 // 			     pte_t *ptep, pte_t old_pte, pte_t pte,
 // 			     unsigned int nr)
 // {
 // 	set_ptes(vma->vm_mm, addr, ptep, pte, nr);
 // }
 // 
-// void ptep_modify_prot_commit(struct vm_area_struct *vma, unsigned long addr, pte_t *ptep,
+// void ptep_modify_prot_commit(vm_area_struct *vma, unsigned long addr, pte_t *ptep,
 // 			     pte_t old_pte, pte_t pte)
 // {
 // 	modify_prot_commit_ptes(vma, addr, ptep, old_pte, pte, 1);

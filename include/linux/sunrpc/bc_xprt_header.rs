@@ -12,7 +12,7 @@
 
 /* Dependencies supplied by the surrounding kernel translation unit. */
 
-#[cfg(feature = "CONFIG_SUNRPC_BACKCHANNEL")]
+#[cfg(CONFIG_SUNRPC_BACKCHANNEL)]
 unsafe extern "C" {
     pub fn xprt_lookup_bc_request(
         xprt: *mut rpc_xprt,
@@ -38,47 +38,47 @@ unsafe extern "C" {
     pub fn xprt_svc_destroy_nullify_bc(xprt: *mut rpc_xprt, serv: *mut *mut svc_serv);
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_BACKCHANNEL")]
+#[cfg(CONFIG_SUNRPC_BACKCHANNEL)]
 #[inline]
 pub unsafe fn svc_is_backchannel(rqstp: *const svc_rqst) -> bool {
     (*(*rqstp).rq_server).sv_bc_enabled
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_BACKCHANNEL")]
+#[cfg(CONFIG_SUNRPC_BACKCHANNEL)]
 #[inline]
 pub unsafe fn set_bc_enabled(serv: *mut svc_serv) {
     (*serv).sv_bc_enabled = true;
 }
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn xprt_setup_backchannel(_xprt: *mut rpc_xprt, _min_reqs: c_uint) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn xprt_destroy_backchannel(_xprt: *mut rpc_xprt, _max_reqs: c_uint) {}
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn svc_is_backchannel(_rqstp: *const svc_rqst) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn set_bc_enabled(_serv: *mut svc_serv) {}
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn xprt_free_bc_request(_req: *mut rpc_rqst) {}
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn xprt_svc_shutdown_bc(_xprt: *mut rpc_xprt) {}
 
-#[cfg(not(feature = "CONFIG_SUNRPC_BACKCHANNEL"))]
+#[cfg(not(CONFIG_SUNRPC_BACKCHANNEL))]
 #[inline]
 pub unsafe fn xprt_svc_destroy_nullify_bc(
     _xprt: *mut rpc_xprt,

@@ -6,17 +6,17 @@
 
 // <linux/bitops.h> dependency: BIT(n) is represented directly as 1u8 << n.
 
-#[cfg(feature = "CONFIG_AB8500_CORE")]
+#[cfg(CONFIG_AB8500_CORE)]
 extern "C" {
     pub fn ab8500_sysctrl_read(reg: u16, value: *mut u8) -> i32;
     pub fn ab8500_sysctrl_write(reg: u16, mask: u8, value: u8) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_AB8500_CORE"))]
+#[cfg(not(CONFIG_AB8500_CORE))]
 #[inline]
 pub unsafe fn ab8500_sysctrl_read(_reg: u16, _value: *mut u8) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_AB8500_CORE"))]
+#[cfg(not(CONFIG_AB8500_CORE))]
 #[inline]
 pub unsafe fn ab8500_sysctrl_write(_reg: u16, _mask: u8, _value: u8) -> i32 { 0 }
 

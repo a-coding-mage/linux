@@ -140,20 +140,20 @@ pub unsafe extern "C" fn kernel_text_address(addr: usize) -> i32 {
 }
 
 // CONFIG_HAVE_FUNCTION_DESCRIPTORS is a build-time condition from the kernel.
-#[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+#[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 #[repr(C)]
 pub struct func_desc_t {
     pub addr: *mut core::ffi::c_void,
 }
 
-#[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+#[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 extern "C" {
     pub static __start_opd: u8;
     pub static __end_opd: u8;
     pub fn get_kernel_nofault(dst: *mut *mut core::ffi::c_void, src: *const core::ffi::c_void) -> i32;
 }
 
-#[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+#[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 #[no_mangle]
 pub unsafe extern "C" fn dereference_function_descriptor(
     mut ptr: *mut core::ffi::c_void,
@@ -166,7 +166,7 @@ pub unsafe extern "C" fn dereference_function_descriptor(
     ptr
 }
 
-#[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+#[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
 #[no_mangle]
 pub unsafe extern "C" fn dereference_kernel_function_descriptor(
     ptr: *mut core::ffi::c_void,
@@ -181,9 +181,9 @@ pub unsafe extern "C" fn dereference_kernel_function_descriptor(
 
 #[no_mangle]
 pub unsafe extern "C" fn func_ptr_is_kernel_text(ptr: *mut core::ffi::c_void) -> i32 {
-    #[cfg(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS")]
+    #[cfg(CONFIG_HAVE_FUNCTION_DESCRIPTORS)]
     let addr = dereference_function_descriptor(ptr) as usize;
-    #[cfg(not(feature = "CONFIG_HAVE_FUNCTION_DESCRIPTORS"))]
+    #[cfg(not(CONFIG_HAVE_FUNCTION_DESCRIPTORS))]
     let addr = ptr as usize;
     if core_kernel_text(addr) != 0 {
         return 1;

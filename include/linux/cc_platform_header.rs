@@ -45,7 +45,7 @@ pub enum cc_attr {
 }
 
 /* CONFIG_ARCH_HAS_CC_PLATFORM is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_ARCH_HAS_CC_PLATFORM")]
+#[cfg(CONFIG_ARCH_HAS_CC_PLATFORM)]
 extern "C" {
     /**
      * Checks if the specified confidential computing attribute is active.
@@ -59,17 +59,17 @@ extern "C" {
 }
 
 /* !CONFIG_ARCH_HAS_CC_PLATFORM */
-#[cfg(not(feature = "CONFIG_ARCH_HAS_CC_PLATFORM"))]
+#[cfg(not(CONFIG_ARCH_HAS_CC_PLATFORM))]
 #[inline]
 pub fn cc_platform_has(_attr: cc_attr) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_ARCH_HAS_CC_PLATFORM"))]
+#[cfg(not(CONFIG_ARCH_HAS_CC_PLATFORM))]
 #[inline]
 pub fn cc_platform_set(_attr: cc_attr) {}
 
-#[cfg(not(feature = "CONFIG_ARCH_HAS_CC_PLATFORM"))]
+#[cfg(not(CONFIG_ARCH_HAS_CC_PLATFORM))]
 #[inline]
 pub fn cc_platform_clear(_attr: cc_attr) {}
 

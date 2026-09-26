@@ -98,21 +98,21 @@ static FLAG_ARRAY: [flag_info; 17] = [
         set: "busy",
         ..flag_info::DEFAULT
     },
-    #[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+    #[cfg(CONFIG_PPC_64K_PAGES)]
     flag_info {
         mask: H_PAGE_COMBO,
         val: H_PAGE_COMBO,
         set: "combo",
         ..flag_info::DEFAULT
     },
-    #[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+    #[cfg(CONFIG_PPC_64K_PAGES)]
     flag_info {
         mask: H_PAGE_4K_PFN,
         val: H_PAGE_4K_PFN,
         set: "4K_pfn",
         ..flag_info::DEFAULT
     },
-    #[cfg(not(feature = "CONFIG_PPC_64K_PAGES"))]
+    #[cfg(not(CONFIG_PPC_64K_PAGES))]
     flag_info {
         mask: H_PAGE_F_GIX,
         val: H_PAGE_F_GIX,
@@ -121,7 +121,7 @@ static FLAG_ARRAY: [flag_info; 17] = [
         shift: H_PAGE_F_GIX_SHIFT,
         ..flag_info::DEFAULT
     },
-    #[cfg(not(feature = "CONFIG_PPC_64K_PAGES"))]
+    #[cfg(not(CONFIG_PPC_64K_PAGES))]
     flag_info {
         mask: H_PAGE_F_SECOND,
         val: H_PAGE_F_SECOND,

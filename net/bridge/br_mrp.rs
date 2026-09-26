@@ -20,49 +20,49 @@ unsafe fn br_mrp_is_in_port(i_port: *mut net_bridge_port, port: *mut net_bridge_
 unsafe fn br_mrp_get_port(br: *mut net_bridge, ifindex: u32) -> *mut net_bridge_port {
     let mut res = core::ptr::null_mut();
     let mut port: *mut net_bridge_port;
-    list_for_each_entry!(port, (*br).port_list, list) {
+    list_for_each_entry!(port, (*br).port_list, list, {
         if (*(*port).dev).ifindex == ifindex { res = port; break; }
-    }
+    });
     res
 }
 
 unsafe fn br_mrp_find_id(br: *mut net_bridge, ring_id: u32) -> *mut br_mrp {
     let mut res = core::ptr::null_mut();
     let mut mrp: *mut br_mrp;
-    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held()) {
+    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held(), {
         if (*mrp).ring_id == ring_id { res = mrp; break; }
-    }
+    });
     res
 }
 
 unsafe fn br_mrp_find_in_id(br: *mut net_bridge, in_id: u32) -> *mut br_mrp {
     let mut res = core::ptr::null_mut();
     let mut mrp: *mut br_mrp;
-    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held()) {
+    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held(), {
         if (*mrp).in_id == in_id { res = mrp; break; }
-    }
+    });
     res
 }
 
 unsafe fn br_mrp_unique_ifindex(br: *mut net_bridge, ifindex: u32) -> bool {
     let mut mrp: *mut br_mrp;
-    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held()) {
+    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held(), {
         let mut p = rtnl_dereference!((*mrp).p_port);
         if !p.is_null() && (*(*p).dev).ifindex == ifindex { return false; }
         p = rtnl_dereference!((*mrp).s_port);
         if !p.is_null() && (*(*p).dev).ifindex == ifindex { return false; }
         p = rtnl_dereference!((*mrp).i_port);
         if !p.is_null() && (*(*p).dev).ifindex == ifindex { return false; }
-    }
+    });
     true
 }
 
 unsafe fn br_mrp_find_port(br: *mut net_bridge, p: *mut net_bridge_port) -> *mut br_mrp {
     let mut res = core::ptr::null_mut();
     let mut mrp: *mut br_mrp;
-    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held()) {
+    hlist_for_each_entry_rcu!(mrp, (*br).mrp_list, list, lockdep_rtnl_is_held(), {
         if rcu_access_pointer!((*mrp).p_port) == p || rcu_access_pointer!((*mrp).s_port) == p || rcu_access_pointer!((*mrp).i_port) == p { res = mrp; break; }
-    }
+    });
     res
 }
 

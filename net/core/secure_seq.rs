@@ -5,13 +5,13 @@
 
 // Linux kernel dependencies supplied by other translation units.
 
-#[cfg(any(feature = "CONFIG_IPV6", feature = "CONFIG_INET"))]
+#[cfg(any(CONFIG_IPV6, CONFIG_INET))]
 static mut NET_SECRET: siphash_aligned_key_t = siphash_aligned_key_t { key: [0; 16] };
 
-#[cfg(any(feature = "CONFIG_IPV6", feature = "CONFIG_INET"))]
+#[cfg(any(CONFIG_IPV6, CONFIG_INET))]
 const EPHEMERAL_PORT_SHUFFLE_PERIOD: u64 = 10 * HZ as u64;
 
-#[cfg(any(feature = "CONFIG_IPV6", feature = "CONFIG_INET"))]
+#[cfg(any(CONFIG_IPV6, CONFIG_INET))]
 #[inline(always)]
 unsafe fn net_secret_init() {
     net_get_random_once(
@@ -20,7 +20,7 @@ unsafe fn net_secret_init() {
     );
 }
 
-#[cfg(feature = "CONFIG_INET")]
+#[cfg(CONFIG_INET)]
 unsafe fn seq_scale(seq: u32) -> u32 {
     /*
      *\tAs close as possible to RFC 793, which
@@ -35,7 +35,7 @@ unsafe fn seq_scale(seq: u32) -> u32 {
     seq.wrapping_add(ktime_get_real_ns() >> 6)
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 #[repr(C)]
 pub union tcp_seq_and_ts_off {
     pub hash64: u64,
@@ -43,7 +43,7 @@ pub union tcp_seq_and_ts_off {
     pub seq: u32,
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 pub unsafe extern "C" fn secure_tcpv6_seq_and_ts_off(
     net: *const net,
     saddr: *const __be32,
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn secure_tcpv6_seq_and_ts_off(
     st
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 pub unsafe extern "C" fn secure_ipv6_port_ephemeral(
     saddr: *const __be32,
     daddr: *const __be32,
@@ -106,7 +106,7 @@ pub unsafe extern "C" fn secure_ipv6_port_ephemeral(
     )
 }
 
-#[cfg(feature = "CONFIG_INET")]
+#[cfg(CONFIG_INET)]
 /* secure_tcp_seq_and_tsoff(a, b, 0, d) == secure_ipv4_port_ephemeral(a, b, d),
  * but fortunately, `sport' cannot be 0 in any circumstances. If this changes,
  * it would be easy enough to have the former function use siphash_4u32, passing
@@ -131,7 +131,7 @@ pub unsafe extern "C" fn secure_tcp_seq_and_ts_off(
     st
 }
 
-#[cfg(feature = "CONFIG_INET")]
+#[cfg(CONFIG_INET)]
 pub unsafe extern "C" fn secure_ipv4_port_ephemeral(
     saddr: __be32,
     daddr: __be32,

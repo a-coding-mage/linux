@@ -11,7 +11,6 @@ pub const fn GENMASK(h: u32, l: u32) -> u64 { (u64::MAX >> (63 - h)) & (u64::MAX
  * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
  */
 // #ifndef _ASM_LOONGARCH_H
-pub const _ASM_LOONGARCH_H: u64 = ;
 
 // #include <linux/bits.h>
 // #include <linux/linkage.h>
@@ -1565,17 +1564,23 @@ pub const EXCCODE_INT_START: u64 = 64;
 // #define EXCCODE_INT_END		(EXCCODE_INT_START + EXCCODE_INT_NUM - 1)
 
 /* FPU Status Register Names */
-// #ifndef CONFIG_AS_HAS_FCSR_CLASS
-pub const LOONGARCH_FCSR0: u64 = $r0;
-pub const LOONGARCH_FCSR1: u64 = $r1;
-pub const LOONGARCH_FCSR2: u64 = $r2;
-pub const LOONGARCH_FCSR3: u64 = $r3;
-// #else
-pub const LOONGARCH_FCSR0: u64 = $fcsr0;
-pub const LOONGARCH_FCSR1: u64 = $fcsr1;
-pub const LOONGARCH_FCSR2: u64 = $fcsr2;
-pub const LOONGARCH_FCSR3: u64 = $fcsr3;
-// #endif
+// Assembler names of the FCSR registers, selected by assembler support.
+#[cfg(not(CONFIG_AS_HAS_FCSR_CLASS))]
+pub const LOONGARCH_FCSR0: &str = "$r0";
+#[cfg(not(CONFIG_AS_HAS_FCSR_CLASS))]
+pub const LOONGARCH_FCSR1: &str = "$r1";
+#[cfg(not(CONFIG_AS_HAS_FCSR_CLASS))]
+pub const LOONGARCH_FCSR2: &str = "$r2";
+#[cfg(not(CONFIG_AS_HAS_FCSR_CLASS))]
+pub const LOONGARCH_FCSR3: &str = "$r3";
+#[cfg(CONFIG_AS_HAS_FCSR_CLASS)]
+pub const LOONGARCH_FCSR0: &str = "$fcsr0";
+#[cfg(CONFIG_AS_HAS_FCSR_CLASS)]
+pub const LOONGARCH_FCSR1: &str = "$fcsr1";
+#[cfg(CONFIG_AS_HAS_FCSR_CLASS)]
+pub const LOONGARCH_FCSR2: &str = "$fcsr2";
+#[cfg(CONFIG_AS_HAS_FCSR_CLASS)]
+pub const LOONGARCH_FCSR3: &str = "$fcsr3";
 
 /* FPU Status Register Values */
 pub const FPU_CSR_RSVD: u64 = 0xe0e0fce0;

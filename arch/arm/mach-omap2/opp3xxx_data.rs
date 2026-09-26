@@ -23,7 +23,7 @@ const OMAP3430_VDD_MPU_OPP3_UV: u32 = 1200000;
 const OMAP3430_VDD_MPU_OPP4_UV: u32 = 1270000;
 const OMAP3430_VDD_MPU_OPP5_UV: u32 = 1350000;
 
-pub static mut omap34xx_vddmpu_volt_data: [struct omap_volt_data; 6] = [
+pub static mut omap34xx_vddmpu_volt_data: [omap_volt_data; 6] = [
     VOLT_DATA_DEFINE!(OMAP3430_VDD_MPU_OPP1_UV, OMAP343X_CONTROL_FUSE_OPP1_VDD1, 0xf4, 0x0c),
     VOLT_DATA_DEFINE!(OMAP3430_VDD_MPU_OPP2_UV, OMAP343X_CONTROL_FUSE_OPP2_VDD1, 0xf4, 0x0c),
     VOLT_DATA_DEFINE!(OMAP3430_VDD_MPU_OPP3_UV, OMAP343X_CONTROL_FUSE_OPP3_VDD1, 0xf9, 0x18),
@@ -38,7 +38,7 @@ const OMAP3430_VDD_CORE_OPP1_UV: u32 = 975000;
 const OMAP3430_VDD_CORE_OPP2_UV: u32 = 1050000;
 const OMAP3430_VDD_CORE_OPP3_UV: u32 = 1150000;
 
-pub static mut omap34xx_vddcore_volt_data: [struct omap_volt_data; 4] = [
+pub static mut omap34xx_vddcore_volt_data: [omap_volt_data; 4] = [
     VOLT_DATA_DEFINE!(OMAP3430_VDD_CORE_OPP1_UV, OMAP343X_CONTROL_FUSE_OPP1_VDD2, 0xf4, 0x0c),
     VOLT_DATA_DEFINE!(OMAP3430_VDD_CORE_OPP2_UV, OMAP343X_CONTROL_FUSE_OPP2_VDD2, 0xf4, 0x0c),
     VOLT_DATA_DEFINE!(OMAP3430_VDD_CORE_OPP3_UV, OMAP343X_CONTROL_FUSE_OPP3_VDD2, 0xf9, 0x18),
@@ -54,7 +54,7 @@ const OMAP3630_VDD_MPU_OPP100_UV: u32 = 1200000;
 const OMAP3630_VDD_MPU_OPP120_UV: u32 = 1325000;
 const OMAP3630_VDD_MPU_OPP1G_UV: u32 = 1375000;
 
-pub static mut omap36xx_vddmpu_volt_data: [struct omap_volt_data; 5] = [
+pub static mut omap36xx_vddmpu_volt_data: [omap_volt_data; 5] = [
     VOLT_DATA_DEFINE!(OMAP3630_VDD_MPU_OPP50_UV, OMAP3630_CONTROL_FUSE_OPP50_VDD1, 0xf4, 0x0c),
     VOLT_DATA_DEFINE!(OMAP3630_VDD_MPU_OPP100_UV, OMAP3630_CONTROL_FUSE_OPP100_VDD1, 0xf9, 0x16),
     VOLT_DATA_DEFINE!(OMAP3630_VDD_MPU_OPP120_UV, OMAP3630_CONTROL_FUSE_OPP120_VDD1, 0xfa, 0x23),
@@ -67,7 +67,7 @@ pub static mut omap36xx_vddmpu_volt_data: [struct omap_volt_data; 5] = [
 const OMAP3630_VDD_CORE_OPP50_UV: u32 = 1000000;
 const OMAP3630_VDD_CORE_OPP100_UV: u32 = 1200000;
 
-pub static mut omap36xx_vddcore_volt_data: [struct omap_volt_data; 3] = [
+pub static mut omap36xx_vddcore_volt_data: [omap_volt_data; 3] = [
     VOLT_DATA_DEFINE!(OMAP3630_VDD_CORE_OPP50_UV, OMAP3630_CONTROL_FUSE_OPP50_VDD2, 0xf4, 0x0c),
     VOLT_DATA_DEFINE!(OMAP3630_VDD_CORE_OPP100_UV, OMAP3630_CONTROL_FUSE_OPP100_VDD2, 0xf9, 0x16),
     VOLT_DATA_DEFINE!(0, 0, 0, 0),

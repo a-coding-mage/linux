@@ -75,12 +75,12 @@ unsafe extern "C" {
 }
 
 /* CONFIG_NFC_SHDLC controls whether the external registration function exists. */
-#[cfg(feature = "CONFIG_NFC_SHDLC")]
+#[cfg(CONFIG_NFC_SHDLC)]
 unsafe extern "C" {
     pub fn nfc_llc_shdlc_register() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NFC_SHDLC"))]
+#[cfg(not(CONFIG_NFC_SHDLC))]
 #[inline]
 pub fn nfc_llc_shdlc_register() -> i32 {
     0

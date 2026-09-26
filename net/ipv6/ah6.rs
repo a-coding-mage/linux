@@ -5,7 +5,7 @@ const IPV6HDR_BASELEN: usize = 8;
 
 #[repr(C)]
 struct tmp_ext {
-    #[cfg(feature = "CONFIG_IPV6_MIP6")]
+    #[cfg(CONFIG_IPV6_MIP6)]
     saddr: in6_addr,
     daddr: in6_addr,
     hdrs: [u8; 0],
@@ -22,7 +22,7 @@ unsafe fn ah_skb_cb(skb: *mut sk_buff) -> *mut ah_skb_cb {
 #[inline]
 unsafe fn ah6_save_hdrs(e: *mut tmp_ext, iph: *mut ipv6hdr, extlen: usize) {
     if extlen == 0 { return; }
-    #[cfg(feature = "CONFIG_IPV6_MIP6")] { (*e).saddr = (*iph).saddr; }
+    #[cfg(CONFIG_IPV6_MIP6)] { (*e).saddr = (*iph).saddr; }
     (*e).daddr = (*iph).daddr;
     memcpy((*e).hdrs.as_mut_ptr(), iph.add(1) as *const _, extlen - core::mem::size_of::<tmp_ext>());
 }
@@ -30,7 +30,7 @@ unsafe fn ah6_save_hdrs(e: *mut tmp_ext, iph: *mut ipv6hdr, extlen: usize) {
 #[inline]
 unsafe fn ah6_restore_hdrs(iph: *mut ipv6hdr, e: *mut tmp_ext, extlen: usize) {
     if extlen == 0 { return; }
-    #[cfg(feature = "CONFIG_IPV6_MIP6")] { (*iph).saddr = (*e).saddr; }
+    #[cfg(CONFIG_IPV6_MIP6)] { (*iph).saddr = (*e).saddr; }
     (*iph).daddr = (*e).daddr;
     memcpy(iph.add(1) as *mut _, (*e).hdrs.as_ptr(), extlen - core::mem::size_of::<tmp_ext>());
 }
@@ -66,12 +66,12 @@ unsafe fn zero_out_mutable_opts(opthdr: *mut ipv6_opt_hdr) -> bool {
     len == 0
 }
 
-#[cfg(feature = "CONFIG_IPV6_MIP6")]
+#[cfg(CONFIG_IPV6_MIP6)]
 unsafe fn ipv6_rearrange_destopt(iph: *mut ipv6hdr, destopt: *mut ipv6_opt_hdr) {
     let opt = destopt as *mut u8; let mut len = ipv6_optlen(destopt) as isize - 2; let mut off = 2usize;
     while len > 0 { let optlen; if *opt.add(off) == IPV6_TLV_PAD1 { optlen = 1; } else { if len < 2 { return; } optlen = *opt.add(off+1) as isize + 2; if len < optlen { return; } if *opt.add(off) == IPV6_TLV_HAO { let hao = opt.add(off) as *mut ipv6_destopt_hao; if (*hao).length as usize != core::mem::size_of::<in6_addr>() { net_warn_ratelimited!("destopt hao: invalid header length: %u\\n", (*hao).length); return; } core::mem::swap(&mut (*hao).addr, &mut (*iph).saddr); } } off += optlen as usize; len -= optlen; }
 }
-#[cfg(not(feature = "CONFIG_IPV6_MIP6"))]
+#[cfg(not(CONFIG_IPV6_MIP6))]
 unsafe fn ipv6_rearrange_destopt(_: *mut ipv6hdr, _: *mut ipv6_opt_hdr) {}
 
 unsafe fn ipv6_rearrange_rthdr(iph: *mut ipv6hdr, rthdr: *mut ipv6_rt_hdr) -> i32 {

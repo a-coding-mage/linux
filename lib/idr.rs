@@ -137,8 +137,8 @@ pub unsafe extern "C" fn idr_get_next_ul(idr: *mut Idr, nextid: *mut usize) -> *
 
 #[no_mangle]
 pub unsafe extern "C" fn ida_alloc_range(ida: *mut Ida, min: u32, max: u32, gfp: GfpT) -> i32 {
-    if min as i32 < 0 { return -28; }
-    let limit = if max as i32 < 0 { i32::MAX as usize } else { max as usize };
+    if (min as i32) < 0 { return -28; }
+    let limit = if (max as i32) < 0 { i32::MAX as usize } else { max as usize };
     let mut id = min as usize;
     while id <= limit { if ida_find_first_range(ida, id as u32, id as u32) < 0 { let mut xas = XaState { xa: &mut (*ida).xa, xa_index: id / IDA_BITMAP_BITS }; let mut flags = 0; xas_lock_irqsave(&mut xas, &mut flags); let entry = xas_load(&mut xas); let value = if entry.is_null() { xa_mk_value(1 << (id % BITS_PER_XA_VALUE)) } else { entry }; xas_store(&mut xas, value); xas_unlock_irqrestore(&mut xas, flags); return id as i32; } id += 1; }
     let _ = gfp; -28
@@ -146,8 +146,8 @@ pub unsafe extern "C" fn ida_alloc_range(ida: *mut Ida, min: u32, max: u32, gfp:
 
 #[no_mangle]
 pub unsafe extern "C" fn ida_find_first_range(ida: *mut Ida, min: u32, max: u32) -> i32 {
-    if min as i32 < 0 { return -22; }
-    let mut id = min as usize; let limit = if max as i32 < 0 { i32::MAX as usize } else { max as usize };
+    if (min as i32) < 0 { return -22; }
+    let mut id = min as usize; let limit = if (max as i32) < 0 { i32::MAX as usize } else { max as usize };
     while id <= limit { let index = id / IDA_BITMAP_BITS; let entry = xa_find(&mut (*ida).xa, &mut (index as usize), limit / IDA_BITMAP_BITS, XA_PRESENT); if !entry.is_null() { return id as i32; } id = (index + 1) * IDA_BITMAP_BITS; }
     -2
 }

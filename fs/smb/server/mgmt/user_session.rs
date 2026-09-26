@@ -16,7 +16,7 @@ struct ksmbd_session_rpc {
     method: u32,
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 static KSMBD_SESS_CAP_CONST_NAMES: [(u32, &'static [u8]); 7] = [
     (SMB2_GLOBAL_CAP_DFS, b"dfs\0"),
     (SMB2_GLOBAL_CAP_LEASING, b"lease\0"),
@@ -27,7 +27,7 @@ static KSMBD_SESS_CAP_CONST_NAMES: [(u32, &'static [u8]); 7] = [
     (SMB2_GLOBAL_CAP_ENCRYPTION, b"encryption\0"),
 ];
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 static KSMBD_CIPHER_CONST_NAMES: [(u16, &'static [u8]); 4] = [
     (SMB2_ENCRYPTION_AES128_CCM.to_le(), b"aes128-ccm\0"),
     (SMB2_ENCRYPTION_AES128_GCM.to_le(), b"aes128-gcm\0"),
@@ -35,14 +35,14 @@ static KSMBD_CIPHER_CONST_NAMES: [(u16, &'static [u8]); 4] = [
     (SMB2_ENCRYPTION_AES256_GCM.to_le(), b"aes256-gcm\0"),
 ];
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 static KSMBD_SIGNING_CONST_NAMES: [(u32, &'static [u8]); 3] = [
     (SIGNING_ALG_HMAC_SHA256, b"hmac-sha256\0"),
     (SIGNING_ALG_AES_CMAC, b"aes-cmac\0"),
     (SIGNING_ALG_AES_GMAC, b"aes-gmac\0"),
 ];
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn session_state_string(session: *mut ksmbd_session) -> *const i8 {
     match (*session).state {
         SMB2_SESSION_VALID => b"valid\0".as_ptr() as *const i8,
@@ -52,32 +52,32 @@ unsafe fn session_state_string(session: *mut ksmbd_session) -> *const i8 {
     }
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn session_user_name(session: *mut ksmbd_session) -> *const i8 {
     if user_guest((*session).user) { b"(Guest)\0".as_ptr() as *const i8 }
     else if ksmbd_anonymous_user((*session).user) { b"(Anonymous)\0".as_ptr() as *const i8 }
     else { (*(*session).user).name }
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn session_account_type(session: *mut ksmbd_session) -> *const i8 {
     if user_guest((*session).user) { b"guest\0".as_ptr() as *const i8 }
     else if ksmbd_anonymous_user((*session).user) { b"anonymous\0".as_ptr() as *const i8 }
     else { b"user\0".as_ptr() as *const i8 }
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn session_open_file_count(session: *mut ksmbd_session) -> u32 {
     let mut count = 0;
     read_lock(&mut (*session).file_table.lock);
     let mut id = 0;
     let mut fp: *mut ksmbd_file = core::ptr::null_mut();
-    idr_for_each_entry((*session).file_table.idr, fp, id) { count += 1; }
+    idr_for_each_entry!((*session).file_table.idr, fp, id, { count += 1; });
     read_unlock(&mut (*session).file_table.lock);
     count
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn show_proc_session(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
     let sess = (*m).private as *mut ksmbd_session;
     ksmbd_user_session_get(sess);
@@ -91,13 +91,13 @@ unsafe fn show_proc_session(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32
     // Channel and tree-connect enumeration is retained through the kernel xarray APIs.
     let mut id = 0; let mut chan: *mut channel = core::ptr::null_mut(); let mut i = 0;
     down_read(&mut (*sess).chann_lock);
-    xa_for_each(&mut (*sess).ksmbd_chann_list, id, chan) {
+    xa_for_each!(&mut (*sess).ksmbd_chann_list, id, chan, {
         seq_puts(m, b"capabilities:\t\0".as_ptr());
         ksmbd_proc_show_flag_names(m, KSMBD_SESS_CAP_CONST_NAMES.as_ptr(), KSMBD_SESS_CAP_CONST_NAMES.len(), (*(*chan).conn).vals.req_capabilities);
         seq_putc(m, b'\n' as i32);
         seq_printf(m, b"posix_extensions:\t%s\n\0".as_ptr(), if (*(*chan).conn).posix_ext_supported { b"yes\0".as_ptr() } else { b"no\0".as_ptr() });
         i += 1;
-    }
+    });
     up_read(&mut (*sess).chann_lock);
     seq_printf(m, b"channels:\t%d\n\0".as_ptr(), i);
     up_read(&mut (*sess).tree_conns_lock);
@@ -106,7 +106,7 @@ unsafe fn show_proc_session(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn create_proc_session(sess: *mut ksmbd_session) -> i32 {
     let mut name = [0i8; 30];
     snprintf(name.as_mut_ptr(), name.len(), b"sessions/%llu\0".as_ptr(), (*sess).id);
@@ -114,18 +114,18 @@ unsafe fn create_proc_session(sess: *mut ksmbd_session) -> i32 {
     if (*sess).proc_entry.is_null() { -ENOMEM } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn delete_proc_session(sess: *mut ksmbd_session) { if !(*sess).proc_entry.is_null() { proc_remove((*sess).proc_entry); } }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 unsafe fn create_proc_session(_sess: *mut ksmbd_session) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 unsafe fn delete_proc_session(_sess: *mut ksmbd_session) {}
 
 unsafe fn free_channel_list(sess: *mut ksmbd_session) {
     down_write(&mut (*sess).chann_lock);
     let mut index = 0; let mut chann: *mut channel = core::ptr::null_mut();
-    xa_for_each(&mut (*sess).ksmbd_chann_list, index, chann) { xa_erase(&mut (*sess).ksmbd_chann_list, index); kfree_sensitive(chann as *mut _); }
+    xa_for_each!(&mut (*sess).ksmbd_chann_list, index, chann, { xa_erase(&mut (*sess).ksmbd_chann_list, index); kfree_sensitive(chann as *mut _); });
     xa_destroy(&mut (*sess).ksmbd_chann_list); up_write(&mut (*sess).chann_lock);
 }
 
@@ -136,7 +136,7 @@ unsafe fn __session_rpc_close(sess: *mut ksmbd_session, entry: *mut ksmbd_sessio
 
 unsafe fn ksmbd_session_rpc_clear_list(sess: *mut ksmbd_session) {
     down_write(&mut (*sess).rpc_lock); let mut index = 0; let mut entry: *mut ksmbd_session_rpc = core::ptr::null_mut();
-    xa_for_each(&mut (*sess).rpc_handle_list, index, entry) { xa_erase(&mut (*sess).rpc_handle_list, index); __session_rpc_close(sess, entry); }
+    xa_for_each!(&mut (*sess).rpc_handle_list, index, entry, { xa_erase(&mut (*sess).rpc_handle_list, index); __session_rpc_close(sess, entry); });
     up_write(&mut (*sess).rpc_lock); xa_destroy(&mut (*sess).rpc_handle_list);
 }
 
@@ -174,12 +174,12 @@ pub unsafe fn ksmbd_session_destroy(sess: *mut ksmbd_session) {
 unsafe fn ksmbd_session_remove_from_table(sess: *mut ksmbd_session) { hash_del(&mut (*sess).hlist); ksmbd_counter_dec(KSMBD_COUNTER_SESSIONS); }
 
 pub unsafe fn __session_lookup(id: u64) -> *mut ksmbd_session {
-    let mut sess: *mut ksmbd_session = core::ptr::null_mut(); hash_for_each_possible(&mut SESSIONS_TABLE, sess, hlist, id) { if id == (*sess).id { (*sess).last_active = jiffies; return sess; } } core::ptr::null_mut()
+    let mut sess: *mut ksmbd_session = core::ptr::null_mut(); hash_for_each_possible!(&mut SESSIONS_TABLE, sess, hlist, id, { if id == (*sess).id { (*sess).last_active = jiffies; return sess; } }); core::ptr::null_mut()
 }
 
 unsafe fn ksmbd_expire_session(conn: *mut ksmbd_conn) {
     down_write(&mut SESSIONS_TABLE_LOCK); down_write(&mut (*conn).session_lock); let mut id = 0; let mut sess: *mut ksmbd_session = core::ptr::null_mut();
-    xa_for_each(&mut (*conn).sessions, id, sess) { if atomic_read(&(*sess).refcnt) <= 1 && ((*sess).state != SMB2_SESSION_VALID || time_after(jiffies, (*sess).last_active + SMB2_SESSION_TIMEOUT)) { xa_erase(&mut (*conn).sessions, (*sess).id); ksmbd_session_remove_from_table(sess); ksmbd_session_destroy(sess); } }
+    xa_for_each!(&mut (*conn).sessions, id, sess, { if atomic_read(&(*sess).refcnt) <= 1 && ((*sess).state != SMB2_SESSION_VALID || time_after(jiffies, (*sess).last_active + SMB2_SESSION_TIMEOUT)) { xa_erase(&mut (*conn).sessions, (*sess).id); ksmbd_session_remove_from_table(sess); ksmbd_session_destroy(sess); } });
     up_write(&mut (*conn).session_lock); up_write(&mut SESSIONS_TABLE_LOCK);
 }
 
@@ -189,8 +189,8 @@ unsafe fn ksmbd_chann_del(conn: *mut ksmbd_conn, sess: *mut ksmbd_session) -> i3
 
 pub unsafe fn ksmbd_sessions_deregister(conn: *mut ksmbd_conn) {
     down_write(&mut SESSIONS_TABLE_LOCK); let mut sess: *mut ksmbd_session = core::ptr::null_mut(); let mut bkt = 0; let mut tmp: *mut hlist_node = core::ptr::null_mut();
-    hash_for_each_safe(&mut SESSIONS_TABLE, bkt, tmp, sess, hlist) { if ksmbd_chann_del(conn, sess) == 0 && xa_empty(&mut (*sess).ksmbd_chann_list) { ksmbd_session_remove_from_table(sess); down_write(&mut (*conn).session_lock); xa_erase(&mut (*conn).sessions, (*sess).id); up_write(&mut (*conn).session_lock); if atomic_dec_and_test(&mut (*sess).refcnt) { ksmbd_session_destroy(sess); } } }
-    down_write(&mut (*conn).session_lock); let mut id = 0; xa_for_each(&mut (*conn).sessions, id, sess) { ksmbd_chann_del(conn, sess); if xa_empty(&mut (*sess).ksmbd_chann_list) { xa_erase(&mut (*conn).sessions, (*sess).id); ksmbd_session_remove_from_table(sess); if atomic_dec_and_test(&mut (*sess).refcnt) { ksmbd_session_destroy(sess); } } } up_write(&mut (*conn).session_lock); up_write(&mut SESSIONS_TABLE_LOCK);
+    hash_for_each_safe!(&mut SESSIONS_TABLE, bkt, tmp, sess, hlist, { if ksmbd_chann_del(conn, sess) == 0 && xa_empty(&mut (*sess).ksmbd_chann_list) { ksmbd_session_remove_from_table(sess); down_write(&mut (*conn).session_lock); xa_erase(&mut (*conn).sessions, (*sess).id); up_write(&mut (*conn).session_lock); if atomic_dec_and_test(&mut (*sess).refcnt) { ksmbd_session_destroy(sess); } } });
+    down_write(&mut (*conn).session_lock); let mut id = 0; xa_for_each!(&mut (*conn).sessions, id, sess, { ksmbd_chann_del(conn, sess); if xa_empty(&mut (*sess).ksmbd_chann_list) { xa_erase(&mut (*conn).sessions, (*sess).id); ksmbd_session_remove_from_table(sess); if atomic_dec_and_test(&mut (*sess).refcnt) { ksmbd_session_destroy(sess); } } }); up_write(&mut (*conn).session_lock); up_write(&mut SESSIONS_TABLE_LOCK);
 }
 
 pub unsafe fn is_ksmbd_session_in_connection(conn: *mut ksmbd_conn, id: u64) -> bool { down_read(&mut (*conn).session_lock); let found = !xa_load(&mut (*conn).sessions, id).is_null(); up_read(&mut (*conn).session_lock); found }
@@ -203,9 +203,9 @@ pub unsafe fn ksmbd_user_session_put(sess: *mut ksmbd_session) { if sess.is_null
 
 #[repr(C)] pub struct preauth_session { id: u64, Preauth_HashValue: [u8; PREAUTH_HASHVALUE_SIZE], preauth_entry: list_head }
 pub unsafe fn ksmbd_preauth_session_alloc(conn: *mut ksmbd_conn, sess_id: u64) -> *mut preauth_session { let sess = kmalloc_obj::<preauth_session>(KSMBD_DEFAULT_GFP); if sess.is_null() { return core::ptr::null_mut(); } (*sess).id = sess_id; memcpy((*sess).Preauth_HashValue.as_mut_ptr(), (*(*conn).preauth_info).Preauth_HashValue.as_ptr(), PREAUTH_HASHVALUE_SIZE); list_add(&mut (*sess).preauth_entry, &mut (*conn).preauth_sess_table); sess }
-pub unsafe fn ksmbd_preauth_session_destroy(conn: *mut ksmbd_conn) { let mut sess: *mut preauth_session = core::ptr::null_mut(); let mut tmp: *mut preauth_session = core::ptr::null_mut(); list_for_each_entry_safe(sess, tmp, &mut (*conn).preauth_sess_table, preauth_entry) { list_del(&mut (*sess).preauth_entry); kfree(sess as *mut _); } }
+pub unsafe fn ksmbd_preauth_session_destroy(conn: *mut ksmbd_conn) { let mut sess: *mut preauth_session = core::ptr::null_mut(); let mut tmp: *mut preauth_session = core::ptr::null_mut(); list_for_each_entry_safe!(sess, tmp, &mut (*conn).preauth_sess_table, preauth_entry, { list_del(&mut (*sess).preauth_entry); kfree(sess as *mut _); }); }
 pub unsafe fn destroy_previous_session(conn: *mut ksmbd_conn, user: *mut ksmbd_user, id: u64) { down_write(&mut SESSIONS_TABLE_LOCK); down_write(&mut (*conn).session_lock); let prev = __session_lookup(id); if !prev.is_null() && (*prev).state != SMB2_SESSION_EXPIRED && !(*prev).user.is_null() && strcmp((*user).name, (*(*prev).user).name) == 0 && (*user).passkey_sz == (*(*prev).user).passkey_sz && memcmp((*user).passkey, (*(*prev).user).passkey, (*user).passkey_sz) == 0 { ksmbd_all_conn_set_status(prev, KSMBD_SESS_NEED_RECONNECT); if ksmbd_conn_wait_idle_sess(conn, prev) == 0 { ksmbd_destroy_file_table(prev); (*prev).kerberos_expiry = 0; (*prev).state = SMB2_SESSION_EXPIRED; ksmbd_all_conn_set_status(prev, KSMBD_SESS_NEED_SETUP); ksmbd_launch_ksmbd_durable_scavenger(); } else { ksmbd_all_conn_set_status(prev, KSMBD_SESS_NEED_SETUP); } } up_write(&mut (*conn).session_lock); up_write(&mut SESSIONS_TABLE_LOCK); }
-pub unsafe fn ksmbd_preauth_session_lookup(conn: *mut ksmbd_conn, id: u64) -> *mut preauth_session { let mut sess: *mut preauth_session = core::ptr::null_mut(); list_for_each_entry(sess, &mut (*conn).preauth_sess_table, preauth_entry) { if (*sess).id == id { return sess; } } core::ptr::null_mut() }
+pub unsafe fn ksmbd_preauth_session_lookup(conn: *mut ksmbd_conn, id: u64) -> *mut preauth_session { let mut sess: *mut preauth_session = core::ptr::null_mut(); list_for_each_entry!(sess, &mut (*conn).preauth_sess_table, preauth_entry, { if (*sess).id == id { return sess; } }); core::ptr::null_mut() }
 
 unsafe fn __init_smb2_session(sess: *mut ksmbd_session) -> i32 { let id = ksmbd_acquire_smb2_uid(&mut SESSION_IDA); if id < 0 { -EINVAL } else { (*sess).id = id; 0 } }
 unsafe fn __session_create(protocol: i32) -> *mut ksmbd_session { if protocol != CIFDS_SESSION_FLAG_SMB2 { return core::ptr::null_mut(); } let sess = kzalloc_obj::<ksmbd_session>(KSMBD_DEFAULT_GFP); if sess.is_null() { return sess; } ida_init(&mut (*sess).tree_conn_ida); if ksmbd_init_file_table(&mut (*sess).file_table) != 0 { ksmbd_session_destroy(sess); return core::ptr::null_mut(); } (*sess).last_active = jiffies; (*sess).state = SMB2_SESSION_IN_PROGRESS; set_session_flag(sess, protocol); xa_init(&mut (*sess).tree_conns); xa_init(&mut (*sess).ksmbd_chann_list); xa_init(&mut (*sess).rpc_handle_list); (*sess).sequence_number = 1; atomic_set(&mut (*sess).refcnt, 2); init_rwsem(&mut (*sess).tree_conns_lock); init_rwsem(&mut (*sess).rpc_lock); init_rwsem(&mut (*sess).chann_lock); if __init_smb2_session(sess) != 0 { ksmbd_session_destroy(sess); return core::ptr::null_mut(); } down_write(&mut SESSIONS_TABLE_LOCK); hash_add(&mut SESSIONS_TABLE, &mut (*sess).hlist, (*sess).id); ksmbd_counter_inc(KSMBD_COUNTER_SESSIONS); up_write(&mut SESSIONS_TABLE_LOCK); if create_proc_session(sess) != 0 { pr_warn_ratelimited(b"Unable to create session %llu procfs entry\n\0".as_ptr(), (*sess).id); } sess }

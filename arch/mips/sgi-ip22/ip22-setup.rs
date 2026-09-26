@@ -16,7 +16,7 @@ extern "C" {
     fn ip22_be_init();
     fn sgihpc_init();
     fn sgimc_init();
-    #[cfg(feature = "CONFIG_BOARD_SCACHE")]
+    #[cfg(CONFIG_BOARD_SCACHE)]
     fn indy_sc_init();
     fn ioremap(offset: c_ulong, size: c_ulong) -> *mut c_void;
     fn set_io_port_base(base: c_ulong);
@@ -46,7 +46,7 @@ pub unsafe extern "C" fn plat_mem_setup() {
     sgimc_init();
 
     // Build-time CONFIG_BOARD_SCACHE condition preserved from the source.
-    #[cfg(feature = "CONFIG_BOARD_SCACHE")]
+    #[cfg(CONFIG_BOARD_SCACHE)]
     {
         /* Now enable boardcaches, if any. */
         indy_sc_init();

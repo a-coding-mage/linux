@@ -85,18 +85,18 @@ pub struct smc_stats {
 // per-CPU primitives, kernel structures, fls/fls64, and token-pasted members
 // are supplied by the surrounding kernel translation.
 macro_rules! SMC_STAT_PAYLOAD_SUB {
-    ($smc_stats:expr, $tech:expr, $key:ident, $len:expr, $rc:expr) => {{
+    ($smc_stats:expr, $tech:expr, $key:tt, $len:expr, $rc:expr) => {{
         let stats = $smc_stats;
         let t = $tech;
         let l = $len;
         let r = $rc;
         let m = SmcBuf::SMC_BUF_MAX as i32 - 1;
-        this_cpu_inc!((*stats).smc[t].$key##_cnt);
+        this_cpu_inc!((*stats).smc[t].::kernel::macros::paste!([<$key _cnt>]));
         if r > 0 && l > 0 {
             let mut pos = fls64(((l - 1) >> 13) as u64);
             pos = if pos <= m { pos } else { m };
-            this_cpu_inc!((*stats).smc[t].$key##_pd.buf[pos as usize]);
-            this_cpu_add!((*stats).smc[t].$key##_bytes, r);
+            this_cpu_inc!((*stats).smc[t].::kernel::macros::paste!([<$key _pd>]).buf[pos as usize]);
+            this_cpu_add!((*stats).smc[t].::kernel::macros::paste!([<$key _bytes>]), r);
         }
     }};
 }

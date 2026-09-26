@@ -15,7 +15,7 @@ extern "C" {
 #[derive(Copy, Clone)]
 pub enum cxl_detach_mode { DETACH_ONLY, DETACH_INVALIDATE }
 
-#[cfg(feature = "CONFIG_CXL_REGION")]
+#[cfg(CONFIG_CXL_REGION)]
 #[repr(C)]
 pub struct cxl_region_context {
     pub cxled: *mut cxl_endpoint_decoder,
@@ -24,7 +24,7 @@ pub struct cxl_region_context {
     pub interleave_granularity: ::core::ffi::c_int,
 }
 
-#[cfg(feature = "CONFIG_CXL_REGION")]
+#[cfg(CONFIG_CXL_REGION)]
 extern "C" {
     pub static mut dev_attr_create_pmem_region: device_attribute;
     pub static mut dev_attr_create_ram_region: device_attribute;
@@ -45,19 +45,19 @@ extern "C" {
     pub fn kill_regions(cxlrd: *mut cxl_root_decoder);
 }
 
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn cxl_dpa_to_hpa(_: *mut cxl_region, _: *const cxl_memdev, _: u64) -> u64 { u64::MAX }
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn cxl_dpa_to_region(_: *const cxl_memdev, _: u64) -> *mut cxl_region { ::core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn cxl_get_poison_by_endpoint(_: *mut cxl_port) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn cxl_decoder_detach(_: *mut cxl_region, _: *mut cxl_endpoint_decoder, _: ::core::ffi::c_int, _: cxl_detach_mode) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn cxl_region_init() -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn cxl_region_exit() {}
-#[cfg(not(feature = "CONFIG_CXL_REGION"))]
+#[cfg(not(CONFIG_CXL_REGION))]
 pub unsafe fn kill_regions(_: *mut cxl_root_decoder) {}
 
 macro_rules! CXL_REGION_ATTR { ($x:ident) => { &raw const dev_attr_$x.attr }; }
@@ -110,7 +110,7 @@ extern "C" { pub fn is_cxl_root(port: *mut cxl_port) -> bool; pub fn to_cxl_port
 
 extern "C" { pub fn cxl_gpf_port_setup(dport: *mut cxl_dport) -> ::core::ffi::c_int; pub fn cxl_hdm_decode_init(cxlds: *mut cxl_dev_state, cxlhdm: *mut cxl_hdm, info: *mut cxl_endpoint_dvsec_info) -> ::core::ffi::c_int; pub fn cxl_port_get_possible_dports(port: *mut cxl_port) -> ::core::ffi::c_int; pub fn cxl_rcd_component_reg_phys(dev: *mut device, dport: *mut cxl_dport) -> resource_size_t; }
 
-#[cfg(feature = "CONFIG_CXL_RAS")]
+#[cfg(CONFIG_CXL_RAS)]
 extern "C" {
     pub fn cxl_ras_init(); pub fn cxl_ras_exit();
     pub fn cxl_handle_ras(dev: *mut device, ras_base: *mut ::core::ffi::c_void) -> bool;
@@ -120,24 +120,24 @@ extern "C" {
     pub fn cxl_handle_rdport_errors(cxlds: *mut cxl_dev_state);
     pub fn devm_cxl_dport_ras_setup(dport: *mut cxl_dport);
 }
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_ras_init() {}
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_ras_exit() {}
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_handle_ras(_: *mut device, _: *mut ::core::ffi::c_void) -> bool { false }
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_handle_cor_ras(_: *mut device, _: *mut ::core::ffi::c_void) {}
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_dport_map_rch_aer(_: *mut cxl_dport) {}
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_disable_rch_root_ints(_: *mut cxl_dport) {}
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn cxl_handle_rdport_errors(_: *mut cxl_dev_state) {}
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 pub unsafe fn devm_cxl_dport_ras_setup(_: *mut cxl_dport) {}
 
-#[cfg(feature = "CONFIG_CXL_FEATURES")]
+#[cfg(CONFIG_CXL_FEATURES)]
 extern "C" {
     pub fn cxl_feature_info(cxlfs: *mut cxl_features_state, uuid: *const uuid_t) -> *mut cxl_feat_entry;
     pub fn cxl_get_feature(cxl_mbox: *mut cxl_mailbox, feat_uuid: *const uuid_t,

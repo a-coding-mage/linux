@@ -22,17 +22,17 @@ const CKEN_BOOT: u32 = 11;
 const CKEN_TPM: u32 = 19;
 const CKEN_HSIO2: u32 = 41;
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 const ISRAM_START: usize = 0x5c000000;
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 const ISRAM_SIZE: usize = 256 * 1024;
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut sram: *mut core::ffi::c_void = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut wakeup_src: usize = 0;
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa3xx_cpu_standby(pwrmode: u32) {
     let fn_: unsafe extern "C" fn(u32) = core::mem::transmute((sram as usize) + 0x8000);
     memcpy_toio((sram as usize + 0x8000) as *mut _, pm_enter_standby_start,
@@ -43,7 +43,7 @@ unsafe fn pxa3xx_cpu_standby(pwrmode: u32) {
     AD2D0ER = 0; AD2D1ER = 0;
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa3xx_cpu_pm_suspend() {
     let p = 0xc0000000usize as *mut usize;
     let saved_data = core::ptr::read_volatile(p);
@@ -57,7 +57,7 @@ unsafe fn pxa3xx_cpu_pm_suspend() {
     core::ptr::write_volatile(p, saved_data); AD3ER = 0;
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa3xx_cpu_pm_enter(state: suspend_state_t) {
     if wakeup_src == 0 { printk(KERN_ERR, "Not suspending: no wakeup sources\n"); return; }
     match state {
@@ -67,15 +67,15 @@ unsafe fn pxa3xx_cpu_pm_enter(state: suspend_state_t) {
     }
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" fn pxa3xx_cpu_pm_valid(state: suspend_state_t) -> i32 {
     (state == PM_SUSPEND_MEM || state == PM_SUSPEND_STANDBY) as i32
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut pxa3xx_cpu_pm_fns: pxa_cpu_pm_fns = pxa_cpu_pm_fns { valid: Some(pxa3xx_cpu_pm_valid), enter: Some(pxa3xx_cpu_pm_enter) };
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa3xx_init_pm() {
     sram = ioremap(ISRAM_START, ISRAM_SIZE);
     if sram.is_null() { printk(KERN_ERR, "Unable to map ISRAM: disabling standby/suspend\n"); return; }
@@ -84,7 +84,7 @@ unsafe fn pxa3xx_init_pm() {
     pxa_cpu_pm_fns = &mut pxa3xx_cpu_pm_fns;
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" fn pxa3xx_set_wake(d: *mut irq_data, on: u32) -> i32 {
     let mask = match (*d).irq {
         IRQ_SSP3 => ADXER_MFP_WSSP3, IRQ_MSL => ADXER_WMSL0,
@@ -105,9 +105,9 @@ unsafe extern "C" fn pxa3xx_set_wake(d: *mut irq_data, on: u32) -> i32 {
     local_irq_restore(flags); 0
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 unsafe fn pxa3xx_init_pm() {}
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const pxa3xx_set_wake: Option<unsafe extern "C" fn(*mut irq_data, u32) -> i32> = None;
 
 unsafe fn pxa_ack_ext_wakeup(d: *mut irq_data) { PECR |= pecr_is((*d).irq - IRQ_WAKEUP0); }

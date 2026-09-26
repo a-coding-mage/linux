@@ -39,7 +39,7 @@ extern "C" {
 }
 
 // The CONFIG_ACPI_IORT branch is preserved as a Rust configuration condition.
-#[cfg(feature = "CONFIG_ACPI_IORT")]
+#[cfg(CONFIG_ACPI_IORT)]
 extern "C" {
     pub fn iort_msi_map_id(dev: *mut device, id: u32) -> u32;
     pub fn iort_msi_xlate(dev: *mut device, id: u32, node: *mut *mut fwnode_handle) -> u32;
@@ -63,19 +63,19 @@ extern "C" {
     pub fn acpi_iort_dma_get_max_cpu_address() -> phys_addr_t;
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_msi_map_id(_dev: *mut device, id: u32) -> u32 { id }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_msi_xlate(_dev: *mut device, id: u32, _node: *mut *mut fwnode_handle) -> u32 { id }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_its_translate_pa(_node: *mut fwnode_handle, _base: *mut phys_addr_t) -> i32 { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_get_device_domain(
     _dev: *mut device,
@@ -83,7 +83,7 @@ pub unsafe fn iort_get_device_domain(
     _bus_token: irq_domain_bus_token,
 ) -> *mut irq_domain { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_pmsi_get_msi_info(
     _dev: *mut device,
@@ -91,31 +91,31 @@ pub unsafe fn iort_pmsi_get_msi_info(
     _pa: *mut phys_addr_t,
 ) -> i32 { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn acpi_configure_pmsi_domain(_dev: *mut device) {}
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_get_rmr_sids(_iommu_fwnode: *mut fwnode_handle, _head: *mut list_head) {}
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_put_rmr_sids(_iommu_fwnode: *mut fwnode_handle, _head: *mut list_head) {}
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_dma_get_ranges(_dev: *mut device, _limit: *mut u64) -> i32 { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_iommu_configure_id(_dev: *mut device, _id_in: *const u32) -> i32 { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn iort_iommu_get_resv_regions(_dev: *mut device, _head: *mut list_head) {}
 
-#[cfg(not(feature = "CONFIG_ACPI_IORT"))]
+#[cfg(not(CONFIG_ACPI_IORT))]
 #[inline]
 pub unsafe fn acpi_iort_dma_get_max_cpu_address() -> phys_addr_t { PHYS_ADDR_MAX }
 

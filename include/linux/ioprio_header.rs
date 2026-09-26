@@ -38,7 +38,7 @@ pub unsafe fn task_nice_ioclass(task: *mut task_struct) -> ::core::ffi::c_int {
     }
 }
 
-#[cfg(feature = "CONFIG_BLOCK")]
+#[cfg(CONFIG_BLOCK)]
 #[inline]
 pub unsafe fn __get_task_ioprio(p: *mut task_struct) -> ::core::ffi::c_int {
     let ioc: *mut io_context = (*p).io_context;
@@ -59,7 +59,7 @@ pub unsafe fn __get_task_ioprio(p: *mut task_struct) -> ::core::ffi::c_int {
     prio
 }
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn __get_task_ioprio(_p: *mut task_struct) -> ::core::ffi::c_int {
     IOPRIO_DEFAULT
@@ -76,11 +76,11 @@ extern "C" {
         ioprio: ::core::ffi::c_int,
     ) -> ::core::ffi::c_int;
 
-    #[cfg(feature = "CONFIG_BLOCK")]
+    #[cfg(CONFIG_BLOCK)]
     pub fn ioprio_check_cap(ioprio: ::core::ffi::c_int) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn ioprio_check_cap(_ioprio: ::core::ffi::c_int) -> ::core::ffi::c_int {
     -ENOTBLK

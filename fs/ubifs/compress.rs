@@ -28,42 +28,42 @@ static mut none_compr: ubifs_compressor = ubifs_compressor {
     ..unsafe { core::mem::zeroed() }
 };
 
-#[cfg(feature = "CONFIG_UBIFS_FS_LZO")]
+#[cfg(CONFIG_UBIFS_FS_LZO)]
 static mut lzo_compr: ubifs_compressor = ubifs_compressor {
     compr_type: UBIFS_COMPR_LZO,
     name: b"lzo\0".as_ptr() as *const i8,
     capi_name: b"lzo\0".as_ptr() as *const i8,
     ..unsafe { core::mem::zeroed() }
 };
-#[cfg(not(feature = "CONFIG_UBIFS_FS_LZO"))]
+#[cfg(not(CONFIG_UBIFS_FS_LZO))]
 static mut lzo_compr: ubifs_compressor = ubifs_compressor {
     compr_type: UBIFS_COMPR_LZO,
     name: b"lzo\0".as_ptr() as *const i8,
     ..unsafe { core::mem::zeroed() }
 };
 
-#[cfg(feature = "CONFIG_UBIFS_FS_ZLIB")]
+#[cfg(CONFIG_UBIFS_FS_ZLIB)]
 static mut zlib_compr: ubifs_compressor = ubifs_compressor {
     compr_type: UBIFS_COMPR_ZLIB,
     name: b"zlib\0".as_ptr() as *const i8,
     capi_name: b"deflate\0".as_ptr() as *const i8,
     ..unsafe { core::mem::zeroed() }
 };
-#[cfg(not(feature = "CONFIG_UBIFS_FS_ZLIB"))]
+#[cfg(not(CONFIG_UBIFS_FS_ZLIB))]
 static mut zlib_compr: ubifs_compressor = ubifs_compressor {
     compr_type: UBIFS_COMPR_ZLIB,
     name: b"zlib\0".as_ptr() as *const i8,
     ..unsafe { core::mem::zeroed() }
 };
 
-#[cfg(feature = "CONFIG_UBIFS_FS_ZSTD")]
+#[cfg(CONFIG_UBIFS_FS_ZSTD)]
 static mut zstd_compr: ubifs_compressor = ubifs_compressor {
     compr_type: UBIFS_COMPR_ZSTD,
     name: b"zstd\0".as_ptr() as *const i8,
     capi_name: b"zstd\0".as_ptr() as *const i8,
     ..unsafe { core::mem::zeroed() }
 };
-#[cfg(not(feature = "CONFIG_UBIFS_FS_ZSTD"))]
+#[cfg(not(CONFIG_UBIFS_FS_ZSTD))]
 static mut zstd_compr: ubifs_compressor = ubifs_compressor {
     compr_type: UBIFS_COMPR_ZSTD,
     name: b"zstd\0".as_ptr() as *const i8,

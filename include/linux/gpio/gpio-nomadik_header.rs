@@ -117,7 +117,7 @@ pub struct nmk_function { pub name: *const core::ffi::c_char, pub groups: *const
 pub struct nmk_pingroup { pub grp: pingroup, pub altsetting: core::ffi::c_int }
 
 #[macro_export]
-macro_rules! NMK_PIN_GROUP { ($a:ident, $b:expr) => { nmk_pingroup { grp: PINCTRL_PINGROUP!(stringify!($a), $a##_pins, $a##_pins.len()), altsetting: $b } }; }
+macro_rules! NMK_PIN_GROUP { ($a:tt, $b:expr) => { nmk_pingroup { grp: PINCTRL_PINGROUP!(stringify!($a), ::kernel::macros::paste!([<$a _pins>]), ::kernel::macros::paste!([<$a _pins>]).len()), altsetting: $b } }; }
 
 #[repr(C)]
 pub struct nmk_pinctrl_soc_data {
@@ -129,23 +129,23 @@ pub struct nmk_pinctrl_soc_data {
 }
 
 // CONFIG_PINCTRL_STN8815 selects the external implementation; otherwise this is a no-op.
-#[cfg(feature = "CONFIG_PINCTRL_STN8815")]
+#[cfg(CONFIG_PINCTRL_STN8815)]
 unsafe extern "C" { pub fn nmk_pinctrl_stn8815_init(soc: *const *const nmk_pinctrl_soc_data); }
-#[cfg(not(feature = "CONFIG_PINCTRL_STN8815"))]
+#[cfg(not(CONFIG_PINCTRL_STN8815))]
 pub unsafe fn nmk_pinctrl_stn8815_init(_soc: *const *const nmk_pinctrl_soc_data) {}
 
 // CONFIG_PINCTRL_DB8500 selects the external implementation; otherwise this is a no-op.
-#[cfg(feature = "CONFIG_PINCTRL_DB8500")]
+#[cfg(CONFIG_PINCTRL_DB8500)]
 unsafe extern "C" { pub fn nmk_pinctrl_db8500_init(soc: *const *const nmk_pinctrl_soc_data); }
-#[cfg(not(feature = "CONFIG_PINCTRL_DB8500"))]
+#[cfg(not(CONFIG_PINCTRL_DB8500))]
 pub unsafe fn nmk_pinctrl_db8500_init(_soc: *const *const nmk_pinctrl_soc_data) {}
 
 pub struct platform_device;
 
 // CONFIG_DEBUG_FS selects the external debug implementation; otherwise this is a no-op.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" { pub fn nmk_gpio_dbg_show_one(s: *mut seq_file, pctldev: *mut pinctrl_dev, chip: *mut gpio_chip, offset: core::ffi::c_uint); }
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn nmk_gpio_dbg_show_one(_s: *mut seq_file, _pctldev: *mut pinctrl_dev, _chip: *mut gpio_chip, _offset: core::ffi::c_uint) {}
 
 unsafe extern "C" {
@@ -155,7 +155,7 @@ unsafe extern "C" {
 }
 
 // CONFIG_PINCTRL_NOMADIK declares symbols supplied by pinctrl-nomadik.
-#[cfg(feature = "CONFIG_PINCTRL_NOMADIK")]
+#[cfg(CONFIG_PINCTRL_NOMADIK)]
 unsafe extern "C" {
     pub static mut nmk_gpio_chips: [*mut nmk_gpio_chip; NMK_MAX_BANKS as usize];
     pub static mut nmk_gpio_slpm_lock: spinlock_t;

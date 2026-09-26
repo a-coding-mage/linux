@@ -154,7 +154,7 @@ unsafe fn jffs2_write_end(_iocb: *const kiocb, mapping: *mut address_space, pos:
     kunmap_local(buf); if ret != 0 { mapping_set_error(mapping, ret); }
     writtenlen = writtenlen.wrapping_sub(core::cmp::min(writtenlen, (start - aligned_start) as u32));
     if writtenlen != 0 && (*inode).i_size < pos + writtenlen as i64 { (*inode).i_size = pos + writtenlen as i64; (*inode).i_blocks = ((*inode).i_size + 511) >> 9; }
-    jffs2_free_raw_inode(ri); if start + writtenlen as usize < end { folio_clear_uptodate(folio); }
+    jffs2_free_raw_inode(ri); if start + (writtenlen as usize) < end { folio_clear_uptodate(folio); }
     folio_unlock(folio); folio_put(folio); if writtenlen > 0 { writtenlen as i32 } else { ret }
 }
 

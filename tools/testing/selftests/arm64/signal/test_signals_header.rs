@@ -18,7 +18,7 @@ macro_rules! get_regval {
         unsafe {
             asm!(
                 concat!("mrs {}, ", stringify!($regname)),
-                out(reg) $out,
+                $out(reg) $out,
                 options(nostack, preserves_flags)
             );
         }
@@ -38,13 +38,13 @@ pub const FGCS_BIT: c_int = 5;
 pub const FPOE_BIT: c_int = 6;
 pub const FMAX_END: c_int = 7;
 
-pub const FEAT_SSBS: libc::c_ulong = 1 as libc::c_ulong << FSSBS_BIT;
-pub const FEAT_SVE: libc::c_ulong = 1 as libc::c_ulong << FSVE_BIT;
-pub const FEAT_SME: libc::c_ulong = 1 as libc::c_ulong << FSME_BIT;
-pub const FEAT_SME_FA64: libc::c_ulong = 1 as libc::c_ulong << FSME_FA64_BIT;
-pub const FEAT_SME2: libc::c_ulong = 1 as libc::c_ulong << FSME2_BIT;
-pub const FEAT_GCS: libc::c_ulong = 1 as libc::c_ulong << FGCS_BIT;
-pub const FEAT_POE: libc::c_ulong = 1 as libc::c_ulong << FPOE_BIT;
+pub const FEAT_SSBS: libc::c_ulong = (1 as libc::c_ulong) << FSSBS_BIT;
+pub const FEAT_SVE: libc::c_ulong = (1 as libc::c_ulong) << FSVE_BIT;
+pub const FEAT_SME: libc::c_ulong = (1 as libc::c_ulong) << FSME_BIT;
+pub const FEAT_SME_FA64: libc::c_ulong = (1 as libc::c_ulong) << FSME_FA64_BIT;
+pub const FEAT_SME2: libc::c_ulong = (1 as libc::c_ulong) << FSME2_BIT;
+pub const FEAT_GCS: libc::c_ulong = (1 as libc::c_ulong) << FGCS_BIT;
+pub const FEAT_POE: libc::c_ulong = (1 as libc::c_ulong) << FPOE_BIT;
 
 /*
  * A descriptor used to describe and configure a test case.

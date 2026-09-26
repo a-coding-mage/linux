@@ -16,9 +16,9 @@ pub struct TaskStruct { _private: [u8; 0] }
 pub struct SmpOperations {
     pub smp_prepare_cpus: Option<unsafe extern "C" fn(max_cpus: u32)>,
     pub smp_boot_secondary: Option<unsafe extern "C" fn(cpu: u32, idle: *mut TaskStruct) -> i32>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe extern "C" fn(cpu: u32) -> i32>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe extern "C" fn(cpu: u32)>,
 }
 
@@ -45,23 +45,23 @@ static mut CPU0_PWR_ZONE_CTRL_REG_VALUE: u32 = 0;
 static mut CPU_RST_CFG_REG: u32 = 0;
 static mut HIF_CONT_REG: u32 = 0;
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 static mut PER_CPU_SW_STATE: i32 = 0;
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn per_cpu_sw_state_rd(cpu: u32) -> i32 {
     sync_cache_r(&raw mut PER_CPU_SW_STATE, cpu);
     per_cpu(PER_CPU_SW_STATE, cpu)
 }
 
 unsafe fn per_cpu_sw_state_wr(cpu: u32, val: i32) {
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     {
         dmb();
         per_cpu_set(PER_CPU_SW_STATE, cpu, val);
         sync_cache_w(&raw mut PER_CPU_SW_STATE, cpu);
     }
-    #[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+    #[cfg(not(CONFIG_HOTPLUG_CPU))]
     { let _ = (cpu, val); }
 }
 
@@ -132,7 +132,7 @@ unsafe fn brcmstb_cpu_get_power_state(cpu: u32) -> i32 {
     if (pwr_ctrl_rd(cpu) & ZONE_RESET_STATE_MASK) != 0 { 0 } else { 1 }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn brcmstb_cpu_die(cpu: u32) {
     v7_exit_coherency_flush(all);
     per_cpu_sw_state_wr(cpu, 0);
@@ -140,7 +140,7 @@ unsafe fn brcmstb_cpu_die(cpu: u32) {
     loop { core::hint::spin_loop(); }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn brcmstb_cpu_kill(cpu: u32) -> i32 {
     if cpu == 0 { pr_warn!("SMP: refusing to power off CPU0\n"); return 1; }
     while per_cpu_sw_state_rd(cpu) != 0 { core::hint::spin_loop(); }
@@ -183,9 +183,9 @@ unsafe fn brcmstb_boot_secondary(cpu: u32, _idle: *mut TaskStruct) -> i32 {
 static BRCMSTB_SMP_OPS: SmpOperations = SmpOperations {
     smp_prepare_cpus: Some(brcmstb_cpu_ctrl_setup),
     smp_boot_secondary: Some(brcmstb_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(brcmstb_cpu_kill),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(brcmstb_cpu_die),
 };
 

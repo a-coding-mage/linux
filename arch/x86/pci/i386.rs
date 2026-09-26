@@ -24,11 +24,11 @@ static mut PCIBIOS_FW_ADDR_DONE: bool = false;
 unsafe fn pcibios_fwaddrmap_lookup(dev: *mut PciDev) -> *mut PcibiosFwaddrmap {
     lockdep_assert_held(&PCIBIOS_FWADDRMAP_LOCK);
     let mut map: *mut PcibiosFwaddrmap;
-    list_for_each_entry!(map, &PCIBIOS_FWADDRMAPPINGS, list) {
+    list_for_each_entry!(map, &PCIBIOS_FWADDRMAPPINGS, list, {
         if (*map).dev == dev {
             return map;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -84,11 +84,11 @@ unsafe fn pcibios_fw_addr_list_del() {
     let mut next: *mut PcibiosFwaddrmap;
 
     spin_lock_irqsave(&PCIBIOS_FWADDRMAP_LOCK, &mut flags);
-    list_for_each_entry_safe!(entry, next, &mut PCIBIOS_FWADDRMAPPINGS, list) {
+    list_for_each_entry_safe!(entry, next, &mut PCIBIOS_FWADDRMAPPINGS, list, {
         list_del!(&mut (*entry).list);
         pci_dev_put((*entry).dev);
         kfree(entry);
-    }
+    });
     spin_unlock_irqrestore(&PCIBIOS_FWADDRMAP_LOCK, flags);
     PCIBIOS_FW_ADDR_DONE = true;
 }
@@ -147,9 +147,9 @@ unsafe fn pcibios_allocate_bus_resources(bus: *mut PciBus) {
         pcibios_allocate_bridge_resources((*bus).self_);
     }
     let mut child: *mut PciBus;
-    list_for_each_entry!(child, &(*bus).children, node) {
+    list_for_each_entry!(child, &(*bus).children, node, {
         pcibios_allocate_bus_resources(child);
-    }
+    });
 }
 
 #[repr(C)]
@@ -192,12 +192,12 @@ unsafe fn pcibios_allocate_dev_resources(dev: *mut PciDev, pass: i32) {
 
 unsafe fn pcibios_allocate_resources(bus: *mut PciBus, pass: i32) {
     let mut dev: *mut PciDev;
-    list_for_each_entry!(dev, &(*bus).devices, bus_list) {
+    list_for_each_entry!(dev, &(*bus).devices, bus_list, {
         pcibios_allocate_dev_resources(dev, pass);
         if !(*dev).subordinate.is_null() {
             pcibios_allocate_resources((*dev).subordinate, pass);
         }
-    }
+    });
 }
 
 unsafe fn pcibios_allocate_dev_rom_resource(dev: *mut PciDev) {
@@ -211,18 +211,18 @@ unsafe fn pcibios_allocate_dev_rom_resource(dev: *mut PciDev) {
 
 unsafe fn pcibios_allocate_rom_resources(bus: *mut PciBus) {
     let mut dev: *mut PciDev;
-    list_for_each_entry!(dev, &(*bus).devices, bus_list) {
+    list_for_each_entry!(dev, &(*bus).devices, bus_list, {
         pcibios_allocate_dev_rom_resource(dev);
         if !(*dev).subordinate.is_null() {
             pcibios_allocate_rom_resources((*dev).subordinate);
         }
-    }
+    });
 }
 
 unsafe fn pcibios_assign_resources() -> i32 {
     if (pci_probe & PCI_ASSIGN_ROMS) == 0 {
         let mut bus: *mut PciBus;
-        list_for_each_entry!(bus, &pci_root_buses, node) { pcibios_allocate_rom_resources(bus); }
+        list_for_each_entry!(bus, &pci_root_buses, node, { pcibios_allocate_rom_resources(bus); });
     }
     pci_assign_unassigned_resources();
     pcibios_fw_addr_list_del();
@@ -242,9 +242,9 @@ pub unsafe fn pcibios_resource_survey_bus(bus: *mut PciBus) {
 pub unsafe fn pcibios_resource_survey() {
     DBG!("PCI: Allocating resources\n");
     let mut bus: *mut PciBus;
-    list_for_each_entry!(bus, &pci_root_buses, node) { pcibios_allocate_bus_resources(bus); }
-    list_for_each_entry!(bus, &pci_root_buses, node) { pcibios_allocate_resources(bus, 0); }
-    list_for_each_entry!(bus, &pci_root_buses, node) { pcibios_allocate_resources(bus, 1); }
+    list_for_each_entry!(bus, &pci_root_buses, node, { pcibios_allocate_bus_resources(bus); });
+    list_for_each_entry!(bus, &pci_root_buses, node, { pcibios_allocate_resources(bus, 0); });
+    list_for_each_entry!(bus, &pci_root_buses, node, { pcibios_allocate_resources(bus, 1); });
     e820__reserve_resources_late();
     ioapic_insert_resources();
 }

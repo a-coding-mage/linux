@@ -9,16 +9,16 @@
 
 // Kernel and architecture dependencies are supplied by the surrounding tree.
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut PCP_LPJ_REF: *mut ::core::ffi::c_ulong = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut PCP_LPJ_REF_FREQ: *mut ::core::ffi::c_ulong = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut GLB_LPJ_REF: ::core::ffi::c_ulong = 0;
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut GLB_LPJ_REF_FREQ: ::core::ffi::c_ulong = 0;
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpufreq_callback(
     _nb: *mut notifier_block,
     val: ::core::ffi::c_ulong,
@@ -42,10 +42,10 @@ unsafe fn cpufreq_callback(
         GLB_LPJ_REF = boot_cpu_data.udelay_val as ::core::ffi::c_ulong;
         GLB_LPJ_REF_FREQ = (*freq).old;
 
-        for_each_online_cpu!(cpu) {
+        for_each_online_cpu!(cpu, {
             *PCP_LPJ_REF.add(cpu as usize) = cpu_data[cpu as usize].udelay_val as _;
             *PCP_LPJ_REF_FREQ.add(cpu as usize) = (*freq).old;
-        }
+        });
     }
 
     /*
@@ -57,25 +57,25 @@ unsafe fn cpufreq_callback(
     {
         loops_per_jiffy = cpufreq_scale(GLB_LPJ_REF, GLB_LPJ_REF_FREQ, (*freq).new);
 
-        for_each_cpu!(cpu, cpus) {
+        for_each_cpu!(cpu, cpus, {
             lpj = cpufreq_scale(
                 *PCP_LPJ_REF.add(cpu as usize),
                 *PCP_LPJ_REF_FREQ.add(cpu as usize),
                 (*freq).new,
             );
             cpu_data[cpu as usize].udelay_val = lpj as ::core::ffi::c_uint;
-        }
+        });
     }
 
     NOTIFY_OK
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut CPUFREQ_NOTIFIER: notifier_block = notifier_block {
     notifier_call: Some(cpufreq_callback),
 };
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn register_cpufreq_notifier() -> ::core::ffi::c_int {
     cpufreq_register_notifier(&mut CPUFREQ_NOTIFIER, CPUFREQ_TRANSITION_NOTIFIER)
 }

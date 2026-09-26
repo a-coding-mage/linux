@@ -30,7 +30,7 @@ pub enum irq_desc {}
 unsafe extern "C" {
 	pub fn fixup_irqs();
 
-    #[cfg(feature = "CONFIG_KVM")]
+    #[cfg(CONFIG_KVM)]
     pub fn kvm_set_posted_intr_wakeup_handler(handler: Option<unsafe extern "C" fn()>);
 
 	pub static mut x86_platform_ipi_callback: Option<unsafe extern "C" fn()>;
@@ -40,7 +40,7 @@ unsafe extern "C" {
 
 	pub fn init_ISA_irqs();
 
-	#[cfg(feature = "CONFIG_X86_LOCAL_APIC")]
+	#[cfg(CONFIG_X86_LOCAL_APIC)]
 	pub fn arch_trigger_cpumask_backtrace(mask: *const cpumask, exclude_cpu: i32);
 }
 

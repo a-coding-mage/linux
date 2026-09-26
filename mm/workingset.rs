@@ -37,19 +37,19 @@ unsafe fn unpack_shadow(shadow: *mut core::ffi::c_void, memcgidp: *mut i32, pgda
     *workingsetp = workingset;
 }
 
-#[cfg(feature = "CONFIG_LRU_GEN")]
+#[cfg(CONFIG_LRU_GEN)]
 unsafe fn lru_gen_eviction(folio: *mut folio) -> *mut core::ffi::c_void {
     let _ = folio;
     todo!("translate CONFIG_LRU_GEN kernel implementation dependencies")
 }
 
-#[cfg(not(feature = "CONFIG_LRU_GEN"))]
+#[cfg(not(CONFIG_LRU_GEN))]
 unsafe fn lru_gen_eviction(_folio: *mut folio) -> *mut core::ffi::c_void { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_LRU_GEN"))]
+#[cfg(not(CONFIG_LRU_GEN))]
 unsafe fn lru_gen_test_recent(_shadow: *mut core::ffi::c_void, _lruvec: *mut *mut lruvec, _token: *mut usize, _workingset: *mut bool, _file: bool) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_LRU_GEN"))]
+#[cfg(not(CONFIG_LRU_GEN))]
 unsafe fn lru_gen_refault(_folio: *mut folio, _shadow: *mut core::ffi::c_void) {}
 
 pub unsafe fn workingset_age_nonresident(mut lruvec: *mut lruvec, nr_pages: usize) {

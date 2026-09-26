@@ -84,7 +84,7 @@ pub struct icc_node {
 }
 
 // The following declarations are enabled when CONFIG_INTERCONNECT is enabled.
-#[cfg(feature = "CONFIG_INTERCONNECT")]
+#[cfg(CONFIG_INTERCONNECT)]
 unsafe extern "C" {
     pub fn icc_std_aggregate(node: *mut icc_node, tag: u32, avg_bw: u32, peak_bw: u32, agg_avg: *mut u32, agg_peak: *mut u32) -> i32;
     pub fn icc_node_create_dyn() -> *mut icc_node;
@@ -104,46 +104,46 @@ unsafe extern "C" {
 }
 
 // CONFIG_INTERCONNECT disabled equivalents. Error constants are supplied by dependencies.
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_std_aggregate(_node: *mut icc_node, _tag: u32, _avg_bw: u32, _peak_bw: u32, _agg_avg: *mut u32, _agg_peak: *mut u32) -> i32 { -ENOTSUPP }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_node_create_dyn() -> *mut icc_node { ERR_PTR(-EOPNOTSUPP) }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_node_create(_id: i32) -> *mut icc_node { ERR_PTR(-EOPNOTSUPP) }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_node_destroy(_id: i32) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_node_set_name(_node: *mut icc_node, _provider: *const icc_provider, _name: *const ::core::ffi::c_char) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_link_nodes(_src_node: *mut icc_node, _dst_node: *mut *mut icc_node) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_link_create(_node: *mut icc_node, _dst_id: i32) -> i32 { -ENOTSUPP }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_node_add(_node: *mut icc_node, _provider: *mut icc_provider) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_node_del(_node: *mut icc_node) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_nodes_remove(_provider: *mut icc_provider) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_provider_init(_provider: *mut icc_provider) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_provider_register(_provider: *mut icc_provider) -> i32 { -ENOTSUPP }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn icc_provider_deregister(_provider: *mut icc_provider) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 #[inline]
 pub unsafe fn of_icc_get_from_provider(_spec: *const of_phandle_args) -> *mut icc_node_data { ERR_PTR(-ENOTSUPP) }
 

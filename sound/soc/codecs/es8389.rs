@@ -20,7 +20,7 @@ struct	es8389_private {
 	struct regmap *regmap;
 	struct clk *mclk;
 	struct regulator_bulk_data core_supply[2];
-	unsigned int sysclk;
+	core::ffi::c_uint sysclk;
 	int mastermode;
 
 	u8 hpfl;
@@ -38,8 +38,8 @@ static const char * const es8389_core_supplies[] = {
 	"vdda",
 };
 
-static bool es8389_volatile_register(struct device *dev,
-			unsigned int reg)
+static bool es8389_volatile_register(device *dev,
+			reg: core::ffi::c_uint)
 {
 	switch (reg) {
 	case ES8389_ADCL_VOL:
@@ -86,11 +86,11 @@ static const u32 hpf_table[10][10] = {
 	{496, 244, 121, 60, 31, 17, 11, 8, 0, 0}
 };
 
-static bool find_best_hpf_freq(u32 target_hz, u8 *hpf1, u8 *hpf2, u32 *out)
+static bool find_best_hpf_freq(target_hz: u32, u8 *hpf1, u8 *hpf2, u32 *out)
 {
 	int best_row = -1, best_col = -1;
 	u32 min_diff = U32_MAX;
-	u32 f, diff;
+	f: u32, diff;
 	int i, j;
 
 	if (target_hz > 1020)
@@ -116,69 +116,69 @@ static bool find_best_hpf_freq(u32 target_hz, u8 *hpf1, u8 *hpf2, u32 *out)
 	return true;
 }
 
-static int es8389_hpf_get(struct snd_kcontrol *kcontrol,
-	struct snd_ctl_elem_value *ucontrol)
+static int es8389_hpf_get(snd_kcontrol *kcontrol,
+	snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
-	ucontrol->value.integer.value[0] = es8389->hpf_freq;
+	(*ucontrol).value.integer.value[0] = (*es8389).hpf_freq;
 	return 0;
 }
 
-static int es8389_hpf_set(struct snd_kcontrol *kcontrol,
-	struct snd_ctl_elem_value *ucontrol)
+static int es8389_hpf_set(snd_kcontrol *kcontrol,
+	snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 	u32 freq;
 	bool hpf;
 
-	if (es8389->hpf_freq == ucontrol->value.integer.value[0])
+	if ((*es8389).hpf_freq == (*ucontrol).value.integer.value[0])
 		return 0;
 
-	if (es8389->capture_rate) {
-		freq = (ucontrol->value.integer.value[0] * 48000) / es8389->capture_rate;
+	if ((*es8389).capture_rate) {
+		freq = ((*ucontrol).value.integer.value[0] * 48000) / (*es8389).capture_rate;
 
-		hpf = find_best_hpf_freq(freq, &es8389->hpfl, &es8389->hpfr, &es8389->hpf_freq);
+		hpf = find_best_hpf_freq(freq, (*&es8389).hpfl, (*&es8389).hpfr, (*&es8389).hpf_freq);
 		if (!hpf)
 			return -EBUSY;
 
-		if (es8389->hpf_freq != ucontrol->value.integer.value[0])
-			dev_dbg(component->dev, "At the %u Hz sampling rate, %ld Hz could not be obtained."
+		if ((*es8389).hpf_freq != (*ucontrol).value.integer.value[0])
+			dev_dbg((*component).dev, "At the %u Hz sampling rate, %ld Hz could not be obtained."
 				"the frequency has been set to the closest value, %u Hz\n",
-				es8389->capture_rate, ucontrol->value.integer.value[0], es8389->hpf_freq);
+				(*es8389).capture_rate, (*ucontrol).value.integer.value[0], (*es8389).hpf_freq);
 
-		regmap_update_bits(es8389->regmap, ES8389_ADC_HPF1, 0x0f, es8389->hpfl);
-		regmap_update_bits(es8389->regmap, ES8389_ADC_HPF2, 0x0f, es8389->hpfr);
+		regmap_update_bits((*es8389).regmap, ES8389_ADC_HPF1, 0x0f, (*es8389).hpfl);
+		regmap_update_bits((*es8389).regmap, ES8389_ADC_HPF2, 0x0f, (*es8389).hpfr);
 	} else {
-		es8389->hpf_freq = ucontrol->value.integer.value[0];
-		dev_dbg(component->dev, "PCM_STREAM_CAPTURE is not active.retain the input frequency\n");
+		(*es8389).hpf_freq = (*ucontrol).value.integer.value[0];
+		dev_dbg((*component).dev, "PCM_STREAM_CAPTURE is not active.retain the input frequency\n");
 	}
 
 	return 1;
 }
 
-static int es8389_dmic_set(struct snd_kcontrol *kcontrol,
-	struct snd_ctl_elem_value *ucontrol)
+static int es8389_dmic_set(snd_kcontrol *kcontrol,
+	snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
 	struct snd_soc_dapm_context *dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
-	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
-	unsigned int val;
-	bool changed1, changed2;
+	struct soc_enum *e = (*(soc_enum *)kcontrol).private_value;
+	core::ffi::c_uint val;
+	changed1: bool, changed2;
 
-	val = ucontrol->value.integer.value[0];
+	val = (*ucontrol).value.integer.value[0];
 	if (val > 1)
 		return -EINVAL;
 
 	if (val) {
-		regmap_update_bits_check(es8389->regmap, ES8389_DMIC_EN, 0xC0, 0xC0, &changed1);
-		regmap_update_bits_check(es8389->regmap, ES8389_ADC_MODE, 0x03, 0x03, &changed2);
+		regmap_update_bits_check((*es8389).regmap, ES8389_DMIC_EN, 0xC0, 0xC0, &changed1);
+		regmap_update_bits_check((*es8389).regmap, ES8389_ADC_MODE, 0x03, 0x03, &changed2);
 	} else {
-		regmap_update_bits_check(es8389->regmap, ES8389_DMIC_EN, 0xC0, 0x00, &changed1);
-		regmap_update_bits_check(es8389->regmap, ES8389_ADC_MODE, 0x03, 0x00, &changed2);
+		regmap_update_bits_check((*es8389).regmap, ES8389_DMIC_EN, 0xC0, 0x00, &changed1);
+		regmap_update_bits_check((*es8389).regmap, ES8389_ADC_MODE, 0x03, 0x00, &changed2);
 	}
 
 	if (changed1 & changed2)
@@ -272,7 +272,7 @@ static const char *const es8389_pga2_texts[] = {
 	"DifferentialR",  "Line 2N", "Line 1N"
 };
 
-static const unsigned int es8389_pga_values[] = {
+static core::ffi::c_uint es8389_pga_values[] = {
 	1, 5, 6
 };
 
@@ -594,10 +594,10 @@ static const struct _coeff_div  coeff_div[] = {
 	{64, 12288000, 192000, 0x00, 0x41, 0x00, 0xC0, 0x18, 0xC1, 0x80, 0x00, 0x00, 0x8F, 0x7F, 0xEF, 0xC0, 0x7F, 0x7F, 0x80, 0x12, 0xC0, 0x3F, 0xF9, 0x3F, 1, 0},
 };
 
-static inline int get_coeff(u8 vddd, u8 dmic, int mclk, int rate)
+int get_coeff(vddd: u8, dmic: u8, int mclk, int rate)
 {
 	int i;
-	u8 dmic_det, vddd_det;
+	dmic_det: u8, vddd_det;
 
 	for (i = 0; i < ARRAY_SIZE(coeff_div); i++) {
 		if (coeff_div[i].rate == rate && coeff_div[i].mclk == mclk) {
@@ -617,45 +617,45 @@ static inline int get_coeff(u8 vddd, u8 dmic, int mclk, int rate)
 /*
  * if PLL not be used, use internal clk1 for mclk,otherwise, use internal clk2 for PLL source.
  */
-static int es8389_set_dai_sysclk(struct snd_soc_dai *dai,
-			int clk_id, unsigned int freq, int dir)
+static int es8389_set_dai_sysclk(snd_soc_dai *dai,
+			int clk_id, freq: core::ffi::c_uint, int dir)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
-	es8389->sysclk = freq;
+	(*es8389).sysclk = freq;
 
 	return 0;
 }
 
-static int es8389_set_tdm_slot(struct snd_soc_dai *dai,
-	unsigned int tx_mask, unsigned int rx_mask, int slots, int slot_width)
+static int es8389_set_tdm_slot(snd_soc_dai *dai,
+	tx_mask: core::ffi::c_uint, rx_mask: core::ffi::c_uint, int slots, int slot_width)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
-	regmap_update_bits(es8389->regmap, ES8389_PTDM_SLOT,
+	regmap_update_bits((*es8389).regmap, ES8389_PTDM_SLOT,
 				ES8389_TDM_SLOT, (slots << ES8389_TDM_SHIFT));
-	regmap_update_bits(es8389->regmap, ES8389_DAC_RAMP,
+	regmap_update_bits((*es8389).regmap, ES8389_DAC_RAMP,
 				ES8389_TDM_SLOT, (slots << ES8389_TDM_SHIFT));
 
 	return 0;
 }
 
-static int es8389_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+static int es8389_set_dai_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 	u8 state = 0;
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBC_CFP:
-		regmap_update_bits(es8389->regmap, ES8389_MASTER_MODE,
+		regmap_update_bits((*es8389).regmap, ES8389_MASTER_MODE,
 				ES8389_MASTER_MODE_EN, ES8389_MASTER_MODE_EN);
-		es8389->mastermode = 1;
+		(*es8389).mastermode = 1;
 		break;
 	case SND_SOC_DAIFMT_CBC_CFC:
-		es8389->mastermode = 0;
+		(*es8389).mastermode = 0;
 		break;
 	default:
 		return -EINVAL;
@@ -666,7 +666,7 @@ static int es8389_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		state |= ES8389_DAIFMT_I2S;
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
-		dev_err(component->dev, "component driver does not support right justified\n");
+		dev_err((*component).dev, "component driver does not support right justified\n");
 		return -EINVAL;
 	case SND_SOC_DAIFMT_LEFT_J:
 		state |= ES8389_DAIFMT_LEFT_J;
@@ -680,21 +680,21 @@ static int es8389_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	default:
 		break;
 	}
-	regmap_update_bits(es8389->regmap, ES8389_ADC_FORMAT_MUTE, ES8389_DAIFMT_MASK, state);
-	regmap_update_bits(es8389->regmap, ES8389_DAC_FORMAT_MUTE, ES8389_DAIFMT_MASK, state);
+	regmap_update_bits((*es8389).regmap, ES8389_ADC_FORMAT_MUTE, ES8389_DAIFMT_MASK, state);
+	regmap_update_bits((*es8389).regmap, ES8389_DAC_FORMAT_MUTE, ES8389_DAIFMT_MASK, state);
 
 	return 0;
 }
 
-static int es8389_pcm_hw_params(struct snd_pcm_substream *substream,
-			struct snd_pcm_hw_params *params,
-			struct snd_soc_dai *dai)
+static int es8389_pcm_hw_params(snd_pcm_substream *substream,
+			snd_pcm_hw_params *params,
+			snd_soc_dai *dai)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 	int coeff, ret;
-	u8 dmic_enable, state = 0;
-	unsigned int regv;
+	dmic_enable: u8, state = 0;
+	core::ffi::c_uint regv;
 	u32 freq;
 	bool hpf;
 
@@ -718,68 +718,68 @@ static int es8389_pcm_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	regmap_update_bits(es8389->regmap, ES8389_ADC_FORMAT_MUTE, ES8389_DATA_LEN_MASK, state);
-	regmap_update_bits(es8389->regmap, ES8389_DAC_FORMAT_MUTE, ES8389_DATA_LEN_MASK, state);
+	regmap_update_bits((*es8389).regmap, ES8389_ADC_FORMAT_MUTE, ES8389_DATA_LEN_MASK, state);
+	regmap_update_bits((*es8389).regmap, ES8389_DAC_FORMAT_MUTE, ES8389_DATA_LEN_MASK, state);
 
-	if (es8389->mclk_src == ES8389_SCLK_PIN) {
-		regmap_update_bits(es8389->regmap, ES8389_MASTER_CLK,
+	if ((*es8389).mclk_src == ES8389_SCLK_PIN) {
+		regmap_update_bits((*es8389).regmap, ES8389_MASTER_CLK,
 					ES8389_MCLK_MASK, ES8389_MCLK_FROM_SCLK);
-		es8389->sysclk = params_channels(params) * params_width(params) * params_rate(params);
+		(*es8389).sysclk = params_channels(params) * params_width(params) * params_rate(params);
 	}
 
-	regmap_read(es8389->regmap, ES8389_DMIC_EN, &regv);
+	regmap_read((*es8389).regmap, ES8389_DMIC_EN, &regv);
 	dmic_enable = regv >> 7 & 0x01;
 
-	ret = regulator_get_voltage(es8389->core_supply[ES8389_SUPPLY_VD].consumer);
+	ret = regulator_get_voltage((*es8389).core_supply[ES8389_SUPPLY_VD].consumer);
 	switch (ret) {
 	case 1800000 ... 2000000:
-		es8389->vddd = ES8389_1V8;
+		(*es8389).vddd = ES8389_1V8;
 		break;
 	case 2500000 ... 3300000:
-		es8389->vddd = ES8389_3V3;
+		(*es8389).vddd = ES8389_3V3;
 		break;
 	default:
-		es8389->vddd = ES8389_3V3;
+		(*es8389).vddd = ES8389_3V3;
 		break;
 	}
 
-	coeff = get_coeff(es8389->vddd, dmic_enable, es8389->sysclk, params_rate(params));
+	coeff = get_coeff((*es8389).vddd, dmic_enable, (*es8389).sysclk, params_rate(params));
 	if (coeff >= 0) {
-		regmap_write(es8389->regmap, ES8389_CLK_DIV1, coeff_div[coeff].Reg0x04);
-		regmap_write(es8389->regmap, ES8389_CLK_MUL, coeff_div[coeff].Reg0x05);
-		regmap_write(es8389->regmap, ES8389_CLK_MUX1, coeff_div[coeff].Reg0x06);
-		regmap_write(es8389->regmap, ES8389_CLK_MUX2, coeff_div[coeff].Reg0x07);
-		regmap_write(es8389->regmap, ES8389_CLK_CTL1, coeff_div[coeff].Reg0x08);
-		regmap_write(es8389->regmap, ES8389_CLK_CTL2, coeff_div[coeff].Reg0x09);
-		regmap_write(es8389->regmap, ES8389_CLK_CTL3, coeff_div[coeff].Reg0x0A);
-		regmap_update_bits(es8389->regmap, ES8389_OSC_CLK,
+		regmap_write((*es8389).regmap, ES8389_CLK_DIV1, coeff_div[coeff].Reg0x04);
+		regmap_write((*es8389).regmap, ES8389_CLK_MUL, coeff_div[coeff].Reg0x05);
+		regmap_write((*es8389).regmap, ES8389_CLK_MUX1, coeff_div[coeff].Reg0x06);
+		regmap_write((*es8389).regmap, ES8389_CLK_MUX2, coeff_div[coeff].Reg0x07);
+		regmap_write((*es8389).regmap, ES8389_CLK_CTL1, coeff_div[coeff].Reg0x08);
+		regmap_write((*es8389).regmap, ES8389_CLK_CTL2, coeff_div[coeff].Reg0x09);
+		regmap_write((*es8389).regmap, ES8389_CLK_CTL3, coeff_div[coeff].Reg0x0A);
+		regmap_update_bits((*es8389).regmap, ES8389_OSC_CLK,
 						0xC0, coeff_div[coeff].Reg0x0F);
-		regmap_write(es8389->regmap, ES8389_CLK_DIV2, coeff_div[coeff].Reg0x11);
-		regmap_write(es8389->regmap, ES8389_ADC_OSR, coeff_div[coeff].Reg0x21);
-		regmap_write(es8389->regmap, ES8389_ADC_DSP, coeff_div[coeff].Reg0x22);
-		regmap_write(es8389->regmap, ES8389_OSR_VOL, coeff_div[coeff].Reg0x26);
-		regmap_update_bits(es8389->regmap, ES8389_SYSTEM30,
+		regmap_write((*es8389).regmap, ES8389_CLK_DIV2, coeff_div[coeff].Reg0x11);
+		regmap_write((*es8389).regmap, ES8389_ADC_OSR, coeff_div[coeff].Reg0x21);
+		regmap_write((*es8389).regmap, ES8389_ADC_DSP, coeff_div[coeff].Reg0x22);
+		regmap_write((*es8389).regmap, ES8389_OSR_VOL, coeff_div[coeff].Reg0x26);
+		regmap_update_bits((*es8389).regmap, ES8389_SYSTEM30,
 						0xC0, coeff_div[coeff].Reg0x30);
-		regmap_write(es8389->regmap, ES8389_DAC_DSM_OSR, coeff_div[coeff].Reg0x41);
-		regmap_write(es8389->regmap, ES8389_DAC_DSP_OSR, coeff_div[coeff].Reg0x42);
-		regmap_update_bits(es8389->regmap, ES8389_DAC_MISC,
+		regmap_write((*es8389).regmap, ES8389_DAC_DSM_OSR, coeff_div[coeff].Reg0x41);
+		regmap_write((*es8389).regmap, ES8389_DAC_DSP_OSR, coeff_div[coeff].Reg0x42);
+		regmap_update_bits((*es8389).regmap, ES8389_DAC_MISC,
 						0x81, coeff_div[coeff].Reg0x43);
-		regmap_update_bits(es8389->regmap, ES8389_CHIP_MISC,
+		regmap_update_bits((*es8389).regmap, ES8389_CHIP_MISC,
 						0x72, coeff_div[coeff].Reg0xF0);
-		regmap_write(es8389->regmap, ES8389_CSM_STATE1, coeff_div[coeff].Reg0xF1);
-		regmap_write(es8389->regmap, ES8389_SYSTEM16, coeff_div[coeff].Reg0x16);
-		regmap_write(es8389->regmap, ES8389_SYSTEM18, coeff_div[coeff].Reg0x18);
-		regmap_write(es8389->regmap, ES8389_SYSTEM19, coeff_div[coeff].Reg0x19);
+		regmap_write((*es8389).regmap, ES8389_CSM_STATE1, coeff_div[coeff].Reg0xF1);
+		regmap_write((*es8389).regmap, ES8389_SYSTEM16, coeff_div[coeff].Reg0x16);
+		regmap_write((*es8389).regmap, ES8389_SYSTEM18, coeff_div[coeff].Reg0x18);
+		regmap_write((*es8389).regmap, ES8389_SYSTEM19, coeff_div[coeff].Reg0x19);
 	} else {
-		dev_warn(component->dev, "Clock coefficients do not match");
+		dev_warn((*component).dev, "Clock coefficients do not match");
 	}
 
-	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
-		es8389->capture_rate = params_rate(params);
-		freq = (es8389->hpf_freq * 48000) / params_rate(params);
-		hpf = find_best_hpf_freq(freq, &es8389->hpfl, &es8389->hpfr, &es8389->hpf_freq);
+	if ((*substream).stream == SNDRV_PCM_STREAM_CAPTURE) {
+		(*es8389).capture_rate = params_rate(params);
+		freq = ((*es8389).hpf_freq * 48000) / params_rate(params);
+		hpf = find_best_hpf_freq(freq, (*&es8389).hpfl, (*&es8389).hpfr, (*&es8389).hpf_freq);
 		if (!hpf) {
-			dev_err(component->dev, "The HPF frequency is invalid\n");
+			dev_err((*component).dev, "The HPF frequency is invalid\n");
 			return -EINVAL;
 		}
 	}
@@ -787,53 +787,53 @@ static int es8389_pcm_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-static int es8389_pcm_hw_free(struct snd_pcm_substream *substream,
-		struct snd_soc_dai *dai)
+static int es8389_pcm_hw_free(snd_pcm_substream *substream,
+		snd_soc_dai *dai)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
-	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
-		es8389->capture_rate = 0;
+	if ((*substream).stream == SNDRV_PCM_STREAM_CAPTURE)
+		(*es8389).capture_rate = 0;
 
 	return 0;
 }
 
-static int es8389_set_bias_level(struct snd_soc_component *component,
-			enum snd_soc_bias_level level)
+static int es8389_set_bias_level(snd_soc_component *component,
+			snd_soc_bias_level level)
 {
 	int ret;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
-		ret = clk_prepare_enable(es8389->mclk);
+		ret = clk_prepare_enable((*es8389).mclk);
 		if (ret)
 			return ret;
 
-		regmap_update_bits(es8389->regmap, ES8389_HPSW, 0x20, 0x20);
-		regmap_write(es8389->regmap, ES8389_ANA_CTL1, 0xD9);
-		regmap_write(es8389->regmap, ES8389_ADC_EN, 0x8F);
-		regmap_write(es8389->regmap, ES8389_CSM_JUMP, 0xE4);
-		regmap_write(es8389->regmap, ES8389_RESET, 0x01);
-		regmap_write(es8389->regmap, ES8389_CLK_OFF1, 0xC3);
+		regmap_update_bits((*es8389).regmap, ES8389_HPSW, 0x20, 0x20);
+		regmap_write((*es8389).regmap, ES8389_ANA_CTL1, 0xD9);
+		regmap_write((*es8389).regmap, ES8389_ADC_EN, 0x8F);
+		regmap_write((*es8389).regmap, ES8389_CSM_JUMP, 0xE4);
+		regmap_write((*es8389).regmap, ES8389_RESET, 0x01);
+		regmap_write((*es8389).regmap, ES8389_CLK_OFF1, 0xC3);
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-		regmap_update_bits(es8389->regmap, ES8389_ADC_HPF1, 0x0f, 0x04);
-		regmap_update_bits(es8389->regmap, ES8389_ADC_HPF2, 0x0f, 0x04);
-		regmap_write(es8389->regmap, ES8389_CSM_JUMP, 0xD4);
+		regmap_update_bits((*es8389).regmap, ES8389_ADC_HPF1, 0x0f, 0x04);
+		regmap_update_bits((*es8389).regmap, ES8389_ADC_HPF2, 0x0f, 0x04);
+		regmap_write((*es8389).regmap, ES8389_CSM_JUMP, 0xD4);
 		usleep_range(70000, 72000);
-		regmap_write(es8389->regmap, ES8389_ANA_CTL1, 0x59);
-		regmap_write(es8389->regmap, ES8389_ADC_EN, 0x00);
-		regmap_write(es8389->regmap, ES8389_CLK_OFF1, 0x00);
-		regmap_write(es8389->regmap, ES8389_RESET, 0x3E);
-		regmap_update_bits(es8389->regmap, ES8389_DAC_INV, 0x80, 0x80);
+		regmap_write((*es8389).regmap, ES8389_ANA_CTL1, 0x59);
+		regmap_write((*es8389).regmap, ES8389_ADC_EN, 0x00);
+		regmap_write((*es8389).regmap, ES8389_CLK_OFF1, 0x00);
+		regmap_write((*es8389).regmap, ES8389_RESET, 0x3E);
+		regmap_update_bits((*es8389).regmap, ES8389_DAC_INV, 0x80, 0x80);
 		usleep_range(8000, 8500);
-		regmap_update_bits(es8389->regmap, ES8389_DAC_INV, 0x80, 0x00);
+		regmap_update_bits((*es8389).regmap, ES8389_DAC_INV, 0x80, 0x00);
 
-		clk_disable_unprepare(es8389->mclk);
+		clk_disable_unprepare((*es8389).mclk);
 		break;
 	case SND_SOC_BIAS_OFF:
 		break;
@@ -843,42 +843,42 @@ static int es8389_set_bias_level(struct snd_soc_component *component,
 
 
 
-static int es8389_mute(struct snd_soc_dai *dai, int mute, int direction)
+static int es8389_mute(snd_soc_dai *dai, int mute, int direction)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
-	unsigned int regv;
+	core::ffi::c_uint regv;
 
 	if (mute) {
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
-			regmap_update_bits(es8389->regmap, ES8389_DAC_FORMAT_MUTE,
+			regmap_update_bits((*es8389).regmap, ES8389_DAC_FORMAT_MUTE,
 						0x03, 0x03);
 		} else {
-			regmap_update_bits(es8389->regmap, ES8389_ADC_FORMAT_MUTE,
+			regmap_update_bits((*es8389).regmap, ES8389_ADC_FORMAT_MUTE,
 						0x03, 0x03);
 		}
 	} else {
-		regmap_read(es8389->regmap, ES8389_CSM_STATE1, &regv);
+		regmap_read((*es8389).regmap, ES8389_CSM_STATE1, &regv);
 		if (regv != ES8389_STATE_ON) {
-			regmap_update_bits(es8389->regmap, ES8389_HPSW, 0x20, 0x20);
-			regmap_write(es8389->regmap, ES8389_ANA_CTL1, 0xD9);
-			regmap_write(es8389->regmap, ES8389_ADC_EN, 0x8F);
-			regmap_write(es8389->regmap, ES8389_CSM_JUMP, 0xE4);
-			regmap_write(es8389->regmap, ES8389_RESET, 0x01);
-			regmap_write(es8389->regmap, ES8389_CLK_OFF1, 0xC3);
+			regmap_update_bits((*es8389).regmap, ES8389_HPSW, 0x20, 0x20);
+			regmap_write((*es8389).regmap, ES8389_ANA_CTL1, 0xD9);
+			regmap_write((*es8389).regmap, ES8389_ADC_EN, 0x8F);
+			regmap_write((*es8389).regmap, ES8389_CSM_JUMP, 0xE4);
+			regmap_write((*es8389).regmap, ES8389_RESET, 0x01);
+			regmap_write((*es8389).regmap, ES8389_CLK_OFF1, 0xC3);
 		}
 
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
-			if (!es8389->version) {
-				regmap_write(es8389->regmap, ES8389_DAC_RESET, 0X00);
+			if ((*!es8389).version) {
+				regmap_write((*es8389).regmap, ES8389_DAC_RESET, 0X00);
 				usleep_range(70000, 72000);
 			}
-			regmap_update_bits(es8389->regmap, ES8389_DAC_FORMAT_MUTE,
+			regmap_update_bits((*es8389).regmap, ES8389_DAC_FORMAT_MUTE,
 						0x03, 0x00);
 		} else {
-			regmap_update_bits(es8389->regmap, ES8389_ADC_HPF1, 0x0f, es8389->hpfl);
-			regmap_update_bits(es8389->regmap, ES8389_ADC_HPF2, 0x0f, es8389->hpfr);
-			regmap_update_bits(es8389->regmap, ES8389_ADC_FORMAT_MUTE,
+			regmap_update_bits((*es8389).regmap, ES8389_ADC_HPF1, 0x0f, (*es8389).hpfl);
+			regmap_update_bits((*es8389).regmap, ES8389_ADC_HPF2, 0x0f, (*es8389).hpfr);
+			regmap_update_bits((*es8389).regmap, ES8389_ADC_FORMAT_MUTE,
 						0x03, 0x00);
 		}
 	}
@@ -891,159 +891,159 @@ pub const es8389_RATES: u32 = SNDRV_PCM_RATE_8000_96000
 pub const es8389_FORMATS: u32 = (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops es8389_ops = {
-	.hw_params = es8389_pcm_hw_params,
-	.hw_free = es8389_pcm_hw_free,
-	.set_fmt = es8389_set_dai_fmt,
-	.set_sysclk = es8389_set_dai_sysclk,
-	.set_tdm_slot = es8389_set_tdm_slot,
-	.mute_stream = es8389_mute,
+	hw_params: es8389_pcm_hw_params,
+	hw_free: es8389_pcm_hw_free,
+	set_fmt: es8389_set_dai_fmt,
+	set_sysclk: es8389_set_dai_sysclk,
+	set_tdm_slot: es8389_set_tdm_slot,
+	mute_stream: es8389_mute,
 };
 
 static struct snd_soc_dai_driver es8389_dai = {
-	.name = "ES8389 HiFi",
-	.playback = {
-		.stream_name = "Playback",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = es8389_RATES,
-		.formats = es8389_FORMATS,
+	name: "ES8389 HiFi",
+	playback: {
+		stream_name: "Playback",
+		channels_min: 1,
+		channels_max: 2,
+		rates: es8389_RATES,
+		formats: es8389_FORMATS,
 	},
-	.capture = {
-		.stream_name = "Capture",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = es8389_RATES,
-		.formats = es8389_FORMATS,
+	capture: {
+		stream_name: "Capture",
+		channels_min: 1,
+		channels_max: 2,
+		rates: es8389_RATES,
+		formats: es8389_FORMATS,
 	},
-	.ops = &es8389_ops,
-	.symmetric_rate = 1,
+	ops: &es8389_ops,
+	symmetric_rate: 1,
 };
 
-static void es8389_init(struct snd_soc_component *component)
+static void es8389_init(snd_soc_component *component)
 {
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
-	unsigned int reg;
+	core::ffi::c_uint reg;
 
-	regmap_read(es8389->regmap, ES8389_MAX_REGISTER, &reg);
-	es8389->version = reg;
-	regmap_write(es8389->regmap, ES8389_ISO_CTL, 0x56);
-	regmap_write(es8389->regmap, ES8389_RESET, 0x7E);
-	regmap_write(es8389->regmap, ES8389_ISO_CTL, 0x38);
-	regmap_write(es8389->regmap, ES8389_ADC_HPF1, 0x64);
-	regmap_write(es8389->regmap, ES8389_ADC_HPF2, 0x04);
-	regmap_write(es8389->regmap, ES8389_DAC_INV, 0x03);
+	regmap_read((*es8389).regmap, ES8389_MAX_REGISTER, &reg);
+	(*es8389).version = reg;
+	regmap_write((*es8389).regmap, ES8389_ISO_CTL, 0x56);
+	regmap_write((*es8389).regmap, ES8389_RESET, 0x7E);
+	regmap_write((*es8389).regmap, ES8389_ISO_CTL, 0x38);
+	regmap_write((*es8389).regmap, ES8389_ADC_HPF1, 0x64);
+	regmap_write((*es8389).regmap, ES8389_ADC_HPF2, 0x04);
+	regmap_write((*es8389).regmap, ES8389_DAC_INV, 0x03);
 
-	regmap_write(es8389->regmap, ES8389_VMID, 0x2A);
-	regmap_write(es8389->regmap, ES8389_ANA_CTL1, 0xC9);
-	regmap_write(es8389->regmap, ES8389_ANA_VSEL, 0x4F);
-	regmap_write(es8389->regmap, ES8389_ANA_CTL2, 0x06);
-	regmap_write(es8389->regmap, ES8389_LOW_POWER1, 0x00);
-	regmap_write(es8389->regmap, ES8389_DMIC_EN, 0x16);
+	regmap_write((*es8389).regmap, ES8389_VMID, 0x2A);
+	regmap_write((*es8389).regmap, ES8389_ANA_CTL1, 0xC9);
+	regmap_write((*es8389).regmap, ES8389_ANA_VSEL, 0x4F);
+	regmap_write((*es8389).regmap, ES8389_ANA_CTL2, 0x06);
+	regmap_write((*es8389).regmap, ES8389_LOW_POWER1, 0x00);
+	regmap_write((*es8389).regmap, ES8389_DMIC_EN, 0x16);
 
-	regmap_write(es8389->regmap, ES8389_PGA_SW, 0xAA);
-	regmap_write(es8389->regmap, ES8389_MOD_SW1, 0x66);
-	regmap_write(es8389->regmap, ES8389_MOD_SW2, 0x99);
-	regmap_write(es8389->regmap, ES8389_ADC_MODE, (0x00 | ES8389_TDM_MODE));
-	regmap_update_bits(es8389->regmap, ES8389_DMIC_EN, 0xC0, 0x00);
-	regmap_update_bits(es8389->regmap, ES8389_ADC_MODE, 0x03, 0x00);
+	regmap_write((*es8389).regmap, ES8389_PGA_SW, 0xAA);
+	regmap_write((*es8389).regmap, ES8389_MOD_SW1, 0x66);
+	regmap_write((*es8389).regmap, ES8389_MOD_SW2, 0x99);
+	regmap_write((*es8389).regmap, ES8389_ADC_MODE, (0x00 | ES8389_TDM_MODE));
+	regmap_update_bits((*es8389).regmap, ES8389_DMIC_EN, 0xC0, 0x00);
+	regmap_update_bits((*es8389).regmap, ES8389_ADC_MODE, 0x03, 0x00);
 
-	regmap_update_bits(es8389->regmap, ES8389_MIC1_GAIN,
+	regmap_update_bits((*es8389).regmap, ES8389_MIC1_GAIN,
 					ES8389_MIC_SEL_MASK, ES8389_MIC_DEFAULT);
-	regmap_update_bits(es8389->regmap, ES8389_MIC2_GAIN,
+	regmap_update_bits((*es8389).regmap, ES8389_MIC2_GAIN,
 					ES8389_MIC_SEL_MASK, ES8389_MIC_DEFAULT);
-	regmap_write(es8389->regmap, ES8389_CSM_JUMP, 0xC4);
-	regmap_write(es8389->regmap, ES8389_MASTER_MODE, 0x08);
-	regmap_write(es8389->regmap, ES8389_CSM_STATE1, 0x00);
-	regmap_write(es8389->regmap, ES8389_SYSTEM12, 0x01);
-	regmap_write(es8389->regmap, ES8389_SYSTEM13, 0x01);
-	regmap_write(es8389->regmap, ES8389_SYSTEM14, 0x01);
-	regmap_write(es8389->regmap, ES8389_SYSTEM15, 0x01);
-	regmap_write(es8389->regmap, ES8389_SYSTEM16, 0x35);
-	regmap_write(es8389->regmap, ES8389_SYSTEM17, 0x09);
-	regmap_write(es8389->regmap, ES8389_SYSTEM18, 0x91);
-	regmap_write(es8389->regmap, ES8389_SYSTEM19, 0x28);
-	regmap_write(es8389->regmap, ES8389_SYSTEM1A, 0x01);
-	regmap_write(es8389->regmap, ES8389_SYSTEM1B, 0x01);
-	regmap_write(es8389->regmap, ES8389_SYSTEM1C, 0x11);
+	regmap_write((*es8389).regmap, ES8389_CSM_JUMP, 0xC4);
+	regmap_write((*es8389).regmap, ES8389_MASTER_MODE, 0x08);
+	regmap_write((*es8389).regmap, ES8389_CSM_STATE1, 0x00);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM12, 0x01);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM13, 0x01);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM14, 0x01);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM15, 0x01);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM16, 0x35);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM17, 0x09);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM18, 0x91);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM19, 0x28);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM1A, 0x01);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM1B, 0x01);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM1C, 0x11);
 
-	regmap_write(es8389->regmap, ES8389_CHIP_MISC, 0x13);
-	regmap_write(es8389->regmap, ES8389_MASTER_CLK, 0x00);
-	regmap_write(es8389->regmap, ES8389_CLK_DIV1, 0x00);
-	regmap_write(es8389->regmap, ES8389_CLK_MUL, 0x10);
-	regmap_write(es8389->regmap, ES8389_CLK_MUX1, 0x00);
-	regmap_write(es8389->regmap, ES8389_CLK_MUX2, 0xC0);
-	regmap_write(es8389->regmap, ES8389_CLK_CTL1, 0x00);
-	regmap_write(es8389->regmap, ES8389_CLK_CTL2, 0xC0);
-	regmap_write(es8389->regmap, ES8389_CLK_CTL3, 0x80);
-	regmap_write(es8389->regmap, ES8389_SCLK_DIV, 0x04);
-	regmap_write(es8389->regmap, ES8389_LRCK_DIV1, 0x01);
-	regmap_write(es8389->regmap, ES8389_LRCK_DIV2, 0x00);
-	regmap_write(es8389->regmap, ES8389_OSC_CLK, 0x10);
-	regmap_write(es8389->regmap, ES8389_ADC_OSR, 0x1F);
-	regmap_write(es8389->regmap, ES8389_ADC_DSP, 0x7F);
-	regmap_write(es8389->regmap, ES8389_ADC_MUTE, 0xC0);
-	regmap_write(es8389->regmap, ES8389_SYSTEM30, 0xF4);
-	regmap_write(es8389->regmap, ES8389_DAC_DSM_OSR, 0x7F);
-	regmap_write(es8389->regmap, ES8389_DAC_DSP_OSR, 0x7F);
-	regmap_write(es8389->regmap, ES8389_DAC_MISC, 0x10);
-	regmap_write(es8389->regmap, ES8389_DAC_RAMP, 0x0F);
-	regmap_write(es8389->regmap, ES8389_SYSTEM4C, 0xC0);
-	regmap_write(es8389->regmap, ES8389_RESET, 0x00);
-	regmap_write(es8389->regmap, ES8389_CLK_OFF1, 0xC1);
-	regmap_write(es8389->regmap, ES8389_RESET, 0x01);
-	regmap_write(es8389->regmap, ES8389_DAC_RESET, 0x02);
+	regmap_write((*es8389).regmap, ES8389_CHIP_MISC, 0x13);
+	regmap_write((*es8389).regmap, ES8389_MASTER_CLK, 0x00);
+	regmap_write((*es8389).regmap, ES8389_CLK_DIV1, 0x00);
+	regmap_write((*es8389).regmap, ES8389_CLK_MUL, 0x10);
+	regmap_write((*es8389).regmap, ES8389_CLK_MUX1, 0x00);
+	regmap_write((*es8389).regmap, ES8389_CLK_MUX2, 0xC0);
+	regmap_write((*es8389).regmap, ES8389_CLK_CTL1, 0x00);
+	regmap_write((*es8389).regmap, ES8389_CLK_CTL2, 0xC0);
+	regmap_write((*es8389).regmap, ES8389_CLK_CTL3, 0x80);
+	regmap_write((*es8389).regmap, ES8389_SCLK_DIV, 0x04);
+	regmap_write((*es8389).regmap, ES8389_LRCK_DIV1, 0x01);
+	regmap_write((*es8389).regmap, ES8389_LRCK_DIV2, 0x00);
+	regmap_write((*es8389).regmap, ES8389_OSC_CLK, 0x10);
+	regmap_write((*es8389).regmap, ES8389_ADC_OSR, 0x1F);
+	regmap_write((*es8389).regmap, ES8389_ADC_DSP, 0x7F);
+	regmap_write((*es8389).regmap, ES8389_ADC_MUTE, 0xC0);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM30, 0xF4);
+	regmap_write((*es8389).regmap, ES8389_DAC_DSM_OSR, 0x7F);
+	regmap_write((*es8389).regmap, ES8389_DAC_DSP_OSR, 0x7F);
+	regmap_write((*es8389).regmap, ES8389_DAC_MISC, 0x10);
+	regmap_write((*es8389).regmap, ES8389_DAC_RAMP, 0x0F);
+	regmap_write((*es8389).regmap, ES8389_SYSTEM4C, 0xC0);
+	regmap_write((*es8389).regmap, ES8389_RESET, 0x00);
+	regmap_write((*es8389).regmap, ES8389_CLK_OFF1, 0xC1);
+	regmap_write((*es8389).regmap, ES8389_RESET, 0x01);
+	regmap_write((*es8389).regmap, ES8389_DAC_RESET, 0x02);
 
-	regmap_update_bits(es8389->regmap, ES8389_ADC_FORMAT_MUTE, 0x03, 0x03);
-	regmap_update_bits(es8389->regmap, ES8389_DAC_FORMAT_MUTE, 0x03, 0x03);
+	regmap_update_bits((*es8389).regmap, ES8389_ADC_FORMAT_MUTE, 0x03, 0x03);
+	regmap_update_bits((*es8389).regmap, ES8389_DAC_FORMAT_MUTE, 0x03, 0x03);
 }
 
-static int es8389_suspend(struct snd_soc_component *component)
+static int es8389_suspend(snd_soc_component *component)
 {
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
 	es8389_set_bias_level(component, SND_SOC_BIAS_STANDBY);
-	regcache_cache_only(es8389->regmap, true);
-	regcache_mark_dirty(es8389->regmap);
+	regcache_cache_only((*es8389).regmap, true);
+	regcache_mark_dirty((*es8389).regmap);
 
 	return 0;
 }
 
-static int es8389_resume(struct snd_soc_component *component)
+static int es8389_resume(snd_soc_component *component)
 {
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
-	unsigned int regv;
+	core::ffi::c_uint regv;
 
-	regcache_cache_only(es8389->regmap, false);
-	regcache_cache_bypass(es8389->regmap, true);
-	regmap_read(es8389->regmap, ES8389_RESET, &regv);
+	regcache_cache_only((*es8389).regmap, false);
+	regcache_cache_bypass((*es8389).regmap, true);
+	regmap_read((*es8389).regmap, ES8389_RESET, &regv);
 
 	if (regv == 0xff)
 		es8389_init(component);
 	else
 		es8389_set_bias_level(component, SND_SOC_BIAS_ON);
 
-	regcache_cache_bypass(es8389->regmap, false);
-	regcache_sync(es8389->regmap);
+	regcache_cache_bypass((*es8389).regmap, false);
+	regcache_sync((*es8389).regmap);
 
 	return 0;
 }
 
-static int es8389_probe(struct snd_soc_component *component)
+static int es8389_probe(snd_soc_component *component)
 {
 	int ret, i;
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
-	ret = device_property_read_u8(component->dev, "everest,mclk-src", &es8389->mclk_src);
+	ret = device_property_read_u8((*component).dev, "everest,mclk-src", (*&es8389).mclk_src);
 	if (ret != 0) {
-		dev_dbg(component->dev, "mclk-src return %d", ret);
-		es8389->mclk_src = ES8389_MCLK_SOURCE;
+		dev_dbg((*component).dev, "mclk-src return %d", ret);
+		(*es8389).mclk_src = ES8389_MCLK_SOURCE;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(es8389_core_supplies); i++)
-		es8389->core_supply[i].supply = es8389_core_supplies[i];
-	ret = devm_regulator_bulk_get(component->dev, ARRAY_SIZE(es8389_core_supplies), es8389->core_supply);
+		(*es8389).core_supply[i].supply = es8389_core_supplies[i];
+	ret = devm_regulator_bulk_get((*component).dev, ARRAY_SIZE(es8389_core_supplies), (*es8389).core_supply);
 	if (ret) {
-		dev_err(component->dev, "Failed to request core supplies %d\n", ret);
+		dev_err((*component).dev, "Failed to request core supplies %d\n", ret);
 		return ret;
 	}
 
@@ -1075,7 +1075,7 @@ static int es8389_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-static void es8389_remove(struct snd_soc_component *component)
+static void es8389_remove(snd_soc_component *component)
 {
 	struct es8389_private *es8389 = snd_soc_component_get_drvdata(component);
 
@@ -1093,33 +1093,33 @@ static void es8389_remove(struct snd_soc_component *component)
 }
 
 static const struct snd_soc_component_driver soc_codec_dev_es8389 = {
-	.probe = es8389_probe,
-	.remove = es8389_remove,
-	.suspend = es8389_suspend,
-	.resume = es8389_resume,
-	.set_bias_level = es8389_set_bias_level,
+	probe: es8389_probe,
+	remove: es8389_remove,
+	suspend: es8389_suspend,
+	resume: es8389_resume,
+	set_bias_level: es8389_set_bias_level,
 
-	.controls = es8389_snd_controls,
-	.num_controls = ARRAY_SIZE(es8389_snd_controls),
-	.dapm_widgets = es8389_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(es8389_dapm_widgets),
-	.dapm_routes = es8389_dapm_routes,
-	.num_dapm_routes = ARRAY_SIZE(es8389_dapm_routes),
-	.idle_bias_on = 1,
-	.use_pmdown_time = 1,
+	controls: es8389_snd_controls,
+	num_controls: ARRAY_SIZE(es8389_snd_controls),
+	dapm_widgets: es8389_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(es8389_dapm_widgets),
+	dapm_routes: es8389_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(es8389_dapm_routes),
+	idle_bias_on: 1,
+	use_pmdown_time: 1,
 };
 
 static const struct regmap_config es8389_regmap = {
-	.reg_bits = 8,
-	.val_bits = 8,
+	reg_bits: 8,
+	val_bits: 8,
 
-	.max_register = ES8389_MAX_REGISTER,
+	max_register: ES8389_MAX_REGISTER,
 
-	.volatile_reg = es8389_volatile_register,
-	.cache_type = REGCACHE_MAPLE,
+	volatile_reg: es8389_volatile_register,
+	cache_type: REGCACHE_MAPLE,
 };
 
-static void es8389_i2c_shutdown(struct i2c_client *i2c)
+static void es8389_i2c_shutdown(i2c_client *i2c)
 {
 	struct es8389_private *es8389;
 
@@ -1139,7 +1139,7 @@ static void es8389_i2c_shutdown(struct i2c_client *i2c)
 	regulator_bulk_disable(ARRAY_SIZE(es8389_core_supplies), es8389->core_supply);
 }
 
-static int es8389_i2c_probe(struct i2c_client *i2c_client)
+static int es8389_i2c_probe(i2c_client *i2c_client)
 {
 	struct es8389_private *es8389;
 	int ret;
@@ -1177,13 +1177,13 @@ static const struct i2c_device_id es8389_i2c_id[] = {
 // MODULE_DEVICE_TABLE(i2c, es8389_i2c_id);
 
 static struct i2c_driver es8389_i2c_driver = {
-	.driver = {
-		.name	= "es8389",
-		.of_match_table = of_match_ptr(es8389_if_dt_ids),
+	driver: {
+		name: "es8389",
+		of_match_table: of_match_ptr(es8389_if_dt_ids),
 	},
-	.shutdown = es8389_i2c_shutdown,
-	.probe = es8389_i2c_probe,
-	.id_table = es8389_i2c_id,
+	shutdown: es8389_i2c_shutdown,
+	probe: es8389_i2c_probe,
+	id_table: es8389_i2c_id,
 };
 // module_i2c_driver!(es8389_i2c_driver);
 

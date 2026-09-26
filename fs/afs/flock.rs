@@ -39,18 +39,18 @@ unsafe fn afs_schedule_lock_extension(vnode: *mut afs_vnode) {
 unsafe fn afs_grant_locks(vnode: *mut afs_vnode) {
     let exclusive = (*vnode).lock_type == AFS_LOCK_WRITE;
     let mut p: *mut file_lock = ptr::null_mut(); let mut n: *mut file_lock = ptr::null_mut();
-    list_for_each_entry_safe!(p,n,&mut (*vnode).pending_locks,fl_u.afs.link) {
+    list_for_each_entry_safe!(p,n,&mut (*vnode).pending_locks,fl_u.afs.link, {
         if !exclusive && lock_is_write(p) { continue; }
         list_move_tail(&mut (*p).fl_u.afs.link,&mut (*vnode).granted_locks); (*p).fl_u.afs.state=AFS_LOCK_GRANTED; trace_afs_flock_op(vnode,p,afs_flock_op_grant); locks_wake_up(p);
-    }
+    });
 }
 
 unsafe fn afs_next_locker_impl(vnode: *mut afs_vnode, error: i32) {
     let mut p: *mut file_lock=ptr::null_mut(); let mut q: *mut file_lock=ptr::null_mut(); let mut next: *mut file_lock=ptr::null_mut(); let key=(*vnode).lock_key; let typ=if (*vnode).lock_type==AFS_LOCK_WRITE {F_WRLCK} else {F_RDLCK}; _enter!("");
-    list_for_each_entry_safe!(p,q,&mut (*vnode).pending_locks,fl_u.afs.link) {
+    list_for_each_entry_safe!(p,q,&mut (*vnode).pending_locks,fl_u.afs.link, {
         if error!=0 && (*p).c.flc_type==typ && afs_file_key((*p).c.flc_file)==key { list_del_init(&mut (*p).fl_u.afs.link); (*p).fl_u.afs.state=error; locks_wake_up(p); }
         if !next.is_null() && (lock_is_write(next)||lock_is_read(p)) { continue; } next=p;
-    }
+    });
     (*vnode).lock_key=ptr::null_mut(); key_put(key);
     if !next.is_null() { afs_set_lock_state(vnode,AFS_VNODE_LOCK_SETTING); (*next).fl_u.afs.state=AFS_LOCK_YOUR_TRY; trace_afs_flock_op(vnode,next,afs_flock_op_wake); locks_wake_up(next); } else { afs_set_lock_state(vnode,AFS_VNODE_LOCK_NONE); trace_afs_flock_ev(vnode,ptr::null_mut(),afs_flock_no_lockers,0); } _leave!("");
 }

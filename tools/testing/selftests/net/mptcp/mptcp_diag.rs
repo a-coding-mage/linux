@@ -228,7 +228,7 @@ unsafe fn nlmsg_data(nlh: *mut nlmsghdr) -> *mut c_void {
 unsafe fn nlmsg_ok(nlh: *mut nlmsghdr, len: c_int) -> bool {
     len >= mem::size_of::<nlmsghdr>() as c_int
         && (*nlh).nlmsg_len >= mem::size_of::<nlmsghdr>() as __u32
-        && (*nlh).nlmsg_len as c_int <= len
+        && ((*nlh).nlmsg_len as c_int) <= len
 }
 
 unsafe fn nlmsg_next(nlh: *mut nlmsghdr, len: &mut c_int) -> *mut nlmsghdr {
@@ -256,7 +256,7 @@ unsafe fn rta_payload(rta: *mut rtattr) -> c_int {
 unsafe fn rta_ok(rta: *mut rtattr, len: c_int) -> bool {
     len >= mem::size_of::<rtattr>() as c_int
         && (*rta).rta_len >= mem::size_of::<rtattr>() as c_ushort
-        && (*rta).rta_len as c_int <= len
+        && ((*rta).rta_len as c_int) <= len
 }
 
 unsafe fn rta_next(rta: *mut rtattr, len: &mut c_int) -> *mut rtattr {
@@ -368,7 +368,7 @@ unsafe fn parse_rtattr_flags(
     );
     while rta_ok(rta, len) {
         type_ = (*rta).rta_type & !flags;
-        if type_ as c_int <= max && (*tb.add(type_ as usize)).is_null() {
+        if (type_ as c_int) <= max && (*tb.add(type_ as usize)).is_null() {
             *tb.add(type_ as usize) = rta;
         }
         rta = rta_next(rta, &mut len);

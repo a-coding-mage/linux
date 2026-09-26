@@ -39,9 +39,9 @@ unsafe fn vm_has_sve(kvm: *const kvm) -> bool {
 
 // Feature restrictions for protected VMs. Constants are supplied by the
 // architecture headers; the entries retain the C table's ordering and values.
-macro_rules! feat { ($id:ident, $fld:ident, $max:ident) => { pvm_ftr_bits { sign: $id##_$fld##_SIGNED, shift: $id##_$fld##_SHIFT, width: $id##_$fld##_WIDTH, max_val: $id##_$fld##_$max, vm_supported: None } }; }
-macro_rules! feat_fn { ($id:ident, $fld:ident, $max:ident, $f:ident) => { pvm_ftr_bits { sign: $id##_$fld##_SIGNED, shift: $id##_$fld##_SHIFT, width: $id##_$fld##_WIDTH, max_val: $id##_$fld##_$max, vm_supported: Some($f) } }; }
-macro_rules! feat_enum { ($id:ident, $fld:ident, $max:ident) => { pvm_ftr_bits { sign: false, shift: $id##_$fld##_SHIFT, width: $id##_$fld##_WIDTH, max_val: $id##_$fld##_$max, vm_supported: None } }; }
+macro_rules! feat { ($id:tt, $fld:tt, $max:ident) => { pvm_ftr_bits { sign: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _SIGNED>]), shift: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _SHIFT>]), width: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _WIDTH>]), max_val: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _>])$max, vm_supported: None } }; }
+macro_rules! feat_fn { ($id:tt, $fld:tt, $max:ident, $f:ident) => { pvm_ftr_bits { sign: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _SIGNED>]), shift: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _SHIFT>]), width: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _WIDTH>]), max_val: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _>])$max, vm_supported: Some($f) } }; }
+macro_rules! feat_enum { ($id:tt, $fld:tt, $max:ident) => { pvm_ftr_bits { sign: false, shift: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _SHIFT>]), width: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _WIDTH>]), max_val: ::kernel::macros::paste!([<$id _>])::kernel::macros::paste!([<$fld _>])$max, vm_supported: None } }; }
 
 // The token-pasting forms above mirror the C feature macros and are resolved
 // by the surrounding architecture bindings.

@@ -44,7 +44,7 @@ unsafe extern "C" {
 pub const ENOENT: c_int = 2;
 
 // CONFIG_OF_GPIO controls whether these declarations or the inline stubs are used.
-#[cfg(feature = "CONFIG_OF_GPIO")]
+#[cfg(CONFIG_OF_GPIO)]
 unsafe extern "C" {
     pub fn of_find_gpio(
         np: *mut device_node,
@@ -63,7 +63,7 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_OF_GPIO"))]
+#[cfg(not(CONFIG_OF_GPIO))]
 pub unsafe fn of_find_gpio(
     _np: *mut device_node,
     _con_id: *const c_char,
@@ -73,20 +73,20 @@ pub unsafe fn of_find_gpio(
     unsafe { ERR_PTR(-ENOENT) }
 }
 
-#[cfg(not(feature = "CONFIG_OF_GPIO"))]
+#[cfg(not(CONFIG_OF_GPIO))]
 pub unsafe fn of_gpiochip_add(_gc: *mut gpio_chip) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_OF_GPIO"))]
+#[cfg(not(CONFIG_OF_GPIO))]
 pub unsafe fn of_gpiochip_remove(_gc: *mut gpio_chip) {}
 
-#[cfg(not(feature = "CONFIG_OF_GPIO"))]
+#[cfg(not(CONFIG_OF_GPIO))]
 pub unsafe fn of_gpiochip_instance_match(_gc: *mut gpio_chip, _index: u32) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_OF_GPIO"))]
+#[cfg(not(CONFIG_OF_GPIO))]
 pub unsafe fn of_gpio_count(
     _fwnode: *const fwnode_handle,
     _con_id: *const c_char,
@@ -94,7 +94,7 @@ pub unsafe fn of_gpio_count(
     0
 }
 
-#[cfg(not(feature = "CONFIG_OF_GPIO"))]
+#[cfg(not(CONFIG_OF_GPIO))]
 pub unsafe fn of_gpiochip_get_lflags(
     _chip: *mut gpio_chip,
     _gpiospec: *mut fwnode_reference_args,

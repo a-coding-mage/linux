@@ -66,10 +66,10 @@ extern "C" {
     fn of_node_put(np: *mut device_node); fn omap_sdrc_init(a: *mut core::ffi::c_void, b: *mut core::ffi::c_void);
 }
 
-#[cfg(feature = "CONFIG_MACH_NOKIA_N8X0")]
+#[cfg(CONFIG_MACH_NOKIA_N8X0)]
 unsafe extern "C" fn omap2420_n8x0_legacy_init() { (*omap_auxdata_lookup.as_mut_ptr()).platform_data = n8x0_legacy_init(); }
 
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_gpio126_127_129() {
     let mut reg = omap_ctrl_readl(OMAP343X_CONTROL_PBIAS_LITE);
     reg &= !OMAP343X_PBIASLITEVMODE1; reg |= OMAP343X_PBIASLITEPWRDNZ1;
@@ -77,23 +77,23 @@ unsafe extern "C" fn omap3_gpio126_127_129() {
     if cpu_is_omap3630() { reg = omap_ctrl_readl(OMAP34XX_CONTROL_WKUP_CTRL); omap_ctrl_writel(reg | OMAP36XX_GPIO_IO_PWRDNZ, OMAP34XX_CONTROL_WKUP_CTRL); }
 }
 
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn hsmmc2_internal_input_clk() { let reg = omap_ctrl_readl(OMAP343X_CONTROL_DEVCONF1); omap_ctrl_writel(reg | OMAP2_MMCSDIO2ADPCLKISEL, OMAP343X_CONTROL_DEVCONF1); }
 
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn am35xx_enable_emac_int() { let v = omap_ctrl_readl(AM35XX_CONTROL_LVL_INTR_CLEAR) | AM35XX_CPGMAC_C0_RX_PULSE_CLR | AM35XX_CPGMAC_C0_TX_PULSE_CLR | AM35XX_CPGMAC_C0_MISC_PULSE_CLR | AM35XX_CPGMAC_C0_RX_THRESH_CLR; omap_ctrl_writel(v, AM35XX_CONTROL_LVL_INTR_CLEAR); let _ = omap_ctrl_readl(AM35XX_CONTROL_LVL_INTR_CLEAR); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn am35xx_disable_emac_int() { let v = omap_ctrl_readl(AM35XX_CONTROL_LVL_INTR_CLEAR) | AM35XX_CPGMAC_C0_RX_PULSE_CLR | AM35XX_CPGMAC_C0_TX_PULSE_CLR; omap_ctrl_writel(v, AM35XX_CONTROL_LVL_INTR_CLEAR); let _ = omap_ctrl_readl(AM35XX_CONTROL_LVL_INTR_CLEAR); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn am35xx_emac_reset() { let v = omap_ctrl_readl(AM35XX_CONTROL_IP_SW_RESET) & !AM35XX_CPGMACSS_SW_RST; omap_ctrl_writel(v, AM35XX_CONTROL_IP_SW_RESET); let _ = omap_ctrl_readl(AM35XX_CONTROL_IP_SW_RESET); }
 
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_sbc_t3x_usb_hub_init(_hub_name: *const core::ffi::c_char, _idx: i32) {
     let d = gpiod_get_index(core::ptr::null_mut(), b"reset\0".as_ptr() as _, _idx, GPIOD_OUT_HIGH);
     if IS_ERR(d) { pr_err(b"Unable to get T3x USB reset GPIO descriptor\0".as_ptr() as _); return; }
     gpiod_set_consumer_name(d, _hub_name); gpiod_export(d, 0); udelay(10); gpiod_set_value(d, 0); msleep(1);
 }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_sbc_t3517_wifi_init() {
     let d = gpiod_get(core::ptr::null_mut(), b"power\0".as_ptr() as _, GPIOD_OUT_HIGH);
     if IS_ERR(d) { pr_err(b"Unable to get CM T3517 WLAN power GPIO descriptor\0".as_ptr() as _); } else { gpiod_set_consumer_name(d, b"wlan pwr\0".as_ptr() as _); gpiod_export(d, 0); }
@@ -101,19 +101,19 @@ unsafe extern "C" fn omap3_sbc_t3517_wifi_init() {
     if IS_ERR(d) { pr_err(b"Unable to get CM T3517 WLAN XCVR NOE GPIO descriptor\0".as_ptr() as _); } else { gpiod_set_consumer_name(d, b"xcvr noe\0".as_ptr() as _); gpiod_export(d, 0); }
     msleep(100); gpiod_set_value(d, 0);
 }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_sbc_t3517_legacy_init() { omap3_sbc_t3x_usb_hub_init(b"cm-t3517 usb hub\0".as_ptr() as _, 0); omap3_sbc_t3x_usb_hub_init(b"sb-t35 usb hub\0".as_ptr() as _, 1); am35xx_emac_reset(); hsmmc2_internal_input_clk(); omap3_sbc_t3517_wifi_init(); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn am3517_evm_legacy_init() { am35xx_emac_reset(); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn nokia_n900_legacy_init() { hsmmc2_internal_input_clk(); (*mmc_pdata.as_mut_ptr()).name=b"external\0".as_ptr() as _; (*mmc_pdata.as_mut_ptr().add(1)).name=b"internal\0".as_ptr() as _; if omap_type()!=OMAP2_DEVICE_TYPE_GP { rx51_secure_update_aux_cr(1<<6,0); } }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_tao3530_legacy_init() { hsmmc2_internal_input_clk(); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_logicpd_torpedo_init() { omap3_gpio126_127_129(); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_evm_legacy_init() { hsmmc2_internal_input_clk(); }
-#[cfg(feature = "CONFIG_ARCH_OMAP3")]
+#[cfg(CONFIG_ARCH_OMAP3)]
 unsafe extern "C" fn omap3_mcbsp_init() { omap3_mcbsp_init_pdata_callback(core::ptr::null_mut()); }
 
 // The remaining board tables and callbacks are direct translations; build-time

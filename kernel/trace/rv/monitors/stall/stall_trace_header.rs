@@ -5,7 +5,7 @@
  */
 
 /* C build-time condition: CONFIG_RV_MON_STALL */
-#[cfg(feature = "CONFIG_RV_MON_STALL")]
+#[cfg(CONFIG_RV_MON_STALL)]
 DEFINE_EVENT!(
     event_da_monitor_id,
     event_stall,
@@ -19,7 +19,7 @@ DEFINE_EVENT!(
     TP_ARGS!(id, state, event, next_state, final_state)
 );
 
-#[cfg(feature = "CONFIG_RV_MON_STALL")]
+#[cfg(CONFIG_RV_MON_STALL)]
 DEFINE_EVENT!(
     error_da_monitor_id,
     error_stall,
@@ -31,7 +31,7 @@ DEFINE_EVENT!(
     TP_ARGS!(id, state, event)
 );
 
-#[cfg(feature = "CONFIG_RV_MON_STALL")]
+#[cfg(CONFIG_RV_MON_STALL)]
 DEFINE_EVENT!(
     error_env_da_monitor_id,
     error_env_stall,

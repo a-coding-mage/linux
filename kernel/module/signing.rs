@@ -142,10 +142,10 @@ pub unsafe extern "C" fn module_sig_check(info: *mut load_info, flags: i32) -> i
     /* We don't permit modules to be loaded into the trusted kernels
      * without a valid signature on them, but if we're not enforcing,
      * certain errors are non-fatal. */
-    reason = match err {
-        -ENODATA => b"unsigned module\0".as_ptr(),
-        -ENOPKG => b"module with unsupported crypto\0".as_ptr(),
-        -ENOKEY => b"module with unavailable key\0".as_ptr(),
+    reason = match -(err) {
+        ENODATA => b"unsigned module\0".as_ptr(),
+        ENOPKG => b"module with unsupported crypto\0".as_ptr(),
+        ENOKEY => b"module with unavailable key\0".as_ptr(),
         _ => return err,
     };
 

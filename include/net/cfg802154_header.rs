@@ -14,19 +14,19 @@ pub struct cfg802154_scan_request;
 pub struct cfg802154_beacon_request;
 pub struct ieee802154_addr;
 
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_device_key;
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_seclevel;
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_params;
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_device;
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_table;
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_key_id;
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub struct ieee802154_llsec_key;
 
 #[repr(C)]
@@ -54,32 +54,32 @@ pub struct cfg802154_ops {
     pub stop_beacons: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev) -> i32>,
     pub associate: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *mut ieee802154_addr) -> i32>,
     pub disassociate: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *mut ieee802154_addr) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub get_llsec_table: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *mut *mut ieee802154_llsec_table)>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub lock_llsec_table: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev)>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub unlock_llsec_table: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev)>,
     // TODO remove locking/get table callbacks; this is part of the nl802154 interface.
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub get_llsec_params: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *mut ieee802154_llsec_params) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub set_llsec_params: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *const ieee802154_llsec_params, i32) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub add_llsec_key: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *const ieee802154_llsec_key_id, *const ieee802154_llsec_key) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub del_llsec_key: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *const ieee802154_llsec_key_id) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub add_seclevel: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *const ieee802154_llsec_seclevel) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub del_seclevel: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *const ieee802154_llsec_seclevel) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub add_device: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, *const ieee802154_llsec_device) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub del_device: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, __le64) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub add_devkey: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, __le64, *const ieee802154_llsec_device_key) -> i32>,
-    #[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+    #[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
     pub del_devkey: Option<unsafe extern "C" fn(*mut wpan_phy, *mut wpan_dev, __le64, *const ieee802154_llsec_device_key) -> i32>,
 }
 

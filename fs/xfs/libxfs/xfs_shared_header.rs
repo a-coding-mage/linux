@@ -106,16 +106,16 @@ pub unsafe fn xfs_btree_is_refcount(ops: *const xfs_btree_ops) -> bool { ops == 
 pub unsafe fn xfs_btree_is_rmap(ops: *const xfs_btree_ops) -> bool { ops == &raw const xfs_rmapbt_ops }
 
 /* CONFIG_XFS_BTREE_IN_MEM controls these declarations in the C build. */
-#[cfg(feature = "CONFIG_XFS_BTREE_IN_MEM")]
+#[cfg(CONFIG_XFS_BTREE_IN_MEM)]
 #[inline]
 pub unsafe fn xfs_btree_is_mem_rmap(ops: *const xfs_btree_ops) -> bool { ops == &raw const xfs_rmapbt_mem_ops }
-#[cfg(not(feature = "CONFIG_XFS_BTREE_IN_MEM"))]
+#[cfg(not(CONFIG_XFS_BTREE_IN_MEM))]
 #[inline]
 pub unsafe fn xfs_btree_is_mem_rmap(_ops: *const xfs_btree_ops) -> bool { false }
-#[cfg(feature = "CONFIG_XFS_BTREE_IN_MEM")]
+#[cfg(CONFIG_XFS_BTREE_IN_MEM)]
 #[inline]
 pub unsafe fn xfs_btree_is_mem_rtrmap(ops: *const xfs_btree_ops) -> bool { ops == &raw const xfs_rtrmapbt_mem_ops }
-#[cfg(not(feature = "CONFIG_XFS_BTREE_IN_MEM"))]
+#[cfg(not(CONFIG_XFS_BTREE_IN_MEM))]
 #[inline]
 pub unsafe fn xfs_btree_is_mem_rtrmap(_ops: *const xfs_btree_ops) -> bool { false }
 

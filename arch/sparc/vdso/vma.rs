@@ -136,18 +136,18 @@ unsafe fn map_vdso(image: *const vdso_image, mapping: *mut vm_special_mapping) -
     mmap_write_lock(mm);
     if (*current).flags & PF_RANDOMIZE != 0 {
         addr = get_unmapped_area(core::ptr::null_mut(), 0, area_size, 0, 0);
-        if addr as isize < 0 { ret = addr as c_int; if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); } mmap_write_unlock(mm); return ret; }
+        if (addr as isize) < 0 { ret = addr as c_int; if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); } mmap_write_unlock(mm); return ret; }
         addr = vdso_addr(addr, area_size as c_uint);
     }
     addr = get_unmapped_area(core::ptr::null_mut(), addr, area_size, 0, 0);
-    if addr as isize < 0 { ret = addr as c_int; if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); } mmap_write_unlock(mm); return ret; }
+    if (addr as isize) < 0 { ret = addr as c_int; if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); } mmap_write_unlock(mm); return ret; }
     let text_start = addr + (VDSO_NR_PAGES * PAGE_SIZE) as c_ulong;
     (*mm).context.vdso = text_start as *mut c_void;
     let vma = _install_special_mapping(mm, text_start, (*image).size,
         VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC, mapping);
-    if vma as isize < 0 { ret = vma as isize as c_int; if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); } mmap_write_unlock(mm); return ret; }
+    if (vma as isize) < 0 { ret = vma as isize as c_int; if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); } mmap_write_unlock(mm); return ret; }
     let vma = vdso_install_vvar_mapping(mm, addr);
-    if vma as isize < 0 { ret = vma as isize as c_int; do_munmap(mm, text_start, (*image).size, core::ptr::null_mut()); }
+    if (vma as isize) < 0 { ret = vma as isize as c_int; do_munmap(mm, text_start, (*image).size, core::ptr::null_mut()); }
     if ret != 0 { (*mm).context.vdso = core::ptr::null_mut(); }
     mmap_write_unlock(mm);
     ret

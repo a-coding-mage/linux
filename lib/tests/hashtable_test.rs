@@ -292,7 +292,7 @@ static mut hashtable_test_cases: [kunit_case; 10] = [
     KUNIT_CASE!(hashtable_test_hash_for_each_safe),
     KUNIT_CASE!(hashtable_test_hash_for_each_possible),
     KUNIT_CASE!(hashtable_test_hash_for_each_possible_safe),
-    KUNIT_CASE_END!,
+    KUNIT_CASE_END!(),
 ];
 
 static mut hashtable_test_module: kunit_suite = kunit_suite {

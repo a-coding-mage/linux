@@ -189,7 +189,7 @@ macro_rules! channel_sta_reg {
     ($off:ident, $get:ident, $set:ident, $value:expr) => {
         pub const fn $off(_: *const uniperif) -> c_int { $value }
         pub unsafe fn $get(ip: *mut uniperif) -> u32 { unsafe { readl_relaxed(reg_addr(ip, $off(ip))) } }
-        pub unsafe fn $set(ip: *mut uniperif, value: u32) { unsafe { writel_relaxed(value, reg_addr(ip, $off(ip))) } }
+        pub unsafe fn $set(ip: *mut uniperif, value: u32) { unsafe { writel_relaxed($value, reg_addr(ip, $off(ip))) } }
     };
 }
 channel_sta_reg!(UNIPERIF_CHANNEL_STA_REG0_OFFSET, GET_UNIPERIF_CHANNEL_STA_REG0, SET_UNIPERIF_CHANNEL_STA_REG0, 0x0060);
@@ -203,7 +203,7 @@ macro_rules! simple_reg {
     ($off:ident, $get:ident, $set:ident, $value:expr) => {
         pub const fn $off(_: *const uniperif) -> c_int { $value }
         pub unsafe fn $get(ip: *mut uniperif) -> u32 { unsafe { readl_relaxed(reg_addr(ip, $off(ip))) } }
-        pub unsafe fn $set(ip: *mut uniperif, value: u32) { unsafe { writel_relaxed(value, reg_addr(ip, $off(ip))) } }
+        pub unsafe fn $set(ip: *mut uniperif, value: u32) { unsafe { writel_relaxed($value, reg_addr(ip, $off(ip))) } }
     };
 }
 macro_rules! ro_reg {
@@ -215,7 +215,7 @@ macro_rules! ro_reg {
 macro_rules! wo_reg {
     ($off:ident, $set:ident, $value:expr) => {
         pub const fn $off(_: *const uniperif) -> c_int { $value }
-        pub unsafe fn $set(ip: *mut uniperif, value: u32) { unsafe { writel_relaxed(value, reg_addr(ip, $off(ip))) } }
+        pub unsafe fn $set(ip: *mut uniperif, value: u32) { unsafe { writel_relaxed($value, reg_addr(ip, $off(ip))) } }
     };
 }
 

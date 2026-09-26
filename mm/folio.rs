@@ -8,7 +8,7 @@ pub struct cpu_fbatches {
     pub lru_deactivate_file: folio_batch,
     pub lru_deactivate: folio_batch,
     pub lru_lazyfree: folio_batch,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub lru_activate: folio_batch,
     pub lock_irq: local_lock_t,
     pub lru_move_tail: folio_batch,
@@ -18,7 +18,7 @@ static mut cpu_fbatches: cpu_fbatches = cpu_fbatches {
     lock: INIT_LOCAL_LOCK!(lock), lru_add: folio_batch::default(),
     lru_deactivate_file: folio_batch::default(), lru_deactivate: folio_batch::default(),
     lru_lazyfree: folio_batch::default(),
-    #[cfg(feature = "CONFIG_SMP")] lru_activate: folio_batch::default(),
+    #[cfg(CONFIG_SMP)] lru_activate: folio_batch::default(),
     lock_irq: INIT_LOCAL_LOCK!(lock_irq), lru_move_tail: folio_batch::default(),
 };
 
@@ -74,7 +74,7 @@ unsafe fn __lru_cache_activate_folio(folio:*mut folio){local_lock!((*core::ptr::
 #[no_mangle] pub unsafe extern "C" fn folio_deactivate(folio:*mut folio){if folio_test_unevictable(folio)||!folio_test_lru(folio){return;}if lru_gen_enabled(){if lru_gen_clear_refs(folio){return;}}else if !folio_test_active(folio){return;}__folio_batch_add_and_move(core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(cpu_fbatches)).lru_deactivate),folio,lru_deactivate,false);}
 #[no_mangle] pub unsafe extern "C" fn folio_mark_lazyfree(folio:*mut folio){if !folio_test_anon(folio)||!folio_test_swapbacked(folio)||!folio_test_lru(folio)||folio_test_swapcache(folio)||folio_test_unevictable(folio){return;}__folio_batch_add_and_move(core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(cpu_fbatches)).lru_lazyfree),folio,lru_lazyfree,false);}
 
-#[no_mangle] pub unsafe extern "C" fn lru_cache_disable(){atomic_inc(&mut lru_disable_count);synchronize_rcu_expedited();#[cfg(feature="CONFIG_SMP")]__lru_add_drain_all(true);#[cfg(not(feature="CONFIG_SMP"))]lru_add_and_bh_lrus_drain();}
+#[no_mangle] pub unsafe extern "C" fn lru_cache_disable(){atomic_inc(&mut lru_disable_count);synchronize_rcu_expedited();#[cfg(CONFIG_SMP)]__lru_add_drain_all(true);#[cfg(not(CONFIG_SMP))]lru_add_and_bh_lrus_drain();}
 #[no_mangle] pub unsafe extern "C" fn lru_cache_drain_for_folio(folio:*const folio,extra_refs:u32,drained:*mut enum_lru_cache_drained){if !folio_may_be_lru_cached(folio){return;}if drained.is_null()||*drained==LRU_CACHE_NOT_DRAINED{if folio_ref_count(folio)==folio_expected_ref_count(folio)+extra_refs{return;}lru_add_drain();if !drained.is_null(){*drained=LRU_CACHE_DRAINED;}}if drained.is_null()||*drained==LRU_CACHE_DRAINED{if folio_ref_count(folio)==folio_expected_ref_count(folio)+extra_refs{return;}lru_add_drain_all();if !drained.is_null(){*drained=LRU_CACHE_DRAINED_ALL;}}}
 
 pub static mut lru_disable_count: atomic_t = ATOMIC_INIT!(0);

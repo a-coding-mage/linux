@@ -2,10 +2,10 @@
 // Dependencies supplied by the Linux NFS/RPC headers and local sources are
 // intentionally left as external Rust items.
 
-#[cfg(feature = "CONFIG_NFS_V3_ACL")]
+#[cfg(CONFIG_NFS_V3_ACL)]
 static mut NFSACL_RPCSTAT: rpc_stat = rpc_stat { program: &nfsacl_program };
 
-#[cfg(feature = "CONFIG_NFS_V3_ACL")]
+#[cfg(CONFIG_NFS_V3_ACL)]
 static NFSACL_VERSION: [*const rpc_version; 4] = [
     core::ptr::null(),
     core::ptr::null(),
@@ -13,7 +13,7 @@ static NFSACL_VERSION: [*const rpc_version; 4] = [
     &nfsacl_version3,
 ];
 
-#[cfg(feature = "CONFIG_NFS_V3_ACL")]
+#[cfg(CONFIG_NFS_V3_ACL)]
 #[no_mangle]
 pub static nfsacl_program: rpc_program = rpc_program {
     name: "nfsacl",
@@ -24,7 +24,7 @@ pub static nfsacl_program: rpc_program = rpc_program {
 };
 
 // Initialise an NFSv3 ACL client connection
-#[cfg(feature = "CONFIG_NFS_V3_ACL")]
+#[cfg(CONFIG_NFS_V3_ACL)]
 unsafe fn nfs_init_server_aclclient(server: *mut nfs_server) {
     if (*server).flags & NFS_MOUNT_NOACL != 0 {
         return;
@@ -41,7 +41,7 @@ unsafe fn nfs_init_server_aclclient(server: *mut nfs_server) {
     (*server).caps |= NFS_CAP_ACLS;
 }
 
-#[cfg(not(feature = "CONFIG_NFS_V3_ACL"))]
+#[cfg(not(CONFIG_NFS_V3_ACL))]
 unsafe fn nfs_init_server_aclclient(server: *mut nfs_server) {
     (*server).flags &= !NFS_MOUNT_NOACL;
     (*server).caps &= !NFS_CAP_ACLS;

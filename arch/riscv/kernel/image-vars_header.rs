@@ -10,7 +10,7 @@
 // defined. The following declarations preserve the linker-script symbols and
 // aliases represented by the original C header.
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     // __efistub__start = _start;
     #[link_name = "_start"]
@@ -33,14 +33,14 @@ extern "C" {
     pub static __efistub___init_text_end: u8;
 }
 
-#[cfg(all(feature = "CONFIG_EFI", any(feature = "CONFIG_EFI_EARLYCON", feature = "CONFIG_SYSFB")))]
+#[cfg(all(CONFIG_EFI, any(CONFIG_EFI_EARLYCON, CONFIG_SYSFB)))]
 extern "C" {
     // __efistub_sysfb_primary_display = sysfb_primary_display;
     #[link_name = "sysfb_primary_display"]
     pub static __efistub_sysfb_primary_display: u8;
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     /*
      * These double-word integer shifts are used by the library code, and

@@ -18,7 +18,6 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-pub const _nbio_7_2_0_OFFSET_HEADER: u32 = ;
 // addressBlock: nbio_nbif0_bif_cfg_dev0_rc_bifcfgdecp
 // base address: 0x0
 pub const cfgBIF_CFG_DEV0_RC_VENDOR_ID: u32 = 0x0000;

@@ -62,7 +62,7 @@ unsafe extern "C" fn rxperf_deliver_to_call(work: *mut work_struct) {
     loop {
         match (*call).state { RxperfCallState::RxperfCallSvAwaitAck => { if !rxrpc_kernel_check_life(RXPERF_SOCKET, (*call).rxcall) { break; } return; }, RxperfCallState::RxperfCallSvAwaitParams | RxperfCallState::RxperfCallSvAwaitRequest => {}, RxperfCallState::RxperfCallComplete => return, _ => break }
         let mut ret = ((*call).deliver.unwrap())(call); if ret == 0 { ret = rxperf_process_call(call); }
-        match ret { 0 => continue, -EINPROGRESS | -EAGAIN => return, -ECONNABORTED => break, _ => { rxrpc_kernel_abort_call(RXPERF_SOCKET, (*call).rxcall, RX_CALL_DEAD, ret, rxperf_abort_general_error); break; } }
+        match ret { case if case == 0 => continue, case if case == -EINPROGRESS || case == -EAGAIN => return, case if case == -ECONNABORTED => break, _ => { rxrpc_kernel_abort_call(RXPERF_SOCKET, (*call).rxcall, RX_CALL_DEAD, ret, rxperf_abort_general_error); break; } }
     }
     rxperf_set_call_complete(call, 0, 0); rxrpc_kernel_shutdown_call(RXPERF_SOCKET, (*call).rxcall); rxrpc_kernel_put_call(RXPERF_SOCKET, (*call).rxcall); cancel_work(&mut (*call).work); kfree(call);
 }
@@ -77,7 +77,7 @@ unsafe extern "C" fn rxperf_close_socket() { kernel_listen(RXPERF_SOCKET, 0); ke
 unsafe fn rxperf_log_error(_: *mut RxperfCall, _: s32) {}
 unsafe fn rxperf_add_rxkad_key(_: *mut key) -> c_int { 0 }
 
-#[cfg(feature = "CONFIG_RXGK")]
+#[cfg(CONFIG_RXGK)]
 unsafe fn rxperf_add_yfs_rxgk_key(_: *mut key, _: u32) -> c_int { 0 }
 
 unsafe extern "C" fn rxperf_init() -> c_int {

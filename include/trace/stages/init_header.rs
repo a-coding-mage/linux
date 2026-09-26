@@ -40,14 +40,14 @@ macro_rules! TRACE_MAKE_SYSTEM_STR {
 // declarative Rust macros. Callers provide the object identifier explicitly.
 #[macro_export]
 macro_rules! TRACE_DEFINE_ENUM {
-    ($object:ident, $a:expr) => {
+    ($object:tt, $a:expr) => {
         static $object: trace_eval_map = trace_eval_map {
             system: TRACE_SYSTEM_STRING_VALUE,
             eval_string: stringify!($a),
             eval_value: $a,
         };
         #[link_section = "_ftrace_eval_map"]
-        static $object##_ftrace_eval_map: *const trace_eval_map = &$object;
+        static ::kernel::macros::paste!([<$object _ftrace_eval_map>]): *const trace_eval_map = &$object;
     };
 }
 
@@ -55,14 +55,14 @@ macro_rules! TRACE_DEFINE_ENUM {
 // TRACE_DEFINE_ENUM, but records the C `sizeof(a)` value and its spelling.
 #[macro_export]
 macro_rules! TRACE_DEFINE_SIZEOF {
-    ($object:ident, $a:ty) => {
+    ($object:tt, $a:ty) => {
         static $object: trace_eval_map = trace_eval_map {
             system: TRACE_SYSTEM_STRING_VALUE,
             eval_string: concat!("sizeof(", stringify!($a), ")"),
             eval_value: core::mem::size_of::<$a>(),
         };
         #[link_section = "_ftrace_eval_map"]
-        static $object##_ftrace_eval_map: *const trace_eval_map = &$object;
+        static ::kernel::macros::paste!([<$object _ftrace_eval_map>]): *const trace_eval_map = &$object;
     };
 }
 

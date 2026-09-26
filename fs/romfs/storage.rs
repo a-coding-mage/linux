@@ -7,10 +7,10 @@
 
 // Kernel dependencies supplied by the surrounding translation unit.
 
-#[cfg(all(not(feature = "CONFIG_ROMFS_ON_MTD"), not(feature = "CONFIG_ROMFS_ON_BLOCK")))]
+#[cfg(all(not(CONFIG_ROMFS_ON_MTD), not(CONFIG_ROMFS_ON_BLOCK)))]
 compile_error!("no ROMFS backing store interface configured");
 
-#[cfg(feature = "CONFIG_ROMFS_ON_MTD")]
+#[cfg(CONFIG_ROMFS_ON_MTD)]
 unsafe fn romfs_mtd_read(sb: *mut super_block, mut pos: c_ulong,
                          buf: *mut c_void, buflen: usize) -> c_int {
     let mut rlen: usize = 0;
@@ -18,7 +18,7 @@ unsafe fn romfs_mtd_read(sb: *mut super_block, mut pos: c_ulong,
     if ret < 0 || rlen != buflen { -EIO } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_ROMFS_ON_MTD")]
+#[cfg(CONFIG_ROMFS_ON_MTD)]
 unsafe fn romfs_mtd_strnlen(sb: *mut super_block, mut pos: c_ulong,
                             mut maxlen: usize) -> ssize_t {
     let mut n: ssize_t = 0;
@@ -39,7 +39,7 @@ unsafe fn romfs_mtd_strnlen(sb: *mut super_block, mut pos: c_ulong,
     n
 }
 
-#[cfg(feature = "CONFIG_ROMFS_ON_MTD")]
+#[cfg(CONFIG_ROMFS_ON_MTD)]
 unsafe fn romfs_mtd_strcmp(sb: *mut super_block, mut pos: c_ulong,
                            mut str_: *const c_char, mut size: usize) -> c_int {
     let mut buf = [0u8; 17];
@@ -64,7 +64,7 @@ unsafe fn romfs_mtd_strcmp(sb: *mut super_block, mut pos: c_ulong,
     1
 }
 
-#[cfg(feature = "CONFIG_ROMFS_ON_BLOCK")]
+#[cfg(CONFIG_ROMFS_ON_BLOCK)]
 unsafe fn romfs_blk_read(sb: *mut super_block, mut pos: c_ulong,
                          mut buf: *mut c_void, mut buflen: usize) -> c_int {
     /* copy the string up to blocksize bytes at a time */
@@ -82,7 +82,7 @@ unsafe fn romfs_blk_read(sb: *mut super_block, mut pos: c_ulong,
     0
 }
 
-#[cfg(feature = "CONFIG_ROMFS_ON_BLOCK")]
+#[cfg(CONFIG_ROMFS_ON_BLOCK)]
 unsafe fn romfs_blk_strnlen(sb: *mut super_block, mut pos: c_ulong,
                             mut limit: usize) -> ssize_t {
     let mut n: ssize_t = 0;
@@ -103,7 +103,7 @@ unsafe fn romfs_blk_strnlen(sb: *mut super_block, mut pos: c_ulong,
     n
 }
 
-#[cfg(feature = "CONFIG_ROMFS_ON_BLOCK")]
+#[cfg(CONFIG_ROMFS_ON_BLOCK)]
 unsafe fn romfs_blk_strcmp(sb: *mut super_block, mut pos: c_ulong,
                            mut str_: *const c_char, mut size: usize) -> c_int {
     let mut terminated = false;
@@ -119,7 +119,7 @@ unsafe fn romfs_blk_strcmp(sb: *mut super_block, mut pos: c_ulong,
         pos += segment as c_ulong;
         str_ = str_.add(segment);
         let mut matched = matched;
-        if matched && size == 0 && offset + segment as c_ulong < ROMBSIZE {
+        if matched && size == 0 && offset + (segment as c_ulong) < ROMBSIZE {
             if *(*bh).b_data.add((offset as usize) + segment) == 0 { terminated = true; }
             else { matched = false; }
         }
@@ -141,9 +141,9 @@ pub unsafe fn romfs_dev_read(sb: *mut super_block, pos: c_ulong,
                              buf: *mut c_void, buflen: usize) -> c_int {
     let limit = romfs_maxsize(sb);
     if pos >= limit || buflen > limit - pos { return -EIO; }
-    #[cfg(feature = "CONFIG_ROMFS_ON_MTD")]
+    #[cfg(CONFIG_ROMFS_ON_MTD)]
     if !(*sb).s_mtd.is_null() { return romfs_mtd_read(sb, pos, buf, buflen); }
-    #[cfg(feature = "CONFIG_ROMFS_ON_BLOCK")]
+    #[cfg(CONFIG_ROMFS_ON_BLOCK)]
     if !(*sb).s_bdev.is_null() { return romfs_blk_read(sb, pos, buf, buflen); }
     -EIO
 }
@@ -153,9 +153,9 @@ pub unsafe fn romfs_dev_strnlen(sb: *mut super_block, pos: c_ulong,
     let limit = romfs_maxsize(sb);
     if pos >= limit { return -EIO; }
     if maxlen > limit - pos { maxlen = limit - pos; }
-    #[cfg(feature = "CONFIG_ROMFS_ON_MTD")]
+    #[cfg(CONFIG_ROMFS_ON_MTD)]
     if !(*sb).s_mtd.is_null() { return romfs_mtd_strnlen(sb, pos, maxlen); }
-    #[cfg(feature = "CONFIG_ROMFS_ON_BLOCK")]
+    #[cfg(CONFIG_ROMFS_ON_BLOCK)]
     if !(*sb).s_bdev.is_null() { return romfs_blk_strnlen(sb, pos, maxlen); }
     -EIO
 }
@@ -166,9 +166,9 @@ pub unsafe fn romfs_dev_strcmp(sb: *mut super_block, pos: c_ulong,
     if pos >= limit { return -EIO; }
     if size > ROMFS_MAXFN { return -ENAMETOOLONG; }
     if size + 1 > limit - pos { return -EIO; }
-    #[cfg(feature = "CONFIG_ROMFS_ON_MTD")]
+    #[cfg(CONFIG_ROMFS_ON_MTD)]
     if !(*sb).s_mtd.is_null() { return romfs_mtd_strcmp(sb, pos, str_, size); }
-    #[cfg(feature = "CONFIG_ROMFS_ON_BLOCK")]
+    #[cfg(CONFIG_ROMFS_ON_BLOCK)]
     if !(*sb).s_bdev.is_null() { return romfs_blk_strcmp(sb, pos, str_, size); }
     -EIO
 }

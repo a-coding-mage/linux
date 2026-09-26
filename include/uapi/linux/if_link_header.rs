@@ -916,7 +916,7 @@ pub const IFLA_OFFLOAD_XSTATS_HW_S_INFO_UNSPEC: i32 = 0;
 pub const IFLA_OFFLOAD_XSTATS_HW_S_INFO_REQUEST: i32 = 1;
 pub const IFLA_OFFLOAD_XSTATS_HW_S_INFO_USED: i32 = 2;
 pub const __IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX: i32 = 3;
-pub const IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX: u32 = ;
+pub const IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX: u32 = (__IFLA_OFFLOAD_XSTATS_HW_S_INFO_MAX as u32) - 1;
 pub const XDP_FLAGS_UPDATE_IF_NOEXIST: u32 = (1u32 << 0);
 pub const XDP_FLAGS_SKB_MODE: u32 = (1u32 << 1);
 pub const XDP_FLAGS_DRV_MODE: u32 = (1u32 << 2);
@@ -991,7 +991,7 @@ pub const IFLA_MCTP_MAX: u32 = (__IFLA_MCTP_MAX - 1);
 pub const IFLA_DSA_UNSPEC: i32 = 0;
 pub const IFLA_DSA_CONDUIT: i32 = 1;
 pub const IFLA_DSA_MASTER: i32 = IFLA_DSA_CONDUIT;
-pub const __IFLA_DSA_MAX: i32 = 0;
+pub const __IFLA_DSA_MAX: i32 = 2;
 pub const IFLA_DSA_MAX: u32 = (__IFLA_DSA_MAX - 1);
 
 pub const OVPN_MODE_P2P: i32 = 0;

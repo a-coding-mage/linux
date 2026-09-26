@@ -93,19 +93,19 @@ pub struct dw_edma_chip {
 }
 
 // CONFIG_DW_EDMA build-time condition from the original header.
-#[cfg(feature = "CONFIG_DW_EDMA")]
+#[cfg(CONFIG_DW_EDMA)]
 unsafe extern "C" {
     pub fn dw_edma_probe(chip: *mut dw_edma_chip) -> i32;
     pub fn dw_edma_remove(chip: *mut dw_edma_chip) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_DW_EDMA"))]
+#[cfg(not(CONFIG_DW_EDMA))]
 #[inline]
 pub unsafe fn dw_edma_probe(_chip: *mut dw_edma_chip) -> i32 {
     -19 // -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_DW_EDMA"))]
+#[cfg(not(CONFIG_DW_EDMA))]
 #[inline]
 pub unsafe fn dw_edma_remove(_chip: *mut dw_edma_chip) -> i32 {
     0

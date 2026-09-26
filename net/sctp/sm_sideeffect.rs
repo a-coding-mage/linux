@@ -52,7 +52,7 @@ unsafe fn sctp_side_effects(sctp_event_type event_type,
 			     sctp_subtype subtype,
 			     sctp_state state,
 			     *mut ep,
-			     *mut struct sctp_association*asoc,
+			     *mut sctp_association*asoc,
 			     void *event_arg,
 			     sctp_disposition status,
 			     *mut commands,
@@ -64,7 +64,7 @@ unsafe fn sctp_side_effects(sctp_event_type event_type,
 
 /* A helper function for delayed processing of INET ECN CE bit. */
 unsafe fn sctp_do_ecn_ce_work(*mut asoc,
-				u32 lowest_tsn)
+				lowest_tsn: u32)
 {
 	/* Save the TSN away for comparison when we receive CWR */
 
@@ -85,7 +85,7 @@ unsafe fn sctp_do_ecn_ce_work(*mut asoc,
  * that was originally marked with the CE bit.
  */
 *mut sctp_do_ecn_ecne_work(*mut asoc,
-						u32 lowest_tsn,
+						lowest_tsn: u32,
 						*mut chunk)
 {
 	*mut repl;
@@ -128,7 +128,7 @@ unsafe fn sctp_do_ecn_ce_work(*mut asoc,
 
 /* Helper function to do delayed processing of ECN CWR chunk.  */
 unsafe fn sctp_do_ecn_cwr_work(*mut asoc,
-				 u32 lowest_tsn)
+				 lowest_tsn: u32)
 {
 	/* Turn off ECNE getting auto-prepended to every outgoing
 	 * packet
@@ -140,8 +140,9 @@ unsafe fn sctp_do_ecn_cwr_work(*mut asoc,
 unsafe fn sctp_gen_sack(*mut asoc, int force,
 			 *mut commands)
 {
+	'nomem: {
 	*mut trans = asoc.peer.last_data_from;
-	u32 ctsn, max_tsn_seen;
+	ctsn: u32, max_tsn_seen;
 	*mut sack;
 	int error = 0;
 
@@ -208,7 +209,7 @@ unsafe fn sctp_gen_sack(*mut asoc, int force,
 		sack = sctp_make_sack(asoc);
 		if (!sack) {
 			asoc.a_rwnd = old_a_rwnd;
-			goto nomem;
+			break 'nomem;
 		}
 
 		asoc.peer.sack_needed = 0;
@@ -222,7 +223,8 @@ unsafe fn sctp_gen_sack(*mut asoc, int force,
 	}
 
 	return error;
-nomem:
+	}
+	
 	error = -ENOMEM;
 	return error;
 }
@@ -232,6 +234,7 @@ nomem:
  */
 unsafe fn sctp_generate_t3_rtx_event(*mut t)
 {
+	'out_unlock: {
 	*mut transport =
 		timer_container_of(transport, t, T3_rtx_timer);
 	*mut asoc = transport.asoc;
@@ -248,7 +251,7 @@ unsafe fn sctp_generate_t3_rtx_event(*mut t)
 		/* Try again later.  */
 		if (!mod_timer(&transport.T3_rtx_timer, jiffies + (HZ/20)))
 			sctp_transport_hold(transport);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	/* Run through the state machine.  */
@@ -260,8 +263,8 @@ unsafe fn sctp_generate_t3_rtx_event(*mut t)
 
 	if (error)
 		sk.sk_err = -error;
-
-out_unlock:
+	}
+	
 	bh_unlock_sock(sk);
 	sctp_transport_put(transport);
 }
@@ -272,6 +275,7 @@ out_unlock:
 unsafe fn sctp_generate_timeout_event(*mut asoc,
 					sctp_event_timeout timeout_type)
 {
+	'out_unlock: {
 	*mut sk = asoc.base.sk;
 	*mut net = sock_net(sk);
 	int error = 0;
@@ -284,14 +288,14 @@ unsafe fn sctp_generate_timeout_event(*mut asoc,
 		/* Try again later.  */
 		if (!mod_timer(&asoc.timers[timeout_type], jiffies + (HZ/20)))
 			sctp_association_hold(asoc);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	/* Is this association really dead and just waiting around for
 	 * the timer to let go of the reference?
 	 */
 	if (asoc.base.dead)
-		goto out_unlock;
+		break 'out_unlock;
 
 	/* Run through the state machine.  */
 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
@@ -301,8 +305,8 @@ unsafe fn sctp_generate_timeout_event(*mut asoc,
 
 	if (error)
 		sk.sk_err = -error;
-
-out_unlock:
+	}
+	
 	bh_unlock_sock(sk);
 	sctp_association_put(asoc);
 }
@@ -367,12 +371,13 @@ unsafe fn sctp_generate_autoclose_event(*mut t)
  */
 unsafe fn sctp_generate_heartbeat_event(*mut t)
 {
+	'out_unlock: {
 	*mut transport = timer_container_of(transport, t,
 							      hb_timer);
 	*mut asoc = transport.asoc;
 	*mut sk = asoc.base.sk;
 	*mut net = sock_net(sk);
-	u32 elapsed, timeout;
+	elapsed: u32, timeout;
 	int error = 0;
 
 	bh_lock_sock(sk);
@@ -382,7 +387,7 @@ unsafe fn sctp_generate_heartbeat_event(*mut t)
 		/* Try again later.  */
 		if (!mod_timer(&transport.hb_timer, jiffies + (HZ/20)))
 			sctp_transport_hold(transport);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	/* Check if we should still send the heartbeat or reschedule */
@@ -392,7 +397,7 @@ unsafe fn sctp_generate_heartbeat_event(*mut t)
 		elapsed = timeout - elapsed;
 		if (!mod_timer(&transport.hb_timer, jiffies + elapsed))
 			sctp_transport_hold(transport);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
@@ -402,8 +407,8 @@ unsafe fn sctp_generate_heartbeat_event(*mut t)
 
 	if (error)
 		sk.sk_err = -error;
-
-out_unlock:
+	}
+	
 	bh_unlock_sock(sk);
 	sctp_transport_put(transport);
 }
@@ -413,6 +418,7 @@ out_unlock:
  */
 unsafe fn sctp_generate_proto_unreach_event(*mut t)
 {
+	'out_unlock: {
 	*mut transport =
 		timer_container_of(transport, t, proto_unreach_timer);
 	*mut asoc = transport.asoc;
@@ -427,20 +433,20 @@ unsafe fn sctp_generate_proto_unreach_event(*mut t)
 		if (!mod_timer(&transport.proto_unreach_timer,
 				jiffies + (HZ/20)))
 			sctp_transport_hold(transport);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	/* Is this structure just waiting around for us to actually
 	 * get destroyed?
 	 */
 	if (asoc.base.dead)
-		goto out_unlock;
+		break 'out_unlock;
 
 	sctp_do_sm(net, SCTP_EVENT_T_OTHER,
 		   SCTP_ST_OTHER(SCTP_EVENT_ICMP_PROTO_UNREACH),
 		   asoc.state, asoc.ep, asoc, transport, GFP_ATOMIC);
-
-out_unlock:
+	}
+	
 	bh_unlock_sock(sk);
 	sctp_transport_put(transport);
 }
@@ -448,6 +454,7 @@ out_unlock:
  /* Handle the timeout of the RE-CONFIG timer. */
 unsafe fn sctp_generate_reconf_event(*mut t)
 {
+	'out_unlock: {
 	*mut transport =
 		timer_container_of(transport, t, reconf_timer);
 	*mut asoc = transport.asoc;
@@ -462,12 +469,12 @@ unsafe fn sctp_generate_reconf_event(*mut t)
 		/* Try again later.  */
 		if (!mod_timer(&transport.reconf_timer, jiffies + (HZ / 20)))
 			sctp_transport_hold(transport);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	/* This happens when the response arrives after the timer is triggered. */
 	if (!asoc.strreset_chunk)
-		goto out_unlock;
+		break 'out_unlock;
 
 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
@@ -476,8 +483,8 @@ unsafe fn sctp_generate_reconf_event(*mut t)
 
 	if (error)
 		sk.sk_err = -error;
-
-out_unlock:
+	}
+	
 	bh_unlock_sock(sk);
 	sctp_transport_put(transport);
 }
@@ -485,6 +492,7 @@ out_unlock:
 /* Handle the timeout of the probe timer. */
 unsafe fn sctp_generate_probe_event(*mut t)
 {
+	'out_unlock: {
 	*mut transport = timer_container_of(transport, t,
 							      probe_timer);
 	*mut asoc = transport.asoc;
@@ -499,7 +507,7 @@ unsafe fn sctp_generate_probe_event(*mut t)
 		/* Try again later.  */
 		if (!mod_timer(&transport.probe_timer, jiffies + (HZ / 20)))
 			sctp_transport_hold(transport);
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
@@ -509,8 +517,8 @@ unsafe fn sctp_generate_probe_event(*mut t)
 
 	if (error)
 		sk.sk_err = -error;
-
-out_unlock:
+	}
+	
 	bh_unlock_sock(sk);
 	sctp_transport_put(transport);
 }
@@ -632,7 +640,7 @@ unsafe fn sctp_do_8_2_transport_strike(*mut commands,
 /* Worker routine to handle INIT command failure.  */
 unsafe fn sctp_cmd_init_failed(*mut commands,
 				 *mut asoc,
-				 unsigned int error)
+				 error: core::ffi::c_uint)
 {
 	*mut event;
 
@@ -658,7 +666,7 @@ unsafe fn sctp_cmd_assoc_failed(*mut commands,
 				  sctp_event_type event_type,
 				  sctp_subtype subtype,
 				  *mut chunk,
-				  unsigned int error)
+				  error: core::ffi::c_uint)
 {
 	*mut event;
 	*mut abort;
@@ -740,11 +748,11 @@ unsafe fn sctp_cmd_hb_timers_stop(*mut cmds,
 
 	/* Stop all heartbeat timers. */
 
-	list_for_each_entry(t, &asoc.peer.transport_addr_list,
-			transports) {
+	list_for_each_entry!(t, &asoc.peer.transport_addr_list,
+			transports, {
 		if (timer_delete(&t.hb_timer))
 			sctp_transport_put(t);
-	}
+	});
 }
 
 /* Helper function to stop any pending T3-RTX timers */
@@ -753,11 +761,11 @@ unsafe fn sctp_cmd_t3_rtx_timers_stop(*mut cmds,
 {
 	*mut t;
 
-	list_for_each_entry(t, &asoc.peer.transport_addr_list,
-			transports) {
+	list_for_each_entry!(t, &asoc.peer.transport_addr_list,
+			transports, {
 		if (timer_delete(&t.T3_rtx_timer))
 			sctp_transport_put(t);
-	}
+	});
 }
 
 
@@ -821,7 +829,7 @@ unsafe fn sctp_cmd_transport_on(*mut cmds,
 	if (t.rto_pending == 0)
 		t.rto_pending = 1;
 
-	hbinfo = (*mut struct sctp_sender_hb_info)chunk.skb.data;
+	hbinfo = (*mut sctp_sender_hb_info)chunk.skb.data;
 	sctp_transport_update_rto(t, (jiffies - hbinfo.sent_at));
 
 	/* Update the heartbeat timer.  */
@@ -978,7 +986,7 @@ unsafe fn sctp_cmd_process_operr(*mut cmds,
 	*mut ev;
 
 	while (chunk.chunk_end > chunk.skb.data) {
-		err_hdr = (*mut struct sctp_errhdr)(chunk.skb.data);
+		err_hdr = (*mut sctp_errhdr)(chunk.skb.data);
 
 		ev = sctp_ulpevent_make_remote_error(asoc, chunk, 0,
 						     GFP_ATOMIC);
@@ -992,8 +1000,8 @@ unsafe fn sctp_cmd_process_operr(*mut cmds,
 		{
 			*mut unk_chunk_hdr;
 
-			unk_chunk_hdr = (*mut struct sctp_chunkhdr)(err_hdr + 1);
-			switch (unk_chunk_hdr.type) {
+			unk_chunk_hdr = (*mut sctp_chunkhdr)(err_hdr + 1);
+			switch (unk_chunk_hdr.r#type) {
 			/* ADDIP 4.1 A9) If the peer responds to an ASCONF with
 			 * an ERROR chunk reporting that it did not recognized
 			 * the ASCONF chunk type, the sender of the ASCONF MUST
@@ -1028,13 +1036,13 @@ unsafe fn sctp_cmd_del_non_primary(*mut asoc)
 	*mut temp;
 	*mut pos;
 
-	list_for_each_safe(pos, temp, &asoc.peer.transport_addr_list) {
-		t = list_entry(pos, struct sctp_transport, transports);
+	list_for_each_safe!(pos, temp, &asoc.peer.transport_addr_list, {
+		t = list_entry(pos, sctp_transport, transports);
 		if (!sctp_cmp_addr_exact(&t.ipaddr,
 					 &asoc.peer.primary_addr)) {
 			sctp_assoc_rm_peer(asoc, t);
 		}
-	}
+	});
 }
 
 /* Helper function to set sk_err on a 1-1 style socket. */
@@ -1049,7 +1057,7 @@ unsafe fn sctp_cmd_set_sk_err(*mut asoc, int error)
 /* Helper function to generate an association change event */
 unsafe fn sctp_cmd_assoc_change(*mut commands,
 				  *mut asoc,
-				  u8 state)
+				  state: u8)
 {
 	*mut ev;
 
@@ -1189,12 +1197,13 @@ unsafe fn sctp_side_effects(sctp_event_type event_type,
 			     sctp_subtype subtype,
 			     sctp_state state,
 			     *mut ep,
-			     *mut struct sctp_association*asoc,
+			     *mut sctp_association*asoc,
 			     void *event_arg,
 			     sctp_disposition status,
 			     *mut commands,
 			     GfpT gfp)
 {
+	'bail: {
 	int error;
 
 	/* FIXME - Most of the dispositions left today would be categorized
@@ -1207,7 +1216,7 @@ unsafe fn sctp_side_effects(sctp_event_type event_type,
 					       ep, *asoc,
 					       event_arg, status,
 					       commands, gfp)))
-		goto bail;
+		break 'bail;
 
 	switch (status) {
 	case SCTP_DISPOSITION_DISCARD:
@@ -1264,8 +1273,8 @@ unsafe fn sctp_side_effects(sctp_event_type event_type,
 		WARN_ON_ONCE(1);
 		break;
 	}
-
-bail:
+	}
+	
 	return error;
 }
 
@@ -1290,7 +1299,7 @@ unsafe fn sctp_cmd_interpreter(sctp_event_type event_type,
 	struct sctp_sackhdr sackh;
 	*mut timer;
 	*mut t;
-	unsigned long timeout;
+	core::ffi::c_ulong timeout;
 	*mut cmd;
 	int local_cork = 0;
 	int error = 0;
@@ -1613,11 +1622,11 @@ unsafe fn sctp_cmd_interpreter(sctp_event_type event_type,
 			/* If we've sent any data bundled with
 			 * COOKIE-ECHO we need to resend.
 			 */
-			list_for_each_entry(t, &asoc.peer.transport_addr_list,
-					transports) {
+			list_for_each_entry!(t, &asoc.peer.transport_addr_list,
+					transports, {
 				sctp_retransmit_mark(&asoc.outqueue, t,
 					    SCTP_RTXR_T1_RTX);
-			}
+			});
 
 			sctp_add_cmd_sf(commands,
 					SCTP_CMD_TIMER_RESTART,
@@ -1640,10 +1649,10 @@ unsafe fn sctp_cmd_interpreter(sctp_event_type event_type,
 		case SCTP_CMD_INIT_COUNTER_RESET:
 			asoc.init_err_counter = 0;
 			asoc.init_cycle = 0;
-			list_for_each_entry(t, &asoc.peer.transport_addr_list,
-					    transports) {
+			list_for_each_entry!(t, &asoc.peer.transport_addr_list,
+					    transports, {
 				t.init_sent_count = 0;
-			}
+			});
 			break;
 
 		case SCTP_CMD_REPORT_DUP:

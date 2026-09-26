@@ -11,19 +11,19 @@
 
 // CONFIG_CPU_FREQ-dependent implementation.
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 const CPUFREQ_THERMAL_MIN_STEP: i32 = 0;
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut CPUFREQ_THERMAL_MAX_STEP: i32 = 3;
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut CPUFREQ_THERMAL_REDUCTION_PCTG: i32 = 20;
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut CPUFREQ_THERMAL_REDUCTION_STEP: [u32; 1] = [0];
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn phys_package_first_cpu(cpu: i32) -> i32 {
     let mut i: i32;
     let id = topology_physical_package_id(cpu);
@@ -36,12 +36,12 @@ unsafe fn phys_package_first_cpu(cpu: i32) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn reduction_step(cpu: i32) -> &'static mut u32 {
     &mut CPUFREQ_THERMAL_REDUCTION_STEP[phys_package_first_cpu(cpu) as usize]
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpu_has_cpufreq(cpu: u32) -> bool {
     if !acpi_processor_cpufreq_init {
         return false;
@@ -54,7 +54,7 @@ unsafe fn cpu_has_cpufreq(cpu: u32) -> bool {
     !policy.is_null()
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpufreq_get_max_state(cpu: u32) -> i32 {
     if !cpu_has_cpufreq(cpu) {
         return 0;
@@ -62,7 +62,7 @@ unsafe fn cpufreq_get_max_state(cpu: u32) -> i32 {
     CPUFREQ_THERMAL_MAX_STEP
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpufreq_get_cur_state(cpu: u32) -> u32 {
     if !cpu_has_cpufreq(cpu) {
         return 0;
@@ -70,7 +70,7 @@ unsafe fn cpufreq_get_cur_state(cpu: u32) -> u32 {
     *reduction_step(cpu as i32)
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpufreq_update_thermal_limit(cpu: u32, pr: *mut acpi_processor) -> bool {
     let policy = cpufreq_cpu_get(cpu);
     if policy.is_null() {
@@ -88,7 +88,7 @@ unsafe fn cpufreq_update_thermal_limit(cpu: u32, pr: *mut acpi_processor) -> boo
     true
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn cpufreq_set_cur_state(cpu: u32, state: i32) -> i32 {
     if !cpu_has_cpufreq(cpu) {
         return 0;
@@ -111,7 +111,7 @@ unsafe fn cpufreq_set_cur_state(cpu: u32, state: i32) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn acpi_thermal_cpufreq_config() {
     let cpufreq_pctg = acpi_arch_thermal_cpufreq_pctg();
     if cpufreq_pctg == 0 {
@@ -121,7 +121,7 @@ unsafe fn acpi_thermal_cpufreq_config() {
     CPUFREQ_THERMAL_MAX_STEP = (100 / cpufreq_pctg) - 2;
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 pub unsafe fn acpi_thermal_cpufreq_init(policy: *mut cpufreq_policy) {
     acpi_thermal_cpufreq_config();
     let mut cpu: u32;
@@ -138,7 +138,7 @@ pub unsafe fn acpi_thermal_cpufreq_init(policy: *mut cpufreq_policy) {
     });
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 pub unsafe fn acpi_thermal_cpufreq_exit(policy: *mut cpufreq_policy) {
     let mut cpu: u32;
     for_each_cpu!(cpu, (*policy).related_cpus, {
@@ -149,13 +149,13 @@ pub unsafe fn acpi_thermal_cpufreq_exit(policy: *mut cpufreq_policy) {
     });
 }
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ"))]
+#[cfg(not(CONFIG_CPU_FREQ))]
 unsafe fn cpufreq_get_max_state(_cpu: u32) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ"))]
+#[cfg(not(CONFIG_CPU_FREQ))]
 unsafe fn cpufreq_get_cur_state(_cpu: u32) -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ"))]
+#[cfg(not(CONFIG_CPU_FREQ))]
 unsafe fn cpufreq_set_cur_state(_cpu: u32, _state: i32) -> i32 { 0 }
 
 unsafe fn acpi_processor_max_state(pr: *mut acpi_processor) -> i32 {
@@ -213,17 +213,21 @@ pub static processor_cooling_ops: thermal_cooling_device_ops = thermal_cooling_d
 
 pub unsafe fn acpi_processor_thermal_init(pr: *mut acpi_processor, device: *mut acpi_device) -> i32 {
     let mut result = 0;
+    'err_thermal_unregister: {
+    'err_remove_sysfs_thermal: {
     (*pr).cdev = thermal_cooling_device_register("Processor", device, &processor_cooling_ops);
     if IS_ERR!((*pr).cdev) { return PTR_ERR!((*pr).cdev); }
     dev_dbg!(&(*device).dev, "registered as cooling_device{}\n", (*(*pr).cdev).id);
     result = sysfs_create_link(&(*device).dev.kobj, &(*(*pr).cdev).device.kobj, "thermal_cooling");
-    if result != 0 { goto err_thermal_unregister; }
+    if result != 0 { break 'err_thermal_unregister; }
     result = sysfs_create_link(&(*(*pr).cdev).device.kobj, &(*device).dev.kobj, "device");
-    if result != 0 { goto err_remove_sysfs_thermal; }
+    if result != 0 { break 'err_remove_sysfs_thermal; }
     return 0;
-err_remove_sysfs_thermal:
+    }
+    
     sysfs_remove_link(&(*device).dev.kobj, "thermal_cooling");
-err_thermal_unregister:
+    }
+    
     thermal_cooling_device_unregister((*pr).cdev);
     result
 }

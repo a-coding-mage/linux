@@ -20,7 +20,7 @@ pub const fn HOOK2MANIP(hooknum: u32) -> bool {
 #[repr(C)]
 pub union nf_conntrack_nat_help {
     // CONFIG_NF_NAT_PPTP-dependent member from the original header.
-    #[cfg(feature = "CONFIG_NF_NAT_PPTP")]
+    #[cfg(CONFIG_NF_NAT_PPTP)]
     pub nat_pptp_info: nf_nat_pptp,
 }
 
@@ -29,7 +29,7 @@ pub union nf_conntrack_nat_help {
 pub struct nf_conn_nat {
     pub help: nf_conntrack_nat_help,
     // CONFIG_NF_NAT_MASQUERADE-dependent member from the original header.
-    #[cfg(feature = "CONFIG_NF_NAT_MASQUERADE")]
+    #[cfg(CONFIG_NF_NAT_MASQUERADE)]
     pub masq_index: i32,
 }
 
@@ -48,11 +48,11 @@ extern "C" {
 
 #[inline]
 pub unsafe fn nfct_nat(ct: *const nf_conn) -> *mut nf_conn_nat {
-    #[cfg(feature = "CONFIG_NF_NAT")]
+    #[cfg(CONFIG_NF_NAT)]
     {
         nf_ct_ext_find(ct, NF_CT_EXT_NAT)
     }
-    #[cfg(not(feature = "CONFIG_NF_NAT"))]
+    #[cfg(not(CONFIG_NF_NAT))]
     {
         core::ptr::null_mut()
     }
@@ -65,7 +65,7 @@ pub unsafe fn nf_nat_oif_changed(
     nat: *mut nf_conn_nat,
     out: *const net_device,
 ) -> bool {
-    #[cfg(feature = "CONFIG_NF_NAT_MASQUERADE")]
+    #[cfg(CONFIG_NF_NAT_MASQUERADE)]
     {
         !nat.is_null()
             && (*nat).masq_index != 0
@@ -73,7 +73,7 @@ pub unsafe fn nf_nat_oif_changed(
             && CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL
             && (*nat).masq_index != (*out).ifindex
     }
-    #[cfg(not(feature = "CONFIG_NF_NAT_MASQUERADE"))]
+    #[cfg(not(CONFIG_NF_NAT_MASQUERADE))]
     {
         false
     }

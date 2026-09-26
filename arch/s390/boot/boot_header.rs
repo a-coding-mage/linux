@@ -25,20 +25,20 @@ pub struct vmlinux_info {
     pub alt_instructions: usize,
     pub alt_instructions_end: usize,
     /* CONFIG_STACKPROTECTOR fields, when enabled, are present in the C layout. */
-    #[cfg(feature = "CONFIG_STACKPROTECTOR")]
+    #[cfg(CONFIG_STACKPROTECTOR)]
     pub stack_prot_start: usize,
-    #[cfg(feature = "CONFIG_STACKPROTECTOR")]
+    #[cfg(CONFIG_STACKPROTECTOR)]
     pub stack_prot_end: usize,
     /* CONFIG_KASAN fields, when enabled, are present in the C layout. */
-    #[cfg(feature = "CONFIG_KASAN")]
+    #[cfg(CONFIG_KASAN)]
     pub kasan_early_shadow_page_off: usize,
-    #[cfg(feature = "CONFIG_KASAN")]
+    #[cfg(CONFIG_KASAN)]
     pub kasan_early_shadow_pte_off: usize,
-    #[cfg(feature = "CONFIG_KASAN")]
+    #[cfg(CONFIG_KASAN)]
     pub kasan_early_shadow_pmd_off: usize,
-    #[cfg(feature = "CONFIG_KASAN")]
+    #[cfg(CONFIG_KASAN)]
     pub kasan_early_shadow_pud_off: usize,
-    #[cfg(feature = "CONFIG_KASAN")]
+    #[cfg(CONFIG_KASAN)]
     pub kasan_early_shadow_p4d_off: usize,
 }
 

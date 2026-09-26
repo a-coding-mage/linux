@@ -115,7 +115,7 @@ pub unsafe fn hw_to_owl_pll(hw: *mut clk_hw) -> *mut owl_pll {
     container_of!(common, owl_pll, common)
 }
 
-pub extern "C" {
+extern "C" {
     pub static owl_pll_ops: clk_ops;
 }
 

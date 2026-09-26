@@ -32,7 +32,7 @@ pub struct module {
 }
 
 // Equivalent to: defined(CONFIG_MEDIA_CONTROLLER) && IS_ENABLED(CONFIG_USB)
-#[cfg(all(feature = "CONFIG_MEDIA_CONTROLLER", feature = "CONFIG_USB"))]
+#[cfg(all(CONFIG_MEDIA_CONTROLLER, CONFIG_USB))]
 extern "C" {
     /**
      * media_device_usb_allocate() - Allocate and return struct &media device
@@ -72,7 +72,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(all(feature = "CONFIG_MEDIA_CONTROLLER", feature = "CONFIG_USB")))]
+#[cfg(not(all(CONFIG_MEDIA_CONTROLLER, CONFIG_USB)))]
 #[inline]
 pub unsafe fn media_device_usb_allocate(
     _udev: *mut usb_device,
@@ -82,7 +82,7 @@ pub unsafe fn media_device_usb_allocate(
     core::ptr::null_mut()
 }
 
-#[cfg(not(all(feature = "CONFIG_MEDIA_CONTROLLER", feature = "CONFIG_USB")))]
+#[cfg(not(all(CONFIG_MEDIA_CONTROLLER, CONFIG_USB)))]
 #[inline]
 pub unsafe fn media_device_delete(
     _mdev: *mut media_device,

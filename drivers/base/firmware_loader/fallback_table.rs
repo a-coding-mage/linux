@@ -11,7 +11,7 @@
 
 pub static mut fw_fallback_config: firmware_fallback_config = firmware_fallback_config {
     // IS_ENABLED(CONFIG_FW_LOADER_USER_HELPER_FALLBACK)
-    force_sysfs_fallback: cfg!(feature = "CONFIG_FW_LOADER_USER_HELPER_FALLBACK") as _,
+    force_sysfs_fallback: cfg!(CONFIG_FW_LOADER_USER_HELPER_FALLBACK) as _,
     loading_timeout: 60,
     old_timeout: 60,
 };
@@ -19,7 +19,7 @@ pub static mut fw_fallback_config: firmware_fallback_config = firmware_fallback_
 // EXPORT_SYMBOL_NS_GPL(fw_fallback_config, "FIRMWARE_LOADER_PRIVATE");
 
 // CONFIG_SYSCTL
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 static firmware_config_table: [ctl_table; 2] = [
     ctl_table {
         procname: "force_sysfs_fallback",
@@ -41,10 +41,10 @@ static firmware_config_table: [ctl_table; 2] = [
     },
 ];
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 static mut firmware_config_sysct_table_header: *mut ctl_table_header = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 pub unsafe fn register_firmware_config_sysctl() -> i32 {
     firmware_config_sysct_table_header = register_sysctl(
         "kernel/firmware_config",
@@ -58,7 +58,7 @@ pub unsafe fn register_firmware_config_sysctl() -> i32 {
 
 // EXPORT_SYMBOL_NS_GPL(register_firmware_config_sysctl, "FIRMWARE_LOADER_PRIVATE");
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 pub unsafe fn unregister_firmware_config_sysctl() {
     unregister_sysctl_table(firmware_config_sysct_table_header);
     firmware_config_sysct_table_header = core::ptr::null_mut();

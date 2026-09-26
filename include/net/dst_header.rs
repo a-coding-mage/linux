@@ -21,7 +21,7 @@ pub const DST_OBSOLETE_NONE:i16=0; pub const DST_OBSOLETE_DEAD:i16=2; pub const 
     pub rt_uncached_list:*mut uncached_list,
 }
 #[repr(C, align(4))] pub struct dst_metrics { pub metrics:[u32; 16], pub refcnt:refcount_t }
-extern "C" { pub static dst_default_metrics: dst_metrics; pub fn dst_cow_metrics_generic(*mut dst_entry,usize)->*mut u32; pub fn __dst_destroy_metrics_generic(*mut dst_entry,usize); pub fn dst_release(*mut dst_entry); pub fn dst_release_immediate(*mut dst_entry); pub fn dst_discard_out(*mut net,*mut sock,*mut sk_buff)->i32; pub fn dst_alloc(*mut dst_ops,*mut net_device,i32,u16)->*mut c_void; pub fn dst_init(*mut dst_entry,*mut dst_ops,*mut net_device,i32,u16); pub fn dst_dev_put(*mut dst_entry); }
+extern "C" { pub static dst_default_metrics: dst_metrics; pub fn dst_cow_metrics_generic(_: *mut dst_entry,_: usize)->*mut u32; pub fn __dst_destroy_metrics_generic(_: *mut dst_entry,_: usize); pub fn dst_release(_: *mut dst_entry); pub fn dst_release_immediate(_: *mut dst_entry); pub fn dst_discard_out(_: *mut net,_: *mut sock,_: *mut sk_buff)->i32; pub fn dst_alloc(_: *mut dst_ops,_: *mut net_device,_: i32,_: u16)->*mut c_void; pub fn dst_init(_: *mut dst_entry,_: *mut dst_ops,_: *mut net_device,_: i32,_: u16); pub fn dst_dev_put(_: *mut dst_entry); }
 pub const DST_METRICS_READ_ONLY:usize=1; pub const DST_METRICS_REFCOUNTED:usize=2; pub const DST_METRICS_FLAGS:usize=3;
 pub const DST_FEATURE_ECN_CA:u32=1u32<<31; pub const DST_FEATURE_MASK:u32=DST_FEATURE_ECN_CA;
 pub const DST_FEATURE_ECN_MASK:u32=DST_FEATURE_ECN_CA | 0; // RTAX_FEATURE_ECN supplied externally
@@ -64,6 +64,6 @@ pub const DST_FEATURE_ECN_MASK:u32=DST_FEATURE_ECN_CA | 0; // RTAX_FEATURE_ECN s
 #[inline] pub unsafe fn skb_dst_dev(skb:*const sk_buff)->*mut net_device { (*skb).dev }
 
 pub const XFRM_LOOKUP_ICMP:i32=1; pub const XFRM_LOOKUP_QUEUE:i32=2; pub const XFRM_LOOKUP_KEEP_DST_REF:i32=4;
-extern "C" { pub fn dst_blackhole_check(*mut dst_entry,u32)->*mut dst_entry; pub fn dst_blackhole_update_pmtu(*mut dst_entry,*mut sock,*mut sk_buff,u32,bool); pub fn dst_blackhole_redirect(*mut dst_entry,*mut sock,*mut sk_buff); pub fn dst_blackhole_cow_metrics(*mut dst_entry,usize)->*mut u32; pub fn dst_blackhole_neigh_lookup(*const dst_entry,*mut sk_buff,*const c_void)->*mut neighbour; pub fn dst_blackhole_mtu(*const dst_entry)->u32; }
+extern "C" { pub fn dst_blackhole_check(_: *mut dst_entry,_: u32)->*mut dst_entry; pub fn dst_blackhole_update_pmtu(_: *mut dst_entry,_: *mut sock,_: *mut sk_buff,_: u32,_: bool); pub fn dst_blackhole_redirect(_: *mut dst_entry,_: *mut sock,_: *mut sk_buff); pub fn dst_blackhole_cow_metrics(_: *mut dst_entry,_: usize)->*mut u32; pub fn dst_blackhole_neigh_lookup(_: *const dst_entry,_: *mut sk_buff,_: *const c_void)->*mut neighbour; pub fn dst_blackhole_mtu(_: *const dst_entry)->u32; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

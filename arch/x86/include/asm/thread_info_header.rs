@@ -51,7 +51,7 @@ pub const TIF_BLOCKSTEP: usize = 26;
 pub const TIF_ADDR32: usize = 27;
 
 #[inline]
-pub const fn BIT(n: usize) -> ::core::ffi::c_ulong { 1 as ::core::ffi::c_ulong << n }
+pub const fn BIT(n: usize) -> ::core::ffi::c_ulong { (1 as ::core::ffi::c_ulong) << n }
 
 pub const _TIF_SSBD: ::core::ffi::c_ulong = BIT(TIF_SSBD);
 pub const _TIF_SPEC_IB: ::core::ffi::c_ulong = BIT(TIF_SPEC_IB);

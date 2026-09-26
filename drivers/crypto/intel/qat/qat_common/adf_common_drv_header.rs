@@ -115,7 +115,7 @@ extern "C" {
 }
 
 /* CONFIG_PCI_IOV declarations are retained under the original build-time condition. */
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 extern "C" {
     pub fn adf_sriov_configure(pdev: *mut pci_dev, numvfs: i32) -> i32;
     pub fn adf_disable_sriov(accel_dev: *mut adf_accel_dev);
@@ -136,17 +136,17 @@ extern "C" {
     pub fn adf_flush_vf_wq(accel_dev: *mut adf_accel_dev);
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 pub unsafe fn adf_disable_sriov(_: *mut adf_accel_dev) {}
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 pub unsafe fn adf_reenable_sriov(_: *mut adf_accel_dev) {}
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 pub unsafe fn adf_init_pf_wq() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 pub unsafe fn adf_exit_pf_wq() {}
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 pub unsafe fn adf_init_vf_wq() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 pub unsafe fn adf_exit_vf_wq() {}
 
 /* The remaining HAL declarations use types supplied by the included HAL headers. */

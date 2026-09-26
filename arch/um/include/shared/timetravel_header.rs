@@ -13,16 +13,16 @@ pub enum time_travel_mode {
 }
 
 /* CONFIG_UML_TIME_TRAVEL_SUPPORT is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 extern "C" {
     pub static mut time_travel_mode: time_travel_mode;
     pub static mut time_travel_should_print_bc_msg: ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT"))]
+#[cfg(not(CONFIG_UML_TIME_TRAVEL_SUPPORT))]
 pub const time_travel_mode: time_travel_mode = time_travel_mode::TT_MODE_OFF;
 
-#[cfg(not(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT"))]
+#[cfg(not(CONFIG_UML_TIME_TRAVEL_SUPPORT))]
 pub const time_travel_should_print_bc_msg: ::core::ffi::c_int = 0;
 
 extern "C" {

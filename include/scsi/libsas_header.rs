@@ -97,9 +97,9 @@ extern "C" {
 }
 
 /* CONFIG_SCSI_SAS_HOST_SMP controls whether this symbol is supplied externally. */
-#[cfg(feature = "CONFIG_SCSI_SAS_HOST_SMP")]
+#[cfg(CONFIG_SCSI_SAS_HOST_SMP)]
 extern "C" { pub fn try_test_sas_gpio_gp_bit(od: u32, data: *mut u8, index: u8, count: u8) -> i32; }
-#[cfg(not(feature = "CONFIG_SCSI_SAS_HOST_SMP"))]
+#[cfg(not(CONFIG_SCSI_SAS_HOST_SMP))]
 #[inline] pub unsafe fn try_test_sas_gpio_gp_bit(_: u32, _: *mut u8, _: u8, _: u8) -> i32 { -1 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

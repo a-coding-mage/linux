@@ -46,7 +46,7 @@ const _COMPLETE_SOURCE_LEVEL_TRANSLATION: &str = r###"
 #include <asm/traps.h>
 #include <asm/vdso.h>
 
-#define GCS_SIGNAL_CAP(addr) (((unsigned long)addr) & GCS_CAP_ADDR_MASK)
+#define GCS_SIGNAL_CAP(addr) (((core::ffi::c_ulong)addr) & GCS_CAP_ADDR_MASK)
 
 /*
  * Do a signal return; undo the signal stack. These are aligned to 128-bit.
@@ -60,24 +60,24 @@ struct rt_sigframe_user_layout {
 	struct rt_sigframe __user *sigframe;
 	struct frame_record __user *next_frame;
 
-	unsigned long size;	/* size of allocated sigframe data */
-	unsigned long limit;	/* largest allowed size */
+	core::ffi::c_ulong size;	/* size of allocated sigframe data */
+	core::ffi::c_ulong limit;	/* largest allowed size */
 
-	unsigned long fpsimd_offset;
-	unsigned long esr_offset;
-	unsigned long gcs_offset;
-	unsigned long sve_offset;
-	unsigned long tpidr2_offset;
-	unsigned long za_offset;
-	unsigned long zt_offset;
-	unsigned long fpmr_offset;
-	unsigned long poe_offset;
-	unsigned long extra_offset;
-	unsigned long end_offset;
+	core::ffi::c_ulong fpsimd_offset;
+	core::ffi::c_ulong esr_offset;
+	core::ffi::c_ulong gcs_offset;
+	core::ffi::c_ulong sve_offset;
+	core::ffi::c_ulong tpidr2_offset;
+	core::ffi::c_ulong za_offset;
+	core::ffi::c_ulong zt_offset;
+	core::ffi::c_ulong fpmr_offset;
+	core::ffi::c_ulong poe_offset;
+	core::ffi::c_ulong extra_offset;
+	core::ffi::c_ulong end_offset;
 };
 
-#define TERMINATOR_SIZE round_up(sizeof(struct _aarch64_ctx), 16)
-#define EXTRA_CONTEXT_SIZE round_up(sizeof(struct extra_context), 16)
+#define TERMINATOR_SIZE round_up(sizeof(_aarch64_ctx), 16)
+#define EXTRA_CONTEXT_SIZE round_up(sizeof(extra_context), 16)
 
 /*
  * Holds any EL0-controlled state that influences unprivileged memory accesses.
@@ -92,14 +92,14 @@ struct rt_sigframe_user_layout {
  * (have been set to some value).
  */
 struct user_access_state {
-	unsigned int __valid_fields;
+	core::ffi::c_uint __valid_fields;
 	u64 __por_el0;
 };
 
-#define UA_STATE_HAS_POR_EL0	BIT(0)
+pub const UA_STATE_HAS_POR_EL0: u32 = 1 << 0;
 
-static void set_ua_state_por_el0(struct user_access_state *ua_state,
-				 u64 por_el0)
+static void set_ua_state_por_el0(user_access_state *ua_state,
+				 por_el0: u64)
 {
 	ua_state->__por_el0 = por_el0;
 	ua_state->__valid_fields |= UA_STATE_HAS_POR_EL0;
@@ -120,7 +120,7 @@ static int get_ua_state_por_el0(const struct user_access_state *ua_state,
  * Save the user access state into ua_state and reset it to disable any
  * restrictions.
  */
-static void save_reset_user_access_state(struct user_access_state *ua_state)
+static void save_reset_user_access_state(user_access_state *ua_state)
 {
 	if (system_supports_poe()) {
 		u64 por_enable_all = 0;
@@ -162,13 +162,13 @@ static void restore_user_access_state(const struct user_access_state *ua_state)
 		write_sysreg_s(por_el0, SYS_POR_EL0);
 }
 
-static void init_user_layout(struct rt_sigframe_user_layout *user)
+static void init_user_layout(rt_sigframe_user_layout *user)
 {
 	const size_t reserved_size =
 		sizeof(user->sigframe->uc.uc_mcontext.__reserved);
 
 	memset(user, 0, sizeof(*user));
-	user->size = offsetof(struct rt_sigframe, uc.uc_mcontext.__reserved);
+	user->size = offsetof(rt_sigframe, uc.uc_mcontext.__reserved);
 
 	user->limit = user->size + reserved_size;
 
@@ -177,9 +177,9 @@ static void init_user_layout(struct rt_sigframe_user_layout *user)
 	/* Reserve space for extension and terminator ^ */
 }
 
-static size_t sigframe_size(struct rt_sigframe_user_layout const *user)
+static size_t sigframe_size(rt_sigframe_user_layout const *user)
 {
-	return round_up(max(user->size, sizeof(struct rt_sigframe)), 16);
+	return round_up(max(user->size, sizeof(rt_sigframe)), 16);
 }
 
 /*
@@ -190,8 +190,8 @@ static size_t sigframe_size(struct rt_sigframe_user_layout const *user)
  */
 #define SIGFRAME_MAXSZ SZ_256K
 
-static int __sigframe_alloc(struct rt_sigframe_user_layout *user,
-			    unsigned long *offset, size_t size, bool extend)
+static int __sigframe_alloc(rt_sigframe_user_layout *user,
+			    core::ffi::c_ulong *offset, size_t size, extend: bool)
 {
 	size_t padded_size = round_up(size, 16);
 
@@ -202,7 +202,7 @@ static int __sigframe_alloc(struct rt_sigframe_user_layout *user,
 
 		user->limit += EXTRA_CONTEXT_SIZE;
 		ret = __sigframe_alloc(user, &user->extra_offset,
-				       sizeof(struct extra_context), false);
+				       sizeof(extra_context), false);
 		if (ret) {
 			user->limit -= EXTRA_CONTEXT_SIZE;
 			return ret;
@@ -233,14 +233,14 @@ static int __sigframe_alloc(struct rt_sigframe_user_layout *user,
  * signal frame.  The offset from the signal frame base address to the
  * allocated block is assigned to *offset.
  */
-static int sigframe_alloc(struct rt_sigframe_user_layout *user,
-			  unsigned long *offset, size_t size)
+static int sigframe_alloc(rt_sigframe_user_layout *user,
+			  core::ffi::c_ulong *offset, size_t size)
 {
 	return __sigframe_alloc(user, offset, size, true);
 }
 
 /* Allocate the null terminator record and prevent further allocations */
-static int sigframe_alloc_end(struct rt_sigframe_user_layout *user)
+static int sigframe_alloc_end(rt_sigframe_user_layout *user)
 {
 	int ret;
 
@@ -248,7 +248,7 @@ static int sigframe_alloc_end(struct rt_sigframe_user_layout *user)
 	user->limit += TERMINATOR_SIZE;
 
 	ret = sigframe_alloc(user, &user->end_offset,
-			     sizeof(struct _aarch64_ctx));
+			     sizeof(_aarch64_ctx));
 	if (ret)
 		return ret;
 
@@ -258,7 +258,7 @@ static int sigframe_alloc_end(struct rt_sigframe_user_layout *user)
 }
 
 static void __user *apply_user_offset(
-	struct rt_sigframe_user_layout const *user, unsigned long offset)
+	rt_sigframe_user_layout const *user, offset: core::ffi::c_ulong)
 {
 	char __user *base = (char __user *)user->sigframe;
 
@@ -284,7 +284,7 @@ struct user_ctxs {
 	u32 gcs_size;
 };
 
-static int preserve_fpsimd_context(struct fpsimd_context __user *ctx)
+static int preserve_fpsimd_context(fpsimd_context __user *ctx)
 {
 	struct user_fpsimd_state const *fpsimd =
 		&current->thread.uw.fpsimd_state;
@@ -299,18 +299,18 @@ static int preserve_fpsimd_context(struct fpsimd_context __user *ctx)
 
 	/* copy the magic/size information */
 	__put_user_error(FPSIMD_MAGIC, &ctx->head.magic, err);
-	__put_user_error(sizeof(struct fpsimd_context), &ctx->head.size, err);
+	__put_user_error(sizeof(fpsimd_context), &ctx->head.size, err);
 
 	return err ? -EFAULT : 0;
 }
 
-static int read_fpsimd_context(struct user_fpsimd_state *fpsimd,
-			       struct user_ctxs *user)
+static int read_fpsimd_context(user_fpsimd_state *fpsimd,
+			       user_ctxs *user)
 {
 	int err;
 
 	/* check the size information */
-	if (user->fpsimd_size != sizeof(struct fpsimd_context))
+	if (user->fpsimd_size != sizeof(fpsimd_context))
 		return -EINVAL;
 
 	/* copy the FP and status/control registers */
@@ -322,7 +322,7 @@ static int read_fpsimd_context(struct user_fpsimd_state *fpsimd,
 	return err ? -EFAULT : 0;
 }
 
-static int restore_fpsimd_context(struct user_ctxs *user)
+static int restore_fpsimd_context(user_ctxs *user)
 {
 	struct user_fpsimd_state fpsimd;
 	int err;
@@ -340,7 +340,7 @@ static int restore_fpsimd_context(struct user_ctxs *user)
 	return 0;
 }
 
-static int preserve_fpmr_context(struct fpmr_context __user *ctx)
+static int preserve_fpmr_context(fpmr_context __user *ctx)
 {
 	int err = 0;
 
@@ -351,7 +351,7 @@ static int preserve_fpmr_context(struct fpmr_context __user *ctx)
 	return err;
 }
 
-static int restore_fpmr_context(struct user_ctxs *user)
+static int restore_fpmr_context(user_ctxs *user)
 {
 	u64 fpmr;
 	int err = 0;
@@ -366,7 +366,7 @@ static int restore_fpmr_context(struct user_ctxs *user)
 	return err;
 }
 
-static int preserve_poe_context(struct poe_context __user *ctx,
+static int preserve_poe_context(poe_context __user *ctx,
 				const struct user_access_state *ua_state)
 {
 	int err;
@@ -383,8 +383,8 @@ static int preserve_poe_context(struct poe_context __user *ctx,
 	return err;
 }
 
-static int restore_poe_context(struct user_ctxs *user,
-			       struct user_access_state *ua_state)
+static int restore_poe_context(user_ctxs *user,
+			       user_access_state *ua_state)
 {
 	u64 por_el0;
 	int err = 0;
@@ -401,13 +401,13 @@ static int restore_poe_context(struct user_ctxs *user,
 
 #ifdef CONFIG_ARM64_SVE
 
-static int preserve_sve_context(struct sve_context __user *ctx)
+static int preserve_sve_context(sve_context __user *ctx)
 {
 	int err = 0;
 	u16 reserved[ARRAY_SIZE(ctx->__reserved)];
 	u16 flags = 0;
-	unsigned int vl = task_get_sve_vl(current);
-	unsigned int vq = 0;
+	core::ffi::c_uint vl = task_get_sve_vl(current);
+	core::ffi::c_uint vq = 0;
 
 	if (thread_sm_enabled(&current->thread)) {
 		vl = task_get_sme_vl(current);
@@ -436,12 +436,12 @@ static int preserve_sve_context(struct sve_context __user *ctx)
 	return err ? -EFAULT : 0;
 }
 
-static int restore_sve_fpsimd_context(struct user_ctxs *user)
+static int restore_sve_fpsimd_context(user_ctxs *user)
 {
 	int err = 0;
-	unsigned int vl, vq;
+	vl: core::ffi::c_uint, vq;
 	struct user_fpsimd_state fpsimd;
-	u16 user_vl, flags;
+	user_vl: u16, flags;
 	bool sm;
 
 	if (user->sve_size < sizeof(*user->sve))
@@ -531,7 +531,7 @@ static int restore_sve_fpsimd_context(struct user_ctxs *user)
 
 #else /* ! CONFIG_ARM64_SVE */
 
-static int restore_sve_fpsimd_context(struct user_ctxs *user)
+static int restore_sve_fpsimd_context(user_ctxs *user)
 {
 	WARN_ON_ONCE(1);
 	return -EINVAL;
@@ -544,7 +544,7 @@ extern int preserve_sve_context(void __user *ctx);
 
 #ifdef CONFIG_ARM64_SME
 
-static int preserve_tpidr2_context(struct tpidr2_context __user *ctx)
+static int preserve_tpidr2_context(tpidr2_context __user *ctx)
 {
 	u64 tpidr2_el0 = read_sysreg_s(SYS_TPIDR2_EL0);
 	int err = 0;
@@ -556,7 +556,7 @@ static int preserve_tpidr2_context(struct tpidr2_context __user *ctx)
 	return err;
 }
 
-static int restore_tpidr2_context(struct user_ctxs *user)
+static int restore_tpidr2_context(user_ctxs *user)
 {
 	u64 tpidr2_el0;
 	int err = 0;
@@ -571,12 +571,12 @@ static int restore_tpidr2_context(struct user_ctxs *user)
 	return err;
 }
 
-static int preserve_za_context(struct za_context __user *ctx)
+static int preserve_za_context(za_context __user *ctx)
 {
 	int err = 0;
 	u16 reserved[ARRAY_SIZE(ctx->__reserved)];
-	unsigned int vl = task_get_sme_vl(current);
-	unsigned int vq;
+	core::ffi::c_uint vl = task_get_sme_vl(current);
+	core::ffi::c_uint vq;
 
 	if (thread_za_enabled(&current->thread))
 		vq = sve_vq_from_vl(vl);
@@ -601,10 +601,10 @@ static int preserve_za_context(struct za_context __user *ctx)
 	return err ? -EFAULT : 0;
 }
 
-static int restore_za_context(struct user_ctxs *user)
+static int restore_za_context(user_ctxs *user)
 {
 	int err = 0;
-	unsigned int vq;
+	core::ffi::c_uint vq;
 	u16 user_vl;
 
 	if (user->za_size < sizeof(*user->za))
@@ -651,7 +651,7 @@ static int restore_za_context(struct user_ctxs *user)
 	return 0;
 }
 
-static int preserve_zt_context(struct zt_context __user *ctx)
+static int preserve_zt_context(zt_context __user *ctx)
 {
 	int err = 0;
 	u16 reserved[ARRAY_SIZE(ctx->__reserved)];
@@ -675,7 +675,7 @@ static int preserve_zt_context(struct zt_context __user *ctx)
 	return err ? -EFAULT : 0;
 }
 
-static int restore_zt_context(struct user_ctxs *user)
+static int restore_zt_context(user_ctxs *user)
 {
 	int err;
 	u16 nregs;
@@ -707,17 +707,17 @@ static int restore_zt_context(struct user_ctxs *user)
 
 /* Turn any non-optimised out attempts to use these into a link error: */
 extern int preserve_tpidr2_context(void __user *ctx);
-extern int restore_tpidr2_context(struct user_ctxs *user);
+extern int restore_tpidr2_context(user_ctxs *user);
 extern int preserve_za_context(void __user *ctx);
-extern int restore_za_context(struct user_ctxs *user);
+extern int restore_za_context(user_ctxs *user);
 extern int preserve_zt_context(void __user *ctx);
-extern int restore_zt_context(struct user_ctxs *user);
+extern int restore_zt_context(user_ctxs *user);
 
 #endif /* ! CONFIG_ARM64_SME */
 
 #ifdef CONFIG_ARM64_GCS
 
-static int preserve_gcs_context(struct gcs_context __user *ctx)
+static int preserve_gcs_context(gcs_context __user *ctx)
 {
 	int err = 0;
 	u64 gcspr = read_sysreg_s(SYS_GCSPR_EL0);
@@ -742,9 +742,9 @@ static int preserve_gcs_context(struct gcs_context __user *ctx)
 	return err;
 }
 
-static int restore_gcs_context(struct user_ctxs *user)
+static int restore_gcs_context(user_ctxs *user)
 {
-	u64 gcspr, enabled;
+	gcspr: u64, enabled;
 	int err = 0;
 
 	if (user->gcs_size != sizeof(*user->gcs))
@@ -787,12 +787,12 @@ static int restore_gcs_context(struct user_ctxs *user)
 
 /* Turn any non-optimised out attempts to use these into a link error: */
 extern int preserve_gcs_context(void __user *ctx);
-extern int restore_gcs_context(struct user_ctxs *user);
+extern int restore_gcs_context(user_ctxs *user);
 
 #endif /* ! CONFIG_ARM64_GCS */
 
-static int parse_user_sigframe(struct user_ctxs *user,
-			       struct rt_sigframe __user *sf)
+static int parse_user_sigframe(user_ctxs *user,
+			       rt_sigframe __user *sf)
 {
 	struct sigcontext __user *const sc = &sf->uc.uc_mcontext;
 	struct _aarch64_ctx __user *head;
@@ -811,18 +811,18 @@ static int parse_user_sigframe(struct user_ctxs *user,
 	user->poe = NULL;
 	user->gcs = NULL;
 
-	if (!IS_ALIGNED((unsigned long)base, 16))
+	if (!IS_ALIGNED((core::ffi::c_ulong)base, 16))
 		goto invalid;
 
 	while (1) {
 		int err = 0;
-		u32 magic, size;
+		magic: u32, size;
 		char const __user *userp;
 		struct extra_context const __user *extra;
 		u64 extra_datap;
 		u32 extra_size;
 		struct _aarch64_ctx const __user *end;
-		u32 end_magic, end_size;
+		end_magic: u32, end_size;
 
 		if (limit - offset < sizeof(*head))
 			goto invalid;
@@ -830,7 +830,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 		if (!IS_ALIGNED(offset, 16))
 			goto invalid;
 
-		head = (struct _aarch64_ctx __user *)(base + offset);
+		head = (_aarch64_ctx __user *)(base + offset);
 		__get_user_error(magic, &head->magic, err);
 		__get_user_error(size, &head->size, err);
 		if (err)
@@ -852,7 +852,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->fpsimd)
 				goto invalid;
 
-			user->fpsimd = (struct fpsimd_context __user *)head;
+			user->fpsimd = (fpsimd_context __user *)head;
 			user->fpsimd_size = size;
 			break;
 
@@ -867,7 +867,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->poe)
 				goto invalid;
 
-			user->poe = (struct poe_context __user *)head;
+			user->poe = (poe_context __user *)head;
 			user->poe_size = size;
 			break;
 
@@ -878,7 +878,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->sve)
 				goto invalid;
 
-			user->sve = (struct sve_context __user *)head;
+			user->sve = (sve_context __user *)head;
 			user->sve_size = size;
 			break;
 
@@ -889,7 +889,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->tpidr2)
 				goto invalid;
 
-			user->tpidr2 = (struct tpidr2_context __user *)head;
+			user->tpidr2 = (tpidr2_context __user *)head;
 			user->tpidr2_size = size;
 			break;
 
@@ -900,7 +900,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->za)
 				goto invalid;
 
-			user->za = (struct za_context __user *)head;
+			user->za = (za_context __user *)head;
 			user->za_size = size;
 			break;
 
@@ -911,7 +911,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->zt)
 				goto invalid;
 
-			user->zt = (struct zt_context __user *)head;
+			user->zt = (zt_context __user *)head;
 			user->zt_size = size;
 			break;
 
@@ -922,7 +922,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->fpmr)
 				goto invalid;
 
-			user->fpmr = (struct fpmr_context __user *)head;
+			user->fpmr = (fpmr_context __user *)head;
 			user->fpmr_size = size;
 			break;
 
@@ -933,7 +933,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (user->gcs)
 				goto invalid;
 
-			user->gcs = (struct gcs_context __user *)head;
+			user->gcs = (gcs_context __user *)head;
 			user->gcs_size = size;
 			break;
 
@@ -946,7 +946,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 
 			userp = (char const __user *)head;
 
-			extra = (struct extra_context const __user *)userp;
+			extra = (extra_context const __user *)userp;
 			userp += size;
 
 			__get_user_error(extra_datap, &extra->datap, err);
@@ -959,7 +959,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			if (limit - offset - size < TERMINATOR_SIZE)
 				goto invalid;
 
-			end = (struct _aarch64_ctx const __user *)userp;
+			end = (_aarch64_ctx const __user *)userp;
 			userp += TERMINATOR_SIZE;
 
 			__get_user_error(end_magic, &end->magic, err);
@@ -974,7 +974,7 @@ static int parse_user_sigframe(struct user_ctxs *user,
 			have_extra_context = true;
 
 			base = (__force void __user *)extra_datap;
-			if (!IS_ALIGNED((unsigned long)base, 16))
+			if (!IS_ALIGNED((core::ffi::c_ulong)base, 16))
 				goto invalid;
 
 			if (!IS_ALIGNED(extra_size, 16))
@@ -1019,9 +1019,9 @@ invalid:
 	return -EINVAL;
 }
 
-static int restore_sigframe(struct pt_regs *regs,
-			    struct rt_sigframe __user *sf,
-			    struct user_access_state *ua_state)
+static int restore_sigframe(pt_regs *regs,
+			    rt_sigframe __user *sf,
+			    user_access_state *ua_state)
 {
 	sigset_t set;
 	int i, err;
@@ -1083,7 +1083,7 @@ static int restore_sigframe(struct pt_regs *regs,
 #ifdef CONFIG_ARM64_GCS
 static int gcs_restore_signal(void)
 {
-	u64 gcspr_el0, cap;
+	gcspr_el0: u64, cap;
 	int ret;
 
 	if (!system_supports_gcs())
@@ -1107,7 +1107,7 @@ static int gcs_restore_signal(void)
 	 * then faults will be generated on GCS operations - the main
 	 * concern is to protect GCS pages.
 	 */
-	ret = copy_from_user(&cap, (unsigned long __user *)gcspr_el0,
+	ret = copy_from_user(&cap, (core::ffi::c_ulong __user *)gcspr_el0,
 			     sizeof(cap));
 	if (ret)
 		return -EFAULT;
@@ -1119,7 +1119,7 @@ static int gcs_restore_signal(void)
 		return -EINVAL;
 
 	/* Invalidate the token to prevent reuse */
-	put_user_gcs(0, (unsigned long __user *)gcspr_el0, &ret);
+	put_user_gcs(0, (core::ffi::c_ulong __user *)gcspr_el0, &ret);
 	if (ret != 0)
 		return -EFAULT;
 
@@ -1139,7 +1139,7 @@ SYSCALL_DEFINE0(rt_sigreturn)
 	struct user_access_state ua_state = {};
 
 	/* Always make any pending restarted system calls return -EINTR */
-	current->restart_block.fn = do_no_restart_syscall;
+	current->restart_block.r#fn = do_no_restart_syscall;
 
 	/*
 	 * Since we stacked the signal on a 128-bit boundary, then 'sp' should
@@ -1148,7 +1148,7 @@ SYSCALL_DEFINE0(rt_sigreturn)
 	if (regs->sp & 15)
 		goto badframe;
 
-	frame = (struct rt_sigframe __user *)regs->sp;
+	frame = (rt_sigframe __user *)regs->sp;
 
 	if (!access_ok(frame, sizeof (*frame)))
 		goto badframe;
@@ -1178,14 +1178,14 @@ badframe:
  *	this task; otherwise, generates a layout for the current state
  *	of the task.
  */
-static int setup_sigframe_layout(struct rt_sigframe_user_layout *user,
-				 bool add_all)
+static int setup_sigframe_layout(rt_sigframe_user_layout *user,
+				 add_all: bool)
 {
 	int err;
 
 	if (system_supports_fpsimd()) {
 		err = sigframe_alloc(user, &user->fpsimd_offset,
-				     sizeof(struct fpsimd_context));
+				     sizeof(fpsimd_context));
 		if (err)
 			return err;
 	}
@@ -1193,7 +1193,7 @@ static int setup_sigframe_layout(struct rt_sigframe_user_layout *user,
 	/* fault information, if valid */
 	if (add_all || current->thread.fault_code) {
 		err = sigframe_alloc(user, &user->esr_offset,
-				     sizeof(struct esr_context));
+				     sizeof(esr_context));
 		if (err)
 			return err;
 	}
@@ -1201,14 +1201,14 @@ static int setup_sigframe_layout(struct rt_sigframe_user_layout *user,
 #ifdef CONFIG_ARM64_GCS
 	if (system_supports_gcs() && (add_all || current->thread.gcspr_el0)) {
 		err = sigframe_alloc(user, &user->gcs_offset,
-				     sizeof(struct gcs_context));
+				     sizeof(gcs_context));
 		if (err)
 			return err;
 	}
 #endif
 
 	if (system_supports_sve() || system_supports_sme()) {
-		unsigned int vq = 0;
+		core::ffi::c_uint vq = 0;
 
 		if (add_all || current->thread.fp_type == FP_STATE_SVE ||
 		    thread_sm_enabled(&current->thread)) {
@@ -1228,14 +1228,14 @@ static int setup_sigframe_layout(struct rt_sigframe_user_layout *user,
 
 	if (system_supports_tpidr2()) {
 		err = sigframe_alloc(user, &user->tpidr2_offset,
-				     sizeof(struct tpidr2_context));
+				     sizeof(tpidr2_context));
 		if (err)
 			return err;
 	}
 
 	if (system_supports_sme()) {
-		unsigned int vl;
-		unsigned int vq = 0;
+		core::ffi::c_uint vl;
+		core::ffi::c_uint vq = 0;
 
 		if (add_all)
 			vl = sme_max_vl();
@@ -1262,14 +1262,14 @@ static int setup_sigframe_layout(struct rt_sigframe_user_layout *user,
 
 	if (system_supports_fpmr()) {
 		err = sigframe_alloc(user, &user->fpmr_offset,
-				     sizeof(struct fpmr_context));
+				     sizeof(fpmr_context));
 		if (err)
 			return err;
 	}
 
 	if (system_supports_poe()) {
 		err = sigframe_alloc(user, &user->poe_offset,
-				     sizeof(struct poe_context));
+				     sizeof(poe_context));
 		if (err)
 			return err;
 	}
@@ -1277,8 +1277,8 @@ static int setup_sigframe_layout(struct rt_sigframe_user_layout *user,
 	return sigframe_alloc_end(user);
 }
 
-static int setup_sigframe(struct rt_sigframe_user_layout *user,
-			  struct pt_regs *regs, sigset_t *set,
+static int setup_sigframe(rt_sigframe_user_layout *user,
+			  pt_regs *regs, sigset_t *set,
 			  const struct user_access_state *ua_state)
 {
 	int i, err = 0;
@@ -1374,10 +1374,10 @@ static int setup_sigframe(struct rt_sigframe_user_layout *user,
 		u64 extra_datap;
 		u32 extra_size;
 
-		extra = (struct extra_context __user *)userp;
+		extra = (extra_context __user *)userp;
 		userp += EXTRA_CONTEXT_SIZE;
 
-		end = (struct _aarch64_ctx __user *)userp;
+		end = (_aarch64_ctx __user *)userp;
 		userp += TERMINATOR_SIZE;
 
 		/*
@@ -1410,10 +1410,10 @@ static int setup_sigframe(struct rt_sigframe_user_layout *user,
 	return err;
 }
 
-static int get_sigframe(struct rt_sigframe_user_layout *user,
-			 struct ksignal *ksig, struct pt_regs *regs)
+static int get_sigframe(rt_sigframe_user_layout *user,
+			 ksignal *ksig, pt_regs *regs)
 {
-	unsigned long sp, sp_top;
+	sp: core::ffi::c_ulong, sp_top;
 	int err;
 
 	init_user_layout(user);
@@ -1423,11 +1423,11 @@ static int get_sigframe(struct rt_sigframe_user_layout *user,
 
 	sp = sp_top = sigsp(regs->sp, ksig);
 
-	sp = round_down(sp - sizeof(struct frame_record), 16);
-	user->next_frame = (struct frame_record __user *)sp;
+	sp = round_down(sp - sizeof(frame_record), 16);
+	user->next_frame = (frame_record __user *)sp;
 
 	sp = round_down(sp, 16) - sigframe_size(user);
-	user->sigframe = (struct rt_sigframe __user *)sp;
+	user->sigframe = (rt_sigframe __user *)sp;
 
 	/*
 	 * Check that we can actually write to the signal frame.
@@ -1440,7 +1440,7 @@ static int get_sigframe(struct rt_sigframe_user_layout *user,
 
 #ifdef CONFIG_ARM64_GCS
 
-static int gcs_signal_entry(__sigrestore_t sigtramp, struct ksignal *ksig)
+static int gcs_signal_entry(__sigrestore_t sigtramp, ksignal *ksig)
 {
 	u64 gcspr_el0;
 	int ret = 0;
@@ -1460,10 +1460,10 @@ static int gcs_signal_entry(__sigrestore_t sigtramp, struct ksignal *ksig)
 	/*
 	 * Push a cap and the GCS entry for the trampoline onto the GCS.
 	 */
-	put_user_gcs((unsigned long)sigtramp,
-		     (unsigned long __user *)(gcspr_el0 - 16), &ret);
+	put_user_gcs((core::ffi::c_ulong)sigtramp,
+		     (core::ffi::c_ulong __user *)(gcspr_el0 - 16), &ret);
 	put_user_gcs(GCS_SIGNAL_CAP(gcspr_el0 - 8),
-		     (unsigned long __user *)(gcspr_el0 - 8), &ret);
+		     (core::ffi::c_ulong __user *)(gcspr_el0 - 8), &ret);
 	if (ret != 0)
 		return ret;
 
@@ -1474,15 +1474,15 @@ static int gcs_signal_entry(__sigrestore_t sigtramp, struct ksignal *ksig)
 }
 #else
 
-static int gcs_signal_entry(__sigrestore_t sigtramp, struct ksignal *ksig)
+static int gcs_signal_entry(__sigrestore_t sigtramp, ksignal *ksig)
 {
 	return 0;
 }
 
 #endif
 
-static int setup_return(struct pt_regs *regs, struct ksignal *ksig,
-			 struct rt_sigframe_user_layout *user, int usig)
+static int setup_return(pt_regs *regs, ksignal *ksig,
+			 rt_sigframe_user_layout *user, int usig)
 {
 	__sigrestore_t sigtramp;
 	int err;
@@ -1506,13 +1506,13 @@ static int setup_return(struct pt_regs *regs, struct ksignal *ksig,
 
 	regs->regs[0] = usig;
 	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
-		regs->regs[1] = (unsigned long)&user->sigframe->info;
-		regs->regs[2] = (unsigned long)&user->sigframe->uc;
+		regs->regs[1] = (core::ffi::c_ulong)&user->sigframe->info;
+		regs->regs[2] = (core::ffi::c_ulong)&user->sigframe->uc;
 	}
-	regs->sp = (unsigned long)user->sigframe;
-	regs->regs[29] = (unsigned long)&user->next_frame->fp;
-	regs->regs[30] = (unsigned long)sigtramp;
-	regs->pc = (unsigned long)ksig->ka.sa.sa_handler;
+	regs->sp = (core::ffi::c_ulong)user->sigframe;
+	regs->regs[29] = (core::ffi::c_ulong)&user->next_frame->fp;
+	regs->regs[30] = (core::ffi::c_ulong)sigtramp;
+	regs->pc = (core::ffi::c_ulong)ksig->ka.sa.sa_handler;
 
 	/*
 	 * Signal delivery is a (wacky) indirect function call in
@@ -1543,8 +1543,8 @@ static int setup_return(struct pt_regs *regs, struct ksignal *ksig,
 	return 0;
 }
 
-static int setup_rt_frame(int usig, struct ksignal *ksig, sigset_t *set,
-			  struct pt_regs *regs)
+static int setup_rt_frame(int usig, ksignal *ksig, sigset_t *set,
+			  pt_regs *regs)
 {
 	struct rt_sigframe_user_layout user;
 	struct rt_sigframe __user *frame;
@@ -1583,7 +1583,7 @@ static int setup_rt_frame(int usig, struct ksignal *ksig, sigset_t *set,
 	return err;
 }
 
-static void setup_restart_syscall(struct pt_regs *regs)
+static void setup_restart_syscall(pt_regs *regs)
 {
 	if (is_compat_task())
 		compat_setup_restart_syscall(regs);
@@ -1594,7 +1594,7 @@ static void setup_restart_syscall(struct pt_regs *regs)
 /*
  * OK, we're invoking a handler
  */
-static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+static void handle_signal(ksignal *ksig, pt_regs *regs)
 {
 	sigset_t *oldset = sigmask_to_save();
 	int usig = ksig->sig;
@@ -1632,9 +1632,9 @@ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
  * the kernel can handle, and then we build all the user-level signal handling
  * stack-frames in one go after that.
  */
-void arch_do_signal_or_restart(struct pt_regs *regs)
+void arch_do_signal_or_restart(pt_regs *regs)
 {
-	unsigned long continue_addr = 0, restart_addr = 0;
+	core::ffi::c_ulong continue_addr = 0, restart_addr = 0;
 	int retval = 0;
 	struct ksignal ksig;
 	bool syscall = in_syscall(regs);
@@ -1703,7 +1703,7 @@ void arch_do_signal_or_restart(struct pt_regs *regs)
 	restore_saved_sigmask();
 }
 
-unsigned long __ro_after_init signal_minsigstksz;
+core::ffi::c_ulong __ro_after_init signal_minsigstksz;
 
 /*
  * Determine the stack space required for guaranteed signal devliery.
@@ -1724,7 +1724,7 @@ void __init minsigstksz_setup(void)
 		return;
 
 	signal_minsigstksz = sigframe_size(&user) +
-		round_up(sizeof(struct frame_record), 16) +
+		round_up(sizeof(frame_record), 16) +
 		16; /* max alignment padding */
 }
 

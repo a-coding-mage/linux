@@ -115,9 +115,9 @@ pub unsafe extern "C" fn sync_counter() {
 #[no_mangle]
 pub unsafe extern "C" fn constant_clockevent_init() -> i32 {
     let cpu: u32 = smp_processor_id() as u32;
-    #[cfg(feature = "CONFIG_PREEMPT_RT")]
+    #[cfg(CONFIG_PREEMPT_RT)]
     let min_delta: usize = 100;
-    #[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(not(CONFIG_PREEMPT_RT))]
     let min_delta: usize = 1000;
     let max_delta: usize = GENMASK_ULL(boot_cpu_data.timerbits, 0);
     let cd: *mut clock_event_device;

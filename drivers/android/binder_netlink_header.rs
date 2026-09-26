@@ -9,7 +9,7 @@
 
 pub const BINDER_NLGRP_REPORT: i32 = 0;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut binder_nl_family: genl_family;
 }
 

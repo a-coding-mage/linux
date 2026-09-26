@@ -18,69 +18,69 @@
 // External kernel dependencies are supplied by the surrounding crate.
 // External kernel dependencies are supplied by the surrounding crate.
 
-*mut struct sgx_va_page sgx_encl_grow(*mut struct sgx_encl encl, bool reclaim)
+*mut sgx_va_page sgx_encl_grow(*mut sgx_encl encl, bool reclaim)
 {
-	*mut struct sgx_va_page va_page = NULL;
+	*mut sgx_va_page va_page = NULL;
 	*mut core::ffi::c_void err;
 
 	BUILD_BUG_ON(SGX_VA_SLOT_COUNT !=
 		(SGX_ENCL_PAGE_VA_OFFSET_MASK >> 3) + 1);
 
-	if (!(encl->page_cnt % SGX_VA_SLOT_COUNT)) {
+	if (!((*encl).page_cnt % SGX_VA_SLOT_COUNT)) {
 		va_page = kzalloc_obj(*va_page);
 		if (!va_page)
 			return ERR_PTR(-ENOMEM);
 
-		va_page->epc_page = sgx_alloc_va_page(reclaim);
-		if (IS_ERR(va_page->epc_page)) {
-			err = ERR_CAST(va_page->epc_page);
+		(*va_page).epc_page = sgx_alloc_va_page(reclaim);
+		if (IS_ERR((*va_page).epc_page)) {
+			err = ERR_CAST((*va_page).epc_page);
 			kfree(va_page);
 			return err;
 		}
 
-		WARN_ON_ONCE(encl->page_cnt % SGX_VA_SLOT_COUNT);
+		WARN_ON_ONCE((*encl).page_cnt % SGX_VA_SLOT_COUNT);
 	}
-	encl->page_cnt++;
+	(*encl).page_cnt++;
 	return va_page;
 }
 
-void sgx_encl_shrink(*mut struct sgx_encl encl, *mut struct sgx_va_page va_page)
+void sgx_encl_shrink(*mut sgx_encl encl, *mut sgx_va_page va_page)
 {
-	encl->page_cnt--;
+	(*encl).page_cnt--;
 
 	if (va_page) {
-		sgx_encl_free_epc_page(va_page->epc_page);
-		list_del(&va_page->list);
+		sgx_encl_free_epc_page((*va_page).epc_page);
+		list_del((*&va_page).list);
 		kfree(va_page);
 	}
 }
 
-static i32 sgx_encl_create(*mut struct sgx_encl encl, *mut struct sgx_secs secs)
+static i32 sgx_encl_create(*mut sgx_encl encl, *mut sgx_secs secs)
 {
-	*mut let mut secs_epc: let mut _opaque: struct sgx_epc_page;
-	*mut let mut va_page: let mut _opaque: struct sgx_va_page;
-	let mut pginfo: let mut _opaque: struct sgx_pageinfo;
-	let mut secinfo: let mut _opaque: struct sgx_secinfo;
+	*mut let mut secs_epc: let mut _opaque: sgx_epc_page;
+	*mut let mut va_page: let mut _opaque: sgx_va_page;
+	let mut pginfo: let mut _opaque: sgx_pageinfo;
+	let mut secinfo: let mut _opaque: sgx_secinfo;
 	usize encl_size;
-	*mut let mut backing: let mut _opaque: struct file;
+	*mut let mut backing: let mut _opaque: file;
 	isize ret;
 
 	/*
 	 * ECREATE would detect this too, but checking here also ensures
 	 * that the 'encl_size' calculations below can never overflow.
 	 */
-	if (!is_power_of_2(secs->size))
+	if (!is_power_of_2((*secs).size))
 		return -EINVAL;
 
 	va_page = sgx_encl_grow(encl, true);
 	if (IS_ERR(va_page))
 		return PTR_ERR(va_page);
 	else if (va_page)
-		list_add(&va_page->list, &encl->va_pages);
+		list_add((*&va_page).list, (*&encl).va_pages);
 	/* else the tail page of the VA page list had free slots. */
 
 	/* The extra page goes to SECS. */
-	encl_size = secs->size + PAGE_SIZE;
+	encl_size = (*secs).size + PAGE_SIZE;
 
 	backing = shmem_file_setup("SGX backing", encl_size + (encl_size >> 5),
 				   mk_vma_flags(VMA_NORESERVE_BIT));
@@ -89,15 +89,15 @@ static i32 sgx_encl_create(*mut struct sgx_encl encl, *mut struct sgx_secs secs)
 		goto err_out_shrink;
 	}
 
-	encl->backing = backing;
+	(*encl).backing = backing;
 
-	secs_epc = sgx_alloc_epc_page(&encl->secs, true);
+	secs_epc = sgx_alloc_epc_page((*&encl).secs, true);
 	if (IS_ERR(secs_epc)) {
 		ret = PTR_ERR(secs_epc);
 		goto err_out_backing;
 	}
 
-	encl->secs.epc_page = secs_epc;
+	(*encl).secs.epc_page = secs_epc;
 
 	pginfo.addr = 0;
 	pginfo.contents = (usize)secs;
@@ -111,28 +111,28 @@ static i32 sgx_encl_create(*mut struct sgx_encl encl, *mut struct sgx_secs secs)
 		goto err_out;
 	}
 
-	if (secs->attributes & SGX_ATTR_DEBUG)
-		set_bit(SGX_ENCL_DEBUG, &encl->flags);
+	if ((*secs).attributes & SGX_ATTR_DEBUG)
+		set_bit(SGX_ENCL_DEBUG, (*&encl).flags);
 
-	encl->secs.encl = encl;
-	encl->secs.type = SGX_PAGE_TYPE_SECS;
-	encl->base = secs->base;
-	encl->size = secs->size;
-	encl->attributes = secs->attributes;
-	encl->attributes_mask = SGX_ATTR_UNPRIV_MASK;
+	(*encl).secs.encl = encl;
+	(*encl).secs.r#type = SGX_PAGE_TYPE_SECS;
+	(*encl).base = (*secs).base;
+	(*encl).size = (*secs).size;
+	(*encl).attributes = (*secs).attributes;
+	(*encl).attributes_mask = SGX_ATTR_UNPRIV_MASK;
 
 	/* Set only after completion, as encl->lock has not been taken. */
-	set_bit(SGX_ENCL_CREATED, &encl->flags);
+	set_bit(SGX_ENCL_CREATED, (*&encl).flags);
 
 	return 0;
 
 err_out:
-	sgx_encl_free_epc_page(encl->secs.epc_page);
-	encl->secs.epc_page = NULL;
+	sgx_encl_free_epc_page((*encl).secs.epc_page);
+	(*encl).secs.epc_page = NULL;
 
 err_out_backing:
-	fput(encl->backing);
-	encl->backing = NULL;
+	fput((*encl).backing);
+	(*encl).backing = NULL;
 
 err_out_shrink:
 	sgx_encl_shrink(encl, va_page);
@@ -152,13 +152,13 @@ err_out_shrink:
  * - -EIO:	ECREATE failed.
  * - -errno:	POSIX error.
  */
-static isize sgx_ioc_enclave_create(*mut struct sgx_encl encl, *mut core::ffi::c_void arg)
+static isize sgx_ioc_enclave_create(*mut sgx_encl encl, *mut core::ffi::c_void arg)
 {
-	let mut create_arg: let mut _opaque: struct sgx_enclave_create;
+	let mut create_arg: let mut _opaque: sgx_enclave_create;
 	*mut core::ffi::c_void secs;
 	i32 ret;
 
-	if (test_bit(SGX_ENCL_CREATED, &encl->flags))
+	if (test_bit(SGX_ENCL_CREATED, (*&encl).flags))
 		return -EINVAL;
 
 	if (copy_from_user(&create_arg, arg, sizeof(create_arg)))
@@ -177,10 +177,10 @@ static isize sgx_ioc_enclave_create(*mut struct sgx_encl encl, *mut core::ffi::c
 	return ret;
 }
 
-static i32 sgx_validate_secinfo(*mut struct sgx_secinfo secinfo)
+static i32 sgx_validate_secinfo(*mut sgx_secinfo secinfo)
 {
-	u64 perm = secinfo->flags & SGX_SECINFO_PERMISSION_MASK;
-	u64 pt   = secinfo->flags & SGX_SECINFO_PAGE_TYPE_MASK;
+	u64 perm = (*secinfo).flags & SGX_SECINFO_PERMISSION_MASK;
+	u64 pt   = (*secinfo).flags & SGX_SECINFO_PAGE_TYPE_MASK;
 
 	if (pt != SGX_SECINFO_REG && pt != SGX_SECINFO_TCS)
 		return -EINVAL;
@@ -195,39 +195,39 @@ static i32 sgx_validate_secinfo(*mut struct sgx_secinfo secinfo)
 	if (pt == SGX_SECINFO_TCS && perm)
 		return -EINVAL;
 
-	if (secinfo->flags & SGX_SECINFO_RESERVED_MASK)
+	if ((*secinfo).flags & SGX_SECINFO_RESERVED_MASK)
 		return -EINVAL;
 
-	if (memchr_inv(secinfo->reserved, 0, sizeof(secinfo->reserved)))
+	if (memchr_inv((*secinfo).reserved, 0, sizeof((*secinfo).reserved)))
 		return -EINVAL;
 
 	return 0;
 }
 
-static i32 __sgx_encl_add_page(*mut struct sgx_encl encl,
-			       *mut struct sgx_encl_page encl_page,
-			       *mut struct sgx_epc_page epc_page,
-			       *mut struct sgx_secinfo secinfo, usize src)
+static i32 __sgx_encl_add_page(*mut sgx_encl encl,
+			       *mut sgx_encl_page encl_page,
+			       *mut sgx_epc_page epc_page,
+			       *mut sgx_secinfo secinfo, usize src)
 {
-	let mut pginfo: let mut _opaque: struct sgx_pageinfo;
-	*mut let mut vma: let mut _opaque: struct vm_area_struct;
-	*mut let mut src_page: let mut _opaque: struct page;
+	let mut pginfo: let mut _opaque: sgx_pageinfo;
+	*mut let mut vma: let mut _opaque: vm_area_struct;
+	*mut let mut src_page: let mut _opaque: page;
 	i32 ret;
 
 	/* Deny noexec. */
-	vma = find_vma(current->mm, src);
+	vma = find_vma((*current).mm, src);
 	if (!vma)
 		return -EFAULT;
 
-	if (!(vma->vm_flags & VM_MAYEXEC))
+	if (!((*vma).vm_flags & VM_MAYEXEC))
 		return -EACCES;
 
 	ret = get_user_pages(src, 1, 0, &src_page);
 	if (ret < 1)
 		return -EFAULT;
 
-	pginfo.secs = (usize)sgx_get_epc_virt_addr(encl->secs.epc_page);
-	pginfo.addr = encl_page->desc & PAGE_MASK;
+	pginfo.secs = (usize)sgx_get_epc_virt_addr((*encl).secs.epc_page);
+	pginfo.addr = (*encl_page).desc & PAGE_MASK;
 	pginfo.metadata = (usize)secinfo;
 	pginfo.contents = (usize)kmap_local_page(src_page);
 
@@ -244,14 +244,14 @@ static i32 __sgx_encl_add_page(*mut struct sgx_encl encl,
  * use EEXTEND to add a measurement for 256 bytes of the page. Repeat this
  * operation until the entire page is measured.
  */
-static i32 __sgx_encl_extend(*mut struct sgx_encl encl,
-			     *mut struct sgx_epc_page epc_page)
+static i32 __sgx_encl_extend(*mut sgx_encl encl,
+			     *mut sgx_epc_page epc_page)
 {
 	usize offset;
 	i32 ret;
 
 	for (offset = 0; offset < PAGE_SIZE; offset += SGX_EEXTEND_BLOCK_SIZE) {
-		ret = __eextend(sgx_get_epc_virt_addr(encl->secs.epc_page),
+		ret = __eextend(sgx_get_epc_virt_addr((*encl).secs.epc_page),
 				sgx_get_epc_virt_addr(epc_page) + offset);
 		if (ret) {
 			if (encls_failed(ret))
@@ -264,16 +264,16 @@ static i32 __sgx_encl_extend(*mut struct sgx_encl encl,
 	return 0;
 }
 
-static i32 sgx_encl_add_page(*mut struct sgx_encl encl, usize src,
-			     usize offset, *mut struct sgx_secinfo secinfo,
-			     usize flags)
+static i32 sgx_encl_add_page(*mut sgx_encl encl, src: usize,
+			     offset: usize, *mut sgx_secinfo secinfo,
+			     flags: usize)
 {
-	*mut let mut encl_page: let mut _opaque: struct sgx_encl_page;
-	*mut let mut epc_page: let mut _opaque: struct sgx_epc_page;
-	*mut let mut va_page: let mut _opaque: struct sgx_va_page;
+	*mut let mut encl_page: let mut _opaque: sgx_encl_page;
+	*mut let mut epc_page: let mut _opaque: sgx_epc_page;
+	*mut let mut va_page: let mut _opaque: sgx_va_page;
 	i32 ret;
 
-	encl_page = sgx_encl_page_alloc(encl, offset, secinfo->flags);
+	encl_page = sgx_encl_page_alloc(encl, offset, (*secinfo).flags);
 	if (IS_ERR(encl_page))
 		return PTR_ERR(encl_page);
 
@@ -289,22 +289,22 @@ static i32 sgx_encl_add_page(*mut struct sgx_encl encl, usize src,
 		goto err_out_free;
 	}
 
-	mmap_read_lock(current->mm);
-	mutex_lock(&encl->lock);
+	mmap_read_lock((*current).mm);
+	mutex_lock((*&encl).lock);
 
 	/*
 	 * Adding to encl->va_pages must be done under encl->lock.  Ditto for
 	 * deleting (via sgx_encl_shrink()) in the error path.
 	 */
 	if (va_page)
-		list_add(&va_page->list, &encl->va_pages);
+		list_add((*&va_page).list, (*&encl).va_pages);
 
 	/*
 	 * Insert prior to EADD in case of OOM.  EADD modifies MRENCLAVE, i.e.
 	 * can't be gracefully unwound, while failure on EADD/EXTEND is limited
 	 * to userspace errors (or kernel/hardware bugs).
 	 */
-	ret = xa_insert(&encl->page_array, PFN_DOWN(encl_page->desc),
+	ret = xa_insert((*&encl).page_array, PFN_DOWN((*encl_page).desc),
 			encl_page, GFP_KERNEL);
 	if (ret)
 		goto err_out_unlock;
@@ -319,10 +319,10 @@ static i32 sgx_encl_add_page(*mut struct sgx_encl encl, usize src,
 	 * isn't in a half-baked state in the extremely unlikely scenario
 	 * the enclave will be destroyed in response to EEXTEND failure.
 	 */
-	encl_page->encl = encl;
-	encl_page->epc_page = epc_page;
-	encl_page->type = (secinfo->flags & SGX_SECINFO_PAGE_TYPE_MASK) >> 8;
-	encl->secs_child_cnt++;
+	(*encl_page).encl = encl;
+	(*encl_page).epc_page = epc_page;
+	(*encl_page).type = ((*secinfo).flags & SGX_SECINFO_PAGE_TYPE_MASK) >> 8;
+	(*encl).secs_child_cnt++;
 
 	if (flags & SGX_PAGE_MEASURE) {
 		ret = __sgx_encl_extend(encl, epc_page);
@@ -330,18 +330,18 @@ static i32 sgx_encl_add_page(*mut struct sgx_encl encl, usize src,
 			goto err_out;
 	}
 
-	sgx_mark_page_reclaimable(encl_page->epc_page);
-	mutex_unlock(&encl->lock);
-	mmap_read_unlock(current->mm);
+	sgx_mark_page_reclaimable((*encl_page).epc_page);
+	mutex_unlock((*&encl).lock);
+	mmap_read_unlock((*current).mm);
 	return ret;
 
 err_out:
-	xa_erase(&encl->page_array, PFN_DOWN(encl_page->desc));
+	xa_erase((*&encl).page_array, PFN_DOWN((*encl_page).desc));
 
 err_out_unlock:
 	sgx_encl_shrink(encl, va_page);
-	mutex_unlock(&encl->lock);
-	mmap_read_unlock(current->mm);
+	mutex_unlock((*&encl).lock);
+	mmap_read_unlock((*current).mm);
 
 err_out_free:
 	sgx_encl_free_epc_page(epc_page);
@@ -354,9 +354,9 @@ err_out_free:
  * Ensure user provided offset and length values are valid for
  * an enclave.
  */
-static i32 sgx_validate_offset_length(*mut struct sgx_encl encl,
-				      usize offset,
-				      usize length)
+static i32 sgx_validate_offset_length(*mut sgx_encl encl,
+				      offset: usize,
+				      length: usize)
 {
 	if (!IS_ALIGNED(offset, PAGE_SIZE))
 		return -EINVAL;
@@ -367,7 +367,7 @@ static i32 sgx_validate_offset_length(*mut struct sgx_encl encl,
 	if (offset + length < offset)
 		return -EINVAL;
 
-	if (offset + length - PAGE_SIZE >= encl->size)
+	if (offset + length - PAGE_SIZE >= (*encl).size)
 		return -EINVAL;
 
 	return 0;
@@ -412,15 +412,15 @@ static i32 sgx_validate_offset_length(*mut struct sgx_encl encl,
  *		or power cycle.
  * - -errno:	POSIX error.
  */
-static isize sgx_ioc_enclave_add_pages(*mut struct sgx_encl encl, *mut core::ffi::c_void arg)
+static isize sgx_ioc_enclave_add_pages(*mut sgx_encl encl, *mut core::ffi::c_void arg)
 {
-	let mut add_arg: let mut _opaque: struct sgx_enclave_add_pages;
-	let mut secinfo: let mut _opaque: struct sgx_secinfo;
+	let mut add_arg: let mut _opaque: sgx_enclave_add_pages;
+	let mut secinfo: let mut _opaque: sgx_secinfo;
 	usize c;
 	i32 ret;
 
-	if (!test_bit(SGX_ENCL_CREATED, &encl->flags) ||
-	    test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
+	if (!test_bit(SGX_ENCL_CREATED, (*&encl).flags) ||
+	    test_bit(SGX_ENCL_INITIALIZED, (*&encl).flags))
 		return -EINVAL;
 
 	if (copy_from_user(&add_arg, arg, sizeof(add_arg)))
@@ -464,11 +464,12 @@ static isize sgx_ioc_enclave_add_pages(*mut struct sgx_encl encl, *mut core::ffi
 	return ret;
 }
 
-static i32 sgx_encl_init(*mut struct sgx_encl encl, *mut struct sgx_sigstruct sigstruct,
+static i32 sgx_encl_init(*mut sgx_encl encl, *mut sgx_sigstruct sigstruct,
 			 *mut core::ffi::c_void token)
 {
+	'err_out: {
 	u64 mrsigner[4];
-	i32 i, j;
+	i: i32, j;
 	*mut core::ffi::c_void addr;
 	i32 ret;
 
@@ -476,7 +477,7 @@ static i32 sgx_encl_init(*mut struct sgx_encl encl, *mut struct sgx_sigstruct si
 	 * Deny initializing enclaves with attributes (namely provisioning)
 	 * that have not been explicitly allowed.
 	 */
-	if (encl->attributes & ~encl->attributes_mask)
+	if ((*encl).attributes & ~(*encl).attributes_mask)
 		return -EACCES;
 
 	/*
@@ -487,21 +488,21 @@ static i32 sgx_encl_init(*mut struct sgx_encl encl, *mut struct sgx_sigstruct si
 	 * without it if the sigstruct->body.attributes_mask does not turn that
 	 * bit on.
 	 */
-	if (sigstruct->body.attributes & sigstruct->body.attributes_mask &
+	if ((*sigstruct).body.attributes & (*sigstruct).body.attributes_mask &
 	    sgx_attributes_reserved_mask)
 		return -EINVAL;
 
-	if (sigstruct->body.miscselect & sigstruct->body.misc_mask &
+	if ((*sigstruct).body.miscselect & (*sigstruct).body.misc_mask &
 	    sgx_misc_reserved_mask)
 		return -EINVAL;
 
-	if (sigstruct->body.xfrm & sigstruct->body.xfrm_mask &
+	if ((*sigstruct).body.xfrm & (*sigstruct).body.xfrm_mask &
 	    sgx_xfrm_reserved_mask)
 		return -EINVAL;
 
-	sha256(sigstruct->modulus, SGX_MODULUS_SIZE, (u8 *)mrsigner);
+	sha256((*sigstruct).modulus, SGX_MODULUS_SIZE, (u8 *)mrsigner);
 
-	mutex_lock(&encl->lock);
+	mutex_lock((*&encl).lock);
 
 	/*
 	 * ENCLS[EINIT] is interruptible because it has such a high latency,
@@ -511,7 +512,7 @@ static i32 sgx_encl_init(*mut struct sgx_encl encl, *mut struct sgx_sigstruct si
 	 */
 	for (i = 0; i < SGX_EINIT_SLEEP_COUNT; i++) {
 		for (j = 0; j < SGX_EINIT_SPIN_COUNT; j++) {
-			addr = sgx_get_epc_virt_addr(encl->secs.epc_page);
+			addr = sgx_get_epc_virt_addr((*encl).secs.epc_page);
 
 			preempt_disable();
 
@@ -534,7 +535,7 @@ static i32 sgx_encl_init(*mut struct sgx_encl encl, *mut struct sgx_sigstruct si
 
 		if (signal_pending(current)) {
 			ret = -ERESTARTSYS;
-			goto err_out;
+			break 'err_out;
 		}
 	}
 
@@ -547,11 +548,11 @@ static i32 sgx_encl_init(*mut struct sgx_encl encl, *mut struct sgx_sigstruct si
 		pr_debug("EINIT returned %d\n", ret);
 		ret = -EPERM;
 	} else {
-		set_bit(SGX_ENCL_INITIALIZED, &encl->flags);
+		set_bit(SGX_ENCL_INITIALIZED, (*&encl).flags);
 	}
-
-err_out:
-	mutex_unlock(&encl->lock);
+	}
+	
+	mutex_unlock((*&encl).lock);
 	return ret;
 }
 
@@ -570,15 +571,15 @@ err_out:
  * - -EIO:	EINIT failed because of a power cycle.
  * - -errno:	POSIX error.
  */
-static isize sgx_ioc_enclave_init(*mut struct sgx_encl encl, *mut core::ffi::c_void arg)
+static isize sgx_ioc_enclave_init(*mut sgx_encl encl, *mut core::ffi::c_void arg)
 {
-	*mut let mut sigstruct: let mut _opaque: struct sgx_sigstruct;
-	let mut init_arg: let mut _opaque: struct sgx_enclave_init;
+	*mut let mut sigstruct: let mut _opaque: sgx_sigstruct;
+	let mut init_arg: let mut _opaque: sgx_enclave_init;
 	*mut core::ffi::c_void token;
 	i32 ret;
 
-	if (!test_bit(SGX_ENCL_CREATED, &encl->flags) ||
-	    test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
+	if (!test_bit(SGX_ENCL_CREATED, (*&encl).flags) ||
+	    test_bit(SGX_ENCL_INITIALIZED, (*&encl).flags))
 		return -EINVAL;
 
 	if (copy_from_user(&init_arg, arg, sizeof(init_arg)))
@@ -609,8 +610,8 @@ static isize sgx_ioc_enclave_init(*mut struct sgx_encl encl, *mut core::ffi::c_v
 	 *
 	 * Thus, reject any other values.
 	 */
-	if (sigstruct->header.vendor != 0x0000 &&
-	    sigstruct->header.vendor != 0x8086) {
+	if ((*sigstruct).header.vendor != 0x0000 &&
+	    (*sigstruct).header.vendor != 0x8086) {
 		ret = -EINVAL;
 		goto out;
 	}
@@ -634,14 +635,14 @@ out:
  * - 0:		Success.
  * - -errno:	Otherwise.
  */
-static isize sgx_ioc_enclave_provision(*mut struct sgx_encl encl, *mut core::ffi::c_void arg)
+static isize sgx_ioc_enclave_provision(*mut sgx_encl encl, *mut core::ffi::c_void arg)
 {
-	let mut params: let mut _opaque: struct sgx_enclave_provision;
+	let mut params: let mut _opaque: sgx_enclave_provision;
 
 	if (copy_from_user(&params, arg, sizeof(params)))
 		return -EFAULT;
 
-	return sgx_set_attribute(&encl->attributes_mask, params.fd);
+	return sgx_set_attribute((*&encl).attributes_mask, params.fd);
 }
 
 /*
@@ -649,12 +650,12 @@ static isize sgx_ioc_enclave_provision(*mut struct sgx_encl encl, *mut core::ffi
  * by ensuring the hardware supports SGX2 and the enclave is initialized
  * and thus able to handle requests to modify pages within it.
  */
-static i32 sgx_ioc_sgx2_ready(*mut struct sgx_encl encl)
+static i32 sgx_ioc_sgx2_ready(*mut sgx_encl encl)
 {
 	if (!(cpu_feature_enabled(X86_FEATURE_SGX2)))
 		return -ENODEV;
 
-	if (!test_bit(SGX_ENCL_INITIALIZED, &encl->flags))
+	if (!test_bit(SGX_ENCL_INITIALIZED, (*&encl).flags))
 		return -EINVAL;
 
 	return 0;
@@ -671,12 +672,12 @@ static i32 sgx_ioc_sgx2_ready(*mut struct sgx_encl encl)
  * SGX function requiring that no cached linear-to-physical mappings
  * are present is executed until this ETRACK flow is complete.
  */
-static i32 sgx_enclave_etrack(*mut struct sgx_encl encl)
+static i32 sgx_enclave_etrack(*mut sgx_encl encl)
 {
 	*mut core::ffi::c_void epc_virt;
 	i32 ret;
 
-	epc_virt = sgx_get_epc_virt_addr(encl->secs.epc_page);
+	epc_virt = sgx_get_epc_virt_addr((*encl).secs.epc_page);
 	ret = __etrack(epc_virt);
 	if (ret) {
 		/*
@@ -713,30 +714,32 @@ static i32 sgx_enclave_etrack(*mut struct sgx_encl encl)
  * - -errno:	Otherwise.
  */
 static long
-sgx_enclave_restrict_permissions(*mut struct sgx_encl encl,
-				 *mut struct sgx_enclave_restrict_permissions modp)
+sgx_enclave_restrict_permissions(*mut sgx_encl encl,
+				 *mut sgx_enclave_restrict_permissions modp)
 {
-	*mut let mut entry: let mut _opaque: struct sgx_encl_page;
-	let mut secinfo: let mut _opaque: struct sgx_secinfo;
+	'out: {
+	'out_unlock: {
+	*mut let mut entry: let mut _opaque: sgx_encl_page;
+	let mut secinfo: let mut _opaque: sgx_secinfo;
 	usize addr;
 	usize c;
 	*mut core::ffi::c_void epc_virt;
 	i32 ret;
 
 	memset(&secinfo, 0, sizeof(secinfo));
-	secinfo.flags = modp->permissions & SGX_SECINFO_PERMISSION_MASK;
+	secinfo.flags = (*modp).permissions & SGX_SECINFO_PERMISSION_MASK;
 
-	for (c = 0 ; c < modp->length; c += PAGE_SIZE) {
-		addr = encl->base + modp->offset + c;
+	for (c = 0 ; c < (*modp).length; c += PAGE_SIZE) {
+		addr = (*encl).base + (*modp).offset + c;
 
 		sgx_reclaim_direct();
 
-		mutex_lock(&encl->lock);
+		mutex_lock((*&encl).lock);
 
 		entry = sgx_encl_load_page(encl, addr);
 		if (IS_ERR(entry)) {
 			ret = PTR_ERR(entry) == -EBUSY ? -EAGAIN : -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
 		/*
@@ -744,9 +747,9 @@ sgx_enclave_restrict_permissions(*mut struct sgx_encl encl,
 		 * SGX pages. Attempting this change on other pages will
 		 * result in #PF.
 		 */
-		if (entry->type != SGX_PAGE_TYPE_REG) {
+		if ((*entry).type != SGX_PAGE_TYPE_REG) {
 			ret = -EINVAL;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
 		/*
@@ -759,7 +762,7 @@ sgx_enclave_restrict_permissions(*mut struct sgx_encl encl,
 		 */
 
 		/* Change EPCM permissions. */
-		epc_virt = sgx_get_epc_virt_addr(entry->epc_page);
+		epc_virt = sgx_get_epc_virt_addr((*entry).epc_page);
 		ret = __emodpr(&secinfo, epc_virt);
 		if (encls_faulted(ret)) {
 			/*
@@ -772,30 +775,31 @@ sgx_enclave_restrict_permissions(*mut struct sgx_encl encl,
 			pr_err_once("EMODPR encountered exception %d\n",
 				    ENCLS_TRAPNR(ret));
 			ret = -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 		if (encls_failed(ret)) {
-			modp->result = ret;
+			(*modp).result = ret;
 			ret = -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
 		ret = sgx_enclave_etrack(encl);
 		if (ret) {
 			ret = -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
-		mutex_unlock(&encl->lock);
+		mutex_unlock((*&encl).lock);
 	}
 
 	ret = 0;
-	goto out;
-
-out_unlock:
-	mutex_unlock(&encl->lock);
-out:
-	modp->count = c;
+	break 'out;
+	}
+	
+	mutex_unlock((*&encl).lock);
+	}
+	
+	(*modp).count = c;
 
 	return ret;
 }
@@ -804,7 +808,7 @@ out:
  * sgx_ioc_enclave_restrict_permissions() - handler for
  *                                        %SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS
  * @encl:	an enclave pointer
- * @arg:	userspace pointer to a &struct sgx_enclave_restrict_permissions
+ * @arg:	userspace pointer to a &sgx_enclave_restrict_permissions
  *		instance
  *
  * SGX2 distinguishes between relaxing and restricting the enclave page
@@ -820,10 +824,10 @@ out:
  * - 0:		Success
  * - -errno:	Otherwise
  */
-static isize sgx_ioc_enclave_restrict_permissions(*mut struct sgx_encl encl,
+static isize sgx_ioc_enclave_restrict_permissions(*mut sgx_encl encl,
 						 *mut core::ffi::c_void arg)
 {
-	let mut params: let mut _opaque: struct sgx_enclave_restrict_permissions;
+	let mut params: let mut _opaque: sgx_enclave_restrict_permissions;
 	isize ret;
 
 	ret = sgx_ioc_sgx2_ready(encl);
@@ -868,20 +872,22 @@ static isize sgx_ioc_enclave_restrict_permissions(*mut struct sgx_encl encl,
  * - 0:		Success
  * - -errno:	Otherwise
  */
-static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
-				     *mut struct sgx_enclave_modify_types modt)
+static isize sgx_enclave_modify_types(*mut sgx_encl encl,
+				     *mut sgx_enclave_modify_types modt)
 {
+	'out: {
+	'out_unlock: {
 	usize max_prot_restore;
 	enum sgx_page_type page_type;
-	*mut let mut entry: let mut _opaque: struct sgx_encl_page;
-	let mut secinfo: let mut _opaque: struct sgx_secinfo;
+	*mut let mut entry: let mut _opaque: sgx_encl_page;
+	let mut secinfo: let mut _opaque: sgx_secinfo;
 	usize prot;
 	usize addr;
 	usize c;
 	*mut core::ffi::c_void epc_virt;
 	i32 ret;
 
-	page_type = modt->page_type & SGX_PAGE_TYPE_MASK;
+	page_type = (*modt).page_type & SGX_PAGE_TYPE_MASK;
 
 	/*
 	 * The only new page types allowed by hardware are PT_TCS and PT_TRIM.
@@ -893,17 +899,17 @@ static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
 
 	secinfo.flags = page_type << 8;
 
-	for (c = 0 ; c < modt->length; c += PAGE_SIZE) {
-		addr = encl->base + modt->offset + c;
+	for (c = 0 ; c < (*modt).length; c += PAGE_SIZE) {
+		addr = (*encl).base + (*modt).offset + c;
 
 		sgx_reclaim_direct();
 
-		mutex_lock(&encl->lock);
+		mutex_lock((*&encl).lock);
 
 		entry = sgx_encl_load_page(encl, addr);
 		if (IS_ERR(entry)) {
 			ret = PTR_ERR(entry) == -EBUSY ? -EAGAIN : -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
 		/*
@@ -912,14 +918,14 @@ static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
 		 * or SGX_PAGE_TYPE_TRIM but TCS pages can only be trimmed.
 		 * CET pages not supported yet.
 		 */
-		if (!(entry->type == SGX_PAGE_TYPE_REG ||
-		      (entry->type == SGX_PAGE_TYPE_TCS &&
+		if (!((*entry).type == SGX_PAGE_TYPE_REG ||
+		      ((*entry).type == SGX_PAGE_TYPE_TCS &&
 		       page_type == SGX_PAGE_TYPE_TRIM))) {
 			ret = -EINVAL;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
-		max_prot_restore = entry->vm_max_prot_bits;
+		max_prot_restore = (*entry).vm_max_prot_bits;
 
 		/*
 		 * Once a regular page becomes a TCS page it cannot be
@@ -929,20 +935,20 @@ static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
 		 * so, do make sure that the new page type continues to
 		 * respect the originally vetted page permissions.
 		 */
-		if (entry->type == SGX_PAGE_TYPE_REG &&
+		if ((*entry).type == SGX_PAGE_TYPE_REG &&
 		    page_type == SGX_PAGE_TYPE_TCS) {
-			if (~entry->vm_max_prot_bits & (VM_READ | VM_WRITE)) {
+			if (~(*entry).vm_max_prot_bits & (VM_READ | VM_WRITE)) {
 				ret = -EPERM;
-				goto out_unlock;
+				break 'out_unlock;
 			}
 			prot = PROT_READ | PROT_WRITE;
-			entry->vm_max_prot_bits = calc_vm_prot_bits(prot, 0);
+			(*entry).vm_max_prot_bits = calc_vm_prot_bits(prot, 0);
 
 			/*
 			 * Prevent page from being reclaimed while mutex
 			 * is released.
 			 */
-			if (sgx_unmark_page_reclaimable(entry->epc_page)) {
+			if (sgx_unmark_page_reclaimable((*entry).epc_page)) {
 				ret = -EAGAIN;
 				goto out_entry_changed;
 			}
@@ -951,17 +957,17 @@ static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
 			 * Do not keep encl->lock because of dependency on
 			 * mmap_lock acquired in sgx_zap_enclave_ptes().
 			 */
-			mutex_unlock(&encl->lock);
+			mutex_unlock((*&encl).lock);
 
 			sgx_zap_enclave_ptes(encl, addr);
 
-			mutex_lock(&encl->lock);
+			mutex_lock((*&encl).lock);
 
-			sgx_mark_page_reclaimable(entry->epc_page);
+			sgx_mark_page_reclaimable((*entry).epc_page);
 		}
 
 		/* Change EPC type */
-		epc_virt = sgx_get_epc_virt_addr(entry->epc_page);
+		epc_virt = sgx_get_epc_virt_addr((*entry).epc_page);
 		ret = __emodt(&secinfo, epc_virt);
 		if (encls_faulted(ret)) {
 			/*
@@ -977,7 +983,7 @@ static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
 			goto out_entry_changed;
 		}
 		if (encls_failed(ret)) {
-			modt->result = ret;
+			(*modt).result = ret;
 			ret = -EFAULT;
 			goto out_entry_changed;
 		}
@@ -985,23 +991,25 @@ static isize sgx_enclave_modify_types(*mut struct sgx_encl encl,
 		ret = sgx_enclave_etrack(encl);
 		if (ret) {
 			ret = -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
-		entry->type = page_type;
+		(*entry).type = page_type;
 
-		mutex_unlock(&encl->lock);
+		mutex_unlock((*&encl).lock);
 	}
 
 	ret = 0;
-	goto out;
+	break 'out;
 
 out_entry_changed:
-	entry->vm_max_prot_bits = max_prot_restore;
-out_unlock:
-	mutex_unlock(&encl->lock);
-out:
-	modt->count = c;
+	(*entry).vm_max_prot_bits = max_prot_restore;
+	}
+	
+	mutex_unlock((*&encl).lock);
+	}
+	
+	(*modt).count = c;
 
 	return ret;
 }
@@ -1009,7 +1017,7 @@ out:
 /**
  * sgx_ioc_enclave_modify_types() - handler for %SGX_IOC_ENCLAVE_MODIFY_TYPES
  * @encl:	an enclave pointer
- * @arg:	userspace pointer to a &struct sgx_enclave_modify_types instance
+ * @arg:	userspace pointer to a &sgx_enclave_modify_types instance
  *
  * Ability to change the enclave page type supports the following use cases:
  *
@@ -1029,10 +1037,10 @@ out:
  * - 0:		Success
  * - -errno:	Otherwise
  */
-static isize sgx_ioc_enclave_modify_types(*mut struct sgx_encl encl,
+static isize sgx_ioc_enclave_modify_types(*mut sgx_encl encl,
 					 *mut core::ffi::c_void arg)
 {
-	let mut params: let mut _opaque: struct sgx_enclave_modify_types;
+	let mut params: let mut _opaque: sgx_enclave_modify_types;
 	isize ret;
 
 	ret = sgx_ioc_sgx2_ready(encl);
@@ -1068,11 +1076,13 @@ static isize sgx_ioc_enclave_modify_types(*mut struct sgx_encl encl,
  * - 0:		Success.
  * - -errno:	Otherwise.
  */
-static isize sgx_encl_remove_pages(*mut struct sgx_encl encl,
-				  *mut struct sgx_enclave_remove_pages params)
+static isize sgx_encl_remove_pages(*mut sgx_encl encl,
+				  *mut sgx_enclave_remove_pages params)
 {
-	*mut let mut entry: let mut _opaque: struct sgx_encl_page;
-	let mut secinfo: let mut _opaque: struct sgx_secinfo;
+	'out: {
+	'out_unlock: {
+	*mut let mut entry: let mut _opaque: sgx_encl_page;
+	let mut secinfo: let mut _opaque: sgx_secinfo;
 	usize addr;
 	usize c;
 	*mut core::ffi::c_void epc_virt;
@@ -1081,22 +1091,22 @@ static isize sgx_encl_remove_pages(*mut struct sgx_encl encl,
 	memset(&secinfo, 0, sizeof(secinfo));
 	secinfo.flags = SGX_SECINFO_R | SGX_SECINFO_W | SGX_SECINFO_X;
 
-	for (c = 0 ; c < params->length; c += PAGE_SIZE) {
-		addr = encl->base + params->offset + c;
+	for (c = 0 ; c < (*params).length; c += PAGE_SIZE) {
+		addr = (*encl).base + (*params).offset + c;
 
 		sgx_reclaim_direct();
 
-		mutex_lock(&encl->lock);
+		mutex_lock((*&encl).lock);
 
 		entry = sgx_encl_load_page(encl, addr);
 		if (IS_ERR(entry)) {
 			ret = PTR_ERR(entry) == -EBUSY ? -EAGAIN : -EFAULT;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
-		if (entry->type != SGX_PAGE_TYPE_TRIM) {
+		if ((*entry).type != SGX_PAGE_TYPE_TRIM) {
 			ret = -EPERM;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
 		/*
@@ -1107,45 +1117,46 @@ static isize sgx_encl_remove_pages(*mut struct sgx_encl encl,
 		 * %SGX_PAGE_NOT_MODIFIABLE, after the trimmed page is
 		 * accepted the instruction will encounter a page fault.
 		 */
-		epc_virt = sgx_get_epc_virt_addr(entry->epc_page);
+		epc_virt = sgx_get_epc_virt_addr((*entry).epc_page);
 		ret = __emodpr(&secinfo, epc_virt);
 		if (!encls_faulted(ret) || ENCLS_TRAPNR(ret) != X86_TRAP_PF) {
 			ret = -EPERM;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
-		if (sgx_unmark_page_reclaimable(entry->epc_page)) {
+		if (sgx_unmark_page_reclaimable((*entry).epc_page)) {
 			ret = -EBUSY;
-			goto out_unlock;
+			break 'out_unlock;
 		}
 
 		/*
 		 * Do not keep encl->lock because of dependency on
 		 * mmap_lock acquired in sgx_zap_enclave_ptes().
 		 */
-		mutex_unlock(&encl->lock);
+		mutex_unlock((*&encl).lock);
 
 		sgx_zap_enclave_ptes(encl, addr);
 
-		mutex_lock(&encl->lock);
+		mutex_lock((*&encl).lock);
 
-		sgx_encl_free_epc_page(entry->epc_page);
-		encl->secs_child_cnt--;
-		entry->epc_page = NULL;
-		xa_erase(&encl->page_array, PFN_DOWN(entry->desc));
+		sgx_encl_free_epc_page((*entry).epc_page);
+		(*encl).secs_child_cnt--;
+		(*entry).epc_page = NULL;
+		xa_erase((*&encl).page_array, PFN_DOWN((*entry).desc));
 		sgx_encl_shrink(encl, NULL);
 		kfree(entry);
 
-		mutex_unlock(&encl->lock);
+		mutex_unlock((*&encl).lock);
 	}
 
 	ret = 0;
-	goto out;
-
-out_unlock:
-	mutex_unlock(&encl->lock);
-out:
-	params->count = c;
+	break 'out;
+	}
+	
+	mutex_unlock((*&encl).lock);
+	}
+	
+	(*params).count = c;
 
 	return ret;
 }
@@ -1153,7 +1164,7 @@ out:
 /**
  * sgx_ioc_enclave_remove_pages() - handler for %SGX_IOC_ENCLAVE_REMOVE_PAGES
  * @encl:	an enclave pointer
- * @arg:	userspace pointer to &struct sgx_enclave_remove_pages instance
+ * @arg:	userspace pointer to &sgx_enclave_remove_pages instance
  *
  * Final step of the flow removing pages from an initialized enclave. The
  * complete flow is:
@@ -1176,10 +1187,10 @@ out:
  * - 0:		Success
  * - -errno:	Otherwise
  */
-static isize sgx_ioc_enclave_remove_pages(*mut struct sgx_encl encl,
+static isize sgx_ioc_enclave_remove_pages(*mut sgx_encl encl,
 					 *mut core::ffi::c_void arg)
 {
-	let mut params: let mut _opaque: struct sgx_enclave_remove_pages;
+	let mut params: let mut _opaque: sgx_enclave_remove_pages;
 	isize ret;
 
 	ret = sgx_ioc_sgx2_ready(encl);
@@ -1203,12 +1214,12 @@ static isize sgx_ioc_enclave_remove_pages(*mut struct sgx_encl encl,
 	return ret;
 }
 
-isize sgx_ioctl(*mut struct file filep, u32 cmd, usize arg)
+isize sgx_ioctl(*mut file filep, cmd: u32, arg: usize)
 {
-	*mut struct sgx_encl encl = filep->private_data;
+	*mut sgx_encl encl = (*filep).private_data;
 	i32 ret;
 
-	if (test_and_set_bit(SGX_ENCL_IOCTL, &encl->flags))
+	if (test_and_set_bit(SGX_ENCL_IOCTL, (*&encl).flags))
 		return -EBUSY;
 
 	switch (cmd) {
@@ -1239,7 +1250,7 @@ isize sgx_ioctl(*mut struct file filep, u32 cmd, usize arg)
 		break;
 	}
 
-	clear_bit(SGX_ENCL_IOCTL, &encl->flags);
+	clear_bit(SGX_ENCL_IOCTL, (*&encl).flags);
 	return ret;
 }
 

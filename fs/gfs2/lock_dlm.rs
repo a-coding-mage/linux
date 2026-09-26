@@ -32,8 +32,8 @@ extern "C" {
     fn gfs2_glock_free(gl:*mut gfs2_glock); fn gfs2_glock_free_later(gl:*mut gfs2_glock); fn gfs2_glock_complete(gl:*mut gfs2_glock,r:u32); fn gfs2_glock_cb(gl:*mut gfs2_glock,s:u32);
     fn dlm_lock(_: *mut c_void, _:i32, _:*mut dlm_lksb, _:u32, _:*const c_char, _:u32, _:u32, _:Option<unsafe extern "C" fn(*mut c_void)>, _: *mut c_void, _:Option<unsafe extern "C" fn(*mut c_void,i32)>) -> i32;
     fn dlm_unlock(_: *mut c_void, _:u32, _:u32, _:*mut dlm_lksb, _:*mut c_void)->i32;
-    fn dlm_new_lockspace(_: *const c_char,*const c_char,u32,u32,*const dlm_lockspace_ops,*mut gfs2_sbd,*mut i32,*mut *mut c_void)->i32;
-    fn dlm_release_lockspace(_: *mut c_void,u32)->i32;
+    fn dlm_new_lockspace(_: *const c_char,_: *const c_char,_: u32,_: u32,_: *const dlm_lockspace_ops,_: *mut gfs2_sbd,_: *mut i32,_: *mut *mut c_void)->i32;
+    fn dlm_release_lockspace(_: *mut c_void,_: u32)->i32;
 }
 
 #[inline] unsafe fn gdlm_ast(arg:*mut c_void) { let gl=arg as *mut gfs2_glock; let st=(*gl).gl_lksb.sb_status; if st == -3 { gfs2_glock_free(gl); return; } let r=match st { -4=>1, -11=>2, -35=>3, -110=>4, 0=>(*gl).gl_req, _=>0 }; gfs2_glock_complete(gl,r); }

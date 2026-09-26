@@ -52,7 +52,7 @@
 // #include "amdgpu_userq.h"
 // #include "amdgpu_video_codecs.h"
 // 
-// void amdgpu_unregister_gpu_instance(struct amdgpu_device *adev)
+// void amdgpu_unregister_gpu_instance(amdgpu_device *adev)
 // {
 // 	struct amdgpu_gpu_instance *gpu_instance;
 // 	int i;
@@ -84,7 +84,7 @@
 //  * This is the main unload function for KMS (all asics).
 //  * Returns 0 on success.
 //  */
-// void amdgpu_driver_unload_kms(struct drm_device *dev)
+// void amdgpu_driver_unload_kms(drm_device *dev)
 // {
 // 	struct amdgpu_device *adev = drm_to_adev(dev);
 // 
@@ -103,7 +103,7 @@
 // 	amdgpu_device_fini_hw(adev);
 // }
 // 
-// void amdgpu_register_gpu_instance(struct amdgpu_device *adev)
+// void amdgpu_register_gpu_instance(amdgpu_device *adev)
 // {
 // 	struct amdgpu_gpu_instance *gpu_instance;
 // 
@@ -137,7 +137,7 @@
 //  * This is the main load function for KMS (all asics).
 //  * Returns 0 on success, error on failure.
 //  */
-// int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
+// int amdgpu_driver_load_kms(amdgpu_device *adev, unsigned long flags)
 // {
 // 	struct drm_device *dev;
 // 	int r, acpi_status;
@@ -177,7 +177,7 @@
 // }
 // 
 // static enum amd_ip_block_type
-// 	amdgpu_ip_get_block_type(struct amdgpu_device *adev, uint32_t ip)
+// 	amdgpu_ip_get_block_type(amdgpu_device *adev, uint32_t ip)
 // {
 // 	enum amd_ip_block_type type;
 // 
@@ -217,7 +217,7 @@
 // 	return type;
 // }
 // 
-// static int amdgpu_firmware_info(struct drm_amdgpu_info_firmware *fw_info,
+// static int amdgpu_firmware_info(drm_amdgpu_info_firmware *fw_info,
 // 				struct drm_amdgpu_query_fw *query_fw,
 // 				struct amdgpu_device *adev)
 // {
@@ -379,7 +379,7 @@
 // 	return 0;
 // }
 // 
-// static int amdgpu_userq_metadata_info_gfx(struct amdgpu_device *adev,
+// static int amdgpu_userq_metadata_info_gfx(amdgpu_device *adev,
 // 					  struct drm_amdgpu_info *info,
 // 					  struct drm_amdgpu_info_uq_metadata_gfx *meta)
 // {
@@ -399,7 +399,7 @@
 // 	return ret;
 // }
 // 
-// static int amdgpu_userq_metadata_info_compute(struct amdgpu_device *adev,
+// static int amdgpu_userq_metadata_info_compute(amdgpu_device *adev,
 // 					      struct drm_amdgpu_info *info,
 // 					      struct drm_amdgpu_info_uq_metadata_compute *meta)
 // {
@@ -417,7 +417,7 @@
 // 	return ret;
 // }
 // 
-// static int amdgpu_userq_metadata_info_sdma(struct amdgpu_device *adev,
+// static int amdgpu_userq_metadata_info_sdma(amdgpu_device *adev,
 // 					   struct drm_amdgpu_info *info,
 // 					   struct drm_amdgpu_info_uq_metadata_sdma *meta)
 // {
@@ -435,7 +435,7 @@
 // 	return ret;
 // }
 // 
-// static int amdgpu_hw_ip_info(struct amdgpu_device *adev,
+// static int amdgpu_hw_ip_info(amdgpu_device *adev,
 // 			     struct drm_amdgpu_info *info,
 // 			     struct drm_amdgpu_info_hw_ip *result)
 // {
@@ -449,7 +449,7 @@
 // 	if (info->query_hw_ip.ip_instance >= AMDGPU_HW_IP_INSTANCE_MAX_COUNT)
 // 		return -EINVAL;
 // 
-// 	switch (info->query_hw_ip.type) {
+// 	switch (info->query_hw_ip.r#type) {
 // 	case AMDGPU_HW_IP_GFX:
 // 		type = AMD_IP_BLOCK_TYPE_GFX;
 // 		for (i = 0; i < adev->gfx.num_gfx_rings; i++)
@@ -594,7 +594,7 @@
 // 	if (i == adev->num_ip_blocks)
 // 		return 0;
 // 
-// 	num_rings = min(amdgpu_ctx_num_entities[info->query_hw_ip.type],
+// 	num_rings = min(amdgpu_ctx_num_entities[info->query_hw_ip.r#type],
 // 			num_rings);
 // 
 // 	result->hw_ip_version_major = adev->ip_blocks[i].version->major;
@@ -654,7 +654,7 @@
 //  * etc. (all asics).
 //  * Returns 0 on success, -EINVAL on failure.
 //  */
-// int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
+// int amdgpu_info_ioctl(drm_device *dev, void *data, drm_file *filp)
 // {
 // 	struct amdgpu_device *adev = drm_to_adev(dev);
 // 	struct drm_amdgpu_info *info = data;
@@ -681,7 +681,7 @@
 // 		return copy_to_user(out, &ui32, min(size, 4u)) ? -EFAULT : 0;
 // 	case AMDGPU_INFO_CRTC_FROM_ID:
 // 		for (i = 0, found = 0; i < adev->mode_info.num_crtc; i++) {
-// 			crtc = (struct drm_crtc *)minfo->crtcs[i];
+// 			crtc = (drm_crtc *)minfo->crtcs[i];
 // 			if (crtc && crtc->base.id == info->mode_crtc.id) {
 // 				struct amdgpu_crtc *amdgpu_crtc = to_amdgpu_crtc(crtc);
 // 
@@ -706,8 +706,8 @@
 // 		return ret ? -EFAULT : 0;
 // 	}
 // 	case AMDGPU_INFO_HW_IP_COUNT: {
-// 		fpriv = (struct amdgpu_fpriv *)filp->driver_priv;
-// 		type = amdgpu_ip_get_block_type(adev, info->query_hw_ip.type);
+// 		fpriv = (amdgpu_fpriv *)filp->driver_priv;
+// 		type = amdgpu_ip_get_block_type(adev, info->query_hw_ip.r#type);
 // 		ip_block = amdgpu_device_ip_get_ip_block(adev, type);
 // 
 // 		if (!ip_block || !ip_block->status.valid)
@@ -1100,7 +1100,7 @@
 // 	case AMDGPU_INFO_VBIOS: {
 // 		uint32_t bios_size = adev->bios_size;
 // 
-// 		switch (info->vbios_info.type) {
+// 		switch (info->vbios_info.r#type) {
 // 		case AMDGPU_INFO_VBIOS_SIZE:
 // 			return copy_to_user(out, &bios_size,
 // 					min((size_t)size, sizeof(bios_size)))
@@ -1139,14 +1139,14 @@
 // 		}
 // 		default:
 // 			DRM_DEBUG_KMS("Invalid request %d\n",
-// 					info->vbios_info.type);
+// 					info->vbios_info.r#type);
 // 			return -EINVAL;
 // 		}
 // 	}
 // 	case AMDGPU_INFO_NUM_HANDLES: {
 // 		struct drm_amdgpu_info_num_handles handle;
 // 
-// 		switch (info->query_hw_ip.type) {
+// 		switch (info->query_hw_ip.r#type) {
 // 		case AMDGPU_HW_IP_UVD:
 // 			/* Starting Polaris, we support unlimited UVD handles */
 // 			if (adev->asic_type < CHIP_POLARIS10) {
@@ -1168,7 +1168,7 @@
 // 		if (!adev->pm.dpm_enabled)
 // 			return -ENOENT;
 // 
-// 		switch (info->sensor_info.type) {
+// 		switch (info->sensor_info.r#type) {
 // 		case AMDGPU_INFO_SENSOR_GFX_SCLK:
 // 			/* get sclk in Mhz */
 // 			if (amdgpu_dpm_read_sensor(adev,
@@ -1280,7 +1280,7 @@
 // 			break;
 // 		default:
 // 			DRM_DEBUG_KMS("Invalid request %d\n",
-// 				      info->sensor_info.type);
+// 				      info->sensor_info.r#type);
 // 			return -EINVAL;
 // 		}
 // 		return copy_to_user(out, &ui32, min(size, 4u)) ? -EFAULT : 0;
@@ -1308,7 +1308,7 @@
 // 		if (!adev->asic_funcs->query_video_codecs)
 // 			return -EINVAL;
 // 
-// 		switch (info->video_cap.type) {
+// 		switch (info->video_cap.r#type) {
 // 		case AMDGPU_INFO_VIDEO_CAPS_DECODE:
 // 			r = amdgpu_asic_query_video_codecs(adev, false, &codecs);
 // 			if (r)
@@ -1321,7 +1321,7 @@
 // 			break;
 // 		default:
 // 			DRM_DEBUG_KMS("Invalid request %d\n",
-// 				      info->video_cap.type);
+// 				      info->video_cap.r#type);
 // 			return -EINVAL;
 // 		}
 // 
@@ -1392,7 +1392,7 @@
 // 	case AMDGPU_INFO_UQ_FW_AREAS: {
 // 		struct drm_amdgpu_info_uq_metadata meta_info = {};
 // 
-// 		switch (info->query_hw_ip.type) {
+// 		switch (info->query_hw_ip.r#type) {
 // 		case AMDGPU_HW_IP_GFX:
 // 			ret = amdgpu_userq_metadata_info_gfx(adev, info, &meta_info.gfx);
 // 			if (ret)
@@ -1440,7 +1440,7 @@
 //  * controls how KFD delivers SIGBUS for poison/RAS events to the calling
 //  * process (immediate, suppressed, or delayed by N milliseconds).
 //  */
-// int amdgpu_proc_options_ioctl(struct drm_device *dev, void *data,
+// int amdgpu_proc_options_ioctl(drm_device *dev, void *data,
 // 			      struct drm_file *filp)
 // {
 // 	struct drm_amdgpu_proc_options *args = data;
@@ -1464,7 +1464,7 @@
 //  * On device open, init vm on cayman+ (all asics).
 //  * Returns 0 on success, error on failure.
 //  */
-// int amdgpu_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
+// int amdgpu_driver_open_kms(drm_device *dev, drm_file *file_priv)
 // {
 // 	struct amdgpu_device *adev = drm_to_adev(dev);
 // 	struct amdgpu_fpriv *fpriv;
@@ -1577,7 +1577,7 @@
 //  *
 //  * On device post close, tear down vm on cayman+ (all asics).
 //  */
-// void amdgpu_driver_postclose_kms(struct drm_device *dev,
+// void amdgpu_driver_postclose_kms(drm_device *dev,
 // 				 struct drm_file *file_priv)
 // {
 // 	struct amdgpu_device *adev = drm_to_adev(dev);
@@ -1633,7 +1633,7 @@
 // }
 // 
 // 
-// void amdgpu_driver_release_kms(struct drm_device *dev)
+// void amdgpu_driver_release_kms(drm_device *dev)
 // {
 // 	struct amdgpu_device *adev = drm_to_adev(dev);
 // 
@@ -1652,7 +1652,7 @@
 //  * Gets the frame count on the requested crtc (all asics).
 //  * Returns frame count on success, -EINVAL on failure.
 //  */
-// u32 amdgpu_get_vblank_counter_kms(struct drm_crtc *crtc)
+// u32 amdgpu_get_vblank_counter_kms(drm_crtc *crtc)
 // {
 // 	struct drm_device *dev = crtc->dev;
 // 	unsigned int pipe = crtc->index;
@@ -1720,7 +1720,7 @@
 //  * Enable the interrupt on the requested crtc (all asics).
 //  * Returns 0 on success, -EINVAL on failure.
 //  */
-// int amdgpu_enable_vblank_kms(struct drm_crtc *crtc)
+// int amdgpu_enable_vblank_kms(drm_crtc *crtc)
 // {
 // 	struct drm_device *dev = crtc->dev;
 // 	unsigned int pipe = crtc->index;
@@ -1737,7 +1737,7 @@
 //  *
 //  * Disable the interrupt on the requested crtc (all asics).
 //  */
-// void amdgpu_disable_vblank_kms(struct drm_crtc *crtc)
+// void amdgpu_disable_vblank_kms(drm_crtc *crtc)
 // {
 // 	struct drm_device *dev = crtc->dev;
 // 	unsigned int pipe = crtc->index;
@@ -1752,7 +1752,7 @@
 //  */
 // #if defined(CONFIG_DEBUG_FS)
 // 
-// static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
+// static int amdgpu_debugfs_firmware_info_show(seq_file *m, void *unused)
 // {
 // 	struct amdgpu_device *adev = m->private;
 // 	struct drm_amdgpu_info_firmware fw_info;
@@ -2022,7 +2022,7 @@
 // 
 // #endif
 // 
-// void amdgpu_debugfs_firmware_init(struct amdgpu_device *adev)
+// void amdgpu_debugfs_firmware_init(amdgpu_device *adev)
 // {
 // #if defined(CONFIG_DEBUG_FS)
 // 	struct drm_minor *minor = adev_to_drm(adev)->primary;

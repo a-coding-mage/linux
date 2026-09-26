@@ -108,7 +108,7 @@ pub unsafe extern "C" fn set_dma_speed(chan:u32, cycle_ns:i32) { let dma=dma_cha
 pub unsafe extern "C" fn get_dma_residue(chan:u32)->i32 { let dma=dma_channel(chan); if let Some(f)=(*(*dma).d_ops).residue { return f(chan,dma); } 0 }
 
 // CONFIG_PROC_FS controls this section in the kernel build.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 pub unsafe extern "C" fn proc_dma_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
     for i in 0..MAX_DMA_CHANNELS {
         let dma = dma_channel(i as u32);
@@ -119,7 +119,7 @@ pub unsafe extern "C" fn proc_dma_show(m: *mut seq_file, _v: *mut core::ffi::c_v
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 pub unsafe extern "C" fn proc_dma_init() -> i32 {
     proc_create_single(b"dma\0".as_ptr() as _, 0, core::ptr::null_mut(), proc_dma_show);
     0

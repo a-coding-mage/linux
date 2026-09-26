@@ -58,58 +58,58 @@ pub unsafe fn exfat_alloc_new_dir(inode: *mut inode, clu: *mut exfat_chain) -> i
 
 pub unsafe fn exfat_init_dir_entry(es: *mut exfat_entry_set_cache, ty: u32,
                                     start_clu: u32, size: u64, ts: *mut timespec64) {
-    extern "C" { fn exfat_init_dir_entry_c(*mut exfat_entry_set_cache, u32, u32, u64, *mut timespec64); }
+    extern "C" { fn exfat_init_dir_entry_c(_: *mut exfat_entry_set_cache, _: u32, _: u32, _: u64, _: *mut timespec64); }
     exfat_init_dir_entry_c(es, ty, start_clu, size, ts)
 }
 
 pub unsafe fn exfat_init_ext_entry(es: *mut exfat_entry_set_cache, num_entries: i32,
                                    name: *mut exfat_uni_name,
                                    old_es: *mut exfat_entry_set_cache, num_extra: i32) {
-    extern "C" { fn exfat_init_ext_entry_c(*mut exfat_entry_set_cache, i32, *mut exfat_uni_name, *mut exfat_entry_set_cache, i32); }
+    extern "C" { fn exfat_init_ext_entry_c(_: *mut exfat_entry_set_cache, _: i32, _: *mut exfat_uni_name, _: *mut exfat_entry_set_cache, _: i32); }
     exfat_init_ext_entry_c(es, num_entries, name, old_es, num_extra)
 }
 
 pub unsafe fn exfat_remove_entries(inode: *mut inode, es: *mut exfat_entry_set_cache,
                                    order: i32, free_benign: bool) {
-    extern "C" { fn exfat_remove_entries_c(*mut inode, *mut exfat_entry_set_cache, i32, bool); }
+    extern "C" { fn exfat_remove_entries_c(_: *mut inode, _: *mut exfat_entry_set_cache, _: i32, _: bool); }
     exfat_remove_entries_c(inode, es, order, free_benign)
 }
 
 pub unsafe fn exfat_update_dir_chksum(es: *mut exfat_entry_set_cache) {
-    extern "C" { fn exfat_update_dir_chksum_c(*mut exfat_entry_set_cache); }
+    extern "C" { fn exfat_update_dir_chksum_c(_: *mut exfat_entry_set_cache); }
     exfat_update_dir_chksum_c(es)
 }
 
 pub unsafe fn exfat_put_dentry_set(es: *mut exfat_entry_set_cache, sync: i32) -> i32 {
-    extern "C" { fn exfat_put_dentry_set_c(*mut exfat_entry_set_cache, i32) -> i32; }
+    extern "C" { fn exfat_put_dentry_set_c(_: *mut exfat_entry_set_cache, _: i32) -> i32; }
     exfat_put_dentry_set_c(es, sync)
 }
 
 pub unsafe fn exfat_get_dentry_set(es: *mut exfat_entry_set_cache, sb: *mut super_block,
                                    dir: *mut exfat_chain, entry: i32, n: u32) -> i32 {
-    extern "C" { fn exfat_get_dentry_set_c(*mut exfat_entry_set_cache, *mut super_block, *mut exfat_chain, i32, u32) -> i32; }
+    extern "C" { fn exfat_get_dentry_set_c(_: *mut exfat_entry_set_cache, _: *mut super_block, _: *mut exfat_chain, _: i32, _: u32) -> i32; }
     exfat_get_dentry_set_c(es, sb, dir, entry, n)
 }
 
 pub unsafe fn exfat_find_dir_entry(sb: *mut super_block, ei: *mut exfat_inode_info,
                                    dir: *mut exfat_chain, name: *mut exfat_uni_name,
                                    hint: *mut exfat_hint) -> i32 {
-    extern "C" { fn exfat_find_dir_entry_c(*mut super_block, *mut exfat_inode_info, *mut exfat_chain, *mut exfat_uni_name, *mut exfat_hint) -> i32; }
+    extern "C" { fn exfat_find_dir_entry_c(_: *mut super_block, _: *mut exfat_inode_info, _: *mut exfat_chain, _: *mut exfat_uni_name, _: *mut exfat_hint) -> i32; }
     exfat_find_dir_entry_c(sb, ei, dir, name, hint)
 }
 
 pub unsafe fn exfat_count_dir_entries(sb: *mut super_block, dir: *mut exfat_chain) -> i32 {
-    extern "C" { fn exfat_count_dir_entries_c(*mut super_block, *mut exfat_chain) -> i32; }
+    extern "C" { fn exfat_count_dir_entries_c(_: *mut super_block, _: *mut exfat_chain) -> i32; }
     exfat_count_dir_entries_c(sb, dir)
 }
 
 pub unsafe fn exfat_read_volume_label(sb: *mut super_block, label: *mut exfat_uni_name) -> i32 {
-    extern "C" { fn exfat_read_volume_label_c(*mut super_block, *mut exfat_uni_name) -> i32; }
+    extern "C" { fn exfat_read_volume_label_c(_: *mut super_block, _: *mut exfat_uni_name) -> i32; }
     exfat_read_volume_label_c(sb, label)
 }
 
 pub unsafe fn exfat_write_volume_label(sb: *mut super_block, label: *mut exfat_uni_name) -> i32 {
-    extern "C" { fn exfat_write_volume_label_c(*mut super_block, *mut exfat_uni_name) -> i32; }
+    extern "C" { fn exfat_write_volume_label_c(_: *mut super_block, _: *mut exfat_uni_name) -> i32; }
     exfat_write_volume_label_c(sb, label)
 }
 

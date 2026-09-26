@@ -29,7 +29,7 @@ unsafe extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_KGDB")]
+#[cfg(CONFIG_KGDB)]
 unsafe extern "C" {
     pub fn kgdb_single_step_handler(
         regs: *mut PtRegs,
@@ -37,7 +37,7 @@ unsafe extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_KGDB"))]
+#[cfg(not(CONFIG_KGDB))]
 pub unsafe fn kgdb_single_step_handler(
     _regs: *mut PtRegs,
     _esr: core::ffi::c_ulong,

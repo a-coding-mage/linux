@@ -67,31 +67,27 @@ extern "C" {
 				req_size: u32,
 				buffer: *mut u8,
 			) -> u32,
-		>,
-		context: *mut c_void,
-	) -> c_int;
+		_: >,
+		context: *mut c_void,) -> c_int;
 	fn ocsd_dt_process_data(
 		dcd_tree: dcd_tree_handle_t,
 		op: ocsd_datapath_op_t,
 		index: u64,
 		data_len: usize,
 		p_data: *const u8,
-		num_bytes_processed: *mut u32,
-	) -> ocsd_datapath_resp_t;
+		num_bytes_processed: *mut u32) -> ocsd_datapath_resp_t;
 	fn ocsd_def_errlog_init(sev: ocsd_err_severity_t, create_output_logger: c_int) -> c_int;
 	fn ocsd_def_errlog_config_output(flags: c_int, logfile: *const c_char) -> c_int;
 	fn ocsd_def_errlog_set_strprint_cb(
 		dcd_tree: dcd_tree_handle_t,
 		context: *mut c_void,
-		cb: Option<unsafe extern "C" fn(p_context: *const c_void, msg: *const c_char, str_len: c_int)>,
-	) -> c_int;
+		cb: Option<unsafe extern "C" fn(p_context: *const c_void, msg: *const c_char, str_len: c_int)>) -> c_int;
 	fn ocsd_dt_create_decoder(
 		dcd_tree: dcd_tree_handle_t,
 		decoder_name: *const c_char,
 		create_flags: c_int,
 		trace_config: *mut c_void,
-		csid: *mut u8,
-	) -> c_int;
+		csid: *mut u8) -> c_int;
 	fn ocsd_dt_set_gen_elem_outfn(
 		dcd_tree: dcd_tree_handle_t,
 		cb: Option<
@@ -101,14 +97,12 @@ extern "C" {
 				trace_chan_id: u8,
 				elem: *const ocsd_generic_trace_elem,
 			) -> ocsd_datapath_resp_t,
-		>,
-		context: *mut c_void,
-	) -> c_int;
+		_: >,
+		context: *mut c_void,) -> c_int;
 	fn ocsd_dt_set_pkt_protocol_printer(
 		dcd_tree: dcd_tree_handle_t,
 		csid: u8,
-		pkt_monitor: c_int,
-	) -> c_int;
+		pkt_monitor: c_int) -> c_int;
 	fn ocsd_create_dcd_tree(format: ocsd_dcd_tree_src_t, flags: u32) -> dcd_tree_handle_t;
 	fn ocsd_destroy_dcd_tree(dcd_tree: dcd_tree_handle_t);
 	fn zalloc(size: usize) -> *mut c_void;
@@ -117,8 +111,7 @@ extern "C" {
 	fn cs_etm__etmq_set_traceid_queue_timestamp(etmq: *mut cs_etm_queue, trace_chan_id: u8);
 	fn cs_etm__etmq_get_packet_queue(
 		etmq: *mut cs_etm_queue,
-		trace_chan_id: u8,
-	) -> *mut cs_etm_packet_queue;
+		trace_chan_id: u8) -> *mut cs_etm_packet_queue;
 	fn cs_etm__convert_sample_time(etmq: *mut cs_etm_queue, timestamp: u64) -> u64;
 	fn cs_etm__etmq_is_timeless(etmq: *mut cs_etm_queue) -> bool;
 	fn cs_etm__get_cpu(etmq: *mut cs_etm_queue, trace_chan_id: u8, cpu: *mut c_int) -> c_int;
@@ -127,8 +120,7 @@ extern "C" {
 		etmq: *mut cs_etm_queue,
 		trace_chan_id: u8,
 		exception_level: ocsd_ex_level,
-		tid: pid_t,
-	) -> c_int;
+		tid: pid_t) -> c_int;
 	fn pr_warning_once(fmt: *const c_char, ...);
 	fn pr_err(fmt: *const c_char, ...);
 }

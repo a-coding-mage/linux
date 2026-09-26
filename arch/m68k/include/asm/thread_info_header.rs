@@ -4,11 +4,11 @@
 // Build-time condition preserved from PAGE_SHIFT and CONFIG_4KSTACKS.
 
 #[cfg(page_shift_lt_13)]
-#[cfg(feature = "CONFIG_4KSTACKS")]
+#[cfg(CONFIG_4KSTACKS)]
 pub const THREAD_SIZE_ORDER: usize = 0;
 
 #[cfg(page_shift_lt_13)]
-#[cfg(not(feature = "CONFIG_4KSTACKS"))]
+#[cfg(not(CONFIG_4KSTACKS))]
 pub const THREAD_SIZE_ORDER: usize = 1;
 
 #[cfg(not(page_shift_lt_13))]

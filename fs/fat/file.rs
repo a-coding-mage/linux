@@ -25,6 +25,7 @@ unsafe fn fat_ioctl_set_attributes(file: *mut file, user_attr: *mut u32) -> c_in
     let mut oldattr: u32;
     let mut ia: iattr = core::mem::zeroed();
     let mut err: c_int;
+    'out_unlock_inode: {
 
     err = get_user(&mut attr, user_attr);
     if err != 0 { return err; }
@@ -39,14 +40,14 @@ unsafe fn fat_ioctl_set_attributes(file: *mut file, user_attr: *mut u32) -> c_in
     ia.ia_mode = if is_dir { fat_make_mode(sbi, attr, S_IRWXUGO) } else {
         fat_make_mode(sbi, attr, S_IRUGO | S_IWUGO | ((*inode).i_mode & S_IXUGO))
     };
-    if (*inode).i_ino == MSDOS_ROOT_INO && attr != ATTR_DIR { err = -EINVAL; goto out_unlock_inode; }
+    if (*inode).i_ino == MSDOS_ROOT_INO && attr != ATTR_DIR { err = -EINVAL; break 'out_unlock_inode; }
     if (*sbi).options.sys_immutable && ((attr | oldattr) & ATTR_SYS) != 0 && !capable(CAP_LINUX_IMMUTABLE) {
-        err = -EPERM; goto out_unlock_inode;
+        err = -EPERM; break 'out_unlock_inode;
     }
     err = security_inode_setattr(file_mnt_idmap(file), (*file).f_path.dentry, &ia);
-    if err != 0 { goto out_unlock_inode; }
+    if err != 0 { break 'out_unlock_inode; }
     err = fat_setattr(file_mnt_idmap(file), (*file).f_path.dentry, &ia);
-    if err != 0 { goto out_unlock_inode; }
+    if err != 0 { break 'out_unlock_inode; }
     fsnotify_change((*file).f_path.dentry, ia.ia_valid);
     if (*sbi).options.sys_immutable {
         if attr & ATTR_SYS != 0 { (*inode).i_flags |= S_IMMUTABLE; }
@@ -54,7 +55,8 @@ unsafe fn fat_ioctl_set_attributes(file: *mut file, user_attr: *mut u32) -> c_in
     }
     fat_save_attrs(inode, attr);
     mark_inode_dirty(inode);
-out_unlock_inode:
+    }
+    
     inode_unlock(inode);
     mnt_drop_write_file(file);
     err

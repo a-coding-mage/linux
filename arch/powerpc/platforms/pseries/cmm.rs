@@ -178,7 +178,7 @@ unsafe fn cmm_memory_cb(_self: *mut notifier_block, action: u64, _arg: *mut core
     NOTIFY_OK
 }
 
-#[cfg(feature = "CONFIG_BALLOON_MIGRATION")]
+#[cfg(CONFIG_BALLOON_MIGRATION)]
 unsafe fn cmm_migratepage(_info: *mut balloon_dev_info, newpage: *mut page, page: *mut page, _mode: migrate_mode) -> i32 {
     if plpar_page_set_loaned(newpage) != 0 { return -EBUSY; }
     plpar_page_set_active(page);
@@ -186,7 +186,7 @@ unsafe fn cmm_migratepage(_info: *mut balloon_dev_info, newpage: *mut page, page
 }
 
 // The CONFIG_BALLOON_MIGRATION-disabled branch is an external declaration.
-#[cfg(not(feature = "CONFIG_BALLOON_MIGRATION"))]
+#[cfg(not(CONFIG_BALLOON_MIGRATION))]
 unsafe extern "C" { fn cmm_migratepage(info: *mut balloon_dev_info, newpage: *mut page, page: *mut page, mode: migrate_mode) -> i32; }
 
 unsafe fn cmm_init() -> i32 {

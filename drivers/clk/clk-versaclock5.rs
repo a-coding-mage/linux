@@ -48,7 +48,7 @@ const VC5_RESERVED_X0_BYPASS_SYNC:u32=bit!(7); const VC5_CLK_OUTPUT_CFG1_EN_CLKB
 #[repr(C)] pub struct vc5_out_data { pub hw:clk_hw,pub vc5:*mut vc5_driver_data,pub num:u32,pub clk_output_cfg0:u32,pub clk_output_cfg0_mask:u32 }
 #[repr(C)] pub struct vc5_driver_data { pub client:*mut c_void,pub regmap:*mut c_void,pub chip_info:*const vc5_chip_info,pub pin_xin:*mut c_void,pub pin_clkin:*mut c_void,pub clk_mux_ins:u8,pub clk_mux:clk_hw,pub clk_mul:clk_hw,pub clk_pfd:clk_hw,pub clk_pll:vc5_hw_data,pub clk_fod:[vc5_hw_data;VC5_MAX_FOD_NUM],pub clk_out:[vc5_out_data;VC5_MAX_CLK_OUT_NUM] }
 
-extern "C" { fn regmap_read(*mut c_void,u32,*mut u32)->c_int; fn regmap_update_bits(*mut c_void,u32,u32,u32)->c_int; fn regmap_bulk_read(*mut c_void,u32,*mut u8,usize)->c_int; fn regmap_bulk_write(*mut c_void,u32,*const u8,usize)->c_int; fn regmap_set_bits(*mut c_void,u32,u32)->c_int; fn regmap_clear_bits(*mut c_void,u32,u32)->c_int; }
+extern "C" { fn regmap_read(_: *mut c_void,_: u32,_: *mut u32)->c_int; fn regmap_update_bits(_: *mut c_void,_: u32,_: u32,_: u32)->c_int; fn regmap_bulk_read(_: *mut c_void,_: u32,_: *mut u8,_: usize)->c_int; fn regmap_bulk_write(_: *mut c_void,_: u32,_: *const u8,_: usize)->c_int; fn regmap_set_bits(_: *mut c_void,_: u32,_: u32)->c_int; fn regmap_clear_bits(_: *mut c_void,_: u32,_: u32)->c_int; }
 
 pub fn vc5_map_index_to_output(model:vc5_model,n:u32)->u32 { match model { vc5_model::IDT_VC5_5P49V5933 => if n==0 {0} else {3}, _=>n } }
 pub fn vc5_map_cap_value(femtofarads:u32)->c_int { if femtofarads<9000 || femtofarads>22760 { return -22; } let mut v=div_round_closest!(femtofarads-9000,430); if v>31 {v=0x3f} else {v<<=1}; v as c_int }

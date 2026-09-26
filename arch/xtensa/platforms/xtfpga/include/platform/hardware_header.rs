@@ -17,18 +17,18 @@
 /* Default assignment of LX60 devices to external interrupts. */
 
 /* Build-time CONFIG_XTENSA_MX condition preserved from the C header. */
-#[cfg(feature = "CONFIG_XTENSA_MX")]
+#[cfg(CONFIG_XTENSA_MX)]
 macro_rules! DUART16552_INTNUM { () => { XCHAL_EXTINT3_NUM }; }
-#[cfg(feature = "CONFIG_XTENSA_MX")]
+#[cfg(CONFIG_XTENSA_MX)]
 macro_rules! OETH_IRQ { () => { XCHAL_EXTINT4_NUM }; }
-#[cfg(feature = "CONFIG_XTENSA_MX")]
+#[cfg(CONFIG_XTENSA_MX)]
 macro_rules! C67X00_IRQ { () => { XCHAL_EXTINT8_NUM }; }
 
-#[cfg(not(feature = "CONFIG_XTENSA_MX"))]
+#[cfg(not(CONFIG_XTENSA_MX))]
 macro_rules! DUART16552_INTNUM { () => { XCHAL_EXTINT0_NUM }; }
-#[cfg(not(feature = "CONFIG_XTENSA_MX"))]
+#[cfg(not(CONFIG_XTENSA_MX))]
 macro_rules! OETH_IRQ { () => { XCHAL_EXTINT1_NUM }; }
-#[cfg(not(feature = "CONFIG_XTENSA_MX"))]
+#[cfg(not(CONFIG_XTENSA_MX))]
 macro_rules! C67X00_IRQ { () => { XCHAL_EXTINT5_NUM }; }
 
 /*

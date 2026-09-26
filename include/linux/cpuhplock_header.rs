@@ -12,7 +12,7 @@ pub struct device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 extern "C" {
     pub fn cpus_write_lock();
     pub fn cpus_write_unlock();
@@ -31,63 +31,63 @@ extern "C" {
     pub fn smp_shutdown_nonboot_cpus(primary_cpu: u32);
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpus_write_lock() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpus_write_unlock() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpus_read_lock() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpus_read_unlock() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpus_read_trylock() -> i32 {
     1
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn lockdep_assert_cpus_held() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn lockdep_is_cpus_held() -> i32 {
     1
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn lockdep_is_cpus_write_held() -> i32 {
     1
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpu_hotplug_disable_offlining() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpu_hotplug_disable() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn cpu_hotplug_enable() {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn remove_cpu(_cpu: u32) -> i32 {
     -EPERM
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn smp_shutdown_nonboot_cpus(_primary_cpu: u32) {}
 

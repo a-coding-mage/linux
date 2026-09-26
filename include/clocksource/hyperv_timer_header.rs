@@ -11,7 +11,7 @@ pub const HV_MAX_MAX_DELTA_TICKS: u32 = 0xffff_ffff;
 pub const HV_MIN_DELTA_TICKS: u32 = 1;
 
 /* CONFIG_HYPERV_TIMER is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_HYPERV_TIMER")]
+#[cfg(CONFIG_HYPERV_TIMER)]
 extern "C" {
     pub fn hv_stimer_alloc(have_percpu_irqs: bool) -> i32;
     pub fn hv_stimer_cleanup(cpu: u32) -> i32;
@@ -26,7 +26,7 @@ extern "C" {
     pub fn hv_adj_sched_clock_offset(offset: u64);
 }
 
-#[cfg(feature = "CONFIG_HYPERV_TIMER")]
+#[cfg(CONFIG_HYPERV_TIMER)]
 #[inline(always)]
 pub unsafe fn hv_read_tsc_page_tsc(
     tsc_pg: *const crate::ms_hyperv_tsc_page,
@@ -63,19 +63,19 @@ pub unsafe fn hv_read_tsc_page_tsc(
     true
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV_TIMER"))]
+#[cfg(not(CONFIG_HYPERV_TIMER))]
 #[inline]
 pub fn hv_get_tsc_pfn() -> libc::c_ulong {
     0
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV_TIMER"))]
+#[cfg(not(CONFIG_HYPERV_TIMER))]
 #[inline]
 pub fn hv_get_tsc_page() -> *mut crate::ms_hyperv_tsc_page {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV_TIMER"))]
+#[cfg(not(CONFIG_HYPERV_TIMER))]
 #[inline(always)]
 pub unsafe fn hv_read_tsc_page_tsc(
     _tsc_pg: *const crate::ms_hyperv_tsc_page,
@@ -85,13 +85,13 @@ pub unsafe fn hv_read_tsc_page_tsc(
     false
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV_TIMER"))]
+#[cfg(not(CONFIG_HYPERV_TIMER))]
 #[inline]
 pub fn hv_stimer_cleanup(_cpu: u32) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV_TIMER"))]
+#[cfg(not(CONFIG_HYPERV_TIMER))]
 #[inline]
 pub fn hv_stimer_global_cleanup() {}
 

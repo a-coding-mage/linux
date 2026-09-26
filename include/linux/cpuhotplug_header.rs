@@ -260,14 +260,14 @@ pub unsafe fn cpuhp_state_remove_instance(state: cpuhp_state, node: *mut hlist_n
 #[inline]
 pub unsafe fn cpuhp_state_remove_instance_nocalls(state: cpuhp_state, node: *mut hlist_node) -> i32 { __cpuhp_state_remove_instance(state, node, false) }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" { pub fn cpuhp_online_idle(state: cpuhp_state); }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline] pub unsafe fn cpuhp_online_idle(_state: cpuhp_state) {}
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CORE_SYNC_DEAD"))]
+#[cfg(not(CONFIG_HOTPLUG_CORE_SYNC_DEAD))]
 #[inline] pub unsafe fn cpuhp_ap_report_dead() {}
-#[cfg(not(feature = "CONFIG_HOTPLUG_CORE_SYNC_DEAD"))]
+#[cfg(not(CONFIG_HOTPLUG_CORE_SYNC_DEAD))]
 #[inline] pub unsafe fn arch_cpuhp_cleanup_dead_cpu(_cpu: u32) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

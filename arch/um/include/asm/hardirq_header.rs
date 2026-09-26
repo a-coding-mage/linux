@@ -11,9 +11,9 @@ pub const __ARCH_IRQ_EXIT_IRQS_DISABLED: ::core::ffi::c_int = 1;
 pub struct irq_cpustat_t {
     pub __softirq_pending: ::core::ffi::c_uint,
     // Corresponds to IS_ENABLED(CONFIG_SMP).
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub irq_resched_count: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub irq_call_count: ::core::ffi::c_uint,
 }
 

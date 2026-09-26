@@ -21,13 +21,13 @@ macro_rules! __string_len { ($item:ident, $src:expr, $len:expr) => { __dynamic_a
 macro_rules! __vstring { ($item:ident, $fmt:expr, $ap:expr) => { __dynamic_array!(char, $item, -1); }; }
 
 macro_rules! __assign_str {
-    ($dst:ident) => {{
+    ($dst:tt) => {{
         let __str__: *mut i8 = __get_str!($dst);
         let __len__: i32 = __get_dynamic_array_len!($dst) - 1;
-        /* C token-pasting: __data_offsets.$dst##_ptr_. */
+        /* C token-pasting: __data_offsets.::kernel::macros::paste!([<$dst _ptr_>]). */
         unsafe {
             core::ptr::copy_nonoverlapping(
-                if __data_offsets.$dst##_ptr_ != core::ptr::null() { __data_offsets.$dst##_ptr_ } else { EVENT_NULL_STR },
+                if __data_offsets.::kernel::macros::paste!([<$dst _ptr_>]) != core::ptr::null() { __data_offsets.::kernel::macros::paste!([<$dst _ptr_>]) } else { EVENT_NULL_STR },
                 __str__,
                 __len__ as usize,
             );
@@ -64,10 +64,10 @@ macro_rules! __rel_dynamic_array {
 macro_rules! __rel_string { ($item:ident, $src:expr) => { __rel_dynamic_array!(char, $item, -1); }; }
 macro_rules! __rel_string_len { ($item:ident, $src:expr, $len:expr) => { __rel_dynamic_array!(char, $item, -1); }; }
 macro_rules! __assign_rel_str {
-    ($dst:ident) => {{
+    ($dst:tt) => {{
         let __str__: *mut i8 = __get_rel_str!($dst);
         let __len__: i32 = __get_rel_dynamic_array_len!($dst) - 1;
-        /* C token-pasting: __data_offsets.$dst##_ptr_. */
+        /* C token-pasting: __data_offsets.::kernel::macros::paste!([<$dst _ptr_>]). */
         unsafe { *__str__.add(__len__ as usize) = 0; }
     }};
 }

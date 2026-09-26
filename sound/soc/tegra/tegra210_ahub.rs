@@ -22,8 +22,7 @@ extern "C" {
         kctl: *mut snd_kcontrol,
         mux: c_uint,
         e: *mut soc_enum,
-        update: *mut snd_soc_dapm_update,
-    ) -> c_int;
+        update: *mut snd_soc_dapm_update) -> c_int;
     fn dev_get_drvdata(dev: *mut device) -> *mut c_void;
     fn regcache_cache_only(map: *mut regmap, enable: bool);
     fn regcache_mark_dirty(map: *mut regmap);
@@ -755,7 +754,7 @@ static const char * const tegra264_ahub_mux_texts[] = {
 	"ADMAIF32",
 };
 
-static const unsigned int tegra210_ahub_mux_values[] = {
+static core::ffi::c_uint tegra210_ahub_mux_values[] = {
 	0,
 	/* ADMAIF */
 	MUX_VALUE(0, 0),
@@ -809,7 +808,7 @@ static const unsigned int tegra210_ahub_mux_values[] = {
 	MUX_VALUE(2, 1),
 };
 
-static const unsigned int tegra186_ahub_mux_values[] = {
+static core::ffi::c_uint tegra186_ahub_mux_values[] = {
 	0,
 	/* ADMAIF */
 	MUX_VALUE(0, 0),
@@ -892,7 +891,7 @@ static const unsigned int tegra186_ahub_mux_values[] = {
 	MUX_VALUE(2, 0),
 };
 
-static const unsigned int tegra264_ahub_mux_values[] = {
+static core::ffi::c_uint tegra264_ahub_mux_values[] = {
 	0,
 	/* ADMAIF */
 	MUX_VALUE(0, 0),
@@ -2104,34 +2103,34 @@ static const struct snd_soc_dapm_route tegra264_ahub_routes[] = {
 };
 
 static const struct snd_soc_component_driver tegra210_ahub_component = {
-	.dapm_widgets		= tegra210_ahub_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(tegra210_ahub_widgets),
-	.dapm_routes		= tegra210_ahub_routes,
-	.num_dapm_routes	= ARRAY_SIZE(tegra210_ahub_routes),
+	dapm_widgets: tegra210_ahub_widgets,
+	num_dapm_widgets: ARRAY_SIZE(tegra210_ahub_widgets),
+	dapm_routes: tegra210_ahub_routes,
+	num_dapm_routes: ARRAY_SIZE(tegra210_ahub_routes),
 };
 
 static const struct snd_soc_component_driver tegra186_ahub_component = {
-	.dapm_widgets = tegra186_ahub_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(tegra186_ahub_widgets),
-	.dapm_routes = tegra186_ahub_routes,
-	.num_dapm_routes = ARRAY_SIZE(tegra186_ahub_routes),
+	dapm_widgets: tegra186_ahub_widgets,
+	num_dapm_widgets: ARRAY_SIZE(tegra186_ahub_widgets),
+	dapm_routes: tegra186_ahub_routes,
+	num_dapm_routes: ARRAY_SIZE(tegra186_ahub_routes),
 };
 
 static const struct snd_soc_component_driver tegra234_ahub_component = {
-	.dapm_widgets		= tegra234_ahub_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(tegra234_ahub_widgets),
-	.dapm_routes		= tegra186_ahub_routes,
-	.num_dapm_routes	= ARRAY_SIZE(tegra186_ahub_routes),
+	dapm_widgets: tegra234_ahub_widgets,
+	num_dapm_widgets: ARRAY_SIZE(tegra234_ahub_widgets),
+	dapm_routes: tegra186_ahub_routes,
+	num_dapm_routes: ARRAY_SIZE(tegra186_ahub_routes),
 };
 
 static const struct snd_soc_component_driver tegra264_ahub_component = {
-	.dapm_widgets		= tegra264_ahub_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(tegra264_ahub_widgets),
-	.dapm_routes		= tegra264_ahub_routes,
-	.num_dapm_routes	= ARRAY_SIZE(tegra264_ahub_routes),
+	dapm_widgets: tegra264_ahub_widgets,
+	num_dapm_widgets: ARRAY_SIZE(tegra264_ahub_widgets),
+	dapm_routes: tegra264_ahub_routes,
+	num_dapm_routes: ARRAY_SIZE(tegra264_ahub_routes),
 };
 
-static bool tegra210_ahub_wr_reg(struct device *dev, unsigned int reg)
+static bool tegra210_ahub_wr_reg(device *dev, reg: core::ffi::c_uint)
 {
 	int part;
 
@@ -2159,7 +2158,7 @@ static bool tegra210_ahub_wr_reg(struct device *dev, unsigned int reg)
 	return false;
 }
 
-static bool tegra186_ahub_wr_reg(struct device *dev, unsigned int reg)
+static bool tegra186_ahub_wr_reg(device *dev, reg: core::ffi::c_uint)
 {
 	int part;
 
@@ -2186,7 +2185,7 @@ static bool tegra186_ahub_wr_reg(struct device *dev, unsigned int reg)
 	return false;
 }
 
-static bool tegra264_ahub_wr_reg(struct device *dev, unsigned int reg)
+static bool tegra264_ahub_wr_reg(device *dev, reg: core::ffi::c_uint)
 {
 	int part;
 
@@ -2210,86 +2209,86 @@ static bool tegra264_ahub_wr_reg(struct device *dev, unsigned int reg)
 }
 
 static const struct regmap_config tegra210_ahub_regmap_config = {
-	.reg_bits		= 32,
-	.val_bits		= 32,
-	.reg_stride		= 4,
-	.writeable_reg		= tegra210_ahub_wr_reg,
-	.max_register		= TEGRA210_MAX_REGISTER_ADDR,
-	.reg_default_cb		= regmap_default_zero_cb,
-	.cache_type		= REGCACHE_FLAT,
+	reg_bits: 32,
+	val_bits: 32,
+	reg_stride: 4,
+	writeable_reg: tegra210_ahub_wr_reg,
+	max_register: TEGRA210_MAX_REGISTER_ADDR,
+	reg_default_cb: regmap_default_zero_cb,
+	cache_type: REGCACHE_FLAT,
 };
 
 static const struct regmap_config tegra186_ahub_regmap_config = {
-	.reg_bits		= 32,
-	.val_bits		= 32,
-	.reg_stride		= 4,
-	.writeable_reg		= tegra186_ahub_wr_reg,
-	.max_register		= TEGRA186_MAX_REGISTER_ADDR,
-	.reg_default_cb		= regmap_default_zero_cb,
-	.cache_type		= REGCACHE_FLAT,
+	reg_bits: 32,
+	val_bits: 32,
+	reg_stride: 4,
+	writeable_reg: tegra186_ahub_wr_reg,
+	max_register: TEGRA186_MAX_REGISTER_ADDR,
+	reg_default_cb: regmap_default_zero_cb,
+	cache_type: REGCACHE_FLAT,
 };
 
 static const struct regmap_config tegra264_ahub_regmap_config = {
-	.reg_bits		= 32,
-	.val_bits		= 32,
-	.reg_stride		= 4,
-	.writeable_reg		= tegra264_ahub_wr_reg,
-	.max_register		= TEGRA264_MAX_REGISTER_ADDR,
-	.reg_default_cb		= regmap_default_zero_cb,
-	.cache_type		= REGCACHE_FLAT,
+	reg_bits: 32,
+	val_bits: 32,
+	reg_stride: 4,
+	writeable_reg: tegra264_ahub_wr_reg,
+	max_register: TEGRA264_MAX_REGISTER_ADDR,
+	reg_default_cb: regmap_default_zero_cb,
+	cache_type: REGCACHE_FLAT,
 };
 
 static const struct tegra_ahub_soc_data soc_data_tegra210 = {
-	.cmpnt_drv	= &tegra210_ahub_component,
-	.dai_drv	= tegra210_ahub_dais,
-	.num_dais	= ARRAY_SIZE(tegra210_ahub_dais),
-	.regmap_config	= &tegra210_ahub_regmap_config,
+	cmpnt_drv: &tegra210_ahub_component,
+	dai_drv: tegra210_ahub_dais,
+	num_dais: ARRAY_SIZE(tegra210_ahub_dais),
+	regmap_config: &tegra210_ahub_regmap_config,
 	.mask[0]	= TEGRA210_XBAR_REG_MASK_0,
 	.mask[1]	= TEGRA210_XBAR_REG_MASK_1,
 	.mask[2]	= TEGRA210_XBAR_REG_MASK_2,
 	.mask[3]	= TEGRA210_XBAR_REG_MASK_3,
-	.reg_count	= TEGRA210_XBAR_UPDATE_MAX_REG,
-	.xbar_part_size	= TEGRA210_XBAR_PART1_RX,
+	reg_count: TEGRA210_XBAR_UPDATE_MAX_REG,
+	xbar_part_size: TEGRA210_XBAR_PART1_RX,
 };
 
 static const struct tegra_ahub_soc_data soc_data_tegra186 = {
-	.cmpnt_drv	= &tegra186_ahub_component,
-	.dai_drv	= tegra186_ahub_dais,
-	.num_dais	= ARRAY_SIZE(tegra186_ahub_dais),
-	.regmap_config	= &tegra186_ahub_regmap_config,
+	cmpnt_drv: &tegra186_ahub_component,
+	dai_drv: tegra186_ahub_dais,
+	num_dais: ARRAY_SIZE(tegra186_ahub_dais),
+	regmap_config: &tegra186_ahub_regmap_config,
 	.mask[0]	= TEGRA186_XBAR_REG_MASK_0,
 	.mask[1]	= TEGRA186_XBAR_REG_MASK_1,
 	.mask[2]	= TEGRA186_XBAR_REG_MASK_2,
 	.mask[3]	= TEGRA186_XBAR_REG_MASK_3,
-	.reg_count	= TEGRA186_XBAR_UPDATE_MAX_REG,
-	.xbar_part_size	= TEGRA210_XBAR_PART1_RX,
+	reg_count: TEGRA186_XBAR_UPDATE_MAX_REG,
+	xbar_part_size: TEGRA210_XBAR_PART1_RX,
 };
 
 static const struct tegra_ahub_soc_data soc_data_tegra234 = {
-	.cmpnt_drv	= &tegra234_ahub_component,
-	.dai_drv	= tegra186_ahub_dais,
-	.num_dais	= ARRAY_SIZE(tegra186_ahub_dais),
-	.regmap_config	= &tegra186_ahub_regmap_config,
+	cmpnt_drv: &tegra234_ahub_component,
+	dai_drv: tegra186_ahub_dais,
+	num_dais: ARRAY_SIZE(tegra186_ahub_dais),
+	regmap_config: &tegra186_ahub_regmap_config,
 	.mask[0]	= TEGRA186_XBAR_REG_MASK_0,
 	.mask[1]	= TEGRA186_XBAR_REG_MASK_1,
 	.mask[2]	= TEGRA186_XBAR_REG_MASK_2,
 	.mask[3]	= TEGRA186_XBAR_REG_MASK_3,
-	.reg_count	= TEGRA186_XBAR_UPDATE_MAX_REG,
-	.xbar_part_size	= TEGRA210_XBAR_PART1_RX,
+	reg_count: TEGRA186_XBAR_UPDATE_MAX_REG,
+	xbar_part_size: TEGRA210_XBAR_PART1_RX,
 };
 
 static const struct tegra_ahub_soc_data soc_data_tegra264 = {
-	.cmpnt_drv	= &tegra264_ahub_component,
-	.dai_drv	= tegra264_ahub_dais,
-	.num_dais	= ARRAY_SIZE(tegra264_ahub_dais),
-	.regmap_config	= &tegra264_ahub_regmap_config,
+	cmpnt_drv: &tegra264_ahub_component,
+	dai_drv: tegra264_ahub_dais,
+	num_dais: ARRAY_SIZE(tegra264_ahub_dais),
+	regmap_config: &tegra264_ahub_regmap_config,
 	.mask[0]	= TEGRA264_XBAR_REG_MASK_0,
 	.mask[1]	= TEGRA264_XBAR_REG_MASK_1,
 	.mask[2]	= TEGRA264_XBAR_REG_MASK_2,
 	.mask[3]	= TEGRA264_XBAR_REG_MASK_3,
 	.mask[4]	= TEGRA264_XBAR_REG_MASK_4,
-	.reg_count	= TEGRA264_XBAR_UPDATE_MAX_REG,
-	.xbar_part_size	= TEGRA264_XBAR_PART1_RX,
+	reg_count: TEGRA264_XBAR_UPDATE_MAX_REG,
+	xbar_part_size: TEGRA264_XBAR_PART1_RX,
 };
 
 static const struct of_device_id tegra_ahub_of_match[] = {
@@ -2301,91 +2300,91 @@ static const struct of_device_id tegra_ahub_of_match[] = {
 };
 MODULE_DEVICE_TABLE!(of, tegra_ahub_of_match);
 
-static int tegra_ahub_runtime_suspend(struct device *dev)
+static int tegra_ahub_runtime_suspend(device *dev)
 {
 	struct tegra_ahub *ahub = dev_get_drvdata(dev);
 
-	regcache_cache_only(ahub->regmap, true);
-	regcache_mark_dirty(ahub->regmap);
+	regcache_cache_only((*ahub).regmap, true);
+	regcache_mark_dirty((*ahub).regmap);
 
-	clk_disable_unprepare(ahub->clk);
+	clk_disable_unprepare((*ahub).clk);
 
 	return 0;
 }
 
-static int tegra_ahub_runtime_resume(struct device *dev)
+static int tegra_ahub_runtime_resume(device *dev)
 {
 	struct tegra_ahub *ahub = dev_get_drvdata(dev);
 	int err;
 
-	err = clk_prepare_enable(ahub->clk);
+	err = clk_prepare_enable((*ahub).clk);
 	if (err) {
 		dev_err(dev, "failed to enable AHUB clock, err: %d\n", err);
 		return err;
 	}
 
-	regcache_cache_only(ahub->regmap, false);
-	regcache_sync(ahub->regmap);
+	regcache_cache_only((*ahub).regmap, false);
+	regcache_sync((*ahub).regmap);
 
 	return 0;
 }
 
-static int tegra_ahub_probe(struct platform_device *pdev)
+static int tegra_ahub_probe(platform_device *pdev)
 {
 	struct tegra_ahub *ahub;
 	void __iomem *regs;
 	int err;
 
-	ahub = devm_kzalloc(&pdev->dev, sizeof(*ahub), GFP_KERNEL);
+	ahub = devm_kzalloc((*&pdev).dev, sizeof(*ahub), GFP_KERNEL);
 	if (!ahub)
 		return -ENOMEM;
 
-	ahub->soc_data = of_device_get_match_data(&pdev->dev);
-	if (!ahub->soc_data)
+	(*ahub).soc_data = of_device_get_match_data((*&pdev).dev);
+	if ((*!ahub).soc_data)
 		return -ENODEV;
 
 	platform_set_drvdata(pdev, ahub);
 
-	ahub->clk = devm_clk_get(&pdev->dev, "ahub");
-	if (IS_ERR(ahub->clk))
-		return dev_err_probe(&pdev->dev, PTR_ERR(ahub->clk),
+	(*ahub).clk = devm_clk_get((*&pdev).dev, "ahub");
+	if (IS_ERR((*ahub).clk))
+		return dev_err_probe((*&pdev).dev, PTR_ERR((*ahub).clk),
 				     "can't retrieve AHUB clock\n");
 
 	regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(regs))
 		return PTR_ERR(regs);
 
-	ahub->regmap = devm_regmap_init_mmio(&pdev->dev, regs,
-					     ahub->soc_data->regmap_config);
-	if (IS_ERR(ahub->regmap))
-		return dev_err_probe(&pdev->dev, PTR_ERR(ahub->regmap),
+	(*ahub).regmap = devm_regmap_init_mmio((*&pdev).dev, regs,
+					     (*(*ahub).soc_data).regmap_config);
+	if (IS_ERR((*ahub).regmap))
+		return dev_err_probe((*&pdev).dev, PTR_ERR((*ahub).regmap),
 				     "regmap init failed\n");
 
-	regcache_cache_only(ahub->regmap, true);
+	regcache_cache_only((*ahub).regmap, true);
 
-	err = devm_snd_soc_register_component(&pdev->dev,
-					      ahub->soc_data->cmpnt_drv,
-					      ahub->soc_data->dai_drv,
-					      ahub->soc_data->num_dais);
+	err = devm_snd_soc_register_component((*&pdev).dev,
+					      (*(*ahub).soc_data).cmpnt_drv,
+					      (*(*ahub).soc_data).dai_drv,
+					      (*(*ahub).soc_data).num_dais);
 	if (err)
-		return dev_err_probe(&pdev->dev, err,
+		return dev_err_probe((*&pdev).dev, err,
 				     "can't register AHUB component\n");
 
-	pm_runtime_enable(&pdev->dev);
+	pm_runtime_enable((*&pdev).dev);
 
-	err = of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
+	err = of_platform_populate((*pdev).dev.of_node, NULL, NULL, (*&pdev).dev);
 	if (err) {
-		pm_runtime_disable(&pdev->dev);
-		return dev_err_probe(&pdev->dev, err,
+		pm_runtime_disable((*&pdev).dev);
+		return dev_err_probe((*&pdev).dev, err,
 				     "failed to populate child nodes\n");
 	}
 
 	return 0;
 }
 
-static void tegra_ahub_remove(struct platform_device *pdev)
+static void tegra_ahub_remove(platform_device *pdev)
 {
-	pm_runtime_disable(&pdev->dev);
+	pm_runtime_disable((*&pdev).dev);
 }
 
 static const struct dev_pm_ops tegra_ahub_pm_ops = {
@@ -2395,12 +2394,12 @@ static const struct dev_pm_ops tegra_ahub_pm_ops = {
 };
 
 static struct platform_driver tegra_ahub_driver = {
-	.probe = tegra_ahub_probe,
-	.remove = tegra_ahub_remove,
-	.driver = {
-		.name = "tegra210-ahub",
-		.of_match_table = tegra_ahub_of_match,
-		.pm = pm_ptr(&tegra_ahub_pm_ops),
+	probe: tegra_ahub_probe,
+	remove: tegra_ahub_remove,
+	driver: {
+		name: "tegra210-ahub",
+		of_match_table: tegra_ahub_of_match,
+		pm: pm_ptr(&tegra_ahub_pm_ops),
 	},
 };
 module_platform_driver!(tegra_ahub_driver);

@@ -9,8 +9,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#ifndef ASIC_REG_PSOC_RESET_CONF_REGS_H_
-#define ASIC_REG_PSOC_RESET_CONF_REGS_H_
 
 /*
  *****************************************

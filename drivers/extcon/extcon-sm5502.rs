@@ -23,17 +23,17 @@ pub struct sm5502_type {
 }
 
 extern "C" {
-    type device; type extcon_dev; type i2c_client; type regmap; type regmap_irq_chip_data;
-    type work_struct; type delayed_work; type mutex; type regmap_irq_chip; type regmap_irq;
-    fn regmap_update_bits(*mut regmap, u32, u32, u32) -> i32;
-    fn regmap_read(*mut regmap, u32, *mut u32) -> i32;
-    fn regmap_write(*mut regmap, u8, u32) -> i32;
-    fn extcon_set_state_sync(*mut extcon_dev, u32, bool) -> i32;
-    fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex);
-    fn schedule_work(*mut work_struct) -> bool;
-    fn regmap_irq_get_virq(*mut regmap_irq_chip_data, u32) -> i32;
-    fn enable_irq_wake(i32) -> i32; fn disable_irq_wake(i32) -> i32;
+    fn regmap_update_bits(_: *mut regmap, _: u32, _: u32, _: u32) -> i32;
+    fn regmap_read(_: *mut regmap, _: u32, _: *mut u32) -> i32;
+    fn regmap_write(_: *mut regmap, _: u8, _: u32) -> i32;
+    fn extcon_set_state_sync(_: *mut extcon_dev, _: u32, _: bool) -> i32;
+    fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex);
+    fn schedule_work(_: *mut work_struct) -> bool;
+    fn regmap_irq_get_virq(_: *mut regmap_irq_chip_data, _: u32) -> i32;
+    fn enable_irq_wake(_: i32) -> i32; fn disable_irq_wake(_: i32) -> i32;
 }
+type device; type extcon_dev; type i2c_client; type regmap; type regmap_irq_chip_data;
+type work_struct; type delayed_work; type mutex; type regmap_irq_chip; type regmap_irq;
 
 #[repr(C)] pub struct regmap_config { pub reg_bits: u32, pub val_bits: u32, pub volatile_reg: Option<unsafe extern "C" fn(*mut device,u32)->bool>, pub max_register: u32 }
 #[repr(C)] pub struct of_device_id { pub compatible: *const core::ffi::c_char, pub data: *const core::ffi::c_void }

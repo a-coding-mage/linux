@@ -17,12 +17,12 @@ unsafe extern "C" {
 }
 
 // CONFIG_PM_SLEEP controls whether this function is externally defined.
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" {
     pub fn rockchip_suspend_init();
 }
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 #[inline]
 pub fn rockchip_suspend_init() {}
 

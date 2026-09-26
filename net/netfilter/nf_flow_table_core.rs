@@ -164,7 +164,7 @@ unsafe fn nf_flow_table_gc_run(flow_table: *mut nf_flowtable) { nf_flow_table_it
 pub unsafe extern "C" fn nf_flow_table_init(flowtable: *mut nf_flowtable) -> i32 { INIT_DELAYED_WORK(&mut (*flowtable).gc_work, nf_flow_offload_work_gc); flow_block_init(&mut (*flowtable).flow_block); init_rwsem(&mut (*flowtable).flow_block_lock); let err = rhashtable_init(&mut (*flowtable).rhashtable, &nf_flow_offload_rhash_params); if err < 0 { return err; } queue_delayed_work(system_power_efficient_wq, &mut (*flowtable).gc_work, HZ); mutex_lock(&mut flowtable_lock); list_add(&mut (*flowtable).list, &mut flowtables); mutex_unlock(&mut flowtable_lock); 0 }
 
 #[no_mangle]
-pub unsafe extern "C" fn nf_flow_table_cleanup(dev: *mut net_device) { mutex_lock(&mut flowtable_lock); list_for_each_entry(flowtable, &mut flowtables, list) { nf_flow_table_gc_cleanup(flowtable, dev); } mutex_unlock(&mut flowtable_lock); }
+pub unsafe extern "C" fn nf_flow_table_cleanup(dev: *mut net_device) { mutex_lock(&mut flowtable_lock); list_for_each_entry!(flowtable, &mut flowtables, list, { nf_flow_table_gc_cleanup(flowtable, dev); }); mutex_unlock(&mut flowtable_lock); }
 
 #[no_mangle]
 pub unsafe extern "C" fn nf_flow_table_free(flow_table: *mut nf_flowtable) { mutex_lock(&mut flowtable_lock); list_del(&mut (*flow_table).list); mutex_unlock(&mut flowtable_lock); cancel_delayed_work_sync(&mut (*flow_table).gc_work); nf_flow_table_offload_flush(flow_table); nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, core::ptr::null_mut()); nf_flow_table_gc_run(flow_table); nf_flow_table_offload_flush_cleanup(flow_table); rhashtable_destroy(&mut (*flow_table).rhashtable); }

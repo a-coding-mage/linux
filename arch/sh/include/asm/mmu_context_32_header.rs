@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 // CONFIG_CPU_HAS_PTEAEX selects the PTEAEX-based implementation.
-#[cfg(feature = "CONFIG_CPU_HAS_PTEAEX")]
+#[cfg(CONFIG_CPU_HAS_PTEAEX)]
 #[inline]
 pub unsafe fn set_asid(asid: ::core::ffi::c_ulong) {
     __raw_writel(asid, MMU_PTEAEX);
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_PTEAEX")]
+#[cfg(CONFIG_CPU_HAS_PTEAEX)]
 #[inline]
 pub unsafe fn get_asid() -> ::core::ffi::c_ulong {
     __raw_readl(MMU_PTEAEX) & MMU_CONTEXT_ASID_MASK
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_PTEAEX"))]
+#[cfg(not(CONFIG_CPU_HAS_PTEAEX))]
 #[inline]
 pub unsafe fn set_asid(asid: ::core::ffi::c_ulong) {
     let mut __dummy: ::core::ffi::c_ulong;
@@ -25,7 +25,7 @@ pub unsafe fn set_asid(asid: ::core::ffi::c_ulong) {
     let _ = (&mut __dummy, asid, MMU_PTEH, 0xffffff00u32);
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_PTEAEX"))]
+#[cfg(not(CONFIG_CPU_HAS_PTEAEX))]
 #[inline]
 pub unsafe fn get_asid() -> ::core::ffi::c_ulong {
     let mut asid: ::core::ffi::c_ulong;

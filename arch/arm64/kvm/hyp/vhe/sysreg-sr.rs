@@ -49,8 +49,8 @@ unsafe fn __sysreg_save_vel2_state(vcpu: *mut kvm_vcpu) {
         val = read_sysreg_el1(SYS_CNTKCTL);
         if !cpus_have_final_cap(ARM64_HAS_NV2P1) {
             val &= CNTKCTL_VALID_BITS;
-            __vcpu_rmw_sys_reg(vcpu, CNTHCTL_EL2, &=, !CNTKCTL_VALID_BITS);
-            __vcpu_rmw_sys_reg(vcpu, CNTHCTL_EL2, |=, val);
+            __vcpu_rmw_sys_reg!(vcpu, CNTHCTL_EL2, &=, !CNTKCTL_VALID_BITS);
+            __vcpu_rmw_sys_reg!(vcpu, CNTHCTL_EL2, |=, val);
         } else {
             __vcpu_assign_sys_reg(vcpu, CNTHCTL_EL2, val);
         }

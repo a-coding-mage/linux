@@ -124,7 +124,7 @@ unsafe extern "C" fn jh71x0_clk_set_phase(hw: *mut clk_hw, degrees: c_int) -> c_
 }
 
 // CONFIG_DEBUG_FS selects the debugfs implementation; otherwise this is NULL.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn jh71x0_clk_debug_init(hw: *mut clk_hw, dentry: *mut dentry) {
     static JH71X0_CLK_REG: debugfs_reg32 = debugfs_reg32 { name: "CTRL", offset: 0 };
     let clk = jh71x0_clk_from(hw);

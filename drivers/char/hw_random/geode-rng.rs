@@ -88,30 +88,34 @@ unsafe fn geode_rng_init() -> i32 {
     let mut mem: *mut core::ffi::c_void;
     let mut rng_base: usize;
     let mut priv_: *mut amd_geode_priv;
+    'put_dev: {
+    'free_priv: {
+    'err_unmap: {
+    'found: {
 
     for_each_pci_dev!(pdev);
     ent = pci_match_id(PCI_TBL.as_ptr(), pdev);
     if !ent.is_null() {
-        goto_found!(found);
+        break 'found;
     }
     /* Device not found. */
     return err;
-
-found:
+    }
+    
     priv_ = kzalloc_obj::<amd_geode_priv>();
     if priv_.is_null() {
         err = -ENOMEM;
-        goto_put_dev!(put_dev);
+        break 'put_dev;
     }
 
     rng_base = pci_resource_start(pdev, 0);
     if rng_base == 0 {
-        goto_free_priv!(free_priv);
+        break 'free_priv;
     }
     err = -ENOMEM;
     mem = ioremap(rng_base, 0x58);
     if mem.is_null() {
-        goto_free_priv!(free_priv);
+        break 'free_priv;
     }
 
     geode_rng.priv_ = priv_ as unsigned_long;
@@ -122,15 +126,17 @@ found:
     err = hwrng_register(&raw mut geode_rng);
     if err != 0 {
         pr_err!("{}RNG registering failed ({})\n", PFX, err);
-        goto_err_unmap!(err_unmap);
+        break 'err_unmap;
     }
     return err;
-
-err_unmap:
+    }
+    
     iounmap(mem);
-free_priv:
+    }
+    
     kfree(priv_);
-put_dev:
+    }
+    
     pci_dev_put(pdev);
     err
 }

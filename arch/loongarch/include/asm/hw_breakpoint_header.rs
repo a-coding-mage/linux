@@ -111,15 +111,15 @@ extern "C" {
     pub fn watchpoint_handler(regs: *mut pt_regs);
 }
 
-#[cfg(feature = "CONFIG_HAVE_HW_BREAKPOINT")]
+#[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
 extern "C" {
     pub fn ptrace_hw_copy_thread(task: *mut task_struct);
     pub fn hw_breakpoint_thread_switch(next: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_HW_BREAKPOINT"))]
+#[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 pub unsafe fn ptrace_hw_copy_thread(_task: *mut task_struct) {}
-#[cfg(not(feature = "CONFIG_HAVE_HW_BREAKPOINT"))]
+#[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 pub unsafe fn hw_breakpoint_thread_switch(_next: *mut task_struct) {}
 
 /* Determine number of BRP registers available. */

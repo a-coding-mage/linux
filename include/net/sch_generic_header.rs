@@ -8,7 +8,7 @@ use core::ffi::{c_char, c_int, c_void};
 #[repr(C)] pub struct Qdisc_class_ops { pub flags:u32, pub select_queue: Option<unsafe extern "C" fn(*mut Qdisc,*mut tcmsg)->*mut netdev_queue>, pub graft: Option<unsafe extern "C" fn(*mut Qdisc, c_ulong,*mut Qdisc,*mut *mut Qdisc,*mut netlink_ext_ack)->c_int>, pub leaf: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong)->*mut Qdisc>, pub qlen_notify: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong)>, pub find: Option<unsafe extern "C" fn(*mut Qdisc,u32)->c_ulong>, pub change: Option<unsafe extern "C" fn(*mut Qdisc,u32,u32,*mut *mut nlattr,*mut c_ulong,*mut netlink_ext_ack)->c_int>, pub delete: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong,*mut netlink_ext_ack)->c_int>, pub walk: Option<unsafe extern "C" fn(*mut Qdisc,*mut qdisc_walker)>, pub tcf_block: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong,*mut netlink_ext_ack)->*mut tcf_block>, pub bind_tcf: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong,u32)->c_ulong>, pub unbind_tcf: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong)>, pub dump: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong,*mut sk_buff,*mut tcmsg)->c_int>, pub dump_stats: Option<unsafe extern "C" fn(*mut Qdisc,c_ulong,*mut gnet_dump)->c_int> }
 
 pub type c_ulong = usize;
-extern "C" { fn qdisc_reset(*mut Qdisc); fn qdisc_tree_reduce_backlog(*mut Qdisc,u32,u32); fn qdisc_root_sleeping(*const Qdisc)->*mut Qdisc; fn qdisc_lock(*mut Qdisc)->*mut spinlock_t; }
+extern "C" { fn qdisc_reset(_: *mut Qdisc); fn qdisc_tree_reduce_backlog(_: *mut Qdisc,_: u32,_: u32); fn qdisc_root_sleeping(_: *const Qdisc)->*mut Qdisc; fn qdisc_lock(_: *mut Qdisc)->*mut spinlock_t; }
 
 #[repr(C)] pub struct qdisc_rate_table { pub rate: tc_ratespec, pub data:[u32;256], pub next:*mut qdisc_rate_table, pub refcnt:c_int }
 #[repr(C)] pub struct qdisc_size_table { pub rcu: rcu_head, pub list:list_head, pub szopts:tc_sizespec, pub refcnt:c_int, pub data:[u16;0] }
@@ -46,10 +46,10 @@ pub type c_long=isize; pub const QDISC_CB_PRIV_LEN:usize=20;
 #[inline] pub unsafe fn psched_pkt2t_ns(r:*const psched_pktrate,pkt_num:u32)->u64{((pkt_num as u64)*(*r).mult as u64)>>(*r).shift}
 
 /* The remaining declarations retain the header's external kernel interfaces. */
-extern "C" { pub static mut noop_qdisc:Qdisc; pub static mut noop_qdisc_ops:Qdisc_ops; pub static mut default_qdisc_ops:*const Qdisc_ops; pub fn qdisc_alloc(*mut netdev_queue,*const Qdisc_ops,*mut netlink_ext_ack)->*mut Qdisc; pub fn qdisc_free(*mut Qdisc); pub fn qdisc_destroy(*mut Qdisc); pub fn qdisc_put(*mut Qdisc); pub fn dev_init_scheduler(*mut net_device); pub fn dev_shutdown(*mut net_device); pub fn dev_activate(*mut net_device); pub fn dev_deactivate(*mut net_device,bool); pub fn qdisc_enqueue_tail(*mut sk_buff,*mut Qdisc)->c_int; }
+extern "C" { pub static mut noop_qdisc:Qdisc; pub static mut noop_qdisc_ops:Qdisc_ops; pub static mut default_qdisc_ops:*const Qdisc_ops; pub fn qdisc_alloc(_: *mut netdev_queue,_: *const Qdisc_ops,_: *mut netlink_ext_ack)->*mut Qdisc; pub fn qdisc_free(_: *mut Qdisc); pub fn qdisc_destroy(_: *mut Qdisc); pub fn qdisc_put(_: *mut Qdisc); pub fn dev_init_scheduler(_: *mut net_device); pub fn dev_shutdown(_: *mut net_device); pub fn dev_activate(_: *mut net_device); pub fn dev_deactivate(_: *mut net_device,_: bool); pub fn qdisc_enqueue_tail(_: *mut sk_buff,_: *mut Qdisc)->c_int; }
 
 /* External types supplied by the kernel translation units. */
 #[allow(non_camel_case_types)] pub type IFNAMSIZ=usize;
-extern "C" { fn refcount_inc(*mut refcount_t); fn refcount_dec_if_one(*mut refcount_t)->bool; fn refcount_inc_not_zero(*mut refcount_t)->bool; }
+extern "C" { fn refcount_inc(_: *mut refcount_t); fn refcount_dec_if_one(_: *mut refcount_t)->bool; fn refcount_inc_not_zero(_: *mut refcount_t)->bool; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

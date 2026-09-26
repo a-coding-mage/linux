@@ -153,7 +153,7 @@ pub unsafe fn simple_strtol(cp: *const c_char, endp: *mut *mut c_char, base: c_u
     simple_strtoull(cp, endp, base) as i64
 }
 
-#[cfg(feature = "CONFIG_EFI_PARAMS_FROM_FDT")]
+#[cfg(CONFIG_EFI_PARAMS_FROM_FDT)]
 #[cfg(not(feature = "EFI_HAVE_STRRCHR"))]
 /// strrchr - Find the last occurrence of a character in a string
 /// @s: The string to be searched
@@ -173,7 +173,7 @@ pub unsafe fn strrchr(mut s: *const c_char, c: c_int) -> *mut c_char {
     last as *mut c_char
 }
 
-#[cfg(feature = "CONFIG_EFI_PARAMS_FROM_FDT")]
+#[cfg(CONFIG_EFI_PARAMS_FROM_FDT)]
 #[cfg(not(feature = "EFI_HAVE_MEMCHR"))]
 /// memchr - Find a character in an area of memory.
 /// @s: The memory area

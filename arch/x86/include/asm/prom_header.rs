@@ -15,7 +15,7 @@ use core::ffi::c_char;
 
 // CONFIG_OF is a build-time C configuration condition.  The two cfg branches
 // below preserve the corresponding declaration/no-op behavior.
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 extern "C" {
     pub static mut of_ioapic: core::ffi::c_int;
     pub static mut initial_dtb: u64;
@@ -24,19 +24,19 @@ extern "C" {
     pub fn x86_flattree_get_config();
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub fn add_dtb(_data: u64) {}
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub fn x86_of_pci_init() {}
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub fn x86_flattree_get_config() {}
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub const of_ioapic: i32 = 0;
 
 extern "C" {

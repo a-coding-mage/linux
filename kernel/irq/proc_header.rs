@@ -10,17 +10,17 @@
 #[repr(C)]
 pub struct irq_chip;
 
-#[cfg(all(feature = "CONFIG_PROC_FS", feature = "CONFIG_GENERIC_IRQ_SHOW"))]
+#[cfg(all(CONFIG_PROC_FS, CONFIG_GENERIC_IRQ_SHOW))]
 unsafe extern "C" {
     pub fn irq_proc_calc_prec();
     pub fn irq_proc_update_chip(chip: *const irq_chip);
 }
 
-#[cfg(not(all(feature = "CONFIG_PROC_FS", feature = "CONFIG_GENERIC_IRQ_SHOW")))]
+#[cfg(not(all(CONFIG_PROC_FS, CONFIG_GENERIC_IRQ_SHOW)))]
 #[inline]
 pub fn irq_proc_calc_prec() {}
 
-#[cfg(not(all(feature = "CONFIG_PROC_FS", feature = "CONFIG_GENERIC_IRQ_SHOW")))]
+#[cfg(not(all(CONFIG_PROC_FS, CONFIG_GENERIC_IRQ_SHOW)))]
 #[inline]
 pub fn irq_proc_update_chip(_chip: *const irq_chip) {}
 

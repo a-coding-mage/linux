@@ -108,19 +108,19 @@
 // #define	_R31	31
 
 macro_rules! IMM_L {
-    ($i:expr) => { ((usize)(i) & 0xffff) };
+    ($i:expr) => { ((usize)($i) & 0xffff) };
 }
 macro_rules! IMM_DS {
-    ($i:expr) => { ((usize)(i) & 0xfffc) };
+    ($i:expr) => { ((usize)($i) & 0xfffc) };
 }
 macro_rules! IMM_DQ {
-    ($i:expr) => { ((usize)(i) & 0xfff0) };
+    ($i:expr) => { ((usize)($i) & 0xfff0) };
 }
 macro_rules! IMM_D0 {
-    ($i:expr) => { (((usize)(i) >> 16) & 0x3ffff) };
+    ($i:expr) => { (((usize)($i) >> 16) & 0x3ffff) };
 }
 macro_rules! IMM_D1 {
-    ($i:expr) => { IMM_L(i) };
+    ($i:expr) => { IMM_L!($i) };
 }
 
 /*
@@ -131,16 +131,21 @@ macro_rules! IMM_D1 {
  * XXX: should these mask out possible sign bits?
  */
 macro_rules! IMM_H {
-    ($i:expr) => { ((usize)(i)>>16) };
+    ($i:expr) => {
+        (($i) as usize) >> 16
+    };
 }
-// #define IMM_HA(i)               (((uintptr_t)(i)>>16) +                       \
-					(((uintptr_t)(i) & 0x8000) >> 15))
+macro_rules! IMM_HA {
+    ($i:expr) => {
+        ((($i) as usize) >> 16) + ((($i) as usize & 0x8000) >> 15)
+    };
+}
 
 /*
  * 18-bit immediate helper for prefix 18-bit upper immediate si0 field.
  */
 macro_rules! IMM_H18 {
-    ($i:expr) => { (((usize)(i)>>16) & 0x3ffff) };
+    ($i:expr) => { (((usize)($i)>>16) & 0x3ffff) };
 }
 
 
@@ -331,107 +336,107 @@ macro_rules! PPC_INST_PSTD { () => { 0xf4000000 }; }
 
 /* macros to insert fields into opcodes */
 macro_rules! ___PPC_RA {
-    ($a:expr) => { (((a) & 0x1f) << 16) };
+    ($a:expr) => { ((($a) & 0x1f) << 16) };
 }
 macro_rules! ___PPC_RB {
-    ($b:expr) => { (((b) & 0x1f) << 11) };
+    ($b:expr) => { ((($b) & 0x1f) << 11) };
 }
 macro_rules! ___PPC_RC {
-    ($c:expr) => { (((c) & 0x1f) << 6) };
+    ($c:expr) => { ((($c) & 0x1f) << 6) };
 }
 macro_rules! ___PPC_RS {
-    ($s:expr) => { (((s) & 0x1f) << 21) };
+    ($s:expr) => { ((($s) & 0x1f) << 21) };
 }
 macro_rules! ___PPC_RT {
-    ($t:expr) => { ___PPC_RS(t) };
+    ($t:expr) => { ___PPC_RS!($t) };
 }
 macro_rules! ___PPC_R {
-    ($r:expr) => { (((r) & 0x1) << 16) };
+    ($r:expr) => { ((($r) & 0x1) << 16) };
 }
 macro_rules! ___PPC_PRS {
-    ($prs:expr) => { (((prs) & 0x1) << 17) };
+    ($prs:expr) => { ((($prs) & 0x1) << 17) };
 }
 macro_rules! ___PPC_RIC {
-    ($ric:expr) => { (((ric) & 0x3) << 18) };
+    ($ric:expr) => { ((($ric) & 0x3) << 18) };
 }
 macro_rules! __PPC_RA {
-    ($a:expr) => { ___PPC_RA(__REG_##a) };
+    ($a:tt) => { ___PPC_RA!(::kernel::macros::paste!([<__REG_ $a>])) };
 }
 macro_rules! __PPC_RA0 {
-    ($a:expr) => { ___PPC_RA(__REGA0_##a) };
+    ($a:tt) => { ___PPC_RA!(::kernel::macros::paste!([<__REGA0_ $a>])) };
 }
 macro_rules! __PPC_RB {
-    ($b:expr) => { ___PPC_RB(__REG_##b) };
+    ($b:tt) => { ___PPC_RB!(::kernel::macros::paste!([<__REG_ $b>])) };
 }
 macro_rules! __PPC_RS {
-    ($s:expr) => { ___PPC_RS(__REG_##s) };
+    ($s:tt) => { ___PPC_RS!(::kernel::macros::paste!([<__REG_ $s>])) };
 }
 macro_rules! __PPC_RT {
-    ($t:expr) => { ___PPC_RT(__REG_##t) };
+    ($t:tt) => { ___PPC_RT!(::kernel::macros::paste!([<__REG_ $t>])) };
 }
 macro_rules! __PPC_XA {
-    ($a:expr) => { ((((a) & 0x1f) << 16) | (((a) & 0x20) >> 3)) };
+    ($a:expr) => { (((($a) & 0x1f) << 16) | ((($a) & 0x20) >> 3)) };
 }
 macro_rules! __PPC_XB {
-    ($b:expr) => { ((((b) & 0x1f) << 11) | (((b) & 0x20) >> 4)) };
+    ($b:expr) => { (((($b) & 0x1f) << 11) | ((($b) & 0x20) >> 4)) };
 }
 macro_rules! __PPC_XS {
-    ($s:expr) => { ((((s) & 0x1f) << 21) | (((s) & 0x20) >> 5)) };
+    ($s:expr) => { (((($s) & 0x1f) << 21) | ((($s) & 0x20) >> 5)) };
 }
 macro_rules! __PPC_XT {
-    ($s:expr) => { __PPC_XS(s) };
+    ($s:expr) => { __PPC_XS!($s) };
 }
 macro_rules! __PPC_XSP {
-    ($s:expr) => { ((((s) & 0x1e) | (((s) >> 5) & 0x1)) << 21) };
+    ($s:expr) => { (((($s) & 0x1e) | ((($s) >> 5) & 0x1)) << 21) };
 }
 macro_rules! __PPC_XTP {
-    ($s:expr) => { __PPC_XSP(s) };
+    ($s:expr) => { __PPC_XSP!($s) };
 }
 macro_rules! __PPC_T_TLB {
-    ($t:expr) => { (((t) & 0x3) << 21) };
+    ($t:expr) => { ((($t) & 0x3) << 21) };
 }
 macro_rules! __PPC_PL {
-    ($p:expr) => { (((p) & 0x3) << 16) };
+    ($p:expr) => { ((($p) & 0x3) << 16) };
 }
 macro_rules! __PPC_WC {
-    ($w:expr) => { (((w) & 0x3) << 21) };
+    ($w:expr) => { ((($w) & 0x3) << 21) };
 }
 macro_rules! __PPC_WS {
-    ($w:expr) => { (((w) & 0x1f) << 11) };
+    ($w:expr) => { ((($w) & 0x1f) << 11) };
 }
 macro_rules! __PPC_SH {
-    ($s:expr) => { __PPC_WS(s) };
+    ($s:expr) => { __PPC_WS!($s) };
 }
 macro_rules! __PPC_SH64 {
-    ($s:expr) => { (__PPC_SH(s) | (((s) & 0x20) >> 4)) };
+    ($s:expr) => { (__PPC_SH!($s) | ((($s) & 0x20) >> 4)) };
 }
 macro_rules! __PPC_MB {
-    ($s:expr) => { ___PPC_RC(s) };
+    ($s:expr) => { ___PPC_RC!($s) };
 }
 macro_rules! __PPC_ME {
-    ($s:expr) => { (((s) & 0x1f) << 1) };
+    ($s:expr) => { ((($s) & 0x1f) << 1) };
 }
 macro_rules! __PPC_MB64 {
-    ($s:expr) => { (__PPC_MB(s) | ((s) & 0x20)) };
+    ($s:expr) => { (__PPC_MB!($s) | (($s) & 0x20)) };
 }
 macro_rules! __PPC_ME64 {
-    ($s:expr) => { __PPC_MB64(s) };
+    ($s:expr) => { __PPC_MB64!($s) };
 }
 macro_rules! __PPC_BI {
-    ($s:expr) => { (((s) & 0x1f) << 16) };
+    ($s:expr) => { ((($s) & 0x1f) << 16) };
 }
 macro_rules! __PPC_CT {
-    ($t:expr) => { (((t) & 0x0f) << 21) };
+    ($t:expr) => { ((($t) & 0x0f) << 21) };
 }
 macro_rules! __PPC_SPR {
-    ($r:expr) => { ((((r) & 0x1f) << 16) | ((((r) >> 5) & 0x1f) << 11)) };
+    ($r:expr) => { (((($r) & 0x1f) << 16) | (((($r) >> 5) & 0x1f) << 11)) };
 }
 macro_rules! __PPC_RC21 { () => { (0x1 << 10) }; }
 macro_rules! __PPC_PRFX_R {
-    ($r:expr) => { (((r) & 0x1) << 20) };
+    ($r:expr) => { ((($r) & 0x1) << 20) };
 }
 macro_rules! __PPC_EH {
-    ($eh:expr) => { (((eh) & 0x1) << 0) };
+    ($eh:expr) => { ((($eh) & 0x1) << 0) };
 }
 
 /*
@@ -440,25 +445,25 @@ macro_rules! __PPC_EH {
  * from binutils).
  */
 macro_rules! PPC_LO {
-    ($v:expr) => { ((v) & 0xffff) };
+    ($v:expr) => { (($v) & 0xffff) };
 }
 macro_rules! PPC_HI {
-    ($v:expr) => { (((v) >> 16) & 0xffff) };
+    ($v:expr) => { ((($v) >> 16) & 0xffff) };
 }
 macro_rules! PPC_HA {
-    ($v:expr) => { PPC_HI((v) + 0x8000) };
+    ($v:expr) => { PPC_HI!(($v) + 0x8000) };
 }
 macro_rules! PPC_HIGHER {
-    ($v:expr) => { (((v) >> 32) & 0xffff) };
+    ($v:expr) => { ((($v) >> 32) & 0xffff) };
 }
 macro_rules! PPC_HIGHEST {
-    ($v:expr) => { (((v) >> 48) & 0xffff) };
+    ($v:expr) => { ((($v) >> 48) & 0xffff) };
 }
 
 /* LI Field */
 macro_rules! PPC_LI_MASK { () => { 0x03fffffc }; }
 macro_rules! PPC_LI {
-    ($v:expr) => { ((v) & PPC_LI_MASK) };
+    ($v:expr) => { (($v) & PPC_LI_MASK) };
 }
 
 /* Base instruction encoding */
@@ -499,17 +504,17 @@ macro_rules! PPC_RAW_MADDLD {
     ($t:expr, $:expr) => { a, b, c)	(0x10000033 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | ___PPC_RC(c)) };
 }
 macro_rules! PPC_RAW_MSGSND {
-    ($b:expr) => { (0x7c00019c | ___PPC_RB(b)) };
+    ($b:expr) => { (0x7c00019c | ___PPC_RB!($b)) };
 }
 macro_rules! PPC_RAW_MSGSYNC { () => { (0x7c0006ec) }; }
 macro_rules! PPC_RAW_MSGCLR {
-    ($b:expr) => { (0x7c0001dc | ___PPC_RB(b)) };
+    ($b:expr) => { (0x7c0001dc | ___PPC_RB!($b)) };
 }
 macro_rules! PPC_RAW_MSGSNDP {
-    ($b:expr) => { (0x7c00011c | ___PPC_RB(b)) };
+    ($b:expr) => { (0x7c00011c | ___PPC_RB!($b)) };
 }
 macro_rules! PPC_RAW_MSGCLRP {
-    ($b:expr) => { (0x7c00015c | ___PPC_RB(b)) };
+    ($b:expr) => { (0x7c00015c | ___PPC_RB!($b)) };
 }
 macro_rules! PPC_RAW_PASTE {
     ($a:expr, $:expr) => { b)		(0x7c20070d | ___PPC_RA(a) | ___PPC_RB(b)) };
@@ -538,9 +543,9 @@ macro_rules! PPC_RAW_TLBIE {
     ($lp:expr, $:expr) => { a)		(0x7c000264 | ___PPC_RB(a) | ___PPC_RS(lp)) };
 }
 // #define PPC_RAW_TLBIE_5(rb, rs, ric, prs, r) \
-	(0x7c000264 | ___PPC_RB(rb) | ___PPC_RS(rs) | ___PPC_RIC(ric) | ___PPC_PRS(prs) | ___PPC_R(r))
+// 	(0x7c000264 | ___PPC_RB(rb) | ___PPC_RS(rs) | ___PPC_RIC(ric) | ___PPC_PRS(prs) | ___PPC_R(r))
 // #define PPC_RAW_TLBIEL(rb, rs, ric, prs, r) \
-	(0x7c000224 | ___PPC_RB(rb) | ___PPC_RS(rs) | ___PPC_RIC(ric) | ___PPC_PRS(prs) | ___PPC_R(r))
+// 	(0x7c000224 | ___PPC_RB(rb) | ___PPC_RS(rs) | ___PPC_RIC(ric) | ___PPC_PRS(prs) | ___PPC_R(r))
 macro_rules! PPC_RAW_TLBIEL_v205 {
     ($rb:expr, $:expr) => { l)	(0x7c000224 | ___PPC_RB(rb) | (l << 21)) };
 }
@@ -640,7 +645,7 @@ macro_rules! PPC_RAW_XVCPSGNDP {
     ($t:expr, $:expr) => { a, b)	((0xf0000780 | VSX_XX3((t), (a), (b)))) };
 }
 // #define PPC_RAW_VPERMXOR(vrt, vra, vrb, vrc) \
-	((0x1000002d | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | (((vrc) & 0x1f) << 6)))
+// 	((0x1000002d | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | (((vrc) & 0x1f) << 6)))
 macro_rules! PPC_RAW_LXVP {
     ($xtp:expr, $:expr) => { a, i)		(0x18000000 | __PPC_XTP(xtp) | ___PPC_RA(a) | IMM_DQ(i)) };
 }
@@ -675,13 +680,13 @@ macro_rules! PPC_RAW_MFBHRBE {
 }
 macro_rules! PPC_RAW_TRECHKPT { () => { (PPC_INST_TRECHKPT) }; }
 macro_rules! PPC_RAW_TRECLAIM {
-    ($r:expr) => { (PPC_INST_TRECLAIM | __PPC_RA(r)) };
+    ($r:expr) => { (PPC_INST_TRECLAIM | __PPC_RA!($r)) };
 }
 macro_rules! PPC_RAW_TABORT {
-    ($r:expr) => { (0x7c00071d | __PPC_RA(r)) };
+    ($r:expr) => { (0x7c00071d | __PPC_RA!($r)) };
 }
 macro_rules! TMRN {
-    ($x:expr) => { ((((x) & 0x1f) << 16) | (((x) & 0x3e0) << 6)) };
+    ($x:expr) => { (((($x) & 0x1f) << 16) | ((($x) & 0x3e0) << 6)) };
 }
 macro_rules! PPC_RAW_MTTMR {
     ($tmr:expr, $:expr) => { r)		(0x7c0003dc | TMRN(tmr) | ___PPC_RS(r)) };
@@ -696,12 +701,12 @@ macro_rules! PPC_RAW_ICSWEPX {
     ($s:expr, $:expr) => { a, b)	(0x7c00076d | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b)) };
 }
 macro_rules! PPC_RAW_SLBIA {
-    ($IH:expr) => { (0x7c0003e4 | (((IH) & 0x7) << 21)) };
+    ($IH:expr) => { (0x7c0003e4 | ((($IH) & 0x7) << 21)) };
 }
 // #define PPC_RAW_VCMPEQUD_RC(vrt, vra, vrb) \
-	(0x100000c7 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
+// 	(0x100000c7 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
 // #define PPC_RAW_VCMPEQUB_RC(vrt, vra, vrb) \
-	(0x10000006 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
+// 	(0x10000006 | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21)
 macro_rules! PPC_RAW_LD {
     ($r:expr, $:expr) => { base, i)		(0xe8000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_DS(i)) };
 }
@@ -760,7 +765,7 @@ macro_rules! PPC_RAW_ADDC_DOT {
     ($t:expr, $:expr) => { a, b)	(0x7c000014 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1) };
 }
 macro_rules! PPC_RAW_NOP {
-    () => { PPC_RAW_ORI(0, 0, 0) };
+    () => { PPC_RAW_ORI!(0, 0, 0) };
 }
 macro_rules! PPC_RAW_BLR {
     () => { (0x4e800020) };
@@ -769,10 +774,10 @@ macro_rules! PPC_RAW_BLRL {
     () => { (0x4e800021) };
 }
 macro_rules! PPC_RAW_MTLR {
-    ($r:expr) => { (0x7c0803a6 | ___PPC_RT(r)) };
+    ($r:expr) => { (0x7c0803a6 | ___PPC_RT!($r)) };
 }
 macro_rules! PPC_RAW_MFLR {
-    ($t:expr) => { (0x7c0802a6 | ___PPC_RT(t)) };
+    ($t:expr) => { (0x7c0802a6 | ___PPC_RT!($t)) };
 }
 macro_rules! PPC_RAW_BCTR {
     () => { (0x4e800420) };
@@ -781,7 +786,7 @@ macro_rules! PPC_RAW_BCTRL {
     () => { (0x4e800421) };
 }
 macro_rules! PPC_RAW_MTCTR {
-    ($r:expr) => { (0x7c0903a6 | ___PPC_RT(r)) };
+    ($r:expr) => { (0x7c0903a6 | ___PPC_RT!($r)) };
 }
 macro_rules! PPC_RAW_ADDI {
     ($d:expr, $:expr) => { a, i)		(0x38000000 | ___PPC_RT(d) | ___PPC_RA(a) | IMM_L(i)) };
@@ -991,7 +996,7 @@ macro_rules! PPC_RAW_RLWINM {
     ($d:expr, $:expr) => { a, i, mb, me)	(0x54000000 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH(i) | __PPC_MB(mb) | __PPC_ME(me)) };
 }
 // #define PPC_RAW_RLWINM_DOT(d, a, i, mb, me) \
-					(0x54000001 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH(i) | __PPC_MB(mb) | __PPC_ME(me))
+// 					(0x54000001 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH(i) | __PPC_MB(mb) | __PPC_ME(me))
 macro_rules! PPC_RAW_RLWIMI {
     ($d:expr, $:expr) => { a, i, mb, me) (0x50000000 | ___PPC_RA(d) | ___PPC_RS(a) | __PPC_SH(i) | __PPC_MB(mb) | __PPC_ME(me)) };
 }
@@ -1041,16 +1046,16 @@ macro_rules! PPC_RAW_BCL4 {
     () => { (0x429f0005) };
 }
 macro_rules! PPC_RAW_BRANCH {
-    ($offset:expr) => { (0x48000000 | PPC_LI(offset)) };
+    ($offset:expr) => { (0x48000000 | PPC_LI!($offset)) };
 }
 macro_rules! PPC_RAW_BL {
-    ($offset:expr) => { (0x48000001 | PPC_LI(offset)) };
+    ($offset:expr) => { (0x48000001 | PPC_LI!($offset)) };
 }
 macro_rules! PPC_RAW_TW {
     ($t0:expr, $:expr) => { a, b)		(0x7c000008 | ___PPC_RS(t0) | ___PPC_RA(a) | ___PPC_RB(b)) };
 }
 macro_rules! PPC_RAW_TRAP {
-    () => { PPC_RAW_TW(31, 0, 0) };
+    () => { PPC_RAW_TW!(31, 0, 0) };
 }
 macro_rules! PPC_RAW_SETB {
     ($t:expr, $:expr) => { bfa)		(0x7c000100 | ___PPC_RT(t) | ___PPC_RA((bfa) << 2)) };
@@ -1096,17 +1101,17 @@ macro_rules! PPC_MADDLD {
     ($t:expr, $:expr) => { a, b, c)	stringify_in_c(.long PPC_RAW_MADDLD(t, a, b, c)) };
 }
 macro_rules! PPC_MSGSND {
-    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGSND(b)) };
+    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGSND!($b)) };
 }
 macro_rules! PPC_MSGSYNC { () => { stringify_in_c(.long PPC_RAW_MSGSYNC) }; }
 macro_rules! PPC_MSGCLR {
-    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGCLR(b)) };
+    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGCLR!($b)) };
 }
 macro_rules! PPC_MSGSNDP {
-    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGSNDP(b)) };
+    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGSNDP!($b)) };
 }
 macro_rules! PPC_MSGCLRP {
-    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGCLRP(b)) };
+    ($b:expr) => { stringify_in_c(.long PPC_RAW_MSGCLRP!($b)) };
 }
 macro_rules! PPC_PASTE {
     ($a:expr, $:expr) => { b)		stringify_in_c(.long PPC_RAW_PASTE(a, b)) };
@@ -1144,9 +1149,9 @@ macro_rules! PPC_TLBIE {
     ($lp:expr, $:expr) => { a) 	stringify_in_c(.long PPC_RAW_TLBIE(lp, a)) };
 }
 // #define	PPC_TLBIE_5(rb, rs, ric, prs, r) \
-				stringify_in_c(.long PPC_RAW_TLBIE_5(rb, rs, ric, prs, r))
+// 				stringify_in_c(.long PPC_RAW_TLBIE_5(rb, rs, ric, prs, r))
 // #define	PPC_TLBIEL(rb,rs,ric,prs,r) \
-				stringify_in_c(.long PPC_RAW_TLBIEL(rb, rs, ric, prs, r))
+// 				stringify_in_c(.long PPC_RAW_TLBIEL(rb, rs, ric, prs, r))
 macro_rules! PPC_TLBIEL_v205 {
     ($rb:expr, $:expr) => { l)	stringify_in_c(.long PPC_RAW_TLBIEL_v205(rb, l)) };
 }
@@ -1228,7 +1233,7 @@ macro_rules! XVCPSGNDP {
 }
 
 // #define VPERMXOR(vrt, vra, vrb, vrc)				\
-	stringify_in_c(.long (PPC_RAW_VPERMXOR(vrt, vra, vrb, vrc)))
+// 	stringify_in_c(.long (PPC_RAW_VPERMXOR(vrt, vra, vrb, vrc)))
 
 macro_rules! PPC_NAP { () => { stringify_in_c(.long PPC_RAW_NAP) }; }
 macro_rules! PPC_SLEEP { () => { stringify_in_c(.long PPC_RAW_SLEEP) }; }
@@ -1245,10 +1250,10 @@ macro_rules! PPC_MFBHRBE {
 /* Transactional memory instructions */
 macro_rules! TRECHKPT { () => { stringify_in_c(.long PPC_RAW_TRECHKPT) }; }
 macro_rules! TRECLAIM {
-    ($r:expr) => { stringify_in_c(.long PPC_RAW_TRECLAIM(r)) };
+    ($r:expr) => { stringify_in_c(.long PPC_RAW_TRECLAIM!($r)) };
 }
 macro_rules! TABORT {
-    ($r:expr) => { stringify_in_c(.long PPC_RAW_TABORT(r)) };
+    ($r:expr) => { stringify_in_c(.long PPC_RAW_TABORT!($r)) };
 }
 
 /* book3e thread control instructions */
@@ -1268,7 +1273,7 @@ macro_rules! PPC_ICSWEPX {
 }
 
 macro_rules! PPC_SLBIA {
-    ($IH:expr) => { stringify_in_c(.long PPC_RAW_SLBIA(IH)) };
+    ($IH:expr) => { stringify_in_c(.long PPC_RAW_SLBIA!($IH)) };
 }
 
 /*
@@ -1277,9 +1282,9 @@ macro_rules! PPC_SLBIA {
  * mode (on HPT these would also invalidate various SLBEs which may not be
  * desired).
  */
-macro_rules! PPC_ISA_3_0_INVALIDATE_ERAT { () => { PPC_SLBIA(7) }; }
-macro_rules! PPC_RADIX_INVALIDATE_ERAT_USER { () => { PPC_SLBIA(3) }; }
-macro_rules! PPC_RADIX_INVALIDATE_ERAT_GUEST { () => { PPC_SLBIA(6) }; }
+macro_rules! PPC_ISA_3_0_INVALIDATE_ERAT { () => { PPC_SLBIA!(7) }; }
+macro_rules! PPC_RADIX_INVALIDATE_ERAT_USER { () => { PPC_SLBIA!(3) }; }
+macro_rules! PPC_RADIX_INVALIDATE_ERAT_GUEST { () => { PPC_SLBIA!(6) }; }
 
 macro_rules! VCMPEQUD_RC {
     ($vrt:expr, $:expr) => { vra, vrb)	stringify_in_c(.long PPC_RAW_VCMPEQUD_RC(vrt, vra, vrb)) };

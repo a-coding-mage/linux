@@ -114,10 +114,10 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs, save_r0: c_uint)
 // The remaining signal-frame setup and resume logic is preserved below in direct unsafe form.
 unsafe fn handle_syscall_restart(save_r0: c_ulong, regs: *mut pt_regs, sa: *mut sigaction) {
     if (*regs).tra < 0 { return; }
-    match (*regs).regs[0] as c_long {
-        -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => { (*regs).regs[0] = -EINTR as c_ulong; }
-        -ERESTARTSYS => { if (*sa).sa_flags & SA_RESTART == 0 { (*regs).regs[0] = -EINTR as c_ulong; } else { (*regs).regs[0] = save_r0; (*regs).pc -= instruction_size(__raw_readw((*regs).pc - 4)); } }
-        -ERESTARTNOINTR => { (*regs).regs[0] = save_r0; (*regs).pc -= instruction_size(__raw_readw((*regs).pc - 4)); }
+    match -((*regs).regs[0] as c_long) {
+        ERESTART_RESTARTBLOCK | ERESTARTNOHAND => { (*regs).regs[0] = -EINTR as c_ulong; }
+        ERESTARTSYS => { if (*sa).sa_flags & SA_RESTART == 0 { (*regs).regs[0] = -EINTR as c_ulong; } else { (*regs).regs[0] = save_r0; (*regs).pc -= instruction_size(__raw_readw((*regs).pc - 4)); } }
+        ERESTARTNOINTR => { (*regs).regs[0] = save_r0; (*regs).pc -= instruction_size(__raw_readw((*regs).pc - 4)); }
         _ => {}
     }
 }

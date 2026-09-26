@@ -104,7 +104,7 @@ pub unsafe extern "C" fn plat_get_fdt() -> *mut c_void {
                 break;
             }
         }
-    } else if cfg!(feature = "CONFIG_LEGACY_BOARDS") {
+    } else if cfg!(CONFIG_LEGACY_BOARDS) {
         // Legacy-board configuration is a build-time kernel condition.
         for check_mach in mips_machines() {
             let detect = (*check_mach).detect;
@@ -120,7 +120,7 @@ pub unsafe extern "C" fn plat_get_fdt() -> *mut c_void {
     FDT as *mut c_void
 }
 
-#[cfg(feature = "CONFIG_RELOCATABLE")]
+#[cfg(CONFIG_RELOCATABLE)]
 pub unsafe extern "C" fn plat_fdt_relocated(new_location: *mut c_void) {
     // Reset the cached FDT after relocation and update the UHI argument.
     FDT = core::ptr::null();

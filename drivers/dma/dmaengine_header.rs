@@ -114,12 +114,12 @@ extern "C" {
     pub fn dma_get_any_slave_channel(device: *mut dma_device) -> *mut dma_chan;
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub unsafe fn dmaengine_get_debugfs_root(dma_dev: *mut dma_device) -> *mut dentry {
     (*dma_dev).dbg_dev_root
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn dmaengine_get_debugfs_root(_dma_dev: *mut dma_device) -> *mut dentry {
     core::ptr::null_mut()
 }

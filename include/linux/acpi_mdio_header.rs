@@ -7,7 +7,7 @@
 
 /* Dependency supplied by linux/phy.h. */
 
-#[cfg(feature = "CONFIG_ACPI_MDIO")]
+#[cfg(CONFIG_ACPI_MDIO)]
 extern "C" {
     pub fn __acpi_mdiobus_register(
         mdio: *mut mii_bus,
@@ -16,7 +16,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_ACPI_MDIO")]
+#[cfg(CONFIG_ACPI_MDIO)]
 #[inline]
 pub unsafe fn acpi_mdiobus_register(
     mdio: *mut mii_bus,
@@ -25,7 +25,7 @@ pub unsafe fn acpi_mdiobus_register(
     __acpi_mdiobus_register(mdio, handle, THIS_MODULE)
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_MDIO"))]
+#[cfg(not(CONFIG_ACPI_MDIO))]
 #[inline]
 pub unsafe fn acpi_mdiobus_register(
     mdio: *mut mii_bus,

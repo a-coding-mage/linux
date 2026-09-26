@@ -9389,7 +9389,7 @@ static charset2upper: [u8; 256] = [
 	0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff, /* 0xf8-0xff */
 ];
 
-static unsafe fn uni2char(const u16 uni,
+unsafe fn uni2char(const u16 uni,
 			u8 *out, int boundlen)
 {
 	const u8 *uni2charset;
@@ -9420,10 +9420,10 @@ static unsafe fn uni2char(const u16 uni,
 	return n;
 }
 
-static unsafe fn char2uni(const u8 *rawstring, int boundlen,
+unsafe fn char2uni(const u8 *rawstring, int boundlen,
 			u16 *uni)
 {
-	u8 ch, cl;
+	ch: u8, cl;
 	const u16 *charset2uni;
 	int n;
 
@@ -9452,20 +9452,20 @@ static unsafe fn char2uni(const u8 *rawstring, int boundlen,
 }
 
 static mut table: nls_table = nls_table {
-	.charset = "cp950",
-	.alias = "big5",
-	.uni2char = uni2char,
-	.char2uni = char2uni,
-	.charset2lower = charset2lower,
-	.charset2upper = charset2upper,
+	charset: "cp950",
+	alias: "big5",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 ];
 
-static unsafe fn init_nls_cp950(void)
+unsafe fn init_nls_cp950(void)
 {
 	return register_nls(&table);
 }
 
-static unsafe fn exit_nls_cp950(void)
+unsafe fn exit_nls_cp950(void)
 {
 	unregister_nls(&table);
 }

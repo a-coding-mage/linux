@@ -60,6 +60,6 @@ pub const MI_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(1<<8)|(55<<12)|MX_
 pub const MX_CLKSEL2_PLL_2x_VAL:u32=2; pub const MX_CLKSEL2_PLL_1x_VAL:u32=1;
 pub const S12M:u32=12000000; pub const S13M:u32=13000000; pub const S19M:u32=19200000; pub const S26M:u32=26000000; pub const S100M:u32=100000000; pub const S133M:u32=133000000; pub const S150M:u32=150000000; pub const S164M:u32=164000000; pub const S165M:u32=165000000; pub const S199M:u32=199000000; pub const S200M:u32=200000000; pub const S266M:u32=266000000; pub const S300M:u32=300000000; pub const S329M:u32=329000000; pub const S330M:u32=330000000; pub const S399M:u32=399000000; pub const S400M:u32=400000000; pub const S532M:u32=532000000; pub const S600M:u32=600000000; pub const S658M:u32=658000000; pub const S660M:u32=660000000; pub const S798M:u32=798000000;
 
-unsafe extern "C" { pub static omap2420_rate_table: prcm_config; #[cfg(feature="CONFIG_SOC_OMAP2430")] pub static omap2430_rate_table: prcm_config; pub static rate_table: *const prcm_config; pub static curr_prcm_set: *const prcm_config; }
+unsafe extern "C" { pub static omap2420_rate_table: prcm_config; #[cfg(CONFIG_SOC_OMAP2430)] pub static omap2430_rate_table: prcm_config; pub static rate_table: *const prcm_config; pub static curr_prcm_set: *const prcm_config; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

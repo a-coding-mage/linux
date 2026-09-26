@@ -16,8 +16,8 @@ pub struct rfkill {
     pub hard_block_reasons: usize, pub idx: u32, pub registered: bool,
     pub persistent: bool, pub polling_paused: bool, pub suspended: bool,
     pub need_sync: bool, pub ops: *const rfkill_ops, pub data: *mut c_void,
-    #[cfg(feature = "CONFIG_RFKILL_LEDS")] pub led_trigger: led_trigger,
-    #[cfg(feature = "CONFIG_RFKILL_LEDS")] pub ledtrigname: *const c_char,
+    #[cfg(CONFIG_RFKILL_LEDS)] pub led_trigger: led_trigger,
+    #[cfg(CONFIG_RFKILL_LEDS)] pub ledtrigname: *const c_char,
     pub dev: device, pub node: list_head, pub poll_work: delayed_work,
     pub uevent_work: work_struct, pub sync_work: work_struct,
     pub name: [c_char; 0],
@@ -35,17 +35,17 @@ static mut rfkill_epo_lock_active: bool = false;
 
 #[repr(C)] struct rfkill_global_state { cur: bool, sav: bool }
 
-#[cfg(not(feature = "CONFIG_RFKILL_LEDS"))]
+#[cfg(not(CONFIG_RFKILL_LEDS))]
 unsafe fn rfkill_led_trigger_event(_: *mut rfkill) {}
-#[cfg(not(feature = "CONFIG_RFKILL_LEDS"))]
+#[cfg(not(CONFIG_RFKILL_LEDS))]
 unsafe fn rfkill_led_trigger_register(_: *mut rfkill) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_RFKILL_LEDS"))]
+#[cfg(not(CONFIG_RFKILL_LEDS))]
 unsafe fn rfkill_led_trigger_unregister(_: *mut rfkill) {}
-#[cfg(not(feature = "CONFIG_RFKILL_LEDS"))]
+#[cfg(not(CONFIG_RFKILL_LEDS))]
 unsafe fn rfkill_global_led_trigger_event() {}
-#[cfg(not(feature = "CONFIG_RFKILL_LEDS"))]
+#[cfg(not(CONFIG_RFKILL_LEDS))]
 unsafe fn rfkill_global_led_trigger_register() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_RFKILL_LEDS"))]
+#[cfg(not(CONFIG_RFKILL_LEDS))]
 unsafe fn rfkill_global_led_trigger_unregister() {}
 
 unsafe fn rfkill_fill_event(i: *mut rfkill_int_event, r: *mut rfkill, d: *mut rfkill_data, op: rfkill_operation) -> c_int {
@@ -63,11 +63,11 @@ unsafe fn rfkill_fill_event(i: *mut rfkill_int_event, r: *mut rfkill, d: *mut rf
 
 unsafe fn rfkill_send_events(r: *mut rfkill, op: rfkill_operation) {
     let mut d: *mut rfkill_data;
-    list_for_each_entry!(d, &mut rfkill_fds, list) {
+    list_for_each_entry!(d, &mut rfkill_fds, list, {
         let e = kzalloc::<rfkill_int_event>(GFP_KERNEL); if e.is_null() { continue; }
         if rfkill_fill_event(e, r, d, op) != 0 { kfree(e); continue; }
         wake_up_interruptible(&mut (*d).read_wait);
-    }
+    });
 }
 unsafe fn rfkill_event(r: *mut rfkill) { if !(*r).registered { return; }
     kobject_uevent(&mut (*r).dev.kobj, KOBJ_CHANGE); rfkill_send_events(r, RFKILL_OP_CHANGE); }

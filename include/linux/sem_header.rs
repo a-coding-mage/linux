@@ -7,19 +7,19 @@ pub struct task_struct {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SYSVIPC")]
+#[cfg(CONFIG_SYSVIPC)]
 extern "C" {
     pub fn copy_semundo(clone_flags: u64, tsk: *mut task_struct) -> ::core::ffi::c_int;
     pub fn exit_sem(tsk: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_SYSVIPC"))]
+#[cfg(not(CONFIG_SYSVIPC))]
 #[inline]
 pub fn copy_semundo(_clone_flags: u64, _tsk: *mut task_struct) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SYSVIPC"))]
+#[cfg(not(CONFIG_SYSVIPC))]
 #[inline]
 pub fn exit_sem(_tsk: *mut task_struct) {
     return;

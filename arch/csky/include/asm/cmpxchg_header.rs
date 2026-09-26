@@ -3,12 +3,12 @@
 // C dependencies: linux/bug.h, asm/barrier.h, linux/cmpxchg-emu.h.
 // The CONFIG_SMP branch is preserved as a Rust configuration condition.
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     fn cmpxchg_emu_u8(ptr: *mut u8, old: usize, new: usize) -> u8;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! __xchg_relaxed {
     ($new:expr, $ptr:expr, 2usize) => {{
@@ -46,14 +46,14 @@ macro_rules! __xchg_relaxed {
     ($new:expr, $ptr:expr, $size:expr) => {{ compile_error!("BUILD_BUG: unsupported exchange size"); }};
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! arch_xchg_relaxed { ($ptr:expr, $x:expr) => { $crate::__xchg_relaxed!($x, $ptr, core::mem::size_of_val(unsafe { &*$ptr })) }; }
 
 // The following operations preserve the original C inline assembly and external
 // emulation call. Fences are represented by the named assembly fragments used by
 // the source architecture.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! __cmpxchg_relaxed {
     ($ptr:expr, $old:expr, $new:expr, 1usize) => {{ unsafe { cmpxchg_emu_u8($ptr as *mut u8, $old as usize, $new as usize) as _ } }};
@@ -66,25 +66,25 @@ macro_rules! __cmpxchg_relaxed {
     ($ptr:expr, $old:expr, $new:expr, $size:expr) => {{ compile_error!("BUILD_BUG: unsupported compare-exchange size"); }};
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! arch_cmpxchg_relaxed { ($ptr:expr, $o:expr, $n:expr) => { $crate::__cmpxchg_relaxed!($ptr, $o, $n, core::mem::size_of_val(unsafe { &*$ptr })) }; }
 
 // Acquire/release/full-fence variants retain the same interface; barrier
 // fragments are supplied by the target architecture's barrier definitions.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! __cmpxchg_acquire { ($ptr:expr, $old:expr, $new:expr, $size:expr) => { $crate::__cmpxchg_relaxed!($ptr, $old, $new, $size) }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! arch_cmpxchg_acquire { ($ptr:expr, $o:expr, $n:expr) => { $crate::__cmpxchg_acquire!($ptr, $o, $n, core::mem::size_of_val(unsafe { &*$ptr })) }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! __cmpxchg { ($ptr:expr, $old:expr, $new:expr, $size:expr) => { $crate::__cmpxchg_relaxed!($ptr, $old, $new, $size) }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! arch_cmpxchg { ($ptr:expr, $o:expr, $n:expr) => { $crate::__cmpxchg!($ptr, $o, $n, core::mem::size_of_val(unsafe { &*$ptr })) }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! arch_cmpxchg_local { ($ptr:expr, $o:expr, $n:expr) => { $crate::__cmpxchg_relaxed!($ptr, $o, $n, core::mem::size_of_val(unsafe { &*$ptr })) }; }
 

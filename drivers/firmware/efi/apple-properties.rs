@@ -53,7 +53,7 @@ unsafe fn unmarshal_key_value_pairs(
         if core::mem::size_of::<u32>() > remaining { break; }
         key_len = *(ptr as *const u32);
         if key_len as usize + core::mem::size_of::<u32>() > remaining
-            || key_len as usize < core::mem::size_of::<u32>() + core::mem::size_of::<efi_char16_t>()
+            || (key_len as usize) < core::mem::size_of::<u32>() + core::mem::size_of::<efi_char16_t>()
             || *((ptr as *const u8).add(core::mem::size_of::<u32>()) as *const efi_char16_t) == 0 {
             dev_err(dev, "invalid property name len at %#zx\n", ptr as usize - dev_header as usize);
             break;

@@ -360,7 +360,7 @@ pub unsafe extern "C" fn map_compat_raw_tp_w(ctx: *mut c_void) -> i32 {
 #[unsafe(link_section = "?tc")]
 pub unsafe extern "C" fn obj_type_id_oor(ctx: *mut c_void) -> i32 {
     let _ = ctx;
-    bpf_obj_new_impl(!0_u64, core::ptr::null_mut());
+    bpf_obj_new_impl(!0u64, core::ptr::null_mut());
     0
 }
 

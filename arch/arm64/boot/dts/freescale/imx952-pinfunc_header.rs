@@ -1,8 +1,13 @@
 /* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
 /*
+ * Copyright 2025 NXP
+ */
 
 
 /*
+ * The pin function ID is a tuple of
+ * <mux_reg conf_reg input_reg mux_mode input_val>
+ */
 pub const IMX952_PAD_DAP_TDI__WAKEUPMIX_TOP_TDI: [u32; 5] = [0x0000, 0x0230, 0x05FC, 0x00, 0x00];
 pub const IMX952_PAD_DAP_TDI__NETCMIX_TOP_MQS2_LEFT: [u32; 5] = [0x0000, 0x0230, 0x0000, 0x01, 0x00];
 pub const IMX952_PAD_DAP_TDI__NETCMIX_TOP_NETC_TMR_1588_ALARM1: [u32; 5] = [0x0000, 0x0230, 0x0000, 0x02, 0x00];

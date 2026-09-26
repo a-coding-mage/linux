@@ -27,17 +27,17 @@ extern "C" {
     fn ps3_result(r: i32) -> *const core::ffi::c_char;
     fn panic(s: *const core::ffi::c_char) -> !;
     fn BUG();
-    fn lv1_query_logical_partition_address_region_info(u64,*mut u64,*mut u64,*mut u64,*mut u64,*mut u64)->i32;
-    fn lv1_construct_virtual_address_space(u64,u64,u64,*mut u64,*mut u64)->i32;
-    fn lv1_select_virtual_address_space(u64)->i32;
-    fn lv1_destruct_virtual_address_space(u64)->i32;
-    fn lv1_panic(u64)->!;
-    fn ps3_repository_read_highmem_info(u64,*mut u64,*mut u64)->i32;
-    fn ps3_repository_write_highmem_info(u64,u64,u64)->i32;
-    fn lv1_allocate_memory(u64,u64,u64,u64,*mut u64,*mut u64)->i32;
-    fn lv1_release_memory(u64)->i32;
-    fn ps3_repository_read_mm_info(*mut u64,*mut u64,*mut u64)->i32;
-    fn memblock_add(u64,u64);
+    fn lv1_query_logical_partition_address_region_info(_: u64,_: *mut u64,_: *mut u64,_: *mut u64,_: *mut u64,_: *mut u64)->i32;
+    fn lv1_construct_virtual_address_space(_: u64,_: u64,_: u64,_: *mut u64,_: *mut u64)->i32;
+    fn lv1_select_virtual_address_space(_: u64)->i32;
+    fn lv1_destruct_virtual_address_space(_: u64)->i32;
+    fn lv1_panic(_: u64)->!;
+    fn ps3_repository_read_highmem_info(_: u64,_: *mut u64,_: *mut u64)->i32;
+    fn ps3_repository_write_highmem_info(_: u64,_: u64,_: u64)->i32;
+    fn lv1_allocate_memory(_: u64,_: u64,_: u64,_: u64,_: *mut u64,_: *mut u64)->i32;
+    fn lv1_release_memory(_: u64)->i32;
+    fn ps3_repository_read_mm_info(_: *mut u64,_: *mut u64,_: *mut u64)->i32;
+    fn memblock_add(_: u64,_: u64);
 }
 
 #[inline] unsafe fn ps3_mm_phys_to_lpar(phys_addr: usize) -> usize {

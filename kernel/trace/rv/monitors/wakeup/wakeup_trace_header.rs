@@ -10,13 +10,13 @@
  */
 
 /* Equivalent of: #ifdef CONFIG_RV_MON_WAKEUP */
-#[cfg(feature = "CONFIG_RV_MON_WAKEUP")]
+#[cfg(CONFIG_RV_MON_WAKEUP)]
 #[repr(C)]
 pub struct event_wakeup {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_RV_MON_WAKEUP")]
+#[cfg(CONFIG_RV_MON_WAKEUP)]
 #[repr(C)]
 pub struct error_wakeup {
     _private: [u8; 0],
@@ -33,6 +33,6 @@ pub struct error_wakeup {
  *              TP_ARGS(task));
  */
 
-/* Equivalent of: #endif /* CONFIG_RV_MON_WAKEUP */
+/* Equivalent of: #endif / * CONFIG_RV_MON_WAKEUP */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

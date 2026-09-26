@@ -36,19 +36,19 @@ pub unsafe extern "C" fn ioport_unmap(_addr: *mut c_void) {
 // EXPORT_SYMBOL(ioport_unmap);
 
 // Corresponds to the C preprocessor condition: CONFIG_PCI.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[no_mangle]
 pub static mut pcibios_min_io: c_ulong = 0x1000;
 // EXPORT_SYMBOL(pcibios_min_io);
 
 // Corresponds to the C preprocessor condition: CONFIG_PCI.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[no_mangle]
 pub static mut pcibios_min_mem: c_ulong = 0x0100_0000;
 // EXPORT_SYMBOL(pcibios_min_mem);
 
 // Corresponds to the C preprocessor condition: CONFIG_PCI.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[no_mangle]
 pub unsafe extern "C" fn pci_iounmap(
     _dev: *mut pci_dev,
@@ -61,14 +61,14 @@ pub unsafe extern "C" fn pci_iounmap(
 // EXPORT_SYMBOL(pci_iounmap);
 
 // Opaque declaration supplied by the PCI headers.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[repr(C)]
 pub struct pci_dev {
     _private: [u8; 0],
 }
 
 // VMALLOC_START and VMALLOC_END are supplied by the architecture headers.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     static VMALLOC_START: c_ulong;
     static VMALLOC_END: c_ulong;

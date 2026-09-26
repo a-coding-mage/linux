@@ -26,13 +26,13 @@ unsafe fn xfrm4_transport_output(x: *mut xfrm_state, skb: *mut sk_buff) -> c_int
 }
 
 unsafe fn xfrm6_transport_output(x: *mut xfrm_state, skb: *mut sk_buff) -> c_int {
-    #[cfg(feature="CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     { let iph = ipv6_hdr(skb); if !(*skb).inner_protocol { skb_set_inner_transport_header(skb, skb_transport_offset(skb)); }
       let mut prev: *mut u8 = core::ptr::null_mut(); let hdr_len = xfrm6_hdr_offset(x, skb, &mut prev); if hdr_len < 0 { return hdr_len; }
       skb_set_mac_header(skb, prev.offset(-(*x).props.header_len as isize).offset_from((*skb).data) as i32);
       skb_set_network_header(skb, -(*x).props.header_len); (*skb).transport_header = (*skb).network_header + hdr_len;
       __skb_pull(skb, hdr_len); memmove(ipv6_hdr(skb), iph, hdr_len as usize); 0 }
-    #[cfg(not(feature="CONFIG_IPV6"))] { WARN_ON_ONCE(1); -EAFNOSUPPORT }
+    #[cfg(not(CONFIG_IPV6))] { WARN_ON_ONCE(1); -EAFNOSUPPORT }
 }
 
 unsafe fn xfrm4_beet_encap_add(x: *mut xfrm_state, skb: *mut sk_buff) -> c_int {

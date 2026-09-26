@@ -20,13 +20,13 @@ pub struct disk_stats {
 pub unsafe fn part_stat_set_all(part: *mut block_device, value: ::core::ffi::c_int) {
     let mut i: ::core::ffi::c_int;
     // for_each_possible_cpu(i)
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         memset(
             per_cpu_ptr((*part).bd_stats, i),
             value,
             ::core::mem::size_of::<disk_stats>(),
         );
-    }
+    });
 }
 
 #[macro_export]
@@ -59,9 +59,9 @@ macro_rules! part_stat_read {
         let mut res = 0;
         let mut _cpu: ::core::ffi::c_uint;
         // for_each_possible_cpu(_cpu)
-        for_each_possible_cpu!(_cpu) {
+        for_each_possible_cpu!(_cpu, {
             res += (*per_cpu_ptr(($part)->bd_stats, _cpu)).$field;
-        }
+        });
         res
     }};
 }

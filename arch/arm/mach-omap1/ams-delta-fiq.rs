@@ -64,10 +64,12 @@ static mut fiq_buffer: [u32; 1024] = [0; 1024];
 static mut irq_chip: *mut IrqChip = core::ptr::null_mut();
 static mut irq_data: [*mut IrqData; 16] = [core::ptr::null_mut(); 16];
 static mut irq_counter: [u32; 16] = [0; 16];
-static pin_name: [*const core::ffi::c_char; 16] = [
-    b"keybrd_data\0".as_ptr() as *const _, b"keybrd_clk\0".as_ptr() as *const _,
-    core::ptr::null(); 14
-];
+static pin_name: [*const core::ffi::c_char; 16] = {
+    let mut names = [core::ptr::null(); 16];
+    names[AMS_DELTA_GPIO_PIN_KEYBRD_DATA as usize] = c"keybrd_data".as_ptr();
+    names[AMS_DELTA_GPIO_PIN_KEYBRD_CLK as usize] = c"keybrd_clk".as_ptr();
+    names
+};
 
 unsafe extern "C" fn deferred_fiq(_irq: i32, _dev_id: *mut core::ffi::c_void) -> i32 {
     for gpio in AMS_DELTA_GPIO_PIN_KEYBRD_CLK..=AMS_DELTA_GPIO_PIN_HOOK_SWITCH {

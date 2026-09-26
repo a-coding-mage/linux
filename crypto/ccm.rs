@@ -49,15 +49,15 @@ extern "C" {
     fn aead_request_ctx(_: *mut aead_request) -> *mut c_void; fn crypto_aead_ctx(_: *mut crypto_aead) -> *mut c_void;
     fn crypto_aead_authsize(_: *mut crypto_aead) -> u32; fn aead_request_flags(_: *mut aead_request) -> u32;
     fn crypto_aead_get_flags(_: *mut crypto_aead) -> u32; fn crypto_aead_set_reqsize(_: *mut crypto_aead, _: usize);
-    fn crypto_skcipher_clear_flags(_: *mut crypto_skcipher,u32); fn crypto_skcipher_set_flags(_: *mut crypto_skcipher,u32);
-    fn crypto_skcipher_setkey(_: *mut crypto_skcipher,*const u8,u32)->c_int; fn crypto_ahash_clear_flags(_: *mut crypto_ahash,u32); fn crypto_ahash_set_flags(_: *mut crypto_ahash,u32); fn crypto_ahash_setkey(_: *mut crypto_ahash,*const u8,u32)->c_int;
-    fn crypto_aead_setkey(_: *mut crypto_aead,*const u8,u32)->c_int; fn crypto_aead_setauthsize(_: *mut crypto_aead,u32)->c_int;
-    fn sg_init_table(_: *mut scatterlist,usize); fn sg_set_buf(_: *mut scatterlist,*mut u8,usize); fn sg_chain(_: *mut scatterlist,usize,*mut scatterlist); fn sg_next(_: *mut scatterlist)->*mut scatterlist;
-    fn scatterwalk_ffwd(_: *mut scatterlist,*mut scatterlist,u32)->*mut scatterlist; fn scatterwalk_map_and_copy(*mut u8,*mut scatterlist,u32,u32,c_int);
-    fn ahash_request_set_tfm(*mut ahash_request,*mut crypto_ahash); fn ahash_request_set_callback(*mut ahash_request,u32,*mut c_void,*mut c_void); fn ahash_request_set_crypt(*mut ahash_request,*mut scatterlist,*mut u8,u32); fn crypto_ahash_init(*mut ahash_request)->c_int; fn crypto_ahash_update(*mut ahash_request)->c_int; fn crypto_ahash_finup(*mut ahash_request)->c_int;
-    fn crypto_memneq(*const u8,*const u8,usize)->c_int; fn aead_request_complete(*mut aead_request,c_int);
-    fn skcipher_request_set_tfm(*mut skcipher_request,*mut crypto_skcipher); fn skcipher_request_set_callback(*mut skcipher_request,u32,Option<unsafe extern "C" fn(*mut c_void,c_int)>,*mut c_void); fn skcipher_request_set_crypt(*mut skcipher_request,*mut scatterlist,*mut scatterlist,u32,*mut u8); fn crypto_skcipher_encrypt(*mut skcipher_request)->c_int; fn crypto_skcipher_decrypt(*mut skcipher_request)->c_int;
-    fn crypto_xor(*mut u8,*const u8,usize); fn crypto_cipher_setkey(*mut crypto_cipher,*const u8,u32)->c_int; fn crypto_cipher_encrypt_one(*mut crypto_cipher,*mut u8,*const u8);
+    fn crypto_skcipher_clear_flags(_: *mut crypto_skcipher,_: u32); fn crypto_skcipher_set_flags(_: *mut crypto_skcipher,_: u32);
+    fn crypto_skcipher_setkey(_: *mut crypto_skcipher,_: *const u8,_: u32)->c_int; fn crypto_ahash_clear_flags(_: *mut crypto_ahash,_: u32); fn crypto_ahash_set_flags(_: *mut crypto_ahash,_: u32); fn crypto_ahash_setkey(_: *mut crypto_ahash,_: *const u8,_: u32)->c_int;
+    fn crypto_aead_setkey(_: *mut crypto_aead,_: *const u8,_: u32)->c_int; fn crypto_aead_setauthsize(_: *mut crypto_aead,_: u32)->c_int;
+    fn sg_init_table(_: *mut scatterlist,_: usize); fn sg_set_buf(_: *mut scatterlist,_: *mut u8,_: usize); fn sg_chain(_: *mut scatterlist,_: usize,_: *mut scatterlist); fn sg_next(_: *mut scatterlist)->*mut scatterlist;
+    fn scatterwalk_ffwd(_: *mut scatterlist,_: *mut scatterlist,_: u32)->*mut scatterlist; fn scatterwalk_map_and_copy(_: *mut u8,_: *mut scatterlist,_: u32,_: u32,_: c_int);
+    fn ahash_request_set_tfm(_: *mut ahash_request,_: *mut crypto_ahash); fn ahash_request_set_callback(_: *mut ahash_request,_: u32,_: *mut c_void,_: *mut c_void); fn ahash_request_set_crypt(_: *mut ahash_request,_: *mut scatterlist,_: *mut u8,_: u32); fn crypto_ahash_init(_: *mut ahash_request)->c_int; fn crypto_ahash_update(_: *mut ahash_request)->c_int; fn crypto_ahash_finup(_: *mut ahash_request)->c_int;
+    fn crypto_memneq(_: *const u8,_: *const u8,_: usize)->c_int; fn aead_request_complete(_: *mut aead_request,_: c_int);
+    fn skcipher_request_set_tfm(_: *mut skcipher_request,_: *mut crypto_skcipher); fn skcipher_request_set_callback(_: *mut skcipher_request,_: u32,_: Option<unsafe extern "C" fn(*mut c_void,c_int)>,_: *mut c_void); fn skcipher_request_set_crypt(_: *mut skcipher_request,_: *mut scatterlist,_: *mut scatterlist,_: u32,_: *mut u8); fn crypto_skcipher_encrypt(_: *mut skcipher_request)->c_int; fn crypto_skcipher_decrypt(_: *mut skcipher_request)->c_int;
+    fn crypto_xor(_: *mut u8,_: *const u8,_: usize); fn crypto_cipher_setkey(_: *mut crypto_cipher,_: *const u8,_: u32)->c_int; fn crypto_cipher_encrypt_one(_: *mut crypto_cipher,_: *mut u8,_: *const u8);
 }
 
 unsafe fn set_msg_len(block:*mut u8, msglen:u32, mut csize:c_int)->c_int { for i in 0..csize { *block.add(i as usize)=0; } let end=block.add(csize as usize); if csize>=4 {csize=4} else if msglen >= (1u32 << (8*csize)) {return -75}; let data=msglen.to_be_bytes(); core::ptr::copy_nonoverlapping(data.as_ptr().add((4-csize) as usize),end.sub(csize as usize),csize as usize); 0 }

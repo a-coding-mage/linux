@@ -3,7 +3,7 @@
 // CONFIG_PERF_EVENTS: the declarations below are present only when perf
 // events are enabled in the build configuration.
 
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 #[inline(always)]
 pub unsafe fn perf_arch_fetch_caller_regs(
     regs: *mut crate::pt_regs,

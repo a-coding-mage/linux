@@ -111,7 +111,7 @@ pub unsafe fn starfire_translate(imap: usize, mut upaid: u32) -> u32 {
     }
     if i == 32 {
         printk(c"starfire_translate: Are you kidding me?\n".as_ptr());
-        panic(c"Lucy in the sky....\0".as_ptr());
+        panic(c"Lucy in the sky....".as_ptr());
     }
     (*p).imap_slots[i] = imap;
 

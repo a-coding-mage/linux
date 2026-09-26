@@ -37,6 +37,7 @@ unsafe fn call_usermodehelper_exec_async(data: *mut c_void) -> c_int {
     let sub_info = data as *mut subprocess_info;
     let mut new: *mut cred;
     let mut retval: c_int;
+    'out: {
 
     spin_lock_irq(&mut (*current).sighand.siglock);
     flush_signal_handlers(current, 1);
@@ -49,7 +50,7 @@ unsafe fn call_usermodehelper_exec_async(data: *mut c_void) -> c_int {
 
     retval = -ENOMEM;
     new = prepare_kernel_cred(current);
-    if new.is_null() { goto out; }
+    if new.is_null() { break 'out; }
 
     spin_lock(&mut umh_sysctl_lock);
     (*new).cap_bset = cap_intersect(usermodehelper_bset, (*new).cap_bset);
@@ -60,7 +61,7 @@ unsafe fn call_usermodehelper_exec_async(data: *mut c_void) -> c_int {
         retval = init(sub_info, new);
         if retval != 0 {
             abort_creds(new);
-            goto out;
+            break 'out;
         }
     }
 
@@ -69,7 +70,8 @@ unsafe fn call_usermodehelper_exec_async(data: *mut c_void) -> c_int {
     retval = kernel_execve((*sub_info).path,
                            (*sub_info).argv as *const *const c_char,
                            (*sub_info).envp as *const *const c_char);
-out:
+    }
+    
     (*sub_info).retval = retval;
     /* call_usermodehelper_exec_sync() calls umh_complete for UMH_WAIT_PROC. */
     if (*sub_info).wait & UMH_WAIT_PROC == 0 { umh_complete(sub_info); }
@@ -186,10 +188,12 @@ pub unsafe fn call_usermodehelper_exec(sub_info: *mut subprocess_info, wait: c_i
     let mut state = TASK_UNINTERRUPTIBLE;
     let mut done = DECLARE_COMPLETION_ONSTACK();
     let mut retval = 0;
+    'out: {
+    'wait_done: {
     if (*sub_info).path.is_null() { call_usermodehelper_freeinfo(sub_info); return -EINVAL; }
     helper_lock();
-    if usermodehelper_disabled != UMH_ENABLED { retval = -EBUSY; goto_out!(out); }
-    if strlen((*sub_info).path) == 0 { goto_out!(out); }
+    if usermodehelper_disabled != UMH_ENABLED { retval = -EBUSY; break 'out; }
+    if strlen((*sub_info).path) == 0 { break 'out; }
     (*sub_info).complete = if wait == UMH_NO_WAIT { ptr::null_mut() } else { &mut done };
     (*sub_info).wait = wait;
     queue_work(system_dfl_wq, &mut (*sub_info).work);
@@ -197,13 +201,15 @@ pub unsafe fn call_usermodehelper_exec(sub_info: *mut subprocess_info, wait: c_i
     if wait & UMH_FREEZABLE != 0 { state |= TASK_FREEZABLE; }
     if wait & UMH_KILLABLE != 0 {
         retval = wait_for_completion_state(&mut done, state | TASK_KILLABLE);
-        if retval == 0 { goto_wait_done!(wait_done); }
+        if retval == 0 { break 'wait_done; }
         if !xchg(&mut (*sub_info).complete, ptr::null_mut()).is_null() { helper_unlock(); return retval; }
     }
     wait_for_completion_state(&mut done, state);
-wait_done:
+    }
+    
     retval = (*sub_info).retval;
-out:
+    }
+    
     call_usermodehelper_freeinfo(sub_info);
     helper_unlock();
     retval

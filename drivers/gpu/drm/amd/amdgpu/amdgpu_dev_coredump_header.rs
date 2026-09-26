@@ -26,10 +26,10 @@
 // Dependency: declarations supplied by amdgpu.h.
 
 // C: #ifdef CONFIG_DEV_COREDUMP
-#[cfg(feature = "CONFIG_DEV_COREDUMP")]
+#[cfg(CONFIG_DEV_COREDUMP)]
 pub const AMDGPU_COREDUMP_VERSION: &str = "1";
 
-#[cfg(feature = "CONFIG_DEV_COREDUMP")]
+#[cfg(CONFIG_DEV_COREDUMP)]
 #[repr(C)]
 pub struct amdgpu_coredump_ring {
 	pub rptr: u64,
@@ -38,14 +38,14 @@ pub struct amdgpu_coredump_ring {
 	pub ring_index: u32,
 }
 
-#[cfg(feature = "CONFIG_DEV_COREDUMP")]
+#[cfg(CONFIG_DEV_COREDUMP)]
 #[repr(C)]
 pub struct amdgpu_coredump_ib_info {
 	pub gpu_addr: u64,
 	pub ib_size_dw: u32,
 }
 
-#[cfg(feature = "CONFIG_DEV_COREDUMP")]
+#[cfg(CONFIG_DEV_COREDUMP)]
 #[repr(C)]
 pub struct amdgpu_coredump_info {
 	pub adev: *mut amdgpu_device,

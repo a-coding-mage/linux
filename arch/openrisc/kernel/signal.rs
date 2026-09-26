@@ -153,7 +153,7 @@ unsafe fn do_signal(regs: *mut pt_regs, syscall: c_int) -> c_int {
     let mut continue_addr = 0; let mut restart_addr = 0; let mut retval = 0; let mut restart = 0;
     if syscall != 0 {
         continue_addr = (*regs).pc; restart_addr = continue_addr - 4; retval = (*regs).gpr[11];
-        match retval as c_long { -ERESTART_RESTARTBLOCK => { restart = -2; }, -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => {}, _ => {} }
+        match retval as c_long { case if case == -ERESTART_RESTARTBLOCK => { restart = -2; }, case if case == -ERESTARTNOHAND || case == -ERESTARTSYS || case == -ERESTARTNOINTR => {}, _ => {} }
         if retval as c_long == -ERESTART_RESTARTBLOCK || retval as c_long == -ERESTARTNOHAND || retval as c_long == -ERESTARTSYS || retval as c_long == -ERESTARTNOINTR { restart += 1; (*regs).gpr[11] = (*regs).orig_gpr11; (*regs).pc = restart_addr; }
     }
     if get_signal(&mut ksig) {

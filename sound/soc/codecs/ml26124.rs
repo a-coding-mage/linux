@@ -3,7 +3,7 @@
  * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
  */
 
-/* Translated from Linux C source. Includes from linux/*, sound/*, and
+/* Translated from Linux C source. Includes from linux/ *, sound/ *, and
  * "ml26124.h" are external dependencies supplied by the target repository.
  */
 

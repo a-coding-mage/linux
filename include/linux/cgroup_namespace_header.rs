@@ -37,12 +37,12 @@ extern "C" {
 }
 
 // CONFIG_CGROUPS conditional from the original header.
-#[cfg(feature = "CONFIG_CGROUPS")]
+#[cfg(CONFIG_CGROUPS)]
 pub unsafe fn to_cg_ns(ns: *mut ns_common) -> *mut cgroup_namespace {
     ns as *mut cgroup_namespace
 }
 
-#[cfg(feature = "CONFIG_CGROUPS")]
+#[cfg(CONFIG_CGROUPS)]
 extern "C" {
     pub fn free_cgroup_ns(ns: *mut cgroup_namespace);
     pub fn copy_cgroup_ns(
@@ -60,13 +60,13 @@ extern "C" {
     pub fn ns_ref_put(ns: *mut cgroup_namespace) -> bool;
 }
 
-#[cfg(feature = "CONFIG_CGROUPS")]
+#[cfg(CONFIG_CGROUPS)]
 #[inline]
 pub unsafe fn get_cgroup_ns(ns: *mut cgroup_namespace) {
     ns_ref_inc(ns);
 }
 
-#[cfg(feature = "CONFIG_CGROUPS")]
+#[cfg(CONFIG_CGROUPS)]
 #[inline]
 pub unsafe fn put_cgroup_ns(ns: *mut cgroup_namespace) {
     if ns_ref_put(ns) {
@@ -75,11 +75,11 @@ pub unsafe fn put_cgroup_ns(ns: *mut cgroup_namespace) {
 }
 
 // !CONFIG_CGROUPS branch from the original header.
-#[cfg(not(feature = "CONFIG_CGROUPS"))]
+#[cfg(not(CONFIG_CGROUPS))]
 #[inline]
 pub unsafe fn free_cgroup_ns(_ns: *mut cgroup_namespace) {}
 
-#[cfg(not(feature = "CONFIG_CGROUPS"))]
+#[cfg(not(CONFIG_CGROUPS))]
 #[inline]
 pub unsafe fn copy_cgroup_ns(
     _flags: u64,
@@ -89,11 +89,11 @@ pub unsafe fn copy_cgroup_ns(
     old_ns
 }
 
-#[cfg(not(feature = "CONFIG_CGROUPS"))]
+#[cfg(not(CONFIG_CGROUPS))]
 #[inline]
 pub unsafe fn get_cgroup_ns(_ns: *mut cgroup_namespace) {}
 
-#[cfg(not(feature = "CONFIG_CGROUPS"))]
+#[cfg(not(CONFIG_CGROUPS))]
 #[inline]
 pub unsafe fn put_cgroup_ns(_ns: *mut cgroup_namespace) {}
 

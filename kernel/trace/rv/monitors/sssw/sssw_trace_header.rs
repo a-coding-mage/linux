@@ -5,7 +5,7 @@
  */
 
 // CONFIG_RV_MON_SSSW condition from the original C header.
-#[cfg(feature = "CONFIG_RV_MON_SSSW")]
+#[cfg(CONFIG_RV_MON_SSSW)]
 extern "C" {
     pub fn event_sssw(
         id: ::core::ffi::c_int,

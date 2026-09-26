@@ -195,7 +195,7 @@ unsafe fn create_spu(data: *mut c_void) -> c_int {
 static spu_state_names: [&str; 4] = ["user", "system", "iowait", "idle"];
 unsafe fn spu_acct_time(spu: *mut spu, state: spu_utilization_state) -> u64 { let mut time = (*spu).stats.times[state as usize]; if (*spu).stats.util_state == state { time += ktime_get_ns() - (*spu).stats.tstamp; } time / NSEC_PER_MSEC }
 unsafe fn spu_stat_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut c_char) -> ssize_t { let spu = container_of(dev, spu, dev); sysfs_emit!(buf, "{} {} {} {} {} {} {} {} {} {} {} {} {}\n", spu_state_names[(*spu).stats.util_state as usize], spu_acct_time(spu, SPU_UTIL_USER), spu_acct_time(spu, SPU_UTIL_SYSTEM), spu_acct_time(spu, SPU_UTIL_IOWAIT), spu_acct_time(spu, SPU_UTIL_IDLE_LOADED), (*spu).stats.vol_ctx_switch, (*spu).stats.invol_ctx_switch, (*spu).stats.slb_flt, (*spu).stats.hash_flt, (*spu).stats.min_flt, (*spu).stats.maj_flt, (*spu).stats.class2_intr, (*spu).stats.libassist) }
-static DEVICE_ATTR!(stat, 0444, spu_stat_show, NULL);
+DEVICE_ATTR!(stat, 0o444, spu_stat_show, NULL);
 
 #[cfg(CONFIG_KEXEC_CORE)]
 struct crash_spu_info { spu: *mut spu, saved_spu_runcntl_RW: u32, saved_spu_status_R: u32, saved_spu_npc_RW: u32, saved_mfc_sr1_RW: u64, saved_mfc_dar: u64, saved_mfc_dsisr: u64 }

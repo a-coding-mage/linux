@@ -8,19 +8,19 @@
  * are supplied by the corresponding Rust dependencies.
  */
 
-#[cfg(feature = "CONFIG_X86")]
+#[cfg(CONFIG_X86)]
 #[inline]
 pub unsafe fn hypervisor_pin_vcpu(cpu: i32) {
     x86_platform.hyper.pin_vcpu(cpu);
 }
 
 /* !CONFIG_X86 */
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub fn hypervisor_pin_vcpu(_cpu: i32) {
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub unsafe fn jailhouse_paravirt() -> bool {
     of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), "jailhouse,cell")
@@ -28,11 +28,11 @@ pub unsafe fn jailhouse_paravirt() -> bool {
 
 #[inline]
 pub unsafe fn hypervisor_isolated_pci_functions() -> bool {
-    if cfg!(feature = "CONFIG_S390") {
+    if cfg!(CONFIG_S390) {
         return true;
     }
 
-    if cfg!(feature = "CONFIG_LOONGARCH") {
+    if cfg!(CONFIG_LOONGARCH) {
         return true;
     }
 

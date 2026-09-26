@@ -7,10 +7,10 @@
 
 /* IPv6 transport protocols */
 unsafe extern "C" {
-    pub static mut rawv6_prot: struct proto;
-    pub static mut udpv6_prot: struct proto;
-    pub static mut tcpv6_prot: struct proto;
-    pub static mut pingv6_prot: struct proto;
+    pub static mut rawv6_prot: proto;
+    pub static mut udpv6_prot: proto;
+    pub static mut tcpv6_prot: proto;
+    pub static mut pingv6_prot: proto;
 }
 
 /* extension headers */
@@ -36,43 +36,38 @@ unsafe extern "C" {
 /* this does all the common and the specific ctl work */
 unsafe extern "C" {
     pub fn ip6_datagram_recv_ctl(
-        sk: *mut struct sock,
-        msg: *mut struct msghdr,
-        skb: *mut struct sk_buff,
-    );
+        sk: *mut sock,
+        msg: *mut msghdr,
+        skb: *mut sk_buff);
     pub fn ip6_datagram_recv_common_ctl(
-        sk: *mut struct sock,
-        msg: *mut struct msghdr,
-        skb: *mut struct sk_buff,
-    );
+        sk: *mut sock,
+        msg: *mut msghdr,
+        skb: *mut sk_buff);
     pub fn ip6_datagram_recv_specific_ctl(
-        sk: *mut struct sock,
-        msg: *mut struct msghdr,
-        skb: *mut struct sk_buff,
-    );
+        sk: *mut sock,
+        msg: *mut msghdr,
+        skb: *mut sk_buff);
 
     pub fn ip6_datagram_send_ctl(
-        net: *mut struct net,
-        sk: *mut struct sock,
-        msg: *mut struct msghdr,
-        fl6: *mut struct flowi6,
-        ipc6: *mut struct ipcm6_cookie,
-    ) -> ::core::ffi::c_int;
+        net: *mut net,
+        sk: *mut sock,
+        msg: *mut msghdr,
+        fl6: *mut flowi6,
+        ipc6: *mut ipcm6_cookie) -> ::core::ffi::c_int;
 
     pub fn __ip6_dgram_sock_seq_show(
-        seq: *mut struct seq_file,
-        sp: *mut struct sock,
+        seq: *mut seq_file,
+        sp: *mut sock,
         srcp: __u16,
         destp: __u16,
         rqueue: ::core::ffi::c_int,
-        bucket: ::core::ffi::c_int,
-    );
+        bucket: ::core::ffi::c_int);
 }
 
 #[inline]
 pub unsafe fn ip6_dgram_sock_seq_show(
-    seq: *mut struct seq_file,
-    sp: *mut struct sock,
+    seq: *mut seq_file,
+    sp: *mut sock,
     srcp: __u16,
     destp: __u16,
     bucket: ::core::ffi::c_int,

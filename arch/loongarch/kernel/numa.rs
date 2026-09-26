@@ -17,16 +17,16 @@ pub static mut phys_cpus_on_node: [cpumask_t; MAX_NUMNODES] = [cpumask_t::defaul
 #[no_mangle]
 pub static mut __cpuid_to_node: [i16; CONFIG_NR_CPUS] = [NUMA_NO_NODE as i16; CONFIG_NR_CPUS];
 
-#[cfg(feature = "CONFIG_HAVE_SETUP_PER_CPU_AREA")]
+#[cfg(CONFIG_HAVE_SETUP_PER_CPU_AREA)]
 #[no_mangle]
 pub static mut __per_cpu_offset: [usize; NR_CPUS] = [0; NR_CPUS];
 
-#[cfg(feature = "CONFIG_HAVE_SETUP_PER_CPU_AREA")]
+#[cfg(CONFIG_HAVE_SETUP_PER_CPU_AREA)]
 unsafe fn pcpu_cpu_to_node(cpu: ::core::ffi::c_int) -> ::core::ffi::c_int {
     early_cpu_to_node(cpu)
 }
 
-#[cfg(feature = "CONFIG_HAVE_SETUP_PER_CPU_AREA")]
+#[cfg(CONFIG_HAVE_SETUP_PER_CPU_AREA)]
 unsafe fn pcpu_cpu_distance(from: u32, to: u32) -> ::core::ffi::c_int {
     if early_cpu_to_node(from as ::core::ffi::c_int) == early_cpu_to_node(to as ::core::ffi::c_int) {
         LOCAL_DISTANCE
@@ -35,12 +35,12 @@ unsafe fn pcpu_cpu_distance(from: u32, to: u32) -> ::core::ffi::c_int {
     }
 }
 
-#[cfg(feature = "CONFIG_HAVE_SETUP_PER_CPU_AREA")]
+#[cfg(CONFIG_HAVE_SETUP_PER_CPU_AREA)]
 pub unsafe fn pcpu_populate_pte(addr: usize) {
     populate_kernel_pte(addr);
 }
 
-#[cfg(feature = "CONFIG_HAVE_SETUP_PER_CPU_AREA")]
+#[cfg(CONFIG_HAVE_SETUP_PER_CPU_AREA)]
 pub unsafe fn setup_per_cpu_areas() {
     let mut delta: usize;
     let mut cpu: u32;
@@ -72,9 +72,9 @@ pub unsafe fn setup_per_cpu_areas() {
     }
 
     delta = pcpu_base_addr as usize - __per_cpu_start as usize;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         __per_cpu_offset[cpu as usize] = delta + pcpu_unit_offsets[cpu as usize];
-    }
+    });
 }
 
 /*
@@ -118,12 +118,12 @@ unsafe fn node_mem_init(node: u32) {
     alloc_node_data(node);
 }
 
-#[cfg(feature = "CONFIG_ACPI_NUMA")]
+#[cfg(CONFIG_ACPI_NUMA)]
 static mut num_physpages: usize = 0;
 
-#[cfg(feature = "CONFIG_ACPI_NUMA")]
+#[cfg(CONFIG_ACPI_NUMA)]
 unsafe fn info_node_memblock() {
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         let mem_type = (*md).type_;
         let mem_start = (*md).phys_addr;
         let mem_size = (*md).num_pages << EFI_PAGE_SHIFT;
@@ -147,10 +147,10 @@ unsafe fn info_node_memblock() {
             }
             _ => {}
         }
-    }
+    });
 }
 
-#[cfg(feature = "CONFIG_ACPI_NUMA")]
+#[cfg(CONFIG_ACPI_NUMA)]
 unsafe fn fake_numa_init() -> ::core::ffi::c_int {
     let start = memblock_start_of_DRAM();
     let end = memblock_end_of_DRAM() - 1;
@@ -158,17 +158,17 @@ unsafe fn fake_numa_init() -> ::core::ffi::c_int {
     numa_add_memblk(0, start, end + 1)
 }
 
-#[cfg(feature = "CONFIG_ACPI_NUMA")]
+#[cfg(CONFIG_ACPI_NUMA)]
 pub unsafe fn init_numa_memory() -> ::core::ffi::c_int {
     for i in 0..NR_CPUS { set_cpuid_to_node(i, NUMA_NO_NODE); }
     let ret = if !acpi_disabled { numa_memblks_init(acpi_numa_init, false) } else { numa_memblks_init(fake_numa_init, false) };
     if ret < 0 { return ret; }
     info_node_memblock();
     if !memblock_validate_numa_coverage(SZ_1M) { return -EINVAL; }
-    for_each_node_mask!(node, node_possible_map) {
+    for_each_node_mask!(node, node_possible_map, {
         node_mem_init(node);
         node_set_online(node);
-    }
+    });
     max_pfn = PFN_DOWN(memblock_end_of_DRAM());
     max_low_pfn = core::cmp::min(PFN_DOWN(HIGHMEM_START), max_pfn);
     setup_nr_node_ids();

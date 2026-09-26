@@ -4,22 +4,22 @@
 
 static mut apic_use_ipi_shorthand: bool = false;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 static mut apic_ipi_shorthand_off: i32 = 0;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn apic_ipi_shorthand(mut str_: *mut core::ffi::c_char) -> i32 {
     get_option(&mut str_, &mut apic_ipi_shorthand_off);
     1
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn print_ipi_mode() -> i32 {
     pr_info!("IPI shorthand broadcast: {}\n", str_disabled_enabled(apic_ipi_shorthand_off));
     0
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn apic_smt_update() {
     /*
      * Do not switch to broadcast mode if:
@@ -39,7 +39,7 @@ unsafe fn apic_smt_update() {
     }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn apic_send_IPI_allbutself(vector: u32) {
     if num_online_cpus() < 2 {
         return;
@@ -51,7 +51,7 @@ unsafe fn apic_send_IPI_allbutself(vector: u32) {
     }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn native_smp_send_reschedule(cpu: i32) {
     if unlikely(cpu_is_offline(cpu)) {
         WARN!(1, "sched: Unexpected reschedule of offline CPU#%d!\n", cpu);
@@ -60,12 +60,12 @@ unsafe fn native_smp_send_reschedule(cpu: i32) {
     __apic_send_IPI(cpu, RESCHEDULE_VECTOR);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn native_send_call_func_single_ipi(cpu: i32) {
     __apic_send_IPI(cpu, CALL_FUNCTION_SINGLE_VECTOR);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn native_send_call_func_ipi(mask: *const cpumask) {
     if static_branch_likely(&apic_use_ipi_shorthand) {
         let cpu = smp_processor_id();
@@ -83,7 +83,7 @@ unsafe fn native_send_call_func_ipi(mask: *const cpumask) {
     __apic_send_IPI_mask(mask, CALL_FUNCTION_VECTOR);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn apic_send_nmi_to_offline_cpu(cpu: u32) {
     if WARN_ON_ONCE(!(*apic).nmi_to_offline_cpu) {
         return;
@@ -179,7 +179,7 @@ unsafe fn default_send_IPI_self(vector: i32) {
     __default_send_IPI_shortcut(APIC_DEST_SELF, vector);
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 unsafe fn default_send_IPI_mask_sequence_logical(mask: *const cpumask, vector: i32) {
     let mut flags = 0;
     local_irq_save(&mut flags);
@@ -189,7 +189,7 @@ unsafe fn default_send_IPI_mask_sequence_logical(mask: *const cpumask, vector: i
     local_irq_restore(flags);
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 unsafe fn default_send_IPI_mask_allbutself_logical(mask: *const cpumask, vector: i32) {
     let this_cpu = smp_processor_id();
     let mut flags = 0;
@@ -201,7 +201,7 @@ unsafe fn default_send_IPI_mask_allbutself_logical(mask: *const cpumask, vector:
     local_irq_restore(flags);
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 unsafe fn default_send_IPI_mask_logical(cpumask: *const cpumask, vector: i32) {
     let mask = cpumask_bits(cpumask)[0];
     let mut flags = 0;

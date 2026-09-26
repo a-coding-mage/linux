@@ -73,7 +73,7 @@ unsafe fn tcp_bpf_check_v6_needs_rebuild(ops: *mut proto) { let _=ops; }
 unsafe fn tcp_bpf_v4_build_proto() -> i32 { 0 }
 unsafe fn tcp_bpf_assert_proto_ops(ops: *mut proto) -> i32 { let _=ops; 0 }
 
-#[cfg(feature = "CONFIG_BPF_SYSCALL")]
+#[cfg(CONFIG_BPF_SYSCALL)]
 pub unsafe fn tcp_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore: bool) -> i32 {
     // Family/config selection and protocol replacement are intentionally kept
     // as direct kernel operations in the native implementation.
@@ -81,12 +81,12 @@ pub unsafe fn tcp_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore:
     0
 }
 
-#[cfg(feature = "CONFIG_BPF_SYSCALL")]
+#[cfg(CONFIG_BPF_SYSCALL)]
 pub unsafe fn tcp_bpf_clone(sk: *const sock, newsk: *mut sock) {
     let _ = (sk, newsk);
 }
 
-#[cfg(feature = "CONFIG_BPF_STREAM_PARSER")]
+#[cfg(CONFIG_BPF_STREAM_PARSER)]
 pub unsafe fn tcp_bpf_strp_read_sock(strp: *mut strparser, desc: *mut read_descriptor_t,
                                      recv_actor: sk_read_actor_t) -> i32 {
     let _ = (strp, desc, recv_actor);

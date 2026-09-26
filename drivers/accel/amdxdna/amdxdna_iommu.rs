@@ -130,6 +130,8 @@ pub unsafe fn amdxdna_iommu_alloc(
     let iova: *mut iova;
     let cpu_addr: *mut c_void;
     let mut ret: c_int;
+    'free_iova: {
+    'free_cpu_addr: {
 
     iova = amdxdna_iommu_alloc_iova(xdna, size, dma_addr, true);
     if IS_ERR(iova) {
@@ -140,7 +142,7 @@ pub unsafe fn amdxdna_iommu_alloc(
     cpu_addr = __get_free_pages(GFP_KERNEL, get_order(size)) as *mut c_void;
     if cpu_addr.is_null() {
         ret = -ENOMEM;
-        goto free_iova;
+        break 'free_iova;
     }
 
     ret = iommu_map(
@@ -152,14 +154,15 @@ pub unsafe fn amdxdna_iommu_alloc(
         GFP_KERNEL,
     );
     if ret != 0 {
-        goto free_cpu_addr;
+        break 'free_cpu_addr;
     }
 
     cpu_addr
-
-    free_cpu_addr:
+    }
+    
     free_pages(cpu_addr as c_ulong, get_order(size));
-    free_iova:
+    }
+    
     __free_iova(&mut (*xdna).iovad, iova);
     ERR_PTR(ret) as *mut c_void
 }
@@ -197,6 +200,10 @@ pub unsafe fn amdxdna_iommu_fini(xdna: *mut amdxdna_dev) {
 pub unsafe fn amdxdna_iommu_init(xdna: *mut amdxdna_dev) -> c_int {
     let mut order: c_ulong;
     let mut ret: c_int = 0;
+    'put_group: {
+    'free_domain: {
+    'put_iova: {
+    'detach_group: {
 
     (*xdna).group = iommu_group_get((*xdna).ddev.dev);
     if (*xdna).group.is_null() || !force_iova {
@@ -208,12 +215,12 @@ pub unsafe fn amdxdna_iommu_init(xdna: *mut amdxdna_dev) -> c_int {
     if IS_ERR((*xdna).domain) {
         XDNA_ERR!(xdna, "Failed to alloc iommu domain");
         ret = PTR_ERR((*xdna).domain);
-        goto put_group;
+        break 'put_group;
     }
 
     ret = iova_cache_get();
     if ret != 0 {
-        goto free_domain;
+        break 'free_domain;
     }
 
     order = __ffs((*(*xdna).domain).pgsize_bitmap);
@@ -221,24 +228,27 @@ pub unsafe fn amdxdna_iommu_init(xdna: *mut amdxdna_dev) -> c_int {
 
     ret = iommu_attach_group((*xdna).domain, (*xdna).group);
     if ret != 0 {
-        goto put_iova;
+        break 'put_iova;
     }
 
     ret = drmm_add_action(&mut (*xdna).ddev, amdxdna_cleanup_force_iova, core::ptr::null_mut());
     if ret != 0 {
-        goto detach_group;
+        break 'detach_group;
     }
 
     return 0;
-
-    detach_group:
+    }
+    
     iommu_detach_group((*xdna).domain, (*xdna).group);
-    put_iova:
+    }
+    
     put_iova_domain(&mut (*xdna).iovad);
     iova_cache_put();
-    free_domain:
+    }
+    
     iommu_domain_free((*xdna).domain);
-    put_group:
+    }
+    
     iommu_group_put((*xdna).group);
     (*xdna).group = core::ptr::null_mut();
     (*xdna).domain = core::ptr::null_mut();

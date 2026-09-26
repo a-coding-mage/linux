@@ -34,7 +34,7 @@ pub unsafe fn esp6_output_head(_x:*mut xfrm_state,skb:*mut sk_buff,e:*mut esp_in
 pub unsafe fn esp6_output_tail(x:*mut xfrm_state,skb:*mut sk_buff,e:*mut esp_info)->c_int{let a=(*x).data;let tmp=esp_alloc_tmp(a,(*e).nfrags+2,0);if tmp.is_null(){return -12}let iv=esp_tmp_iv(a,tmp,0);let r=esp_tmp_req(a,iv);let sg=esp_req_sg(a,r);sg_init_table(sg,(*e).nfrags);let q=skb_to_sgvec(skb,sg,0,(*skb).len as c_int);if q<0{kfree(tmp);return q}aead_request_set_callback(r,0,esp_output_done,skb);aead_request_set_crypt(r,sg,sg,(*e).clen+crypto_aead_ivsize(a),iv);aead_request_set_ad(r,8);let ret=crypto_aead_encrypt(r);if ret!=-115{kfree(tmp)}ret}
 pub unsafe fn esp6_input_done2(skb:*mut sk_buff,err:c_int)->c_int{if err!=0{return err}let x=xfrm_input_state(skb);let h=8+crypto_aead_ivsize((*x).data);skb_pull_rcsum(skb,h);0}
 pub unsafe fn esp6_input(x:*mut xfrm_state,skb:*mut sk_buff)->c_int{let a=(*x).data;let iv=crypto_aead_ivsize(a);if (*skb).len<(8+iv) as u32{return -22}let tmp=esp_alloc_tmp(a,1,0);if tmp.is_null(){return -12}let r=esp_tmp_req(a,esp_tmp_iv(a,tmp,0));let sg=esp_req_sg(a,r);sg_init_table(sg,1);let q=skb_to_sgvec(skb,sg,0,(*skb).len as c_int);if q<0{kfree(tmp);return q}aead_request_set_callback(r,0,esp_input_done,skb);aead_request_set_crypt(r,sg,sg,(*skb).len as c_int-8,esp_tmp_iv(a,tmp,0));aead_request_set_ad(r,8);let ret=crypto_aead_decrypt(r);if ret!=-115{kfree(tmp)}esp6_input_done2(skb,ret)}
-pub unsafe fn esp6_destroy(x:*mut xfrm_state){let _=x}
+pub unsafe fn esp6_destroy(x:*mut xfrm_state){let _=x;}
 pub unsafe fn esp6_rcv_cb(_skb:*mut sk_buff,_err:c_int)->c_int{0}
 pub unsafe fn esp6_init_state(_x:*mut xfrm_state,_extack:*mut netlink_ext_ack)->c_int{0}
 

@@ -127,10 +127,10 @@ extern "C" {
 // External constants
 const INTEGRITY_KEYRING_MAX: usize = 4;
 
-#[cfg(not(feature = "CONFIG_INTEGRITY_TRUSTED_KEYRING"))]
+#[cfg(not(CONFIG_INTEGRITY_TRUSTED_KEYRING))]
 static KEYRING_NAME: &[&[u8]; 4] = &[b"_evm\0", b"_ima\0", b".platform\0", b".machine\0"];
 
-#[cfg(feature = "CONFIG_INTEGRITY_TRUSTED_KEYRING")]
+#[cfg(CONFIG_INTEGRITY_TRUSTED_KEYRING)]
 static KEYRING_NAME: &[&[u8]; 4] = &[b".evm\0", b".ima\0", b".platform\0", b".machine\0"];
 
 // Conditional macro for restrict_link_to_ima
@@ -318,7 +318,7 @@ pub extern "C" fn integrity_init_keyring(id: c_uint) -> c_int {
 
     if id == INTEGRITY_KEYRING_PLATFORM
         || (id == INTEGRITY_KEYRING_MACHINE
-            && cfg!(not(feature = "CONFIG_INTEGRITY_CA_MACHINE_KEYRING")))
+            && cfg!(not(CONFIG_INTEGRITY_CA_MACHINE_KEYRING)))
     {
         restriction = core::ptr::null_mut();
         unsafe {
@@ -326,12 +326,12 @@ pub extern "C" fn integrity_init_keyring(id: c_uint) -> c_int {
         }
     }
 
-    #[cfg(not(feature = "CONFIG_INTEGRITY_TRUSTED_KEYRING"))]
+    #[cfg(not(CONFIG_INTEGRITY_TRUSTED_KEYRING))]
     {
         return 0;
     }
 
-    #[cfg(feature = "CONFIG_INTEGRITY_TRUSTED_KEYRING")]
+    #[cfg(CONFIG_INTEGRITY_TRUSTED_KEYRING)]
     unsafe {
         restriction = kzalloc_obj(core::ptr::null());
         if restriction.is_null() {
@@ -346,12 +346,12 @@ pub extern "C" fn integrity_init_keyring(id: c_uint) -> c_int {
         } else {
             // restriction->check = restrict_link_to_ima
             let restriction_ptr = restriction as *mut KeyRestriction;
-            #[cfg(feature = "CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY")]
+            #[cfg(CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY)]
             {
                 (*restriction_ptr).check = restrict_link_by_digsig_builtin_and_secondary
                     as *mut core::ffi::c_void;
             }
-            #[cfg(not(feature = "CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY"))]
+            #[cfg(not(CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY))]
             {
                 (*restriction_ptr).check = restrict_link_by_digsig_builtin as *mut core::ffi::c_void;
             }

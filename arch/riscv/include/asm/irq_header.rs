@@ -14,12 +14,12 @@ pub enum resource {}
 pub enum cpumask_t {}
 
 #[cfg(CONFIG_SMP)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn arch_trigger_cpumask_backtrace(mask: *const cpumask_t, exclude_cpu: core::ffi::c_int);
 }
 // C macro alias: arch_trigger_cpumask_backtrace -> arch_trigger_cpumask_backtrace.
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn riscv_set_intc_hwnode_fn(
         func: Option<unsafe extern "C" fn() -> *mut fwnode_handle>,
     );
@@ -43,7 +43,7 @@ pub enum riscv_irqchip_type {
 }
 
 #[cfg(CONFIG_ACPI)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn riscv_acpi_get_gsi_info(
         fwnode: *mut fwnode_handle,
         gsi_base: *mut u32,

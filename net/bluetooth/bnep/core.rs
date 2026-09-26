@@ -14,9 +14,9 @@ static mut bnep_session_sem: RwSemaphore = RwSemaphore::new();
 unsafe fn __bnep_get_session(dst: *mut u8) -> *mut bnep_session {
     let mut s: *mut bnep_session;
     BT_DBG!("");
-    list_for_each_entry!(s, &mut bnep_session_list, list) {
+    list_for_each_entry!(s, &mut bnep_session_list, list, {
         if ether_addr_equal(dst, (*s).eh.h_source.as_mut_ptr()) { return s; }
-    }
+    });
     core::ptr::null_mut()
 }
 

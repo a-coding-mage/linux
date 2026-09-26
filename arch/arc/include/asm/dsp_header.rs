@@ -18,25 +18,25 @@ pub struct dsp_callee_regs {
 
     // Preserved from CONFIG_ARC_DSP_AGU_USERSPACE. Enable the corresponding
     // Rust feature to include these fields.
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_AP0: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_AP1: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_AP2: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_AP3: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_OS0: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_OS1: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_MOD0: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_MOD1: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_MOD2: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_ARC_DSP_AGU_USERSPACE")]
+    #[cfg(CONFIG_ARC_DSP_AGU_USERSPACE)]
     pub AGU_MOD3: core::ffi::c_ulong,
 }
 

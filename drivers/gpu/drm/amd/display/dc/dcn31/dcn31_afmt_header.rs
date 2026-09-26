@@ -130,8 +130,7 @@ extern "C" {
         inst: u32,
         afmt_regs: *const dcn31_afmt_registers,
         afmt_shift: *const dcn31_afmt_shift,
-        afmt_mask: *const dcn31_afmt_mask,
-    );
+        afmt_mask: *const dcn31_afmt_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

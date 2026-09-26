@@ -12,24 +12,24 @@
 use crate::bi_record;
 
 // CONFIG_BOOTINFO_PROC
-#[cfg(feature = "CONFIG_BOOTINFO_PROC")]
+#[cfg(CONFIG_BOOTINFO_PROC)]
 extern "C" {
     pub fn save_bootinfo(bi: *const bi_record);
 }
 
 // CONFIG_BOOTINFO_PROC is not enabled.
-#[cfg(not(feature = "CONFIG_BOOTINFO_PROC"))]
+#[cfg(not(CONFIG_BOOTINFO_PROC))]
 #[inline]
 pub unsafe fn save_bootinfo(_bi: *const bi_record) {}
 
 // CONFIG_UBOOT
-#[cfg(feature = "CONFIG_UBOOT")]
+#[cfg(CONFIG_UBOOT)]
 extern "C" {
     pub fn process_uboot_commandline(commandp: *mut core::ffi::c_char, size: core::ffi::c_int);
 }
 
 // CONFIG_UBOOT is not enabled.
-#[cfg(not(feature = "CONFIG_UBOOT"))]
+#[cfg(not(CONFIG_UBOOT))]
 #[inline]
 pub unsafe fn process_uboot_commandline(
     _commandp: *mut core::ffi::c_char,

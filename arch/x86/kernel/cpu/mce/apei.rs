@@ -83,12 +83,12 @@ pub unsafe fn apei_smca_report_x86_error(ctx_info: *mut cper_ia_proc_ctx, lapic_
         return -EINVAL;
     }
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         if cpu_data(cpu).topo.initial_apicid == lapic_id {
             apicid_found = true;
             break;
         }
-    }
+    });
 
     if !apicid_found {
         return -EINVAL;

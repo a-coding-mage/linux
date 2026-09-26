@@ -29,7 +29,7 @@ static mut nfs4_callback_program: svc_program = svc_program {
     pg_rpcbind_set: Some(svc_generic_rpcbind_set),
 };
 
-static unsafe fn nfs4_callback_up_net(serv: *mut svc_serv, net: *mut net) -> i32 {
+unsafe fn nfs4_callback_up_net(serv: *mut svc_serv, net: *mut net) -> i32 {
     let cred = current_cred();
     let mut ret: i32;
     let nn = net_generic(net, nfs_net_id);

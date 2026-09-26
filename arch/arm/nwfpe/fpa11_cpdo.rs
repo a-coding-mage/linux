@@ -12,7 +12,7 @@
 extern "C" {
     fn SingleCPDO(round_data: *mut roundingData, opcode: u32, r_fd: *mut FPREG) -> u32;
     fn DoubleCPDO(round_data: *mut roundingData, opcode: u32, r_fd: *mut FPREG) -> u32;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     fn ExtendedCPDO(round_data: *mut roundingData, opcode: u32, r_fd: *mut FPREG) -> u32;
 
     fn getDestinationSize(opcode: u32) -> u32;
@@ -25,13 +25,13 @@ extern "C" {
     fn getFd(opcode: u32) -> u32;
     fn float64_to_float32(round_data: *mut roundingData, value: f64) -> f32;
     fn float32_to_float64(value: f32) -> f64;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     fn floatx80_to_float32(round_data: *mut roundingData, value: floatx80) -> f32;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     fn floatx80_to_float64(round_data: *mut roundingData, value: floatx80) -> f64;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     fn float32_to_floatx80(value: f32) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     fn float64_to_floatx80(value: f64) -> floatx80;
     fn float_raise(exception: u32);
 }
@@ -76,7 +76,7 @@ pub unsafe fn EmulateCPDO(opcode: u32) -> u32 {
     let n_rc = match n_type {
         typeSingle => SingleCPDO(&mut round_data, opcode, r_fd),
         typeDouble => DoubleCPDO(&mut round_data, opcode, r_fd),
-        #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+        #[cfg(CONFIG_FPE_NWFPE_XP)]
         typeExtended => ExtendedCPDO(&mut round_data, opcode, r_fd),
         _ => 0,
     };
@@ -89,7 +89,7 @@ pub unsafe fn EmulateCPDO(opcode: u32) -> u32 {
            to be. */
         (*fpa11).fType[fd as usize] = n_dest;
 
-        #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+        #[cfg(CONFIG_FPE_NWFPE_XP)]
         if n_dest != n_type {
             match n_dest {
                 typeSingle => {
@@ -117,7 +117,7 @@ pub unsafe fn EmulateCPDO(opcode: u32) -> u32 {
             }
         }
 
-        #[cfg(not(feature = "CONFIG_FPE_NWFPE_XP"))]
+        #[cfg(not(CONFIG_FPE_NWFPE_XP))]
         if n_dest != n_type {
             if n_dest == typeSingle {
                 (*r_fd).fSingle = float64_to_float32(&mut round_data, (*r_fd).fDouble);

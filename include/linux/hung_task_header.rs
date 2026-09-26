@@ -22,7 +22,7 @@ pub const BLOCKER_TYPE_RWSEM_WRITER: usize = 0x03;
 pub const BLOCKER_TYPE_MASK: usize = 0x03;
 
 /* CONFIG_DETECT_HUNG_TASK_BLOCKER controls which implementation is built. */
-#[cfg(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER")]
+#[cfg(CONFIG_DETECT_HUNG_TASK_BLOCKER)]
 pub unsafe fn hung_task_set_blocker(lock: *mut c_void, type_: usize) {
     let lock_ptr = lock as usize;
 
@@ -39,35 +39,35 @@ pub unsafe fn hung_task_set_blocker(lock: *mut c_void, type_: usize) {
     unsafe { core::ptr::write_volatile(crate::current_blocker_ptr(), lock_ptr | type_) };
 }
 
-#[cfg(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER")]
+#[cfg(CONFIG_DETECT_HUNG_TASK_BLOCKER)]
 pub unsafe fn hung_task_clear_blocker() {
     unsafe { core::ptr::write_volatile(crate::current_blocker_ptr(), 0usize) };
 }
 
-#[cfg(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER")]
+#[cfg(CONFIG_DETECT_HUNG_TASK_BLOCKER)]
 pub unsafe fn hung_task_get_blocker_type(blocker: usize) -> usize {
     /* WARN_ON_ONCE(!blocker); */
     blocker & BLOCKER_TYPE_MASK
 }
 
-#[cfg(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER")]
+#[cfg(CONFIG_DETECT_HUNG_TASK_BLOCKER)]
 pub unsafe fn hung_task_blocker_to_lock(blocker: usize) -> *mut c_void {
     /* WARN_ON_ONCE(!blocker); */
     (blocker & !BLOCKER_TYPE_MASK) as *mut c_void
 }
 
-#[cfg(not(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER"))]
+#[cfg(not(CONFIG_DETECT_HUNG_TASK_BLOCKER))]
 pub unsafe fn hung_task_set_blocker(_lock: *mut c_void, _type_: usize) {}
 
-#[cfg(not(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER"))]
+#[cfg(not(CONFIG_DETECT_HUNG_TASK_BLOCKER))]
 pub unsafe fn hung_task_clear_blocker() {}
 
-#[cfg(not(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER"))]
+#[cfg(not(CONFIG_DETECT_HUNG_TASK_BLOCKER))]
 pub unsafe fn hung_task_get_blocker_type(_blocker: usize) -> usize {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DETECT_HUNG_TASK_BLOCKER"))]
+#[cfg(not(CONFIG_DETECT_HUNG_TASK_BLOCKER))]
 pub unsafe fn hung_task_blocker_to_lock(_blocker: usize) -> *mut c_void {
     core::ptr::null_mut()
 }

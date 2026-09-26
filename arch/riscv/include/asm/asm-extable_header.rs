@@ -14,7 +14,7 @@ pub const EX_TYPE_LOAD_UNALIGNED_ZEROPAD: i32 = 4;
  * The assembler form emits entries into __ex_table.  It is preserved as a
  * Rust macro so assembly users retain the same source-level interface.
  */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 macro_rules! __ASM_EXTABLE_RAW {
     ($insn:expr, $fixup:expr, $type:expr, $data:expr) => {
         concat!(
@@ -29,33 +29,33 @@ macro_rules! __ASM_EXTABLE_RAW {
     };
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 macro_rules! _ASM_EXTABLE {
     ($insn:tt, $fixup:tt) => {
         __ASM_EXTABLE_RAW!(stringify!($insn), stringify!($fixup), stringify!(EX_TYPE_FIXUP), "0")
     };
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_ERR_SHIFT: u32 = 0;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_ERR: u32 = 0x1f;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_ZERO_SHIFT: u32 = 5;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_ZERO: u32 = 0x3e0;
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_DATA_SHIFT: u32 = 0;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_DATA: u32 = 0x1f;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_ADDR_SHIFT: u32 = 5;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const EX_DATA_REG_ADDR: u32 = 0x3e0;
 
 /* Depends on the external __DEFINE_ASM_GPR_NUMS assembler definitions. */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 macro_rules! EX_DATA_REG {
     ($reg:ident, $gpr:ident) => {
         concat!(
@@ -65,7 +65,7 @@ macro_rules! EX_DATA_REG {
     };
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 macro_rules! _ASM_EXTABLE_UACCESS_ERR_ZERO {
     ($insn:tt, $fixup:tt, $err:ident, $zero:ident) => {
         __ASM_EXTABLE_RAW!(
@@ -77,14 +77,14 @@ macro_rules! _ASM_EXTABLE_UACCESS_ERR_ZERO {
     };
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 macro_rules! _ASM_EXTABLE_UACCESS_ERR {
     ($insn:tt, $fixup:tt, $err:ident) => {
         _ASM_EXTABLE_UACCESS_ERR_ZERO!($insn, $fixup, $err, zero)
     };
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 macro_rules! _ASM_EXTABLE_LOAD_UNALIGNED_ZEROPAD {
     ($insn:tt, $fixup:tt, $data:ident, $addr:ident) => {
         __ASM_EXTABLE_RAW!(
@@ -97,7 +97,7 @@ macro_rules! _ASM_EXTABLE_LOAD_UNALIGNED_ZEROPAD {
 }
 
 /* Without CONFIG_MMU, the C macro intentionally expands to nothing. */
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 macro_rules! _ASM_EXTABLE_UACCESS_ERR {
     ($insn:tt, $fixup:tt, $err:ident) => {};
 }

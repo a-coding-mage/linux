@@ -20,7 +20,7 @@ const SS3: u8 = 0x8f;
 #[inline] fn map_euc2sjis(eh:u8,el:u8,ep:u8,sh:&mut u8,sl:&mut u8,sp:u8){if eh&1!=0{*sh=eh/2+(sp-ep/2);*sl=el.wrapping_sub(if el>=0xe0{0x60}else{0x61})}else{*sh=eh/2+((sp-ep/2)-1);*sl=el.wrapping_sub(2)}}
 
 #[repr(C)] pub struct nls_table { pub charset:*const u8, pub uni2char:Option<unsafe extern "C" fn(u32,*mut u8,c_int)->c_int>, pub char2uni:Option<unsafe extern "C" fn(*const u8,c_int,*mut u32)->c_int> }
-extern "C" { fn load_nls(*const u8)->*mut nls_table; fn register_nls(*mut nls_table)->c_int; fn unregister_nls(*mut nls_table); fn unload_nls(*mut nls_table); }
+extern "C" { fn load_nls(_: *const u8)->*mut nls_table; fn register_nls(_: *mut nls_table)->c_int; fn unregister_nls(_: *mut nls_table); fn unload_nls(_: *mut nls_table); }
 static mut p_nls:*mut nls_table=core::ptr::null_mut();
 unsafe extern "C" fn uni2char(_u:u32,_o:*mut u8,_b:c_int)->c_int{-22}
 unsafe extern "C" fn char2uni(_r:*const u8,_b:c_int,_u:*mut u32)->c_int{-22}

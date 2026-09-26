@@ -69,8 +69,8 @@ unsafe fn xmon_write(ptr: *const c_char, nb: c_int) -> c_int {
             if PAGINATE_POS >= PAGINATE_LPP {
                 udbg_write(msg.as_ptr() as *const c_char, msg.len() as c_int - 1);
                 match xmon_readchar() {
-                    b'a' as c_int => PAGINATING = false,
-                    b'q' as c_int => PAGINATE_SKIPPING = true,
+                    case if case == b'a' as c_int => PAGINATING = false,
+                    case if case == b'q' as c_int => PAGINATE_SKIPPING = true,
                     _ => {},
                 }
                 PAGINATE_POS = 0;

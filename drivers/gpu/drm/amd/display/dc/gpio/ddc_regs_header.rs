@@ -68,15 +68,15 @@ pub struct ddc_sh_mask {
 // The following macros preserve the original C preprocessor token-pasting
 // interfaces. Their expanded register symbols are supplied by dependencies.
 #[macro_export]
-macro_rules! DDC_GPIO_REG_LIST_ENTRY { ($type:ident, $cd:ident, $id:ident) => {
-    /* .type_reg = REG(DC_GPIO_DDC##id##_##type),
-       .type_mask = DC_GPIO_DDC##id##_##type##__DC_GPIO_DDC##id##cd##_##type##_MASK,
-       .type_shift = DC_GPIO_DDC##id##_##type##__DC_GPIO_DDC##id##cd##_##type##__SHIFT */
+macro_rules! DDC_GPIO_REG_LIST_ENTRY { ($type:tt, $cd:tt, $id:tt) => {
+    /* .type_reg = REG(::kernel::macros::paste!([<DC_GPIO_DDC $id>])##::kernel::macros::paste!([<_ $type>])),
+       .type_mask = ::kernel::macros::paste!([<DC_GPIO_DDC $id>])##::kernel::macros::paste!([<_ $type>])##::kernel::macros::paste!([<__DC_GPIO_DDC $id>])##::kernel::macros::paste!([<$cd _>])##::kernel::macros::paste!([<$type _MASK>]),
+       .type_shift = ::kernel::macros::paste!([<DC_GPIO_DDC $id>])##::kernel::macros::paste!([<_ $type>])##::kernel::macros::paste!([<__DC_GPIO_DDC $id>])##::kernel::macros::paste!([<$cd _>])##::kernel::macros::paste!([<$type __SHIFT>]) */
 }; }
 #[macro_export]
 macro_rules! DDC_GPIO_REG_LIST { ($cd:ident, $id:ident) => { DDC_GPIO_REG_LIST_ENTRY!(MASK,$cd,$id); DDC_GPIO_REG_LIST_ENTRY!(A,$cd,$id); DDC_GPIO_REG_LIST_ENTRY!(EN,$cd,$id); DDC_GPIO_REG_LIST_ENTRY!(Y,$cd,$id); }; }
 #[macro_export]
-macro_rules! DDC_REG_LIST { ($cd:ident, $id:ident) => { DDC_GPIO_REG_LIST!($cd,$id); /* .ddc_setup = REG(DC_I2C_DDC##id##_SETUP) */ }; }
+macro_rules! DDC_REG_LIST { ($cd:ident, $id:tt) => { DDC_GPIO_REG_LIST!($cd,$id); /* .ddc_setup = REG(::kernel::macros::paste!([<DC_I2C_DDC $id>])##_SETUP) */ }; }
 #[macro_export]
 macro_rules! DDC_REG_LIST_DCN2 { ($cd:ident, $id:ident) => { DDC_REG_LIST!($cd,$id); /* .phy_aux_cntl = REG(PHY_AUX_CNTL), .dc_gpio_aux_ctrl_5 = REG(DC_GPIO_AUX_CTRL_5) */ }; }
 #[macro_export]
@@ -96,24 +96,24 @@ macro_rules! DDC_I2C_REG_LIST_DCN2 { ($cd:ident) => { DDC_I2C_REG_LIST!($cd); /*
 
 #[macro_export]
 macro_rules! DDC_MASK_SH_LIST_COMMON { ($mask_sh:ident) => {
-    /* SF_DDC(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_ENABLE, mask_sh),
-       SF_DDC(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_EDID_DETECT_ENABLE, mask_sh),
-       SF_DDC(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_EDID_DETECT_MODE, mask_sh),
-       SF_DDC(DC_GPIO_DDC1_MASK, DC_GPIO_DDC1DATA_PD_EN, mask_sh),
-       SF_DDC(DC_GPIO_DDC1_MASK, DC_GPIO_DDC1CLK_PD_EN, mask_sh),
-       SF_DDC(DC_GPIO_DDC1_MASK, AUX_PAD1_MODE, mask_sh) */
+    /* SF_DDC(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_ENABLE, $mask_sh),
+       SF_DDC(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_EDID_DETECT_ENABLE, $mask_sh),
+       SF_DDC(DC_I2C_DDC1_SETUP, DC_I2C_DDC1_EDID_DETECT_MODE, $mask_sh),
+       SF_DDC(DC_GPIO_DDC1_MASK, DC_GPIO_DDC1DATA_PD_EN, $mask_sh),
+       SF_DDC(DC_GPIO_DDC1_MASK, DC_GPIO_DDC1CLK_PD_EN, $mask_sh),
+       SF_DDC(DC_GPIO_DDC1_MASK, AUX_PAD1_MODE, $mask_sh) */
 }; }
 #[macro_export]
 macro_rules! DDC_MASK_SH_LIST { ($mask_sh:ident) => {
     DDC_MASK_SH_LIST_COMMON!($mask_sh);
-    /* SF_DDC(DC_GPIO_I2CPAD_MASK, DC_GPIO_SDA_PD_DIS, mask_sh),
-       SF_DDC(DC_GPIO_I2CPAD_MASK, DC_GPIO_SCL_PD_DIS, mask_sh) */
+    /* SF_DDC(DC_GPIO_I2CPAD_MASK, DC_GPIO_SDA_PD_DIS, $mask_sh),
+       SF_DDC(DC_GPIO_I2CPAD_MASK, DC_GPIO_SCL_PD_DIS, $mask_sh) */
 }; }
 #[macro_export]
-macro_rules! DDC_MASK_SH_LIST_DCN2 { ($mask_sh:ident, $cd:ident) => {
+macro_rules! DDC_MASK_SH_LIST_DCN2 { ($mask_sh:tt, $cd:tt) => {
     DDC_MASK_SH_LIST_COMMON!($mask_sh);
-    /* 0, 0, (PHY_AUX_CNTL__AUX##cd##_PAD_RXSEL##mask_sh),
-       (DC_GPIO_AUX_CTRL_5__DDC_PAD##cd##_I2CMODE##mask_sh) */
+    /* 0, 0, (::kernel::macros::paste!([<PHY_AUX_CNTL__AUX $cd>])##::kernel::macros::paste!([<_PAD_RXSEL $mask_sh>])),
+       (::kernel::macros::paste!([<DC_GPIO_AUX_CTRL_5__DDC_PAD $cd>])##::kernel::macros::paste!([<_I2CMODE $mask_sh>])) */
 }; }
 #[macro_export]
 macro_rules! DDC_MASK_SH_LIST_DCN2_VGA { ($mask_sh:ident) => {

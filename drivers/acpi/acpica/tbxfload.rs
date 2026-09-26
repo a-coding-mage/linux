@@ -98,14 +98,14 @@ pub unsafe fn acpi_tb_load_namespace() -> acpi_status {
                 status,
                 "(%4.4s:%8.8s) while loading table",
                 (*table).signature.ascii,
-                (*table).pointer->oem_table_id,
+                (*(*table).pointer).oem_table_id,
             ));
             tables_failed += 1;
             ACPI_DEBUG_PRINT_RAW((
                 ACPI_DB_INIT,
                 "Table [%4.4s:%8.8s] (id FF) - Table namespace load failed\n\n",
                 (*table).signature.ascii,
-                (*table).pointer->oem_table_id,
+                (*(*table).pointer).oem_table_id,
             ));
         } else {
             tables_loaded += 1;

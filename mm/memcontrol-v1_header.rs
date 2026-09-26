@@ -77,11 +77,11 @@ pub type gfp_t = core::ffi::c_uint;
 pub enum res_type { _MEM, _MEMSWAP, _KMEM, _TCP }
 
 /* CONFIG_MEMCG_V1 selects the real implementations; otherwise these are stubs. */
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline]
 pub const fn do_memsw_account() -> bool { false }
 
-#[cfg(feature = "CONFIG_MEMCG_V1")]
+#[cfg(CONFIG_MEMCG_V1)]
 #[inline]
 pub unsafe fn do_memsw_account() -> bool {
     !cgroup_subsys_on_dfl(core::ptr::addr_of_mut!(memory_cgrp_subsys) as *mut core::ffi::c_void)
@@ -98,36 +98,36 @@ extern "C" {
 
 pub enum cftype {}
 
-#[cfg(feature = "CONFIG_MEMCG_V1")]
+#[cfg(CONFIG_MEMCG_V1)]
 #[inline]
 pub unsafe fn memcg1_soft_limit_reset(memcg: *mut mem_cgroup) {
     /* WRITE_ONCE(memcg->soft_limit, PAGE_COUNTER_MAX); */
     let _ = (memcg, PAGE_COUNTER_MAX);
 }
 
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_alloc_events(_: *mut mem_cgroup) -> bool { true }
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_free_events(_: *mut mem_cgroup) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_memcg_init(_: *mut mem_cgroup) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_remove_from_trees(_: *mut mem_cgroup) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_soft_limit_reset(_: *mut mem_cgroup) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_css_offline(_: *mut mem_cgroup) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub unsafe fn memcg1_oom_prepare(_: *mut mem_cgroup, locked: *mut bool) -> bool { *locked = false; true }
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_oom_finish(_: *mut mem_cgroup, _: bool) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_oom_recover(_: *mut mem_cgroup) {}
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_tcpmem_active(_: *mut mem_cgroup) -> bool { false }
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_charge_skmem(_: *mut mem_cgroup, _: core::ffi::c_uint, _: gfp_t) -> bool { true }
-#[cfg(not(feature = "CONFIG_MEMCG_V1"))]
+#[cfg(not(CONFIG_MEMCG_V1))]
 #[inline] pub fn memcg1_uncharge_skmem(_: *mut mem_cgroup, _: core::ffi::c_uint) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

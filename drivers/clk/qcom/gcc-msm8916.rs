@@ -40,7 +40,7 @@ pub enum ParentId {
 
 /*
 // SPDX-License-Identifier: GPL-2.0-only
-/*
+/ *
  * Copyright 2015 Linaro Limited
  * /
 
@@ -821,7 +821,7 @@ static struct clk_rcg2 cci_clk_src = {
 	},
 };
 
-/*
+/ *
  * This is a frequency table for "General Purpose" clocks.
  * These clocks can be muxed to the SoC pins and may be used by
  * external devices. They're often used as PWM source.
@@ -996,7 +996,7 @@ static struct clk_rcg2 crypto_clk_src = {
 	},
 };
 
-/*
+/ *
  * This is a frequency table for "General Purpose" clocks.
  * These clocks can be muxed to the SoC pins and may be used by
  * external devices. They're often used as PWM source.

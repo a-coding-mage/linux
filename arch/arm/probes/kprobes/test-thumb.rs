@@ -13,7 +13,7 @@
 // external dependency: "test-core.h"
 
 
-#define TEST_ISA "16"
+pub const TEST_ISA: &core::ffi::CStr = c"16";
 
 #define DONT_TEST_IN_ITBLOCK(tests)			\
 	kprobe_test_flags |= TEST_FLAG_NO_ITBLOCK;	\
@@ -380,12 +380,12 @@ pub unsafe extern "C" fn kprobe_thumb32_test_cases() {
 	TEST_THUMB_TO_ARM_INTERWORK_P("ldmia	r",13,2*4,", {r0-r12,pc}")
 
 	TEST_UNSUPPORTED(__inst_thumb32(0xe88f0101) "	@ stmia	pc, {r0,r8}")
-	TEST_UNSUPPORTED(__inst_thumb32(0xe92f5f00) "	@ stmdb	pc!, {r8-r12,r14}")
-	TEST_UNSUPPORTED(__inst_thumb32(0xe8bdc000) "	@ ldmia	r13!, {r14,pc}")
-	TEST_UNSUPPORTED(__inst_thumb32(0xe93ec000) "	@ ldmdb	r14!, {r14,pc}")
-	TEST_UNSUPPORTED(__inst_thumb32(0xe8a73f00) "	@ stmia	r7!, {r8-r12,sp}")
-	TEST_UNSUPPORTED(__inst_thumb32(0xe8a79f00) "	@ stmia	r7!, {r8-r12,pc}")
-	TEST_UNSUPPORTED(__inst_thumb32(0xe93e2010) "	@ ldmdb	r14!, {r4,sp}")
+	TEST_UNSUPPORTED(__inst_thumb32(0xe92f5f00) "	@ stmdb	pc!(), {r8-r12,r14}")
+	TEST_UNSUPPORTED(__inst_thumb32(0xe8bdc000) "	@ ldmia	r13!(), {r14,pc}")
+	TEST_UNSUPPORTED(__inst_thumb32(0xe93ec000) "	@ ldmdb	r14!(), {r14,pc}")
+	TEST_UNSUPPORTED(__inst_thumb32(0xe8a73f00) "	@ stmia	r7!(), {r8-r12,sp}")
+	TEST_UNSUPPORTED(__inst_thumb32(0xe8a79f00) "	@ stmia	r7!(), {r8-r12,pc}")
+	TEST_UNSUPPORTED(__inst_thumb32(0xe93e2010) "	@ ldmdb	r14!(), {r4,sp}")
 
 	TEST_GROUP("Load/store double or exclusive, table branch")
 

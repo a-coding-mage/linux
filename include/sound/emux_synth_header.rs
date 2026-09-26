@@ -26,7 +26,7 @@ pub struct snd_emux_operators {
     pub sample_reset: Option<unsafe extern "C" fn(*mut snd_emux)>,
     pub load_fx: Option<unsafe extern "C" fn(*mut snd_emux, i32, i32, *const core::ffi::c_void, libc::c_long) -> i32>,
     pub sysex: Option<unsafe extern "C" fn(*mut snd_emux, *mut core::ffi::c_char, i32, i32, *mut snd_midi_channel_set)>,
-    #[cfg(feature = "CONFIG_SND_SEQUENCER_OSS")]
+    #[cfg(CONFIG_SND_SEQUENCER_OSS)]
     pub oss_ioctl: Option<unsafe extern "C" fn(*mut snd_emux, i32, i32, i32) -> i32>,
     pub get_pitch_shift: Option<unsafe extern "C" fn(*mut snd_emux) -> i32>,
 }
@@ -66,9 +66,9 @@ pub struct snd_emux {
     pub tlist: timer_list,
     pub timer_active: i32,
     pub memhdr: *mut snd_util_memhdr,
-    #[cfg(feature = "CONFIG_SND_PROC_FS")]
+    #[cfg(CONFIG_SND_PROC_FS)]
     pub proc: *mut snd_info_entry,
-    #[cfg(feature = "CONFIG_SND_SEQUENCER_OSS")]
+    #[cfg(CONFIG_SND_SEQUENCER_OSS)]
     pub oss_synth: *mut snd_seq_device,
 }
 
@@ -80,7 +80,7 @@ pub struct snd_emux_port {
     pub drum_flags: libc::c_ulong,
     pub ctrls: [i32; EMUX_MD_END as usize],
     pub effect: *mut snd_emux_effect_table,
-    #[cfg(feature = "CONFIG_SND_SEQUENCER_OSS")]
+    #[cfg(CONFIG_SND_SEQUENCER_OSS)]
     pub oss_arg: *mut snd_seq_oss_arg,
     pub chset: snd_midi_channel_set,
 }

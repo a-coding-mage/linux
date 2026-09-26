@@ -16,16 +16,18 @@ unsafe extern "C" {
 
 pub unsafe fn nilfs_set_last_segment(nilfs: *mut the_nilfs, start_blocknr: sector_t,
                                      seq: u64, cno: u64) {
+    'stay_cursor: {
     spin_lock(&mut (*nilfs).ns_last_segment_lock);
     (*nilfs).ns_last_pseg = start_blocknr;
     (*nilfs).ns_last_seq = seq;
     (*nilfs).ns_last_cno = cno;
     if !nilfs_sb_dirty(nilfs) {
-        if (*nilfs).ns_prev_seq == (*nilfs).ns_last_seq { goto stay_cursor; }
+        if (*nilfs).ns_prev_seq == (*nilfs).ns_last_seq { break 'stay_cursor; }
         set_nilfs_sb_dirty(nilfs);
     }
     (*nilfs).ns_prev_seq = (*nilfs).ns_last_seq;
-stay_cursor:
+    }
+    
     spin_unlock(&mut (*nilfs).ns_last_segment_lock);
 }
 

@@ -15,7 +15,7 @@
  * @block: block base address
  *
  */
-unsafe fn goya_pb_set_block(struct hl_device *hdev, u64 base)
+unsafe fn goya_pb_set_block(hl_device *hdev, base: u64)
 {
 	u32 pb_addr = base - CFG_BASE + PROT_BITS_OFFS;
 
@@ -25,7 +25,7 @@ unsafe fn goya_pb_set_block(struct hl_device *hdev, u64 base)
 	}
 }
 
-unsafe fn goya_init_mme_protection_bits(struct hl_device *hdev)
+unsafe fn goya_init_mme_protection_bits(hl_device *hdev)
 {
 	let mut pb_addr: u32;
 	let mut mask: u32;
@@ -270,7 +270,7 @@ unsafe fn goya_init_mme_protection_bits(struct hl_device *hdev)
 	wreg32!(pb_addr + word_offset, ~mask);
 }
 
-unsafe fn goya_init_dma_protection_bits(struct hl_device *hdev)
+unsafe fn goya_init_dma_protection_bits(hl_device *hdev)
 {
 	let mut pb_addr: u32;
 	let mut mask: u32;
@@ -671,7 +671,7 @@ unsafe fn goya_init_dma_protection_bits(struct hl_device *hdev)
 	goya_pb_set_block(hdev, mmDMA_CH_4_BASE);
 }
 
-unsafe fn goya_init_tpc_protection_bits(struct hl_device *hdev)
+unsafe fn goya_init_tpc_protection_bits(hl_device *hdev)
 {
 	let mut pb_addr: u32;
 	let mut mask: u32;
@@ -2254,7 +2254,7 @@ unsafe fn goya_init_tpc_protection_bits(struct hl_device *hdev)
  * each bit that belongs to a protected register.
  *
  */
-unsafe fn goya_init_protection_bits(struct hl_device *hdev)
+unsafe fn goya_init_protection_bits(hl_device *hdev)
 {
 	/*
 	 * In each 4K block of registers, the last 128 bytes are protection
@@ -2381,9 +2381,9 @@ unsafe fn goya_init_protection_bits(struct hl_device *hdev)
  * That includes range registers and protection bit per register
  *
  */
-unsafe fn goya_init_security(struct hl_device *hdev)
+unsafe fn goya_init_security(hl_device *hdev)
 {
-	struct goya_device *goya = hdev->asic_specific;
+	struct goya_device *goya = (*hdev).asic_specific;
 
 	u32 dram_addr_lo = lower_32_bits(DRAM_PHYS_BASE);
 	u32 dram_addr_hi = upper_32_bits(DRAM_PHYS_BASE);
@@ -2433,7 +2433,7 @@ unsafe fn goya_init_security(struct hl_device *hdev)
 	wreg32!(mmDMA_MACRO_LBW_RANGE_HIT_BLOCK, 0xFFFF);
 	wreg32!(mmDMA_MACRO_HBW_RANGE_HIT_BLOCK, 0xFF);
 
-	if (!(goya->hw_cap_initialized & HW_CAP_MMU)) {
+	if (!((*goya).hw_cap_initialized & HW_CAP_MMU)) {
 		wreg32!(mmDMA_MACRO_HBW_RANGE_HIT_BLOCK, 0xFE);
 
 		/* Protect HOST */
@@ -3125,7 +3125,7 @@ unsafe fn goya_init_security(struct hl_device *hdev)
 	goya_init_protection_bits(hdev);
 }
 
-unsafe fn goya_ack_protection_bits_errors(struct hl_device *hdev)
+unsafe fn goya_ack_protection_bits_errors(hl_device *hdev)
 {
 
 }

@@ -38,7 +38,7 @@ unsafe fn sbi_hsm_hart_start(hartid: ::core::ffi::c_ulong, saddr: ::core::ffi::c
 }
 
 // CONFIG_HOTPLUG_CPU condition from the C source.
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn sbi_hsm_hart_stop() -> ::core::ffi::c_int {
     let ret: sbiret = sbi_ecall(
         SBI_EXT_HSM,
@@ -54,7 +54,7 @@ unsafe fn sbi_hsm_hart_stop() -> ::core::ffi::c_int {
     sbi_err_map_linux_errno(ret.error)
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn sbi_hsm_hart_get_status(hartid: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
     let ret: sbiret = sbi_ecall(
         SBI_EXT_HSM,
@@ -89,7 +89,7 @@ unsafe fn sbi_cpu_start(cpuid: ::core::ffi::c_uint, tidle: *mut task_struct) -> 
     sbi_hsm_hart_start(hartid, boot_addr, hsm_data)
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn sbi_cpu_stop() {
     let ret: ::core::ffi::c_int;
 
@@ -97,7 +97,7 @@ unsafe fn sbi_cpu_stop() {
     pr_crit!("Unable to stop the cpu %d (%d)\n", smp_processor_id(), ret);
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn sbi_cpu_is_stopped(cpuid: ::core::ffi::c_uint) -> bool {
     let rc: ::core::ffi::c_int;
     let hartid: ::core::ffi::c_ulong = cpuid_to_hartid_map(cpuid);
@@ -115,9 +115,9 @@ unsafe fn sbi_cpu_is_stopped(cpuid: ::core::ffi::c_uint) -> bool {
 #[no_mangle]
 pub static cpu_ops_sbi: cpu_operations = cpu_operations {
     cpu_start: Some(sbi_cpu_start),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_stop: Some(sbi_cpu_stop),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_is_stopped: Some(sbi_cpu_is_stopped),
 };
 

@@ -34,11 +34,11 @@ macro_rules! cstr {
 }
 
 const fn BIT(x: c_int) -> c_ulong {
-    1 as c_ulong << x
+    (1 as c_ulong) << x
 }
 
 const fn GENMASK(h: c_int, l: c_int) -> c_ulong {
-    (!0 as c_ulong >> (c_ulong::BITS as c_int - 1 - h)) & (!0 as c_ulong << l)
+    (!0 as c_ulong >> (c_ulong::BITS as c_int - 1 - h)) & ((!0 as c_ulong) << l)
 }
 
 const fn AVS_SSP(x: c_int) -> c_ulong {

@@ -20,7 +20,9 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-*/
+
+
+
 // addressBlock: athub_xpbdec
 // base address: 0x3000
 pub const regXPB_RTR_SRC_APRTR0: u32 = 0x0000;
@@ -195,6 +197,8 @@ pub const regXPB_CLG_GUS_MATCH: u32 = 0x0055;
 pub const regXPB_CLG_GUS_MATCH_BASE_IDX: u32 = 0;
 pub const regXPB_CLG_GUS_MATCH_MSK: u32 = 0x0056;
 pub const regXPB_CLG_GUS_MATCH_MSK_BASE_IDX: u32 = 0;
+
+
 // addressBlock: athub_rpbdec
 // base address: 0x31b0
 pub const regRPB_PASSPW_CONF: u32 = 0x006c;

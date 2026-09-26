@@ -98,7 +98,7 @@ unsafe extern "C" fn trng_counter_show(
                dev_counter + hwrng_counter + arch_counter)
 }
 
-static DEVICE_ATTR!(byte_counter, 0444, trng_counter_show, core::ptr::null_mut());
+DEVICE_ATTR!(byte_counter, 0o444, trng_counter_show, core::ptr::null_mut());
 
 static mut trng_dev_attrs: [*mut attribute; 2] = [
     &mut dev_attr_byte_counter.attr,

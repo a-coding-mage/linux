@@ -55,11 +55,11 @@ unsafe fn mmhub_v4_2_0_get_mc_fb_offset(adev: *mut amdgpu_device) -> u64 {
 
 unsafe fn mmhub_v4_2_0_mid_setup_vm_pt_regs(adev: *mut amdgpu_device, vmid: u32, page_table_base: u64, mid_mask: u32) {
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         let hub = &(*adev).vmhub[AMDGPU_MMHUB0(i)];
         WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_BASE_ADDR_LO32, hub.ctx_addr_distance * vmid, lower_32_bits(page_table_base));
         WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_BASE_ADDR_HI32, hub.ctx_addr_distance * vmid, upper_32_bits(page_table_base));
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_setup_vm_pt_regs(adev: *mut amdgpu_device, vmid: u32, page_table_base: u64) {
@@ -70,19 +70,19 @@ unsafe fn mmhub_v4_2_0_mid_init_gart_aperture_regs(adev: *mut amdgpu_device, mid
     let pt_base = if !(*adev).gmc.pdb0_bo.is_null() { amdgpu_gmc_pd_addr((*adev).gmc.pdb0_bo) } else { amdgpu_gmc_pd_addr((*adev).gart.bo) };
     mmhub_v4_2_0_mid_setup_vm_pt_regs(adev, 0, pt_base, mid_mask);
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         let (start, end) = if !(*adev).gmc.pdb0_bo.is_null() { ((*adev).gmc.fb_start, (*adev).gmc.gart_end) } else { ((*adev).gmc.gart_start, (*adev).gmc.gart_end) };
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_START_ADDR_LO32, (start >> 12) as u32);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_START_ADDR_HI32, (start >> 44) as u32);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_END_ADDR_LO32, (end >> 12) as u32);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_END_ADDR_HI32, (end >> 44) as u32);
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_init_system_aperture_regs(adev: *mut amdgpu_device, mid_mask: u32) {
     if amdgpu_sriov_vf(adev) { return; }
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         if !(*adev).gmc.pdb0_bo.is_null() {
             WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMMC_VM_FB_LOCATION_TOP_LO32, 0);
             WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMMC_VM_FB_LOCATION_TOP_HI32, 0);
@@ -119,12 +119,12 @@ unsafe fn mmhub_v4_2_0_mid_init_system_aperture_regs(adev: *mut amdgpu_device, m
         tmp = REG_SET_FIELD(tmp, MMVM_L2_PROTECTION_FAULT_CNTL2, ACTIVE_PAGE_MIGRATION_PTE_READ_RETRY, 1);
         tmp = REG_SET_FIELD(tmp, MMVM_L2_PROTECTION_FAULT_CNTL2, ENABLE_RETRY_FAULT_INTERRUPT, 1);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_PROTECTION_FAULT_CNTL2, tmp);
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_init_tlb_regs(adev: *mut amdgpu_device, mid_mask: u32) {
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMMC_VM_MX_L1_TLB_CNTL);
         tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 1);
         tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, SYSTEM_ACCESS_MODE, 3);
@@ -133,13 +133,13 @@ unsafe fn mmhub_v4_2_0_mid_init_tlb_regs(adev: *mut amdgpu_device, mid_mask: u32
         tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ECO_BITS, 0);
         tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, MTYPE, MTYPE_UC);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMMC_VM_MX_L1_TLB_CNTL, tmp);
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_init_cache_regs(adev: *mut amdgpu_device, mid_mask: u32) {
     if amdgpu_sriov_vf(adev) { return; }
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CNTL);
         tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_CACHE, 1);
         tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_FRAGMENT_PROCESSING, 0);
@@ -164,37 +164,37 @@ unsafe fn mmhub_v4_2_0_mid_init_cache_regs(adev: *mut amdgpu_device, mid_mask: u
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CNTL4, tmp);
         tmp = REG_SET_FIELD(regMMVM_L2_CNTL5_DEFAULT, MMVM_L2_CNTL5, L2_CACHE_SMALLK_FRAGMENT_SIZE, 0);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CNTL5, tmp);
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_enable_system_domain(adev: *mut amdgpu_device, mid_mask: u32) {
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_CNTL);
         tmp = REG_SET_FIELD(tmp, MMVM_CONTEXT0_CNTL, ENABLE_CONTEXT, 1);
         tmp = REG_SET_FIELD(tmp, MMVM_CONTEXT0_CNTL, PAGE_TABLE_DEPTH, (*adev).gmc.vmid0_page_table_depth);
         tmp = REG_SET_FIELD(tmp, MMVM_CONTEXT0_CNTL, PAGE_TABLE_BLOCK_SIZE, (*adev).gmc.vmid0_page_table_block_size);
         tmp = REG_SET_FIELD(tmp, MMVM_CONTEXT0_CNTL, RETRY_PERMISSION_OR_INVALID_PAGE_FAULT, 0);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_CNTL, tmp);
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_disable_identity_aperture(adev: *mut amdgpu_device, mid_mask: u32) {
     if amdgpu_sriov_vf(adev) { return; }
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CONTEXT1_IDENTITY_APERTURE_LOW_ADDR_LO32, 0xffffffff);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CONTEXT1_IDENTITY_APERTURE_LOW_ADDR_HI32, 0x1fff);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CONTEXT1_IDENTITY_APERTURE_HIGH_ADDR_LO32, 0);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CONTEXT1_IDENTITY_APERTURE_HIGH_ADDR_HI32, 0);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CONTEXT_IDENTITY_PHYSICAL_OFFSET_LO32, 0);
         WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_CONTEXT_IDENTITY_PHYSICAL_OFFSET_HI32, 0);
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_setup_vmid_config(adev: *mut amdgpu_device, mid_mask: u32) {
     let mut j: i32 = 0;
-    for_each_inst!(j, mid_mask) {
+    for_each_inst!(j, mid_mask, {
         let hub = &(*adev).vmhub[AMDGPU_MMHUB0(j)];
         for i in 0..=14 {
             let off = i * hub.ctx_distance;
@@ -211,12 +211,12 @@ unsafe fn mmhub_v4_2_0_mid_setup_vmid_config(adev: *mut amdgpu_device, mid_mask:
             WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_CONTEXT1_PAGE_TABLE_END_ADDR_LO32, aoff, lower_32_bits((*adev).vm_manager.max_pfn - 1));
             WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_CONTEXT1_PAGE_TABLE_END_ADDR_HI32, aoff, upper_32_bits((*adev).vm_manager.max_pfn - 1));
         }
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_mid_program_invalidation(adev: *mut amdgpu_device, mid_mask: u32) {
     let mut j: i32 = 0;
-    for_each_inst!(j, mid_mask) { let hub = &(*adev).vmhub[AMDGPU_MMHUB0(j)]; for i in 0..18 { let off = i * hub.eng_addr_distance; WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_INVALIDATE_ENG0_ADDR_RANGE_LO32, off, 0xffffffff); WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_INVALIDATE_ENG0_ADDR_RANGE_HI32, off, 0x3fff); } }
+    for_each_inst!(j, mid_mask, { let hub = &(*adev).vmhub[AMDGPU_MMHUB0(j)]; for i in 0..18 { let off = i * hub.eng_addr_distance; WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_INVALIDATE_ENG0_ADDR_RANGE_LO32, off, 0xffffffff); WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_INVALIDATE_ENG0_ADDR_RANGE_HI32, off, 0x3fff); } });
 }
 
 unsafe fn mmhub_v4_2_0_mid_gart_enable(adev: *mut amdgpu_device, mid_mask: u32) -> i32 { mmhub_v4_2_0_mid_init_gart_aperture_regs(adev, mid_mask); mmhub_v4_2_0_mid_init_system_aperture_regs(adev, mid_mask); mmhub_v4_2_0_mid_init_tlb_regs(adev, mid_mask); mmhub_v4_2_0_mid_init_cache_regs(adev, mid_mask); mmhub_v4_2_0_mid_enable_system_domain(adev, mid_mask); mmhub_v4_2_0_mid_disable_identity_aperture(adev, mid_mask); mmhub_v4_2_0_mid_setup_vmid_config(adev, mid_mask); mmhub_v4_2_0_mid_program_invalidation(adev, mid_mask); 0 }
@@ -224,13 +224,13 @@ unsafe fn mmhub_v4_2_0_gart_enable(adev: *mut amdgpu_device) -> i32 { mmhub_v4_2
 
 unsafe fn mmhub_v4_2_0_mid_gart_disable(adev: *mut amdgpu_device, mid_mask: u32) {
     let mut j: i32 = 0;
-    for_each_inst!(j, mid_mask) { let hub = &(*adev).vmhub[AMDGPU_MMHUB0(j)]; for i in 0..16 { WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_CONTEXT0_CNTL, i * hub.ctx_distance, 0); } let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMMC_VM_MX_L1_TLB_CNTL); tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 0); tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_ADVANCED_DRIVER_MODEL, 0); WREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMMC_VM_MX_L1_TLB_CNTL, tmp); tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMVM_L2_CNTL); tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_CACHE, 0); WREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMVM_L2_CNTL, tmp); WREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMVM_L2_CNTL3, 0); }
+    for_each_inst!(j, mid_mask, { let hub = &(*adev).vmhub[AMDGPU_MMHUB0(j)]; for i in 0..16 { WREG32_SOC15_OFFSET(MMHUB, GET_INST(MMHUB, j), regMMVM_CONTEXT0_CNTL, i * hub.ctx_distance, 0); } let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMMC_VM_MX_L1_TLB_CNTL); tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 0); tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_ADVANCED_DRIVER_MODEL, 0); WREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMMC_VM_MX_L1_TLB_CNTL, tmp); tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMVM_L2_CNTL); tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_CACHE, 0); WREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMVM_L2_CNTL, tmp); WREG32_SOC15(MMHUB, GET_INST(MMHUB, j), regMMVM_L2_CNTL3, 0); });
 }
 unsafe fn mmhub_v4_2_0_gart_disable(adev: *mut amdgpu_device) { mmhub_v4_2_0_mid_gart_disable(adev, (*adev).aid_mask); }
 
 unsafe fn mmhub_v4_2_0_mid_set_fault_enable_default(adev: *mut amdgpu_device, value: bool, mid_mask: u32) {
     if amdgpu_sriov_vf(adev) { return; } let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) { let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_PROTECTION_FAULT_CNTL_LO32); for field in [RANGE_PROTECTION_FAULT_ENABLE_DEFAULT, PDE0_PROTECTION_FAULT_ENABLE_DEFAULT, PDE1_PROTECTION_FAULT_ENABLE_DEFAULT, PDE2_PROTECTION_FAULT_ENABLE_DEFAULT, TRANSLATE_FURTHER_PROTECTION_FAULT_ENABLE_DEFAULT, NACK_PROTECTION_FAULT_ENABLE_DEFAULT, DUMMY_PAGE_PROTECTION_FAULT_ENABLE_DEFAULT, VALID_PROTECTION_FAULT_ENABLE_DEFAULT, READ_PROTECTION_FAULT_ENABLE_DEFAULT, WRITE_PROTECTION_FAULT_ENABLE_DEFAULT, EXECUTE_PROTECTION_FAULT_ENABLE_DEFAULT] { tmp = REG_SET_FIELD(tmp, MMVM_L2_PROTECTION_FAULT_CNTL_LO32, field, value as u32); } if !value { tmp = REG_SET_FIELD(tmp, MMVM_L2_PROTECTION_FAULT_CNTL_LO32, CRASH_ON_NO_RETRY_FAULT, 1); } WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_PROTECTION_FAULT_CNTL_LO32, tmp); }
+    for_each_inst!(i, mid_mask, { let mut tmp = RREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_PROTECTION_FAULT_CNTL_LO32); for field in [RANGE_PROTECTION_FAULT_ENABLE_DEFAULT, PDE0_PROTECTION_FAULT_ENABLE_DEFAULT, PDE1_PROTECTION_FAULT_ENABLE_DEFAULT, PDE2_PROTECTION_FAULT_ENABLE_DEFAULT, TRANSLATE_FURTHER_PROTECTION_FAULT_ENABLE_DEFAULT, NACK_PROTECTION_FAULT_ENABLE_DEFAULT, DUMMY_PAGE_PROTECTION_FAULT_ENABLE_DEFAULT, VALID_PROTECTION_FAULT_ENABLE_DEFAULT, READ_PROTECTION_FAULT_ENABLE_DEFAULT, WRITE_PROTECTION_FAULT_ENABLE_DEFAULT, EXECUTE_PROTECTION_FAULT_ENABLE_DEFAULT] { tmp = REG_SET_FIELD(tmp, MMVM_L2_PROTECTION_FAULT_CNTL_LO32, field, value as u32); } if !value { tmp = REG_SET_FIELD(tmp, MMVM_L2_PROTECTION_FAULT_CNTL_LO32, CRASH_ON_NO_RETRY_FAULT, 1); } WREG32_SOC15(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_PROTECTION_FAULT_CNTL_LO32, tmp); });
 }
 unsafe fn mmhub_v4_2_0_set_fault_enable_default(adev: *mut amdgpu_device, value: bool) { mmhub_v4_2_0_mid_set_fault_enable_default(adev, value, (*adev).aid_mask); }
 
@@ -242,7 +242,7 @@ unsafe fn mmhub_v4_2_0_print_l2_protection_fault_status(adev: *mut amdgpu_device
 
 unsafe fn mmhub_v4_2_0_mid_init(adev: *mut amdgpu_device, mid_mask: u32) {
     let mut i: i32 = 0;
-    for_each_inst!(i, mid_mask) {
+    for_each_inst!(i, mid_mask, {
         let hub = &mut (*adev).vmhub[AMDGPU_MMHUB0(i)];
         hub.ctx0_ptb_addr_lo32 = SOC15_REG_OFFSET(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_BASE_ADDR_LO32);
         hub.ctx0_ptb_addr_hi32 = SOC15_REG_OFFSET(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXT0_PAGE_TABLE_BASE_ADDR_HI32);
@@ -260,7 +260,7 @@ unsafe fn mmhub_v4_2_0_mid_init(adev: *mut amdgpu_device, mid_mask: u32) {
         hub.vm_l2_bank_select_reserved_cid2 = SOC15_REG_OFFSET(MMHUB, GET_INST(MMHUB, i), regMMVM_L2_BANK_SELECT_RESERVED_CID2);
         hub.vm_contexts_disable = SOC15_REG_OFFSET(MMHUB, GET_INST(MMHUB, i), regMMVM_CONTEXTS_DISABLE);
         hub.vmhub_funcs = &mmhub_v4_2_0_vmhub_funcs;
-    }
+    });
 }
 
 unsafe fn mmhub_v4_2_0_init(adev: *mut amdgpu_device) { mmhub_v4_2_0_mid_init(adev, (*adev).aid_mask); amdgpu_mmhub_init_client_info(&mut (*adev).mmhub, mmhub_client_ids_v4_2_0.as_ptr(), ARRAY_SIZE!(mmhub_client_ids_v4_2_0)); }

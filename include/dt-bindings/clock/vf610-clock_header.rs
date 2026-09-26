@@ -3,9 +3,8 @@
  * Copyright 2013 Freescale Semiconductor, Inc.
  */
 
-// Translated from the C header guard: __DT_BINDINGS_CLOCK_VF610_H
 
-+pub const VF610_CLK_DUMMY: u32 = 0;
+pub const VF610_CLK_DUMMY: u32 = 0;
 pub const VF610_CLK_SIRC_128K: u32 = 1;
 pub const VF610_CLK_SIRC_32K: u32 = 2;
 pub const VF610_CLK_FIRC: u32 = 3;

@@ -39,10 +39,10 @@ const TRACE_BPUTS: c_uint = 1;
 const TRACE_BPRINT: c_uint = 2;
 
 extern "C" {
-    static mut __start___tracepoint_str: *const *const c_char;
-    static mut __stop___tracepoint_str: *const *const c_char;
-    static mut __start___trace_bprintk_fmt: *const *const c_char;
-    static mut __stop___trace_bprintk_fmt: *const *const c_char;
+    static __start___tracepoint_str: [*const c_char; 0];
+    static __stop___tracepoint_str: [*const c_char; 0];
+    static __start___trace_bprintk_fmt: [*const c_char; 0];
+    static __stop___trace_bprintk_fmt: [*const c_char; 0];
     static mut printk_trace: *mut trace_array;
     static mut tracing_selftest_running: bool;
     static mut tracing_disabled: bool;
@@ -125,8 +125,8 @@ static mut module_trace_bprintk_format_nb: notifier_block = notifier_block { not
 #[no_mangle] pub unsafe extern "C" fn __trace_printk(ip: c_ulong, fmt: *const c_char, args: va_list) -> c_int { if !trace_printk_enabled { return 0; } trace_vprintk(ip, fmt, args) }
 #[no_mangle] pub unsafe extern "C" fn __ftrace_vprintk(ip: c_ulong, fmt: *const c_char, args: va_list) -> c_int { if !trace_printk_enabled { return 0; } trace_vprintk(ip, fmt, args) }
 
-#[no_mangle] pub unsafe extern "C" fn trace_is_tracepoint_string(str_: *const c_char) -> bool { let mut p = __start___tracepoint_str; while p < __stop___tracepoint_str { if str_ == *p { return true; } p = p.add(1); } false }
-unsafe fn find_next(_v: *mut c_void, pos: *mut loff_t) -> *const *const c_char { let n = __stop___trace_bprintk_fmt.offset_from(__start___trace_bprintk_fmt) as loff_t; if *pos < n { return __start___trace_bprintk_fmt.offset(*pos as isize); } let q = __stop___tracepoint_str.offset_from(__start___tracepoint_str) as loff_t; if *pos < n + q { return __start___tracepoint_str.offset((*pos - n) as isize); } find_next_mod_format((n + q) as c_int, _v, ptr::null(), pos) }
+#[no_mangle] pub unsafe extern "C" fn trace_is_tracepoint_string(str_: *const c_char) -> bool { let mut p = __start___tracepoint_str.as_ptr(); while p < __stop___tracepoint_str.as_ptr() { if str_ == *p { return true; } p = p.add(1); } false }
+unsafe fn find_next(_v: *mut c_void, pos: *mut loff_t) -> *const *const c_char { let n = __stop___trace_bprintk_fmt.as_ptr().offset_from(__start___trace_bprintk_fmt.as_ptr()) as loff_t; if *pos < n { return __start___trace_bprintk_fmt.as_ptr().offset(*pos as isize); } let q = __stop___tracepoint_str.as_ptr().offset_from(__start___tracepoint_str.as_ptr()) as loff_t; if *pos < n + q { return __start___tracepoint_str.as_ptr().offset((*pos - n) as isize); } find_next_mod_format((n + q) as c_int, _v, ptr::null(), pos) }
 unsafe fn t_start(_m: *mut seq_file, pos: *mut loff_t) -> *mut c_void { format_mod_start(); find_next(ptr::null_mut(), pos) as *mut c_void }
 unsafe fn t_next(_m: *mut seq_file, v: *mut c_void, pos: *mut loff_t) -> *mut c_void { *pos += 1; find_next(v, pos) as *mut c_void }
 unsafe fn t_show(_m: *mut seq_file, _v: *mut c_void) -> c_int { 0 }

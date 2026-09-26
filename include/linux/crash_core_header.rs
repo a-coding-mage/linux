@@ -14,45 +14,45 @@ pub struct crash_mem {
 }
 
 // CONFIG_CRASH_DUMP
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 extern "C" {
     pub fn crash_shrink_memory(new_size: ::core::ffi::c_ulong) -> ::core::ffi::c_int;
     pub fn crash_get_memory_size() -> isize;
 }
 
 // Default architecture hooks; architecture code may override these.
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
 pub unsafe fn arch_kexec_protect_crashkres() {}
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
 pub unsafe fn arch_kexec_unprotect_crashkres() {}
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
 pub unsafe fn arch_crash_handle_hotplug_event(_image: *mut kimage, _arg: *mut ::core::ffi::c_void) {}
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 extern "C" {
     pub fn crash_check_hotplug_support() -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
 pub unsafe fn arch_crash_hotplug_support(
     _image: *mut kimage,
     _kexec_flags: ::core::ffi::c_ulong,
 ) -> ::core::ffi::c_int { 0 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 #[inline]
 pub unsafe fn crash_get_elfcorehdr_size() -> ::core::ffi::c_uint { 0 }
 
 /* Alignment required for elf header segment. */
 pub const ELF_CORE_HEADER_ALIGN: ::core::ffi::c_uint = 4096;
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 extern "C" {
     pub fn crash_exclude_mem_range(
         mem: *mut crash_mem,
@@ -84,7 +84,7 @@ pub const KEXEC_CRASH_HP_ADD_MEMORY: ::core::ffi::c_uint = 3;
 pub const KEXEC_CRASH_HP_REMOVE_MEMORY: ::core::ffi::c_uint = 4;
 pub const KEXEC_CRASH_HP_INVALID_CPU: ::core::ffi::c_uint = !0;
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 extern "C" {
     pub fn __crash_kexec(regs: *mut pt_regs);
     pub fn crash_kexec(regs: *mut pt_regs);
@@ -102,27 +102,27 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn __crash_kexec(_regs: *mut pt_regs) {}
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn crash_kexec(_regs: *mut pt_regs) {}
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn kexec_should_crash(_p: *mut task_struct) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn kexec_crash_loaded() -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn crash_save_cpu(_regs: *mut pt_regs, _cpu: ::core::ffi::c_int) {}
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 #[inline]
 pub unsafe fn kimage_crash_copy_vmcoreinfo(_image: *mut kimage) -> ::core::ffi::c_int { 0 }
 
 // CONFIG_CRASH_DM_CRYPT
-#[cfg(feature = "CONFIG_CRASH_DM_CRYPT")]
+#[cfg(CONFIG_CRASH_DM_CRYPT)]
 extern "C" {
     pub fn crash_load_dm_crypt_keys(image: *mut kimage) -> ::core::ffi::c_int;
     pub fn dm_crypt_keys_read(
@@ -132,7 +132,7 @@ extern "C" {
     ) -> isize;
 }
 
-#[cfg(not(feature = "CONFIG_CRASH_DM_CRYPT"))]
+#[cfg(not(CONFIG_CRASH_DM_CRYPT))]
 #[inline]
 pub unsafe fn crash_load_dm_crypt_keys(_image: *mut kimage) -> ::core::ffi::c_int { 0 }
 

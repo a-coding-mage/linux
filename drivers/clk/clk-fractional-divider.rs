@@ -100,8 +100,8 @@ pub unsafe fn clk_fractional_divider_general_approximation(
     }
 
     if (*fd).flags & CLK_FRAC_DIVIDER_ZERO_BASED != 0 {
-        max_m = 1 as c_ulong << (*fd).mwidth;
-        max_n = 1 as c_ulong << (*fd).nwidth;
+        max_m = (1 as c_ulong) << (*fd).mwidth;
+        max_n = (1 as c_ulong) << (*fd).nwidth;
     } else {
         max_m = genmask((*fd).mwidth as u32 - 1, 0) as c_ulong;
         max_n = genmask((*fd).nwidth as u32 - 1, 0) as c_ulong;
@@ -143,8 +143,8 @@ unsafe fn clk_fd_set_rate(hw: *mut clk_hw, rate: c_ulong, parent_rate: c_ulong) 
     let max_n: c_ulong;
 
     if (*fd).flags & CLK_FRAC_DIVIDER_ZERO_BASED != 0 {
-        max_m = 1 as c_ulong << (*fd).mwidth;
-        max_n = 1 as c_ulong << (*fd).nwidth;
+        max_m = (1 as c_ulong) << (*fd).mwidth;
+        max_n = (1 as c_ulong) << (*fd).nwidth;
     } else {
         max_m = genmask((*fd).mwidth as u32 - 1, 0) as c_ulong;
         max_n = genmask((*fd).nwidth as u32 - 1, 0) as c_ulong;

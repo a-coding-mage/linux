@@ -45,7 +45,7 @@ pub struct qcom_clk_ref {
 
 // When CONFIG_COMMON_CLK_QCOM is enabled, this declaration is provided by
 // the Qualcomm common-clock implementation.
-#[cfg(feature = "CONFIG_COMMON_CLK_QCOM")]
+#[cfg(CONFIG_COMMON_CLK_QCOM)]
 extern "C" {
     pub fn qcom_clk_ref_probe(
         pdev: *mut platform_device,
@@ -57,7 +57,7 @@ extern "C" {
 
 // Equivalent of the C fallback selected when CONFIG_COMMON_CLK_QCOM is
 // disabled.  Linux errno EOPNOTSUPP is 95.
-#[cfg(not(feature = "CONFIG_COMMON_CLK_QCOM"))]
+#[cfg(not(CONFIG_COMMON_CLK_QCOM))]
 #[inline]
 pub unsafe fn qcom_clk_ref_probe(
     _pdev: *mut platform_device,

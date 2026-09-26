@@ -34,7 +34,7 @@ unsafe fn get_node_num(e: *mut mrrm_mem_range_entry) -> i32 {
     let mut nid: u32;
 
     // for_each_online_node(nid)
-    for_each_online_node!(nid) {
+    for_each_online_node!(nid, {
         for z in 0..MAX_NR_ZONES {
             let zone: *mut zone = (*NODE_DATA(nid)).node_zones.add(z as usize);
 
@@ -45,7 +45,7 @@ unsafe fn get_node_num(e: *mut mrrm_mem_range_entry) -> i32 {
                 return zone_to_nid(zone);
             }
         }
-    }
+    });
 
     -ENOENT
 }
@@ -119,8 +119,8 @@ unsafe extern "C" fn acpi_parse_mrrm(table: *mut acpi_table_header) -> i32 {
 }
 
 macro_rules! range_attr {
-    ($name:ident, $fmt:literal) => {
-        unsafe extern "C" fn $name##_show(
+    ($name:tt, $fmt:literal) => {
+        unsafe extern "C" fn ::kernel::macros::paste!([<$name _show>])(
             kobj: *mut kobject,
             _attr: *mut kobj_attribute,
             buf: *mut core::ffi::c_char,
@@ -135,7 +135,7 @@ macro_rules! range_attr {
             mre = mrrm_mem_range_entry.add(n as usize);
             sysfs_emit!(buf, $fmt, (*mre).$name)
         }
-        static mut $name##_attr: kobj_attribute = __ATTR_RO!($name);
+        static mut ::kernel::macros::paste!([<$name _attr>]): kobj_attribute = __ATTR_RO!($name);
     };
 }
 

@@ -1588,8 +1588,7 @@ extern "C" {
         dev: *mut device,
         cmpnt_drv: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: c_int,
-    ) -> c_int;
+        num_dai: c_int) -> c_int;
 
     fn dev_err(dev: *mut device, fmt: *const c_char, ...);
     fn dev_info(dev: *mut device, fmt: *const c_char, ...);

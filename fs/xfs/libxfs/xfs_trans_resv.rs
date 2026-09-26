@@ -40,8 +40,8 @@ const _FREE: bool = false;
  u32
 xfs_buf_log_overhead(void)
 {
-	return round_up(sizeof(struct xlog_op_header) +
-			sizeof(struct xfs_buf_log_format), 128);
+	return round_up(sizeof(xlog_op_header) +
+			sizeof(xfs_buf_log_format), 128);
 }
 
 /*
@@ -51,8 +51,8 @@ xfs_buf_log_overhead(void)
  */
  u32
 xfs_calc_buf_res(
-	u32		nbufs,
-	u32		size)
+	nbufs: u32,
+	size: u32)
 {
 	return nbufs * (size + xfs_buf_log_overhead());
 }
@@ -61,19 +61,19 @@ xfs_calc_buf_res(
  * Per-extent log reservation for the btree changes involved in freeing *allocating an extent.  In classic XFS there were two trees that will *modified(bnobt + cntbt).  With rmap enabled, there are three trees
  * (rmapbt).  The number of blocks reserved is based on the formula:
  *
- * num trees * ((2 blocks/*max depth) - 1)
+ * num trees * ((2 blocks/ *max depth) - 1)
  *
  * Keep in mind that max depth is calculated separately for each type of tree.
  */
 u32
 xfs_allocfree_block_count(
 	*mp,
-	u32		num_ops)
+	num_ops: u32)
 {
 	let mut blocks: u32;
-	blocks = num_ops * 2 * (2 * mp->m_alloc_maxlevels - 1);
+	blocks = num_ops * 2 * (2 * (*mp).m_alloc_maxlevels - 1);
 	if(xfs_has_rmapbt(mp))
-		blocks += num_ops * (2 * mp->m_rmap_maxlevels - 1);
+		blocks += num_ops * (2 * (*mp).m_rmap_maxlevels - 1);
 	return blocks;
 }
 
@@ -83,17 +83,17 @@ xfs_allocfree_block_count(
 static u32
 xfs_refcountbt_block_count(
 	*mp,
-	u32		num_ops)
+	num_ops: u32)
 {
-	return num_ops * (2 * mp->m_refc_maxlevels - 1);
+	return num_ops * (2 * (*mp).m_refc_maxlevels - 1);
 }
 
 static u32
 xfs_rtrefcountbt_block_count(
 	*mp,
-	u32		num_ops)
+	num_ops: u32)
 {
-	return num_ops * (2 * mp->m_rtrefc_maxlevels - 1);
+	return num_ops * (2 * (*mp).m_rtrefc_maxlevels - 1);
 }
 
 /*
@@ -117,12 +117,12 @@ xfs_rtrefcountbt_block_count(
  u32
 xfs_calc_inode_res(
 	*mp,
-	u32			ninodes)
+	ninodes: u32)
 {
 	return ninodes *
-		(4 * sizeof(struct xlog_op_header) +
-		 sizeof(struct xfs_inode_log_format) +
-		 mp->m_sb.sb_inodesize +
+		(4 * sizeof(xlog_op_header) +
+		 sizeof(xfs_inode_log_format) +
+		 (*mp).m_sb.sb_inodesize +
 		 2 * xfs_bmbt_block_len(mp));
 }
 
@@ -138,7 +138,7 @@ xfs_calc_inode_res(
 xfs_calc_inobt_res(
 	*mp)
 {
-	return xfs_calc_buf_res(M_IGEO(mp)->inobt_maxlevels,
+	return xfs_calc_buf_res((*M_IGEO(mp)).inobt_maxlevels,
 			XFS_FSB_TO_B(mp, 1)) +
 				xfs_calc_buf_res(xfs_allocfree_block_count(mp, 1),
 			XFS_FSB_TO_B(mp, 1));
@@ -168,9 +168,9 @@ xfs_calc_finobt_res(
  u32
 xfs_calc_inode_chunk_res(
 	*mp,
-	bool			alloc)
+	alloc: bool)
 {
-	u32			res, size = 0;
+	res: u32, size = 0;
 	res = xfs_calc_buf_res(xfs_allocfree_block_count(mp, 1),
 			       XFS_FSB_TO_B(mp, 1));
 	if(alloc) {
@@ -180,7 +180,7 @@ xfs_calc_inode_chunk_res(
 		size = XFS_FSB_TO_B(mp, 1);
 	}
 
-	res += xfs_calc_buf_res(M_IGEO(mp)->ialloc_blks, size);
+	res += xfs_calc_buf_res((*M_IGEO(mp)).ialloc_blks, size);
 	return res;
 }
 
@@ -190,16 +190,16 @@ xfs_calc_inode_chunk_res(
 static u32
 xfs_rtalloc_block_count(
 	*mp,
-	u32		num_ops)
+	num_ops: u32)
 {
 	let mut rtbmp_blocks: u32;
 	let mut rtxlen: u64;
-	u32		t1, t2 = 0;
+	t1: u32, t2 = 0;
 	rtxlen = xfs_extlen_to_rtxlen(mp, XFS_MAX_BMBT_EXTLEN);
 	rtbmp_blocks = xfs_rtbitmap_blockcount_len(mp, rtxlen);
 	t1 = (rtbmp_blocks + 1) * num_ops;
 	if(xfs_has_rmapbt(mp))
-		t2 = num_ops * (2 * mp->m_rtrmap_maxlevels - 1);
+		t2 = num_ops * (2 * (*mp).m_rtrmap_maxlevels - 1);
 	return std::cmp::std::cmp::max(t1, t2);
 }
 
@@ -221,13 +221,13 @@ xfs_rtalloc_block_count(
 u32
 xfs_calc_finish_cui_reservation(
 	*mp,
-	u32		nr_ops)
+	nr_ops: u32)
 {
 	if(!xfs_has_reflink(mp))
 		return 0;
-	return xfs_calc_buf_res(nr_ops, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res(nr_ops, (*mp).m_sb.sb_sectsize) +
 	       xfs_calc_buf_res(xfs_refcountbt_block_count(mp, nr_ops),
-			       mp->m_sb.sb_blocksize);
+			       (*mp).m_sb.sb_blocksize);
 }
 
 /*
@@ -237,13 +237,13 @@ xfs_calc_finish_cui_reservation(
 u32
 xfs_calc_finish_rt_cui_reservation(
 	*mp,
-	u32		nr_ops)
+	nr_ops: u32)
 {
 	if(!xfs_has_rtreflink(mp))
 		return 0;
 	return xfs_calc_inode_res(mp, 1) +
 	       xfs_calc_buf_res(xfs_rtrefcountbt_block_count(mp, nr_ops),
-				     mp->m_sb.sb_blocksize);
+				     (*mp).m_sb.sb_blocksize);
 }
 
 /*
@@ -257,9 +257,9 @@ xfs_calc_finish_rt_cui_reservation(
 static u32
 xfs_calc_refcountbt_reservation(
 	*mp,
-	u32		nr_ops)
+	nr_ops: u32)
 {
-	u32		t1, t2;
+	t1: u32, t2;
 	t1 = xfs_calc_finish_cui_reservation(mp, nr_ops);
 	t2 = xfs_calc_finish_rt_cui_reservation(mp, nr_ops);
 	return std::cmp::std::cmp::max(t1, t2);
@@ -275,26 +275,26 @@ xfs_calc_refcountbt_reservation(
  u32
 xfs_calc_write_reservation(
 	*mp,
-	bool			for_minlogsize)
+	for_minlogsize: bool)
 {
-	u32		t1, t2, t3, t4;
+	t1: u32, t2, t3, t4;
 	let blksz = XFS_FSB_TO_B(mp, 1);
 	t1 = xfs_calc_inode_res(mp, 1) +
 	     xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_DATA_FORK), blksz) +
-	     xfs_calc_buf_res(3, mp->m_sb.sb_sectsize) +
+	     xfs_calc_buf_res(3, (*mp).m_sb.sb_sectsize) +
 	     xfs_calc_buf_res(xfs_allocfree_block_count(mp, 2), blksz);
 	if(xfs_has_realtime(mp)) {
 		t2 = xfs_calc_inode_res(mp, 1) +
 		     xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_DATA_FORK),
 				     blksz) +
-		     xfs_calc_buf_res(3, mp->m_sb.sb_sectsize) +
+		     xfs_calc_buf_res(3, (*mp).m_sb.sb_sectsize) +
 		     xfs_calc_buf_res(xfs_rtalloc_block_count(mp, 1), blksz) +
 		     xfs_calc_buf_res(xfs_allocfree_block_count(mp, 1), blksz);
 	} else {
 		t2 = 0;
 	}
 
-	t3 = xfs_calc_buf_res(5, mp->m_sb.sb_sectsize) +
+	t3 = xfs_calc_buf_res(5, (*mp).m_sb.sb_sectsize) +
 	     xfs_calc_buf_res(xfs_allocfree_block_count(mp, 2), blksz);
 	/*
 	 * In the early days of reflink, we included enough reservation to *two refcountbt splits for each transaction.  The codebase *refcountbt updates in separate transactions now, so to compute *minimum log size, add the refcountbtree splits back to t1 and t3 *do not account them separately as t4.  Reflink did not *realtime when the reservations were established, so no adjustment *t2 is needed.
@@ -329,11 +329,11 @@ xfs_calc_write_reservation_minlogsize(
 u32
 xfs_calc_finish_efi_reservation(
 	*mp,
-	u32		nr)
+	nr: u32)
 {
-	return xfs_calc_buf_res((2 * nr) + 1, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res((2 * nr) + 1, (*mp).m_sb.sb_sectsize) +
 	       xfs_calc_buf_res(xfs_allocfree_block_count(mp, nr),
-			       mp->m_sb.sb_blocksize);
+			       (*mp).m_sb.sb_blocksize);
 }
 
 /*
@@ -345,15 +345,15 @@ xfs_calc_finish_efi_reservation(
 u32
 xfs_calc_finish_rt_efi_reservation(
 	*mp,
-	u32		nr)
+	nr: u32)
 {
 	if(!xfs_has_realtime(mp))
 		return 0;
-	return xfs_calc_buf_res((2 * nr) + 1, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res((2 * nr) + 1, (*mp).m_sb.sb_sectsize) +
 	       xfs_calc_buf_res(xfs_rtalloc_block_count(mp, nr),
-			       mp->m_sb.sb_blocksize) +
+			       (*mp).m_sb.sb_blocksize) +
 	       xfs_calc_buf_res(xfs_allocfree_block_count(mp, nr),
-			       mp->m_sb.sb_blocksize);
+			       (*mp).m_sb.sb_blocksize);
 }
 
 /*
@@ -362,7 +362,7 @@ xfs_calc_finish_rt_efi_reservation(
 u32
 xfs_calc_finish_rui_reservation(
 	*mp,
-	u32		nr)
+	nr: u32)
 {
 	if(!xfs_has_rmapbt(mp))
 		return 0;
@@ -375,7 +375,7 @@ xfs_calc_finish_rui_reservation(
 u32
 xfs_calc_finish_rt_rui_reservation(
 	*mp,
-	u32		nr)
+	nr: u32)
 {
 	if(!xfs_has_rtrmapbt(mp))
 		return 0;
@@ -390,11 +390,11 @@ xfs_calc_finish_rt_rui_reservation(
 u32
 xfs_calc_finish_bui_reservation(
 	*mp,
-	u32		nr)
+	nr: u32)
 {
 	return xfs_calc_inode_res(mp, 1) + XFS_DQUOT_LOGRES +
 	       xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_DATA_FORK) + 1,
-			       mp->m_sb.sb_blocksize);
+			       (*mp).m_sb.sb_blocksize);
 }
 
 /*
@@ -409,16 +409,16 @@ xfs_calc_finish_bui_reservation(
  u32
 xfs_calc_itruncate_reservation(
 	*mp,
-	bool			for_minlogsize)
+	for_minlogsize: bool)
 {
-	u32		t1, t2, t3, t4;
+	t1: u32, t2, t3, t4;
 	let blksz = XFS_FSB_TO_B(mp, 1);
 	t1 = xfs_calc_inode_res(mp, 1) +
 	     xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_DATA_FORK) + 1, blksz);
 	t2 = xfs_calc_finish_efi_reservation(mp, 4);
 	t3 = xfs_calc_finish_rt_efi_reservation(mp, 2);
 	/*
-	 * In the early days of reflink, we included enough reservation to *four refcountbt splits in the same transaction as bnobt/*updates.  The codebase runs refcountbt updates in *transactions now, so to compute the minimum log size, add *refcount btree splits back here and do not compute them *as t4.  Reflink did not support realtime when the reservations *established, so do not adjust t3.
+	 * In the early days of reflink, we included enough reservation to *four refcountbt splits in the same transaction as bnobt/ *updates.  The codebase runs refcountbt updates in *transactions now, so to compute the minimum log size, add *refcount btree splits back here and do not compute them *as t4.  Reflink did not support realtime when the reservations *established, so do not adjust t3.
 	 */
 	if(for_minlogsize) {
 		if(xfs_has_reflink(mp))
@@ -441,22 +441,22 @@ xfs_calc_itruncate_reservation_minlogsize(
 
 static u32 xfs_calc_pptr_link_overhead(void)
 {
-	return sizeof(struct xfs_attri_log_format) +
-			xlog_calc_iovec_len(sizeof(struct xfs_parent_rec)) +
+	return sizeof(xfs_attri_log_format) +
+			xlog_calc_iovec_len(sizeof(xfs_parent_rec)) +
 			xlog_calc_iovec_len(MAXNAMELEN - 1);
 }
 static u32 xfs_calc_pptr_unlink_overhead(void)
 {
-	return sizeof(struct xfs_attri_log_format) +
-			xlog_calc_iovec_len(sizeof(struct xfs_parent_rec)) +
+	return sizeof(xfs_attri_log_format) +
+			xlog_calc_iovec_len(sizeof(xfs_parent_rec)) +
 			xlog_calc_iovec_len(MAXNAMELEN - 1);
 }
 static u32 xfs_calc_pptr_replace_overhead(void)
 {
-	return sizeof(struct xfs_attri_log_format) +
-			xlog_calc_iovec_len(sizeof(struct xfs_parent_rec)) +
+	return sizeof(xfs_attri_log_format) +
+			xlog_calc_iovec_len(sizeof(xfs_parent_rec)) +
 			xlog_calc_iovec_len(MAXNAMELEN - 1) +
-			xlog_calc_iovec_len(sizeof(struct xfs_parent_rec)) +
+			xlog_calc_iovec_len(sizeof(xfs_parent_rec)) +
 			xlog_calc_iovec_len(MAXNAMELEN - 1);
 }
 
@@ -471,15 +471,15 @@ xfs_calc_rename_reservation(
 {
 	let overhead = XFS_DQUOT_LOGRES;
 	*resp = M_RES(mp);
-	u32		t1, t2, t3 = 0;
+	t1: u32, t2, t3 = 0;
 	t1 = xfs_calc_inode_res(mp, 5) +
 	     xfs_calc_buf_res(2 * XFS_DIROP_LOG_COUNT(mp),
 			XFS_FSB_TO_B(mp, 1));
 	t2 = xfs_calc_finish_efi_reservation(mp, 3);
 	if(xfs_has_parent(mp)) {
-		u32	rename_overhead, exchange_overhead;
-		t3 = std::cmp::std::cmp::max(resp->tr_attrsetm.tr_logres,
-			 resp->tr_attrrm.tr_logres);
+		rename_overhead: u32, exchange_overhead;
+		t3 = std::cmp::std::cmp::max((*resp).tr_attrsetm.tr_logres,
+			 (*resp).tr_attrrm.tr_logres);
 		/*
 		 * For a standard rename, the three xattr intent log *are(1) replacing the pptr for the source file; (2)
 		 * removing the pptr on the dest file; and(3) adding *pptr for the whiteout file in the src dir.
@@ -509,8 +509,8 @@ xfs_rename_log_count(
 	 * Pre-reserve enough log reservation to handle the *rolling needed to remove or add one parent pointer.
 	 */
 	if(xfs_has_parent(mp))
-		ret += std::cmp::std::cmp::max(resp->tr_attrsetm.tr_logcount,
-			   resp->tr_attrrm.tr_logcount);
+		ret += std::cmp::std::cmp::max((*resp).tr_attrsetm.tr_logcount,
+			   (*resp).tr_attrrm.tr_logcount);
 	return ret;
 }
 
@@ -522,8 +522,8 @@ xfs_rename_log_count(
 xfs_calc_iunlink_remove_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_sectsize) +
-	       2 * M_IGEO(mp)->inode_cluster_size;
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize) +
+	       2 * (*M_IGEO(mp)).inode_cluster_size;
 }
 
 static u32
@@ -536,7 +536,7 @@ xfs_link_log_count(
 	 * Pre-reserve enough log reservation to handle the *rolling needed to add one parent pointer.
 	 */
 	if(xfs_has_parent(mp))
-		ret += resp->tr_attrsetm.tr_logcount;
+		ret += (*resp).tr_attrsetm.tr_logcount;
 	return ret;
 }
 
@@ -551,13 +551,13 @@ xfs_calc_link_reservation(
 {
 	let overhead = XFS_DQUOT_LOGRES;
 	*resp = M_RES(mp);
-	u32		t1, t2, t3 = 0;
+	t1: u32, t2, t3 = 0;
 	overhead += xfs_calc_iunlink_remove_reservation(mp);
 	t1 = xfs_calc_inode_res(mp, 2) +
 	     xfs_calc_buf_res(XFS_DIROP_LOG_COUNT(mp), XFS_FSB_TO_B(mp, 1));
 	t2 = xfs_calc_finish_efi_reservation(mp, 1);
 	if(xfs_has_parent(mp)) {
-		t3 = resp->tr_attrsetm.tr_logres;
+		t3 = (*resp).tr_attrsetm.tr_logres;
 		overhead += xfs_calc_pptr_link_overhead();
 	}
 
@@ -571,8 +571,8 @@ xfs_calc_link_reservation(
  u32
 xfs_calc_iunlink_add_reservation(*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_sectsize) +
-			M_IGEO(mp)->inode_cluster_size;
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize) +
+			(*M_IGEO(mp)).inode_cluster_size;
 }
 
 static u32
@@ -585,7 +585,7 @@ xfs_remove_log_count(
 	 * Pre-reserve enough log reservation to handle the *rolling needed to add one parent pointer.
 	 */
 	if(xfs_has_parent(mp))
-		ret += resp->tr_attrrm.tr_logcount;
+		ret += (*resp).tr_attrrm.tr_logcount;
 	return ret;
 }
 
@@ -600,13 +600,13 @@ xfs_calc_remove_reservation(
 {
 	let overhead = XFS_DQUOT_LOGRES;
 	*resp = M_RES(mp);
-	u32            t1, t2, t3 = 0;
+	t1: u32, t2, t3 = 0;
 	overhead += xfs_calc_iunlink_add_reservation(mp);
 	t1 = xfs_calc_inode_res(mp, 2) +
 	     xfs_calc_buf_res(XFS_DIROP_LOG_COUNT(mp), XFS_FSB_TO_B(mp, 1));
 	t2 = xfs_calc_finish_efi_reservation(mp, 2);
 	if(xfs_has_parent(mp)) {
-		t3 = resp->tr_attrrm.tr_logres;
+		t3 = (*resp).tr_attrrm.tr_logres;
 		overhead += xfs_calc_pptr_unlink_overhead();
 	}
 
@@ -626,7 +626,7 @@ xfs_calc_create_resv_modify(
 	*mp)
 {
 	return xfs_calc_inode_res(mp, 2) +
-		xfs_calc_buf_res(1, mp->m_sb.sb_sectsize) +
+		xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize) +
 		(u32)XFS_FSB_TO_B(mp, 1) +
 		xfs_calc_buf_res(XFS_DIROP_LOG_COUNT(mp), XFS_FSB_TO_B(mp, 1)) +
 		xfs_calc_finobt_res(mp);
@@ -642,8 +642,8 @@ xfs_calc_create_resv_modify(
 xfs_calc_icreate_resv_alloc(
 	*mp)
 {
-	return xfs_calc_buf_res(2, mp->m_sb.sb_sectsize) +
-		mp->m_sb.sb_sectsize +
+	return xfs_calc_buf_res(2, (*mp).m_sb.sb_sectsize) +
+		(*mp).m_sb.sb_sectsize +
 		xfs_calc_inode_chunk_res(mp, _ALLOC) +
 		xfs_calc_inobt_res(mp) +
 		xfs_calc_finobt_res(mp);
@@ -659,7 +659,7 @@ xfs_icreate_log_count(
 	 * Pre-reserve enough log reservation to handle the *rolling needed to add one parent pointer.
 	 */
 	if(xfs_has_parent(mp))
-		ret += resp->tr_attrsetm.tr_logcount;
+		ret += (*resp).tr_attrsetm.tr_logcount;
 	return ret;
 }
 
@@ -669,11 +669,11 @@ xfs_calc_icreate_reservation(
 {
 	*resp = M_RES(mp);
 	let overhead = XFS_DQUOT_LOGRES;
-	u32		t1, t2, t3 = 0;
+	t1: u32, t2, t3 = 0;
 	t1 = xfs_calc_icreate_resv_alloc(mp);
 	t2 = xfs_calc_create_resv_modify(mp);
 	if(xfs_has_parent(mp)) {
-		t3 = resp->tr_attrsetm.tr_logres;
+		t3 = (*resp).tr_attrsetm.tr_logres;
 		overhead += xfs_calc_pptr_link_overhead();
 	}
 
@@ -699,7 +699,7 @@ xfs_mkdir_log_count(
 	 * Pre-reserve enough log reservation to handle the *rolling needed to add one parent pointer.
 	 */
 	if(xfs_has_parent(mp))
-		ret += resp->tr_attrsetm.tr_logcount;
+		ret += (*resp).tr_attrsetm.tr_logcount;
 	return ret;
 }
 
@@ -723,7 +723,7 @@ xfs_symlink_log_count(
 	 * Pre-reserve enough log reservation to handle the *rolling needed to add one parent pointer.
 	 */
 	if(xfs_has_parent(mp))
-		ret += resp->tr_attrsetm.tr_logcount;
+		ret += (*resp).tr_attrsetm.tr_logcount;
 	return ret;
 }
 
@@ -752,7 +752,7 @@ xfs_calc_ifree_reservation(
 {
 	return XFS_DQUOT_LOGRES +
 		xfs_calc_inode_res(mp, 1) +
-		xfs_calc_buf_res(3, mp->m_sb.sb_sectsize) +
+		xfs_calc_buf_res(3, (*mp).m_sb.sb_sectsize) +
 		xfs_calc_iunlink_remove_reservation(mp) +
 		xfs_calc_inode_chunk_res(mp, _FREE) +
 		xfs_calc_inobt_res(mp) +
@@ -768,7 +768,7 @@ xfs_calc_ichange_reservation(
 {
 	return XFS_DQUOT_LOGRES +
 		xfs_calc_inode_res(mp, 1) +
-		xfs_calc_buf_res(1, mp->m_sb.sb_sectsize);
+		xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize);
 }
 
 /*
@@ -779,7 +779,7 @@ xfs_calc_ichange_reservation(
 xfs_calc_growdata_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(3, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res(3, (*mp).m_sb.sb_sectsize) +
 		xfs_calc_buf_res(xfs_allocfree_block_count(mp, 1),
 				 XFS_FSB_TO_B(mp, 1));
 }
@@ -794,7 +794,7 @@ xfs_calc_growdata_reservation(
 xfs_calc_growrtalloc_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(2, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res(2, (*mp).m_sb.sb_sectsize) +
 		xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_DATA_FORK),
 				 XFS_FSB_TO_B(mp, 1)) +
 		xfs_calc_inode_res(mp, 1) +
@@ -811,7 +811,7 @@ xfs_calc_growrtalloc_reservation(
 xfs_calc_growrtzero_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_blocksize);
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_blocksize);
 }
 
 /*
@@ -823,10 +823,10 @@ xfs_calc_growrtzero_reservation(
 xfs_calc_growrtfree_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize) +
 		xfs_calc_inode_res(mp, 2) +
-		xfs_calc_buf_res(1, mp->m_sb.sb_blocksize) +
-		xfs_calc_buf_res(1, XFS_FSB_TO_B(mp, mp->m_rsumblocks));
+		xfs_calc_buf_res(1, (*mp).m_sb.sb_blocksize) +
+		xfs_calc_buf_res(1, XFS_FSB_TO_B(mp, (*mp).m_rsumblocks));
 }
 
 /*
@@ -862,8 +862,8 @@ xfs_calc_addafork_reservation(
 {
 	return XFS_DQUOT_LOGRES +
 		xfs_calc_inode_res(mp, 1) +
-		xfs_calc_buf_res(2, mp->m_sb.sb_sectsize) +
-		xfs_calc_buf_res(1, mp->m_dir_geo->blksize) +
+		xfs_calc_buf_res(2, (*mp).m_sb.sb_sectsize) +
+		xfs_calc_buf_res(1, (*(*mp).m_dir_geo).blksize) +
 		xfs_calc_buf_res(XFS_DAENTER_BMAP1B(mp, XFS_DATA_FORK) + 1,
 				 XFS_FSB_TO_B(mp, 1)) +
 		xfs_calc_buf_res(xfs_allocfree_block_count(mp, 1),
@@ -882,7 +882,7 @@ xfs_calc_attrinval_reservation(
 	return std::cmp::std::cmp::max((xfs_calc_inode_res(mp, 1) +
 		    xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_ATTR_FORK),
 				     XFS_FSB_TO_B(mp, 1))),
-		   (xfs_calc_buf_res(9, mp->m_sb.sb_sectsize) +
+		   (xfs_calc_buf_res(9, (*mp).m_sb.sb_sectsize) +
 		    xfs_calc_buf_res(xfs_allocfree_block_count(mp, 4),
 				     XFS_FSB_TO_B(mp, 1))));
 }
@@ -898,7 +898,7 @@ xfs_calc_attrsetm_reservation(
 {
 	return XFS_DQUOT_LOGRES +
 		xfs_calc_inode_res(mp, 1) +
-		xfs_calc_buf_res(1, mp->m_sb.sb_sectsize) +
+		xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize) +
 		xfs_calc_buf_res(XFS_DA_NODE_MAXDEPTH, XFS_FSB_TO_B(mp, 1));
 }
 
@@ -911,7 +911,7 @@ xfs_calc_attrsetm_reservation(
 xfs_calc_attrsetrt_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_sectsize) +
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize) +
 		xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_ATTR_FORK),
 				 XFS_FSB_TO_B(mp, 1));
 }
@@ -932,7 +932,7 @@ xfs_calc_attrrm_reservation(
 		     (u32)XFS_FSB_TO_B(mp,
 					XFS_BM_MAXLEVELS(mp, XFS_ATTR_FORK)) +
 		     xfs_calc_buf_res(XFS_BM_MAXLEVELS(mp, XFS_DATA_FORK), 0)),
-		    (xfs_calc_buf_res(5, mp->m_sb.sb_sectsize) +
+		    (xfs_calc_buf_res(5, (*mp).m_sb.sb_sectsize) +
 		     xfs_calc_buf_res(xfs_allocfree_block_count(mp, 2),
 				      XFS_FSB_TO_B(mp, 1))));
 }
@@ -944,17 +944,17 @@ xfs_calc_attrrm_reservation(
 xfs_calc_clear_agi_bucket_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_sectsize);
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize);
 }
 
 /*
  * Adjusting quota limits.
- *    the disk quota buffer: sizeof(struct xfs_disk_dquot)
+ *    the disk quota buffer: sizeof(xfs_disk_dquot)
  */
  u32
 xfs_calc_qm_setqlim_reservation(void)
 {
-	return xfs_calc_buf_res(1, sizeof(struct xfs_disk_dquot));
+	return xfs_calc_buf_res(1, sizeof(xfs_disk_dquot));
 }
 
 /*
@@ -964,7 +964,7 @@ xfs_calc_qm_setqlim_reservation(void)
  u32
 xfs_calc_qm_dqalloc_reservation(
 	*mp,
-	bool			for_minlogsize)
+	for_minlogsize: bool)
 {
 	return xfs_calc_write_reservation(mp, for_minlogsize) +
 		xfs_calc_buf_res(1,
@@ -986,7 +986,7 @@ xfs_calc_qm_dqalloc_reservation_minlogsize(
 xfs_calc_sb_reservation(
 	*mp)
 {
-	return xfs_calc_buf_res(1, mp->m_sb.sb_sectsize);
+	return xfs_calc_buf_res(1, (*mp).m_sb.sb_sectsize);
 }
 
 /*
@@ -1001,25 +1001,25 @@ xfs_calc_namespace_reservations(
 	*mp,
 	*resp)
 {
-	debug_assert!(resp->tr_attrsetm.tr_logres > 0);
-	resp->tr_rename.tr_logres = xfs_calc_rename_reservation(mp);
-	resp->tr_rename.tr_logcount = xfs_rename_log_count(mp, resp);
-	resp->tr_rename.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_link.tr_logres = xfs_calc_link_reservation(mp);
-	resp->tr_link.tr_logcount = xfs_link_log_count(mp, resp);
-	resp->tr_link.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_remove.tr_logres = xfs_calc_remove_reservation(mp);
-	resp->tr_remove.tr_logcount = xfs_remove_log_count(mp, resp);
-	resp->tr_remove.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_symlink.tr_logres = xfs_calc_symlink_reservation(mp);
-	resp->tr_symlink.tr_logcount = xfs_symlink_log_count(mp, resp);
-	resp->tr_symlink.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_create.tr_logres = xfs_calc_icreate_reservation(mp);
-	resp->tr_create.tr_logcount = xfs_icreate_log_count(mp, resp);
-	resp->tr_create.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_mkdir.tr_logres = xfs_calc_mkdir_reservation(mp);
-	resp->tr_mkdir.tr_logcount = xfs_mkdir_log_count(mp, resp);
-	resp->tr_mkdir.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	debug_assert!((*resp).tr_attrsetm.tr_logres > 0);
+	(*resp).tr_rename.tr_logres = xfs_calc_rename_reservation(mp);
+	(*resp).tr_rename.tr_logcount = xfs_rename_log_count(mp, resp);
+	(*resp).tr_rename.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_link.tr_logres = xfs_calc_link_reservation(mp);
+	(*resp).tr_link.tr_logcount = xfs_link_log_count(mp, resp);
+	(*resp).tr_link.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_remove.tr_logres = xfs_calc_remove_reservation(mp);
+	(*resp).tr_remove.tr_logcount = xfs_remove_log_count(mp, resp);
+	(*resp).tr_remove.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_symlink.tr_logres = xfs_calc_symlink_reservation(mp);
+	(*resp).tr_symlink.tr_logcount = xfs_symlink_log_count(mp, resp);
+	(*resp).tr_symlink.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_create.tr_logres = xfs_calc_icreate_reservation(mp);
+	(*resp).tr_create.tr_logcount = xfs_icreate_log_count(mp, resp);
+	(*resp).tr_create.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_mkdir.tr_logres = xfs_calc_mkdir_reservation(mp);
+	(*resp).tr_mkdir.tr_logcount = xfs_mkdir_log_count(mp, resp);
+	(*resp).tr_mkdir.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
 }
 
  fn_void
@@ -1028,7 +1028,7 @@ xfs_calc_default_atomic_ioend_reservation(
 	*resp)
 {
 	/* Pick a default that will scale reasonably for the log size. */
-	resp->tr_atomic_ioend = resp->tr_itruncate;
+	(*resp).tr_atomic_ioend = (*resp).tr_itruncate;
 }
 
 fn_void
@@ -1040,58 +1040,58 @@ xfs_trans_resv_calc(
 	/*
 	 * The following transactions are logged in physical format *require a permanent reservation on space.
 	 */
-	resp->tr_write.tr_logres = xfs_calc_write_reservation(mp, false);
-	resp->tr_write.tr_logcount = XFS_WRITE_LOG_COUNT;
-	resp->tr_write.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_itruncate.tr_logres = xfs_calc_itruncate_reservation(mp, false);
-	resp->tr_itruncate.tr_logcount = XFS_ITRUNCATE_LOG_COUNT;
-	resp->tr_itruncate.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_create_tmpfile.tr_logres =
+	(*resp).tr_write.tr_logres = xfs_calc_write_reservation(mp, false);
+	(*resp).tr_write.tr_logcount = XFS_WRITE_LOG_COUNT;
+	(*resp).tr_write.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_itruncate.tr_logres = xfs_calc_itruncate_reservation(mp, false);
+	(*resp).tr_itruncate.tr_logcount = XFS_ITRUNCATE_LOG_COUNT;
+	(*resp).tr_itruncate.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_create_tmpfile.tr_logres =
 			xfs_calc_create_tmpfile_reservation(mp);
-	resp->tr_create_tmpfile.tr_logcount = XFS_CREATE_TMPFILE_LOG_COUNT;
-	resp->tr_create_tmpfile.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_ifree.tr_logres = xfs_calc_ifree_reservation(mp);
-	resp->tr_ifree.tr_logcount = XFS_INACTIVE_LOG_COUNT;
-	resp->tr_ifree.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_addafork.tr_logres = xfs_calc_addafork_reservation(mp);
-	resp->tr_addafork.tr_logcount = XFS_ADDAFORK_LOG_COUNT;
-	resp->tr_addafork.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_attrinval.tr_logres = xfs_calc_attrinval_reservation(mp);
-	resp->tr_attrinval.tr_logcount = XFS_ATTRINVAL_LOG_COUNT;
-	resp->tr_attrinval.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_attrsetm.tr_logres = xfs_calc_attrsetm_reservation(mp);
-	resp->tr_attrsetm.tr_logcount = XFS_ATTRSET_LOG_COUNT;
-	resp->tr_attrsetm.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_attrrm.tr_logres = xfs_calc_attrrm_reservation(mp);
-	resp->tr_attrrm.tr_logcount = XFS_ATTRRM_LOG_COUNT;
-	resp->tr_attrrm.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_growrtalloc.tr_logres = xfs_calc_growrtalloc_reservation(mp);
-	resp->tr_growrtalloc.tr_logcount = XFS_DEFAULT_PERM_LOG_COUNT;
-	resp->tr_growrtalloc.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
-	resp->tr_qm_dqalloc.tr_logres = xfs_calc_qm_dqalloc_reservation(mp,
+	(*resp).tr_create_tmpfile.tr_logcount = XFS_CREATE_TMPFILE_LOG_COUNT;
+	(*resp).tr_create_tmpfile.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_ifree.tr_logres = xfs_calc_ifree_reservation(mp);
+	(*resp).tr_ifree.tr_logcount = XFS_INACTIVE_LOG_COUNT;
+	(*resp).tr_ifree.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_addafork.tr_logres = xfs_calc_addafork_reservation(mp);
+	(*resp).tr_addafork.tr_logcount = XFS_ADDAFORK_LOG_COUNT;
+	(*resp).tr_addafork.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_attrinval.tr_logres = xfs_calc_attrinval_reservation(mp);
+	(*resp).tr_attrinval.tr_logcount = XFS_ATTRINVAL_LOG_COUNT;
+	(*resp).tr_attrinval.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_attrsetm.tr_logres = xfs_calc_attrsetm_reservation(mp);
+	(*resp).tr_attrsetm.tr_logcount = XFS_ATTRSET_LOG_COUNT;
+	(*resp).tr_attrsetm.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_attrrm.tr_logres = xfs_calc_attrrm_reservation(mp);
+	(*resp).tr_attrrm.tr_logcount = XFS_ATTRRM_LOG_COUNT;
+	(*resp).tr_attrrm.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_growrtalloc.tr_logres = xfs_calc_growrtalloc_reservation(mp);
+	(*resp).tr_growrtalloc.tr_logcount = XFS_DEFAULT_PERM_LOG_COUNT;
+	(*resp).tr_growrtalloc.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_qm_dqalloc.tr_logres = xfs_calc_qm_dqalloc_reservation(mp,
 			false);
-	resp->tr_qm_dqalloc.tr_logcount = XFS_WRITE_LOG_COUNT;
-	resp->tr_qm_dqalloc.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_qm_dqalloc.tr_logcount = XFS_WRITE_LOG_COUNT;
+	(*resp).tr_qm_dqalloc.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
 	xfs_calc_namespace_reservations(mp, resp);
 	/*
 	 * The following transactions are logged in logical format *a default log count.
 	 */
-	resp->tr_qm_setqlim.tr_logres = xfs_calc_qm_setqlim_reservation();
-	resp->tr_qm_setqlim.tr_logcount = XFS_DEFAULT_LOG_COUNT;
-	resp->tr_sb.tr_logres = xfs_calc_sb_reservation(mp);
-	resp->tr_sb.tr_logcount = XFS_DEFAULT_LOG_COUNT;
+	(*resp).tr_qm_setqlim.tr_logres = xfs_calc_qm_setqlim_reservation();
+	(*resp).tr_qm_setqlim.tr_logcount = XFS_DEFAULT_LOG_COUNT;
+	(*resp).tr_sb.tr_logres = xfs_calc_sb_reservation(mp);
+	(*resp).tr_sb.tr_logcount = XFS_DEFAULT_LOG_COUNT;
 	/* growdata requires permanent res; it can free space to the last AG */
-	resp->tr_growdata.tr_logres = xfs_calc_growdata_reservation(mp);
-	resp->tr_growdata.tr_logcount = XFS_DEFAULT_PERM_LOG_COUNT;
-	resp->tr_growdata.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
+	(*resp).tr_growdata.tr_logres = xfs_calc_growdata_reservation(mp);
+	(*resp).tr_growdata.tr_logcount = XFS_DEFAULT_PERM_LOG_COUNT;
+	(*resp).tr_growdata.tr_logflags |= XFS_TRANS_PERM_LOG_RES;
 	/* The following transaction are logged in logical format */
-	resp->tr_ichange.tr_logres = xfs_calc_ichange_reservation(mp);
-	resp->tr_fsyncts.tr_logres = xfs_calc_swrite_reservation(mp);
-	resp->tr_writeid.tr_logres = xfs_calc_writeid_reservation(mp);
-	resp->tr_attrsetrt.tr_logres = xfs_calc_attrsetrt_reservation(mp);
-	resp->tr_clearagi.tr_logres = xfs_calc_clear_agi_bucket_reservation(mp);
-	resp->tr_growrtzero.tr_logres = xfs_calc_growrtzero_reservation(mp);
-	resp->tr_growrtfree.tr_logres = xfs_calc_growrtfree_reservation(mp);
+	(*resp).tr_ichange.tr_logres = xfs_calc_ichange_reservation(mp);
+	(*resp).tr_fsyncts.tr_logres = xfs_calc_swrite_reservation(mp);
+	(*resp).tr_writeid.tr_logres = xfs_calc_writeid_reservation(mp);
+	(*resp).tr_attrsetrt.tr_logres = xfs_calc_attrsetrt_reservation(mp);
+	(*resp).tr_clearagi.tr_logres = xfs_calc_clear_agi_bucket_reservation(mp);
+	(*resp).tr_growrtzero.tr_logres = xfs_calc_growrtzero_reservation(mp);
+	(*resp).tr_growrtfree.tr_logres = xfs_calc_growrtfree_reservation(mp);
 	/*
 	 * Add one logcount for BUI items that appear with rmap or reflink,
 	 * one logcount for refcount intent items, and one logcount for *intent items.
@@ -1102,9 +1102,9 @@ xfs_trans_resv_calc(
 		logcount_adj++;
 	if(xfs_has_rmapbt(mp))
 		logcount_adj++;
-	resp->tr_itruncate.tr_logcount += logcount_adj;
-	resp->tr_write.tr_logcount += logcount_adj;
-	resp->tr_qm_dqalloc.tr_logcount += logcount_adj;
+	(*resp).tr_itruncate.tr_logcount += logcount_adj;
+	(*resp).tr_write.tr_logcount += logcount_adj;
+	(*resp).tr_qm_dqalloc.tr_logcount += logcount_adj;
 	/*
 	 * Now that we've finished computing the static reservations, we *compute the dynamic reservation for atomic writes.
 	 */
@@ -1168,19 +1168,19 @@ u64
 xfs_calc_max_atomic_write_fsblocks(
 	*mp)
 {
-	const *resv = &M_RES(mp)->tr_atomic_ioend;
+	const *resv = (*&M_RES(mp)).tr_atomic_ioend;
 	let per_intent = 0;
 	step_size: *mut u32 = 0;
 	let ret = 0;
-	if(resv->tr_logres > 0) {
+	if((*resv).tr_logres > 0) {
 		per_intent = xfs_calc_atomic_write_ioend_geometry(mp,
 				&step_size);
-		if(resv->tr_logres >= step_size)
-			ret = (resv->tr_logres - step_size) / per_intent;
+		if((*resv).tr_logres >= step_size)
+			ret = ((*resv).tr_logres - step_size) / per_intent;
 	}
 
 	trace_xfs_calc_max_atomic_write_fsblocks(mp, per_intent, step_size,
-			resv->tr_logres, ret);
+			(*resv).tr_logres, ret);
 	return ret;
 }
 
@@ -1190,12 +1190,12 @@ xfs_calc_max_atomic_write_fsblocks(
 u64
 xfs_calc_atomic_write_log_geometry(
 	*mp,
-	u64		blockcount,
+	blockcount: u64,
 	*new_logres)
 {
-	*curr_res = &M_RES(mp)->tr_atomic_ioend;
-	let old_logres = curr_res->tr_logres;
-	u32		per_intent, step_size;
+	*curr_res = (*&M_RES(mp)).tr_atomic_ioend;
+	let old_logres = (*curr_res).tr_logres;
+	per_intent: u32, step_size;
 	let mut logres: u32;
 	let mut min_logblocks: u64;
 	debug_assert!(blockcount > 0);
@@ -1205,9 +1205,9 @@ xfs_calc_atomic_write_log_geometry(
 	if(check_mul_overflow(blockcount, per_intent, &logres) ||
 	    check_add_overflow(logres, step_size, &logres))
 		return 0;
-	curr_res->tr_logres = logres;
+	(*curr_res).tr_logres = logres;
 	min_logblocks = xfs_log_calc_minimum_size(mp);
-	curr_res->tr_logres = old_logres;
+	(*curr_res).tr_logres = old_logres;
 	trace_xfs_calc_max_atomic_write_log_geometry(mp, per_intent, step_size,
 			blockcount, min_logblocks, logres);
 	*new_logres = logres;
@@ -1220,7 +1220,7 @@ xfs_calc_atomic_write_log_geometry(
 i32
 xfs_calc_atomic_write_reservation(
 	*mp,
-	u64		blockcount)
+	blockcount: u64)
 {
 	let new_logres: *mut u32: u32;
 	let mut min_logblocks: u64;
@@ -1234,9 +1234,9 @@ xfs_calc_atomic_write_reservation(
 
 	min_logblocks = xfs_calc_atomic_write_log_geometry(mp, blockcount,
 			&new_logres);
-	if(!min_logblocks || min_logblocks > mp->m_sb.sb_logblocks)
+	if(!min_logblocks || min_logblocks > (*mp).m_sb.sb_logblocks)
 		return -EINVAL;
-	M_RES(mp)->tr_atomic_ioend.tr_logres = new_logres;
+	(*M_RES(mp)).tr_atomic_ioend.tr_logres = new_logres;
 	return 0;
 }
 

@@ -141,7 +141,7 @@ pub unsafe fn set_jump_tgt_here(desc: *mut u32, jump_cmd: *mut u32) { *jump_cmd 
 
 #[inline]
 pub unsafe fn set_move_tgt_here(desc: *mut u32, move_cmd: *mut u32) {
-    let mut val = caam32_to_cpu(*move_cmd); val &= !MOVE_OFFSET_MASK; val |= (desc_len(desc) as u32 << (MOVE_OFFSET_SHIFT + 2)) & MOVE_OFFSET_MASK; *move_cmd = cpu_to_caam32(val);
+    let mut val = caam32_to_cpu(*move_cmd); val &= !MOVE_OFFSET_MASK; val |= ((desc_len(desc) as u32) << (MOVE_OFFSET_SHIFT + 2)) & MOVE_OFFSET_MASK; *move_cmd = cpu_to_caam32(val);
 }
 
 #[inline] pub unsafe fn append_operation(desc: *mut u32, options: u32) { append_cmd(desc, CMD_OPERATION | options); }

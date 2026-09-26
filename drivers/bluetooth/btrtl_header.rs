@@ -82,7 +82,7 @@ macro_rules! btrealtek_get_flag {
 macro_rules! btrealtek_test_flag { ($hdev:expr, $nr:expr) => { test_bit($nr, btrealtek_get_flag!($hdev)) }; }
 
 /* CONFIG_BT_RTL controls whether these declarations or the inline stubs are used. */
-#[cfg(feature = "CONFIG_BT_RTL")]
+#[cfg(CONFIG_BT_RTL)]
 extern "C" {
     pub fn btrtl_initialize(hdev: *mut hci_dev, postfix: *const c_char) -> *mut btrtl_device_info;
     pub fn btrtl_free(btrtl_dev: *mut btrtl_device_info);
@@ -94,21 +94,21 @@ extern "C" {
     pub fn btrtl_set_driver_name(hdev: *mut hci_dev, driver_name: *const c_char);
 }
 
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_initialize(_: *mut hci_dev, _: *const c_char) -> *mut btrtl_device_info { ERR_PTR(-EOPNOTSUPP) }
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_free(_: *mut btrtl_device_info) {}
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_download_firmware(_: *mut hci_dev, _: *mut btrtl_device_info) -> c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_set_quirks(_: *mut hci_dev, _: *mut btrtl_device_info) {}
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_setup_realtek(_: *mut hci_dev) -> c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_shutdown_realtek(_: *mut hci_dev) -> c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_get_uart_settings(_: *mut hci_dev, _: *mut btrtl_device_info, _: *mut c_uint, _: *mut u32, _: *mut bool) -> c_int { -ENOENT }
-#[cfg(not(feature = "CONFIG_BT_RTL"))]
+#[cfg(not(CONFIG_BT_RTL))]
 pub unsafe fn btrtl_set_driver_name(_: *mut hci_dev, _: *const c_char) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

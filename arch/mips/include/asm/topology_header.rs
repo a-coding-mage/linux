@@ -9,40 +9,40 @@
 // Dependency intent from <topology.h> and <linux/smp.h> is supplied externally.
 
 // CONFIG_SMP conditional: these items are present only for SMP builds.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! topology_physical_package_id {
     ($cpu:expr) => {
         cpu_data[$cpu].package
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! topology_core_id {
     ($cpu:expr) => {
         cpu_core(&cpu_data[$cpu])
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! topology_core_cpumask {
     ($cpu:expr) => {
         &cpu_core_map[$cpu]
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! topology_sibling_cpumask {
     ($cpu:expr) => {
         &cpu_sibling_map[$cpu]
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub static __cpu_primary_thread_mask: cpumask;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! cpu_primary_thread_mask {
     () => {
         &__cpu_primary_thread_mask as *const cpumask

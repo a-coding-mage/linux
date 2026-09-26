@@ -78,18 +78,18 @@ macro_rules! __dynamic_array {
 
 #[macro_export]
 macro_rules! __string {
-    ($item:ident, $src:expr) => {{
+    ($item:tt, $src:expr) => {{
         $crate::__dynamic_array!(::core::ffi::c_char, $item,
             unsafe { ::core::ffi::CStr::from_ptr($crate::__string_src($src)).to_bytes().len() + 1 });
-        __data_offsets.$item##_ptr_ = $src;
+        __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
 }
 
 #[macro_export]
 macro_rules! __string_len {
-    ($item:ident, $src:expr, $len:expr) => {{
+    ($item:tt, $src:expr, $len:expr) => {{
         $crate::__dynamic_array!(::core::ffi::c_char, $item, ($len) + 1);
-        __data_offsets.$item##_ptr_ = $src;
+        __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
 }
 
@@ -116,18 +116,18 @@ macro_rules! __rel_dynamic_array {
 
 #[macro_export]
 macro_rules! __rel_string {
-    ($item:ident, $src:expr) => {{
+    ($item:tt, $src:expr) => {{
         $crate::__rel_dynamic_array!(::core::ffi::c_char, $item,
             unsafe { ::core::ffi::CStr::from_ptr($crate::__string_src($src)).to_bytes().len() + 1 });
-        __data_offsets.$item##_ptr_ = $src;
+        __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
 }
 
 #[macro_export]
 macro_rules! __rel_string_len {
-    ($item:ident, $src:expr, $len:expr) => {{
+    ($item:tt, $src:expr, $len:expr) => {{
         $crate::__rel_dynamic_array!(::core::ffi::c_char, $item, ($len) + 1);
-        __data_offsets.$item##_ptr_ = $src;
+        __data_offsets.::kernel::macros::paste!([<$item _ptr_>]) = $src;
     }};
 }
 

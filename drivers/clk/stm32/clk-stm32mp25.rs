@@ -42,88 +42,86 @@
 // define SEC_RIFSC_FLAG		BIT(31)
 // define SEC_RIFSC(_id)		((_id) | SEC_RIFSC_FLAG)
 
-enum {
-	HSE,
-	HSI,
-	MSI,
-	LSE,
-	LSI,
-	HSE_DIV2,
-	ICN_HS_MCU,
-	ICN_LS_MCU,
-	ICN_SDMMC,
-	ICN_DDR,
-	ICN_DISPLAY,
-	ICN_HSL,
-	ICN_NIC,
-	ICN_VID,
-	FLEXGEN_07,
-	FLEXGEN_08,
-	FLEXGEN_09,
-	FLEXGEN_10,
-	FLEXGEN_11,
-	FLEXGEN_12,
-	FLEXGEN_13,
-	FLEXGEN_14,
-	FLEXGEN_15,
-	FLEXGEN_16,
-	FLEXGEN_17,
-	FLEXGEN_18,
-	FLEXGEN_19,
-	FLEXGEN_20,
-	FLEXGEN_21,
-	FLEXGEN_22,
-	FLEXGEN_23,
-	FLEXGEN_24,
-	FLEXGEN_25,
-	FLEXGEN_26,
-	FLEXGEN_27,
-	FLEXGEN_28,
-	FLEXGEN_29,
-	FLEXGEN_30,
-	FLEXGEN_31,
-	FLEXGEN_32,
-	FLEXGEN_33,
-	FLEXGEN_34,
-	FLEXGEN_35,
-	FLEXGEN_36,
-	FLEXGEN_37,
-	FLEXGEN_38,
-	FLEXGEN_39,
-	FLEXGEN_40,
-	FLEXGEN_41,
-	FLEXGEN_42,
-	FLEXGEN_43,
-	FLEXGEN_44,
-	FLEXGEN_45,
-	FLEXGEN_46,
-	FLEXGEN_47,
-	FLEXGEN_48,
-	FLEXGEN_49,
-	FLEXGEN_50,
-	FLEXGEN_51,
-	FLEXGEN_52,
-	FLEXGEN_53,
-	FLEXGEN_54,
-	FLEXGEN_55,
-	FLEXGEN_56,
-	FLEXGEN_57,
-	FLEXGEN_58,
-	FLEXGEN_59,
-	FLEXGEN_60,
-	FLEXGEN_61,
-	FLEXGEN_62,
-	FLEXGEN_63,
-	ICN_APB1,
-	ICN_APB2,
-	ICN_APB3,
-	ICN_APB4,
-	ICN_APBDBG,
-	TIMG1,
-	TIMG2,
-	PLL3,
-	DSI_TXBYTE,
-};
+pub const HSE: i32 = 0;
+pub const HSI: i32 = HSE + 1;
+pub const MSI: i32 = HSI + 1;
+pub const LSE: i32 = MSI + 1;
+pub const LSI: i32 = LSE + 1;
+pub const HSE_DIV2: i32 = LSI + 1;
+pub const ICN_HS_MCU: i32 = HSE_DIV2 + 1;
+pub const ICN_LS_MCU: i32 = ICN_HS_MCU + 1;
+pub const ICN_SDMMC: i32 = ICN_LS_MCU + 1;
+pub const ICN_DDR: i32 = ICN_SDMMC + 1;
+pub const ICN_DISPLAY: i32 = ICN_DDR + 1;
+pub const ICN_HSL: i32 = ICN_DISPLAY + 1;
+pub const ICN_NIC: i32 = ICN_HSL + 1;
+pub const ICN_VID: i32 = ICN_NIC + 1;
+pub const FLEXGEN_07: i32 = ICN_VID + 1;
+pub const FLEXGEN_08: i32 = FLEXGEN_07 + 1;
+pub const FLEXGEN_09: i32 = FLEXGEN_08 + 1;
+pub const FLEXGEN_10: i32 = FLEXGEN_09 + 1;
+pub const FLEXGEN_11: i32 = FLEXGEN_10 + 1;
+pub const FLEXGEN_12: i32 = FLEXGEN_11 + 1;
+pub const FLEXGEN_13: i32 = FLEXGEN_12 + 1;
+pub const FLEXGEN_14: i32 = FLEXGEN_13 + 1;
+pub const FLEXGEN_15: i32 = FLEXGEN_14 + 1;
+pub const FLEXGEN_16: i32 = FLEXGEN_15 + 1;
+pub const FLEXGEN_17: i32 = FLEXGEN_16 + 1;
+pub const FLEXGEN_18: i32 = FLEXGEN_17 + 1;
+pub const FLEXGEN_19: i32 = FLEXGEN_18 + 1;
+pub const FLEXGEN_20: i32 = FLEXGEN_19 + 1;
+pub const FLEXGEN_21: i32 = FLEXGEN_20 + 1;
+pub const FLEXGEN_22: i32 = FLEXGEN_21 + 1;
+pub const FLEXGEN_23: i32 = FLEXGEN_22 + 1;
+pub const FLEXGEN_24: i32 = FLEXGEN_23 + 1;
+pub const FLEXGEN_25: i32 = FLEXGEN_24 + 1;
+pub const FLEXGEN_26: i32 = FLEXGEN_25 + 1;
+pub const FLEXGEN_27: i32 = FLEXGEN_26 + 1;
+pub const FLEXGEN_28: i32 = FLEXGEN_27 + 1;
+pub const FLEXGEN_29: i32 = FLEXGEN_28 + 1;
+pub const FLEXGEN_30: i32 = FLEXGEN_29 + 1;
+pub const FLEXGEN_31: i32 = FLEXGEN_30 + 1;
+pub const FLEXGEN_32: i32 = FLEXGEN_31 + 1;
+pub const FLEXGEN_33: i32 = FLEXGEN_32 + 1;
+pub const FLEXGEN_34: i32 = FLEXGEN_33 + 1;
+pub const FLEXGEN_35: i32 = FLEXGEN_34 + 1;
+pub const FLEXGEN_36: i32 = FLEXGEN_35 + 1;
+pub const FLEXGEN_37: i32 = FLEXGEN_36 + 1;
+pub const FLEXGEN_38: i32 = FLEXGEN_37 + 1;
+pub const FLEXGEN_39: i32 = FLEXGEN_38 + 1;
+pub const FLEXGEN_40: i32 = FLEXGEN_39 + 1;
+pub const FLEXGEN_41: i32 = FLEXGEN_40 + 1;
+pub const FLEXGEN_42: i32 = FLEXGEN_41 + 1;
+pub const FLEXGEN_43: i32 = FLEXGEN_42 + 1;
+pub const FLEXGEN_44: i32 = FLEXGEN_43 + 1;
+pub const FLEXGEN_45: i32 = FLEXGEN_44 + 1;
+pub const FLEXGEN_46: i32 = FLEXGEN_45 + 1;
+pub const FLEXGEN_47: i32 = FLEXGEN_46 + 1;
+pub const FLEXGEN_48: i32 = FLEXGEN_47 + 1;
+pub const FLEXGEN_49: i32 = FLEXGEN_48 + 1;
+pub const FLEXGEN_50: i32 = FLEXGEN_49 + 1;
+pub const FLEXGEN_51: i32 = FLEXGEN_50 + 1;
+pub const FLEXGEN_52: i32 = FLEXGEN_51 + 1;
+pub const FLEXGEN_53: i32 = FLEXGEN_52 + 1;
+pub const FLEXGEN_54: i32 = FLEXGEN_53 + 1;
+pub const FLEXGEN_55: i32 = FLEXGEN_54 + 1;
+pub const FLEXGEN_56: i32 = FLEXGEN_55 + 1;
+pub const FLEXGEN_57: i32 = FLEXGEN_56 + 1;
+pub const FLEXGEN_58: i32 = FLEXGEN_57 + 1;
+pub const FLEXGEN_59: i32 = FLEXGEN_58 + 1;
+pub const FLEXGEN_60: i32 = FLEXGEN_59 + 1;
+pub const FLEXGEN_61: i32 = FLEXGEN_60 + 1;
+pub const FLEXGEN_62: i32 = FLEXGEN_61 + 1;
+pub const FLEXGEN_63: i32 = FLEXGEN_62 + 1;
+pub const ICN_APB1: i32 = FLEXGEN_63 + 1;
+pub const ICN_APB2: i32 = ICN_APB1 + 1;
+pub const ICN_APB3: i32 = ICN_APB2 + 1;
+pub const ICN_APB4: i32 = ICN_APB3 + 1;
+pub const ICN_APBDBG: i32 = ICN_APB4 + 1;
+pub const TIMG1: i32 = ICN_APBDBG + 1;
+pub const TIMG2: i32 = TIMG1 + 1;
+pub const PLL3: i32 = TIMG2 + 1;
+pub const DSI_TXBYTE: i32 = PLL3 + 1;
 
 static const struct clk_parent_data adc12_src[] = {
 	{ .index = FLEXGEN_46 },
@@ -198,11 +196,11 @@ enum enum_mux_cfg {
 };
 
 // define MUX_CFG(id, _offset, _shift, _witdh)	\
-	[id] = {				\
-		.offset		= (_offset),	\
-		.shift		= (_shift),	\
-		.width		= (_witdh),	\
-	}
+// 	[id] = {				\
+// 		offset: (_offset),	\
+// 		shift: (_shift),	\
+// 		width: (_witdh),	\
+// 	}
 
 static const struct stm32_mux_cfg stm32mp25_muxes[MUX_NB] = {
 	MUX_CFG(MUX_ADC12,		RCC_ADC12CFGR,		12,	1),
@@ -341,11 +339,11 @@ enum enum_gate_cfg {
 };
 
 // define GATE_CFG(id, _offset, _bit_idx, _offset_clr)	\
-	[id] = {					\
-		.offset		= (_offset),		\
-		.bit_idx	= (_bit_idx),		\
-		.set_clr	= (_offset_clr),	\
-	}
+// 	[id] = {					\
+// 		offset: (_offset),		\
+// 		bit_idx: (_bit_idx),		\
+// 		set_clr: (_offset_clr),	\
+// 	}
 
 static const struct stm32_gate_cfg stm32mp25_gates[GATE_NB] = {
 	GATE_CFG(GATE_ADC12,		RCC_ADC12CFGR,		1,	0),
@@ -469,100 +467,100 @@ static const struct stm32_gate_cfg stm32mp25_gates[GATE_NB] = {
 };
 
 // define CLK_HW_INIT_INDEX(_name, _parent, _ops, _flags)		\
-	(&(struct clk_init_data) {					\
-		.flags		= _flags,				\
-		.name		= _name,				\
-		.parent_data	= (const struct clk_parent_data[]) {	\
-					{ .index = _parent },		\
-				  },					\
-		.num_parents	= 1,					\
-		.ops		= _ops,					\
-	})
+// 	(&(clk_init_data) {					\
+// 		flags: _flags,				\
+// 		name: _name,				\
+// 		parent_data: (const struct clk_parent_data[]) {	\
+// 					{ .index = _parent },		\
+// 				  },					\
+// 		num_parents: 1,					\
+// 		ops: _ops,					\
+// 	})
 
 // ADC */
 static struct clk_stm32_gate ck_icn_p_adc12 = {
-	.gate_id = GATE_ADC12,
+	gate_id: GATE_ADC12,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_adc12", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_composite ck_ker_adc12 = {
-	.gate_id = GATE_ADC12,
-	.mux_id = MUX_ADC12,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_ADC12,
+	mux_id: MUX_ADC12,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_adc12", adc12_src, &clk_stm32_composite_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_adc3 = {
-	.gate_id = GATE_ADC3,
+	gate_id: GATE_ADC3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_adc3", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_composite ck_ker_adc3 = {
-	.gate_id = GATE_ADC3,
-	.mux_id = MUX_ADC3,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_ADC3,
+	mux_id: MUX_ADC3,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_adc3", adc3_src, &clk_stm32_composite_ops, 0),
 };
 
 // ADF */
 static struct clk_stm32_gate ck_icn_p_adf1 = {
-	.gate_id = GATE_ADF1,
+	gate_id: GATE_ADF1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_adf1", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_adf1 = {
-	.gate_id = GATE_ADF1,
+	gate_id: GATE_ADF1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_adf1", FLEXGEN_42, &clk_stm32_gate_ops, 0),
 };
 
 // DCMI */
 static struct clk_stm32_gate ck_icn_p_cci = {
-	.gate_id = GATE_CCI,
+	gate_id: GATE_CCI,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_cci", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // CSI-HOST */
 static struct clk_stm32_gate ck_icn_p_csi = {
-	.gate_id = GATE_CSI,
+	gate_id: GATE_CSI,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_csi", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_csi = {
-	.gate_id = GATE_CSI,
+	gate_id: GATE_CSI,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_csi", FLEXGEN_29, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_csitxesc = {
-	.gate_id = GATE_CSI,
+	gate_id: GATE_CSI,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_csitxesc", FLEXGEN_30, &clk_stm32_gate_ops, 0),
 };
 
 // CSI-PHY */
 static struct clk_stm32_gate ck_ker_csiphy = {
-	.gate_id = GATE_CSI,
+	gate_id: GATE_CSI,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_csiphy", FLEXGEN_31, &clk_stm32_gate_ops, 0),
 };
 
 // DCMIPP */
 static struct clk_stm32_gate ck_icn_p_dcmipp = {
-	.gate_id = GATE_DCMIPP,
+	gate_id: GATE_DCMIPP,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_dcmipp", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 // CRC */
 static struct clk_stm32_gate ck_icn_p_crc = {
-	.gate_id = GATE_CRC,
+	gate_id: GATE_CRC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_crc", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // CRYP */
 static struct clk_stm32_gate ck_icn_p_cryp1 = {
-	.gate_id = GATE_CRYP1,
+	gate_id: GATE_CRYP1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_cryp1", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_cryp2 = {
-	.gate_id = GATE_CRYP2,
+	gate_id: GATE_CRYP2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_cryp2", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
@@ -571,1004 +569,1004 @@ static struct clk_stm32_gate ck_icn_p_cryp2 = {
 
 // LTDC */
 static struct clk_stm32_gate ck_icn_p_ltdc = {
-	.gate_id = GATE_LTDC,
+	gate_id: GATE_LTDC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_ltdc", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_ltdc = {
-	.gate_id = GATE_LTDC,
+	gate_id: GATE_LTDC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_ltdc", FLEXGEN_27, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 // DSI */
 static struct clk_stm32_gate ck_icn_p_dsi = {
-	.gate_id = GATE_DSI,
+	gate_id: GATE_DSI,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_dsi", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_composite clk_lanebyte = {
-	.gate_id = GATE_DSI,
-	.mux_id = MUX_DSIBLANE,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_DSI,
+	mux_id: MUX_DSIBLANE,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("clk_lanebyte", dsiblane_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // LVDS */
 static struct clk_stm32_gate ck_icn_p_lvds = {
-	.gate_id = GATE_LVDS,
+	gate_id: GATE_LVDS,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lvds", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 // DSI PHY */
 static struct clk_stm32_composite clk_phy_dsi = {
-	.gate_id = GATE_DSI,
-	.mux_id = MUX_DSIPHY,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_DSI,
+	mux_id: MUX_DSIPHY,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("clk_phy_dsi", dsiphy_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // LVDS PHY */
 static struct clk_stm32_composite ck_ker_lvdsphy = {
-	.gate_id = GATE_LVDS,
-	.mux_id = MUX_LVDSPHY,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_LVDS,
+	mux_id: MUX_LVDSPHY,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_lvdsphy", lvdsphy_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // DTS */
 static struct clk_stm32_composite ck_ker_dts = {
-	.gate_id = GATE_DTS,
-	.mux_id = MUX_DTS,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_DTS,
+	mux_id: MUX_DTS,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_dts", dts_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // ETHERNET */
 static struct clk_stm32_gate ck_icn_p_eth1 = {
-	.gate_id = GATE_ETH1,
+	gate_id: GATE_ETH1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_eth1", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth1stp = {
-	.gate_id = GATE_ETH1STP,
+	gate_id: GATE_ETH1STP,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth1stp", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth1 = {
-	.gate_id = GATE_ETH1,
+	gate_id: GATE_ETH1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth1", FLEXGEN_54, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth1ptp = {
-	.gate_id = GATE_ETH1,
+	gate_id: GATE_ETH1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth1ptp", FLEXGEN_56, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth1mac = {
-	.gate_id = GATE_ETH1MAC,
+	gate_id: GATE_ETH1MAC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth1mac", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth1tx = {
-	.gate_id = GATE_ETH1TX,
+	gate_id: GATE_ETH1TX,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth1tx", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth1rx = {
-	.gate_id = GATE_ETH1RX,
+	gate_id: GATE_ETH1RX,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth1rx", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_eth2 = {
-	.gate_id = GATE_ETH2,
+	gate_id: GATE_ETH2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_eth2", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth2stp = {
-	.gate_id = GATE_ETH2STP,
+	gate_id: GATE_ETH2STP,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth2stp", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth2 = {
-	.gate_id = GATE_ETH2,
+	gate_id: GATE_ETH2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth2", FLEXGEN_55, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth2ptp = {
-	.gate_id = GATE_ETH2,
+	gate_id: GATE_ETH2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth2ptp", FLEXGEN_56, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth2mac = {
-	.gate_id = GATE_ETH2MAC,
+	gate_id: GATE_ETH2MAC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth2mac", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth2tx = {
-	.gate_id = GATE_ETH2TX,
+	gate_id: GATE_ETH2TX,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth2tx", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_eth2rx = {
-	.gate_id = GATE_ETH2RX,
+	gate_id: GATE_ETH2RX,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_eth2rx", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_ethsw = {
-	.gate_id = GATE_ETHSWMAC,
+	gate_id: GATE_ETHSWMAC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_ethsw", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_ethsw = {
-	.gate_id = GATE_ETHSW,
+	gate_id: GATE_ETHSW,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_ethsw", FLEXGEN_54, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_ethswref = {
-	.gate_id = GATE_ETHSWREF,
+	gate_id: GATE_ETHSWREF,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_ethswref", FLEXGEN_60, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_ethsw_acm_cfg = {
-	.gate_id = GATE_ETHSWACMCFG,
+	gate_id: GATE_ETHSWACMCFG,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_ethsw_acm_cfg", ICN_LS_MCU,
 				     &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_ethsw_acm_msg = {
-	.gate_id = GATE_ETHSWACMMSG,
+	gate_id: GATE_ETHSWACMMSG,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_ethsw_acm_msg", ICN_LS_MCU,
 				     &clk_stm32_gate_ops, 0),
 };
 
 // FDCAN */
 static struct clk_stm32_gate ck_icn_p_fdcan = {
-	.gate_id = GATE_FDCAN,
+	gate_id: GATE_FDCAN,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_fdcan", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_fdcan = {
-	.gate_id = GATE_FDCAN,
+	gate_id: GATE_FDCAN,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_fdcan", FLEXGEN_26, &clk_stm32_gate_ops, 0),
 };
 
 // GPU */
 static struct clk_stm32_gate ck_icn_m_gpu = {
-	.gate_id = GATE_GPU,
+	gate_id: GATE_GPU,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_gpu", FLEXGEN_59, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_gpu = {
-	.gate_id = GATE_GPU,
+	gate_id: GATE_GPU,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_gpu", PLL3, &clk_stm32_gate_ops, 0),
 };
 
 // HASH */
 static struct clk_stm32_gate ck_icn_p_hash = {
-	.gate_id = GATE_HASH,
+	gate_id: GATE_HASH,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_hash", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // HDP */
 static struct clk_stm32_gate ck_icn_p_hdp = {
-	.gate_id = GATE_HDP,
+	gate_id: GATE_HDP,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_hdp", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 // I2C */
 static struct clk_stm32_gate ck_icn_p_i2c8 = {
-	.gate_id = GATE_I2C8,
+	gate_id: GATE_I2C8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c8", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c1 = {
-	.gate_id = GATE_I2C1,
+	gate_id: GATE_I2C1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c1", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c2 = {
-	.gate_id = GATE_I2C2,
+	gate_id: GATE_I2C2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c2", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c3 = {
-	.gate_id = GATE_I2C3,
+	gate_id: GATE_I2C3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c3", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c4 = {
-	.gate_id = GATE_I2C4,
+	gate_id: GATE_I2C4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c4", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c5 = {
-	.gate_id = GATE_I2C5,
+	gate_id: GATE_I2C5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c5", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c6 = {
-	.gate_id = GATE_I2C6,
+	gate_id: GATE_I2C6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c6", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i2c7 = {
-	.gate_id = GATE_I2C7,
+	gate_id: GATE_I2C7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i2c7", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c1 = {
-	.gate_id = GATE_I2C1,
+	gate_id: GATE_I2C1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c1", FLEXGEN_12, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c2 = {
-	.gate_id = GATE_I2C2,
+	gate_id: GATE_I2C2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c2", FLEXGEN_12, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c3 = {
-	.gate_id = GATE_I2C3,
+	gate_id: GATE_I2C3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c3", FLEXGEN_13, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c5 = {
-	.gate_id = GATE_I2C5,
+	gate_id: GATE_I2C5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c5", FLEXGEN_13, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c4 = {
-	.gate_id = GATE_I2C4,
+	gate_id: GATE_I2C4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c4", FLEXGEN_14, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c6 = {
-	.gate_id = GATE_I2C6,
+	gate_id: GATE_I2C6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c6", FLEXGEN_14, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c7 = {
-	.gate_id = GATE_I2C7,
+	gate_id: GATE_I2C7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c7", FLEXGEN_15, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i2c8 = {
-	.gate_id = GATE_I2C8,
+	gate_id: GATE_I2C8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i2c8", FLEXGEN_38, &clk_stm32_gate_ops, 0),
 };
 
 // I3C */
 static struct clk_stm32_gate ck_icn_p_i3c1 = {
-	.gate_id = GATE_I3C1,
+	gate_id: GATE_I3C1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i3c1", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i3c2 = {
-	.gate_id = GATE_I3C2,
+	gate_id: GATE_I3C2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i3c2", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i3c3 = {
-	.gate_id = GATE_I3C3,
+	gate_id: GATE_I3C3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i3c3", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_i3c4 = {
-	.gate_id = GATE_I3C4,
+	gate_id: GATE_I3C4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_i3c4", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i3c1 = {
-	.gate_id = GATE_I3C1,
+	gate_id: GATE_I3C1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i3c1", FLEXGEN_12, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i3c2 = {
-	.gate_id = GATE_I3C2,
+	gate_id: GATE_I3C2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i3c2", FLEXGEN_12, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i3c3 = {
-	.gate_id = GATE_I3C3,
+	gate_id: GATE_I3C3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i3c3", FLEXGEN_13, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_i3c4 = {
-	.gate_id = GATE_I3C4,
+	gate_id: GATE_I3C4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_i3c4", FLEXGEN_36, &clk_stm32_gate_ops, 0),
 };
 
 // I2S */
 static struct clk_stm32_gate ck_icn_p_is2m = {
-	.gate_id = GATE_IS2M,
+	gate_id: GATE_IS2M,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_is2m", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 // IWDG */
 static struct clk_stm32_gate ck_icn_p_iwdg1 = {
-	.gate_id = GATE_IWDG1,
+	gate_id: GATE_IWDG1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_iwdg1", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_iwdg2 = {
-	.gate_id = GATE_IWDG2,
+	gate_id: GATE_IWDG2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_iwdg2", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_iwdg3 = {
-	.gate_id = GATE_IWDG3,
+	gate_id: GATE_IWDG3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_iwdg3", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_iwdg4 = {
-	.gate_id = GATE_IWDG4,
+	gate_id: GATE_IWDG4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_iwdg4", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_iwdg5 = {
-	.gate_id = GATE_IWDG5,
+	gate_id: GATE_IWDG5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_iwdg5", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // LPTIM */
 static struct clk_stm32_gate ck_icn_p_lptim1 = {
-	.gate_id = GATE_LPTIM1,
+	gate_id: GATE_LPTIM1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lptim1", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_lptim2 = {
-	.gate_id = GATE_LPTIM2,
+	gate_id: GATE_LPTIM2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lptim2", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_lptim3 = {
-	.gate_id = GATE_LPTIM3,
+	gate_id: GATE_LPTIM3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lptim3", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_lptim4 = {
-	.gate_id = GATE_LPTIM4,
+	gate_id: GATE_LPTIM4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lptim4", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_lptim5 = {
-	.gate_id = GATE_LPTIM5,
+	gate_id: GATE_LPTIM5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lptim5", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_lptim1 = {
-	.gate_id = GATE_LPTIM1,
+	gate_id: GATE_LPTIM1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_lptim1", FLEXGEN_07, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_lptim2 = {
-	.gate_id = GATE_LPTIM2,
+	gate_id: GATE_LPTIM2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_lptim2", FLEXGEN_07, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_lptim3 = {
-	.gate_id = GATE_LPTIM3,
+	gate_id: GATE_LPTIM3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_lptim3", FLEXGEN_40, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_lptim4 = {
-	.gate_id = GATE_LPTIM4,
+	gate_id: GATE_LPTIM4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_lptim4", FLEXGEN_41, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_lptim5 = {
-	.gate_id = GATE_LPTIM5,
+	gate_id: GATE_LPTIM5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_lptim5", FLEXGEN_41, &clk_stm32_gate_ops, 0),
 };
 
 // LPUART */
 static struct clk_stm32_gate ck_icn_p_lpuart1 = {
-	.gate_id = GATE_LPUART1,
+	gate_id: GATE_LPUART1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_lpuart1", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_lpuart1 = {
-	.gate_id = GATE_LPUART1,
+	gate_id: GATE_LPUART1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_lpuart1", FLEXGEN_39, &clk_stm32_gate_ops, 0),
 };
 
 // MCO1 & MCO2 */
 static struct clk_stm32_composite ck_mco1 = {
-	.gate_id = GATE_MCO1,
-	.mux_id = MUX_MCO1,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_MCO1,
+	mux_id: MUX_MCO1,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_mco1", mco1_src, &clk_stm32_composite_ops, 0),
 };
 
 static struct clk_stm32_composite ck_mco2 = {
-	.gate_id = GATE_MCO2,
-	.mux_id = MUX_MCO2,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_MCO2,
+	mux_id: MUX_MCO2,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_mco2", mco2_src, &clk_stm32_composite_ops, 0),
 };
 
 // MDF */
 static struct clk_stm32_gate ck_icn_p_mdf1 = {
-	.gate_id = GATE_MDF1,
+	gate_id: GATE_MDF1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_mdf1", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_mdf1 = {
-	.gate_id = GATE_MDF1,
+	gate_id: GATE_MDF1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_mdf1", FLEXGEN_23, &clk_stm32_gate_ops, 0),
 };
 
 // OSPI */
 static struct clk_stm32_gate ck_icn_p_ospiiom = {
-	.gate_id = GATE_OSPIIOM,
+	gate_id: GATE_OSPIIOM,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_ospiiom", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // PCIE */
 static struct clk_stm32_gate ck_icn_p_pcie = {
-	.gate_id = GATE_PCIE,
+	gate_id: GATE_PCIE,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_pcie", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // PKA */
 static struct clk_stm32_gate ck_icn_p_pka = {
-	.gate_id = GATE_PKA,
+	gate_id: GATE_PKA,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_pka", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // RNG */
 static struct clk_stm32_gate ck_icn_p_rng = {
-	.gate_id = GATE_RNG,
+	gate_id: GATE_RNG,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_rng", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // SAES */
 static struct clk_stm32_gate ck_icn_p_saes = {
-	.gate_id = GATE_SAES,
+	gate_id: GATE_SAES,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_saes", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 // SAI */
 static struct clk_stm32_gate ck_icn_p_sai1 = {
-	.gate_id = GATE_SAI1,
+	gate_id: GATE_SAI1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_sai1", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_sai2 = {
-	.gate_id = GATE_SAI2,
+	gate_id: GATE_SAI2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_sai2", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_sai3 = {
-	.gate_id = GATE_SAI3,
+	gate_id: GATE_SAI3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_sai3", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_sai4 = {
-	.gate_id = GATE_SAI4,
+	gate_id: GATE_SAI4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_sai4", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_sai1 = {
-	.gate_id = GATE_SAI1,
+	gate_id: GATE_SAI1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sai1", FLEXGEN_23, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 static struct clk_stm32_gate ck_ker_sai2 = {
-	.gate_id = GATE_SAI2,
+	gate_id: GATE_SAI2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sai2", FLEXGEN_24, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 static struct clk_stm32_gate ck_ker_sai3 = {
-	.gate_id = GATE_SAI3,
+	gate_id: GATE_SAI3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sai3", FLEXGEN_25, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 static struct clk_stm32_gate ck_ker_sai4 = {
-	.gate_id = GATE_SAI4,
+	gate_id: GATE_SAI4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sai4", FLEXGEN_25, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 // SDMMC */
 static struct clk_stm32_gate ck_icn_m_sdmmc1 = {
-	.gate_id = GATE_SDMMC1,
+	gate_id: GATE_SDMMC1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_sdmmc1", ICN_SDMMC, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_m_sdmmc2 = {
-	.gate_id = GATE_SDMMC2,
+	gate_id: GATE_SDMMC2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_sdmmc2", ICN_SDMMC, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_m_sdmmc3 = {
-	.gate_id = GATE_SDMMC3,
+	gate_id: GATE_SDMMC3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_sdmmc3", ICN_SDMMC, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_sdmmc1 = {
-	.gate_id = GATE_SDMMC1,
+	gate_id: GATE_SDMMC1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sdmmc1", FLEXGEN_51, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_sdmmc2 = {
-	.gate_id = GATE_SDMMC2,
+	gate_id: GATE_SDMMC2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sdmmc2", FLEXGEN_52, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_sdmmc3 = {
-	.gate_id = GATE_SDMMC3,
+	gate_id: GATE_SDMMC3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_sdmmc3", FLEXGEN_53, &clk_stm32_gate_ops, 0),
 };
 
 // SERC */
 static struct clk_stm32_gate ck_icn_p_serc = {
-	.gate_id = GATE_SERC,
+	gate_id: GATE_SERC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_serc", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 // SPDIF */
 static struct clk_stm32_gate ck_icn_p_spdifrx = {
-	.gate_id = GATE_SPDIFRX,
+	gate_id: GATE_SPDIFRX,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spdifrx", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_spdifrx = {
-	.gate_id = GATE_SPDIFRX,
+	gate_id: GATE_SPDIFRX,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spdifrx", FLEXGEN_11, &clk_stm32_gate_ops, 0),
 };
 
 // SPI */
 static struct clk_stm32_gate ck_icn_p_spi1 = {
-	.gate_id = GATE_SPI1,
+	gate_id: GATE_SPI1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi1", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi2 = {
-	.gate_id = GATE_SPI2,
+	gate_id: GATE_SPI2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi2", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi3 = {
-	.gate_id = GATE_SPI3,
+	gate_id: GATE_SPI3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi3", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi4 = {
-	.gate_id = GATE_SPI4,
+	gate_id: GATE_SPI4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi4", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi5 = {
-	.gate_id = GATE_SPI5,
+	gate_id: GATE_SPI5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi5", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi6 = {
-	.gate_id = GATE_SPI6,
+	gate_id: GATE_SPI6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi6", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi7 = {
-	.gate_id = GATE_SPI7,
+	gate_id: GATE_SPI7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi7", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_spi8 = {
-	.gate_id = GATE_SPI8,
+	gate_id: GATE_SPI8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_spi8", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_spi1 = {
-	.gate_id = GATE_SPI1,
+	gate_id: GATE_SPI1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi1", FLEXGEN_16, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 static struct clk_stm32_gate ck_ker_spi2 = {
-	.gate_id = GATE_SPI2,
+	gate_id: GATE_SPI2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi2", FLEXGEN_10, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 static struct clk_stm32_gate ck_ker_spi3 = {
-	.gate_id = GATE_SPI3,
+	gate_id: GATE_SPI3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi3", FLEXGEN_10, &clk_stm32_gate_ops,
 				     CLK_SET_RATE_PARENT),
 };
 
 static struct clk_stm32_gate ck_ker_spi4 = {
-	.gate_id = GATE_SPI4,
+	gate_id: GATE_SPI4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi4", FLEXGEN_17, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_spi5 = {
-	.gate_id = GATE_SPI5,
+	gate_id: GATE_SPI5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi5", FLEXGEN_17, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_spi6 = {
-	.gate_id = GATE_SPI6,
+	gate_id: GATE_SPI6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi6", FLEXGEN_18, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_spi7 = {
-	.gate_id = GATE_SPI7,
+	gate_id: GATE_SPI7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi7", FLEXGEN_18, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_spi8 = {
-	.gate_id = GATE_SPI8,
+	gate_id: GATE_SPI8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_spi8", FLEXGEN_37, &clk_stm32_gate_ops, 0),
 };
 
 // Timers */
 static struct clk_stm32_gate ck_icn_p_tim2 = {
-	.gate_id = GATE_TIM2,
+	gate_id: GATE_TIM2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim2", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim3 = {
-	.gate_id = GATE_TIM3,
+	gate_id: GATE_TIM3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim3", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim4 = {
-	.gate_id = GATE_TIM4,
+	gate_id: GATE_TIM4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim4", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim5 = {
-	.gate_id = GATE_TIM5,
+	gate_id: GATE_TIM5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim5", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim6 = {
-	.gate_id = GATE_TIM6,
+	gate_id: GATE_TIM6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim6", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim7 = {
-	.gate_id = GATE_TIM7,
+	gate_id: GATE_TIM7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim7", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim10 = {
-	.gate_id = GATE_TIM10,
+	gate_id: GATE_TIM10,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim10", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim11 = {
-	.gate_id = GATE_TIM11,
+	gate_id: GATE_TIM11,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim11", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim12 = {
-	.gate_id = GATE_TIM12,
+	gate_id: GATE_TIM12,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim12", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim13 = {
-	.gate_id = GATE_TIM13,
+	gate_id: GATE_TIM13,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim13", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim14 = {
-	.gate_id = GATE_TIM14,
+	gate_id: GATE_TIM14,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim14", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim1 = {
-	.gate_id = GATE_TIM1,
+	gate_id: GATE_TIM1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim1", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim8 = {
-	.gate_id = GATE_TIM8,
+	gate_id: GATE_TIM8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim8", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim15 = {
-	.gate_id = GATE_TIM15,
+	gate_id: GATE_TIM15,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim15", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim16 = {
-	.gate_id = GATE_TIM16,
+	gate_id: GATE_TIM16,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim16", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim17 = {
-	.gate_id = GATE_TIM17,
+	gate_id: GATE_TIM17,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim17", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_tim20 = {
-	.gate_id = GATE_TIM20,
+	gate_id: GATE_TIM20,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_tim20", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim2 = {
-	.gate_id = GATE_TIM2,
+	gate_id: GATE_TIM2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim2", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim3 = {
-	.gate_id = GATE_TIM3,
+	gate_id: GATE_TIM3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim3", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim4 = {
-	.gate_id = GATE_TIM4,
+	gate_id: GATE_TIM4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim4", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim5 = {
-	.gate_id = GATE_TIM5,
+	gate_id: GATE_TIM5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim5", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim6 = {
-	.gate_id = GATE_TIM6,
+	gate_id: GATE_TIM6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim6", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim7 = {
-	.gate_id = GATE_TIM7,
+	gate_id: GATE_TIM7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim7", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim10 = {
-	.gate_id = GATE_TIM10,
+	gate_id: GATE_TIM10,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim10", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim11 = {
-	.gate_id = GATE_TIM11,
+	gate_id: GATE_TIM11,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim11", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim12 = {
-	.gate_id = GATE_TIM12,
+	gate_id: GATE_TIM12,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim12", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim13 = {
-	.gate_id = GATE_TIM13,
+	gate_id: GATE_TIM13,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim13", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim14 = {
-	.gate_id = GATE_TIM14,
+	gate_id: GATE_TIM14,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim14", TIMG1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim1 = {
-	.gate_id = GATE_TIM1,
+	gate_id: GATE_TIM1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim1", TIMG2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim8 = {
-	.gate_id = GATE_TIM8,
+	gate_id: GATE_TIM8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim8", TIMG2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim15 = {
-	.gate_id = GATE_TIM15,
+	gate_id: GATE_TIM15,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim15", TIMG2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim16 = {
-	.gate_id = GATE_TIM16,
+	gate_id: GATE_TIM16,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim16", TIMG2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim17 = {
-	.gate_id = GATE_TIM17,
+	gate_id: GATE_TIM17,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim17", TIMG2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_tim20 = {
-	.gate_id = GATE_TIM20,
+	gate_id: GATE_TIM20,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_tim20", TIMG2, &clk_stm32_gate_ops, 0),
 };
 
 // UART/USART */
 static struct clk_stm32_gate ck_icn_p_usart2 = {
-	.gate_id = GATE_USART2,
+	gate_id: GATE_USART2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_usart2", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_usart3 = {
-	.gate_id = GATE_USART3,
+	gate_id: GATE_USART3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_usart3", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_uart4 = {
-	.gate_id = GATE_UART4,
+	gate_id: GATE_UART4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_uart4", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_uart5 = {
-	.gate_id = GATE_UART5,
+	gate_id: GATE_UART5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_uart5", ICN_APB1, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_usart1 = {
-	.gate_id = GATE_USART1,
+	gate_id: GATE_USART1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_usart1", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_usart6 = {
-	.gate_id = GATE_USART6,
+	gate_id: GATE_USART6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_usart6", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_uart7 = {
-	.gate_id = GATE_UART7,
+	gate_id: GATE_UART7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_uart7", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_uart8 = {
-	.gate_id = GATE_UART8,
+	gate_id: GATE_UART8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_uart8", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_uart9 = {
-	.gate_id = GATE_UART9,
+	gate_id: GATE_UART9,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_uart9", ICN_APB2, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_usart2 = {
-	.gate_id = GATE_USART2,
+	gate_id: GATE_USART2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_usart2", FLEXGEN_08, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_uart4 = {
-	.gate_id = GATE_UART4,
+	gate_id: GATE_UART4,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_uart4", FLEXGEN_08, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_usart3 = {
-	.gate_id = GATE_USART3,
+	gate_id: GATE_USART3,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_usart3", FLEXGEN_09, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_uart5 = {
-	.gate_id = GATE_UART5,
+	gate_id: GATE_UART5,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_uart5", FLEXGEN_09, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_usart1 = {
-	.gate_id = GATE_USART1,
+	gate_id: GATE_USART1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_usart1", FLEXGEN_19, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_usart6 = {
-	.gate_id = GATE_USART6,
+	gate_id: GATE_USART6,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_usart6", FLEXGEN_20, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_uart7 = {
-	.gate_id = GATE_UART7,
+	gate_id: GATE_UART7,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_uart7", FLEXGEN_21, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_uart8 = {
-	.gate_id = GATE_UART8,
+	gate_id: GATE_UART8,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_uart8", FLEXGEN_21, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_uart9 = {
-	.gate_id = GATE_UART9,
+	gate_id: GATE_UART9,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_uart9", FLEXGEN_22, &clk_stm32_gate_ops, 0),
 };
 
 // USB2PHY1 */
 static struct clk_stm32_composite ck_ker_usb2phy1 = {
-	.gate_id = GATE_USB2PHY1,
-	.mux_id = MUX_USB2PHY1,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_USB2PHY1,
+	mux_id: MUX_USB2PHY1,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_usb2phy1", usb2phy1_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // USB2H */
 static struct clk_stm32_gate ck_icn_m_usb2ehci = {
-	.gate_id = GATE_USBH,
+	gate_id: GATE_USBH,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_usb2ehci", ICN_HSL, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_m_usb2ohci = {
-	.gate_id = GATE_USBH,
+	gate_id: GATE_USBH,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_usb2ohci", ICN_HSL, &clk_stm32_gate_ops, 0),
 };
 
 // USB2PHY2 */
 static struct clk_stm32_composite ck_ker_usb2phy2_en = {
-	.gate_id = GATE_USB2PHY2,
-	.mux_id = MUX_USB2PHY2,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_USB2PHY2,
+	mux_id: MUX_USB2PHY2,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_usb2phy2_en", usb2phy2_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // USB3 PCIe COMBOPHY */
 static struct clk_stm32_gate ck_icn_p_usb3pciephy = {
-	.gate_id = GATE_USB3PCIEPHY,
+	gate_id: GATE_USB3PCIEPHY,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_usb3pciephy", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_composite ck_ker_usb3pciephy = {
-	.gate_id = GATE_USB3PCIEPHY,
-	.mux_id = MUX_USB3PCIEPHY,
-	.div_id = NO_STM32_DIV,
+	gate_id: GATE_USB3PCIEPHY,
+	mux_id: MUX_USB3PCIEPHY,
+	div_id: NO_STM32_DIV,
 	.hw.init = CLK_HW_INIT_PARENTS_DATA("ck_ker_usb3pciephy", usb3pciphy_src,
 					    &clk_stm32_composite_ops, 0),
 };
 
 // USB3 DRD */
 static struct clk_stm32_gate ck_icn_m_usb3dr = {
-	.gate_id = GATE_USB3DR,
+	gate_id: GATE_USB3DR,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_m_usb3dr", ICN_HSL, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_usb2phy2 = {
-	.gate_id = GATE_USB3DR,
+	gate_id: GATE_USB3DR,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_usb2phy2", FLEXGEN_58, &clk_stm32_gate_ops, 0),
 };
 
 // USBTC */
 static struct clk_stm32_gate ck_icn_p_usbtc = {
-	.gate_id = GATE_USBTC,
+	gate_id: GATE_USBTC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_usbtc", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_ker_usbtc = {
-	.gate_id = GATE_USBTC,
+	gate_id: GATE_USBTC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_ker_usbtc", FLEXGEN_35, &clk_stm32_gate_ops, 0),
 };
 
 // VDEC / VENC */
 static struct clk_stm32_gate ck_icn_p_vdec = {
-	.gate_id = GATE_VDEC,
+	gate_id: GATE_VDEC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_vdec", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_venc = {
-	.gate_id = GATE_VENC,
+	gate_id: GATE_VENC,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_venc", ICN_APB4, &clk_stm32_gate_ops, 0),
 };
 
 // VREF */
 static struct clk_stm32_gate ck_icn_p_vref = {
-	.gate_id = GATE_VREF,
+	gate_id: GATE_VREF,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_vref", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 // WWDG */
 static struct clk_stm32_gate ck_icn_p_wwdg1 = {
-	.gate_id = GATE_WWDG1,
+	gate_id: GATE_WWDG1,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_wwdg1", ICN_APB3, &clk_stm32_gate_ops, 0),
 };
 
 static struct clk_stm32_gate ck_icn_p_wwdg2 = {
-	.gate_id = GATE_WWDG2,
+	gate_id: GATE_WWDG2,
 	.hw.init = CLK_HW_INIT_INDEX("ck_icn_p_wwdg2", ICN_LS_MCU, &clk_stm32_gate_ops, 0),
 };
 
 static struct stm32_firewall firewall;
 
-static int stm32_rcc_get_access(void __iomem *base, u32 index)
+static int stm32_rcc_get_access(void __iomem *base, index: u32)
 {
-	u32 seccfgr, cidcfgr, semcr;
+	seccfgr: u32, cidcfgr, semcr;
 	int bit, cid;
 
 	bit = index % RCC_REG_SIZE;
@@ -1603,13 +1601,13 @@ static int stm32_rcc_get_access(void __iomem *base, u32 index)
 	return 0;
 }
 
-static int stm32mp25_check_security(struct device_node *np, void __iomem *base,
+static int stm32mp25_check_security(device_node *np, void __iomem *base,
 				    const struct clock_config *cfg)
 {
 	int ret = 0;
 
-	if (cfg->sec_id != SECF_NONE) {
-		u32 index = (u32)cfg->sec_id;
+	if ((*cfg).sec_id != SECF_NONE) {
+		u32 index = (*(u32)cfg).sec_id;
 
 		if (index & SEC_RIFSC_FLAG) {
 			ret = stm32_firewall_grant_access_by_id(&firewall, index & ~SEC_RIFSC_FLAG);
@@ -1618,7 +1616,7 @@ static int stm32mp25_check_security(struct device_node *np, void __iomem *base,
 			if (ret == -ENODEV)
 				return 0;
 		} else {
-			ret = stm32_rcc_get_access(base, cfg->sec_id & ~SEC_RIFSC_FLAG);
+			ret = stm32_rcc_get_access(base, (*cfg).sec_id & ~SEC_RIFSC_FLAG);
 		}
 	}
 
@@ -1828,11 +1826,11 @@ static const struct clock_config stm32mp25_clock_cfg[] = {
 };
 
 // define RESET_MP25(id, _offset, _bit_idx, _set_clr)	\
-	[id] = &(struct stm32_reset_cfg){		\
-		.offset		= (_offset),		\
-		.bit_idx	= (_bit_idx),		\
-		.set_clr	= (_set_clr),		\
-	}
+// 	[id] = &(stm32_reset_cfg){		\
+// 		offset: (_offset),		\
+// 		bit_idx: (_bit_idx),		\
+// 		set_clr: (_set_clr),		\
+// 	}
 
 static const struct stm32_reset_cfg *stm32mp25_reset_cfg[STM32MP25_LAST_RESET] = {
 	RESET_MP25(TIM1_R,		RCC_TIM1CFGR,		0,	0),
@@ -1944,23 +1942,23 @@ static const struct stm32_reset_cfg *stm32mp25_reset_cfg[STM32MP25_LAST_RESET] =
 static u16 stm32mp25_cpt_gate[GATE_NB];
 
 static struct clk_stm32_clock_data stm32mp25_clock_data = {
-	.gate_cpt	= stm32mp25_cpt_gate,
-	.gates		= stm32mp25_gates,
-	.muxes		= stm32mp25_muxes,
+	gate_cpt: stm32mp25_cpt_gate,
+	gates: stm32mp25_gates,
+	muxes: stm32mp25_muxes,
 };
 
 static struct clk_stm32_reset_data stm32mp25_reset_data = {
-	.reset_lines	= stm32mp25_reset_cfg,
-	.nr_lines	= ARRAY_SIZE(stm32mp25_reset_cfg),
+	reset_lines: stm32mp25_reset_cfg,
+	nr_lines: ARRAY_SIZE(stm32mp25_reset_cfg),
 };
 
 static const struct stm32_rcc_match_data stm32mp25_data = {
-	.tab_clocks	= stm32mp25_clock_cfg,
-	.num_clocks	= ARRAY_SIZE(stm32mp25_clock_cfg),
-	.maxbinding	= STM32MP25_LAST_CLK,
-	.clock_data	= &stm32mp25_clock_data,
-	.reset_data	= &stm32mp25_reset_data,
-	.check_security = &stm32mp25_check_security,
+	tab_clocks: stm32mp25_clock_cfg,
+	num_clocks: ARRAY_SIZE(stm32mp25_clock_cfg),
+	maxbinding: STM32MP25_LAST_CLK,
+	clock_data: &stm32mp25_clock_data,
+	reset_data: &stm32mp25_reset_data,
+	check_security: &stm32mp25_check_security,
 };
 
 static const struct of_device_id stm32mp25_match_data[] = {
@@ -1969,9 +1967,9 @@ static const struct of_device_id stm32mp25_match_data[] = {
 };
 MODULE_DEVICE_TABLE(of, stm32mp25_match_data);
 
-static int stm32mp25_rcc_clocks_probe(struct platform_device *pdev)
+static int stm32mp25_rcc_clocks_probe(platform_device *pdev)
 {
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 	void __iomem *base;
 	int ret;
 
@@ -1979,7 +1977,7 @@ static int stm32mp25_rcc_clocks_probe(struct platform_device *pdev)
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 
-	ret = stm32_firewall_get_firewall(dev->of_node, &firewall, 1);
+	ret = stm32_firewall_get_firewall((*dev).of_node, &firewall, 1);
 	if (ret)
 		return ret;
 
@@ -1987,11 +1985,11 @@ static int stm32mp25_rcc_clocks_probe(struct platform_device *pdev)
 }
 
 static struct platform_driver stm32mp25_rcc_clocks_driver = {
-	.driver	= {
-		.name = "stm32mp25_rcc",
-		.of_match_table = stm32mp25_match_data,
+	driver: {
+		name: "stm32mp25_rcc",
+		of_match_table: stm32mp25_match_data,
 	},
-	.probe = stm32mp25_rcc_clocks_probe,
+	probe: stm32mp25_rcc_clocks_probe,
 };
 
 static int __init stm32mp25_clocks_init(void)

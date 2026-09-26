@@ -10,8 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#ifndef ASIC_REG_MME2_QM_REGS_H_
-#define ASIC_REG_MME2_QM_REGS_H_
 
 /*
  *****************************************
@@ -425,7 +423,6 @@ pub const mmMME2_QM_GLBL_ERR_ADDR_LO: u32 = 0x168CD0;
 pub const mmMME2_QM_GLBL_ERR_ADDR_HI: u32 = 0x168CD4;
 pub const mmMME2_QM_GLBL_ERR_WDATA: u32 = 0x168CD8;
 pub const mmMME2_QM_GLBL_MEM_INIT_BUSY: u32 = 0x168D00;
-#endif /* ASIC_REG_MME2_QM_REGS_H_ */
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

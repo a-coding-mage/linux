@@ -31,7 +31,7 @@ unsafe fn netdev_port_receive(mut skb: *mut sk_buff) {
         return;
     }
 
-    if (*(*skb).dev).type == ARPHRD_ETHER {
+    if (*(*skb).dev).r#type == ARPHRD_ETHER {
         skb_push_rcsum(skb, ETH_HLEN);
     }
 
@@ -127,8 +127,8 @@ unsafe fn netdev_create(parms: *const vport_parms) -> *mut vport {
     }
 
     if (*(*vport).dev).flags & IFF_LOOPBACK != 0
-        || (((*(*vport).dev).type != ARPHRD_ETHER)
-            && ((*(*vport).dev).type != ARPHRD_NONE))
+        || (((*(*vport).dev).r#type != ARPHRD_ETHER)
+            && ((*(*vport).dev).r#type != ARPHRD_NONE))
         || ovs_is_internal_dev((*vport).dev)
     {
         err = -EINVAL;

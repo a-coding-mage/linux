@@ -121,7 +121,7 @@ pub unsafe fn __own_fpu() -> i32 {
         return ret;
     }
 
-    if current->thread.fpu.fcr31 & FPU_CSR_NAN2008 != 0 {
+    if (*current).thread.fpu.fcr31 & FPU_CSR_NAN2008 != 0 {
         if !cpu_has_nan_2008 {
             ret = SIGFPE;
             return failed_fpu(ret);

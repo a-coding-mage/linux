@@ -29,8 +29,8 @@ const fn upper_table() -> [u8;256] { let mut a=[0u8;256]; let mut i=0; while i<2
 static charset2lower: [u8;256] = lower_table();
 static charset2upper: [u8;256] = upper_table();
 
-static fn uni2char(uni: wchar_t, out: *mut u8, boundlen: i32) -> i32 { if boundlen <= 0 { return -36; } let mut i=0; while i<256 { if charset2uni[i] == uni { unsafe { *out=i as u8; } return 1; } i+=1; } -22 }
-static fn char2uni(rawstring: *const u8, _boundlen: i32, uni: *mut wchar_t) -> i32 { unsafe { *uni=charset2uni[*rawstring as usize]; if *uni==0 { return -22; } } 1 }
+fn uni2char(uni: wchar_t, out: *mut u8, boundlen: i32) -> i32 { if boundlen <= 0 { return -36; } let mut i=0; while i<256 { if charset2uni[i] == uni { unsafe { *out=i as u8; } return 1; } i+=1; } -22 }
+fn char2uni(rawstring: *const u8, _boundlen: i32, uni: *mut wchar_t) -> i32 { unsafe { *uni=charset2uni[*rawstring as usize]; if *uni==0 { return -22; } } 1 }
 
 // The kernel module registration and nls_table are supplied by the surrounding kernel bindings.
 extern "C" { fn register_nls(table: *mut core::ffi::c_void) -> i32; fn unregister_nls(table: *mut core::ffi::c_void); }

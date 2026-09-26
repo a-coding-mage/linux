@@ -38,7 +38,7 @@ pub const AUD4_REGISTER_OFFSET: u32 = 0x1798 - 0x1780;
 pub const AUD5_REGISTER_OFFSET: u32 = 0x179d - 0x1780;
 pub const AUD6_REGISTER_OFFSET: u32 = 0x17a4 - 0x1780;
 
-macro_rules! shift { ($name:ident, $n:expr) => { pub const fn $name(x: u32) -> u32 { x << $n } }; }
+macro_rules! shift { ($name:ident, $n:expr) => { pub const fn $(*$name(x: u32)).u32 { x << $n } }; }
 shift!(PIPEID, 0); shift!(MEID, 2); shift!(VMID, 4); shift!(QUEUEID, 8);
 pub const MMCC_DRM_ID_STRAPS: u32 = 0x1559;
 pub const CC_DRM_ID_STRAPS_ATI_REV_ID_MASK: u32 = 0xf0000000;

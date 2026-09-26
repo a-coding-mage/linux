@@ -864,7 +864,7 @@ pub unsafe fn wsa884x_init(wsa884x: *mut wsa884x_priv) {
 /*
  * Copyright (c) 2015-2021, The Linux Foundation. All rights reserved.
  * Copyright (c) 2023, Linaro Ltd.
- * /
+ */
 
 #include <linux/bitfield.h>
 #include <linux/cleanup.h>
@@ -1568,7 +1568,7 @@ pub unsafe fn wsa884x_init(wsa884x: *mut wsa884x_priv) {
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000 |\
 			SNDRV_PCM_RATE_384000)
-/* Fractional Rates * /
+/* Fractional Rates */
 #define WSA884X_FRAC_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
 				SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_352800)
 
@@ -1576,14 +1576,14 @@ pub unsafe fn wsa884x_init(wsa884x: *mut wsa884x_priv) {
 		SNDRV_PCM_FMTBIT_S24_LE |\
 		SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S32_LE)
 
-/* Two-point trimming for temperature calibration * /
+/* Two-point trimming for temperature calibration */
 #define WSA884X_T1_TEMP			-10L
 #define WSA884X_T2_TEMP			150L
 
 /*
  * Device will report senseless data in many cases, so discard any measurements
  * outside of valid range.
- * /
+ */
 #define WSA884X_LOW_TEMP_THRESHOLD	5
 #define WSA884X_HIGH_TEMP_THRESHOLD	45
 
@@ -1605,7 +1605,7 @@ struct wsa884x_priv {
 	/*
 	 * Protects temperature reading code (related to speaker protection) and
 	 * fields: temperature and pa_on.
-	 * /
+	 */
 	struct mutex sp_lock;
 	unsigned int temperature;
 	bool pa_on;
@@ -2253,7 +2253,7 @@ static const struct reg_sequence wsa884x_reg_init[] = {
 	/*
 	 * Downstream suggests for batteries different than 1-Stacked (1S):
 	 * { WSA884X_TOP_CTRL1, 0xd3 & ~WSA884X_TOP_CTRL1_OCP_LOWVBAT_ITH_EN_MASK },
-	 * /
+	 */
 	{ WSA884X_STB_CTRL1, (0x42 & ~WSA884X_STB_CTRL1_SLOPE_COMP_CURRENT_MASK) |
 			     FIELD_PREP_CONST(WSA884X_STB_CTRL1_SLOPE_COMP_CURRENT_MASK, 0xd) },
 	{ WSA884X_CURRENT_LIMIT, (0x54 & ~WSA884X_CURRENT_LIMIT_CURRENT_LIMIT_MASK) |
@@ -2265,7 +2265,7 @@ static const struct reg_sequence wsa884x_reg_init[] = {
 	{ WSA884X_CKWD_CTL_1, FIELD_PREP_CONST(WSA884X_CKWD_CTL_1_VPP_SW_CTL_MASK, 0x0) |
 			      FIELD_PREP_CONST(WSA884X_CKWD_CTL_1_CKWD_VCOMP_VREF_SEL_MASK, 0x13) },
 	{ WSA884X_PA_FSM_CTL1, (0xfe & ~WSA884X_PA_FSM_CTL1_NOISE_GATE_BLOCK_MASK) |
-			       FIELD_PREP_CONST(WSA884X_PA_FSM_CTL1_NOISE_GATE_BLOCK_MASK, 0x4) }, /* == 0xfe * /
+			       FIELD_PREP_CONST(WSA884X_PA_FSM_CTL1_NOISE_GATE_BLOCK_MASK, 0x4) }, /* == 0xfe */
 	{ WSA884X_VBAT_THRM_FLT_CTL, (0x7f & ~WSA884X_VBAT_THRM_FLT_CTL_VBAT_COEF_SEL_MASK) |
 				     FIELD_PREP_CONST(WSA884X_VBAT_THRM_FLT_CTL_VBAT_COEF_SEL_MASK, 0x4) },
 	{ WSA884X_VBAT_CAL_CTL, FIELD_PREP_CONST(WSA884X_VBAT_CAL_CTL_RESERVE_MASK, 0x2) |
@@ -2291,14 +2291,14 @@ static const struct reg_sequence wsa884x_reg_init[] = {
 	{ WSA884X_CDC_SPK_DSM_R5, 0x8b },
 	{ WSA884X_CDC_SPK_DSM_R6, 0x9b },
 	{ WSA884X_CDC_SPK_DSM_R7, 0x3f },
-	/* Speaker mode by default * /
+	/* Speaker mode by default */
 	{ WSA884X_DRE_CTL_0, FIELD_PREP_CONST(WSA884X_DRE_CTL_0_PROG_DELAY_MASK, 0x7) },
 	{ WSA884X_CLSH_CTL_0, (0x37 & ~WSA884X_CLSH_CTL_0_DLY_CODE_MASK) |
 			      FIELD_PREP_CONST(WSA884X_CLSH_CTL_0_DLY_CODE_MASK, 0x6) },
 	/*
 	 * WSA884X_CLSH_VTH values for speaker mode with G_21_DB system gain,
 	 * battery 1S and rload 8 Ohms.
-	 * /
+	 */
 	{ WSA884X_CLSH_VTH1, WSA884X_VTH_TO_REG(863), },
 	{ WSA884X_CLSH_VTH2, WSA884X_VTH_TO_REG(918), },
 	{ WSA884X_CLSH_VTH3, WSA884X_VTH_TO_REG(980), },
@@ -2332,14 +2332,14 @@ static void wsa884x_set_gain_parameters(struct wsa884x_priv *wsa884x)
 	 * Values match here downstream:
 	 * For WSA884X_RECEIVER - G_7P5_DB system gain
 	 * For WSA884X_SPEAKER - G_21_DB system gain
-	 * /
+	 */
 	if (wsa884x->dev_mode == WSA884X_RECEIVER) {
 		comp_offset = COMP_OFFSET4;
 		min_gain = G_M6_DB;
 		igain = ISENSE_18_DB;
 		vgain = VSENSE_M12_DB;
 	} else {
-		/* WSA884X_SPEAKER * /
+		/* WSA884X_SPEAKER */
 		comp_offset = COMP_OFFSET0;
 		min_gain = G_0_DB;
 		igain = ISENSE_12_DB;
@@ -2385,7 +2385,7 @@ static void wsa884x_init(struct wsa884x_priv *wsa884x)
 	wo_ctl_0 = 0xc;
 	wo_ctl_0 |= FIELD_PREP(WSA884X_ANA_WO_CTL_0_DAC_CM_CLAMP_EN_MASK,
 			       WSA884X_ANA_WO_CTL_0_DAC_CM_CLAMP_EN_MODE_SPEAKER);
-	/* Assume that compander is enabled by default unless it is haptics sku * /
+	/* Assume that compander is enabled by default unless it is haptics sku */
 	if (variant == WSA884X_OTP_ID_WSA8845H)
 		wo_ctl_0 |= FIELD_PREP(WSA884X_ANA_WO_CTL_0_PA_AUX_GAIN_MASK,
 				       WSA884X_ANA_WO_CTL_0_PA_AUX_18_DB);
@@ -2532,7 +2532,7 @@ static void wsa884x_spkr_post_pmu(struct snd_soc_component *component,
 					      WSA884X_PWM_CLK_CTL_PWM_CLK_FREQ_SEL_MASK,
 					      0x1);
 	} else {
-		/* WSA884X_SPEAKER * /
+		/* WSA884X_SPEAKER */
 		snd_soc_component_write_field(component, WSA884X_DRE_CTL_0,
 					      WSA884X_DRE_CTL_0_PROG_DELAY_MASK, 0xf);
 	}
@@ -2734,7 +2734,7 @@ static int wsa884x_get_temp(struct wsa884x_priv *wsa884x, long *temp)
 		/*
 		 * Reading temperature is possible only when Power Amplifier is
 		 * off. Report last cached data.
-		 * /
+		 */
 		*temp = wsa884x->temperature * 1000;
 		return 0;
 	}
@@ -2755,7 +2755,7 @@ static int wsa884x_get_temp(struct wsa884x_priv *wsa884x, long *temp)
 	 * time, reading WSA884X_TEMP_DIN_MSB will always return 0.
 	 * Instead, check if returned value is within reasonable
 	 * thresholds.
-	 * /
+	 */
 	regmap_update_bits(wsa884x->regmap, WSA884X_PA_FSM_BYP0, mask, mask);
 
 	regmap_update_bits(wsa884x->regmap, WSA884X_TADC_VALUE_CTL,
@@ -2781,7 +2781,7 @@ static int wsa884x_get_temp(struct wsa884x_priv *wsa884x, long *temp)
 	d2 = (((d2_msb & 0xff) << 0x8) | (d2_lsb & 0xff)) >> 0x6;
 
 	if (d1 == d2) {
-		/* Incorrect data in OTP? * /
+		/* Incorrect data in OTP? */
 		ret = -EINVAL;
 		goto out;
 	}
@@ -2890,7 +2890,7 @@ static int wsa884x_get_reset(struct device *dev, struct wsa884x_priv *wsa884x)
 	/*
 	 * else: NULL, so use the backwards compatible way for powerdown-gpios,
 	 * which does not handle sharing GPIO properly.
-	 * /
+	 */
 	wsa884x->sd_n = devm_gpiod_get_optional(dev, "powerdown",
 						GPIOD_OUT_HIGH);
 	if (IS_ERR(wsa884x->sd_n))
@@ -2947,7 +2947,7 @@ static int wsa884x_probe(struct sdw_slave *pdev,
 	/*
 	 * Port map index starts with 0, however the data port for this codec
 	 * are from index 1
-	 * /
+	 */
 	if (of_property_read_u32_array(dev->of_node, "qcom,port-mapping", &pdev->m_port_map[1],
 					WSA884X_MAX_SWR_PORTS))
 		dev_dbg(dev, "Static Port mapping not specified\n");
@@ -2967,7 +2967,7 @@ static int wsa884x_probe(struct sdw_slave *pdev,
 		return dev_err_probe(dev, PTR_ERR(wsa884x->regmap),
 				     "regmap_init failed\n");
 
-	/* Start in cache-only until device is enumerated * /
+	/* Start in cache-only until device is enumerated */
 	regcache_cache_only(wsa884x->regmap, true);
 
 	if (IS_REACHABLE(CONFIG_HWMON)) {

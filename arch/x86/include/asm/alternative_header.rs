@@ -20,12 +20,14 @@ pub const fn ALT_DIRECT_CALL(feature: u32) -> u32 {
 pub const ALT_CALL_ALWAYS: u32 = ALT_DIRECT_CALL(X86_FEATURE_ALWAYS);
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub union AltInstrFlags {
     pub ft_flags: u32,
     pub cpuid_flags: AltInstrCpuidFlags,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct AltInstrCpuidFlags {
     // C bit-fields: cpuid:16, flags:16.
     pub cpuid: u16,
@@ -102,22 +104,109 @@ pub const alt_slen: &str = "772b-771b";
 pub const alt_total_slen: &str = "773b-771b";
 pub const alt_rlen: &str = "775f-774f";
 
-// The following assembly primitives are retained as token macros for consumers that provide
-// the kernel assembler symbols and configuration constants.
+/*
+ * Assembler text for the alternative-instruction macros.  Rust's `concat!`
+ * cannot splice constants, so each feature/flags word is an asm `const`
+ * operand whose name is passed as a string literal, e.g.:
+ *
+ *     asm!(ALTERNATIVE!("rep movsb", "call rep_movs_alternative", "ft"),
+ *          ft = const ALT_NOT(X86_FEATURE_FSRM), ...)
+ *
+ * ALT_INSTR_SIZE is 14 (sizeof(struct alt_instr), asm-offsets).
+ */
 #[macro_export]
-macro_rules! OLDINSTR { ($oldinstr:tt) => { concat!("# ALT: oldinstr\n771:\n\t", $oldinstr, "\n772:\n") }; }
+macro_rules! OLDINSTR {
+    ($oldinstr:expr) => {
+        concat!(
+            "# ALT: oldinstr\n",
+            "771:\n\t", $oldinstr, "\n772:\n",
+            "# ALT: padding\n",
+            ".skip -(((775f-774f)-(772b-771b)) > 0) * ((775f-774f)-(772b-771b)),0x90\n",
+            "773:\n"
+        )
+    };
+}
+
 #[macro_export]
-macro_rules! ALTINSTR_ENTRY { ($ft_flags:tt) => { $ft_flags }; }
+macro_rules! ALTINSTR_ENTRY {
+    ($ft_flags:literal) => {
+        concat!(
+            ".pushsection .altinstructions, \"aM\", @progbits, 14\n",
+            " .long 771b - .\n",
+            " .long 774f - .\n",
+            " .4byte {", $ft_flags, "}\n",
+            " .byte 773b-771b\n",
+            " .byte 775f-774f\n",
+            ".popsection\n"
+        )
+    };
+}
+
+#[cfg(CONFIG_OBJTOOL)]
 #[macro_export]
-macro_rules! ALTINSTR_REPLACEMENT { ($newinstr:tt) => { $newinstr }; }
+macro_rules! ANNOTATE_DATA_SPECIAL {
+    () => {
+        "912: .pushsection .discard.annotate_data, \"M\", @progbits, 8; .long 912b - ., 1; .popsection"
+    };
+}
+#[cfg(not(CONFIG_OBJTOOL))]
 #[macro_export]
-macro_rules! ALTERNATIVE { ($oldinstr:tt, $newinstr:tt, $ft_flags:tt) => { ($oldinstr, $newinstr, $ft_flags) }; }
+macro_rules! ANNOTATE_DATA_SPECIAL {
+    () => {
+        ""
+    };
+}
+
 #[macro_export]
-macro_rules! ALTERNATIVE_2 { ($oldinstr:tt, $newinstr1:tt, $ft_flags1:tt, $newinstr2:tt, $ft_flags2:tt) => { ($oldinstr, $newinstr1, $ft_flags1, $newinstr2, $ft_flags2) }; }
+macro_rules! ALTINSTR_REPLACEMENT {
+    ($newinstr:expr) => {
+        concat!(
+            ".pushsection .altinstr_replacement, \"ax\"\n",
+            ANNOTATE_DATA_SPECIAL!(), "\n",
+            "# ALT: replacement\n",
+            "774:\n\t", $newinstr, "\n775:\n",
+            ".popsection\n"
+        )
+    };
+}
+
 #[macro_export]
-macro_rules! ALTERNATIVE_TERNARY { ($oldinstr:tt, $ft_flags:tt, $newinstr_yes:tt, $newinstr_no:tt) => { $crate::ALTERNATIVE_2!($oldinstr, $newinstr_no, X86_FEATURE_ALWAYS, $newinstr_yes, $ft_flags) }; }
+macro_rules! ALTERNATIVE {
+    ($oldinstr:expr, $newinstr:expr, $ft_flags:literal) => {
+        concat!(
+            OLDINSTR!($oldinstr),
+            ALTINSTR_ENTRY!($ft_flags),
+            ALTINSTR_REPLACEMENT!($newinstr)
+        )
+    };
+}
+
 #[macro_export]
-macro_rules! ALTERNATIVE_3 { ($oldinstr:tt, $newinstr1:tt, $ft_flags1:tt, $newinstr2:tt, $ft_flags2:tt, $newinstr3:tt, $ft_flags3:tt) => { $crate::ALTERNATIVE!($crate::ALTERNATIVE_2!($oldinstr, $newinstr1, $ft_flags1, $newinstr2, $ft_flags2), $newinstr3, $ft_flags3) }; }
+macro_rules! ALTERNATIVE_2 {
+    ($oldinstr:expr, $newinstr1:expr, $ft_flags1:literal, $newinstr2:expr, $ft_flags2:literal) => {
+        ALTERNATIVE!(ALTERNATIVE!($oldinstr, $newinstr1, $ft_flags1), $newinstr2, $ft_flags2)
+    };
+}
+
+/// The caller binds `$ft_always` to `const X86_FEATURE_ALWAYS`.
+#[macro_export]
+macro_rules! ALTERNATIVE_TERNARY {
+    ($oldinstr:expr, $ft_flags:literal, $newinstr_yes:expr, $newinstr_no:expr, $ft_always:literal) => {
+        ALTERNATIVE_2!($oldinstr, $newinstr_no, $ft_always, $newinstr_yes, $ft_flags)
+    };
+}
+
+#[macro_export]
+macro_rules! ALTERNATIVE_3 {
+    ($oldinstr:expr, $newinstr1:expr, $ft_flags1:literal, $newinstr2:expr, $ft_flags2:literal,
+     $newinstr3:expr, $ft_flags3:literal) => {
+        ALTERNATIVE!(
+            ALTERNATIVE_2!($oldinstr, $newinstr1, $ft_flags1, $newinstr2, $ft_flags2),
+            $newinstr3,
+            $ft_flags3
+        )
+    };
+}
 
 unsafe extern "C" {
     pub fn BUG_func();

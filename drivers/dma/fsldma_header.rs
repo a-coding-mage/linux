@@ -87,9 +87,9 @@ pub const FSL_DMA_IP_83XX: u32 = 0x20;
 pub const FSL_DMA_CHAN_PAUSE_EXT: u32 = 0x1000;
 pub const FSL_DMA_CHAN_START_EXT: u32 = 0x2000;
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 #[repr(C)] pub struct fsldma_chan_regs_save { pub mr: u32 }
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 #[repr(C)] pub enum fsldma_pm_state { RUNNING = 0, SUSPENDED }
 
 #[repr(C)]
@@ -98,8 +98,8 @@ pub struct fsldma_chan {
     pub ld_pending: list_head, pub ld_running: list_head, pub ld_completed: list_head,
     pub common: dma_chan, pub desc_pool: *mut dma_pool, pub dev: *mut device,
     pub irq: i32, pub id: i32, pub tasklet: tasklet_struct, pub feature: u32, pub idle: bool,
-    #[cfg(feature = "CONFIG_PM")] pub regs_save: fsldma_chan_regs_save,
-    #[cfg(feature = "CONFIG_PM")] pub pm_state: fsldma_pm_state,
+    #[cfg(CONFIG_PM)] pub regs_save: fsldma_chan_regs_save,
+    #[cfg(CONFIG_PM)] pub pm_state: fsldma_pm_state,
     pub toggle_ext_pause: Option<unsafe extern "C" fn(*mut fsldma_chan, i32)>,
     pub toggle_ext_start: Option<unsafe extern "C" fn(*mut fsldma_chan, i32)>,
     pub set_src_loop_size: Option<unsafe extern "C" fn(*mut fsldma_chan, i32)>,

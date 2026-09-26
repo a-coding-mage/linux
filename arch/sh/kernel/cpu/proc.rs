@@ -88,7 +88,7 @@ pub unsafe extern "C" fn get_cpu_subtype(c: *const sh_cpuinfo) -> *const c_char 
 }
 
 // CONFIG_PROC_FS controls the following procfs implementation.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 mod proc_fs {
     use super::*;
 

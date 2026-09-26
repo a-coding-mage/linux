@@ -102,7 +102,7 @@ unsafe fn record_exception_local(_regs: *mut pt_regs, eflag: i32) -> i32 {
 pub unsafe fn do_mathemu(regs: *mut pt_regs) -> i32 {
     let mut insn=0u32; if get_user(&mut insn, (*regs).nip as *const u32) != 0 { return -EFAULT; }
     let opcode=insn>>26; let mut func: Option<unsafe extern "C" fn(*mut core::ffi::c_void,*mut core::ffi::c_void,*mut core::ffi::c_void,*mut core::ffi::c_void)->i32>=None; let mut typ=0i32;
-    macro_rules! set {($f:ident,$t:expr)=>{{func=Some($f);typ=$t;}}}
+    macro_rules! set {($f:ident,$t:expr) => {{func=Some($f);typ=$t;}}}
     match opcode {
         LFS=>set!(lfs,D), LFSU=>set!(lfs,DU), LFD=>set!(lfd,D), LFDU=>set!(lfd,DU), STFS=>set!(stfs,D), STFSU=>set!(stfs,DU), STFD=>set!(stfd,D), STFDU=>set!(stfd,DU),
         OP31=>match (insn>>1)&0x3ff {LFSX=>set!(lfs,XE),LFSUX=>set!(lfs,XEU),LFDX=>set!(lfd,XE),LFDUX=>set!(lfd,XEU),STFSX=>set!(stfs,XE),STFSUX=>set!(stfs,XEU),STFDX=>set!(stfd,XE),STFDUX=>set!(stfd,XEU),STFIWX=>set!(stfiwx,XE),_=>return -ENOSYS},
@@ -112,7 +112,7 @@ pub unsafe fn do_mathemu(regs: *mut pt_regs) -> i32 {
     }
     let f=func.unwrap(); let mut op0=core::ptr::null_mut(); let mut op1=core::ptr::null_mut(); let op2=core::ptr::null_mut(); let op3=core::ptr::null_mut();
     let task=current; let fpr=(*task).thread.fpr.as_mut_ptr(); let a=((insn>>21)&31) as usize; let b=((insn>>16)&31) as usize; let c=((insn>>11)&31) as usize; let d=((insn>>6)&31) as usize;
-    match typ {AB=>{op0=fpr.add(a) as *mut _;op1=fpr.add(b) as *mut _;op2=fpr.add(c) as *mut _},AC=>{op0=fpr.add(a) as *mut _;op1=fpr.add(b) as *mut _;op2=fpr.add(d) as *mut _},ABC=>{op0=fpr.add(a) as *mut _;op1=fpr.add(b) as *mut _;op2=fpr.add(c) as *mut _;let _=d},XB=>{op0=fpr.add(a) as *mut _;op1=fpr.add(c) as *mut _},X=>{op0=fpr.add(a) as *mut _},XCR=>{op0=&mut (*regs).ccr as *mut _;op1=((insn>>23)&7) as usize as *mut _;op2=fpr.add(b) as *mut _;op3=fpr.add(c) as *mut _},XCRB=>op0=((insn>>21)&31) as usize as *mut _,XCRI=>{op0=((insn>>23)&7) as usize as *mut _;op1=((insn>>12)&15) as usize as *mut _},XCRL=>{op0=&mut (*regs).ccr as *mut _;op1=((insn>>23)&7) as usize as *mut _;let _=((insn>>18)&7)},XFLB=>{op0=((insn>>17)&255) as usize as *mut _;op1=fpr.add(c) as *mut _},_=>return -ENOSYS}
+    match typ {AB=>{op0=fpr.add(a) as *mut _;op1=fpr.add(b) as *mut _;op2=fpr.add(c) as *mut _},AC=>{op0=fpr.add(a) as *mut _;op1=fpr.add(b) as *mut _;op2=fpr.add(d) as *mut _},ABC=>{op0=fpr.add(a) as *mut _;op1=fpr.add(b) as *mut _;op2=fpr.add(c) as *mut _;let _=d;},XB=>{op0=fpr.add(a) as *mut _;op1=fpr.add(c) as *mut _},X=>{op0=fpr.add(a) as *mut _},XCR=>{op0=&mut (*regs).ccr as *mut _;op1=((insn>>23)&7) as usize as *mut _;op2=fpr.add(b) as *mut _;op3=fpr.add(c) as *mut _},XCRB=>op0=((insn>>21)&31) as usize as *mut _,XCRI=>{op0=((insn>>23)&7) as usize as *mut _;op1=((insn>>12)&15) as usize as *mut _},XCRL=>{op0=&mut (*regs).ccr as *mut _;op1=((insn>>23)&7) as usize as *mut _;let _=((insn>>18)&7);},XFLB=>{op0=((insn>>17)&255) as usize as *mut _;op1=fpr.add(c) as *mut _},_=>return -ENOSYS}
     flush_fp_to_thread(task); let eflag=f(op0,op1,op2,op3); if insn&1!=0 {(*regs).ccr=((*regs).ccr&!0x0f000000)|((__FPU_FPSCR>>4)&0x0f000000)}; if record_exception_local(regs,eflag)!=0{return 1}; regs_add_return_ip(regs,4); 0
 }
 

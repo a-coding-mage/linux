@@ -16,7 +16,7 @@ pub struct pt_regs {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 extern "C" {
     pub fn bug_get_file_line(
         bug: *mut bug_entry,
@@ -30,40 +30,40 @@ extern "C" {
     pub fn generic_bug_clear_once();
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 #[repr(C)]
 pub struct bug_entry {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 pub unsafe fn is_warning_bug(_bug: *const bug_entry) -> i32 {
     // The bug_entry layout and BUGFLAG_WARNING are supplied by asm-generic/bug.h.
     // Field access is therefore deferred to the architecture-specific binding.
     unimplemented!()
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub unsafe fn find_bug(_bugaddr: u64) -> *mut core::ffi::c_void {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub unsafe fn report_bug(_bug_addr: u64, _regs: *mut pt_regs) -> bug_trap_type {
     bug_trap_type::BUG_TRAP_TYPE_BUG
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub struct bug_entry {
     _private: [u8; 0],
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub unsafe fn report_bug_entry(_bug: *mut bug_entry, _regs: *mut pt_regs) -> bug_trap_type {
     bug_trap_type::BUG_TRAP_TYPE_BUG
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub unsafe fn bug_get_file_line(
     _bug: *mut bug_entry,
     file: *mut *const core::ffi::c_char,
@@ -73,15 +73,15 @@ pub unsafe fn bug_get_file_line(
     *line = 0;
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub unsafe fn generic_bug_clear_once() {}
 
-#[cfg(feature = "CONFIG_PRINTK")]
+#[cfg(CONFIG_PRINTK)]
 extern "C" {
     pub fn mem_dump_obj(object: *mut core::ffi::c_void);
 }
 
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn mem_dump_obj(_object: *mut core::ffi::c_void) {}
 
 /*

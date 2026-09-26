@@ -20,11 +20,11 @@ pub struct arch_probe_insn {
 }
 
 // CONFIG_KPROBES conditional preserved as a Rust feature condition.
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub type kprobe_opcode_t = __le32;
 
 // CONFIG_KPROBES conditional preserved as a Rust feature condition.
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct arch_specific_insn {
     pub api: arch_probe_insn,

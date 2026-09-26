@@ -51,7 +51,7 @@ pub type amdgpu_transfer_function = i32;
 pub type drm_colorop_curve_1d_type = i32;
 
 // Prototypes are enabled when CONFIG_DRM_AMD_DC_KUNIT_TEST is enabled.
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 extern "C" {
     pub fn amdgpu_dm_fixpt_from_s3132(x: u64) -> fixed31_32;
     pub fn __is_lut_linear(lut: *const drm_color_lut, size: u32) -> bool;

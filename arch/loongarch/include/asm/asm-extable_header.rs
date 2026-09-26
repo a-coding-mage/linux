@@ -88,7 +88,7 @@ macro_rules! _ASM_EXTABLE_UACCESS_ERR_ZERO {
 macro_rules! _ASM_EXTABLE_UACCESS_ERR {
     ($insn:ident, $fixup:ident, $err:ident) => {
         // Preserves the original macro's reference to the surrounding `zero`
-        // token: _ASM_EXTABLE_UACCESS_ERR_ZERO(insn, fixup, err, zero).
+        // token: _ASM_EXTABLE_UACCESS_ERR_ZERO!($insn, $fixup, $err, zero).
         $crate::_ASM_EXTABLE_UACCESS_ERR_ZERO!($insn, $fixup, $err, zero)
     };
 }

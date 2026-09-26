@@ -56,14 +56,14 @@ pub const FUTEX_KEY_INIT: FutexKey = FutexKey {
 };
 
 // The following declarations are enabled by CONFIG_FUTEX in the kernel.
-#[cfg(feature = "CONFIG_FUTEX")]
+#[cfg(CONFIG_FUTEX)]
 pub const FUTEX_STATE_OK: c_int = 0;
-#[cfg(feature = "CONFIG_FUTEX")]
+#[cfg(CONFIG_FUTEX)]
 pub const FUTEX_STATE_EXITING: c_int = 1;
-#[cfg(feature = "CONFIG_FUTEX")]
+#[cfg(CONFIG_FUTEX)]
 pub const FUTEX_STATE_DEAD: c_int = 2;
 
-#[cfg(feature = "CONFIG_FUTEX")]
+#[cfg(CONFIG_FUTEX)]
 pub unsafe fn futex_init_task(tsk: *mut TaskStruct) {
     memset(
         core::ptr::addr_of_mut!((*tsk).futex) as *mut u8,
@@ -91,44 +91,44 @@ extern "C" {
     pub fn futex_hash_prctl(arg2: usize, arg3: usize, arg4: usize) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_FUTEX_PRIVATE_HASH")]
+#[cfg(CONFIG_FUTEX_PRIVATE_HASH)]
 extern "C" {
     pub fn futex_hash_allocate_default() -> c_int;
     pub fn futex_hash_free(mm: *mut MmStruct) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_FUTEX_PRIVATE_HASH"))]
+#[cfg(not(CONFIG_FUTEX_PRIVATE_HASH))]
 pub unsafe fn futex_hash_allocate_default() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_FUTEX_PRIVATE_HASH"))]
+#[cfg(not(CONFIG_FUTEX_PRIVATE_HASH))]
 pub unsafe fn futex_hash_free(_mm: *mut MmStruct) -> c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_init_task(_tsk: *mut TaskStruct) {}
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_exit_recursive(_tsk: *mut TaskStruct) {}
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_exit_exec_release(_tsk: *mut TaskStruct) {}
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_exec_done(_tsk: *mut TaskStruct) {}
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn do_futex(
     _uaddr: *mut u32, _op: c_int, _val: u32, _timeout: *mut KtimeT,
     _uaddr2: *mut u32, _val2: u32, _val3: u32,
 ) -> isize { -EINVAL as isize }
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_hash_prctl(_arg2: usize, _arg3: usize, _arg4: usize) -> c_int { -EINVAL }
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_hash_allocate_default() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_FUTEX"))]
+#[cfg(not(CONFIG_FUTEX))]
 pub unsafe fn futex_hash_free(_mm: *mut MmStruct) -> c_int { 0 }
 
-#[cfg(feature = "CONFIG_FUTEX_ROBUST_UNLOCK")]
+#[cfg(CONFIG_FUTEX_ROBUST_UNLOCK)]
 extern "C" {
     pub fn futex_reset_cs_ranges(fd: *mut FutexMmData);
     pub fn __futex_fixup_robust_unlock(regs: *mut PtRegs, csr: *mut FutexUnlockCsRange);
 }
 
-#[cfg(feature = "CONFIG_FUTEX_ROBUST_UNLOCK")]
+#[cfg(CONFIG_FUTEX_ROBUST_UNLOCK)]
 pub unsafe fn futex_within_robust_unlock(
     regs: *mut PtRegs,
     csr: *mut FutexUnlockCsRange,
@@ -137,7 +137,7 @@ pub unsafe fn futex_within_robust_unlock(
     ip >= (*csr).start_ip && ip < (*csr).start_ip + (*csr).len
 }
 
-#[cfg(feature = "CONFIG_FUTEX_ROBUST_UNLOCK")]
+#[cfg(CONFIG_FUTEX_ROBUST_UNLOCK)]
 pub unsafe fn futex_fixup_robust_unlock(regs: *mut PtRegs) {
     if !(*current).rseq.event.user_irq {
         return;
@@ -152,7 +152,7 @@ pub unsafe fn futex_fixup_robust_unlock(regs: *mut PtRegs) {
     }
 }
 
-#[cfg(feature = "CONFIG_FUTEX_ROBUST_UNLOCK")]
+#[cfg(CONFIG_FUTEX_ROBUST_UNLOCK)]
 pub unsafe fn futex_set_vdso_cs_range(
     fd: *mut FutexMmData, idx: u32, start: usize, end: usize, sz32: bool,
 ) {
@@ -163,12 +163,12 @@ pub unsafe fn futex_set_vdso_cs_range(
     });
 }
 
-#[cfg(not(feature = "CONFIG_FUTEX_ROBUST_UNLOCK"))]
+#[cfg(not(CONFIG_FUTEX_ROBUST_UNLOCK))]
 pub unsafe fn futex_fixup_robust_unlock(_regs: *mut PtRegs) {}
 
-#[cfg(any(feature = "CONFIG_FUTEX_PRIVATE_HASH", feature = "CONFIG_FUTEX_ROBUST_UNLOCK"))]
+#[cfg(any(CONFIG_FUTEX_PRIVATE_HASH, CONFIG_FUTEX_ROBUST_UNLOCK))]
 extern "C" { pub fn futex_mm_init(mm: *mut MmStruct); }
-#[cfg(not(any(feature = "CONFIG_FUTEX_PRIVATE_HASH", feature = "CONFIG_FUTEX_ROBUST_UNLOCK")))]
+#[cfg(not(any(CONFIG_FUTEX_PRIVATE_HASH, CONFIG_FUTEX_ROBUST_UNLOCK)))]
 pub unsafe fn futex_mm_init(_mm: *mut MmStruct) {}
 
 // External types, constants, globals, and helpers are supplied by included kernel headers.

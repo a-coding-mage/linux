@@ -27,22 +27,22 @@ pub const BPF_JIT_C_SOURCE: &str = r###"
 #include "bpf_jit.h"
 
 /* DBAR hint for LL/SC completion ordering, see __WEAK_LLSC_MB */
-#define DBAR_LLSC_MB	0x700
+pub const DBAR_LLSC_MB: u32 = 0x700;
 
-#define LOONGARCH_MAX_REG_ARGS 8
+pub const LOONGARCH_MAX_REG_ARGS: u32 = 8;
 
-#define LOONGARCH_SAVE_RA_NINSNS   1
-#define LOONGARCH_LONG_JUMP_NINSNS 5
-#define LOONGARCH_TCC_SLOT_NINSNS  1
+pub const LOONGARCH_SAVE_RA_NINSNS: u32 = 1;
+pub const LOONGARCH_LONG_JUMP_NINSNS: u32 = 5;
+pub const LOONGARCH_TCC_SLOT_NINSNS: u32 = 1;
 
 #define LOONGARCH_PROLOGUE_SKIP_INSNS \
 	(LOONGARCH_SAVE_RA_NINSNS + LOONGARCH_LONG_JUMP_NINSNS + LOONGARCH_TCC_SLOT_NINSNS)
 
-#define LOONGARCH_LONG_JUMP_NBYTES (LOONGARCH_LONG_JUMP_NINSNS * 4)
+pub const LOONGARCH_LONG_JUMP_NBYTES: u32 = LOONGARCH_LONG_JUMP_NINSNS * 4;
 
-#define LOONGARCH_FENTRY_NINSNS 2
-#define LOONGARCH_FENTRY_NBYTES (LOONGARCH_FENTRY_NINSNS * 4)
-#define LOONGARCH_BPF_FENTRY_NBYTES (LOONGARCH_LONG_JUMP_NINSNS * 4)
+pub const LOONGARCH_FENTRY_NINSNS: u32 = 2;
+pub const LOONGARCH_FENTRY_NBYTES: u32 = LOONGARCH_FENTRY_NINSNS * 4;
+pub const LOONGARCH_BPF_FENTRY_NBYTES: u32 = LOONGARCH_LONG_JUMP_NINSNS * 4;
 
 #define REG_TCC		LOONGARCH_GPR_A6
 #define REG_ARENA	LOONGARCH_GPR_S6 /* For storing arena_vm_start */
@@ -68,7 +68,7 @@ static const int regmap[] = {
 	[BPF_REG_AX] = LOONGARCH_GPR_T0,
 };
 
-static void prepare_bpf_tail_call_cnt(struct jit_ctx *ctx, int *store_offset)
+static void prepare_bpf_tail_call_cnt(jit_ctx *ctx, int *store_offset)
 {
 	const struct bpf_prog *prog = ctx->prog;
 	const bool is_main_prog = !bpf_is_subprog(prog);
@@ -133,7 +133,7 @@ static void prepare_bpf_tail_call_cnt(struct jit_ctx *ctx, int *store_offset)
  * current $sp -------------> +-------------------------+
  *                                        low
  */
-static void build_prologue(struct jit_ctx *ctx)
+static void build_prologue(jit_ctx *ctx)
 {
 	int i, stack_adjust = 0, store_offset, bpf_stack_adjust;
 	const struct bpf_prog *prog = ctx->prog;
@@ -215,7 +215,7 @@ static void build_prologue(struct jit_ctx *ctx)
 		move_imm(ctx, REG_ARENA, ctx->arena_vm_start, false);
 }
 
-static void __build_epilogue(struct jit_ctx *ctx, bool is_tail_call)
+static void __build_epilogue(jit_ctx *ctx, is_tail_call: bool)
 {
 	int stack_adjust = ctx->stack_size;
 	int load_offset;
@@ -273,7 +273,7 @@ static void __build_epilogue(struct jit_ctx *ctx, bool is_tail_call)
 	}
 }
 
-static void build_epilogue(struct jit_ctx *ctx)
+static void build_epilogue(jit_ctx *ctx)
 {
 	__build_epilogue(ctx, false);
 }
@@ -288,7 +288,7 @@ bool bpf_jit_supports_far_kfunc_call(void)
 	return true;
 }
 
-static int emit_bpf_tail_call(struct jit_ctx *ctx, int insn)
+static int emit_bpf_tail_call(jit_ctx *ctx, int insn)
 {
 	int off, jmp_offset;
 	int tcc_ptr_off = BPF_TAIL_CALL_CNT_PTR_STACK_OFF(ctx->stack_size);
@@ -308,7 +308,7 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int insn)
 	 */
 	emit_zext_32(ctx, a2, true);
 
-	off = offsetof(struct bpf_array, map.max_entries);
+	off = offsetof(bpf_array, map.max_entries);
 	emit_insn(ctx, ldwu, t1, a1, off);
 	/* bgeu $a2, $t1, jmp_offset */
 	jmp_offset = ctx->image ? (ctx->offset[insn + 1] - ctx->idx) : 0;
@@ -334,7 +334,7 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int insn)
 	 *	 goto out;
 	 */
 	emit_insn(ctx, alsld, t2, a2, a1, 2);
-	off = offsetof(struct bpf_array, ptrs);
+	off = offsetof(bpf_array, ptrs);
 	emit_insn(ctx, ldd, t2, t2, off);
 	/* beq $t2, $zero, jmp_offset */
 	jmp_offset = ctx->image ? (ctx->offset[insn + 1] - ctx->idx) : 0;
@@ -344,7 +344,7 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int insn)
 	emit_insn(ctx, std, t3, REG_TCC, 0);
 
 	/* goto *(prog->bpf_func + 4); */
-	off = offsetof(struct bpf_prog, bpf_func);
+	off = offsetof(bpf_prog, bpf_func);
 	emit_insn(ctx, ldd, t3, t2, off);
 	__build_epilogue(ctx, true);
 
@@ -355,13 +355,13 @@ toofar:
 	return -1;
 }
 
-static void emit_store_stack_imm64(struct jit_ctx *ctx, int reg, int stack_off, u64 imm64)
+static void emit_store_stack_imm64(jit_ctx *ctx, int reg, int stack_off, imm64: u64)
 {
 	move_imm(ctx, reg, imm64, false);
 	emit_insn(ctx, std, reg, LOONGARCH_GPR_FP, stack_off);
 }
 
-static int emit_atomic_rmw(const struct bpf_insn *insn, struct jit_ctx *ctx)
+static int emit_atomic_rmw(const struct bpf_insn *insn, jit_ctx *ctx)
 {
 	const u8 t1 = LOONGARCH_GPR_T1;
 	const u8 t2 = LOONGARCH_GPR_T2;
@@ -530,7 +530,7 @@ static int emit_atomic_rmw(const struct bpf_insn *insn, struct jit_ctx *ctx)
 	return 0;
 }
 
-static int emit_atomic_ld_st(const struct bpf_insn *insn, struct jit_ctx *ctx)
+static int emit_atomic_ld_st(const struct bpf_insn *insn, jit_ctx *ctx)
 {
 	const u8 t1 = LOONGARCH_GPR_T1;
 	const u8 src = regmap[insn->src_reg];
@@ -623,7 +623,7 @@ static int emit_atomic_ld_st(const struct bpf_insn *insn, struct jit_ctx *ctx)
 	return 0;
 }
 
-static bool is_signed_bpf_cond(u8 cond)
+static bool is_signed_bpf_cond(cond: u8)
 {
 	return cond == BPF_JSGT || cond == BPF_JSLT ||
 	       cond == BPF_JSGE || cond == BPF_JSLE;
@@ -631,27 +631,27 @@ static bool is_signed_bpf_cond(u8 cond)
 
 #define BPF_FIXUP_REG_MASK	GENMASK(31, 27)
 #define BPF_FIXUP_OFFSET_MASK	GENMASK(26, 0)
-#define REG_DONT_CLEAR_MARKER	0
+pub const REG_DONT_CLEAR_MARKER: u32 = 0;
 
 bool ex_handler_bpf(const struct exception_table_entry *ex,
-		    struct pt_regs *regs)
+		    pt_regs *regs)
 {
 	int dst_reg = FIELD_GET(BPF_FIXUP_REG_MASK, ex->fixup);
 	off_t offset = FIELD_GET(BPF_FIXUP_OFFSET_MASK, ex->fixup);
 
 	if (dst_reg != REG_DONT_CLEAR_MARKER)
 		regs->regs[dst_reg] = 0;
-	regs->csr_era = (unsigned long)&ex->fixup - offset;
+	regs->csr_era = (core::ffi::c_ulong)&ex->fixup - offset;
 
 	return true;
 }
 
 /* For accesses to BTF pointers, add an entry to the exception table */
 static int add_exception_handler(const struct bpf_insn *insn,
-				 struct jit_ctx *ctx,
+				 jit_ctx *ctx,
 				 int dst_reg)
 {
-	unsigned long pc;
+	core::ffi::c_ulong pc;
 	off_t ins_offset, fixup_offset;
 	struct exception_table_entry *ex;
 
@@ -667,7 +667,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
 		return -EINVAL;
 
 	ex = &ctx->prog->aux->extable[ctx->num_exentries];
-	pc = (unsigned long)&ctx->ro_image[ctx->idx - 1];
+	pc = (core::ffi::c_ulong)&ctx->ro_image[ctx->idx - 1];
 
 	/*
 	 * This is the relative offset of the instruction that may fault from
@@ -709,11 +709,11 @@ static int add_exception_handler(const struct bpf_insn *insn,
 	return 0;
 }
 
-static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx, bool extra_pass)
+static int build_insn(const struct bpf_insn *insn, jit_ctx *ctx, extra_pass: bool)
 {
 	u8 tm = -1;
 	u64 func_addr;
-	bool func_addr_fixed, sign_extend;
+	func_addr_fixed: bool, sign_extend;
 	int i = insn - ctx->prog->insnsi;
 	int ret, jmp_offset, tcc_ptr_off;
 	const u8 code = insn->code;
@@ -1483,7 +1483,7 @@ toofar:
 	return -E2BIG;
 }
 
-static int build_body(struct jit_ctx *ctx, bool extra_pass)
+static int build_body(jit_ctx *ctx, extra_pass: bool)
 {
 	int i;
 	const struct bpf_prog *prog = ctx->prog;
@@ -1513,7 +1513,7 @@ static int build_body(struct jit_ctx *ctx, bool extra_pass)
 }
 
 /* Fill space with break instructions */
-static void jit_fill_hole(void *area, unsigned int size)
+static void jit_fill_hole(void *area, size: core::ffi::c_uint)
 {
 	u32 *ptr;
 
@@ -1522,7 +1522,7 @@ static void jit_fill_hole(void *area, unsigned int size)
 		*ptr++ = INSN_BREAK;
 }
 
-static int validate_code(struct jit_ctx *ctx)
+static int validate_code(jit_ctx *ctx)
 {
 	int i;
 	union loongarch_instruction insn;
@@ -1537,7 +1537,7 @@ static int validate_code(struct jit_ctx *ctx)
 	return 0;
 }
 
-static int validate_ctx(struct jit_ctx *ctx)
+static int validate_ctx(jit_ctx *ctx)
 {
 	if (validate_code(ctx))
 		return -1;
@@ -1548,7 +1548,7 @@ static int validate_ctx(struct jit_ctx *ctx)
 	return 0;
 }
 
-static int emit_jump_and_link(struct jit_ctx *ctx, u8 rd, u64 target)
+static int emit_jump_and_link(jit_ctx *ctx, rd: u8, target: u64)
 {
 	if (!target) {
 		pr_err("bpf_jit: jump target address is error\n");
@@ -1561,13 +1561,13 @@ static int emit_jump_and_link(struct jit_ctx *ctx, u8 rd, u64 target)
 	return 0;
 }
 
-static int emit_jump_or_nops(void *target, void *ip, u32 *insns, bool is_call)
+static int emit_jump_or_nops(void *target, void *ip, u32 *insns, is_call: bool)
 {
 	int i;
 	struct jit_ctx ctx;
 
 	ctx.idx = 0;
-	ctx.image = (union loongarch_instruction *)insns;
+	ctx.image = (loongarch_instruction *)insns;
 
 	if (!target) {
 		for (i = 0; i < LOONGARCH_LONG_JUMP_NINSNS; i++)
@@ -1578,7 +1578,7 @@ static int emit_jump_or_nops(void *target, void *ip, u32 *insns, bool is_call)
 	return emit_jump_and_link(&ctx, is_call ? LOONGARCH_GPR_RA : LOONGARCH_GPR_ZERO, (u64)target);
 }
 
-static int emit_call(struct jit_ctx *ctx, u64 addr)
+static int emit_call(jit_ctx *ctx, addr: u64)
 {
 	return emit_jump_and_link(ctx, LOONGARCH_GPR_RA, addr);
 }
@@ -1596,14 +1596,14 @@ void *bpf_arch_text_copy(void *dst, void *src, size_t len)
 	return ret ? ERR_PTR(-EINVAL) : dst;
 }
 
-int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type old_t,
-		       enum bpf_text_poke_type new_t, void *old_addr,
+int bpf_arch_text_poke(void *ip, bpf_text_poke_type old_t,
+		       bpf_text_poke_type new_t, void *old_addr,
 		       void *new_addr)
 {
 	int ret;
 	bool is_call;
-	unsigned long size = 0;
-	unsigned long offset = 0;
+	core::ffi::c_ulong size = 0;
+	core::ffi::c_ulong offset = 0;
 	void *image = NULL;
 	char namebuf[KSYM_NAME_LEN];
 	u32 old_insns[LOONGARCH_LONG_JUMP_NINSNS] = {[0 ... 4] = INSN_NOP};
@@ -1612,7 +1612,7 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type old_t,
 	/* Only poking bpf text is supported. Since kernel function entry
 	 * is set up by ftrace, we rely on ftrace to poke kernel functions.
 	 */
-	if (!bpf_address_lookup((unsigned long)ip, &size, &offset, namebuf))
+	if (!bpf_address_lookup((core::ffi::c_ulong)ip, &size, &offset, namebuf))
 		return -ENOTSUPP;
 
 	image = ip - offset;
@@ -1674,7 +1674,7 @@ int bpf_arch_text_invalidate(void *dst, size_t len)
 	return ret;
 }
 
-static void store_args(struct jit_ctx *ctx, int nr_arg_slots, int args_off)
+static void store_args(jit_ctx *ctx, int nr_arg_slots, int args_off)
 {
 	int i;
 
@@ -1691,7 +1691,7 @@ static void store_args(struct jit_ctx *ctx, int nr_arg_slots, int args_off)
 	}
 }
 
-static void restore_args(struct jit_ctx *ctx, int nr_reg_args, int args_off)
+static void restore_args(jit_ctx *ctx, int nr_reg_args, int args_off)
 {
 	int i;
 
@@ -1701,7 +1701,7 @@ static void restore_args(struct jit_ctx *ctx, int nr_reg_args, int args_off)
 	}
 }
 
-static void restore_stk_args(struct jit_ctx *ctx, int nr_stk_args, int args_off, int stk_args_off)
+static void restore_stk_args(jit_ctx *ctx, int nr_stk_args, int args_off, int stk_args_off)
 {
 	int i;
 
@@ -1714,13 +1714,13 @@ static void restore_stk_args(struct jit_ctx *ctx, int nr_stk_args, int args_off,
 	}
 }
 
-static int invoke_bpf_prog(struct jit_ctx *ctx, struct bpf_tramp_node *n,
-			   int args_off, int retval_off, int run_ctx_off, bool save_ret)
+static int invoke_bpf_prog(jit_ctx *ctx, bpf_tramp_node *n,
+			   int args_off, int retval_off, int run_ctx_off, save_ret: bool)
 {
 	int ret;
 	u32 *branch;
 	struct bpf_prog *p = n->link->prog;
-	int cookie_off = offsetof(struct bpf_tramp_run_ctx, bpf_cookie);
+	int cookie_off = offsetof(bpf_tramp_run_ctx, bpf_cookie);
 
 	if (n->cookie)
 		emit_store_stack_imm64(ctx, LOONGARCH_GPR_T1,
@@ -1777,9 +1777,9 @@ static int invoke_bpf_prog(struct jit_ctx *ctx, struct bpf_tramp_node *n,
 	return ret;
 }
 
-static int invoke_bpf(struct jit_ctx *ctx, struct bpf_tramp_nodes *tn,
+static int invoke_bpf(jit_ctx *ctx, bpf_tramp_nodes *tn,
 		      int args_off, int retval_off, int run_ctx_off,
-		      int func_meta_off, bool save_ret, u64 func_meta, int cookie_off)
+		      int func_meta_off, save_ret: bool, func_meta: u64, int cookie_off)
 {
 	int i, cur_cookie = (cookie_off - args_off) / 8;
 
@@ -1800,17 +1800,17 @@ static int invoke_bpf(struct jit_ctx *ctx, struct bpf_tramp_nodes *tn,
 	return 0;
 }
 
-void *arch_alloc_bpf_trampoline(unsigned int size)
+void *arch_alloc_bpf_trampoline(size: core::ffi::c_uint)
 {
 	return bpf_prog_pack_alloc(size, jit_fill_hole, false);
 }
 
-void arch_free_bpf_trampoline(void *image, unsigned int size)
+void arch_free_bpf_trampoline(void *image, size: core::ffi::c_uint)
 {
 	bpf_prog_pack_free(image, size);
 }
 
-int arch_protect_bpf_trampoline(void *image, unsigned int size)
+int arch_protect_bpf_trampoline(void *image, size: core::ffi::c_uint)
 {
 	return 0;
 }
@@ -1818,9 +1818,9 @@ int arch_protect_bpf_trampoline(void *image, unsigned int size)
 /*
  * Sign-extend the register if necessary
  */
-static void sign_extend(struct jit_ctx *ctx, int rd, int rj, u8 size, bool sign)
+static void sign_extend(jit_ctx *ctx, int rd, int rj, size: u8, sign: bool)
 {
-	/* ABI requires unsigned char/short to be zero-extended */
+	/* ABI requires core::ffi::c_uchar/short to be zero-extended */
 	if (!sign && (size == 1 || size == 2)) {
 		if (rd != rj)
 			move_reg(ctx, rd, rj);
@@ -1846,15 +1846,15 @@ static void sign_extend(struct jit_ctx *ctx, int rd, int rj, u8 size, bool sign)
 	}
 }
 
-static int __arch_prepare_bpf_trampoline(struct jit_ctx *ctx, struct bpf_tramp_image *im,
-					 const struct btf_func_model *m, struct bpf_tramp_nodes *tnodes,
-					 void *func_addr, u32 flags)
+static int __arch_prepare_bpf_trampoline(jit_ctx *ctx, bpf_tramp_image *im,
+					 const struct btf_func_model *m, bpf_tramp_nodes *tnodes,
+					 void *func_addr, flags: u32)
 {
 	int i, ret, save_ret;
 	int cookie_cnt, cookie_off;
 	int stack_size, args_off, stk_args_off, nr_arg_slots = 0;
 	int retval_off, func_meta_off, ip_off, run_ctx_off, sreg_off, tcc_ptr_off;
-	unsigned long long func_meta;
+	core::ffi::c_ulonglong func_meta;
 	bool is_struct_ops = flags & BPF_TRAMP_F_INDIRECT;
 	void *orig_call = func_addr;
 	struct bpf_tramp_nodes *fentry = &tnodes[BPF_TRAMP_FENTRY];
@@ -1945,7 +1945,7 @@ static int __arch_prepare_bpf_trampoline(struct jit_ctx *ctx, struct bpf_tramp_i
 	cookie_off = stack_size;
 
 	/* Room of trampoline frame to store struct bpf_tramp_run_ctx */
-	stack_size += round_up(sizeof(struct bpf_tramp_run_ctx), 8);
+	stack_size += round_up(sizeof(bpf_tramp_run_ctx), 8);
 	run_ctx_off = stack_size;
 
 	stack_size += 8;
@@ -2020,11 +2020,11 @@ static int __arch_prepare_bpf_trampoline(struct jit_ctx *ctx, struct bpf_tramp_i
 
 	/* To traced function */
 	/* Ftrace jump skips 2 NOP instructions */
-	if (is_kernel_text((unsigned long)orig_call) ||
-	    is_module_text_address((unsigned long)orig_call))
+	if (is_kernel_text((core::ffi::c_ulong)orig_call) ||
+	    is_module_text_address((core::ffi::c_ulong)orig_call))
 		orig_call += LOONGARCH_FENTRY_NBYTES;
 	/* Direct jump skips 5 NOP instructions */
-	else if (is_bpf_text_address((unsigned long)orig_call))
+	else if (is_bpf_text_address((core::ffi::c_ulong)orig_call))
 		orig_call += LOONGARCH_BPF_FENTRY_NBYTES;
 
 	if (flags & BPF_TRAMP_F_CALL_ORIG) {
@@ -2153,9 +2153,9 @@ out:
 	return ret;
 }
 
-int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *ro_image,
+int arch_prepare_bpf_trampoline(bpf_tramp_image *im, void *ro_image,
 				void *ro_image_end, const struct btf_func_model *m,
-				u32 flags, struct bpf_tramp_nodes *tnodes, void *func_addr)
+				flags: u32, bpf_tramp_nodes *tnodes, void *func_addr)
 {
 	int ret, size;
 	void *image, *tmp;
@@ -2166,11 +2166,11 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *ro_image,
 	if (!image)
 		return -ENOMEM;
 
-	ctx.image = (union loongarch_instruction *)image;
-	ctx.ro_image = (union loongarch_instruction *)ro_image;
+	ctx.image = (loongarch_instruction *)image;
+	ctx.ro_image = (loongarch_instruction *)ro_image;
 	ctx.idx = 0;
 
-	jit_fill_hole(image, (unsigned int)(ro_image_end - ro_image));
+	jit_fill_hole(image, (core::ffi::c_uint)(ro_image_end - ro_image));
 	ret = __arch_prepare_bpf_trampoline(&ctx, im, m, tnodes, func_addr, flags);
 	if (ret < 0)
 		goto out;
@@ -2191,8 +2191,8 @@ out:
 	return ret < 0 ? ret : size;
 }
 
-int arch_bpf_trampoline_size(const struct btf_func_model *m, u32 flags,
-			     struct bpf_tramp_nodes *tnodes, void *func_addr)
+int arch_bpf_trampoline_size(const struct btf_func_model *m, flags: u32,
+			     bpf_tramp_nodes *tnodes, void *func_addr)
 {
 	int ret;
 	struct jit_ctx ctx;
@@ -2206,7 +2206,7 @@ int arch_bpf_trampoline_size(const struct btf_func_model *m, u32 flags,
 	return ret < 0 ? ret : ret * LOONGARCH_INSN_SIZE;
 }
 
-struct bpf_prog *bpf_int_jit_compile(struct bpf_verifier_env *env, struct bpf_prog *prog)
+struct bpf_prog *bpf_int_jit_compile(bpf_verifier_env *env, bpf_prog *prog)
 {
 	bool extra_pass = false;
 	u8 *image_ptr, *ro_image_ptr;
@@ -2257,7 +2257,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_verifier_env *env, struct bpf_pr
 	ctx.epilogue_offset = ctx.idx;
 	build_epilogue(&ctx);
 
-	extable_size = prog->aux->num_exentries * sizeof(struct exception_table_entry);
+	extable_size = prog->aux->num_exentries * sizeof(exception_table_entry);
 
 	/* Now we know the actual image size.
 	 * As each LoongArch instruction is of length 32bit,
@@ -2281,8 +2281,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_verifier_env *env, struct bpf_pr
 	 * run. The bpf_jit_binary_pack_finalize() will do this copy in the final
 	 * step.
 	 */
-	ctx.image = (union loongarch_instruction *)image_ptr;
-	ctx.ro_image = (union loongarch_instruction *)ro_image_ptr;
+	ctx.image = (loongarch_instruction *)image_ptr;
+	ctx.ro_image = (loongarch_instruction *)ro_image_ptr;
 	if (extable_size)
 		prog->aux->extable = (void *)ro_image_ptr + prog_size;
 
@@ -2360,7 +2360,7 @@ out_free:
 	goto out_offset;
 }
 
-void bpf_jit_free(struct bpf_prog *prog)
+void bpf_jit_free(bpf_prog *prog)
 {
 	if (prog->jited) {
 		struct jit_data *jit_data = prog->aux->jit_data;
@@ -2387,18 +2387,18 @@ void bpf_jit_free(struct bpf_prog *prog)
 #if defined(CONFIG_UNWINDER_ORC)
 #include <asm/unwind.h>
 
-static noinline void walk_bpf_stackframe(bool (*consume_fn)(void *cookie, u64 ip, u64 sp, u64 bp),
-					 void *cookie, unsigned long fp)
+static noinline void walk_bpf_stackframe(bool (*consume_fn)(void *cookie, ip: u64, sp: u64, bp: u64),
+					 void *cookie, fp: core::ffi::c_ulong)
 {
-	unsigned long addr;
+	core::ffi::c_ulong addr;
 	struct unwind_state state;
 	struct pt_regs dummyregs;
 	struct pt_regs *regs = &dummyregs;
 
 	regs->regs[1] = 0;
 	regs->regs[22] = fp;
-	regs->regs[3] = (unsigned long)__builtin_frame_address(0);
-	regs->csr_era = (unsigned long)__builtin_return_address(0);
+	regs->regs[3] = (core::ffi::c_ulong)__builtin_frame_address(0);
+	regs->csr_era = (core::ffi::c_ulong)__builtin_return_address(0);
 
 	for (unwind_start(&state, current, regs);
 	     !unwind_done(&state); unwind_next_frame(&state)) {
@@ -2408,9 +2408,8 @@ static noinline void walk_bpf_stackframe(bool (*consume_fn)(void *cookie, u64 ip
 	}
 }
 
-void arch_bpf_stack_walk(bool (*consume_fn)(void *cookie, u64 ip, u64 sp, u64 bp), void *cookie)
-{
-	unsigned long fp;
+void arch_bpf_stack_walk!(bool (*consume_fn)(void *cookie, ip: u64, sp: u64, bp: u64), void *cookie, {
+	core::ffi::c_ulong fp;
 
 	/*
 	 * Capture the live frame pointer ($r22) at the very front-line before
@@ -2419,7 +2418,7 @@ void arch_bpf_stack_walk(bool (*consume_fn)(void *cookie, u64 ip, u64 sp, u64 bp
 	 */
 	asm volatile("move %0, $r22" : "=r"(fp));
 	walk_bpf_stackframe(consume_fn, cookie, fp);
-}
+});
 #endif /* CONFIG_UNWINDER_ORC */
 
 bool bpf_jit_bypass_spec_v1(void)

@@ -175,7 +175,7 @@ pub unsafe extern "C" fn futex_numa_32_unlock(lock: *mut futex_numa_32) {
         assert!(val == N_WAITERS);
         if woken == 0 {
             let _ = unsafe {
-                (*val_ptr(lock)).compare_exchange(val, 0_u32, Ordering::Relaxed, Ordering::Relaxed)
+                (*val_ptr(lock)).compare_exchange(val, 0u32, Ordering::Relaxed, Ordering::Relaxed)
             };
         }
     }
@@ -239,7 +239,7 @@ unsafe extern "C" fn contendfn(_arg: *mut c_void) -> *mut c_void {
         unsafe {
             futex2_wait(
                 &mut (*(*args).lock).u.parts.val as *mut u32 as *mut c_void,
-                !0_u32,
+                !0u32,
                 fflags,
                 ptr::null_mut(),
                 0,

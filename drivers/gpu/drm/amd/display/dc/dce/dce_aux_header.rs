@@ -42,7 +42,7 @@ pub struct dce110_aux_registers_mask { pub AUX_EN: u32, pub AUX_RESET: u32, pub 
 pub struct dce110_aux_registers_shift { pub AUX_EN: u8, pub AUX_RESET: u8, pub AUX_RESET_DONE: u8, pub AUX_REG_RW_CNTL_STATUS: u8, pub AUX_SW_USE_AUX_REG_REQ: u8, pub AUX_SW_DONE_USING_AUX_REG: u8, pub AUX_SW_AUTOINCREMENT_DISABLE: u8, pub AUX_SW_DATA_RW: u8, pub AUX_SW_INDEX: u8, pub AUX_SW_GO: u8, pub AUX_SW_DATA: u8, pub AUX_SW_REPLY_BYTE_COUNT: u8, pub AUX_SW_DONE: u8, pub AUX_SW_DONE_ACK: u8, pub AUXN_IMPCAL_ENABLE: u8, pub AUXP_IMPCAL_ENABLE: u8, pub AUXN_IMPCAL_OVERRIDE_ENABLE: u8, pub AUXP_IMPCAL_OVERRIDE_ENABLE: u8, pub AUX_RX_TIMEOUT_LEN: u8, pub AUX_RX_TIMEOUT_LEN_MUL: u8, pub AUXN_CALOUT_ERROR_AK: u8, pub AUXP_CALOUT_ERROR_AK: u8, pub AUX_SW_START_DELAY: u8, pub AUX_SW_WR_BYTES: u8 }
 
 #[macro_export]
-macro_rules! AUX_SF { ($reg:ident, $field:ident, $post_fix:ident) => { $field = $reg ## __ ## $field ## $post_fix }; }
+macro_rules! AUX_SF { ($reg:tt, $field:tt, $post_fix:tt) => { $field = ::kernel::macros::paste!([<$reg __>]) ## ::kernel::macros::paste!([<$field $post_fix>]) }; }
 
 // Register-mask field-list macros.  The concatenated C register-field names
 // are retained as macro tokens for use by the generated register definitions.

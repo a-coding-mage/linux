@@ -19,10 +19,10 @@ pub struct arch_probe_insn {
 }
 
 /* Corresponds to the C CONFIG_KPROBES build-time condition. */
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub type kprobe_opcode_t = u32;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct arch_specific_insn {
     pub api: arch_probe_insn,

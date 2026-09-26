@@ -12,17 +12,17 @@
  * /sys/module/foo/sections stuff
  * J. Corbet <corbet@lwn.net>
  */
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 #[repr(C)]
 struct module_sect_attrs {
     grp: attribute_group,
     attrs: [bin_attribute; 0],
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 const MODULE_SECT_READ_SIZE: usize = 3 + (BITS_PER_LONG / 4);
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn module_sect_read(
     file: *mut file,
     _kobj: *mut kobject,
@@ -62,7 +62,7 @@ unsafe fn module_sect_read(
     count as isize
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn free_sect_attrs(sect_attrs: *mut module_sect_attrs) {
     let mut bin_attr = (*sect_attrs).grp.bin_attrs;
 
@@ -74,7 +74,7 @@ unsafe fn free_sect_attrs(sect_attrs: *mut module_sect_attrs) {
     kfree(sect_attrs as *mut c_void);
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn add_sect_attrs(mod_: *mut module, info: *const load_info) -> c_int {
     let mut nloaded: u32 = 0;
     let mut i: u32;
@@ -140,7 +140,7 @@ unsafe fn add_sect_attrs(mod_: *mut module, info: *const load_info) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn remove_sect_attrs(mod_: *mut module) {
     if !(*mod_).sect_attrs.is_null() {
         sysfs_remove_group(&mut (*mod_).mkobj.kobj, &mut (*(*mod_).sect_attrs).grp);
@@ -149,20 +149,20 @@ unsafe fn remove_sect_attrs(mod_: *mut module) {
     }
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 #[repr(C)]
 struct module_notes_attrs {
     grp: attribute_group,
     attrs: [bin_attribute; 0],
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn free_notes_attrs(notes_attrs: *mut module_notes_attrs) {
     kfree((*notes_attrs).grp.bin_attrs as *mut c_void);
     kfree(notes_attrs as *mut c_void);
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn add_notes_attrs(mod_: *mut module, info: *const load_info) -> c_int {
     let mut notes = 0u32;
     let mut i: u32;
@@ -218,7 +218,7 @@ unsafe fn add_notes_attrs(mod_: *mut module, info: *const load_info) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 unsafe fn remove_notes_attrs(mod_: *mut module) {
     if !(*mod_).notes_attrs.is_null() {
         sysfs_remove_group(&mut (*mod_).mkobj.kobj, &mut (*(*mod_).notes_attrs).grp);
@@ -227,17 +227,17 @@ unsafe fn remove_notes_attrs(mod_: *mut module) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_KALLSYMS"))]
+#[cfg(not(CONFIG_KALLSYMS))]
 unsafe fn add_sect_attrs(_mod_: *mut module, _info: *const load_info) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_KALLSYMS"))]
+#[cfg(not(CONFIG_KALLSYMS))]
 unsafe fn remove_sect_attrs(_mod_: *mut module) {}
-#[cfg(not(feature = "CONFIG_KALLSYMS"))]
+#[cfg(not(CONFIG_KALLSYMS))]
 unsafe fn add_notes_attrs(_mod_: *mut module, _info: *const load_info) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_KALLSYMS"))]
+#[cfg(not(CONFIG_KALLSYMS))]
 unsafe fn remove_notes_attrs(_mod_: *mut module) {}
 
 unsafe fn del_usage_links(mod_: *mut module) {
-    #[cfg(feature = "CONFIG_MODULE_UNLOAD")]
+    #[cfg(CONFIG_MODULE_UNLOAD)]
     {
         let mut use_: *mut module_use;
         mutex_lock(&mut module_mutex);
@@ -250,7 +250,7 @@ unsafe fn del_usage_links(mod_: *mut module) {
 
 unsafe fn add_usage_links(mod_: *mut module) -> c_int {
     let mut ret = 0;
-    #[cfg(feature = "CONFIG_MODULE_UNLOAD")]
+    #[cfg(CONFIG_MODULE_UNLOAD)]
     {
         let mut use_: *mut module_use;
         mutex_lock(&mut module_mutex);

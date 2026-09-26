@@ -5,26 +5,26 @@
 /* These transfer routines select the access width from the pointed-to type. */
 macro_rules! put_user {
     ($x:expr, $ptr:expr) => {
-        __put_user_check($x as _, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
+        __put_user_check!($x as _, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
     };
 }
 
 macro_rules! get_user {
     ($x:expr, $ptr:expr) => {
-        __get_user_check($x, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
+        __get_user_check!($x, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
     };
 }
 
 /* The __xxx versions do not perform address-space checking. */
 macro_rules! __put_user {
     ($x:expr, $ptr:expr) => {
-        __put_user_nocheck($x as _, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
+        __put_user_nocheck!($x as _, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
     };
 }
 
 macro_rules! __get_user {
     ($x:expr, $ptr:expr) => {
-        __get_user_nocheck($x, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
+        __get_user_nocheck!($x, $ptr, core::mem::size_of_val(unsafe { &*$ptr }))
     };
 }
 

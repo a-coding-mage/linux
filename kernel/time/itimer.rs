@@ -63,11 +63,11 @@ pub unsafe fn getitimer(which: c_int, value: *mut __kernel_old_itimerval) -> c_i
     error
 }
 
-#[cfg(any(feature = "CONFIG_COMPAT", feature = "CONFIG_ALPHA"))]
+#[cfg(any(CONFIG_COMPAT, CONFIG_ALPHA))]
 #[repr(C)]
 struct old_itimerval32 { it_interval: old_timeval32, it_value: old_timeval32 }
 
-#[cfg(any(feature = "CONFIG_COMPAT", feature = "CONFIG_ALPHA"))]
+#[cfg(any(CONFIG_COMPAT, CONFIG_ALPHA))]
 unsafe fn put_old_itimerval32(o: *mut old_itimerval32, i: *const itimerspec64) -> c_int {
     let mut v32: old_itimerval32 = core::mem::zeroed();
     v32.it_interval.tv_sec = (*i).it_interval.tv_sec;
@@ -143,7 +143,7 @@ unsafe fn do_setitimer(which: c_int, value: *const itimerspec64, ovalue: *mut it
     0
 }
 
-#[cfg(feature = "CONFIG_SECURITY_SELINUX")]
+#[cfg(CONFIG_SECURITY_SELINUX)]
 pub unsafe fn clear_itimer() {
     let v: itimerspec64 = core::mem::zeroed();
     for i in 0..3 { do_setitimer(i, &v, core::ptr::null_mut()); }
@@ -180,7 +180,7 @@ pub unsafe fn setitimer(which: c_int, value: *const __kernel_old_itimerval, oval
     0
 }
 
-#[cfg(any(feature = "CONFIG_COMPAT", feature = "CONFIG_ALPHA"))]
+#[cfg(any(CONFIG_COMPAT, CONFIG_ALPHA))]
 unsafe fn get_old_itimerval32(o: *mut itimerspec64, i: *const old_itimerval32) -> c_int {
     let mut v: old_itimerval32 = core::mem::zeroed();
     if copy_from_user(&mut v as *mut _ as *mut c_void, i as *const c_void, core::mem::size_of::<old_itimerval32>()) != 0 { return -EFAULT; }
@@ -190,7 +190,7 @@ unsafe fn get_old_itimerval32(o: *mut itimerspec64, i: *const old_itimerval32) -
     0
 }
 
-#[cfg(any(feature = "CONFIG_COMPAT", feature = "CONFIG_ALPHA"))]
+#[cfg(any(CONFIG_COMPAT, CONFIG_ALPHA))]
 pub unsafe fn compat_getitimer(which: c_int, value: *mut old_itimerval32) -> c_int {
     let mut get_buffer: itimerspec64 = core::mem::zeroed();
     let mut error = do_getitimer(which, &mut get_buffer);
@@ -198,7 +198,7 @@ pub unsafe fn compat_getitimer(which: c_int, value: *mut old_itimerval32) -> c_i
     error
 }
 
-#[cfg(any(feature = "CONFIG_COMPAT", feature = "CONFIG_ALPHA"))]
+#[cfg(any(CONFIG_COMPAT, CONFIG_ALPHA))]
 pub unsafe fn compat_setitimer(which: c_int, value: *const old_itimerval32, ovalue: *mut old_itimerval32) -> c_int {
     let mut set_buffer: itimerspec64 = core::mem::zeroed();
     let mut get_buffer: itimerspec64 = core::mem::zeroed();

@@ -232,8 +232,8 @@ unsafe fn show_segv_info(regs: *mut uml_pt_regs) {
         UPT_SP(regs) as *mut core::ffi::c_void,
         (*fi).error_code,
     );
-    print_vma_addr(KERN_CONT " in ", UPT_IP(regs));
-    printk(KERN_CONT "\n");
+    print_vma_addr(c"\x01c in ".as_ptr(), UPT_IP(regs));
+    printk(c"\x01c\n".as_ptr());
 }
 
 unsafe fn bad_segv(fi: faultinfo, _ip: c_ulong) {
@@ -337,7 +337,7 @@ pub unsafe fn relay_signal(
     _mc: *mut core::ffi::c_void,
 ) {
     if !UPT_IS_USER(regs) {
-        if sig == SIGBUS { printk(KERN_ERR "Bus error - the host /dev/shm or /tmp mount likely just ran out of space\n"); }
+        if sig == SIGBUS { printk(c"\x013Bus error - the host /dev/shm or /tmp mount likely just ran out of space\n".as_ptr()); }
         panic!("Kernel mode signal %d", sig);
     }
     arch_examine_signal(sig, regs);
@@ -348,7 +348,7 @@ pub unsafe fn relay_signal(
         (*current).thread.arch.faultinfo = *fi;
         force_sig_fault(sig, code, FAULT_ADDRESS(*fi) as *mut core::ffi::c_void);
     } else {
-        printk(KERN_ERR "Attempted to relay unknown signal %d (si_code = %d) with errno %d\n", sig, code, err);
+        printk(c"\x013Attempted to relay unknown signal %d (si_code = %d) with errno %d\n".as_ptr(), sig, code, err);
         force_sig(sig);
     }
 }

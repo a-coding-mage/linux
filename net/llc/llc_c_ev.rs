@@ -44,7 +44,7 @@ pub unsafe extern "C" fn llc_conn_ev_local_busy_detected(_: *mut sock, skb:*mut 
 pub unsafe extern "C" fn llc_conn_ev_local_busy_cleared(_: *mut sock, skb:*mut sk_buff)->i32 { let e=llc_conn_ev(skb); ((*e).r#type != LLC_CONN_EV_TYPE_SIMPLE || (*e).prim_type != LLC_CONN_EV_LOCAL_BUSY_CLEARED) as i32 }
 pub unsafe extern "C" fn llc_conn_ev_rx_bad_pdu(_: *mut sock, _: *mut sk_buff)->i32 { 1 }
 
-macro_rules! pdu_test { ($n:ident,$h:ident,$x:expr)=>{ pub unsafe extern "C" fn $n(_: *mut sock,skb:*mut sk_buff)->i32 { let p=$h(skb); (!$x) as i32 } }; }
+macro_rules! pdu_test { ($n:ident,$h:ident,$x:expr) => { pub unsafe extern "C" fn $n(_: *mut sock,skb:*mut sk_buff)->i32 { let p=$h(skb); (!$x) as i32 } }; }
 pdu_test!(llc_conn_ev_rx_disc_cmd_pbit_set_x,llc_pdu_un_hdr,LLC_PDU_IS_CMD(p)&&LLC_PDU_TYPE_IS_U(p)&&LLC_U_PDU_CMD(p)==LLC_2_PDU_CMD_DISC);
 pdu_test!(llc_conn_ev_rx_dm_rsp_fbit_set_x,llc_pdu_un_hdr,LLC_PDU_IS_RSP(p)&&LLC_PDU_TYPE_IS_U(p)&&LLC_U_PDU_RSP(p)==LLC_2_PDU_RSP_DM);
 pdu_test!(llc_conn_ev_rx_frmr_rsp_fbit_set_x,llc_pdu_un_hdr,LLC_PDU_IS_RSP(p)&&LLC_PDU_TYPE_IS_U(p)&&LLC_U_PDU_RSP(p)==LLC_2_PDU_RSP_FRMR);
@@ -52,7 +52,7 @@ pdu_test!(llc_conn_ev_rx_frmr_rsp_fbit_set_x,llc_pdu_un_hdr,LLC_PDU_IS_RSP(p)&&L
 // Remaining predicates retain the C implementation's externally visible ABI.
 pub unsafe extern "C" fn llc_conn_ev_rx_any_frame(_: *mut sock,_:*mut sk_buff)->i32{0}
 pub unsafe extern "C" fn llc_conn_ev_init_p_f_cycle(_: *mut sock,_:*mut sk_buff)->i32{1}
-macro_rules! timer {($n:ident,$v:ident)=>{pub unsafe extern "C" fn $n(_: *mut sock,skb:*mut sk_buff)->i32{(*llc_conn_ev(skb)).r#type != $v as u8 as i32}}}
+macro_rules! timer {($n:ident,$v:ident) => {pub unsafe extern "C" fn $n(_: *mut sock,skb:*mut sk_buff)->i32{(*llc_conn_ev(skb)).r#type != $v as u8 as i32}}}
 timer!(llc_conn_ev_p_tmr_exp,LLC_CONN_EV_TYPE_P_TMR); timer!(llc_conn_ev_ack_tmr_exp,LLC_CONN_EV_TYPE_ACK_TMR); timer!(llc_conn_ev_rej_tmr_exp,LLC_CONN_EV_TYPE_REJ_TMR); timer!(llc_conn_ev_busy_tmr_exp,LLC_CONN_EV_TYPE_BUSY_TMR);
 
 pub unsafe extern "C" fn llc_conn_ev_tx_buffer_full(_: *mut sock,skb:*mut sk_buff)->i32{let e=llc_conn_ev(skb);((*e).r#type!=LLC_CONN_EV_TYPE_SIMPLE||(*e).prim_type!=LLC_CONN_EV_TX_BUFF_FULL)as i32}

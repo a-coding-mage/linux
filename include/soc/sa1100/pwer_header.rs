@@ -4,7 +4,7 @@
  * Copyright (C) 2015, Dmitry Eremin-Solenikov
  */
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn sa11x0_gpio_set_wake(gpio: u32, on: u32) -> i32;
     pub fn sa11x0_sc_set_wake(irq: u32, on: u32) -> i32;
 }

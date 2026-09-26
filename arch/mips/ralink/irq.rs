@@ -116,8 +116,8 @@ unsafe fn intc_map(d: *mut irq_domain, irq: u32, hw: irq_hw_number_t) -> i32 {
 }
 
 static irq_domain_ops: irq_domain_ops = irq_domain_ops {
-    .xlate: irq_domain_xlate_onecell,
-    .map: intc_map,
+    xlate: irq_domain_xlate_onecell,
+    map: intc_map,
 };
 
 unsafe fn intc_of_init(node: *mut device_node, parent: *mut device_node) -> i32 {

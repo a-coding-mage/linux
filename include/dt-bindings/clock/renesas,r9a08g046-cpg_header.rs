@@ -3,7 +3,6 @@
  * Copyright (C) 2026 Renesas Electronics Corp.
  */
 
-#define __DT_BINDINGS_CLOCK_RENESAS_R9A08G046_CPG_H__
 
 // Dependency: <dt-bindings/clock/renesas-cpg-mssr.h>
 

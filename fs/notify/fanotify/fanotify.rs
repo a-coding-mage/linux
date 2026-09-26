@@ -54,10 +54,10 @@ unsafe fn fanotify_merge(group: *mut fsnotify_group, event: *mut fsnotify_event)
     let new = FANOTIFY_E(event); let bucket = fanotify_event_hash_bucket(group, new);
     let hlist = &mut (*group).fanotify_data.merge_hash[bucket as usize]; let mut i = 0;
     if fanotify_is_perm_event((*new).mask) { return 0; }
-    hlist_for_each_entry!(old, hlist, merge_list) {
+    hlist_for_each_entry!(old, hlist, merge_list, {
         i += 1; if i > FANOTIFY_MAX_MERGE_EVENTS { break; }
         if fanotify_should_merge(old, new) { (*old).mask |= (*new).mask; if fanotify_is_error_event((*old).mask) { (*FANOTIFY_EE(old)).err_count += 1; } return 1; }
-    }
+    });
     0
 }
 

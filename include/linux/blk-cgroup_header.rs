@@ -42,7 +42,7 @@ pub struct atomic_t {
 
 pub const FC_APPID_LEN: usize = 129;
 
-#[cfg(feature = "CONFIG_BLK_CGROUP")]
+#[cfg(CONFIG_BLK_CGROUP)]
 extern "C" {
     pub static blkcg_root_css: *mut cgroup_subsys_state;
     pub static mut blkcg_nr_congested: atomic_t;
@@ -57,7 +57,7 @@ extern "C" {
     pub fn bio_blkcg_css(bio: *mut bio) -> *mut cgroup_subsys_state;
 }
 
-#[cfg(feature = "CONFIG_BLK_CGROUP")]
+#[cfg(CONFIG_BLK_CGROUP)]
 #[inline]
 pub unsafe fn blk_cgroup_congested() -> bool {
     // Equivalent to likely(!atomic_read(&blkcg_nr_congested)); atomic access is
@@ -68,23 +68,23 @@ pub unsafe fn blk_cgroup_congested() -> bool {
     __blk_cgroup_congested()
 }
 
-#[cfg(not(feature = "CONFIG_BLK_CGROUP"))]
+#[cfg(not(CONFIG_BLK_CGROUP))]
 #[inline]
 pub unsafe fn blkcg_maybe_throttle_current() {}
 
-#[cfg(not(feature = "CONFIG_BLK_CGROUP"))]
+#[cfg(not(CONFIG_BLK_CGROUP))]
 #[inline]
 pub unsafe fn blk_cgroup_congested() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_BLK_CGROUP"))]
+#[cfg(not(CONFIG_BLK_CGROUP))]
 #[inline]
 pub unsafe fn bio_blkcg_css(_bio: *mut bio) -> *mut cgroup_subsys_state {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_BLK_CGROUP"))]
+#[cfg(not(CONFIG_BLK_CGROUP))]
 pub const blkcg_root_css: *mut cgroup_subsys_state = (-22isize) as *mut cgroup_subsys_state;
 
 extern "C" {

@@ -16,7 +16,7 @@ pub struct qcom_smem_state_ops {
 }
 
 // CONFIG_QCOM_SMEM_STATE is a build-time condition from the original header.
-#[cfg(feature = "CONFIG_QCOM_SMEM_STATE")]
+#[cfg(CONFIG_QCOM_SMEM_STATE)]
 extern "C" {
     pub fn qcom_smem_state_get(
         dev: *mut device,
@@ -42,7 +42,7 @@ extern "C" {
     pub fn qcom_smem_state_unregister(state: *mut qcom_smem_state);
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_SMEM_STATE"))]
+#[cfg(not(CONFIG_QCOM_SMEM_STATE))]
 #[inline]
 pub unsafe fn qcom_smem_state_get(
     _dev: *mut device,
@@ -52,7 +52,7 @@ pub unsafe fn qcom_smem_state_get(
     core::mem::transmute::<isize, *mut qcom_smem_state>(-22)
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_SMEM_STATE"))]
+#[cfg(not(CONFIG_QCOM_SMEM_STATE))]
 #[inline]
 pub unsafe fn devm_qcom_smem_state_get(
     _dev: *mut device,
@@ -62,11 +62,11 @@ pub unsafe fn devm_qcom_smem_state_get(
     core::mem::transmute::<isize, *mut qcom_smem_state>(-22)
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_SMEM_STATE"))]
+#[cfg(not(CONFIG_QCOM_SMEM_STATE))]
 #[inline]
 pub unsafe fn qcom_smem_state_put(_state: *mut qcom_smem_state) {}
 
-#[cfg(not(feature = "CONFIG_QCOM_SMEM_STATE"))]
+#[cfg(not(CONFIG_QCOM_SMEM_STATE))]
 #[inline]
 pub unsafe fn qcom_smem_state_update_bits(
     _state: *mut qcom_smem_state,
@@ -76,7 +76,7 @@ pub unsafe fn qcom_smem_state_update_bits(
     -22
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_SMEM_STATE"))]
+#[cfg(not(CONFIG_QCOM_SMEM_STATE))]
 #[inline]
 pub unsafe fn qcom_smem_state_register(
     _of_node: *mut device_node,
@@ -86,7 +86,7 @@ pub unsafe fn qcom_smem_state_register(
     core::mem::transmute::<isize, *mut qcom_smem_state>(-22)
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_SMEM_STATE"))]
+#[cfg(not(CONFIG_QCOM_SMEM_STATE))]
 #[inline]
 pub unsafe fn qcom_smem_state_unregister(_state: *mut qcom_smem_state) {}
 

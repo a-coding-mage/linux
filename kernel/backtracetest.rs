@@ -52,7 +52,7 @@ unsafe fn backtrace_test_bh() {
 }
 
 // CONFIG_STACKTRACE controls which implementation is compiled by the kernel build.
-#[cfg(feature = "CONFIG_STACKTRACE")]
+#[cfg(CONFIG_STACKTRACE)]
 unsafe fn backtrace_test_saved() {
     let mut entries: [usize; 8] = [0; 8];
     let nr_entries: u32;
@@ -66,7 +66,7 @@ unsafe fn backtrace_test_saved() {
     }
 }
 
-#[cfg(not(feature = "CONFIG_STACKTRACE"))]
+#[cfg(not(CONFIG_STACKTRACE))]
 unsafe fn backtrace_test_saved() {
     unsafe {
         pr_info(b"Saved backtrace test skipped.\n\0".as_ptr() as *const _);

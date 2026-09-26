@@ -31,12 +31,12 @@ pub struct net_offload {
 
 pub const MAX_INET_PROTOS: usize = 256;
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 #[no_mangle]
 pub static mut inet6_protos: [*const inet6_protocol; MAX_INET_PROTOS] =
     [core::ptr::null(); MAX_INET_PROTOS];
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 #[inline]
 pub unsafe fn inet6_add_protocol(
     prot: *const inet6_protocol,
@@ -59,7 +59,7 @@ pub unsafe fn inet6_add_protocol(
     }
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 #[inline]
 pub unsafe fn inet6_del_protocol(
     prot: *const inet6_protocol,

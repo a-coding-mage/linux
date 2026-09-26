@@ -70,7 +70,7 @@ pub unsafe fn get_entity_id(dl_se: *mut sched_dl_entity, cpu: i32, type_: u8) ->
 
 #[inline]
 pub unsafe fn task_is_scx_enabled(tsk: *mut task_struct) -> bool {
-    cfg!(feature = "CONFIG_SCHED_CLASS_EXT") && (*tsk).sched_class == rv_ext_sched_class
+    cfg!(CONFIG_SCHED_CLASS_EXT) && (*tsk).sched_class == rv_ext_sched_class
 }
 
 #[inline]

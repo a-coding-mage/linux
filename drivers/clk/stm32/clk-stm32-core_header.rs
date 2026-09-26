@@ -97,7 +97,7 @@ pub struct clk_stm32_mux {
     pub lock: *mut spinlock_t,
 }
 
-macro_rules! to_clk_stm32_mux { ($hw:expr) => { container_of!($hw, clk_stm32_mux, hw) }; }
+macro_rules! to_clk_stm32_mux { ($hw:expr) => { container_of!($hw, clk_stm32_mux, $hw) }; }
 
 #[repr(C)]
 pub struct clk_stm32_gate {
@@ -108,7 +108,7 @@ pub struct clk_stm32_gate {
     pub lock: *mut spinlock_t,
 }
 
-macro_rules! to_clk_stm32_gate { ($hw:expr) => { container_of!($hw, clk_stm32_gate, hw) }; }
+macro_rules! to_clk_stm32_gate { ($hw:expr) => { container_of!($hw, clk_stm32_gate, $hw) }; }
 
 #[repr(C)]
 pub struct clk_stm32_div {
@@ -119,7 +119,7 @@ pub struct clk_stm32_div {
     pub lock: *mut spinlock_t,
 }
 
-macro_rules! to_clk_stm32_divider { ($hw:expr) => { container_of!($hw, clk_stm32_div, hw) }; }
+macro_rules! to_clk_stm32_divider { ($hw:expr) => { container_of!($hw, clk_stm32_div, $hw) }; }
 
 #[repr(C)]
 pub struct clk_stm32_composite {
@@ -132,7 +132,7 @@ pub struct clk_stm32_composite {
     pub lock: *mut spinlock_t,
 }
 
-macro_rules! to_clk_stm32_composite { ($hw:expr) => { container_of!($hw, clk_stm32_composite, hw) }; }
+macro_rules! to_clk_stm32_composite { ($hw:expr) => { container_of!($hw, clk_stm32_composite, $hw) }; }
 
 extern "C" {
     pub static clk_stm32_mux_ops: clk_ops;

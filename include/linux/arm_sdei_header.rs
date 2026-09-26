@@ -68,7 +68,7 @@ unsafe extern "C" {
     pub fn sdei_unregister_ghes(ghes: *mut Ghes) -> i32;
 }
 
-#[cfg(feature = "CONFIG_ARM_SDE_INTERFACE")]
+#[cfg(CONFIG_ARM_SDE_INTERFACE)]
 unsafe extern "C" {
     /* For use by arch code when CPU hotplug notifiers are not appropriate. */
     pub fn sdei_mask_local_cpu() -> i32;
@@ -77,19 +77,19 @@ unsafe extern "C" {
     pub fn sdei_handler_abort();
 }
 
-#[cfg(not(feature = "CONFIG_ARM_SDE_INTERFACE"))]
+#[cfg(not(CONFIG_ARM_SDE_INTERFACE))]
 #[inline]
 pub fn sdei_mask_local_cpu() -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ARM_SDE_INTERFACE"))]
+#[cfg(not(CONFIG_ARM_SDE_INTERFACE))]
 #[inline]
 pub fn sdei_unmask_local_cpu() -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ARM_SDE_INTERFACE"))]
+#[cfg(not(CONFIG_ARM_SDE_INTERFACE))]
 #[inline]
 pub fn acpi_sdei_init() {}
 
-#[cfg(not(feature = "CONFIG_ARM_SDE_INTERFACE"))]
+#[cfg(not(CONFIG_ARM_SDE_INTERFACE))]
 #[inline]
 pub fn sdei_handler_abort() {}
 

@@ -38,7 +38,7 @@ extern "C" {
     pub fn s3c64xx_set_xusbxti_freq(freq: c_ulong);
 }
 
-#[cfg(feature = "CONFIG_CPU_S3C6410")]
+#[cfg(CONFIG_CPU_S3C6410)]
 extern "C" {
     pub fn s3c6410_init() -> c_int;
     pub fn s3c6410_init_irq();
@@ -46,13 +46,13 @@ extern "C" {
 }
 
 /* When CONFIG_CPU_S3C6410 is disabled, the C macros expand these names to NULL. */
-#[cfg(not(feature = "CONFIG_CPU_S3C6410"))]
+#[cfg(not(CONFIG_CPU_S3C6410))]
 pub const s3c6410_map_io: Option<unsafe extern "C" fn()> = None;
 
-#[cfg(not(feature = "CONFIG_CPU_S3C6410"))]
+#[cfg(not(CONFIG_CPU_S3C6410))]
 pub const s3c6410_init: Option<unsafe extern "C" fn() -> c_int> = None;
 
-#[cfg(feature = "CONFIG_S3C64XX_PL080")]
+#[cfg(CONFIG_S3C64XX_PL080)]
 extern "C" {
     pub static mut s3c64xx_dma0_plat_data: pl08x_platform_data;
     pub static mut s3c64xx_dma1_plat_data: pl08x_platform_data;

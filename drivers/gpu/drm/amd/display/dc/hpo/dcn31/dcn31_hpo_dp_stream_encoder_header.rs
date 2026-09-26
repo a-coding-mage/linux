@@ -136,8 +136,7 @@ extern "C" {
         vpg: *mut vpg, apg: *mut apg,
         regs: *const dcn31_hpo_dp_stream_encoder_registers,
         hpo_se_shift: *const dcn31_hpo_dp_stream_encoder_shift,
-        hpo_se_mask: *const dcn31_hpo_dp_stream_encoder_mask,
-    );
+        hpo_se_mask: *const dcn31_hpo_dp_stream_encoder_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

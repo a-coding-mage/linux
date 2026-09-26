@@ -73,7 +73,15 @@ static mut div4_div_mult_table: clk_div_mult_table = clk_div_mult_table {
 };
 static mut div4_table: clk_div4_table = clk_div4_table { div_mult_table: &mut div4_div_mult_table };
 
-enum { DIV4_I, DIV4_U, DIV4_SH, DIV4_B, DIV4_B3, DIV4_P, DIV4_SIUA, DIV4_SIUB, DIV4_NR }
+pub const DIV4_I: i32 = 0;
+pub const DIV4_U: i32 = DIV4_I + 1;
+pub const DIV4_SH: i32 = DIV4_U + 1;
+pub const DIV4_B: i32 = DIV4_SH + 1;
+pub const DIV4_B3: i32 = DIV4_B + 1;
+pub const DIV4_P: i32 = DIV4_B3 + 1;
+pub const DIV4_SIUA: i32 = DIV4_P + 1;
+pub const DIV4_SIUB: i32 = DIV4_SIUA + 1;
+pub const DIV4_NR: i32 = DIV4_SIUB + 1;
 
 pub static mut div4_clks: [clk; DIV4_NR] = [
     SH_CLK_DIV4!(&mut pll_clk, FRQCR, 20, 0x1fef, CLK_ENABLE_ON_INIT),
@@ -86,10 +94,52 @@ pub static mut div4_clks: [clk; DIV4_NR] = [
     SH_CLK_DIV4!(&mut pll_clk, SCLKBCR, 0, 0x1fff, 0),
 ];
 
-enum { DIV6_V, DIV6_NR }
+pub const DIV6_V: i32 = 0;
+pub const DIV6_NR: i32 = DIV6_V + 1;
 pub static mut div6_clks: [clk; DIV6_NR] = [SH_CLK_DIV6!(&mut pll_clk, VCLKCR, 0)];
 
-enum { MSTP031, MSTP030, MSTP029, MSTP028, MSTP026, MSTP023, MSTP022, MSTP021, MSTP020, MSTP019, MSTP018, MSTP017, MSTP016, MSTP015, MSTP014, MSTP013, MSTP012, MSTP011, MSTP010, MSTP007, MSTP006, MSTP005, MSTP002, MSTP001, MSTP109, MSTP100, MSTP227, MSTP226, MSTP224, MSTP223, MSTP222, MSTP218, MSTP217, MSTP211, MSTP207, MSTP205, MSTP204, MSTP203, MSTP202, MSTP201, MSTP200, MSTP_NR }
+pub const MSTP031: i32 = 0;
+pub const MSTP030: i32 = MSTP031 + 1;
+pub const MSTP029: i32 = MSTP030 + 1;
+pub const MSTP028: i32 = MSTP029 + 1;
+pub const MSTP026: i32 = MSTP028 + 1;
+pub const MSTP023: i32 = MSTP026 + 1;
+pub const MSTP022: i32 = MSTP023 + 1;
+pub const MSTP021: i32 = MSTP022 + 1;
+pub const MSTP020: i32 = MSTP021 + 1;
+pub const MSTP019: i32 = MSTP020 + 1;
+pub const MSTP018: i32 = MSTP019 + 1;
+pub const MSTP017: i32 = MSTP018 + 1;
+pub const MSTP016: i32 = MSTP017 + 1;
+pub const MSTP015: i32 = MSTP016 + 1;
+pub const MSTP014: i32 = MSTP015 + 1;
+pub const MSTP013: i32 = MSTP014 + 1;
+pub const MSTP012: i32 = MSTP013 + 1;
+pub const MSTP011: i32 = MSTP012 + 1;
+pub const MSTP010: i32 = MSTP011 + 1;
+pub const MSTP007: i32 = MSTP010 + 1;
+pub const MSTP006: i32 = MSTP007 + 1;
+pub const MSTP005: i32 = MSTP006 + 1;
+pub const MSTP002: i32 = MSTP005 + 1;
+pub const MSTP001: i32 = MSTP002 + 1;
+pub const MSTP109: i32 = MSTP001 + 1;
+pub const MSTP100: i32 = MSTP109 + 1;
+pub const MSTP227: i32 = MSTP100 + 1;
+pub const MSTP226: i32 = MSTP227 + 1;
+pub const MSTP224: i32 = MSTP226 + 1;
+pub const MSTP223: i32 = MSTP224 + 1;
+pub const MSTP222: i32 = MSTP223 + 1;
+pub const MSTP218: i32 = MSTP222 + 1;
+pub const MSTP217: i32 = MSTP218 + 1;
+pub const MSTP211: i32 = MSTP217 + 1;
+pub const MSTP207: i32 = MSTP211 + 1;
+pub const MSTP205: i32 = MSTP207 + 1;
+pub const MSTP204: i32 = MSTP205 + 1;
+pub const MSTP203: i32 = MSTP204 + 1;
+pub const MSTP202: i32 = MSTP203 + 1;
+pub const MSTP201: i32 = MSTP202 + 1;
+pub const MSTP200: i32 = MSTP201 + 1;
+pub const MSTP_NR: i32 = MSTP200 + 1;
 
 static mut mstp_clks: [clk; MSTP_NR] = [
     MSTP!(&mut div4_clks[DIV4_I], MSTPCR0, 31, CLK_ENABLE_ON_INIT), MSTP!(&mut div4_clks[DIV4_I], MSTPCR0, 30, CLK_ENABLE_ON_INIT), MSTP!(&mut div4_clks[DIV4_I], MSTPCR0, 29, CLK_ENABLE_ON_INIT), MSTP!(&mut div4_clks[DIV4_SH], MSTPCR0, 28, CLK_ENABLE_ON_INIT), MSTP!(&mut div4_clks[DIV4_B], MSTPCR0, 26, CLK_ENABLE_ON_INIT),

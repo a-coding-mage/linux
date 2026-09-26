@@ -218,10 +218,10 @@ unsafe extern "C" {
     pub fn regulator_desc_list_voltage_linear(desc: *const regulator_desc, selector: u32) -> i32;
 }
 
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 pub unsafe extern "C" fn rdev_get_name(rdev: *mut regulator_dev) -> *const i8;
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 pub unsafe fn rdev_get_name(_rdev: *mut regulator_dev) -> *const i8 { core::ptr::null() }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -60,7 +60,7 @@ unsafe fn tcp_conn_schedule(ipvs: *mut netns_ipvs, af: i32, skb: *mut sk_buff,
 unsafe fn tcp_fast_csum_update(af: i32, tcph: *mut tcphdr,
     oldip: *const nf_inet_addr, newip: *const nf_inet_addr,
     oldport: __be16, newport: __be16) {
-    #[cfg(feature = "CONFIG_IP_VS_IPV6")]
+    #[cfg(CONFIG_IP_VS_IPV6)]
     if af == AF_INET6 {
         (*tcph).check = csum_fold(ip_vs_check_diff16((*oldip).ip6, (*newip).ip6,
             ip_vs_check_diff2(oldport, newport, !csum_unfold((*tcph).check))));
@@ -73,7 +73,7 @@ unsafe fn tcp_fast_csum_update(af: i32, tcph: *mut tcphdr,
 unsafe fn tcp_partial_csum_update(af: i32, tcph: *mut tcphdr,
     oldip: *const nf_inet_addr, newip: *const nf_inet_addr,
     oldlen: __be16, newlen: __be16) {
-    #[cfg(feature = "CONFIG_IP_VS_IPV6")]
+    #[cfg(CONFIG_IP_VS_IPV6)]
     if af == AF_INET6 {
         (*tcph).check = !csum_fold(ip_vs_check_diff16((*oldip).ip6, (*newip).ip6,
             ip_vs_check_diff2(oldlen, newlen, csum_unfold((*tcph).check))));
@@ -85,7 +85,7 @@ unsafe fn tcp_partial_csum_update(af: i32, tcph: *mut tcphdr,
 
 unsafe fn tcp_snat_handler(skb: *mut sk_buff, pp: *mut ip_vs_protocol,
     cp: *mut ip_vs_conn, iph: *mut ip_vs_iphdr) -> i32 {
-    #[cfg(feature = "CONFIG_IP_VS_IPV6")]
+    #[cfg(CONFIG_IP_VS_IPV6)]
     if (*cp).af == AF_INET6 && (*iph).fragoffs != 0 { return 1; }
     let tcphoff = (*iph).len;
     let mut oldlen = (*skb).len - tcphoff;
@@ -108,9 +108,9 @@ unsafe fn tcp_snat_handler(skb: *mut sk_buff, pp: *mut ip_vs_protocol,
     } else {
         (*tcph).check = 0;
         (*skb).csum = skb_checksum(skb, tcphoff, (*skb).len - tcphoff, 0);
-        #[cfg(feature = "CONFIG_IP_VS_IPV6")]
+        #[cfg(CONFIG_IP_VS_IPV6)]
         if (*cp).af == AF_INET6 { (*tcph).check = csum_ipv6_magic(&(*cp).vaddr.in6, &(*cp).caddr.in6, (*skb).len - tcphoff, (*cp).protocol, (*skb).csum); }
-        #[cfg(not(feature = "CONFIG_IP_VS_IPV6"))]
+        #[cfg(not(CONFIG_IP_VS_IPV6))]
         { (*tcph).check = csum_tcpudp_magic((*cp).vaddr.ip, (*cp).caddr.ip, (*skb).len - tcphoff, (*cp).protocol, (*skb).csum); }
         (*skb).ip_summed = CHECKSUM_UNNECESSARY;
         IP_VS_DBG(11, "O-pkt: %s O-csum=%d (+%zd)\n", (*pp).name, (*tcph).check, (tcph as isize + 0) as isize);
@@ -120,7 +120,7 @@ unsafe fn tcp_snat_handler(skb: *mut sk_buff, pp: *mut ip_vs_protocol,
 
 unsafe fn tcp_dnat_handler(skb: *mut sk_buff, pp: *mut ip_vs_protocol,
     cp: *mut ip_vs_conn, iph: *mut ip_vs_iphdr) -> i32 {
-    #[cfg(feature = "CONFIG_IP_VS_IPV6")]
+    #[cfg(CONFIG_IP_VS_IPV6)]
     if (*cp).af == AF_INET6 && (*iph).fragoffs != 0 { return 1; }
     let tcphoff = (*iph).len; let mut oldlen = (*skb).len - tcphoff; let mut payload_csum = false;
     if skb_ensure_writable(skb, tcphoff + core::mem::size_of::<tcphdr>()) != 0 { return 0; }
@@ -128,7 +128,7 @@ unsafe fn tcp_dnat_handler(skb: *mut sk_buff, pp: *mut ip_vs_protocol,
     let tcph = (*skb).data.add(tcphoff) as *mut tcphdr; (*tcph).dest = (*cp).dport;
     if (*skb).ip_summed == CHECKSUM_PARTIAL { tcp_partial_csum_update((*cp).af, tcph, &(*cp).vaddr, &(*cp).daddr, htons(oldlen), htons((*skb).len - tcphoff)); }
     else if !payload_csum { tcp_fast_csum_update((*cp).af, tcph, &(*cp).vaddr, &(*cp).daddr, (*cp).vport, (*cp).dport); if (*skb).ip_summed == CHECKSUM_COMPLETE { (*skb).ip_summed = if !(*cp).app.is_null() { CHECKSUM_UNNECESSARY } else { CHECKSUM_NONE }; } }
-    else { (*tcph).check = 0; (*skb).csum = skb_checksum(skb, tcphoff, (*skb).len - tcphoff, 0); #[cfg(feature = "CONFIG_IP_VS_IPV6")] if (*cp).af == AF_INET6 { (*tcph).check = csum_ipv6_magic(&(*cp).caddr.in6, &(*cp).daddr.in6, (*skb).len - tcphoff, (*cp).protocol, (*skb).csum); } #[cfg(not(feature = "CONFIG_IP_VS_IPV6"))] { (*tcph).check = csum_tcpudp_magic((*cp).caddr.ip, (*cp).daddr.ip, (*skb).len - tcphoff, (*cp).protocol, (*skb).csum); } (*skb).ip_summed = CHECKSUM_UNNECESSARY; }
+    else { (*tcph).check = 0; (*skb).csum = skb_checksum(skb, tcphoff, (*skb).len - tcphoff, 0); #[cfg(CONFIG_IP_VS_IPV6)] if (*cp).af == AF_INET6 { (*tcph).check = csum_ipv6_magic(&(*cp).caddr.in6, &(*cp).daddr.in6, (*skb).len - tcphoff, (*cp).protocol, (*skb).csum); } #[cfg(not(CONFIG_IP_VS_IPV6))] { (*tcph).check = csum_tcpudp_magic((*cp).caddr.ip, (*cp).daddr.ip, (*skb).len - tcphoff, (*cp).protocol, (*skb).csum); } (*skb).ip_summed = CHECKSUM_UNNECESSARY; }
     1
 }
 
@@ -186,16 +186,16 @@ unsafe fn tcp_state_transition(cp: *mut ip_vs_conn, direction: i32,
 unsafe fn tcp_app_hashkey(port: __be16) -> u16 { ((((port as u16) >> TCP_APP_TAB_BITS) ^ port as u16) & TCP_APP_TAB_MASK) as u16 }
 unsafe fn tcp_register_app(ipvs: *mut netns_ipvs, inc: *mut ip_vs_app) -> i32 {
     let pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP); let hash = tcp_app_hashkey((*inc).port); let mut i: *mut ip_vs_app = core::ptr::null_mut();
-    list_for_each_entry(&mut i, &mut (*ipvs).tcp_apps[hash as usize], p_list) { if (*i).port == (*inc).port { return -EEXIST; } }
+    list_for_each_entry!(&mut i, &mut (*ipvs).tcp_apps[hash as usize], p_list, { if (*i).port == (*inc).port { return -EEXIST; } });
     list_add_rcu(&mut (*inc).p_list, &mut (*ipvs).tcp_apps[hash as usize]); atomic_inc(&mut (*pd).appcnt); 0
 }
 unsafe fn tcp_unregister_app(ipvs: *mut netns_ipvs, inc: *mut ip_vs_app) { let pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP); atomic_dec(&mut (*pd).appcnt); list_del_rcu(&mut (*inc).p_list); }
 unsafe fn tcp_app_conn_bind(cp: *mut ip_vs_conn) -> i32 {
     if IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ { return 0; }
     let ipvs = (*cp).ipvs; let hash = tcp_app_hashkey((*cp).vport); let mut inc: *mut ip_vs_app = core::ptr::null_mut(); let mut result = 0;
-    list_for_each_entry_rcu(&mut inc, &mut (*ipvs).tcp_apps[hash as usize], p_list) {
+    list_for_each_entry_rcu!(&mut inc, &mut (*ipvs).tcp_apps[hash as usize], p_list, {
         if (*inc).port == (*cp).vport { if !ip_vs_app_inc_get(inc) { break; } (*cp).app = inc; if let Some(f) = (*inc).init_conn { result = f(inc, cp); } break; }
-    } result
+    }); result
 }
 pub unsafe fn ip_vs_tcp_conn_listen(cp: *mut ip_vs_conn) { let pd = ip_vs_proto_data_get((*cp).ipvs, IPPROTO_TCP); spin_lock_bh(&mut (*cp).lock); (*cp).state = IP_VS_TCP_S_LISTEN; (*cp).timeout = if !pd.is_null() { (*pd).timeout_table[IP_VS_TCP_S_LISTEN as usize] } else { TCP_TIMEOUTS[IP_VS_TCP_S_LISTEN as usize] }; spin_unlock_bh(&mut (*cp).lock); }
 unsafe fn __ip_vs_tcp_init(ipvs: *mut netns_ipvs, pd: *mut ip_vs_proto_data) -> i32 { ip_vs_init_hash_table((*ipvs).tcp_apps.as_mut_ptr(), TCP_APP_TAB_SIZE); (*pd).timeout_table = ip_vs_create_timeout_table(TCP_TIMEOUTS.as_ptr() as *mut i32, core::mem::size_of_val(&TCP_TIMEOUTS)); if (*pd).timeout_table.is_null() { return -ENOMEM; } (*pd).tcp_state_table = TCP_STATES.as_mut_ptr(); 0 }

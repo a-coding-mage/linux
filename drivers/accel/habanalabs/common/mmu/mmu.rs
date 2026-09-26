@@ -12,16 +12,18 @@ pub unsafe fn hl_is_dram_va(hdev: *mut hl_device, virt_addr: u64) -> bool {
 
 pub unsafe fn hl_mmu_init(hdev: *mut hl_device) -> i32 {
     let mut rc = -EOPNOTSUPP;
+    'fini_dr_mmu: {
     if (*hdev).mmu_disable { return 0; }
     mutex_init(&mut (*hdev).mmu_lock);
     if (*hdev).mmu_func[MMU_DR_PGT].init.is_some() {
         rc = ((*hdev).mmu_func[MMU_DR_PGT].init.unwrap())(hdev); if rc != 0 { return rc; }
     }
     if (*hdev).mmu_func[MMU_HR_PGT].init.is_some() {
-        rc = ((*hdev).mmu_func[MMU_HR_PGT].init.unwrap())(hdev); if rc != 0 { goto fini_dr_mmu; }
+        rc = ((*hdev).mmu_func[MMU_HR_PGT].init.unwrap())(hdev); if rc != 0 { break 'fini_dr_mmu; }
     }
     return 0;
-fini_dr_mmu:
+    }
+    
     if (*hdev).mmu_func[MMU_DR_PGT].fini.is_some() { ((*hdev).mmu_func[MMU_DR_PGT].fini.unwrap())(hdev); }
     rc
 }
@@ -35,11 +37,13 @@ pub unsafe fn hl_mmu_fini(hdev: *mut hl_device) {
 
 pub unsafe fn hl_mmu_ctx_init(ctx: *mut hl_ctx) -> i32 {
     let hdev = (*ctx).hdev; let mut rc = -EOPNOTSUPP;
+    'fini_dr_ctx: {
     if (*hdev).mmu_disable { return 0; }
     if (*hdev).mmu_func[MMU_DR_PGT].ctx_init.is_some() { rc = ((*hdev).mmu_func[MMU_DR_PGT].ctx_init.unwrap())(ctx); if rc != 0 { return rc; } }
-    if (*hdev).mmu_func[MMU_HR_PGT].ctx_init.is_some() { rc = ((*hdev).mmu_func[MMU_HR_PGT].ctx_init.unwrap())(ctx); if rc != 0 { goto fini_dr_ctx; } }
+    if (*hdev).mmu_func[MMU_HR_PGT].ctx_init.is_some() { rc = ((*hdev).mmu_func[MMU_HR_PGT].ctx_init.unwrap())(ctx); if rc != 0 { break 'fini_dr_ctx; } }
     return 0;
-fini_dr_ctx:
+    }
+    
     if (*hdev).mmu_func[MMU_DR_PGT].fini.is_some() { ((*hdev).mmu_func[MMU_DR_PGT].fini.unwrap())(hdev); } rc
 }
 

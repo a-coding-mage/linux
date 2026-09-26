@@ -15,7 +15,7 @@
 
 // Dependencies are supplied by the surrounding kernel translation unit.
 
-static inline fn to_htlb1_esel(esel: usize) -> usize {
+inline fn to_htlb1_esel(esel: usize) -> usize {
     host_tlb_params[1].entries - esel - 1
 }
 
@@ -24,11 +24,11 @@ static mut host_tlb_params: [kvmppc_e500_tlb_params; E500_TLB_NUM] = [
     kvmppc_e500_tlb_params { entries: 0, ways: 0, sets: 0 },
 ];
 
-static inline fn tlb1_max_shadow_size() -> u32 {
+inline fn tlb1_max_shadow_size() -> u32 {
     unsafe { host_tlb_params[1].entries - tlbcam_index - 1 }
 }
 
-static inline fn e500_shadow_mas3_attrib(mut mas3: u32, writable: bool, usermode: i32) -> u32 {
+inline fn e500_shadow_mas3_attrib(mut mas3: u32, writable: bool, usermode: i32) -> u32 {
     mas3 &= MAS3_ATTRIB_MASK;
     if !writable { mas3 &= !(MAS3_UW | MAS3_SW); }
     // CONFIG_KVM_BOOKE_HV condition is preserved by the source build.
@@ -40,7 +40,7 @@ static inline fn e500_shadow_mas3_attrib(mut mas3: u32, writable: bool, usermode
     mas3
 }
 
-static inline unsafe fn __write_host_tlbe(stlbe: *mut kvm_book3e_206_tlb_entry, mas0: u32, lpid: u32) {
+inline unsafe fn __write_host_tlbe(stlbe: *mut kvm_book3e_206_tlb_entry, mas0: u32, lpid: u32) {
     let mut flags: ulong = 0;
     local_irq_save(&mut flags);
     mtspr(SPRN_MAS0, mas0); mtspr(SPRN_MAS1, (*stlbe).mas1);
@@ -52,7 +52,7 @@ static inline unsafe fn __write_host_tlbe(stlbe: *mut kvm_book3e_206_tlb_entry, 
     trace_kvm_booke206_stlb_write(mas0, (*stlbe).mas8, (*stlbe).mas1, (*stlbe).mas2, (*stlbe).mas7_3);
 }
 
-static unsafe fn get_host_mas0(eaddr: ulong) -> u32 {
+unsafe fn get_host_mas0(eaddr: ulong) -> u32 {
     let mut flags: ulong = 0; let mas4: u32;
     local_irq_save(&mut flags); mtspr(SPRN_MAS6, 0); mas4 = mfspr(SPRN_MAS4);
     mtspr(SPRN_MAS4, mas4 & !MAS4_TLBSEL_MASK);
@@ -60,12 +60,12 @@ static unsafe fn get_host_mas0(eaddr: ulong) -> u32 {
     let mas0 = mfspr(SPRN_MAS0); mtspr(SPRN_MAS4, mas4); local_irq_restore(flags); mas0
 }
 
-static unsafe fn write_host_tlbe(vcpu_e500: *mut kvmppc_vcpu_e500, tlbsel: i32, sesel: i32, stlbe: *mut kvm_book3e_206_tlb_entry) {
+unsafe fn write_host_tlbe(vcpu_e500: *mut kvmppc_vcpu_e500, tlbsel: i32, sesel: i32, stlbe: *mut kvm_book3e_206_tlb_entry) {
     let mas0 = if tlbsel == 0 { get_host_mas0((*stlbe).mas2) } else { MAS0_TLBSEL(1) | MAS0_ESEL(to_htlb1_esel(sesel as usize)) };
     __write_host_tlbe(stlbe, mas0, (*(*vcpu_e500).vcpu.kvm).arch.lpid);
 }
 
-static unsafe fn write_stlbe(vcpu_e500: *mut kvmppc_vcpu_e500, gtlbe: *mut kvm_book3e_206_tlb_entry, stlbe: *mut kvm_book3e_206_tlb_entry, stlbsel: i32, sesel: i32) {
+unsafe fn write_stlbe(vcpu_e500: *mut kvmppc_vcpu_e500, gtlbe: *mut kvm_book3e_206_tlb_entry, stlbe: *mut kvm_book3e_206_tlb_entry, stlbsel: i32, sesel: i32) {
     preempt_disable();
     let stid = kvmppc_e500_get_tlb_stid(&mut (*vcpu_e500).vcpu, gtlbe);
     (*stlbe).mas1 |= MAS1_TID(stid); write_host_tlbe(vcpu_e500, stlbsel, sesel, stlbe); preempt_enable();

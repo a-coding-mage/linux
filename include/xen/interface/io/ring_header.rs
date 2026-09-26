@@ -87,8 +87,8 @@ macro_rules! XEN_FLEX_RING_SIZE { ($order:expr) => { 1usize << (($order) + $crat
 
 #[macro_export]
 macro_rules! DEFINE_XEN_FLEX_RING {
-    ($name:ident, $data:ident) => {
-        #[inline] pub fn $name##_mask(idx: $crate::RING_IDX, ring_size: $crate::RING_IDX) -> $crate::RING_IDX { idx & (ring_size - 1) }
+    ($name:tt, $data:ident) => {
+        #[inline] pub fn ::kernel::macros::paste!([<$name _mask>])(idx: $crate::RING_IDX, ring_size: $crate::RING_IDX) -> $crate::RING_IDX { idx & (ring_size - 1) }
         #[repr(C)] pub struct $data { pub r#in: *mut u8, pub out: *mut u8 }
     };
 }

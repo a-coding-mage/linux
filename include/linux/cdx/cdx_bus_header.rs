@@ -108,7 +108,7 @@ macro_rules! CDX_DEVICE_DRIVER_OVERRIDE {
 }
 
 #[macro_export]
-macro_rules! to_cdx_device { ($dev:expr) => { container_of!($dev, cdx_device, dev) }; }
+macro_rules! to_cdx_device { ($dev:expr) => { container_of!($dev, cdx_device, $dev) }; }
 #[macro_export]
 macro_rules! cdx_resource_start { ($dev:expr, $num:expr) => { ($dev).res[$num].start }; }
 #[macro_export]

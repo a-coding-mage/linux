@@ -50,6 +50,7 @@ pub mod auxiliary;
 pub mod bcd;
 pub mod bitfield;
 pub mod bitmap;
+pub mod bitrev;
 pub mod bits;
 #[cfg(CONFIG_BLOCK)]
 pub mod block;
@@ -147,6 +148,8 @@ pub mod tracepoint;
 pub mod transmute;
 pub mod types;
 pub mod uaccess;
+#[cfg(CONFIG_UNION_FIND)]
+pub mod union_find;
 #[cfg(CONFIG_USB = "y")]
 pub mod usb;
 pub mod workqueue;

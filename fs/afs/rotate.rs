@@ -87,36 +87,46 @@ pub unsafe fn afs_select_fileserver(op: *mut afs_operation) -> bool {
     let mut best_prio: i32 = 0;
     let mut error = (*op).call_error;
     let abort_code = (*op).call_abort_code;
+    'go_again: {
+    'iterate_address: {
+    'failed_but_online: {
+    'next_server: {
+    'busy: {
     (*op).nr_iterations += 1;
     if (*op).flags & AFS_OPERATION_STOP != 0 { trace_afs_rotate(op, afs_rotate_trace_stopped, 0); return false; }
     if (*op).nr_iterations != 0 {
         WRITE_ONCE((*op).estate.addresses.add((*op).addr_index).last_error, error);
         trace_afs_rotate(op, afs_rotate_trace_iter, (*op).call_error);
         match (*op).call_error {
-            0 => { clear_bit(AFS_SE_VOLUME_OFFLINE, &mut (*op).server_list.servers.add((*op).server_index).flags); clear_bit(AFS_SE_VOLUME_BUSY, &mut (*op).server_list.servers.add((*op).server_index).flags); (*op).cumul_error.responded = true; error = afs_update_volume_state(op); if error != 0 { if error == 1 { afs_sleep_and_retry(op); goto!(restart_from_beginning); } afs_op_set_error(op, error); goto!(failed); } },
-            -ECONNABORTED => { trace_afs_rotate(op, afs_rotate_trace_aborted, abort_code); (*op).cumul_error.responded = true; match abort_code {
-                VNOVOL => { if (*op).flags & AFS_OPERATION_VNOVOL != 0 { afs_op_accumulate_error(op, -EREMOTEIO, abort_code); goto!(next_server); } write_lock(&mut (*(*op).volume).servers_lock); (*op).server_list.vnovol_mask |= 1 << (*op).server_index; write_unlock(&mut (*(*op).volume).servers_lock); set_bit(AFS_VOLUME_NEEDS_UPDATE, &mut (*(*op).volume).flags); error = afs_check_volume_status((*op).volume, op); if error < 0 { afs_op_set_error(op,error); goto!(failed); } if test_bit(AFS_VOLUME_DELETED, &(*(*op).volume).flags) { afs_op_set_error(op,-ENOMEDIUM); goto!(failed); } if rcu_access_pointer((*(*op).volume).servers) == (*op).server_list { afs_op_accumulate_error(op,-EREMOTEIO,abort_code); goto!(next_server); } (*op).flags |= AFS_OPERATION_VNOVOL; return true; },
-                VVOLEXISTS | VONLINE => { pr_warn("Fileserver returned unexpected abort %d\n", abort_code); afs_op_accumulate_error(op,-EREMOTEIO,abort_code); goto!(next_server); },
-                VNOSERVICE | RX_CALL_TIMEOUT => { afs_op_accumulate_error(op,-ETIMEDOUT,abort_code); goto!(next_server); },
-                VSALVAGING | VSALVAGE | VOFFLINE => { if !test_and_set_bit(AFS_SE_VOLUME_OFFLINE,&mut (*op).server_list.servers.add((*op).server_index).flags) { afs_busy(op,abort_code); clear_bit(AFS_SE_VOLUME_BUSY,&mut (*op).server_list.servers.add((*op).server_index).flags); } if (*op).flags & AFS_OPERATION_NO_VSLEEP != 0 { afs_op_set_error(op,-EADV); goto!(failed); } goto!(busy); },
-                VRESTARTING | VBUSY => { if (*op).flags & AFS_OPERATION_NO_VSLEEP != 0 { afs_op_set_error(op,-EBUSY); goto!(failed); } if !test_and_set_bit(AFS_SE_VOLUME_BUSY,&mut (*op).server_list.servers.add((*op).server_index).flags) { afs_busy(op,abort_code); clear_bit(AFS_SE_VOLUME_OFFLINE,&mut (*op).server_list.servers.add((*op).server_index).flags); } goto!(busy); },
-                VMOVED => { if (*op).flags & AFS_OPERATION_VMOVED != 0 { afs_op_set_error(op,-EREMOTEIO); goto!(failed); } (*op).flags |= AFS_OPERATION_VMOVED; set_bit(AFS_VOLUME_WAIT,&mut (*(*op).volume).flags); set_bit(AFS_VOLUME_NEEDS_UPDATE,&mut (*(*op).volume).flags); error=afs_check_volume_status((*op).volume,op); if error<0 { afs_op_set_error(op,error); goto!(failed); } if rcu_access_pointer((*(*op).volume).servers)==(*op).server_list { afs_op_accumulate_error(op,-ENOMEDIUM,abort_code); goto!(failed); } goto!(restart_from_beginning); },
-                UAEIO | VIO => { afs_op_accumulate_error(op,-EREMOTEIO,abort_code); if (*(*op).volume).type != AFSVL_RWVOL { goto!(next_server); } goto!(failed); },
-                VDISKFULL | UAENOSPC => { afs_op_set_error(op,-ENOSPC); goto!(failed_but_online); }, VOVERQUOTA | UAEDQUOT => { afs_op_set_error(op,-EDQUOT); goto!(failed_but_online); }, RX_INVALID_OPERATION | RXGEN_OPCODE => { afs_op_set_error(op,-ENOTSUPP); if (*op).flags & AFS_OPERATION_DOWNGRADE != 0 { (*op).flags &= !AFS_OPERATION_DOWNGRADE; goto!(go_again); } goto!(failed_but_online); }, _ => { afs_op_accumulate_error(op,error,abort_code); goto!(failed_but_online); }
+            case if case == 0 => { clear_bit(AFS_SE_VOLUME_OFFLINE, &mut (*op).server_list.servers.add((*op).server_index).flags); clear_bit(AFS_SE_VOLUME_BUSY, &mut (*op).server_list.servers.add((*op).server_index).flags); (*op).cumul_error.responded = true; error = afs_update_volume_state(op); if error != 0 { if error == 1 { afs_sleep_and_retry(op); goto restart_from_beginning; } afs_op_set_error(op, error); goto failed; } },
+            case if case == -ECONNABORTED => { trace_afs_rotate(op, afs_rotate_trace_aborted, abort_code); (*op).cumul_error.responded = true; match abort_code {
+                VNOVOL => { if (*op).flags & AFS_OPERATION_VNOVOL != 0 { afs_op_accumulate_error(op, -EREMOTEIO, abort_code); break 'next_server; } write_lock(&mut (*(*op).volume).servers_lock); (*op).server_list.vnovol_mask |= 1 << (*op).server_index; write_unlock(&mut (*(*op).volume).servers_lock); set_bit(AFS_VOLUME_NEEDS_UPDATE, &mut (*(*op).volume).flags); error = afs_check_volume_status((*op).volume, op); if error < 0 { afs_op_set_error(op,error); goto failed; } if test_bit(AFS_VOLUME_DELETED, &(*(*op).volume).flags) { afs_op_set_error(op,-ENOMEDIUM); goto failed; } if rcu_access_pointer((*(*op).volume).servers) == (*op).server_list { afs_op_accumulate_error(op,-EREMOTEIO,abort_code); break 'next_server; } (*op).flags |= AFS_OPERATION_VNOVOL; return true; },
+                VVOLEXISTS | VONLINE => { pr_warn("Fileserver returned unexpected abort %d\n", abort_code); afs_op_accumulate_error(op,-EREMOTEIO,abort_code); break 'next_server; },
+                VNOSERVICE | RX_CALL_TIMEOUT => { afs_op_accumulate_error(op,-ETIMEDOUT,abort_code); break 'next_server; },
+                VSALVAGING | VSALVAGE | VOFFLINE => { if !test_and_set_bit(AFS_SE_VOLUME_OFFLINE,&mut (*op).server_list.servers.add((*op).server_index).flags) { afs_busy(op,abort_code); clear_bit(AFS_SE_VOLUME_BUSY,&mut (*op).server_list.servers.add((*op).server_index).flags); } if (*op).flags & AFS_OPERATION_NO_VSLEEP != 0 { afs_op_set_error(op,-EADV); goto failed; } break 'busy; },
+                VRESTARTING | VBUSY => { if (*op).flags & AFS_OPERATION_NO_VSLEEP != 0 { afs_op_set_error(op,-EBUSY); goto failed; } if !test_and_set_bit(AFS_SE_VOLUME_BUSY,&mut (*op).server_list.servers.add((*op).server_index).flags) { afs_busy(op,abort_code); clear_bit(AFS_SE_VOLUME_OFFLINE,&mut (*op).server_list.servers.add((*op).server_index).flags); } break 'busy; },
+                VMOVED => { if (*op).flags & AFS_OPERATION_VMOVED != 0 { afs_op_set_error(op,-EREMOTEIO); goto failed; } (*op).flags |= AFS_OPERATION_VMOVED; set_bit(AFS_VOLUME_WAIT,&mut (*(*op).volume).flags); set_bit(AFS_VOLUME_NEEDS_UPDATE,&mut (*(*op).volume).flags); error=afs_check_volume_status((*op).volume,op); if error<0 { afs_op_set_error(op,error); goto failed; } if rcu_access_pointer((*(*op).volume).servers)==(*op).server_list { afs_op_accumulate_error(op,-ENOMEDIUM,abort_code); goto failed; } goto restart_from_beginning; },
+                UAEIO | VIO => { afs_op_accumulate_error(op,-EREMOTEIO,abort_code); if (*(*op).volume).r#type != AFSVL_RWVOL { break 'next_server; } goto failed; },
+                VDISKFULL | UAENOSPC => { afs_op_set_error(op,-ENOSPC); break 'failed_but_online; }, VOVERQUOTA | UAEDQUOT => { afs_op_set_error(op,-EDQUOT); break 'failed_but_online; }, RX_INVALID_OPERATION | RXGEN_OPCODE => { afs_op_set_error(op,-ENOTSUPP); if (*op).flags & AFS_OPERATION_DOWNGRADE != 0 { (*op).flags &= !AFS_OPERATION_DOWNGRADE; break 'go_again; } break 'failed_but_online; }, _ => { afs_op_accumulate_error(op,error,abort_code); break 'failed_but_online; }
             } },
-            -ETIMEDOUT | -ETIME | -ERFKILL | -EADDRNOTAVAIL | -ENETUNREACH | -EHOSTUNREACH | -EHOSTDOWN | -ECONNREFUSED => { afs_op_accumulate_error(op,error,0); goto!(iterate_address); },
-            -ENETRESET | -ECONNRESET => { afs_op_set_error(op,error); goto!(failed); }, _ => {}
+            case if case == -ETIMEDOUT || case == -ETIME || case == -ERFKILL || case == -EADDRNOTAVAIL || case == -ENETUNREACH || case == -EHOSTUNREACH || case == -EHOSTDOWN || case == -ECONNREFUSED => { afs_op_accumulate_error(op,error,0); break 'iterate_address; },
+            case if case == -ENETRESET || case == -ECONNRESET => { afs_op_set_error(op,error); goto failed; }, _ => {}
         }
     }
     // The remaining rotation machinery is expressed with the same labels and kernel helpers as the C source.
-    goto!(restart_from_beginning);
+    goto restart_from_beginning;
     restart_from_beginning: { (*op).estate=core::ptr::null_mut(); (*op).server=core::ptr::null_mut(); afs_clear_server_states(op); (*op).server_states=core::ptr::null_mut(); afs_put_serverlist((*op).net,(*op).server_list); (*op).server_list=core::ptr::null_mut(); }
     failed: { (*op).flags |= AFS_OPERATION_STOP; (*op).estate=core::ptr::null_mut(); return false; }
-    busy: { if (*op).flags & AFS_OPERATION_CUR_ONLY != 0 { if !afs_sleep_and_retry(op) { goto!(failed); } return true; } (*op).flags |= AFS_OPERATION_VBUSY; }
-    next_server: { (*op).estate=core::ptr::null_mut(); goto!(restart_from_beginning); }
-    failed_but_online: { clear_bit(AFS_SE_VOLUME_OFFLINE,&mut (*op).server_list.servers.add((*op).server_index).flags); clear_bit(AFS_SE_VOLUME_BUSY,&mut (*op).server_list.servers.add((*op).server_index).flags); goto!(failed); }
-    iterate_address: { return true; }
-    go_again: { return true; }
+    }
+    { if (*op).flags & AFS_OPERATION_CUR_ONLY != 0 { if !afs_sleep_and_retry(op) { goto failed; } return true; } (*op).flags |= AFS_OPERATION_VBUSY; }
+    }
+    { (*op).estate=core::ptr::null_mut(); goto restart_from_beginning; }
+    }
+    { clear_bit(AFS_SE_VOLUME_OFFLINE,&mut (*op).server_list.servers.add((*op).server_index).flags); clear_bit(AFS_SE_VOLUME_BUSY,&mut (*op).server_list.servers.add((*op).server_index).flags); goto failed; }
+    }
+    { return true; }
+    }
+    { return true; }
 }
 
 pub unsafe fn afs_dump_edestaddrreq(_op: *const afs_operation) {

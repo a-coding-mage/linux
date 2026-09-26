@@ -82,7 +82,7 @@ pub unsafe fn __cvmx_interrupt_gmxx_enable(interface: ::core::ffi::c_int) {
              * errors through port 0.  RGMII needs
              * to check all 4 ports
              */
-            if mode.s.type != 0 {
+            if mode.s.r#type != 0 {
                 num_ports = 1;
             } else {
                 num_ports = 4;
@@ -93,7 +93,7 @@ pub unsafe fn __cvmx_interrupt_gmxx_enable(interface: ::core::ffi::c_int) {
              * or three ports. GMII and MII has 2,
              * RGMII has three
              */
-            if mode.s.type != 0 {
+            if mode.s.r#type != 0 {
                 num_ports = 2;
             } else {
                 num_ports = 3;

@@ -81,6 +81,7 @@ unsafe fn vsock_bpf_recvmsg(
     let psock: *mut sk_psock = sk_psock_get(sk);
     let vsk: *mut vsock_sock;
     let mut copied: c_int;
+    'out: {
 
     if psock.is_null() {
         return __vsock_recvmsg(sk, msg, len, flags);
@@ -91,7 +92,7 @@ unsafe fn vsock_bpf_recvmsg(
 
     if WARN_ON_ONCE((*vsk).transport.is_null()) {
         copied = -ENODEV;
-        goto_out!(out);
+        break 'out;
     }
 
     if vsock_has_data(sk, psock) && sk_psock_queue_empty(psock) {
@@ -117,8 +118,8 @@ unsafe fn vsock_bpf_recvmsg(
 
         copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
     }
-
-    out:
+    }
+    
     release_sock(sk);
     sk_psock_put(sk, psock);
 

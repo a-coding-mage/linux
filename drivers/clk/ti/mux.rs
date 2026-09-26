@@ -11,7 +11,7 @@
 // linux/clk-provider.h, linux/slab.h, linux/err.h, linux/of.h,
 // linux/of_address.h, linux/clk/ti.h, and clock.h.
 
-static unsafe fn ti_clk_mux_get_parent(hw: *mut clk_hw) -> u8 {
+unsafe fn ti_clk_mux_get_parent(hw: *mut clk_hw) -> u8 {
     let mux: *mut clk_omap_mux = to_clk_omap_mux(hw);
     let num_parents: i32 = clk_hw_get_num_parents(hw);
     let mut val: u32;
@@ -52,7 +52,7 @@ static unsafe fn ti_clk_mux_get_parent(hw: *mut clk_hw) -> u8 {
     val as u8
 }
 
-static unsafe fn ti_clk_mux_set_parent(hw: *mut clk_hw, mut index: u8) -> i32 {
+unsafe fn ti_clk_mux_set_parent(hw: *mut clk_hw, mut index: u8) -> i32 {
     let mux: *mut clk_omap_mux = to_clk_omap_mux(hw);
     let mut val: u32;
 
@@ -86,7 +86,7 @@ static unsafe fn ti_clk_mux_set_parent(hw: *mut clk_hw, mut index: u8) -> i32 {
  *
  * Save the parent mux value.
  */
-static unsafe fn clk_mux_save_context(hw: *mut clk_hw) -> i32 {
+unsafe fn clk_mux_save_context(hw: *mut clk_hw) -> i32 {
     let mux: *mut clk_omap_mux = to_clk_omap_mux(hw);
     (*mux).saved_parent = ti_clk_mux_get_parent(hw);
     0
@@ -98,7 +98,7 @@ static unsafe fn clk_mux_save_context(hw: *mut clk_hw) -> i32 {
  *
  * Restore the saved parent mux value.
  */
-static unsafe fn clk_mux_restore_context(hw: *mut clk_hw) {
+unsafe fn clk_mux_restore_context(hw: *mut clk_hw) {
     let mux: *mut clk_omap_mux = to_clk_omap_mux(hw);
     ti_clk_mux_set_parent(hw, (*mux).saved_parent);
 }
@@ -111,7 +111,7 @@ const ti_clk_mux_ops: clk_ops = clk_ops {
     restore_context: Some(clk_mux_restore_context),
 };
 
-static unsafe fn _register_mux(
+unsafe fn _register_mux(
     node: *mut device_node,
     name: *const c_char,
     parent_data: *const clk_parent_data,
@@ -158,7 +158,7 @@ static unsafe fn _register_mux(
  *
  * Sets up a basic clock multiplexer.
  */
-static unsafe fn of_mux_clk_setup(node: *mut device_node) {
+unsafe fn of_mux_clk_setup(node: *mut device_node) {
     let mut reg: clk_omap_reg = core::mem::zeroed();
     let num_parents = of_clk_get_parent_count(node);
     let mut clk_mux_flags: u8 = 0;
@@ -209,7 +209,7 @@ pub unsafe fn ti_clk_build_component_mux(setup: *mut ti_clk_mux) -> *mut clk_hw 
     &mut (*mux).hw
 }
 
-static unsafe fn of_ti_composite_mux_clk_setup(node: *mut device_node) {
+unsafe fn of_ti_composite_mux_clk_setup(node: *mut device_node) {
     let mux: *mut clk_omap_mux = kzalloc_obj::<clk_omap_mux>();
     if mux.is_null() { return; }
     if ti_clk_get_reg_addr(node, 0, &mut (*mux).reg) != 0 { kfree(mux); return; }

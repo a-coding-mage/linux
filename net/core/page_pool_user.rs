@@ -45,17 +45,17 @@ unsafe fn netdev_nl_page_pool_get_dump(skb: *mut sk_buff, cb: *mut netlink_callb
     if !ifindex_attr.is_null() { (*state).ifindex = nla_get_u32(ifindex_attr) as c_ulong; }
     rtnl_lock();
     mutex_lock(&raw mut PAGE_POOLS_LOCK);
-    for_each_netdev_dump(net, netdev, (*state).ifindex) {
+    for_each_netdev_dump!(net, netdev, (*state).ifindex, {
         if !ifindex_attr.is_null() && (*netdev).ifindex != nla_get_u32(ifindex_attr) { break; }
-        hlist_for_each_entry(pool, &(*netdev).page_pools, user.list) {
+        hlist_for_each_entry!(pool, &(*netdev).page_pools, user.list, {
             if (*state).pp_id != 0 && (*state).pp_id < (*pool).user.id { continue; }
             (*state).pp_id = (*pool).user.id;
             err = fill(skb, pool, info);
             if err != 0 { break; }
-        }
+        });
         if err != 0 { break; }
         (*state).pp_id = 0;
-    }
+    });
     mutex_unlock(&raw mut PAGE_POOLS_LOCK);
     rtnl_unlock();
     err
@@ -63,7 +63,7 @@ unsafe fn netdev_nl_page_pool_get_dump(skb: *mut sk_buff, cb: *mut netlink_callb
 
 unsafe fn page_pool_nl_stats_fill(rsp: *mut sk_buff, pool: *const page_pool,
                                   info: *const genl_info) -> c_int {
-    #[cfg(feature = "CONFIG_PAGE_POOL_STATS")]
+    #[cfg(CONFIG_PAGE_POOL_STATS)]
     {
         let mut stats: page_pool_stats = core::mem::zeroed();
         page_pool_get_stats(pool, &mut stats);
@@ -72,7 +72,7 @@ unsafe fn page_pool_nl_stats_fill(rsp: *mut sk_buff, pool: *const page_pool,
         let nest = nla_nest_start(rsp, NETDEV_A_PAGE_POOL_STATS_INFO);
         if nest.is_null() { genlmsg_cancel(rsp, hdr); return -EMSGSIZE; }
         if nla_put_uint(rsp, NETDEV_A_PAGE_POOL_ID, (*pool).user.id) != 0 ||
-           ((*pool).slow.netdev->ifindex != LOOPBACK_IFINDEX && nla_put_u32(rsp, NETDEV_A_PAGE_POOL_IFINDEX, (*pool).slow.netdev->ifindex) != 0) {
+           ((*(*pool).slow.netdev).ifindex != LOOPBACK_IFINDEX && nla_put_u32(rsp, NETDEV_A_PAGE_POOL_IFINDEX, (*(*pool).slow.netdev).ifindex) != 0) {
             nla_nest_cancel(rsp, nest); genlmsg_cancel(rsp, hdr); return -EMSGSIZE;
         }
         nla_nest_end(rsp, nest);
@@ -91,7 +91,7 @@ unsafe fn page_pool_nl_stats_fill(rsp: *mut sk_buff, pool: *const page_pool,
         }
         genlmsg_end(rsp, hdr); return 0;
     }
-    #[cfg(not(feature = "CONFIG_PAGE_POOL_STATS"))]
+    #[cfg(not(CONFIG_PAGE_POOL_STATS))]
     { GENL_SET_ERR_MSG(info, "kernel built without CONFIG_PAGE_POOL_STATS"); -EOPNOTSUPP }
 }
 
@@ -126,7 +126,7 @@ pub unsafe extern "C" fn netdev_nl_page_pool_stats_get_dumpit(skb: *mut sk_buff,
 unsafe fn page_pool_nl_fill(rsp: *mut sk_buff, pool: *const page_pool, info: *const genl_info) -> c_int {
     let hdr = genlmsg_iput(rsp, info); if hdr.is_null() { return -EMSGSIZE; }
     if nla_put_uint(rsp, NETDEV_A_PAGE_POOL_ID, (*pool).user.id) != 0 { genlmsg_cancel(rsp, hdr); return -EMSGSIZE; }
-    if (*pool).slow.netdev->ifindex != LOOPBACK_IFINDEX && nla_put_u32(rsp, NETDEV_A_PAGE_POOL_IFINDEX, (*pool).slow.netdev->ifindex) != 0 { genlmsg_cancel(rsp, hdr); return -EMSGSIZE; }
+    if (*(*pool).slow.netdev).ifindex != LOOPBACK_IFINDEX && nla_put_u32(rsp, NETDEV_A_PAGE_POOL_IFINDEX, (*(*pool).slow.netdev).ifindex) != 0 { genlmsg_cancel(rsp, hdr); return -EMSGSIZE; }
     let napi_id = if !(*pool).p.napi.is_null() { READ_ONCE((*pool).p.napi.napi_id) } else { 0 };
     if napi_id_valid(napi_id) && nla_put_uint(rsp, NETDEV_A_PAGE_POOL_NAPI_ID, napi_id) != 0 { genlmsg_cancel(rsp, hdr); return -EMSGSIZE; }
     let inflight = page_pool_inflight(pool, false); let refsz = PAGE_SIZE << (*pool).p.order;
@@ -170,11 +170,11 @@ pub unsafe extern "C" fn page_pool_unlist(pool: *mut page_pool) { mutex_lock(&ra
 pub unsafe extern "C" fn page_pool_check_memory_provider(dev: *mut net_device, rxq: *mut netdev_rx_queue) -> c_int {
     let binding = (*rxq).mp_params.mp_priv; if binding.is_null() { return 0; }
     mutex_lock(&raw mut PAGE_POOLS_LOCK);
-    hlist_for_each_entry_safe(pool, n, &(*dev).page_pools, user.list) { if (*pool).mp_priv != binding { continue; } if (*pool).slow.queue_idx == get_netdev_rx_queue_index(rxq) { mutex_unlock(&raw mut PAGE_POOLS_LOCK); return 0; } }
+    hlist_for_each_entry_safe!(pool, n, &(*dev).page_pools, user.list, { if (*pool).mp_priv != binding { continue; } if (*pool).slow.queue_idx == get_netdev_rx_queue_index(rxq) { mutex_unlock(&raw mut PAGE_POOLS_LOCK); return 0; } });
     mutex_unlock(&raw mut PAGE_POOLS_LOCK); -ENODATA
 }
-unsafe fn page_pool_unreg_netdev_wipe(netdev: *mut net_device) { mutex_lock(&raw mut PAGE_POOLS_LOCK); hlist_for_each_entry_safe(pool, n, &(*netdev).page_pools, user.list) { hlist_del_init(&mut (*pool).user.list); (*pool).slow.netdev = NET_PTR_POISON; } mutex_unlock(&raw mut PAGE_POOLS_LOCK); }
-unsafe fn page_pool_unreg_netdev(netdev: *mut net_device) { let lo = dev_net(netdev).loopback_dev; mutex_lock(&raw mut PAGE_POOLS_LOCK); let mut last = core::ptr::null_mut(); hlist_for_each_entry(pool, &(*netdev).page_pools, user.list) { (*pool).slow.netdev = lo; netdev_nl_page_pool_event(pool, NETDEV_CMD_PAGE_POOL_CHANGE_NTF); last = pool; } if !last.is_null() { hlist_splice_init(&mut (*netdev).page_pools, &mut (*last).user.list, &mut (*lo).page_pools); } mutex_unlock(&raw mut PAGE_POOLS_LOCK); }
+unsafe fn page_pool_unreg_netdev_wipe(netdev: *mut net_device) { mutex_lock(&raw mut PAGE_POOLS_LOCK); hlist_for_each_entry_safe!(pool, n, &(*netdev).page_pools, user.list, { hlist_del_init(&mut (*pool).user.list); (*pool).slow.netdev = NET_PTR_POISON; }); mutex_unlock(&raw mut PAGE_POOLS_LOCK); }
+unsafe fn page_pool_unreg_netdev(netdev: *mut net_device) { let lo = dev_net(netdev).loopback_dev; mutex_lock(&raw mut PAGE_POOLS_LOCK); let mut last = core::ptr::null_mut(); hlist_for_each_entry!(pool, &(*netdev).page_pools, user.list, { (*pool).slow.netdev = lo; netdev_nl_page_pool_event(pool, NETDEV_CMD_PAGE_POOL_CHANGE_NTF); last = pool; }); if !last.is_null() { hlist_splice_init(&mut (*netdev).page_pools, &mut (*last).user.list, &mut (*lo).page_pools); } mutex_unlock(&raw mut PAGE_POOLS_LOCK); }
 unsafe extern "C" fn page_pool_netdevice_event(_nb: *mut notifier_block, event: c_ulong, ptr: *mut c_void) -> c_int { let netdev = netdev_notifier_info_to_dev(ptr); if event != NETDEV_UNREGISTER { return NOTIFY_DONE; } if hlist_empty(&(*netdev).page_pools) { return NOTIFY_OK; } if (*netdev).ifindex != LOOPBACK_IFINDEX { page_pool_unreg_netdev(netdev); } else { page_pool_unreg_netdev_wipe(netdev); } NOTIFY_OK }
 static mut PAGE_POOL_NETDEVICE_NB: notifier_block = notifier_block { notifier_call: Some(page_pool_netdevice_event) };
 unsafe extern "C" fn page_pool_user_init() -> c_int { register_netdevice_notifier(&raw mut PAGE_POOL_NETDEVICE_NB) }

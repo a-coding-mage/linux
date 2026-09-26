@@ -21,9 +21,9 @@ extern "C" {
     pub fn may_use_simd() -> bool;
     pub static elf_hwcap: usize;
     pub static elf_hwcap2: usize;
-    pub const HWCAP_NEON: usize;
-    pub const HWCAP2_PMULL: usize;
 }
+pub const HWCAP_NEON: usize;
+pub const HWCAP2_PMULL: usize;
 
 #[inline]
 pub unsafe fn crc_t10dif_arch(crc: u16, data: *const u8, length: usize) -> u16 {

@@ -19,25 +19,25 @@
  * it's also necessary for the CCR, so we make it generic here instead.
  */
 
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 #[inline(always)]
 pub unsafe fn mb() {
     core::arch::asm!("synco", options(nostack, preserves_flags));
 }
 
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 #[inline(always)]
 pub unsafe fn rmb() {
     mb();
 }
 
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 #[inline(always)]
 pub unsafe fn wmb() {
     mb();
 }
 
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 #[macro_export]
 macro_rules! ctrl_barrier {
     () => {{
@@ -45,8 +45,8 @@ macro_rules! ctrl_barrier {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_CPU_SH4A"))]
-#[cfg(all(feature = "CONFIG_CPU_J2", feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_CPU_SH4A))]
+#[cfg(all(CONFIG_CPU_J2, CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn __smp_mb() {
     let mut tmp: i32 = 0;
@@ -58,21 +58,21 @@ pub unsafe fn __smp_mb() {
     );
 }
 
-#[cfg(not(feature = "CONFIG_CPU_SH4A"))]
-#[cfg(all(feature = "CONFIG_CPU_J2", feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_CPU_SH4A))]
+#[cfg(all(CONFIG_CPU_J2, CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn __smp_rmb() {
     __smp_mb();
 }
 
-#[cfg(not(feature = "CONFIG_CPU_SH4A"))]
-#[cfg(all(feature = "CONFIG_CPU_J2", feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_CPU_SH4A))]
+#[cfg(all(CONFIG_CPU_J2, CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn __smp_wmb() {
     __smp_mb();
 }
 
-#[cfg(not(feature = "CONFIG_CPU_SH4A"))]
+#[cfg(not(CONFIG_CPU_SH4A))]
 #[macro_export]
 macro_rules! ctrl_barrier {
     () => {{

@@ -49,9 +49,9 @@ unsafe fn release_callchain_buffers_rcu(head: *mut rcu_head) {
     let entries: *mut callchain_cpus_entries = container_of!(head, callchain_cpus_entries, rcu_head);
     let mut cpu: i32;
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         kfree((*entries).cpu_entries[cpu as usize] as *mut core::ffi::c_void);
-    }
+    });
 
     kfree(entries as *mut core::ffi::c_void);
 }
@@ -80,17 +80,17 @@ unsafe fn alloc_callchain_buffers() -> i32 {
 
     size = perf_callchain_entry__sizeof() * PERF_NR_CONTEXTS as usize;
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         (*entries).cpu_entries[cpu as usize] =
             kmalloc_node(size, GFP_KERNEL, cpu_to_node(cpu));
         if (*entries).cpu_entries[cpu as usize].is_null() {
-            for_each_possible_cpu!(cpu) {
+            for_each_possible_cpu!(cpu, {
                 kfree((*entries).cpu_entries[cpu as usize] as *mut core::ffi::c_void);
-            }
+            });
             kfree(entries as *mut core::ffi::c_void);
             return -ENOMEM;
         }
-    }
+    });
 
     rcu_assign_pointer!(callchain_cpus_entries, entries);
     0
@@ -237,7 +237,7 @@ pub unsafe extern "C" fn get_perf_callchain(
     entry
 }
 
-static unsafe fn perf_event_max_stack_handler(
+unsafe fn perf_event_max_stack_handler(
     table: *const ctl_table, write: i32, buffer: *mut core::ffi::c_void,
     lenp: *mut usize, ppos: *mut loff_t,
 ) -> i32 {

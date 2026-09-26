@@ -78,6 +78,8 @@ unsafe fn xdp_umem_pin_pages(umem: *mut xdp_umem, address: usize) -> i32 {
     let gup_flags: u32 = FOLL_WRITE;
     let mut npgs: isize;
     let err: i32;
+    'out_pgs: {
+    'out_pin: {
 
     (*umem).pgs = kvzalloc_objs!((*umem).pgs, (*umem).npgs, GFP_KERNEL | __GFP_NOWARN);
     if (*umem).pgs.is_null() {
@@ -97,16 +99,17 @@ unsafe fn xdp_umem_pin_pages(umem: *mut xdp_umem, address: usize) -> i32 {
         if npgs >= 0 {
             (*umem).npgs = npgs as u32;
             err = -ENOMEM;
-            goto_out_pin!(out_pin);
+            break 'out_pin;
         }
         err = npgs as i32;
-        goto_out_pgs!(out_pgs);
+        break 'out_pgs;
     }
     return 0;
-
-out_pin:
+    }
+    
     xdp_umem_unpin_pages(umem);
-out_pgs:
+    }
+    
     kvfree((*umem).pgs as *mut core::ffi::c_void);
     (*umem).pgs = core::ptr::null_mut();
     err
@@ -159,7 +162,7 @@ unsafe fn xdp_umem_reg(umem: *mut xdp_umem, mr: *mut xdp_umem_reg) -> i32 {
     let err: i32;
 
     if chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > PAGE_SIZE {
-        /* Strictly speaking we could support this, if:
+        /* Strictly speaking we could support this, r#if:
          * - huge pages, or*
          * - using an IOMMU, or
          * - making sure the memory area is consecutive

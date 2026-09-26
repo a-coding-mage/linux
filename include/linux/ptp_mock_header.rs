@@ -16,24 +16,24 @@ pub struct mock_phc {
 }
 
 // The following conditional preserves IS_ENABLED(CONFIG_PTP_1588_CLOCK_MOCK).
-#[cfg(feature = "CONFIG_PTP_1588_CLOCK_MOCK")]
+#[cfg(CONFIG_PTP_1588_CLOCK_MOCK)]
 extern "C" {
     pub fn mock_phc_create(dev: *mut device) -> *mut mock_phc;
     pub fn mock_phc_destroy(phc: *mut mock_phc);
     pub fn mock_phc_index(phc: *mut mock_phc) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK_MOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK_MOCK))]
 #[inline]
 pub unsafe fn mock_phc_create(_dev: *mut device) -> *mut mock_phc {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK_MOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK_MOCK))]
 #[inline]
 pub unsafe fn mock_phc_destroy(_phc: *mut mock_phc) {}
 
-#[cfg(not(feature = "CONFIG_PTP_1588_CLOCK_MOCK"))]
+#[cfg(not(CONFIG_PTP_1588_CLOCK_MOCK))]
 #[inline]
 pub unsafe fn mock_phc_index(_phc: *mut mock_phc) -> i32 {
     -1

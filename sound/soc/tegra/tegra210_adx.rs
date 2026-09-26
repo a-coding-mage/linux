@@ -296,8 +296,7 @@ unsafe extern "C" {
     fn snd_soc_add_component_controls(
         component: *mut snd_soc_component,
         controls: *mut snd_kcontrol_new,
-        num_controls: c_uint,
-    ) -> c_int;
+        num_controls: c_uint) -> c_int;
     fn devm_kzalloc(dev: *mut device, size: usize, flags: c_uint) -> *mut c_void;
     fn of_device_get_match_data(dev: *mut device) -> *const tegra210_adx_soc_data;
     fn devm_platform_ioremap_resource(pdev: *mut platform_device, index: c_uint) -> *mut c_void;
@@ -306,15 +305,13 @@ unsafe extern "C" {
     fn devm_regmap_init_mmio(
         dev: *mut device,
         regs: *mut c_void,
-        config: *const regmap_config,
-    ) -> *mut regmap;
+        config: *const regmap_config) -> *mut regmap;
     fn devm_kcalloc(dev: *mut device, n: usize, size: usize, flags: c_uint) -> *mut c_void;
     fn devm_snd_soc_register_component(
         dev: *mut device,
         component_driver: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: c_int,
-    ) -> c_int;
+        num_dai: c_int) -> c_int;
     fn pm_runtime_enable(dev: *mut device);
     fn pm_runtime_disable(dev: *mut device);
     fn pm_runtime_force_suspend(dev: *mut device) -> c_int;

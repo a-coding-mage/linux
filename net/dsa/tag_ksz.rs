@@ -196,13 +196,13 @@ unsafe fn ksz8795_rcv(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     ksz_common_rcv(skb, dev, (*tag & 3) as c_uint, KSZ_EGRESS_TAG_LEN as c_uint)
 }
 
-const KSZ9893_TAIL_TAG_PRIO: u8 = 7 << 3;
+const KSZ9893_TAIL_TAG_PRIO: u8 = 0b11 << 3; // GENMASK(4, 3)
 unsafe fn ksz9893_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     let prio = netdev_txq_to_tc(dev, skb_get_queue_mapping(skb));
     ksz_common_xmit(skb, dev, true, field_prep(KSZ9893_TAIL_TAG_PRIO as u16, prio as u16) as u8, 1 << 5)
 }
 
-const KSZ8463_TAIL_TAG_PRIO: u8 = 7 << 3;
+const KSZ8463_TAIL_TAG_PRIO: u8 = 0b11 << 3; // GENMASK(4, 3)
 unsafe fn ksz8463_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     let prio = netdev_txq_to_tc(dev, skb_get_queue_mapping(skb));
     ksz_common_xmit(skb, dev, false, field_prep(KSZ8463_TAIL_TAG_PRIO as u16, prio as u16) as u8, 0)

@@ -23,7 +23,7 @@
 
 // C dependency: #include "soc15_common.h"
 
-pub extern "C" {
+extern "C" {
     pub static lsdma_v6_0_funcs: amdgpu_lsdma_funcs;
 }
 

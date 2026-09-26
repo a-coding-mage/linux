@@ -10,7 +10,6 @@
 /* cru-clocks indices */
 
 /* cru plls */
-pub const _DT_BINDINGS_CLK_ROCKCHIP_RK3562_H: u32 = ;
 pub const PLL_DMPLL0: u32 = 0;
 pub const PLL_APLL: u32 = 1;
 pub const PLL_GPLL: u32 = 2;

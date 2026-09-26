@@ -176,7 +176,7 @@ unsafe fn mpc512x_psc_fifo_init() {
     let psc_compat = mpc512x_select_psc_compat();
     if psc_compat.is_null() { pr_err(c"%s: no compatible devices found\n", c"mpc512x_psc_fifo_init".as_ptr()); return; }
     let mut fifobase = 0u32;
-    for_each_compatible_node!(np, psc_compat) {
+    for_each_compatible_node!(np, psc_compat, {
         let mut tx = get_fifo_size(np, c"fsl,tx-fifo-size".as_ptr()) / 4;
         let mut rx = get_fifo_size(np, c"fsl,rx-fifo-size".as_ptr()) / 4;
         if tx == 0 { tx = 1; } if rx == 0 { rx = 1; }
@@ -188,7 +188,7 @@ unsafe fn mpc512x_psc_fifo_init() {
         out_be32(&mut (*fifo).rxsz, (fifobase << 16) | rx); fifobase += rx;
         out_be32(&mut (*fifo).txcmd, 0x80); out_be32(&mut (*fifo).txcmd, 1);
         out_be32(&mut (*fifo).rxcmd, 0x80); out_be32(&mut (*fifo).rxcmd, 1); iounmap(psc);
-    }
+    });
 }
 
 unsafe fn mpc512x_declare_of_platform_devices() { if of_platform_bus_probe(core::ptr::null_mut(), core::ptr::null(), core::ptr::null_mut()) != 0 { printk(c"Error while probing of_platform bus\n".as_ptr()); } }

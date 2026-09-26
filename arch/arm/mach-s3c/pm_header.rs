@@ -18,19 +18,19 @@ pub struct device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SAMSUNG_PM")]
+#[cfg(CONFIG_SAMSUNG_PM)]
 extern "C" {
     pub fn s3c_pm_init() -> ::core::ffi::c_int;
     pub fn s3c64xx_pm_init() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM"))]
+#[cfg(not(CONFIG_SAMSUNG_PM))]
 #[inline]
 pub fn s3c_pm_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM"))]
+#[cfg(not(CONFIG_SAMSUNG_PM))]
 #[inline]
 pub fn s3c64xx_pm_init() -> ::core::ffi::c_int {
     0
@@ -59,24 +59,24 @@ pub struct irq_data {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 extern "C" {
     pub fn s3c_irq_wake(data: *mut irq_data, state: ::core::ffi::c_uint) -> ::core::ffi::c_int;
     pub fn s3c_cpu_resume();
 }
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub const s3c_irq_wake: Option<unsafe extern "C" fn(*mut irq_data, ::core::ffi::c_uint) -> ::core::ffi::c_int> = None;
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub const s3c_cpu_resume: Option<unsafe extern "C" fn()> = None;
 
-#[cfg(feature = "CONFIG_SAMSUNG_PM")]
+#[cfg(CONFIG_SAMSUNG_PM)]
 extern "C" {
     pub fn s3c_irqext_wake(data: *mut irq_data, state: ::core::ffi::c_uint) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM"))]
+#[cfg(not(CONFIG_SAMSUNG_PM))]
 pub const s3c_irqext_wake: Option<unsafe extern "C" fn(*mut irq_data, ::core::ffi::c_uint) -> ::core::ffi::c_int> = None;
 
 /**
@@ -89,7 +89,7 @@ extern "C" {
     pub fn s3c_pm_configure_extint();
 }
 
-#[cfg(feature = "CONFIG_GPIO_SAMSUNG")]
+#[cfg(CONFIG_GPIO_SAMSUNG)]
 extern "C" {
     /**
      * samsung_pm_restore_gpios() - restore the state of the gpios after sleep.
@@ -108,11 +108,11 @@ extern "C" {
     pub fn samsung_pm_save_gpios();
 }
 
-#[cfg(not(feature = "CONFIG_GPIO_SAMSUNG"))]
+#[cfg(not(CONFIG_GPIO_SAMSUNG))]
 #[inline]
 pub fn samsung_pm_restore_gpios() {}
 
-#[cfg(not(feature = "CONFIG_GPIO_SAMSUNG"))]
+#[cfg(not(CONFIG_GPIO_SAMSUNG))]
 #[inline]
 pub fn samsung_pm_save_gpios() {}
 

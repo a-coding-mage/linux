@@ -88,57 +88,57 @@ pub extern "C" fn amdgpu_dm_dcn10_register_irq_handlers(adev: *mut amdgpu_device
 pub extern "C" fn amdgpu_dm_register_outbox_irq_handlers(adev: *mut amdgpu_device) -> core::ffi::c_int;
 
 // Build-time condition preserved from CONFIG_DRM_AMD_DC_KUNIT_TEST.
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_hpd_to_dal_irq_source(type_: u32) -> dc_irq_source;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn are_sinks_equal(sink1: *const dc_sink, sink2: *const dc_sink) -> bool;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dmub_notification_type_str(e: dmub_notification_type) -> *const core::ffi::c_char;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_hpd_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, type_: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_dmub_outbox_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, crtc_id: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_dmub_trace_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, type_: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_pflip_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, crtc_id: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_crtc_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, crtc_id: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_vline0_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, crtc_id: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_set_vupdate_irq_state(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, crtc_id: u32, state: amdgpu_interrupt_state) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_irq_schedule_work(adev: *mut amdgpu_device, irq_source: dc_irq_source);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_irq_immediate_work(adev: *mut amdgpu_device, irq_source: dc_irq_source);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_handle_hpd_rx_offload_work(work: *mut work_struct);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn handle_hpd_irq_helper(aconnector: *mut amdgpu_dm_connector, reason: dc_detect_reason);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn handle_hpd_irq(param: *mut core::ffi::c_void);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn schedule_hpd_rx_offload_work(adev: *mut amdgpu_device, offload_wq: *mut hpd_rx_irq_offload_work_queue, hpd_irq_data: hpd_irq_data);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn handle_hpd_rx_irq(param: *mut core::ffi::c_void);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dmub_hpd_callback(adev: *mut amdgpu_device, notify: *mut dmub_notification);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dmub_hpd_sense_callback(adev: *mut amdgpu_device, notify: *mut dmub_notification);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_pflip_high_irq(interrupt_params: *mut core::ffi::c_void);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_vupdate_high_irq(interrupt_params: *mut core::ffi::c_void);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_crtc_high_irq(interrupt_params: *mut core::ffi::c_void);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_handle_hpd_work(work: *mut work_struct);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_dmub_outbox1_low_irq(interrupt_params: *mut core::ffi::c_void);
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn amdgpu_dm_irq_handler(adev: *mut amdgpu_device, source: *mut amdgpu_irq_src, entry: *mut amdgpu_iv_entry) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub extern "C" fn dm_handle_vmin_vmax_update(offload_work: *mut work_struct);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

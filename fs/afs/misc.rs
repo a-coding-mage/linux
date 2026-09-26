@@ -120,13 +120,13 @@ pub unsafe fn afs_prioritise_error(e: *mut afs_error, error: i32, abort_code: u3
         (*e).aborted = false;
         return;
     }
-    match error {
-        -ECONNABORTED => {
+    match -(error) {
+        ECONNABORTED => {
             (*e).error = afs_abort_to_error(abort_code);
             (*e).aborted = true;
             (*e).responded = true;
         }
-        -ENETRESET => {
+        ENETRESET => {
             (*e).aborted = false;
             (*e).responded = true;
             (*e).error = error;

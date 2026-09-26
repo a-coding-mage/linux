@@ -563,7 +563,7 @@ pub unsafe extern "C" fn tpm2_seal_trusted(
                     blob_len = tpm_buf_read_u32(buf, &mut offset);
                     if blob_len > MAX_BLOB_SIZE as i32 || ((*buf).flags & TPM_BUF_INVALID) != 0 {
                         rc = -E2BIG;
-                    } else if (*buf).length - offset as usize < blob_len as usize {
+                    } else if (*buf).length - (offset as usize) < blob_len as usize {
                         rc = -EFAULT;
                     } else {
                         blob_len = tpm2_key_encode(payload, options, (*buf).data.add(offset as usize), blob_len as u32);

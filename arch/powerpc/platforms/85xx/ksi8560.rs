@@ -45,7 +45,7 @@ struct cpm_pin {
     flags: i32,
 }
 
-#[cfg(feature = "CONFIG_CPM2")]
+#[cfg(CONFIG_CPM2)]
 static mut ksi8560_pins: [cpm_pin; 18] = [
     cpm_pin { port: 3, pin: 29, flags: CPM_PIN_OUTPUT | CPM_PIN_PRIMARY },
     cpm_pin { port: 3, pin: 30, flags: CPM_PIN_OUTPUT | CPM_PIN_SECONDARY },
@@ -83,7 +83,7 @@ unsafe fn ksi8560_pic_init() {
     mpc85xx_cpm2_pic_init();
 }
 
-#[cfg(feature = "CONFIG_CPM2")]
+#[cfg(CONFIG_CPM2)]
 unsafe fn init_ioports() {
     let mut i = 0;
     while i < ksi8560_pins.len() {
@@ -108,7 +108,7 @@ unsafe fn ksi8560_setup_arch() {
     }
     of_node_put(cpld);
     if !ppc_md.progress.is_none() { ppc_md.progress.unwrap()(b"ksi8560_setup_arch()\0".as_ptr() as *const _, 0); }
-    #[cfg(feature = "CONFIG_CPM2")]
+    #[cfg(CONFIG_CPM2)]
     { cpm2_reset(); init_ioports(); }
 }
 

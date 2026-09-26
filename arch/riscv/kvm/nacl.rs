@@ -99,7 +99,7 @@ pub unsafe fn kvm_riscv_nacl_exit() {
     }
 
     /* Allocate per-CPU shared memory */
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         nacl = per_cpu_ptr(&raw mut kvm_riscv_nacl, cpu);
         if (*nacl).shmem.is_null() {
             continue;
@@ -109,7 +109,7 @@ pub unsafe fn kvm_riscv_nacl_exit() {
                    get_order(SBI_NACL_SHMEM_SIZE));
         (*nacl).shmem = core::ptr::null_mut();
         (*nacl).shmem_phys = 0;
-    }
+    });
 }
 
 unsafe fn nacl_probe_feature(feature_id: c_long) -> c_long {
@@ -153,7 +153,7 @@ pub unsafe fn kvm_riscv_nacl_init() -> c_int {
     }
 
     /* Allocate per-CPU shared memory */
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         nacl = per_cpu_ptr(&raw mut kvm_riscv_nacl, cpu);
 
         shmem_page = alloc_pages(GFP_KERNEL | __GFP_ZERO,
@@ -164,7 +164,7 @@ pub unsafe fn kvm_riscv_nacl_init() -> c_int {
         }
         (*nacl).shmem = page_to_virt(shmem_page);
         (*nacl).shmem_phys = page_to_phys(shmem_page);
-    }
+    });
 
     0
 }

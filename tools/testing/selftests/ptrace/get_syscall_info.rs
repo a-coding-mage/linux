@@ -94,7 +94,7 @@ macro_rules! ASSERT_LE {
     ($left:expr, $right:expr, $body:block) => {
         if !($left <= $right) {
             $body
-            panic!("ASSERT_LE({}, {}) failed", stringify!($left), stringify!($right));
+            panic!("ASSERT_LE!({}, {}) failed", stringify!($left), stringify!($right));
         }
     };
 }
@@ -103,7 +103,7 @@ macro_rules! ASSERT_LT {
     ($left:expr, $right:expr, $body:block) => {
         if !($left < $right) {
             $body
-            panic!("ASSERT_LT({}, {}) failed", stringify!($left), stringify!($right));
+            panic!("ASSERT_LT!({}, {}) failed", stringify!($left), stringify!($right));
         }
     };
 }
@@ -115,7 +115,7 @@ macro_rules! ASSERT_EQ {
     ($left:expr, $right:expr, $body:block) => {
         if !($left == $right) {
             $body
-            panic!("ASSERT_EQ({}, {}) failed", stringify!($left), stringify!($right));
+            panic!("ASSERT_EQ!({}, {}) failed", stringify!($left), stringify!($right));
         }
     };
 }
@@ -124,7 +124,7 @@ macro_rules! ASSERT_FALSE {
     ($expr:expr, $body:block) => {
         if $expr {
             $body
-            panic!("ASSERT_FALSE({}) failed", stringify!($expr));
+            panic!("ASSERT_FALSE!({}) failed", stringify!($expr));
         }
     };
 }
@@ -133,7 +133,7 @@ macro_rules! ASSERT_TRUE {
     ($expr:expr, $body:block) => {
         if !$expr {
             $body
-            panic!("ASSERT_TRUE({}) failed", stringify!($expr));
+            panic!("ASSERT_TRUE!({}) failed", stringify!($expr));
         }
     };
 }

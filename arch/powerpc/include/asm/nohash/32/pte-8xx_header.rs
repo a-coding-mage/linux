@@ -36,9 +36,9 @@ pub const _PMD_ACCESSED: u32 = 0x0020;
 pub const _PMD_USER: u32 = 0x0040;
 pub const _PTE_NONE_MASK: u32 = 0;
 
-#[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+#[cfg(CONFIG_PPC_16K_PAGES)]
 pub const _PAGE_BASE_NC: u32 = _PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_SPS;
-#[cfg(not(feature = "CONFIG_PPC_16K_PAGES"))]
+#[cfg(not(CONFIG_PPC_16K_PAGES))]
 pub const _PAGE_BASE_NC: u32 = _PAGE_PRESENT | _PAGE_ACCESSED;
 pub const _PAGE_BASE: u32 = _PAGE_BASE_NC;
 
@@ -99,7 +99,7 @@ extern "C" { pub static mmu_virtual_psize: usize; }
 #[inline] pub unsafe fn number_of_cells_per_pte(pmd: *mut pmd_t, val: pte_basic_t, huge: i32) -> usize {
     if huge == 0 { PAGE_SIZE / SZ_4K }
     else if pmd_val(*pmd) & _PMD_PAGE_MASK != _PMD_PAGE_8M { SZ_4M / SZ_4K }
-    else if cfg!(feature = "CONFIG_PPC_4K_PAGES") && val & _PAGE_HUGE as usize == 0 { SZ_16K / SZ_4K }
+    else if cfg!(CONFIG_PPC_4K_PAGES) && val & _PAGE_HUGE as usize == 0 { SZ_16K / SZ_4K }
     else { SZ_512K / SZ_4K }
 }
 
@@ -114,7 +114,7 @@ pub const PAGE_SIZE: usize = 4096;
     let mut i = 0;
     while i < num {
         *entry = new; entry = entry.add(1);
-        if cfg!(feature = "CONFIG_PPC_16K_PAGES") { *entry = new; entry = entry.add(1); *entry = new; entry = entry.add(1); *entry = new; entry = entry.add(1); }
+        if cfg!(CONFIG_PPC_16K_PAGES) { *entry = new; entry = entry.add(1); *entry = new; entry = entry.add(1); *entry = new; entry = entry.add(1); }
         i += PAGE_SIZE / SZ_4K; new = new.wrapping_add(PAGE_SIZE);
     }
     old
@@ -131,7 +131,7 @@ pub const PAGE_SIZE: usize = 4096;
     old
 }
 
-#[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+#[cfg(CONFIG_PPC_16K_PAGES)]
 #[inline] pub unsafe fn ptep_get(ptep: *mut pte_t) -> pte_t {
     let val = core::ptr::read_volatile(&(*ptep).pte);
     pte_t { pte: val }

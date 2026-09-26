@@ -59,7 +59,7 @@ pub struct compat_statfs {
 }
 
 /* CONFIG_X86_X32_ABI controls this build-time definition in the C header. */
-#[cfg(feature = "CONFIG_X86_X32_ABI")]
+#[cfg(CONFIG_X86_X32_ABI)]
 #[macro_export]
 macro_rules! COMPAT_USE_64BIT_TIME {
     () => {{
@@ -68,7 +68,7 @@ macro_rules! COMPAT_USE_64BIT_TIME {
 }
 
 pub unsafe fn in_x32_syscall() -> bool {
-    #[cfg(feature = "CONFIG_X86_X32_ABI")]
+    #[cfg(CONFIG_X86_X32_ABI)]
     {
         if task_pt_regs(current).orig_ax & __X32_SYSCALL_BIT != 0 {
             return true;
@@ -81,7 +81,7 @@ pub unsafe fn in_32bit_syscall() -> bool {
     in_ia32_syscall() || in_x32_syscall()
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn in_compat_syscall() -> bool {
     in_32bit_syscall()
 }
@@ -93,7 +93,7 @@ pub struct compat_siginfo {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_X86_X32_ABI")]
+#[cfg(CONFIG_X86_X32_ABI)]
 unsafe extern "C" {
     pub fn copy_siginfo_to_user32(
         to: *mut compat_siginfo,

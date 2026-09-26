@@ -38,53 +38,53 @@ c_translation_unit! {
 
 
 static const struct snd_pcm_hardware mt8192_afe_hardware = {
-	.info = (SNDRV_PCM_INFO_MMAP |
+	info: (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_INTERLEAVED |
 		 SNDRV_PCM_INFO_MMAP_VALID),
-	.formats = (SNDRV_PCM_FMTBIT_S16_LE |
+	formats: (SNDRV_PCM_FMTBIT_S16_LE |
 		    SNDRV_PCM_FMTBIT_S24_LE |
 		    SNDRV_PCM_FMTBIT_S32_LE),
-	.period_bytes_min = 96,
-	.period_bytes_max = 4 * 48 * 1024,
-	.periods_min = 2,
-	.periods_max = 256,
-	.buffer_bytes_max = 4 * 48 * 1024,
-	.fifo_size = 0,
+	period_bytes_min: 96,
+	period_bytes_max: 4 * 48 * 1024,
+	periods_min: 2,
+	periods_max: 256,
+	buffer_bytes_max: 4 * 48 * 1024,
+	fifo_size: 0,
 };
 
-static int mt8192_memif_fs(struct snd_pcm_substream *substream,
-			   unsigned int rate)
+static int mt8192_memif_fs(snd_pcm_substream *substream,
+			   rate: core::ffi::c_uint)
 {
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct snd_soc_component *component =
 		snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-	int id = snd_soc_rtd_to_cpu(rtd, 0)->id;
+	int id = (*snd_soc_rtd_to_cpu(rtd, 0)).id;
 
-	return mt8192_rate_transform(afe->dev, rate, id);
+	return mt8192_rate_transform((*afe).dev, rate, id);
 }
 
-static int mt8192_get_dai_fs(struct mtk_base_afe *afe,
-			     int dai_id, unsigned int rate)
+static int mt8192_get_dai_fs(mtk_base_afe *afe,
+			     int dai_id, rate: core::ffi::c_uint)
 {
-	return mt8192_rate_transform(afe->dev, rate, dai_id);
+	return mt8192_rate_transform((*afe).dev, rate, dai_id);
 }
 
-static int mt8192_irq_fs(struct snd_pcm_substream *substream, unsigned int rate)
+static int mt8192_irq_fs(snd_pcm_substream *substream, rate: core::ffi::c_uint)
 {
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct snd_soc_component *component =
 		snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
 
-	return mt8192_general_rate_transform(afe->dev, rate);
+	return mt8192_general_rate_transform((*afe).dev, rate);
 }
 
-static int mt8192_get_memif_pbuf_size(struct snd_pcm_substream *substream)
+static int mt8192_get_memif_pbuf_size(snd_pcm_substream *substream)
 {
-	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct snd_pcm_runtime *runtime = (*substream).runtime;
 
-	if ((runtime->period_size * 1000) / runtime->rate > 10)
+	if (((*runtime).period_size * 1000) / (*runtime).rate > 10)
 		return MT8192_MEMIF_PBUF_SIZE_256_BYTES;
 	else
 		return MT8192_MEMIF_PBUF_SIZE_32_BYTES;
@@ -108,308 +108,308 @@ static int mt8192_get_memif_pbuf_size(struct snd_pcm_substream *substream)
 static struct snd_soc_dai_driver mt8192_memif_dai_driver[] = {
 	/* FE DAIs: memory intefaces to CPU */
 	{
-		.name = "DL1",
-		.id = MT8192_MEMIF_DL1,
-		.playback = {
-			.stream_name = "DL1",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL1",
+		id: MT8192_MEMIF_DL1,
+		playback: {
+			stream_name: "DL1",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL12",
-		.id = MT8192_MEMIF_DL12,
-		.playback = {
-			.stream_name = "DL12",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL12",
+		id: MT8192_MEMIF_DL12,
+		playback: {
+			stream_name: "DL12",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL2",
-		.id = MT8192_MEMIF_DL2,
-		.playback = {
-			.stream_name = "DL2",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL2",
+		id: MT8192_MEMIF_DL2,
+		playback: {
+			stream_name: "DL2",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL3",
-		.id = MT8192_MEMIF_DL3,
-		.playback = {
-			.stream_name = "DL3",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL3",
+		id: MT8192_MEMIF_DL3,
+		playback: {
+			stream_name: "DL3",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL4",
-		.id = MT8192_MEMIF_DL4,
-		.playback = {
-			.stream_name = "DL4",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL4",
+		id: MT8192_MEMIF_DL4,
+		playback: {
+			stream_name: "DL4",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL5",
-		.id = MT8192_MEMIF_DL5,
-		.playback = {
-			.stream_name = "DL5",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL5",
+		id: MT8192_MEMIF_DL5,
+		playback: {
+			stream_name: "DL5",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL6",
-		.id = MT8192_MEMIF_DL6,
-		.playback = {
-			.stream_name = "DL6",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL6",
+		id: MT8192_MEMIF_DL6,
+		playback: {
+			stream_name: "DL6",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL7",
-		.id = MT8192_MEMIF_DL7,
-		.playback = {
-			.stream_name = "DL7",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL7",
+		id: MT8192_MEMIF_DL7,
+		playback: {
+			stream_name: "DL7",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL8",
-		.id = MT8192_MEMIF_DL8,
-		.playback = {
-			.stream_name = "DL8",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL8",
+		id: MT8192_MEMIF_DL8,
+		playback: {
+			stream_name: "DL8",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "DL9",
-		.id = MT8192_MEMIF_DL9,
-		.playback = {
-			.stream_name = "DL9",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "DL9",
+		id: MT8192_MEMIF_DL9,
+		playback: {
+			stream_name: "DL9",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL1",
-		.id = MT8192_MEMIF_VUL12,
-		.capture = {
-			.stream_name = "UL1",
-			.channels_min = 1,
-			.channels_max = 4,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL1",
+		id: MT8192_MEMIF_VUL12,
+		capture: {
+			stream_name: "UL1",
+			channels_min: 1,
+			channels_max: 4,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL2",
-		.id = MT8192_MEMIF_AWB,
-		.capture = {
-			.stream_name = "UL2",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL2",
+		id: MT8192_MEMIF_AWB,
+		capture: {
+			stream_name: "UL2",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL3",
-		.id = MT8192_MEMIF_VUL2,
-		.capture = {
-			.stream_name = "UL3",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL3",
+		id: MT8192_MEMIF_VUL2,
+		capture: {
+			stream_name: "UL3",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL4",
-		.id = MT8192_MEMIF_AWB2,
-		.capture = {
-			.stream_name = "UL4",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL4",
+		id: MT8192_MEMIF_AWB2,
+		capture: {
+			stream_name: "UL4",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL5",
-		.id = MT8192_MEMIF_VUL3,
-		.capture = {
-			.stream_name = "UL5",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL5",
+		id: MT8192_MEMIF_VUL3,
+		capture: {
+			stream_name: "UL5",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL6",
-		.id = MT8192_MEMIF_VUL4,
-		.capture = {
-			.stream_name = "UL6",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL6",
+		id: MT8192_MEMIF_VUL4,
+		capture: {
+			stream_name: "UL6",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL7",
-		.id = MT8192_MEMIF_VUL5,
-		.capture = {
-			.stream_name = "UL7",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL7",
+		id: MT8192_MEMIF_VUL5,
+		capture: {
+			stream_name: "UL7",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL8",
-		.id = MT8192_MEMIF_VUL6,
-		.capture = {
-			.stream_name = "UL8",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL8",
+		id: MT8192_MEMIF_VUL6,
+		capture: {
+			stream_name: "UL8",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL_MONO_1",
-		.id = MT8192_MEMIF_MOD_DAI,
-		.capture = {
-			.stream_name = "UL_MONO_1",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_DAI_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL_MONO_1",
+		id: MT8192_MEMIF_MOD_DAI,
+		capture: {
+			stream_name: "UL_MONO_1",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_DAI_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL_MONO_2",
-		.id = MT8192_MEMIF_DAI,
-		.capture = {
-			.stream_name = "UL_MONO_2",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_DAI_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL_MONO_2",
+		id: MT8192_MEMIF_DAI,
+		capture: {
+			stream_name: "UL_MONO_2",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_DAI_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "UL_MONO_3",
-		.id = MT8192_MEMIF_DAI2,
-		.capture = {
-			.stream_name = "UL_MONO_3",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = MTK_PCM_DAI_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "UL_MONO_3",
+		id: MT8192_MEMIF_DAI2,
+		capture: {
+			stream_name: "UL_MONO_3",
+			channels_min: 1,
+			channels_max: 2,
+			rates: MTK_PCM_DAI_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 	{
-		.name = "HDMI",
-		.id = MT8192_MEMIF_HDMI,
-		.playback = {
-			.stream_name = "HDMI",
-			.channels_min = 2,
-			.channels_max = 8,
-			.rates = MTK_PCM_RATES,
-			.formats = MTK_PCM_FORMATS,
+		name: "HDMI",
+		id: MT8192_MEMIF_HDMI,
+		playback: {
+			stream_name: "HDMI",
+			channels_min: 2,
+			channels_max: 8,
+			rates: MTK_PCM_RATES,
+			formats: MTK_PCM_FORMATS,
 		},
-		.ops = &mtk_afe_fe_ops,
+		ops: &mtk_afe_fe_ops,
 	},
 };
 
-static int ul_tinyconn_event(struct snd_soc_dapm_widget *w,
-			     struct snd_kcontrol *kcontrol,
+static int ul_tinyconn_event(snd_soc_dapm_widget *w,
+			     snd_kcontrol *kcontrol,
 			     int event)
 {
-	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component((*w).dapm);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-	unsigned int reg_shift;
-	unsigned int reg_mask_shift;
+	core::ffi::c_uint reg_shift;
+	core::ffi::c_uint reg_mask_shift;
 
-	dev_dbg(afe->dev, "%s(), event 0x%x\n", __func__, event);
+	dev_dbg((*afe).dev, "%s(), event 0x%x\n", __func__, event);
 
-	if (strstr(w->name, "UL1")) {
+	if (strstr((*w).name, "UL1")) {
 		reg_shift = VUL1_USE_TINY_SFT;
 		reg_mask_shift = VUL1_USE_TINY_MASK_SFT;
-	} else if (strstr(w->name, "UL2")) {
+	} else if (strstr((*w).name, "UL2")) {
 		reg_shift = VUL2_USE_TINY_SFT;
 		reg_mask_shift = VUL2_USE_TINY_MASK_SFT;
-	} else if (strstr(w->name, "UL3")) {
+	} else if (strstr((*w).name, "UL3")) {
 		reg_shift = VUL12_USE_TINY_SFT;
 		reg_mask_shift = VUL12_USE_TINY_MASK_SFT;
-	} else if (strstr(w->name, "UL4")) {
+	} else if (strstr((*w).name, "UL4")) {
 		reg_shift = AWB2_USE_TINY_SFT;
 		reg_mask_shift = AWB2_USE_TINY_MASK_SFT;
 	} else {
 		reg_shift = AWB2_USE_TINY_SFT;
 		reg_mask_shift = AWB2_USE_TINY_MASK_SFT;
-		dev_warn(afe->dev, "%s(), err widget name %s, default use UL4",
-			 __func__, w->name);
+		dev_warn((*afe).dev, "%s(), err widget name %s, default use UL4",
+			 __func__, (*w).name);
 	}
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		regmap_update_bits(afe->regmap, AFE_MEMIF_CONN, reg_mask_shift,
+		regmap_update_bits((*afe).regmap, AFE_MEMIF_CONN, reg_mask_shift,
 				   0x1 << reg_shift);
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
-		regmap_update_bits(afe->regmap, AFE_MEMIF_CONN, reg_mask_shift,
+		regmap_update_bits((*afe).regmap, AFE_MEMIF_CONN, reg_mask_shift,
 				   0x0 << reg_shift);
 		break;
 	default:
@@ -644,15 +644,13 @@ static const struct snd_kcontrol_new memif_ul_mono_3_mix[] = {
 };
 
 /* TINYCONN MUX */
-enum {
-	TINYCONN_CH1_MUX_I2S0 = 0x14,
-	TINYCONN_CH2_MUX_I2S0 = 0x15,
-	TINYCONN_CH1_MUX_I2S6 = 0x1a,
-	TINYCONN_CH2_MUX_I2S6 = 0x1b,
-	TINYCONN_CH1_MUX_I2S8 = 0x1c,
-	TINYCONN_CH2_MUX_I2S8 = 0x1d,
-	TINYCONN_MUX_NONE = 0x1f,
-};
+pub const TINYCONN_CH1_MUX_I2S0: i32 = 0x14;
+pub const TINYCONN_CH2_MUX_I2S0: i32 = 0x15;
+pub const TINYCONN_CH1_MUX_I2S6: i32 = 0x1a;
+pub const TINYCONN_CH2_MUX_I2S6: i32 = 0x1b;
+pub const TINYCONN_CH1_MUX_I2S8: i32 = 0x1c;
+pub const TINYCONN_CH2_MUX_I2S8: i32 = 0x1d;
+pub const TINYCONN_MUX_NONE: i32 = 0x1f;
 
 static const char * const tinyconn_mux_map[] = {
 	"NONE",
@@ -856,882 +854,882 @@ static const struct snd_soc_dapm_route mt8192_memif_routes[] = {
 
 static const struct mtk_base_memif_data memif_data[MT8192_MEMIF_NUM] = {
 	[MT8192_MEMIF_DL1] = {
-		.name = "DL1",
-		.id = MT8192_MEMIF_DL1,
-		.reg_ofs_base = AFE_DL1_BASE,
-		.reg_ofs_cur = AFE_DL1_CUR,
-		.reg_ofs_end = AFE_DL1_END,
-		.reg_ofs_base_msb = AFE_DL1_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL1_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL1_END_MSB,
-		.fs_reg = AFE_DL1_CON0,
-		.fs_shift = DL1_MODE_SFT,
-		.fs_maskbit = DL1_MODE_MASK,
-		.mono_reg = AFE_DL1_CON0,
-		.mono_shift = DL1_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL1_ON_SFT,
-		.hd_reg = AFE_DL1_CON0,
-		.hd_shift = DL1_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL1_CON0,
-		.hd_align_mshift = DL1_HALIGN_SFT,
-		.pbuf_reg = AFE_DL1_CON0,
-		.pbuf_shift = DL1_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL1_CON0,
-		.minlen_shift = DL1_MINLEN_SFT,
+		name: "DL1",
+		id: MT8192_MEMIF_DL1,
+		reg_ofs_base: AFE_DL1_BASE,
+		reg_ofs_cur: AFE_DL1_CUR,
+		reg_ofs_end: AFE_DL1_END,
+		reg_ofs_base_msb: AFE_DL1_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL1_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL1_END_MSB,
+		fs_reg: AFE_DL1_CON0,
+		fs_shift: DL1_MODE_SFT,
+		fs_maskbit: DL1_MODE_MASK,
+		mono_reg: AFE_DL1_CON0,
+		mono_shift: DL1_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL1_ON_SFT,
+		hd_reg: AFE_DL1_CON0,
+		hd_shift: DL1_HD_MODE_SFT,
+		hd_align_reg: AFE_DL1_CON0,
+		hd_align_mshift: DL1_HALIGN_SFT,
+		pbuf_reg: AFE_DL1_CON0,
+		pbuf_shift: DL1_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL1_CON0,
+		minlen_shift: DL1_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL12] = {
-		.name = "DL12",
-		.id = MT8192_MEMIF_DL12,
-		.reg_ofs_base = AFE_DL12_BASE,
-		.reg_ofs_cur = AFE_DL12_CUR,
-		.reg_ofs_end = AFE_DL12_END,
-		.reg_ofs_base_msb = AFE_DL12_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL12_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL12_END_MSB,
-		.fs_reg = AFE_DL12_CON0,
-		.fs_shift = DL12_MODE_SFT,
-		.fs_maskbit = DL12_MODE_MASK,
-		.mono_reg = AFE_DL12_CON0,
-		.mono_shift = DL12_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL12_ON_SFT,
-		.hd_reg = AFE_DL12_CON0,
-		.hd_shift = DL12_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL12_CON0,
-		.hd_align_mshift = DL12_HALIGN_SFT,
-		.pbuf_reg = AFE_DL12_CON0,
-		.pbuf_shift = DL12_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL12_CON0,
-		.minlen_shift = DL12_MINLEN_SFT,
+		name: "DL12",
+		id: MT8192_MEMIF_DL12,
+		reg_ofs_base: AFE_DL12_BASE,
+		reg_ofs_cur: AFE_DL12_CUR,
+		reg_ofs_end: AFE_DL12_END,
+		reg_ofs_base_msb: AFE_DL12_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL12_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL12_END_MSB,
+		fs_reg: AFE_DL12_CON0,
+		fs_shift: DL12_MODE_SFT,
+		fs_maskbit: DL12_MODE_MASK,
+		mono_reg: AFE_DL12_CON0,
+		mono_shift: DL12_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL12_ON_SFT,
+		hd_reg: AFE_DL12_CON0,
+		hd_shift: DL12_HD_MODE_SFT,
+		hd_align_reg: AFE_DL12_CON0,
+		hd_align_mshift: DL12_HALIGN_SFT,
+		pbuf_reg: AFE_DL12_CON0,
+		pbuf_shift: DL12_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL12_CON0,
+		minlen_shift: DL12_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL2] = {
-		.name = "DL2",
-		.id = MT8192_MEMIF_DL2,
-		.reg_ofs_base = AFE_DL2_BASE,
-		.reg_ofs_cur = AFE_DL2_CUR,
-		.reg_ofs_end = AFE_DL2_END,
-		.reg_ofs_base_msb = AFE_DL2_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL2_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL2_END_MSB,
-		.fs_reg = AFE_DL2_CON0,
-		.fs_shift = DL2_MODE_SFT,
-		.fs_maskbit = DL2_MODE_MASK,
-		.mono_reg = AFE_DL2_CON0,
-		.mono_shift = DL2_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL2_ON_SFT,
-		.hd_reg = AFE_DL2_CON0,
-		.hd_shift = DL2_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL2_CON0,
-		.hd_align_mshift = DL2_HALIGN_SFT,
-		.pbuf_reg = AFE_DL2_CON0,
-		.pbuf_shift = DL2_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL2_CON0,
-		.minlen_shift = DL2_MINLEN_SFT,
+		name: "DL2",
+		id: MT8192_MEMIF_DL2,
+		reg_ofs_base: AFE_DL2_BASE,
+		reg_ofs_cur: AFE_DL2_CUR,
+		reg_ofs_end: AFE_DL2_END,
+		reg_ofs_base_msb: AFE_DL2_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL2_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL2_END_MSB,
+		fs_reg: AFE_DL2_CON0,
+		fs_shift: DL2_MODE_SFT,
+		fs_maskbit: DL2_MODE_MASK,
+		mono_reg: AFE_DL2_CON0,
+		mono_shift: DL2_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL2_ON_SFT,
+		hd_reg: AFE_DL2_CON0,
+		hd_shift: DL2_HD_MODE_SFT,
+		hd_align_reg: AFE_DL2_CON0,
+		hd_align_mshift: DL2_HALIGN_SFT,
+		pbuf_reg: AFE_DL2_CON0,
+		pbuf_shift: DL2_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL2_CON0,
+		minlen_shift: DL2_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL3] = {
-		.name = "DL3",
-		.id = MT8192_MEMIF_DL3,
-		.reg_ofs_base = AFE_DL3_BASE,
-		.reg_ofs_cur = AFE_DL3_CUR,
-		.reg_ofs_end = AFE_DL3_END,
-		.reg_ofs_base_msb = AFE_DL3_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL3_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL3_END_MSB,
-		.fs_reg = AFE_DL3_CON0,
-		.fs_shift = DL3_MODE_SFT,
-		.fs_maskbit = DL3_MODE_MASK,
-		.mono_reg = AFE_DL3_CON0,
-		.mono_shift = DL3_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL3_ON_SFT,
-		.hd_reg = AFE_DL3_CON0,
-		.hd_shift = DL3_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL3_CON0,
-		.hd_align_mshift = DL3_HALIGN_SFT,
-		.pbuf_reg = AFE_DL3_CON0,
-		.pbuf_shift = DL3_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL3_CON0,
-		.minlen_shift = DL3_MINLEN_SFT,
+		name: "DL3",
+		id: MT8192_MEMIF_DL3,
+		reg_ofs_base: AFE_DL3_BASE,
+		reg_ofs_cur: AFE_DL3_CUR,
+		reg_ofs_end: AFE_DL3_END,
+		reg_ofs_base_msb: AFE_DL3_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL3_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL3_END_MSB,
+		fs_reg: AFE_DL3_CON0,
+		fs_shift: DL3_MODE_SFT,
+		fs_maskbit: DL3_MODE_MASK,
+		mono_reg: AFE_DL3_CON0,
+		mono_shift: DL3_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL3_ON_SFT,
+		hd_reg: AFE_DL3_CON0,
+		hd_shift: DL3_HD_MODE_SFT,
+		hd_align_reg: AFE_DL3_CON0,
+		hd_align_mshift: DL3_HALIGN_SFT,
+		pbuf_reg: AFE_DL3_CON0,
+		pbuf_shift: DL3_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL3_CON0,
+		minlen_shift: DL3_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL4] = {
-		.name = "DL4",
-		.id = MT8192_MEMIF_DL4,
-		.reg_ofs_base = AFE_DL4_BASE,
-		.reg_ofs_cur = AFE_DL4_CUR,
-		.reg_ofs_end = AFE_DL4_END,
-		.reg_ofs_base_msb = AFE_DL4_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL4_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL4_END_MSB,
-		.fs_reg = AFE_DL4_CON0,
-		.fs_shift = DL4_MODE_SFT,
-		.fs_maskbit = DL4_MODE_MASK,
-		.mono_reg = AFE_DL4_CON0,
-		.mono_shift = DL4_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL4_ON_SFT,
-		.hd_reg = AFE_DL4_CON0,
-		.hd_shift = DL4_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL4_CON0,
-		.hd_align_mshift = DL4_HALIGN_SFT,
-		.pbuf_reg = AFE_DL4_CON0,
-		.pbuf_shift = DL4_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL4_CON0,
-		.minlen_shift = DL4_MINLEN_SFT,
+		name: "DL4",
+		id: MT8192_MEMIF_DL4,
+		reg_ofs_base: AFE_DL4_BASE,
+		reg_ofs_cur: AFE_DL4_CUR,
+		reg_ofs_end: AFE_DL4_END,
+		reg_ofs_base_msb: AFE_DL4_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL4_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL4_END_MSB,
+		fs_reg: AFE_DL4_CON0,
+		fs_shift: DL4_MODE_SFT,
+		fs_maskbit: DL4_MODE_MASK,
+		mono_reg: AFE_DL4_CON0,
+		mono_shift: DL4_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL4_ON_SFT,
+		hd_reg: AFE_DL4_CON0,
+		hd_shift: DL4_HD_MODE_SFT,
+		hd_align_reg: AFE_DL4_CON0,
+		hd_align_mshift: DL4_HALIGN_SFT,
+		pbuf_reg: AFE_DL4_CON0,
+		pbuf_shift: DL4_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL4_CON0,
+		minlen_shift: DL4_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL5] = {
-		.name = "DL5",
-		.id = MT8192_MEMIF_DL5,
-		.reg_ofs_base = AFE_DL5_BASE,
-		.reg_ofs_cur = AFE_DL5_CUR,
-		.reg_ofs_end = AFE_DL5_END,
-		.reg_ofs_base_msb = AFE_DL5_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL5_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL5_END_MSB,
-		.fs_reg = AFE_DL5_CON0,
-		.fs_shift = DL5_MODE_SFT,
-		.fs_maskbit = DL5_MODE_MASK,
-		.mono_reg = AFE_DL5_CON0,
-		.mono_shift = DL5_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL5_ON_SFT,
-		.hd_reg = AFE_DL5_CON0,
-		.hd_shift = DL5_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL5_CON0,
-		.hd_align_mshift = DL5_HALIGN_SFT,
-		.pbuf_reg = AFE_DL5_CON0,
-		.pbuf_shift = DL5_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL5_CON0,
-		.minlen_shift = DL5_MINLEN_SFT,
+		name: "DL5",
+		id: MT8192_MEMIF_DL5,
+		reg_ofs_base: AFE_DL5_BASE,
+		reg_ofs_cur: AFE_DL5_CUR,
+		reg_ofs_end: AFE_DL5_END,
+		reg_ofs_base_msb: AFE_DL5_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL5_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL5_END_MSB,
+		fs_reg: AFE_DL5_CON0,
+		fs_shift: DL5_MODE_SFT,
+		fs_maskbit: DL5_MODE_MASK,
+		mono_reg: AFE_DL5_CON0,
+		mono_shift: DL5_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL5_ON_SFT,
+		hd_reg: AFE_DL5_CON0,
+		hd_shift: DL5_HD_MODE_SFT,
+		hd_align_reg: AFE_DL5_CON0,
+		hd_align_mshift: DL5_HALIGN_SFT,
+		pbuf_reg: AFE_DL5_CON0,
+		pbuf_shift: DL5_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL5_CON0,
+		minlen_shift: DL5_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL6] = {
-		.name = "DL6",
-		.id = MT8192_MEMIF_DL6,
-		.reg_ofs_base = AFE_DL6_BASE,
-		.reg_ofs_cur = AFE_DL6_CUR,
-		.reg_ofs_end = AFE_DL6_END,
-		.reg_ofs_base_msb = AFE_DL6_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL6_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL6_END_MSB,
-		.fs_reg = AFE_DL6_CON0,
-		.fs_shift = DL6_MODE_SFT,
-		.fs_maskbit = DL6_MODE_MASK,
-		.mono_reg = AFE_DL6_CON0,
-		.mono_shift = DL6_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL6_ON_SFT,
-		.hd_reg = AFE_DL6_CON0,
-		.hd_shift = DL6_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL6_CON0,
-		.hd_align_mshift = DL6_HALIGN_SFT,
-		.pbuf_reg = AFE_DL6_CON0,
-		.pbuf_shift = DL6_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL6_CON0,
-		.minlen_shift = DL6_MINLEN_SFT,
+		name: "DL6",
+		id: MT8192_MEMIF_DL6,
+		reg_ofs_base: AFE_DL6_BASE,
+		reg_ofs_cur: AFE_DL6_CUR,
+		reg_ofs_end: AFE_DL6_END,
+		reg_ofs_base_msb: AFE_DL6_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL6_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL6_END_MSB,
+		fs_reg: AFE_DL6_CON0,
+		fs_shift: DL6_MODE_SFT,
+		fs_maskbit: DL6_MODE_MASK,
+		mono_reg: AFE_DL6_CON0,
+		mono_shift: DL6_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL6_ON_SFT,
+		hd_reg: AFE_DL6_CON0,
+		hd_shift: DL6_HD_MODE_SFT,
+		hd_align_reg: AFE_DL6_CON0,
+		hd_align_mshift: DL6_HALIGN_SFT,
+		pbuf_reg: AFE_DL6_CON0,
+		pbuf_shift: DL6_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL6_CON0,
+		minlen_shift: DL6_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL7] = {
-		.name = "DL7",
-		.id = MT8192_MEMIF_DL7,
-		.reg_ofs_base = AFE_DL7_BASE,
-		.reg_ofs_cur = AFE_DL7_CUR,
-		.reg_ofs_end = AFE_DL7_END,
-		.reg_ofs_base_msb = AFE_DL7_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL7_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL7_END_MSB,
-		.fs_reg = AFE_DL7_CON0,
-		.fs_shift = DL7_MODE_SFT,
-		.fs_maskbit = DL7_MODE_MASK,
-		.mono_reg = AFE_DL7_CON0,
-		.mono_shift = DL7_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL7_ON_SFT,
-		.hd_reg = AFE_DL7_CON0,
-		.hd_shift = DL7_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL7_CON0,
-		.hd_align_mshift = DL7_HALIGN_SFT,
-		.pbuf_reg = AFE_DL7_CON0,
-		.pbuf_shift = DL7_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL7_CON0,
-		.minlen_shift = DL7_MINLEN_SFT,
+		name: "DL7",
+		id: MT8192_MEMIF_DL7,
+		reg_ofs_base: AFE_DL7_BASE,
+		reg_ofs_cur: AFE_DL7_CUR,
+		reg_ofs_end: AFE_DL7_END,
+		reg_ofs_base_msb: AFE_DL7_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL7_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL7_END_MSB,
+		fs_reg: AFE_DL7_CON0,
+		fs_shift: DL7_MODE_SFT,
+		fs_maskbit: DL7_MODE_MASK,
+		mono_reg: AFE_DL7_CON0,
+		mono_shift: DL7_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL7_ON_SFT,
+		hd_reg: AFE_DL7_CON0,
+		hd_shift: DL7_HD_MODE_SFT,
+		hd_align_reg: AFE_DL7_CON0,
+		hd_align_mshift: DL7_HALIGN_SFT,
+		pbuf_reg: AFE_DL7_CON0,
+		pbuf_shift: DL7_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL7_CON0,
+		minlen_shift: DL7_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL8] = {
-		.name = "DL8",
-		.id = MT8192_MEMIF_DL8,
-		.reg_ofs_base = AFE_DL8_BASE,
-		.reg_ofs_cur = AFE_DL8_CUR,
-		.reg_ofs_end = AFE_DL8_END,
-		.reg_ofs_base_msb = AFE_DL8_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL8_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL8_END_MSB,
-		.fs_reg = AFE_DL8_CON0,
-		.fs_shift = DL8_MODE_SFT,
-		.fs_maskbit = DL8_MODE_MASK,
-		.mono_reg = AFE_DL8_CON0,
-		.mono_shift = DL8_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL8_ON_SFT,
-		.hd_reg = AFE_DL8_CON0,
-		.hd_shift = DL8_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL8_CON0,
-		.hd_align_mshift = DL8_HALIGN_SFT,
-		.pbuf_reg = AFE_DL8_CON0,
-		.pbuf_shift = DL8_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL8_CON0,
-		.minlen_shift = DL8_MINLEN_SFT,
+		name: "DL8",
+		id: MT8192_MEMIF_DL8,
+		reg_ofs_base: AFE_DL8_BASE,
+		reg_ofs_cur: AFE_DL8_CUR,
+		reg_ofs_end: AFE_DL8_END,
+		reg_ofs_base_msb: AFE_DL8_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL8_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL8_END_MSB,
+		fs_reg: AFE_DL8_CON0,
+		fs_shift: DL8_MODE_SFT,
+		fs_maskbit: DL8_MODE_MASK,
+		mono_reg: AFE_DL8_CON0,
+		mono_shift: DL8_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL8_ON_SFT,
+		hd_reg: AFE_DL8_CON0,
+		hd_shift: DL8_HD_MODE_SFT,
+		hd_align_reg: AFE_DL8_CON0,
+		hd_align_mshift: DL8_HALIGN_SFT,
+		pbuf_reg: AFE_DL8_CON0,
+		pbuf_shift: DL8_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL8_CON0,
+		minlen_shift: DL8_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DL9] = {
-		.name = "DL9",
-		.id = MT8192_MEMIF_DL9,
-		.reg_ofs_base = AFE_DL9_BASE,
-		.reg_ofs_cur = AFE_DL9_CUR,
-		.reg_ofs_end = AFE_DL9_END,
-		.reg_ofs_base_msb = AFE_DL9_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DL9_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DL9_END_MSB,
-		.fs_reg = AFE_DL9_CON0,
-		.fs_shift = DL9_MODE_SFT,
-		.fs_maskbit = DL9_MODE_MASK,
-		.mono_reg = AFE_DL9_CON0,
-		.mono_shift = DL9_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DL9_ON_SFT,
-		.hd_reg = AFE_DL9_CON0,
-		.hd_shift = DL9_HD_MODE_SFT,
-		.hd_align_reg = AFE_DL9_CON0,
-		.hd_align_mshift = DL9_HALIGN_SFT,
-		.pbuf_reg = AFE_DL9_CON0,
-		.pbuf_shift = DL9_PBUF_SIZE_SFT,
-		.minlen_reg = AFE_DL9_CON0,
-		.minlen_shift = DL9_MINLEN_SFT,
+		name: "DL9",
+		id: MT8192_MEMIF_DL9,
+		reg_ofs_base: AFE_DL9_BASE,
+		reg_ofs_cur: AFE_DL9_CUR,
+		reg_ofs_end: AFE_DL9_END,
+		reg_ofs_base_msb: AFE_DL9_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DL9_CUR_MSB,
+		reg_ofs_end_msb: AFE_DL9_END_MSB,
+		fs_reg: AFE_DL9_CON0,
+		fs_shift: DL9_MODE_SFT,
+		fs_maskbit: DL9_MODE_MASK,
+		mono_reg: AFE_DL9_CON0,
+		mono_shift: DL9_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DL9_ON_SFT,
+		hd_reg: AFE_DL9_CON0,
+		hd_shift: DL9_HD_MODE_SFT,
+		hd_align_reg: AFE_DL9_CON0,
+		hd_align_mshift: DL9_HALIGN_SFT,
+		pbuf_reg: AFE_DL9_CON0,
+		pbuf_shift: DL9_PBUF_SIZE_SFT,
+		minlen_reg: AFE_DL9_CON0,
+		minlen_shift: DL9_MINLEN_SFT,
 	},
 	[MT8192_MEMIF_DAI] = {
-		.name = "DAI",
-		.id = MT8192_MEMIF_DAI,
-		.reg_ofs_base = AFE_DAI_BASE,
-		.reg_ofs_cur = AFE_DAI_CUR,
-		.reg_ofs_end = AFE_DAI_END,
-		.reg_ofs_base_msb = AFE_DAI_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DAI_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DAI_END_MSB,
-		.fs_reg = AFE_DAI_CON0,
-		.fs_shift = DAI_MODE_SFT,
-		.fs_maskbit = DAI_MODE_MASK,
-		.mono_reg = AFE_DAI_CON0,
-		.mono_shift = DAI_DUPLICATE_WR_SFT,
-		.mono_invert = 1,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DAI_ON_SFT,
-		.hd_reg = AFE_DAI_CON0,
-		.hd_shift = DAI_HD_MODE_SFT,
-		.hd_align_reg = AFE_DAI_CON0,
-		.hd_align_mshift = DAI_HALIGN_SFT,
+		name: "DAI",
+		id: MT8192_MEMIF_DAI,
+		reg_ofs_base: AFE_DAI_BASE,
+		reg_ofs_cur: AFE_DAI_CUR,
+		reg_ofs_end: AFE_DAI_END,
+		reg_ofs_base_msb: AFE_DAI_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DAI_CUR_MSB,
+		reg_ofs_end_msb: AFE_DAI_END_MSB,
+		fs_reg: AFE_DAI_CON0,
+		fs_shift: DAI_MODE_SFT,
+		fs_maskbit: DAI_MODE_MASK,
+		mono_reg: AFE_DAI_CON0,
+		mono_shift: DAI_DUPLICATE_WR_SFT,
+		mono_invert: 1,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DAI_ON_SFT,
+		hd_reg: AFE_DAI_CON0,
+		hd_shift: DAI_HD_MODE_SFT,
+		hd_align_reg: AFE_DAI_CON0,
+		hd_align_mshift: DAI_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_MOD_DAI] = {
-		.name = "MOD_DAI",
-		.id = MT8192_MEMIF_MOD_DAI,
-		.reg_ofs_base = AFE_MOD_DAI_BASE,
-		.reg_ofs_cur = AFE_MOD_DAI_CUR,
-		.reg_ofs_end = AFE_MOD_DAI_END,
-		.reg_ofs_base_msb = AFE_MOD_DAI_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_MOD_DAI_CUR_MSB,
-		.reg_ofs_end_msb = AFE_MOD_DAI_END_MSB,
-		.fs_reg = AFE_MOD_DAI_CON0,
-		.fs_shift = MOD_DAI_MODE_SFT,
-		.fs_maskbit = MOD_DAI_MODE_MASK,
-		.mono_reg = AFE_MOD_DAI_CON0,
-		.mono_shift = MOD_DAI_DUPLICATE_WR_SFT,
-		.mono_invert = 1,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = MOD_DAI_ON_SFT,
-		.hd_reg = AFE_MOD_DAI_CON0,
-		.hd_shift = MOD_DAI_HD_MODE_SFT,
-		.hd_align_reg = AFE_MOD_DAI_CON0,
-		.hd_align_mshift = MOD_DAI_HALIGN_SFT,
+		name: "MOD_DAI",
+		id: MT8192_MEMIF_MOD_DAI,
+		reg_ofs_base: AFE_MOD_DAI_BASE,
+		reg_ofs_cur: AFE_MOD_DAI_CUR,
+		reg_ofs_end: AFE_MOD_DAI_END,
+		reg_ofs_base_msb: AFE_MOD_DAI_BASE_MSB,
+		reg_ofs_cur_msb: AFE_MOD_DAI_CUR_MSB,
+		reg_ofs_end_msb: AFE_MOD_DAI_END_MSB,
+		fs_reg: AFE_MOD_DAI_CON0,
+		fs_shift: MOD_DAI_MODE_SFT,
+		fs_maskbit: MOD_DAI_MODE_MASK,
+		mono_reg: AFE_MOD_DAI_CON0,
+		mono_shift: MOD_DAI_DUPLICATE_WR_SFT,
+		mono_invert: 1,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: MOD_DAI_ON_SFT,
+		hd_reg: AFE_MOD_DAI_CON0,
+		hd_shift: MOD_DAI_HD_MODE_SFT,
+		hd_align_reg: AFE_MOD_DAI_CON0,
+		hd_align_mshift: MOD_DAI_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_DAI2] = {
-		.name = "DAI2",
-		.id = MT8192_MEMIF_DAI2,
-		.reg_ofs_base = AFE_DAI2_BASE,
-		.reg_ofs_cur = AFE_DAI2_CUR,
-		.reg_ofs_end = AFE_DAI2_END,
-		.reg_ofs_base_msb = AFE_DAI2_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_DAI2_CUR_MSB,
-		.reg_ofs_end_msb = AFE_DAI2_END_MSB,
-		.fs_reg = AFE_DAI2_CON0,
-		.fs_shift = DAI2_MODE_SFT,
-		.fs_maskbit = DAI2_MODE_MASK,
-		.mono_reg = AFE_DAI2_CON0,
-		.mono_shift = DAI2_DUPLICATE_WR_SFT,
-		.mono_invert = 1,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = DAI2_ON_SFT,
-		.hd_reg = AFE_DAI2_CON0,
-		.hd_shift = DAI2_HD_MODE_SFT,
-		.hd_align_reg = AFE_DAI2_CON0,
-		.hd_align_mshift = DAI2_HALIGN_SFT,
+		name: "DAI2",
+		id: MT8192_MEMIF_DAI2,
+		reg_ofs_base: AFE_DAI2_BASE,
+		reg_ofs_cur: AFE_DAI2_CUR,
+		reg_ofs_end: AFE_DAI2_END,
+		reg_ofs_base_msb: AFE_DAI2_BASE_MSB,
+		reg_ofs_cur_msb: AFE_DAI2_CUR_MSB,
+		reg_ofs_end_msb: AFE_DAI2_END_MSB,
+		fs_reg: AFE_DAI2_CON0,
+		fs_shift: DAI2_MODE_SFT,
+		fs_maskbit: DAI2_MODE_MASK,
+		mono_reg: AFE_DAI2_CON0,
+		mono_shift: DAI2_DUPLICATE_WR_SFT,
+		mono_invert: 1,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: DAI2_ON_SFT,
+		hd_reg: AFE_DAI2_CON0,
+		hd_shift: DAI2_HD_MODE_SFT,
+		hd_align_reg: AFE_DAI2_CON0,
+		hd_align_mshift: DAI2_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_VUL12] = {
-		.name = "VUL12",
-		.id = MT8192_MEMIF_VUL12,
-		.reg_ofs_base = AFE_VUL12_BASE,
-		.reg_ofs_cur = AFE_VUL12_CUR,
-		.reg_ofs_end = AFE_VUL12_END,
-		.reg_ofs_base_msb = AFE_VUL12_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_VUL12_CUR_MSB,
-		.reg_ofs_end_msb = AFE_VUL12_END_MSB,
-		.fs_reg = AFE_VUL12_CON0,
-		.fs_shift = VUL12_MODE_SFT,
-		.fs_maskbit = VUL12_MODE_MASK,
-		.mono_reg = AFE_VUL12_CON0,
-		.mono_shift = VUL12_MONO_SFT,
-		.quad_ch_reg = AFE_VUL12_CON0,
-		.quad_ch_shift = VUL12_4CH_EN_SFT,
-		.quad_ch_mask = VUL12_4CH_EN_MASK,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = VUL12_ON_SFT,
-		.hd_reg = AFE_VUL12_CON0,
-		.hd_shift = VUL12_HD_MODE_SFT,
-		.hd_align_reg = AFE_VUL12_CON0,
-		.hd_align_mshift = VUL12_HALIGN_SFT,
+		name: "VUL12",
+		id: MT8192_MEMIF_VUL12,
+		reg_ofs_base: AFE_VUL12_BASE,
+		reg_ofs_cur: AFE_VUL12_CUR,
+		reg_ofs_end: AFE_VUL12_END,
+		reg_ofs_base_msb: AFE_VUL12_BASE_MSB,
+		reg_ofs_cur_msb: AFE_VUL12_CUR_MSB,
+		reg_ofs_end_msb: AFE_VUL12_END_MSB,
+		fs_reg: AFE_VUL12_CON0,
+		fs_shift: VUL12_MODE_SFT,
+		fs_maskbit: VUL12_MODE_MASK,
+		mono_reg: AFE_VUL12_CON0,
+		mono_shift: VUL12_MONO_SFT,
+		quad_ch_reg: AFE_VUL12_CON0,
+		quad_ch_shift: VUL12_4CH_EN_SFT,
+		quad_ch_mask: VUL12_4CH_EN_MASK,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: VUL12_ON_SFT,
+		hd_reg: AFE_VUL12_CON0,
+		hd_shift: VUL12_HD_MODE_SFT,
+		hd_align_reg: AFE_VUL12_CON0,
+		hd_align_mshift: VUL12_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_VUL2] = {
-		.name = "VUL2",
-		.id = MT8192_MEMIF_VUL2,
-		.reg_ofs_base = AFE_VUL2_BASE,
-		.reg_ofs_cur = AFE_VUL2_CUR,
-		.reg_ofs_end = AFE_VUL2_END,
-		.reg_ofs_base_msb = AFE_VUL2_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_VUL2_CUR_MSB,
-		.reg_ofs_end_msb = AFE_VUL2_END_MSB,
-		.fs_reg = AFE_VUL2_CON0,
-		.fs_shift = VUL2_MODE_SFT,
-		.fs_maskbit = VUL2_MODE_MASK,
-		.mono_reg = AFE_VUL2_CON0,
-		.mono_shift = VUL2_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = VUL2_ON_SFT,
-		.hd_reg = AFE_VUL2_CON0,
-		.hd_shift = VUL2_HD_MODE_SFT,
-		.hd_align_reg = AFE_VUL2_CON0,
-		.hd_align_mshift = VUL2_HALIGN_SFT,
+		name: "VUL2",
+		id: MT8192_MEMIF_VUL2,
+		reg_ofs_base: AFE_VUL2_BASE,
+		reg_ofs_cur: AFE_VUL2_CUR,
+		reg_ofs_end: AFE_VUL2_END,
+		reg_ofs_base_msb: AFE_VUL2_BASE_MSB,
+		reg_ofs_cur_msb: AFE_VUL2_CUR_MSB,
+		reg_ofs_end_msb: AFE_VUL2_END_MSB,
+		fs_reg: AFE_VUL2_CON0,
+		fs_shift: VUL2_MODE_SFT,
+		fs_maskbit: VUL2_MODE_MASK,
+		mono_reg: AFE_VUL2_CON0,
+		mono_shift: VUL2_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: VUL2_ON_SFT,
+		hd_reg: AFE_VUL2_CON0,
+		hd_shift: VUL2_HD_MODE_SFT,
+		hd_align_reg: AFE_VUL2_CON0,
+		hd_align_mshift: VUL2_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_AWB] = {
-		.name = "AWB",
-		.id = MT8192_MEMIF_AWB,
-		.reg_ofs_base = AFE_AWB_BASE,
-		.reg_ofs_cur = AFE_AWB_CUR,
-		.reg_ofs_end = AFE_AWB_END,
-		.reg_ofs_base_msb = AFE_AWB_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_AWB_CUR_MSB,
-		.reg_ofs_end_msb = AFE_AWB_END_MSB,
-		.fs_reg = AFE_AWB_CON0,
-		.fs_shift = AWB_MODE_SFT,
-		.fs_maskbit = AWB_MODE_MASK,
-		.mono_reg = AFE_AWB_CON0,
-		.mono_shift = AWB_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = AWB_ON_SFT,
-		.hd_reg = AFE_AWB_CON0,
-		.hd_shift = AWB_HD_MODE_SFT,
-		.hd_align_reg = AFE_AWB_CON0,
-		.hd_align_mshift = AWB_HALIGN_SFT,
+		name: "AWB",
+		id: MT8192_MEMIF_AWB,
+		reg_ofs_base: AFE_AWB_BASE,
+		reg_ofs_cur: AFE_AWB_CUR,
+		reg_ofs_end: AFE_AWB_END,
+		reg_ofs_base_msb: AFE_AWB_BASE_MSB,
+		reg_ofs_cur_msb: AFE_AWB_CUR_MSB,
+		reg_ofs_end_msb: AFE_AWB_END_MSB,
+		fs_reg: AFE_AWB_CON0,
+		fs_shift: AWB_MODE_SFT,
+		fs_maskbit: AWB_MODE_MASK,
+		mono_reg: AFE_AWB_CON0,
+		mono_shift: AWB_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: AWB_ON_SFT,
+		hd_reg: AFE_AWB_CON0,
+		hd_shift: AWB_HD_MODE_SFT,
+		hd_align_reg: AFE_AWB_CON0,
+		hd_align_mshift: AWB_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_AWB2] = {
-		.name = "AWB2",
-		.id = MT8192_MEMIF_AWB2,
-		.reg_ofs_base = AFE_AWB2_BASE,
-		.reg_ofs_cur = AFE_AWB2_CUR,
-		.reg_ofs_end = AFE_AWB2_END,
-		.reg_ofs_base_msb = AFE_AWB2_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_AWB2_CUR_MSB,
-		.reg_ofs_end_msb = AFE_AWB2_END_MSB,
-		.fs_reg = AFE_AWB2_CON0,
-		.fs_shift = AWB2_MODE_SFT,
-		.fs_maskbit = AWB2_MODE_MASK,
-		.mono_reg = AFE_AWB2_CON0,
-		.mono_shift = AWB2_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = AWB2_ON_SFT,
-		.hd_reg = AFE_AWB2_CON0,
-		.hd_shift = AWB2_HD_MODE_SFT,
-		.hd_align_reg = AFE_AWB2_CON0,
-		.hd_align_mshift = AWB2_HALIGN_SFT,
+		name: "AWB2",
+		id: MT8192_MEMIF_AWB2,
+		reg_ofs_base: AFE_AWB2_BASE,
+		reg_ofs_cur: AFE_AWB2_CUR,
+		reg_ofs_end: AFE_AWB2_END,
+		reg_ofs_base_msb: AFE_AWB2_BASE_MSB,
+		reg_ofs_cur_msb: AFE_AWB2_CUR_MSB,
+		reg_ofs_end_msb: AFE_AWB2_END_MSB,
+		fs_reg: AFE_AWB2_CON0,
+		fs_shift: AWB2_MODE_SFT,
+		fs_maskbit: AWB2_MODE_MASK,
+		mono_reg: AFE_AWB2_CON0,
+		mono_shift: AWB2_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: AWB2_ON_SFT,
+		hd_reg: AFE_AWB2_CON0,
+		hd_shift: AWB2_HD_MODE_SFT,
+		hd_align_reg: AFE_AWB2_CON0,
+		hd_align_mshift: AWB2_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_VUL3] = {
-		.name = "VUL3",
-		.id = MT8192_MEMIF_VUL3,
-		.reg_ofs_base = AFE_VUL3_BASE,
-		.reg_ofs_cur = AFE_VUL3_CUR,
-		.reg_ofs_end = AFE_VUL3_END,
-		.reg_ofs_base_msb = AFE_VUL3_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_VUL3_CUR_MSB,
-		.reg_ofs_end_msb = AFE_VUL3_END_MSB,
-		.fs_reg = AFE_VUL3_CON0,
-		.fs_shift = VUL3_MODE_SFT,
-		.fs_maskbit = VUL3_MODE_MASK,
-		.mono_reg = AFE_VUL3_CON0,
-		.mono_shift = VUL3_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = VUL3_ON_SFT,
-		.hd_reg = AFE_VUL3_CON0,
-		.hd_shift = VUL3_HD_MODE_SFT,
-		.hd_align_reg = AFE_VUL3_CON0,
-		.hd_align_mshift = VUL3_HALIGN_SFT,
+		name: "VUL3",
+		id: MT8192_MEMIF_VUL3,
+		reg_ofs_base: AFE_VUL3_BASE,
+		reg_ofs_cur: AFE_VUL3_CUR,
+		reg_ofs_end: AFE_VUL3_END,
+		reg_ofs_base_msb: AFE_VUL3_BASE_MSB,
+		reg_ofs_cur_msb: AFE_VUL3_CUR_MSB,
+		reg_ofs_end_msb: AFE_VUL3_END_MSB,
+		fs_reg: AFE_VUL3_CON0,
+		fs_shift: VUL3_MODE_SFT,
+		fs_maskbit: VUL3_MODE_MASK,
+		mono_reg: AFE_VUL3_CON0,
+		mono_shift: VUL3_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: VUL3_ON_SFT,
+		hd_reg: AFE_VUL3_CON0,
+		hd_shift: VUL3_HD_MODE_SFT,
+		hd_align_reg: AFE_VUL3_CON0,
+		hd_align_mshift: VUL3_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_VUL4] = {
-		.name = "VUL4",
-		.id = MT8192_MEMIF_VUL4,
-		.reg_ofs_base = AFE_VUL4_BASE,
-		.reg_ofs_cur = AFE_VUL4_CUR,
-		.reg_ofs_end = AFE_VUL4_END,
-		.reg_ofs_base_msb = AFE_VUL4_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_VUL4_CUR_MSB,
-		.reg_ofs_end_msb = AFE_VUL4_END_MSB,
-		.fs_reg = AFE_VUL4_CON0,
-		.fs_shift = VUL4_MODE_SFT,
-		.fs_maskbit = VUL4_MODE_MASK,
-		.mono_reg = AFE_VUL4_CON0,
-		.mono_shift = VUL4_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = VUL4_ON_SFT,
-		.hd_reg = AFE_VUL4_CON0,
-		.hd_shift = VUL4_HD_MODE_SFT,
-		.hd_align_reg = AFE_VUL4_CON0,
-		.hd_align_mshift = VUL4_HALIGN_SFT,
+		name: "VUL4",
+		id: MT8192_MEMIF_VUL4,
+		reg_ofs_base: AFE_VUL4_BASE,
+		reg_ofs_cur: AFE_VUL4_CUR,
+		reg_ofs_end: AFE_VUL4_END,
+		reg_ofs_base_msb: AFE_VUL4_BASE_MSB,
+		reg_ofs_cur_msb: AFE_VUL4_CUR_MSB,
+		reg_ofs_end_msb: AFE_VUL4_END_MSB,
+		fs_reg: AFE_VUL4_CON0,
+		fs_shift: VUL4_MODE_SFT,
+		fs_maskbit: VUL4_MODE_MASK,
+		mono_reg: AFE_VUL4_CON0,
+		mono_shift: VUL4_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: VUL4_ON_SFT,
+		hd_reg: AFE_VUL4_CON0,
+		hd_shift: VUL4_HD_MODE_SFT,
+		hd_align_reg: AFE_VUL4_CON0,
+		hd_align_mshift: VUL4_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_VUL5] = {
-		.name = "VUL5",
-		.id = MT8192_MEMIF_VUL5,
-		.reg_ofs_base = AFE_VUL5_BASE,
-		.reg_ofs_cur = AFE_VUL5_CUR,
-		.reg_ofs_end = AFE_VUL5_END,
-		.reg_ofs_base_msb = AFE_VUL5_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_VUL5_CUR_MSB,
-		.reg_ofs_end_msb = AFE_VUL5_END_MSB,
-		.fs_reg = AFE_VUL5_CON0,
-		.fs_shift = VUL5_MODE_SFT,
-		.fs_maskbit = VUL5_MODE_MASK,
-		.mono_reg = AFE_VUL5_CON0,
-		.mono_shift = VUL5_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = VUL5_ON_SFT,
-		.hd_reg = AFE_VUL5_CON0,
-		.hd_shift = VUL5_HD_MODE_SFT,
-		.hd_align_reg = AFE_VUL5_CON0,
-		.hd_align_mshift = VUL5_HALIGN_SFT,
+		name: "VUL5",
+		id: MT8192_MEMIF_VUL5,
+		reg_ofs_base: AFE_VUL5_BASE,
+		reg_ofs_cur: AFE_VUL5_CUR,
+		reg_ofs_end: AFE_VUL5_END,
+		reg_ofs_base_msb: AFE_VUL5_BASE_MSB,
+		reg_ofs_cur_msb: AFE_VUL5_CUR_MSB,
+		reg_ofs_end_msb: AFE_VUL5_END_MSB,
+		fs_reg: AFE_VUL5_CON0,
+		fs_shift: VUL5_MODE_SFT,
+		fs_maskbit: VUL5_MODE_MASK,
+		mono_reg: AFE_VUL5_CON0,
+		mono_shift: VUL5_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: VUL5_ON_SFT,
+		hd_reg: AFE_VUL5_CON0,
+		hd_shift: VUL5_HD_MODE_SFT,
+		hd_align_reg: AFE_VUL5_CON0,
+		hd_align_mshift: VUL5_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_VUL6] = {
-		.name = "VUL6",
-		.id = MT8192_MEMIF_VUL6,
-		.reg_ofs_base = AFE_VUL6_BASE,
-		.reg_ofs_cur = AFE_VUL6_CUR,
-		.reg_ofs_end = AFE_VUL6_END,
-		.reg_ofs_base_msb = AFE_VUL6_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_VUL6_CUR_MSB,
-		.reg_ofs_end_msb = AFE_VUL6_END_MSB,
-		.fs_reg = AFE_VUL6_CON0,
-		.fs_shift = VUL6_MODE_SFT,
-		.fs_maskbit = VUL6_MODE_MASK,
-		.mono_reg = AFE_VUL6_CON0,
-		.mono_shift = VUL6_MONO_SFT,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = VUL6_ON_SFT,
-		.hd_reg = AFE_VUL6_CON0,
-		.hd_shift = VUL6_HD_MODE_SFT,
-		.hd_align_reg = AFE_VUL6_CON0,
-		.hd_align_mshift = VUL6_HALIGN_SFT,
+		name: "VUL6",
+		id: MT8192_MEMIF_VUL6,
+		reg_ofs_base: AFE_VUL6_BASE,
+		reg_ofs_cur: AFE_VUL6_CUR,
+		reg_ofs_end: AFE_VUL6_END,
+		reg_ofs_base_msb: AFE_VUL6_BASE_MSB,
+		reg_ofs_cur_msb: AFE_VUL6_CUR_MSB,
+		reg_ofs_end_msb: AFE_VUL6_END_MSB,
+		fs_reg: AFE_VUL6_CON0,
+		fs_shift: VUL6_MODE_SFT,
+		fs_maskbit: VUL6_MODE_MASK,
+		mono_reg: AFE_VUL6_CON0,
+		mono_shift: VUL6_MONO_SFT,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: VUL6_ON_SFT,
+		hd_reg: AFE_VUL6_CON0,
+		hd_shift: VUL6_HD_MODE_SFT,
+		hd_align_reg: AFE_VUL6_CON0,
+		hd_align_mshift: VUL6_HALIGN_SFT,
 	},
 	[MT8192_MEMIF_HDMI] = {
-		.name = "HDMI",
-		.id = MT8192_MEMIF_HDMI,
-		.reg_ofs_base = AFE_HDMI_OUT_BASE,
-		.reg_ofs_cur = AFE_HDMI_OUT_CUR,
-		.reg_ofs_end = AFE_HDMI_OUT_END,
-		.reg_ofs_base_msb = AFE_HDMI_OUT_BASE_MSB,
-		.reg_ofs_cur_msb = AFE_HDMI_OUT_CUR_MSB,
-		.reg_ofs_end_msb = AFE_HDMI_OUT_END_MSB,
-		.fs_reg = -1,
-		.fs_shift = -1,
-		.fs_maskbit = -1,
-		.mono_reg = -1,
-		.mono_shift = -1,
-		.enable_reg = AFE_DAC_CON0,
-		.enable_shift = HDMI_OUT_ON_SFT,
-		.hd_reg = AFE_HDMI_OUT_CON0,
-		.hd_shift = HDMI_OUT_HD_MODE_SFT,
-		.hd_align_reg = AFE_HDMI_OUT_CON0,
-		.hd_align_mshift = HDMI_OUT_HALIGN_SFT,
-		.pbuf_reg = AFE_HDMI_OUT_CON0,
-		.minlen_reg = AFE_HDMI_OUT_CON0,
-		.minlen_shift = HDMI_OUT_MINLEN_SFT,
+		name: "HDMI",
+		id: MT8192_MEMIF_HDMI,
+		reg_ofs_base: AFE_HDMI_OUT_BASE,
+		reg_ofs_cur: AFE_HDMI_OUT_CUR,
+		reg_ofs_end: AFE_HDMI_OUT_END,
+		reg_ofs_base_msb: AFE_HDMI_OUT_BASE_MSB,
+		reg_ofs_cur_msb: AFE_HDMI_OUT_CUR_MSB,
+		reg_ofs_end_msb: AFE_HDMI_OUT_END_MSB,
+		fs_reg: -1,
+		fs_shift: -1,
+		fs_maskbit: -1,
+		mono_reg: -1,
+		mono_shift: -1,
+		enable_reg: AFE_DAC_CON0,
+		enable_shift: HDMI_OUT_ON_SFT,
+		hd_reg: AFE_HDMI_OUT_CON0,
+		hd_shift: HDMI_OUT_HD_MODE_SFT,
+		hd_align_reg: AFE_HDMI_OUT_CON0,
+		hd_align_mshift: HDMI_OUT_HALIGN_SFT,
+		pbuf_reg: AFE_HDMI_OUT_CON0,
+		minlen_reg: AFE_HDMI_OUT_CON0,
+		minlen_shift: HDMI_OUT_MINLEN_SFT,
 	},
 };
 
 static const struct mtk_base_irq_data irq_data[MT8192_IRQ_NUM] = {
 	[MT8192_IRQ_0] = {
-		.id = MT8192_IRQ_0,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT0,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ0_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ0_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ0_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ0_MCU_CLR_SFT,
+		id: MT8192_IRQ_0,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT0,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ0_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ0_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ0_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ0_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_1] = {
-		.id = MT8192_IRQ_1,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT1,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ1_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ1_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ1_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ1_MCU_CLR_SFT,
+		id: MT8192_IRQ_1,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT1,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ1_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ1_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ1_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ1_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_2] = {
-		.id = MT8192_IRQ_2,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT2,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ2_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ2_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ2_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ2_MCU_CLR_SFT,
+		id: MT8192_IRQ_2,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT2,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ2_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ2_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ2_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ2_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_3] = {
-		.id = MT8192_IRQ_3,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT3,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ3_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ3_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ3_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ3_MCU_CLR_SFT,
+		id: MT8192_IRQ_3,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT3,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ3_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ3_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ3_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ3_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_4] = {
-		.id = MT8192_IRQ_4,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT4,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ4_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ4_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ4_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ4_MCU_CLR_SFT,
+		id: MT8192_IRQ_4,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT4,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ4_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ4_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ4_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ4_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_5] = {
-		.id = MT8192_IRQ_5,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT5,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ5_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ5_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ5_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ5_MCU_CLR_SFT,
+		id: MT8192_IRQ_5,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT5,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ5_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ5_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ5_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ5_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_6] = {
-		.id = MT8192_IRQ_6,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT6,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ6_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ6_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ6_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ6_MCU_CLR_SFT,
+		id: MT8192_IRQ_6,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT6,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ6_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ6_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ6_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ6_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_7] = {
-		.id = MT8192_IRQ_7,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT7,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON1,
-		.irq_fs_shift = IRQ7_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ7_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ7_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ7_MCU_CLR_SFT,
+		id: MT8192_IRQ_7,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT7,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON1,
+		irq_fs_shift: IRQ7_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ7_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ7_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ7_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_8] = {
-		.id = MT8192_IRQ_8,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT8,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ8_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ8_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ8_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ8_MCU_CLR_SFT,
+		id: MT8192_IRQ_8,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT8,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ8_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ8_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ8_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ8_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_9] = {
-		.id = MT8192_IRQ_9,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT9,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ9_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ9_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ9_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ9_MCU_CLR_SFT,
+		id: MT8192_IRQ_9,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT9,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ9_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ9_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ9_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ9_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_10] = {
-		.id = MT8192_IRQ_10,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT10,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ10_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ10_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ10_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ10_MCU_CLR_SFT,
+		id: MT8192_IRQ_10,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT10,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ10_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ10_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ10_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ10_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_11] = {
-		.id = MT8192_IRQ_11,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT11,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ11_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ11_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ11_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ11_MCU_CLR_SFT,
+		id: MT8192_IRQ_11,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT11,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ11_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ11_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ11_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ11_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_12] = {
-		.id = MT8192_IRQ_12,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT12,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ12_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ12_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ12_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ12_MCU_CLR_SFT,
+		id: MT8192_IRQ_12,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT12,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ12_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ12_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ12_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ12_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_13] = {
-		.id = MT8192_IRQ_13,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT13,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ13_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ13_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ13_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ13_MCU_CLR_SFT,
+		id: MT8192_IRQ_13,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT13,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ13_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ13_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ13_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ13_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_14] = {
-		.id = MT8192_IRQ_14,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT14,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ14_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ14_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ14_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ14_MCU_CLR_SFT,
+		id: MT8192_IRQ_14,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT14,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ14_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ14_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ14_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ14_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_15] = {
-		.id = MT8192_IRQ_15,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT15,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON2,
-		.irq_fs_shift = IRQ15_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ15_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ15_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ15_MCU_CLR_SFT,
+		id: MT8192_IRQ_15,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT15,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON2,
+		irq_fs_shift: IRQ15_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ15_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ15_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ15_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_16] = {
-		.id = MT8192_IRQ_16,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT16,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ16_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ16_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ16_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ16_MCU_CLR_SFT,
+		id: MT8192_IRQ_16,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT16,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ16_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ16_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ16_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ16_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_17] = {
-		.id = MT8192_IRQ_17,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT17,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ17_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ17_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ17_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ17_MCU_CLR_SFT,
+		id: MT8192_IRQ_17,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT17,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ17_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ17_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ17_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ17_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_18] = {
-		.id = MT8192_IRQ_18,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT18,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ18_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ18_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ18_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ18_MCU_CLR_SFT,
+		id: MT8192_IRQ_18,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT18,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ18_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ18_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ18_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ18_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_19] = {
-		.id = MT8192_IRQ_19,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT19,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ19_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ19_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ19_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ19_MCU_CLR_SFT,
+		id: MT8192_IRQ_19,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT19,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ19_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ19_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ19_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ19_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_20] = {
-		.id = MT8192_IRQ_20,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT20,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ20_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ20_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ20_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ20_MCU_CLR_SFT,
+		id: MT8192_IRQ_20,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT20,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ20_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ20_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ20_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ20_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_21] = {
-		.id = MT8192_IRQ_21,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT21,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ21_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ21_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ21_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ21_MCU_CLR_SFT,
+		id: MT8192_IRQ_21,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT21,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ21_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ21_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ21_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ21_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_22] = {
-		.id = MT8192_IRQ_22,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT22,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ22_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ22_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ22_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ22_MCU_CLR_SFT,
+		id: MT8192_IRQ_22,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT22,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ22_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ22_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ22_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ22_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_23] = {
-		.id = MT8192_IRQ_23,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT23,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON3,
-		.irq_fs_shift = IRQ23_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ23_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ23_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ23_MCU_CLR_SFT,
+		id: MT8192_IRQ_23,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT23,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON3,
+		irq_fs_shift: IRQ23_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ23_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ23_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ23_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_24] = {
-		.id = MT8192_IRQ_24,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT24,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON4,
-		.irq_fs_shift = IRQ24_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ24_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ24_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ24_MCU_CLR_SFT,
+		id: MT8192_IRQ_24,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT24,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON4,
+		irq_fs_shift: IRQ24_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ24_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ24_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ24_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_25] = {
-		.id = MT8192_IRQ_25,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT25,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON4,
-		.irq_fs_shift = IRQ25_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ25_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ25_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ25_MCU_CLR_SFT,
+		id: MT8192_IRQ_25,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT25,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON4,
+		irq_fs_shift: IRQ25_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ25_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ25_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ25_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_26] = {
-		.id = MT8192_IRQ_26,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT26,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = AFE_IRQ_MCU_CON4,
-		.irq_fs_shift = IRQ26_MCU_MODE_SFT,
-		.irq_fs_maskbit = IRQ26_MCU_MODE_MASK,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ26_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ26_MCU_CLR_SFT,
+		id: MT8192_IRQ_26,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT26,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: AFE_IRQ_MCU_CON4,
+		irq_fs_shift: IRQ26_MCU_MODE_SFT,
+		irq_fs_maskbit: IRQ26_MCU_MODE_MASK,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ26_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ26_MCU_CLR_SFT,
 	},
 	[MT8192_IRQ_31] = {
-		.id = MT8192_IRQ_31,
-		.irq_cnt_reg = AFE_IRQ_MCU_CNT31,
-		.irq_cnt_shift = AFE_IRQ_CNT_SHIFT,
-		.irq_cnt_maskbit = AFE_IRQ_CNT_MASK,
-		.irq_fs_reg = -1,
-		.irq_fs_shift = -1,
-		.irq_fs_maskbit = -1,
-		.irq_en_reg = AFE_IRQ_MCU_CON0,
-		.irq_en_shift = IRQ31_MCU_ON_SFT,
-		.irq_clr_reg = AFE_IRQ_MCU_CLR,
-		.irq_clr_shift = IRQ31_MCU_CLR_SFT,
+		id: MT8192_IRQ_31,
+		irq_cnt_reg: AFE_IRQ_MCU_CNT31,
+		irq_cnt_shift: AFE_IRQ_CNT_SHIFT,
+		irq_cnt_maskbit: AFE_IRQ_CNT_MASK,
+		irq_fs_reg: -1,
+		irq_fs_shift: -1,
+		irq_fs_maskbit: -1,
+		irq_en_reg: AFE_IRQ_MCU_CON0,
+		irq_en_shift: IRQ31_MCU_ON_SFT,
+		irq_clr_reg: AFE_IRQ_MCU_CLR,
+		irq_clr_shift: IRQ31_MCU_CLR_SFT,
 	},
 };
 
@@ -1760,10 +1758,10 @@ static const int memif_irq_usage[MT8192_MEMIF_NUM] = {
 	[MT8192_MEMIF_HDMI] = MT8192_IRQ_31,
 };
 
-static bool mt8192_is_volatile_reg(struct device *dev, unsigned int reg)
+static bool mt8192_is_volatile_reg(device *dev, reg: core::ffi::c_uint)
 {
 	/* these auto-gen reg has read-only bit, so put it as volatile */
-	/* volatile reg cannot be cached, so cannot be set when power off */
+	/*mut reg cannot be cached, so cannot be set when power off */
 	switch (reg) {
 	case AUDIO_TOP_CON0:	/* reg bit controlled by CCF */
 	case AUDIO_TOP_CON1:	/* reg bit controlled by CCF */
@@ -2004,161 +2002,164 @@ static bool mt8192_is_volatile_reg(struct device *dev, unsigned int reg)
 }
 
 static const struct regmap_config mt8192_afe_regmap_config = {
-	.reg_bits = 32,
-	.reg_stride = 4,
-	.val_bits = 32,
-	.volatile_reg = mt8192_is_volatile_reg,
-	.max_register = AFE_MAX_REGISTER,
-	.num_reg_defaults_raw = AFE_MAX_REGISTER,
-	.cache_type = REGCACHE_FLAT,
+	reg_bits: 32,
+	reg_stride: 4,
+	val_bits: 32,
+	volatile_reg: mt8192_is_volatile_reg,
+	max_register: AFE_MAX_REGISTER,
+	num_reg_defaults_raw: AFE_MAX_REGISTER,
+	cache_type: REGCACHE_FLAT,
 };
 
 static irqreturn_t mt8192_afe_irq_handler(int irq_id, void *dev)
 {
+	'err_irq: {
 	struct mtk_base_afe *afe = dev;
 	struct mtk_base_afe_irq *irq;
-	unsigned int status;
-	unsigned int status_mcu;
-	unsigned int mcu_en;
+	core::ffi::c_uint status;
+	core::ffi::c_uint status_mcu;
+	core::ffi::c_uint mcu_en;
 	int ret;
 	int i;
 
 	/* get irq that is sent to MCU */
-	regmap_read(afe->regmap, AFE_IRQ_MCU_EN, &mcu_en);
+	regmap_read((*afe).regmap, AFE_IRQ_MCU_EN, &mcu_en);
 
-	ret = regmap_read(afe->regmap, AFE_IRQ_MCU_STATUS, &status);
+	ret = regmap_read((*afe).regmap, AFE_IRQ_MCU_STATUS, &status);
 	/* only care IRQ which is sent to MCU */
 	status_mcu = status & mcu_en & AFE_IRQ_STATUS_BITS;
 
 	if (ret || status_mcu == 0) {
-		dev_err(afe->dev, "%s(), irq status err, ret %d, status 0x%x, mcu_en 0x%x\n",
+		dev_err((*afe).dev, "%s(), irq status err, ret %d, status 0x%x, mcu_en 0x%x\n",
 			__func__, ret, status, mcu_en);
 
-		goto err_irq;
+		break 'err_irq;
 	}
 
 	for (i = 0; i < MT8192_MEMIF_NUM; i++) {
-		struct mtk_base_afe_memif *memif = &afe->memif[i];
+		struct mtk_base_afe_memif *memif = (*&afe).memif[i];
 
-		if (!memif->substream)
+		if ((*!memif).substream)
 			continue;
 
-		if (memif->irq_usage < 0)
+		if ((*memif).irq_usage < 0)
 			continue;
 
-		irq = &afe->irqs[memif->irq_usage];
+		irq = (*&afe).irqs[(*memif).irq_usage];
 
-		if (status_mcu & (1 << irq->irq_data->irq_en_shift))
-			snd_pcm_period_elapsed(memif->substream);
+		if (status_mcu & (1 << (*(*irq).irq_data).irq_en_shift))
+			snd_pcm_period_elapsed((*memif).substream);
 	}
-
-err_irq:
+	}
+	
 	/* clear irq */
-	regmap_write(afe->regmap,
+	regmap_write((*afe).regmap,
 		     AFE_IRQ_MCU_CLR,
 		     status_mcu);
 
 	return IRQ_HANDLED;
 }
 
-static int mt8192_afe_runtime_suspend(struct device *dev)
+static int mt8192_afe_runtime_suspend(device *dev)
 {
+	'skip_regmap: {
 	struct mtk_base_afe *afe = dev_get_drvdata(dev);
-	struct mt8192_afe_private *afe_priv = afe->platform_priv;
-	unsigned int value;
+	struct mt8192_afe_private *afe_priv = (*afe).platform_priv;
+	core::ffi::c_uint value;
 	int ret;
 
-	if (!afe->regmap || afe_priv->pm_runtime_bypass_reg_ctl)
-		goto skip_regmap;
+	if ((*!afe).regmap || (*afe_priv).pm_runtime_bypass_reg_ctl)
+		break 'skip_regmap;
 
 	/* disable AFE */
-	regmap_update_bits(afe->regmap, AFE_DAC_CON0, AFE_ON_MASK_SFT, 0x0);
+	regmap_update_bits((*afe).regmap, AFE_DAC_CON0, AFE_ON_MASK_SFT, 0x0);
 
-	ret = regmap_read_poll_timeout(afe->regmap,
+	ret = regmap_read_poll_timeout((*afe).regmap,
 				       AFE_DAC_MON,
 				       value,
 				       (value & AFE_ON_RETM_MASK_SFT) == 0,
 				       20,
 				       1 * 1000 * 1000);
 	if (ret)
-		dev_warn(afe->dev, "%s(), ret %d\n", __func__, ret);
+		dev_warn((*afe).dev, "%s(), ret %d\n", __func__, ret);
 
 	/* make sure all irq status are cleared */
-	regmap_write(afe->regmap, AFE_IRQ_MCU_CLR, 0xffffffff);
-	regmap_write(afe->regmap, AFE_IRQ_MCU_CLR, 0xffffffff);
+	regmap_write((*afe).regmap, AFE_IRQ_MCU_CLR, 0xffffffff);
+	regmap_write((*afe).regmap, AFE_IRQ_MCU_CLR, 0xffffffff);
 
 	/* reset sgen */
-	regmap_write(afe->regmap, AFE_SINEGEN_CON0, 0x0);
-	regmap_update_bits(afe->regmap, AFE_SINEGEN_CON2,
+	regmap_write((*afe).regmap, AFE_SINEGEN_CON0, 0x0);
+	regmap_update_bits((*afe).regmap, AFE_SINEGEN_CON2,
 			   INNER_LOOP_BACK_MODE_MASK_SFT,
 			   0x3f << INNER_LOOP_BACK_MODE_SFT);
 
 	/* cache only */
-	regcache_cache_only(afe->regmap, true);
-	regcache_mark_dirty(afe->regmap);
-
-skip_regmap:
+	regcache_cache_only((*afe).regmap, true);
+	regcache_mark_dirty((*afe).regmap);
+	}
+	
 	mt8192_afe_disable_clock(afe);
 	return 0;
 }
 
-static int mt8192_afe_runtime_resume(struct device *dev)
+static int mt8192_afe_runtime_resume(device *dev)
 {
+	'skip_regmap: {
 	struct mtk_base_afe *afe = dev_get_drvdata(dev);
-	struct mt8192_afe_private *afe_priv = afe->platform_priv;
+	struct mt8192_afe_private *afe_priv = (*afe).platform_priv;
 	int ret;
 
 	ret = mt8192_afe_enable_clock(afe);
 	if (ret)
 		return ret;
 
-	if (!afe->regmap || afe_priv->pm_runtime_bypass_reg_ctl)
-		goto skip_regmap;
+	if ((*!afe).regmap || (*afe_priv).pm_runtime_bypass_reg_ctl)
+		break 'skip_regmap;
 
-	regcache_cache_only(afe->regmap, false);
-	regcache_sync(afe->regmap);
+	regcache_cache_only((*afe).regmap, false);
+	regcache_sync((*afe).regmap);
 
 	/* enable audio sys DCM for power saving */
-	regmap_update_bits(afe_priv->infracfg,
+	regmap_update_bits((*afe_priv).infracfg,
 			   PERI_BUS_DCM_CTRL, 0x1 << 29, 0x1 << 29);
-	regmap_update_bits(afe->regmap, AUDIO_TOP_CON0, 0x1 << 29, 0x1 << 29);
+	regmap_update_bits((*afe).regmap, AUDIO_TOP_CON0, 0x1 << 29, 0x1 << 29);
 
 	/* force cpu use 8_24 format when writing 32bit data */
-	regmap_update_bits(afe->regmap, AFE_MEMIF_CON0,
+	regmap_update_bits((*afe).regmap, AFE_MEMIF_CON0,
 			   CPU_HD_ALIGN_MASK_SFT, 0 << CPU_HD_ALIGN_SFT);
 
 	/* set all output port to 24bit */
-	regmap_write(afe->regmap, AFE_CONN_24BIT, 0xffffffff);
-	regmap_write(afe->regmap, AFE_CONN_24BIT_1, 0xffffffff);
+	regmap_write((*afe).regmap, AFE_CONN_24BIT, 0xffffffff);
+	regmap_write((*afe).regmap, AFE_CONN_24BIT_1, 0xffffffff);
 
 	/* enable AFE */
-	regmap_update_bits(afe->regmap, AFE_DAC_CON0, AFE_ON_MASK_SFT, 0x1);
-
-skip_regmap:
+	regmap_update_bits((*afe).regmap, AFE_DAC_CON0, AFE_ON_MASK_SFT, 0x1);
+	}
+	
 	return 0;
 }
 
-static int mt8192_dai_memif_register(struct mtk_base_afe *afe)
+static int mt8192_dai_memif_register(mtk_base_afe *afe)
 {
 	struct mtk_base_afe_dai *dai;
 
-	dai = devm_kzalloc(afe->dev, sizeof(*dai), GFP_KERNEL);
+	dai = devm_kzalloc((*afe).dev, sizeof(*dai), GFP_KERNEL);
 	if (!dai)
 		return -ENOMEM;
 
-	list_add(&dai->list, &afe->sub_dais);
+	list_add((*&dai).list, (*&afe).sub_dais);
 
-	dai->dai_drivers = mt8192_memif_dai_driver;
-	dai->num_dai_drivers = ARRAY_SIZE(mt8192_memif_dai_driver);
+	(*dai).dai_drivers = mt8192_memif_dai_driver;
+	(*dai).num_dai_drivers = ARRAY_SIZE(mt8192_memif_dai_driver);
 
-	dai->dapm_widgets = mt8192_memif_widgets;
-	dai->num_dapm_widgets = ARRAY_SIZE(mt8192_memif_widgets);
-	dai->dapm_routes = mt8192_memif_routes;
-	dai->num_dapm_routes = ARRAY_SIZE(mt8192_memif_routes);
+	(*dai).dapm_widgets = mt8192_memif_widgets;
+	(*dai).num_dapm_widgets = ARRAY_SIZE(mt8192_memif_widgets);
+	(*dai).dapm_routes = mt8192_memif_routes;
+	(*dai).num_dapm_routes = ARRAY_SIZE(mt8192_memif_routes);
 	return 0;
 }
 
-typedef int (*dai_register_cb)(struct mtk_base_afe *);
+typedef int (*dai_register_cb)(mtk_base_afe *);
 static const dai_register_cb dai_register_cbs[] = {
 	mt8192_dai_adda_register,
 	mt8192_dai_i2s_register,
@@ -2172,11 +2173,11 @@ static void mt8192_afe_release_reserved_mem(void *data)
 	of_reserved_mem_device_release(data);
 }
 
-static int mt8192_afe_pcm_dev_probe(struct platform_device *pdev)
+static int mt8192_afe_pcm_dev_probe(platform_device *pdev)
 {
 	struct mtk_base_afe *afe;
 	struct mt8192_afe_private *afe_priv;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 	struct reset_control *rstc;
 	int i, ret, irq_id;
 
@@ -2189,18 +2190,18 @@ static int mt8192_afe_pcm_dev_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	platform_set_drvdata(pdev, afe);
 
-	afe->platform_priv = devm_kzalloc(dev, sizeof(*afe_priv),
+	(*afe).platform_priv = devm_kzalloc(dev, sizeof(*afe_priv),
 					  GFP_KERNEL);
-	if (!afe->platform_priv)
+	if ((*!afe).platform_priv)
 		return -ENOMEM;
-	afe_priv = afe->platform_priv;
+	afe_priv = (*afe).platform_priv;
 
-	afe->dev = dev;
+	(*afe).dev = dev;
 
 	ret = of_reserved_mem_device_init(dev);
 	if (ret) {
 		dev_info(dev, "no reserved memory found, pre-allocating buffers instead\n");
-		afe->preallocate_buffers = true;
+		(*afe).preallocate_buffers = true;
 	} else {
 		ret = devm_add_action_or_reset(dev, mt8192_afe_release_reserved_mem, dev);
 		if (ret)
@@ -2228,57 +2229,57 @@ static int mt8192_afe_pcm_dev_probe(struct platform_device *pdev)
 		return ret;
 
 	/* regmap init */
-	afe->regmap = syscon_node_to_regmap(dev->parent->of_node);
-	if (IS_ERR(afe->regmap))
-		return dev_err_probe(dev, PTR_ERR(afe->regmap),
+	(*afe).regmap = syscon_node_to_regmap((*(*dev).parent).of_node);
+	if (IS_ERR((*afe).regmap))
+		return dev_err_probe(dev, PTR_ERR((*afe).regmap),
 				     "could not get regmap from parent");
 
-	ret = regmap_attach_dev(dev, afe->regmap, &mt8192_afe_regmap_config);
+	ret = regmap_attach_dev(dev, (*afe).regmap, &mt8192_afe_regmap_config);
 	if (ret)
 		return dev_err_probe(dev, ret, "regmap_attach_dev fail\n");
 
 	/* enable clock for regcache get default value from hw */
-	afe_priv->pm_runtime_bypass_reg_ctl = true;
+	(*afe_priv).pm_runtime_bypass_reg_ctl = true;
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret) {
-		afe_priv->pm_runtime_bypass_reg_ctl = false;
+		(*afe_priv).pm_runtime_bypass_reg_ctl = false;
 		return dev_err_probe(dev, ret, "failed to resume device\n");
 	}
 
-	ret = regmap_reinit_cache(afe->regmap, &mt8192_afe_regmap_config);
+	ret = regmap_reinit_cache((*afe).regmap, &mt8192_afe_regmap_config);
 	pm_runtime_put_sync(dev);
-	afe_priv->pm_runtime_bypass_reg_ctl = false;
+	(*afe_priv).pm_runtime_bypass_reg_ctl = false;
 
 	if (ret)
 		return dev_err_probe(dev, ret, "regmap_reinit_cache fail\n");
 
-	regcache_cache_only(afe->regmap, true);
-	regcache_mark_dirty(afe->regmap);
+	regcache_cache_only((*afe).regmap, true);
+	regcache_mark_dirty((*afe).regmap);
 
 	/* init memif */
-	afe->memif_size = MT8192_MEMIF_NUM;
-	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif),
+	(*afe).memif_size = MT8192_MEMIF_NUM;
+	(*afe).memif = devm_kcalloc(dev, (*afe).memif_size, sizeof((**afe).memif),
 				  GFP_KERNEL);
-	if (!afe->memif)
+	if ((*!afe).memif)
 		return -ENOMEM;
 
-	for (i = 0; i < afe->memif_size; i++) {
-		afe->memif[i].data = &memif_data[i];
-		afe->memif[i].irq_usage = memif_irq_usage[i];
-		afe->memif[i].const_irq = 1;
+	for (i = 0; i < (*afe).memif_size; i++) {
+		(*afe).memif[i].data = &memif_data[i];
+		(*afe).memif[i].irq_usage = memif_irq_usage[i];
+		(*afe).memif[i].const_irq = 1;
 	}
 
-	mutex_init(&afe->irq_alloc_lock);	/* needed when dynamic irq */
+	mutex_init((*&afe).irq_alloc_lock);	/* needed when dynamic irq */
 
 	/* init irq */
-	afe->irqs_size = MT8192_IRQ_NUM;
-	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
+	(*afe).irqs_size = MT8192_IRQ_NUM;
+	(*afe).irqs = devm_kcalloc(dev, (*afe).irqs_size, sizeof((**afe).irqs),
 				 GFP_KERNEL);
-	if (!afe->irqs)
+	if ((*!afe).irqs)
 		return -ENOMEM;
 
-	for (i = 0; i < afe->irqs_size; i++)
-		afe->irqs[i].irq_data = &irq_data[i];
+	for (i = 0; i < (*afe).irqs_size; i++)
+		(*afe).irqs[i].irq_data = &irq_data[i];
 
 	/* request irq */
 	irq_id = platform_get_irq(pdev, 0);
@@ -2291,48 +2292,48 @@ static int mt8192_afe_pcm_dev_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, ret, "could not request_irq for Afe_ISR_Handle\n");
 
 	/* init sub_dais */
-	INIT_LIST_HEAD(&afe->sub_dais);
+	INIT_LIST_HEAD((*&afe).sub_dais);
 
 	for (i = 0; i < ARRAY_SIZE(dai_register_cbs); i++) {
 		ret = dai_register_cbs[i](afe);
 		if (ret)
-			return dev_err_probe(afe->dev, ret, "dai %d register fail", i);
+			return dev_err_probe((*afe).dev, ret, "dai %d register fail", i);
 	}
 
 	/* init dai_driver and component_driver */
 	ret = mtk_afe_combine_sub_dai(afe);
 	if (ret)
-		return dev_err_probe(afe->dev, ret, "mtk_afe_combine_sub_dai fail\n");
+		return dev_err_probe((*afe).dev, ret, "mtk_afe_combine_sub_dai fail\n");
 
 	/* others */
-	afe->mtk_afe_hardware = &mt8192_afe_hardware;
-	afe->memif_fs = mt8192_memif_fs;
-	afe->irq_fs = mt8192_irq_fs;
-	afe->get_dai_fs = mt8192_get_dai_fs;
-	afe->get_memif_pbuf_size = mt8192_get_memif_pbuf_size;
-	afe->memif_32bit_supported = 1;
+	(*afe).mtk_afe_hardware = &mt8192_afe_hardware;
+	(*afe).memif_fs = mt8192_memif_fs;
+	(*afe).irq_fs = mt8192_irq_fs;
+	(*afe).get_dai_fs = mt8192_get_dai_fs;
+	(*afe).get_memif_pbuf_size = mt8192_get_memif_pbuf_size;
+	(*afe).memif_32bit_supported = 1;
 
-	afe->runtime_resume = mt8192_afe_runtime_resume;
-	afe->runtime_suspend = mt8192_afe_runtime_suspend;
+	(*afe).runtime_resume = mt8192_afe_runtime_resume;
+	(*afe).runtime_suspend = mt8192_afe_runtime_suspend;
 
 	/* register platform */
 	ret = devm_snd_soc_register_component(dev,
 					      &mtk_afe_pcm_platform,
-					      afe->dai_drivers,
-					      afe->num_dai_drivers);
+					      (*afe).dai_drivers,
+					      (*afe).num_dai_drivers);
 	if (ret)
 		return dev_err_probe(dev, ret, "Couldn't register AFE component\n");
 
 	return 0;
 }
 
-static void mt8192_afe_pcm_dev_remove(struct platform_device *pdev)
+static void mt8192_afe_pcm_dev_remove(platform_device *pdev)
 {
 	struct mtk_base_afe *afe = platform_get_drvdata(pdev);
 
-	pm_runtime_disable(&pdev->dev);
-	if (!pm_runtime_status_suspended(&pdev->dev))
-		mt8192_afe_runtime_suspend(&pdev->dev);
+	pm_runtime_disable((*&pdev).dev);
+	if (!pm_runtime_status_suspended((*&pdev).dev))
+		mt8192_afe_runtime_suspend((*&pdev).dev);
 
 	/* disable afe clock */
 	mt8192_afe_disable_clock(afe);
@@ -2350,13 +2351,13 @@ static const struct dev_pm_ops mt8192_afe_pm_ops = {
 };
 
 static struct platform_driver mt8192_afe_pcm_driver = {
-	.driver = {
-		   .name = "mt8192-audio",
-		   .of_match_table = mt8192_afe_pcm_dt_match,
-		   .pm = pm_ptr(&mt8192_afe_pm_ops),
+	driver: {
+		   name: "mt8192-audio",
+		   of_match_table: mt8192_afe_pcm_dt_match,
+		   pm: pm_ptr(&mt8192_afe_pm_ops),
 	},
-	.probe = mt8192_afe_pcm_dev_probe,
-	.remove = mt8192_afe_pcm_dev_remove,
+	probe: mt8192_afe_pcm_dev_probe,
+	remove: mt8192_afe_pcm_dev_remove,
 };
 
 module_platform_driver(mt8192_afe_pcm_driver);

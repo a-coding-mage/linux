@@ -53,7 +53,8 @@ const I8253_BASE_REG: usize = 0x14;
 pub struct a2150_board { pub name: *const i8, pub clock: [i32; 4], pub num_clocks: i32, pub ai_speed: i32 }
 
 static range_a2150: comedi_lrange = comedi_lrange { length: 1, range: [BIP_RANGE(2.828)] };
-enum { a2150_c, a2150_s }
+pub const a2150_c: i32 = 0;
+pub const a2150_s: i32 = a2150_c + 1;
 static a2150_boards: [a2150_board; 2] = [
     a2150_board { name: b"at-a2150c\0" as *const u8 as *const i8, clock: [31250, 22676, 20833, 19531], num_clocks: 4, ai_speed: 19531 },
     a2150_board { name: b"at-a2150s\0" as *const u8 as *const i8, clock: [62500, 50000, 41667, 0], num_clocks: 3, ai_speed: 41667 },

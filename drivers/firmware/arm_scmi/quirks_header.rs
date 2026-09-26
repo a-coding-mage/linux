@@ -7,7 +7,7 @@
 
 // The C header includes linux/static_key.h and linux/types.h.
 
-#[cfg(feature = "CONFIG_ARM_SCMI_QUIRKS")]
+#[cfg(CONFIG_ARM_SCMI_QUIRKS)]
 #[macro_export]
 macro_rules! DECLARE_SCMI_QUIRK {
     ($key:ident) => {
@@ -23,18 +23,18 @@ macro_rules! DECLARE_SCMI_QUIRK {
  * Rust macro_rules! cannot perform C-style token pasting; callers pass the
  * complete static-key identifier as the first argument.
  */
-#[cfg(feature = "CONFIG_ARM_SCMI_QUIRKS")]
+#[cfg(CONFIG_ARM_SCMI_QUIRKS)]
 #[macro_export]
 macro_rules! SCMI_QUIRK {
     ($key:ident, $blk:block) => {{
-        // Equivalent to static_branch_unlikely(&scmi_quirk_##_qn).
+        // Equivalent to static_branch_unlikely(&::kernel::macros::paste!([<scmi_quirk_ _qn>])).
         if unsafe { $key } {
             $blk
         }
     }};
 }
 
-#[cfg(feature = "CONFIG_ARM_SCMI_QUIRKS")]
+#[cfg(CONFIG_ARM_SCMI_QUIRKS)]
 extern "C" {
     pub fn scmi_quirks_initialize();
     pub fn scmi_quirks_enable(
@@ -45,14 +45,14 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_ARM_SCMI_QUIRKS"))]
+#[cfg(not(CONFIG_ARM_SCMI_QUIRKS))]
 #[macro_export]
 macro_rules! DECLARE_SCMI_QUIRK {
     ($key:ident) => {};
 }
 
 /* Force quirks compilation even when SCMI Quirks are disabled */
-#[cfg(not(feature = "CONFIG_ARM_SCMI_QUIRKS"))]
+#[cfg(not(CONFIG_ARM_SCMI_QUIRKS))]
 #[macro_export]
 macro_rules! SCMI_QUIRK {
     ($key:ident, $blk:block) => {{
@@ -62,11 +62,11 @@ macro_rules! SCMI_QUIRK {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_ARM_SCMI_QUIRKS"))]
+#[cfg(not(CONFIG_ARM_SCMI_QUIRKS))]
 #[inline]
 pub unsafe fn scmi_quirks_initialize() {}
 
-#[cfg(not(feature = "CONFIG_ARM_SCMI_QUIRKS"))]
+#[cfg(not(CONFIG_ARM_SCMI_QUIRKS))]
 #[inline]
 pub unsafe fn scmi_quirks_enable(
     _dev: *mut core::ffi::c_void,
@@ -77,9 +77,9 @@ pub unsafe fn scmi_quirks_enable(
 }
 
 /* Quirk declarations */
-#[cfg(feature = "CONFIG_ARM_SCMI_QUIRKS")]
+#[cfg(CONFIG_ARM_SCMI_QUIRKS)]
 DECLARE_SCMI_QUIRK!(scmi_quirk_clock_rates_triplet_out_of_spec);
-#[cfg(feature = "CONFIG_ARM_SCMI_QUIRKS")]
+#[cfg(CONFIG_ARM_SCMI_QUIRKS)]
 DECLARE_SCMI_QUIRK!(scmi_quirk_perf_level_get_fc_force);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

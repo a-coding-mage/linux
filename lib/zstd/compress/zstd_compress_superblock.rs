@@ -31,7 +31,7 @@ unsafe fn zstd_compress_subblock_literal(
     if write_entropy == 0 && c_lit_size >= lit_size { return ZSTD_noCompressLiterals(dst, dst_size, literals, lit_size); }
     if lh_size < 3 + (c_lit_size >= 1024) as usize + (c_lit_size >= 16384) as usize { return ZSTD_noCompressLiterals(dst, dst_size, literals, lit_size); }
     let lhc = match lh_size {
-        3 => h_type as u32 + ((!single_stream) as u32 << 2) + ((lit_size as u32) << 4) + ((c_lit_size as u32) << 14),
+        3 => h_type as u32 + (((!single_stream) as u32) << 2) + ((lit_size as u32) << 4) + ((c_lit_size as u32) << 14),
         4 => h_type as u32 + (2 << 2) + ((lit_size as u32) << 4) + ((c_lit_size as u32) << 18),
         5 => h_type as u32 + (3 << 2) + ((lit_size as u32) << 4) + ((c_lit_size as u32) << 22),
         _ => { assert!(false); 0 }

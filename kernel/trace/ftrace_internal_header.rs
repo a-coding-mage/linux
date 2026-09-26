@@ -13,7 +13,7 @@ extern "C" {
 }
 
 // CONFIG_DYNAMIC_FTRACE
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 extern "C" {
     pub fn ftrace_startup(
         ops: *mut crate::ftrace_ops,
@@ -41,7 +41,7 @@ extern "C" {
 }
 
 // !CONFIG_DYNAMIC_FTRACE: the C macros are represented as inline Rust functions.
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 pub unsafe fn ftrace_startup(
     ops: *mut crate::ftrace_ops,
     _command: ::core::ffi::c_int,
@@ -53,7 +53,7 @@ pub unsafe fn ftrace_startup(
     ret
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 pub unsafe fn ftrace_shutdown(
     ops: *mut crate::ftrace_ops,
     _command: ::core::ffi::c_int,
@@ -65,7 +65,7 @@ pub unsafe fn ftrace_shutdown(
     ret
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 pub unsafe fn ftrace_ops_test(
     _ops: *mut crate::ftrace_ops,
     _ip: ::core::ffi::c_ulong,
@@ -74,7 +74,7 @@ pub unsafe fn ftrace_ops_test(
     1
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 pub unsafe fn ftrace_startup_subops(
     _ops: *mut crate::ftrace_ops,
     _subops: *mut crate::ftrace_ops,
@@ -83,7 +83,7 @@ pub unsafe fn ftrace_startup_subops(
     -crate::EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 pub unsafe fn ftrace_shutdown_subops(
     _ops: *mut crate::ftrace_ops,
     _subops: *mut crate::ftrace_ops,
@@ -93,26 +93,26 @@ pub unsafe fn ftrace_shutdown_subops(
 }
 
 // CONFIG_FUNCTION_GRAPH_TRACER
-#[cfg(feature = "CONFIG_FUNCTION_GRAPH_TRACER")]
+#[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
 extern "C" {
     pub static mut ftrace_graph_active: ::core::ffi::c_int;
 }
 
 #[cfg(all(
-    feature = "CONFIG_FUNCTION_GRAPH_TRACER",
-    feature = "CONFIG_DYNAMIC_FTRACE"
+    CONFIG_FUNCTION_GRAPH_TRACER,
+    CONFIG_DYNAMIC_FTRACE
 ))]
 extern "C" {
     pub fn fgraph_update_pid_func();
 }
 
 #[cfg(any(
-    not(feature = "CONFIG_FUNCTION_GRAPH_TRACER"),
-    not(feature = "CONFIG_DYNAMIC_FTRACE")
+    not(CONFIG_FUNCTION_GRAPH_TRACER),
+    not(CONFIG_DYNAMIC_FTRACE)
 ))]
 pub unsafe fn fgraph_update_pid_func() {}
 
-#[cfg(not(feature = "CONFIG_FUNCTION_GRAPH_TRACER"))]
+#[cfg(not(CONFIG_FUNCTION_GRAPH_TRACER))]
 pub const ftrace_graph_active: ::core::ffi::c_int = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

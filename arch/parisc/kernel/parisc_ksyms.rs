@@ -66,13 +66,13 @@ EXPORT_SYMBOL!(__cmpxchg_u8);
 EXPORT_SYMBOL!(__cmpxchg_u16);
 EXPORT_SYMBOL!(__cmpxchg_u32);
 EXPORT_SYMBOL!(__cmpxchg_u64);
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 EXPORT_SYMBOL!(__atomic_hash);
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 EXPORT_SYMBOL!(__xchg64);
 EXPORT_SYMBOL!(lclear_user);
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 EXPORT_SYMBOL!(global);
 
 EXPORT_SYMBOL!(div_i);
@@ -105,32 +105,32 @@ EXPORT_SYMBOL!(__muldi3);
 EXPORT_SYMBOL!(__ucmpdi2);
 EXPORT_SYMBOL!(__canonicalize_funcptr_for_compare);
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 extern "C" {
     pub fn __divdi3();
     pub fn __udivdi3();
     pub fn __umoddi3();
     pub fn __moddi3();
 }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 EXPORT_SYMBOL!(__divdi3);
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 EXPORT_SYMBOL!(__udivdi3);
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 EXPORT_SYMBOL!(__umoddi3);
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 EXPORT_SYMBOL!(__moddi3);
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 extern "C" {
     #[link_name = "$$dyncall"] pub fn dyncall();
 }
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 EXPORT_SYMBOL!(dyncall);
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 extern "C" { pub fn _mcount(); }
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 EXPORT_SYMBOL!(_mcount);
 
 // from pacache.S -- needed for clear/copy_page

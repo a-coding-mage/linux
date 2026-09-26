@@ -104,8 +104,8 @@ unsafe fn nfs40_walk_client_list(
         prev = pos;
         status = nfs4_proc_setclientid_confirm(pos, &clid, cred);
         match status {
-            -NFS4ERR_STALE_CLIENTID => {}
-            0 => {
+            case if case == -NFS4ERR_STALE_CLIENTID => {}
+            case if case == 0 => {
                 nfs4_swap_callback_idents(pos, new);
                 (*pos).cl_confirm = (*new).cl_confirm;
                 nfs_mark_client_ready(pos, NFS_CS_READY);
@@ -114,7 +114,7 @@ unsafe fn nfs40_walk_client_list(
                 nfs_put_client(prev);
                 return status;
             }
-            -ERESTARTSYS | -ETIMEDOUT => {
+            case if case == -ERESTARTSYS || case == -ETIMEDOUT => {
                 nfs4_schedule_path_down_recovery(pos);
                 nfs_put_client(prev);
                 return status;

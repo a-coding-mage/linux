@@ -113,7 +113,7 @@ unsafe fn ltl_atom_pulse(task: *mut task_struct, atom: ltl_atom, value: bool) {
 }
 
 // CONFIG_RV_MONITORS_KUNIT_TEST equivalent of RV_MON_OPS_INIT.
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 const RV_MON_OPS_INIT: rv_monitor_ops = rv_monitor_ops {
     rv_this: unsafe { &raw mut rv_this },
     is_per_task: true,

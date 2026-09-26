@@ -6,7 +6,7 @@
 pub const KSTACK_ERASE_POISON: isize = -0xBEEF;
 pub const KSTACK_ERASE_SEARCH_DEPTH: usize = 128;
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE")]
+#[cfg(CONFIG_KSTACK_ERASE)]
 extern "C" {
     pub type task_struct;
 
@@ -19,7 +19,7 @@ extern "C" {
     pub fn __sanitizer_cov_stack_depth();
 }
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE")]
+#[cfg(CONFIG_KSTACK_ERASE)]
 #[inline(always)]
 pub unsafe fn stackleak_task_low_bound(tsk: *const task_struct) -> usize {
     // The lowest unsigned long on the task stack contains STACK_END_MAGIC,
@@ -27,7 +27,7 @@ pub unsafe fn stackleak_task_low_bound(tsk: *const task_struct) -> usize {
     (end_of_stack(tsk) as usize).wrapping_add(core::mem::size_of::<usize>())
 }
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE")]
+#[cfg(CONFIG_KSTACK_ERASE)]
 #[inline(always)]
 pub unsafe fn stackleak_task_high_bound(tsk: *const task_struct) -> usize {
     // The task's pt_regs lives at the top of the task stack and will be
@@ -35,7 +35,7 @@ pub unsafe fn stackleak_task_high_bound(tsk: *const task_struct) -> usize {
     task_pt_regs(tsk) as usize
 }
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE")]
+#[cfg(CONFIG_KSTACK_ERASE)]
 #[inline(always)]
 pub unsafe fn stackleak_find_top_of_poison(low: usize, high: usize) -> usize {
     let depth: usize = KSTACK_ERASE_SEARCH_DEPTH / core::mem::size_of::<usize>();
@@ -57,18 +57,18 @@ pub unsafe fn stackleak_find_top_of_poison(low: usize, high: usize) -> usize {
     poison_high
 }
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE")]
+#[cfg(CONFIG_KSTACK_ERASE)]
 #[inline]
 pub unsafe fn stackleak_task_init(t: *mut task_struct) {
     // `task_struct` fields are supplied by linux/sched.h.
     (*t).lowest_stack = stackleak_task_low_bound(t);
-    #[cfg(feature = "CONFIG_KSTACK_ERASE_METRICS")]
+    #[cfg(CONFIG_KSTACK_ERASE_METRICS)]
     {
         (*t).prev_lowest_stack = (*t).lowest_stack;
     }
 }
 
-#[cfg(not(feature = "CONFIG_KSTACK_ERASE"))]
+#[cfg(not(CONFIG_KSTACK_ERASE))]
 #[inline]
 pub unsafe fn stackleak_task_init(_t: *mut task_struct) {}
 

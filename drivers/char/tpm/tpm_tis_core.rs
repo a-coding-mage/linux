@@ -61,7 +61,7 @@ pub unsafe extern "C" fn tpm_tis_core_init(
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 #[no_mangle]
 pub unsafe extern "C" fn tpm_tis_resume(dev: *mut device) -> c_int {
     let _ = dev;

@@ -77,7 +77,7 @@ unsafe fn xra1403_set(chip: *mut GpioChip, offset: u32, value: i32) -> i32 {
         1u32 << (offset % 8), if value != 0 { 1u32 << (offset % 8) } else { 0 })
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn xra1403_dbg_show(s: *mut SeqFile, chip: *mut GpioChip) {
     let xra = gpiochip_get_data(chip);
     let mut value = [0i32; XRA_LAST as usize];
@@ -96,7 +96,7 @@ unsafe fn xra1403_dbg_show(s: *mut SeqFile, chip: *mut GpioChip) {
     });
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 const XRA1403_DBG_SHOW: Option<unsafe fn(*mut SeqFile, *mut GpioChip)> = None;
 
 unsafe fn xra1403_probe(spi: *mut SpiDevice) -> i32 {
@@ -110,7 +110,7 @@ unsafe fn xra1403_probe(spi: *mut SpiDevice) -> i32 {
     (*xra).chip.get_direction = Some(xra1403_get_direction);
     (*xra).chip.get = Some(xra1403_get);
     (*xra).chip.set = Some(xra1403_set);
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     { (*xra).chip.dbg_show = Some(xra1403_dbg_show); }
     (*xra).chip.ngpio = 16;
     (*xra).chip.label = "xra1403";

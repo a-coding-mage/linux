@@ -5,7 +5,7 @@ pub unsafe fn save_fpu_state(regs: *mut pt_regs, fpu: *mut __siginfo_fpu_t) -> i
     let mut err: i32 = 0;
 
     // CONFIG_SMP selects the corresponding C preprocessor branch.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         if test_tsk_thread_flag(current, TIF_USEDFPU) {
             put_psr(get_psr() | PSR_EF);
@@ -19,7 +19,7 @@ pub unsafe fn save_fpu_state(regs: *mut pt_regs, fpu: *mut __siginfo_fpu_t) -> i
             clear_tsk_thread_flag(current, TIF_USEDFPU);
         }
     }
-    #[cfg(not(feature = "CONFIG_SMP"))]
+    #[cfg(not(CONFIG_SMP))]
     {
         if current == last_task_used_math {
             put_psr(get_psr() | PSR_EF);
@@ -59,13 +59,13 @@ pub unsafe fn restore_fpu_state(regs: *mut pt_regs, fpu: *mut __siginfo_fpu_t) -
         return -EFAULT;
     }
 
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         if test_tsk_thread_flag(current, TIF_USEDFPU) {
             (*regs).psr &= !PSR_EF;
         }
     }
-    #[cfg(not(feature = "CONFIG_SMP"))]
+    #[cfg(not(CONFIG_SMP))]
     {
         if current == last_task_used_math {
             last_task_used_math = core::ptr::null_mut();

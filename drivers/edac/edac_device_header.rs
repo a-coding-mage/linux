@@ -88,8 +88,8 @@ pub struct edac_device_ctl_info {
 }
 
 /* To get from the instance's workqueue to the beginning of the ctl structure. */
-/* #define to_edac_mem_ctl_work(w) container_of(w, struct mem_ctl_info, work) */
-/* #define to_edac_device_ctl_work(w) container_of(w, struct edac_device_ctl_info, work) */
+/* #define to_edac_mem_ctl_work(w) container_of(w, mem_ctl_info, work) */
+/* #define to_edac_device_ctl_work(w) container_of(w, edac_device_ctl_info, work) */
 
 extern "C" {
     pub fn edac_device_alloc_ctl_info(
@@ -99,20 +99,17 @@ extern "C" {
         edac_block_name: *mut c_char,
         nr_blocks: c_uint,
         offset_value: c_uint,
-        device_index: c_int,
-    ) -> *mut edac_device_ctl_info;
+        device_index: c_int) -> *mut edac_device_ctl_info;
 
     pub fn edac_device_free_ctl_info(ctl_info: *mut edac_device_ctl_info);
     pub fn edac_device_add_device(edac_dev: *mut edac_device_ctl_info) -> c_int;
     pub fn edac_device_del_device(dev: *mut device) -> *mut edac_device_ctl_info;
     pub fn edac_device_handle_ce_count(
         edac_dev: *mut edac_device_ctl_info, count: c_uint,
-        inst_nr: c_int, block_nr: c_int, msg: *const c_char,
-    );
+        inst_nr: c_int, block_nr: c_int, msg: *const c_char);
     pub fn edac_device_handle_ue_count(
         edac_dev: *mut edac_device_ctl_info, count: c_uint,
-        inst_nr: c_int, block_nr: c_int, msg: *const c_char,
-    );
+        inst_nr: c_int, block_nr: c_int, msg: *const c_char);
     pub fn edac_device_alloc_index() -> c_int;
     pub static mut edac_layer_name: *const *const c_char;
 }

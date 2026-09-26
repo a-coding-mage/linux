@@ -11,7 +11,7 @@
 // and internal headers are intentionally referenced but not implemented here.
 
 #[cfg(CONFIG_RTC_MC146818_LIB)]
-static unsafe fn acpi_watchdog_uses_rtc(wdat: *const acpi_table_wdat) -> bool {
+unsafe fn acpi_watchdog_uses_rtc(wdat: *const acpi_table_wdat) -> bool {
     /*
      * There are several systems where the WDAT table is accessing RTC SRAM to
      * store persistent information. This does not work well with the Linux RTC
@@ -39,13 +39,13 @@ static unsafe fn acpi_watchdog_uses_rtc(wdat: *const acpi_table_wdat) -> bool {
 }
 
 #[cfg(not(CONFIG_RTC_MC146818_LIB))]
-static unsafe fn acpi_watchdog_uses_rtc(_wdat: *const acpi_table_wdat) -> bool {
+unsafe fn acpi_watchdog_uses_rtc(_wdat: *const acpi_table_wdat) -> bool {
     false
 }
 
 static mut acpi_no_watchdog: bool = false;
 
-static unsafe fn acpi_watchdog_get_wdat() -> *const acpi_table_wdat {
+unsafe fn acpi_watchdog_get_wdat() -> *const acpi_table_wdat {
     let mut wdat: *const acpi_table_wdat = core::ptr::null();
     let status: acpi_status;
 

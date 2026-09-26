@@ -9,11 +9,11 @@
 #[inline]
 fn kbd_defleds() -> i32 {
     // Equivalent to: #if defined(CONFIG_KEYBOARD_HIL) || defined(CONFIG_KEYBOARD_HIL_OLD)
-    #[cfg(any(feature = "CONFIG_KEYBOARD_HIL", feature = "CONFIG_KEYBOARD_HIL_OLD"))]
+    #[cfg(any(CONFIG_KEYBOARD_HIL, CONFIG_KEYBOARD_HIL_OLD))]
     {
         1i32 << VC_NUMLOCK
     }
-    #[cfg(not(any(feature = "CONFIG_KEYBOARD_HIL", feature = "CONFIG_KEYBOARD_HIL_OLD")))]
+    #[cfg(not(any(CONFIG_KEYBOARD_HIL, CONFIG_KEYBOARD_HIL_OLD)))]
     {
         0
     }

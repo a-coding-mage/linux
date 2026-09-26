@@ -36,7 +36,7 @@ extern "C" {
     pub fn ERR_PTR(error: i32) -> *mut core::ffi::c_void;
 }
 
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 extern "C" {
     pub fn pinctrl_gpio_can_use_line(gc: *mut gpio_chip, offset: u32) -> bool;
     pub fn pinctrl_gpio_request(gc: *mut gpio_chip, offset: u32) -> i32;
@@ -54,8 +54,8 @@ extern "C" {
     pub fn pinctrl_select_default_state(dev: *mut device) -> i32;
 }
 
-#[cfg(feature = "CONFIG_PINCTRL")]
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PINCTRL)]
+#[cfg(CONFIG_PM)]
 extern "C" {
     pub fn pinctrl_pm_select_default_state(dev: *mut device) -> i32;
     pub fn pinctrl_pm_select_init_state(dev: *mut device) -> i32;
@@ -63,43 +63,43 @@ extern "C" {
     pub fn pinctrl_pm_select_idle_state(dev: *mut device) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub unsafe fn pinctrl_pm_select_default_state(_dev: *mut device) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub unsafe fn pinctrl_pm_select_init_state(_dev: *mut device) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub unsafe fn pinctrl_pm_select_sleep_state(_dev: *mut device) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub unsafe fn pinctrl_pm_select_idle_state(_dev: *mut device) -> i32 { 0 }
 
 // !CONFIG_PINCTRL provides no-op inline implementations.
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_can_use_line(_gc: *mut gpio_chip, _offset: u32) -> bool { true }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_request(_gc: *mut gpio_chip, _offset: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_free(_gc: *mut gpio_chip, _offset: u32) {}
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_direction_input(_gc: *mut gpio_chip, _offset: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_direction_output(_gc: *mut gpio_chip, _offset: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_get_config(_gc: *mut gpio_chip, _offset: u32, _config: *mut c_ulong) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_gpio_set_config(_gc: *mut gpio_chip, _offset: u32, _config: c_ulong) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_get(_dev: *mut device) -> *mut pinctrl { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_put(_p: *mut pinctrl) {}
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_lookup_state(_p: *mut pinctrl, _name: *const c_char) -> *mut pinctrl_state { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_select_state(_p: *mut pinctrl, _s: *mut pinctrl_state) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn devm_pinctrl_get(_dev: *mut device) -> *mut pinctrl { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn devm_pinctrl_put(_p: *mut pinctrl) {}
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_select_default_state(_dev: *mut device) -> i32 { 0 }
 
 pub const PINCTRL_STATE_DEFAULT: *const c_char = b"default\0".as_ptr() as *const c_char;

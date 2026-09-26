@@ -13,12 +13,12 @@ pub struct dw_edma {
 }
 
 // CONFIG_DEBUG_FS is a build-time condition from the original C header.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn dw_edma_v0_debugfs_on(dw: *mut dw_edma);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn dw_edma_v0_debugfs_on(_dw: *mut dw_edma) {}
 

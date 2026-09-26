@@ -49,7 +49,7 @@ pub unsafe extern "C" fn ext4_ioctl(
     ext4_ioctl_impl(filp, cmd, arg)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe extern "C" fn ext4_compat_ioctl(
     file: *mut file, cmd: u32, arg: usize) -> isize {
     ext4_compat_ioctl_impl(file, cmd, arg)

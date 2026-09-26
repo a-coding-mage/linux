@@ -114,12 +114,16 @@ pub unsafe fn set_cpuinfo_static(ci: *mut cpuinfo, cpu: *mut device_node) {
 
     /* Do various fixups based on CPU version and FPGA family strings */
     /* Resolved the CPU version code */
-    for i = 0; !cpu_ver_lookup[i].s.is_null(); i += 1 {
+    i = 0;
+    while !cpu_ver_lookup[i].s.is_null() {
         if strcmp(cpu_ver_lookup[i].s, CPU_VER_STRING) == 0 { (*ci).ver_code = cpu_ver_lookup[i].k; }
+        i += 1;
     }
     /* Resolved the fpga family code */
-    for i = 0; !family_string_lookup[i].s.is_null(); i += 1 {
+    i = 0;
+    while !family_string_lookup[i].s.is_null() {
         if strcmp(family_string_lookup[i].s, FAMILY_STRING) == 0 { (*ci).fpga_family_code = family_string_lookup[i].k; }
+        i += 1;
     }
     /* FIXME - mb3 and spartan2 do not exist in PVR */
     /* This is mb3 and on a non Spartan2 */

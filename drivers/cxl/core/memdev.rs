@@ -28,7 +28,7 @@ unsafe fn firmware_version_show(dev: *mut device, _attr: *mut device_attribute,
     if mds.is_null() { return sysfs_emit(buf, c"\n"); }
     sysfs_emit(buf, c"%.16s\n", (*mds).firmware_version)
 }
-static DEVICE_ATTR_RO!(firmware_version);
+DEVICE_ATTR_RO!(firmware_version);
 
 unsafe fn payload_max_show(dev: *mut device, _attr: *mut device_attribute,
                            buf: *mut i8) -> ssize_t {
@@ -37,7 +37,7 @@ unsafe fn payload_max_show(dev: *mut device, _attr: *mut device_attribute,
     if mds.is_null() { return sysfs_emit(buf, c"\n"); }
     sysfs_emit(buf, c"%zu\n", (*cxlds).cxl_mbox.payload_size)
 }
-static DEVICE_ATTR_RO!(payload_max);
+DEVICE_ATTR_RO!(payload_max);
 
 unsafe fn label_storage_size_show(dev: *mut device, _attr: *mut device_attribute,
                                   buf: *mut i8) -> ssize_t {
@@ -46,7 +46,7 @@ unsafe fn label_storage_size_show(dev: *mut device, _attr: *mut device_attribute
     if mds.is_null() { return sysfs_emit(buf, c"\n"); }
     sysfs_emit(buf, c"%zu\n", (*mds).lsa_size)
 }
-static DEVICE_ATTR_RO!(label_storage_size);
+DEVICE_ATTR_RO!(label_storage_size);
 
 unsafe fn cxl_ram_size(cxlds: *mut cxl_dev_state) -> resource_size_t {
     // Static RAM is only expected at partition 0.
@@ -68,11 +68,11 @@ static mut DEV_ATTR_PMEM_SIZE: device_attribute = __ATTR!(size, 0o444, pmem_size
 unsafe fn serial_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut i8) -> ssize_t {
     sysfs_emit(buf, c"%#llx\n", (*(*to_cxl_memdev(dev)).cxlds).serial)
 }
-static DEVICE_ATTR_RO!(serial);
+DEVICE_ATTR_RO!(serial);
 unsafe fn numa_node_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut i8) -> ssize_t {
     sysfs_emit(buf, c"%d\n", dev_to_node(dev))
 }
-static DEVICE_ATTR_RO!(numa_node);
+DEVICE_ATTR_RO!(numa_node);
 
 unsafe fn security_state_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut i8) -> ssize_t {
     let cxlds = (*to_cxl_memdev(dev)).cxlds;

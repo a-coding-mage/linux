@@ -5,17 +5,17 @@
 
 // C dependencies: linux/atomic.h and linux/perf_event.h.
 
-#[cfg(feature = "CONFIG_PPC_EMULATED_STATS")]
+#[cfg(CONFIG_PPC_EMULATED_STATS)]
 #[repr(C)]
 pub struct ppc_emulated_entry {
     pub name: *const core::ffi::c_char,
     pub val: atomic_t,
 }
 
-#[cfg(feature = "CONFIG_PPC_EMULATED_STATS")]
+#[cfg(CONFIG_PPC_EMULATED_STATS)]
 #[repr(C)]
 pub struct ppc_emulated {
-    #[cfg(feature = "CONFIG_ALTIVEC")]
+    #[cfg(CONFIG_ALTIVEC)]
     pub altivec: ppc_emulated_entry,
     pub dcba: ppc_emulated_entry,
     pub dcbz: ppc_emulated_entry,
@@ -29,34 +29,34 @@ pub struct ppc_emulated {
     pub string: ppc_emulated_entry,
     pub sync: ppc_emulated_entry,
     pub unaligned: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_MATH_EMULATION")]
+    #[cfg(CONFIG_MATH_EMULATION)]
     pub math: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_VSX")]
+    #[cfg(CONFIG_VSX)]
     pub vsx: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub mfdscr: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub mtdscr: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub lq_stq: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub lxvw4x: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub lxvh8x: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub lxvd2x: ppc_emulated_entry,
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     pub lxvb16x: ppc_emulated_entry,
 }
 
-#[cfg(feature = "CONFIG_PPC_EMULATED_STATS")]
+#[cfg(CONFIG_PPC_EMULATED_STATS)]
 extern "C" {
     pub static mut ppc_emulated: ppc_emulated;
     pub static mut ppc_warn_emulated: u32;
     pub fn ppc_warn_emulated_print(type_: *const core::ffi::c_char);
 }
 
-#[cfg(feature = "CONFIG_PPC_EMULATED_STATS")]
+#[cfg(CONFIG_PPC_EMULATED_STATS)]
 #[macro_export]
 macro_rules! __PPC_WARN_EMULATED {
     ($type:ident) => {{
@@ -69,7 +69,7 @@ macro_rules! __PPC_WARN_EMULATED {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_PPC_EMULATED_STATS"))]
+#[cfg(not(CONFIG_PPC_EMULATED_STATS))]
 #[macro_export]
 macro_rules! __PPC_WARN_EMULATED {
     ($type:ident) => {{}};

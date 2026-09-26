@@ -5,11 +5,9 @@
 
 // Linux and Qualcomm clock-driver dependencies are supplied externally.
 
-enum {
-    P_XO,
-    P_GPLL0,
-    P_GPUPLL0_OUT_EVEN,
-}
+pub const P_XO: i32 = 0;
+pub const P_GPLL0: i32 = P_XO + 1;
+pub const P_GPUPLL0_OUT_EVEN: i32 = P_GPLL0 + 1;
 
 /* Instead of going directly to the block, XO is routed through this branch */
 static mut gpucc_cxo_clk: clk_branch = clk_branch {

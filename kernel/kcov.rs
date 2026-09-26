@@ -63,7 +63,7 @@ unsafe fn canonicalize_ip(ip:usize)->usize { ip /* CONFIG_RANDOMIZE_BASE subtrac
     let s=1+c*KCOV_WORDS_PER_CMP as u64;let max=(*t).kcov_size as u64*core::mem::size_of::<usize>() as u64;
     if (s+KCOV_WORDS_PER_CMP as u64)*8<=max {WRITE_ONCE!(area,c+1);barrier!();*area.add(s as usize)=typ;*area.add(s as usize+1)=a;*area.add(s as usize+2)=b;*area.add(s as usize+3)=canonicalize_ip(ip as usize) as u64}
 }
-#[cfg(CONFIG_KCOV_ENABLE_COMPARISONS)] macro_rules! cmp_fn {($n:ident,$t:ty,$s:expr,$c:expr)=>{#[no_mangle]pub unsafe extern "C" fn $n(a:$t,b:$t){write_comp_data(KCOV_CMP_SIZE!($s)|$c,a as u64,b as u64,_RET_IP!() as u64)}}}
+#[cfg(CONFIG_KCOV_ENABLE_COMPARISONS)] macro_rules! cmp_fn {($n:ident,$t:ty,$s:expr,$c:expr) => {#[no_mangle]pub unsafe extern "C" fn $n(a:$t,b:$t){write_comp_data(KCOV_CMP_SIZE!($s)|$c,a as u64,b as u64,_RET_IP!() as u64)}}}
 #[cfg(CONFIG_KCOV_ENABLE_COMPARISONS)] cmp_fn!(__sanitizer_cov_trace_cmp1,u8,0,0);
 #[cfg(CONFIG_KCOV_ENABLE_COMPARISONS)] cmp_fn!(__sanitizer_cov_trace_cmp2,u16,1,0);
 #[cfg(CONFIG_KCOV_ENABLE_COMPARISONS)] cmp_fn!(__sanitizer_cov_trace_cmp4,u32,2,0);

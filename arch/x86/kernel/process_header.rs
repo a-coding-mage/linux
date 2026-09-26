@@ -31,7 +31,7 @@ pub unsafe fn switch_to_extra(prev: *mut task_struct, next: *mut task_struct) {
     let mut prev_tif: libc::c_ulong = read_task_thread_flags(prev);
 
     // Build-time condition corresponding to IS_ENABLED(CONFIG_SMP).
-    if cfg!(feature = "CONFIG_SMP") {
+    if cfg!(CONFIG_SMP) {
         /*
          * Avoid __switch_to_xtra() invocation when conditional
          * STIBP is disabled and the only different bit is

@@ -27,7 +27,7 @@ pub const HA_TIMER_TYPE: u32 = HA_TIMER_HRTIMER;
  */
 macro_rules! BAR_NS {
     ($ha_mon:expr) => {
-        todo!("XXX: what is BAR_NS(ha_mon)?")
+        todo!("XXX: what is BAR_NS!($ha_mon)?")
     };
 }
 

@@ -1,30 +1,30 @@
 // SPDX-License-Identifier: GPL-2.0
 // Kernel dependencies are supplied by other translation units.
 
-static mut SYSTEM_ROM_RESOURCE: struct resource = struct resource {
+static mut SYSTEM_ROM_RESOURCE: resource = resource {
     name: "System ROM",
     start: 0xf0000,
     end: 0xfffff,
     flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM,
 };
 
-static mut EXTENSION_ROM_RESOURCE: struct resource = struct resource {
+static mut EXTENSION_ROM_RESOURCE: resource = resource {
     name: "Extension ROM",
     start: 0xe0000,
     end: 0xeffff,
     flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM,
 };
 
-static mut ADAPTER_ROM_RESOURCES: [struct resource; 6] = [
-    struct resource { name: "Adapter ROM", start: 0xc8000, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
-    struct resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
-    struct resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
-    struct resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
-    struct resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
-    struct resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
+static mut ADAPTER_ROM_RESOURCES: [resource; 6] = [
+    resource { name: "Adapter ROM", start: 0xc8000, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
+    resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
+    resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
+    resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
+    resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
+    resource { name: "Adapter ROM", start: 0, end: 0, flags: IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM },
 ];
 
-static mut VIDEO_ROM_RESOURCE: struct resource = struct resource {
+static mut VIDEO_ROM_RESOURCE: resource = resource {
     name: "Video ROM",
     start: 0xc0000,
     end: 0xc7fff,
@@ -34,9 +34,9 @@ static mut VIDEO_ROM_RESOURCE: struct resource = struct resource {
 /* does this oprom support the given pci device, or any of the devices
  * that the driver supports?
  */
-unsafe fn match_id(pdev: *mut struct pci_dev, vendor: u16, device: u16) -> bool {
-    let drv: *mut struct pci_driver = to_pci_driver((*pdev).dev.driver);
-    let mut id: *const struct pci_device_id;
+unsafe fn match_id(pdev: *mut pci_dev, vendor: u16, device: u16) -> bool {
+    let drv: *mut pci_driver = to_pci_driver((*pdev).dev.driver);
+    let mut id: *const pci_device_id;
 
     if (*pdev).vendor == vendor && (*pdev).device == device { return true; }
 
@@ -48,7 +48,7 @@ unsafe fn match_id(pdev: *mut struct pci_dev, vendor: u16, device: u16) -> bool 
     !id.is_null() && (*id).vendor != 0
 }
 
-unsafe fn probe_list(pdev: *mut struct pci_dev, vendor: u16, mut rom_list: *const core::ffi::c_void) -> bool {
+unsafe fn probe_list(pdev: *mut pci_dev, vendor: u16, mut rom_list: *const core::ffi::c_void) -> bool {
     let mut device: u16;
     loop {
         if get_kernel_nofault(&mut device, rom_list) != 0 { device = 0; }
@@ -59,11 +59,11 @@ unsafe fn probe_list(pdev: *mut struct pci_dev, vendor: u16, mut rom_list: *cons
     device != 0
 }
 
-unsafe fn find_oprom(pdev: *mut struct pci_dev) -> *mut struct resource {
-    let mut oprom: *mut struct resource = core::ptr::null_mut();
+unsafe fn find_oprom(pdev: *mut pci_dev) -> *mut resource {
+    let mut oprom: *mut resource = core::ptr::null_mut();
     let mut i = 0;
     while i < ADAPTER_ROM_RESOURCES.len() {
-        let res = &mut ADAPTER_ROM_RESOURCES[i] as *mut struct resource;
+        let res = &mut ADAPTER_ROM_RESOURCES[i] as *mut resource;
         let (mut offset, mut vendor, mut device, mut list, mut rev): (u16, u16, u16, u16, u16);
         let rom: *const u8;
         if (*res).end == 0 { break; }
@@ -82,7 +82,7 @@ unsafe fn find_oprom(pdev: *mut struct pci_dev) -> *mut struct resource {
     oprom
 }
 
-pub unsafe fn pci_map_biosrom(pdev: *mut struct pci_dev) -> *mut core::ffi::c_void {
+pub unsafe fn pci_map_biosrom(pdev: *mut pci_dev) -> *mut core::ffi::c_void {
     let oprom = find_oprom(pdev);
     if oprom.is_null() { return core::ptr::null_mut(); }
     ioremap((*oprom).start, resource_size(oprom))
@@ -90,7 +90,7 @@ pub unsafe fn pci_map_biosrom(pdev: *mut struct pci_dev) -> *mut core::ffi::c_vo
 
 pub unsafe fn pci_unmap_biosrom(image: *mut core::ffi::c_void) { iounmap(image); }
 
-pub unsafe fn pci_biosrom_size(pdev: *mut struct pci_dev) -> usize {
+pub unsafe fn pci_biosrom_size(pdev: *mut pci_dev) -> usize {
     let oprom = find_oprom(pdev);
     if !oprom.is_null() { resource_size(oprom) } else { 0 }
 }

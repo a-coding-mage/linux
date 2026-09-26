@@ -169,7 +169,7 @@ pub unsafe extern "C" fn dynptr_data_null(
     ret = bpf_dynptr_from_mem(
         value,
         core::mem::size_of_val(&*value),
-        !0_u64 as __u64,
+        !0u64 as __u64,
         &mut ptr,
     );
     if ret != -EINVAL {

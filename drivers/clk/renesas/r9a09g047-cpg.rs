@@ -749,21 +749,21 @@ static r9a09g047_resets: &[rzv2h_reset] = &[
 
 const struct rzv2h_cpg_info r9a09g047_cpg_info  = {
 	/* Core Clocks */
-	.core_clks = r9a09g047_core_clks,
-	.num_core_clks = ARRAY_SIZE(r9a09g047_core_clks),
-	.last_dt_core_clk = LAST_DT_CORE_CLK,
-	.num_total_core_clks = MOD_CLK_BASE,
+	core_clks: r9a09g047_core_clks,
+	num_core_clks: ARRAY_SIZE(r9a09g047_core_clks),
+	last_dt_core_clk: LAST_DT_CORE_CLK,
+	num_total_core_clks: MOD_CLK_BASE,
 
 	/* Module Clocks */
-	.mod_clks = r9a09g047_mod_clks,
-	.num_mod_clks = ARRAY_SIZE(r9a09g047_mod_clks),
-	.num_hw_mod_clks = 28 * 16,
+	mod_clks: r9a09g047_mod_clks,
+	num_mod_clks: ARRAY_SIZE(r9a09g047_mod_clks),
+	num_hw_mod_clks: 28 * 16,
 
 	/* Resets */
-	.resets = r9a09g047_resets,
-	.num_resets = ARRAY_SIZE(r9a09g047_resets),
+	resets: r9a09g047_resets,
+	num_resets: ARRAY_SIZE(r9a09g047_resets),
 
-	.num_mstop_bits = 208,
+	num_mstop_bits: 208,
 ];
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

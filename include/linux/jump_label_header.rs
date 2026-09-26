@@ -17,11 +17,11 @@ pub struct atomic_t {
 #[repr(C)]
 pub struct static_key {
     pub enabled: atomic_t,
-    #[cfg(feature = "CONFIG_JUMP_LABEL")]
+    #[cfg(CONFIG_JUMP_LABEL)]
     pub data: static_key_data,
 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
+#[cfg(CONFIG_JUMP_LABEL)]
 #[repr(C)]
 pub union static_key_data {
     pub type_: usize,
@@ -34,8 +34,8 @@ pub struct static_key_mod {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
-#[cfg(feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE")]
+#[cfg(CONFIG_JUMP_LABEL)]
+#[cfg(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE)]
 #[repr(C)]
 pub struct jump_entry {
     pub code: i32,
@@ -43,8 +43,8 @@ pub struct jump_entry {
     pub key: isize, // key may be far away from the core kernel under KASLR
 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE"))]
+#[cfg(CONFIG_JUMP_LABEL)]
+#[cfg(not(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE))]
 #[repr(C)]
 pub struct jump_entry {
     pub code: usize,
@@ -52,54 +52,54 @@ pub struct jump_entry {
     pub key: usize,
 }
 
-#[cfg(all(feature = "CONFIG_JUMP_LABEL", feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE"))]
+#[cfg(all(CONFIG_JUMP_LABEL, CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE))]
 #[inline]
 pub unsafe fn jump_entry_code(entry: *const jump_entry) -> usize {
     (core::ptr::addr_of!((*entry).code) as usize).wrapping_add((*entry).code as isize as usize)
 }
 
-#[cfg(all(feature = "CONFIG_JUMP_LABEL", feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE"))]
+#[cfg(all(CONFIG_JUMP_LABEL, CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE))]
 #[inline]
 pub unsafe fn jump_entry_target(entry: *const jump_entry) -> usize {
     (core::ptr::addr_of!((*entry).target) as usize).wrapping_add((*entry).target as isize as usize)
 }
 
-#[cfg(all(feature = "CONFIG_JUMP_LABEL", feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE"))]
+#[cfg(all(CONFIG_JUMP_LABEL, CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE))]
 #[inline]
 pub unsafe fn jump_entry_key(entry: *const jump_entry) -> *mut static_key {
     let offset = ((*entry).key & !3isize) as isize;
     (core::ptr::addr_of!((*entry).key) as usize).wrapping_add(offset as usize) as *mut static_key
 }
 
-#[cfg(all(feature = "CONFIG_JUMP_LABEL", not(feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE")))]
+#[cfg(all(CONFIG_JUMP_LABEL, not(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE)))]
 #[inline]
 pub unsafe fn jump_entry_code(entry: *const jump_entry) -> usize { (*entry).code }
 
-#[cfg(all(feature = "CONFIG_JUMP_LABEL", not(feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE")))]
+#[cfg(all(CONFIG_JUMP_LABEL, not(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE)))]
 #[inline]
 pub unsafe fn jump_entry_target(entry: *const jump_entry) -> usize { (*entry).target }
 
-#[cfg(all(feature = "CONFIG_JUMP_LABEL", not(feature = "CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE")))]
+#[cfg(all(CONFIG_JUMP_LABEL, not(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE)))]
 #[inline]
 pub unsafe fn jump_entry_key(entry: *const jump_entry) -> *mut static_key {
     ((*entry).key & !3usize) as *mut static_key
 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
+#[cfg(CONFIG_JUMP_LABEL)]
 #[inline]
 pub unsafe fn jump_entry_is_branch(entry: *const jump_entry) -> bool { ((*entry).key as usize & 1) != 0 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
+#[cfg(CONFIG_JUMP_LABEL)]
 #[inline]
 pub unsafe fn jump_entry_is_init(entry: *const jump_entry) -> bool { ((*entry).key as usize & 2) != 0 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
+#[cfg(CONFIG_JUMP_LABEL)]
 #[inline]
 pub unsafe fn jump_entry_set_init(entry: *mut jump_entry, set: bool) {
     if set { (*entry).key |= 2; } else { (*entry).key &= !2; }
 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
+#[cfg(CONFIG_JUMP_LABEL)]
 #[inline]
 pub unsafe fn jump_entry_size(entry: *mut jump_entry) -> i32 {
     /* JUMP_LABEL_NOP_SIZE, when configured, is supplied by the architecture. */

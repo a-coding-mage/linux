@@ -114,7 +114,7 @@ pub unsafe fn bpf_percpu_cgroup_storage_copy(map: *mut bpf_map, key: *mut core::
     } else {
         let size = round_up!((*map).value_size, 8);
         let mut off = 0;
-        for_each_possible_cpu!(cpu) { copy_map_value_long(map, value.add(off), per_cpu_ptr((*storage).percpu_buf, cpu)); off += size; }
+        for_each_possible_cpu!(cpu, { copy_map_value_long(map, value.add(off), per_cpu_ptr((*storage).percpu_buf, cpu)); off += size; });
     }
     0
 }
@@ -126,7 +126,7 @@ pub unsafe fn bpf_percpu_cgroup_storage_update(map: *mut bpf_map, key: *mut core
     if storage.is_null() { return -ENOENT; }
     let size = round_up!((*map).value_size, 8);
     if map_flags & BPF_F_CPU != 0 { copy_map_value(map, per_cpu_ptr((*storage).percpu_buf, map_flags >> 32), value); }
-    else { for_each_possible_cpu!(cpu) { let val = if map_flags & BPF_F_ALL_CPUS != 0 { value } else { value.add(size * cpu) }; copy_map_value(map, per_cpu_ptr((*storage).percpu_buf, cpu), val); } }
+    else { for_each_possible_cpu!(cpu, { let val = if map_flags & BPF_F_ALL_CPUS != 0 { value } else { value.add(size * cpu) }; copy_map_value(map, per_cpu_ptr((*storage).percpu_buf, cpu), val); }); }
     0
 }
 
@@ -223,7 +223,7 @@ unsafe fn cgroup_storage_seq_show_elem(map: *mut bpf_map, key: *mut core::ffi::c
     let storage = cgroup_storage_lookup(map_to_storage(map), key, false); if storage.is_null() { return; }
     btf_type_seq_show((*map).btf, (*map).btf_key_type_id, key, m);
     if cgroup_storage_type(map) == BPF_CGROUP_STORAGE_SHARED { seq_puts(m, ": "); btf_type_seq_show((*map).btf, (*map).btf_value_type_id, &mut (*(*storage).buf).data[0] as *mut _, m); seq_putc(m, b'\n' as i32); }
-    else { seq_puts(m, ": {\n"); for_each_possible_cpu!(cpu) { seq_printf!(m, "\tcpu%d: ", cpu); btf_type_seq_show((*map).btf, (*map).btf_value_type_id, per_cpu_ptr((*storage).percpu_buf, cpu), m); seq_putc(m, b'\n' as i32); } seq_puts(m, "}\n"); }
+    else { seq_puts(m, ": {\n"); for_each_possible_cpu!(cpu, { seq_printf!(m, "\tcpu%d: ", cpu); btf_type_seq_show((*map).btf, (*map).btf_value_type_id, per_cpu_ptr((*storage).percpu_buf, cpu), m); seq_putc(m, b'\n' as i32); }); seq_puts(m, "}\n"); }
 }
 
 #[cfg(CONFIG_CGROUP_BPF)]

@@ -10,11 +10,11 @@
 // Dependencies supplied by the surrounding kernel translation:
 // linux/init.h, linux/string.h, ext4.h, and xattr.h
 
-static unsafe fn ext4_xattr_hurd_list(dentry: *mut dentry) -> bool {
+unsafe fn ext4_xattr_hurd_list(dentry: *mut dentry) -> bool {
     test_opt((*dentry).d_sb, XATTR_USER)
 }
 
-static unsafe fn ext4_xattr_hurd_get(
+unsafe fn ext4_xattr_hurd_get(
     _handler: *const xattr_handler,
     _unused: *mut dentry,
     inode: *mut inode,
@@ -29,7 +29,7 @@ static unsafe fn ext4_xattr_hurd_get(
     ext4_xattr_get(inode, EXT4_XATTR_INDEX_HURD, name, buffer, size)
 }
 
-static unsafe fn ext4_xattr_hurd_set(
+unsafe fn ext4_xattr_hurd_set(
     _handler: *const xattr_handler,
     _idmap: *mut mnt_idmap,
     _unused: *mut dentry,

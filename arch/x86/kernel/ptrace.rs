@@ -72,7 +72,7 @@ pub unsafe fn arch_ptrace(child:*mut TaskStruct, request:i64, addr:usize, data:u
         2 => { if addr < core::mem::size_of::<PtRegs>() { return getreg(child,addr) as i64; } -5 },
         _ => ptrace_request(child,request,addr,data) }
 }
-extern "C" { fn ptrace_request(*mut TaskStruct,i64,usize,usize)->i64; }
+extern "C" { fn ptrace_request(_: *mut TaskStruct,_: i64,_: usize,_: usize)->i64; }
 
 pub static mut xstate_fx_sw_bytes:[u64; 12]=[0;12];
 pub unsafe fn update_regset_xstate_info(size:usize,xstate_mask:u64) { let _=size; xstate_fx_sw_bytes[0]=xstate_mask; }

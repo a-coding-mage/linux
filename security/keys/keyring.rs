@@ -473,7 +473,7 @@ pub unsafe extern "C" fn key_free_user_ns(ns: *mut user_namespace) {
     list_del_init(&mut (*ns).keyring_name_list);
     write_unlock(&raw mut keyring_name_lock);
     key_put((*ns).user_keyring_register);
-    #[cfg(feature = "CONFIG_PERSISTENT_KEYRINGS")]
+    #[cfg(CONFIG_PERSISTENT_KEYRINGS)]
     key_put((*ns).persistent_keyring_register);
 }
 

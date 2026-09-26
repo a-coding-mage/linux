@@ -109,13 +109,13 @@ pub unsafe fn pm_qos_update_flags(pqf: *mut pm_qos_flags, req: *mut pm_qos_flags
     let curr = if list_empty(&(*pqf).list) { 0 } else { (*pqf).effective_flags }; spin_unlock_irqrestore(&mut pm_qos_lock, flags); trace_pm_qos_update_flags(action, prev, curr); prev != curr
 }
 
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 pub unsafe fn cpu_latency_qos_limit() -> i32 { pm_qos_read_value(&cpu_latency_constraints) }
 
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 pub unsafe fn cpu_latency_qos_request_active(req: *mut pm_qos_request) -> bool { (*req).qos == &mut cpu_latency_constraints }
 
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 pub unsafe fn cpu_latency_qos_apply(req: *mut pm_qos_request, action: pm_qos_req_action, value: i32) { if pm_qos_update_target((*req).qos, &mut (*req).node, action, value) > 0 { wake_up_all_idle_cpus(); } }
 
 #[inline] pub fn freq_qos_value_invalid(value: i32) -> bool { value < 0 && value != PM_QOS_DEFAULT_VALUE }
@@ -127,11 +127,11 @@ pub unsafe fn freq_qos_add_request(qos: *mut freq_constraints, req: *mut freq_qo
 pub unsafe fn freq_qos_update_request(req: *mut freq_qos_request, value: i32) -> c_int { if req.is_null() || freq_qos_value_invalid(value) { return -22; } if (*req).pnode.prio == value { return 0; } freq_qos_apply(req, PM_QOS_UPDATE_REQ, value) }
 pub unsafe fn freq_qos_remove_request(req: *mut freq_qos_request) -> c_int { if req.is_null() { return -22; } let ret = freq_qos_apply(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); (*req).qos = core::ptr::null_mut(); (*req).type_ = 0; ret }
 
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 pub unsafe fn cpu_latency_qos_add_request(req: *mut pm_qos_request, value: i32) { if req.is_null() || (value < 0 && value != PM_QOS_DEFAULT_VALUE) { return; } if cpu_latency_qos_request_active(req) { return; } (*req).qos = &mut cpu_latency_constraints; cpu_latency_qos_apply(req, PM_QOS_ADD_REQ, value); }
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 pub unsafe fn cpu_latency_qos_update_request(req: *mut pm_qos_request, value: i32) { if req.is_null() || (value < 0 && value != PM_QOS_DEFAULT_VALUE) || !cpu_latency_qos_request_active(req) { return; } if (*req).node.prio != value { cpu_latency_qos_apply(req, PM_QOS_UPDATE_REQ, value); } }
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 pub unsafe fn cpu_latency_qos_remove_request(req: *mut pm_qos_request) { if req.is_null() || !cpu_latency_qos_request_active(req) { return; } cpu_latency_qos_apply(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<pm_qos_request>()); }
 
 pub unsafe fn freq_qos_add_notifier(qos: *mut freq_constraints, type_: freq_qos_req_type, notifier: *mut notifier_block) -> c_int { if qos.is_null() || notifier.is_null() { return -22; } match type_ { FREQ_QOS_MIN | FREQ_QOS_MAX => 0, _ => -22 } }

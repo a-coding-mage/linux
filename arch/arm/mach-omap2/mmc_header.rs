@@ -11,12 +11,12 @@ pub struct omap_hwmod {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SOC_OMAP2420")]
+#[cfg(CONFIG_SOC_OMAP2420)]
 unsafe extern "C" {
     pub fn omap_msdi_reset(oh: *mut omap_hwmod) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SOC_OMAP2420"))]
+#[cfg(not(CONFIG_SOC_OMAP2420))]
 #[inline]
 pub unsafe fn omap_msdi_reset(_oh: *mut omap_hwmod) -> i32 {
     0

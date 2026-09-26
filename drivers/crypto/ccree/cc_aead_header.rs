@@ -102,7 +102,7 @@ pub struct AeadReqCtx {
     pub plaintext_authenticate_only: bool, // for gcm_rfc4543
 }
 
-pub extern "C" {
+extern "C" {
     pub fn cc_aead_alloc(drvdata: *mut cc_drvdata) -> core::ffi::c_int;
     pub fn cc_aead_free(drvdata: *mut cc_drvdata) -> core::ffi::c_int;
 }

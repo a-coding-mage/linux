@@ -6,7 +6,7 @@
 
 // Dependencies supplied by the surrounding kernel clock implementation.
 
-static inline fn meson_vid_pll_div_data(clk: *mut clk_regmap) -> *mut meson_vid_pll_div_data {
+inline fn meson_vid_pll_div_data(clk: *mut clk_regmap) -> *mut meson_vid_pll_div_data {
     unsafe { (*clk).data as *mut meson_vid_pll_div_data }
 }
 
@@ -51,7 +51,7 @@ static VID_PLL_DIV_TABLE: [vid_pll_div; 14] = [
     vid_pll_div(0x7f80, 2, 15, 1), // 15/1 => /15
 ];
 
-static fn _get_table_val(shift_val: u32, shift_sel: u32) -> *const vid_pll_div {
+fn _get_table_val(shift_val: u32, shift_sel: u32) -> *const vid_pll_div {
     let mut i = 0usize;
     while i < VID_PLL_DIV_TABLE.len() {
         if VID_PLL_DIV_TABLE[i].shift_val == shift_val

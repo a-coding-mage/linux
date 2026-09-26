@@ -31,7 +31,7 @@ unsafe extern "C" {
 #[inline(always)]
 pub unsafe fn skb_page_unref(netmem: netmem_ref, recycle: bool) {
     // CONFIG_PAGE_POOL is a build-time condition from the original header.
-    #[cfg(feature = "CONFIG_PAGE_POOL")]
+    #[cfg(CONFIG_PAGE_POOL)]
     {
         if recycle && napi_pp_put_page(netmem) {
             return;

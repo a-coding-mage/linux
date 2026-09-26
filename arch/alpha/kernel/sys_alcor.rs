@@ -23,12 +23,12 @@ unsafe fn alcor_update_irq_hw(mask: c_ulong) {
 
 #[inline]
 unsafe fn alcor_enable_irq(d: *mut irq_data) {
-    cached_irq_mask |= 1 as c_ulong << ((*d).irq - 16);
+    cached_irq_mask |= (1 as c_ulong) << ((*d).irq - 16);
     alcor_update_irq_hw(cached_irq_mask);
 }
 
 unsafe fn alcor_disable_irq(d: *mut irq_data) {
-    cached_irq_mask &= !(1 as c_ulong << ((*d).irq - 16));
+    cached_irq_mask &= !((1 as c_ulong) << ((*d).irq - 16));
     alcor_update_irq_hw(cached_irq_mask);
 }
 
@@ -36,7 +36,7 @@ unsafe fn alcor_mask_and_ack_irq(d: *mut irq_data) {
     alcor_disable_irq(d);
 
     /* On ALCOR/XLT, need to dismiss interrupt via GRU. */
-    core::ptr::write_volatile(GRU_INT_CLEAR as *mut c_ulong, 1 as c_ulong << ((*d).irq - 16));
+    core::ptr::write_volatile(GRU_INT_CLEAR as *mut c_ulong, (1 as c_ulong) << ((*d).irq - 16));
     mb();
     core::ptr::write_volatile(GRU_INT_CLEAR as *mut c_ulong, 0);
     mb();

@@ -88,7 +88,7 @@ unsafe fn iomap_swapfile_fail(isi: *mut iomap_swapfile_info, str_: *const i8) ->
     }
     pr_err(
         c"swapon: file %s %s\n".as_ptr(),
-        if is_err(p) { c"<unknown>\0".as_ptr() } else { p },
+        if is_err(p) { c"<unknown>".as_ptr() } else { p },
         str_,
     );
     kfree(buf);

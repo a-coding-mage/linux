@@ -64,7 +64,7 @@ static AXI_CLKGEN_ZYNQ_DEFAULT_LIMITS: axi_clkgen_limits = axi_clkgen_limits { f
 unsafe fn axi_clkgen_calc_params(l: *const axi_clkgen_limits, mut fin:u64, mut fout:u64, bd:&mut u32, bm:&mut u32, bo:&mut u32) {
     fin/=1000; fout/=1000; let mut best_f=u64::MAX; *bd=0; *bm=0; *bo=0;
     let dmin=core::cmp::max((fin + (*l).fpfd_max as u64-1)/(*l).fpfd_max as u64,1); let dmax=core::cmp::min(fin/(*l).fpfd_min as u64,80); let mut shift=0;
-    'again: loop { let vmin=(*l).fvco_min as u64<<shift; let vmax=(*l).fvco_max as u64<<shift;
+    'again: loop { let vmin=((*l).fvco_min as u64)<<shift; let vmax=((*l).fvco_max as u64)<<shift;
         let mmin=core::cmp::max((vmin+fin-1)/fin*dmin,1); let mmax=core::cmp::min(vmax*dmax/fin,64<<shift);
         for m in mmin..=mmax { let lo=core::cmp::max(dmin,(fin*m+vmax-1)/vmax); let hi=core::cmp::min(dmax,fin*m/vmin); for d in lo..=hi { let fv=fin*m/d; let mut dout=(fv+fout/2)/fout; dout=core::cmp::min(core::cmp::max(dout,1),128<<shift); let f=fv/dout; if (f as i128-fout as i128).abs() < (best_f as i128-fout as i128).abs() { best_f=f; *bd=d as u32; *bm=(m<<(3-shift)) as u32; *bo=(dout<<(3-shift)) as u32; if best_f==fout{return;} } } }
         if shift==0 { shift=3; continue 'again; } break;

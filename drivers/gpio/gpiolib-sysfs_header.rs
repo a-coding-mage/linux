@@ -13,20 +13,20 @@ pub struct gpio_chip {
 }
 
 // CONFIG_GPIO_SYSFS is a build-time condition from the C source.
-#[cfg(feature = "CONFIG_GPIO_SYSFS")]
+#[cfg(CONFIG_GPIO_SYSFS)]
 extern "C" {
     pub fn gpiochip_sysfs_register(gc: *mut gpio_chip) -> ::std::os::raw::c_int;
     pub fn gpiochip_sysfs_unregister(gc: *mut gpio_chip);
 }
 
 // Equivalent to the !CONFIG_GPIO_SYSFS branch.
-#[cfg(not(feature = "CONFIG_GPIO_SYSFS"))]
+#[cfg(not(CONFIG_GPIO_SYSFS))]
 #[inline]
 pub unsafe fn gpiochip_sysfs_register(_gc: *mut gpio_chip) -> ::std::os::raw::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_GPIO_SYSFS"))]
+#[cfg(not(CONFIG_GPIO_SYSFS))]
 #[inline]
 pub unsafe fn gpiochip_sysfs_unregister(_gc: *mut gpio_chip) {}
 

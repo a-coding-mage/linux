@@ -44,7 +44,7 @@ pub unsafe extern "C" fn phonet_address_notify(
     rtnl_notify(skb, net, 0, RTNLGRP_PHONET_IFADDR, core::ptr::null_mut(), GFP_KERNEL);
 }
 
-static const ifa_phonet_policy_entry: nla_policy = nla_policy { type_: NLA_U8 };
+static ifa_phonet_policy_entry: nla_policy = nla_policy { type_: NLA_U8 };
 
 unsafe extern "C" fn addr_doit(
     skb: *mut sk_buff,

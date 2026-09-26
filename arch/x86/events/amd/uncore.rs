@@ -155,10 +155,10 @@ unsafe extern "C" fn amd_uncore_cpu_dead(cpu: u32) -> i32 { for i in 0..UNCORE_T
 // External kernel declarations and constants are intentionally unresolved here;
 // they are provided by the other translated source files.
 extern "C" {
-    fn amd_uncore_df_ctx_scan(*mut amd_uncore, u32); fn amd_uncore_df_ctx_init(*mut amd_uncore, u32) -> i32;
-    fn amd_uncore_l3_ctx_scan(*mut amd_uncore, u32); fn amd_uncore_l3_ctx_init(*mut amd_uncore, u32) -> i32;
-    fn amd_uncore_umc_ctx_scan(*mut amd_uncore, u32); fn amd_uncore_umc_ctx_init(*mut amd_uncore, u32) -> i32;
-    fn amd_uncore_ctx_move(*mut amd_uncore, u32); fn amd_uncore_ctx_free(*mut amd_uncore, u32);
+    fn amd_uncore_df_ctx_scan(_: *mut amd_uncore, _: u32); fn amd_uncore_df_ctx_init(_: *mut amd_uncore, _: u32) -> i32;
+    fn amd_uncore_l3_ctx_scan(_: *mut amd_uncore, _: u32); fn amd_uncore_l3_ctx_init(_: *mut amd_uncore, _: u32) -> i32;
+    fn amd_uncore_umc_ctx_scan(_: *mut amd_uncore, _: u32); fn amd_uncore_umc_ctx_init(_: *mut amd_uncore, _: u32) -> i32;
+    fn amd_uncore_ctx_move(_: *mut amd_uncore, _: u32); fn amd_uncore_ctx_free(_: *mut amd_uncore, _: u32);
 }
 
 // module_init(amd_uncore_init); module_exit(amd_uncore_exit);

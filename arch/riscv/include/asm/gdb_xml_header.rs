@@ -5,13 +5,13 @@ pub static riscv_gdb_stub_feature: &str = "PacketSize=800;qXfer:features:read+;"
 static GDB_XFER_READ_TARGET: &str = "qXfer:features:read:target.xml:";
 
 // The C CONFIG_64BIT build condition is represented as a Rust feature.
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 static GDB_XFER_READ_CPUXML: &str = "qXfer:features:read:riscv-64bit-cpu.xml";
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 static GDB_XFER_READ_CPUXML: &str = "qXfer:features:read:riscv-32bit-cpu.xml";
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 static RISCV_GDB_STUB_TARGET_DESC: &str =
     "l<?xml version=\"1.0\"?>"
     "<!DOCTYPE target SYSTEM \"gdb-target.dtd\">"
@@ -19,7 +19,7 @@ static RISCV_GDB_STUB_TARGET_DESC: &str =
     "<xi:include href=\"riscv-64bit-cpu.xml\"/>"
     "</target>";
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 static RISCV_GDB_STUB_TARGET_DESC: &str =
     "l<?xml version=\"1.0\"?>"
     "<!DOCTYPE target SYSTEM \"gdb-target.dtd\">"
@@ -27,7 +27,7 @@ static RISCV_GDB_STUB_TARGET_DESC: &str =
     "<xi:include href=\"riscv-32bit-cpu.xml\"/>"
     "</target>";
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 static RISCV_GDB_STUB_CPUXML: &str = concat!(
     "l<?xml version=\"1.0\"?>",
     "<!DOCTYPE feature SYSTEM \"gdb-target.dtd\">",
@@ -71,7 +71,7 @@ static RISCV_GDB_STUB_CPUXML: &str = concat!(
     "</feature>"
 );
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 static RISCV_GDB_STUB_CPUXML: &str = concat!(
     "l<?xml version=\"1.0\"?><!DOCTYPE feature SYSTEM \"gdb-target.dtd\"><feature name=\"org.gnu.gdb.riscv.cpu\">",
     "<reg name=\"", DBG_REG_ZERO, "\" bitsize=\"32\" type=\"int\" regnum=\"0\"/>",

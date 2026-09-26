@@ -67,6 +67,11 @@ TOOLS = (
     "lib/crc/gen_crc32table",
     "lib/crc/gen_crc64table",
     "fs/unicode/mkutf8data",
+    "drivers/zorro/gen-devlist",
+    "drivers/tty/vt/conmakehash",
+    "drivers/gpu/drm/xe/xe_gen_wa_oob",
+    "drivers/gpu/drm/radeon/mkregtable",
+    "drivers/video/logo/pnmtologo",
     "drivers/accessibility/speakup/makemapdata",
     "drivers/accessibility/speakup/genmap",
 )

@@ -25,7 +25,7 @@ pub struct snd_dma_buffer {
 }
 
 /* CONFIG_SND_SOF_SOF_HDA_SDW_BPT controls whether these symbols are defined. */
-#[cfg(feature = "CONFIG_SND_SOF_SOF_HDA_SDW_BPT")]
+#[cfg(CONFIG_SND_SOF_SOF_HDA_SDW_BPT)]
 unsafe extern "C" {
     pub fn hda_sdw_bpt_open(
         dev: *mut device,
@@ -64,7 +64,7 @@ unsafe extern "C" {
     pub fn hda_sdw_bpt_get_buf_size_alignment(dma_bandwidth: c_uint) -> c_uint;
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOF_SOF_HDA_SDW_BPT"))]
+#[cfg(not(CONFIG_SND_SOF_SOF_HDA_SDW_BPT))]
 pub unsafe fn hda_sdw_bpt_open(
     _dev: *mut device,
     _link_id: c_int,
@@ -81,7 +81,7 @@ pub unsafe fn hda_sdw_bpt_open(
     -95 // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOF_SOF_HDA_SDW_BPT"))]
+#[cfg(not(CONFIG_SND_SOF_SOF_HDA_SDW_BPT))]
 pub unsafe fn hda_sdw_bpt_send_async(
     _dev: *mut device,
     _bpt_tx_stream: *mut hdac_ext_stream,
@@ -91,7 +91,7 @@ pub unsafe fn hda_sdw_bpt_send_async(
     -95 // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOF_SOF_HDA_SDW_BPT"))]
+#[cfg(not(CONFIG_SND_SOF_SOF_HDA_SDW_BPT))]
 pub unsafe fn hda_sdw_bpt_wait(
     _dev: *mut device,
     _bpt_tx_stream: *mut hdac_ext_stream,
@@ -101,7 +101,7 @@ pub unsafe fn hda_sdw_bpt_wait(
     -95 // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOF_SOF_HDA_SDW_BPT"))]
+#[cfg(not(CONFIG_SND_SOF_SOF_HDA_SDW_BPT))]
 pub unsafe fn hda_sdw_bpt_close(
     _dev: *mut device,
     _link_id: c_int,
@@ -114,7 +114,7 @@ pub unsafe fn hda_sdw_bpt_close(
     -95 // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOF_SOF_HDA_SDW_BPT"))]
+#[cfg(not(CONFIG_SND_SOF_SOF_HDA_SDW_BPT))]
 pub unsafe fn hda_sdw_bpt_get_buf_size_alignment(_dma_bandwidth: c_uint) -> c_uint {
     0
 }

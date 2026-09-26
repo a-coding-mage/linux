@@ -41,11 +41,11 @@ unsafe fn get_parent_cpu_data(
         return core::ptr::null_mut();
     }
 
-    list_for_each_entry!(parent_cpu_data, (*p_data).cpu_data_list, node) {
+    list_for_each_entry!(parent_cpu_data, (*p_data).cpu_data_list, node, {
         if (*parent_cpu_data).first_cpu == cpumask_first((*policy).related_cpus) {
             return parent_cpu_data;
         }
-    }
+    });
 
     core::ptr::null_mut()
 }
@@ -54,7 +54,7 @@ unsafe fn delete_parent_cpu_data(p_data: *mut devfreq_passive_data) {
     let mut parent_cpu_data: *mut devfreq_cpu_data;
     let mut tmp: *mut devfreq_cpu_data;
 
-    list_for_each_entry_safe!(parent_cpu_data, tmp, (*p_data).cpu_data_list, node) {
+    list_for_each_entry_safe!(parent_cpu_data, tmp, (*p_data).cpu_data_list, node, {
         list_del!(&mut (*parent_cpu_data).node);
 
         if !(*parent_cpu_data).opp_table.is_null() {
@@ -62,7 +62,7 @@ unsafe fn delete_parent_cpu_data(p_data: *mut devfreq_passive_data) {
         }
 
         kfree(parent_cpu_data);
-    }
+    });
 }
 
 unsafe fn get_target_freq_by_required_opp(
@@ -109,7 +109,7 @@ unsafe fn get_target_freq_with_cpufreq(
     let mut freq: c_ulong = 0;
     let mut ret: c_int = 0;
 
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         policy = cpufreq_cpu_get(cpu);
         if policy.is_null() {
             ret = -EINVAL;
@@ -144,7 +144,7 @@ unsafe fn get_target_freq_with_cpufreq(
 
         *target_freq = core::cmp::max(freq, *target_freq);
         cpufreq_cpu_put(policy);
-    }
+    });
 
     ret
 }
@@ -266,7 +266,7 @@ unsafe fn cpufreq_passive_register_notifier(devfreq: *mut devfreq) -> c_int {
         return ret;
     }
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         policy = cpufreq_cpu_get(cpu);
         if policy.is_null() { ret = -EPROBE_DEFER; goto!('err); }
         parent_cpu_data = get_parent_cpu_data(p_data, policy);
@@ -285,7 +285,7 @@ unsafe fn cpufreq_passive_register_notifier(devfreq: *mut devfreq) -> c_int {
         (*parent_cpu_data).max_freq = (*policy).cpuinfo.max_freq;
         list_add_tail!(&mut (*parent_cpu_data).node, &mut (*p_data).cpu_data_list);
         cpufreq_cpu_put(policy);
-    }
+    });
     mutex_lock!(&mut (*devfreq).lock);
     ret = devfreq_update_target(devfreq, 0);
     mutex_unlock!(&mut (*devfreq).lock);

@@ -43,6 +43,9 @@ pub unsafe fn jfs_extendfs(sb: *mut super_block, new_lv_size: s64, mut new_log_s
     let mut tid: i32;
     let mut log_formatted = 0;
     let mut iplist: [*mut inode; 1] = [core::ptr::null_mut()];
+    'out: {
+    'resume: {
+    'error_out: {
     let (mut j_sb, mut j_sb2): (*mut jfs_superblock, *mut jfs_superblock);
     let mut old_agsize: s64;
     let mut agsizechanged = 0;
@@ -59,13 +62,13 @@ pub unsafe fn jfs_extendfs(sb: *mut super_block, new_lv_size: s64, mut new_log_s
     }
     volume_size = sb_bdev_nr_blocks(sb);
     if volume_size != 0 {
-        if new_lv_size > volume_size { rc = -EINVAL; goto out; }
+        if new_lv_size > volume_size { rc = -EINVAL; break 'out; }
     } else {
         bh = sb_bread(sb, new_lv_size - 1);
-        if bh.is_null() { rc = -EINVAL; goto out; }
+        if bh.is_null() { rc = -EINVAL; break 'out; }
         bforget(bh);
     }
-    if isReadOnly(ipbmap) { rc = -EROFS; goto out; }
+    if isReadOnly(ipbmap) { rc = -EROFS; break 'out; }
 
     if (*sbi).mntflag & JFS_INLINELOG != 0 {
         if new_log_size == 0 {
@@ -83,10 +86,10 @@ pub unsafe fn jfs_extendfs(sb: *mut super_block, new_lv_size: s64, mut new_log_s
     new_fsck_size = t32 << (*sbi).l2nbperpage;
     new_fsck_address = new_log_address - new_fsck_size as i64;
     new_fs_size = new_lv_size - new_log_size as i64 - new_fsck_size as i64;
-    if new_fs_size < (*bmp).db_mapsize { rc = -EINVAL; goto out; }
+    if new_fs_size < (*bmp).db_mapsize { rc = -EINVAL; break 'out; }
 
     if (*sbi).mntflag & JFS_INLINELOG != 0 && new_log_address > old_lv_size {
-        rc = lmLogFormat(log, new_log_address, new_log_size); if rc != 0 { goto out; }
+        rc = lmLogFormat(log, new_log_address, new_log_size); if rc != 0 { break 'out; }
         log_formatted = 1;
     }
     txQuiesce(sb);
@@ -94,17 +97,17 @@ pub unsafe fn jfs_extendfs(sb: *mut super_block, new_lv_size: s64, mut new_log_s
 
     if (*sbi).mntflag & JFS_INLINELOG != 0 {
         lmLogShutdown(log);
-        rc = readSuper(sb, &mut bh); if rc != 0 { goto error_out; }
+        rc = readSuper(sb, &mut bh); if rc != 0 { break 'error_out; }
         j_sb = bh.cast::<jfs_superblock>();
         (*j_sb).s_state |= cpu_to_le32(FM_EXTENDFS);
         (*j_sb).s_xsize = cpu_to_le64(new_fs_size);
         PXDaddress(&mut (*j_sb).s_xfsckpxd, new_fsck_address); PXDlength(&mut (*j_sb).s_xfsckpxd, new_fsck_size);
         PXDaddress(&mut (*j_sb).s_xlogpxd, new_log_address); PXDlength(&mut (*j_sb).s_xlogpxd, new_log_size);
         mark_buffer_dirty(bh); sync_dirty_buffer(bh); brelse(bh);
-        if log_formatted == 0 { rc = lmLogFormat(log, new_log_address, new_log_size); if rc != 0 { goto error_out; } }
+        if log_formatted == 0 { rc = lmLogFormat(log, new_log_address, new_log_size); if rc != 0 { break 'error_out; } }
         (*log).base = new_log_address;
         (*log).size = new_log_size >> (L2LOGPSIZE - (*sb).s_blocksize_bits);
-        rc = lmLogInit(log); if rc != 0 { goto error_out; }
+        rc = lmLogInit(log); if rc != 0 { break 'error_out; }
     }
 
     new_map_size = new_fs_size;
@@ -114,45 +117,48 @@ pub unsafe fn jfs_extendfs(sb: *mut super_block, new_lv_size: s64, mut new_log_s
 extend_bmap:
     map_size = (*bmp).db_mapsize; x_address = map_size; x_size = new_map_size - map_size; old_agsize = (*bmp).db_agsize;
     t64 = dbMapFileSizeToMapSize(ipbmap);
-    if map_size > t64 { rc = -EIO; goto error_out; }
+    if map_size > t64 { rc = -EIO; break 'error_out; }
     nblocks = core::cmp::min(t64 - map_size, x_size);
-    rc = dbExtendFS(ipbmap, x_address, nblocks); if rc != 0 { goto error_out; }
+    rc = dbExtendFS(ipbmap, x_address, nblocks); if rc != 0 { break 'error_out; }
     if (*bmp).db_agsize != old_agsize { agsizechanged |= 1; }
     x_size -= nblocks;
     n_pages = ((*ipbmap).i_size >> L2PSIZE) as i32;
     if n_pages != new_npages {
-        rc = filemap_fdatawait((*ipbmap).i_mapping); if rc != 0 { goto error_out; }
-        rc = filemap_write_and_wait((*ipbmap).i_mapping); if rc != 0 { goto error_out; }
+        rc = filemap_fdatawait((*ipbmap).i_mapping); if rc != 0 { break 'error_out; }
+        rc = filemap_write_and_wait((*ipbmap).i_mapping); if rc != 0 { break 'error_out; }
         diWriteSpecial(ipbmap, 0);
         new_page = n_pages; xoff = (new_page as i64) << (*sbi).l2nbperpage;
         xlen = (new_npages - n_pages) << (*sbi).l2nbperpage;
         xlen = core::cmp::min(xlen, nblocks as i32) & !((*sbi).nbperpage - 1); xaddr = x_address;
         tid = txBegin(sb, COMMIT_FORCE);
         rc = xtAppend(tid, ipbmap, 0, xoff, nblocks, &mut xlen, &mut xaddr, 0);
-        if rc != 0 { txEnd(tid); goto error_out; }
+        if rc != 0 { txEnd(tid); break 'error_out; }
         (*ipbmap).i_size += (xlen as i64) << (*sbi).l2bsize; inode_add_bytes(ipbmap, (xlen as i64) << (*sbi).l2bsize);
         iplist[0] = ipbmap; rc = txCommit(tid, 1, iplist.as_mut_ptr(), COMMIT_FORCE); txEnd(tid);
-        if rc != 0 { goto error_out; }
+        if rc != 0 { break 'error_out; }
         if x_size != 0 { goto extend_bmap; }
     }
     dbFinalizeBmap(ipbmap);
-    if agsizechanged != 0 { rc = diExtendFS(ipimap, ipbmap); if rc != 0 { goto error_out; } rc = diSync(ipimap); if rc != 0 { goto error_out; } }
-    rc = dbSync(ipbmap); if rc != 0 { goto error_out; }
-    ipbmap2 = diReadSpecial(sb, BMAP_I, 1); if ipbmap2.is_null() { goto error_out; }
+    if agsizechanged != 0 { rc = diExtendFS(ipimap, ipbmap); if rc != 0 { break 'error_out; } rc = diSync(ipimap); if rc != 0 { break 'error_out; } }
+    rc = dbSync(ipbmap); if rc != 0 { break 'error_out; }
+    ipbmap2 = diReadSpecial(sb, BMAP_I, 1); if ipbmap2.is_null() { break 'error_out; }
     core::ptr::copy_nonoverlapping(&(*JFS_IP(ipbmap)).i_xtroot, &mut (*JFS_IP(ipbmap2)).i_xtroot, 288);
     (*ipbmap2).i_size = (*ipbmap).i_size; (*ipbmap2).i_blocks = (*ipbmap).i_blocks; diWriteSpecial(ipbmap2, 1); diFreeSpecial(ipbmap2);
-    rc = readSuper(sb, &mut bh); if rc != 0 { goto error_out; }
+    rc = readSuper(sb, &mut bh); if rc != 0 { break 'error_out; }
     j_sb = bh.cast::<jfs_superblock>(); (*j_sb).s_state &= cpu_to_le32(!FM_EXTENDFS);
     (*j_sb).s_size = cpu_to_le64((*bmp).db_mapsize << le16_to_cpu((*j_sb).s_l2bfactor)); (*j_sb).s_agsize = cpu_to_le32((*bmp).db_agsize);
     if (*sbi).mntflag & JFS_INLINELOG != 0 { PXDaddress(&mut (*j_sb).s_logpxd, new_log_address); PXDlength(&mut (*j_sb).s_logpxd, new_log_size); }
     (*j_sb).s_logserial = cpu_to_le32((*log).serial); PXDaddress(&mut (*j_sb).s_fsckpxd, new_fsck_address); PXDlength(&mut (*j_sb).s_fsckpxd, new_fsck_size); (*j_sb).s_fscklog = 1;
     bh2 = sb_bread(sb, SUPER2_OFF >> (*sb).s_blocksize_bits); if !bh2.is_null() { j_sb2 = bh2.cast(); core::ptr::copy_nonoverlapping(j_sb, j_sb2, core::mem::size_of::<jfs_superblock>()); mark_buffer_dirty(bh2); sync_dirty_buffer(bh2); brelse(bh2); }
-    mark_buffer_dirty(bh); sync_dirty_buffer(bh); brelse(bh); goto resume;
-error_out:
+    mark_buffer_dirty(bh); sync_dirty_buffer(bh); brelse(bh); break 'resume;
+    }
+    
     jfs_error(sb, b"\n\0".as_ptr());
-resume:
+    }
+    
     txResume(sb);
-out:
+    }
+    
     rc
 }
 

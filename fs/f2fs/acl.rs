@@ -45,6 +45,7 @@ unsafe fn f2fs_acl_from_disk(value: *const i8, size: usize) -> *mut posix_acl {
     let hdr = value as *mut f2fs_acl_header;
     let mut entry = hdr.add(1) as *mut f2fs_acl_entry;
     let end = value.add(size);
+    'fail: {
 
     if size < core::mem::size_of::<f2fs_acl_header>() { return ERR_PTR(-EINVAL); }
     if (*hdr).a_version != cpu_to_le32(F2FS_ACL_VERSION) { return ERR_PTR(-EINVAL); }
@@ -57,7 +58,7 @@ unsafe fn f2fs_acl_from_disk(value: *const i8, size: usize) -> *mut posix_acl {
     i = 0;
     while i < count {
         if (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry_short>()) > end {
-            err = -EFSCORRUPTED; goto fail;
+            err = -EFSCORRUPTED; break 'fail;
         }
         (*acl).a_entries.add(i as usize).write(posix_acl_entry {
             e_tag: le16_to_cpu((*entry).e_tag), e_perm: le16_to_cpu((*entry).e_perm), ..core::mem::zeroed()
@@ -67,22 +68,23 @@ unsafe fn f2fs_acl_from_disk(value: *const i8, size: usize) -> *mut posix_acl {
                 entry = (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry_short>()) as *mut f2fs_acl_entry;
             }
             ACL_USER => {
-                if (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry>()) > end { err = -EFSCORRUPTED; goto fail; }
+                if (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry>()) > end { err = -EFSCORRUPTED; break 'fail; }
                 (*acl).a_entries.add(i as usize).as_mut().unwrap_unchecked().e_uid = make_kuid(&init_user_ns, le32_to_cpu((*entry).e_id));
                 entry = (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry>()) as *mut f2fs_acl_entry;
             }
             ACL_GROUP => {
-                if (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry>()) > end { err = -EFSCORRUPTED; goto fail; }
+                if (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry>()) > end { err = -EFSCORRUPTED; break 'fail; }
                 (*acl).a_entries.add(i as usize).as_mut().unwrap_unchecked().e_gid = make_kgid(&init_user_ns, le32_to_cpu((*entry).e_id));
                 entry = (entry as *mut i8).add(core::mem::size_of::<f2fs_acl_entry>()) as *mut f2fs_acl_entry;
             }
-            _ => { goto fail; }
+            _ => { break 'fail; }
         }
         i += 1;
     }
-    if entry as *mut i8 != end { goto fail; }
+    if entry as *mut i8 != end { break 'fail; }
     return acl;
-fail:
+    }
+    
     posix_acl_release(acl);
     ERR_PTR(err)
 }

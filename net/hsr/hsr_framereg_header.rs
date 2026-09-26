@@ -76,7 +76,7 @@ extern "C" {
 }
 
 // Corresponds to: #if IS_ENABLED(CONFIG_KUNIT)
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 extern "C" {
     pub fn hsr_get_seq_block(node: *mut hsr_node, block_idx: u16) -> *mut hsr_seq_block;
 }

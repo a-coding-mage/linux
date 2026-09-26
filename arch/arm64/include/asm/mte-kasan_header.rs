@@ -7,7 +7,7 @@
 // The original header guard and __ASSEMBLER__ exclusion are represented by
 // this Rust source file containing declarations only.
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 extern "C" {
     // DECLARE_STATIC_KEY_FALSE(mte_async_or_asymm_mode)
     static mte_async_or_asymm_mode: bool;
@@ -15,40 +15,40 @@ extern "C" {
 
 #[inline]
 pub fn system_uses_mte_async_or_asymm_mode() -> bool {
-    #[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+    #[cfg(CONFIG_KASAN_HW_TAGS)]
     unsafe {
         // Equivalent to static_branch_unlikely(&mte_async_or_asymm_mode).
         core::ptr::read_volatile(&mte_async_or_asymm_mode)
     }
-    #[cfg(not(feature = "CONFIG_KASAN_HW_TAGS"))]
+    #[cfg(not(CONFIG_KASAN_HW_TAGS))]
     {
         false
     }
 }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn mte_disable_tco() {
     // ALTERNATIVE("nop", SET_PSTATE_TCO(0), ARM64_MTE, CONFIG_KASAN_HW_TAGS)
     core::arch::asm!("msr tco, #0", options(nostack, preserves_flags));
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn mte_disable_tco() {}
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn mte_enable_tco() {
     // ALTERNATIVE("nop", SET_PSTATE_TCO(1), ARM64_MTE, CONFIG_KASAN_HW_TAGS)
     core::arch::asm!("msr tco, #1", options(nostack, preserves_flags));
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn mte_enable_tco() {}
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn __mte_disable_tco_async() {
     if system_uses_mte_async_or_asymm_mode() {
@@ -56,11 +56,11 @@ pub unsafe fn __mte_disable_tco_async() {
     }
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn __mte_disable_tco_async() {}
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn __mte_enable_tco_async() {
     if system_uses_mte_async_or_asymm_mode() {
@@ -68,11 +68,11 @@ pub unsafe fn __mte_enable_tco_async() {
     }
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn __mte_enable_tco_async() {}
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub fn mte_get_ptr_tag(ptr: *mut core::ffi::c_void) -> u8 {
     // Note: The format of KASAN tags is 0xF<x>.
@@ -80,11 +80,11 @@ pub fn mte_get_ptr_tag(ptr: *mut core::ffi::c_void) -> u8 {
     0xF0 | (((ptr as u64) >> MTE_TAG_SHIFT) as u8)
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub fn mte_get_ptr_tag(_ptr: *mut core::ffi::c_void) -> u8 { 0xFF }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn mte_get_mem_tag(addr: *mut core::ffi::c_void) -> u8 {
     let mut addr = addr;
@@ -92,11 +92,11 @@ pub unsafe fn mte_get_mem_tag(addr: *mut core::ffi::c_void) -> u8 {
     mte_get_ptr_tag(addr)
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn mte_get_mem_tag(_addr: *mut core::ffi::c_void) -> u8 { 0xFF }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn mte_get_random_tag() -> u8 {
     let mut addr: *mut core::ffi::c_void;
@@ -104,37 +104,37 @@ pub unsafe fn mte_get_random_tag() -> u8 {
     mte_get_ptr_tag(addr)
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn mte_get_random_tag() -> u8 { 0xFF }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn __stg_post(mut p: u64) -> u64 {
     core::arch::asm!("stg {0}, [{0}], #16", inout(reg) p, options(nostack));
     p
 }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn __stzg_post(mut p: u64) -> u64 {
     core::arch::asm!("stzg {0}, [{0}], #16", inout(reg) p, options(nostack));
     p
 }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn __dc_gva(p: u64) {
     core::arch::asm!("dc gva, {0}", in(reg) p, options(nostack));
 }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn __dc_gzva(p: u64) {
     core::arch::asm!("dc gzva, {0}", in(reg) p, options(nostack));
 }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[inline]
 pub unsafe fn mte_set_mem_tag_range(
     addr: *mut core::ffi::c_void,
@@ -170,11 +170,11 @@ pub unsafe fn mte_set_mem_tag_range(
     let _ = MTE_GRANULE_SIZE;
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline]
 pub unsafe fn mte_set_mem_tag_range(_addr: *mut core::ffi::c_void, _size: usize, _tag: u8, _init: bool) {}
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 extern "C" {
     pub fn mte_enable_kernel_sync();
     pub fn mte_enable_kernel_async();
@@ -182,13 +182,13 @@ extern "C" {
     pub fn mte_enable_kernel_store_only() -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline] pub fn mte_enable_kernel_sync() {}
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline] pub fn mte_enable_kernel_async() {}
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline] pub fn mte_enable_kernel_asymm() {}
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[inline] pub fn mte_enable_kernel_store_only() -> core::ffi::c_int { -22 }
 
 // External dependencies supplied by the translated architecture support.

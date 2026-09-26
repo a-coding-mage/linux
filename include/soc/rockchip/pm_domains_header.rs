@@ -4,20 +4,20 @@
  */
 
 /* CONFIG_ROCKCHIP_PM_DOMAINS */
-#[cfg(feature = "CONFIG_ROCKCHIP_PM_DOMAINS")]
+#[cfg(CONFIG_ROCKCHIP_PM_DOMAINS)]
 extern "C" {
     pub fn rockchip_pmu_block() -> ::core::ffi::c_int;
     pub fn rockchip_pmu_unblock();
 }
 
 /* !CONFIG_ROCKCHIP_PM_DOMAINS */
-#[cfg(not(feature = "CONFIG_ROCKCHIP_PM_DOMAINS"))]
+#[cfg(not(CONFIG_ROCKCHIP_PM_DOMAINS))]
 #[inline]
 pub fn rockchip_pmu_block() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_ROCKCHIP_PM_DOMAINS"))]
+#[cfg(not(CONFIG_ROCKCHIP_PM_DOMAINS))]
 #[inline]
 pub fn rockchip_pmu_unblock() {}
 

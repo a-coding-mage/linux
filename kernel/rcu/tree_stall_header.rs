@@ -61,7 +61,7 @@
 // 
 // static unsigned int rcu_stall_count;
 // 
-// static ssize_t rcu_stall_count_show(struct kobject *kobj, struct kobj_attribute *attr,
+// static ssize_t rcu_stall_count_show(kobject *kobj, kobj_attribute *attr,
 // 				    char *page)
 // {
 // 	return sysfs_emit(page, "%u\n", rcu_stall_count);
@@ -149,7 +149,7 @@
 // }
 // 
 // /* Don't print RCU CPU stall warnings during a kernel panic. */
-// static int rcu_panic(struct notifier_block *this, unsigned long ev, void *ptr)
+// static int rcu_panic(notifier_block *this, unsigned long ev, void *ptr)
 // {
 // 	rcu_cpu_stall_suppress = 1;
 // 	return NOTIFY_DONE;
@@ -221,7 +221,7 @@
 // }
 // 
 // /* Zero ->ticks_this_gp and snapshot the number of RCU softirq handlers. */
-// static void zero_cpu_stall_ticks(struct rcu_data *rdp)
+// static void zero_cpu_stall_ticks(rcu_data *rdp)
 // {
 // 	rdp->ticks_this_gp = 0;
 // 	rdp->softirq_snap = kstat_softirqs_cpu(RCU_SOFTIRQ, smp_processor_id());
@@ -254,12 +254,12 @@
 //  * stall timeout, and used to detect excessive irq disabling.  Set state
 //  * appropriately, but just complain if there is unexpected state on entry.
 //  */
-// static void rcu_iw_handler(struct irq_work *iwp)
+// static void rcu_iw_handler(irq_work *iwp)
 // {
 // 	struct rcu_data *rdp;
 // 	struct rcu_node *rnp;
 // 
-// 	rdp = container_of(iwp, struct rcu_data, rcu_iw);
+// 	rdp = container_of(iwp, rcu_data, rcu_iw);
 // 	rnp = rdp->mynode;
 // 	raw_spin_lock_rcu_node(rnp);
 // 	if (!WARN_ON_ONCE(!rdp->rcu_iw_pending)) {
@@ -279,7 +279,7 @@
 //  * Dump detailed information for all tasks blocking the current RCU
 //  * grace period on the specified rcu_node structure.
 //  */
-// static void rcu_print_detail_task_stall_rnp(struct rcu_node *rnp)
+// static void rcu_print_detail_task_stall_rnp(rcu_node *rnp)
 // {
 // 	unsigned long flags;
 // 	struct task_struct *t;
@@ -313,7 +313,7 @@
 //  * Report out the state of a not-running task that is stalling the
 //  * current RCU grace period.
 //  */
-// static int check_slow_task(struct task_struct *t, void *arg)
+// static int check_slow_task(task_struct *t, void *arg)
 // {
 // 	struct rcu_stall_chk_rdr *rscrp = arg;
 // 
@@ -329,7 +329,7 @@
 //  * Scan the current list of tasks blocked within RCU read-side critical
 //  * sections, printing out the tid of each of the first few of them.
 //  */
-// static int rcu_print_task_stall(struct rcu_node *rnp, unsigned long flags)
+// static int rcu_print_task_stall(rcu_node *rnp, unsigned long flags)
 // 	__releases(rnp->lock)
 // {
 // 	int i = 0;
@@ -379,7 +379,7 @@
 //  * Because preemptible RCU does not exist, we never have to check for
 //  * tasks blocked within RCU read-side critical sections.
 //  */
-// static void rcu_print_detail_task_stall_rnp(struct rcu_node *rnp)
+// static void rcu_print_detail_task_stall_rnp(rcu_node *rnp)
 // {
 // }
 // 
@@ -387,7 +387,7 @@
 //  * Because preemptible RCU does not exist, we never have to check for
 //  * tasks blocked within RCU read-side critical sections.
 //  */
-// static int rcu_print_task_stall(struct rcu_node *rnp, unsigned long flags)
+// static int rcu_print_task_stall(rcu_node *rnp, unsigned long flags)
 // 	__releases(rnp->lock)
 // {
 // 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
@@ -462,7 +462,7 @@
 // 	return j > 2 * HZ;
 // }
 // 
-// static bool rcu_is_rcuc_kthread_starving(struct rcu_data *rdp, unsigned long *jp)
+// static bool rcu_is_rcuc_kthread_starving(rcu_data *rdp, unsigned long *jp)
 // {
 // 	int cpu;
 // 	struct task_struct *rcuc;
@@ -781,7 +781,7 @@
 // static bool csd_lock_suppress_rcu_stall;
 // module_param(csd_lock_suppress_rcu_stall, bool, 0644);
 // 
-// static void check_cpu_stall(struct rcu_data *rdp)
+// static void check_cpu_stall(rcu_data *rdp)
 // {
 // 	bool self_detected;
 // 	unsigned long gs1;
@@ -965,7 +965,7 @@
 // 		data_race(READ_ONCE(rcu_state.gp_flags)));
 // }
 // 
-// static noinline_for_stack void show_rcu_node(struct rcu_node *rnp)
+// static noinline_for_stack void show_rcu_node(rcu_node *rnp)
 // {
 // 	pr_info("\trcu_node %d:%d ->gp_seq %ld ->gp_seq_needed %ld ->qsmask %#lx %c%c%c%c ->n_boosts %ld\n",
 // 		rnp->grplo, rnp->grphi,
@@ -1022,7 +1022,7 @@
 //  * This function checks for grace-period requests that fail to motivate
 //  * RCU to come out of its idle mode.
 //  */
-// static void rcu_check_gp_start_stall(struct rcu_node *rnp, const unsigned long gpssdelay)
+// static void rcu_check_gp_start_stall(rcu_node *rnp, const unsigned long gpssdelay)
 // {
 // 	unsigned long flags;
 // 	unsigned long j;
@@ -1161,7 +1161,7 @@
 //  *
 //  * Returns 0 on success, %-EEXIST on error.
 //  */
-// int rcu_stall_chain_notifier_register(struct notifier_block *n)
+// int rcu_stall_chain_notifier_register(notifier_block *n)
 // {
 // 	int rcsn = rcu_cpu_stall_notifiers;
 // 
@@ -1181,7 +1181,7 @@
 //  *
 //  * Returns zero on success, %-ENOENT on failure.
 //  */
-// int rcu_stall_chain_notifier_unregister(struct notifier_block *n)
+// int rcu_stall_chain_notifier_unregister(notifier_block *n)
 // {
 // 	return atomic_notifier_chain_unregister(&rcu_cpu_stall_notifier_list, n);
 // }
@@ -1213,9 +1213,9 @@ extern "C" {
     pub fn rcu_check_boost_fail(gp_state: usize, cpup: *mut i32) -> bool;
     pub fn show_rcu_gp_kthreads();
     pub fn rcu_fwd_progress_check(j: usize);
-    #[cfg(feature = "CONFIG_RCU_CPU_STALL_NOTIFIER")]
+    #[cfg(CONFIG_RCU_CPU_STALL_NOTIFIER)]
     pub fn rcu_stall_chain_notifier_register(n: *mut notifier_block) -> i32;
-    #[cfg(feature = "CONFIG_RCU_CPU_STALL_NOTIFIER")]
+    #[cfg(CONFIG_RCU_CPU_STALL_NOTIFIER)]
     pub fn rcu_stall_chain_notifier_unregister(n: *mut notifier_block) -> i32;
 }
 
@@ -1226,9 +1226,9 @@ pub struct notifier_block {
 
 // Kernel ABI constants and declarations used by this header are supplied by other files.
 pub const RCU_STALL_MIGHT_DIV: usize = 8;
-#[cfg(not(feature = "CONFIG_PROVE_RCU")] )
+#[cfg(not(CONFIG_PROVE_RCU))] )
 pub const RCU_STALL_DELAY_DELTA: usize = 0;
-#[cfg(feature = "CONFIG_PROVE_RCU")]
+#[cfg(CONFIG_PROVE_RCU)]
 pub const RCU_STALL_DELAY_DELTA: usize = 5 * HZ;
 
 

@@ -93,7 +93,7 @@ pub unsafe fn zlib_inflate_table(
     loop {
         this.bits = (len - drop) as u8;
         let symbol = *work.add(sym as usize);
-        if symbol as i32 < end { this.op = 0; this.val = symbol; }
+        if (symbol as i32) < end { this.op = 0; this.val = symbol; }
         else if symbol as i32 > end { this.op = *extra.add(symbol as usize) as u8; this.val = *base.add(symbol as usize); }
         else { this.op = 96; this.val = 0; }
         incr = 1 << (len - drop); fill = 1 << curr; min = fill;

@@ -45,7 +45,7 @@ pub unsafe fn bpf_resolve_jumps(
             continue;
         }
         match ((instr.jt as u16) << 8) | instr.jf as u16 {
-            ((JUMP_JT as u16) << 8) | JUMP_JF as u16 => {
+            case if case == ((JUMP_JT as u16) << 8) || case == JUMP_JF as u16 => {
                 let label = &mut (*labels).labels[instr.k as usize];
                 if label.location == 0xffff_ffff {
                     fprintf(stderr, b"Unresolved label: '%s'\n\0".as_ptr() as *const c_char,
@@ -57,7 +57,7 @@ pub unsafe fn bpf_resolve_jumps(
                 instr.jf = 0;
                 continue;
             }
-            ((LABEL_JT as u16) << 8) | LABEL_JF as u16 => {
+            case if case == ((LABEL_JT as u16) << 8) || case == LABEL_JF as u16 => {
                 let label = &mut (*labels).labels[instr.k as usize];
                 if label.location != 0xffff_ffff {
                     fprintf(stderr, b"Duplicate label use: '%s'\n\0".as_ptr() as *const c_char,

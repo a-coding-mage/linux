@@ -46,15 +46,15 @@ pub const FUSE_DENTRY_INVAL_FREQ_MIN: c_uint = 5;
 pub type dev_t = u64; pub type umode_t = u16; pub type loff_t = i64;
 
 extern "C" {
-    fn get_fuse_inode(*mut inode) -> *mut fuse_inode;
-    fn get_fuse_conn_super(*mut super_block) -> *mut fuse_conn;
-    fn get_fuse_conn(*mut inode) -> *mut fuse_conn;
-    fn get_fuse_mount(*mut inode) -> *mut fuse_mount;
+    fn get_fuse_inode(_: *mut inode) -> *mut fuse_inode;
+    fn get_fuse_conn_super(_: *mut super_block) -> *mut fuse_conn;
+    fn get_fuse_conn(_: *mut inode) -> *mut fuse_conn;
+    fn get_fuse_mount(_: *mut inode) -> *mut fuse_mount;
     fn fuse_time_to_jiffies(sec: u64, nsec: u32) -> u64;
-    fn fuse_change_attributes(*mut inode,*mut fuse_attr,*mut fuse_statx,u64,u64);
-    fn fuse_simple_request(*mut fuse_mount,*mut fuse_args) -> c_int;
-    fn fuse_iget(*mut super_block,u64,u64,*mut fuse_attr,u64,u64,u64) -> *mut inode;
-    fn fuse_readdir(*mut file,*mut c_void) -> c_int;
+    fn fuse_change_attributes(_: *mut inode,_: *mut fuse_attr,_: *mut fuse_statx,_: u64,_: u64);
+    fn fuse_simple_request(_: *mut fuse_mount,_: *mut fuse_args) -> c_int;
+    fn fuse_iget(_: *mut super_block,_: u64,_: u64,_: *mut fuse_attr,_: u64,_: u64,_: u64) -> *mut inode;
+    fn fuse_readdir(_: *mut file,_: *mut c_void) -> c_int;
 }
 #[repr(C)] pub struct fuse_inode { _private: [u8; 0] }
 #[repr(C)] pub struct fuse_conn { _private: [u8; 0] }

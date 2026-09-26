@@ -41,7 +41,7 @@ unsafe fn show_msi_interrupt(p: *mut seq_file, irq: ::core::ffi::c_int) {
     raw_spin_lock_irqsave(&mut (*desc).lock, &mut flags);
     seq_printf(p, c"%3d: ".as_ptr(), irq);
     let mut cpu = 0;
-    for_each_online_cpu!(cpu) { seq_printf(p, c"%10u ".as_ptr(), irq_desc_kstat_cpu(desc, cpu)); }
+    for_each_online_cpu!(cpu, { seq_printf(p, c"%10u ".as_ptr(), irq_desc_kstat_cpu(desc, cpu)); });
     if !(*desc).irq_data.chip.is_null() { seq_printf(p, c" %8s".as_ptr(), (*(*desc).irq_data.chip).name); }
     if !(*desc).action.is_null() { seq_printf(p, c"  %s".as_ptr(), (*(*desc).action).name); }
     seq_putc(p, b'\n' as _);
@@ -55,13 +55,13 @@ pub unsafe fn show_interrupts(p: *mut seq_file, v: *mut ::core::ffi::c_void) -> 
     cpus_read_lock();
     if index == 0 {
         seq_puts(p, c"           ".as_ptr());
-        for_each_online_cpu!(cpu) { seq_printf(p, c"CPU%-8d".as_ptr(), cpu); }
+        for_each_online_cpu!(cpu, { seq_printf(p, c"CPU%-8d".as_ptr(), cpu); });
         seq_putc(p, b'\n' as _);
     }
     if index < NR_IRQS_BASE {
         seq_printf(p, c"%s: ".as_ptr(), irqclass_main_desc[index as usize].name);
         let irq = irqclass_main_desc[index as usize].irq;
-        for_each_online_cpu!(cpu) { seq_printf(p, c"%10u ".as_ptr(), kstat_irqs_cpu(irq, cpu)); }
+        for_each_online_cpu!(cpu, { seq_printf(p, c"%10u ".as_ptr(), kstat_irqs_cpu(irq, cpu)); });
         seq_putc(p, b'\n' as _);
     } else if index < irq_get_nr_irqs() {
         show_msi_interrupt(p, index);
@@ -70,7 +70,7 @@ pub unsafe fn show_interrupts(p: *mut seq_file, v: *mut ::core::ffi::c_void) -> 
         while index < NR_ARCH_IRQS {
             seq_printf(p, c"%s: ".as_ptr(), irqclass_sub_desc[index as usize].name);
             let irq = irqclass_sub_desc[index as usize].irq;
-            for_each_online_cpu!(cpu) { seq_printf(p, c"%10u ".as_ptr(), per_cpu_irq_stat(cpu).irqs[irq as usize]); }
+            for_each_online_cpu!(cpu, { seq_printf(p, c"%10u ".as_ptr(), per_cpu_irq_stat(cpu).irqs[irq as usize]); });
             if !irqclass_sub_desc[index as usize].desc.is_null() { seq_printf(p, c"  %s".as_ptr(), irqclass_sub_desc[index as usize].desc); }
             seq_putc(p, b'\n' as _);
             index += 1;
@@ -202,12 +202,12 @@ pub unsafe fn unregister_external_irq(code: u16, handler: ext_int_handler_t) -> 
     let index = ext_hash(code) as usize;
     spin_lock_irqsave(&mut ext_int_hash_lock);
     let mut p: *mut ext_int_info = core::ptr::null_mut();
-    hlist_for_each_entry_rcu(p, &mut ext_int_hash[index], entry) {
+    hlist_for_each_entry_rcu!(p, &mut ext_int_hash[index], entry, {
         if (*p).code == code && (*p).handler == handler {
             hlist_del_rcu(&mut (*p).entry);
             kfree_rcu(p, rcu);
         }
-    }
+    });
     spin_unlock_irqrestore(&mut ext_int_hash_lock);
     0
 }
@@ -219,10 +219,10 @@ unsafe fn do_ext_interrupt(_irq: ::core::ffi::c_int, _dummy: *mut ::core::ffi::c
     let index = ext_hash((*ext_code).code) as usize;
     rcu_read_lock();
     let mut p: *mut ext_int_info = core::ptr::null_mut();
-    hlist_for_each_entry_rcu(p, &mut ext_int_hash[index], entry) {
+    hlist_for_each_entry_rcu!(p, &mut ext_int_hash[index], entry, {
         if (*p).code != (*ext_code).code { continue; }
         ((*p).handler)((*ext_code), (*regs).int_parm, (*regs).int_parm_long);
-    }
+    });
     rcu_read_unlock();
     IRQ_HANDLED
 }

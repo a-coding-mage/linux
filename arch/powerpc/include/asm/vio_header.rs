@@ -189,7 +189,7 @@ macro_rules! to_vio_driver {
 #[macro_export]
 macro_rules! to_vio_dev {
     ($dev:expr) => {
-        container_of_const!($dev, vio_dev, dev)
+        container_of_const!($dev, vio_dev, $dev)
     };
 }
 

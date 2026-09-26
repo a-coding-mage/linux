@@ -17,12 +17,12 @@
 
 pub unsafe fn dmub_srv_dcn32_regs_init(dmub: *mut dmub_srv, ctx: *mut dc_context) {
     let regs = (*dmub).regs_dcn32;
-    macro_rules! dmub_sr { ($reg:ident) => { (*regs).offset.$reg = BASE((*ctx).dcn_reg_offsets[$reg##_BASE_IDX]) + $reg; }; }
+    macro_rules! dmub_sr { ($reg:tt) => { (*regs).offset.$reg = BASE((*ctx).dcn_reg_offsets[::kernel::macros::paste!([<$reg _BASE_IDX>])]) + $reg; }; }
     DMUB_DCN32_REGS!();
     DMCUB_INTERNAL_REGS!();
-    macro_rules! dmub_sf { ($reg:ident, $field:ident) => { (*regs).mask.$reg##__$field = FD_MASK($reg, $field); }; }
+    macro_rules! dmub_sf { ($reg:tt, $field:ident) => { (*regs).mask.::kernel::macros::paste!([<$reg __>])$field = FD_MASK($reg, $field); }; }
     DMUB_DCN32_FIELDS!();
-    macro_rules! dmub_sf_shift { ($reg:ident, $field:ident) => { (*regs).shift.$reg##__$field = FD_SHIFT($reg, $field); }; }
+    macro_rules! dmub_sf_shift { ($reg:tt, $field:ident) => { (*regs).shift.::kernel::macros::paste!([<$reg __>])$field = FD_SHIFT($reg, $field); }; }
     DMUB_DCN32_FIELDS!();
 }
 

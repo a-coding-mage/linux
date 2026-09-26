@@ -8,8 +8,10 @@
  * parameter. Now every user can use their own standalone ratelimit_state.
  */
 
-// Dependencies supplied by the Linux kernel translation environment:
-// linux/ratelimit.h, linux/jiffies.h, and linux/export.h.
+// Dependencies: linux/ratelimit.h, linux/jiffies.h, linux/export.h.
+
+use core::ffi::{c_char, c_int, c_ulong};
+use core::ptr::{addr_of, addr_of_mut, read_volatile};
 
 /*
  * __ratelimit - rate limiting
@@ -23,101 +25,98 @@
  * 0 means callbacks will be suppressed.
  * 1 means go ahead and do it.
  */
-pub unsafe extern "C" fn ___ratelimit(
-    rs: *mut ratelimit_state,
-    func: *const core::ffi::c_char,
-) -> i32 {
+#[no_mangle]
+pub unsafe extern "C" fn ___ratelimit(rs: *mut ratelimit_state, func: *const c_char) -> c_int {
     /* Paired with WRITE_ONCE() in .proc_handler().
      * Changing two values separately could be inconsistent
      * and some message could be lost.  (See: net_ratelimit_state).
      */
-    let interval = READ_ONCE((*rs).interval);
-    let burst = READ_ONCE((*rs).burst);
-    let mut flags: unsigned_long = 0;
-    let mut ret: i32 = 0;
+    let interval: c_int = read_volatile(addr_of!((*rs).interval));
+    let burst: c_int = read_volatile(addr_of!((*rs).burst));
+    let mut flags: c_ulong = 0;
+    let mut ret: c_int = 0;
 
-    /*
-     * Zero interval says never limit, otherwise, non-positive burst
-     * says always limit.
-     */
-    if interval <= 0 || burst <= 0 {
-        WARN_ONCE(
-            interval < 0 || burst < 0,
-            "Negative interval (%d) or burst (%d): Uninitialized ratelimit_state structure?\n",
-            interval,
-            burst,
-        );
-        ret = if interval == 0 || burst > 0 { 1 } else { 0 };
-        if !(READ_ONCE((*rs).flags) & RATELIMIT_INITIALIZED != 0)
-            || (!interval && !burst)
-            || !raw_spin_trylock_irqsave(&mut (*rs).lock, &mut flags)
-        {
-            goto nolock_ret;
-        }
+    'nolock_ret: {
+        'unlock_ret: {
+            /*
+             * Zero interval says never limit, otherwise, non-positive burst
+             * says always limit.
+             */
+            if interval <= 0 || burst <= 0 {
+                WARN_ONCE!(
+                    interval < 0 || burst < 0,
+                    c"Negative interval (%d) or burst (%d): Uninitialized ratelimit_state structure?\n",
+                    interval,
+                    burst
+                );
+                ret = (interval == 0 || burst > 0) as c_int;
+                if read_volatile(addr_of!((*rs).flags)) & RATELIMIT_INITIALIZED == 0
+                    || (interval == 0 && burst == 0)
+                    || !raw_spin_trylock_irqsave(addr_of_mut!((*rs).lock), &mut flags)
+                {
+                    break 'nolock_ret;
+                }
 
-        /* Force re-initialization once re-enabled. */
-        (*rs).flags &= !RATELIMIT_INITIALIZED;
-        goto unlock_ret;
-    }
+                /* Force re-initialization once re-enabled. */
+                (*rs).flags &= !RATELIMIT_INITIALIZED;
+                break 'unlock_ret;
+            }
 
-    /*
-     * If we contend on this state's lock then just check if
-     * the current burst is used or not. It might cause
-     * false positive when we are past the interval and
-     * the current lock owner is just about to reset it.
-     */
-    if !raw_spin_trylock_irqsave(&mut (*rs).lock, &mut flags) {
-        if READ_ONCE((*rs).flags) & RATELIMIT_INITIALIZED != 0
-            && (*rs).rs_n_left.load(core::sync::atomic::Ordering::Relaxed) > 0
-            && (*rs).rs_n_left.fetch_sub(1, core::sync::atomic::Ordering::Relaxed) - 1 >= 0
-        {
-            ret = 1;
-        }
-        goto nolock_ret;
-    }
+            /*
+             * If we contend on this state's lock then just check if
+             * the current burst is used or not. It might cause
+             * false positive when we are past the interval and
+             * the current lock owner is just about to reset it.
+             */
+            if !raw_spin_trylock_irqsave(addr_of_mut!((*rs).lock), &mut flags) {
+                if read_volatile(addr_of!((*rs).flags)) & RATELIMIT_INITIALIZED != 0
+                    && atomic_read(addr_of!((*rs).rs_n_left)) > 0
+                    && atomic_dec_return(addr_of_mut!((*rs).rs_n_left)) >= 0
+                {
+                    ret = 1;
+                }
+                break 'nolock_ret;
+            }
 
-    if (*rs).flags & RATELIMIT_INITIALIZED == 0 {
-        (*rs).begin = jiffies;
-        (*rs).flags |= RATELIMIT_INITIALIZED;
-        (*rs).rs_n_left.store((*rs).burst, core::sync::atomic::Ordering::Relaxed);
-    }
+            if (*rs).flags & RATELIMIT_INITIALIZED == 0 {
+                (*rs).begin = read_volatile(addr_of!(jiffies));
+                (*rs).flags |= RATELIMIT_INITIALIZED;
+                atomic_set(addr_of_mut!((*rs).rs_n_left), (*rs).burst);
+            }
 
-    if time_is_before_jiffies((*rs).begin + interval as unsigned_long) {
-        let m: i32;
+            if time_is_before_jiffies((*rs).begin.wrapping_add(interval as c_ulong)) {
+                /*
+                 * Reset rs_n_left ASAP to reduce false positives
+                 * in parallel calls, see above.
+                 */
+                atomic_set(addr_of_mut!((*rs).rs_n_left), (*rs).burst);
+                (*rs).begin = read_volatile(addr_of!(jiffies));
 
-        /*
-         * Reset rs_n_left ASAP to reduce false positives
-         * in parallel calls, see above.
-         */
-        (*rs).rs_n_left.store((*rs).burst, core::sync::atomic::Ordering::Relaxed);
-        (*rs).begin = jiffies;
+                if (*rs).flags & RATELIMIT_MSG_ON_RELEASE == 0 {
+                    let m: c_int = ratelimit_state_reset_miss(rs);
+                    if m != 0 {
+                        printk_deferred(c"\x014%s: %d callbacks suppressed\n".as_ptr(), func, m);
+                    }
+                }
+            }
 
-        if (*rs).flags & RATELIMIT_MSG_ON_RELEASE == 0 {
-            m = ratelimit_state_reset_miss(rs);
-            if m != 0 {
-                printk_deferred(KERN_WARNING, b"%s: %d callbacks suppressed\0".as_ptr(), func, m);
+            /* Note that the burst might be taken by a parallel call. */
+            if atomic_read(addr_of!((*rs).rs_n_left)) > 0
+                && atomic_dec_return(addr_of_mut!((*rs).rs_n_left)) >= 0
+            {
+                ret = 1;
             }
         }
+        // unlock_ret:
+        raw_spin_unlock_irqrestore(addr_of_mut!((*rs).lock), flags);
     }
-
-    /* Note that the burst might be taken by a parallel call. */
-    if (*rs).rs_n_left.load(core::sync::atomic::Ordering::Relaxed) > 0
-        && (*rs).rs_n_left.fetch_sub(1, core::sync::atomic::Ordering::Relaxed) - 1 >= 0
-    {
-        ret = 1;
-    }
-
-unlock_ret:
-    raw_spin_unlock_irqrestore(&mut (*rs).lock, flags);
-
-nolock_ret:
+    // nolock_ret:
     if ret == 0 {
         ratelimit_state_inc_miss(rs);
     }
 
     ret
 }
-
 // EXPORT_SYMBOL(___ratelimit);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

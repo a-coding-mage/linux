@@ -138,7 +138,7 @@ unsafe fn netfs_retry_write_stream(
             (*subreq).start = start;
             (*subreq).stream_nr = (*to).stream_nr;
             (*subreq).retry_count = 1;
-            trace_netfs_sreq_ref((*wreq).debug_id, (*subreq).debug_index, refcount_read(&(*subreq).ref), netfs_sreq_trace_new);
+            trace_netfs_sreq_ref((*wreq).debug_id, (*subreq).debug_index, refcount_read(&(*subreq).r#ref), netfs_sreq_trace_new);
             trace_netfs_sreq(subreq, netfs_sreq_trace_split);
             spin_lock(&mut (*wreq).lock);
             list_add(&mut (*subreq).rreq_link, &mut (*to).rreq_link);

@@ -18,7 +18,7 @@
  * Defined here in the reference implementation:
  * https://github.com/microsoft/ms-tpm-20-ref/blob/master/Samples/ARM32-FirmwareTPM/optee_ta/fTPM/include/fTPM.h#L42
  */
-static const ftpm_ta_uuid: uuid_t = UUID_INIT!(0xBC50D971, 0xD4C9, 0x42C4,
+static ftpm_ta_uuid: uuid_t = UUID_INIT!(0xBC50D971, 0xD4C9, 0x42C4,
     0x82, 0xCB, 0x34, 0x3F, 0xB7, 0xF3, 0x78, 0x96);
 
 /**
@@ -118,6 +118,10 @@ unsafe fn ftpm_tee_probe_generic(dev: *mut device) -> i32 {
     let mut rc: i32;
     let mut chip: *mut tpm_chip;
     let pvt_data = devm_kzalloc(dev, core::mem::size_of::<ftpm_tee_private>(), GFP_KERNEL);
+    'out_tee_session: {
+    'out_shm_alloc: {
+    'out_chip_alloc: {
+    'out_chip: {
     if pvt_data.is_null() { return -ENOMEM; }
     dev_set_drvdata(dev, pvt_data);
     (*pvt_data).ctx = tee_client_open_context(core::ptr::null_mut(), Some(ftpm_tee_match), core::ptr::null(), core::ptr::null());
@@ -129,24 +133,28 @@ unsafe fn ftpm_tee_probe_generic(dev: *mut device) -> i32 {
     export_uuid(sess_arg.uuid.as_mut_ptr(), &ftpm_ta_uuid);
     sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
     rc = tee_client_open_session((*pvt_data).ctx, &mut sess_arg, core::ptr::null_mut());
-    if rc < 0 || sess_arg.ret != 0 { rc = -EINVAL; goto!(out_tee_session); }
+    if rc < 0 || sess_arg.ret != 0 { rc = -EINVAL; break 'out_tee_session; }
     (*pvt_data).session = sess_arg.session;
     (*pvt_data).shm = tee_shm_alloc_kernel_buf((*pvt_data).ctx, MAX_COMMAND_SIZE + MAX_RESPONSE_SIZE);
-    if IS_ERR((*pvt_data).shm) { rc = -ENOMEM; goto!(out_shm_alloc); }
+    if IS_ERR((*pvt_data).shm) { rc = -ENOMEM; break 'out_shm_alloc; }
     chip = tpm_chip_alloc(dev, &ftpm_tee_tpm_ops);
-    if IS_ERR(chip) { rc = PTR_ERR(chip); goto!(out_chip_alloc); }
+    if IS_ERR(chip) { rc = PTR_ERR(chip); break 'out_chip_alloc; }
     (*pvt_data).chip = chip;
     (*chip).flags |= TPM_CHIP_FLAG_TPM2 | TPM_CHIP_FLAG_SYNC;
     rc = tpm_chip_register(chip);
-    if rc != 0 { goto!(out_chip); }
+    if rc != 0 { break 'out_chip; }
     return 0;
-out_chip:
+    }
+    
     put_device(&mut (*(*pvt_data).chip).dev);
-out_chip_alloc:
+    }
+    
     tee_shm_free((*pvt_data).shm);
-out_shm_alloc:
+    }
+    
     tee_client_close_session((*pvt_data).ctx, (*pvt_data).session);
-out_tee_session:
+    }
+    
     tee_client_close_context((*pvt_data).ctx);
     rc
 }

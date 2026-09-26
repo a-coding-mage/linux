@@ -14,11 +14,11 @@ static mut zx_pmon_event_map: [u64; PERF_COUNT_HW_MAX as usize] = {
 };
 
 static mut zxc_event_constraints: [struct_event_constraint; 2] = [
-    FIXED_EVENT_CONSTRAINT!(0x0082, 1), EVENT_CONSTRAINT_END!,
+    FIXED_EVENT_CONSTRAINT!(0x0082, 1), EVENT_CONSTRAINT_END!(),
 ];
 static mut zxd_event_constraints: [struct_event_constraint; 4] = [
     FIXED_EVENT_CONSTRAINT!(0x00c0, 0), FIXED_EVENT_CONSTRAINT!(0x0082, 1),
-    FIXED_EVENT_CONSTRAINT!(0x0083, 2), EVENT_CONSTRAINT_END!,
+    FIXED_EVENT_CONSTRAINT!(0x0083, 2), EVENT_CONSTRAINT_END!(),
 ];
 
 // C designated initializers below are represented as nested Rust arrays. -1 is the
@@ -77,12 +77,12 @@ unsafe fn zhaoxin_pmu_handle_irq(regs: *mut pt_regs) -> i32 {
         if x86_pmu.enabled_ack != 0 { zxc_pmu_ack_status(status); } else { zhaoxin_pmu_ack_status(status); }
         inc_perf_irq_stat();
         if __test_and_clear_bit(63, &mut status as *mut u64 as *mut unsigned_long) != 0 && status == 0 { break; }
-        for_each_set_bit!(bit, &status as *const u64 as *const unsigned_long, X86_PMC_IDX_MAX) {
+        for_each_set_bit!(bit, &status as *const u64 as *const unsigned_long, X86_PMC_IDX_MAX, {
             let event = (*cpuc).events[bit]; handled += 1;
             if !test_bit(bit, (*cpuc).active_mask) { continue; }
             x86_perf_event_update(event); perf_sample_data_init(&mut data, 0, (*event).hw.last_period);
             if !x86_perf_event_set_period(event) { continue; } perf_event_overflow(event, &mut data, regs);
-        }
+        });
         status = zhaoxin_pmu_get_status(); if status == 0 { break; }
     }
     zhaoxin_pmu_enable_all(0); handled
@@ -90,7 +90,7 @@ unsafe fn zhaoxin_pmu_handle_irq(regs: *mut pt_regs) -> i32 {
 
 unsafe fn zhaoxin_pmu_event_map(hw_event: i32) -> u64 { zx_pmon_event_map[hw_event as usize] }
 unsafe fn zhaoxin_get_event_constraints(_cpuc: *mut cpu_hw_events, _idx: i32, event: *mut perf_event) -> *mut event_constraint {
-    if !x86_pmu.event_constraints.is_null() { for_each_event_constraint!(c, x86_pmu.event_constraints) { if ((*event).hw.config & (*c).cmask) == (*c).code { return c; } } }
+    if !x86_pmu.event_constraints.is_null() { for_each_event_constraint!(c, x86_pmu.event_constraints, { if ((*event).hw.config & (*c).cmask) == (*c).code { return c; } }); }
     &mut unconstrained
 }
 
@@ -112,7 +112,7 @@ static mut zhaoxin_pmu: x86_pmu = x86_pmu {
 };
 
 static zx_arch_events_map: [(i32, &str); 7] = [(PERF_COUNT_HW_CPU_CYCLES,"cpu cycles"),(PERF_COUNT_HW_INSTRUCTIONS,"instructions"),(PERF_COUNT_HW_BUS_CYCLES,"bus cycles"),(PERF_COUNT_HW_CACHE_REFERENCES,"cache references"),(PERF_COUNT_HW_CACHE_MISSES,"cache misses"),(PERF_COUNT_HW_BRANCH_INSTRUCTIONS,"branch instructions"),(PERF_COUNT_HW_BRANCH_MISSES,"branch misses")];
-unsafe fn zhaoxin_arch_events_quirk() { for_each_set_bit!(bit, x86_pmu.events_mask, ARRAY_SIZE!(zx_arch_events_map)) { zx_pmon_event_map[zx_arch_events_map[bit].0 as usize] = 0; pr_warn!("CPUID marked event: '{}' unavailable\n", zx_arch_events_map[bit].1); } }
+unsafe fn zhaoxin_arch_events_quirk() { for_each_set_bit!(bit, x86_pmu.events_mask, ARRAY_SIZE!(zx_arch_events_map), { zx_pmon_event_map[zx_arch_events_map[bit].0 as usize] = 0; pr_warn!("CPUID marked event: '{}' unavailable\n", zx_arch_events_map[bit].1); }); }
 
 unsafe fn zhaoxin_pmu_init() -> i32 {
     let mut edx = union_cpuid10_edx::default(); let mut eax = union_cpuid10_eax::default(); let mut ebx = union_cpuid10_ebx::default(); let mut unused = 0; let mut c; let mut version;
@@ -121,7 +121,7 @@ unsafe fn zhaoxin_pmu_init() -> i32 {
     x86_pmu = zhaoxin_pmu; pr_info!("Version check pass!\n"); x86_pmu.version = version; x86_pmu.cntr_mask64 = GENMASK_ULL!(eax.split.num_counters - 1, 0); x86_pmu.cntval_bits = eax.split.bit_width; x86_pmu.cntval_mask = (1u64 << eax.split.bit_width) - 1; x86_pmu.events_maskl = ebx.full; x86_pmu.events_mask_len = eax.split.mask_length; x86_pmu.fixed_cntr_mask64 = GENMASK_ULL!(edx.split.num_counters_fixed - 1, 0); x86_add_quirk(zhaoxin_arch_events_quirk);
     match boot_cpu_data.x86 { 0x06 => { if (boot_cpu_data.x86_model == 0x0f && boot_cpu_data.x86_stepping >= 0x0e) || boot_cpu_data.x86_model == 0x19 { x86_pmu.max_period = x86_pmu.cntval_mask >> 1; x86_pmu.enabled_ack = 1; x86_pmu.event_constraints = zxc_event_constraints.as_mut_ptr(); zx_pmon_event_map[PERF_COUNT_HW_INSTRUCTIONS as usize]=0; zx_pmon_event_map[PERF_COUNT_HW_CACHE_REFERENCES as usize]=0; zx_pmon_event_map[PERF_COUNT_HW_CACHE_MISSES as usize]=0; zx_pmon_event_map[PERF_COUNT_HW_BUS_CYCLES as usize]=0; pr_cont!("ZXC events, "); } else { return -ENODEV; } },
         0x07 => { zx_pmon_event_map[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND as usize] = X86_CONFIG!(event=0x01,umask=0x01,inv=0x01,cmask=0x01); zx_pmon_event_map[PERF_COUNT_HW_STALLED_CYCLES_BACKEND as usize] = X86_CONFIG!(event=0x0f,umask=0x04,inv=0,cmask=0); match boot_cpu_data.x86_model { 0x1b => { hw_cache_event_ids.copy_from_slice(&zxd_hw_cache_event_ids); x86_pmu.event_constraints=zxd_event_constraints.as_mut_ptr(); zx_pmon_event_map[PERF_COUNT_HW_BRANCH_INSTRUCTIONS as usize]=0x0700; zx_pmon_event_map[PERF_COUNT_HW_BRANCH_MISSES as usize]=0x0709; pr_cont!("ZXD events, "); }, 0x3b => { hw_cache_event_ids.copy_from_slice(&zxe_hw_cache_event_ids); x86_pmu.event_constraints=zxd_event_constraints.as_mut_ptr(); zx_pmon_event_map[PERF_COUNT_HW_BRANCH_INSTRUCTIONS as usize]=0x0028; zx_pmon_event_map[PERF_COUNT_HW_BRANCH_MISSES as usize]=0x0029; pr_cont!("ZXE events, "); }, _ => return -ENODEV } }, _ => return -ENODEV }
-    x86_pmu.intel_ctrl = x86_pmu.cntr_mask64 | (x86_pmu.fixed_cntr_mask64 << INTEL_PMC_IDX_FIXED); if !x86_pmu.event_constraints.is_null() { for_each_event_constraint!(c, x86_pmu.event_constraints) { (*c).idxmsk64 |= x86_pmu.cntr_mask64; (*c).weight += x86_pmu_num_counters(core::ptr::null_mut()); } } 0
+    x86_pmu.intel_ctrl = x86_pmu.cntr_mask64 | (x86_pmu.fixed_cntr_mask64 << INTEL_PMC_IDX_FIXED); if !x86_pmu.event_constraints.is_null() { for_each_event_constraint!(c, x86_pmu.event_constraints, { (*c).idxmsk64 |= x86_pmu.cntr_mask64; (*c).weight += x86_pmu_num_counters(core::ptr::null_mut()); }); } 0
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -5,7 +5,7 @@
 // conditions; the corresponding macro forms are retained below as Rust
 // declarative macros and assembly-text fragments.
 
-#[cfg(feature = "CONFIG_RISCV_ALTERNATIVE")]
+#[cfg(CONFIG_RISCV_ALTERNATIVE)]
 #[cfg(feature = "__ASSEMBLER__")]
 macro_rules! ALT_ENTRY {
     ($oldptr:tt, $newptr:tt, $vendor_id:tt, $patch_id:tt, $new_len:tt) => {
@@ -19,7 +19,7 @@ macro_rules! ALT_ENTRY {
     };
 }
 
-#[cfg(feature = "CONFIG_RISCV_ALTERNATIVE")]
+#[cfg(CONFIG_RISCV_ALTERNATIVE)]
 #[cfg(feature = "__ASSEMBLER__")]
 macro_rules! ALT_NEW_CONTENT {
     ($vendor_id:tt, $patch_id:tt, $enable:tt, $new_c:expr) => {
@@ -37,7 +37,7 @@ macro_rules! ALT_NEW_CONTENT {
     };
 }
 
-#[cfg(feature = "CONFIG_RISCV_ALTERNATIVE")]
+#[cfg(CONFIG_RISCV_ALTERNATIVE)]
 #[cfg(feature = "__ASSEMBLER__")]
 macro_rules! ALTERNATIVE_CFG {
     ($old_c:expr, $new_c:expr, $vendor_id:tt, $patch_id:tt, $enable:tt) => {
@@ -49,7 +49,7 @@ macro_rules! ALTERNATIVE_CFG {
     };
 }
 
-#[cfg(feature = "CONFIG_RISCV_ALTERNATIVE")]
+#[cfg(CONFIG_RISCV_ALTERNATIVE)]
 #[cfg(not(feature = "__ASSEMBLER__"))]
 macro_rules! ALT_ENTRY {
     ($oldptr:expr, $newptr:expr, $vendor_id:expr, $patch_id:expr, $newlen:expr) => {
@@ -59,7 +59,7 @@ macro_rules! ALT_ENTRY {
     };
 }
 
-#[cfg(feature = "CONFIG_RISCV_ALTERNATIVE")]
+#[cfg(CONFIG_RISCV_ALTERNATIVE)]
 #[cfg(not(feature = "__ASSEMBLER__"))]
 macro_rules! ALT_NEW_CONTENT {
     ($vendor_id:expr, $patch_id:expr, $enable:expr, $new_c:expr) => {
@@ -72,11 +72,11 @@ macro_rules! ALT_NEW_CONTENT {
     };
 }
 
-#[cfg(not(feature = "CONFIG_RISCV_ALTERNATIVE"))]
+#[cfg(not(CONFIG_RISCV_ALTERNATIVE))]
 macro_rules! __ALTERNATIVE_CFG {
     ($old_c:expr, $($rest:tt)*) => { concat!($old_c, "\n") };
 }
-#[cfg(not(feature = "CONFIG_RISCV_ALTERNATIVE"))]
+#[cfg(not(CONFIG_RISCV_ALTERNATIVE))]
 macro_rules! __ALTERNATIVE_CFG_2 {
     ($old_c:expr, $($rest:tt)*) => { concat!($old_c, "\n") };
 }

@@ -68,7 +68,7 @@ pub unsafe fn is_xattr_ref_dead(ref_: *mut jffs2_xattr_ref) -> i32 {
 
 // CONFIG_JFFS2_FS_XATTR declarations are enabled when the corresponding
 // build-time kernel configuration is selected.
-#[cfg(feature = "CONFIG_JFFS2_FS_XATTR")]
+#[cfg(CONFIG_JFFS2_FS_XATTR)]
 extern "C" {
     pub fn jffs2_init_xattr_subsystem(c: *mut jffs2_sb_info);
     pub fn jffs2_build_xattr_subsystem(c: *mut jffs2_sb_info) -> i32;
@@ -90,18 +90,18 @@ extern "C" {
     pub fn jffs2_listxattr(dentry: *mut dentry, buffer: *mut core::ffi::c_char, size: usize) -> isize;
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_FS_XATTR"))]
+#[cfg(not(CONFIG_JFFS2_FS_XATTR))]
 pub const jffs2_xattr_handlers: *const *const xattr_handler = core::ptr::null();
-#[cfg(not(feature = "CONFIG_JFFS2_FS_XATTR"))]
+#[cfg(not(CONFIG_JFFS2_FS_XATTR))]
 pub const jffs2_listxattr: Option<unsafe extern "C" fn(*mut dentry, *mut core::ffi::c_char, usize) -> isize> = None;
 
-#[cfg(feature = "CONFIG_JFFS2_FS_SECURITY")]
+#[cfg(CONFIG_JFFS2_FS_SECURITY)]
 extern "C" {
     pub fn jffs2_init_security(inode: *mut inode, dir: *mut inode, qstr: *const qstr) -> i32;
     pub static jffs2_security_xattr_handler: xattr_handler;
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_FS_SECURITY"))]
+#[cfg(not(CONFIG_JFFS2_FS_SECURITY))]
 #[inline]
 pub unsafe fn jffs2_init_security(_inode: *mut inode, _dir: *mut inode, _qstr: *const qstr) -> i32 { 0 }
 

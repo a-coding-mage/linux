@@ -14,16 +14,16 @@ pub const PM_SUSPEND_MEM: suspend_state_t = suspend_state_t(3);
 pub const PM_SUSPEND_MIN: suspend_state_t = PM_SUSPEND_TO_IDLE;
 pub const PM_SUSPEND_MAX: suspend_state_t = suspend_state_t(4);
 
-#[cfg(feature = "CONFIG_VT")]
+#[cfg(CONFIG_VT)]
 extern "C" { pub fn pm_set_vt_switch(do_switch: ::core::ffi::c_int); }
-#[cfg(not(feature = "CONFIG_VT"))]
+#[cfg(not(CONFIG_VT))]
 #[inline] pub unsafe fn pm_set_vt_switch(_do_switch: ::core::ffi::c_int) {}
 
-#[cfg(feature = "CONFIG_VT_CONSOLE_SLEEP")]
+#[cfg(CONFIG_VT_CONSOLE_SLEEP)]
 extern "C" { pub fn pm_prepare_console(); pub fn pm_restore_console(); }
-#[cfg(not(feature = "CONFIG_VT_CONSOLE_SLEEP"))]
+#[cfg(not(CONFIG_VT_CONSOLE_SLEEP))]
 #[inline] pub unsafe fn pm_prepare_console() {}
-#[cfg(not(feature = "CONFIG_VT_CONSOLE_SLEEP"))]
+#[cfg(not(CONFIG_VT_CONSOLE_SLEEP))]
 #[inline] pub unsafe fn pm_restore_console() {}
 
 #[repr(C)]
@@ -48,7 +48,7 @@ pub struct platform_s2idle_ops {
     pub end: Option<unsafe extern "C" fn()>,
 }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 extern "C" {
     pub static mut pm_suspend_target_state: suspend_state_t;
     pub static mut mem_sleep_current: suspend_state_t;
@@ -64,19 +64,19 @@ pub const PM_SUSPEND_FLAG_FW_SUSPEND: u32 = 1 << 0;
 pub const PM_SUSPEND_FLAG_FW_RESUME: u32 = 1 << 1;
 pub const PM_SUSPEND_FLAG_NO_PLATFORM: u32 = 1 << 2;
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_suspend_clear_flags() { pm_suspend_global_flags = 0; }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_set_suspend_via_firmware() { pm_suspend_global_flags |= PM_SUSPEND_FLAG_FW_SUSPEND; }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_set_resume_via_firmware() { pm_suspend_global_flags |= PM_SUSPEND_FLAG_FW_RESUME; }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_set_suspend_no_platform() { pm_suspend_global_flags |= PM_SUSPEND_FLAG_NO_PLATFORM; }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_suspend_via_firmware() -> bool { pm_suspend_global_flags & PM_SUSPEND_FLAG_FW_SUSPEND != 0 }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_resume_via_firmware() -> bool { pm_suspend_global_flags & PM_SUSPEND_FLAG_FW_RESUME != 0 }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 #[inline] pub unsafe fn pm_suspend_no_platform() -> bool { pm_suspend_global_flags & PM_SUSPEND_FLAG_NO_PLATFORM != 0 }
 
 #[repr(C)]
@@ -96,7 +96,7 @@ pub struct platform_hibernation_ops {
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum s2idle_states { S2IDLE_STATE_NONE, S2IDLE_STATE_ENTER, S2IDLE_STATE_WAKE }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 extern "C" {
     pub static mut s2idle_state: s2idle_states;
     pub fn pm_suspend_default_s2idle() -> bool;
@@ -105,21 +105,21 @@ extern "C" {
 }
 #[inline] pub unsafe fn idle_should_enter_s2idle() -> bool { s2idle_state == s2idle_states::S2IDLE_STATE_ENTER }
 
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_suspend_target_state() -> suspend_state_t { PM_SUSPEND_ON }
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_suspend_clear_flags() {}
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_set_suspend_via_firmware() {}
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_set_resume_via_firmware() {}
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_suspend_via_firmware() -> bool { false }
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_resume_via_firmware() -> bool { false }
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn pm_suspend_no_platform() -> bool { false }
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline] pub unsafe fn idle_should_enter_s2idle() -> bool { false }
 
 #[inline] pub unsafe fn pm_suspend_in_progress() -> bool { pm_suspend_target_state() != PM_SUSPEND_ON }
@@ -160,23 +160,23 @@ extern "C" {
 
 #[inline] pub unsafe fn pm_suspended_storage() -> bool { !gfp_has_io_fs(gfp_allowed_mask) }
 
-#[cfg(feature = "CONFIG_PM_SLEEP_DEBUG")]
+#[cfg(CONFIG_PM_SLEEP_DEBUG)]
 extern "C" {
     pub static mut pm_print_times_enabled: bool;
     pub static mut pm_debug_messages_on: bool;
     pub fn pm_debug_messages_should_print() -> bool;
 }
 
-#[cfg(feature = "CONFIG_PM_AUTOSLEEP")]
+#[cfg(CONFIG_PM_AUTOSLEEP)]
 extern "C" { pub fn queue_up_suspend_work(); }
-#[cfg(not(feature = "CONFIG_PM_AUTOSLEEP"))]
+#[cfg(not(CONFIG_PM_AUTOSLEEP))]
 #[inline] pub unsafe fn queue_up_suspend_work() {}
 
-#[cfg(not(feature = "CONFIG_HIBERNATION"))]
+#[cfg(not(CONFIG_HIBERNATION))]
 #[inline] pub unsafe fn hibernate() -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_HIBERNATION"))]
+#[cfg(not(CONFIG_HIBERNATION))]
 #[inline] pub unsafe fn system_entering_hibernation() -> bool { false }
-#[cfg(not(feature = "CONFIG_HIBERNATION"))]
+#[cfg(not(CONFIG_HIBERNATION))]
 #[inline] pub unsafe fn hibernation_available() -> bool { false }
 
 pub const PM_HIBERNATION_PREPARE: u32 = 0x0001;

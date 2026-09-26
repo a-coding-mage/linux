@@ -56,12 +56,12 @@ unsafe fn autofs_show_options(m: *mut seq_file, root: *mut dentry) -> c_int {
     seq_printf(m, ",timeout=%lu", (*sbi).exp_timeout / HZ);
     seq_printf(m, ",minproto=%d", (*sbi).min_proto);
     seq_printf(m, ",maxproto=%d", (*sbi).max_proto);
-    if autofs_type_offset((*sbi).type) { seq_puts(m, ",offset"); }
-    else if autofs_type_direct((*sbi).type) { seq_puts(m, ",direct"); }
+    if autofs_type_offset((*sbi).r#type) { seq_puts(m, ",offset"); }
+    else if autofs_type_direct((*sbi).r#type) { seq_puts(m, ",direct"); }
     else { seq_puts(m, ",indirect"); }
     if (*sbi).flags & AUTOFS_SBI_STRICTEXPIRE { seq_puts(m, ",strictexpire"); }
     if (*sbi).flags & AUTOFS_SBI_IGNORE { seq_puts(m, ",ignore"); }
-    #[cfg(feature = "CONFIG_CHECKPOINT_RESTORE")]
+    #[cfg(CONFIG_CHECKPOINT_RESTORE)]
     {
         if !(*sbi).pipe.is_null() { seq_printf(m, ",pipe_ino=%llu", (*file_inode((*sbi).pipe)).i_ino); }
         else { seq_puts(m, ",pipe_ino=-1"); }

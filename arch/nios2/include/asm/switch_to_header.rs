@@ -27,8 +27,8 @@ macro_rules! switch_to {
     ($prev:expr, $next:expr, $last:expr) => {{
         let _last: *mut core::ffi::c_void = unsafe {
             // C source:
-            //   mov r4, prev
-            //   mov r5, next
+            //   mov r4, $prev
+            //   mov r5, $next
             //   call resume
             //   mov _last, r4
             // The register-level implementation is provided by the external

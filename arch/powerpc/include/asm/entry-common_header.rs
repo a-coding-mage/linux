@@ -41,7 +41,7 @@ unsafe fn nap_adjust_return(regs: *mut pt_regs) {
 
 unsafe fn booke_load_dbcr0() {
     #[cfg(CONFIG_PPC_ADV_DEBUG_REGS)]
-    { let dbcr0 = current->thread.debug.dbcr0;
+    { let dbcr0 = (*current).thread.debug.dbcr0;
       if likely(!(dbcr0 & DBCR0_IDM)) { return; }
       mtmsr(mfmsr() & !MSR_DE);
       if IS_ENABLED(CONFIG_PPC32) { isync(); global_dbcr0[smp_processor_id()] = mfspr(SPRN_DBCR0); }
@@ -49,7 +49,7 @@ unsafe fn booke_load_dbcr0() {
 }
 unsafe fn booke_restore_dbcr0() {
     #[cfg(CONFIG_PPC_ADV_DEBUG_REGS)]
-    { let dbcr0 = current->thread.debug.dbcr0;
+    { let dbcr0 = (*current).thread.debug.dbcr0;
       if IS_ENABLED(CONFIG_PPC32) && unlikely(dbcr0 & DBCR0_IDM) { mtspr(SPRN_DBSR, -1); mtspr(SPRN_DBCR0, global_dbcr0[smp_processor_id()]); } }
 }
 

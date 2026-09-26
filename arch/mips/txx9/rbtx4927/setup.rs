@@ -3,7 +3,7 @@
 // Kernel headers and symbols referenced below are supplied by the surrounding
 // platform bindings.
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn tx4927_pci_setup() {
     let extarb = !((__raw_readq(&(*tx4927_ccfgptr).ccfg) & TX4927_CCFG_PCIARB) != 0);
     let c = &mut txx9_primary_pcic;
@@ -31,7 +31,7 @@ unsafe fn tx4927_pci_setup() {
     tx4927_setup_pcierr_irq();
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn tx4937_pci_setup() {
     let extarb = !((__raw_readq(&(*tx4938_ccfgptr).ccfg) & TX4938_CCFG_PCIARB) != 0);
     let c = &mut txx9_primary_pcic;
@@ -48,8 +48,8 @@ unsafe fn tx4937_pci_setup() {
     }
     tx4938_setup_pcierr_irq();
 }
-#[cfg(not(feature = "CONFIG_PCI"))] unsafe fn tx4927_pci_setup() {}
-#[cfg(not(feature = "CONFIG_PCI"))] unsafe fn tx4937_pci_setup() {}
+#[cfg(not(CONFIG_PCI))] unsafe fn tx4927_pci_setup() {}
+#[cfg(not(CONFIG_PCI))] unsafe fn tx4937_pci_setup() {}
 
 // GPIO_LOOKUP_SINGLE(sio_gpio_table, NULL, "TXx9", 15, "sio-dtr", GPIO_ACTIVE_HIGH)
 static mut sio_gpio_table: gpiod_lookup_table = unsafe { core::mem::zeroed() };
@@ -72,9 +72,9 @@ unsafe fn toshiba_rbtx4927_restart(_command: *mut i8) {
 unsafe fn rbtx4927_mem_setup() {
     if TX4927_REV_PCODE() == 0x4927 { rbtx4927_clock_init(); tx4927_setup(); } else { rbtx4937_clock_init(); tx4938_setup(); }
     _machine_restart = toshiba_rbtx4927_restart;
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     { txx9_alloc_pci_controller(&mut txx9_primary_pcic, RBTX4927_PCIMEM, RBTX4927_PCIMEM_SIZE, RBTX4927_PCIIO, RBTX4927_PCIIO_SIZE); txx9_board_pcibios_setup = tx4927_pcibios_setup; }
-    #[cfg(not(feature = "CONFIG_PCI"))]
+    #[cfg(not(CONFIG_PCI))]
     { set_io_port_base(KSEG1 + RBTX4927_ISA_IO_OFFSET); }
 }
 unsafe fn rbtx4927_clock_init() { match (__raw_readq(&(*tx4927_ccfgptr).ccfg) as u64) & TX4927_CCFG_PCIDIVMODE_MASK { TX4927_CCFG_PCIDIVMODE_2_5 | TX4927_CCFG_PCIDIVMODE_5 => txx9_cpu_clock = 166666666, _ => txx9_cpu_clock = 200000000 } }

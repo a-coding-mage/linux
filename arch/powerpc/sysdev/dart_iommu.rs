@@ -131,13 +131,13 @@ unsafe fn pci_dma_dev_setup_dart(_dev: *mut pci_dev) {}
 unsafe fn iommu_bypass_supported_dart(_dev: *mut pci_dev, mask: u64) -> bool { dart_is_u4 != 0 && mask >= (1u64 << 40) }
 unsafe fn iommu_init_early_dart(_controller_ops: *mut pci_controller_ops) {}
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn iommu_dart_restore() {
     dart_cache_sync(dart_tablebase, (dart_tablesize / core::mem::size_of::<u32>()) as u32);
     dart_tlb_invalidate_all();
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn iommu_init_late_dart() -> i32 {
     if dart_tablebase.is_null() { return 0; }
     0

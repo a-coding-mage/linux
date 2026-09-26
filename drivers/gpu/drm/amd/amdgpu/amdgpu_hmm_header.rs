@@ -58,7 +58,7 @@ extern "C" {
 }
 
 // CONFIG_HMM_MIRROR controls whether these external implementations exist.
-#[cfg(feature = "CONFIG_HMM_MIRROR")]
+#[cfg(CONFIG_HMM_MIRROR)]
 extern "C" {
     pub fn amdgpu_hmm_range_valid(range: *mut amdgpu_hmm_range) -> bool;
     pub fn amdgpu_hmm_range_alloc(bo: *mut amdgpu_bo) -> *mut amdgpu_hmm_range;
@@ -67,27 +67,27 @@ extern "C" {
     pub fn amdgpu_hmm_unregister(bo: *mut amdgpu_bo);
 }
 
-#[cfg(not(feature = "CONFIG_HMM_MIRROR"))]
+#[cfg(not(CONFIG_HMM_MIRROR))]
 pub unsafe fn amdgpu_hmm_register(_bo: *mut amdgpu_bo, _addr: usize) -> i32 {
     // DRM_WARN_ONCE("HMM_MIRROR kernel config option is not enabled, "
     //               "add CONFIG_ZONE_DEVICE=y in config file to fix this\\n");
     -19 // -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_HMM_MIRROR"))]
+#[cfg(not(CONFIG_HMM_MIRROR))]
 pub unsafe fn amdgpu_hmm_unregister(_bo: *mut amdgpu_bo) {}
 
-#[cfg(not(feature = "CONFIG_HMM_MIRROR"))]
+#[cfg(not(CONFIG_HMM_MIRROR))]
 pub unsafe fn amdgpu_hmm_range_valid(_range: *mut amdgpu_hmm_range) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_HMM_MIRROR"))]
+#[cfg(not(CONFIG_HMM_MIRROR))]
 pub unsafe fn amdgpu_hmm_range_alloc(_bo: *mut amdgpu_bo) -> *mut amdgpu_hmm_range {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_HMM_MIRROR"))]
+#[cfg(not(CONFIG_HMM_MIRROR))]
 pub unsafe fn amdgpu_hmm_range_free(_range: *mut amdgpu_hmm_range) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

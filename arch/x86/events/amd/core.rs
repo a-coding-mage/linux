@@ -77,9 +77,9 @@ unsafe fn amd_pmu_test_overflow_topbit(idx: i32) -> bool { let mut counter = 0; 
 unsafe fn amd_pmu_test_overflow_status(idx: i32) -> bool { amd_pmu_get_global_status() & BIT_ULL(idx) != 0 }
 
 unsafe fn amd_pmu_wait_on_overflow(idx: i32) { for _ in 0..OVERFLOW_WAIT_COUNT { if !static_call(amd_pmu_test_overflow)(idx) { break; } udelay(1); } }
-unsafe fn amd_pmu_check_overflow() { let cpuc = this_cpu_ptr(&cpu_hw_events); if in_nmi() { return; } for_each_set_bit(idx, x86_pmu.cntr_mask, X86_PMC_IDX_MAX) { if test_bit(idx, (*cpuc).active_mask) { amd_pmu_wait_on_overflow(idx); } } }
+unsafe fn amd_pmu_check_overflow() { let cpuc = this_cpu_ptr(&cpu_hw_events); if in_nmi() { return; } for_each_set_bit!(idx, x86_pmu.cntr_mask, X86_PMC_IDX_MAX, { if test_bit(idx, (*cpuc).active_mask) { amd_pmu_wait_on_overflow(idx); } }); }
 unsafe fn amd_pmu_enable_event(event: *mut perf_event) { x86_pmu_enable_event(event); }
-unsafe fn amd_pmu_enable_all(_added: i32) { amd_brs_enable_all(); let cpuc = this_cpu_ptr(&cpu_hw_events); for_each_set_bit(idx, x86_pmu.cntr_mask, X86_PMC_IDX_MAX) { if test_bit(idx, (*cpuc).active_mask) && !(*cpuc).events[idx].is_null() { amd_pmu_enable_event((*cpuc).events[idx]); } } }
+unsafe fn amd_pmu_enable_all(_added: i32) { amd_brs_enable_all(); let cpuc = this_cpu_ptr(&cpu_hw_events); for_each_set_bit!(idx, x86_pmu.cntr_mask, X86_PMC_IDX_MAX, { if test_bit(idx, (*cpuc).active_mask) && !(*cpuc).events[idx].is_null() { amd_pmu_enable_event((*cpuc).events[idx]); } }); }
 unsafe fn amd_pmu_disable_event(event: *mut perf_event) { x86_pmu_disable_event(event); if !in_nmi() { amd_pmu_wait_on_overflow((*event).hw.idx); } }
 unsafe fn amd_pmu_disable_all() { amd_brs_disable_all(); x86_pmu_disable_all(); amd_pmu_check_overflow(); }
 

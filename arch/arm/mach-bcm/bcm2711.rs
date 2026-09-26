@@ -6,12 +6,12 @@
 // Dependency intent from <linux/of_address.h>, <asm/mach/arch.h>, and
 // "platsmp.h" is supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_ARCH_MULTI_V7")]
+#[cfg(CONFIG_ARCH_MULTI_V7)]
 static BCM2711_COMPAT_ENTRY: &[u8] = b"brcm,bcm2711\0";
 
 // The C source terminates the compatibility list with a NULL pointer.
 static BCM2711_COMPAT: &[*const core::ffi::c_char] = &[
-    #[cfg(feature = "CONFIG_ARCH_MULTI_V7")]
+    #[cfg(CONFIG_ARCH_MULTI_V7)]
     BCM2711_COMPAT_ENTRY.as_ptr() as *const core::ffi::c_char,
     core::ptr::null(),
 ];
@@ -28,14 +28,14 @@ extern "C" {
 
 #[repr(C)]
 pub struct Bcm2711Machine {
-    #[cfg(feature = "CONFIG_ZONE_DMA")]
+    #[cfg(CONFIG_ZONE_DMA)]
     pub dma_zone_size: usize,
     pub dt_compat: *const *const core::ffi::c_char,
     pub smp: *const SmpOperations,
 }
 
 pub static BCM2711_MACHINE: Bcm2711Machine = Bcm2711Machine {
-    #[cfg(feature = "CONFIG_ZONE_DMA")]
+    #[cfg(CONFIG_ZONE_DMA)]
     dma_zone_size: 1usize << 30, // SZ_1G
     dt_compat: BCM2711_COMPAT.as_ptr(),
     smp: &bcm2836_smp_ops,

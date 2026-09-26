@@ -19,31 +19,31 @@ pub struct btrfs_trans_handle {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_BTRFS_FS_POSIX_ACL")]
+#[cfg(CONFIG_BTRFS_FS_POSIX_ACL)]
 #[repr(C)]
 pub struct mnt_idmap {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_BTRFS_FS_POSIX_ACL")]
+#[cfg(CONFIG_BTRFS_FS_POSIX_ACL)]
 #[repr(C)]
 pub struct dentry {
     _private: [u8; 0],
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_BTRFS_FS_POSIX_ACL))]
 #[repr(C)]
 pub struct mnt_idmap {
     _private: [u8; 0],
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_BTRFS_FS_POSIX_ACL))]
 #[repr(C)]
 pub struct dentry {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_BTRFS_FS_POSIX_ACL")]
+#[cfg(CONFIG_BTRFS_FS_POSIX_ACL)]
 extern "C" {
     pub fn btrfs_get_acl(inode: *mut inode, type_: c_int, rcu: bool) -> *mut posix_acl;
     pub fn btrfs_set_acl(
@@ -60,17 +60,17 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_BTRFS_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_BTRFS_FS_POSIX_ACL))]
 pub const btrfs_get_acl: Option<
     unsafe extern "C" fn(*mut inode, c_int, bool) -> *mut posix_acl,
 > = None;
 
-#[cfg(not(feature = "CONFIG_BTRFS_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_BTRFS_FS_POSIX_ACL))]
 pub const btrfs_set_acl: Option<
     unsafe extern "C" fn(*mut mnt_idmap, *mut dentry, *mut posix_acl, c_int) -> c_int,
 > = None;
 
-#[cfg(not(feature = "CONFIG_BTRFS_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_BTRFS_FS_POSIX_ACL))]
 pub unsafe fn __btrfs_set_acl(
     _trans: *mut btrfs_trans_handle,
     _inode: *mut inode,

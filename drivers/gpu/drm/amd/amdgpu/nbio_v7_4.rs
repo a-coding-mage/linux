@@ -143,7 +143,7 @@ unsafe fn nbio_v7_4_enable_doorbell_interrupt(adev: *mut amdgpu_device, enable: 
  * as the C implementation. */
 unsafe fn nbio_v7_4_query_ras_error_count(_adev: *mut amdgpu_device, _status: *mut core::ffi::c_void) { /* external RAS structures and generated fields */ }
 
-#[cfg(feature = "CONFIG_PCIEASPM")]
+#[cfg(CONFIG_PCIEASPM)]
 unsafe fn nbio_v7_4_program_ltr(adev: *mut amdgpu_device) {
     WREG32_PCIE(SMNRCC_EP_DEV0_0_EP_PCIE_TX_LTR_CNTL, 0x75eb);
     let def = RREG32_PCIE(SMNRCC_BIF_STRAP2); let mut data = def & !RCC_BIF_STRAP2__STRAP_LTR_IN_ASPML1_DIS_MASK;
@@ -157,7 +157,7 @@ unsafe fn nbio_v7_4_program_ltr(adev: *mut amdgpu_device) {
 unsafe fn nbio_v7_4_program_aspm(adev: *mut amdgpu_device) {
     /* CONFIG_PCIEASPM controls the complete register programming block in the
      * original source; keep the same conditional boundary for this translation. */
-    #[cfg(feature = "CONFIG_PCIEASPM")]
+    #[cfg(CONFIG_PCIEASPM)]
     {
         if amdgpu_ip_version(adev, NBIO_HWIP, 0) == IP_VERSION(7,4,4) { return; }
         let def = RREG32_PCIE(SMNPCIE_LC_CNTL); let mut data = def;

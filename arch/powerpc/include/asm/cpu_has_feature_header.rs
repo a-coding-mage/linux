@@ -40,13 +40,13 @@ pub unsafe fn early_cpu_has_feature(feature: c_ulong) -> bool {
         || (CPU_FTRS_POSSIBLE & (*cur_cpu_spec).cpu_features & feature != 0)
 }
 
-#[cfg(feature = "CONFIG_JUMP_LABEL_FEATURE_CHECKS")]
+#[cfg(CONFIG_JUMP_LABEL_FEATURE_CHECKS)]
 #[inline(always)]
 pub unsafe fn cpu_has_feature(feature: c_ulong) -> bool {
     // BUILD_BUG_ON(!__builtin_constant_p(feature));
     // BUILD_BUG_ON(__builtin_popcountl(feature) > 1);
 
-    #[cfg(feature = "CONFIG_JUMP_LABEL_FEATURE_CHECK_DEBUG")]
+    #[cfg(CONFIG_JUMP_LABEL_FEATURE_CHECK_DEBUG)]
     {
         if !static_key_feature_checks_initialized {
             let warning = b"Warning! cpu_has_feature() used prior to jump label init!\n\0";
@@ -68,7 +68,7 @@ pub unsafe fn cpu_has_feature(feature: c_ulong) -> bool {
     static_branch_likely(&cpu_feature_keys[i])
 }
 
-#[cfg(not(feature = "CONFIG_JUMP_LABEL_FEATURE_CHECKS"))]
+#[cfg(not(CONFIG_JUMP_LABEL_FEATURE_CHECKS))]
 #[inline(always)]
 pub unsafe fn cpu_has_feature(feature: c_ulong) -> bool {
     early_cpu_has_feature(feature)

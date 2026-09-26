@@ -126,9 +126,9 @@ extern "C" {
 pub type ring_buffer_cond_fn = Option<unsafe extern "C" fn(data: *mut c_void) -> bool>;
 pub const RING_BUFFER_ALL_CPUS: i32 = -1;
 
-#[cfg(feature = "CONFIG_RING_BUFFER_ALLOW_SWAP")]
+#[cfg(CONFIG_RING_BUFFER_ALLOW_SWAP)]
 extern "C" { pub fn ring_buffer_swap_cpu(buffer_a: *mut trace_buffer, buffer_b: *mut trace_buffer, cpu: i32) -> i32; }
-#[cfg(not(feature = "CONFIG_RING_BUFFER_ALLOW_SWAP"))]
+#[cfg(not(CONFIG_RING_BUFFER_ALLOW_SWAP))]
 pub unsafe fn ring_buffer_swap_cpu(_: *mut trace_buffer, _: *mut trace_buffer, _: i32) -> i32 { -19 }
 
 #[repr(C)]

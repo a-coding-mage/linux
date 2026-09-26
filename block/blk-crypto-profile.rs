@@ -99,9 +99,9 @@ unsafe fn blk_crypto_find_keyslot(profile: *mut blk_crypto_profile,
                                   key: *const blk_crypto_key) -> *mut blk_crypto_keyslot {
     let head = blk_crypto_hash_bucket_for_key(profile, key);
     let mut slotp: *mut blk_crypto_keyslot = core::ptr::null_mut();
-    hlist_for_each_entry(&mut slotp, head, hash_node) {
+    hlist_for_each_entry!(&mut slotp, head, hash_node, {
         if (*slotp).key == key { return slotp; }
-    }
+    });
     core::ptr::null_mut()
 }
 

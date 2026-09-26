@@ -72,6 +72,6 @@ pub unsafe fn skb_flow_dissector_target(d: *mut flow_dissector, key_id: flow_dis
 extern "C" { pub fn flow_hash_from_keys(keys: *mut flow_keys) -> u32; pub fn flow_hash_from_keys_seed(keys: *mut flow_keys, keyval: *const siphash_key_t) -> u32; pub fn skb_flow_get_icmp_tci(skb: *const sk_buff, key_icmp: *mut flow_dissector_key_icmp, data: *const core::ffi::c_void, thoff: i32, hlen: i32); }
 pub unsafe fn flow_dissector_init_keys(c: *mut flow_dissector_key_control, b: *mut flow_dissector_key_basic) { core::ptr::write_bytes(c, 0, 1); core::ptr::write_bytes(b, 0, 1); }
 /* CONFIG_BPF_SYSCALL: extern declaration is conditional in the original header. */
-#[cfg(feature = "CONFIG_BPF_SYSCALL")] extern "C" { pub fn flow_dissector_bpf_prog_attach_check(net: *mut net, prog: *mut bpf_prog) -> i32; }
+#[cfg(CONFIG_BPF_SYSCALL)] extern "C" { pub fn flow_dissector_bpf_prog_attach_check(net: *mut net, prog: *mut bpf_prog) -> i32; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

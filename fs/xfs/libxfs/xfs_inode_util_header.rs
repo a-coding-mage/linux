@@ -6,7 +6,7 @@
 
 pub struct xfs_icluster;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xfs_flags2diflags(ip: *mut xfs_inode, xflags: core::ffi::c_uint) -> u16;
     pub fn xfs_flags2diflags2(ip: *mut xfs_inode, xflags: core::ffi::c_uint) -> u64;
     pub fn xfs_dic2xflags(ip: *mut xfs_inode) -> u32;
@@ -47,7 +47,7 @@ pub const XFS_ICHGTIME_CHG: core::ffi::c_int = 0x2; /* inode field change timest
 pub const XFS_ICHGTIME_CREATE: core::ffi::c_int = 0x4; /* inode create timestamp */
 pub const XFS_ICHGTIME_ACCESS: core::ffi::c_int = 0x8; /* last access timestamp */
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xfs_trans_ichgtime(tp: *mut xfs_trans, ip: *mut xfs_inode, flags: core::ffi::c_int);
 
     pub fn xfs_inode_init(

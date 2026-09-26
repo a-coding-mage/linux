@@ -692,7 +692,7 @@ unsafe fn btf_int128_shift(print_num: *mut __u64, left_shift_bits: __u16, right_
 unsafe fn btf_dumper_bitfield(nr_bits: __u32, bit_offset: __u8, data: *const c_void, jw: *mut json_writer_t, is_plain_text: bool) {
     let left_shift_bits: c_int;
     let right_shift_bits: c_int;
-    let mut print_num = [0_u64; 2];
+    let mut print_num = [0u64; 2];
     let bytes_to_copy: c_int;
     let bits_to_copy: c_int;
 

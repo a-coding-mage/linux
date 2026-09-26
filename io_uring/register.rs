@@ -11,12 +11,13 @@ unsafe fn io_probe(ctx: *mut io_ring_ctx, arg: *mut core::ffi::c_void, mut nr_ar
     let size: usize;
     let mut i: i32 = 0;
     let mut ret: i32;
+    'out: {
     if nr_args > IORING_OP_LAST { nr_args = IORING_OP_LAST; }
     size = struct_size_probe(nr_args);
     p = memdup_user(arg, size);
     if is_err(p) { return ptr_err(p); }
     ret = -EINVAL;
-    if memchr_inv(p as *const _, 0, size).is_null() == false { goto_out!(out); }
+    if memchr_inv(p as *const _, 0, size).is_null() == false { break 'out; }
     (*p).last_op = IORING_OP_LAST - 1;
     while i < nr_args as i32 {
         (*p).ops.add(i as usize).as_mut().unwrap().op = i as u8;
@@ -26,7 +27,8 @@ unsafe fn io_probe(ctx: *mut io_ring_ctx, arg: *mut core::ffi::c_void, mut nr_ar
     (*p).ops_len = i as u8;
     ret = 0;
     if copy_to_user(arg, p as *const _, size) != 0 { ret = -EFAULT; }
-out:
+    }
+    
     kfree(p as *mut _);
     ret
 }

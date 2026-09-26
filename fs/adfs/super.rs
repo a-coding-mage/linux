@@ -54,7 +54,11 @@ unsafe fn adfs_show_options(seq: *mut seq_file, root: *mut dentry) -> c_int {
     0
 }
 
-enum { Opt_uid, Opt_gid, Opt_ownmask, Opt_othmask, Opt_ftsuffix }
+pub const Opt_uid: i32 = 0;
+pub const Opt_gid: i32 = Opt_uid + 1;
+pub const Opt_ownmask: i32 = Opt_gid + 1;
+pub const Opt_othmask: i32 = Opt_ownmask + 1;
+pub const Opt_ftsuffix: i32 = Opt_othmask + 1;
 static adfs_param_spec: [fs_parameter_spec; 6] = [
     fsparam_uid!("uid", Opt_uid), fsparam_gid!("gid", Opt_gid),
     fsparam_u32oct!("ownmask", Opt_ownmask), fsparam_u32oct!("othmask", Opt_othmask),

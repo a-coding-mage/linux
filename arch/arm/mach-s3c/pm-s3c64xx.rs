@@ -87,10 +87,10 @@ static mut S3C64XX_PM_DOMAINS: [*mut S3c64xxPmDomain; 7] = [
     &raw mut S3C64XX_PM_F,
 ];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static mut CORE_SAVE: [SleepSave; 2] = [SAVE_ITEM!(S3C64XX_MEM0DRVCON), SAVE_ITEM!(S3C64XX_MEM1DRVCON)];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static mut MISC_SAVE: [SleepSave; 12] = [
     SAVE_ITEM!(S3C64XX_AHB_CON0), SAVE_ITEM!(S3C64XX_AHB_CON1), SAVE_ITEM!(S3C64XX_AHB_CON2),
     SAVE_ITEM!(S3C64XX_SPCON), SAVE_ITEM!(S3C64XX_MEM0CONSTOP), SAVE_ITEM!(S3C64XX_MEM1CONSTOP),
@@ -98,17 +98,17 @@ static mut MISC_SAVE: [SleepSave; 12] = [
     SAVE_ITEM!(S3C64XX_SDMA_SEL), SAVE_ITEM!(S3C64XX_MODEM_MIFPCON), SAVE_ITEM!(S3C64XX_NORMAL_CFG),
 ];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe extern "C" fn s3c_pm_configure_extint() { __raw_writel(s3c_irqwake_eintmask, S3C64XX_EINT_MASK); }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe extern "C" fn s3c_pm_restore_core() {
     __raw_writel(0, S3C64XX_EINT_MASK);
     s3c_pm_do_restore_core(CORE_SAVE.as_ptr(), CORE_SAVE.len());
     s3c_pm_do_restore(MISC_SAVE.as_ptr(), MISC_SAVE.len());
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe extern "C" fn s3c_pm_save_core() {
     s3c_pm_do_save(MISC_SAVE.as_ptr(), MISC_SAVE.len());
     s3c_pm_do_save(CORE_SAVE.as_ptr(), CORE_SAVE.len());

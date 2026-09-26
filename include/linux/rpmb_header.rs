@@ -62,7 +62,7 @@ pub const RPMB_WRITE_DATA: u32 = 0x3;
 pub const RPMB_READ_DATA: u32 = 0x4;
 pub const RPMB_RESULT_READ: u32 = 0x5;
 
-#[cfg(feature = "CONFIG_RPMB")]
+#[cfg(CONFIG_RPMB)]
 extern "C" {
     pub fn rpmb_dev_get(rdev: *mut rpmb_dev) -> *mut rpmb_dev;
     pub fn rpmb_dev_put(rdev: *mut rpmb_dev);
@@ -84,15 +84,15 @@ extern "C" {
     ) -> libc::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_dev_get(_rdev: *mut rpmb_dev) -> *mut rpmb_dev {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_dev_put(_rdev: *mut rpmb_dev) {}
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_dev_find_device(
     _data: *const libc::c_void,
     _start: *const rpmb_dev,
@@ -101,25 +101,25 @@ pub unsafe fn rpmb_dev_find_device(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_interface_register(_intf: *mut class_interface) -> libc::c_int {
     -95
 }
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_interface_unregister(_intf: *mut class_interface) {}
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_dev_register(_dev: *mut device, _descr: *mut rpmb_descr) -> *mut rpmb_dev {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_dev_unregister(_dev: *mut rpmb_dev) -> libc::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_RPMB"))]
+#[cfg(not(CONFIG_RPMB))]
 pub unsafe fn rpmb_route_frames(
     _rdev: *mut rpmb_dev,
     _req: *mut u8,

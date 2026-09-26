@@ -111,7 +111,7 @@ unsafe fn CPU_ZERO(set: *mut cpu_set_t) {
 unsafe fn CPU_SET(cpu: c_int, set: *mut cpu_set_t) {
     let bits_per_word = 8 * core::mem::size_of::<c_ulong>();
     let set = unsafe { &mut *set };
-    set.__bits[cpu as usize / bits_per_word] |= 1 as c_ulong << (cpu as usize % bits_per_word);
+    set.__bits[cpu as usize / bits_per_word] |= (1 as c_ulong) << (cpu as usize % bits_per_word);
 }
 
 unsafe fn pr_warn(code: c_int, format: *const c_char) {

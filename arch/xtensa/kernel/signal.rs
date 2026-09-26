@@ -114,7 +114,7 @@ unsafe fn restore_sigcontext(regs: *mut pt_regs, frame: *mut rt_sigframe) -> u32
 
 pub unsafe extern "C" fn xtensa_rt_sigreturn() -> c_long {
     let regs = current_pt_regs();
-    current.restart_block.fn = do_no_restart_syscall;
+    current.restart_block.r#fn = do_no_restart_syscall;
     if (*regs).depc > 64 { panic!("rt_sigreturn in double exception!\n"); }
     let frame = (*regs).areg[1] as *mut rt_sigframe;
     if !access_ok(frame, core::mem::size_of::<rt_sigframe>()) { force_sig(SIGSEGV); return 0; }
@@ -181,7 +181,7 @@ unsafe fn do_signal(regs: *mut pt_regs) {
         if test_thread_flag(TIF_SINGLESTEP) { (*task_pt_regs(current)).icountlevel = 1; }
         return;
     }
-    if (*regs).syscall != NO_SYSCALL { match (*regs).areg[2] as c_long { -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => { (*regs).areg[2] = (*regs).syscall; (*regs).pc -= 3; }, -ERESTART_RESTARTBLOCK => { (*regs).areg[2] = __NR_restart_syscall; (*regs).pc -= 3; }, _ => () } }
+    if (*regs).syscall != NO_SYSCALL { match -((*regs).areg[2] as c_long) { ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => { (*regs).areg[2] = (*regs).syscall; (*regs).pc -= 3; }, ERESTART_RESTARTBLOCK => { (*regs).areg[2] = __NR_restart_syscall; (*regs).pc -= 3; }, _ => () } }
     restore_saved_sigmask();
     if test_thread_flag(TIF_SINGLESTEP) { (*task_pt_regs(current)).icountlevel = 1; }
 }

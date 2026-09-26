@@ -113,7 +113,7 @@ extern "C" {
 pub unsafe extern "C" fn db1500_pci_setup() -> c_int { platform_device_register(&mut db1500_pci_host_dev) }
 
 // CONFIG_MMC_AU1X conditional section retained as a Rust conditional intent.
-#[cfg(feature = "CONFIG_MMC_AU1X")]
+#[cfg(CONFIG_MMC_AU1X)]
 mod mmc {
     use super::*;
     unsafe extern "C" fn db1100_mmc_cd(_irq: c_int, ptr: *mut c_void) -> irqreturn_t {

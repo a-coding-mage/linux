@@ -19,9 +19,9 @@ pub struct bcma_host_ops {
     pub write8: Option<unsafe extern "C" fn(*mut bcma_device, u16, u8)>,
     pub write16: Option<unsafe extern "C" fn(*mut bcma_device, u16, u16)>,
     pub write32: Option<unsafe extern "C" fn(*mut bcma_device, u16, u32)>,
-    #[cfg(feature = "CONFIG_BCMA_BLOCKIO")]
+    #[cfg(CONFIG_BCMA_BLOCKIO)]
     pub block_read: Option<unsafe extern "C" fn(*mut bcma_device, *mut core::ffi::c_void, usize, u16, u8)>,
-    #[cfg(feature = "CONFIG_BCMA_BLOCKIO")]
+    #[cfg(CONFIG_BCMA_BLOCKIO)]
     pub block_write: Option<unsafe extern "C" fn(*mut bcma_device, *const core::ffi::c_void, usize, u16, u8)>,
     pub aread32: Option<unsafe extern "C" fn(*mut bcma_device, u16) -> u32>,
     pub awrite32: Option<unsafe extern "C" fn(*mut bcma_device, u16, u32)>,
@@ -261,9 +261,9 @@ pub unsafe fn bcma_write16(core: *mut bcma_device, offset: u16, value: u32) { ((
 pub unsafe fn bcma_write32(core: *mut bcma_device, offset: u16, value: u32) { ((*(*core).bus).ops).as_ref().unwrap().write32.unwrap()(core, offset, value); }
 pub unsafe fn bcma_aread32(core: *mut bcma_device, offset: u16) -> u32 { ((*(*core).bus).ops).as_ref().unwrap().aread32.unwrap()(core, offset) }
 pub unsafe fn bcma_awrite32(core: *mut bcma_device, offset: u16, value: u32) { ((*(*core).bus).ops).as_ref().unwrap().awrite32.unwrap()(core, offset, value); }
-#[cfg(feature = "CONFIG_BCMA_BLOCKIO")]
+#[cfg(CONFIG_BCMA_BLOCKIO)]
 pub unsafe fn bcma_block_read(core: *mut bcma_device, buffer: *mut core::ffi::c_void, count: usize, offset: u16, reg_width: u8) { ((*(*core).bus).ops).as_ref().unwrap().block_read.unwrap()(core, buffer, count, offset, reg_width); }
-#[cfg(feature = "CONFIG_BCMA_BLOCKIO")]
+#[cfg(CONFIG_BCMA_BLOCKIO)]
 pub unsafe fn bcma_block_write(core: *mut bcma_device, buffer: *const core::ffi::c_void, count: usize, offset: u16, reg_width: u8) { ((*(*core).bus).ops).as_ref().unwrap().block_write.unwrap()(core, buffer, count, offset, reg_width); }
 pub unsafe fn bcma_mask32(cc: *mut bcma_device, offset: u16, mask: u32) { bcma_write32(cc, offset, bcma_read32(cc, offset) & mask); }
 pub unsafe fn bcma_set32(cc: *mut bcma_device, offset: u16, set: u32) { bcma_write32(cc, offset, bcma_read32(cc, offset) | set); }
@@ -285,13 +285,13 @@ extern "C" {
 }
 pub unsafe fn bcma_find_core(bus: *mut bcma_bus, coreid: u16) -> *mut bcma_device { bcma_find_core_unit(bus, coreid, 0) }
 /* CONFIG_BCMA_HOST_PCI selects external implementations; otherwise these are no-op stubs. */
-#[cfg(feature = "CONFIG_BCMA_HOST_PCI")]
+#[cfg(CONFIG_BCMA_HOST_PCI)]
 extern "C" { pub fn bcma_host_pci_up(bus: *mut bcma_bus); pub fn bcma_host_pci_down(bus: *mut bcma_bus); pub fn bcma_host_pci_irq_ctl(bus: *mut bcma_bus, core: *mut bcma_device, enable: bool) -> i32; }
-#[cfg(not(feature = "CONFIG_BCMA_HOST_PCI"))]
+#[cfg(not(CONFIG_BCMA_HOST_PCI))]
 pub unsafe fn bcma_host_pci_up(_bus: *mut bcma_bus) {}
-#[cfg(not(feature = "CONFIG_BCMA_HOST_PCI"))]
+#[cfg(not(CONFIG_BCMA_HOST_PCI))]
 pub unsafe fn bcma_host_pci_down(_bus: *mut bcma_bus) {}
-#[cfg(not(feature = "CONFIG_BCMA_HOST_PCI"))]
+#[cfg(not(CONFIG_BCMA_HOST_PCI))]
 pub unsafe fn bcma_host_pci_irq_ctl(bus: *mut bcma_bus, _core: *mut bcma_device, _enable: bool) -> i32 {
     if (*bus).hosttype as u32 == BCMA_HOSTTYPE_PCI as u32 { -95 } else { 0 }
 }

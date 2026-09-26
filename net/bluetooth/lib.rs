@@ -108,16 +108,16 @@ pub unsafe extern "C" fn bt_err(_format: *const c_char, ...) {}
 pub unsafe extern "C" fn bt_warn_ratelimited(_format: *const c_char, ...) {}
 pub unsafe extern "C" fn bt_err_ratelimited(_format: *const c_char, ...) {}
 
-#[cfg(feature = "CONFIG_BT_FEATURE_DEBUG")]
+#[cfg(CONFIG_BT_FEATURE_DEBUG)]
 static mut DEBUG_ENABLE: bool = false;
 
-#[cfg(feature = "CONFIG_BT_FEATURE_DEBUG")]
+#[cfg(CONFIG_BT_FEATURE_DEBUG)]
 pub unsafe extern "C" fn bt_dbg_set(enable: bool) { DEBUG_ENABLE = enable; }
 
-#[cfg(feature = "CONFIG_BT_FEATURE_DEBUG")]
+#[cfg(CONFIG_BT_FEATURE_DEBUG)]
 pub unsafe extern "C" fn bt_dbg_get() -> bool { DEBUG_ENABLE }
 
-#[cfg(feature = "CONFIG_BT_FEATURE_DEBUG")]
+#[cfg(CONFIG_BT_FEATURE_DEBUG)]
 pub unsafe extern "C" fn bt_dbg(_format: *const c_char, ...) {
     if !DEBUG_ENABLE { return; }
 }

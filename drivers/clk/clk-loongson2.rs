@@ -72,7 +72,7 @@ unsafe fn freqscale_recalc(hw:*mut ClkHw,parent:usize)->usize { let c=to_clk(hw)
 unsafe fn to_clk(hw:*mut ClkHw)->*mut Loongson2ClkData { (hw as *mut u8).sub(core::mem::offset_of!(Loongson2ClkData,hw)) as *mut Loongson2ClkData }
 
 // External kernel ABI declarations and registration/probe entry points.
-extern "C" { fn readq(p:*mut core::ffi::c_void)->u64; fn devm_kzalloc(*mut Device,usize,usize)->*mut core::ffi::c_void; fn devm_clk_hw_register(*mut Device,*mut ClkHw)->i32; }
+extern "C" { fn readq(p:*mut core::ffi::c_void)->u64; fn devm_kzalloc(_: *mut Device,_: usize,_: usize)->*mut core::ffi::c_void; fn devm_clk_hw_register(_: *mut Device,_: *mut ClkHw)->i32; }
 #[repr(C)] struct Device; #[repr(C)] struct PlatformDevice { dev:Device }
 #[repr(C)] struct Spinlock; #[repr(C)] struct ClkHw; #[repr(C)] struct ClkHwOnecellData;
 unsafe fn loongson2_clk_probe(_pdev:*mut PlatformDevice)->i32 { /* device_get_match_data, registration loops, provider publication */ 0 }

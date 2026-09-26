@@ -472,11 +472,11 @@ unsafe fn char2uni(rawstring: *const u8, _boundlen: i32, uni: *mut u32) -> i32
 }
 
 static mut table: nls_table = nls_table {
-	.charset	= "maccyrillic",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "maccyrillic",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 };
 
 unsafe fn init_nls_maccyrillic() -> i32

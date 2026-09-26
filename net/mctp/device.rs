@@ -82,7 +82,7 @@ unsafe fn mctp_dump_addrinfo(skb: *mut sk_buff, cb: *mut netlink_callback) -> i3
     if !hdr.is_null() { ifindex = (*hdr as *mut ifaddrmsg).read().ifa_index; }
     else if (*cb).strict_check { NL_SET_ERR_MSG((*cb).extack, "mctp: Invalid header for addr dump request"); return -EINVAL; }
     rcu_read_lock();
-    for_each_netdev_dump(net, dev, (*mcb).ifindex) {
+    for_each_netdev_dump!(net, dev, (*mcb).ifindex, {
         if ifindex != 0 && ifindex != (*dev).ifindex { continue; }
         let mdev = __mctp_dev_get(dev);
         if mdev.is_null() { continue; }
@@ -90,7 +90,7 @@ unsafe fn mctp_dump_addrinfo(skb: *mut sk_buff, cb: *mut netlink_callback) -> i3
         mctp_dev_put(mdev);
         if rc < 0 { break; }
         (*mcb).a_idx = 0;
-    }
+    });
     rcu_read_unlock();
     (*skb).len as i32
 }

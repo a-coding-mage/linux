@@ -59,34 +59,34 @@ pub const ACR_WPROTECT: u32 = 0x00000004; /* Write protect region */
  * The following cfg features represent the original CONFIG_CACHE_* build
  * conditions.
  */
-#[cfg(feature = "CONFIG_CACHE_I")]
+#[cfg(CONFIG_CACHE_I)]
 pub const CACHE_TYPE: u32 = CACR_DISD + CACR_EUSP;
-#[cfg(feature = "CONFIG_CACHE_I")]
+#[cfg(CONFIG_CACHE_I)]
 pub const CACHE_INVTYPEI: u32 = 0;
 
-#[cfg(feature = "CONFIG_CACHE_D")]
+#[cfg(CONFIG_CACHE_D)]
 pub const CACHE_TYPE: u32 = CACR_DISI + CACR_EUSP;
-#[cfg(feature = "CONFIG_CACHE_D")]
+#[cfg(CONFIG_CACHE_D)]
 pub const CACHE_INVTYPED: u32 = 0;
 
-#[cfg(feature = "CONFIG_CACHE_BOTH")]
+#[cfg(CONFIG_CACHE_BOTH)]
 pub const CACHE_TYPE: u32 = CACR_EUSP;
-#[cfg(feature = "CONFIG_CACHE_BOTH")]
+#[cfg(CONFIG_CACHE_BOTH)]
 pub const CACHE_INVTYPEI: u32 = CACR_INVI;
-#[cfg(feature = "CONFIG_CACHE_BOTH")]
+#[cfg(CONFIG_CACHE_BOTH)]
 pub const CACHE_INVTYPED: u32 = CACR_INVD;
 
 /* This is the instruction cache only devices (no split cache, no eusp). */
 #[cfg(not(any(
-    feature = "CONFIG_CACHE_I",
-    feature = "CONFIG_CACHE_D",
-    feature = "CONFIG_CACHE_BOTH"
+    CONFIG_CACHE_I,
+    CONFIG_CACHE_D,
+    CONFIG_CACHE_BOTH
 )))]
 pub const CACHE_TYPE: u32 = 0;
 #[cfg(not(any(
-    feature = "CONFIG_CACHE_I",
-    feature = "CONFIG_CACHE_D",
-    feature = "CONFIG_CACHE_BOTH"
+    CONFIG_CACHE_I,
+    CONFIG_CACHE_D,
+    CONFIG_CACHE_BOTH
 )))]
 pub const CACHE_INVTYPEI: u32 = 0;
 
@@ -94,9 +94,9 @@ pub const CACHE_INIT: u32 = CACR_CINV + CACHE_TYPE;
 pub const CACHE_MODE: u32 = CACR_CENB + CACHE_TYPE + CACR_DCM;
 
 pub const CACHE_INVALIDATE: u32 = CACHE_MODE + CACR_CINV;
-#[cfg(any(feature = "CONFIG_CACHE_I", feature = "CONFIG_CACHE_BOTH"))]
+#[cfg(any(CONFIG_CACHE_I, CONFIG_CACHE_BOTH))]
 pub const CACHE_INVALIDATEI: u32 = CACHE_MODE + CACR_CINV + CACHE_INVTYPEI;
-#[cfg(feature = "CONFIG_CACHE_BOTH")]
+#[cfg(CONFIG_CACHE_BOTH)]
 pub const CACHE_INVALIDATED: u32 = CACHE_MODE + CACR_CINV + CACHE_INVTYPED;
 
 /* CONFIG_RAMBASE is supplied by the external build configuration. */

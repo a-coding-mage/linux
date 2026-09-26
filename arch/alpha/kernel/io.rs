@@ -33,9 +33,9 @@ pub unsafe fn iowrite16(b: u16, addr: *mut core::ffi::c_void) { mb(); platform_i
 pub unsafe fn iowrite32(b: u32, addr: *mut core::ffi::c_void) { mb(); platform_iowrite32(b, addr); }
 pub unsafe fn iowrite64(b: u64, addr: *mut core::ffi::c_void) { mb(); platform_iowrite64(b, addr); }
 
-pub unsafe fn inb(port: libc::c_ulong) -> u8 { ioread8(ioport_map(port)). as u8 }
-pub unsafe fn inw(port: libc::c_ulong) -> u16 { ioread16(ioport_map(port)). as u16 }
-pub unsafe fn inl(port: libc::c_ulong) -> u32 { ioread32(ioport_map(port)). as u32 }
+pub unsafe fn inb(port: libc::c_ulong) -> u8 { ioread8(ioport_map(port)) as u8 }
+pub unsafe fn inw(port: libc::c_ulong) -> u16 { ioread16(ioport_map(port)) as u16 }
+pub unsafe fn inl(port: libc::c_ulong) -> u32 { ioread32(ioport_map(port)) as u32 }
 pub unsafe fn outb(b: u8, port: libc::c_ulong) { iowrite8(b, ioport_map(port)); }
 pub unsafe fn outw(b: u16, port: libc::c_ulong) { iowrite16(b, ioport_map(port)); }
 pub unsafe fn outl(b: u32, port: libc::c_ulong) { iowrite32(b, ioport_map(port)); }

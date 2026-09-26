@@ -10,33 +10,33 @@
  * With EtherNAT add-on card on Atari, the highest interrupt
  * number is 140 so NR_IRQS needs to be 141.
  */
-#[cfg(feature = "CONFIG_COLDFIRE")]
+#[cfg(CONFIG_COLDFIRE)]
 pub const NR_IRQS: usize = 256;
 #[cfg(all(
-    not(feature = "CONFIG_COLDFIRE"),
+    not(CONFIG_COLDFIRE),
     any(
-        feature = "CONFIG_VME",
-        feature = "CONFIG_SUN3",
-        feature = "CONFIG_SUN3X",
-        feature = "CONFIG_VIRT"
+        CONFIG_VME,
+        CONFIG_SUN3,
+        CONFIG_SUN3X,
+        CONFIG_VIRT
     )
 ))]
 pub const NR_IRQS: usize = 200;
 #[cfg(all(
-    not(feature = "CONFIG_COLDFIRE"),
-    not(any(feature = "CONFIG_VME", feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X", feature = "CONFIG_VIRT")),
-    feature = "CONFIG_ATARI"
+    not(CONFIG_COLDFIRE),
+    not(any(CONFIG_VME, CONFIG_SUN3, CONFIG_SUN3X, CONFIG_VIRT)),
+    CONFIG_ATARI
 ))]
 pub const NR_IRQS: usize = 141;
-#[cfg(all(not(feature = "CONFIG_COLDFIRE"), not(any(feature = "CONFIG_VME", feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X", feature = "CONFIG_VIRT")), not(feature = "CONFIG_ATARI"), feature = "CONFIG_MAC"))]
+#[cfg(all(not(CONFIG_COLDFIRE), not(any(CONFIG_VME, CONFIG_SUN3, CONFIG_SUN3X, CONFIG_VIRT)), not(CONFIG_ATARI), CONFIG_MAC))]
 pub const NR_IRQS: usize = 72;
-#[cfg(all(not(feature = "CONFIG_COLDFIRE"), not(any(feature = "CONFIG_VME", feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X", feature = "CONFIG_VIRT")), not(feature = "CONFIG_ATARI"), not(feature = "CONFIG_MAC"), feature = "CONFIG_Q40"))]
+#[cfg(all(not(CONFIG_COLDFIRE), not(any(CONFIG_VME, CONFIG_SUN3, CONFIG_SUN3X, CONFIG_VIRT)), not(CONFIG_ATARI), not(CONFIG_MAC), CONFIG_Q40))]
 pub const NR_IRQS: usize = 43;
-#[cfg(all(not(feature = "CONFIG_COLDFIRE"), not(any(feature = "CONFIG_VME", feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X", feature = "CONFIG_VIRT")), not(feature = "CONFIG_ATARI"), not(feature = "CONFIG_MAC"), not(feature = "CONFIG_Q40"), any(feature = "CONFIG_AMIGA", not(feature = "CONFIG_MMU"))))]
+#[cfg(all(not(CONFIG_COLDFIRE), not(any(CONFIG_VME, CONFIG_SUN3, CONFIG_SUN3X, CONFIG_VIRT)), not(CONFIG_ATARI), not(CONFIG_MAC), not(CONFIG_Q40), any(CONFIG_AMIGA, not(CONFIG_MMU))))]
 pub const NR_IRQS: usize = 32;
-#[cfg(all(not(feature = "CONFIG_COLDFIRE"), not(any(feature = "CONFIG_VME", feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X", feature = "CONFIG_VIRT")), not(feature = "CONFIG_ATARI"), not(feature = "CONFIG_MAC"), not(feature = "CONFIG_Q40"), not(any(feature = "CONFIG_AMIGA", not(feature = "CONFIG_MMU"))), feature = "CONFIG_APOLLO"))]
+#[cfg(all(not(CONFIG_COLDFIRE), not(any(CONFIG_VME, CONFIG_SUN3, CONFIG_SUN3X, CONFIG_VIRT)), not(CONFIG_ATARI), not(CONFIG_MAC), not(CONFIG_Q40), not(any(CONFIG_AMIGA, not(CONFIG_MMU))), CONFIG_APOLLO))]
 pub const NR_IRQS: usize = 24;
-#[cfg(all(not(feature = "CONFIG_COLDFIRE"), not(any(feature = "CONFIG_VME", feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X", feature = "CONFIG_VIRT")), not(feature = "CONFIG_ATARI"), not(feature = "CONFIG_MAC"), not(feature = "CONFIG_Q40"), not(any(feature = "CONFIG_AMIGA", not(feature = "CONFIG_MMU"))), not(feature = "CONFIG_APOLLO"))]
+#[cfg(all(not(CONFIG_COLDFIRE), not(any(CONFIG_VME, CONFIG_SUN3, CONFIG_SUN3X, CONFIG_VIRT)), not(CONFIG_ATARI), not(CONFIG_MAC), not(CONFIG_Q40), not(any(CONFIG_AMIGA, not(CONFIG_MMU))), not(CONFIG_APOLLO)))]
 pub const NR_IRQS: usize = 8;
 
 #[repr(C)]
@@ -59,7 +59,7 @@ pub const IRQ_AUTO_6: u32 = 6; /* level 6 interrupt */
 pub const IRQ_AUTO_7: u32 = 7; /* level 7 interrupt (non-maskable) */
 pub const IRQ_USER: u32 = 8;
 
-#[cfg(any(feature = "CONFIG_M68020", feature = "CONFIG_M68030", feature = "CONFIG_M68040", feature = "CONFIG_M68060"))]
+#[cfg(any(CONFIG_M68020, CONFIG_M68030, CONFIG_M68040, CONFIG_M68060))]
 extern "C" {
     pub fn m68k_irq_startup(data: *mut irq_data) -> u32;
     pub fn m68k_irq_startup_irq(irq: u32) -> u32;
@@ -70,7 +70,7 @@ extern "C" {
     pub fn irq_canonicalize(irq: u32) -> u32;
 }
 
-#[cfg(not(any(feature = "CONFIG_M68020", feature = "CONFIG_M68030", feature = "CONFIG_M68040", feature = "CONFIG_M68060")))]
+#[cfg(not(any(CONFIG_M68020, CONFIG_M68030, CONFIG_M68040, CONFIG_M68060)))]
 #[inline]
 pub const fn irq_canonicalize(irq: u32) -> u32 { irq }
 

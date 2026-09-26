@@ -10,7 +10,7 @@ pub unsafe fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t {
     ) as *mut pgd_t;
 
     // CONFIG_PPC_BOOK3S_603 controls this C preprocessor conditional.
-    #[cfg(feature = "CONFIG_PPC_BOOK3S_603")]
+    #[cfg(CONFIG_PPC_BOOK3S_603)]
     {
         memcpy(
             pgd.add(USER_PTRS_PER_PGD),

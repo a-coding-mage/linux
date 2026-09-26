@@ -30,14 +30,14 @@ c_translation! {
 
 
 
-#define WM8996_AIFS 2
+pub const WM8996_AIFS: u32 = 2;
 
-#define HPOUT1L 1
-#define HPOUT1R 2
-#define HPOUT2L 4
-#define HPOUT2R 8
+pub const HPOUT1L: u32 = 1;
+pub const HPOUT1R: u32 = 2;
+pub const HPOUT2L: u32 = 4;
+pub const HPOUT2R: u32 = 8;
 
-#define WM8996_NUM_SUPPLIES 3
+pub const WM8996_NUM_SUPPLIES: u32 = 3;
 static const char *wm8996_supply_names[WM8996_NUM_SUPPLIES] = {
 	"DBVDD",
 	"AVDD1",
@@ -98,13 +98,13 @@ struct wm8996_priv {
  * except container_of().
  */
 #define WM8996_REGULATOR_EVENT(n) \
-static int wm8996_regulator_event_##n(struct notifier_block *nb, \
-				    unsigned long event, void *data)	\
+static int wm8996_regulator_event_##n(notifier_block *nb, \
+				    event: core::ffi::c_ulong, void *data)	\
 { \
-	struct wm8996_priv *wm8996 = container_of(nb, struct wm8996_priv, \
+	struct wm8996_priv *wm8996 = container_of(nb, wm8996_priv, \
 						  disable_nb[n]); \
 	if (event & REGULATOR_EVENT_DISABLE) { \
-		regcache_mark_dirty(wm8996->regmap);	\
+		regcache_mark_dirty((*wm8996).regmap);	\
 	} \
 	return 0; \
 }
@@ -330,13 +330,13 @@ static SOC_ENUM_SINGLE_DECL(dsp1tx_hpf_cutoff,
 static SOC_ENUM_SINGLE_DECL(dsp2tx_hpf_cutoff,
 			    WM8996_DSP2_TX_FILTERS, 0, hpf_cutoff_text);
 
-static void wm8996_set_retune_mobile(struct snd_soc_component *component, int block)
+static void wm8996_set_retune_mobile(snd_soc_component *component, int block)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct wm8996_pdata *pdata = &wm8996->pdata;
+	struct wm8996_pdata *pdata = (*&wm8996).pdata;
 	int base, best, best_val, save, i, cfg, iface;
 
-	if (!wm8996->num_retune_mobile_texts)
+	if ((*!wm8996).num_retune_mobile_texts)
 		return;
 
 	switch (block) {
@@ -362,25 +362,25 @@ static void wm8996_set_retune_mobile(struct snd_soc_component *component, int bl
 
 	/* Find the version of the currently selected configuration
 	 * with the nearest sample rate. */
-	cfg = wm8996->retune_mobile_cfg[block];
+	cfg = (*wm8996).retune_mobile_cfg[block];
 	best = 0;
 	best_val = INT_MAX;
-	for (i = 0; i < pdata->num_retune_mobile_cfgs; i++) {
-		if (strcmp(pdata->retune_mobile_cfgs[i].name,
-			   wm8996->retune_mobile_texts[cfg]) == 0 &&
-		    abs(pdata->retune_mobile_cfgs[i].rate
-			- wm8996->rx_rate[iface]) < best_val) {
+	for (i = 0; i < (*pdata).num_retune_mobile_cfgs; i++) {
+		if (strcmp((*pdata).retune_mobile_cfgs[i].name,
+			   (*wm8996).retune_mobile_texts[cfg]) == 0 &&
+		    abs((*pdata).retune_mobile_cfgs[i].rate
+			- (*wm8996).rx_rate[iface]) < best_val) {
 			best = i;
-			best_val = abs(pdata->retune_mobile_cfgs[i].rate
-				       - wm8996->rx_rate[iface]);
+			best_val = abs((*pdata).retune_mobile_cfgs[i].rate
+				       - (*wm8996).rx_rate[iface]);
 		}
 	}
 
-	dev_dbg(component->dev, "ReTune Mobile %d %s/%dHz for %dHz sample rate\n",
+	dev_dbg((*component).dev, "ReTune Mobile %d %s/%dHz for %dHz sample rate\n",
 		block,
-		pdata->retune_mobile_cfgs[best].name,
-		pdata->retune_mobile_cfgs[best].rate,
-		wm8996->rx_rate[iface]);
+		(*pdata).retune_mobile_cfgs[best].name,
+		(*pdata).retune_mobile_cfgs[best].rate,
+		(*wm8996).rx_rate[iface]);
 
 	/* The EQ will be disabled while reconfiguring it, remember the
 	 * current configuration. 
@@ -388,9 +388,9 @@ static void wm8996_set_retune_mobile(struct snd_soc_component *component, int bl
 	save = snd_soc_component_read(component, base);
 	save &= WM8996_DSP1RX_EQ_ENA;
 
-	for (i = 0; i < ARRAY_SIZE(pdata->retune_mobile_cfgs[best].regs); i++)
+	for (i = 0; i < ARRAY_SIZE((*pdata).retune_mobile_cfgs[best].regs); i++)
 		snd_soc_component_update_bits(component, base + i, 0xffff,
-				    pdata->retune_mobile_cfgs[best].regs[i]);
+				    (*pdata).retune_mobile_cfgs[best].regs[i]);
 
 	snd_soc_component_update_bits(component, base, WM8996_DSP1RX_EQ_ENA, save);
 }
@@ -405,38 +405,38 @@ static int wm8996_get_retune_mobile_block(const char *name)
 	return -EINVAL;
 }
 
-static int wm8996_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
-					 struct snd_ctl_elem_value *ucontrol)
+static int wm8996_put_retune_mobile_enum(snd_kcontrol *kcontrol,
+					 snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct wm8996_pdata *pdata = &wm8996->pdata;
-	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
-	int value = ucontrol->value.enumerated.item[0];
+	struct wm8996_pdata *pdata = (*&wm8996).pdata;
+	int block = wm8996_get_retune_mobile_block((*kcontrol).id.name);
+	int value = (*ucontrol).value.enumerated.item[0];
 
 	if (block < 0)
 		return block;
 
-	if (value >= pdata->num_retune_mobile_cfgs)
+	if (value >= (*pdata).num_retune_mobile_cfgs)
 		return -EINVAL;
 
-	wm8996->retune_mobile_cfg[block] = value;
+	(*wm8996).retune_mobile_cfg[block] = value;
 
 	wm8996_set_retune_mobile(component, block);
 
 	return 0;
 }
 
-static int wm8996_get_retune_mobile_enum(struct snd_kcontrol *kcontrol,
-					 struct snd_ctl_elem_value *ucontrol)
+static int wm8996_get_retune_mobile_enum(snd_kcontrol *kcontrol,
+					 snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
+	int block = wm8996_get_retune_mobile_block((*kcontrol).id.name);
 
 	if (block < 0)
 		return block;
-	ucontrol->value.enumerated.item[0] = wm8996->retune_mobile_cfg[block];
+	(*ucontrol).value.enumerated.item[0] = (*wm8996).retune_mobile_cfg[block];
 
 	return 0;
 }
@@ -570,32 +570,32 @@ SOC_SINGLE_TLV("DSP2 EQ B5 Volume", WM8996_DSP2_RX_EQ_GAINS_2, 6, 31, 0,
 	       eq_tlv),
 };
 
-static void wm8996_bg_enable(struct snd_soc_component *component)
+static void wm8996_bg_enable(snd_soc_component *component)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 
-	wm8996->bg_ena++;
-	if (wm8996->bg_ena == 1) {
+	(*wm8996).bg_ena++;
+	if ((*wm8996).bg_ena == 1) {
 		snd_soc_component_update_bits(component, WM8996_POWER_MANAGEMENT_1,
 				    WM8996_BG_ENA, WM8996_BG_ENA);
 		msleep(2);
 	}
 }
 
-static void wm8996_bg_disable(struct snd_soc_component *component)
+static void wm8996_bg_disable(snd_soc_component *component)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 
-	wm8996->bg_ena--;
-	if (!wm8996->bg_ena)
+	(*wm8996).bg_ena--;
+	if ((*!wm8996).bg_ena)
 		snd_soc_component_update_bits(component, WM8996_POWER_MANAGEMENT_1,
 				    WM8996_BG_ENA, 0);
 }
 
-static int bg_event(struct snd_soc_dapm_widget *w,
-		    struct snd_kcontrol *kcontrol, int event)
+static int bg_event(snd_soc_dapm_widget *w,
+		    snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	int ret = 0;
 
 	switch (event) {
@@ -613,8 +613,8 @@ static int bg_event(struct snd_soc_dapm_widget *w,
 	return ret;
 }
 
-static int cp_event(struct snd_soc_dapm_widget *w,
-		    struct snd_kcontrol *kcontrol, int event)
+static int cp_event(snd_soc_dapm_widget *w,
+		    snd_kcontrol *kcontrol, int event)
 {
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
@@ -627,19 +627,19 @@ static int cp_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rmv_short_event(struct snd_soc_dapm_widget *w,
-			   struct snd_kcontrol *kcontrol, int event)
+static int rmv_short_event(snd_soc_dapm_widget *w,
+			   snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 
 	/* Record which outputs we enabled */
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMD:
-		wm8996->hpout_pending &= ~w->shift;
+		(*wm8996).hpout_pending &= ~(*w).shift;
 		break;
 	case SND_SOC_DAPM_PRE_PMU:
-		wm8996->hpout_pending |= w->shift;
+		(*wm8996).hpout_pending |= (*w).shift;
 		break;
 	default:
 		WARN(1, "Invalid event %d\n", event);
@@ -649,22 +649,21 @@ static int rmv_short_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static void wait_for_dc_servo(struct snd_soc_component *component, u16 mask)
-{
-	struct i2c_client *i2c = to_i2c_client(component->dev);
+static void wait_for_dc_servo!(snd_soc_component *component, mask: u16, {
+	struct i2c_client *i2c = to_i2c_client((*component).dev);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int ret;
-	unsigned long time_left = 200;
+	core::ffi::c_ulong time_left = 200;
 
 	snd_soc_component_write(component, WM8996_DC_SERVO_2, mask);
 
 	/* Use the interrupt if possible */
 	do {
-		if (i2c->irq) {
-			time_left = wait_for_completion_timeout(&wm8996->dcs_done,
+		if ((*i2c).irq) {
+			time_left = wait_for_completion_timeout((*&wm8996).dcs_done,
 								msecs_to_jiffies(200));
 			if (time_left == 0)
-				dev_err(component->dev, "DC servo timed out\n");
+				dev_err((*component).dev, "DC servo timed out\n");
 
 		} else {
 			msleep(1);
@@ -672,40 +671,40 @@ static void wait_for_dc_servo(struct snd_soc_component *component, u16 mask)
 		}
 
 		ret = snd_soc_component_read(component, WM8996_DC_SERVO_2);
-		dev_dbg(component->dev, "DC servo state: %x\n", ret);
+		dev_dbg((*component).dev, "DC servo state: %x\n", ret);
 	} while (time_left && ret & mask);
 
 	if (time_left == 0)
-		dev_err(component->dev, "DC servo timed out for %x\n", mask);
+		dev_err((*component).dev, "DC servo timed out for %x\n", mask);
 	else
-		dev_dbg(component->dev, "DC servo complete for %x\n", mask);
-}
+		dev_dbg((*component).dev, "DC servo complete for %x\n", mask);
+});
 
-static void wm8996_seq_notifier(struct snd_soc_component *component,
-				enum snd_soc_dapm_type event, int subseq)
+static void wm8996_seq_notifier(snd_soc_component *component,
+				snd_soc_dapm_type event, int subseq)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	u16 val, mask;
+	val: u16, mask;
 
 	/* Complete any pending DC servo starts */
-	if (wm8996->dcs_pending) {
-		dev_dbg(component->dev, "Starting DC servo for %x\n",
-			wm8996->dcs_pending);
+	if ((*wm8996).dcs_pending) {
+		dev_dbg((*component).dev, "Starting DC servo for %x\n",
+			(*wm8996).dcs_pending);
 
 		/* Trigger a startup sequence */
-		wait_for_dc_servo(component, wm8996->dcs_pending
+		wait_for_dc_servo(component, (*wm8996).dcs_pending
 				         << WM8996_DCS_TRIG_STARTUP_0_SHIFT);
 
-		wm8996->dcs_pending = 0;
+		(*wm8996).dcs_pending = 0;
 	}
 
-	if (wm8996->hpout_pending != wm8996->hpout_ena) {
-		dev_dbg(component->dev, "Applying RMV_SHORTs %x->%x\n",
-			wm8996->hpout_ena, wm8996->hpout_pending);
+	if ((*wm8996).hpout_pending != (*wm8996).hpout_ena) {
+		dev_dbg((*component).dev, "Applying RMV_SHORTs %x->%x\n",
+			(*wm8996).hpout_ena, (*wm8996).hpout_pending);
 
 		val = 0;
 		mask = 0;
-		if (wm8996->hpout_pending & HPOUT1L) {
+		if ((*wm8996).hpout_pending & HPOUT1L) {
 			val |= WM8996_HPOUT1L_RMV_SHORT | WM8996_HPOUT1L_OUTP;
 			mask |= WM8996_HPOUT1L_RMV_SHORT | WM8996_HPOUT1L_OUTP;
 		} else {
@@ -714,7 +713,7 @@ static void wm8996_seq_notifier(struct snd_soc_component *component,
 				WM8996_HPOUT1L_DLY;
 		}
 
-		if (wm8996->hpout_pending & HPOUT1R) {
+		if ((*wm8996).hpout_pending & HPOUT1R) {
 			val |= WM8996_HPOUT1R_RMV_SHORT | WM8996_HPOUT1R_OUTP;
 			mask |= WM8996_HPOUT1R_RMV_SHORT | WM8996_HPOUT1R_OUTP;
 		} else {
@@ -727,7 +726,7 @@ static void wm8996_seq_notifier(struct snd_soc_component *component,
 
 		val = 0;
 		mask = 0;
-		if (wm8996->hpout_pending & HPOUT2L) {
+		if ((*wm8996).hpout_pending & HPOUT2L) {
 			val |= WM8996_HPOUT2L_RMV_SHORT | WM8996_HPOUT2L_OUTP;
 			mask |= WM8996_HPOUT2L_RMV_SHORT | WM8996_HPOUT2L_OUTP;
 		} else {
@@ -736,7 +735,7 @@ static void wm8996_seq_notifier(struct snd_soc_component *component,
 				WM8996_HPOUT2L_DLY;
 		}
 
-		if (wm8996->hpout_pending & HPOUT2R) {
+		if ((*wm8996).hpout_pending & HPOUT2R) {
 			val |= WM8996_HPOUT2R_RMV_SHORT | WM8996_HPOUT2R_OUTP;
 			mask |= WM8996_HPOUT2R_RMV_SHORT | WM8996_HPOUT2R_OUTP;
 		} else {
@@ -747,19 +746,19 @@ static void wm8996_seq_notifier(struct snd_soc_component *component,
 
 		snd_soc_component_update_bits(component, WM8996_ANALOGUE_HP_2, mask, val);
 
-		wm8996->hpout_ena = wm8996->hpout_pending;
+		(*wm8996).hpout_ena = (*wm8996).hpout_pending;
 	}
 }
 
-static int dcs_start(struct snd_soc_dapm_widget *w,
-		     struct snd_kcontrol *kcontrol, int event)
+static int dcs_start(snd_soc_dapm_widget *w,
+		     snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		wm8996->dcs_pending |= 1 << w->shift;
+		(*wm8996).dcs_pending |= 1 << (*w).shift;
 		break;
 	default:
 		WARN(1, "Invalid event %d\n", event);
@@ -1292,7 +1291,7 @@ static const struct snd_soc_dapm_route wm8996_dapm_routes[] = {
 	{ "SPKDAT", NULL, "SPKR PGA" },
 };
 
-static bool wm8996_readable_register(struct device *dev, unsigned int reg)
+static bool wm8996_readable_register(device *dev, reg: core::ffi::c_uint)
 {
 	/* Due to the sparseness of the register map the compiler
 	 * output from an explicit switch statement ends up being much
@@ -1499,7 +1498,7 @@ static bool wm8996_readable_register(struct device *dev, unsigned int reg)
 	}
 }
 
-static bool wm8996_volatile_register(struct device *dev, unsigned int reg)
+static bool wm8996_volatile_register(device *dev, reg: core::ffi::c_uint)
 {
 	switch (reg) {
 	case WM8996_SOFTWARE_RESET:
@@ -1527,7 +1526,7 @@ static const int bclk_divs[] = {
 	1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96
 };
 
-static void wm8996_update_bclk(struct snd_soc_component *component)
+static void wm8996_update_bclk(snd_soc_component *component)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int aif, best, cur_val, bclk_rate, bclk_reg, i;
@@ -1535,7 +1534,7 @@ static void wm8996_update_bclk(struct snd_soc_component *component)
 	/* Don't bother if we're in a low frequency idle mode that
 	 * can't support audio.
 	 */
-	if (wm8996->sysclk < 64000)
+	if ((*wm8996).sysclk < 64000)
 		return;
 
 	for (aif = 0; aif < WM8996_AIFS; aif++) {
@@ -1548,18 +1547,18 @@ static void wm8996_update_bclk(struct snd_soc_component *component)
 			break;
 		}
 
-		bclk_rate = wm8996->bclk_rate[aif];
+		bclk_rate = (*wm8996).bclk_rate[aif];
 
 		/* Pick a divisor for BCLK as close as we can get to ideal */
 		best = 0;
 		for (i = 0; i < ARRAY_SIZE(bclk_divs); i++) {
-			cur_val = (wm8996->sysclk / bclk_divs[i]) - bclk_rate;
+			cur_val = ((*wm8996).sysclk / bclk_divs[i]) - bclk_rate;
 			if (cur_val < 0) /* BCLK table is sorted */
 				break;
 			best = i;
 		}
-		bclk_rate = wm8996->sysclk / bclk_divs[best];
-		dev_dbg(component->dev, "Using BCLK_DIV %d for actual BCLK %dHz\n",
+		bclk_rate = (*wm8996).sysclk / bclk_divs[best];
+		dev_dbg((*component).dev, "Using BCLK_DIV %d for actual BCLK %dHz\n",
 			bclk_divs[best], bclk_rate);
 
 		snd_soc_component_update_bits(component, bclk_reg,
@@ -1567,8 +1566,8 @@ static void wm8996_update_bclk(struct snd_soc_component *component)
 	}
 }
 
-static int wm8996_set_bias_level(struct snd_soc_component *component,
-				 enum snd_soc_bias_level level)
+static int wm8996_set_bias_level(snd_soc_component *component,
+				 snd_soc_bias_level level)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
@@ -1587,23 +1586,23 @@ static int wm8996_set_bias_level(struct snd_soc_component *component,
 
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_dapm_get_bias_level(dapm) == SND_SOC_BIAS_OFF) {
-			ret = regulator_bulk_enable(ARRAY_SIZE(wm8996->supplies),
-						    wm8996->supplies);
+			ret = regulator_bulk_enable(ARRAY_SIZE((*wm8996).supplies),
+						    (*wm8996).supplies);
 			if (ret != 0) {
-				dev_err(component->dev,
+				dev_err((*component).dev,
 					"Failed to enable supplies: %d\n",
 					ret);
 				return ret;
 			}
 
-			if (wm8996->ldo_ena) {
-				gpiod_set_value_cansleep(wm8996->ldo_ena,
+			if ((*wm8996).ldo_ena) {
+				gpiod_set_value_cansleep((*wm8996).ldo_ena,
 							 1);
 				msleep(5);
 			}
 
-			regcache_cache_only(wm8996->regmap, false);
-			regcache_sync(wm8996->regmap);
+			regcache_cache_only((*wm8996).regmap, false);
+			regcache_sync((*wm8996).regmap);
 		}
 
 		/* Bypass the MICBIASes for lowest power */
@@ -1614,29 +1613,29 @@ static int wm8996_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		regcache_cache_only(wm8996->regmap, true);
-		if (wm8996->ldo_ena) {
-			gpiod_set_value_cansleep(wm8996->ldo_ena, 0);
-			regcache_cache_only(wm8996->regmap, true);
+		regcache_cache_only((*wm8996).regmap, true);
+		if ((*wm8996).ldo_ena) {
+			gpiod_set_value_cansleep((*wm8996).ldo_ena, 0);
+			regcache_cache_only((*wm8996).regmap, true);
 		}
-		regulator_bulk_disable(ARRAY_SIZE(wm8996->supplies),
-				       wm8996->supplies);
+		regulator_bulk_disable(ARRAY_SIZE((*wm8996).supplies),
+				       (*wm8996).supplies);
 		break;
 	}
 
 	return 0;
 }
 
-static int wm8996_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+static int wm8996_set_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	int aifctrl = 0;
 	int bclk = 0;
 	int lrclk_tx = 0;
 	int lrclk_rx = 0;
 	int aifctrl_reg, bclk_reg, lrclk_tx_reg, lrclk_rx_reg;
 
-	switch (dai->id) {
+	switch ((*dai).id) {
 	case 0:
 		aifctrl_reg = WM8996_AIF1_CONTROL;
 		bclk_reg = WM8996_AIF1_BCLK;
@@ -1650,7 +1649,7 @@ static int wm8996_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		lrclk_rx_reg = WM8996_AIF2_RX_LRCLK_2;
 		break;
 	default:
-		WARN(1, "Invalid dai id %d\n", dai->id);
+		WARN(1, "Invalid dai id %d\n", (*dai).id);
 		return -EINVAL;
 	}
 
@@ -1726,11 +1725,11 @@ static const int dsp_divs[] = {
 	48000, 32000, 16000, 8000
 };
 
-static int wm8996_hw_params(struct snd_pcm_substream *substream,
-			    struct snd_pcm_hw_params *params,
-			    struct snd_soc_dai *dai)
+static int wm8996_hw_params(snd_pcm_substream *substream,
+			    snd_pcm_hw_params *params,
+			    snd_soc_dai *dai)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int bits, i, bclk_rate, best;
 	int aifdata = 0;
@@ -1738,9 +1737,9 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	int dsp = 0;
 	int aifdata_reg, lrclk_reg, dsp_shift;
 
-	switch (dai->id) {
+	switch ((*dai).id) {
 	case 0:
-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK ||
+		if ((*substream).stream == SNDRV_PCM_STREAM_PLAYBACK ||
 		    (snd_soc_component_read(component, WM8996_GPIO_1)) & WM8996_GP1_FN_MASK) {
 			aifdata_reg = WM8996_AIF1RX_DATA_CONFIGURATION;
 			lrclk_reg = WM8996_AIF1_RX_LRCLK_1;
@@ -1751,7 +1750,7 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 		dsp_shift = 0;
 		break;
 	case 1:
-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK ||
+		if ((*substream).stream == SNDRV_PCM_STREAM_PLAYBACK ||
 		    (snd_soc_component_read(component, WM8996_GPIO_2)) & WM8996_GP2_FN_MASK) {
 			aifdata_reg = WM8996_AIF2RX_DATA_CONFIGURATION;
 			lrclk_reg = WM8996_AIF2_RX_LRCLK_1;
@@ -1762,18 +1761,18 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 		dsp_shift = WM8996_DSP2_DIV_SHIFT;
 		break;
 	default:
-		WARN(1, "Invalid dai id %d\n", dai->id);
+		WARN(1, "Invalid dai id %d\n", (*dai).id);
 		return -EINVAL;
 	}
 
 	bclk_rate = snd_soc_params_to_bclk(params);
 	if (bclk_rate < 0) {
-		dev_err(component->dev, "Unsupported BCLK rate: %d\n", bclk_rate);
+		dev_err((*component).dev, "Unsupported BCLK rate: %d\n", bclk_rate);
 		return bclk_rate;
 	}
 
-	wm8996->bclk_rate[dai->id] = bclk_rate;
-	wm8996->rx_rate[dai->id] = params_rate(params);
+	(*wm8996).bclk_rate[(*dai).id] = bclk_rate;
+	(*wm8996).rx_rate[(*dai).id] = params_rate(params);
 
 	/* Needs looking at for TDM */
 	bits = params_width(params);
@@ -1792,7 +1791,7 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	wm8996_update_bclk(component);
 
 	lrclk = bclk_rate / params_rate(params);
-	dev_dbg(dai->dev, "Using LRCLK rate %d for actual LRCLK %dHz\n",
+	dev_dbg((*dai).dev, "Using LRCLK rate %d for actual LRCLK %dHz\n",
 		lrclk, bclk_rate / lrclk);
 
 	snd_soc_component_update_bits(component, aifdata_reg,
@@ -1807,10 +1806,10 @@ static int wm8996_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-static int wm8996_set_sysclk(struct snd_soc_dai *dai,
-		int clk_id, unsigned int freq, int dir)
+static int wm8996_set_sysclk(snd_soc_dai *dai,
+		int clk_id, freq: core::ffi::c_uint, int dir)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int lfclk = 0;
 	int ratediv = 0;
@@ -1818,7 +1817,7 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 	int src;
 	int old;
 
-	if (freq == wm8996->sysclk && clk_id == wm8996->sysclk_src)
+	if (freq == (*wm8996).sysclk && clk_id == (*wm8996).sysclk_src)
 		return 0;
 
 	/* Disable SYSCLK while we reconfigure */
@@ -1828,23 +1827,23 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 
 	switch (clk_id) {
 	case WM8996_SYSCLK_MCLK1:
-		wm8996->sysclk = freq;
+		(*wm8996).sysclk = freq;
 		src = 0;
 		break;
 	case WM8996_SYSCLK_MCLK2:
-		wm8996->sysclk = freq;
+		(*wm8996).sysclk = freq;
 		src = 1;
 		break;
 	case WM8996_SYSCLK_FLL:
-		wm8996->sysclk = freq;
+		(*wm8996).sysclk = freq;
 		src = 2;
 		break;
 	default:
-		dev_err(component->dev, "Unsupported clock source %d\n", clk_id);
+		dev_err((*component).dev, "Unsupported clock source %d\n", clk_id);
 		return -EINVAL;
 	}
 
-	switch (wm8996->sysclk) {
+	switch ((*wm8996).sysclk) {
 	case 5644800:
 	case 6144000:
 		snd_soc_component_update_bits(component, WM8996_AIF_RATE,
@@ -1853,7 +1852,7 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 	case 22579200:
 	case 24576000:
 		ratediv = WM8996_SYSCLK_DIV;
-		wm8996->sysclk /= 2;
+		(*wm8996).sysclk /= 2;
 		fallthrough;
 	case 11289600:
 	case 12288000:
@@ -1866,8 +1865,8 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 		sync = 0;
 		break;
 	default:
-		dev_warn(component->dev, "Unsupported clock rate %dHz\n",
-			 wm8996->sysclk);
+		dev_warn((*component).dev, "Unsupported clock rate %dHz\n",
+			 (*wm8996).sysclk);
 		return -EINVAL;
 	}
 
@@ -1882,7 +1881,7 @@ static int wm8996_set_sysclk(struct snd_soc_dai *dai,
 	snd_soc_component_update_bits(component, WM8996_AIF_CLOCKING_1,
 			    WM8996_SYSCLK_ENA, old);
 
-	wm8996->sysclk_src = clk_id;
+	(*wm8996).sysclk_src = clk_id;
 
 	return 0;
 }
@@ -1899,8 +1898,8 @@ struct _fll_div {
 };
 
 static struct {
-	unsigned int min;
-	unsigned int max;
+	core::ffi::c_uint min;
+	core::ffi::c_uint max;
 	u16 fll_fratio;
 	int ratio;
 } fll_fratios[] = {
@@ -1911,20 +1910,20 @@ static struct {
 	{ 1000000, 13500000, 0,  1 },
 };
 
-static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
-		       unsigned int Fout)
+static int fll_factors(_fll_div *fll_div, core::ffi::c_uint Fref,
+		       core::ffi::c_uint Fout)
 {
-	unsigned int target;
-	unsigned int div;
-	unsigned int fratio, gcd_fll;
+	core::ffi::c_uint target;
+	core::ffi::c_uint div;
+	fratio: core::ffi::c_uint, gcd_fll;
 	int i;
 
 	/* Fref must be <=13.5MHz */
 	div = 1;
-	fll_div->fll_refclk_div = 0;
+	(*fll_div).fll_refclk_div = 0;
 	while ((Fref / div) > 13500000) {
 		div *= 2;
-		fll_div->fll_refclk_div++;
+		(*fll_div).fll_refclk_div++;
 
 		if (div > 8) {
 			pr_err("Can't scale %dMHz input down to <=13.5MHz\n",
@@ -1939,14 +1938,14 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 	Fref /= div;
 
 	if (Fref >= 3000000)
-		fll_div->fll_loop_gain = 5;
+		(*fll_div).fll_loop_gain = 5;
 	else
-		fll_div->fll_loop_gain = 0;
+		(*fll_div).fll_loop_gain = 0;
 
 	if (Fref >= 48000)
-		fll_div->fll_ref_freq = 0;
+		(*fll_div).fll_ref_freq = 0;
 	else
-		fll_div->fll_ref_freq = 1;
+		(*fll_div).fll_ref_freq = 1;
 
 	/* Fvco should be 90-100MHz; don't check the upper bound */
 	div = 2;
@@ -1959,14 +1958,14 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 		}
 	}
 	target = Fout * div;
-	fll_div->fll_outdiv = div - 1;
+	(*fll_div).fll_outdiv = div - 1;
 
 	pr_debug("FLL Fvco=%dHz\n", target);
 
 	/* Find an appropraite FLL_FRATIO and factor it out of the target */
 	for (i = 0; i < ARRAY_SIZE(fll_fratios); i++) {
 		if (fll_fratios[i].min <= Fref && Fref <= fll_fratios[i].max) {
-			fll_div->fll_fratio = fll_fratios[i].fll_fratio;
+			(*fll_div).fll_fratio = fll_fratios[i].fll_fratio;
 			fratio = fll_fratios[i].ratio;
 			break;
 		}
@@ -1976,47 +1975,47 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 		return -EINVAL;
 	}
 
-	fll_div->n = target / (fratio * Fref);
+	(*fll_div).n = target / (fratio * Fref);
 
 	if (target % Fref == 0) {
-		fll_div->theta = 0;
-		fll_div->lambda = 0;
+		(*fll_div).theta = 0;
+		(*fll_div).lambda = 0;
 	} else {
 		gcd_fll = gcd(target, fratio * Fref);
 
-		fll_div->theta = (target - (fll_div->n * fratio * Fref))
+		(*fll_div).theta = (target - ((*fll_div).n * fratio * Fref))
 			/ gcd_fll;
-		fll_div->lambda = (fratio * Fref) / gcd_fll;
+		(*fll_div).lambda = (fratio * Fref) / gcd_fll;
 	}
 
 	pr_debug("FLL N=%x THETA=%x LAMBDA=%x\n",
-		 fll_div->n, fll_div->theta, fll_div->lambda);
+		 (*fll_div).n, (*fll_div).theta, (*fll_div).lambda);
 	pr_debug("FLL_FRATIO=%x FLL_OUTDIV=%x FLL_REFCLK_DIV=%x\n",
-		 fll_div->fll_fratio, fll_div->fll_outdiv,
-		 fll_div->fll_refclk_div);
+		 (*fll_div).fll_fratio, (*fll_div).fll_outdiv,
+		 (*fll_div).fll_refclk_div);
 
 	return 0;
 }
 
-static int wm8996_set_fll(struct snd_soc_component *component, int fll_id, int source,
-			  unsigned int Fref, unsigned int Fout)
+static int wm8996_set_fll(snd_soc_component *component, int fll_id, int source,
+			  core::ffi::c_uint Fref, core::ffi::c_uint Fout)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct i2c_client *i2c = to_i2c_client(component->dev);
+	struct i2c_client *i2c = to_i2c_client((*component).dev);
 	struct _fll_div fll_div;
-	unsigned long timeout, time_left;
+	timeout: core::ffi::c_ulong, time_left;
 	int ret, reg, retry;
 
 	/* Any change? */
-	if (source == wm8996->fll_src && Fref == wm8996->fll_fref &&
-	    Fout == wm8996->fll_fout)
+	if (source == (*wm8996).fll_src && Fref == (*wm8996).fll_fref &&
+	    Fout == (*wm8996).fll_fout)
 		return 0;
 
 	if (Fout == 0) {
-		dev_dbg(component->dev, "FLL disabled\n");
+		dev_dbg((*component).dev, "FLL disabled\n");
 
-		wm8996->fll_fref = 0;
-		wm8996->fll_fout = 0;
+		(*wm8996).fll_fref = 0;
+		(*wm8996).fll_fout = 0;
 
 		snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_1,
 				    WM8996_FLL_ENA, 0);
@@ -2044,7 +2043,7 @@ static int wm8996_set_fll(struct snd_soc_component *component, int fll_id, int s
 		reg = 3;
 		break;
 	default:
-		dev_err(component->dev, "Unknown FLL source %d\n", ret);
+		dev_err((*component).dev, "Unknown FLL source %d\n", ret);
 		return -EINVAL;
 	}
 
@@ -2083,7 +2082,7 @@ static int wm8996_set_fll(struct snd_soc_component *component, int fll_id, int s
 		wm8996_bg_enable(component);
 
 	/* Clear any pending completions (eg, from failed startups) */
-	try_wait_for_completion(&wm8996->fll_lock);
+	try_wait_for_completion((*&wm8996).fll_lock);
 
 	snd_soc_component_update_bits(component, WM8996_FLL_CONTROL_1,
 			    WM8996_FLL_ENA, WM8996_FLL_ENA);
@@ -2102,17 +2101,17 @@ static int wm8996_set_fll(struct snd_soc_component *component, int fll_id, int s
 	/* Allow substantially longer if we've actually got the IRQ, poll
 	 * at a slightly higher rate if we don't.
 	 */
-	if (i2c->irq)
+	if ((*i2c).irq)
 		timeout *= 10;
 	else
 		/* ensure timeout of atleast 1 jiffies */
 		timeout = (timeout/2) ? : 1;
 
 	for (retry = 0; retry < 10; retry++) {
-		time_left = wait_for_completion_timeout(&wm8996->fll_lock,
+		time_left = wait_for_completion_timeout((*&wm8996).fll_lock,
 							timeout);
 		if (time_left != 0) {
-			WARN_ON(!i2c->irq);
+			WARN_ON((*!i2c).irq);
 			ret = 1;
 			break;
 		}
@@ -2122,32 +2121,32 @@ static int wm8996_set_fll(struct snd_soc_component *component, int fll_id, int s
 			break;
 	}
 	if (retry == 10) {
-		dev_err(component->dev, "Timed out waiting for FLL\n");
+		dev_err((*component).dev, "Timed out waiting for FLL\n");
 		ret = -ETIMEDOUT;
 	}
 
-	dev_dbg(component->dev, "FLL configured for %dHz->%dHz\n", Fref, Fout);
+	dev_dbg((*component).dev, "FLL configured for %dHz->%dHz\n", Fref, Fout);
 
-	wm8996->fll_fref = Fref;
-	wm8996->fll_fout = Fout;
-	wm8996->fll_src = source;
+	(*wm8996).fll_fref = Fref;
+	(*wm8996).fll_fout = Fout;
+	(*wm8996).fll_src = source;
 
 	return ret;
 }
 
 // Original conditional: CONFIG_GPIOLIB
 #[cfg(CONFIG_GPIOLIB)]
-static int wm8996_gpio_set(struct gpio_chip *chip, unsigned int offset,
+static int wm8996_gpio_set(gpio_chip *chip, offset: core::ffi::c_uint,
 			   int value)
 {
 	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
 
-	return regmap_update_bits(wm8996->regmap, WM8996_GPIO_1 + offset,
+	return regmap_update_bits((*wm8996).regmap, WM8996_GPIO_1 + offset,
 				  WM8996_GP1_LVL,
 				  !!value << WM8996_GP1_LVL_SHIFT);
 }
 
-static int wm8996_gpio_direction_out(struct gpio_chip *chip,
+static int wm8996_gpio_direction_out(gpio_chip *chip,
 				     unsigned offset, int value)
 {
 	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
@@ -2155,68 +2154,68 @@ static int wm8996_gpio_direction_out(struct gpio_chip *chip,
 
 	val = (1 << WM8996_GP1_FN_SHIFT) | (!!value << WM8996_GP1_LVL_SHIFT);
 
-	return regmap_update_bits(wm8996->regmap, WM8996_GPIO_1 + offset,
+	return regmap_update_bits((*wm8996).regmap, WM8996_GPIO_1 + offset,
 				  WM8996_GP1_FN_MASK | WM8996_GP1_DIR |
 				  WM8996_GP1_LVL, val);
 }
 
-static int wm8996_gpio_get(struct gpio_chip *chip, unsigned offset)
+static int wm8996_gpio_get(gpio_chip *chip, unsigned offset)
 {
 	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
-	unsigned int reg;
+	core::ffi::c_uint reg;
 	int ret;
 
-	ret = regmap_read(wm8996->regmap, WM8996_GPIO_1 + offset, &reg);
+	ret = regmap_read((*wm8996).regmap, WM8996_GPIO_1 + offset, &reg);
 	if (ret < 0)
 		return ret;
 
 	return (reg & WM8996_GP1_LVL) != 0;
 }
 
-static int wm8996_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
+static int wm8996_gpio_direction_in(gpio_chip *chip, unsigned offset)
 {
 	struct wm8996_priv *wm8996 = gpiochip_get_data(chip);
 
-	return regmap_update_bits(wm8996->regmap, WM8996_GPIO_1 + offset,
+	return regmap_update_bits((*wm8996).regmap, WM8996_GPIO_1 + offset,
 				  WM8996_GP1_FN_MASK | WM8996_GP1_DIR,
 				  (1 << WM8996_GP1_FN_SHIFT) |
 				  (1 << WM8996_GP1_DIR_SHIFT));
 }
 
 static const struct gpio_chip wm8996_template_chip = {
-	.label			= "wm8996",
-	.owner			= THIS_MODULE,
-	.direction_output	= wm8996_gpio_direction_out,
-	.set			= wm8996_gpio_set,
-	.direction_input	= wm8996_gpio_direction_in,
-	.get			= wm8996_gpio_get,
-	.can_sleep		= 1,
-	.ngpio			= 5,
-	.base			= -1,
+	label: "wm8996",
+	owner: THIS_MODULE,
+	direction_output: wm8996_gpio_direction_out,
+	set: wm8996_gpio_set,
+	direction_input: wm8996_gpio_direction_in,
+	get: wm8996_gpio_get,
+	can_sleep: 1,
+	ngpio: 5,
+	base: -1,
 };
 
-static void wm8996_init_gpio(struct wm8996_priv *wm8996)
+static void wm8996_init_gpio(wm8996_priv *wm8996)
 {
 	int ret;
 
-	wm8996->gpio_chip = wm8996_template_chip;
-	wm8996->gpio_chip.parent = wm8996->dev;
+	(*wm8996).gpio_chip = wm8996_template_chip;
+	(*wm8996).gpio_chip.parent = (*wm8996).dev;
 
-	ret = gpiochip_add_data(&wm8996->gpio_chip, wm8996);
+	ret = gpiochip_add_data((*&wm8996).gpio_chip, wm8996);
 	if (ret != 0)
-		dev_err(wm8996->dev, "Failed to add GPIOs: %d\n", ret);
+		dev_err((*wm8996).dev, "Failed to add GPIOs: %d\n", ret);
 }
 
-static void wm8996_free_gpio(struct wm8996_priv *wm8996)
+static void wm8996_free_gpio(wm8996_priv *wm8996)
 {
-	gpiochip_remove(&wm8996->gpio_chip);
+	gpiochip_remove((*&wm8996).gpio_chip);
 }
 #[cfg(not(CONFIG_GPIOLIB))]
-static void wm8996_init_gpio(struct wm8996_priv *wm8996)
+static void wm8996_init_gpio(wm8996_priv *wm8996)
 {
 }
 
-static void wm8996_free_gpio(struct wm8996_priv *wm8996)
+static void wm8996_free_gpio(wm8996_priv *wm8996)
 {
 }
 // end conditional
@@ -2235,19 +2234,19 @@ static void wm8996_free_gpio(struct wm8996_priv *wm8996)
  * will also detect inverted microphone ground connections and update
  * the polarity of the connections.
  */
-int wm8996_detect(struct snd_soc_component *component, struct snd_soc_jack *jack,
+int wm8996_detect(snd_soc_component *component, snd_soc_jack *jack,
 		  wm8996_polarity_fn polarity_cb)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 
-	wm8996->jack = jack;
-	wm8996->detecting = true;
-	wm8996->polarity_cb = polarity_cb;
-	wm8996->jack_flips = 0;
+	(*wm8996).jack = jack;
+	(*wm8996).detecting = true;
+	(*wm8996).polarity_cb = polarity_cb;
+	(*wm8996).jack_flips = 0;
 
-	if (wm8996->polarity_cb)
-		wm8996->polarity_cb(component, 0);
+	if ((*wm8996).polarity_cb)
+		(*wm8996).polarity_cb(component, 0);
 
 	/* Clear discarge to avoid noise during detection */
 	snd_soc_component_update_bits(component, WM8996_MICBIAS_1,
@@ -2282,8 +2281,9 @@ int wm8996_detect(struct snd_soc_component *component, struct snd_soc_jack *jack
 }
 EXPORT_SYMBOL_GPL(wm8996_detect);
 
-static void wm8996_hpdet_irq(struct snd_soc_component *component)
+static void wm8996_hpdet_irq(snd_soc_component *component)
 {
+	'out: {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int val, reg, report;
@@ -2295,18 +2295,18 @@ static void wm8996_hpdet_irq(struct snd_soc_component *component)
 
 	reg = snd_soc_component_read(component, WM8996_HEADPHONE_DETECT_2);
 	if (reg < 0) {
-		dev_err(component->dev, "Failed to read HPDET status\n");
-		goto out;
+		dev_err((*component).dev, "Failed to read HPDET status\n");
+		break 'out;
 	}
 
 	if (!(reg & WM8996_HP_DONE)) {
-		dev_err(component->dev, "Got HPDET IRQ but HPDET is busy\n");
-		goto out;
+		dev_err((*component).dev, "Got HPDET IRQ but HPDET is busy\n");
+		break 'out;
 	}
 
 	val = reg & WM8996_HP_LVL_MASK;
 
-	dev_dbg(component->dev, "HPDET measured %d ohms\n", val);
+	dev_dbg((*component).dev, "HPDET measured %d ohms\n", val);
 
 	/* If we've got high enough impedence then report as line,
 	 * otherwise assume headphone.
@@ -2315,15 +2315,15 @@ static void wm8996_hpdet_irq(struct snd_soc_component *component)
 		report = SND_JACK_LINEOUT;
 	else
 		report = SND_JACK_HEADPHONE;
-
-out:
-	if (wm8996->jack_mic)
+	}
+	
+	if ((*wm8996).jack_mic)
 		report |= SND_JACK_MICROPHONE;
 
-	snd_soc_jack_report(wm8996->jack, report,
+	snd_soc_jack_report((*wm8996).jack, report,
 			    SND_JACK_LINEOUT | SND_JACK_HEADSET);
 
-	wm8996->detecting = false;
+	(*wm8996).detecting = false;
 
 	/* If the output isn't running re-clamp it */
 	if (!(snd_soc_component_read(component, WM8996_POWER_MANAGEMENT_1) &
@@ -2342,7 +2342,7 @@ out:
 	snd_soc_dapm_sync(dapm);
 }
 
-static void wm8996_hpdet_start(struct snd_soc_component *component)
+static void wm8996_hpdet_start(snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 
@@ -2367,9 +2367,9 @@ static void wm8996_hpdet_start(struct snd_soc_component *component)
 			    WM8996_HP_POLL, WM8996_HP_POLL);
 }
 
-static void wm8996_report_headphone(struct snd_soc_component *component)
+static void wm8996_report_headphone(snd_soc_component *component)
 {
-	dev_dbg(component->dev, "Headphone detected\n");
+	dev_dbg((*component).dev, "Headphone detected\n");
 	wm8996_hpdet_start(component);
 
 	/* Increase the detection rate a bit for responsiveness. */
@@ -2380,27 +2380,27 @@ static void wm8996_report_headphone(struct snd_soc_component *component)
 			    7 << WM8996_MICD_BIAS_STARTTIME_SHIFT);
 }
 
-static void wm8996_micd(struct snd_soc_component *component)
+static void wm8996_micd(snd_soc_component *component)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
 	int val, reg;
 
 	val = snd_soc_component_read(component, WM8996_MIC_DETECT_3);
 
-	dev_dbg(component->dev, "Microphone event: %x\n", val);
+	dev_dbg((*component).dev, "Microphone event: %x\n", val);
 
 	if (!(val & WM8996_MICD_VALID)) {
-		dev_warn(component->dev, "Microphone detection state invalid\n");
+		dev_warn((*component).dev, "Microphone detection state invalid\n");
 		return;
 	}
 
 	/* No accessory, reset everything and report removal */
 	if (!(val & WM8996_MICD_STS)) {
-		dev_dbg(component->dev, "Jack removal detected\n");
-		wm8996->jack_mic = false;
-		wm8996->detecting = true;
-		wm8996->jack_flips = 0;
-		snd_soc_jack_report(wm8996->jack, 0,
+		dev_dbg((*component).dev, "Jack removal detected\n");
+		(*wm8996).jack_mic = false;
+		(*wm8996).detecting = true;
+		(*wm8996).jack_flips = 0;
+		snd_soc_jack_report((*wm8996).jack, 0,
 				    SND_JACK_LINEOUT | SND_JACK_HEADSET |
 				    SND_JACK_BTN_0);
 
@@ -2417,9 +2417,9 @@ static void wm8996_micd(struct snd_soc_component *component)
 	 * we've got a button release event.
 	 */
 	if (val & 0x400) {
-		if (wm8996->detecting) {
-			dev_dbg(component->dev, "Microphone detected\n");
-			wm8996->jack_mic = true;
+		if ((*wm8996).detecting) {
+			dev_dbg((*component).dev, "Microphone detected\n");
+			(*wm8996).jack_mic = true;
 			wm8996_hpdet_start(component);
 
 			/* Increase poll rate to give better responsiveness
@@ -2430,8 +2430,8 @@ static void wm8996_micd(struct snd_soc_component *component)
 					    5 << WM8996_MICD_RATE_SHIFT |
 					    7 << WM8996_MICD_BIAS_STARTTIME_SHIFT);
 		} else {
-			dev_dbg(component->dev, "Mic button up\n");
-			snd_soc_jack_report(wm8996->jack, 0, SND_JACK_BTN_0);
+			dev_dbg((*component).dev, "Mic button up\n");
+			snd_soc_jack_report((*wm8996).jack, 0, SND_JACK_BTN_0);
 		}
 
 		return;
@@ -2443,10 +2443,10 @@ static void wm8996_micd(struct snd_soc_component *component)
 	 * plain headphones.  If both polarities report a low
 	 * impedence then give up and report headphones.
 	 */
-	if (wm8996->detecting && (val & 0x3f0)) {
-		wm8996->jack_flips++;
+	if ((*wm8996).detecting && (val & 0x3f0)) {
+		(*wm8996).jack_flips++;
 
-		if (wm8996->jack_flips > 1) {
+		if ((*wm8996).jack_flips > 1) {
 			wm8996_report_headphone(component);
 			return;
 		}
@@ -2458,11 +2458,11 @@ static void wm8996_micd(struct snd_soc_component *component)
 				    WM8996_HPOUT1FB_SRC | WM8996_MICD_SRC |
 				    WM8996_MICD_BIAS_SRC, reg);
 
-		if (wm8996->polarity_cb)
-			wm8996->polarity_cb(component,
+		if ((*wm8996).polarity_cb)
+			(*wm8996).polarity_cb(component,
 					    (reg & WM8996_MICD_SRC) != 0);
 
-		dev_dbg(component->dev, "Set microphone polarity to %d\n",
+		dev_dbg((*component).dev, "Set microphone polarity to %d\n",
 			(reg & WM8996_MICD_SRC) != 0);
 
 		return;
@@ -2472,11 +2472,11 @@ static void wm8996_micd(struct snd_soc_component *component)
 	 * impedence as BTN_0.
 	 */
 	if (val & 0x3fc) {
-		if (wm8996->jack_mic) {
-			dev_dbg(component->dev, "Mic button detected\n");
-			snd_soc_jack_report(wm8996->jack, SND_JACK_BTN_0,
+		if ((*wm8996).jack_mic) {
+			dev_dbg((*component).dev, "Mic button detected\n");
+			snd_soc_jack_report((*wm8996).jack, SND_JACK_BTN_0,
 					    SND_JACK_BTN_0);
-		} else if (wm8996->detecting) {
+		} else if ((*wm8996).detecting) {
 			wm8996_report_headphone(component);
 		}
 	}
@@ -2490,7 +2490,7 @@ static irqreturn_t wm8996_irq(int irq, void *data)
 
 	irq_val = snd_soc_component_read(component, WM8996_INTERRUPT_STATUS_2);
 	if (irq_val < 0) {
-		dev_err(component->dev, "Failed to read IRQ status: %d\n",
+		dev_err((*component).dev, "Failed to read IRQ status: %d\n",
 			irq_val);
 		return IRQ_NONE;
 	}
@@ -2502,16 +2502,16 @@ static irqreturn_t wm8996_irq(int irq, void *data)
 	snd_soc_component_write(component, WM8996_INTERRUPT_STATUS_2, irq_val);
 
 	if (irq_val & (WM8996_DCS_DONE_01_EINT | WM8996_DCS_DONE_23_EINT)) {
-		dev_dbg(component->dev, "DC servo IRQ\n");
-		complete(&wm8996->dcs_done);
+		dev_dbg((*component).dev, "DC servo IRQ\n");
+		complete((*&wm8996).dcs_done);
 	}
 
 	if (irq_val & WM8996_FIFOS_ERR_EINT)
-		dev_err(component->dev, "Digital core FIFO error\n");
+		dev_err((*component).dev, "Digital core FIFO error\n");
 
 	if (irq_val & WM8996_FLL_LOCK_EINT) {
-		dev_dbg(component->dev, "FLL locked\n");
-		complete(&wm8996->fll_lock);
+		dev_dbg((*component).dev, "FLL locked\n");
+		complete((*&wm8996).fll_lock);
 	}
 
 	if (irq_val & WM8996_MICD_EINT)
@@ -2537,18 +2537,18 @@ static irqreturn_t wm8996_edge_irq(int irq, void *data)
 	return ret;
 }
 
-static void wm8996_retune_mobile_pdata(struct snd_soc_component *component)
+static void wm8996_retune_mobile_pdata(snd_soc_component *component)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct wm8996_pdata *pdata = &wm8996->pdata;
+	struct wm8996_pdata *pdata = (*&wm8996).pdata;
 
 	struct snd_kcontrol_new controls[] = {
 		SOC_ENUM_EXT("DSP1 EQ Mode",
-			     wm8996->retune_mobile_enum,
+			     (*wm8996).retune_mobile_enum,
 			     wm8996_get_retune_mobile_enum,
 			     wm8996_put_retune_mobile_enum),
 		SOC_ENUM_EXT("DSP2 EQ Mode",
-			     wm8996->retune_mobile_enum,
+			     (*wm8996).retune_mobile_enum,
 			     wm8996_get_retune_mobile_enum,
 			     wm8996_put_retune_mobile_enum),
 	};
@@ -2559,10 +2559,10 @@ static void wm8996_retune_mobile_pdata(struct snd_soc_component *component)
 	 * of texts is likely to be less than the number of
 	 * configurations due to the sample rate dependency of the
 	 * configurations. */
-	wm8996->num_retune_mobile_texts = 0;
-	wm8996->retune_mobile_texts = NULL;
-	for (i = 0; i < pdata->num_retune_mobile_cfgs; i++) {
-		for (j = 0; j < wm8996->num_retune_mobile_texts; j++) {
+	(*wm8996).num_retune_mobile_texts = 0;
+	(*wm8996).retune_mobile_texts = NULL;
+	for (i = 0; i < (*pdata).num_retune_mobile_cfgs; i++) {
+		for (j = 0; j < (*wm8996).num_retune_mobile_texts; j++) {
 			if (strcmp(pdata->retune_mobile_cfgs[i].name,
 				   wm8996->retune_mobile_texts[j]) == 0)
 				break;
@@ -2601,18 +2601,18 @@ static void wm8996_retune_mobile_pdata(struct snd_soc_component *component)
 }
 
 static const struct regmap_config wm8996_regmap = {
-	.reg_bits = 16,
-	.val_bits = 16,
+	reg_bits: 16,
+	val_bits: 16,
 
-	.max_register = WM8996_MAX_REGISTER,
-	.reg_defaults = wm8996_reg,
-	.num_reg_defaults = ARRAY_SIZE(wm8996_reg),
-	.volatile_reg = wm8996_volatile_register,
-	.readable_reg = wm8996_readable_register,
-	.cache_type = REGCACHE_MAPLE,
+	max_register: WM8996_MAX_REGISTER,
+	reg_defaults: wm8996_reg,
+	num_reg_defaults: ARRAY_SIZE(wm8996_reg),
+	volatile_reg: wm8996_volatile_register,
+	readable_reg: wm8996_readable_register,
+	cache_type: REGCACHE_MAPLE,
 };
 
-static int wm8996_probe(struct snd_soc_component *component)
+static int wm8996_probe(snd_soc_component *component)
 {
 	int ret;
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
@@ -2669,7 +2669,7 @@ static int wm8996_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-static void wm8996_remove(struct snd_soc_component *component)
+static void wm8996_remove(snd_soc_component *component)
 {
 	struct i2c_client *i2c = to_i2c_client(component->dev);
 
@@ -2681,19 +2681,19 @@ static void wm8996_remove(struct snd_soc_component *component)
 }
 
 static const struct snd_soc_component_driver soc_component_dev_wm8996 = {
-	.probe			= wm8996_probe,
-	.remove			= wm8996_remove,
-	.set_bias_level		= wm8996_set_bias_level,
-	.seq_notifier		= wm8996_seq_notifier,
-	.controls		= wm8996_snd_controls,
-	.num_controls		= ARRAY_SIZE(wm8996_snd_controls),
-	.dapm_widgets		= wm8996_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(wm8996_dapm_widgets),
-	.dapm_routes		= wm8996_dapm_routes,
-	.num_dapm_routes	= ARRAY_SIZE(wm8996_dapm_routes),
-	.set_pll		= wm8996_set_fll,
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
+	probe: wm8996_probe,
+	remove: wm8996_remove,
+	set_bias_level: wm8996_set_bias_level,
+	seq_notifier: wm8996_seq_notifier,
+	controls: wm8996_snd_controls,
+	num_controls: ARRAY_SIZE(wm8996_snd_controls),
+	dapm_widgets: wm8996_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(wm8996_dapm_widgets),
+	dapm_routes: wm8996_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(wm8996_dapm_routes),
+	set_pll: wm8996_set_fll,
+	use_pmdown_time: 1,
+	endianness: 1,
 };
 
 #define WM8996_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
@@ -2704,61 +2704,66 @@ static const struct snd_soc_component_driver soc_component_dev_wm8996 = {
 			SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops wm8996_dai_ops = {
-	.set_fmt = wm8996_set_fmt,
-	.hw_params = wm8996_hw_params,
-	.set_sysclk = wm8996_set_sysclk,
+	set_fmt: wm8996_set_fmt,
+	hw_params: wm8996_hw_params,
+	set_sysclk: wm8996_set_sysclk,
 };
 
 static struct snd_soc_dai_driver wm8996_dai[] = {
 	{
-		.name = "wm8996-aif1",
-		.playback = {
-			.stream_name = "AIF1 Playback",
-			.channels_min = 1,
-			.channels_max = 6,
-			.rates = WM8996_RATES,
-			.formats = WM8996_FORMATS,
-			.sig_bits = 24,
+		name: "wm8996-aif1",
+		playback: {
+			stream_name: "AIF1 Playback",
+			channels_min: 1,
+			channels_max: 6,
+			rates: WM8996_RATES,
+			formats: WM8996_FORMATS,
+			sig_bits: 24,
 		},
-		.capture = {
-			 .stream_name = "AIF1 Capture",
-			 .channels_min = 1,
-			 .channels_max = 6,
-			 .rates = WM8996_RATES,
-			 .formats = WM8996_FORMATS,
-			 .sig_bits = 24,
+		capture: {
+			 stream_name: "AIF1 Capture",
+			 channels_min: 1,
+			 channels_max: 6,
+			 rates: WM8996_RATES,
+			 formats: WM8996_FORMATS,
+			 sig_bits: 24,
 		 },
-		.ops = &wm8996_dai_ops,
+		ops: &wm8996_dai_ops,
 	},
 	{
-		.name = "wm8996-aif2",
-		.playback = {
-			.stream_name = "AIF2 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = WM8996_RATES,
-			.formats = WM8996_FORMATS,
-			.sig_bits = 24,
+		name: "wm8996-aif2",
+		playback: {
+			stream_name: "AIF2 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: WM8996_RATES,
+			formats: WM8996_FORMATS,
+			sig_bits: 24,
 		},
-		.capture = {
-			 .stream_name = "AIF2 Capture",
-			 .channels_min = 1,
-			 .channels_max = 2,
-			 .rates = WM8996_RATES,
-			 .formats = WM8996_FORMATS,
-			.sig_bits = 24,
+		capture: {
+			 stream_name: "AIF2 Capture",
+			 channels_min: 1,
+			 channels_max: 2,
+			 rates: WM8996_RATES,
+			 formats: WM8996_FORMATS,
+			sig_bits: 24,
 		 },
-		.ops = &wm8996_dai_ops,
+		ops: &wm8996_dai_ops,
 	},
 };
 
-static int wm8996_i2c_probe(struct i2c_client *i2c)
+static int wm8996_i2c_probe(i2c_client *i2c)
 {
+	'err: {
+	'err_gpio: {
+	'err_enable: {
+	'err_regmap: {
+	'err_gpiolib: {
 	struct wm8996_priv *wm8996;
 	int ret, i;
-	unsigned int reg;
+	core::ffi::c_uint reg;
 
-	wm8996 = devm_kzalloc(&i2c->dev, sizeof(struct wm8996_priv),
+	wm8996 = devm_kzalloc(&i2c->dev, sizeof(wm8996_priv),
 			      GFP_KERNEL);
 	if (wm8996 == NULL)
 		return -ENOMEM;
@@ -2776,7 +2781,7 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 		ret = PTR_ERR(wm8996->ldo_ena);
 		dev_err(&i2c->dev, "Failed to request LDO ENA GPIO: %d\n",
 			ret);
-		goto err;
+		break 'err;
 	}
 	gpiod_set_consumer_name(wm8996->ldo_ena, "WM8996 ENA");
 
@@ -2787,7 +2792,7 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 				      wm8996->supplies);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to request supplies: %d\n", ret);
-		goto err_gpio;
+		break 'err_gpio;
 	}
 
 	wm8996->disable_nb[0].notifier_call = wm8996_regulator_event_0;
@@ -2810,7 +2815,7 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 				    wm8996->supplies);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to enable supplies: %d\n", ret);
-		goto err_gpio;
+		break 'err_gpio;
 	}
 
 	if (wm8996->ldo_ena) {
@@ -2822,25 +2827,25 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 	if (IS_ERR(wm8996->regmap)) {
 		ret = PTR_ERR(wm8996->regmap);
 		dev_err(&i2c->dev, "regmap_init() failed: %d\n", ret);
-		goto err_enable;
+		break 'err_enable;
 	}
 
 	ret = regmap_read(wm8996->regmap, WM8996_SOFTWARE_RESET, &reg);
 	if (ret < 0) {
 		dev_err(&i2c->dev, "Failed to read ID register: %d\n", ret);
-		goto err_regmap;
+		break 'err_regmap;
 	}
 	if (reg != 0x8915) {
 		dev_err(&i2c->dev, "Device is not a WM8996, ID %x\n", reg);
 		ret = -EINVAL;
-		goto err_regmap;
+		break 'err_regmap;
 	}
 
 	ret = regmap_read(wm8996->regmap, WM8996_CHIP_REVISION, &reg);
 	if (ret < 0) {
 		dev_err(&i2c->dev, "Failed to read device revision: %d\n",
 			ret);
-		goto err_regmap;
+		break 'err_regmap;
 	}
 
 	dev_info(&i2c->dev, "revision %c\n",
@@ -2854,7 +2859,7 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 				   0x8915);
 		if (ret != 0) {
 			dev_err(&i2c->dev, "Failed to issue reset: %d\n", ret);
-			goto err_regmap;
+			break 'err_regmap;
 		}
 	}
 
@@ -3020,7 +3025,7 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 	ret = regmap_read(wm8996->regmap, WM8996_GPIO_1, &reg);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to read GPIO1: %d\n", ret);
-		goto err_regmap;
+		break 'err_regmap;
 	}
 
 	if (reg & WM8996_GP1_FN_MASK)
@@ -3031,7 +3036,7 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 	ret = regmap_read(wm8996->regmap, WM8996_GPIO_2, &reg);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to read GPIO2: %d\n", ret);
-		goto err_regmap;
+		break 'err_regmap;
 	}
 
 	if (reg & WM8996_GP2_FN_MASK)
@@ -3045,24 +3050,26 @@ static int wm8996_i2c_probe(struct i2c_client *i2c)
 				     &soc_component_dev_wm8996, wm8996_dai,
 				     ARRAY_SIZE(wm8996_dai));
 	if (ret < 0)
-		goto err_gpiolib;
+		break 'err_gpiolib;
 
 	return ret;
-
-err_gpiolib:
+	}
+	
 	wm8996_free_gpio(wm8996);
-err_regmap:
-err_enable:
+	}
+	}
+	
 	if (wm8996->ldo_ena)
 		gpiod_set_value_cansleep(wm8996->ldo_ena, 0);
 	regulator_bulk_disable(ARRAY_SIZE(wm8996->supplies), wm8996->supplies);
-err_gpio:
-err:
+	}
+	}
+	
 
 	return ret;
 }
 
-static void wm8996_i2c_remove(struct i2c_client *client)
+static void wm8996_i2c_remove(i2c_client *client)
 {
 	struct wm8996_priv *wm8996 = i2c_get_clientdata(client);
 
@@ -3078,12 +3085,12 @@ static const struct i2c_device_id wm8996_i2c_id[] = {
 MODULE_DEVICE_TABLE(i2c, wm8996_i2c_id);
 
 static struct i2c_driver wm8996_i2c_driver = {
-	.driver = {
-		.name = "wm8996",
+	driver: {
+		name: "wm8996",
 	},
-	.probe =    wm8996_i2c_probe,
-	.remove =   wm8996_i2c_remove,
-	.id_table = wm8996_i2c_id,
+	probe: wm8996_i2c_probe,
+	remove: wm8996_i2c_remove,
+	id_table: wm8996_i2c_id,
 };
 
 module_i2c_driver(wm8996_i2c_driver);

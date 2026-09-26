@@ -76,7 +76,7 @@ extern "C" {
     fn per_cpu_xen_vcpu_id(cpu: c_int) -> u32;
 }
 
-#[cfg(feature = "CONFIG_XEN_PV")]
+#[cfg(CONFIG_XEN_PV)]
 extern "C" {
     pub fn xen_remap_pfn(
         vma: *mut vm_area_struct,
@@ -90,7 +90,7 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_XEN_PV"))]
+#[cfg(not(CONFIG_XEN_PV))]
 #[inline]
 pub unsafe fn xen_remap_pfn(
     _vma: *mut vm_area_struct,
@@ -152,27 +152,27 @@ pub unsafe fn xen_remap_domain_gfn_range(
     xen_remap_pfn(vma, addr, &mut gfn, nr, core::ptr::null_mut(), prot, domid, false)
 }
 
-#[cfg(all(feature = "CONFIG_XEN_PV", not(feature = "CONFIG_PREEMPTION")))]
+#[cfg(all(CONFIG_XEN_PV, not(CONFIG_PREEMPTION)))]
 extern "C" {
     pub static mut xen_in_preemptible_hcall: bool;
 }
 
 #[inline]
 pub unsafe fn xen_preemptible_hcall_begin() {
-    #[cfg(all(feature = "CONFIG_XEN_PV", not(feature = "CONFIG_PREEMPTION")))]
+    #[cfg(all(CONFIG_XEN_PV, not(CONFIG_PREEMPTION)))]
     { xen_in_preemptible_hcall = true; }
 }
 
 #[inline]
 pub unsafe fn xen_preemptible_hcall_end() {
-    #[cfg(all(feature = "CONFIG_XEN_PV", not(feature = "CONFIG_PREEMPTION")))]
+    #[cfg(all(CONFIG_XEN_PV, not(CONFIG_PREEMPTION)))]
     { xen_in_preemptible_hcall = false; }
 }
 
-#[cfg(feature = "CONFIG_XEN_GRANT_DMA_OPS")]
+#[cfg(CONFIG_XEN_GRANT_DMA_OPS)]
 extern "C" { pub fn xen_virtio_restricted_mem_acc(dev: *mut virtio_device) -> bool; }
 
-#[cfg(not(feature = "CONFIG_XEN_GRANT_DMA_OPS"))]
+#[cfg(not(CONFIG_XEN_GRANT_DMA_OPS))]
 #[inline]
 pub unsafe fn xen_virtio_restricted_mem_acc(_dev: *mut virtio_device) -> bool { false }
 

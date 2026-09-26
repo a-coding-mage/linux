@@ -18,10 +18,10 @@ pub const MT8189_MEMIF_PBUF_SIZE_NUM: u32 = 4;
 /*
 
 
-/*  /* reg bit enum */ */
+/ *  / * reg bit enum */ */
 
 /*****************************************************************************
-/* AUDIO_TOP_CON0 */
+/ * AUDIO_TOP_CON0 */
 pub const PDN_MTKAIFV4_SFT: u32 = 25;
 pub const PDN_MTKAIFV4_MASK: u32 = 0x1;
 pub const PDN_MTKAIFV4_MASK_SFT: u32 = 0x1 << 25;
@@ -1645,10 +1645,10 @@ pub const AFE_IRQ26_CNT_MON_SFT: u32 = 0;
 pub const AFE_IRQ26_CNT_MON_MASK: u32 = 0xffffff;
 pub const AFE_IRQ26_CNT_MON_MASK_SFT: u32 = 0xffffff << 0;
 
-/*  /* AFE_GAIN0_CON0 */ */
-/*  /* AFE_GAIN1_CON0 */ */
-/*  /* AFE_GAIN2_CON0 */ */
-/*  /* AFE_GAIN3_CON0 */ */
+/*  / * AFE_GAIN0_CON0 */ */
+/*  / * AFE_GAIN1_CON0 */ */
+/*  / * AFE_GAIN2_CON0 */ */
+/*  / * AFE_GAIN3_CON0 */ */
 pub const GAIN_TARGET_SYNC_ON_SFT: u32 = 24;
 pub const GAIN_TARGET_SYNC_ON_MASK: u32 = 0x1;
 pub const GAIN_TARGET_SYNC_ON_MASK_SFT: u32 = 0x1 << 24;
@@ -1671,50 +1671,50 @@ pub const GAIN_SEL_FS_SFT: u32 = 0;
 pub const GAIN_SEL_FS_MASK: u32 = 0x1f;
 pub const GAIN_SEL_FS_MASK_SFT: u32 = 0x1f << 0;
 
-/*  /* AFE_GAIN0_CON1_R */ */
-/*  /* AFE_GAIN1_CON1_R */ */
-/*  /* AFE_GAIN2_CON1_R */ */
-/*  /* AFE_GAIN3_CON1_R */ */
+/*  / * AFE_GAIN0_CON1_R */ */
+/*  / * AFE_GAIN1_CON1_R */ */
+/*  / * AFE_GAIN2_CON1_R */ */
+/*  / * AFE_GAIN3_CON1_R */ */
 pub const GAIN_TARGET_R_SFT: u32 = 0;
 pub const GAIN_TARGET_R_MASK: u32 = 0xffffffff;
 pub const GAIN_TARGET_R_MASK_SFT: u32 = 0xffffffff << 0;
 
-/*  /* AFE_GAIN0_CON1_L */ */
-/*  /* AFE_GAIN1_CON1_L */ */
-/*  /* AFE_GAIN2_CON1_L */ */
-/*  /* AFE_GAIN3_CON1_L */ */
+/*  / * AFE_GAIN0_CON1_L */ */
+/*  / * AFE_GAIN1_CON1_L */ */
+/*  / * AFE_GAIN2_CON1_L */ */
+/*  / * AFE_GAIN3_CON1_L */ */
 pub const GAIN_TARGET_L_SFT: u32 = 0;
 pub const GAIN_TARGET_L_MASK: u32 = 0xffffffff;
 pub const GAIN_TARGET_L_MASK_SFT: u32 = 0xffffffff << 0;
 
-/*  /* AFE_GAIN0_CON2 */ */
-/*  /* AFE_GAIN1_CON2 */ */
-/*  /* AFE_GAIN2_CON2 */ */
-/*  /* AFE_GAIN3_CON2 */ */
+/*  / * AFE_GAIN0_CON2 */ */
+/*  / * AFE_GAIN1_CON2 */ */
+/*  / * AFE_GAIN2_CON2 */ */
+/*  / * AFE_GAIN3_CON2 */ */
 pub const GAIN_DOWN_STEP_SFT: u32 = 0;
 pub const GAIN_DOWN_STEP_MASK: u32 = 0x3fffff;
 pub const GAIN_DOWN_STEP_MASK_SFT: u32 = 0x3fffff << 0;
 
-/*  /* AFE_GAIN0_CON3 */ */
-/*  /* AFE_GAIN1_CON3 */ */
-/*  /* AFE_GAIN2_CON3 */ */
-/*  /* AFE_GAIN3_CON3 */ */
+/*  / * AFE_GAIN0_CON3 */ */
+/*  / * AFE_GAIN1_CON3 */ */
+/*  / * AFE_GAIN2_CON3 */ */
+/*  / * AFE_GAIN3_CON3 */ */
 pub const GAIN_UP_STEP_SFT: u32 = 0;
 pub const GAIN_UP_STEP_MASK: u32 = 0x3fffff;
 pub const GAIN_UP_STEP_MASK_SFT: u32 = 0x3fffff << 0;
 
-/*  /* AFE_GAIN0_CUR_R */ */
-/*  /* AFE_GAIN1_CUR_R */ */
-/*  /* AFE_GAIN2_CUR_R */ */
-/*  /* AFE_GAIN3_CUR_R */ */
+/*  / * AFE_GAIN0_CUR_R */ */
+/*  / * AFE_GAIN1_CUR_R */ */
+/*  / * AFE_GAIN2_CUR_R */ */
+/*  / * AFE_GAIN3_CUR_R */ */
 pub const AFE_GAIN_CUR_R_SFT: u32 = 0;
 pub const AFE_GAIN_CUR_R_MASK: u32 = 0xffffffff;
 pub const AFE_GAIN_CUR_R_MASK_SFT: u32 = 0xffffffff << 0;
 
-/*  /* AFE_GAIN0_CUR_L */ */
-/*  /* AFE_GAIN1_CUR_L */ */
-/*  /* AFE_GAIN2_CUR_L */ */
-/*  /* AFE_GAIN3_CUR_L */ */
+/*  / * AFE_GAIN0_CUR_L */ */
+/*  / * AFE_GAIN1_CUR_L */ */
+/*  / * AFE_GAIN2_CUR_L */ */
+/*  / * AFE_GAIN3_CUR_L */ */
 pub const AFE_GAIN_CUR_L_SFT: u32 = 0;
 pub const AFE_GAIN_CUR_L_MASK: u32 = 0xffffffff;
 pub const AFE_GAIN_CUR_L_MASK_SFT: u32 = 0xffffffff << 0;

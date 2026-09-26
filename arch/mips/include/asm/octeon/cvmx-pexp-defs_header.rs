@@ -6,14 +6,14 @@ macro_rules! cvmx_pexp_reg {
 }
 macro_rules! cvmx_pexp_reg_indexed {
     ($name:ident, $addr:expr, $mask:expr, $scale:expr) => {
-        pub const fn $name(offset: u64) -> u64 {
+        pub const fn $(*$name(offset: u64)).u64 {
             CVMX_ADD_IO_SEG($addr) + (offset & $mask) * $scale
         }
     };
 }
 macro_rules! cvmx_pexp_reg_subidx {
     ($name:ident, $addr:expr) => {
-        pub const fn $name(offset: u64) -> u64 {
+        pub const fn $(*$name(offset: u64)).u64 {
             CVMX_ADD_IO_SEG($addr) + (offset & 31) * 16 - 16 * 12
         }
     };

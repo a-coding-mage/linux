@@ -37,18 +37,18 @@ pub type gfp_t = c_uint;
 
 const SHRINK_BATCH: c_ulong = 128;
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 static mut shrinker_nr_max: c_int = 0;
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn shrinker_unit_size(nr_items: c_int) -> c_int { (((nr_items + SHRINKER_UNIT_BITS - 1) / SHRINKER_UNIT_BITS) * core::mem::size_of::<*mut shrinker_info_unit>()) as c_int }
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn shrinker_unit_free(info: *mut shrinker_info, start: c_int) {
     if info.is_null() { return; }
     let unit = (*info).unit; let nr = ((*info).map_nr_max + SHRINKER_UNIT_BITS - 1) / SHRINKER_UNIT_BITS;
     for i in start..nr { let p = *unit.add(i as usize); if p.is_null() { break; } kfree(p as *mut c_void); *unit.add(i as usize) = core::ptr::null_mut(); }
 }
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn shrinker_unit_alloc(new: *mut shrinker_info, old: *mut shrinker_info, nid: c_int) -> c_int {
     let nr = ((*new).map_nr_max + SHRINKER_UNIT_BITS - 1) / SHRINKER_UNIT_BITS;
     let start = if old.is_null() { 0 } else { ((*old).map_nr_max + SHRINKER_UNIT_BITS - 1) / SHRINKER_UNIT_BITS };
@@ -80,18 +80,18 @@ unsafe fn do_shrink_slab(sc: *mut shrink_control, shrinker: *mut shrinker, prior
     let next = core::cmp::min(core::cmp::max(nr + delta as c_long - scanned, 0), (2 * freeable) as c_long); let _ = add_nr_deferred(next, shrinker, sc); freed
 }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn xchg_nr_deferred_memcg(_nid: c_int, _s: *mut shrinker, _m: *mut mem_cgroup) -> c_long { 0 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn xchg_nr_deferred_memcg(_nid: c_int, _s: *mut shrinker, _m: *mut mem_cgroup) -> c_long { 0 }
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn add_nr_deferred_memcg(_nr: c_long, _nid: c_int, _s: *mut shrinker, _m: *mut mem_cgroup) -> c_long { 0 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn add_nr_deferred_memcg(_nr: c_long, _nid: c_int, _s: *mut shrinker, _m: *mut mem_cgroup) -> c_long { 0 }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn shrink_slab_memcg(_gfp: gfp_t, _nid: c_int, _memcg: *mut mem_cgroup, _priority: c_int) -> c_ulong { 0 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn shrink_slab_memcg(_gfp: gfp_t, _nid: c_int, _memcg: *mut mem_cgroup, _priority: c_int) -> c_ulong { 0 }
 
 pub unsafe fn shrink_slab(gfp_mask: gfp_t, nid: c_int, memcg: *mut mem_cgroup, priority: c_int) -> c_ulong {
@@ -109,11 +109,11 @@ pub unsafe fn shrinker_free(_shrinker: *mut shrinker) {}
 
 // External symbols and constants supplied by the kernel.
 extern "C" {
-    fn kfree(*mut c_void); fn kzalloc_node(usize, gfp_t, c_int) -> *mut c_void;
-    fn mem_cgroup_disabled() -> bool; fn mem_cgroup_is_root(*mut mem_cgroup) -> bool;
+    fn kfree(_: *mut c_void); fn kzalloc_node(_: usize, _: gfp_t, _: c_int) -> *mut c_void;
+    fn mem_cgroup_disabled() -> bool; fn mem_cgroup_is_root(_: *mut mem_cgroup) -> bool;
     fn rcu_read_lock(); fn rcu_read_unlock(); fn cond_resched();
-    fn atomic_long_xchg(*mut atomic_long_t, c_long) -> c_long; fn atomic_long_add_return(c_long, *mut atomic_long_t) -> c_long;
-    fn shrinker_try_get(*mut shrinker) -> bool; fn shrinker_put(*mut shrinker);
+    fn atomic_long_xchg(_: *mut atomic_long_t, _: c_long) -> c_long; fn atomic_long_add_return(_: c_long, _: *mut atomic_long_t) -> c_long;
+    fn shrinker_try_get(_: *mut shrinker) -> bool; fn shrinker_put(_: *mut shrinker);
     fn list_for_each_entry_rcu(f: unsafe extern "C" fn(*mut shrinker), head: *mut list_head, member: list_head);
 }
 pub type c_long = isize;

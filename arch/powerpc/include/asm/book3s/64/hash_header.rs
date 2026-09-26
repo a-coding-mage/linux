@@ -19,9 +19,9 @@ pub const H_PGTABLE_RANGE: usize = 1usize << H_PGTABLE_EADDR_SIZE;
 pub const EA_MASK: usize = !(0xcusize << 60);
 
 /* CONFIG_HUGETLB_PAGE && CONFIG_PPC_64K_PAGES adds one PUD cache index bit. */
-#[cfg(all(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_PPC_64K_PAGES"))]
+#[cfg(all(CONFIG_HUGETLB_PAGE, CONFIG_PPC_64K_PAGES))]
 pub const H_PUD_CACHE_INDEX: usize = H_PUD_INDEX_SIZE + 1;
-#[cfg(not(all(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_PPC_64K_PAGES")))]
+#[cfg(not(all(CONFIG_HUGETLB_PAGE, CONFIG_PPC_64K_PAGES)))]
 pub const H_PUD_CACHE_INDEX: usize = H_PUD_INDEX_SIZE;
 
 pub const H_VMALLOC_START: usize = H_KERN_VIRT_START;
@@ -77,7 +77,7 @@ pub fn hash__pud_bad(pud: pud_t) -> usize { pud_val(pud) & H_PUD_BAD_BITS }
 #[inline]
 pub fn hash__p4d_bad(p4d: p4d_t) -> i32 { (p4d_val(p4d) == 0) as i32 }
 
-#[cfg(feature = "CONFIG_STRICT_KERNEL_RWX")]
+#[cfg(CONFIG_STRICT_KERNEL_RWX)]
 extern "C" { pub fn hash__mark_rodata_ro(); pub fn hash__mark_initmem_nx(); }
 extern "C" {
     pub fn hpte_need_flush(mm: *mut mm_struct, addr: usize, ptep: *mut pte_t, pte: usize, huge: i32);
@@ -126,9 +126,9 @@ extern "C" {
 pub unsafe fn hash__set_pte_at(_mm: *mut mm_struct, _addr: usize, ptep: *mut pte_t,
                                pte: pte_t, _percpu: i32) { *ptep = pte; }
 
-#[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+#[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
 extern "C" { pub fn hpte_do_hugepage_flush(mm: *mut mm_struct, addr: usize, pmdp: *mut pmd_t, old_pmd: usize); }
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub unsafe fn hpte_do_hugepage_flush(_mm: *mut mm_struct, _addr: usize, _pmdp: *mut pmd_t, _old_pmd: usize) {
     WARN(1, "%s called with THP disabled\n", "hpte_do_hugepage_flush");

@@ -7,11 +7,11 @@ use core::ffi::{c_char, c_int, c_void};
 pub struct attribute {
     pub name: *const c_char,
     pub mode: umode_t,
-    #[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+    #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub ignore_lockdep: bool,
-    #[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+    #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub key: *mut lock_class_key,
-    #[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+    #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub skey: lock_class_key,
 }
 
@@ -48,18 +48,18 @@ pub struct sysfs_ops {
     pub store: Option<unsafe extern "C" fn(*mut kobject, *mut attribute, *const c_char, usize) -> ssize_t>,
 }
 
-#[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 #[macro_export]
 macro_rules! sysfs_attr_init { ($attr:expr) => {{ static mut __KEY: lock_class_key = lock_class_key {}; unsafe { (*$attr).key = &mut __KEY; } }}; }
-#[cfg(not(feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
 #[macro_export]
 macro_rules! sysfs_attr_init { ($attr:expr) => {{}}; }
 
-#[macro_export] macro_rules! DEFINE_SYSFS_GROUP_VISIBLE { ($name:ident) => { unsafe fn sysfs_group_visible_$name(kobj: *mut kobject, attr: *mut attribute, n: c_int) -> umode_t { if n == 0 && !$name##_group_visible(kobj) { SYSFS_GROUP_INVISIBLE } else { $name##_attr_visible(kobj, attr, n) } } }; }
-#[macro_export] macro_rules! DEFINE_SIMPLE_SYSFS_GROUP_VISIBLE { ($name:ident) => { unsafe fn sysfs_group_visible_$name(kobj: *mut kobject, a: *mut attribute, n: c_int) -> umode_t { if n == 0 && !$name##_group_visible(kobj) { SYSFS_GROUP_INVISIBLE } else { (*a).mode } } }; }
+#[macro_export] macro_rules! DEFINE_SYSFS_GROUP_VISIBLE { ($name:tt) => { unsafe fn sysfs_group_visible_$name(kobj: *mut kobject, attr: *mut attribute, n: c_int) -> umode_t { if n == 0 && !::kernel::macros::paste!([<$name _group_visible>])(kobj) { SYSFS_GROUP_INVISIBLE } else { ::kernel::macros::paste!([<$name _attr_visible>])(kobj, attr, n) } } }; }
+#[macro_export] macro_rules! DEFINE_SIMPLE_SYSFS_GROUP_VISIBLE { ($name:tt) => { unsafe fn sysfs_group_visible_$name(kobj: *mut kobject, a: *mut attribute, n: c_int) -> umode_t { if n == 0 && !::kernel::macros::paste!([<$name _group_visible>])(kobj) { SYSFS_GROUP_INVISIBLE } else { (*a).mode } } }; }
 #[macro_export] macro_rules! SYSFS_GROUP_VISIBLE { ($fn:ident) => { sysfs_group_visible_$fn }; }
 
-#[cfg(feature = "CONFIG_SYSFS")]
+#[cfg(CONFIG_SYSFS)]
 extern "C" {
     pub fn sysfs_create_dir_ns(kobj: *mut kobject, ns: *const ns_common) -> c_int;
     pub fn sysfs_remove_dir(kobj: *mut kobject);
@@ -108,7 +108,7 @@ extern "C" {
     pub fn sysfs_bin_attr_simple_read(file: *mut file, kobj: *mut kobject, attr: *const bin_attribute, buf: *mut c_char, off: loff_t, count: usize) -> ssize_t;
 }
 
-#[cfg(not(feature = "CONFIG_SYSFS"))]
+#[cfg(not(CONFIG_SYSFS))]
 macro_rules! sysfs_stub { ($($name:ident($($arg:ident : $ty:ty),*) -> $ret:ty),* $(,)?) => { $(unsafe fn $name($($arg:$ty),*) -> $ret { 0 as $ret })* }; }
 
 pub unsafe fn sysfs_create_file(kobj: *mut kobject, attr: *const attribute) -> c_int { sysfs_create_file_ns(kobj, attr, core::ptr::null()) }

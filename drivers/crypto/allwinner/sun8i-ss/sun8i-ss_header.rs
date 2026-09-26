@@ -94,7 +94,7 @@ pub struct sun8i_ss_flow {
     pub biv: *mut u8,
     pub pad: *mut core::ffi::c_void,
     pub result: *mut core::ffi::c_void,
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_SUN8I_SS_DEBUG")]
+    #[cfg(CONFIG_CRYPTO_DEV_SUN8I_SS_DEBUG)]
     pub stat_req: libc::c_ulong,
 }
 
@@ -108,7 +108,7 @@ pub struct sun8i_ss_dev {
     pub flows: *mut sun8i_ss_flow,
     pub flow: atomic_t,
     pub variant: *const ss_variant,
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_SUN8I_SS_DEBUG")]
+    #[cfg(CONFIG_CRYPTO_DEV_SUN8I_SS_DEBUG)]
     pub dbgfs_dir: *mut dentry,
     pub dbgfs_stats: *mut dentry,
 }

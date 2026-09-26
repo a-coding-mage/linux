@@ -2,7 +2,7 @@
 /* Rust translation of trace/events/devlink.h.  The C tracepoint machinery and
  * the types supplied by <linux/device.h> and <net/devlink.h> are external. */
 
-#[cfg(feature = "CONFIG_NET_DEVLINK")]
+#[cfg(CONFIG_NET_DEVLINK)]
 mod net_devlink_tracepoints {
     use core::ffi::{c_char, c_void};
 
@@ -116,7 +116,7 @@ mod net_devlink_tracepoints {
 }
 
 /* CONFIG_NET_DEVLINK disabled: the C header supplies empty inline stubs. */
-#[cfg(not(feature = "CONFIG_NET_DEVLINK"))]
+#[cfg(not(CONFIG_NET_DEVLINK))]
 pub mod no_net_devlink_tracepoints {
     use core::ffi::c_char;
 

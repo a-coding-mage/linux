@@ -6,19 +6,19 @@ extern "C" {
     pub fn pq2_restart(cmd: *mut core::ffi::c_char) -> !;
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn pq2ads_pci_init_irq() -> core::ffi::c_int;
     pub fn pq2_init_pci();
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn pq2ads_pci_init_irq() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn pq2_init_pci() {
 }

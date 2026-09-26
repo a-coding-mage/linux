@@ -6,9 +6,9 @@
 #[repr(C)]
 pub struct netdev_rx_queue {
     pub xdp_rxq: xdp_rxq_info,
-    #[cfg(feature = "CONFIG_RPS")]
+    #[cfg(CONFIG_RPS)]
     pub rps_map: *mut rps_map,
-    #[cfg(feature = "CONFIG_RPS")]
+    #[cfg(CONFIG_RPS)]
     pub rps_flow_table: rps_tag_ptr,
     pub kobj: kobject,
     pub groups: *const *const attribute_group,
@@ -18,7 +18,7 @@ pub struct netdev_rx_queue {
     /* All fields below are "ops protected",
      * see comment about net_device::lock
      */
-    #[cfg(feature = "CONFIG_XDP_SOCKETS")]
+    #[cfg(CONFIG_XDP_SOCKETS)]
     pub pool: *mut xsk_buff_pool,
     pub napi: *mut napi_struct,
     pub qcfg: netdev_queue_config,

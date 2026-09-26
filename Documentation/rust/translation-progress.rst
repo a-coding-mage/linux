@@ -18,8 +18,8 @@ revision in ``scripts/tests/translated_sources.txt``. An intentional revision
 update must update that manifest as well; removing or replacing a marker
 accidentally fails the test.
 
-Current conservative inventory (2026-09-24): 55/64 canonical C-origin host tools
-(85.94%, nine remain) and 38/526 translated lib units (7.22%, 488 remain).
+Current conservative inventory (2026-09-26): 60/64 canonical C-origin host tools
+(93.75%, four remain) and 47/526 translated lib units (8.94%, 479 remain).
 Three lib host generators overlap the two inventories. These are integrated,
 tested units within the documented configuration coverage, not a whole-kernel
 completion percentage or proof of every exceptional path.
@@ -96,6 +96,12 @@ The following normal Kbuild targets have Rust implementations:
 * ``lib/raid/raid6/mktables``
 * ``lib/crc/gen_crc32table`` and ``lib/crc/gen_crc64table``
 * ``fs/unicode/mkutf8data``
+* ``drivers/accessibility/speakup/makemapdata`` and ``genmap``
+* ``drivers/zorro/gen-devlist``
+* ``drivers/tty/vt/conmakehash``
+* ``drivers/gpu/drm/xe/xe_gen_wa_oob``
+* ``drivers/gpu/drm/radeon/mkregtable``
+* ``drivers/video/logo/pnmtologo``
 
 These tools use the Rust standard library without third-party Rust crates or
 unresolved declarations for functions that were C macros or inline helpers.
@@ -2348,8 +2354,8 @@ unit: 35 native units plus three host generators, or 38/526 (7.22%), with 488
 remaining. The resumed runtime cycle totals 56 successful VMs across seven
 components, not proof of every architecture/configuration or full regression.
 
-RBTree and binary search: runtime validation pending
----------------------------------------------------
+RBTree and binary search
+------------------------
 
 ``CONFIG_RUST_RBTREE`` and ``CONFIG_RUST_BSEARCH`` now add independently
 selectable Rust providers; both default off and retain the original C archive
@@ -2359,17 +2365,142 @@ preserve nullable callbacks on the original defined paths and the exact
 signature-specific normalized CFI identities. The generated general callback
 typedefs are not replaced with universally non-null function pointers.
 
-RBTree's integrated 17-group suite passes, and its selected x86-64 and ARM64
-images/modules have built successfully. Binary search's private 10-group suite
-passes original-C differential, real native ABI/CFI/export/version checks,
-conditional kprobe exclusion and Kbuild C/Rust/C/Rust switching; root's
-integrated rerun and selected builds are in progress. Root additionally keeps
-binary search's original ``lib/bsearch`` modfile identity. Genuine C and Rust
-defining-object version CRCs can differ, so dependent modules must be rebuilt.
+Fresh integrated discovery passes all 27 provider groups without skips
+(137.241 seconds): 17 for RBTree and ten for binary search. These exercise
+original-C differential behavior, genuine ELF32 execution, native binding,
+ABI/CFI/export/version checks, configuration selection, dependencies and no-op
+builds. Binary search retains its original ``lib/bsearch`` modfile identity
+and conditional kprobe exclusion. Genuine C and Rust defining-object version
+CRCs can differ, so dependent modules must be rebuilt.
 
-Neither component is included in the 38/526 validated inventory yet. Dedicated
-selected-kernel caller/module and C/Rust-provider runtime matrices remain
-required; these intermediate results are not full regression or runtime proof.
+Both selected Rust image/module builds and separate C-provider baseline builds
+pass on x86-64 and ARM64 with Rust 1.85, strict Rust warnings, nonpermissive
+KCFI and DWARF-derived symbol versions. Each component now passes all eight
+C/Rust-provider by C/Rust-caller by architecture VMs, including caller
+unload/reload. RBTree checks 150,000 operations per caller load across its
+eleven exports and runs the unchanged original C ``rbtree_test`` twice per VM;
+its deliberate ``-EAGAIN`` completion is verified separately from successful
+caller loading. Binary search checks 23,228 cases per load, including the exact
+comparator pivot trace, zero-count nullable callbacks, distinct key/element
+types, zero stride and wrapping pivot multiplication. Both caller languages
+own their workload and compare against the unchanged C oracle. There is no
+dedicated original bsearch KUnit suite in this source tree.
+
+The dedicated runtime checker suites pass 13 RBTree and 12 binary-search groups
+without skips, including actual private caller/module/PID1 builds, selected
+artifact audits, ABI negative controls and compiler-output isolation. Binary
+search's initial preflight incorrectly required unused ``libkernel.rmeta`` in
+the defining object's dep-info; removing that requirement retains the actual
+bindings, implementation/header and export dependencies.
+
+These two providers bring the conservative inventory to 37 native units plus
+three host generators, or 40/526. Persistent native outputs and exact
+commands/results reside under
+``/home/fenhir/.cache/lupos-migration/current-20260925``. The 160-module baseline
+now has passing evidence for all 2,008 distinct methods: 1,810 retained original
+passes, 197 resumed-tail passes and one corrected genksyms retry. This combines
+an interrupted run, its exact remaining tail and a retry; it is not one clean
+uninterrupted run. Original failures remain recorded. The five genksyms subtest
+errors came from temporary configuration headers in the source checkout; after
+quarantining them and fixing the fixture's working directory, all six native
+CRC subtests passed. Configuration-specific x86/nVHE/MIPS inputs and their gates
+also passed. New sort and driver-generator tests are separate from this baseline.
+These results do not establish full translation, every architecture/configuration,
+or complete kernel/selftest parity.
+
+Driver generators and tools bootstrap
+-------------------------------------
+
+The Zorro device-name generator, console font-map generator and Intel Xe
+workaround generator now have complete Rust implementations and default Rust
+selection through ``HOST_TOOLS_LANG``. Original-C differential and real Kbuild
+checks pass in five, six and five groups respectively. They cover the shipped
+inputs, compiled generated C consumers, byte-valued names, parser boundaries,
+diagnostics, output errors, inherited SIGPIPE, language switching and incremental
+dependencies. The console generator retains its large table in static storage:
+all tested optimization levels pass the original 128 KiB stack budget. Its
+genuine ELF32 output and long-integer overflow behavior also match C. The Xe
+translation preserves the original final-byte stripping and partial-output
+behavior; inputs that dereference NULL in C are rejected safely and tested
+separately from defined-input parity.
+
+Radeon ``mkregtable`` and logo ``pnmtologo`` are also integrated in the aggregate.
+The Radeon generator passes eight focused groups against all ten shipped inputs,
+including XOR behavior for duplicate registers, unsigned bounds and pipe input;
+genuine ELF32 checks also pass. The logo generator passes six focused groups
+covering all shipped logos and four output encodings, plus a generated consumer
+compiled against the actual ``linux_logo.h``. Both preserve original parsing,
+stream errors, inherited SIGPIPE and Kbuild language switching.
+
+The expanded 60-tool aggregate and all three migration invariants pass in five
+groups without skips (360.654 seconds). A retained normal ``rust-host-tools``
+build also succeeds with the pinned compiler and strict warnings.
+
+``tools/build/fixdep`` is also integrated, separately from the canonical host
+inventory and ``scripts/basic/fixdep``. It uses the actual host libc declarations
+and layout to preserve open/stat/mmap behavior, including 32-bit default,
+large-file and 64-bit-time ABIs. The production ``fixdep-abi.py`` helper requires
+Python 3, bindgen and the host C development headers; it probes declarations
+and object constants without compiling a C implementation shim. Thirteen
+current-checkout groups pass without skips, including genuine i686 sparse-file
+and syscall-fault cases, successful mappings larger than isize::MAX, quoted host
+linker flags and compiler wrappers. Real objtool/libsubcmd language-switch and
+no-op checks also passed. Independent review found and fixed a clean-only
+toolchain check: cleanup works without Rust/bindgen, while mixed clean/build
+requests still validate before changing outputs. Its targeted regression passes.
+
+Array sorting and its original test suite
+-----------------------------------------
+
+``CONFIG_RUST_SORT`` selects all four original sort interfaces, including the
+nonatomic scheduler paths. It preserves callback and swap ordering, nullable
+callbacks, wrapping address arithmetic and uninitialized element padding.
+``CONFIG_RUST_SORT_KUNIT_TEST`` independently selects the repaired original
+``lib/tests/test_sort.rs`` suite with its existing ``test_sort`` module and
+``lib_sort`` suite identities. The suite uses actual KUnit bindings, managed
+allocation and the original seeded 1,000/999-element cases.
+
+Five integrated native groups pass without skips, covering genuine ELF32 and
+ELF64 execution, protected callbacks and six scheduler configurations. Eleven
+runtime-checker groups also pass. Eight provider/caller/architecture VMs run the
+original C suite and 5,776 independent caller cases per load, twice per VM:
+92,416 caller cases and 16 original C suite runs. Those guests use lazy preemption;
+active rescheduling requests are covered by the focused native checks rather
+than claimed for the guest runs.
+
+The current checkout also passes eight complete image/module builds and eight
+selected Rust-suite VMs: C/Rust providers, x86/ARM64, and module/built-in suites.
+Module cases unload and reload both framework and suite; built-in cases run at
+boot. All 12 translated suite executions pass without faults, warnings or skips.
+Selected source commands, archive membership, original module identity, metadata
+and imported symbol versions are checked against the actual artifacts. These
+two validated units bring the lib inventory to 42/526.
+
+The errname, generic bit-reversal, union-find and argv-splitting repairs now have
+default-off native selectors and provenance entries. Their focused original-C
+checks pass. All four combined native builds and original printf/cpuset test
+gates now pass (C/Rust providers on x86/ARM64), with original printf 28/28
+twice without skips, native fixture reloads and unchanged completed donors.
+Both legitimate generic bit-reversal module variants also pass full builds,
+original module identity/GPL/table/CRC checks and guest load/unload/reload of
+the actual provider plus callers. Their private configs disable ACPI to let
+the original CRC32/BITREVERSE dependencies resolve to modules; the cpuset
+gates remain covered by the four earlier topology-corrected guests. These
+four validated units bring the lib inventory to 46/526. C/Rust DWARF-derived export
+CRCs differ; each rebuilt consumer matches its selected owner, and the two
+gendwarf implementations agree per owner. Cross-selection module binary
+compatibility is not claimed.
+
+Early CPIO is now selected through default-off ``RUST_EARLYCPIO`` in the
+original archive position, retaining its actual by-value result layout and
+18-byte filename bound. Both strict x86/ARM64 image/module builds pass. The
+x86 original early Intel microcode consumer exercises the Rust parser before
+ordinary console startup: a zero-length regular archive member with the real
+prefix produces the exact original oversized-name warning with the emulated
+hypervisor bit disabled, and no warning with it enabled. Both boots succeed;
+no fabricated microcode update is supplied. The original C provider passed
+the same controls. ARM's selected archive/link audit and image boot also pass,
+with no observed donor writes. This brings the lib inventory to 47/526.
 
 Remaining integration
 ---------------------

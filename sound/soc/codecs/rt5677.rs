@@ -81,14 +81,14 @@ c_source_translation! {
 
 static const struct regmap_range_cfg rt5677_ranges[] = {
 	{
-		.name = "PR",
-		.range_min = RT5677_PR_BASE,
-		.range_max = RT5677_PR_BASE + 0xfd,
-		.selector_reg = RT5677_PRIV_INDEX,
-		.selector_mask = 0xff,
-		.selector_shift = 0x0,
-		.window_start = RT5677_PRIV_DATA,
-		.window_len = 0x1,
+		name: "PR",
+		range_min: RT5677_PR_BASE,
+		range_max: RT5677_PR_BASE + 0xfd,
+		selector_reg: RT5677_PRIV_INDEX,
+		selector_mask: 0xff,
+		selector_shift: 0x0,
+		window_start: RT5677_PRIV_DATA,
+		window_len: 0x1,
 	},
 };
 
@@ -312,7 +312,7 @@ static const struct reg_default rt5677_reg[] = {
 	{RT5677_VENDOR_ID2		, 0x6327},
 };
 
-static bool rt5677_volatile_register(struct device *dev, unsigned int reg)
+static bool rt5677_volatile_register(device *dev, reg: core::ffi::c_uint)
 {
 	int i;
 
@@ -361,7 +361,7 @@ static bool rt5677_volatile_register(struct device *dev, unsigned int reg)
 	}
 }
 
-static bool rt5677_readable_register(struct device *dev, unsigned int reg)
+static bool rt5677_readable_register(device *dev, reg: core::ffi::c_uint)
 {
 	int i;
 
@@ -591,46 +591,46 @@ static bool rt5677_readable_register(struct device *dev, unsigned int reg)
  *
  * Returns 0 for success or negative error code.
  */
-static int rt5677_dsp_mode_i2c_write_addr(struct rt5677_priv *rt5677,
-		unsigned int addr, unsigned int value, unsigned int opcode)
+static int rt5677_dsp_mode_i2c_write_addr(rt5677_priv *rt5677,
+		addr: core::ffi::c_uint, value: core::ffi::c_uint, opcode: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = rt5677->component;
+	struct snd_soc_component *component = (*rt5677).component;
 	int ret;
 
-	guard(mutex)(&rt5677->dsp_cmd_lock);
+	guard(mutex)((*&rt5677).dsp_cmd_lock);
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_ADDR_MSB,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_ADDR_MSB,
 		addr >> 16);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set addr msb value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set addr msb value: %d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_ADDR_LSB,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_ADDR_LSB,
 		addr & 0xffff);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set addr lsb value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set addr lsb value: %d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_DATA_MSB,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_DATA_MSB,
 		value >> 16);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set data msb value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set data msb value: %d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_DATA_LSB,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_DATA_LSB,
 		value & 0xffff);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set data lsb value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set data lsb value: %d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_OP_CODE,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_OP_CODE,
 		opcode);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set op code value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set op code value: %d\n", ret);
 		return ret;
 	}
 
@@ -647,37 +647,37 @@ static int rt5677_dsp_mode_i2c_write_addr(struct rt5677_priv *rt5677,
  * Returns 0 for success or negative error code.
  */
 static int rt5677_dsp_mode_i2c_read_addr(
-	struct rt5677_priv *rt5677, unsigned int addr, unsigned int *value)
+	rt5677_priv *rt5677, addr: core::ffi::c_uint, core::ffi::c_uint *value)
 {
-	struct snd_soc_component *component = rt5677->component;
+	struct snd_soc_component *component = (*rt5677).component;
 	int ret;
-	unsigned int msb, lsb;
+	msb: core::ffi::c_uint, lsb;
 
-	guard(mutex)(&rt5677->dsp_cmd_lock);
+	guard(mutex)((*&rt5677).dsp_cmd_lock);
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_ADDR_MSB,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_ADDR_MSB,
 		addr >> 16);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set addr msb value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set addr msb value: %d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_ADDR_LSB,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_ADDR_LSB,
 		addr & 0xffff);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set addr lsb value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set addr lsb value: %d\n", ret);
 		return ret;
 	}
 
-	ret = regmap_write(rt5677->regmap_physical, RT5677_DSP_I2C_OP_CODE,
+	ret = regmap_write((*rt5677).regmap_physical, RT5677_DSP_I2C_OP_CODE,
 		0x0002);
 	if (ret < 0) {
-		dev_err(component->dev, "Failed to set op code value: %d\n", ret);
+		dev_err((*component).dev, "Failed to set op code value: %d\n", ret);
 		return ret;
 	}
 
-	regmap_read(rt5677->regmap_physical, RT5677_DSP_I2C_DATA_MSB, &msb);
-	regmap_read(rt5677->regmap_physical, RT5677_DSP_I2C_DATA_LSB, &lsb);
+	regmap_read((*rt5677).regmap_physical, RT5677_DSP_I2C_DATA_MSB, &msb);
+	regmap_read((*rt5677).regmap_physical, RT5677_DSP_I2C_DATA_LSB, &lsb);
 	*value = (msb << 16) | lsb;
 
 	return ret;
@@ -692,8 +692,8 @@ static int rt5677_dsp_mode_i2c_read_addr(
  *
  * Returns 0 for success or negative error code.
  */
-static int rt5677_dsp_mode_i2c_write(struct rt5677_priv *rt5677,
-		unsigned int reg, unsigned int value)
+static int rt5677_dsp_mode_i2c_write(rt5677_priv *rt5677,
+		reg: core::ffi::c_uint, value: core::ffi::c_uint)
 {
 	return rt5677_dsp_mode_i2c_write_addr(rt5677, 0x18020000 + reg * 2,
 		value, 0x0001);
@@ -709,7 +709,7 @@ static int rt5677_dsp_mode_i2c_write(struct rt5677_priv *rt5677,
  * Returns 0 for success or negative error code.
  */
 static int rt5677_dsp_mode_i2c_read(
-	struct rt5677_priv *rt5677, unsigned int reg, unsigned int *value)
+	rt5677_priv *rt5677, reg: core::ffi::c_uint, core::ffi::c_uint *value)
 {
 	int ret = rt5677_dsp_mode_i2c_read_addr(rt5677, 0x18020000 + reg * 2,
 		value);
@@ -719,22 +719,22 @@ static int rt5677_dsp_mode_i2c_read(
 	return ret;
 }
 
-static void rt5677_set_dsp_mode(struct rt5677_priv *rt5677, bool on)
+static void rt5677_set_dsp_mode(rt5677_priv *rt5677, on: bool)
 {
 	if (on) {
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_DSP1,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_DSP1,
 			RT5677_PWR_DSP, RT5677_PWR_DSP);
-		rt5677->is_dsp_mode = true;
+		(*rt5677).is_dsp_mode = true;
 	} else {
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_DSP1,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_DSP1,
 			RT5677_PWR_DSP, 0x0);
-		rt5677->is_dsp_mode = false;
+		(*rt5677).is_dsp_mode = false;
 	}
 }
 
-static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
+static core::ffi::c_uint rt5677_set_vad_source(rt5677_priv *rt5677)
 {
-	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(rt5677->component);
+	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm((*rt5677).component);
 	/* Force dapm to sync before we enable the
 	 * DSP to prevent write corruption
 	 */
@@ -743,26 +743,26 @@ static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
 	/* DMIC1 power = enabled
 	 * DMIC CLK = 256 * fs / 12
 	 */
-	regmap_update_bits(rt5677->regmap, RT5677_DMIC_CTRL1,
+	regmap_update_bits((*rt5677).regmap, RT5677_DMIC_CTRL1,
 		RT5677_DMIC_CLK_MASK, 5 << RT5677_DMIC_CLK_SFT);
 
 	/* I2S pre divide 2 = /6 (clk_sys2) */
-	regmap_update_bits(rt5677->regmap, RT5677_CLK_TREE_CTRL1,
+	regmap_update_bits((*rt5677).regmap, RT5677_CLK_TREE_CTRL1,
 		RT5677_I2S_PD2_MASK, RT5677_I2S_PD2_6);
 
 	/* DSP Clock = MCLK1 (bypassed PLL2) */
-	regmap_write(rt5677->regmap, RT5677_GLB_CLK2,
+	regmap_write((*rt5677).regmap, RT5677_GLB_CLK2,
 		RT5677_DSP_CLK_SRC_BYPASS);
 
 	/* SAD Threshold1 */
-	regmap_write(rt5677->regmap, RT5677_VAD_CTRL2, 0x013f);
+	regmap_write((*rt5677).regmap, RT5677_VAD_CTRL2, 0x013f);
 	/* SAD Threshold2 */
-	regmap_write(rt5677->regmap, RT5677_VAD_CTRL3, 0x0ae5);
+	regmap_write((*rt5677).regmap, RT5677_VAD_CTRL3, 0x0ae5);
 	/* SAD Sample Rate Converter = Up 6 (8K to 48K)
 	 * SAD Output Sample Rate = Same as I2S
 	 * SAD Threshold3
 	 */
-	regmap_update_bits(rt5677->regmap, RT5677_VAD_CTRL4,
+	regmap_update_bits((*rt5677).regmap, RT5677_VAD_CTRL4,
 		RT5677_VAD_OUT_SRC_RATE_MASK | RT5677_VAD_OUT_SRC_MASK |
 		RT5677_VAD_LV_DIFF_MASK, 0x7f << RT5677_VAD_LV_DIFF_SFT);
 	/* Minimum frame level within a pre-determined duration = 32 frames
@@ -775,7 +775,7 @@ static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
 	 * SAD Function Control = enable
 	 * SAD Function Reset = normal
 	 */
-	regmap_write(rt5677->regmap, RT5677_VAD_CTRL1,
+	regmap_write((*rt5677).regmap, RT5677_VAD_CTRL1,
 		RT5677_VAD_FUNC_RESET | RT5677_VAD_FUNC_ENABLE |
 		RT5677_VAD_DET_ENABLE | RT5677_VAD_BUF_PUSH |
 		RT5677_VAD_BUF_OW | RT5677_VAD_FG2ENC |
@@ -788,20 +788,20 @@ static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
 	 */
 
 	/* Private register, no doc */
-	regmap_update_bits(rt5677->regmap, RT5677_PR_BASE + RT5677_BIAS_CUR4,
+	regmap_update_bits((*rt5677).regmap, RT5677_PR_BASE + RT5677_BIAS_CUR4,
 		0x0f00, 0x0100);
 
 	/* LDO2 output = 1.2V
 	 * LDO1 output = 1.2V (LDO_IN = 1.8V)
 	 */
-	regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG1,
+	regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG1,
 		RT5677_LDO1_SEL_MASK | RT5677_LDO2_SEL_MASK,
 		5 << RT5677_LDO1_SEL_SFT | 5 << RT5677_LDO2_SEL_SFT);
 
 	/* Codec core power =  power on
 	 * LDO1 power = power on
 	 */
-	regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+	regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 		RT5677_PWR_CORE | RT5677_PWR_LDO1,
 		RT5677_PWR_CORE | RT5677_PWR_LDO1);
 
@@ -811,7 +811,7 @@ static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
 	 * Isolation for Band 0~7 = disable
 	 * Isolation for InBound 4~10 and OutBound 4~10 = disable
 	 */
-	regmap_write(rt5677->regmap, RT5677_PWR_DSP2,
+	regmap_write((*rt5677).regmap, RT5677_PWR_DSP2,
 		RT5677_PWR_CORE_ISO | RT5677_PWR_DSP_ISO |
 		RT5677_PWR_SR7_ISO | RT5677_PWR_SR6_ISO |
 		RT5677_PWR_SR5_ISO | RT5677_PWR_SR4_ISO |
@@ -824,7 +824,7 @@ static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
 	 * DSP = power on
 	 * DSP CPU = stop (will be set to "run" after firmware loaded)
 	 */
-	regmap_write(rt5677->regmap, RT5677_PWR_DSP1,
+	regmap_write((*rt5677).regmap, RT5677_PWR_DSP1,
 		RT5677_PWR_SR7 | RT5677_PWR_SR6 |
 		RT5677_PWR_SR5 | RT5677_PWR_SR4 |
 		RT5677_PWR_SR3 | RT5677_PWR_SR2 |
@@ -835,10 +835,10 @@ static unsigned int rt5677_set_vad_source(struct rt5677_priv *rt5677)
 	return 0;
 }
 
-static int rt5677_parse_and_load_dsp(struct rt5677_priv *rt5677, const u8 *buf,
-		unsigned int len)
+static int rt5677_parse_and_load_dsp(rt5677_priv *rt5677, const u8 *buf,
+		len: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = rt5677->component;
+	struct snd_soc_component *component = (*rt5677).component;
 	Elf32_Ehdr *elf_hdr;
 	Elf32_Phdr *pr_hdr;
 	Elf32_Half i;
@@ -849,29 +849,29 @@ static int rt5677_parse_and_load_dsp(struct rt5677_priv *rt5677, const u8 *buf,
 
 	elf_hdr = (Elf32_Ehdr *)buf;
 #ifndef EM_XTENSA
-#define EM_XTENSA	94
+pub const EM_XTENSA: u32 = 94;
 #endif
-	if (strncmp(elf_hdr->e_ident, ELFMAG, sizeof(ELFMAG) - 1))
-		dev_err(component->dev, "Wrong ELF header prefix\n");
-	if (elf_hdr->e_ehsize != sizeof(Elf32_Ehdr))
-		dev_err(component->dev, "Wrong ELF header size\n");
-	if (elf_hdr->e_machine != EM_XTENSA)
-		dev_err(component->dev, "Wrong DSP code file\n");
+	if (strncmp((*elf_hdr).e_ident, ELFMAG, sizeof(ELFMAG) - 1))
+		dev_err((*component).dev, "Wrong ELF header prefix\n");
+	if ((*elf_hdr).e_ehsize != sizeof(Elf32_Ehdr))
+		dev_err((*component).dev, "Wrong ELF header size\n");
+	if ((*elf_hdr).e_machine != EM_XTENSA)
+		dev_err((*component).dev, "Wrong DSP code file\n");
 
-	if (len < elf_hdr->e_phoff)
+	if (len < (*elf_hdr).e_phoff)
 		return -ENOMEM;
-	pr_hdr = (Elf32_Phdr *)(buf + elf_hdr->e_phoff);
-	for (i = 0; i < elf_hdr->e_phnum; i++) {
+	pr_hdr = (Elf32_Phdr *)(buf + (*elf_hdr).e_phoff);
+	for (i = 0; i < (*elf_hdr).e_phnum; i++) {
 		/* TODO: handle p_memsz != p_filesz */
-		if (pr_hdr->p_paddr && pr_hdr->p_filesz) {
-			dev_info(component->dev, "Load 0x%x bytes to 0x%x\n",
-					pr_hdr->p_filesz, pr_hdr->p_paddr);
+		if ((*pr_hdr).p_paddr && (*pr_hdr).p_filesz) {
+			dev_info((*component).dev, "Load 0x%x bytes to 0x%x\n",
+					(*pr_hdr).p_filesz, (*pr_hdr).p_paddr);
 
-			ret = rt5677_spi_write(pr_hdr->p_paddr,
-					buf + pr_hdr->p_offset,
-					pr_hdr->p_filesz);
+			ret = rt5677_spi_write((*pr_hdr).p_paddr,
+					buf + (*pr_hdr).p_offset,
+					(*pr_hdr).p_filesz);
 			if (ret)
-				dev_err(component->dev, "Load firmware failed %d\n",
+				dev_err((*component).dev, "Load firmware failed %d\n",
 						ret);
 		}
 		pr_hdr++;
@@ -879,9 +879,9 @@ static int rt5677_parse_and_load_dsp(struct rt5677_priv *rt5677, const u8 *buf,
 	return ret;
 }
 
-static int rt5677_load_dsp_from_file(struct rt5677_priv *rt5677)
+static int rt5677_load_dsp_from_file(rt5677_priv *rt5677)
 {
-	struct device *dev = rt5677->component->dev;
+	struct device *dev = (*(*rt5677).component).dev;
 	int ret;
 
 	/* Load dsp firmware from rt5677_elf_vad file */
@@ -891,34 +891,34 @@ static int rt5677_load_dsp_from_file(struct rt5677_priv *rt5677)
 		dev_err(dev, "Request rt5677_elf_vad failed %d\n", ret);
 		return ret;
 	}
-	dev_info(dev, "Requested rt5677_elf_vad (%zu)\n", fwp->size);
+	dev_info(dev, "Requested rt5677_elf_vad (%zu)\n", (*fwp).size);
 
-	return rt5677_parse_and_load_dsp(rt5677, fwp->data, fwp->size);
+	return rt5677_parse_and_load_dsp(rt5677, (*fwp).data, (*fwp).size);
 }
 
-static int rt5677_set_dsp_vad(struct snd_soc_component *component, bool on)
+static int rt5677_set_dsp_vad(snd_soc_component *component, on: bool)
 {
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	rt5677->dsp_vad_en_request = on;
-	rt5677->dsp_vad_en = on;
+	(*rt5677).dsp_vad_en_request = on;
+	(*rt5677).dsp_vad_en = on;
 
 	if (!IS_ENABLED(CONFIG_SND_SOC_RT5677_SPI))
 		return -ENXIO;
 
-	schedule_delayed_work(&rt5677->dsp_work, 0);
+	schedule_delayed_work((*&rt5677).dsp_work, 0);
 	return 0;
 }
 
-static void rt5677_dsp_work(struct work_struct *work)
+static void rt5677_dsp_work(work_struct *work)
 {
 	struct rt5677_priv *rt5677 =
-		container_of(work, struct rt5677_priv, dsp_work.work);
+		container_of(work, rt5677_priv, dsp_work.work);
 	static bool activity;
-	bool enable = rt5677->dsp_vad_en;
+	bool enable = (*rt5677).dsp_vad_en;
 	int i, val;
 
 
-	dev_info(rt5677->component->dev, "DSP VAD: enable=%d, activity=%d\n",
+	dev_info((*(*rt5677).component).dev, "DSP VAD: enable=%d, activity=%d\n",
 			enable, activity);
 
 	if (enable && !activity) {
@@ -937,15 +937,15 @@ static void rt5677_dsp_work(struct work_struct *work)
 		rt5677_set_vad_source(rt5677);
 		rt5677_set_dsp_mode(rt5677, true);
 
-#define RT5677_BOOT_RETRY 20
+pub const RT5677_BOOT_RETRY: u32 = 20;
 		for (i = 0; i < RT5677_BOOT_RETRY; i++) {
-			regmap_read(rt5677->regmap, RT5677_PWR_DSP_ST, &val);
+			regmap_read((*rt5677).regmap, RT5677_PWR_DSP_ST, &val);
 			if (val == 0x3ff)
 				break;
 			udelay(500);
 		}
 		if (i == RT5677_BOOT_RETRY && val != 0x3ff) {
-			dev_err(rt5677->component->dev, "DSP Boot Timed Out!");
+			dev_err((*(*rt5677).component).dev, "DSP Boot Timed Out!");
 			return;
 		}
 
@@ -960,24 +960,24 @@ static void rt5677_dsp_work(struct work_struct *work)
 		rt5677_load_dsp_from_file(rt5677);
 
 		/* Set DSP CPU to Run */
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_DSP1,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_DSP1,
 			RT5677_PWR_DSP_CPU, 0x0);
 	} else if (!enable && activity) {
 		activity = false;
 
 		/* Don't turn off the DSP while handling irqs */
-		scoped_guard(mutex, &rt5677->irq_lock) {
+		scoped_guard(mutex, (*&rt5677).irq_lock) {
 			/* Set DSP CPU to Stop */
-			regmap_update_bits(rt5677->regmap, RT5677_PWR_DSP1,
+			regmap_update_bits((*rt5677).regmap, RT5677_PWR_DSP1,
 					   RT5677_PWR_DSP_CPU, RT5677_PWR_DSP_CPU);
 
 			rt5677_set_dsp_mode(rt5677, false);
 
 			/* Disable and clear VAD interrupt */
-			regmap_write(rt5677->regmap, RT5677_VAD_CTRL1, 0x2184);
+			regmap_write((*rt5677).regmap, RT5677_VAD_CTRL1, 0x2184);
 
 			/* Set GPIO1 pin back to be IRQ output for jack detect */
-			regmap_update_bits(rt5677->regmap, RT5677_GPIO_CTRL1,
+			regmap_update_bits((*rt5677).regmap, RT5677_GPIO_CTRL1,
 					   RT5677_GPIO1_PIN_MASK, RT5677_GPIO1_PIN_IRQ);
 		}
 	}
@@ -999,23 +999,23 @@ static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	8, 8, TLV_DB_SCALE_ITEM(5200, 0, 0)
 );
 
-static int rt5677_dsp_vad_get(struct snd_kcontrol *kcontrol,
-		struct snd_ctl_elem_value *ucontrol)
+static int rt5677_dsp_vad_get(snd_kcontrol *kcontrol,
+		snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
-	ucontrol->value.integer.value[0] = rt5677->dsp_vad_en_request;
+	(*ucontrol).value.integer.value[0] = (*rt5677).dsp_vad_en_request;
 
 	return 0;
 }
 
-static int rt5677_dsp_vad_put(struct snd_kcontrol *kcontrol,
-		struct snd_ctl_elem_value *ucontrol)
+static int rt5677_dsp_vad_put(snd_kcontrol *kcontrol,
+		snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 
-	rt5677_set_dsp_vad(component, !!ucontrol->value.integer.value[0]);
+	rt5677_set_dsp_vad(component, (*!!ucontrol).value.integer.value[0]);
 
 	return 0;
 }
@@ -1106,32 +1106,32 @@ static const struct snd_kcontrol_new rt5677_snd_controls[] = {
  * Choose dmic clock between 1MHz and 3MHz.
  * It is better for clock to approximate 3MHz.
  */
-static int set_dmic_clk(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int set_dmic_clk(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 	int idx, rate;
 
-	rate = rt5677->sysclk / rl6231_get_pre_div(rt5677->regmap,
+	rate = (*rt5677).sysclk / rl6231_get_pre_div((*rt5677).regmap,
 		RT5677_CLK_TREE_CTRL1, RT5677_I2S_PD1_SFT);
 	idx = rl6231_calc_dmic_clk(rate);
 	if (idx < 0)
-		dev_err(component->dev, "Failed to set DMIC clock\n");
+		dev_err((*component).dev, "Failed to set DMIC clock\n");
 	else
-		regmap_update_bits(rt5677->regmap, RT5677_DMIC_CTRL1,
+		regmap_update_bits((*rt5677).regmap, RT5677_DMIC_CTRL1,
 			RT5677_DMIC_CLK_MASK, idx << RT5677_DMIC_CLK_SFT);
 	return idx;
 }
 
-static int is_sys_clk_from_pll(struct snd_soc_dapm_widget *source,
-			 struct snd_soc_dapm_widget *sink)
+static int is_sys_clk_from_pll(snd_soc_dapm_widget *source,
+			 snd_soc_dapm_widget *sink)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*source).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int val;
+	core::ffi::c_uint val;
 
-	regmap_read(rt5677->regmap, RT5677_GLB_CLK1, &val);
+	regmap_read((*rt5677).regmap, RT5677_GLB_CLK1, &val);
 	val &= RT5677_SCLK_SRC_MASK;
 	if (val == RT5677_SCLK_SRC_PLL1)
 		return 1;
@@ -1139,15 +1139,15 @@ static int is_sys_clk_from_pll(struct snd_soc_dapm_widget *source,
 		return 0;
 }
 
-static int is_using_asrc(struct snd_soc_dapm_widget *source,
-			 struct snd_soc_dapm_widget *sink)
+static int is_using_asrc(snd_soc_dapm_widget *source,
+			 snd_soc_dapm_widget *sink)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*source).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int reg, shift, val;
+	reg: core::ffi::c_uint, shift, val;
 
-	if (source->reg == RT5677_ASRC_1) {
-		switch (source->shift) {
+	if ((*source).reg == RT5677_ASRC_1) {
+		switch ((*source).shift) {
 		case 12:
 			reg = RT5677_ASRC_4;
 			shift = 0;
@@ -1168,7 +1168,7 @@ static int is_using_asrc(struct snd_soc_dapm_widget *source,
 			return 0;
 		}
 	} else {
-		switch (source->shift) {
+		switch ((*source).shift) {
 		case 0:
 			reg = RT5677_ASRC_6;
 			shift = 8;
@@ -1210,7 +1210,7 @@ static int is_using_asrc(struct snd_soc_dapm_widget *source,
 		}
 	}
 
-	regmap_read(rt5677->regmap, reg, &val);
+	regmap_read((*rt5677).regmap, reg, &val);
 	val = (val >> shift) & 0xf;
 
 	switch (val) {
@@ -1222,13 +1222,13 @@ static int is_using_asrc(struct snd_soc_dapm_widget *source,
 
 }
 
-static int can_use_asrc(struct snd_soc_dapm_widget *source,
-			 struct snd_soc_dapm_widget *sink)
+static int can_use_asrc(snd_soc_dapm_widget *source,
+			 snd_soc_dapm_widget *sink)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*source).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
-	if (rt5677->sysclk > rt5677->lrck[RT5677_AIF1] * 384)
+	if ((*rt5677).sysclk > (*rt5677).lrck[RT5677_AIF1] * 384)
 		return 1;
 
 	return 0;
@@ -1248,16 +1248,16 @@ static int can_use_asrc(struct snd_soc_dapm_widget *source,
  * set of filters specified by the mask. And the codec driver will turn on ASRC
  * for these filters if ASRC is selected as their clock source.
  */
-int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
-		unsigned int filter_mask, unsigned int clk_src)
+int rt5677_sel_asrc_clk_src(snd_soc_component *component,
+		filter_mask: core::ffi::c_uint, clk_src: core::ffi::c_uint)
 {
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int asrc3_mask = 0, asrc3_value = 0;
-	unsigned int asrc4_mask = 0, asrc4_value = 0;
-	unsigned int asrc5_mask = 0, asrc5_value = 0;
-	unsigned int asrc6_mask = 0, asrc6_value = 0;
-	unsigned int asrc7_mask = 0, asrc7_value = 0;
-	unsigned int asrc8_mask = 0, asrc8_value = 0;
+	core::ffi::c_uint asrc3_mask = 0, asrc3_value = 0;
+	core::ffi::c_uint asrc4_mask = 0, asrc4_value = 0;
+	core::ffi::c_uint asrc5_mask = 0, asrc5_value = 0;
+	core::ffi::c_uint asrc6_mask = 0, asrc6_value = 0;
+	core::ffi::c_uint asrc7_mask = 0, asrc7_value = 0;
+	core::ffi::c_uint asrc8_mask = 0, asrc8_value = 0;
 
 	switch (clk_src) {
 	case RT5677_CLK_SEL_SYS:
@@ -1299,7 +1299,7 @@ int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
 	}
 
 	if (asrc3_mask)
-		regmap_update_bits(rt5677->regmap, RT5677_ASRC_3, asrc3_mask,
+		regmap_update_bits((*rt5677).regmap, RT5677_ASRC_3, asrc3_mask,
 			asrc3_value);
 
 	/* ASRC 4 */
@@ -1328,7 +1328,7 @@ int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
 	}
 
 	if (asrc4_mask)
-		regmap_update_bits(rt5677->regmap, RT5677_ASRC_4, asrc4_mask,
+		regmap_update_bits((*rt5677).regmap, RT5677_ASRC_4, asrc4_mask,
 			asrc4_value);
 
 	/* ASRC 5 */
@@ -1357,7 +1357,7 @@ int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
 	}
 
 	if (asrc5_mask)
-		regmap_update_bits(rt5677->regmap, RT5677_ASRC_5, asrc5_mask,
+		regmap_update_bits((*rt5677).regmap, RT5677_ASRC_5, asrc5_mask,
 			asrc5_value);
 
 	/* ASRC 6 */
@@ -1374,7 +1374,7 @@ int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
 	}
 
 	if (asrc6_mask)
-		regmap_update_bits(rt5677->regmap, RT5677_ASRC_6, asrc6_mask,
+		regmap_update_bits((*rt5677).regmap, RT5677_ASRC_6, asrc6_mask,
 			asrc6_value);
 
 	/* ASRC 7 */
@@ -1391,7 +1391,7 @@ int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
 	}
 
 	if (asrc7_mask)
-		regmap_update_bits(rt5677->regmap, RT5677_ASRC_7, asrc7_mask,
+		regmap_update_bits((*rt5677).regmap, RT5677_ASRC_7, asrc7_mask,
 			asrc7_value);
 
 	/* ASRC 8 */
@@ -1420,53 +1420,53 @@ int rt5677_sel_asrc_clk_src(struct snd_soc_component *component,
 	}
 
 	if (asrc8_mask)
-		regmap_update_bits(rt5677->regmap, RT5677_ASRC_8, asrc8_mask,
+		regmap_update_bits((*rt5677).regmap, RT5677_ASRC_8, asrc8_mask,
 			asrc8_value);
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(rt5677_sel_asrc_clk_src);
 
-static int rt5677_dmic_use_asrc(struct snd_soc_dapm_widget *source,
-			 struct snd_soc_dapm_widget *sink)
+static int rt5677_dmic_use_asrc(snd_soc_dapm_widget *source,
+			 snd_soc_dapm_widget *sink)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*source).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int asrc_setting;
+	core::ffi::c_uint asrc_setting;
 
-	switch (source->shift) {
+	switch ((*source).shift) {
 	case 11:
-		regmap_read(rt5677->regmap, RT5677_ASRC_5, &asrc_setting);
+		regmap_read((*rt5677).regmap, RT5677_ASRC_5, &asrc_setting);
 		asrc_setting = (asrc_setting & RT5677_AD_STO1_CLK_SEL_MASK) >>
 				RT5677_AD_STO1_CLK_SEL_SFT;
 		break;
 
 	case 10:
-		regmap_read(rt5677->regmap, RT5677_ASRC_5, &asrc_setting);
+		regmap_read((*rt5677).regmap, RT5677_ASRC_5, &asrc_setting);
 		asrc_setting = (asrc_setting & RT5677_AD_STO2_CLK_SEL_MASK) >>
 				RT5677_AD_STO2_CLK_SEL_SFT;
 		break;
 
 	case 9:
-		regmap_read(rt5677->regmap, RT5677_ASRC_5, &asrc_setting);
+		regmap_read((*rt5677).regmap, RT5677_ASRC_5, &asrc_setting);
 		asrc_setting = (asrc_setting & RT5677_AD_STO3_CLK_SEL_MASK) >>
 				RT5677_AD_STO3_CLK_SEL_SFT;
 		break;
 
 	case 8:
-		regmap_read(rt5677->regmap, RT5677_ASRC_5, &asrc_setting);
+		regmap_read((*rt5677).regmap, RT5677_ASRC_5, &asrc_setting);
 		asrc_setting = (asrc_setting & RT5677_AD_STO4_CLK_SEL_MASK) >>
 			RT5677_AD_STO4_CLK_SEL_SFT;
 		break;
 
 	case 7:
-		regmap_read(rt5677->regmap, RT5677_ASRC_6, &asrc_setting);
+		regmap_read((*rt5677).regmap, RT5677_ASRC_6, &asrc_setting);
 		asrc_setting = (asrc_setting & RT5677_AD_MONOL_CLK_SEL_MASK) >>
 			RT5677_AD_MONOL_CLK_SEL_SFT;
 		break;
 
 	case 6:
-		regmap_read(rt5677->regmap, RT5677_ASRC_6, &asrc_setting);
+		regmap_read((*rt5677).regmap, RT5677_ASRC_6, &asrc_setting);
 		asrc_setting = (asrc_setting & RT5677_AD_MONOR_CLK_SEL_MASK) >>
 			RT5677_AD_MONOR_CLK_SEL_SFT;
 		break;
@@ -2588,20 +2588,20 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5677_if2_dac7_tdm_sel_mux =
 	SOC_DAPM_ENUM("IF2 DAC7 TDM Source", rt5677_if2_dac7_tdm_sel_enum);
 
-static int rt5677_bst1_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_bst1_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 			RT5677_PWR_BST1_P, RT5677_PWR_BST1_P);
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 			RT5677_PWR_BST1_P, 0);
 		break;
 
@@ -2612,20 +2612,20 @@ static int rt5677_bst1_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_bst2_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_bst2_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 			RT5677_PWR_BST2_P, RT5677_PWR_BST2_P);
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 			RT5677_PWR_BST2_P, 0);
 		break;
 
@@ -2636,19 +2636,19 @@ static int rt5677_bst2_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_set_pll1_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_set_pll1_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PLL1_CTRL2, 0x2, 0x2);
+		regmap_update_bits((*rt5677).regmap, RT5677_PLL1_CTRL2, 0x2, 0x2);
 		break;
 
 	case SND_SOC_DAPM_POST_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PLL1_CTRL2, 0x2, 0x0);
+		regmap_update_bits((*rt5677).regmap, RT5677_PLL1_CTRL2, 0x2, 0x0);
 		break;
 
 	default:
@@ -2658,19 +2658,19 @@ static int rt5677_set_pll1_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_set_pll2_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_set_pll2_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PLL2_CTRL2, 0x2, 0x2);
+		regmap_update_bits((*rt5677).regmap, RT5677_PLL2_CTRL2, 0x2, 0x2);
 		break;
 
 	case SND_SOC_DAPM_POST_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PLL2_CTRL2, 0x2, 0x0);
+		regmap_update_bits((*rt5677).regmap, RT5677_PLL2_CTRL2, 0x2, 0x0);
 		break;
 
 	default:
@@ -2680,22 +2680,22 @@ static int rt5677_set_pll2_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_set_micbias1_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_set_micbias1_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 			RT5677_PWR_CLK_MB1 | RT5677_PWR_PP_MB1 |
 			RT5677_PWR_CLK_MB, RT5677_PWR_CLK_MB1 |
 			RT5677_PWR_PP_MB1 | RT5677_PWR_CLK_MB);
 		break;
 
 	case SND_SOC_DAPM_PRE_PMD:
-		regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG2,
+		regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG2,
 			RT5677_PWR_CLK_MB1 | RT5677_PWR_PP_MB1 |
 			RT5677_PWR_CLK_MB, 0);
 		break;
@@ -2707,18 +2707,18 @@ static int rt5677_set_micbias1_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_if1_adc_tdm_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_if1_adc_tdm_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int value;
+	core::ffi::c_uint value;
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		regmap_read(rt5677->regmap, RT5677_TDM1_CTRL2, &value);
+		regmap_read((*rt5677).regmap, RT5677_TDM1_CTRL2, &value);
 		if (value & RT5677_IF1_ADC_CTRL_MASK)
-			regmap_update_bits(rt5677->regmap, RT5677_TDM1_CTRL1,
+			regmap_update_bits((*rt5677).regmap, RT5677_TDM1_CTRL1,
 				RT5677_IF1_ADC_MODE_MASK,
 				RT5677_IF1_ADC_MODE_TDM);
 		break;
@@ -2730,18 +2730,18 @@ static int rt5677_if1_adc_tdm_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_if2_adc_tdm_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_if2_adc_tdm_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int value;
+	core::ffi::c_uint value;
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		regmap_read(rt5677->regmap, RT5677_TDM2_CTRL2, &value);
+		regmap_read((*rt5677).regmap, RT5677_TDM2_CTRL2, &value);
 		if (value & RT5677_IF2_ADC_CTRL_MASK)
-			regmap_update_bits(rt5677->regmap, RT5677_TDM2_CTRL1,
+			regmap_update_bits((*rt5677).regmap, RT5677_TDM2_CTRL1,
 				RT5677_IF2_ADC_MODE_MASK,
 				RT5677_IF2_ADC_MODE_TDM);
 		break;
@@ -2753,22 +2753,22 @@ static int rt5677_if2_adc_tdm_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_vref_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_vref_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		if (snd_soc_dapm_get_bias_level(dapm) != SND_SOC_BIAS_ON &&
-			!rt5677->is_vref_slow) {
+			(*!rt5677).is_vref_slow) {
 			mdelay(20);
-			regmap_update_bits(rt5677->regmap, RT5677_PWR_ANLG1,
+			regmap_update_bits((*rt5677).regmap, RT5677_PWR_ANLG1,
 				RT5677_PWR_FV1 | RT5677_PWR_FV2,
 				RT5677_PWR_FV1 | RT5677_PWR_FV2);
-			rt5677->is_vref_slow = true;
+			(*rt5677).is_vref_slow = true;
 		}
 		break;
 
@@ -2779,8 +2779,8 @@ static int rt5677_vref_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5677_filter_power_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5677_filter_power_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
@@ -4309,33 +4309,33 @@ static const struct snd_soc_dapm_route rt5677_dmic2_clk_2[] = {
 	{ "DMIC R2", NULL, "DMIC2 power" },
 };
 
-static int rt5677_hw_params(struct snd_pcm_substream *substream,
-	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
+static int rt5677_hw_params(snd_pcm_substream *substream,
+	snd_pcm_hw_params *params, snd_soc_dai *dai)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int val_len = 0, val_clk, mask_clk;
+	core::ffi::c_uint val_len = 0, val_clk, mask_clk;
 	int pre_div, bclk_ms, frame_size;
 
-	rt5677->lrck[dai->id] = params_rate(params);
-	pre_div = rl6231_get_clk_info(rt5677->sysclk, rt5677->lrck[dai->id]);
+	(*rt5677).lrck[(*dai).id] = params_rate(params);
+	pre_div = rl6231_get_clk_info((*rt5677).sysclk, (*rt5677).lrck[(*dai).id]);
 	if (pre_div < 0) {
-		dev_err(component->dev, "Unsupported clock setting: sysclk=%dHz lrck=%dHz\n",
-			rt5677->sysclk, rt5677->lrck[dai->id]);
+		dev_err((*component).dev, "Unsupported clock setting: sysclk=%dHz lrck=%dHz\n",
+			(*rt5677).sysclk, (*rt5677).lrck[(*dai).id]);
 		return -EINVAL;
 	}
 	frame_size = snd_soc_params_to_frame_size(params);
 	if (frame_size < 0) {
-		dev_err(component->dev, "Unsupported frame size: %d\n", frame_size);
+		dev_err((*component).dev, "Unsupported frame size: %d\n", frame_size);
 		return -EINVAL;
 	}
 	bclk_ms = frame_size > 32;
-	rt5677->bclk[dai->id] = rt5677->lrck[dai->id] * (32 << bclk_ms);
+	(*rt5677).bclk[(*dai).id] = (*rt5677).lrck[(*dai).id] * (32 << bclk_ms);
 
-	dev_dbg(dai->dev, "bclk is %dHz and lrck is %dHz\n",
-		rt5677->bclk[dai->id], rt5677->lrck[dai->id]);
-	dev_dbg(dai->dev, "bclk_ms is %d and pre_div is %d for iis %d\n",
-				bclk_ms, pre_div, dai->id);
+	dev_dbg((*dai).dev, "bclk is %dHz and lrck is %dHz\n",
+		(*rt5677).bclk[(*dai).id], (*rt5677).lrck[(*dai).id]);
+	dev_dbg((*dai).dev, "bclk_ms is %d and pre_div is %d for iis %d\n",
+				bclk_ms, pre_div, (*dai).id);
 
 	switch (params_width(params)) {
 	case 16:
@@ -4353,39 +4353,39 @@ static int rt5677_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	switch (dai->id) {
+	switch ((*dai).id) {
 	case RT5677_AIF1:
 		mask_clk = RT5677_I2S_PD1_MASK;
 		val_clk = pre_div << RT5677_I2S_PD1_SFT;
-		regmap_update_bits(rt5677->regmap, RT5677_I2S1_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S1_SDP,
 			RT5677_I2S_DL_MASK, val_len);
-		regmap_update_bits(rt5677->regmap, RT5677_CLK_TREE_CTRL1,
+		regmap_update_bits((*rt5677).regmap, RT5677_CLK_TREE_CTRL1,
 			mask_clk, val_clk);
 		break;
 	case RT5677_AIF2:
 		mask_clk = RT5677_I2S_PD2_MASK;
 		val_clk = pre_div << RT5677_I2S_PD2_SFT;
-		regmap_update_bits(rt5677->regmap, RT5677_I2S2_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S2_SDP,
 			RT5677_I2S_DL_MASK, val_len);
-		regmap_update_bits(rt5677->regmap, RT5677_CLK_TREE_CTRL1,
+		regmap_update_bits((*rt5677).regmap, RT5677_CLK_TREE_CTRL1,
 			mask_clk, val_clk);
 		break;
 	case RT5677_AIF3:
 		mask_clk = RT5677_I2S_BCLK_MS3_MASK | RT5677_I2S_PD3_MASK;
 		val_clk = bclk_ms << RT5677_I2S_BCLK_MS3_SFT |
 			pre_div << RT5677_I2S_PD3_SFT;
-		regmap_update_bits(rt5677->regmap, RT5677_I2S3_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S3_SDP,
 			RT5677_I2S_DL_MASK, val_len);
-		regmap_update_bits(rt5677->regmap, RT5677_CLK_TREE_CTRL1,
+		regmap_update_bits((*rt5677).regmap, RT5677_CLK_TREE_CTRL1,
 			mask_clk, val_clk);
 		break;
 	case RT5677_AIF4:
 		mask_clk = RT5677_I2S_BCLK_MS4_MASK | RT5677_I2S_PD4_MASK;
 		val_clk = bclk_ms << RT5677_I2S_BCLK_MS4_SFT |
 			pre_div << RT5677_I2S_PD4_SFT;
-		regmap_update_bits(rt5677->regmap, RT5677_I2S4_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S4_SDP,
 			RT5677_I2S_DL_MASK, val_len);
-		regmap_update_bits(rt5677->regmap, RT5677_CLK_TREE_CTRL1,
+		regmap_update_bits((*rt5677).regmap, RT5677_CLK_TREE_CTRL1,
 			mask_clk, val_clk);
 		break;
 	default:
@@ -4395,19 +4395,19 @@ static int rt5677_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-static int rt5677_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+static int rt5677_set_dai_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int reg_val = 0;
+	core::ffi::c_uint reg_val = 0;
 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
-		rt5677->master[dai->id] = 1;
+		(*rt5677).master[(*dai).id] = 1;
 		break;
 	case SND_SOC_DAIFMT_CBC_CFC:
 		reg_val |= RT5677_I2S_MS_S;
-		rt5677->master[dai->id] = 0;
+		(*rt5677).master[(*dai).id] = 0;
 		break;
 	default:
 		return -EINVAL;
@@ -4439,24 +4439,24 @@ static int rt5677_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	switch (dai->id) {
+	switch ((*dai).id) {
 	case RT5677_AIF1:
-		regmap_update_bits(rt5677->regmap, RT5677_I2S1_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S1_SDP,
 			RT5677_I2S_MS_MASK | RT5677_I2S_BP_MASK |
 			RT5677_I2S_DF_MASK, reg_val);
 		break;
 	case RT5677_AIF2:
-		regmap_update_bits(rt5677->regmap, RT5677_I2S2_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S2_SDP,
 			RT5677_I2S_MS_MASK | RT5677_I2S_BP_MASK |
 			RT5677_I2S_DF_MASK, reg_val);
 		break;
 	case RT5677_AIF3:
-		regmap_update_bits(rt5677->regmap, RT5677_I2S3_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S3_SDP,
 			RT5677_I2S_MS_MASK | RT5677_I2S_BP_MASK |
 			RT5677_I2S_DF_MASK, reg_val);
 		break;
 	case RT5677_AIF4:
-		regmap_update_bits(rt5677->regmap, RT5677_I2S4_SDP,
+		regmap_update_bits((*rt5677).regmap, RT5677_I2S4_SDP,
 			RT5677_I2S_MS_MASK | RT5677_I2S_BP_MASK |
 			RT5677_I2S_DF_MASK, reg_val);
 		break;
@@ -4468,14 +4468,14 @@ static int rt5677_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	return 0;
 }
 
-static int rt5677_set_dai_sysclk(struct snd_soc_dai *dai,
-		int clk_id, unsigned int freq, int dir)
+static int rt5677_set_dai_sysclk(snd_soc_dai *dai,
+		int clk_id, freq: core::ffi::c_uint, int dir)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int reg_val = 0;
+	core::ffi::c_uint reg_val = 0;
 
-	if (freq == rt5677->sysclk && clk_id == rt5677->sysclk_src)
+	if (freq == (*rt5677).sysclk && clk_id == (*rt5677).sysclk_src)
 		return 0;
 
 	switch (clk_id) {
@@ -4489,15 +4489,15 @@ static int rt5677_set_dai_sysclk(struct snd_soc_dai *dai,
 		reg_val |= RT5677_SCLK_SRC_RCCLK;
 		break;
 	default:
-		dev_err(component->dev, "Invalid clock id (%d)\n", clk_id);
+		dev_err((*component).dev, "Invalid clock id (%d)\n", clk_id);
 		return -EINVAL;
 	}
-	regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+	regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 		RT5677_SCLK_SRC_MASK, reg_val);
-	rt5677->sysclk = freq;
-	rt5677->sysclk_src = clk_id;
+	(*rt5677).sysclk = freq;
+	(*rt5677).sysclk_src = clk_id;
 
-	dev_dbg(dai->dev, "Sysclk is %dHz and clock id is %d\n", freq, clk_id);
+	dev_dbg((*dai).dev, "Sysclk is %dHz and clock id is %d\n", freq, clk_id);
 
 	return 0;
 }
@@ -4512,8 +4512,8 @@ static int rt5677_set_dai_sysclk(struct snd_soc_dai *dai,
  *
  * Returns 0 for success or negative error code.
  */
-static int rt5677_pll_calc(const unsigned int freq_in,
-	const unsigned int freq_out, struct rl6231_pll_code *pll_code)
+static int rt5677_pll_calc(const core::ffi::c_uint freq_in,
+	const core::ffi::c_uint freq_out, rl6231_pll_code *pll_code)
 {
 	if (RT5677_PLL_INP_MIN > freq_in)
 		return -EINVAL;
@@ -4521,52 +4521,52 @@ static int rt5677_pll_calc(const unsigned int freq_in,
 	return rl6231_pll_calc(freq_in, freq_out, pll_code);
 }
 
-static int rt5677_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int source,
-			unsigned int freq_in, unsigned int freq_out)
+static int rt5677_set_dai_pll(snd_soc_dai *dai, int pll_id, int source,
+			freq_in: core::ffi::c_uint, freq_out: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 	struct rl6231_pll_code pll_code;
 	int ret;
 
-	if (source == rt5677->pll_src && freq_in == rt5677->pll_in &&
-	    freq_out == rt5677->pll_out)
+	if (source == (*rt5677).pll_src && freq_in == (*rt5677).pll_in &&
+	    freq_out == (*rt5677).pll_out)
 		return 0;
 
 	if (!freq_in || !freq_out) {
-		dev_dbg(component->dev, "PLL disabled\n");
+		dev_dbg((*component).dev, "PLL disabled\n");
 
-		rt5677->pll_in = 0;
-		rt5677->pll_out = 0;
-		regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+		(*rt5677).pll_in = 0;
+		(*rt5677).pll_out = 0;
+		regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 			RT5677_SCLK_SRC_MASK, RT5677_SCLK_SRC_MCLK);
 		return 0;
 	}
 
 	switch (source) {
 	case RT5677_PLL1_S_MCLK:
-		regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+		regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 			RT5677_PLL1_SRC_MASK, RT5677_PLL1_SRC_MCLK);
 		break;
 	case RT5677_PLL1_S_BCLK1:
 	case RT5677_PLL1_S_BCLK2:
 	case RT5677_PLL1_S_BCLK3:
 	case RT5677_PLL1_S_BCLK4:
-		switch (dai->id) {
+		switch ((*dai).id) {
 		case RT5677_AIF1:
-			regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+			regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 				RT5677_PLL1_SRC_MASK, RT5677_PLL1_SRC_BCLK1);
 			break;
 		case RT5677_AIF2:
-			regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+			regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 				RT5677_PLL1_SRC_MASK, RT5677_PLL1_SRC_BCLK2);
 			break;
 		case RT5677_AIF3:
-			regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+			regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 				RT5677_PLL1_SRC_MASK, RT5677_PLL1_SRC_BCLK3);
 			break;
 		case RT5677_AIF4:
-			regmap_update_bits(rt5677->regmap, RT5677_GLB_CLK1,
+			regmap_update_bits((*rt5677).regmap, RT5677_GLB_CLK1,
 				RT5677_PLL1_SRC_MASK, RT5677_PLL1_SRC_BCLK4);
 			break;
 		default:
@@ -4574,17 +4574,17 @@ static int rt5677_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int source,
 		}
 		break;
 	default:
-		dev_err(component->dev, "Unknown PLL source %d\n", source);
+		dev_err((*component).dev, "Unknown PLL source %d\n", source);
 		return -EINVAL;
 	}
 
 	ret = rt5677_pll_calc(freq_in, freq_out, &pll_code);
 	if (ret < 0) {
-		dev_err(component->dev, "Unsupported input clock %d\n", freq_in);
+		dev_err((*component).dev, "Unsupported input clock %d\n", freq_in);
 		return ret;
 	}
 
-	dev_dbg(component->dev, "m_bypass=%d m=%d n=%d k=%d\n",
+	dev_dbg((*component).dev, "m_bypass=%d m=%d n=%d k=%d\n",
 		pll_code.m_bp, (pll_code.m_bp ? 0 : pll_code.m_code),
 		pll_code.n_code, pll_code.k_code);
 
@@ -4601,12 +4601,12 @@ static int rt5677_set_dai_pll(struct snd_soc_dai *dai, int pll_id, int source,
 	return 0;
 }
 
-static int rt5677_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
-			unsigned int rx_mask, int slots, int slot_width)
+static int rt5677_set_tdm_slot(snd_soc_dai *dai, tx_mask: core::ffi::c_uint,
+			rx_mask: core::ffi::c_uint, int slots, int slot_width)
 {
 	struct snd_soc_component *component = dai->component;
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
-	unsigned int val = 0, slot_width_25 = 0;
+	core::ffi::c_uint val = 0, slot_width_25 = 0;
 
 	if (rx_mask || tx_mask)
 		val |= (1 << 12);
@@ -4664,8 +4664,8 @@ static int rt5677_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	return 0;
 }
 
-static int rt5677_set_bias_level(struct snd_soc_component *component,
-			enum snd_soc_bias_level level)
+static int rt5677_set_bias_level(snd_soc_component *component,
+			snd_soc_bias_level level)
 {
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
@@ -4740,17 +4740,17 @@ static int rt5677_set_bias_level(struct snd_soc_component *component,
 	return 0;
 }
 
-static int rt5677_update_gpio_bits(struct rt5677_priv *rt5677, unsigned offset, int m, int v)
+static int rt5677_update_gpio_bits(rt5677_priv *rt5677, unsigned offset, int m, int v)
 {
-	unsigned int bank = offset / 5;
-	unsigned int shift = (offset % 5) * 3;
-	unsigned int reg = bank ? RT5677_GPIO_CTRL3 : RT5677_GPIO_CTRL2;
+	core::ffi::c_uint bank = offset / 5;
+	core::ffi::c_uint shift = (offset % 5) * 3;
+	core::ffi::c_uint reg = bank ? RT5677_GPIO_CTRL3 : RT5677_GPIO_CTRL2;
 
 	return regmap_update_bits(rt5677->regmap, reg, m << shift, v << shift);
 }
 
 #ifdef CONFIG_GPIOLIB
-static int rt5677_gpio_set(struct gpio_chip *chip, unsigned int offset,
+static int rt5677_gpio_set(gpio_chip *chip, offset: core::ffi::c_uint,
 			   int value)
 {
 	struct rt5677_priv *rt5677 = gpiochip_get_data(chip);
@@ -4760,7 +4760,7 @@ static int rt5677_gpio_set(struct gpio_chip *chip, unsigned int offset,
 	return rt5677_update_gpio_bits(rt5677, offset, m, level);
 }
 
-static int rt5677_gpio_direction_out(struct gpio_chip *chip,
+static int rt5677_gpio_direction_out(gpio_chip *chip,
 				     unsigned offset, int value)
 {
 	struct rt5677_priv *rt5677 = gpiochip_get_data(chip);
@@ -4771,7 +4771,7 @@ static int rt5677_gpio_direction_out(struct gpio_chip *chip,
 	return rt5677_update_gpio_bits(rt5677, offset, m, v);
 }
 
-static int rt5677_gpio_get(struct gpio_chip *chip, unsigned offset)
+static int rt5677_gpio_get(gpio_chip *chip, unsigned offset)
 {
 	struct rt5677_priv *rt5677 = gpiochip_get_data(chip);
 	int value, ret;
@@ -4783,7 +4783,7 @@ static int rt5677_gpio_get(struct gpio_chip *chip, unsigned offset)
 	return (value & (0x1 << offset)) >> offset;
 }
 
-static int rt5677_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
+static int rt5677_gpio_direction_in(gpio_chip *chip, unsigned offset)
 {
 	struct rt5677_priv *rt5677 = gpiochip_get_data(chip);
 	int m = RT5677_GPIOx_DIR_MASK;
@@ -4792,12 +4792,12 @@ static int rt5677_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 	return rt5677_update_gpio_bits(rt5677, offset, m, v);
 }
 
-static int rt5677_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
+static int rt5677_gpio_get_direction(gpio_chip *chip, offset: core::ffi::c_uint)
 {
 	struct rt5677_priv *rt5677 = gpiochip_get_data(chip);
-	unsigned int shift = RT5677_GPIOx_DIR_SFT + (offset % 5) * 3;
-	unsigned int bank = offset / 5;
-	unsigned int reg = bank ? RT5677_GPIO_CTRL3 : RT5677_GPIO_CTRL2;
+	core::ffi::c_uint shift = RT5677_GPIOx_DIR_SFT + (offset % 5) * 3;
+	core::ffi::c_uint bank = offset / 5;
+	core::ffi::c_uint reg = bank ? RT5677_GPIO_CTRL3 : RT5677_GPIO_CTRL2;
 	int ret;
 
 	ret = regmap_test_bits(rt5677->regmap, reg, BIT(shift));
@@ -4813,7 +4813,7 @@ static int rt5677_gpio_get_direction(struct gpio_chip *chip, unsigned int offset
  *   1 - pull down
  *   2 - pull up
  */
-static void rt5677_gpio_config(struct rt5677_priv *rt5677, unsigned offset,
+static void rt5677_gpio_config(rt5677_priv *rt5677, unsigned offset,
 		int value)
 {
 	int shift;
@@ -4840,7 +4840,7 @@ static void rt5677_gpio_config(struct rt5677_priv *rt5677, unsigned offset,
 	}
 }
 
-static int rt5677_to_irq(struct gpio_chip *chip, unsigned offset)
+static int rt5677_to_irq(gpio_chip *chip, unsigned offset)
 {
 	struct rt5677_priv *rt5677 = gpiochip_get_data(chip);
 	int irq;
@@ -4872,18 +4872,18 @@ static int rt5677_to_irq(struct gpio_chip *chip, unsigned offset)
 }
 
 static const struct gpio_chip rt5677_template_chip = {
-	.label			= RT5677_DRV_NAME,
-	.owner			= THIS_MODULE,
-	.get_direction		= rt5677_gpio_get_direction,
-	.direction_output	= rt5677_gpio_direction_out,
-	.set			= rt5677_gpio_set,
-	.direction_input	= rt5677_gpio_direction_in,
-	.get			= rt5677_gpio_get,
-	.to_irq			= rt5677_to_irq,
-	.can_sleep		= 1,
+	label: RT5677_DRV_NAME,
+	owner: THIS_MODULE,
+	get_direction: rt5677_gpio_get_direction,
+	direction_output: rt5677_gpio_direction_out,
+	set: rt5677_gpio_set,
+	direction_input: rt5677_gpio_direction_in,
+	get: rt5677_gpio_get,
+	to_irq: rt5677_to_irq,
+	can_sleep: 1,
 };
 
-static void rt5677_init_gpio(struct i2c_client *i2c)
+static void rt5677_init_gpio(i2c_client *i2c)
 {
 	struct rt5677_priv *rt5677 = i2c_get_clientdata(i2c);
 	int ret;
@@ -4898,28 +4898,28 @@ static void rt5677_init_gpio(struct i2c_client *i2c)
 		dev_err(&i2c->dev, "Failed to add GPIOs: %d\n", ret);
 }
 
-static void rt5677_free_gpio(struct i2c_client *i2c)
+static void rt5677_free_gpio(i2c_client *i2c)
 {
 	struct rt5677_priv *rt5677 = i2c_get_clientdata(i2c);
 
 	gpiochip_remove(&rt5677->gpio_chip);
 }
 #else
-static void rt5677_gpio_config(struct rt5677_priv *rt5677, unsigned offset,
+static void rt5677_gpio_config(rt5677_priv *rt5677, unsigned offset,
 		int value)
 {
 }
 
-static void rt5677_init_gpio(struct i2c_client *i2c)
+static void rt5677_init_gpio(i2c_client *i2c)
 {
 }
 
-static void rt5677_free_gpio(struct i2c_client *i2c)
+static void rt5677_free_gpio(i2c_client *i2c)
 {
 }
 #endif
 
-static int rt5677_probe(struct snd_soc_component *component)
+static int rt5677_probe(snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
@@ -4953,7 +4953,7 @@ static int rt5677_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-static void rt5677_remove(struct snd_soc_component *component)
+static void rt5677_remove(snd_soc_component *component)
 {
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
@@ -4965,7 +4965,7 @@ static void rt5677_remove(struct snd_soc_component *component)
 }
 
 #ifdef CONFIG_PM
-static int rt5677_suspend(struct snd_soc_component *component)
+static int rt5677_suspend(snd_soc_component *component)
 {
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
@@ -4985,7 +4985,7 @@ static int rt5677_suspend(struct snd_soc_component *component)
 	return 0;
 }
 
-static int rt5677_resume(struct snd_soc_component *component)
+static int rt5677_resume(snd_soc_component *component)
 {
 	struct rt5677_priv *rt5677 = snd_soc_component_get_drvdata(component);
 
@@ -5014,7 +5014,7 @@ static int rt5677_resume(struct snd_soc_component *component)
 #define rt5677_resume NULL
 #endif
 
-static int rt5677_read(void *context, unsigned int reg, unsigned int *val)
+static int rt5677_read(void *context, reg: core::ffi::c_uint, core::ffi::c_uint *val)
 {
 	struct i2c_client *client = context;
 	struct rt5677_priv *rt5677 = i2c_get_clientdata(client);
@@ -5036,7 +5036,7 @@ static int rt5677_read(void *context, unsigned int reg, unsigned int *val)
 	return 0;
 }
 
-static int rt5677_write(void *context, unsigned int reg, unsigned int val)
+static int rt5677_write(void *context, reg: core::ffi::c_uint, val: core::ffi::c_uint)
 {
 	struct i2c_client *client = context;
 	struct rt5677_priv *rt5677 = i2c_get_clientdata(client);
@@ -5064,176 +5064,176 @@ static int rt5677_write(void *context, unsigned int reg, unsigned int val)
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S8)
 
 static const struct snd_soc_dai_ops rt5677_aif_dai_ops = {
-	.hw_params = rt5677_hw_params,
-	.set_fmt = rt5677_set_dai_fmt,
-	.set_sysclk = rt5677_set_dai_sysclk,
-	.set_pll = rt5677_set_dai_pll,
-	.set_tdm_slot = rt5677_set_tdm_slot,
+	hw_params: rt5677_hw_params,
+	set_fmt: rt5677_set_dai_fmt,
+	set_sysclk: rt5677_set_dai_sysclk,
+	set_pll: rt5677_set_dai_pll,
+	set_tdm_slot: rt5677_set_tdm_slot,
 };
 
 static const struct snd_soc_dai_ops rt5677_dsp_dai_ops = {
-	.set_sysclk = rt5677_set_dai_sysclk,
-	.set_pll = rt5677_set_dai_pll,
+	set_sysclk: rt5677_set_dai_sysclk,
+	set_pll: rt5677_set_dai_pll,
 };
 
 static struct snd_soc_dai_driver rt5677_dai[] = {
 	{
-		.name = "rt5677-aif1",
-		.id = RT5677_AIF1,
-		.playback = {
-			.stream_name = "AIF1 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		name: "rt5677-aif1",
+		id: RT5677_AIF1,
+		playback: {
+			stream_name: "AIF1 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.capture = {
-			.stream_name = "AIF1 Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		capture: {
+			stream_name: "AIF1 Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.ops = &rt5677_aif_dai_ops,
+		ops: &rt5677_aif_dai_ops,
 	},
 	{
-		.name = "rt5677-aif2",
-		.id = RT5677_AIF2,
-		.playback = {
-			.stream_name = "AIF2 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		name: "rt5677-aif2",
+		id: RT5677_AIF2,
+		playback: {
+			stream_name: "AIF2 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.capture = {
-			.stream_name = "AIF2 Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		capture: {
+			stream_name: "AIF2 Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.ops = &rt5677_aif_dai_ops,
+		ops: &rt5677_aif_dai_ops,
 	},
 	{
-		.name = "rt5677-aif3",
-		.id = RT5677_AIF3,
-		.playback = {
-			.stream_name = "AIF3 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		name: "rt5677-aif3",
+		id: RT5677_AIF3,
+		playback: {
+			stream_name: "AIF3 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.capture = {
-			.stream_name = "AIF3 Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		capture: {
+			stream_name: "AIF3 Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.ops = &rt5677_aif_dai_ops,
+		ops: &rt5677_aif_dai_ops,
 	},
 	{
-		.name = "rt5677-aif4",
-		.id = RT5677_AIF4,
-		.playback = {
-			.stream_name = "AIF4 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		name: "rt5677-aif4",
+		id: RT5677_AIF4,
+		playback: {
+			stream_name: "AIF4 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.capture = {
-			.stream_name = "AIF4 Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		capture: {
+			stream_name: "AIF4 Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.ops = &rt5677_aif_dai_ops,
+		ops: &rt5677_aif_dai_ops,
 	},
 	{
-		.name = "rt5677-slimbus",
-		.id = RT5677_AIF5,
-		.playback = {
-			.stream_name = "SLIMBus Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		name: "rt5677-slimbus",
+		id: RT5677_AIF5,
+		playback: {
+			stream_name: "SLIMBus Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.capture = {
-			.stream_name = "SLIMBus Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5677_STEREO_RATES,
-			.formats = RT5677_FORMATS,
+		capture: {
+			stream_name: "SLIMBus Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5677_STEREO_RATES,
+			formats: RT5677_FORMATS,
 		},
-		.ops = &rt5677_aif_dai_ops,
+		ops: &rt5677_aif_dai_ops,
 	},
 	{
-		.name = "rt5677-dspbuffer",
-		.id = RT5677_DSPBUFF,
-		.capture = {
-			.stream_name = "DSP Buffer",
-			.channels_min = 1,
-			.channels_max = 1,
-			.rates = SNDRV_PCM_RATE_16000,
-			.formats = SNDRV_PCM_FMTBIT_S16_LE,
+		name: "rt5677-dspbuffer",
+		id: RT5677_DSPBUFF,
+		capture: {
+			stream_name: "DSP Buffer",
+			channels_min: 1,
+			channels_max: 1,
+			rates: SNDRV_PCM_RATE_16000,
+			formats: SNDRV_PCM_FMTBIT_S16_LE,
 		},
-		.ops = &rt5677_dsp_dai_ops,
+		ops: &rt5677_dsp_dai_ops,
 	},
 };
 
 static const struct snd_soc_component_driver soc_component_dev_rt5677 = {
-	.name			= RT5677_DRV_NAME,
-	.probe			= rt5677_probe,
-	.remove			= rt5677_remove,
-	.suspend		= rt5677_suspend,
-	.resume			= rt5677_resume,
-	.set_bias_level		= rt5677_set_bias_level,
-	.controls		= rt5677_snd_controls,
-	.num_controls		= ARRAY_SIZE(rt5677_snd_controls),
-	.dapm_widgets		= rt5677_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(rt5677_dapm_widgets),
-	.dapm_routes		= rt5677_dapm_routes,
-	.num_dapm_routes	= ARRAY_SIZE(rt5677_dapm_routes),
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
+	name: RT5677_DRV_NAME,
+	probe: rt5677_probe,
+	remove: rt5677_remove,
+	suspend: rt5677_suspend,
+	resume: rt5677_resume,
+	set_bias_level: rt5677_set_bias_level,
+	controls: rt5677_snd_controls,
+	num_controls: ARRAY_SIZE(rt5677_snd_controls),
+	dapm_widgets: rt5677_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(rt5677_dapm_widgets),
+	dapm_routes: rt5677_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(rt5677_dapm_routes),
+	use_pmdown_time: 1,
+	endianness: 1,
 };
 
 static const struct regmap_config rt5677_regmap_physical = {
-	.name = "physical",
-	.reg_bits = 8,
-	.val_bits = 16,
+	name: "physical",
+	reg_bits: 8,
+	val_bits: 16,
 
-	.max_register = RT5677_VENDOR_ID2 + 1 + (ARRAY_SIZE(rt5677_ranges) *
+	max_register: RT5677_VENDOR_ID2 + 1 + (ARRAY_SIZE(rt5677_ranges) *
 						RT5677_PR_SPACING),
-	.readable_reg = rt5677_readable_register,
+	readable_reg: rt5677_readable_register,
 
-	.cache_type = REGCACHE_NONE,
-	.ranges = rt5677_ranges,
-	.num_ranges = ARRAY_SIZE(rt5677_ranges),
+	cache_type: REGCACHE_NONE,
+	ranges: rt5677_ranges,
+	num_ranges: ARRAY_SIZE(rt5677_ranges),
 };
 
 static const struct regmap_config rt5677_regmap = {
-	.reg_bits = 8,
-	.val_bits = 16,
+	reg_bits: 8,
+	val_bits: 16,
 
-	.max_register = RT5677_VENDOR_ID2 + 1 + (ARRAY_SIZE(rt5677_ranges) *
+	max_register: RT5677_VENDOR_ID2 + 1 + (ARRAY_SIZE(rt5677_ranges) *
 						RT5677_PR_SPACING),
 
-	.volatile_reg = rt5677_volatile_register,
-	.readable_reg = rt5677_readable_register,
-	.reg_read = rt5677_read,
-	.reg_write = rt5677_write,
+	volatile_reg: rt5677_volatile_register,
+	readable_reg: rt5677_readable_register,
+	reg_read: rt5677_read,
+	reg_write: rt5677_write,
 
-	.cache_type = REGCACHE_RBTREE,
-	.reg_defaults = rt5677_reg,
-	.num_reg_defaults = ARRAY_SIZE(rt5677_reg),
-	.ranges = rt5677_ranges,
-	.num_ranges = ARRAY_SIZE(rt5677_ranges),
+	cache_type: REGCACHE_RBTREE,
+	reg_defaults: rt5677_reg,
+	num_reg_defaults: ARRAY_SIZE(rt5677_reg),
+	ranges: rt5677_ranges,
+	num_ranges: ARRAY_SIZE(rt5677_ranges),
 };
 
 static const struct of_device_id rt5677_of_match[] = {
@@ -5256,8 +5256,8 @@ static const struct i2c_device_id rt5677_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, rt5677_i2c_id);
 
-static void rt5677_read_device_properties(struct rt5677_priv *rt5677,
-		struct device *dev)
+static void rt5677_read_device_properties(rt5677_priv *rt5677,
+		device *dev)
 {
 	u32 val;
 
@@ -5303,30 +5303,30 @@ static void rt5677_read_device_properties(struct rt5677_priv *rt5677,
 }
 
 struct rt5677_irq_desc {
-	unsigned int enable_mask;
-	unsigned int status_mask;
-	unsigned int polarity_mask;
+	core::ffi::c_uint enable_mask;
+	core::ffi::c_uint status_mask;
+	core::ffi::c_uint polarity_mask;
 };
 
 static const struct rt5677_irq_desc rt5677_irq_descs[] = {
 	[RT5677_IRQ_JD1] = {
-		.enable_mask = RT5677_EN_IRQ_GPIO_JD1,
-		.status_mask = RT5677_STA_GPIO_JD1,
-		.polarity_mask = RT5677_INV_GPIO_JD1,
+		enable_mask: RT5677_EN_IRQ_GPIO_JD1,
+		status_mask: RT5677_STA_GPIO_JD1,
+		polarity_mask: RT5677_INV_GPIO_JD1,
 	},
 	[RT5677_IRQ_JD2] = {
-		.enable_mask = RT5677_EN_IRQ_GPIO_JD2,
-		.status_mask = RT5677_STA_GPIO_JD2,
-		.polarity_mask = RT5677_INV_GPIO_JD2,
+		enable_mask: RT5677_EN_IRQ_GPIO_JD2,
+		status_mask: RT5677_STA_GPIO_JD2,
+		polarity_mask: RT5677_INV_GPIO_JD2,
 	},
 	[RT5677_IRQ_JD3] = {
-		.enable_mask = RT5677_EN_IRQ_GPIO_JD3,
-		.status_mask = RT5677_STA_GPIO_JD3,
-		.polarity_mask = RT5677_INV_GPIO_JD3,
+		enable_mask: RT5677_EN_IRQ_GPIO_JD3,
+		status_mask: RT5677_STA_GPIO_JD3,
+		polarity_mask: RT5677_INV_GPIO_JD3,
 	},
 };
 
-static bool rt5677_check_hotword(struct rt5677_priv *rt5677)
+static bool rt5677_check_hotword(rt5677_priv *rt5677)
 {
 	int reg_gpio;
 
@@ -5350,6 +5350,7 @@ static bool rt5677_check_hotword(struct rt5677_priv *rt5677)
 
 static irqreturn_t rt5677_irq(int unused, void *data)
 {
+	'exit: {
 	struct rt5677_priv *rt5677 = data;
 	int ret, loop, i, reg_irq, virq;
 	bool irq_fired = false;
@@ -5376,7 +5377,7 @@ static irqreturn_t rt5677_irq(int unused, void *data)
 		if (ret) {
 			dev_err(rt5677->dev, "failed reading IRQ status: %d\n",
 				ret);
-			goto exit;
+			break 'exit;
 		}
 
 		irq_fired = false;
@@ -5400,16 +5401,17 @@ static irqreturn_t rt5677_irq(int unused, void *data)
 		 * call to rt5677_irq().
 		 */
 		if (!irq_fired && !rt5677_check_hotword(rt5677))
-			goto exit;
+			break 'exit;
 
 		ret = regmap_write(rt5677->regmap, RT5677_IRQ_CTRL1, reg_irq);
 		if (ret) {
 			dev_err(rt5677->dev, "failed updating IRQ status: %d\n",
 				ret);
-			goto exit;
+			break 'exit;
 		}
 	}
-exit:
+	}
+	
 	WARN_ON_ONCE(loop == 20);
 	mutex_unlock(&rt5677->irq_lock);
 	if (irq_fired)
@@ -5418,11 +5420,11 @@ exit:
 		return IRQ_NONE;
 }
 
-static void rt5677_resume_irq_check(struct work_struct *work)
+static void rt5677_resume_irq_check(work_struct *work)
 {
 	int i, virq;
 	struct rt5677_priv *rt5677 =
-		container_of(work, struct rt5677_priv, resume_irq_check.work);
+		container_of(work, rt5677_priv, resume_irq_check.work);
 
 	/* This is needed to check and clear the interrupt status register
 	 * at resume. If the headset is plugged/unplugged when the device is
@@ -5450,14 +5452,14 @@ static void rt5677_resume_irq_check(struct work_struct *work)
 	}
 }
 
-static void rt5677_irq_bus_lock(struct irq_data *data)
+static void rt5677_irq_bus_lock(irq_data *data)
 {
 	struct rt5677_priv *rt5677 = irq_data_get_irq_chip_data(data);
 
 	mutex_lock(&rt5677->irq_lock);
 }
 
-static void rt5677_irq_bus_sync_unlock(struct irq_data *data)
+static void rt5677_irq_bus_sync_unlock(irq_data *data)
 {
 	struct rt5677_priv *rt5677 = irq_data_get_irq_chip_data(data);
 
@@ -5468,14 +5470,14 @@ static void rt5677_irq_bus_sync_unlock(struct irq_data *data)
 	mutex_unlock(&rt5677->irq_lock);
 }
 
-static void rt5677_irq_enable(struct irq_data *data)
+static void rt5677_irq_enable(irq_data *data)
 {
 	struct rt5677_priv *rt5677 = irq_data_get_irq_chip_data(data);
 
 	rt5677->irq_en |= rt5677_irq_descs[data->hwirq].enable_mask;
 }
 
-static void rt5677_irq_disable(struct irq_data *data)
+static void rt5677_irq_disable(irq_data *data)
 {
 	struct rt5677_priv *rt5677 = irq_data_get_irq_chip_data(data);
 
@@ -5483,14 +5485,14 @@ static void rt5677_irq_disable(struct irq_data *data)
 }
 
 static struct irq_chip rt5677_irq_chip = {
-	.name			= "rt5677_irq_chip",
-	.irq_bus_lock		= rt5677_irq_bus_lock,
-	.irq_bus_sync_unlock	= rt5677_irq_bus_sync_unlock,
-	.irq_disable		= rt5677_irq_disable,
-	.irq_enable		= rt5677_irq_enable,
+	name: "rt5677_irq_chip",
+	irq_bus_lock: rt5677_irq_bus_lock,
+	irq_bus_sync_unlock: rt5677_irq_bus_sync_unlock,
+	irq_disable: rt5677_irq_disable,
+	irq_enable: rt5677_irq_enable,
 };
 
-static int rt5677_irq_map(struct irq_domain *h, unsigned int virq,
+static int rt5677_irq_map(irq_domain *h, virq: core::ffi::c_uint,
 			  irq_hw_number_t hw)
 {
 	struct rt5677_priv *rt5677 = h->host_data;
@@ -5504,15 +5506,15 @@ static int rt5677_irq_map(struct irq_domain *h, unsigned int virq,
 
 
 static const struct irq_domain_ops rt5677_domain_ops = {
-	.map	= rt5677_irq_map,
-	.xlate	= irq_domain_xlate_twocell,
+	map: rt5677_irq_map,
+	xlate: irq_domain_xlate_twocell,
 };
 
-static int rt5677_init_irq(struct i2c_client *i2c)
+static int rt5677_init_irq(i2c_client *i2c)
 {
 	int ret;
 	struct rt5677_priv *rt5677 = i2c_get_clientdata(i2c);
-	unsigned int jd_mask = 0, jd_val = 0;
+	core::ffi::c_uint jd_mask = 0, jd_val = 0;
 
 	if (!rt5677->pdata.jd1_gpio &&
 		!rt5677->pdata.jd2_gpio &&
@@ -5585,13 +5587,13 @@ static const struct acpi_gpio_mapping rt5677_acpi_gpios[] = {
 	{},
 };
 
-static int rt5677_i2c_probe(struct i2c_client *i2c)
+static int rt5677_i2c_probe(i2c_client *i2c)
 {
 	struct rt5677_priv *rt5677;
 	int ret;
-	unsigned int val;
+	core::ffi::c_uint val;
 
-	rt5677 = devm_kzalloc(&i2c->dev, sizeof(struct rt5677_priv),
+	rt5677 = devm_kzalloc(&i2c->dev, sizeof(rt5677_priv),
 				GFP_KERNEL);
 	if (rt5677 == NULL)
 		return -ENOMEM;
@@ -5601,7 +5603,7 @@ static int rt5677_i2c_probe(struct i2c_client *i2c)
 	INIT_DELAYED_WORK(&rt5677->dsp_work, rt5677_dsp_work);
 	i2c_set_clientdata(i2c, rt5677);
 
-	rt5677->type = (enum rt5677_type)(uintptr_t)i2c_get_match_data(i2c);
+	rt5677->type = (rt5677_type)(uintptr_t)i2c_get_match_data(i2c);
 	if (rt5677->type == 0)
 		return -EINVAL;
 
@@ -5725,20 +5727,20 @@ static int rt5677_i2c_probe(struct i2c_client *i2c)
 				      rt5677_dai, ARRAY_SIZE(rt5677_dai));
 }
 
-static void rt5677_i2c_remove(struct i2c_client *i2c)
+static void rt5677_i2c_remove(i2c_client *i2c)
 {
 	rt5677_free_gpio(i2c);
 }
 
 static struct i2c_driver rt5677_i2c_driver = {
-	.driver = {
-		.name = RT5677_DRV_NAME,
-		.of_match_table = rt5677_of_match,
-		.acpi_match_table = rt5677_acpi_match,
+	driver: {
+		name: RT5677_DRV_NAME,
+		of_match_table: rt5677_of_match,
+		acpi_match_table: rt5677_acpi_match,
 	},
-	.id_table = rt5677_i2c_id,
-	.probe    = rt5677_i2c_probe,
-	.remove   = rt5677_i2c_remove,
+	id_table: rt5677_i2c_id,
+	probe: rt5677_i2c_probe,
+	remove: rt5677_i2c_remove,
 };
 module_i2c_driver(rt5677_i2c_driver);
 

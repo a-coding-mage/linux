@@ -21,7 +21,6 @@
  *
  */
 
-#define _nbio_6_3_2_OFFSET_HEADER
 
 
 

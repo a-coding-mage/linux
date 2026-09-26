@@ -22,7 +22,7 @@ static mut vdso_sgx_enter_enclave: vdso_sgx_enter_enclave_t = None;
 /*
  * Security Information (SECINFO) data structure needed by a few SGX
  * instructions (eg. ENCLU[EACCEPT] and ENCLU[EMODPE]) holds meta-data
- * about an enclave page. &enum sgx_secinfo_page_state specifies the
+ * about an enclave page. &sgx_secinfo_page_state specifies the
  * secinfo flags used for page state.
  */
 #[repr(u32)]
@@ -198,11 +198,11 @@ unsafe fn setup_test_encl(heap_size: c_ulong, encl: *mut encl, _metadata: *mut _
     }
 
     if !encl_measure(encl) {
-        goto_err!(err);
+        goto err;
     }
 
     if !encl_build(encl) {
-        goto_err!(err);
+        goto err;
     }
 
     /*
@@ -216,7 +216,7 @@ unsafe fn setup_test_encl(heap_size: c_ulong, encl: *mut encl, _metadata: *mut _
                     (*seg).prot, MAP_SHARED | MAP_FIXED, (*encl).fd, 0);
         EXPECT_NE(addr, MAP_FAILED);
         if addr == MAP_FAILED {
-            goto_err!(err);
+            goto err;
         }
         i += 1;
     }
@@ -224,16 +224,16 @@ unsafe fn setup_test_encl(heap_size: c_ulong, encl: *mut encl, _metadata: *mut _
     /* Get vDSO base address */
     addr = getauxval(AT_SYSINFO_EHDR) as *mut c_void;
     if addr.is_null() {
-        goto_err!(err);
+        goto err;
     }
 
     if !vdso_get_symtab(addr, &mut symtab) {
-        goto_err!(err);
+        goto err;
     }
 
     sgx_enter_enclave_sym = vdso_symtab_get(&mut symtab, c"__vdso_sgx_enter_enclave".as_ptr());
     if sgx_enter_enclave_sym.is_null() {
-        goto_err!(err);
+        goto err;
     }
 
     vdso_sgx_enter_enclave = core::mem::transmute((addr as *mut u8).add((*sgx_enter_enclave_sym).st_value as usize));

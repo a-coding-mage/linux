@@ -101,7 +101,7 @@ pub unsafe fn page_to_virt(page: *const Page) -> *mut c_void {
 
 #[inline]
 pub unsafe fn virt_addr_valid(kaddr: *const c_void) -> bool {
-    (kaddr as c_ulong >= PAGE_OFFSET) && (kaddr as c_ulong < memory_end)
+    (kaddr as c_ulong >= PAGE_OFFSET) && ((kaddr as c_ulong) < memory_end)
 }
 
 // ARCH_PFN_OFFSET PHYS_PFN(PAGE_OFFSET_RAW)

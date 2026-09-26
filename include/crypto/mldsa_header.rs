@@ -66,7 +66,7 @@ unsafe extern "C" {
 /* Internal function, exposed only for unit testing.
  * The C declaration is conditional on CONFIG_CRYPTO_LIB_MLDSA_KUNIT_TEST;
  * preserve that build-time condition here for consumers to select. */
-#[cfg(feature = "CONFIG_CRYPTO_LIB_MLDSA_KUNIT_TEST")]
+#[cfg(CONFIG_CRYPTO_LIB_MLDSA_KUNIT_TEST)]
 unsafe extern "C" {
     pub fn mldsa_use_hint(h: u8, r: i32, gamma2: i32) -> i32;
 }

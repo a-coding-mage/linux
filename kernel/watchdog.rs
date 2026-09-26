@@ -34,15 +34,15 @@ static mut watchdog_hardlockup_available: c_int = 0;
 #[no_mangle] pub static mut hardlockup_si_mask: usize = 0;
 
 extern "C" {
-    fn hardlockup_config_perf_event(*mut c_char); fn scx_hardlockup(c: u32) -> bool;
-    fn watchdog_buddy_check_hardlockup(c_int); fn sys_info(usize); fn nmi_panic(*mut pt_regs,*const c_char)->!;
-    fn watchdog_update_hrtimer_threshold(u64); fn running_clock()->u64; fn wq_watchdog_touch(u32);
+    fn hardlockup_config_perf_event(_: *mut c_char); fn scx_hardlockup(c: u32) -> bool;
+    fn watchdog_buddy_check_hardlockup(_: c_int); fn sys_info(_: usize); fn nmi_panic(_: *mut pt_regs,_: *const c_char)->!;
+    fn watchdog_update_hrtimer_threshold(_: u64); fn running_clock()->u64; fn wq_watchdog_touch(_: u32);
     fn raw_smp_processor_id()->u32; fn smp_processor_id()->u32; fn panic_in_progress()->bool;
-    fn kvm_check_and_clear_guest_paused(); fn sched_clock_tick(); fn scx_softlockup(usize);
-    fn trigger_allbutcpu_cpu_backtrace(u32); fn trigger_single_cpu_backtrace(u32); fn print_modules();
-    fn print_irqtrace_events(*mut c_void); fn show_regs(*mut pt_regs); fn dump_stack();
-    fn printk_cpu_sync_get_irqsave(*mut usize); fn printk_cpu_sync_put_irqrestore(usize);
-    fn add_taint(c_int,c_int); fn panic(*const c_char)->!;
+    fn kvm_check_and_clear_guest_paused(); fn sched_clock_tick(); fn scx_softlockup(_: usize);
+    fn trigger_allbutcpu_cpu_backtrace(_: u32); fn trigger_single_cpu_backtrace(_: u32); fn print_modules();
+    fn print_irqtrace_events(_: *mut c_void); fn show_regs(_: *mut pt_regs); fn dump_stack();
+    fn printk_cpu_sync_get_irqsave(_: *mut usize); fn printk_cpu_sync_put_irqrestore(_: usize);
+    fn add_taint(_: c_int,_: c_int); fn panic(_: *const c_char)->!;
     fn watchdog_hardlockup_probe()->c_int;
 }
 

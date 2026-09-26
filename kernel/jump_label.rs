@@ -99,7 +99,7 @@ unsafe fn jump_label_update(k:*mut static_key){let e=static_key_entries(k);if !e
 // CONFIG_MODULES-specific declarations and module-list manipulation are kept
 // as direct external interfaces; their implementations depend on kernel
 // module and RCU support supplied by other translation units.
-#[cfg(feature="CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 #[no_mangle] pub unsafe extern "C" fn jump_label_init_type(e:*mut jump_entry)->jump_label_type{if static_key_type(jump_entry_key(e))^jump_entry_is_branch(e){jump_label_type::JUMP}else{jump_label_type::NOP}}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

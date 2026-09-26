@@ -75,7 +75,7 @@ pub const MODULE_PROC_FAMILY: &str = "P5600 ";
     CONFIG_CPU_LOONGSON64,
     CONFIG_CPU_CAVIUM_OCTEON,
     CONFIG_CPU_P5600,
-))]
+)))]
 compile_error!("MODULE_PROC_FAMILY undefined for your processor configuration");
 
 #[cfg(CONFIG_32BIT)]

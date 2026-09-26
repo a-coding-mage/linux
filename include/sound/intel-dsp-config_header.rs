@@ -25,7 +25,7 @@ pub const SND_INTEL_DSP_DRIVER_LAST: i32 = SND_INTEL_DSP_DRIVER_AVS;
 
 // The C condition is controlled by CONFIG_SND_INTEL_DSP_CONFIG at build time.
 // When enabled, these are declaration-only external functions.
-#[cfg(feature = "CONFIG_SND_INTEL_DSP_CONFIG")]
+#[cfg(CONFIG_SND_INTEL_DSP_CONFIG)]
 unsafe extern "C" {
     pub fn snd_intel_dsp_driver_probe(pci: *mut pci_dev) -> i32;
     pub fn snd_intel_acpi_dsp_driver_probe(
@@ -36,13 +36,13 @@ unsafe extern "C" {
 
 // When CONFIG_SND_INTEL_DSP_CONFIG is disabled, the C header provides these
 // static inline fallbacks. ACPI_ID_LEN is supplied by the surrounding build.
-#[cfg(not(feature = "CONFIG_SND_INTEL_DSP_CONFIG"))]
+#[cfg(not(CONFIG_SND_INTEL_DSP_CONFIG))]
 #[inline]
 pub unsafe fn snd_intel_dsp_driver_probe(_pci: *mut pci_dev) -> i32 {
     SND_INTEL_DSP_DRIVER_ANY
 }
 
-#[cfg(not(feature = "CONFIG_SND_INTEL_DSP_CONFIG"))]
+#[cfg(not(CONFIG_SND_INTEL_DSP_CONFIG))]
 #[inline]
 pub unsafe fn snd_intel_acpi_dsp_driver_probe(
     _dev: *mut device,

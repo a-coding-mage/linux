@@ -61,7 +61,7 @@ pub struct comedi_isadma {
 }
 
 // IS_ENABLED(CONFIG_ISA_DMA_API) is represented by the cfg feature below.
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 unsafe extern "C" {
     pub fn comedi_isadma_program(desc: *mut comedi_isadma_desc);
     pub fn comedi_isadma_disable(dma_chan: u32) -> u32;
@@ -80,27 +80,27 @@ unsafe extern "C" {
     pub fn comedi_isadma_free(dma: *mut comedi_isadma);
 }
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_program(_desc: *mut comedi_isadma_desc) {}
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_disable(_dma_chan: u32) -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_disable_on_sample(_dma_chan: u32, _size: u32) -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_poll(_dma: *mut comedi_isadma) -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_set_mode(_desc: *mut comedi_isadma_desc, _dma_dir: i8) {}
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_alloc(
     _dev: *mut comedi_device,
@@ -113,7 +113,7 @@ pub unsafe fn comedi_isadma_alloc(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_ISA_DMA_API"))]
+#[cfg(not(CONFIG_ISA_DMA_API))]
 #[inline]
 pub unsafe fn comedi_isadma_free(_dma: *mut comedi_isadma) {}
 

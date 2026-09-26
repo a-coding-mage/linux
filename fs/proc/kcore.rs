@@ -90,10 +90,10 @@ unsafe fn open_kcore(_inode:*mut inode,filp:*mut file)->c_int {
 }
 unsafe fn release_kcore(_inode:*mut inode,file:*mut file)->c_int { kfree((*file).private_data); 0 }
 
-#[cfg(feature="CONFIG_ARCH_PROC_KCORE_TEXT")]
+#[cfg(CONFIG_ARCH_PROC_KCORE_TEXT)]
 static mut kcore_text:kcore_list = kcore_list{list:list_head{next:core::ptr::null_mut(),prev:core::ptr::null_mut()},addr:0,size:0,r#type:KCORE_TEXT};
 unsafe fn proc_kcore_text_init(){
-    #[cfg(feature="CONFIG_ARCH_PROC_KCORE_TEXT")]
+    #[cfg(CONFIG_ARCH_PROC_KCORE_TEXT)]
     { extern "C" { static _text:u8; static _end:u8; } kclist_add(&mut kcore_text,&_text as *const u8 as *mut c_void,(&_end as *const u8 as usize)-(&_text as *const u8 as usize),KCORE_TEXT); }
 }
 unsafe fn add_modules_range(){

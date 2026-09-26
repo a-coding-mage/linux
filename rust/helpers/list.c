@@ -15,3 +15,14 @@ __rust_helper void rust_helper_list_add_tail(struct list_head *new, struct list_
 {
 	list_add_tail(new, head);
 }
+
+#ifdef CONFIG_LIST_HARDENED
+/* Rust and bindgen cannot describe __preserve_most. Keep only the calling
+ * convention transition here; callers implement the inline list logic. */
+__rust_helper bool rust_helper___list_add_valid_or_report(struct list_head *new,
+						       struct list_head *prev,
+						       struct list_head *next)
+{
+	return __list_add_valid_or_report(new, prev, next);
+}
+#endif

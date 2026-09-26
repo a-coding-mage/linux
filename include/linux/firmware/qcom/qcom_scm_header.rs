@@ -126,16 +126,16 @@ extern "C" {
     pub fn qcom_scm_shm_bridge_delete(handle: u64) -> i32;
 }
 
-#[cfg(feature = "CONFIG_QCOM_QSEECOM")]
+#[cfg(CONFIG_QCOM_QSEECOM)]
 extern "C" {
     pub fn qcom_scm_qseecom_app_get_id(app_name: *const core::ffi::c_char, app_id: *mut u32) -> i32;
     pub fn qcom_scm_qseecom_app_send(app_id: u32, req: *mut core::ffi::c_void, req_size: usize, rsp: *mut core::ffi::c_void, rsp_size: usize) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_QSEECOM"))]
+#[cfg(not(CONFIG_QCOM_QSEECOM))]
 pub unsafe fn qcom_scm_qseecom_app_get_id(_app_name: *const core::ffi::c_char, _app_id: *mut u32) -> i32 { -22 }
 
-#[cfg(not(feature = "CONFIG_QCOM_QSEECOM"))]
+#[cfg(not(CONFIG_QCOM_QSEECOM))]
 pub unsafe fn qcom_scm_qseecom_app_send(_app_id: u32, _req: *mut core::ffi::c_void, _req_size: usize, _rsp: *mut core::ffi::c_void, _rsp_size: usize) -> i32 { -22 }
 
 extern "C" {

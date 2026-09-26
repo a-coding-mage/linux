@@ -140,7 +140,7 @@ pub union kvm_smram {
     pub bytes: [u8; 512],
 }
 
-#[cfg(feature = "CONFIG_KVM_SMM")]
+#[cfg(CONFIG_KVM_SMM)]
 pub unsafe fn kvm_inject_smi(vcpu: *mut kvm_vcpu) -> i32 {
     if !kvm_x86_call(has_emulated_msr)((*vcpu).kvm, MSR_IA32_SMBASE) {
         return -ENOTTY;
@@ -150,12 +150,12 @@ pub unsafe fn kvm_inject_smi(vcpu: *mut kvm_vcpu) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_KVM_SMM")]
+#[cfg(CONFIG_KVM_SMM)]
 pub unsafe fn is_smm(vcpu: *mut kvm_vcpu) -> bool {
     ((*vcpu).arch.hflags & HF_SMM_MASK) != 0
 }
 
-#[cfg(feature = "CONFIG_KVM_SMM")]
+#[cfg(CONFIG_KVM_SMM)]
 unsafe extern "C" {
     pub fn kvm_smm_changed(vcpu: *mut kvm_vcpu, in_smm: bool);
     pub fn enter_smm(vcpu: *mut kvm_vcpu);
@@ -163,10 +163,10 @@ unsafe extern "C" {
     pub fn process_smi(vcpu: *mut kvm_vcpu);
 }
 
-#[cfg(not(feature = "CONFIG_KVM_SMM"))]
+#[cfg(not(CONFIG_KVM_SMM))]
 pub unsafe fn kvm_inject_smi(_vcpu: *mut kvm_vcpu) -> i32 { -ENOTTY }
 
-#[cfg(not(feature = "CONFIG_KVM_SMM"))]
+#[cfg(not(CONFIG_KVM_SMM))]
 pub unsafe fn is_smm(_vcpu: *mut kvm_vcpu) -> bool { false }
 
 // emulator_leave_smm is used as a function pointer, so the stub is defined in x86.c.

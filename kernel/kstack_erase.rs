@@ -12,10 +12,10 @@
 
 // C dependencies supplied by the kernel build are intentionally external.
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE_RUNTIME_DISABLE")]
+#[cfg(CONFIG_KSTACK_ERASE_RUNTIME_DISABLE)]
 static mut STACK_ERASING_BYPASS: bool = false;
 
-#[cfg(all(feature = "CONFIG_KSTACK_ERASE_RUNTIME_DISABLE", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(CONFIG_KSTACK_ERASE_RUNTIME_DISABLE, CONFIG_SYSCTL))]
 unsafe fn stack_erasing_sysctl(
     table: *const ctl_table,
     write: i32,
@@ -45,7 +45,7 @@ unsafe fn stack_erasing_sysctl(
     ret
 }
 
-#[cfg(all(feature = "CONFIG_KSTACK_ERASE_RUNTIME_DISABLE", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(CONFIG_KSTACK_ERASE_RUNTIME_DISABLE, CONFIG_SYSCTL))]
 static STACKLEAK_SYSCTLS: [ctl_table; 1] = [ctl_table {
     procname: "stack_erasing\0".as_ptr(),
     data: core::ptr::null_mut(),
@@ -56,19 +56,19 @@ static STACKLEAK_SYSCTLS: [ctl_table; 1] = [ctl_table {
     extra2: SYSCTL_ONE,
 }];
 
-#[cfg(all(feature = "CONFIG_KSTACK_ERASE_RUNTIME_DISABLE", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(CONFIG_KSTACK_ERASE_RUNTIME_DISABLE, CONFIG_SYSCTL))]
 unsafe fn stackleak_sysctls_init() -> i32 {
     register_sysctl_init("kernel\0".as_ptr(), STACKLEAK_SYSCTLS.as_ptr());
     0
 }
 
-#[cfg(feature = "CONFIG_KSTACK_ERASE_RUNTIME_DISABLE")]
+#[cfg(CONFIG_KSTACK_ERASE_RUNTIME_DISABLE)]
 #[inline]
 unsafe fn skip_erasing() -> bool {
     static_branch_unlikely(&STACK_ERASING_BYPASS)
 }
 
-#[cfg(not(feature = "CONFIG_KSTACK_ERASE_RUNTIME_DISABLE"))]
+#[cfg(not(CONFIG_KSTACK_ERASE_RUNTIME_DISABLE))]
 #[inline]
 unsafe fn skip_erasing() -> bool { false }
 
@@ -87,7 +87,7 @@ unsafe fn __stackleak_erase(on_task_stack: bool) {
     let task_stack_high = stackleak_task_high_bound(current);
     let erase_low = stackleak_find_top_of_poison(task_stack_low, (*current).lowest_stack);
 
-    #[cfg(feature = "CONFIG_KSTACK_ERASE_METRICS")]
+    #[cfg(CONFIG_KSTACK_ERASE_METRICS)]
     { (*current).prev_lowest_stack = erase_low; }
 
     let erase_high = if on_task_stack { current_stack_pointer } else { task_stack_high };

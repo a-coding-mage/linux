@@ -18,19 +18,19 @@ unsafe fn __rt_mutex_lock_common(lock: *mut rt_mutex, state: u32,
 
 pub unsafe fn rt_mutex_base_init(rtb: *mut rt_mutex_base) { __rt_mutex_base_init(rtb); }
 
-#[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 pub unsafe fn rt_mutex_lock_nested(lock: *mut rt_mutex, subclass: u32) {
     if __rt_mutex_lock_common(lock, TASK_UNINTERRUPTIBLE, core::ptr::null_mut(), subclass) == 0 { return; }
     WARN_ON_ONCE(true); __acquire(lock);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 pub unsafe fn _rt_mutex_lock_nest_lock(lock: *mut rt_mutex, nest_lock: *mut lockdep_map) {
     if __rt_mutex_lock_common(lock, TASK_UNINTERRUPTIBLE, nest_lock, 0) == 0 { return; }
     WARN_ON_ONCE(true); __acquire(lock);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn rt_mutex_lock(lock: *mut rt_mutex) {
     if __rt_mutex_lock_common(lock, TASK_UNINTERRUPTIBLE, core::ptr::null_mut(), 0) == 0 { return; }
     WARN_ON_ONCE(true); __acquire(lock);
@@ -119,51 +119,51 @@ pub unsafe fn rt_mutex_adjust_pi(task: *mut task_struct) {
 }
 pub unsafe fn rt_mutex_postunlock(wqh: *mut rt_wake_q_head) { rt_mutex_wake_up_q(wqh); }
 
-#[cfg(feature = "CONFIG_DEBUG_RT_MUTEXES")]
+#[cfg(CONFIG_DEBUG_RT_MUTEXES)]
 pub unsafe fn rt_mutex_debug_task_free(task: *mut task_struct) {
     DEBUG_LOCKS_WARN_ON(!RB_EMPTY_ROOT(&(*task).pi_waiters.rb_root)); DEBUG_LOCKS_WARN_ON(!(*task).pi_blocked_on.is_null());
 }
 
 // PREEMPT_RT mutex wrappers.  Types and primitives are supplied externally.
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 unsafe fn __mutex_rt_init_generic(mutex: *mut mutex) { rt_mutex_base_init(&mut (*mutex).rtmutex); debug_check_no_locks_freed(mutex as *mut c_void, core::mem::size_of::<mutex>()); }
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 unsafe fn __mutex_lock_common(lock: *mut mutex, state: u32, subclass: u32, nest_lock: *mut lockdep_map, ip: usize) -> i32 {
     might_sleep(); mutex_acquire_nest(&mut (*lock).dep_map, subclass, 0, nest_lock, ip);
     let ret = __rt_mutex_lock(&mut (*lock).rtmutex, state);
     if ret != 0 { mutex_release(&mut (*lock).dep_map, ip); } else { lock_acquired(&mut (*lock).dep_map, ip); } ret
 }
 
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn mutex_rt_init_lockdep(m: *mut mutex, name: *const c_char, key: *mut lock_class_key) { __mutex_rt_init_generic(m); lockdep_init_map_wait(&mut (*m).dep_map, name, key, 0, LD_WAIT_SLEEP); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn mutex_lock_nested(m: *mut mutex, s: u32) { __mutex_lock_common(m, TASK_UNINTERRUPTIBLE, s, core::ptr::null_mut(), _RET_IP_()); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn _mutex_lock_nest_lock(m: *mut mutex, n: *mut lockdep_map) { __mutex_lock_common(m, TASK_UNINTERRUPTIBLE, 0, n, _RET_IP_()); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn mutex_lock_interruptible_nested(m: *mut mutex, s: u32) -> i32 { __mutex_lock_common(m, TASK_INTERRUPTIBLE, s, core::ptr::null_mut(), _RET_IP_()) }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn _mutex_lock_killable(m: *mut mutex, s: u32, n: *mut lockdep_map) -> i32 { __mutex_lock_common(m, TASK_KILLABLE, s, n, _RET_IP_()) }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn mutex_lock_io_nested(m: *mut mutex, s: u32) { might_sleep(); let t = io_schedule_prepare(); __mutex_lock_common(m, TASK_UNINTERRUPTIBLE, s, core::ptr::null_mut(), _RET_IP_()); io_schedule_finish(t); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(all(CONFIG_PREEMPT_RT, CONFIG_DEBUG_LOCK_ALLOC))]
 pub unsafe fn _mutex_trylock_nest_lock(m: *mut mutex, n: *mut lockdep_map) -> i32 { if IS_ENABLED(CONFIG_DEBUG_RT_MUTEXES) && WARN_ON_ONCE(!in_task()) { return 0; } let r = __rt_mutex_trylock(&mut (*m).rtmutex); if r != 0 { mutex_acquire_nest(&mut (*m).dep_map, 0, 1, n, _RET_IP_()); } r }
 
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", not(feature = "CONFIG_DEBUG_LOCK_ALLOC")))]
+#[cfg(all(CONFIG_PREEMPT_RT, not(CONFIG_DEBUG_LOCK_ALLOC)))]
 pub unsafe fn mutex_rt_init_generic(m: *mut mutex) { __mutex_rt_init_generic(m); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", not(feature = "CONFIG_DEBUG_LOCK_ALLOC")))]
+#[cfg(all(CONFIG_PREEMPT_RT, not(CONFIG_DEBUG_LOCK_ALLOC)))]
 pub unsafe fn mutex_lock(m: *mut mutex) { __mutex_lock_common(m, TASK_UNINTERRUPTIBLE, 0, core::ptr::null_mut(), _RET_IP_()); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", not(feature = "CONFIG_DEBUG_LOCK_ALLOC")))]
+#[cfg(all(CONFIG_PREEMPT_RT, not(CONFIG_DEBUG_LOCK_ALLOC)))]
 pub unsafe fn mutex_lock_interruptible(m: *mut mutex) -> i32 { __mutex_lock_common(m, TASK_INTERRUPTIBLE, 0, core::ptr::null_mut(), _RET_IP_()) }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", not(feature = "CONFIG_DEBUG_LOCK_ALLOC")))]
+#[cfg(all(CONFIG_PREEMPT_RT, not(CONFIG_DEBUG_LOCK_ALLOC)))]
 pub unsafe fn mutex_lock_killable(m: *mut mutex) -> i32 { __mutex_lock_common(m, TASK_KILLABLE, 0, core::ptr::null_mut(), _RET_IP_()) }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", not(feature = "CONFIG_DEBUG_LOCK_ALLOC")))]
+#[cfg(all(CONFIG_PREEMPT_RT, not(CONFIG_DEBUG_LOCK_ALLOC)))]
 pub unsafe fn mutex_lock_io(m: *mut mutex) { let t = io_schedule_prepare(); __mutex_lock_common(m, TASK_UNINTERRUPTIBLE, 0, core::ptr::null_mut(), _RET_IP_()); io_schedule_finish(t); }
-#[cfg(all(feature = "CONFIG_PREEMPT_RT", not(feature = "CONFIG_DEBUG_LOCK_ALLOC")))]
+#[cfg(all(CONFIG_PREEMPT_RT, not(CONFIG_DEBUG_LOCK_ALLOC)))]
 pub unsafe fn mutex_trylock(m: *mut mutex) -> i32 { if IS_ENABLED(CONFIG_DEBUG_RT_MUTEXES) && WARN_ON_ONCE(!in_task()) { return 0; } __rt_mutex_trylock(&mut (*m).rtmutex) }
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 pub unsafe fn mutex_unlock(m: *mut mutex) { mutex_release(&mut (*m).dep_map, _RET_IP_()); __rt_mutex_unlock(&mut (*m).rtmutex); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

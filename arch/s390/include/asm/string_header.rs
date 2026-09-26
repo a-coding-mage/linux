@@ -18,7 +18,7 @@ unsafe extern "C" {
 }
 
 // !defined(CONFIG_KASAN) && !defined(CONFIG_KMSAN)
-#[cfg(not(any(feature = "CONFIG_KASAN", feature = "CONFIG_KMSAN")))]
+#[cfg(not(any(CONFIG_KASAN, CONFIG_KMSAN)))]
 unsafe extern "C" {
     pub fn memcmp(s1: *const core::ffi::c_void, s2: *const core::ffi::c_void, n: usize) -> i32;
     pub fn strcmp(s1: *const core::ffi::c_char, s2: *const core::ffi::c_char) -> i32;

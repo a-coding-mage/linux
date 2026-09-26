@@ -38,8 +38,8 @@ macro_rules! DCN301_PANEL_CNTL_REG_LIST {
 }
 
 macro_rules! DCN301_PANEL_CNTL_SF {
-    ($reg_name:ident, $field_name:ident, $post_fix:ident) => {
-        $field_name: $reg_name ## __ ## $field_name ## $post_fix
+    ($reg_name:tt, $field_name:tt, $post_fix:tt) => {
+        $field_name: ::kernel::macros::paste!([<$reg_name __>]) ## ::kernel::macros::paste!([<$field_name $post_fix>])
     };
 }
 
@@ -103,8 +103,7 @@ extern "C" {
         init_data: *const panel_cntl_init_data,
         regs: *const dce_panel_cntl_registers,
         shift: *const dcn301_panel_cntl_shift,
-        mask: *const dcn301_panel_cntl_mask,
-    );
+        mask: *const dcn301_panel_cntl_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

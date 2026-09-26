@@ -15,8 +15,8 @@
 #[macro_export]
 macro_rules! container_of {
     ($ptr:expr, $type:ty, $member:tt) => {{
-        // The C implementation performs a compile-time pointer-type assertion
-        // and subtracts offsetof($type, $member) from the member pointer.
+        // The C implementation performs a compile-time pointer-$type assertion
+        // and subtracts offsetof($type, $member) from the $member pointer.
         unsafe {
             (($ptr as *mut u8).sub(core::mem::offset_of!($type, $member))) as *mut $type
         }
@@ -30,7 +30,7 @@ macro_rules! container_of {
 #[macro_export]
 macro_rules! container_of_const {
     ($ptr:expr, $type:ty, $member:tt) => {{
-        // C11 _Generic preserves const-qualified member pointers. Rust's cast
+        // C11 _Generic preserves const-qualified $member pointers. Rust's cast
         // expression preserves the requested pointer mutability at the call site.
         container_of!($ptr, $type, $member)
     }};

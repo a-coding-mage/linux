@@ -125,7 +125,7 @@ pub unsafe fn dst_cache_set_ip4(
 EXPORT_SYMBOL_GPL!(dst_cache_set_ip4);
 
 // The following functions are compiled when CONFIG_IPV6 is enabled.
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 pub unsafe fn dst_cache_set_ip6(
     dst_cache: *mut dst_cache,
     dst: *mut dst_entry,
@@ -143,10 +143,10 @@ pub unsafe fn dst_cache_set_ip6(
     (*idst).addr.in6_saddr = *saddr;
     local_unlock_nested_bh(&(*(*dst_cache).cache).bh_lock);
 }
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 EXPORT_SYMBOL_GPL!(dst_cache_set_ip6);
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 pub unsafe fn dst_cache_get_ip6(
     dst_cache: *mut dst_cache,
     saddr: *mut in6_addr,
@@ -170,7 +170,7 @@ pub unsafe fn dst_cache_get_ip6(
     local_unlock_nested_bh(&(*(*dst_cache).cache).bh_lock);
     dst
 }
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 EXPORT_SYMBOL_GPL!(dst_cache_get_ip6);
 
 pub unsafe fn dst_cache_init(dst_cache: *mut dst_cache, gfp: gfp_t) -> c_int {
@@ -180,9 +180,9 @@ pub unsafe fn dst_cache_init(dst_cache: *mut dst_cache, gfp: gfp_t) -> c_int {
     if (*dst_cache).cache.is_null() {
         return -ENOMEM;
     }
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         local_lock_init(&mut (*per_cpu_ptr((*dst_cache).cache, i)).bh_lock);
-    }
+    });
 
     dst_cache_reset(dst_cache);
     0
@@ -196,9 +196,9 @@ pub unsafe fn dst_cache_destroy(dst_cache: *mut dst_cache) {
         return;
     }
 
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         dst_release((*per_cpu_ptr((*dst_cache).cache, i)).dst);
-    }
+    });
 
     free_percpu((*dst_cache).cache);
 }
@@ -212,14 +212,14 @@ pub unsafe fn dst_cache_reset_now(dst_cache: *mut dst_cache) {
     }
 
     dst_cache_reset(dst_cache);
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let idst: *mut dst_cache_pcpu = per_cpu_ptr((*dst_cache).cache, i);
         let dst: *mut dst_entry = (*idst).dst;
 
         (*idst).cookie = 0;
         (*idst).dst = core::ptr::null_mut();
         dst_release(dst);
-    }
+    });
 }
 EXPORT_SYMBOL_GPL!(dst_cache_reset_now);
 

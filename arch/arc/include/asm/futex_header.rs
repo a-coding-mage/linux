@@ -8,7 +8,7 @@
 // C includes and header guards are intentionally omitted; their symbols are
 // supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_ARC_HAS_LLSC")]
+#[cfg(CONFIG_ARC_HAS_LLSC)]
 macro_rules! __futex_atomic_op {
     ($insn:expr, $ret:ident, $oldval:ident, $uaddr:ident, $oparg:ident) => {{
         unsafe { smp_mb(); }
@@ -30,10 +30,10 @@ macro_rules! __futex_atomic_op {
                 ".word 1b, 4b",
                 ".word 2b, 4b",
                 ".previous",
-                oldval = out(reg) $oldval,
-                ret = out(reg) $ret,
-                uaddr = in(reg) $uaddr,
-                oparg = in(reg) $oparg,
+                $oldval = out(reg) $oldval,
+                $ret = out(reg) $ret,
+                $uaddr = in(reg) $uaddr,
+                $oparg = in(reg) $oparg,
                 fault = const -EFAULT,
                 options(preserves_flags),
             );
@@ -42,7 +42,7 @@ macro_rules! __futex_atomic_op {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+#[cfg(not(CONFIG_ARC_HAS_LLSC))]
 macro_rules! __futex_atomic_op {
     ($insn:expr, $ret:ident, $oldval:ident, $uaddr:ident, $oparg:ident) => {{
         unsafe { smp_mb(); }
@@ -63,10 +63,10 @@ macro_rules! __futex_atomic_op {
                 ".word 1b, 4b",
                 ".word 2b, 4b",
                 ".previous",
-                oldval = out(reg) $oldval,
-                ret = out(reg) $ret,
-                uaddr = in(reg) $uaddr,
-                oparg = in(reg) $oparg,
+                $oldval = out(reg) $oldval,
+                $ret = out(reg) $ret,
+                $uaddr = in(reg) $uaddr,
+                $oparg = in(reg) $oparg,
                 fault = const -EFAULT,
                 options(preserves_flags),
             );
@@ -88,7 +88,7 @@ pub unsafe fn arch_futex_atomic_op_inuser(
         return -EFAULT;
     }
 
-    #[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+    #[cfg(not(CONFIG_ARC_HAS_LLSC))]
     preempt_disable(); // to guarantee atomic r-m-w of futex op
 
     match op {
@@ -101,7 +101,7 @@ pub unsafe fn arch_futex_atomic_op_inuser(
         _ => ret = -ENOSYS,
     }
 
-    #[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+    #[cfg(not(CONFIG_ARC_HAS_LLSC))]
     preempt_enable();
 
     if ret == 0 {
@@ -127,11 +127,11 @@ pub unsafe fn futex_atomic_cmpxchg_inatomic(
         return -EFAULT;
     }
 
-    #[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+    #[cfg(not(CONFIG_ARC_HAS_LLSC))]
     preempt_disable(); // to guarantee atomic r-m-w of futex op
     smp_mb();
 
-    #[cfg(feature = "CONFIG_ARC_HAS_LLSC")]
+    #[cfg(CONFIG_ARC_HAS_LLSC)]
     core::arch::asm!(
         "1: llock {existval}, [{uaddr}]",
         "brne {existval}, {expval}, 3f",
@@ -145,7 +145,7 @@ pub unsafe fn futex_atomic_cmpxchg_inatomic(
         fault = const -EFAULT,
     );
 
-    #[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+    #[cfg(not(CONFIG_ARC_HAS_LLSC))]
     core::arch::asm!(
         "1: ld {existval}, [{uaddr}]", "brne {existval}, {expval}, 3f", "2: st {newval}, [{uaddr}]", "3:",
         ".section .fixup,\"ax\"", "4: mov {ret}, {fault}", "j 3b", ".previous",
@@ -156,7 +156,7 @@ pub unsafe fn futex_atomic_cmpxchg_inatomic(
     );
 
     smp_mb();
-    #[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+    #[cfg(not(CONFIG_ARC_HAS_LLSC))]
     preempt_enable();
     *uval = existval;
     ret

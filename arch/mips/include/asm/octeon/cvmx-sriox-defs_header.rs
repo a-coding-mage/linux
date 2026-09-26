@@ -7,8 +7,6 @@ extern "C" {
 
 /* C register-address macros (preserved verbatim for dependency integration:
 
-#ifndef __CVMX_SRIOX_DEFS_H__
-#define __CVMX_SRIOX_DEFS_H__
 
 #define CVMX_SRIOX_ACC_CTRL(block_id) (CVMX_ADD_IO_SEG(0x00011800C8000148ull) + ((block_id) & 3) * 0x1000000ull)
 #define CVMX_SRIOX_ASMBLY_ID(block_id) (CVMX_ADD_IO_SEG(0x00011800C8000200ull) + ((block_id) & 3) * 0x1000000ull)

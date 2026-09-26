@@ -26,7 +26,7 @@ pub struct zpci_dev {
 }
 
 // CONFIG_PCI_IOV
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 extern "C" {
     pub fn zpci_iov_remove_virtfn(pdev: *mut pci_dev, vfn: ::core::ffi::c_int);
 
@@ -45,15 +45,15 @@ extern "C" {
 }
 
 // !CONFIG_PCI_IOV
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn zpci_iov_remove_virtfn(_pdev: *mut pci_dev, _vfn: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn zpci_iov_map_resources(_pdev: *mut pci_dev) {}
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn zpci_iov_setup_virtfn(
     _zbus: *mut zpci_bus,
@@ -63,7 +63,7 @@ pub unsafe fn zpci_iov_setup_virtfn(
     0
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn zpci_iov_find_parent_pf(
     _zbus: *mut zpci_bus,

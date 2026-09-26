@@ -8,7 +8,7 @@
 // net/netlink.h, net/genetlink.h, "netlink.h", and uapi/linux/lockd_netlink.h
 
 /* LOCKD_CMD_SERVER_SET - do */
-static const lockd_server_set_nl_policy: [nla_policy; (LOCKD_A_SERVER_UDP_PORT + 1) as usize] = [
+static lockd_server_set_nl_policy: [nla_policy; (LOCKD_A_SERVER_UDP_PORT + 1) as usize] = [
     /* LOCKD_A_SERVER_GRACETIME */
     nla_policy { type_: NLA_U32 },
     /* LOCKD_A_SERVER_TCP_PORT */

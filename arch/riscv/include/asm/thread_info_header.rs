@@ -8,9 +8,9 @@
 /* Dependencies supplied by the surrounding kernel translation. */
 
 /* thread information allocation */
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 pub const KASAN_STACK_ORDER: usize = 1;
-#[cfg(not(feature = "CONFIG_KASAN"))]
+#[cfg(not(CONFIG_KASAN))]
 pub const KASAN_STACK_ORDER: usize = 0;
 
 pub const THREAD_SIZE_ORDER: usize = CONFIG_THREAD_SIZE_ORDER + KASAN_STACK_ORDER;
@@ -21,9 +21,9 @@ pub const THREAD_SIZE: usize = PAGE_SIZE << THREAD_SIZE_ORDER;
  * checking sp & (1 << THREAD_SHIFT), which we can do cheaply in the entry
  * assembly.
  */
-#[cfg(feature = "CONFIG_VMAP_STACK")]
+#[cfg(CONFIG_VMAP_STACK)]
 pub const THREAD_ALIGN: usize = 2 * THREAD_SIZE;
-#[cfg(not(feature = "CONFIG_VMAP_STACK"))]
+#[cfg(not(CONFIG_VMAP_STACK))]
 pub const THREAD_ALIGN: usize = THREAD_SIZE;
 
 pub const THREAD_SHIFT: usize = PAGE_SHIFT + THREAD_SIZE_ORDER;
@@ -51,21 +51,21 @@ pub struct thread_info {
     pub user_sp: core::ffi::c_long,
     pub cpu: core::ffi::c_int,
     pub syscall_work: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+    #[cfg(CONFIG_SHADOW_CALL_STACK)]
     pub scs_base: *mut core::ffi::c_void,
-    #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+    #[cfg(CONFIG_SHADOW_CALL_STACK)]
     pub scs_sp: *mut core::ffi::c_void,
-    #[cfg(feature = "CONFIG_64BIT")]
+    #[cfg(CONFIG_64BIT)]
     pub a0: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_64BIT")]
+    #[cfg(CONFIG_64BIT)]
     pub a1: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_64BIT")]
+    #[cfg(CONFIG_64BIT)]
     pub a2: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_RISCV_USER_CFI")]
+    #[cfg(CONFIG_RISCV_USER_CFI)]
     pub user_cfi_state: cfi_state,
 }
 
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 #[macro_export]
 macro_rules! INIT_SCS {
     () => {
@@ -73,7 +73,7 @@ macro_rules! INIT_SCS {
         scs_sp: init_shadow_call_stack,
     };
 }
-#[cfg(not(feature = "CONFIG_SHADOW_CALL_STACK"))]
+#[cfg(not(CONFIG_SHADOW_CALL_STACK))]
 #[macro_export]
 macro_rules! INIT_SCS {
     () => {};

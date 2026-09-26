@@ -133,14 +133,14 @@ unsafe fn intel_xpower_lpat_raw_to_temp(lpat_table: *mut AcpiLpatConversionTable
 extern "C" {
     static AXP288_ADC_TS_PIN_CTRL: i32;
     static AXP288_GP_ADC_H: i32;
-    fn regmap_read(*mut Regmap, i32, *mut i32) -> i32;
-    fn regmap_update_bits(*mut Regmap, i32, i32, i32) -> i32;
-    fn regmap_write(*mut Regmap, i32, i32) -> i32;
-    fn regmap_bulk_read(*mut Regmap, i32, *mut u8, usize) -> i32;
+    fn regmap_read(_: *mut Regmap, _: i32, _: *mut i32) -> i32;
+    fn regmap_update_bits(_: *mut Regmap, _: i32, _: i32, _: i32) -> i32;
+    fn regmap_write(_: *mut Regmap, _: i32, _: i32) -> i32;
+    fn regmap_bulk_read(_: *mut Regmap, _: i32, _: *mut u8, _: usize) -> i32;
     fn iosf_mbi_block_punit_i2c_access() -> i32;
     fn iosf_mbi_unblock_punit_i2c_access();
-    fn usleep_range(u32, u32);
-    fn acpi_lpat_raw_to_temp(*mut AcpiLpatConversionTable, i32) -> i32;
+    fn usleep_range(_: u32, _: u32);
+    fn acpi_lpat_raw_to_temp(_: *mut AcpiLpatConversionTable, _: i32) -> i32;
 }
 
 unsafe fn intel_xpower_pmic_gpio_handler(
@@ -185,11 +185,11 @@ static INTEL_XPOWER_PMIC_OPREGION_DATA: IntelPmicOpregionData = IntelPmicOpregio
 };
 
 extern "C" {
-    fn dev_get_drvdata(*mut Device) -> *mut Axp20xDev;
-    fn acpi_install_address_space_handler(*mut core::ffi::c_void, u32, unsafe fn(u32, u64, u32, *mut u64, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32;
-    fn acpi_remove_address_space_handler(*mut core::ffi::c_void, u32, unsafe fn(u32, u64, u32, *mut u64, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32);
-    fn acpi_handle(*mut Device) -> *mut core::ffi::c_void;
-    fn intel_pmic_install_opregion_handler(*mut Device, *mut core::ffi::c_void, *mut Regmap, *const IntelPmicOpregionData) -> i32;
+    fn dev_get_drvdata(_: *mut Device) -> *mut Axp20xDev;
+    fn acpi_install_address_space_handler(_: *mut core::ffi::c_void, _: u32, _: unsafe fn(u32, u64, u32, *mut u64, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32;
+    fn acpi_remove_address_space_handler(_: *mut core::ffi::c_void, _: u32, _: unsafe fn(u32, u64, u32, *mut u64, *mut core::ffi::c_void, *mut core::ffi::c_void) -> i32);
+    fn acpi_handle(_: *mut Device) -> *mut core::ffi::c_void;
+    fn intel_pmic_install_opregion_handler(_: *mut Device, _: *mut core::ffi::c_void, _: *mut Regmap, _: *const IntelPmicOpregionData) -> i32;
 }
 
 unsafe fn intel_xpower_pmic_opregion_probe(pdev: *mut PlatformDevice) -> i32 {
@@ -211,7 +211,7 @@ unsafe fn intel_xpower_pmic_opregion_probe(pdev: *mut PlatformDevice) -> i32 {
 #[repr(C)] struct PlatformDriver;
 extern "C" {
     static mut INTEL_XPOWER_PMIC_OPREGION_DRIVER: PlatformDriver;
-    fn builtin_platform_driver(*mut PlatformDriver);
+    fn builtin_platform_driver(_: *mut PlatformDriver);
 }
 
 #[no_mangle]

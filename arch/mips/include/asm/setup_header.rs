@@ -8,7 +8,7 @@ unsafe extern "C" {
 }
 
 // CONFIG_EARLY_PRINTK_8250 controls whether the external implementation is available.
-#[cfg(feature = "CONFIG_EARLY_PRINTK_8250")]
+#[cfg(CONFIG_EARLY_PRINTK_8250)]
 unsafe extern "C" {
     pub fn setup_8250_early_printk_port(
         base: c_ulong,
@@ -17,7 +17,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_EARLY_PRINTK_8250"))]
+#[cfg(not(CONFIG_EARLY_PRINTK_8250))]
 #[inline]
 pub unsafe fn setup_8250_early_printk_port(
     _base: c_ulong,
@@ -44,7 +44,7 @@ unsafe extern "C" {
 }
 
 // CONFIG_RELOCATABLE controls whether the relocation declarations are available.
-#[cfg(feature = "CONFIG_RELOCATABLE")]
+#[cfg(CONFIG_RELOCATABLE)]
 unsafe extern "C" {
     pub fn relocate_kernel() -> *mut c_void;
     pub fn plat_post_relocation(value: c_long) -> c_int;

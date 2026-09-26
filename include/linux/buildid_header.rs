@@ -47,7 +47,7 @@ extern "C" {
 
 // The following declarations are enabled when CONFIG_STACKTRACE_BUILD_ID or
 // CONFIG_VMCORE_INFO is enabled in the kernel build.
-#[cfg(any(feature = "CONFIG_STACKTRACE_BUILD_ID", feature = "CONFIG_VMCORE_INFO"))]
+#[cfg(any(CONFIG_STACKTRACE_BUILD_ID, CONFIG_VMCORE_INFO))]
 extern "C" {
     pub static mut vmlinux_build_id: [u8; BUILD_ID_SIZE_MAX];
     pub fn init_vmlinux_build_id();
@@ -55,7 +55,7 @@ extern "C" {
 
 // When neither configuration option is enabled, the C header provides an
 // empty inline function.
-#[cfg(not(any(feature = "CONFIG_STACKTRACE_BUILD_ID", feature = "CONFIG_VMCORE_INFO")))]
+#[cfg(not(any(CONFIG_STACKTRACE_BUILD_ID, CONFIG_VMCORE_INFO)))]
 #[inline]
 pub unsafe fn init_vmlinux_build_id() {}
 

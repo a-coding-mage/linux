@@ -2,7 +2,7 @@
 // Main AML parse loop. C headers and build-time configuration are supplied by
 // the surrounding ACPICA translation unit.
 
-static unsafe fn acpi_ps_get_arguments(
+unsafe fn acpi_ps_get_arguments(
     walk_state: *mut acpi_walk_state,
     aml_op_start: *mut u8,
     op: *mut acpi_parse_object,

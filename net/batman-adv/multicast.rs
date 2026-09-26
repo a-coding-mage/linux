@@ -7,15 +7,15 @@
 
 
 
-static void batadv_mcast_mla_update(struct work_struct *work);
+static void batadv_mcast_mla_update(work_struct *work);
 
 /**
  * batadv_mcast_start_timer() - schedule the multicast periodic worker
  * @bat_priv: the bat priv with all the mesh interface information
  */
-static void batadv_mcast_start_timer(struct batadv_priv *bat_priv)
+static void batadv_mcast_start_timer(batadv_priv *bat_priv)
 {
-	queue_delayed_work(batadv_event_workqueue, &bat_priv->mcast.work,
+	queue_delayed_work(batadv_event_workqueue, (*&bat_priv).mcast.work,
 			   msecs_to_jiffies(BATADV_MCAST_WORK_PERIOD));
 }
 
@@ -29,7 +29,7 @@ static void batadv_mcast_start_timer(struct batadv_priv *bat_priv)
  * Return: NULL if no such bridge exists. Otherwise the net device of the
  * bridge.
  */
-static struct net_device *batadv_mcast_get_bridge(struct net_device *mesh_iface)
+static struct net_device *batadv_mcast_get_bridge(net_device *mesh_iface)
 {
 	struct net_device *upper = mesh_iface;
 
@@ -55,7 +55,7 @@ static struct net_device *batadv_mcast_get_bridge(struct net_device *mesh_iface)
  *
  * Return: BATADV_NO_FLAGS if present, BATADV_MCAST_WANT_NO_RTR4 otherwise.
  */
-static u8 batadv_mcast_mla_rtr_flags_meshif_get_ipv4(struct net_device *dev)
+static u8 batadv_mcast_mla_rtr_flags_meshif_get_ipv4(net_device *dev)
 {
 	struct in_device *in_dev = __in_dev_get_rcu(dev);
 
@@ -77,18 +77,18 @@ static u8 batadv_mcast_mla_rtr_flags_meshif_get_ipv4(struct net_device *dev)
  * Return: BATADV_NO_FLAGS if present, BATADV_MCAST_WANT_NO_RTR6 otherwise.
  */
 #if IS_ENABLED(CONFIG_IPV6_MROUTE)
-static u8 batadv_mcast_mla_rtr_flags_meshif_get_ipv6(struct net_device *dev)
+static u8 batadv_mcast_mla_rtr_flags_meshif_get_ipv6(net_device *dev)
 {
 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
 
-	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
+	if (in6_dev && atomic_read((*&in6_dev).cnf.mc_forwarding))
 		return BATADV_NO_FLAGS;
 	else
 		return BATADV_MCAST_WANT_NO_RTR6;
 }
 #else
-static inline u8
-batadv_mcast_mla_rtr_flags_meshif_get_ipv6(struct net_device *dev)
+u8
+batadv_mcast_mla_rtr_flags_meshif_get_ipv6(net_device *dev)
 {
 	return BATADV_MCAST_WANT_NO_RTR6;
 }
@@ -109,10 +109,10 @@ batadv_mcast_mla_rtr_flags_meshif_get_ipv6(struct net_device *dev)
  *	BATADV_MCAST_WANT_NO_RTR6: No IPv6 multicast router is present
  *	The former two OR'd: no multicast router is present
  */
-static u8 batadv_mcast_mla_rtr_flags_meshif_get(struct batadv_priv *bat_priv,
-						struct net_device *bridge)
+static u8 batadv_mcast_mla_rtr_flags_meshif_get(batadv_priv *bat_priv,
+						net_device *bridge)
 {
-	struct net_device *dev = bridge ? bridge : bat_priv->mesh_iface;
+	struct net_device *dev = bridge ? bridge : (*bat_priv).mesh_iface;
 	u8 flags = BATADV_NO_FLAGS;
 
 	rcu_read_lock();
@@ -139,10 +139,10 @@ static u8 batadv_mcast_mla_rtr_flags_meshif_get(struct batadv_priv *bat_priv,
  *	BATADV_MCAST_WANT_NO_RTR6: No IPv6 multicast router is present
  *	The former two OR'd: no multicast router is present
  */
-static u8 batadv_mcast_mla_rtr_flags_bridge_get(struct batadv_priv *bat_priv,
-						struct net_device *bridge)
+static u8 batadv_mcast_mla_rtr_flags_bridge_get(batadv_priv *bat_priv,
+						net_device *bridge)
 {
-	struct net_device *dev = bat_priv->mesh_iface;
+	struct net_device *dev = (*bat_priv).mesh_iface;
 	u8 flags = BATADV_NO_FLAGS;
 
 	if (!bridge)
@@ -171,8 +171,8 @@ static u8 batadv_mcast_mla_rtr_flags_bridge_get(struct batadv_priv *bat_priv,
  *	BATADV_MCAST_WANT_NO_RTR6: No IPv6 multicast router is present
  *	The former two OR'd: no multicast router is present
  */
-static u8 batadv_mcast_mla_rtr_flags_get(struct batadv_priv *bat_priv,
-					 struct net_device *bridge)
+static u8 batadv_mcast_mla_rtr_flags_get(batadv_priv *bat_priv,
+					 net_device *bridge)
 {
 	u8 flags = BATADV_MCAST_WANT_NO_RTR4 | BATADV_MCAST_WANT_NO_RTR6;
 
@@ -191,21 +191,21 @@ static u8 batadv_mcast_mla_rtr_flags_get(struct batadv_priv *bat_priv,
  *
  * Return: BATADV_MCAST_HAVE_MC_PTYPE_CAPA if yes, BATADV_NO_FLAGS otherwise.
  */
-static u8 batadv_mcast_mla_forw_flags_get(struct batadv_priv *bat_priv)
+static u8 batadv_mcast_mla_forw_flags_get(batadv_priv *bat_priv)
 {
 	const struct batadv_hard_iface *hard_iface;
 	struct list_head *iter;
 
 	rcu_read_lock();
-	netdev_for_each_lower_private_rcu(bat_priv->mesh_iface, hard_iface, iter) {
-		if (hard_iface->if_status != BATADV_IF_ACTIVE)
+	netdev_for_each_lower_private_rcu!((*bat_priv).mesh_iface, hard_iface, iter, {
+		if ((*hard_iface).if_status != BATADV_IF_ACTIVE)
 			continue;
 
-		if (hard_iface->net_dev->mtu < IPV6_MIN_MTU) {
+		if ((*(*hard_iface).net_dev).mtu < IPV6_MIN_MTU) {
 			rcu_read_unlock();
 			return BATADV_NO_FLAGS;
 		}
-	}
+	});
 	rcu_read_unlock();
 
 	return BATADV_MCAST_HAVE_MC_PTYPE_CAPA;
@@ -219,9 +219,9 @@ static u8 batadv_mcast_mla_forw_flags_get(struct batadv_priv *bat_priv)
  * bridge state.
  */
 static struct batadv_mcast_mla_flags
-batadv_mcast_mla_flags_get(struct batadv_priv *bat_priv)
+batadv_mcast_mla_flags_get(batadv_priv *bat_priv)
 {
-	struct net_device *dev = bat_priv->mesh_iface;
+	struct net_device *dev = (*bat_priv).mesh_iface;
 	struct batadv_mcast_mla_flags mla_flags;
 	struct batadv_mcast_querier_state *qr4;
 	struct batadv_mcast_querier_state *qr6;
@@ -247,11 +247,11 @@ batadv_mcast_mla_flags_get(struct batadv_priv *bat_priv)
 	if (!IS_ENABLED(CONFIG_BRIDGE_IGMP_SNOOPING))
 		pr_warn_once("No bridge IGMP snooping compiled - multicast optimizations disabled\n");
 
-	qr4->exists = br_multicast_has_querier_anywhere(dev, ETH_P_IP);
-	qr4->shadowing = br_multicast_has_querier_adjacent(dev, ETH_P_IP);
+	(*qr4).exists = br_multicast_has_querier_anywhere(dev, ETH_P_IP);
+	(*qr4).shadowing = br_multicast_has_querier_adjacent(dev, ETH_P_IP);
 
-	qr6->exists = br_multicast_has_querier_anywhere(dev, ETH_P_IPV6);
-	qr6->shadowing = br_multicast_has_querier_adjacent(dev, ETH_P_IPV6);
+	(*qr6).exists = br_multicast_has_querier_anywhere(dev, ETH_P_IPV6);
+	(*qr6).shadowing = br_multicast_has_querier_adjacent(dev, ETH_P_IPV6);
 
 	mla_flags.tvlv_flags |= BATADV_MCAST_WANT_ALL_UNSNOOPABLES;
 
@@ -264,12 +264,12 @@ batadv_mcast_mla_flags_get(struct batadv_priv *bat_priv)
 	 * In both cases, we will signalize other batman nodes that
 	 * we need all multicast traffic of the according protocol.
 	 */
-	if (!qr4->exists || qr4->shadowing) {
+	if ((*!qr4).exists || (*qr4).shadowing) {
 		mla_flags.tvlv_flags |= BATADV_MCAST_WANT_ALL_IPV4;
 		mla_flags.tvlv_flags &= ~BATADV_MCAST_WANT_NO_RTR4;
 	}
 
-	if (!qr6->exists || qr6->shadowing) {
+	if ((*!qr6).exists || (*qr6).shadowing) {
 		mla_flags.tvlv_flags |= BATADV_MCAST_WANT_ALL_IPV6;
 		mla_flags.tvlv_flags &= ~BATADV_MCAST_WANT_NO_RTR6;
 	}
@@ -286,12 +286,12 @@ batadv_mcast_mla_flags_get(struct batadv_priv *bat_priv)
  * Otherwise returns false.
  */
 static bool batadv_mcast_mla_is_duplicate(u8 *mcast_addr,
-					  struct hlist_head *mcast_list)
+					  hlist_head *mcast_list)
 {
 	struct batadv_hw_addr *mcast_entry;
 
 	hlist_for_each_entry(mcast_entry, mcast_list, list)
-		if (batadv_compare_eth(mcast_entry->addr, mcast_addr))
+		if (batadv_compare_eth((*mcast_entry).addr, mcast_addr))
 			return true;
 
 	return false;
@@ -312,9 +312,9 @@ static bool batadv_mcast_mla_is_duplicate(u8 *mcast_addr,
  * items added to the mcast_list otherwise.
  */
 static int
-batadv_mcast_mla_meshif_get_ipv4(struct net_device *dev,
-				 struct hlist_head *mcast_list,
-				 struct batadv_mcast_mla_flags *flags)
+batadv_mcast_mla_meshif_get_ipv4(net_device *dev,
+				 hlist_head *mcast_list,
+				 batadv_mcast_mla_flags *flags)
 {
 	struct batadv_hw_addr *new;
 	struct in_device *in_dev;
@@ -322,7 +322,7 @@ batadv_mcast_mla_meshif_get_ipv4(struct net_device *dev,
 	struct ip_mc_list *pmc;
 	int ret = 0;
 
-	if (flags->tvlv_flags & BATADV_MCAST_WANT_ALL_IPV4)
+	if ((*flags).tvlv_flags & BATADV_MCAST_WANT_ALL_IPV4)
 		return 0;
 
 	rcu_read_lock();
@@ -333,17 +333,17 @@ batadv_mcast_mla_meshif_get_ipv4(struct net_device *dev,
 		return 0;
 	}
 
-	for (pmc = rcu_dereference(in_dev->mc_list); pmc;
-	     pmc = rcu_dereference(pmc->next_rcu)) {
-		if (flags->tvlv_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
-		    ipv4_is_local_multicast(pmc->multiaddr))
+	for (pmc = rcu_dereference((*in_dev).mc_list); pmc;
+	     pmc = rcu_dereference((*pmc).next_rcu)) {
+		if ((*flags).tvlv_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
+		    ipv4_is_local_multicast((*pmc).multiaddr))
 			continue;
 
-		if (!(flags->tvlv_flags & BATADV_MCAST_WANT_NO_RTR4) &&
-		    !ipv4_is_local_multicast(pmc->multiaddr))
+		if (!((*flags).tvlv_flags & BATADV_MCAST_WANT_NO_RTR4) &&
+		    !ipv4_is_local_multicast((*pmc).multiaddr))
 			continue;
 
-		ip_eth_mc_map(pmc->multiaddr, mcast_addr);
+		ip_eth_mc_map((*pmc).multiaddr, mcast_addr);
 
 		if (batadv_mcast_mla_is_duplicate(mcast_addr, mcast_list))
 			continue;
@@ -354,8 +354,8 @@ batadv_mcast_mla_meshif_get_ipv4(struct net_device *dev,
 			break;
 		}
 
-		ether_addr_copy(new->addr, mcast_addr);
-		hlist_add_head(&new->list, mcast_list);
+		ether_addr_copy((*new).addr, mcast_addr);
+		hlist_add_head((*&new).list, mcast_list);
 		ret++;
 	}
 	rcu_read_unlock();
@@ -379,9 +379,9 @@ batadv_mcast_mla_meshif_get_ipv4(struct net_device *dev,
  */
 #if IS_ENABLED(CONFIG_IPV6)
 static int
-batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
-				 struct hlist_head *mcast_list,
-				 struct batadv_mcast_mla_flags *flags)
+batadv_mcast_mla_meshif_get_ipv6(net_device *dev,
+				 hlist_head *mcast_list,
+				 batadv_mcast_mla_flags *flags)
 {
 	struct batadv_hw_addr *new;
 	struct inet6_dev *in6_dev;
@@ -389,7 +389,7 @@ batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
 	struct ifmcaddr6 *pmc6;
 	int ret = 0;
 
-	if (flags->tvlv_flags & BATADV_MCAST_WANT_ALL_IPV6)
+	if ((*flags).tvlv_flags & BATADV_MCAST_WANT_ALL_IPV6)
 		return 0;
 
 	rcu_read_lock();
@@ -400,23 +400,23 @@ batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
 		return 0;
 	}
 
-	for (pmc6 = rcu_dereference(in6_dev->mc_list);
+	for (pmc6 = rcu_dereference((*in6_dev).mc_list);
 	     pmc6;
-	     pmc6 = rcu_dereference(pmc6->next)) {
-		if (IPV6_ADDR_MC_SCOPE(&pmc6->mca_addr) <
+	     pmc6 = rcu_dereference((*pmc6).next)) {
+		if (IPV6_ADDR_MC_SCOPE((*&pmc6).mca_addr) <
 		    IPV6_ADDR_SCOPE_LINKLOCAL)
 			continue;
 
-		if (flags->tvlv_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
-		    ipv6_addr_is_ll_all_nodes(&pmc6->mca_addr))
+		if ((*flags).tvlv_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
+		    ipv6_addr_is_ll_all_nodes((*&pmc6).mca_addr))
 			continue;
 
-		if (!(flags->tvlv_flags & BATADV_MCAST_WANT_NO_RTR6) &&
-		    IPV6_ADDR_MC_SCOPE(&pmc6->mca_addr) >
+		if (!((*flags).tvlv_flags & BATADV_MCAST_WANT_NO_RTR6) &&
+		    IPV6_ADDR_MC_SCOPE((*&pmc6).mca_addr) >
 		    IPV6_ADDR_SCOPE_LINKLOCAL)
 			continue;
 
-		ipv6_eth_mc_map(&pmc6->mca_addr, mcast_addr);
+		ipv6_eth_mc_map((*&pmc6).mca_addr, mcast_addr);
 
 		if (batadv_mcast_mla_is_duplicate(mcast_addr, mcast_list))
 			continue;
@@ -427,8 +427,8 @@ batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
 			break;
 		}
 
-		ether_addr_copy(new->addr, mcast_addr);
-		hlist_add_head(&new->list, mcast_list);
+		ether_addr_copy((*new).addr, mcast_addr);
+		hlist_add_head((*&new).list, mcast_list);
 		ret++;
 	}
 	rcu_read_unlock();
@@ -436,10 +436,10 @@ batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
 	return ret;
 }
 #else
-static inline int
-batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
-				 struct hlist_head *mcast_list,
-				 struct batadv_mcast_mla_flags *flags)
+int
+batadv_mcast_mla_meshif_get_ipv6(net_device *dev,
+				 hlist_head *mcast_list,
+				 batadv_mcast_mla_flags *flags)
 {
 	return 0;
 }
@@ -465,10 +465,11 @@ batadv_mcast_mla_meshif_get_ipv6(struct net_device *dev,
  * items added to the mcast_list otherwise.
  */
 static int
-batadv_mcast_mla_meshif_get(struct net_device *dev,
-			    struct hlist_head *mcast_list,
-			    struct batadv_mcast_mla_flags *flags)
+batadv_mcast_mla_meshif_get(net_device *dev,
+			    hlist_head *mcast_list,
+			    batadv_mcast_mla_flags *flags)
 {
+	'out: {
 	struct net_device *bridge = batadv_mcast_get_bridge(dev);
 	int ret6 = 0;
 	int ret4;
@@ -478,15 +479,15 @@ batadv_mcast_mla_meshif_get(struct net_device *dev,
 
 	ret4 = batadv_mcast_mla_meshif_get_ipv4(dev, mcast_list, flags);
 	if (ret4 < 0)
-		goto out;
+		break 'out;
 
 	ret6 = batadv_mcast_mla_meshif_get_ipv6(dev, mcast_list, flags);
 	if (ret6 < 0) {
 		ret4 = 0;
-		goto out;
+		break 'out;
 	}
-
-out:
+	}
+	
 	dev_put(bridge);
 
 	return ret4 + ret6;
@@ -506,11 +507,11 @@ out:
  */
 static void batadv_mcast_mla_br_addr_cpy(char *dst, const struct br_ip *src)
 {
-	if (src->proto == htons(ETH_P_IP))
-		ip_eth_mc_map(src->dst.ip4, dst);
+	if ((*src).proto == htons(ETH_P_IP))
+		ip_eth_mc_map((*src).dst.ip4, dst);
 #if IS_ENABLED(CONFIG_IPV6)
-	else if (src->proto == htons(ETH_P_IPV6))
-		ipv6_eth_mc_map(&src->dst.ip6, dst);
+	else if ((*src).proto == htons(ETH_P_IPV6))
+		ipv6_eth_mc_map((*&src).dst.ip6, dst);
 #endif
 	else
 		eth_zero_addr(dst);
@@ -530,12 +531,13 @@ static void batadv_mcast_mla_br_addr_cpy(char *dst, const struct br_ip *src)
  * Return: -ENOMEM on memory allocation error or the number of
  * items added to the mcast_list otherwise.
  */
-static int batadv_mcast_mla_bridge_get(struct net_device *dev,
-				       struct hlist_head *mcast_list,
-				       struct batadv_mcast_mla_flags *flags)
+static int batadv_mcast_mla_bridge_get(net_device *dev,
+				       hlist_head *mcast_list,
+				       batadv_mcast_mla_flags *flags)
 {
+	'out: {
 	struct list_head bridge_mcast_list = LIST_HEAD_INIT(bridge_mcast_list);
-	u8 tvlv_flags = flags->tvlv_flags;
+	u8 tvlv_flags = (*flags).tvlv_flags;
 	struct br_ip_list *br_ip_entry;
 	struct batadv_hw_addr *new;
 	u8 mcast_addr[ETH_ALEN];
@@ -547,39 +549,39 @@ static int batadv_mcast_mla_bridge_get(struct net_device *dev,
 	 */
 	ret = br_multicast_list_adjacent(dev, &bridge_mcast_list);
 	if (ret < 0)
-		goto out;
+		break 'out;
 
-	list_for_each_entry(br_ip_entry, &bridge_mcast_list, list) {
-		if (br_ip_entry->addr.proto == htons(ETH_P_IP)) {
+	list_for_each_entry!(br_ip_entry, &bridge_mcast_list, list, {
+		if ((*br_ip_entry).addr.proto == htons(ETH_P_IP)) {
 			if (tvlv_flags & BATADV_MCAST_WANT_ALL_IPV4)
 				continue;
 
 			if (tvlv_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
-			    ipv4_is_local_multicast(br_ip_entry->addr.dst.ip4))
+			    ipv4_is_local_multicast((*br_ip_entry).addr.dst.ip4))
 				continue;
 
 			if (!(tvlv_flags & BATADV_MCAST_WANT_NO_RTR4) &&
-			    !ipv4_is_local_multicast(br_ip_entry->addr.dst.ip4))
+			    !ipv4_is_local_multicast((*br_ip_entry).addr.dst.ip4))
 				continue;
 		}
 
 #if IS_ENABLED(CONFIG_IPV6)
-		if (br_ip_entry->addr.proto == htons(ETH_P_IPV6)) {
+		if ((*br_ip_entry).addr.proto == htons(ETH_P_IPV6)) {
 			if (tvlv_flags & BATADV_MCAST_WANT_ALL_IPV6)
 				continue;
 
 			if (tvlv_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
-			    ipv6_addr_is_ll_all_nodes(&br_ip_entry->addr.dst.ip6))
+			    ipv6_addr_is_ll_all_nodes((*&br_ip_entry).addr.dst.ip6))
 				continue;
 
 			if (!(tvlv_flags & BATADV_MCAST_WANT_NO_RTR6) &&
-			    IPV6_ADDR_MC_SCOPE(&br_ip_entry->addr.dst.ip6) >
+			    IPV6_ADDR_MC_SCOPE((*&br_ip_entry).addr.dst.ip6) >
 			    IPV6_ADDR_SCOPE_LINKLOCAL)
 				continue;
 		}
 #endif
 
-		batadv_mcast_mla_br_addr_cpy(mcast_addr, &br_ip_entry->addr);
+		batadv_mcast_mla_br_addr_cpy(mcast_addr, (*&br_ip_entry).addr);
 		if (batadv_mcast_mla_is_duplicate(mcast_addr, mcast_list))
 			continue;
 
@@ -589,15 +591,15 @@ static int batadv_mcast_mla_bridge_get(struct net_device *dev,
 			break;
 		}
 
-		ether_addr_copy(new->addr, mcast_addr);
-		hlist_add_head(&new->list, mcast_list);
+		ether_addr_copy((*new).addr, mcast_addr);
+		hlist_add_head((*&new).list, mcast_list);
+	});
 	}
-
-out:
-	list_for_each_entry_safe(br_ip_entry, tmp, &bridge_mcast_list, list) {
-		list_del(&br_ip_entry->list);
+	
+	list_for_each_entry_safe!(br_ip_entry, tmp, &bridge_mcast_list, list, {
+		list_del((*&br_ip_entry).list);
 		kfree(br_ip_entry);
-	}
+	});
 
 	return ret;
 }
@@ -608,15 +610,15 @@ out:
  *
  * Removes and frees all items in the given mcast_list.
  */
-static void batadv_mcast_mla_list_free(struct hlist_head *mcast_list)
+static void batadv_mcast_mla_list_free(hlist_head *mcast_list)
 {
 	struct batadv_hw_addr *mcast_entry;
 	struct hlist_node *tmp;
 
-	hlist_for_each_entry_safe(mcast_entry, tmp, mcast_list, list) {
-		hlist_del(&mcast_entry->list);
+	hlist_for_each_entry_safe!(mcast_entry, tmp, mcast_list, list, {
+		hlist_del((*&mcast_entry).list);
 		kfree(mcast_entry);
-	}
+	});
 }
 
 /**
@@ -629,26 +631,26 @@ static void batadv_mcast_mla_list_free(struct hlist_head *mcast_list)
  *
  * If mcast_list is NULL then all are retracted.
  */
-static void batadv_mcast_mla_tt_retract(struct batadv_priv *bat_priv,
-					struct hlist_head *mcast_list)
+static void batadv_mcast_mla_tt_retract(batadv_priv *bat_priv,
+					hlist_head *mcast_list)
 {
 	struct batadv_hw_addr *mcast_entry;
 	struct hlist_node *tmp;
 
-	hlist_for_each_entry_safe(mcast_entry, tmp, &bat_priv->mcast.mla_list,
-				  list) {
+	hlist_for_each_entry_safe!(mcast_entry, tmp, (*&bat_priv).mcast.mla_list,
+				  list, {
 		if (mcast_list &&
-		    batadv_mcast_mla_is_duplicate(mcast_entry->addr,
+		    batadv_mcast_mla_is_duplicate((*mcast_entry).addr,
 						  mcast_list))
 			continue;
 
-		batadv_tt_local_remove(bat_priv, mcast_entry->addr,
+		batadv_tt_local_remove(bat_priv, (*mcast_entry).addr,
 				       BATADV_NO_FLAGS,
 				       "mcast TT outdated", false);
 
-		hlist_del(&mcast_entry->list);
+		hlist_del((*&mcast_entry).list);
 		kfree(mcast_entry);
-	}
+	});
 }
 
 /**
@@ -659,8 +661,8 @@ static void batadv_mcast_mla_tt_retract(struct batadv_priv *bat_priv,
  * Adds multicast listener announcements from the given mcast_list to the
  * translation table if they have not been added yet.
  */
-static void batadv_mcast_mla_tt_add(struct batadv_priv *bat_priv,
-				    struct hlist_head *mcast_list)
+static void batadv_mcast_mla_tt_add(batadv_priv *bat_priv,
+				    hlist_head *mcast_list)
 {
 	struct batadv_hw_addr *mcast_entry;
 	struct hlist_node *tmp;
@@ -668,19 +670,19 @@ static void batadv_mcast_mla_tt_add(struct batadv_priv *bat_priv,
 	if (!mcast_list)
 		return;
 
-	hlist_for_each_entry_safe(mcast_entry, tmp, mcast_list, list) {
-		if (batadv_mcast_mla_is_duplicate(mcast_entry->addr,
-						  &bat_priv->mcast.mla_list))
+	hlist_for_each_entry_safe!(mcast_entry, tmp, mcast_list, list, {
+		if (batadv_mcast_mla_is_duplicate((*mcast_entry).addr,
+						  (*&bat_priv).mcast.mla_list))
 			continue;
 
-		if (!batadv_tt_local_add(bat_priv->mesh_iface,
-					 mcast_entry->addr, BATADV_NO_FLAGS,
+		if (!batadv_tt_local_add((*bat_priv).mesh_iface,
+					 (*mcast_entry).addr, BATADV_NO_FLAGS,
 					 BATADV_NULL_IFINDEX, BATADV_NO_MARK))
 			continue;
 
-		hlist_del(&mcast_entry->list);
-		hlist_add_head(&mcast_entry->list, &bat_priv->mcast.mla_list);
-	}
+		hlist_del((*&mcast_entry).list);
+		hlist_add_head((*&mcast_entry).list, (*&bat_priv).mcast.mla_list);
+	});
 }
 
 /**
@@ -706,29 +708,29 @@ static void batadv_mcast_mla_tt_add(struct batadv_priv *bat_priv,
  * mesh interface.
  */
 static void
-batadv_mcast_querier_log(struct batadv_priv *bat_priv, char *str_proto,
-			 struct batadv_mcast_querier_state *old_state,
-			 struct batadv_mcast_querier_state *new_state)
+batadv_mcast_querier_log(batadv_priv *bat_priv, char *str_proto,
+			 batadv_mcast_querier_state *old_state,
+			 batadv_mcast_querier_state *new_state)
 {
-	if (!old_state->exists && new_state->exists)
-		batadv_info(bat_priv->mesh_iface, "%s Querier appeared\n",
+	if ((*!old_state).exists && (*new_state).exists)
+		batadv_info((*bat_priv).mesh_iface, "%s Querier appeared\n",
 			    str_proto);
-	else if (old_state->exists && !new_state->exists)
-		batadv_info(bat_priv->mesh_iface,
+	else if ((*old_state).exists && (*!new_state).exists)
+		batadv_info((*bat_priv).mesh_iface,
 			    "%s Querier disappeared - multicast optimizations disabled\n",
 			    str_proto);
-	else if (!bat_priv->mcast.mla_flags.bridged && !new_state->exists)
-		batadv_info(bat_priv->mesh_iface,
+	else if ((*!bat_priv).mcast.mla_flags.bridged && (*!new_state).exists)
+		batadv_info((*bat_priv).mesh_iface,
 			    "No %s Querier present - multicast optimizations disabled\n",
 			    str_proto);
 
-	if (new_state->exists) {
-		if ((!old_state->shadowing && new_state->shadowing) ||
-		    (!old_state->exists && new_state->shadowing))
+	if ((*new_state).exists) {
+		if (((*!old_state).shadowing && (*new_state).shadowing) ||
+		    ((*!old_state).exists && (*new_state).shadowing))
 			batadv_dbg(BATADV_DBG_MCAST, bat_priv,
 				   "%s Querier is behind our bridged segment: Might shadow listeners\n",
 				   str_proto);
-		else if (old_state->shadowing && !new_state->shadowing)
+		else if ((*old_state).shadowing && (*!new_state).shadowing)
 			batadv_dbg(BATADV_DBG_MCAST, bat_priv,
 				   "%s Querier is not behind our bridged segment\n",
 				   str_proto);
@@ -752,25 +754,25 @@ batadv_mcast_querier_log(struct batadv_priv *bat_priv, char *str_proto,
  * multicast flags this node is going to set.
  */
 static void
-batadv_mcast_bridge_log(struct batadv_priv *bat_priv,
-			struct batadv_mcast_mla_flags *new_flags)
+batadv_mcast_bridge_log(batadv_priv *bat_priv,
+			batadv_mcast_mla_flags *new_flags)
 {
-	struct batadv_mcast_mla_flags *old_flags = &bat_priv->mcast.mla_flags;
+	struct batadv_mcast_mla_flags *old_flags = (*&bat_priv).mcast.mla_flags;
 
-	if (!old_flags->bridged && new_flags->bridged)
+	if ((*!old_flags).bridged && (*new_flags).bridged)
 		batadv_dbg(BATADV_DBG_MCAST, bat_priv,
 			   "Bridge added: Setting Unsnoopables(U)-flag\n");
-	else if (old_flags->bridged && !new_flags->bridged)
+	else if ((*old_flags).bridged && (*!new_flags).bridged)
 		batadv_dbg(BATADV_DBG_MCAST, bat_priv,
 			   "Bridge removed: Unsetting Unsnoopables(U)-flag\n");
 
-	if (new_flags->bridged) {
+	if ((*new_flags).bridged) {
 		batadv_mcast_querier_log(bat_priv, "IGMP",
-					 &old_flags->querier_ipv4,
-					 &new_flags->querier_ipv4);
+					 (*&old_flags).querier_ipv4,
+					 (*&new_flags).querier_ipv4);
 		batadv_mcast_querier_log(bat_priv, "MLD",
-					 &old_flags->querier_ipv6,
-					 &new_flags->querier_ipv6);
+					 (*&old_flags).querier_ipv6,
+					 (*&new_flags).querier_ipv6);
 	}
 }
 
@@ -782,10 +784,10 @@ batadv_mcast_bridge_log(struct batadv_priv *bat_priv,
  * Whenever the multicast TVLV flags this node announces change, this function
  * should be used to notify userspace about the change.
  */
-static void batadv_mcast_flags_log(struct batadv_priv *bat_priv, u8 flags)
+static void batadv_mcast_flags_log(batadv_priv *bat_priv, flags: u8)
 {
-	bool old_enabled = bat_priv->mcast.mla_flags.enabled;
-	u8 old_flags = bat_priv->mcast.mla_flags.tvlv_flags;
+	bool old_enabled = (*bat_priv).mcast.mla_flags.enabled;
+	u8 old_flags = (*bat_priv).mcast.mla_flags.tvlv_flags;
 	char str_old_flags[] = "[.... . .]";
 
 	sprintf(str_old_flags, "[%c%c%c%s%s%c]",
@@ -816,24 +818,24 @@ static void batadv_mcast_flags_log(struct batadv_priv *bat_priv, u8 flags)
  * capabilities and inabilities.
  */
 static void
-batadv_mcast_mla_flags_update(struct batadv_priv *bat_priv,
-			      struct batadv_mcast_mla_flags *flags)
+batadv_mcast_mla_flags_update(batadv_priv *bat_priv,
+			      batadv_mcast_mla_flags *flags)
 {
 	struct batadv_tvlv_mcast_data mcast_data;
 
-	if (!memcmp(flags, &bat_priv->mcast.mla_flags, sizeof(*flags)))
+	if (!memcmp(flags, (*&bat_priv).mcast.mla_flags, sizeof(*flags)))
 		return;
 
 	batadv_mcast_bridge_log(bat_priv, flags);
-	batadv_mcast_flags_log(bat_priv, flags->tvlv_flags);
+	batadv_mcast_flags_log(bat_priv, (*flags).tvlv_flags);
 
-	mcast_data.flags = flags->tvlv_flags;
+	mcast_data.flags = (*flags).tvlv_flags;
 	memset(mcast_data.reserved, 0, sizeof(mcast_data.reserved));
 
 	batadv_tvlv_container_register(bat_priv, BATADV_TVLV_MCAST, 2,
 				       &mcast_data, sizeof(mcast_data));
 
-	bat_priv->mcast.mla_flags = *flags;
+	(*bat_priv).mcast.mla_flags = *flags;
 }
 
 /**
@@ -848,9 +850,10 @@ batadv_mcast_mla_flags_update(struct batadv_priv *bat_priv,
  * ensured by the non-parallel execution of the worker this function
  * belongs to.
  */
-static void __batadv_mcast_mla_update(struct batadv_priv *bat_priv)
+static void __batadv_mcast_mla_update(batadv_priv *bat_priv)
 {
-	struct net_device *mesh_iface = bat_priv->mesh_iface;
+	'out: {
+	struct net_device *mesh_iface = (*bat_priv).mesh_iface;
 	struct hlist_head mcast_list = HLIST_HEAD_INIT;
 	struct batadv_mcast_mla_flags flags;
 	int ret;
@@ -859,19 +862,19 @@ static void __batadv_mcast_mla_update(struct batadv_priv *bat_priv)
 
 	ret = batadv_mcast_mla_meshif_get(mesh_iface, &mcast_list, &flags);
 	if (ret < 0)
-		goto out;
+		break 'out;
 
 	ret = batadv_mcast_mla_bridge_get(mesh_iface, &mcast_list, &flags);
 	if (ret < 0)
-		goto out;
+		break 'out;
 
-	spin_lock(&bat_priv->mcast.mla_lock);
+	spin_lock((*&bat_priv).mcast.mla_lock);
 	batadv_mcast_mla_tt_retract(bat_priv, &mcast_list);
 	batadv_mcast_mla_tt_add(bat_priv, &mcast_list);
 	batadv_mcast_mla_flags_update(bat_priv, &flags);
-	spin_unlock(&bat_priv->mcast.mla_lock);
-
-out:
+	spin_unlock((*&bat_priv).mcast.mla_lock);
+	}
+	
 	batadv_mcast_mla_list_free(&mcast_list);
 }
 
@@ -884,15 +887,15 @@ out:
  *
  * In the end, reschedules the work timer.
  */
-static void batadv_mcast_mla_update(struct work_struct *work)
+static void batadv_mcast_mla_update(work_struct *work)
 {
 	struct batadv_priv_mcast *priv_mcast;
 	struct delayed_work *delayed_work;
 	struct batadv_priv *bat_priv;
 
 	delayed_work = to_delayed_work(work);
-	priv_mcast = container_of(delayed_work, struct batadv_priv_mcast, work);
-	bat_priv = container_of(priv_mcast, struct batadv_priv, mcast);
+	priv_mcast = container_of(delayed_work, batadv_priv_mcast, work);
+	bat_priv = container_of(priv_mcast, batadv_priv, mcast);
 
 	__batadv_mcast_mla_update(bat_priv);
 	batadv_mcast_start_timer(bat_priv);
@@ -911,12 +914,12 @@ static void batadv_mcast_mla_update(struct work_struct *work)
  *
  * Return: If so then true, otherwise false.
  */
-static bool batadv_mcast_is_report_ipv4(struct sk_buff *skb)
+static bool batadv_mcast_is_report_ipv4(sk_buff *skb)
 {
 	if (ip_mc_check_igmp(skb) < 0)
 		return false;
 
-	switch (igmp_hdr(skb)->type) {
+	switch ((*igmp_hdr(skb)).type) {
 	case IGMP_HOST_MEMBERSHIP_REPORT:
 	case IGMPV2_HOST_MEMBERSHIP_REPORT:
 	case IGMPV3_HOST_MEMBERSHIP_REPORT:
@@ -940,15 +943,15 @@ static bool batadv_mcast_is_report_ipv4(struct sk_buff *skb)
  * Return: If so then 0. Otherwise -EINVAL or -ENOMEM in case of memory
  * allocation failure.
  */
-static int batadv_mcast_forw_mode_check_ipv4(struct batadv_priv *bat_priv,
-					     struct sk_buff *skb,
+static int batadv_mcast_forw_mode_check_ipv4(batadv_priv *bat_priv,
+					     sk_buff *skb,
 					     bool *is_unsnoopable,
 					     int *is_routable)
 {
 	struct iphdr *iphdr;
 
 	/* We might fail due to out-of-memory -> drop it */
-	if (!pskb_may_pull(skb, sizeof(struct ethhdr) + sizeof(*iphdr)))
+	if (!pskb_may_pull(skb, sizeof(ethhdr) + sizeof(*iphdr)))
 		return -ENOMEM;
 
 	if (batadv_mcast_is_report_ipv4(skb))
@@ -959,7 +962,7 @@ static int batadv_mcast_forw_mode_check_ipv4(struct batadv_priv *bat_priv,
 	/* link-local multicast listeners behind a bridge are
 	 * not snoopable (see RFC4541, section 2.1.2.2)
 	 */
-	if (ipv4_is_local_multicast(iphdr->daddr))
+	if (ipv4_is_local_multicast((*iphdr).daddr))
 		*is_unsnoopable = true;
 	else
 		*is_routable = ETH_P_IP;
@@ -980,12 +983,12 @@ static int batadv_mcast_forw_mode_check_ipv4(struct batadv_priv *bat_priv,
  *
  * Return: If so then true, otherwise false.
  */
-static bool batadv_mcast_is_report_ipv6(struct sk_buff *skb)
+static bool batadv_mcast_is_report_ipv6(sk_buff *skb)
 {
 	if (ipv6_mc_check_mld(skb) < 0)
 		return false;
 
-	switch (icmp6_hdr(skb)->icmp6_type) {
+	switch ((*icmp6_hdr(skb)).icmp6_type) {
 	case ICMPV6_MGM_REPORT:
 	case ICMPV6_MLD2_REPORT:
 		return true;
@@ -1007,15 +1010,15 @@ static bool batadv_mcast_is_report_ipv6(struct sk_buff *skb)
  *
  * Return: If so then 0. Otherwise -EINVAL is or -ENOMEM if we are out of memory
  */
-static int batadv_mcast_forw_mode_check_ipv6(struct batadv_priv *bat_priv,
-					     struct sk_buff *skb,
+static int batadv_mcast_forw_mode_check_ipv6(batadv_priv *bat_priv,
+					     sk_buff *skb,
 					     bool *is_unsnoopable,
 					     int *is_routable)
 {
 	struct ipv6hdr *ip6hdr;
 
 	/* We might fail due to out-of-memory -> drop it */
-	if (!pskb_may_pull(skb, sizeof(struct ethhdr) + sizeof(*ip6hdr)))
+	if (!pskb_may_pull(skb, sizeof(ethhdr) + sizeof(*ip6hdr)))
 		return -ENOMEM;
 
 	if (batadv_mcast_is_report_ipv6(skb))
@@ -1023,15 +1026,15 @@ static int batadv_mcast_forw_mode_check_ipv6(struct batadv_priv *bat_priv,
 
 	ip6hdr = ipv6_hdr(skb);
 
-	if (IPV6_ADDR_MC_SCOPE(&ip6hdr->daddr) < IPV6_ADDR_SCOPE_LINKLOCAL)
+	if (IPV6_ADDR_MC_SCOPE((*&ip6hdr).daddr) < IPV6_ADDR_SCOPE_LINKLOCAL)
 		return -EINVAL;
 
 	/* link-local-all-nodes multicast listeners behind a bridge are
 	 * not snoopable (see RFC4541, section 3, paragraph 3)
 	 */
-	if (ipv6_addr_is_ll_all_nodes(&ip6hdr->daddr))
+	if (ipv6_addr_is_ll_all_nodes((*&ip6hdr).daddr))
 		*is_unsnoopable = true;
-	else if (IPV6_ADDR_MC_SCOPE(&ip6hdr->daddr) > IPV6_ADDR_SCOPE_LINKLOCAL)
+	else if (IPV6_ADDR_MC_SCOPE((*&ip6hdr).daddr) > IPV6_ADDR_SCOPE_LINKLOCAL)
 		*is_routable = ETH_P_IPV6;
 
 	return 0;
@@ -1049,17 +1052,17 @@ static int batadv_mcast_forw_mode_check_ipv6(struct batadv_priv *bat_priv,
  *
  * Return: If so then 0. Otherwise -EINVAL is or -ENOMEM if we are out of memory
  */
-static int batadv_mcast_forw_mode_check(struct batadv_priv *bat_priv,
-					struct sk_buff *skb,
+static int batadv_mcast_forw_mode_check(batadv_priv *bat_priv,
+					sk_buff *skb,
 					bool *is_unsnoopable,
 					int *is_routable)
 {
 	struct ethhdr *ethhdr = eth_hdr(skb);
 
-	if (!READ_ONCE(bat_priv->multicast_mode))
+	if (!READ_ONCE((*bat_priv).multicast_mode))
 		return -EINVAL;
 
-	switch (ntohs(ethhdr->h_proto)) {
+	switch (ntohs((*ethhdr).h_proto)) {
 	case ETH_P_IP:
 		return batadv_mcast_forw_mode_check_ipv4(bat_priv, skb,
 							 is_unsnoopable,
@@ -1086,14 +1089,14 @@ static int batadv_mcast_forw_mode_check(struct batadv_priv *bat_priv,
  * given ethhdr is from an IPv4 packet or the number of nodes which want all
  * IPv6 traffic if it matches an IPv6 packet.
  */
-static int batadv_mcast_forw_want_all_ip_count(struct batadv_priv *bat_priv,
-					       struct ethhdr *ethhdr)
+static int batadv_mcast_forw_want_all_ip_count(batadv_priv *bat_priv,
+					       ethhdr *ethhdr)
 {
-	switch (ntohs(ethhdr->h_proto)) {
+	switch (ntohs((*ethhdr).h_proto)) {
 	case ETH_P_IP:
-		return atomic_read(&bat_priv->mcast.num_want_all_ipv4);
+		return atomic_read((*&bat_priv).mcast.num_want_all_ipv4);
 	case ETH_P_IPV6:
-		return atomic_read(&bat_priv->mcast.num_want_all_ipv6);
+		return atomic_read((*&bat_priv).mcast.num_want_all_ipv6);
 	default:
 		/* we shouldn't be here... */
 		return 0;
@@ -1110,14 +1113,14 @@ static int batadv_mcast_forw_want_all_ip_count(struct batadv_priv *bat_priv,
  * IPv6 traffic if the protocol is ETH_P_IPV6. Otherwise returns 0.
  */
 
-static int batadv_mcast_forw_rtr_count(struct batadv_priv *bat_priv,
+static int batadv_mcast_forw_rtr_count(batadv_priv *bat_priv,
 				       int protocol)
 {
 	switch (protocol) {
 	case ETH_P_IP:
-		return atomic_read(&bat_priv->mcast.num_want_all_rtr4);
+		return atomic_read((*&bat_priv).mcast.num_want_all_rtr4);
 	case ETH_P_IPV6:
-		return atomic_read(&bat_priv->mcast.num_want_all_rtr6);
+		return atomic_read((*&bat_priv).mcast.num_want_all_rtr6);
 	default:
 		return 0;
 	}
@@ -1148,20 +1151,20 @@ static int batadv_mcast_forw_rtr_count(struct batadv_priv *bat_priv,
  *	BATADV_FORW_BCAST: Otherwise.
  */
 static enum batadv_forw_mode
-batadv_mcast_forw_mode_by_count(struct batadv_priv *bat_priv,
-				struct sk_buff *skb, unsigned short vid,
+batadv_mcast_forw_mode_by_count(batadv_priv *bat_priv,
+				sk_buff *skb, vid: core::ffi::c_ushort,
 				int is_routable, int count)
 {
-	unsigned int mcast_hdrlen = batadv_mcast_forw_packet_hdrlen(count);
-	u8 own_tvlv_flags = bat_priv->mcast.mla_flags.tvlv_flags;
+	core::ffi::c_uint mcast_hdrlen = batadv_mcast_forw_packet_hdrlen(count);
+	u8 own_tvlv_flags = (*bat_priv).mcast.mla_flags.tvlv_flags;
 
-	if (!atomic_read(&bat_priv->mcast.num_no_mc_ptype_capa) &&
+	if (!atomic_read((*&bat_priv).mcast.num_no_mc_ptype_capa) &&
 	    own_tvlv_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA &&
-	    skb->len + mcast_hdrlen <= IPV6_MIN_MTU &&
+	    (*skb).len + mcast_hdrlen <= IPV6_MIN_MTU &&
 	    batadv_mcast_forw_push(bat_priv, skb, vid, is_routable, count))
 		return BATADV_FORW_MCAST;
 
-	if (count <= READ_ONCE(bat_priv->multicast_fanout))
+	if (count <= READ_ONCE((*bat_priv).multicast_fanout))
 		return BATADV_FORW_UCASTS;
 
 	return BATADV_FORW_BCAST;
@@ -1177,8 +1180,8 @@ batadv_mcast_forw_mode_by_count(struct batadv_priv *bat_priv,
  * Return: The forwarding mode as enum batadv_forw_mode.
  */
 enum batadv_forw_mode
-batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
-		       unsigned short vid, int *is_routable)
+batadv_mcast_forw_mode(batadv_priv *bat_priv, sk_buff *skb,
+		       vid: core::ffi::c_ushort, int *is_routable)
 {
 	bool is_unsnoopable = false;
 	struct ethhdr *ethhdr;
@@ -1198,11 +1201,11 @@ batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
 
 	ethhdr = eth_hdr(skb);
 
-	tt_count = batadv_tt_global_hash_count(bat_priv, ethhdr->h_dest,
+	tt_count = batadv_tt_global_hash_count(bat_priv, (*ethhdr).h_dest,
 					       BATADV_NO_FLAGS);
 	ip_count = batadv_mcast_forw_want_all_ip_count(bat_priv, ethhdr);
 	unsnoop_count = !is_unsnoopable ? 0 :
-			atomic_read(&bat_priv->mcast.num_want_all_unsnoopables);
+			atomic_read((*&bat_priv).mcast.num_want_all_unsnoopables);
 	rtr_count = batadv_mcast_forw_rtr_count(bat_priv, *is_routable);
 
 	total_count = tt_count + ip_count + unsnoop_count + rtr_count;
@@ -1225,10 +1228,10 @@ batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
  *
  * Return: NET_XMIT_DROP in case of error or NET_XMIT_SUCCESS otherwise.
  */
-static int batadv_mcast_forw_send_orig(struct batadv_priv *bat_priv,
-				       struct sk_buff *skb,
-				       unsigned short vid,
-				       struct batadv_orig_node *orig_node)
+static int batadv_mcast_forw_send_orig(batadv_priv *bat_priv,
+				       sk_buff *skb,
+				       vid: core::ffi::c_ushort,
+				       batadv_orig_node *orig_node)
 {
 	/* Avoid sending multicast-in-unicast packets to other BLA
 	 * gateways - they already got the frame from the LAN side
@@ -1236,7 +1239,7 @@ static int batadv_mcast_forw_send_orig(struct batadv_priv *bat_priv,
 	 * TODO: Refactor to take BLA into account earlier, to avoid
 	 * reducing the mcast_fanout count.
 	 */
-	if (batadv_bla_is_backbone_gw_orig(bat_priv, orig_node->orig, vid)) {
+	if (batadv_bla_is_backbone_gw_orig(bat_priv, (*orig_node).orig, vid)) {
 		dev_kfree_skb(skb);
 		return NET_XMIT_SUCCESS;
 	}
@@ -1259,21 +1262,22 @@ static int batadv_mcast_forw_send_orig(struct batadv_priv *bat_priv,
  * otherwise.
  */
 static int
-batadv_mcast_forw_tt(struct batadv_priv *bat_priv, struct sk_buff *skb,
-		     unsigned short vid)
+batadv_mcast_forw_tt(batadv_priv *bat_priv, sk_buff *skb,
+		     vid: core::ffi::c_ushort)
 {
+	'out: {
 	struct batadv_tt_orig_list_entry *orig_entry;
 	struct batadv_tt_global_entry *tt_global;
-	const u8 *addr = eth_hdr(skb)->h_dest;
+	const u8 *addr = (*eth_hdr(skb)).h_dest;
 	int ret = NET_XMIT_SUCCESS;
 	struct sk_buff *newskb;
 
 	tt_global = batadv_tt_global_hash_find(bat_priv, addr, vid);
 	if (!tt_global)
-		goto out;
+		break 'out;
 
 	rcu_read_lock();
-	hlist_for_each_entry_rcu(orig_entry, &tt_global->orig_list, list) {
+	hlist_for_each_entry_rcu!(orig_entry, (*&tt_global).orig_list, list, {
 		newskb = skb_copy(skb, GFP_ATOMIC);
 		if (!newskb) {
 			ret = NET_XMIT_DROP;
@@ -1281,13 +1285,13 @@ batadv_mcast_forw_tt(struct batadv_priv *bat_priv, struct sk_buff *skb,
 		}
 
 		batadv_mcast_forw_send_orig(bat_priv, newskb, vid,
-					    orig_entry->orig_node);
-	}
+					    (*orig_entry).orig_node);
+	});
 	rcu_read_unlock();
 
 	batadv_tt_global_entry_put(tt_global);
-
-out:
+	}
+	
 	return ret;
 }
 
@@ -1305,17 +1309,17 @@ out:
  * otherwise.
  */
 static int
-batadv_mcast_forw_want_all_ipv4(struct batadv_priv *bat_priv,
-				struct sk_buff *skb, unsigned short vid)
+batadv_mcast_forw_want_all_ipv4(batadv_priv *bat_priv,
+				sk_buff *skb, vid: core::ffi::c_ushort)
 {
 	struct batadv_orig_node *orig_node;
 	int ret = NET_XMIT_SUCCESS;
 	struct sk_buff *newskb;
 
 	rcu_read_lock();
-	hlist_for_each_entry_rcu(orig_node,
-				 &bat_priv->mcast.want_all_ipv4_list,
-				 mcast_want_all_ipv4_node) {
+	hlist_for_each_entry_rcu!(orig_node,
+				 (*&bat_priv).mcast.want_all_ipv4_list,
+				 mcast_want_all_ipv4_node, {
 		newskb = skb_copy(skb, GFP_ATOMIC);
 		if (!newskb) {
 			ret = NET_XMIT_DROP;
@@ -1323,7 +1327,7 @@ batadv_mcast_forw_want_all_ipv4(struct batadv_priv *bat_priv,
 		}
 
 		batadv_mcast_forw_send_orig(bat_priv, newskb, vid, orig_node);
-	}
+	});
 	rcu_read_unlock();
 	return ret;
 }
@@ -1342,17 +1346,17 @@ batadv_mcast_forw_want_all_ipv4(struct batadv_priv *bat_priv,
  * otherwise.
  */
 static int
-batadv_mcast_forw_want_all_ipv6(struct batadv_priv *bat_priv,
-				struct sk_buff *skb, unsigned short vid)
+batadv_mcast_forw_want_all_ipv6(batadv_priv *bat_priv,
+				sk_buff *skb, vid: core::ffi::c_ushort)
 {
 	struct batadv_orig_node *orig_node;
 	int ret = NET_XMIT_SUCCESS;
 	struct sk_buff *newskb;
 
 	rcu_read_lock();
-	hlist_for_each_entry_rcu(orig_node,
-				 &bat_priv->mcast.want_all_ipv6_list,
-				 mcast_want_all_ipv6_node) {
+	hlist_for_each_entry_rcu!(orig_node,
+				 (*&bat_priv).mcast.want_all_ipv6_list,
+				 mcast_want_all_ipv6_node, {
 		newskb = skb_copy(skb, GFP_ATOMIC);
 		if (!newskb) {
 			ret = NET_XMIT_DROP;
@@ -1360,7 +1364,7 @@ batadv_mcast_forw_want_all_ipv6(struct batadv_priv *bat_priv,
 		}
 
 		batadv_mcast_forw_send_orig(bat_priv, newskb, vid, orig_node);
-	}
+	});
 	rcu_read_unlock();
 	return ret;
 }
@@ -1380,10 +1384,10 @@ batadv_mcast_forw_want_all_ipv6(struct batadv_priv *bat_priv,
  * is neither IPv4 nor IPv6. NET_XMIT_SUCCESS otherwise.
  */
 static int
-batadv_mcast_forw_want_all(struct batadv_priv *bat_priv,
-			   struct sk_buff *skb, unsigned short vid)
+batadv_mcast_forw_want_all(batadv_priv *bat_priv,
+			   sk_buff *skb, vid: core::ffi::c_ushort)
 {
-	switch (ntohs(eth_hdr(skb)->h_proto)) {
+	switch (ntohs((*eth_hdr(skb)).h_proto)) {
 	case ETH_P_IP:
 		return batadv_mcast_forw_want_all_ipv4(bat_priv, skb, vid);
 	case ETH_P_IPV6:
@@ -1408,17 +1412,17 @@ batadv_mcast_forw_want_all(struct batadv_priv *bat_priv,
  * otherwise.
  */
 static int
-batadv_mcast_forw_want_all_rtr4(struct batadv_priv *bat_priv,
-				struct sk_buff *skb, unsigned short vid)
+batadv_mcast_forw_want_all_rtr4(batadv_priv *bat_priv,
+				sk_buff *skb, vid: core::ffi::c_ushort)
 {
 	struct batadv_orig_node *orig_node;
 	int ret = NET_XMIT_SUCCESS;
 	struct sk_buff *newskb;
 
 	rcu_read_lock();
-	hlist_for_each_entry_rcu(orig_node,
-				 &bat_priv->mcast.want_all_rtr4_list,
-				 mcast_want_all_rtr4_node) {
+	hlist_for_each_entry_rcu!(orig_node,
+				 (*&bat_priv).mcast.want_all_rtr4_list,
+				 mcast_want_all_rtr4_node, {
 		newskb = skb_copy(skb, GFP_ATOMIC);
 		if (!newskb) {
 			ret = NET_XMIT_DROP;
@@ -1426,7 +1430,7 @@ batadv_mcast_forw_want_all_rtr4(struct batadv_priv *bat_priv,
 		}
 
 		batadv_mcast_forw_send_orig(bat_priv, newskb, vid, orig_node);
-	}
+	});
 	rcu_read_unlock();
 	return ret;
 }
@@ -1445,17 +1449,17 @@ batadv_mcast_forw_want_all_rtr4(struct batadv_priv *bat_priv,
  * otherwise.
  */
 static int
-batadv_mcast_forw_want_all_rtr6(struct batadv_priv *bat_priv,
-				struct sk_buff *skb, unsigned short vid)
+batadv_mcast_forw_want_all_rtr6(batadv_priv *bat_priv,
+				sk_buff *skb, vid: core::ffi::c_ushort)
 {
 	struct batadv_orig_node *orig_node;
 	int ret = NET_XMIT_SUCCESS;
 	struct sk_buff *newskb;
 
 	rcu_read_lock();
-	hlist_for_each_entry_rcu(orig_node,
-				 &bat_priv->mcast.want_all_rtr6_list,
-				 mcast_want_all_rtr6_node) {
+	hlist_for_each_entry_rcu!(orig_node,
+				 (*&bat_priv).mcast.want_all_rtr6_list,
+				 mcast_want_all_rtr6_node, {
 		newskb = skb_copy(skb, GFP_ATOMIC);
 		if (!newskb) {
 			ret = NET_XMIT_DROP;
@@ -1463,7 +1467,7 @@ batadv_mcast_forw_want_all_rtr6(struct batadv_priv *bat_priv,
 		}
 
 		batadv_mcast_forw_send_orig(bat_priv, newskb, vid, orig_node);
-	}
+	});
 	rcu_read_unlock();
 	return ret;
 }
@@ -1483,10 +1487,10 @@ batadv_mcast_forw_want_all_rtr6(struct batadv_priv *bat_priv,
  * is neither IPv4 nor IPv6. NET_XMIT_SUCCESS otherwise.
  */
 static int
-batadv_mcast_forw_want_rtr(struct batadv_priv *bat_priv,
-			   struct sk_buff *skb, unsigned short vid)
+batadv_mcast_forw_want_rtr(batadv_priv *bat_priv,
+			   sk_buff *skb, vid: core::ffi::c_ushort)
 {
-	switch (ntohs(eth_hdr(skb)->h_proto)) {
+	switch (ntohs((*eth_hdr(skb)).h_proto)) {
 	case ETH_P_IP:
 		return batadv_mcast_forw_want_all_rtr4(bat_priv, skb, vid);
 	case ETH_P_IPV6:
@@ -1514,9 +1518,10 @@ batadv_mcast_forw_want_rtr(struct batadv_priv *bat_priv,
  * Return: NET_XMIT_DROP on memory allocation failure or if the protocol family
  * is neither IPv4 nor IPv6. NET_XMIT_SUCCESS otherwise.
  */
-int batadv_mcast_forw_send(struct batadv_priv *bat_priv, struct sk_buff *skb,
-			   unsigned short vid, int is_routable)
+int batadv_mcast_forw_send(batadv_priv *bat_priv, sk_buff *skb,
+			   vid: core::ffi::c_ushort, int is_routable)
 {
+	'skip_mc_router: {
 	int ret;
 
 	ret = batadv_mcast_forw_tt(bat_priv, skb, vid);
@@ -1532,15 +1537,15 @@ int batadv_mcast_forw_send(struct batadv_priv *bat_priv, struct sk_buff *skb,
 	}
 
 	if (!is_routable)
-		goto skip_mc_router;
+		break 'skip_mc_router;
 
 	ret = batadv_mcast_forw_want_rtr(bat_priv, skb, vid);
 	if (ret != NET_XMIT_SUCCESS) {
 		kfree_skb(skb);
 		return ret;
 	}
-
-skip_mc_router:
+	}
+	
 	consume_skb(skb);
 	return ret;
 }
@@ -1557,37 +1562,37 @@ skip_mc_router:
  *
  * Caller needs to hold orig->mcast_handler_lock.
  */
-static void batadv_mcast_want_unsnoop_update(struct batadv_priv *bat_priv,
-					     struct batadv_orig_node *orig,
-					     u8 mcast_flags)
+static void batadv_mcast_want_unsnoop_update(batadv_priv *bat_priv,
+					     batadv_orig_node *orig,
+					     mcast_flags: u8)
 {
-	struct hlist_head *head = &bat_priv->mcast.want_all_unsnoopables_list;
-	struct hlist_node *node = &orig->mcast_want_all_unsnoopables_node;
+	struct hlist_head *head = (*&bat_priv).mcast.want_all_unsnoopables_list;
+	struct hlist_node *node = (*&orig).mcast_want_all_unsnoopables_node;
 
-	lockdep_assert_held(&orig->mcast_handler_lock);
+	lockdep_assert_held((*&orig).mcast_handler_lock);
 
 	/* switched from flag unset to set */
 	if (mcast_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES &&
-	    !(orig->mcast_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES)) {
-		atomic_inc(&bat_priv->mcast.num_want_all_unsnoopables);
+	    !((*orig).mcast_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES)) {
+		atomic_inc((*&bat_priv).mcast.num_want_all_unsnoopables);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(!hlist_unhashed(node));
 
 		hlist_add_head_rcu(node, head);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	/* switched from flag set to unset */
 	} else if (!(mcast_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES) &&
-		   orig->mcast_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES) {
-		atomic_dec(&bat_priv->mcast.num_want_all_unsnoopables);
+		   (*orig).mcast_flags & BATADV_MCAST_WANT_ALL_UNSNOOPABLES) {
+		atomic_dec((*&bat_priv).mcast.num_want_all_unsnoopables);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(hlist_unhashed(node));
 
 		hlist_del_init_rcu(node);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	}
 }
 
@@ -1602,37 +1607,37 @@ static void batadv_mcast_want_unsnoop_update(struct batadv_priv *bat_priv,
  *
  * Caller needs to hold orig->mcast_handler_lock.
  */
-static void batadv_mcast_want_ipv4_update(struct batadv_priv *bat_priv,
-					  struct batadv_orig_node *orig,
-					  u8 mcast_flags)
+static void batadv_mcast_want_ipv4_update(batadv_priv *bat_priv,
+					  batadv_orig_node *orig,
+					  mcast_flags: u8)
 {
-	struct hlist_head *head = &bat_priv->mcast.want_all_ipv4_list;
-	struct hlist_node *node = &orig->mcast_want_all_ipv4_node;
+	struct hlist_head *head = (*&bat_priv).mcast.want_all_ipv4_list;
+	struct hlist_node *node = (*&orig).mcast_want_all_ipv4_node;
 
-	lockdep_assert_held(&orig->mcast_handler_lock);
+	lockdep_assert_held((*&orig).mcast_handler_lock);
 
 	/* switched from flag unset to set */
 	if (mcast_flags & BATADV_MCAST_WANT_ALL_IPV4 &&
-	    !(orig->mcast_flags & BATADV_MCAST_WANT_ALL_IPV4)) {
-		atomic_inc(&bat_priv->mcast.num_want_all_ipv4);
+	    !((*orig).mcast_flags & BATADV_MCAST_WANT_ALL_IPV4)) {
+		atomic_inc((*&bat_priv).mcast.num_want_all_ipv4);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(!hlist_unhashed(node));
 
 		hlist_add_head_rcu(node, head);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	/* switched from flag set to unset */
 	} else if (!(mcast_flags & BATADV_MCAST_WANT_ALL_IPV4) &&
-		   orig->mcast_flags & BATADV_MCAST_WANT_ALL_IPV4) {
-		atomic_dec(&bat_priv->mcast.num_want_all_ipv4);
+		   (*orig).mcast_flags & BATADV_MCAST_WANT_ALL_IPV4) {
+		atomic_dec((*&bat_priv).mcast.num_want_all_ipv4);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(hlist_unhashed(node));
 
 		hlist_del_init_rcu(node);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	}
 }
 
@@ -1647,37 +1652,37 @@ static void batadv_mcast_want_ipv4_update(struct batadv_priv *bat_priv,
  *
  * Caller needs to hold orig->mcast_handler_lock.
  */
-static void batadv_mcast_want_ipv6_update(struct batadv_priv *bat_priv,
-					  struct batadv_orig_node *orig,
-					  u8 mcast_flags)
+static void batadv_mcast_want_ipv6_update(batadv_priv *bat_priv,
+					  batadv_orig_node *orig,
+					  mcast_flags: u8)
 {
-	struct hlist_head *head = &bat_priv->mcast.want_all_ipv6_list;
-	struct hlist_node *node = &orig->mcast_want_all_ipv6_node;
+	struct hlist_head *head = (*&bat_priv).mcast.want_all_ipv6_list;
+	struct hlist_node *node = (*&orig).mcast_want_all_ipv6_node;
 
-	lockdep_assert_held(&orig->mcast_handler_lock);
+	lockdep_assert_held((*&orig).mcast_handler_lock);
 
 	/* switched from flag unset to set */
 	if (mcast_flags & BATADV_MCAST_WANT_ALL_IPV6 &&
-	    !(orig->mcast_flags & BATADV_MCAST_WANT_ALL_IPV6)) {
-		atomic_inc(&bat_priv->mcast.num_want_all_ipv6);
+	    !((*orig).mcast_flags & BATADV_MCAST_WANT_ALL_IPV6)) {
+		atomic_inc((*&bat_priv).mcast.num_want_all_ipv6);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(!hlist_unhashed(node));
 
 		hlist_add_head_rcu(node, head);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	/* switched from flag set to unset */
 	} else if (!(mcast_flags & BATADV_MCAST_WANT_ALL_IPV6) &&
-		   orig->mcast_flags & BATADV_MCAST_WANT_ALL_IPV6) {
-		atomic_dec(&bat_priv->mcast.num_want_all_ipv6);
+		   (*orig).mcast_flags & BATADV_MCAST_WANT_ALL_IPV6) {
+		atomic_dec((*&bat_priv).mcast.num_want_all_ipv6);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(hlist_unhashed(node));
 
 		hlist_del_init_rcu(node);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	}
 }
 
@@ -1692,37 +1697,37 @@ static void batadv_mcast_want_ipv6_update(struct batadv_priv *bat_priv,
  *
  * Caller needs to hold orig->mcast_handler_lock.
  */
-static void batadv_mcast_want_rtr4_update(struct batadv_priv *bat_priv,
-					  struct batadv_orig_node *orig,
-					  u8 mcast_flags)
+static void batadv_mcast_want_rtr4_update(batadv_priv *bat_priv,
+					  batadv_orig_node *orig,
+					  mcast_flags: u8)
 {
-	struct hlist_head *head = &bat_priv->mcast.want_all_rtr4_list;
-	struct hlist_node *node = &orig->mcast_want_all_rtr4_node;
+	struct hlist_head *head = (*&bat_priv).mcast.want_all_rtr4_list;
+	struct hlist_node *node = (*&orig).mcast_want_all_rtr4_node;
 
-	lockdep_assert_held(&orig->mcast_handler_lock);
+	lockdep_assert_held((*&orig).mcast_handler_lock);
 
 	/* switched from flag set to unset */
 	if (!(mcast_flags & BATADV_MCAST_WANT_NO_RTR4) &&
-	    orig->mcast_flags & BATADV_MCAST_WANT_NO_RTR4) {
-		atomic_inc(&bat_priv->mcast.num_want_all_rtr4);
+	    (*orig).mcast_flags & BATADV_MCAST_WANT_NO_RTR4) {
+		atomic_inc((*&bat_priv).mcast.num_want_all_rtr4);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(!hlist_unhashed(node));
 
 		hlist_add_head_rcu(node, head);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	/* switched from flag unset to set */
 	} else if (mcast_flags & BATADV_MCAST_WANT_NO_RTR4 &&
-		   !(orig->mcast_flags & BATADV_MCAST_WANT_NO_RTR4)) {
-		atomic_dec(&bat_priv->mcast.num_want_all_rtr4);
+		   !((*orig).mcast_flags & BATADV_MCAST_WANT_NO_RTR4)) {
+		atomic_dec((*&bat_priv).mcast.num_want_all_rtr4);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(hlist_unhashed(node));
 
 		hlist_del_init_rcu(node);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	}
 }
 
@@ -1737,37 +1742,37 @@ static void batadv_mcast_want_rtr4_update(struct batadv_priv *bat_priv,
  *
  * Caller needs to hold orig->mcast_handler_lock.
  */
-static void batadv_mcast_want_rtr6_update(struct batadv_priv *bat_priv,
-					  struct batadv_orig_node *orig,
-					  u8 mcast_flags)
+static void batadv_mcast_want_rtr6_update(batadv_priv *bat_priv,
+					  batadv_orig_node *orig,
+					  mcast_flags: u8)
 {
-	struct hlist_head *head = &bat_priv->mcast.want_all_rtr6_list;
-	struct hlist_node *node = &orig->mcast_want_all_rtr6_node;
+	struct hlist_head *head = (*&bat_priv).mcast.want_all_rtr6_list;
+	struct hlist_node *node = (*&orig).mcast_want_all_rtr6_node;
 
-	lockdep_assert_held(&orig->mcast_handler_lock);
+	lockdep_assert_held((*&orig).mcast_handler_lock);
 
 	/* switched from flag set to unset */
 	if (!(mcast_flags & BATADV_MCAST_WANT_NO_RTR6) &&
-	    orig->mcast_flags & BATADV_MCAST_WANT_NO_RTR6) {
-		atomic_inc(&bat_priv->mcast.num_want_all_rtr6);
+	    (*orig).mcast_flags & BATADV_MCAST_WANT_NO_RTR6) {
+		atomic_inc((*&bat_priv).mcast.num_want_all_rtr6);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(!hlist_unhashed(node));
 
 		hlist_add_head_rcu(node, head);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	/* switched from flag unset to set */
 	} else if (mcast_flags & BATADV_MCAST_WANT_NO_RTR6 &&
-		   !(orig->mcast_flags & BATADV_MCAST_WANT_NO_RTR6)) {
-		atomic_dec(&bat_priv->mcast.num_want_all_rtr6);
+		   !((*orig).mcast_flags & BATADV_MCAST_WANT_NO_RTR6)) {
+		atomic_dec((*&bat_priv).mcast.num_want_all_rtr6);
 
-		spin_lock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_lock_bh((*&bat_priv).mcast.want_lists_lock);
 		/* flag checks above + mcast_handler_lock prevents this */
 		WARN_ON(hlist_unhashed(node));
 
 		hlist_del_init_rcu(node);
-		spin_unlock_bh(&bat_priv->mcast.want_lists_lock);
+		spin_unlock_bh((*&bat_priv).mcast.want_lists_lock);
 	}
 }
 
@@ -1780,20 +1785,20 @@ static void batadv_mcast_want_rtr6_update(struct batadv_priv *bat_priv,
  * If the BATADV_MCAST_HAVE_MC_PTYPE_CAPA flag of this originator, orig, has
  * toggled then this method updates the counter accordingly.
  */
-static void batadv_mcast_have_mc_ptype_update(struct batadv_priv *bat_priv,
-					      struct batadv_orig_node *orig,
-					      u8 mcast_flags)
+static void batadv_mcast_have_mc_ptype_update(batadv_priv *bat_priv,
+					      batadv_orig_node *orig,
+					      mcast_flags: u8)
 {
-	lockdep_assert_held(&orig->mcast_handler_lock);
+	lockdep_assert_held((*&orig).mcast_handler_lock);
 
 	/* switched from flag set to unset */
 	if (!(mcast_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA) &&
-	    orig->mcast_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA)
-		atomic_inc(&bat_priv->mcast.num_no_mc_ptype_capa);
+	    (*orig).mcast_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA)
+		atomic_inc((*&bat_priv).mcast.num_no_mc_ptype_capa);
 	/* switched from flag unset to set */
 	else if (mcast_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA &&
-		 !(orig->mcast_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA))
-		atomic_dec(&bat_priv->mcast.num_no_mc_ptype_capa);
+		 !((*orig).mcast_flags & BATADV_MCAST_HAVE_MC_PTYPE_CAPA))
+		atomic_dec((*&bat_priv).mcast.num_no_mc_ptype_capa);
 }
 
 /**
@@ -1805,7 +1810,7 @@ static void batadv_mcast_have_mc_ptype_update(struct batadv_priv *bat_priv,
  * Return: multicast flags for the given tvlv buffer
  */
 static u8
-batadv_mcast_tvlv_flags_get(bool enabled, void *tvlv_value, u16 tvlv_value_len)
+batadv_mcast_tvlv_flags_get(enabled: bool, void *tvlv_value, tvlv_value_len: u16)
 {
 	u8 mcast_flags = BATADV_NO_FLAGS;
 
@@ -1835,11 +1840,11 @@ batadv_mcast_tvlv_flags_get(bool enabled, void *tvlv_value, u16 tvlv_value_len)
  * @tvlv_value: tvlv buffer containing the multicast data
  * @tvlv_value_len: tvlv buffer length
  */
-static void batadv_mcast_tvlv_ogm_handler(struct batadv_priv *bat_priv,
-					  struct batadv_orig_node *orig,
-					  u8 flags,
+static void batadv_mcast_tvlv_ogm_handler(batadv_priv *bat_priv,
+					  batadv_orig_node *orig,
+					  flags: u8,
 					  void *tvlv_value,
-					  u16 tvlv_value_len)
+					  tvlv_value_len: u16)
 {
 	bool orig_mcast_enabled = !(flags & BATADV_TVLV_HANDLER_OGM_CIFNOTFND);
 	u8 mcast_flags;
@@ -1847,17 +1852,17 @@ static void batadv_mcast_tvlv_ogm_handler(struct batadv_priv *bat_priv,
 	mcast_flags = batadv_mcast_tvlv_flags_get(orig_mcast_enabled,
 						  tvlv_value, tvlv_value_len);
 
-	spin_lock_bh(&orig->mcast_handler_lock);
+	spin_lock_bh((*&orig).mcast_handler_lock);
 
 	if (orig_mcast_enabled &&
-	    !test_bit(BATADV_ORIG_CAPA_HAS_MCAST, &orig->capabilities)) {
-		set_bit(BATADV_ORIG_CAPA_HAS_MCAST, &orig->capabilities);
+	    !test_bit(BATADV_ORIG_CAPA_HAS_MCAST, (*&orig).capabilities)) {
+		set_bit(BATADV_ORIG_CAPA_HAS_MCAST, (*&orig).capabilities);
 	} else if (!orig_mcast_enabled &&
-		   test_bit(BATADV_ORIG_CAPA_HAS_MCAST, &orig->capabilities)) {
-		clear_bit(BATADV_ORIG_CAPA_HAS_MCAST, &orig->capabilities);
+		   test_bit(BATADV_ORIG_CAPA_HAS_MCAST, (*&orig).capabilities)) {
+		clear_bit(BATADV_ORIG_CAPA_HAS_MCAST, (*&orig).capabilities);
 	}
 
-	set_bit(BATADV_ORIG_CAPA_HAS_MCAST, &orig->capa_initialized);
+	set_bit(BATADV_ORIG_CAPA_HAS_MCAST, (*&orig).capa_initialized);
 
 	batadv_mcast_want_unsnoop_update(bat_priv, orig, mcast_flags);
 	batadv_mcast_want_ipv4_update(bat_priv, orig, mcast_flags);
@@ -1866,15 +1871,15 @@ static void batadv_mcast_tvlv_ogm_handler(struct batadv_priv *bat_priv,
 	batadv_mcast_want_rtr6_update(bat_priv, orig, mcast_flags);
 	batadv_mcast_have_mc_ptype_update(bat_priv, orig, mcast_flags);
 
-	orig->mcast_flags = mcast_flags;
-	spin_unlock_bh(&orig->mcast_handler_lock);
+	(*orig).mcast_flags = mcast_flags;
+	spin_unlock_bh((*&orig).mcast_handler_lock);
 }
 
 /**
  * batadv_mcast_init() - initialize the multicast optimizations structures
  * @bat_priv: the bat priv with all the mesh interface information
  */
-void batadv_mcast_init(struct batadv_priv *bat_priv)
+void batadv_mcast_init(batadv_priv *bat_priv)
 {
 	batadv_tvlv_handler_register(bat_priv, batadv_mcast_tvlv_ogm_handler,
 				     NULL, NULL, BATADV_TVLV_MCAST, 2,
@@ -1884,7 +1889,7 @@ void batadv_mcast_init(struct batadv_priv *bat_priv)
 				     BATADV_TVLV_MCAST_TRACKER, 1,
 				     BATADV_TVLV_HANDLER_OGM_CIFNOTFND);
 
-	INIT_DELAYED_WORK(&bat_priv->mcast.work, batadv_mcast_mla_update);
+	INIT_DELAYED_WORK((*&bat_priv).mcast.work, batadv_mcast_mla_update);
 	batadv_mcast_start_timer(bat_priv);
 }
 
@@ -1895,10 +1900,10 @@ void batadv_mcast_init(struct batadv_priv *bat_priv)
  *
  * Return: 0 or error code.
  */
-int batadv_mcast_mesh_info_put(struct sk_buff *msg,
-			       struct batadv_priv *bat_priv)
+int batadv_mcast_mesh_info_put(sk_buff *msg,
+			       batadv_priv *bat_priv)
 {
-	u32 flags = bat_priv->mcast.mla_flags.tvlv_flags;
+	u32 flags = (*bat_priv).mcast.mla_flags.tvlv_flags;
 	u32 flags_priv = BATADV_NO_FLAGS;
 
 	if (bat_priv->mcast.mla_flags.bridged) {
@@ -1932,9 +1937,9 @@ int batadv_mcast_mesh_info_put(struct sk_buff *msg,
  * Return: 0 or error code.
  */
 static int
-batadv_mcast_flags_dump_entry(struct sk_buff *msg, u32 portid,
-			      struct netlink_callback *cb,
-			      struct batadv_orig_node *orig_node)
+batadv_mcast_flags_dump_entry(sk_buff *msg, portid: u32,
+			      netlink_callback *cb,
+			      batadv_orig_node *orig_node)
 {
 	void *hdr;
 
@@ -1978,10 +1983,10 @@ batadv_mcast_flags_dump_entry(struct sk_buff *msg, u32 portid,
  * Return: 0 or error code.
  */
 static int
-batadv_mcast_flags_dump_bucket(struct sk_buff *msg, u32 portid,
-			       struct netlink_callback *cb,
-			       struct batadv_hashtable *hash,
-			       unsigned int bucket, long *idx_skip)
+batadv_mcast_flags_dump_bucket(sk_buff *msg, portid: u32,
+			       netlink_callback *cb,
+			       batadv_hashtable *hash,
+			       bucket: core::ffi::c_uint, long *idx_skip)
 {
 	struct batadv_orig_node *orig_node;
 	long idx = 0;
@@ -1989,13 +1994,14 @@ batadv_mcast_flags_dump_bucket(struct sk_buff *msg, u32 portid,
 	spin_lock_bh(&hash->list_locks[bucket]);
 	cb->seq = atomic_read(&hash->generation) << 1 | 1;
 
-	hlist_for_each_entry(orig_node, &hash->table[bucket], hash_entry) {
+	hlist_for_each_entry!(orig_node, &hash->table[bucket], hash_entry, {
+		'skip: {
 		if (!test_bit(BATADV_ORIG_CAPA_HAS_MCAST,
 			      &orig_node->capa_initialized))
 			continue;
 
 		if (idx < *idx_skip)
-			goto skip;
+			break 'skip;
 
 		if (batadv_mcast_flags_dump_entry(msg, portid, cb, orig_node)) {
 			spin_unlock_bh(&hash->list_locks[bucket]);
@@ -2003,10 +2009,10 @@ batadv_mcast_flags_dump_bucket(struct sk_buff *msg, u32 portid,
 
 			return -EMSGSIZE;
 		}
-
-skip:
+		}
+		
 		idx++;
-	}
+	});
 	spin_unlock_bh(&hash->list_locks[bucket]);
 
 	return 0;
@@ -2024,9 +2030,9 @@ skip:
  * Return: 0 or error code.
  */
 static int
-__batadv_mcast_flags_dump(struct sk_buff *msg, u32 portid,
-			  struct netlink_callback *cb,
-			  struct batadv_priv *bat_priv, long *bucket, long *idx)
+__batadv_mcast_flags_dump(sk_buff *msg, portid: u32,
+			  netlink_callback *cb,
+			  batadv_priv *bat_priv, long *bucket, long *idx)
 {
 	struct batadv_hashtable *hash = bat_priv->orig_hash;
 	long bucket_tmp = *bucket;
@@ -2056,9 +2062,10 @@ __batadv_mcast_flags_dump(struct sk_buff *msg, u32 portid,
  * Return: 0 or error code.
  */
 static int
-batadv_mcast_netlink_get_primary(struct netlink_callback *cb,
-				 struct batadv_hard_iface **primary_if)
+batadv_mcast_netlink_get_primary(netlink_callback *cb,
+				 batadv_hard_iface **primary_if)
 {
+	'out: {
 	struct batadv_hard_iface *hard_iface = NULL;
 	struct net_device *mesh_iface;
 	struct batadv_priv *bat_priv;
@@ -2073,10 +2080,10 @@ batadv_mcast_netlink_get_primary(struct netlink_callback *cb,
 	hard_iface = batadv_primary_if_get_selected(bat_priv);
 	if (!hard_iface || hard_iface->if_status != BATADV_IF_ACTIVE) {
 		ret = -ENOENT;
-		goto out;
+		break 'out;
 	}
-
-out:
+	}
+	
 	dev_put(mesh_iface);
 
 	if (!ret && primary_if)
@@ -2094,7 +2101,7 @@ out:
  *
  * Return: message length.
  */
-int batadv_mcast_flags_dump(struct sk_buff *msg, struct netlink_callback *cb)
+int batadv_mcast_flags_dump(sk_buff *msg, netlink_callback *cb)
 {
 	struct batadv_hard_iface *primary_if = NULL;
 	int portid = NETLINK_CB(cb->skb).portid;
@@ -2118,7 +2125,7 @@ int batadv_mcast_flags_dump(struct sk_buff *msg, struct netlink_callback *cb)
  * batadv_mcast_free() - free the multicast optimizations structures
  * @bat_priv: the bat priv with all the mesh interface information
  */
-void batadv_mcast_free(struct batadv_priv *bat_priv)
+void batadv_mcast_free(batadv_priv *bat_priv)
 {
 	disable_delayed_work_sync(&bat_priv->mcast.work);
 
@@ -2134,7 +2141,7 @@ void batadv_mcast_free(struct batadv_priv *bat_priv)
  * batadv_mcast_purge_orig() - reset originator global mcast state modifications
  * @orig: the originator which is going to get purged
  */
-void batadv_mcast_purge_orig(struct batadv_orig_node *orig)
+void batadv_mcast_purge_orig(batadv_orig_node *orig)
 {
 	struct batadv_priv *bat_priv = orig->bat_priv;
 

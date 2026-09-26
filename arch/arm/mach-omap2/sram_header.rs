@@ -51,12 +51,12 @@ unsafe extern "C" {
 }
 
 /* CONFIG_PM conditional: enable the external idle function when configured. */
-#[cfg(feature = "CONFIG_PM")]
-pub unsafe extern "C" {
+#[cfg(CONFIG_PM)]
+unsafe extern "C" {
     pub fn omap_push_sram_idle();
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn omap_push_sram_idle() {}
 

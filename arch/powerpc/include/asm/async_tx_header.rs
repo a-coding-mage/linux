@@ -9,7 +9,7 @@
  * The original header selects this interface when CONFIG_440SPe or
  * CONFIG_440SP is enabled.  These cfg flags preserve that build-time intent.
  */
-#[cfg(any(feature = "CONFIG_440SPe", feature = "CONFIG_440SP"))]
+#[cfg(any(CONFIG_440SPe, CONFIG_440SP))]
 unsafe extern "C" {
     pub fn ppc440spe_async_tx_find_best_channel(
         cap: dma_transaction_type,
@@ -21,7 +21,7 @@ unsafe extern "C" {
     ) -> *mut dma_chan;
 }
 
-#[cfg(any(feature = "CONFIG_440SPe", feature = "CONFIG_440SP"))]
+#[cfg(any(CONFIG_440SPe, CONFIG_440SP))]
 macro_rules! async_tx_find_channel {
     ($dep:expr, $cap:expr, $dst_lst:expr, $dst_cnt:expr, $src_lst:expr,
      $src_cnt:expr, $src_sz:expr) => {
@@ -33,7 +33,7 @@ macro_rules! async_tx_find_channel {
     };
 }
 
-#[cfg(not(any(feature = "CONFIG_440SPe", feature = "CONFIG_440SP")))]
+#[cfg(not(any(CONFIG_440SPe, CONFIG_440SP)))]
 macro_rules! async_tx_find_channel {
     ($dep:expr, $type:expr, $dst:expr, $dst_count:expr, $src:expr,
      $src_count:expr, $len:expr) => {
@@ -41,7 +41,7 @@ macro_rules! async_tx_find_channel {
     };
 }
 
-#[cfg(not(any(feature = "CONFIG_440SPe", feature = "CONFIG_440SP")))]
+#[cfg(not(any(CONFIG_440SPe, CONFIG_440SP)))]
 unsafe extern "C" {
     pub fn __async_tx_find_channel(
         submit: *mut async_submit_ctl,

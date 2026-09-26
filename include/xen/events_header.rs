@@ -112,7 +112,7 @@ pub unsafe fn notify_remote_via_evtchn(port: evtchn_port_t) {
     let _ = HYPERVISOR_event_channel_op(EVTCHNOP_send, &mut send);
 }
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 extern "C" {
     pub fn xen_allocate_pirq_msi(dev: *mut pci_dev, msidesc: *mut msi_desc) -> ::core::ffi::c_int;
     pub fn xen_bind_pirq_msi_to_irq(

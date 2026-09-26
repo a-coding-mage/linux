@@ -19,11 +19,11 @@
 
 pub unsafe fn qnx4_count_free_blocks(sb: *mut super_block) -> ::std::os::raw::c_ulong {
     let mut start: ::std::os::raw::c_int =
-        le32_to_cpu((*qnx4_sb(sb)).BitMap->di_first_xtnt.xtnt_blk) - 1;
+        le32_to_cpu((*(*qnx4_sb(sb)).BitMap).di_first_xtnt.xtnt_blk) - 1;
     let mut total: ::std::os::raw::c_int = 0;
     let mut total_free: ::std::os::raw::c_int = 0;
     let mut offset: ::std::os::raw::c_int = 0;
-    let size: ::std::os::raw::c_int = le32_to_cpu((*qnx4_sb(sb)).BitMap->di_size);
+    let size: ::std::os::raw::c_int = le32_to_cpu((*(*qnx4_sb(sb)).BitMap).di_size);
     let mut bh: *mut buffer_head;
 
     while total < size {
@@ -31,7 +31,7 @@ pub unsafe fn qnx4_count_free_blocks(sb: *mut super_block) -> ::std::os::raw::c_
 
         bh = sb_bread(sb, start + offset);
         if bh.is_null() {
-            printk(KERN_ERR "qnx4: I/O error in counting free blocks\n");
+            printk(c"\x013qnx4: I/O error in counting free blocks\n".as_ptr());
             break;
         }
         total_free += bytes * BITS_PER_BYTE - memweight((*bh).b_data, bytes);

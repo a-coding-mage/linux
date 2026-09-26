@@ -58,22 +58,22 @@ unsafe fn unregister_dca_providers() {
     let domain = list_first_entry::<DcaDomain>(&mut DCA_DOMAINS);
     let mut dca: *mut DcaProvider;
     let mut next: *mut DcaProvider;
-    list_for_each_entry_safe(&mut dca, &mut next, &mut (*domain).dca_providers) {
+    list_for_each_entry_safe!(&mut dca, &mut next, &mut (*domain).dca_providers, {
         list_move(&mut (*dca).node, &mut unregistered_providers);
-    }
+    });
     dca_free_domain(domain);
     raw_spin_unlock_irqrestore(&mut DCA_LOCK, flags);
-    list_for_each_entry_safe(&mut dca, &mut next, &mut unregistered_providers) {
+    list_for_each_entry_safe!(&mut dca, &mut next, &mut unregistered_providers, {
         dca_sysfs_remove_provider(dca);
         list_del(&mut (*dca).node);
-    }
+    });
 }
 
 unsafe fn dca_find_domain(rc: *mut PciBus) -> *mut DcaDomain {
     let mut domain: *mut DcaDomain = core::ptr::null_mut();
-    list_for_each_entry(&mut domain, &DCA_DOMAINS) {
+    list_for_each_entry!(&mut domain, &DCA_DOMAINS, {
         if (*domain).pci_rc == rc { return domain; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -95,9 +95,9 @@ unsafe fn dca_find_provider_by_dev(dev: *mut Device) -> *mut DcaProvider {
         list_first_entry::<DcaDomain>(&mut DCA_DOMAINS)
     };
     let mut dca: *mut DcaProvider = core::ptr::null_mut();
-    list_for_each_entry(&mut dca, &(*domain).dca_providers) {
+    list_for_each_entry!(&mut dca, &(*domain).dca_providers, {
         if dev.is_null() || ((*(*dca).ops).dev_managed)(dca, dev) { return dca; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -109,10 +109,10 @@ pub unsafe fn dca_add_requester(dev: *mut Device) -> i32 {
     if domain.is_null() { raw_spin_unlock_irqrestore(&mut DCA_LOCK, flags); return -ENODEV; }
     let mut slot = -ENODEV;
     let mut dca: *mut DcaProvider = core::ptr::null_mut();
-    list_for_each_entry(&mut dca, &(*domain).dca_providers) {
+    list_for_each_entry!(&mut dca, &(*domain).dca_providers, {
         slot = ((*(*dca).ops).add_requester)(dca, dev);
         if slot >= 0 { break; }
-    }
+    });
     raw_spin_unlock_irqrestore(&mut DCA_LOCK, flags);
     if slot < 0 { return slot; }
     let err = dca_sysfs_add_req(dca, dev, slot);

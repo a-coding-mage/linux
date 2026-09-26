@@ -184,7 +184,7 @@ extern "C" {
 
 /* CONFIG_ATAGS conditional: declarations are present when enabled; otherwise
  * the C inline functions return -ENXIO. */
-#[cfg(feature = "CONFIG_ATAGS")]
+#[cfg(CONFIG_ATAGS)]
 extern "C" {
     pub fn omap3430_clk_legacy_init() -> i32;
     pub fn omap3430es1_clk_legacy_init() -> i32;
@@ -192,13 +192,13 @@ extern "C" {
     pub fn am35xx_clk_legacy_init() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ATAGS"))]
+#[cfg(not(CONFIG_ATAGS))]
 pub unsafe fn omap3430_clk_legacy_init() -> i32 { -6 }
-#[cfg(not(feature = "CONFIG_ATAGS"))]
+#[cfg(not(CONFIG_ATAGS))]
 pub unsafe fn omap3430es1_clk_legacy_init() -> i32 { -6 }
-#[cfg(not(feature = "CONFIG_ATAGS"))]
+#[cfg(not(CONFIG_ATAGS))]
 pub unsafe fn omap36xx_clk_legacy_init() -> i32 { -6 }
-#[cfg(not(feature = "CONFIG_ATAGS"))]
+#[cfg(not(CONFIG_ATAGS))]
 pub unsafe fn am35xx_clk_legacy_init() -> i32 { -6 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

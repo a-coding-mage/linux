@@ -82,7 +82,7 @@ unsafe fn numa_enforce_memory_limit(start:usize,size:usize)->usize { let end=mem
 
 // Remaining initialization and hotplug entry points retain the C control-flow
 // structure and call the corresponding kernel facilities supplied elsewhere.
-#[no_mangle] pub unsafe extern "C" fn mem_topology_setup() { max_low_pfn=memblock_end_of_DRAM()>>PAGE_SHIFT; max_pfn=max_low_pfn; min_low_pfn=MEMORY_START>>PAGE_SHIFT; node_set_offline(0); if parse_numa_properties()!=0 { setup_nonnuma(); } nodes_and(node_possible_map,node_possible_map,node_online_map); find_possible_nodes(); setup_node_to_cpumask_map(); reset_numa_cpu_lookup_table(); for_each_possible_cpu!(cpu) { numa_setup_cpu(cpu); } }
+#[no_mangle] pub unsafe extern "C" fn mem_topology_setup() { max_low_pfn=memblock_end_of_DRAM()>>PAGE_SHIFT; max_pfn=max_low_pfn; min_low_pfn=MEMORY_START>>PAGE_SHIFT; node_set_offline(0); if parse_numa_properties()!=0 { setup_nonnuma(); } nodes_and(node_possible_map,node_possible_map,node_online_map); find_possible_nodes(); setup_node_to_cpumask_map(); reset_numa_cpu_lookup_table(); for_each_possible_cpu!(cpu, { numa_setup_cpu(cpu); }); }
 
 // External declarations corresponding to symbols supplied by the kernel.
 extern "C" { static mut nr_node_ids:c_int; static mut node_possible_map:*mut c_void; static mut node_online_map:*mut c_void; static mut max_low_pfn:usize; static mut max_pfn:usize; static mut min_low_pfn:usize; }

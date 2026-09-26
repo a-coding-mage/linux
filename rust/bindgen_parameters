@@ -18,6 +18,9 @@
 # layout and the fifth argument's original normalized CFI signature manually.
 --blocklist-function ^bsearch$
 
+# Preserve nullable sort callbacks and each enclosing CFI signature.
+--blocklist-function '^sort(_r)?(_nonatomic)?$'
+
 --opaque-type xregs_state
 --opaque-type desc_struct
 --opaque-type arch_lbr_state

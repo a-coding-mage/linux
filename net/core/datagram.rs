@@ -48,14 +48,14 @@ pub unsafe extern "C" fn __skb_try_recv_from_queue(queue: *mut sk_buff_head, fla
     let mut off_local = 0;
     if flags & MSG_PEEK != 0 && *off >= 0 { peek_at_off = true; off_local = *off; }
     *last = (*queue).prev;
-    skb_queue_walk(queue, skb) {
+    skb_queue_walk!(queue, skb, {
         if flags & MSG_PEEK != 0 {
             if peek_at_off && off_local >= (*skb).len as i32 && (off_local != 0 || (*skb).peeked != 0) { off_local -= (*skb).len as i32; continue; }
             if (*skb).len == 0 { skb = skb_set_peeked(skb); if IS_ERR(skb) { *err = PTR_ERR(skb); return core::ptr::null_mut(); } }
             refcount_inc(&mut (*skb).users);
         } else { __skb_unlink(skb, queue); }
         *off = off_local; return skb;
-    }
+    });
     core::ptr::null_mut()
 }
 

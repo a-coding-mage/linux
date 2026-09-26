@@ -45,13 +45,13 @@ macro_rules! user_ok {
         // movi $at, __XTENSA_UL_CONST(TASK_SIZE)
         $at = __XTENSA_UL_CONST(TASK_SIZE);
         // bgeu $as, $at, $error
-        if ($as as usize) >= ($at as usize) {
+        if ($as $as usize) >= ($at $as usize) {
             $error;
         }
         // sub $at, $at, $as
         $at = $at.wrapping_sub($as);
         // bgeu $aa, $at, $error
-        if ($aa as usize) >= ($at as usize) {
+        if ($aa $as usize) >= ($at $as usize) {
             $error;
         }
     }};

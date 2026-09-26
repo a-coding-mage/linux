@@ -14,6 +14,9 @@ unsafe fn ps3_register_lpm_devices() -> i32 {
     let mut tmp1: u64 = 0;
     let mut tmp2: u64 = 0;
     let dev = kzalloc_obj::<ps3_system_bus_device>();
+    'fail_read_repo: {
+    'fail_rights: {
+    'fail_register: {
     if dev.is_null() { return -ENOMEM; }
     (*dev).match_id = PS3_MATCH_ID_LPM;
     (*dev).dev_type = PS3_DEVICE_TYPE_LPM;
@@ -22,16 +25,17 @@ unsafe fn ps3_register_lpm_devices() -> i32 {
     result = ps3_repository_read_lpm_privileges((*dev).lpm.node_id, &mut tmp1, &mut (*dev).lpm.rights);
     if result != 0 { goto_fail_read_repo!(); }
     lv1_get_logical_partition_id(&mut tmp2);
-    if tmp1 != tmp2 { result = -ENODEV; goto fail_rights; }
-    if ((*dev).lpm.rights & PS3_LPM_RIGHTS_USE_LPM) == 0 { result = -EPERM; goto fail_rights; }
+    if tmp1 != tmp2 { result = -ENODEV; break 'fail_rights; }
+    if ((*dev).lpm.rights & PS3_LPM_RIGHTS_USE_LPM) == 0 { result = -EPERM; break 'fail_rights; }
     result = ps3_repository_read_pu_id(0, &mut (*dev).lpm.pu_id);
-    if result != 0 { goto fail_read_repo; }
+    if result != 0 { break 'fail_read_repo; }
     result = ps3_system_bus_device_register(dev);
-    if result != 0 { goto fail_register; }
+    if result != 0 { break 'fail_register; }
     return 0;
-fail_register:
-fail_rights:
-fail_read_repo:
+    }
+    }
+    }
+    
     kfree(dev as *mut _);
     result
 }
@@ -39,6 +43,9 @@ fail_read_repo:
 unsafe fn ps3_setup_gelic_device(repo: *const ps3_repository_device) -> i32 {
     let mut result: i32;
     let p = kzalloc_obj::<GelicLayout>();
+    'fail_find_interrupt: {
+    'fail_dma_init: {
+    'fail_device_register: {
     if p.is_null() { return -ENOMEM; }
     BUG_ON((*repo).bus_type != PS3_BUS_TYPE_SB);
     BUG_ON((*repo).dev_type != PS3_DEV_TYPE_SB_GELIC);
@@ -48,16 +55,17 @@ unsafe fn ps3_setup_gelic_device(repo: *const ps3_repository_device) -> i32 {
     (*p).dev.dev_id = (*repo).dev_id;
     (*p).dev.d_region = &mut (*p).d_region;
     result = ps3_repository_find_interrupt(repo, PS3_INTERRUPT_TYPE_EVENT_PORT, &mut (*p).dev.interrupt_id);
-    if result != 0 { goto fail_find_interrupt; }
+    if result != 0 { break 'fail_find_interrupt; }
     BUG_ON((*p).dev.interrupt_id != 0);
     result = ps3_dma_region_init(&mut (*p).dev, (*p).dev.d_region, PS3_DMA_64K, PS3_DMA_OTHER, core::ptr::null_mut(), 0);
-    if result != 0 { goto fail_dma_init; }
+    if result != 0 { break 'fail_dma_init; }
     result = ps3_system_bus_device_register(&mut (*p).dev);
-    if result != 0 { goto fail_device_register; }
+    if result != 0 { break 'fail_device_register; }
     return result;
-fail_device_register:
-fail_dma_init:
-fail_find_interrupt:
+    }
+    }
+    }
+    
     kfree(p as *mut _);
     -ENOMEM
 }
@@ -65,23 +73,33 @@ fail_find_interrupt:
 unsafe fn ps3_setup_uhc_device(repo: *const ps3_repository_device, match_id: ps3_match_id, interrupt_type: ps3_interrupt_type, reg_type: ps3_reg_type) -> i32 {
     let mut result: i32; let mut bus_addr = 0u64; let mut len = 0u64;
     let p = kzalloc_obj::<UhcLayout>();
+    'fail_find_interrupt: {
+    'fail_find_reg: {
+    'fail_dma_init: {
+    'fail_mmio_init: {
+    'fail_device_register: {
     if p.is_null() { return -ENOMEM; }
     BUG_ON((*repo).bus_type != PS3_BUS_TYPE_SB); BUG_ON((*repo).dev_type != PS3_DEV_TYPE_SB_USB);
     (*p).dev.match_id = match_id; (*p).dev.dev_type = PS3_DEVICE_TYPE_SB;
     (*p).dev.bus_id = (*repo).bus_id; (*p).dev.dev_id = (*repo).dev_id;
     (*p).dev.d_region = &mut (*p).d_region; (*p).dev.m_region = &mut (*p).m_region;
     result = ps3_repository_find_interrupt(repo, interrupt_type, &mut (*p).dev.interrupt_id);
-    if result != 0 { goto fail_find_interrupt; }
+    if result != 0 { break 'fail_find_interrupt; }
     result = ps3_repository_find_reg(repo, reg_type, &mut bus_addr, &mut len);
-    if result != 0 { goto fail_find_reg; }
+    if result != 0 { break 'fail_find_reg; }
     result = ps3_dma_region_init(&mut (*p).dev, (*p).dev.d_region, PS3_DMA_64K, PS3_DMA_INTERNAL, core::ptr::null_mut(), 0);
-    if result != 0 { goto fail_dma_init; }
+    if result != 0 { break 'fail_dma_init; }
     result = ps3_mmio_region_init(&mut (*p).dev, (*p).dev.m_region, bus_addr, len, PS3_MMIO_4K);
-    if result != 0 { goto fail_mmio_init; }
+    if result != 0 { break 'fail_mmio_init; }
     result = ps3_system_bus_device_register(&mut (*p).dev);
-    if result != 0 { goto fail_device_register; }
+    if result != 0 { break 'fail_device_register; }
     return result;
-fail_device_register: fail_mmio_init: fail_dma_init: fail_find_reg: fail_find_interrupt:
+    }
+    }
+    }
+    }
+    }
+    
     kfree(p as *mut _); result
 }
 

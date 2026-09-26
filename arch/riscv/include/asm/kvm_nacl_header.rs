@@ -147,19 +147,19 @@ macro_rules! nacl_csr_read { ($s:expr,$csr:expr) => {{ unsafe {
 }}}; }
 #[macro_export]
 macro_rules! nacl_csr_write { ($s:expr,$csr:expr,$val:expr) => {{ unsafe {
-    let s = $s as *mut u8;
+    let $s = $s as *mut u8;
     let i = SBI_NACL_SHMEM_CSR_INDEX($csr) as usize;
-    let a = s.add(SBI_NACL_SHMEM_CSR_OFFSET) as *mut __lelong;
-    let b = s.add(SBI_NACL_SHMEM_DBITMAP_OFFSET);
+    let a = $s.add(SBI_NACL_SHMEM_CSR_OFFSET) as *mut __lelong;
+    let b = $s.add(SBI_NACL_SHMEM_DBITMAP_OFFSET);
     *a.add(i) = cpu_to_lelong($val);
     *b.add(i >> 3) |= 1u8 << (i & 0x7);
 }}}; }
 #[macro_export]
 macro_rules! nacl_csr_swap { ($s:expr,$csr:expr,$val:expr) => {{ unsafe {
-    let s = $s as *mut u8;
+    let $s = $s as *mut u8;
     let i = SBI_NACL_SHMEM_CSR_INDEX($csr) as usize;
-    let a = s.add(SBI_NACL_SHMEM_CSR_OFFSET) as *mut __lelong;
-    let b = s.add(SBI_NACL_SHMEM_DBITMAP_OFFSET);
+    let a = $s.add(SBI_NACL_SHMEM_CSR_OFFSET) as *mut __lelong;
+    let b = $s.add(SBI_NACL_SHMEM_DBITMAP_OFFSET);
     let r = lelong_to_cpu(*a.add(i));
     *a.add(i) = cpu_to_lelong($val);
     *b.add(i >> 3) |= 1u8 << (i & 0x7);

@@ -73,8 +73,8 @@ pub unsafe fn add_type_attr(mut typ: tree, attr: *const i8, args: tree) {
 #[macro_export] macro_rules! TYPE_NAME_POINTER { ($node:expr) => { IDENTIFIER_POINTER(TYPE_NAME($node)) }; }
 #[macro_export] macro_rules! TYPE_NAME_LENGTH { ($node:expr) => { IDENTIFIER_LENGTH(TYPE_NAME($node)) }; }
 #[macro_export] macro_rules! C_TYPE_FIELDS_READONLY { ($typ:expr) => { TREE_LANG_FLAG_1($typ) }; }
-#[macro_export] macro_rules! PASS_INFO { ($name:ident, $reference:expr, $id:expr, $pos:expr) => {
-    pub static mut $name##_pass_info: register_pass_info = register_pass_info { pass: make_$name##_pass(), reference_pass_name: $reference, ref_pass_instance_number: $id, pos_op: $pos };
+#[macro_export] macro_rules! PASS_INFO { ($name:tt, $reference:expr, $id:expr, $pos:expr) => {
+    pub static mut ::kernel::macros::paste!([<$name _pass_info>]): register_pass_info = register_pass_info { pass: make_::kernel::macros::paste!([<$name _pass>])(), reference_pass_name: $reference, ref_pass_instance_number: $id, pos_op: $pos };
 }; }
 #[macro_export] macro_rules! add_referenced_var { ($var:expr) => {}; }
 #[macro_export] macro_rules! mark_sym_for_renaming { ($var:expr) => {}; }
@@ -92,7 +92,7 @@ pub const TODO_ggc_collect: i32 = 0;
 #[macro_export] macro_rules! INSN_DELETED_P { ($insn:expr) => { (*$insn).deleted() }; }
 #[inline] pub unsafe fn get_decl_section_name(decl: const_tree) -> *const i8 { DECL_SECTION_NAME(decl) }
 
-#[inline] pub unsafe fn change_decl_assembler_name(decl: tree, name: tree) { symtab->change_decl_assembler_name(decl, name); }
+#[inline] pub unsafe fn change_decl_assembler_name(decl: tree, name: tree) { (*symtab).change_decl_assembler_name(decl, name); }
 #[inline] pub unsafe fn varpool_finalize_decl(decl: tree) { varpool_node::finalize_decl(decl); }
 #[inline] pub unsafe fn varpool_add_new_variable(decl: tree) { varpool_node::add(decl); }
 #[inline] pub unsafe fn rebuild_cgraph_edges() -> u32 { cgraph_edge::rebuild_edges() }

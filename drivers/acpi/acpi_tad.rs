@@ -100,20 +100,20 @@ unsafe fn acpi_tad_wake_read(dev: *mut device, method: *const c_char, id: u32, o
 }
 unsafe fn acpi_tad_clear_status(dev: *mut device, id: u32) -> c_int { acpi_tad_wake_set(dev, b"_CWS\0".as_ptr() as *const c_char, id, 0) }
 
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 #[repr(C)] struct rtc_time { tm_sec: c_int, tm_min: c_int, tm_hour: c_int, tm_mday: c_int, tm_mon: c_int, tm_year: c_int, tm_wday: c_int, tm_yday: c_int, tm_isdst: c_int }
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 #[repr(C)] struct rtc_wkalrm { time: rtc_time, enabled: u8, pending: u8 }
 
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 unsafe fn acpi_tad_rt_to_tm(rt: *mut acpi_tad_rt, tm: *mut rtc_time) { (*tm).tm_year=(*rt).year as c_int-1900; (*tm).tm_mon=(*rt).month as c_int-1; (*tm).tm_mday=(*rt).day as c_int; (*tm).tm_hour=(*rt).hour as c_int; (*tm).tm_min=(*rt).minute as c_int; (*tm).tm_sec=(*rt).second as c_int; (*tm).tm_isdst=((*rt).daylight==ACPI_TAD_TIME_ISDST) as c_int; }
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 unsafe fn acpi_tad_rtc_set_time(dev: *mut device, tm: *mut rtc_time) -> c_int { let mut rt=acpi_tad_rt{year:(*tm).tm_year as u16+1900,month:(*tm).tm_mon as u8+1,day:(*tm).tm_mday as u8,hour:(*tm).tm_hour as u8,minute:(*tm).tm_min as u8,second:(*tm).tm_sec as u8,valid:0,msec:0,tz:ACPI_TAD_TZ_UNSPEC,daylight:ACPI_TAD_TIME_ISDST*(((*tm).tm_isdst)!=0) as u8,padding:[0;3]}; acpi_tad_set_real_time(dev,&mut rt) }
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 unsafe fn acpi_tad_rtc_read_time(dev: *mut device, tm: *mut rtc_time) -> c_int { let mut rt=core::mem::zeroed(); let r=acpi_tad_get_real_time(dev,&mut rt); if r==0 { acpi_tad_rt_to_tm(&mut rt,tm); } r }
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 unsafe fn acpi_tad_rtc_set_alarm(_dev: *mut device, _t: *mut rtc_wkalrm) -> c_int { 0 }
-#[cfg(feature = "CONFIG_RTC_CLASS")]
+#[cfg(CONFIG_RTC_CLASS)]
 unsafe fn acpi_tad_rtc_read_alarm(_dev: *mut device, _t: *mut rtc_wkalrm) -> c_int { 0 }
 
 unsafe fn acpi_tad_remove(dev: *mut device) {

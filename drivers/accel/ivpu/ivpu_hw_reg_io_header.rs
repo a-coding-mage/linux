@@ -30,26 +30,26 @@ macro_rules! REGV_WR64 { ($reg:expr, $val:expr) => { ivpu_hw_reg_wr64(vdev, vdev
 macro_rules! REGV_WR32I { ($reg:expr, $stride:expr, $index:expr, $val:expr) => { ivpu_hw_reg_wr32_index(vdev, vdev.regv, $reg, $stride, $index, $val, stringify!($reg), module_path!()) }; }
 
 #[macro_export]
-macro_rules! REG_FLD { ($reg:ident, $fld:ident) => { $reg::$fld##_MASK }; }
+macro_rules! REG_FLD { ($reg:ident, $fld:tt) => { $reg::::kernel::macros::paste!([<$fld _MASK>]) }; }
 #[macro_export]
-macro_rules! REG_FLD_NUM { ($reg:ident, $fld:ident, $num:expr) => { FIELD_PREP($reg::$fld##_MASK, $num) }; }
+macro_rules! REG_FLD_NUM { ($reg:ident, $fld:tt, $num:expr) => { FIELD_PREP($reg::::kernel::macros::paste!([<$fld _MASK>]), $num) }; }
 #[macro_export]
-macro_rules! REG_GET_FLD { ($reg:ident, $fld:ident, $val:expr) => { FIELD_GET($reg::$fld##_MASK, $val) }; }
+macro_rules! REG_GET_FLD { ($reg:ident, $fld:tt, $val:expr) => { FIELD_GET($reg::::kernel::macros::paste!([<$fld _MASK>]), $val) }; }
 #[macro_export]
-macro_rules! REG_CLR_FLD { ($reg:ident, $fld:ident, $val:expr) => { ($val) & !($reg::$fld##_MASK) }; }
+macro_rules! REG_CLR_FLD { ($reg:ident, $fld:tt, $val:expr) => { ($val) & !($reg::::kernel::macros::paste!([<$fld _MASK>])) }; }
 #[macro_export]
-macro_rules! REG_SET_FLD { ($reg:ident, $fld:ident, $val:expr) => { ($val) | ($reg::$fld##_MASK) }; }
+macro_rules! REG_SET_FLD { ($reg:ident, $fld:tt, $val:expr) => { ($val) | ($reg::::kernel::macros::paste!([<$fld _MASK>])) }; }
 #[macro_export]
-macro_rules! REG_SET_FLD_NUM { ($reg:ident, $fld:ident, $num:expr, $val:expr) => { (($val) & !($reg::$fld##_MASK)) | FIELD_PREP($reg::$fld##_MASK, $num) }; }
+macro_rules! REG_SET_FLD_NUM { ($reg:ident, $fld:tt, $num:expr, $val:expr) => { (($val) & !($reg::::kernel::macros::paste!([<$fld _MASK>]))) | FIELD_PREP($reg::::kernel::macros::paste!([<$fld _MASK>]), $num) }; }
 #[macro_export]
-macro_rules! REG_TEST_FLD { ($reg:ident, $fld:ident, $val:expr) => { ($reg::$fld##_MASK) == (($val) & ($reg::$fld##_MASK)) }; }
+macro_rules! REG_TEST_FLD { ($reg:ident, $fld:tt, $val:expr) => { ($reg::::kernel::macros::paste!([<$fld _MASK>])) == (($val) & ($reg::::kernel::macros::paste!([<$fld _MASK>]))) }; }
 #[macro_export]
-macro_rules! REG_TEST_FLD_NUM { ($reg:ident, $fld:ident, $num:expr, $val:expr) => { ($num) == FIELD_GET($reg::$fld##_MASK, $val) }; }
+macro_rules! REG_TEST_FLD_NUM { ($reg:ident, $fld:tt, $num:expr, $val:expr) => { ($num) == FIELD_GET($reg::::kernel::macros::paste!([<$fld _MASK>]), $val) }; }
 
 #[macro_export]
-macro_rules! REGB_POLL_FLD { ($reg:ident, $fld:ident, $exp:expr, $timeout:expr) => { ivpu_hw_reg_poll_fld(vdev, vdev.regb, $reg, $reg::$fld##_MASK, FIELD_PREP($reg::$fld##_MASK, $exp), $timeout, module_path!(), stringify!($reg), stringify!($fld)) }; }
+macro_rules! REGB_POLL_FLD { ($reg:ident, $fld:tt, $exp:expr, $timeout:expr) => { ivpu_hw_reg_poll_fld(vdev, vdev.regb, $reg, $reg::::kernel::macros::paste!([<$fld _MASK>]), FIELD_PREP($reg::::kernel::macros::paste!([<$fld _MASK>]), $exp), $timeout, module_path!(), stringify!($reg), stringify!($fld)) }; }
 #[macro_export]
-macro_rules! REGV_POLL_FLD { ($reg:ident, $fld:ident, $exp:expr, $timeout:expr) => { ivpu_hw_reg_poll_fld(vdev, vdev.regv, $reg, $reg::$fld##_MASK, FIELD_PREP($reg::$fld##_MASK, $exp), $timeout, module_path!(), stringify!($reg), stringify!($fld)) }; }
+macro_rules! REGV_POLL_FLD { ($reg:ident, $fld:tt, $exp:expr, $timeout:expr) => { ivpu_hw_reg_poll_fld(vdev, vdev.regv, $reg, $reg::::kernel::macros::paste!([<$fld _MASK>]), FIELD_PREP($reg::::kernel::macros::paste!([<$fld _MASK>]), $exp), $timeout, module_path!(), stringify!($reg), stringify!($fld)) }; }
 
 extern "C" {
     pub static mut ivpu_hw_failure: fault_attr;

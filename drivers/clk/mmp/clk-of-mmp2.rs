@@ -105,9 +105,9 @@ extern "C" {
     static mut apbc_mux_clks: [mmp_param_mux_clk; 9];
     static mut apbc_gate_clks: [mmp_param_gate_clk; 25];
     static mut mmp3_apbc_gate_clks: [mmp_param_gate_clk; 3];
-    fn mmp2_axi_periph_clk_init(*mut mmp2_clk_unit);
-    fn mmp2_clk_reset_init(*mut device_node, *mut mmp2_clk_unit);
-    fn mmp2_pm_domain_init(*mut device_node, *mut mmp2_clk_unit);
+    fn mmp2_axi_periph_clk_init(_: *mut mmp2_clk_unit);
+    fn mmp2_clk_reset_init(_: *mut device_node, _: *mut mmp2_clk_unit);
+    fn mmp2_pm_domain_init(_: *mut device_node, _: *mut mmp2_clk_unit);
 }
 
 unsafe fn mmp2_main_clk_init(pxa_unit: *mut mmp2_clk_unit) {

@@ -98,7 +98,7 @@ unsafe fn __qat_bl_sgl_to_bufl(
     }
 
     left = sskip;
-    for_each_sg(sgl, sg, n, i) {
+    for_each_sg!(sgl, sg, n, i, {
         let y = sg_nctr;
         if (*sg).length == 0 { continue; }
         if left >= (*sg).length { left -= (*sg).length; continue; }
@@ -108,7 +108,7 @@ unsafe fn __qat_bl_sgl_to_bufl(
         if unlikely(dma_mapping_error(dev, (*bufl).buffers[y as usize].addr)) { goto_err_in!(); }
         sg_nctr += 1;
         if left != 0 { (*bufl).buffers[y as usize].len -= left; left = 0; }
-    }
+    });
     (*bufl).num_bufs = sg_nctr;
     blp = dma_map_single(dev, bufl, sz, DMA_TO_DEVICE);
     if unlikely(dma_mapping_error(dev, blp)) { goto_err_in!(); }
@@ -134,7 +134,7 @@ unsafe fn __qat_bl_sgl_to_bufl(
         let buffers = (*buflout).buffers;
         i = 0;
         while i < n { buffers[i as usize].addr = DMA_MAPPING_ERROR; i += 1; }
-        for_each_sg(sglout, sg, n_sglout, i) {
+        for_each_sg!(sglout, sg, n_sglout, i, {
             let y = sg_nctr;
             if (*sg).length == 0 { continue; }
             if left >= (*sg).length { left -= (*sg).length; continue; }
@@ -143,7 +143,7 @@ unsafe fn __qat_bl_sgl_to_bufl(
             buffers[y as usize].len = (*sg).length;
             sg_nctr += 1;
             if left != 0 { buffers[y as usize].len -= left; left = 0; }
-        }
+        });
         if extra_buff != 0 { buffers[sg_nctr as usize].addr = extra_dst_buff; buffers[sg_nctr as usize].len = sz_extra_dst_buff; }
         (*buflout).num_bufs = sg_nctr + extra_buff;
         (*buflout).num_mapped_bufs = sg_nctr;

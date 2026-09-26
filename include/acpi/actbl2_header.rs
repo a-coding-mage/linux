@@ -96,7 +96,7 @@ pub struct acpi_table_aest {
 
 #[repr(C, packed)]
 pub struct acpi_aest_hdr {
-    pub type: u8;
+    pub r#type: u8;
     pub length: u16;
     pub reserved: u8;
     pub node_specific_offset: u32;
@@ -237,7 +237,7 @@ pub struct acpi_aest_proxy {
 
 #[repr(C, packed)]
 pub struct acpi_aest_node_interface {
-    pub type: u8;
+    pub r#type: u8;
     pub reserved: [u8; 3];
     pub flags: u32;
     pub address: u64;
@@ -252,7 +252,7 @@ pub struct acpi_aest_node_interface {
 
 #[repr(C, packed)]
 pub struct acpi_aest_node_interface_header {
-    pub type: u8;
+    pub r#type: u8;
     pub group_format: u8;
     pub reserved: [u8; 2];
     pub flags: u32;
@@ -309,7 +309,7 @@ pub const ACPI_AEST_XFACE_RESERVED: u64 = 3   /* 2 and above are reserved */;
 
 #[repr(C, packed)]
 pub struct acpi_aest_node_interrupt {
-    pub type: u8;
+    pub r#type: u8;
     pub reserved: [u8; 2];
     pub flags: u8;
     pub gsiv: u32;
@@ -321,7 +321,7 @@ pub struct acpi_aest_node_interrupt {
 
 #[repr(C, packed)]
 pub struct acpi_aest_node_interrupt_v2 {
-    pub type: u8;
+    pub r#type: u8;
     pub reserved: [u8; 2];
     pub flags: u8;
     pub gsiv: u32;
@@ -378,7 +378,7 @@ pub const ACPI_APMT_NODE_ID_LENGTH: u64 = 4;
 pub struct acpi_apmt_node {
     pub length: u16;
     pub flags: u8;
-    pub type: u8;
+    pub r#type: u8;
     pub id: u32;
     pub inst_primary: u64;
     pub inst_secondary: u32;
@@ -694,7 +694,7 @@ pub struct acpi_table_iort {
  */
 #[repr(C, packed)]
 pub struct acpi_iort_node {
-    pub type: u8;
+    pub r#type: u8;
     pub length: u16;
     pub revision: u8;
     pub identifier: u32;
@@ -933,7 +933,7 @@ pub struct acpi_table_iovt {
 
 #[repr(C, packed)]
 pub struct acpi_iovt_header {
-    pub type: u16;
+    pub r#type: u16;
     pub length: u16;
 };
 
@@ -970,7 +970,7 @@ pub struct acpi_iovt_iommu {
 
 #[repr(C, packed)]
 pub struct acpi_iovt_device_entry {
-    pub type: u8;
+    pub r#type: u8;
     pub length: u8;
     pub flags: u8;
     pub reserved: [u8; 3];
@@ -1012,7 +1012,7 @@ pub const ACPI_IVRS_ATS_RESERVED: u64 = 0x00400000	/* ATS address translation ra
 
 #[repr(C, packed)]
 pub struct acpi_ivrs_header {
-    pub type: u8;		/* Subtable type */
+    pub r#type: u8;		/* Subtable type */
     pub flags: u8;
     pub length: u16;		/* Subtable length */
     pub device_id: u16;		/* ID of IOMMU */
@@ -1088,7 +1088,7 @@ pub const ACPI_IVHD_UNIT_ID_MASK: u64 = 0x1F00	/* 5 bits, unit_ID */;
  */
 #[repr(C, packed)]
 pub struct acpi_ivrs_de_header {
-    pub type: u8;
+    pub r#type: u8;
     pub id: u16;
     pub data_setting: u8;
 };
@@ -1225,7 +1225,7 @@ pub struct acpi_table_keyp {
 
 #[repr(C, packed)]
 pub struct acpi_keyp_common_header {
-    pub type: u8;
+    pub r#type: u8;
     pub reserved: u8;
     pub length: u16;
 };
@@ -1286,7 +1286,7 @@ pub struct acpi_table_lpit {
 
 #[repr(C, packed)]
 pub struct acpi_lpit_header {
-    pub type: u32;		/* Subtable type */
+    pub r#type: u32;		/* Subtable type */
     pub length: u32;		/* Subtable length */
     pub unique_id: u16;
     pub reserved: u16;
@@ -1479,7 +1479,7 @@ pub struct acpi_madt_local_sapic {
 pub struct acpi_madt_interrupt_source {
     pub header: acpi_subtable_header;
     pub inti_flags: u16;
-    pub type: u8;		/* 1=PMI, 2=INIT, 3=corrected */
+    pub r#type: u8;		/* 1=PMI, 2=INIT, 3=corrected */
     pub id: u8;			/* Processor ID */
     pub eid: u8;			/* Processor EID */
     pub io_sapic_vector: u8;	/* Vector value for PMI interrupts */
@@ -2324,7 +2324,7 @@ pub struct acpi_table_nfit {
 
 #[repr(C, packed)]
 pub struct acpi_nfit_header {
-    pub type: u16;
+    pub r#type: u16;
     pub length: u16;
 };
 
@@ -2656,7 +2656,7 @@ pub const ACPI_NHLT_ARRAYTYPE_VENDOR: u64 = 0xF;
 
 #[repr(C, packed)]
 pub struct acpi_nhlt_vendor_mic_config {
-    pub type: u8;
+    pub r#type: u8;
     pub panel: u8;
     pub speaker_position_distance: u16;		/* mm */
     pub horizontal_offset: u16;			/* mm */
@@ -2702,7 +2702,7 @@ pub struct acpi_nhlt_vendor_micdevice_config {
 
 union acpi_nhlt_device_config {
     pub virtual_slot: u8;
-    pub gen: acpi_nhlt_gendevice_config;
+    pub r#gen: acpi_nhlt_gendevice_config;
     pub mic: acpi_nhlt_micdevice_config;
     pub vendor_mic: acpi_nhlt_vendor_micdevice_config;
 };
@@ -2990,7 +2990,7 @@ pub struct acpi_table_phat {
 
 #[repr(C, packed)]
 pub struct acpi_phat_header {
-    pub type: u16;
+    pub r#type: u16;
     pub length: u16;
     pub revision: u8;
 };
@@ -3060,7 +3060,7 @@ pub struct acpi_table_pmtt {
 
 #[repr(C, packed)]
 pub struct acpi_pmtt_header {
-    pub type: u8;
+    pub r#type: u8;
     pub reserved1: u8;
     pub length: u16;
     pub flags: u16;
@@ -3335,7 +3335,7 @@ pub struct acpi_rasf_shared_memory {
 
 #[repr(C, packed)]
 pub struct acpi_rasf_parameter_block {
-    pub type: u16;
+    pub r#type: u16;
     pub version: u16;
     pub length: u16;
 };
@@ -3451,7 +3451,7 @@ pub struct acpi_ras2_shmem {
 
 #[repr(C, packed)]
 pub struct acpi_ras2_parameter_block {
-    pub type: u16;
+    pub r#type: u16;
     pub version: u16;
     pub length: u16;
 };
@@ -3602,7 +3602,7 @@ pub const ACPI_RHCT_TIMER_CANNOT_WAKEUP_CPU: u64 = (1);
  */
 #[repr(C, packed)]
 pub struct acpi_rhct_node_header {
-    pub type: u16;
+    pub r#type: u16;
     pub length: u16;
     pub revision: u16;
 };
@@ -3675,7 +3675,7 @@ pub struct acpi_table_rimt {
 
 #[repr(C, packed)]
 pub struct acpi_rimt_node {
-    pub type: u8;
+    pub r#type: u8;
     pub revision: u8;
     pub length: u16;
     pub reserved: u16;
@@ -3790,7 +3790,7 @@ pub struct acpi_table_sdev {
 
 #[repr(C, packed)]
 pub struct acpi_sdev_header {
-    pub type: u8;
+    pub r#type: u8;
     pub flags: u8;
     pub length: u16;
 };
@@ -3907,7 +3907,7 @@ pub struct acpi_table_svkl {
 
 #[repr(C, packed)]
 pub struct acpi_svkl_key {
-    pub type: u16;
+    pub r#type: u16;
     pub format: u16;
     pub size: u32;
     pub address: u64;

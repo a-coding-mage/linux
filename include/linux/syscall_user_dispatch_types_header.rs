@@ -3,7 +3,7 @@
 // Dependency equivalent of: #include <linux/types.h>
 
 // Corresponds to CONFIG_SYSCALL_USER_DISPATCH.
-#[cfg(feature = "CONFIG_SYSCALL_USER_DISPATCH")]
+#[cfg(CONFIG_SYSCALL_USER_DISPATCH)]
 #[repr(C)]
 pub struct syscall_user_dispatch {
     pub selector: *mut core::ffi::c_char,
@@ -12,7 +12,7 @@ pub struct syscall_user_dispatch {
     pub on_dispatch: bool,
 }
 
-#[cfg(not(feature = "CONFIG_SYSCALL_USER_DISPATCH"))]
+#[cfg(not(CONFIG_SYSCALL_USER_DISPATCH))]
 #[repr(C)]
 pub struct syscall_user_dispatch {}
 

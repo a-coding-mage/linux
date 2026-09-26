@@ -28,8 +28,8 @@
 // External dependencies supplied by the surrounding crate.
 
 pub static mut ni_pxi_6225_device_routes: ni_device_routes = ni_device_routes {
-	.device = "pxi-6225",
-	.routes = &[
+	device: "pxi-6225",
+	routes: &[
 		{
 			dest: NI_PFI(0),
 			src: &[

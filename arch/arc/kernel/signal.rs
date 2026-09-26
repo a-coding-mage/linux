@@ -184,10 +184,11 @@ unsafe fn setup_rt_frame(ksig: *mut ksignal, set: *mut sigset_t, regs: *mut pt_r
 }
 
 unsafe fn arc_restart_syscall(ka: *mut k_sigaction, regs: *mut pt_regs) {
-    match (*regs).r0 as isize {
-        -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => (*regs).r0 = (-EINTR) as _,
-        -ERESTARTSYS => { if (*ka).sa.sa_flags & SA_RESTART == 0 { (*regs).r0 = (-EINTR) as _; } else { (*regs).r0 = (*regs).orig_r0; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; } },
-        -ERESTARTNOINTR => { (*regs).r0 = (*regs).orig_r0; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; },
+    // The syscall return value is a negated errno; match on the errno itself.
+    match -((*regs).r0 as isize) {
+        ERESTART_RESTARTBLOCK | ERESTARTNOHAND => (*regs).r0 = (-EINTR) as _,
+        ERESTARTSYS => { if (*ka).sa.sa_flags & SA_RESTART == 0 { (*regs).r0 = (-EINTR) as _; } else { (*regs).r0 = (*regs).orig_r0; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; } },
+        ERESTARTNOINTR => { (*regs).r0 = (*regs).orig_r0; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; },
         _ => {}
     }
 }
@@ -206,9 +207,9 @@ pub unsafe fn do_signal(regs: *mut pt_regs) {
         handle_signal(&mut ksig, regs); return;
     }
     if restart_scall {
-        match (*regs).r0 as isize {
-            -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => { (*regs).r0 = (*regs).orig_r0; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; },
-            -ERESTART_RESTARTBLOCK => { (*regs).r8 = __NR_restart_syscall; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; },
+        match -((*regs).r0 as isize) {
+            ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => { (*regs).r0 = (*regs).orig_r0; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; },
+            ERESTART_RESTARTBLOCK => { (*regs).r8 = __NR_restart_syscall; (*regs).ret -= if is_isa_arcv2() { 2 } else { 4 }; },
             _ => {}
         }
         syscall_wont_restart(regs);

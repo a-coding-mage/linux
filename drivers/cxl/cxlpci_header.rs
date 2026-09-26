@@ -82,7 +82,7 @@ extern "C" {
 }
 
 // CONFIG_CXL_RAS is a build-time condition from the C environment.
-#[cfg(feature = "CONFIG_CXL_RAS")]
+#[cfg(CONFIG_CXL_RAS)]
 extern "C" {
     pub fn cxl_cor_error_detected(pdev: *mut pci_dev);
     pub fn cxl_error_detected(pdev: *mut pci_dev, state: pci_channel_state_t) -> pci_ers_result_t;
@@ -90,11 +90,11 @@ extern "C" {
     pub fn devm_cxl_port_ras_setup(port: *mut cxl_port);
 }
 
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 #[inline]
 pub unsafe fn cxl_cor_error_detected(_pdev: *mut pci_dev) {}
 
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 #[inline]
 pub unsafe fn cxl_error_detected(
     _pdev: *mut pci_dev,
@@ -103,11 +103,11 @@ pub unsafe fn cxl_error_detected(
     PCI_ERS_RESULT_NONE
 }
 
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 #[inline]
 pub unsafe fn devm_cxl_dport_rch_ras_setup(_dport: *mut cxl_dport) {}
 
-#[cfg(not(feature = "CONFIG_CXL_RAS"))]
+#[cfg(not(CONFIG_CXL_RAS))]
 #[inline]
 pub unsafe fn devm_cxl_port_ras_setup(_port: *mut cxl_port) {}
 

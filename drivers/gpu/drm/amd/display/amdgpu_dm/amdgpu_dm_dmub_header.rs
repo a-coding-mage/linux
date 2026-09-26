@@ -72,11 +72,11 @@ pub const FIRMWARE_RAVEN_DMCU: *const c_char = b"amdgpu/raven_dmcu.bin\0".as_ptr
 pub const FIRMWARE_NAVI12_DMCU: *const c_char = b"amdgpu/navi12_dmcu.bin\0".as_ptr().cast();
 
 // The following declarations are conditional on CONFIG_DRM_AMD_DC_KUNIT_TEST.
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub struct dc_context;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub struct dmub_cmd_fused_request;
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 extern "C" {
     pub fn dm_dmub_get_vbios_bounding_box(adev: *mut amdgpu_device) -> *mut core::ffi::c_void;
     pub fn abort_fused_io(ctx: *mut dc_context, request: *const dmub_cmd_fused_request);

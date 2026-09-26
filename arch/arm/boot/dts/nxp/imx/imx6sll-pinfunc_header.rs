@@ -5,7 +5,6 @@
  *
  */
 
-#define __DTS_IMX6SLL_PINFUNC_H
 
 /*
  * The pin function ID is a tuple of

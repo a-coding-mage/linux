@@ -41,7 +41,7 @@ extern "C" {
     fn fat_setattr(_: *mut c_void) -> c_int; fn fat_getattr(_: *mut c_void) -> c_int;
     fn fat_fileattr_get(_: *mut c_void) -> c_int; fn fat_update_time(_: *mut c_void) -> c_int;
     fn fat_fill_super(_: *mut super_block, _: *mut fs_context, _: extern "C" fn(*mut super_block));
-    fn fat_parse_param(_: *mut fs_context, _: *mut fs_parameter, bool) -> c_int;
+    fn fat_parse_param(_: *mut fs_context, _: *mut fs_parameter, _: bool) -> c_int;
     fn fat_reconfigure(_: *mut fs_context) -> c_int; fn fat_free_fc(_: *mut fs_context);
     fn get_tree_bdev(_: *mut fs_context, _: extern "C" fn(*mut super_block, *mut fs_context) -> c_int) -> c_int;
     fn register_filesystem(_: *mut file_system_type) -> c_int; fn unregister_filesystem(_: *mut file_system_type);

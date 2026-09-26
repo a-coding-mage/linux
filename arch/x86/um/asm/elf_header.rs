@@ -9,7 +9,7 @@
 pub const CORE_DUMP_USE_REGSET: bool = true;
 
 // The C header selects this branch with CONFIG_X86_32.
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 mod x86_32 {
     pub const R_386_NONE: u32 = 0;
     pub const R_386_32: u32 = 1;
@@ -39,7 +39,7 @@ mod x86_32 {
     }}; }
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 mod x86_64 {
     pub const R_X86_64_NONE: u32 = 0; pub const R_X86_64_64: u32 = 1; pub const R_X86_64_PC32: u32 = 2; pub const R_X86_64_GOT32: u32 = 3;
     pub const R_X86_64_PLT32: u32 = 4; pub const R_X86_64_COPY: u32 = 5; pub const R_X86_64_GLOB_DAT: u32 = 6; pub const R_X86_64_JUMP_SLOT: u32 = 7;

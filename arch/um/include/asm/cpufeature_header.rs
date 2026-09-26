@@ -22,16 +22,16 @@ macro_rules! x86_cap_flag {
 #[macro_export]
 macro_rules! test_cpu_cap {
     ($c:expr, $bit:expr) => {{
-        // C equivalent: test_bit(bit, (unsigned long *)((c)->x86_capability))
+        // C equivalent: test_bit($bit, (unsigned long *)(($c)->x86_capability))
         unsafe { $crate::test_bit($bit, (*$c).x86_capability.as_ptr() as *mut _) }
     }};
 }
 
 #[macro_export]
 macro_rules! CHECK_BIT_IN_MASK_WORD {
-    ($maskname:ident, $word:expr, $bit:expr) => {
+    ($maskname:tt, $word:tt, $bit:expr) => {
         ((($bit) >> 5) == ($word)
-            && ((1usize << (($bit) & 31)) & $maskname##$word) != 0)
+            && ((1usize << (($bit) & 31)) & ::kernel::macros::paste!([<$maskname $word>])) != 0)
     };
 }
 

@@ -1310,7 +1310,7 @@ unsafe fn test_curve25519_basepoint(test: *mut kunit)
 		let mut in_ = [0u8; CURVE25519_KEY_SIZE];
 		let mut out = [0u8; CURVE25519_KEY_SIZE];
 		let mut out2 = [0u8; CURVE25519_KEY_SIZE];
-		bool ret, ret2;
+		ret: bool, ret2;
 
 		get_random_bytes(in_.as_mut_ptr(), in_.len());
 		ret = curve25519_generate_public(out.as_mut_ptr(), in_.as_ptr());
@@ -1359,8 +1359,8 @@ static CURVE25519_TEST_CASES: &[kunit_case] = &[
 };
 
 static CURVE25519_TEST_SUITE: kunit_suite = kunit_suite {
-	.name = "curve25519",
-	.test_cases = curve25519_test_cases,
+	name: "curve25519",
+	test_cases: curve25519_test_cases,
 };
 kunit_test_suite(curve25519_test_suite);
 

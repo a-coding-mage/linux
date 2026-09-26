@@ -85,9 +85,9 @@ pub struct MachineDesc {
     pub setup_arch: Option<unsafe extern "C" fn()>,
     pub init_irq: Option<unsafe extern "C" fn()>,
     // These callbacks are present when CONFIG_PCI is enabled.
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pub pcibios_fixup_bus: Option<unsafe extern "C" fn(*mut c_void)>,
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pub pcibios_fixup_phb: Option<unsafe extern "C" fn(*mut c_void)>,
     pub get_irq: Option<unsafe extern "C" fn(*mut c_void) -> c_int>,
     pub progress: Option<unsafe extern "C" fn(*const c_char, c_int)>,
@@ -99,9 +99,9 @@ pub static mut mvme2500: MachineDesc = MachineDesc {
     compatible: b"artesyn,MVME2500\0".as_ptr() as *const c_char,
     setup_arch: Some(mvme2500_setup_arch),
     init_irq: Some(mvme2500_pic_init),
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pcibios_fixup_bus: Some(fsl_pcibios_fixup_bus),
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pcibios_fixup_phb: Some(fsl_pcibios_fixup_phb),
     get_irq: Some(mpic_get_irq),
     progress: Some(udbg_progress),

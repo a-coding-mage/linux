@@ -8,17 +8,17 @@
 // dependency: include "fixed31_32.h"
 
 // #define CTX \
-	hubbub2.base.ctx
+// 	hubbub2.base.ctx
 // #define DC_LOGGER \
-	hubbub2.base.ctx.logger
+// 	hubbub2.base.ctx.logger
 // #define REG(reg)\
-	hubbub2.regs.reg
+// 	hubbub2.regs.reg
 
 // #undef FN
 // #define FN(reg_name, field_name) \
-	hubbub2.shifts.field_name, hubbub2.masks.field_name
+// 	hubbub2.shifts.field_name, hubbub2.masks.field_name
 
-unsafe fn dcn60_init_crb(hubbub: *mut struct hubbubhubbub) {
+unsafe fn dcn60_init_crb(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_GET(DCHUBBUB_DET0_CTRL, DET0_SIZE_CURRENT,
@@ -40,7 +40,7 @@ unsafe fn dcn60_init_crb(hubbub: *mut struct hubbubhubbub) {
 			COMPBUF_RESERVED_SPACE_64B, hubbub2.pixel_chunk_size / 32); // 256 64Bytes
 }
 
-unsafe fn dcn60_program_det_segments(hubbub: *mut struct hubbubhubbub, int hubp_inst, u32 det_buffer_size_seg) {
+unsafe fn dcn60_program_det_segments(hubbub: *mut hubbubhubbub, int hubp_inst, det_buffer_size_seg: u32) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	switch (hubp_inst) {
@@ -76,7 +76,7 @@ unsafe fn dcn60_program_det_segments(hubbub: *mut struct hubbubhubbub, int hubp_
 	}
 }
 
-unsafe fn dcn60_program_compbuf_segments(hubbub: *mut struct hubbubhubbub, u32 compbuf_size_seg, bool safe_to_increase) {
+unsafe fn dcn60_program_compbuf_segments(hubbub: *mut hubbubhubbub, compbuf_size_seg: u32, safe_to_increase: bool) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	if (safe_to_increase || compbuf_size_seg <= hubbub2.compbuf_size_segments) {
@@ -94,7 +94,7 @@ unsafe fn dcn60_program_compbuf_segments(hubbub: *mut struct hubbubhubbub, u32 c
 	}
 }
 
-unsafe fn dcn60_wait_for_det_update(hubbub: *mut struct hubbubhubbub, int hubp_inst) {
+unsafe fn dcn60_wait_for_det_update(hubbub: *mut hubbubhubbub, int hubp_inst) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	switch (hubp_inst) {
@@ -116,9 +116,9 @@ unsafe fn dcn60_wait_for_det_update(hubbub: *mut struct hubbubhubbub, int hubp_i
 }
 
 unsafe fn hubbub60_program_urgent_watermarks(
-		hubbub: *mut struct hubbubhubbub,
-		watermarks: *mut union dcn_watermark_setwatermarks,
-		u32 refclk_mhz,
+		hubbub: *mut hubbubhubbub,
+		watermarks: *mut dcn_watermark_setwatermarks,
+		refclk_mhz: u32,
 	safe_to_lower: bool) {
 	(void)refclk_mhz;
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
@@ -237,9 +237,9 @@ unsafe fn hubbub60_program_urgent_watermarks(
 }
 
 unsafe fn hubbub60_program_pstate_watermarks(
-		hubbub: *mut struct hubbubhubbub,
-		watermarks: *mut union dcn_watermark_setwatermarks,
-		u32 refclk_mhz,
+		hubbub: *mut hubbubhubbub,
+		watermarks: *mut dcn_watermark_setwatermarks,
+		refclk_mhz: u32,
 	safe_to_lower: bool) {
 	(void)refclk_mhz;
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
@@ -363,9 +363,9 @@ unsafe fn hubbub60_program_pstate_watermarks(
 }
 
 unsafe fn hubbub60_program_stutter_watermarks(
-		hubbub: *mut struct hubbubhubbub,
-		watermarks: *mut union dcn_watermark_setwatermarks,
-		u32 refclk_mhz,
+		hubbub: *mut hubbubhubbub,
+		watermarks: *mut dcn_watermark_setwatermarks,
+		refclk_mhz: u32,
 	safe_to_lower: bool) {
 	(void)refclk_mhz;
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
@@ -510,9 +510,9 @@ unsafe fn hubbub60_program_stutter_watermarks(
 }
 
 unsafe fn hubbub60_program_watermarks(
-		hubbub: *mut struct hubbubhubbub,
-		watermarks: *mut union dcn_watermark_setwatermarks,
-		u32 refclk_mhz,
+		hubbub: *mut hubbubhubbub,
+		watermarks: *mut dcn_watermark_setwatermarks,
+		refclk_mhz: u32,
 	safe_to_lower: bool) {
 	bool wm_pending = false;
 
@@ -531,7 +531,7 @@ unsafe fn hubbub60_program_watermarks(
 }
 
 /* Copy values from WM set A to all other sets */
-unsafe fn hubbub60_init_watermarks(hubbub: *mut struct hubbubhubbub) {
+unsafe fn hubbub60_init_watermarks(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 reg;
 
@@ -582,7 +582,7 @@ unsafe fn hubbub60_init_watermarks(hubbub: *mut struct hubbubhubbub) {
 	REG_WRITE(DCHUBBUB_ARB_BUFFER_FULLNESS_WATERMARK_B, reg);
 }
 
-unsafe fn hubbub60_force_wm_propagate_to_pipes(hubbub: *mut struct hubbubhubbub) {
+unsafe fn hubbub60_force_wm_propagate_to_pipes(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_SET(DCHUBBUB_ARB_DATA_URGENCY_WATERMARK_A, 0,
@@ -590,12 +590,12 @@ unsafe fn hubbub60_force_wm_propagate_to_pipes(hubbub: *mut struct hubbubhubbub)
 
 }
 
-unsafe fn hubbub60_wm_read_state(hubbub: *mut struct hubbubhubbub,
-	struct dcn_hubbub_wm *wm) {
+unsafe fn hubbub60_wm_read_state(hubbub: *mut hubbubhubbub,
+	dcn_hubbub_wm *wm) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
-	let mut s: *mut struct dcn_hubbub_wm_set;
+	let mut s: *mut dcn_hubbub_wm_set;
 
-	memset(wm, 0, sizeof(struct dcn_hubbub_wm));
+	memset(wm, 0, sizeof(dcn_hubbub_wm));
 
 	s = &wm.sets[0];
 	s.wm_set = 0;
@@ -642,7 +642,7 @@ unsafe fn hubbub60_wm_read_state(hubbub: *mut struct hubbubhubbub,
  * @param hubbub Pointer to the hubbub structure to reset performance monitoring
  * for.
  */
-unsafe fn hubbub60_perfmon_reset(hubbub: *mut struct hubbubhubbub) {
+unsafe fn hubbub60_perfmon_reset(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_WRITE(DC_PERFMON5_PERFMON_CNTL, 0);
@@ -683,7 +683,7 @@ unsafe fn hubbub60_perfmon_reset(hubbub: *mut struct hubbubhubbub) {
  * instance.
  */
 unsafe fn hubbub60_perfmon_start_measuring_memory_latencies(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	/* configure measurement control */
@@ -798,12 +798,12 @@ unsafe fn hubbub60_perfmon_start_measuring_memory_latencies(
  * unsigned integer.
  */
 unsafe fn hubbub60_perfmon_get_memory_latencies_ns(
-		hubbub: *mut struct hubbubhubbub, u32 refclk_mhz,
-		*mut u32min_latency_ns, *mut u32max_latency_ns,
-		*mut u32avg_latency_ns) {
+		hubbub: *mut hubbubhubbub, refclk_mhz: u32,
+		min_latency_ns: *mut u32, max_latency_ns: *mut u32,
+		avg_latency_ns: *mut u32) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 count4 = 0, count5 = 0, count6 = 0, count7 = 0;
-	let mut temp: struct fixed31_32;
+	let mut temp: fixed31_32;
 
 	ASSERT(refclk_mhz != 0);
 	if (refclk_mhz == 0)
@@ -864,7 +864,7 @@ unsafe fn hubbub60_perfmon_get_memory_latencies_ns(
  * instance.
  */
 unsafe fn hubbub60_perfmon_start_measuring_urgent_assertion_count(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	/* configure measurement control */
@@ -952,9 +952,9 @@ unsafe fn hubbub60_perfmon_start_measuring_urgent_assertion_count(
  * have been updated since the last read.
  */
 unsafe fn hubbub60_perfmon_get_urgent_assertion_count(
-		hubbub: *mut struct hubbubhubbub, u32 refclk_mhz,
-		*mut u32assertion_count, *mut u32deassertion_count,
-		*mut u32timestamp_us) {
+		hubbub: *mut hubbubhubbub, refclk_mhz: u32,
+		assertion_count: *mut u32, deassertion_count: *mut u32,
+		timestamp_us: *mut u32) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 count0 = 0, count1 = 0, count4 = 0;
 	bool updated = false;
@@ -1032,8 +1032,8 @@ unsafe fn hubbub60_perfmon_get_urgent_assertion_count(
  * @param params Pointer to the urgent latency measurement parameters.
  */
 unsafe fn hubbub60_perfmon_start_measuring_urgent_ramp_latency(
-		hubbub: *mut struct hubbubhubbub,
-		params: *const struct hubbub_urgent_latency_paramsparams) {
+		hubbub: *mut hubbubhubbub,
+		params: *const hubbub_urgent_latency_paramsparams) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	/* configure measurement control */
@@ -1247,10 +1247,10 @@ unsafe fn hubbub60_perfmon_start_measuring_urgent_ramp_latency(
  * integer.
  */
 unsafe fn hubbub60_perfmon_get_urgent_ramp_latency_ns(
-		hubbub: *mut struct hubbubhubbub, u32 refclk_mhz) {
+		hubbub: *mut hubbubhubbub, refclk_mhz: u32) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 count7 = 0, latency_ns = 0;
-	let mut temp: struct fixed31_32;
+	let mut temp: fixed31_32;
 
 	if (refclk_mhz == 0)
 		return 0;
@@ -1286,7 +1286,7 @@ unsafe fn hubbub60_perfmon_get_urgent_ramp_latency_ns(
  * hubbub60_perfmon_start_measuring_out_of_order_bandwidth() to enable them.
  */
 unsafe fn hubbub60_perfmon_arm_measuring_out_of_order_bandwidth(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	/* configure measurement control */
@@ -1384,7 +1384,7 @@ unsafe fn hubbub60_perfmon_arm_measuring_out_of_order_bandwidth(
  * explicit stop step for the peak-BW path.
  */
 unsafe fn hubbub60_perfmon_start_measuring_out_of_order_bandwidth(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_SET_2(DC_PERFMON5_PERFMON_CNTL, 0,
@@ -1404,11 +1404,11 @@ unsafe fn hubbub60_perfmon_start_measuring_out_of_order_bandwidth(
  * Return: out-of-order bandwidth in Mbps
  */
 unsafe fn hubbub60_perfmon_get_out_of_order_bandwidth_mbps(
-		hubbub: *mut struct hubbubhubbub, u32 refclk_mhz, *mut u32duration_ns) {
+		hubbub: *mut hubbubhubbub, refclk_mhz: u32, duration_ns: *mut u32) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 count0 = 0, count1 = 0, count4 = 0,
 			out_of_order_bandwidth_mbps = 0, measuring_duration_ns = 0;
-	let mut temp: struct fixed31_32;
+	let mut temp: fixed31_32;
 
 	REG_SET(DC_PERFMON5_PERFMON_HI, 0, PERFMON_READ_SEL, 0x0);
 	REG_GET(DC_PERFMON5_PERFMON_LOW, PERFMON_LOW, &count0);
@@ -1462,7 +1462,7 @@ unsafe fn hubbub60_perfmon_get_out_of_order_bandwidth_mbps(
  *        instance.
  */
 unsafe fn hubbub60_perfmon_start_measuring_in_order_bandwidth(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	/* Program Latency Monitor Registers */
@@ -1536,12 +1536,12 @@ unsafe fn hubbub60_perfmon_start_measuring_in_order_bandwidth(
  * @return The in-order bandwidth in Mbps as a 32-bit unsigned integer.
  */
 unsafe fn hubbub60_perfmon_get_in_order_bandwidth_mbps(
-		hubbub: *mut struct hubbubhubbub, u32 refclk_mhz,
-		u32 min_duration_ns, *mut u32duration_ns) {
+		hubbub: *mut hubbubhubbub, refclk_mhz: u32,
+		min_duration_ns: u32, duration_ns: *mut u32) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 count0 = 0, count4 = 0, in_order_bandwidth_mbps = 0,
 			measuring_duration_ns = 0;
-	let mut temp: struct fixed31_32;
+	let mut temp: fixed31_32;
 
 	REG_SET(DC_PERFMON5_PERFMON_HI, 0, PERFMON_READ_SEL, 0x4);
 	REG_GET(DC_PERFMON5_PERFMON_LOW, PERFMON_LOW, &count4);
@@ -1588,7 +1588,7 @@ unsafe fn hubbub60_perfmon_get_in_order_bandwidth_mbps(
  *        instance.
  */
 unsafe fn hubbub60_perfmon_start_measuring_prefetch_data_size(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	/* configure measurement control */
@@ -1642,7 +1642,7 @@ unsafe fn hubbub60_perfmon_start_measuring_prefetch_data_size(
  * @return The prefetch data size in bytes as a 32-bit unsigned integer.
  */
 unsafe fn hubbub60_perfmon_get_prefetch_data_size(
-		hubbub: *mut struct hubbubhubbub) {
+		hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 count0 = 0;
 	u32 prefetch_data_size_bytes = 0;
@@ -1663,7 +1663,7 @@ unsafe fn hubbub60_perfmon_get_prefetch_data_size(
  * @param hubbub Pointer to the hubbub structure representing the
  * hardware instance.
  */
-unsafe fn hubbub60_force_display_nominal_profile(hubbub: *mut struct hubbubhubbub) {
+unsafe fn hubbub60_force_display_nominal_profile(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_UPDATE(DCHUBBUB_ARB_QOS_FORCE, DCHUBBUB_ARB_UTM_FORCE_URGENT, 0);
@@ -1679,7 +1679,7 @@ unsafe fn hubbub60_force_display_nominal_profile(hubbub: *mut struct hubbubhubbu
  * @param hubbub Pointer to the hubbub structure representing the
  * hardware instance.
  */
-unsafe fn hubbub60_force_display_urgent_profile(hubbub: *mut struct hubbubhubbub) {
+unsafe fn hubbub60_force_display_urgent_profile(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_UPDATE(DCHUBBUB_ARB_QOS_FORCE, DCHUBBUB_ARB_UTM_FORCE_URGENT, 1);
@@ -1695,7 +1695,7 @@ unsafe fn hubbub60_force_display_urgent_profile(hubbub: *mut struct hubbubhubbub
  * @param hubbub Pointer to the hubbub structure representing the
  * hardware instance.
  */
-unsafe fn hubbub60_reset_display_qos_profile(hubbub: *mut struct hubbubhubbub) {
+unsafe fn hubbub60_reset_display_qos_profile(hubbub: *mut hubbubhubbub) {
 	let hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
 	REG_UPDATE(DCHUBBUB_ARB_QOS_FORCE, DCHUBBUB_ARB_UTM_FORCE_ENABLE, 0);
@@ -1703,72 +1703,55 @@ unsafe fn hubbub60_reset_display_qos_profile(hubbub: *mut struct hubbubhubbub) {
 }
 
 static const struct hubbub_funcs hubbub60_funcs = {
-	.update_dchub = hubbub2_update_dchub,
-	.init_dchub_sys_ctx = hubbub3_init_dchub_sys_ctx,
-	.init_vm_ctx = hubbub2_init_vm_ctx,
-	.dcc_support_swizzle_addr3 = hubbub401_dcc_support_swizzle,
-	.dcc_support_pixel_format_plane0_plane1 =
-		hubbub401_dcc_support_pixel_format,
-	.get_dcc_compression_cap = hubbub401_get_dcc_compression_cap,
-	.wm_read_state = hubbub60_wm_read_state,
-	.get_dchub_ref_freq = hubbub2_get_dchub_ref_freq,
-	.program_watermarks = hubbub60_program_watermarks,
-	.allow_self_refresh_control = hubbub1_allow_self_refresh_control,
-	.is_allow_self_refresh_enabled = hubbub1_is_allow_self_refresh_enabled,
-	.verify_allow_pstate_change_high = core::ptr::null_mut(),
-	.force_wm_propagate_to_pipes = hubbub60_force_wm_propagate_to_pipes,
-	.force_pstate_change_control = hubbub3_force_pstate_change_control,
-	.init_watermarks = hubbub60_init_watermarks,
-	.init_crb = dcn60_init_crb,
-	.hubbub_read_state = hubbub2_read_state,
-	.force_usr_retraining_allow = core::ptr::null_mut(),
-	.set_request_limit = hubbub32_set_request_limit,
-	.program_det_segments = dcn60_program_det_segments,
-	.program_compbuf_segments = dcn60_program_compbuf_segments,
-	.wait_for_det_update = dcn60_wait_for_det_update,
-	.program_arbiter = dcn401_program_arbiter,
-	.hubbub_read_reg_state = hubbub3_read_reg_state,
-	.perfmon = {
-		.reset = hubbub60_perfmon_reset,
-		.start_measuring_memory_latencies =
-			hubbub60_perfmon_start_measuring_memory_latencies,
-		.get_memory_latencies_ns =
-			hubbub60_perfmon_get_memory_latencies_ns,
-		.start_measuring_urgent_assertion_count =
-			hubbub60_perfmon_start_measuring_urgent_assertion_count,
-		.get_urgent_assertion_count =
-			hubbub60_perfmon_get_urgent_assertion_count,
-		.start_measuring_urgent_ramp_latency =
-			hubbub60_perfmon_start_measuring_urgent_ramp_latency,
-		.get_urgent_ramp_latency_ns =
-			hubbub60_perfmon_get_urgent_ramp_latency_ns,
-		.arm_measuring_out_of_order_bandwidth =
-			hubbub60_perfmon_arm_measuring_out_of_order_bandwidth,
-		.start_measuring_out_of_order_bandwidth =
-			hubbub60_perfmon_start_measuring_out_of_order_bandwidth,
-		.get_out_of_order_bandwidth_mbps =
-			hubbub60_perfmon_get_out_of_order_bandwidth_mbps,
-		.start_measuring_in_order_bandwidth =
-			hubbub60_perfmon_start_measuring_in_order_bandwidth,
-		.get_in_order_bandwidth_mbps =
-			hubbub60_perfmon_get_in_order_bandwidth_mbps,
-		.start_measuring_prefetch_data_size =
-			hubbub60_perfmon_start_measuring_prefetch_data_size,
-		.get_prefetch_data_size =
-			hubbub60_perfmon_get_prefetch_data_size,
+	update_dchub: hubbub2_update_dchub,
+	init_dchub_sys_ctx: hubbub3_init_dchub_sys_ctx,
+	init_vm_ctx: hubbub2_init_vm_ctx,
+	dcc_support_swizzle_addr3: hubbub401_dcc_support_swizzle,
+	dcc_support_pixel_format_plane0_plane1: 		hubbub401_dcc_support_pixel_format,
+	get_dcc_compression_cap: hubbub401_get_dcc_compression_cap,
+	wm_read_state: hubbub60_wm_read_state,
+	get_dchub_ref_freq: hubbub2_get_dchub_ref_freq,
+	program_watermarks: hubbub60_program_watermarks,
+	allow_self_refresh_control: hubbub1_allow_self_refresh_control,
+	is_allow_self_refresh_enabled: hubbub1_is_allow_self_refresh_enabled,
+	verify_allow_pstate_change_high: core::ptr::null_mut(),
+	force_wm_propagate_to_pipes: hubbub60_force_wm_propagate_to_pipes,
+	force_pstate_change_control: hubbub3_force_pstate_change_control,
+	init_watermarks: hubbub60_init_watermarks,
+	init_crb: dcn60_init_crb,
+	hubbub_read_state: hubbub2_read_state,
+	force_usr_retraining_allow: core::ptr::null_mut(),
+	set_request_limit: hubbub32_set_request_limit,
+	program_det_segments: dcn60_program_det_segments,
+	program_compbuf_segments: dcn60_program_compbuf_segments,
+	wait_for_det_update: dcn60_wait_for_det_update,
+	program_arbiter: dcn401_program_arbiter,
+	hubbub_read_reg_state: hubbub3_read_reg_state,
+	perfmon: {
+		reset: hubbub60_perfmon_reset,
+		start_measuring_memory_latencies: 			hubbub60_perfmon_start_measuring_memory_latencies,
+		get_memory_latencies_ns: 			hubbub60_perfmon_get_memory_latencies_ns,
+		start_measuring_urgent_assertion_count: 			hubbub60_perfmon_start_measuring_urgent_assertion_count,
+		get_urgent_assertion_count: 			hubbub60_perfmon_get_urgent_assertion_count,
+		start_measuring_urgent_ramp_latency: 			hubbub60_perfmon_start_measuring_urgent_ramp_latency,
+		get_urgent_ramp_latency_ns: 			hubbub60_perfmon_get_urgent_ramp_latency_ns,
+		arm_measuring_out_of_order_bandwidth: 			hubbub60_perfmon_arm_measuring_out_of_order_bandwidth,
+		start_measuring_out_of_order_bandwidth: 			hubbub60_perfmon_start_measuring_out_of_order_bandwidth,
+		get_out_of_order_bandwidth_mbps: 			hubbub60_perfmon_get_out_of_order_bandwidth_mbps,
+		start_measuring_in_order_bandwidth: 			hubbub60_perfmon_start_measuring_in_order_bandwidth,
+		get_in_order_bandwidth_mbps: 			hubbub60_perfmon_get_in_order_bandwidth_mbps,
+		start_measuring_prefetch_data_size: 			hubbub60_perfmon_start_measuring_prefetch_data_size,
+		get_prefetch_data_size: 			hubbub60_perfmon_get_prefetch_data_size,
 	},
-	.qos = {
-		.force_display_nominal_profile =
-			hubbub60_force_display_nominal_profile,
-		.force_display_urgent_profile =
-			hubbub60_force_display_urgent_profile,
-		.reset_display_qos_profile =
-			hubbub60_reset_display_qos_profile,
+	qos: {
+		force_display_nominal_profile: 			hubbub60_force_display_nominal_profile,
+		force_display_urgent_profile: 			hubbub60_force_display_urgent_profile,
+		reset_display_qos_profile: 			hubbub60_reset_display_qos_profile,
 	},
 };
 
-void hubbub60_construct(struct dcn20_hubbub *hubbub2,
-	struct dc_context *ctx,
+void hubbub60_construct(dcn20_hubbub *hubbub2,
+	dc_context *ctx,
 	const struct dcn_hubbub_registers *hubbub_regs,
 	const struct dcn_hubbub_shift *hubbub_shift,
 	const struct dcn_hubbub_mask *hubbub_mask,

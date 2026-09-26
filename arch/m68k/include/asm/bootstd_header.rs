@@ -40,7 +40,7 @@ macro_rules! __bsc_return {
         if (::__core::mem::transmute::<_, usize>(__res)) >=
             (::__core::mem::transmute::<_, usize>(-64isize))
         {
-            /* let errno be a function, preserve res in d0 */
+            /* let errno be a function, preserve $res in d0 */
             let __err = -__res;
             unsafe { errno = __err as i32; }
             __res = -1;

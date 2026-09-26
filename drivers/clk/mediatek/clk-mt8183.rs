@@ -630,14 +630,14 @@ static mtk_composite top_aud_comp[] = {
 };
 
 static mtk_gate_regs top_cg_regs = {
-	.set_ofs = 0x104,
-	.clr_ofs = 0x104,
-	.sta_ofs = 0x104,
+	set_ofs: 0x104,
+	clr_ofs: 0x104,
+	sta_ofs: 0x104,
 };
 
 // C macro: GATE_TOP(_id, _name, _parent, _shift)			\
-	GATE_MTK(_id, _name, _parent, &top_cg_regs, _shift,	\
-		&mtk_clk_gate_ops_no_setclr_inv)
+// 	GATE_MTK(_id, _name, _parent, &top_cg_regs, _shift,	\
+// 		&mtk_clk_gate_ops_no_setclr_inv)
 
 static mtk_gate top_clks[] = {
 	/* TOP */
@@ -646,52 +646,52 @@ static mtk_gate top_clks[] = {
 };
 
 static mtk_gate_regs infra0_cg_regs = {
-	.set_ofs = 0x80,
-	.clr_ofs = 0x84,
-	.sta_ofs = 0x90,
+	set_ofs: 0x80,
+	clr_ofs: 0x84,
+	sta_ofs: 0x90,
 };
 
 static mtk_gate_regs infra1_cg_regs = {
-	.set_ofs = 0x88,
-	.clr_ofs = 0x8c,
-	.sta_ofs = 0x94,
+	set_ofs: 0x88,
+	clr_ofs: 0x8c,
+	sta_ofs: 0x94,
 };
 
 static mtk_gate_regs infra2_cg_regs = {
-	.set_ofs = 0xa4,
-	.clr_ofs = 0xa8,
-	.sta_ofs = 0xac,
+	set_ofs: 0xa4,
+	clr_ofs: 0xa8,
+	sta_ofs: 0xac,
 };
 
 static mtk_gate_regs infra3_cg_regs = {
-	.set_ofs = 0xc0,
-	.clr_ofs = 0xc4,
-	.sta_ofs = 0xc8,
+	set_ofs: 0xc0,
+	clr_ofs: 0xc4,
+	sta_ofs: 0xc8,
 };
 
 // C macro: GATE_INFRA0(_id, _name, _parent, _shift)		\
-	GATE_MTK(_id, _name, _parent, &infra0_cg_regs, _shift,	\
-		&mtk_clk_gate_ops_setclr)
+// 	GATE_MTK(_id, _name, _parent, &infra0_cg_regs, _shift,	\
+// 		&mtk_clk_gate_ops_setclr)
 
 // C macro: GATE_INFRA1(_id, _name, _parent, _shift)		\
-	GATE_MTK(_id, _name, _parent, &infra1_cg_regs, _shift,	\
-		&mtk_clk_gate_ops_setclr)
+// 	GATE_MTK(_id, _name, _parent, &infra1_cg_regs, _shift,	\
+// 		&mtk_clk_gate_ops_setclr)
 
 // C macro: GATE_INFRA2(_id, _name, _parent, _shift)		\
-	GATE_MTK(_id, _name, _parent, &infra2_cg_regs, _shift,	\
-		&mtk_clk_gate_ops_setclr)
+// 	GATE_MTK(_id, _name, _parent, &infra2_cg_regs, _shift,	\
+// 		&mtk_clk_gate_ops_setclr)
 
 // C macro: GATE_INFRA2_FLAGS(_id, _name, _parent, _shift, _flag)	\
-	GATE_MTK_FLAGS(_id, _name, _parent, &infra2_cg_regs, 	\
-		       _shift, &mtk_clk_gate_ops_setclr, _flag)
+// 	GATE_MTK_FLAGS(_id, _name, _parent, &infra2_cg_regs, 	\
+// 		       _shift, &mtk_clk_gate_ops_setclr, _flag)
 
 // C macro: GATE_INFRA3(_id, _name, _parent, _shift)		\
-	GATE_MTK(_id, _name, _parent, &infra3_cg_regs, _shift,	\
-		&mtk_clk_gate_ops_setclr)
+// 	GATE_MTK(_id, _name, _parent, &infra3_cg_regs, _shift,	\
+// 		&mtk_clk_gate_ops_setclr)
 
 // C macro: GATE_INFRA3_FLAGS(_id, _name, _parent, _shift, _flag)	\
-	GATE_MTK_FLAGS(_id, _name, _parent, &infra3_cg_regs, 	\
-		       _shift, &mtk_clk_gate_ops_setclr, _flag)
+// 	GATE_MTK_FLAGS(_id, _name, _parent, &infra3_cg_regs, 	\
+// 		       _shift, &mtk_clk_gate_ops_setclr, _flag)
 
 static mtk_gate infra_clks[] = {
 	/* INFRA0 */
@@ -806,14 +806,14 @@ static mtk_gate infra_clks[] = {
 };
 
 static mtk_gate_regs peri_cg_regs = {
-	.set_ofs = 0x20c,
-	.clr_ofs = 0x20c,
-	.sta_ofs = 0x20c,
+	set_ofs: 0x20c,
+	clr_ofs: 0x20c,
+	sta_ofs: 0x20c,
 };
 
 // C macro: GATE_PERI(_id, _name, _parent, _shift)			\
-	GATE_MTK(_id, _name, _parent, &peri_cg_regs, _shift,	\
-		&mtk_clk_gate_ops_no_setclr_inv)
+// 	GATE_MTK(_id, _name, _parent, &peri_cg_regs, _shift,	\
+// 		&mtk_clk_gate_ops_no_setclr_inv)
 
 static mtk_gate peri_clks[] = {
 	GATE_PERI(CLK_PERI_AXI, "peri_axi", "axi_sel", 31),
@@ -827,13 +827,13 @@ static infra_rst_ofs: [u16] = {
 };
 
 static mtk_clk_rst_desc clk_rst_desc = {
-	.version = MTK_RST_SET_CLR,
-	.rst_bank_ofs = infra_rst_ofs,
-	.rst_bank_nr = ARRAY_SIZE(infra_rst_ofs),
+	version: MTK_RST_SET_CLR,
+	rst_bank_ofs: infra_rst_ofs,
+	rst_bank_nr: ARRAY_SIZE(infra_rst_ofs),
 };
 
 /* Register mux notifier for MFG mux */
-unsafe fn clk_mt8183_reg_mfg_mux_notifier(struct device *dev, struct clk *clk)
+unsafe fn clk_mt8183_reg_mfg_mux_notifier(device *dev, clk *clk)
 {
 	struct mtk_mux_nb *mfg_mux_nb;
 	int i;
@@ -848,43 +848,43 @@ unsafe fn clk_mt8183_reg_mfg_mux_notifier(struct device *dev, struct clk *clk)
 	if (i == ARRAY_SIZE(top_muxes))
 		return -EINVAL;
 
-	mfg_mux_nb->ops = top_muxes[i].ops;
-	mfg_mux_nb->bypass_index = 0; /* Bypass to 26M crystal */
+	(*mfg_mux_nb).ops = top_muxes[i].ops;
+	(*mfg_mux_nb).bypass_index = 0; /* Bypass to 26M crystal */
 
 	return devm_mtk_clk_mux_notifier_register(dev, clk, mfg_mux_nb);
 }
 
 static mtk_clk_desc infra_desc = {
-	.clks = infra_clks,
-	.num_clks = ARRAY_SIZE(infra_clks),
-	.rst_desc = &clk_rst_desc,
+	clks: infra_clks,
+	num_clks: ARRAY_SIZE(infra_clks),
+	rst_desc: &clk_rst_desc,
 };
 
 static mtk_clk_desc mcu_desc = {
-	.composite_clks = mcu_muxes,
-	.num_composite_clks = ARRAY_SIZE(mcu_muxes),
-	.clk_lock = &mt8183_clk_lock,
+	composite_clks: mcu_muxes,
+	num_composite_clks: ARRAY_SIZE(mcu_muxes),
+	clk_lock: &mt8183_clk_lock,
 };
 
 static mtk_clk_desc peri_desc = {
-	.clks = peri_clks,
-	.num_clks = ARRAY_SIZE(peri_clks),
+	clks: peri_clks,
+	num_clks: ARRAY_SIZE(peri_clks),
 };
 
 static mtk_clk_desc topck_desc = {
-	.fixed_clks = top_fixed_clks,
-	.num_fixed_clks = ARRAY_SIZE(top_fixed_clks),
-	.factor_clks = top_divs,
-	.num_factor_clks = ARRAY_SIZE(top_divs),
-	.mux_clks = top_muxes,
-	.num_mux_clks = ARRAY_SIZE(top_muxes),
-	.composite_clks = top_aud_comp,
-	.num_composite_clks = ARRAY_SIZE(top_aud_comp),
-	.clks = top_clks,
-	.num_clks = ARRAY_SIZE(top_clks),
-	.clk_lock = &mt8183_clk_lock,
-	.clk_notifier_func = clk_mt8183_reg_mfg_mux_notifier,
-	.mfg_clk_idx = CLK_TOP_MUX_MFG,
+	fixed_clks: top_fixed_clks,
+	num_fixed_clks: ARRAY_SIZE(top_fixed_clks),
+	factor_clks: top_divs,
+	num_factor_clks: ARRAY_SIZE(top_divs),
+	mux_clks: top_muxes,
+	num_mux_clks: ARRAY_SIZE(top_muxes),
+	composite_clks: top_aud_comp,
+	num_composite_clks: ARRAY_SIZE(top_aud_comp),
+	clks: top_clks,
+	num_clks: ARRAY_SIZE(top_clks),
+	clk_lock: &mt8183_clk_lock,
+	clk_notifier_func: clk_mt8183_reg_mfg_mux_notifier,
+	mfg_clk_idx: CLK_TOP_MUX_MFG,
 };
 
 static of_device_id of_match_clk_mt8183[] = {
@@ -897,11 +897,11 @@ static of_device_id of_match_clk_mt8183[] = {
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8183);
 
 static platform_driver clk_mt8183_drv = {
-	.probe = mtk_clk_simple_probe,
-	.remove = mtk_clk_simple_remove,
-	.driver = {
-		.name = "clk-mt8183",
-		.of_match_table = of_match_clk_mt8183,
+	probe: mtk_clk_simple_probe,
+	remove: mtk_clk_simple_remove,
+	driver: {
+		name: "clk-mt8183",
+		of_match_table: of_match_clk_mt8183,
 	},
 };
 module_platform_driver(clk_mt8183_drv)

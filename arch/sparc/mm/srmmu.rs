@@ -88,7 +88,7 @@ pub unsafe fn init_new_context(_tsk:*mut task_struct,mm:*mut mm_struct)->c_int {
 pub unsafe fn destroy_context(mm:*mut mm_struct){ if (*mm).context!=NO_CONTEXT { flush_cache_mm(mm); (*mm).context=NO_CONTEXT; } }
 pub unsafe fn switch_mm(old:*mut mm_struct,mm:*mut mm_struct,_tsk:*mut task_struct){ if (*mm).context==NO_CONTEXT {alloc_context(old,mm); srmmu_ctxd_set(srmmu_context_table.add((*mm).context as usize),(*mm).pgd);} srmmu_set_context((*mm).context); }
 
-pub unsafe fn srmmu_mapiorange(bus:u32,mut xpa:ulong,mut xva:ulong,mut len:u32){ while len!=0 {len-=4096; let p=pgd_offset_k(xva); let q=p4d_offset(p,xva); let r=pud_offset(q,xva); let s=pmd_offset(r,xva); let t=pte_offset_kernel(s,xva); set_pte(t,__pte(((xpa>>4)|(bus as ulong<<28)|0x20000001) as u32)); xpa+=4096;xva+=4096;} flush_tlb_all(); }
+pub unsafe fn srmmu_mapiorange(bus:u32,mut xpa:ulong,mut xva:ulong,mut len:u32){ while len!=0 {len-=4096; let p=pgd_offset_k(xva); let q=p4d_offset(p,xva); let r=pud_offset(q,xva); let s=pmd_offset(r,xva); let t=pte_offset_kernel(s,xva); set_pte(t,__pte(((xpa>>4)|((bus as ulong)<<28)|0x20000001) as u32)); xpa+=4096;xva+=4096;} flush_tlb_all(); }
 pub unsafe fn srmmu_unmapiorange(mut va:ulong,mut len:u32){while len!=0{len-=4096;let p=pgd_offset_k(va);let q=p4d_offset(p,va);let r=pud_offset(q,va);let s=pmd_offset(r,va);__pte_clear(pte_offset_kernel(s,va));va+=4096;}flush_tlb_all();}
 
 pub unsafe fn mmu_info(_m:*mut seq_file) {}

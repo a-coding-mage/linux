@@ -15,10 +15,10 @@ macro_rules! AUTO_KVFREE {
 /* The C ENUM_BIT macro is represented as a declarative macro for callers that provide
  * the surrounding enum context. */
 macro_rules! ENUM_BIT {
-    ($name:ident) => {
-        __$name##_BIT,
-        $name = (1u32 << __$name##_BIT),
-        __$name##_SEQ = __$name##_BIT
+    ($name:tt) => {
+        __::kernel::macros::paste!([<$name _BIT>]),
+        $name = (1u32 << __::kernel::macros::paste!([<$name _BIT>])),
+        __::kernel::macros::paste!([<$name _SEQ>]) = __::kernel::macros::paste!([<$name _BIT>])
     };
 }
 

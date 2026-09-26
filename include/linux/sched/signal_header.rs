@@ -68,25 +68,25 @@ pub const SIGNAL_STOP_MASK: u32 = SIGNAL_CLD_MASK | SIGNAL_STOP_STOPPED | SIGNAL
 pub unsafe fn signal_set_stop_flags(sig: *mut signal_struct, flags: u32) { WARN_ON!((*sig).flags & SIGNAL_GROUP_EXIT != 0); (*sig).flags = ((*sig).flags & !SIGNAL_STOP_MASK) | flags; }
 
 extern "C" {
-    pub fn flush_signals(*mut task_struct); pub fn ignore_signals(*mut task_struct); pub fn flush_signal_handlers(*mut task_struct, i32);
-    pub fn dequeue_signal(*mut sigset_t, *mut kernel_siginfo_t, *mut pid_type) -> i32;
-    pub fn force_sig_fault_to_task(i32, i32, *mut libc::c_void, *mut task_struct) -> i32;
-    pub fn force_sig_fault(i32, i32, *mut libc::c_void) -> i32;
-    pub fn send_sig_fault(i32, i32, *mut libc::c_void, *mut task_struct) -> i32;
-    pub fn force_sig_mceerr(i32, *mut libc::c_void, i16) -> i32; pub fn send_sig_mceerr(i32, *mut libc::c_void, i16, *mut task_struct) -> i32;
-    pub fn force_sig_bnderr(*mut libc::c_void, *mut libc::c_void, *mut libc::c_void) -> i32;
-    pub fn force_sig_pkuerr(*mut libc::c_void, u32) -> i32; pub fn send_sig_perf(*mut libc::c_void, u32, u64) -> i32;
-    pub fn force_sig_ptrace_errno_trap(i32, *mut libc::c_void) -> i32; pub fn force_sig_fault_trapno(i32, i32, *mut libc::c_void, i32) -> i32;
-    pub fn send_sig_fault_trapno(i32, i32, *mut libc::c_void, i32, *mut task_struct) -> i32; pub fn force_sig_seccomp(i32, i32, bool) -> i32;
-    pub fn send_sig_info(i32, *mut kernel_siginfo, *mut task_struct) -> i32; pub fn force_sigsegv(i32); pub fn force_sig_info(*mut kernel_siginfo) -> i32;
-    pub fn __kill_pgrp_info(i32, *mut kernel_siginfo, *mut pid) -> i32; pub fn kill_pid_info(i32, *mut kernel_siginfo, *mut pid) -> i32;
-    pub fn kill_pid_usb_asyncio(i32, i32, sigval_t, *mut pid, *const cred) -> i32; pub fn kill_pgrp(*mut pid, i32, i32) -> i32; pub fn kill_pid(*mut pid, i32, i32) -> i32;
-    pub fn do_notify_parent(*mut task_struct, i32) -> bool; pub fn __wake_up_parent(*mut task_struct, *mut task_struct); pub fn force_sig(i32); pub fn force_fatal_sig(i32); pub fn force_exit_sig(i32);
-    pub fn send_sig(i32, *mut task_struct, i32) -> i32; pub fn zap_other_threads(*mut task_struct) -> i32; pub fn do_sigaction(i32, *mut k_sigaction, *mut k_sigaction) -> i32;
-    pub fn recalc_sigpending(); pub fn calculate_sigpending(); pub fn signal_wake_up_state(*mut task_struct, u32); pub fn task_join_group_stop(*mut task_struct);
-    pub fn set_user_sigmask(*const sigset_t, usize) -> i32; pub fn __cleanup_sighand(*mut sighand_struct); pub fn flush_itimer_signals();
-    pub fn current_is_single_threaded() -> bool; pub fn walk_process_tree(*mut task_struct, proc_visitor, *mut libc::c_void);
-    pub fn lock_task_sighand(*mut task_struct, *mut libc::c_ulong) -> *mut sighand_struct;
+    pub fn flush_signals(_: *mut task_struct); pub fn ignore_signals(_: *mut task_struct); pub fn flush_signal_handlers(_: *mut task_struct, _: i32);
+    pub fn dequeue_signal(_: *mut sigset_t, _: *mut kernel_siginfo_t, _: *mut pid_type) -> i32;
+    pub fn force_sig_fault_to_task(_: i32, _: i32, _: *mut libc::c_void, _: *mut task_struct) -> i32;
+    pub fn force_sig_fault(_: i32, _: i32, _: *mut libc::c_void) -> i32;
+    pub fn send_sig_fault(_: i32, _: i32, _: *mut libc::c_void, _: *mut task_struct) -> i32;
+    pub fn force_sig_mceerr(_: i32, _: *mut libc::c_void, _: i16) -> i32; pub fn send_sig_mceerr(_: i32, _: *mut libc::c_void, _: i16, _: *mut task_struct) -> i32;
+    pub fn force_sig_bnderr(_: *mut libc::c_void, _: *mut libc::c_void, _: *mut libc::c_void) -> i32;
+    pub fn force_sig_pkuerr(_: *mut libc::c_void, _: u32) -> i32; pub fn send_sig_perf(_: *mut libc::c_void, _: u32, _: u64) -> i32;
+    pub fn force_sig_ptrace_errno_trap(_: i32, _: *mut libc::c_void) -> i32; pub fn force_sig_fault_trapno(_: i32, _: i32, _: *mut libc::c_void, _: i32) -> i32;
+    pub fn send_sig_fault_trapno(_: i32, _: i32, _: *mut libc::c_void, _: i32, _: *mut task_struct) -> i32; pub fn force_sig_seccomp(_: i32, _: i32, _: bool) -> i32;
+    pub fn send_sig_info(_: i32, _: *mut kernel_siginfo, _: *mut task_struct) -> i32; pub fn force_sigsegv(_: i32); pub fn force_sig_info(_: *mut kernel_siginfo) -> i32;
+    pub fn __kill_pgrp_info(_: i32, _: *mut kernel_siginfo, _: *mut pid) -> i32; pub fn kill_pid_info(_: i32, _: *mut kernel_siginfo, _: *mut pid) -> i32;
+    pub fn kill_pid_usb_asyncio(_: i32, _: i32, _: sigval_t, _: *mut pid, _: *const cred) -> i32; pub fn kill_pgrp(_: *mut pid, _: i32, _: i32) -> i32; pub fn kill_pid(_: *mut pid, _: i32, _: i32) -> i32;
+    pub fn do_notify_parent(_: *mut task_struct, _: i32) -> bool; pub fn __wake_up_parent(_: *mut task_struct, _: *mut task_struct); pub fn force_sig(_: i32); pub fn force_fatal_sig(_: i32); pub fn force_exit_sig(_: i32);
+    pub fn send_sig(_: i32, _: *mut task_struct, _: i32) -> i32; pub fn zap_other_threads(_: *mut task_struct) -> i32; pub fn do_sigaction(_: i32, _: *mut k_sigaction, _: *mut k_sigaction) -> i32;
+    pub fn recalc_sigpending(); pub fn calculate_sigpending(); pub fn signal_wake_up_state(_: *mut task_struct, _: u32); pub fn task_join_group_stop(_: *mut task_struct);
+    pub fn set_user_sigmask(_: *const sigset_t, _: usize) -> i32; pub fn __cleanup_sighand(_: *mut sighand_struct); pub fn flush_itimer_signals();
+    pub fn current_is_single_threaded() -> bool; pub fn walk_process_tree(_: *mut task_struct, _: proc_visitor, _: *mut libc::c_void);
+    pub fn lock_task_sighand(_: *mut task_struct, _: *mut libc::c_ulong) -> *mut sighand_struct;
 }
 
 pub unsafe fn kernel_dequeue_signal() -> i32 { let task = current; let mut info = core::mem::zeroed(); let mut ty = core::mem::zeroed(); spin_lock_irq(&mut (*(*task).sighand).siglock); let r = dequeue_signal(&mut (*task).blocked, &mut info, &mut ty); spin_unlock_irq(&mut (*(*task).sighand).siglock); r }

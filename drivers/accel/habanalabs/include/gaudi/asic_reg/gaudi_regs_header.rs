@@ -320,6 +320,5 @@ pub const mmIF_W_PLL_NR: u32 = 0x488100;
 
 pub const mmPCIE_WRAP_RR_ELBI_RD_SEC_REG_CTRL: u32 = 0xC01208;
 
-#endif /* ASIC_REG_GAUDI_REGS_H_ */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

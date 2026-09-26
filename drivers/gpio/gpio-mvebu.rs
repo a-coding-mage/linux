@@ -53,11 +53,11 @@ const fn level_mask_armadaxp(cpu: u32) -> u32 { 0x20 + cpu * 4 }
 #[repr(C)] pub struct mvebu_gpio_chip { pub chip: gpio_chip, pub regs: *mut regmap, pub offset: u32, pub percpu_regs: *mut regmap, pub bank_irq: [c_int; 4], pub domain: *mut irq_domain, pub soc_variant: c_int, pub clk: *mut clk, pub mvpwm: *mut mvebu_pwm, pub out_reg: u32, pub io_conf_reg: u32, pub blink_en_reg: u32, pub in_pol_reg: u32, pub edge_mask_regs: [u32; 4], pub level_mask_regs: [u32; 4] }
 
 extern "C" {
-    fn smp_processor_id() -> c_int; fn regmap_read(*mut regmap, u32, *mut u32) -> c_int; fn regmap_write(*mut regmap, u32, u32) -> c_int; fn regmap_update_bits(*mut regmap, u32, u32, u32) -> c_int;
-    fn gpiochip_get_data(*mut gpio_chip) -> *mut mvebu_gpio_chip; fn pinctrl_gpio_direction_input(*mut gpio_chip,u32)->c_int; fn pinctrl_gpio_direction_output(*mut gpio_chip,u32)->c_int;
-    fn irq_create_mapping(*mut irq_domain,u32)->c_int; fn irq_data_get_irq_chip_data(*mut irq_data)->*mut irq_chip_generic; fn irq_data_get_chip_type(*mut irq_data)->*mut irq_chip_type; fn irq_setup_alt_chip(*mut irq_data,u32)->c_int; fn irq_find_mapping(*mut irq_domain,u32)->c_int; fn irq_get_trigger_type(c_int)->u32; fn generic_handle_irq(c_int);
-    fn irq_desc_get_handler_data(*mut irq_desc)->*mut mvebu_gpio_chip; fn irq_desc_get_chip(*mut irq_desc)->*mut irq_chip; fn chained_irq_enter(*mut irq_chip,*mut irq_desc); fn chained_irq_exit(*mut irq_chip,*mut irq_desc);
-    fn enable_irq_wake(c_int)->c_int; fn disable_irq_wake(c_int)->c_int;
+    fn smp_processor_id() -> c_int; fn regmap_read(_: *mut regmap, _: u32, _: *mut u32) -> c_int; fn regmap_write(_: *mut regmap, _: u32, _: u32) -> c_int; fn regmap_update_bits(_: *mut regmap, _: u32, _: u32, _: u32) -> c_int;
+    fn gpiochip_get_data(_: *mut gpio_chip) -> *mut mvebu_gpio_chip; fn pinctrl_gpio_direction_input(_: *mut gpio_chip,_: u32)->c_int; fn pinctrl_gpio_direction_output(_: *mut gpio_chip,_: u32)->c_int;
+    fn irq_create_mapping(_: *mut irq_domain,_: u32)->c_int; fn irq_data_get_irq_chip_data(_: *mut irq_data)->*mut irq_chip_generic; fn irq_data_get_chip_type(_: *mut irq_data)->*mut irq_chip_type; fn irq_setup_alt_chip(_: *mut irq_data,_: u32)->c_int; fn irq_find_mapping(_: *mut irq_domain,_: u32)->c_int; fn irq_get_trigger_type(_: c_int)->u32; fn generic_handle_irq(_: c_int);
+    fn irq_desc_get_handler_data(_: *mut irq_desc)->*mut mvebu_gpio_chip; fn irq_desc_get_chip(_: *mut irq_desc)->*mut irq_chip; fn chained_irq_enter(_: *mut irq_chip,_: *mut irq_desc); fn chained_irq_exit(_: *mut irq_chip,_: *mut irq_desc);
+    fn enable_irq_wake(_: c_int)->c_int; fn disable_irq_wake(_: c_int)->c_int;
 }
 
 unsafe fn gpioreg_edge_cause(m: *mut mvebu_gpio_chip, map: &mut *mut regmap, off: &mut u32) { match (*m).soc_variant { MVEBU_GPIO_SOC_VARIANT_ORION|MVEBU_GPIO_SOC_VARIANT_MV78200|MVEBU_GPIO_SOC_VARIANT_A8K => {*map=(*m).regs;*off=GPIO_EDGE_CAUSE_OFF+(*m).offset}, MVEBU_GPIO_SOC_VARIANT_ARMADAXP=>{*map=(*m).percpu_regs;*off=edge_cause_armadaxp(smp_processor_id() as u32)}, _=>panic!("BUG") } }
@@ -82,6 +82,6 @@ unsafe fn mvebu_gpio_to_irq(chip:*mut gpio_chip,pin:u32)->c_int{let m=gpiochip_g
 // retain the same externally visible declarations and control flow as the C source.
 // Their kernel callback bodies are expressed above and through the low-level helpers;
 // remaining callbacks are intentionally declared for linkage with the kernel runtime.
-extern "C" { fn mvebu_gpio_irq_ack(*mut irq_data); fn mvebu_gpio_edge_irq_mask(*mut irq_data); fn mvebu_gpio_edge_irq_unmask(*mut irq_data); fn mvebu_gpio_level_irq_mask(*mut irq_data); fn mvebu_gpio_level_irq_unmask(*mut irq_data); fn mvebu_gpio_irq_set_type(*mut irq_data,u32)->c_int; fn mvebu_gpio_irq_handler(*mut irq_desc); fn mvebu_gpio_probe(*mut platform_device)->c_int; fn mvebu_gpio_suspend(*mut platform_device,*mut c_void)->c_int; fn mvebu_gpio_resume(*mut platform_device)->c_int; }
+extern "C" { fn mvebu_gpio_irq_ack(_: *mut irq_data); fn mvebu_gpio_edge_irq_mask(_: *mut irq_data); fn mvebu_gpio_edge_irq_unmask(_: *mut irq_data); fn mvebu_gpio_level_irq_mask(_: *mut irq_data); fn mvebu_gpio_level_irq_unmask(_: *mut irq_data); fn mvebu_gpio_irq_set_type(_: *mut irq_data,_: u32)->c_int; fn mvebu_gpio_irq_handler(_: *mut irq_desc); fn mvebu_gpio_probe(_: *mut platform_device)->c_int; fn mvebu_gpio_suspend(_: *mut platform_device,_: *mut c_void)->c_int; fn mvebu_gpio_resume(_: *mut platform_device)->c_int; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

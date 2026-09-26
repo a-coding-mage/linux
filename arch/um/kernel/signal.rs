@@ -52,11 +52,11 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) {
     /* Did we come from a system call? */
     if PT_REGS_SYSCALL_NR(regs) >= 0 {
         /* If so, check system call restarting.. */
-        match PT_REGS_SYSCALL_RET(regs) {
-            -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => {
+        match -(PT_REGS_SYSCALL_RET(regs)) {
+            ERESTART_RESTARTBLOCK | ERESTARTNOHAND => {
                 PT_REGS_SYSCALL_RET(regs) = -EINTR;
             }
-            -ERESTARTSYS => {
+            ERESTARTSYS => {
                 if ((*ksig).ka.sa.sa_flags & SA_RESTART) == 0 {
                     PT_REGS_SYSCALL_RET(regs) = -EINTR;
                 } else {
@@ -64,7 +64,7 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) {
                     PT_REGS_ORIG_SYSCALL(regs) = PT_REGS_SYSCALL_NR(regs);
                 }
             }
-            -ERESTARTNOINTR => {
+            ERESTARTNOINTR => {
                 PT_REGS_RESTART_SYSCALL(regs);
                 PT_REGS_ORIG_SYSCALL(regs) = PT_REGS_SYSCALL_NR(regs);
             }
@@ -107,12 +107,12 @@ pub unsafe fn do_signal(regs: *mut pt_regs) {
     /* Did we come from a system call? */
     if handled_sig == 0 && PT_REGS_SYSCALL_NR(regs) >= 0 {
         /* Restart the system call - no handlers present */
-        match PT_REGS_SYSCALL_RET(regs) {
-            -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => {
+        match -(PT_REGS_SYSCALL_RET(regs)) {
+            ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => {
                 PT_REGS_ORIG_SYSCALL(regs) = PT_REGS_SYSCALL_NR(regs);
                 PT_REGS_RESTART_SYSCALL(regs);
             }
-            -ERESTART_RESTARTBLOCK => {
+            ERESTART_RESTARTBLOCK => {
                 PT_REGS_ORIG_SYSCALL(regs) = __NR_restart_syscall;
                 PT_REGS_RESTART_SYSCALL(regs);
             }

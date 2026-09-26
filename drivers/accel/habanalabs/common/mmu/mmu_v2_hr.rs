@@ -10,9 +10,9 @@
 unsafe fn hl_mmu_v2_hr_get_pgt_info(ctx: *mut hl_ctx, phys_hop_addr: u64) -> *mut pgt_info {
     let mut pgt_info: *mut pgt_info = core::ptr::null_mut();
     // C hash_for_each_possible: iterate the context's physical-page-table hash.
-    hash_for_each_possible((*ctx).hr_mmu_phys_hash, pgt_info, node, phys_hop_addr as usize) {
+    hash_for_each_possible!((*ctx).hr_mmu_phys_hash, pgt_info, node, phys_hop_addr as usize, {
         if phys_hop_addr == (*pgt_info).phys_addr { break; }
-    }
+    });
     pgt_info
 }
 
@@ -47,10 +47,10 @@ unsafe fn hl_mmu_v2_hr_ctx_fini(ctx: *mut hl_ctx) {
     if !hash_empty((*ctx).hr_mmu_phys_hash) {
         dev_err((*hdev).dev, "ctx %d is freed while it has pgts in use\n", (*ctx).asid);
     }
-    hash_for_each_safe((*ctx).hr_mmu_phys_hash, i, tmp, pgt_info, node) {
+    hash_for_each_safe!((*ctx).hr_mmu_phys_hash, i, tmp, pgt_info, node, {
         dev_err_ratelimited((*hdev).dev, "pgt_info of addr 0x%llx of asid %d was not destroyed, num_ptes: %d\n", (*pgt_info).phys_addr, (*ctx).asid, (*pgt_info).num_of_ptes);
         hl_mmu_hr_free_hop_remove_pgt(pgt_info, &mut (*(*ctx).hdev).mmu_priv.hr, (*(*ctx).hdev).asic_prop.pmmu.hop_table_size);
-    }
+    });
 }
 
 unsafe fn _hl_mmu_v2_hr_unmap(ctx: *mut hl_ctx, virt_addr: u64, is_dram_addr: bool) -> i32 {

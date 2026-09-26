@@ -113,7 +113,7 @@ unsafe fn pcie_init(port: *mut sh7786_pcie_port) -> c_int {
 }
 
 // External declarations and platform entry points referenced by this translation.
-extern "C" { fn pci_read_reg(*mut pci_channel,u32)->u32; fn pci_write_reg(*mut pci_channel,u32,u32); fn udelay(u32); fn mdelay(u32); fn clk_register(*mut clk)->c_int; fn clk_get(*mut c_void,*const c_char)->*mut clk; fn clk_enable(*mut clk); fn clk_disable(*mut clk); fn clk_put(*mut clk); fn clk_unregister(*mut clk); fn sh_clk_mstp_register(*mut clk,u32)->c_int; fn ptr_err(*mut clk)->c_int; fn is_err(*mut clk)->bool; fn snprintf(*mut c_char,usize,*const c_char,...)->c_int; fn __pa(usize)->u64; fn roundup_pow_of_two(usize)->usize; fn align_down(u64,usize)->u64; fn wmb(); }
+extern "C" { fn pci_read_reg(_: *mut pci_channel,_: u32)->u32; fn pci_write_reg(_: *mut pci_channel,_: u32,_: u32); fn udelay(_: u32); fn mdelay(_: u32); fn clk_register(_: *mut clk)->c_int; fn clk_get(_: *mut c_void,_: *const c_char)->*mut clk; fn clk_enable(_: *mut clk); fn clk_disable(_: *mut clk); fn clk_put(_: *mut clk); fn clk_unregister(_: *mut clk); fn sh_clk_mstp_register(_: *mut clk,_: u32)->c_int; fn ptr_err(_: *mut clk)->c_int; fn is_err(_: *mut clk)->bool; fn snprintf(_: *mut c_char,_: usize,_: *const c_char,...)->c_int; fn __pa(_: usize)->u64; fn roundup_pow_of_two(_: usize)->usize; fn align_down(_: u64,_: usize)->u64; fn wmb(); }
 type c_int=i32; type c_uint=u32; type c_char=i8; type c_void=core::ffi::c_void; type async_cookie_t=u64;
 const ETIMEDOUT:c_int=110;
 
@@ -138,7 +138,7 @@ pub unsafe extern "C" fn sh7786_pcie_init() -> c_int {
     async_synchronize_full(); 0
 }
 
-extern "C" { fn evt2irq(u32)->c_int; fn dma_direct_set_offset(*mut c_void,u64,u64,usize); fn test_mode_pin(u32)->bool; fn async_synchronize_cookie(async_cookie_t); fn register_pci_controller(*mut pci_channel); fn async_schedule(unsafe extern "C" fn(*mut c_void,async_cookie_t),*mut c_void)->async_cookie_t; fn async_synchronize_full(); fn sh7786_mm_sel()->u32; }
+extern "C" { fn evt2irq(_: u32)->c_int; fn dma_direct_set_offset(_: *mut c_void,_: u64,_: u64,_: usize); fn test_mode_pin(_: u32)->bool; fn async_synchronize_cookie(_: async_cookie_t); fn register_pci_controller(_: *mut pci_channel); fn async_schedule(_: unsafe extern "C" fn(*mut c_void,async_cookie_t),_: *mut c_void)->async_cookie_t; fn async_synchronize_full(); fn sh7786_mm_sel()->u32; }
 extern "C" { fn kzalloc_objs<T>(usize)->*mut T; }
 const ENODEV:c_int=19; const ENOMEM:c_int=12; const IORESOURCE_MEM:u64=1; const IORESOURCE_IO:u64=2; const IORESOURCE_MEM_32BIT:u64=4; const IORESOURCE_DISABLED:u64=0x8000;
 const SZ_1M:u64=0x100000; const SZ_4M:u64=0x400000; const SZ_8M:u64=0x800000; const SZ_64M:u64=0x4000000; const SZ_256M:u64=0x10000000; const SZ_512M:u64=0x20000000; const SZ_256:u64=0x100; const MODE_PIN11:u32=11; const MODE_PIN12:u32=12;

@@ -7,7 +7,7 @@
 #[allow(non_camel_case_types)]
 pub struct adf_accel_dev;
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 extern "C" {
     pub fn adf_vf2pf_notify_init(accel_dev: *mut adf_accel_dev) -> ::core::ffi::c_int;
     pub fn adf_vf2pf_notify_shutdown(accel_dev: *mut adf_accel_dev);
@@ -17,13 +17,13 @@ extern "C" {
     pub fn adf_vf2pf_get_ring_to_svc(accel_dev: *mut adf_accel_dev) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub fn adf_vf2pf_notify_init(_accel_dev: *mut adf_accel_dev) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub fn adf_vf2pf_notify_shutdown(_accel_dev: *mut adf_accel_dev) {}
 

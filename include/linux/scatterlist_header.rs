@@ -8,9 +8,9 @@ pub struct scatterlist {
     pub offset: u32,
     pub length: u32,
     pub dma_address: dma_addr_t,
-    #[cfg(feature = "CONFIG_NEED_SG_DMA_LENGTH")]
+    #[cfg(CONFIG_NEED_SG_DMA_LENGTH)]
     pub dma_length: u32,
-    #[cfg(feature = "CONFIG_NEED_SG_DMA_FLAGS")]
+    #[cfg(CONFIG_NEED_SG_DMA_FLAGS)]
     pub dma_flags: u32,
 }
 
@@ -19,8 +19,8 @@ pub type dma_addr_t = u64;
 #[inline] pub unsafe fn sg_dma_address(sg: *mut scatterlist) -> dma_addr_t { (*sg).dma_address }
 #[inline]
 pub unsafe fn sg_dma_len(sg: *mut scatterlist) -> u32 {
-    #[cfg(feature = "CONFIG_NEED_SG_DMA_LENGTH")] { (*sg).dma_length }
-    #[cfg(not(feature = "CONFIG_NEED_SG_DMA_LENGTH"))] { (*sg).length }
+    #[cfg(CONFIG_NEED_SG_DMA_LENGTH)] { (*sg).dma_length }
+    #[cfg(not(CONFIG_NEED_SG_DMA_LENGTH))] { (*sg).length }
 }
 
 #[repr(C)] pub struct sg_table { pub sgl: *mut scatterlist, pub nents: u32, pub orig_nents: u32 }
@@ -82,14 +82,14 @@ pub const PAGE_SHIFT: usize = 12;
 #[inline] pub unsafe fn sg_mark_end(sg: *mut scatterlist) { (*sg).page_link |= SG_END; (*sg).page_link &= !SG_CHAIN; }
 #[inline] pub unsafe fn sg_unmark_end(sg: *mut scatterlist) { (*sg).page_link &= !SG_END; }
 
-#[cfg(feature = "CONFIG_NEED_SG_DMA_FLAGS")]
+#[cfg(CONFIG_NEED_SG_DMA_FLAGS)]
 pub const SG_DMA_BUS_ADDRESS: u32 = 1 << 0;
-#[cfg(feature = "CONFIG_NEED_SG_DMA_FLAGS")] pub const SG_DMA_SWIOTLB: u32 = 1 << 1;
-#[inline] pub unsafe fn sg_dma_is_bus_address(sg: *mut scatterlist) -> bool { cfg!(feature = "CONFIG_NEED_SG_DMA_FLAGS") && ((*sg).dma_flags & SG_DMA_BUS_ADDRESS) != 0 }
-#[inline] pub unsafe fn sg_dma_mark_bus_address(sg: *mut scatterlist) { #[cfg(feature = "CONFIG_NEED_SG_DMA_FLAGS")] { (*sg).dma_flags |= SG_DMA_BUS_ADDRESS; } }
-#[inline] pub unsafe fn sg_dma_unmark_bus_address(sg: *mut scatterlist) { #[cfg(feature = "CONFIG_NEED_SG_DMA_FLAGS")] { (*sg).dma_flags &= !SG_DMA_BUS_ADDRESS; } }
-#[inline] pub unsafe fn sg_dma_is_swiotlb(sg: *mut scatterlist) -> bool { cfg!(feature = "CONFIG_NEED_SG_DMA_FLAGS") && ((*sg).dma_flags & SG_DMA_SWIOTLB) != 0 }
-#[inline] pub unsafe fn sg_dma_mark_swiotlb(sg: *mut scatterlist) { #[cfg(feature = "CONFIG_NEED_SG_DMA_FLAGS")] { (*sg).dma_flags |= SG_DMA_SWIOTLB; } }
+#[cfg(CONFIG_NEED_SG_DMA_FLAGS)] pub const SG_DMA_SWIOTLB: u32 = 1 << 1;
+#[inline] pub unsafe fn sg_dma_is_bus_address(sg: *mut scatterlist) -> bool { cfg!(CONFIG_NEED_SG_DMA_FLAGS) && ((*sg).dma_flags & SG_DMA_BUS_ADDRESS) != 0 }
+#[inline] pub unsafe fn sg_dma_mark_bus_address(sg: *mut scatterlist) { #[cfg(CONFIG_NEED_SG_DMA_FLAGS)] { (*sg).dma_flags |= SG_DMA_BUS_ADDRESS; } }
+#[inline] pub unsafe fn sg_dma_unmark_bus_address(sg: *mut scatterlist) { #[cfg(CONFIG_NEED_SG_DMA_FLAGS)] { (*sg).dma_flags &= !SG_DMA_BUS_ADDRESS; } }
+#[inline] pub unsafe fn sg_dma_is_swiotlb(sg: *mut scatterlist) -> bool { cfg!(CONFIG_NEED_SG_DMA_FLAGS) && ((*sg).dma_flags & SG_DMA_SWIOTLB) != 0 }
+#[inline] pub unsafe fn sg_dma_mark_swiotlb(sg: *mut scatterlist) { #[cfg(CONFIG_NEED_SG_DMA_FLAGS)] { (*sg).dma_flags |= SG_DMA_SWIOTLB; } }
 
 #[inline] pub unsafe fn sg_phys(sg: *mut scatterlist) -> dma_addr_t { page_to_phys(sg_page(sg)) + (*sg).offset as dma_addr_t }
 #[inline] pub unsafe fn sg_virt(sg: *mut scatterlist) -> *mut ::std::ffi::c_void { page_address(sg_page(sg)).add((*sg).offset as usize) }
@@ -116,8 +116,8 @@ pub type sg_free_fn = unsafe extern "C" fn(*mut scatterlist, u32);
 
 pub const SG_CHUNK_SIZE: usize = 128;
 pub const SG_MAX_SINGLE_ALLOC: usize = PAGE_SIZE / core::mem::size_of::<scatterlist>();
-#[cfg(feature = "CONFIG_ARCH_NO_SG_CHAIN")] pub const SG_MAX_SEGMENTS: usize = SG_CHUNK_SIZE;
-#[cfg(not(feature = "CONFIG_ARCH_NO_SG_CHAIN"))] pub const SG_MAX_SEGMENTS: usize = 2048;
+#[cfg(CONFIG_ARCH_NO_SG_CHAIN)] pub const SG_MAX_SEGMENTS: usize = SG_CHUNK_SIZE;
+#[cfg(not(CONFIG_ARCH_NO_SG_CHAIN))] pub const SG_MAX_SEGMENTS: usize = 2048;
 pub const SG_MITER_ATOMIC: u32 = 1 << 0;
 pub const SG_MITER_TO_SG: u32 = 1 << 1;
 pub const SG_MITER_FROM_SG: u32 = 1 << 2;
@@ -132,7 +132,7 @@ extern "C" { pub fn __sg_page_iter_next(piter: *mut sg_page_iter) -> bool; pub f
 #[repr(C)] pub struct sg_mapping_iter { pub page: *mut page, pub addr: *mut ::std::ffi::c_void, pub length: usize, pub consumed: usize, pub piter: sg_page_iter, pub __offset: u32, pub __remaining: u32, pub __flags: u32 }
 extern "C" { pub fn sg_miter_start(miter: *mut sg_mapping_iter, sgl: *mut scatterlist, nents: u32, flags: u32); pub fn sg_miter_skip(miter: *mut sg_mapping_iter, offset: isize) -> bool; pub fn sg_miter_next(miter: *mut sg_mapping_iter) -> bool; pub fn sg_miter_stop(miter: *mut sg_mapping_iter); }
 
-#[cfg(feature = "CONFIG_SGL_ALLOC")]
+#[cfg(CONFIG_SGL_ALLOC)]
 extern "C" {
     pub fn sgl_alloc_order(length: u64, order: u32, chainable: bool, gfp: gfp_t, nent_p: *mut u32) -> *mut scatterlist;
     pub fn sgl_alloc(length: u64, gfp: gfp_t, nent_p: *mut u32) -> *mut scatterlist;
@@ -148,7 +148,7 @@ extern "C" {
     pub fn sg_pcopy_to_buffer(sgl: *mut scatterlist, nents: u32, buf: *mut ::std::ffi::c_void, buflen: usize, skip: isize) -> usize;
     pub fn sg_zero_buffer(sgl: *mut scatterlist, nents: u32, buflen: usize, skip: isize) -> usize;
 }
-#[cfg(feature = "CONFIG_SG_POOL")]
+#[cfg(CONFIG_SG_POOL)]
 extern "C" {
     pub fn sg_free_table_chained(table: *mut sg_table, nents_first_chunk: u32);
     pub fn sg_alloc_table_chained(table: *mut sg_table, nents: i32, first_chunk: *mut scatterlist, nents_first_chunk: u32) -> i32;

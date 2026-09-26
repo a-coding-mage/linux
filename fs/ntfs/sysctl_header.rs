@@ -11,12 +11,12 @@
  * equivalent.
  */
 
-#[cfg(all(feature = "DEBUG", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(feature = "DEBUG", CONFIG_SYSCTL))]
 unsafe extern "C" {
     pub fn ntfs_sysctl(add: i32) -> i32;
 }
 
-#[cfg(not(all(feature = "DEBUG", feature = "CONFIG_SYSCTL")))]
+#[cfg(not(all(feature = "DEBUG", CONFIG_SYSCTL)))]
 /* Just return success. */
 pub fn ntfs_sysctl(_add: i32) -> i32 {
     0

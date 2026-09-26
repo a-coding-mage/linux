@@ -40,8 +40,7 @@ extern "C" {
     fn ltl_monitor_destroy();
     fn rv_register_monitor(
         monitor: *mut rv_monitor,
-        parent: *mut core::ffi::c_void,
-    ) -> core::ffi::c_int;
+        parent: *mut core::ffi::c_void) -> core::ffi::c_int;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
 }
 
@@ -83,7 +82,7 @@ unsafe extern "C" fn ltl_atoms_init(
  * are translated into model's event.
  */
 %%TRACEPOINT_HANDLERS_SKEL%%
-unsafe extern "C" fn enable_%%MODEL_NAME%%() -> core::ffi::c_int {
+unsafe extern "C" fn enable_%%MODEL_NAME%%(*()).core::ffi::c_int {
     let retval: core::ffi::c_int;
 
     retval = ltl_monitor_init();
@@ -112,7 +111,7 @@ static mut rv_this: rv_monitor = rv_monitor {
     disable: Some(disable_%%MODEL_NAME%%),
 };
 
-unsafe extern "C" fn register_%%MODEL_NAME%%() -> core::ffi::c_int {
+unsafe extern "C" fn register_%%MODEL_NAME%%(*()).core::ffi::c_int {
     return rv_register_monitor(&mut rv_this, %%PARENT%%);
 }
 

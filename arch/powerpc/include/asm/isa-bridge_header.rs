@@ -2,13 +2,13 @@
 
 /* The CONFIG_PPC64 build-time condition is represented by the
  * `CONFIG_PPC64` Cargo configuration option where available. */
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 extern "C" {
     pub fn isa_bridge_find_early(hose: *mut pci_controller);
     pub fn isa_bridge_init_non_pci(np: *mut device_node);
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline]
 pub unsafe fn isa_vaddr_is_ioport(address: *mut core::ffi::c_void) -> i32 {
     /* Check if address hits the reserved legacy IO range */
@@ -20,7 +20,7 @@ pub unsafe fn isa_vaddr_is_ioport(address: *mut core::ffi::c_void) -> i32 {
     }
 }
 
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 #[inline]
 pub unsafe fn isa_vaddr_is_ioport(_address: *mut core::ffi::c_void) -> i32 {
     /* No specific ISA handling on ppc32 at this stage, it

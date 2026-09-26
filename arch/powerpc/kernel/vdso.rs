@@ -166,18 +166,18 @@ pub unsafe extern "C" fn arch_setup_additional_pages(
 
 /* Build-time CONFIG_PPC64/CONFIG_VDSO32 sections are preserved by conditional compilation. */
 unsafe fn vdso_fixup_features() {
-    #[cfg(feature = "CONFIG_PPC64")]
+    #[cfg(CONFIG_PPC64)]
     {
         VDSO_DO_FIXUPS!(feature, cur_cpu_spec.cpu_features, 64, ftr_fixup);
         VDSO_DO_FIXUPS!(feature, cur_cpu_spec.mmu_features, 64, mmu_ftr_fixup);
         VDSO_DO_FIXUPS!(feature, powerpc_firmware_features, 64, fw_ftr_fixup);
         VDSO_DO_FIXUPS!(lwsync, cur_cpu_spec.cpu_features, 64, lwsync_fixup);
     }
-    #[cfg(feature = "CONFIG_VDSO32")]
+    #[cfg(CONFIG_VDSO32)]
     {
         VDSO_DO_FIXUPS!(feature, cur_cpu_spec.cpu_features, 32, ftr_fixup);
         VDSO_DO_FIXUPS!(feature, cur_cpu_spec.mmu_features, 32, mmu_ftr_fixup);
-        #[cfg(feature = "CONFIG_PPC64")]
+        #[cfg(CONFIG_PPC64)]
         VDSO_DO_FIXUPS!(feature, powerpc_firmware_features, 32, fw_ftr_fixup);
         VDSO_DO_FIXUPS!(lwsync, cur_cpu_spec.cpu_features, 32, lwsync_fixup);
     }
@@ -195,7 +195,7 @@ unsafe fn vdso_setup_syscall_map() {
     }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub unsafe extern "C" fn vdso_getcpu_init() -> i32 {
     let cpu = unsafe { get_cpu() };
     unsafe { WARN_ON_ONCE(cpu > 0xffff); }
@@ -208,7 +208,7 @@ pub unsafe extern "C" fn vdso_getcpu_init() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 early_initcall!(vdso_getcpu_init);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

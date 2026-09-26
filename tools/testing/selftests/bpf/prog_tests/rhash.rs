@@ -116,8 +116,7 @@ unsafe extern "C" {
 
     fn bpf_object__find_program_by_name(
         obj: *mut bpf_object,
-        name: *const c_char,
-    ) -> *mut bpf_program;
+        name: *const c_char) -> *mut bpf_program;
     fn bpf_program__set_autoload(prog: *mut bpf_program, autoload: bool);
     fn bpf_program__fd(prog: *mut bpf_program) -> c_int;
     fn bpf_prog_test_run_opts(prog_fd: c_int, opts: *mut bpf_test_run_opts) -> c_int;
@@ -127,20 +126,17 @@ unsafe extern "C" {
         key_size: __u32,
         value_size: __u32,
         max_entries: __u32,
-        opts: *mut bpf_map_create_opts,
-    ) -> c_int;
+        opts: *mut bpf_map_create_opts) -> c_int;
     fn bpf_map_get_info_by_fd(fd: c_int, info: *mut bpf_map_info, info_len: *__u32) -> c_int;
     fn bpf_map_update_elem(
         fd: c_int,
         key: *const c_void,
         value: *const c_void,
-        flags: __u64,
-    ) -> c_int;
+        flags: __u64) -> c_int;
     fn bpf_map__fd(map: *mut bpf_map) -> c_int;
     fn bpf_program__attach_iter(
         prog: *mut bpf_program,
-        opts: *mut bpf_iter_attach_opts,
-    ) -> *mut bpf_link;
+        opts: *mut bpf_iter_attach_opts) -> *mut bpf_link;
     fn bpf_iter_create(link_fd: c_int) -> c_int;
     fn bpf_link__fd(link: *mut bpf_link) -> c_int;
     fn bpf_link__destroy(link: *mut bpf_link);

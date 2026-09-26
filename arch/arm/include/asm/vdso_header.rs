@@ -12,7 +12,7 @@ pub struct mm_struct {
 
 /* CONFIG_VDSO: the build-time condition from the C header is represented by
  * the corresponding Rust feature condition. */
-#[cfg(feature = "CONFIG_VDSO")]
+#[cfg(CONFIG_VDSO)]
 extern "C" {
     pub fn arm_install_vdso(mm: *mut mm_struct, addr: usize);
 
@@ -20,10 +20,10 @@ extern "C" {
 }
 
 /* CONFIG_VDSO disabled. */
-#[cfg(not(feature = "CONFIG_VDSO"))]
+#[cfg(not(CONFIG_VDSO))]
 pub unsafe extern "C" fn arm_install_vdso(_mm: *mut mm_struct, _addr: usize) {}
 
-#[cfg(not(feature = "CONFIG_VDSO"))]
+#[cfg(not(CONFIG_VDSO))]
 pub const vdso_total_pages: u32 = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

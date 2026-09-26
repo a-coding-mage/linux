@@ -41,7 +41,7 @@ pub enum apple_gmux_type {
     APPLE_GMUX_TYPE_MMIO,
 }
 
-#[cfg(feature = "CONFIG_APPLE_GMUX")]
+#[cfg(CONFIG_APPLE_GMUX)]
 pub unsafe fn apple_gmux_is_indexed(iostart: libc::c_ulong) -> bool {
     let val: u16;
     outb(0xaa, iostart + 0xcc);
@@ -51,7 +51,7 @@ pub unsafe fn apple_gmux_is_indexed(iostart: libc::c_ulong) -> bool {
     val == 0x55aa
 }
 
-#[cfg(feature = "CONFIG_APPLE_GMUX")]
+#[cfg(CONFIG_APPLE_GMUX)]
 pub unsafe fn apple_gmux_is_mmio(iostart: libc::c_ulong) -> bool {
     let iomem_base = ioremap(iostart, 16);
     if iomem_base.is_null() {
@@ -62,7 +62,7 @@ pub unsafe fn apple_gmux_is_mmio(iostart: libc::c_ulong) -> bool {
     val != 0xff
 }
 
-#[cfg(feature = "CONFIG_APPLE_GMUX")]
+#[cfg(CONFIG_APPLE_GMUX)]
 pub unsafe fn apple_gmux_detect(
     mut pnp_dev: *mut pnp_dev,
     type_ret: *mut apple_gmux_type,
@@ -99,13 +99,13 @@ pub unsafe fn apple_gmux_detect(
     true
 }
 
-#[cfg(feature = "CONFIG_APPLE_GMUX")]
+#[cfg(CONFIG_APPLE_GMUX)]
 pub unsafe fn apple_gmux_present() -> bool { acpi_dev_found(GMUX_ACPI_HID.as_ptr() as *const _) }
 
-#[cfg(not(feature = "CONFIG_APPLE_GMUX"))]
+#[cfg(not(CONFIG_APPLE_GMUX))]
 pub unsafe fn apple_gmux_present() -> bool { false }
 
-#[cfg(not(feature = "CONFIG_APPLE_GMUX"))]
+#[cfg(not(CONFIG_APPLE_GMUX))]
 pub unsafe fn apple_gmux_detect(_pnp_dev: *mut pnp_dev, _indexed_ret: *mut bool) -> bool { false }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

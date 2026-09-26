@@ -7,13 +7,13 @@ pub struct tcf_gact {
     pub common: tc_action,
     // Preserved from CONFIG_GACT_PROB; enable the corresponding Rust feature
     // when this configuration is present.
-    #[cfg(feature = "CONFIG_GACT_PROB")]
+    #[cfg(CONFIG_GACT_PROB)]
     pub tcfg_ptype: u16,
-    #[cfg(feature = "CONFIG_GACT_PROB")]
+    #[cfg(CONFIG_GACT_PROB)]
     pub tcfg_pval: u16,
-    #[cfg(feature = "CONFIG_GACT_PROB")]
+    #[cfg(CONFIG_GACT_PROB)]
     pub tcfg_paction: i32,
-    #[cfg(feature = "CONFIG_GACT_PROB")]
+    #[cfg(CONFIG_GACT_PROB)]
     pub packets: core::sync::atomic::AtomicI32,
 }
 
@@ -25,7 +25,7 @@ pub unsafe fn to_gact(a: *mut tc_action) -> *mut tcf_gact {
 #[inline]
 pub unsafe fn __is_tcf_gact_act(a: *const tc_action, act: i32, is_ext: bool) -> bool {
     // CONFIG_NET_CLS_ACT controls this body in the C header.
-    #[cfg(feature = "CONFIG_NET_CLS_ACT")]
+    #[cfg(CONFIG_NET_CLS_ACT)]
     {
         let gact: *const tcf_gact;
 

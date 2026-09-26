@@ -17,22 +17,22 @@ unsafe fn llc_get_sk_idx(mut pos: loff_t) -> *mut sock {
     let mut sk: *mut sock = core::ptr::null_mut();
     let mut i: i32;
 
-    list_for_each_entry_rcu!(sap, &llc_sap_list, node) {
+    list_for_each_entry_rcu!(sap, &llc_sap_list, node, {
         spin_lock_bh(&(*sap).sk_lock);
         i = 0;
         while i < LLC_SK_LADDR_HASH_ENTRIES {
             let head: *mut hlist_nulls_head = &mut (*sap).sk_laddr_hash[i as usize];
             let mut node: *mut hlist_nulls_node;
-            sk_nulls_for_each!(sk, node, head) {
+            sk_nulls_for_each!(sk, node, head, {
                 if pos == 0 {
                     return sk; // keep the lock
                 }
                 pos -= 1;
-            }
+            });
             i += 1;
         }
         spin_unlock_bh(&(*sap).sk_lock);
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -52,9 +52,9 @@ unsafe fn laddr_hash_next(sap: *mut llc_sap, mut bucket: i32) -> *mut sock {
     bucket += 1;
     while bucket < LLC_SK_LADDR_HASH_ENTRIES {
         let mut node: *mut hlist_nulls_node;
-        sk_nulls_for_each!(sk, node, &(*sap).sk_laddr_hash[bucket as usize]) {
+        sk_nulls_for_each!(sk, node, &(*sap).sk_laddr_hash[bucket as usize], {
             return sk;
-        }
+        });
         bucket += 1;
     }
     sk
@@ -79,14 +79,14 @@ unsafe fn llc_seq_next(_seq: *mut seq_file, v: *mut core::ffi::c_void, pos: *mut
         return sk as *mut core::ffi::c_void;
     }
     spin_unlock_bh(&(*sap).sk_lock);
-    list_for_each_entry_continue_rcu!(sap, &llc_sap_list, node) {
+    list_for_each_entry_continue_rcu!(sap, &llc_sap_list, node, {
         spin_lock_bh(&(*sap).sk_lock);
         sk = laddr_hash_next(sap, -1);
         if !sk.is_null() {
             break; // keep the lock
         }
         spin_unlock_bh(&(*sap).sk_lock);
-    }
+    });
     sk as *mut core::ffi::c_void
 }
 

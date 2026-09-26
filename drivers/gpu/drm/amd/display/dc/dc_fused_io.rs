@@ -5,9 +5,9 @@
 // Dependencies are supplied by the surrounding translation unit.
 
 unsafe fn op_i2c_convert(
-    cmd: *mut union dmub_rb_cmd,
+    cmd: *mut dmub_rb_cmd,
     op: *const mod_hdcp_atomic_op_i2c,
-    type_: enum dmub_cmd_fused_request_type,
+    type_: dmub_cmd_fused_request_type,
     ddc_line: u32,
     over_aux: bool,
 ) -> bool {
@@ -31,9 +31,9 @@ unsafe fn op_i2c_convert(
 }
 
 unsafe fn op_aux_convert(
-    cmd: *mut union dmub_rb_cmd,
+    cmd: *mut dmub_rb_cmd,
     op: *const mod_hdcp_atomic_op_aux,
-    type_: enum dmub_cmd_fused_request_type,
+    type_: dmub_cmd_fused_request_type,
     ddc_line: u32,
 ) -> bool {
     let req = &mut (*cmd).fused_io.request;
@@ -55,7 +55,7 @@ unsafe fn op_aux_convert(
 
 unsafe fn atomic_write_poll_read(
     link: *mut dc_link,
-    commands: *mut [union dmub_rb_cmd; 3],
+    commands: *mut [dmub_rb_cmd; 3],
     poll_timeout_us: u32,
     poll_mask_msb: u8,
 ) -> bool {
@@ -108,7 +108,7 @@ pub unsafe fn dm_atomic_write_poll_read_i2c(
         (*(*(*link).ddc).ddc_pin).pin_data.en
     };
 
-    let mut commands: [union dmub_rb_cmd; 3] = core::mem::zeroed();
+    let mut commands: [dmub_rb_cmd; 3] = core::mem::zeroed();
     let converted = op_i2c_convert(&mut commands[0], write, FUSED_REQUEST_WRITE, ddc_line, over_aux)
         && op_i2c_convert(&mut commands[1], poll, FUSED_REQUEST_POLL, ddc_line, over_aux)
         && op_i2c_convert(&mut commands[2], read, FUSED_REQUEST_READ, ddc_line, over_aux);
@@ -136,7 +136,7 @@ pub unsafe fn dm_atomic_write_poll_read_aux(
     }
 
     let ddc_line = (*(*(*link).ddc).ddc_pin).pin_data.en;
-    let mut commands: [union dmub_rb_cmd; 3] = core::mem::zeroed();
+    let mut commands: [dmub_rb_cmd; 3] = core::mem::zeroed();
     let converted = op_aux_convert(&mut commands[0], write, FUSED_REQUEST_WRITE, ddc_line)
         && op_aux_convert(&mut commands[1], poll, FUSED_REQUEST_POLL, ddc_line)
         && op_aux_convert(&mut commands[2], read, FUSED_REQUEST_READ, ddc_line);

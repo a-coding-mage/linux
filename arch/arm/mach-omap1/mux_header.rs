@@ -15,7 +15,7 @@ pub const PULL_DWN_CTRL_NA: u32 = 0; // No pull-down control needed
  * The register-name fields are represented directly by the corresponding
  * Rust macros below; register constants are supplied by the including code.
  */
-#[cfg(feature = "CONFIG_OMAP_MUX_DEBUG")]
+#[cfg(CONFIG_OMAP_MUX_DEBUG)]
 #[macro_export]
 macro_rules! MUX_REG {
     ($reg:ident, $mode_offset:expr, $mode:expr) => {
@@ -26,7 +26,7 @@ macro_rules! MUX_REG {
     };
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_MUX_DEBUG"))]
+#[cfg(not(CONFIG_OMAP_MUX_DEBUG))]
 #[macro_export]
 macro_rules! MUX_REG {
     ($reg:expr, $mode_offset:expr, $mode:expr) => {
@@ -131,7 +131,7 @@ pub struct pin_config {
     pub pu_pd_name: Option<*const c_char>,
     pub pu_pd_reg: u32,
     pub pu_pd_val: u8,
-    #[cfg(any(feature = "CONFIG_OMAP_MUX_DEBUG", feature = "CONFIG_OMAP_MUX_WARNINGS"))]
+    #[cfg(any(CONFIG_OMAP_MUX_DEBUG, CONFIG_OMAP_MUX_WARNINGS))]
     pub mux_reg_name: Option<*const c_char>,
 }
 
@@ -142,13 +142,13 @@ pub struct omap_mux_cfg {
     pub cfg_reg: Option<unsafe extern "C" fn(*const pin_config) -> c_int>,
 }
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 unsafe extern "C" {
     pub fn omap1_mux_init() -> c_int;
     pub fn omap_mux_register(cfg: *mut omap_mux_cfg) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_MUX"))]
+#[cfg(not(CONFIG_OMAP_MUX))]
 #[inline]
 pub const unsafe fn omap1_mux_init() -> c_int { 0 }
 

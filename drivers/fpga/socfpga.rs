@@ -292,11 +292,11 @@ unsafe fn socfpga_fpga_probe(_pdev: *mut platform_device) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 #[repr(C)]
 struct of_device_id { compatible: *const u8 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 static SOCFPGA_FPGA_OF_MATCH: [of_device_id; 2] = [
     of_device_id { compatible: b"altr,socfpga-fpga-mgr\0".as_ptr() },
     of_device_id { compatible: core::ptr::null() },

@@ -105,7 +105,7 @@ pub unsafe fn uv_query_info() {
     if uv_call(0, (&mut uvcb as *mut UvCbQui) as u64) != 0 && uvcb.header.rc != UVC_RC_MORE_DATA { return; }
 
     // CONFIG_KVM conditional from the C source.
-    if cfg!(feature = "CONFIG_KVM") {
+    if cfg!(CONFIG_KVM) {
         uv_info.inst_calls_list.copy_from_slice(&uvcb.inst_calls_list);
         uv_info.uv_base_stor_len = uvcb.uv_base_stor_len;
         uv_info.guest_base_stor_len = uvcb.conf_base_phys_stor_len;

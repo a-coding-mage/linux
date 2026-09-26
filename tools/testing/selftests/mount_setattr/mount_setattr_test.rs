@@ -361,16 +361,16 @@ FIXTURE_SETUP(mount_setattr)
 	ASSERT_EQ(mount("testing", "/tmp", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/tmp/B", 0777), 0);
+	ASSERT_EQ(mkdir("/tmp/B", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/tmp/B", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/tmp/B/BB", 0777), 0);
+	ASSERT_EQ(mkdir("/tmp/B/BB", 0o777), 0);
 
-	ASSERT_EQ(mkdir("/tmp/target1", 0777), 0);
+	ASSERT_EQ(mkdir("/tmp/target1", 0o777), 0);
 
-	ASSERT_EQ(mkdir("/tmp/target2", 0777), 0);
+	ASSERT_EQ(mkdir("/tmp/target2", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/tmp/B/BB", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
@@ -378,21 +378,21 @@ FIXTURE_SETUP(mount_setattr)
 	ASSERT_EQ(mount("testing", "/mnt", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/mnt/A", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/A", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/mnt/A", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/mnt/A/AA", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/A/AA", 0o777), 0);
 
 	ASSERT_EQ(mount("/tmp", "/mnt/A/AA", NULL, MS_BIND | MS_REC, NULL), 0);
 
-	ASSERT_EQ(mkdir("/mnt/B", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/B", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/mnt/B", "ramfs",
 			MS_NOATIME | MS_NODEV | MS_NOSUID, 0), 0);
 
-	ASSERT_EQ(mkdir("/mnt/B/BB", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/B/BB", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/tmp/B/BB", "devpts",
 			MS_RELATIME | MS_NOEXEC | MS_RDONLY, 0), 0);
@@ -604,7 +604,7 @@ TEST_F(mount_setattr, basic_recursive)
 
 	ASSERT_EQ(is_shared_mount("/mnt/A/AA/B/BB"), true);
 
-	fd = open("/mnt/A/AA/B/b", O_RDWR | O_CLOEXEC | O_CREAT | O_EXCL, 0777);
+	fd = open("/mnt/A/AA/B/b", O_RDWR | O_CLOEXEC | O_CREAT | O_EXCL, 0o777);
 	ASSERT_GE(fd, 0);
 
 	/*
@@ -653,7 +653,7 @@ TEST_F(mount_setattr, mount_has_writers)
 	old_flags = read_mnt_flags("/mnt/A");
 	ASSERT_GT(old_flags, 0);
 
-	fd = open("/mnt/A/AA/B/b", O_RDWR | O_CLOEXEC | O_CREAT | O_EXCL, 0777);
+	fd = open("/mnt/A/AA/B/b", O_RDWR | O_CLOEXEC | O_CREAT | O_EXCL, 0o777);
 	ASSERT_GE(fd, 0);
 
 	/*
@@ -986,15 +986,15 @@ FIXTURE_SETUP(mount_setattr_idmapped)
 	ASSERT_EQ(mount("testing", "/tmp", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/tmp/B", 0777), 0);
-	ASSERT_EQ(mknodat(-EBADF, "/tmp/B/b", S_IFREG | 0644, 0), 0);
+	ASSERT_EQ(mkdir("/tmp/B", 0o777), 0);
+	ASSERT_EQ(mknodat(-EBADF, "/tmp/B/b", S_IFREG | 0o644, 0), 0);
 	ASSERT_EQ(chown("/tmp/B/b", 0, 0), 0);
 
 	ASSERT_EQ(mount("testing", "/tmp/B", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/tmp/B/BB", 0777), 0);
-	ASSERT_EQ(mknodat(-EBADF, "/tmp/B/BB/b", S_IFREG | 0644, 0), 0);
+	ASSERT_EQ(mkdir("/tmp/B/BB", 0o777), 0);
+	ASSERT_EQ(mknodat(-EBADF, "/tmp/B/BB/b", S_IFREG | 0o644, 0), 0);
 	ASSERT_EQ(chown("/tmp/B/BB/b", 0, 0), 0);
 
 	ASSERT_EQ(mount("testing", "/tmp/B/BB", "tmpfs", MS_NOATIME | MS_NODEV,
@@ -1003,28 +1003,28 @@ FIXTURE_SETUP(mount_setattr_idmapped)
 	ASSERT_EQ(mount("testing", "/mnt", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=256m,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/mnt/A", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/A", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/mnt/A", "tmpfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/mnt/A/AA", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/A/AA", 0o777), 0);
 
 	ASSERT_EQ(mount("/tmp", "/mnt/A/AA", NULL, MS_BIND | MS_REC, NULL), 0);
 
-	ASSERT_EQ(mkdir("/mnt/B", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/B", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/mnt/B", "ramfs",
 			MS_NOATIME | MS_NODEV | MS_NOSUID, 0), 0);
 
-	ASSERT_EQ(mkdir("/mnt/B/BB", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/B/BB", 0o777), 0);
 
 	ASSERT_EQ(mount("testing", "/tmp/B/BB", "devpts",
 			MS_RELATIME | MS_NOEXEC | MS_RDONLY, 0), 0);
 
-	ASSERT_EQ(mkdir("/mnt/C", 0777), 0);
-	ASSERT_EQ(mkdir("/mnt/D", 0777), 0);
-	img_fd = openat(-EBADF, "/mnt/C/ext4.img", O_CREAT | O_WRONLY, 0600);
+	ASSERT_EQ(mkdir("/mnt/C", 0o777), 0);
+	ASSERT_EQ(mkdir("/mnt/D", 0o777), 0);
+	img_fd = openat(-EBADF, "/mnt/C/ext4.img", O_CREAT | O_WRONLY, 0o600);
 	ASSERT_GE(img_fd, 0);
 	ASSERT_EQ(ftruncate(img_fd, 2147483648 /* 2 GB */), 0);
 	ASSERT_EQ(system("mkfs.ext4 -q /mnt/C/ext4.img"), 0);
@@ -1417,7 +1417,7 @@ TEST_F(mount_setattr_idmapped, idmap_mount_tree_invalid)
 	ASSERT_EQ(mount("testing", "/mnt/A", "ramfs", MS_NOATIME | MS_NODEV,
 			"size=100000,mode=700"), 0);
 
-	ASSERT_EQ(mkdir("/mnt/A/AA", 0777), 0);
+	ASSERT_EQ(mkdir("/mnt/A/AA", 0o777), 0);
 
 	ASSERT_EQ(mount("/tmp", "/mnt/A/AA", NULL, MS_BIND | MS_REC, NULL), 0);
 
@@ -1734,7 +1734,7 @@ TEST_F(mount_setattr, open_tree_subfolder)
 
 	EXPECT_EQ(close(fd_context), 0);
 
-	ASSERT_EQ(mkdirat(fd_tmpfs, "subdir", 0755), 0);
+	ASSERT_EQ(mkdirat(fd_tmpfs, "subdir", 0o755), 0);
 
 	fd_tree = sys_open_tree(fd_tmpfs, "subdir",
 				AT_NO_AUTOMOUNT | AT_SYMLINK_NOFOLLOW |
@@ -1744,7 +1744,7 @@ TEST_F(mount_setattr, open_tree_subfolder)
 
 	EXPECT_EQ(close(fd_tmpfs), 0);
 
-	ASSERT_EQ(mkdirat(-EBADF, "/mnt/open_tree_subfolder", 0755), 0);
+	ASSERT_EQ(mkdirat(-EBADF, "/mnt/open_tree_subfolder", 0o755), 0);
 
 	ASSERT_EQ(sys_move_mount(fd_tree, "", -EBADF, "/mnt/open_tree_subfolder", MOVE_MOUNT_F_EMPTY_PATH), 0);
 

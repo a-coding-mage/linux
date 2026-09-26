@@ -74,20 +74,19 @@ pub unsafe fn afs_select_vlserver(vc: *mut afs_vl_cursor) -> bool {
     if (*vc).nr_iterations == 0 { goto_start(vc, &mut alist)?; }
     if !alist.is_null() { (*alist).addrs[(*vc).addr_index as usize].last_error = error; }
     match error {
-        0 => { (*vc).cumul_error.error = error; (*vc).flags |= AFS_VL_CURSOR_STOP; return false; }
-        -ECONNABORTED => match abort_code {
+        case if case == 0 => { (*vc).cumul_error.error = error; (*vc).flags |= AFS_VL_CURSOR_STOP; return false; }
+        case if case == -ECONNABORTED => match abort_code {
             AFSVL_IO | AFSVL_BADVOLOPER | AFSVL_NOMEM => {
                 afs_prioritise_error(&mut (*vc).cumul_error, -EREMOTEIO, abort_code);
                 goto_next_server(vc, &mut alist);
             }
             _ => { afs_prioritise_error(&mut (*vc).cumul_error, error, abort_code); goto_failed(vc, &mut alist); }
         },
-        -ERFKILL | -EADDRNOTAVAIL | -ENETUNREACH | -EHOSTUNREACH | -EHOSTDOWN |
-        -ECONNREFUSED | -ETIMEDOUT | -ETIME => {
+        case if case == -ERFKILL || case == -EADDRNOTAVAIL || case == -ENETUNREACH || case == -EHOSTUNREACH || case == -EHOSTDOWN || case == -ECONNREFUSED || case == -ETIMEDOUT || case == -ETIME => {
             afs_prioritise_error(&mut (*vc).cumul_error, error, 0); goto_iterate_address(vc, &mut alist);
         }
-        -ECONNRESET => { afs_prioritise_error(&mut (*vc).cumul_error, error, 0); (*vc).flags |= AFS_VL_CURSOR_RETRY; goto_next_server(vc, &mut alist); }
-        -EOPNOTSUPP => goto_next_server(vc, &mut alist),
+        case if case == -ECONNRESET => { afs_prioritise_error(&mut (*vc).cumul_error, error, 0); (*vc).flags |= AFS_VL_CURSOR_RETRY; goto_next_server(vc, &mut alist); }
+        case if case == -EOPNOTSUPP => goto_next_server(vc, &mut alist),
         _ => { goto_restart(vc, &mut alist); }
     }
     false
@@ -110,8 +109,8 @@ unsafe fn afs_vl_dump_edestaddrreq(_vc: *const afs_vl_cursor) {
 
 pub unsafe fn afs_end_vlserver_operation(vc: *mut afs_vl_cursor) -> i32 {
     let net = (*(*vc).cell).net;
-    match (*vc).cumul_error.error {
-        -EDESTADDRREQ | -EADDRNOTAVAIL | -ENETUNREACH | -EHOSTUNREACH =>
+    match -((*vc).cumul_error.error) {
+        EDESTADDRREQ | EADDRNOTAVAIL | ENETUNREACH | EHOSTUNREACH =>
             afs_vl_dump_edestaddrreq(vc),
         _ => {}
     }

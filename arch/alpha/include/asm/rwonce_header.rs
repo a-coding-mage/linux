@@ -5,7 +5,7 @@
 
 // The original header is guarded by CONFIG_SMP.  The following item is
 // emitted only when the corresponding Rust configuration is enabled.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 mod config_smp {
     // Supplied by the Alpha barrier dependency (asm/barrier.h).
     unsafe extern "C" {

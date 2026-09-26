@@ -30,7 +30,7 @@ extern "C" {
 }
 
 // The following declarations are enabled when CONFIG_DRM_AMD_DC_KUNIT_TEST is enabled.
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 extern "C" {
     pub fn build_pm_display_cfg(
         pm_display_cfg: *mut amd_pp_display_configuration,

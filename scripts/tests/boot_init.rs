@@ -168,6 +168,232 @@ fn prepare_failslab(stack_filter: bool) -> io::Result<()> {
     )
 }
 
+fn cpuset_invalid(message: impl Into<String>) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message.into())
+}
+
+fn cpuset_readback(path: &str, expected: &str) -> io::Result<()> {
+    if fs::read_to_string(path)?.trim() != expected {
+        return Err(cpuset_invalid(format!("unexpected cpuset state: {path}")));
+    }
+    Ok(())
+}
+
+fn cpuset_write(path: &str, value: &str) -> io::Result<()> {
+    fs::OpenOptions::new().write(true).open(path)?.write_all(value.as_bytes())?;
+    cpuset_readback(path, value)
+}
+
+fn cpuset_online(mut read: impl FnMut(&str) -> io::Result<String>) -> io::Result<()> {
+    for (path, expected) in [
+        ("/sys/devices/system/cpu/online", "0-1"),
+        ("/sys/devices/system/cpu/cpu1/online", "1"),
+    ] {
+        let actual = read(path)?;
+        if actual.trim() != expected {
+            return Err(cpuset_invalid(format!("cpuset hotplug prerequisite/restore failed: {path}: expected {expected}, got {actual:?}")));
+        }
+    }
+    Ok(())
+}
+
+fn cpuset_restore_helper(
+    base: bool,
+    mut read: impl FnMut() -> io::Result<String>,
+    mut write: impl FnMut(&str) -> io::Result<()>,
+) -> io::Result<()> {
+    // Legacy hotplug removes CPU1 from the child's configured mask. Bringing
+    // CPU1 online does not restore it; verify that behavior before cleanup.
+    if read()?.trim() != if base { "0-1" } else { "0" } {
+        return Err(cpuset_invalid("unexpected cpuset-v1 helper mask after original test"));
+    }
+    if !base {
+        write("0-1")?;
+        if read()?.trim() != "0-1" {
+            return Err(cpuset_invalid("cpuset-v1 helper mask restore failed"));
+        }
+    }
+    Ok(())
+}
+
+fn cpuset_result(base: bool, status: Option<i32>, stdout: &[u8], stderr: &[u8]) -> io::Result<()> {
+    const WRITES: &[&str] = &[
+        "cpuset.cpus 0-1", "cpuset.mem_exclusive 1", "cpuset.mem_exclusive 0",
+        "cpuset.mem_hardwall 1", "cpuset.mem_hardwall 0", "cpuset.memory_migrate 1",
+        "cpuset.memory_migrate 0", "cpuset.memory_spread_page 1", "cpuset.memory_spread_page 0",
+        "cpuset.memory_spread_slab 1", "cpuset.memory_spread_slab 0", "cpuset.mems 0",
+        "cpuset.sched_load_balance 1", "cpuset.sched_load_balance 0",
+        "cpuset.sched_relax_domain_level 2", "cpuset.memory_pressure_enabled 1",
+        "cpuset.memory_pressure_enabled 0",
+    ];
+    let mut expected = String::new();
+    if base {
+        for value in WRITES {
+            expected.push_str("testing ");
+            expected.push_str(value);
+            expected.push('\n');
+        }
+    }
+    expected.push_str("Test PASSED\n");
+    if status != Some(0) || stdout != expected.as_bytes() || !stderr.is_empty() {
+        return Err(cpuset_invalid(format!(
+            "original cpuset-v1 {} failed/skipped: status={status:?}, stdout={:?}, stderr={:?}",
+            if base { "base" } else { "hotplug" },
+            String::from_utf8_lossy(stdout), String::from_utf8_lossy(stderr)
+        )));
+    }
+    Ok(())
+}
+
+fn cpuset_finish(result: io::Result<()>, cleanup: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
+    // Restore the isolated guest even when an unchanged selftest fails early.
+    let restored = cleanup();
+    match (result, restored) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(test), Err(cleanup)) => Err(cpuset_invalid(format!("{test}; cleanup failed: {cleanup}"))),
+    }
+}
+
+fn cpuset_mount(source: &std::ffi::CStr, target: &std::ffi::CStr, kind: &std::ffi::CStr,
+                options: Option<&std::ffi::CStr>) -> io::Result<()> {
+    unsafe extern "C" {
+        fn mount(source: *const std::ffi::c_char, target: *const std::ffi::c_char,
+                 filesystem: *const std::ffi::c_char, flags: std::ffi::c_ulong,
+                 data: *const std::ffi::c_void) -> std::ffi::c_int;
+    }
+    // SAFETY: the strings and optional mount data live through this call.
+    if unsafe { mount(source.as_ptr(), target.as_ptr(), kind.as_ptr(), 0,
+                      options.map_or(std::ptr::null(), |value| value.as_ptr().cast())) } != 0 {
+        return Err(io::Error::last_os_error());
+    }
+    Ok(())
+}
+
+fn cpuset_tool_result(bash: bool, status: Option<i32>, stdout: &[u8], stderr: &[u8]) -> io::Result<()> {
+    if status != Some(0) || !stderr.is_empty() {
+        return Err(cpuset_invalid("cpuset userspace prerequisite command failed"));
+    }
+    if bash {
+        if !stdout.starts_with(b"GNU bash, version ") {
+            return Err(cpuset_invalid("cpuset-v1 requires GNU Bash"));
+        }
+    } else {
+        // Keep this list in sync with boot_kernel.py's staged applet links.
+        for name in ["awk", "cat", "grep", "head", "id", "mkdir", "mount", "rmdir", "sleep"] {
+            if !stdout.split(|byte| *byte == b'\n').any(|line| line == name.as_bytes()) {
+                return Err(cpuset_invalid(format!("BusyBox lacks required cpuset-v1 applet: {name}")));
+            }
+        }
+    }
+    Ok(())
+}
+
+fn cpuset_command(program: &str) -> std::process::Command {
+    let mut command = std::process::Command::new(program);
+    command.env_clear().env("PATH", "/bin").env("LC_ALL", "C")
+        .env("LD_LIBRARY_PATH", "/cpuset-runtime");
+    command
+}
+
+fn cpuset_children() -> io::Result<Vec<std::path::PathBuf>> {
+    let mut children = Vec::new();
+    for entry in fs::read_dir("/cpuset-v1")? {
+        let entry = entry?;
+        if entry.file_type()?.is_dir() {
+            children.push(entry.path());
+        }
+    }
+    children.sort();
+    Ok(children)
+}
+
+fn run_cpuset_v1(log: &mut impl Write) -> io::Result<()> {
+    unsafe extern "C" {
+        fn geteuid() -> std::ffi::c_uint;
+        fn umount2(target: *const std::ffi::c_char, flags: std::ffi::c_int) -> std::ffi::c_int;
+    }
+    // SAFETY: geteuid has no arguments or memory preconditions.
+    if std::process::id() != 1 || !cfg!(any(target_arch = "x86_64", target_arch = "aarch64")) || unsafe { geteuid() } != 0 {
+        return Err(cpuset_invalid("cpuset-v1 requires the supplied target root userspace"));
+    }
+    if fs::read("/cpuset-v1-setup")? != b"cpuset-v1\n" {
+        return Err(cpuset_invalid("invalid cpuset-v1 setup plan"));
+    }
+    for (bash, program, argument) in [(true, "/bin/bash", "--version"), (false, "/bin/busybox", "--list")] {
+        let output = cpuset_command(program).arg(argument).output()?;
+        cpuset_tool_result(bash, output.status.code(), &output.stdout, &output.stderr)?;
+    }
+    for path in ["/proc", "/sys", "/cpuset-v1"] {
+        fs::create_dir_all(path)?;
+    }
+    cpuset_mount(c"proc", c"/proc", c"proc", None)?;
+    cpuset_mount(c"sysfs", c"/sys", c"sysfs", None)?;
+    cpuset_online(|path| fs::read_to_string(path))?;
+    cpuset_mount(c"cpuset", c"/cpuset-v1", c"cgroup", Some(c"cpuset"))?;
+    cpuset_readback("/cpuset-v1/cpuset.cpus", "0-1")?;
+    cpuset_readback("/cpuset-v1/cpuset.mems", "0")?;
+    if !cpuset_children()?.is_empty() {
+        return Err(cpuset_invalid("cpuset-v1 hierarchy is not private to this fixture"));
+    }
+    let balance = fs::read_to_string("/cpuset-v1/cpuset.sched_load_balance")?;
+    let pressure = fs::read_to_string("/cpuset-v1/cpuset.memory_pressure_enabled")?;
+    let result = (|| {
+        // Root balancing normally bypasses union-find. An overlapping sibling
+        // makes the unchanged tests enter cpuset1_generate_sched_domains' merge.
+        cpuset_write("/cpuset-v1/cpuset.sched_load_balance", "0")?;
+        fs::create_dir("/cpuset-v1/union-find-overlap")?;
+        cpuset_write("/cpuset-v1/union-find-overlap/cpuset.cpus", "0-1")?;
+        cpuset_write("/cpuset-v1/union-find-overlap/cpuset.mems", "0")?;
+        cpuset_write("/cpuset-v1/union-find-overlap/cpuset.sched_load_balance", "1")?;
+        write_record(log, "LUPOS_CPUSET_V1_SETUP_OK cpus=0-1 mems=0 overlap=0-1 root_load_balance=0")?;
+        for (base, script, marker) in [
+            (true, "/cpuset-tests/test_cpuset_v1_base.sh", "LUPOS_CPUSET_V1_BASE_OK"),
+            (false, "/cpuset-tests/test_cpuset_v1_hp.sh", "LUPOS_CPUSET_V1_HOTPLUG_OK"),
+        ] {
+            let output = cpuset_command("/bin/bash").arg(script).output()?;
+            cpuset_result(base, output.status.code(), &output.stdout, &output.stderr)?;
+            for line in String::from_utf8_lossy(&output.stdout).lines() {
+                write_record(log, &format!("cpuset-v1 original output: {line}"))?;
+            }
+            cpuset_online(|path| fs::read_to_string(path))?;
+            cpuset_readback("/cpuset-v1/cpuset.sched_load_balance", "0")?;
+            let helper_cpus = "/cpuset-v1/union-find-overlap/cpuset.cpus";
+            cpuset_restore_helper(base, || fs::read_to_string(helper_cpus),
+                                  |value| cpuset_write(helper_cpus, value))?;
+            if cpuset_children()? != [std::path::PathBuf::from("/cpuset-v1/union-find-overlap")] {
+                return Err(cpuset_invalid("original cpuset-v1 selftest left a child hierarchy"));
+            }
+            write_record(log, marker)?;
+        }
+        Ok(())
+    })();
+    cpuset_finish(result, || {
+        // All paths are on the fresh in-VM hierarchy. Move any task left by a
+        // failed hotplug test back to its root before removing its child.
+        cpuset_write("/sys/devices/system/cpu/cpu1/online", "1")?;
+        for child in cpuset_children()? {
+            for task in fs::read_to_string(child.join("tasks"))?.lines() {
+                fs::OpenOptions::new().write(true).open("/cpuset-v1/tasks")?.write_all(task.as_bytes())?;
+            }
+            fs::remove_dir(child)?;
+        }
+        if !cpuset_children()?.is_empty() {
+            return Err(cpuset_invalid("cpuset-v1 child cleanup incomplete"));
+        }
+        cpuset_write("/cpuset-v1/cpuset.memory_pressure_enabled", pressure.trim())?;
+        cpuset_write("/cpuset-v1/cpuset.sched_load_balance", balance.trim())?;
+        cpuset_online(|path| fs::read_to_string(path))?;
+        // SAFETY: the static target names the private mounted hierarchy.
+        if unsafe { umount2(c"/cpuset-v1".as_ptr(), 0) } != 0 {
+            return Err(io::Error::last_os_error());
+        }
+        fs::remove_dir("/cpuset-v1")?;
+        Ok(())
+    })?;
+    write_record(log, "LUPOS_CPUSET_V1_CLEANUP_OK cpu1=online")
+}
+
 fn main() {
     assert_eq!(std::process::id(), 1);
     // Console TTY writes can interleave with a module's printk output even
@@ -191,6 +417,9 @@ fn main() {
     assert_eq!(file.uid(), 123);
     assert_eq!(file.gid(), 456);
     assert_eq!(file.mode() & 0o777, 0o640);
+    if fs::exists("/cpuset-v1-setup").unwrap() {
+        run_cpuset_v1(&mut log).unwrap();
+    }
     if fs::exists("/failslab-setup").unwrap() {
         let stack_filter = match fs::read("/failslab-setup").unwrap().as_slice() {
             b"failslab-v1\nstacktrace-filter=0\n" => false,
@@ -262,6 +491,86 @@ fn main() {
 mod tests {
     use super::*;
     use std::collections::VecDeque;
+
+    #[test]
+    fn cpuset_runtime_requires_bash_and_every_busybox_applet_in_guest() {
+        let bash = b"GNU bash, version 5.2\n";
+        let applets = b"awk\ncat\ngrep\nhead\nid\nmkdir\nmount\nrmdir\nsleep\n";
+        cpuset_tool_result(true, Some(0), bash, b"").unwrap();
+        cpuset_tool_result(false, Some(0), applets, b"").unwrap();
+        for (shell, output) in [(true, bash.as_slice()), (false, applets.as_slice())] {
+            for code in [None, Some(1), Some(4)] {
+                assert!(cpuset_tool_result(shell, code, output, b"").is_err());
+            }
+            assert!(cpuset_tool_result(shell, Some(0), output, b"warning").is_err());
+            assert!(cpuset_tool_result(shell, Some(0), b"", b"").is_err());
+        }
+        assert!(cpuset_tool_result(true, Some(0), b"not GNU bash, version 5\n", b"").is_err());
+        for missing in applets.split(|byte| *byte == b'\n').filter(|line| !line.is_empty()) {
+            let partial: Vec<u8> = applets.split_inclusive(|byte| *byte == b'\n')
+                .filter(|line| &line[..line.len() - 1] != missing).flatten().copied().collect();
+            assert!(cpuset_tool_result(false, Some(0), &partial, b"").is_err());
+        }
+    }
+
+    #[test]
+    fn cpuset_original_success_is_exact_and_skips_fail() {
+        cpuset_result(false, Some(0), b"Test PASSED\n", b"").unwrap();
+        for (code, stdout, stderr) in [
+            (Some(4), b"Test SKIPPED\n".as_slice(), b"".as_slice()),
+            (Some(1), b"Test PASSED\n", b""),
+            (None, b"Test PASSED\n", b""),
+            (Some(0), b"Test PASSED\n", b"write failed"),
+            (Some(0), b"Test PASSED\nTest PASSED\n", b""),
+            (Some(0), b"", b""),
+        ] {
+            assert!(cpuset_result(false, code, stdout, stderr).is_err());
+        }
+        // A pass printed without all 17 original read/write cases is partial.
+        assert!(cpuset_result(true, Some(0), b"Test PASSED\n", b"").is_err());
+    }
+
+    #[test]
+    fn cpuset_cpu_presence_and_online_restore_are_required() {
+        cpuset_online(|path| Ok(if path.ends_with("cpu1/online") { "1\n" } else { "0-1\n" }.to_owned())).unwrap();
+        for broken in ["0", "0-2", "", "1-2"] {
+            assert!(cpuset_online(|path| Ok(if path.ends_with("cpu1/online") { "1" } else { broken }.to_owned())).is_err());
+            assert!(cpuset_online(|path| Ok(if path.ends_with("cpu1/online") { broken } else { "0-1" }.to_owned())).is_err());
+        }
+        assert!(cpuset_online(|_| Err(io::ErrorKind::NotFound.into())).is_err());
+    }
+
+    #[test]
+    fn cpuset_hotplug_helper_mask_is_checked_then_explicitly_restored() {
+        use std::cell::RefCell;
+        cpuset_restore_helper(true, || Ok("0-1\n".into()), |_| panic!("base needs no restore")).unwrap();
+        let mask = RefCell::new("0\n".to_owned());
+        cpuset_restore_helper(false, || Ok(mask.borrow().clone()), |value| {
+            assert_eq!(value, "0-1");
+            *mask.borrow_mut() = value.to_owned();
+            Ok(())
+        }).unwrap();
+        assert_eq!(*mask.borrow(), "0-1");
+        assert!(cpuset_restore_helper(false, || Ok("0-1".into()), |_| panic!("invalid mask")).is_err());
+        assert!(cpuset_restore_helper(false, || Ok("0".into()), |_| Err(io::ErrorKind::PermissionDenied.into())).is_err());
+        assert!(cpuset_restore_helper(false, || Ok("0".into()), |_| Ok(())).is_err());
+        assert!(cpuset_restore_helper(true, || Ok("0".into()), |_| panic!("invalid base mask")).is_err());
+    }
+
+    #[test]
+    fn cpuset_cleanup_runs_on_failure_and_cannot_hide_failure() {
+        for test_ok in [false, true] {
+            for cleanup_ok in [false, true] {
+                let mut ran = false;
+                let result = cpuset_finish(if test_ok { Ok(()) } else { Err(cpuset_invalid("test")) }, || {
+                    ran = true;
+                    if cleanup_ok { Ok(()) } else { Err(cpuset_invalid("cleanup")) }
+                });
+                assert!(ran);
+                assert_eq!(result.is_ok(), test_ok && cleanup_ok);
+            }
+        }
+    }
 
     #[test]
     fn failslab_controls_are_written_and_verified_before_loading() {

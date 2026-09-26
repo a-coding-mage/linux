@@ -32,20 +32,20 @@ unsafe fn add_bus_probe() -> i32 {
     of_platform_bus_probe(core::ptr::null_mut(), ce4100_ids.as_mut_ptr(), core::ptr::null_mut())
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 pub unsafe fn pcibios_get_phb_of_node(bus: *mut pci_bus) -> *mut device_node {
     let mut np: *mut device_node = core::ptr::null_mut();
-    for_each_node_by_type!(np, b"pci\0".as_ptr() as *const _) {
+    for_each_node_by_type!(np, b"pci\0".as_ptr() as *const _, {
         let mut bus_min: u32 = 0;
         let prop = of_get_property(np, b"bus-range\0".as_ptr() as *const _, core::ptr::null_mut());
         if prop.is_null() { continue; }
         bus_min = be32_to_cpup(prop as *const u32);
         if (*bus).number == bus_min { return np; }
-    }
+    });
     core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn x86_of_pci_irq_enable(dev: *mut pci_dev) -> i32 {
     let mut pin: u8 = 0;
     let ret = pci_read_config_byte(dev, PCI_INTERRUPT_PIN, &mut pin);
@@ -57,17 +57,17 @@ unsafe fn x86_of_pci_irq_enable(dev: *mut pci_dev) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn x86_of_pci_irq_disable(_dev: *mut pci_dev) {}
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 pub unsafe fn x86_of_pci_init() {
     pcibios_enable_irq = Some(x86_of_pci_irq_enable);
     pcibios_disable_irq = Some(x86_of_pci_irq_disable);
 }
 
 unsafe fn dtb_setup_hpet() {
-    #[cfg(feature = "CONFIG_HPET_TIMER")]
+    #[cfg(CONFIG_HPET_TIMER)]
     {
         let dn = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), b"intel,ce4100-hpet\0".as_ptr() as *const _);
         if dn.is_null() { return; }
@@ -78,13 +78,13 @@ unsafe fn dtb_setup_hpet() {
     }
 }
 
-#[cfg(all(feature = "CONFIG_X86_64", feature = "CONFIG_SMP"))]
+#[cfg(all(CONFIG_X86_64, CONFIG_SMP))]
 const WAKEUP_MAILBOX_SIZE: u64 = 0x1000;
-#[cfg(all(feature = "CONFIG_X86_64", feature = "CONFIG_SMP"))]
+#[cfg(all(CONFIG_X86_64, CONFIG_SMP))]
 const WAKEUP_MAILBOX_ALIGN: u64 = 0x1000;
 
 unsafe fn dtb_wakeup_mailbox_setup() {
-    #[cfg(all(feature = "CONFIG_X86_64", feature = "CONFIG_SMP"))]
+    #[cfg(all(CONFIG_X86_64, CONFIG_SMP))]
     {
         let node = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), b"intel,wakeup-mailbox\0".as_ptr() as *const _);
         if node.is_null() { return; }
@@ -96,22 +96,22 @@ unsafe fn dtb_wakeup_mailbox_setup() {
         acpi_setup_mp_wakeup_mailbox(res.start);
         of_node_put(node);
     }
-    #[cfg(not(all(feature = "CONFIG_X86_64", feature = "CONFIG_SMP")))]
+    #[cfg(not(all(CONFIG_X86_64, CONFIG_SMP)))]
     { let _ = -EOPNOTSUPP; }
 }
 
-#[cfg(feature = "CONFIG_X86_LOCAL_APIC")]
+#[cfg(CONFIG_X86_LOCAL_APIC)]
 unsafe fn dtb_cpu_setup() {
     let mut dn: *mut device_node = core::ptr::null_mut();
-    for_each_of_cpu_node!(dn) {
+    for_each_of_cpu_node!(dn, {
         let apic_id = of_get_cpu_hwid(dn, 0);
         if apic_id == !0u32 { pr_warn!(b"%pOF: missing local APIC ID\n", dn); continue; }
         topology_register_apic(apic_id, CPU_ACPIID_INVALID, true);
         set_apicid_to_node(apic_id, of_node_to_nid(dn));
-    }
+    });
 }
 
-#[cfg(feature = "CONFIG_X86_LOCAL_APIC")]
+#[cfg(CONFIG_X86_LOCAL_APIC)]
 unsafe fn dtb_lapic_setup() {
     let dn = of_find_compatible_node(core::ptr::null_mut(), core::ptr::null_mut(), b"intel,ce4100-lapic\0".as_ptr() as *const _);
     let mut r = core::mem::zeroed::<resource>();
@@ -123,13 +123,13 @@ unsafe fn dtb_lapic_setup() {
     pr_info!(b"%s compatibility mode.\n", if pic_mode { b"IMCR and PIC\0".as_ptr() } else { b"Virtual Wire\0".as_ptr() });
 }
 
-#[cfg(feature = "CONFIG_X86_IO_APIC")]
+#[cfg(CONFIG_X86_IO_APIC)]
 static mut ioapic_id: u32 = 0;
 
 #[repr(C)]
 struct of_ioapic_type { out_type: u32, is_level: u32, active_low: u32 }
 
-#[cfg(feature = "CONFIG_X86_IO_APIC")]
+#[cfg(CONFIG_X86_IO_APIC)]
 static mut of_ioapic_type: [of_ioapic_type; 4] = [
     of_ioapic_type { out_type: IRQ_TYPE_EDGE_FALLING, is_level: 0, active_low: 1 },
     of_ioapic_type { out_type: IRQ_TYPE_LEVEL_HIGH, is_level: 1, active_low: 0 },
@@ -137,7 +137,7 @@ static mut of_ioapic_type: [of_ioapic_type; 4] = [
     of_ioapic_type { out_type: IRQ_TYPE_EDGE_RISING, is_level: 0, active_low: 0 },
 ];
 
-#[cfg(feature = "CONFIG_X86_IO_APIC")]
+#[cfg(CONFIG_X86_IO_APIC)]
 unsafe fn dt_irqdomain_alloc(domain: *mut irq_domain, virq: u32, nr_irqs: u32, arg: *mut core::ffi::c_void) -> i32 {
     let fwspec = arg as *mut irq_fwspec;
     if WARN_ON!((*fwspec).param_count < 2) { return -EINVAL; }
@@ -151,7 +151,7 @@ unsafe fn dt_irqdomain_alloc(domain: *mut irq_domain, virq: u32, nr_irqs: u32, a
     mp_irqdomain_alloc(domain, virq, nr_irqs, &mut tmp)
 }
 
-#[cfg(feature = "CONFIG_X86_IO_APIC")]
+#[cfg(CONFIG_X86_IO_APIC)]
 unsafe fn dtb_add_ioapic(dn: *mut device_node) {
     let mut r = core::mem::zeroed::<resource>();
     let mut cfg = ioapic_domain_cfg { type_: IOAPIC_DOMAIN_DYNAMIC, ops: &ioapic_irq_domain_ops, dev: dn };
@@ -160,17 +160,17 @@ unsafe fn dtb_add_ioapic(dn: *mut device_node) {
 }
 
 unsafe fn dtb_ioapic_setup() {
-    #[cfg(feature = "CONFIG_X86_IO_APIC")]
+    #[cfg(CONFIG_X86_IO_APIC)]
     {
         let mut dn: *mut device_node = core::ptr::null_mut();
-        for_each_compatible_node!(dn, core::ptr::null_mut(), b"intel,ce4100-ioapic\0".as_ptr() as *const _) { dtb_add_ioapic(dn); }
+        for_each_compatible_node!(dn, core::ptr::null_mut(), b"intel,ce4100-ioapic\0".as_ptr() as *const _, { dtb_add_ioapic(dn); });
         if nr_ioapics != 0 { of_ioapic = 1; return; }
         pr_err!(b"Error: No information about IO-APIC in OF.\n");
     }
 }
 
 unsafe fn dtb_apic_setup() {
-    #[cfg(feature = "CONFIG_X86_LOCAL_APIC")] { dtb_lapic_setup(); dtb_cpu_setup(); }
+    #[cfg(CONFIG_X86_LOCAL_APIC)] { dtb_lapic_setup(); dtb_cpu_setup(); }
     dtb_ioapic_setup();
 }
 
@@ -180,7 +180,7 @@ unsafe fn x86_dtb_parse_smp_config() {
 }
 
 pub unsafe fn x86_flattree_get_config() {
-    #[cfg(feature = "CONFIG_OF_EARLY_FLATTREE")]
+    #[cfg(CONFIG_OF_EARLY_FLATTREE)]
     {
         let mut map_len: u32;
         let mut dt: *mut core::ffi::c_void;

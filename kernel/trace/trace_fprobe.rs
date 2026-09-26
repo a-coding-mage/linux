@@ -11,27 +11,27 @@ use core::ffi::{c_char, c_int, c_ulong, c_void};
 extern "C" {
     static mut tracepoint_user_list: list_head; static mut tracepoint_user_mutex: mutex;
     static mut event_mutex: mutex;
-    fn tracepoint_probe_register_prio_may_exist(*mut tracepoint, *mut c_void, *mut c_void, c_int)->c_int;
-    fn tracepoint_probe_unregister(*mut tracepoint,*mut c_void,*mut c_void)->c_int;
-    fn find_tracepoint(*const c_char,*mut *mut module)->*mut tracepoint;
-    fn tracepoint_user_put(*mut tracepoint_user); fn tracepoint_user_register(*mut tracepoint_user)->c_int;
-    fn tracepoint_user_unregister(*mut tracepoint_user); fn tracepoint_user_ip(*mut tracepoint_user)->c_ulong;
-    fn __tracepoint_user_free(*mut tracepoint_user); fn kfree(*mut c_void); fn kzalloc(usize,c_int)->*mut c_void;
-    fn kstrdup(*const c_char,c_int)->*mut c_char; fn strcmp(*const c_char,*const c_char)->c_int;
-    fn trace_probe_is_enabled(*mut trace_probe)->bool; fn trace_probe_name(*mut trace_probe)->*const c_char;
-    fn trace_probe_group_name(*mut trace_probe)->*const c_char; fn container_of(*mut c_void,usize,usize)->*mut c_void;
-    fn fprobe_is_registered(*mut fprobe)->bool; fn process_common_fetch_insn(*mut fetch_insn,*mut c_ulong)->c_int;
-    fn process_fetch_insn_bottom(*mut fetch_insn,c_ulong,*mut c_void,*mut c_void)->c_int;
-    fn ftrace_regs_get_kernel_stack_nth(*mut ftrace_regs,u32)->c_ulong; fn ftrace_regs_get_stack_pointer(*mut ftrace_regs)->c_ulong;
-    fn ftrace_regs_get_return_value(*mut ftrace_regs)->c_ulong; fn ftrace_regs_get_argument(*mut ftrace_regs,u32)->c_ulong;
-    fn trace_probe_cleanup(*mut trace_probe); fn trace_probe_init(*mut trace_probe,*const c_char,*const c_char,bool,c_int)->c_int;
-    fn dyn_event_init(*mut dyn_event,*mut dyn_event_operations); fn register_fprobe(*mut fprobe,*const c_char,*const c_void)->c_int;
-    fn unregister_fprobe(*mut fprobe); fn register_fprobe_ips(*mut fprobe,*mut c_ulong,usize)->c_int;
-    fn trace_probe_register_event_call(*mut trace_probe)->c_int; fn trace_probe_unregister_event_call(*mut trace_probe)->c_int;
-    fn trace_probe_load_flag(*mut trace_probe)->u32; fn trace_probe_append(*mut trace_probe,*mut trace_probe)->c_int;
-    fn trace_probe_compare_arg_type(*mut trace_probe,*mut trace_probe)->c_int; fn trace_probe_unlink(*mut trace_probe);
-    fn trace_probe_event_call(*mut trace_probe)->*mut trace_event_call; fn dyn_event_add(*mut dyn_event,*mut trace_event_call);
-    fn dyn_event_remove(*mut dyn_event); fn traceprobe_update_arg(*mut c_void)->c_int;
+    fn tracepoint_probe_register_prio_may_exist(_: *mut tracepoint, _: *mut c_void, _: *mut c_void, _: c_int)->c_int;
+    fn tracepoint_probe_unregister(_: *mut tracepoint,_: *mut c_void,_: *mut c_void)->c_int;
+    fn find_tracepoint(_: *const c_char,_: *mut *mut module)->*mut tracepoint;
+    fn tracepoint_user_put(_: *mut tracepoint_user); fn tracepoint_user_register(_: *mut tracepoint_user)->c_int;
+    fn tracepoint_user_unregister(_: *mut tracepoint_user); fn tracepoint_user_ip(_: *mut tracepoint_user)->c_ulong;
+    fn __tracepoint_user_free(_: *mut tracepoint_user); fn kfree(_: *mut c_void); fn kzalloc(_: usize,_: c_int)->*mut c_void;
+    fn kstrdup(_: *const c_char,_: c_int)->*mut c_char; fn strcmp(_: *const c_char,_: *const c_char)->c_int;
+    fn trace_probe_is_enabled(_: *mut trace_probe)->bool; fn trace_probe_name(_: *mut trace_probe)->*const c_char;
+    fn trace_probe_group_name(_: *mut trace_probe)->*const c_char; fn container_of(_: *mut c_void,_: usize,_: usize)->*mut c_void;
+    fn fprobe_is_registered(_: *mut fprobe)->bool; fn process_common_fetch_insn(_: *mut fetch_insn,_: *mut c_ulong)->c_int;
+    fn process_fetch_insn_bottom(_: *mut fetch_insn,_: c_ulong,_: *mut c_void,_: *mut c_void)->c_int;
+    fn ftrace_regs_get_kernel_stack_nth(_: *mut ftrace_regs,_: u32)->c_ulong; fn ftrace_regs_get_stack_pointer(_: *mut ftrace_regs)->c_ulong;
+    fn ftrace_regs_get_return_value(_: *mut ftrace_regs)->c_ulong; fn ftrace_regs_get_argument(_: *mut ftrace_regs,_: u32)->c_ulong;
+    fn trace_probe_cleanup(_: *mut trace_probe); fn trace_probe_init(_: *mut trace_probe,_: *const c_char,_: *const c_char,_: bool,_: c_int)->c_int;
+    fn dyn_event_init(_: *mut dyn_event,_: *mut dyn_event_operations); fn register_fprobe(_: *mut fprobe,_: *const c_char,_: *const c_void)->c_int;
+    fn unregister_fprobe(_: *mut fprobe); fn register_fprobe_ips(_: *mut fprobe,_: *mut c_ulong,_: usize)->c_int;
+    fn trace_probe_register_event_call(_: *mut trace_probe)->c_int; fn trace_probe_unregister_event_call(_: *mut trace_probe)->c_int;
+    fn trace_probe_load_flag(_: *mut trace_probe)->u32; fn trace_probe_append(_: *mut trace_probe,_: *mut trace_probe)->c_int;
+    fn trace_probe_compare_arg_type(_: *mut trace_probe,_: *mut trace_probe)->c_int; fn trace_probe_unlink(_: *mut trace_probe);
+    fn trace_probe_event_call(_: *mut trace_probe)->*mut trace_event_call; fn dyn_event_add(_: *mut dyn_event,_: *mut trace_event_call);
+    fn dyn_event_remove(_: *mut dyn_event); fn traceprobe_update_arg(_: *mut c_void)->c_int;
 }
 
 // Opaque kernel types and constants are provided by the kernel translation unit.

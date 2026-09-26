@@ -112,31 +112,31 @@ extern "C" {
 /* CONFIG_GENERIC_PHY is a build-time condition; both API variants are preserved below. */
 #[cfg(generic_phy)]
 extern "C" {
-    pub fn phy_pm_runtime_get(*mut phy) -> i32; pub fn phy_pm_runtime_get_sync(*mut phy) -> i32;
-    pub fn phy_pm_runtime_put(*mut phy); pub fn phy_pm_runtime_put_sync(*mut phy) -> i32;
-    pub fn phy_init(*mut phy) -> i32; pub fn phy_exit(*mut phy) -> i32;
-    pub fn phy_power_on(*mut phy) -> i32; pub fn phy_power_off(*mut phy) -> i32;
-    pub fn phy_set_mode_ext(*mut phy, phy_mode, i32) -> i32;
-    pub fn phy_set_media(*mut phy, phy_media) -> i32; pub fn phy_set_speed(*mut phy, i32) -> i32;
-    pub fn phy_configure(*mut phy, *mut phy_configure_opts) -> i32;
-    pub fn phy_validate(*mut phy, phy_mode, i32, *mut phy_configure_opts) -> i32;
-    pub fn phy_reset(*mut phy) -> i32; pub fn phy_calibrate(*mut phy) -> i32;
-    pub fn phy_notify_connect(*mut phy, i32) -> i32; pub fn phy_notify_disconnect(*mut phy, i32) -> i32;
-    pub fn phy_notify_state(*mut phy, phy_notify) -> i32;
-    pub fn phy_get(*mut device, *const i8) -> *mut phy; pub fn devm_phy_get(*mut device, *const i8) -> *mut phy;
-    pub fn devm_phy_optional_get(*mut device, *const i8) -> *mut phy;
-    pub fn devm_of_phy_get(*mut device, *mut device_node, *const i8) -> *mut phy;
-    pub fn devm_of_phy_optional_get(*mut device, *mut device_node, *const i8) -> *mut phy;
-    pub fn devm_of_phy_get_by_index(*mut device, *mut device_node, i32) -> *mut phy;
-    pub fn of_phy_put(*mut phy); pub fn phy_put(*mut device, *mut phy); pub fn devm_phy_put(*mut device, *mut phy);
-    pub fn of_phy_get(*mut device_node, *const i8) -> *mut phy;
-    pub fn of_phy_simple_xlate(*mut device, *const of_phandle_args) -> *mut phy;
-    pub fn phy_create(*mut device, *mut device_node, *const phy_ops) -> *mut phy;
-    pub fn devm_phy_create(*mut device, *mut device_node, *const phy_ops) -> *mut phy;
-    pub fn phy_destroy(*mut phy); pub fn devm_phy_destroy(*mut device, *mut phy);
-    pub fn of_phy_provider_unregister(*mut phy_provider); pub fn devm_of_phy_provider_unregister(*mut device, *mut phy_provider);
-    pub fn phy_create_lookup(*mut phy, *const i8, *const i8) -> i32;
-    pub fn phy_remove_lookup(*mut phy, *const i8, *const i8);
+    pub fn phy_pm_runtime_get(_: *mut phy) -> i32; pub fn phy_pm_runtime_get_sync(_: *mut phy) -> i32;
+    pub fn phy_pm_runtime_put(_: *mut phy); pub fn phy_pm_runtime_put_sync(_: *mut phy) -> i32;
+    pub fn phy_init(_: *mut phy) -> i32; pub fn phy_exit(_: *mut phy) -> i32;
+    pub fn phy_power_on(_: *mut phy) -> i32; pub fn phy_power_off(_: *mut phy) -> i32;
+    pub fn phy_set_mode_ext(_: *mut phy, _: phy_mode, _: i32) -> i32;
+    pub fn phy_set_media(_: *mut phy, _: phy_media) -> i32; pub fn phy_set_speed(_: *mut phy, _: i32) -> i32;
+    pub fn phy_configure(_: *mut phy, _: *mut phy_configure_opts) -> i32;
+    pub fn phy_validate(_: *mut phy, _: phy_mode, _: i32, _: *mut phy_configure_opts) -> i32;
+    pub fn phy_reset(_: *mut phy) -> i32; pub fn phy_calibrate(_: *mut phy) -> i32;
+    pub fn phy_notify_connect(_: *mut phy, _: i32) -> i32; pub fn phy_notify_disconnect(_: *mut phy, _: i32) -> i32;
+    pub fn phy_notify_state(_: *mut phy, _: phy_notify) -> i32;
+    pub fn phy_get(_: *mut device, _: *const i8) -> *mut phy; pub fn devm_phy_get(_: *mut device, _: *const i8) -> *mut phy;
+    pub fn devm_phy_optional_get(_: *mut device, _: *const i8) -> *mut phy;
+    pub fn devm_of_phy_get(_: *mut device, _: *mut device_node, _: *const i8) -> *mut phy;
+    pub fn devm_of_phy_optional_get(_: *mut device, _: *mut device_node, _: *const i8) -> *mut phy;
+    pub fn devm_of_phy_get_by_index(_: *mut device, _: *mut device_node, _: i32) -> *mut phy;
+    pub fn of_phy_put(_: *mut phy); pub fn phy_put(_: *mut device, _: *mut phy); pub fn devm_phy_put(_: *mut device, _: *mut phy);
+    pub fn of_phy_get(_: *mut device_node, _: *const i8) -> *mut phy;
+    pub fn of_phy_simple_xlate(_: *mut device, _: *const of_phandle_args) -> *mut phy;
+    pub fn phy_create(_: *mut device, _: *mut device_node, _: *const phy_ops) -> *mut phy;
+    pub fn devm_phy_create(_: *mut device, _: *mut device_node, _: *const phy_ops) -> *mut phy;
+    pub fn phy_destroy(_: *mut phy); pub fn devm_phy_destroy(_: *mut device, _: *mut phy);
+    pub fn of_phy_provider_unregister(_: *mut phy_provider); pub fn devm_of_phy_provider_unregister(_: *mut device, _: *mut phy_provider);
+    pub fn phy_create_lookup(_: *mut phy, _: *const i8, _: *const i8) -> i32;
+    pub fn phy_remove_lookup(_: *mut phy, _: *const i8, _: *const i8);
 }
 
 #[inline] pub unsafe fn phy_get_mode(phy: *mut phy) -> phy_mode { (*phy).attrs.mode }

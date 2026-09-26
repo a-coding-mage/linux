@@ -287,7 +287,7 @@ const AMOPHI_SADR:u32=0x000000FF; const AMOPHI_SE:u32=0x80000000;
 #[repr(C)] #[derive(Copy,Clone,Default)] pub struct amixer_dirty{pub data:u16}
 impl amixer_dirty{fn amoplo(&self)->bool{self.data&1!=0} fn set_amoplo(&mut self,v:bool){if v{self.data|=1}else{self.data&=!1}} fn amophi(&self)->bool{self.data&2!=0} fn set_amophi(&mut self,v:bool){if v{self.data|=2}else{self.data&=!2}}}
 #[repr(C)] #[derive(Default)] pub struct amixer_rsc_ctrl_blk{pub amoplo:u32,pub amophi:u32,pub dirty:amixer_dirty}
-macro_rules! amixer_set_lo{($n:ident,$m:ident)=>{unsafe extern "C" fn $n(blk:*mut c_void,v:u32)->i32{let c=&mut *(blk as *mut amixer_rsc_ctrl_blk); set_field(&mut c.amoplo,$m,v); c.dirty.set_amoplo(true);0}}}
+macro_rules! amixer_set_lo{($n:ident,$m:ident) => {unsafe extern "C" fn $n(blk:*mut c_void,v:u32)->i32{let c=&mut *(blk as *mut amixer_rsc_ctrl_blk); set_field(&mut c.amoplo,$m,v); c.dirty.set_amoplo(true);0}}}
 amixer_set_lo!(amixer_set_mode,AMOPLO_M); amixer_set_lo!(amixer_set_x,AMOPLO_X); amixer_set_lo!(amixer_set_y,AMOPLO_Y);
 unsafe extern "C" fn amixer_set_iv(_blk:*mut c_void,_iv:u32)->i32{0}
 unsafe extern "C" fn amixer_set_sadr(blk:*mut c_void,sadr:u32)->i32{let c=&mut *(blk as *mut amixer_rsc_ctrl_blk); set_field(&mut c.amophi,AMOPHI_SADR,sadr); c.dirty.set_amophi(true);0}
@@ -313,7 +313,7 @@ const SPOCTL_OE:u32=0x00000001; const SPOCTL_OS:u32=0x0000000E; const SPOCTL_RIV
 #[repr(C)] #[derive(Copy,Clone,Default)] pub struct daio_mgr_dirty{pub data:u32}
 impl daio_mgr_dirty{fn get4(&self,s:u32)->u32{(self.data>>s)&0xf} fn set4_or(&mut self,s:u32,v:u32){self.data|=(v&0xf)<<s} fn clr4_bit(&mut self,s:u32,i:u32){self.data&=!(1<<(s+i))} fn daoimap(&self)->bool{self.data&(1<<16)!=0} fn set_daoimap(&mut self,v:bool){if v{self.data|=1<<16}else{self.data&=!(1<<16)}}}
 #[repr(C)] #[derive(Default)] pub struct daio_mgr_ctrl_blk{pub i2sctl:u32,pub spoctl:u32,pub spictl:u32,pub daoimap:daoimap,pub dirty:daio_mgr_dirty}
-macro_rules! dai_set{($n:ident,$m:ident)=>{unsafe extern "C" fn $n(blk:*mut c_void,v:u32)->i32{let c=&mut *(blk as *mut dai_ctrl_blk); set_field(&mut c.srtctl,$m,v); c.dirty.set_srtctl(true);0}}}
+macro_rules! dai_set{($n:ident,$m:ident) => {unsafe extern "C" fn $n(blk:*mut c_void,v:u32)->i32{let c=&mut *(blk as *mut dai_ctrl_blk); set_field(&mut c.srtctl,$m,v); c.dirty.set_srtctl(true);0}}}
 dai_set!(dai_srt_set_srcr,SRTCTL_SRCR); dai_set!(dai_srt_set_srcl,SRTCTL_SRCL); dai_set!(dai_srt_set_rsr,SRTCTL_RSR); dai_set!(dai_srt_set_drat,SRTCTL_DRAT);
 unsafe extern "C" fn dai_srt_set_ec(blk:*mut c_void,ec:u32)->i32{let c=&mut *(blk as *mut dai_ctrl_blk); set_field(&mut c.srtctl,SRTCTL_EC,if ec!=0{1}else{0}); c.dirty.set_srtctl(true);0}
 unsafe extern "C" fn dai_srt_set_et(blk:*mut c_void,et:u32)->i32{let c=&mut *(blk as *mut dai_ctrl_blk); set_field(&mut c.srtctl,SRTCTL_ET,if et!=0{1}else{0}); c.dirty.set_srtctl(true);0}

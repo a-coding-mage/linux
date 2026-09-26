@@ -31,8 +31,8 @@ macro_rules! GENERIC_MPP {
     ($num:expr, $sel:expr, $input:expr, $output:expr) => {
         /* MPP number */ (($num) & 0xff)
             /* MPP select value */ | ((($sel) & 0xf) << 8)
-            /* may be input signal */ | ((($input != 0) as u32) << 12)
-            /* may be output signal */ | ((($output != 0) as u32) << 13)
+            /* may be $input signal */ | ((($input != 0) as u32) << 12)
+            /* may be $output signal */ | ((($output != 0) as u32) << 13)
     };
 }
 

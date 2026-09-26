@@ -17,13 +17,13 @@ pub struct resource {
 }
 
 /* CONFIG_P2SB build-time condition from <linux/kconfig.h>. */
-#[cfg(feature = "CONFIG_P2SB")]
+#[cfg(CONFIG_P2SB)]
 extern "C" {
     pub fn p2sb_bar(bus: *mut pci_bus, devfn: c_uint, mem: *mut resource) -> c_int;
 }
 
 /* CONFIG_P2SB is not set. */
-#[cfg(not(feature = "CONFIG_P2SB"))]
+#[cfg(not(CONFIG_P2SB))]
 #[inline]
 pub unsafe fn p2sb_bar(_bus: *mut pci_bus, _devfn: c_uint, _mem: *mut resource) -> c_int {
     -19 /* -ENODEV */

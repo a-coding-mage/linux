@@ -12,57 +12,57 @@ extern "C" {
     pub static mut elfcorehdr_size: u64;
     pub static mut dm_crypt_keys_addr: u64;
 
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn elfcorehdr_alloc(addr: *mut u64, size: *mut u64) -> i32;
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn elfcorehdr_free(addr: u64);
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn elfcorehdr_read(buf: *mut i8, count: usize, ppos: *mut u64) -> isize;
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn elfcorehdr_read_notes(buf: *mut i8, count: usize, ppos: *mut u64) -> isize;
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn elfcorehdr_fill_device_ram_ptload_elf64(
         phdr: *mut Elf64_Phdr, paddr: u64, size: u64,
     );
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn remap_oldmem_pfn_range(
         vma: *mut vm_area_struct, from: usize, pfn: usize, size: usize, prot: pgprot_t,
     ) -> i32;
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn copy_oldmem_page(i: *mut iov_iter, pfn: usize, csize: usize, offset: usize) -> isize;
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn copy_oldmem_page_encrypted(
         iter: *mut iov_iter, pfn: usize, csize: usize, offset: usize,
     ) -> isize;
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn vmcore_cleanup();
 
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn register_vmcore_cb(cb: *mut vmcore_cb);
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     pub fn unregister_vmcore_cb(cb: *mut vmcore_cb);
 }
 
 #[inline]
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe fn is_kdump_kernel() -> bool {
     elfcorehdr_addr != ELFCORE_ADDR_MAX
 }
 
 #[inline]
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe fn is_vmcore_usable() -> i32 {
     if elfcorehdr_addr != ELFCORE_ADDR_ERR && elfcorehdr_addr != ELFCORE_ADDR_MAX { 1 } else { 0 }
 }
 
 #[inline]
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe fn vmcore_unusable() {
     elfcorehdr_addr = ELFCORE_ADDR_ERR;
 }
 
 #[inline]
-#[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+#[cfg(not(CONFIG_CRASH_DUMP))]
 pub fn is_kdump_kernel() -> bool { false }
 
 #[repr(C)]
@@ -103,17 +103,17 @@ pub struct vmcoredd_data {
     pub vmcoredd_callback: Option<unsafe extern "C" fn(*mut vmcoredd_data, *mut core::ffi::c_void) -> i32>,
 }
 
-#[cfg(feature = "CONFIG_PROC_VMCORE_DEVICE_DUMP")]
+#[cfg(CONFIG_PROC_VMCORE_DEVICE_DUMP)]
 extern "C" { pub fn vmcore_add_device_dump(data: *mut vmcoredd_data) -> i32; }
 
-#[cfg(not(feature = "CONFIG_PROC_VMCORE_DEVICE_DUMP"))]
+#[cfg(not(CONFIG_PROC_VMCORE_DEVICE_DUMP))]
 #[inline]
 pub unsafe fn vmcore_add_device_dump(_data: *mut vmcoredd_data) -> i32 { -95 }
 
-#[cfg(feature = "CONFIG_PROC_VMCORE")]
+#[cfg(CONFIG_PROC_VMCORE)]
 extern "C" { pub fn read_from_oldmem(iter: *mut iov_iter, count: usize, ppos: *mut u64, encrypted: bool) -> isize; }
 
-#[cfg(not(feature = "CONFIG_PROC_VMCORE"))]
+#[cfg(not(CONFIG_PROC_VMCORE))]
 #[inline]
 pub unsafe fn read_from_oldmem(_iter: *mut iov_iter, _count: usize, _ppos: *mut u64, _encrypted: bool) -> isize { -95 }
 

@@ -252,14 +252,16 @@ static SH_TABLE: &[ShOpcodeInfo] = &[
 	ShOpcodeInfo { name: "", arg: vec![], nibbles: vec![] },
 };
 
-static void print_sh_insn(u32 memaddr, u16 insn)
+static void print_sh_insn(memaddr: u32, insn: u16)
 {
 	int relmask = ~0;
 	int nibs[4] = { (insn >> 12) & 0xf, (insn >> 8) & 0xf, (insn >> 4) & 0xf, insn & 0xf};
 	int lastsp;
 	struct sh_opcode_info *op = sh_table;
 
-	for (; op->name; op++) {
+	for (; (*op).name; op++) {
+		'fail: {
+		'ok: {
 		int n;
 		int imm = 0;
 		int rn = 0;
@@ -269,12 +271,12 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 		int disp_pc_addr = 0;
 
 		for (n = 0; n < 4; n++) {
-			int i = op->nibbles[n];
+			int i = (*op).nibbles[n];
 
 			if (i < 16) {
 				if (nibs[n] == i)
 					continue;
-				goto fail;
+				break 'fail;
 			}
 			switch (i) {
 			case BRANCH_8:
@@ -282,45 +284,45 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 				if (imm & 0x80)
 					imm |= ~0xff;
 				imm = ((char)imm) * 2 + 4 ;
-				goto ok;
+				break 'ok;
 			case BRANCH_12:
 				imm = ((nibs[1]) << 8) | (nibs[2] << 4) | (nibs[3]);
 				if (imm & 0x800)
 					imm |= ~0xfff;
 				imm = imm * 2 + 4;
-				goto ok;
+				break 'ok;
 			case IMM_4:
 				imm = nibs[3];
-				goto ok;
+				break 'ok;
 			case IMM_4BY2:
 				imm = nibs[3] <<1;
-				goto ok;
+				break 'ok;
 			case IMM_4BY4:
 				imm = nibs[3] <<2;
-				goto ok;
+				break 'ok;
 			case IMM_8:
 				imm = (nibs[2] << 4) | nibs[3];
-				goto ok;
+				break 'ok;
 			case PCRELIMM_8BY2:
 				imm = ((nibs[2] << 4) | nibs[3]) <<1;
 				relmask = ~1;
-				goto ok;
+				break 'ok;
 			case PCRELIMM_8BY4:
 				imm = ((nibs[2] << 4) | nibs[3]) <<2;
 				relmask = ~3;
-				goto ok;
+				break 'ok;
 			case IMM_8BY2:
 				imm = ((nibs[2] << 4) | nibs[3]) <<1;
-				goto ok;
+				break 'ok;
 			case IMM_8BY4:
 				imm = ((nibs[2] << 4) | nibs[3]) <<2;
-				goto ok;
+				break 'ok;
 			case DISP_8:
 				imm = (nibs[2] << 4) | (nibs[3]);
-				goto ok;
+				break 'ok;
 			case DISP_4:
 				imm = nibs[3];
-				goto ok;
+				break 'ok;
 			case REG_N:
 				rn = nibs[n];
 				break;
@@ -338,15 +340,15 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 				return;
 			}
 		}
-
-	ok:
-		pr_cont("%-8s  ", op->name);
-		lastsp = (op->arg[0] == A_END);
+		}
+		
+		pr_cont("%-8s  ", (*op).name);
+		lastsp = ((*op).arg[0] == A_END);
 		disp_pc = 0;
-		for (n = 0; n < 6 && op->arg[n] != A_END; n++) {
-			if (n && op->arg[1] != A_END)
+		for (n = 0; n < 6 && (*op).arg[n] != A_END; n++) {
+			if (n && (*op).arg[1] != A_END)
 				pr_cont(", ");
-			switch (op->arg[n]) {
+			switch ((*op).arg[n]) {
 			case A_IMM:
 				pr_cont("#%d", (char)(imm));
 				break;
@@ -488,7 +490,7 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 			}
 		}
 
-		if (disp_pc && strcmp(op->name, "mova") != 0) {
+		if (disp_pc && strcmp((*op).name, "mova") != 0) {
 			u32 val;
 
 			if (relmask == ~1)
@@ -500,7 +502,8 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 		}
 
 		return;
-	fail:
+		}
+		
 		;
 
 	}
@@ -508,18 +511,18 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 	pr_info(".word 0x%x%x%x%x", nibs[0], nibs[1], nibs[2], nibs[3]);
 }
 
-void show_code(struct pt_regs *regs)
+void show_code(pt_regs *regs)
 {
-	unsigned short *pc = (unsigned short *)regs->pc;
+	core::ffi::c_ushort *pc = (*(core::ffi::c_ushort *)regs).pc;
 	long i;
 
-	if (regs->pc & 0x1)
+	if ((*regs).pc & 0x1)
 		return;
 
 	pr_info("Code:\n");
 
 	for (i = -3 ; i < 6 ; i++) {
-		unsigned short insn;
+		core::ffi::c_ushort insn;
 
 		if (__get_user(insn, pc + i)) {
 			pr_err(" (Bad address in pc)\n");
@@ -527,8 +530,8 @@ void show_code(struct pt_regs *regs)
 		}
 
 		pr_info("%s%08lx:  ", (i ? "  " : "->"),
-			(unsigned long)(pc + i));
-		print_sh_insn((unsigned long)(pc + i), insn);
+			(core::ffi::c_ulong)(pc + i));
+		print_sh_insn((core::ffi::c_ulong)(pc + i), insn);
 		pr_cont("\n");
 	}
 

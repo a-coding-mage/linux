@@ -8,29 +8,29 @@
 #[repr(C)]
 pub struct mm_context_t {
     /* The following fields follow the C build-time CONFIG_MMU selection. */
-    #[cfg(not(feature = "CONFIG_MMU"))]
+    #[cfg(not(CONFIG_MMU))]
     pub end_brk: libc::c_ulong,
-    #[cfg(feature = "CONFIG_MMU")]
+    #[cfg(CONFIG_MMU)]
     pub id: atomic_long_t,
 
     pub vdso: *mut core::ffi::c_void,
 
     /* CONFIG_SMP */
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub icache_stale_mask: cpumask_t,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub force_icache_flush: bool,
 
     /* CONFIG_BINFMT_ELF_FDPIC */
-    #[cfg(feature = "CONFIG_BINFMT_ELF_FDPIC")]
+    #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
     pub exec_fdpic_loadmap: libc::c_ulong,
-    #[cfg(feature = "CONFIG_BINFMT_ELF_FDPIC")]
+    #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
     pub interp_fdpic_loadmap: libc::c_ulong,
 
     pub flags: libc::c_ulong,
 
     /* CONFIG_RISCV_ISA_SUPM */
-    #[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+    #[cfg(CONFIG_RISCV_ISA_SUPM)]
     pub pmlen: u8,
 }
 

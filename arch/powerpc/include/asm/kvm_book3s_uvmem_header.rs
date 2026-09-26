@@ -16,7 +16,7 @@ pub struct kvm_memory_slot {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_PPC_UV")]
+#[cfg(CONFIG_PPC_UV)]
 extern "C" {
     pub fn kvmppc_uvmem_init() -> c_int;
     pub fn kvmppc_uvmem_free();
@@ -51,23 +51,23 @@ extern "C" {
     pub fn kvmppc_uvmem_memslot_delete(kvm: *mut kvm, old: *const kvm_memory_slot);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_init() -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_free() {}
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_available() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_slot_init(
     _kvm: *mut kvm,
@@ -76,11 +76,11 @@ pub fn kvmppc_uvmem_slot_init(
     0
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_slot_free(_kvm: *mut kvm, _slot: *const kvm_memory_slot) {}
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_h_svm_page_in(
     _kvm: *mut kvm,
@@ -91,7 +91,7 @@ pub fn kvmppc_h_svm_page_in(
     H_UNSUPPORTED
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_h_svm_page_out(
     _kvm: *mut kvm,
@@ -102,31 +102,31 @@ pub fn kvmppc_h_svm_page_out(
     H_UNSUPPORTED
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_h_svm_init_start(_kvm: *mut kvm) -> c_ulong {
     H_UNSUPPORTED
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_h_svm_init_done(_kvm: *mut kvm) -> c_ulong {
     H_UNSUPPORTED
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_h_svm_init_abort(_kvm: *mut kvm) -> c_ulong {
     H_UNSUPPORTED
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_send_page_to_uv(_kvm: *mut kvm, _gfn: c_ulong) -> c_int {
     -EFAULT
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_drop_pages(
     _free: *const kvm_memory_slot,
@@ -135,7 +135,7 @@ pub fn kvmppc_uvmem_drop_pages(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_memslot_create(
     _kvm: *mut kvm,
@@ -144,7 +144,7 @@ pub fn kvmppc_uvmem_memslot_create(
     H_UNSUPPORTED as c_int
 }
 
-#[cfg(not(feature = "CONFIG_PPC_UV"))]
+#[cfg(not(CONFIG_PPC_UV))]
 #[inline]
 pub fn kvmppc_uvmem_memslot_delete(_kvm: *mut kvm, _old: *const kvm_memory_slot) {}
 

@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Direct Rust translation of arch/arm64/mm/hugetlbpage.c. */
 
-#[cfg(feature = "CONFIG_CMA")]
+#[cfg(CONFIG_CMA)]
 pub unsafe fn arch_hugetlb_cma_order() -> ::core::ffi::c_uint {
     if pud_sect_supported() { PUD_SHIFT - PAGE_SHIFT } else { CONT_PMD_SHIFT - PAGE_SHIFT }
 }
 
 unsafe fn __hugetlb_valid_size(size: ::core::ffi::c_ulong) -> bool {
     match size {
-        #[cfg(not(feature = "__PAGETABLE_PMD_FOLDED"))]
+        case if case == #[cfg(not(feature = "__PAGETABLE_PMD_FOLDED"))]
         PUD_SIZE => pud_sect_supported(),
-        CONT_PMD_SIZE | PMD_SIZE | CONT_PTE_SIZE => true,
+        case if case == CONT_PMD_SIZE || case == PMD_SIZE || case == CONT_PTE_SIZE => true,
         _ => false,
     }
 }
 
-#[cfg(feature = "CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION")]
+#[cfg(CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION)]
 pub unsafe fn arch_hugetlb_migration_supported(h: *mut hstate) -> bool {
     let pagesize = huge_page_size(h);
     if !__hugetlb_valid_size(pagesize) {
@@ -130,16 +130,16 @@ pub unsafe fn arch_make_huge_pte(mut entry: pte_t, shift: ::core::ffi::c_uint, _
 }
 
 pub unsafe fn huge_pte_clear(mm: *mut mm_struct, mut addr: ::core::ffi::c_ulong, mut ptep: *mut pte_t, sz: ::core::ffi::c_ulong) { let mut pgsize=0usize; let n=num_contig_ptes(sz,&mut pgsize); for _ in 0..n { __pte_clear(mm,addr,ptep); addr+=pgsize as _; ptep=ptep.add(1); } }
-pub unsafe fn huge_ptep_get_and_clear(mm:*mut mm_struct,addr:::core::ffi::c_ulong,ptep:*mut pte_t,sz:::core::ffi::c_ulong)->pte_t { let mut s=0usize; let n=num_contig_ptes(sz,&mut s); get_clear_contig(mm,addr,ptep,s as _,n as _) }
+pub unsafe fn huge_ptep_get_and_clear(mm:*mut mm_struct,addr: ::core::ffi::c_ulong,ptep:*mut pte_t,sz: ::core::ffi::c_ulong)->pte_t { let mut s=0usize; let n=num_contig_ptes(sz,&mut s); get_clear_contig(mm,addr,ptep,s as _,n as _) }
 
-unsafe fn __cont_access_flags_changed(ptep:*mut pte_t,pte:pte_t,ncontig:::core::ffi::c_int)->::core::ffi::c_int { if pte_write(pte)!=pte_write(__ptep_get(ptep)){return 1;} for i in 0..ncontig { let o=__ptep_get(ptep.add(i as usize)); if pte_dirty(pte)!=pte_dirty(o)||pte_young(pte)!=pte_young(o){return 1;} } 0 }
-pub unsafe fn huge_ptep_set_access_flags(vma:*mut vm_area_struct,addr:::core::ffi::c_ulong,ptep:*mut pte_t,pte:pte_t,dirty:::core::ffi::c_int)->::core::ffi::c_int { VM_WARN_ON!(!pte_present(pte)); let mut s=0usize; let mm=(*vma).vm_mm; let n=num_contig_ptes(huge_page_size(hstate_vma(vma)),&mut s); if !pte_cont(pte){return __ptep_set_access_flags_anysz(vma,addr,ptep,pte,dirty,s as _);} if __cont_access_flags_changed(ptep,pte,n)!=0 { let o=get_clear_contig_flush(mm,addr,ptep,s as _,n as _); VM_WARN_ON!(!pte_present(o)); let mut p=pte; if pte_dirty(o){p=pte_mkdirty(p);} if pte_young(o){p=pte_mkyoung(p);} __set_ptes_anysz(mm,addr,ptep,p,n,s as _); return 1;} 0 }
-pub unsafe fn huge_ptep_set_wrprotect(mm:*mut mm_struct,mut addr:::core::ffi::c_ulong,ptep:*mut pte_t) { let mut p=__ptep_get(ptep); VM_WARN_ON!(!pte_present(p)); if !pte_cont(p){__ptep_set_wrprotect(mm,addr,ptep);return;} let mut s=0usize; let n=find_num_contig(mm,addr,ptep,&mut s); p=pte_wrprotect(get_clear_contig_flush(mm,addr,ptep,s as _,n as _)); __set_ptes_anysz(mm,addr,ptep,p,n,s as _); }
-pub unsafe fn huge_ptep_clear_flush(vma:*mut vm_area_struct,addr:::core::ffi::c_ulong,ptep:*mut pte_t)->pte_t { let mut s=0usize; let n=num_contig_ptes(huge_page_size(hstate_vma(vma)),&mut s); get_clear_contig_flush((*vma).vm_mm,addr,ptep,s as _,n as _) }
+unsafe fn __cont_access_flags_changed(ptep:*mut pte_t,pte:pte_t,ncontig: ::core::ffi::c_int)->::core::ffi::c_int { if pte_write(pte)!=pte_write(__ptep_get(ptep)){return 1;} for i in 0..ncontig { let o=__ptep_get(ptep.add(i as usize)); if pte_dirty(pte)!=pte_dirty(o)||pte_young(pte)!=pte_young(o){return 1;} } 0 }
+pub unsafe fn huge_ptep_set_access_flags(vma:*mut vm_area_struct,addr: ::core::ffi::c_ulong,ptep:*mut pte_t,pte:pte_t,dirty: ::core::ffi::c_int)->::core::ffi::c_int { VM_WARN_ON!(!pte_present(pte)); let mut s=0usize; let mm=(*vma).vm_mm; let n=num_contig_ptes(huge_page_size(hstate_vma(vma)),&mut s); if !pte_cont(pte){return __ptep_set_access_flags_anysz(vma,addr,ptep,pte,dirty,s as _);} if __cont_access_flags_changed(ptep,pte,n)!=0 { let o=get_clear_contig_flush(mm,addr,ptep,s as _,n as _); VM_WARN_ON!(!pte_present(o)); let mut p=pte; if pte_dirty(o){p=pte_mkdirty(p);} if pte_young(o){p=pte_mkyoung(p);} __set_ptes_anysz(mm,addr,ptep,p,n,s as _); return 1;} 0 }
+pub unsafe fn huge_ptep_set_wrprotect(mm:*mut mm_struct,mut addr: ::core::ffi::c_ulong,ptep:*mut pte_t) { let mut p=__ptep_get(ptep); VM_WARN_ON!(!pte_present(p)); if !pte_cont(p){__ptep_set_wrprotect(mm,addr,ptep);return;} let mut s=0usize; let n=find_num_contig(mm,addr,ptep,&mut s); p=pte_wrprotect(get_clear_contig_flush(mm,addr,ptep,s as _,n as _)); __set_ptes_anysz(mm,addr,ptep,p,n,s as _); }
+pub unsafe fn huge_ptep_clear_flush(vma:*mut vm_area_struct,addr: ::core::ffi::c_ulong,ptep:*mut pte_t)->pte_t { let mut s=0usize; let n=num_contig_ptes(huge_page_size(hstate_vma(vma)),&mut s); get_clear_contig_flush((*vma).vm_mm,addr,ptep,s as _,n as _) }
 
-pub unsafe fn arch_hugetlb_valid_size(size:::core::ffi::c_ulong)->bool { __hugetlb_valid_size(size) }
-pub unsafe fn huge_ptep_modify_prot_start(vma:*mut vm_area_struct,addr:::core::ffi::c_ulong,ptep:*mut pte_t)->pte_t { let psize=huge_page_size(hstate_vma(vma)); if alternative_has_cap_unlikely(ARM64_WORKAROUND_2645198) && pte_user_exec(__ptep_get(ptep)){return huge_ptep_clear_flush(vma,addr,ptep);} huge_ptep_get_and_clear((*vma).vm_mm,addr,ptep,psize) }
-pub unsafe fn huge_ptep_modify_prot_commit(vma:*mut vm_area_struct,addr:::core::ffi::c_ulong,ptep:*mut pte_t,_old_pte:pte_t,pte:pte_t) { set_huge_pte_at((*vma).vm_mm,addr,ptep,pte,huge_page_size(hstate_vma(vma))); }
+pub unsafe fn arch_hugetlb_valid_size(size: ::core::ffi::c_ulong)->bool { __hugetlb_valid_size(size) }
+pub unsafe fn huge_ptep_modify_prot_start(vma:*mut vm_area_struct,addr: ::core::ffi::c_ulong,ptep:*mut pte_t)->pte_t { let psize=huge_page_size(hstate_vma(vma)); if alternative_has_cap_unlikely(ARM64_WORKAROUND_2645198) && pte_user_exec(__ptep_get(ptep)){return huge_ptep_clear_flush(vma,addr,ptep);} huge_ptep_get_and_clear((*vma).vm_mm,addr,ptep,psize) }
+pub unsafe fn huge_ptep_modify_prot_commit(vma:*mut vm_area_struct,addr: ::core::ffi::c_ulong,ptep:*mut pte_t,_old_pte:pte_t,pte:pte_t) { set_huge_pte_at((*vma).vm_mm,addr,ptep,pte,huge_page_size(hstate_vma(vma))); }
 
 #[allow(non_snake_case)]
 unsafe fn hugetlbpage_init() -> ::core::ffi::c_int {

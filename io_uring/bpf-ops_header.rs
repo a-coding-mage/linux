@@ -15,12 +15,12 @@ pub struct io_uring_bpf_ops {
 }
 
 // Build-time condition from CONFIG_IO_URING_BPF_OPS is represented as a Cargo feature.
-#[cfg(feature = "CONFIG_IO_URING_BPF_OPS")]
+#[cfg(CONFIG_IO_URING_BPF_OPS)]
 extern "C" {
     pub fn io_unregister_bpf_ops(ctx: *mut io_ring_ctx);
 }
 
-#[cfg(not(feature = "CONFIG_IO_URING_BPF_OPS"))]
+#[cfg(not(CONFIG_IO_URING_BPF_OPS))]
 #[inline]
 pub unsafe fn io_unregister_bpf_ops(_ctx: *mut io_ring_ctx) {}
 

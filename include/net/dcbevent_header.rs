@@ -16,7 +16,7 @@ pub enum dcbevent_notif_type {
 }
 
 // CONFIG_DCB is a build-time condition from the original header.
-#[cfg(feature = "CONFIG_DCB")]
+#[cfg(CONFIG_DCB)]
 unsafe extern "C" {
     pub fn register_dcbevent_notifier(nb: *mut notifier_block) -> ::std::os::raw::c_int;
     pub fn unregister_dcbevent_notifier(nb: *mut notifier_block) -> ::std::os::raw::c_int;
@@ -26,19 +26,19 @@ unsafe extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_DCB"))]
+#[cfg(not(CONFIG_DCB))]
 #[inline]
 pub unsafe fn register_dcbevent_notifier(_nb: *mut notifier_block) -> ::std::os::raw::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DCB"))]
+#[cfg(not(CONFIG_DCB))]
 #[inline]
 pub unsafe fn unregister_dcbevent_notifier(_nb: *mut notifier_block) -> ::std::os::raw::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DCB"))]
+#[cfg(not(CONFIG_DCB))]
 #[inline]
 pub unsafe fn call_dcbevent_notifiers(
     _val: ::std::os::raw::c_ulong,

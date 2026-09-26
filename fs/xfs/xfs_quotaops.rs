@@ -6,7 +6,7 @@
 
 // Dependencies are supplied by the surrounding XFS translation unit.
 
-static unsafe fn xfs_qm_fill_state(
+unsafe fn xfs_qm_fill_state(
     tstate: *mut qc_type_state,
     mp: *mut xfs_mount,
     type_: xfs_dqtype_t,

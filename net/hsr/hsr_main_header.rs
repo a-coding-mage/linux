@@ -110,7 +110,7 @@ pub unsafe fn get_prp_LSDU_size(rct: *mut prp_rct) -> u16 { ntohs((*rct).lan_id_
 pub unsafe fn set_prp_lan_id(rct: *mut prp_rct, lan_id: u16) { (*rct).lan_id_and_LSDU_size = htons((ntohs((*rct).lan_id_and_LSDU_size) & 0x0fff) | (lan_id << 12)); }
 pub unsafe fn set_prp_LSDU_size(rct: *mut prp_rct, LSDU_size: u16) { (*rct).lan_id_and_LSDU_size = htons((ntohs((*rct).lan_id_and_LSDU_size) & 0xf000) | (LSDU_size & 0x0fff)); }
 
-pub unsafe extern "C" { pub fn hsr_port_get_hsr(hsr: *mut hsr_priv, pt: hsr_port_type) -> *mut hsr_port; }
+unsafe extern "C" { pub fn hsr_port_get_hsr(hsr: *mut hsr_priv, pt: hsr_port_type) -> *mut hsr_port; }
 
 pub unsafe fn hsr_get_skb_sequence_nr(skb: *mut sk_buff) -> u16 {
     let h = skb_mac_header(skb) as *mut hsr_ethhdr;
@@ -133,7 +133,7 @@ pub unsafe fn prp_check_lsdu_size(skb: *mut sk_buff, rct: *mut prp_rct, is_sup: 
 }
 
 /* CONFIG_DEBUG_FS controls whether these are external functions or empty inline functions. */
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" {
     pub fn hsr_debugfs_rename(dev: *mut net_device);
     pub fn hsr_debugfs_init(priv_: *mut hsr_priv, hsr_dev: *mut net_device);
@@ -141,15 +141,15 @@ unsafe extern "C" {
     pub fn hsr_debugfs_create_root();
     pub fn hsr_debugfs_remove_root();
 }
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn hsr_debugfs_rename(_dev: *mut net_device) {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn hsr_debugfs_init(_priv_: *mut hsr_priv, _hsr_dev: *mut net_device) {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn hsr_debugfs_term(_priv_: *mut hsr_priv) {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn hsr_debugfs_create_root() {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn hsr_debugfs_remove_root() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -34,8 +34,7 @@ pub struct strlist_config {
 unsafe extern "C" {
     pub fn strlist__new(
         slist: *const c_char,
-        config: *const strlist_config,
-    ) -> *mut strlist;
+        config: *const strlist_config) -> *mut strlist;
     pub fn strlist__delete(slist: *mut strlist);
 
     pub fn strlist__remove(slist: *mut strlist, sn: *mut str_node);
@@ -90,8 +89,8 @@ pub unsafe fn strlist__next(sn: *mut str_node) -> *mut str_node {
 
 /**
  * strlist_for_each      - iterate over a strlist
- * @pos:	the &struct str_node to use as a loop cursor.
- * @slist:	the &struct strlist for loop.
+ * @pos:	the &str_node to use as a loop cursor.
+ * @slist:	the &strlist for loop.
  *
  * Original C macro:
  * #define strlist__for_each_entry(pos, slist) \
@@ -101,9 +100,9 @@ pub unsafe fn strlist__next(sn: *mut str_node) -> *mut str_node {
 /**
  * strlist_for_each_safe - iterate over a strlist safe against removal of
  *                         str_node
- * @pos:	the &struct str_node to use as a loop cursor.
- * @n:		another &struct str_node to use as temporary storage.
- * @slist:	the &struct strlist for loop.
+ * @pos:	the &str_node to use as a loop cursor.
+ * @n:		another &str_node to use as temporary storage.
+ * @slist:	the &strlist for loop.
  *
  * Original C macro:
  * #define strlist__for_each_entry_safe(pos, n, slist) \

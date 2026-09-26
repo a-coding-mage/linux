@@ -12,10 +12,10 @@ pub const BOOT_ADDR: usize = 0x20000000;
 /* Remove when official MILO sources have ELF support: */
 pub const BOOT_SIZE: usize = 16 * 1024;
 
-#[cfg(feature = "CONFIG_ALPHA_LEGACY_START_ADDRESS")]
+#[cfg(CONFIG_ALPHA_LEGACY_START_ADDRESS)]
 pub const KERNEL_START_PHYS: usize = 0x300000; /* Old bootloaders hardcoded this. */
 
-#[cfg(not(feature = "CONFIG_ALPHA_LEGACY_START_ADDRESS"))]
+#[cfg(not(CONFIG_ALPHA_LEGACY_START_ADDRESS))]
 pub const KERNEL_START_PHYS: usize = 0x1000000; /* required: Wildfire/Titan/Marvel */
 
 /* PAGE_OFFSET is supplied by the target environment. */

@@ -254,7 +254,7 @@ pub unsafe extern "C" fn tool_pmu__event_to_str(ev: tool_pmu_event) -> *const c_
     let idx = ev as usize;
 
     if ev as c_int > tool_pmu_event::TOOL_PMU__EVENT_NONE as c_int
-        && ev as c_int < tool_pmu_event::TOOL_PMU__EVENT_MAX as c_int
+        && (ev as c_int) < tool_pmu_event::TOOL_PMU__EVENT_MAX as c_int
         && !tool_pmu__skip_event(TOOL_PMU__EVENT_NAMES[idx])
     {
         return TOOL_PMU__EVENT_NAMES[idx];

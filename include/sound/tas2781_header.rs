@@ -75,9 +75,9 @@ pub const TAS2781_RUNTIME_RE_REG: u32 = TASDEVICE_REG(0x64, 0x63, 0x44);
 #[repr(C)] pub struct calidata { pub data: *mut u8, pub total_sz: usize, pub cali_reg_array: cali_reg, pub cali_dat_sz_per_dev: u32 }
 
 // CONFIG_SND_SOC_TAS2781_ACOUST_I2C conditionally adds the following field/type.
-#[cfg(feature = "CONFIG_SND_SOC_TAS2781_ACOUST_I2C")]
+#[cfg(CONFIG_SND_SOC_TAS2781_ACOUST_I2C)]
 pub const TASDEV_DATA_PAYLOAD_SIZE: usize = 128;
-#[cfg(feature = "CONFIG_SND_SOC_TAS2781_ACOUST_I2C")]
+#[cfg(CONFIG_SND_SOC_TAS2781_ACOUST_I2C)]
 #[repr(C)] pub struct acoustic_data { pub len: u8, pub id: u8, pub addr: u8, pub book: u8, pub page: u8, pub reg: u8, pub data: [u8; TASDEV_DATA_PAYLOAD_SIZE] }
 
 // External types supplied by included driver headers.
@@ -85,7 +85,7 @@ pub struct tasdevice_rca; pub struct tasdevice_fw; pub struct gpio_desc; pub str
 
 #[repr(C)] pub struct tasdevice_priv {
     pub tasdevice: [tasdevice; TASDEVICE_MAX_CHANNELS], pub rcabin: tasdevice_rca, pub cali_data: calidata,
-    #[cfg(feature = "CONFIG_SND_SOC_TAS2781_ACOUST_I2C")] pub acou_data: acoustic_data,
+    #[cfg(CONFIG_SND_SOC_TAS2781_ACOUST_I2C)] pub acou_data: acoustic_data,
     pub fmw: *mut tasdevice_fw, pub reset: *mut gpio_desc, pub codec_lock: mutex, pub regmap: *mut regmap, pub dev: *mut device,
     pub cal_binaryname: [[u8; 64]; TASDEVICE_MAX_CHANNELS], pub crc8_lkp_tbl: [u8; CRC8_TABLE_SIZE], pub coef_binaryname: [u8; 64], pub rca_binaryname: [u8; 64], pub dev_name: [u8; 32], pub dvc_tlv_table: *const [u8; 4], pub name_prefix: *const core::ffi::c_char, pub ndev: u8, pub dspbin_typ: u32, pub magic_num: u32, pub chip_id: u32, pub sysclk: u32, pub speaker_id: i32,
     pub irq: i32, pub cur_prog: i32, pub cur_conf: i32, pub fw_state: i32, pub index: i32, pub client: *mut core::ffi::c_void, pub codec: *mut core::ffi::c_void, pub force_fwload_status: bool, pub playback_started: bool, pub isacpi: bool, pub isspi: bool, pub global_addr: u32,

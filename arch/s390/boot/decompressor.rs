@@ -14,11 +14,11 @@
 const STATIC: &str = "static";
 
 // C preprocessor configuration selects the heap size at build time.
-#[cfg(feature = "CONFIG_KERNEL_BZIP2")]
+#[cfg(CONFIG_KERNEL_BZIP2)]
 const BOOT_HEAP_SIZE: usize = 0x400000;
-#[cfg(all(not(feature = "CONFIG_KERNEL_BZIP2"), feature = "CONFIG_KERNEL_ZSTD"))]
+#[cfg(all(not(CONFIG_KERNEL_BZIP2), CONFIG_KERNEL_ZSTD))]
 const BOOT_HEAP_SIZE: usize = 0x30000;
-#[cfg(all(not(feature = "CONFIG_KERNEL_BZIP2"), not(feature = "CONFIG_KERNEL_ZSTD")))]
+#[cfg(all(not(CONFIG_KERNEL_BZIP2), not(CONFIG_KERNEL_ZSTD)))]
 const BOOT_HEAP_SIZE: usize = 0x10000;
 
 extern "C" {

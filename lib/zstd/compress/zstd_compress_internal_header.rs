@@ -76,6 +76,6 @@ pub const ZSTD_ROLL_HASH_CHAR_OFFSET:U64=10;
 #[inline] pub fn ZSTD_rollingHash_rotate(mut h:U64,r:BYTE,a:BYTE,p:U64)->U64{h=h.wrapping_sub((r as U64+10).wrapping_mul(p));h=h.wrapping_mul(prime8bytes);h.wrapping_add(a as U64+10)}
 
 #[inline] pub fn ZSTD_hasExtSeqProd(p:&ZSTD_CCtx_params)->i32{if p.extSeqProdFunc.is_some(){1}else{0}}
-extern "C" { pub fn ZSTD_loadCEntropy(*mut ZSTD_compressedBlockState_t,*mut core::ffi::c_void,*const core::ffi::c_void,usize)->usize; pub fn ZSTD_reset_compressedBlockState(*mut ZSTD_compressedBlockState_t); pub fn ZSTD_writeLastEmptyBlock(*mut core::ffi::c_void,usize)->usize; pub fn ZSTD_cycleLog(U32,ZSTD_strategy)->U32; }
+extern "C" { pub fn ZSTD_loadCEntropy(_: *mut ZSTD_compressedBlockState_t,_: *mut core::ffi::c_void,_: *const core::ffi::c_void,_: usize)->usize; pub fn ZSTD_reset_compressedBlockState(_: *mut ZSTD_compressedBlockState_t); pub fn ZSTD_writeLastEmptyBlock(_: *mut core::ffi::c_void,_: usize)->usize; pub fn ZSTD_cycleLog(_: U32,_: ZSTD_strategy)->U32; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

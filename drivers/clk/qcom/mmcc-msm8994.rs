@@ -11,7 +11,7 @@ pub const MMCC_MSM8994_C_TRANSLATION: &str = r##"
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- * /
+ */
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -41,7 +41,7 @@ enum {
 	P_MMPLL1,
 	P_MMPLL3,
 	P_MMPLL4,
-	P_MMPLL5, /* Is this one even used by anything? Downstream doesn't tell. * /
+	P_MMPLL5, /* Is this one even used by anything? Downstream doesn't tell. */
 	P_DSI0PLL,
 	P_DSI1PLL,
 	P_DSI0PLL_BYTE,
@@ -308,7 +308,7 @@ static struct clk_alpha_pll_postdiv mmpll5 = {
 };
 
 static const struct freq_tbl ftbl_ahb_clk_src[] = {
-	/* Note: There might be more frequencies desired here. * /
+	/* Note: There might be more frequencies desired here. */
 	F(19200000, P_XO, 1, 0, 0),
 	F(40000000, P_GPLL0, 15, 0, 0),
 	F(80000000, P_MMPLL0, 10, 0, 0),
@@ -2074,7 +2074,7 @@ static struct clk_branch mmss_mmssnoc_axi_clk = {
 			.name = "mmss_mmssnoc_axi_clk",
 			.parent_hws = (const struct clk_hw *[]){ &axi_clk_src.clkr.hw },
 			.num_parents = 1,
-			/* Gating this clock will wreck havoc among MMSS! * /
+			/* Gating this clock will wreck havoc among MMSS! */
 			.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
 			.ops = &clk_branch2_ops,
 		},
@@ -2559,7 +2559,7 @@ static const struct qcom_cc_desc mmcc_msm8994_desc = {
 
 static const struct of_device_id mmcc_msm8994_match_table[] = {
 	{ .compatible = "qcom,mmcc-msm8992" },
-	{ .compatible = "qcom,mmcc-msm8994" }, /* V2 and V2.1 * /
+	{ .compatible = "qcom,mmcc-msm8994" }, /* V2 and V2.1 */
 	{ }
 };
 MODULE_DEVICE_TABLE(of, mmcc_msm8994_match_table);
@@ -2569,7 +2569,7 @@ static int mmcc_msm8994_probe(struct platform_device *pdev)
 	struct regmap *regmap;
 
 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,mmcc-msm8992")) {
-		/* MSM8992 features less clocks and some have different freq tables * /
+		/* MSM8992 features less clocks and some have different freq tables */
 		mmcc_msm8994_desc.clks[CAMSS_JPEG_JPEG1_CLK] = NULL;
 		mmcc_msm8994_desc.clks[CAMSS_JPEG_JPEG2_CLK] = NULL;
 		mmcc_msm8994_desc.clks[FD_CORE_CLK_SRC] = NULL;

@@ -41,7 +41,7 @@ pub struct mips_r2br_emulator_stats {
 }
 
 /* CONFIG_DEBUG_FS conditionally enables the statistics operations. */
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 macro_rules! MIPS_R2_STATS {
     ($M:ident) => {{
         preempt_disable();
@@ -57,7 +57,7 @@ macro_rules! MIPS_R2_STATS {
     }};
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 macro_rules! MIPS_R2BR_STATS {
     ($M:ident) => {{
         preempt_disable();
@@ -66,12 +66,12 @@ macro_rules! MIPS_R2BR_STATS {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 macro_rules! MIPS_R2_STATS {
     ($M:ident) => {{}};
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 macro_rules! MIPS_R2BR_STATS {
     ($M:ident) => {{}};
 }
@@ -92,10 +92,10 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_MIPSR2_TO_R6_EMULATOR"))]
+#[cfg(not(CONFIG_MIPSR2_TO_R6_EMULATOR))]
 pub static mut mipsr2_emulation: i32 = 0;
 
-#[cfg(not(feature = "CONFIG_MIPSR2_TO_R6_EMULATOR"))]
+#[cfg(not(CONFIG_MIPSR2_TO_R6_EMULATOR))]
 #[inline]
 pub unsafe fn mipsr2_decoder(
     _regs: *mut pt_regs,
@@ -105,7 +105,7 @@ pub unsafe fn mipsr2_decoder(
     0
 }
 
-#[cfg(feature = "CONFIG_MIPSR2_TO_R6_EMULATOR")]
+#[cfg(CONFIG_MIPSR2_TO_R6_EMULATOR)]
 extern "C" {
     pub static mut mipsr2_emulation: i32;
     pub fn mipsr2_decoder(regs: *mut pt_regs, inst: u32, fcr31: *mut u64) -> i32;

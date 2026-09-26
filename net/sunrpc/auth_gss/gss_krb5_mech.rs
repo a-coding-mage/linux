@@ -47,16 +47,18 @@ unsafe fn gss_krb5_prepare_enctype_priority_list() {
 
 unsafe fn gss_krb5_import_ctx_v2(ctx: *mut krb5_ctx, gfp_mask: gfp_t) -> c_int {
     let tk = krb5_buffer { len: (*(*ctx).krb5e).key_len, data: (*ctx).Ksess.as_mut_ptr() };
+    'out_free: {
     (*ctx).initiator_enc_aead = crypto_krb5_prepare_encryption((*ctx).krb5e, &tk, KG_USAGE_INITIATOR_SEAL, gfp_mask);
-    if IS_ERR((*ctx).initiator_enc_aead) { let ret = PTR_ERR((*ctx).initiator_enc_aead); goto out_free; }
+    if IS_ERR((*ctx).initiator_enc_aead) { let ret = PTR_ERR((*ctx).initiator_enc_aead); break 'out_free; }
     (*ctx).acceptor_enc_aead = crypto_krb5_prepare_encryption((*ctx).krb5e, &tk, KG_USAGE_ACCEPTOR_SEAL, gfp_mask);
-    if IS_ERR((*ctx).acceptor_enc_aead) { let ret = PTR_ERR((*ctx).acceptor_enc_aead); goto out_free; }
+    if IS_ERR((*ctx).acceptor_enc_aead) { let ret = PTR_ERR((*ctx).acceptor_enc_aead); break 'out_free; }
     (*ctx).initiator_sign_shash = crypto_krb5_prepare_checksum((*ctx).krb5e, &tk, KG_USAGE_INITIATOR_SIGN, gfp_mask);
-    if IS_ERR((*ctx).initiator_sign_shash) { let ret = PTR_ERR((*ctx).initiator_sign_shash); goto out_free; }
+    if IS_ERR((*ctx).initiator_sign_shash) { let ret = PTR_ERR((*ctx).initiator_sign_shash); break 'out_free; }
     (*ctx).acceptor_sign_shash = crypto_krb5_prepare_checksum((*ctx).krb5e, &tk, KG_USAGE_ACCEPTOR_SIGN, gfp_mask);
-    if IS_ERR((*ctx).acceptor_sign_shash) { let ret = PTR_ERR((*ctx).acceptor_sign_shash); goto out_free; }
+    if IS_ERR((*ctx).acceptor_sign_shash) { let ret = PTR_ERR((*ctx).acceptor_sign_shash); break 'out_free; }
     return 0;
-out_free:
+    }
+    
     crypto_free_shash((*ctx).acceptor_sign_shash); crypto_free_shash((*ctx).initiator_sign_shash);
     crypto_free_aead((*ctx).acceptor_enc_aead); crypto_free_aead((*ctx).initiator_enc_aead);
     return ret;
@@ -92,7 +94,7 @@ unsafe fn gss_krb5_import_sec_context(p: *const c_void, len: usize, ctx_id: *mut
 
 unsafe fn gss_krb5_delete_sec_context(internal_ctx: *mut c_void) { let kctx = internal_ctx as *mut krb5_ctx; crypto_free_shash((*kctx).acceptor_sign_shash); crypto_free_shash((*kctx).initiator_sign_shash); crypto_free_aead((*kctx).acceptor_enc_aead); crypto_free_aead((*kctx).initiator_enc_aead); kfree((*kctx).mech_used.data); kfree(kctx as *mut c_void); }
 
-pub unsafe fn gss_krb5_errno_to_status(err: c_int) -> u32 { match err { 0 => GSS_S_COMPLETE, -EBADMSG => GSS_S_BAD_SIG, -EPROTO => GSS_S_DEFECTIVE_TOKEN, _ => GSS_S_FAILURE } }
+pub unsafe fn gss_krb5_errno_to_status(err: c_int) -> u32 { match err { case if case == 0 => GSS_S_COMPLETE, case if case == -EBADMSG => GSS_S_BAD_SIG, case if case == -EPROTO => GSS_S_DEFECTIVE_TOKEN, _ => GSS_S_FAILURE } }
 
 unsafe fn gss_krb5_get_mic(gctx: *mut gss_ctx, text: *mut xdr_buf, token: *mut xdr_netobj) -> u32 { gss_krb5_get_mic_v2((*gctx).internal_ctx_id as *mut krb5_ctx, text, token) }
 unsafe fn gss_krb5_verify_mic(gctx: *mut gss_ctx, message_buffer: *mut xdr_buf, read_token: *mut xdr_netobj) -> u32 { gss_krb5_verify_mic_v2((*gctx).internal_ctx_id as *mut krb5_ctx, message_buffer, read_token) }

@@ -29,7 +29,7 @@ pub unsafe fn batadv_algo_get(name: *const c_char) -> *mut batadv_algo_ops {
 	let mut bat_algo_ops_tmp: *mut batadv_algo_ops;
 
 	// hlist_for_each_entry(bat_algo_ops_tmp, &batadv_algo_list, list)
-	for bat_algo_ops_tmp in hlist_for_each_entry(&raw mut batadv_algo_list) {
+	for bat_algo_ops_tmp in hlist_for_each_entry!(&raw mut batadv_algo_list) {
 		if strcmp((*bat_algo_ops_tmp).name, name) != 0 {
 			continue;
 		}
@@ -164,7 +164,7 @@ pub unsafe fn batadv_algo_dump(msg: *mut sk_buff, cb: *mut netlink_callback) -> 
 	let mut skip = (*cb).args[0];
 	let mut i = 0;
 
-	for bat_algo_ops in hlist_for_each_entry(&raw mut batadv_algo_list) {
+	for bat_algo_ops in hlist_for_each_entry!(&raw mut batadv_algo_list) {
 		if i += 1; i - 1 < skip {
 			continue;
 		}

@@ -172,7 +172,7 @@ pub struct kasan_report_info {
 
 #[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 #[inline(always)] pub unsafe fn addr_in_shadow(addr: *const c_void) -> bool {
-    addr as usize >= KASAN_SHADOW_START && addr as usize < KASAN_SHADOW_END
+    addr as usize >= KASAN_SHADOW_START && (addr as usize) < KASAN_SHADOW_END
 }
 #[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 #[inline] pub unsafe fn kasan_shadow_to_mem(shadow_addr: *const c_void) -> *const c_void {

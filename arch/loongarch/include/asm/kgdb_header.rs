@@ -91,12 +91,12 @@ unsafe extern "C" {
     pub fn arch_kgdb_breakpoint();
 }
 
-#[cfg(feature = "CONFIG_KGDB")]
+#[cfg(CONFIG_KGDB)]
 unsafe extern "C" {
     pub fn kgdb_breakpoint_handler(regs: *mut crate::pt_regs) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_KGDB"))]
+#[cfg(not(CONFIG_KGDB))]
 #[inline]
 pub unsafe fn kgdb_breakpoint_handler(_regs: *mut crate::pt_regs) -> bool {
     false

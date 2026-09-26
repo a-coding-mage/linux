@@ -48,7 +48,7 @@ macro_rules! for_each_of_graph_port_endpoint {
     };
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe extern "C" {
     pub fn of_graph_is_present(node: *const device_node) -> bool;
     pub fn of_graph_parse_endpoint(
@@ -86,49 +86,49 @@ unsafe extern "C" {
     ) -> *mut device_node;
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_is_present(_node: *const device_node) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_parse_endpoint(
     _node: *const device_node,
     _endpoint: *mut of_endpoint,
 ) -> ::core::ffi::c_int { -ENOSYS }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_endpoint_count(_np: *const device_node) -> ::core::ffi::c_uint { 0 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_port_count(_np: *mut device_node) -> ::core::ffi::c_uint { 0 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_port_by_id(_node: *mut device_node, _id: u32) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_next_endpoint(_parent: *const device_node, _previous: *mut device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_next_port(_parent: *const device_node, _previous: *mut device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_next_port_endpoint(_parent: *const device_node, _previous: *mut device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_endpoint_by_regs(_parent: *const device_node, _port_reg: ::core::ffi::c_int, _reg: ::core::ffi::c_int) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_remote_endpoint(_node: *const device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_port_parent(_node: *mut device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_remote_port_parent(_node: *const device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_remote_port(_node: *const device_node) -> *mut device_node { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn of_graph_get_remote_node(_node: *const device_node, _port: u32, _endpoint: u32) -> *mut device_node { core::ptr::null_mut() }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

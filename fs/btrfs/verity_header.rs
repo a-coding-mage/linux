@@ -13,7 +13,7 @@ pub struct btrfs_inode {
 
 // CONFIG_FS_VERITY is a build-time C preprocessor condition.
 // The corresponding Rust configuration is represented by the cfg attribute.
-#[cfg(feature = "CONFIG_FS_VERITY")]
+#[cfg(CONFIG_FS_VERITY)]
 extern "C" {
     // Supplied by the fsverity dependency.
     pub static btrfs_verityops: fsverity_operations;
@@ -26,19 +26,19 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_FS_VERITY")]
+#[cfg(CONFIG_FS_VERITY)]
 #[repr(C)]
 pub struct fsverity_operations {
     _private: [u8; 0],
 }
 
-#[cfg(not(feature = "CONFIG_FS_VERITY"))]
+#[cfg(not(CONFIG_FS_VERITY))]
 #[inline]
 pub unsafe fn btrfs_drop_verity_items(_inode: *mut btrfs_inode) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_FS_VERITY"))]
+#[cfg(not(CONFIG_FS_VERITY))]
 #[inline]
 pub unsafe fn btrfs_get_verity_descriptor(
     _inode: *mut inode,
@@ -49,7 +49,7 @@ pub unsafe fn btrfs_get_verity_descriptor(
 }
 
 // Supplied by the kernel errno dependency; equivalent to C's EPERM macro.
-#[cfg(not(feature = "CONFIG_FS_VERITY"))]
+#[cfg(not(CONFIG_FS_VERITY))]
 const EPERM: ::core::ffi::c_int = 1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

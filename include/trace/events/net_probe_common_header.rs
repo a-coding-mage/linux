@@ -18,7 +18,7 @@ macro_rules! TP_STORE_ADDR_PORTS_V4 {
 }
 
 // IS_ENABLED(CONFIG_IPV6) selects the IPv6-capable definition at build time.
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 macro_rules! TP_STORE_ADDR_PORTS {
     ($entry:expr, $inet:expr, $sk:expr) => {{
         if unsafe { (*($sk)).sk_family } == AF_INET6 {
@@ -38,7 +38,7 @@ macro_rules! TP_STORE_ADDR_PORTS {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 macro_rules! TP_STORE_ADDR_PORTS {
     ($entry:expr, $inet:expr, $sk:expr) => {{
         TP_STORE_ADDR_PORTS_V4!($entry, $inet, $sk);
@@ -57,7 +57,7 @@ macro_rules! TP_STORE_V4MAPPED {
     }};
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 macro_rules! TP_STORE_ADDRS {
     ($entry:expr, $saddr:expr, $daddr:expr, $saddr6:expr, $daddr6:expr) => {{
         if unsafe { (*sk).sk_family } == AF_INET6 {
@@ -74,7 +74,7 @@ macro_rules! TP_STORE_ADDRS {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 macro_rules! TP_STORE_ADDRS {
     ($entry:expr, $saddr:expr, $daddr:expr, $saddr6:expr, $daddr6:expr) => {{
         TP_STORE_V4MAPPED!($entry, $saddr, $daddr);
@@ -96,7 +96,7 @@ macro_rules! TP_STORE_ADDR_PORTS_SKB_V4 {
     }};
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 macro_rules! TP_STORE_ADDR_PORTS_SKB {
     ($skb:expr, $protoh:expr, $entry_saddr:expr, $entry_daddr:expr) => {{
         let iph = ip_hdr($skb);
@@ -117,7 +117,7 @@ macro_rules! TP_STORE_ADDR_PORTS_SKB {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 macro_rules! TP_STORE_ADDR_PORTS_SKB {
     ($skb:expr, $protoh:expr, $entry_saddr:expr, $entry_daddr:expr) => {{
         TP_STORE_ADDR_PORTS_SKB_V4!($skb, $protoh, $entry_saddr, $entry_daddr);

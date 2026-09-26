@@ -74,20 +74,24 @@ unsafe fn nilfs_mdt_submit_block(inode: *mut inode, blkoff: c_ulong, opf: blk_op
     let mut bh: *mut buffer_head;
     let mut blknum: u64 = 0;
     let mut ret = -ENOMEM;
+    'submit_failed: {
+    'submit_out: {
     bh = nilfs_grab_buffer(inode, (*inode).i_mapping, blkoff, 0);
     if unlikely(bh.is_null()) { return ret; }
     ret = -EEXIST;
     if buffer_uptodate(bh) { get_bh(bh); *out_bh = bh; folio_unlock((*bh).b_folio); folio_put((*bh).b_folio); brelse(bh); return ret; }
-    if opf & REQ_RAHEAD != 0 { if !trylock_buffer(bh) { ret = -EBUSY; goto submit_failed; } } else { lock_buffer(bh); }
-    if buffer_uptodate(bh) { unlock_buffer(bh); ret = -EEXIST; goto submit_out; }
+    if opf & REQ_RAHEAD != 0 { if !trylock_buffer(bh) { ret = -EBUSY; break 'submit_failed; } } else { lock_buffer(bh); }
+    if buffer_uptodate(bh) { unlock_buffer(bh); ret = -EEXIST; break 'submit_out; }
     ret = nilfs_bmap_lookup((*NILFS_I(inode)).i_bmap, blkoff, &mut blknum);
-    if unlikely(ret != 0) { unlock_buffer(bh); goto submit_failed; }
+    if unlikely(ret != 0) { unlock_buffer(bh); break 'submit_failed; }
     map_bh(bh, (*inode).i_sb, blknum as sector_t);
     bh_submit(bh, opf, bh_end_read); ret = 0;
     trace_nilfs2_mdt_submit_block(inode, (*inode).i_ino, blkoff, opf & REQ_OP_MASK);
-submit_out:
+    }
+    
     get_bh(bh); *out_bh = bh;
-submit_failed:
+    }
+    
     folio_unlock((*bh).b_folio); folio_put((*bh).b_folio); brelse(bh); ret
 }
 

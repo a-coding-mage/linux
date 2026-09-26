@@ -105,6 +105,7 @@ pub unsafe fn sctp_datamsg_from_user(asoc: *mut sctp_association, sinfo: *mut sc
     let (mut pos, mut temp): (*mut list_head, *mut list_head);
     let (mut chunk, msg): (*mut sctp_chunk, *mut sctp_datamsg);
     let mut err: i32;
+    'errout: {
     msg = sctp_datamsg_new(GFP_KERNEL);
     if msg.is_null() { return ERR_PTR(-ENOMEM); }
     if (*asoc).peer.prsctp_capable != 0 && (*sinfo).sinfo_timetolive != 0 &&
@@ -121,7 +122,7 @@ pub unsafe fn sctp_datamsg_from_user(asoc: *mut sctp_association, sinfo: *mut sc
         if !hmac_desc.is_null() { max_data -= SCTP_PAD4(core::mem::size_of::<sctp_auth_chunk>() + (*hmac_desc).hmac_len); }
         if (*sinfo).sinfo_tsn != 0 && (*sinfo).sinfo_ssn != (*asoc).active_key_id {
             shkey = sctp_auth_get_shkey(asoc, (*sinfo).sinfo_ssn);
-            if shkey.is_null() { err = -EINVAL; goto errout; }
+            if shkey.is_null() { err = -EINVAL; break 'errout; }
         } else { shkey = (*asoc).shkey; }
     }
     let mut first_len = max_data;
@@ -139,9 +140,9 @@ pub unsafe fn sctp_datamsg_from_user(asoc: *mut sctp_association, sinfo: *mut sc
         if remaining == msg_len { frag |= SCTP_DATA_FIRST_FRAG; len = first_len; } else { len = max_data; }
         if len >= remaining { len = remaining; frag |= SCTP_DATA_LAST_FRAG; if (*sinfo).sinfo_flags & (SCTP_EOF | SCTP_SACK_IMMEDIATELY) != 0 { frag |= SCTP_DATA_SACK_IMM; } }
         chunk = (*(*asoc).stream.si).make_datafrag(asoc, sinfo, len, frag, GFP_KERNEL);
-        if chunk.is_null() { err = -ENOMEM; goto errout; }
+        if chunk.is_null() { err = -ENOMEM; break 'errout; }
         err = sctp_user_addto_chunk(chunk, len, from);
-        if err < 0 { sctp_chunk_free(chunk); goto errout; }
+        if err < 0 { sctp_chunk_free(chunk); break 'errout; }
         (*chunk).shkey = shkey;
         __skb_pull((*chunk).skb, ((*chunk).chunk_hdr as *mut u8).offset_from((*chunk).skb as *mut u8));
         sctp_datamsg_assign(msg, chunk);
@@ -149,7 +150,8 @@ pub unsafe fn sctp_datamsg_from_user(asoc: *mut sctp_association, sinfo: *mut sc
         remaining -= len;
     }
     return msg;
-errout:
+    }
+    
     list_for_each_safe!(pos, temp, &mut (*msg).chunks, { list_del_init(pos); chunk = list_entry!(pos, sctp_chunk, frag_list); sctp_chunk_free(chunk); });
     sctp_datamsg_put(msg);
     return ERR_PTR(err);

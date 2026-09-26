@@ -17,7 +17,7 @@ static mut SP_UNITS: ListHead = LIST_HEAD_INIT!();
 /* Ever-increasing value to produce unique unit numbers */
 static mut SP_ORDINAL: Atomic = ATOMIC_INIT!(0);
 
-static unsafe fn sp_add_device(sp: *mut sp_device) {
+unsafe fn sp_add_device(sp: *mut sp_device) {
     let mut flags: c_ulong = 0;
 
     write_lock_irqsave(&mut SP_UNIT_LOCK, &mut flags);
@@ -25,7 +25,7 @@ static unsafe fn sp_add_device(sp: *mut sp_device) {
     write_unlock_irqrestore(&mut SP_UNIT_LOCK, flags);
 }
 
-static unsafe fn sp_del_device(sp: *mut sp_device) {
+unsafe fn sp_del_device(sp: *mut sp_device) {
     let mut flags: c_ulong = 0;
 
     write_lock_irqsave(&mut SP_UNIT_LOCK, &mut flags);
@@ -33,7 +33,7 @@ static unsafe fn sp_del_device(sp: *mut sp_device) {
     write_unlock_irqrestore(&mut SP_UNIT_LOCK, flags);
 }
 
-static unsafe extern "C" fn sp_irq_handler(irq: c_int, data: *mut c_void) -> irqreturn_t {
+unsafe extern "C" fn sp_irq_handler(irq: c_int, data: *mut c_void) -> irqreturn_t {
     let sp = data as *mut sp_device;
 
     if let Some(handler) = (*sp).ccp_irq_handler {

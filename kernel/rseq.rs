@@ -39,7 +39,7 @@ static mut rseq_stats: PerCpu<rseq_stats> = PerCpu::new();
 unsafe fn rseq_stats_show(m: *mut seq_file, _p: *mut core::ffi::c_void) -> i32 {
     let mut stats = rseq_stats { ..Default::default() };
     let mut cpu: u32 = 0;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         stats.exit = stats.exit.wrapping_add(data_race(per_cpu!(rseq_stats.exit, cpu)));
         stats.signal = stats.signal.wrapping_add(data_race(per_cpu!(rseq_stats.signal, cpu)));
         stats.slowpath = stats.slowpath.wrapping_add(data_race(per_cpu!(rseq_stats.slowpath, cpu)));
@@ -55,7 +55,7 @@ unsafe fn rseq_stats_show(m: *mut seq_file, _p: *mut core::ffi::c_void) -> i32 {
             stats.s_yielded = stats.s_yielded.wrapping_add(data_race(per_cpu!(rseq_stats.s_yielded, cpu)));
             stats.s_aborted = stats.s_aborted.wrapping_add(data_race(per_cpu!(rseq_stats.s_aborted, cpu)));
         }
-    }
+    });
     seq_printf(m, "exit:   %16lu\n", stats.exit);
     seq_printf(m, "signal: %16lu\n", stats.signal);
     seq_printf(m, "slowp:  %16lu\n", stats.slowpath);

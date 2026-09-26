@@ -83,7 +83,7 @@ pub unsafe fn dns_query(
     kfree(desc as *mut _);
     if IS_ERR(rkey) {
         ret = PTR_ERR(rkey);
-        goto_out!(ret);
+        goto ret;
     }
 
     down_read(&(*rkey).sem);
@@ -92,13 +92,13 @@ pub unsafe fn dns_query(
 
     ret = key_validate(rkey);
     if ret < 0 {
-        goto_put!(ret);
+        goto ret;
     }
 
     /* If the DNS server gave an error, return that to the caller */
     ret = PTR_ERR((*rkey).payload.data[dns_key_error]);
     if ret != 0 {
-        goto_put!(ret);
+        goto ret;
     }
 
     upayload = user_key_payload_locked(rkey);
@@ -108,7 +108,7 @@ pub unsafe fn dns_query(
         ret = -ENOMEM;
         *_result = kmemdup_nul((*upayload).data, len as usize, GFP_KERNEL);
         if (*_result).is_null() {
-            goto_put!(ret);
+            goto ret;
         }
     }
 

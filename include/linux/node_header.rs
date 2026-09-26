@@ -50,7 +50,7 @@ pub struct node_cache_attrs {
     pub address_mode: u16,
 }
 
-#[cfg(feature = "CONFIG_HMEM_REPORTING")]
+#[cfg(CONFIG_HMEM_REPORTING)]
 extern "C" {
     pub fn node_add_cache(nid: u32, cache_attrs: *mut node_cache_attrs);
     pub fn node_set_perf_attrs(
@@ -65,11 +65,11 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_HMEM_REPORTING"))]
+#[cfg(not(CONFIG_HMEM_REPORTING))]
 #[inline]
 pub unsafe fn node_add_cache(_nid: u32, _cache_attrs: *mut node_cache_attrs) {}
 
-#[cfg(not(feature = "CONFIG_HMEM_REPORTING"))]
+#[cfg(not(CONFIG_HMEM_REPORTING))]
 #[inline]
 pub unsafe fn node_set_perf_attrs(
     _nid: u32,
@@ -78,7 +78,7 @@ pub unsafe fn node_set_perf_attrs(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_HMEM_REPORTING"))]
+#[cfg(not(CONFIG_HMEM_REPORTING))]
 #[inline]
 pub unsafe fn node_update_perf_attrs(
     _nid: u32,
@@ -91,9 +91,9 @@ pub unsafe fn node_update_perf_attrs(
 pub struct node {
     pub dev: device,
     pub access_list: list_head,
-    #[cfg(feature = "CONFIG_HMEM_REPORTING")]
+    #[cfg(CONFIG_HMEM_REPORTING)]
     pub cache_attrs: list_head,
-    #[cfg(feature = "CONFIG_HMEM_REPORTING")]
+    #[cfg(CONFIG_HMEM_REPORTING)]
     pub cache_dev: *mut device,
 }
 
@@ -103,7 +103,7 @@ extern "C" {
     pub static mut node_devices: [*mut node; 0];
 }
 
-#[cfg(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA))]
 extern "C" {
     pub fn register_memory_blocks_under_node_hotplug(
         nid: i32,
@@ -112,7 +112,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn register_memory_blocks_under_node_hotplug(
     _nid: i32,
@@ -121,7 +121,7 @@ pub unsafe fn register_memory_blocks_under_node_hotplug(
 ) {
 }
 
-#[cfg(not(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn register_memory_blocks_under_nodes() {}
 
@@ -137,27 +137,27 @@ pub const NODE_REMOVING_LAST_MEMORY: u32 = 1 << 3;
 pub const NODE_REMOVED_LAST_MEMORY: u32 = 1 << 4;
 pub const NODE_CANCEL_REMOVING_LAST_MEMORY: u32 = 1 << 5;
 
-#[cfg(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA))]
 extern "C" {
     pub fn register_node_notifier(nb: *mut notifier_block) -> i32;
     pub fn unregister_node_notifier(nb: *mut notifier_block);
     pub fn node_notify(val: c_ulong, v: *mut core::ffi::c_void) -> i32;
 }
 
-#[cfg(not(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn register_node_notifier(_nb: *mut notifier_block) -> i32 { 0 }
-#[cfg(not(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn unregister_node_notifier(_nb: *mut notifier_block) {}
-#[cfg(not(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn node_notify(_val: c_ulong, _v: *mut core::ffi::c_void) -> i32 { 0 }
-#[cfg(not(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn hotplug_node_notifier(_fn: notifier_fn_t, _pri: i32) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn node_dev_init();
     pub fn register_node(nid: i32) -> i32;
@@ -172,22 +172,22 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn node_dev_init() {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn register_node(_nid: i32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn unregister_node(_nid: i32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn register_cpu_under_node(_cpu: u32, _nid: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn unregister_cpu_under_node(_cpu: u32, _nid: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn unregister_memory_block_under_nodes(_mem_blk: *mut memory_block) {}
 

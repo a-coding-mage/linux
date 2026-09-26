@@ -17,7 +17,7 @@ const NI_PCIMIO_C_SOURCE: &str = r###"// SPDX-License-Identifier: GPL-2.0+
  *
  * COMEDI - Linux Control and Measurement Device Interface
  * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
- * /
+ */
 
 /*
  * Driver: ni_pcimio
@@ -75,7 +75,7 @@ const NI_PCIMIO_C_SOURCE: &str = r###"// SPDX-License-Identifier: GPL-2.0+
  *
  * Bugs:
  * - When DMA is enabled, COMEDI_EV_CONVERT does not work correctly.
- * /
+ */
 
 /*
  * The PCI-MIO E series driver was originally written by
@@ -103,7 +103,7 @@ const NI_PCIMIO_C_SOURCE: &str = r###"// SPDX-License-Identifier: GPL-2.0+
  *	DAC8043		120ns
  *	DAC8800		60ns
  *	MB88341		?
- * /
+ */
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -131,7 +131,7 @@ static const struct comedi_lrange range_ni_E_ao_ext = {
  * be 10V, 5V, 2V, 1V, APFI<0,1>, AO<0...3>.  That's
  * 63 different possibilities.  An AO channel
  * can not act as it's own OFFSET or REFERENCE.
- * /
+ */
 static const struct comedi_lrange range_ni_M_628x_ao = {
 	8, {
 		BIP_RANGE(10),
@@ -175,14 +175,14 @@ enum ni_pcimio_boardid {
 	BOARD_PCI6052E,
 	BOARD_PCI6110,
 	BOARD_PCI6111,
-	/* BOARD_PCI6115, * /
-	/* BOARD_PXI6115, * /
+	/* BOARD_PCI6115, */
+	/* BOARD_PXI6115, */
 	BOARD_PCI6711,
 	BOARD_PXI6711,
 	BOARD_PCI6713,
 	BOARD_PXI6713,
 	BOARD_PCI6731,
-	/* BOARD_PXI6731, * /
+	/* BOARD_PXI6731, */
 	BOARD_PCI6733,
 	BOARD_PXI6733,
 	BOARD_PXI6071E,
@@ -241,7 +241,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { dac8800, dac8043 },
 	},
 	[BOARD_PCIMIO_16XE_10] = {
-		.name		= "pci-mio-16xe-10",	/*  aka pci-6030E * /
+		.name		= "pci-mio-16xe-10",	/*  aka pci-6030E */
 		.n_adchan	= 16,
 		.ai_maxdata	= 0xffff,
 		.ai_fifo_depth	= 512,
@@ -285,7 +285,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { dac8800, dac8043, ad8522 },
 	},
 	[BOARD_PCIMIO_16E_1] = {
-		.name		= "pci-mio-16e-1",	/* aka pci-6070e * /
+		.name		= "pci-mio-16e-1",	/* aka pci-6070e */
 		.n_adchan	= 16,
 		.ai_maxdata	= 0x0fff,
 		.ai_fifo_depth	= 512,
@@ -299,7 +299,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { mb88341 },
 	},
 	[BOARD_PCIMIO_16E_4] = {
-		.name		= "pci-mio-16e-4",	/* aka pci-6040e * /
+		.name		= "pci-mio-16e-4",	/* aka pci-6040e */
 		.n_adchan	= 16,
 		.ai_maxdata	= 0x0fff,
 		.ai_fifo_depth	= 512,
@@ -307,14 +307,14 @@ static const struct ni_board_struct ni_boards[] = {
 		/*
 		 * there have been reported problems with
 		 * full speed on this board
-		 * /
+		 */
 		.ai_speed	= 2000,
 		.n_aochan	= 2,
 		.ao_maxdata	= 0x0fff,
 		.ao_fifo_depth	= 512,
 		.ao_range_table	= &range_ni_E_ao_ext,
 		.ao_speed	= 1000,
-		.caldac		= { ad8804_debug },	/* doc says mb88341 * /
+		.caldac		= { ad8804_debug },	/* doc says mb88341 */
 	},
 	[BOARD_PXI6040E] = {
 		.name		= "pxi-6040e",
@@ -387,7 +387,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ai_fifo_depth	= 512,
 		.gainlkup	= ai_gain_4,
 		.ai_speed	= 5000,
-		.caldac		= { ad8804_debug },	/* manual is wrong * /
+		.caldac		= { ad8804_debug },	/* manual is wrong */
 	},
 	[BOARD_PCI6024E] = {
 		.name		= "pci-6024e",
@@ -400,7 +400,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_maxdata	= 0x0fff,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 100000,
-		.caldac		= { ad8804_debug },	/* manual is wrong * /
+		.caldac		= { ad8804_debug },	/* manual is wrong */
 	},
 	[BOARD_PCI6025E] = {
 		.name		= "pci-6025e",
@@ -413,7 +413,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_maxdata	= 0x0fff,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 100000,
-		.caldac		= { ad8804_debug },	/* manual is wrong * /
+		.caldac		= { ad8804_debug },	/* manual is wrong */
 		.has_8255	= 1,
 	},
 	[BOARD_PXI6025E] = {
@@ -427,7 +427,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_maxdata	= 0x0fff,
 		.ao_range_table	= &range_ni_E_ao_ext,
 		.ao_speed	= 100000,
-		.caldac		= { ad8804_debug },	/* manual is wrong * /
+		.caldac		= { ad8804_debug },	/* manual is wrong */
 		.has_8255	= 1,
 	},
 	[BOARD_PCI6034E] = {
@@ -467,7 +467,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_range_table	= &range_ni_E_ao_ext,
 		.ao_speed	= 3000,
-		/* manual is wrong * /
+		/* manual is wrong */
 		.caldac		= { ad8804_debug, ad8804_debug, ad8522 },
 	},
 	[BOARD_PCI6110] = {
@@ -502,8 +502,8 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { ad8804, ad8804 },
 	},
 #if 0
-	/* The 6115 boards probably need their own driver * /
-	[BOARD_PCI6115] = {	/* .device_id = 0x2ed0, * /
+	/* The 6115 boards probably need their own driver */
+	[BOARD_PCI6115] = {	/* .device_id = 0x2ed0, */
 		.name		= "pci-6115",
 		.n_adchan	= 4,
 		.ai_maxdata	= 0x0fff,
@@ -516,12 +516,12 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_speed	= 250,
 		.reg_611x	= 1,
-		/* XXX * /
+		/* XXX */
 		.caldac		= { ad8804_debug, ad8804_debug, ad8804_debug },
 	},
 #endif
 #if 0
-	[BOARD_PXI6115] = {	/* .device_id = ????, * /
+	[BOARD_PXI6115] = {	/* .device_id = ????, */
 		.name		= "pxi-6115",
 		.n_adchan	= 4,
 		.ai_maxdata	= 0x0fff,
@@ -534,7 +534,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_speed	= 250,
 		.reg_611x	= 1,
-		/* XXX * /
+		/* XXX */
 		.caldac		= { ad8804_debug, ad8804_debug, ad8804_debug },
 	},
 #endif
@@ -542,7 +542,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.name = "pci-6711",
 		.n_aochan	= 4,
 		.ao_maxdata	= 0x0fff,
-		/* data sheet says 8192, but fifo really holds 16384 samples * /
+		/* data sheet says 8192, but fifo really holds 16384 samples */
 		.ao_fifo_depth	= 16384,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 1000,
@@ -590,7 +590,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { ad8804_debug },
 	},
 #if 0
-	[BOARD_PXI6731] = {	/* .device_id = ????, * /
+	[BOARD_PXI6731] = {	/* .device_id = ????, */
 		.name		= "pxi-6731",
 		.n_aochan	= 4,
 		.ao_maxdata	= 0xffff,
@@ -1242,7 +1242,7 @@ static void m_series_init_eeprom_buffer(struct comedi_device *dev)
 	unsigned int old_iodwcr1_bits;
 	int i;
 
-	/* IO Window 1 needs to be temporarily mapped to read the eeprom * /
+	/* IO Window 1 needs to be temporarily mapped to read the eeprom */
 	daq_phys_addr = pci_resource_start(mite->pcidev, 1);
 
 	old_iodwbsr_bits = readl(mite->mmio + MITE_IODWBSR);
@@ -1268,22 +1268,22 @@ static void init_6143(struct comedi_device *dev)
 	const struct ni_board_struct *board = dev->board_ptr;
 	struct ni_private *devpriv = dev->private;
 
-	/*  Disable interrupts * /
+	/*  Disable interrupts */
 	ni_stc_writew(dev, 0, NISTC_INT_CTRL_REG);
 
-	/*  Initialise 6143 AI specific bits * /
+	/*  Initialise 6143 AI specific bits */
 
-	/* Set G0,G1 DMA mode to E series version * /
+	/* Set G0,G1 DMA mode to E series version */
 	ni_writeb(dev, 0x00, NI6143_MAGIC_REG);
-	/* Set EOCMode, ADCMode and pipelinedelay * /
+	/* Set EOCMode, ADCMode and pipelinedelay */
 	ni_writeb(dev, 0x80, NI6143_PIPELINE_DELAY_REG);
-	/* Set EOC Delay * /
+	/* Set EOC Delay */
 	ni_writeb(dev, 0x00, NI6143_EOC_SET_REG);
 
-	/* Set the FIFO half full level * /
+	/* Set the FIFO half full level */
 	ni_writel(dev, board->ai_fifo_depth / 2, NI6143_AI_FIFO_FLAG_REG);
 
-	/*  Strobe Relay disable bit * /
+	/*  Strobe Relay disable bit */
 	devpriv->ai_calib_source_enabled = 0;
 	ni_writew(dev, devpriv->ai_calib_source | NI6143_CALIB_CHAN_RELAY_OFF,
 		  NI6143_CALIB_CHAN_REG);
@@ -1335,7 +1335,7 @@ static int pcimio_auto_attach(struct comedi_device *dev,
 		return ret;
 	devpriv = dev->private;
 
-	devpriv->mite = mite_attach(dev, false);	/* use win0 * /
+	devpriv->mite = mite_attach(dev, false);	/* use win0 */
 	if (!devpriv->mite)
 		return -ENOMEM;
 
@@ -1416,7 +1416,7 @@ static int ni_pcimio_pci_probe(struct pci_dev *dev,
 }
 
 static const struct pci_device_id ni_pcimio_pci_table[] = {
-	{ PCI_VDEVICE(NI, 0x0162), .driver_data = BOARD_PCIMIO_16XE_50 },	/* 0x1620? * /
+	{ PCI_VDEVICE(NI, 0x0162), .driver_data = BOARD_PCIMIO_16XE_50 },	/* 0x1620? */
 	{ PCI_VDEVICE(NI, 0x1170), .driver_data = BOARD_PCIMIO_16XE_10 },
 	{ PCI_VDEVICE(NI, 0x1180), .driver_data = BOARD_PCIMIO_16E_1 },
 	{ PCI_VDEVICE(NI, 0x1190), .driver_data = BOARD_PCIMIO_16E_4 },

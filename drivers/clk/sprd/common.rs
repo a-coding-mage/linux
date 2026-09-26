@@ -61,8 +61,7 @@ unsafe extern "C" {
     fn of_property_present(node: *mut device_node, name: *const c_char) -> bool;
     fn syscon_regmap_lookup_by_phandle(
         node: *mut device_node,
-        name: *const c_char,
-    ) -> *mut regmap;
+        name: *const c_char) -> *mut regmap;
     fn of_get_parent(node: *mut device_node) -> *mut device_node;
     fn of_device_is_compatible(node: *mut device_node, compatible: *const c_char) -> bool;
     fn of_node_put(node: *mut device_node);
@@ -70,20 +69,17 @@ unsafe extern "C" {
     fn devm_platform_get_and_ioremap_resource(
         pdev: *mut platform_device,
         index: c_int,
-        res: *mut *mut resource,
-    ) -> *mut c_void;
+        res: *mut *mut resource) -> *mut c_void;
     fn resource_size(res: *mut resource) -> usize;
     fn devm_regmap_init_mmio(
         dev: *mut device,
         base: *mut c_void,
-        config: *const regmap_config,
-    ) -> *mut regmap;
+        config: *const regmap_config) -> *mut regmap;
     fn devm_clk_hw_register(dev: *mut device, hw: *mut clk_hw) -> c_int;
     fn devm_of_clk_add_hw_provider(
         dev: *mut device,
         get: *const c_void,
-        data: *mut clk_hw_onecell_data,
-    ) -> c_int;
+        data: *mut clk_hw_onecell_data) -> c_int;
     fn of_clk_hw_onecell_get;
 }
 

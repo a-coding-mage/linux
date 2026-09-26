@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* CONFIG_HAVE_SRAM_POOL is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_HAVE_SRAM_POOL")]
+#[cfg(CONFIG_HAVE_SRAM_POOL)]
 mod have_sram_pool {
     #[repr(C)]
     pub struct gen_pool {
@@ -33,16 +33,16 @@ mod have_sram_pool {
     }
 }
 
-#[cfg(feature = "CONFIG_HAVE_SRAM_POOL")]
+#[cfg(CONFIG_HAVE_SRAM_POOL)]
 pub use have_sram_pool::{sram_alloc, sram_free};
 
-#[cfg(not(feature = "CONFIG_HAVE_SRAM_POOL"))]
+#[cfg(not(CONFIG_HAVE_SRAM_POOL))]
 #[inline]
 pub fn sram_alloc(_len: usize) -> u64 {
     0u64
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_SRAM_POOL"))]
+#[cfg(not(CONFIG_HAVE_SRAM_POOL))]
 #[inline]
 pub fn sram_free(_addr: u64, _len: usize) {}
 

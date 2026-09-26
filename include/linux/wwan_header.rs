@@ -112,20 +112,20 @@ extern "C" {
 }
 
 // CONFIG_WWAN_DEBUGFS controls whether these declarations or inline stubs are used.
-#[cfg(feature = "CONFIG_WWAN_DEBUGFS")]
+#[cfg(CONFIG_WWAN_DEBUGFS)]
 extern "C" {
     pub fn wwan_get_debugfs_dir(parent: *mut device) -> *mut dentry;
     pub fn wwan_put_debugfs_dir(dir: *mut dentry);
 }
 
-#[cfg(not(feature = "CONFIG_WWAN_DEBUGFS"))]
+#[cfg(not(CONFIG_WWAN_DEBUGFS))]
 #[inline]
 pub unsafe fn wwan_get_debugfs_dir(_parent: *mut device) -> *mut dentry {
     // ERR_PTR(-ENODEV), supplied by the surrounding kernel translation unit.
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_WWAN_DEBUGFS"))]
+#[cfg(not(CONFIG_WWAN_DEBUGFS))]
 #[inline]
 pub unsafe fn wwan_put_debugfs_dir(_dir: *mut dentry) {}
 

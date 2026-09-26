@@ -78,7 +78,7 @@ unsafe fn vdc_getgeo(disk: *mut gendisk, geo: *mut hd_geometry) -> i32 {
     (*geo).heads = 0xff; (*geo).sectors = 0x3f;
     sector_div!(cylinders, (*geo).heads as _ * (*geo).sectors as _);
     (*geo).cylinders = cylinders;
-    if (( (*geo).cylinders + 1) as sector_t) * (*geo).heads as sector_t * (*geo).sectors as sector_t < nsect { (*geo).cylinders = 0xffff; }
+    if (( (*geo).cylinders + 1) as sector_t) * (*geo).heads as sector_t * ((*geo).sectors as sector_t) < nsect { (*geo).cylinders = 0xffff; }
     0
 }
 

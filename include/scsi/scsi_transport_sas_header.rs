@@ -35,11 +35,11 @@ pub const SAS_PROTOCOL_STP: sas_protocol = 1 << 1;
 pub const SAS_FANOUT_EXPANDER_DEVICE: sas_device_type = 0x02;
 pub const SAS_EDGE_EXPANDER_DEVICE: sas_device_type = 0x03;
 
-#[cfg(not(feature = "CONFIG_SCSI_SAS_ATTRS"))]
+#[cfg(not(CONFIG_SCSI_SAS_ATTRS))]
 #[inline]
 pub unsafe fn scsi_is_sas_rphy(_sdev: *const device) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_SCSI_SAS_ATTRS")]
+#[cfg(CONFIG_SCSI_SAS_ATTRS)]
 unsafe extern "C" {
     pub fn scsi_is_sas_rphy(sdev: *const device) -> i32;
 }

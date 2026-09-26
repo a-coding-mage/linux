@@ -450,7 +450,7 @@ unsafe extern "C" fn snd_i2c_bit_sendbytes(
             return -EIO; /* not yet implemented */
         }
         snd_i2c_bit_start(bus);
-        err = snd_i2c_bit_sendbyte(bus, ((*device).addr as c_int << 1) as c_uchar);
+        err = snd_i2c_bit_sendbyte(bus, (((*device).addr as c_int) << 1) as c_uchar);
         if err < 0 {
             snd_i2c_bit_hw_stop(bus);
             return err;
@@ -487,7 +487,7 @@ unsafe extern "C" fn snd_i2c_bit_readbytes(
             return -EIO; /* not yet implemented */
         }
         snd_i2c_bit_start(bus);
-        err = snd_i2c_bit_sendbyte(bus, (((*device).addr as c_int << 1) | 1) as c_uchar);
+        err = snd_i2c_bit_sendbyte(bus, ((((*device).addr as c_int) << 1) | 1) as c_uchar);
         if err < 0 {
             snd_i2c_bit_hw_stop(bus);
             return err;

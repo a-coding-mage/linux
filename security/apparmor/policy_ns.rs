@@ -339,9 +339,9 @@ unsafe fn __ns_list_release(head: *mut list_head) {
     let mut ns: *mut aa_ns;
     let mut tmp: *mut aa_ns;
 
-    list_for_each_entry_safe(ns, tmp, head, base.list) {
+    list_for_each_entry_safe!(ns, tmp, head, base.list, {
         __aa_remove_ns(ns);
-    }
+    });
 }
 
 /**

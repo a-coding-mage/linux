@@ -28,16 +28,16 @@ unsafe fn int rdev_resume(*mut cfg80211_registered_devicerdev)
 }
 
 unsafe fn () rdev_set_wakeup(*mut cfg80211_registered_devicerdev,
-				   bool enabled)
+				   enabled: bool)
 {
 	trace_rdev_set_wakeup(&(*rdev).wiphy, enabled);
 	(*rdev).(*ops).set_wakeup(&(*rdev).wiphy, enabled);
 	trace_rdev_return_void(&(*rdev).wiphy);
 }
 
-unsafe fn *mut wireless_devrdev_add_virtual_intf(*mut cfg80211_registered_devicerdev, *mut core::ffi::c_charname,
-		       u8 name_assign_type,
-		       enum nl80211_iftype type,
+unsafe fn *mut wireless_devrdev_add_virtual_intf(*mut cfg80211_registered_devicerdev, name: *mut core::ffi::c_char,
+		       name_assign_type: u8,
+		       nl80211_iftype type,
 		       *mut vif_paramsparams)
 {
 	*mut wireless_devret;
@@ -61,7 +61,7 @@ rdev_del_virtual_intf(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_change_virtual_intf(*mut cfg80211_registered_devicerdev,
-			 *mut net_devicedev, enum nl80211_iftype type,
+			 *mut net_devicedev, nl80211_iftype type,
 			 *mut vif_paramsparams)
 {
 	int ret;
@@ -73,7 +73,7 @@ rdev_change_virtual_intf(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int rdev_add_key(*mut cfg80211_registered_devicerdev,
 			       *mut wireless_devwdev, int link_id,
-			       u8 key_index, bool pairwise, *const u8mac_addr,
+			       key_index: u8, pairwise: bool, mac_addr: *const u8,
 			       *mut key_paramsparams)
 {
 	int ret;
@@ -87,7 +87,7 @@ unsafe fn int rdev_add_key(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_get_key(*mut cfg80211_registered_devicerdev, *mut wireless_devwdev,
-	     int link_id, u8 key_index, bool pairwise, *const u8mac_addr,
+	     int link_id, key_index: u8, pairwise: bool, mac_addr: *const u8,
 	     () *cookie,
 	     () (*callback)(() *cookie, *mut key_params))
 {
@@ -102,7 +102,7 @@ rdev_get_key(*mut cfg80211_registered_devicerdev, *mut wireless_devwdev,
 
 unsafe fn int rdev_del_key(*mut cfg80211_registered_devicerdev,
 			       *mut wireless_devwdev, int link_id,
-			       u8 key_index, bool pairwise, *const u8mac_addr)
+			       key_index: u8, pairwise: bool, mac_addr: *const u8)
 {
 	int ret;
 	trace_rdev_del_key(&(*rdev).wiphy, wdev, link_id, key_index, pairwise,
@@ -116,7 +116,7 @@ unsafe fn int rdev_del_key(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_set_default_key(*mut cfg80211_registered_devicerdev,
 		     *mut net_devicenetdev, int link_id, u8 key_index,
-		     bool unicast, bool multicast)
+		     unicast: bool, multicast: bool)
 {
 	int ret;
 	trace_rdev_set_default_key(&(*rdev).wiphy, netdev, link_id, key_index,
@@ -143,7 +143,7 @@ rdev_set_default_mgmt_key(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_set_default_beacon_key(*mut cfg80211_registered_devicerdev,
 			    *mut wireless_devwdev, int link_id,
-			    u8 key_index)
+			    key_index: u8)
 {
 	int ret;
 
@@ -188,7 +188,7 @@ unsafe fn int rdev_stop_ap(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_add_station(*mut cfg80211_registered_devicerdev,
-				   *mut wireless_devwdev, *mut u8mac,
+				   *mut wireless_devwdev, mac: *mut u8,
 				   *mut station_parametersparams)
 {
 	int ret;
@@ -210,7 +210,7 @@ unsafe fn int rdev_del_station(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_change_station(*mut cfg80211_registered_devicerdev,
-				      *mut wireless_devwdev, *mut u8mac,
+				      *mut wireless_devwdev, mac: *mut u8,
 				      *mut station_parametersparams)
 {
 	int ret;
@@ -221,7 +221,7 @@ unsafe fn int rdev_change_station(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_get_station(*mut cfg80211_registered_devicerdev,
-				   *mut wireless_devwdev, *const u8mac,
+				   *mut wireless_devwdev, mac: *const u8,
 				   *mut station_infosinfo)
 {
 	int ret;
@@ -232,7 +232,7 @@ unsafe fn int rdev_get_station(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_dump_station(*mut cfg80211_registered_devicerdev,
-				    *mut wireless_devwdev, int idx, *mut u8mac,
+				    *mut wireless_devwdev, int idx, mac: *mut u8,
 				    *mut station_infosinfo)
 {
 	int ret;
@@ -243,7 +243,7 @@ unsafe fn int rdev_dump_station(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_add_mpath(*mut cfg80211_registered_devicerdev,
-				 *mut net_devicedev, *mut u8dst, *mut u8next_hop)
+				 *mut net_devicedev, dst: *mut u8, next_hop: *mut u8)
 {
 	int ret;
 	trace_rdev_add_mpath(&(*rdev).wiphy, dev, dst, next_hop);
@@ -253,7 +253,7 @@ unsafe fn int rdev_add_mpath(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_del_mpath(*mut cfg80211_registered_devicerdev,
-				 *mut net_devicedev, *mut u8dst)
+				 *mut net_devicedev, dst: *mut u8)
 {
 	int ret;
 	trace_rdev_del_mpath(&(*rdev).wiphy, dev, dst);
@@ -263,8 +263,8 @@ unsafe fn int rdev_del_mpath(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_change_mpath(*mut cfg80211_registered_devicerdev,
-				    *mut net_devicedev, *mut u8dst,
-				    *mut u8next_hop)
+				    *mut net_devicedev, dst: *mut u8,
+				    next_hop: *mut u8)
 {
 	int ret;
 	trace_rdev_change_mpath(&(*rdev).wiphy, dev, dst, next_hop);
@@ -274,7 +274,7 @@ unsafe fn int rdev_change_mpath(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_get_mpath(*mut cfg80211_registered_devicerdev,
-				 *mut net_devicedev, *mut u8dst, *mut u8next_hop,
+				 *mut net_devicedev, dst: *mut u8, next_hop: *mut u8,
 				 *mut mpath_infopinfo)
 {
 	int ret;
@@ -286,7 +286,7 @@ unsafe fn int rdev_get_mpath(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_get_mpp(*mut cfg80211_registered_devicerdev,
-			       *mut net_devicedev, *mut u8dst, *mut u8mpp,
+			       *mut net_devicedev, dst: *mut u8, mpp: *mut u8,
 			       *mut mpath_infopinfo)
 {
 	int ret;
@@ -298,8 +298,8 @@ unsafe fn int rdev_get_mpp(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_dump_mpath(*mut cfg80211_registered_devicerdev,
-				  *mut net_devicedev, int idx, *mut u8dst,
-				  *mut u8next_hop, *mut mpath_infopinfo)
+				  *mut net_devicedev, int idx, dst: *mut u8,
+				  next_hop: *mut u8, *mut mpath_infopinfo)
 
 {
 	int ret;
@@ -311,8 +311,8 @@ unsafe fn int rdev_dump_mpath(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_dump_mpp(*mut cfg80211_registered_devicerdev,
-				*mut net_devicedev, int idx, *mut u8dst,
-				*mut u8mpp, *mut mpath_infopinfo)
+				*mut net_devicedev, int idx, dst: *mut u8,
+				mpp: *mut u8, *mut mpath_infopinfo)
 
 {
 	int ret;
@@ -573,7 +573,7 @@ unsafe fn int rdev_leave_ibss(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_set_wiphy_params(*mut cfg80211_registered_devicerdev, int radio_idx,
-		      u32 changed)
+		      changed: u32)
 {
 	int ret = -EOPNOTSUPP;
 
@@ -587,7 +587,7 @@ rdev_set_wiphy_params(*mut cfg80211_registered_devicerdev, int radio_idx,
 
 unsafe fn int rdev_set_tx_power(*mut cfg80211_registered_devicerdev,
 				    *mut wireless_devwdev, int radio_idx,
-				    enum nl80211_tx_power_setting type,
+				    nl80211_tx_power_setting type,
 				    int mbm)
 {
 	int ret;
@@ -600,7 +600,7 @@ unsafe fn int rdev_set_tx_power(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int rdev_get_tx_power(*mut cfg80211_registered_devicerdev,
 				    *mut wireless_devwdev, int radio_idx,
-				    u32 link_id, int *dbm)
+				    link_id: u32, int *dbm)
 {
 	int ret;
 	trace_rdev_get_tx_power(&(*rdev).wiphy, wdev, radio_idx, link_id);
@@ -668,7 +668,7 @@ unsafe fn int rdev_testmode_dump(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_set_bitrate_mask(*mut cfg80211_registered_devicerdev,
 		      *mut net_devicedev, u32 link_id,
-		      *const u8peer,
+		      peer: *const u8,
 		      const *mut cfg80211_bitrate_maskmask)
 {
 	int ret;
@@ -729,7 +729,7 @@ unsafe fn int
 rdev_remain_on_channel(*mut cfg80211_registered_devicerdev,
 		       *mut wireless_devwdev,
 		       *mut ieee80211_channelchan,
-		       u32 duration, u64 cookie, *const u8rx_addr)
+		       duration: u32, cookie: u64, rx_addr: *const u8)
 {
 	int ret;
 	trace_rdev_remain_on_channel(&(*rdev).wiphy, wdev, chan, duration,
@@ -754,7 +754,7 @@ rdev_cancel_remain_on_channel(*mut cfg80211_registered_devicerdev,
 unsafe fn int rdev_mgmt_tx(*mut cfg80211_registered_devicerdev,
 			       *mut wireless_devwdev,
 			       *mut cfg80211_mgmt_tx_paramsparams,
-			       u64 cookie)
+			       cookie: u64)
 {
 	int ret;
 	trace_rdev_mgmt_tx(&(*rdev).wiphy, wdev, params);
@@ -765,10 +765,10 @@ unsafe fn int rdev_mgmt_tx(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int rdev_tx_control_port(*mut cfg80211_registered_devicerdev,
 				       *mut net_devicedev,
-				       *const core::ffi::c_voidbuf, usize len,
-				       *const u8dest, __be16 proto,
+				       buf: *const core::ffi::c_void, len: usize,
+				       dest: *const u8, __be16 proto,
 				       const bool noencrypt, int link,
-				       u64 cookie)
+				       cookie: u64)
 {
 	int ret;
 	trace_rdev_tx_control_port(&(*rdev).wiphy, dev, buf, len,
@@ -856,7 +856,7 @@ rdev_update_mgmt_frame_registrations(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_set_antenna(*mut cfg80211_registered_devicerdev,
-				   int radio_idx, u32 tx_ant, u32 rx_ant)
+				   int radio_idx, tx_ant: u32, rx_ant: u32)
 {
 	int ret;
 	trace_rdev_set_antenna(&(*rdev).wiphy, radio_idx, tx_ant, rx_ant);
@@ -913,11 +913,11 @@ unsafe fn int rdev_set_rekey_data(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_tdls_mgmt(*mut cfg80211_registered_devicerdev,
-				 *mut net_devicedev, *mut u8peer,
-				 int link_id, u8 action_code,
-				 u8 dialog_token, u16 status_code,
-				 u32 peer_capability, bool initiator,
-				 *const u8buf, usize len)
+				 *mut net_devicedev, peer: *mut u8,
+				 int link_id, action_code: u8,
+				 dialog_token: u8, status_code: u16,
+				 peer_capability: u32, initiator: bool,
+				 buf: *const u8, len: usize)
 {
 	int ret;
 	trace_rdev_tdls_mgmt(&(*rdev).wiphy, dev, peer, link_id, action_code,
@@ -931,8 +931,8 @@ unsafe fn int rdev_tdls_mgmt(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_tdls_oper(*mut cfg80211_registered_devicerdev,
-				 *mut net_devicedev, *mut u8peer,
-				 enum nl80211_tdls_operation oper)
+				 *mut net_devicedev, peer: *mut u8,
+				 nl80211_tdls_operation oper)
 {
 	int ret;
 	trace_rdev_tdls_oper(&(*rdev).wiphy, dev, peer, oper);
@@ -942,8 +942,8 @@ unsafe fn int rdev_tdls_oper(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_probe_peer(*mut cfg80211_registered_devicerdev,
-				  *mut net_devicedev, *const u8peer,
-				  u64 cookie)
+				  *mut net_devicedev, peer: *const u8,
+				  cookie: u64)
 {
 	int ret;
 	trace_rdev_probe_peer(&(*rdev).wiphy, dev, peer);
@@ -965,7 +965,7 @@ unsafe fn int rdev_set_noack_map(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_get_channel(*mut cfg80211_registered_devicerdev,
 		 *mut wireless_devwdev,
-		 u32 link_id,
+		 link_id: u32,
 		 *mut cfg80211_chan_defchandef)
 {
 	int ret;
@@ -1131,8 +1131,8 @@ unsafe fn int rdev_update_ft_ies(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int rdev_crit_proto_start(*mut cfg80211_registered_devicerdev,
 					*mut wireless_devwdev,
-					enum nl80211_crit_proto_id protocol,
-					u16 duration)
+					nl80211_crit_proto_id protocol,
+					duration: u16)
 {
 	int ret;
 
@@ -1181,7 +1181,7 @@ unsafe fn int rdev_set_qos_map(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_set_ap_chanwidth(*mut cfg80211_registered_devicerdev,
 		      *mut net_devicedev,
-		      u32 link_id,
+		      link_id: u32,
 		      *mut cfg80211_chan_defchandef)
 {
 	int ret;
@@ -1195,8 +1195,8 @@ rdev_set_ap_chanwidth(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_add_tx_ts(*mut cfg80211_registered_devicerdev,
-	       *mut net_devicedev, u8 tsid, *const u8peer,
-	       u8 user_prio, u16 admitted_time)
+	       *mut net_devicedev, u8 tsid, peer: *const u8,
+	       user_prio: u8, admitted_time: u16)
 {
 	int ret = -EOPNOTSUPP;
 
@@ -1212,7 +1212,7 @@ rdev_add_tx_ts(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_del_tx_ts(*mut cfg80211_registered_devicerdev,
-	       *mut net_devicedev, u8 tsid, *const u8peer)
+	       *mut net_devicedev, u8 tsid, peer: *const u8)
 {
 	int ret = -EOPNOTSUPP;
 
@@ -1226,8 +1226,8 @@ rdev_del_tx_ts(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_tdls_channel_switch(*mut cfg80211_registered_devicerdev,
-			 *mut net_devicedev, *const u8addr,
-			 u8 oper_class, *mut cfg80211_chan_defchandef)
+			 *mut net_devicedev, addr: *const u8,
+			 oper_class: u8, *mut cfg80211_chan_defchandef)
 {
 	int ret;
 
@@ -1241,7 +1241,7 @@ rdev_tdls_channel_switch(*mut cfg80211_registered_devicerdev,
 
 unsafe fn ()
 rdev_tdls_cancel_channel_switch(*mut cfg80211_registered_devicerdev,
-				*mut net_devicedev, *const u8addr)
+				*mut net_devicedev, addr: *const u8)
 {
 	trace_rdev_tdls_cancel_channel_switch(&(*rdev).wiphy, dev, addr);
 	(*rdev).(*ops).tdls_cancel_channel_switch(&(*rdev).wiphy, dev, addr);
@@ -1252,7 +1252,7 @@ unsafe fn int
 rdev_start_radar_detection(*mut cfg80211_registered_devicerdev,
 			   *mut net_devicedev,
 			   *mut cfg80211_chan_defchandef,
-			   u32 cac_time_ms, int link_id)
+			   cac_time_ms: u32, int link_id)
 {
 	int ret = -EOPNOTSUPP;
 
@@ -1317,7 +1317,7 @@ unsafe fn int rdev_set_pmk(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_del_pmk(*mut cfg80211_registered_devicerdev,
-			       *mut net_devicedev, *const u8aa)
+			       *mut net_devicedev, aa: *const u8)
 {
 	int ret = -EOPNOTSUPP;
 
@@ -1397,8 +1397,8 @@ unsafe fn int rdev_update_owe_info(*mut cfg80211_registered_devicerdev,
 
 unsafe fn int
 rdev_probe_mesh_link(*mut cfg80211_registered_devicerdev,
-		     *mut net_devicedev, *const u8dest,
-		     *const core::ffi::c_voidbuf, usize len)
+		     *mut net_devicedev, dest: *const u8,
+		     buf: *const core::ffi::c_void, len: usize)
 {
 	int ret;
 
@@ -1421,8 +1421,8 @@ unsafe fn int rdev_set_tid_config(*mut cfg80211_registered_devicerdev,
 }
 
 unsafe fn int rdev_reset_tid_config(*mut cfg80211_registered_devicerdev,
-					*mut net_devicedev, *const u8peer,
-					u8 tids)
+					*mut net_devicedev, peer: *const u8,
+					tids: u8)
 {
 	int ret;
 
@@ -1489,7 +1489,7 @@ rdev_set_radar_background(*mut cfg80211_registered_devicerdev,
 unsafe fn int
 rdev_add_intf_link(*mut cfg80211_registered_devicerdev,
 		   *mut wireless_devwdev,
-		   u32 link_id)
+		   link_id: u32)
 {
 	int ret = 0;
 
@@ -1504,7 +1504,7 @@ rdev_add_intf_link(*mut cfg80211_registered_devicerdev,
 unsafe fn ()
 rdev_del_intf_link(*mut cfg80211_registered_devicerdev,
 		   *mut wireless_devwdev,
-		   u32 link_id)
+		   link_id: u32)
 {
 	trace_rdev_del_intf_link(&(*rdev).wiphy, wdev, link_id);
 	if ((*rdev).(*ops).del_intf_link)

@@ -8850,7 +8850,7 @@ chacha20poly1305_encrypt_bignonce(u8 *dst, const u8 *src, const size_t src_len,
 }
 
 static void
-chacha20poly1305_test_encrypt(struct kunit *test, u8 *dst,
+chacha20poly1305_test_encrypt(kunit *test, u8 *dst,
 			      const u8 *src, const size_t src_len,
 			      const u8 *ad, const size_t ad_len,
 			      const u8 *nonce, const size_t nonce_len,
@@ -8867,16 +8867,16 @@ chacha20poly1305_test_encrypt(struct kunit *test, u8 *dst,
 }
 
 static bool
-decryption_success(bool func_ret, bool expect_failure, int memcmp_result)
+decryption_success(func_ret: bool, expect_failure: bool, int memcmp_result)
 {
 	if (expect_failure)
 		return !func_ret;
 	return func_ret && !memcmp_result;
 }
 
-static void test_chacha20poly1305(struct kunit *test)
+static void test_chacha20poly1305(kunit *test)
 {
-	enum { MAXIMUM_TEST_BUFFER_LEN = 1UL << 12 };
+	pub const MAXIMUM_TEST_BUFFER_LEN: i32 = 1UL << 12;
 	size_t i, j, k, total_len;
 	u8 *computed_output = core::ptr::null_mut(), *input = core::ptr::null_mut();
 	bool ret;
@@ -9010,6 +9010,7 @@ static void test_chacha20poly1305(struct kunit *test)
 	     && total_len <= 1 << 10; ++total_len) {
 		for (i = 0; i <= total_len; ++i) {
 			for (j = i; j <= total_len; ++j) {
+				'chunkfail: {
 				k = 0;
 				sg_init_table(sg_src, 3);
 				if (i)
@@ -9025,30 +9026,30 @@ static void test_chacha20poly1305(struct kunit *test)
 				if (!chacha20poly1305_encrypt_sg_inplace(sg_src,
 					total_len - POLY1305_DIGEST_SIZE, core::ptr::null_mut(), 0,
 					0, enc_key001))
-					goto chunkfail;
+					break 'chunkfail;
 				chacha20poly1305_encrypt(computed_output,
 					computed_output,
 					total_len - POLY1305_DIGEST_SIZE, core::ptr::null_mut(), 0, 0,
 					enc_key001);
 				if (memcmp(computed_output, input, total_len))
-					goto chunkfail;
+					break 'chunkfail;
 				if (!chacha20poly1305_decrypt(computed_output,
 					input, total_len, core::ptr::null_mut(), 0, 0, enc_key001))
-					goto chunkfail;
+					break 'chunkfail;
 				for (k = 0; k < total_len - POLY1305_DIGEST_SIZE; ++k) {
 					if (computed_output[k])
-						goto chunkfail;
+						break 'chunkfail;
 				}
 				if (!chacha20poly1305_decrypt_sg_inplace(sg_src,
 					total_len, core::ptr::null_mut(), 0, 0, enc_key001))
-					goto chunkfail;
+					break 'chunkfail;
 				for (k = 0; k < total_len - POLY1305_DIGEST_SIZE; ++k) {
 					if (input[k])
-						goto chunkfail;
+						break 'chunkfail;
 				}
 				continue;
-
-			chunkfail:
+				}
+				
 				KUNIT_FAIL(
 					test,
 					"chacha20poly1305 chunked test %zu/%zu/%zu: FAIL\n",
@@ -9065,8 +9066,8 @@ static struct kunit_case chacha20poly1305_test_cases[] = {
 ];
 
 static struct kunit_suite chacha20poly1305_test_suite = {
-	.name = "chacha20poly1305",
-	.test_cases = chacha20poly1305_test_cases,
+	name: "chacha20poly1305",
+	test_cases: chacha20poly1305_test_cases,
 ];
 kunit_test_suite(chacha20poly1305_test_suite);
 

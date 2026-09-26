@@ -39,9 +39,9 @@ unsafe fn genl_family_find_byid(id: c_uint) -> *const genl_family {
 unsafe fn genl_family_find_byname(name: *mut c_char) -> *const genl_family {
     let mut family: *const genl_family = core::ptr::null();
     let mut id: c_uint = 0;
-    idr_for_each_entry(core::ptr::addr_of_mut!(genl_fam_idr), family, id) {
+    idr_for_each_entry!(core::ptr::addr_of_mut!(genl_fam_idr), family, id, {
         if strcmp((*family).name, name) == 0 { return family; }
-    }
+    });
     core::ptr::null()
 }
 

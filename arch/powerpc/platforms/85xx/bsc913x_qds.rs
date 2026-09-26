@@ -75,7 +75,7 @@ unsafe fn bsc913x_qds_setup_arch() {
     }
 
     // CONFIG_SMP conditional from the original source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     mpc85xx_smp_init();
 
     fsl_pci_assign_primary();

@@ -92,10 +92,10 @@ macro_rules! start_thread {
 macro_rules! start_thread32 {
     ($regs:expr, $pc:expr, $sp:expr) => {{
         let __asi: usize = ASI_PNF;
-        let pc = $pc & 0x0000_0000_ffff_ffffusize;
-        let sp = $sp & 0x0000_0000_ffff_ffffusize;
+        let $pc = $pc & 0x0000_0000_ffff_ffffusize;
+        let $sp = $sp & 0x0000_0000_ffff_ffffusize;
         $regs.tstate = ($regs.tstate & TSTATE_CWP) | (TSTATE_INITIAL_MM | TSTATE_IE | TSTATE_AM) | (__asi << 24);
-        $regs.tpc = ((pc & !3usize).wrapping_sub(4));
+        $regs.tpc = (($pc & !3usize).wrapping_sub(4));
         $regs.tnpc = $regs.tpc.wrapping_add(4);
         $regs.y = 0;
         set_thread_wstate(2 << 3);
@@ -104,7 +104,7 @@ macro_rules! start_thread32 {
             else { *current_thread_info().utraps -= 1; }
             current_thread_info().utraps = core::ptr::null_mut();
         }
-        unsafe { core::arch::asm!("stx %g0, [{0} + {2} + 0x00]", in(reg) $regs, in(reg) (sp - core::mem::size_of::<reg_window32>()), const 0); }
+        unsafe { core::arch::asm!("stx %g0, [{0} + {2} + 0x00]", in(reg) $regs, in(reg) ($sp - core::mem::size_of::<reg_window32>()), const 0); }
         fprs_write(0);
         current_thread_info().xfsr[0] = 0;
         current_thread_info().fpsaved[0] = 0;

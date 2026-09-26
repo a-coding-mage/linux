@@ -32,77 +32,77 @@ pub const _PAGE_EXT_WIRED: u64 = 0x4000;
 #[inline]
 pub const fn _PAGE_EXT(x: u64) -> u64 { x << 32 }
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 pub const _PAGE_PCC_MASK: u64 = 0x00000000;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_AREA5: u64 = 0x00000000;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_AREA6: u64 = 0x80000000;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_IODYN: u64 = 0x00000001;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_IO8: u64 = 0x20000000;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_IO16: u64 = 0x20000001;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_COM8: u64 = 0x40000000;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_COM16: u64 = 0x40000001;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_ATR8: u64 = 0x60000000;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_ATR16: u64 = 0x60000001;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_PCC_MASK: u64 = 0xe0000001;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline]
 pub fn copy_ptea_attributes(x: u64) -> u64 { ((x >> 28) & 0xe) | (x & 0x1) }
 
-#[cfg(feature = "CONFIG_CPU_SH3")]
+#[cfg(CONFIG_CPU_SH3)]
 pub const _PAGE_CLEAR_FLAGS: u64 = _PAGE_PROTNONE | _PAGE_ACCESSED | _PAGE_SZ1 | _PAGE_HW_SHARED;
-#[cfg(all(not(feature = "CONFIG_CPU_SH3"), feature = "CONFIG_X2TLB"))]
+#[cfg(all(not(CONFIG_CPU_SH3), CONFIG_X2TLB))]
 pub const _PAGE_CLEAR_FLAGS: u64 = _PAGE_PROTNONE | _PAGE_ACCESSED | _PAGE_PR_MASK | _PAGE_SZ_MASK;
-#[cfg(all(not(feature = "CONFIG_CPU_SH3"), not(feature = "CONFIG_X2TLB")))]
+#[cfg(all(not(CONFIG_CPU_SH3), not(CONFIG_X2TLB)))]
 pub const _PAGE_CLEAR_FLAGS: u64 = _PAGE_PROTNONE | _PAGE_ACCESSED;
 
 /* phys_addr_mask() is supplied by the architecture implementation. */
 #[inline]
 pub fn _PAGE_FLAGS_HARDWARE_MASK() -> u64 { phys_addr_mask() & !_PAGE_CLEAR_FLAGS }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const _PAGE_FLAGS_HARD: u64 = 0;
-#[cfg(all(feature = "CONFIG_MMU", feature = "CONFIG_X2TLB", feature = "CONFIG_PAGE_SIZE_4KB"))]
+#[cfg(all(CONFIG_MMU, CONFIG_X2TLB, CONFIG_PAGE_SIZE_4KB))]
 pub const _PAGE_FLAGS_HARD: u64 = _PAGE_EXT(_PAGE_EXT_ESZ0);
-#[cfg(all(feature = "CONFIG_MMU", feature = "CONFIG_X2TLB", feature = "CONFIG_PAGE_SIZE_8KB"))]
+#[cfg(all(CONFIG_MMU, CONFIG_X2TLB, CONFIG_PAGE_SIZE_8KB))]
 pub const _PAGE_FLAGS_HARD: u64 = _PAGE_EXT(_PAGE_EXT_ESZ1);
-#[cfg(all(feature = "CONFIG_MMU", feature = "CONFIG_X2TLB", feature = "CONFIG_PAGE_SIZE_64KB"))]
+#[cfg(all(CONFIG_MMU, CONFIG_X2TLB, CONFIG_PAGE_SIZE_64KB))]
 pub const _PAGE_FLAGS_HARD: u64 = _PAGE_EXT(_PAGE_EXT_ESZ2);
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "CONFIG_X2TLB"), feature = "CONFIG_PAGE_SIZE_4KB"))]
+#[cfg(all(CONFIG_MMU, not(CONFIG_X2TLB), CONFIG_PAGE_SIZE_4KB))]
 pub const _PAGE_FLAGS_HARD: u64 = _PAGE_SZ0;
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "CONFIG_X2TLB"), feature = "CONFIG_PAGE_SIZE_64KB"))]
+#[cfg(all(CONFIG_MMU, not(CONFIG_X2TLB), CONFIG_PAGE_SIZE_64KB))]
 pub const _PAGE_FLAGS_HARD: u64 = _PAGE_SZ1;
 
-#[cfg(all(feature = "CONFIG_X2TLB", feature = "CONFIG_HUGETLB_PAGE_SIZE_64K"))]
+#[cfg(all(CONFIG_X2TLB, CONFIG_HUGETLB_PAGE_SIZE_64K))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_EXT_ESZ2;
-#[cfg(all(feature = "CONFIG_X2TLB", feature = "CONFIG_HUGETLB_PAGE_SIZE_256K"))]
+#[cfg(all(CONFIG_X2TLB, CONFIG_HUGETLB_PAGE_SIZE_256K))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_EXT_ESZ0 | _PAGE_EXT_ESZ2;
-#[cfg(all(feature = "CONFIG_X2TLB", feature = "CONFIG_HUGETLB_PAGE_SIZE_1MB"))]
+#[cfg(all(CONFIG_X2TLB, CONFIG_HUGETLB_PAGE_SIZE_1MB))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_EXT_ESZ0 | _PAGE_EXT_ESZ1 | _PAGE_EXT_ESZ2;
-#[cfg(all(feature = "CONFIG_X2TLB", feature = "CONFIG_HUGETLB_PAGE_SIZE_4MB"))]
+#[cfg(all(CONFIG_X2TLB, CONFIG_HUGETLB_PAGE_SIZE_4MB))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_EXT_ESZ3;
-#[cfg(all(feature = "CONFIG_X2TLB", feature = "CONFIG_HUGETLB_PAGE_SIZE_64MB"))]
+#[cfg(all(CONFIG_X2TLB, CONFIG_HUGETLB_PAGE_SIZE_64MB))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_EXT_ESZ2 | _PAGE_EXT_ESZ3;
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 pub const _PAGE_WIRED: u64 = _PAGE_EXT(_PAGE_EXT_WIRED);
-#[cfg(all(not(feature = "CONFIG_X2TLB"), feature = "CONFIG_HUGETLB_PAGE_SIZE_64K"))]
+#[cfg(all(not(CONFIG_X2TLB), CONFIG_HUGETLB_PAGE_SIZE_64K))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_SZ1;
-#[cfg(all(not(feature = "CONFIG_X2TLB"), feature = "CONFIG_HUGETLB_PAGE_SIZE_1MB"))]
+#[cfg(all(not(CONFIG_X2TLB), CONFIG_HUGETLB_PAGE_SIZE_1MB))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_SZ0 | _PAGE_SZ1;
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 pub const _PAGE_WIRED: u64 = 0;
 
 /* Stub out _PAGE_SZHUGE when no configuration supplied a definition. */
-#[cfg(not(any(feature = "CONFIG_HUGETLB_PAGE_SIZE_64K", feature = "CONFIG_HUGETLB_PAGE_SIZE_256K", feature = "CONFIG_HUGETLB_PAGE_SIZE_1MB", feature = "CONFIG_HUGETLB_PAGE_SIZE_4MB", feature = "CONFIG_HUGETLB_PAGE_SIZE_64MB")))]
+#[cfg(not(any(CONFIG_HUGETLB_PAGE_SIZE_64K, CONFIG_HUGETLB_PAGE_SIZE_256K, CONFIG_HUGETLB_PAGE_SIZE_1MB, CONFIG_HUGETLB_PAGE_SIZE_4MB, CONFIG_HUGETLB_PAGE_SIZE_64MB)))]
 pub const _PAGE_SZHUGE: u64 = _PAGE_FLAGS_HARD;
 
 pub const _PAGE_CHG_MASK: u64 = PTE_MASK | _PAGE_ACCESSED | _PAGE_CACHABLE | _PAGE_DIRTY | _PAGE_SPECIAL;
@@ -110,13 +110,13 @@ pub const _PAGE_CHG_MASK: u64 = PTE_MASK | _PAGE_ACCESSED | _PAGE_CACHABLE | _PA
 /* __ASSEMBLER__-excluded declarations are represented as Rust items. */
 #[inline]
 pub unsafe fn set_pte(ptep: *mut pte_t, pte: pte_t) {
-    #[cfg(feature = "CONFIG_X2TLB")]
+    #[cfg(CONFIG_X2TLB)]
     {
         (*ptep).pte_high = pte.pte_high;
         smp_wmb();
         (*ptep).pte_low = pte.pte_low;
     }
-    #[cfg(not(feature = "CONFIG_X2TLB"))]
+    #[cfg(not(CONFIG_X2TLB))]
     { *ptep = pte; }
 }
 
@@ -139,21 +139,21 @@ pub const PFN_PTE_SHIFT: u64 = PAGE_SHIFT;
 #[inline] pub fn pte_young(pte: pte_t) -> bool { (pte.pte_low & _PAGE_ACCESSED) != 0 }
 #[inline] pub fn pte_special(pte: pte_t) -> bool { (pte.pte_low & _PAGE_SPECIAL) != 0 }
 #[inline] pub fn pte_write(pte: pte_t) -> bool {
-    #[cfg(feature = "CONFIG_X2TLB")] { (pte.pte_high & (_PAGE_EXT_USER_WRITE | _PAGE_EXT_KERN_WRITE)) != 0 }
-    #[cfg(not(feature = "CONFIG_X2TLB"))] { (pte.pte_low & _PAGE_RW) != 0 }
+    #[cfg(CONFIG_X2TLB)] { (pte.pte_high & (_PAGE_EXT_USER_WRITE | _PAGE_EXT_KERN_WRITE)) != 0 }
+    #[cfg(not(CONFIG_X2TLB))] { (pte.pte_low & _PAGE_RW) != 0 }
 }
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn pte_wrprotect(mut pte: pte_t) -> pte_t { pte.pte_high &= !(_PAGE_EXT_USER_WRITE | _PAGE_EXT_KERN_WRITE); pte }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn pte_wrprotect(mut pte: pte_t) -> pte_t { pte.pte_low &= !_PAGE_RW; pte }
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn pte_mkwrite_novma(mut pte: pte_t) -> pte_t { pte.pte_high |= _PAGE_EXT_USER_WRITE | _PAGE_EXT_KERN_WRITE; pte }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn pte_mkwrite_novma(mut pte: pte_t) -> pte_t { pte.pte_low |= _PAGE_RW; pte }
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn pte_mkhuge(mut pte: pte_t) -> pte_t { pte.pte_high |= _PAGE_SZHUGE; pte }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn pte_mkhuge(mut pte: pte_t) -> pte_t { pte.pte_low |= _PAGE_SZHUGE; pte }
 #[inline] pub fn pte_mkclean(mut pte: pte_t) -> pte_t { pte.pte_low &= !_PAGE_DIRTY; pte }
 #[inline] pub fn pte_mkdirty(mut pte: pte_t) -> pte_t { pte.pte_low |= _PAGE_DIRTY; pte }
@@ -167,7 +167,7 @@ pub const PFN_PTE_SHIFT: u64 = PAGE_SHIFT;
 pub fn pte_modify(mut pte: pte_t, newprot: pgprot_t) -> pte_t {
     pte.pte_low &= _PAGE_CHG_MASK;
     pte.pte_low |= pgprot_val(newprot);
-    #[cfg(feature = "CONFIG_X2TLB")]
+    #[cfg(CONFIG_X2TLB)]
     { pte.pte_high |= pgprot_val(newprot) >> 32; }
     pte
 }
@@ -176,25 +176,25 @@ pub fn pte_modify(mut pte: pte_t, newprot: pgprot_t) -> pte_t {
 #[inline] pub fn pmd_page(pmd: pmd_t) -> *mut page { virt_to_page(pmd_val(pmd)) }
 
 /* Swap entry encoding. */
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn __swp_type(x: swp_entry_t) -> u64 { x.val & 0x1f }
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn __swp_offset(x: swp_entry_t) -> u64 { x.val >> 5 }
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn __swp_entry(ty: u64, offset: u64) -> swp_entry_t { swp_entry_t { val: (ty & 0x1f) | (offset << 5) } }
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn __pte_to_swp_entry(pte: pte_t) -> swp_entry_t { swp_entry_t { val: pte.pte_high } }
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline] pub fn __swp_entry_to_pte(x: swp_entry_t) -> pte_t { pte_t { pte_high: 0, pte_low: x.val } }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn __swp_type(x: swp_entry_t) -> u64 { x.val & 0x1f }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn __swp_offset(x: swp_entry_t) -> u64 { x.val >> 10 }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn __swp_entry(ty: u64, offset: u64) -> swp_entry_t { swp_entry_t { val: (ty & 0x1f) | (offset << 10) } }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn __pte_to_swp_entry(pte: pte_t) -> swp_entry_t { swp_entry_t { val: pte_val(pte) >> 1 } }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline] pub fn __swp_entry_to_pte(x: swp_entry_t) -> pte_t { __pte(x.val << 1) }
 
 pub const _PAGE_SWP_EXCLUSIVE: u64 = _PAGE_USER;

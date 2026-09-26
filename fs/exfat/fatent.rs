@@ -264,25 +264,29 @@ pub unsafe fn exfat_zeroed_cluster(dir: *mut inode, clu: u32) -> i32 {
 
 pub unsafe fn exfat_alloc_cluster(inode: *mut inode, num_alloc: u32, p_chain: *mut exfat_chain, sync_bmap: bool, contig: bool) -> i32 {
     let mut ret = -ENOSPC; let mut total_cnt; let mut hint_clu; let mut new_clu; let mut last_clu = EXFAT_EOF_CLUSTER;
-    let sb = (*inode).i_sb; let sbi = EXFAT_SB(sb); total_cnt = EXFAT_DATA_CLUSTER_COUNT(sbi);
+    let sb = (*inode).i_sb; let sbi = EXFAT_SB(sb);
+    'unlock: {
+    'free_cluster: { total_cnt = EXFAT_DATA_CLUSTER_COUNT(sbi);
     if total_cnt < (*sbi).used_clusters { exfat_fs_error_ratelimit(sb, c"%s: invalid used clusters(t:%u,u:%u)\n", __func__, total_cnt, (*sbi).used_clusters); return -EIO; }
     if num_alloc > total_cnt - (*sbi).used_clusters { return -ENOSPC; }
     mutex_lock(&mut (*sbi).bitmap_lock); hint_clu = (*p_chain).dir;
-    if hint_clu == EXFAT_EOF_CLUSTER { if (*sbi).clu_srch_ptr < EXFAT_FIRST_CLUSTER { exfat_err(sb, c"sbi->clu_srch_ptr is invalid (%u)", (*sbi).clu_srch_ptr); (*sbi).clu_srch_ptr = EXFAT_FIRST_CLUSTER; } hint_clu = exfat_find_free_bitmap(sb, (*sbi).clu_srch_ptr); if hint_clu == EXFAT_EOF_CLUSTER { goto unlock; } }
+    if hint_clu == EXFAT_EOF_CLUSTER { if (*sbi).clu_srch_ptr < EXFAT_FIRST_CLUSTER { exfat_err(sb, c"sbi->clu_srch_ptr is invalid (%u)", (*sbi).clu_srch_ptr); (*sbi).clu_srch_ptr = EXFAT_FIRST_CLUSTER; } hint_clu = exfat_find_free_bitmap(sb, (*sbi).clu_srch_ptr); if hint_clu == EXFAT_EOF_CLUSTER { break 'unlock; } }
     if !is_valid_cluster(sbi, hint_clu) { if hint_clu != (*sbi).num_clusters { exfat_err(sb, c"hint_cluster is invalid (%u), rewind to the first cluster", hint_clu); } hint_clu = EXFAT_FIRST_CLUSTER; (*p_chain).flags = ALLOC_FAT_CHAIN; }
     (*p_chain).dir = EXFAT_EOF_CLUSTER;
     loop {
         new_clu = exfat_find_free_bitmap(sb, hint_clu); if new_clu == EXFAT_EOF_CLUSTER { break; }
-        if new_clu != hint_clu { if (*p_chain).flags == ALLOC_NO_FAT_CHAIN { if exfat_chain_cont_cluster(sb, (*p_chain).dir, (*p_chain).size) != 0 { ret = -EIO; goto free_cluster; } (*p_chain).flags = ALLOC_FAT_CHAIN; } if contig && (*p_chain).size > 0 { hint_clu = last_clu; goto done; } }
-        if exfat_set_bitmap(sb, new_clu, sync_bmap) != 0 { ret = -EIO; goto free_cluster; }
-        if (*p_chain).flags == ALLOC_FAT_CHAIN && exfat_ent_set(sb, new_clu, EXFAT_EOF_CLUSTER) != 0 { ret = -EIO; goto free_cluster; }
-        if (*p_chain).dir == EXFAT_EOF_CLUSTER { (*p_chain).dir = new_clu; } else if (*p_chain).flags == ALLOC_FAT_CHAIN && exfat_ent_set(sb, last_clu, new_clu) != 0 { ret = -EIO; goto free_cluster; }
+        if new_clu != hint_clu { if (*p_chain).flags == ALLOC_NO_FAT_CHAIN { if exfat_chain_cont_cluster(sb, (*p_chain).dir, (*p_chain).size) != 0 { ret = -EIO; break 'free_cluster; } (*p_chain).flags = ALLOC_FAT_CHAIN; } if contig && (*p_chain).size > 0 { hint_clu = last_clu; goto done; } }
+        if exfat_set_bitmap(sb, new_clu, sync_bmap) != 0 { ret = -EIO; break 'free_cluster; }
+        if (*p_chain).flags == ALLOC_FAT_CHAIN && exfat_ent_set(sb, new_clu, EXFAT_EOF_CLUSTER) != 0 { ret = -EIO; break 'free_cluster; }
+        if (*p_chain).dir == EXFAT_EOF_CLUSTER { (*p_chain).dir = new_clu; } else if (*p_chain).flags == ALLOC_FAT_CHAIN && exfat_ent_set(sb, last_clu, new_clu) != 0 { ret = -EIO; break 'free_cluster; }
         (*p_chain).size += 1; last_clu = new_clu;
         if (*p_chain).size == num_alloc { done: (*sbi).clu_srch_ptr = hint_clu; (*sbi).used_clusters += (*p_chain).size; mutex_unlock(&mut (*sbi).bitmap_lock); return 0; }
-        hint_clu = new_clu + 1; if hint_clu >= (*sbi).num_clusters { hint_clu = EXFAT_FIRST_CLUSTER; if (*p_chain).flags == ALLOC_NO_FAT_CHAIN { if exfat_chain_cont_cluster(sb, (*p_chain).dir, (*p_chain).size) != 0 { ret = -EIO; goto free_cluster; } (*p_chain).flags = ALLOC_FAT_CHAIN; } }
+        hint_clu = new_clu + 1; if hint_clu >= (*sbi).num_clusters { hint_clu = EXFAT_FIRST_CLUSTER; if (*p_chain).flags == ALLOC_NO_FAT_CHAIN { if exfat_chain_cont_cluster(sb, (*p_chain).dir, (*p_chain).size) != 0 { ret = -EIO; break 'free_cluster; } (*p_chain).flags = ALLOC_FAT_CHAIN; } }
     }
-free_cluster: __exfat_free_cluster(inode, p_chain);
-unlock: mutex_unlock(&mut (*sbi).bitmap_lock); ret
+    }
+    __exfat_free_cluster(inode, p_chain);
+    }
+    mutex_unlock(&mut (*sbi).bitmap_lock); ret
 }
 
 pub unsafe fn exfat_count_num_clusters(sb: *mut super_block, p_chain: *mut exfat_chain, ret_count: *mut u32) -> i32 {

@@ -13,7 +13,7 @@ pub unsafe fn arch_local_save_flags() -> usize {
 #[inline]
 pub unsafe fn arch_local_irq_disable() {
     // CONFIG_COLDFIRE selects the following implementation.
-    #[cfg(feature = "CONFIG_COLDFIRE")]
+    #[cfg(CONFIG_COLDFIRE)]
     core::arch::asm!(
         "move %sr, %d0",
         "ori.l #0x0700, %d0",
@@ -22,14 +22,14 @@ pub unsafe fn arch_local_irq_disable() {
     );
 
     // Non-ColdFire implementation.
-    #[cfg(not(feature = "CONFIG_COLDFIRE"))]
+    #[cfg(not(CONFIG_COLDFIRE))]
     core::arch::asm!("oriw #0x0700, %sr", options(nostack));
 }
 
 #[inline]
 pub unsafe fn arch_local_irq_enable() {
     // CONFIG_COLDFIRE selects the following implementation.
-    #[cfg(feature = "CONFIG_COLDFIRE")]
+    #[cfg(CONFIG_COLDFIRE)]
     core::arch::asm!(
         "move %sr, %d0",
         "andi.l #0xf8ff, %d0",
@@ -39,14 +39,14 @@ pub unsafe fn arch_local_irq_enable() {
 
     // On CONFIG_MMU builds, the non-ColdFire instruction is executed only
     // when MACH_IS_Q40 || !hardirq_count().
-    #[cfg(not(feature = "CONFIG_COLDFIRE"))]
+    #[cfg(not(CONFIG_COLDFIRE))]
     {
-        #[cfg(feature = "CONFIG_MMU")]
+        #[cfg(CONFIG_MMU)]
         if MACH_IS_Q40 || unsafe { !hardirq_count() } {
             core::arch::asm!("andiw {0}, %sr", const ALLOWINT, options(nostack));
         }
 
-        #[cfg(not(feature = "CONFIG_MMU"))]
+        #[cfg(not(CONFIG_MMU))]
         core::arch::asm!("andiw {0}, %sr", const ALLOWINT, options(nostack));
     }
 }

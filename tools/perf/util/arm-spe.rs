@@ -1331,7 +1331,7 @@ pub unsafe extern "C" fn arm_spe_process_auxtrace_info(event: *mut perf_event, s
     let auxtrace_info = &mut (*event).auxtrace_info as *mut perf_record_auxtrace_info;
     let min_sz = ARM_SPE_AUXTRACE_V1_PRIV_SIZE;
     let tc = &mut (*session).time_conv as *mut perf_record_time_conv;
-    if (*auxtrace_info).header.size as usize < size_of::<perf_record_auxtrace_info>() + min_sz as usize {
+    if ((*auxtrace_info).header.size as usize) < size_of::<perf_record_auxtrace_info>() + min_sz as usize {
         return -EINVAL;
     }
     let mut metadata_ver = 0u64;

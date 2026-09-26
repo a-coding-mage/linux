@@ -33,22 +33,22 @@ pub static mut pkmap_page_table: *mut pte_t;
 // also disables it.
 
 #[cfg(not(any(
-    all!(feature = "CONFIG_SMP", feature = "CONFIG_CPU_TLB_V6"),
-    feature = "CONFIG_ARM_ERRATA_798181"
+    all!(CONFIG_SMP, CONFIG_CPU_TLB_V6),
+    CONFIG_ARM_ERRATA_798181
 )))]
 pub const ARCH_NEEDS_KMAP_HIGH_GET: bool = true;
 
 #[cfg(not(any(
-    all!(feature = "CONFIG_SMP", feature = "CONFIG_CPU_TLB_V6"),
-    feature = "CONFIG_ARM_ERRATA_798181"
+    all!(CONFIG_SMP, CONFIG_CPU_TLB_V6),
+    CONFIG_ARM_ERRATA_798181
 )))]
 unsafe extern "C" {
     pub fn kmap_high_get(page: *const page) -> *mut core::ffi::c_void;
 }
 
 #[cfg(not(any(
-    all!(feature = "CONFIG_SMP", feature = "CONFIG_CPU_TLB_V6"),
-    feature = "CONFIG_ARM_ERRATA_798181"
+    all!(CONFIG_SMP, CONFIG_CPU_TLB_V6),
+    CONFIG_ARM_ERRATA_798181
 )))]
 #[inline]
 pub unsafe fn arch_kmap_local_high_get(page: *const page) -> *mut core::ffi::c_void {
@@ -60,8 +60,8 @@ pub unsafe fn arch_kmap_local_high_get(page: *const page) -> *mut core::ffi::c_v
 }
 
 #[cfg(any(
-    all!(feature = "CONFIG_SMP", feature = "CONFIG_CPU_TLB_V6"),
-    feature = "CONFIG_ARM_ERRATA_798181"
+    all!(CONFIG_SMP, CONFIG_CPU_TLB_V6),
+    CONFIG_ARM_ERRATA_798181
 ))]
 #[inline]
 pub unsafe fn kmap_high_get(_page: *const page) -> *mut core::ffi::c_void {

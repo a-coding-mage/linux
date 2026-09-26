@@ -68,7 +68,7 @@ pub unsafe fn xchk_symlink(sc: *mut xfs_scrub) -> i32 {
     if !xchk_fblock_process_error(sc, XFS_DATA_FORK, 0, &mut error) {
         return error;
     }
-    if strnlen((*sc).buf, XFS_SYMLINK_MAXLEN) as i64 < len {
+    if (strnlen((*sc).buf, XFS_SYMLINK_MAXLEN) as i64) < len {
         xchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);
     }
 

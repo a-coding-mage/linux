@@ -18,15 +18,15 @@ pub static mut swapper_pg_dir: [pgd_t; PTRS_PER_PGD] = [pgd_t { _private: [] }; 
 static low_mem_start: ::core::ffi::c_ulong = CONFIG_LINUX_RAM_BASE;
 static mut low_mem_sz: ::core::ffi::c_ulong = 0;
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 static mut min_high_pfn: ::core::ffi::c_ulong = 0;
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 static mut max_high_pfn: ::core::ffi::c_ulong = 0;
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 static mut high_mem_start: phys_addr_t = 0;
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 static mut high_mem_sz: phys_addr_t = 0;
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 #[no_mangle]
 pub static mut arch_pfn_offset: ::core::ffi::c_ulong = 0;
 
@@ -58,7 +58,7 @@ pub unsafe extern "C" fn early_init_dt_add_memory_arch(base: u64, size: u64) {
         in_use = 1;
         memblock_add_node(base, size, 0, MEMBLOCK_NONE);
     } else {
-        #[cfg(feature = "CONFIG_HIGHMEM")]
+        #[cfg(CONFIG_HIGHMEM)]
         {
             high_mem_start = base as phys_addr_t;
             high_mem_sz = size as phys_addr_t;
@@ -75,7 +75,7 @@ pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfn: *mut ::core::ffi::c
     /*----------------- node/zones setup --------------------------*/
     *max_zone_pfn.add(ZONE_NORMAL) = max_low_pfn;
 
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         /*
          * max_high_pfn should be ok here for both HIGHMEM and HIGHMEM+PAE.
@@ -121,7 +121,7 @@ pub unsafe extern "C" fn setup_arch_memory() {
 
     memblock_reserve(CONFIG_LINUX_LINK_BASE, __pa(_end) - CONFIG_LINUX_LINK_BASE);
 
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     if phys_initrd_size != 0 {
         memblock_reserve(phys_initrd_start, phys_initrd_size);
         initrd_start = __va(phys_initrd_start) as ::core::ffi::c_ulong;
@@ -133,7 +133,7 @@ pub unsafe extern "C" fn setup_arch_memory() {
 
     memblock_dump_all();
 
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         /*
          * On ARC (w/o PAE) HIGHMEM addresses are actually smaller (0 based)
@@ -154,7 +154,7 @@ pub unsafe extern "C" fn setup_arch_memory() {
 }
 
 pub unsafe extern "C" fn arch_mm_preinit() {
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     memblock_phys_free(high_mem_start, high_mem_sz);
 
     BUILD_BUG_ON!((PTRS_PER_PGD * core::mem::size_of::<pgd_t>()) > PAGE_SIZE);
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn arch_mm_preinit() {
     BUILD_BUG_ON!((PTRS_PER_PTE * core::mem::size_of::<pte_t>()) > PAGE_SIZE);
 }
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 pub unsafe extern "C" fn pfn_valid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
     ((pfn >= min_high_pfn && pfn <= max_high_pfn)
         || (pfn >= min_low_pfn && pfn <= max_low_pfn)) as ::core::ffi::c_int

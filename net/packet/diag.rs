@@ -123,6 +123,7 @@ unsafe fn sk_diag_fill(
     let po = pkt_sk(sk);
     let nlh = nlmsg_put(skb, portid, seq, SOCK_DIAG_BY_FAMILY,
         core::mem::size_of::<packet_diag_msg>(), flags);
+    'out_nlmsg_trim: {
     if nlh.is_null() { return -EMSGSIZE; }
 
     let rp = nlmsg_data(nlh) as *mut packet_diag_msg;
@@ -132,18 +133,18 @@ unsafe fn sk_diag_fill(
     (*rp).pdiag_ino = sk_ino;
     sock_diag_save_cookie(sk, (*rp).pdiag_cookie.as_mut_ptr());
 
-    if ((*req).pdiag_show & PACKET_SHOW_INFO) != 0 && pdiag_put_info(po, skb) != 0 { goto out_nlmsg_trim; }
-    if ((*req).pdiag_show & PACKET_SHOW_INFO) != 0 && nla_put_u32(skb, PACKET_DIAG_UID, from_kuid_munged(user_ns, sk_uid(sk))) != 0 { goto out_nlmsg_trim; }
-    if ((*req).pdiag_show & PACKET_SHOW_MCLIST) != 0 && pdiag_put_mclist(po, skb) != 0 { goto out_nlmsg_trim; }
-    if ((*req).pdiag_show & PACKET_SHOW_RING_CFG) != 0 && pdiag_put_rings_cfg(po, skb) != 0 { goto out_nlmsg_trim; }
-    if ((*req).pdiag_show & PACKET_SHOW_FANOUT) != 0 && pdiag_put_fanout(po, skb) != 0 { goto out_nlmsg_trim; }
-    if ((*req).pdiag_show & PACKET_SHOW_MEMINFO) != 0 && sock_diag_put_meminfo(sk, skb, PACKET_DIAG_MEMINFO) != 0 { goto out_nlmsg_trim; }
-    if ((*req).pdiag_show & PACKET_SHOW_FILTER) != 0 && sock_diag_put_filterinfo(may_report_filterinfo, sk, skb, PACKET_DIAG_FILTER) != 0 { goto out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_INFO) != 0 && pdiag_put_info(po, skb) != 0 { break 'out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_INFO) != 0 && nla_put_u32(skb, PACKET_DIAG_UID, from_kuid_munged(user_ns, sk_uid(sk))) != 0 { break 'out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_MCLIST) != 0 && pdiag_put_mclist(po, skb) != 0 { break 'out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_RING_CFG) != 0 && pdiag_put_rings_cfg(po, skb) != 0 { break 'out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_FANOUT) != 0 && pdiag_put_fanout(po, skb) != 0 { break 'out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_MEMINFO) != 0 && sock_diag_put_meminfo(sk, skb, PACKET_DIAG_MEMINFO) != 0 { break 'out_nlmsg_trim; }
+    if ((*req).pdiag_show & PACKET_SHOW_FILTER) != 0 && sock_diag_put_filterinfo(may_report_filterinfo, sk, skb, PACKET_DIAG_FILTER) != 0 { break 'out_nlmsg_trim; }
 
     nlmsg_end(skb, nlh);
     return 0;
-
-out_nlmsg_trim:
+    }
+    
     nlmsg_cancel(skb, nlh);
     -EMSGSIZE
 }

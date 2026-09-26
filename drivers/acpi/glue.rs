@@ -118,6 +118,7 @@ unsafe fn acpi_physnode_link_name(buf: *mut c_char, node_id: c_uint) {
 pub unsafe fn acpi_bind_one(dev: *mut device, mut acpi_dev: *mut acpi_device) -> c_int {
     let mut physical_node: *mut acpi_device_physical_node;
     let mut physical_node_name = [0 as c_char; PHYSICAL_NODE_NAME_SIZE];
+    'err: {
     let mut physnode_list: *mut list_head;
     let mut node_id: c_uint;
     let mut retval = -EINVAL;
@@ -125,12 +126,12 @@ pub unsafe fn acpi_bind_one(dev: *mut device, mut acpi_dev: *mut acpi_device) ->
     if acpi_dev.is_null() { return -EINVAL; }
     acpi_dev_get(acpi_dev); get_device(dev);
     physical_node = kzalloc_obj!(*physical_node);
-    if physical_node.is_null() { retval = -ENOMEM; goto err; }
+    if physical_node.is_null() { retval = -ENOMEM; break 'err; }
     mutex_lock(&mut (*acpi_dev).physical_node_lock);
     physnode_list = &mut (*acpi_dev).physical_node_list;
     node_id = 0;
     list_for_each_entry!(pn, &(*acpi_dev).physical_node_list, node, {
-        if (*pn).dev == dev { mutex_unlock(&mut (*acpi_dev).physical_node_lock); dev_warn!(dev, "Already associated with ACPI node\n"); kfree(physical_node); if ACPI_COMPANION(dev) != acpi_dev { goto err; } put_device(dev); acpi_dev_put(acpi_dev); return 0; }
+        if (*pn).dev == dev { mutex_unlock(&mut (*acpi_dev).physical_node_lock); dev_warn!(dev, "Already associated with ACPI node\n"); kfree(physical_node); if ACPI_COMPANION(dev) != acpi_dev { break 'err; } put_device(dev); acpi_dev_put(acpi_dev); return 0; }
         if (*pn).node_id == node_id { physnode_list = &mut (*pn).node; node_id += 1; }
     });
     (*physical_node).node_id = node_id; (*physical_node).dev = dev; list_add(&mut (*physical_node).node, physnode_list); (*acpi_dev).physical_node_count += 1;
@@ -143,7 +144,8 @@ pub unsafe fn acpi_bind_one(dev: *mut device, mut acpi_dev: *mut acpi_device) ->
     mutex_unlock(&mut (*acpi_dev).physical_node_lock);
     if (*acpi_dev).wakeup.flags.valid { device_set_wakeup_capable(dev, true); }
     return 0;
-err:
+    }
+    
     ACPI_COMPANION_SET(dev, core::ptr::null_mut()); put_device(dev); acpi_dev_put(acpi_dev); retval
 }
 
@@ -158,11 +160,15 @@ pub unsafe fn acpi_unbind_one(dev: *mut device) -> c_int {
 
 pub unsafe fn acpi_device_notify(dev: *mut device) {
     let mut adev: *mut acpi_device; let mut ret = acpi_bind_one(dev, core::ptr::null_mut());
-    if ret != 0 { let type_ = acpi_get_bus_type(dev); if type_.is_null() { goto err; } adev = ((*type_).find_companion)(dev); if adev.is_null() { dev_dbg!(dev, "ACPI companion not found\n"); goto err; } ret = acpi_bind_one(dev, adev); if ret != 0 { goto err; } if let Some(setup) = (*type_).setup { setup(dev); goto done; } }
-    else { adev = ACPI_COMPANION(dev); if dev_is_pci(dev) { pci_acpi_setup(dev, adev); goto done; } else if dev_is_platform(dev) { acpi_configure_pmsi_domain(dev); } }
+    'err: {
+    'done: {
+    if ret != 0 { let type_ = acpi_get_bus_type(dev); if type_.is_null() { break 'err; } adev = ((*type_).find_companion)(dev); if adev.is_null() { dev_dbg!(dev, "ACPI companion not found\n"); break 'err; } ret = acpi_bind_one(dev, adev); if ret != 0 { break 'err; } if let Some(setup) = (*type_).setup { setup(dev); break 'done; } }
+    else { adev = ACPI_COMPANION(dev); if dev_is_pci(dev) { pci_acpi_setup(dev, adev); break 'done; } else if dev_is_platform(dev) { acpi_configure_pmsi_domain(dev); } }
     if !(*adev).handler.is_null() && (*(*adev).handler).bind.is_some() { ((*(*adev).handler).bind)(dev); }
-done: acpi_handle_debug!(ACPI_HANDLE(dev), "Bound to device %s\n", dev_name(dev)); return;
-err: dev_dbg!(dev, "No ACPI support\n");
+    }
+    acpi_handle_debug!(ACPI_HANDLE(dev), "Bound to device %s\n", dev_name(dev)); return;
+    }
+    dev_dbg!(dev, "No ACPI support\n");
 }
 
 pub unsafe fn acpi_device_notify_remove(dev: *mut device) {

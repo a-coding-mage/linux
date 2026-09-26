@@ -20,19 +20,19 @@ extern "C" {
 }
 
 extern "C" {
-    fn rds_conn_connect_if_down(*mut rds_connection);
-    fn rds_conn_path_drop(*mut rds_conn_path, bool);
-    fn rds_ib_destroy_mr_pool(*mut rds_ib_mr_pool);
-    fn ib_dealloc_pd(*mut ib_pd);
-    fn kfree(*mut c_void);
-    fn queue_work(*mut workqueue_struct, *mut work_struct) -> bool;
-    fn rds_ib_create_mr_pool(*mut rds_ib_device, i32) -> *mut rds_ib_mr_pool;
-    fn ib_alloc_pd(*mut ib_device, u32) -> *mut ib_pd;
-    fn ib_set_client_data(*mut ib_device, *mut ib_client, *mut c_void);
-    fn ib_get_client_data(*mut ib_device, *mut ib_client) -> *mut rds_ib_device;
-    fn ib_register_client(*mut ib_client) -> i32;
-    fn ib_unregister_client(*mut ib_client);
-    fn rds_ib_get_device(u32) -> *mut rds_ib_device;
+    fn rds_conn_connect_if_down(_: *mut rds_connection);
+    fn rds_conn_path_drop(_: *mut rds_conn_path, _: bool);
+    fn rds_ib_destroy_mr_pool(_: *mut rds_ib_mr_pool);
+    fn ib_dealloc_pd(_: *mut ib_pd);
+    fn kfree(_: *mut c_void);
+    fn queue_work(_: *mut workqueue_struct, _: *mut work_struct) -> bool;
+    fn rds_ib_create_mr_pool(_: *mut rds_ib_device, _: i32) -> *mut rds_ib_mr_pool;
+    fn ib_alloc_pd(_: *mut ib_device, _: u32) -> *mut ib_pd;
+    fn ib_set_client_data(_: *mut ib_device, _: *mut ib_client, _: *mut c_void);
+    fn ib_get_client_data(_: *mut ib_device, _: *mut ib_client) -> *mut rds_ib_device;
+    fn ib_register_client(_: *mut ib_client) -> i32;
+    fn ib_unregister_client(_: *mut ib_client);
+    fn rds_ib_get_device(_: u32) -> *mut rds_ib_device;
     fn rds_ib_destroy_nodev_conns();
     fn rds_ib_sysctl_init() -> i32;
     fn rds_ib_sysctl_exit();
@@ -40,11 +40,11 @@ extern "C" {
     fn rds_ib_recv_exit();
     fn rds_ib_mr_init() -> i32;
     fn rds_ib_mr_exit();
-    fn rds_trans_register(*mut rds_transport);
-    fn rds_trans_unregister(*mut rds_transport);
-    fn rds_info_register_func(u32, *mut c_void);
-    fn rds_info_deregister_func(u32, *mut c_void);
-    fn flush_workqueue(*mut workqueue_struct);
+    fn rds_trans_register(_: *mut rds_transport);
+    fn rds_trans_unregister(_: *mut rds_transport);
+    fn rds_info_register_func(_: u32, _: *mut c_void);
+    fn rds_info_deregister_func(_: u32, _: *mut c_void);
+    fn flush_workqueue(_: *mut workqueue_struct);
     fn synchronize_rcu();
 }
 
@@ -73,9 +73,9 @@ extern "C" {
 /* The following kernel helpers/macros retain their C semantics through the
  * corresponding externally supplied bindings. */
 extern "C" {
-    fn rds_ib_dev_put(*mut rds_ib_device);
+    fn rds_ib_dev_put(_: *mut rds_ib_device);
     fn rds_ib_nodev_connect();
-    fn rds_ib_laddr_check_cm(*mut net, *const in6_addr, u32) -> i32;
+    fn rds_ib_laddr_check_cm(_: *mut net, _: *const in6_addr, _: u32) -> i32;
 }
 #[repr(C)] pub struct in6_addr { pub s6_addr32: [u32; 4] }
 

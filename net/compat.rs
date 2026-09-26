@@ -77,7 +77,7 @@ pub unsafe fn cmsghdr_from_user_compat_to_kern(kmsg: *mut msghdr, sk: *mut sock,
     while !ucmsg.is_null() {
         let mut ucmlen: compat_size_t = 0;
         if get_user(&mut ucmlen, &(*ucmsg).cmsg_len) != 0 { return -EFAULT; }
-        if ucmlen as usize < core::mem::size_of::<compat_cmsghdr>() || ucmlen as usize > ((*kmsg).msg_controllen - ((*ucmsg as *mut u8).offset_from((*kmsg).msg_control_user as *mut u8) as usize)) { return -EINVAL; }
+        if (ucmlen as usize) < core::mem::size_of::<compat_cmsghdr>() || ucmlen as usize > ((*kmsg).msg_controllen - ((*ucmsg as *mut u8).offset_from((*kmsg).msg_control_user as *mut u8) as usize)) { return -EINVAL; }
         kcmlen += cmsg_align((ucmlen as usize - core::mem::size_of::<compat_cmsghdr>()) + core::mem::size_of::<cmsghdr>());
         ucmsg = cmsg_compat_nxthdr(kmsg, ucmsg, ucmlen as i32);
     }
@@ -91,9 +91,9 @@ pub unsafe fn cmsghdr_from_user_compat_to_kern(kmsg: *mut msghdr, sk: *mut sock,
     while !ucmsg.is_null() {
         let mut cmsg: compat_cmsghdr = core::mem::zeroed();
         if copy_from_user(&mut cmsg as *mut _ as *mut _, ucmsg as *const _, core::mem::size_of::<compat_cmsghdr>()) != 0 { return compat_cmsg_error(sk, stackbuf, kcmsg_base, kcmlen, -EFAULT); }
-        if cmsg.cmsg_len as usize < core::mem::size_of::<compat_cmsghdr>() { return compat_cmsg_error(sk, stackbuf, kcmsg_base, kcmlen, -EINVAL); }
+        if (cmsg.cmsg_len as usize) < core::mem::size_of::<compat_cmsghdr>() { return compat_cmsg_error(sk, stackbuf, kcmsg_base, kcmlen, -EINVAL); }
         let tmp = (cmsg.cmsg_len as usize - core::mem::size_of::<compat_cmsghdr>()) + core::mem::size_of::<cmsghdr>();
-        if (kcmsg_base as *mut u8).add(kcmlen).offset_from(kcmsg as *mut u8) as usize < cmsg_align(tmp) { return compat_cmsg_error(sk, stackbuf, kcmsg_base, kcmlen, -EINVAL); }
+        if ((kcmsg_base as *mut u8).add(kcmlen).offset_from(kcmsg as *mut u8) as usize) < cmsg_align(tmp) { return compat_cmsg_error(sk, stackbuf, kcmsg_base, kcmlen, -EINVAL); }
         (*kcmsg).cmsg_len = tmp;
         (*kcmsg).cmsg_level = cmsg.cmsg_level;
         (*kcmsg).cmsg_type = cmsg.cmsg_type;

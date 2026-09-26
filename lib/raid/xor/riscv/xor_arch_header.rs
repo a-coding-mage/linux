@@ -24,7 +24,7 @@ pub unsafe fn arch_xor_init() {
     xor_register(&raw mut xor_block_32regs);
 
     // C build-time condition: CONFIG_RISCV_ISA_V.
-    #[cfg(feature = "CONFIG_RISCV_ISA_V")]
+    #[cfg(CONFIG_RISCV_ISA_V)]
     if has_vector() {
         xor_register(&raw mut xor_block_rvv);
     }

@@ -23,14 +23,14 @@ pub const cpu_has_counter: i32 = 1;
 pub const cpu_has_ejtag: i32 = 1;
 
 /* CONFIG_SOC_AR5312 is a build-time condition; preserve the source conditional intent. */
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 pub const cpu_has_llsc: i32 = 1;
 
 /*
  * The MIPS 4Kc V0.9 core in the AR5312/AR2312 have problems with the
  * ll/sc instructions.
  */
-#[cfg(feature = "CONFIG_SOC_AR5312")]
+#[cfg(CONFIG_SOC_AR5312)]
 pub const cpu_has_llsc: i32 = 0;
 
 pub const cpu_has_mips16: i32 = 0;
@@ -41,7 +41,7 @@ pub const cpu_has_smartmips: i32 = 0;
 
 pub const cpu_has_mips32r1: i32 = 1;
 
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 pub const cpu_has_mips32r2: i32 = 1;
 
 pub const cpu_has_mips64r1: i32 = 0;

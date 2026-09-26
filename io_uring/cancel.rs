@@ -72,7 +72,7 @@ unsafe fn __io_async_cancel(cd: *mut io_cancel_data, tctx: *mut io_uring_task, i
     let ctx = (*cd).ctx; let mut nr = 0;
     loop { let ret = io_try_cancel(tctx, cd, issue_flags); if ret == -ENOENT { break; } if !all { return ret; } nr += 1; }
     set_current_state!(TASK_RUNNING); io_ring_submit_lock(ctx, issue_flags); mutex_lock(&mut (*ctx).tctx_lock); let mut ret = -ENOENT;
-    list_for_each_entry!(node in (*ctx).tctx_list.ctx_node, io_tctx_node) { ret = io_async_cancel_one((*node).task.io_uring, cd); if ret != -ENOENT { if !all { break; } nr += 1; } }
+    list_for_each_entry!(node in (*ctx).tctx_list.ctx_node, io_tctx_node, { ret = io_async_cancel_one((*node).task.io_uring, cd); if ret != -ENOENT { if !all { break; } nr += 1; } });
     mutex_unlock(&mut (*ctx).tctx_lock); io_ring_submit_unlock(ctx, issue_flags); if all { nr } else { ret }
 }
 
@@ -114,14 +114,14 @@ pub unsafe fn io_sync_cancel(ctx: *mut io_ring_ctx, arg: *mut core::ffi::c_void)
 }
 
 pub unsafe fn io_cancel_remove_all(ctx: *mut io_ring_ctx, tctx: *mut io_uring_task, list: *mut hlist_head, cancel_all: bool, cancel: unsafe fn(*mut io_kiocb) -> bool) -> bool {
-    lockdep_assert_held!(&mut (*ctx).uring_lock); let mut found = false; hlist_for_each_entry_safe!(req, tmp, list, hash_node, io_kiocb) { if !io_match_task_safe(req, tctx, cancel_all) { continue; } hlist_del_init!(&mut (*req).hash_node); if cancel(req) { found = true; } } found
+    lockdep_assert_held!(&mut (*ctx).uring_lock); let mut found = false; hlist_for_each_entry_safe!(req, tmp, list, hash_node, io_kiocb, { if !io_match_task_safe(req, tctx, cancel_all) { continue; } hlist_del_init!(&mut (*req).hash_node); if cancel(req) { found = true; } }); found
 }
 
 pub unsafe fn io_cancel_remove(ctx: *mut io_ring_ctx, cd: *mut io_cancel_data, issue_flags: u32, list: *mut hlist_head, cancel: unsafe fn(*mut io_kiocb) -> bool) -> i32 {
-    let mut nr = 0; io_ring_submit_lock(ctx, issue_flags); hlist_for_each_entry_safe!(req, tmp, list, hash_node, io_kiocb) { if !io_cancel_req_match(req, cd) { continue; } if cancel(req) { nr += 1; } if (*cd).flags & IORING_ASYNC_CANCEL_ALL == 0 { break; } } io_ring_submit_unlock(ctx, issue_flags); if nr != 0 { nr } else { -ENOENT }
+    let mut nr = 0; io_ring_submit_lock(ctx, issue_flags); hlist_for_each_entry_safe!(req, tmp, list, hash_node, io_kiocb, { if !io_cancel_req_match(req, cd) { continue; } if cancel(req) { nr += 1; } if (*cd).flags & IORING_ASYNC_CANCEL_ALL == 0 { break; } }); io_ring_submit_unlock(ctx, issue_flags); if nr != 0 { nr } else { -ENOENT }
 }
 
-unsafe fn io_match_linked(head: *mut io_kiocb) -> bool { io_for_each_link!(req, head) { if (*req).flags & REQ_F_INFLIGHT != 0 { return true; } } false }
+unsafe fn io_match_linked(head: *mut io_kiocb) -> bool { io_for_each_link!(req, head, { if (*req).flags & REQ_F_INFLIGHT != 0 { return true; } }); false }
 pub unsafe fn io_match_task_safe(head: *mut io_kiocb, tctx: *mut io_uring_task, cancel_all: bool) -> bool {
     if !tctx.is_null() && (*head).tctx != tctx { return false; } if cancel_all { return true; }
     if (*head).flags & REQ_F_LINK_TIMEOUT != 0 { let ctx = (*head).ctx; raw_spin_lock_irq(&mut (*ctx).timeout_lock); let m = io_match_linked(head); raw_spin_unlock_irq(&mut (*ctx).timeout_lock); m } else { io_match_linked(head) }
@@ -131,7 +131,7 @@ unsafe fn io_cancel_task_cb(work: *mut io_wq_work, data: *mut core::ffi::c_void)
 
 unsafe fn io_cancel_defer_files(ctx: *mut io_ring_ctx, tctx: *mut io_uring_task, cancel_all: bool) -> bool {
     let mut list = list_head!(); let mut found = false;
-    list_for_each_entry_reverse!(de, (*ctx).defer_list, list, io_defer_entry) { if io_match_task_safe((*de).req, tctx, cancel_all) { list_cut_position!(&mut list, &mut (*ctx).defer_list, &mut (*de).list); found = true; break; } }
+    list_for_each_entry_reverse!(de, (*ctx).defer_list, list, io_defer_entry, { if io_match_task_safe((*de).req, tctx, cancel_all) { list_cut_position!(&mut list, &mut (*ctx).defer_list, &mut (*de).list); found = true; break; } });
     if !found || list_empty!(&list) { return false; }
     while !list_empty!(&list) { let de = list_first_entry!(&mut list, io_defer_entry, list); list_del_init!(&mut (*de).list); (*ctx).nr_drained -= io_linked_nr((*de).req); io_req_task_queue_fail((*de).req, -ECANCELED); kfree(de); }
     true

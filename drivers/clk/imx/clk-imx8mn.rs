@@ -454,10 +454,10 @@ unsafe fn imx8mn_clocks_probe(pdev: *mut platform_device) -> i32
 	(*hws.add(IMX8MN_CLK_DRAM_ALT_ROOT)) = imx_clk_hw_fixed_factor("dram_alt_root", "dram_alt", 1, 4);
 
 	(*hws.add(IMX8MN_CLK_ARM)) = imx_clk_hw_cpu("arm", "arm_a53_core",
-					   (*hws.add(IMX8MN_CLK_A53_CORE]->clk,
-					   (*hws.add(IMX8MN_CLK_A53_CORE]->clk,
-					   (*hws.add(IMX8MN_ARM_PLL_OUT]->clk,
-					   (*hws.add(IMX8MN_CLK_A53_DIV]->clk);
+					   ((**hws.add(IMX8MN_CLK_A53_CORE]).clk,
+					   ((**hws.add(IMX8MN_CLK_A53_CORE]).clk,
+					   ((**hws.add(IMX8MN_ARM_PLL_OUT]).clk,
+					   ((**hws.add(IMX8MN_CLK_A53_DIV]).clk);
 
 	imx_check_clk_hws(hws, IMX8MN_CLK_END);
 

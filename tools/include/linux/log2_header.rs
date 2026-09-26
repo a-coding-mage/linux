@@ -48,7 +48,7 @@ pub fn is_power_of_2(n: c_ulong) -> bool {
  */
 #[inline]
 pub unsafe fn __roundup_pow_of_two(n: c_ulong) -> c_ulong {
-    1 as c_ulong << fls_long(n.wrapping_sub(1))
+    (1 as c_ulong) << fls_long(n.wrapping_sub(1))
 }
 
 /*
@@ -56,7 +56,7 @@ pub unsafe fn __roundup_pow_of_two(n: c_ulong) -> c_ulong {
  */
 #[inline]
 pub unsafe fn __rounddown_pow_of_two(n: c_ulong) -> c_ulong {
-    1 as c_ulong << (fls_long(n) - 1)
+    (1 as c_ulong) << (fls_long(n) - 1)
 }
 
 /**
@@ -224,7 +224,7 @@ pub const fn roundup_pow_of_two_const(n: c_ulong) -> c_ulong {
     if n == 1 {
         1
     } else {
-        1 as c_ulong << (ilog2_const(n.wrapping_sub(1) as u64) + 1)
+        (1 as c_ulong) << (ilog2_const(n.wrapping_sub(1) as u64) + 1)
     }
 }
 
@@ -243,7 +243,7 @@ pub unsafe fn roundup_pow_of_two(n: c_ulong) -> c_ulong {
  */
 #[inline]
 pub const fn rounddown_pow_of_two_const(n: c_ulong) -> c_ulong {
-    1 as c_ulong << ilog2_const(n as u64)
+    (1 as c_ulong) << ilog2_const(n as u64)
 }
 
 #[inline]

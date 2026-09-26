@@ -150,9 +150,9 @@ unsafe fn l2x0_pmu_group_is_valid(event: *mut perf_event) -> bool {
     let pmu = (*event).pmu; let leader = (*event).group_leader; let mut num_hw = 0;
     if (*leader).pmu == pmu { num_hw += 1; } else if !is_software_event(leader) { return false; }
     let mut sibling = core::ptr::null_mut();
-    for_each_sibling_event!(sibling, leader) {
+    for_each_sibling_event!(sibling, leader, {
         if (*sibling).pmu == pmu { num_hw += 1; } else if !is_software_event(sibling) { return false; }
-    }
+    });
     num_hw <= PMU_NR_COUNTERS as i32
 }
 

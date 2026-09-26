@@ -22,17 +22,17 @@ type loff_t = i64;
 #[repr(C)] pub struct seq_file { pub count: usize, pub size: usize, pub from: usize, pub index: loff_t, pub read_pos: loff_t, pub buf: *mut u8, pub op: *const seq_operations, pub file: *mut file, pub lock: mutex, pub private: *mut c_void, pub pad_until: usize }
 extern "C" {
     static mut seq_file_cache: *mut c_void;
-    fn kmem_cache_zalloc(*mut c_void, u32) -> *mut seq_file; fn kmem_cache_free(*mut c_void, *mut seq_file);
-    fn kvmalloc(usize, u32) -> *mut u8; fn kvfree(*mut u8); fn kzalloc(usize,u32)->*mut c_void; fn kfree(*mut c_void);
-    fn mutex_init(*mut mutex); fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex);
-    fn seq_read_iter(*mut kiocb,*mut iov_iter)->isize; fn copy_to_iter(*const u8,usize,*mut iov_iter)->usize; fn iov_iter_count(*const iov_iter)->usize;
-    fn seq_get_buf(*mut seq_file,*mut *mut c_char)->usize; fn seq_commit(*mut seq_file,isize); fn string_escape_mem(*const c_char,usize,*mut c_char,usize,u32,*const c_char)->usize;
-    fn vsnprintf(*mut u8,usize,*const c_char,*mut c_void)->c_int; fn d_path(*const path,*mut c_char,usize)->*mut c_char; fn __d_path(*const path,*const path,*mut c_char,usize)->*mut c_char; fn dentry_path(*mut dentry,*mut c_char,usize)->*mut c_char;
-    fn strchr(*const c_char,c_int)->*const c_char; fn strlen(*const c_char)->usize; fn memcpy(*mut u8,*const c_void,usize); fn memset(*mut u8,u8,usize);
-    fn num_to_str(*mut u8,usize,u64,u32)->c_int; fn hex_dump_to_buffer(*const u8,usize,int,int,*mut c_char,usize,bool)->c_int; fn pr_info_ratelimited(*const c_char,...);
+    fn kmem_cache_zalloc(_: *mut c_void, _: u32) -> *mut seq_file; fn kmem_cache_free(_: *mut c_void, _: *mut seq_file);
+    fn kvmalloc(_: usize, _: u32) -> *mut u8; fn kvfree(_: *mut u8); fn kzalloc(_: usize,_: u32)->*mut c_void; fn kfree(_: *mut c_void);
+    fn mutex_init(_: *mut mutex); fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex);
+    fn seq_read_iter(_: *mut kiocb,_: *mut iov_iter)->isize; fn copy_to_iter(_: *const u8,_: usize,_: *mut iov_iter)->usize; fn iov_iter_count(_: *const iov_iter)->usize;
+    fn seq_get_buf(_: *mut seq_file,_: *mut *mut c_char)->usize; fn seq_commit(_: *mut seq_file,_: isize); fn string_escape_mem(_: *const c_char,_: usize,_: *mut c_char,_: usize,_: u32,_: *const c_char)->usize;
+    fn vsnprintf(_: *mut u8,_: usize,_: *const c_char,_: *mut c_void)->c_int; fn d_path(_: *const path,_: *mut c_char,_: usize)->*mut c_char; fn __d_path(_: *const path,_: *const path,_: *mut c_char,_: usize)->*mut c_char; fn dentry_path(_: *mut dentry,_: *mut c_char,_: usize)->*mut c_char;
+    fn strchr(_: *const c_char,_: c_int)->*const c_char; fn strlen(_: *const c_char)->usize; fn memcpy(_: *mut u8,_: *const c_void,_: usize); fn memset(_: *mut u8,_: u8,_: usize);
+    fn num_to_str(_: *mut u8,_: usize,_: u64,_: u32)->c_int; fn hex_dump_to_buffer(_: *const u8,_: usize,_: int,_: int,_: *mut c_char,_: usize,_: bool)->c_int; fn pr_info_ratelimited(_: *const c_char,...);
     fn kmalloc_seq_operations()->*mut seq_operations;
-    fn cpumask_next(c_int,*const c_void)->c_int; static cpu_possible_mask:*const c_void; static nr_cpu_ids:c_int;
-    fn per_cpu_ptr(*mut hlist_head,c_int)->*mut hlist_head; fn rcu_dereference<T>(p:*mut T)->*mut T;
+    fn cpumask_next(_: c_int,_: *const c_void)->c_int; static cpu_possible_mask:*const c_void; static nr_cpu_ids:c_int;
+    fn per_cpu_ptr(_: *mut hlist_head,_: c_int)->*mut hlist_head; fn rcu_dereference<T>(p:*mut T)->*mut T;
 }
 const PAGE_SIZE: usize = 4096; const MAX_RW_COUNT: usize = usize::MAX; const ENOMEM:c_int=12; const EINVAL:c_int=22; const EAGAIN:c_int=11; const EFAULT:c_int=14; const ENAMETOOLONG:c_int=36; const SEQ_SKIP:c_int=1; const FMODE_PWRITE:u32=0x10; const SEQ_START_TOKEN: *mut c_void = 1 as *mut c_void;
 unsafe fn seq_set_overflow(m:*mut seq_file){(*m).count=(*m).size}
@@ -58,7 +58,7 @@ unsafe fn traverse(m:*mut seq_file,offset:loff_t)->c_int{let mut pos=0;let mut e
 #[no_mangle] pub unsafe extern "C" fn seq_hlist_next(v:*mut c_void,head:*mut hlist_head,pos:*mut loff_t)->*mut hlist_node{*pos+=1;if v==SEQ_START_TOKEN{(*head).first}else{(*(v as *mut hlist_node)).next}}
 #[no_mangle] pub unsafe extern "C" fn seq_vprintf(_m:*mut seq_file,_f:*const c_char,_args:*mut c_void){}
 #[no_mangle] pub unsafe extern "C" fn seq_printf(_m:*mut seq_file,_f:*const c_char,...){ }
-#[no_mangle] pub unsafe extern "C" fn seq_mangle_path(mut s:*mut c_char,mut p:*const c_char,esc:*const c_char)->*mut c_char{while s as usize<=p as usize{let c=*p;p=p.add(1);if c==0{return s}else if strchr(esc,c as c_int).is_null(){*s=c;s=s.add(1)}else{*s=b'\\' as c_char;s=s.add(1);*s=b'0' as c_char;s=s.add(1);*s=b'0' as c_char;s=s.add(1);*s=b'0' as c_char;s=s.add(1)}}core::ptr::null_mut()}
+#[no_mangle] pub unsafe extern "C" fn seq_mangle_path(mut s:*mut c_char,mut p:*const c_char,esc:*const c_char)->*mut c_char{while (s as usize)<=p as usize{let c=*p;p=p.add(1);if c==0{return s}else if strchr(esc,c as c_int).is_null(){*s=c;s=s.add(1)}else{*s=b'\\' as c_char;s=s.add(1);*s=b'0' as c_char;s=s.add(1);*s=b'0' as c_char;s=s.add(1);*s=b'0' as c_char;s=s.add(1)}}core::ptr::null_mut()}
 #[no_mangle] pub unsafe extern "C" fn seq_path(_m:*mut seq_file,_p:*const path,_e:*const c_char)->c_int{-1}
 #[no_mangle] pub unsafe extern "C" fn seq_file_path(m:*mut seq_file,f:*mut file,e:*const c_char)->c_int{seq_path(m,&(*f).f_path,e)}
 #[no_mangle] pub unsafe extern "C" fn seq_path_root(_m:*mut seq_file,_p:*const path,_r:*const path,_e:*const c_char)->c_int{SEQ_SKIP}

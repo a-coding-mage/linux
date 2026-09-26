@@ -166,12 +166,12 @@ pub unsafe fn xrep_bmap_cow(sc: *mut xfs_scrub) -> i32 {
     xfs_trans_ijoin((*sc).tp, (*sc).ip, 0); (*xc).sc = sc; xoff_bitmap_init(&mut (*xc).bad_fileoffs);
     if XFS_IS_REALTIME_INODE((*sc).ip) { xrtb_bitmap_init(&mut (*xc).old_cowfork.old_cowfork_rtblocks); } else { xfsb_bitmap_init(&mut (*xc).old_cowfork.old_cowfork_fsblocks); }
     let mut icur: xfs_iext_cursor = core::mem::zeroed();
-    for_each_xfs_iext(ifp, &mut icur, &mut (*xc).irec) {
+    for_each_xfs_iext!(ifp, &mut icur, &mut (*xc).irec, {
         if xchk_should_terminate(sc, &mut error) { break; }
         if isnullstartblock((*xc).irec.br_startblock) || xfs_bmap_is_written_extent(&(*xc).irec) { continue; }
         error = if XFS_IS_REALTIME_INODE((*sc).ip) { xrep_cow_find_bad_rt(xc) } else { xrep_cow_find_bad(xc) };
         if error != 0 { break; }
-    }
+    });
     if error != 0 { if XFS_IS_REALTIME_INODE((*sc).ip) { xrtb_bitmap_destroy(&mut (*xc).old_cowfork.old_cowfork_rtblocks); } else { xfsb_bitmap_destroy(&mut (*xc).old_cowfork.old_cowfork_fsblocks); } xoff_bitmap_destroy(&mut (*xc).bad_fileoffs); kfree(xc as *mut _); return error; }
     error = xoff_bitmap_walk(&(*xc).bad_fileoffs, xrep_cow_replace, xc as *mut _ as *mut core::ffi::c_void);
     if XFS_IS_REALTIME_INODE((*sc).ip) { error = xrep_reap_rtblocks(sc, &(*xc).old_cowfork.old_cowfork_rtblocks, &XFS_RMAP_OINFO_COW); } else { error = xrep_reap_fsblocks(sc, &(*xc).old_cowfork.old_cowfork_fsblocks, &XFS_RMAP_OINFO_COW); }

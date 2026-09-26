@@ -11,7 +11,7 @@ macro_rules! bitop {
         pub unsafe fn $name(bit: usize, addr: *mut u32) {
             // C/assembler equivalent:
             //   assert word alignment; word = addr + (bit >> 5);
-            //   do { old = ld rex(word); instr(old, old, 1 << (bit & 31)); }
+            //   do { old = ld rex(word); $instr(old, old, 1 << (bit & 31)); }
             //   while (strex(word) != 0);
             let word = addr.add(bit >> 5);
             let mask = 1u32 << (bit & 31);

@@ -16,28 +16,29 @@ unsafe fn ethnl_cable_test_started(phydev: *mut phy_device, cmd: u8) -> c_int {
     let mut skb: *mut sk_buff;
     let mut err: c_int = -ENOMEM;
     let mut ehdr: *mut c_void;
+    'out: {
 
     skb = genlmsg_new(NLMSG_GOOD, GFP_KERNEL);
-    if skb.is_null() { goto!(out); }
+    if skb.is_null() { break 'out; }
 
     ehdr = ethnl_bcastmsg_put(skb, cmd);
     if ehdr.is_null() {
         err = -EMSGSIZE;
-        goto!(out);
+        break 'out;
     }
 
     err = ethnl_fill_reply_header((*phydev).attached_dev,
                                   skb, ETHTOOL_A_CABLE_TEST_NTF_HEADER);
-    if err != 0 { goto!(out); }
+    if err != 0 { break 'out; }
 
     err = nla_put_u8(skb, ETHTOOL_A_CABLE_TEST_NTF_STATUS,
                      ETHTOOL_A_CABLE_TEST_NTF_STATUS_STARTED);
-    if err != 0 { goto!(out); }
+    if err != 0 { break 'out; }
 
     genlmsg_end(skb, ehdr);
     return ethnl_multicast(skb, (*phydev).attached_dev);
-
-out:
+    }
+    
     nlmsg_free(skb);
     phydev_err(phydev, "%s: Error %pe\n", __func__, ERR_PTR(err));
     err
@@ -50,6 +51,7 @@ pub unsafe fn ethnl_act_cable_test(skb: *mut sk_buff, info: *mut genl_info) -> c
     let phydev: *mut phy_device;
     let dev: *mut net_device;
     let mut ret: c_int;
+    'out_unlock: {
 
     ret = ethnl_parse_header_dev_get(&mut req_info, *tb.add(ETHTOOL_A_CABLE_TEST_HEADER),
                                      genl_info_net(info), (*info).extack, true);
@@ -58,15 +60,16 @@ pub unsafe fn ethnl_act_cable_test(skb: *mut sk_buff, info: *mut genl_info) -> c
     netdev_lock_ops_compat(dev);
     phydev = ethnl_req_get_phydev(&mut req_info, tb, ETHTOOL_A_CABLE_TEST_HEADER,
                                   (*info).extack);
-    if IS_ERR_OR_NULL!(phydev) { ret = -EOPNOTSUPP; goto!(out_unlock); }
+    if IS_ERR_OR_NULL!(phydev) { ret = -EOPNOTSUPP; break 'out_unlock; }
     ops = ethtool_phy_ops;
-    if ops.is_null() || (*ops).start_cable_test.is_none() { ret = -EOPNOTSUPP; goto!(out_unlock); }
+    if ops.is_null() || (*ops).start_cable_test.is_none() { ret = -EOPNOTSUPP; break 'out_unlock; }
     ret = ethnl_ops_begin(dev);
-    if ret < 0 { goto!(out_unlock); }
+    if ret < 0 { break 'out_unlock; }
     ret = ((*ops).start_cable_test.unwrap())(phydev, (*info).extack);
     ethnl_ops_complete(dev);
     if ret == 0 { ethnl_cable_test_started(phydev, ETHTOOL_MSG_CABLE_TEST_NTF); }
-out_unlock:
+    }
+    
     netdev_unlock_ops_compat(dev);
     ethnl_parse_header_dev_put(&mut req_info);
     ret
@@ -74,20 +77,22 @@ out_unlock:
 
 pub unsafe fn ethnl_cable_test_alloc(phydev: *mut phy_device, cmd: u8) -> c_int {
     let mut err: c_int = -ENOMEM;
+    'out: {
     (*phydev).skb = genlmsg_new(SZ_16K, GFP_KERNEL);
-    if (*phydev).skb.is_null() { goto!(out); }
+    if (*phydev).skb.is_null() { break 'out; }
     (*phydev).ehdr = ethnl_bcastmsg_put((*phydev).skb, cmd);
-    if (*phydev).ehdr.is_null() { err = -EMSGSIZE; goto!(out); }
+    if (*phydev).ehdr.is_null() { err = -EMSGSIZE; break 'out; }
     err = ethnl_fill_reply_header((*phydev).attached_dev, (*phydev).skb,
                                   ETHTOOL_A_CABLE_TEST_NTF_HEADER);
-    if err != 0 { goto!(out); }
+    if err != 0 { break 'out; }
     err = nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_TEST_NTF_STATUS,
                      ETHTOOL_A_CABLE_TEST_NTF_STATUS_COMPLETED);
-    if err != 0 { goto!(out); }
+    if err != 0 { break 'out; }
     (*phydev).nest = nla_nest_start((*phydev).skb, ETHTOOL_A_CABLE_TEST_NTF_NEST);
-    if (*phydev).nest.is_null() { err = -EMSGSIZE; goto!(out); }
+    if (*phydev).nest.is_null() { err = -EMSGSIZE; break 'out; }
     0
-out:
+    }
+    
     nlmsg_free((*phydev).skb);
     (*phydev).skb = core::ptr::null_mut();
     err
@@ -107,18 +112,18 @@ pub unsafe fn ethnl_cable_test_finished(phydev: *mut phy_device) {
 pub unsafe fn ethnl_cable_test_result_with_src(phydev: *mut phy_device, pair: u8, result: u8, src: u32) -> c_int {
     let nest = nla_nest_start((*phydev).skb, ETHTOOL_A_CABLE_NEST_RESULT);
     if nest.is_null() { return -EMSGSIZE; }
-    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_RESULT_PAIR, pair) != 0 { goto_cancel!(nest); }
-    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_RESULT_CODE, result) != 0 { goto_cancel!(nest); }
-    if src != ETHTOOL_A_CABLE_INF_SRC_UNSPEC && nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_RESULT_SRC, src) != 0 { goto_cancel!(nest); }
+    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_RESULT_PAIR, pair) != 0 { goto nest; }
+    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_RESULT_CODE, result) != 0 { goto nest; }
+    if src != ETHTOOL_A_CABLE_INF_SRC_UNSPEC && nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_RESULT_SRC, src) != 0 { goto nest; }
     nla_nest_end((*phydev).skb, nest); 0
 }
 
 pub unsafe fn ethnl_cable_test_fault_length_with_src(phydev: *mut phy_device, pair: u8, cm: u32, src: u32) -> c_int {
     let nest = nla_nest_start((*phydev).skb, ETHTOOL_A_CABLE_NEST_FAULT_LENGTH);
     if nest.is_null() { return -EMSGSIZE; }
-    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR, pair) != 0 { goto_cancel!(nest); }
-    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_FAULT_LENGTH_CM, cm) != 0 { goto_cancel!(nest); }
-    if src != ETHTOOL_A_CABLE_INF_SRC_UNSPEC && nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_FAULT_LENGTH_SRC, src) != 0 { goto_cancel!(nest); }
+    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR, pair) != 0 { goto nest; }
+    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_FAULT_LENGTH_CM, cm) != 0 { goto nest; }
+    if src != ETHTOOL_A_CABLE_INF_SRC_UNSPEC && nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_FAULT_LENGTH_SRC, src) != 0 { goto nest; }
     nla_nest_end((*phydev).skb, nest); 0
 }
 
@@ -152,37 +157,39 @@ unsafe fn ethnl_act_cable_test_tdr_cfg(nest: *const nlattr, info: *mut genl_info
 
 pub unsafe fn ethnl_act_cable_test_tdr(skb: *mut sk_buff, info: *mut genl_info) -> c_int {
     let mut req_info: ethnl_req_info = core::mem::zeroed(); let tb = (*info).attrs; let mut cfg: phy_tdr_config = core::mem::zeroed(); let mut ret;
+    'out_dev_put: {
     ret = ethnl_parse_header_dev_get(&mut req_info, *tb.add(ETHTOOL_A_CABLE_TEST_TDR_HEADER), genl_info_net(info), (*info).extack, true); if ret < 0 { return ret; }
     let dev = req_info.dev;
-    ret = ethnl_act_cable_test_tdr_cfg(*tb.add(ETHTOOL_A_CABLE_TEST_TDR_CFG), info, &mut cfg); if ret != 0 { goto!(out_dev_put); }
+    ret = ethnl_act_cable_test_tdr_cfg(*tb.add(ETHTOOL_A_CABLE_TEST_TDR_CFG), info, &mut cfg); if ret != 0 { break 'out_dev_put; }
     netdev_lock_ops_compat(dev); let phydev = ethnl_req_get_phydev(&mut req_info, tb, ETHTOOL_A_CABLE_TEST_TDR_HEADER, (*info).extack);
-    if IS_ERR_OR_NULL!(phydev) { ret = -EOPNOTSUPP; goto!(out_unlock); }
-    let ops = ethtool_phy_ops; if ops.is_null() || (*ops).start_cable_test_tdr.is_none() { ret = -EOPNOTSUPP; goto!(out_unlock); }
-    ret = ethnl_ops_begin(dev); if ret < 0 { goto!(out_unlock); }
+    if IS_ERR_OR_NULL!(phydev) { ret = -EOPNOTSUPP; goto out_unlock; }
+    let ops = ethtool_phy_ops; if ops.is_null() || (*ops).start_cable_test_tdr.is_none() { ret = -EOPNOTSUPP; goto out_unlock; }
+    ret = ethnl_ops_begin(dev); if ret < 0 { goto out_unlock; }
     ret = ((*ops).start_cable_test_tdr.unwrap())(phydev, (*info).extack, &mut cfg); ethnl_ops_complete(dev);
     if ret == 0 { ethnl_cable_test_started(phydev, ETHTOOL_MSG_CABLE_TEST_TDR_NTF); }
 out_unlock: netdev_unlock_ops_compat(dev);
-out_dev_put: ethnl_parse_header_dev_put(&mut req_info); ret
+    }
+    ethnl_parse_header_dev_put(&mut req_info); ret
 }
 
 pub unsafe fn ethnl_cable_test_amplitude(phydev: *mut phy_device, pair: u8, mV: i16) -> c_int {
     let nest = nla_nest_start((*phydev).skb, ETHTOOL_A_CABLE_TDR_NEST_AMPLITUDE); if nest.is_null() { return -EMSGSIZE; }
-    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_AMPLITUDE_PAIR, pair) != 0 { goto_cancel!(nest); }
-    if nla_put_u16((*phydev).skb, ETHTOOL_A_CABLE_AMPLITUDE_mV, mV as u16) != 0 { goto_cancel!(nest); }
+    if nla_put_u8((*phydev).skb, ETHTOOL_A_CABLE_AMPLITUDE_PAIR, pair) != 0 { goto nest; }
+    if nla_put_u16((*phydev).skb, ETHTOOL_A_CABLE_AMPLITUDE_mV, mV as u16) != 0 { goto nest; }
     nla_nest_end((*phydev).skb, nest); 0
 }
 
 pub unsafe fn ethnl_cable_test_pulse(phydev: *mut phy_device, mV: u16) -> c_int {
     let nest = nla_nest_start((*phydev).skb, ETHTOOL_A_CABLE_TDR_NEST_PULSE); if nest.is_null() { return -EMSGSIZE; }
-    if nla_put_u16((*phydev).skb, ETHTOOL_A_CABLE_PULSE_mV, mV) != 0 { goto_cancel!(nest); }
+    if nla_put_u16((*phydev).skb, ETHTOOL_A_CABLE_PULSE_mV, mV) != 0 { goto nest; }
     nla_nest_end((*phydev).skb, nest); 0
 }
 
 pub unsafe fn ethnl_cable_test_step(phydev: *mut phy_device, first: u32, last: u32, step: u32) -> c_int {
     let nest = nla_nest_start((*phydev).skb, ETHTOOL_A_CABLE_TDR_NEST_STEP); if nest.is_null() { return -EMSGSIZE; }
-    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_STEP_FIRST_DISTANCE, first) != 0 { goto_cancel!(nest); }
-    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_STEP_LAST_DISTANCE, last) != 0 { goto_cancel!(nest); }
-    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_STEP_STEP_DISTANCE, step) != 0 { goto_cancel!(nest); }
+    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_STEP_FIRST_DISTANCE, first) != 0 { goto nest; }
+    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_STEP_LAST_DISTANCE, last) != 0 { goto nest; }
+    if nla_put_u32((*phydev).skb, ETHTOOL_A_CABLE_STEP_STEP_DISTANCE, step) != 0 { goto nest; }
     nla_nest_end((*phydev).skb, nest); 0
 }
 

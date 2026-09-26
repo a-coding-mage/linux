@@ -22,7 +22,7 @@ pub unsafe fn batadv_bla_is_loopdetect_mac(mac: *const u8) -> bool {
     false
 }
 
-#[cfg(feature = "CONFIG_BATMAN_ADV_BLA")]
+#[cfg(CONFIG_BATMAN_ADV_BLA)]
 extern "C" {
     pub fn batadv_bla_rx(
         bat_priv: *mut batadv_priv,
@@ -56,7 +56,7 @@ extern "C" {
     pub fn batadv_bla_init(bat_priv: *mut batadv_priv) -> i32;
     pub fn batadv_bla_free(bat_priv: *mut batadv_priv);
 
-    #[cfg(feature = "CONFIG_BATMAN_ADV_DAT")]
+    #[cfg(CONFIG_BATMAN_ADV_DAT)]
     pub fn batadv_bla_check_claim(
         bat_priv: *mut batadv_priv,
         addr: *mut u8,
@@ -64,10 +64,10 @@ extern "C" {
     ) -> bool;
 }
 
-#[cfg(feature = "CONFIG_BATMAN_ADV_BLA")]
+#[cfg(CONFIG_BATMAN_ADV_BLA)]
 pub const BATADV_BLA_CRC_INIT: i32 = 0;
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_rx(
     _bat_priv: *mut batadv_priv,
@@ -78,7 +78,7 @@ pub unsafe fn batadv_bla_rx(
     false
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_tx(
     _bat_priv: *mut batadv_priv,
@@ -88,7 +88,7 @@ pub unsafe fn batadv_bla_tx(
     false
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_is_backbone_gw(
     _skb: *mut sk_buff,
@@ -98,7 +98,7 @@ pub unsafe fn batadv_bla_is_backbone_gw(
     false
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_is_backbone_gw_orig(
     _bat_priv: *mut batadv_priv,
@@ -108,7 +108,7 @@ pub unsafe fn batadv_bla_is_backbone_gw_orig(
     false
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_check_bcast_duplist(
     _bat_priv: *mut batadv_priv,
@@ -117,7 +117,7 @@ pub unsafe fn batadv_bla_check_bcast_duplist(
     false
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_update_orig_address(
     _bat_priv: *mut batadv_priv,
@@ -126,18 +126,18 @@ pub unsafe fn batadv_bla_update_orig_address(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_init(_bat_priv: *mut batadv_priv) -> i32 {
     1
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_free(_bat_priv: *mut batadv_priv) {
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_claim_dump(
     _msg: *mut sk_buff,
@@ -146,7 +146,7 @@ pub unsafe fn batadv_bla_claim_dump(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_backbone_dump(
     _msg: *mut sk_buff,
@@ -155,7 +155,7 @@ pub unsafe fn batadv_bla_backbone_dump(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BLA"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BLA))]
 #[inline]
 pub unsafe fn batadv_bla_check_claim(
     _bat_priv: *mut batadv_priv,

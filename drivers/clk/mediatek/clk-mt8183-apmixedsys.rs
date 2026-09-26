@@ -69,6 +69,8 @@ unsafe fn clk_mt8183_apmixed_probe(pdev: *mut platform_device) -> c_int {
     let node = (*pdev).dev.of_node;
     let dev = &mut (*pdev).dev as *mut device;
     let mut ret: c_int;
+    'unregister_plls: {
+    'unregister_gates: {
 
     base = devm_platform_ioremap_resource(pdev, 0);
     if IS_ERR(base) { return PTR_ERR(base); }
@@ -77,13 +79,15 @@ unsafe fn clk_mt8183_apmixed_probe(pdev: *mut platform_device) -> c_int {
     ret = mtk_clk_register_plls(dev, PLLS.as_ptr(), PLLS.len(), clk_data);
     if ret != 0 { return ret; }
     ret = mtk_clk_register_gates(dev, node, APMIXED_CLKS.as_ptr(), APMIXED_CLKS.len(), clk_data);
-    if ret != 0 { goto unregister_plls; }
+    if ret != 0 { break 'unregister_plls; }
     ret = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
-    if ret != 0 { goto unregister_gates; }
+    if ret != 0 { break 'unregister_gates; }
     return 0;
-unregister_gates:
+    }
+    
     mtk_clk_unregister_gates(APMIXED_CLKS.as_ptr(), APMIXED_CLKS.len(), clk_data);
-unregister_plls:
+    }
+    
     mtk_clk_unregister_plls(PLLS.as_ptr(), PLLS.len(), clk_data);
     ret
 }

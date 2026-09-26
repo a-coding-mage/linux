@@ -32,10 +32,7 @@ pub unsafe fn cfi_interleave_is_8(cfi: *const cfi_private) -> bool { cfi_interle
 #[inline]
 pub const fn cfi_interleave_supported(i: i32) -> i32 {
     match i {
-        #[cfg(CONFIG_MTD_CFI_I1)] 1 |
-        #[cfg(CONFIG_MTD_CFI_I2)] 2 |
-        #[cfg(CONFIG_MTD_CFI_I4)] 4 |
-        #[cfg(CONFIG_MTD_CFI_I8)] 8 => 1,
+        case if case == #[cfg(CONFIG_MTD_CFI_I1)] 1 || case == #[cfg(CONFIG_MTD_CFI_I2)] 2 || case == #[cfg(CONFIG_MTD_CFI_I4)] 4 || case == #[cfg(CONFIG_MTD_CFI_I8)] 8 => 1,
         _ => 0,
     }
 }

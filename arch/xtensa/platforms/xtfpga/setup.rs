@@ -26,7 +26,7 @@ unsafe fn xtfpga_restart(_unused: *mut sys_off_data) -> i32 {
     NOTIFY_DONE
 }
 
-#[cfg(feature = "CONFIG_XTENSA_CALIBRATE_CCOUNT")]
+#[cfg(CONFIG_XTENSA_CALIBRATE_CCOUNT)]
 unsafe fn platform_calibrate_ccount() {
     ccount_freq = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const libc::c_long);
 }
@@ -46,7 +46,7 @@ unsafe fn xtfpga_register_handlers() {
     );
 }
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 unsafe fn xtfpga_clk_setup(np: *mut device_node) {
     let base = of_iomap(np, 0);
     let freq: u32;
@@ -76,15 +76,15 @@ unsafe fn xtfpga_clk_setup(np: *mut device_node) {
     }
 }
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 const _: () = {
     // CLK_OF_DECLARE(xtfpga_clk, "cdns,xtfpga-clock", xtfpga_clk_setup);
 };
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 const MAC_LEN: usize = 6;
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 unsafe fn update_local_mac(node: *mut device_node) {
     let mut prop_len = 0;
     let macaddr = of_get_property(node, b"local-mac-address\0".as_ptr() as *const i8, &mut prop_len);
@@ -109,7 +109,7 @@ unsafe fn update_local_mac(node: *mut device_node) {
     of_update_property(node, newmac);
 }
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 unsafe fn machine_setup() -> i32 {
     let mut eth: *mut device_node = core::ptr::null_mut();
     eth = of_find_compatible_node(eth, core::ptr::null_mut(), b"opencores,ethoc\0".as_ptr() as *const i8);
@@ -121,36 +121,36 @@ unsafe fn machine_setup() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 static mut ethoc_res: [resource; 3] = [
     resource { start: OETH_REGS_PADDR, end: OETH_REGS_PADDR + OETH_REGS_SIZE - 1, flags: IORESOURCE_MEM },
     resource { start: OETH_SRAMBUFF_PADDR, end: OETH_SRAMBUFF_PADDR + OETH_SRAMBUFF_SIZE - 1, flags: IORESOURCE_MEM },
     resource { start: XTENSA_PIC_LINUX_IRQ(OETH_IRQ), end: XTENSA_PIC_LINUX_IRQ(OETH_IRQ), flags: IORESOURCE_IRQ },
 ];
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 static mut ethoc_pdata: ethoc_platform_data = ethoc_platform_data {
     hwaddr: [0x00, 0x50, 0xc2, 0x13, 0x6f, 0],
     phy_id: -1,
     big_endian: XCHAL_HAVE_BE,
 };
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 static mut c67x00_res: [resource; 2] = [
     resource { start: C67X00_PADDR, end: C67X00_PADDR + C67X00_SIZE - 1, flags: IORESOURCE_MEM },
     resource { start: XTENSA_PIC_LINUX_IRQ(C67X00_IRQ), end: XTENSA_PIC_LINUX_IRQ(C67X00_IRQ), flags: IORESOURCE_IRQ },
 ];
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 static mut c67x00_pdata: c67x00_platform_data = c67x00_platform_data {
     sie_config: C67X00_SIE1_HOST | C67X00_SIE2_UNUSED,
     hpi_regstep: 4,
 };
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 static mut serial_resource: resource = resource { start: DUART16552_PADDR, end: DUART16552_PADDR + 0x1f, flags: IORESOURCE_MEM };
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 static mut serial_platform_data: [plat_serial8250_port; 2] = [
     plat_serial8250_port {
         mapbase: DUART16552_PADDR,
@@ -163,7 +163,7 @@ static mut serial_platform_data: [plat_serial8250_port; 2] = [
     plat_serial8250_port { ..Default::default() },
 ];
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 unsafe fn xtavnet_init() -> i32 {
     ethoc_pdata.hwaddr[5] = core::ptr::read_volatile(DIP_SWITCHES_VADDR as *const u32) as u8;
     serial_platform_data[0].uartclk = core::ptr::read_volatile(XTFPGA_CLKFRQ_VADDR as *const libc::c_long) as _;

@@ -302,7 +302,7 @@ pub struct uprobe_multi_usdt {
 
 unsafe extern "C" {
     static mut errno: c_int;
-    static __start_consumers: *const c_void;
+    static __start_consumers: [c_void; 0];
 
     fn close(fd: c_int) -> c_int;
     fn pipe(pipefd: *mut c_int) -> c_int;
@@ -1357,7 +1357,7 @@ extern "C" fn consumer_thread(arg: *mut c_void) -> *mut c_void {
         let idx = arg as c_ulong;
         let skel = uprobe_multi_consumers__open_and_load();
         if !ASSERT_OK_PTR(skel, c"uprobe_multi_consumers__open_and_load".as_ptr()) { return ptr::null_mut(); }
-        let func = *((&raw const __start_consumers as *const *const c_void).add(idx as usize));
+        let func = *((&raw const __start_consumers.as_ptr() as *const *const c_void).add(idx as usize));
         let offset = get_uprobe_offset(func);
         if ASSERT_GE(offset, 0, c"uprobe_offset".as_ptr()) {
             let test: test_t = core::mem::transmute(func);

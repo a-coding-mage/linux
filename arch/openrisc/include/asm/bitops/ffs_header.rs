@@ -6,7 +6,7 @@
  */
 
 /* CONFIG_OPENRISC_HAVE_INST_FF1 */
-#[cfg(feature = "CONFIG_OPENRISC_HAVE_INST_FF1")]
+#[cfg(CONFIG_OPENRISC_HAVE_INST_FF1)]
 #[inline]
 pub unsafe fn ffs(x: i32) -> i32 {
     let mut ret: i32;
@@ -21,7 +21,7 @@ pub unsafe fn ffs(x: i32) -> i32 {
 }
 
 /* The generic implementation is supplied by asm-generic/bitops/ffs.h. */
-#[cfg(not(feature = "CONFIG_OPENRISC_HAVE_INST_FF1"))]
+#[cfg(not(CONFIG_OPENRISC_HAVE_INST_FF1))]
 unsafe extern "C" {
     pub fn ffs(x: i32) -> i32;
 }

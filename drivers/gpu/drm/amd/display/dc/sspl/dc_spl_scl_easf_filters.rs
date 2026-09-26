@@ -2192,7 +2192,7 @@ static struct scale_ratio_to_reg_value_lookup easf_3tap_uptilt2_offset_lookup[] 
 	{-1, -1, 0x9E00},
 };
 
-static const uint16_t *spl_get_easf_filter_3tap_64p(struct spl_fixed31_32 ratio)
+static const uint16_t *spl_get_easf_filter_3tap_64p(spl_fixed31_32 ratio)
 {
 	if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(3, 10)).value)
 		return easf_filter_3tap_64p_ratio_0_30_s1_12;
@@ -2212,7 +2212,7 @@ static const uint16_t *spl_get_easf_filter_3tap_64p(struct spl_fixed31_32 ratio)
 		return easf_filter_3tap_64p_ratio_1_00_s1_12;
 }
 
-static const uint16_t *spl_get_easf_filter_4tap_64p(struct spl_fixed31_32 ratio)
+static const uint16_t *spl_get_easf_filter_4tap_64p(spl_fixed31_32 ratio)
 {
 	if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(3, 10)).value)
 		return easf_filter_4tap_64p_ratio_0_30_s1_12;
@@ -2232,7 +2232,7 @@ static const uint16_t *spl_get_easf_filter_4tap_64p(struct spl_fixed31_32 ratio)
 		return easf_filter_4tap_64p_ratio_1_00_s1_12;
 }
 
-static const uint16_t *spl_get_easf_filter_6tap_64p(struct spl_fixed31_32 ratio)
+static const uint16_t *spl_get_easf_filter_6tap_64p(spl_fixed31_32 ratio)
 {
 	if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(3, 10)).value)
 		return easf_filter_6tap_64p_ratio_0_30_s1_12;
@@ -2253,7 +2253,7 @@ static const uint16_t *spl_get_easf_filter_6tap_64p(struct spl_fixed31_32 ratio)
 }
 
 const uint16_t *SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
-	int taps, struct spl_fixed31_32 ratio))
+	int taps, spl_fixed31_32 ratio))
 {
 	if (taps == 6)
 		return spl_get_easf_filter_6tap_64p(ratio);
@@ -2268,7 +2268,7 @@ const uint16_t *SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
 	}
 }
 
-static const uint16_t *spl_get_easf_filter_3tap_64p_s1_10(struct spl_fixed31_32 ratio)
+static const uint16_t *spl_get_easf_filter_3tap_64p_s1_10(spl_fixed31_32 ratio)
 {
 	if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(3, 10)).value)
 		return easf_filter_3tap_64p_ratio_0_30;
@@ -2288,7 +2288,7 @@ static const uint16_t *spl_get_easf_filter_3tap_64p_s1_10(struct spl_fixed31_32 
 		return easf_filter_3tap_64p_ratio_1_00;
 }
 
-static const uint16_t *spl_get_easf_filter_4tap_64p_s1_10(struct spl_fixed31_32 ratio)
+static const uint16_t *spl_get_easf_filter_4tap_64p_s1_10(spl_fixed31_32 ratio)
 {
 	if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(3, 10)).value)
 		return easf_filter_4tap_64p_ratio_0_30;
@@ -2308,7 +2308,7 @@ static const uint16_t *spl_get_easf_filter_4tap_64p_s1_10(struct spl_fixed31_32 
 		return easf_filter_4tap_64p_ratio_1_00;
 }
 
-static const uint16_t *spl_get_easf_filter_6tap_64p_s1_10(struct spl_fixed31_32 ratio)
+static const uint16_t *spl_get_easf_filter_6tap_64p_s1_10(spl_fixed31_32 ratio)
 {
 	if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(3, 10)).value)
 		return easf_filter_6tap_64p_ratio_0_30;
@@ -2329,7 +2329,7 @@ static const uint16_t *spl_get_easf_filter_6tap_64p_s1_10(struct spl_fixed31_32 
 }
 
 const uint16_t *SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p_s1_10(
-	int taps, struct spl_fixed31_32 ratio))
+	int taps, spl_fixed31_32 ratio))
 {
 	if (taps == 6)
 		return spl_get_easf_filter_6tap_64p_s1_10(ratio);
@@ -2344,63 +2344,63 @@ const uint16_t *SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p_s1_10(
 	}
 }
 
-void SPL_NAMESPACE(spl_set_filters_data(struct dscl_prog_data *dscl_prog_data,
-		const struct spl_scaler_data *data, bool enable_easf_v,
-		bool enable_easf_h))
+void SPL_NAMESPACE(spl_set_filters_data(dscl_prog_data *dscl_prog_data,
+		const struct spl_scaler_data *data, enable_easf_v: bool,
+		enable_easf_h: bool))
 {
 	/*
 	 * Old coefficients calculated scaling ratio = input / output
 	 * New coefficients are calculated based on = output / input
 	 */
 	if (enable_easf_h) {
-		dscl_prog_data->filter_h = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
-			data->taps.h_taps, data->recip_ratios.horz));
+		(*dscl_prog_data).filter_h = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
+			(*data).taps.h_taps, (*data).recip_ratios.horz));
 
-		dscl_prog_data->filter_h_c = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
-			data->taps.h_taps_c, data->recip_ratios.horz_c));
+		(*dscl_prog_data).filter_h_c = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
+			(*data).taps.h_taps_c, (*data).recip_ratios.horz_c));
 	} else {
-		dscl_prog_data->filter_h = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
-			data->taps.h_taps, data->ratios.horz));
+		(*dscl_prog_data).filter_h = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
+			(*data).taps.h_taps, (*data).ratios.horz));
 
-		dscl_prog_data->filter_h_c = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
-			data->taps.h_taps_c, data->ratios.horz_c));
+		(*dscl_prog_data).filter_h_c = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
+			(*data).taps.h_taps_c, (*data).ratios.horz_c));
 	}
 	if (enable_easf_v) {
-		dscl_prog_data->filter_v = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
-			data->taps.v_taps, data->recip_ratios.vert));
+		(*dscl_prog_data).filter_v = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
+			(*data).taps.v_taps, (*data).recip_ratios.vert));
 
-		dscl_prog_data->filter_v_c = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
-			data->taps.v_taps_c, data->recip_ratios.vert_c));
+		(*dscl_prog_data).filter_v_c = SPL_NAMESPACE(spl_dscl_get_easf_filter_coeffs_64p(
+			(*data).taps.v_taps_c, (*data).recip_ratios.vert_c));
 	} else {
-		dscl_prog_data->filter_v = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
-			data->taps.v_taps, data->ratios.vert));
+		(*dscl_prog_data).filter_v = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
+			(*data).taps.v_taps, (*data).ratios.vert));
 
-		dscl_prog_data->filter_v_c = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
-			data->taps.v_taps_c, data->ratios.vert_c));
+		(*dscl_prog_data).filter_v_c = SPL_NAMESPACE(spl_dscl_get_filter_coeffs_64p(
+			(*data).taps.v_taps_c, (*data).ratios.vert_c));
 	}
 }
 
-static uint32_t spl_easf_get_scale_ratio_to_reg_value(struct spl_fixed31_32 ratio,
-	struct scale_ratio_to_reg_value_lookup *lookup_table_base_ptr,
-	unsigned int num_entries)
+static uint32_t spl_easf_get_scale_ratio_to_reg_value(spl_fixed31_32 ratio,
+	scale_ratio_to_reg_value_lookup *lookup_table_base_ptr,
+	num_entries: core::ffi::c_uint)
 {
-	unsigned int count = 0;
+	core::ffi::c_uint count = 0;
 	uint32_t value = 0;
 	struct scale_ratio_to_reg_value_lookup *lookup_table_index_ptr;
 
 	lookup_table_index_ptr = (lookup_table_base_ptr + num_entries - 1);
-	value = lookup_table_index_ptr->reg_value;
+	value = (*lookup_table_index_ptr).reg_value;
 
 	while (count < num_entries) {
 
 		lookup_table_index_ptr = (lookup_table_base_ptr + count);
-		if (lookup_table_index_ptr->numer < 0)
+		if ((*lookup_table_index_ptr).numer < 0)
 			break;
 
 		if (ratio.value < SPL_NAMESPACE(spl_fixpt_from_fraction(
-			lookup_table_index_ptr->numer,
-			lookup_table_index_ptr->denom)).value) {
-			value = lookup_table_index_ptr->reg_value;
+			(*lookup_table_index_ptr).numer,
+			(*lookup_table_index_ptr).denom)).value) {
+			value = (*lookup_table_index_ptr).reg_value;
 			break;
 		}
 
@@ -2408,94 +2408,94 @@ static uint32_t spl_easf_get_scale_ratio_to_reg_value(struct spl_fixed31_32 rati
 	}
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_v_bf3_mode(struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_v_bf3_mode(spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries = sizeof(easf_v_bf3_mode_lookup) /
-		sizeof(struct scale_ratio_to_reg_value_lookup);
+	core::ffi::c_uint num_entries = sizeof(easf_v_bf3_mode_lookup) /
+		sizeof(scale_ratio_to_reg_value_lookup);
 	value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 		easf_v_bf3_mode_lookup, num_entries);
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_h_bf3_mode(struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_h_bf3_mode(spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries = sizeof(easf_h_bf3_mode_lookup) /
-		sizeof(struct scale_ratio_to_reg_value_lookup);
+	core::ffi::c_uint num_entries = sizeof(easf_h_bf3_mode_lookup) /
+		sizeof(scale_ratio_to_reg_value_lookup);
 	value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 		easf_h_bf3_mode_lookup, num_entries);
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_reducer_gain6(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_reducer_gain6(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 4) {
 		num_entries = sizeof(easf_reducer_gain6_4tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_reducer_gain6_4tap_lookup, num_entries);
 	} else if (taps == 6) {
 		num_entries = sizeof(easf_reducer_gain6_6tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_reducer_gain6_6tap_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_reducer_gain4(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_reducer_gain4(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 4) {
 		num_entries = sizeof(easf_reducer_gain4_4tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_reducer_gain4_4tap_lookup, num_entries);
 	} else if (taps == 6) {
 		num_entries = sizeof(easf_reducer_gain4_6tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_reducer_gain4_6tap_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_gainRing6(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_gainRing6(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 4) {
 		num_entries = sizeof(easf_gain_ring6_4tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_gain_ring6_4tap_lookup, num_entries);
 	} else if (taps == 6) {
 		num_entries = sizeof(easf_gain_ring6_6tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_gain_ring6_6tap_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_gainRing4(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_gainRing4(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 4) {
 		num_entries = sizeof(easf_gain_ring4_4tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_gain_ring4_4tap_lookup, num_entries);
 	} else if (taps == 6) {
 		num_entries = sizeof(easf_gain_ring4_6tap_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_gain_ring4_6tap_lookup, num_entries);
 	} else
@@ -2503,84 +2503,84 @@ uint32_t SPL_NAMESPACE(spl_get_gainRing4(int taps, struct spl_fixed31_32 ratio))
 	return value;
 }
 uint32_t SPL_NAMESPACE(spl_get_3tap_dntilt_uptilt_offset(
-	int taps, struct spl_fixed31_32 ratio))
+	int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 3) {
 		num_entries = sizeof(easf_3tap_dntilt_uptilt_offset_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_3tap_dntilt_uptilt_offset_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt_maxval(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt_maxval(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 3) {
 		num_entries = sizeof(easf_3tap_uptilt_maxval_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_3tap_uptilt_maxval_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_3tap_dntilt_slope(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_3tap_dntilt_slope(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 3) {
 		num_entries = sizeof(easf_3tap_dntilt_slope_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_3tap_dntilt_slope_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt1_slope(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt1_slope(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 3) {
 		num_entries = sizeof(easf_3tap_uptilt1_slope_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_3tap_uptilt1_slope_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt2_slope(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt2_slope(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 3) {
 		num_entries = sizeof(easf_3tap_uptilt2_slope_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_3tap_uptilt2_slope_lookup, num_entries);
 	} else
 		value = 0;
 	return value;
 }
-uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt2_offset(int taps, struct spl_fixed31_32 ratio))
+uint32_t SPL_NAMESPACE(spl_get_3tap_uptilt2_offset(int taps, spl_fixed31_32 ratio))
 {
 	uint32_t value;
-	unsigned int num_entries;
+	core::ffi::c_uint num_entries;
 
 	if (taps == 3) {
 		num_entries = sizeof(easf_3tap_uptilt2_offset_lookup) /
-			sizeof(struct scale_ratio_to_reg_value_lookup);
+			sizeof(scale_ratio_to_reg_value_lookup);
 		value = spl_easf_get_scale_ratio_to_reg_value(ratio,
 			easf_3tap_uptilt2_offset_lookup, num_entries);
 	} else

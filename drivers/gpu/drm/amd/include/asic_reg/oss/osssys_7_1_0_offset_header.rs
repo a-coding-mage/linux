@@ -1,4 +1,4 @@
-+/*
+/*
  * Copyright 2025 Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -18,11 +18,13 @@
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
+
 
 // addressBlock: osssys_osssysdec
 // base address: 0x4280
-
 pub const regIH_VMID_0_LUT: u32 = 0x0000;
 pub const regIH_VMID_0_LUT_BASE_IDX: u32 = 0;
 pub const regIH_VMID_1_LUT: u32 = 0x0001;
@@ -271,6 +273,5 @@ pub const regIH_MMHUB_CNTL: u32 = 0x0147;
 pub const regIH_MMHUB_CNTL_BASE_IDX: u32 = 0;
 pub const regIH_REGISTER_LAST_PART1: u32 = 0x019f;
 pub const regIH_REGISTER_LAST_PART1_BASE_IDX: u32 = 0;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

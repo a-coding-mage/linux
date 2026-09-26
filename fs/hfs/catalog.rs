@@ -156,7 +156,7 @@ unsafe fn hfs_set_next_unused_CNID(sb: *mut super_block, deleted_cnid: u32, foun
 }
 
 unsafe fn hfs_correct_next_unused_CNID(sb: *mut super_block, cnid: u32) -> i32 {
-    if (cnid + 1) as i64 < atomic64_read(&HFS_SB((*sb).s_fs_info).next_id) { return 0; }
+    if ((cnid + 1) as i64) < atomic64_read(&HFS_SB((*sb).s_fs_info).next_id) { return 0; }
     let cat_tree = HFS_SB((*sb).s_fs_info).cat_tree;
     let leaf_head = (*cat_tree).leaf_head;
     let leaf_tail = (*cat_tree).leaf_tail;

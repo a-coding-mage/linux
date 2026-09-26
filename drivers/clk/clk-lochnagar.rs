@@ -50,13 +50,13 @@ struct lochnagar_config {
 #[repr(C)] struct of_device_id { compatible: *const core::ffi::c_char, data: *const core::ffi::c_void }
 
 extern "C" {
-    fn regmap_update_bits(*mut regmap, u16, u16, u16) -> i32;
-    fn regmap_read(*mut regmap, u16, *mut u32) -> i32;
-    fn clk_hw_get_num_parents(*mut clk_hw) -> u8;
-    fn dev_get_regmap(*mut device, *const core::ffi::c_char) -> *mut regmap;
-    fn device_get_match_data(*mut device) -> *const core::ffi::c_void;
-    fn devm_clk_hw_register(*mut device, *mut clk_hw) -> i32;
-    fn devm_of_clk_add_hw_provider(*mut device, unsafe extern "C" fn(*mut of_phandle_args, *mut core::ffi::c_void) -> *mut clk_hw, *mut lochnagar_clk_priv) -> i32;
+    fn regmap_update_bits(_: *mut regmap, _: u16, _: u16, _: u16) -> i32;
+    fn regmap_read(_: *mut regmap, _: u16, _: *mut u32) -> i32;
+    fn clk_hw_get_num_parents(_: *mut clk_hw) -> u8;
+    fn dev_get_regmap(_: *mut device, _: *const core::ffi::c_char) -> *mut regmap;
+    fn device_get_match_data(_: *mut device) -> *const core::ffi::c_void;
+    fn devm_clk_hw_register(_: *mut device, _: *mut clk_hw) -> i32;
+    fn devm_of_clk_add_hw_provider(_: *mut device, _: unsafe extern "C" fn(*mut of_phandle_args, *mut core::ffi::c_void) -> *mut clk_hw, *mut lochnagar_clk_priv) -> i32;
 }
 
 static LOCHNAGAR1_CLK_PARENTS: [clk_parent_data; 11] = [

@@ -292,7 +292,7 @@ landlock_c_test_translation! {
 // C:  *
 // C:  * Copyright © 2022-2023 Huawei Tech. Co., Ltd.
 // C:  * Copyright © 2023 Microsoft Corporation
-// C:  * /
+// C:  */
 // C: 
 // C: #define _GNU_SOURCE
 // C: #include <arpa/inet.h>
@@ -320,12 +320,12 @@ landlock_c_test_translation! {
 // C: static const char loopback_ipv4[] = "127.0.0.1";
 // C: static const char loopback_ipv6[] = "::1";
 // C: 
-// C: /* Number pending connections queue to be hold. * /
+// C: /* Number pending connections queue to be hold. */
 // C: const short backlog = 10;
 // C: 
 // C: enum sandbox_type {
 // C: 	NO_SANDBOX,
-// C: 	/* This may be used to test rules that allow *and* deny accesses. * /
+// C: 	/* This may be used to test rules that allow *and* deny accesses. */
 // C: 	TCP_SANDBOX,
 // C: 	UDP_SANDBOX,
 // C: };
@@ -339,10 +339,10 @@ landlock_c_test_translation! {
 // C: 	/*
 // C: 	 * Copies all protocol properties in case of the variant only contains
 // C: 	 * a subset of them.
-// C: 	 * /
+// C: 	 */
 // C: 	srv->protocol = prot;
 // C: 
-// C: 	/* Checks for port overflow. * /
+// C: 	/* Checks for port overflow. */
 // C: 	if (index > 2)
 // C: 		return 1;
 // C: 	srv->port = sock_port_start << (2 * index);
@@ -405,7 +405,7 @@ landlock_c_test_translation! {
 // C: 
 // C: static int socket_variant(const struct service_fixture *const srv)
 // C: {
-// C: 	/* Arbitrary value just to not block other tests indefinitely. * /
+// C: 	/* Arbitrary value just to not block other tests indefinitely. */
 // C: 	const struct timeval timeout = {
 // C: 		.tv_sec = 0,
 // C: 		.tv_usec = 100000,
@@ -491,7 +491,7 @@ landlock_c_test_translation! {
 // C: 	struct sockaddr_in6 ipv6_addr;
 // C: 	socklen_t ipv4_addr_len, ipv6_addr_len;
 // C: 
-// C: 	/* Gets binded port. * /
+// C: 	/* Gets binded port. */
 // C: 	switch (prot->domain) {
 // C: 	case AF_UNSPEC:
 // C: 	case AF_INET:
@@ -592,7 +592,7 @@ landlock_c_test_translation! {
 // C: 	/*
 // C: 	 * We never want our processes to be killed by SIGPIPE: we check return
 // C: 	 * codes and errno, so that we have actual error messages.
-// C: 	 * /
+// C: 	 */
 // C: 	flags |= MSG_NOSIGNAL;
 // C: 
 // C: 	if (srv != NULL) {
@@ -620,7 +620,7 @@ landlock_c_test_translation! {
 // C: 	if (ret < 0)
 // C: 		return -errno;
 // C: 
-// C: 	/* errno is not set in cases of partial writes. * /
+// C: 	/* errno is not set in cases of partial writes. */
 // C: 	if (ret != len)
 // C: 		return -EINTR;
 // C: 
@@ -657,7 +657,7 @@ landlock_c_test_translation! {
 // C: 	 * Prepare the test by inspecting the socket type and whether it has a
 // C: 	 * local/remote address set (all of which determine the expected
 // C: 	 * outcomes).
-// C: 	 * /
+// C: 	 */
 // C: 	opt_len = sizeof(sock_type);
 // C: 	ASSERT_EQ(0, getsockopt(client_fd, SOL_SOCKET, SO_TYPE, &sock_type,
 // C: 				&opt_len));
@@ -670,7 +670,7 @@ landlock_c_test_translation! {
 // C: 	needs_autobind = (addr_family == AF_INET || addr_family == AF_INET6) &&
 // C: 			 get_binded_port(client_fd, prot) == 0;
 // C: 
-// C: 	/* First, check error code with truncated explicit address. * /
+// C: 	/* First, check error code with truncated explicit address. */
 // C: 	if (srv != NULL) {
 // C: 		ret = sendto_variant_addrlen(
 // C: 			client_fd, srv, get_addrlen(srv, true) - 1, "A", 1, 0);
@@ -692,7 +692,7 @@ landlock_c_test_translation! {
 // C: 		}
 // C: 	}
 // C: 
-// C: 	/* With or without explicit destination address (srv can be NULL). * /
+// C: 	/* With or without explicit destination address (srv can be NULL). */
 // C: 	ret = sendto_variant(client_fd, srv, "B", 1, 0);
 // C: 	if (sock_type == SOCK_STREAM && !has_remote_port) {
 // C: 		EXPECT_EQ(-EPIPE, ret)
@@ -771,21 +771,21 @@ landlock_c_test_translation! {
 // C: {
 // C: }
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv4_tcp1) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
 // C: 		.type = SOCK_STREAM,
-// C: 		/* IPPROTO_IP == 0 * /
+// C: 		/* IPPROTO_IP == 0 */
 // C: 		.protocol = IPPROTO_IP,
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv4_tcp2) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -794,9 +794,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv4_mptcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -805,21 +805,21 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv6_tcp1) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
 // C: 		.type = SOCK_STREAM,
-// C: 		/* IPPROTO_IP == 0 * /
+// C: 		/* IPPROTO_IP == 0 */
 // C: 		.protocol = IPPROTO_IP,
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv6_tcp2) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -828,9 +828,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv6_mptcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -839,9 +839,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv4_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -849,9 +849,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_ipv6_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -859,9 +859,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_unix_stream) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_UNIX,
@@ -869,9 +869,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, no_sandbox_with_unix_datagram) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_UNIX,
@@ -879,21 +879,21 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv4_tcp1) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
 // C: 		.type = SOCK_STREAM,
-// C: 		/* IPPROTO_IP == 0 * /
+// C: 		/* IPPROTO_IP == 0 */
 // C: 		.protocol = IPPROTO_IP,
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv4_tcp2) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -902,9 +902,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv4_mptcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -913,21 +913,21 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv6_tcp1) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
 // C: 		.type = SOCK_STREAM,
-// C: 		/* IPPROTO_IP == 0 * /
+// C: 		/* IPPROTO_IP == 0 */
 // C: 		.protocol = IPPROTO_IP,
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv6_tcp2) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -936,9 +936,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv6_mptcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -947,9 +947,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv4_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -957,9 +957,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_ipv6_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -967,9 +967,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_unix_stream) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_UNIX,
@@ -977,9 +977,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, tcp_sandbox_with_unix_datagram) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_UNIX,
@@ -987,9 +987,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_ipv4_udp1) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -998,21 +998,21 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_ipv4_udp2) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
 // C: 		.type = SOCK_DGRAM,
-// C: 		/* IPPROTO_IP == 0 * /
+// C: 		/* IPPROTO_IP == 0 */
 // C: 		.protocol = IPPROTO_IP,
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_ipv6_udp1) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -1021,21 +1021,21 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_ipv6_udp2) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
 // C: 		.type = SOCK_DGRAM,
-// C: 		/* IPPROTO_IP == 0 * /
+// C: 		/* IPPROTO_IP == 0 */
 // C: 		.protocol = IPPROTO_IP,
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_ipv4_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -1043,9 +1043,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_ipv6_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -1053,9 +1053,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_unix_stream) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_UNIX,
@@ -1063,9 +1063,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(protocol, udp_sandbox_with_unix_datagram) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_UNIX,
@@ -1081,21 +1081,21 @@ landlock_c_test_translation! {
 // C: 	int inval_fd, bind_fd, client_fd, status, ret;
 // C: 	pid_t child;
 // C: 
-// C: 	/* Starts invalid addrlen tests with bind. * /
+// C: 	/* Starts invalid addrlen tests with bind. */
 // C: 	inval_fd = socket_variant(srv);
 // C: 	ASSERT_LE(0, inval_fd)
 // C: 	{
 // C: 		TH_LOG("Failed to create socket: %s", strerror(errno));
 // C: 	}
 // C: 
-// C: 	/* Tries to bind with zero as addrlen. * /
+// C: 	/* Tries to bind with zero as addrlen. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant_addrlen(inval_fd, srv, 0));
 // C: 
-// C: 	/* Tries to bind with too small addrlen. * /
+// C: 	/* Tries to bind with too small addrlen. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant_addrlen(inval_fd, srv,
 // C: 						get_addrlen(srv, true) - 1));
 // C: 
-// C: 	/* Tries to bind with minimal addrlen. * /
+// C: 	/* Tries to bind with minimal addrlen. */
 // C: 	ret = bind_variant_addrlen(inval_fd, srv, get_addrlen(srv, true));
 // C: 	if (deny_bind) {
 // C: 		EXPECT_EQ(-EACCES, ret);
@@ -1107,25 +1107,25 @@ landlock_c_test_translation! {
 // C: 	}
 // C: 	EXPECT_EQ(0, close(inval_fd));
 // C: 
-// C: 	/* Starts invalid addrlen tests with connect. * /
+// C: 	/* Starts invalid addrlen tests with connect. */
 // C: 	inval_fd = socket_variant(srv);
 // C: 	ASSERT_LE(0, inval_fd);
 // C: 
-// C: 	/* Tries to connect with zero as addrlen. * /
+// C: 	/* Tries to connect with zero as addrlen. */
 // C: 	EXPECT_EQ(-EINVAL, connect_variant_addrlen(inval_fd, srv, 0));
 // C: 
-// C: 	/* Tries to connect with too small addrlen. * /
+// C: 	/* Tries to connect with too small addrlen. */
 // C: 	EXPECT_EQ(-EINVAL, connect_variant_addrlen(inval_fd, srv,
 // C: 						   get_addrlen(srv, true) - 1));
 // C: 
-// C: 	/* Tries to connect with minimal addrlen. * /
+// C: 	/* Tries to connect with minimal addrlen. */
 // C: 	ret = connect_variant_addrlen(inval_fd, srv, get_addrlen(srv, true));
 // C: 	if (srv->protocol.domain == AF_UNIX) {
 // C: 		EXPECT_EQ(-EINVAL, ret);
 // C: 	} else if (deny_connect) {
 // C: 		EXPECT_EQ(-EACCES, ret);
 // C: 	} else if (srv->protocol.type == SOCK_STREAM) {
-// C: 		/* No listening server, whatever the value of deny_bind. * /
+// C: 		/* No listening server, whatever the value of deny_bind. */
 // C: 		EXPECT_EQ(-ECONNREFUSED, ret);
 // C: 	} else {
 // C: 		EXPECT_EQ(0, ret)
@@ -1136,7 +1136,7 @@ landlock_c_test_translation! {
 // C: 	}
 // C: 	EXPECT_EQ(0, close(inval_fd));
 // C: 
-// C: 	/* Starts connection tests. * /
+// C: 	/* Starts connection tests. */
 // C: 	bind_fd = socket_variant(srv);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 
@@ -1146,7 +1146,7 @@ landlock_c_test_translation! {
 // C: 	} else {
 // C: 		EXPECT_EQ(0, ret);
 // C: 
-// C: 		/* Creates a listening socket. * /
+// C: 		/* Creates a listening socket. */
 // C: 		if (srv->protocol.type == SOCK_STREAM)
 // C: 			EXPECT_EQ(0, listen(bind_fd, backlog));
 // C: 	}
@@ -1156,17 +1156,17 @@ landlock_c_test_translation! {
 // C: 	if (child == 0) {
 // C: 		int connect_fd, ret;
 // C: 
-// C: 		/* Closes listening socket for the child. * /
+// C: 		/* Closes listening socket for the child. */
 // C: 		EXPECT_EQ(0, close(bind_fd));
 // C: 
-// C: 		/* Starts connection tests. * /
+// C: 		/* Starts connection tests. */
 // C: 		connect_fd = socket_variant(srv);
 // C: 		ASSERT_LE(0, connect_fd);
 // C: 		ret = connect_variant(connect_fd, srv);
 // C: 		if (deny_connect) {
 // C: 			EXPECT_EQ(-EACCES, ret);
 // C: 		} else if (deny_bind && srv->protocol.type == SOCK_STREAM) {
-// C: 			/* No listening server. * /
+// C: 			/* No listening server. */
 // C: 			EXPECT_EQ(-ECONNREFUSED, ret);
 // C: 		} else {
 // C: 			EXPECT_EQ(0, ret);
@@ -1178,7 +1178,7 @@ landlock_c_test_translation! {
 // C: 		return;
 // C: 	}
 // C: 
-// C: 	/* Accepts connection from the child. * /
+// C: 	/* Accepts connection from the child. */
 // C: 	client_fd = bind_fd;
 // C: 	if (!deny_bind && !deny_connect) {
 // C: 		if (srv->protocol.type == SOCK_STREAM) {
@@ -1194,11 +1194,11 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(1, WIFEXITED(status));
 // C: 	EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 // C: 
-// C: 	/* Closes connection, if any. * /
+// C: 	/* Closes connection, if any. */
 // C: 	if (client_fd != bind_fd)
 // C: 		EXPECT_LE(0, close(client_fd));
 // C: 
-// C: 	/* Closes listening socket. * /
+// C: 	/* Closes listening socket. */
 // C: 	EXPECT_EQ(0, close(bind_fd));
 // C: }
 // C: 
@@ -1231,12 +1231,12 @@ landlock_c_test_translation! {
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Allows connect and bind for the first port.  * /
+// C: 		/* Allows connect and bind for the first port.  */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &bind_connect_p0, 0));
 // C: 
-// C: 		/* Allows connect and denies bind for the second port. * /
+// C: 		/* Allows connect and denies bind for the second port. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &connect_p1, 0));
@@ -1244,7 +1244,7 @@ landlock_c_test_translation! {
 // C: 		/*
 // C: 		 * For UDP sockets, allows binding to ephemeral ports (required
 // C: 		 * to connect or send a first datagram)
-// C: 		 * /
+// C: 		 */
 // C: 		if (variant->sandbox == UDP_SANDBOX) {
 // C: 			const struct landlock_net_port_attr bind_ephemeral = {
 // C: 				.allowed_access = bind_access,
@@ -1259,15 +1259,15 @@ landlock_c_test_translation! {
 // C: 		EXPECT_EQ(0, close(ruleset_fd));
 // C: 	}
 // C: 
-// C: 	/* Binds a socket to the first port. * /
+// C: 	/* Binds a socket to the first port. */
 // C: 	test_bind_and_connect(_metadata, &self->srv0, false, false);
 // C: 
-// C: 	/* Binds a socket to the second port. * /
+// C: 	/* Binds a socket to the second port. */
 // C: 	test_bind_and_connect(_metadata, &self->srv1,
 // C: 			      is_restricted(&variant->prot, variant->sandbox),
 // C: 			      false);
 // C: 
-// C: 	/* Binds a socket to the third port. * /
+// C: 	/* Binds a socket to the third port. */
 // C: 	test_bind_and_connect(_metadata, &self->srv2,
 // C: 			      is_restricted(&variant->prot, variant->sandbox),
 // C: 			      is_restricted(&variant->prot, variant->sandbox));
@@ -1302,12 +1302,12 @@ landlock_c_test_translation! {
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Allows connect and bind for the first port. * /
+// C: 		/* Allows connect and bind for the first port. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &bind_connect_p0, 0));
 // C: 
-// C: 		/* Allows bind and denies connect for the second port. * /
+// C: 		/* Allows bind and denies connect for the second port. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &bind_p1, 0));
@@ -1315,7 +1315,7 @@ landlock_c_test_translation! {
 // C: 		/*
 // C: 		 * For UDP sockets, allows binding to ephemeral ports (required
 // C: 		 * to connect or send a first datagram)
-// C: 		 * /
+// C: 		 */
 // C: 		if (variant->sandbox == UDP_SANDBOX) {
 // C: 			const struct landlock_net_port_attr bind_ephemeral = {
 // C: 				.allowed_access = bind_access,
@@ -1360,7 +1360,7 @@ landlock_c_test_translation! {
 // C: 			&ruleset_attr, sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Allows bind. * /
+// C: 		/* Allows bind. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &rule_bind, 0));
@@ -1371,12 +1371,12 @@ landlock_c_test_translation! {
 // C: 	bind_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 
-// C: 	/* Tries to bind with too small addrlen. * /
+// C: 	/* Tries to bind with too small addrlen. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant_addrlen(
 // C: 				   bind_fd, &self->unspec_any0,
 // C: 				   get_addrlen(&self->unspec_any0, true) - 1));
 // C: 
-// C: 	/* Allowed bind on AF_UNSPEC/INADDR_ANY. * /
+// C: 	/* Allowed bind on AF_UNSPEC/INADDR_ANY. */
 // C: 	ret = bind_variant(bind_fd, &self->unspec_any0);
 // C: 	if (variant->prot.domain == AF_INET) {
 // C: 		EXPECT_EQ(0, ret)
@@ -1397,7 +1397,7 @@ landlock_c_test_translation! {
 // C: 			&ruleset_attr, sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Denies bind. * /
+// C: 		/* Denies bind. */
 // C: 		enforce_ruleset(_metadata, ruleset_fd);
 // C: 		EXPECT_EQ(0, close(ruleset_fd));
 // C: 	}
@@ -1405,7 +1405,7 @@ landlock_c_test_translation! {
 // C: 	bind_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 
-// C: 	/* Denied bind on AF_UNSPEC/INADDR_ANY. * /
+// C: 	/* Denied bind on AF_UNSPEC/INADDR_ANY. */
 // C: 	ret = bind_variant(bind_fd, &self->unspec_any0);
 // C: 	if (variant->prot.domain == AF_INET) {
 // C: 		if (is_restricted(&variant->prot, variant->sandbox)) {
@@ -1420,7 +1420,7 @@ landlock_c_test_translation! {
 // C: 	}
 // C: 	EXPECT_EQ(0, close(bind_fd));
 // C: 
-// C: 	/* Checks bind with AF_UNSPEC and the loopback address. * /
+// C: 	/* Checks bind with AF_UNSPEC and the loopback address. */
 // C: 	bind_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 	ret = bind_variant(bind_fd, &self->unspec_srv0);
@@ -1458,7 +1458,7 @@ landlock_c_test_translation! {
 // C: 	int bind_fd, client_fd, status;
 // C: 	pid_t child;
 // C: 
-// C: 	/* Specific connection tests. * /
+// C: 	/* Specific connection tests. */
 // C: 	bind_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 	EXPECT_EQ(0, bind_variant(bind_fd, &self->srv0));
@@ -1470,14 +1470,14 @@ landlock_c_test_translation! {
 // C: 	if (child == 0) {
 // C: 		int connect_fd, ret;
 // C: 
-// C: 		/* Closes listening socket for the child. * /
+// C: 		/* Closes listening socket for the child. */
 // C: 		EXPECT_EQ(0, close(bind_fd));
 // C: 
 // C: 		connect_fd = socket_variant(&self->srv0);
 // C: 		ASSERT_LE(0, connect_fd);
 // C: 		EXPECT_EQ(0, connect_variant(connect_fd, &self->srv0));
 // C: 
-// C: 		/* Tries to connect again, or set peer. * /
+// C: 		/* Tries to connect again, or set peer. */
 // C: 		ret = connect_variant(connect_fd, &self->srv0);
 // C: 		if (self->srv0.protocol.type == SOCK_STREAM) {
 // C: 			EXPECT_EQ(-EISCONN, ret);
@@ -1491,7 +1491,7 @@ landlock_c_test_translation! {
 // C: 				&ruleset_conn, sizeof(ruleset_conn), 0);
 // C: 			ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 			/* Allows connect. * /
+// C: 			/* Allows connect. */
 // C: 			ASSERT_EQ(0, landlock_add_rule(ruleset_fd,
 // C: 						       LANDLOCK_RULE_NET_PORT,
 // C: 						       &rule_connect, 0));
@@ -1499,7 +1499,7 @@ landlock_c_test_translation! {
 // C: 			EXPECT_EQ(0, close(ruleset_fd));
 // C: 		}
 // C: 
-// C: 		/* Disconnects already connected socket, or set peer. * /
+// C: 		/* Disconnects already connected socket, or set peer. */
 // C: 		ret = connect_variant(connect_fd, &self->unspec_any0);
 // C: 		if (self->srv0.protocol.domain == AF_UNIX &&
 // C: 		    self->srv0.protocol.type == SOCK_STREAM) {
@@ -1508,7 +1508,7 @@ landlock_c_test_translation! {
 // C: 			EXPECT_EQ(0, ret);
 // C: 		}
 // C: 
-// C: 		/* Tries to reconnect, or set peer. * /
+// C: 		/* Tries to reconnect, or set peer. */
 // C: 		ret = connect_variant(connect_fd, &self->srv0);
 // C: 		if (self->srv0.protocol.domain == AF_UNIX &&
 // C: 		    self->srv0.protocol.type == SOCK_STREAM) {
@@ -1524,12 +1524,12 @@ landlock_c_test_translation! {
 // C: 				0);
 // C: 			ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 			/* Denies connect and bind. * /
+// C: 			/* Denies connect and bind. */
 // C: 			enforce_ruleset(_metadata, ruleset_fd);
 // C: 			EXPECT_EQ(0, close(ruleset_fd));
 // C: 		}
 // C: 
-// C: 		/* Try to re-disconnect with a truncated address struct. * /
+// C: 		/* Try to re-disconnect with a truncated address struct. */
 // C: 		EXPECT_EQ(-EINVAL,
 // C: 			  connect_variant_addrlen(
 // C: 				  connect_fd, &self->unspec_any0,
@@ -1538,7 +1538,7 @@ landlock_c_test_translation! {
 // C: 		/*
 // C: 		 * Re-disconnect, with a minimal sockaddr struct (just a
 // C: 		 * bare af_family=AF_UNSPEC field).
-// C: 		 * /
+// C: 		 */
 // C: 		ret = connect_variant_addrlen(connect_fd, &self->unspec_any0,
 // C: 					      get_addrlen(&self->unspec_any0,
 // C: 							  true));
@@ -1546,7 +1546,7 @@ landlock_c_test_translation! {
 // C: 		    self->srv0.protocol.type == SOCK_STREAM) {
 // C: 			EXPECT_EQ(-EINVAL, ret);
 // C: 		} else {
-// C: 			/* Always allowed to disconnect. * /
+// C: 			/* Always allowed to disconnect. */
 // C: 			EXPECT_EQ(0, ret);
 // C: 		}
 // C: 
@@ -1565,11 +1565,11 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(1, WIFEXITED(status));
 // C: 	EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 // C: 
-// C: 	/* Closes connection, if any. * /
+// C: 	/* Closes connection, if any. */
 // C: 	if (client_fd != bind_fd)
 // C: 		EXPECT_LE(0, close(client_fd));
 // C: 
-// C: 	/* Closes listening socket. * /
+// C: 	/* Closes listening socket. */
 // C: 	EXPECT_EQ(0, close(bind_fd));
 // C: }
 // C: 
@@ -1599,7 +1599,7 @@ landlock_c_test_translation! {
 // C: 	if (child == 0) {
 // C: 		int connect_fd, ret;
 // C: 
-// C: 		/* Closes listening socket for the child. * /
+// C: 		/* Closes listening socket for the child. */
 // C: 		EXPECT_EQ(0, close(bind_fd));
 // C: 
 // C: 		connect_fd = socket_variant(&self->srv0);
@@ -1614,7 +1614,7 @@ landlock_c_test_translation! {
 // C: 			EXPECT_EQ(0, close(ruleset_fd));
 // C: 		}
 // C: 
-// C: 		/* Fast Open with no address. * /
+// C: 		/* Fast Open with no address. */
 // C: 		ret = sendto_variant(connect_fd, NULL, NULL, 0, MSG_FASTOPEN);
 // C: 		if (self->srv0.protocol.domain == AF_UNIX) {
 // C: 			EXPECT_EQ(-ENOTCONN, ret);
@@ -1624,7 +1624,7 @@ landlock_c_test_translation! {
 // C: 			EXPECT_EQ(-EINVAL, ret);
 // C: 		}
 // C: 
-// C: 		/* Fast Open to a denied address. * /
+// C: 		/* Fast Open to a denied address. */
 // C: 		ret = sendto_variant(connect_fd, &self->srv0, "A", 1,
 // C: 				     MSG_FASTOPEN);
 // C: 		if (restricted) {
@@ -1679,7 +1679,7 @@ landlock_c_test_translation! {
 // C: 	 * Simple test for stream sockets: just deny all connect()/
 // C: 	 * send(explicit addr)/bind(), and make sure we don't interfere with any
 // C: 	 * operation.
-// C: 	 * /
+// C: 	 */
 // C: 	if (variant->prot.type != SOCK_STREAM)
 // C: 		return;
 // C: 
@@ -1701,7 +1701,7 @@ landlock_c_test_translation! {
 // C: 	ASSERT_EQ(0, bind_variant(srv0_fd, &self->srv0));
 // C: 	ASSERT_EQ(0, listen(srv0_fd, backlog));
 // C: 
-// C: 	/* Send on a non-connected socket. * /
+// C: 	/* Send on a non-connected socket. */
 // C: 	res = sendto_variant(client_fd, NULL, "A", 1, 0);
 // C: 	if (variant->prot.domain == AF_UNIX) {
 // C: 		EXPECT_EQ(-ENOTCONN, res);
@@ -1709,7 +1709,7 @@ landlock_c_test_translation! {
 // C: 		EXPECT_EQ(-EPIPE, res);
 // C: 	}
 // C: 
-// C: 	/* Send to a truncated (invalid) address on a non-connected socket. * /
+// C: 	/* Send to a truncated (invalid) address on a non-connected socket. */
 // C: 	res = sendto_variant_addrlen(client_fd, &self->srv0,
 // C: 				     get_addrlen(&self->srv0, true) - 1, "B", 1,
 // C: 				     0);
@@ -1719,14 +1719,14 @@ landlock_c_test_translation! {
 // C: 		EXPECT_EQ(-EPIPE, res);
 // C: 	}
 // C: 
-// C: 	/* Connect. * /
+// C: 	/* Connect. */
 // C: 	ASSERT_EQ(0, connect_variant(client_fd, &self->srv0));
 // C: 	tmp_fd = accept(srv0_fd, NULL, 0);
 // C: 	ASSERT_LE(0, tmp_fd);
 // C: 	EXPECT_EQ(0, close(srv0_fd));
 // C: 	srv0_fd = tmp_fd;
 // C: 
-// C: 	/* Send without an explicit address. * /
+// C: 	/* Send without an explicit address. */
 // C: 	EXPECT_EQ(0, sendto_variant(client_fd, NULL, "C", 1, 0));
 // C: 	EXPECT_EQ(1, recv(srv0_fd, read_buf, 1, 0))
 // C: 	{
@@ -1734,7 +1734,7 @@ landlock_c_test_translation! {
 // C: 	}
 // C: 	EXPECT_EQ(read_buf[0], 'C');
 // C: 
-// C: 	/* Send to a truncated (invalid) address. * /
+// C: 	/* Send to a truncated (invalid) address. */
 // C: 	res = sendto_variant_addrlen(client_fd, &self->srv0,
 // C: 				     get_addrlen(&self->srv0, true) - 1, "D", 1,
 // C: 				     0);
@@ -1749,7 +1749,7 @@ landlock_c_test_translation! {
 // C: 		EXPECT_EQ(read_buf[0], 'D');
 // C: 	}
 // C: 
-// C: 	/* Send to a valid but different address. * /
+// C: 	/* Send to a valid but different address. */
 // C: 	res = sendto_variant(client_fd, &self->srv1, "E", 1, 0);
 // C: 	if (variant->prot.domain == AF_UNIX) {
 // C: 		EXPECT_EQ(-EISCONN, res);
@@ -1773,25 +1773,25 @@ landlock_c_test_translation! {
 // C: 	if (variant->prot.type != SOCK_DGRAM)
 // C: 		return;
 // C: 
-// C: 	/* Prepare server on port #0 to be allowed. * /
+// C: 	/* Prepare server on port #0 to be allowed. */
 // C: 	ASSERT_LE(0, srv0_fd = socket_variant(&self->srv0));
 // C: 	ASSERT_EQ(0, bind_variant(srv0_fd, &self->srv0));
 // C: 
-// C: 	/* And another server on port #1 to be denied. * /
+// C: 	/* And another server on port #1 to be denied. */
 // C: 	ASSERT_LE(0, srv1_fd = socket_variant(&self->srv1));
 // C: 	ASSERT_EQ(0, bind_variant(srv1_fd, &self->srv1));
 // C: 
 // C: 	/*
 // C: 	 * Check that sockets connected before restrictions are not impacted in
 // C: 	 * any way.
-// C: 	 * /
+// C: 	 */
 // C: 	child = fork();
 // C: 	ASSERT_LE(0, child);
 // C: 	if (child == 0) {
 // C: 		ASSERT_LE(0, client_fd = socket_variant(&self->srv0));
 // C: 		ASSERT_EQ(0, connect_variant(client_fd, &self->srv0));
 // C: 		if (variant->sandbox == UDP_SANDBOX) {
-// C: 			/* Deny all connect()/send(explicit addr)/bind(). * /
+// C: 			/* Deny all connect()/send(explicit addr)/bind(). */
 // C: 			const struct landlock_ruleset_attr ruleset_attr = {
 // C: 				.handled_access_net =
 // C: 					LANDLOCK_ACCESS_NET_BIND_UDP |
@@ -1823,7 +1823,7 @@ landlock_c_test_translation! {
 // C: 	 * Restrict connect/send, but not bind(). Then try sending with no
 // C: 	 * destination (and no remote peer set), an allowed destination, then a
 // C: 	 * denied destination.
-// C: 	 * /
+// C: 	 */
 // C: 	child = fork();
 // C: 	ASSERT_LE(0, child);
 // C: 	if (child == 0) {
@@ -1865,11 +1865,11 @@ landlock_c_test_translation! {
 // C: 	/*
 // C: 	 * Rest of this test is just for autobind enforcement, which only exists
 // C: 	 * in IP sockets.
-// C: 	 * /
+// C: 	 */
 // C: 	if (variant->prot.domain != AF_INET && variant->prot.domain != AF_INET6)
 // C: 		return;
 // C: 
-// C: 	/* Restrict bind() to explicit calls with an arbitrary (non-0) port. * /
+// C: 	/* Restrict bind() to explicit calls with an arbitrary (non-0) port. */
 // C: 	child = fork();
 // C: 	ASSERT_LE(0, child);
 // C: 	if (child == 0) {
@@ -1898,12 +1898,12 @@ landlock_c_test_translation! {
 // C: 		}
 // C: 		ASSERT_LE(0, client_fd = socket_variant(&self->srv0));
 // C: 
-// C: 		/* Check that implicit bind(0) in sendmsg() is denied. * /
+// C: 		/* Check that implicit bind(0) in sendmsg() is denied. */
 // C: 		EXPECT_EQ(0, test_sendmsg(_metadata, &variant->prot, client_fd,
 // C: 					  srv0_fd, &self->srv0, restricted,
 // C: 					  false));
 // C: 
-// C: 		/* Same thing for autobind in connect(). * /
+// C: 		/* Same thing for autobind in connect(). */
 // C: 		res = connect_variant(client_fd, &self->srv0);
 // C: 		if (restricted) {
 // C: 			EXPECT_EQ(-EACCES, res);
@@ -1912,7 +1912,7 @@ landlock_c_test_translation! {
 // C: 		}
 // C: 		EXPECT_EQ(0, close(client_fd));
 // C: 
-// C: 		/* Make sendmsg() work by explicitly binding to the only allowed port. * /
+// C: 		/* Make sendmsg() work by explicitly binding to the only allowed port. */
 // C: 		ASSERT_LE(0, client_fd = socket_variant(&self->srv0));
 // C: 		EXPECT_EQ(0, bind_variant(client_fd, &allowed_src));
 // C: 		EXPECT_EQ(0, test_sendmsg(_metadata, &variant->prot, client_fd,
@@ -1920,7 +1920,7 @@ landlock_c_test_translation! {
 // C: 					  false));
 // C: 		EXPECT_EQ(0, close(client_fd));
 // C: 
-// C: 		/* Make connect() work by explicitly binding to the only allowed port. * /
+// C: 		/* Make connect() work by explicitly binding to the only allowed port. */
 // C: 		ASSERT_LE(0, client_fd = socket_variant(&self->srv0));
 // C: 		EXPECT_EQ(0, bind_variant(client_fd, &allowed_src));
 // C: 		EXPECT_EQ(0, connect_variant(client_fd, &self->srv0));
@@ -1936,7 +1936,7 @@ landlock_c_test_translation! {
 // C: 	/*
 // C: 	 * Check that %LANDLOCK_ACCESS_NET_BIND_UDP on port 0 allows implicit
 // C: 	 * autobinds.
-// C: 	 * /
+// C: 	 */
 // C: 	child = fork();
 // C: 	ASSERT_LE(0, child);
 // C: 	if (child == 0) {
@@ -1979,18 +1979,18 @@ landlock_c_test_translation! {
 // C: 	 * We already test for the absence of influence on sendmsg for other
 // C: 	 * socket types and other address families, there's no point in adapting
 // C: 	 * this test for stream sockets too.
-// C: 	 * /
+// C: 	 */
 // C: 	if (variant->prot.type != SOCK_DGRAM)
 // C: 		return;
 // C: 
-// C: 	/* Prepare client of the right family. * /
+// C: 	/* Prepare client of the right family. */
 // C: 	ASSERT_LE(0, client_fd = socket_variant(&self->srv0));
 // C: 
-// C: 	/* Prepare server on port #0 to be allowed. * /
+// C: 	/* Prepare server on port #0 to be allowed. */
 // C: 	ASSERT_LE(0, srv0_fd = socket_variant(&self->srv0));
 // C: 	ASSERT_EQ(0, bind_variant(srv0_fd, &self->srv0));
 // C: 
-// C: 	/* And another server on port #1 to be denied. * /
+// C: 	/* And another server on port #1 to be denied. */
 // C: 	ASSERT_LE(0, srv1_fd = socket_variant(&self->srv1));
 // C: 	ASSERT_EQ(0, bind_variant(srv1_fd, &self->srv1));
 // C: 
@@ -2013,7 +2013,7 @@ landlock_c_test_translation! {
 // C: 		EXPECT_EQ(0, close(ruleset_fd));
 // C: 	}
 // C: 
-// C: 	/* Explicit AF_UNSPEC address but truncated. * /
+// C: 	/* Explicit AF_UNSPEC address but truncated. */
 // C: 	EXPECT_EQ(-EINVAL, sendto_variant_addrlen(
 // C: 				   client_fd, &self->unspec_srv0,
 // C: 				   get_addrlen(&self->unspec_srv0, true) - 1,
@@ -2023,14 +2023,14 @@ landlock_c_test_translation! {
 // C: 	 * Explicit AF_UNSPEC address, should be treated as AF_INET by IPv4
 // C: 	 * sockets (and thus map to srv0, allowed), but be denied by IPv6
 // C: 	 * sockets.
-// C: 	 * /
+// C: 	 */
 // C: 	res = sendto_variant(client_fd, &self->unspec_srv0, "B", 1, 0);
 // C: 	if (variant->prot.domain == AF_INET6) {
 // C: 		if (restricted) {
-// C: 			/* Always denied on IPv6 socket. * /
+// C: 			/* Always denied on IPv6 socket. */
 // C: 			EXPECT_EQ(-EACCES, res);
 // C: 		} else {
-// C: 			/* IPv6 sockets treat AF_UNSPEC as a NULL address. * /
+// C: 			/* IPv6 sockets treat AF_UNSPEC as a NULL address. */
 // C: 			EXPECT_EQ(-EDESTADDRREQ, res);
 // C: 		}
 // C: 	} else if (variant->prot.domain == AF_INET) {
@@ -2041,7 +2041,7 @@ landlock_c_test_translation! {
 // C: 		}
 // C: 		EXPECT_EQ(read_buf[0], 'B');
 // C: 	} else {
-// C: 		/* Unix sockets don't accept AF_UNSPEC. * /
+// C: 		/* Unix sockets don't accept AF_UNSPEC. */
 // C: 		EXPECT_EQ(-EINVAL, res);
 // C: 	}
 // C: 
@@ -2049,19 +2049,19 @@ landlock_c_test_translation! {
 // C: 	 * Explicit AF_UNSPEC address, should be treated as AF_INET on IPv4
 // C: 	 * sockets (and thus map to srv1, denied), and be denied on IPv6 sockets
 // C: 	 * as always.
-// C: 	 * /
+// C: 	 */
 // C: 	res = sendto_variant(client_fd, &self->unspec_srv1, "C", 1, 0);
 // C: 	if (variant->prot.domain == AF_INET6) {
 // C: 		if (restricted) {
-// C: 			/* Always denied on IPv6 socket. * /
+// C: 			/* Always denied on IPv6 socket. */
 // C: 			EXPECT_EQ(-EACCES, res);
 // C: 		} else {
-// C: 			/* IPv6 sockets treat AF_UNSPEC as a NULL address. * /
+// C: 			/* IPv6 sockets treat AF_UNSPEC as a NULL address. */
 // C: 			EXPECT_EQ(-EDESTADDRREQ, res);
 // C: 		}
 // C: 	} else if (variant->prot.domain == AF_INET) {
 // C: 		if (restricted) {
-// C: 			/* Sending to srv1 is not allowed, only srv0. * /
+// C: 			/* Sending to srv1 is not allowed, only srv0. */
 // C: 			EXPECT_EQ(-EACCES, res);
 // C: 		} else {
 // C: 			ASSERT_EQ(0, res);
@@ -2072,25 +2072,25 @@ landlock_c_test_translation! {
 // C: 			EXPECT_EQ(read_buf[0], 'C');
 // C: 		}
 // C: 	} else {
-// C: 		/* Unix sockets don't accept AF_UNSPEC. * /
+// C: 		/* Unix sockets don't accept AF_UNSPEC. */
 // C: 		EXPECT_EQ(-EINVAL, res);
 // C: 	}
 // C: 
 // C: 	ASSERT_EQ(0, connect_variant(client_fd, &self->srv0));
 // C: 
-// C: 	/* Minimal explicit AF_UNSPEC address (just the sa_family_t field) * /
+// C: 	/* Minimal explicit AF_UNSPEC address (just the sa_family_t field) */
 // C: 	res = sendto_variant_addrlen(client_fd, &self->unspec_srv0,
 // C: 				     get_addrlen(&self->unspec_srv0, true), "D",
 // C: 				     1, 0);
 // C: 	if (variant->prot.domain == AF_INET6) {
 // C: 		if (restricted) {
-// C: 			/* AF_UNSPEC is always denied in IPv6. * /
+// C: 			/* AF_UNSPEC is always denied in IPv6. */
 // C: 			EXPECT_EQ(-EACCES, res);
 // C: 		} else {
 // C: 			/*
 // C: 			 * IPv6 sockets treat AF_UNSPEC as a NULL address,
 // C: 			 * falling back to the connected address.
-// C: 			 * /
+// C: 			 */
 // C: 			ASSERT_EQ(0, res);
 // C: 			EXPECT_EQ(1, read(srv0_fd, read_buf, 1));
 // C: 			EXPECT_EQ(read_buf[0], 'D');
@@ -2100,7 +2100,7 @@ landlock_c_test_translation! {
 // C: 		 * IPv4 socket will expect a struct sockaddr_in, our address is
 // C: 		 * considered truncated.  And Unix sockets don't accept
 // C: 		 * AF_UNSPEC at all.
-// C: 		 * /
+// C: 		 */
 // C: 		EXPECT_EQ(-EINVAL, res);
 // C: 	}
 // C: }
@@ -2116,44 +2116,44 @@ landlock_c_test_translation! {
 // C: 	const int type;
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(ipv4, no_sandbox_with_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.type = SOCK_STREAM,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(ipv4, tcp_sandbox_with_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.type = SOCK_STREAM,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(ipv4, udp_sandbox_with_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.type = SOCK_STREAM,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(ipv4, no_sandbox_with_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.type = SOCK_DGRAM,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(ipv4, tcp_sandbox_with_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.type = SOCK_DGRAM,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(ipv4, udp_sandbox_with_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.type = SOCK_DGRAM,
 // C: };
@@ -2198,12 +2198,12 @@ landlock_c_test_translation! {
 // C: 		};
 // C: 		int ruleset_fd;
 // C: 
-// C: 		/* Denies connect and bind to check errno value. * /
+// C: 		/* Denies connect and bind to check errno value. */
 // C: 		ruleset_fd = landlock_create_ruleset(&ruleset_attr,
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Allows connect and bind for srv0.  * /
+// C: 		/* Allows connect and bind for srv0.  */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &tcp_bind_connect_p0, 0));
@@ -2218,22 +2218,22 @@ landlock_c_test_translation! {
 // C: 	unix_dgram_fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0);
 // C: 	ASSERT_LE(0, unix_dgram_fd);
 // C: 
-// C: 	/* Checks unix stream bind and connect for srv0. * /
+// C: 	/* Checks unix stream bind and connect for srv0. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant(unix_stream_fd, &self->srv0));
 // C: 	EXPECT_EQ(-EINVAL, connect_variant(unix_stream_fd, &self->srv0));
 // C: 
-// C: 	/* Checks unix stream bind and connect for srv1. * /
+// C: 	/* Checks unix stream bind and connect for srv1. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant(unix_stream_fd, &self->srv1))
 // C: 	{
 // C: 		TH_LOG("Wrong bind error: %s", strerror(errno));
 // C: 	}
 // C: 	EXPECT_EQ(-EINVAL, connect_variant(unix_stream_fd, &self->srv1));
 // C: 
-// C: 	/* Checks unix datagram bind and connect for srv0. * /
+// C: 	/* Checks unix datagram bind and connect for srv0. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant(unix_dgram_fd, &self->srv0));
 // C: 	EXPECT_EQ(-EINVAL, connect_variant(unix_dgram_fd, &self->srv0));
 // C: 
-// C: 	/* Checks unix datagram bind and connect for srv1. * /
+// C: 	/* Checks unix datagram bind and connect for srv1. */
 // C: 	EXPECT_EQ(-EINVAL, bind_variant(unix_dgram_fd, &self->srv1));
 // C: 	EXPECT_EQ(-EINVAL, connect_variant(unix_dgram_fd, &self->srv1));
 // C: }
@@ -2268,58 +2268,58 @@ landlock_c_test_translation! {
 // C: {
 // C: }
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, no_sandbox_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET,
 // C: 	.num_layers = 0,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, one_sandbox_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET,
 // C: 	.num_layers = 1,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, two_sandboxes_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET,
 // C: 	.num_layers = 2,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, three_sandboxes_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET,
 // C: 	.num_layers = 3,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, no_sandbox_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET6,
 // C: 	.num_layers = 0,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, one_sandbox_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET6,
 // C: 	.num_layers = 1,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, two_sandboxes_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET6,
 // C: 	.num_layers = 2,
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(tcp_layers, three_sandboxes_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.domain = AF_INET6,
 // C: 	.num_layers = 3,
 // C: };
@@ -2347,11 +2347,11 @@ landlock_c_test_translation! {
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Allows bind. * /
+// C: 		/* Allows bind. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &tcp_bind, 0));
-// C: 		/* Also allows bind, but allows connect too. * /
+// C: 		/* Also allows bind, but allows connect too. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &tcp_bind_connect, 0));
@@ -2362,12 +2362,12 @@ landlock_c_test_translation! {
 // C: 	if (variant->num_layers >= 2) {
 // C: 		int ruleset_fd;
 // C: 
-// C: 		/* Creates another ruleset layer. * /
+// C: 		/* Creates another ruleset layer. */
 // C: 		ruleset_fd = landlock_create_ruleset(&ruleset_attr,
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Only allows bind. * /
+// C: 		/* Only allows bind. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &tcp_bind, 0));
@@ -2378,12 +2378,12 @@ landlock_c_test_translation! {
 // C: 	if (variant->num_layers >= 3) {
 // C: 		int ruleset_fd;
 // C: 
-// C: 		/* Creates another ruleset layer. * /
+// C: 		/* Creates another ruleset layer. */
 // C: 		ruleset_fd = landlock_create_ruleset(&ruleset_attr,
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Try to allow bind and connect. * /
+// C: 		/* Try to allow bind and connect. */
 // C: 		ASSERT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &tcp_bind_connect, 0));
@@ -2394,7 +2394,7 @@ landlock_c_test_translation! {
 // C: 	/*
 // C: 	 * Forbids to connect to the socket because only one ruleset layer
 // C: 	 * allows connect.
-// C: 	 * /
+// C: 	 */
 // C: 	test_bind_and_connect(_metadata, &self->srv0, false,
 // C: 			      variant->num_layers >= 2);
 // C: }
@@ -2405,7 +2405,7 @@ landlock_c_test_translation! {
 // C: 		const struct landlock_ruleset_attr ruleset_attr = {
 // C: 			.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP,
 // C: 		};
-// C: 		/* Allows bind for srv0. * /
+// C: 		/* Allows bind for srv0. */
 // C: 		const struct landlock_net_port_attr bind_srv0 = {
 // C: 			.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
 // C: 			.port = self->srv0.port,
@@ -2423,18 +2423,18 @@ landlock_c_test_translation! {
 // C: 	}
 // C: 
 // C: 	if (variant->num_layers >= 2) {
-// C: 		/* Expands network mask with connect action. * /
+// C: 		/* Expands network mask with connect action. */
 // C: 		const struct landlock_ruleset_attr ruleset_attr = {
 // C: 			.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
 // C: 					      LANDLOCK_ACCESS_NET_CONNECT_TCP,
 // C: 		};
-// C: 		/* Allows bind for srv0 and connect to srv0. * /
+// C: 		/* Allows bind for srv0 and connect to srv0. */
 // C: 		const struct landlock_net_port_attr tcp_bind_connect_p0 = {
 // C: 			.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
 // C: 					  LANDLOCK_ACCESS_NET_CONNECT_TCP,
 // C: 			.port = self->srv0.port,
 // C: 		};
-// C: 		/* Try to allow bind for srv1. * /
+// C: 		/* Try to allow bind for srv1. */
 // C: 		const struct landlock_net_port_attr tcp_bind_p1 = {
 // C: 			.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
 // C: 			.port = self->srv1.port,
@@ -2459,7 +2459,7 @@ landlock_c_test_translation! {
 // C: 			.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
 // C: 					      LANDLOCK_ACCESS_NET_CONNECT_TCP,
 // C: 		};
-// C: 		/* Allows connect to srv0, without bind rule. * /
+// C: 		/* Allows connect to srv0, without bind rule. */
 // C: 		const struct landlock_net_port_attr tcp_bind_p0 = {
 // C: 			.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
 // C: 			.port = self->srv0.port,
@@ -2483,9 +2483,9 @@ landlock_c_test_translation! {
 // C: 			      variant->num_layers >= 2);
 // C: }
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE(mini) {};
-// C: /* clang-format on * /
+// C: /* clang-format on */
 // C: 
 // C: FIXTURE_SETUP(mini)
 // C: {
@@ -2498,7 +2498,7 @@ landlock_c_test_translation! {
 // C: {
 // C: }
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: 
 // C: #define ACCESS_LAST LANDLOCK_ACCESS_NET_CONNECT_SEND_UDP
 // C: 
@@ -2508,7 +2508,7 @@ landlock_c_test_translation! {
 // C: 	LANDLOCK_ACCESS_NET_BIND_UDP | \
 // C: 	LANDLOCK_ACCESS_NET_CONNECT_SEND_UDP)
 // C: 
-// C: /* clang-format on * /
+// C: /* clang-format on */
 // C: 
 // C: TEST_F(mini, network_access_rights)
 // C: {
@@ -2538,7 +2538,7 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(0, close(ruleset_fd));
 // C: }
 // C: 
-// C: /* Checks invalid attribute, out of landlock network access range. * /
+// C: /* Checks invalid attribute, out of landlock network access range. */
 // C: TEST_F(mini, ruleset_with_unknown_access)
 // C: {
 // C: 	__u64 access_mask;
@@ -2636,17 +2636,17 @@ landlock_c_test_translation! {
 // C: 		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
 // C: 	ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 	/* Checks unhandled allowed_access. * /
+// C: 	/* Checks unhandled allowed_access. */
 // C: 	EXPECT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					&tcp_bind_connect, 0));
 // C: 	EXPECT_EQ(EINVAL, errno);
 // C: 
-// C: 	/* Checks zero access value. * /
+// C: 	/* Checks zero access value. */
 // C: 	EXPECT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					&tcp_denied, 0));
 // C: 	EXPECT_EQ(ENOMSG, errno);
 // C: 
-// C: 	/* Adds with legitimate values. * /
+// C: 	/* Adds with legitimate values. */
 // C: 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 				       &tcp_bind, 0));
 // C: }
@@ -2690,7 +2690,7 @@ landlock_c_test_translation! {
 // C: 
 // C: 	ASSERT_EQ(0, set_service(&srv_denied, ipv4_tcp, 0));
 // C: 
-// C: 	/* Be careful to avoid port inconsistencies. * /
+// C: 	/* Be careful to avoid port inconsistencies. */
 // C: 	srv_max_allowed = srv_denied;
 // C: 	srv_max_allowed.port = port_max_bind.port;
 // C: 	srv_max_allowed.ipv4_addr.sin_port = htons(port_max_bind.port);
@@ -2714,7 +2714,7 @@ landlock_c_test_translation! {
 // C: 					&port_overflow3, 0));
 // C: 	EXPECT_EQ(EINVAL, errno);
 // C: 
-// C: 	/* Interleaves with invalid rule additions. * /
+// C: 	/* Interleaves with invalid rule additions. */
 // C: 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 				       &port_max_connect, 0));
 // C: 
@@ -2760,18 +2760,18 @@ landlock_c_test_translation! {
 // C: 	};
 // C: 	const struct landlock_net_port_attr bind_host_endian_p0 = {
 // C: 		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
-// C: 		/* Host port format. * /
+// C: 		/* Host port format. */
 // C: 		.port = self->srv0.port,
 // C: 	};
 // C: 	const struct landlock_net_port_attr connect_big_endian_p0 = {
 // C: 		.allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
-// C: 		/* Big endian port format. * /
+// C: 		/* Big endian port format. */
 // C: 		.port = htons(self->srv0.port),
 // C: 	};
 // C: 	const struct landlock_net_port_attr bind_connect_host_endian_p1 = {
 // C: 		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
 // C: 				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
-// C: 		/* Host port format. * /
+// C: 		/* Host port format. */
 // C: 		.port = self->srv1.port,
 // C: 	};
 // C: 	const unsigned int one = 1;
@@ -2789,10 +2789,10 @@ landlock_c_test_translation! {
 // C: 				       &bind_connect_host_endian_p1, 0));
 // C: 	enforce_ruleset(_metadata, ruleset_fd);
 // C: 
-// C: 	/* No restriction for big endinan CPU. * /
+// C: 	/* No restriction for big endinan CPU. */
 // C: 	test_bind_and_connect(_metadata, &self->srv0, false, little_endian);
 // C: 
-// C: 	/* No restriction for any CPU. * /
+// C: 	/* No restriction for any CPU. */
 // C: 	test_bind_and_connect(_metadata, &self->srv1, false, false);
 // C: }
 // C: 
@@ -2812,26 +2812,26 @@ landlock_c_test_translation! {
 // C: 	};
 // C: 	int ruleset_fd, bind_fd, dir_fd;
 // C: 
-// C: 	/* Creates ruleset both for filesystem and network access. * /
+// C: 	/* Creates ruleset both for filesystem and network access. */
 // C: 	ruleset_fd = landlock_create_ruleset(&ruleset_attr_fs_net,
 // C: 					     sizeof(ruleset_attr_fs_net), 0);
 // C: 	ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 	/* Adds a filesystem rule. * /
+// C: 	/* Adds a filesystem rule. */
 // C: 	path_beneath.parent_fd = open("/dev", O_PATH | O_DIRECTORY | O_CLOEXEC);
 // C: 	ASSERT_LE(0, path_beneath.parent_fd);
 // C: 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
 // C: 				       &path_beneath, 0));
 // C: 	EXPECT_EQ(0, close(path_beneath.parent_fd));
 // C: 
-// C: 	/* Adds a network rule. * /
+// C: 	/* Adds a network rule. */
 // C: 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 				       &tcp_bind, 0));
 // C: 
 // C: 	enforce_ruleset(_metadata, ruleset_fd);
 // C: 	EXPECT_EQ(0, close(ruleset_fd));
 // C: 
-// C: 	/* Tests file access. * /
+// C: 	/* Tests file access. */
 // C: 	dir_fd = open("/dev", O_RDONLY);
 // C: 	EXPECT_LE(0, dir_fd);
 // C: 	EXPECT_EQ(0, close(dir_fd));
@@ -2840,7 +2840,7 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(-1, dir_fd);
 // C: 	EXPECT_EQ(EACCES, errno);
 // C: 
-// C: 	/* Tests port binding. * /
+// C: 	/* Tests port binding. */
 // C: 	bind_fd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 	EXPECT_EQ(0, bind_variant(bind_fd, &self->srv0));
@@ -2863,9 +2863,9 @@ landlock_c_test_translation! {
 // C: 	const struct protocol_variant prot;
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(port_specific, no_sandbox_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -2873,9 +2873,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(port_specific, tcp_sandbox_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -2883,9 +2883,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(port_specific, udp_sandbox_with_ipv4) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -2893,9 +2893,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(port_specific, no_sandbox_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = NO_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -2903,9 +2903,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(port_specific, tcp_sandbox_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = TCP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -2913,9 +2913,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(port_specific, udp_sandbox_with_ipv6) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = UDP_SANDBOX,
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -2942,7 +2942,7 @@ landlock_c_test_translation! {
 // C: 	int bind_fd, connect_fd, ret;
 // C: 	uint16_t port;
 // C: 
-// C: 	/* Adds a rule layer with bind and connect actions. * /
+// C: 	/* Adds a rule layer with bind and connect actions. */
 // C: 	if (variant->sandbox == TCP_SANDBOX ||
 // C: 	    variant->sandbox == UDP_SANDBOX) {
 // C: 		const __u64 access_rights =
@@ -2964,7 +2964,7 @@ landlock_c_test_translation! {
 // C: 						     sizeof(ruleset_attr), 0);
 // C: 		ASSERT_LE(0, ruleset_fd);
 // C: 
-// C: 		/* Checks zero port value on bind and connect actions. * /
+// C: 		/* Checks zero port value on bind and connect actions. */
 // C: 		EXPECT_EQ(0,
 // C: 			  landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_PORT,
 // C: 					    &bind_connect_zero, 0));
@@ -2979,19 +2979,19 @@ landlock_c_test_translation! {
 // C: 	connect_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, connect_fd);
 // C: 
-// C: 	/* Sets address port to 0 for both protocol families. * /
+// C: 	/* Sets address port to 0 for both protocol families. */
 // C: 	set_port(&self->srv0, 0);
 // C: 	/*
 // C: 	 * Binds on port 0, which selects a random port within
 // C: 	 * ip_local_port_range.
-// C: 	 * /
+// C: 	 */
 // C: 	ret = bind_variant(bind_fd, &self->srv0);
 // C: 	EXPECT_EQ(0, ret);
 // C: 
 // C: 	if (variant->prot.type == SOCK_STREAM)
 // C: 		EXPECT_EQ(0, listen(bind_fd, backlog));
 // C: 
-// C: 	/* Connects on port 0. * /
+// C: 	/* Connects on port 0. */
 // C: 	ret = connect_variant(connect_fd, &self->srv0);
 // C: 	if (variant->prot.type == SOCK_STREAM) {
 // C: 		EXPECT_EQ(-ECONNREFUSED, ret);
@@ -2999,14 +2999,14 @@ landlock_c_test_translation! {
 // C: 		EXPECT_EQ(0, ret);
 // C: 	}
 // C: 
-// C: 	/* Sets binded port for both protocol families. * /
+// C: 	/* Sets binded port for both protocol families. */
 // C: 	port = get_binded_port(bind_fd, &variant->prot);
 // C: 	EXPECT_NE(0, port);
 // C: 	set_port(&self->srv0, port);
-// C: 	/* Connects on the binded port. * /
+// C: 	/* Connects on the binded port. */
 // C: 	ret = connect_variant(connect_fd, &self->srv0);
 // C: 	if (is_restricted(&variant->prot, variant->sandbox)) {
-// C: 		/* Denied by Landlock. * /
+// C: 		/* Denied by Landlock. */
 // C: 		EXPECT_EQ(-EACCES, ret);
 // C: 	} else {
 // C: 		EXPECT_EQ(0, ret);
@@ -3020,7 +3020,7 @@ landlock_c_test_translation! {
 // C: {
 // C: 	int bind_fd, connect_fd, ret;
 // C: 
-// C: 	/* Adds a rule layer with bind and connect actions. * /
+// C: 	/* Adds a rule layer with bind and connect actions. */
 // C: 	if (variant->sandbox == TCP_SANDBOX ||
 // C: 	    variant->sandbox == UDP_SANDBOX) {
 // C: 		const __u64 bind_right = (variant->sandbox == TCP_SANDBOX ?
@@ -3035,17 +3035,17 @@ landlock_c_test_translation! {
 // C: 		const struct landlock_ruleset_attr ruleset_attr = {
 // C: 			.handled_access_net = access_rights,
 // C: 		};
-// C: 		/* A rule with port value less than 1024. * /
+// C: 		/* A rule with port value less than 1024. */
 // C: 		const struct landlock_net_port_attr bind_connect_low_range = {
 // C: 			.allowed_access = access_rights,
 // C: 			.port = 1023,
 // C: 		};
-// C: 		/* A rule with 1024 port. * /
+// C: 		/* A rule with 1024 port. */
 // C: 		const struct landlock_net_port_attr bind_connect = {
 // C: 			.allowed_access = access_rights,
 // C: 			.port = 1024,
 // C: 		};
-// C: 		/* A rule with cli1's port, to use as source port. * /
+// C: 		/* A rule with cli1's port, to use as source port. */
 // C: 		const struct landlock_net_port_attr srcport = {
 // C: 			.allowed_access = bind_right,
 // C: 			.port = self->cli1.port,
@@ -3075,14 +3075,14 @@ landlock_c_test_translation! {
 // C: 	bind_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, bind_fd);
 // C: 
-// C: 	/* Sets address port to 1023 for both protocol families. * /
+// C: 	/* Sets address port to 1023 for both protocol families. */
 // C: 	set_port(&self->srv0, 1023);
-// C: 	/* Binds on port 1023. * /
+// C: 	/* Binds on port 1023. */
 // C: 	ret = bind_variant(bind_fd, &self->srv0);
-// C: 	/* Denied by the system. * /
+// C: 	/* Denied by the system. */
 // C: 	EXPECT_EQ(-EACCES, ret);
 // C: 
-// C: 	/* Binds on port 1023. * /
+// C: 	/* Binds on port 1023. */
 // C: 	set_cap(_metadata, CAP_NET_BIND_SERVICE);
 // C: 	ret = bind_variant(bind_fd, &self->srv0);
 // C: 	clear_cap(_metadata, CAP_NET_BIND_SERVICE);
@@ -3097,10 +3097,10 @@ landlock_c_test_translation! {
 // C: 		 * We are about to connect(), but bind() is restricted, so for
 // C: 		 * UDP sockets we need to use cli1's port as source port (the
 // C: 		 * only one we are allowed to use).
-// C: 		 * /
+// C: 		 */
 // C: 		EXPECT_EQ(0, bind_variant(connect_fd, &self->cli1));
 // C: 	}
-// C: 	/* Connects on the binded port 1023. * /
+// C: 	/* Connects on the binded port 1023. */
 // C: 	ret = connect_variant(connect_fd, &self->srv0);
 // C: 	EXPECT_EQ(0, ret);
 // C: 
@@ -3113,9 +3113,9 @@ landlock_c_test_translation! {
 // C: 	connect_fd = socket_variant(&self->srv0);
 // C: 	ASSERT_LE(0, connect_fd);
 // C: 
-// C: 	/* Sets address port to 1024 for both protocol families. * /
+// C: 	/* Sets address port to 1024 for both protocol families. */
 // C: 	set_port(&self->srv0, 1024);
-// C: 	/* Binds on port 1024. * /
+// C: 	/* Binds on port 1024. */
 // C: 	ret = bind_variant(bind_fd, &self->srv0);
 // C: 	EXPECT_EQ(0, ret);
 // C: 	if (variant->prot.type == SOCK_STREAM)
@@ -3123,7 +3123,7 @@ landlock_c_test_translation! {
 // C: 	if (variant->prot.type == SOCK_DGRAM)
 // C: 		EXPECT_EQ(0, bind_variant(connect_fd, &self->cli1));
 // C: 
-// C: 	/* Connects on the binded port 1024. * /
+// C: 	/* Connects on the binded port 1024. */
 // C: 	ret = connect_variant(connect_fd, &self->srv0);
 // C: 	EXPECT_EQ(0, ret);
 // C: 
@@ -3140,7 +3140,7 @@ landlock_c_test_translation! {
 // C:  * @addr:       A regex-escaped IP address string, or NULL.
 // C:  * @dir_port:   Either "src" or "dest", ignored if addr is NULL.
 // C:  * @port:       A port number, ignored if addr is NULL.
-// C:  * /
+// C:  */
 // C: static int matches_auditlog(const int audit_fd, const char *const blockers,
 // C: 			    const char *const dir_addr, const char *const addr,
 // C: 			    const char *const dir_port, const __u16 port)
@@ -3155,7 +3155,7 @@ landlock_c_test_translation! {
 // C: 	 * Max strlen(addr): 12
 // C: 	 * Max strlen(dir_port): 4
 // C: 	 * Max strlen(%u port): 5
-// C: 	 * /
+// C: 	 */
 // C: 	char log_match[sizeof(log_with_addrport_tmpl) + 42];
 // C: 	int log_match_len;
 // C: 
@@ -3177,7 +3177,7 @@ landlock_c_test_translation! {
 // C: {
 // C: 	struct service_fixture srv0;
 // C: 	struct service_fixture srv1;
-// C: 	/* srv2 has a rule with no access but quiet bit set. * /
+// C: 	/* srv2 has a rule with no access but quiet bit set. */
 // C: 	struct service_fixture srv2;
 // C: 	struct service_fixture unspec_srv0;
 // C: 	struct audit_filter audit_filter;
@@ -3190,9 +3190,9 @@ landlock_c_test_translation! {
 // C: 	const struct protocol_variant prot;
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(audit, ipv4_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.addr = "127\\.0\\.0\\.1",
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -3200,9 +3200,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(audit, ipv4_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.addr = "127\\.0\\.0\\.1",
 // C: 	.prot = {
 // C: 		.domain = AF_INET,
@@ -3210,9 +3210,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(audit, ipv6_tcp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.addr = "::1",
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -3220,9 +3220,9 @@ landlock_c_test_translation! {
 // C: 	},
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(audit, ipv6_udp) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.addr = "::1",
 // C: 	.prot = {
 // C: 		.domain = AF_INET6,
@@ -3298,7 +3298,7 @@ landlock_c_test_translation! {
 // C: 
 // C: 	EXPECT_EQ(0, close(sock_fd));
 // C: 
-// C: 	/* Bind to srv2 (with quiet rule): no new audit logs. * /
+// C: 	/* Bind to srv2 (with quiet rule): no new audit logs. */
 // C: 	sock_fd = socket_variant(&self->srv2);
 // C: 	ASSERT_LE(0, sock_fd);
 // C: 	EXPECT_EQ(-EACCES, bind_variant(sock_fd, &self->srv2));
@@ -3358,7 +3358,7 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(1, records.domain);
 // C: 
 // C: 	if (variant->prot.type == SOCK_DGRAM) {
-// C: 		/* Check that autobind generates a denied bind event. * /
+// C: 		/* Check that autobind generates a denied bind event. */
 // C: 		EXPECT_EQ(-EACCES, connect_variant(sock_fd, &self->srv1));
 // C: 
 // C: 		EXPECT_EQ(0, matches_auditlog(self->audit_fd, "net\\.bind_udp",
@@ -3370,7 +3370,7 @@ landlock_c_test_translation! {
 // C: 
 // C: 	EXPECT_EQ(0, close(sock_fd));
 // C: 
-// C: 	/* Connect to srv2 (with quiet rule): no new audit logs. * /
+// C: 	/* Connect to srv2 (with quiet rule): no new audit logs. */
 // C: 	sock_fd = socket_variant(&self->srv2);
 // C: 	ASSERT_LE(0, sock_fd);
 // C: 	EXPECT_EQ(-EACCES, connect_variant(sock_fd, &self->srv2));
@@ -3382,7 +3382,7 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(0, close(sock_fd));
 // C: }
 // C: 
-// C: /* Quieting bind access has no effect on connect. * /
+// C: /* Quieting bind access has no effect on connect. */
 // C: TEST_F(audit, connect_quiet_bind)
 // C: {
 // C: 	const char *audit_evt = (variant->prot.type == SOCK_STREAM ?
@@ -3429,7 +3429,7 @@ landlock_c_test_translation! {
 // C: 
 // C: 	EXPECT_EQ(0, close(sock_fd));
 // C: 
-// C: 	/* New layer that also denies connect but has the correct quiet bit. * /
+// C: 	/* New layer that also denies connect but has the correct quiet bit. */
 // C: 	ruleset_fd = landlock_create_ruleset(&ruleset_attr_2,
 // C: 					     sizeof(ruleset_attr_2), 0);
 // C: 	ASSERT_LE(0, ruleset_fd);
@@ -3442,7 +3442,7 @@ landlock_c_test_translation! {
 // C: 	ASSERT_LE(0, sock_fd);
 // C: 	EXPECT_EQ(-EACCES, connect_variant(sock_fd, &self->srv2));
 // C: 
-// C: 	/* Quieted - no logs expected. * /
+// C: 	/* Quieted - no logs expected. */
 // C: 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
 // C: 	EXPECT_EQ(0, records.access);
 // C: 
@@ -3455,7 +3455,7 @@ landlock_c_test_translation! {
 // C: {
 // C: 	static const char log_template[] = REGEX_LANDLOCK_PREFIX
 // C: 		" blockers=%s laddr=%s lport=%u daddr=%s dest=%u$";
-// C: 	/* Slack for the blockers, two addresses and two port numbers. * /
+// C: 	/* Slack for the blockers, two addresses and two port numbers. */
 // C: 	char log_match[sizeof(log_template) + 60];
 // C: 	int log_match_len;
 // C: 
@@ -3472,7 +3472,7 @@ landlock_c_test_translation! {
 // C:  * After a bind() to an allowed port, a denied connect must report laddr/lport
 // C:  * from the bound socket (made available through audit_net.sk) in addition to
 // C:  * the connect sockaddr's daddr/dest.
-// C:  * /
+// C:  */
 // C: TEST_F(audit, connect_bound)
 // C: {
 // C: 	const __u64 bind_right = (variant->prot.type == SOCK_STREAM ?
@@ -3495,7 +3495,7 @@ landlock_c_test_translation! {
 // C: 	struct audit_records records;
 // C: 	int ruleset_fd, sock_fd;
 // C: 
-// C: 	/* Uses a second port as the denied connect target. * /
+// C: 	/* Uses a second port as the denied connect target. */
 // C: 	ASSERT_EQ(0, set_service(&srv_remote, variant->prot, 1));
 // C: 
 // C: 	ruleset_fd =
@@ -3535,7 +3535,7 @@ landlock_c_test_translation! {
 // C: 	int ruleset_fd;
 // C: 	int sock_fd;
 // C: 
-// C: 	/* Sendmsg on stream sockets is never denied. * /
+// C: 	/* Sendmsg on stream sockets is never denied. */
 // C: 	if (variant->prot.type != SOCK_DGRAM)
 // C: 		return;
 // C: 
@@ -3558,7 +3558,7 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(0, records.access);
 // C: 	EXPECT_EQ(1, records.domain);
 // C: 
-// C: 	/* Check that autobind generates a denied bind event. * /
+// C: 	/* Check that autobind generates a denied bind event. */
 // C: 	EXPECT_EQ(-EACCES, sendto_variant(sock_fd, &self->srv1, "A", 1, 0));
 // C: 	EXPECT_EQ(0, matches_auditlog(self->audit_fd, "net\\.bind_udp", NULL,
 // C: 				      NULL, NULL, 0));
@@ -3577,11 +3577,11 @@ landlock_c_test_translation! {
 // C: 	EXPECT_EQ(0, close(sock_fd));
 // C: }
 // C: 
-// C: /* Trace tests * /
+// C: /* Trace tests */
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE(trace_net) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	int tracefs_ok;
 // C: };
 // C: 
@@ -3589,7 +3589,7 @@ landlock_c_test_translation! {
 // C: {
 // C: 	int ret;
 // C: 
-// C: 	/* Isolate the network namespace so the bound port cannot collide. * /
+// C: 	/* Isolate the network namespace so the bound port cannot collide. */
 // C: 	setup_loopback(_metadata);
 // C: 
 // C: 	set_cap(_metadata, CAP_SYS_ADMIN);
@@ -3624,38 +3624,38 @@ landlock_c_test_translation! {
 // C: /*
 // C:  * Baseline: verifies that without Landlock, the bind succeeds and no
 // C:  * deny_access_net trace event fires.
-// C:  * /
-// C: /* clang-format off * /
+// C:  */
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT(trace_net)
 // C: {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	bool sandbox;
-// C: 	int bind_port_offset; /* 0 = allowed port, 1 = denied port * /
+// C: 	int bind_port_offset; /* 0 = allowed port, 1 = denied port */
 // C: 	int expect_denied;
 // C: };
 // C: 
-// C: /* Unsandboxed: no Landlock, bind should succeed with no events. * /
-// C: /* clang-format off * /
+// C: /* Unsandboxed: no Landlock, bind should succeed with no events. */
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(trace_net, unsandboxed) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = false,
 // C: 	.bind_port_offset = 0,
 // C: 	.expect_denied = 0,
 // C: };
 // C: 
-// C: /* Denied: sandboxed, bind to port not in ruleset. * /
-// C: /* clang-format off * /
+// C: /* Denied: sandboxed, bind to port not in ruleset. */
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(trace_net, bind_denied) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = true,
 // C: 	.bind_port_offset = 1,
 // C: 	.expect_denied = 1,
 // C: };
 // C: 
-// C: /* Allowed: sandboxed, bind to port in ruleset. * /
-// C: /* clang-format off * /
+// C: /* Allowed: sandboxed, bind to port in ruleset. */
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT_ADD(trace_net, bind_allowed) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	.sandbox = true,
 // C: 	.bind_port_offset = 0,
 // C: 	.expect_denied = 0,
@@ -3720,7 +3720,7 @@ landlock_c_test_translation! {
 // C: 		addr.sin_port =
 // C: 			htons(sock_port_start + variant->bind_port_offset);
 // C: 		if (variant->expect_denied) {
-// C: 			/* Bind should be denied. * /
+// C: 			/* Bind should be denied. */
 // C: 			if (bind(sock_fd, (struct sockaddr *)&addr,
 // C: 				 sizeof(addr)) == 0) {
 // C: 				close(sock_fd);
@@ -3731,7 +3731,7 @@ landlock_c_test_translation! {
 // C: 				_exit(3);
 // C: 			}
 // C: 		} else {
-// C: 			/* Bind should succeed. * /
+// C: 			/* Bind should succeed. */
 // C: 			if (bind(sock_fd, (struct sockaddr *)&addr,
 // C: 				 sizeof(addr))) {
 // C: 				close(sock_fd);
@@ -3772,7 +3772,7 @@ landlock_c_test_translation! {
 // C:  * Anchors the denial fields shared by every deny_access_net event so a field
 // C:  * test proves more than sport/dport: the denying domain, the same-exec bit, the
 // C:  * audit-logging verdict, and the blocked access all stay populated.
-// C:  * /
+// C:  */
 // C: static void
 // C: expect_net_deny_common_fields(struct __test_metadata *const _metadata,
 // C: 			      const char *const buf)
@@ -3784,13 +3784,13 @@ landlock_c_test_translation! {
 // C: 					"domain", field, sizeof(field)));
 // C: 	EXPECT_STRNE("0", field);
 // C: 
-// C: 	/* Same exec that restricted itself, no exec in between. * /
+// C: 	/* Same exec that restricted itself, no exec in between. */
 // C: 	ASSERT_EQ(0,
 // C: 		  tracefs_extract_field(buf, REGEX_DENY_ACCESS_NET(TRACE_TASK),
 // C: 					"same_exec", field, sizeof(field)));
 // C: 	EXPECT_STREQ("1", field);
 // C: 
-// C: 	/* Default flags, same exec: audit would log this denial. * /
+// C: 	/* Default flags, same exec: audit would log this denial. */
 // C: 	ASSERT_EQ(0,
 // C: 		  tracefs_extract_field(buf, REGEX_DENY_ACCESS_NET(TRACE_TASK),
 // C: 					"logged", field, sizeof(field)));
@@ -3802,11 +3802,11 @@ landlock_c_test_translation! {
 // C: 	EXPECT_STRNE("", field);
 // C: }
 // C: 
-// C: /* Connect and field-check tests use a separate fixture without variants. * /
+// C: /* Connect and field-check tests use a separate fixture without variants. */
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE(trace_net_connect) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	int tracefs_ok;
 // C: };
 // C: 
@@ -3814,7 +3814,7 @@ landlock_c_test_translation! {
 // C: {
 // C: 	int ret;
 // C: 
-// C: 	/* Isolate the network namespace so the bound port cannot collide. * /
+// C: 	/* Isolate the network namespace so the bound port cannot collide. */
 // C: 	setup_loopback(_metadata);
 // C: 
 // C: 	set_cap(_metadata, CAP_SYS_ADMIN);
@@ -3846,41 +3846,41 @@ landlock_c_test_translation! {
 // C: 	clear_cap(_metadata, CAP_SYS_ADMIN);
 // C: }
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE_VARIANT(trace_net_connect) {
-// C: 	/* clang-format on * /
-// C: 	/* handled_access_net, also the access allowed on the base port. * /
+// C: 	/* clang-format on */
+// C: 	/* handled_access_net, also the access allowed on the base port. */
 // C: 	__u64 handled;
-// C: 	/* Bind the allowed base port before the denied operation. * /
+// C: 	/* Bind the allowed base port before the denied operation. */
 // C: 	bool bind_base_first;
-// C: 	/* Denied operation on the next port: connect (true) or bind (false). * /
+// C: 	/* Denied operation on the next port: connect (true) or bind (false). */
 // C: 	bool deny_connect;
 // C: };
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: 
-// C: /* Denied connect(): sport=0, dport=<denied port>. * /
+// C: /* Denied connect(): sport=0, dport=<denied port>. */
 // C: FIXTURE_VARIANT_ADD(trace_net_connect, connect_denied) {
 // C: 	.handled = LANDLOCK_ACCESS_NET_CONNECT_TCP,
 // C: 	.bind_base_first = false,
 // C: 	.deny_connect = true,
 // C: };
 // C: 
-// C: /* Denied bind(): sport=<denied port>, dport=0. * /
+// C: /* Denied bind(): sport=<denied port>, dport=0. */
 // C: FIXTURE_VARIANT_ADD(trace_net_connect, bind_fields) {
 // C: 	.handled = LANDLOCK_ACCESS_NET_BIND_TCP,
 // C: 	.bind_base_first = false,
 // C: 	.deny_connect = false,
 // C: };
 // C: 
-// C: /* Denied connect() after an allowed bind(): the connect fields (sport=0). * /
+// C: /* Denied connect() after an allowed bind(): the connect fields (sport=0). */
 // C: FIXTURE_VARIANT_ADD(trace_net_connect, connect_after_bind) {
 // C: 	.handled = LANDLOCK_ACCESS_NET_BIND_TCP | LANDLOCK_ACCESS_NET_CONNECT_TCP,
 // C: 	.bind_base_first = true,
 // C: 	.deny_connect = true,
 // C: };
 // C: 
-// C: /* clang-format on * /
+// C: /* clang-format on */
 // C: 
 // C: /*
 // C:  * A denied TCP bind(2) or connect(2) emits one deny_access_net event.  The port
@@ -3889,7 +3889,7 @@ landlock_c_test_translation! {
 // C:  * sport=0 dport=<port>, a bind denial reports sport=<port> dport=0, so a
 // C:  * byte-order or field-swap bug is caught.  A prior allowed bind
 // C:  * (connect_after_bind) does not change the connect denial's fields.
-// C:  * /
+// C:  */
 // C: TEST_F(trace_net_connect, deny_access_net)
 // C: {
 // C: 	pid_t child;
@@ -3937,7 +3937,7 @@ landlock_c_test_translation! {
 // C: 		if (sock_fd < 0)
 // C: 			_exit(1);
 // C: 
-// C: 		/* Bind the allowed base port first (succeeds, no event). * /
+// C: 		/* Bind the allowed base port first (succeeds, no event). */
 // C: 		if (variant->bind_base_first) {
 // C: 			setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &optval,
 // C: 				   sizeof(optval));
@@ -3949,7 +3949,7 @@ landlock_c_test_translation! {
 // C: 			}
 // C: 		}
 // C: 
-// C: 		/* Denied operation on the next port. * /
+// C: 		/* Denied operation on the next port. */
 // C: 		addr.sin_port = htons(sock_port_start + 1);
 // C: 		if (variant->deny_connect)
 // C: 			ret = connect(sock_fd, (struct sockaddr *)&addr,
@@ -3983,7 +3983,7 @@ landlock_c_test_translation! {
 // C: 
 // C: 	/*
 // C: 	 * The denied operation's port field carries the port; the other is 0.
-// C: 	 * /
+// C: 	 */
 // C: 	snprintf(expected, sizeof(expected), "%llu",
 // C: 		 (unsigned long long)(sock_port_start + 1));
 // C: 
@@ -4000,11 +4000,11 @@ landlock_c_test_translation! {
 // C: 	free(buf);
 // C: }
 // C: 
-// C: /* Field verification for the check_rule_net event on an allowed access. * /
+// C: /* Field verification for the check_rule_net event on an allowed access. */
 // C: 
-// C: /* clang-format off * /
+// C: /* clang-format off */
 // C: FIXTURE(trace_net_check_rule) {
-// C: 	/* clang-format on * /
+// C: 	/* clang-format on */
 // C: 	int tracefs_ok;
 // C: };
 // C: 
@@ -4012,7 +4012,7 @@ landlock_c_test_translation! {
 // C: {
 // C: 	int ret;
 // C: 
-// C: 	/* Isolate the network namespace so the bound port cannot collide. * /
+// C: 	/* Isolate the network namespace so the bound port cannot collide. */
 // C: 	setup_loopback(_metadata);
 // C: 
 // C: 	set_cap(_metadata, CAP_SYS_ADMIN);
@@ -4049,7 +4049,7 @@ landlock_c_test_translation! {
 // C:  * access, the checked port (host endianness), and the per-layer grants.  The
 // C:  * whole event is anchored to exact values so a revert of the check_rule_net
 // C:  * emit (or a byte-order or field-plumbing regression) fails the test.
-// C:  * /
+// C:  */
 // C: TEST_F(trace_net_check_rule, check_rule_net_fields)
 // C: {
 // C: 	pid_t child;
@@ -4095,7 +4095,7 @@ landlock_c_test_translation! {
 // C: 		}
 // C: 		close(ruleset_fd);
 // C: 
-// C: 		/* Bind to the allowed port: succeeds and matches the rule. * /
+// C: 		/* Bind to the allowed port: succeeds and matches the rule. */
 // C: 		sock_fd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 // C: 		if (sock_fd < 0)
 // C: 			_exit(1);
@@ -4116,7 +4116,7 @@ landlock_c_test_translation! {
 // C: 	buf = tracefs_read_buf();
 // C: 	ASSERT_NE(NULL, buf);
 // C: 
-// C: 	/* A single-layer domain matching one port rule emits one event. * /
+// C: 	/* A single-layer domain matching one port rule emits one event. */
 // C: 	EXPECT_EQ(1,
 // C: 		  tracefs_count_matches(buf, REGEX_CHECK_RULE_NET(TRACE_TASK)))
 // C: 	{
@@ -4137,7 +4137,7 @@ landlock_c_test_translation! {
 // C: 	 * The port is reported in host endianness (UAPI convention), so on
 // C: 	 * little-endian htons(sock_port_start) would print a different value:
 // C: 	 * the exact match also catches byte-order regressions.
-// C: 	 * /
+// C: 	 */
 // C: 	ASSERT_EQ(0,
 // C: 		  tracefs_extract_field(buf, REGEX_CHECK_RULE_NET(TRACE_TASK),
 // C: 					"port", field, sizeof(field)));
@@ -4145,7 +4145,7 @@ landlock_c_test_translation! {
 // C: 		 (unsigned long long)sock_port_start);
 // C: 	EXPECT_STREQ(expected, field);
 // C: 
-// C: 	/* One layer that fully grants the request: grants={bind_tcp}. * /
+// C: 	/* One layer that fully grants the request: grants={bind_tcp}. */
 // C: 	ASSERT_EQ(0,
 // C: 		  tracefs_extract_field(buf, REGEX_CHECK_RULE_NET(TRACE_TASK),
 // C: 					"grants", field, sizeof(field)));
@@ -4159,7 +4159,7 @@ landlock_c_test_translation! {
 // C:  * the same current_check_access_socket() code path as IPv4, validated by the
 // C:  * audit tests in this file.  The trace events use the same blockers/sport/dport
 // C:  * fields regardless of address family.
-// C:  * /
+// C:  */
 // C: 
 // C: TEST_HARNESS_MAIN
 

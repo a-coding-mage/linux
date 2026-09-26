@@ -194,15 +194,14 @@ pub struct clk_rcg_dfs_data {
 
 #[macro_export]
 macro_rules! DEFINE_RCG_DFS {
-    ($r:ident) => { clk_rcg_dfs_data { rcg: &mut $r, init: &mut $r##_init } };
+    ($r:tt) => { clk_rcg_dfs_data { rcg: &mut $r, init: &mut ::kernel::macros::paste!([<$r _init>]) } };
 }
 
 extern "C" {
     pub fn qcom_cc_register_rcg_dfs(
         regmap: *mut regmap,
         rcgs: *const clk_rcg_dfs_data,
-        len: usize,
-    ) -> ::core::ffi::c_int;
+        len: usize) -> ::core::ffi::c_int;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

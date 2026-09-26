@@ -20,6 +20,7 @@ pub unsafe fn logic_pio_register_range(new_range: *mut logic_pio_hwaddr) -> i32 
     let mut mmio_end: resource_size_t = 0;
     let mut iio_sz: resource_size_t = MMIO_UPPER_LIMIT;
     let mut ret: i32 = 0;
+    'end_register: {
 
     if new_range.is_null()
         || (*new_range).fwnode.is_null()
@@ -37,7 +38,7 @@ pub unsafe fn logic_pio_register_range(new_range: *mut logic_pio_hwaddr) -> i32 
         if (*range).fwnode == (*new_range).fwnode {
             // range already there
             ret = -EEXIST;
-            goto end_register;
+            break 'end_register;
         }
         if (*range).flags == LOGIC_PIO_CPU_MMIO
             && (*new_range).flags == LOGIC_PIO_CPU_MMIO
@@ -49,7 +50,7 @@ pub unsafe fn logic_pio_register_range(new_range: *mut logic_pio_hwaddr) -> i32 
                 mmio_end = (*range).io_start.wrapping_add((*range).size);
             } else {
                 ret = -EFAULT;
-                goto end_register;
+                break 'end_register;
             }
         } else if (*range).flags == LOGIC_PIO_INDIRECT
             && (*new_range).flags == LOGIC_PIO_INDIRECT
@@ -64,7 +65,7 @@ pub unsafe fn logic_pio_register_range(new_range: *mut logic_pio_hwaddr) -> i32 
             // if it's too big check if 64K space can be reserved
             if mmio_end.wrapping_add(SZ_64K).wrapping_sub(1) > MMIO_UPPER_LIMIT {
                 ret = -E2BIG;
-                goto end_register;
+                break 'end_register;
             }
             (*new_range).size = SZ_64K;
             pr_warn!("Requested IO range too big, new size set to 64K\n");
@@ -73,18 +74,18 @@ pub unsafe fn logic_pio_register_range(new_range: *mut logic_pio_hwaddr) -> i32 
     } else if (*new_range).flags == LOGIC_PIO_INDIRECT {
         if iio_sz.wrapping_add((*new_range).size).wrapping_sub(1) > IO_SPACE_LIMIT {
             ret = -E2BIG;
-            goto end_register;
+            break 'end_register;
         }
         (*new_range).io_start = iio_sz;
     } else {
         // invalid flag
         ret = -EINVAL;
-        goto end_register;
+        break 'end_register;
     }
 
     list_add_tail_rcu!(&mut (*new_range).list, &raw mut IO_RANGE_LIST);
-
-end_register:
+    }
+    
     mutex_unlock(&raw mut IO_RANGE_MUTEX);
     ret
 }
@@ -182,14 +183,14 @@ pub unsafe fn logic_pio_trans_cpuaddr(addr: resource_size_t) -> usize {
 
 // The following helpers correspond to BUILD_LOGIC_IO and are present only
 // when CONFIG_INDIRECT_PIO and PCI_IOBASE are enabled in the C build.
-#[cfg(all(feature = "CONFIG_INDIRECT_PIO", feature = "PCI_IOBASE"))]
+#[cfg(all(CONFIG_INDIRECT_PIO, feature = "PCI_IOBASE"))]
 pub unsafe fn logic_inb(addr: usize) -> u8 { logic_in::<u8>(addr) }
-#[cfg(all(feature = "CONFIG_INDIRECT_PIO", feature = "PCI_IOBASE"))]
+#[cfg(all(CONFIG_INDIRECT_PIO, feature = "PCI_IOBASE"))]
 pub unsafe fn logic_inw(addr: usize) -> u16 { logic_in::<u16>(addr) }
-#[cfg(all(feature = "CONFIG_INDIRECT_PIO", feature = "PCI_IOBASE"))]
+#[cfg(all(CONFIG_INDIRECT_PIO, feature = "PCI_IOBASE"))]
 pub unsafe fn logic_inl(addr: usize) -> u32 { logic_in::<u32>(addr) }
 
-#[cfg(all(feature = "CONFIG_INDIRECT_PIO", feature = "PCI_IOBASE"))]
+#[cfg(all(CONFIG_INDIRECT_PIO, feature = "PCI_IOBASE"))]
 unsafe fn logic_in<T: Copy>(addr: usize) -> T {
     let mut ret: T = core::mem::zeroed();
     if addr < MMIO_UPPER_LIMIT {

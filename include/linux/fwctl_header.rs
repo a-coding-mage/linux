@@ -92,7 +92,7 @@ unsafe extern "C" {
 macro_rules! fwctl_alloc_device {
     ($parent:expr, $ops:expr, $drv_struct:ty, $member:ident) => {{
         const _: () = {
-            // C static_assert(__same_type(...)) and offsetof(..., member) == 0.
+            // C static_assert(__same_type(...)) and offsetof(..., $member) == 0.
             let _ = core::mem::offset_of!($drv_struct, $member);
         };
         _fwctl_alloc_device(

@@ -140,7 +140,7 @@ pub unsafe fn hfsplus_brec_read_cat(fd: *mut hfs_find_data, entry: *mut hfsplus_
         HFSPLUS_FOLDER => core::mem::size_of::<hfsplus_cat_folder>() as u32,
         HFSPLUS_FILE => core::mem::size_of::<hfsplus_cat_file>() as u32,
         HFSPLUS_FOLDER_THREAD | HFSPLUS_FILE_THREAD => {
-            if (*fd).entrylength as u32 < HFSPLUS_MIN_THREAD_SZ { return -EIO; }
+            if ((*fd).entrylength as u32) < HFSPLUS_MIN_THREAD_SZ { return -EIO; }
             hfsplus_cat_thread_size(&mut (*entry).thread) as u32
         }
         _ => return -EIO,

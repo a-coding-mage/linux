@@ -51,12 +51,12 @@ unsafe fn tegra_cpu_reset_handler_enable() {
 
     err = call_firmware_op(set_cpu_boot_addr, 0, reset_address);
     match err {
-        -ENOSYS => {
+        case if case == -ENOSYS => {
             tegra_cpu_reset_handler_set(reset_address);
             // fallthrough
             IS_ENABLED = true;
         }
-        0 => {
+        case if case == 0 => {
             IS_ENABLED = true;
         }
         _ => {

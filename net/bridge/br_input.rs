@@ -86,13 +86,13 @@ unsafe fn nf_hook_bridge_pre(skb: *mut sk_buff, pskb: *mut *mut sk_buff) -> c_in
     br_handle_frame_finish(dev_net((*skb).dev), core::ptr::null_mut(), skb); RX_HANDLER_CONSUMED
 }
 
-unsafe fn br_process_frame_type(p: *mut net_bridge_port, skb: *mut sk_buff) -> c_int { let mut tmp: *mut br_frame_type; hlist_for_each_entry_rcu!(tmp, &(*p).br.frame_type_list, list) { if (*tmp).type_ == (*skb).protocol { return ((*tmp).frame_handler)(p, skb); } } 0 }
+unsafe fn br_process_frame_type(p: *mut net_bridge_port, skb: *mut sk_buff) -> c_int { let mut tmp: *mut br_frame_type; hlist_for_each_entry_rcu!(tmp, &(*p).br.frame_type_list, list, { if (*tmp).type_ == (*skb).protocol { return ((*tmp).frame_handler)(p, skb); } }); 0 }
 
 unsafe fn br_handle_frame(pskb: *mut *mut sk_buff) -> rx_handler_result_t { let skb = *pskb; let dest = eth_hdr(skb).h_dest; if (*skb).pkt_type == PACKET_LOOPBACK || !is_valid_ether_addr(eth_hdr(skb).h_source) { return RX_HANDLER_PASS; } let skb = skb_share_check(skb, GFP_ATOMIC); if skb.is_null() { return RX_HANDLER_CONSUMED; } memset((*skb).cb.as_mut_ptr(), 0, core::mem::size_of::<br_input_skb_cb>()); br_tc_skb_miss_set(skb, false); let p = br_port_get_rcu((*skb).dev); if test_bit(BR_VLAN_TUNNEL_BIT, &(*p).flags) { br_handle_ingress_vlan_tunnel(skb, p, nbp_vlan_group_rcu(p)); } if is_link_local_ether_addr(dest) { *pskb = skb; __br_handle_local_finish(skb); return RX_HANDLER_PASS; } if br_process_frame_type(p, skb) != 0 { return RX_HANDLER_PASS; } if br_mst_is_enabled(p) || (*p).state == BR_STATE_FORWARDING || (*p).state == BR_STATE_LEARNING { if ether_addr_equal((*p).br).dev.dev_addr, dest { (*skb).pkt_type = PACKET_HOST; } return nf_hook_bridge_pre(skb, pskb); } kfree_skb_reason(skb, SKB_DROP_REASON_BRIDGE_INGRESS_STP_STATE); RX_HANDLER_CONSUMED }
 
 unsafe fn br_handle_frame_dummy(pskb: *mut *mut sk_buff) -> rx_handler_result_t { RX_HANDLER_PASS }
 unsafe fn br_get_rx_handler(dev: *const net_device) -> rx_handler_func_t { if netdev_uses_dsa(dev) { br_handle_frame_dummy } else { br_handle_frame } }
 pub unsafe fn br_add_frame(br: *mut net_bridge, ft: *mut br_frame_type) { hlist_add_head_rcu!(&mut (*ft).list, &mut (*br).frame_type_list); }
-pub unsafe fn br_del_frame(br: *mut net_bridge, ft: *mut br_frame_type) { let mut tmp: *mut br_frame_type; hlist_for_each_entry!(tmp, &(*br).frame_type_list, list) { if ft == tmp { hlist_del_rcu!(&mut (*ft).list); return; } } }
+pub unsafe fn br_del_frame(br: *mut net_bridge, ft: *mut br_frame_type) { let mut tmp: *mut br_frame_type; hlist_for_each_entry!(tmp, &(*br).frame_type_list, list, { if ft == tmp { hlist_del_rcu!(&mut (*ft).list); return; } }); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

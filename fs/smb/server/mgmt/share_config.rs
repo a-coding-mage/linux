@@ -16,7 +16,7 @@ struct KsmbdVetoPattern {
     list: ListHead,
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 static KSMBD_SHARE_FLAG_NAMES: &[KsmbdConstName] = &[
     KsmbdConstName { value: KSMBD_SHARE_FLAG_AVAILABLE, name: b"available\0".as_ptr() as *const libc::c_char },
     KsmbdConstName { value: KSMBD_SHARE_FLAG_BROWSEABLE, name: b"browseable\0".as_ptr() as *const libc::c_char },
@@ -38,7 +38,7 @@ static KSMBD_SHARE_FLAG_NAMES: &[KsmbdConstName] = &[
     KsmbdConstName { value: KSMBD_SHARE_FLAG_ENCRYPT_DATA, name: b"encrypt-data\0".as_ptr() as *const libc::c_char },
 ];
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn proc_show_shares(m: *mut SeqFile, _v: *mut libc::c_void) -> libc::c_int {
     let mut share: *mut KsmbdShareConfig;
     let mut i: libc::c_int = 0;
@@ -58,13 +58,13 @@ unsafe fn proc_show_shares(m: *mut SeqFile, _v: *mut libc::c_void) -> libc::c_in
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn create_proc_shares() -> libc::c_int {
     if !ksmbd_proc_create(b"shares\0".as_ptr() as *const libc::c_char, Some(proc_show_shares), core::ptr::null_mut()) { return -libc::ENOMEM; }
     0
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 unsafe fn create_proc_shares() -> libc::c_int { 0 }
 
 unsafe fn share_name_hash(name: *const libc::c_char) -> libc::c_uint {

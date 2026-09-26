@@ -51,7 +51,7 @@ pub struct dmem_cgroup_init {
     pub reclaim_priv: *mut c_void,
 }
 
-#[cfg(feature = "CONFIG_CGROUP_DMEM")]
+#[cfg(CONFIG_CGROUP_DMEM)]
 extern "C" {
     pub fn dmem_cgroup_register_region(
         init: *const dmem_cgroup_init,
@@ -87,7 +87,7 @@ extern "C" {
     pub fn dmem_cgroup_pool_state_put(pool: *mut dmem_cgroup_pool_state);
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_register_region(
     _init: *const dmem_cgroup_init,
     _name_fmt: *const i8,
@@ -96,10 +96,10 @@ pub unsafe fn dmem_cgroup_register_region(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_unregister_region(_region: *mut dmem_cgroup_region) {}
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_try_charge(
     _region: *mut dmem_cgroup_region,
     _size: u64,
@@ -113,10 +113,10 @@ pub unsafe fn dmem_cgroup_try_charge(
     0
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_uncharge(_pool: *mut dmem_cgroup_pool_state, _size: u64) {}
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_state_evict_valuable(
     _limit_pool: *mut dmem_cgroup_pool_state,
     _test_pool: *mut dmem_cgroup_pool_state,
@@ -126,7 +126,7 @@ pub unsafe fn dmem_cgroup_state_evict_valuable(
     true
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_below_min(
     _root: *mut dmem_cgroup_pool_state,
     _test: *mut dmem_cgroup_pool_state,
@@ -134,7 +134,7 @@ pub unsafe fn dmem_cgroup_below_min(
     false
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_below_low(
     _root: *mut dmem_cgroup_pool_state,
     _test: *mut dmem_cgroup_pool_state,
@@ -142,7 +142,7 @@ pub unsafe fn dmem_cgroup_below_low(
     false
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_get_common_ancestor(
     _a: *mut dmem_cgroup_pool_state,
     _b: *mut dmem_cgroup_pool_state,
@@ -150,7 +150,7 @@ pub unsafe fn dmem_cgroup_get_common_ancestor(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(not(CONFIG_CGROUP_DMEM))]
 pub unsafe fn dmem_cgroup_pool_state_put(_pool: *mut dmem_cgroup_pool_state) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

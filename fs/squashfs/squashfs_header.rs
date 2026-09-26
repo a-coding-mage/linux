@@ -16,21 +16,6 @@
 extern "C" {
 
 // External types supplied by the surrounding kernel code.
-pub enum super_block {}
-pub enum squashfs_page_actor {}
-pub enum squashfs_cache {}
-pub enum squashfs_cache_entry {}
-pub enum squashfs_decompressor {}
-pub enum squashfs_sb_info {}
-pub enum bio {}
-pub enum folio {}
-pub enum inode {}
-pub enum dentry {}
-pub enum file_operations {}
-pub enum export_operations {}
-pub enum address_space_operations {}
-pub enum inode_operations {}
-pub enum xattr_handler {}
 
 /* block.c */
 pub fn squashfs_read_data(
@@ -92,22 +77,7 @@ pub fn squashfs_decompressor_setup(
 ) -> *mut core::ffi::c_void;
 
 /* decompressor_xxx.c */
-#[repr(C)]
-pub struct squashfs_decompressor_thread_ops {
-    pub create: Option<unsafe extern "C" fn(
-        msblk: *mut squashfs_sb_info,
-        comp_opts: *mut core::ffi::c_void,
-    ) -> *mut core::ffi::c_void>,
-    pub destroy: Option<unsafe extern "C" fn(msblk: *mut squashfs_sb_info)>,
-    pub decompress: Option<unsafe extern "C" fn(
-        msblk: *mut squashfs_sb_info,
-        bio: *mut bio,
-        offset: core::ffi::c_int,
-        length: core::ffi::c_int,
-        output: *mut squashfs_page_actor,
-    ) -> core::ffi::c_int>,
-    pub max_decompressors: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-}
+
 
 /* export.c */
 pub fn squashfs_read_inode_lookup_table(
@@ -194,5 +164,36 @@ pub static squashfs_symlink_inode_ops: inode_operations;
 pub static squashfs_xattr_handlers: [*const xattr_handler; 0];
 
 }
+#[repr(C)]
+pub struct squashfs_decompressor_thread_ops {
+    pub create: Option<unsafe extern "C" fn(
+        msblk: *mut squashfs_sb_info,
+        comp_opts: *mut core::ffi::c_void,
+    ) -> *mut core::ffi::c_void>,
+    pub destroy: Option<unsafe extern "C" fn(msblk: *mut squashfs_sb_info)>,
+    pub decompress: Option<unsafe extern "C" fn(
+        msblk: *mut squashfs_sb_info,
+        bio: *mut bio,
+        offset: core::ffi::c_int,
+        length: core::ffi::c_int,
+        output: *mut squashfs_page_actor,
+    ) -> core::ffi::c_int>,
+    pub max_decompressors: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
+}
+pub enum super_block {}
+pub enum squashfs_page_actor {}
+pub enum squashfs_cache {}
+pub enum squashfs_cache_entry {}
+pub enum squashfs_decompressor {}
+pub enum squashfs_sb_info {}
+pub enum bio {}
+pub enum folio {}
+pub enum inode {}
+pub enum dentry {}
+pub enum file_operations {}
+pub enum export_operations {}
+pub enum address_space_operations {}
+pub enum inode_operations {}
+pub enum xattr_handler {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

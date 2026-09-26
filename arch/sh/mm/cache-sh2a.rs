@@ -10,7 +10,7 @@
 const MAX_OCACHE_PAGES: usize = 32;
 const MAX_ICACHE_PAGES: usize = 32;
 
-#[cfg(feature = "CONFIG_CACHE_WRITEBACK")]
+#[cfg(CONFIG_CACHE_WRITEBACK)]
 unsafe fn sh2a_flush_oc_line(v: usize, way: i32) {
     let addr = (v & 0x0000_07f0) | ((way as usize) << 11);
     let mut data: u32;
@@ -32,7 +32,7 @@ unsafe fn sh2a_invalidate_line(cache_addr: usize, v: usize) {
  * Write back the dirty D-caches, but not invalidate them.
  */
 unsafe fn sh2a__flush_wback_region(start: *mut core::ffi::c_void, size: i32) {
-    #[cfg(feature = "CONFIG_CACHE_WRITEBACK")]
+    #[cfg(CONFIG_CACHE_WRITEBACK)]
     {
         let mut v: usize;
         let mut begin: usize;
@@ -93,7 +93,7 @@ unsafe fn sh2a__flush_purge_region(start: *mut core::ffi::c_void, size: i32) {
 
     v = begin;
     while v < end {
-        #[cfg(feature = "CONFIG_CACHE_WRITEBACK")]
+        #[cfg(CONFIG_CACHE_WRITEBACK)]
         {
             let mut way = 0;
             let nr_ways = current_cpu_data.dcache.ways;
@@ -148,7 +148,7 @@ unsafe fn sh2a_flush_icache_range(args: *mut core::ffi::c_void) {
     let mut v: usize;
     let mut flags: usize = 0;
 
-    #[cfg(feature = "CONFIG_CACHE_WRITEBACK")]
+    #[cfg(CONFIG_CACHE_WRITEBACK)]
     sh2a__flush_wback_region(start as *mut core::ffi::c_void, end.wrapping_sub(start) as i32);
 
     local_irq_save(&mut flags);

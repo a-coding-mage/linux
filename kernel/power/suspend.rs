@@ -115,11 +115,11 @@ unsafe fn platform_resume_end(state: suspend_state_t) { if state == PM_SUSPEND_T
 unsafe fn platform_recover(state: suspend_state_t) { if state != PM_SUSPEND_TO_IDLE && (*SUSPEND_OPS).recover.is_some() { ((*SUSPEND_OPS).recover.unwrap())(); } }
 unsafe fn platform_suspend_again(state: suspend_state_t) -> bool { state != PM_SUSPEND_TO_IDLE && (*SUSPEND_OPS).suspend_again.is_some() && ((*SUSPEND_OPS).suspend_again.unwrap())() }
 
-#[cfg(feature = "CONFIG_PM_DEBUG")]
+#[cfg(CONFIG_PM_DEBUG)]
 static mut PM_TEST_DELAY: u32 = 5;
 
 unsafe fn suspend_test(level: i32) -> i32 {
-    #[cfg(feature = "CONFIG_PM_DEBUG")]
+    #[cfg(CONFIG_PM_DEBUG)]
     if pm_test_level == level { pr_info!("suspend debug: Waiting for %d second(s).\n", PM_TEST_DELAY); let mut i = 0; while i < PM_TEST_DELAY && !pm_wakeup_pending() { if level > TEST_CORE { msleep(1000); } else { mdelay(1000); } i += 1; } return 1; }
     0
 }
@@ -157,7 +157,7 @@ pub unsafe fn suspend_devices_and_enter(state: suspend_state_t) -> i32 {
 unsafe fn suspend_finish() { suspend_thaw_processes(); filesystems_thaw(); pm_notifier_call_chain(PM_POST_SUSPEND); pm_restore_console(); }
 
 unsafe fn enter_state(state: suspend_state_t) -> i32 {
-    trace_suspend_resume(TPS!("suspend_enter"), state, true); if state == PM_SUSPEND_TO_IDLE { #[cfg(feature = "CONFIG_PM_DEBUG")] if pm_test_level != TEST_NONE && pm_test_level <= TEST_CPUS { pr_warn!("Unsupported test mode for suspend to idle, please choose none/freezer/devices/platform.\n"); return -EAGAIN; } } else if !valid_state(state) { return -EINVAL; }
+    trace_suspend_resume(TPS!("suspend_enter"), state, true); if state == PM_SUSPEND_TO_IDLE { #[cfg(CONFIG_PM_DEBUG)] if pm_test_level != TEST_NONE && pm_test_level <= TEST_CPUS { pr_warn!("Unsupported test mode for suspend to idle, please choose none/freezer/devices/platform.\n"); return -EAGAIN; } } else if !valid_state(state) { return -EINVAL; }
     if !mutex_trylock(&mut system_transition_mutex) { return -EBUSY; } if state == PM_SUSPEND_TO_IDLE { s2idle_begin(); }
     let mut error = 0; if sync_on_suspend_enabled { trace_suspend_resume(TPS!("sync_filesystems"), 0, true); error = pm_sleep_fs_sync(); if error != 0 { mutex_unlock(&mut system_transition_mutex); return error; } trace_suspend_resume(TPS!("sync_filesystems"), 0, false); }
     pm_pr_dbg!("Preparing system for sleep (%s)\n", MEM_SLEEP_LABELS[state as usize].as_ptr()); pm_suspend_clear_flags(); error = suspend_prepare(state); if error == 0 && suspend_test(TEST_FREEZER) == 0 { trace_suspend_resume(TPS!("suspend_enter"), state, false); pm_pr_dbg!("Suspending system (%s)\n", MEM_SLEEP_LABELS[state as usize].as_ptr()); error = suspend_devices_and_enter(state); }

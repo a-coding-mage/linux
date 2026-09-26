@@ -6,7 +6,7 @@ use core::ffi::{c_char, c_int, c_void};
 
 const NAME_PREFIX: &[u8] = b"dlm\0";
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct DlmLockParams32 {
     pub mode: u8, pub namelen: u8, pub unused: u16, pub flags: u32,
@@ -15,19 +15,19 @@ pub struct DlmLockParams32 {
     pub lksb: u32, pub lvb: [c_char; DLM_USER_LVB_LEN], pub name: [c_char; 0],
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct DlmWriteRequest32 { pub version: [u32; 3], pub cmd: u8, pub is64bit: u8,
     pub unused: [u8; 2], pub i: DlmWriteUnion32 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub union DlmWriteUnion32 { pub lock: DlmLockParams32, pub lspace: DlmLspaceParams, pub purge: DlmPurgeParams }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct DlmLksb32 { pub sb_status: u32, pub sb_lkid: u32, pub sb_flags: u8, pub sb_lvbptr: u32 }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct DlmLockResult32 { pub version: [u32;3], pub length: u32, pub user_astaddr: u32, pub user_astparam: u32, pub user_lksb: u32, pub lksb: DlmLksb32, pub bast_mode: u8, pub unused: [u8;3], pub lvb_offset: u32 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_input(kb: *mut DlmWriteRequest, kb32: *const DlmWriteRequest32, namelen: usize) {
     (*kb).version = (*kb32).version; (*kb).cmd = (*kb32).cmd; (*kb).is64bit = (*kb32).is64bit;
     if (*kb).cmd == DLM_USER_CREATE_LOCKSPACE || (*kb).cmd == DLM_USER_REMOVE_LOCKSPACE {
@@ -37,7 +37,7 @@ unsafe fn compat_input(kb: *mut DlmWriteRequest, kb32: *const DlmWriteRequest32,
     } else { let a = &(*kb32).i.lock; let b = &mut (*kb).i.lock; b.mode=a.mode; b.namelen=a.namelen; b.flags=a.flags; b.lkid=a.lkid; b.parent=a.parent; b.xid=a.xid; b.timeout=a.timeout; b.castparam=a.castparam as usize as *mut c_void; b.castaddr=a.castaddr as usize as *mut c_void; b.bastparam=a.bastparam as usize as *mut c_void; b.bastaddr=a.bastaddr as usize as *mut c_void; b.lksb=a.lksb as usize as *mut c_void; core::ptr::copy_nonoverlapping(a.lvb.as_ptr(), b.lvb.as_mut_ptr(), DLM_USER_LVB_LEN); core::ptr::copy_nonoverlapping(a.name.as_ptr(), b.name.as_mut_ptr(), namelen); }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_output(res: *const DlmLockResult, out: *mut DlmLockResult32) { core::ptr::write_bytes(out, 0, 1); (*out).version=(*res).version; (*out).user_astaddr=(*res).user_astaddr as usize as u32; (*out).user_astparam=(*res).user_astparam as usize as u32; (*out).user_lksb=(*res).user_lksb as usize as u32; (*out).bast_mode=(*res).bast_mode; (*out).lvb_offset=(*res).lvb_offset; (*out).length=(*res).length; (*out).lksb.sb_status=(*res).lksb.sb_status; (*out).lksb.sb_flags=(*res).lksb.sb_flags; (*out).lksb.sb_lkid=(*res).lksb.sb_lkid; (*out).lksb.sb_lvbptr=(*res).lksb.sb_lvbptr as usize as u32; }
 
 unsafe fn lkb_is_endoflife(mode: c_int, status: c_int) -> c_int { match status { x if x == -DLM_EUNLOCK => 1, x if x == -DLM_ECANCEL || x == -ETIMEDOUT || x == -EDEADLK || x == -EAGAIN => (mode == DLM_LOCK_IV) as c_int, _ => 0 } }

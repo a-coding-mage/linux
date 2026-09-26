@@ -92,7 +92,7 @@ pub struct hte_chip {
 }
 
 // When CONFIG_HTE is enabled, these functions are provided by the HTE subsystem.
-#[cfg(feature = "CONFIG_HTE")]
+#[cfg(CONFIG_HTE)]
 extern "C" {
     pub fn devm_hte_register_chip(chip: *mut hte_chip) -> ::core::ffi::c_int;
     pub fn hte_push_ts_ns(chip: *const hte_chip, xlated_id: u32, data: *mut hte_ts_data) -> ::core::ffi::c_int;
@@ -108,30 +108,30 @@ extern "C" {
 }
 
 // !CONFIG_HTE stubs return -EOPNOTSUPP, supplied by the surrounding dependency.
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 const EOPNOTSUPP: ::core::ffi::c_int = 95;
 
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn devm_hte_register_chip(_: *mut hte_chip) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_push_ts_ns(_: *const hte_chip, _: u32, _: *const hte_ts_data) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_init_line_attr(_: *mut hte_ts_desc, _: u32, _: usize, _: *const ::core::ffi::c_char, _: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_ts_get(_: *mut device, _: *mut hte_ts_desc, _: ::core::ffi::c_int) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_ts_put(_: *mut hte_ts_desc) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_request_ts_ns(_: *mut hte_ts_desc, _: hte_ts_cb_t, _: hte_ts_sec_cb_t, _: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn devm_hte_request_ts_ns(_: *mut device, _: *mut hte_ts_desc, _: hte_ts_cb_t, _: hte_ts_sec_cb_t, _: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn of_hte_req_count(_: *mut device) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_enable_ts(_: *mut hte_ts_desc) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_disable_ts(_: *mut hte_ts_desc) -> ::core::ffi::c_int { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_HTE"))]
+#[cfg(not(CONFIG_HTE))]
 pub unsafe fn hte_get_clk_src_info(_: *const hte_ts_desc, _: *mut hte_clk_info) -> ::core::ffi::c_int { -EOPNOTSUPP }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -29,32 +29,32 @@ pub type c_ulong = usize; pub type loff_t = i64; pub type __be32 = u32;
 #[no_mangle] pub static mut ppc_hw_desc: seq_buf = seq_buf { buffer: unsafe { ppc_hw_desc_buf.as_mut_ptr() }, size: 128, len: 0 };
 
 extern "C" {
-    fn fadump_cleanup(); fn local_irq_disable(); fn smp_send_stop(); fn do_kernel_restart(*mut c_char);
-    fn do_kernel_power_off(); fn mdelay(c_uint); fn hard_irq_disable(); fn kaslr_offset() -> c_ulong;
-    fn should_fadump_crash() -> bool; fn crash_fadump(*mut core::ffi::c_void, *mut core::ffi::c_void);
-    fn kmsg_dump_desc(c_int, *mut c_char); fn pr_emerg(*const c_char, ...); fn pr_info(*const c_char, ...);
-    fn pr_err(*const c_char, ...); fn printk(c_int, *const c_char, ...); fn seq_printf(*mut seq_file, *const c_char, ...);
-    fn seq_puts(*mut seq_file, *const c_char); fn seq_putc(*mut seq_file, c_int);
-    fn of_find_node_by_path(*const c_char) -> *mut device_node; fn of_node_put(*mut device_node);
-    fn of_get_property(*mut device_node, *const c_char, *mut c_int) -> *const c_char;
-    fn cpu_has_feature(c_int) -> bool; fn cpumask_last(*const core::ffi::c_void) -> c_ulong;
-    fn cpumask_next(c_ulong, *const core::ffi::c_void) -> c_ulong; fn mfspr(c_int) -> c_uint;
-    fn cpu_temp(c_ulong) -> c_uint; fn cpu_temp_both(c_ulong) -> c_uint;
-    fn be32_to_cpu(u32) -> u32; fn PVR_VER(u32) -> u32; fn PVR_MIN(u32) -> u16; fn PVR_MAJ(u32) -> u16;
-    fn of_device_is_available(*mut device_node) -> bool; fn of_property_match_string(*mut device_node,*const c_char,*const c_char)->c_int;
-    fn of_get_parent(*mut device_node)->*mut device_node; fn irq_of_parse_and_map(*mut device_node,c_int)->c_int;
-    fn of_find_compatible_node(*mut device_node,*mut device_node,*const c_char)->*mut device_node;
-    fn of_find_node_by_type(*mut device_node,*const c_char)->*mut device_node; fn of_find_node_by_name(*mut device_node,*const c_char)->*mut device_node;
-    fn of_node_is_type(*mut device_node,*const c_char)->bool; fn of_machine_is_compatible(*const c_char)->bool;
-    fn of_machine_compatible_match(*const *const c_char)->bool; fn dump_stack_set_arch_desc(*mut c_char);
-    fn seq_buf_puts(*mut seq_buf,*const c_char); fn atomic_notifier_chain_register(*mut notifier_block,*mut notifier_block)->c_int;
+    fn fadump_cleanup(); fn local_irq_disable(); fn smp_send_stop(); fn do_kernel_restart(_: *mut c_char);
+    fn do_kernel_power_off(); fn mdelay(_: c_uint); fn hard_irq_disable(); fn kaslr_offset() -> c_ulong;
+    fn should_fadump_crash() -> bool; fn crash_fadump(_: *mut core::ffi::c_void, _: *mut core::ffi::c_void);
+    fn kmsg_dump_desc(_: c_int, _: *mut c_char); fn pr_emerg(_: *const c_char, ...); fn pr_info(_: *const c_char, ...);
+    fn pr_err(_: *const c_char, ...); fn printk(_: c_int, _: *const c_char, ...); fn seq_printf(_: *mut seq_file, _: *const c_char, ...);
+    fn seq_puts(_: *mut seq_file, _: *const c_char); fn seq_putc(_: *mut seq_file, _: c_int);
+    fn of_find_node_by_path(_: *const c_char) -> *mut device_node; fn of_node_put(_: *mut device_node);
+    fn of_get_property(_: *mut device_node, _: *const c_char, _: *mut c_int) -> *const c_char;
+    fn cpu_has_feature(_: c_int) -> bool; fn cpumask_last(_: *const core::ffi::c_void) -> c_ulong;
+    fn cpumask_next(_: c_ulong, _: *const core::ffi::c_void) -> c_ulong; fn mfspr(_: c_int) -> c_uint;
+    fn cpu_temp(_: c_ulong) -> c_uint; fn cpu_temp_both(_: c_ulong) -> c_uint;
+    fn be32_to_cpu(_: u32) -> u32; fn PVR_VER(_: u32) -> u32; fn PVR_MIN(_: u32) -> u16; fn PVR_MAJ(_: u32) -> u16;
+    fn of_device_is_available(_: *mut device_node) -> bool; fn of_property_match_string(_: *mut device_node,_: *const c_char,_: *const c_char)->c_int;
+    fn of_get_parent(_: *mut device_node)->*mut device_node; fn irq_of_parse_and_map(_: *mut device_node,_: c_int)->c_int;
+    fn of_find_compatible_node(_: *mut device_node,_: *mut device_node,_: *const c_char)->*mut device_node;
+    fn of_find_node_by_type(_: *mut device_node,_: *const c_char)->*mut device_node; fn of_find_node_by_name(_: *mut device_node,_: *const c_char)->*mut device_node;
+    fn of_node_is_type(_: *mut device_node,_: *const c_char)->bool; fn of_machine_is_compatible(_: *const c_char)->bool;
+    fn of_machine_compatible_match(_: *const *const c_char)->bool; fn dump_stack_set_arch_desc(_: *mut c_char);
+    fn seq_buf_puts(_: *mut seq_buf,_: *const c_char); fn atomic_notifier_chain_register(_: *mut notifier_block,_: *mut notifier_block)->c_int;
     fn setup_power_save(); fn find_legacy_serial_ports(); fn register_early_udbg_console(); fn xmon_setup();
-    fn check_smt_enabled(); fn mem_topology_setup(); fn __va(usize)->*mut core::ffi::c_void; fn setup_tlb_core_data();
-    fn klp_init_thread_info(*mut core::ffi::c_void); fn setup_initial_init_mm(*mut c_char,*mut c_char,*mut c_char,*mut c_char);
-    fn smp_processor_id()->c_int; fn cpumask_test_cpu(c_int,*mut core::ffi::c_void)->bool; fn cpumask_set_cpu(c_int,*mut core::ffi::c_void);
-    fn inc_mm_active_cpus(*mut core::ffi::c_void); fn mm_iommu_init(*mut core::ffi::c_void); fn irqstack_early_init(); fn exc_lvl_early_init();
-    fn emergency_stack_init(); fn mce_init(); fn smp_release_cpus(); fn initmem_init(); fn early_memtest(usize,usize);
-    fn setup_barrier_nospec(); fn setup_spectre_v2(); fn paging_init(); fn mmu_context_init(); fn panic(*const c_char,...);
+    fn check_smt_enabled(); fn mem_topology_setup(); fn __va(_: usize)->*mut core::ffi::c_void; fn setup_tlb_core_data();
+    fn klp_init_thread_info(_: *mut core::ffi::c_void); fn setup_initial_init_mm(_: *mut c_char,_: *mut c_char,_: *mut c_char,_: *mut c_char);
+    fn smp_processor_id()->c_int; fn cpumask_test_cpu(_: c_int,_: *mut core::ffi::c_void)->bool; fn cpumask_set_cpu(_: c_int,_: *mut core::ffi::c_void);
+    fn inc_mm_active_cpus(_: *mut core::ffi::c_void); fn mm_iommu_init(_: *mut core::ffi::c_void); fn irqstack_early_init(); fn exc_lvl_early_init();
+    fn emergency_stack_init(); fn mce_init(); fn smp_release_cpus(); fn initmem_init(); fn early_memtest(_: usize,_: usize);
+    fn setup_barrier_nospec(); fn setup_spectre_v2(); fn paging_init(); fn mmu_context_init(); fn panic(_: *const c_char,...);
 }
 
 #[no_mangle] pub unsafe extern "C" fn machine_shutdown() { fadump_cleanup(); }

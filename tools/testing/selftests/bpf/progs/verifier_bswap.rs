@@ -69,8 +69,8 @@ macro_rules! bswap_range_test {
     ($name:ident, $op:literal, $in_value:literal, $out_value:literal) => {
         // SEC("socket")
         // __success __log_level(2)
-        // __msg("r0 &= {{.*}}; R0=scalar({{.*}},var_off=(0x0; " #in_value "))")
-        // __msg("r0 = " op " r0 {{.*}}; R0=scalar({{.*}},var_off=(0x0; " #out_value "))")
+        // __msg("r0 &= {{.*}}; R0=scalar({{.*}},var_off=(0x0; " #$in_value "))")
+        // __msg("r0 = " $op " r0 {{.*}}; R0=scalar({{.*}},var_off=(0x0; " #$out_value "))")
         #[unsafe(no_mangle)]
         pub unsafe extern "C" fn $name() {
             unsafe {

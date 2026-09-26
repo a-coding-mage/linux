@@ -32,7 +32,7 @@ struct MetaAnchor { mp_count: i32, io_count: atomic_t, status: blk_status_t, mp:
 
 #[inline] unsafe fn folio_to_mp(folio: *mut folio, offset: i32) -> *mut metapage {
     #[cfg(any())] { let a = (*folio).private as *mut MetaAnchor; if a.is_null() { return core::ptr::null_mut(); } return (*a).mp[(offset as usize >> L2PSIZE)]; }
-    #[cfg(not(any())] { let _ = offset; (*folio).private as *mut metapage }
+    #[cfg(not(any()))] { let _ = offset; (*folio).private as *mut metapage }
 }
 
 #[inline] unsafe fn insert_metapage(folio: *mut folio, mp: *mut metapage) -> i32 {
@@ -55,7 +55,7 @@ pub unsafe fn metapage_exit() { mempool_destroy(METAPAGE_MEMPOOL); kmem_cache_de
 // The remaining operations retain the original kernel implementation's interfaces and ordering.
 pub unsafe fn __get_metapage(inode:*mut inode,lblock:usize,size:u32,absolute:i32,new_:usize)->*mut metapage {
     let l2b=(*inode).i_blkbits; let l2p=PAGE_SHIFT-l2b; let page_index=lblock>>l2p; let page_offset=(lblock-(page_index<<l2p))<<l2b;
-    if page_offset+size as usize>PAGE_SIZE { jfs_err(c"MetaData crosses page boundary!!\0".as_ptr()); dump_stack(); return core::ptr::null_mut(); }
+    if page_offset+size as usize>PAGE_SIZE { jfs_err(c"MetaData crosses page boundary!!".as_ptr()); dump_stack(); return core::ptr::null_mut(); }
     let mapping=if absolute!=0 { (*JFS_SBI((*inode).i_sb)).direct_inode.i_mapping } else { if (lblock<<l2b)>=(*inode).i_size as usize{return core::ptr::null_mut();} (*inode).i_mapping };
     let folio=if new_!=0 && PSIZE==PAGE_SIZE { let f=filemap_grab_folio(mapping,page_index); if IS_ERR(f){return core::ptr::null_mut();} folio_mark_uptodate(f); f } else { let f=read_mapping_folio(mapping,page_index,core::ptr::null_mut()); if IS_ERR(f){return core::ptr::null_mut();} folio_lock(f); f };
     let mp=folio_to_mp(folio,page_offset as i32); if !mp.is_null() { (*mp).count+=1; lock_metapage(mp); } else { let mp=alloc_metapage(GFP_NOFS); if mp.is_null(){folio_unlock(folio);return core::ptr::null_mut();} (*mp).folio=folio;(*mp).sb=(*inode).i_sb;(*mp).flag=0;(*mp).xflag=COMMIT_PAGE;(*mp).count=1;(*mp).nohomeok=0;(*mp).logical_size=size;(*mp).data=folio_address(folio).add(page_offset);(*mp).index=lblock as _; insert_metapage(folio,mp);lock_metapage(mp); if new_!=0 { core::ptr::write_bytes((*mp).data,0,PSIZE); } folio_unlock(folio); return mp; }
@@ -67,7 +67,7 @@ pub unsafe fn hold_metapage(mp:*mut metapage){ folio_lock((*mp).folio); }
 pub unsafe fn put_metapage(mp:*mut metapage){ if (*mp).count!=0||(*mp).nohomeok!=0 { folio_unlock((*mp).folio); return; } folio_get((*mp).folio); (*mp).count+=1; lock_metapage(mp); folio_unlock((*mp).folio); release_metapage(mp); }
 pub unsafe fn release_metapage(mp:*mut metapage){ let f=(*mp).folio; folio_lock(f); unlock_metapage(mp); assert!((*mp).count>0); (*mp).count-=1; if (*mp).count!=0||(*mp).nohomeok!=0 {folio_unlock(f);folio_put(f);return;} if test_bit(META_dirty,&(*mp).flag){folio_mark_dirty(f);if test_bit(META_sync,&(*mp).flag){clear_bit(META_sync,&mut (*mp).flag);let _=metapage_write_one(f);folio_lock(f);}} folio_unlock(f);folio_put(f); }
 pub unsafe fn force_metapage(mp:*mut metapage){set_bit(META_forcewrite,&mut (*mp).flag);clear_bit(META_sync,&mut (*mp).flag);let f=(*mp).folio;folio_get(f);folio_lock(f);folio_mark_dirty(f);let _=metapage_write_one(f);clear_bit(META_forcewrite,&mut (*mp).flag);folio_put(f);}
-unsafe fn metapage_write_one(f:*mut folio)->i32 { let mut wbc=writeback_control{sync_mode:WB_SYNC_ALL,nr_to_write:folio_nr_pages(f)}; folio_wait_writeback(f); if folio_clear_dirty_for_io(f){folio_get(f);let r=metapage_write_folio(f,&mut wbc);if r==0{folio_wait_writeback(f);}folio_put(f);r}else{folio_unlock(f);0} }
+unsafe fn metapage_write_one(f:*mut folio)->i32 { let mut wbc=writeback_control{sync_mode:WB_SYNC_ALL,nr_to_write:folio_nr_pages(f)}; folio_wait_writeback(f); if folio_clear_dirty_for_io(f) {folio_get(f);let r=metapage_write_folio(f,&mut wbc);if r==0{folio_wait_writeback(f);}folio_put(f);r}else{folio_unlock(f);0} }
 unsafe fn metapage_write_folio(f:*mut folio,_wbc:*mut writeback_control)->i32 { let inode=(*(*f).mapping).host; let mut bio=core::ptr::null_mut(); let mut off=0; while off<PAGE_SIZE { let mp=folio_to_mp(f,off as i32); if !mp.is_null()&&test_bit(META_dirty,&(*mp).flag){clear_bit(META_dirty,&mut (*mp).flag);set_bit(META_io,&mut (*mp).flag);let _=inode;} off+=PSIZE;} if !bio.is_null(){submit_bio(bio);} folio_unlock(f);0 }
 unsafe fn metapage_read_folio(_fp:*mut file,f:*mut folio)->i32 { folio_unlock(f);0 }
 unsafe fn metapage_release_folio(f:*mut folio,_gfp:gfp_t)->bool { let mut off=0; while off<PAGE_SIZE {let mp=folio_to_mp(f,off as i32);if !mp.is_null()&&(*mp).count==0&&(*mp).nohomeok==0&&!test_bit(META_dirty,&(*mp).flag){remove_metapage(f,mp);free_metapage(mp);}off+=PSIZE;} true }

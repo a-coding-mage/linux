@@ -57,6 +57,8 @@ unsafe fn cptvf_register_interrupts(cptvf: *mut otx2_cptvf_dev) -> i32 {
 unsafe fn cptvf_pfvf_mbox_init(cptvf: *mut otx2_cptvf_dev) -> i32 {
     let pdev = (*cptvf).pdev;
     let mut ret;
+    'free_wqe: {
+    'destroy_mbox: {
     (*cptvf).pfvf_mbox_wq = alloc_ordered_workqueue("cpt_pfvf_mailbox", WQ_HIGHPRI | WQ_MEM_RECLAIM);
     if (*cptvf).pfvf_mbox_wq.is_null() { return -ENOMEM; }
 
@@ -73,21 +75,22 @@ unsafe fn cptvf_pfvf_mbox_init(cptvf: *mut otx2_cptvf_dev) -> i32 {
         if (*cptvf).pfvf_mbox_base.is_null() {
             dev_err(&(*pdev).dev, "Unable to map BAR4\n");
             ret = -ENOMEM;
-            goto free_wqe;
+            break 'free_wqe;
         }
     }
 
     ret = otx2_mbox_init(&mut (*cptvf).pfvf_mbox, (*cptvf).pfvf_mbox_base,
                          pdev, (*cptvf).reg_base, MBOX_DIR_VFPF, 1);
-    if ret != 0 { goto free_wqe; }
+    if ret != 0 { break 'free_wqe; }
     ret = otx2_cpt_mbox_bbuf_init(cptvf, pdev);
-    if ret != 0 { goto destroy_mbox; }
+    if ret != 0 { break 'destroy_mbox; }
     INIT_WORK(&mut (*cptvf).pfvf_mbox_work, otx2_cptvf_pfvf_mbox_handler);
     return 0;
-
-destroy_mbox:
+    }
+    
     otx2_mbox_destroy(&mut (*cptvf).pfvf_mbox);
-free_wqe:
+    }
+    
     destroy_workqueue((*cptvf).pfvf_mbox_wq);
     ret
 }

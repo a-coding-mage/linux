@@ -45,7 +45,7 @@ pub const MCF_IRQ_PIT1: usize = MCFINT_VECBASE + MCFINT_PIT1;
 pub const MCF_IRQ_I2C0: usize = MCFINT_VECBASE + MCFINT_I2C0;
 
 /* CONFIG_M5271 and CONFIG_M5275 sections are preserved as feature gates. */
-#[cfg(feature = "CONFIG_M5271")]
+#[cfg(CONFIG_M5271)]
 pub mod config_m5271 {
     pub const MCFSIM_DCR: usize = super::MCF_IPSBAR + 0x40;
     pub const MCFSIM_DACR0: usize = super::MCF_IPSBAR + 0x48;
@@ -64,7 +64,7 @@ pub mod config_m5271 {
     pub const UART2_ENABLE_MASK: usize = 0x3000;
 }
 
-#[cfg(feature = "CONFIG_M5275")]
+#[cfg(CONFIG_M5275)]
 pub mod config_m5275 {
     pub const MCFSIM_DMR: usize = super::MCF_IPSBAR + 0x40;
     pub const MCFSIM_DCR: usize = super::MCF_IPSBAR + 0x44;
@@ -127,7 +127,7 @@ gpio_addr_consts! {
     MCFGPIO_PAR_TIMER=0x10004c
 }
 
-#[cfg(feature = "CONFIG_M5271")]
+#[cfg(CONFIG_M5271)]
 pub mod gpio_m5271 {
     macro_rules! regs { ($($n:ident = $o:expr),* $(,)?) => { $(pub const $n: usize = super::super::MCF_IPSBAR + $o;)* }; }
     regs! {
@@ -153,7 +153,7 @@ pub mod gpio_m5271 {
     pub const MCFGPIO_CLRR: usize = MCFGPIO_PCLRR_ADDR;
 }
 
-#[cfg(feature = "CONFIG_M5275")]
+#[cfg(CONFIG_M5275)]
 pub mod gpio_m5275 {
     macro_rules! regs { ($($n:ident = $o:expr),* $(,)?) => { $(pub const $n: usize = super::super::MCF_IPSBAR + $o;)* }; }
     regs! { MCFGPIO_PODR_BUSCTL=0x100004, MCFGPIO_PODR_ADDR=0x100005, MCFGPIO_PODR_CS=0x100008,

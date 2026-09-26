@@ -25,13 +25,13 @@ const bin_true: &[u8] = b"./true\0";
 
 /* Original C source follows, preserved as Rust comments.
  * // SPDX-License-Identifier: GPL-2.0
- * /*
+ * / *
  *  * Landlock tests - Filesystem
  *  *
  *  * Copyright © 2017-2020 Mickaël Salaün <mic@digikod.net>
  *  * Copyright © 2020 ANSSI
  *  * Copyright © 2020-2022 Microsoft Corporation
- *  * /
+ *  */
  * 
  * #define _GNU_SOURCE
  * #include <asm/termbits.h>
@@ -60,11 +60,11 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Intentionally included last to work around header conflict.
  *  * See https://sourceware.org/glibc/wiki/Synchronizing_Headers.
- *  * /
+ *  */
  * #include <linux/fs.h>
  * #include <linux/mount.h>
  * 
- * /* Defines AT_EXECVE_CHECK without type conflicts. * /
+ * /* Defines AT_EXECVE_CHECK without type conflicts. */
  * #define _ASM_GENERIC_FCNTL_H
  * #include <linux/fcntl.h>
  * 
@@ -76,7 +76,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * #ifndef renameat2
  * int renameat2(int olddirfd, const char *oldpath, int newdirfd,
- * 	      const char *newpath, unsigned int flags)
+ * 	      const char *newpath, core::ffi::c_uint flags)
  * {
  * 	return syscall(__NR_renameat2, olddirfd, oldpath, newdirfd, newpath,
  * 		       flags);
@@ -84,7 +84,7 @@ const bin_true: &[u8] = b"./true\0";
  * #endif
  * 
  * #ifndef open_tree
- * int open_tree(int dfd, const char *filename, unsigned int flags)
+ * int open_tree(int dfd, const char *filename, core::ffi::c_uint flags)
  * {
  * 	return syscall(__NR_open_tree, dfd, filename, flags);
  * }
@@ -102,7 +102,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * static const char bin_true[] = "./true";
  * 
- * /* Paths (sibling number and depth) * /
+ * /* Paths (sibling number and depth) */
  * static const char dir_s1d1[] = TMP_DIR "/s1d1";
  * static const char file1_s1d1[] = TMP_DIR "/s1d1/f1";
  * static const char file2_s1d1[] = TMP_DIR "/s1d1/f2";
@@ -123,7 +123,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * static const char dir_s3d1[] = TMP_DIR "/s3d1";
  * static const char file1_s3d1[] = TMP_DIR "/s3d1/f1";
- * /* dir_s3d2 is a mount point. * /
+ * /* dir_s3d2 is a mount point. */
  * static const char dir_s3d2[] = TMP_DIR "/s3d1/s3d2";
  * static const char dir_s3d3[] = TMP_DIR "/s3d1/s3d2/s3d3";
  * static const char file1_s3d3[] = TMP_DIR "/s3d1/s3d2/s3d3/f1";
@@ -157,7 +157,7 @@ const bin_true: &[u8] = b"./true\0";
  *  *         │   └── f1
  *  *         └── s3d4
  *  *             └── f1
- *  * /
+ *  */
  * 
  * static bool fgrep(FILE *const inf, const char *const str)
  * {
@@ -186,17 +186,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Consider that the filesystem is supported if we cannot get the
  * 	 * supported ones.
- * 	 * /
+ * 	 */
  * 	if (!inf)
  * 		return true;
  * 
- * 	/* filesystem can be null for bind mounts. * /
+ * 	/* filesystem can be null for bind mounts. */
  * 	if (!filesystem)
  * 		goto out;
  * 
  * 	len = snprintf(str, sizeof(str), "nodev\t%s\n", filesystem);
  * 	if (len >= sizeof(str))
- * 		/* Ignores too-long filesystem names. * /
+ * 		/* Ignores too-long filesystem names. */
  * 		goto out;
  * 
  * 	res = fgrep(inf, str);
@@ -206,7 +206,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	return res;
  * }
  * 
- * static bool cwd_matches_fs(unsigned int fs_magic)
+ * static bool cwd_matches_fs(core::ffi::c_uint fs_magic)
  * {
  * 	struct statfs statfs_buf;
  * 
@@ -219,7 +219,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	return statfs_buf.f_type == fs_magic;
  * }
  * 
- * static void mkdir_parents(struct __test_metadata *const _metadata,
+ * static void mkdir_parents(__test_metadata *const _metadata,
  * 			  const char *const path)
  * {
  * 	char *walker;
@@ -245,7 +245,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	free(walker);
  * }
  * 
- * static void create_directory(struct __test_metadata *const _metadata,
+ * static void create_directory(__test_metadata *const _metadata,
  * 			     const char *const path)
  * {
  * 	mkdir_parents(_metadata, path);
@@ -256,7 +256,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	}
  * }
  * 
- * static void create_file(struct __test_metadata *const _metadata,
+ * static void create_file(__test_metadata *const _metadata,
  * 			const char *const path)
  * {
  * 	mkdir_parents(_metadata, path);
@@ -304,7 +304,7 @@ const bin_true: &[u8] = b"./true\0";
  * struct mnt_opt {
  * 	const char *const source;
  * 	const char *const type;
- * 	const unsigned long flags;
+ * 	const core::ffi::c_ulong flags;
  * 	const char *const data;
  * };
  * 
@@ -317,11 +317,11 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * static int mount_opt(const struct mnt_opt *const mnt, const char *const target)
  * {
- * 	return mount(mnt->source ?: mnt->type, target, mnt->type, mnt->flags,
- * 		     mnt->data);
+ * 	return mount((*mnt).source ?: (*mnt).type, target, (*mnt).type, (*mnt).flags,
+ * 		     (*mnt).data);
  * }
  * 
- * static void prepare_layout_opt(struct __test_metadata *const _metadata,
+ * static void prepare_layout_opt(__test_metadata *const _metadata,
  * 			       const struct mnt_opt *const mnt)
  * {
  * 	disable_caps(_metadata);
@@ -331,31 +331,31 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Do not pollute the rest of the system: creates a private mount point
  * 	 * for tests relying on pivot_root(2) and move_mount(2).
- * 	 * /
+ * 	 */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, unshare(CLONE_NEWNS | CLONE_NEWCGROUP));
  * 	ASSERT_EQ(0, mount_opt(mnt, TMP_DIR))
  * 	{
- * 		TH_LOG("Failed to mount the %s filesystem: %s", mnt->type,
+ * 		TH_LOG("Failed to mount the %s filesystem: %s", (*mnt).type,
  * 		       strerror(errno));
  * 		/*
  * 		 * FIXTURE_TEARDOWN() is not called when FIXTURE_SETUP()
  * 		 * failed, so we need to explicitly do a minimal cleanup to
  * 		 * avoid cascading errors with other tests that don't depend on
  * 		 * the same filesystem.
- * 		 * /
+ * 		 */
  * 		remove_path(TMP_DIR);
  * 	}
  * 	ASSERT_EQ(0, mount(NULL, TMP_DIR, NULL, MS_PRIVATE | MS_REC, NULL));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * }
  * 
- * static void prepare_layout(struct __test_metadata *const _metadata)
+ * static void prepare_layout(__test_metadata *const _metadata)
  * {
  * 	prepare_layout_opt(_metadata, &mnt_tmp);
  * }
  * 
- * static void cleanup_layout(struct __test_metadata *const _metadata)
+ * static void cleanup_layout(__test_metadata *const _metadata)
  * {
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	if (umount(TMP_DIR)) {
@@ -364,16 +364,16 @@ const bin_true: &[u8] = b"./true\0";
  * 		 * current directory may be shared or not, which changes the
  * 		 * visibility of the nested TMP_DIR mount point for the test's
  * 		 * parent process doing this cleanup.
- * 		 * /
+ * 		 */
  * 		ASSERT_EQ(EINVAL, errno);
  * 	}
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * 	EXPECT_EQ(0, remove_path(TMP_DIR));
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(layout0) {};
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * FIXTURE_SETUP(layout0)
  * {
@@ -385,7 +385,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	cleanup_layout(_metadata);
  * }
  * 
- * static void create_layout1(struct __test_metadata *const _metadata)
+ * static void create_layout1(__test_metadata *const _metadata)
  * {
  * 	create_file(_metadata, file1_s1d1);
  * 	create_file(_metadata, file1_s1d2);
@@ -409,7 +409,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	create_file(_metadata, file1_s3d4);
  * }
  * 
- * static void remove_layout1(struct __test_metadata *const _metadata)
+ * static void remove_layout1(__test_metadata *const _metadata)
  * {
  * 	EXPECT_EQ(0, remove_path(file2_s1d3));
  * 	EXPECT_EQ(0, remove_path(file2_s1d2));
@@ -434,9 +434,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, remove_path(dir_s3d2));
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(layout1) {};
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * FIXTURE_SETUP(layout1)
  * {
@@ -455,20 +455,20 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * This helper enables to use the ASSERT_* macros and print the line number
  *  * pointing to the test caller.
- *  * /
+ *  */
  * static int test_open_rel(const int dirfd, const char *const path,
  * 			 const int flags)
  * {
  * 	int fd;
  * 
- * 	/* Works with file and directories. * /
+ * 	/* Works with file and directories. */
  * 	fd = openat(dirfd, path, flags | O_CLOEXEC);
  * 	if (fd < 0)
  * 		return errno;
  * 	/*
  * 	 * Mixing error codes from close(2) and open(2) should not lead to any
  * 	 * (access type) confusion for this test.
- * 	 * /
+ * 	 */
  * 	if (close(fd) != 0)
  * 		return errno;
  * 	return 0;
@@ -523,7 +523,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LE(0, ruleset_fd);
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
- * 	/* Returns EBADF because ruleset_fd is not a landlock-ruleset FD. * /
+ * 	/* Returns EBADF because ruleset_fd is not a landlock-ruleset FD. */
  * 	ASSERT_EQ(EBADF, errno);
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * 
@@ -531,11 +531,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LE(0, ruleset_fd);
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
- * 	/* Returns EBADFD because ruleset_fd is not a valid ruleset. * /
+ * 	/* Returns EBADFD because ruleset_fd is not a valid ruleset. */
  * 	ASSERT_EQ(EBADFD, errno);
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * 
- * 	/* Gets a real ruleset. * /
+ * 	/* Gets a real ruleset. */
  * 	ruleset_fd =
  * 		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
  * 	ASSERT_LE(0, ruleset_fd);
@@ -543,46 +543,46 @@ const bin_true: &[u8] = b"./true\0";
  * 				       &path_beneath, 0));
  * 	ASSERT_EQ(0, close(path_beneath.parent_fd));
  * 
- * 	/* Tests without O_PATH. * /
+ * 	/* Tests without O_PATH. */
  * 	path_beneath.parent_fd = open(dir_s1d2, O_DIRECTORY | O_CLOEXEC);
  * 	ASSERT_LE(0, path_beneath.parent_fd);
  * 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 				       &path_beneath, 0));
  * 	ASSERT_EQ(0, close(path_beneath.parent_fd));
  * 
- * 	/* Tests with a ruleset FD. * /
+ * 	/* Tests with a ruleset FD. */
  * 	path_beneath.parent_fd = ruleset_fd;
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
  * 	ASSERT_EQ(EBADFD, errno);
  * 
- * 	/* Checks unhandled allowed_access. * /
+ * 	/* Checks unhandled allowed_access. */
  * 	path_beneath.parent_fd =
  * 		open(dir_s1d2, O_PATH | O_DIRECTORY | O_CLOEXEC);
  * 	ASSERT_LE(0, path_beneath.parent_fd);
  * 
- * 	/* Test with legitimate values. * /
+ * 	/* Test with legitimate values. */
  * 	path_beneath.allowed_access |= LANDLOCK_ACCESS_FS_EXECUTE;
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
  * 	ASSERT_EQ(EINVAL, errno);
  * 	path_beneath.allowed_access &= ~LANDLOCK_ACCESS_FS_EXECUTE;
  * 
- * 	/* Tests with denied-by-default access right. * /
+ * 	/* Tests with denied-by-default access right. */
  * 	path_beneath.allowed_access |= LANDLOCK_ACCESS_FS_REFER;
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
  * 	ASSERT_EQ(EINVAL, errno);
  * 	path_beneath.allowed_access &= ~LANDLOCK_ACCESS_FS_REFER;
  * 
- * 	/* Test with unknown (64-bits) value. * /
+ * 	/* Test with unknown (64-bits) value. */
  * 	path_beneath.allowed_access |= (1ULL << 60);
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
  * 	ASSERT_EQ(EINVAL, errno);
  * 	path_beneath.allowed_access &= ~(1ULL << 60);
  * 
- * 	/* Test with no access. * /
+ * 	/* Test with no access. */
  * 	path_beneath.allowed_access = 0;
  * 	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
  * 					&path_beneath, 0));
@@ -591,14 +591,14 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ASSERT_EQ(0, close(path_beneath.parent_fd));
  * 
- * 	/* Enforces the ruleset. * /
+ * 	/* Enforces the ruleset. */
  * 	ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
  * 	ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
  * 
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * 
  * #define ACCESS_FILE ( \
  * 	LANDLOCK_ACCESS_FS_EXECUTE | \
@@ -624,7 +624,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	LANDLOCK_ACCESS_FS_MAKE_SYM | \
  * 	LANDLOCK_ACCESS_FS_REFER)
  * 
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * TEST_F_FORK(layout1, file_and_dir_access_rights)
  * {
@@ -640,11 +640,11 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ASSERT_LE(0, ruleset_fd);
  * 
- * 	/* Tests access rights for files. * /
+ * 	/* Tests access rights for files. */
  * 	path_beneath_file.parent_fd = open(file1_s1d2, O_PATH | O_CLOEXEC);
  * 	ASSERT_LE(0, path_beneath_file.parent_fd);
  * 
- * 	/* Tests access rights for directories. * /
+ * 	/* Tests access rights for directories. */
  * 	path_beneath_dir.parent_fd =
  * 		open(dir_s1d2, O_PATH | O_DIRECTORY | O_CLOEXEC);
  * 	ASSERT_LE(0, path_beneath_dir.parent_fd);
@@ -747,7 +747,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, close(ruleset_fd));
  * }
  * 
- * static void add_path_beneath(struct __test_metadata *const _metadata,
+ * static void add_path_beneath(__test_metadata *const _metadata,
  * 			     const int ruleset_fd, const __u64 allowed_access,
  * 			     const char *const path, __u32 flags)
  * {
@@ -775,7 +775,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	__u64 access;
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * 
  * #define ACCESS_RO ( \
  * 	LANDLOCK_ACCESS_FS_READ_FILE | \
@@ -785,9 +785,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	ACCESS_RO | \
  * 	LANDLOCK_ACCESS_FS_WRITE_FILE)
  * 
- * /* clang-format on * /
+ * /* clang-format on */
  * 
- * static int create_ruleset(struct __test_metadata *const _metadata,
+ * static int create_ruleset(__test_metadata *const _metadata,
  * 			  const __u64 handled_access_fs,
  * 			  const struct rule rules[])
  * {
@@ -814,7 +814,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	return ruleset_fd;
  * }
  * 
- * static void enforce_fs(struct __test_metadata *const _metadata,
+ * static void enforce_fs(__test_metadata *const _metadata,
  * 		       const __u64 access_fs, const struct rule rules[])
  * {
  * 	const int ruleset_fd = create_ruleset(_metadata, access_fs, rules);
@@ -855,13 +855,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Because nsfs is an internal filesystem, /proc/self/ns/mnt is a
  * 	 * disconnected path.  Such path cannot be identified and must then be
  * 	 * allowed.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, test_open("/proc/self/ns/mnt", O_RDONLY));
  * 
  * 	/*
  * 	 * Checks that it is not possible to add nsfs-like filesystem
  * 	 * references to a ruleset.
- * 	 * /
+ * 	 */
  * 	path_beneath.allowed_access = LANDLOCK_ACCESS_FS_READ_FILE |
  * 				      LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 	path_beneath.parent_fd = open("/proc/self/ns/mnt", O_PATH | O_CLOEXEC);
@@ -890,7 +890,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(-1, landlock_restrict_self(ruleset_fd, 0));
  * 	ASSERT_EQ(EPERM, errno);
  * 
- * 	/* enforce_ruleset() calls prctl(no_new_privs). * /
+ * 	/* enforce_ruleset() calls prctl(no_new_privs). */
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * }
@@ -914,7 +914,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_RW, rules);
  * 
- * 	/* Tests on a directory (with or without O_PATH). * /
+ * 	/* Tests on a directory (with or without O_PATH). */
  * 	ASSERT_EQ(EACCES, test_open("/", O_RDONLY));
  * 	ASSERT_EQ(0, test_open("/", O_RDONLY | O_PATH));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY));
@@ -927,13 +927,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 
- * 	/* Tests on a file (with or without O_PATH). * /
+ * 	/* Tests on a file (with or without O_PATH). */
  * 	ASSERT_EQ(EACCES, test_open(dir_s2d2, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(dir_s2d2, O_RDONLY | O_PATH));
  * 
  * 	ASSERT_EQ(0, test_open(file1_s2d2, O_RDONLY));
  * 
- * 	/* Checks effective read and write actions. * /
+ * 	/* Checks effective read and write actions. */
  * 	reg_fd = open(file1_s2d2, O_RDWR | O_CLOEXEC);
  * 	ASSERT_LE(0, reg_fd);
  * 	ASSERT_EQ(1, write(reg_fd, ".", 1));
@@ -942,7 +942,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ('.', buf);
  * 	ASSERT_EQ(0, close(reg_fd));
  * 
- * 	/* Just in case, double-checks effective actions. * /
+ * 	/* Just in case, double-checks effective actions. */
  * 	reg_fd = open(file1_s2d2, O_RDONLY | O_CLOEXEC);
  * 	ASSERT_LE(0, reg_fd);
  * 	ASSERT_EQ(-1, write(reg_fd, &buf, 1));
@@ -960,13 +960,13 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* Here, we only handle read accesses, not write accesses. * /
+ * 	/* Here, we only handle read accesses, not write accesses. */
  * 	enforce_fs(_metadata, ACCESS_RO, rules);
  * 
  * 	/*
  * 	 * Because the policy does not handle LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 	 * opening for write-only should be allowed, but not read-write.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
  * 
@@ -977,7 +977,7 @@ const bin_true: &[u8] = b"./true\0";
  * TEST_F_FORK(layout1, ruleset_overlap)
  * {
  * 	const struct rule rules[] = {
- * 		/* These rules should be ORed among them. * /
+ * 		/* These rules should be ORed among them. */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
@@ -993,19 +993,19 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_RW, rules);
  * 
- * 	/* Checks s1d1 hierarchy. * /
+ * 	/* Checks s1d1 hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d2 hierarchy. * /
+ * 	/* Checks s1d2 hierarchy. */
  * 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDWR));
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d3 hierarchy. * /
+ * 	/* Checks s1d3 hierarchy. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
@@ -1019,7 +1019,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
  * 		},
- * 		/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). * /
+ * 		/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). */
  * 		{
  * 			.path = dir_s1d3,
  * 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
@@ -1027,7 +1027,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 	const struct rule layer2[] = {
- * 		/* Doesn't change anything from layer1. * /
+ * 		/* Doesn't change anything from layer1. */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
@@ -1036,7 +1036,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 	const struct rule layer3[] = {
- * 		/* Only allows write (but not read) to dir_s1d3. * /
+ * 		/* Only allows write (but not read) to dir_s1d3. */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
@@ -1046,66 +1046,66 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_RW, layer1);
  * 
- * 	/* Checks s1d1 hierarchy with layer1. * /
+ * 	/* Checks s1d1 hierarchy with layer1. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d2 hierarchy with layer1. * /
+ * 	/* Checks s1d2 hierarchy with layer1. */
  * 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d3 hierarchy with layer1. * /
+ * 	/* Checks s1d3 hierarchy with layer1. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
- * 	/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). * /
+ * 	/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Doesn't change anything from layer1. * /
+ * 	/* Doesn't change anything from layer1. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer2);
  * 
- * 	/* Checks s1d1 hierarchy with layer2. * /
+ * 	/* Checks s1d1 hierarchy with layer2. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d2 hierarchy with layer2. * /
+ * 	/* Checks s1d2 hierarchy with layer2. */
  * 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d3 hierarchy with layer2. * /
+ * 	/* Checks s1d3 hierarchy with layer2. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
- * 	/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). * /
+ * 	/* dir_s1d3 should allow READ_FILE and WRITE_FILE (O_RDWR). */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Only allows write (but not read) to dir_s1d3. * /
+ * 	/* Only allows write (but not read) to dir_s1d3. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer3);
  * 
- * 	/* Checks s1d1 hierarchy with layer3. * /
+ * 	/* Checks s1d1 hierarchy with layer3. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d2 hierarchy with layer3. * /
+ * 	/* Checks s1d2 hierarchy with layer3. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks s1d3 hierarchy with layer3. * /
+ * 	/* Checks s1d3 hierarchy with layer3. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_WRONLY));
- * 	/* dir_s1d3 should now deny READ_FILE and WRITE_FILE (O_RDWR). * /
+ * 	/* dir_s1d3 should now deny READ_FILE and WRITE_FILE (O_RDWR). */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * }
@@ -1139,12 +1139,12 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_REMOVE_FILE, layer2);
  * 
- * 	/* Unchanged accesses for file creation. * /
+ * 	/* Unchanged accesses for file creation. */
  * 	ASSERT_EQ(-1, mknod(file1_s1d1, S_IFREG | 0700, 0));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(0, mknod(file1_s1d2, S_IFREG | 0700, 0));
  * 
- * 	/* Checks file removing. * /
+ * 	/* Checks file removing. */
  * 	ASSERT_EQ(-1, unlink(file1_s1d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
@@ -1165,24 +1165,24 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * layer 6: allows   X ----
  * 	 * layer 7: allows  W  s1d1/s1d2
  * 	 *          denies R   s1d1/s1d2
- * 	 * /
+ * 	 */
  * 	const struct rule layer1_read[] = {
- * 		/* Allows read access to file1_s1d3 with the first layer. * /
+ * 		/* Allows read access to file1_s1d3 with the first layer. */
  * 		{
  * 			.path = file1_s1d3,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
  * 		},
  * 		{},
  * 	};
- * 	/* First rule with write restrictions. * /
+ * 	/* First rule with write restrictions. */
  * 	const struct rule layer2_read_write[] = {
- * 		/* Start by granting read-write access via its parent directory... * /
+ * 		/* Start by granting read-write access via its parent directory... */
  * 		{
  * 			.path = dir_s1d3,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE |
  * 				  LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 		},
- * 		/* ...but also denies read access via its grandparent directory. * /
+ * 		/* ...but also denies read access via its grandparent directory. */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
@@ -1190,7 +1190,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 	const struct rule layer3_read[] = {
- * 		/* Allows read access via its great-grandparent directory. * /
+ * 		/* Allows read access via its great-grandparent directory. */
  * 		{
  * 			.path = dir_s1d1,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
@@ -1201,7 +1201,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		/*
  * 		 * Try to confuse the deny access by denying write (but not
  * 		 * read) access via its grandparent directory.
- * 		 * /
+ * 		 */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
@@ -1212,7 +1212,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		/*
  * 		 * Try to override layer2's deny read access by explicitly
  * 		 * allowing read access via file1_s1d3's grandparent.
- * 		 * /
+ * 		 */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_READ_FILE,
@@ -1223,7 +1223,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		/*
  * 		 * Restricts an unrelated file hierarchy with a new access
  * 		 * (non-overlapping) type.
- * 		 * /
+ * 		 */
  * 		{
  * 			.path = dir_s2d1,
  * 			.access = LANDLOCK_ACCESS_FS_EXECUTE,
@@ -1234,7 +1234,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		/*
  * 		 * Finally, denies read access to file1_s1d3 via its
  * 		 * grandparent.
- * 		 * /
+ * 		 */
  * 		{
  * 			.path = dir_s1d2,
  * 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
@@ -1244,7 +1244,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_READ_FILE, layer1_read);
  * 
- * 	/* Checks that read access is granted for file1_s1d3 with layer 1. * /
+ * 	/* Checks that read access is granted for file1_s1d3 with layer 1. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file2_s1d3, O_WRONLY));
@@ -1253,19 +1253,19 @@ const bin_true: &[u8] = b"./true\0";
  * 		   LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 		   layer2_read_write);
  * 
- * 	/* Checks that previous access rights are unchanged with layer 2. * /
+ * 	/* Checks that previous access rights are unchanged with layer 2. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file2_s1d3, O_WRONLY));
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_READ_FILE, layer3_read);
  * 
- * 	/* Checks that previous access rights are unchanged with layer 3. * /
+ * 	/* Checks that previous access rights are unchanged with layer 3. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(file2_s1d3, O_WRONLY));
  * 
- * 	/* This time, denies write access for the file hierarchy. * /
+ * 	/* This time, denies write access for the file hierarchy. */
  * 	enforce_fs(_metadata,
  * 		   LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 		   layer4_read_write);
@@ -1273,7 +1273,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks that the only change with layer 4 is that write access is
  * 	 * denied.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_RDONLY));
@@ -1281,7 +1281,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_READ_FILE, layer5_read);
  * 
- * 	/* Checks that previous access rights are unchanged with layer 5. * /
+ * 	/* Checks that previous access rights are unchanged with layer 5. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_WRONLY));
@@ -1289,7 +1289,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_EXECUTE, layer6_execute);
  * 
- * 	/* Checks that previous access rights are unchanged with layer 6. * /
+ * 	/* Checks that previous access rights are unchanged with layer 6. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_WRONLY));
@@ -1299,7 +1299,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		   LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 		   layer7_read_write);
  * 
- * 	/* Checks read access is now denied with layer 7. * /
+ * 	/* Checks read access is now denied with layer 7. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(file2_s1d3, O_WRONLY));
@@ -1323,21 +1323,21 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Write access is forbidden. * /
+ * 	/* Write access is forbidden. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
- * 	/* Readdir access is allowed. * /
+ * 	/* Readdir access is allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Write access is forbidden. * /
+ * 	/* Write access is forbidden. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
- * 	/* Readdir access is allowed. * /
+ * 	/* Readdir access is allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
  * 
  * 	/*
  * 	 * Tests shared rule extension: the following rules should not grant
  * 	 * any new access, only remove some.  Once enforced, these rules are
  * 	 * ANDed with the previous ones.
- * 	 * /
+ * 	 */
  * 	add_path_beneath(_metadata, ruleset_fd, LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 			 dir_s1d2, 0);
  * 	/*
@@ -1350,49 +1350,49 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * LANDLOCK_ACCESS_FS_READ_DIR accesses, but
  * 	 * LANDLOCK_ACCESS_FS_WRITE_FILE must not be allowed because it would
  * 	 * be a privilege escalation.
- * 	 * /
+ * 	 */
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 
- * 	/* Same tests and results as above. * /
+ * 	/* Same tests and results as above. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* It is still forbidden to write in file1_s1d2. * /
+ * 	/* It is still forbidden to write in file1_s1d2. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
- * 	/* Readdir access is still allowed. * /
+ * 	/* Readdir access is still allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* It is still forbidden to write in file1_s1d3. * /
+ * 	/* It is still forbidden to write in file1_s1d3. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
- * 	/* Readdir access is still allowed. * /
+ * 	/* Readdir access is still allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
  * 
  * 	/*
  * 	 * Try to get more privileges by adding new access rights to the parent
  * 	 * directory: dir_s1d1.
- * 	 * /
+ * 	 */
  * 	add_path_beneath(_metadata, ruleset_fd, ACCESS_RW, dir_s1d1, 0);
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 
- * 	/* Same tests and results as above. * /
+ * 	/* Same tests and results as above. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* It is still forbidden to write in file1_s1d2. * /
+ * 	/* It is still forbidden to write in file1_s1d2. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
- * 	/* Readdir access is still allowed. * /
+ * 	/* Readdir access is still allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* It is still forbidden to write in file1_s1d3. * /
+ * 	/* It is still forbidden to write in file1_s1d3. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
- * 	/* Readdir access is still allowed. * /
+ * 	/* Readdir access is still allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
  * 
  * 	/*
  * 	 * Now, dir_s1d3 get a new rule tied to it, only allowing
  * 	 * LANDLOCK_ACCESS_FS_WRITE_FILE.  The (kernel internal) difference is
  * 	 * that there was no rule tied to it before.
- * 	 * /
+ * 	 */
  * 	add_path_beneath(_metadata, ruleset_fd, LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 			 dir_s1d3, 0);
  * 	enforce_ruleset(_metadata, ruleset_fd);
@@ -1402,23 +1402,23 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Same tests and results as above, except for open(dir_s1d3) which is
  * 	 * now denied because the new rule mask the rule previously inherited
  * 	 * from dir_s1d2.
- * 	 * /
+ * 	 */
  * 
- * 	/* Same tests and results as above. * /
+ * 	/* Same tests and results as above. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* It is still forbidden to write in file1_s1d2. * /
+ * 	/* It is still forbidden to write in file1_s1d2. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
- * 	/* Readdir access is still allowed. * /
+ * 	/* Readdir access is still allowed. */
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* It is still forbidden to write in file1_s1d3. * /
+ * 	/* It is still forbidden to write in file1_s1d3. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 	/*
  * 	 * Readdir of dir_s1d3 is still allowed because of the OR policy inside
  * 	 * the same layer.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
  * }
  * 
@@ -1435,14 +1435,14 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 
- * 	/* Readdir access is denied for dir_s1d2. * /
+ * 	/* Readdir access is denied for dir_s1d2. */
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
- * 	/* Readdir access is allowed for dir_s1d3. * /
+ * 	/* Readdir access is allowed for dir_s1d3. */
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
- * 	/* File access is allowed for file1_s1d3. * /
+ * 	/* File access is allowed for file1_s1d3. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * 
- * 	/* Now dir_s1d2, parent of dir_s1d3, gets a new rule tied to it. * /
+ * 	/* Now dir_s1d2, parent of dir_s1d3, gets a new rule tied to it. */
  * 	add_path_beneath(_metadata, ruleset_fd,
  * 			 LANDLOCK_ACCESS_FS_READ_FILE |
  * 				 LANDLOCK_ACCESS_FS_READ_DIR,
@@ -1450,11 +1450,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	EXPECT_EQ(0, close(ruleset_fd));
  * 
- * 	/* Readdir access is still denied for dir_s1d2. * /
+ * 	/* Readdir access is still denied for dir_s1d2. */
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
- * 	/* Readdir access is still allowed for dir_s1d3. * /
+ * 	/* Readdir access is still allowed for dir_s1d3. */
  * 	ASSERT_EQ(0, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
- * 	/* File access is still allowed for file1_s1d3. * /
+ * 	/* File access is still allowed for file1_s1d3. */
  * 	ASSERT_EQ(0, test_open(file1_s1d3, O_RDONLY));
  * }
  * 
@@ -1486,26 +1486,26 @@ const bin_true: &[u8] = b"./true\0";
  * 	struct landlock_ruleset_attr ruleset_attr = {};
  * 	int ruleset_fd;
  * 
- * 	/* Tests empty handled_access_fs. * /
+ * 	/* Tests empty handled_access_fs. */
  * 	ruleset_fd =
  * 		landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 0);
  * 	ASSERT_LE(-1, ruleset_fd);
  * 	ASSERT_EQ(ENOMSG, errno);
  * 
- * 	/* Enforces policy which denies read access to all files. * /
+ * 	/* Enforces policy which denies read access to all files. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_READ_FILE, NULL);
  * 
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(0, test_open(dir_s1d1, O_RDONLY));
  * 
- * 	/* Nests a policy which denies read access to all directories. * /
+ * 	/* Nests a policy which denies read access to all directories. */
  * 	ruleset_fd =
  * 		create_ruleset(_metadata, LANDLOCK_ACCESS_FS_READ_DIR, NULL);
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY));
  * 
- * 	/* Enforces a second time with the same ruleset. * /
+ * 	/* Enforces a second time with the same ruleset. */
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * }
@@ -1518,7 +1518,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.access = ACCESS_RO,
  * 		},
  * 		{
- * 			/* dir_s3d2 is a mount point. * /
+ * 			/* dir_s3d2 is a mount point. */
  * 			.path = dir_s3d2,
  * 			.access = ACCESS_RO,
  * 		},
@@ -1544,7 +1544,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.access = ACCESS_RO,
  * 		},
  * 		{
- * 			/* dir_s3d2 is a mount point. * /
+ * 			/* dir_s3d2 is a mount point. */
  * 			.path = dir_s3d1,
  * 			.access = ACCESS_RO,
  * 		},
@@ -1565,7 +1565,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * This test verifies that we can apply a landlock rule on the root directory
  *  * (which might require special handling).
- *  * /
+ *  */
  * TEST_F_FORK(layout1, rule_over_root_allow_then_deny)
  * {
  * 	struct rule rules[] = {
@@ -1578,14 +1578,14 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_RW, rules);
  * 
- * 	/* Checks allowed access. * /
+ * 	/* Checks allowed access. */
  * 	ASSERT_EQ(0, test_open("/", O_RDONLY));
  * 	ASSERT_EQ(0, test_open(dir_s1d1, O_RDONLY));
  * 
  * 	rules[0].access = LANDLOCK_ACCESS_FS_READ_FILE;
  * 	enforce_fs(_metadata, ACCESS_RW, rules);
  * 
- * 	/* Checks denied access (on a directory). * /
+ * 	/* Checks denied access (on a directory). */
  * 	ASSERT_EQ(EACCES, test_open("/", O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY));
  * }
@@ -1602,7 +1602,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_RW, rules);
  * 
- * 	/* Checks denied access (on a directory). * /
+ * 	/* Checks denied access (on a directory). */
  * 	ASSERT_EQ(EACCES, test_open("/", O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY));
  * }
@@ -1688,10 +1688,10 @@ const bin_true: &[u8] = b"./true\0";
  * 				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
  * 	};
  * 
- * 	/* Add network restrictions. * /
+ * 	/* Add network restrictions. */
  * 	drop_access_rights(_metadata, &ruleset_net);
  * 
- * 	/* Mount, remount, move_mount, umount, and pivot_root checks. * /
+ * 	/* Mount, remount, move_mount, umount, and pivot_root checks. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, mount_opt(&mnt_tmp, dir_s1d2));
  * 	ASSERT_EQ(0, mount(NULL, dir_s1d2, NULL, MS_PRIVATE | MS_REC, NULL));
@@ -1711,10 +1711,10 @@ const bin_true: &[u8] = b"./true\0";
  * 		.handled_access_fs = LANDLOCK_ACCESS_FS_EXECUTE,
  * 	};
  * 
- * 	/* Add network and filesystem restrictions. * /
+ * 	/* Add network and filesystem restrictions. */
  * 	drop_access_rights(_metadata, &ruleset_net_fs);
  * 
- * 	/* Mount, remount, move_mount, umount, and pivot_root checks. * /
+ * 	/* Mount, remount, move_mount, umount, and pivot_root checks. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(-1, mount_opt(&mnt_tmp, dir_s1d2));
  * 	ASSERT_EQ(EPERM, errno);
@@ -1749,7 +1749,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
  * 
- * 	/* Unmount a file hierarchy while it is being used by a ruleset. * /
+ * 	/* Unmount a file hierarchy while it is being used by a ruleset. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, umount(dir_s3d2));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
@@ -1759,7 +1759,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ASSERT_EQ(0, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s3d2, O_RDONLY));
- * 	/* This dir_s3d3 would not be allowed and does not exist anyway. * /
+ * 	/* This dir_s3d3 would not be allowed and does not exist anyway. */
  * 	ASSERT_EQ(ENOENT, test_open(dir_s3d3, O_RDONLY));
  * }
  * 
@@ -1767,7 +1767,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * This test checks that a rule on a directory used as a mount point does not
  *  * grant access to the mount covering it.  It is a generalization of the bind
  *  * mount case in layout3_fs.hostfs.release_inodes that tests hidden mount points.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, covered_rule)
  * {
  * 	const struct rule layer1[] = {
@@ -1779,16 +1779,16 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * 	int ruleset_fd;
  * 
- * 	/* Unmount to simplify FIXTURE_TEARDOWN. * /
+ * 	/* Unmount to simplify FIXTURE_TEARDOWN. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, umount(dir_s3d2));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * 
- * 	/* Creates a ruleset with the future hidden directory. * /
+ * 	/* Creates a ruleset with the future hidden directory. */
  * 	ruleset_fd =
  * 		create_ruleset(_metadata, LANDLOCK_ACCESS_FS_READ_DIR, layer1);
  * 
- * 	/* Covers with a new mount point. * /
+ * 	/* Covers with a new mount point. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, mount_opt(&mnt_tmp, dir_s3d2));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
@@ -1798,7 +1798,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * 
- * 	/* Checks that access to the new mount point is denied. * /
+ * 	/* Checks that access to the new mount point is denied. */
  * 	ASSERT_EQ(EACCES, test_open(dir_s3d2, O_RDONLY));
  * }
  * 
@@ -1809,13 +1809,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	REL_CHROOT_CHDIR,
  * };
  * 
- * static void test_relative_path(struct __test_metadata *const _metadata,
+ * static void test_relative_path(__test_metadata *const _metadata,
  * 			       const enum relative_access rel)
  * {
  * 	/*
  * 	 * Common layer to check that chroot doesn't ignore it (i.e. a chroot
  * 	 * is not a disconnected root directory).
- * 	 * /
+ * 	 */
  * 	const struct rule layer1_base[] = {
  * 		{
  * 			.path = TMP_DIR,
@@ -1869,7 +1869,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		dirfd = AT_FDCWD;
  * 		break;
  * 	case REL_CHROOT_ONLY:
- * 		/* Do chroot into dir_s1d2 (relative to dir_s2d2). * /
+ * 		/* Do chroot into dir_s1d2 (relative to dir_s2d2). */
  * 		ASSERT_EQ(0, chroot("../../s1d1/s1d2"))
  * 		{
  * 			TH_LOG("Failed to chroot: %s", strerror(errno));
@@ -1877,7 +1877,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		dirfd = AT_FDCWD;
  * 		break;
  * 	case REL_CHROOT_CHDIR:
- * 		/* Do chroot into dir_s1d2. * /
+ * 		/* Do chroot into dir_s1d2. */
  * 		ASSERT_EQ(0, chroot("."))
  * 		{
  * 			TH_LOG("Failed to chroot: %s", strerror(errno));
@@ -1891,15 +1891,15 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, test_open_rel(dirfd, ".", O_RDONLY));
  * 
  * 	if (rel == REL_CHROOT_ONLY) {
- * 		/* The current directory is dir_s2d2. * /
+ * 		/* The current directory is dir_s2d2. */
  * 		ASSERT_EQ(0, test_open_rel(dirfd, "./s2d3", O_RDONLY));
  * 	} else {
- * 		/* The current directory is dir_s1d2. * /
+ * 		/* The current directory is dir_s1d2. */
  * 		ASSERT_EQ(0, test_open_rel(dirfd, "./s1d3", O_RDONLY));
  * 	}
  * 
  * 	if (rel == REL_CHROOT_ONLY || rel == REL_CHROOT_CHDIR) {
- * 		/* Checks the root dir_s1d2. * /
+ * 		/* Checks the root dir_s1d2. */
  * 		ASSERT_EQ(0, test_open_rel(dirfd, "/..", O_RDONLY));
  * 		ASSERT_EQ(0, test_open_rel(dirfd, "/", O_RDONLY));
  * 		ASSERT_EQ(0, test_open_rel(dirfd, "/f1", O_RDONLY));
@@ -1943,7 +1943,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	test_relative_path(_metadata, REL_CHROOT_CHDIR);
  * }
  * 
- * static void copy_file(struct __test_metadata *const _metadata,
+ * static void copy_file(__test_metadata *const _metadata,
  * 		      const char *const src_path, const char *const dst_path)
  * {
  * 	int dst_fd, src_fd;
@@ -1966,7 +1966,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, close(dst_fd));
  * }
  * 
- * static void test_execute(struct __test_metadata *const _metadata, const int err,
+ * static void test_execute(__test_metadata *const _metadata, const int err,
  * 			 const char *const path)
  * {
  * 	int status;
@@ -1992,7 +1992,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * }
  * 
- * static void test_check_exec(struct __test_metadata *const _metadata,
+ * static void test_check_exec(__test_metadata *const _metadata,
  * 			    const int err, const char *const path)
  * {
  * 	int ret;
@@ -2022,7 +2022,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	copy_file(_metadata, bin_true, file1_s1d2);
  * 	copy_file(_metadata, bin_true, file1_s1d3);
  * 
- * 	/* Checks before file1_s1d1 being denied. * /
+ * 	/* Checks before file1_s1d1 being denied. */
  * 	test_execute(_metadata, 0, file1_s1d1);
  * 	test_check_exec(_metadata, 0, file1_s1d1);
  * 
@@ -2063,7 +2063,7 @@ const bin_true: &[u8] = b"./true\0";
  * 				       (char *)bin_wait_pipe, pipe_child_str,
  * 				       pipe_parent_str, NULL };
  * 
- * 		/* Passes the pipe FDs to the executed binary and its child. * /
+ * 		/* Passes the pipe FDs to the executed binary and its child. */
  * 		EXPECT_EQ(0, close(pipe_child[0]));
  * 		EXPECT_EQ(0, close(pipe_parent[1]));
  * 		snprintf(pipe_child_str, sizeof(pipe_child_str), "%d",
@@ -2077,7 +2077,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		 * make sure the mount point will not be EBUSY because of
  * 		 * file1_s3d3 being in use.  This avoids a potential race
  * 		 * condition between the following read() and umount() calls.
- * 		 * /
+ * 		 */
  * 		ASSERT_EQ(0, execve(argv[0], argv, NULL))
  * 		{
  * 			TH_LOG("Failed to execute \"%s\": %s", argv[0],
@@ -2090,22 +2090,22 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, close(pipe_child[1]));
  * 	EXPECT_EQ(0, close(pipe_parent[0]));
  * 
- * 	/* Waits for the child to sandbox itself. * /
+ * 	/* Waits for the child to sandbox itself. */
  * 	EXPECT_EQ(1, read(pipe_child[0], &buf_parent, 1));
  * 
- * 	/* Tests that the sandboxer is tied to its mount point. * /
+ * 	/* Tests that the sandboxer is tied to its mount point. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	EXPECT_EQ(-1, umount(dir_s3d2));
  * 	EXPECT_EQ(EBUSY, errno);
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * 
- * 	/* Signals the child to launch a grandchild. * /
+ * 	/* Signals the child to launch a grandchild. */
  * 	EXPECT_EQ(1, write(pipe_parent[1], ".", 1));
  * 
- * 	/* Waits for the grandchild. * /
+ * 	/* Waits for the grandchild. */
  * 	EXPECT_EQ(1, read(pipe_child[0], &buf_parent, 1));
  * 
- * 	/* Tests that the domain's sandboxer is not tied to its mount point. * /
+ * 	/* Tests that the domain's sandboxer is not tied to its mount point. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	EXPECT_EQ(0, umount(dir_s3d2))
  * 	{
@@ -2114,7 +2114,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * 
- * 	/* Signals the grandchild to terminate. * /
+ * 	/* Signals the grandchild to terminate. */
  * 	EXPECT_EQ(1, write(pipe_parent[1], ".", 1));
  * 	ASSERT_EQ(child, waitpid(child, &status, 0));
  * 	ASSERT_EQ(1, WIFEXITED(status));
@@ -2147,7 +2147,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(-1, link(file2_s1d1, file1_s1d1));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Denies linking because of reparenting. * /
+ * 	/* Denies linking because of reparenting. */
  * 	ASSERT_EQ(-1, link(file1_s2d1, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	ASSERT_EQ(-1, link(file2_s1d2, file1_s1d3));
@@ -2158,13 +2158,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, link(file2_s1d2, file1_s1d2));
  * 	ASSERT_EQ(0, link(file2_s1d3, file1_s1d3));
  * 
- * 	/* Prepares for next unlinks. * /
+ * 	/* Prepares for next unlinks. */
  * 	ASSERT_EQ(0, unlink(file2_s1d2));
  * 	ASSERT_EQ(0, unlink(file2_s1d3));
  * 
  * 	enforce_fs(_metadata, layer2[0].access, layer2);
  * 
- * 	/* Checks that linkind doesn't require the ability to delete a file. * /
+ * 	/* Checks that linkind doesn't require the ability to delete a file. */
  * 	ASSERT_EQ(0, link(file1_s1d2, file2_s1d2));
  * 	ASSERT_EQ(0, link(file1_s1d3, file2_s1d3));
  * }
@@ -2220,7 +2220,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Tries to replace a file, from a directory that allows file removal,
  * 	 * but to a different directory (which also allows file removal).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(file1_s2d3, file1_s1d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d3, AT_FDCWD, file1_s1d3,
@@ -2233,7 +2233,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Tries to replace a file, from a directory that denies file removal,
  * 	 * to a different directory (which allows file removal).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(file1_s2d1, file1_s1d3));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d1, AT_FDCWD, file1_s1d3,
@@ -2243,33 +2243,33 @@ const bin_true: &[u8] = b"./true\0";
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Exchanges files and directories that partially allow removal. * /
+ * 	/* Exchanges files and directories that partially allow removal. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s2d2, AT_FDCWD, file1_s2d1,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Checks that file1_s2d1 cannot be removed (instead of ENOTDIR). * /
+ * 	/* Checks that file1_s2d1 cannot be removed (instead of ENOTDIR). */
  * 	ASSERT_EQ(-1, rename(dir_s2d2, file1_s2d1));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d1, AT_FDCWD, dir_s2d2,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Checks that file1_s1d1 cannot be removed (instead of EISDIR). * /
+ * 	/* Checks that file1_s1d1 cannot be removed (instead of EISDIR). */
  * 	ASSERT_EQ(-1, rename(file1_s1d1, dir_s1d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Renames files with different parents. * /
+ * 	/* Renames files with different parents. */
  * 	ASSERT_EQ(-1, rename(file1_s2d2, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
  * 	ASSERT_EQ(-1, rename(file1_s2d1, file1_s1d3));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Exchanges and renames files with same parent. * /
+ * 	/* Exchanges and renames files with same parent. */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, file2_s2d3, AT_FDCWD, file1_s2d3,
  * 			       RENAME_EXCHANGE));
  * 	ASSERT_EQ(0, rename(file2_s2d3, file1_s2d3));
  * 
- * 	/* Exchanges files and directories with same parent, twice. * /
+ * 	/* Exchanges files and directories with same parent, twice. */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, dir_s2d3,
  * 			       RENAME_EXCHANGE));
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, dir_s2d3,
@@ -2278,18 +2278,18 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout1, rename_whiteout_denied)
  * {
- * 	/* The affected file is a FIFO. * /
+ * 	/* The affected file is a FIFO. */
  * 	ASSERT_EQ(0, unlink(file1_s3d3));
  * 	ASSERT_EQ(0, mknod(file1_s3d3, S_IFIFO | 0600, 0));
  * 
- * 	/* Deny MAKE_REG, but allow MAKE_FIFO. * /
+ * 	/* Deny MAKE_REG, but allow MAKE_FIFO. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_MAKE_REG, NULL);
  * 
  * 	/*
  * 	 * Try to rename a file with RENAME_WHITEOUT.
  * 	 * file1_s3d3 is in dir_s3d2 (tmpfs), so it supports RENAME_WHITEOUT.
  * 	 * Denied, because whiteout creation is guarded with MAKE_REG.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(-1, renameat2(AT_FDCWD, file1_s3d3, AT_FDCWD,
  * 				TMP_DIR "/s3d1/s3d2/s3d3/f2", RENAME_WHITEOUT));
  * 	EXPECT_EQ(EACCES, errno);
@@ -2329,22 +2329,22 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* The affected file is a FIFO. * /
+ * 	/* The affected file is a FIFO. */
  * 	ASSERT_EQ(0, unlink(file1_s3d3));
  * 	ASSERT_EQ(0, mknod(file1_s3d3, S_IFIFO | 0600, 0));
  * 
- * 	/* Allow MAKE_REG below dir_s3d3. * /
+ * 	/* Allow MAKE_REG below dir_s3d3. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_MAKE_REG, rules);
  * 
  * 	/*
  * 	 * Rename a file with RENAME_WHITEOUT within the same directory.
  * 	 * Allowed, because MAKE_REG is granted for the whiteout object which
  * 	 * gets created in the source location.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, renameat2(AT_FDCWD, file1_s3d3, AT_FDCWD,
  * 			       TMP_DIR "/s3d1/s3d2/s3d3/f2", RENAME_WHITEOUT));
  * 
- * 	/* A whiteout object took the place of the moved FIFO. * /
+ * 	/* A whiteout object took the place of the moved FIFO. */
  * 	EXPECT_TRUE(is_whiteout(file1_s3d3));
  * 	EXPECT_TRUE(is_fifo(TMP_DIR "/s3d1/s3d2/s3d3/f2"));
  * }
@@ -2363,13 +2363,13 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* The moved files are FIFOs. * /
+ * 	/* The moved files are FIFOs. */
  * 	ASSERT_EQ(0, unlink(file1_s3d3));
  * 	ASSERT_EQ(0, mknod(file1_s3d3, S_IFIFO | 0600, 0));
  * 	ASSERT_EQ(0, unlink(file1_s3d4));
  * 	ASSERT_EQ(0, mknod(file1_s3d4, S_IFIFO | 0600, 0));
  * 
- * 	/* Allow REFER below dir_s3d2, but MAKE_REG only below dir_s3d3. * /
+ * 	/* Allow REFER below dir_s3d2, but MAKE_REG only below dir_s3d3. */
  * 	enforce_fs(_metadata,
  * 		   LANDLOCK_ACCESS_FS_MAKE_REG | LANDLOCK_ACCESS_FS_REFER,
  * 		   rules);
@@ -2379,7 +2379,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * FIFO out of dir_s3d4 is denied because MAKE_REG is not granted
  * 	 * there, even though it is granted in the destination directory
  * 	 * dir_s3d3.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(-1, renameat2(AT_FDCWD, file1_s3d4, AT_FDCWD,
  * 				TMP_DIR "/s3d1/s3d2/s3d3/f2", RENAME_WHITEOUT));
  * 	EXPECT_EQ(EACCES, errno);
@@ -2387,11 +2387,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Moving the FIFO out of dir_s3d3 is allowed, because MAKE_REG is
  * 	 * granted there for the created whiteout object.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, renameat2(AT_FDCWD, file1_s3d3, AT_FDCWD,
  * 			       TMP_DIR "/s3d1/s3d2/s3d4/f2", RENAME_WHITEOUT));
  * 
- * 	/* A whiteout object took the place of the moved FIFO. * /
+ * 	/* A whiteout object took the place of the moved FIFO. */
  * 	EXPECT_TRUE(is_whiteout(file1_s3d3));
  * 	EXPECT_TRUE(is_fifo(TMP_DIR "/s3d1/s3d2/s3d4/f2"));
  * }
@@ -2411,14 +2411,14 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* The exchanged files are FIFOs and an existing whiteout object. * /
+ * 	/* The exchanged files are FIFOs and an existing whiteout object. */
  * 	ASSERT_EQ(0, unlink(file1_s3d3));
  * 	ASSERT_EQ(0, mknod(file1_s3d3, S_IFIFO | 0600, 0));
  * 	ASSERT_EQ(0, mknod(whiteout_s3d3, S_IFCHR | 0600, makedev(0, 0)));
  * 	ASSERT_EQ(0, unlink(file1_s3d4));
  * 	ASSERT_EQ(0, mknod(file1_s3d4, S_IFIFO | 0600, 0));
  * 
- * 	/* Allow REFER below dir_s3d2, but MAKE_REG only below dir_s3d3. * /
+ * 	/* Allow REFER below dir_s3d2, but MAKE_REG only below dir_s3d3. */
  * 	enforce_fs(_metadata,
  * 		   LANDLOCK_ACCESS_FS_MAKE_REG | LANDLOCK_ACCESS_FS_REFER,
  * 		   rules);
@@ -2429,7 +2429,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * whiteout object is denied because MAKE_REG is not granted in
  * 	 * dir_s3d4, even though it is granted in the whiteout object's own
  * 	 * directory dir_s3d3.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(-1, renameat2(AT_FDCWD, file1_s3d4, AT_FDCWD, whiteout_s3d3,
  * 				RENAME_EXCHANGE));
  * 	EXPECT_EQ(EACCES, errno);
@@ -2438,11 +2438,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Exchanging the FIFO in dir_s3d3 with the whiteout object is
  * 	 * allowed, because MAKE_REG is granted in the directory into which
  * 	 * the whiteout object moves.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, renameat2(AT_FDCWD, file1_s3d3, AT_FDCWD, whiteout_s3d3,
  * 			       RENAME_EXCHANGE));
  * 
- * 	/* The FIFO and the whiteout object swapped places. * /
+ * 	/* The FIFO and the whiteout object swapped places. */
  * 	EXPECT_TRUE(is_whiteout(file1_s3d3));
  * 	EXPECT_TRUE(is_fifo(whiteout_s3d3));
  * }
@@ -2461,13 +2461,13 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* Empties dir_s1d3 to allow renaming. * /
+ * 	/* Empties dir_s1d3 to allow renaming. */
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
  * 	ASSERT_EQ(0, unlink(file2_s1d3));
  * 
  * 	enforce_fs(_metadata, rules[0].access, rules);
  * 
- * 	/* Exchanges and renames directory to a different parent. * /
+ * 	/* Exchanges and renames directory to a different parent. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s2d3, AT_FDCWD, dir_s1d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EXDEV, errno);
@@ -2480,24 +2480,24 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Exchanges directory to the same parent, which doesn't allow
  * 	 * directory removal.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s1d1, AT_FDCWD, dir_s2d1,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Checks that dir_s1d2 cannot be removed (instead of ENOTDIR). * /
+ * 	/* Checks that dir_s1d2 cannot be removed (instead of ENOTDIR). */
  * 	ASSERT_EQ(-1, rename(dir_s1d2, file1_s1d1));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s1d1, AT_FDCWD, dir_s1d2,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Checks that dir_s1d2 cannot be removed (instead of EISDIR). * /
+ * 	/* Checks that dir_s1d2 cannot be removed (instead of EISDIR). */
  * 	ASSERT_EQ(-1, rename(file1_s1d1, dir_s1d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 
  * 	/*
  * 	 * Exchanges and renames directory to the same parent, which allows
  * 	 * directory removal.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, dir_s1d3, AT_FDCWD, file1_s1d2,
  * 			       RENAME_EXCHANGE));
  * 	ASSERT_EQ(0, unlink(dir_s1d3));
@@ -2536,7 +2536,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Moving should only be allowed when the source and the destination
  * 	 * parent directory have REFER.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(dir_s1d3, dir_s2d3));
  * 	ASSERT_EQ(ENOTEMPTY, errno);
  * 	ASSERT_EQ(0, unlink(file1_s2d3));
@@ -2544,8 +2544,8 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, rename(dir_s1d3, dir_s2d3));
  * }
  * 
- * /* Checks renames beneath dir_s1d1. * /
- * static void refer_denied_by_default(struct __test_metadata *const _metadata,
+ * /* Checks renames beneath dir_s1d1. */
+ * static void refer_denied_by_default(__test_metadata *const _metadata,
  * 				    const struct rule layer1[],
  * 				    const int layer1_err,
  * 				    const struct rule layer2[])
@@ -2557,7 +2557,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * If the first layer handles LANDLOCK_ACCESS_FS_REFER (according to
  * 	 * layer1_err), then it allows some different-parent renames and links.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(layer1_err, test_rename(file1_s1d1, file1_s1d2));
  * 	if (layer1_err == 0)
  * 		ASSERT_EQ(layer1_err, test_rename(file1_s1d2, file1_s1d1));
@@ -2571,7 +2571,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * LANDLOCK_ACCESS_FS_REFER, which means that any different-parent
  * 	 * renames and links are denied, thus making the layer handling
  * 	 * LANDLOCK_ACCESS_FS_REFER null and void.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(EXDEV, test_rename(file1_s1d1, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, test_exchange(file2_s1d1, file2_s1d2));
  * 	ASSERT_EQ(EXDEV, test_exchange(file2_s1d2, file2_s1d1));
@@ -2587,7 +2587,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * const struct rule layer_dir_s1d1_execute[] = {
  * 	{
- * 		/* Matches a parent directory. * /
+ * 		/* Matches a parent directory. */
  * 		.path = dir_s1d1,
  * 		.access = LANDLOCK_ACCESS_FS_EXECUTE,
  * 	},
@@ -2596,7 +2596,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * const struct rule layer_dir_s2d1_execute[] = {
  * 	{
- * 		/* Does not match a parent directory. * /
+ * 		/* Does not match a parent directory. */
  * 		.path = dir_s2d1,
  * 		.access = LANDLOCK_ACCESS_FS_EXECUTE,
  * 	},
@@ -2607,7 +2607,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * Tests precedence over renames: denied by default for different parent
  *  * directories, *with* a rule matching a parent directory, but not directly
  *  * denying access (with MAKE_REG nor REMOVE).
- *  * /
+ *  */
  * TEST_F_FORK(layout1, refer_denied_by_default1)
  * {
  * 	refer_denied_by_default(_metadata, layer_dir_s1d1_refer, 0,
@@ -2617,7 +2617,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Same test but this time turning around the ABI version order: the first
  *  * layer does not handle LANDLOCK_ACCESS_FS_REFER.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, refer_denied_by_default2)
  * {
  * 	refer_denied_by_default(_metadata, layer_dir_s1d1_execute, EXDEV,
@@ -2628,7 +2628,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * Tests precedence over renames: denied by default for different parent
  *  * directories, *without* a rule matching a parent directory, but not directly
  *  * denying access (with MAKE_REG nor REMOVE).
- *  * /
+ *  */
  * TEST_F_FORK(layout1, refer_denied_by_default3)
  * {
  * 	refer_denied_by_default(_metadata, layer_dir_s1d1_refer, 0,
@@ -2638,7 +2638,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Same test but this time turning around the ABI version order: the first
  *  * layer does not handle LANDLOCK_ACCESS_FS_REFER.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, refer_denied_by_default4)
  * {
  * 	refer_denied_by_default(_metadata, layer_dir_s2d1_execute, EXDEV,
@@ -2647,12 +2647,12 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * /*
  *  * Tests walking through a denied root mount.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, refer_mount_root_deny)
  * {
  * 	int root_fd;
  * 
- * 	/* Creates a mount object from a non-mount point. * /
+ * 	/* Creates a mount object from a non-mount point. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	root_fd =
  * 		open_tree(AT_FDCWD, dir_s1d1,
@@ -2662,11 +2662,11 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_MAKE_DIR, NULL);
  * 
- * 	/* Link denied by Landlock: EACCES. * /
+ * 	/* Link denied by Landlock: EACCES. */
  * 	EXPECT_EQ(-1, linkat(root_fd, ".", root_fd, "does_not_exist", 0));
  * 	EXPECT_EQ(EACCES, errno);
  * 
- * 	/* renameat2() always returns EBUSY. * /
+ * 	/* renameat2() always returns EBUSY. */
  * 	EXPECT_EQ(-1, renameat2(root_fd, ".", root_fd, "does_not_exist", 0));
  * 	EXPECT_EQ(EBUSY, errno);
  * 
@@ -2677,7 +2677,7 @@ const bin_true: &[u8] = b"./true\0";
  * {
  * 	const struct rule layer1[] = {
  * 		{
- * 			/* Parent mount point. * /
+ * 			/* Parent mount point. */
  * 			.path = dir_s3d1,
  * 			.access = LANDLOCK_ACCESS_FS_REFER |
  * 				  LANDLOCK_ACCESS_FS_MAKE_REG,
@@ -2687,7 +2687,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			 * Removing the source file is allowed because its
  * 			 * access rights are already a superset of the
  * 			 * destination.
- * 			 * /
+ * 			 */
  * 			.path = dir_s3d4,
  * 			.access = LANDLOCK_ACCESS_FS_REFER |
  * 				  LANDLOCK_ACCESS_FS_MAKE_REG |
@@ -2735,38 +2735,38 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, unlink(file1_s1d2));
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
  * 
- * 	/* Denies linking because of missing MAKE_REG. * /
+ * 	/* Denies linking because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, link(file2_s1d1, file1_s1d1));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Denies linking because of missing source and destination REFER. * /
+ * 	/* Denies linking because of missing source and destination REFER. */
  * 	ASSERT_EQ(-1, link(file1_s2d1, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
- * 	/* Denies linking because of missing source REFER. * /
+ * 	/* Denies linking because of missing source REFER. */
  * 	ASSERT_EQ(-1, link(file1_s2d1, file1_s1d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Denies linking because of missing MAKE_REG. * /
+ * 	/* Denies linking because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, link(file1_s2d2, file1_s1d1));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Denies linking because of missing destination REFER. * /
+ * 	/* Denies linking because of missing destination REFER. */
  * 	ASSERT_EQ(-1, link(file1_s2d2, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Allows linking because of REFER and MAKE_REG. * /
+ * 	/* Allows linking because of REFER and MAKE_REG. */
  * 	ASSERT_EQ(0, link(file1_s2d2, file1_s1d3));
  * 	ASSERT_EQ(0, unlink(file1_s2d2));
- * 	/* Reverse linking denied because of missing MAKE_REG. * /
+ * 	/* Reverse linking denied because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, link(file1_s1d3, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(0, unlink(file1_s2d3));
- * 	/* Checks reverse linking. * /
+ * 	/* Checks reverse linking. */
  * 	ASSERT_EQ(0, link(file1_s1d3, file1_s2d3));
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
  * 
  * 	/*
  * 	 * This is OK for a file link, but it should not be allowed for a
  * 	 * directory rename (because of the superset of access rights.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, link(file1_s2d3, file1_s1d3));
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
  * 
@@ -2781,7 +2781,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout1, reparent_rename)
  * {
- * 	/* Same rules as for reparent_link. * /
+ * 	/* Same rules as for reparent_link. */
  * 	const struct rule layer1[] = {
  * 		{
  * 			.path = dir_s1d2,
@@ -2809,7 +2809,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, unlink(file1_s1d2));
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
  * 
- * 	/* Denies renaming because of missing MAKE_REG. * /
+ * 	/* Denies renaming because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file2_s1d1, AT_FDCWD, file1_s1d1,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -2819,18 +2819,18 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, unlink(file1_s1d1));
  * 	ASSERT_EQ(-1, rename(file2_s1d1, file1_s1d1));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Even denies same file exchange. * /
+ * 	/* Even denies same file exchange. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file2_s1d1, AT_FDCWD, file2_s1d1,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Denies renaming because of missing source and destination REFER. * /
+ * 	/* Denies renaming because of missing source and destination REFER. */
  * 	ASSERT_EQ(-1, rename(file1_s2d1, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	/*
  * 	 * Denies renaming because of missing MAKE_REG, source and destination
  * 	 * REFER.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d1, AT_FDCWD, file2_s1d1,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -2838,35 +2838,35 @@ const bin_true: &[u8] = b"./true\0";
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Denies renaming because of missing source REFER. * /
+ * 	/* Denies renaming because of missing source REFER. */
  * 	ASSERT_EQ(-1, rename(file1_s2d1, file1_s1d3));
  * 	ASSERT_EQ(EXDEV, errno);
- * 	/* Denies renaming because of missing MAKE_REG. * /
+ * 	/* Denies renaming because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d1, AT_FDCWD, file2_s1d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Denies renaming because of missing MAKE_REG. * /
+ * 	/* Denies renaming because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, rename(file1_s2d2, file1_s1d1));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Denies renaming because of missing destination REFER* /
+ * 	/* Denies renaming because of missing destination REFER*/
  * 	ASSERT_EQ(-1, rename(file1_s2d2, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Denies exchange because of one missing MAKE_REG. * /
+ * 	/* Denies exchange because of one missing MAKE_REG. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, file2_s1d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Allows renaming because of REFER and MAKE_REG. * /
+ * 	/* Allows renaming because of REFER and MAKE_REG. */
  * 	ASSERT_EQ(0, rename(file1_s2d2, file1_s1d3));
  * 
- * 	/* Reverse renaming denied because of missing MAKE_REG. * /
+ * 	/* Reverse renaming denied because of missing MAKE_REG. */
  * 	ASSERT_EQ(-1, rename(file1_s1d3, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(0, unlink(file1_s2d3));
  * 	ASSERT_EQ(0, rename(file1_s1d3, file1_s2d3));
  * 
- * 	/* Tests reverse renaming. * /
+ * 	/* Tests reverse renaming. */
  * 	ASSERT_EQ(0, rename(file1_s2d3, file1_s1d3));
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, file2_s2d3, AT_FDCWD, file1_s1d3,
  * 			       RENAME_EXCHANGE));
@@ -2875,7 +2875,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * This is OK for a file rename, but it should not be allowed for a
  * 	 * directory rename (because of the superset of access rights).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(file1_s2d3, file1_s1d3));
  * 	ASSERT_EQ(0, rename(file1_s1d3, file1_s2d3));
  * 
@@ -2885,13 +2885,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * access rights tied to dir_s2d3. dir_s2d2 is missing one access right
  * 	 * compared to dir_s1d3/file1_s1d3 (MAKE_REG) but it is provided
  * 	 * directly by the moved dir_s2d3.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(dir_s2d3, file1_s1d3));
  * 	ASSERT_EQ(0, rename(file1_s1d3, dir_s2d3));
  * 	/*
  * 	 * The first rename is allowed but not the exchange because dir_s1d3's
  * 	 * parent (dir_s1d2) doesn't have REFER.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d3, AT_FDCWD, dir_s1d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EXDEV, errno);
@@ -2906,23 +2906,23 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(-1, rename(file2_s1d3, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Renaming in the same directory is always allowed. * /
+ * 	/* Renaming in the same directory is always allowed. */
  * 	ASSERT_EQ(0, rename(file2_s1d2, file1_s1d2));
  * 	ASSERT_EQ(0, rename(file2_s1d3, file1_s1d3));
  * 
  * 	ASSERT_EQ(0, unlink(file1_s1d2));
- * 	/* Denies because of missing source MAKE_REG and destination REFER. * /
+ * 	/* Denies because of missing source MAKE_REG and destination REFER. */
  * 	ASSERT_EQ(-1, rename(dir_s2d3, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
  * 	ASSERT_EQ(0, unlink(file1_s1d3));
- * 	/* Denies because of missing source MAKE_REG and REFER. * /
+ * 	/* Denies because of missing source MAKE_REG and REFER. */
  * 	ASSERT_EQ(-1, rename(dir_s2d2, file1_s1d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * }
  * 
  * static void
- * reparent_exdev_layers_enforce1(struct __test_metadata *const _metadata)
+ * reparent_exdev_layers_enforce1(__test_metadata *const _metadata)
  * {
  * 	const struct rule layer1[] = {
  * 		{
@@ -2930,7 +2930,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.access = LANDLOCK_ACCESS_FS_REFER,
  * 		},
  * 		{
- * 			/* Interesting for the layer2 tests. * /
+ * 			/* Interesting for the layer2 tests. */
  * 			.path = dir_s1d3,
  * 			.access = LANDLOCK_ACCESS_FS_MAKE_REG,
  * 		},
@@ -2950,7 +2950,7 @@ const bin_true: &[u8] = b"./true\0";
  * }
  * 
  * static void
- * reparent_exdev_layers_enforce2(struct __test_metadata *const _metadata)
+ * reparent_exdev_layers_enforce2(__test_metadata *const _metadata)
  * {
  * 	const struct rule layer2[] = {
  * 		{
@@ -2962,7 +2962,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Same checks as before but with a second layer and a new MAKE_DIR
  * 	 * rule (and no explicit handling of REFER).
- * 	 * /
+ * 	 */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_MAKE_DIR, layer2);
  * }
  * 
@@ -2976,7 +2976,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Moving the dir_s1d3 directory below dir_s2d2 is allowed by Landlock
  * 	 * because it doesn't inherit new access rights.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(dir_s1d3, file1_s2d2));
  * 	ASSERT_EQ(0, rename(file1_s2d2, dir_s1d3));
  * 
@@ -2984,7 +2984,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Moving the dir_s1d3 directory below dir_s2d3 is allowed, even if it
  * 	 * gets a new inherited access rights (MAKE_REG), because MAKE_REG is
  * 	 * already allowed for dir_s1d3.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(dir_s1d3, file1_s2d3));
  * 	ASSERT_EQ(0, rename(file1_s2d3, dir_s1d3));
  * 
@@ -2992,7 +2992,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * However, moving the file1_s1d3 file below dir_s2d3 is allowed
  * 	 * because it cannot inherit MAKE_REG right (which is dedicated to
  * 	 * directories).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(file1_s1d3, file1_s2d3));
  * 
  * 	reparent_exdev_layers_enforce2(_metadata);
@@ -3000,14 +3000,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Moving the dir_s1d3 directory below dir_s2d2 is now denied because
  * 	 * MAKE_DIR is not tied to dir_s2d2.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(dir_s1d3, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 
  * 	/*
  * 	 * Moving the dir_s1d3 directory below dir_s2d3 is forbidden because it
  * 	 * would grants MAKE_REG and MAKE_DIR rights to it.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(dir_s1d3, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
@@ -3015,7 +3015,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Moving the file2_s1d3 file below dir_s2d3 is denied because the
  * 	 * second layer does not handle REFER, which is always denied by
  * 	 * default.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(file2_s1d3, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * }
@@ -3024,17 +3024,17 @@ const bin_true: &[u8] = b"./true\0";
  * {
  * 	reparent_exdev_layers_enforce1(_metadata);
  * 
- * 	/* Checks EACCES predominance over EXDEV. * /
+ * 	/* Checks EACCES predominance over EXDEV. */
  * 	ASSERT_EQ(-1, rename(file1_s1d1, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, rename(file1_s1d2, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, rename(file1_s1d1, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
- * 	/* Modify layout! * /
+ * 	/* Modify layout! */
  * 	ASSERT_EQ(0, rename(file1_s1d2, file1_s2d3));
  * 
- * 	/* Without REFER source. * /
+ * 	/* Without REFER source. */
  * 	ASSERT_EQ(-1, rename(dir_s1d1, file1_s2d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	ASSERT_EQ(-1, rename(dir_s1d2, file1_s2d2));
@@ -3042,10 +3042,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	reparent_exdev_layers_enforce2(_metadata);
  * 
- * 	/* Checks EACCES predominance over EXDEV. * /
+ * 	/* Checks EACCES predominance over EXDEV. */
  * 	ASSERT_EQ(-1, rename(file1_s1d1, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
- * 	/* Checks with actual file2_s1d2. * /
+ * 	/* Checks with actual file2_s1d2. */
  * 	ASSERT_EQ(-1, rename(file2_s1d2, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, rename(file1_s1d1, file1_s2d3));
@@ -3053,11 +3053,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Modifying the layout is now denied because the second layer does not
  * 	 * handle REFER, which is always denied by default.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(file2_s1d2, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Without REFER source, EACCES wins over EXDEV. * /
+ * 	/* Without REFER source, EACCES wins over EXDEV. */
  * 	ASSERT_EQ(-1, rename(dir_s1d1, file1_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, rename(dir_s1d2, file1_s2d2));
@@ -3076,7 +3076,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	reparent_exdev_layers_enforce1(_metadata);
  * 
- * 	/* Error predominance with file exchange: returns EXDEV and EACCES. * /
+ * 	/* Error predominance with file exchange: returns EXDEV and EACCES. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s1d1, AT_FDCWD, file1_s2d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -3087,7 +3087,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks with directories which creation could be allowed, but denied
  * 	 * because of access rights that would be inherited.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_file1_s1d2, AT_FDCWD,
  * 				dir_file2_s2d3, RENAME_EXCHANGE));
  * 	ASSERT_EQ(EXDEV, errno);
@@ -3095,13 +3095,13 @@ const bin_true: &[u8] = b"./true\0";
  * 				dir_file1_s1d2, RENAME_EXCHANGE));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Checks with same access rights. * /
+ * 	/* Checks with same access rights. */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, dir_s1d3, AT_FDCWD, dir_s2d3,
  * 			       RENAME_EXCHANGE));
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, dir_s2d3, AT_FDCWD, dir_s1d3,
  * 			       RENAME_EXCHANGE));
  * 
- * 	/* Checks with different (child-only) access rights. * /
+ * 	/* Checks with different (child-only) access rights. */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, dir_s2d3, AT_FDCWD, dir_file1_s1d2,
  * 			       RENAME_EXCHANGE));
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, dir_file1_s1d2, AT_FDCWD, dir_s2d3,
@@ -3116,14 +3116,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * grants less access rights is allowed too.
  * 	 *
  * 	 * See layout1.reparent_exdev_layers_exchange3 for inverted arguments.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, dir_file2_s2d3,
  * 			       RENAME_EXCHANGE));
  * 	/*
  * 	 * However, moving back the directory is denied because it would get
  * 	 * more access rights than the current state and because file creation
  * 	 * is forbidden (in dir_s2d2).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_file2_s2d3, AT_FDCWD, file1_s2d2,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -3133,7 +3133,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	reparent_exdev_layers_enforce2(_metadata);
  * 
- * 	/* Error predominance with file exchange: returns EXDEV and EACCES. * /
+ * 	/* Error predominance with file exchange: returns EXDEV and EACCES. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s1d1, AT_FDCWD, file1_s2d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -3141,7 +3141,7 @@ const bin_true: &[u8] = b"./true\0";
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Checks with directories which creation is now denied. * /
+ * 	/* Checks with directories which creation is now denied. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_file1_s1d2, AT_FDCWD,
  * 				dir_file2_s2d3, RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -3149,25 +3149,25 @@ const bin_true: &[u8] = b"./true\0";
  * 				dir_file1_s1d2, RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Checks with different (child-only) access rights. * /
+ * 	/* Checks with different (child-only) access rights. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s1d3, AT_FDCWD, dir_s2d3,
  * 				RENAME_EXCHANGE));
- * 	/* Denied because of MAKE_DIR. * /
+ * 	/* Denied because of MAKE_DIR. */
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s2d3, AT_FDCWD, dir_s1d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Checks with different (child-only) access rights. * /
+ * 	/* Checks with different (child-only) access rights. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_s2d3, AT_FDCWD, dir_file1_s1d2,
  * 				RENAME_EXCHANGE));
- * 	/* Denied because of MAKE_DIR. * /
+ * 	/* Denied because of MAKE_DIR. */
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, dir_file1_s1d2, AT_FDCWD, dir_s2d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* See layout1.reparent_exdev_layers_exchange2 for complement. * /
+ * 	/* See layout1.reparent_exdev_layers_exchange2 for complement. */
  * }
  * 
  * TEST_F_FORK(layout1, reparent_exdev_layers_exchange2)
@@ -3180,7 +3180,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	reparent_exdev_layers_enforce1(_metadata);
  * 	reparent_exdev_layers_enforce2(_metadata);
  * 
- * 	/* Checks that exchange between file and directory are consistent. * /
+ * 	/* Checks that exchange between file and directory are consistent. */
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, dir_file2_s2d3,
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
@@ -3202,7 +3202,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Checks that exchange between file and directory are consistent,
  * 	 * including with inverted arguments (see
  * 	 * layout1.reparent_exdev_layers_exchange1).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, dir_file2_s2d3, AT_FDCWD, file1_s2d2,
  * 			       RENAME_EXCHANGE));
  * 	ASSERT_EQ(-1, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, dir_file2_s2d3,
@@ -3238,7 +3238,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			   LANDLOCK_ACCESS_FS_REMOVE_FILE,
  * 		   layer1);
  * 
- * 	/* Access denied because of wrong/swapped remove file/dir. * /
+ * 	/* Access denied because of wrong/swapped remove file/dir. */
  * 	ASSERT_EQ(-1, rename(file1_s1d1, dir_s2d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, rename(dir_s2d2, file1_s1d1));
@@ -3250,7 +3250,7 @@ const bin_true: &[u8] = b"./true\0";
  * 				RENAME_EXCHANGE));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Access allowed thanks to the matching rights. * /
+ * 	/* Access allowed thanks to the matching rights. */
  * 	ASSERT_EQ(-1, rename(file1_s2d1, dir_s1d2));
  * 	ASSERT_EQ(EISDIR, errno);
  * 	ASSERT_EQ(-1, rename(dir_s1d2, file1_s2d1));
@@ -3262,7 +3262,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, unlink(file2_s1d3));
  * 	ASSERT_EQ(0, rename(dir_s1d3, file1_s2d1));
  * 
- * 	/* Effectively removes a file and a directory by exchanging them. * /
+ * 	/* Effectively removes a file and a directory by exchanging them. */
  * 	ASSERT_EQ(0, mkdir(dir_s1d3, 0700));
  * 	ASSERT_EQ(0, renameat2(AT_FDCWD, file1_s2d2, AT_FDCWD, dir_s1d3,
  * 			       RENAME_EXCHANGE));
@@ -3313,14 +3313,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Moving file1_s1d2 beneath dir_s2d3 would grant it the READ_FILE
  * 	 * access right.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(file1_s1d2, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	/*
  * 	 * Moving file1_s1d2 should be allowed even if dir_s2d2 grants a
  * 	 * superset of access rights compared to dir_s1d2, because file1_s1d2
  * 	 * already has these access rights anyway.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(file1_s1d2, file1_s2d2));
  * 	ASSERT_EQ(0, rename(file1_s2d2, file1_s1d2));
  * 
@@ -3329,14 +3329,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Moving dir_s1d3 beneath dir_s2d3 would grant it the MAKE_FIFO access
  * 	 * right.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(-1, rename(dir_s1d3, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 	/*
  * 	 * Moving dir_s1d3 should be allowed even if dir_s2d2 grants a superset
  * 	 * of access rights compared to dir_s1d2, because dir_s1d3 already has
  * 	 * these access rights anyway.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(dir_s1d3, file1_s2d2));
  * 	ASSERT_EQ(0, rename(file1_s2d2, dir_s1d3));
  * 
@@ -3345,7 +3345,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * will be denied because the new inherited access rights from dir_s1d2
  * 	 * will be less than the destination (original) dir_s2d3.  This is a
  * 	 * sinkhole scenario where we cannot move back files or directories.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(file1_s2d3, file2_s1d2));
  * 	ASSERT_EQ(-1, rename(file2_s1d2, file1_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
@@ -3354,7 +3354,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks similar directory one-way move: dir_s2d3 loses EXECUTE and
  * 	 * MAKE_SOCK which were inherited from dir_s1d3.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(dir_s2d3, file2_s1d2));
  * 	ASSERT_EQ(-1, rename(file2_s1d2, dir_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
@@ -3381,7 +3381,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, mkdir(dir_s1d3, 0700));
  * 	ASSERT_EQ(0, unlinkat(AT_FDCWD, dir_s1d3, AT_REMOVEDIR));
  * 
- * 	/* dir_s1d2 itself cannot be removed. * /
+ * 	/* dir_s1d2 itself cannot be removed. */
  * 	ASSERT_EQ(-1, rmdir(dir_s1d2));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(-1, unlinkat(AT_FDCWD, dir_s1d2, AT_REMOVEDIR));
@@ -3412,7 +3412,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, unlinkat(AT_FDCWD, file1_s1d3, 0));
  * }
  * 
- * static void test_make_file(struct __test_metadata *const _metadata,
+ * static void test_make_file(__test_metadata *const _metadata,
  * 			   const __u64 access, const mode_t mode,
  * 			   const dev_t dev)
  * {
@@ -3464,7 +3464,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout1, make_char)
  * {
- * 	/* Creates a /dev/null device. * /
+ * 	/* Creates a /dev/null device. */
  * 	set_cap(_metadata, CAP_MKNOD);
  * 	test_make_file(_metadata, LANDLOCK_ACCESS_FS_MAKE_CHAR, S_IFCHR,
  * 		       makedev(1, 3));
@@ -3477,14 +3477,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	 *
  * 	 * Contrary to the other character devices, this does not require
  * 	 * CAP_MKNOD, cf. vfs_mknod().
- * 	 * /
+ * 	 */
  * 	test_make_file(_metadata, LANDLOCK_ACCESS_FS_MAKE_REG, S_IFCHR,
  * 		       makedev(0, 0));
  * }
  * 
  * TEST_F_FORK(layout1, make_block)
  * {
- * 	/* Creates a /dev/loop0 device. * /
+ * 	/* Creates a /dev/loop0 device. */
  * 	set_cap(_metadata, CAP_MKNOD);
  * 	test_make_file(_metadata, LANDLOCK_ACCESS_FS_MAKE_BLOCK, S_IFBLK,
  * 		       makedev(7, 0));
@@ -3566,14 +3566,14 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, rules[0].access, rules);
  * 
- * 	/* Uses file_* as directory names. * /
+ * 	/* Uses file_* as directory names. */
  * 	ASSERT_EQ(-1, mkdir(file1_s1d1, 0700));
  * 	ASSERT_EQ(EACCES, errno);
  * 	ASSERT_EQ(0, mkdir(file1_s1d2, 0700));
  * 	ASSERT_EQ(0, mkdir(file1_s1d3, 0700));
  * }
  * 
- * static int open_proc_fd(struct __test_metadata *const _metadata, const int fd,
+ * static int open_proc_fd(__test_metadata *const _metadata, const int fd,
  * 			const int open_flags)
  * {
  * 	static const char path_template[] = "/proc/self/fd/%d";
@@ -3635,14 +3635,14 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* Limits read and write access to files tied to the filesystem. * /
+ * 	/* Limits read and write access to files tied to the filesystem. */
  * 	enforce_fs(_metadata, rules[0].access, rules);
  * 
- * 	/* Checks enforcement for normal files. * /
+ * 	/* Checks enforcement for normal files. */
  * 	ASSERT_EQ(0, test_open(file1_s1d2, O_RDWR));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDWR));
  * 
- * 	/* Checks access to pipes through FD. * /
+ * 	/* Checks access to pipes through FD. */
  * 	ASSERT_EQ(0, pipe2(pipe_fds, O_CLOEXEC));
  * 	ASSERT_EQ(1, write(pipe_fds[1], ".", 1))
  * 	{
@@ -3651,7 +3651,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(1, read(pipe_fds[0], &buf, 1));
  * 	ASSERT_EQ('.', buf);
  * 
- * 	/* Checks write access to pipe through /proc/self/fd . * /
+ * 	/* Checks write access to pipe through /proc/self/fd . */
  * 	proc_fd = open_proc_fd(_metadata, pipe_fds[1], O_WRONLY | O_CLOEXEC);
  * 	ASSERT_LE(0, proc_fd);
  * 	ASSERT_EQ(1, write(proc_fd, ".", 1))
@@ -3661,7 +3661,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	}
  * 	ASSERT_EQ(0, close(proc_fd));
  * 
- * 	/* Checks read access to pipe through /proc/self/fd . * /
+ * 	/* Checks read access to pipe through /proc/self/fd . */
  * 	proc_fd = open_proc_fd(_metadata, pipe_fds[0], O_RDONLY | O_CLOEXEC);
  * 	ASSERT_LE(0, proc_fd);
  * 	buf = '\0';
@@ -3676,7 +3676,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, close(pipe_fds[1]));
  * }
  * 
- * /* Invokes truncate(2) and returns its errno or 0. * /
+ * /* Invokes truncate(2) and returns its errno or 0. */
  * static int test_truncate(const char *const path)
  * {
  * 	if (truncate(path, 10) < 0)
@@ -3687,7 +3687,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Invokes creat(2) and returns its errno or 0.
  *  * Closes the opened file descriptor on success.
- *  * /
+ *  */
  * static int test_creat(const char *const path)
  * {
  * 	int fd = creat(path, 0600);
@@ -3698,7 +3698,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Mixing error codes from close(2) and creat(2) should not lead to any
  * 	 * (access type) confusion for this test.
- * 	 * /
+ * 	 */
  * 	if (close(fd) < 0)
  * 		return errno;
  * 	return 0;
@@ -3707,7 +3707,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Exercises file truncation when it's not restricted,
  *  * as it was the case before LANDLOCK_ACCESS_FS_TRUNCATE existed.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, truncate_unhandled)
  * {
  * 	const char *const file_r = file1_s1d1;
@@ -3722,11 +3722,11 @@ const bin_true: &[u8] = b"./true\0";
  * 			.path = file_w,
  * 			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 		},
- * 		/* Implicitly: No rights for file_none. * /
+ * 		/* Implicitly: No rights for file_none. */
  * 		{},
  * 	};
  * 
- * 	/* Enables Landlock. * /
+ * 	/* Enables Landlock. */
  * 	enforce_fs(_metadata,
  * 		   LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 		   rules);
@@ -3734,7 +3734,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks read right: truncate and open with O_TRUNC work, unless the
  * 	 * file is attempted to be opened for writing.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_truncate(file_r));
  * 	EXPECT_EQ(0, test_open(file_r, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_r, O_WRONLY | O_TRUNC));
@@ -3743,7 +3743,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks write right: truncate and open with O_TRUNC work, unless the
  * 	 * file is attempted to be opened for reading.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_truncate(file_w));
  * 	EXPECT_EQ(EACCES, test_open(file_w, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(0, test_open(file_w, O_WRONLY | O_TRUNC));
@@ -3752,7 +3752,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks "no rights" case: truncate works but all open attempts fail,
  * 	 * including creat.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_truncate(file_none));
  * 	EXPECT_EQ(EACCES, test_open(file_none, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_none, O_WRONLY | O_TRUNC));
@@ -3791,7 +3791,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.path = file_t,
  * 			.access = LANDLOCK_ACCESS_FS_TRUNCATE,
  * 		},
- * 		/* Implicitly: No access rights for file_none. * /
+ * 		/* Implicitly: No access rights for file_none. */
  * 		{
  * 			.path = dir_t,
  * 			.access = LANDLOCK_ACCESS_FS_TRUNCATE,
@@ -3803,19 +3803,19 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* Enables Landlock. * /
+ * 	/* Enables Landlock. */
  * 	enforce_fs(_metadata,
  * 		   LANDLOCK_ACCESS_FS_READ_FILE |
  * 			   LANDLOCK_ACCESS_FS_WRITE_FILE |
  * 			   LANDLOCK_ACCESS_FS_TRUNCATE,
  * 		   rules);
  * 
- * 	/* Checks read, write and truncate rights: truncation works. * /
+ * 	/* Checks read, write and truncate rights: truncation works. */
  * 	EXPECT_EQ(0, test_truncate(file_rwt));
  * 	EXPECT_EQ(0, test_open(file_rwt, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(0, test_open(file_rwt, O_WRONLY | O_TRUNC));
  * 
- * 	/* Checks read and write rights: no truncate variant works. * /
+ * 	/* Checks read and write rights: no truncate variant works. */
  * 	EXPECT_EQ(EACCES, test_truncate(file_rw));
  * 	EXPECT_EQ(EACCES, test_open(file_rw, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_rw, O_WRONLY | O_TRUNC));
@@ -3824,17 +3824,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Checks read and truncate rights: truncation works.
  * 	 *
  * 	 * Note: Files can get truncated using open() even with O_RDONLY.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_truncate(file_rt));
  * 	EXPECT_EQ(0, test_open(file_rt, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_rt, O_WRONLY | O_TRUNC));
  * 
- * 	/* Checks truncate right: truncate works, but can't open file. * /
+ * 	/* Checks truncate right: truncate works, but can't open file. */
  * 	EXPECT_EQ(0, test_truncate(file_t));
  * 	EXPECT_EQ(EACCES, test_open(file_t, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_t, O_WRONLY | O_TRUNC));
  * 
- * 	/* Checks "no rights" case: No form of truncation works. * /
+ * 	/* Checks "no rights" case: No form of truncation works. */
  * 	EXPECT_EQ(EACCES, test_truncate(file_none));
  * 	EXPECT_EQ(EACCES, test_open(file_none, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_none, O_WRONLY | O_TRUNC));
@@ -3842,7 +3842,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks truncate right on directory: truncate works on contained
  * 	 * files.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_truncate(file_in_dir_t));
  * 	EXPECT_EQ(EACCES, test_open(file_in_dir_t, O_RDONLY | O_TRUNC));
  * 	EXPECT_EQ(EACCES, test_open(file_in_dir_t, O_WRONLY | O_TRUNC));
@@ -3851,14 +3851,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Checks creat in dir_w: This requires the truncate right when
  * 	 * overwriting an existing file, but does not require it when the file
  * 	 * is new.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(EACCES, test_creat(file_in_dir_w));
  * 
  * 	ASSERT_EQ(0, unlink(file_in_dir_w));
  * 	EXPECT_EQ(0, test_creat(file_in_dir_w));
  * }
  * 
- * /* Invokes ftruncate(2) and returns its errno or 0. * /
+ * /* Invokes ftruncate(2) and returns its errno or 0. */
  * static int test_ftruncate(int fd)
  * {
  * 	if (ftruncate(fd, 10) < 0)
@@ -3880,7 +3880,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Whether this works or not is expected to depend on the time when the
  * 	 * FD was opened, not to depend on the time when ftruncate() was
  * 	 * called.
- * 	 * /
+ * 	 */
  * 	const char *const path = file1_s1d1;
  * 	const __u64 handled1 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			       LANDLOCK_ACCESS_FS_WRITE_FILE;
@@ -3940,9 +3940,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, close(fd_layer3));
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(ftruncate) {};
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * FIXTURE_SETUP(ftruncate)
  * {
@@ -3964,45 +3964,45 @@ const bin_true: &[u8] = b"./true\0";
  * 	const int expected_ftruncate_result;
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ftruncate, w_w) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 	.allowed = LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 	.expected_open_result = 0,
  * 	.expected_ftruncate_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ftruncate, t_t) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.allowed = LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.expected_open_result = 0,
  * 	.expected_ftruncate_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ftruncate, wt_w) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_WRITE_FILE | LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.allowed = LANDLOCK_ACCESS_FS_WRITE_FILE,
  * 	.expected_open_result = 0,
  * 	.expected_ftruncate_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ftruncate, wt_wt) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_WRITE_FILE | LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.allowed = LANDLOCK_ACCESS_FS_WRITE_FILE | LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.expected_open_result = 0,
  * 	.expected_ftruncate_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ftruncate, wt_t) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_WRITE_FILE | LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.allowed = LANDLOCK_ACCESS_FS_TRUNCATE,
  * 	.expected_open_result = EACCES,
@@ -4014,19 +4014,19 @@ const bin_true: &[u8] = b"./true\0";
  * 	const struct rule rules[] = {
  * 		{
  * 			.path = path,
- * 			.access = variant->allowed,
+ * 			.access = (*variant).allowed,
  * 		},
  * 		{},
  * 	};
  * 	int fd;
  * 
- * 	/* Enables Landlock. * /
- * 	enforce_fs(_metadata, variant->handled, rules);
+ * 	/* Enables Landlock. */
+ * 	enforce_fs(_metadata, (*variant).handled, rules);
  * 
  * 	fd = open(path, O_WRONLY);
- * 	EXPECT_EQ(variant->expected_open_result, (fd < 0 ? errno : 0));
+ * 	EXPECT_EQ((*variant).expected_open_result, (fd < 0 ? errno : 0));
  * 	if (fd >= 0) {
- * 		EXPECT_EQ(variant->expected_ftruncate_result,
+ * 		EXPECT_EQ((*variant).expected_ftruncate_result,
  * 			  test_ftruncate(fd));
  * 		ASSERT_EQ(0, close(fd));
  * 	}
@@ -4047,21 +4047,21 @@ const bin_true: &[u8] = b"./true\0";
  * 		 * Enables Landlock in the child process, open a file descriptor
  * 		 * where truncation is forbidden and send it to the
  * 		 * non-landlocked parent process.
- * 		 * /
+ * 		 */
  * 		const char *const path = file1_s1d1;
  * 		const struct rule rules[] = {
  * 			{
  * 				.path = path,
- * 				.access = variant->allowed,
+ * 				.access = (*variant).allowed,
  * 			},
  * 			{},
  * 		};
  * 		int fd;
  * 
- * 		enforce_fs(_metadata, variant->handled, rules);
+ * 		enforce_fs(_metadata, (*variant).handled, rules);
  * 
  * 		fd = open(path, O_WRONLY);
- * 		ASSERT_EQ(variant->expected_open_result, (fd < 0 ? errno : 0));
+ * 		ASSERT_EQ((*variant).expected_open_result, (fd < 0 ? errno : 0));
  * 
  * 		if (fd >= 0) {
  * 			ASSERT_EQ(0, send_fd(socket_fds[0], fd));
@@ -4070,15 +4070,15 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 		ASSERT_EQ(0, close(socket_fds[0]));
  * 
- * 		_exit(_metadata->exit_code);
+ * 		_exit((*_metadata).exit_code);
  * 		return;
  * 	}
  * 
- * 	if (variant->expected_open_result == 0) {
+ * 	if ((*variant).expected_open_result == 0) {
  * 		fd = recv_fd(socket_fds[1]);
  * 		ASSERT_LE(0, fd);
  * 
- * 		EXPECT_EQ(variant->expected_ftruncate_result,
+ * 		EXPECT_EQ((*variant).expected_ftruncate_result,
  * 			  test_ftruncate(fd));
  * 		ASSERT_EQ(0, close(fd));
  * 	}
@@ -4091,7 +4091,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, close(socket_fds[1]));
  * }
  * 
- * /* Invokes the FS_IOC_GETFLAGS IOCTL and returns its errno or 0. * /
+ * /* Invokes the FS_IOC_GETFLAGS IOCTL and returns its errno or 0. */
  * static int test_fs_ioc_getflags_ioctl(int fd)
  * {
  * 	uint32_t flags;
@@ -4108,9 +4108,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * We exercise the same test both with and without Landlock enabled, to
  * 	 * ensure that it behaves the same in both cases.
- * 	 * /
+ * 	 */
  * 	for (i = 0; i < 2; i++) {
- * 		/* Creates a new memfd. * /
+ * 		/* Creates a new memfd. */
  * 		fd = memfd_create("name", MFD_CLOEXEC);
  * 		ASSERT_LE(0, fd);
  * 
@@ -4118,13 +4118,13 @@ const bin_true: &[u8] = b"./true\0";
  * 		 * Checks that operations associated with the opened file
  * 		 * (ftruncate, ioctl) are permitted on file descriptors that are
  * 		 * created in ways other than open(2).
- * 		 * /
+ * 		 */
  * 		EXPECT_EQ(0, test_ftruncate(fd));
  * 		EXPECT_EQ(0, test_fs_ioc_getflags_ioctl(fd));
  * 
  * 		ASSERT_EQ(0, close(fd));
  * 
- * 		/* Enables Landlock. * /
+ * 		/* Enables Landlock. */
  * 		enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 	}
  * }
@@ -4146,7 +4146,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Checks that for files opened with O_PATH, both ioctl(2) and
  * 	 * ftruncate(2) yield EBADF, as it is documented in open(2) for the
  * 	 * O_PATH flag.
- * 	 * /
+ * 	 */
  * 	fd = open(dir_s1d1, O_PATH | O_CLOEXEC);
  * 	ASSERT_LE(0, fd);
  * 
@@ -4155,14 +4155,14 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ASSERT_EQ(0, close(fd));
  * 
- * 	/* Enables Landlock. * /
+ * 	/* Enables Landlock. */
  * 	enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 
  * 	/*
  * 	 * Checks that after enabling Landlock,
  * 	 * - the file can still be opened with O_PATH
  * 	 * - both ioctl and truncate still yield EBADF (not EACCES).
- * 	 * /
+ * 	 */
  * 	fd = open(dir_s1d1, O_PATH | O_CLOEXEC);
  * 	ASSERT_LE(0, fd);
  * 
@@ -4177,11 +4177,11 @@ const bin_true: &[u8] = b"./true\0";
  *  * sufficiently large zeroed-out memory region.
  *  *
  *  * Returns the IOCTLs error, or 0.
- *  * /
- * static int ioctl_error(struct __test_metadata *const _metadata, int fd,
- * 		       unsigned int cmd)
+ *  */
+ * static int ioctl_error(__test_metadata *const _metadata, int fd,
+ * 		       core::ffi::c_uint cmd)
  * {
- * 	char buf[128]; /* sufficiently large * /
+ * 	char buf[128]; /* sufficiently large */
  * 	int res, stdinbak_fd, err;
  * 
  * 	/*
@@ -4189,17 +4189,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * be interpreted as file descriptor numbers.  We do not want to
  * 	 * accidentally operate on file descriptor 0 (stdin), so we temporarily
  * 	 * move stdin to a different FD and close FD 0 for the IOCTL call.
- * 	 * /
+ * 	 */
  * 	stdinbak_fd = dup(0);
  * 	ASSERT_LT(0, stdinbak_fd);
  * 	ASSERT_EQ(0, close(0));
  * 
- * 	/* Invokes the IOCTL with a zeroed-out buffer. * /
+ * 	/* Invokes the IOCTL with a zeroed-out buffer. */
  * 	bzero(&buf, sizeof(buf));
  * 	res = ioctl(fd, cmd, &buf);
  * 	err = errno;
  * 
- * 	/* Restores the old FD 0 and closes the backup FD. * /
+ * 	/* Restores the old FD 0 and closes the backup FD. */
  * 	ASSERT_EQ(0, dup2(stdinbak_fd, 0));
  * 	ASSERT_EQ(0, close(stdinbak_fd));
  * 
@@ -4209,31 +4209,31 @@ const bin_true: &[u8] = b"./true\0";
  * 	return 0;
  * }
  * 
- * /* Define some linux/falloc.h IOCTL commands which are not available in uapi headers. * /
+ * /* Define some linux/falloc.h IOCTL commands which are not available in uapi headers. */
  * struct space_resv {
  * 	__s16 l_type;
  * 	__s16 l_whence;
  * 	__s64 l_start;
- * 	__s64 l_len; /* len == 0 means until end of file * /
+ * 	__s64 l_len; /* len == 0 means until end of file */
  * 	__s32 l_sysid;
  * 	__u32 l_pid;
- * 	__s32 l_pad[4]; /* reserved area * /
+ * 	__s32 l_pad[4]; /* reserved area */
  * };
  * 
- * #define FS_IOC_RESVSP _IOW('X', 40, struct space_resv)
- * #define FS_IOC_UNRESVSP _IOW('X', 41, struct space_resv)
- * #define FS_IOC_RESVSP64 _IOW('X', 42, struct space_resv)
- * #define FS_IOC_UNRESVSP64 _IOW('X', 43, struct space_resv)
- * #define FS_IOC_ZERO_RANGE _IOW('X', 57, struct space_resv)
+ * #define FS_IOC_RESVSP _IOW('X', 40, space_resv)
+ * #define FS_IOC_UNRESVSP _IOW('X', 41, space_resv)
+ * #define FS_IOC_RESVSP64 _IOW('X', 42, space_resv)
+ * #define FS_IOC_UNRESVSP64 _IOW('X', 43, space_resv)
+ * #define FS_IOC_ZERO_RANGE _IOW('X', 57, space_resv)
  * 
  * /*
  *  * Tests a series of blanket-permitted and denied IOCTLs.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, blanket_permitted_ioctls)
  * {
  * 	int fd;
  * 
- * 	/* Enables Landlock. * /
+ * 	/* Enables Landlock. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_IOCTL_DEV, NULL);
  * 
  * 	fd = open("/dev/null", O_RDWR | O_CLOEXEC);
@@ -4242,7 +4242,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks permitted commands.
  * 	 * These ones may return errors, but should not be blocked by Landlock.
- * 	 * /
+ * 	 */
  * 	EXPECT_NE(EACCES, ioctl_error(_metadata, fd, FIOCLEX));
  * 	EXPECT_NE(EACCES, ioctl_error(_metadata, fd, FIONCLEX));
  * 	EXPECT_NE(EACCES, ioctl_error(_metadata, fd, FIONBIO));
@@ -4261,7 +4261,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Checks blocked commands.
  * 	 * A call to a blocked IOCTL command always returns EACCES.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, FIONREAD));
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, FS_IOC_GETFLAGS));
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, FS_IOC_SETFLAGS));
@@ -4274,7 +4274,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, FS_IOC_UNRESVSP64));
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, FS_IOC_ZERO_RANGE));
  * 
- * 	/* Default case is also blocked. * /
+ * 	/* Default case is also blocked. */
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, 0xc00ffeee));
  * 
  * 	ASSERT_EQ(0, close(fd));
@@ -4283,7 +4283,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Named pipes are not governed by the LANDLOCK_ACCESS_FS_IOCTL_DEV right,
  *  * because they are not character or block devices.
- *  * /
+ *  */
  * TEST_F_FORK(layout1, named_pipe_ioctl)
  * {
  * 	pid_t child_pid;
@@ -4293,10 +4293,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, unlink(path));
  * 	ASSERT_EQ(0, mkfifo(path, 0600));
  * 
- * 	/* Enables Landlock. * /
+ * 	/* Enables Landlock. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_IOCTL_DEV, NULL);
  * 
- * 	/* The child process opens the pipe for writing. * /
+ * 	/* The child process opens the pipe for writing. */
  * 	child_pid = fork();
  * 	ASSERT_NE(-1, child_pid);
  * 	if (child_pid == 0) {
@@ -4308,7 +4308,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	fd = open(path, O_RDONLY);
  * 	ASSERT_LE(0, fd);
  * 
- * 	/* FIONREAD is implemented by pipefifo_fops. * /
+ * 	/* FIONREAD is implemented by pipefifo_fops. */
  * 	EXPECT_EQ(0, test_fionread_ioctl(fd));
  * 
  * 	ASSERT_EQ(0, close(fd));
@@ -4323,8 +4323,8 @@ const bin_true: &[u8] = b"./true\0";
  *  * If the socket type is not SOCK_DGRAM, also invoke listen(2).
  *  *
  *  * Return: The listening FD - it is the caller responsibility to close it.
- *  * /
- * static int set_up_named_unix_server(struct __test_metadata *const _metadata,
+ *  */
+ * static int set_up_named_unix_server(__test_metadata *const _metadata,
  * 				    int type, const char *const path)
  * {
  * 	int fd;
@@ -4338,19 +4338,19 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LT(strlen(path), sizeof(addr.sun_path));
  * 	strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
  * 
- * 	ASSERT_EQ(0, bind(fd, (struct sockaddr *)&addr, sizeof(addr)));
+ * 	ASSERT_EQ(0, bind(fd, (sockaddr *)&addr, sizeof(addr)));
  * 
  * 	if (type != SOCK_DGRAM)
  * 		ASSERT_EQ(0, listen(fd, 10 /* qlen * /));
  * 	return fd;
  * }
  * 
- * /*
+ * / *
  *  * test_connect_named_unix - connect to the given named UNIX socket
  *  *
  *  * Return: The errno from connect(), or 0
- *  * /
- * static int test_connect_named_unix(struct __test_metadata *const _metadata,
+ *  */
+ * static int test_connect_named_unix(__test_metadata *const _metadata,
  * 				   int fd, const char *const path)
  * {
  * 	struct sockaddr_un addr = {
@@ -4360,44 +4360,44 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LT(strlen(path), sizeof(addr.sun_path));
  * 	strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
  * 
- * 	if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+ * 	if (connect(fd, (sockaddr *)&addr, sizeof(addr)) == -1)
  * 		return errno;
  * 	return 0;
  * }
  * 
- * /* For named UNIX domain sockets, no IOCTL restrictions apply. * /
+ * /* For named UNIX domain sockets, no IOCTL restrictions apply. */
  * TEST_F_FORK(layout1, named_unix_domain_socket_ioctl)
  * {
  * 	const char *const path = file1_s1d1;
  * 	int srv_fd, cli_fd;
  * 
- * 	/* Sets up a server * /
+ * 	/* Sets up a server */
  * 	ASSERT_EQ(0, unlink(path));
  * 	srv_fd = set_up_named_unix_server(_metadata, SOCK_STREAM, path);
  * 
- * 	/* Enables Landlock. * /
+ * 	/* Enables Landlock. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_IOCTL_DEV, NULL);
  * 
- * 	/* Sets up a client connection to it * /
+ * 	/* Sets up a client connection to it */
  * 	cli_fd = socket(AF_UNIX, SOCK_STREAM, 0);
  * 	ASSERT_LE(0, cli_fd);
  * 
  * 	ASSERT_EQ(0, test_connect_named_unix(_metadata, cli_fd, path));
  * 
- * 	/* FIONREAD and other IOCTLs should not be forbidden. * /
+ * 	/* FIONREAD and other IOCTLs should not be forbidden. */
  * 	EXPECT_EQ(0, test_fionread_ioctl(cli_fd));
  * 
  * 	EXPECT_EQ(0, close(cli_fd));
  * 	EXPECT_EQ(0, close(srv_fd));
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(ioctl) {};
  * 
  * FIXTURE_SETUP(ioctl) {};
  * 
  * FIXTURE_TEARDOWN(ioctl) {};
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * FIXTURE_VARIANT(ioctl)
  * {
@@ -4408,31 +4408,31 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * FIONREAD is used as a characteristic device-specific IOCTL command.
  * 	 * It is implemented in fs/ioctl.c for regular files,
  * 	 * but we do not blanket-permit it for devices.
- * 	 * /
+ * 	 */
  * 	const int expected_fionread_result;
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ioctl, handled_i_allowed_none) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_IOCTL_DEV,
  * 	.allowed = 0,
  * 	.open_mode = O_RDWR,
  * 	.expected_fionread_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ioctl, handled_i_allowed_i) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_IOCTL_DEV,
  * 	.allowed = LANDLOCK_ACCESS_FS_IOCTL_DEV,
  * 	.open_mode = O_RDWR,
  * 	.expected_fionread_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(ioctl, unhandled) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.handled = LANDLOCK_ACCESS_FS_EXECUTE,
  * 	.allowed = LANDLOCK_ACCESS_FS_EXECUTE,
  * 	.open_mode = O_RDWR,
@@ -4445,22 +4445,22 @@ const bin_true: &[u8] = b"./true\0";
  * 	const struct rule rules[] = {
  * 		{
  * 			.path = "/dev",
- * 			.access = variant->allowed,
+ * 			.access = (*variant).allowed,
  * 		},
  * 		{},
  * 	};
  * 	int fd;
  * 
- * 	/* Enables Landlock. * /
- * 	enforce_fs(_metadata, variant->handled, rules);
+ * 	/* Enables Landlock. */
+ * 	enforce_fs(_metadata, (*variant).handled, rules);
  * 
- * 	fd = open("/dev/zero", variant->open_mode);
+ * 	fd = open("/dev/zero", (*variant).open_mode);
  * 	ASSERT_LE(0, fd);
  * 
- * 	/* Checks that IOCTL commands return the expected errors. * /
- * 	EXPECT_EQ(variant->expected_fionread_result, test_fionread_ioctl(fd));
+ * 	/* Checks that IOCTL commands return the expected errors. */
+ * 	EXPECT_EQ((*variant).expected_fionread_result, test_fionread_ioctl(fd));
  * 
- * 	/* Checks that unrestrictable commands are unrestricted. * /
+ * 	/* Checks that unrestrictable commands are unrestricted. */
  * 	EXPECT_EQ(0, ioctl(fd, FIOCLEX));
  * 	EXPECT_EQ(0, ioctl(fd, FIONCLEX));
  * 	EXPECT_EQ(0, ioctl(fd, FIONBIO, &flag));
@@ -4476,20 +4476,20 @@ const bin_true: &[u8] = b"./true\0";
  * 	const struct rule rules[] = {
  * 		{
  * 			.path = "/dev",
- * 			.access = variant->allowed,
+ * 			.access = (*variant).allowed,
  * 		},
  * 		{},
  * 	};
  * 	int dir_fd;
  * 
- * 	/* Enables Landlock. * /
- * 	enforce_fs(_metadata, variant->handled, rules);
+ * 	/* Enables Landlock. */
+ * 	enforce_fs(_metadata, (*variant).handled, rules);
  * 
  * 	/*
  * 	 * Ignore variant->open_mode for this test, as we intend to open a
  * 	 * directory.  If the directory can not be opened, the variant is
  * 	 * infeasible to test with an opened directory.
- * 	 * /
+ * 	 */
  * 	dir_fd = open("/dev", O_RDONLY);
  * 	if (dir_fd < 0)
  * 		return;
@@ -4499,10 +4499,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * We do not use the expected values from the fixture here.
  * 	 *
  * 	 * When using IOCTL on a directory, no Landlock restrictions apply.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_fionread_ioctl(dir_fd));
  * 
- * 	/* Checks that unrestrictable commands are unrestricted. * /
+ * 	/* Checks that unrestrictable commands are unrestricted. */
  * 	EXPECT_EQ(0, ioctl(dir_fd, FIOCLEX));
  * 	EXPECT_EQ(0, ioctl(dir_fd, FIONCLEX));
  * 	EXPECT_EQ(0, ioctl(dir_fd, FIONBIO, &flag));
@@ -4518,25 +4518,25 @@ const bin_true: &[u8] = b"./true\0";
  * 	const struct rule rules[] = {
  * 		{
  * 			.path = "/dev/zero",
- * 			.access = variant->allowed,
+ * 			.access = (*variant).allowed,
  * 		},
  * 		{},
  * 	};
  * 	int fd;
  * 
- * 	/* Enables Landlock. * /
- * 	enforce_fs(_metadata, variant->handled, rules);
+ * 	/* Enables Landlock. */
+ * 	enforce_fs(_metadata, (*variant).handled, rules);
  * 
- * 	fd = open("/dev/zero", variant->open_mode);
+ * 	fd = open("/dev/zero", (*variant).open_mode);
  * 	ASSERT_LE(0, fd)
  * 	{
  * 		TH_LOG("Failed to open /dev/zero: %s", strerror(errno));
  * 	}
  * 
- * 	/* Checks that IOCTL commands return the expected errors. * /
- * 	EXPECT_EQ(variant->expected_fionread_result, test_fionread_ioctl(fd));
+ * 	/* Checks that IOCTL commands return the expected errors. */
+ * 	EXPECT_EQ((*variant).expected_fionread_result, test_fionread_ioctl(fd));
  * 
- * 	/* Checks that unrestrictable commands are unrestricted. * /
+ * 	/* Checks that unrestrictable commands are unrestricted. */
  * 	EXPECT_EQ(0, ioctl(fd, FIOCLEX));
  * 	EXPECT_EQ(0, ioctl(fd, FIONCLEX));
  * 	EXPECT_EQ(0, ioctl(fd, FIONBIO, &flag));
@@ -4552,8 +4552,8 @@ const bin_true: &[u8] = b"./true\0";
  *  * sendto() is equivalent to sendmsg() in this respect.
  *  *
  *  * Return: The errno from sendto(), or 0
- *  * /
- * static int test_sendto_named_unix(struct __test_metadata *const _metadata,
+ *  */
+ * static int test_sendto_named_unix(__test_metadata *const _metadata,
  * 				  int fd, const char *const path)
  * {
  * 	static const char buf[] = "dummy";
@@ -4564,15 +4564,15 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LT(strlen(path), sizeof(addr.sun_path));
  * 	strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
  * 
- * 	if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&addr,
+ * 	if (sendto(fd, buf, sizeof(buf), 0, (sockaddr *)&addr,
  * 		   sizeof(addr)) == -1)
  * 		return errno;
  * 	return 0;
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(scoped_domains) {};
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * #include "scoped_base_variants.h"
  * 
@@ -4592,11 +4592,11 @@ const bin_true: &[u8] = b"./true\0";
  *  * ENFORCE_ALL: Enforce a Landlock domain even when the variant says
  *  *   we shouldn't.  We enforce a domain where the path is allow-listed,
  *  *   and expect the behavior to be the same as if none was used.
- *  * /
+ *  */
  * #define USE_SENDTO (1 << 0)
  * #define ENFORCE_ALL (1 << 1)
  * 
- * static void test_connect_to_parent(struct __test_metadata *const _metadata,
+ * static void test_connect_to_parent(__test_metadata *const _metadata,
  * 				   const FIXTURE_VARIANT(scoped_domains) *
  * 					   variant,
  * 				   int sock_type, int flags)
@@ -4614,7 +4614,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	int readiness_pipe[2];
  * 	char buf[1];
  * 
- * 	if (variant->domain_both)
+ * 	if ((*variant).domain_both)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, NULL);
  * 	else if (flags & ENFORCE_ALL)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, rules);
@@ -4626,19 +4626,19 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LE(0, child_pid);
  * 
  * 	if (child_pid == 0) {
- * 		if (variant->domain_child)
+ * 		if ((*variant).domain_child)
  * 			enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX,
  * 				   NULL);
  * 		else if (flags & ENFORCE_ALL)
  * 			enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX,
  * 				   rules);
  * 
- * 		/* Wait for server to be available. * /
+ * 		/* Wait for server to be available. */
  * 		EXPECT_EQ(0, close(readiness_pipe[1]));
  * 		EXPECT_EQ(1, read(readiness_pipe[0], &buf, 1));
  * 		EXPECT_EQ(0, close(readiness_pipe[0]));
  * 
- * 		/* Talk to server. * /
+ * 		/* Talk to server. */
  * 		cli_fd = socket(AF_UNIX, sock_type, 0);
  * 		ASSERT_LE(0, cli_fd);
  * 
@@ -4647,38 +4647,38 @@ const bin_true: &[u8] = b"./true\0";
  * 		else
  * 			res = test_connect_named_unix(_metadata, cli_fd, path);
  * 
- * 		EXPECT_EQ(variant->domain_child ? EACCES : 0, res);
+ * 		EXPECT_EQ((*variant).domain_child ? EACCES : 0, res);
  * 
- * 		/* Clean up. * /
+ * 		/* Clean up. */
  * 		EXPECT_EQ(0, close(cli_fd));
  * 
- * 		_exit(_metadata->exit_code);
+ * 		_exit((*_metadata).exit_code);
  * 		return;
  * 	}
  * 
- * 	if (variant->domain_parent)
+ * 	if ((*variant).domain_parent)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, NULL);
  * 	else if (flags & ENFORCE_ALL)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, rules);
  * 
  * 	srv_fd = set_up_named_unix_server(_metadata, sock_type, path);
  * 
- * 	/* Tell the child that it can connect. * /
+ * 	/* Tell the child that it can connect. */
  * 	EXPECT_EQ(0, close(readiness_pipe[0]));
  * 	EXPECT_EQ(sizeof(buf), write(readiness_pipe[1], buf, sizeof(buf)));
  * 	EXPECT_EQ(0, close(readiness_pipe[1]));
  * 
- * 	/* Wait for child. * /
+ * 	/* Wait for child. */
  * 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
  * 	EXPECT_EQ(1, WIFEXITED(status));
  * 	EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
  * 
- * 	/* Clean up. * /
+ * 	/* Clean up. */
  * 	EXPECT_EQ(0, close(srv_fd));
  * 	EXPECT_EQ(0, unlink(path));
  * }
  * 
- * static void test_connect_to_child(struct __test_metadata *const _metadata,
+ * static void test_connect_to_child(__test_metadata *const _metadata,
  * 				  const FIXTURE_VARIANT(scoped_domains) *
  * 					  variant,
  * 				  int sock_type, int flags)
@@ -4697,7 +4697,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	pid_t child_pid;
  * 	char buf[1];
  * 
- * 	if (variant->domain_both)
+ * 	if ((*variant).domain_both)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, NULL);
  * 	else if (flags & ENFORCE_ALL)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, rules);
@@ -4710,7 +4710,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LE(0, child_pid);
  * 
  * 	if (child_pid == 0) {
- * 		if (variant->domain_child)
+ * 		if ((*variant).domain_child)
  * 			enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX,
  * 				   NULL);
  * 		else if (flags & ENFORCE_ALL)
@@ -4719,36 +4719,36 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 		srv_fd = set_up_named_unix_server(_metadata, sock_type, path);
  * 
- * 		/* Tell the parent that it can connect. * /
+ * 		/* Tell the parent that it can connect. */
  * 		EXPECT_EQ(0, close(readiness_pipe[0]));
  * 		EXPECT_EQ(sizeof(buf),
  * 			  write(readiness_pipe[1], buf, sizeof(buf)));
  * 		EXPECT_EQ(0, close(readiness_pipe[1]));
  * 
- * 		/* Wait until it is time to shut down. * /
+ * 		/* Wait until it is time to shut down. */
  * 		EXPECT_EQ(0, close(shutdown_pipe[1]));
  * 		EXPECT_EQ(1, read(shutdown_pipe[0], &buf, 1));
  * 		EXPECT_EQ(0, close(shutdown_pipe[0]));
  * 
- * 		/* Cleanup * /
+ * 		/* Cleanup */
  * 		EXPECT_EQ(0, close(srv_fd));
  * 		EXPECT_EQ(0, unlink(path));
  * 
- * 		_exit(_metadata->exit_code);
+ * 		_exit((*_metadata).exit_code);
  * 		return;
  * 	}
  * 
- * 	if (variant->domain_parent)
+ * 	if ((*variant).domain_parent)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, NULL);
  * 	else if (flags & ENFORCE_ALL)
  * 		enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, rules);
  * 
- * 	/* Wait for server to be available. * /
+ * 	/* Wait for server to be available. */
  * 	EXPECT_EQ(0, close(readiness_pipe[1]));
  * 	EXPECT_EQ(1, read(readiness_pipe[0], &buf, 1));
  * 	EXPECT_EQ(0, close(readiness_pipe[0]));
  * 
- * 	/* Talk to server. * /
+ * 	/* Talk to server. */
  * 	cli_fd = socket(AF_UNIX, sock_type, 0);
  * 	ASSERT_LE(0, cli_fd);
  * 
@@ -4757,17 +4757,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	else
  * 		res = test_connect_named_unix(_metadata, cli_fd, path);
  * 
- * 	EXPECT_EQ(variant->domain_parent ? EACCES : 0, res);
+ * 	EXPECT_EQ((*variant).domain_parent ? EACCES : 0, res);
  * 
- * 	/* Clean up. * /
+ * 	/* Clean up. */
  * 	EXPECT_EQ(0, close(cli_fd));
  * 
- * 	/* Tell the server to shut down. * /
+ * 	/* Tell the server to shut down. */
  * 	EXPECT_EQ(0, close(shutdown_pipe[0]));
  * 	EXPECT_EQ(sizeof(buf), write(shutdown_pipe[1], buf, sizeof(buf)));
  * 	EXPECT_EQ(0, close(shutdown_pipe[1]));
  * 
- * 	/* Wait for child. * /
+ * 	/* Wait for child. */
  * 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
  * 	EXPECT_EQ(1, WIFEXITED(status));
  * 	EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
@@ -4858,7 +4858,7 @@ const bin_true: &[u8] = b"./true\0";
  * #undef USE_SENDTO
  * #undef ENFORCE_ALL
  * 
- * static void read_core_pattern(struct __test_metadata *const _metadata,
+ * static void read_core_pattern(__test_metadata *const _metadata,
  * 			      char *buf, size_t buf_size)
  * {
  * 	int fd;
@@ -4874,7 +4874,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	buf[ret] = '\0';
  * }
  * 
- * static void set_core_pattern(struct __test_metadata *const _metadata,
+ * static void set_core_pattern(__test_metadata *const _metadata,
  * 			     const char *pattern)
  * {
  * 	int fd;
@@ -4887,7 +4887,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 *
  * 	 * Switching EUID clears the dumpable flag, which must be restored
  * 	 * afterwards to allow coredumps.
- * 	 * /
+ * 	 */
  * 	set_cap(_metadata, CAP_SETUID);
  * 	ASSERT_EQ(0, seteuid(0));
  * 	clear_cap(_metadata, CAP_SETUID);
@@ -4906,7 +4906,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, seteuid(getuid()));
  * 	clear_cap(_metadata, CAP_SETUID);
  * 
- * 	/* Restore dumpable flag cleared by seteuid(). * /
+ * 	/* Restore dumpable flag cleared by seteuid(). */
  * 	ASSERT_EQ(0, prctl(PR_SET_DUMPABLE, 1, 0, 0, 0));
  * }
  * 
@@ -4918,20 +4918,20 @@ const bin_true: &[u8] = b"./true\0";
  * FIXTURE_SETUP(coredump)
  * {
  * 	disable_caps(_metadata);
- * 	read_core_pattern(_metadata, self->original_core_pattern,
- * 			  sizeof(self->original_core_pattern));
+ * 	read_core_pattern(_metadata, (*self).original_core_pattern,
+ * 			  sizeof((*self).original_core_pattern));
  * }
  * 
  * FIXTURE_TEARDOWN_PARENT(coredump)
  * {
- * 	set_core_pattern(_metadata, self->original_core_pattern);
+ * 	set_core_pattern(_metadata, (*self).original_core_pattern);
  * }
  * 
  * /*
  *  * Test that even when a process is restricted with
  *  * LANDLOCK_ACCESS_FS_RESOLVE_UNIX, the kernel can still initiate a connection
  *  * to the coredump socket on the processes' behalf.
- *  * /
+ *  */
  * TEST_F_FORK(coredump, socket_not_restricted)
  * {
  * 	static const char core_pattern[] = "@/tmp/landlock_coredump_test.sock";
@@ -4942,17 +4942,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	socklen_t cred_len = sizeof(cred);
  * 	char buf[4096];
  * 
- * 	/* Set up the coredump server socket. * /
+ * 	/* Set up the coredump server socket. */
  * 	unlink(sock_path);
  * 	srv_fd = set_up_named_unix_server(_metadata, SOCK_STREAM, sock_path);
  * 
- * 	/* Point coredumps at our socket. * /
+ * 	/* Point coredumps at our socket. */
  * 	set_core_pattern(_metadata, core_pattern);
  * 
- * 	/* Restrict LANDLOCK_ACCESS_FS_RESOLVE_UNIX. * /
+ * 	/* Restrict LANDLOCK_ACCESS_FS_RESOLVE_UNIX. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_RESOLVE_UNIX, NULL);
  * 
- * 	/* Fork a child that crashes. * /
+ * 	/* Fork a child that crashes. */
  * 	child_pid = fork();
  * 	ASSERT_LE(0, child_pid);
  * 	if (child_pid == 0) {
@@ -4963,7 +4963,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 		ASSERT_EQ(0, setrlimit(RLIMIT_CORE, &rl));
  * 
- * 		/* Crash on purpose. * /
+ * 		/* Crash on purpose. */
  * 		kill(getpid(), SIGSEGV);
  * 		_exit(1);
  * 	}
@@ -4972,22 +4972,22 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Accept the coredump connection.  If Landlock incorrectly denies the
  * 	 * kernel's coredump connect, accept() will block forever, so the test
  * 	 * would time out.
- * 	 * /
+ * 	 */
  * 	conn_fd = accept(srv_fd, NULL, NULL);
  * 	ASSERT_LE(0, conn_fd);
  * 
- * 	/* Check that the connection came from the crashing child. * /
+ * 	/* Check that the connection came from the crashing child. */
  * 	ASSERT_EQ(0, getsockopt(conn_fd, SOL_SOCKET, SO_PEERCRED, &cred,
  * 				&cred_len));
  * 	EXPECT_EQ(child_pid, cred.pid);
  * 
- * 	/* Drain the coredump data so the kernel can finish. * /
+ * 	/* Drain the coredump data so the kernel can finish. */
  * 	while (read(conn_fd, buf, sizeof(buf)) > 0)
  * 		;
  * 
  * 	EXPECT_EQ(0, close(conn_fd));
  * 
- * 	/* Wait for the child and verify it coredumped. * /
+ * 	/* Wait for the child and verify it coredumped. */
  * 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
  * 	ASSERT_TRUE(WIFSIGNALED(status));
  * 	ASSERT_TRUE(WCOREDUMP(status));
@@ -4996,15 +4996,15 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, unlink(sock_path));
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(layout1_bind) {};
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * static const char bind_dir_s1d3[] = TMP_DIR "/s2d1/s2d2/s1d3";
  * static const char bind_file1_s1d3[] = TMP_DIR "/s2d1/s2d2/s1d3/f1";
  * static const char bind_file2_s1d3[] = TMP_DIR "/s2d1/s2d2/s1d3/f2";
  * 
- * /* Move targets for disconnected path tests. * /
+ * /* Move targets for disconnected path tests. */
  * static const char dir_s4d1[] = TMP_DIR "/s4d1";
  * static const char file1_s4d1[] = TMP_DIR "/s4d1/f1";
  * static const char file2_s4d1[] = TMP_DIR "/s4d1/f2";
@@ -5026,7 +5026,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * FIXTURE_TEARDOWN_PARENT(layout1_bind)
  * {
- * 	/* umount(dir_s2d2)) is handled by namespace lifetime. * /
+ * 	/* umount(dir_s2d2)) is handled by namespace lifetime. */
  * 
  * 	remove_path(file1_s4d1);
  * 	remove_path(file2_s4d1);
@@ -5065,7 +5065,7 @@ const bin_true: &[u8] = b"./true\0";
  *  *     ├── f2
  *  *     └── s4d2
  *  *         └── f1
- *  * /
+ *  */
  * 
  * TEST_F_FORK(layout1_bind, no_restriction)
  * {
@@ -5094,7 +5094,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Sets access right on parent directories of both source and
  * 	 * destination mount points.
- * 	 * /
+ * 	 */
  * 	const struct rule layer1_parent[] = {
  * 		{
  * 			.path = dir_s1d1,
@@ -5110,7 +5110,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Sets access rights on the same bind-mounted directories.  The result
  * 	 * should be ACCESS_RW for both directories, but not both hierarchies
  * 	 * because of the first layer.
- * 	 * /
+ * 	 */
  * 	const struct rule layer2_mount_point[] = {
  * 		{
  * 			.path = dir_s1d2,
@@ -5122,7 +5122,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 		{},
  * 	};
- * 	/* Only allow read-access to the s1d3 hierarchies. * /
+ * 	/* Only allow read-access to the s1d3 hierarchies. */
  * 	const struct rule layer3_source[] = {
  * 		{
  * 			.path = dir_s1d3,
@@ -5130,7 +5130,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 		{},
  * 	};
- * 	/* Removes all access rights. * /
+ * 	/* Removes all access rights. */
  * 	const struct rule layer4_destination[] = {
  * 		{
  * 			.path = bind_file1_s1d3,
@@ -5139,10 +5139,10 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* Sets rules for the parent directories. * /
+ * 	/* Sets rules for the parent directories. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer1_parent);
  * 
- * 	/* Checks source hierarchy. * /
+ * 	/* Checks source hierarchy. */
  * 	ASSERT_EQ(0, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(0, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
@@ -5151,17 +5151,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks destination hierarchy. * /
+ * 	/* Checks destination hierarchy. */
  * 	ASSERT_EQ(0, test_open(file1_s2d1, O_RDWR));
  * 	ASSERT_EQ(0, test_open(dir_s2d1, O_RDONLY | O_DIRECTORY));
  * 
  * 	ASSERT_EQ(0, test_open(file1_s2d2, O_RDWR));
  * 	ASSERT_EQ(0, test_open(dir_s2d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Sets rules for the mount points. * /
+ * 	/* Sets rules for the mount points. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer2_mount_point);
  * 
- * 	/* Checks source hierarchy. * /
+ * 	/* Checks source hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d1, O_RDONLY | O_DIRECTORY));
@@ -5170,7 +5170,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(0, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks destination hierarchy. * /
+ * 	/* Checks destination hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s2d1, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s2d1, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s2d1, O_RDONLY | O_DIRECTORY));
@@ -5179,10 +5179,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, test_open(dir_s2d2, O_RDONLY | O_DIRECTORY));
  * 	ASSERT_EQ(0, test_open(bind_dir_s1d3, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Sets a (shared) rule only on the source. * /
+ * 	/* Sets a (shared) rule only on the source. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer3_source);
  * 
- * 	/* Checks source hierarchy. * /
+ * 	/* Checks source hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d2, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d2, O_RDONLY | O_DIRECTORY));
@@ -5191,7 +5191,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s1d3, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Checks destination hierarchy. * /
+ * 	/* Checks destination hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s2d2, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s2d2, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(dir_s2d2, O_RDONLY | O_DIRECTORY));
@@ -5200,14 +5200,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(EACCES, test_open(bind_file1_s1d3, O_WRONLY));
  * 	ASSERT_EQ(EACCES, test_open(bind_dir_s1d3, O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Sets a (shared) rule only on the destination. * /
+ * 	/* Sets a (shared) rule only on the destination. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer4_destination);
  * 
- * 	/* Checks source hierarchy. * /
+ * 	/* Checks source hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(file1_s1d3, O_WRONLY));
  * 
- * 	/* Checks destination hierarchy. * /
+ * 	/* Checks destination hierarchy. */
  * 	ASSERT_EQ(EACCES, test_open(bind_file1_s1d3, O_RDONLY));
  * 	ASSERT_EQ(EACCES, test_open(bind_file1_s1d3, O_WRONLY));
  * }
@@ -5216,7 +5216,7 @@ const bin_true: &[u8] = b"./true\0";
  * {
  * 	const struct rule layer1[] = {
  * 		{
- * 			/* dir_s2d1 is beneath the dir_s2d2 mount point. * /
+ * 			/* dir_s2d1 is beneath the dir_s2d2 mount point. */
  * 			.path = dir_s2d1,
  * 			.access = LANDLOCK_ACCESS_FS_REFER,
  * 		},
@@ -5231,26 +5231,26 @@ const bin_true: &[u8] = b"./true\0";
  * 		   LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_EXECUTE,
  * 		   layer1);
  * 
- * 	/* Checks basic denied move. * /
+ * 	/* Checks basic denied move. */
  * 	ASSERT_EQ(-1, rename(file1_s1d1, file1_s1d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Checks real cross-mount move (Landlock is not involved). * /
+ * 	/* Checks real cross-mount move (Landlock is not involved). */
  * 	ASSERT_EQ(-1, rename(file1_s2d1, file1_s2d2));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Checks move that will give more accesses. * /
+ * 	/* Checks move that will give more accesses. */
  * 	ASSERT_EQ(-1, rename(file1_s2d2, bind_file1_s1d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Checks legitimate downgrade move. * /
+ * 	/* Checks legitimate downgrade move. */
  * 	ASSERT_EQ(0, rename(bind_file1_s1d3, file1_s2d2));
  * }
  * 
  * /*
  *  * Make sure access to file through a disconnected path works as expected.
  *  * This test moves s1d3 to s4d1.
- *  * /
+ *  */
  * TEST_F_FORK(layout1_bind, path_disconnected)
  * {
  * 	const struct rule layer1_allow_all[] = {
@@ -5275,11 +5275,11 @@ const bin_true: &[u8] = b"./true\0";
  * 		{},
  * 	};
  * 
- * 	/* Landlock should not deny access just because it is disconnected. * /
+ * 	/* Landlock should not deny access just because it is disconnected. */
  * 	int ruleset_fd_l1 =
  * 		create_ruleset(_metadata, ACCESS_ALL, layer1_allow_all);
  * 
- * 	/* Creates the new ruleset now before we move the dir containing the file. * /
+ * 	/* Creates the new ruleset now before we move the dir containing the file. */
  * 	int ruleset_fd_l2 =
  * 		create_ruleset(_metadata, ACCESS_RW, layer2_allow_just_f1);
  * 	int ruleset_fd_l3 =
@@ -5292,30 +5292,30 @@ const bin_true: &[u8] = b"./true\0";
  * 	bind_s1d3_fd = open(bind_dir_s1d3, O_PATH | O_CLOEXEC);
  * 	ASSERT_LE(0, bind_s1d3_fd);
  * 
- * 	/* Tests access is possible before we move. * /
+ * 	/* Tests access is possible before we move. */
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file2_name, O_RDONLY));
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, "..", O_RDONLY | O_DIRECTORY));
  * 
- * 	/* Makes it disconnected. * /
+ * 	/* Makes it disconnected. */
  * 	ASSERT_EQ(0, rename(dir_s1d3, dir_s4d1))
  * 	{
  * 		TH_LOG("Failed to rename %s to %s: %s", dir_s1d3, dir_s4d1,
  * 		       strerror(errno));
  * 	}
  * 
- * 	/* Tests that access is still possible. * /
+ * 	/* Tests that access is still possible. */
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file2_name, O_RDONLY));
  * 
  * 	/*
  * 	 * Tests that ".." is not possible (not because of Landlock, but just
  * 	 * because it's disconnected).
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(ENOENT,
  * 		  test_open_rel(bind_s1d3_fd, "..", O_RDONLY | O_DIRECTORY));
  * 
- * 	/* This should still work with a narrower rule. * /
+ * 	/* This should still work with a narrower rule. */
  * 	enforce_ruleset(_metadata, ruleset_fd_l2);
  * 	EXPECT_EQ(0, close(ruleset_fd_l2));
  * 
@@ -5324,7 +5324,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Accessing a file through a disconnected file descriptor can still be
  * 	 * allowed by a rule tied to this file, even if it is no longer visible in
  * 	 * its mount point.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 	EXPECT_EQ(EACCES, test_open_rel(bind_s1d3_fd, file2_name, O_RDONLY));
  * 
@@ -5336,7 +5336,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Accessing a file through a disconnected file descriptor can still be
  * 	 * allowed by a rule tied to the original mount point, even if it is no
  * 	 * longer visible in its mount point.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 	EXPECT_EQ(EACCES, test_open_rel(bind_s1d3_fd, file2_name, O_RDONLY));
  * }
@@ -5345,7 +5345,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * Test that renameat with disconnected paths works under Landlock.  This test
  *  * moves s1d3 to s4d2, so that we can have a rule allowing refers on the move
  *  * target's immediate parent.
- *  * /
+ *  */
  * TEST_F_FORK(layout1_bind, path_disconnected_rename)
  * {
  * 	const struct rule layer1[] = {
@@ -5370,7 +5370,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		{}
  * 	};
  * 
- * 	/* This layer only handles LANDLOCK_ACCESS_FS_READ_FILE. * /
+ * 	/* This layer only handles LANDLOCK_ACCESS_FS_READ_FILE. */
  * 	const struct rule layer2_only_s1d2[] = {
  * 		{
  * 			.path = dir_s1d2,
@@ -5397,7 +5397,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LE(0, bind_s1d3_fd);
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 
- * 	/* Tests ENOENT priority over EACCES for disconnected directory. * /
+ * 	/* Tests ENOENT priority over EACCES for disconnected directory. */
  * 	EXPECT_EQ(EACCES, test_open_rel(bind_s1d3_fd, "..", O_DIRECTORY));
  * 	ASSERT_EQ(0, rename(dir_s1d3, dir_s4d2))
  * 	{
@@ -5411,7 +5411,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * with layer 2 because its mount point is evaluated as the first valid
  * 	 * directory because it was initially a parent.  Do a fork to test this so
  * 	 * we don't prevent ourselves from renaming it back later.
- * 	 * /
+ * 	 */
  * 	child_pid = fork();
  * 	ASSERT_LE(0, child_pid);
  * 	if (child_pid == 0) {
@@ -5423,18 +5423,18 @@ const bin_true: &[u8] = b"./true\0";
  * 		/*
  * 		 * Tests that access widening checks indeed prevents us from renaming it
  * 		 * back.
- * 		 * /
+ * 		 */
  * 		EXPECT_EQ(-1, rename(dir_s4d2, dir_s1d3));
  * 		EXPECT_EQ(EXDEV, errno);
  * 
  * 		/*
  * 		 * Including through the now disconnected fd (but it should return
  * 		 * EXDEV).
- * 		 * /
+ * 		 */
  * 		EXPECT_EQ(-1, renameat(bind_s1d3_fd, file1_name, AT_FDCWD,
  * 				       file1_s2d2));
  * 		EXPECT_EQ(EXDEV, errno);
- * 		_exit(_metadata->exit_code);
+ * 		_exit((*_metadata).exit_code);
  * 		return;
  * 	}
  * 
@@ -5448,7 +5448,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		       strerror(errno));
  * 	}
  * 
- * 	/* Now checks that we can access it under l2. * /
+ * 	/* Now checks that we can access it under l2. */
  * 	child_pid = fork();
  * 	ASSERT_LE(0, child_pid);
  * 	if (child_pid == 0) {
@@ -5456,7 +5456,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		EXPECT_EQ(0, close(ruleset_fd_l2));
  * 		EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 		EXPECT_EQ(0, test_open(file1_s1d3, O_RDONLY));
- * 		_exit(_metadata->exit_code);
+ * 		_exit((*_metadata).exit_code);
  * 		return;
  * 	}
  * 
@@ -5468,7 +5468,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Also test that we can rename via a disconnected path.  We move the
  * 	 * dir back to the disconnected place first, then we rename file1 to
  * 	 * file2 through our dir fd.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, rename(dir_s1d3, dir_s4d2))
  * 	{
  * 		TH_LOG("Failed to rename %s to %s: %s", dir_s1d3, dir_s4d2,
@@ -5489,21 +5489,21 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, test_open(file1_s2d2, O_RDONLY));
  * 	EXPECT_EQ(0, test_open(file1_s1d2, O_RDONLY));
  * 
- * 	/* Move it back using the disconnected path as the target. * /
+ * 	/* Move it back using the disconnected path as the target. */
  * 	ASSERT_EQ(0, renameat(AT_FDCWD, file1_s2d2, bind_s1d3_fd, file1_name))
  * 	{
  * 		TH_LOG("Failed to rename %s to %s through disconnected %s: %s",
  * 		       file1_s1d2, file1_name, bind_dir_s1d3, strerror(errno));
  * 	}
  * 
- * 	/* Now make it connected again. * /
+ * 	/* Now make it connected again. */
  * 	ASSERT_EQ(0, rename(dir_s4d2, dir_s1d3))
  * 	{
  * 		TH_LOG("Failed to rename %s back to %s: %s", dir_s4d2, dir_s1d3,
  * 		       strerror(errno));
  * 	}
  * 
- * 	/* Checks again that we can access it under l2. * /
+ * 	/* Checks again that we can access it under l2. */
  * 	enforce_ruleset(_metadata, ruleset_fd_l2);
  * 	EXPECT_EQ(0, close(ruleset_fd_l2));
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
@@ -5513,10 +5513,10 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Test that linkat(2) with disconnected paths works under Landlock. This
  *  * test moves s1d3 to s4d1.
- *  * /
+ *  */
  * TEST_F_FORK(layout1_bind, path_disconnected_link)
  * {
- * 	/* Ruleset to be applied after renaming s1d3 to s4d1. * /
+ * 	/* Ruleset to be applied after renaming s1d3 to s4d1. */
  * 	const struct rule layer1[] = {
  * 		{
  * 			.path = dir_s4d1,
@@ -5536,7 +5536,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * 	int bind_s1d3_fd;
  * 
- * 	/* Removes unneeded files created by layout1, otherwise it will EEXIST. * /
+ * 	/* Removes unneeded files created by layout1, otherwise it will EEXIST. */
  * 	ASSERT_EQ(0, unlink(file1_s1d2));
  * 	ASSERT_EQ(0, unlink(file2_s1d3));
  * 
@@ -5544,14 +5544,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_LE(0, bind_s1d3_fd);
  * 	EXPECT_EQ(0, test_open_rel(bind_s1d3_fd, file1_name, O_RDONLY));
  * 
- * 	/* Disconnects bind_s1d3_fd. * /
+ * 	/* Disconnects bind_s1d3_fd. */
  * 	ASSERT_EQ(0, rename(dir_s1d3, dir_s4d1))
  * 	{
  * 		TH_LOG("Failed to rename %s to %s: %s", dir_s1d3, dir_s4d1,
  * 		       strerror(errno));
  * 	}
  * 
- * 	/* Need this later to test different parent link. * /
+ * 	/* Need this later to test different parent link. */
  * 	ASSERT_EQ(0, mkdir(dir_s4d2, 0755))
  * 	{
  * 		TH_LOG("Failed to create %s: %s", dir_s4d2, strerror(errno));
@@ -5559,28 +5559,28 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_ALL, layer1);
  * 
- * 	/* From disconnected to connected. * /
+ * 	/* From disconnected to connected. */
  * 	ASSERT_EQ(0, linkat(bind_s1d3_fd, file1_name, AT_FDCWD, file1_s2d2, 0))
  * 	{
  * 		TH_LOG("Failed to link %s to %s via disconnected %s: %s",
  * 		       file1_name, file1_s2d2, bind_dir_s1d3, strerror(errno));
  * 	}
  * 
- * 	/* Tests that we can access via the new link... * /
+ * 	/* Tests that we can access via the new link... */
  * 	EXPECT_EQ(0, test_open(file1_s2d2, O_RDONLY))
  * 	{
  * 		TH_LOG("Failed to open newly linked %s: %s", file1_s2d2,
  * 		       strerror(errno));
  * 	}
  * 
- * 	/* ...as well as the old one. * /
+ * 	/* ...as well as the old one. */
  * 	EXPECT_EQ(0, test_open(file1_s4d1, O_RDONLY))
  * 	{
  * 		TH_LOG("Failed to open original %s: %s", file1_s4d1,
  * 		       strerror(errno));
  * 	}
  * 
- * 	/* From connected to disconnected. * /
+ * 	/* From connected to disconnected. */
  * 	ASSERT_EQ(0, unlink(file1_s4d1));
  * 	ASSERT_EQ(0, linkat(AT_FDCWD, file1_s2d2, bind_s1d3_fd, file2_name, 0))
  * 	{
@@ -5590,7 +5590,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, test_open(file2_s4d1, O_RDONLY));
  * 	ASSERT_EQ(0, unlink(file1_s2d2));
  * 
- * 	/* From disconnected to disconnected (same parent). * /
+ * 	/* From disconnected to disconnected (same parent). */
  * 	ASSERT_EQ(0,
  * 		  linkat(bind_s1d3_fd, file2_name, bind_s1d3_fd, file1_name, 0))
  * 	{
@@ -5609,7 +5609,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	}
  * 	ASSERT_EQ(0, unlink(file2_s4d1));
  * 
- * 	/* From disconnected to disconnected (different parent). * /
+ * 	/* From disconnected to disconnected (different parent). */
  * 	ASSERT_EQ(0,
  * 		  linkat(bind_s1d3_fd, file1_name, bind_s1d3_fd, "s4d2/f1", 0))
  * 	{
@@ -5660,12 +5660,12 @@ const bin_true: &[u8] = b"./true\0";
  *  *     └── s1d42 [renamed here]
  *  *         ├── f3
  *  *         └── f4
- *  * /
- * /* clang-format off * /
+ *  */
+ * /* clang-format off */
  * FIXTURE(layout4_disconnected_leafs) {
  * 	int s2d2_fd;
  * };
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * FIXTURE_SETUP(layout4_disconnected_leafs)
  * {
@@ -5679,9 +5679,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	create_directory(_metadata, TMP_DIR "/s3d1");
  * 	create_directory(_metadata, TMP_DIR "/s4d1");
  * 
- * 	self->s2d2_fd =
+ * 	(*self).s2d2_fd =
  * 		open(TMP_DIR "/s2d1/s2d2", O_DIRECTORY | O_PATH | O_CLOEXEC);
- * 	ASSERT_LE(0, self->s2d2_fd);
+ * 	ASSERT_LE(0, (*self).s2d2_fd);
  * 
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, mount(TMP_DIR "/s1d1/s1d2", TMP_DIR "/s2d1/s2d2", NULL,
@@ -5691,9 +5691,9 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * FIXTURE_TEARDOWN_PARENT(layout4_disconnected_leafs)
  * {
- * 	/* umount(TMP_DIR "/s2d1") is handled by namespace lifetime. * /
+ * 	/* umount(TMP_DIR "/s2d1") is handled by namespace lifetime. */
  * 
- * 	/* Removes files after renames. * /
+ * 	/* Removes files after renames. */
  * 	remove_path(TMP_DIR "/s3d1/s1d41/f1");
  * 	remove_path(TMP_DIR "/s3d1/s1d41/f2");
  * 	remove_path(TMP_DIR "/s4d1/s1d42/f1");
@@ -5709,85 +5709,85 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Parent of the bind mount source.  It should always be ignored when
  * 	 * testing against files under the s1d41 or s1d42 disconnected directories.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d1;
  * 	/*
  * 	 * Source of bind mount (to s2d2).  It should always be enforced when
  * 	 * testing against files under the s1d41 or s1d42 disconnected directories.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d2;
  * 	/*
  * 	 * Original parent of s1d41.  It should always be ignored when testing
  * 	 * against files under the s1d41 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d31;
  * 	/*
  * 	 * Original parent of s1d42.  It should always be ignored when testing
  * 	 * against files under the s1d42 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d32;
  * 	/*
  * 	 * Opened and disconnected source directory.  It should always be enforced
  * 	 * when testing against files under the s1d41 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d41;
  * 	/*
  * 	 * Opened and disconnected source directory.  It should always be enforced
  * 	 * when testing against files under the s1d42 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d42;
  * 	/*
  * 	 * File in the s1d41 disconnected directory.  It should always be enforced
  * 	 * when testing against itself under the s1d41 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_f1;
  * 	/*
  * 	 * File in the s1d41 disconnected directory.  It should always be enforced
  * 	 * when testing against itself under the s1d41 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_f2;
  * 	/*
  * 	 * File in the s1d42 disconnected directory.  It should always be enforced
  * 	 * when testing against itself under the s1d42 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_f3;
  * 	/*
  * 	 * Parent of the bind mount destination.  It should always be enforced when
  * 	 * testing against files under the s1d41 or s1d42 disconnected directories.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s2d1;
  * 	/*
  * 	 * Directory covered by the bind mount.  It should always be ignored when
  * 	 * testing against files under the s1d41 or s1d42 disconnected directories.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s2d2;
  * 	/*
  * 	 * New parent of the renamed s1d41.  It should always be ignored when
  * 	 * testing against files under the s1d41 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s3d1;
  * 	/*
  * 	 * New parent of the renamed s1d42.  It should always be ignored when
  * 	 * testing against files under the s1d42 disconnected directory.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s4d1;
  * 
- * 	/* Expected result of the call to open([fd:s1d41]/f1, O_RDONLY). * /
+ * 	/* Expected result of the call to open([fd:s1d41]/f1, O_RDONLY). */
  * 	const int expected_read_result;
- * 	/* Expected result of the call to renameat([fd:s1d41]/f1, [fd:s1d42]/f1). * /
+ * 	/* Expected result of the call to renameat([fd:s1d41]/f1, [fd:s1d42]/f1). */
  * 	const int expected_rename_result;
  * 	/*
  * 	 * Expected result of the call to renameat([fd:s1d41]/f2, [fd:s1d42]/f3,
  * 	 * RENAME_EXCHANGE).
- * 	 * /
+ * 	 */
  * 	const int expected_exchange_result;
- * 	/* Expected result of the call to renameat([fd:s1d42]/f4, [fd:s1d42]/f5). * /
+ * 	/* Expected result of the call to renameat([fd:s1d42]/f4, [fd:s1d42]/f5). */
  * 	const int expected_same_dir_rename_result;
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d1_mount_src_parent) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d1 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -5798,9 +5798,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d2_mount_src_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d2 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -5808,9 +5808,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d2_mount_src_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d2 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -5819,9 +5819,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d2_mount_src_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d2 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -5829,9 +5829,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d31_s1d32_old_parent) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d31 = LANDLOCK_ACCESS_FS_REFER |
  * 			 LANDLOCK_ACCESS_FS_READ_FILE |
  * 			 LANDLOCK_ACCESS_FS_EXECUTE |
@@ -5846,9 +5846,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d41_s1d42_disconnected_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d41 = LANDLOCK_ACCESS_FS_REFER |
  * 			 LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.allowed_s1d42 = LANDLOCK_ACCESS_FS_REFER |
@@ -5859,9 +5859,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d41_s1d42_disconnected_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d41 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			 LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.allowed_s1d42 = LANDLOCK_ACCESS_FS_READ_FILE |
@@ -5872,9 +5872,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d41_s1d42_disconnected_rename_even) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d41 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.allowed_s1d42 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
@@ -5883,39 +5883,39 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* The destination directory has more access right. * /
- * /* clang-format off * /
+ * /* The destination directory has more access right. */
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d41_s1d42_disconnected_rename_more) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d41 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.allowed_s1d42 = LANDLOCK_ACCESS_FS_REFER |
  * 			 LANDLOCK_ACCESS_FS_MAKE_REG |
  * 			 LANDLOCK_ACCESS_FS_EXECUTE,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
- * 	/* Access denied. * /
+ * 	/* Access denied. */
  * 	.expected_rename_result = EXDEV,
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* The destination directory has less access right. * /
- * /* clang-format off * /
+ * /* The destination directory has less access right. */
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s1d41_s1d42_disconnected_rename_less) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d41 = LANDLOCK_ACCESS_FS_REFER |
  * 			 LANDLOCK_ACCESS_FS_MAKE_REG |
  * 			 LANDLOCK_ACCESS_FS_EXECUTE,
  * 	.allowed_s1d42 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
- * 	/* Access allowed. * /
+ * 	/* Access allowed. */
  * 	.expected_rename_result = 0,
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s2d1_mount_dst_parent_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d1 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -5924,9 +5924,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s2d1_mount_dst_parent_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -5934,9 +5934,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s2d1_mount_dst_parent_mini) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d1 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
@@ -5946,9 +5946,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s2d2_covered_by_mount) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d2 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -5959,10 +5959,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* Tests collect_domain_accesses(). * /
- * /* clang-format off * /
+ * /* Tests collect_domain_accesses(). */
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s3d1_s4d1_new_parent_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
@@ -5971,9 +5971,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s3d1_s4d1_new_parent_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_READ_FILE |
@@ -5986,7 +5986,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs,
  * 		    s3d1_s4d1_disconnected_rename_even){
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
@@ -5995,37 +5995,37 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* The destination directory has more access right. * /
- * /* clang-format off * /
+ * /* The destination directory has more access right. */
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s3d1_s4d1_disconnected_rename_more) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG |
  * 			LANDLOCK_ACCESS_FS_EXECUTE,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
- * 	/* Access denied. * /
+ * 	/* Access denied. */
  * 	.expected_rename_result = EXDEV,
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* The destination directory has less access right. * /
- * /* clang-format off * /
+ * /* The destination directory has less access right. */
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, s3d1_s4d1_disconnected_rename_less) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG |
  * 			LANDLOCK_ACCESS_FS_EXECUTE,
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
- * 	/* Access allowed. * /
+ * 	/* Access allowed. */
  * 	.expected_rename_result = 0,
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout4_disconnected_leafs, f1_f2_f3) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_f1 = LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.allowed_f2 = LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.allowed_f3 = LANDLOCK_ACCESS_FS_READ_FILE,
@@ -6043,52 +6043,52 @@ const bin_true: &[u8] = b"./true\0";
  * 	const struct rule rules[] = {
  * 		{
  * 			.path = TMP_DIR "/s1d1",
- * 			.access = variant->allowed_s1d1,
+ * 			.access = (*variant).allowed_s1d1,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2",
- * 			.access = variant->allowed_s1d2,
+ * 			.access = (*variant).allowed_s1d2,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d31",
- * 			.access = variant->allowed_s1d31,
+ * 			.access = (*variant).allowed_s1d31,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d32",
- * 			.access = variant->allowed_s1d32,
+ * 			.access = (*variant).allowed_s1d32,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d31/s1d41",
- * 			.access = variant->allowed_s1d41,
+ * 			.access = (*variant).allowed_s1d41,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d32/s1d42",
- * 			.access = variant->allowed_s1d42,
+ * 			.access = (*variant).allowed_s1d42,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d31/s1d41/f1",
- * 			.access = variant->allowed_f1,
+ * 			.access = (*variant).allowed_f1,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d31/s1d41/f2",
- * 			.access = variant->allowed_f2,
+ * 			.access = (*variant).allowed_f2,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d32/s1d42/f3",
- * 			.access = variant->allowed_f3,
+ * 			.access = (*variant).allowed_f3,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s2d1",
- * 			.access = variant->allowed_s2d1,
+ * 			.access = (*variant).allowed_s2d1,
  * 		},
- * 		/* s2d2_fd * /
+ * 		/* s2d2_fd */
  * 		{
  * 			.path = TMP_DIR "/s3d1",
- * 			.access = variant->allowed_s3d1,
+ * 			.access = (*variant).allowed_s3d1,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s4d1",
- * 			.access = variant->allowed_s4d1,
+ * 			.access = (*variant).allowed_s4d1,
  * 		},
  * 		{},
  * 	};
@@ -6096,18 +6096,18 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ruleset_fd = create_ruleset(_metadata, handled_access, rules);
  * 
- * 	/* Adds rule for the covered directory. * /
- * 	if (variant->allowed_s2d2) {
+ * 	/* Adds rule for the covered directory. */
+ * 	if ((*variant).allowed_s2d2) {
  * 		ASSERT_EQ(0, landlock_add_rule(
  * 				     ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
- * 				     &(struct landlock_path_beneath_attr){
- * 					     .parent_fd = self->s2d2_fd,
+ * 				     &(landlock_path_beneath_attr){
+ * 					     .parent_fd = (*self).s2d2_fd,
  * 					     .allowed_access =
- * 						     variant->allowed_s2d2,
+ * 						     (*variant).allowed_s2d2,
  * 				     },
  * 				     0));
  * 	}
- * 	EXPECT_EQ(0, close(self->s2d2_fd));
+ * 	EXPECT_EQ(0, close((*self).s2d2_fd));
  * 
  * 	s1d41_bind_fd = open(TMP_DIR "/s2d1/s2d2/s1d31/s1d41",
  * 			     O_DIRECTORY | O_PATH | O_CLOEXEC);
@@ -6116,13 +6116,13 @@ const bin_true: &[u8] = b"./true\0";
  * 			     O_DIRECTORY | O_PATH | O_CLOEXEC);
  * 	ASSERT_LE(0, s1d42_bind_fd);
  * 
- * 	/* Disconnects and checks source and destination directories. * /
+ * 	/* Disconnects and checks source and destination directories. */
  * 	EXPECT_EQ(0, test_open_rel(s1d41_bind_fd, "..", O_DIRECTORY));
  * 	EXPECT_EQ(0, test_open_rel(s1d42_bind_fd, "..", O_DIRECTORY));
- * 	/* Renames to make it accessible through s3d1/s1d41 * /
+ * 	/* Renames to make it accessible through s3d1/s1d41 */
  * 	ASSERT_EQ(0, test_renameat(AT_FDCWD, TMP_DIR "/s1d1/s1d2/s1d31/s1d41",
  * 				   AT_FDCWD, TMP_DIR "/s3d1/s1d41"));
- * 	/* Renames to make it accessible through s4d1/s1d42 * /
+ * 	/* Renames to make it accessible through s4d1/s1d42 */
  * 	ASSERT_EQ(0, test_renameat(AT_FDCWD, TMP_DIR "/s1d1/s1d2/s1d32/s1d42",
  * 				   AT_FDCWD, TMP_DIR "/s4d1/s1d42"));
  * 	EXPECT_EQ(ENOENT, test_open_rel(s1d41_bind_fd, "..", O_DIRECTORY));
@@ -6131,15 +6131,15 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	EXPECT_EQ(0, close(ruleset_fd));
  * 
- * 	EXPECT_EQ(variant->expected_read_result,
+ * 	EXPECT_EQ((*variant).expected_read_result,
  * 		  test_open_rel(s1d41_bind_fd, "f1", O_RDONLY));
  * 
- * 	EXPECT_EQ(variant->expected_rename_result,
+ * 	EXPECT_EQ((*variant).expected_rename_result,
  * 		  test_renameat(s1d41_bind_fd, "f1", s1d42_bind_fd, "f1"));
- * 	EXPECT_EQ(variant->expected_exchange_result,
+ * 	EXPECT_EQ((*variant).expected_exchange_result,
  * 		  test_exchangeat(s1d41_bind_fd, "f2", s1d42_bind_fd, "f3"));
  * 
- * 	EXPECT_EQ(variant->expected_same_dir_rename_result,
+ * 	EXPECT_EQ((*variant).expected_same_dir_rename_result,
  * 		  test_renameat(s1d42_bind_fd, "f4", s1d42_bind_fd, "f5"));
  * }
  * 
@@ -6216,13 +6216,13 @@ const bin_true: &[u8] = b"./true\0";
  *  *   6. parent mounts:                [...] -> /
  *  *
  *  * The s4d1 directory is evaluated even if it is not in the s2d2 mount.
- *  * /
+ *  */
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(layout5_disconnected_branch) {
  * 	int s2d4_fd, s3d2_fd;
  * };
- * /* clang-format on * /
+ * /* clang-format on */
  * 
  * FIXTURE_SETUP(layout5_disconnected_branch)
  * {
@@ -6236,13 +6236,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	create_directory(_metadata, TMP_DIR "/s3d1/s3d2");
  * 	create_directory(_metadata, TMP_DIR "/s4d1");
  * 
- * 	self->s2d4_fd = open(TMP_DIR "/s2d1/s2d2/s2d3/s2d4",
+ * 	(*self).s2d4_fd = open(TMP_DIR "/s2d1/s2d2/s2d3/s2d4",
  * 			     O_DIRECTORY | O_PATH | O_CLOEXEC);
- * 	ASSERT_LE(0, self->s2d4_fd);
+ * 	ASSERT_LE(0, (*self).s2d4_fd);
  * 
- * 	self->s3d2_fd =
+ * 	(*self).s3d2_fd =
  * 		open(TMP_DIR "/s3d1/s3d2", O_DIRECTORY | O_PATH | O_CLOEXEC);
- * 	ASSERT_LE(0, self->s3d2_fd);
+ * 	ASSERT_LE(0, (*self).s3d2_fd);
  * 
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, mount(TMP_DIR "/s1d1/s1d2", TMP_DIR "/s2d1/s2d2/s2d3/s2d4",
@@ -6254,9 +6254,9 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * FIXTURE_TEARDOWN_PARENT(layout5_disconnected_branch)
  * {
- * 	/* Bind mounts are handled by namespace lifetime. * /
+ * 	/* Bind mounts are handled by namespace lifetime. */
  * 
- * 	/* Removes files after renames. * /
+ * 	/* Removes files after renames. */
  * 	remove_path(TMP_DIR "/s1d1/s1d2/s1d3/s1d41/f1");
  * 	remove_path(TMP_DIR "/s1d1/s1d2/s1d3/s1d41/f2");
  * 	remove_path(TMP_DIR "/s1d1/s1d2/s1d3/s1d42/f1");
@@ -6272,12 +6272,12 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * Parent of all files.  It should always be enforced when testing against
  * 	 * files under the s1d41 or s1d42 disconnected directories.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_base;
  * 	/*
  * 	 * Parent of the first bind mount source.  It should always be ignored when
  * 	 * testing against files under the s1d41 or s1d42 disconnected directories.
- * 	 * /
+ * 	 */
  * 	const __u64 allowed_s1d1;
  * 	const __u64 allowed_s1d2;
  * 	const __u64 allowed_s1d3;
@@ -6289,28 +6289,28 @@ const bin_true: &[u8] = b"./true\0";
  * 	const __u64 allowed_s3d2;
  * 	const __u64 allowed_s4d1;
  * 
- * 	/* Expected result of the call to open([fd:s1d3]/s1d41/f1, O_RDONLY). * /
+ * 	/* Expected result of the call to open([fd:s1d3]/s1d41/f1, O_RDONLY). */
  * 	const int expected_read_result;
  * 	/*
  * 	 * Expected result of the call to renameat([fd:s1d3]/s1d41/f1,
  * 	 * [fd:s1d3]/s1d42/f1).
- * 	 * /
+ * 	 */
  * 	const int expected_rename_result;
  * 	/*
  * 	 * Expected result of the call to renameat([fd:s1d3]/s1d41/f2,
  * 	 * [fd:s1d3]/s1d42/f3,  RENAME_EXCHANGE).
- * 	 * /
+ * 	 */
  * 	const int expected_exchange_result;
  * 	/*
  * 	 * Expected result of the call to renameat([fd:s1d3]/s1d42/f4,
  * 	 * [fd:s1d3]/s1d42/f5).
- * 	 * /
+ * 	 */
  * 	const int expected_same_dir_rename_result;
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d1_mount1_src_parent) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d1 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -6321,9 +6321,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d2_mount1_src_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d2 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -6331,9 +6331,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d2_mount1_src_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d2 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -6342,9 +6342,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d2_mount1_src_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d2 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -6352,9 +6352,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d3_fd_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d3 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -6362,9 +6362,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d3_fd_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d3 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -6373,9 +6373,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d3_fd_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d3 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -6383,9 +6383,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s1d3_fd_full) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s1d3 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -6396,9 +6396,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d1_mount2_src_parent) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d1 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -6409,9 +6409,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d2_mount2_src_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d2 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -6419,9 +6419,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d2_mount2_src_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d2 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -6430,9 +6430,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d2_mount2_src_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d2 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -6440,9 +6440,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d3_mount1_dst_parent_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d3 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -6450,9 +6450,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d3_mount1_dst_parent_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d3 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -6461,9 +6461,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d3_mount1_dst_parent_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d3 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -6471,9 +6471,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s2d4_mount1_dst) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s2d4 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -6484,9 +6484,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s3d1_mount2_dst_parent_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -6494,9 +6494,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s3d1_mount2_dst_parent_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -6505,9 +6505,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s3d1_mount2_dst_parent_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -6515,9 +6515,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = 0,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s3d2_mount1_dst) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s3d2 = LANDLOCK_ACCESS_FS_REFER |
  * 			LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_EXECUTE |
@@ -6528,9 +6528,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s4d1_rename_parent_refer) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_READ_FILE,
  * 	.expected_read_result = 0,
  * 	.expected_same_dir_rename_result = EACCES,
@@ -6538,9 +6538,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EACCES,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s4d1_rename_parent_create) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_READ_FILE |
  * 			LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = 0,
@@ -6549,9 +6549,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	.expected_exchange_result = EXDEV,
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout5_disconnected_branch, s4d1_rename_parent_rename) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.allowed_s4d1 = LANDLOCK_ACCESS_FS_REFER | LANDLOCK_ACCESS_FS_MAKE_REG,
  * 	.expected_read_result = EACCES,
  * 	.expected_same_dir_rename_result = 0,
@@ -6567,37 +6567,37 @@ const bin_true: &[u8] = b"./true\0";
  * 	const struct rule rules[] = {
  * 		{
  * 			.path = TMP_DIR "/s1d1",
- * 			.access = variant->allowed_s1d1,
+ * 			.access = (*variant).allowed_s1d1,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2",
- * 			.access = variant->allowed_s1d2,
+ * 			.access = (*variant).allowed_s1d2,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s1d1/s1d2/s1d3",
- * 			.access = variant->allowed_s1d3,
+ * 			.access = (*variant).allowed_s1d3,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s2d1",
- * 			.access = variant->allowed_s2d1,
+ * 			.access = (*variant).allowed_s2d1,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s2d1/s2d2",
- * 			.access = variant->allowed_s2d2,
+ * 			.access = (*variant).allowed_s2d2,
  * 		},
  * 		{
  * 			.path = TMP_DIR "/s2d1/s2d2/s2d3",
- * 			.access = variant->allowed_s2d3,
+ * 			.access = (*variant).allowed_s2d3,
  * 		},
- * 		/* s2d4_fd * /
+ * 		/* s2d4_fd */
  * 		{
  * 			.path = TMP_DIR "/s3d1",
- * 			.access = variant->allowed_s3d1,
+ * 			.access = (*variant).allowed_s3d1,
  * 		},
- * 		/* s3d2_fd * /
+ * 		/* s3d2_fd */
  * 		{
  * 			.path = TMP_DIR "/s4d1",
- * 			.access = variant->allowed_s4d1,
+ * 			.access = (*variant).allowed_s4d1,
  * 		},
  * 		{},
  * 	};
@@ -6606,39 +6606,39 @@ const bin_true: &[u8] = b"./true\0";
  * 	ruleset_fd = create_ruleset(_metadata, handled_access, rules);
  * 	ASSERT_LE(0, ruleset_fd);
  * 
- * 	/* Adds rules for the covered directories. * /
- * 	if (variant->allowed_s2d4) {
+ * 	/* Adds rules for the covered directories. */
+ * 	if ((*variant).allowed_s2d4) {
  * 		ASSERT_EQ(0, landlock_add_rule(
  * 				     ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
- * 				     &(struct landlock_path_beneath_attr){
- * 					     .parent_fd = self->s2d4_fd,
+ * 				     &(landlock_path_beneath_attr){
+ * 					     .parent_fd = (*self).s2d4_fd,
  * 					     .allowed_access =
- * 						     variant->allowed_s2d4,
+ * 						     (*variant).allowed_s2d4,
  * 				     },
  * 				     0));
  * 	}
- * 	EXPECT_EQ(0, close(self->s2d4_fd));
+ * 	EXPECT_EQ(0, close((*self).s2d4_fd));
  * 
- * 	if (variant->allowed_s3d2) {
+ * 	if ((*variant).allowed_s3d2) {
  * 		ASSERT_EQ(0, landlock_add_rule(
  * 				     ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
- * 				     &(struct landlock_path_beneath_attr){
- * 					     .parent_fd = self->s3d2_fd,
+ * 				     &(landlock_path_beneath_attr){
+ * 					     .parent_fd = (*self).s3d2_fd,
  * 					     .allowed_access =
- * 						     variant->allowed_s3d2,
+ * 						     (*variant).allowed_s3d2,
  * 				     },
  * 				     0));
  * 	}
- * 	EXPECT_EQ(0, close(self->s3d2_fd));
+ * 	EXPECT_EQ(0, close((*self).s3d2_fd));
  * 
  * 	s1d3_bind_fd = open(TMP_DIR "/s3d1/s3d2/s2d3/s2d4/s1d3",
  * 			    O_DIRECTORY | O_PATH | O_CLOEXEC);
  * 	ASSERT_LE(0, s1d3_bind_fd);
  * 
- * 	/* Disconnects and checks source and destination directories. * /
+ * 	/* Disconnects and checks source and destination directories. */
  * 	EXPECT_EQ(0, test_open_rel(s1d3_bind_fd, "..", O_DIRECTORY));
  * 	EXPECT_EQ(0, test_open_rel(s1d3_bind_fd, "../..", O_DIRECTORY));
- * 	/* Renames to make it accessible through s3d1/s1d41 * /
+ * 	/* Renames to make it accessible through s3d1/s1d41 */
  * 	ASSERT_EQ(0, test_renameat(AT_FDCWD, TMP_DIR "/s2d1/s2d2/s2d3",
  * 				   AT_FDCWD, TMP_DIR "/s4d1/s2d3"));
  * 	EXPECT_EQ(0, test_open_rel(s1d3_bind_fd, "..", O_DIRECTORY));
@@ -6647,17 +6647,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	EXPECT_EQ(0, close(ruleset_fd));
  * 
- * 	EXPECT_EQ(variant->expected_read_result,
+ * 	EXPECT_EQ((*variant).expected_read_result,
  * 		  test_open_rel(s1d3_bind_fd, "s1d41/f1", O_RDONLY));
  * 
- * 	EXPECT_EQ(variant->expected_rename_result,
+ * 	EXPECT_EQ((*variant).expected_rename_result,
  * 		  test_renameat(s1d3_bind_fd, "s1d41/f1", s1d3_bind_fd,
  * 				"s1d42/f1"));
- * 	EXPECT_EQ(variant->expected_exchange_result,
+ * 	EXPECT_EQ((*variant).expected_exchange_result,
  * 		  test_exchangeat(s1d3_bind_fd, "s1d41/f2", s1d3_bind_fd,
  * 				  "s1d42/f3"));
  * 
- * 	EXPECT_EQ(variant->expected_same_dir_rename_result,
+ * 	EXPECT_EQ((*variant).expected_same_dir_rename_result,
  * 		  test_renameat(s1d3_bind_fd, "s1d42/f4", s1d3_bind_fd,
  * 				"s1d42/f5"));
  * }
@@ -6671,7 +6671,7 @@ const bin_true: &[u8] = b"./true\0";
  * static const char lower_do1[] = LOWER_DATA "/do1";
  * static const char lower_do1_fo2[] = LOWER_DATA "/do1/fo2";
  * static const char lower_do1_fl3[] = LOWER_DATA "/do1/fl3";
- * /* lower_pl1 is a FIFO and is deliberately not in the lists below. * /
+ * /* lower_pl1 is a FIFO and is deliberately not in the lists below. */
  * static const char lower_pl1[] = LOWER_DATA "/pl1";
  * 
  * static const char (*lower_base_files[])[] = {
@@ -6722,7 +6722,7 @@ const bin_true: &[u8] = b"./true\0";
  * #define MERGE_BASE TMP_DIR "/merge"
  * #define MERGE_DATA MERGE_BASE "/data"
  * static const char merge_fl1[] = MERGE_DATA "/fl1";
- * /* merge_pl1 is a FIFO and is deliberately not in the lists below. * /
+ * /* merge_pl1 is a FIFO and is deliberately not in the lists below. */
  * static const char merge_pl1[] = MERGE_DATA "/pl1";
  * static const char merge_dl1[] = MERGE_DATA "/dl1";
  * static const char merge_dl1_fl2[] = MERGE_DATA "/dl1/fl2";
@@ -6791,7 +6791,7 @@ const bin_true: &[u8] = b"./true\0";
  *  *     │   └── fu1
  *  *     └── work
  *  *         └── work
- *  * /
+ *  */
  * 
  * FIXTURE(layout2_overlay)
  * {
@@ -6801,7 +6801,7 @@ const bin_true: &[u8] = b"./true\0";
  * FIXTURE_SETUP(layout2_overlay)
  * {
  * 	if (!supports_filesystem("overlay")) {
- * 		self->skip_test = true;
+ * 		(*self).skip_test = true;
  * 		SKIP(return, "overlayfs is not supported (setup)");
  * 	}
  * 
@@ -6809,7 +6809,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	create_directory(_metadata, LOWER_BASE);
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
- * 	/* Creates tmpfs mount points to get deterministic overlayfs. * /
+ * 	/* Creates tmpfs mount points to get deterministic overlayfs. */
  * 	ASSERT_EQ(0, mount_opt(&mnt_tmp, LOWER_BASE));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * 	create_file(_metadata, lower_fl1);
@@ -6842,7 +6842,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * FIXTURE_TEARDOWN_PARENT(layout2_overlay)
  * {
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "overlayfs is not supported (teardown)");
  * 
  * 	EXPECT_EQ(0, remove_path(lower_do1_fl3));
@@ -6852,7 +6852,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, remove_path(lower_fo1));
  * 	EXPECT_EQ(0, remove_path(lower_pl1));
  * 
- * 	/* umount(LOWER_BASE)) is handled by namespace lifetime. * /
+ * 	/* umount(LOWER_BASE)) is handled by namespace lifetime. */
  * 	EXPECT_EQ(0, remove_path(LOWER_BASE));
  * 
  * 	EXPECT_EQ(0, remove_path(upper_do1_fu3));
@@ -6862,10 +6862,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(0, remove_path(upper_fo1));
  * 	EXPECT_EQ(0, remove_path(UPPER_WORK "/work"));
  * 
- * 	/* umount(UPPER_BASE)) is handled by namespace lifetime. * /
+ * 	/* umount(UPPER_BASE)) is handled by namespace lifetime. */
  * 	EXPECT_EQ(0, remove_path(UPPER_BASE));
  * 
- * 	/* umount(MERGE_DATA)) is handled by namespace lifetime. * /
+ * 	/* umount(MERGE_DATA)) is handled by namespace lifetime. */
  * 	EXPECT_EQ(0, remove_path(MERGE_DATA));
  * 
  * 	cleanup_layout(_metadata);
@@ -6873,7 +6873,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout2_overlay, no_restriction)
  * {
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "overlayfs is not supported (test)");
  * 
  * 	ASSERT_EQ(0, test_open(lower_fl1, O_RDONLY));
@@ -6911,7 +6911,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout2_overlay, same_content_different_file)
  * {
- * 	/* Sets access right on parent directories of both layers. * /
+ * 	/* Sets access right on parent directories of both layers. */
  * 	const struct rule layer1_base[] = {
  * 		{
  * 			.path = LOWER_BASE,
@@ -6942,7 +6942,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 		{},
  * 	};
- * 	/* Sets access right on directories inside both layers. * /
+ * 	/* Sets access right on directories inside both layers. */
  * 	const struct rule layer3_subdirs[] = {
  * 		{
  * 			.path = lower_dl1,
@@ -6974,7 +6974,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 		{},
  * 	};
- * 	/* Tighten access rights to the files. * /
+ * 	/* Tighten access rights to the files. */
  * 	const struct rule layer4_files[] = {
  * 		{
  * 			.path = lower_dl1_fl2,
@@ -7038,13 +7038,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	size_t i;
  * 	const char *path_entry;
  * 
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "overlayfs is not supported (test)");
  * 
- * 	/* Sets rules on base directories (i.e. outside overlay scope). * /
+ * 	/* Sets rules on base directories (i.e. outside overlay scope). */
  * 	enforce_fs(_metadata, ACCESS_RW, layer1_base);
  * 
- * 	/* Checks lower layer. * /
+ * 	/* Checks lower layer. */
  * 	for_each_path(lower_base_files, path_entry, i) {
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDONLY));
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_WRONLY));
@@ -7057,7 +7057,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDONLY));
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_WRONLY));
  * 	}
- * 	/* Checks upper layer. * /
+ * 	/* Checks upper layer. */
  * 	for_each_path(upper_base_files, path_entry, i) {
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDONLY));
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_WRONLY));
@@ -7075,7 +7075,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * layers: write access to upper files viewed through the merge point
  * 	 * is still allowed, and write access to lower file viewed (and copied)
  * 	 * through the merge point is still allowed.
- * 	 * /
+ * 	 */
  * 	for_each_path(merge_base_files, path_entry, i) {
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDWR));
  * 	}
@@ -7086,10 +7086,10 @@ const bin_true: &[u8] = b"./true\0";
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDWR));
  * 	}
  * 
- * 	/* Sets rules on data directories (i.e. inside overlay scope). * /
+ * 	/* Sets rules on data directories (i.e. inside overlay scope). */
  * 	enforce_fs(_metadata, ACCESS_RW, layer2_data);
  * 
- * 	/* Checks merge. * /
+ * 	/* Checks merge. */
  * 	for_each_path(merge_base_files, path_entry, i) {
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDWR));
  * 	}
@@ -7100,18 +7100,18 @@ const bin_true: &[u8] = b"./true\0";
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDWR));
  * 	}
  * 
- * 	/* Same checks with tighter rules. * /
+ * 	/* Same checks with tighter rules. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer3_subdirs);
  * 
- * 	/* Checks changes for lower layer. * /
+ * 	/* Checks changes for lower layer. */
  * 	for_each_path(lower_base_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDONLY));
  * 	}
- * 	/* Checks changes for upper layer. * /
+ * 	/* Checks changes for upper layer. */
  * 	for_each_path(upper_base_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDONLY));
  * 	}
- * 	/* Checks all merge accesses. * /
+ * 	/* Checks all merge accesses. */
  * 	for_each_path(merge_base_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDWR));
  * 	}
@@ -7122,20 +7122,20 @@ const bin_true: &[u8] = b"./true\0";
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDWR));
  * 	}
  * 
- * 	/* Sets rules directly on overlayed files. * /
+ * 	/* Sets rules directly on overlayed files. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer4_files);
  * 
- * 	/* Checks unchanged accesses on lower layer. * /
+ * 	/* Checks unchanged accesses on lower layer. */
  * 	for_each_path(lower_sub_files, path_entry, i) {
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDONLY));
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_WRONLY));
  * 	}
- * 	/* Checks unchanged accesses on upper layer. * /
+ * 	/* Checks unchanged accesses on upper layer. */
  * 	for_each_path(upper_sub_files, path_entry, i) {
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDONLY));
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_WRONLY));
  * 	}
- * 	/* Checks all merge accesses. * /
+ * 	/* Checks all merge accesses. */
  * 	for_each_path(merge_base_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDWR));
  * 	}
@@ -7147,18 +7147,18 @@ const bin_true: &[u8] = b"./true\0";
  * 		ASSERT_EQ(0, test_open(path_entry, O_RDWR));
  * 	}
  * 
- * 	/* Only allows access to the merge hierarchy. * /
+ * 	/* Only allows access to the merge hierarchy. */
  * 	enforce_fs(_metadata, ACCESS_RW, layer5_merge_only);
  * 
- * 	/* Checks new accesses on lower layer. * /
+ * 	/* Checks new accesses on lower layer. */
  * 	for_each_path(lower_sub_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDONLY));
  * 	}
- * 	/* Checks new accesses on upper layer. * /
+ * 	/* Checks new accesses on upper layer. */
  * 	for_each_path(upper_sub_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDONLY));
  * 	}
- * 	/* Checks all merge accesses. * /
+ * 	/* Checks all merge accesses. */
  * 	for_each_path(merge_base_files, path_entry, i) {
  * 		ASSERT_EQ(EACCES, test_open(path_entry, O_RDWR));
  * 	}
@@ -7175,17 +7175,17 @@ const bin_true: &[u8] = b"./true\0";
  * {
  * 	const char *const merge_pl1_renamed = MERGE_DATA "/pl1_renamed";
  * 
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "overlayfs is not supported (test)");
  * 
  * 	/*
  * 	 * merge_pl1 is a FIFO which only exists in the lower layer.  Before
  * 	 * the rename, the upper layer has no entry under this name.
- * 	 * /
+ * 	 */
  * 	ASSERT_TRUE(is_fifo(merge_pl1));
  * 	ASSERT_TRUE(is_missing(UPPER_DATA "/pl1"));
  * 
- * 	/* MAKE_REG is restricted, but MAKE_FIFO is not. * /
+ * 	/* MAKE_REG is restricted, but MAKE_FIFO is not. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_MAKE_REG, NULL);
  * 
  * 	/*
@@ -7193,10 +7193,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * lower layer, so this triggers a copy-up and creates the whiteout in
  * 	 * the upper layer to hide the lower layer FIFO file.  Even though
  * 	 * MAKE_REG is restricted, the rename on the OverlayFS works.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, rename(merge_pl1, merge_pl1_renamed));
  * 
- * 	/* Check that the rename worked. * /
+ * 	/* Check that the rename worked. */
  * 	EXPECT_TRUE(is_fifo(merge_pl1_renamed));
  * 	EXPECT_TRUE(is_missing(merge_pl1));
  * 
@@ -7204,7 +7204,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Check that the whiteout object was created on the underlying "upper"
  * 	 * filesystem during the rename.  This is OK because the whiteout object
  * 	 * was created by OverlayFS, not by the calling task.
- * 	 * /
+ * 	 */
  * 	EXPECT_TRUE(is_whiteout(UPPER_DATA "/pl1"));
  * }
  * 
@@ -7219,12 +7219,12 @@ const bin_true: &[u8] = b"./true\0";
  * {
  * 	const struct mnt_opt mnt;
  * 	const char *const file_path;
- * 	unsigned int cwd_fs_magic;
+ * 	core::ffi::c_uint cwd_fs_magic;
  * };
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE_VARIANT_ADD(layout3_fs, tmpfs) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	.mnt = {
  * 		.type = "tmpfs",
  * 		.data = MNT_TMP_DATA,
@@ -7287,17 +7287,17 @@ const bin_true: &[u8] = b"./true\0";
  * FIXTURE_SETUP(layout3_fs)
  * {
  * 	struct stat statbuf;
- * 	char *dir_path = dirname_alloc(variant->file_path);
+ * 	char *dir_path = dirname_alloc((*variant).file_path);
  * 
- * 	if (!supports_filesystem(variant->mnt.type) ||
- * 	    !cwd_matches_fs(variant->cwd_fs_magic)) {
- * 		self->skip_test = true;
+ * 	if (!supports_filesystem((*variant).mnt.r#type) ||
+ * 	    !cwd_matches_fs((*variant).cwd_fs_magic)) {
+ * 		(*self).skip_test = true;
  * 		SKIP(return, "this filesystem is not supported (setup)");
  * 	}
  * 
- * 	prepare_layout_opt(_metadata, &variant->mnt);
+ * 	prepare_layout_opt(_metadata, (*&variant).mnt);
  * 
- * 	/* Creates directory when required. * /
+ * 	/* Creates directory when required. */
  * 	if (stat(dir_path, &statbuf)) {
  * 		set_cap(_metadata, CAP_DAC_OVERRIDE);
  * 		EXPECT_EQ(0, mkdir(dir_path, 0700))
@@ -7305,23 +7305,23 @@ const bin_true: &[u8] = b"./true\0";
  * 			TH_LOG("Failed to create directory \"%s\": %s",
  * 			       dir_path, strerror(errno));
  * 		}
- * 		self->has_created_dir = true;
+ * 		(*self).has_created_dir = true;
  * 		clear_cap(_metadata, CAP_DAC_OVERRIDE);
  * 	}
  * 
- * 	/* Creates file when required. * /
- * 	if (stat(variant->file_path, &statbuf)) {
+ * 	/* Creates file when required. */
+ * 	if (stat((*variant).file_path, &statbuf)) {
  * 		int fd;
  * 
  * 		set_cap(_metadata, CAP_DAC_OVERRIDE);
- * 		fd = creat(variant->file_path, 0600);
+ * 		fd = creat((*variant).file_path, 0600);
  * 		EXPECT_LE(0, fd)
  * 		{
  * 			TH_LOG("Failed to create file \"%s\": %s",
- * 			       variant->file_path, strerror(errno));
+ * 			       (*variant).file_path, strerror(errno));
  * 		}
  * 		EXPECT_EQ(0, close(fd));
- * 		self->has_created_file = true;
+ * 		(*self).has_created_file = true;
  * 		clear_cap(_metadata, CAP_DAC_OVERRIDE);
  * 	}
  * 
@@ -7330,27 +7330,27 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * FIXTURE_TEARDOWN_PARENT(layout3_fs)
  * {
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "this filesystem is not supported (teardown)");
  * 
- * 	if (self->has_created_file) {
+ * 	if ((*self).has_created_file) {
  * 		set_cap(_metadata, CAP_DAC_OVERRIDE);
  * 		/*
  * 		 * Don't check for error because the file might already
  * 		 * have been removed (cf. release_inode test).
- * 		 * /
- * 		unlink(variant->file_path);
+ * 		 */
+ * 		unlink((*variant).file_path);
  * 		clear_cap(_metadata, CAP_DAC_OVERRIDE);
  * 	}
  * 
- * 	if (self->has_created_dir) {
- * 		char *dir_path = dirname_alloc(variant->file_path);
+ * 	if ((*self).has_created_dir) {
+ * 		char *dir_path = dirname_alloc((*variant).file_path);
  * 
  * 		set_cap(_metadata, CAP_DAC_OVERRIDE);
  * 		/*
  * 		 * Don't check for error because the directory might already
  * 		 * have been removed (cf. release_inode test).
- * 		 * /
+ * 		 */
  * 		rmdir(dir_path);
  * 		clear_cap(_metadata, CAP_DAC_OVERRIDE);
  * 		free(dir_path);
@@ -7359,7 +7359,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	cleanup_layout(_metadata);
  * }
  * 
- * static void layer3_fs_tag_inode(struct __test_metadata *const _metadata,
+ * static void layer3_fs_tag_inode(__test_metadata *const _metadata,
  * 				FIXTURE_DATA(layout3_fs) * self,
  * 				const FIXTURE_VARIANT(layout3_fs) * variant,
  * 				const char *const rule_path)
@@ -7373,32 +7373,32 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * 	const char *const dev_null_path = "/dev/null";
  * 
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "this filesystem is not supported (test)");
  * 
- * 	/* Checks without Landlock. * /
+ * 	/* Checks without Landlock. */
  * 	EXPECT_EQ(0, test_open(dev_null_path, O_RDONLY | O_CLOEXEC));
- * 	EXPECT_EQ(0, test_open(variant->file_path, O_RDONLY | O_CLOEXEC));
+ * 	EXPECT_EQ(0, test_open((*variant).file_path, O_RDONLY | O_CLOEXEC));
  * 
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_READ_FILE,
  * 		   layer1_allow_read_file);
  * 
  * 	EXPECT_EQ(EACCES, test_open(dev_null_path, O_RDONLY | O_CLOEXEC));
- * 	EXPECT_EQ(0, test_open(variant->file_path, O_RDONLY | O_CLOEXEC));
+ * 	EXPECT_EQ(0, test_open((*variant).file_path, O_RDONLY | O_CLOEXEC));
  * 
- * 	/* Forbids directory reading. * /
+ * 	/* Forbids directory reading. */
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_READ_FILE, NULL);
  * 
- * 	/* Checks with Landlock and forbidden access. * /
+ * 	/* Checks with Landlock and forbidden access. */
  * 	EXPECT_EQ(EACCES, test_open(dev_null_path, O_RDONLY | O_CLOEXEC));
- * 	EXPECT_EQ(EACCES, test_open(variant->file_path, O_RDONLY | O_CLOEXEC));
+ * 	EXPECT_EQ(EACCES, test_open((*variant).file_path, O_RDONLY | O_CLOEXEC));
  * }
  * 
- * /* Matrix of tests to check file hierarchy evaluation. * /
+ * /* Matrix of tests to check file hierarchy evaluation. */
  * 
  * TEST_F_FORK(layout3_fs, tag_inode_dir_parent)
  * {
- * 	/* The current directory must not be the root for this test. * /
+ * 	/* The current directory must not be the root for this test. */
  * 	layer3_fs_tag_inode(_metadata, self, variant, ".");
  * }
  * 
@@ -7409,7 +7409,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout3_fs, tag_inode_dir_child)
  * {
- * 	char *dir_path = dirname_alloc(variant->file_path);
+ * 	char *dir_path = dirname_alloc((*variant).file_path);
  * 
  * 	layer3_fs_tag_inode(_metadata, self, variant, dir_path);
  * 	free(dir_path);
@@ -7417,10 +7417,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * TEST_F_FORK(layout3_fs, tag_inode_file)
  * {
- * 	layer3_fs_tag_inode(_metadata, self, variant, variant->file_path);
+ * 	layer3_fs_tag_inode(_metadata, self, variant, (*variant).file_path);
  * }
  * 
- * /* Light version of layout1.release_inodes * /
+ * /* Light version of layout1.release_inodes */
  * TEST_F_FORK(layout3_fs, release_inodes)
  * {
  * 	const struct rule layer1[] = {
@@ -7432,17 +7432,17 @@ const bin_true: &[u8] = b"./true\0";
  * 	};
  * 	int ruleset_fd;
  * 
- * 	if (self->skip_test)
+ * 	if ((*self).skip_test)
  * 		SKIP(return, "this filesystem is not supported (test)");
  * 
- * 	/* Clean up for the teardown to not fail. * /
- * 	if (self->has_created_file)
- * 		EXPECT_EQ(0, remove_path(variant->file_path));
+ * 	/* Clean up for the teardown to not fail. */
+ * 	if ((*self).has_created_file)
+ * 		EXPECT_EQ(0, remove_path((*variant).file_path));
  * 
- * 	if (self->has_created_dir) {
- * 		char *dir_path = dirname_alloc(variant->file_path);
+ * 	if ((*self).has_created_dir) {
+ * 		char *dir_path = dirname_alloc((*variant).file_path);
  * 
- * 		/* Don't check for error because of cgroup specificities. * /
+ * 		/* Don't check for error because of cgroup specificities. */
  * 		remove_path(dir_path);
  * 		free(dir_path);
  * 	}
@@ -7450,12 +7450,12 @@ const bin_true: &[u8] = b"./true\0";
  * 	ruleset_fd =
  * 		create_ruleset(_metadata, LANDLOCK_ACCESS_FS_READ_DIR, layer1);
  * 
- * 	/* Unmount the filesystem while it is being used by a ruleset. * /
+ * 	/* Unmount the filesystem while it is being used by a ruleset. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, umount(TMP_DIR));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
  * 
- * 	/* Replaces with a new mount point to simplify FIXTURE_TEARDOWN. * /
+ * 	/* Replaces with a new mount point to simplify FIXTURE_TEARDOWN. */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, mount_opt(&mnt_tmp, TMP_DIR));
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
@@ -7463,11 +7463,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_ruleset(_metadata, ruleset_fd);
  * 	ASSERT_EQ(0, close(ruleset_fd));
  * 
- * 	/* Checks that access to the new mount point is denied. * /
+ * 	/* Checks that access to the new mount point is denied. */
  * 	ASSERT_EQ(EACCES, test_open(TMP_DIR, O_RDONLY));
  * }
  * 
- * static int matches_log_fs_extra(struct __test_metadata *const _metadata,
+ * static int matches_log_fs_extra(__test_metadata *const _metadata,
  * 				int audit_fd, const char *const blockers,
  * 				const char *const path, const char *const extra)
  * {
@@ -7490,7 +7490,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * It is assumed that absolute_path does not contain control
  * 	 * characters nor spaces, see audit_string_contains_control().
- * 	 * /
+ * 	 */
  * 	absolute_path = realpath(path, NULL);
  * 	if (!absolute_path)
  * 		return -errno;
@@ -7501,7 +7501,7 @@ const bin_true: &[u8] = b"./true\0";
  * 					log_match_remaining);
  * 	free(absolute_path);
  * 	if (log_match_cursor < 0)
- * 		return (long long)log_match_cursor;
+ * 		return (core::ffi::c_longlong)log_match_cursor;
  * 
  * 	log_match_remaining -= log_match_cursor - log_match;
  * 	chunk_len = snprintf(log_match_cursor, log_match_remaining,
@@ -7514,7 +7514,7 @@ const bin_true: &[u8] = b"./true\0";
  * 				  NULL);
  * }
  * 
- * static int matches_log_fs(struct __test_metadata *const _metadata, int audit_fd,
+ * static int matches_log_fs(__test_metadata *const _metadata, int audit_fd,
  * 			  const char *const blockers, const char *const path)
  * {
  * 	return matches_log_fs_extra(_metadata, audit_fd, blockers, path, NULL);
@@ -7533,8 +7533,8 @@ const bin_true: &[u8] = b"./true\0";
  * 	create_layout1(_metadata);
  * 
  * 	set_cap(_metadata, CAP_AUDIT_CONTROL);
- * 	self->audit_fd = audit_init_with_exe_filter(&self->audit_filter);
- * 	EXPECT_LE(0, self->audit_fd);
+ * 	(*self).audit_fd = audit_init_with_exe_filter((*&self).audit_filter);
+ * 	EXPECT_LE(0, (*self).audit_fd);
  * 	disable_caps(_metadata);
  * }
  * 
@@ -7558,13 +7558,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_fs(_metadata, LANDLOCK_ACCESS_FS_EXECUTE, NULL);
  * 
  * 	test_execute(_metadata, EACCES, file1_s1d1);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.execute",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.execute",
  * 				    file1_s1d1));
  * 	test_check_exec(_metadata, EACCES, file1_s1d1);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.execute",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.execute",
  * 				    file1_s1d1));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7572,7 +7572,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Using a set of handled/denied access rights make it possible to check that
  *  * only the blocked ones are logged.
- *  * /
+ *  */
  * 
  * TEST_F(audit_layout1, execute_read)
  * {
@@ -7587,15 +7587,15 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * The only difference with the previous audit_layout1.execute_read test is
  * 	 * the extra ",fs\\.read_file" blocked by the executable file.
- * 	 * /
+ * 	 */
  * 	test_execute(_metadata, EACCES, file1_s1d1);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.execute,fs\\.read_file", file1_s1d1));
  * 	test_check_exec(_metadata, EACCES, file1_s1d1);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.execute,fs\\.read_file", file1_s1d1));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7607,10 +7607,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 
  * 	EXPECT_EQ(EACCES, test_open(file1_s1d1, O_WRONLY));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.write_file", file1_s1d1));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7622,10 +7622,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 
  * 	EXPECT_EQ(EACCES, test_open(file1_s1d1, O_RDONLY));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.read_file",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.read_file",
  * 				    file1_s1d1));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7637,10 +7637,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 
  * 	EXPECT_EQ(EACCES, test_open(dir_s1d1, O_DIRECTORY));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.read_dir",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.read_dir",
  * 				    dir_s1d1));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7656,15 +7656,15 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, rmdir(dir_s1d3));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_dir", dir_s1d2));
  * 
  * 	EXPECT_EQ(-1, unlinkat(AT_FDCWD, dir_s1d3, AT_REMOVEDIR));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_dir", dir_s1d2));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7677,10 +7677,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, unlink(file1_s1d3));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_file", dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7695,10 +7695,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, mknod(file1_s1d3, S_IFCHR | 0644, makedev(7, 0)));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_char",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_char",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7711,13 +7711,13 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 
- * 	/* Whiteout creation is denied and logged as fs.make_reg. * /
+ * 	/* Whiteout creation is denied and logged as fs.make_reg. */
  * 	EXPECT_EQ(-1, mknod(file1_s1d3, S_IFCHR | 0644, makedev(0, 0)));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_reg",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_reg",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7732,10 +7732,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, mkdir(file1_s1d3, 0755));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_dir",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_dir",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7750,10 +7750,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, mknod(file1_s1d3, S_IFREG | 0644, 0));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_reg",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_reg",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7768,10 +7768,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, mknod(file1_s1d3, S_IFSOCK | 0644, 0));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_sock",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_sock",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7786,10 +7786,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, mknod(file1_s1d3, S_IFIFO | 0644, 0));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_fifo",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_fifo",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7804,10 +7804,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, mknod(file1_s1d3, S_IFBLK | 0644, 0));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.make_block", dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7822,10 +7822,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, symlink("target", file1_s1d3));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.make_sym",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.make_sym",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7840,14 +7840,14 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, link(file1_s1d1, file1_s1d3));
  * 	EXPECT_EQ(EXDEV, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.refer",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.refer",
  * 				    dir_s1d1));
  * 	EXPECT_EQ(0,
- * 		  matches_log_domain_allocated(self->audit_fd, getpid(), NULL));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.refer",
+ * 		  matches_log_domain_allocated((*self).audit_fd, getpid(), NULL));
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.refer",
  * 				    dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7864,12 +7864,12 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, link(file1_s1d1, file1_s1d3));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.refer",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.refer",
  * 				    dir_s1d1));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.make_reg,fs\\.refer", dir_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7883,13 +7883,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	enforce_fs(_metadata, ACCESS_ALL, NULL);
  * 
  * 	EXPECT_EQ(EACCES, test_rename(file1_s1d2, file1_s2d3));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_file,fs\\.refer", dir_s1d2));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_file,fs\\.make_reg,fs\\.refer",
  * 				    dir_s2d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7905,16 +7905,16 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * The only difference with the previous audit_layout1.refer_rename test is
  * 	 * the extra ",fs\\.make_reg" blocked by the source directory.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(EACCES, test_exchange(file1_s1d2, file1_s2d3));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_file,fs\\.make_reg,fs\\.refer",
  * 				    dir_s1d2));
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.remove_file,fs\\.make_reg,fs\\.refer",
  * 				    dir_s2d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(0, records.domain);
  * }
@@ -7927,7 +7927,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * This is also a regression test for commit d617f0d72d80 ("landlock: Optimize
  *  * file path walks and prepare for audit support") and commit 058518c20920
  *  * ("landlock: Align partial refer access checks with final ones").
- *  * /
+ *  */
  * TEST_F(audit_layout1, refer_rename_half)
  * {
  * 	struct audit_records records;
@@ -7944,11 +7944,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(-1, rename(dir_s1d2, dir_s2d3));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* Only half of the request is denied. * /
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.refer",
+ * 	/* Only half of the request is denied. */
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.refer",
  * 				    dir_s1d1));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7961,10 +7961,10 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	EXPECT_EQ(-1, truncate(file1_s1d3, 0));
  * 	EXPECT_EQ(EACCES, errno);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.truncate",
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd, "fs\\.truncate",
  * 				    file1_s1d3));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -7979,11 +7979,11 @@ const bin_true: &[u8] = b"./true\0";
  * 	fd = open("/dev/null", O_RDONLY | O_CLOEXEC);
  * 	ASSERT_LE(0, fd);
  * 	EXPECT_EQ(EACCES, ioctl_error(_metadata, fd, FIONREAD));
- * 	EXPECT_EQ(0, matches_log_fs_extra(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs_extra(_metadata, (*self).audit_fd,
  * 					  "fs\\.ioctl_dev", "/dev/null",
  * 					  " ioctlcmd=0x541b"));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -8008,17 +8008,17 @@ const bin_true: &[u8] = b"./true\0";
  * 			  test_connect_named_unix(_metadata, cli_fd, path));
  * 
  * 		EXPECT_EQ(0, close(cli_fd));
- * 		_exit(_metadata->exit_code);
+ * 		_exit((*_metadata).exit_code);
  * 	}
  * 
  * 	ASSERT_EQ(child_pid, waitpid(child_pid, &status, 0));
  * 	EXPECT_EQ(1, WIFEXITED(status));
  * 	EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
  * 
- * 	EXPECT_EQ(0, matches_log_fs_extra(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs_extra(_metadata, (*self).audit_fd,
  * 					  "fs\\.resolve_unix", path, NULL));
  * 
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * 
@@ -8035,9 +8035,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	EXPECT_EQ(-1, mount(NULL, dir_s3d2, NULL, MS_RDONLY, NULL));
  * 	EXPECT_EQ(EPERM, errno);
  * 	clear_cap(_metadata, CAP_SYS_ADMIN);
- * 	EXPECT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
+ * 	EXPECT_EQ(0, matches_log_fs(_metadata, (*self).audit_fd,
  * 				    "fs\\.change_topology", dir_s3d2));
- * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
+ * 	EXPECT_EQ(0, audit_count_records((*self).audit_fd, &records));
  * 	EXPECT_EQ(0, records.access);
  * 	EXPECT_EQ(1, records.domain);
  * }
@@ -8056,8 +8056,8 @@ const bin_true: &[u8] = b"./true\0";
  * 	create_layout1(_metadata);
  * 
  * 	set_cap(_metadata, CAP_AUDIT_CONTROL);
- * 	self->audit_fd = audit_init_with_exe_filter(&self->audit_filter);
- * 	EXPECT_LE(0, self->audit_fd);
+ * 	(*self).audit_fd = audit_init_with_exe_filter((*&self).audit_filter);
+ * 	EXPECT_LE(0, (*self).audit_fd);
  * 	clear_cap(_metadata, CAP_AUDIT_CONTROL);
  * 
  * 	if (getenv("DEBUG_QUIET_TESTS"))
@@ -8088,28 +8088,28 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * struct a_target {
- * 	/* File/dir to try open. * /
+ * 	/* File/dir to try open. */
  * 	const char *target;
- * 	/* Open mode (one of O_RDONLY, O_WRONLY, or O_RDWR). * /
+ * 	/* Open mode (one of O_RDONLY, O_WRONLY, or O_RDWR). */
  * 	int open_mode;
- * 	/* Should open succeed? * /
+ * 	/* Should open succeed? */
  * 	bool expect_open_success;
- * 	/* If open fails, whether to expect an audit log for read. * /
+ * 	/* If open fails, whether to expect an audit log for read. */
  * 	bool audit_read_blocked;
- * 	/* If open fails, whether to expect an audit log for write. * /
+ * 	/* If open fails, whether to expect an audit log for write. */
  * 	bool audit_write_blocked;
- * 	/* If ftruncate() is expected to be allowed. * /
+ * 	/* If ftruncate() is expected to be allowed. */
  * 	bool expect_truncate_success;
- * 	/* If ftruncate fails, whether to expect an audit log. * /
+ * 	/* If ftruncate fails, whether to expect an audit log. */
  * 	bool audit_truncate;
  * 	/*
  * 	 * If ioctl() is expected to be allowed (ioctl not attempted if neither
  * 	 * this nor expect_ioctl_denied is set).
- * 	 * /
+ * 	 */
  * 	bool expect_ioctl_allowed;
- * 	/* If ioctl() is expected to be denied. * /
+ * 	/* If ioctl() is expected to be denied. */
  * 	bool expect_ioctl_denied;
- * 	/* If ioctl fails, whether to expect an audit log. * /
+ * 	/* If ioctl fails, whether to expect an audit log. */
  * 	bool audit_ioctl;
  * };
  * 
@@ -8159,35 +8159,35 @@ const bin_true: &[u8] = b"./true\0";
  * 	return offset;
  * }
  * 
- * static int apply_a_layer(struct __test_metadata *const _metadata,
+ * static int apply_a_layer(__test_metadata *const _metadata,
  * 			 const struct a_layer *l)
  * {
  * 	struct landlock_ruleset_attr rs_attr = {
- * 		.handled_access_fs = l->handled_access_fs,
- * 		.quiet_access_fs = l->quiet_access_fs,
+ * 		.handled_access_fs = (*l).handled_access_fs,
+ * 		.quiet_access_fs = (*l).quiet_access_fs,
  * 	};
  * 	int rs_fd;
  * 	int i;
  * 	const struct a_rule *r;
  * 	char handled_access_s[33], quiet_access_s[33], rule_access_s[33];
  * 
- * 	if (!l->handled_access_fs)
+ * 	if ((*!l).handled_access_fs)
  * 		return 0;
  * 
  * 	rs_fd = landlock_create_ruleset(&rs_attr, sizeof(rs_attr), 0);
  * 	ASSERT_LE(0, rs_fd);
  * 
- * 	for (i = 0; i < ARRAY_SIZE(l->rules); i++) {
- * 		r = &l->rules[i];
- * 		if (!r->path)
+ * 	for (i = 0; i < ARRAY_SIZE((*l).rules); i++) {
+ * 		r = (*&l).rules[i];
+ * 		if ((*!r).path)
  * 			continue;
  * 
- * 		add_path_beneath(_metadata, rs_fd, r->access, r->path,
- * 				 r->quiet ? LANDLOCK_ADD_RULE_QUIET : 0);
+ * 		add_path_beneath(_metadata, rs_fd, (*r).access, (*r).path,
+ * 				 (*r).quiet ? LANDLOCK_ADD_RULE_QUIET : 0);
  * 	}
  * 
  * 	ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
- * 	ASSERT_EQ(0, landlock_restrict_self(rs_fd, l->restrict_flags))
+ * 	ASSERT_EQ(0, landlock_restrict_self(rs_fd, (*l).restrict_flags))
  * 	{
  * 		TH_LOG("Failed to enforce ruleset: %s", strerror(errno));
  * 	}
@@ -8195,27 +8195,27 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	if (debug_quiet_tests) {
  * 		sprint_access_bits(handled_access_s, sizeof(handled_access_s),
- * 				   l->handled_access_fs);
+ * 				   (*l).handled_access_fs);
  * 		sprint_access_bits(quiet_access_s, sizeof(quiet_access_s),
- * 				   l->quiet_access_fs);
+ * 				   (*l).quiet_access_fs);
  * 		TH_LOG("applied layer: handled=%s quiet=%s restrict_flags=0x%llx",
  * 		       handled_access_s, quiet_access_s,
- * 		       (unsigned long long)l->restrict_flags);
- * 		for (i = 0; i < ARRAY_SIZE(l->rules); i++) {
- * 			r = &l->rules[i];
- * 			if (!r->path)
+ * 		       (*(core::ffi::c_ulonglong)l).restrict_flags);
+ * 		for (i = 0; i < ARRAY_SIZE((*l).rules); i++) {
+ * 			r = (*&l).rules[i];
+ * 			if ((*!r).path)
  * 				continue;
  * 
  * 			sprint_access_bits(rule_access_s, sizeof(rule_access_s),
- * 					   r->access);
+ * 					   (*r).access);
  * 			TH_LOG("  rule[%d]: path=%s access=%s quiet=%d", i,
- * 			       r->path, rule_access_s, r->quiet);
+ * 			       (*r).path, rule_access_s, (*r).quiet);
  * 		}
  * 	}
  * 	return 0;
  * }
  * 
- * void audit_quiet_layout1_test_body(struct __test_metadata *const _metadata,
+ * void audit_quiet_layout1_test_body(__test_metadata *const _metadata,
  * 				   FIXTURE_DATA(audit_quiet_layout1) * self,
  * 				   const struct a_target *targets)
  * {
@@ -8278,7 +8278,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
  * 						    blocker, target->target));
  * 
- * 		/* Check that we see no (other) logs. * /
+ * 		/* Check that we see no (other) logs. */
  * 		EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 		ASSERT_EQ(0, records.access);
  * 
@@ -8322,7 +8322,7 @@ const bin_true: &[u8] = b"./true\0";
  * 						     target->target,
  * 						     " ioctlcmd=0x541b\\+"));
  * 
- * 			/* Check that we see no other logs. * /
+ * 			/* Check that we see no other logs. */
  * 			EXPECT_EQ(0, audit_count_records(self->audit_fd,
  * 							 &records));
  * 			ASSERT_EQ(0, records.access);
@@ -8356,13 +8356,13 @@ const bin_true: &[u8] = b"./true\0";
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
  * 		},
- * 		/* Not covered by quiet * /
+ * 		/* Not covered by quiet */
  * 		{
  * 			.target = file1_s2d1,
  * 			.open_mode = O_RDONLY,
  * 			.audit_read_blocked = true,
  * 		},
- * 		/* Access not quieted * /
+ * 		/* Access not quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_WRONLY,
@@ -8372,7 +8372,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		 * Quiet flag only takes effect if all blocked access bits are
  * 		 * quieted, otherwise audit log emitted as normal (with all
  * 		 * blockers)
- * 		 * /
+ * 		 */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDWR,
@@ -8389,30 +8389,30 @@ const bin_true: &[u8] = b"./true\0";
  * 			.quiet_access_fs = FS_W,
  * 			.rules = {
  * 				{ .path = dir_s1d1, .access = FS_R, .quiet = true },
- * 				/* Quiet flags inherit down and are not overridden * /
+ * 				/* Quiet flags inherit down and are not overridden */
  * 				{ .path = file1_s1d1, .access = FS_R, .quiet = false },
  * 				{ .path = file1_s2d3, .access = 0, .quiet = true },
  * 			},
  * 		},
  * 	},
  * 	.targets = {
- * 		/* Read ok * /
+ * 		/* Read ok */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
  * 			.expect_open_success = true,
  * 		},
- * 		/* Write quieted * /
+ * 		/* Write quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_WRONLY,
  * 		},
- * 		/* Read allowed, write quieted so no audit * /
+ * 		/* Read allowed, write quieted so no audit */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDWR,
  * 		},
- * 		/* Not covered by quiet * /
+ * 		/* Not covered by quiet */
  * 		{
  * 			.target = file1_s2d2,
  * 			.open_mode = O_WRONLY,
@@ -8424,24 +8424,24 @@ const bin_true: &[u8] = b"./true\0";
  * 			.audit_read_blocked = true,
  * 			.audit_write_blocked = true,
  * 		},
- * 		/* Single file quiet * /
+ * 		/* Single file quiet */
  * 		{
  * 			.target = file1_s2d3,
  * 			.open_mode = O_WRONLY,
  * 		},
- * 		/* Wrong file * /
+ * 		/* Wrong file */
  * 		{
  * 			.target = file2_s2d3,
  * 			.open_mode = O_WRONLY,
  * 			.audit_write_blocked = true,
  * 		},
- * 		/* Access not quieted * /
+ * 		/* Access not quieted */
  * 		{
  * 			.target = file1_s2d3,
  * 			.open_mode = O_RDONLY,
  * 			.audit_read_blocked = true,
  * 		},
- * 		/* Some access not quieted * /
+ * 		/* Some access not quieted */
  * 		{
  * 			.target = file1_s2d3,
  * 			.open_mode = O_RDWR,
@@ -8462,25 +8462,25 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 	},
  * 	.targets = {
- * 		/* Read quieted * /
+ * 		/* Read quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
  * 		},
- * 		/* Truncate not quieted * /
+ * 		/* Truncate not quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_WRONLY,
  * 			.expect_open_success = true,
  * 			.audit_truncate = true,
  * 		},
- * 		/* Not covered by quiet * /
+ * 		/* Not covered by quiet */
  * 		{
  * 			.target = file1_s2d1,
  * 			.open_mode = O_RDONLY,
  * 			.audit_read_blocked = true,
  * 		},
- * 		/* Write allowed, read quieted so no audit * /
+ * 		/* Write allowed, read quieted so no audit */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDWR,
@@ -8500,26 +8500,26 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 	},
  * 	.targets = {
- * 		/* Read not allowed and not quieted * /
+ * 		/* Read not allowed and not quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
  * 			.audit_read_blocked = true,
  * 		},
- * 		/* Truncate quieted * /
+ * 		/* Truncate quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_WRONLY,
  * 			.expect_open_success = true,
  * 		},
- * 		/* Not covered by quiet (truncate) * /
+ * 		/* Not covered by quiet (truncate) */
  * 		{
  * 			.target = file1_s2d1,
  * 			.open_mode = O_WRONLY,
  * 			.expect_open_success = true,
  * 			.audit_truncate = true,
  * 		},
- * 		/* Not covered by quiet (read/write) * /
+ * 		/* Not covered by quiet (read/write) */
  * 		{
  * 			.target = file1_s3d1,
  * 			.open_mode = O_RDWR,
@@ -8571,7 +8571,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 	},
  * 	.targets = {
- * 		/* No logs * /
+ * 		/* No logs */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
@@ -8584,45 +8584,45 @@ const bin_true: &[u8] = b"./true\0";
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDWR,
  * 		},
- * 		/* Truncate quieted - no log * /
+ * 		/* Truncate quieted - no log */
  * 		{
  * 			.target = file1_s2d1,
  * 			.open_mode = O_RDWR,
  * 			.expect_open_success = true,
  * 		},
- * 		/* Truncate not covered by quiet * /
+ * 		/* Truncate not covered by quiet */
  * 		{
  * 			.target = file1_s3d1,
  * 			.open_mode = O_WRONLY,
  * 			.expect_open_success = true,
  * 			.audit_truncate = true,
  * 		},
- * 		/* Not covered by quiet * /
+ * 		/* Not covered by quiet */
  * 		{
  * 			.target = file1_s3d1,
  * 			.open_mode = O_RDONLY,
  * 			.audit_read_blocked = true,
  * 		},
- * 		/* Single file quiet * /
+ * 		/* Single file quiet */
  * 		{
  * 			.target = file1_s2d3,
  * 			.open_mode = O_RDWR,
  * 		},
- * 		/* Wrong file * /
+ * 		/* Wrong file */
  * 		{
  * 			.target = file2_s2d3,
  * 			.open_mode = O_RDWR,
  * 			.audit_read_blocked = true,
  * 			.audit_write_blocked = true,
  * 		},
- * 		/* Ioctl quieted * /
+ * 		/* Ioctl quieted */
  * 		{
  * 			.target = "/dev/null",
  * 			.open_mode = O_RDONLY,
  * 			.expect_open_success = true,
  * 			.expect_ioctl_denied = true,
  * 		},
- * 		/* Ioctl not quieted * /
+ * 		/* Ioctl not quieted */
  * 		{
  * 			.target = "/dev/zero",
  * 			.open_mode = O_RDONLY,
@@ -8648,7 +8648,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.target = file1_s3d3,
  * 			.open_mode = O_RDONLY,
  * 		},
- * 		/* Not covered by quiet * /
+ * 		/* Not covered by quiet */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
@@ -8660,7 +8660,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			.audit_read_blocked = true,
  * 			.audit_write_blocked = true,
  * 		},
- * 		/* Access not quieted * /
+ * 		/* Access not quieted */
  * 		{
  * 			.target = file1_s3d3,
  * 			.open_mode = O_WRONLY,
@@ -8707,7 +8707,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * With LANDLOCK_RESTRICT_SELF_LOG_SUBDOMAINS_OFF, it doesn't matter what the
  *  * quiet flags below the layer say.
- *  * /
+ *  */
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, subdomains_off) {
  * 	.layers = {
  * 		{
@@ -8742,27 +8742,27 @@ const bin_true: &[u8] = b"./true\0";
  * 			.target = file1_s2d2,
  * 			.open_mode = O_RDWR,
  * 			.expect_open_success = true,
- * 			/* No audit_truncate * /
+ * 			/* No audit_truncate */
  * 		},
  * 		{
  * 			.target = file1_s2d3,
  * 			.open_mode = O_RDWR,
  * 			.expect_open_success = true,
- * 			/* No audit_truncate * /
+ * 			/* No audit_truncate */
  * 		},
  * 		{
  * 			.target = "/dev/null",
  * 			.open_mode = O_RDONLY,
  * 			.expect_open_success = true,
  * 			.expect_ioctl_denied = true,
- * 			/* No audit_ioctl * /
+ * 			/* No audit_ioctl */
  * 		},
  * 		{
  * 			.target = "/dev/zero",
  * 			.open_mode = O_RDONLY,
  * 			.expect_open_success = true,
  * 			.expect_ioctl_denied = true,
- * 			/* No audit_ioctl * /
+ * 			/* No audit_ioctl */
  * 		},
  * 	},
  * };
@@ -8770,7 +8770,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * With LANDLOCK_RESTRICT_SELF_LOG_SAME_EXEC_OFF, it doesn't matter what the
  *  * quiet flags on the layer say.
- *  * /
+ *  */
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, same_exec_off) {
  * 	.layers = {
  * 		{
@@ -8799,33 +8799,33 @@ const bin_true: &[u8] = b"./true\0";
  * 			.target = file1_s2d2,
  * 			.open_mode = O_RDWR,
  * 			.expect_open_success = true,
- * 			/* No audit_truncate * /
+ * 			/* No audit_truncate */
  * 		},
  * 		{
  * 			.target = file1_s2d3,
  * 			.open_mode = O_RDWR,
  * 			.expect_open_success = true,
- * 			/* No audit_truncate * /
+ * 			/* No audit_truncate */
  * 		},
  * 		{
  * 			.target = "/dev/null",
  * 			.open_mode = O_RDONLY,
  * 			.expect_open_success = true,
  * 			.expect_ioctl_denied = true,
- * 			/* No audit_ioctl * /
+ * 			/* No audit_ioctl */
  * 		},
  * 		{
  * 			.target = "/dev/zero",
  * 			.open_mode = O_RDONLY,
  * 			.expect_open_success = true,
  * 			.expect_ioctl_denied = true,
- * 			/* No audit_ioctl * /
+ * 			/* No audit_ioctl */
  * 		},
  * 	},
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_1) {
- * 	/* Here, rules that deny access are always quiet. * /
+ * 	/* Here, rules that deny access are always quiet. */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R | FS_W | FS_TRUNC | FS_IOCTL,
@@ -8915,7 +8915,7 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_2) {
- * 	/* Here, rules that deny access are never quiet. * /
+ * 	/* Here, rules that deny access are never quiet. */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R | FS_W | FS_TRUNC | FS_IOCTL,
@@ -9011,7 +9011,7 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_3) {
- * 	/* This time only the second layer quiets things. * /
+ * 	/* This time only the second layer quiets things. */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R | FS_W | FS_TRUNC | FS_IOCTL,
@@ -9104,7 +9104,7 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_different_quiet_access) {
- * 	/* Here, rules that deny access are always quiet. * /
+ * 	/* Here, rules that deny access are always quiet. */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R | FS_W | FS_TRUNC | FS_IOCTL,
@@ -9196,7 +9196,7 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_different_handled_1) {
- * 	/* Quiet from layer 1 * /
+ * 	/* Quiet from layer 1 */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R,
@@ -9233,13 +9233,13 @@ const bin_true: &[u8] = b"./true\0";
  * 					.access = FS_W,
  * 					.quiet = false,
  * 				},
- * 				/* Nothing for file2_s1d1 * /
+ * 				/* Nothing for file2_s1d1 */
  * 				{
  * 					.path = file1_s1d2,
  * 					.access = FS_W,
  * 					.quiet = false,
  * 				},
- * 				/* Nothing for file2_s1d2 * /
+ * 				/* Nothing for file2_s1d2 */
  * 			},
  * 		},
  * 	},
@@ -9250,18 +9250,18 @@ const bin_true: &[u8] = b"./true\0";
  * 			.expect_open_success = true,
  * 			.expect_truncate_success = true,
  * 		},
- * 		/* Missing both, youngest layer denies write, not quiet * /
+ * 		/* Missing both, youngest layer denies write, not quiet */
  * 		{
  * 			.target = file2_s1d1,
  * 			.open_mode = O_RDWR,
  * 			.audit_write_blocked = true,
  * 		},
- * 		/* Missing read, denied and quieted by layer 1 * /
+ * 		/* Missing read, denied and quieted by layer 1 */
  * 		{
  * 			.target = file1_s1d2,
  * 			.open_mode = O_RDWR,
  * 		},
- * 		/* Missing write, denied and not quieted by layer 2 * /
+ * 		/* Missing write, denied and not quieted by layer 2 */
  * 		{
  * 			.target = file2_s1d2,
  * 			.open_mode = O_RDWR,
@@ -9271,7 +9271,7 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_different_handled_2) {
- * 	/* Quiet from layer 2 * /
+ * 	/* Quiet from layer 2 */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R,
@@ -9282,7 +9282,7 @@ const bin_true: &[u8] = b"./true\0";
  * 					.access = FS_R,
  * 					.quiet = false,
  * 				},
- * 				/* Nothing for file2_s1d1 and file1_s1d2 * /
+ * 				/* Nothing for file2_s1d1 and file1_s1d2 */
  * 				{
  * 					.path = file2_s1d2,
  * 					.access = FS_R,
@@ -9324,18 +9324,18 @@ const bin_true: &[u8] = b"./true\0";
  * 			.expect_open_success = true,
  * 			.expect_truncate_success = true,
  * 		},
- * 		/* Missing both, youngest layer denies write, quiet * /
+ * 		/* Missing both, youngest layer denies write, quiet */
  * 		{
  * 			.target = file2_s1d1,
  * 			.open_mode = O_RDWR,
  * 		},
- * 		/* Missing read, denied and not quieted by layer 1 * /
+ * 		/* Missing read, denied and not quieted by layer 1 */
  * 		{
  * 			.target = file1_s1d2,
  * 			.open_mode = O_RDWR,
  * 			.audit_read_blocked = true,
  * 		},
- * 		/* Missing write, denied and quieted by layer 2 * /
+ * 		/* Missing write, denied and quieted by layer 2 */
  * 		{
  * 			.target = file2_s1d2,
  * 			.open_mode = O_RDWR,
@@ -9344,7 +9344,7 @@ const bin_true: &[u8] = b"./true\0";
  * };
  * 
  * FIXTURE_VARIANT_ADD(audit_quiet_layout1, quiet_two_layers_different_handled_3) {
- * 	/* Quiet from both layers * /
+ * 	/* Quiet from both layers */
  * 	.layers = {
  * 		{
  * 			.handled_access_fs = FS_R,
@@ -9433,24 +9433,24 @@ const bin_true: &[u8] = b"./true\0";
  * 		},
  * 	},
  * 	.targets = {
- * 		/* Read denied and quieted * /
+ * 		/* Read denied and quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDONLY,
  * 		},
- * 		/* Write ok * /
+ * 		/* Write ok */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_WRONLY,
  * 			.expect_open_success = true,
  * 			.expect_truncate_success = true,
  * 		},
- * 		/* Write ok, read denied and quieted * /
+ * 		/* Write ok, read denied and quieted */
  * 		{
  * 			.target = file1_s1d1,
  * 			.open_mode = O_RDWR,
  * 		},
- * 		/* Not covered by quiet * /
+ * 		/* Not covered by quiet */
  * 		{
  * 			.target = file1_s2d1,
  * 			.open_mode = O_RDONLY,
@@ -9462,9 +9462,9 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * The following TEST_F extend the above test cases to test more layers, with
  *  * the inserted layers having varying configurations.
- *  * /
+ *  */
  * 
- * /* Extra allow all layers, quiet or not, does not change any behaviour. * /
+ * /* Extra allow all layers, quiet or not, does not change any behaviour. */
  * TEST_F(audit_quiet_layout1, allow_all_layer)
  * {
  * 	struct a_layer allow_all_layer = {
@@ -9493,13 +9493,13 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * SELF_LOG flags or quiet bits from inner allowing layers should not
  * 	 * affect behaviour.
- * 	 * /
+ * 	 */
  * 	allow_all_layer.quiet_access_fs = FS_R | FS_W | FS_TRUNC | FS_IOCTL;
  * 	allow_all_layer.rules[0].quiet = true;
  * 	/*
  * 	 * Note: this only works because we're not checking counts of domain
  * 	 * alloc/dealloc logs
- * 	 * /
+ * 	 */
  * 	allow_all_layer.restrict_flags =
  * 		LANDLOCK_RESTRICT_SELF_LOG_SAME_EXEC_OFF |
  * 		LANDLOCK_RESTRICT_SELF_LOG_SUBDOMAINS_OFF;
@@ -9511,7 +9511,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * Add useless outer layers until we reach the layer limit.  Should not change
  *  * anything.
- *  * /
+ *  */
  * TEST_F(audit_quiet_layout1, many_outer_layers)
  * {
  * 	struct a_layer useless_layer = {
@@ -9537,7 +9537,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	audit_quiet_layout1_test_body(_metadata, self, variant->targets);
  * }
  * 
- * /* An inner layer that denies and quiets everything should result in no logs. * /
+ * /* An inner layer that denies and quiets everything should result in no logs. */
  * TEST_F(audit_quiet_layout1, deny_all_quiet_layer)
  * {
  * 	struct a_layer deny_all_layer = {
@@ -9550,14 +9550,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	int i;
  * 	FIXTURE_VARIANT(audit_quiet_layout1) variant_2 = {};
  * 
- * 	/* Any open should fail with no logs. * /
+ * 	/* Any open should fail with no logs. */
  * 	for (i = 0; i < ARRAY_SIZE(variant->targets); i++) {
  * 		const struct a_target *target = &variant->targets[i];
  * 
- * 		variant_2.targets[i] = (struct a_target){
+ * 		variant_2.targets[i] = (a_target){
  * 			.target = target->target,
  * 			.open_mode = target->open_mode,
- * 			/* We denied everything, open should always fail. * /
+ * 			/* We denied everything, open should always fail. */
  * 			.expect_open_success = false,
  * 		};
  * 	}
@@ -9572,7 +9572,7 @@ const bin_true: &[u8] = b"./true\0";
  * /*
  *  * An inner layer that denies everything without quiet should produce logs for
  *  * all access.
- *  * /
+ *  */
  * TEST_F(audit_quiet_layout1, deny_all_layer)
  * {
  * 	struct a_layer deny_all_layer = {
@@ -9594,16 +9594,16 @@ const bin_true: &[u8] = b"./true\0";
  * 	for (i = 0; i < ARRAY_SIZE(variant->targets); i++) {
  * 		const struct a_target *target = &variant->targets[i];
  * 
- * 		variant_2.targets[i] = (struct a_target){
+ * 		variant_2.targets[i] = (a_target){
  * 			.target = target->target,
  * 			.open_mode = target->open_mode,
  * 
- * 			/* We denied everything, open should always fail. * /
+ * 			/* We denied everything, open should always fail. */
  * 			.expect_open_success = false,
- * 			/* Audit should always happen as long as open request contains read. * /
+ * 			/* Audit should always happen as long as open request contains read. */
  * 			.audit_read_blocked = !test_has_subdomains_off &&
  * 					      target->open_mode != O_WRONLY,
- * 			/* Audit should always happen as long as open request contains write. * /
+ * 			/* Audit should always happen as long as open request contains write. */
  * 			.audit_write_blocked = !test_has_subdomains_off &&
  * 					       target->open_mode != O_RDONLY,
  * 		};
@@ -9616,7 +9616,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	audit_quiet_layout1_test_body(_metadata, self, variant_2.targets);
  * }
  * 
- * /* Uses layout1_bind hierarchy * /
+ * /* Uses layout1_bind hierarchy */
  * FIXTURE(audit_quiet_rename)
  * {
  * 	struct audit_filter audit_filter;
@@ -9646,7 +9646,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	remove_layout1(_metadata);
  * 	cleanup_layout(_metadata);
  * 
- * 	/* umount(dir_s2d2)) is handled by namespace lifetime. * /
+ * 	/* umount(dir_s2d2)) is handled by namespace lifetime. */
  * 
  * 	remove_path(file1_s4d1);
  * 	remove_path(file2_s4d1);
@@ -9656,7 +9656,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	clear_cap(_metadata, CAP_AUDIT_CONTROL);
  * }
  * 
- * static void simple_quiet_rename(struct __test_metadata *const _metadata,
+ * static void simple_quiet_rename(__test_metadata *const _metadata,
  * 				FIXTURE_DATA(audit_quiet_rename) *const self,
  * 				__u64 handled_access, __u64 quiet_access,
  * 				bool source_allow, bool dest_allow,
@@ -9664,7 +9664,7 @@ const bin_true: &[u8] = b"./true\0";
  * 				const char *source_blockers,
  * 				const char *dest_blockers)
  * {
- * 	/* We will move file1_s1d1 to file1_s2d1 * /
+ * 	/* We will move file1_s1d1 to file1_s2d1 */
  * 	struct a_layer layer = {
  * 		.handled_access_fs = handled_access,
  * 		.quiet_access_fs = quiet_access,
@@ -9684,7 +9684,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	struct audit_records records = {};
  * 	int ret, err;
  * 
- * 	/* Skip landlock_add_rule for useless rules. * /
+ * 	/* Skip landlock_add_rule for useless rules. */
  * 	if (!source_allow && !source_quiet)
  * 		layer.rules[0].path = NULL;
  * 	if (!dest_allow && !dest_quiet)
@@ -9723,7 +9723,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * No other logs. records.domain not checked per reasoning in
  * 	 * audit_quiet_layout1_test_body.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -9842,7 +9842,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(-1, renameat(AT_FDCWD, file1_s1d1, AT_FDCWD, file1_s2d1));
  * 	ASSERT_EQ(EXDEV, errno);
  * 
- * 	/* No logs * /
+ * 	/* No logs */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -9883,7 +9883,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.refer",
  * 				    dir_s2d1));
  * 
- * 	/* No other logs * /
+ * 	/* No other logs */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -9922,7 +9922,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd, "fs\\.refer",
  * 				    dir_s2d1));
  * 
- * 	/* No other logs * /
+ * 	/* No other logs */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -9984,12 +9984,12 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
  * 				    "fs\\.remove_file,fs\\.refer", dir_s1d1));
- * 	/* We didn't unlink destination file * /
+ * 	/* We didn't unlink destination file */
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
  * 				    "fs\\.remove_file,fs\\.make_reg,fs\\.refer",
  * 				    dir_s2d1));
  * 
- * 	/* No other logs * /
+ * 	/* No other logs */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10026,7 +10026,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		  matches_log_fs(_metadata, self->audit_fd,
  * 				 "fs\\.remove_file,fs\\.make_reg", dir_s1d1));
  * 
- * 	/* No other logs * /
+ * 	/* No other logs */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10081,10 +10081,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * The youngest denial will be layer 2.  Refer is quieted but we are
  * 	 * also missing remove_file on source.
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
  * 				    "fs\\.remove_file,fs\\.refer", dir_s1d1));
- * 	/* No other logs * /
+ * 	/* No other logs */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10139,7 +10139,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	/*
  * 	 * The youngest denial will be layer 2, but refer is quieted (and that
  * 	 * layer does not handle any other accesses).
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10193,7 +10193,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	/*
  * 	 * The youngest denial will be layer 2, in which everything is quieted.
- * 	 * /
+ * 	 */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10239,7 +10239,7 @@ const bin_true: &[u8] = b"./true\0";
  * 				    "fs\\.remove_file,fs\\.refer", dir_s1d1));
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
  * 				    "fs\\.make_reg,fs\\.refer", dir_s2d1));
- * 	/* No other logs. * /
+ * 	/* No other logs. */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10287,10 +10287,10 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(-1, renameat(AT_FDCWD, file1_s1d1, AT_FDCWD, file1_s2d1));
  * 	ASSERT_EQ(EACCES, errno);
  * 
- * 	/* Source is quieted but destination is not. * /
+ * 	/* Source is quieted but destination is not. */
  * 	ASSERT_EQ(0, matches_log_fs(_metadata, self->audit_fd,
  * 				    "fs\\.make_reg,fs\\.refer", dir_s2d1));
- * 	/* No other logs. * /
+ * 	/* No other logs. */
  * 	EXPECT_EQ(0, audit_count_records(self->audit_fd, &records));
  * 	ASSERT_EQ(0, records.access);
  * }
@@ -10413,7 +10413,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	bind_s1d3_fd = open(bind_dir_s1d3, O_PATH | O_DIRECTORY);
  * 	ASSERT_GE(bind_s1d3_fd, 0);
  * 
- * 	/* Make s1d3 disconnected. * /
+ * 	/* Make s1d3 disconnected. */
  * 	create_directory(_metadata, dir_s4d1);
  * 	ASSERT_EQ(0, renameat(AT_FDCWD, dir_s1d3, AT_FDCWD, dir_s4d2));
  * 
@@ -10451,7 +10451,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	bind_s1d3_fd = open(bind_dir_s1d3, O_PATH | O_DIRECTORY);
  * 	ASSERT_GE(bind_s1d3_fd, 0);
  * 
- * 	/* Make s1d3 disconnected. * /
+ * 	/* Make s1d3 disconnected. */
  * 	create_directory(_metadata, dir_s4d1);
  * 	ASSERT_EQ(0, renameat(AT_FDCWD, dir_s1d3, AT_FDCWD, dir_s4d2));
  * 
@@ -10465,9 +10465,9 @@ const bin_true: &[u8] = b"./true\0";
  * 	ASSERT_EQ(0, records.access);
  * }
  * 
- * /* clang-format off * /
+ * /* clang-format off */
  * FIXTURE(trace_layout1) {
- * 	/* clang-format on * /
+ * 	/* clang-format on */
  * 	int tracefs_ok;
  * };
  * 
@@ -10479,14 +10479,14 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Check tracefs availability before creating the layout, following the
  * 	 * layout3_fs pattern: skip before any layout creation to avoid leaving
  * 	 * stale TMP_DIR on skip.
- * 	 * /
+ * 	 */
  * 	if (stat(TRACEFS_LANDLOCK_DIR, &st)) {
  * 		self->tracefs_ok = 0;
  * 		SKIP(return, "tracefs not available");
  * 	}
  * 	self->tracefs_ok = 1;
  * 
- * 	/* Isolate tracefs state (PID filter, event enables). * /
+ * 	/* Isolate tracefs state (PID filter, event enables). */
  * 	set_cap(_metadata, CAP_SYS_ADMIN);
  * 	ASSERT_EQ(0, unshare(CLONE_NEWNS));
  * 	ASSERT_EQ(0, mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL));
@@ -10522,7 +10522,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * Verifies that check_rule_fs events include correct field values: domain, dev,
  *  * ino, access_request, and grants.  All values are verified against stat() of
  *  * the rule path on a deterministic tmpfs layout.
- *  * /
+ *  */
  * TEST_F(trace_layout1, check_rule_fs_fields)
  * {
  * 	struct stat dir_stat;
@@ -10584,7 +10584,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * The domain handles only READ_DIR, so the rule carries the
  * 	 * unhandled-rights padding; intersecting with the request leaves just
  * 	 * the requested read_dir (no padding, no hex).
- * 	 * /
+ * 	 */
  * 	ASSERT_EQ(0, tracefs_extract_field(buf, REGEX_CHECK_RULE_FS(TRACE_TASK),
  * 					   "grants", field, sizeof(field)));
  * 	EXPECT_STREQ("{read_dir}", field)
@@ -10599,7 +10599,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * Verifies check_rule_fs behavior with multiple rules.  With rules at s1d1 and
  *  * s1d2 (a child of s1d1), accessing s1d2 produces only 1 event because the
  *  * pathwalk short-circuits after the first rule fully unmasks the single layer.
- *  * /
+ *  */
  * TEST_F(trace_layout1, check_rule_fs_multiple_rules)
  * {
  * 	pid_t pid;
@@ -10672,7 +10672,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	 * Only 1 check_rule_fs event: the rule on dir_s1d2 fully unmasked the
  * 	 * single layer, so the pathwalk short-circuits before reaching the
  * 	 * dir_s1d1 rule.
- * 	 * /
+ * 	 */
  * 	count = tracefs_count_matches(buf, REGEX_CHECK_RULE_FS(TRACE_TASK));
  * 	EXPECT_EQ(1, count)
  * 	{
@@ -10687,7 +10687,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * Verifies the grants array is intersected with the request: a handled,
  *  * granted, but unrequested right (execute) is filtered out, leaving only the
  *  * requested read_dir.
- *  * /
+ *  */
  * TEST_F(trace_layout1, check_rule_fs_request_subset)
  * {
  * 	char *buf;
@@ -10702,7 +10702,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	/*
  * 	 * Handle and grant READ_DIR|EXECUTE; the open only requests read_dir.
- * 	 * /
+ * 	 */
  * 	sandbox_child_fs_access(
  * 		_metadata, dir_s1d1,
  * 		LANDLOCK_ACCESS_FS_READ_DIR | LANDLOCK_ACCESS_FS_EXECUTE,
@@ -10733,7 +10733,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * open hook also evaluates truncate; the domain handles and the rule grants
  *  * both, so the event reports access_request=read_file|truncate and
  *  * grants={read_file|truncate}, and the open is allowed.
- *  * /
+ *  */
  * TEST_F(trace_layout1, check_rule_fs_optional_access)
  * {
  * 	pid_t pid;
@@ -10781,7 +10781,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			_exit(1);
  * 		close(ruleset_fd);
  * 
- * 		/* Read-only open needs only read_file; truncate is optional. * /
+ * 		/* Read-only open needs only read_file; truncate is optional. */
  * 		fd = open(file1_s1d1, O_RDONLY | O_CLOEXEC);
  * 		if (fd < 0)
  * 			_exit(1);
@@ -10791,7 +10791,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	ASSERT_EQ(pid, waitpid(pid, &status, 0));
  * 	ASSERT_TRUE(WIFEXITED(status));
- * 	/* The open is allowed: the required read_file is granted. * /
+ * 	/* The open is allowed: the required read_file is granted. */
  * 	EXPECT_EQ(0, WEXITSTATUS(status));
  * 
  * 	set_cap(_metadata, CAP_DAC_OVERRIDE);
@@ -10799,7 +10799,7 @@ const bin_true: &[u8] = b"./true\0";
  * 	clear_cap(_metadata, CAP_DAC_OVERRIDE);
  * 	ASSERT_NE(NULL, buf);
  * 
- * 	/* The rule at dir_s1d1 matches when opening file1_s1d1. * /
+ * 	/* The rule at dir_s1d1 matches when opening file1_s1d1. */
  * 	count = tracefs_count_matches(buf, REGEX_CHECK_RULE_FS(TRACE_TASK));
  * 	EXPECT_EQ(1, count)
  * 	{
@@ -10807,13 +10807,13 @@ const bin_true: &[u8] = b"./true\0";
  * 		       buf);
  * 	}
  * 
- * 	/* The open hook adds the optional truncate to the request. * /
+ * 	/* The open hook adds the optional truncate to the request. */
  * 	ASSERT_EQ(0, tracefs_extract_field(buf, REGEX_CHECK_RULE_FS(TRACE_TASK),
  * 					   "access_request", field,
  * 					   sizeof(field)));
  * 	EXPECT_STREQ("read_file|truncate", field);
  * 
- * 	/* The rule grants both, so truncate appears in the grants array. * /
+ * 	/* The rule grants both, so truncate appears in the grants array. */
  * 	ASSERT_EQ(0, tracefs_extract_field(buf, REGEX_CHECK_RULE_FS(TRACE_TASK),
  * 					   "grants", field, sizeof(field)));
  * 	EXPECT_STREQ("{read_file|truncate}", field);
@@ -10831,7 +10831,7 @@ const bin_true: &[u8] = b"./true\0";
  *  * first matches the dir_s1d2 rule, which grants nothing requested (grants={});
  *  * walking up to dir_s1d1 then grants read_dir (grants={read_dir}) and allows
  *  * the access.
- *  * /
+ *  */
  * TEST_F(trace_layout1, check_rule_fs_empty_grant)
  * {
  * 	pid_t pid;
@@ -10861,7 +10861,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		if (ruleset_fd < 0)
  * 			_exit(1);
  * 
- * 		/* Parent dir_s1d1 grants only READ_DIR. * /
+ * 		/* Parent dir_s1d1 grants only READ_DIR. */
  * 		path_beneath.allowed_access = LANDLOCK_ACCESS_FS_READ_DIR;
  * 		path_beneath.parent_fd =
  * 			open(dir_s1d1, O_PATH | O_DIRECTORY | O_CLOEXEC);
@@ -10872,7 +10872,7 @@ const bin_true: &[u8] = b"./true\0";
  * 			_exit(1);
  * 		close(path_beneath.parent_fd);
  * 
- * 		/* Child dir_s1d2 grants only EXECUTE. * /
+ * 		/* Child dir_s1d2 grants only EXECUTE. */
  * 		path_beneath.allowed_access = LANDLOCK_ACCESS_FS_EXECUTE;
  * 		path_beneath.parent_fd =
  * 			open(dir_s1d2, O_PATH | O_DIRECTORY | O_CLOEXEC);
@@ -10906,7 +10906,7 @@ const bin_true: &[u8] = b"./true\0";
  * 
  * 	/*
  * 	 * dir_s1d2 (grants nothing requested) then dir_s1d1 (grants read_dir).
- * 	 * /
+ * 	 */
  * 	count = tracefs_count_matches(buf, REGEX_CHECK_RULE_FS(TRACE_TASK));
  * 	EXPECT_EQ(2, count)
  * 	{
@@ -10914,7 +10914,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		       buf);
  * 	}
  * 
- * 	/* The dir_s1d2 rule matches the inode but grants none of read_dir. * /
+ * 	/* The dir_s1d2 rule matches the inode but grants none of read_dir. */
  * 	EXPECT_EQ(
  * 		1,
  * 		tracefs_count_matches(
@@ -10928,7 +10928,7 @@ const bin_true: &[u8] = b"./true\0";
  * 		TH_LOG("Expected a grants={} event\n%s", buf);
  * 	}
  * 
- * 	/* Walking up to dir_s1d1 grants the requested read_dir. * /
+ * 	/* Walking up to dir_s1d1 grants the requested read_dir. */
  * 	EXPECT_EQ(
  * 		1,
  * 		tracefs_count_matches(

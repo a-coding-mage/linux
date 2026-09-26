@@ -45,7 +45,7 @@ unsafe fn afs_insert_volume_into_cell(mut cell: *mut afs_cell, mut volume: *mut 
 unsafe fn afs_remove_volume_from_cell(volume: *mut afs_volume) {
     let cell = (*volume).cell;
     if !hlist_unhashed(&(*volume).proc_link) {
-        trace_afs_volume((*volume).debug_id, (*volume).vid, refcount_read(&(*volume).ref), afs_volume_trace_remove);
+        trace_afs_volume((*volume).debug_id, (*volume).vid, refcount_read(&(*volume).r#ref), afs_volume_trace_remove);
         write_seqlock(&mut (*cell).volume_lock);
         hlist_del_rcu(&mut (*volume).proc_link);
         if !test_and_set_bit(AFS_VOLUME_RM_TREE, &mut (*volume).flags) {

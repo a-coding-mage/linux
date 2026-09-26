@@ -731,15 +731,15 @@ const samsung_pll_clock s5p6442_pll_clks[]  = {
 };
 
 unsafe fn __s5pv210_clk_init(device_node *np,
-				      u64 xxti_f,
-				      u64 xusbxti_f,
-				      bool is_s5p6442)
+				      xxti_f: u64,
+				      xusbxti_f: u64,
+				      is_s5p6442: bool)
 {
 	samsung_clk_provider *ctx;
 	clk_hw **hws;
 
 	ctx = samsung_clk_init(core::ptr::null_mut(), reg_base, NR_CLKS);
-	hws = ctx->clk_data.hws;
+	hws = (*ctx).clk_data.hws;
 
 	samsung_clk_register_mux(ctx, early_mux_clks,
 					(early_mux_clks.len()));

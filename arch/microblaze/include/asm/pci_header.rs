@@ -29,12 +29,12 @@ pub struct pci_bus {
     _private: [u8; 0],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn pci_domain_nr(bus: *mut pci_bus) -> i32;
 }
 
 /* Decide whether to display the domain number in /proc */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn pci_proc_domain(bus: *mut pci_bus) -> i32;
 }
 

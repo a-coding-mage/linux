@@ -20,7 +20,7 @@ unsafe extern "C" {
     fn memzero_explicit(ptr: *mut core::ffi::c_void, len: usize);
 }
 
-static unsafe fn gen_cookie_auth_key(key: *mut hmac_sha256_key) {
+unsafe fn gen_cookie_auth_key(key: *mut hmac_sha256_key) {
     let mut raw_key: [u8; SCTP_COOKIE_KEY_SIZE] = [0; SCTP_COOKIE_KEY_SIZE];
     get_random_bytes(raw_key.as_mut_ptr(), core::mem::size_of_val(&raw_key));
     hmac_sha256_preparekey(key, raw_key.as_ptr(), core::mem::size_of_val(&raw_key));
@@ -29,7 +29,7 @@ static unsafe fn gen_cookie_auth_key(key: *mut hmac_sha256_key) {
 }
 
 /* Initialize the base fields of the endpoint structure. */
-static unsafe fn sctp_endpoint_init(ep: *mut sctp_endpoint, sk: *mut sock, gfp: gfp_t)
+unsafe fn sctp_endpoint_init(ep: *mut sctp_endpoint, sk: *mut sock, gfp: gfp_t)
     -> *mut sctp_endpoint
 {
     let net: *mut net = sock_net(sk);
@@ -104,7 +104,7 @@ pub unsafe fn sctp_endpoint_free(ep: *mut sctp_endpoint) {
     sctp_endpoint_put(ep);
 }
 
-static unsafe fn sctp_endpoint_destroy_rcu(head: *mut rcu_head) {
+unsafe fn sctp_endpoint_destroy_rcu(head: *mut rcu_head) {
     let ep = container_of!(head, sctp_endpoint, rcu);
     let sk = (*ep).base.sk;
     (*sctp_sk(sk)).ep = core::ptr::null_mut();
@@ -113,7 +113,7 @@ static unsafe fn sctp_endpoint_destroy_rcu(head: *mut rcu_head) {
     SCTP_DBG_OBJCNT_DEC(ep);
 }
 
-static unsafe fn sctp_endpoint_destroy(ep: *mut sctp_endpoint) {
+unsafe fn sctp_endpoint_destroy(ep: *mut sctp_endpoint) {
     if !(*ep).base.dead {
         WARN(1, "Attempt to destroy undead endpoint %p!\n", ep);
         return;
@@ -169,7 +169,7 @@ pub unsafe fn sctp_endpoint_is_peeled_off(ep: *mut sctp_endpoint, paddr: *const 
     false
 }
 
-static unsafe fn sctp_endpoint_bh_rcv(work: *mut work_struct) {
+unsafe fn sctp_endpoint_bh_rcv(work: *mut work_struct) {
     let ep = container_of!(work, sctp_endpoint, base.inqueue.immediate);
     if (*ep).base.dead { return; }
     let mut asoc: *mut sctp_association = core::ptr::null_mut();

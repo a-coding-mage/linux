@@ -16,12 +16,12 @@ pub struct davinci_cpufreq_config {
 }
 
 // The CONFIG_CPU_FREQ build-time condition is preserved through this cfg.
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe extern "C" {
     pub fn davinci_cpufreq_init() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ"))]
+#[cfg(not(CONFIG_CPU_FREQ))]
 #[inline]
 pub unsafe fn davinci_cpufreq_init() -> ::core::ffi::c_int {
     0

@@ -123,22 +123,22 @@ extern "C" {
     pub static video_qops: vb2_ops;
     pub static saa7146_vbi_uops: saa7146_use_ops;
     pub static vbi_qops: vb2_ops;
-    pub fn saa7146_register_device(*mut video_device, *mut saa7146_dev, *mut core::ffi::c_char, core::ffi::c_int) -> core::ffi::c_int;
-    pub fn saa7146_unregister_device(*mut video_device, *mut saa7146_dev) -> core::ffi::c_int;
-    pub fn saa7146_buffer_finish(*mut saa7146_dev, *mut saa7146_dmaqueue, core::ffi::c_int);
-    pub fn saa7146_buffer_next(*mut saa7146_dev, *mut saa7146_dmaqueue, core::ffi::c_int);
-    pub fn saa7146_buffer_queue(*mut saa7146_dev, *mut saa7146_dmaqueue, *mut saa7146_buf) -> core::ffi::c_int;
-    pub fn saa7146_buffer_timeout(*mut timer_list);
-    pub fn saa7146_vv_init(*mut saa7146_dev, *mut saa7146_ext_vv) -> core::ffi::c_int;
-    pub fn saa7146_vv_release(*mut saa7146_dev) -> core::ffi::c_int;
-    pub fn saa7146_set_capture(*mut saa7146_dev, *mut saa7146_buf, *mut saa7146_buf);
-    pub fn saa7146_write_out_dma(*mut saa7146_dev, core::ffi::c_int, *mut saa7146_video_dma);
-    pub fn saa7146_set_hps_source_and_sync(*mut saa7146_dev, core::ffi::c_int, core::ffi::c_int);
-    pub fn saa7146_set_gpio(*mut saa7146_dev, u8, u8);
-    pub fn saa7146_video_do_ioctl(*mut file, u32, *mut core::ffi::c_void) -> isize;
-    pub fn saa7146_s_ctrl(*mut v4l2_ctrl) -> core::ffi::c_int;
-    pub fn saa7146_res_get(*mut saa7146_dev, u32) -> core::ffi::c_int;
-    pub fn saa7146_res_free(*mut saa7146_dev, u32);
+    pub fn saa7146_register_device(_: *mut video_device, _: *mut saa7146_dev, _: *mut core::ffi::c_char, _: core::ffi::c_int) -> core::ffi::c_int;
+    pub fn saa7146_unregister_device(_: *mut video_device, _: *mut saa7146_dev) -> core::ffi::c_int;
+    pub fn saa7146_buffer_finish(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: core::ffi::c_int);
+    pub fn saa7146_buffer_next(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: core::ffi::c_int);
+    pub fn saa7146_buffer_queue(_: *mut saa7146_dev, _: *mut saa7146_dmaqueue, _: *mut saa7146_buf) -> core::ffi::c_int;
+    pub fn saa7146_buffer_timeout(_: *mut timer_list);
+    pub fn saa7146_vv_init(_: *mut saa7146_dev, _: *mut saa7146_ext_vv) -> core::ffi::c_int;
+    pub fn saa7146_vv_release(_: *mut saa7146_dev) -> core::ffi::c_int;
+    pub fn saa7146_set_capture(_: *mut saa7146_dev, _: *mut saa7146_buf, _: *mut saa7146_buf);
+    pub fn saa7146_write_out_dma(_: *mut saa7146_dev, _: core::ffi::c_int, _: *mut saa7146_video_dma);
+    pub fn saa7146_set_hps_source_and_sync(_: *mut saa7146_dev, _: core::ffi::c_int, _: core::ffi::c_int);
+    pub fn saa7146_set_gpio(_: *mut saa7146_dev, _: u8, _: u8);
+    pub fn saa7146_video_do_ioctl(_: *mut file, _: u32, _: *mut core::ffi::c_void) -> isize;
+    pub fn saa7146_s_ctrl(_: *mut v4l2_ctrl) -> core::ffi::c_int;
+    pub fn saa7146_res_get(_: *mut saa7146_dev, _: u32) -> core::ffi::c_int;
+    pub fn saa7146_res_free(_: *mut saa7146_dev, _: u32);
 }
 
 pub const RESOURCE_DMA1_HPS: u32 = 0x1;

@@ -122,7 +122,7 @@ pub unsafe fn vgic_v3_flush_nested(vcpu: *mut KvmVcpu) {
 
 pub unsafe fn vgic_v3_sync_nested(vcpu: *mut KvmVcpu) {
     let shadow_if = get_shadow_if();
-    for i in for_each_set_bit((*shadow_if).lr_map, kvm_vgic_global_state.nr_lr) {
+    for i in for_each_set_bit!((*shadow_if).lr_map, kvm_vgic_global_state.nr_lr) {
         let host_lr = __gic_v3_get_lr(lr_map_idx_to_shadow_idx(shadow_if, i));
         let lr = __vcpu_sys_reg(vcpu, ich_lrn(i));
         __vcpu_assign_sys_reg(vcpu, ich_lrn(i), (lr & !ICH_LR_STATE) | (host_lr & ICH_LR_STATE));
@@ -130,8 +130,8 @@ pub unsafe fn vgic_v3_sync_nested(vcpu: *mut KvmVcpu) {
         vgic_v3_deactivate(vcpu, FIELD_GET(ICH_LR_PHYS_ID_MASK, lr));
     }
     __vcpu_assign_sys_reg(vcpu, ICH_VMCR_EL2, read_sysreg_s(SYS_ICH_VMCR_EL2));
-    __vcpu_rmw_sys_reg(vcpu, ICH_HCR_EL2, &=, !ICH_HCR_EL2_EOIcount);
-    __vcpu_rmw_sys_reg(vcpu, ICH_HCR_EL2, |=, read_sysreg_s(SYS_ICH_HCR_EL2) & ICH_HCR_EL2_EOIcount);
+    __vcpu_rmw_sys_reg!(vcpu, ICH_HCR_EL2, &=, !ICH_HCR_EL2_EOIcount);
+    __vcpu_rmw_sys_reg!(vcpu, ICH_HCR_EL2, |=, read_sysreg_s(SYS_ICH_HCR_EL2) & ICH_HCR_EL2_EOIcount);
     write_sysreg_s(0, SYS_ICH_HCR_EL2); isb(); vgic_v3_nested_update_mi(vcpu);
 }
 

@@ -20,7 +20,7 @@ unsafe fn dir_blocks(inode: *mut inode) -> c_ulong {
     (((i_size_read(inode) + PAGE_SIZE - 1) as u64) >> PAGE_SHIFT) as c_ulong
 }
 unsafe fn dir_buckets(level: c_uint, dir_level: c_int) -> c_uint {
-    if level + dir_level as c_uint < MAX_DIR_HASH_DEPTH / 2 { BIT(level + dir_level as c_uint) } else { MAX_DIR_BUCKETS }
+    if level + (dir_level as c_uint) < MAX_DIR_HASH_DEPTH / 2 { BIT(level + dir_level as c_uint) } else { MAX_DIR_BUCKETS }
 }
 unsafe fn bucket_blocks(level: c_uint) -> c_uint { if level < MAX_DIR_HASH_DEPTH / 2 { 2 } else { 4 } }
 

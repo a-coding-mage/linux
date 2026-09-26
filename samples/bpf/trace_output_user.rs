@@ -150,7 +150,7 @@ pub unsafe fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
         return 1;
     }
 
-    f = popen(c"taskset 1 dd if=/dev/zero of=/dev/null\0".as_ptr(), c"r\0".as_ptr());
+    f = popen(c"taskset 1 dd if=/dev/zero of=/dev/null".as_ptr(), c"r".as_ptr());
     let _ = f;
 
     START_TIME = time_get_ns();

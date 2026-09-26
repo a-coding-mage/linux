@@ -483,7 +483,7 @@ static fsl_asoc_card_dapm_widgets: [snd_soc_dapm_widget; 7] = [
     snd_soc_dapm_widget { id: 0, name: b"DMIC\0".as_ptr() as *const c_char, reg: 0, shift: 0, mask: 0, on_val: 0, off_val: 0 },
 ];
 
-unsafe extern "C" fn fsl_asoc_card_is_ac97(priv: *mut fsl_asoc_card_priv) -> bool {
+unsafe extern "C" fn fsl_asoc_card_is_ac97(r#priv: *mut fsl_asoc_card_priv) -> bool {
     unsafe { (*priv).dai_fmt == SND_SOC_DAIFMT_AC97 }
 }
 

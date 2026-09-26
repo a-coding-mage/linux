@@ -14,7 +14,7 @@ unsafe extern "C" {
     static relocate_kernel_len: u64;
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn __do_machine_kdump(data: *mut core::ffi::c_void) {
     let image = data as *mut kimage;
     let purgatory = (*image).start as PurgatoryT;
@@ -39,7 +39,7 @@ unsafe fn __do_machine_kdump(data: *mut core::ffi::c_void) {
     disabled_wait();
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn __machine_kdump(image: *mut core::ffi::c_void) {
     let mut mcesa: *mut mcesa;
     let mut cr2_old: ctlreg2;
@@ -80,16 +80,16 @@ unsafe fn __machine_kdump(image: *mut core::ffi::c_void) {
 
 /* Check if kdump checksums are valid: We call purgatory with parameter "0" */
 unsafe fn kdump_csum_valid(image: *mut kimage) -> bool {
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     {
         let purgatory = (*image).start as PurgatoryT;
         return call_nodat_1(purgatory, 0) == 0;
     }
-    #[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+    #[cfg(not(CONFIG_CRASH_DUMP))]
     { let _ = image; false }
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn crash_free_reserved_phys_range(begin: usize, end: usize) {
     let mut addr = begin;
     while addr < end {
@@ -101,7 +101,7 @@ unsafe fn crash_free_reserved_phys_range(begin: usize, end: usize) {
     else { os_info_crashkernel_add(0, 0); }
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn crash_protect_pages(protect: i32) {
     if crashk_res.end == 0 { return; }
     let size = resource_size(&crashk_res);
@@ -109,20 +109,20 @@ unsafe fn crash_protect_pages(protect: i32) {
     else { set_memory_rw(crashk_res.start, size >> PAGE_SHIFT); }
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn arch_kexec_protect_crashkres() { crash_protect_pages(1); }
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 unsafe fn arch_kexec_unprotect_crashkres() { crash_protect_pages(0); }
 
 unsafe fn machine_kexec_prepare_kdump() -> i32 {
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     {
         if machine_is_vm() {
             diag10_range(PFN_DOWN!(crashk_res.start), PFN_DOWN!(crashk_res.end - crashk_res.start + 1));
         }
         return 0;
     }
-    #[cfg(not(feature = "CONFIG_CRASH_DUMP"))]
+    #[cfg(not(CONFIG_CRASH_DUMP))]
     { -EINVAL }
 }
 
@@ -154,7 +154,7 @@ unsafe fn __machine_kexec(data: *mut core::ffi::c_void) {
     pfault_fini();
     tracing_off();
     debug_locks_off();
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     if (*(data as *mut kimage)).type_ == KEXEC_TYPE_CRASH { __machine_kdump(data); }
     __do_machine_kexec(data);
 }

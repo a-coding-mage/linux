@@ -12,7 +12,6 @@
 /* C include <linux/regmap.h> removed; external symbols are expected from dependencies. */
 
 
-pub const __CS35L36_H__: u32 = ;
 
 
 pub const CS35L36_FIRSTREG: u32 = 0x00000000;

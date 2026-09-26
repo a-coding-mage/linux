@@ -64,7 +64,7 @@ define_simple_or!(this_cpu_or_4); define_simple_or!(this_cpu_or_8);
 macro_rules! arch_this_cpu_read { ($pcp:expr, $op:tt) => {{
     let ptr__ = unsafe { PERCPU_PTR(&mut $pcp) };
     let mut res__ = core::mem::MaybeUninit::uninit();
-    // `op` is one of llgc, llgh, llgf, or lg in the original inline asm.
+    // `$op` is one of llgc, llgh, llgf, or lg in the original inline asm.
     unsafe { core::ptr::read_volatile(ptr__) }
 }}; }
 macro_rules! define_read { ($n:ident,$op:tt) => { #[macro_export] macro_rules! $n { ($p:expr) => { arch_this_cpu_read!($p,$op) }; } }; }

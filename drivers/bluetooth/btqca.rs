@@ -13,13 +13,14 @@ pub unsafe fn qca_read_soc_version(hdev: *mut hci_dev, ver: *mut qca_btsoc_versi
     let mut event_type = HCI_EV_VENDOR as u8;
     let mut rlen = (core::mem::size_of::<edl_event_hdr>() + core::mem::size_of::<qca_btsoc_version>()) as u8;
     let mut rtype = EDL_APP_VER_RES_EVT as u8;
+    'out: {
     bt_dev_dbg(hdev, "QCA Version Request");
     if soc_type >= QCA_WCN3991 { event_type = 0; rlen = rlen.wrapping_add(1); rtype = EDL_PATCH_VER_REQ_CMD as u8; }
     skb = __hci_cmd_sync_ev(hdev, EDL_PATCH_CMD_OPCODE, EDL_PATCH_CMD_LEN, &mut cmd as *mut i8 as *mut u8, event_type, HCI_INIT_TIMEOUT);
     if IS_ERR(skb) { err = PTR_ERR(skb); bt_dev_err(hdev, "Reading QCA version information failed (%d)", err); return err; }
-    if (*skb).len != rlen as usize { bt_dev_err(hdev, "QCA Version size mismatch len %d", (*skb).len); err = -EILSEQ; goto out; }
+    if (*skb).len != rlen as usize { bt_dev_err(hdev, "QCA Version size mismatch len %d", (*skb).len); err = -EILSEQ; break 'out; }
     edl = (*skb).data as *mut edl_event_hdr;
-    if (*edl).cresp != EDL_CMD_REQ_RES_EVT || (*edl).rtype != rtype { bt_dev_err(hdev, "QCA Wrong packet received %d %d", (*edl).cresp, (*edl).rtype); err = -EIO; goto out; }
+    if (*edl).cresp != EDL_CMD_REQ_RES_EVT || (*edl).rtype != rtype { bt_dev_err(hdev, "QCA Wrong packet received %d %d", (*edl).cresp, (*edl).rtype); err = -EIO; break 'out; }
     if soc_type >= QCA_WCN3991 { core::ptr::copy_nonoverlapping((*edl).data.add(1), ver as *mut u8, core::mem::size_of::<qca_btsoc_version>()); }
     else { core::ptr::copy_nonoverlapping((*edl).data, ver as *mut u8, core::mem::size_of::<qca_btsoc_version>()); }
     bt_dev_info(hdev, "QCA Product ID   :0x%08x", le32_to_cpu((*ver).product_id));
@@ -27,7 +28,8 @@ pub unsafe fn qca_read_soc_version(hdev: *mut hci_dev, ver: *mut qca_btsoc_versi
     bt_dev_info(hdev, "QCA ROM Version  :0x%08x", le16_to_cpu((*ver).rom_ver));
     bt_dev_info(hdev, "QCA Patch Version:0x%08x", le16_to_cpu((*ver).patch_ver));
     if (*ver).soc_id == 0 || (*ver).rom_ver == 0 { err = -EILSEQ; }
-out: kfree_skb(skb); if err != 0 { bt_dev_err(hdev, "QCA Failed to get version (%d)", err); } err
+    }
+    kfree_skb(skb); if err != 0 { bt_dev_err(hdev, "QCA Failed to get version (%d)", err); } err
 }
 
 unsafe fn qca_read_fw_build_info(hdev: *mut hci_dev) -> i32 {

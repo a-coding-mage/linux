@@ -62,7 +62,7 @@ pub unsafe fn send_fault_sig(regs: *mut pt_regs) -> i32 {
          * Oops. The kernel tried to access some bad page. We'll have to
          * terminate things with extreme prejudice.
          */
-        if addr as usize < PAGE_SIZE {
+        if (addr as usize) < PAGE_SIZE {
             pr_alert_null_pointer();
         } else {
             pr_alert_kernel_access();
@@ -113,6 +113,10 @@ pub unsafe fn do_page_fault(
     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
 
     'retry: loop {
+        'acc_err: {
+        'map_err: {
+        'bus_err: {
+        'no_context: {
         mmap_read_lock(mm);
         vma = find_vma(mm, address);
         if vma.is_null() {
@@ -148,24 +152,24 @@ pub unsafe fn do_page_fault(
 
         match error_code & 3 {
             2 | 3 => {
-                if (*vma).vm_flags & VM_WRITE == 0 { goto acc_err; }
+                if (*vma).vm_flags & VM_WRITE == 0 { break 'acc_err; }
                 flags |= FAULT_FLAG_WRITE;
             }
-            1 => { goto acc_err; }
-            0 => { if !vma_is_accessible(vma) { goto acc_err; } }
+            1 => { break 'acc_err; }
+            0 => { if !vma_is_accessible(vma) { break 'acc_err; } }
             _ => unreachable!(),
         }
 
         fault = handle_mm_fault(vma, address, flags, regs);
         if fault_signal_pending(fault, regs) {
-            if !user_mode(regs) { goto no_context; }
+            if !user_mode(regs) { break 'no_context; }
             return 0;
         }
         if fault & VM_FAULT_COMPLETED != 0 { return 0; }
         if fault & VM_FAULT_ERROR != 0 {
-            if fault & VM_FAULT_OOM != 0 { mmap_read_unlock(mm); if !user_mode(regs) { goto no_context; } pagefault_out_of_memory(); return 0; }
-            if fault & VM_FAULT_SIGSEGV != 0 { goto map_err; }
-            if fault & VM_FAULT_SIGBUS != 0 { goto bus_err; }
+            if fault & VM_FAULT_OOM != 0 { mmap_read_unlock(mm); if !user_mode(regs) { break 'no_context; } pagefault_out_of_memory(); return 0; }
+            if fault & VM_FAULT_SIGSEGV != 0 { break 'map_err; }
+            if fault & VM_FAULT_SIGBUS != 0 { break 'bus_err; }
             BUG();
         }
         if fault & VM_FAULT_RETRY != 0 {
@@ -174,22 +178,25 @@ pub unsafe fn do_page_fault(
         }
         mmap_read_unlock(mm);
         return 0;
-
-        no_context: {
+        }
+        {
             (*current).thread.signo = SIGBUS;
             (*current).thread.faddr = address;
             return send_fault_sig(regs);
         }
-        bus_err: {
+        }
+        {
             (*current).thread.signo = SIGBUS; (*current).thread.code = BUS_ADRERR; (*current).thread.faddr = address;
             mmap_read_unlock(mm); return send_fault_sig(regs);
         }
-        map_err: {
+        }
+        {
             mmap_read_unlock(mm);
             (*current).thread.signo = SIGSEGV; (*current).thread.code = SEGV_MAPERR; (*current).thread.faddr = address;
             return send_fault_sig(regs);
         }
-        acc_err: {
+        }
+        {
             (*current).thread.signo = SIGSEGV; (*current).thread.code = SEGV_ACCERR; (*current).thread.faddr = address;
             mmap_read_unlock(mm); return send_fault_sig(regs);
         }

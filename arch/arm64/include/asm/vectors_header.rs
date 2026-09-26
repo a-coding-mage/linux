@@ -21,21 +21,21 @@ extern "C" {
 #[repr(C)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum arm64_bp_harden_el1_vectors {
-    #[cfg(feature = "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY")]
+    #[cfg(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY)]
     /*
      * Perform the BHB loop mitigation, before branching to the canonical
      * vectors.
      */
     EL1_VECTOR_BHB_LOOP,
 
-    #[cfg(feature = "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY")]
+    #[cfg(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY)]
     /*
      * Make the SMC call for firmware mitigation, before branching to the
      * canonical vectors.
      */
     EL1_VECTOR_BHB_FW,
 
-    #[cfg(feature = "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY")]
+    #[cfg(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY)]
     /*
      * Use the ClearBHB instruction, before branching to the canonical
      * vectors.
@@ -48,11 +48,11 @@ pub enum arm64_bp_harden_el1_vectors {
     EL1_VECTOR_KPTI,
 }
 
-#[cfg(not(feature = "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY"))]
+#[cfg(not(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY))]
 pub const EL1_VECTOR_BHB_LOOP: isize = -1;
-#[cfg(not(feature = "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY"))]
+#[cfg(not(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY))]
 pub const EL1_VECTOR_BHB_FW: isize = -1;
-#[cfg(not(feature = "CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY"))]
+#[cfg(not(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY))]
 pub const EL1_VECTOR_BHB_CLEAR_INSN: isize = -1;
 
 /* The vectors to use on return from EL0. e.g. to remap the kernel */
@@ -61,7 +61,7 @@ extern "C" {
     pub static mut this_cpu_vector: *const c_char;
 }
 
-#[cfg(not(feature = "CONFIG_UNMAP_KERNEL_AT_EL0"))]
+#[cfg(not(CONFIG_UNMAP_KERNEL_AT_EL0))]
 pub const TRAMP_VALIAS: usize = 0;
 
 // These symbols/constants are supplied by the kernel environment.

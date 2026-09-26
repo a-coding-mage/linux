@@ -186,7 +186,7 @@ impl MiscDevice for RustMiscDevice {
             try_pin_init! {
                 RustMiscDevice {
                     inner <- new_mutex!(Inner {
-                        value: 0_i32,
+                        value: 0i32,
                         buffer: KVVec::new(),
                     }),
                     dev: dev,

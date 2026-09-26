@@ -29,14 +29,12 @@ extern "C" {
     fn snd_soc_dai_init_dma_data(
         dai: *mut snd_soc_dai,
         playback: *mut snd_dmaengine_dai_dma_data,
-        capture: *mut snd_dmaengine_dai_dma_data,
-    );
+        capture: *mut snd_dmaengine_dai_dma_data);
     fn snd_soc_register_component(
         dev: *mut device,
         component_driver: *const snd_soc_component_driver,
         dai_drv: *mut snd_soc_dai_driver,
-        num_dai: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        num_dai: core::ffi::c_int) -> core::ffi::c_int;
     fn snd_soc_unregister_component(dev: *mut device);
 
     fn params_format(params: *mut snd_pcm_hw_params) -> core::ffi::c_int;
@@ -47,19 +45,17 @@ extern "C" {
         i: *mut snd_interval,
         count: core::ffi::c_uint,
         list: *const core::ffi::c_uint,
-        mask: core::ffi::c_ulong,
-    ) -> core::ffi::c_int;
+        mask: core::ffi::c_ulong) -> core::ffi::c_int;
     fn snd_pcm_hw_rule_add(
         runtime: *mut snd_pcm_runtime,
         cond: core::ffi::c_uint,
         var: core::ffi::c_int,
         func: Option<
             unsafe extern "C" fn(*mut snd_pcm_hw_params, *mut snd_pcm_hw_rule) -> core::ffi::c_int,
-        >,
+        _: >,
         private: *mut core::ffi::c_void,
         dep: core::ffi::c_int,
-        ...
-    ) -> core::ffi::c_int;
+        ...) -> core::ffi::c_int;
 
     fn regcache_cache_only(map: *mut regmap, enable: bool);
     fn regcache_mark_dirty(map: *mut regmap);
@@ -68,8 +64,7 @@ extern "C" {
         map: *mut regmap,
         reg: core::ffi::c_uint,
         mask: core::ffi::c_uint,
-        val: core::ffi::c_uint,
-    ) -> core::ffi::c_int;
+        val: core::ffi::c_uint) -> core::ffi::c_int;
     fn regmap_write(map: *mut regmap, reg: core::ffi::c_uint, val: core::ffi::c_uint) -> core::ffi::c_int;
 
     fn clk_disable_unprepare(clk: *mut clk);
@@ -83,8 +78,7 @@ extern "C" {
     fn reset_control_deassert(rstc: *mut reset_control) -> core::ffi::c_int;
     fn devm_reset_control_get_exclusive(
         dev: *mut device,
-        id: *const core::ffi::c_char,
-    ) -> *mut reset_control;
+        id: *const core::ffi::c_char) -> *mut reset_control;
 
     fn usleep_range(min: core::ffi::c_ulong, max: core::ffi::c_ulong);
     fn device_property_read_bool(dev: *mut device, propname: *const core::ffi::c_char) -> bool;
@@ -92,13 +86,11 @@ extern "C" {
     fn devm_platform_get_and_ioremap_resource(
         pdev: *mut platform_device,
         index: core::ffi::c_uint,
-        res: *mut *mut resource,
-    ) -> *mut core::ffi::c_void;
+        res: *mut *mut resource) -> *mut core::ffi::c_void;
     fn devm_regmap_init_mmio(
         dev: *mut device,
         regs: *mut core::ffi::c_void,
-        config: *const regmap_config,
-    ) -> *mut regmap;
+        config: *const regmap_config) -> *mut regmap;
     fn pm_runtime_enable(dev: *mut device);
     fn pm_runtime_disable(dev: *mut device);
     fn pm_runtime_force_suspend(dev: *mut device) -> core::ffi::c_int;

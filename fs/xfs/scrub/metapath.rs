@@ -53,7 +53,7 @@ pub unsafe fn xchk_setup_metapath_scan(
     error
 }
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 unsafe fn xchk_setup_metapath_rtdir(sc: *mut xfs_scrub) -> c_int {
     if (*(*sc).mp).m_rtdirip.is_null() { return -ENOENT; }
     xchk_setup_metapath_scan(sc, (*(*sc).mp).m_metadirip,
@@ -61,10 +61,10 @@ unsafe fn xchk_setup_metapath_rtdir(sc: *mut xfs_scrub) -> c_int {
         (*(*sc).mp).m_rtdirip)
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 unsafe fn xchk_setup_metapath_rtdir(_: *mut xfs_scrub) -> c_int { -ENOENT }
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 unsafe fn xchk_setup_metapath_rtginode(sc: *mut xfs_scrub, typ: xfs_rtg_inodes) -> c_int {
     let rtg = xfs_rtgroup_get((*sc).mp, (*(*sc).sm).sm_agno);
     if rtg.is_null() { return -ENOENT; }
@@ -76,10 +76,10 @@ unsafe fn xchk_setup_metapath_rtginode(sc: *mut xfs_scrub, typ: xfs_rtg_inodes) 
     error
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 unsafe fn xchk_setup_metapath_rtginode(_: *mut xfs_scrub, _: xfs_rtg_inodes) -> c_int { -ENOENT }
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 unsafe fn xchk_setup_metapath_quotadir(sc: *mut xfs_scrub) -> c_int {
     let qi = (*(*sc).mp).m_quotainfo;
     if qi.is_null() || (*qi).qi_dirip.is_null() { return -ENOENT; }
@@ -87,10 +87,10 @@ unsafe fn xchk_setup_metapath_quotadir(sc: *mut xfs_scrub) -> c_int {
         kstrdup_const(b"quota\0".as_ptr() as *const c_char, GFP_KERNEL), (*qi).qi_dirip)
 }
 
-#[cfg(not(feature = "CONFIG_XFS_QUOTA"))]
+#[cfg(not(CONFIG_XFS_QUOTA))]
 unsafe fn xchk_setup_metapath_quotadir(_: *mut xfs_scrub) -> c_int { -ENOENT }
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 unsafe fn xchk_setup_metapath_dqinode(sc: *mut xfs_scrub, typ: xfs_dqtype_t) -> c_int {
     let qi = (*(*sc).mp).m_quotainfo;
     if qi.is_null() { return -ENOENT; }
@@ -104,7 +104,7 @@ unsafe fn xchk_setup_metapath_dqinode(sc: *mut xfs_scrub, typ: xfs_dqtype_t) -> 
     xchk_setup_metapath_scan(sc, (*qi).qi_dirip, xfs_dqinode_path(typ), ip)
 }
 
-#[cfg(not(feature = "CONFIG_XFS_QUOTA"))]
+#[cfg(not(CONFIG_XFS_QUOTA))]
 unsafe fn xchk_setup_metapath_dqinode(_: *mut xfs_scrub, _: xfs_dqtype_t) -> c_int { -ENOENT }
 
 pub unsafe fn xchk_setup_metapath(sc: *mut xfs_scrub) -> c_int {
@@ -164,7 +164,7 @@ pub unsafe fn xchk_metapath(sc: *mut xfs_scrub) -> c_int {
 }
 
 /* Online repair implementation is supplied under the corresponding build condition. */
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 unsafe fn xrep_metapath_link(m: *mut xchk_metapath) -> c_int {
     let sc = (*m).sc;
     (*m).du.dp = (*m).dp; (*m).du.name = &mut (*m).xname; (*m).du.ip = (*sc).ip;
@@ -173,7 +173,7 @@ unsafe fn xrep_metapath_link(m: *mut xchk_metapath) -> c_int {
     xfs_dir_add_child((*sc).tp, (*m).link_resblks, &mut (*m).du)
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 unsafe fn xrep_metapath_try_link(m: *mut xchk_metapath, alleged: *mut xfs_ino_t) -> c_int {
     let sc = (*m).sc; let mut ino = 0;
     let mut error = xchk_trans_alloc(sc, (*m).link_resblks); if error != 0 { return error; }
@@ -186,7 +186,7 @@ unsafe fn xrep_metapath_try_link(m: *mut xchk_metapath, alleged: *mut xfs_ino_t)
     xchk_trans_cancel(sc); xchk_metapath_iunlock(m); error
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 pub unsafe fn xrep_metapath(sc: *mut xfs_scrub) -> c_int {
     let m = (*sc).buf as *mut xchk_metapath; let mp = (*sc).mp; let mut error = 0;
     if (*(*sc).sm).sm_ino == XFS_SCRUB_METAPATH_PROBE { return 0; }

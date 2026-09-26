@@ -39,7 +39,7 @@ static SUN6I_BOARD_DT_COMPAT: [*const c_char; 3] = [
 unsafe extern "C" fn sun6i_timer_init() {
     of_clk_init(core::ptr::null());
     // CONFIG_RESET_CONTROLLER is a build-time configuration condition.
-    #[cfg(feature = "CONFIG_RESET_CONTROLLER")]
+    #[cfg(CONFIG_RESET_CONTROLLER)]
     sun6i_reset_init();
     timer_probe();
 }
@@ -77,7 +77,7 @@ static SUN8I_BOARD_DT_COMPAT: [*const c_char; 8] = [
 
 unsafe extern "C" fn sun8i_a83t_cntvoff_init() {
     // CONFIG_SMP is a build-time configuration condition.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     secure_cntvoff_init();
 }
 

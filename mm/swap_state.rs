@@ -9,7 +9,7 @@ const PAGE_CLUSTER_MAX: i32 = 31;
 // swapper_space is a fiction, retained to simplify the path through vmscan's shrink_folio_list.
 static mut SWAP_AOPS: address_space_operations = address_space_operations {
     dirty_folio: noop_dirty_folio,
-    #[cfg(feature = "CONFIG_MIGRATION")]
+    #[cfg(CONFIG_MIGRATION)]
     migrate_folio: migrate_folio,
 };
 static mut swap_space: address_space = address_space { a_ops: unsafe { &SWAP_AOPS } };

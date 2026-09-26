@@ -11,13 +11,13 @@
 // C dependencies: linux/types.h, linux/pgtable.h, asm/mmiowb.h,
 // asm/early_ioremap.h, asm/mmio.h, and asm-generic/io.h.
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const IO_SPACE_LIMIT: usize = PCI_IO_SIZE - 1;
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const PCI_IOBASE: *mut core::ffi::c_void = PCI_IO_START as *mut core::ffi::c_void;
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn ioremap_wc(addr: usize, size: usize) -> *mut core::ffi::c_void {
     ioremap_prot(addr, size, __pgprot(_PAGE_KERNEL_NC))
@@ -138,7 +138,7 @@ macro_rules! writesw { ($addr:expr, $buffer:expr, $count:expr) => { $crate::__wr
 #[macro_export]
 macro_rules! writesl { ($addr:expr, $buffer:expr, $count:expr) => { $crate::__writesl($addr, $buffer, $count) }; }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[inline]
 pub unsafe fn __readsq(addr: *const core::ffi::c_void, buffer: *mut u64, mut count: u32) {
     __io_br!();
@@ -148,11 +148,11 @@ pub unsafe fn __readsq(addr: *const core::ffi::c_void, buffer: *mut u64, mut cou
     }
     __io_ar!(addr);
 }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[macro_export]
 macro_rules! readsq { ($addr:expr, $buffer:expr, $count:expr) => { $crate::__readsq($addr, $buffer, $count) }; }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[inline]
 pub unsafe fn __writesq(addr: *mut core::ffi::c_void, buffer: *const u64, mut count: u32) {
     __io_bw!();
@@ -162,14 +162,14 @@ pub unsafe fn __writesq(addr: *mut core::ffi::c_void, buffer: *const u64, mut co
     }
     __io_aw!();
 }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[macro_export]
 macro_rules! writesq { ($addr:expr, $buffer:expr, $count:expr) => { $crate::__writesq($addr, $buffer, $count) }; }
 
 // CONFIG_HAS_IOPORT variants use PCI_IOBASE + the supplied port offset and
 // the same raw access loops with port-specific fences.
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn arch_memremap_wb(addr: usize, size: usize, _flags: usize) -> *mut core::ffi::c_void {
     ioremap_prot(addr, size, __pgprot(_PAGE_KERNEL)) as *mut core::ffi::c_void

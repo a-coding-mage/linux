@@ -1590,6 +1590,11 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=lib/raid/raid6 lib/raid/raid6/mktables
 	$(Q)$(MAKE) $(build)=lib/crc lib/crc/gen_crc32table lib/crc/gen_crc64table
 	$(Q)$(MAKE) $(build)=fs/unicode fs/unicode/mkutf8data
+	$(Q)$(MAKE) $(build)=drivers/zorro drivers/zorro/gen-devlist
+	$(Q)$(MAKE) $(build)=drivers/tty/vt drivers/tty/vt/conmakehash
+	$(Q)$(MAKE) $(build)=drivers/gpu/drm/xe drivers/gpu/drm/xe/xe_gen_wa_oob
+	$(Q)$(MAKE) $(build)=drivers/gpu/drm/radeon drivers/gpu/drm/radeon/mkregtable
+	$(Q)$(MAKE) $(build)=drivers/video/logo drivers/video/logo/pnmtologo
 	$(Q)$(MAKE) $(build)=drivers/accessibility/speakup \
 		drivers/accessibility/speakup/makemapdata \
 		drivers/accessibility/speakup/genmap \

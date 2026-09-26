@@ -20,7 +20,7 @@ struct patch_params {
  * I2C/SPI relocation patch arrays.
  */
 
-#[cfg(feature = "CONFIG_I2C_SPI_UCODE_PATCH")]
+#[cfg(CONFIG_I2C_SPI_UCODE_PATCH)]
 
 static char patch_name[]  = "I2C/SPI";
 
@@ -77,7 +77,7 @@ static u32 patch_2e00[]  = &[];
  * I2C/SPI/SMC1 relocation patch arrays.
  */
 
-#[cfg(feature = "CONFIG_I2C_SPI_SMC1_UCODE_PATCH")]
+#[cfg(CONFIG_I2C_SPI_SMC1_UCODE_PATCH)]
 
 static char patch_name[]  = "I2C/SPI/SMC1";
 
@@ -198,7 +198,7 @@ static u32 patch_2e00[]  = &[
  *  USB SOF patch arrays.
  */
 
-#[cfg(feature = "CONFIG_USB_SOF_UCODE_PATCH")]
+#[cfg(CONFIG_USB_SOF_UCODE_PATCH)]
 
 static char patch_name[]  = "USB SOF";
 
@@ -222,7 +222,7 @@ static u32 patch_2e00[]  = &[];
  * SMC relocation patch arrays.
  */
 
-#[cfg(feature = "CONFIG_SMC_UCODE_PATCH")]
+#[cfg(CONFIG_SMC_UCODE_PATCH)]
 
 static char patch_name[]  = "SMC";
 
@@ -309,12 +309,12 @@ static void  cpm_write_patch(cpm8xx_t *cp, int offset, u32 *patch, int len)
 {
 	if (!len)
 		return;
-	memcpy_toio(cp->cp_dpmem + offset, patch, len);
+	memcpy_toio((*cp).cp_dpmem + offset, patch, len);
 }
 
 void  cpm_load_patch(cpm8xx_t *cp)
 {
-	out_be16(&cp->cp_rccr, 0);
+	out_be16((*&cp).cp_rccr, 0);
 
 	cpm_write_patch(cp, 0, patch_2000, sizeof(patch_2000));
 	cpm_write_patch(cp, 0xf00, patch_2f00, sizeof(patch_2f00));
@@ -326,18 +326,18 @@ void  cpm_load_patch(cpm8xx_t *cp)
 		iic_t *iip;
 		struct spi_pram *spp;
 
-		iip = (iic_t *)&cp->cp_dparam[PROFF_IIC];
-		out_be16(&iip->iic_rpbase, rpbase);
+		iip = (iic_t *)&(*cp).cp_dparam[PROFF_IIC];
+		out_be16((*&iip).iic_rpbase, rpbase);
 
 		/* Put SPI above the IIC, also 32-byte aligned. */
-		spp = (struct spi_pram *)&cp->cp_dparam[PROFF_SPI];
-		out_be16(&spp->rpbase, (rpbase + sizeof(iic_t) + 31) & ~31);
+		spp = (spi_pram *)&(*cp).cp_dparam[PROFF_SPI];
+		out_be16((*&spp).rpbase, (rpbase + sizeof(iic_t) + 31) & ~31);
 
 		if (IS_ENABLED(CONFIG_I2C_SPI_SMC1_UCODE_PATCH)) {
 			smc_uart_t *smp;
 
-			smp = (smc_uart_t *)&cp->cp_dparam[PROFF_SMC1];
-			out_be16(&smp->smc_rpbase, 0x1FC0);
+			smp = (smc_uart_t *)&(*cp).cp_dparam[PROFF_SMC1];
+			out_be16((*&smp).smc_rpbase, 0x1FC0);
 		}
 	}
 
@@ -348,25 +348,25 @@ void  cpm_load_patch(cpm8xx_t *cp)
 			int i;
 
 			for (i = 0; i < sizeof(*smp); i += 4) {
-				u32 __iomem *src = (u32 __iomem *)&cp->cp_dparam[PROFF_SMC1 + i];
-				u32 __iomem *dst = (u32 __iomem *)&cp->cp_dparam[PROFF_DSP1 + i];
+				u32 __iomem *src = (u32 __iomem *)&(*cp).cp_dparam[PROFF_SMC1 + i];
+				u32 __iomem *dst = (u32 __iomem *)&(*cp).cp_dparam[PROFF_DSP1 + i];
 
 				out_be32(dst, in_be32(src));
 			}
 		}
 
-		smp = (smc_uart_t *)&cp->cp_dparam[PROFF_SMC1];
-		out_be16(&smp->smc_rpbase, 0x1ec0);
-		smp = (smc_uart_t *)&cp->cp_dparam[PROFF_SMC2];
-		out_be16(&smp->smc_rpbase, 0x1fc0);
+		smp = (smc_uart_t *)&(*cp).cp_dparam[PROFF_SMC1];
+		out_be16((*&smp).smc_rpbase, 0x1ec0);
+		smp = (smc_uart_t *)&(*cp).cp_dparam[PROFF_SMC2];
+		out_be16((*&smp).smc_rpbase, 0x1fc0);
 	}
 
-	out_be16(&cp->cp_cpmcr1, patch_params.cpmcr1);
-	out_be16(&cp->cp_cpmcr2, patch_params.cpmcr2);
-	out_be16(&cp->cp_cpmcr3, patch_params.cpmcr3);
-	out_be16(&cp->cp_cpmcr4, patch_params.cpmcr4);
+	out_be16((*&cp).cp_cpmcr1, patch_params.cpmcr1);
+	out_be16((*&cp).cp_cpmcr2, patch_params.cpmcr2);
+	out_be16((*&cp).cp_cpmcr3, patch_params.cpmcr3);
+	out_be16((*&cp).cp_cpmcr4, patch_params.cpmcr4);
 
-	out_be16(&cp->cp_rccr, patch_params.rccr);
+	out_be16((*&cp).cp_rccr, patch_params.rccr);
 
 	pr_info("%s microcode patch installed\n", patch_name);
 }
@@ -386,22 +386,22 @@ pub unsafe fn cpm_load_patch(cp: *mut cpm8xx_t) {
     cpm_write_patch(cp, 0xe00, patch_2e00, core::mem::size_of_val(patch_2e00) as i32);
 
     // Build-time CONFIG_I2C_SPI_UCODE_PATCH / CONFIG_I2C_SPI_SMC1_UCODE_PATCH condition.
-    #[cfg(any(feature = "CONFIG_I2C_SPI_UCODE_PATCH", feature = "CONFIG_I2C_SPI_SMC1_UCODE_PATCH"))]
+    #[cfg(any(CONFIG_I2C_SPI_UCODE_PATCH, CONFIG_I2C_SPI_SMC1_UCODE_PATCH))]
     {
         let rpbase: u16 = 0x500;
         let iip = &mut *((&mut (*cp).cp_dparam[PROFF_IIC]) as *mut _ as *mut iic_t);
         out_be16(&mut (*iip).iic_rpbase, rpbase);
         let spp = &mut *((&mut (*cp).cp_dparam[PROFF_SPI]) as *mut _ as *mut spi_pram);
         out_be16(&mut (*spp).rpbase, (rpbase as usize + core::mem::size_of::<iic_t>() + 31 & !31) as u16);
-        #[cfg(feature = "CONFIG_I2C_SPI_SMC1_UCODE_PATCH")]
+        #[cfg(CONFIG_I2C_SPI_SMC1_UCODE_PATCH)]
         {
             let smp = &mut *((&mut (*cp).cp_dparam[PROFF_SMC1]) as *mut _ as *mut smc_uart_t);
             out_be16(&mut (*smp).smc_rpbase, 0x1fc0);
         }
     }
-    #[cfg(feature = "CONFIG_SMC_UCODE_PATCH")]
+    #[cfg(CONFIG_SMC_UCODE_PATCH)]
     {
-        #[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_CPM")]
+        #[cfg(CONFIG_PPC_EARLY_DEBUG_CPM)]
         {
             let smp = core::ptr::addr_of_mut!((*cp).cp_dparam[PROFF_SMC1]) as *mut smc_uart_t;
             let _ = smp;

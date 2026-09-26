@@ -17,20 +17,20 @@
 pub const HWEX_MSR_BIT: u32 = 1u32 << 8;
 
 /* CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR selects the first implementation. */
-#[cfg(feature = "CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR")]
+#[cfg(CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR)]
 #[inline]
 pub unsafe fn __enable_hw_exceptions() {
     core::arch::asm!("msrset r0, {0}; nop;", const HWEX_MSR_BIT, options(nostack));
 }
 
-#[cfg(feature = "CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR")]
+#[cfg(CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR)]
 #[inline]
 pub unsafe fn __disable_hw_exceptions() {
     core::arch::asm!("msrclr r0, {0}; nop;", const HWEX_MSR_BIT, options(nostack));
 }
 
 /* !CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR */
-#[cfg(not(feature = "CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR"))]
+#[cfg(not(CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR))]
 #[inline]
 pub unsafe fn __enable_hw_exceptions() {
     core::arch::asm!(
@@ -41,7 +41,7 @@ pub unsafe fn __enable_hw_exceptions() {
     );
 }
 
-#[cfg(not(feature = "CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR"))]
+#[cfg(not(CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR))]
 #[inline]
 pub unsafe fn __disable_hw_exceptions() {
     core::arch::asm!(

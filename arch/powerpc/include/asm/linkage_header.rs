@@ -4,7 +4,7 @@
 // remain external to this translation unit.
 
 // CONFIG_PPC64_ELF_ABI_V1
-#[cfg(feature = "CONFIG_PPC64_ELF_ABI_V1")]
+#[cfg(CONFIG_PPC64_ELF_ABI_V1)]
 macro_rules! cond_syscall {
     ($x:ident) => {
         core::arch::global_asm!(concat!(
@@ -15,7 +15,7 @@ macro_rules! cond_syscall {
     };
 }
 
-#[cfg(feature = "CONFIG_PPC64_ELF_ABI_V1")]
+#[cfg(CONFIG_PPC64_ELF_ABI_V1)]
 macro_rules! SYSCALL_ALIAS {
     ($alias:ident, $name:ident) => {
         core::arch::global_asm!(concat!(

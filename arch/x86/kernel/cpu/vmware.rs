@@ -37,7 +37,7 @@ pub unsafe fn vmware_hypercall_slow(cmd: usize, in1: usize, in3: usize, in4: usi
 unsafe fn __vmware_platform() -> bool { let mut ebx=0; let mut ecx=0; let eax=vmware_hypercall3(VMWARE_CMD_GETVERSION,0,&mut ebx,&mut ecx); eax != u32::MAX && ebx == VMWARE_HYPERVISOR_MAGIC }
 unsafe fn vmware_get_tsc_khz() -> usize { VMWARE_TSC_KHZ }
 
-#[cfg(feature = "CONFIG_PARAVIRT")]
+#[cfg(CONFIG_PARAVIRT)]
 mod paravirt {
     use super::*;
     static mut VMWARE_CYC2NS: Cyc2nsData = Cyc2nsData { cyc2ns_mul:0, cyc2ns_shift:0, cyc2ns_offset:0 };
@@ -58,12 +58,12 @@ mod paravirt {
 unsafe extern "C" { static mut x86_hyper_vmware: HypervisorX86; }
 #[repr(C)] pub struct HypervisorX86 { pub name:*const u8, pub detect:Option<unsafe fn()->u32>, pub type_:u32 }
 
-#[cfg(feature = "CONFIG_INTEL_TDX_GUEST")]
+#[cfg(CONFIG_INTEL_TDX_GUEST)]
 pub unsafe fn vmware_tdx_hypercall(cmd:usize,in1:usize,in3:usize,in4:usize,in5:usize,out1:*mut u32,out2:*mut u32,out3:*mut u32,out4:*mut u32,out5:*mut u32)->usize { let mut args=MaybeUninit::<TdxModuleArgs>::zeroed().assume_init(); if !hypervisor_is_type(X86_HYPER_VMWARE)||cmd & !VMWARE_CMD_MASK != 0{return usize::MAX;} args.rbx=in1;args.rdx=in3;args.rsi=in4;args.rdi=in5;args.r10=VMWARE_TDX_VENDOR_LEAF;args.r11=VMWARE_TDX_HCALL_FUNC;args.r12=VMWARE_HYPERVISOR_MAGIC as usize;args.r13=cmd;__tdx_hypercall(&mut args);if !out1.is_null(){*out1=args.rbx as u32}if !out2.is_null(){*out2=args.r13 as u32}if !out3.is_null(){*out3=args.rdx as u32}if !out4.is_null(){*out4=args.rsi as u32}if !out5.is_null(){*out5=args.rdi as u32}args.r12 }
 
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 pub unsafe fn vmware_sev_es_hcall_prepare(ghcb:*mut Ghcb, regs:*mut PtRegs){ghcb_set_rip(ghcb,(*regs).ip);ghcb_set_rbx(ghcb,(*regs).bx);ghcb_set_rcx(ghcb,(*regs).cx);ghcb_set_rdx(ghcb,(*regs).dx);ghcb_set_rsi(ghcb,(*regs).si);ghcb_set_rdi(ghcb,(*regs).di);ghcb_set_rbp(ghcb,(*regs).bp);}
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 pub unsafe fn vmware_sev_es_hcall_finish(ghcb:*mut Ghcb, regs:*mut PtRegs)->bool {if !(ghcb_rbx_is_valid(ghcb)&&ghcb_rcx_is_valid(ghcb)&&ghcb_rdx_is_valid(ghcb)&&ghcb_rsi_is_valid(ghcb)&&ghcb_rdi_is_valid(ghcb)&&ghcb_rbp_is_valid(ghcb)){return false;}(*regs).bx=ghcb_get_rbx(ghcb);(*regs).cx=ghcb_get_rcx(ghcb);(*regs).dx=ghcb_get_rdx(ghcb);(*regs).si=ghcb_get_rsi(ghcb);(*regs).di=ghcb_get_rdi(ghcb);(*regs).bp=ghcb_get_rbp(ghcb);true}
 
 pub unsafe fn vmware_legacy_x2apic_available()->bool {let eax=vmware_hypercall1(VMWARE_CMD_GETVCPU_INFO,0);eax&GETVCPU_INFO_VCPU_RESERVED==0&&eax&GETVCPU_INFO_LEGACY_X2APIC!=0}
@@ -72,6 +72,6 @@ pub unsafe fn vmware_platform()->u32 {if boot_cpu_has(X86_FEATURE_HYPERVISOR){le
 pub unsafe fn vmware_platform_setup(){let mut b=0;let mut c=0;let eax=vmware_hypercall3(VMWARE_CMD_GETHZ,u32::MAX as usize,&mut b,&mut c);if b!=u32::MAX{let mut t=(eax as u64)|((b as u64)<<32);let mut lpj=t;t/=1000;if preset_lpj==0{lpj/=HZ as u64;preset_lpj=lpj;}VMWARE_TSC_KHZ=t as usize;x86_platform_calibrate();lapic_timer_period=c/HZ;}vmware_paravirt_ops_setup();vmware_set_capabilities();}
 pub unsafe fn vmware_set_capabilities(){setup_force_cpu_cap(X86_FEATURE_CONSTANT_TSC);setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);if VMWARE_TSC_KHZ!=0{setup_force_cpu_cap(X86_FEATURE_TSC_KNOWN_FREQ)}if VMWARE_HYPERCALL_MODE==CPUID_VMWARE_FEATURES_ECX_VMCALL{setup_force_cpu_cap(X86_FEATURE_VMCALL)}else if VMWARE_HYPERCALL_MODE==CPUID_VMWARE_FEATURES_ECX_VMMCALL{setup_force_cpu_cap(X86_FEATURE_VMW_VMMCALL)}}
 
-#[cfg(feature = "CONFIG_PARAVIRT")] unsafe fn vmware_paravirt_ops_setup(){paravirt::vmware_cyc2ns_setup();} #[cfg(not(feature = "CONFIG_PARAVIRT"))] unsafe fn vmware_paravirt_ops_setup(){}
+#[cfg(CONFIG_PARAVIRT)] unsafe fn vmware_paravirt_ops_setup(){paravirt::vmware_cyc2ns_setup();} #[cfg(not(CONFIG_PARAVIRT))] unsafe fn vmware_paravirt_ops_setup(){}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

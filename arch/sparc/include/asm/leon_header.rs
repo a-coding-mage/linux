@@ -89,9 +89,9 @@ pub unsafe fn sparc_leon3_get_dcachecfg() -> u32 {
 #[inline(always)] pub unsafe fn sparc_leon3_cpuid() -> u32 { sparc_leon3_asr17() >> 28 }
 
 // CONFIG_SMP conditionals are preserved from the source build configuration.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const LEON3_IRQ_IPI_DEFAULT: u32 = 13;
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const LEON3_IRQ_CROSS_CALL: u32 = 15;
 
 // PAGE_SIZE_LEON_8K/PAGE_SIZE_LEON_16K and the source's page-layout conditional.

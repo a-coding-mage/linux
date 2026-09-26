@@ -2,7 +2,7 @@
 
 // Equivalent of CONFIG_ARM_MODULE_PLTS. The original linker-script sections
 // are represented here as zero-filled section markers.
-#[cfg(feature = "CONFIG_ARM_MODULE_PLTS")]
+#[cfg(CONFIG_ARM_MODULE_PLTS)]
 pub mod sections {
     pub const PLT: u8 = 0;
     pub const INIT_PLT: u8 = 0;

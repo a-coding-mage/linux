@@ -31,43 +31,43 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 	device: "pci-6602",
 	routes: &mut [
 		ni_route_set {
-			.dest = NI_PFI(2),
-			.src = &mut [
+			dest: NI_PFI(2),
+			src: &mut [
 				NI_80MHzTimebase,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(3),
-			.src = &mut [
+			dest: NI_PFI(3),
+			src: &mut [
 				NI_100kHzTimebase,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(4),
-			.src = &mut [
+			dest: NI_PFI(4),
+			src: &mut [
 				NI_20MHzTimebase,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(6),
-			.src = &mut [
+			dest: NI_PFI(6),
+			src: &mut [
 				NI_80MHzTimebase,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(7),
-			.src = &mut [
+			dest: NI_PFI(7),
+			src: &mut [
 				TRIGGER_LINE(7),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(8),
-			.src = &mut [
+			dest: NI_PFI(8),
+			src: &mut [
 				NI_PFI(7),
 				NI_PFI(15),
 				NI_PFI(23),
@@ -95,8 +95,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(9),
-			.src = &mut [
+			dest: NI_PFI(9),
+			src: &mut [
 				NI_PFI(7),
 				NI_PFI(15),
 				NI_PFI(23),
@@ -124,24 +124,24 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(10),
-			.src = &mut [
+			dest: NI_PFI(10),
+			src: &mut [
 				NI_CtrGate(7),
 				NI_LogicLow,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(11),
-			.src = &mut [
+			dest: NI_PFI(11),
+			src: &mut [
 				NI_CtrSource(7),
 				NI_LogicLow,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(12),
-			.src = &mut [
+			dest: NI_PFI(12),
+			src: &mut [
 				NI_PFI(6),
 				NI_PFI(14),
 				NI_PFI(22),
@@ -169,8 +169,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(13),
-			.src = &mut [
+			dest: NI_PFI(13),
+			src: &mut [
 				NI_PFI(6),
 				NI_PFI(14),
 				NI_PFI(22),
@@ -198,24 +198,24 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(14),
-			.src = &mut [
+			dest: NI_PFI(14),
+			src: &mut [
 				NI_CtrGate(6),
 				NI_LogicLow,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(15),
-			.src = &mut [
+			dest: NI_PFI(15),
+			src: &mut [
 				NI_CtrSource(6),
 				NI_LogicLow,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(16),
-			.src = &mut [
+			dest: NI_PFI(16),
+			src: &mut [
 				NI_PFI(5),
 				NI_PFI(13),
 				NI_PFI(21),
@@ -243,8 +243,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(17),
-			.src = &mut [
+			dest: NI_PFI(17),
+			src: &mut [
 				NI_PFI(5),
 				NI_PFI(13),
 				NI_PFI(21),
@@ -272,23 +272,23 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(18),
-			.src = &mut [
+			dest: NI_PFI(18),
+			src: &mut [
 				NI_CtrGate(5),
 				NI_LogicLow,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(19),
-			.src = &mut [
+			dest: NI_PFI(19),
+			src: &mut [
 				NI_CtrSource(5),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(20),
-			.src = &mut [
+			dest: NI_PFI(20),
+			src: &mut [
 				NI_PFI(4),
 				NI_PFI(12),
 				NI_PFI(28),
@@ -315,8 +315,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(21),
-			.src = &mut [
+			dest: NI_PFI(21),
+			src: &mut [
 				NI_PFI(4),
 				NI_PFI(12),
 				NI_PFI(20),
@@ -344,23 +344,23 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(22),
-			.src = &mut [
+			dest: NI_PFI(22),
+			src: &mut [
 				NI_CtrGate(4),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(23),
-			.src = &mut [
+			dest: NI_PFI(23),
+			src: &mut [
 				NI_CtrSource(4),
 				NI_LogicLow,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(24),
-			.src = &mut [
+			dest: NI_PFI(24),
+			src: &mut [
 				NI_PFI(3),
 				NI_PFI(11),
 				NI_PFI(19),
@@ -392,8 +392,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(25),
-			.src = &mut [
+			dest: NI_PFI(25),
+			src: &mut [
 				NI_PFI(3),
 				NI_PFI(11),
 				NI_PFI(19),
@@ -425,22 +425,22 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(26),
-			.src = &mut [
+			dest: NI_PFI(26),
+			src: &mut [
 				NI_CtrGate(3),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(27),
-			.src = &mut [
+			dest: NI_PFI(27),
+			src: &mut [
 				NI_CtrSource(3),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(28),
-			.src = &mut [
+			dest: NI_PFI(28),
+			src: &mut [
 				NI_PFI(2),
 				NI_PFI(10),
 				NI_PFI(18),
@@ -471,8 +471,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(29),
-			.src = &mut [
+			dest: NI_PFI(29),
+			src: &mut [
 				NI_PFI(2),
 				NI_PFI(10),
 				NI_PFI(18),
@@ -503,22 +503,22 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(30),
-			.src = &mut [
+			dest: NI_PFI(30),
+			src: &mut [
 				NI_CtrGate(2),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(31),
-			.src = &mut [
+			dest: NI_PFI(31),
+			src: &mut [
 				NI_CtrSource(2),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(32),
-			.src = &mut [
+			dest: NI_PFI(32),
+			src: &mut [
 				NI_PFI(1),
 				NI_PFI(9),
 				NI_PFI(17),
@@ -549,8 +549,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(33),
-			.src = &mut [
+			dest: NI_PFI(33),
+			src: &mut [
 				NI_PFI(1),
 				NI_PFI(9),
 				NI_PFI(17),
@@ -580,22 +580,22 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(34),
-			.src = &mut [
+			dest: NI_PFI(34),
+			src: &mut [
 				NI_CtrGate(1),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(35),
-			.src = &mut [
+			dest: NI_PFI(35),
+			src: &mut [
 				NI_CtrSource(1),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(36),
-			.src = &mut [
+			dest: NI_PFI(36),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -660,8 +660,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(37),
-			.src = &mut [
+			dest: NI_PFI(37),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -726,94 +726,22 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(38),
-			.src = &mut [
+			dest: NI_PFI(38),
+			src: &mut [
 				NI_CtrGate(0),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_PFI(39),
-			.src = &mut [
+			dest: NI_PFI(39),
+			src: &mut [
 				NI_CtrSource(0),
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(0),
-			.src = &mut [
-				NI_PFI(0),
-				NI_PFI(1),
-				NI_PFI(2),
-				NI_PFI(3),
-				NI_PFI(4),
-				NI_PFI(5),
-				NI_PFI(6),
-				NI_PFI(7),
-				NI_PFI(8),
-				NI_PFI(9),
-				NI_PFI(10),
-				NI_PFI(11),
-				NI_PFI(12),
-				NI_PFI(13),
-				NI_PFI(14),
-				NI_PFI(15),
-				NI_PFI(16),
-				NI_PFI(17),
-				NI_PFI(18),
-				NI_PFI(19),
-				NI_PFI(20),
-				NI_PFI(21),
-				NI_PFI(22),
-				NI_PFI(23),
-				NI_PFI(24),
-				NI_PFI(25),
-				NI_PFI(26),
-				NI_PFI(27),
-				NI_PFI(28),
-				NI_PFI(29),
-				NI_PFI(30),
-				NI_PFI(31),
-				NI_PFI(32),
-				NI_PFI(33),
-				NI_PFI(34),
-				NI_PFI(35),
-				NI_PFI(36),
-				NI_PFI(37),
-				NI_PFI(38),
-				NI_PFI(39),
-				NI_CtrSource(0),
-				NI_CtrSource(1),
-				NI_CtrSource(2),
-				NI_CtrSource(3),
-				NI_CtrSource(4),
-				NI_CtrSource(5),
-				NI_CtrSource(6),
-				NI_CtrSource(7),
-				NI_CtrGate(0),
-				NI_CtrGate(1),
-				NI_CtrGate(2),
-				NI_CtrGate(3),
-				NI_CtrGate(4),
-				NI_CtrGate(5),
-				NI_CtrGate(6),
-				NI_CtrGate(7),
-				NI_CtrInternalOutput(0),
-				NI_CtrInternalOutput(1),
-				NI_CtrInternalOutput(2),
-				NI_CtrInternalOutput(3),
-				NI_CtrInternalOutput(4),
-				NI_CtrInternalOutput(5),
-				NI_CtrInternalOutput(6),
-				NI_CtrInternalOutput(7),
-				NI_LogicLow,
-				NI_LogicHigh,
-				0, /* Termination */
-			]
-		},
-		ni_route_set {
-			.dest = TRIGGER_LINE(1),
-			.src = &mut [
+			dest: TRIGGER_LINE(0),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -884,8 +812,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(2),
-			.src = &mut [
+			dest: TRIGGER_LINE(1),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -956,8 +884,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(3),
-			.src = &mut [
+			dest: TRIGGER_LINE(2),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1028,8 +956,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(4),
-			.src = &mut [
+			dest: TRIGGER_LINE(3),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1100,8 +1028,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(5),
-			.src = &mut [
+			dest: TRIGGER_LINE(4),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1172,8 +1100,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(6),
-			.src = &mut [
+			dest: TRIGGER_LINE(5),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1244,15 +1172,87 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = TRIGGER_LINE(7),
-			.src = &mut [
+			dest: TRIGGER_LINE(6),
+			src: &mut [
+				NI_PFI(0),
+				NI_PFI(1),
+				NI_PFI(2),
+				NI_PFI(3),
+				NI_PFI(4),
+				NI_PFI(5),
+				NI_PFI(6),
+				NI_PFI(7),
+				NI_PFI(8),
+				NI_PFI(9),
+				NI_PFI(10),
+				NI_PFI(11),
+				NI_PFI(12),
+				NI_PFI(13),
+				NI_PFI(14),
+				NI_PFI(15),
+				NI_PFI(16),
+				NI_PFI(17),
+				NI_PFI(18),
+				NI_PFI(19),
+				NI_PFI(20),
+				NI_PFI(21),
+				NI_PFI(22),
+				NI_PFI(23),
+				NI_PFI(24),
+				NI_PFI(25),
+				NI_PFI(26),
+				NI_PFI(27),
+				NI_PFI(28),
+				NI_PFI(29),
+				NI_PFI(30),
+				NI_PFI(31),
+				NI_PFI(32),
+				NI_PFI(33),
+				NI_PFI(34),
+				NI_PFI(35),
+				NI_PFI(36),
+				NI_PFI(37),
+				NI_PFI(38),
+				NI_PFI(39),
+				NI_CtrSource(0),
+				NI_CtrSource(1),
+				NI_CtrSource(2),
+				NI_CtrSource(3),
+				NI_CtrSource(4),
+				NI_CtrSource(5),
+				NI_CtrSource(6),
+				NI_CtrSource(7),
+				NI_CtrGate(0),
+				NI_CtrGate(1),
+				NI_CtrGate(2),
+				NI_CtrGate(3),
+				NI_CtrGate(4),
+				NI_CtrGate(5),
+				NI_CtrGate(6),
+				NI_CtrGate(7),
+				NI_CtrInternalOutput(0),
+				NI_CtrInternalOutput(1),
+				NI_CtrInternalOutput(2),
+				NI_CtrInternalOutput(3),
+				NI_CtrInternalOutput(4),
+				NI_CtrInternalOutput(5),
+				NI_CtrInternalOutput(6),
+				NI_CtrInternalOutput(7),
+				NI_LogicLow,
+				NI_LogicHigh,
+				0, /* Termination */
+			]
+		},
+		ni_route_set {
+			dest: TRIGGER_LINE(7),
+			src: &mut [
 				NI_20MHzTimebase,
 				0, /* Termination */
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(0),
-			.src = &mut [
+			dest: NI_CtrSource(0),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1308,74 +1308,6 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 				NI_CtrGate(2),
 				NI_CtrGate(3),
 				NI_CtrInternalOutput(1),
-				NI_CtrInternalOutput(2),
-				NI_CtrInternalOutput(3),
-				NI_20MHzTimebase,
-				NI_80MHzTimebase,
-				NI_100kHzTimebase,
-				NI_LogicLow,
-				NI_LogicHigh,
-				0, /* Termination */
-			]
-		},
-		ni_route_set {
-			.dest = NI_CtrSource(1),
-			.src = &mut [
-				NI_PFI(0),
-				NI_PFI(1),
-				NI_PFI(2),
-				NI_PFI(3),
-				NI_PFI(4),
-				NI_PFI(5),
-				NI_PFI(6),
-				NI_PFI(7),
-				NI_PFI(8),
-				NI_PFI(9),
-				NI_PFI(10),
-				NI_PFI(11),
-				NI_PFI(12),
-				NI_PFI(13),
-				NI_PFI(14),
-				NI_PFI(15),
-				NI_PFI(16),
-				NI_PFI(17),
-				NI_PFI(18),
-				NI_PFI(19),
-				NI_PFI(20),
-				NI_PFI(21),
-				NI_PFI(22),
-				NI_PFI(23),
-				NI_PFI(24),
-				NI_PFI(25),
-				NI_PFI(26),
-				NI_PFI(27),
-				NI_PFI(28),
-				NI_PFI(29),
-				NI_PFI(30),
-				NI_PFI(31),
-				NI_PFI(32),
-				NI_PFI(33),
-				NI_PFI(34),
-				NI_PFI(35),
-				NI_PFI(36),
-				NI_PFI(37),
-				NI_PFI(38),
-				NI_PFI(39),
-				TRIGGER_LINE(0),
-				TRIGGER_LINE(1),
-				TRIGGER_LINE(2),
-				TRIGGER_LINE(3),
-				TRIGGER_LINE(4),
-				TRIGGER_LINE(5),
-				TRIGGER_LINE(6),
-				TRIGGER_LINE(7),
-				NI_CtrSource(0),
-				NI_CtrSource(2),
-				NI_CtrSource(3),
-				NI_CtrGate(0),
-				NI_CtrGate(2),
-				NI_CtrGate(3),
-				NI_CtrInternalOutput(0),
 				NI_CtrInternalOutput(2),
 				NI_CtrInternalOutput(3),
 				NI_20MHzTimebase,
@@ -1387,8 +1319,76 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(2),
-			.src = &mut [
+			dest: NI_CtrSource(1),
+			src: &mut [
+				NI_PFI(0),
+				NI_PFI(1),
+				NI_PFI(2),
+				NI_PFI(3),
+				NI_PFI(4),
+				NI_PFI(5),
+				NI_PFI(6),
+				NI_PFI(7),
+				NI_PFI(8),
+				NI_PFI(9),
+				NI_PFI(10),
+				NI_PFI(11),
+				NI_PFI(12),
+				NI_PFI(13),
+				NI_PFI(14),
+				NI_PFI(15),
+				NI_PFI(16),
+				NI_PFI(17),
+				NI_PFI(18),
+				NI_PFI(19),
+				NI_PFI(20),
+				NI_PFI(21),
+				NI_PFI(22),
+				NI_PFI(23),
+				NI_PFI(24),
+				NI_PFI(25),
+				NI_PFI(26),
+				NI_PFI(27),
+				NI_PFI(28),
+				NI_PFI(29),
+				NI_PFI(30),
+				NI_PFI(31),
+				NI_PFI(32),
+				NI_PFI(33),
+				NI_PFI(34),
+				NI_PFI(35),
+				NI_PFI(36),
+				NI_PFI(37),
+				NI_PFI(38),
+				NI_PFI(39),
+				TRIGGER_LINE(0),
+				TRIGGER_LINE(1),
+				TRIGGER_LINE(2),
+				TRIGGER_LINE(3),
+				TRIGGER_LINE(4),
+				TRIGGER_LINE(5),
+				TRIGGER_LINE(6),
+				TRIGGER_LINE(7),
+				NI_CtrSource(0),
+				NI_CtrSource(2),
+				NI_CtrSource(3),
+				NI_CtrGate(0),
+				NI_CtrGate(2),
+				NI_CtrGate(3),
+				NI_CtrInternalOutput(0),
+				NI_CtrInternalOutput(2),
+				NI_CtrInternalOutput(3),
+				NI_20MHzTimebase,
+				NI_80MHzTimebase,
+				NI_100kHzTimebase,
+				NI_LogicLow,
+				NI_LogicHigh,
+				0, /* Termination */
+			]
+		},
+		ni_route_set {
+			dest: NI_CtrSource(2),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1455,8 +1455,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(3),
-			.src = &mut [
+			dest: NI_CtrSource(3),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1523,8 +1523,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(4),
-			.src = &mut [
+			dest: NI_CtrSource(4),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1591,8 +1591,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(5),
-			.src = &mut [
+			dest: NI_CtrSource(5),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1659,8 +1659,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(6),
-			.src = &mut [
+			dest: NI_CtrSource(6),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1727,8 +1727,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrSource(7),
-			.src = &mut [
+			dest: NI_CtrSource(7),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1795,8 +1795,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(0),
-			.src = &mut [
+			dest: NI_CtrGate(0),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1860,8 +1860,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(1),
-			.src = &mut [
+			dest: NI_CtrGate(1),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1925,8 +1925,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(2),
-			.src = &mut [
+			dest: NI_CtrGate(2),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -1990,8 +1990,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(3),
-			.src = &mut [
+			dest: NI_CtrGate(3),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2055,8 +2055,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(4),
-			.src = &mut [
+			dest: NI_CtrGate(4),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2120,8 +2120,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(5),
-			.src = &mut [
+			dest: NI_CtrGate(5),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2185,8 +2185,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(6),
-			.src = &mut [
+			dest: NI_CtrGate(6),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2250,8 +2250,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrGate(7),
-			.src = &mut [
+			dest: NI_CtrGate(7),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2315,8 +2315,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(0),
-			.src = &mut [
+			dest: NI_CtrAux(0),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2381,8 +2381,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(1),
-			.src = &mut [
+			dest: NI_CtrAux(1),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2447,8 +2447,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(2),
-			.src = &mut [
+			dest: NI_CtrAux(2),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2513,8 +2513,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(3),
-			.src = &mut [
+			dest: NI_CtrAux(3),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2579,8 +2579,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(4),
-			.src = &mut [
+			dest: NI_CtrAux(4),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2645,8 +2645,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(5),
-			.src = &mut [
+			dest: NI_CtrAux(5),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2711,8 +2711,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(6),
-			.src = &mut [
+			dest: NI_CtrAux(6),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2777,8 +2777,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrAux(7),
-			.src = &mut [
+			dest: NI_CtrAux(7),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2843,8 +2843,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(0),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(0),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2908,8 +2908,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(1),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(1),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -2973,8 +2973,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(2),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(2),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -3038,8 +3038,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(3),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(3),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -3103,8 +3103,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(4),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(4),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -3168,8 +3168,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(5),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(5),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -3233,8 +3233,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(6),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(6),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -3298,8 +3298,8 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_CtrArmStartTrigger(7),
-			.src = &mut [
+			dest: NI_CtrArmStartTrigger(7),
+			src: &mut [
 				NI_PFI(0),
 				NI_PFI(1),
 				NI_PFI(2),
@@ -3363,15 +3363,15 @@ pub static mut ni_pci_6602_device_routes: ni_device_routes = ni_device_routes {
 			]
 		},
 		ni_route_set {
-			.dest = NI_MasterTimebase,
-			.src = &mut [
+			dest: NI_MasterTimebase,
+			src: &mut [
 				TRIGGER_LINE(7),
 				NI_20MHzTimebase,
 				0, /* Termination */
 			]
 		},
 		{ /* Termination of list */
-			.dest = 0,
+			dest: 0,
 		],
 	},
 };

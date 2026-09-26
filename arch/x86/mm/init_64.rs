@@ -17,11 +17,11 @@ extern "C" {
 
 /* DEFINE_POPULATE and DEFINE_ENTRY, expressed as Rust macros to preserve the
  * generated helper names and their initialization-time selection. */
-macro_rules! define_populate { ($name:ident, $safe:ident, $a:ty, $b:ty) => {
-    #[inline] unsafe fn $name##_init(mm: *mut mm_struct, a: *mut $a, b: *mut $b, init: bool) { if init { $safe(mm,a,b) } else { $name(mm,a,b) } }
+macro_rules! define_populate { ($name:tt, $safe:ident, $a:ty, $b:ty) => {
+    #[inline] unsafe fn ::kernel::macros::paste!([<$name _init>])(mm: *mut mm_struct, a: *mut $a, b: *mut $b, init: bool) { if init { $safe(mm,$a,$b) } else { $name(mm,$a,$b) } }
 }; }
-macro_rules! define_entry { ($name:ident, $safe:ident, $t:ty) => {
-    #[inline] unsafe fn $name##_init(a: *mut $t, b: $t, init: bool) { if init { $safe(a,b) } else { $name(a,b) } }
+macro_rules! define_entry { ($name:tt, $safe:ident, $t:ty) => {
+    #[inline] unsafe fn ::kernel::macros::paste!([<$name _init>])(a: *mut $t, b: $t, init: bool) { if init { $safe(a,b) } else { $name(a,b) } }
 }; }
 
 unsafe fn nonx32_setup(str_: *mut i8) -> i32 {

@@ -21,7 +21,7 @@ pub unsafe fn current_pt_regs() -> *mut crate::pt_regs {
 }
 
 // Equivalent of: #if CONFIG_HEXAGON_ARCH_VERSION >= 4
-#[cfg(feature = "CONFIG_HEXAGON_ARCH_VERSION_GE_4")]
+#[cfg(CONFIG_HEXAGON_ARCH_VERSION_GE_4)]
 pub const ARCH_HAS_SINGLE_STEP: core::ffi::c_int = 1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

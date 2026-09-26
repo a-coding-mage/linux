@@ -47,7 +47,7 @@ unsafe fn add_exit_timing(vcpu: *mut kvm_vcpu, duration: u64, type_: i32) {
     (*vcpu).arch.timing_sum_duration[index] =
         (*vcpu).arch.timing_sum_duration[index].wrapping_add(duration);
     if old > (*vcpu).arch.timing_sum_duration[index] {
-        printk(KERN_ERR "%s - wrap adding sum of durations old %lld new %lld type %d exit # of type %d\n",
+        printk(c"\x013%s - wrap adding sum of durations old %lld new %lld type %d exit # of type %d\n".as_ptr(),
             __func__, old, (*vcpu).arch.timing_sum_duration[index], type_,
             (*vcpu).arch.timing_count_type[index]);
     }
@@ -58,7 +58,7 @@ unsafe fn add_exit_timing(vcpu: *mut kvm_vcpu, duration: u64, type_: i32) {
         (*vcpu).arch.timing_sum_quad_duration[index]
             .wrapping_add(duration.wrapping_mul(duration));
     if old > (*vcpu).arch.timing_sum_quad_duration[index] {
-        printk(KERN_ERR "%s - wrap adding sum of squared durations old %lld new %lld type %d exit # of type %d\n",
+        printk(c"\x013%s - wrap adding sum of squared durations old %lld new %lld type %d exit # of type %d\n".as_ptr(),
             __func__, old, (*vcpu).arch.timing_sum_quad_duration[index], type_,
             (*vcpu).arch.timing_count_type[index]);
     }

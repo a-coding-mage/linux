@@ -59,7 +59,7 @@ unsafe extern "C" fn mtx1_power_off() -> ! {
 
 pub unsafe extern "C" fn board_setup() {
     // Build-time CONFIG_USB_OHCI_HCD condition is preserved here.
-    #[cfg(feature = "CONFIG_USB_OHCI_HCD")] { alchemy_gpio_direction_output(204, 0); }
+    #[cfg(CONFIG_USB_OHCI_HCD)] { alchemy_gpio_direction_output(204, 0); }
     alchemy_wrsys(SYS_PF_NI2, AU1000_SYS_PINFUNC);
     alchemy_wrsys(!0, AU1000_SYS_TRIOUTCLR);
     alchemy_gpio_direction_output(0, 0);

@@ -1256,33 +1256,33 @@ static mut eswin_clk_info eic7700_clks[] = {
  * clk_pll_cpu rate will be changed. Then switch its parent clock back after
  * the clk_pll_cpu rate is completed.
  */
-unsafe fn eic7700_clk_pll_cpu_notifier_cb(struct notifier_block *nb,
-					   unsigned long action, void *data)
+unsafe fn eic7700_clk_pll_cpu_notifier_cb(notifier_block *nb,
+					   action: core::ffi::c_ulong, void *data)
 {
 	struct eswin_clock_data *pdata;
 	struct clk_hw *mux_clk;
 	struct clk_hw *lp_clk;
 	int ret = 0;
 
-	pdata = container_of(nb, struct eswin_clock_data, pll_nb);
+	pdata = container_of(nb, eswin_clock_data, pll_nb);
 
 	mux_clk = &eic7700_mux_clks[0].hw;
 	lp_clk = &eic7700_early_clks[11].hw;
 
 	if (action == PRE_RATE_CHANGE) {
-		pdata->original_clk = clk_hw_get_parent(mux_clk);
+		(*pdata).original_clk = clk_hw_get_parent(mux_clk);
 		ret = clk_hw_set_parent(mux_clk, lp_clk);
 	} else if (action == POST_RATE_CHANGE) {
-		ret = clk_hw_set_parent(mux_clk, pdata->original_clk);
+		ret = clk_hw_set_parent(mux_clk, (*pdata).original_clk);
 	}
 
 	return notifier_from_errno(ret);
 }
 
-unsafe fn eic7700_clk_probe(struct platform_device *pdev)
+unsafe fn eic7700_clk_probe(platform_device *pdev)
 {
 	struct eswin_clock_data *clk_data;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 	struct clk *pll_clk;
 	int ret;
 
@@ -1311,8 +1311,8 @@ unsafe fn eic7700_clk_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(pll_clk),
 				     "failed to get clk_pll_cpu\n");
 
-	clk_data->pll_nb.notifier_call = eic7700_clk_pll_cpu_notifier_cb;
-	ret = devm_clk_notifier_register(dev, pll_clk, &clk_data->pll_nb);
+	(*clk_data).pll_nb.notifier_call = eic7700_clk_pll_cpu_notifier_cb;
+	ret = devm_clk_notifier_register(dev, pll_clk, (*&clk_data).pll_nb);
 	if (ret)
 		return ret;
 
@@ -1353,7 +1353,7 @@ unsafe fn eic7700_clk_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, ret, "failed to register clock\n");
 
 	return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get,
-					   &clk_data->clk_data);
+					   (*&clk_data).clk_data);
 }
 
 static_ref_struct of_device_id eic7700_clock_dt_ids[] = {
@@ -1363,10 +1363,10 @@ static_ref_struct of_device_id eic7700_clock_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, eic7700_clock_dt_ids);
 
 static mut platform_driver eic7700_clock_driver = {
-	.probe	= eic7700_clk_probe,
-	.driver = {
-		.name	= "eic7700-clock",
-		.of_match_table	= eic7700_clock_dt_ids,
+	probe: eic7700_clk_probe,
+	driver: {
+		name: "eic7700-clock",
+		of_match_table: eic7700_clock_dt_ids,
 	},
 };
 module_platform_driver(eic7700_clock_driver);

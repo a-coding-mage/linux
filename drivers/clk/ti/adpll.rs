@@ -86,13 +86,13 @@ const TI_ADPLL_NR_CLOCKS: usize = 11;
 
 // The following kernel-facing types and functions are intentionally external.
 extern "C" {
-    fn of_property_read_string_index(*mut device_node, *const i8, i32, *mut *const i8) -> i32;
-    fn devm_kasprintf(*mut device, i32, *const i8, ...) -> *const i8;
-    fn dev_warn(*mut device, *const i8, ...); fn dev_err(*mut device, *const i8, ...);
-    fn __clk_get_name(*mut clk) -> *const i8; fn clkdev_create(*mut clk, *const i8, *const i8) -> *mut clk_lookup;
-    fn readl_relaxed(*mut u8) -> u32; fn writel_relaxed(u32, *mut u8); fn readw_relaxed(*mut u8) -> u16;
-    fn spin_lock_irqsave(*mut spinlock_t, *mut usize); fn spin_unlock_irqrestore(*mut spinlock_t, usize);
-    fn usleep_range(u32, u32); fn clk_gate_ops_enable(*mut clk_hw) -> i32; fn clk_gate_ops_disable(*mut clk_hw);
+    fn of_property_read_string_index(_: *mut device_node, _: *const i8, _: i32, _: *mut *const i8) -> i32;
+    fn devm_kasprintf(_: *mut device, _: i32, _: *const i8, ...) -> *const i8;
+    fn dev_warn(_: *mut device, _: *const i8, ...); fn dev_err(_: *mut device, _: *const i8, ...);
+    fn __clk_get_name(_: *mut clk) -> *const i8; fn clkdev_create(_: *mut clk, _: *const i8, _: *const i8) -> *mut clk_lookup;
+    fn readl_relaxed(_: *mut u8) -> u32; fn writel_relaxed(_: u32, _: *mut u8); fn readw_relaxed(_: *mut u8) -> u16;
+    fn spin_lock_irqsave(_: *mut spinlock_t, _: *mut usize); fn spin_unlock_irqrestore(_: *mut spinlock_t, _: usize);
+    fn usleep_range(_: u32, _: u32); fn clk_gate_ops_enable(_: *mut clk_hw) -> i32; fn clk_gate_ops_disable(_: *mut clk_hw);
 }
 
 #[repr(C)] pub struct clk; #[repr(C)] pub struct clk_lookup; #[repr(C)] pub struct device; #[repr(C)] pub struct device_node; #[repr(C)] pub struct spinlock_t; #[repr(C)] pub struct clk_hw; #[repr(C)] pub struct clk_gate; #[repr(C)] pub struct clk_onecell_data;

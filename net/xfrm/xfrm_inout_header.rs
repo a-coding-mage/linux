@@ -23,7 +23,7 @@ pub unsafe fn xfrm4_extract_header(skb: *mut sk_buff) {
 #[inline]
 pub unsafe fn xfrm6_extract_header(skb: *mut sk_buff) {
     // C build-time condition: IS_ENABLED(CONFIG_IPV6).
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     {
         let iph: *mut ipv6hdr = ipv6_hdr(skb);
 
@@ -39,7 +39,7 @@ pub unsafe fn xfrm6_extract_header(skb: *mut sk_buff) {
             (*XFRM_MODE_SKB_CB(skb)).flow_lbl.len(),
         );
     }
-    #[cfg(not(feature = "CONFIG_IPV6"))]
+    #[cfg(not(CONFIG_IPV6))]
     {
         WARN_ON_ONCE(1);
     }

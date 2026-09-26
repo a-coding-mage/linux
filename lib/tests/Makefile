@@ -71,6 +71,17 @@ obj-$(CONFIG_SEQ_BUF_KUNIT_TEST) += seq_buf_kunit.o
 obj-$(CONFIG_SIPHASH_KUNIT_TEST) += siphash_kunit.o
 obj-$(CONFIG_SLUB_KUNIT_TEST) += slub_kunit.o
 obj-$(CONFIG_TEST_SORT) += test_sort.o
+ifeq ($(CONFIG_RUST_SORT_KUNIT_TEST),y)
+# Keep the original suite tristate and module identity independent of the provider.
+$(obj)/test_sort.o: $(src)/test_sort.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+$(obj)/test_sort.s: $(src)/test_sort.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+
+$(obj)/test_sort.ll: $(src)/test_sort.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 CFLAGS_stackinit_kunit.o += $(call cc-disable-warning, switch-unreachable)
 obj-$(CONFIG_STACKINIT_KUNIT_TEST) += stackinit_kunit.o
 obj-$(CONFIG_STRING_KUNIT_TEST) += string_kunit.o

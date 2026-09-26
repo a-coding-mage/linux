@@ -3,7 +3,6 @@
  * Copyright (c) 2015 Heiko Stuebner <heiko@sntech.de>
  */
 
-#define _DT_BINDINGS_CLK_ROCKCHIP_RK3368_H
 
 /* core clocks */
 pub const PLL_APLLB: u32 = 1;

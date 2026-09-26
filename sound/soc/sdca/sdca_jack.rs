@@ -53,7 +53,7 @@ pub unsafe extern "C" fn sdca_jack_process(interrupt: *mut sdca_interrupt) -> c_
         let component = (*interrupt).component;
         let card = (*component).card;
         let rwsem = &mut (*(*card).snd_card).controls_rwsem as *mut rw_semaphore;
-        let state = (*interrupt).priv as *mut jack_state;
+        let state = (*interrupt).r#priv as *mut jack_state;
         let kctl = (*state).kctl;
         let mut ucontrol: *mut snd_ctl_elem_value = ptr::null_mut();
         let mut soc_enum: *mut soc_enum;
@@ -149,7 +149,7 @@ pub unsafe extern "C" fn sdca_jack_alloc_state(interrupt: *mut sdca_interrupt) -
             return -ENOMEM;
         }
 
-        (*interrupt).priv = jack_state as *mut c_void;
+        (*interrupt).r#priv = jack_state as *mut c_void;
 
         0
     }
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn sdca_jack_alloc_state(interrupt: *mut sdca_interrupt) -
 #[no_mangle]
 pub unsafe extern "C" fn sdca_jack_free_state(interrupt: *mut sdca_interrupt) {
     unsafe {
-        kfree((*interrupt).priv as *const c_void);
+        kfree((*interrupt).r#priv as *const c_void);
     }
 }
 // EXPORT_SYMBOL_NS_GPL(sdca_jack_free_state, "SND_SOC_SDCA");
@@ -177,7 +177,7 @@ pub unsafe extern "C" fn sdca_jack_free_state(interrupt: *mut sdca_interrupt) {
 #[no_mangle]
 pub unsafe extern "C" fn sdca_jack_init_state(interrupt: *mut sdca_interrupt) -> c_int {
     unsafe {
-        let jack_state = (*interrupt).priv as *mut jack_state;
+        let jack_state = (*interrupt).r#priv as *mut jack_state;
         let name = kasprintf(
             GFP_KERNEL,
             c"%s %s".as_ptr(),
@@ -268,7 +268,7 @@ pub unsafe extern "C" fn sdca_jack_set_jack(
                         return -EINVAL;
                     }
 
-                    jack_state = (*interrupt).priv as *mut jack_state;
+                    jack_state = (*interrupt).r#priv as *mut jack_state;
 
                     j = 0;
                     while j < (*range).rows {
@@ -304,7 +304,7 @@ pub unsafe extern "C" fn sdca_jack_set_jack(
 #[no_mangle]
 pub unsafe extern "C" fn sdca_jack_report(interrupt: *mut sdca_interrupt) -> c_int {
     unsafe {
-        let jack_state = (*interrupt).priv as *mut jack_state;
+        let jack_state = (*interrupt).r#priv as *mut jack_state;
         let mut range: *mut sdca_control_range;
         let mut type_: sdca_terminal_type;
         let mut reg: c_uint;

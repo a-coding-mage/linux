@@ -9,7 +9,7 @@ pub struct callee_regs {
 }
 
 // Build-time equivalent of CONFIG_ARC_EMUL_UNALIGNED.
-#[cfg(feature = "CONFIG_ARC_EMUL_UNALIGNED")]
+#[cfg(CONFIG_ARC_EMUL_UNALIGNED)]
 extern "C" {
     pub fn misaligned_fixup(
         address: core::ffi::c_ulong,
@@ -18,7 +18,7 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_ARC_EMUL_UNALIGNED"))]
+#[cfg(not(CONFIG_ARC_EMUL_UNALIGNED))]
 #[inline]
 pub unsafe fn misaligned_fixup(
     _address: core::ffi::c_ulong,

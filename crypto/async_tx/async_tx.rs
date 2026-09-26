@@ -13,19 +13,19 @@
 
 // C dependencies supplied by the kernel headers are intentionally external.
 
-#[cfg(feature = "CONFIG_DMA_ENGINE")]
+#[cfg(CONFIG_DMA_ENGINE)]
 unsafe fn async_tx_init() -> i32 {
     async_dmaengine_get();
     printk(KERN_INFO, "async_tx: api initialized (async)\n");
     0
 }
 
-#[cfg(feature = "CONFIG_DMA_ENGINE")]
+#[cfg(CONFIG_DMA_ENGINE)]
 unsafe fn async_tx_exit() {
     async_dmaengine_put();
 }
 
-#[cfg(feature = "CONFIG_DMA_ENGINE")]
+#[cfg(CONFIG_DMA_ENGINE)]
 pub unsafe fn __async_tx_find_channel(
     submit: *mut async_submit_ctl,
     tx_type: dma_transaction_type,

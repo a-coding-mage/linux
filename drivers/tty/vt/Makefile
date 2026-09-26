@@ -15,6 +15,9 @@ clean-files :=	consolemap_deftbl.c defkeymap.c \
 		ucs_width_table.h ucs_recompose_table.h ucs_fallback_table.h
 
 hostprogs += conmakehash
+ifneq ($(HOST_TOOLS_LANG),c)
+conmakehash-rust := y
+endif
 
 quiet_cmd_conmk = CONMK   $@
       cmd_conmk = $(obj)/conmakehash $< > $@

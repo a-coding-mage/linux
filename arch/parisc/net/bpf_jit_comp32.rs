@@ -40,20 +40,17 @@
  *                     low
  */
 
-enum {
-	/* Stack layout - these are offsets from top of JIT scratch space. */
-	BPF_R8_HI,
-	BPF_R8_LO,
-	BPF_R9_HI,
-	BPF_R9_LO,
-	BPF_FP_HI,
-	BPF_FP_LO,
-	BPF_AX_HI,
-	BPF_AX_LO,
-	BPF_R0_TEMP_HI,
-	BPF_R0_TEMP_LO,
-	BPF_JIT_SCRATCH_REGS,
-};
+pub const BPF_R8_HI: i32 = 0;
+pub const BPF_R8_LO: i32 = BPF_R8_HI + 1;
+pub const BPF_R9_HI: i32 = BPF_R8_LO + 1;
+pub const BPF_R9_LO: i32 = BPF_R9_HI + 1;
+pub const BPF_FP_HI: i32 = BPF_R9_LO + 1;
+pub const BPF_FP_LO: i32 = BPF_FP_HI + 1;
+pub const BPF_AX_HI: i32 = BPF_FP_LO + 1;
+pub const BPF_AX_LO: i32 = BPF_AX_HI + 1;
+pub const BPF_R0_TEMP_HI: i32 = BPF_AX_LO + 1;
+pub const BPF_R0_TEMP_LO: i32 = BPF_R0_TEMP_HI + 1;
+pub const BPF_JIT_SCRATCH_REGS: i32 = BPF_R0_TEMP_LO + 1;
 
 /* Number of callee-saved registers stored to stack: rp, r3-r18. */
 // C macro dependency: #define NR_SAVED_REGISTERS	(18 - 3 + 1 + 8)
@@ -138,7 +135,7 @@ fn void emit_hppa_xor(const i8 r1, const i8 r2, const i8 r3, *mut hppa_jit_conte
 	}
 }
 
-fn void emit_imm(const i8 rd, i32 imm, *mut hppa_jit_contextctx)
+fn void emit_imm(const i8 rd, imm: i32, *mut hppa_jit_contextctx)
 {
 	u32 lower = im11(imm);
 
@@ -153,7 +150,7 @@ fn void emit_imm(const i8 rd, i32 imm, *mut hppa_jit_contextctx)
 	emit(hppa_ldo(lower, rd, rd), ctx);
 }
 
-fn void emit_imm32(*const i8rd, i32 imm, *mut hppa_jit_contextctx)
+fn void emit_imm32(rd: *const i8, imm: i32, *mut hppa_jit_contextctx)
 {
 	/* Emit immediate into lower bits. */
 	REG_SET_SEEN(ctx, lo(rd));
@@ -167,14 +164,14 @@ fn void emit_imm32(*const i8rd, i32 imm, *mut hppa_jit_contextctx)
 		emit(hppa_ldi(-1, hi(rd)), ctx);
 }
 
-fn void emit_imm64(*const i8rd, i32 imm_hi, i32 imm_lo,
+fn void emit_imm64(rd: *const i8, imm_hi: i32, imm_lo: i32,
 		       *mut hppa_jit_contextctx)
 {
 	emit_imm(hi(rd), imm_hi, ctx);
 	emit_imm(lo(rd), imm_lo, ctx);
 }
 
-fn void __build_epilogue(bool is_tail_call, *mut hppa_jit_contextctx)
+fn void __build_epilogue(is_tail_call: bool, *mut hppa_jit_contextctx)
 {
 	*const i8r0 = regmap[BPF_REG_0];
 	int i;
@@ -216,13 +213,13 @@ fn void __build_epilogue(bool is_tail_call, *mut hppa_jit_contextctx)
 	emit(hppa_ldw(-0x04, HPPA_REG_SP, HPPA_REG_SP), ctx);
 }
 
-fn bool is_stacked(i8 reg)
+fn bool is_stacked(reg: i8)
 {
 	return reg < 0;
 }
 
-fn *const i8bpf_get_reg64_offset(*const i8reg, *const i8tmp,
-		u16 offset_sp, *mut hppa_jit_contextctx)
+fn *const i8bpf_get_reg64_offset(reg: *const i8, tmp: *const i8,
+		offset_sp: u16, *mut hppa_jit_contextctx)
 {
 	if (is_stacked(hi(reg))) {
 		emit(hppa_ldw(REG_SIZE * hi(reg) - offset_sp, HPPA_REG_SP, hi(tmp)), ctx);
@@ -234,14 +231,14 @@ fn *const i8bpf_get_reg64_offset(*const i8reg, *const i8tmp,
 	return reg;
 }
 
-fn *const i8bpf_get_reg64(*const i8reg, *const i8tmp,
+fn *const i8bpf_get_reg64(reg: *const i8, tmp: *const i8,
 			       *mut hppa_jit_contextctx)
 {
 	return bpf_get_reg64_offset(reg, tmp, 0, ctx);
 }
 
-fn *const i8bpf_get_reg64_ref(*const i8reg, *const i8tmp,
-		bool must_load, *mut hppa_jit_contextctx)
+fn *const i8bpf_get_reg64_ref(reg: *const i8, tmp: *const i8,
+		must_load: bool, *mut hppa_jit_contextctx)
 {
 	if (!OPTIMIZE_HPPA)
 		return bpf_get_reg64(reg, tmp, ctx);
@@ -257,7 +254,7 @@ fn *const i8bpf_get_reg64_ref(*const i8reg, *const i8tmp,
 }
 
 
-fn void bpf_put_reg64(*const i8reg, *const i8src,
+fn void bpf_put_reg64(reg: *const i8, src: *const i8,
 			  *mut hppa_jit_contextctx)
 {
 	if (is_stacked(hi(reg))) {
@@ -277,7 +274,7 @@ fn void bpf_restore_R0(*mut hppa_jit_contextctx)
 }
 
 
-fn *const i8bpf_get_reg32(*const i8reg, *const i8tmp,
+fn *const i8bpf_get_reg32(reg: *const i8, tmp: *const i8,
 			       *mut hppa_jit_contextctx)
 {
 	if (is_stacked(lo(reg))) {
@@ -288,7 +285,7 @@ fn *const i8bpf_get_reg32(*const i8reg, *const i8tmp,
 	return reg;
 }
 
-fn *const i8bpf_get_reg32_ref(*const i8reg, *const i8tmp,
+fn *const i8bpf_get_reg32_ref(reg: *const i8, tmp: *const i8,
 		*mut hppa_jit_contextctx)
 {
 	if (!OPTIMIZE_HPPA)
@@ -301,17 +298,17 @@ fn *const i8bpf_get_reg32_ref(*const i8reg, *const i8tmp,
 	return reg;
 }
 
-fn void bpf_put_reg32(*const i8reg, *const i8src,
+fn void bpf_put_reg32(reg: *const i8, src: *const i8,
 			  *mut hppa_jit_contextctx)
 {
 	if (is_stacked(lo(reg))) {
 		REG_SET_SEEN(ctx, lo(src));
 		emit(hppa_stw(lo(src), REG_SIZE * lo(reg), HPPA_REG_SP), ctx);
-		if (1 && !ctx->prog->aux->verifier_zext) {
+		if (1 && (*(*(*!ctx).prog).aux).verifier_zext) {
 			REG_SET_SEEN(ctx, hi(reg));
 			emit(hppa_stw(HPPA_REG_ZERO, REG_SIZE * hi(reg), HPPA_REG_SP), ctx);
 		}
-	} else if (1 && !ctx->prog->aux->verifier_zext) {
+	} else if (1 && (*(*(*!ctx).prog).aux).verifier_zext) {
 		REG_SET_SEEN(ctx, hi(reg));
 		emit_hppa_copy(HPPA_REG_ZERO, hi(reg), ctx);
 	}
@@ -323,7 +320,7 @@ extern "C" { fn $$divU(); }
 extern "C" { fn $$remU(); }
 
 fn void emit_call_millicode(void *func, const i8 arg0,
-		const i8 arg1, u8 opcode, *mut hppa_jit_contextctx)
+		const i8 arg1, opcode: u8, *mut hppa_jit_contextctx)
 {
 	u32 func_addr;
 
@@ -356,8 +353,8 @@ fn void emit_call_millicode(void *func, const i8 arg0,
 		bpf_restore_R0(ctx);
 }
 
-fn void emit_call_libgcc_ll(void *func, *const i8arg0,
-		*const i8arg1, u8 opcode, *mut hppa_jit_contextctx)
+fn void emit_call_libgcc_ll(void *func, arg0: *const i8,
+		arg1: *const i8, opcode: u8, *mut hppa_jit_contextctx)
 {
 	u32 func_addr;
 
@@ -398,10 +395,10 @@ fn void emit_call_libgcc_ll(void *func, *const i8arg0,
 		bpf_restore_R0(ctx);
 }
 
-fn void emit_jump(i32 paoff, bool force_far,
+fn void emit_jump(paoff: i32, force_far: bool,
 			       *mut hppa_jit_contextctx)
 {
-	unsigned long pc, addr;
+	pc: core::ffi::c_ulong, addr;
 
 	/* Note: allocate 2 instructions for jumps if force_far is set. */
 	if (relative_bits_ok(paoff - HPPA_BRANCH_DISPLACEMENT, 17)) {
@@ -412,13 +409,13 @@ fn void emit_jump(i32 paoff, bool force_far,
 		return;
 	}
 
-	pc = (uintptr_t) &ctx->insns[ctx->ninsns];
+	pc = (uintptr_t) (*&ctx).insns[(*ctx).ninsns];
 	addr = pc + (paoff * HPPA_INSN_SIZE);
 	emit(hppa_ldil(addr, HPPA_REG_R31), ctx);
 	emit(hppa_be_l(im11(addr) >> 2, HPPA_REG_R31, NOP_NEXT_INSTR), ctx); // be,l,n addr(sr4,r31), %sr0, %r31
 }
 
-fn void emit_alu_i64(*const i8dst, i32 imm,
+fn void emit_alu_i64(dst: *const i8, imm: i32,
 			 *mut hppa_jit_contextctx, const u8 op)
 {
 	*const i8tmp1 = regmap[TMP_REG_1];
@@ -506,7 +503,7 @@ fn void emit_alu_i64(*const i8dst, i32 imm,
 	bpf_put_reg64(dst, rd, ctx);
 }
 
-fn void emit_alu_i32(*const i8dst, i32 imm,
+fn void emit_alu_i32(dst: *const i8, imm: i32,
 			 *mut hppa_jit_contextctx, const u8 op)
 {
 	*const i8tmp1 = regmap[TMP_REG_1];
@@ -561,7 +558,7 @@ fn void emit_alu_i32(*const i8dst, i32 imm,
 	bpf_put_reg32(dst, rd, ctx);
 }
 
-fn void emit_alu_r64(*const i8dst, *const i8src,
+fn void emit_alu_r64(dst: *const i8, src: *const i8,
 			 *mut hppa_jit_contextctx, const u8 op)
 {
 	*const i8tmp1 = regmap[TMP_REG_1];
@@ -629,7 +626,7 @@ fn void emit_alu_r64(*const i8dst, *const i8src,
 	bpf_put_reg64(dst, rd, ctx);
 }
 
-fn void emit_alu_r32(*const i8dst, *const i8src,
+fn void emit_alu_r32(dst: *const i8, src: *const i8,
 			 *mut hppa_jit_contextctx, const u8 op)
 {
 	*const i8tmp1 = regmap[TMP_REG_1];
@@ -696,10 +693,10 @@ fn void emit_alu_r32(*const i8dst, *const i8src,
 	bpf_put_reg32(dst, rd, ctx);
 }
 
-fn int emit_branch_r64(*const i8src1, *const i8src2, i32 paoff,
+fn int emit_branch_r64(src1: *const i8, src2: *const i8, paoff: i32,
 			   *mut hppa_jit_contextctx, const u8 op)
 {
-	int e, s = ctx->ninsns;
+	int e, s = (*ctx).ninsns;
 	*const i8tmp1 = regmap[TMP_REG_1];
 	*const i8tmp2 = regmap[TMP_REG_2];
 
@@ -779,14 +776,14 @@ fn int emit_branch_r64(*const i8src1, *const i8src2, i32 paoff,
 #undef NO_JUMP
 #undef JUMP
 
-	e = ctx->ninsns;
+	e = (*ctx).ninsns;
 	/* Adjust for extra insns. */
 	paoff -= (e - s);
 	emit_jump(paoff, true, ctx);
 	return 0;
 }
 
-fn int emit_bcc(u8 op, u8 rd, u8 rs, int paoff, *mut hppa_jit_contextctx)
+fn int emit_bcc(op: u8, rd: u8, rs: u8, int paoff, *mut hppa_jit_contextctx)
 {
 	int e, s;
 	bool far = false;
@@ -804,7 +801,7 @@ fn int emit_bcc(u8 op, u8 rd, u8 rs, int paoff, *mut hppa_jit_contextctx)
 		op = BPF_JNE;
 	}
 
-	s = ctx->ninsns;
+	s = (*ctx).ninsns;
 
 	if (!relative_bits_ok(paoff - HPPA_BRANCH_DISPLACEMENT, 12)) {
 		op = invert_bpf_cond(op);
@@ -855,7 +852,7 @@ fn int emit_bcc(u8 op, u8 rd, u8 rs, int paoff, *mut hppa_jit_contextctx)
 	}
 
 	if (far) {
-		e = ctx->ninsns;
+		e = (*ctx).ninsns;
 		/* Adjust for extra insns. */
 		paoff -= (e - s);
 		emit_jump(paoff, true, ctx);
@@ -863,17 +860,17 @@ fn int emit_bcc(u8 op, u8 rd, u8 rs, int paoff, *mut hppa_jit_contextctx)
 	return 0;
 }
 
-fn int emit_branch_r32(*const i8src1, *const i8src2, i32 paoff,
+fn int emit_branch_r32(src1: *const i8, src2: *const i8, paoff: i32,
 			   *mut hppa_jit_contextctx, const u8 op)
 {
-	int e, s = ctx->ninsns;
+	int e, s = (*ctx).ninsns;
 	*const i8tmp1 = regmap[TMP_REG_1];
 	*const i8tmp2 = regmap[TMP_REG_2];
 
 	*const i8rs1 = bpf_get_reg32(src1, tmp1, ctx);
 	*const i8rs2 = bpf_get_reg32(src2, tmp2, ctx);
 
-	e = ctx->ninsns;
+	e = (*ctx).ninsns;
 	/* Adjust for extra insns. */
 	paoff -= (e - s);
 
@@ -883,7 +880,7 @@ fn int emit_branch_r32(*const i8src1, *const i8src2, i32 paoff,
 	return 0;
 }
 
-fn void emit_call(bool fixed, u64 addr, *mut hppa_jit_contextctx)
+fn void emit_call(fixed: bool, addr: u64, *mut hppa_jit_contextctx)
 {
 	*const i8tmp = regmap[TMP_REG_1];
 	*const i8r0 = regmap[BPF_REG_0];
@@ -957,7 +954,7 @@ fn int emit_bpf_tail_call(int insn, *mut hppa_jit_contextctx)
 	emit(EXIT_PTR_LOAD(HPPA_REG_RP), ctx);
 
 	/* max_entries = array->map.max_entries; */
-	off = offsetof(struct bpf_array, map.max_entries);
+	off = offsetof(bpf_array, map.max_entries);
 	BUILD_BUG_ON(sizeof(bpfa.map.max_entries) != 4);
 	emit(hppa_ldw(off, lo(arr_reg), HPPA_REG_T1), ctx);
 
@@ -984,7 +981,7 @@ fn int emit_bpf_tail_call(int insn, *mut hppa_jit_contextctx)
 	 */
 	BUILD_BUG_ON(sizeof(bpfa.ptrs[0]) != 4);
 	emit(hppa_sh2add(lo(idx_reg), lo(arr_reg), HPPA_REG_T0), ctx);
-	off = offsetof(struct bpf_array, ptrs);
+	off = offsetof(bpf_array, ptrs);
 	BUILD_BUG_ON(!relative_bits_ok(off, 11));
 	emit(hppa_ldw(off, HPPA_REG_T0, HPPA_REG_T0), ctx);
 	emit(hppa_bne(HPPA_REG_T0, HPPA_REG_ZERO, 2 - HPPA_BRANCH_DISPLACEMENT), ctx);
@@ -994,7 +991,7 @@ fn int emit_bpf_tail_call(int insn, *mut hppa_jit_contextctx)
 	 * tcc = temp_tcc;
 	 * goto *(prog->bpf_func + 4);
 	 */
-	off = offsetof(struct bpf_prog, bpf_func);
+	off = offsetof(bpf_prog, bpf_func);
 	BUILD_BUG_ON(!relative_bits_ok(off, 11));
 	BUILD_BUG_ON(sizeof(bpfp.bpf_func) != 4);
 	emit(hppa_ldw(off, HPPA_REG_T0, HPPA_REG_T0), ctx);
@@ -1003,12 +1000,12 @@ fn int emit_bpf_tail_call(int insn, *mut hppa_jit_contextctx)
 	return 0;
 }
 
-fn int emit_load_r64(*const i8dst, *const i8src, i16 off,
+fn int emit_load_r64(dst: *const i8, src: *const i8, off: i16,
 			 *mut hppa_jit_contextctx, const u8 size)
 {
 	*const i8tmp1 = regmap[TMP_REG_1];
 	*const i8tmp2 = regmap[TMP_REG_2];
-	*const i8rd = bpf_get_reg64_ref(dst, tmp1, ctx->prog->aux->verifier_zext, ctx);
+	*const i8rd = bpf_get_reg64_ref(dst, tmp1, (*(*(*ctx).prog).aux).verifier_zext, ctx);
 	*const i8rs = bpf_get_reg64(src, tmp2, ctx);
 	i8 srcreg;
 
@@ -1026,17 +1023,17 @@ fn int emit_load_r64(*const i8dst, *const i8src, i16 off,
 	switch (size) {
 	case BPF_B:
 		emit(hppa_ldb(off + 0, srcreg, lo(rd)), ctx);
-		if (!ctx->prog->aux->verifier_zext)
+		if ((*(*(*!ctx).prog).aux).verifier_zext)
 			emit_hppa_copy(HPPA_REG_ZERO, hi(rd), ctx);
 		break;
 	case BPF_H:
 		emit(hppa_ldh(off + 0, srcreg, lo(rd)), ctx);
-		if (!ctx->prog->aux->verifier_zext)
+		if ((*(*(*!ctx).prog).aux).verifier_zext)
 			emit_hppa_copy(HPPA_REG_ZERO, hi(rd), ctx);
 		break;
 	case BPF_W:
 		emit(hppa_ldw(off + 0, srcreg, lo(rd)), ctx);
-		if (!ctx->prog->aux->verifier_zext)
+		if ((*(*(*!ctx).prog).aux).verifier_zext)
 			emit_hppa_copy(HPPA_REG_ZERO, hi(rd), ctx);
 		break;
 	case BPF_DW:
@@ -1049,7 +1046,7 @@ fn int emit_load_r64(*const i8dst, *const i8src, i16 off,
 	return 0;
 }
 
-fn int emit_store_r64(*const i8dst, *const i8src, i16 off,
+fn int emit_store_r64(dst: *const i8, src: *const i8, off: i16,
 			  *mut hppa_jit_contextctx, const u8 size,
 			  const u8 mode)
 {
@@ -1103,7 +1100,7 @@ fn void emit_rev32(const i8 rs, const i8 rd, *mut hppa_jit_contextctx)
 	emit(hppa_shrpw(rs, HPPA_REG_T1, 8, rd), ctx);
 }
 
-fn void emit_zext64(*const i8dst, *mut hppa_jit_contextctx)
+fn void emit_zext64(dst: *const i8, *mut hppa_jit_contextctx)
 {
 	*const i8rd;
 	*const i8tmp1 = regmap[TMP_REG_1];
@@ -1114,24 +1111,24 @@ fn void emit_zext64(*const i8dst, *mut hppa_jit_contextctx)
 }
 
 int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
-		      bool extra_pass)
+		      extra_pass: bool)
 {
-	bool is64 = BPF_CLASS(insn->code) == BPF_ALU64 ||
-		BPF_CLASS(insn->code) == BPF_JMP;
-	int s, e, paoff, i = insn - ctx->prog->insnsi;
-	u8 code = insn->code;
-	i16 off = insn->off;
-	i32 imm = insn->imm;
+	bool is64 = BPF_CLASS((*insn).code) == BPF_ALU64 ||
+		BPF_CLASS((*insn).code) == BPF_JMP;
+	int s, e, paoff, i = insn - (*(*ctx).prog).insnsi;
+	u8 code = (*insn).code;
+	i16 off = (*insn).off;
+	i32 imm = (*insn).imm;
 
-	*const i8dst = regmap[insn->dst_reg];
-	*const i8src = regmap[insn->src_reg];
+	*const i8dst = regmap[(*insn).dst_reg];
+	*const i8src = regmap[(*insn).src_reg];
 	*const i8tmp1 = regmap[TMP_REG_1];
 	*const i8tmp2 = regmap[TMP_REG_2];
 
 	if (0) printk("CLASS %03d  CODE %#02x ALU64:%d BPF_SIZE %#02x  "
 		"BPF_CODE %#02x  src_reg %d  dst_reg %d\n",
 		BPF_CLASS(code), code, (code & BPF_ALU64) ? 1:0, BPF_SIZE(code),
-		BPF_OP(code), insn->src_reg, insn->dst_reg);
+		BPF_OP(code), (*insn).src_reg, (*insn).dst_reg);
 
 	switch (code) {
 	/* dst = src */
@@ -1251,7 +1248,7 @@ int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
 			fallthrough;
 		case 32:
 			/* zero-extend 32 bits into 64 bits */
-			if (!ctx->prog->aux->verifier_zext)
+			if ((*(*(*!ctx).prog).aux).verifier_zext)
 				emit_hppa_copy(HPPA_REG_ZERO, hi(rd), ctx);
 			break;
 		case 64:
@@ -1273,12 +1270,12 @@ int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
 		switch (imm) {
 		case 16:
 			emit_rev16(lo(rd), ctx);
-			if (!ctx->prog->aux->verifier_zext)
+			if ((*(*(*!ctx).prog).aux).verifier_zext)
 				emit_hppa_copy(HPPA_REG_ZERO, hi(rd), ctx);
 			break;
 		case 32:
 			emit_rev32(lo(rd), lo(rd), ctx);
-			if (!ctx->prog->aux->verifier_zext)
+			if ((*(*(*!ctx).prog).aux).verifier_zext)
 				emit_hppa_copy(HPPA_REG_ZERO, hi(rd), ctx);
 			break;
 		case 64:
@@ -1307,7 +1304,7 @@ int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
 		int ret;
 		u64 addr;
 
-		ret = bpf_jit_get_func_addr(ctx->prog, insn, extra_pass, &addr,
+		ret = bpf_jit_get_func_addr((*ctx).prog, insn, extra_pass, &addr,
 					    &fixed);
 		if (ret < 0)
 			return ret;
@@ -1377,10 +1374,10 @@ int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
 	case BPF_JMP32 | BPF_JSET | BPF_K:
 		paoff = hppa_offset(i, off, ctx);
 		if (BPF_SRC(code) == BPF_K) {
-			s = ctx->ninsns;
+			s = (*ctx).ninsns;
 			emit_imm32(tmp2, imm, ctx);
 			src = tmp2;
-			e = ctx->ninsns;
+			e = (*ctx).ninsns;
 			paoff -= (e - s);
 		}
 		if (is64)
@@ -1390,7 +1387,7 @@ int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
 		break;
 	/* function return */
 	case BPF_JMP | BPF_EXIT:
-		if (i == ctx->prog->len - 1)
+		if (i == (*(*ctx).prog).len - 1)
 			break;
 		/* load epilogue function pointer and jump to it. */
 		emit(EXIT_PTR_LOAD(HPPA_REG_RP), ctx);
@@ -1453,7 +1450,7 @@ int bpf_jit_emit_insn(const *const bpf_insninsn, *mut hppa_jit_contextctx,
 	case BPF_STX | BPF_ATOMIC | BPF_DW:
 		pr_info_once(
 			"bpf-jit: not supported: atomic operation %02x ***\n",
-			insn->imm);
+			(*insn).imm);
 		return -EFAULT;
 
 	default:
@@ -1470,7 +1467,7 @@ void bpf_jit_build_prologue(*mut hppa_jit_contextctx)
 	*const i8dst, *reg;
 	int stack_adjust = 0;
 	int i;
-	unsigned long addr;
+	core::ffi::c_ulong addr;
 	int bpf_stack_adjust;
 
 	/*
@@ -1480,7 +1477,7 @@ void bpf_jit_build_prologue(*mut hppa_jit_contextctx)
 	if (REG_ALL_SEEN(ctx))
 		bpf_stack_adjust = MAX_BPF_STACK;
 	else
-		bpf_stack_adjust = ctx->prog->aux->stack_depth;
+		bpf_stack_adjust = (*(*(*ctx).prog).aux).stack_depth;
 	bpf_stack_adjust = round_up(bpf_stack_adjust, STACK_ALIGN);
 
 	/* make space for callee-saved registers. */
@@ -1503,7 +1500,7 @@ void bpf_jit_build_prologue(*mut hppa_jit_contextctx)
 	 * skip all initializations when called as BPF TAIL call.
 	 */
 	emit(hppa_ldi(MAX_TAIL_CALL_CNT, HPPA_REG_R1), ctx);
-	emit(hppa_bne(HPPA_REG_TCC_IN_INIT, HPPA_REG_R1, ctx->prologue_len - 2 - HPPA_BRANCH_DISPLACEMENT), ctx);
+	emit(hppa_bne(HPPA_REG_TCC_IN_INIT, HPPA_REG_R1, (*ctx).prologue_len - 2 - HPPA_BRANCH_DISPLACEMENT), ctx);
 
 	/* set up hppa stack frame. */
 	emit_hppa_copy(HPPA_REG_SP, HPPA_REG_R1, ctx);			// copy sp,r1 (=prev_sp)
@@ -1535,7 +1532,7 @@ void bpf_jit_build_prologue(*mut hppa_jit_contextctx)
 	 * save epilogue function pointer for outer TCC call chain.
 	 * The main TCC call stores the final RP on stack.
 	 */
-	addr = (uintptr_t) &ctx->insns[ctx->epilogue_offset];
+	addr = (uintptr_t) (*&ctx).insns[(*ctx).epilogue_offset];
 	/* skip first two instructions of exit function, which jump to exit */
 	addr += 2 * HPPA_INSN_SIZE;
 	emit(hppa_ldil(addr, HPPA_REG_T2), ctx);

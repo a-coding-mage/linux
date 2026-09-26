@@ -326,12 +326,12 @@ pub unsafe fn tcf_idr_create_from_flags(tn: *mut tc_action_net, index: u32, est:
 
 pub unsafe fn tcf_idrinfo_destroy(ops: *const tc_action_ops, idrinfo: *mut tcf_idrinfo) {
     let idr = &mut (*idrinfo).action_idr; let mut mutex_taken = false;
-    idr_for_each_entry!(idr, p, id) {
+    idr_for_each_entry!(idr, p, id, {
         if IS_ERR(p) { continue; }
         if tc_act_in_hw(p) && !mutex_taken { rtnl_lock(); mutex_taken = true; }
         let ret = __tcf_idr_release(p, false, true);
         if ret == ACT_P_DELETED { module_put((*ops).owner); } else if ret < 0 { return; }
-    }
+    });
     if mutex_taken { rtnl_unlock(); } idr_destroy(idr);
 }
 

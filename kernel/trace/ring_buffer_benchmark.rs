@@ -30,11 +30,11 @@ static mut consumer: *mut task_struct = std::ptr::null_mut();
 static mut read: c_ulong = 0;
 
 static mut disable_reader: c_uint = 0;
-module_param!(disable_reader, uint, 0644);
+module_param!(disable_reader, uint, 0o644);
 module_param_desc!(disable_reader, "only run producer");
 
 static mut write_iteration: c_uint = 50;
-module_param!(write_iteration, uint, 0644);
+module_param!(write_iteration, uint, 0o644);
 module_param_desc!(write_iteration, "# of writes between timestamp readings");
 
 static mut producer_nice: i32 = MAX_NICE;
@@ -43,13 +43,13 @@ static mut consumer_nice: i32 = MAX_NICE;
 static mut producer_fifo: i32 = 0;
 static mut consumer_fifo: i32 = 0;
 
-module_param!(producer_nice, int, 0644);
+module_param!(producer_nice, int, 0o644);
 module_param_desc!(producer_nice, "nice prio for producer");
-module_param!(consumer_nice, int, 0644);
+module_param!(consumer_nice, int, 0o644);
 module_param_desc!(consumer_nice, "nice prio for consumer");
-module_param!(producer_fifo, int, 0644);
+module_param!(producer_fifo, int, 0o644);
 module_param_desc!(producer_fifo, "use fifo for producer: 0 - disabled, 1 - low prio, 2 - fifo");
-module_param!(consumer_fifo, int, 0644);
+module_param!(consumer_fifo, int, 0o644);
 module_param_desc!(consumer_fifo, "use fifo for consumer: 0 - disabled, 1 - low prio, 2 - fifo");
 
 static mut read_events: i32 = 0;

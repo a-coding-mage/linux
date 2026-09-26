@@ -99,11 +99,11 @@ unsafe fn rdhwr_count_usable() -> bool {
 #[inline]
 unsafe fn count_can_be_sched_clock() -> bool {
     // CONFIG_CPU_FREQ is a build-time condition; preserve its source intent.
-    if cfg!(feature = "CONFIG_CPU_FREQ") {
+    if cfg!(CONFIG_CPU_FREQ) {
         return false;
     }
 
-    if num_possible_cpus() > 1 && !cfg!(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK") {
+    if num_possible_cpus() > 1 && !cfg!(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK) {
         return false;
     }
 
@@ -111,10 +111,10 @@ unsafe fn count_can_be_sched_clock() -> bool {
 }
 
 // CONFIG_CPU_FREQ conditional section.
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut r4k_clock_unstable: bool = false;
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn r4k_clocksource_unstable(reason: *mut core::ffi::c_char) {
     if r4k_clock_unstable {
         return;
@@ -124,7 +124,7 @@ unsafe fn r4k_clocksource_unstable(reason: *mut core::ffi::c_char) {
     clocksource_mark_unstable(&raw mut clocksource_mips);
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe extern "C" fn r4k_cpufreq_callback(
     _nb: *mut notifier_block,
     val: u64,
@@ -136,12 +136,12 @@ unsafe extern "C" fn r4k_cpufreq_callback(
     0
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 static mut r4k_cpufreq_notifier: notifier_block = notifier_block {
     notifier_call: Some(r4k_cpufreq_callback),
 };
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 unsafe fn r4k_register_cpufreq_notifier() -> i32 {
     cpufreq_register_notifier(&raw mut r4k_cpufreq_notifier, CPUFREQ_TRANSITION_NOTIFIER)
 }

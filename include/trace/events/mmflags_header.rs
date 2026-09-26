@@ -16,19 +16,19 @@ macro_rules! TRACE_GFP_FLAGS_GENERAL {
     };
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 #[macro_export]
 macro_rules! TRACE_GFP_FLAGS_KASAN {
     ($m:ident) => { $m!(SKIP_ZERO); $m!(SKIP_KASAN); };
 }
-#[cfg(not(feature = "CONFIG_KASAN_HW_TAGS"))]
+#[cfg(not(CONFIG_KASAN_HW_TAGS))]
 #[macro_export]
 macro_rules! TRACE_GFP_FLAGS_KASAN { ($m:ident) => {}; }
 
-#[cfg(feature = "CONFIG_LOCKDEP")]
+#[cfg(CONFIG_LOCKDEP)]
 #[macro_export]
 macro_rules! TRACE_GFP_FLAGS_LOCKDEP { ($m:ident) => { $m!(NOLOCKDEP); }; }
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[macro_export]
 macro_rules! TRACE_GFP_FLAGS_LOCKDEP { ($m:ident) => {}; }
 
@@ -43,7 +43,7 @@ macro_rules! TRACE_GFP_FLAGS {
 
 /* TRACE_DEFINE_ENUM is supplied by the tracing dependency. */
 #[macro_export]
-macro_rules! TRACE_GFP_EM { ($a:ident) => { TRACE_DEFINE_ENUM!(___GFP_$a##_BIT); }; }
+macro_rules! TRACE_GFP_EM { ($a:tt) => { TRACE_DEFINE_ENUM!(___GFP_::kernel::macros::paste!([<$a _BIT>])); }; }
 
 /* Just in case these are ever used. */
 /* TRACE_DEFINE_ENUM(___GFP_UNUSED_BIT); */
@@ -87,16 +87,16 @@ macro_rules! __def_pageflag_names { () => { /* expanded by the kernel configurat
 #[macro_export]
 macro_rules! show_page_flags { ($flags:expr) => { if $flags != 0 { __print_flags!($flags, "|", __def_pageflag_names!()) } else { "none" } }; }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[macro_export]
 macro_rules! __VM_ARCH_SPECIFIC_1 { () => { (VM_SAO, "sao") }; }
-#[cfg(all(not(feature = "CONFIG_PPC64"), feature = "CONFIG_PARISC"))]
+#[cfg(all(not(CONFIG_PPC64), CONFIG_PARISC))]
 #[macro_export]
 macro_rules! __VM_ARCH_SPECIFIC_1 { () => { (VM_GROWSUP, "growsup") }; }
-#[cfg(all(not(feature = "CONFIG_PPC64"), not(feature = "CONFIG_PARISC"), not(feature = "CONFIG_MMU")))]
+#[cfg(all(not(CONFIG_PPC64), not(CONFIG_PARISC), not(CONFIG_MMU)))]
 #[macro_export]
 macro_rules! __VM_ARCH_SPECIFIC_1 { () => { (VM_MAPPED_COPY, "mappedcopy") }; }
-#[cfg(all(not(feature = "CONFIG_PPC64"), not(feature = "CONFIG_PARISC"), feature = "CONFIG_MMU"))]
+#[cfg(all(not(CONFIG_PPC64), not(CONFIG_PARISC), CONFIG_MMU))]
 #[macro_export]
 macro_rules! __VM_ARCH_SPECIFIC_1 { () => { (VM_ARCH_1, "arch_1") }; }
 

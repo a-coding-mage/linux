@@ -40,25 +40,25 @@ pub const IORESOURCE_DAX_KMEM: u64 = 1 << 0; pub const IORESOURCE_DAX_STATIC: u6
 extern "C" {
     static mut dax_regions: resource; static mut dax_bus_lock: c_void;
     static mut dax_region_rwsem: c_void; static mut dax_dev_rwsem: c_void;
-    fn add_uevent_var(*mut kobj_uevent_env, *const c_char, c_int) -> c_int;
-    fn sysfs_streq(*const c_char, *const c_char) -> bool; fn dev_name(*mut device) -> *const c_char;
-    fn mutex_lock(*mut c_void); fn mutex_unlock(*mut c_void); fn to_dax_drv(*const device_driver) -> *mut dax_device_driver;
-    fn to_dev_dax(*mut device) -> *mut dev_dax; fn driver_attach(*mut device_driver) -> c_int;
-    fn sscanf(*const c_char, *const c_char, ...) -> c_int; fn sprintf(*mut c_char, *const c_char, ...);
-    fn kzalloc(usize, u32) -> *mut c_void; fn kfree(*mut c_void); fn strscpy(*mut c_char,*const c_char,usize) -> isize;
-    fn list_add(*mut list_head,*mut list_head); fn list_del(*mut list_head); fn dev_get_drvdata(*mut device)->*mut c_void; fn dev_set_drvdata(*mut device,*mut c_void);
-    fn down_read_interruptible(*mut c_void)->c_int; fn up_read(*mut c_void); fn down_write_killable(*mut c_void)->c_int; fn up_write(*mut c_void); fn down_write(*mut c_void); fn up_write_killable(*mut c_void);
-    fn dax_inode(*mut dax_device)->*mut inode; fn kill_dax(*mut dax_device); fn unmap_mapping_range(*mut c_void,u64,u64,c_int);
-    fn request_resource(*mut resource,*mut resource)->c_int; fn release_resource(*mut resource)->c_int; fn __request_region(*mut resource,u64,u64,*const c_char,u64)->*mut resource; fn __release_region(*mut resource,u64,u64);
-    fn resource_size(*const resource)->u64; fn range_len(*const range)->u64; fn adjust_resource(*mut resource,u64,u64)->c_int;
-    fn ida_init(*mut ida); fn ida_alloc(*mut ida,u32)->c_int; fn ida_free(*mut ida,c_int); fn kref_init(*mut kref); fn kref_get(*mut kref); fn kref_put(*mut kref,unsafe extern "C" fn(*mut kref));
-    fn device_initialize(*mut device); fn device_add(*mut device)->c_int; fn device_del(*mut device); fn device_unregister(*mut device); fn device_is_registered(*mut device)->bool; fn get_device(*mut device); fn put_device(*mut device);
-    fn device_find_child_by_name(*mut device,*const c_char)->*mut device; fn device_lock(*mut device); fn device_unlock(*mut device); fn devm_release_action(*mut device,*mut c_void,*mut c_void)->c_int;
-    fn devm_add_action_or_reset(*mut device,*mut c_void,*mut c_void)->c_int; fn sysfs_create_groups(*mut kobject,*const *const attribute_group)->c_int; fn sysfs_remove_groups(*mut kobject,*const *const attribute_group);
-    fn bus_register(*const bus_type)->c_int; fn bus_unregister(*const bus_type); fn driver_register(*mut device_driver)->c_int; fn driver_unregister(*mut device_driver);
-    fn sysfs_emit(*mut c_char,*const c_char,...)->isize; fn kstrtoint(*const c_char,u32,*mut c_int)->c_int; fn kstrtoull(*const c_char,u32,*mut u64)->c_int; fn kstrtoul(*const c_char,u32,*mut usize)->c_int; fn kstrtobool(*const c_char,*mut bool)->c_int;
-    fn alloc_dax(*mut dev_dax,*mut c_void)->*mut dax_device; fn set_dax_synchronous(*mut dax_device); fn set_dax_nocache(*mut dax_device); fn set_dax_nomc(*mut dax_device); fn put_dax(*mut dax_device);
-    fn memremap_compat_align()->usize; fn mhp_supports_memmap_on_memory()->bool; fn dev_to_node(*mut device)->c_int; fn dax_align_valid(usize)->bool; fn strcmp(*const c_char,*const c_char)->c_int;
+    fn add_uevent_var(_: *mut kobj_uevent_env, _: *const c_char, _: c_int) -> c_int;
+    fn sysfs_streq(_: *const c_char, _: *const c_char) -> bool; fn dev_name(_: *mut device) -> *const c_char;
+    fn mutex_lock(_: *mut c_void); fn mutex_unlock(_: *mut c_void); fn to_dax_drv(_: *const device_driver) -> *mut dax_device_driver;
+    fn to_dev_dax(_: *mut device) -> *mut dev_dax; fn driver_attach(_: *mut device_driver) -> c_int;
+    fn sscanf(_: *const c_char, _: *const c_char, ...) -> c_int; fn sprintf(_: *mut c_char, _: *const c_char, ...);
+    fn kzalloc(_: usize, _: u32) -> *mut c_void; fn kfree(_: *mut c_void); fn strscpy(_: *mut c_char,_: *const c_char,_: usize) -> isize;
+    fn list_add(_: *mut list_head,_: *mut list_head); fn list_del(_: *mut list_head); fn dev_get_drvdata(_: *mut device)->*mut c_void; fn dev_set_drvdata(_: *mut device,_: *mut c_void);
+    fn down_read_interruptible(_: *mut c_void)->c_int; fn up_read(_: *mut c_void); fn down_write_killable(_: *mut c_void)->c_int; fn up_write(_: *mut c_void); fn down_write(_: *mut c_void); fn up_write_killable(_: *mut c_void);
+    fn dax_inode(_: *mut dax_device)->*mut inode; fn kill_dax(_: *mut dax_device); fn unmap_mapping_range(_: *mut c_void,_: u64,_: u64,_: c_int);
+    fn request_resource(_: *mut resource,_: *mut resource)->c_int; fn release_resource(_: *mut resource)->c_int; fn __request_region(_: *mut resource,_: u64,_: u64,_: *const c_char,_: u64)->*mut resource; fn __release_region(_: *mut resource,_: u64,_: u64);
+    fn resource_size(_: *const resource)->u64; fn range_len(_: *const range)->u64; fn adjust_resource(_: *mut resource,_: u64,_: u64)->c_int;
+    fn ida_init(_: *mut ida); fn ida_alloc(_: *mut ida,_: u32)->c_int; fn ida_free(_: *mut ida,_: c_int); fn kref_init(_: *mut kref); fn kref_get(_: *mut kref); fn kref_put(_: *mut kref,_: unsafe extern "C" fn(*mut kref));
+    fn device_initialize(_: *mut device); fn device_add(_: *mut device)->c_int; fn device_del(_: *mut device); fn device_unregister(_: *mut device); fn device_is_registered(_: *mut device)->bool; fn get_device(_: *mut device); fn put_device(_: *mut device);
+    fn device_find_child_by_name(_: *mut device,_: *const c_char)->*mut device; fn device_lock(_: *mut device); fn device_unlock(_: *mut device); fn devm_release_action(_: *mut device,_: *mut c_void,_: *mut c_void)->c_int;
+    fn devm_add_action_or_reset(_: *mut device,_: *mut c_void,_: *mut c_void)->c_int; fn sysfs_create_groups(_: *mut kobject,_: *const *const attribute_group)->c_int; fn sysfs_remove_groups(_: *mut kobject,_: *const *const attribute_group);
+    fn bus_register(_: *const bus_type)->c_int; fn bus_unregister(_: *const bus_type); fn driver_register(_: *mut device_driver)->c_int; fn driver_unregister(_: *mut device_driver);
+    fn sysfs_emit(_: *mut c_char,_: *const c_char,...)->isize; fn kstrtoint(_: *const c_char,_: u32,_: *mut c_int)->c_int; fn kstrtoull(_: *const c_char,_: u32,_: *mut u64)->c_int; fn kstrtoul(_: *const c_char,_: u32,_: *mut usize)->c_int; fn kstrtobool(_: *const c_char,_: *mut bool)->c_int;
+    fn alloc_dax(_: *mut dev_dax,_: *mut c_void)->*mut dax_device; fn set_dax_synchronous(_: *mut dax_device); fn set_dax_nocache(_: *mut dax_device); fn set_dax_nomc(_: *mut dax_device); fn put_dax(_: *mut dax_device);
+    fn memremap_compat_align()->usize; fn mhp_supports_memmap_on_memory()->bool; fn dev_to_node(_: *mut device)->c_int; fn dax_align_valid(_: usize)->bool; fn strcmp(_: *const c_char,_: *const c_char)->c_int;
 }
 
 #[inline] unsafe fn is_static(r: *mut dax_region) -> bool { ((*r).res.flags & IORESOURCE_DAX_STATIC) != 0 }

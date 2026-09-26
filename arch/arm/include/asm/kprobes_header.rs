@@ -9,7 +9,7 @@
 
 // The following declarations are enabled when CONFIG_KPROBES is defined in
 // the C build. Rust feature configuration should provide the equivalent gate.
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub mod config_kprobes {
     // #include <linux/types.h>
     // #include <linux/ptrace.h>

@@ -11,17 +11,17 @@
 
 // CONFIG_HW_RANDOM_PPC4XX selects the hardware-random-number-generator support.
 // `crypto4xx_core_device` is supplied by the surrounding driver dependencies.
-#[cfg(feature = "CONFIG_HW_RANDOM_PPC4XX")]
+#[cfg(CONFIG_HW_RANDOM_PPC4XX)]
 extern "C" {
     pub fn ppc4xx_trng_probe(core_dev: *mut crypto4xx_core_device);
     pub fn ppc4xx_trng_remove(core_dev: *mut crypto4xx_core_device);
 }
 
-#[cfg(not(feature = "CONFIG_HW_RANDOM_PPC4XX"))]
+#[cfg(not(CONFIG_HW_RANDOM_PPC4XX))]
 #[inline]
 pub unsafe fn ppc4xx_trng_probe(_dev: *mut crypto4xx_core_device) {}
 
-#[cfg(not(feature = "CONFIG_HW_RANDOM_PPC4XX"))]
+#[cfg(not(CONFIG_HW_RANDOM_PPC4XX))]
 #[inline]
 pub unsafe fn ppc4xx_trng_remove(_dev: *mut crypto4xx_core_device) {}
 

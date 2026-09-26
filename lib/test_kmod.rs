@@ -183,6 +183,6 @@ unsafe fn __trigger_config_run(test_dev:*mut kmod_test_device)->i32 { (*test_dev
 unsafe fn trigger_config_run(test_dev:*mut kmod_test_device)->i32 { mutex_lock!(&mut (*test_dev).trigger_mutex); mutex_lock!(&mut (*test_dev).config_mutex); let mut ret=__trigger_config_run(test_dev); if ret>=0 {dev_info!((*test_dev).dev,"General test result: %d\n",(*test_dev).config.test_result);ret=0;} mutex_unlock!(&mut (*test_dev).config_mutex);mutex_unlock!(&mut (*test_dev).trigger_mutex);ret }
 
 // External kernel declarations used by the translated implementation.
-extern "C" { fn dev_get_drvdata(*mut device)->*mut miscdevice; fn module_put(*mut module); fn request_module(*const core::ffi::c_char,...)->i32; fn get_fs_type(*mut core::ffi::c_char)->*mut file_system_type; }
+extern "C" { fn dev_get_drvdata(_: *mut device)->*mut miscdevice; fn module_put(_: *mut module); fn request_module(_: *const core::ffi::c_char,...)->i32; fn get_fs_type(_: *mut core::ffi::c_char)->*mut file_system_type; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

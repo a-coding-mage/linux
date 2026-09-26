@@ -82,7 +82,7 @@ extern "C" {
     pub static jfs_xattr_handlers: *const *const xattr_handler;
 }
 
-#[cfg(feature = "CONFIG_JFS_SECURITY")]
+#[cfg(CONFIG_JFS_SECURITY)]
 extern "C" {
     pub fn jfs_init_security(
         tid: tid_t,
@@ -92,7 +92,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_JFS_SECURITY"))]
+#[cfg(not(CONFIG_JFS_SECURITY))]
 #[inline]
 pub unsafe fn jfs_init_security(
     _tid: tid_t,

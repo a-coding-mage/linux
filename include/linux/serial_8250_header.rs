@@ -142,16 +142,16 @@ extern "C" {
     pub fn serial8250_set_isa_configurator(v: Option<unsafe extern "C" fn(c_int, *mut uart_port, *mut u32)>);
 }
 
-#[cfg(feature = "CONFIG_SERIAL_8250_RT288X")]
+#[cfg(CONFIG_SERIAL_8250_RT288X)]
 extern "C" { pub fn rt288x_setup(p: *mut uart_port) -> c_int; pub fn au_platform_setup(p: *mut plat_serial8250_port) -> c_int; }
-#[cfg(not(feature = "CONFIG_SERIAL_8250_RT288X"))]
+#[cfg(not(CONFIG_SERIAL_8250_RT288X))]
 #[inline] pub fn rt288x_setup(_: *mut uart_port) -> c_int { -19 }
-#[cfg(not(feature = "CONFIG_SERIAL_8250_RT288X"))]
+#[cfg(not(CONFIG_SERIAL_8250_RT288X))]
 #[inline] pub fn au_platform_setup(_: *mut plat_serial8250_port) -> c_int { -19 }
 
-#[cfg(feature = "CONFIG_SERIAL_8250_CONSOLE")]
+#[cfg(CONFIG_SERIAL_8250_CONSOLE)]
 extern "C" { pub fn hp300_setup_serial_console() -> c_int; }
-#[cfg(not(feature = "CONFIG_SERIAL_8250_CONSOLE"))]
+#[cfg(not(CONFIG_SERIAL_8250_CONSOLE))]
 #[inline] pub fn hp300_setup_serial_console() -> c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

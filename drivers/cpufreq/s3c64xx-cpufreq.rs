@@ -52,7 +52,7 @@ const CPUFREQ_TABLE_END: u32 = 0xffff_ffff;
 const CPUFREQ_ENTRY_INVALID: u32 = 0xffff_fffe;
 const CPUFREQ_NEED_INITIAL_FREQ_CHECK: u32 = 1 << 4;
 
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 unsafe extern "C" {
     fn regulator_count_voltages(regulator: *mut regulator) -> c_int;
     fn regulator_list_voltage(regulator: *mut regulator, selector: c_int) -> c_int;
@@ -69,7 +69,7 @@ struct s3c64xx_dvfs {
     vddarm_max: u32,
 }
 
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 static mut S3C64XX_DVFS_TABLE: [s3c64xx_dvfs; 5] = [
     s3c64xx_dvfs { vddarm_min: 1000000, vddarm_max: 1150000 },
     s3c64xx_dvfs { vddarm_min: 1050000, vddarm_max: 1150000 },
@@ -97,19 +97,19 @@ static mut S3C64XX_FREQ_TABLE: [cpufreq_frequency_table; 13] = [
 unsafe fn s3c64xx_cpufreq_set_target(policy: *mut cpufreq_policy, index: u32) -> c_int {
     let new_freq = S3C64XX_FREQ_TABLE[index as usize].frequency;
     let mut ret: c_int;
-    #[cfg(feature = "CONFIG_REGULATOR")]
+    #[cfg(CONFIG_REGULATOR)]
     let old_freq = clk_get_rate((*policy).clk) / 1000;
-    #[cfg(feature = "CONFIG_REGULATOR")]
+    #[cfg(CONFIG_REGULATOR)]
     let dvfs = &S3C64XX_DVFS_TABLE[S3C64XX_FREQ_TABLE[index as usize].driver_data as usize];
 
-    #[cfg(feature = "CONFIG_REGULATOR")]
+    #[cfg(CONFIG_REGULATOR)]
     if !VDDARM.is_null() && (new_freq as usize) > old_freq {
         ret = regulator_set_voltage(VDDARM, dvfs.vddarm_min as c_int, dvfs.vddarm_max as c_int);
         if ret != 0 { return ret; }
     }
     ret = clk_set_rate((*policy).clk, (new_freq as usize) * 1000);
     if ret < 0 { return ret; }
-    #[cfg(feature = "CONFIG_REGULATOR")]
+    #[cfg(CONFIG_REGULATOR)]
     if !VDDARM.is_null() && (new_freq as usize) < old_freq {
         ret = regulator_set_voltage(VDDARM, dvfs.vddarm_min as c_int, dvfs.vddarm_max as c_int);
         if ret != 0 {
@@ -124,7 +124,7 @@ unsafe fn s3c64xx_cpufreq_driver_init(policy: *mut cpufreq_policy) -> c_int {
     if (*policy).cpu != 0 { return -EINVAL; }
     (*policy).clk = clk_get(core::ptr::null_mut(), b"armclk\0".as_ptr() as *const c_char);
     if (*policy).clk.is_null() { return -1; }
-    #[cfg(feature = "CONFIG_REGULATOR")]
+    #[cfg(CONFIG_REGULATOR)]
     {
         VDDARM = regulator_get(core::ptr::null_mut(), b"vddarm\0".as_ptr() as *const c_char);
         if !VDDARM.is_null() {
@@ -137,7 +137,7 @@ unsafe fn s3c64xx_cpufreq_driver_init(policy: *mut cpufreq_policy) -> c_int {
         if freq.frequency == CPUFREQ_TABLE_END { break; }
         let r = clk_round_rate((*policy).clk, (freq.frequency as usize) * 1000) / 1000;
         if r != freq.frequency as usize { freq.frequency = CPUFREQ_ENTRY_INVALID; }
-        #[cfg(feature = "CONFIG_REGULATOR")]
+        #[cfg(CONFIG_REGULATOR)]
         if VDDARM.is_null() && (freq.frequency as usize) > clk_get_rate((*policy).clk) / 1000 {
             freq.frequency = CPUFREQ_ENTRY_INVALID;
         }

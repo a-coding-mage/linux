@@ -63,7 +63,7 @@ pub unsafe fn ppc_find_vmap_phys(addr: ::core::ffi::c_ulong) -> phys_addr_t {
         hugepage_shift = PAGE_SHIFT;
     }
 
-    pa |= addr & ((1 as phys_addr_t << hugepage_shift) - 1);
+    pa |= addr & (((1 as phys_addr_t) << hugepage_shift) - 1);
 
     pa
 }

@@ -50,6 +50,8 @@ pub unsafe fn orangefs_inode_getxattr(inode: *mut inode, name: *const c_char, bu
     let mut cx: *mut orangefs_cached_xattr;
     let mut ret: isize = -ENOMEM as isize;
     let mut length: isize = 0;
+    'out_unlock: {
+    'out_release_op: {
     gossip_debug(GOSSIP_XATTR_DEBUG, cstr!("%s: name %s, buffer_size %zd\n"), __func__, name, size);
     if S_ISLNK((*inode).i_mode) { return -EOPNOTSUPP as isize; }
     if strlen(name) >= ORANGEFS_MAX_XATTR_NAMELEN { return -EINVAL as isize; }
@@ -58,29 +60,31 @@ pub unsafe fn orangefs_inode_getxattr(inode: *mut inode, name: *const c_char, bu
     down_read(&mut (*oi).xattr_sem);
     cx = find_cached_xattr(inode, name);
     if !cx.is_null() && time_before(jiffies, (*cx).timeout) {
-        if (*cx).length == -1 { ret = -ENODATA as isize; goto out_unlock; }
-        if size == 0 { ret = (*cx).length as isize; goto out_unlock; }
-        if (*cx).length as usize > size { ret = -ERANGE as isize; goto out_unlock; }
+        if (*cx).length == -1 { ret = -ENODATA as isize; break 'out_unlock; }
+        if size == 0 { ret = (*cx).length as isize; break 'out_unlock; }
+        if (*cx).length as usize > size { ret = -ERANGE as isize; break 'out_unlock; }
         memcpy(buffer, (*cx).val.as_ptr() as *const c_void, (*cx).length as usize);
         memset((buffer as *mut u8).add((*cx).length as usize) as *mut c_void, 0, size - (*cx).length as usize);
-        ret = (*cx).length as isize; goto out_unlock;
+        ret = (*cx).length as isize; break 'out_unlock;
     }
     new_op = op_alloc(ORANGEFS_VFS_OP_GETXATTR);
-    if new_op.is_null() { goto out_unlock; }
+    if new_op.is_null() { break 'out_unlock; }
     (*new_op).upcall.req.getxattr.refn = (*oi).refn;
     strscpy((*new_op).upcall.req.getxattr.key.as_mut_ptr(), name);
     (*new_op).upcall.req.getxattr.key_sz = strlen(name) + 1;
     ret = service_operation(new_op, cstr!("orangefs_inode_getxattr"), get_interruptible_flag(inode)) as isize;
-    if ret != 0 { if ret == -ENOENT as isize { ret = -ENODATA as isize; } goto out_release_op; }
+    if ret != 0 { if ret == -ENOENT as isize { ret = -ENODATA as isize; } break 'out_release_op; }
     length = (*new_op).downcall.resp.getxattr.val_sz as isize;
-    if length < 0 || length as usize > ORANGEFS_MAX_XATTR_VALUELEN { ret = -EIO as isize; goto out_release_op; }
-    if size == 0 { ret = length; goto out_release_op; }
-    if length as usize > size { ret = -ERANGE as isize; goto out_release_op; }
+    if length < 0 || length as usize > ORANGEFS_MAX_XATTR_VALUELEN { ret = -EIO as isize; break 'out_release_op; }
+    if size == 0 { ret = length; break 'out_release_op; }
+    if length as usize > size { ret = -ERANGE as isize; break 'out_release_op; }
     memcpy(buffer, (*new_op).downcall.resp.getxattr.val.as_ptr() as *const c_void, length as usize);
     memset((buffer as *mut u8).add(length as usize) as *mut c_void, 0, size - length as usize);
     ret = length;
-out_release_op: op_release(new_op);
-out_unlock: up_read(&mut (*oi).xattr_sem); ret
+    }
+    op_release(new_op);
+    }
+    up_read(&mut (*oi).xattr_sem); ret
 }
 
 pub unsafe fn orangefs_inode_setxattr(inode: *mut inode, name: *const c_char, value: *const c_void, size: usize, flags: c_int) -> c_int {

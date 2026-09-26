@@ -101,8 +101,7 @@ unsafe extern "C" {
     pub fn request_firmware(
         firmware_p: *mut *const firmware,
         name: *const c_char,
-        device: *mut device,
-    ) -> c_int;
+        device: *mut device) -> c_int;
     pub fn release_firmware(fw: *const firmware);
 
     pub fn dev_err(dev: *mut device, fmt: *const c_char, ...);
@@ -114,8 +113,7 @@ unsafe extern "C" {
         buf: *mut c_void,
         size: usize,
         name: *const c_char,
-        mode: c_uint,
-    ) -> c_int;
+        mode: c_uint) -> c_int;
     pub fn snd_sof_dsp_pre_fw_run(sdev: *mut snd_sof_dev) -> c_int;
     pub fn snd_sof_dsp_run(sdev: *mut snd_sof_dev) -> c_int;
     pub fn snd_sof_dsp_dbg_dump(sdev: *mut snd_sof_dev, msg: *const c_char, flags: c_uint);
@@ -132,8 +130,7 @@ unsafe extern "C" {
     pub fn wait_event_timeout(
         wq_head: *mut wait_queue_head_t,
         condition: bool,
-        timeout: c_ulong,
-    ) -> c_long;
+        timeout: c_ulong) -> c_long;
 }
 
 pub type c_long = isize;

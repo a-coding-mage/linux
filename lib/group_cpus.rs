@@ -52,18 +52,18 @@ unsafe fn free_node_to_cpumask(masks: *mut cpumask_var_t) {
 
 #[cfg(CONFIG_SMP)]
 unsafe fn build_node_to_cpumask(masks: *mut cpumask_var_t) {
-    for_each_possible_cpu!(cpu) { cpumask_set_cpu(cpu, *masks.add(cpu_to_node(cpu) as usize)); }
+    for_each_possible_cpu!(cpu, { cpumask_set_cpu(cpu, *masks.add(cpu_to_node(cpu) as usize)); });
 }
 
 #[cfg(CONFIG_SMP)]
 unsafe fn get_nodes_in_cpumask(node_to_cpumask: *mut cpumask_var_t,
                                mask: *const cpumask, nodemsk: *mut nodemask_t) -> c_int {
     let mut nodes = 0;
-    for_each_node!(n) {
+    for_each_node!(n, {
         if cpumask_intersects(mask, *node_to_cpumask.add(n as usize)) {
             node_set(n, nodemsk); nodes += 1;
         }
-    }
+    });
     nodes
 }
 
@@ -114,10 +114,10 @@ unsafe fn __group_cpus_evenly(startgrp: c_uint, numgrps: c_uint,
     let nodes = get_nodes_in_cpumask(node_to_cpumask, cpu_mask, &mut nodemsk);
     let mut curgrp = startgrp;
     if numgrps <= nodes as c_uint {
-        for_each_node_mask!(n, nodemsk) {
+        for_each_node_mask!(n, nodemsk, {
             cpumask_and(masks.add(curgrp as usize), cpu_mask, *node_to_cpumask.add(n as usize));
             curgrp += 1; if curgrp == numgrps { curgrp = 0; }
-        }
+        });
         return numgrps as c_int;
     }
     // The remaining NUMA/cluster allocation helpers are external kernel mechanisms.

@@ -20,7 +20,10 @@ unsafe fn virt_virtio_init(id: u32) -> *mut platform_device {
 }
 
 unsafe fn virt_platform_init() -> i32 {
-    let goldfish_tty_res: [resource; 2] = [
+    let goldfish_tty_res: [resource;
+    'err_unregister_tty: {
+    'err_unregister_rtc: {
+    'err_unregister_virtio: { 2] = [
         DEFINE_RES_MEM(virt_bi_data.tty.mmio, 1),
         DEFINE_RES_IRQ(virt_bi_data.tty.irq),
     ];
@@ -65,7 +68,7 @@ unsafe fn virt_platform_init() -> i32 {
     );
     if IS_ERR(pdev2) {
         ret = PTR_ERR(pdev2);
-        goto err_unregister_tty;
+        break 'err_unregister_tty;
     }
 
     pdev3 = platform_device_register_simple(
@@ -76,7 +79,7 @@ unsafe fn virt_platform_init() -> i32 {
     );
     if IS_ERR(pdev3) {
         ret = PTR_ERR(pdev3);
-        goto err_unregister_rtc;
+        break 'err_unregister_rtc;
     }
 
     i = 0;
@@ -84,22 +87,24 @@ unsafe fn virt_platform_init() -> i32 {
         pdevs[i as usize] = virt_virtio_init(i);
         if IS_ERR(pdevs[i as usize]) {
             ret = PTR_ERR(pdevs[i as usize]);
-            goto err_unregister_virtio;
+            break 'err_unregister_virtio;
         }
         i += 1;
     }
 
     return 0;
-
-err_unregister_virtio:
+    }
+    
     while i > 0 {
         i -= 1;
         platform_device_unregister(pdevs[i as usize]);
     }
     platform_device_unregister(pdev3);
-err_unregister_rtc:
+    }
+    
     platform_device_unregister(pdev2);
-err_unregister_tty:
+    }
+    
     platform_device_unregister(pdev1);
 
     ret

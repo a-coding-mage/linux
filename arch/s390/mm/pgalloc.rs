@@ -153,10 +153,10 @@ unsafe fn base_segment_walk(origin: *mut c_ulong, mut addr: c_ulong, end: c_ulon
     } 0
 }
 
-macro_rules! base_region_walk { ($fn:ident, $nextfn:ident, $index:ident, $shift:ident, $empty:ident, $entry:ident) => {
-    unsafe fn $fn(origin: *mut c_ulong, mut addr: c_ulong, end: c_ulong, alloc: c_int) -> c_int {
-        let mut entry = origin.add(((addr & $index) >> $shift) as usize);
-        loop { let next = $nextfn(addr, end); if *entry & _REGION_ENTRY_INVALID != 0 { if alloc == 0 { addr=next; entry=entry.add(1); if addr>=end {break;} continue; } let table=base_crst_alloc($empty); if table.is_null(){return -ENOMEM;} *entry=__pa(table)|$entry; } let table=__va(*entry&_REGION_ENTRY_ORIGIN); let rc=$fn##_inner(table,addr,next,alloc); if rc!=0{return rc;} if alloc==0{base_crst_free(table);} addr=next; entry=entry.add(1); if addr>=end{break;} } 0
+macro_rules! base_region_walk { ($fn:tt, $nextfn:ident, $index:ident, $shift:ident, $empty:ident, $entry:ident) => {
+    unsafe $fn $fn(origin: *mut c_ulong, mut addr: c_ulong, end: c_ulong, alloc: c_int) -> c_int {
+        let mut $entry = origin.add(((addr & $index) >> $shift) as usize);
+        loop { let next = $nextfn(addr, end); if *$entry & _REGION_ENTRY_INVALID != 0 { if alloc == 0 { addr=next; $entry=$entry.add(1); if addr>=end {break;} continue; } let table=base_crst_alloc($empty); if table.is_null(){return -ENOMEM;} *$entry=__pa(table)|$entry; } let table=__va(*$entry&_REGION_ENTRY_ORIGIN); let rc=::kernel::macros::paste!([<$fn _inner>])(table,addr,next,alloc); if rc!=0{return rc;} if alloc==0{base_crst_free(table);} addr=next; $entry=$entry.add(1); if addr>=end{break;} } 0
     }
 }; }
 

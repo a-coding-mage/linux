@@ -139,12 +139,12 @@ unsafe fn dialog_checklist(title: *const c_char, prompt: *const c_char, height: 
                 continue;
             }
             match key {
-                 'H' as i32 | 'h' as i32 | '?' as i32 => { button = 1; },
-                'S' as i32 | 's' as i32 | ' ' as i32 | '\n' as i32 => { item_foreach!({ item_set_selected(0); }); item_set(scroll + choice); item_set_selected(1); delwin(list); delwin(dialog); return button; },
-                TAB | KEY_LEFT | KEY_RIGHT => { button = if (if key == KEY_LEFT { button - 1 } else { button + 1 }) < 0 { 1 } else if button > 1 { 0 } else { button }; print_buttons(dialog, height, width, button); wrefresh(dialog); },
-                'X' as i32 | 'x' as i32 => key = KEY_ESC,
-                KEY_ESC => key = on_key_esc(dialog),
-                KEY_RESIZE => { delwin(list); delwin(dialog); on_key_resize(); continue 'do_resize; },
+                 case if case == 'H' as i32 || case == 'h' as i32 || case == '?' as i32 => { button = 1; },
+                case if case == 'S' as i32 || case == 's' as i32 || case == ' ' as i32 || case == '\n' as i32 => { item_foreach!({ item_set_selected(0); }); item_set(scroll + choice); item_set_selected(1); delwin(list); delwin(dialog); return button; },
+                case if case == TAB || case == KEY_LEFT || case == KEY_RIGHT => { button = if (if key == KEY_LEFT { button - 1 } else { button + 1 }) < 0 { 1 } else if button > 1 { 0 } else { button }; print_buttons(dialog, height, width, button); wrefresh(dialog); },
+                case if case == 'X' as i32 || case == 'x' as i32 => key = KEY_ESC,
+                case if case == KEY_ESC => key = on_key_esc(dialog),
+                case if case == KEY_RESIZE => { delwin(list); delwin(dialog); on_key_resize(); continue 'do_resize; },
                 _ => {}
             }
             doupdate();

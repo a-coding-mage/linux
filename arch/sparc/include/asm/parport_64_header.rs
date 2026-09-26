@@ -11,10 +11,10 @@ pub const PARPORT_PC_MAX_PORTS: usize = PARPORT_MAX as usize;
 
 pub const HAS_DMA: bool = true;
 
-#[cfg(feature = "CONFIG_PARPORT_PC_FIFO")]
+#[cfg(CONFIG_PARPORT_PC_FIFO)]
 static mut dma_spin_lock: DEFINE_SPINLOCK_TYPE = DEFINE_SPINLOCK!();
 
-#[cfg(feature = "CONFIG_PARPORT_PC_FIFO")]
+#[cfg(CONFIG_PARPORT_PC_FIFO)]
 #[inline]
 unsafe fn claim_dma_lock() -> c_ulong {
     let mut flags: c_ulong = 0;
@@ -22,7 +22,7 @@ unsafe fn claim_dma_lock() -> c_ulong {
     flags
 }
 
-#[cfg(feature = "CONFIG_PARPORT_PC_FIFO")]
+#[cfg(CONFIG_PARPORT_PC_FIFO)]
 #[inline]
 unsafe fn release_dma_lock(flags: c_ulong) {
     spin_unlock_irqrestore(&raw mut dma_spin_lock, flags);

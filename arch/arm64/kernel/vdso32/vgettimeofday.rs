@@ -56,7 +56,7 @@ unsafe extern "C" {
 
 // CONFIG_COMPAT_32BIT_TIME
 // The following definitions are included when CONFIG_COMPAT_32BIT_TIME is enabled.
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn __vdso_clock_gettime(
     clock: clockid_t,
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn __vdso_clock_gettime(
     unsafe { __cvdso_clock_gettime32(clock, ts) }
 }
 
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn __vdso_clock_getres(
     clock_id: clockid_t,
@@ -74,7 +74,7 @@ pub unsafe extern "C" fn __vdso_clock_getres(
     unsafe { __cvdso_clock_getres_time32(clock_id, res) }
 }
 
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn __vdso_gettimeofday(
     tv: *mut __kernel_old_timeval,

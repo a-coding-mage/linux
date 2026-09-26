@@ -125,7 +125,7 @@ pub unsafe fn probe_mem_read(dest: *mut core::ffi::c_void,
                              size: usize) -> i32 {
     #[cfg(CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE)]
     {
-        if src as usize < TASK_SIZE {
+        if (src as usize) < TASK_SIZE {
             return probe_mem_read_user(dest, src, size);
         }
     }

@@ -10,15 +10,15 @@
 /* The original includes provide byte-order, page, Linux type, and page
  * definitions; those names are supplied by the surrounding translation. */
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 pub const _IO_BASE: usize = 0;
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 pub const _ISA_MEM_BASE: usize = 0;
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 pub struct pci_dev;
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn pci_iounmap(dev: *mut pci_dev, addr: *mut core::ffi::c_void);
     pub static mut isa_io_base: usize;
@@ -26,12 +26,12 @@ extern "C" {
 }
 
 /* Under CONFIG_PCI, resource_size_t is supplied by Linux type definitions. */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 pub type resource_size_t = u64;
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 pub const PCI_IOBASE: *mut core::ffi::c_void = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 pub const PCI_IOBASE: *mut core::ffi::c_void = core::ptr::null_mut();
 pub const IO_SPACE_LIMIT: u32 = 0xFFFF_FFFF;
 

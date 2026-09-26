@@ -47,8 +47,8 @@ macro_rules! __raw_cmpxchg {
                 unsafe {
                     core::arch::asm!(
                         concat!($lock, "cmpxchgb {new}, [{ptr}]"),
-                        ptr = in(reg) __ptr,
-                        new = in(reg_byte) __new as u8,
+                        $ptr = in(reg) __ptr,
+                        $new = in(reg_byte) __new as u8,
                         inout("al") __ret,
                         options(nostack, preserves_flags),
                     );
@@ -60,8 +60,8 @@ macro_rules! __raw_cmpxchg {
                 unsafe {
                     core::arch::asm!(
                         concat!($lock, "cmpxchgw {new:x}, [{ptr}]"),
-                        ptr = in(reg) __ptr,
-                        new = in(reg) __new as u16,
+                        $ptr = in(reg) __ptr,
+                        $new = in(reg) __new as u16,
                         inout("ax") __ret,
                         options(nostack, preserves_flags),
                     );
@@ -73,8 +73,8 @@ macro_rules! __raw_cmpxchg {
                 unsafe {
                     core::arch::asm!(
                         concat!($lock, "cmpxchgl {new:e}, [{ptr}]"),
-                        ptr = in(reg) __ptr,
-                        new = in(reg) __new as u32,
+                        $ptr = in(reg) __ptr,
+                        $new = in(reg) __new as u32,
                         inout("eax") __ret,
                         options(nostack, preserves_flags),
                     );
@@ -86,8 +86,8 @@ macro_rules! __raw_cmpxchg {
                 unsafe {
                     core::arch::asm!(
                         concat!($lock, "cmpxchgq {new}, [{ptr}]"),
-                        ptr = in(reg) __ptr,
-                        new = in(reg) __new as u64,
+                        $ptr = in(reg) __ptr,
+                        $new = in(reg) __new as u64,
                         inout("rax") __ret,
                         options(nostack, preserves_flags),
                     );

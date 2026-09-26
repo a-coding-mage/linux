@@ -5,8 +5,8 @@
 pub const IDXD_DRIVER_VERSION: &str = "1.00";
 
 extern "C" {
-    pub fn perfmon_pmu_init(*mut idxd_device) -> i32; pub fn perfmon_pmu_remove(*mut idxd_device); pub fn perfmon_counter_overflow(*mut idxd_device);
-    pub fn idxd_misc_thread(i32, *mut core::ffi::c_void) -> i32; pub fn idxd_wq_thread(i32, *mut core::ffi::c_void) -> i32;
+    pub fn perfmon_pmu_init(_: *mut idxd_device) -> i32; pub fn perfmon_pmu_remove(_: *mut idxd_device); pub fn perfmon_counter_overflow(_: *mut idxd_device);
+    pub fn idxd_misc_thread(_: i32, _: *mut core::ffi::c_void) -> i32; pub fn idxd_wq_thread(_: i32, _: *mut core::ffi::c_void) -> i32;
     pub static mut tc_override: bool;
 }
 
@@ -114,36 +114,36 @@ pub unsafe fn wq_shared_supported(w: *mut idxd_wq) -> bool { support_enqcmd && w
 
 // External declarations from the Linux kernel and other repository headers.
 extern "C" {
-    pub fn idxd_free_desc(*mut idxd_wq, *mut idxd_desc);
-    pub fn idxd_dma_complete_txd(*mut idxd_desc, idxd_complete_type, bool, *mut core::ffi::c_void, *mut u32);
-    pub fn idxd_register_devices(*mut idxd_device) -> i32; pub fn idxd_unregister_devices(*mut idxd_device);
-    pub fn idxd_wqs_quiesce(*mut idxd_device); pub fn idxd_queue_int_handle_resubmit(*mut idxd_desc) -> bool;
-    pub fn idxd_submit_desc(*mut idxd_wq, *mut idxd_desc) -> i32; pub fn idxd_alloc_desc(*mut idxd_wq, idxd_op_type) -> *mut idxd_desc;
-    pub fn idxd_enqcmds(*mut idxd_wq, *mut core::ffi::c_void, *const core::ffi::c_void) -> i32;
-    pub fn idxd_register_dma_device(*mut idxd_device) -> i32; pub fn idxd_unregister_dma_device(*mut idxd_device);
-    pub fn idxd_cdev_register() -> i32; pub fn idxd_cdev_remove(); pub fn idxd_cdev_get_major(*mut idxd_device) -> i32;
-    pub fn idxd_device_drv_probe(*mut idxd_dev) -> i32; pub fn idxd_device_drv_remove(*mut idxd_dev);
-    pub fn idxd_mask_error_interrupts(*mut idxd_device); pub fn idxd_unmask_error_interrupts(*mut idxd_device);
-    pub fn idxd_pci_probe_alloc(*mut idxd_device, *mut pci_dev, *const pci_device_id) -> i32;
-    pub fn idxd_drv_enable_wq(*mut idxd_wq) -> i32; pub fn idxd_drv_disable_wq(*mut idxd_wq);
-    pub fn idxd_device_init_reset(*mut idxd_device) -> i32; pub fn idxd_device_enable(*mut idxd_device) -> i32;
-    pub fn idxd_device_disable(*mut idxd_device) -> i32; pub fn idxd_device_reset(*mut idxd_device);
-    pub fn idxd_device_clear_state(*mut idxd_device); pub fn idxd_device_config(*mut idxd_device) -> i32;
-    pub fn idxd_device_drain_pasid(*mut idxd_device, i32); pub fn idxd_device_load_config(*mut idxd_device) -> i32;
-    pub fn idxd_device_request_int_handle(*mut idxd_device, i32, *mut i32, idxd_interrupt_type) -> i32;
-    pub fn idxd_device_release_int_handle(*mut idxd_device, i32, idxd_interrupt_type) -> i32;
-    pub fn idxd_wqs_unmap_portal(*mut idxd_device); pub fn idxd_wq_alloc_resources(*mut idxd_wq) -> i32;
-    pub fn idxd_wq_free_resources(*mut idxd_wq); pub fn idxd_wq_enable(*mut idxd_wq) -> i32;
-    pub fn idxd_wq_disable(*mut idxd_wq, bool) -> i32; pub fn idxd_wq_drain(*mut idxd_wq);
-    pub fn idxd_wq_reset(*mut idxd_wq); pub fn idxd_wq_map_portal(*mut idxd_wq) -> i32;
-    pub fn idxd_wq_unmap_portal(*mut idxd_wq); pub fn idxd_wq_set_pasid(*mut idxd_wq, i32) -> i32;
-    pub fn idxd_wq_disable_pasid(*mut idxd_wq) -> i32; pub fn __idxd_wq_quiesce(*mut idxd_wq);
-    pub fn idxd_wq_quiesce(*mut idxd_wq); pub fn idxd_wq_init_percpu_ref(*mut idxd_wq) -> i32;
-    pub fn idxd_wq_free_irq(*mut idxd_wq); pub fn idxd_wq_request_irq(*mut idxd_wq) -> i32;
-    pub fn idxd_wq_flush_descs(*mut idxd_wq); pub fn idxd_dma_complete_txd(*mut idxd_desc, idxd_complete_type, bool, *mut core::ffi::c_void, *mut u32);
-    pub fn idxd_copy_cr(*mut idxd_wq, ioasid_t, usize, *mut core::ffi::c_void, i32) -> i32;
-    pub fn idxd_user_counter_increment(*mut idxd_wq, u32, i32);
-    pub fn idxd_device_init_debugfs(*mut idxd_device) -> i32; pub fn idxd_device_remove_debugfs(*mut idxd_device);
+    pub fn idxd_free_desc(_: *mut idxd_wq, _: *mut idxd_desc);
+    pub fn idxd_dma_complete_txd(_: *mut idxd_desc, _: idxd_complete_type, _: bool, _: *mut core::ffi::c_void, _: *mut u32);
+    pub fn idxd_register_devices(_: *mut idxd_device) -> i32; pub fn idxd_unregister_devices(_: *mut idxd_device);
+    pub fn idxd_wqs_quiesce(_: *mut idxd_device); pub fn idxd_queue_int_handle_resubmit(_: *mut idxd_desc) -> bool;
+    pub fn idxd_submit_desc(_: *mut idxd_wq, _: *mut idxd_desc) -> i32; pub fn idxd_alloc_desc(_: *mut idxd_wq, _: idxd_op_type) -> *mut idxd_desc;
+    pub fn idxd_enqcmds(_: *mut idxd_wq, _: *mut core::ffi::c_void, _: *const core::ffi::c_void) -> i32;
+    pub fn idxd_register_dma_device(_: *mut idxd_device) -> i32; pub fn idxd_unregister_dma_device(_: *mut idxd_device);
+    pub fn idxd_cdev_register() -> i32; pub fn idxd_cdev_remove(); pub fn idxd_cdev_get_major(_: *mut idxd_device) -> i32;
+    pub fn idxd_device_drv_probe(_: *mut idxd_dev) -> i32; pub fn idxd_device_drv_remove(_: *mut idxd_dev);
+    pub fn idxd_mask_error_interrupts(_: *mut idxd_device); pub fn idxd_unmask_error_interrupts(_: *mut idxd_device);
+    pub fn idxd_pci_probe_alloc(_: *mut idxd_device, _: *mut pci_dev, _: *const pci_device_id) -> i32;
+    pub fn idxd_drv_enable_wq(_: *mut idxd_wq) -> i32; pub fn idxd_drv_disable_wq(_: *mut idxd_wq);
+    pub fn idxd_device_init_reset(_: *mut idxd_device) -> i32; pub fn idxd_device_enable(_: *mut idxd_device) -> i32;
+    pub fn idxd_device_disable(_: *mut idxd_device) -> i32; pub fn idxd_device_reset(_: *mut idxd_device);
+    pub fn idxd_device_clear_state(_: *mut idxd_device); pub fn idxd_device_config(_: *mut idxd_device) -> i32;
+    pub fn idxd_device_drain_pasid(_: *mut idxd_device, _: i32); pub fn idxd_device_load_config(_: *mut idxd_device) -> i32;
+    pub fn idxd_device_request_int_handle(_: *mut idxd_device, _: i32, _: *mut i32, _: idxd_interrupt_type) -> i32;
+    pub fn idxd_device_release_int_handle(_: *mut idxd_device, _: i32, _: idxd_interrupt_type) -> i32;
+    pub fn idxd_wqs_unmap_portal(_: *mut idxd_device); pub fn idxd_wq_alloc_resources(_: *mut idxd_wq) -> i32;
+    pub fn idxd_wq_free_resources(_: *mut idxd_wq); pub fn idxd_wq_enable(_: *mut idxd_wq) -> i32;
+    pub fn idxd_wq_disable(_: *mut idxd_wq, _: bool) -> i32; pub fn idxd_wq_drain(_: *mut idxd_wq);
+    pub fn idxd_wq_reset(_: *mut idxd_wq); pub fn idxd_wq_map_portal(_: *mut idxd_wq) -> i32;
+    pub fn idxd_wq_unmap_portal(_: *mut idxd_wq); pub fn idxd_wq_set_pasid(_: *mut idxd_wq, _: i32) -> i32;
+    pub fn idxd_wq_disable_pasid(_: *mut idxd_wq) -> i32; pub fn __idxd_wq_quiesce(_: *mut idxd_wq);
+    pub fn idxd_wq_quiesce(_: *mut idxd_wq); pub fn idxd_wq_init_percpu_ref(_: *mut idxd_wq) -> i32;
+    pub fn idxd_wq_free_irq(_: *mut idxd_wq); pub fn idxd_wq_request_irq(_: *mut idxd_wq) -> i32;
+    pub fn idxd_wq_flush_descs(_: *mut idxd_wq); pub fn idxd_dma_complete_txd(_: *mut idxd_desc, _: idxd_complete_type, _: bool, _: *mut core::ffi::c_void, _: *mut u32);
+    pub fn idxd_copy_cr(_: *mut idxd_wq, _: ioasid_t, _: usize, _: *mut core::ffi::c_void, _: i32) -> i32;
+    pub fn idxd_user_counter_increment(_: *mut idxd_wq, _: u32, _: i32);
+    pub fn idxd_device_init_debugfs(_: *mut idxd_device) -> i32; pub fn idxd_device_remove_debugfs(_: *mut idxd_device);
     pub fn idxd_init_debugfs() -> i32; pub fn idxd_remove_debugfs();
 }
 

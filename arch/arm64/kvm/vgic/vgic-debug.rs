@@ -59,9 +59,9 @@ unsafe fn vgic_count_lpis(kvm: *mut Kvm) -> i32 {
     let mut nr_lpis = 0;
 
     rcu_read_lock();
-    xa_for_each(&mut dist.lpi_xa, &mut intid, &mut irq) {
+    xa_for_each!(&mut dist.lpi_xa, &mut intid, &mut irq, {
         nr_lpis += 1;
-    }
+    });
     rcu_read_unlock();
     nr_lpis
 }

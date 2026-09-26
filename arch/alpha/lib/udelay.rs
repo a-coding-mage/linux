@@ -11,13 +11,13 @@ extern "C" {
     static mut loops_per_jiffy: c_ulong;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct CpuData {
     pub loops_per_jiffy: c_ulong,
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     static mut cpu_data: *mut CpuData;
     fn smp_processor_id() -> usize;
@@ -46,13 +46,13 @@ pub unsafe fn __delay(mut loops: c_int) {
     );
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 unsafe fn lpj() -> c_ulong {
     (*cpu_data.add(smp_processor_id())).loops_per_jiffy
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 unsafe fn lpj() -> c_ulong {
     loops_per_jiffy

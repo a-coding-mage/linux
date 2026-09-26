@@ -77,7 +77,7 @@ unsafe fn mctp_ioctl(_sock:*mut socket,_cmd:u32,_arg:usize)->i32 { -EINVAL }
 unsafe fn mctp_compat_ioctl(_sock:*mut socket,_cmd:u32,_arg:usize)->i32 { -ENOIOCTLCMD }
 unsafe fn mctp_pf_create(_net:*mut net,_sock:*mut socket,protocol:i32,_kern:i32)->i32 { if protocol!=0{-EPROTONOSUPPORT}else if (*_sock).r#type!=SOCK_DGRAM{-ESOCKTNOSUPPORT}else{-ENOMEM} }
 
-extern "C" { fn sock_net(sk:*mut sock)->*mut net; fn lock_sock(*mut sock); fn release_sock(*mut sock); fn sk_hashed(*mut sock)->bool; fn sk_common_release(*mut sock); fn init_hlist(*mut hlist_head); fn timer_setup(*mut timer_list, unsafe fn(*mut timer_list)); fn skb_queue_purge(*mut sk_buff_head); }
+extern "C" { fn sock_net(sk:*mut sock)->*mut net; fn lock_sock(_: *mut sock); fn release_sock(_: *mut sock); fn sk_hashed(_: *mut sock)->bool; fn sk_common_release(_: *mut sock); fn init_hlist(_: *mut hlist_head); fn timer_setup(_: *mut timer_list, _: unsafe fn(*mut timer_list)); fn skb_queue_purge(_: *mut sk_buff_head); }
 
 #[no_mangle] pub unsafe extern "C" fn mctp_init()->i32 { if MCTP_TAG_OWNER!=MCTP_HDR_FLAG_TO || MCTP_TAG_MASK!=MCTP_HDR_TAG_MASK {core::hint::unreachable_unchecked()}; let mut rc=sock_register(); if rc!=0{return rc}; rc=proto_register(); if rc!=0{sock_unregister();return rc}; rc=mctp_routes_init(); if rc!=0{proto_unregister();sock_unregister();return rc}; rc=mctp_neigh_init(); if rc!=0{mctp_routes_exit();proto_unregister();sock_unregister();return rc}; rc=mctp_device_init(); if rc!=0{mctp_neigh_exit();mctp_routes_exit();proto_unregister();sock_unregister();return rc}; 0 }
 #[no_mangle] pub unsafe extern "C" fn mctp_exit(){mctp_device_exit();mctp_neigh_exit();mctp_routes_exit();proto_unregister();sock_unregister()}

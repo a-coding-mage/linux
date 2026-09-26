@@ -81,7 +81,7 @@ unsafe fn secretmem_fault(vmf: *mut vm_fault) -> vm_fault_t {
     ret
 }
 
-static const secretmem_vm_ops: vm_operations_struct = vm_operations_struct {
+static secretmem_vm_ops: vm_operations_struct = vm_operations_struct {
     fault: Some(secretmem_fault),
 };
 
@@ -109,7 +109,7 @@ pub unsafe fn vma_is_secretmem(vma: *mut vm_area_struct) -> bool {
     (*vma).vm_ops == &raw const secretmem_vm_ops
 }
 
-static const secretmem_fops: file_operations = file_operations {
+static secretmem_fops: file_operations = file_operations {
     release: Some(secretmem_release),
     mmap_prepare: Some(secretmem_mmap_prepare),
 };
@@ -154,7 +154,7 @@ unsafe fn secretmem_setattr(
     ret
 }
 
-static const secretmem_iops: inode_operations = inode_operations {
+static secretmem_iops: inode_operations = inode_operations {
     setattr: Some(secretmem_setattr),
 };
 

@@ -43,8 +43,8 @@ unsafe fn early_pci_mcfg_parse(header: *mut acpi_table_header) -> i32 {
         return -EINVAL;
     }
 
-    n = ((*header).length - core::mem::size_of::<acpi_table_mcfg>() as u32)
-        as usize
+    n = (((*header).length - core::mem::size_of::<acpi_table_mcfg>() as u32)
+        as usize)
         .wrapping_div(core::mem::size_of::<acpi_mcfg_allocation>()) as i32;
     mcfg = header.cast();
     mptr = (&mut (*mcfg).allocations as *mut _).cast();

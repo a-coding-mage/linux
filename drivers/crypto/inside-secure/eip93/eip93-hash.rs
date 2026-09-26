@@ -14,10 +14,10 @@ unsafe fn eip93_hash_free_data_blocks(req: *mut ahash_request) {
     let eip93 = (*ctx).eip93;
     let mut block: *mut mkt_hash_block;
     let mut tmp: *mut mkt_hash_block;
-    list_for_each_entry_safe!(block, tmp, &mut (*rctx).blocks, list) {
+    list_for_each_entry_safe!(block, tmp, &mut (*rctx).blocks, list, {
         dma_unmap_single((*eip93).dev, (*block).data_dma, SHA256_BLOCK_SIZE, DMA_TO_DEVICE);
         kfree(block);
-    }
+    });
     if !list_empty(&(*rctx).blocks) { INIT_LIST_HEAD(&mut (*rctx).blocks); }
     if (*rctx).finalize { dma_unmap_single((*eip93).dev, (*rctx).data_dma, (*rctx).data_used, DMA_TO_DEVICE); }
 }
@@ -112,7 +112,7 @@ unsafe fn __eip93_hash_update(req: *mut ahash_request, complete_req: bool) -> i3
     let rctx = ahash_request_ctx_dma(req); let async_req = &mut (*req).base; let mut consumed = 0; let mut to_consume = (*req).nbytes; let mut offset = (*rctx).data_used; let mut max_read = SHA256_BLOCK_SIZE - offset; let mut wait_req = false;
     while to_consume > max_read { let block = kzalloc_obj::<mkt_hash_block>(); if block.is_null() { eip93_hash_free_data_blocks(req); return -ENOMEM; } let read = sg_pcopy_to_buffer((*req).src, sg_nents((*req).src), (*block).data.as_mut_ptr().add(offset), max_read, consumed); if offset > 0 { memcpy((*block).data.as_mut_ptr(), (*rctx).data.as_ptr(), offset); offset = 0; max_read = SHA256_BLOCK_SIZE; } list_add(&mut (*block).list, &mut (*rctx).blocks); to_consume -= read; consumed += read; }
     let read = sg_pcopy_to_buffer((*req).src, sg_nents((*req).src), (*rctx).data.as_mut_ptr().add(offset), to_consume, consumed); (*rctx).data_used = offset + read; (*rctx).len += read + consumed;
-    let mut block: *mut mkt_hash_block; list_for_each_entry_reverse!(block, &(*rctx).blocks, list) { wait_req = complete_req && list_is_first(&(*block).list, &(*rctx).blocks); let ret = eip93_send_hash_req(async_req, (*block).data.as_mut_ptr(), &mut (*block).data_dma, SHA256_BLOCK_SIZE, wait_req); if ret != 0 { eip93_hash_free_data_blocks(req); return ret; } }
+    let mut block: *mut mkt_hash_block; list_for_each_entry_reverse!(block, &(*rctx).blocks, list, { wait_req = complete_req && list_is_first(&(*block).list, &(*rctx).blocks); let ret = eip93_send_hash_req(async_req, (*block).data.as_mut_ptr(), &mut (*block).data_dma, SHA256_BLOCK_SIZE, wait_req); if ret != 0 { eip93_hash_free_data_blocks(req); return ret; } });
     if wait_req { -EINPROGRESS } else { 0 }
 }
 

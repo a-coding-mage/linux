@@ -49,7 +49,7 @@ unsafe extern "C" fn ines_command(b:*mut gpib_board,buf:*mut u8,len:usize,n:*mut
 
 // The remaining wrappers preserve the original interface delegation and are
 // declared for linkage with the common NEC7210 implementation.
-extern "C" { fn ines_pci_attach(*mut gpib_board,*const gpib_board_config)->i32; fn ines_pci_detach(*mut gpib_board); }
+extern "C" { fn ines_pci_attach(_: *mut gpib_board,_: *const gpib_board_config)->i32; fn ines_pci_detach(_: *mut gpib_board); }
 
 #[no_mangle] pub unsafe extern "C" fn ines_generic_attach(board:*mut gpib_board)->i32 { (*board).status=0; let p=(*board).private_data; if p.is_null(){return -12}; init_nec7210_private(&mut (*p).nec7210_priv); (*p).pci_chip_type=PCI_CHIP_NONE; (*p).nec7210_priv.offset=1; 0 }
 

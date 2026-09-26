@@ -57,8 +57,8 @@ pub unsafe fn local_flush_tlb_mm(mm: *mut mm_struct) {
     }
 }
 
-const _ITLB_ENTRIES: usize = ITLB_ARF_WAYS as usize << XCHAL_ITLB_ARF_ENTRIES_LOG2;
-const _DTLB_ENTRIES: usize = DTLB_ARF_WAYS as usize << XCHAL_DTLB_ARF_ENTRIES_LOG2;
+const _ITLB_ENTRIES: usize = (ITLB_ARF_WAYS as usize) << XCHAL_ITLB_ARF_ENTRIES_LOG2;
+const _DTLB_ENTRIES: usize = (DTLB_ARF_WAYS as usize) << XCHAL_DTLB_ARF_ENTRIES_LOG2;
 const _TLB_ENTRIES: usize = if _ITLB_ENTRIES > _DTLB_ENTRIES { _ITLB_ENTRIES } else { _DTLB_ENTRIES };
 
 pub unsafe fn local_flush_tlb_range(vma: *mut vm_area_struct, mut start: unsigned_long, end: unsigned_long) {

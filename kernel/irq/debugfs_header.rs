@@ -5,14 +5,14 @@ use core::ffi::{c_char, c_int, c_uint, c_void};
 /* The C header includes <linux/debugfs.h>; those declarations are supplied by
  * the surrounding translation unit. */
 
-#[cfg(feature = "CONFIG_GENERIC_IRQ_DEBUGFS")]
+#[cfg(CONFIG_GENERIC_IRQ_DEBUGFS)]
 #[repr(C)]
 pub struct irq_bit_descr {
     pub mask: c_uint,
     pub name: *mut c_char,
 }
 
-#[cfg(feature = "CONFIG_GENERIC_IRQ_DEBUGFS")]
+#[cfg(CONFIG_GENERIC_IRQ_DEBUGFS)]
 #[macro_export]
 macro_rules! BIT_MASK_DESCR {
     ($m:expr) => {
@@ -23,7 +23,7 @@ macro_rules! BIT_MASK_DESCR {
     };
 }
 
-#[cfg(feature = "CONFIG_GENERIC_IRQ_DEBUGFS")]
+#[cfg(CONFIG_GENERIC_IRQ_DEBUGFS)]
 extern "C" {
     pub fn irq_debug_show_bits(
         m: *mut seq_file,
@@ -38,32 +38,32 @@ extern "C" {
     pub fn irq_debugfs_copy_devname(irq: c_int, dev: *mut device);
 }
 
-#[cfg(feature = "CONFIG_GENERIC_IRQ_DEBUGFS")]
+#[cfg(CONFIG_GENERIC_IRQ_DEBUGFS)]
 #[inline]
 pub unsafe fn irq_remove_debugfs_entry(desc: *mut irq_desc) {
     debugfs_remove((*desc).debugfs_file);
     kfree((*desc).dev_name as *mut c_void);
 }
 
-#[cfg(all(feature = "CONFIG_GENERIC_IRQ_DEBUGFS", feature = "CONFIG_IRQ_DOMAIN"))]
+#[cfg(all(CONFIG_GENERIC_IRQ_DEBUGFS, CONFIG_IRQ_DOMAIN))]
 extern "C" {
     pub fn irq_domain_debugfs_init(root: *mut dentry);
 }
 
-#[cfg(all(feature = "CONFIG_GENERIC_IRQ_DEBUGFS", not(feature = "CONFIG_IRQ_DOMAIN")))]
+#[cfg(all(CONFIG_GENERIC_IRQ_DEBUGFS, not(CONFIG_IRQ_DOMAIN)))]
 #[inline]
 pub unsafe fn irq_domain_debugfs_init(_root: *mut dentry) {}
 
 /* CONFIG_GENERIC_IRQ_DEBUGFS is a build-time condition from the C header. */
-#[cfg(not(feature = "CONFIG_GENERIC_IRQ_DEBUGFS"))]
+#[cfg(not(CONFIG_GENERIC_IRQ_DEBUGFS))]
 #[inline]
 pub unsafe fn irq_add_debugfs_entry(_irq: c_uint, _d: *mut irq_desc) {}
 
-#[cfg(not(feature = "CONFIG_GENERIC_IRQ_DEBUGFS"))]
+#[cfg(not(CONFIG_GENERIC_IRQ_DEBUGFS))]
 #[inline]
 pub unsafe fn irq_remove_debugfs_entry(_d: *mut irq_desc) {}
 
-#[cfg(not(feature = "CONFIG_GENERIC_IRQ_DEBUGFS"))]
+#[cfg(not(CONFIG_GENERIC_IRQ_DEBUGFS))]
 #[inline]
 pub unsafe fn irq_debugfs_copy_devname(_irq: c_int, _dev: *mut device) {}
 

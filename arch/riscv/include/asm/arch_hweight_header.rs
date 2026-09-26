@@ -22,8 +22,8 @@ extern "C" {
 
 #[inline(always)]
 pub unsafe fn __arch_hweight32(mut w: core::ffi::c_uint) -> core::ffi::c_uint {
-    if !(cfg!(feature = "CONFIG_RISCV_ISA_ZBB")
-        && cfg!(feature = "CONFIG_TOOLCHAIN_HAS_ZBB")
+    if !(cfg!(CONFIG_RISCV_ISA_ZBB)
+        && cfg!(CONFIG_TOOLCHAIN_HAS_ZBB)
         && riscv_has_extension_likely(RISCV_ISA_EXT_ZBB))
     {
         return __sw_hweight32(w);
@@ -53,8 +53,8 @@ pub unsafe fn __arch_hweight8(w: core::ffi::c_uint) -> core::ffi::c_uint {
 #[cfg(target_pointer_width = "64")]
 #[inline(always)]
 pub unsafe fn __arch_hweight64(mut w: u64) -> core::ffi::c_ulong {
-    if !(cfg!(feature = "CONFIG_RISCV_ISA_ZBB")
-        && cfg!(feature = "CONFIG_TOOLCHAIN_HAS_ZBB")
+    if !(cfg!(CONFIG_RISCV_ISA_ZBB)
+        && cfg!(CONFIG_TOOLCHAIN_HAS_ZBB)
         && riscv_has_extension_likely(RISCV_ISA_EXT_ZBB))
     {
         return __sw_hweight64(w);

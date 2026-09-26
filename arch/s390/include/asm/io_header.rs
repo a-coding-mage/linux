@@ -45,7 +45,7 @@ pub unsafe fn ioport_map(_port: c_ulong, _nr: c_uint) -> *mut c_void {
 pub unsafe fn ioport_unmap(_p: *mut c_void) {
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 mod config_pci {
     use super::*;
 

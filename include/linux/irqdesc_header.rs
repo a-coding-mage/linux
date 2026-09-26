@@ -13,7 +13,7 @@ pub struct pt_regs;
 pub struct irqstat {
     pub cnt: core::ffi::c_uint,
     // CONFIG_GENERIC_IRQ_STAT_SNAPSHOT
-    #[cfg(feature = "CONFIG_GENERIC_IRQ_STAT_SNAPSHOT")]
+    #[cfg(CONFIG_GENERIC_IRQ_STAT_SNAPSHOT)]
     pub ref_: core::ffi::c_uint,
 }
 
@@ -43,60 +43,60 @@ pub struct irq_desc {
     pub lock: raw_spinlock_t,
     pub percpu_enabled: *mut cpumask,
     // CONFIG_SMP
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub redirect: irq_redirect,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub affinity_hint: *const cpumask,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub affinity_notify: *mut irq_affinity_notify,
     // CONFIG_GENERIC_PENDING_IRQ
-    #[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_GENERIC_PENDING_IRQ"))]
+    #[cfg(all(CONFIG_SMP, CONFIG_GENERIC_PENDING_IRQ))]
     pub pending_mask: cpumask_var_t,
     pub threads_oneshot: core::ffi::c_ulong,
     pub threads_active: atomic_t,
     pub wait_for_threads: wait_queue_head_t,
     // CONFIG_PM_SLEEP
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub nr_actions: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub no_suspend_depth: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub cond_suspend_depth: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub force_resume_depth: core::ffi::c_uint,
     // CONFIG_PROC_FS
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub dir: *mut proc_dir_entry,
     // CONFIG_GENERIC_IRQ_DEBUGFS
-    #[cfg(feature = "CONFIG_GENERIC_IRQ_DEBUGFS")]
+    #[cfg(CONFIG_GENERIC_IRQ_DEBUGFS)]
     pub debugfs_file: *mut dentry,
-    #[cfg(feature = "CONFIG_GENERIC_IRQ_DEBUGFS")]
+    #[cfg(CONFIG_GENERIC_IRQ_DEBUGFS)]
     pub dev_name: *const core::ffi::c_char,
     pub refcnt: rcuref_t,
     // CONFIG_SPARSE_IRQ
-    #[cfg(feature = "CONFIG_SPARSE_IRQ")]
+    #[cfg(CONFIG_SPARSE_IRQ)]
     pub rcu: rcu_head,
-    #[cfg(feature = "CONFIG_SPARSE_IRQ")]
+    #[cfg(CONFIG_SPARSE_IRQ)]
     pub kobj: kobject,
     pub request_mutex: mutex,
     pub parent_irq: core::ffi::c_int,
     pub owner: *mut module,
     pub name: *const core::ffi::c_char,
     // CONFIG_HARDIRQS_SW_RESEND
-    #[cfg(feature = "CONFIG_HARDIRQS_SW_RESEND")]
+    #[cfg(CONFIG_HARDIRQS_SW_RESEND)]
     pub resend_node: hlist_node,
 }
 
 // CONFIG_SPARSE_IRQ
-#[cfg(feature = "CONFIG_SPARSE_IRQ")]
+#[cfg(CONFIG_SPARSE_IRQ)]
 pub fn irq_lock_sparse();
-#[cfg(feature = "CONFIG_SPARSE_IRQ")]
+#[cfg(CONFIG_SPARSE_IRQ)]
 pub fn irq_unlock_sparse();
-#[cfg(not(feature = "CONFIG_SPARSE_IRQ"))]
+#[cfg(not(CONFIG_SPARSE_IRQ))]
 pub fn irq_lock_sparse() {}
-#[cfg(not(feature = "CONFIG_SPARSE_IRQ"))]
+#[cfg(not(CONFIG_SPARSE_IRQ))]
 pub fn irq_unlock_sparse() {}
-#[cfg(not(feature = "CONFIG_SPARSE_IRQ"))]
+#[cfg(not(CONFIG_SPARSE_IRQ))]
 pub static mut irq_desc: [irq_desc; NR_IRQS] = unsafe { core::mem::zeroed() };
 
 #[inline]
@@ -128,13 +128,13 @@ pub fn generic_handle_irq(irq: core::ffi::c_uint) -> core::ffi::c_int;
 pub fn generic_handle_irq_safe(irq: core::ffi::c_uint) -> core::ffi::c_int;
 
 // CONFIG_IRQ_DOMAIN
-#[cfg(feature = "CONFIG_IRQ_DOMAIN")]
+#[cfg(CONFIG_IRQ_DOMAIN)]
 pub fn generic_handle_domain_irq(domain: *mut irq_domain, hwirq: irq_hw_number_t) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_IRQ_DOMAIN")]
+#[cfg(CONFIG_IRQ_DOMAIN)]
 pub fn generic_handle_domain_irq_safe(domain: *mut irq_domain, hwirq: irq_hw_number_t) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_IRQ_DOMAIN")]
+#[cfg(CONFIG_IRQ_DOMAIN)]
 pub fn generic_handle_domain_nmi(domain: *mut irq_domain, hwirq: irq_hw_number_t) -> core::ffi::c_int;
-#[cfg(feature = "CONFIG_IRQ_DOMAIN")]
+#[cfg(CONFIG_IRQ_DOMAIN)]
 pub fn generic_handle_demux_domain_irq(domain: *mut irq_domain, hwirq: irq_hw_number_t) -> bool;
 
 #[inline]

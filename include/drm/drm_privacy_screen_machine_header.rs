@@ -35,8 +35,8 @@ unsafe extern "C" {
 // Preserved build-time condition:
 // #if IS_ENABLED(CONFIG_DRM_PRIVACY_SCREEN) && IS_ENABLED(CONFIG_X86)
 #[cfg(all(
-    feature = "CONFIG_DRM_PRIVACY_SCREEN",
-    feature = "CONFIG_X86"
+    CONFIG_DRM_PRIVACY_SCREEN,
+    CONFIG_X86
 ))]
 unsafe extern "C" {
     pub fn drm_privacy_screen_lookup_init();
@@ -44,15 +44,15 @@ unsafe extern "C" {
 }
 // #else: the C header provides empty inline functions.
 #[cfg(not(all(
-    feature = "CONFIG_DRM_PRIVACY_SCREEN",
-    feature = "CONFIG_X86"
+    CONFIG_DRM_PRIVACY_SCREEN,
+    CONFIG_X86
 )))]
 #[inline]
 pub fn drm_privacy_screen_lookup_init() {}
 
 #[cfg(not(all(
-    feature = "CONFIG_DRM_PRIVACY_SCREEN",
-    feature = "CONFIG_X86"
+    CONFIG_DRM_PRIVACY_SCREEN,
+    CONFIG_X86
 )))]
 #[inline]
 pub fn drm_privacy_screen_lookup_exit() {}

@@ -10,13 +10,13 @@
 #[macro_export]
 macro_rules! pgtable_supports_uffd {
     () => {
-        cfg!(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")
+        cfg!(CONFIG_HAVE_ARCH_USERFAULTFD_WP)
     };
 }
 
 #[inline]
 pub fn uffd_supports_wp_marker() -> bool {
-    pgtable_supports_uffd!() && cfg!(feature = "CONFIG_PTE_MARKER_UFFD_WP")
+    pgtable_supports_uffd!() && cfg!(CONFIG_PTE_MARKER_UFFD_WP)
 }
 
 /* CONFIG_HAVE_ARCH_USERFAULTFD_WP is absent: use the generic no-op helpers. */

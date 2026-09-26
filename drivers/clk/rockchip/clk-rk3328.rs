@@ -92,8 +92,8 @@ const RK3328_DIV_PCLK_DBG_SHIFT	0
 
 const RK3328_CLKSEL1(_aclk_core, _pclk_dbg)				
 {									
-	.reg = RK3328_CLKSEL_CON(1),					
-	.val = HIWORD_UPDATE(_aclk_core, RK3328_DIV_ACLKM_MASK,		
+	reg: RK3328_CLKSEL_CON(1),					
+	val: HIWORD_UPDATE(_aclk_core, RK3328_DIV_ACLKM_MASK,		
 			     RK3328_DIV_ACLKM_SHIFT) |			
 	       HIWORD_UPDATE(_pclk_dbg, RK3328_DIV_PCLK_DBG_MASK,	
 			     RK3328_DIV_PCLK_DBG_SHIFT),		
@@ -101,8 +101,8 @@ const RK3328_CLKSEL1(_aclk_core, _pclk_dbg)
 
 const RK3328_CPUCLK_RATE(_prate, _aclk_core, _pclk_dbg)		
 {									
-	.prate = _prate,						
-	.divs = {							
+	prate: _prate,						
+	divs: {							
 		RK3328_CLKSEL1(_aclk_core, _pclk_dbg),			
 	},								
 }
@@ -133,11 +133,11 @@ static rockchip_cpuclk_reg_data rk3328_cpuclk_data = {
 	.core_reg[0] = RK3328_CLKSEL_CON(0),
 	.div_core_shift[0] = 0,
 	.div_core_mask[0] = 0x1f,
-	.num_cores = 1,
-	.mux_core_alt = 1,
-	.mux_core_main = 3,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x3,
+	num_cores: 1,
+	mux_core_alt: 1,
+	mux_core_main: 3,
+	mux_core_shift: 6,
+	mux_core_mask: 0x3,
 };
 
 static mux_pll_p: PNAME(mux_pll_p)[PNAME(mux_pll_p)str]		= { "xin24m" };

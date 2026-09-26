@@ -124,6 +124,7 @@ pub unsafe fn afs_cache_permit(vnode: *mut afs_vnode, key: *mut key, cb_break: c
     let mut changed = false;
     let mut i: usize;
     let mut j: usize;
+    'found: {
 
     _enter!("{%llx:%llu},%x,%x", (*vnode).fid.vid, (*vnode).fid.vnode, key_serial(key), caller_access);
     rcu_read_lock();
@@ -170,13 +171,14 @@ pub unsafe fn afs_cache_permit(vnode: *mut afs_vnode, key: *mut key, cb_break: c
         if (*xpermits).h != (*new).h || (*xpermits).invalidated || (*xpermits).nr_permits != (*new).nr_permits ||
            core::slice::from_raw_parts((*xpermits).permits.as_ptr() as *const u8, (*new).nr_permits * core::mem::size_of::<afs_permit>()) !=
            core::slice::from_raw_parts((*new).permits.as_ptr() as *const u8, (*new).nr_permits * core::mem::size_of::<afs_permit>()) { continue; }
-        if refcount_inc_not_zero(&mut (*xpermits).usage) { replacement = xpermits; goto!(found); }
+        if refcount_inc_not_zero(&mut (*xpermits).usage) { replacement = xpermits; break 'found; }
         break;
     });
     for n in 0..(*new).nr_permits { key_get((*new).permits[n].key); }
     hash_add_rcu!(afs_permits_cache, &mut (*new).hash_node, (*new).h);
     replacement = new; new = core::ptr::null_mut();
-found:
+    }
+    
     spin_unlock(&afs_permits_lock); kfree(new.cast());
     rcu_read_lock(); spin_lock(&(*vnode).lock); zap = rcu_access_pointer!((*vnode).permit_cache);
     if !afs_cb_is_broken(cb_break, vnode) && zap == permits { rcu_assign_pointer!((*vnode).permit_cache, replacement); } else { zap = replacement; }

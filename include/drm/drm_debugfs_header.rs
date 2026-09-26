@@ -88,7 +88,7 @@ pub struct drm_debugfs_entry {
     pub list: list_head,
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn drm_debugfs_create_files(files: *const drm_info_list, count: i32, root: *mut dentry, minor: *mut drm_minor);
     pub fn drm_debugfs_remove_files(files: *const drm_info_list, count: i32, root: *mut dentry, minor: *mut drm_minor) -> i32;
@@ -99,25 +99,25 @@ extern "C" {
     pub fn drm_debugfs_clients_remove(file: *mut drm_file);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_create_files(_files: *const drm_info_list, _count: i32, _root: *mut dentry, _minor: *mut drm_minor) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_remove_files(_files: *const drm_info_list, _count: i32, _root: *mut dentry, _minor: *mut drm_minor) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_add_file(_dev: *mut drm_device, _name: *const core::ffi::c_char, _show: Option<unsafe extern "C" fn(*mut seq_file, *mut core::ffi::c_void) -> i32>, _data: *mut core::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_add_files(_dev: *mut drm_device, _files: *const drm_debugfs_info, _count: i32) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_gpuva_info(_m: *mut seq_file, _gpuvm: *mut drm_gpuvm) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_clients_add(_file: *mut drm_file) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn drm_debugfs_clients_remove(_file: *mut drm_file) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

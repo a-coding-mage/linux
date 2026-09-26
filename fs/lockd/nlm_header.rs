@@ -20,15 +20,15 @@ pub const NLM_LCK_DENIED_GRACE_PERIOD: i32 = 4;
  * The following return states are present when CONFIG_LOCKD_V4 is enabled
  * in the C implementation.  This condition is preserved as a Rust cfg.
  */
-#[cfg(feature = "CONFIG_LOCKD_V4")]
+#[cfg(CONFIG_LOCKD_V4)]
 pub const NLM_DEADLCK: i32 = 5;
-#[cfg(feature = "CONFIG_LOCKD_V4")]
+#[cfg(CONFIG_LOCKD_V4)]
 pub const NLM_ROFS: i32 = 6;
-#[cfg(feature = "CONFIG_LOCKD_V4")]
+#[cfg(CONFIG_LOCKD_V4)]
 pub const NLM_STALE_FH: i32 = 7;
-#[cfg(feature = "CONFIG_LOCKD_V4")]
+#[cfg(CONFIG_LOCKD_V4)]
 pub const NLM_FBIG: i32 = 8;
-#[cfg(feature = "CONFIG_LOCKD_V4")]
+#[cfg(CONFIG_LOCKD_V4)]
 pub const NLM_FAILED: i32 = 9;
 
 pub const NLM_PROGRAM: i32 = 100021;

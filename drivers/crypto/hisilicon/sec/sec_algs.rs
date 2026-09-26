@@ -113,7 +113,7 @@ unsafe fn sec_alg_skcipher_setkey_aes_ctr(tfm: *mut crypto_skcipher, key: *const
 }
 unsafe fn sec_alg_skcipher_setkey_aes_xts(tfm: *mut crypto_skcipher, key: *const u8, len: u32) -> i32 {
     let ret = xts_verify_key(tfm, key, len); if ret != 0 { return ret; }
-    let alg = match len { 2 * AES_KEYSIZE_128 => SEC_C_AES_XTS_128, 2 * AES_KEYSIZE_256 => SEC_C_AES_XTS_256, _ => return -EINVAL }; sec_alg_skcipher_setkey(tfm, key, len, alg)
+    let alg = match len { case if case == 2 * AES_KEYSIZE_128 => SEC_C_AES_XTS_128, case if case == 2 * AES_KEYSIZE_256 => SEC_C_AES_XTS_256, _ => return -EINVAL }; sec_alg_skcipher_setkey(tfm, key, len, alg)
 }
 unsafe fn sec_alg_skcipher_setkey_des_ecb(tfm: *mut crypto_skcipher, key: *const u8, len: u32) -> i32 { let r = verify_skcipher_des_key(tfm, key); if r != 0 { r } else { sec_alg_skcipher_setkey(tfm, key, len, SEC_C_DES_ECB_64) } }
 unsafe fn sec_alg_skcipher_setkey_des_cbc(tfm: *mut crypto_skcipher, key: *const u8, len: u32) -> i32 { let r = verify_skcipher_des_key(tfm, key); if r != 0 { r } else { sec_alg_skcipher_setkey(tfm, key, len, SEC_C_DES_CBC_64) } }

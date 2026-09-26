@@ -11,9 +11,9 @@ use core::ptr;
 use super::*;
 
 pub const NFS_MAX_CONNECTIONS: u32 = 16;
-#[cfg(feature = "CONFIG_NFS_V3")]
+#[cfg(CONFIG_NFS_V3)]
 pub const NFS_DEFAULT_VERSION: u32 = 3;
-#[cfg(not(feature = "CONFIG_NFS_V3"))]
+#[cfg(not(CONFIG_NFS_V3))]
 pub const NFS_DEFAULT_VERSION: u32 = 2;
 
 #[repr(i32)]
@@ -67,9 +67,9 @@ unsafe fn nfs_verify_server_address(addr: *mut sockaddr_storage) -> c_int {
 }
 
 unsafe fn nfs_server_transport_udp_invalid(ctx: *const nfs_fs_context) -> bool {
-    #[cfg(feature = "CONFIG_NFS_DISABLE_UDP_SUPPORT")]
+    #[cfg(CONFIG_NFS_DISABLE_UDP_SUPPORT)]
     { let _ = ctx; true }
-    #[cfg(not(feature = "CONFIG_NFS_DISABLE_UDP_SUPPORT"))]
+    #[cfg(not(CONFIG_NFS_DISABLE_UDP_SUPPORT))]
     { (*ctx).version == 4 }
 }
 

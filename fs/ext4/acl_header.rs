@@ -60,7 +60,7 @@ pub fn ext4_acl_count(mut size: usize) -> i32 {
 }
 
 // CONFIG_EXT4_FS_POSIX_ACL controls the following declarations.
-#[cfg(feature = "CONFIG_EXT4_FS_POSIX_ACL")]
+#[cfg(CONFIG_EXT4_FS_POSIX_ACL)]
 extern "C" {
     pub fn ext4_get_acl(inode: *mut inode, type_: i32, rcu: bool) -> *mut posix_acl;
     pub fn ext4_set_acl(
@@ -72,13 +72,13 @@ extern "C" {
     pub fn ext4_init_acl(handle: *mut handle_t, inode: *mut inode, dir: *mut inode) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_EXT4_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_EXT4_FS_POSIX_ACL))]
 pub const ext4_get_acl: Option<unsafe extern "C" fn(*mut inode, i32, bool) -> *mut posix_acl> = None;
 
-#[cfg(not(feature = "CONFIG_EXT4_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_EXT4_FS_POSIX_ACL))]
 pub const ext4_set_acl: Option<unsafe extern "C" fn(*mut mnt_idmap, *mut dentry, *mut posix_acl, i32) -> i32> = None;
 
-#[cfg(not(feature = "CONFIG_EXT4_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_EXT4_FS_POSIX_ACL))]
 #[inline]
 pub unsafe fn ext4_init_acl(_handle: *mut handle_t, _inode: *mut inode, _dir: *mut inode) -> i32 {
     0

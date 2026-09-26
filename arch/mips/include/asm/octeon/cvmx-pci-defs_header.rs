@@ -627,9 +627,9 @@ pub const CVMX_PCI_WIN_WR_MASK: u64 = (0x0000000000000018u64);
     pub w64: u32, // bitfield width 1
     pub bn: u32, // bitfield width 8
     pub dn: u32, // bitfield width 5
-    pub fn: u32, // bitfield width 3
+    pub r#fn: u32, // bitfield width 3
 // #else
-    pub fn: u32, // bitfield width 3
+    pub r#fn: u32, // bitfield width 3
     pub dn: u32, // bitfield width 5
     pub bn: u32, // bitfield width 8
     pub w64: u32, // bitfield width 1

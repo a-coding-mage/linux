@@ -48,8 +48,8 @@ unsafe fn generate_config_rom(card: *mut fw_card, config_rom: *mut u32) {
         bib_generation((*card).config_rom_generation.wrapping_add(1) % 14 + 2) |
         bib_max_rom(2) | bib_max_receive((*card).max_receive) |
         BIB_BMC | BIB_ISC | BIB_CMC | BIB_IRMC).to_be();
-    *config_rom.add(3) = ((*card).guid >> 32) as u32 .to_be();
-    *config_rom.add(4) = (*card).guid as u32 .to_be();
+    *config_rom.add(3) = (((*card).guid >> 32) as u32) .to_be();
+    *config_rom.add(4) = ((*card).guid as u32) .to_be();
     *config_rom.add(6) = NODE_CAPABILITIES.to_be();
     i = 7; j = 7 + DESCRIPTOR_COUNT;
     let mut desc = (*DESCRIPTOR_LIST.next as *mut fw_descriptor);

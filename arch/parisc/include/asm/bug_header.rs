@@ -8,18 +8,18 @@
  * Configuration conditions are retained as Rust cfg conditions.
  */
 
-#[cfg(feature = "CONFIG_BUG")]
+#[cfg(CONFIG_BUG)]
 pub const HAVE_ARCH_BUG: bool = true;
-#[cfg(feature = "CONFIG_BUG")]
+#[cfg(CONFIG_BUG)]
 pub const HAVE_ARCH_WARN_ON: bool = true;
 
 /* the break instruction is used as BUG() marker. */
-#[cfg(feature = "CONFIG_BUG")]
+#[cfg(CONFIG_BUG)]
 pub const PARISC_BUG_BREAK_ASM: &str = "break 0x1f, 0x1fff";
-#[cfg(feature = "CONFIG_BUG")]
+#[cfg(CONFIG_BUG)]
 pub const PARISC_BUG_BREAK_INSN: u32 = 0x03ffe01f;
 
-#[cfg(all(feature = "CONFIG_BUG", feature = "CONFIG_GENERIC_BUG_RELATIVE_POINTERS"))]
+#[cfg(all(CONFIG_BUG, CONFIG_GENERIC_BUG_RELATIVE_POINTERS))]
 #[macro_export]
 macro_rules! __BUG_REL {
     ($val:expr) => {
@@ -27,7 +27,7 @@ macro_rules! __BUG_REL {
     };
 }
 
-#[cfg(all(feature = "CONFIG_BUG", not(feature = "CONFIG_GENERIC_BUG_RELATIVE_POINTERS")))]
+#[cfg(all(CONFIG_BUG, not(CONFIG_GENERIC_BUG_RELATIVE_POINTERS)))]
 #[macro_export]
 macro_rules! __BUG_REL {
     ($val:expr) => {
@@ -35,7 +35,7 @@ macro_rules! __BUG_REL {
     };
 }
 
-#[cfg(all(feature = "CONFIG_BUG", feature = "CONFIG_DEBUG_BUGVERBOSE"))]
+#[cfg(all(CONFIG_BUG, CONFIG_DEBUG_BUGVERBOSE))]
 #[macro_export]
 macro_rules! BUG {
     () => {{
@@ -45,7 +45,7 @@ macro_rules! BUG {
     }};
 }
 
-#[cfg(all(feature = "CONFIG_BUG", not(feature = "CONFIG_DEBUG_BUGVERBOSE")))]
+#[cfg(all(CONFIG_BUG, not(CONFIG_DEBUG_BUGVERBOSE)))]
 #[macro_export]
 macro_rules! BUG {
     () => {{
@@ -55,7 +55,7 @@ macro_rules! BUG {
     }};
 }
 
-#[cfg(all(feature = "CONFIG_BUG", feature = "CONFIG_DEBUG_BUGVERBOSE"))]
+#[cfg(all(CONFIG_BUG, CONFIG_DEBUG_BUGVERBOSE))]
 #[macro_export]
 macro_rules! __WARN_FLAGS {
     ($cond_str:expr, $flags:expr) => {{
@@ -68,7 +68,7 @@ macro_rules! __WARN_FLAGS {
     }};
 }
 
-#[cfg(all(feature = "CONFIG_BUG", not(feature = "CONFIG_DEBUG_BUGVERBOSE")))]
+#[cfg(all(CONFIG_BUG, not(CONFIG_DEBUG_BUGVERBOSE)))]
 #[macro_export]
 macro_rules! __WARN_FLAGS {
     ($cond_str:expr, $flags:expr) => {{
@@ -81,7 +81,7 @@ macro_rules! __WARN_FLAGS {
     }};
 }
 
-#[cfg(feature = "CONFIG_BUG")]
+#[cfg(CONFIG_BUG)]
 #[macro_export]
 macro_rules! WARN_ON {
     ($x:expr) => {{

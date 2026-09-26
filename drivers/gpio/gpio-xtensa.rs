@@ -34,7 +34,7 @@ unsafe fn enable_cp(cpenable: *mut libc::c_ulong) -> libc::c_ulong {
     let mut flags: libc::c_ulong = 0;
     local_irq_save(&mut flags);
     *cpenable = xtensa_get_sr(cpenable);
-    xtensa_set_sr(*cpenable | (1 as libc::c_ulong << XCHAL_CP_ID_XTIOP), cpenable);
+    xtensa_set_sr(*cpenable | ((1 as libc::c_ulong) << XCHAL_CP_ID_XTIOP), cpenable);
     flags
 }
 

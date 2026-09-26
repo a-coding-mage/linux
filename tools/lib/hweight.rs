@@ -15,7 +15,7 @@ pub type __u64 = u64;
 #[no_mangle]
 pub extern "C" fn __sw_hweight32(mut w: u32) -> u32 {
     // Original C condition: CONFIG_ARCH_HAS_FAST_MULTIPLIER.
-    #[cfg(feature = "CONFIG_ARCH_HAS_FAST_MULTIPLIER")]
+    #[cfg(CONFIG_ARCH_HAS_FAST_MULTIPLIER)]
     {
         w = w.wrapping_sub((w >> 1) & 0x55555555);
         w = (w & 0x33333333).wrapping_add((w >> 2) & 0x33333333);
@@ -24,7 +24,7 @@ pub extern "C" fn __sw_hweight32(mut w: u32) -> u32 {
     }
 
     // Original C fallback when CONFIG_ARCH_HAS_FAST_MULTIPLIER is not set.
-    #[cfg(not(feature = "CONFIG_ARCH_HAS_FAST_MULTIPLIER"))]
+    #[cfg(not(CONFIG_ARCH_HAS_FAST_MULTIPLIER))]
     {
         let mut res: u32 = w.wrapping_sub((w >> 1) & 0x55555555);
         res = (res & 0x33333333).wrapping_add((res >> 2) & 0x33333333);
@@ -59,7 +59,7 @@ pub extern "C" fn __sw_hweight64(w: __u64) -> c_ulong {
 #[no_mangle]
 pub extern "C" fn __sw_hweight64(mut w: __u64) -> c_ulong {
     // Original C condition: CONFIG_ARCH_HAS_FAST_MULTIPLIER.
-    #[cfg(feature = "CONFIG_ARCH_HAS_FAST_MULTIPLIER")]
+    #[cfg(CONFIG_ARCH_HAS_FAST_MULTIPLIER)]
     {
         w = w.wrapping_sub((w >> 1) & 0x5555555555555555);
         w = (w & 0x3333333333333333).wrapping_add((w >> 2) & 0x3333333333333333);
@@ -68,7 +68,7 @@ pub extern "C" fn __sw_hweight64(mut w: __u64) -> c_ulong {
     }
 
     // Original C fallback when CONFIG_ARCH_HAS_FAST_MULTIPLIER is not set.
-    #[cfg(not(feature = "CONFIG_ARCH_HAS_FAST_MULTIPLIER"))]
+    #[cfg(not(CONFIG_ARCH_HAS_FAST_MULTIPLIER))]
     {
         let mut res: __u64 = w.wrapping_sub((w >> 1) & 0x5555555555555555);
         res = (res & 0x3333333333333333).wrapping_add((res >> 2) & 0x3333333333333333);

@@ -16,7 +16,7 @@ pub struct drm_format_info {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_DRM_CLIENT_SETUP")]
+#[cfg(CONFIG_DRM_CLIENT_SETUP)]
 extern "C" {
     pub fn drm_client_setup(
         dev: *mut drm_device,
@@ -26,7 +26,7 @@ extern "C" {
     pub fn drm_client_setup_with_color_mode(dev: *mut drm_device, color_mode: c_uint);
 }
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT_SETUP"))]
+#[cfg(not(CONFIG_DRM_CLIENT_SETUP))]
 #[inline]
 pub unsafe fn drm_client_setup(
     _dev: *mut drm_device,
@@ -34,12 +34,12 @@ pub unsafe fn drm_client_setup(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT_SETUP"))]
+#[cfg(not(CONFIG_DRM_CLIENT_SETUP))]
 #[inline]
 pub unsafe fn drm_client_setup_with_fourcc(_dev: *mut drm_device, _fourcc: u32) {
 }
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT_SETUP"))]
+#[cfg(not(CONFIG_DRM_CLIENT_SETUP))]
 #[inline]
 pub unsafe fn drm_client_setup_with_color_mode(_dev: *mut drm_device, _color_mode: c_uint) {
 }

@@ -29,7 +29,7 @@ unsafe fn hsr_node_table_show(sfp: *mut seq_file, _data: *mut core::ffi::c_void)
     }
 
     rcu_read_lock();
-    list_for_each_entry_rcu!(node, &(*priv_).node_db, mac_list) {
+    list_for_each_entry_rcu!(node, &(*priv_).node_db, mac_list, {
         /* skip self node */
         if hsr_addr_is_self(priv_, (*node).macaddress_A.as_ptr()) {
             continue;
@@ -51,7 +51,7 @@ unsafe fn hsr_node_table_show(sfp: *mut seq_file, _data: *mut core::ffi::c_void)
         } else {
             seq_printf(sfp, c"%5x\n", 1);
         }
-    }
+    });
     rcu_read_unlock();
     0
 }

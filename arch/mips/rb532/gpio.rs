@@ -41,7 +41,7 @@ unsafe fn rb532_set_bit(bitval: c_uint, offset: c_uint, ioaddr: *mut core::ffi::
     local_irq_save(&mut flags);
 
     val = readl(ioaddr);
-    val &= !(((!bitval) != 0) as u32 << offset);
+    val &= !((((!bitval) != 0) as u32) << offset);
     val |= (((bitval != 0) as u32) << offset);
     writel(val, ioaddr);
 

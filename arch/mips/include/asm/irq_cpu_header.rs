@@ -12,10 +12,10 @@ unsafe extern "C" {
 }
 
 /* Preserves the C build-time CONFIG_IRQ_DOMAIN condition. */
-#[cfg(feature = "CONFIG_IRQ_DOMAIN")]
+#[cfg(CONFIG_IRQ_DOMAIN)]
 pub enum device_node {}
 
-#[cfg(feature = "CONFIG_IRQ_DOMAIN")]
+#[cfg(CONFIG_IRQ_DOMAIN)]
 unsafe extern "C" {
     pub fn mips_cpu_irq_of_init(
         of_node: *mut device_node,

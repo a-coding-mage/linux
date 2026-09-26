@@ -11,12 +11,12 @@ pub struct samsung_pwm_variant {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SAMSUNG_DEV_PWM")]
+#[cfg(CONFIG_SAMSUNG_DEV_PWM)]
 extern "C" {
     pub fn samsung_pwm_set_platdata(pd: *mut samsung_pwm_variant);
 }
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_DEV_PWM"))]
+#[cfg(not(CONFIG_SAMSUNG_DEV_PWM))]
 #[inline]
 pub unsafe fn samsung_pwm_set_platdata(_pd: *mut samsung_pwm_variant) {}
 

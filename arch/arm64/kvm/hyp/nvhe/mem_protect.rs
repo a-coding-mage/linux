@@ -9,7 +9,7 @@
 /*
  * Copyright (C) 2020 Google LLC
  * Author: Quentin Perret <qperret@google.com>
- * /
+ */
 
 #include <linux/kvm_host.h>
 
@@ -46,7 +46,7 @@ static void pkvm_sme_dvmsync_fw_call(void)
 		/*
 		 * Ignore the return value. Probing for the workaround
 		 * availability took place in init_hyp_mode().
-		 * /
+		 */
 		hyp_smccc_1_1_smc(ARM_SMCCC_CPU_WORKAROUND_4193714, &res);
 	}
 }
@@ -98,7 +98,7 @@ static void *host_s2_zalloc_pages_exact(size_t size)
 	 * The size of concatenated PGDs is always a power of two of PAGE_SIZE,
 	 * so there should be no need to free any of the tail pages to make the
 	 * allocation exact.
-	 * /
+	 */
 	WARN_ON(size != (PAGE_SIZE << get_order(size)));
 
 	return addr;
@@ -153,7 +153,7 @@ static void prepare_host_vtcr(void)
 {
 	u32 parange, phys_shift;
 
-	/* The host stage 2 is id-mapped, so use parange for T0SZ * /
+	/* The host stage 2 is id-mapped, so use parange for T0SZ */
 	parange = kvm_get_parange(id_aa64mmfr0_el1_sys_val);
 	phys_shift = id_aa64mmfr0_parange_to_phys_shift(parange);
 
@@ -268,7 +268,7 @@ static void __apply_guest_page(void *va, size_t size,
 
 static void clean_dcache_guest_page(void *va, size_t size)
 {
-	/* See comment in __clean_dcache_guest_page() * /
+	/* See comment in __clean_dcache_guest_page() */
 	if (cpus_have_final_cap(ARM64_HAS_STAGE2_FWB))
 		return;
 
@@ -332,10 +332,10 @@ void reclaim_pgtable_pages(struct pkvm_hyp_vm *vm, struct kvm_hyp_memcache *mc)
 	struct hyp_page *page;
 	void *addr;
 
-	/* Dump all pgtable pages in the hyp_pool * /
+	/* Dump all pgtable pages in the hyp_pool */
 	kvm_guest_destroy_stage2(vm);
 
-	/* Drain the hyp_pool into the memcache * /
+	/* Drain the hyp_pool into the memcache */
 	addr = hyp_alloc_pages(&vm->pool, 0);
 	while (addr) {
 		page = hyp_virt_to_page(addr);
@@ -365,7 +365,7 @@ int __pkvm_prot_finalize(void)
 	 * PoC, but also provides the DSB that ensures ongoing
 	 * page-table walks that have started before we trapped to EL2
 	 * have completed.
-	 * /
+	 */
 	kvm_flush_dcache_to_poc(params, sizeof(*params));
 
 	write_sysreg_hcr(params->hcr_el2);
@@ -374,10 +374,10 @@ int __pkvm_prot_finalize(void)
 	/*
 	 * Make sure to have an ISB before the TLB maintenance below but only
 	 * when __load_stage2() doesn't include one already.
-	 * /
+	 */
 	asm(ALTERNATIVE("isb", "nop", ARM64_WORKAROUND_SPECULATIVE_AT));
 
-	/* Invalidate stale HCR bits that may be cached in TLBs * /
+	/* Invalidate stale HCR bits that may be cached in TLBs */
 	__tlbi(vmalls12e1);
 	dsb(nsh);
 	isb();
@@ -392,7 +392,7 @@ static int host_stage2_unmap_dev_all(void)
 	u64 addr = 0;
 	int i, ret;
 
-	/* Unmap all non-memory regions to recycle the pages * /
+	/* Unmap all non-memory regions to recycle the pages */
 	for (i = 0; i < hyp_memblock_nr; i++, addr = reg->base + reg->size) {
 		reg = &hyp_memory[i];
 		ret = kvm_pgtable_stage2_unmap(pgt, addr, reg->base - addr);
@@ -407,7 +407,7 @@ static int host_stage2_unmap_dev_all(void)
  *
  * This check is also robust to overflows and is therefore a requirement before
  * using a pfn/nr_pages pair from an untrusted source.
- * /
+ */
 static bool pfn_range_is_valid(u64 pfn, u64 nr_pages)
 {
 	u64 limit = BIT(kvm_phys_shift(&host_mmu.arch.mmu) - PAGE_SHIFT);
@@ -429,7 +429,7 @@ static struct memblock_region *find_mem_range(phys_addr_t addr, struct kvm_mem_r
 	range->start = 0;
 	range->end = ULONG_MAX;
 
-	/* The list of memblock regions is sorted, binary search it * /
+	/* The list of memblock regions is sorted, binary search it */
 	while (left < right) {
 		cur = (left + right) >> 1;
 		reg = &hyp_memory[cur];
@@ -470,7 +470,7 @@ static int check_range_allowed_memory(u64 start, u64 end)
 	/*
 	 * Callers can't check the state of a range that overlaps memory and
 	 * MMIO regions, so ensure [start, end[ is in the same kvm_mem_range.
-	 * /
+	 */
 	reg = find_mem_range(start, &range);
 	if (!is_in_mem_range(end - 1, &range))
 		return -EINVAL;
@@ -499,7 +499,7 @@ static inline int __host_stage2_idmap(u64 start, u64 end,
 	 * initialisation, so we can squash -EAGAIN to save callers
 	 * having to treat it like success in the case that they try to
 	 * map something that is already mapped.
-	 * /
+	 */
 	return kvm_pgtable_stage2_map(&host_mmu.pgt, start, end - start, start,
 				      prot, &host_s2_pool,
 				      KVM_PGTABLE_WALK_IGNORE_EAGAIN);
@@ -510,7 +510,7 @@ static inline int __host_stage2_idmap(u64 start, u64 end,
  * page granularity, but it is difficult to know how much of the MMIO range
  * we will need to cover upfront, so we may need to 'recycle' the pages if we
  * run out.
- * /
+ */
 #define host_stage2_try(fn, ...)					\
 	({								\
 		int __ret;						\
@@ -610,7 +610,7 @@ static int host_stage2_set_owner_metadata_locked(phys_addr_t addr, u64 size,
 		/*
 		 * After stage2 maintenance has happened, but before the page
 		 * owner has changed.
-		 * /
+		 */
 		pkvm_sme_dvmsync_fw_call();
 		__host_update_page_state(addr, size, PKVM_NOPAGE);
 	}
@@ -641,7 +641,7 @@ int host_stage2_set_owner_locked(phys_addr_t addr, u64 size, u8 owner_id)
 }
 
 #define KVM_HOST_PTE_OWNER_GUEST_HANDLE_MASK	GENMASK(15, 0)
-/* We need 40 bits for the GFN to cover a 52-bit IPA with 4k pages and LPA2 * /
+/* We need 40 bits for the GFN to cover a 52-bit IPA with 4k pages and LPA2 */
 #define KVM_HOST_PTE_OWNER_GUEST_GFN_MASK	GENMASK(55, 16)
 static u64 host_stage2_encode_gfn_meta(struct pkvm_hyp_vm *vm, u64 gfn)
 {
@@ -675,7 +675,7 @@ static int host_stage2_decode_gfn_meta(kvm_pte_t pte, struct pkvm_hyp_vm **vm,
 	handle = FIELD_GET(KVM_HOST_PTE_OWNER_GUEST_HANDLE_MASK, meta);
 	*vm = get_vm_by_handle(handle);
 	if (!*vm) {
-		/* We probably raced with teardown; try again * /
+		/* We probably raced with teardown; try again */
 		return -EAGAIN;
 	}
 
@@ -698,7 +698,7 @@ static bool host_stage2_force_pte_cb(u64 addr, u64 end, enum kvm_pgtable_prot pr
 	 * state is stored. In all those cases, it is safer to use page-level
 	 * mappings, hence avoiding to lose the state because of side-effects in
 	 * kvm_pgtable_stage2_map().
-	 * /
+	 */
 	if (range_is_memory(addr, end))
 		return prot != PKVM_HOST_MEM_PROT;
 	else
@@ -733,7 +733,7 @@ static void host_inject_mem_abort(struct kvm_cpu_context *host_ctxt)
 	esr = read_sysreg_el2(SYS_ESR);
 	spsr = read_sysreg_el2(SYS_SPSR);
 
-	/* Repaint the ESR to report a same-level fault if taken from EL1 * /
+	/* Repaint the ESR to report a same-level fault if taken from EL1 */
 	if ((spsr & PSR_MODE_MASK) != PSR_MODE_EL0t) {
 		ec = ESR_ELx_EC(esr);
 		if (ec == ESR_ELx_EC_DABT_LOW)
@@ -754,7 +754,7 @@ static void host_inject_mem_abort(struct kvm_cpu_context *host_ctxt)
 	 *
 	 * Note: although S1PTW is RES0 at EL1, it is guaranteed by the
 	 * architecture to be backed by flops, so it should be safe to use.
-	 * /
+	 */
 	esr |= ESR_ELx_S1PTW;
 	inject_host_exception(esr);
 }
@@ -769,7 +769,7 @@ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
 		/*
 		 * We've presumably raced with a page-table change which caused
 		 * AT to fail, try again.
-		 * /
+		 */
 		return;
 	}
 
@@ -777,7 +777,7 @@ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt)
 	/*
 	 * Yikes, we couldn't resolve the fault IPA. This should reinject an
 	 * abort into the host when we figure out how to do that.
-	 * /
+	 */
 	BUG_ON(!(fault.hpfar_el2 & HPFAR_EL2_NS));
 	addr = FIELD_GET(HPFAR_EL2_FIPA, fault.hpfar_el2) << 12;
 
@@ -961,7 +961,7 @@ int __pkvm_vcpu_in_poison_fault(struct pkvm_hyp_vcpu *hyp_vcpu)
 	 * fault handler but we retrieve it ourselves from the FAR so as
 	 * to avoid exposing an "oracle" that could reveal data access
 	 * patterns of the guest after initial donation of its pages.
-	 * /
+	 */
 	ipa = kvm_vcpu_get_fault_ipa(&hyp_vcpu->vcpu);
 	ipa |= FAR_TO_FIPA_OFFSET(kvm_vcpu_get_hfar(&hyp_vcpu->vcpu));
 
@@ -1269,7 +1269,7 @@ static int __guest_check_transition_size(u64 phys, u64 ipa, u64 nr_pages, u64 *s
 		return 0;
 	}
 
-	/* We solely support second to last level huge mapping * /
+	/* We solely support second to last level huge mapping */
 	block_size = kvm_granule_size(KVM_PGTABLE_LAST_LEVEL - 1);
 
 	if (nr_pages != block_size >> PAGE_SHIFT)
@@ -1293,7 +1293,7 @@ static void hyp_poison_page(phys_addr_t phys)
 	 * will be enabled on CPUs that support it. This is incorrect for the
 	 * host stage-2 and would otherwise lead to a malicious host potentially
 	 * being able to read the contents of newly reclaimed guest pages.
-	 * /
+	 */
 	kvm_flush_dcache_to_poc(addr, PAGE_SIZE);
 	hyp_fixmap_unmap();
 }
@@ -1314,7 +1314,7 @@ static int host_stage2_get_guest_info(phys_addr_t phys, struct pkvm_hyp_vm **vm,
 	case PKVM_PAGE_OWNED:
 	case PKVM_PAGE_SHARED_OWNED:
 	case PKVM_PAGE_SHARED_BORROWED:
-		/* The access should no longer fault; try again. * /
+		/* The access should no longer fault; try again. */
 		return -EAGAIN;
 	case PKVM_NOPAGE:
 		break;
@@ -1360,7 +1360,7 @@ int __pkvm_host_force_reclaim_page_guest(phys_addr_t phys)
 		goto unlock_guest;
 	}
 
-	/* We really shouldn't be allocating, so don't pass a memcache * /
+	/* We really shouldn't be allocating, so don't pass a memcache */
 	ret = kvm_pgtable_stage2_annotate(&vm->pgt, ipa, PAGE_SIZE, NULL,
 					  KVM_GUEST_INVALID_PTE_TYPE_POISONED,
 					  0);
@@ -1415,7 +1415,7 @@ unlock:
 	/*
 	 * -EHWPOISON implies that the page was forcefully reclaimed already
 	 * so return success for the GUP pin to be dropped.
-	 * /
+	 */
 	return ret && ret != -EHWPOISON ? ret : 0;
 }
 
@@ -1424,7 +1424,7 @@ unlock:
  * KVM_PGTABLE_LAST_LEVEL - 1 block for share). kvm_mmu_cache_min_pages()
  * bounds the worst-case allocation: exact for the PAGE_SIZE leaf,
  * conservative by one for the block.
- * /
+ */
 static int __guest_check_pgtable_memcache(struct pkvm_hyp_vcpu *vcpu)
 {
 	struct pkvm_hyp_vm *vm = pkvm_hyp_vcpu_to_hyp_vm(vcpu);
@@ -1512,7 +1512,7 @@ int __pkvm_host_share_guest(u64 pfn, u64 gfn, u64 nr_pages, struct pkvm_hyp_vcpu
 				goto unlock;
 			}
 
-			/* Only host to np-guest multi-sharing is tolerated * /
+			/* Only host to np-guest multi-sharing is tolerated */
 			if (page->host_share_guest_count)
 				continue;
 
@@ -1605,7 +1605,7 @@ int __pkvm_host_unshare_guest(u64 gfn, u64 nr_pages, struct pkvm_hyp_vm *vm)
 		goto unlock;
 
 	for_each_hyp_page(page, phys, size) {
-		/* __check_host_shared_guest() protects against underflow * /
+		/* __check_host_shared_guest() protects against underflow */
 		page->host_share_guest_count--;
 		if (!page->host_share_guest_count)
 			set_host_state(page, PKVM_PAGE_OWNED);
@@ -1717,7 +1717,7 @@ int __pkvm_host_mkyoung_guest(u64 gfn, struct pkvm_hyp_vcpu *vcpu)
 struct pkvm_expected_state {
 	enum pkvm_page_state host;
 	enum pkvm_page_state hyp;
-	enum pkvm_page_state guest[2]; /* [ gfn, gfn + 1 ] * /
+	enum pkvm_page_state guest[2]; /* [ gfn, gfn + 1 ] */
 };
 
 static struct pkvm_expected_state selftest_state;

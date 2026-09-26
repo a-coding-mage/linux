@@ -144,7 +144,7 @@ unsafe fn setup_return(regs: *mut pt_regs, ksig: *mut ksignal, rc: *mut c_ulong,
         idx = (thumb << 1) as usize; if (*ksig).ka.sa.sa_flags & SA_SIGINFO != 0 { idx += 3; }
         if __put_user(sigreturn_codes[idx], rc) != 0 || __put_user(sigreturn_codes[idx+1], rc.add(1)) != 0 { return 1; }
     }
-    let retcode = if IS_ENABLED(CONFIG_MMU) && cpsr & MODE32_BIT != 0 { (*(*current).mm).context.sigpage + signal_return_offset + (idx as c_ulong << 2) + thumb } else { flush_icache_range(rc as c_ulong, rc.add(3) as c_ulong); rc as c_ulong + thumb };
+    let retcode = if IS_ENABLED(CONFIG_MMU) && cpsr & MODE32_BIT != 0 { (*(*current).mm).context.sigpage + signal_return_offset + ((idx as c_ulong) << 2) + thumb } else { flush_icache_range(rc as c_ulong, rc.add(3) as c_ulong); rc as c_ulong + thumb };
     (*regs).ARM_r0 = (*ksig).sig; (*regs).ARM_sp = frame as c_ulong; (*regs).ARM_lr = retcode; (*regs).ARM_pc = handler;
     if fdpic { (*regs).ARM_r9 = got; } (*regs).ARM_cpsr = cpsr; 0
 }
@@ -166,7 +166,7 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) { let oldset = s
 
 unsafe fn do_signal(regs: *mut pt_regs, syscall: c_int) -> c_int {
     let (mut retval, mut cont, mut restart_addr, mut restart) = (0u32, 0u32, 0u32, 0); let mut ksig: ksignal = core::mem::zeroed();
-    if syscall != 0 { cont=(*regs).ARM_pc; restart_addr=cont-(if thumb_mode(regs){2}else{4}); retval=(*regs).ARM_r0; match retval as c_int { -ERESTART_RESTARTBLOCK => {restart-=2; restart+=1; (*regs).ARM_r0=(*regs).ARM_ORIG_r0; (*regs).ARM_pc=restart_addr;}, -ERESTARTNOHAND|-ERESTARTSYS|-ERESTARTNOINTR => {restart+=1; (*regs).ARM_r0=(*regs).ARM_ORIG_r0; (*regs).ARM_pc=restart_addr;}, _=>{} } }
+    if syscall != 0 { cont=(*regs).ARM_pc; restart_addr=cont-(if thumb_mode(regs){2}else{4}); retval=(*regs).ARM_r0; match retval as c_int { case if case == -ERESTART_RESTARTBLOCK => {restart-=2; restart+=1; (*regs).ARM_r0=(*regs).ARM_ORIG_r0; (*regs).ARM_pc=restart_addr;}, case if case == -ERESTARTNOHAND || case == -ERESTARTSYS || case == -ERESTARTNOINTR => {restart+=1; (*regs).ARM_r0=(*regs).ARM_ORIG_r0; (*regs).ARM_pc=restart_addr;}, _=>{} } }
     if get_signal(&mut ksig) { if restart != 0 && (*regs).ARM_pc==restart_addr && (retval as c_int==-ERESTARTNOHAND || retval as c_int==-ERESTART_RESTARTBLOCK || (retval as c_int==-ERESTARTSYS && (*ksig).ka.sa.sa_flags&SA_RESTART==0)) {(*regs).ARM_r0=-EINTR as _; (*regs).ARM_pc=cont;} handle_signal(&mut ksig, regs); } else { restore_saved_sigmask(); if restart!=0 && (*regs).ARM_pc==restart_addr {(*regs).ARM_pc=cont; return restart;} } 0
 }
 

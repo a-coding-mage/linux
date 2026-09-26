@@ -6,51 +6,51 @@
 const DML2_MAX_FMT_420_BUFFER_WIDTH: u32 = 4096;
 
 static double dcn5_trunc_to_valid_bpp(
-		struct dml2_core_shared_TruncToValidBPP_locals *l,
+		dml2_core_shared_TruncToValidBPP_locals *l,
 		double LinkBitRate,
-		unsigned int Lanes,
-		unsigned int HTotal,
-		unsigned int HActive,
+		core::ffi::c_uint Lanes,
+		core::ffi::c_uint HTotal,
+		core::ffi::c_uint HActive,
 		double PixelClock,
 		double DesiredBPP,
 		bool DSCEnable,
-		enum dml2_output_encoder_class Output,
-		enum dml2_output_format_class Format,
-		unsigned int DSCInputBitPerComponent,
-		unsigned int DSCSlices,
-		unsigned int AudioRate,
-		unsigned int AudioLayout,
-		enum dml2_odm_mode ODMModeNoDSC,
-		enum dml2_odm_mode ODMModeDSC,
+		dml2_output_encoder_class Output,
+		dml2_output_format_class Format,
+		core::ffi::c_uint DSCInputBitPerComponent,
+		core::ffi::c_uint DSCSlices,
+		core::ffi::c_uint AudioRate,
+		core::ffi::c_uint AudioLayout,
+		dml2_odm_mode ODMModeNoDSC,
+		dml2_odm_mode ODMModeDSC,
 
 		// Output
-		unsigned int *RequiredSlots)
+		core::ffi::c_uint *RequiredSlots)
 {
 	(void)DSCInputBitPerComponent;
 	(void)RequiredSlots;
 	double MaxLinkBPP;
-	unsigned int MinDSCBPP;
+	core::ffi::c_uint MinDSCBPP;
 	double MaxDSCBPP;
-	unsigned int NonDSCBPP0;
-	unsigned int NonDSCBPP1;
-	unsigned int NonDSCBPP2;
+	core::ffi::c_uint NonDSCBPP0;
+	core::ffi::c_uint NonDSCBPP1;
+	core::ffi::c_uint NonDSCBPP2;
 	enum dml2_odm_mode ODMMode;
-	unsigned int slice_width = (int)math_ceil2((double)HActive / DSCSlices, 1.0);
+	core::ffi::c_uint slice_width = (int)math_ceil2((double)HActive / DSCSlices, 1.0);
 
 	enum lib_frl_cap_check_status hdmifrlresult = LIB_FRL_CAP_CHECK_OK;
 
-	l->hdmifrlparams.lanes = (int)Lanes;
-	l->hdmifrlparams.f_pixel_clock_nominal = PixelClock * 1000000;
-	l->hdmifrlparams.r_bit_nominal = LinkBitRate * 1000000;
-	l->hdmifrlparams.layout = (int)AudioLayout;
-	l->hdmifrlparams.f_audio = AudioRate * 1000;
-	l->hdmifrlparams.h_active = (int)HActive;
-	l->hdmifrlparams.h_blank = (int)(HTotal - HActive);
-	l->hdmifrlparams.bpc = (int)(DesiredBPP / 3);
-	l->hdmifrlparams.compressed = DSCEnable;
-	l->hdmifrlparams.slices = (int)DSCSlices;
-	l->hdmifrlparams.slice_width = slice_width;
-	l->hdmifrlparams.bpp_target = DesiredBPP;
+	(*l).hdmifrlparams.lanes = (int)Lanes;
+	(*l).hdmifrlparams.f_pixel_clock_nominal = PixelClock * 1000000;
+	(*l).hdmifrlparams.r_bit_nominal = LinkBitRate * 1000000;
+	(*l).hdmifrlparams.layout = (int)AudioLayout;
+	(*l).hdmifrlparams.f_audio = AudioRate * 1000;
+	(*l).hdmifrlparams.h_active = (int)HActive;
+	(*l).hdmifrlparams.h_blank = (int)(HTotal - HActive);
+	(*l).hdmifrlparams.bpc = (int)(DesiredBPP / 3);
+	(*l).hdmifrlparams.compressed = DSCEnable;
+	(*l).hdmifrlparams.slices = (int)DSCSlices;
+	(*l).hdmifrlparams.slice_width = slice_width;
+	(*l).hdmifrlparams.bpp_target = DesiredBPP;
 
 	if (Format == dml2_420) {
 		NonDSCBPP0 = 12;
@@ -58,19 +58,19 @@ static double dcn5_trunc_to_valid_bpp(
 		NonDSCBPP2 = 18;
 		MinDSCBPP = 6;
 		MaxDSCBPP = 16;
-		l->hdmifrlparams.pixel_encoding = LIB_FRL_CAP_CHECK_PIXEL_ENCODING_420;
-		l->hdmifrlparams.bpc = (int)(DesiredBPP / 1.5);
+		(*l).hdmifrlparams.pixel_encoding = LIB_FRL_CAP_CHECK_PIXEL_ENCODING_420;
+		(*l).hdmifrlparams.bpc = (int)(DesiredBPP / 1.5);
 	} else if (Format == dml2_444) {
 		NonDSCBPP0 = 24;
 		NonDSCBPP1 = 30;
 		NonDSCBPP2 = 36;
 		MinDSCBPP = 8;
 		MaxDSCBPP = 16;
-		l->hdmifrlparams.pixel_encoding = LIB_FRL_CAP_CHECK_PIXEL_ENCODING_444;
-		l->hdmifrlparams.bpc = (int)(DesiredBPP / 3.0);
+		(*l).hdmifrlparams.pixel_encoding = LIB_FRL_CAP_CHECK_PIXEL_ENCODING_444;
+		(*l).hdmifrlparams.bpc = (int)(DesiredBPP / 3.0);
 	} else {
-		l->hdmifrlparams.pixel_encoding = LIB_FRL_CAP_CHECK_PIXEL_ENCODING_422;
-		l->hdmifrlparams.bpc = (int)(DesiredBPP / 2.0);
+		(*l).hdmifrlparams.pixel_encoding = LIB_FRL_CAP_CHECK_PIXEL_ENCODING_422;
+		(*l).hdmifrlparams.bpc = (int)(DesiredBPP / 2.0);
 		if (Output == dml2_hdmi || Output == dml2_hdmifrl) {
 			NonDSCBPP0 = 24;
 			NonDSCBPP1 = 24;
@@ -90,9 +90,9 @@ static double dcn5_trunc_to_valid_bpp(
 	}
 
 	if (Output == dml2_hdmifrl) {
-		hdmifrlresult = frl_cap_check_intermediates(&l->hdmifrlparams, &l->hdmifrlinter);
-		MaxLinkBPP = (1 - l->hdmifrlinter.overhead_max) * math_min2(l->hdmifrlinter.r_frl_char_min * 16.0 * (double)Lanes / l->hdmifrlinter.f_pixel_clock_max + 24.0 * (double)DML2_FRL_CHK_TB_BORROWED_MAX / (double)HActive,
-				(l->hdmifrlinter.r_frl_char_min * 16.0 * (double)Lanes / l->hdmifrlinter.f_pixel_clock_max * (double)HTotal - 16.0 * (double)l->hdmifrlinter.blank_audio_min) / (double)HActive);
+		hdmifrlresult = frl_cap_check_intermediates((*&l).hdmifrlparams, (*&l).hdmifrlinter);
+		MaxLinkBPP = (1 - (*l).hdmifrlinter.overhead_max) * math_min2((*l).hdmifrlinter.r_frl_char_min * 16.0 * (double)Lanes / (*l).hdmifrlinter.f_pixel_clock_max + 24.0 * (double)DML2_FRL_CHK_TB_BORROWED_MAX / (double)HActive,
+				((*l).hdmifrlinter.r_frl_char_min * 16.0 * (double)Lanes / (*l).hdmifrlinter.f_pixel_clock_max * (double)HTotal - 16.0 * (*(double)l).hdmifrlinter.blank_audio_min) / (double)HActive);
 	} else if (DSCEnable && Output == dml2_dp2p0) {
 		MaxLinkBPP = LinkBitRate * Lanes / PixelClock * 128.0 / 132.0 * 383.0 / 384.0 * 65536.0 / 65540.0;
 		MaxLinkBPP = math_floor2(MaxLinkBPP * slice_width - 128.0, 128.0) / slice_width;
@@ -144,37 +144,37 @@ static double dcn5_trunc_to_valid_bpp(
 }
 
 void dcn5_calculate_output_link(
-		struct dml2_core_internal_scratch *s,
+		dml2_core_internal_scratch *s,
 		double PHYCLK,
 		double PHYCLKD18,
 		double PHYCLKD32,
 		double Downspreading,
-		enum dml2_output_encoder_class Output,
-		enum dml2_output_format_class OutputFormat,
-		unsigned int HTotal,
-		unsigned int HActive,
+		dml2_output_encoder_class Output,
+		dml2_output_format_class OutputFormat,
+		core::ffi::c_uint HTotal,
+		core::ffi::c_uint HActive,
 		double PixelClockBackEnd,
 		double ForcedOutputLinkBPP,
-		unsigned int DSCInputBitPerComponent,
-		unsigned int NumberOfDSCSlices,
+		core::ffi::c_uint DSCInputBitPerComponent,
+		core::ffi::c_uint NumberOfDSCSlices,
 		double AudioSampleRate,
-		unsigned int AudioSampleLayout,
-		enum dml2_odm_mode ODMModeNoDSC,
-		enum dml2_odm_mode ODMModeDSC,
-		enum dml2_dsc_enable_option DSCEnable,
-		unsigned int OutputLinkDPLanes,
-		enum dml2_output_link_dp_rate OutputLinkDPRate,
+		core::ffi::c_uint AudioSampleLayout,
+		dml2_odm_mode ODMModeNoDSC,
+		dml2_odm_mode ODMModeDSC,
+		dml2_dsc_enable_option DSCEnable,
+		core::ffi::c_uint OutputLinkDPLanes,
+		dml2_output_link_dp_rate OutputLinkDPRate,
 
 		// Output
 		bool *RequiresDSC,
 		bool *RequiresFEC,
 		double *OutBpp,
-		enum dml2_core_internal_output_type *OutputType,
-		enum dml2_core_internal_output_type_rate *OutputRate,
-		unsigned int *RequiredSlots)
+		dml2_core_internal_output_type *OutputType,
+		dml2_core_internal_output_type_rate *OutputRate,
+		core::ffi::c_uint *RequiredSlots)
 {
 	bool LinkDSCEnable;
-	unsigned int dummy;
+	core::ffi::c_uint dummy;
 	*RequiresDSC = false;
 	*RequiresFEC = false;
 	*OutBpp = 0;
@@ -197,8 +197,8 @@ void dcn5_calculate_output_link(
 		if (Output == dml2_hdmi) {
 			*RequiresDSC = false;
 			*RequiresFEC = false;
-			*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, math_min2(600, PHYCLK) * 10, 3, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, false, Output,
-					OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+			*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, math_min2(600, PHYCLK) * 10, 3, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, false, Output,
+					OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 			//OutputTypeAndRate = "HDMI";
 			*OutputType = dml2_core_internal_output_type_hdmi;
 		} else if (Output == dml2_dp || Output == dml2_dp2p0 || Output == dml2_edp) {
@@ -222,40 +222,40 @@ void dcn5_calculate_output_link(
 			if (Output == dml2_dp2p0) {
 				*OutBpp = 0;
 				if ((OutputLinkDPRate == dml2_dp_rate_na || OutputLinkDPRate == dml2_dp_rate_uhbr10) && PHYCLKD32 >= 10000.0 / 32) {
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 10000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 10000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					if (*OutBpp == 0 && PHYCLKD32 < 13500.0 / 32 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 						*RequiresDSC = true;
 						LinkDSCEnable = true;
-						*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 10000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+						*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 10000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					}
 					//OutputTypeAndRate = Output & " UHBR10";
 					*OutputType = dml2_core_internal_output_type_dp2p0;
 					*OutputRate = dml2_core_internal_output_rate_dp_rate_uhbr10;
 				}
 				if ((OutputLinkDPRate == dml2_dp_rate_na || OutputLinkDPRate == dml2_dp_rate_uhbr13p5) && *OutBpp == 0 && PHYCLKD32 >= 13500.0 / 32) {
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 13500, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 13500, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 
 					if (*OutBpp == 0 && PHYCLKD32 < 20000.0 / 32 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 						*RequiresDSC = true;
 						LinkDSCEnable = true;
-						*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 13500, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+						*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 13500, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					}
 					//OutputTypeAndRate = Output & " UHBR13p5";
 					*OutputType = dml2_core_internal_output_type_dp2p0;
 					*OutputRate = dml2_core_internal_output_rate_dp_rate_uhbr13p5;
 				}
 				if ((OutputLinkDPRate == dml2_dp_rate_na || OutputLinkDPRate == dml2_dp_rate_uhbr20) && *OutBpp == 0 && PHYCLKD32 >= 20000.0 / 32) {
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 20000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 20000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					if (*OutBpp == 0 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 						*RequiresDSC = true;
 						LinkDSCEnable = true;
-						*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 20000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+						*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 20000, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					}
 					//OutputTypeAndRate = Output & " UHBR20";
 					*OutputType = dml2_core_internal_output_type_dp2p0;
@@ -264,24 +264,24 @@ void dcn5_calculate_output_link(
 			} else { // output is dp or edp
 				*OutBpp = 0;
 				if ((OutputLinkDPRate == dml2_dp_rate_na || OutputLinkDPRate == dml2_dp_rate_hbr) && PHYCLK >= 270) {
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 2700, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 2700, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					if (*OutBpp == 0 && PHYCLK < 540 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 						*RequiresDSC = true;
 						LinkDSCEnable = true;
 						if (Output == dml2_dp) {
 							*RequiresFEC = true;
 						}
-						*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 2700, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+						*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 2700, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					}
 					//OutputTypeAndRate = Output & " HBR";
 					*OutputType = (Output == dml2_dp) ? dml2_core_internal_output_type_dp : dml2_core_internal_output_type_edp;
 					*OutputRate = dml2_core_internal_output_rate_dp_rate_hbr;
 				}
 				if ((OutputLinkDPRate == dml2_dp_rate_na || OutputLinkDPRate == dml2_dp_rate_hbr2) && *OutBpp == 0 && PHYCLK >= 540) {
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 5400, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 5400, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 
 					if (*OutBpp == 0 && PHYCLK < 810 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 						*RequiresDSC = true;
@@ -289,16 +289,16 @@ void dcn5_calculate_output_link(
 						if (Output == dml2_dp) {
 							*RequiresFEC = true;
 						}
-						*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 5400, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+						*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 5400, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					}
 					//OutputTypeAndRate = Output & " HBR2";
 					*OutputType = (Output == dml2_dp) ? dml2_core_internal_output_type_dp : dml2_core_internal_output_type_edp;
 					*OutputRate = dml2_core_internal_output_rate_dp_rate_hbr2;
 				}
 				if ((OutputLinkDPRate == dml2_dp_rate_na || OutputLinkDPRate == dml2_dp_rate_hbr3) && *OutBpp == 0 && PHYCLK >= 810) { // VBA_ERROR, vba code doesn't have hbr3 check
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 8100, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 8100, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+							OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 
 					if (*OutBpp == 0 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 						*RequiresDSC = true;
@@ -306,8 +306,8 @@ void dcn5_calculate_output_link(
 						if (Output == dml2_dp) {
 							*RequiresFEC = true;
 						}
-						*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, (1 - Downspreading / 100) * 8100, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
-								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
+						*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, (1 - Downspreading / 100) * 8100, OutputLinkDPLanes, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output,
+								OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, RequiredSlots);
 					}
 					//OutputTypeAndRate = Output & " HBR3";
 					*OutputType = (Output == dml2_dp) ? dml2_core_internal_output_type_dp : dml2_core_internal_output_type_edp;
@@ -326,54 +326,54 @@ void dcn5_calculate_output_link(
 			}
 			*OutBpp = 0;
 			if (PHYCLKD18 >= 3000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 3000, 3, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 3000, 3, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "3x3";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_3x3;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 6000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 6000, 3, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 6000, 3, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "6x3";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_6x3;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 6000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 6000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 6000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "6x4";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_6x4;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 8000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 8000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 8000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "8x4";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_8x4;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 10000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 10000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 10000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "10x4";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_10x4;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 12000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 12000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 12000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "12x4";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_12x4;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 16000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 16000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 16000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				//OutputTypeAndRate = Output & "16x4";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
 				*OutputRate = dml2_core_internal_output_rate_hdmi_rate_16x4;
 			}
 			if (*OutBpp == 0 && PHYCLKD18 >= 20000.0 / 18) {
-				*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 20000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+				*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 20000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				if (*OutBpp == 0 && DSCEnable == dml2_dsc_enable_if_necessary && ForcedOutputLinkBPP == 0) {
 					*RequiresDSC = true;
 					LinkDSCEnable = true;
 					*RequiresFEC = true;
-					*OutBpp = dcn5_trunc_to_valid_bpp(&s->TruncToValidBPP_locals, 20000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (unsigned int)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
+					*OutBpp = dcn5_trunc_to_valid_bpp((*&s).TruncToValidBPP_locals, 20000, 4, HTotal, HActive, PixelClockBackEnd, ForcedOutputLinkBPP, LinkDSCEnable, Output, OutputFormat, DSCInputBitPerComponent, NumberOfDSCSlices, (core::ffi::c_uint)AudioSampleRate, AudioSampleLayout, ODMModeNoDSC, ODMModeDSC, &dummy);
 				}
 				//OutputTypeAndRate = Output & "20x4";
 				*OutputType = dml2_core_internal_output_type_hdmifrl;
@@ -387,13 +387,13 @@ void dcn5_calculate_output_link(
 }
 
 
-static enum dml2_odm_mode dcn5_decide_odm_mode(unsigned int HActive,
+static enum dml2_odm_mode dcn5_decide_odm_mode(core::ffi::c_uint HActive,
 		double MaxDispclk,
-		unsigned int MaximumPixelsPerLinePerDSCUnit,
-		enum dml2_output_format_class OutFormat,
+		core::ffi::c_uint MaximumPixelsPerLinePerDSCUnit,
+		dml2_output_format_class OutFormat,
 		bool UseDSC,
-		unsigned int MaximumSlicesPerDSCUnit,
-		unsigned int NumberOfDSCSlices,
+		core::ffi::c_uint MaximumSlicesPerDSCUnit,
+		core::ffi::c_uint NumberOfDSCSlices,
 		double SurfaceRequiredDISPCLKWithoutODMCombine,
 		double SurfaceRequiredDISPCLKWithODMCombineTwoToOne,
 		double SurfaceRequiredDISPCLKWithODMCombineThreeToOne,
@@ -445,19 +445,19 @@ static enum dml2_odm_mode dcn5_decide_odm_mode(unsigned int HActive,
 }
 
 static void dcn5_calculate_odm_constraints(
-		enum dml2_odm_mode ODMUse,
+		dml2_odm_mode ODMUse,
 		double SurfaceRequiredDISPCLKWithoutODMCombine,
 		double SurfaceRequiredDISPCLKWithODMCombineTwoToOne,
 		double SurfaceRequiredDISPCLKWithODMCombineThreeToOne,
 		double SurfaceRequiredDISPCLKWithODMCombineFourToOne,
-		unsigned int MaximumPixelsPerLinePerDSCUnit,
-		unsigned int MaximumSlicesPerDSCUnit,
+		core::ffi::c_uint MaximumPixelsPerLinePerDSCUnit,
+		core::ffi::c_uint MaximumSlicesPerDSCUnit,
 		/* Output */
 		double *DISPCLKRequired,
-		unsigned int *NumberOfDPPRequired,
-		unsigned int *MaxHActiveForDSC,
-		unsigned int *MaxDSCSlices,
-		unsigned int *MaxHActiveFor420)
+		core::ffi::c_uint *NumberOfDPPRequired,
+		core::ffi::c_uint *MaxHActiveForDSC,
+		core::ffi::c_uint *MaxDSCSlices,
+		core::ffi::c_uint *MaxHActiveFor420)
 {
 	switch (ODMUse) {
 	case dml2_odm_mode_combine_2to1:
@@ -487,24 +487,24 @@ static void dcn5_calculate_odm_constraints(
 	*MaxHActiveFor420 = *NumberOfDPPRequired * DML2_MAX_FMT_420_BUFFER_WIDTH;
 }
 
-static bool dcn5_validate_odm_mode(enum dml2_odm_mode ODMMode,
+static bool dcn5_validate_odm_mode(dml2_odm_mode ODMMode,
 		double MaxDispclk,
-		unsigned int HActive,
-		enum dml2_output_format_class OutFormat,
+		core::ffi::c_uint HActive,
+		dml2_output_format_class OutFormat,
 		bool UseDSC,
-		unsigned int NumberOfDSCSlices,
-		unsigned int TotalNumberOfActiveDPP,
-		unsigned int MaxNumDPP,
+		core::ffi::c_uint NumberOfDSCSlices,
+		core::ffi::c_uint TotalNumberOfActiveDPP,
+		core::ffi::c_uint MaxNumDPP,
 		double DISPCLKRequired,
-		unsigned int NumberOfDPPRequired,
-		unsigned int MaxHActiveForDSC,
-		unsigned int MaxDSCSlices,
-		unsigned int MaxHActiveFor420,
-		unsigned int odm_combine_support_mask)
+		core::ffi::c_uint NumberOfDPPRequired,
+		core::ffi::c_uint MaxHActiveForDSC,
+		core::ffi::c_uint MaxDSCSlices,
+		core::ffi::c_uint MaxHActiveFor420,
+		odm_combine_support_mask: core::ffi::c_uint)
 {
 	bool are_odm_segments_symmetrical = (ODMMode == dml2_odm_mode_combine_3to1) ? UseDSC : true;
-	unsigned int pixels_per_clock_cycle = (OutFormat == dml2_420 || OutFormat == dml2_n422) ? 2 : 1;
-	unsigned int h_timing_div_mode =
+	core::ffi::c_uint pixels_per_clock_cycle = (OutFormat == dml2_420 || OutFormat == dml2_n422) ? 2 : 1;
+	core::ffi::c_uint h_timing_div_mode =
 			(ODMMode == dml2_odm_mode_combine_4to1 || ODMMode == dml2_odm_mode_combine_3to1) ? 4 :
 					(ODMMode == dml2_odm_mode_combine_2to1) ? 2 : pixels_per_clock_cycle;
 
@@ -548,24 +548,24 @@ static bool dcn5_validate_odm_mode(enum dml2_odm_mode ODMMode,
 }
 
 void dcn5_calculate_odm_mode(
-		unsigned int MaximumPixelsPerLinePerDSCUnit,
-		unsigned int HActive,
-		enum dml2_output_format_class OutFormat,
-		enum dml2_output_encoder_class Output,
-		enum dml2_odm_mode ODMUse,
+		core::ffi::c_uint MaximumPixelsPerLinePerDSCUnit,
+		core::ffi::c_uint HActive,
+		dml2_output_format_class OutFormat,
+		dml2_output_encoder_class Output,
+		dml2_odm_mode ODMUse,
 		double MaxDispclk,
 		bool DSCEnable,
-		unsigned int TotalNumberOfActiveDPP,
-		unsigned int MaxNumDPP,
+		core::ffi::c_uint TotalNumberOfActiveDPP,
+		core::ffi::c_uint MaxNumDPP,
 		double PixelClock,
-		unsigned int MaximumSlicesPerDSCUnit,
-		unsigned int NumberOfDSCSlices,
-		unsigned int odm_combine_support_mask,
+		core::ffi::c_uint MaximumSlicesPerDSCUnit,
+		core::ffi::c_uint NumberOfDSCSlices,
+		odm_combine_support_mask: core::ffi::c_uint,
 
 		// Output
 		bool *TotalAvailablePipesSupport,
-		unsigned int *NumberOfDPP,
-		enum dml2_odm_mode *ODMMode,
+		core::ffi::c_uint *NumberOfDPP,
+		dml2_odm_mode *ODMMode,
 		double *RequiredDISPCLKPerSurface)
 {
 	double SurfaceRequiredDISPCLKWithoutODMCombine;
@@ -573,10 +573,10 @@ void dcn5_calculate_odm_mode(
 	double SurfaceRequiredDISPCLKWithODMCombineThreeToOne;
 	double SurfaceRequiredDISPCLKWithODMCombineFourToOne;
 	double DISPCLKRequired;
-	unsigned int NumberOfDPPRequired;
-	unsigned int MaxHActiveForDSC;
-	unsigned int MaxDSCSlices;
-	unsigned int MaxHActiveFor420;
+	core::ffi::c_uint NumberOfDPPRequired;
+	core::ffi::c_uint MaxHActiveForDSC;
+	core::ffi::c_uint MaxDSCSlices;
+	core::ffi::c_uint MaxHActiveFor420;
 	bool success;
 	bool UseDSC = DSCEnable && (NumberOfDSCSlices > 0);
 	enum dml2_odm_mode DecidedODMMode;
@@ -649,13 +649,13 @@ void dcn5_calculate_odm_mode(
 double dcn5_calculate_required_dtbclk(
 		bool DSCEnable,
 		double PixelClock,
-		enum dml2_output_format_class OutputFormat,
+		dml2_output_format_class OutputFormat,
 		double OutputBpp,
-		unsigned int DSCSlices,
-		unsigned int HTotal,
-		unsigned int HActive,
-		unsigned int AudioRate,
-		unsigned int AudioLayout)
+		core::ffi::c_uint DSCSlices,
+		core::ffi::c_uint HTotal,
+		core::ffi::c_uint HActive,
+		core::ffi::c_uint AudioRate,
+		core::ffi::c_uint AudioLayout)
 {
 	if (DSCEnable != true) {
 		return math_max2(PixelClock / 4.0 * OutputBpp / 24.0, 25.0);
@@ -670,9 +670,9 @@ double dcn5_calculate_required_dtbclk(
 }
 
 double dcn5_calculate_required_dispclk(
-		enum dml2_odm_mode ODMMode,
+		dml2_odm_mode ODMMode,
 		double PixelClock,
-		bool isTMDS420)
+		isTMDS420: bool)
 {
 	double DispClk;
 
@@ -695,19 +695,19 @@ double dcn5_calculate_required_dispclk(
 }
 
 double dcn5_calculate_write_back_dispclk(
-		enum dml2_source_format_class WritebackPixelFormat,
+		dml2_source_format_class WritebackPixelFormat,
 		double PixelClock,
-		enum dml2_odm_mode ODMMode,
+		dml2_odm_mode ODMMode,
 		double WritebackHRatio,
 		double WritebackVRatio,
-		unsigned int WritebackHTaps,
-		unsigned int WritebackVTaps,
-		unsigned int WritebackHTapsChroma,
-		unsigned int WritebackVTapsChroma,
-		unsigned int WritebackSourceWidth,
-		unsigned int WritebackDestinationWidth,
-		unsigned int HTotal,
-		unsigned int WritebackLineBufferSize)
+		core::ffi::c_uint WritebackHTaps,
+		core::ffi::c_uint WritebackVTaps,
+		core::ffi::c_uint WritebackHTapsChroma,
+		core::ffi::c_uint WritebackVTapsChroma,
+		core::ffi::c_uint WritebackSourceWidth,
+		core::ffi::c_uint WritebackDestinationWidth,
+		core::ffi::c_uint HTotal,
+		core::ffi::c_uint WritebackLineBufferSize)
 {
 	(void)WritebackSourceWidth;
 	(void)WritebackLineBufferSize;
@@ -755,23 +755,23 @@ double dcn5_calculate_write_back_dispclk(
 	return math_max2(math_max3(DISPCLK_H, DISPCLK_V, THROUGHPUT), math_max3(DISPCLK_H_CHROMA, DISPCLK_V_CHROMA, THROUGHPUT_CHROMA));
 }
 
-unsigned int dcn5_calculate_dsc_delay_requirement(
+core::ffi::c_uint dcn5_calculate_dsc_delay_requirement(
 		bool DSCEnabled,
-		enum dml2_odm_mode ODMMode,
-		unsigned int DSCInputBitPerComponent,
+		dml2_odm_mode ODMMode,
+		core::ffi::c_uint DSCInputBitPerComponent,
 		double OutputBpp,
-		unsigned int HActive,
-		unsigned int HTotal,
-		unsigned int NumberOfDSCSlices,
-		enum dml2_output_format_class OutputFormat,
-		enum dml2_output_encoder_class Output,
+		core::ffi::c_uint HActive,
+		core::ffi::c_uint HTotal,
+		core::ffi::c_uint NumberOfDSCSlices,
+		dml2_output_format_class OutputFormat,
+		dml2_output_encoder_class Output,
 		double PixelClock,
 		double PixelClockBackEnd,
-		bool use_legacy_dsc_delay_formula)
+		use_legacy_dsc_delay_formula: bool)
 {
 	(void)Output;
-	unsigned int DSCDelayRequirement_val = 0;
-	unsigned int NumberOfDSCSlicesFactor = 1;
+	core::ffi::c_uint DSCDelayRequirement_val = 0;
+	core::ffi::c_uint NumberOfDSCSlicesFactor = 1;
 
 	if (DSCEnabled == true && OutputBpp != 0) {
 
@@ -783,7 +783,7 @@ unsigned int dcn5_calculate_dsc_delay_requirement(
 			NumberOfDSCSlicesFactor = 2;
 
 		delay_uncertainty_t DscResult;
-		unsigned int EffectiveNumSlices = NumberOfDSCSlices / NumberOfDSCSlicesFactor;
+		core::ffi::c_uint EffectiveNumSlices = NumberOfDSCSlices / NumberOfDSCSlicesFactor;
 		int SliceWidth = (int)math_ceil2((double)HActive / (double)NumberOfDSCSlices, 1.0);
 
 		// ASSUMPTION: Enabling dynamic gating for maximum delay calculation:
@@ -823,10 +823,10 @@ unsigned int dcn5_calculate_dsc_delay_requirement(
 		}
 
 		// Apply ODM factor multiplier and timing adjustments
-		DSCDelayRequirement_val = (unsigned int)(DscResult.delay * NumberOfDSCSlicesFactor);
+		DSCDelayRequirement_val = (core::ffi::c_uint)(DscResult.delay * NumberOfDSCSlicesFactor);
 
-		DSCDelayRequirement_val = (unsigned int)(DSCDelayRequirement_val + (HTotal - HActive) * math_ceil2((double)DSCDelayRequirement_val / (double)HActive, 1.0));
-		DSCDelayRequirement_val = (unsigned int)(DSCDelayRequirement_val * PixelClock / PixelClockBackEnd);
+		DSCDelayRequirement_val = (core::ffi::c_uint)(DSCDelayRequirement_val + (HTotal - HActive) * math_ceil2((double)DSCDelayRequirement_val / (double)HActive, 1.0));
+		DSCDelayRequirement_val = (core::ffi::c_uint)(DSCDelayRequirement_val * PixelClock / PixelClockBackEnd);
 
 	} else {
 		DSCDelayRequirement_val = 0;
@@ -854,11 +854,11 @@ void dcn5_calculate_single_pipe_dppclk_and_scl_throughput(
 		double MaxDCHUBToPSCLThroughput,
 		double MaxPSCLToLBThroughput,
 		double PixelClock,
-		enum dml2_source_format_class SourcePixelFormat,
-		unsigned int HTaps,
-		unsigned int HTapsChroma,
-		unsigned int VTaps,
-		unsigned int VTapsChroma,
+		dml2_source_format_class SourcePixelFormat,
+		core::ffi::c_uint HTaps,
+		core::ffi::c_uint HTapsChroma,
+		core::ffi::c_uint VTaps,
+		core::ffi::c_uint VTapsChroma,
 
 		// Output
 		double *PSCL_THROUGHPUT,
@@ -898,20 +898,20 @@ void dcn5_calculate_single_pipe_dppclk_and_scl_throughput(
 
 void dcn5_calculate_pixel_delivery_times(
 		const struct dml2_display_cfg *display_cfg,
-		unsigned int NoOfDPP[DML2_MAX_PLANES],
-		unsigned int NumberOfActiveSurfaces,
+		core::ffi::c_uint NoOfDPP[DML2_MAX_PLANES],
+		core::ffi::c_uint NumberOfActiveSurfaces,
 		double VRatioPrefetchY[],
 		double VRatioPrefetchC[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[],
 		double PSCL_THROUGHPUT[],
 		double PSCL_THROUGHPUT_CHROMA[],
 		double Dppclk[],
 		double DCFCLKDeepSleep,
-		unsigned int BytePerPixelY[],
-		unsigned int BytePerPixelC[],
-		unsigned int req_per_swath_ub_l[],
-		unsigned int req_per_swath_ub_c[],
+		core::ffi::c_uint BytePerPixelY[],
+		core::ffi::c_uint BytePerPixelC[],
+		core::ffi::c_uint req_per_swath_ub_l[],
+		core::ffi::c_uint req_per_swath_ub_c[],
 
 		// Output
 		double DisplayPipeLineDeliveryTimeLuma[],
@@ -923,13 +923,13 @@ void dcn5_calculate_pixel_delivery_times(
 		double DisplayPipeRequestDeliveryTimeLumaPrefetch[],
 		double DisplayPipeRequestDeliveryTimeChromaPrefetch[])
 {
-	for (unsigned int k = 0; k < NumberOfActiveSurfaces; ++k) {
-		double pixel_clock_mhz = ((double)display_cfg->stream_descriptors[display_cfg->plane_descriptors[k].stream_index].timing.pixel_clock_khz / 1000);
+	for (core::ffi::c_uint k = 0; k < NumberOfActiveSurfaces; ++k) {
+		double pixel_clock_mhz = ((*(double)display_cfg).stream_descriptors[(*display_cfg).plane_descriptors[k].stream_index].timing.pixel_clock_khz / 1000);
 
-		DML_LOG_VERBOSE("DML::%s: k=%u : HRatio = %f\n", __func__, k, display_cfg->plane_descriptors[k].composition.scaler_info.plane0.h_ratio);
-		DML_LOG_VERBOSE("DML::%s: k=%u : VRatio = %f\n", __func__, k, display_cfg->plane_descriptors[k].composition.scaler_info.plane0.v_ratio);
-		DML_LOG_VERBOSE("DML::%s: k=%u : HRatioChroma = %f\n", __func__, k, display_cfg->plane_descriptors[k].composition.scaler_info.plane1.h_ratio);
-		DML_LOG_VERBOSE("DML::%s: k=%u : VRatioChroma = %f\n", __func__, k, display_cfg->plane_descriptors[k].composition.scaler_info.plane1.v_ratio);
+		DML_LOG_VERBOSE("DML::%s: k=%u : HRatio = %f\n", __func__, k, (*display_cfg).plane_descriptors[k].composition.scaler_info.plane0.h_ratio);
+		DML_LOG_VERBOSE("DML::%s: k=%u : VRatio = %f\n", __func__, k, (*display_cfg).plane_descriptors[k].composition.scaler_info.plane0.v_ratio);
+		DML_LOG_VERBOSE("DML::%s: k=%u : HRatioChroma = %f\n", __func__, k, (*display_cfg).plane_descriptors[k].composition.scaler_info.plane1.h_ratio);
+		DML_LOG_VERBOSE("DML::%s: k=%u : VRatioChroma = %f\n", __func__, k, (*display_cfg).plane_descriptors[k].composition.scaler_info.plane1.v_ratio);
 		DML_LOG_VERBOSE("DML::%s: k=%u : VRatioPrefetchY = %f\n", __func__, k, VRatioPrefetchY[k]);
 		DML_LOG_VERBOSE("DML::%s: k=%u : VRatioPrefetchC = %f\n", __func__, k, VRatioPrefetchC[k]);
 		DML_LOG_VERBOSE("DML::%s: k=%u : swath_width_luma_ub = %u\n", __func__, k, swath_width_luma_ub[k]);
@@ -939,8 +939,8 @@ void dcn5_calculate_pixel_delivery_times(
 		DML_LOG_VERBOSE("DML::%s: k=%u : DPPPerSurface = %u\n", __func__, k, NoOfDPP[k]);
 		DML_LOG_VERBOSE("DML::%s: k=%u : pixel_clock_mhz = %f\n", __func__, k, pixel_clock_mhz);
 		DML_LOG_VERBOSE("DML::%s: k=%u : Dppclk = %f\n", __func__, k, Dppclk[k]);
-		if (display_cfg->plane_descriptors[k].composition.scaler_info.plane0.v_ratio <= 1) {
-			DisplayPipeLineDeliveryTimeLuma[k] = swath_width_luma_ub[k] * NoOfDPP[k] / display_cfg->plane_descriptors[k].composition.scaler_info.plane0.h_ratio / pixel_clock_mhz;
+		if ((*display_cfg).plane_descriptors[k].composition.scaler_info.plane0.v_ratio <= 1) {
+			DisplayPipeLineDeliveryTimeLuma[k] = swath_width_luma_ub[k] * NoOfDPP[k] / (*display_cfg).plane_descriptors[k].composition.scaler_info.plane0.h_ratio / pixel_clock_mhz;
 		} else {
 			DisplayPipeLineDeliveryTimeLuma[k] = swath_width_luma_ub[k] / PSCL_THROUGHPUT[k] / Dppclk[k];
 		}
@@ -948,15 +948,15 @@ void dcn5_calculate_pixel_delivery_times(
 		if (BytePerPixelC[k] == 0) {
 			DisplayPipeLineDeliveryTimeChroma[k] = 0;
 		} else {
-			if (display_cfg->plane_descriptors[k].composition.scaler_info.plane1.v_ratio <= 1) {
-				DisplayPipeLineDeliveryTimeChroma[k] = swath_width_chroma_ub[k] * NoOfDPP[k] / display_cfg->plane_descriptors[k].composition.scaler_info.plane1.h_ratio / pixel_clock_mhz;
+			if ((*display_cfg).plane_descriptors[k].composition.scaler_info.plane1.v_ratio <= 1) {
+				DisplayPipeLineDeliveryTimeChroma[k] = swath_width_chroma_ub[k] * NoOfDPP[k] / (*display_cfg).plane_descriptors[k].composition.scaler_info.plane1.h_ratio / pixel_clock_mhz;
 			} else {
 				DisplayPipeLineDeliveryTimeChroma[k] = swath_width_chroma_ub[k] / PSCL_THROUGHPUT_CHROMA[k] / Dppclk[k];
 			}
 		}
 
 		if (VRatioPrefetchY[k] <= 1) {
-			DisplayPipeLineDeliveryTimeLumaPrefetch[k] = swath_width_luma_ub[k] * NoOfDPP[k] / display_cfg->plane_descriptors[k].composition.scaler_info.plane0.h_ratio / pixel_clock_mhz;
+			DisplayPipeLineDeliveryTimeLumaPrefetch[k] = swath_width_luma_ub[k] * NoOfDPP[k] / (*display_cfg).plane_descriptors[k].composition.scaler_info.plane0.h_ratio / pixel_clock_mhz;
 		} else {
 			DisplayPipeLineDeliveryTimeLumaPrefetch[k] = swath_width_luma_ub[k] / PSCL_THROUGHPUT[k] / Dppclk[k];
 		}
@@ -965,7 +965,7 @@ void dcn5_calculate_pixel_delivery_times(
 			DisplayPipeLineDeliveryTimeChromaPrefetch[k] = 0;
 		} else {
 			if (VRatioPrefetchC[k] <= 1) {
-				DisplayPipeLineDeliveryTimeChromaPrefetch[k] = swath_width_chroma_ub[k] * NoOfDPP[k] / display_cfg->plane_descriptors[k].composition.scaler_info.plane1.h_ratio / pixel_clock_mhz;
+				DisplayPipeLineDeliveryTimeChromaPrefetch[k] = swath_width_chroma_ub[k] * NoOfDPP[k] / (*display_cfg).plane_descriptors[k].composition.scaler_info.plane1.h_ratio / pixel_clock_mhz;
 			} else {
 				DisplayPipeLineDeliveryTimeChromaPrefetch[k] = swath_width_chroma_ub[k] / PSCL_THROUGHPUT_CHROMA[k] / Dppclk[k];
 			}
@@ -987,7 +987,7 @@ void dcn5_calculate_pixel_delivery_times(
 		DML_LOG_VERBOSE("DML::%s: k=%u : DisplayPipeLineDeliveryTimeChromaPrefetch = %f\n", __func__, k, DisplayPipeLineDeliveryTimeChromaPrefetch[k]);
 	}
 
-	for (unsigned int k = 0; k < NumberOfActiveSurfaces; ++k) {
+	for (core::ffi::c_uint k = 0; k < NumberOfActiveSurfaces; ++k) {
 
 		DisplayPipeRequestDeliveryTimeLuma[k] = DisplayPipeLineDeliveryTimeLuma[k] / req_per_swath_ub_l[k];
 		DisplayPipeRequestDeliveryTimeLumaPrefetch[k] = DisplayPipeLineDeliveryTimeLumaPrefetch[k] / req_per_swath_ub_l[k];

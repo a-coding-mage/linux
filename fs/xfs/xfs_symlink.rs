@@ -12,6 +12,7 @@ pub unsafe fn xfs_readlink(ip: *mut xfs_inode, link: *mut ::std::os::raw::c_char
     let mp = (*ip).i_mount;
     let mut pathlen: xfs_fsize_t;
     let error: ::std::os::raw::c_int;
+    'out_corrupt: {
 
     trace_xfs_readlink(ip);
 
@@ -26,19 +27,19 @@ pub unsafe fn xfs_readlink(ip: *mut xfs_inode, link: *mut ::std::os::raw::c_char
 
     pathlen = (*ip).i_disk_size;
     if pathlen == 0 {
-        goto out_corrupt;
+        break 'out_corrupt;
     }
 
     if pathlen < 0 || pathlen > XFS_SYMLINK_MAXLEN {
         xfs_alert(mp, b"xfs_readlink: inode (%llu) bad symlink length (%lld)\0".as_ptr() as _, I_INO(ip) as u64, pathlen as i64);
         ASSERT(0);
-        goto out_corrupt;
+        break 'out_corrupt;
     }
 
     if (*ip).i_df.if_format == XFS_DINODE_FMT_LOCAL {
         /* The VFS crashes on a NULL pointer, so return -EFSCORRUPTED if if_data is junk. */
         if XFS_IS_CORRUPT((*ip).i_mount, (*ip).i_df.if_data.is_null()) {
-            goto out_corrupt;
+            break 'out_corrupt;
         }
         memcpy(link as _, (*ip).i_df.if_data as _, (pathlen + 1) as _);
         error = 0;
@@ -48,8 +49,8 @@ pub unsafe fn xfs_readlink(ip: *mut xfs_inode, link: *mut ::std::os::raw::c_char
 
     xfs_iunlock(ip, XFS_ILOCK_SHARED);
     return error;
-
-out_corrupt:
+    }
+    
     xfs_iunlock(ip, XFS_ILOCK_SHARED);
     xfs_inode_mark_sick(ip, XFS_SICK_INO_SYMLINK);
     return -EFSCORRUPTED;
@@ -80,6 +81,10 @@ pub unsafe fn xfs_symlink(
     let pdqp: *mut xfs_dquot;
     let mut resblks: uint;
     let mut ino: xfs_ino_t = 0;
+    'out_release_dquots: {
+    'out_parent: {
+    'out_release_inode: {
+    'out_trans_cancel: {
 
     *ipp = ::std::ptr::null_mut();
     trace_xfs_symlink(dp, link_name);
@@ -96,47 +101,50 @@ pub unsafe fn xfs_symlink(
     resblks = xfs_symlink_space_res(mp, (*link_name).len, fs_blocks);
 
     error = xfs_parent_start(mp, &mut du.ppargs);
-    if error != 0 { goto out_release_dquots; }
+    if error != 0 { break 'out_release_dquots; }
     error = xfs_trans_alloc_icreate(mp, &M_RES(mp).tr_symlink, udqp, gdqp, pdqp, resblks, &mut tp);
-    if error != 0 { goto out_parent; }
+    if error != 0 { break 'out_parent; }
     xfs_ilock(dp, XFS_ILOCK_EXCL | XFS_ILOCK_PARENT);
     unlock_dp_on_error = true;
-    if (*dp).i_diflags & XFS_DIFLAG_NOSYMLINKS != 0 { error = -EPERM; goto out_trans_cancel; }
+    if (*dp).i_diflags & XFS_DIFLAG_NOSYMLINKS != 0 { error = -EPERM; break 'out_trans_cancel; }
     error = xfs_dialloc(&mut tp, &mut args, &mut ino);
     if error == 0 { error = xfs_icreate(tp, ino, &mut args, &mut du.ip); }
-    if error != 0 { goto out_trans_cancel; }
+    if error != 0 { break 'out_trans_cancel; }
     xfs_trans_ijoin(tp, dp, 0);
     xfs_qm_vop_create_dqattach(tp, du.ip, udqp, gdqp, pdqp);
     resblks -= XFS_IALLOC_SPACE_RES(mp);
     error = xfs_symlink_write_target(tp, du.ip, I_INO(du.ip), target_path, pathlen, fs_blocks, resblks);
-    if error != 0 { goto out_trans_cancel; }
+    if error != 0 { break 'out_trans_cancel; }
     resblks -= fs_blocks;
     i_size_write(VFS_I(du.ip), (*du.ip).i_disk_size);
     error = xfs_dir_create_child(tp, resblks, &mut du);
-    if error != 0 { goto out_trans_cancel; }
+    if error != 0 { break 'out_trans_cancel; }
     if xfs_has_wsync(mp) || xfs_has_dirsync(mp) { xfs_trans_set_sync(tp); }
     error = xfs_trans_commit(tp);
-    if error != 0 { goto out_release_inode; }
+    if error != 0 { break 'out_release_inode; }
     xfs_qm_dqrele(udqp); xfs_qm_dqrele(gdqp); xfs_qm_dqrele(pdqp);
     *ipp = du.ip;
     xfs_iunlock(du.ip, XFS_ILOCK_EXCL);
     xfs_iunlock(dp, XFS_ILOCK_EXCL);
     xfs_parent_finish(mp, du.ppargs);
     return 0;
-
-out_trans_cancel:
+    }
+    
     xfs_trans_cancel(tp);
-out_release_inode:
+    }
+    
     if !du.ip.is_null() { xfs_iunlock(du.ip, XFS_ILOCK_EXCL); xfs_finish_inode_setup(du.ip); xfs_irele(du.ip); }
-out_parent:
+    }
+    
     xfs_parent_finish(mp, du.ppargs);
-out_release_dquots:
+    }
+    
     xfs_qm_dqrele(udqp); xfs_qm_dqrele(gdqp); xfs_qm_dqrele(pdqp);
     if unlock_dp_on_error { xfs_iunlock(dp, XFS_ILOCK_EXCL); }
     error
 }
 
-static unsafe fn xfs_inactive_symlink_rmt(ip: *mut xfs_inode) -> ::std::os::raw::c_int {
+unsafe fn xfs_inactive_symlink_rmt(ip: *mut xfs_inode) -> ::std::os::raw::c_int {
     let mp = (*ip).i_mount;
     let mut tp: *mut xfs_trans = ::std::ptr::null_mut();
     let mut error;

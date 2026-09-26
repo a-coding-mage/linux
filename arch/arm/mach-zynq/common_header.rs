@@ -17,15 +17,15 @@ extern "C" {
     pub fn zynq_slcr_get_device_id() -> c_uint;
 
     /* The following declarations are present when CONFIG_SMP is enabled. */
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub static mut zynq_secondary_trampoline: c_char;
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub static mut zynq_secondary_trampoline_jump: c_char;
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub static mut zynq_secondary_trampoline_end: c_char;
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn zynq_cpun_start(address: c_uint, cpu: c_int) -> c_int;
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub static zynq_smp_ops: smp_operations;
 
     pub static mut zynq_scu_base: *mut c_void;

@@ -23,12 +23,12 @@ extern "C" {
 
 extern "C" {
     fn read_cpuid_id() -> u32; fn read_cpuid_part() -> u32; fn smp_processor_id() -> i32;
-    fn counter_arch_bp(*mut perf_event) -> *mut arch_hw_breakpoint;
-    fn encode_ctrl_reg(arch_hw_breakpoint_ctrl) -> u32; fn decode_ctrl_reg(u32,*mut arch_hw_breakpoint_ctrl);
-    fn is_default_overflow_handler(*mut perf_event) -> bool; fn perf_bp_event(*mut perf_event,*mut pt_regs);
-    fn instruction_pointer(*mut pt_regs) -> *mut u32; fn user_mode(*mut pt_regs)->bool;
-    fn pr_warn(*const u8,...); fn pr_warn_once(*const u8,...); fn pr_info(*const u8,...); fn pr_debug(*const u8,...);
-    fn isb(); fn memset(*mut core::ffi::c_void,i32,usize); fn __ffs(u32)->u32; fn __fls(u32)->u32;
+    fn counter_arch_bp(_: *mut perf_event) -> *mut arch_hw_breakpoint;
+    fn encode_ctrl_reg(_: arch_hw_breakpoint_ctrl) -> u32; fn decode_ctrl_reg(_: u32,_: *mut arch_hw_breakpoint_ctrl);
+    fn is_default_overflow_handler(_: *mut perf_event) -> bool; fn perf_bp_event(_: *mut perf_event,_: *mut pt_regs);
+    fn instruction_pointer(_: *mut pt_regs) -> *mut u32; fn user_mode(_: *mut pt_regs)->bool;
+    fn pr_warn(_: *const u8,...); fn pr_warn_once(_: *const u8,...); fn pr_info(_: *const u8,...); fn pr_debug(_: *const u8,...);
+    fn isb(); fn memset(_: *mut core::ffi::c_void,_: i32,_: usize); fn __ffs(_: u32)->u32; fn __fls(_: u32)->u32;
     fn monitor_mode_enabled() -> i32; fn enable_monitor_mode()->i32;
 }
 
@@ -73,9 +73,9 @@ unsafe fn watchpoint_single_step_handler(_pc:u64) {}
 unsafe fn breakpoint_handler(_unknown:u64,_regs:*mut pt_regs) {}
 unsafe fn hw_breakpoint_cfi_handler(_regs:*mut pt_regs) {}
 unsafe fn hw_breakpoint_pending(_addr:u64,_fsr:u32,_regs:*mut pt_regs)->i32 { 1 }
-#[cfg(feature="CONFIG_ARM_ERRATA_764319")]
+#[cfg(CONFIG_ARM_ERRATA_764319)]
 static mut oslsr_fault:i32=0;
-#[cfg(feature="CONFIG_ARM_ERRATA_764319")]
+#[cfg(CONFIG_ARM_ERRATA_764319)]
 unsafe fn debug_oslsr_trap(regs:*mut pt_regs,_instr:u32)->i32 { oslsr_fault=1; *instruction_pointer(regs)=(*instruction_pointer(regs)).wrapping_add(4); 0 }
 static mut debug_err_mask:*mut cpumask_t=core::ptr::null_mut();
 unsafe fn debug_reg_trap(regs:*mut pt_regs,_instr:u32)->i32 { *instruction_pointer(regs)=(*instruction_pointer(regs)).wrapping_add(4); 0 }

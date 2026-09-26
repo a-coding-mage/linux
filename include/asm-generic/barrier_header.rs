@@ -32,22 +32,22 @@ macro_rules! __smp_rmb { () => { rmb!() }; }
 macro_rules! __smp_wmb { () => { wmb!() }; }
 
 /* CONFIG_SMP selects the following SMP definitions in the original header. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_mb { () => {{ kcsan_mb(); __smp_mb!(); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_mb { () => { barrier() }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_rmb { () => {{ kcsan_rmb(); __smp_rmb!(); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_rmb { () => { barrier() }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_wmb { () => {{ kcsan_wmb(); __smp_wmb!(); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_wmb { () => { barrier() }; }
 
@@ -62,28 +62,28 @@ macro_rules! __smp_store_release { ($p:expr, $v:expr) => {{ __smp_mb!(); WRITE_O
 #[macro_export]
 macro_rules! __smp_load_acquire { ($p:expr) => {{ let ___p1 = READ_ONCE!(*$p); __smp_mb!(); ___p1 }}; }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_store_mb { ($var:expr, $value:expr) => {{ kcsan_mb(); __smp_store_mb!($var, $value); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_store_mb { ($var:expr, $value:expr) => {{ WRITE_ONCE!($var, $value); barrier(); }}; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_mb__before_atomic { () => {{ kcsan_mb(); __smp_mb__before_atomic!(); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_mb__before_atomic { () => { barrier() }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_mb__after_atomic { () => {{ kcsan_mb(); __smp_mb__after_atomic!(); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_mb__after_atomic { () => { barrier() }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! smp_store_release { ($p:expr, $v:expr) => {{ kcsan_release(); __smp_store_release!($p, $v); }}; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! smp_store_release { ($p:expr, $v:expr) => {{ barrier(); WRITE_ONCE!(*$p, $v); }}; }
 #[macro_export]

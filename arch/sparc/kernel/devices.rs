@@ -53,13 +53,13 @@ unsafe fn __cpu_find_by(
     let mut cur_inst: i32 = 0;
 
     // Preserves the C for_each_node_by_type(dp, "cpu") iteration macro.
-    for_each_node_by_type!(dp, b"cpu\0".as_ptr() as *const u8) {
+    for_each_node_by_type!(dp, b"cpu\0".as_ptr() as *const u8, {
         let err = check_cpu_node((*dp).phandle, &mut cur_inst, compare, compare_arg, prom_node, mid);
         if err == 0 {
             of_node_put(dp);
             return 0;
         }
-    }
+    });
 
     -ENODEV
 }

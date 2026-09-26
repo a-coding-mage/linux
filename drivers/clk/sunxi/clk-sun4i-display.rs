@@ -94,6 +94,13 @@ unsafe fn sun4i_a10_display_init(
     data: *const sun4i_a10_display_clk_data,
 ) {
     let mut parents: [*const c_char; 4] = [core::ptr::null(); 4];
+    'unmap: {
+    'free_mux: {
+    'free_gate: {
+    'free_div: {
+    'free_clk: {
+    'free_of_clk: {
+    'free_reset: {
     let mut clk_name: *const c_char = (*node).name;
     let mut reset_data: *mut reset_data;
     let mut div: *mut clk_divider = core::ptr::null_mut();
@@ -114,25 +121,25 @@ unsafe fn sun4i_a10_display_init(
     ret = of_clk_parent_fill(node, parents.as_mut_ptr(), (*data).parents);
     if ret != (*data).parents as c_int {
         pr_err(c_str!("%s: Could not retrieve the parents\n"), clk_name);
-        goto!(unmap);
+        break 'unmap;
     }
 
     mux = kzalloc_obj::<clk_mux>();
-    if mux.is_null() { goto!(unmap); }
+    if mux.is_null() { break 'unmap; }
     (*mux).reg = reg;
     (*mux).shift = (*data).offset_mux;
     (*mux).mask = (1u32 << (*data).width_mux) - 1;
     (*mux).lock = &raw mut sun4i_a10_display_lock;
 
     gate = kzalloc_obj::<clk_gate>();
-    if gate.is_null() { goto!(free_mux); }
+    if gate.is_null() { break 'free_mux; }
     (*gate).reg = reg;
     (*gate).bit_idx = (*data).offset_en;
     (*gate).lock = &raw mut sun4i_a10_display_lock;
 
     if (*data).has_div {
         div = kzalloc_obj::<clk_divider>();
-        if div.is_null() { goto!(free_gate); }
+        if div.is_null() { break 'free_gate; }
         (*div).reg = reg;
         (*div).shift = (*data).offset_div;
         (*div).width = (*data).width_div;
@@ -144,13 +151,13 @@ unsafe fn sun4i_a10_display_init(
         if (*data).has_div { &mut (*div).hw } else { core::ptr::null_mut() },
         if (*data).has_div { &clk_divider_ops } else { core::ptr::null() },
         &mut (*gate).hw, &clk_gate_ops, (*data).flags);
-    if is_err(clk) { pr_err(c_str!("%s: Couldn't register the clock\n"), clk_name); goto!(free_div); }
+    if is_err(clk) { pr_err(c_str!("%s: Couldn't register the clock\n"), clk_name); break 'free_div; }
     ret = of_clk_add_provider(node, of_clk_src_simple_get, clk);
-    if ret != 0 { pr_err(c_str!("%s: Couldn't register DT provider\n"), clk_name); goto!(free_clk); }
+    if ret != 0 { pr_err(c_str!("%s: Couldn't register DT provider\n"), clk_name); break 'free_clk; }
     if (*data).num_rst == 0 { return; }
 
     reset_data = kzalloc_obj::<reset_data>();
-    if reset_data.is_null() { goto!(free_of_clk); }
+    if reset_data.is_null() { break 'free_of_clk; }
     (*reset_data).reg = reg;
     (*reset_data).offset = (*data).offset_rst;
     (*reset_data).lock = &raw mut sun4i_a10_display_lock;
@@ -163,17 +170,23 @@ unsafe fn sun4i_a10_display_init(
     } else { (*reset_data).rcdev.of_reset_n_cells = 1; }
     if reset_controller_register(&mut (*reset_data).rcdev) != 0 {
         pr_err(c_str!("%s: Couldn't register the reset controller\n"), clk_name);
-        goto!(free_reset);
+        break 'free_reset;
     }
     return;
-
-free_reset: kfree(reset_data);
-free_of_clk: of_clk_del_provider(node);
-free_clk: clk_unregister_composite(clk);
-free_div: kfree(div);
-free_gate: kfree(gate);
-free_mux: kfree(mux);
-unmap: iounmap(reg); of_address_to_resource(node, 0, &mut res); release_mem_region(res.start, resource_size(&res));
+    }
+    kfree(reset_data);
+    }
+    of_clk_del_provider(node);
+    }
+    clk_unregister_composite(clk);
+    }
+    kfree(div);
+    }
+    kfree(gate);
+    }
+    kfree(mux);
+    }
+    iounmap(reg); of_address_to_resource(node, 0, &mut res); release_mem_region(res.start, resource_size(&res));
 }
 
 static sun4i_a10_tcon_ch0_data: sun4i_a10_display_clk_data = sun4i_a10_display_clk_data {

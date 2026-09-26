@@ -101,11 +101,11 @@ pub unsafe fn register_ip_vs_app(ipvs: *mut netns_ipvs, app: *mut ip_vs_app) -> 
     mutex_lock!(&mut __IP_VS_APP_MUTEX);
     if !ip_vs_use_count_inc() { mutex_unlock!(&mut __IP_VS_APP_MUTEX); return ERR_PTR!(-ENOENT); }
     let mut a: *mut ip_vs_app;
-    list_for_each_entry!(a, (*ipvs).app_list, a_list) {
+    list_for_each_entry!(a, (*ipvs).app_list, a_list, {
         if strcmp((*app).name, (*a).name) == 0 {
             ip_vs_use_count_dec(); mutex_unlock!(&mut __IP_VS_APP_MUTEX); return ERR_PTR!(-EEXIST);
         }
-    }
+    });
     a = kmemdup(app, core::mem::size_of::<ip_vs_app>(), GFP_KERNEL);
     if a.is_null() { ip_vs_use_count_dec(); mutex_unlock!(&mut __IP_VS_APP_MUTEX); return ERR_PTR!(-ENOMEM); }
     INIT_LIST_HEAD!(&mut (*a).incs_list);
@@ -117,12 +117,12 @@ pub unsafe fn register_ip_vs_app(ipvs: *mut netns_ipvs, app: *mut ip_vs_app) -> 
 pub unsafe fn unregister_ip_vs_app(ipvs: *mut netns_ipvs, app: *mut ip_vs_app) {
     mutex_lock!(&mut __IP_VS_APP_MUTEX);
     let mut a: *mut ip_vs_app; let mut anxt: *mut ip_vs_app;
-    list_for_each_entry_safe!(a, anxt, (*ipvs).app_list, a_list) {
+    list_for_each_entry_safe!(a, anxt, (*ipvs).app_list, a_list, {
         if !app.is_null() && strcmp((*app).name, (*a).name) != 0 { continue; }
         let mut inc: *mut ip_vs_app; let mut nxt: *mut ip_vs_app;
-        list_for_each_entry_safe!(inc, nxt, (*a).incs_list, a_list) { ip_vs_app_inc_release(ipvs, inc); }
+        list_for_each_entry_safe!(inc, nxt, (*a).incs_list, a_list, { ip_vs_app_inc_release(ipvs, inc); });
         list_del!(&mut (*a).a_list); kfree(a); ip_vs_use_count_dec();
-    }
+    });
     mutex_unlock!(&mut __IP_VS_APP_MUTEX);
 }
 

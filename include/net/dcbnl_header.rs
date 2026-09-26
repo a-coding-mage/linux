@@ -19,7 +19,7 @@ pub struct dcb_app_type {
     pub dcbx: u8,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dcb_getrewr(dev: *mut net_device, app: *mut dcb_app) -> u16;
     pub fn dcb_setrewr(dev: *mut net_device, app: *mut dcb_app) -> c_int;
     pub fn dcb_delrewr(dev: *mut net_device, app: *mut dcb_app) -> c_int;
@@ -36,7 +36,7 @@ pub struct dcb_rewr_prio_pcp_map {
     pub map: [u16; IEEE_8021QAZ_MAX_TCS as usize],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dcb_getrewr_prio_pcp_mask_map(
         dev: *const net_device,
         p_map: *mut dcb_rewr_prio_pcp_map,
@@ -48,7 +48,7 @@ pub struct dcb_ieee_app_prio_map {
     pub map: [u64; IEEE_8021QAZ_MAX_TCS as usize],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dcb_ieee_getapp_prio_dscp_mask_map(
         dev: *const net_device,
         p_map: *mut dcb_ieee_app_prio_map,
@@ -65,7 +65,7 @@ pub struct dcb_ieee_app_dscp_map {
     pub map: [u8; 64],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dcb_ieee_getapp_dscp_prio_mask_map(
         dev: *const net_device,
         p_map: *mut dcb_ieee_app_dscp_map,

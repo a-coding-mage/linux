@@ -21,7 +21,7 @@ const RBF_ENCRYPTION_MODE_OFFSET:usize=69; const RBF_DECOMPRESS_OFFSET:usize=229
 pub struct regmap; pub struct clk; pub struct device; pub struct platform_device;
 pub struct fpga_manager { pub priv_:*mut a10_fpga_priv, pub dev:device }
 pub struct fpga_image_info { pub flags:u32 }
-extern "C" { fn regmap_update_bits(*mut regmap,u32,u32,u32)->i32; fn regmap_write(*mut regmap,u32,u32)->i32; fn regmap_read(*mut regmap,u32,*mut u32)->i32; fn writel(u32,*mut core::ffi::c_void); }
+extern "C" { fn regmap_update_bits(_: *mut regmap,_: u32,_: u32,_: u32)->i32; fn regmap_write(_: *mut regmap,_: u32,_: u32)->i32; fn regmap_read(_: *mut regmap,_: u32,_: *mut u32)->i32; fn writel(_: u32,_: *mut core::ffi::c_void); }
 const EINVAL:i32=22; const ETIMEDOUT:i32=110; const EFAULT:i32=14;
 
 fn socfpga_a10_fpga_set_cfg_width(p:*mut a10_fpga_priv, mut width:i32) { width <<= A10_FPGAMGR_IMGCFG_CTL_02_CFGWIDTH_SHIFT; unsafe { regmap_update_bits((*p).regmap,A10_FPGAMGR_IMGCFG_CTL_02_OFST,A10_FPGAMGR_IMGCFG_CTL_02_CFGWIDTH,width as u32); } }

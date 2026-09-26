@@ -11,7 +11,6 @@
  ************************************/
 
 // Conditional header guard: ASIC_REG_DMA_IF_W_N_REGS_H_
-#define ASIC_REG_DMA_IF_W_N_REGS_H_
 
 /*
  *****************************************

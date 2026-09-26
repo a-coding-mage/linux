@@ -57,8 +57,7 @@ unsafe extern "C" {
                 ref_pc: uint64_t,
                 ref_name: *mut *const c_char,
             ) -> *const c_char,
-        >,
-    ) -> LLVMDisasmContextRef;
+        _: >,) -> LLVMDisasmContextRef;
     fn LLVMDisposeMessage(message: *mut c_char);
     fn LLVMSetDisasmOptions(dc: LLVMDisasmContextRef, options: uint64_t) -> c_int;
     fn LLVMDisasmInstruction(
@@ -67,8 +66,7 @@ unsafe extern "C" {
         bytes_size: __u64,
         pc: uint64_t,
         out_string: *mut c_char,
-        out_string_size: size_t,
-    ) -> size_t;
+        out_string_size: size_t) -> size_t;
     fn LLVMDisasmDispose(dc: LLVMDisasmContextRef);
     fn LLVMInitializeAllTargetInfos();
     fn LLVMInitializeAllTargetMCs();
@@ -199,7 +197,7 @@ unsafe fn disasm_insn(
         PRINT_FAIL(c"Can't disasm instruction at offset %d:".as_ptr(), pc as c_int);
     }
     i = 0;
-    while i < 16 && pc + i as __u32 < len {
+    while i < 16 && pc + (i as __u32) < len {
         unsafe {
             printf(c" %02x".as_ptr(), *image.add((pc + i as __u32) as usize) as c_int);
         }
@@ -343,7 +341,7 @@ unsafe fn disasm_one_func(text_out: *mut FILE, image: *mut uint8_t, len: __u32) 
                     .names
                     .as_ptr()
                     .add(label_pc.offset_from(labels.pcs.as_ptr()) as usize)
-                    .cast::<c_char>();
+                    cast: :<c_char>();
             }
             colon = c":".as_ptr();
         }

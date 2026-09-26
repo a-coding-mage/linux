@@ -43,10 +43,10 @@
  * parsing of the message
  */
 // C macro: nla_nest_start(_msg, _type) \
-	nla_nest_start(_msg, (_type) | NLA_F_NESTED)
+// 	nla_nest_start(_msg, (_type) | NLA_F_NESTED)
 
 /* libnl < 3.11.0 does not implement nla_get_uint() */
-uint64_t ovpn_nla_get_uint(struct nlattr *attr)
+uint64_t ovpn_nla_get_uint(nlattr *attr)
 {
 	if (nla_len(attr) == sizeof(uint32_t))
 		return nla_get_u32(attr);
@@ -54,7 +54,7 @@ uint64_t ovpn_nla_get_uint(struct nlattr *attr)
 		return nla_get_u64(attr);
 }
 
-// C typedef: int (*ovpn_nl_cb)(struct nl_msg *msg, void *arg);
+// C typedef: int (*ovpn_nl_cb)(nl_msg *msg, void *arg);
 
 enum ovpn_key_direction {
 	KEY_DIR_IN = 0,
@@ -104,8 +104,8 @@ struct ovpn_ctx {
 
 	sa_family_t sa_family;
 
-	unsigned long peer_id, tx_id;
-	unsigned long lport;
+	peer_id: core::ffi::c_ulong, tx_id;
+	core::ffi::c_ulong lport;
 
 	union {
 		struct sockaddr_in in4;
@@ -119,7 +119,7 @@ struct ovpn_ctx {
 
 	bool peer_ip_set;
 
-	unsigned int ifindex;
+	core::ffi::c_uint ifindex;
 	char ifname[IFNAMSIZ];
 	enum ovpn_mode mode;
 	bool mode_set;
@@ -140,11 +140,11 @@ struct ovpn_ctx {
 	const char *peers_file;
 };
 
-unsafe fn int ovpn_nl_recvmsgs(struct nl_ctx *ctx)
+unsafe fn int ovpn_nl_recvmsgs(nl_ctx *ctx)
 {
 	int ret;
 
-	ret = nl_recvmsgs(ctx->nl_sock, ctx->nl_cb);
+	ret = nl_recvmsgs((*ctx).nl_sock, (*ctx).nl_cb);
 
 	switch (ret) {
 	case -NLE_INTR:
@@ -168,9 +168,13 @@ unsafe fn int ovpn_nl_recvmsgs(struct nl_ctx *ctx)
 	return ret;
 }
 
-unsafe fn struct nl_ctx *nl_ctx_alloc_flags(struct ovpn_ctx *ovpn, int cmd,
+unsafe fn struct nl_ctx *nl_ctx_alloc_flags(ovpn_ctx *ovpn, int cmd,
 					 int flags)
 {
+	'err_free: {
+	'err_sock: {
+	'err_msg: {
+	'nla_put_failure: {
 	struct nl_ctx *ctx;
 	int err, ret;
 
@@ -178,96 +182,99 @@ unsafe fn struct nl_ctx *nl_ctx_alloc_flags(struct ovpn_ctx *ovpn, int cmd,
 	if (!ctx)
 		return NULL;
 
-	ctx->nl_sock = nl_socket_alloc();
-	if (!ctx->nl_sock) {
+	(*ctx).nl_sock = nl_socket_alloc();
+	if ((*!ctx).nl_sock) {
 		fprintf(stderr, "cannot allocate netlink socket\n");
-		goto err_free;
+		break 'err_free;
 	}
 
-	nl_socket_set_buffer_size(ctx->nl_sock, 8192, 8192);
+	nl_socket_set_buffer_size((*ctx).nl_sock, 8192, 8192);
 
-	ret = genl_connect(ctx->nl_sock);
+	ret = genl_connect((*ctx).nl_sock);
 	if (ret) {
 		fprintf(stderr, "cannot connect to generic netlink: %s\n",
 			nl_geterror(ret));
-		goto err_sock;
+		break 'err_sock;
 	}
 
 	/* enable Extended ACK for detailed error reporting */
 	err = 1;
-	setsockopt(nl_socket_get_fd(ctx->nl_sock), SOL_NETLINK, NETLINK_EXT_ACK,
+	setsockopt(nl_socket_get_fd((*ctx).nl_sock), SOL_NETLINK, NETLINK_EXT_ACK,
 		   &err, sizeof(err));
 
-	ctx->ovpn_dco_id = genl_ctrl_resolve(ctx->nl_sock, OVPN_FAMILY_NAME);
-	if (ctx->ovpn_dco_id < 0) {
+	(*ctx).ovpn_dco_id = genl_ctrl_resolve((*ctx).nl_sock, OVPN_FAMILY_NAME);
+	if ((*ctx).ovpn_dco_id < 0) {
 		fprintf(stderr, "cannot find ovpn_dco netlink component: %d\n",
-			ctx->ovpn_dco_id);
-		goto err_free;
+			(*ctx).ovpn_dco_id);
+		break 'err_free;
 	}
 
-	ctx->nl_msg = nlmsg_alloc();
-	if (!ctx->nl_msg) {
+	(*ctx).nl_msg = nlmsg_alloc();
+	if ((*!ctx).nl_msg) {
 		fprintf(stderr, "cannot allocate netlink message\n");
-		goto err_sock;
+		break 'err_sock;
 	}
 
-	ctx->nl_cb = nl_cb_alloc(NL_CB_DEFAULT);
-	if (!ctx->nl_cb) {
+	(*ctx).nl_cb = nl_cb_alloc(NL_CB_DEFAULT);
+	if ((*!ctx).nl_cb) {
 		fprintf(stderr, "failed to allocate netlink callback\n");
-		goto err_msg;
+		break 'err_msg;
 	}
 
-	nl_socket_set_cb(ctx->nl_sock, ctx->nl_cb);
+	nl_socket_set_cb((*ctx).nl_sock, (*ctx).nl_cb);
 
-	genlmsg_put(ctx->nl_msg, 0, 0, ctx->ovpn_dco_id, 0, flags, cmd, 0);
+	genlmsg_put((*ctx).nl_msg, 0, 0, (*ctx).ovpn_dco_id, 0, flags, cmd, 0);
 
-	if (ovpn->ifindex > 0)
-		NLA_PUT_U32(ctx->nl_msg, OVPN_A_IFINDEX, ovpn->ifindex);
+	if ((*ovpn).ifindex > 0)
+		NLA_PUT_U32((*ctx).nl_msg, OVPN_A_IFINDEX, (*ovpn).ifindex);
 
 	return ctx;
-nla_put_failure:
-err_msg:
-	nlmsg_free(ctx->nl_msg);
-err_sock:
-	nl_socket_free(ctx->nl_sock);
-err_free:
+	}
+	}
+	
+	nlmsg_free((*ctx).nl_msg);
+	}
+	
+	nl_socket_free((*ctx).nl_sock);
+	}
+	
 	free(ctx);
 	return NULL;
 }
 
-unsafe fn struct nl_ctx *nl_ctx_alloc(struct ovpn_ctx *ovpn, int cmd)
+unsafe fn struct nl_ctx *nl_ctx_alloc(ovpn_ctx *ovpn, int cmd)
 {
 	return nl_ctx_alloc_flags(ovpn, cmd, 0);
 }
 
-unsafe fn void nl_ctx_free(struct nl_ctx *ctx)
+unsafe fn void nl_ctx_free(nl_ctx *ctx)
 {
 	if (!ctx)
 		return;
 
-	nl_socket_free(ctx->nl_sock);
-	nlmsg_free(ctx->nl_msg);
-	nl_cb_put(ctx->nl_cb);
+	nl_socket_free((*ctx).nl_sock);
+	nlmsg_free((*ctx).nl_msg);
+	nl_cb_put((*ctx).nl_cb);
 	free(ctx);
 }
 
-unsafe fn int ovpn_nl_cb_error(struct sockaddr_nl (*nla)__always_unused,
-			    struct nlmsgerr *err, void *arg)
+unsafe fn int ovpn_nl_cb_error(sockaddr_nl (*nla)__always_unused,
+			    nlmsgerr *err, void *arg)
 {
-	struct nlmsghdr *nlh = (struct nlmsghdr *)err - 1;
+	struct nlmsghdr *nlh = (nlmsghdr *)err - 1;
 	struct nlattr *tb_msg[NLMSGERR_ATTR_MAX + 1];
-	int len = nlh->nlmsg_len;
+	int len = (*nlh).nlmsg_len;
 	struct nlattr *attrs;
 	int *ret = arg;
 	int ack_len = sizeof(*nlh) + sizeof(int) + sizeof(*nlh);
 
-	*ret = err->error;
+	*ret = (*err).error;
 
-	if (!(nlh->nlmsg_flags & NLM_F_ACK_TLVS))
+	if (!((*nlh).nlmsg_flags & NLM_F_ACK_TLVS))
 		return NL_STOP;
 
-	if (!(nlh->nlmsg_flags & NLM_F_CAPPED))
-		ack_len += err->msg.nlmsg_len - sizeof(*nlh);
+	if (!((*nlh).nlmsg_flags & NLM_F_CAPPED))
+		ack_len += (*err).msg.nlmsg_len - sizeof(*nlh);
 
 	if (len <= ack_len)
 		return NL_STOP;
@@ -296,7 +303,7 @@ unsafe fn int ovpn_nl_cb_error(struct sockaddr_nl (*nla)__always_unused,
 	return NL_STOP;
 }
 
-unsafe fn int ovpn_nl_cb_finish(struct nl_msg (*msg)__always_unused,
+unsafe fn int ovpn_nl_cb_finish(nl_msg (*msg)__always_unused,
 			     void *arg)
 {
 	int *status = arg;
@@ -305,7 +312,7 @@ unsafe fn int ovpn_nl_cb_finish(struct nl_msg (*msg)__always_unused,
 	return NL_SKIP;
 }
 
-unsafe fn int ovpn_nl_cb_ack(struct nl_msg (*msg)__always_unused,
+unsafe fn int ovpn_nl_cb_ack(nl_msg (*msg)__always_unused,
 			  void *arg)
 {
 	int *status = arg;
@@ -314,19 +321,19 @@ unsafe fn int ovpn_nl_cb_ack(struct nl_msg (*msg)__always_unused,
 	return NL_STOP;
 }
 
-unsafe fn int ovpn_nl_msg_send(struct nl_ctx *ctx, ovpn_nl_cb cb)
+unsafe fn int ovpn_nl_msg_send(nl_ctx *ctx, ovpn_nl_cb cb)
 {
 	int status = 1;
 
-	nl_cb_err(ctx->nl_cb, NL_CB_CUSTOM, ovpn_nl_cb_error, &status);
-	nl_cb_set(ctx->nl_cb, NL_CB_FINISH, NL_CB_CUSTOM, ovpn_nl_cb_finish,
+	nl_cb_err((*ctx).nl_cb, NL_CB_CUSTOM, ovpn_nl_cb_error, &status);
+	nl_cb_set((*ctx).nl_cb, NL_CB_FINISH, NL_CB_CUSTOM, ovpn_nl_cb_finish,
 		  &status);
-	nl_cb_set(ctx->nl_cb, NL_CB_ACK, NL_CB_CUSTOM, ovpn_nl_cb_ack, &status);
+	nl_cb_set((*ctx).nl_cb, NL_CB_ACK, NL_CB_CUSTOM, ovpn_nl_cb_ack, &status);
 
 	if (cb)
-		nl_cb_set(ctx->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, ctx);
+		nl_cb_set((*ctx).nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, ctx);
 
-	nl_send_auto_complete(ctx->nl_sock, ctx->nl_msg);
+	nl_send_auto_complete((*ctx).nl_sock, (*ctx).nl_msg);
 
 	while (status == 1)
 		ovpn_nl_recvmsgs(ctx);
@@ -338,10 +345,11 @@ unsafe fn int ovpn_nl_msg_send(struct nl_ctx *ctx, ovpn_nl_cb cb)
 	return status;
 }
 
-unsafe fn int ovpn_parse_key(const char *file, struct ovpn_ctx *ctx)
+unsafe fn int ovpn_parse_key(const char *file, ovpn_ctx *ctx)
 {
+	'err: {
 	int idx_enc, idx_dec, ret = -1;
-	unsigned char *ckey = NULL;
+	core::ffi::c_uchar *ckey = NULL;
 	__u8 *bkey = NULL;
 	size_t olen = 0;
 	long ckey_len;
@@ -364,14 +372,14 @@ unsafe fn int ovpn_parse_key(const char *file, struct ovpn_ctx *ctx)
 
 	ckey = malloc(ckey_len);
 	if (!ckey)
-		goto err;
+		break 'err;
 
 	ret = fread(ckey, 1, ckey_len, fp);
 	if (ret != ckey_len) {
 		fprintf(stderr,
 			"couldn't read enough data from key file: %dbytes read\n",
 			ret);
-		goto err;
+		break 'err;
 	}
 
 	olen = 0;
@@ -383,13 +391,13 @@ unsafe fn int ovpn_parse_key(const char *file, struct ovpn_ctx *ctx)
 		fprintf(stderr, "unexpected base64 error1: %s (%d)\n", buf,
 			ret);
 
-		goto err;
+		break 'err;
 	}
 
 	bkey = malloc(olen);
 	if (!bkey) {
 		fprintf(stderr, "cannot allocate binary key buffer\n");
-		goto err;
+		break 'err;
 	}
 
 	ret = mbedtls_base64_decode(bkey, olen, &olen, ckey, ckey_len);
@@ -400,17 +408,17 @@ unsafe fn int ovpn_parse_key(const char *file, struct ovpn_ctx *ctx)
 		fprintf(stderr, "unexpected base64 error2: %s (%d)\n", buf,
 			ret);
 
-		goto err;
+		break 'err;
 	}
 
 	if (olen < 2 * KEY_LEN + NONCE_LEN) {
 		fprintf(stderr,
 			"not enough data in key file, found %zdB but needs %dB\n",
 			olen, 2 * KEY_LEN + NONCE_LEN);
-		goto err;
+		break 'err;
 	}
 
-	switch (ctx->key_dir) {
+	switch ((*ctx).key_dir) {
 	case KEY_DIR_IN:
 		idx_enc = 0;
 		idx_dec = 1;
@@ -420,16 +428,16 @@ unsafe fn int ovpn_parse_key(const char *file, struct ovpn_ctx *ctx)
 		idx_dec = 0;
 		break;
 	default:
-		goto err;
+		break 'err;
 	}
 
-	memcpy(ctx->key_enc, bkey + KEY_LEN * idx_enc, KEY_LEN);
-	memcpy(ctx->key_dec, bkey + KEY_LEN * idx_dec, KEY_LEN);
-	memcpy(ctx->nonce, bkey + 2 * KEY_LEN, NONCE_LEN);
+	memcpy((*ctx).key_enc, bkey + KEY_LEN * idx_enc, KEY_LEN);
+	memcpy((*ctx).key_dec, bkey + KEY_LEN * idx_dec, KEY_LEN);
+	memcpy((*ctx).nonce, bkey + 2 * KEY_LEN, NONCE_LEN);
 
 	ret = 0;
-
-err:
+	}
+	
 	fclose(fp);
 	free(bkey);
 	free(ckey);
@@ -437,21 +445,21 @@ err:
 	return ret;
 }
 
-unsafe fn int ovpn_parse_cipher(const char *cipher, struct ovpn_ctx *ctx)
+unsafe fn int ovpn_parse_cipher(const char *cipher, ovpn_ctx *ctx)
 {
 	if (strcmp(cipher, "aes") == 0)
-		ctx->cipher = OVPN_CIPHER_ALG_AES_GCM;
+		(*ctx).cipher = OVPN_CIPHER_ALG_AES_GCM;
 	else if (strcmp(cipher, "chachapoly") == 0)
-		ctx->cipher = OVPN_CIPHER_ALG_CHACHA20_POLY1305;
+		(*ctx).cipher = OVPN_CIPHER_ALG_CHACHA20_POLY1305;
 	else if (strcmp(cipher, "none") == 0)
-		ctx->cipher = OVPN_CIPHER_ALG_NONE;
+		(*ctx).cipher = OVPN_CIPHER_ALG_NONE;
 	else
 		return -ENOTSUP;
 
 	return 0;
 }
 
-unsafe fn int ovpn_parse_key_direction(const char *dir, struct ovpn_ctx *ctx)
+unsafe fn int ovpn_parse_key_direction(const char *dir, ovpn_ctx *ctx)
 {
 	int in_dir;
 
@@ -459,7 +467,7 @@ unsafe fn int ovpn_parse_key_direction(const char *dir, struct ovpn_ctx *ctx)
 	switch (in_dir) {
 	case KEY_DIR_IN:
 	case KEY_DIR_OUT:
-		ctx->key_dir = in_dir;
+		(*ctx).key_dir = in_dir;
 		break;
 	default:
 		fprintf(stderr,
@@ -470,8 +478,9 @@ unsafe fn int ovpn_parse_key_direction(const char *dir, struct ovpn_ctx *ctx)
 	return 0;
 }
 
-unsafe fn int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
+unsafe fn int ovpn_socket(ovpn_ctx *ctx, sa_family_t family, int proto)
 {
+	'err_socket: {
 	struct sockaddr_storage local_sock = { 0 };
 	struct sockaddr_in6 *in6;
 	struct sockaddr_in *in;
@@ -493,17 +502,17 @@ unsafe fn int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
 
 	switch (family) {
 	case AF_INET:
-		in = (struct sockaddr_in *)&local_sock;
-		in->sin_family = family;
-		in->sin_port = htons(ctx->lport);
-		in->sin_addr.s_addr = htonl(INADDR_ANY);
+		in = (sockaddr_in *)&local_sock;
+		(*in).sin_family = family;
+		(*in).sin_port = htons((*ctx).lport);
+		(*in).sin_addr.s_addr = htonl(INADDR_ANY);
 		sock_len = sizeof(*in);
 		break;
 	case AF_INET6:
-		in6 = (struct sockaddr_in6 *)&local_sock;
-		in6->sin6_family = family;
-		in6->sin6_port = htons(ctx->lport);
-		in6->sin6_addr = in6addr_any;
+		in6 = (sockaddr_in6 *)&local_sock;
+		(*in6).sin6_family = family;
+		(*in6).sin6_port = htons((*ctx).lport);
+		(*in6).sin6_addr = in6addr_any;
 		sock_len = sizeof(*in6);
 		break;
 	default:
@@ -525,9 +534,9 @@ unsafe fn int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
 		return ret;
 	}
 
-	if (ctx->mark != 0) {
-		ret = setsockopt(s, SOL_SOCKET, SO_MARK, (void *)&ctx->mark,
-				 sizeof(ctx->mark));
+	if ((*ctx).mark != 0) {
+		ret = setsockopt(s, SOL_SOCKET, SO_MARK, (void *)&(*ctx).mark,
+				 sizeof((*ctx).mark));
 		if (ret < 0) {
 			perror("setsockopt for SO_MARK");
 			return ret;
@@ -543,27 +552,27 @@ unsafe fn int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
 		}
 	}
 
-	ret = bind(s, (struct sockaddr *)&local_sock, sock_len);
+	ret = bind(s, (sockaddr *)&local_sock, sock_len);
 	if (ret < 0) {
 		perror("cannot bind socket");
-		goto err_socket;
+		break 'err_socket;
 	}
 
-	ctx->socket = s;
-	ctx->sa_family = family;
+	(*ctx).socket = s;
+	(*ctx).sa_family = family;
 	return 0;
-
-err_socket:
+	}
+	
 	close(s);
 	return -1;
 }
 
-unsafe fn int ovpn_udp_socket(struct ovpn_ctx *ctx, sa_family_t family)
+unsafe fn int ovpn_udp_socket(ovpn_ctx *ctx, sa_family_t family)
 {
 	return ovpn_socket(ctx, family, IPPROTO_UDP);
 }
 
-unsafe fn int ovpn_listen(struct ovpn_ctx *ctx, sa_family_t family)
+unsafe fn int ovpn_listen(ovpn_ctx *ctx, sa_family_t family)
 {
 	int ret;
 
@@ -571,87 +580,92 @@ unsafe fn int ovpn_listen(struct ovpn_ctx *ctx, sa_family_t family)
 	if (ret < 0)
 		return ret;
 
-	ret = listen(ctx->socket, 10);
+	ret = listen((*ctx).socket, 10);
 	if (ret < 0) {
 		perror("listen");
-		close(ctx->socket);
+		close((*ctx).socket);
 		return -1;
 	}
 
 	return 0;
 }
 
-unsafe fn int ovpn_accept(struct ovpn_ctx *ctx)
+unsafe fn int ovpn_accept(ovpn_ctx *ctx)
 {
+	'err: {
 	socklen_t socklen;
 	int ret;
 
-	socklen = sizeof(ctx->remote);
-	ret = accept(ctx->socket, (struct sockaddr *)&ctx->remote, &socklen);
+	socklen = sizeof((*ctx).remote);
+	ret = accept((*ctx).socket, (sockaddr *)&(*ctx).remote, &socklen);
 	if (ret < 0) {
 		perror("accept");
-		goto err;
+		break 'err;
 	}
 
 	fprintf(stderr, "Connection received!\n");
 
 	switch (socklen) {
-	case sizeof(struct sockaddr_in):
-	case sizeof(struct sockaddr_in6):
+	case sizeof(sockaddr_in):
+	case sizeof(sockaddr_in6):
 		break;
 	default:
 		fprintf(stderr, "error: expecting IPv4 or IPv6 connection\n");
 		close(ret);
 		ret = -EINVAL;
-		goto err;
+		break 'err;
 	}
 
 	return ret;
-err:
-	close(ctx->socket);
+	}
+	
+	close((*ctx).socket);
 	return ret;
 }
 
-unsafe fn int ovpn_connect(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_connect(ovpn_ctx *ovpn)
 {
+	'err: {
 	socklen_t socklen;
 	int s, ret;
 
-	s = socket(ovpn->remote.in4.sin_family, SOCK_STREAM, 0);
+	s = socket((*ovpn).remote.in4.sin_family, SOCK_STREAM, 0);
 	if (s < 0) {
 		perror("cannot create socket");
 		return -1;
 	}
 
-	switch (ovpn->remote.in4.sin_family) {
+	switch ((*ovpn).remote.in4.sin_family) {
 	case AF_INET:
-		socklen = sizeof(struct sockaddr_in);
+		socklen = sizeof(sockaddr_in);
 		break;
 	case AF_INET6:
-		socklen = sizeof(struct sockaddr_in6);
+		socklen = sizeof(sockaddr_in6);
 		break;
 	default:
 		return -EOPNOTSUPP;
 	}
 
-	ret = connect(s, (struct sockaddr *)&ovpn->remote, socklen);
+	ret = connect(s, (sockaddr *)&(*ovpn).remote, socklen);
 	if (ret < 0) {
 		perror("connect");
-		goto err;
+		break 'err;
 	}
 
 	fprintf(stderr, "connected\n");
 
-	ovpn->socket = s;
+	(*ovpn).socket = s;
 
 	return 0;
-err:
+	}
+	
 	close(s);
 	return ret;
 }
 
-unsafe fn int ovpn_new_peer(struct ovpn_ctx *ovpn, bool is_tcp)
+unsafe fn int ovpn_new_peer(ovpn_ctx *ovpn, is_tcp: bool)
 {
+	'nla_put_failure: {
 	struct nlattr *attr;
 	struct nl_ctx *ctx;
 	int ret = -1;
@@ -660,64 +674,66 @@ unsafe fn int ovpn_new_peer(struct ovpn_ctx *ovpn, bool is_tcp)
 	if (!ctx)
 		return -ENOMEM;
 
-	attr = nla_nest_start(ctx->nl_msg, OVPN_A_PEER);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_ID, ovpn->peer_id);
-	if (ovpn->asymm_id)
-		NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_TX_ID, ovpn->tx_id);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_SOCKET, ovpn->socket);
+	attr = nla_nest_start((*ctx).nl_msg, OVPN_A_PEER);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_ID, (*ovpn).peer_id);
+	if ((*ovpn).asymm_id)
+		NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_TX_ID, (*ovpn).tx_id);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_SOCKET, (*ovpn).socket);
 
 	if (!is_tcp) {
-		switch (ovpn->remote.in4.sin_family) {
+		switch ((*ovpn).remote.in4.sin_family) {
 		case AF_INET:
-			NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_REMOTE_IPV4,
-				    ovpn->remote.in4.sin_addr.s_addr);
-			NLA_PUT_U16(ctx->nl_msg, OVPN_A_PEER_REMOTE_PORT,
-				    ovpn->remote.in4.sin_port);
+			NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_REMOTE_IPV4,
+				    (*ovpn).remote.in4.sin_addr.s_addr);
+			NLA_PUT_U16((*ctx).nl_msg, OVPN_A_PEER_REMOTE_PORT,
+				    (*ovpn).remote.in4.sin_port);
 			break;
 		case AF_INET6:
-			NLA_PUT(ctx->nl_msg, OVPN_A_PEER_REMOTE_IPV6,
-				sizeof(ovpn->remote.in6.sin6_addr),
-				&ovpn->remote.in6.sin6_addr);
-			NLA_PUT_U32(ctx->nl_msg,
+			NLA_PUT((*ctx).nl_msg, OVPN_A_PEER_REMOTE_IPV6,
+				sizeof((*ovpn).remote.in6.sin6_addr),
+				(*&ovpn).remote.in6.sin6_addr);
+			NLA_PUT_U32((*ctx).nl_msg,
 				    OVPN_A_PEER_REMOTE_IPV6_SCOPE_ID,
-				    ovpn->remote.in6.sin6_scope_id);
-			NLA_PUT_U16(ctx->nl_msg, OVPN_A_PEER_REMOTE_PORT,
-				    ovpn->remote.in6.sin6_port);
+				    (*ovpn).remote.in6.sin6_scope_id);
+			NLA_PUT_U16((*ctx).nl_msg, OVPN_A_PEER_REMOTE_PORT,
+				    (*ovpn).remote.in6.sin6_port);
 			break;
 		default:
 			fprintf(stderr,
 				"Invalid family for remote socket address\n");
-			goto nla_put_failure;
+			break 'nla_put_failure;
 		}
 	}
 
-	if (ovpn->peer_ip_set) {
-		switch (ovpn->peer_ip.in4.sin_family) {
+	if ((*ovpn).peer_ip_set) {
+		switch ((*ovpn).peer_ip.in4.sin_family) {
 		case AF_INET:
-			NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_VPN_IPV4,
-				    ovpn->peer_ip.in4.sin_addr.s_addr);
+			NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_VPN_IPV4,
+				    (*ovpn).peer_ip.in4.sin_addr.s_addr);
 			break;
 		case AF_INET6:
-			NLA_PUT(ctx->nl_msg, OVPN_A_PEER_VPN_IPV6,
-				sizeof(struct in6_addr),
-				&ovpn->peer_ip.in6.sin6_addr);
+			NLA_PUT((*ctx).nl_msg, OVPN_A_PEER_VPN_IPV6,
+				sizeof(in6_addr),
+				(*&ovpn).peer_ip.in6.sin6_addr);
 			break;
 		default:
 			fprintf(stderr, "Invalid family for peer address\n");
-			goto nla_put_failure;
+			break 'nla_put_failure;
 		}
 	}
 
-	nla_nest_end(ctx->nl_msg, attr);
+	nla_nest_end((*ctx).nl_msg, attr);
 
 	ret = ovpn_nl_msg_send(ctx, NULL);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_set_peer(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_set_peer(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	struct nlattr *attr;
 	struct nl_ctx *ctx;
 	int ret = -1;
@@ -726,22 +742,24 @@ unsafe fn int ovpn_set_peer(struct ovpn_ctx *ovpn)
 	if (!ctx)
 		return -ENOMEM;
 
-	attr = nla_nest_start(ctx->nl_msg, OVPN_A_PEER);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_ID, ovpn->peer_id);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_KEEPALIVE_INTERVAL,
-		    ovpn->keepalive_interval);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_KEEPALIVE_TIMEOUT,
-		    ovpn->keepalive_timeout);
-	nla_nest_end(ctx->nl_msg, attr);
+	attr = nla_nest_start((*ctx).nl_msg, OVPN_A_PEER);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_ID, (*ovpn).peer_id);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_KEEPALIVE_INTERVAL,
+		    (*ovpn).keepalive_interval);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_KEEPALIVE_TIMEOUT,
+		    (*ovpn).keepalive_timeout);
+	nla_nest_end((*ctx).nl_msg, attr);
 
 	ret = ovpn_nl_msg_send(ctx, NULL);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_del_peer(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_del_peer(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	struct nlattr *attr;
 	struct nl_ctx *ctx;
 	int ret = -1;
@@ -750,17 +768,18 @@ unsafe fn int ovpn_del_peer(struct ovpn_ctx *ovpn)
 	if (!ctx)
 		return -ENOMEM;
 
-	attr = nla_nest_start(ctx->nl_msg, OVPN_A_PEER);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_ID, ovpn->peer_id);
-	nla_nest_end(ctx->nl_msg, attr);
+	attr = nla_nest_start((*ctx).nl_msg, OVPN_A_PEER);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_ID, (*ovpn).peer_id);
+	nla_nest_end((*ctx).nl_msg, attr);
 
 	ret = ovpn_nl_msg_send(ctx, NULL);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_handle_peer(struct nl_msg *msg, void (*arg)__always_unused)
+unsafe fn int ovpn_handle_peer(nl_msg *msg, void (*arg)__always_unused)
 {
 	struct nlattr *pattrs[OVPN_A_PEER_MAX + 1];
 	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
@@ -896,33 +915,36 @@ unsafe fn int ovpn_handle_peer(struct nl_msg *msg, void (*arg)__always_unused)
 	return NL_SKIP;
 }
 
-unsafe fn int ovpn_get_peer(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_get_peer(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	int flags = 0, ret = -1;
 	struct nlattr *attr;
 	struct nl_ctx *ctx;
 
-	if (ovpn->peer_id == PEER_ID_UNDEF)
+	if ((*ovpn).peer_id == PEER_ID_UNDEF)
 		flags = NLM_F_DUMP;
 
 	ctx = nl_ctx_alloc_flags(ovpn, OVPN_CMD_PEER_GET, flags);
 	if (!ctx)
 		return -ENOMEM;
 
-	if (ovpn->peer_id != PEER_ID_UNDEF) {
-		attr = nla_nest_start(ctx->nl_msg, OVPN_A_PEER);
-		NLA_PUT_U32(ctx->nl_msg, OVPN_A_PEER_ID, ovpn->peer_id);
-		nla_nest_end(ctx->nl_msg, attr);
+	if ((*ovpn).peer_id != PEER_ID_UNDEF) {
+		attr = nla_nest_start((*ctx).nl_msg, OVPN_A_PEER);
+		NLA_PUT_U32((*ctx).nl_msg, OVPN_A_PEER_ID, (*ovpn).peer_id);
+		nla_nest_end((*ctx).nl_msg, attr);
 	}
 
 	ret = ovpn_nl_msg_send(ctx, ovpn_handle_peer);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_new_key(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_new_key(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	struct nlattr *keyconf, *key_dir;
 	struct nl_ctx *ctx;
 	int ret = -1;
@@ -931,32 +953,34 @@ unsafe fn int ovpn_new_key(struct ovpn_ctx *ovpn)
 	if (!ctx)
 		return -ENOMEM;
 
-	keyconf = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_PEER_ID, ovpn->peer_id);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_SLOT, ovpn->key_slot);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_KEY_ID, ovpn->key_id);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_CIPHER_ALG, ovpn->cipher);
+	keyconf = nla_nest_start((*ctx).nl_msg, OVPN_A_KEYCONF);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_PEER_ID, (*ovpn).peer_id);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_SLOT, (*ovpn).key_slot);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_KEY_ID, (*ovpn).key_id);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_CIPHER_ALG, (*ovpn).cipher);
 
-	key_dir = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF_ENCRYPT_DIR);
-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, ovpn->key_enc);
-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, ovpn->nonce);
-	nla_nest_end(ctx->nl_msg, key_dir);
+	key_dir = nla_nest_start((*ctx).nl_msg, OVPN_A_KEYCONF_ENCRYPT_DIR);
+	NLA_PUT((*ctx).nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, (*ovpn).key_enc);
+	NLA_PUT((*ctx).nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, (*ovpn).nonce);
+	nla_nest_end((*ctx).nl_msg, key_dir);
 
-	key_dir = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF_DECRYPT_DIR);
-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, ovpn->key_dec);
-	NLA_PUT(ctx->nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, ovpn->nonce);
-	nla_nest_end(ctx->nl_msg, key_dir);
+	key_dir = nla_nest_start((*ctx).nl_msg, OVPN_A_KEYCONF_DECRYPT_DIR);
+	NLA_PUT((*ctx).nl_msg, OVPN_A_KEYDIR_CIPHER_KEY, KEY_LEN, (*ovpn).key_dec);
+	NLA_PUT((*ctx).nl_msg, OVPN_A_KEYDIR_NONCE_TAIL, NONCE_LEN, (*ovpn).nonce);
+	nla_nest_end((*ctx).nl_msg, key_dir);
 
-	nla_nest_end(ctx->nl_msg, keyconf);
+	nla_nest_end((*ctx).nl_msg, keyconf);
 
 	ret = ovpn_nl_msg_send(ctx, NULL);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_del_key(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_del_key(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	struct nlattr *keyconf;
 	struct nl_ctx *ctx;
 	int ret = -1;
@@ -965,18 +989,19 @@ unsafe fn int ovpn_del_key(struct ovpn_ctx *ovpn)
 	if (!ctx)
 		return -ENOMEM;
 
-	keyconf = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_PEER_ID, ovpn->peer_id);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_SLOT, ovpn->key_slot);
-	nla_nest_end(ctx->nl_msg, keyconf);
+	keyconf = nla_nest_start((*ctx).nl_msg, OVPN_A_KEYCONF);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_PEER_ID, (*ovpn).peer_id);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_SLOT, (*ovpn).key_slot);
+	nla_nest_end((*ctx).nl_msg, keyconf);
 
 	ret = ovpn_nl_msg_send(ctx, NULL);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_handle_key(struct nl_msg *msg, void (*arg)__always_unused)
+unsafe fn int ovpn_handle_key(nl_msg *msg, void (*arg)__always_unused)
 {
 	struct nlattr *kattrs[OVPN_A_KEYCONF_MAX + 1];
 	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
@@ -1036,8 +1061,9 @@ unsafe fn int ovpn_handle_key(struct nl_msg *msg, void (*arg)__always_unused)
 	return NL_SKIP;
 }
 
-unsafe fn int ovpn_get_key(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_get_key(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	struct nlattr *keyconf;
 	struct nl_ctx *ctx;
 	int ret = -1;
@@ -1046,19 +1072,21 @@ unsafe fn int ovpn_get_key(struct ovpn_ctx *ovpn)
 	if (!ctx)
 		return -ENOMEM;
 
-	keyconf = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_PEER_ID, ovpn->peer_id);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_SLOT, ovpn->key_slot);
-	nla_nest_end(ctx->nl_msg, keyconf);
+	keyconf = nla_nest_start((*ctx).nl_msg, OVPN_A_KEYCONF);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_PEER_ID, (*ovpn).peer_id);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_SLOT, (*ovpn).key_slot);
+	nla_nest_end((*ctx).nl_msg, keyconf);
 
 	ret = ovpn_nl_msg_send(ctx, ovpn_handle_key);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
-unsafe fn int ovpn_swap_keys(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_swap_keys(ovpn_ctx *ovpn)
 {
+	'nla_put_failure: {
 	struct nl_ctx *ctx;
 	struct nlattr *kc;
 	int ret = -1;
@@ -1067,44 +1095,45 @@ unsafe fn int ovpn_swap_keys(struct ovpn_ctx *ovpn)
 	if (!ctx)
 		return -ENOMEM;
 
-	kc = nla_nest_start(ctx->nl_msg, OVPN_A_KEYCONF);
-	NLA_PUT_U32(ctx->nl_msg, OVPN_A_KEYCONF_PEER_ID, ovpn->peer_id);
-	nla_nest_end(ctx->nl_msg, kc);
+	kc = nla_nest_start((*ctx).nl_msg, OVPN_A_KEYCONF);
+	NLA_PUT_U32((*ctx).nl_msg, OVPN_A_KEYCONF_PEER_ID, (*ovpn).peer_id);
+	nla_nest_end((*ctx).nl_msg, kc);
 
 	ret = ovpn_nl_msg_send(ctx, NULL);
-nla_put_failure:
+	}
+	
 	nl_ctx_free(ctx);
 	return ret;
 }
 
 /* Helper function used to easily add attributes to a rtnl message */
-unsafe fn int ovpn_addattr(struct nlmsghdr *n, int maxlen, int type,
+unsafe fn int ovpn_addattr(nlmsghdr *n, int maxlen, int type,
 			const void *data, int alen)
 {
 	int len = RTA_LENGTH(alen);
 	struct rtattr *rta;
 
-	if ((int)(NLMSG_ALIGN(n->nlmsg_len) + RTA_ALIGN(len)) > maxlen)	{
+	if ((int)(NLMSG_ALIGN((*n).nlmsg_len) + RTA_ALIGN(len)) > maxlen)	{
 		fprintf(stderr, "%s: rtnl: message exceeded bound of %d\n",
 			__func__, maxlen);
 		return -EMSGSIZE;
 	}
 
 	rta = nlmsg_tail(n);
-	rta->rta_type = type;
-	rta->rta_len = len;
+	(*rta).rta_type = type;
+	(*rta).rta_len = len;
 
 	if (!data)
 		memset(RTA_DATA(rta), 0, alen);
 	else
 		memcpy(RTA_DATA(rta), data, alen);
 
-	n->nlmsg_len = NLMSG_ALIGN(n->nlmsg_len) + RTA_ALIGN(len);
+	(*n).nlmsg_len = NLMSG_ALIGN((*n).nlmsg_len) + RTA_ALIGN(len);
 
 	return 0;
 }
 
-unsafe fn struct rtattr *ovpn_nest_start(struct nlmsghdr *msg, size_t max_size,
+unsafe fn struct rtattr *ovpn_nest_start(nlmsghdr *msg, size_t max_size,
 				      int attr)
 {
 	struct rtattr *nest = nlmsg_tail(msg);
@@ -1115,9 +1144,9 @@ unsafe fn struct rtattr *ovpn_nest_start(struct nlmsghdr *msg, size_t max_size,
 	return nest;
 }
 
-unsafe fn void ovpn_nest_end(struct nlmsghdr *msg, struct rtattr *nest)
+unsafe fn void ovpn_nest_end(nlmsghdr *msg, rtattr *nest)
 {
-	nest->rta_len = (uint8_t *)nlmsg_tail(msg) - (uint8_t *)nest;
+	(*nest).rta_len = (uint8_t *)nlmsg_tail(msg) - (uint8_t *)nest;
 }
 
 // C macro: RT_SNDBUF_SIZE (1024 * 2)
@@ -1160,14 +1189,14 @@ unsafe fn int ovpn_rt_bind(int fd, uint32_t groups)
 	local.nl_family = AF_NETLINK;
 	local.nl_groups = groups;
 
-	if (bind(fd, (struct sockaddr *)&local, sizeof(local)) < 0) {
+	if (bind(fd, (sockaddr *)&local, sizeof(local)) < 0) {
 		fprintf(stderr, "%s: cannot bind netlink socket: %d\n",
 			__func__, errno);
 		return -errno;
 	}
 
 	addr_len = sizeof(local);
-	if (getsockname(fd, (struct sockaddr *)&local, &addr_len) < 0) {
+	if (getsockname(fd, (sockaddr *)&local, &addr_len) < 0) {
 		fprintf(stderr, "%s: cannot getsockname: %d\n", __func__,
 			errno);
 		return -errno;
@@ -1188,38 +1217,39 @@ unsafe fn int ovpn_rt_bind(int fd, uint32_t groups)
 	return 0;
 }
 
-// C typedef: int (*ovpn_parse_reply_cb)(struct nlmsghdr *msg, void *arg);
+// C typedef: int (*ovpn_parse_reply_cb)(nlmsghdr *msg, void *arg);
 
 /* Send Netlink message and run callback on reply (if specified) */
-unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
-			unsigned int groups, ovpn_parse_reply_cb cb,
+unsafe fn int ovpn_rt_send(nlmsghdr *payload, pid_t peer,
+			groups: core::ffi::c_uint, ovpn_parse_reply_cb cb,
 			void *arg_cb)
 {
+	'out: {
 	int len, rem_len, fd, ret, rcv_len;
 	struct sockaddr_nl nladdr = { 0 };
 	struct nlmsgerr *err;
 	struct nlmsghdr *h;
 	char buf[1024 * 16];
 	struct iovec iov = {
-		.iov_base = payload,
-		.iov_len = payload->nlmsg_len,
+		iov_base: payload,
+		iov_len: (*payload).nlmsg_len,
 	};
 	struct msghdr nlmsg = {
-		.msg_name = &nladdr,
-		.msg_namelen = sizeof(nladdr),
-		.msg_iov = &iov,
-		.msg_iovlen = 1,
+		msg_name: &nladdr,
+		msg_namelen: sizeof(nladdr),
+		msg_iov: &iov,
+		msg_iovlen: 1,
 	};
 
 	nladdr.nl_family = AF_NETLINK;
 	nladdr.nl_pid = peer;
 	nladdr.nl_groups = groups;
 
-	payload->nlmsg_seq = time(NULL);
+	(*payload).nlmsg_seq = time(NULL);
 
 	/* no need to send reply */
 	if (!cb)
-		payload->nlmsg_flags |= NLM_F_ACK;
+		(*payload).nlmsg_flags |= NLM_F_ACK;
 
 	fd = ovpn_rt_socket();
 	if (fd < 0) {
@@ -1231,14 +1261,14 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 	if (ret < 0) {
 		fprintf(stderr, "%s: can't bind rtnl socket\n", __func__);
 		ret = -errno;
-		goto out;
+		break 'out;
 	}
 
 	ret = sendmsg(fd, &nlmsg, 0);
 	if (ret < 0) {
 		fprintf(stderr, "%s: rtnl: error on sendmsg()\n", __func__);
 		ret = -errno;
-		goto out;
+		break 'out;
 	}
 
 	/* prepare buffer to store RTNL replies */
@@ -1261,7 +1291,7 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 			fprintf(stderr, "%s: rtnl: error on recvmsg()\n",
 				__func__);
 			ret = -errno;
-			goto out;
+			break 'out;
 		}
 
 		if (rcv_len == 0) {
@@ -1269,7 +1299,7 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 				"%s: rtnl: socket reached unexpected EOF\n",
 				__func__);
 			ret = -EIO;
-			goto out;
+			break 'out;
 		}
 
 		if (nlmsg.msg_namelen != sizeof(nladdr)) {
@@ -1277,12 +1307,12 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 				"%s: sender address length: %u (expected %zu)\n",
 				__func__, nlmsg.msg_namelen, sizeof(nladdr));
 			ret = -EIO;
-			goto out;
+			break 'out;
 		}
 
-		h = (struct nlmsghdr *)buf;
+		h = (nlmsghdr *)buf;
 		while (rcv_len >= (int)sizeof(*h)) {
-			len = h->nlmsg_len;
+			len = (*h).nlmsg_len;
 			rem_len = len - sizeof(*h);
 
 			if (rem_len < 0 || len > rcv_len) {
@@ -1290,34 +1320,34 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 					fprintf(stderr, "%s: truncated message\n",
 						__func__);
 					ret = -EIO;
-					goto out;
+					break 'out;
 				}
 				fprintf(stderr, "%s: malformed message: len=%d\n",
 					__func__, len);
 				ret = -EIO;
-				goto out;
+				break 'out;
 			}
 
-			if (h->nlmsg_type == NLMSG_DONE) {
+			if ((*h).nlmsg_type == NLMSG_DONE) {
 				ret = 0;
-				goto out;
+				break 'out;
 			}
 
-			if (h->nlmsg_type == NLMSG_ERROR) {
-				err = (struct nlmsgerr *)NLMSG_DATA(h);
-				if (rem_len < (int)sizeof(struct nlmsgerr)) {
+			if ((*h).nlmsg_type == NLMSG_ERROR) {
+				err = (nlmsgerr *)NLMSG_DATA(h);
+				if (rem_len < (int)sizeof(nlmsgerr)) {
 					fprintf(stderr, "%s: ERROR truncated\n",
 						__func__);
 					ret = -EIO;
-					goto out;
+					break 'out;
 				}
 
-				if (err->error) {
+				if ((*err).error) {
 					fprintf(stderr, "%s: (%d) %s\n",
-						__func__, err->error,
-						strerror(-err->error));
-					ret = err->error;
-					goto out;
+						__func__, (*err).error,
+						strerror((*-err).error));
+					ret = (*err).error;
+					break 'out;
 				}
 
 				ret = 0;
@@ -1327,7 +1357,7 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 					if (r <= 0)
 						ret = r;
 				}
-				goto out;
+				break 'out;
 			}
 
 			if (cb) {
@@ -1335,7 +1365,7 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 
 				if (r <= 0) {
 					ret = r;
-					goto out;
+					break 'out;
 				}
 			} else {
 				fprintf(stderr, "%s: RTNL: unexpected reply\n",
@@ -1343,7 +1373,7 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 			}
 
 			rcv_len -= NLMSG_ALIGN(len);
-			h = (struct nlmsghdr *)((uint8_t *)h +
+			h = (nlmsghdr *)((uint8_t *)h +
 						NLMSG_ALIGN(len));
 		}
 
@@ -1356,10 +1386,11 @@ unsafe fn int ovpn_rt_send(struct nlmsghdr *payload, pid_t peer,
 			fprintf(stderr, "%s: rtnl: %d not parsed bytes\n",
 				__func__, rcv_len);
 			ret = -1;
-			goto out;
+			break 'out;
 		}
 	}
-out:
+	}
+	
 	close(fd);
 
 	return ret;
@@ -1371,39 +1402,40 @@ struct ovpn_link_req {
 	char buf[256];
 };
 
-unsafe fn int ovpn_new_iface(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_new_iface(ovpn_ctx *ovpn)
 {
+	'err: {
 	struct rtattr *linkinfo, *data;
 	struct ovpn_link_req req = { 0 };
 	int ret = -1;
 
-	fprintf(stdout, "Creating interface %s with mode %u\n", ovpn->ifname,
-		ovpn->mode);
+	fprintf(stdout, "Creating interface %s with mode %u\n", (*ovpn).ifname,
+		(*ovpn).mode);
 
 	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
 	req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL;
 	req.n.nlmsg_type = RTM_NEWLINK;
 
-	if (ovpn_addattr(&req.n, sizeof(req), IFLA_IFNAME, ovpn->ifname,
-			 strlen(ovpn->ifname) + 1) < 0)
-		goto err;
+	if (ovpn_addattr(&req.n, sizeof(req), IFLA_IFNAME, (*ovpn).ifname,
+			 strlen((*ovpn).ifname) + 1) < 0)
+		break 'err;
 
 	linkinfo = ovpn_nest_start(&req.n, sizeof(req), IFLA_LINKINFO);
 	if (!linkinfo)
-		goto err;
+		break 'err;
 
 	if (ovpn_addattr(&req.n, sizeof(req), IFLA_INFO_KIND, OVPN_FAMILY_NAME,
 			 strlen(OVPN_FAMILY_NAME) + 1) < 0)
-		goto err;
+		break 'err;
 
-	if (ovpn->mode_set) {
+	if ((*ovpn).mode_set) {
 		data = ovpn_nest_start(&req.n, sizeof(req), IFLA_INFO_DATA);
 		if (!data)
-			goto err;
+			break 'err;
 
 		if (ovpn_addattr(&req.n, sizeof(req), IFLA_OVPN_MODE,
-				 &ovpn->mode, sizeof(uint8_t)) < 0)
-			goto err;
+				 (*&ovpn).mode, sizeof(uint8_t)) < 0)
+			break 'err;
 
 		ovpn_nest_end(&req.n, data);
 	}
@@ -1413,28 +1445,29 @@ unsafe fn int ovpn_new_iface(struct ovpn_ctx *ovpn)
 	req.i.ifi_family = AF_PACKET;
 
 	ret = ovpn_rt_send(&req.n, 0, 0, NULL, NULL);
-err:
+	}
+	
 	return ret;
 }
 
-unsafe fn int ovpn_del_iface(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_del_iface(ovpn_ctx *ovpn)
 {
 	struct ovpn_link_req req = { 0 };
 
-	fprintf(stdout, "Deleting interface %s ifindex %u\n", ovpn->ifname,
-		ovpn->ifindex);
+	fprintf(stdout, "Deleting interface %s ifindex %u\n", (*ovpn).ifname,
+		(*ovpn).ifindex);
 
 	req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
 	req.n.nlmsg_flags = NLM_F_REQUEST;
 	req.n.nlmsg_type = RTM_DELLINK;
 
 	req.i.ifi_family = AF_PACKET;
-	req.i.ifi_index = ovpn->ifindex;
+	req.i.ifi_index = (*ovpn).ifindex;
 
 	return ovpn_rt_send(&req.n, 0, 0, NULL, NULL);
 }
 
-unsafe fn int nl_seq_check(struct nl_msg (*msg)__always_unused,
+unsafe fn int nl_seq_check(nl_msg (*msg)__always_unused,
 			void (*arg)__always_unused)
 {
 	return NL_OK;
@@ -1445,7 +1478,7 @@ struct mcast_handler_args {
 	int id;
 };
 
-unsafe fn int mcast_family_handler(struct nl_msg *msg, void *arg)
+unsafe fn int mcast_family_handler(nl_msg *msg, void *arg)
 {
 	struct mcast_handler_args *grp = arg;
 	struct nlattr *tb[CTRL_ATTR_MAX + 1];
@@ -1459,7 +1492,7 @@ unsafe fn int mcast_family_handler(struct nl_msg *msg, void *arg)
 	if (!tb[CTRL_ATTR_MCAST_GROUPS])
 		return NL_SKIP;
 
-	nla_for_each_nested(mcgrp, tb[CTRL_ATTR_MCAST_GROUPS], rem_mcgrp) {
+	nla_for_each_nested!(mcgrp, tb[CTRL_ATTR_MCAST_GROUPS], rem_mcgrp, {
 		struct nlattr *tb_mcgrp[CTRL_ATTR_MCAST_GRP_MAX + 1];
 
 		nla_parse(tb_mcgrp, CTRL_ATTR_MCAST_GRP_MAX,
@@ -1469,25 +1502,25 @@ unsafe fn int mcast_family_handler(struct nl_msg *msg, void *arg)
 		    !tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID])
 			continue;
 		if (strncmp(nla_data(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME]),
-			    grp->group, nla_len(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME])))
+			    (*grp).group, nla_len(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME])))
 			continue;
-		grp->id = nla_get_u32(tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID]);
+		(*grp).id = nla_get_u32(tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID]);
 		break;
-	}
+	});
 
 	return NL_SKIP;
 }
 
-unsafe fn int mcast_error_handler(struct sockaddr_nl (*nla)__always_unused,
-			       struct nlmsgerr *err, void *arg)
+unsafe fn int mcast_error_handler(sockaddr_nl (*nla)__always_unused,
+			       nlmsgerr *err, void *arg)
 {
 	int *ret = arg;
 
-	*ret = err->error;
+	*ret = (*err).error;
 	return NL_STOP;
 }
 
-unsafe fn int mcast_ack_handler(struct nl_msg (*msg)__always_unused, void *arg)
+unsafe fn int mcast_ack_handler(nl_msg (*msg)__always_unused, void *arg)
 {
 	int *ret = arg;
 
@@ -1495,7 +1528,7 @@ unsafe fn int mcast_ack_handler(struct nl_msg (*msg)__always_unused, void *arg)
 	return NL_STOP;
 }
 
-unsafe fn int ovpn_handle_msg(struct nl_msg *msg, void *arg)
+unsafe fn int ovpn_handle_msg(nl_msg *msg, void *arg)
 {
 	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
 	struct nlattr *attrs[OVPN_A_MAX + 1];
@@ -1531,7 +1564,7 @@ unsafe fn int ovpn_handle_msg(struct nl_msg *msg, void *arg)
 		return NL_STOP;
 	}
 
-	switch (gnlh->cmd) {
+	switch ((*gnlh).cmd) {
 	case OVPN_CMD_PEER_DEL_NTF:
 		fprintf(stdout, "received CMD_PEER_DEL_NTF\n");
 		break;
@@ -1542,7 +1575,7 @@ unsafe fn int ovpn_handle_msg(struct nl_msg *msg, void *arg)
 		fprintf(stdout, "received CMD_KEY_SWAP_NTF\n");
 		break;
 	default:
-		fprintf(stderr, "received unknown command: %d\n", gnlh->cmd);
+		fprintf(stderr, "received unknown command: %d\n", (*gnlh).cmd);
 		return NL_STOP;
 	}
 
@@ -1550,15 +1583,17 @@ unsafe fn int ovpn_handle_msg(struct nl_msg *msg, void *arg)
 	return NL_OK;
 }
 
-unsafe fn int ovpn_get_mcast_id(struct nl_sock *sock, const char *family,
+unsafe fn int ovpn_get_mcast_id(nl_sock *sock, const char *family,
 			     const char *group)
 {
+	'out_fail_cb: {
+	'nla_put_failure: {
 	struct nl_msg *msg;
 	struct nl_cb *cb;
 	int ret, ctrlid;
 	struct mcast_handler_args grp = {
-		.group = group,
-		.id = -ENOENT,
+		group: group,
+		id: -ENOENT,
 	};
 
 	msg = nlmsg_alloc();
@@ -1568,7 +1603,7 @@ unsafe fn int ovpn_get_mcast_id(struct nl_sock *sock, const char *family,
 	cb = nl_cb_alloc(NL_CB_DEFAULT);
 	if (!cb) {
 		ret = -ENOMEM;
-		goto out_fail_cb;
+		break 'out_fail_cb;
 	}
 
 	ctrlid = genl_ctrl_resolve(sock, "nlctrl");
@@ -1580,7 +1615,7 @@ unsafe fn int ovpn_get_mcast_id(struct nl_sock *sock, const char *family,
 
 	ret = nl_send_auto_complete(sock, msg);
 	if (ret < 0)
-		goto nla_put_failure;
+		break 'nla_put_failure;
 
 	ret = 1;
 
@@ -1593,15 +1628,18 @@ unsafe fn int ovpn_get_mcast_id(struct nl_sock *sock, const char *family,
 
 	if (ret == 0)
 		ret = grp.id;
- nla_put_failure:
+	}
+	
 	nl_cb_put(cb);
- out_fail_cb:
+	}
+	
 	nlmsg_free(msg);
 	return ret;
 }
 
 unsafe fn int ovpn_listen_mcast(void)
 {
+	'err_free: {
 	struct nl_sock *sock;
 	struct nl_cb *cb;
 	int mcid, ret;
@@ -1610,7 +1648,7 @@ unsafe fn int ovpn_listen_mcast(void)
 	if (!sock) {
 		fprintf(stderr, "cannot allocate netlink socket\n");
 		ret = -ENOMEM;
-		goto err_free;
+		break 'err_free;
 	}
 
 	nl_socket_set_buffer_size(sock, 8192, 8192);
@@ -1619,20 +1657,20 @@ unsafe fn int ovpn_listen_mcast(void)
 	if (ret < 0) {
 		fprintf(stderr, "cannot connect to generic netlink: %s\n",
 			nl_geterror(ret));
-		goto err_free;
+		break 'err_free;
 	}
 
 	mcid = ovpn_get_mcast_id(sock, OVPN_FAMILY_NAME, OVPN_MCGRP_PEERS);
 	if (mcid < 0) {
 		fprintf(stderr, "cannot get mcast group: %s\n",
 			nl_geterror(mcid));
-		goto err_free;
+		break 'err_free;
 	}
 
 	ret = nl_socket_add_membership(sock, mcid);
 	if (ret) {
 		fprintf(stderr, "failed to join mcast group: %d\n", ret);
-		goto err_free;
+		break 'err_free;
 	}
 
 	ret = 1;
@@ -1654,7 +1692,8 @@ unsafe fn int ovpn_listen_mcast(void)
 	}
 
 	nl_cb_put(cb);
-err_free:
+	}
+	
 	nl_socket_free(sock);
 	return ret;
 }
@@ -1781,15 +1820,16 @@ unsafe fn void usage(const char *cmd)
 		"* listen_mcast: listen to ovpn netlink multicast messages\n");
 }
 
-unsafe fn int ovpn_parse_remote(struct ovpn_ctx *ovpn, const char *host,
+unsafe fn int ovpn_parse_remote(ovpn_ctx *ovpn, const char *host,
 			     const char *service, const char *vpnip)
 {
+	'out: {
 	int ret;
 	struct addrinfo *result = NULL;
 	struct addrinfo hints = {
-		.ai_family = ovpn->sa_family,
-		.ai_socktype = SOCK_DGRAM,
-		.ai_protocol = IPPROTO_UDP
+		ai_family: (*ovpn).sa_family,
+		ai_socktype: SOCK_DGRAM,
+		ai_protocol: IPPROTO_UDP
 	};
 
 	if (host) {
@@ -1800,15 +1840,15 @@ unsafe fn int ovpn_parse_remote(struct ovpn_ctx *ovpn, const char *host,
 			return -1;
 		}
 
-		if (!(result->ai_family == AF_INET &&
-		      result->ai_addrlen == sizeof(struct sockaddr_in)) &&
-		    !(result->ai_family == AF_INET6 &&
-		      result->ai_addrlen == sizeof(struct sockaddr_in6))) {
+		if (!((*result).ai_family == AF_INET &&
+		      (*result).ai_addrlen == sizeof(sockaddr_in)) &&
+		    !((*result).ai_family == AF_INET6 &&
+		      (*result).ai_addrlen == sizeof(sockaddr_in6))) {
 			ret = -EINVAL;
-			goto out;
+			break 'out;
 		}
 
-		memcpy(&ovpn->remote, result->ai_addr, result->ai_addrlen);
+		memcpy((*&ovpn).remote, (*result).ai_addr, (*result).ai_addrlen);
 		freeaddrinfo(result);
 		result = NULL;
 	}
@@ -1821,27 +1861,28 @@ unsafe fn int ovpn_parse_remote(struct ovpn_ctx *ovpn, const char *host,
 			return -1;
 		}
 
-		if (!(result->ai_family == AF_INET &&
-		      result->ai_addrlen == sizeof(struct sockaddr_in)) &&
-		    !(result->ai_family == AF_INET6 &&
-		      result->ai_addrlen == sizeof(struct sockaddr_in6))) {
+		if (!((*result).ai_family == AF_INET &&
+		      (*result).ai_addrlen == sizeof(sockaddr_in)) &&
+		    !((*result).ai_family == AF_INET6 &&
+		      (*result).ai_addrlen == sizeof(sockaddr_in6))) {
 			ret = -EINVAL;
-			goto out;
+			break 'out;
 		}
 
-		memcpy(&ovpn->peer_ip, result->ai_addr, result->ai_addrlen);
-		ovpn->sa_family = result->ai_family;
+		memcpy((*&ovpn).peer_ip, (*result).ai_addr, (*result).ai_addrlen);
+		(*ovpn).sa_family = (*result).ai_family;
 
-		ovpn->peer_ip_set = true;
+		(*ovpn).peer_ip_set = true;
 	}
 
 	ret = 0;
-out:
+	}
+	
 	freeaddrinfo(result);
 	return ret;
 }
 
-unsafe fn int ovpn_parse_new_peer(struct ovpn_ctx *ovpn, const char *peer_id,
+unsafe fn int ovpn_parse_new_peer(ovpn_ctx *ovpn, const char *peer_id,
 			       const char *tx_id, const char *raddr,
 			       const char *rport, const char *vpnip)
 {
@@ -1862,7 +1903,7 @@ unsafe fn int ovpn_parse_new_peer(struct ovpn_ctx *ovpn, const char *peer_id,
 	return ovpn_parse_remote(ovpn, raddr, rport, vpnip);
 }
 
-unsafe fn int ovpn_parse_key_slot(const char *arg, struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_parse_key_slot(const char *arg, ovpn_ctx *ovpn)
 {
 	int slot = strtoul(arg, NULL, 10);
 
@@ -1983,7 +2024,7 @@ unsafe fn void ovpn_waitbg(void)
 	pause();
 }
 
-unsafe fn int ovpn_run_cmd(struct ovpn_ctx *ovpn)
+unsafe fn int ovpn_run_cmd(ovpn_ctx *ovpn)
 {
 	char peer_id[10], tx_id[10], vpnip[INET6_ADDRSTRLEN], laddr[128];
 	char lport[10], raddr[128], rport[10];
@@ -2166,7 +2207,7 @@ unsafe fn int ovpn_run_cmd(struct ovpn_ctx *ovpn)
 	return ret;
 }
 
-unsafe fn int ovpn_parse_cmd_args(struct ovpn_ctx *ovpn, int argc, char *argv[])
+unsafe fn int ovpn_parse_cmd_args(ovpn_ctx *ovpn, int argc, char *argv[])
 {
 	int ret;
 

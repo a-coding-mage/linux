@@ -14,7 +14,7 @@ static mut bdi_list: list_head = unsafe { core::mem::zeroed() };
 pub static mut bdi_wq: *mut workqueue_struct = core::ptr::null_mut();
 pub struct workqueue_struct;
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] struct wb_stats { nr_dirty: usize, nr_io: usize, nr_more_io: usize, nr_dirty_time: usize, nr_writeback: usize, nr_reclaimable: usize, nr_dirtied: usize, nr_written: usize, dirty_thresh: usize, wb_thresh: usize }
 
 extern "C" {

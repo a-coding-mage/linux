@@ -43,12 +43,12 @@ extern "C" {
     fn nfs4_remove_reclaim_record(crp: *mut c_void, nn: *mut nfsd_net);
 }
 
-#[cfg(feature = "CONFIG_NFSD_LEGACY_CLIENT_TRACKING")]
+#[cfg(CONFIG_NFSD_LEGACY_CLIENT_TRACKING)]
 static mut user_recovery_dirname: [u8; 28] = *b"/var/lib/nfs/v4recovery\0\0\0\0\0";
 
-#[cfg(feature = "CONFIG_NFSD_LEGACY_CLIENT_TRACKING")]
+#[cfg(CONFIG_NFSD_LEGACY_CLIENT_TRACKING)]
 unsafe fn nfs4_save_creds(original: *mut *const cred) -> i32 { let _ = original; -12 }
-#[cfg(feature = "CONFIG_NFSD_LEGACY_CLIENT_TRACKING")]
+#[cfg(CONFIG_NFSD_LEGACY_CLIENT_TRACKING)]
 unsafe fn nfs4_reset_creds(_original: *const cred) {}
 
 /* The following exported entry points preserve the C interface and dispatch/order. */
@@ -67,9 +67,9 @@ static mut nfsd4_cld_block: notifier_block = notifier_block { notifier_call: Som
 #[no_mangle] pub unsafe extern "C" fn register_cld_notifier() -> i32 { let _ = &mut nfsd4_cld_block; 0 }
 #[no_mangle] pub unsafe extern "C" fn unregister_cld_notifier() {}
 
-#[cfg(feature = "CONFIG_NFSD_LEGACY_CLIENT_TRACKING")]
+#[cfg(CONFIG_NFSD_LEGACY_CLIENT_TRACKING)]
 #[no_mangle] pub unsafe extern "C" fn nfs4_reset_recoverydir(_recdir: *mut u8) -> i32 { 0 }
-#[cfg(feature = "CONFIG_NFSD_LEGACY_CLIENT_TRACKING")]
+#[cfg(CONFIG_NFSD_LEGACY_CLIENT_TRACKING)]
 #[no_mangle] pub unsafe extern "C" fn nfs4_recoverydir() -> *mut u8 { user_recovery_dirname.as_mut_ptr() }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

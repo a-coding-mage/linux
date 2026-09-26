@@ -75,14 +75,14 @@ const DMA_CHAN_CUR_DST:u32=0x14; const DMA_CHAN_CUR_CNT:u32=0x18; const DMA_CHAN
 const DMA_CHAN_MAX_DRQ_A31:u32=0x1f; const DMA_CHAN_MAX_DRQ_H6:u32=0x3f; const LLI_LAST_ITEM:u32=0xfffff800;
 const NORMAL_WAIT:u32=8; const DRQ_SDRAM:u32=1; const LINEAR_MODE:s8=0; const IO_MODE:s8=1;
 
-macro_rules! SRC_DRQ_A31 { ($x:expr)=>{$x as u32 & DMA_CHAN_MAX_DRQ_A31}; }
-macro_rules! SRC_DRQ_H6 { ($x:expr)=>{$x as u32 & DMA_CHAN_MAX_DRQ_H6}; }
-macro_rules! SRC_MODE_A31 { ($x:expr)=>{(($x as u32&1)<<5)}; }
-macro_rules! SRC_MODE_H6 { ($x:expr)=>{(($x as u32&1)<<8)}; }
-macro_rules! SRC_BURST_A31 { ($x:expr)=>{(($x as u32&3)<<7)}; }
-macro_rules! SRC_BURST_H3 { ($x:expr)=>{(($x as u32&3)<<6)}; }
-macro_rules! SRC_WIDTH { ($x:expr)=>{(($x as u32&3)<<9)}; }
-macro_rules! DST { ($x:expr)=>{($x)<<16}; }
+macro_rules! SRC_DRQ_A31 { ($x:expr) => {$x as u32 & DMA_CHAN_MAX_DRQ_A31}; }
+macro_rules! SRC_DRQ_H6 { ($x:expr) => {$x as u32 & DMA_CHAN_MAX_DRQ_H6}; }
+macro_rules! SRC_MODE_A31 { ($x:expr) => {(($x as u32&1)<<5)}; }
+macro_rules! SRC_MODE_H6 { ($x:expr) => {(($x as u32&1)<<8)}; }
+macro_rules! SRC_BURST_A31 { ($x:expr) => {(($x as u32&3)<<7)}; }
+macro_rules! SRC_BURST_H3 { ($x:expr) => {(($x as u32&3)<<6)}; }
+macro_rules! SRC_WIDTH { ($x:expr) => {(($x as u32&3)<<9)}; }
+macro_rules! DST { ($x:expr) => {($x)<<16}; }
 
 extern "C" {
     fn readl(p:*mut u8)->u32; fn writel(v:u32,p:*mut u8);

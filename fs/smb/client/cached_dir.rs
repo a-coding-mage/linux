@@ -24,15 +24,15 @@ pub struct cached_dir_dentry { pub entry: list_head, pub dentry: *mut dentry }
 }
 
 extern "C" {
-    fn dput(*mut dentry); fn kref_get(*mut kref);
-    fn kref_put(*mut kref, cb: unsafe extern "C" fn(*mut kref));
-    fn spin_lock(*mut spinlock_t); fn spin_unlock(*mut spinlock_t);
-    fn close_cached_dir_locked(*mut cached_fid);
-    fn smb2_close_cached_fid(*mut kref);
-    fn is_valid_cached_dir(*mut cached_fid) -> bool;
-    fn open_cached_dir(u32, *mut cifs_tcon, *const c_char, *mut cifs_sb_info, bool, *mut *mut cached_fid) -> c_int;
-    fn free_cached_dir(*mut cached_fid);
-    fn kfree(*mut c_void);
+    fn dput(_: *mut dentry); fn kref_get(_: *mut kref);
+    fn kref_put(_: *mut kref, cb: unsafe extern "C" fn(*mut kref));
+    fn spin_lock(_: *mut spinlock_t); fn spin_unlock(_: *mut spinlock_t);
+    fn close_cached_dir_locked(_: *mut cached_fid);
+    fn smb2_close_cached_fid(_: *mut kref);
+    fn is_valid_cached_dir(_: *mut cached_fid) -> bool;
+    fn open_cached_dir(_: u32, _: *mut cifs_tcon, _: *const c_char, _: *mut cifs_sb_info, _: bool, _: *mut *mut cached_fid) -> c_int;
+    fn free_cached_dir(_: *mut cached_fid);
+    fn kfree(_: *mut c_void);
 }
 
 pub unsafe extern "C" fn open_cached_dir_by_dentry(tcon: *mut cifs_tcon, dentry: *mut dentry, ret: *mut *mut cached_fid) -> c_int {

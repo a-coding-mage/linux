@@ -49,7 +49,7 @@ extern "C" {
     ) -> i64;
 }
 
-static unsafe extern "C" fn check_array_elem(
+unsafe extern "C" fn check_array_elem(
     _map: *mut bpf_map,
     key: *mut __u32,
     _val: *mut __u64,

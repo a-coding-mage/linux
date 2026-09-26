@@ -149,7 +149,7 @@ pub unsafe extern "C" fn fdt_check_mem_start(mem_start: u32, fdt: *const c_void)
                             if base < usable_base { base = usable_base; }
                             if end > usable_end { end = usable_end; }
                             if end > base as u64 && base < fdt_mem_start { fdt_mem_start = base; }
-                        } else if (mem_start >= base) && (mem_start as u64 < end) {
+                        } else if (mem_start >= base) && ((mem_start as u64) < end) {
                             return mem_start;
                         } else if base < fdt_mem_start { fdt_mem_start = base; }
                     }

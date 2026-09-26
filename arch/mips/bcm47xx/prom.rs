@@ -95,7 +95,7 @@ pub unsafe fn prom_init() {
 }
 
 // Preserved conditional intent: this section is compiled for BCM47XX BCMA with HIGHMEM.
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", feature = "CONFIG_HIGHMEM"))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, CONFIG_HIGHMEM))]
 mod highmem {
     const EXTVBASE: usize = 0xc0000000;
 

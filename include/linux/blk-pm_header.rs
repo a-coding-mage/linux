@@ -16,7 +16,7 @@ pub struct request_queue {
  * The CONFIG_PM condition is preserved as a Rust configuration condition;
  * the corresponding feature is supplied by the build configuration.
  */
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 extern "C" {
     pub fn blk_pm_runtime_init(q: *mut request_queue, dev: *mut device);
     pub fn blk_pre_runtime_suspend(q: *mut request_queue) -> ::core::ffi::c_int;
@@ -25,7 +25,7 @@ extern "C" {
     pub fn blk_post_runtime_resume(q: *mut request_queue);
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub unsafe fn blk_pm_runtime_init(_q: *mut request_queue, _dev: *mut device) {}
 

@@ -35,7 +35,7 @@ static dtable_1_32: [ClkDivTable; 6] = [
     ClkDivTable { val: 2, div: 4 }, ClkDivTable { val: 3, div: 8 },
     ClkDivTable { val: 4, div: 32 }, ClkDivTable { val: 0, div: 0 },
 ];
-#[cfg(feature = "CONFIG_CLK_R9A07G054")]
+#[cfg(CONFIG_CLK_R9A07G054)]
 static dtable_4_32: [ClkDivTable; 30] = [
     ClkDivTable { val: 3, div: 4 }, ClkDivTable { val: 4, div: 5 },
     ClkDivTable { val: 5, div: 6 }, ClkDivTable { val: 6, div: 7 },
@@ -138,7 +138,7 @@ static r9a07g044_crit_mod_clks: &[u32] = &[MOD_CLK_BASE + R9A07G044_GIC600_GICCL
 static r9a07g044_crit_resets: &[u32] = &[R9A07G044_DMAC_ARESETN, R9A07G044_DMAC_RST_ASYNC];
 static r9a07g044_no_pm_mod_clks: &[u32] = &[MOD_CLK_BASE + R9A07G044_CRU_SYSCLK, MOD_CLK_BASE + R9A07G044_CRU_VCLK];
 
-#[cfg(feature = "CONFIG_CLK_R9A07G044")]
+#[cfg(CONFIG_CLK_R9A07G044)]
 pub static r9a07g044_cpg_info: Rzg2lCpgInfo = Rzg2lCpgInfo {
     core_clks: core_clks.common, num_core_clks: ARRAY_SIZE!(core_clks.common),
     last_dt_core_clk: LAST_DT_CORE_CLK, num_total_core_clks: MOD_CLK_BASE,
@@ -150,7 +150,7 @@ pub static r9a07g044_cpg_info: Rzg2lCpgInfo = Rzg2lCpgInfo {
     num_crit_resets: ARRAY_SIZE!(r9a07g044_crit_resets), has_clk_mon_regs: true,
 };
 
-#[cfg(feature = "CONFIG_CLK_R9A07G054")]
+#[cfg(CONFIG_CLK_R9A07G054)]
 pub static r9a07g054_cpg_info: Rzg2lCpgInfo = Rzg2lCpgInfo {
     core_clks: core_clks.common, num_core_clks: ARRAY_SIZE!(core_clks.common) + ARRAY_SIZE!(core_clks.drp),
     last_dt_core_clk: LAST_DT_CORE_CLK, num_total_core_clks: MOD_CLK_BASE,

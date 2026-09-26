@@ -44,7 +44,7 @@ pub enum gpiod_flags {
     _Opaque,
 }
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 extern "C" {
     pub fn acpi_gpiochip_add(chip: *mut gpio_chip);
     pub fn acpi_gpiochip_remove(chip: *mut gpio_chip);
@@ -63,19 +63,19 @@ extern "C" {
     pub fn acpi_gpio_count(fwnode: *const fwnode_handle, con_id: *const c_char) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn acpi_gpiochip_add(_chip: *mut gpio_chip) {}
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn acpi_gpiochip_remove(_chip: *mut gpio_chip) {}
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn acpi_gpiochip_request_interrupts(_chip: *mut gpio_chip) {}
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn acpi_gpiochip_free_interrupts(_chip: *mut gpio_chip) {}
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn acpi_find_gpio(
     _fwnode: *mut fwnode_handle,
     _con_id: *const c_char,
@@ -87,7 +87,7 @@ pub unsafe fn acpi_find_gpio(
     (-2isize) as *mut gpio_desc
 }
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn acpi_gpio_count(
     _fwnode: *const fwnode_handle,
     _con_id: *const c_char,

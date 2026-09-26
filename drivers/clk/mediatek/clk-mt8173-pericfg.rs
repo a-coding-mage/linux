@@ -21,15 +21,15 @@ macro_rules! GATE_PERI1 {
     };
 }
 
-static DEFINE_SPINLOCK!(mt8173_clk_lock);
+DEFINE_SPINLOCK!(mt8173_clk_lock);
 
-static const peri0_cg_regs: mtk_gate_regs = mtk_gate_regs {
+static peri0_cg_regs: mtk_gate_regs = mtk_gate_regs {
     set_ofs: 0x0008,
     clr_ofs: 0x0010,
     sta_ofs: 0x0018,
 };
 
-static const peri1_cg_regs: mtk_gate_regs = mtk_gate_regs {
+static peri1_cg_regs: mtk_gate_regs = mtk_gate_regs {
     set_ofs: 0x000c,
     clr_ofs: 0x0014,
     sta_ofs: 0x001c,

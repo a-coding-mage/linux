@@ -232,8 +232,8 @@ unsafe fn nfs_sillyrename(dir: *mut inode, dentry: *mut dentry) -> i32 {
     if IS_ERR(task) { nfs_cancel_async_unlink(dentry); iput(inode); dput(sdentry); return -EBUSY; }
     error = rpc_wait_for_completion_task(task); if error == 0 { error = (*task).tk_status; }
     match error {
-        0 => { nfs_set_verifier(dentry, nfs_save_change_attribute(dir)); spin_lock(&mut (*inode).i_lock); NFS_I(inode).attr_gencount = nfs_inc_attr_generation_counter(); nfs_set_cache_invalid(inode, NFS_INO_INVALID_CHANGE | NFS_INO_INVALID_CTIME | NFS_INO_REVAL_FORCED); spin_unlock(&mut (*inode).i_lock); d_move(dentry, sdentry); }
-        -ERESTARTSYS => { d_drop(dentry); d_drop(sdentry); }
+        case if case == 0 => { nfs_set_verifier(dentry, nfs_save_change_attribute(dir)); spin_lock(&mut (*inode).i_lock); NFS_I(inode).attr_gencount = nfs_inc_attr_generation_counter(); nfs_set_cache_invalid(inode, NFS_INO_INVALID_CHANGE | NFS_INO_INVALID_CTIME | NFS_INO_REVAL_FORCED); spin_unlock(&mut (*inode).i_lock); d_move(dentry, sdentry); }
+        case if case == -ERESTARTSYS => { d_drop(dentry); d_drop(sdentry); }
         _ => {}
     }
     rpc_put_task(task); iput(inode); dput(sdentry); error

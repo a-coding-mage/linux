@@ -95,8 +95,7 @@ extern "C" {
         inst: u32,
         tf_regs: *const dcn201_dpp_registers,
         tf_shift: *const dcn201_dpp_shift,
-        tf_mask: *const dcn201_dpp_mask,
-    ) -> bool;
+        tf_mask: *const dcn201_dpp_mask) -> bool;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -79,9 +79,9 @@ macro_rules! arch_cmpxchg {
                 "if (!P0) jump 1b;",
                 "2:",
                 oldval = inout(reg) __oldval,
-                ptr = in(reg) __ptr,
-                old = in(reg) __old,
-                new = in(reg) __new,
+                $ptr = in(reg) __ptr,
+                $old = in(reg) __old,
+                $new = in(reg) __new,
                 options(nostack)
             );
         }

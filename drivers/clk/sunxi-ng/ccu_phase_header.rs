@@ -32,7 +32,7 @@ pub unsafe fn hw_to_ccu_phase(hw: *mut clk_hw) -> *mut ccu_phase {
     (common as *mut u8).sub(core::mem::offset_of!(ccu_phase, common)) as *mut ccu_phase
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static ccu_phase_ops: clk_ops;
 }
 

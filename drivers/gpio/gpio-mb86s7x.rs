@@ -159,7 +159,7 @@ static MB86S70_GPIO_DT_IDS: [of_device_id; 2] = [
 ];
 
 // CONFIG_ACPI conditionally includes the SCX0007 ACPI match table.
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 static MB86S70_GPIO_ACPI_IDS: [&'static [u8]; 2] = [b"SCX0007\0", b"\0"];
 
 // Equivalent of module_platform_driver(mb86s70_gpio_driver).

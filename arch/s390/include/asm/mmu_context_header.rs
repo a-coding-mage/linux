@@ -20,7 +20,7 @@ pub unsafe fn init_new_context(tsk: *mut task_struct, mm: *mut mm_struct) -> ::c
     (*mm).context.gmap_asce = 0;
     (*mm).context.flush_mm = 0;
     // Build-time condition: CONFIG_KVM.
-    #[cfg(feature = "CONFIG_KVM")]
+    #[cfg(CONFIG_KVM)]
     {
         (*mm).context.allow_cow_sharing = 1;
     }

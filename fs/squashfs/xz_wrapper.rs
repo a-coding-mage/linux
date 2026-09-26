@@ -146,7 +146,7 @@ unsafe fn squashfs_xz_uncompress(
                 avail = min(length, (*bvec).bv_len as c_int - offset);
                 data = bvec_virt(bvec);
                 length -= avail;
-                (*stream).buf.in = (data as *const u8).add(offset as usize);
+                (*stream).buf.r#in = (data as *const u8).add(offset as usize);
                 (*stream).buf.in_size = avail as usize;
                 (*stream).buf.in_pos = 0;
                 offset = 0;

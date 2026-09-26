@@ -32,7 +32,7 @@ unsafe extern "C" {
     pub fn dove_sata_init(sata_data: *mut mv_sata_platform_data);
 
     // CONFIG_PCI
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pub fn dove_pcie_init(init_port0: ::core::ffi::c_int, init_port1: ::core::ffi::c_int);
 
     pub fn dove_ehci0_init();
@@ -50,7 +50,7 @@ unsafe extern "C" {
 }
 
 // When CONFIG_PCI is not enabled, the C header provides an empty inline function.
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn dove_pcie_init(_init_port0: ::core::ffi::c_int, _init_port1: ::core::ffi::c_int) {}
 

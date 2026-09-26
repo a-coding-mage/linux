@@ -53,7 +53,7 @@ static mut nvs_list: ListHead = ListHead {
     prev: core::ptr::null_mut(),
 };
 
-#[cfg(feature = "CONFIG_ACPI_SLEEP")]
+#[cfg(CONFIG_ACPI_SLEEP)]
 unsafe fn suspend_nvs_register(start: usize, mut size: usize) -> i32 {
     while size > 0 {
         let entry = kzalloc_obj::<NvsPage>();
@@ -77,7 +77,7 @@ unsafe fn suspend_nvs_register(start: usize, mut size: usize) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_SLEEP"))]
+#[cfg(not(CONFIG_ACPI_SLEEP))]
 unsafe fn suspend_nvs_register(_start: usize, _size: usize) -> i32 {
     0
 }

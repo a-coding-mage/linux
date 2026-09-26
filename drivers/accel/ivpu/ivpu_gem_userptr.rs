@@ -72,6 +72,10 @@ unsafe fn ivpu_create_userptr_dmabuf(
     let mut ret: i32;
     let mut i: i32;
     let pinned: i32;
+    'free_pages_array: {
+    'unpin_pages: {
+    'free_sgt: {
+    'free_sg_table: {
 
     // Add FOLL_WRITE only if the BO is not read-only
     if flags & DRM_IVPU_BO_READ_ONLY == 0 {
@@ -87,25 +91,25 @@ unsafe fn ivpu_create_userptr_dmabuf(
     if pinned < 0 {
         ret = pinned;
         ivpu_dbg!(vdev, IOCTL, "Failed to pin user pages: %d\n", ret);
-        goto!(free_pages_array);
+        break 'free_pages_array;
     }
 
     if pinned as usize != nr_pages {
         ivpu_dbg!(vdev, IOCTL, "Pinned %d pages, expected %lu\n", pinned, nr_pages);
         ret = -EFAULT;
-        goto!(unpin_pages);
+        break 'unpin_pages;
     }
 
     sgt = kmalloc_obj!(sg_table);
     if sgt.is_null() {
         ret = -ENOMEM;
-        goto!(unpin_pages);
+        break 'unpin_pages;
     }
 
     ret = sg_alloc_table_from_pages(sgt, pages, nr_pages, 0, size, GFP_KERNEL);
     if ret != 0 {
         ivpu_dbg!(vdev, IOCTL, "Failed to create sg table: %d\n", ret);
-        goto!(free_sgt);
+        break 'free_sgt;
     }
 
     exp_info.exp_name = c"ivpu_userptr_dmabuf".as_ptr();
@@ -119,23 +123,26 @@ unsafe fn ivpu_create_userptr_dmabuf(
     if IS_ERR!(dma_buf) {
         ret = PTR_ERR(dma_buf);
         ivpu_dbg!(vdev, IOCTL, "Failed to export userptr dma-buf: %d\n", ret);
-        goto!(free_sg_table);
+        break 'free_sg_table;
     }
 
     kvfree(pages);
     return dma_buf;
-
-free_sg_table:
+    }
+    
     sg_free_table(sgt);
-free_sgt:
+    }
+    
     kfree(sgt);
-unpin_pages:
+    }
+    
     i = 0;
     while i < pinned {
         unpin_user_page(*pages.add(i as usize));
         i += 1;
     }
-free_pages_array:
+    }
+    
     kvfree(pages);
     ERR_PTR(ret)
 }

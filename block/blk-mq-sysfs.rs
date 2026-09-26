@@ -74,7 +74,7 @@ unsafe extern "C" fn blk_mq_hw_sysfs_cpus_show(
     let mut pos: c_int = 0;
     let mut i: c_uint;
 
-    for_each_cpu!(i, (*hctx).cpumask) {
+    for_each_cpu!(i, (*hctx).cpumask, {
         if first != 0 {
             ret = snprintf(page.add(pos as usize), size - pos as usize, c!("%u"), i);
         } else {
@@ -87,7 +87,7 @@ unsafe extern "C" fn blk_mq_hw_sysfs_cpus_show(
 
         first = 0;
         pos += ret;
-    }
+    });
 
     ret = snprintf(
         page.add(pos as usize),
@@ -145,11 +145,11 @@ unsafe fn blk_mq_unregister_hctx(hctx: *mut blk_mq_hw_ctx) {
         return;
     }
 
-    hctx_for_each_ctx!(hctx, ctx, i) {
+    hctx_for_each_ctx!(hctx, ctx, i, {
         if (*ctx).kobj.state_in_sysfs {
             kobject_del(&mut (*ctx).kobj);
         }
-    }
+    });
 
     if (*hctx).kobj.state_in_sysfs {
         kobject_del(&mut (*hctx).kobj);
@@ -162,6 +162,7 @@ unsafe fn blk_mq_register_hctx(hctx: *mut blk_mq_hw_ctx) -> c_int {
     let mut i: c_int;
     let mut j: c_int;
     let mut ret: c_int;
+    'out: {
 
     if (*hctx).nr_ctx == 0 {
         return 0;
@@ -172,21 +173,21 @@ unsafe fn blk_mq_register_hctx(hctx: *mut blk_mq_hw_ctx) -> c_int {
         return ret;
     }
 
-    hctx_for_each_ctx!(hctx, ctx, i) {
+    hctx_for_each_ctx!(hctx, ctx, i, {
         ret = kobject_add(&mut (*ctx).kobj, &mut (*hctx).kobj, c!("cpu%u"), (*ctx).cpu);
         if ret != 0 {
-            goto!(out);
+            break 'out;
         }
-    }
+    });
 
     return 0;
-
-out:
-    hctx_for_each_ctx!(hctx, ctx, j) {
+    }
+    
+    hctx_for_each_ctx!(hctx, ctx, j, {
         if j < i {
             kobject_del(&mut (*ctx).kobj);
         }
-    }
+    });
     kobject_del(&mut (*hctx).kobj);
     ret
 }
@@ -199,10 +200,10 @@ pub unsafe fn blk_mq_sysfs_deinit(q: *mut request_queue) {
     let mut ctx: *mut blk_mq_ctx;
     let mut cpu: c_int;
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         ctx = per_cpu_ptr((*q).queue_ctx, cpu);
         kobject_put(&mut (*ctx).kobj);
-    }
+    });
     kobject_put((*q).mq_kobj);
 }
 
@@ -212,12 +213,12 @@ pub unsafe fn blk_mq_sysfs_init(q: *mut request_queue) {
 
     kobject_init((*q).mq_kobj, &blk_mq_ktype);
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         ctx = per_cpu_ptr((*q).queue_ctx, cpu);
 
         kobject_get((*q).mq_kobj);
         kobject_init(&mut (*ctx).kobj, &blk_mq_ctx_ktype);
-    }
+    });
 }
 
 pub unsafe fn blk_mq_sysfs_register(disk: *mut gendisk) -> c_int {
@@ -226,6 +227,7 @@ pub unsafe fn blk_mq_sysfs_register(disk: *mut gendisk) -> c_int {
     let mut i: c_ulong;
     let mut j: c_ulong;
     let mut ret: c_int;
+    'out_unreg: {
 
     ret = kobject_add((*q).mq_kobj, &mut (*disk_to_dev(disk)).kobj, c!("mq"));
     if ret < 0 {
@@ -235,21 +237,21 @@ pub unsafe fn blk_mq_sysfs_register(disk: *mut gendisk) -> c_int {
     kobject_uevent((*q).mq_kobj, KOBJ_ADD);
 
     mutex_lock(&mut (*(*q).tag_set).tag_list_lock);
-    queue_for_each_hw_ctx!(q, hctx, i) {
+    queue_for_each_hw_ctx!(q, hctx, i, {
         ret = blk_mq_register_hctx(hctx);
         if ret != 0 {
-            goto!(out_unreg);
+            break 'out_unreg;
         }
-    }
+    });
     mutex_unlock(&mut (*(*q).tag_set).tag_list_lock);
     return 0;
-
-out_unreg:
-    queue_for_each_hw_ctx!(q, hctx, j) {
+    }
+    
+    queue_for_each_hw_ctx!(q, hctx, j, {
         if j < i {
             blk_mq_unregister_hctx(hctx);
         }
-    }
+    });
     mutex_unlock(&mut (*(*q).tag_set).tag_list_lock);
 
     kobject_uevent((*q).mq_kobj, KOBJ_REMOVE);
@@ -263,9 +265,9 @@ pub unsafe fn blk_mq_sysfs_unregister(disk: *mut gendisk) {
     let mut i: c_ulong;
 
     mutex_lock(&mut (*(*q).tag_set).tag_list_lock);
-    queue_for_each_hw_ctx!(q, hctx, i) {
+    queue_for_each_hw_ctx!(q, hctx, i, {
         blk_mq_unregister_hctx(hctx);
-    }
+    });
     mutex_unlock(&mut (*(*q).tag_set).tag_list_lock);
 
     kobject_uevent((*q).mq_kobj, KOBJ_REMOVE);
@@ -280,28 +282,29 @@ pub unsafe fn blk_mq_sysfs_unregister_hctxs(q: *mut request_queue) {
         return;
     }
 
-    queue_for_each_hw_ctx!(q, hctx, i) {
+    queue_for_each_hw_ctx!(q, hctx, i, {
         blk_mq_unregister_hctx(hctx);
-    }
+    });
 }
 
 pub unsafe fn blk_mq_sysfs_register_hctxs(q: *mut request_queue) -> c_int {
     let mut hctx: *mut blk_mq_hw_ctx;
     let mut i: c_ulong;
     let mut ret: c_int = 0;
+    'out: {
 
     if !blk_queue_registered(q) {
-        goto!(out);
+        break 'out;
     }
 
-    queue_for_each_hw_ctx!(q, hctx, i) {
+    queue_for_each_hw_ctx!(q, hctx, i, {
         ret = blk_mq_register_hctx(hctx);
         if ret != 0 {
             break;
         }
+    });
     }
-
-out:
+    
     ret
 }
 

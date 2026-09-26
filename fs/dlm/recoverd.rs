@@ -79,6 +79,8 @@ unsafe fn ls_recover(ls: *mut dlm_ls, rv: *mut dlm_recover) -> c_int {
     let mut start: c_ulong;
     let mut error: c_int;
     let mut neg: c_int = 0;
+    'fail: {
+    'fail_root_list: {
 
     log_rinfo(ls, "dlm_recover %llu", (*rv).seq as c_ulonglong);
     mutex_lock(&mut (*ls).ls_recoverd_active);
@@ -87,59 +89,61 @@ unsafe fn ls_recover(ls: *mut dlm_ls, rv: *mut dlm_recover) -> c_int {
     dlm_create_root_list(ls, &mut root_list);
 
     error = dlm_recover_members(ls, rv, &mut neg);
-    if error != 0 { log_rinfo(ls, "dlm_recover_members error %d", error); goto fail_root_list; }
+    if error != 0 { log_rinfo(ls, "dlm_recover_members error %d", error); break 'fail_root_list; }
     dlm_recover_dir_nodeid(ls, &mut root_list);
     error = dlm_create_masters_list(ls);
-    if error != 0 { log_rinfo(ls, "dlm_create_masters_list error %d", error); goto fail_root_list; }
+    if error != 0 { log_rinfo(ls, "dlm_create_masters_list error %d", error); break 'fail_root_list; }
     (*ls).ls_recover_locks_in = 0;
     dlm_set_recover_status(ls, DLM_RS_NODES);
     error = dlm_recover_members_wait(ls, (*rv).seq);
-    if error != 0 { log_rinfo(ls, "dlm_recover_members_wait error %d", error); dlm_release_masters_list(ls); goto fail_root_list; }
+    if error != 0 { log_rinfo(ls, "dlm_recover_members_wait error %d", error); dlm_release_masters_list(ls); break 'fail_root_list; }
     start = jiffies;
     error = dlm_recover_directory(ls, (*rv).seq);
-    if error != 0 { log_rinfo(ls, "dlm_recover_directory error %d", error); dlm_release_masters_list(ls); goto fail_root_list; }
+    if error != 0 { log_rinfo(ls, "dlm_recover_directory error %d", error); dlm_release_masters_list(ls); break 'fail_root_list; }
     dlm_set_recover_status(ls, DLM_RS_DIR);
     error = dlm_recover_directory_wait(ls, (*rv).seq);
-    if error != 0 { log_rinfo(ls, "dlm_recover_directory_wait error %d", error); dlm_release_masters_list(ls); goto fail_root_list; }
+    if error != 0 { log_rinfo(ls, "dlm_recover_directory_wait error %d", error); dlm_release_masters_list(ls); break 'fail_root_list; }
     dlm_release_masters_list(ls);
     dlm_recover_waiters_pre(ls);
-    if dlm_recovery_stopped(ls) { error = -EINTR; goto fail_root_list; }
+    if dlm_recovery_stopped(ls) { error = -EINTR; break 'fail_root_list; }
     if neg != 0 || dlm_no_directory(ls) {
         dlm_recover_purge(ls, &mut root_list);
         error = dlm_recover_masters(ls, (*rv).seq, &mut root_list);
-        if error != 0 { log_rinfo(ls, "dlm_recover_masters error %d", error); goto fail_root_list; }
+        if error != 0 { log_rinfo(ls, "dlm_recover_masters error %d", error); break 'fail_root_list; }
         error = dlm_recover_locks(ls, (*rv).seq, &mut root_list);
-        if error != 0 { log_rinfo(ls, "dlm_recover_locks error %d", error); goto fail_root_list; }
+        if error != 0 { log_rinfo(ls, "dlm_recover_locks error %d", error); break 'fail_root_list; }
         dlm_set_recover_status(ls, DLM_RS_LOCKS);
         error = dlm_recover_locks_wait(ls, (*rv).seq);
-        if error != 0 { log_rinfo(ls, "dlm_recover_locks_wait error %d", error); goto fail_root_list; }
+        if error != 0 { log_rinfo(ls, "dlm_recover_locks_wait error %d", error); break 'fail_root_list; }
         log_rinfo(ls, "dlm_recover_locks %u in", (*ls).ls_recover_locks_in);
         dlm_recover_rsbs(ls, &mut root_list);
     } else {
         dlm_set_recover_status(ls, DLM_RS_LOCKS);
         error = dlm_recover_locks_wait(ls, (*rv).seq);
-        if error != 0 { log_rinfo(ls, "dlm_recover_locks_wait error %d", error); goto fail_root_list; }
+        if error != 0 { log_rinfo(ls, "dlm_recover_locks_wait error %d", error); break 'fail_root_list; }
     }
     dlm_release_root_list(&mut root_list);
     dlm_purge_requestqueue(ls);
     dlm_set_recover_status(ls, DLM_RS_DONE);
     error = dlm_recover_done_wait(ls, (*rv).seq);
-    if error != 0 { log_rinfo(ls, "dlm_recover_done_wait error %d", error); goto fail; }
+    if error != 0 { log_rinfo(ls, "dlm_recover_done_wait error %d", error); break 'fail; }
     dlm_clear_members_gone(ls);
     dlm_callback_resume(ls);
     error = enable_locking(ls, (*rv).seq);
-    if error != 0 { log_rinfo(ls, "enable_locking error %d", error); goto fail; }
+    if error != 0 { log_rinfo(ls, "enable_locking error %d", error); break 'fail; }
     error = dlm_process_requestqueue(ls);
-    if error != 0 { log_rinfo(ls, "dlm_process_requestqueue error %d", error); goto fail; }
+    if error != 0 { log_rinfo(ls, "dlm_process_requestqueue error %d", error); break 'fail; }
     error = dlm_recover_waiters_post(ls);
-    if error != 0 { log_rinfo(ls, "dlm_recover_waiters_post error %d", error); goto fail; }
+    if error != 0 { log_rinfo(ls, "dlm_recover_waiters_post error %d", error); break 'fail; }
     dlm_recover_grant(ls);
     log_rinfo(ls, "dlm_recover %llu generation %u done: %u ms", (*rv).seq as c_ulonglong, (*ls).ls_generation, jiffies_to_msecs(jiffies - start));
     mutex_unlock(&mut (*ls).ls_recoverd_active);
     return 0;
-fail_root_list:
+    }
+    
     dlm_release_root_list(&mut root_list);
-fail:
+    }
+    
     mutex_unlock(&mut (*ls).ls_recoverd_active);
     error
 }
@@ -156,8 +160,8 @@ unsafe fn do_ls_recovery(ls: *mut dlm_ls) {
     if !rv.is_null() {
         error = ls_recover(ls, rv);
         match error {
-            0 => { (*ls).ls_recovery_result = 0; complete(&mut (*ls).ls_recovery_done); dlm_lsop_recover_done(ls); }
-            -EINTR => { log_rinfo(ls, "do_ls_recovery %llu interrupted and should be queued to run again", (*rv).seq as c_ulonglong); }
+            case if case == 0 => { (*ls).ls_recovery_result = 0; complete(&mut (*ls).ls_recovery_done); dlm_lsop_recover_done(ls); }
+            case if case == -EINTR => { log_rinfo(ls, "do_ls_recovery %llu interrupted and should be queued to run again", (*rv).seq as c_ulonglong); }
             _ => { log_rinfo(ls, "do_ls_recovery %llu error %d", (*rv).seq as c_ulonglong, error); (*ls).ls_recovery_result = error; complete(&mut (*ls).ls_recovery_done); }
         }
         kfree((*rv).nodes);

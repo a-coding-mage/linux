@@ -80,7 +80,7 @@ extern "C" {
 }
 
 /* CONFIG_IRQ_WORK controls whether the architecture implementation is used. */
-#[cfg(feature = "CONFIG_IRQ_WORK")]
+#[cfg(CONFIG_IRQ_WORK)]
 extern "C" {
     pub fn irq_work_run();
     pub fn irq_work_needs_cpu() -> bool;
@@ -89,15 +89,15 @@ extern "C" {
     pub fn arch_irq_work_raise();
 }
 
-#[cfg(not(feature = "CONFIG_IRQ_WORK"))]
+#[cfg(not(CONFIG_IRQ_WORK))]
 #[inline]
 pub fn irq_work_needs_cpu() -> bool { false }
 
-#[cfg(not(feature = "CONFIG_IRQ_WORK"))]
+#[cfg(not(CONFIG_IRQ_WORK))]
 #[inline]
 pub fn irq_work_run() {}
 
-#[cfg(not(feature = "CONFIG_IRQ_WORK"))]
+#[cfg(not(CONFIG_IRQ_WORK))]
 #[inline]
 pub fn irq_work_single(_arg: *mut core::ffi::c_void) {}
 

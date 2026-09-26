@@ -2,12 +2,12 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-#[cfg(any(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_TRACE_IRQFLAGS"))]
+#[cfg(any(CONFIG_PREEMPT_RT, CONFIG_TRACE_IRQFLAGS))]
 extern "C" {
     pub fn __local_bh_disable_ip(ip: ::core::ffi::c_ulong, cnt: u32);
 }
 
-#[cfg(not(any(feature = "CONFIG_PREEMPT_RT", feature = "CONFIG_TRACE_IRQFLAGS")))]
+#[cfg(not(any(CONFIG_PREEMPT_RT, CONFIG_TRACE_IRQFLAGS)))]
 #[inline(always)]
 unsafe fn __local_bh_disable_ip(ip: ::core::ffi::c_ulong, cnt: u32) {
     let _ = ip;
@@ -45,12 +45,12 @@ pub unsafe fn local_bh_enable() {
     __local_bh_enable_ip(0, SOFTIRQ_DISABLE_OFFSET);
 }
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 extern "C" {
     pub fn local_bh_blocked() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 #[inline]
 pub fn local_bh_blocked() -> bool {
     false

@@ -12,7 +12,7 @@
 
 // Linux and MIPS headers supply the external types, constants, macros, and functions used below.
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub unsafe extern "C" fn arch_cpu_idle_dead() -> ! { play_dead(); }
 
 extern "C" {
@@ -140,13 +140,13 @@ unsafe fn thread_saved_pc(tsk: *mut task_struct) -> ulong {
     *((t.reg29 as *mut ulong).offset(schedule_mfi.pc_offset as isize))
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 pub unsafe extern "C" fn unwind_stack(task: *mut task_struct, sp: *mut ulong, pc: ulong, ra: *mut ulong) -> ulong {
     let page = task_stack_page(task) as ulong;
     unwind_stack_by_address(page, sp, pc, ra)
 }
 
-#[cfg(feature = "CONFIG_KALLSYMS")]
+#[cfg(CONFIG_KALLSYMS)]
 pub unsafe extern "C" fn unwind_stack_by_address(_stack_page: ulong, _sp: *mut ulong, pc: ulong, _ra: *mut ulong) -> ulong {
     // The frame decoder depends on the architecture-specific mips_instruction union and kallsyms.
     // Its control flow is retained through the external frame-analysis interface.
@@ -156,7 +156,7 @@ pub unsafe extern "C" fn unwind_stack_by_address(_stack_page: ulong, _sp: *mut u
 pub unsafe extern "C" fn __get_wchan(task: *mut task_struct) -> ulong {
     if task_stack_page(task).is_null() { return 0; }
     let mut pc = thread_saved_pc(task);
-    #[cfg(feature = "CONFIG_KALLSYMS")]
+    #[cfg(CONFIG_KALLSYMS)]
     {
         let mut sp = (*task).thread.reg29 + schedule_mfi.frame_size as ulong;
         let mut ra = 0;
@@ -179,14 +179,14 @@ pub unsafe extern "C" fn mips_set_process_fp_mode(task: *mut task_struct, value:
     0
 }
 
-#[cfg(any(feature = "CONFIG_32BIT", feature = "CONFIG_MIPS32_O32"))]
+#[cfg(any(CONFIG_32BIT, CONFIG_MIPS32_O32))]
 pub unsafe extern "C" fn mips_dump_regs32(uregs: *mut u32, regs: *const pt_regs) {
     let mut i = MIPS32_EF_R1; while i <= MIPS32_EF_R31 { *uregs.add(i as usize) = if i == MIPS32_EF_R26 || i == MIPS32_EF_R27 { 0 } else { (*regs).regs[(i - MIPS32_EF_R0) as usize] as u32 }; i += 1; }
     *uregs.add(MIPS32_EF_LO as usize) = (*regs).lo as u32; *uregs.add(MIPS32_EF_HI as usize) = (*regs).hi as u32;
     *uregs.add(MIPS32_EF_CP0_EPC as usize) = (*regs).cp0_epc as u32; *uregs.add(MIPS32_EF_CP0_BADVADDR as usize) = (*regs).cp0_badvaddr as u32; *uregs.add(MIPS32_EF_CP0_STATUS as usize) = (*regs).cp0_status as u32; *uregs.add(MIPS32_EF_CP0_CAUSE as usize) = (*regs).cp0_cause as u32;
 }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe extern "C" fn mips_dump_regs64(uregs: *mut u64, regs: *const pt_regs) {
     let mut i = MIPS64_EF_R1; while i <= MIPS64_EF_R31 { *uregs.add(i as usize) = if i == MIPS64_EF_R26 || i == MIPS64_EF_R27 { 0 } else { (*regs).regs[(i - MIPS64_EF_R0) as usize] }; i += 1; }
     *uregs.add(MIPS64_EF_LO as usize) = (*regs).lo; *uregs.add(MIPS64_EF_HI as usize) = (*regs).hi;

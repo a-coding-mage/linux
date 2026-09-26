@@ -62,16 +62,16 @@ extern "C" {
 }
 
 // CONFIG_SMP selects the declarations below; otherwise the C header provides empty inline stubs.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn v7_secondary_startup();
     pub fn imx_scu_map_io();
     pub fn imx_smp_prepare();
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub fn imx_scu_map_io() {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub fn imx_smp_prepare() {}
 
 extern "C" {
@@ -95,18 +95,18 @@ extern "C" {
     pub fn imx_cpu_kill(cpu: u32) -> i32;
 }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 extern "C" {
     pub fn imx53_suspend(ocram_vbase: *mut core::ffi::c_void);
     pub static imx53_suspend_sz: u32;
     pub fn imx6_suspend(ocram_vbase: *mut core::ffi::c_void);
 }
 
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 pub fn imx53_suspend(_ocram_vbase: *mut core::ffi::c_void) {}
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 pub static imx53_suspend_sz: u32 = 0;
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 pub fn imx6_suspend(_ocram_vbase: *mut core::ffi::c_void) {}
 
 extern "C" {
@@ -120,31 +120,31 @@ extern "C" {
     pub fn imx7ulp_pm_init();
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 extern "C" {
     pub fn imx51_pm_init();
     pub fn imx53_pm_init();
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub fn imx51_pm_init() {}
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub fn imx53_pm_init() {}
 
-#[cfg(feature = "CONFIG_NEON")]
+#[cfg(CONFIG_NEON)]
 extern "C" {
     pub fn mx51_neon_fixup() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NEON"))]
+#[cfg(not(CONFIG_NEON))]
 pub fn mx51_neon_fixup() -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_CACHE_L2X0")]
+#[cfg(CONFIG_CACHE_L2X0)]
 extern "C" {
     pub fn imx_init_l2cache();
 }
 
-#[cfg(not(feature = "CONFIG_CACHE_L2X0"))]
+#[cfg(not(CONFIG_CACHE_L2X0))]
 pub fn imx_init_l2cache() {}
 
 extern "C" {

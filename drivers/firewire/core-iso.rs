@@ -172,7 +172,7 @@ pub unsafe fn fw_iso_context_stop(ctx: *mut fw_iso_context) -> i32 {
     cancel_work_sync(&mut (*ctx).work); err
 }
 
-static unsafe fn manage_bandwidth(card: *mut fw_card, irm_id: i32, generation: i32,
+unsafe fn manage_bandwidth(card: *mut fw_card, irm_id: i32, generation: i32,
                                   bandwidth: i32, allocate: bool) -> i32 {
     let mut old = if allocate { BANDWIDTH_AVAILABLE_INITIAL } else { 0 };
     let mut data: [__be32; 2] = [0; 2];
@@ -191,7 +191,7 @@ static unsafe fn manage_bandwidth(card: *mut fw_card, irm_id: i32, generation: i
     -EIO
 }
 
-static unsafe fn manage_channel(card: *mut fw_card, irm_id: i32, generation: i32,
+unsafe fn manage_channel(card: *mut fw_card, irm_id: i32, generation: i32,
                                 channels_mask: u32, offset: u64, allocate: bool) -> i32 {
     let all = if allocate { u32::MAX } else { 0 };
     let mut old = all; let mut ret = -EIO; let mut retry = 5;
@@ -215,7 +215,7 @@ static unsafe fn manage_channel(card: *mut fw_card, irm_id: i32, generation: i32
     ret
 }
 
-static unsafe fn deallocate_channel(card: *mut fw_card, irm_id: i32, generation: i32, channel: i32) {
+unsafe fn deallocate_channel(card: *mut fw_card, irm_id: i32, generation: i32, channel: i32) {
     let mask = if channel < 32 { 1 << channel } else { 1 << (channel - 32) };
     let offset = if channel < 32 { CSR_REGISTER_BASE + CSR_CHANNELS_AVAILABLE_HI }
                  else { CSR_REGISTER_BASE + CSR_CHANNELS_AVAILABLE_LO };

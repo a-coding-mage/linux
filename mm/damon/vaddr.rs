@@ -21,9 +21,10 @@ unsafe fn __damon_va_three_regions(mm: *mut mm_struct, regions: *mut damon_addr_
     let mut prev: *mut vm_area_struct = core::ptr::null_mut();
     let mut start = 0;
     rcu_read_lock();
-    for_each_vma(vmi, vma) {
+    for_each_vma!(vmi, vma, {
         let gap;
-        if prev.is_null() { start = (*vma).vm_start; goto_next!(next); }
+        'next: {
+        if prev.is_null() { start = (*vma).vm_start; break 'next; }
         gap = (*vma).vm_start - (*prev).vm_end;
         if gap > sz_range(&mut first_gap) {
             second_gap = first_gap;
@@ -31,8 +32,9 @@ unsafe fn __damon_va_three_regions(mm: *mut mm_struct, regions: *mut damon_addr_
         } else if gap > sz_range(&mut second_gap) {
             second_gap.start = (*prev).vm_end; second_gap.end = (*vma).vm_start;
         }
-        next: prev = vma;
-    }
+        }
+        prev = vma;
+    });
     rcu_read_unlock();
     if sz_range(&mut second_gap) == 0 || sz_range(&mut first_gap) == 0 { return -EINVAL; }
     if first_gap.start > second_gap.start { core::mem::swap(&mut first_gap, &mut second_gap); }
@@ -58,7 +60,7 @@ unsafe fn __damon_va_init_regions(ctx: *mut damon_ctx, t: *mut damon_target) {
 unsafe fn damon_va_init(ctx: *mut damon_ctx) { damon_for_each_target!(t, ctx, { if damon_nr_regions(t) == 0 { __damon_va_init_regions(ctx, t); } }); }
 unsafe fn damon_va_update(ctx: *mut damon_ctx) { let mut r = [damon_addr_range {start:0,end:0};3]; damon_for_each_target!(t,ctx,{ if damon_va_three_regions(t,r.as_mut_ptr())==0 { damon_set_regions(t,r.as_mut_ptr(),3,DAMON_MIN_REGION_SZ); }}); }
 
-unsafe fn damon_va_walk_page_range(mm:*mut mm_struct,start:c_ulong,end:c_ulong,ops:*mut mm_walk_ops,private:*mut c_void){
+unsafe fn damon_va_walk_page_range(mm:*mut mm_struct,start:c_ulong,end:c_ulong,ops:*mut mm_walk_ops,private:*mut c_void) {
     let vma=lock_vma_under_rcu(mm,start); if !vma.is_null() && end<=(*vma).vm_end { if (*vma).vm_flags & VM_PFNMAP == 0 { (*ops).walk_lock=PGWALK_VMA_RDLOCK_VERIFY; walk_page_range_vma(vma,start,end,ops,private); } vma_end_read(vma); return; }
     mmap_read_lock(mm); (*ops).walk_lock=PGWALK_RDLOCK; walk_page_range(mm,start,end,ops,private); mmap_read_unlock(mm);
 }

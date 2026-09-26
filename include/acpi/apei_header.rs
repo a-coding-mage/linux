@@ -27,13 +27,13 @@ extern "C" {
     pub static mut hest_disable: core::ffi::c_int;
     pub static mut erst_disable: core::ffi::c_int;
 
-    #[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+    #[cfg(CONFIG_ACPI_APEI_GHES)]
     pub static mut ghes_disable: bool;
 
-    #[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+    #[cfg(CONFIG_ACPI_APEI_GHES)]
     pub fn acpi_ghes_init();
 
-    #[cfg(feature = "CONFIG_ACPI_APEI")]
+    #[cfg(CONFIG_ACPI_APEI)]
     pub fn acpi_hest_init();
 
     pub fn erst_write(record: *const crate::cper_record_header) -> core::ffi::c_int;
@@ -68,14 +68,14 @@ extern "C" {
     );
 }
 
-#[cfg(all(feature = "kernel", not(feature = "CONFIG_ACPI_APEI_GHES")))]
+#[cfg(all(feature = "kernel", not(CONFIG_ACPI_APEI_GHES)))]
 pub const ghes_disable: bool = true;
 
-#[cfg(all(feature = "kernel", not(feature = "CONFIG_ACPI_APEI_GHES")))]
+#[cfg(all(feature = "kernel", not(CONFIG_ACPI_APEI_GHES)))]
 #[inline]
 pub fn acpi_ghes_init() {}
 
-#[cfg(all(feature = "kernel", not(feature = "CONFIG_ACPI_APEI")))]
+#[cfg(all(feature = "kernel", not(CONFIG_ACPI_APEI)))]
 #[inline]
 pub fn acpi_hest_init() {}
 

@@ -57,6 +57,7 @@ unsafe fn hci_read_codec_capabilities(
             let mut skb: *mut sk_buff;
             let mut j: __u8;
             let mut len: __u32;
+            'skip_caps_parse: {
 
             (*cmd).transport = i;
 
@@ -83,7 +84,7 @@ unsafe fn hci_read_codec_capabilities(
             if (*skb).len < core::mem::size_of::<hci_rp_read_local_codec_caps>() { kfree_skb(skb); i += 1; continue; }
             rp = (*skb).data as *mut hci_rp_read_local_codec_caps;
             if (*rp).status != 0 { kfree_skb(skb); i += 1; continue; }
-            if (*rp).num_caps == 0 { len = 0; goto skip_caps_parse; }
+            if (*rp).num_caps == 0 { len = 0; break 'skip_caps_parse; }
 
             skb_pull(skb, core::mem::size_of::<hci_rp_read_local_codec_caps>());
             j = 0; len = 0;
@@ -95,8 +96,8 @@ unsafe fn hci_read_codec_capabilities(
                 skb_pull(skb, core::mem::size_of_val(&(*caps).len) + (*caps).len as usize);
                 j += 1;
             }
-
-        skip_caps_parse:
+            }
+            
             hci_dev_lock(hdev);
             hci_codec_list_add(&mut (*hdev).local_codecs, cmd, rp,
                 (rp as *mut __u8).add(core::mem::size_of::<hci_rp_read_local_codec_caps>() ) as *const _, len);

@@ -74,23 +74,23 @@ static mut watchdog_cpus: c_int = 0;
 static mut wd_hw_attr: PerfEventAttr = PerfEventAttr { type_: PERF_TYPE_HARDWARE, config: PERF_COUNT_HW_CPU_CYCLES, size: core::mem::size_of::<PerfEventAttr>() as u32, pinned: 1, disabled: 1, sample_period: 0 };
 static mut fallback_wd_hw_attr: PerfEventAttr = PerfEventAttr { type_: PERF_TYPE_HARDWARE, config: PERF_COUNT_HW_CPU_CYCLES, size: core::mem::size_of::<PerfEventAttr>() as u32, pinned: 1, disabled: 1, sample_period: 0 };
 
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 static mut last_timestamp: i64 = 0;
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 static mut nmi_rearmed: u32 = 0;
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 static mut watchdog_hrtimer_sample_threshold: i64 = 0;
 
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 extern "C" { fn ktime_get_mono_fast_ns() -> i64; }
 
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 #[no_mangle]
 pub unsafe extern "C" fn watchdog_update_hrtimer_threshold(period: u64) {
     watchdog_hrtimer_sample_threshold = (period * 2) as i64;
 }
 
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 unsafe fn watchdog_check_timestamp() -> bool {
     let now = ktime_get_mono_fast_ns();
     let delta = now - last_timestamp;
@@ -103,11 +103,11 @@ unsafe fn watchdog_check_timestamp() -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP")]
+#[cfg(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP)]
 unsafe fn watchdog_init_timestamp() { nmi_rearmed = 0; last_timestamp = ktime_get_mono_fast_ns(); }
-#[cfg(not(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP"))]
+#[cfg(not(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP))]
 unsafe fn watchdog_check_timestamp() -> bool { true }
-#[cfg(not(feature = "CONFIG_HARDLOCKUP_CHECK_TIMESTAMP"))]
+#[cfg(not(CONFIG_HARDLOCKUP_CHECK_TIMESTAMP))]
 unsafe fn watchdog_init_timestamp() {}
 
 unsafe extern "C" fn watchdog_overflow_callback(event: *mut PerfEvent, _data: *mut PerfSampleData, regs: *mut PtRegs) {

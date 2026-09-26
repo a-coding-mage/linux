@@ -77,7 +77,7 @@ extern "C" {
         len: u32,
     );
 
-    #[cfg(feature = "CONFIG_PCIEAER")]
+    #[cfg(CONFIG_PCIEAER)]
     pub fn aer_event(
         dev_name: *const core::ffi::c_char,
         status: u32,
@@ -90,7 +90,7 @@ extern "C" {
 
 /* PCIe AER error-name tables from aer_correctable_errors and
  * aer_uncorrectable_errors.  PCI error constants are supplied externally. */
-#[cfg(feature = "CONFIG_PCIEAER")]
+#[cfg(CONFIG_PCIEAER)]
 pub const aer_correctable_errors: &[(&str, &str)] = &[
     ("PCI_ERR_COR_RCVR", "Receiver Error"),
     ("PCI_ERR_COR_BAD_TLP", "Bad TLP"),
@@ -102,7 +102,7 @@ pub const aer_correctable_errors: &[(&str, &str)] = &[
     ("PCI_ERR_COR_LOG_OVER", "Header Log Overflow"),
 ];
 
-#[cfg(feature = "CONFIG_PCIEAER")]
+#[cfg(CONFIG_PCIEAER)]
 pub const aer_uncorrectable_errors: &[(&str, &str)] = &[
     ("PCI_ERR_UNC_UND", "Undefined"),
     ("PCI_ERR_UNC_DLP", "Data Link Protocol Error"),

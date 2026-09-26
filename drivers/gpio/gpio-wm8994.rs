@@ -110,7 +110,7 @@ unsafe extern "C" fn wm8994_gpio_to_irq(chip: *mut gpio_chip, offset: u32) -> i3
     regmap_irq_get_virq((*wm).irq_data, offset)
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn wm8994_gpio_fn(fn_: u16) -> &'static str {
     match fn_ as u32 {
         0 => "pin-specific", 1 => "GPIO", 2 => "SDOUT", 3 => "IRQ", 4 => "Temperature",
@@ -122,7 +122,7 @@ unsafe fn wm8994_gpio_fn(fn_: u16) -> &'static str {
     }
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn wm8994_gpio_dbg_show(_s: *mut seq_file, _chip: *mut gpio_chip) {
     // The source reports each GPIO's label, direction, pulls, polarity,
     // output configuration, function name, and register value through seq_file.

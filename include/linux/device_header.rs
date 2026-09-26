@@ -45,8 +45,8 @@ pub type ssize_t = isize; pub type size_t = usize; pub type refcount_t = u32;
 #[repr(C)] pub struct device_attribute { pub attr: attribute, pub show: Option<unsafe extern "C" fn(*mut device,*mut device_attribute,*mut c_char)->ssize_t>, pub show_const: Option<unsafe extern "C" fn(*mut device,*const device_attribute,*mut c_char)->ssize_t>, pub store: Option<unsafe extern "C" fn(*mut device,*mut device_attribute,*const c_char,size_t)->ssize_t>, pub store_const: Option<unsafe extern "C" fn(*mut device,*const device_attribute,*const c_char,size_t)->ssize_t> }
 #[repr(C)] pub struct dev_ext_attribute { pub attr: device_attribute, pub var: *mut c_void }
 
-extern "C" { pub fn subsys_interface_register(*mut subsys_interface)->c_int; pub fn subsys_interface_unregister(*mut subsys_interface); pub fn subsys_system_register(*const bus_type,*const *const attribute_group)->c_int; pub fn subsys_virtual_register(*const bus_type,*const *const attribute_group)->c_int; }
-extern "C" { pub fn device_show_ulong(*mut device,*mut device_attribute,*mut c_char)->ssize_t; pub fn device_store_ulong(*mut device,*mut device_attribute,*const c_char,size_t)->ssize_t; pub fn device_show_int(*mut device,*mut device_attribute,*mut c_char)->ssize_t; pub fn device_store_int(*mut device,*mut device_attribute,*const c_char,size_t)->ssize_t; pub fn device_show_bool(*mut device,*mut device_attribute,*mut c_char)->ssize_t; pub fn device_store_bool(*mut device,*mut device_attribute,*const c_char,size_t)->ssize_t; pub fn device_show_string(*mut device,*mut device_attribute,*mut c_char)->ssize_t; }
+extern "C" { pub fn subsys_interface_register(_: *mut subsys_interface)->c_int; pub fn subsys_interface_unregister(_: *mut subsys_interface); pub fn subsys_system_register(_: *const bus_type,_: *const *const attribute_group)->c_int; pub fn subsys_virtual_register(_: *const bus_type,_: *const *const attribute_group)->c_int; }
+extern "C" { pub fn device_show_ulong(_: *mut device,_: *mut device_attribute,_: *mut c_char)->ssize_t; pub fn device_store_ulong(_: *mut device,_: *mut device_attribute,_: *const c_char,_: size_t)->ssize_t; pub fn device_show_int(_: *mut device,_: *mut device_attribute,_: *mut c_char)->ssize_t; pub fn device_store_int(_: *mut device,_: *mut device_attribute,_: *const c_char,_: size_t)->ssize_t; pub fn device_show_bool(_: *mut device,_: *mut device_attribute,_: *mut c_char)->ssize_t; pub fn device_store_bool(_: *mut device,_: *mut device_attribute,_: *const c_char,_: size_t)->ssize_t; pub fn device_show_string(_: *mut device,_: *mut device_attribute,_: *mut c_char)->ssize_t; }
 
 #[repr(C)] pub struct device_dma_parameters { pub max_segment_size: c_uint, pub min_align_mask: c_uint, pub segment_boundary_mask: c_ulong }
 #[repr(i32)] pub enum device_link_state { DL_STATE_NONE=-1, DL_STATE_DORMANT, DL_STATE_AVAILABLE, DL_STATE_CONSUMER_PROBE, DL_STATE_ACTIVE, DL_STATE_SUPPLIER_UNBIND }
@@ -66,7 +66,7 @@ pub const DL_FLAG_STATELESS:u32=1<<0; pub const DL_FLAG_AUTOREMOVE_CONSUMER:u32=
 #[repr(C)] pub struct device { pub kobj:kobject, pub parent:*mut device, pub p:*mut device_private, pub init_name:*const c_char, pub type_:*const device_type, pub bus:*const bus_type, pub driver:*mut device_driver, pub platform_data:*mut c_void, pub driver_data:*mut c_void, pub driver_override:driver_override, pub mutex:mutex, pub links:dev_links_info, pub power:dev_pm_info, pub pm_domain:*mut dev_pm_domain, pub em_pd:*mut em_perf_domain, pub pins:*mut dev_pin_info, pub msi:dev_msi_info, pub dma_ops:*const dma_map_ops, pub dma_mask:*mut u64, pub coherent_dma_mask:u64, pub bus_dma_limit:u64, pub dma_range_map:*const bus_dma_region, pub dma_parms:*mut device_dma_parameters, pub dma_pools:list_head, pub dma_mem:*mut dma_coherent_mem, pub cma_area:*mut cma, pub dma_io_tlb_mem:*mut io_tlb_mem, pub dma_io_tlb_pools:list_head, pub dma_io_tlb_lock:spinlock_t, pub dma_uses_io_tlb:bool, pub archdata:dev_archdata, pub of_node:*mut device_node, pub fwnode:*mut fwnode_handle, pub numa_node:c_int, pub devt:dev_t, pub id:u32, pub devres_lock:spinlock_t, pub devres_head:list_head, pub class:*const class, pub groups:*const *const attribute_group, pub release:Option<unsafe extern "C" fn(*mut device)>, pub iommu_group:*mut iommu_group, pub iommu:*mut dev_iommu, pub physical_location:*mut device_physical_location, pub removable:device_removable, pub flags:[usize; 1] }
 #[repr(C)] pub struct device_link { pub supplier:*mut device, pub s_node:list_head, pub consumer:*mut device, pub c_node:list_head, pub link_dev:device, pub status:device_link_state, pub flags:u32, pub rpm_active:refcount_t, pub kref:kref, pub rm_work:work_struct, pub supplier_preactivated:bool }
 
-extern "C" { pub fn __device_set_driver_override(*mut device,*const c_char,size_t)->c_int; pub fn device_create_file(*mut device,*const device_attribute)->c_int; pub fn device_remove_file(*mut device,*const device_attribute); pub fn device_remove_file_self(*mut device,*const device_attribute)->bool; pub fn device_create_bin_file(*mut device,*const bin_attribute)->c_int; pub fn device_remove_bin_file(*mut device,*const bin_attribute); pub fn device_register(*mut device)->c_int; pub fn device_unregister(*mut device); pub fn device_initialize(*mut device); pub fn device_add(*mut device)->c_int; pub fn device_del(*mut device); pub fn get_device(*mut device)->*mut device; pub fn put_device(*mut device); pub fn device_rename(*mut device,*const c_char)->c_int; pub fn device_move(*mut device,*mut device,c_int)->c_int; pub fn device_change_owner(*mut device,kuid_t,kgid_t)->c_int; pub fn device_shutdown(); pub fn dev_driver_string(*const device)->*const c_char; }
+extern "C" { pub fn __device_set_driver_override(_: *mut device,_: *const c_char,_: size_t)->c_int; pub fn device_create_file(_: *mut device,_: *const device_attribute)->c_int; pub fn device_remove_file(_: *mut device,_: *const device_attribute); pub fn device_remove_file_self(_: *mut device,_: *const device_attribute)->bool; pub fn device_create_bin_file(_: *mut device,_: *const bin_attribute)->c_int; pub fn device_remove_bin_file(_: *mut device,_: *const bin_attribute); pub fn device_register(_: *mut device)->c_int; pub fn device_unregister(_: *mut device); pub fn device_initialize(_: *mut device); pub fn device_add(_: *mut device)->c_int; pub fn device_del(_: *mut device); pub fn get_device(_: *mut device)->*mut device; pub fn put_device(_: *mut device); pub fn device_rename(_: *mut device,_: *const c_char)->c_int; pub fn device_move(_: *mut device,_: *mut device,_: c_int)->c_int; pub fn device_change_owner(_: *mut device,_: kuid_t,_: kgid_t)->c_int; pub fn device_shutdown(); pub fn dev_driver_string(_: *const device)->*const c_char; }
 
 #[inline] pub unsafe fn device_iommu_mapped(dev:*mut device)->bool { !(*dev).iommu_group.is_null() }
 #[inline] pub unsafe fn dev_get_drvdata(dev:*const device)->*mut c_void { (*dev).driver_data }
@@ -76,32 +76,32 @@ extern "C" { pub fn __device_set_driver_override(*mut device,*const c_char,size_
 #[inline] pub unsafe fn dev_is_removable(dev:*mut device)->bool{(*dev).removable==device_removable::DEVICE_REMOVABLE}
 #[inline] pub unsafe fn dev_removable_is_valid(dev:*mut device)->bool{(*dev).removable!=device_removable::DEVICE_REMOVABLE_NOT_SUPPORTED}
 
-extern "C" { pub fn device_link_add(*mut device,*mut device,u32)->*mut device_link; pub fn device_link_del(*mut device_link); pub fn device_link_remove(*mut c_void,*mut device); pub fn device_links_supplier_sync_state_pause(); pub fn device_links_supplier_sync_state_resume(); pub fn device_link_wait_removal(); pub fn root_device_unregister(*mut device); }
+extern "C" { pub fn device_link_add(_: *mut device,_: *mut device,_: u32)->*mut device_link; pub fn device_link_del(_: *mut device_link); pub fn device_link_remove(_: *mut c_void,_: *mut device); pub fn device_links_supplier_sync_state_pause(); pub fn device_links_supplier_sync_state_resume(); pub fn device_link_wait_removal(); pub fn root_device_unregister(_: *mut device); }
 #[inline] pub unsafe fn device_link_test(link:*const device_link,flags:u32)->bool{((*link).flags&flags)!=0}
 
 // C declaration-only APIs retained as external dependencies.
-extern "C" { pub fn set_primary_fwnode(*mut device,*mut fwnode_handle); pub fn set_secondary_fwnode(*mut device,*mut fwnode_handle); pub fn device_set_node(*mut device,*mut fwnode_handle); pub fn device_add_of_node(*mut device,*mut device_node)->c_int; pub fn device_remove_of_node(*mut device); pub fn get_dev_from_fwnode(*mut fwnode_handle)->*mut device; }
+extern "C" { pub fn set_primary_fwnode(_: *mut device,_: *mut fwnode_handle); pub fn set_secondary_fwnode(_: *mut device,_: *mut fwnode_handle); pub fn device_set_node(_: *mut device,_: *mut fwnode_handle); pub fn device_add_of_node(_: *mut device,_: *mut device_node)->c_int; pub fn device_remove_of_node(_: *mut device); pub fn get_dev_from_fwnode(_: *mut fwnode_handle)->*mut device; }
 
 extern "C" {
- pub fn device_for_each_child(*mut device,*mut c_void,*mut c_void)->c_int;
- pub fn device_for_each_child_reverse(*mut device,*mut c_void,*mut c_void)->c_int;
- pub fn device_for_each_child_reverse_from(*mut device,*mut device,*mut c_void,*mut c_void)->c_int;
- pub fn device_find_child(*mut device,*const c_void,*mut c_void)->*mut device;
- pub fn device_attach(*mut device)->c_int; pub fn driver_attach(*const device_driver)->c_int;
- pub fn device_release_driver(*mut device); pub fn device_initial_probe(*mut device);
- pub fn device_reprobe(*mut device)->c_int; pub fn device_is_bound(*mut device)->bool;
- pub fn device_create(*const class,*mut device,dev_t,*mut c_void,*const c_char,...)->*mut device;
- pub fn device_destroy(*const class,dev_t);
- pub fn device_add_groups(*mut device,*const *const attribute_group)->c_int;
- pub fn device_remove_groups(*mut device,*const *const attribute_group);
- pub fn devm_device_add_group(*mut device,*const attribute_group)->c_int;
- pub fn kill_device(*mut device)->bool;
+ pub fn device_for_each_child(_: *mut device,_: *mut c_void,_: *mut c_void)->c_int;
+ pub fn device_for_each_child_reverse(_: *mut device,_: *mut c_void,_: *mut c_void)->c_int;
+ pub fn device_for_each_child_reverse_from(_: *mut device,_: *mut device,_: *mut c_void,_: *mut c_void)->c_int;
+ pub fn device_find_child(_: *mut device,_: *const c_void,_: *mut c_void)->*mut device;
+ pub fn device_attach(_: *mut device)->c_int; pub fn driver_attach(_: *const device_driver)->c_int;
+ pub fn device_release_driver(_: *mut device); pub fn device_initial_probe(_: *mut device);
+ pub fn device_reprobe(_: *mut device)->c_int; pub fn device_is_bound(_: *mut device)->bool;
+ pub fn device_create(_: *const class,_: *mut device,_: dev_t,_: *mut c_void,_: *const c_char,...)->*mut device;
+ pub fn device_destroy(_: *const class,_: dev_t);
+ pub fn device_add_groups(_: *mut device,_: *const *const attribute_group)->c_int;
+ pub fn device_remove_groups(_: *mut device,_: *const *const attribute_group);
+ pub fn devm_device_add_group(_: *mut device,_: *const attribute_group)->c_int;
+ pub fn kill_device(_: *mut device)->bool;
  pub fn lock_device_hotplug(); pub fn unlock_device_hotplug(); pub fn lock_device_hotplug_sysfs()->c_int;
- pub fn device_offline(*mut device)->c_int; pub fn device_online(*mut device)->c_int;
- pub fn dev_set_name(*mut device,*const c_char,...)->c_int;
- pub fn device_driver_attach(*const device_driver,*mut device)->c_int;
- pub fn device_bind_driver(*mut device)->c_int;
- pub fn __root_device_register(*const c_char,*mut module)->*mut device;
+ pub fn device_offline(_: *mut device)->c_int; pub fn device_online(_: *mut device)->c_int;
+ pub fn dev_set_name(_: *mut device,_: *const c_char,...)->c_int;
+ pub fn device_driver_attach(_: *const device_driver,_: *mut device)->c_int;
+ pub fn device_bind_driver(_: *mut device)->c_int;
+ pub fn __root_device_register(_: *const c_char,_: *mut module)->*mut device;
 }
 
 #[inline] pub unsafe fn dev_to_node(dev:*mut device)->c_int { (*dev).numa_node }

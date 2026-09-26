@@ -3,7 +3,7 @@
 // Dependency: linux/cpumask.h
 // Dependency: uapi/asm/hwprobe.h
 
-#[cfg(feature = "CONFIG_RISCV_ISA_VENDOR_EXT_SIFIVE")]
+#[cfg(CONFIG_RISCV_ISA_VENDOR_EXT_SIFIVE)]
 unsafe extern "C" {
     pub fn hwprobe_isa_vendor_ext_sifive_0(
         pair: *mut riscv_hwprobe,
@@ -11,7 +11,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_RISCV_ISA_VENDOR_EXT_SIFIVE"))]
+#[cfg(not(CONFIG_RISCV_ISA_VENDOR_EXT_SIFIVE))]
 #[inline]
 pub unsafe fn hwprobe_isa_vendor_ext_sifive_0(
     pair: *mut riscv_hwprobe,

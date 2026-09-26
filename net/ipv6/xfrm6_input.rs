@@ -45,7 +45,7 @@ pub unsafe fn xfrm6_transport_finish(skb: *mut sk_buff, async_: i32) -> i32 {
         xfrm_mode_skb_cb(skb).protocol;
 
     // CONFIG_NETFILTER-disabled builds return here for synchronous processing.
-    #[cfg(not(feature = "CONFIG_NETFILTER"))]
+    #[cfg(not(CONFIG_NETFILTER))]
     if async_ == 0 { return 1; }
 
     __skb_push(skb, nhlen as usize);

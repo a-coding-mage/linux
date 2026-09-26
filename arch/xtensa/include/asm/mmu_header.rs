@@ -14,7 +14,7 @@
  * reimplemented here.
  */
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[repr(C)]
 pub struct mm_context_t {
     pub asid: [usize; NR_CPUS],

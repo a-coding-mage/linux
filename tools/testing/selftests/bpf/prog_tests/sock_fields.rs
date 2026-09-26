@@ -517,37 +517,38 @@ unsafe fn test() {
     let mut i: c_int;
     let mut addrlen: socklen_t = core::mem::size_of::<sockaddr_in6>() as socklen_t;
     let mut buf: [c_char; DATA_LEN] = [0; DATA_LEN];
+    'done: {
 
     /* Prepare listen_fd */
     listen_fd = start_server(AF_INET6, SOCK_STREAM, b"::1\0".as_ptr() as *const c_char, 0xcafe, 0);
     /* start_server() has logged the error details */
     if CHECK_FAIL!(listen_fd == -1) {
-        goto_done!(done);
+        break 'done;
     }
 
     err = getsockname(listen_fd, &mut srv_sa6 as *mut sockaddr_in6 as *mut sockaddr, &mut addrlen);
     if CHECK!(err, b"getsockname(listen_fd)\0".as_ptr() as *const c_char, b"err:%d errno:%d\n\0".as_ptr() as *const c_char, err, errno) {
-        goto_done!(done);
+        break 'done;
     }
     memcpy(&mut (*(*skel).bss).srv_sa6 as *mut sockaddr_in6 as *mut c_void, &srv_sa6 as *const sockaddr_in6 as *const c_void, core::mem::size_of_val(&srv_sa6));
 
     cli_fd = connect_to_fd(listen_fd, 0);
     if CHECK_FAIL!(cli_fd == -1) {
-        goto_done!(done);
+        break 'done;
     }
 
     err = getsockname(cli_fd, &mut cli_sa6 as *mut sockaddr_in6 as *mut sockaddr, &mut addrlen);
     if CHECK!(err, b"getsockname(cli_fd)\0".as_ptr() as *const c_char, b"err:%d errno:%d\n\0".as_ptr() as *const c_char, err, errno) {
-        goto_done!(done);
+        break 'done;
     }
 
     accept_fd = accept(listen_fd, core::ptr::null_mut(), core::ptr::null_mut());
     if CHECK!(accept_fd == -1, b"accept(listen_fd)\0".as_ptr() as *const c_char, b"accept_fd:%d errno:%d\n\0".as_ptr() as *const c_char, accept_fd, errno) {
-        goto_done!(done);
+        break 'done;
     }
 
     if init_sk_storage(accept_fd, 0xeB9F) != 0 {
-        goto_done!(done);
+        break 'done;
     }
 
     i = 0;
@@ -557,12 +558,12 @@ unsafe fn test() {
          */
         err = send(accept_fd, DATA.as_ptr() as *const c_void, DATA_LEN, MSG_EOR) as c_int;
         if CHECK!(err != DATA_LEN as c_int, b"send(accept_fd)\0".as_ptr() as *const c_char, b"err:%d errno:%d\n\0".as_ptr() as *const c_char, err, errno) {
-            goto_done!(done);
+            break 'done;
         }
 
         err = recv(cli_fd, buf.as_mut_ptr() as *mut c_void, DATA_LEN, 0) as c_int;
         if CHECK!(err != DATA_LEN as c_int, b"recv(cli_fd)\0".as_ptr() as *const c_char, b"err:%d errno:%d\n\0".as_ptr() as *const c_char, err, errno) {
-            goto_done!(done);
+            break 'done;
         }
         i += 1;
     }
@@ -570,17 +571,17 @@ unsafe fn test() {
     shutdown(cli_fd, SHUT_WR);
     err = recv(accept_fd, buf.as_mut_ptr() as *mut c_void, 1, 0) as c_int;
     if CHECK!(err, b"recv(accept_fd) for fin\0".as_ptr() as *const c_char, b"err:%d errno:%d\n\0".as_ptr() as *const c_char, err, errno) {
-        goto_done!(done);
+        break 'done;
     }
     shutdown(accept_fd, SHUT_WR);
     err = recv(cli_fd, buf.as_mut_ptr() as *mut c_void, 1, 0) as c_int;
     if CHECK!(err, b"recv(cli_fd) for fin\0".as_ptr() as *const c_char, b"err:%d errno:%d\n\0".as_ptr() as *const c_char, err, errno) {
-        goto_done!(done);
+        break 'done;
     }
     check_sk_pkt_out_cnt(accept_fd, cli_fd);
     check_result();
-
-done:
+    }
+    
     if accept_fd != -1 {
         close(accept_fd);
     }
@@ -597,6 +598,7 @@ pub unsafe extern "C" fn serial_test_sock_fields() {
     let mut parent_cg_fd: c_int = -1;
     let mut child_cg_fd: c_int = -1;
     let mut link: *mut bpf_link;
+    'done: {
 
     /* Use a dedicated netns to have a fixed listen port */
     if !create_netns() {
@@ -610,38 +612,38 @@ pub unsafe extern "C" fn serial_test_sock_fields() {
     }
     parent_cg_id = get_cgroup_id(PARENT_CGROUP.as_ptr() as *const c_char);
     if CHECK_FAIL!(parent_cg_id == 0) {
-        goto_done!(done);
+        break 'done;
     }
 
     child_cg_fd = test__join_cgroup(CHILD_CGROUP.as_ptr() as *const c_char);
     if CHECK_FAIL!(child_cg_fd < 0) {
-        goto_done!(done);
+        break 'done;
     }
     child_cg_id = get_cgroup_id(CHILD_CGROUP.as_ptr() as *const c_char);
     if CHECK_FAIL!(child_cg_id == 0) {
-        goto_done!(done);
+        break 'done;
     }
 
     skel = test_sock_fields__open_and_load();
     if CHECK!(skel.is_null(), b"test_sock_fields__open_and_load\0".as_ptr() as *const c_char, b"failed\n\0".as_ptr() as *const c_char) {
-        goto_done!(done);
+        break 'done;
     }
 
     link = bpf_program__attach_cgroup((*skel).progs.egress_read_sock_fields, child_cg_fd);
     if !ASSERT_OK_PTR!(link, b"attach_cgroup(egress_read_sock_fields)\0".as_ptr() as *const c_char) {
-        goto_done!(done);
+        break 'done;
     }
     (*skel).links.egress_read_sock_fields = link;
 
     link = bpf_program__attach_cgroup((*skel).progs.ingress_read_sock_fields, child_cg_fd);
     if !ASSERT_OK_PTR!(link, b"attach_cgroup(ingress_read_sock_fields)\0".as_ptr() as *const c_char) {
-        goto_done!(done);
+        break 'done;
     }
     (*skel).links.ingress_read_sock_fields = link;
 
     link = bpf_program__attach_cgroup((*skel).progs.read_sk_dst_port, child_cg_fd);
     if !ASSERT_OK_PTR!(link, b"attach_cgroup(read_sk_dst_port\0".as_ptr() as *const c_char) {
-        goto_done!(done);
+        break 'done;
     }
     (*skel).links.read_sk_dst_port = link;
 
@@ -650,8 +652,8 @@ pub unsafe extern "C" fn serial_test_sock_fields() {
     sk_pkt_out_cnt10_fd = bpf_map__fd((*skel).maps.sk_pkt_out_cnt10);
 
     test();
-
-done:
+    }
+    
     test_sock_fields__destroy(skel);
     if child_cg_fd >= 0 {
         close(child_cg_fd);

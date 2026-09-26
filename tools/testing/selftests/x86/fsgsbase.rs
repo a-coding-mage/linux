@@ -344,7 +344,7 @@ unsafe fn mov_0_gs(initial_base: c_ulong, schedule: bool) {
         usleep(10);
     }
 
-    asm!("mov gs, {0:x}", in(reg) 0_u16, options(nostack, preserves_flags));
+    asm!("mov gs, {0:x}", in(reg) 0u16, options(nostack, preserves_flags));
     base = read_base(which_base::GS);
     if syscall(SYS_arch_prctl, ARCH_GET_GS, &mut arch_base as *mut c_ulong) != 0 {
         err(1, c"ARCH_GET_GS".as_ptr());
@@ -383,7 +383,7 @@ unsafe fn do_remote_base() {
     }
 
     if hard_zero {
-        asm!("mov gs, {0:x}", in(reg) 0_u16, options(nostack, preserves_flags));
+        asm!("mov gs, {0:x}", in(reg) 0u16, options(nostack, preserves_flags));
     }
 
     let sel: c_ushort;
@@ -533,7 +533,7 @@ extern "C" fn threadproc(_ctx: *mut c_void) -> *mut c_void {
                  */
 
                 load_gs();
-                asm!("mov gs, {0:x}", in(reg) 0_u16, options(nostack, preserves_flags));
+                asm!("mov gs, {0:x}", in(reg) 0u16, options(nostack, preserves_flags));
             } else {
                 errx(1, c"helper thread got bad command".as_ptr());
             }
@@ -568,7 +568,7 @@ unsafe fn set_gs_and_switch_to(mut local: c_ulong, force_sel: c_ushort, remote: 
         err(1, c"ARCH_SET_GS".as_ptr());
     }
     if hard_zero {
-        asm!("mov gs, {0:x}", in(reg) 0_u16, options(nostack, preserves_flags));
+        asm!("mov gs, {0:x}", in(reg) 0u16, options(nostack, preserves_flags));
     }
 
     if read_base(which_base::GS) != local {
@@ -636,7 +636,7 @@ unsafe fn test_unexpected_base() {
     if syscall(SYS_arch_prctl, ARCH_SET_GS, 0) != 0 {
         err(1, c"ARCH_SET_GS".as_ptr());
     }
-    asm!("mov gs, {0:x}", in(reg) 0_u16, options(nostack, preserves_flags));
+    asm!("mov gs, {0:x}", in(reg) 0u16, options(nostack, preserves_flags));
 
     ftx = 2;
     syscall(SYS_futex, &raw mut ftx, FUTEX_WAKE, 0, null::<c_void>(), null::<c_void>(), 0);
@@ -892,7 +892,7 @@ fn main() {
 
         for local in 0..4 {
             for remote in 0..4 {
-                for s in 0_u16..5 {
+                for s in 0u16..5 {
                     let mut sel: c_ushort = s;
                     if s == 4 {
                         asm!("mov {0:x}, ss", out(reg) sel, options(nostack, preserves_flags));

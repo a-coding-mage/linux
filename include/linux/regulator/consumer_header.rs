@@ -34,7 +34,7 @@ pub const REGULATOR_ERROR_OVER_TEMP_WARN: u32 = 1 << 9;
     pub ret: i32,
 }
 
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 extern "C" {
     pub fn regulator_get(dev: *mut device, id: *const i8) -> *mut regulator;
     pub fn devm_regulator_get(dev: *mut device, id: *const i8) -> *mut regulator;

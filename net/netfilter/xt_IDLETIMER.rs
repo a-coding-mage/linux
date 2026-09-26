@@ -34,11 +34,11 @@ static mut idletimer_tg_kobj: *mut kobject = core::ptr::null_mut();
 
 unsafe fn __idletimer_tg_find_by_label(label: *const c_char) -> *mut idletimer_tg {
     let mut entry: *mut idletimer_tg;
-    list_for_each_entry!(entry, &mut idletimer_tg_list, entry) {
+    list_for_each_entry!(entry, &mut idletimer_tg_list, entry, {
         if strcmp(label, (*entry).attr.attr.name) == 0 {
             return entry;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -110,43 +110,49 @@ unsafe fn idletimer_check_sysfs_name(name: *const c_char, size: c_uint) -> c_int
 
 unsafe fn idletimer_tg_create(info: *mut idletimer_tg_info) -> c_int {
     let mut ret: c_int;
+    'out_free_timer: {
+    'out_free_attr: {
     (*info).timer = kzalloc_obj!((*info).timer);
     if (*info).timer.is_null() { return -ENOMEM; }
     ret = idletimer_check_sysfs_name((*info).label.as_ptr(), core::mem::size_of_val(&(*info).label) as c_uint);
-    if ret < 0 { goto!(out_free_timer); }
+    if ret < 0 { break 'out_free_timer; }
     sysfs_attr_init(&mut (*(*info).timer).attr.attr);
     (*(*info).timer).attr.attr.name = kstrdup((*info).label.as_ptr(), GFP_KERNEL);
-    if (*(*info).timer).attr.attr.name.is_null() { ret = -ENOMEM; goto!(out_free_timer); }
+    if (*(*info).timer).attr.attr.name.is_null() { ret = -ENOMEM; break 'out_free_timer; }
     (*(*info).timer).attr.attr.mode = 0o444;
     (*(*info).timer).attr.show = Some(idletimer_tg_show);
     ret = sysfs_create_file(idletimer_tg_kobj, &(*(*info).timer).attr.attr);
-    if ret < 0 { pr_info_ratelimited!("couldn't add file to sysfs\n"); goto!(out_free_attr); }
+    if ret < 0 { pr_info_ratelimited!("couldn't add file to sysfs\n"); break 'out_free_attr; }
     list_add(&mut (*(*info).timer).entry, &mut idletimer_tg_list);
     timer_setup(&mut (*(*info).timer).timer, Some(idletimer_tg_expired), 0);
     (*(*info).timer).refcnt = 1;
     INIT_WORK(&mut (*(*info).timer).work, Some(idletimer_tg_work));
     mod_timer(&mut (*(*info).timer).timer, secs_to_jiffies((*info).timeout) + jiffies);
     return 0;
-out_free_attr:
+    }
+    
     kfree((*(*info).timer).attr.attr.name as *mut c_void);
-out_free_timer:
+    }
+    
     kfree((*info).timer as *mut c_void);
     ret
 }
 
 unsafe fn idletimer_tg_create_v1(info: *mut idletimer_tg_info_v1) -> c_int {
     let mut ret: c_int;
+    'out_free_timer: {
+    'out_free_attr: {
     (*info).timer = kmalloc_obj!((*info).timer);
     if (*info).timer.is_null() { return -ENOMEM; }
     ret = idletimer_check_sysfs_name((*info).label.as_ptr(), core::mem::size_of_val(&(*info).label) as c_uint);
-    if ret < 0 { goto!(out_free_timer); }
+    if ret < 0 { break 'out_free_timer; }
     sysfs_attr_init(&mut (*(*info).timer).attr.attr);
     (*(*info).timer).attr.attr.name = kstrdup((*info).label.as_ptr(), GFP_KERNEL);
-    if (*(*info).timer).attr.attr.name.is_null() { ret = -ENOMEM; goto!(out_free_timer); }
+    if (*(*info).timer).attr.attr.name.is_null() { ret = -ENOMEM; break 'out_free_timer; }
     (*(*info).timer).attr.attr.mode = 0o444;
     (*(*info).timer).attr.show = Some(idletimer_tg_show);
     ret = sysfs_create_file(idletimer_tg_kobj, &(*(*info).timer).attr.attr);
-    if ret < 0 { pr_info_ratelimited!("couldn't add file to sysfs\n"); goto!(out_free_attr); }
+    if ret < 0 { pr_info_ratelimited!("couldn't add file to sysfs\n"); break 'out_free_attr; }
     kobject_uevent(idletimer_tg_kobj, KOBJ_ADD);
     list_add(&mut (*(*info).timer).entry, &mut idletimer_tg_list);
     (*(*info).timer).timer_type = (*info).timer_type;
@@ -161,9 +167,11 @@ unsafe fn idletimer_tg_create_v1(info: *mut idletimer_tg_info_v1) -> c_int {
         mod_timer(&mut (*(*info).timer).timer, secs_to_jiffies((*info).timeout) + jiffies);
     }
     return 0;
-out_free_attr:
+    }
+    
     kfree((*(*info).timer).attr.attr.name as *mut c_void);
-out_free_timer:
+    }
+    
     kfree((*info).timer as *mut c_void);
     ret
 }

@@ -92,8 +92,8 @@ pub unsafe fn outsl(port: usize, src: *const core::ffi::c_void, mut count: usize
     match (p as usize) & 3 {
         0 => while count != 0 { count -= 1; outl(le32_to_cpu(*(p as *const u32)), port); p = p.add(4); },
         2 => { count -= 1; let mut l = *(p as *const u16) as u32; p = p.add(2); while count != 0 { count -= 1; let l2 = *(p as *const u32); p = p.add(4); outl(le32_to_cpu(l << 16 | l2 >> 16), port); l = l2; } let l2 = *(p as *const u16) as u32; outl(le32_to_cpu(l << 16 | l2), port); },
-        1 => { count -= 1; let mut l = (*p as u32) << 24; p = p.add(1); l |= *(p as *const u16) as u32 << 8; p = p.add(2); while count != 0 { count -= 1; let l2 = *(p as *const u32); p = p.add(4); outl(le32_to_cpu(l | l2 >> 24), port); l = l2 << 8; } outl(le32_to_cpu(l | *p as u32), port); },
-        3 => { count -= 1; let mut l = (*p as u32) << 24; p = p.add(1); while count != 0 { count -= 1; let l2 = *(p as *const u32); p = p.add(4); outl(le32_to_cpu(l | l2 >> 8), port); l = l2 << 24; } let mut l2 = *(p as *const u16) as u32 << 16; p = p.add(2); l2 |= *p as u32; outl(le32_to_cpu(l | l2), port); }, _ => {}
+        1 => { count -= 1; let mut l = (*p as u32) << 24; p = p.add(1); l |= (*(p as *const u16) as u32) << 8; p = p.add(2); while count != 0 { count -= 1; let l2 = *(p as *const u32); p = p.add(4); outl(le32_to_cpu(l | l2 >> 24), port); l = l2 << 8; } outl(le32_to_cpu(l | *p as u32), port); },
+        3 => { count -= 1; let mut l = (*p as u32) << 24; p = p.add(1); while count != 0 { count -= 1; let l2 = *(p as *const u32); p = p.add(4); outl(le32_to_cpu(l | l2 >> 8), port); l = l2 << 24; } let mut l2 = (*(p as *const u16) as u32) << 16; p = p.add(2); l2 |= *p as u32; outl(le32_to_cpu(l | l2), port); }, _ => {}
     }
 }
 

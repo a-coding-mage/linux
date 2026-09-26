@@ -7,7 +7,7 @@ pub type bits32 = u32;
 pub type bits64 = u64;
 pub type int32 = i32;
 
-#[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+#[cfg(CONFIG_FPE_NWFPE_XP)]
 #[repr(C, packed(4))]
 pub struct floatx80 {
     #[cfg(target_endian = "big")]
@@ -29,13 +29,13 @@ extern "C" {
 
     pub fn int32_to_float32(a: *mut roundingData, b: i32) -> float32;
     pub fn int32_to_float64(a: i32) -> float64;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn int32_to_floatx80(a: i32) -> floatx80;
 
     pub fn float32_to_int32(a: *mut roundingData, b: float32) -> i32;
     pub fn float32_to_int32_round_to_zero(a: float32) -> i32;
     pub fn float32_to_float64(a: float32) -> float64;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn float32_to_floatx80(a: float32) -> floatx80;
 
     pub fn float32_round_to_int(a: *mut roundingData, b: float32) -> float32;
@@ -56,7 +56,7 @@ extern "C" {
     pub fn float64_to_int32(a: *mut roundingData, b: float64) -> i32;
     pub fn float64_to_int32_round_to_zero(a: float64) -> i32;
     pub fn float64_to_float32(a: *mut roundingData, b: float64) -> float32;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn float64_to_floatx80(a: float64) -> floatx80;
 
     pub fn float64_round_to_int(a: *mut roundingData, b: float64) -> float64;
@@ -74,43 +74,43 @@ extern "C" {
     pub fn float64_lt_quiet(a: float64, b: float64) -> i8;
     pub fn float64_is_signaling_nan(a: float64) -> i8;
 
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_to_int32(a: *mut roundingData, b: floatx80) -> i32;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_to_int32_round_to_zero(a: floatx80) -> i32;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_to_float32(a: *mut roundingData, b: floatx80) -> float32;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_to_float64(a: *mut roundingData, b: floatx80) -> float64;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_round_to_int(a: *mut roundingData, b: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_add(a: *mut roundingData, b: floatx80, c: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_sub(a: *mut roundingData, b: floatx80, c: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_mul(a: *mut roundingData, b: floatx80, c: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_div(a: *mut roundingData, b: floatx80, c: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_rem(a: *mut roundingData, b: floatx80, c: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_sqrt(a: *mut roundingData, b: floatx80) -> floatx80;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_eq(a: floatx80, b: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_le(a: floatx80, b: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_lt(a: floatx80, b: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_eq_signaling(a: floatx80, b: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_le_quiet(a: floatx80, b: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_lt_quiet(a: floatx80, b: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_is_signaling_nan(a: floatx80) -> i8;
-    #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+    #[cfg(CONFIG_FPE_NWFPE_XP)]
     pub fn floatx80_is_nan(a: floatx80) -> flag;
 
     pub fn float32_is_nan(a: float32) -> flag;

@@ -36,7 +36,7 @@ pub struct l3mdev_ops {
     pub l3mdev_link_scope_lookup: Option<unsafe extern "C" fn(*const net_device, *mut flowi6) -> *mut dst_entry>,
 }
 
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 extern "C" {
     pub fn l3mdev_table_lookup_register(l3type: l3mdev_type, func: lookup_by_table_id_t) -> c_int;
     pub fn l3mdev_table_lookup_unregister(l3type: l3mdev_type, func: lookup_by_table_id_t);
@@ -51,92 +51,92 @@ extern "C" {
 }
 
 /* The CONFIG_NET_L3_MASTER_DEV-disabled branch is retained as inline fallbacks. */
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_master_ifindex_rcu(_: *const net_device) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_master_upper_ifindex_by_index_rcu(_: *mut net, _: c_int) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_fib_table_rcu(_: *const net_device) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_fib_table_by_index(_: *mut net, _: c_int) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_link_scope_lookup(_: *mut net, _: *mut flowi6) -> *mut dst_entry { core::ptr::null_mut() }
 
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_fib_rule_iif_match(_: *const flowi, _: c_int) -> bool { todo!("flowi fields supplied by dependency") }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_fib_rule_oif_match(_: *const flowi, _: c_int) -> bool { todo!("flowi fields supplied by dependency") }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_fib_rule_iif_match(_: *const flowi, _: c_int) -> bool { false }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_fib_rule_oif_match(_: *const flowi, _: c_int) -> bool { false }
 
 /* Remaining inline definitions preserve the source interfaces; kernel helpers are external dependencies. */
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_master_ifindex(dev: *mut net_device) -> c_int {
     /* rcu_read_lock(); */ let ret = l3mdev_master_ifindex_rcu(dev); /* rcu_read_unlock(); */ ret
 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_master_ifindex(_: *mut net_device) -> c_int { 0 }
 
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_master_upper_ifindex_by_index(net: *mut net, ifindex: c_int) -> c_int {
     /* rcu_read_lock(); */ let ret = l3mdev_master_upper_ifindex_by_index_rcu(net, ifindex); /* rcu_read_unlock(); */ ret
 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_master_upper_ifindex_by_index(_: *mut net, _: c_int) -> c_int { 0 }
 
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_fib_table(dev: *const net_device) -> u32 { l3mdev_fib_table_rcu(dev) }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_fib_table(_: *const net_device) -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_master_dev_rcu(_: *const net_device) -> *mut net_device { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_master_ifindex_by_index(_: *mut net, _: c_int) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn netif_index_is_l3_master(_: *mut net, _: c_int) -> bool { false }
 
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_ip_rcv(skb: *mut sk_buff) -> *mut sk_buff { l3mdev_l3_rcv(skb, 2) }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_ip6_rcv(skb: *mut sk_buff) -> *mut sk_buff { l3mdev_l3_rcv(skb, 10) }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_l3_rcv(skb: *mut sk_buff, _proto: u16) -> *mut sk_buff { skb }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_l3_out(_sk: *mut sock, skb: *mut sk_buff, _proto: u16) -> *mut sk_buff { skb }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_ip_out(sk: *mut sock, skb: *mut sk_buff) -> *mut sk_buff { l3mdev_l3_out(sk, skb, 2) }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_ip6_out(sk: *mut sock, skb: *mut sk_buff) -> *mut sk_buff { l3mdev_l3_out(sk, skb, 10) }
 
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_ip_rcv(skb: *mut sk_buff) -> *mut sk_buff { skb }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_ip6_rcv(skb: *mut sk_buff) -> *mut sk_buff { skb }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_ip_out(_: *mut sock, skb: *mut sk_buff) -> *mut sk_buff { skb }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_ip6_out(_: *mut sock, skb: *mut sk_buff) -> *mut sk_buff { skb }
 
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_table_lookup_register(_: l3mdev_type, _: lookup_by_table_id_t) -> c_int { -95 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_table_lookup_unregister(_: l3mdev_type, _: lookup_by_table_id_t) {}
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_ifindex_lookup_by_table_id(_: l3mdev_type, _: *mut net, _: u32) -> c_int { -19 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_fib_rule_match(_: *mut net, _: *mut flowi, _: *mut fib_lookup_arg) -> c_int { 1 }
-#[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+#[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
 pub unsafe fn l3mdev_update_flow(_: *mut net, _: *mut flowi) {}
 
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 extern "C" {
     pub fn l3mdev_master_dev_rcu(dev: *const net_device) -> *mut net_device;
     pub fn netif_index_is_l3_master(net: *mut net, ifindex: c_int) -> bool;
 }
-#[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+#[cfg(CONFIG_NET_L3_MASTER_DEV)]
 pub unsafe fn l3mdev_master_ifindex_by_index(net: *mut net, ifindex: c_int) -> c_int {
     l3mdev_master_ifindex_rcu(net as *const net_device).wrapping_add(ifindex)
 }

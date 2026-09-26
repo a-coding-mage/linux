@@ -4,12 +4,12 @@
 // left external: atomic_t, mutex, sock, path, refcount_t, spinlock_t,
 // wait_queue_entry_t, socket_wq, sockaddr_un, unix_vertex, sk_buff, and file.
 
-#[cfg(feature = "CONFIG_UNIX")]
+#[cfg(CONFIG_UNIX)]
 extern "C" {
     pub fn unix_get_socket(filp: *mut file) -> *mut unix_sock;
 }
 
-#[cfg(not(feature = "CONFIG_UNIX"))]
+#[cfg(not(CONFIG_UNIX))]
 #[inline]
 pub unsafe fn unix_get_socket(_filp: *mut file) -> *mut unix_sock {
     core::ptr::null_mut()
@@ -47,7 +47,7 @@ pub struct unix_sock {
     pub inq_len: core::ffi::c_int,
     pub recvmsg_inq: bool,
     pub scm_rights_notrunc: bool,
-    #[cfg(feature = "CONFIG_AF_UNIX_OOB")]
+    #[cfg(CONFIG_AF_UNIX_OOB)]
     pub oob_skb: *mut sk_buff,
 }
 

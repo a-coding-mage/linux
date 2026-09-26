@@ -80,7 +80,7 @@ pub unsafe fn qcom_tzmem_cleanup(ptr: *mut c_void) {
 }
 
 // CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE is a build-time kernel configuration.
-#[cfg(feature = "CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE")]
+#[cfg(CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE)]
 extern "C" {
     pub fn qcom_tzmem_shm_bridge_create(
         paddr: phys_addr_t,
@@ -90,7 +90,7 @@ extern "C" {
     pub fn qcom_tzmem_shm_bridge_delete(handle: u64);
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE"))]
+#[cfg(not(CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE))]
 #[inline]
 pub unsafe fn qcom_tzmem_shm_bridge_create(
     _paddr: phys_addr_t,
@@ -100,7 +100,7 @@ pub unsafe fn qcom_tzmem_shm_bridge_create(
     0
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE"))]
+#[cfg(not(CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE))]
 #[inline]
 pub unsafe fn qcom_tzmem_shm_bridge_delete(_handle: u64) {}
 

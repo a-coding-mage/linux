@@ -26,7 +26,7 @@ extern "C" {
     fn printk(fmt: *const u8, ...);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn doorbell_exception(regs: *mut pt_regs) {
     let old_regs: *mut pt_regs = set_irq_regs(regs);
 
@@ -49,7 +49,7 @@ pub unsafe extern "C" fn doorbell_exception(regs: *mut pt_regs) {
     set_irq_regs(old_regs);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe extern "C" fn doorbell_exception(_regs: *mut pt_regs) {
     printk(KERN_WARNING, b"Received doorbell on non-smp system\0".as_ptr());
 }

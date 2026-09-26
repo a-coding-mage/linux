@@ -5,7 +5,7 @@
  */
 #![allow(non_snake_case, non_camel_case_types, dead_code, unused_variables)]
 
-+// / *
+// / *
 //  * Copyright 2015 Advanced Micro Devices, Inc.
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -54,7 +54,7 @@
 // 
 // #define NUM_BITS_CLOCK_INFO_ARRAY_INDEX 6
 // 
-// static bool pp_table_has_space(struct pp_hwmgr *hwmgr, size_t offset,
+// static bool pp_table_has_space(pp_hwmgr *hwmgr, size_t offset,
 // 			       size_t size)
 // {
 // 	size_t table_size = hwmgr->soft_pp_table_size;
@@ -63,7 +63,7 @@
 // }
 // 
 // static const ATOM_PPLIB_EXTENDEDHEADER *
-// get_extended_header(struct pp_hwmgr *hwmgr,
+// get_extended_header(pp_hwmgr *hwmgr,
 // 		    const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table,
 // 		    size_t min_size)
 // {
@@ -91,7 +91,7 @@
 // 	return extended_header;
 // }
 // 
-// static uint16_t get_vce_table_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_vce_table_offset(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t vce_table_offset = 0;
@@ -105,7 +105,7 @@
 // 	return vce_table_offset;
 // }
 // 
-// static uint16_t get_vce_clock_info_array_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_vce_clock_info_array_offset(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_vce_table_offset(hwmgr,
@@ -117,7 +117,7 @@
 // 	return 0;
 // }
 // 
-// static uint16_t get_vce_clock_info_array_size(struct pp_hwmgr *hwmgr,
+// static uint16_t get_vce_clock_info_array_size(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_vce_clock_info_array_offset(hwmgr,
@@ -140,7 +140,7 @@
 // 	return table_size;
 // }
 // 
-// static uint16_t get_vce_clock_voltage_limit_table_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_vce_clock_voltage_limit_table_offset(pp_hwmgr *hwmgr,
 // 				const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_vce_clock_info_array_offset(hwmgr,
@@ -156,7 +156,7 @@
 // 	return 0;
 // }
 // 
-// static uint16_t get_vce_clock_voltage_limit_table_size(struct pp_hwmgr *hwmgr,
+// static uint16_t get_vce_clock_voltage_limit_table_size(pp_hwmgr *hwmgr,
 // 							const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_vce_clock_voltage_limit_table_offset(hwmgr, powerplay_table);
@@ -178,7 +178,7 @@
 // 	return table_size;
 // }
 // 
-// static uint16_t get_vce_state_table_offset(struct pp_hwmgr *hwmgr, const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
+// static uint16_t get_vce_state_table_offset(pp_hwmgr *hwmgr, const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_vce_clock_voltage_limit_table_offset(hwmgr, powerplay_table);
 // 	u16 table_size;
@@ -208,7 +208,7 @@
 // 	return NULL;
 // }
 // 
-// static uint16_t get_uvd_table_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_uvd_table_offset(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t uvd_table_offset = 0;
@@ -222,7 +222,7 @@
 // 	return uvd_table_offset;
 // }
 // 
-// static uint16_t get_uvd_clock_info_array_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_uvd_clock_info_array_offset(pp_hwmgr *hwmgr,
 // 			 const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_uvd_table_offset(hwmgr,
@@ -233,7 +233,7 @@
 // 	return 0;
 // }
 // 
-// static uint16_t get_uvd_clock_info_array_size(struct pp_hwmgr *hwmgr,
+// static uint16_t get_uvd_clock_info_array_size(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t table_offset = get_uvd_clock_info_array_offset(hwmgr,
@@ -274,7 +274,7 @@
 // 	return 0;
 // }
 // 
-// static uint16_t get_samu_table_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_samu_table_offset(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t samu_table_offset = 0;
@@ -301,7 +301,7 @@
 // 	return 0;
 // }
 // 
-// static uint16_t get_acp_table_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_acp_table_offset(pp_hwmgr *hwmgr,
 // 				const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t acp_table_offset = 0;
@@ -342,7 +342,7 @@
 // 	return cacTdpTableOffset;
 // }
 // 
-// static int get_cac_tdp_table(struct pp_hwmgr *hwmgr,
+// static int get_cac_tdp_table(pp_hwmgr *hwmgr,
 // 				struct phm_cac_tdp_table **ptable,
 // 				const ATOM_PowerTune_Table *table,
 // 				uint16_t us_maximum_power_delivery_limit)
@@ -350,7 +350,7 @@
 // 	unsigned long table_size;
 // 	struct phm_cac_tdp_table *tdp_table;
 // 
-// 	table_size = sizeof(unsigned long) + sizeof(struct phm_cac_tdp_table);
+// 	table_size = sizeof(unsigned long) + sizeof(phm_cac_tdp_table);
 // 
 // 	tdp_table = kzalloc(table_size, GFP_KERNEL);
 // 	if (NULL == tdp_table)
@@ -370,7 +370,7 @@
 // 	return 0;
 // }
 // 
-// static uint16_t get_sclk_vdd_gfx_table_offset(struct pp_hwmgr *hwmgr,
+// static uint16_t get_sclk_vdd_gfx_table_offset(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	uint16_t sclk_vdd_gfx_table_offset = 0;
@@ -398,7 +398,7 @@
 // }
 // 
 // 
-// static int get_clock_voltage_dependency_table(struct pp_hwmgr *hwmgr,
+// static int get_clock_voltage_dependency_table(pp_hwmgr *hwmgr,
 // 		struct phm_clock_voltage_dependency_table **ptable,
 // 		const ATOM_PPLIB_Clock_Voltage_Dependency_Table *table)
 // {
@@ -425,7 +425,7 @@
 // 	return 0;
 // }
 // 
-// static int get_valid_clk(struct pp_hwmgr *hwmgr,
+// static int get_valid_clk(pp_hwmgr *hwmgr,
 // 			struct phm_clock_array **ptable,
 // 			const struct phm_clock_voltage_dependency_table *table)
 // {
@@ -446,7 +446,7 @@
 // 	return 0;
 // }
 // 
-// static int get_clock_voltage_limit(struct pp_hwmgr *hwmgr,
+// static int get_clock_voltage_limit(pp_hwmgr *hwmgr,
 // 			struct phm_clock_and_voltage_limits *limits,
 // 			const ATOM_PPLIB_Clock_Voltage_Limit_Table *table)
 // {
@@ -461,7 +461,7 @@
 // }
 // 
 // 
-// static void set_hw_cap(struct pp_hwmgr *hwmgr, bool enable,
+// static void set_hw_cap(pp_hwmgr *hwmgr, bool enable,
 // 		       enum phm_platform_caps cap)
 // {
 // 	if (enable)
@@ -470,7 +470,7 @@
 // 		phm_cap_unset(hwmgr->platform_descriptor.platformCaps, cap);
 // }
 // 
-// static int set_platform_caps(struct pp_hwmgr *hwmgr,
+// static int set_platform_caps(pp_hwmgr *hwmgr,
 // 			unsigned long powerplay_caps)
 // {
 // 	set_hw_cap(
@@ -696,7 +696,7 @@
 // 	return result;
 // }
 // 
-// static int init_non_clock_fields(struct pp_hwmgr *hwmgr,
+// static int init_non_clock_fields(pp_hwmgr *hwmgr,
 // 						struct pp_power_state *ps,
 // 							    uint8_t version,
 // 			 const ATOM_PPLIB_NONCLOCK_INFO *pnon_clock_info) {
@@ -884,7 +884,7 @@
 // 	return (const ATOM_PPLIB_POWERPLAYTABLE *)table_addr;
 // }
 // 
-// int pp_tables_get_response_times(struct pp_hwmgr *hwmgr,
+// int pp_tables_get_response_times(pp_hwmgr *hwmgr,
 // 				uint32_t *vol_rep_time, uint32_t *bb_rep_time)
 // {
 // 	const ATOM_PPLIB_POWERPLAYTABLE *powerplay_tab = get_powerplay_table(hwmgr);
@@ -900,7 +900,7 @@
 // 	return 0;
 // }
 // 
-// int pp_tables_get_num_of_entries(struct pp_hwmgr *hwmgr,
+// int pp_tables_get_num_of_entries(pp_hwmgr *hwmgr,
 // 				     unsigned long *num_of_entries)
 // {
 // 	const StateArray *pstate_arrays;
@@ -928,7 +928,7 @@
 // 	return 0;
 // }
 // 
-// int pp_tables_get_entry(struct pp_hwmgr *hwmgr,
+// int pp_tables_get_entry(pp_hwmgr *hwmgr,
 // 				unsigned long entry_index,
 // 				struct pp_power_state *ps,
 // 			 pp_tables_hw_clock_info_callback func)
@@ -1248,7 +1248,7 @@
 // 	return 0;
 // }
 // 
-// static int init_overdrive_limits_V1_4(struct pp_hwmgr *hwmgr,
+// static int init_overdrive_limits_V1_4(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table,
 // 			const ATOM_FIRMWARE_INFO_V1_4 *fw_info)
 // {
@@ -1271,7 +1271,7 @@
 // 	return 0;
 // }
 // 
-// static int init_overdrive_limits_V2_1(struct pp_hwmgr *hwmgr,
+// static int init_overdrive_limits_V2_1(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table,
 // 			const ATOM_FIRMWARE_INFO_V2_1 *fw_info)
 // {
@@ -1301,7 +1301,7 @@
 // 	return 0;
 // }
 // 
-// static int init_overdrive_limits(struct pp_hwmgr *hwmgr,
+// static int init_overdrive_limits(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	int result = 0;
@@ -1341,7 +1341,7 @@
 // 	return result;
 // }
 // 
-// static int get_uvd_clock_voltage_limit_table(struct pp_hwmgr *hwmgr,
+// static int get_uvd_clock_voltage_limit_table(pp_hwmgr *hwmgr,
 // 		struct phm_uvd_clock_voltage_dependency_table **ptable,
 // 		const ATOM_PPLIB_UVD_Clock_Voltage_Limit_Table *table,
 // 		const UVDClockInfoArray *array)
@@ -1370,7 +1370,7 @@
 // 	return 0;
 // }
 // 
-// static int get_vce_clock_voltage_limit_table(struct pp_hwmgr *hwmgr,
+// static int get_vce_clock_voltage_limit_table(pp_hwmgr *hwmgr,
 // 		struct phm_vce_clock_voltage_dependency_table **ptable,
 // 		const ATOM_PPLIB_VCE_Clock_Voltage_Limit_Table *table,
 // 		const VCEClockInfoArray    *array)
@@ -1398,7 +1398,7 @@
 // 	return 0;
 // }
 // 
-// static int get_samu_clock_voltage_limit_table(struct pp_hwmgr *hwmgr,
+// static int get_samu_clock_voltage_limit_table(pp_hwmgr *hwmgr,
 // 		 struct phm_samu_clock_voltage_dependency_table **ptable,
 // 		 const ATOM_PPLIB_SAMClk_Voltage_Limit_Table *table)
 // {
@@ -1422,7 +1422,7 @@
 // 	return 0;
 // }
 // 
-// static int get_acp_clock_voltage_limit_table(struct pp_hwmgr *hwmgr,
+// static int get_acp_clock_voltage_limit_table(pp_hwmgr *hwmgr,
 // 		struct phm_acp_clock_voltage_dependency_table **ptable,
 // 		const ATOM_PPLIB_ACPClk_Voltage_Limit_Table *table)
 // {
@@ -1446,7 +1446,7 @@
 // 	return 0;
 // }
 // 
-// static int init_clock_voltage_dependency(struct pp_hwmgr *hwmgr,
+// static int init_clock_voltage_dependency(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	ATOM_PPLIB_Clock_Voltage_Dependency_Table *table;
@@ -1612,7 +1612,7 @@
 // 	return result;
 // }
 // 
-// static int get_cac_leakage_table(struct pp_hwmgr *hwmgr,
+// static int get_cac_leakage_table(pp_hwmgr *hwmgr,
 // 				 struct phm_cac_leakage_table **ptable,
 // 				const ATOM_PPLIB_CAC_Leakage_Table *table)
 // {
@@ -1646,10 +1646,10 @@
 // 	return 0;
 // }
 // 
-// static int get_platform_power_management_table(struct pp_hwmgr *hwmgr,
+// static int get_platform_power_management_table(pp_hwmgr *hwmgr,
 // 			ATOM_PPLIB_PPM_Table *atom_ppm_table)
 // {
-// 	struct phm_ppm_table *ptr = kzalloc_obj(struct phm_ppm_table);
+// 	struct phm_ppm_table *ptr = kzalloc_obj(phm_ppm_table);
 // 
 // 	if (NULL == ptr)
 // 		return -ENOMEM;
@@ -1669,7 +1669,7 @@
 // 	return 0;
 // }
 // 
-// static int init_dpm2_parameters(struct pp_hwmgr *hwmgr,
+// static int init_dpm2_parameters(pp_hwmgr *hwmgr,
 // 			const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	int result = 0;
@@ -1743,7 +1743,7 @@
 // 	return result;
 // }
 // 
-// static int init_phase_shedding_table(struct pp_hwmgr *hwmgr,
+// static int init_phase_shedding_table(pp_hwmgr *hwmgr,
 // 		const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table)
 // {
 // 	if (le16_to_cpu(powerplay_table->usTableSize) >=
@@ -1795,7 +1795,7 @@
 // 	return 0;
 // }
 // 
-// static int get_vce_state_table_entry(struct pp_hwmgr *hwmgr,
+// static int get_vce_state_table_entry(pp_hwmgr *hwmgr,
 // 							unsigned long i,
 // 							struct amd_vce_state *vce_state,
 // 							void **clock_info,
@@ -1878,7 +1878,7 @@
 // }
 // 
 // 
-// static int pp_tables_initialize(struct pp_hwmgr *hwmgr)
+// static int pp_tables_initialize(pp_hwmgr *hwmgr)
 // {
 // 	int result;
 // 	const ATOM_PPLIB_POWERPLAYTABLE *powerplay_table;
@@ -1934,7 +1934,7 @@
 // 	return result;
 // }
 // 
-// static int pp_tables_uninitialize(struct pp_hwmgr *hwmgr)
+// static int pp_tables_uninitialize(pp_hwmgr *hwmgr)
 // {
 // 	if (hwmgr->chip_id == CHIP_RAVEN)
 // 		return 0;

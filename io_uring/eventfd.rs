@@ -12,9 +12,7 @@ struct io_ev_fd {
     rcu: rcu_head,
 }
 
-enum {
-    IO_EVENTFD_OP_SIGNAL_BIT,
-}
+pub const IO_EVENTFD_OP_SIGNAL_BIT: i32 = 0;
 
 unsafe fn io_eventfd_free(rcu: *mut rcu_head) {
     let ev_fd = container_of!(rcu, io_ev_fd, rcu);

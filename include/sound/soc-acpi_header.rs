@@ -18,7 +18,7 @@ pub struct snd_soc_acpi_package_context {
 pub const SND_ACPI_I2C_ID_LEN: usize = 4 + ACPI_ID_LEN + 3 + 1;
 
 /* acpi match */
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 extern "C" {
     pub fn snd_soc_acpi_find_machine(
         machines: *mut snd_soc_acpi_mach,
@@ -34,14 +34,14 @@ extern "C" {
 }
 
 /* Build-time CONFIG_ACPI=false fallback. */
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn snd_soc_acpi_find_machine(
     _machines: *mut snd_soc_acpi_mach,
 ) -> *mut snd_soc_acpi_mach {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn snd_soc_acpi_find_package_from_hid(
     _hid: *const u8,
     _ctx: *mut snd_soc_acpi_package_context,
@@ -50,7 +50,7 @@ pub unsafe fn snd_soc_acpi_find_package_from_hid(
 }
 
 /* check all codecs */
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 pub unsafe fn snd_soc_acpi_codec_list(_arg: *mut c_void) -> *mut snd_soc_acpi_mach {
     core::ptr::null_mut()
 }

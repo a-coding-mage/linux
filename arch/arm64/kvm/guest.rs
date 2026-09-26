@@ -39,15 +39,11 @@ unsafe fn core_reg_offset_from_id(id: u64) -> u64 {
 unsafe fn core_reg_size_from_offset(vcpu: *const kvm_vcpu, off: u64) -> i32 {
     let size: i32;
     match off {
-        KVM_REG_ARM_CORE_REG(regs.regs[0]) ..= KVM_REG_ARM_CORE_REG(regs.regs[30]) |
-        KVM_REG_ARM_CORE_REG(regs.sp) | KVM_REG_ARM_CORE_REG(regs.pc) |
-        KVM_REG_ARM_CORE_REG(regs.pstate) | KVM_REG_ARM_CORE_REG(sp_el1) |
-        KVM_REG_ARM_CORE_REG(elr_el1) |
-        KVM_REG_ARM_CORE_REG(spsr[0]) ..= KVM_REG_ARM_CORE_REG(spsr[KVM_NR_SPSR - 1]) =>
+        case if (KVM_REG_ARM_CORE_REG(regs.regs[0])..=KVM_REG_ARM_CORE_REG(regs.regs[30])).contains(&case) || case == KVM_REG_ARM_CORE_REG(regs.sp) || case == KVM_REG_ARM_CORE_REG(regs.pc) || case == KVM_REG_ARM_CORE_REG(regs.pstate) || case == KVM_REG_ARM_CORE_REG(sp_el1) || case == KVM_REG_ARM_CORE_REG(elr_el1) || (KVM_REG_ARM_CORE_REG(spsr[0])..=KVM_REG_ARM_CORE_REG(spsr[KVM_NR_SPSR - 1])).contains(&case) =>
             size = core::mem::size_of::<u64>() as i32,
-        KVM_REG_ARM_CORE_REG(fp_regs.vregs[0]) ..= KVM_REG_ARM_CORE_REG(fp_regs.vregs[31]) =>
+        case if (KVM_REG_ARM_CORE_REG(fp_regs.vregs[0])..=KVM_REG_ARM_CORE_REG(fp_regs.vregs[31])).contains(&case) =>
             size = core::mem::size_of::<u128>() as i32,
-        KVM_REG_ARM_CORE_REG(fp_regs.fpsr) | KVM_REG_ARM_CORE_REG(fp_regs.fpcr) =>
+        case if case == KVM_REG_ARM_CORE_REG(fp_regs.fpsr) || case == KVM_REG_ARM_CORE_REG(fp_regs.fpcr) =>
             size = core::mem::size_of::<u32>() as i32,
         _ => return -EINVAL,
     }
@@ -61,26 +57,26 @@ unsafe fn core_reg_addr(vcpu: *mut kvm_vcpu, reg: *const kvm_one_reg) -> *mut co
     let size = core_reg_size_from_offset(vcpu, off);
     if size < 0 || KVM_REG_SIZE((*reg).id) != size as u64 { return core::ptr::null_mut(); }
     match off {
-        KVM_REG_ARM_CORE_REG(regs.regs[0]) ..= KVM_REG_ARM_CORE_REG(regs.regs[30]) => {
+        case if (KVM_REG_ARM_CORE_REG(regs.regs[0])..=KVM_REG_ARM_CORE_REG(regs.regs[30])).contains(&case) => {
             let n = (off - KVM_REG_ARM_CORE_REG(regs.regs[0])) / 2;
             (&mut (*vcpu).arch.ctxt.regs.regs[n as usize]) as *mut _ as *mut _
         }
-        KVM_REG_ARM_CORE_REG(regs.sp) => &mut (*vcpu).arch.ctxt.regs.sp as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(regs.pc) => &mut (*vcpu).arch.ctxt.regs.pc as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(regs.pstate) => &mut (*vcpu).arch.ctxt.regs.pstate as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(sp_el1) => __ctxt_sys_reg(&mut (*vcpu).arch.ctxt, SP_EL1),
-        KVM_REG_ARM_CORE_REG(elr_el1) => __ctxt_sys_reg(&mut (*vcpu).arch.ctxt, ELR_EL1),
-        KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_EL1]) => __ctxt_sys_reg(&mut (*vcpu).arch.ctxt, SPSR_EL1),
-        KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_ABT]) => &mut (*vcpu).arch.ctxt.spsr_abt as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_UND]) => &mut (*vcpu).arch.ctxt.spsr_und as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_IRQ]) => &mut (*vcpu).arch.ctxt.spsr_irq as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_FIQ]) => &mut (*vcpu).arch.ctxt.spsr_fiq as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(fp_regs.vregs[0]) ..= KVM_REG_ARM_CORE_REG(fp_regs.vregs[31]) => {
+        case if case == KVM_REG_ARM_CORE_REG(regs.sp) => &mut (*vcpu).arch.ctxt.regs.sp as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(regs.pc) => &mut (*vcpu).arch.ctxt.regs.pc as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(regs.pstate) => &mut (*vcpu).arch.ctxt.regs.pstate as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(sp_el1) => __ctxt_sys_reg(&mut (*vcpu).arch.ctxt, SP_EL1),
+        case if case == KVM_REG_ARM_CORE_REG(elr_el1) => __ctxt_sys_reg(&mut (*vcpu).arch.ctxt, ELR_EL1),
+        case if case == KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_EL1]) => __ctxt_sys_reg(&mut (*vcpu).arch.ctxt, SPSR_EL1),
+        case if case == KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_ABT]) => &mut (*vcpu).arch.ctxt.spsr_abt as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_UND]) => &mut (*vcpu).arch.ctxt.spsr_und as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_IRQ]) => &mut (*vcpu).arch.ctxt.spsr_irq as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(spsr[KVM_SPSR_FIQ]) => &mut (*vcpu).arch.ctxt.spsr_fiq as *mut _ as *mut _,
+        case if (KVM_REG_ARM_CORE_REG(fp_regs.vregs[0])..=KVM_REG_ARM_CORE_REG(fp_regs.vregs[31])).contains(&case) => {
             let n = (off - KVM_REG_ARM_CORE_REG(fp_regs.vregs[0])) / 4;
             (&mut (*vcpu).arch.ctxt.fp_regs.vregs[n as usize]) as *mut _ as *mut _
         }
-        KVM_REG_ARM_CORE_REG(fp_regs.fpsr) => &mut (*vcpu).arch.ctxt.fp_regs.fpsr as *mut _ as *mut _,
-        KVM_REG_ARM_CORE_REG(fp_regs.fpcr) => &mut (*vcpu).arch.ctxt.fp_regs.fpcr as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(fp_regs.fpsr) => &mut (*vcpu).arch.ctxt.fp_regs.fpsr as *mut _ as *mut _,
+        case if case == KVM_REG_ARM_CORE_REG(fp_regs.fpcr) => &mut (*vcpu).arch.ctxt.fp_regs.fpcr as *mut _ as *mut _,
         _ => core::ptr::null_mut(),
     }
 }

@@ -85,10 +85,11 @@ unsafe fn tcp_lp_remote_hz_estimator(sk: *mut sock) -> u32 {
     let lp = inet_csk_ca(sk);
     let mut rhz: i64 = ((*lp).remote_hz as i64) << 6;
     let mut m: i64 = 0;
+    'out: {
 
-    if (*lp).remote_ref_time == 0 || (*lp).local_ref_time == 0 { goto_out!(out); }
+    if (*lp).remote_ref_time == 0 || (*lp).local_ref_time == 0 { break 'out; }
     if (*tp).rx_opt.rcv_tsval == (*lp).remote_ref_time ||
-       (*tp).rx_opt.rcv_tsecr == (*lp).local_ref_time { goto_out!(out); }
+       (*tp).rx_opt.rcv_tsecr == (*lp).local_ref_time { break 'out; }
 
     m = (TCP_TS_HZ as i64) *
         ((*tp).rx_opt.rcv_tsval as i64 - (*lp).remote_ref_time as i64) /
@@ -100,8 +101,8 @@ unsafe fn tcp_lp_remote_hz_estimator(sk: *mut sock) -> u32 {
     } else {
         rhz = m << 6;
     }
-
-out:
+    }
+    
     if (rhz >> 6) > 0 { (*lp).flag |= LP_VALID_RHZ as u32; }
     else { (*lp).flag &= !(LP_VALID_RHZ as u32); }
     (*lp).remote_ref_time = (*tp).rx_opt.rcv_tsval;

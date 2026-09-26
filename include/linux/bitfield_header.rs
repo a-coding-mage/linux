@@ -84,8 +84,8 @@ pub unsafe fn u8p_replace_bits(p: *mut u8, val: u8, field: u8) { *p = u8_replace
 pub fn u8_get_bits(v: u8, field: u8) -> u8 { (v & field) / field_multiplier(field as u64) as u8 }
 
 macro_rules! make_ops {
-    ($size:ty, $name:ident) => {
-        #[inline(always)] pub fn $name##_encode_bits(v: $size, field: $size) -> $size { ((v & field_mask(field as u64) as $size).wrapping_mul(field_multiplier(field as u64) as $size)) }
+    ($size:ty, $name:tt) => {
+        #[inline(always)] pub fn ::kernel::macros::paste!([<$name _encode_bits>])(v: $size, field: $size) -> $size { ((v & field_mask(field as u64) as $size).wrapping_mul(field_multiplier(field as u64) as $size)) }
     }
 }
 

@@ -7,7 +7,7 @@ macro_rules! __CSKY_INSN_FUNCS {
     ($name:ident, $mask:expr, $val:expr) => {
         #[inline(always)]
         fn $name(code: probe_opcode_t) -> bool {
-            // C's BUILD_BUG_ON(~mask & val) is satisfied by all definitions below.
+            // C's BUILD_BUG_ON(~$mask & $val) is satisfied by all definitions below.
             (code & ($mask as probe_opcode_t)) == ($val as probe_opcode_t)
         }
     };

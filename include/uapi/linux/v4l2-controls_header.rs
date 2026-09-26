@@ -1058,13 +1058,13 @@ pub const pub V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD: u64 = 0x20;
 pub const pub V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE: u64 = 0x40;
 
 pub const pub V4L2_H264_SPS_HAS_CHROMA_FORMAT: u64 = (sps) \;
-	((sps)->profile_idc == 100 || (sps)->profile_idc == 110 || \
-	 (sps)->profile_idc == 122 || (sps)->profile_idc == 244 || \
-	 (sps)->profile_idc == 44  || (sps)->profile_idc == 83  || \
-	 (sps)->profile_idc == 86  || (sps)->profile_idc == 118 || \
-	 (sps)->profile_idc == 128 || (sps)->profile_idc == 138 || \
-	 (sps)->profile_idc == 139 || (sps)->profile_idc == 134 || \
-	 (sps)->profile_idc == 135)
+	((*(sps)).profile_idc == 100 || (*(sps)).profile_idc == 110 || \
+	 (*(sps)).profile_idc == 122 || (*(sps)).profile_idc == 244 || \
+	 (*(sps)).profile_idc == 44  || (*(sps)).profile_idc == 83  || \
+	 (*(sps)).profile_idc == 86  || (*(sps)).profile_idc == 118 || \
+	 (*(sps)).profile_idc == 128 || (*(sps)).profile_idc == 138 || \
+	 (*(sps)).profile_idc == 139 || (*(sps)).profile_idc == 134 || \
+	 (*(sps)).profile_idc == 135)
 
 pub const pub V4L2_CID_STATELESS_H264_SPS: u64 = (V4L2_CID_CODEC_STATELESS_BASE + 2);
 /**
@@ -1166,11 +1166,11 @@ pub struct v4l2_h264_weight_factors {
 };
 
 pub const pub V4L2_H264_CTRL_PRED_WEIGHTS_REQUIRED: u64 = (pps, slice) \;
-	((((pps)->flags & V4L2_H264_PPS_FLAG_WEIGHTED_PRED) && \
-	 ((slice)->slice_type == V4L2_H264_SLICE_TYPE_P || \
-	  (slice)->slice_type == V4L2_H264_SLICE_TYPE_SP)) || \
-	 ((pps)->weighted_bipred_idc == 1 && \
-	  (slice)->slice_type == V4L2_H264_SLICE_TYPE_B))
+	((((*(pps)).flags & V4L2_H264_PPS_FLAG_WEIGHTED_PRED) && \
+	 ((*(slice)).slice_type == V4L2_H264_SLICE_TYPE_P || \
+	  (*(slice)).slice_type == V4L2_H264_SLICE_TYPE_SP)) || \
+	 ((*(pps)).weighted_bipred_idc == 1 && \
+	  (*(slice)).slice_type == V4L2_H264_SLICE_TYPE_B))
 
 pub const pub V4L2_CID_STATELESS_H264_PRED_WEIGHTS: u64 = (V4L2_CID_CODEC_STATELESS_BASE + 5);
 /**
@@ -1185,7 +1185,7 @@ pub const pub V4L2_CID_STATELESS_H264_PRED_WEIGHTS: u64 = (V4L2_CID_CODEC_STATEL
  */
 #[repr(C)]
 pub struct v4l2_ctrl_h264_pred_weights {
-    pub pub luma_log2_weight_denom: u16,    pub pub chroma_log2_weight_denom: u16,	struct v4l2_h264_weight_factors weight_factors[2];
+    pub pub luma_log2_weight_denom: u16,    pub pub chroma_log2_weight_denom: u16,	v4l2_h264_weight_factors weight_factors[2];
 };
 
 pub const pub V4L2_H264_TOP_FIELD_REF: u64 = 0x1;
@@ -1258,7 +1258,7 @@ pub const pub V4L2_CID_STATELESS_H264_SLICE_PARAMS: u64 = (V4L2_CID_CODEC_STATEL
 pub struct v4l2_ctrl_h264_slice_params {
     pub pub header_bit_size: u32,    pub pub first_mb_in_slice: u32,    pub pub slice_type: u8,    pub pub colour_plane_id: u8,    pub pub redundant_pic_cnt: u8,    pub pub cabac_init_idc: u8,    pub pub slice_qp_delta: i8,    pub pub slice_qs_delta: i8,    pub pub disable_deblocking_filter_idc: u8,    pub pub slice_alpha_c0_offset_div2: i8,    pub pub slice_beta_offset_div2: i8,    pub pub num_ref_idx_l0_active_minus1: u8,    pub pub num_ref_idx_l1_active_minus1: u8,
     pub pub reserved: u8,
-	struct v4l2_h264_reference ref_pic_list0[V4L2_H264_REF_LIST_LEN];
+	v4l2_h264_reference ref_pic_list0[V4L2_H264_REF_LIST_LEN];
 	struct v4l2_h264_reference ref_pic_list1[V4L2_H264_REF_LIST_LEN];
 
     pub pub flags: u32,};
@@ -1376,10 +1376,10 @@ pub const pub V4L2_CID_STATELESS_FWHT_PARAMS: u64 = (V4L2_CID_CODEC_STATELESS_BA
  * @pub width: width of frame.
  * @pub height: height of frame.
  * @pub flags: FWHT flags (see V4L2_FWHT_FL_*).
- * @pub colorspace: the colorspace (enum v4l2_colorspace).
- * @pub xfer_func: the transfer function (enum v4l2_xfer_func).
- * @pub ycbcr_enc: the Y'CbCr encoding (enum v4l2_ycbcr_encoding).
- * @pub quantization: the quantization (enum v4l2_quantization).
+ * @pub colorspace: the colorspace (v4l2_colorspace).
+ * @pub xfer_func: the transfer function (v4l2_xfer_func).
+ * @pub ycbcr_enc: the Y'CbCr encoding (v4l2_ycbcr_encoding).
+ * @pub quantization: the quantization (v4l2_quantization).
  */
 #[repr(C)]
 pub struct v4l2_ctrl_fwht_params {
@@ -1499,7 +1499,7 @@ pub const pub V4L2_VP8_FRAME_FLAG_SIGN_BIAS_GOLDEN: u64 = 0x10;
 pub const pub V4L2_VP8_FRAME_FLAG_SIGN_BIAS_ALT: u64 = 0x20;
 
 pub const pub V4L2_VP8_FRAME_IS_KEY_FRAME: u64 = (hdr) \;
-	(!!((hdr)->flags & V4L2_VP8_FRAME_FLAG_KEY_FRAME))
+	(!!((*(hdr)).flags & V4L2_VP8_FRAME_FLAG_KEY_FRAME))
 
 pub const pub V4L2_CID_STATELESS_VP8_FRAME: u64 = (V4L2_CID_CODEC_STATELESS_BASE + 200);
 /**
@@ -1986,7 +1986,7 @@ pub const pub V4L2_HEVC_DECODE_PARAM_FLAG_NO_OUTPUT_OF_PRIOR: u64 = 0x4;
  */
 #[repr(C)]
 pub struct v4l2_ctrl_hevc_decode_params {
-    pub pub pic_order_cnt_val: i32,    pub pub short_term_ref_pic_set_size: u16,    pub pub long_term_ref_pic_set_size: u16,    pub pub num_active_dpb_entries: u8,    pub pub num_poc_st_curr_before: u8,    pub pub num_poc_st_curr_after: u8,    pub pub num_poc_lt_curr: u8,    pub pub poc_st_curr_before: [u8; V4L2_HEVC_DPB_ENTRIES_NUM_MAX],    pub pub poc_st_curr_after: [u8; V4L2_HEVC_DPB_ENTRIES_NUM_MAX],    pub pub poc_lt_curr: [u8; V4L2_HEVC_DPB_ENTRIES_NUM_MAX],    pub pub num_delta_pocs_of_ref_rps_idx: u8,    pub pub reserved: [u8; 3],	struct	v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+    pub pub pic_order_cnt_val: i32,    pub pub short_term_ref_pic_set_size: u16,    pub pub long_term_ref_pic_set_size: u16,    pub pub num_active_dpb_entries: u8,    pub pub num_poc_st_curr_before: u8,    pub pub num_poc_st_curr_after: u8,    pub pub num_poc_lt_curr: u8,    pub pub poc_st_curr_before: [u8; V4L2_HEVC_DPB_ENTRIES_NUM_MAX],    pub pub poc_st_curr_after: [u8; V4L2_HEVC_DPB_ENTRIES_NUM_MAX],    pub pub poc_lt_curr: [u8; V4L2_HEVC_DPB_ENTRIES_NUM_MAX],    pub pub num_delta_pocs_of_ref_rps_idx: u8,    pub pub reserved: [u8; 3],	v4l2_hevc_dpb_entry dpb[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
     pub pub flags: u64,};
 
 /**
@@ -2138,7 +2138,7 @@ pub const pub V4L2_VP9_SEGMENT_FEATURE_ENABLED_MASK: u64 = 0xf;
  * Segment-ID. See '5.15. Segmentation map' section of the VP9 specification
  * for more details.
  * @pub pred_probs: specifies the probability values to be used when decoding a
- * Predicted-Segment-ID. See '6.4.14. Get segment id syntax' section pub of:pub ref:`vp9`
+ * Predicted-Segment-ID. See '6.4.14. Get segment id syntax' section pub of:pub r#ref:`vp9`
  * for more details.
  * @pub flags: combination of V4L2_VP9_SEGMENTATION_FLAG_{} flags.
  * @pub reserved: padding field. Should be zeroed by applications.
@@ -2438,7 +2438,7 @@ pub const pub V4L2_AV1_GLOBAL_MOTION_FLAG_IS_TRANSLATION: u64 = 0x4;
  *
  * @pub flags: A bitfield containing the flags per reference frame. See
  * V4L2_AV1_GLOBAL_MOTION_FLAG_{}
- * @pub type: The type of global motion transform used.
+ * @pub r#type: The type of global motion transform used.
  * @pub params: this field has the same meaning as "gm_params" in the AV1
  * specification.
  * @pub invalid: bitfield indicating whether the global motion params are invalid
@@ -2450,7 +2450,7 @@ pub const pub V4L2_AV1_GLOBAL_MOTION_FLAG_IS_TRANSLATION: u64 = 0x4;
 
 #[repr(C)]
 pub struct v4l2_av1_global_motion {
-    pub pub flags: [u8; V4L2_AV1_TOTAL_REFS_PER_FRAME],	enum v4l2_av1_warp_model type[V4L2_AV1_TOTAL_REFS_PER_FRAME];
+    pub pub flags: [u8; V4L2_AV1_TOTAL_REFS_PER_FRAME],	v4l2_av1_warp_model type[V4L2_AV1_TOTAL_REFS_PER_FRAME];
 	i32 params[V4L2_AV1_TOTAL_REFS_PER_FRAME][6];
     pub pub invalid: u8,    pub pub reserved: [u8; 3],};
 
@@ -2483,7 +2483,7 @@ pub const pub V4L2_AV1_LOOP_RESTORATION_FLAG_USES_CHROMA_LR: u64 = 0x2;
  */
 #[repr(C)]
 pub struct v4l2_av1_loop_restoration {
-    pub pub flags: u8,    pub pub lr_unit_shift: u8,    pub pub lr_uv_shift: u8,    pub pub reserved: u8,	enum v4l2_av1_frame_restoration_type frame_restoration_type[V4L2_AV1_NUM_PLANES_MAX];
+    pub pub flags: u8,    pub pub lr_unit_shift: u8,    pub pub lr_uv_shift: u8,    pub pub reserved: u8,	v4l2_av1_frame_restoration_type frame_restoration_type[V4L2_AV1_NUM_PLANES_MAX];
     pub pub loop_restoration_size: [u32; V4L2_AV1_MAX_NUM_PLANES],};
 
 /**
@@ -2753,13 +2753,13 @@ pub const pub V4L2_CID_STATELESS_AV1_FRAME: u64 = (V4L2_CID_CODEC_STATELESS_BASE
 pub struct v4l2_ctrl_av1_frame {
 	struct v4l2_av1_tile_info tile_info;
 	struct v4l2_av1_quantization quantization;
-    pub pub superres_denom: u8,	struct v4l2_av1_segmentation segmentation;
+    pub pub superres_denom: u8,	v4l2_av1_segmentation segmentation;
 	struct v4l2_av1_loop_filter loop_filter;
 	struct v4l2_av1_cdef cdef;
-    pub pub skip_mode_frame: [u8; 2],    pub pub primary_ref_frame: u8,	struct v4l2_av1_loop_restoration loop_restoration;
+    pub pub skip_mode_frame: [u8; 2],    pub pub primary_ref_frame: u8,	v4l2_av1_loop_restoration loop_restoration;
 	struct v4l2_av1_global_motion global_motion;
-    pub pub flags: u32,	enum v4l2_av1_frame_type frame_type;
-    pub pub order_hint: u32,    pub pub upscaled_width: u32,	enum v4l2_av1_interpolation_filter interpolation_filter;
+    pub pub flags: u32,	v4l2_av1_frame_type frame_type;
+    pub pub order_hint: u32,    pub pub upscaled_width: u32,	v4l2_av1_interpolation_filter interpolation_filter;
 	enum v4l2_av1_tx_mode tx_mode;
     pub pub frame_width_minus_1: u32,    pub pub frame_height_minus_1: u32,    pub pub render_width_minus_1: u16,    pub pub render_height_minus_1: u16,
     pub pub current_frame_id: u32,    pub pub buffer_removal_time: [u32; V4L2_AV1_MAX_OPERATING_POINTS],    pub pub reserved: [u8; 4],    pub pub order_hints: [u32; V4L2_AV1_TOTAL_REFS_PER_FRAME],    pub pub reference_frame_ts: [u64; V4L2_AV1_TOTAL_REFS_PER_FRAME],    pub pub ref_frame_idx: [i8; V4L2_AV1_REFS_PER_FRAME],    pub pub refresh_frame_flags: u8,};

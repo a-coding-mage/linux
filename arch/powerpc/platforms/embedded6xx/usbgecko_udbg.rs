@@ -120,17 +120,17 @@ pub unsafe extern "C" fn ug_udbg_init() {
 
 // Preserved conditional intent: this section is compiled when
 // CONFIG_PPC_EARLY_DEBUG_USBGECKO is enabled.
-#[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_USBGECKO")]
+#[cfg(CONFIG_PPC_EARLY_DEBUG_USBGECKO)]
 unsafe fn ug_early_grab_io_addr() -> usize {
     // CONFIG_GAMECUBE and CONFIG_WII select the platform-specific address.
-    #[cfg(feature = "CONFIG_GAMECUBE")]
+    #[cfg(CONFIG_GAMECUBE)]
     { return 0x0c000000; }
-    #[cfg(feature = "CONFIG_WII")]
+    #[cfg(CONFIG_WII)]
     { return 0x0d000000; }
     panic!("Invalid platform for USB Gecko based early debugging.");
 }
 
-#[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_USBGECKO")]
+#[cfg(CONFIG_PPC_EARLY_DEBUG_USBGECKO)]
 pub unsafe extern "C" fn udbg_init_usbgecko() {
     // The BAT uses a virtual address range reserved at the fixmap.
     let early_debug_area = __fix_to_virt(FIX_EARLY_DEBUG_BASE) as *mut u8;

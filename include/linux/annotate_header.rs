@@ -3,7 +3,7 @@
 // Translation of linux/annotate.h. The original header provides assembler
 // annotations when CONFIG_OBJTOOL is enabled and empty annotations otherwise.
 
-#[cfg(feature = "CONFIG_OBJTOOL")]
+#[cfg(CONFIG_OBJTOOL)]
 #[macro_export]
 macro_rules! __ASM_ANNOTATE {
     ($section:tt, $label:tt, $type:expr) => {
@@ -15,7 +15,7 @@ macro_rules! __ASM_ANNOTATE {
     };
 }
 
-#[cfg(feature = "CONFIG_OBJTOOL")]
+#[cfg(CONFIG_OBJTOOL)]
 #[macro_export]
 macro_rules! ASM_ANNOTATE_LABEL {
     ($label:tt, $type:expr) => {
@@ -23,7 +23,7 @@ macro_rules! ASM_ANNOTATE_LABEL {
     };
 }
 
-#[cfg(feature = "CONFIG_OBJTOOL")]
+#[cfg(CONFIG_OBJTOOL)]
 #[macro_export]
 macro_rules! ASM_ANNOTATE {
     ($type:expr) => {
@@ -34,7 +34,7 @@ macro_rules! ASM_ANNOTATE {
     };
 }
 
-#[cfg(feature = "CONFIG_OBJTOOL")]
+#[cfg(CONFIG_OBJTOOL)]
 #[macro_export]
 macro_rules! ASM_ANNOTATE_DATA {
     ($type:expr) => {
@@ -45,19 +45,19 @@ macro_rules! ASM_ANNOTATE_DATA {
     };
 }
 
-#[cfg(not(feature = "CONFIG_OBJTOOL"))]
+#[cfg(not(CONFIG_OBJTOOL))]
 #[macro_export]
 macro_rules! ASM_ANNOTATE_LABEL {
     ($label:tt, $type:expr) => { "" };
 }
 
-#[cfg(not(feature = "CONFIG_OBJTOOL"))]
+#[cfg(not(CONFIG_OBJTOOL))]
 #[macro_export]
 macro_rules! ASM_ANNOTATE {
     ($type:expr) => { "" };
 }
 
-#[cfg(not(feature = "CONFIG_OBJTOOL"))]
+#[cfg(not(CONFIG_OBJTOOL))]
 #[macro_export]
 macro_rules! ASM_ANNOTATE_DATA {
     ($type:expr) => { "" };

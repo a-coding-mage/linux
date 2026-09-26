@@ -13,9 +13,9 @@ pub const PR_FMT: &str = "trusted_key: ";
 
 pub const MIN_KEY_SIZE: usize = 32;
 pub const MAX_KEY_SIZE: usize = 128;
-#[cfg(feature = "CONFIG_TRUSTED_KEYS_PKWM")]
+#[cfg(CONFIG_TRUSTED_KEYS_PKWM)]
 pub const MAX_BLOB_SIZE: usize = 1152;
-#[cfg(not(feature = "CONFIG_TRUSTED_KEYS_PKWM"))]
+#[cfg(not(CONFIG_TRUSTED_KEYS_PKWM))]
 pub const MAX_BLOB_SIZE: usize = 512;
 pub const MAX_PCRINFO_SIZE: usize = 64;
 pub const MAX_DIGEST_SIZE: usize = 64;
@@ -79,12 +79,12 @@ extern "C" {
     pub static mut key_type_trusted: key_type;
 }
 
-#[cfg(feature = "CONFIG_TRUSTED_KEYS_DEBUG")]
+#[cfg(CONFIG_TRUSTED_KEYS_DEBUG)]
 extern "C" {
     pub static mut trusted_debug: bool;
 }
 
-#[cfg(feature = "CONFIG_TRUSTED_KEYS_DEBUG")]
+#[cfg(CONFIG_TRUSTED_KEYS_DEBUG)]
 #[inline]
 pub unsafe fn dump_payload(p: *mut trusted_key_payload) {
     if !trusted_debug {
@@ -98,7 +98,7 @@ pub unsafe fn dump_payload(p: *mut trusted_key_payload) {
     pr_debug!(b"migratable %d\n", (*p).migratable);
 }
 
-#[cfg(not(feature = "CONFIG_TRUSTED_KEYS_DEBUG"))]
+#[cfg(not(CONFIG_TRUSTED_KEYS_DEBUG))]
 #[inline]
 pub unsafe fn dump_payload(_p: *mut trusted_key_payload) {}
 

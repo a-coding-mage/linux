@@ -29,7 +29,7 @@ extern "C" {
 
 unsafe fn imx25_suspend_enter(state: SuspendStateT) -> c_int {
     // !IS_ENABLED(CONFIG_PM): preserve the build-time kernel condition.
-    if !cfg!(feature = "CONFIG_PM") {
+    if !cfg!(CONFIG_PM) {
         return 0;
     }
 

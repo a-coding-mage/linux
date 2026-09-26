@@ -2,7 +2,7 @@
 
 // Kernel dependencies supplied by the surrounding translation unit.
 
-#[cfg(feature = "CONFIG_NF_TABLES_IPV4")]
+#[cfg(CONFIG_NF_TABLES_IPV4)]
 unsafe fn nf_route_table_hook4(
     priv_: *mut core::ffi::c_void,
     skb: *mut sk_buff,
@@ -42,7 +42,7 @@ unsafe fn nf_route_table_hook4(
     ret
 }
 
-#[cfg(feature = "CONFIG_NF_TABLES_IPV4")]
+#[cfg(CONFIG_NF_TABLES_IPV4)]
 static nft_chain_route_ipv4: nft_chain_type = nft_chain_type {
     name: "route",
     type_: NFT_CHAIN_T_ROUTE,
@@ -51,7 +51,7 @@ static nft_chain_route_ipv4: nft_chain_type = nft_chain_type {
     hooks: [nf_route_table_hook4],
 };
 
-#[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+#[cfg(CONFIG_NF_TABLES_IPV6)]
 unsafe fn nf_route_table_hook6(
     priv_: *mut core::ffi::c_void,
     skb: *mut sk_buff,
@@ -111,7 +111,7 @@ unsafe fn nf_route_table_hook6(
     ret
 }
 
-#[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+#[cfg(CONFIG_NF_TABLES_IPV6)]
 static nft_chain_route_ipv6: nft_chain_type = nft_chain_type {
     name: "route",
     type_: NFT_CHAIN_T_ROUTE,
@@ -120,7 +120,7 @@ static nft_chain_route_ipv6: nft_chain_type = nft_chain_type {
     hooks: [nf_route_table_hook6],
 };
 
-#[cfg(feature = "CONFIG_NF_TABLES_INET")]
+#[cfg(CONFIG_NF_TABLES_INET)]
 unsafe fn nf_route_table_inet(
     priv_: *mut core::ffi::c_void,
     skb: *mut sk_buff,
@@ -138,7 +138,7 @@ unsafe fn nf_route_table_inet(
     }
 }
 
-#[cfg(feature = "CONFIG_NF_TABLES_INET")]
+#[cfg(CONFIG_NF_TABLES_INET)]
 static nft_chain_route_inet: nft_chain_type = nft_chain_type {
     name: "route",
     type_: NFT_CHAIN_T_ROUTE,
@@ -148,20 +148,20 @@ static nft_chain_route_inet: nft_chain_type = nft_chain_type {
 };
 
 unsafe fn nft_chain_route_init() {
-    #[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+    #[cfg(CONFIG_NF_TABLES_IPV6)]
     nft_register_chain_type(&nft_chain_route_ipv6);
-    #[cfg(feature = "CONFIG_NF_TABLES_IPV4")]
+    #[cfg(CONFIG_NF_TABLES_IPV4)]
     nft_register_chain_type(&nft_chain_route_ipv4);
-    #[cfg(feature = "CONFIG_NF_TABLES_INET")]
+    #[cfg(CONFIG_NF_TABLES_INET)]
     nft_register_chain_type(&nft_chain_route_inet);
 }
 
 unsafe fn nft_chain_route_fini() {
-    #[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+    #[cfg(CONFIG_NF_TABLES_IPV6)]
     nft_unregister_chain_type(&nft_chain_route_ipv6);
-    #[cfg(feature = "CONFIG_NF_TABLES_IPV4")]
+    #[cfg(CONFIG_NF_TABLES_IPV4)]
     nft_unregister_chain_type(&nft_chain_route_ipv4);
-    #[cfg(feature = "CONFIG_NF_TABLES_INET")]
+    #[cfg(CONFIG_NF_TABLES_INET)]
     nft_unregister_chain_type(&nft_chain_route_inet);
 }
 

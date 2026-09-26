@@ -79,7 +79,7 @@ unsafe fn m520x_clk_init() {
 
 unsafe fn m520x_qspi_init() {
     // CONFIG_SPI_COLDFIRE_QSPI conditional preserved from the C source.
-    #[cfg(feature = "CONFIG_SPI_COLDFIRE_QSPI")]
+    #[cfg(CONFIG_SPI_COLDFIRE_QSPI)]
     {
         mcf_write8(0x3f, MCF_GPIO_PAR_QSPI);
         let mut par = mcf_read16(MCF_GPIO_PAR_UART);
@@ -90,7 +90,7 @@ unsafe fn m520x_qspi_init() {
 
 unsafe fn m520x_i2c_init() {
     // CONFIG_I2C_IMX conditional preserved from the C source.
-    #[cfg(feature = "CONFIG_I2C_IMX")]
+    #[cfg(CONFIG_I2C_IMX)]
     {
         let mut par = mcf_read8(MCF_GPIO_PAR_FECI2C);
         par |= 0x0f;

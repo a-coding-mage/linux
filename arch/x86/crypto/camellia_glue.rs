@@ -23,25 +23,25 @@
 // #include "ecb_cbc_helpers.h"
 
 /* regular block cipher functions */
-extern "C" { pub fn __camellia_enc_blk(*const core::ffi::c_voidctx, *mut u8dst, *const u8src,
-				   bool xor); }
+extern "C" { pub fn __camellia_enc_blk(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8,
+				   xor: bool); }
 // EXPORT_SYMBOL_GPL(__camellia_enc_blk);
-extern "C" { pub fn camellia_dec_blk(*const core::ffi::c_voidctx, *mut u8dst, *const u8src); }
+extern "C" { pub fn camellia_dec_blk(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8); }
 // EXPORT_SYMBOL_GPL(camellia_dec_blk);
 
 /* 2-way parallel cipher functions */
-extern "C" { pub fn __camellia_enc_blk_2way(*const core::ffi::c_voidctx, *mut u8dst, *const u8src,
-					bool xor); }
+extern "C" { pub fn __camellia_enc_blk_2way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8,
+					xor: bool); }
 // EXPORT_SYMBOL_GPL(__camellia_enc_blk_2way);
-extern "C" { pub fn camellia_dec_blk_2way(*const core::ffi::c_voidctx, *mut u8dst, *const u8src); }
+extern "C" { pub fn camellia_dec_blk_2way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8); }
 // EXPORT_SYMBOL_GPL(camellia_dec_blk_2way);
 
-unsafe fn camellia_encrypt(*mut crypto_tfm, *mut u8dst, *const u8src)
+unsafe fn camellia_encrypt(*mut crypto_tfm, dst: *mut u8, src: *const u8)
 {
 	camellia_enc_blk(crypto_tfm_ctx(tfm), dst, src);
 }
 
-unsafe fn camellia_decrypt(*mut crypto_tfm, *mut u8dst, *const u8src)
+unsafe fn camellia_decrypt(*mut crypto_tfm, dst: *mut u8, src: *const u8)
 {
 	camellia_dec_blk(crypto_tfm_ctx(tfm), dst, src);
 }
@@ -775,33 +775,33 @@ const CAMELLIA_SIGMA6R: u32 = 0xB3E6C1FDu32;
 
 /* macros */
 // #define ROLDQ(l, r, bits) ({ \
-	u64 t = l;					\
-	l = (l << bits) | (r >> (64 - bits));		\
-	r = (r << bits) | (t >> (64 - bits));		\
-})
+// 	u64 t = l;					\
+// 	l = (l << bits) | (r >> (64 - bits));		\
+// 	r = (r << bits) | (t >> (64 - bits));		\
+// })
 
 // #define CAMELLIA_F(x, kl, kr, y) ({ \
-	u64 ii = x ^ (((u64)kl << 32) | kr);				\
-	y = camellia_sp11101110[(uint8_t)ii];				\
-	y ^= camellia_sp44044404[(uint8_t)(ii >> 8)];			\
-	ii >>= 16;							\
-	y ^= camellia_sp30333033[(uint8_t)ii];				\
-	y ^= camellia_sp02220222[(uint8_t)(ii >> 8)];			\
-	ii >>= 16;							\
-	y ^= camellia_sp00444404[(uint8_t)ii];				\
-	y ^= camellia_sp03303033[(uint8_t)(ii >> 8)];			\
-	ii >>= 16;							\
-	y ^= camellia_sp22000222[(uint8_t)ii];				\
-	y ^= camellia_sp10011110[(uint8_t)(ii >> 8)];			\
-	y = ror64(y, 32);						\
-})
+// 	u64 ii = x ^ (((u64)kl << 32) | kr);				\
+// 	y = camellia_sp11101110[(uint8_t)ii];				\
+// 	y ^= camellia_sp44044404[(uint8_t)(ii >> 8)];			\
+// 	ii >>= 16;							\
+// 	y ^= camellia_sp30333033[(uint8_t)ii];				\
+// 	y ^= camellia_sp02220222[(uint8_t)(ii >> 8)];			\
+// 	ii >>= 16;							\
+// 	y ^= camellia_sp00444404[(uint8_t)ii];				\
+// 	y ^= camellia_sp03303033[(uint8_t)(ii >> 8)];			\
+// 	ii >>= 16;							\
+// 	y ^= camellia_sp22000222[(uint8_t)ii];				\
+// 	y ^= camellia_sp10011110[(uint8_t)(ii >> 8)];			\
+// 	y = ror64(y, 32);						\
+// })
 
 // #define SET_SUBKEY_LR(INDEX, sRL) (subkey[(INDEX)] = ror64((sRL), 32))
 
 unsafe fn camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 {
-	u64 kw4, tt;
-	u32 dw, tl, tr;
+	kw4: u64, tt;
+	dw: u32, tl, tr;
 
 	/* absorb kw2 to other subkeys */
 	/* round 2 */
@@ -980,9 +980,9 @@ unsafe fn camellia_setup_tail(u64 *subkey, u64 *subRL, int max)
 	}
 }
 
-unsafe fn camellia_setup128(*const u8key, u64 *subkey)
+unsafe fn camellia_setup128(key: *const u8, u64 *subkey)
 {
-	u64 kl, kr, ww;
+	kl: u64, kr, ww;
 	u64 subRL[26];
 
 	/**
@@ -1086,10 +1086,10 @@ unsafe fn camellia_setup128(*const u8key, u64 *subkey)
 	camellia_setup_tail(subkey, subRL, 24);
 }
 
-unsafe fn camellia_setup256(*const u8key, u64 *subkey)
+unsafe fn camellia_setup256(key: *const u8, u64 *subkey)
 {
-	u64 kl, kr;			/* left half of key */
-	u64 krl, krr;			/* right half of key */
+	kl: u64, kr;			/* left half of key */
+	krl: u64, krr;			/* right half of key */
 	u64 ww;				/* temporary variables */
 	u64 subRL[34];
 
@@ -1219,10 +1219,10 @@ unsafe fn camellia_setup256(*const u8key, u64 *subkey)
 	camellia_setup_tail(subkey, subRL, 32);
 }
 
-unsafe fn camellia_setup192(*const u8key, u64 *subkey)
+unsafe fn camellia_setup192(key: *const u8, u64 *subkey)
 {
 	u8 kk[32];
-	u64 krl, krr;
+	krl: u64, krr;
 
 	core::ptr::copy_nonoverlapping(kk, key, 24);
 	core::ptr::copy_nonoverlapping((u8 *)&krl, key+16, 8);
@@ -1231,23 +1231,23 @@ unsafe fn camellia_setup192(*const u8key, u64 *subkey)
 	camellia_setup256(kk, subkey);
 }
 
-pub unsafe fn __camellia_setkey(camellia_ctx *cctx, *const u8key,
-		      u32 key_len)
+pub unsafe fn __camellia_setkey(camellia_ctx *cctx, key: *const u8,
+		      key_len: u32)
 {
 	if (key_len != 16 && key_len != 24 && key_len != 32)
 		return -EINVAu32;
 
-	cctx->key_length = key_len;
+	(*cctx).key_length = key_len;
 
 	switch (key_len) {
 	case 16:
-		camellia_setup128(key, cctx->key_table);
+		camellia_setup128(key, (*cctx).key_table);
 		break;
 	case 24:
-		camellia_setup192(key, cctx->key_table);
+		camellia_setup192(key, (*cctx).key_table);
 		break;
 	case 32:
-		camellia_setup256(key, cctx->key_table);
+		camellia_setup256(key, (*cctx).key_table);
 		break;
 	}
 
@@ -1255,19 +1255,19 @@ pub unsafe fn __camellia_setkey(camellia_ctx *cctx, *const u8key,
 }
 // EXPORT_SYMBOL_GPL(__camellia_setkey);
 
-unsafe fn camellia_setkey(*mut crypto_tfm, *const u8key,
-			   u32 key_len)
+unsafe fn camellia_setkey(*mut crypto_tfm, key: *const u8,
+			   key_len: u32)
 {
 	return __camellia_setkey(crypto_tfm_ctx(tfm), key, key_len);
 }
 
-unsafe fn camellia_setkey_skcipher(*mut crypto_skcipher, *const u8key,
-				    u32 key_len)
+unsafe fn camellia_setkey_skcipher(*mut crypto_skcipher, key: *const u8,
+				    key_len: u32)
 {
-	return camellia_setkey(&tfm->base, key, key_len);
+	return camellia_setkey((*&tfm).base, key, key_len);
 }
 
-pub unsafe fn camellia_decrypt_cbc_2way(*const core::ffi::c_voidctx, *mut u8dst, *const u8src)
+pub unsafe fn camellia_decrypt_cbc_2way(ctx: *const core::ffi::c_void, dst: *mut u8, src: *const u8)
 {
 	u8 buf[CAMELLIA_BLOCK_SIZE];
 	*const u8iv = src;
@@ -1311,20 +1311,20 @@ unsafe fn cbc_decrypt(skcipher_request *req)
 }
 
 static struct crypto_alg camellia_cipher_alg = {
-	.cra_name		= "camellia",
-	.cra_driver_name	= "camellia-asm",
-	.cra_priority		= 200,
-	.cra_flags		= CRYPTO_ALG_TYPE_CIPHER,
-	.cra_blocksize		= CAMELLIA_BLOCK_SIZE,
-	.cra_ctxsize		= sizeof(camellia_ctx),
-	.cra_module		= THIS_MODULE,
-	.cra_u			= {
-		.cipher = {
-			.cia_min_keysize = CAMELLIA_MIN_KEY_SIZE,
-			.cia_max_keysize = CAMELLIA_MAX_KEY_SIZE,
-			.cia_setkey	 = camellia_setkey,
-			.cia_encrypt	 = camellia_encrypt,
-			.cia_decrypt	 = camellia_decrypt
+	cra_name: "camellia",
+	cra_driver_name: "camellia-asm",
+	cra_priority: 200,
+	cra_flags: CRYPTO_ALG_TYPE_CIPHER,
+	cra_blocksize: CAMELLIA_BLOCK_SIZE,
+	cra_ctxsize: sizeof(camellia_ctx),
+	cra_module: THIS_MODULE,
+	cra_u: {
+		cipher: {
+			cia_min_keysize: CAMELLIA_MIN_KEY_SIZE,
+			cia_max_keysize: CAMELLIA_MAX_KEY_SIZE,
+			cia_setkey: camellia_setkey,
+			cia_encrypt: camellia_encrypt,
+			cia_decrypt: camellia_decrypt
 		}
 	}
 };
@@ -1337,11 +1337,11 @@ static struct skcipher_alg camellia_skcipher_algs[] = {
 		.base.cra_blocksize	= CAMELLIA_BLOCK_SIZE,
 		.base.cra_ctxsize	= sizeof(camellia_ctx),
 		.base.cra_module	= THIS_MODULE,
-		.min_keysize		= CAMELLIA_MIN_KEY_SIZE,
-		.max_keysize		= CAMELLIA_MAX_KEY_SIZE,
-		.setkey			= camellia_setkey_skcipher,
-		.encrypt		= ecb_encrypt,
-		.decrypt		= ecb_decrypt,
+		min_keysize: CAMELLIA_MIN_KEY_SIZE,
+		max_keysize: CAMELLIA_MAX_KEY_SIZE,
+		setkey: camellia_setkey_skcipher,
+		encrypt: ecb_encrypt,
+		decrypt: ecb_decrypt,
 	}, {
 		.base.cra_name		= "cbc(camellia)",
 		.base.cra_driver_name	= "cbc-camellia-asm",
@@ -1349,12 +1349,12 @@ static struct skcipher_alg camellia_skcipher_algs[] = {
 		.base.cra_blocksize	= CAMELLIA_BLOCK_SIZE,
 		.base.cra_ctxsize	= sizeof(camellia_ctx),
 		.base.cra_module	= THIS_MODULE,
-		.min_keysize		= CAMELLIA_MIN_KEY_SIZE,
-		.max_keysize		= CAMELLIA_MAX_KEY_SIZE,
-		.ivsize			= CAMELLIA_BLOCK_SIZE,
-		.setkey			= camellia_setkey_skcipher,
-		.encrypt		= cbc_encrypt,
-		.decrypt		= cbc_decrypt,
+		min_keysize: CAMELLIA_MIN_KEY_SIZE,
+		max_keysize: CAMELLIA_MAX_KEY_SIZE,
+		ivsize: CAMELLIA_BLOCK_SIZE,
+		setkey: camellia_setkey_skcipher,
+		encrypt: cbc_encrypt,
+		decrypt: cbc_decrypt,
 	}
 };
 

@@ -88,7 +88,7 @@ pub unsafe extern "C" fn mxc_restart(mode: reboot_mode, cmd: *const c_char) {
     /* wait for reset to assert... */
     mdelay(500);
 
-    pr_err(c"%s: Watchdog reset failed to assert reset\n", c"mxc_restart\0".as_ptr().cast());
+    pr_err(c"%s: Watchdog reset failed to assert reset\n", c"mxc_restart".as_ptr().cast());
 
     /* delay to allow the serial port to show the message */
     mdelay(50);
@@ -100,9 +100,9 @@ pub unsafe extern "C" fn mxc_restart(mode: reboot_mode, cmd: *const c_char) {
 pub unsafe extern "C" fn mxc_arch_reset_init(base: *mut c_void) {
     wdog_base = base;
 
-    wdog_clk = clk_get_sys(c"imx2-wdt.0\0".as_ptr().cast(), core::ptr::null());
+    wdog_clk = clk_get_sys(c"imx2-wdt.0".as_ptr().cast(), core::ptr::null());
     if is_err(wdog_clk.cast()) {
-        pr_warn(c"%s: failed to get wdog clock\n", c"mxc_arch_reset_init\0".as_ptr().cast());
+        pr_warn(c"%s: failed to get wdog clock\n", c"mxc_arch_reset_init".as_ptr().cast());
     } else {
         clk_prepare(wdog_clk);
     }

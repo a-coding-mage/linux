@@ -3,7 +3,7 @@
 // Declarations corresponding to the Linux headers included by the C source
 // are supplied by other translation units.
 
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 #[repr(C)]
 pub struct core_vma_metadata {
     pub start: ::core::ffi::c_ulong,
@@ -14,7 +14,7 @@ pub struct core_vma_metadata {
     pub file: *mut file,
 }
 
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 #[repr(C)]
 pub struct coredump_params {
     pub siginfo: *const kernel_siginfo_t,
@@ -34,7 +34,7 @@ pub struct coredump_params {
     pub pid: *mut pid,
 }
 
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 unsafe extern "C" {
     pub static mut core_file_note_size_limit: ::core::ffi::c_uint;
 
@@ -60,7 +60,7 @@ unsafe extern "C" {
 // Logging for the coredump code, ratelimited. The TGID and comm fields are
 // added to the message. The variadic formatting and kernel logging machinery
 // are provided by the surrounding kernel translation.
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 #[macro_export]
 macro_rules! __COREDUMP_PRINTK {
     ($level:expr, $format:expr $(, $arg:expr)*) => {{
@@ -71,7 +71,7 @@ macro_rules! __COREDUMP_PRINTK {
     }};
 }
 
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 #[macro_export]
 macro_rules! coredump_report {
     ($fmt:expr $(, $arg:expr)*) => {
@@ -79,7 +79,7 @@ macro_rules! coredump_report {
     };
 }
 
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 #[macro_export]
 macro_rules! coredump_report_failure {
     ($fmt:expr $(, $arg:expr)*) => {
@@ -87,23 +87,23 @@ macro_rules! coredump_report_failure {
     };
 }
 
-#[cfg(not(feature = "CONFIG_COREDUMP"))]
+#[cfg(not(CONFIG_COREDUMP))]
 pub unsafe extern "C" fn vfs_coredump(_siginfo: *const kernel_siginfo_t) {}
 
-#[cfg(not(feature = "CONFIG_COREDUMP"))]
+#[cfg(not(CONFIG_COREDUMP))]
 #[macro_export]
 macro_rules! coredump_report { ($($arg:tt)*) => {}; }
 
-#[cfg(not(feature = "CONFIG_COREDUMP"))]
+#[cfg(not(CONFIG_COREDUMP))]
 #[macro_export]
 macro_rules! coredump_report_failure { ($($arg:tt)*) => {}; }
 
-#[cfg(all(feature = "CONFIG_COREDUMP", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(CONFIG_COREDUMP, CONFIG_SYSCTL))]
 unsafe extern "C" {
     pub fn validate_coredump_safety();
 }
 
-#[cfg(not(all(feature = "CONFIG_COREDUMP", feature = "CONFIG_SYSCTL")))]
+#[cfg(not(all(CONFIG_COREDUMP, CONFIG_SYSCTL)))]
 pub unsafe extern "C" fn validate_coredump_safety() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

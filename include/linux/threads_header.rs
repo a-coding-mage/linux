@@ -24,7 +24,7 @@ pub const MIN_THREADS_LEFT_FOR_ROOT: usize = 4;
  * The CONFIG_BASE_SMALL conditional is represented by the corresponding
  * Rust cfg feature.
  */
-pub const PID_MAX_DEFAULT: usize = if cfg!(feature = "CONFIG_BASE_SMALL") {
+pub const PID_MAX_DEFAULT: usize = if cfg!(CONFIG_BASE_SMALL) {
     0x1000
 } else {
     0x8000
@@ -37,7 +37,7 @@ pub const PID_MAX_DEFAULT: usize = if cfg!(feature = "CONFIG_BASE_SMALL") {
  * PAGE_SIZE is supplied by the surrounding kernel translation when
  * CONFIG_BASE_SMALL is enabled.
  */
-pub const PID_MAX_LIMIT: usize = if cfg!(feature = "CONFIG_BASE_SMALL") {
+pub const PID_MAX_LIMIT: usize = if cfg!(CONFIG_BASE_SMALL) {
     PAGE_SIZE * 8
 } else if core::mem::size_of::<core::ffi::c_long>() > 4 {
     4 * 1024 * 1024

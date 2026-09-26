@@ -128,12 +128,12 @@ unsafe fn calibrate_xor_blocks() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_XOR_BLOCKS_ARCH")]
+#[cfg(CONFIG_XOR_BLOCKS_ARCH)]
 unsafe fn arch_xor_init() {
     // The architecture-specific xor_arch.h implementation is supplied externally.
 }
 
-#[cfg(not(feature = "CONFIG_XOR_BLOCKS_ARCH"))]
+#[cfg(not(CONFIG_XOR_BLOCKS_ARCH))]
 unsafe fn arch_xor_init() {
     xor_register(&raw mut xor_block_8regs);
     xor_register(&raw mut xor_block_8regs_p);

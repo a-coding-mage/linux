@@ -24,7 +24,7 @@ unsafe fn resume_one_md_table_init(pgd: *mut pgd_t) -> *mut pmd_t {
     let pud: *mut pud_t;
     let pmd_table: *mut pmd_t;
 
-    #[cfg(feature = "CONFIG_X86_PAE")]
+    #[cfg(CONFIG_X86_PAE)]
     {
         pmd_table = get_safe_page(GFP_ATOMIC as _).cast::<pmd_t>();
         if pmd_table.is_null() {
@@ -38,7 +38,7 @@ unsafe fn resume_one_md_table_init(pgd: *mut pgd_t) -> *mut pmd_t {
         BUG_ON(pmd_table != pmd_offset(pud, 0));
     }
 
-    #[cfg(not(feature = "CONFIG_X86_PAE"))]
+    #[cfg(not(CONFIG_X86_PAE))]
     {
         p4d = p4d_offset(pgd, 0);
         pud = pud_offset(p4d, 0);
@@ -135,7 +135,7 @@ unsafe fn resume_physical_mapping_init(pgd_base: *mut pgd_t) -> i32 {
 }
 
 unsafe fn resume_init_first_level_page_table(pg_dir: *mut pgd_t) {
-    #[cfg(feature = "CONFIG_X86_PAE")]
+    #[cfg(CONFIG_X86_PAE)]
     {
         /* Init entries of the first-level page table to the zero page */
         let mut i = 0;

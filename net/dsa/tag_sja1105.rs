@@ -86,10 +86,10 @@ unsafe fn sja1105_xmit_tpid(dp: *mut DsaPort) -> u16 {
     let ds = (*dp).ds;
     if !dsa_port_is_vlan_filtering(dp) { return ETH_P_SJA1105; }
     let mut other_dp: *mut DsaPort = core::ptr::null_mut(); let mut proto = 0u16;
-    dsa_switch_for_each_port(other_dp, ds) {
+    dsa_switch_for_each_port!(other_dp, ds, {
         let br = dsa_port_bridge_dev_get(other_dp); if br.is_null() { continue; }
         br_vlan_get_proto(br, &mut proto); return proto;
-    }
+    });
     WARN_ONCE!(true, "Port is VLAN-aware but cannot find associated bridge!\n"); ETH_P_SJA1105
 }
 

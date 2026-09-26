@@ -70,7 +70,7 @@ extern "C" {
 #[inline]
 pub fn ipmr_pimsm_enabled() -> bool {
     /* Build-time equivalent of IS_BUILTIN(CONFIG_IP_PIMSM_V1/V2). */
-    cfg!(any(feature = "CONFIG_IP_PIMSM_V1", feature = "CONFIG_IP_PIMSM_V2"))
+    cfg!(any(CONFIG_IP_PIMSM_V1, CONFIG_IP_PIMSM_V2))
 }
 
 #[inline]

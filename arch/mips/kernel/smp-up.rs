@@ -61,12 +61,12 @@ unsafe fn up_prepare_cpus(max_cpus: core::ffi::c_uint) {
 }
 
 /* CONFIG_HOTPLUG_CPU conditionally includes the following declarations. */
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn up_cpu_disable() -> core::ffi::c_int {
     -38 /* -ENOSYS */
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn up_cpu_die(cpu: core::ffi::c_uint) {
     let _ = cpu;
     BUG();
@@ -84,24 +84,24 @@ pub struct plat_smp_ops {
         unsafe fn(core::ffi::c_int, *mut task_struct) -> core::ffi::c_int,
     pub smp_setup: unsafe fn(),
     pub prepare_cpus: unsafe fn(core::ffi::c_uint),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_disable: unsafe fn() -> core::ffi::c_int,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: unsafe fn(core::ffi::c_uint),
 }
 
 pub static up_smp_ops: plat_smp_ops = plat_smp_ops {
-    .send_ipi_single: up_send_ipi_single,
-    .send_ipi_mask: up_send_ipi_mask,
-    .init_secondary: up_init_secondary,
-    .smp_finish: up_smp_finish,
-    .boot_secondary: up_boot_secondary,
-    .smp_setup: up_smp_setup,
-    .prepare_cpus: up_prepare_cpus,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
-    .cpu_disable: up_cpu_disable,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
-    .cpu_die: up_cpu_die,
+    send_ipi_single: up_send_ipi_single,
+    send_ipi_mask: up_send_ipi_mask,
+    init_secondary: up_init_secondary,
+    smp_finish: up_smp_finish,
+    boot_secondary: up_boot_secondary,
+    smp_setup: up_smp_setup,
+    prepare_cpus: up_prepare_cpus,
+    #[cfg(CONFIG_HOTPLUG_CPU)]
+    cpu_disable: up_cpu_disable,
+    #[cfg(CONFIG_HOTPLUG_CPU)]
+    cpu_die: up_cpu_die,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -132,7 +132,7 @@ unsafe fn huge_tte_to_shift(entry: pte_t) -> c_uint {
 }
 
 unsafe fn huge_tte_to_size(pte: pte_t) -> c_ulong {
-    let mut size = 1 as c_ulong << huge_tte_to_shift(pte);
+    let mut size = (1 as c_ulong) << huge_tte_to_shift(pte);
     if size == REAL_HPAGE_SIZE {
         size = HPAGE_SIZE;
     }
@@ -140,13 +140,13 @@ unsafe fn huge_tte_to_size(pte: pte_t) -> c_ulong {
 }
 
 pub unsafe fn pud_leaf_size(pud: pud_t) -> c_ulong {
-    1 as c_ulong << tte_to_shift(*( &pud as *const pud_t as *const pte_t))
+    (1 as c_ulong) << tte_to_shift(*( &pud as *const pud_t as *const pte_t))
 }
 pub unsafe fn pmd_leaf_size(pmd: pmd_t) -> c_ulong {
-    1 as c_ulong << tte_to_shift(*( &pmd as *const pmd_t as *const pte_t))
+    (1 as c_ulong) << tte_to_shift(*( &pmd as *const pmd_t as *const pte_t))
 }
 pub unsafe fn pte_leaf_size(pte: pte_t) -> c_ulong {
-    1 as c_ulong << tte_to_shift(pte)
+    (1 as c_ulong) << tte_to_shift(pte)
 }
 
 pub unsafe fn huge_pte_alloc(mm: *mut mm_struct, vma: *mut vm_area_struct, addr: c_ulong, sz: c_ulong) -> *mut pte_t {

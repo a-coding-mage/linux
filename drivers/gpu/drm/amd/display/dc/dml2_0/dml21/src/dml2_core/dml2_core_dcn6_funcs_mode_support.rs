@@ -10,7 +10,7 @@ unsafe fn dcn6_ms_check_input_sanity(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates)
 {
-	unsigned int k;
+	core::ffi::c_uint k;
 	const *mut dml2_plane_parametersplane;
 	*mut dml2_core_internal_mode_supportoutputs = states;
 
@@ -93,7 +93,7 @@ unsafe fn dcn6_ms_calculate_effective_pixel_clock(
 	*mut dml2_core_internal_mode_supportoutputs = states;
 
 	
-	/*
+	/ *
 	 * This function should probably be removed since ptoi is never true, so the function is a noop; not *mut really obvious if the comment means DML2.1 doesn't support interlace today.
 	 */
 	dcn5_adjust_pixel_clock_for_progressive_to_interlace_unit(display_cfg, ip.ptoi_supported, outputs.PixelClockBackEnd);
@@ -160,7 +160,7 @@ unsafe fn dcn6_ms_check_source_format_and_scan_direction(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates)
 {
-	/*Source Format, Pixel Format and Scan Support *mut Check/
+	/ *Source Format, Pixel Format and Scan Support *mut Check/
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
 	*mut dml2_core_internal_mode_supportoutputs = states;
 	unsigned int k;
@@ -199,7 +199,7 @@ unsafe fn dcn6_ms_calculate_byte_per_pixel_and_block_sizes(
 				plane.surface.tiling,
 				plane.surface.plane0.pitch,
 				plane.surface.plane1.pitch,
-				/* *mut Output/
+				/ * *mut Output/
 				&outputs.BytePerPixelY[k],
 				&outputs.BytePerPixelC[k],
 				&outputs.BytePerPixelInDETY[k],
@@ -245,7 +245,7 @@ unsafe fn dcn6_ms_calculate_read_bandwidth(
 	const *mut dml2_stream_parametersstream;
 
 	
-	/* Bandwidth Support *mut Check/
+	/ * Bandwidth Support *mut Check/
 	for (k = 0; k < display_cfg.num_planes; k++) {
 		plane = &display_cfg.plane_descriptors[k];
 		if (!dml2_core_utils_is_vertical_rotation(plane.composition.rotation_angle)) {
@@ -325,7 +325,7 @@ unsafe fn dcn6_ms_check_writeback_bandwidth_latency_support(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates)
 {
-	/*Writeback Latency support *mut check/
+	/ *Writeback Latency support *mut check/
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
 	const *mut dml2_core_ip_paramsip = ctx.ip;
 	const *mut dml2_utm_soc_bbsoc_bb = ctx.soc_bb;
@@ -364,7 +364,7 @@ unsafe fn dcn6_ms_check_writeback_scale_ratio_and_taps_support(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates)
 {
-	/* Writeback Scale Ratio and Taps Support *mut Check/
+	/ * Writeback Scale Ratio and Taps Support *mut Check/
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
 	const *mut dml2_core_ip_paramsip = ctx.ip;
 	*mut dml2_core_internal_mode_supportoutputs = states;
@@ -466,7 +466,7 @@ unsafe fn dcn6_ms_calculate_single_pipe_dppclk_and_pscl_factor(
 				plane.composition.scaler_info.plane0.v_taps,
 				plane.composition.scaler_info.plane1.v_taps,
 
-				/* *mut Output/
+				/ * *mut Output/
 				&outputs.PSCL_FACTOR[k],
 				&outputs.PSCL_FACTOR_CHROMA[k],
 				&outputs.MinDPPCLKUsingSingleDPP[k]);
@@ -564,7 +564,7 @@ unsafe fn dcn6_ms_check_cursor_support(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates)
 {
-	/* Cursor Support *mut Check/
+	/ * Cursor Support *mut Check/
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
 	const *mut dml2_core_ip_paramsip = ctx.ip;
 	*mut dml2_core_internal_mode_supportoutputs = states;
@@ -602,7 +602,7 @@ unsafe fn dcn6_ms_check_surface_alginment_requirements(
 
 	
 	outputs.support.PitchSupport = true;
-	/* Valid Pitch *mut Check/
+	/ * Valid Pitch *mut Check/
 	for (k = 0; k < display_cfg.num_planes; k++) {
 		// data pitch
 
@@ -667,9 +667,8 @@ unsafe fn dcn6_ms_check_surface_alginment_requirements(
 
 unsafe fn dcn6_ms_calculate_swath_and_det_configuration_for_single_dpp(
 		const *mut dml2_core_calculate_ms_contextctx,
-		*mut dml2_core_internal_mode_supportstates)
-{
-	/*
+		*mut dml2_core_internal_mode_supportstates) {
+	/ *
 	 * FIXME - The whole point of this call seems to be to figure out SingleDPPViewportSizeSupportPerSurface, *mut which if 0, means you need 2 DPPs.
 	 */
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
@@ -750,7 +749,7 @@ unsafe fn dcn6_ms_calculate_estimated_num_of_dsc_slices(
 	*mut dml2_core_internal_mode_supportoutputs = states;
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
 	const *mut dml2_stream_parametersstream;
-	unsigned int k;
+	core::ffi::c_uint k;
 
 	
 	for (k = 0; k < display_cfg.num_planes; k++) {
@@ -818,7 +817,7 @@ unsafe fn dcn6_ms_calculate_output_link(
 				stream.timing.dsc.enable,
 				stream.output.output_dp_lane_count,
 				stream.output.output_dp_link_rate,
-				/* *mut Output/
+				/ * *mut Output/
 				&outputs.RequiresDSC[k],
 				&outputs.RequiresFEC[k],
 				&outputs.OutputBpp[k],
@@ -872,7 +871,7 @@ unsafe fn dcn6_ms_calculate_odm_mode(
 				inputs.EstimatedNumberOfDSCSlices[k],
 				ip.odm_combine_support_mask,
 
-				/* *mut Output/
+				/ * *mut Output/
 				&ODMSupport,
 				&numOfDPP,
 				&outputs.ODMMode[k],
@@ -1158,10 +1157,10 @@ unsafe fn dcn6_ms_check_otg_count_support(
 
 	
 	for (unsigned int k = 0; k < display_cfg.num_planes; k++) {
-		/* Check if stream has been *mut visited/
+		/ * Check if stream has been *mut visited/
 		if (stream_visited_bit_map & (1 << display_cfg.plane_descriptors[k].stream_index))
 			continue;
-		/* Mark stream as *mut visited/
+		/ * Mark stream as *mut visited/
 		stream_visited_bit_map |= (1 << display_cfg.plane_descriptors[k].stream_index);
 
 		TotalNumberOfActiveOTG = TotalNumberOfActiveOTG + 1;
@@ -1186,10 +1185,10 @@ unsafe fn dcn6_ms_check_hpo_frl_encoder_count_support(
 
 	
 	for (unsigned int k = 0; k < display_cfg.num_planes; k++) {
-		/* Check if stream has been *mut visited/
+		/ * Check if stream has been *mut visited/
 		if (stream_visited_bit_map & (1 << display_cfg.plane_descriptors[k].stream_index))
 			continue;
-		/* Mark stream as *mut visited/
+		/ * Mark stream as *mut visited/
 		stream_visited_bit_map |= (1 << display_cfg.plane_descriptors[k].stream_index);
 
 		if (display_cfg.stream_descriptors[display_cfg.plane_descriptors[k].stream_index].output.output_encoder == dml2_hdmifrl)
@@ -1216,10 +1215,10 @@ unsafe fn dcn6_ms_check_hpo_dp_encoder_count_support(
 
 	
 	for (unsigned int k = 0; k < display_cfg.num_planes; k++) {
-		/* Check if stream has been *mut visited/
+		/ * Check if stream has been *mut visited/
 		if (stream_visited_bit_map & (1 << display_cfg.plane_descriptors[k].stream_index))
 			continue;
-		/* Mark stream as *mut visited/
+		/ * Mark stream as *mut visited/
 		stream_visited_bit_map |= (1 << display_cfg.plane_descriptors[k].stream_index);
 
 		if (display_cfg.stream_descriptors[display_cfg.plane_descriptors[k].stream_index].output.output_encoder == dml2_dp2p0) {
@@ -1251,16 +1250,16 @@ unsafe fn dcn6_ms_check_writeback_count_support(
 
 	
 	for (unsigned int k = 0; k < display_cfg.num_planes; k++) {
-		/* Check if stream has been *mut visited/
+		/ * Check if stream has been *mut visited/
 		if (stream_visited_bit_map & (1 << display_cfg.plane_descriptors[k].stream_index))
 			continue;
-		/* Mark stream as *mut visited/
+		/ * Mark stream as *mut visited/
 		stream_visited_bit_map |= (1 << display_cfg.plane_descriptors[k].stream_index);
 
 		totalNumberOfActiveWriteback +=
 				display_cfg.stream_descriptors[display_cfg.plane_descriptors[k].stream_index].writeback.active_writebacks_per_stream;
 
-		/* >1 writeback per stream is currently not *mut supported/
+		/ * >1 writeback per stream is currently not *mut supported/
 		if (display_cfg.stream_descriptors[display_cfg.plane_descriptors[k].stream_index].writeback.active_writebacks_per_stream > 1)
 			writeback_per_stream_supported = false;
 	}
@@ -1515,11 +1514,11 @@ unsafe fn dcn6_ms_check_dsc_engine_supports(
 	for (k = 0; k < display_cfg.num_planes; k++) {
 		stream_index = display_cfg.plane_descriptors[k].stream_index;
 
-		/* Check if stream has been *mut visited/
+		/ * Check if stream has been *mut visited/
 		if (stream_visited_bit_map & (1 << stream_index))
 			continue;
 
-		/* Mark stream as *mut visited/
+		/ * Mark stream as *mut visited/
 		stream_visited_bit_map |= (1 << stream_index);
 
 		if (!inputs.RequiresDSC[k])
@@ -1565,7 +1564,7 @@ unsafe fn dcn6_ms_calculate_dsc_delay(
 	const *mut dml2_stream_parametersstream;
 
 	
-	/*DSC Delay per *mut state/
+	/ *DSC Delay per *mut state/
 	for (k = 0; k < display_cfg.num_planes; k++) {
 		stream = &display_cfg.stream_descriptors[display_cfg.plane_descriptors[k].stream_index];
 		outputs.DSCDelay[k] = dcn5_calculate_dsc_delay_requirement(
@@ -1937,7 +1936,7 @@ unsafe fn dcn6_ms_check_dcc_meta_cache_support(
 
 unsafe fn dcn6_ms_pstate_type_to_blackout_us(
 		const *mut dml2_core_calculate_ms_contextctx,
-		enum dml2_pstate_type pstate_type)
+		dml2_pstate_type pstate_type)
 {
 	double blackout_us = 0.0;
 
@@ -1977,7 +1976,7 @@ unsafe fn dcn6_ms_calculate_vactive_pstate_requirements(
 	double blackout_us;
 
 	
-	/* Max VActive bytes to fetch for any P-State (PPT or UCLK) */
+	/ * Max VActive bytes to fetch for any P-State (PPT or UCLK) */
 	p.display_cfg = display_cfg;
 	p.mrq_present = ip.dcn_mrq_present;
 	p.num_active_planes = display_cfg.num_planes;
@@ -2005,11 +2004,11 @@ unsafe fn dcn6_ms_calculate_vactive_pstate_requirements(
 			continue;
 		}
 
-		/* determine per plane *mut latency/
+		/ * determine per plane *mut latency/
 		for (plane_index = 0; plane_index < display_cfg.num_planes; plane_index++) {
 			p.latency_to_hide_us[plane_index] = dcn6_ms_pstate_type_to_blackout_us(ctx, pstate_type);
 
-			/* Only need to consider DRAM blackout time if the plane is using some form of *mut vactive/
+			/ * Only need to consider DRAM blackout time if the plane is using some form of *mut vactive/
 			if (pstate_type == dml2_pstate_type_uclk &&
 					!(inputs.uclk_pstate_switch_modes[plane_index] == dml2_pstate_method_vactive ||
 					inputs.uclk_pstate_switch_modes[plane_index] == dml2_pstate_method_fw_vactive_drr)) {
@@ -2017,19 +2016,19 @@ unsafe fn dcn6_ms_calculate_vactive_pstate_requirements(
 			}
 		}
 
-		/* *mut outputs/
+		/ * *mut outputs/
 		p.bytes_required_l = outputs.pstate_bytes_required_l[pstate_type];
 		p.bytes_required_c = outputs.pstate_bytes_required_c[pstate_type];
 
 		dcn5_calculate_bytes_to_fetch_required_to_hide_latency(p);
 	}
 
-	/* Excess VActive bandwidth required to fill *mut DET/
+	/ * Excess VActive bandwidth required to fill *mut DET/
 	dcn6_calculate_excess_vactive_bandwidth_required(display_cfg,
 			outputs.pstate_bytes_required_l,
 			outputs.pstate_bytes_required_c,
 
-			/* *mut outputs/
+			/ * *mut outputs/
 			outputs.excess_vactive_fill_bw_l,
 			outputs.excess_vactive_fill_bw_c);
 
@@ -2046,7 +2045,7 @@ unsafe fn dcn6_ms_calculate_vactive_pstate_requirements(
 	
 }
 
-/* FIXME - break it down according the function *mut name/
+/ * FIXME - break it down according the function *mut name/
 unsafe fn dcn6_ms_calculate_det_buffer_time_value_urgent_burst_factor_and_urgent_latency_hiding(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates)
@@ -2151,7 +2150,7 @@ unsafe fn dcn6_ms_calculate_min_dcfclk_deepsleep_clock(
 			inputs.vactive_sw_bw_l,
 			inputs.vactive_sw_bw_c,
 			soc_bb.return_bus_width_bytes,
-			/* *mut Output/
+			/ * *mut Output/
 			&raw_dcfclk_deepsleep_mhz);
 	outputs.dcfclk_deepsleep = clock_adjuster.adjust_dcfclk_deepsleep_mhz(
 			clock_adjuster, raw_dcfclk_deepsleep_mhz);
@@ -2940,8 +2939,7 @@ unsafe fn dcn6_ms_check_v_ratio_in_prefetch_support(
 
 unsafe fn dcn6_ms_calculate_urgent_burst_factor_for_prefetch(
 		const *mut dml2_core_calculate_ms_contextctx,
-		*mut dml2_core_internal_mode_supportstates)
-{
+		*mut dml2_core_internal_mode_supportstates) {
 	const *mut dml2_display_cfgdisplay_cfg = ctx.display_cfg;
 	*mut dml2_core_internal_mode_supportinputs = states;
 	*mut dml2_core_internal_mode_supportoutputs = states;
@@ -2970,7 +2968,7 @@ unsafe fn dcn6_ms_calculate_urgent_burst_factor_for_prefetch(
 				inputs.BytePerPixelInDETC[k],
 				inputs.DETBufferSizeY[k],
 				inputs.DETBufferSizeC[k],
-				/* *mut Output/
+				/ * *mut Output/
 				&outputs.UrgentBurstFactorLumaPre[k],
 				&outputs.UrgentBurstFactorChromaPre[k],
 				&outputs.NotEnoughUrgentLatencyHidingPre[k]);
@@ -3110,7 +3108,7 @@ unsafe fn dcn6_ms_calculate_flip_schedule(
 				inputs.meta_row_height_luma[k],
 				inputs.meta_row_height_chroma[k],
 
-				/* *mut Output/
+				/ * *mut Output/
 				&outputs.dst_y_per_vm_flip[k],
 				&outputs.dst_y_per_row_flip[k],
 				&outputs.final_flip_bw[k],
@@ -3222,7 +3220,7 @@ unsafe fn dcn6_ms_calculate_vactive_det_fill_latency(
 	enum dml2_pstate_type pstate_type;
 
 	
-	/* VActive fill time calculations (informative) */
+	/ * VActive fill time calculations (informative) */
 	for (pstate_type = 0; pstate_type < dml2_pstate_type_count; pstate_type++) {
 		dcn5_calculate_vactive_det_fill_latency(
 				display_cfg,
@@ -3249,7 +3247,7 @@ unsafe fn dcn6_ms_calculate_vactive_det_fill_latency(
 unsafe fn dcn6_ms_check_mode_support(
 		const *mut dml2_core_calculate_ms_contextctx,
 		*mut dml2_core_internal_mode_supportstates,
-		enum dml2_status status)
+		dml2_status status)
 {
 	(void)ctx;
 	*mut dml2_core_internal_mode_supportinputs = states;
@@ -3833,7 +3831,7 @@ unsafe fn dcn6_ms_check_pstate_schedule_admissibility(
 	*mut boolis_drr = dummies.dummy_boolean_array[0];
 	// array of frame times for each plane in microseconds
 	*mut doubleframe_time_us = dummies.dummy_double_array[0];
-	*mut enum dml2_pstate_methodpstate_method = dummies.dummy_pstate_method_array;
+	*mut dml2_pstate_methodpstate_method = dummies.dummy_pstate_method_array;
 	const *mut dml2_stream_parametersstream = core::ptr::null_mut();
 	const *mut dml2_plane_parametersplane = core::ptr::null_mut();
 	unsigned int k;

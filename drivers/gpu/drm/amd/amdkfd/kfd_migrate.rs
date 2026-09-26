@@ -158,10 +158,10 @@ pub unsafe fn svm_migrate_vram_to_ram(prange: *mut svm_range, mm: *mut mm_struct
 
 // External kernel declarations intentionally remain unresolved here.
 extern "C" {
-    fn svm_migrate_ram_to_vram(*mut svm_range, u32, usize, usize, *mut mm_struct, u32) -> i32;
-    fn svm_migrate_vram_to_vram(*mut svm_range, u32, usize, usize, *mut mm_struct, u32) -> i32;
-    fn svm_migrate_vma_to_ram(*mut kfd_node, *mut svm_range, *mut vm_area_struct, u64, u64, u32, *mut page) -> i32;
-    fn amdgpu_ttm_domain_start(*mut amdgpu_device, u32) -> u64;
+    fn svm_migrate_ram_to_vram(_: *mut svm_range, _: u32, _: usize, _: usize, _: *mut mm_struct, _: u32) -> i32;
+    fn svm_migrate_vram_to_vram(_: *mut svm_range, _: u32, _: usize, _: usize, _: *mut mm_struct, _: u32) -> i32;
+    fn svm_migrate_vma_to_ram(_: *mut kfd_node, _: *mut svm_range, _: *mut vm_area_struct, _: u64, _: u64, _: u32, _: *mut page) -> i32;
+    fn amdgpu_ttm_domain_start(_: *mut amdgpu_device, _: u32) -> u64;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

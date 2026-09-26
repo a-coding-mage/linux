@@ -85,7 +85,7 @@ unsafe fn acpi_ds_build_internal_package_obj(
                 return AE_SUPPORT;
             }
 
-            if (*(*arg).common.node).type == ACPI_TYPE_METHOD {
+            if (*(*arg).common.node).r#type == ACPI_TYPE_METHOD {
                 (*arg).common.aml_opcode = AML_INT_NAMEPATH_OP;
                 status = acpi_ds_build_internal_object(
                     walk_state,

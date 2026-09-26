@@ -20,7 +20,7 @@ unsafe fn __cvmx_get_mode_cn68xx(interface: i32) -> cvmx_helper_interface_mode {
     let mut qlm_cfg: cvmx_mio_qlmx_cfg = core::mem::zeroed();
     match interface {
         0 | 2 | 3 | 4 => {
-            qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(if interface));
+            qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(interface));
             if qlm_cfg.s.qlm_spd == 15 { return CVMX_HELPER_INTERFACE_MODE_DISABLED; }
             if qlm_cfg.s.qlm_cfg == 2 { CVMX_HELPER_INTERFACE_MODE_SGMII }
             else if qlm_cfg.s.qlm_cfg == 3 { CVMX_HELPER_INTERFACE_MODE_XAUI }

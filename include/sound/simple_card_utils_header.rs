@@ -105,9 +105,9 @@ pub unsafe fn simple_priv_to_link(priv_: *mut simple_util_priv, i: isize) -> *mu
 #[inline]
 pub unsafe fn simple_props_to_dlc_cpu(props: *mut simple_dai_props, i: isize) -> *mut snd_soc_dai_link_component { (*props).num.cpus as *mut snd_soc_dai_link_component /* external array base supplied by layout */ .offset(i) }
 #[inline]
-pub unsafe fn simple_props_to_dlc_codec(props: *mut simple_dai_props, i: isize) -> *mut snd_soc_dai_link_component { (*props).num.codecs as *mut snd_soc_dai_link_component .offset(i) }
+pub unsafe fn simple_props_to_dlc_codec(props: *mut simple_dai_props, i: isize) -> *mut snd_soc_dai_link_component { ((*props).num.codecs as *mut snd_soc_dai_link_component).offset(i) }
 #[inline]
-pub unsafe fn simple_props_to_dlc_platform(props: *mut simple_dai_props, i: isize) -> *mut snd_soc_dai_link_component { (*props).num.platforms as *mut snd_soc_dai_link_component .offset(i) }
+pub unsafe fn simple_props_to_dlc_platform(props: *mut simple_dai_props, i: isize) -> *mut snd_soc_dai_link_component { ((*props).num.platforms as *mut snd_soc_dai_link_component).offset(i) }
 #[inline]
 pub unsafe fn simple_props_to_dai_cpu(props: *mut simple_dai_props, i: isize) -> *mut simple_util_dai { (*props).cpu_dai.offset(i) }
 #[inline]

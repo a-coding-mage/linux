@@ -18,7 +18,7 @@ pub unsafe fn arp_hashfn(
     val.wrapping_mul(*hash_rnd)
 }
 
-#[cfg(feature = "CONFIG_INET")]
+#[cfg(CONFIG_INET)]
 pub unsafe fn __ipv4_neigh_lookup_noref(
     dev: *mut net_device,
     mut key: u32,
@@ -36,7 +36,7 @@ pub unsafe fn __ipv4_neigh_lookup_noref(
     )
 }
 
-#[cfg(not(feature = "CONFIG_INET"))]
+#[cfg(not(CONFIG_INET))]
 pub unsafe fn __ipv4_neigh_lookup_noref(
     _dev: *mut net_device,
     _key: u32,

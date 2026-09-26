@@ -136,7 +136,7 @@ macro_rules! _SDT_ARGTMPL {
 #[macro_export]
 macro_rules! _SDT_ARGFMT {
     ($no:tt) => {
-        concat!("/* _SDT_ARGFMT(", stringify!($no), "): GCC operand size/sign/type encoding is not directly expressible in Rust macro_rules. */\n")
+        concat!("/* _SDT_ARGFMT!(", stringify!($no), "): GCC operand size/sign/type encoding is not directly expressible in Rust macro_rules. */\n")
     };
 }
 

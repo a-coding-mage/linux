@@ -43,7 +43,7 @@ struct screen_info {
 
 unsafe fn sni_display_setup() {
     // Compiled only when CONFIG_VGA_CONSOLE and CONFIG_FW_ARC are enabled.
-    #[cfg(all(feature = "CONFIG_VGA_CONSOLE", feature = "CONFIG_FW_ARC"))]
+    #[cfg(all(CONFIG_VGA_CONSOLE, CONFIG_FW_ARC))]
     {
         let mut si = core::mem::zeroed::<screen_info>();
         let di = ArcGetDisplayStatus(1);
@@ -61,14 +61,14 @@ unsafe fn sni_display_setup() {
 
 unsafe fn sni_console_setup() {
     // Compiled only when CONFIG_FW_ARC is not enabled.
-    #[cfg(not(feature = "CONFIG_FW_ARC"))]
+    #[cfg(not(CONFIG_FW_ARC))]
     {
         static mut OPTIONS: [core::ffi::c_char; 8] = [0; 8];
         let cdev = prom_getenv(b"console_dev\0".as_ptr() as *const _);
         if strncmp(cdev, b"tty\0".as_ptr() as *const _, 3) == 0 {
             let ctype = prom_getenv(b"console\0".as_ptr() as *const _);
             let (port, baud) = match *ctype {
-                b'r' as i8 => (1, prom_getenv(b"rbaud\0".as_ptr() as *const _)),
+                case if case == b'r' as i8 => (1, prom_getenv(b"rbaud\0".as_ptr() as *const _)),
                 _ => (0, prom_getenv(b"lbaud\0".as_ptr() as *const _)),
             };
             if !baud.is_null() { strscpy(OPTIONS.as_mut_ptr(), baud); }
@@ -93,7 +93,7 @@ unsafe fn sni_idprom_dump() {
 
 pub unsafe fn plat_mem_setup() {
     set_io_port_base(SNI_PORT_BASE);
-    #[cfg(feature = "CONFIG_EISA")]
+    #[cfg(CONFIG_EISA)]
     { EISA_bus = 1; }
 
     sni_brd_type = *(SNI_IDPROM_BRDTYPE as *const u8) as core::ffi::c_uint;
@@ -119,7 +119,7 @@ pub unsafe fn plat_mem_setup() {
     sni_console_setup();
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn quirk_cirrus_ram_size(dev: *mut pci_dev) {
     let mut cmd = 0u16;
     pci_read_config_word(dev, PCI_COMMAND, &mut cmd);

@@ -42,9 +42,9 @@ pub struct netfs_io_subrequest { _private: [u8; 0] }
 
 pub static mut netfs_debug: u32 = 0;
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 pub static mut netfs_io_requests: list_head = list_head { next: core::ptr::null_mut(), prev: core::ptr::null_mut() };
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 pub static mut netfs_proc_lock: spinlock_t = spinlock_t { _private: [0; 0] };
 
 #[repr(C)]
@@ -52,24 +52,24 @@ pub struct list_head { pub next: *mut list_head, pub prev: *mut list_head }
 #[repr(C)]
 pub struct spinlock_t { _private: [u8; 0] }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 static netfs_origins: [&[u8]; 13] = [
     b"RA", b"RP", b"RG", b"R1", b"RW", b"UR", b"DR", b"WB",
     b"W1", b"WT", b"UW", b"DW", b"2C",
 ];
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn netfs_requests_seq_show(_m: *mut c_void, _v: *mut c_void) -> c_int {
     // The seq_file formatting and list_entry operations are supplied by the
     // kernel interfaces represented by the surrounding translation.
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn netfs_requests_seq_start(_m: *mut c_void, _pos: *mut c_long) -> *mut c_void { core::ptr::null_mut() }
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn netfs_requests_seq_next(_m: *mut c_void, _v: *mut c_void, _pos: *mut c_long) -> *mut c_void { core::ptr::null_mut() }
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn netfs_requests_seq_stop(_m: *mut c_void, _v: *mut c_void) {}
 
 static mut netfs_request_slab: *mut kmem_cache = core::ptr::null_mut();

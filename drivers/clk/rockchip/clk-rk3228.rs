@@ -100,11 +100,11 @@ static rk3228_cpuclk_data: rockchip_cpuclk_reg_data = {
 	.core_reg[0] = RK2928_CLKSEL_CON(0),
 	.div_core_shift[0] = 0,
 	.div_core_mask[0] = 0x1f,
-	.num_cores = 1,
-	.mux_core_alt = 1,
-	.mux_core_main = 0,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x1,
+	num_cores: 1,
+	mux_core_alt: 1,
+	mux_core_main: 0,
+	mux_core_shift: 6,
+	mux_core_mask: 0x1,
 };
 
 static mux_pll_p: &[&str] = &[ "clk_24m", "xin24m" ];
@@ -658,10 +658,10 @@ static rk3228_critical_clocks: &[&str] = {
 	"hclk_rkvdec_noc",
 };
 
-static void  rk3228_clk_init(struct device_node *np)
+static void  rk3228_clk_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
-	unsigned long clk_nr_clks;
+	core::ffi::c_ulong clk_nr_clks;
 	void __iomem *reg_base;
 
 	reg_base = of_iomap(np, 0);

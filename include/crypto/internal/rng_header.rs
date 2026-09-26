@@ -34,12 +34,12 @@ extern "C" {
     pub fn crypto_unregister_rngs(algs: *mut rng_alg, count: i32);
 
     /* Available when CONFIG_CRYPTO_RNG or CONFIG_CRYPTO_RNG_MODULE is set. */
-    #[cfg(any(feature = "CONFIG_CRYPTO_RNG", feature = "CONFIG_CRYPTO_RNG_MODULE"))]
+    #[cfg(any(CONFIG_CRYPTO_RNG, CONFIG_CRYPTO_RNG_MODULE))]
     pub fn crypto_del_default_rng() -> i32;
 }
 
 /* When CONFIG_CRYPTO_RNG and CONFIG_CRYPTO_RNG_MODULE are unset. */
-#[cfg(not(any(feature = "CONFIG_CRYPTO_RNG", feature = "CONFIG_CRYPTO_RNG_MODULE")))]
+#[cfg(not(any(CONFIG_CRYPTO_RNG, CONFIG_CRYPTO_RNG_MODULE)))]
 #[inline]
 pub const fn crypto_del_default_rng() -> i32 {
     0

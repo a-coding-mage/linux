@@ -25,19 +25,19 @@ pub const __ARCH_WANT_SYS_OLD_SELECT: bool = true;
 pub const __ARCH_WANT_SYS_UTIME32: bool = true;
 
 // C condition: !defined(CONFIG_AEABI) || defined(CONFIG_OABI_COMPAT).
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_SYS_TIME32: bool = true;
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_SYS_IPC: bool = true;
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_SYS_OLDUMOUNT: bool = true;
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_SYS_ALARM: bool = true;
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_SYS_OLD_GETRLIMIT: bool = true;
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_OLD_READDIR: bool = true;
-#[cfg(any(not(feature = "CONFIG_AEABI"), feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(any(not(CONFIG_AEABI), CONFIG_OABI_COMPAT))]
 pub const __ARCH_WANT_SYS_SOCKETCALL: bool = true;
 
 pub const __ARCH_WANT_SYS_FORK: bool = true;

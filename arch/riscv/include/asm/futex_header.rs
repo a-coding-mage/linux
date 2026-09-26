@@ -27,7 +27,7 @@ macro_rules! __futex_atomic_op {
         unsafe {
             core::arch::asm!(
                 "1: {insn}\n2:",
-                insn = const $insn,
+                $insn = const $insn,
                 inout("r") $ret,
                 lateout("r") $oldval,
                 inout("r") $uaddr,

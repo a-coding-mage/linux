@@ -141,8 +141,7 @@ unsafe extern "C" {
         target: *const c_char,
         filesystemtype: *const c_char,
         mountflags: c_ulong,
-        data: *const c_void,
-    ) -> c_int;
+        data: *const c_void) -> c_int;
     fn open(pathname: *const c_char, flags: c_int, ...) -> c_int;
     fn pread(fd: c_int, buf: *mut c_void, count: size_t, offset: off_t) -> ssize_t;
     fn pwrite(fd: c_int, buf: *const c_void, count: size_t, offset: off_t) -> ssize_t;

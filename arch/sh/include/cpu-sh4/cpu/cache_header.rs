@@ -24,7 +24,7 @@ pub const CCR_CACHE_ICI: u32 = 0x0800; /* IC Invalidate */
 pub const CCR_CACHE_IIX: u32 = 0x8000; /* IC Index Enable */
 
 /* Preserved from the C build-time condition: define when CONFIG_CPU_SH4A is not enabled. */
-#[cfg(not(feature = "CONFIG_CPU_SH4A"))]
+#[cfg(not(CONFIG_CPU_SH4A))]
 pub const CCR_CACHE_EMODE: u32 = 0x80000000; /* EMODE Enable */
 
 /* Default CCR setup: 8k+16k-byte cache,P1-wb,enable */

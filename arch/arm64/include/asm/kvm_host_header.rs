@@ -11,9 +11,9 @@ pub const KVM_VCPU_VALID_FEATURES: usize = (1usize << KVM_VCPU_MAX_FEATURES) - 1
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum KvmMode { KVM_MODE_DEFAULT, KVM_MODE_PROTECTED, KVM_MODE_NV, KVM_MODE_NONE }
-#[cfg(feature = "CONFIG_KVM")]
+#[cfg(CONFIG_KVM)]
 extern "C" { pub fn kvm_get_mode() -> KvmMode; }
-#[cfg(not(feature = "CONFIG_KVM"))]
+#[cfg(not(CONFIG_KVM))]
 #[inline] pub fn kvm_get_mode() -> KvmMode { KvmMode::KVM_MODE_NONE }
 
 extern "C" {
@@ -34,7 +34,7 @@ pub const HYP_MEMCACHE_ACCOUNT_STAGE2: c_ulong = 1 << 1;
 #[inline] pub unsafe fn __free_hyp_memcache(mc:*mut kvm_hyp_memcache,free_fn:unsafe extern "C" fn(*mut c_void,*mut c_void),to_va:unsafe extern "C" fn(phys_addr_t)->*mut c_void,arg:*mut c_void){while (*mc).nr_pages!=0{free_fn(pop_hyp_memcache(mc,to_va),arg);}}
 
 #[repr(C)] pub struct kvm_vmid { pub id: atomic64_t }
-#[repr(C)] pub struct kvm_s2_mmu { pub vmid:kvm_vmid, pub pgd_phys:phys_addr_t, pub pgt:*mut kvm_pgtable, pub vtcr:u64, pub last_vcpu_ran:*mut c_int, pub split_page_cache:kvm_mmu_memory_cache, pub split_page_chunk_size:u64, pub arch:*mut kvm_arch, pub tlb_vttbr:u64, pub tlb_vtcr:u64, pub nested_stage2_enabled:bool, #[cfg(feature="CONFIG_PTDUMP_STAGE2_DEBUGFS")] pub shadow_pt_debugfs_dentry:*mut dentry, pub pending_unmap:bool, pub refcnt:atomic_t }
+#[repr(C)] pub struct kvm_s2_mmu { pub vmid:kvm_vmid, pub pgd_phys:phys_addr_t, pub pgt:*mut kvm_pgtable, pub vtcr:u64, pub last_vcpu_ran:*mut c_int, pub split_page_cache:kvm_mmu_memory_cache, pub split_page_chunk_size:u64, pub arch:*mut kvm_arch, pub tlb_vttbr:u64, pub tlb_vtcr:u64, pub nested_stage2_enabled:bool, #[cfg(CONFIG_PTDUMP_STAGE2_DEBUGFS)] pub shadow_pt_debugfs_dentry:*mut dentry, pub pending_unmap:bool, pub refcnt:atomic_t }
 #[repr(C)] pub struct kvm_arch_memory_slot;
 #[repr(C)] pub struct kvm_smccc_features { pub std_bmap:c_ulong, pub std_hyp_bmap:c_ulong, pub vendor_hyp_bmap:c_ulong, pub vendor_hyp_bmap_2:c_ulong }
 pub type pkvm_handle_t=u16;
@@ -54,19 +54,52 @@ pub const KVM_ARCH_FLAG_RETURN_NISV_IO_ABORT_TO_USER:u32=0; pub const KVM_ARCH_F
 #[repr(C)] pub struct vcpu_reset_state { pub pc:c_ulong,pub r0:c_ulong,pub be:bool,pub reset:bool }
 #[repr(C)] pub struct kvm_vcpu_arch { pub ctxt:kvm_cpu_context,pub sve_state:*mut arm64_sve_state,pub fp_type:fp_type,pub sve_max_vl:c_uint,pub hw_mmu:*mut kvm_s2_mmu,pub hcr_el2:u64,pub hcrx_el2:u64,pub mdcr_el2:u64,pub fgt:[[u64;2];__NR_FGT_GROUP_IDS__ as usize],pub fault:kvm_vcpu_fault_info,pub cflags:u8,pub iflags:u8,pub sflags:u16,pub pause:bool,pub vcpu_debug_state:kvm_guest_debug_arch,pub external_debug_state:kvm_guest_debug_arch,pub external_mdscr_el1:u64,pub debug_owner:c_int,pub vgic_cpu:vgic_cpu,pub timer_cpu:arch_timer_cpu,pub pmu:kvm_pmu,pub mp_state:kvm_mp_state,pub mp_state_lock:spinlock_t,pub mmu_page_cache:kvm_mmu_memory_cache,pub pkvm_memcache:kvm_hyp_memcache,pub vsesr_el2:u64,pub reset_state:vcpu_reset_state,pub last_steal:u64,pub steal_base:gpa_t,pub ccsidr:*mut u32,pub vncr_tlb:*mut vncr_tlb,pub pid:pid_t }
 
-extern "C" { pub fn free_hyp_memcache(*mut kvm_hyp_memcache); pub fn topup_hyp_memcache(*mut kvm_hyp_memcache,c_ulong)->c_int; pub fn vcpu_read_sys_reg(*const kvm_vcpu,vcpu_sysreg)->u64; pub fn vcpu_write_sys_reg(*mut kvm_vcpu,u64,vcpu_sysreg); pub fn kvm_vcpu_apply_reg_masks(*const kvm_vcpu,vcpu_sysreg,u64)->u64; pub fn kvm_arch_alloc_vm()->*mut kvm; pub fn kvm_arm_vcpu_finalize(*mut kvm_vcpu,c_int)->c_int; }
-#[inline] pub unsafe fn kvm_arch_pmi_in_guest(vcpu:*mut kvm_vcpu)->bool { cfg!(feature="CONFIG_GUEST_PERF_EVENTS") && !vcpu.is_null() }
+extern "C" { pub fn free_hyp_memcache(_: *mut kvm_hyp_memcache); pub fn topup_hyp_memcache(_: *mut kvm_hyp_memcache,_: c_ulong)->c_int; pub fn vcpu_read_sys_reg(_: *const kvm_vcpu,_: vcpu_sysreg)->u64; pub fn vcpu_write_sys_reg(_: *mut kvm_vcpu,_: u64,_: vcpu_sysreg); pub fn kvm_vcpu_apply_reg_masks(_: *const kvm_vcpu,_: vcpu_sysreg,_: u64)->u64; pub fn kvm_arch_alloc_vm()->*mut kvm; pub fn kvm_arm_vcpu_finalize(_: *mut kvm_vcpu,_: c_int)->c_int; }
+#[inline] pub unsafe fn kvm_arch_pmi_in_guest(vcpu:*mut kvm_vcpu)->bool { cfg!(CONFIG_GUEST_PERF_EVENTS) && !vcpu.is_null() }
 #[inline] pub unsafe fn kvm_arm_pvtime_vcpu_init(v:*mut kvm_vcpu_arch){(*v).steal_base=INVALID_GPA;}
 #[inline] pub unsafe fn kvm_arm_is_pvtime_enabled(v:*mut kvm_vcpu_arch)->bool{(*v).steal_base!=INVALID_GPA}
 
 // The remaining kernel macros are preserved as Rust macro interfaces; their referenced
 // constants and helper symbols are supplied by the translated dependency headers.
-macro_rules! __vcpu_single_flag { ($set:ident,$f:expr)=>{($set,$f,$f)} }
-macro_rules! vcpu_get_flag { ($v:expr,$set:ident,$f:expr,$m:expr)=>{unsafe{(*$v).arch.$set & $m}} }
-macro_rules! vcpu_set_flag { ($v:expr,$set:ident,$f:expr,$m:expr)=>{unsafe{(*$v).arch.$set |= $f}} }
-macro_rules! vcpu_clear_flag { ($v:expr,$set:ident,$f:expr,$m:expr)=>{unsafe{(*$v).arch.$set &= !$m}} }
+macro_rules! __vcpu_single_flag { ($set:ident,$f:expr) => {($set,$f,$f)} }
+macro_rules! vcpu_get_flag { ($v:expr,$set:ident,$f:expr,$m:expr) => {unsafe{(*$v).arch.$set & $m}} }
+macro_rules! vcpu_set_flag { ($v:expr,$set:ident,$f:expr,$m:expr) => {unsafe{(*$v).arch.$set |= $f}} }
+macro_rules! vcpu_clear_flag { ($v:expr,$set:ident,$f:expr,$m:expr) => {unsafe{(*$v).arch.$set &= !$m}} }
 pub const VCPU_INITIALIZED:(u8,u8,u8)=(0,1,1); pub const VCPU_SVE_FINALIZED:(u8,u8,u8)=(0,2,2); pub const VCPU_PKVM_FINALIZED:(u8,u8,u8)=(0,4,4);
 pub const PENDING_EXCEPTION:(u8,u8,u8)=(1,1,1); pub const INCREMENT_PC:(u8,u8,u8)=(1,2,2); pub const EXCEPT_MASK:(u8,u8,u8)=(1,14,14); pub const PKVM_HOST_STATE_DIRTY:(u8,u8,u8)=(1,16,16);
 pub const ON_UNSUPPORTED_CPU:(u8,u16,u16)=(2,1,1); pub const IN_WFIT:(u8,u16,u16)=(2,2,2); pub const SYSREGS_ON_CPU:(u8,u16,u16)=(2,4,4);
+
+/*
+ * Don't bother with VNCR-based accesses in the nVHE code, it has no
+ * business dealing with NV.
+ */
+#[inline]
+pub unsafe fn ___ctxt_sys_reg(ctxt: *const kvm_cpu_context, r: c_int) -> *mut u64 {
+    #[cfg(not(__KVM_NVHE_HYPERVISOR__))]
+    if cpus_have_final_cap(ARM64_HAS_NESTED_VIRT)
+        && r >= __VNCR_START__ as c_int
+        && !(*ctxt).vncr_array.is_null()
+    {
+        return (*ctxt).vncr_array.add((r - __VNCR_START__ as c_int) as usize);
+    }
+    core::ptr::addr_of!((*ctxt).sys_regs[r as usize]).cast_mut()
+}
+
+/// `__vcpu_rmw_sys_reg!(v, r, op, val)`: apply the compound assignment `op`
+/// to a vCPU system register, re-applying the NV register masks.
+#[macro_export]
+macro_rules! __vcpu_rmw_sys_reg {
+    ($v:expr, $r:expr, $op:tt, $val:expr) => {{
+        let vcpu = $v;
+        let reg = $r;
+        let ctxt = core::ptr::addr_of!((*vcpu).arch.ctxt);
+        let mut __v: u64 = *___ctxt_sys_reg(ctxt, reg as c_int);
+        __v $op ($val);
+        if vcpu_has_nv(vcpu) && reg as c_int >= __SANITISED_REG_START__ as c_int {
+            __v = kvm_vcpu_apply_reg_masks(vcpu, reg, __v);
+        }
+        *___ctxt_sys_reg(ctxt, reg as c_int) = __v;
+    }};
+}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

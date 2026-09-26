@@ -2,10 +2,10 @@
 // Dependencies supplied by the corresponding kernel headers and other translation units.
 
 extern "C" {
-    static mut __start_orc_unwind_ip: *mut i32;
-    static mut __stop_orc_unwind_ip: *mut i32;
-    static mut __start_orc_unwind: *mut orc_entry;
-    static mut __stop_orc_unwind: *mut orc_entry;
+    static __start_orc_unwind_ip: [i32; 0];
+    static __stop_orc_unwind_ip: [i32; 0];
+    static __start_orc_unwind: [orc_entry; 0];
+    static __stop_orc_unwind: [orc_entry; 0];
 }
 
 #[repr(C)]
@@ -64,7 +64,7 @@ unsafe fn __orc_find(ip_table: *mut i32, u_table: *mut orc_entry, num_entries: u
     u_table.add(found.offset_from(ip_table) as usize)
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn orc_module_find(ip: usize) -> *mut orc_entry {
     let module = __module_address(ip);
     if module.is_null() || (*module).arch.orc_unwind.is_null() || (*module).arch.orc_unwind_ip.is_null() {
@@ -72,10 +72,10 @@ unsafe fn orc_module_find(ip: usize) -> *mut orc_entry {
     }
     __orc_find((*module).arch.orc_unwind_ip, (*module).arch.orc_unwind, (*module).arch.num_orcs, ip)
 }
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 unsafe fn orc_module_find(_: usize) -> *mut orc_entry { core::ptr::null_mut() }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 unsafe fn orc_ftrace_find(ip: usize) -> *mut orc_entry {
     let ops = ftrace_ops_trampoline(ip);
     if ops.is_null() { return core::ptr::null_mut(); }
@@ -84,7 +84,7 @@ unsafe fn orc_ftrace_find(ip: usize) -> *mut orc_entry {
     if ip == tramp_addr { return core::ptr::null_mut(); }
     orc_find(tramp_addr)
 }
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 unsafe fn orc_ftrace_find(_: usize) -> *mut orc_entry { core::ptr::null_mut() }
 
 unsafe fn orc_find(ip: usize) -> *mut orc_entry {
@@ -95,34 +95,34 @@ unsafe fn orc_find(ip: usize) -> *mut orc_entry {
         if idx >= lookup_num_blocks.wrapping_sub(1) { orc_warn(); return core::ptr::null_mut(); }
         let start = orc_lookup[idx];
         let stop = orc_lookup[idx + 1] + 1;
-        if __start_orc_unwind.add(start as usize) >= __stop_orc_unwind || __start_orc_unwind.add(stop as usize) > __stop_orc_unwind { orc_warn(); return core::ptr::null_mut(); }
-        return __orc_find(__start_orc_unwind_ip.add(start as usize), __start_orc_unwind.add(start as usize), stop - start, ip);
+        if __start_orc_unwind.as_ptr().cast_mut().add(start as usize) >= __stop_orc_unwind.as_ptr().cast_mut() || __start_orc_unwind.as_ptr().cast_mut().add(stop as usize) > __stop_orc_unwind.as_ptr().cast_mut() { orc_warn(); return core::ptr::null_mut(); }
+        return __orc_find(__start_orc_unwind_ip.as_ptr().cast_mut().add(start as usize), __start_orc_unwind.as_ptr().cast_mut().add(start as usize), stop - start, ip);
     }
-    if is_kernel_inittext(ip) { return __orc_find(__start_orc_unwind_ip, __start_orc_unwind, __stop_orc_unwind_ip.offset_from(__start_orc_unwind_ip) as u32, ip); }
+    if is_kernel_inittext(ip) { return __orc_find(__start_orc_unwind_ip.as_ptr().cast_mut(), __start_orc_unwind.as_ptr().cast_mut(), __stop_orc_unwind_ip.as_ptr().cast_mut().offset_from(__start_orc_unwind_ip.as_ptr().cast_mut()) as u32, ip); }
     orc = orc_module_find(ip);
     if !orc.is_null() { return orc; }
     orc_ftrace_find(ip)
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn orc_sort_swap(a: *mut i32, b: *mut i32, _: i32) {
     let delta = b.offset_from(a);
     let tmp = *a; *a = (*b).wrapping_add(delta as i32); *b = tmp.wrapping_sub(delta as i32);
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn orc_sort_cmp(a: *const i32, b: *const i32) -> i32 {
     let av = orc_ip(a); let bv = orc_ip(b);
     if av > bv { return 1; } if av < bv { return -1; }
     if (*cur_orc_table.add(a.offset_from(cur_orc_ip_table) as usize)).type_ == ORC_TYPE_UNDEFINED { -1 } else { 1 }
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 static mut cur_orc_ip_table: *mut i32 = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 static mut cur_orc_table: *mut orc_entry = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe fn unwind_module_init(mod_: *mut module, orc_ip: *mut i32, orc_ip_size: usize, orc: *mut orc_entry, orc_size: usize) {
     let num_entries = orc_ip_size / core::mem::size_of::<i32>();
     cur_orc_ip_table = orc_ip; cur_orc_table = orc;
@@ -131,14 +131,14 @@ pub unsafe fn unwind_module_init(mod_: *mut module, orc_ip: *mut i32, orc_ip_siz
 }
 
 pub unsafe fn unwind_init() {
-    let orc_size = (__stop_orc_unwind as usize).wrapping_sub(__start_orc_unwind as usize);
-    let orc_ip_size = (__stop_orc_unwind_ip as usize).wrapping_sub(__start_orc_unwind_ip as usize);
+    let orc_size = (__stop_orc_unwind.as_ptr().cast_mut() as usize).wrapping_sub(__start_orc_unwind.as_ptr().cast_mut() as usize);
+    let orc_ip_size = (__stop_orc_unwind_ip.as_ptr().cast_mut() as usize).wrapping_sub(__start_orc_unwind_ip.as_ptr().cast_mut() as usize);
     let num_entries = orc_ip_size / core::mem::size_of::<i32>();
     if num_entries == 0 || orc_ip_size % core::mem::size_of::<i32>() != 0 || orc_size % core::mem::size_of::<orc_entry>() != 0 || num_entries != orc_size / core::mem::size_of::<orc_entry>() { orc_warn(); return; }
     lookup_num_blocks = (orc_lookup_end as usize - orc_lookup as usize) / core::mem::size_of::<u32>();
-    for i in 0..lookup_num_blocks.saturating_sub(1) { let o = __orc_find(__start_orc_unwind_ip, __start_orc_unwind, num_entries as u32, LOOKUP_START_IP + LOOKUP_BLOCK_SIZE * i as usize); if o.is_null() { orc_warn(); return; } orc_lookup[i] = o.offset_from(__start_orc_unwind) as u32; }
-    let o = __orc_find(__start_orc_unwind_ip, __start_orc_unwind, num_entries as u32, LOOKUP_STOP_IP); if o.is_null() { orc_warn(); return; }
-    orc_lookup[lookup_num_blocks as usize - 1] = o.offset_from(__start_orc_unwind) as u32; orc_init = true;
+    for i in 0..lookup_num_blocks.saturating_sub(1) { let o = __orc_find(__start_orc_unwind_ip.as_ptr().cast_mut(), __start_orc_unwind.as_ptr().cast_mut(), num_entries as u32, LOOKUP_START_IP + LOOKUP_BLOCK_SIZE * i as usize); if o.is_null() { orc_warn(); return; } orc_lookup[i] = o.offset_from(__start_orc_unwind.as_ptr().cast_mut()) as u32; }
+    let o = __orc_find(__start_orc_unwind_ip.as_ptr().cast_mut(), __start_orc_unwind.as_ptr().cast_mut(), num_entries as u32, LOOKUP_STOP_IP); if o.is_null() { orc_warn(); return; }
+    orc_lookup[lookup_num_blocks as usize - 1] = o.offset_from(__start_orc_unwind.as_ptr().cast_mut()) as u32; orc_init = true;
 }
 
 unsafe fn on_stack(info: *const stack_info, addr: usize, len: usize) -> bool {

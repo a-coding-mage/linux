@@ -13,7 +13,7 @@ extern "C" {
 // Equivalent of the build-time IS_ENABLED(CONFIG_PFAULT) condition.
 #[inline]
 pub unsafe fn pfault_init() -> ::core::ffi::c_int {
-    if cfg!(feature = "CONFIG_PFAULT") {
+    if cfg!(CONFIG_PFAULT) {
         unsafe { __pfault_init() }
     } else {
         EOPNOTSUPP
@@ -23,7 +23,7 @@ pub unsafe fn pfault_init() -> ::core::ffi::c_int {
 // Equivalent of the build-time IS_ENABLED(CONFIG_PFAULT) condition.
 #[inline]
 pub unsafe fn pfault_fini() {
-    if cfg!(feature = "CONFIG_PFAULT") {
+    if cfg!(CONFIG_PFAULT) {
         unsafe { __pfault_fini() };
     }
 }

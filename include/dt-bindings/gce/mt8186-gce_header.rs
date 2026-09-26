@@ -4,7 +4,6 @@
  * Author: Yongqiang Niu <yongqiang.niu@mediatek.com>
  */
 
-pub const _DT_BINDINGS_GCE_MT8186_H: u32 = ;
 
 /* assign timeout 0 also means default */
 pub const CMDQ_NO_TIMEOUT: u32 = 0xffffffff;

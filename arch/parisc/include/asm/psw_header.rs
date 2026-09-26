@@ -42,14 +42,14 @@ pub const PSW_Z: u32 = 0x40000000; /* PA1.x only */
 pub const PSW_Y: u32 = 0x80000000; /* PA1.x only */
 
 /* CONFIG_64BIT is a build-time C condition; Rust cfg preserves its intent. */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const PSW_HI_CB: u32 = 0x000000ff; /* PA2.0 only */
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const USER_PSW_HI_MASK: u32 = PSW_HI_CB;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const WIDE_PSW: u32 = PSW_W;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub const WIDE_PSW: u32 = 0;
 
 /* Used when setting up for rfi */
@@ -88,13 +88,13 @@ pub struct pa_psw {
 }
 
 /* TASK_PT_PSW is supplied by the containing architecture definitions. */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[inline]
 pub unsafe fn pa_psw(task: *mut u8) -> *mut pa_psw {
     task.add(TASK_PT_PSW + 4) as *mut pa_psw
 }
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 #[inline]
 pub unsafe fn pa_psw(task: *mut u8) -> *mut pa_psw {
     task.add(TASK_PT_PSW) as *mut pa_psw

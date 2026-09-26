@@ -10,14 +10,14 @@
 //
 // Write access on the head is protected by kvm->mmu_lock, read access
 // is protected by track_srcu.
-#[cfg(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING")]
+#[cfg(CONFIG_KVM_EXTERNAL_WRITE_TRACKING)]
 #[repr(C)]
 pub struct kvm_page_track_notifier_head {
     pub track_srcu: srcu_struct,
     pub track_notifier_list: hlist_head,
 }
 
-#[cfg(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING")]
+#[cfg(CONFIG_KVM_EXTERNAL_WRITE_TRACKING)]
 #[repr(C)]
 pub struct kvm_page_track_notifier_node {
     pub node: hlist_node,
@@ -49,7 +49,7 @@ pub struct kvm_page_track_notifier_node {
     )>,
 }
 
-#[cfg(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING")]
+#[cfg(CONFIG_KVM_EXTERNAL_WRITE_TRACKING)]
 unsafe extern "C" {
     pub fn kvm_page_track_register_notifier(
         kvm: *mut kvm,
@@ -66,7 +66,7 @@ unsafe extern "C" {
 
 // Allow defining a node in a structure even if page tracking is disabled, e.g.
 // to play nice with testing headers via direct inclusion from the command line.
-#[cfg(not(feature = "CONFIG_KVM_EXTERNAL_WRITE_TRACKING"))]
+#[cfg(not(CONFIG_KVM_EXTERNAL_WRITE_TRACKING))]
 #[repr(C)]
 pub struct kvm_page_track_notifier_node {}
 

@@ -111,7 +111,7 @@ pub unsafe fn dlm_print_one_mle(mle: *mut dlm_master_list_entry) {
 
 // CONFIG_DEBUG_FS implementation follows the C source's debugfs operations.
 // Its kernel file-operation, seq-file, and list APIs are external dependencies.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub unsafe fn dlm_debug_init(dlm: *mut dlm_ctxt) {
     debugfs_create_file(b"dlm_state\0".as_ptr(), S_IFREG | S_IRUSR, (*dlm).dlm_debugfs_subroot, dlm, &debug_state_fops);
     debugfs_create_file(b"locking_state\0".as_ptr(), S_IFREG | S_IRUSR, (*dlm).dlm_debugfs_subroot, dlm, &debug_lockres_fops);
@@ -119,13 +119,13 @@ pub unsafe fn dlm_debug_init(dlm: *mut dlm_ctxt) {
     debugfs_create_file(b"purge_list\0".as_ptr(), S_IFREG | S_IRUSR, (*dlm).dlm_debugfs_subroot, dlm, &debug_purgelist_fops);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub unsafe fn dlm_create_debugfs_subroot(dlm: *mut dlm_ctxt) { (*dlm).dlm_debugfs_subroot = debugfs_create_dir((*dlm).name, dlm_debugfs_root); }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub unsafe fn dlm_destroy_debugfs_subroot(dlm: *mut dlm_ctxt) { debugfs_remove_recursive((*dlm).dlm_debugfs_subroot); }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub unsafe fn dlm_create_debugfs_root() { dlm_debugfs_root = debugfs_create_dir(b"o2dlm\0".as_ptr(), core::ptr::null_mut()); }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub unsafe fn dlm_destroy_debugfs_root() { debugfs_remove(dlm_debugfs_root); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

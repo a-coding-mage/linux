@@ -59,22 +59,22 @@ pub enum switchdev_obj_id { SWITCHDEV_OBJ_ID_UNDEFINED, SWITCHDEV_OBJ_ID_PORT_VL
 
 /* CONFIG_NET_SWITCHDEV declarations and the enabled implementations are supplied by the kernel translation unit. */
 #[cfg(CONFIG_NET_SWITCHDEV)] extern "C" {
-    pub fn switchdev_bridge_port_offload(*mut net_device,*mut net_device,*const ::core::ffi::c_void,*mut notifier_block,*mut notifier_block,bool,*mut netlink_ext_ack)->i32;
-    pub fn switchdev_bridge_port_unoffload(*mut net_device,*const ::core::ffi::c_void,*mut notifier_block,*mut notifier_block);
+    pub fn switchdev_bridge_port_offload(_: *mut net_device,_: *mut net_device,_: *const ::core::ffi::c_void,_: *mut notifier_block,_: *mut notifier_block,_: bool,_: *mut netlink_ext_ack)->i32;
+    pub fn switchdev_bridge_port_unoffload(_: *mut net_device,_: *const ::core::ffi::c_void,_: *mut notifier_block,_: *mut notifier_block);
     pub fn switchdev_deferred_process();
-    pub fn switchdev_port_attr_set(*mut net_device,*const switchdev_attr,*mut netlink_ext_ack)->i32;
-    pub fn switchdev_port_obj_add(*mut net_device,*const switchdev_obj,*mut netlink_ext_ack)->i32;
-    pub fn switchdev_port_obj_del(*mut net_device,*const switchdev_obj)->i32;
-    pub fn register_switchdev_notifier(*mut notifier_block)->i32;
-    pub fn unregister_switchdev_notifier(*mut notifier_block)->i32;
-    pub fn register_switchdev_blocking_notifier(*mut notifier_block)->i32;
-    pub fn unregister_switchdev_blocking_notifier(*mut notifier_block)->i32;
-    pub fn call_switchdev_notifiers(::core::ffi::c_ulong,*mut net_device,*mut switchdev_notifier_info,*mut netlink_ext_ack)->i32;
-    pub fn call_switchdev_blocking_notifiers(::core::ffi::c_ulong,*mut net_device,*mut switchdev_notifier_info,*mut netlink_ext_ack)->i32;
-    pub fn switchdev_handle_fdb_event_to_device(*mut net_device,::core::ffi::c_ulong,*const switchdev_notifier_fdb_info,Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*const net_device,*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*mut net_device,::core::ffi::c_ulong,*const ::core::ffi::c_void,*const switchdev_notifier_fdb_info)->i32>)->i32;
-    pub fn switchdev_handle_port_obj_add(*mut net_device,*mut switchdev_notifier_port_obj_info,Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*const ::core::ffi::c_void,*const switchdev_obj,*mut netlink_ext_ack)->i32>)->i32;
-    pub fn switchdev_handle_port_obj_del(*mut net_device,*mut switchdev_notifier_port_obj_info,Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*const ::core::ffi::c_void,*const switchdev_obj)->i32>)->i32;
-    pub fn switchdev_handle_port_attr_set(*mut net_device,*mut switchdev_notifier_port_attr_info,Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*const ::core::ffi::c_void,*const switchdev_attr,*mut netlink_ext_ack)->i32>)->i32;
+    pub fn switchdev_port_attr_set(_: *mut net_device,_: *const switchdev_attr,_: *mut netlink_ext_ack)->i32;
+    pub fn switchdev_port_obj_add(_: *mut net_device,_: *const switchdev_obj,_: *mut netlink_ext_ack)->i32;
+    pub fn switchdev_port_obj_del(_: *mut net_device,_: *const switchdev_obj)->i32;
+    pub fn register_switchdev_notifier(_: *mut notifier_block)->i32;
+    pub fn unregister_switchdev_notifier(_: *mut notifier_block)->i32;
+    pub fn register_switchdev_blocking_notifier(_: *mut notifier_block)->i32;
+    pub fn unregister_switchdev_blocking_notifier(_: *mut notifier_block)->i32;
+    pub fn call_switchdev_notifiers(_: ::core::ffi::c_ulong,_: *mut net_device,_: *mut switchdev_notifier_info,_: *mut netlink_ext_ack)->i32;
+    pub fn call_switchdev_blocking_notifiers(_: ::core::ffi::c_ulong,_: *mut net_device,_: *mut switchdev_notifier_info,_: *mut netlink_ext_ack)->i32;
+    pub fn switchdev_handle_fdb_event_to_device(_: *mut net_device,_: ::core::ffi::c_ulong,_: *const switchdev_notifier_fdb_info,_: Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*const net_device,*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,_: *mut net_device,_: ::core::ffi::c_ulong,_: *const ::core::ffi::c_void,_: *const switchdev_notifier_fdb_info)->i32>)->i32;
+    pub fn switchdev_handle_port_obj_add(_: *mut net_device,_: *mut switchdev_notifier_port_obj_info,_: Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*const ::core::ffi::c_void,*const switchdev_obj,*mut netlink_ext_ack)->i32>)->i32;
+    pub fn switchdev_handle_port_obj_del(_: *mut net_device,_: *mut switchdev_notifier_port_obj_info,_: Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*const ::core::ffi::c_void,*const switchdev_obj)->i32>)->i32;
+    pub fn switchdev_handle_port_attr_set(_: *mut net_device,_: *mut switchdev_notifier_port_attr_info,_: Option<unsafe extern "C" fn(*const net_device)->bool>,Option<unsafe extern "C" fn(*mut net_device,*const ::core::ffi::c_void,*const switchdev_attr,*mut netlink_ext_ack)->i32>)->i32;
 }
 
 #[macro_export] macro_rules! SWITCHDEV_OBJ_PORT_VLAN { ($obj:expr) => { $obj as *mut switchdev_obj_port_vlan }; }

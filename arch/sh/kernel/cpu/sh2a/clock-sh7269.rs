@@ -91,7 +91,9 @@ static mut div4_table: clk_div4_table = clk_div4_table {
     div_mult_table: &mut div4_div_mult_table,
 };
 
-enum { DIV4_I, DIV4_B, DIV4_NR }
+pub const DIV4_I: i32 = 0;
+pub const DIV4_B: i32 = DIV4_I + 1;
+pub const DIV4_NR: i32 = DIV4_B + 1;
 
 // DIV4(_reg, _bit, _mask, _flags) expands to SH_CLK_DIV4(&pll_clk, ...).
 static mut div4_clks: [clk; DIV4_NR] = unsafe {
@@ -103,13 +105,20 @@ static mut div4_clks: [clk; DIV4_NR] = unsafe {
     ]
 };
 
-enum {
-    MSTP72,
-    MSTP60,
-    MSTP47, MSTP46, MSTP45, MSTP44, MSTP43, MSTP42, MSTP41, MSTP40,
-    MSTP35, MSTP32, MSTP30,
-    MSTP_NR,
-}
+pub const MSTP72: i32 = 0;
+pub const MSTP60: i32 = MSTP72 + 1;
+pub const MSTP47: i32 = MSTP60 + 1;
+pub const MSTP46: i32 = MSTP47 + 1;
+pub const MSTP45: i32 = MSTP46 + 1;
+pub const MSTP44: i32 = MSTP45 + 1;
+pub const MSTP43: i32 = MSTP44 + 1;
+pub const MSTP42: i32 = MSTP43 + 1;
+pub const MSTP41: i32 = MSTP42 + 1;
+pub const MSTP40: i32 = MSTP41 + 1;
+pub const MSTP35: i32 = MSTP40 + 1;
+pub const MSTP32: i32 = MSTP35 + 1;
+pub const MSTP30: i32 = MSTP32 + 1;
+pub const MSTP_NR: i32 = MSTP30 + 1;
 
 static mut mstp_clks: [clk; MSTP_NR] = unsafe {
     [

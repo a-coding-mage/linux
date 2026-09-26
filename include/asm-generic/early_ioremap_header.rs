@@ -25,8 +25,8 @@ extern "C" {
 
 /* CONFIG_GENERIC_EARLY_IOREMAP && CONFIG_MMU */
 #[cfg(all(
-    feature = "CONFIG_GENERIC_EARLY_IOREMAP",
-    feature = "CONFIG_MMU"
+    CONFIG_GENERIC_EARLY_IOREMAP,
+    CONFIG_MMU
 ))]
 extern "C" {
     /* Arch-specific initialization */
@@ -50,22 +50,22 @@ extern "C" {
 }
 
 #[cfg(not(all(
-    feature = "CONFIG_GENERIC_EARLY_IOREMAP",
-    feature = "CONFIG_MMU"
+    CONFIG_GENERIC_EARLY_IOREMAP,
+    CONFIG_MMU
 )))]
 #[inline]
 pub unsafe fn early_ioremap_init() {}
 
 #[cfg(not(all(
-    feature = "CONFIG_GENERIC_EARLY_IOREMAP",
-    feature = "CONFIG_MMU"
+    CONFIG_GENERIC_EARLY_IOREMAP,
+    CONFIG_MMU
 )))]
 #[inline]
 pub unsafe fn early_ioremap_setup() {}
 
 #[cfg(not(all(
-    feature = "CONFIG_GENERIC_EARLY_IOREMAP",
-    feature = "CONFIG_MMU"
+    CONFIG_GENERIC_EARLY_IOREMAP,
+    CONFIG_MMU
 )))]
 #[inline]
 pub unsafe fn early_ioremap_reset() {}

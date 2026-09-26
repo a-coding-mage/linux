@@ -120,9 +120,11 @@ unsafe fn vmemmap_remap_free(start: c_ulong, mut end: c_ulong, head: *mut page, 
 unsafe fn alloc_vmemmap_page_list(start: c_ulong, end: c_ulong, list: *mut list_head) -> c_int {
     let mask = GFP_KERNEL | __GFP_RETRY_MAYFAIL; let nr = (end - start) >> PAGE_SHIFT;
     let nid = page_to_nid(start as *mut page); let mut i = 0;
-    while i < nr { let p = alloc_pages_node(nid, mask, 0); if p.is_null() { goto_out!(out); } list_add(&mut (*p).lru, list); i += 1; }
+    'out: {
+    while i < nr { let p = alloc_pages_node(nid, mask, 0); if p.is_null() { break 'out; } list_add(&mut (*p).lru, list); i += 1; }
     memmap_pages_add(nr as c_long); return 0;
-out: list_for_each_entry_safe!(p, next, list, lru, { __free_page(p); }); -ENOMEM
+    }
+    list_for_each_entry_safe!(p, next, list, lru, { __free_page(p); }); -ENOMEM
 }
 
 static mut vmemmap_optimize_enabled: bool = IS_ENABLED_CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON;

@@ -11,7 +11,7 @@ pub struct pt_regs {
     _private: [u8; 0],
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 extern "C" {
     pub static mut __debugger: Option<unsafe extern "C" fn(regs: *mut pt_regs) -> i32>;
     pub static mut __debugger_ipi: Option<unsafe extern "C" fn(regs: *mut pt_regs) -> i32>;
@@ -22,7 +22,7 @@ extern "C" {
     pub static mut __debugger_fault_handler: Option<unsafe extern "C" fn(regs: *mut pt_regs) -> i32>;
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger(regs: *mut pt_regs) -> i32 {
     match __debugger {
@@ -31,7 +31,7 @@ pub unsafe fn debugger(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger_ipi(regs: *mut pt_regs) -> i32 {
     match __debugger_ipi {
@@ -40,7 +40,7 @@ pub unsafe fn debugger_ipi(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger_bpt(regs: *mut pt_regs) -> i32 {
     match __debugger_bpt {
@@ -49,7 +49,7 @@ pub unsafe fn debugger_bpt(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger_sstep(regs: *mut pt_regs) -> i32 {
     match __debugger_sstep {
@@ -58,7 +58,7 @@ pub unsafe fn debugger_sstep(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger_iabr_match(regs: *mut pt_regs) -> i32 {
     match __debugger_iabr_match {
@@ -67,7 +67,7 @@ pub unsafe fn debugger_iabr_match(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger_break_match(regs: *mut pt_regs) -> i32 {
     match __debugger_break_match {
@@ -76,7 +76,7 @@ pub unsafe fn debugger_break_match(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE"))]
+#[cfg(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE))]
 #[inline]
 pub unsafe fn debugger_fault_handler(regs: *mut pt_regs) -> i32 {
     match __debugger_fault_handler {
@@ -85,25 +85,25 @@ pub unsafe fn debugger_fault_handler(regs: *mut pt_regs) -> i32 {
     }
 }
 
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger(_regs: *mut pt_regs) -> i32 { 0 }
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger_ipi(_regs: *mut pt_regs) -> i32 { 0 }
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger_bpt(_regs: *mut pt_regs) -> i32 { 0 }
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger_sstep(_regs: *mut pt_regs) -> i32 { 0 }
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger_iabr_match(_regs: *mut pt_regs) -> i32 { 0 }
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger_break_match(_regs: *mut pt_regs) -> i32 { 0 }
-#[cfg(not(any(feature = "CONFIG_DEBUGGER", feature = "CONFIG_KEXEC_CORE")))]
+#[cfg(not(any(CONFIG_DEBUGGER, CONFIG_KEXEC_CORE)))]
 #[inline]
 pub unsafe fn debugger_fault_handler(_regs: *mut pt_regs) -> i32 { 0 }
 
@@ -114,7 +114,7 @@ extern "C" {
     pub fn ppc_breakpoint_available() -> bool;
 }
 
-#[cfg(feature = "CONFIG_PPC_ADV_DEBUG_REGS")]
+#[cfg(CONFIG_PPC_ADV_DEBUG_REGS)]
 extern "C" {
     pub fn do_send_trap(
         regs: *mut pt_regs,

@@ -15,7 +15,7 @@ pub struct expcard_quirklist {
 extern "C" {
     fn ecard_loader_reset(base:usize, loader:*mut core::ffi::c_void)->i32;
     fn ecard_loader_read(off:i32, base:usize, loader:*mut core::ffi::c_void)->i32;
-    fn atomwide_3p_quirk(*mut ecard_t);
+    fn atomwide_3p_quirk(_: *mut ecard_t);
 }
 static mut cards:*mut ecard_t=core::ptr::null_mut();
 static mut slot_to_expcard:[*mut ecard_t;MAX_ECARDS]=[core::ptr::null_mut();MAX_ECARDS];

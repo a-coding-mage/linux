@@ -31,8 +31,8 @@ macro_rules! TO_DCE_TRANSFORM { ($transform:expr) => {
 // macros because their SRI/OPP_SF symbols are supplied by the generated
 // register definitions used with this header.
 #[macro_export]
-macro_rules! XFM_SF { ($reg:ident, $field:ident, $post:ident) => {
-    $reg ## __ ## $field ## $post
+macro_rules! XFM_SF { ($reg:tt, $field:tt, $post:tt) => {
+    ::kernel::macros::paste!([<$reg __>]) ## ::kernel::macros::paste!([<$field $post>])
 } }
 
 #[repr(C)]
@@ -122,7 +122,7 @@ pub struct dce_transform_registers {
 
 #[repr(C)] pub struct init_int_and_frac { pub integer: u32, pub fraction: u32 }
 #[repr(C)] pub struct scl_ratios_inits { pub h_int_scale_ratio: u32, pub v_int_scale_ratio: u32, pub h_init: init_int_and_frac, pub v_init: init_int_and_frac }
-#[cfg(feature = "CONFIG_DRM_AMD_DC_SI")]
+#[cfg(CONFIG_DRM_AMD_DC_SI)]
 #[repr(C)] pub struct sclh_ratios_inits { pub h_int_scale_ratio: u32, pub v_int_scale_ratio: u32, pub h_init_luma: init_int_and_frac, pub h_init_chroma: init_int_and_frac, pub v_init: init_int_and_frac }
 
 #[repr(i32)] pub enum ram_filter_type { FILTER_TYPE_RGB_Y_VERTICAL = 0, FILTER_TYPE_CBCR_VERTICAL = 1, FILTER_TYPE_RGB_Y_HORIZONTAL = 2, FILTER_TYPE_CBCR_HORIZONTAL = 3, FILTER_TYPE_ALPHA_VERTICAL = 4, FILTER_TYPE_ALPHA_HORIZONTAL = 5 }
@@ -140,7 +140,7 @@ pub struct dce_transform_registers {
 
 extern "C" {
     pub fn dce_transform_construct(xfm_dce: *mut dce_transform, ctx: *mut dc_context, inst: u32, regs: *const dce_transform_registers, xfm_shift: *const dce_transform_shift, xfm_mask: *const dce_transform_mask);
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_SI")] pub fn dce60_transform_construct(xfm_dce: *mut dce_transform, ctx: *mut dc_context, inst: u32, regs: *const dce_transform_registers, xfm_shift: *const dce_transform_shift, xfm_mask: *const dce_transform_mask);
+    #[cfg(CONFIG_DRM_AMD_DC_SI)] pub fn dce60_transform_construct(xfm_dce: *mut dce_transform, ctx: *mut dc_context, inst: u32, regs: *const dce_transform_registers, xfm_shift: *const dce_transform_shift, xfm_mask: *const dce_transform_mask);
     pub fn dce_transform_get_optimal_number_of_taps(xfm: *mut transform, scl_data: *mut scaler_data, in_taps: *const scaling_taps) -> bool;
     pub fn dce110_opp_set_csc_adjustment(xfm: *mut transform, tbl_entry: *const out_csc_color_matrix);
     pub fn dce110_opp_set_csc_default(xfm: *mut transform, default_adjust: *const default_adjustment);

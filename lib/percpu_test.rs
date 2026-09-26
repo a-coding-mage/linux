@@ -14,25 +14,25 @@ static mut ULONG_COUNTER: usize = 0;
 
 macro_rules! check {
     ($native:expr, $pcp:expr, $expected:expr) => {{
-        let native = $native;
-        let expected = $expected;
+        let $native = $native;
+        let $expected = $expected;
         unsafe {
             WARN(
-                native != expected,
+                $native != $expected,
                 b"raw %ld (0x%lx) != expected %lld (0x%llx)\0".as_ptr() as *const c_char,
-                native,
-                native,
-                expected as i64,
-                expected as i64,
+                $native,
+                $native,
+                $expected as i64,
+                $expected as i64,
             );
-            let pcp = $pcp;
+            let $pcp = $pcp;
             WARN(
-                pcp != expected,
+                $pcp != $expected,
                 b"pcp %ld (0x%lx) != expected %lld (0x%llx)\0".as_ptr() as *const c_char,
-                pcp,
-                pcp,
-                expected as i64,
-                expected as i64,
+                $pcp,
+                $pcp,
+                $expected as i64,
+                $expected as i64,
             );
         }
     }};

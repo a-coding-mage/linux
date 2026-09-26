@@ -109,17 +109,17 @@ extern "C" {
         cancel_all: bool,
     ) -> io_wq_cancel;
 
-    #[cfg(feature = "CONFIG_IO_WQ")]
+    #[cfg(CONFIG_IO_WQ)]
     pub fn io_wq_worker_sleeping(tsk: *mut task_struct);
-    #[cfg(feature = "CONFIG_IO_WQ")]
+    #[cfg(CONFIG_IO_WQ)]
     pub fn io_wq_worker_running(tsk: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_IO_WQ"))]
+#[cfg(not(CONFIG_IO_WQ))]
 #[inline]
 pub unsafe fn io_wq_worker_sleeping(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_IO_WQ"))]
+#[cfg(not(CONFIG_IO_WQ))]
 #[inline]
 pub unsafe fn io_wq_worker_running(_tsk: *mut task_struct) {}
 

@@ -90,7 +90,7 @@ unsafe extern "C" fn xen_hvm_smp_prepare_cpus(max_cpus: c_uint) {
     }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn xen_hvm_cleanup_dead_cpu(cpu: c_uint) {
     if xen_have_vector_callback {
         xen_smp_intr_free(cpu);
@@ -99,7 +99,7 @@ unsafe extern "C" fn xen_hvm_cleanup_dead_cpu(cpu: c_uint) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 unsafe extern "C" fn xen_hvm_cleanup_dead_cpu(_cpu: c_uint) {
     bug();
 }
@@ -111,7 +111,7 @@ pub unsafe extern "C" fn xen_hvm_smp_init() {
     smp_ops.cleanup_dead_cpu = Some(xen_hvm_cleanup_dead_cpu);
 
     if !xen_have_vector_callback {
-        #[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
+        #[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
         {
             nopvspin = true;
         }

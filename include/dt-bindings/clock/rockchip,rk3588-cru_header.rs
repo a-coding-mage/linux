@@ -9,7 +9,6 @@
  * Author: Sebastian Reichel <sebastian.reichel@collabora.com>
  */
 
-pub const _DT_BINDINGS_CLK_ROCKCHIP_RK3588_H: u32 = ;
 
 // cru-clocks indices
 

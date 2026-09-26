@@ -815,7 +815,7 @@ unsafe fn exynos7885_cmu_probe(pdev: *mut platform_device) -> i32
 	let dev: *mut device = unsafe { &mut (*pdev).dev };
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }

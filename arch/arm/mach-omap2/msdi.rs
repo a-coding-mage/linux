@@ -80,14 +80,14 @@ pub unsafe fn omap_msdi_reset(oh: *mut OmapHwmod) -> i32 {
     if c == MAX_MODULE_SOFTRESET_WAIT {
         pr_warn(
             c"%s: %s: softreset failed (waited %d usec)\n",
-            c"omap_msdi_reset\0".as_ptr(),
+            c"omap_msdi_reset".as_ptr(),
             (*oh).name,
             MAX_MODULE_SOFTRESET_WAIT,
         );
     } else {
         pr_debug(
             c"%s: %s: softreset in %d usec\n",
-            c"omap_msdi_reset\0".as_ptr(),
+            c"omap_msdi_reset".as_ptr(),
             (*oh).name,
             c,
         );

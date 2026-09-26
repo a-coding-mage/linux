@@ -85,6 +85,6 @@ unsafe fn xdma_fill_descs(sw: *mut XdmaDesc, mut src: u64, mut dst: u64, size: u
 
 // External kernel types, register definitions, helpers, and the remaining
 // driver callbacks are intentionally unresolved dependencies of this translation.
-extern "C" { fn regmap_write(*mut regmap,u32,u32)->i32; fn regmap_read(*mut regmap,u32,*mut u32)->i32; fn kfree(*mut c_void); fn platform_get_drvdata(*mut platform_device)->*mut c_void; fn dev_err(*mut platform_device,*const str,...); }
+extern "C" { fn regmap_write(_: *mut regmap,_: u32,_: u32)->i32; fn regmap_read(_: *mut regmap,_: u32,_: *mut u32)->i32; fn kfree(_: *mut c_void); fn platform_get_drvdata(_: *mut platform_device)->*mut c_void; fn dev_err(_: *mut platform_device,_: *const str,...); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

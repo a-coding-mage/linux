@@ -54,17 +54,17 @@ struct uretprobe_stack {
 unsafe extern "C" {
     static env: Env;
 
-    static __start_uprobe__target_4: *const c_void;
-    static __stop_uprobe__target_4: *const c_void;
-    static __start_uprobe__target_3: *const c_void;
-    static __stop_uprobe__target_3: *const c_void;
-    static __start_uprobe__target_2: *const c_void;
-    static __stop_uprobe__target_2: *const c_void;
-    static __start_uprobe__target_1: *const c_void;
-    static __stop_uprobe__target_1: *const c_void;
+    static __start_uprobe__target_4: [c_void; 0];
+    static __stop_uprobe__target_4: [c_void; 0];
+    static __start_uprobe__target_3: [c_void; 0];
+    static __stop_uprobe__target_3: [c_void; 0];
+    static __start_uprobe__target_2: [c_void; 0];
+    static __stop_uprobe__target_2: [c_void; 0];
+    static __start_uprobe__target_1: [c_void; 0];
+    static __stop_uprobe__target_1: [c_void; 0];
 
-    static __start_uretprobe_stack_sec: *const c_void;
-    static __stop_uretprobe_stack_sec: *const c_void;
+    static __start_uretprobe_stack_sec: [c_void; 0];
+    static __stop_uretprobe_stack_sec: [c_void; 0];
 
     fn printf(fmt: *const c_char, ...) -> c_int;
 
@@ -121,26 +121,26 @@ pub extern "C" fn target_1(depth: c_int) -> c_int {
 static mut targets: [range; 5] = [
     range { start: 0, stop: 0 }, /* we want target_1 to map to target[1], so need 1-based indexing */
     range {
-        start: unsafe { &__start_uprobe__target_1 as *const _ as c_long },
-        stop: unsafe { &__stop_uprobe__target_1 as *const _ as c_long },
+        start: unsafe { &__start_uprobe__target_1.as_ptr() as *const _ as c_long },
+        stop: unsafe { &__stop_uprobe__target_1.as_ptr() as *const _ as c_long },
     },
     range {
-        start: unsafe { &__start_uprobe__target_2 as *const _ as c_long },
-        stop: unsafe { &__stop_uprobe__target_2 as *const _ as c_long },
+        start: unsafe { &__start_uprobe__target_2.as_ptr() as *const _ as c_long },
+        stop: unsafe { &__stop_uprobe__target_2.as_ptr() as *const _ as c_long },
     },
     range {
-        start: unsafe { &__start_uprobe__target_3 as *const _ as c_long },
-        stop: unsafe { &__stop_uprobe__target_3 as *const _ as c_long },
+        start: unsafe { &__start_uprobe__target_3.as_ptr() as *const _ as c_long },
+        stop: unsafe { &__stop_uprobe__target_3.as_ptr() as *const _ as c_long },
     },
     range {
-        start: unsafe { &__start_uprobe__target_4 as *const _ as c_long },
-        stop: unsafe { &__stop_uprobe__target_4 as *const _ as c_long },
+        start: unsafe { &__start_uprobe__target_4.as_ptr() as *const _ as c_long },
+        stop: unsafe { &__stop_uprobe__target_4.as_ptr() as *const _ as c_long },
     },
 ];
 
 static mut caller: range = range {
-    start: unsafe { &__start_uretprobe_stack_sec as *const _ as c_long },
-    stop: unsafe { &__stop_uretprobe_stack_sec as *const _ as c_long },
+    start: unsafe { &__start_uretprobe_stack_sec.as_ptr() as *const _ as c_long },
+    stop: unsafe { &__stop_uretprobe_stack_sec.as_ptr() as *const _ as c_long },
 };
 
 unsafe fn validate_stack(ips: *mut __u64, mut stack_len: c_int, cnt: c_int, expected: &[*const range]) {

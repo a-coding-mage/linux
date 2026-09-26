@@ -600,7 +600,7 @@ unsafe extern "C" fn perf_event__repipe_attr(tool: *const perf_tool, mut event: 
     }
     if !(*inject).output.is_pipe { ret = 0; free(aslr_event as *mut c_void); return ret; }
     if !(*inject).itrace_synth_opts.set { ret = perf_event__repipe_synth(tool, event); free(aslr_event as *mut c_void); return ret; }
-    if (*event).header.size as usize  < size_of::<perf_event_header>() + PERF_ATTR_SIZE_VER0 as usize {
+    if ((*event).header.size as usize)  < size_of::<perf_event_header>() + PERF_ATTR_SIZE_VER0 as usize {
         pr_err(c"Attribute event size %u is too small\n".as_ptr(), (*event).header.size as c_uint);
         free(aslr_event as *mut c_void); return -EINVAL;
     }

@@ -44,19 +44,21 @@ unsafe fn alg_get_type(name: *const i8) -> *const af_alg_type {
 pub unsafe extern "C" fn af_alg_register_type(type_: *const af_alg_type) -> i32 {
     let mut node: *mut AlgTypeList;
     let mut err = -EEXIST;
+    'unlock: {
     down_write(&mut ALG_TYPES_SEM);
     list_for_each_entry!(node, &mut ALG_TYPES, list, {
-        if strcmp((*(*node).type_).name, (*type_).name) == 0 { goto!(unlock); }
+        if strcmp((*(*node).type_).name, (*type_).name) == 0 { break 'unlock; }
     });
     node = kmalloc_obj!(*node);
     err = -ENOMEM;
-    if node.is_null() { goto!(unlock); }
+    if node.is_null() { break 'unlock; }
     (*(*type_).ops).owner = THIS_MODULE;
     if !(*type_).ops_nokey.is_null() { (*(*type_).ops_nokey).owner = THIS_MODULE; }
     (*node).type_ = type_;
     list_add(&mut (*node).list, &mut ALG_TYPES);
     err = 0;
-unlock:
+    }
+    
     up_write(&mut ALG_TYPES_SEM);
     err
 }

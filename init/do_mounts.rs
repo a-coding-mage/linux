@@ -99,8 +99,8 @@ pub unsafe fn mount_root_generic(name: *mut i8, pretty_name: *mut i8, mut flags:
             if *p == 0 { p = p.add(strlen(p) + 1); i += 1; continue; }
             err = do_mount_root(name, p, flags, root_mount_data as *const _);
             match err {
-                0 => break 'retry,
-                -EACCES | -EINVAL => { #[cfg(CONFIG_BLOCK)] init_flush_fput(); p = p.add(strlen(p) + 1); i += 1; continue; }
+                case if case == 0 => break 'retry,
+                case if case == -EACCES || case == -EINVAL => { #[cfg(CONFIG_BLOCK)] init_flush_fput(); p = p.add(strlen(p) + 1); i += 1; continue; }
                 _ => {}
             }
             printk(c"VFS: Cannot open root device \"%s\" or %s: error %d\n", pretty_name, b.as_ptr(), err);

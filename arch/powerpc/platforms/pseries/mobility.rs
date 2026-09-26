@@ -17,7 +17,7 @@ const MIGRATION_API_VERSION: u32 = 1;
 
 static mut MOBILITY_KOBJ: *mut Kobject = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_PPC_WATCHDOG")]
+#[cfg(CONFIG_PPC_WATCHDOG)]
 static mut NMI_WD_LPM_FACTOR: u32 = 200;
 
 unsafe fn mobility_rtas_call(token: i32, buf: *mut i8, scope: i32) -> i32 {
@@ -125,13 +125,13 @@ unsafe fn prod_others() { for_each_online_cpu!(cpu => { if cpu != smp_processor_
 
 #[repr(C)] struct PseriesSuspendInfo { counter: AtomicT, done: bool }
 unsafe fn do_suspend() -> i32 { let saved=clamp_slb_size(); let mut status=0; let r=rtas_ibm_suspend_me(&mut status); if r!=0 { pr_err!("ibm,suspend-me error: %d\n",status); slb_set_size(saved); } r }
-unsafe fn clamp_slb_size() -> u16 { #[cfg(feature="CONFIG_PPC_64S_HASH_MMU")] { let p=MMU_SLB_SIZE; slb_set_size(SLB_MIN_SIZE); p } #[cfg(not(feature="CONFIG_PPC_64S_HASH_MMU"))] { 0 } }
+unsafe fn clamp_slb_size() -> u16 { #[cfg(CONFIG_PPC_64S_HASH_MMU)] { let p=MMU_SLB_SIZE; slb_set_size(SLB_MIN_SIZE); p } #[cfg(not(CONFIG_PPC_64S_HASH_MMU))] { 0 } }
 unsafe fn do_join(arg: *mut core::ffi::c_void) -> i32 { let info=arg as *mut PseriesSuspendInfo; loop { hard_irq_disable(); match plpar_hcall_norets(H_JOIN) { H_CONTINUE => break, H_SUCCESS => { smp_mb(); if !READ_ONCE!((*info).done) { continue; } return 0; }, _ => return -EIO } } let r=do_suspend(); if atomic_inc_return(&mut (*info).counter)==1 { WRITE_ONCE!((*info).done,true); smp_mb(); prod_others(); } r }
 
 #[repr(u32)] enum VasiAbortingEntity { ORCHESTRATOR=1, VSP_SOURCE, PARTITION_FIRMWARE, PLATFORM_FIRMWARE, VSP_TARGET, MIGRATING_PARTITION }
 unsafe fn pseries_cancel_migration(handle:u64, err:i32) { let reason=((MIGRATING_PARTITION as u32)<<24)|(err.unsigned_abs()&0xffffff); let r=plpar_hcall_norets(H_VASI_SIGNAL,handle,H_VASI_SIGNAL_CANCEL,reason); if r!=0 { pr_err!("H_VASI_SIGNAL error: %ld\n",r); } }
 unsafe fn pseries_suspend(handle:u64)->i32 { let mut interval=1; let mut attempt=1; let mut ret; loop { let mut info=PseriesSuspendInfo{counter:ATOMIC_INIT(0),done:false}; ret=stop_machine(do_join,&mut info as *mut _ as *mut _,cpu_online_mask); if ret==0 || attempt==5 { break; } let mut state=0; let e=poll_vasi_state(handle,&mut state); if (e==0 && state!=H_VASI_SUSPENDING)||(e!=0&&e!=-EOPNOTSUPP){ break; } msleep(interval); interval*=10; attempt+=1; } ret }
-unsafe fn pseries_migrate_partition(handle:u64)->i32 { let mut factor=0; #[cfg(feature="CONFIG_PPC_WATCHDOG")] { factor=NMI_WD_LPM_FACTOR; } vas_migration_handler(VAS_SUSPEND); hvpipe_migration_handler(HVPIPE_SUSPEND); let mut ret=wait_for_vasi_session_suspending(handle); if ret==0 { if factor!=0 { watchdog_hardlockup_set_timeout_pct(factor); } ret=pseries_suspend(handle); if ret==0 { post_mobility_fixup(); wait_for_vasi_session_completed(handle); } else { pseries_cancel_migration(handle,ret); } if factor!=0 { watchdog_hardlockup_set_timeout_pct(0); } } vas_migration_handler(VAS_RESUME); hvpipe_migration_handler(HVPIPE_RESUME); ret }
+unsafe fn pseries_migrate_partition(handle:u64)->i32 { let mut factor=0; #[cfg(CONFIG_PPC_WATCHDOG)] { factor=NMI_WD_LPM_FACTOR; } vas_migration_handler(VAS_SUSPEND); hvpipe_migration_handler(HVPIPE_SUSPEND); let mut ret=wait_for_vasi_session_suspending(handle); if ret==0 { if factor!=0 { watchdog_hardlockup_set_timeout_pct(factor); } ret=pseries_suspend(handle); if ret==0 { post_mobility_fixup(); wait_for_vasi_session_completed(handle); } else { pseries_cancel_migration(handle,ret); } if factor!=0 { watchdog_hardlockup_set_timeout_pct(0); } } vas_migration_handler(VAS_RESUME); hvpipe_migration_handler(HVPIPE_RESUME); ret }
 pub unsafe fn rtas_syscall_dispatch_ibm_suspend_me(handle:u64)->i32 { pseries_migrate_partition(handle) }
 
 unsafe fn migration_store(_class: *const Class, _attr: *const ClassAttribute, buf: *const i8, count: usize) -> isize {

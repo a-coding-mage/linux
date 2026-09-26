@@ -73,9 +73,9 @@ pub unsafe extern "C" fn cpu_init() {
 unsafe fn show_facilities(m: *mut seq_file) {
     let mut bit: c_uint = 0;
     seq_puts(m, "facilities      :");
-    for_each_set_bit_inv(bit, &raw const stfle_fac_list as *const _, MAX_FACILITY_BIT) {
+    for_each_set_bit_inv!(bit, &raw const stfle_fac_list as *const _, MAX_FACILITY_BIT, {
         seq_printf(m, " %d", bit);
-    }
+    });
     seq_putc(m, b'\n' as c_int);
 }
 
@@ -100,7 +100,7 @@ unsafe fn show_cpu_summary(m: *mut seq_file, _v: *mut c_void) {
     seq_puts(m, c"features\t: ");
     for i in 0..hwcap_str.len() { if !hwcap_str[i].is_null() && (elf_hwcap & (1UL << i)) != 0 { seq_printf(m, c"%s ", hwcap_str[i]); } }
     seq_puts(m, c"\n"); show_facilities(m); show_cacheinfo(m);
-    for_each_online_cpu(cpu) { let id = &(*per_cpu_ptr(&raw mut cpu_info_per_cpu, cpu)).cpu_id; seq_printf(m, c"processor %d: version = %02X,  identification = %06X,  machine = %04X\n", cpu, id.version, id.ident, id.machine); }
+    for_each_online_cpu!(cpu, { let id = &(*per_cpu_ptr(&raw mut cpu_info_per_cpu, cpu)).cpu_id; seq_printf(m, c"processor %d: version = %02X,  identification = %06X,  machine = %04X\n", cpu, id.version, id.ident, id.machine); });
 }
 
 unsafe extern "C" fn setup_hwcaps() -> c_int {

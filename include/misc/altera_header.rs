@@ -30,12 +30,12 @@ pub struct altera_config {
 }
 
 /* The Kconfig condition is preserved through these Rust feature names. */
-#[cfg(any(feature = "CONFIG_ALTERA_STAPL", all(feature = "CONFIG_ALTERA_STAPL_MODULE", feature = "MODULE")))]
+#[cfg(any(CONFIG_ALTERA_STAPL, all(CONFIG_ALTERA_STAPL_MODULE, feature = "MODULE")))]
 extern "C" {
     pub fn altera_init(config: *mut altera_config, fw: *const firmware) -> c_int;
 }
 
-#[cfg(not(any(feature = "CONFIG_ALTERA_STAPL", all(feature = "CONFIG_ALTERA_STAPL_MODULE", feature = "MODULE"))))]
+#[cfg(not(any(CONFIG_ALTERA_STAPL, all(CONFIG_ALTERA_STAPL_MODULE, feature = "MODULE"))))]
 #[inline]
 pub unsafe fn altera_init(_config: *mut altera_config, _fw: *const firmware) -> c_int {
     /* printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__); */

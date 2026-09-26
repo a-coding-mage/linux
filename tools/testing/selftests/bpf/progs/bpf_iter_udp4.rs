@@ -16,7 +16,7 @@ unsafe extern "C" {
     fn bpf_ntohs(x: __be16) -> __u16;
 }
 
-static unsafe fn sock_i_ino(sk: *const sock) -> i64 {
+unsafe fn sock_i_ino(sk: *const sock) -> i64 {
     let sk_socket: *const socket = unsafe { (*sk).sk_socket };
     let inode: *const inode;
     let mut ino: core::ffi::c_ulong;

@@ -14,22 +14,22 @@ pub const _PAGE_EXEC: usize = 0x200;
 pub const _PAGE_WRITE: usize = 0x400;
 pub const _PAGE_SPECIAL: usize = 0x800;
 
-#[cfg(feature = "CONFIG_PTE_64BIT")]
+#[cfg(CONFIG_PTE_64BIT)]
 pub const _PTE_NONE_MASK: u64 = 0xffffffff00000000u64 | _PAGE_HASHPTE as u64;
-#[cfg(not(feature = "CONFIG_PTE_64BIT"))]
+#[cfg(not(CONFIG_PTE_64BIT))]
 pub const _PTE_NONE_MASK: usize = _PAGE_HASHPTE;
 pub const _PMD_PRESENT: usize = 0;
 pub const _PAGE_SWP_EXCLUSIVE: usize = _PAGE_READ;
 pub const _PAGE_HPTEFLAGS: usize = _PAGE_HASHPTE;
 
 pub const PTE_RPN_SHIFT: usize = PAGE_SHIFT;
-#[cfg(feature = "CONFIG_PTE_64BIT")]
+#[cfg(CONFIG_PTE_64BIT)]
 pub const PTE_RPN_MASK: u64 = !((1u64 << PTE_RPN_SHIFT) - 1);
-#[cfg(not(feature = "CONFIG_PTE_64BIT"))]
+#[cfg(not(CONFIG_PTE_64BIT))]
 pub const PTE_RPN_MASK: usize = !((1usize << PTE_RPN_SHIFT) - 1);
-#[cfg(feature = "CONFIG_PTE_64BIT")]
+#[cfg(CONFIG_PTE_64BIT)]
 pub const MAX_POSSIBLE_PHYSMEM_BITS: usize = 36;
-#[cfg(not(feature = "CONFIG_PTE_64BIT"))]
+#[cfg(not(CONFIG_PTE_64BIT))]
 pub const MAX_POSSIBLE_PHYSMEM_BITS: usize = 32;
 
 pub const _PAGE_CHG_MASK: usize = PTE_RPN_MASK as usize | _PAGE_HASHPTE | _PAGE_DIRTY | _PAGE_ACCESSED | _PAGE_SPECIAL;
@@ -155,7 +155,7 @@ pub fn pte_modify(pte: pte_t, newprot: pgprot_t) -> pte_t { __pte((pte_val(pte) 
 pub unsafe fn __set_pte_at(mm: *mut mm_struct, addr: usize, ptep: *mut pte_t, pte: pte_t, percpu: i32) {
     if percpu != 0 {
         *ptep = __pte((pte_val(*ptep) & _PAGE_HASHPTE) | (pte_val(pte) & !_PAGE_HASHPTE));
-    } else if cfg!(feature = "CONFIG_PTE_64BIT") {
+    } else if cfg!(CONFIG_PTE_64BIT) {
         if pte_val(*ptep) & _PAGE_HASHPTE != 0 { flush_hash_entry(mm, ptep, addr); }
         *ptep = pte;
     } else {

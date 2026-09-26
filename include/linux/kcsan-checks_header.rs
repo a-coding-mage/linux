@@ -9,7 +9,7 @@ pub const KCSAN_ACCESS_ATOMIC: i32 = 1 << 2;
 pub const KCSAN_ACCESS_ASSERT: i32 = 1 << 3;
 pub const KCSAN_ACCESS_SCOPED: i32 = 1 << 4;
 
-#[cfg(feature = "CONFIG_KCSAN")]
+#[cfg(CONFIG_KCSAN)]
 extern "C" {
     pub fn __kcsan_check_access(ptr: *const core::ffi::c_void, size: usize, ty: i32);
     pub fn __kcsan_mb();
@@ -27,34 +27,34 @@ extern "C" {
     pub fn kcsan_set_access_mask(mask: usize);
 }
 
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline]
 pub unsafe fn __kcsan_check_access(_ptr: *const core::ffi::c_void, _size: usize, _ty: i32) {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn __kcsan_mb() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn __kcsan_wmb() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn __kcsan_rmb() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn __kcsan_release() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_disable_current() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_enable_current() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_enable_current_nowarn() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_nestable_atomic_begin() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_nestable_atomic_end() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_flat_atomic_begin() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_flat_atomic_end() {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_atomic_next(_n: i32) {}
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline] pub unsafe fn kcsan_set_access_mask(_mask: usize) {}
 
 #[repr(C)]
@@ -72,7 +72,7 @@ pub struct kcsan_scoped_access {
     pub ip: usize,
 }
 
-#[cfg(feature = "CONFIG_KCSAN")]
+#[cfg(CONFIG_KCSAN)]
 extern "C" {
     pub fn kcsan_begin_scoped_access(
         ptr: *const core::ffi::c_void, size: usize, ty: i32,
@@ -81,13 +81,13 @@ extern "C" {
     pub fn kcsan_end_scoped_access(sa: *mut kcsan_scoped_access);
 }
 
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline]
 pub unsafe fn kcsan_begin_scoped_access(
     _ptr: *const core::ffi::c_void, _size: usize, _ty: i32,
     sa: *mut kcsan_scoped_access,
 ) -> *mut kcsan_scoped_access { sa }
-#[cfg(not(feature = "CONFIG_KCSAN"))]
+#[cfg(not(CONFIG_KCSAN))]
 #[inline]
 pub unsafe fn kcsan_end_scoped_access(_sa: *mut kcsan_scoped_access) {}
 
@@ -119,13 +119,13 @@ macro_rules! kcsan_check_write { ($ptr:expr, $size:expr) => { unsafe { $crate::k
 #[macro_export]
 macro_rules! kcsan_check_read_write { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_COMPOUND | $crate::KCSAN_ACCESS_WRITE) } }; }
 
-#[cfg(not(feature = "CONFIG_KCSAN_IGNORE_ATOMICS"))]
+#[cfg(not(CONFIG_KCSAN_IGNORE_ATOMICS))]
 #[macro_export] macro_rules! kcsan_check_atomic_read { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_ATOMIC) } }; }
-#[cfg(feature = "CONFIG_KCSAN_IGNORE_ATOMICS")]
+#[cfg(CONFIG_KCSAN_IGNORE_ATOMICS)]
 #[macro_export] macro_rules! kcsan_check_atomic_read { ($($args:tt)*) => {}; }
-#[cfg(not(feature = "CONFIG_KCSAN_IGNORE_ATOMICS"))]
+#[cfg(not(CONFIG_KCSAN_IGNORE_ATOMICS))]
 #[macro_export] macro_rules! kcsan_check_atomic_write { ($ptr:expr, $size:expr) => { unsafe { $crate::__kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_ATOMIC | $crate::KCSAN_ACCESS_WRITE) } }; }
-#[cfg(feature = "CONFIG_KCSAN_IGNORE_ATOMICS")]
+#[cfg(CONFIG_KCSAN_IGNORE_ATOMICS)]
 #[macro_export] macro_rules! kcsan_check_atomic_write { ($($args:tt)*) => {}; }
 
 #[macro_export]
@@ -146,10 +146,10 @@ pub unsafe fn __kcsan_disable_current() { kcsan_disable_current(); }
 #[inline]
 pub unsafe fn __kcsan_enable_current() { kcsan_enable_current_nowarn(); }
 
-#[cfg(not(feature = "CONFIG_KCSAN_IGNORE_ATOMICS"))]
+#[cfg(not(CONFIG_KCSAN_IGNORE_ATOMICS))]
 #[macro_export]
 macro_rules! kcsan_check_atomic_read_write { ($ptr:expr, $size:expr) => { unsafe { $crate::kcsan_check_access(($ptr) as *const _, $size, $crate::KCSAN_ACCESS_ATOMIC | $crate::KCSAN_ACCESS_WRITE | $crate::KCSAN_ACCESS_COMPOUND) } }; }
-#[cfg(feature = "CONFIG_KCSAN_IGNORE_ATOMICS")]
+#[cfg(CONFIG_KCSAN_IGNORE_ATOMICS)]
 #[macro_export]
 macro_rules! kcsan_check_atomic_read_write { ($($args:tt)*) => {}; }
 

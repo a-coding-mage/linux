@@ -302,8 +302,7 @@ pub mod usx2y_hwdep_pcm {
             runtime: *mut snd_pcm_runtime,
             var: u32,
             min: u32,
-            max: u32,
-        ) -> i32;
+            max: u32) -> i32;
         fn snd_hwdep_new(card: *mut snd_card, id: *const u8, device: i32, rhw: *mut *mut snd_hwdep) -> i32;
         fn snd_pcm_new(
             card: *mut snd_card,
@@ -311,16 +310,14 @@ pub mod usx2y_hwdep_pcm {
             device: i32,
             playback_count: i32,
             capture_count: i32,
-            rpcm: *mut *mut snd_pcm,
-        ) -> i32;
+            rpcm: *mut *mut snd_pcm) -> i32;
         fn snd_pcm_set_ops(pcm: *mut snd_pcm, direction: i32, ops: *const snd_pcm_ops);
         fn snd_pcm_set_managed_buffer(
             substream: *mut snd_pcm_substream,
             dma_type: i32,
             dev: *mut core::ffi::c_void,
             prealloc_size: u32,
-            max_size: u32,
-        );
+            max_size: u32);
         fn alloc_pages_exact(size: u32, flags: i32) -> *mut core::ffi::c_void;
         fn free_pages_exact(addr: *mut core::ffi::c_void, size: u32);
         fn memset(s: *mut core::ffi::c_void, c: i32, n: u32) -> *mut core::ffi::c_void;

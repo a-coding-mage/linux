@@ -28,7 +28,7 @@ unsafe fn x25_add_route(
 
     write_lock_bh(&raw mut x25_route_list_lock);
 
-    list_for_each_entry!(rt, &raw mut x25_route_list, node) {
+    list_for_each_entry!(rt, &raw mut x25_route_list, node, {
         if memcmp(
             &(*rt).address as *const _ as *const c_void,
             address as *const c_void,
@@ -37,7 +37,7 @@ unsafe fn x25_add_route(
         {
             goto_out!();
         }
-    }
+    });
 
     rt = kmalloc_obj!(*rt, GFP_ATOMIC);
     rc = -ENOMEM;
@@ -86,7 +86,7 @@ unsafe fn x25_del_route(
     let mut rc: c_int = -EINVAL;
 
     write_lock_bh(&raw mut x25_route_list_lock);
-    list_for_each_entry!(rt, &raw mut x25_route_list, node) {
+    list_for_each_entry!(rt, &raw mut x25_route_list, node, {
         if memcmp(
             &(*rt).address as *const _ as *const c_void,
             address as *const c_void,
@@ -97,7 +97,7 @@ unsafe fn x25_del_route(
             rc = 0;
             break;
         }
-    }
+    });
     write_unlock_bh(&raw mut x25_route_list_lock);
     rc
 }
@@ -109,12 +109,12 @@ pub unsafe fn x25_route_device_down(dev: *mut net_device) {
     let mut tmp: *mut list_head;
 
     write_lock_bh(&raw mut x25_route_list_lock);
-    list_for_each_safe!(entry, tmp, &raw mut x25_route_list) {
+    list_for_each_safe!(entry, tmp, &raw mut x25_route_list, {
         rt = list_entry!(entry, x25_route, node);
         if (*rt).dev == dev {
             __x25_remove_route(rt);
         }
-    }
+    });
     write_unlock_bh(&raw mut x25_route_list_lock);
 }
 
@@ -134,7 +134,7 @@ pub unsafe fn x25_get_route(addr: *mut x25_address) -> *mut x25_route {
     let mut use_: *mut x25_route = core::ptr::null_mut();
 
     read_lock_bh(&raw mut x25_route_list_lock);
-    list_for_each_entry!(rt, &raw mut x25_route_list, node) {
+    list_for_each_entry!(rt, &raw mut x25_route_list, node, {
         if memcmp(
             &(*rt).address as *const _ as *const c_void,
             addr as *const c_void,
@@ -146,7 +146,7 @@ pub unsafe fn x25_get_route(addr: *mut x25_address) -> *mut x25_route {
                 use_ = rt;
             }
         }
-    }
+    });
     if !use_.is_null() {
         x25_route_hold(use_);
     }
@@ -179,10 +179,10 @@ pub unsafe fn x25_route_free() {
     let mut entry: *mut list_head;
     let mut tmp: *mut list_head;
     write_lock_bh(&raw mut x25_route_list_lock);
-    list_for_each_safe!(entry, tmp, &raw mut x25_route_list) {
+    list_for_each_safe!(entry, tmp, &raw mut x25_route_list, {
         rt = list_entry!(entry, x25_route, node);
         __x25_remove_route(rt);
-    }
+    });
     write_unlock_bh(&raw mut x25_route_list_lock);
 }
 

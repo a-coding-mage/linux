@@ -118,14 +118,14 @@ pub struct ieee80211_key {
     /* protected by key mutex */
     pub flags: core::ffi::c_uint,
     pub u: ieee80211_key_u,
-    #[cfg(feature = "CONFIG_MAC80211_DEBUGFS")]
+    #[cfg(CONFIG_MAC80211_DEBUGFS)]
     pub debugfs: ieee80211_key_debugfs,
     pub color: core::ffi::c_uint,
     /* key config, must be last because it contains key material as variable length member */
     pub conf: ieee80211_key_conf,
 }
 
-#[cfg(feature = "CONFIG_MAC80211_DEBUGFS")]
+#[cfg(CONFIG_MAC80211_DEBUGFS)]
 #[repr(C)]
 pub struct ieee80211_key_debugfs {
     pub stalink: *mut dentry,

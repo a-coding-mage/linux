@@ -55,10 +55,10 @@ pub unsafe fn riscv_has_vendor_extension_likely(
     vendor: core::ffi::c_ulong,
     ext: core::ffi::c_ulong,
 ) -> bool {
-    if !cfg!(feature = "CONFIG_RISCV_ISA_VENDOR_EXT") {
+    if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
     }
-    if cfg!(feature = "CONFIG_RISCV_ALTERNATIVE") {
+    if cfg!(CONFIG_RISCV_ALTERNATIVE) {
         return __riscv_has_extension_likely(
             vendor,
             ext.wrapping_add(RISCV_VENDOR_EXT_ALTERNATIVES_BASE),
@@ -71,10 +71,10 @@ pub unsafe fn riscv_has_vendor_extension_unlikely(
     vendor: core::ffi::c_ulong,
     ext: core::ffi::c_ulong,
 ) -> bool {
-    if !cfg!(feature = "CONFIG_RISCV_ISA_VENDOR_EXT") {
+    if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
     }
-    if cfg!(feature = "CONFIG_RISCV_ALTERNATIVE") {
+    if cfg!(CONFIG_RISCV_ALTERNATIVE) {
         return __riscv_has_extension_unlikely(
             vendor,
             ext.wrapping_add(RISCV_VENDOR_EXT_ALTERNATIVES_BASE),
@@ -88,10 +88,10 @@ pub unsafe fn riscv_cpu_has_vendor_extension_likely(
     cpu: core::ffi::c_int,
     ext: core::ffi::c_ulong,
 ) -> bool {
-    if !cfg!(feature = "CONFIG_RISCV_ISA_VENDOR_EXT") {
+    if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
     }
-    if cfg!(feature = "CONFIG_RISCV_ALTERNATIVE")
+    if cfg!(CONFIG_RISCV_ALTERNATIVE)
         && __riscv_has_extension_likely(
             vendor,
             ext.wrapping_add(RISCV_VENDOR_EXT_ALTERNATIVES_BASE),
@@ -107,10 +107,10 @@ pub unsafe fn riscv_cpu_has_vendor_extension_unlikely(
     cpu: core::ffi::c_int,
     ext: core::ffi::c_ulong,
 ) -> bool {
-    if !cfg!(feature = "CONFIG_RISCV_ISA_VENDOR_EXT") {
+    if !cfg!(CONFIG_RISCV_ISA_VENDOR_EXT) {
         return false;
     }
-    if cfg!(feature = "CONFIG_RISCV_ALTERNATIVE")
+    if cfg!(CONFIG_RISCV_ALTERNATIVE)
         && __riscv_has_extension_unlikely(
             vendor,
             ext.wrapping_add(RISCV_VENDOR_EXT_ALTERNATIVES_BASE),

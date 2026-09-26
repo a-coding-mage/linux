@@ -58,7 +58,7 @@ pub unsafe extern "C" fn mprotect(start: c_ulong, len: usize, prot: c_ulong) -> 
 
 // CONFIG_ARCH_HAS_PKEYS declarations/definitions are conditional in the
 // source and are represented here without inventing architecture support.
-#[cfg(feature = "CONFIG_ARCH_HAS_PKEYS")]
+#[cfg(CONFIG_ARCH_HAS_PKEYS)]
 #[no_mangle]
 pub unsafe extern "C" fn pkey_mprotect(start: c_ulong, len: usize, prot: c_ulong, pkey: c_int) -> c_int {
     do_mprotect_pkey(start, len, prot, pkey)

@@ -79,15 +79,15 @@ unsafe fn turn_monitoring_on_with_reset() { if !rv_monitoring_on() { reset_all_m
 unsafe fn create_monitor_dir(mon: *mut rv_monitor, _parent: *mut rv_monitor) -> i32 { let d=rv_create_dir((*mon).name, get_monitors_root()); if d.is_null() { return -12; } (*mon).root_d=d; 0 }
 #[no_mangle] pub unsafe extern "C" fn rv_init_interface() -> i32 { turn_monitoring_on(); 0 }
 
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 static mut mock_current: *mut task_struct = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub unsafe extern "C" fn rv_set_testing(_suite: *mut kunit_suite) -> i32 { mutex_lock(&mut rv_interface_lock); 0 }
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub unsafe extern "C" fn rv_clear_testing(_suite: *mut kunit_suite) { mutex_unlock(&mut rv_interface_lock); }
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub unsafe extern "C" fn rv_mock_current(tsk: *mut task_struct) { mock_current = tsk; }
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub unsafe extern "C" fn rv_get_mock_current() -> *mut task_struct { mock_current }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

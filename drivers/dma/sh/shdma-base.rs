@@ -23,12 +23,12 @@ unsafe fn shdma_chan_xfer_ld_queue(schan: *mut shdma_chan) {
     let ops = (*sdev).ops;
     if ((*ops).channel_busy)(schan) { return; }
     let mut sdesc: *mut shdma_desc;
-    list_for_each_entry!(sdesc, &mut (*schan).ld_queue, node) {
+    list_for_each_entry!(sdesc, &mut (*schan).ld_queue, node, {
         if (*sdesc).mark == shdma_desc_status::DESC_SUBMITTED {
             ((*ops).start_xfer)(schan, sdesc);
             break;
         }
-    }
+    });
 }
 
 unsafe fn shdma_tx_submit(tx: *mut dma_async_tx_descriptor) -> dma_cookie_t {
@@ -40,7 +40,7 @@ unsafe fn shdma_tx_submit(tx: *mut dma_async_tx_descriptor) -> dma_cookie_t {
     let cookie = dma_cookie_assign(tx);
     let mut chunk: *mut shdma_desc;
     let mut c: *mut shdma_desc;
-    list_for_each_entry_safe!(chunk, c, (*desc).node.prev, node) {
+    list_for_each_entry_safe!(chunk, c, (*desc).node.prev, node, {
         if chunk != desc && ((*chunk).mark == shdma_desc_status::DESC_IDLE ||
             (*chunk).async_tx.cookie > 0 || (*chunk).async_tx.cookie == -EBUSY ||
             &(*chunk).node == &(*schan).ld_free) { break; }
@@ -51,7 +51,7 @@ unsafe fn shdma_tx_submit(tx: *mut dma_async_tx_descriptor) -> dma_cookie_t {
         } else { (*chunk).async_tx.callback = None; }
         (*chunk).cookie = cookie;
         list_move_tail!(&mut (*chunk).node, &mut (*schan).ld_queue);
-    }
+    });
     if power_up {
         (*schan).pm_state = SHDMA_PM_BUSY;
         let ret = pm_runtime_get((*schan).dev);
@@ -64,9 +64,9 @@ unsafe fn shdma_tx_submit(tx: *mut dma_async_tx_descriptor) -> dma_cookie_t {
             let ops = (*sdev).ops;
             let ret = ((*ops).setup_xfer)(schan, (*schan).slave_id);
             if ret < 0 {
-                list_for_each_entry_safe!(chunk, c, &mut (*schan).ld_queue, node) {
+                list_for_each_entry_safe!(chunk, c, &mut (*schan).ld_queue, node, {
                     if (*chunk).cookie == cookie { (*chunk).mark = shdma_desc_status::DESC_IDLE; list_move!(&mut (*chunk).node, &mut (*schan).ld_free); }
-                }
+                });
                 (*schan).pm_state = SHDMA_PM_ESTABLISHED;
                 pm_runtime_put((*schan).dev);
                 spin_unlock_irq!(&mut (*schan).chan_lock);
@@ -82,13 +82,13 @@ unsafe fn shdma_tx_submit(tx: *mut dma_async_tx_descriptor) -> dma_cookie_t {
 
 unsafe fn shdma_get_desc(schan: *mut shdma_chan) -> *mut shdma_desc {
     let mut sdesc: *mut shdma_desc;
-    list_for_each_entry!(sdesc, &mut (*schan).ld_free, node) {
+    list_for_each_entry!(sdesc, &mut (*schan).ld_free, node, {
         if (*sdesc).mark != shdma_desc_status::DESC_PREPARED {
             BUG_ON!((*sdesc).mark != shdma_desc_status::DESC_IDLE);
             list_del!(&mut (*sdesc).node);
             return sdesc;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 

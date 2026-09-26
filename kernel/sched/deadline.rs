@@ -40,19 +40,19 @@ unsafe fn on_dl_rq(dl_se: *mut sched_dl_entity) -> i32 {
     (!rb_empty_node(&mut (*dl_se).rb_node)) as i32
 }
 
-#[cfg(feature = "CONFIG_RT_MUTEXES")]
+#[cfg(CONFIG_RT_MUTEXES)]
 #[inline]
 unsafe fn pi_of(dl_se: *mut sched_dl_entity) -> *mut sched_dl_entity { (*dl_se).pi_se }
 
-#[cfg(not(feature = "CONFIG_RT_MUTEXES"))]
+#[cfg(not(CONFIG_RT_MUTEXES))]
 #[inline]
 unsafe fn pi_of(dl_se: *mut sched_dl_entity) -> *mut sched_dl_entity { dl_se }
 
-#[cfg(feature = "CONFIG_RT_MUTEXES")]
+#[cfg(CONFIG_RT_MUTEXES)]
 #[inline]
 unsafe fn is_dl_boosted(dl_se: *mut sched_dl_entity) -> bool { pi_of(dl_se) != dl_se }
 
-#[cfg(not(feature = "CONFIG_RT_MUTEXES"))]
+#[cfg(not(CONFIG_RT_MUTEXES))]
 #[inline]
 unsafe fn is_dl_boosted(_: *mut sched_dl_entity) -> bool { false }
 
@@ -60,7 +60,7 @@ unsafe fn is_dl_boosted(_: *mut sched_dl_entity) -> bool { false }
 unsafe fn dl_get_type(dl_se: *mut sched_dl_entity, rq: *mut rq) -> u8 {
     if !dl_server(dl_se) { return DL_TASK; }
     if dl_se == &mut (*rq).fair_server { return DL_SERVER_FAIR; }
-    #[cfg(feature = "CONFIG_SCHED_CLASS_EXT")]
+    #[cfg(CONFIG_SCHED_CLASS_EXT)]
     if dl_se == &mut (*rq).ext_server { return DL_SERVER_EXT; }
     DL_OTHER
 }

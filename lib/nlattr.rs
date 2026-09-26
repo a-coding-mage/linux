@@ -31,12 +31,12 @@ unsafe fn nla_validate_array(head: *const nlattr, len: c_int, maxtype: c_int,
     depth: c_uint) -> c_int {
     let mut entry: *const nlattr = core::ptr::null();
     let mut rem = 0;
-    nla_for_each_attr!(entry, head, len, rem) {
+    nla_for_each_attr!(entry, head, len, rem, {
         if nla_len(entry) == 0 { continue; }
         if nla_len(entry) < NLA_HDRLEN { NL_SET_ERR_MSG_ATTR_POL!(extack, entry, policy, "Array element too short"); return -ERANGE; }
         let ret = __nla_validate_parse(nla_data(entry), nla_len(entry), maxtype, policy, validate, extack, core::ptr::null_mut(), depth + 1);
         if ret < 0 { return ret; }
-    }
+    });
     0
 }
 
@@ -93,7 +93,7 @@ unsafe fn nla_validate_mask(pt:*const nla_policy,nla:*const nlattr,extack:*mut n
 // the corresponding kernel ABI helpers supplied by the surrounding translation.
 pub unsafe fn __nla_validate(head:*const nlattr,len:c_int,maxtype:c_int,policy:*const nla_policy,validate:c_uint,extack:*mut netlink_ext_ack)->c_int { __nla_validate_parse(head,len,maxtype,policy,validate,extack,core::ptr::null_mut(),0) }
 pub unsafe fn nla_policy_len(mut p:*const nla_policy,n:c_int)->c_int { let mut len=0;for _ in 0..n{if(*p).len!=0{len+=nla_total_size((*p).len)}else if NLA_ATTR_LEN[(*p).type_ as usize]!=0{len+=nla_total_size(NLA_ATTR_LEN[(*p).type_ as usize] as c_int)}else{len+=nla_total_size(NLA_ATTR_MINLEN[(*p).type_ as usize] as c_int)}p=p.add(1)}len }
-pub unsafe fn nla_find(head:*const nlattr,len:c_int,attrtype:c_int)->*mut nlattr{let mut n=core::ptr::null();let mut r=0;nla_for_each_attr!(n,head,len,r){if nla_type(n)==attrtype{return n as *mut nlattr}}core::ptr::null_mut()}
+pub unsafe fn nla_find(head:*const nlattr,len:c_int,attrtype:c_int)->*mut nlattr{let mut n=core::ptr::null();let mut r=0;nla_for_each_attr!(n,head,len,r, {if nla_type(n)==attrtype{return n as *mut nlattr}});core::ptr::null_mut()}
 pub unsafe fn nla_strscpy(dst:*mut c_char,nla:*const nlattr,dstsize:usize)->isize{let mut s=nla_len(nla)as usize;let src=nla_data(nla)as*mut c_char;if dstsize==0||dstsize>U16_MAX as usize{return -E2BIG as isize}if s>0&&*src.add(s-1)==0{s-=1}let l=if s>=dstsize{dstsize-1}else{s};core::ptr::copy_nonoverlapping(src,dst,l);core::ptr::write_bytes(dst.add(l),0,dstsize-l);if s>=dstsize{-E2BIG as isize}else{l as isize}}
 pub unsafe fn nla_memcpy(dest:*mut c_void,src:*const nlattr,count:c_int)->c_int{let n=core::cmp::min(count,nla_len(src));core::ptr::copy_nonoverlapping(nla_data(src),dest,n as usize);if count>n{core::ptr::write_bytes((dest as*mut u8).add(n as usize),0,(count-n)as usize)}n}
 pub unsafe fn nla_memcmp(nla:*const nlattr,data:*const c_void,size:usize)->c_int{let d=nla_len(nla)-size as c_int;if d==0{memcmp(nla_data(nla),data,size)}else{d}}

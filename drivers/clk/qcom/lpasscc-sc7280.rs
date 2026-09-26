@@ -114,36 +114,36 @@ unsafe fn lpass_cc_sc7280_probe(pdev: *mut platform_device) -> c_int {
     ret = pm_clk_add(&mut (*pdev).dev, "iface");
     if ret < 0 {
         dev_err(&mut (*pdev).dev, "failed to acquire iface clock\n");
-        goto_err_destroy_pm_clk!(ret);
+        goto ret;
     }
 
     ret = pm_runtime_resume_and_get(&mut (*pdev).dev);
-    if ret != 0 { goto_err_destroy_pm_clk!(ret); }
+    if ret != 0 { goto ret; }
 
     if !of_property_read_bool((*pdev).dev.of_node, "qcom,adsp-pil-mode") {
         lpass_regmap_config.name = "qdsp6ss";
         lpass_regmap_config.max_register = 0x3f;
         desc = &lpass_qdsp6ss_sc7280_desc;
         ret = qcom_cc_probe_by_index(pdev, 0, desc);
-        if ret != 0 { goto_err_put_rpm!(ret); }
+        if ret != 0 { goto ret; }
     }
 
     lpass_regmap_config.name = "top_cc";
     lpass_regmap_config.max_register = 0x4;
     desc = &lpass_cc_top_sc7280_desc;
     ret = qcom_cc_probe_by_index(pdev, 1, desc);
-    if ret != 0 { goto_err_put_rpm!(ret); }
+    if ret != 0 { goto ret; }
 
     pm_runtime_put(&mut (*pdev).dev);
     return 0;
 
     // The labels below represent the direct C cleanup branches.
-    goto_err_put_rpm!(ret) => {
+    goto ret;=> {
         pm_runtime_put_sync(&mut (*pdev).dev);
         pm_clk_destroy(&mut (*pdev).dev);
         return ret;
     }
-    goto_err_destroy_pm_clk!(ret) => {
+    goto ret;=> {
         pm_clk_destroy(&mut (*pdev).dev);
         return ret;
     }

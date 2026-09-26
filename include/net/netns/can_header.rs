@@ -43,25 +43,25 @@ pub struct hlist_head {
 
 #[repr(C)]
 pub struct netns_can {
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub proc_dir: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_stats: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_reset_stats: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_rcvlist_all: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_rcvlist_fil: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_rcvlist_inv: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_rcvlist_sff: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_rcvlist_eff: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub pde_rcvlist_err: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub bcmproc_dir: *mut proc_dir_entry,
 
     /* receive filters subscribed for 'all' CAN devices */

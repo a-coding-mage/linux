@@ -43,16 +43,16 @@ pub const OCTEON_IRQ_TIMER1: i32 = OCTEON_IRQ_TIMER0 + 1;
 pub const OCTEON_IRQ_TIMER2: i32 = OCTEON_IRQ_TIMER1 + 1;
 pub const OCTEON_IRQ_TIMER3: i32 = OCTEON_IRQ_TIMER2 + 1;
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 pub const OCTEON_IRQ_MSI_BIT0: i32 = 256;
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 pub const OCTEON_IRQ_MSI_LAST: i32 = OCTEON_IRQ_MSI_BIT0 + 255;
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 pub const OCTEON_IRQ_LAST: i32 = OCTEON_IRQ_MSI_LAST + 1;
 
-#[cfg(not(feature = "CONFIG_PCI_MSI"))]
+#[cfg(not(CONFIG_PCI_MSI))]
 pub const OCTEON_IRQ_LAST: i32 = 127;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

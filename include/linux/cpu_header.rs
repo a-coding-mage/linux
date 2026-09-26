@@ -82,7 +82,7 @@ extern "C" {
     pub fn arch_unregister_cpu(cpu: i32);
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 extern "C" {
     pub fn unregister_cpu(cpu: *mut cpu);
     pub fn arch_cpu_probe(buf: *const i8, count: usize) -> ssize_t;
@@ -96,7 +96,7 @@ pub const CPU_DEAD_FROZEN: u32 = 0x0008;
 pub const CPU_POST_DEAD: u32 = 0x0009;
 pub const CPU_BROKEN: u32 = 0x000B;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub static mut cpuhp_tasks_frozen: bool;
     pub fn add_cpu(cpu: u32) -> i32;
@@ -109,16 +109,16 @@ extern "C" {
     pub fn arch_cpu_rescan_dead_smt_siblings() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const cpuhp_tasks_frozen: i32 = 0;
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub fn cpu_maps_update_begin() {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub fn cpu_maps_update_done() {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub fn add_cpu(_cpu: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub fn arch_cpu_rescan_dead_smt_siblings() -> i32 { 0 }
 
 extern "C" {
@@ -134,21 +134,21 @@ extern "C" {
     pub fn cpu_in_idle(pc: usize) -> bool;
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP_SMP")]
+#[cfg(CONFIG_PM_SLEEP_SMP)]
 extern "C" {
     pub fn freeze_secondary_cpus(primary: i32) -> i32;
     pub fn thaw_secondary_cpus();
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP_SMP")]
+#[cfg(CONFIG_PM_SLEEP_SMP)]
 pub fn suspend_disable_secondary_cpus() -> i32 { unsafe { freeze_secondary_cpus(0) } }
-#[cfg(feature = "CONFIG_PM_SLEEP_SMP")]
+#[cfg(CONFIG_PM_SLEEP_SMP)]
 pub fn suspend_enable_secondary_cpus() { unsafe { thaw_secondary_cpus() } }
-#[cfg(not(feature = "CONFIG_PM_SLEEP_SMP"))]
+#[cfg(not(CONFIG_PM_SLEEP_SMP))]
 pub fn thaw_secondary_cpus() {}
-#[cfg(not(feature = "CONFIG_PM_SLEEP_SMP"))]
+#[cfg(not(CONFIG_PM_SLEEP_SMP))]
 pub fn suspend_disable_secondary_cpus() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PM_SLEEP_SMP"))]
+#[cfg(not(CONFIG_PM_SLEEP_SMP))]
 pub fn suspend_enable_secondary_cpus() {}
 
 extern "C" {
@@ -156,14 +156,14 @@ extern "C" {
     pub fn arch_cpu_idle_dead() -> !;
 }
 
-#[cfg(feature = "CONFIG_ARCH_HAS_CPU_FINALIZE_INIT")]
+#[cfg(CONFIG_ARCH_HAS_CPU_FINALIZE_INIT)]
 extern "C" { pub fn arch_cpu_finalize_init(); }
-#[cfg(not(feature = "CONFIG_ARCH_HAS_CPU_FINALIZE_INIT"))]
+#[cfg(not(CONFIG_ARCH_HAS_CPU_FINALIZE_INIT))]
 pub fn arch_cpu_finalize_init() {}
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 extern "C" { pub fn cpuhp_report_idle_dead(); }
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 pub fn cpuhp_report_idle_dead() {}
 
 #[repr(C)]
@@ -178,20 +178,20 @@ pub enum cpu_attack_vectors {
 #[repr(C)]
 pub enum smt_mitigations { SMT_MITIGATIONS_OFF, SMT_MITIGATIONS_AUTO, SMT_MITIGATIONS_ON }
 
-#[cfg(feature = "CONFIG_CPU_MITIGATIONS")]
+#[cfg(CONFIG_CPU_MITIGATIONS)]
 extern "C" {
     pub fn cpu_mitigations_off() -> bool;
     pub fn cpu_mitigations_auto_nosmt() -> bool;
     pub fn cpu_attack_vector_mitigated(v: cpu_attack_vectors) -> bool;
     pub static mut smt_mitigations: smt_mitigations;
 }
-#[cfg(not(feature = "CONFIG_CPU_MITIGATIONS"))]
+#[cfg(not(CONFIG_CPU_MITIGATIONS))]
 pub fn cpu_mitigations_off() -> bool { true }
-#[cfg(not(feature = "CONFIG_CPU_MITIGATIONS"))]
+#[cfg(not(CONFIG_CPU_MITIGATIONS))]
 pub fn cpu_mitigations_auto_nosmt() -> bool { false }
-#[cfg(not(feature = "CONFIG_CPU_MITIGATIONS"))]
+#[cfg(not(CONFIG_CPU_MITIGATIONS))]
 pub fn cpu_attack_vector_mitigated(_v: cpu_attack_vectors) -> bool { false }
-#[cfg(not(feature = "CONFIG_CPU_MITIGATIONS"))]
+#[cfg(not(CONFIG_CPU_MITIGATIONS))]
 pub const smt_mitigations: smt_mitigations = smt_mitigations::SMT_MITIGATIONS_OFF;
 
 extern "C" {

@@ -75,8 +75,8 @@ macro_rules! _IOWR {
 #[macro_export]
 macro_rules! _IOC_DIR {
     ($nr:expr) => {{
-        let nr = $nr as u32;
-        let dir = (nr >> $crate::_IOC_DIRSHIFT) & $crate::_IOC_DIRMASK;
+        let $nr = $nr as u32;
+        let dir = ($nr >> $crate::_IOC_DIRSHIFT) & $crate::_IOC_DIRMASK;
         if (dir & ($crate::_IOC_WRITE | $crate::_IOC_READ)) != 0 {
             dir & ($crate::_IOC_WRITE | $crate::_IOC_READ)
         } else {
@@ -98,12 +98,12 @@ macro_rules! _IOC_NR {
 #[macro_export]
 macro_rules! _IOC_SIZE {
     ($nr:expr) => {{
-        let nr = $nr as u32;
-        let dir = (nr >> $crate::_IOC_DIRSHIFT) & $crate::_IOC_DIRMASK;
+        let $nr = $nr as u32;
+        let dir = ($nr >> $crate::_IOC_DIRSHIFT) & $crate::_IOC_DIRMASK;
         if (dir & ($crate::_IOC_WRITE | $crate::_IOC_READ)) == 0 {
             0
         } else {
-            (nr >> $crate::_IOC_SIZESHIFT) & $crate::_IOC_XSIZEMASK
+            ($nr >> $crate::_IOC_SIZESHIFT) & $crate::_IOC_XSIZEMASK
         }
     }};
 }

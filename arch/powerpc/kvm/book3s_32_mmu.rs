@@ -154,8 +154,8 @@ unsafe fn kvmppc_mmu_book3s_32_xlate(vcpu: *mut kvm_vcpu, eaddr: gva_t, pte: *mu
 }
 
 unsafe fn kvmppc_mmu_book3s_32_mfsrin(vcpu: *mut kvm_vcpu, srnum: u32) -> u32 { kvmppc_get_sr(vcpu, srnum) }
-unsafe fn kvmppc_mmu_book3s_32_mtsrin(vcpu: *mut kvm_vcpu, srnum: u32, value: ulong) { kvmppc_set_sr(vcpu, srnum, value); kvmppc_mmu_map_segment(vcpu, srnum as ulong << SID_SHIFT); }
-unsafe fn kvmppc_mmu_book3s_32_tlbie(vcpu: *mut kvm_vcpu, ea: ulong, _large: bool) { let mut i = 0; let mut v: *mut kvm_vcpu = core::ptr::null_mut(); kvm_for_each_vcpu(i, v, (*vcpu).kvm) { kvmppc_mmu_pte_flush(v, ea, 0x0FFFF000); } }
+unsafe fn kvmppc_mmu_book3s_32_mtsrin(vcpu: *mut kvm_vcpu, srnum: u32, value: ulong) { kvmppc_set_sr(vcpu, srnum, value); kvmppc_mmu_map_segment(vcpu, (srnum as ulong) << SID_SHIFT); }
+unsafe fn kvmppc_mmu_book3s_32_tlbie(vcpu: *mut kvm_vcpu, ea: ulong, _large: bool) { let mut i = 0; let mut v: *mut kvm_vcpu = core::ptr::null_mut(); kvm_for_each_vcpu!(i, v, (*vcpu).kvm, { kvmppc_mmu_pte_flush(v, ea, 0x0FFFF000); }); }
 
 unsafe fn kvmppc_mmu_book3s_32_esid_to_vsid(vcpu: *mut kvm_vcpu, esid: ulong, vsid: *mut u64) -> i32 {
     let ea = esid << SID_SHIFT; let mut sr = 0; let mut gvsid = esid as u64; let msr = kvmppc_get_msr(vcpu);

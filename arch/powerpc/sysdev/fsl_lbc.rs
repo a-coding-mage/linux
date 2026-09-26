@@ -119,6 +119,7 @@ unsafe extern "C" fn fsl_lbc_ctrl_irq(_irqno: i32, data: *mut core::ffi::c_void)
 
 unsafe fn fsl_lbc_ctrl_probe(dev: *mut platform_device) -> i32 {
     let mut ret;
+    'err: {
     if (*dev).dev.of_node.is_null() { dev_err(&mut (*dev).dev, "Device OF-Node is NULL"); return -EFAULT; }
     fsl_lbc_ctrl_dev = kzalloc_obj::<fsl_lbc_ctrl>();
     if fsl_lbc_ctrl_dev.is_null() { return -ENOMEM; }
@@ -126,22 +127,23 @@ unsafe fn fsl_lbc_ctrl_probe(dev: *mut platform_device) -> i32 {
     spin_lock_init(&mut (*fsl_lbc_ctrl_dev).lock);
     init_waitqueue_head(&mut (*fsl_lbc_ctrl_dev).irq_wait);
     (*fsl_lbc_ctrl_dev).regs = of_iomap((*dev).dev.of_node, 0);
-    if (*fsl_lbc_ctrl_dev).regs.is_null() { dev_err(&mut (*dev).dev, "failed to get memory region\n"); ret = -ENODEV; goto_err!(err); }
+    if (*fsl_lbc_ctrl_dev).regs.is_null() { dev_err(&mut (*dev).dev, "failed to get memory region\n"); ret = -ENODEV; break 'err; }
     (*fsl_lbc_ctrl_dev).irq[0] = irq_of_parse_and_map((*dev).dev.of_node, 0);
-    if (*fsl_lbc_ctrl_dev).irq[0] == 0 { dev_err(&mut (*dev).dev, "failed to get irq resource\n"); ret = -ENODEV; goto_err!(err); }
+    if (*fsl_lbc_ctrl_dev).irq[0] == 0 { dev_err(&mut (*dev).dev, "failed to get irq resource\n"); ret = -ENODEV; break 'err; }
     (*fsl_lbc_ctrl_dev).dev = &mut (*dev).dev;
     ret = fsl_lbc_ctrl_init(fsl_lbc_ctrl_dev, (*dev).dev.of_node);
-    if ret < 0 { goto_err!(err); }
+    if ret < 0 { break 'err; }
     ret = request_irq((*fsl_lbc_ctrl_dev).irq[0], fsl_lbc_ctrl_irq, 0, c"fsl-lbc", fsl_lbc_ctrl_dev);
-    if ret != 0 { dev_err(&mut (*dev).dev, "failed to install irq (%d)\n", (*fsl_lbc_ctrl_dev).irq[0]); ret = (*fsl_lbc_ctrl_dev).irq[0]; goto_err!(err); }
+    if ret != 0 { dev_err(&mut (*dev).dev, "failed to install irq (%d)\n", (*fsl_lbc_ctrl_dev).irq[0]); ret = (*fsl_lbc_ctrl_dev).irq[0]; break 'err; }
     (*fsl_lbc_ctrl_dev).irq[1] = irq_of_parse_and_map((*dev).dev.of_node, 1);
     if (*fsl_lbc_ctrl_dev).irq[1] != 0 {
         ret = request_irq((*fsl_lbc_ctrl_dev).irq[1], fsl_lbc_ctrl_irq, IRQF_SHARED, c"fsl-lbc-err", fsl_lbc_ctrl_dev);
-        if ret != 0 { dev_err(&mut (*dev).dev, "failed to install irq (%d)\n", (*fsl_lbc_ctrl_dev).irq[1]); ret = (*fsl_lbc_ctrl_dev).irq[1]; free_irq((*fsl_lbc_ctrl_dev).irq[0], fsl_lbc_ctrl_dev); goto_err!(err); }
+        if ret != 0 { dev_err(&mut (*dev).dev, "failed to install irq (%d)\n", (*fsl_lbc_ctrl_dev).irq[1]); ret = (*fsl_lbc_ctrl_dev).irq[1]; free_irq((*fsl_lbc_ctrl_dev).irq[0], fsl_lbc_ctrl_dev); break 'err; }
     }
     out_be32(&mut (*(*fsl_lbc_ctrl_dev).regs).lteir, LTEIR_ENABLE);
     return 0;
-    err: { iounmap((*fsl_lbc_ctrl_dev).regs); kfree(fsl_lbc_ctrl_dev); fsl_lbc_ctrl_dev = core::ptr::null_mut(); return ret; }
+    }
+    { iounmap((*fsl_lbc_ctrl_dev).regs); kfree(fsl_lbc_ctrl_dev); fsl_lbc_ctrl_dev = core::ptr::null_mut(); return ret; }
 }
 
 #[cfg(CONFIG_SUSPEND)]

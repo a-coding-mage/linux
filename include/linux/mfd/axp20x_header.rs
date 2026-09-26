@@ -1004,7 +1004,7 @@ pub unsafe fn i32 axp20x_read_variable_width(// external: regmap *mut regmap,
  * This lets the axp20x core configure the mfd cells and register maps
  * for later use.
  */
-i32 axp20x_match_device(struct axp20x_dev *mut axp20x);
+i32 axp20x_match_device(axp20x_dev *mut axp20x);
 
 /**
  * axp20x_device_probe(): Probe a configured axp20x device
@@ -1015,7 +1015,7 @@ i32 axp20x_match_device(struct axp20x_dev *mut axp20x);
  * and irqchip. The axp20x device passed in must be fully configured
  * with axp20x_match_device, its irq set, and regmap created.
  */
-i32 axp20x_device_probe(struct axp20x_dev *mut axp20x);
+i32 axp20x_device_probe(axp20x_dev *mut axp20x);
 
 /**
  * axp20x_device_remove(): Remove a axp20x device
@@ -1024,7 +1024,7 @@ i32 axp20x_device_probe(struct axp20x_dev *mut axp20x);
  *
  * This tells the axp20x core to remove the associated mfd devices
  */
-pub unsafe fn axp20x_device_remove(struct axp20x_dev *mut axp20x);
+pub unsafe fn axp20x_device_remove(axp20x_dev *mut axp20x);
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

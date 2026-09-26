@@ -54,7 +54,26 @@ pub unsafe fn __list_del_entry_valid(entry: *mut list_head) -> bool {
 
 // The following macros retain the source interface; `container_of!` is supplied
 // by the translated kernel support code.
-#[macro_export] macro_rules! LIST_HEAD_INIT { ($name:expr) => { [$name as *mut _, $name as *mut _] }; }
+/// `HLIST_HEAD_INIT`: an empty hash list head.
+#[macro_export]
+macro_rules! HLIST_HEAD_INIT {
+    () => {
+        hlist_head { first: core::ptr::null_mut() }
+    };
+}
+
+/// `LIST_HEAD_INIT(name)`: an empty list pointing at itself; `name` is a
+/// place expression (usually a static or one of its fields).
+#[macro_export]
+macro_rules! LIST_HEAD_INIT {
+    ($name:expr) => {
+        // SAFETY: only the address of `name` is taken; nothing is accessed.
+        list_head {
+            next: unsafe { &raw mut $name },
+            prev: unsafe { &raw mut $name },
+        }
+    };
+}
 #[macro_export] macro_rules! LIST_HEAD { ($name:ident) => { let mut $name: list_head = unsafe { core::mem::zeroed() }; unsafe { $crate::INIT_LIST_HEAD(&mut $name); } }; }
 #[macro_export] macro_rules! list_entry { ($ptr:expr,$ty:ty,$member:ident) => { container_of!($ptr,$ty,$member) }; }
 #[macro_export] macro_rules! list_first_entry { ($ptr:expr,$ty:ty,$member:ident) => { list_entry!(unsafe{(*$ptr).next},$ty,$member) }; }

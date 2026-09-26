@@ -83,7 +83,7 @@ pub const DRBD_MAX_SECTORS: u64 = DRBD_MAX_SECTORS_FIXED_BM; pub const DRBD_MAX_
 #[repr(C)] pub struct drbd_interval { _private: [u8; 0] }
 #[repr(C)] pub struct drbd_request { pub w: drbd_work, pub device: *mut drbd_device, pub private_bio: *mut bio, pub i: drbd_interval, pub epoch: u32, pub tl_requests: list_head, pub master_bio: *mut bio, pub completion_ref: atomic_t, pub kref: kref, pub rq_state: u32 }
 
-extern "C" { pub static mut drbd_devices: idr; pub static mut drbd_resources: list_head; pub fn drbd_insert_fault(*mut drbd_device, u32) -> c_int; pub fn drbd_header_size(*mut drbd_connection) -> u32; pub fn drbd_device_post_work(*mut drbd_device, c_int); pub fn drbd_set_my_capacity(*mut drbd_device, sector_t); }
+extern "C" { pub static mut drbd_devices: idr; pub static mut drbd_resources: list_head; pub fn drbd_insert_fault(_: *mut drbd_device, _: u32) -> c_int; pub fn drbd_header_size(_: *mut drbd_connection) -> u32; pub fn drbd_device_post_work(_: *mut drbd_device, _: c_int); pub fn drbd_set_my_capacity(_: *mut drbd_device, _: sector_t); }
 
 pub const DRBD_END_OF_BITMAP: usize = usize::MAX;
 pub const DDSF_FORCED: c_int = 1; pub const DDSF_NO_RESYNC: c_int = 2;
@@ -97,14 +97,14 @@ pub const DRBD_MIN_POOL_PAGES: u32 = 128;
 /* The remaining declarations are external kernel/DRBD interfaces from the C
  * header; their signatures remain available to dependent translation units. */
 extern "C" {
-    pub fn drbd_init_set_defaults(*mut drbd_device); pub fn drbd_thread_start(*mut drbd_thread) -> c_int;
-    pub fn drbd_free_sock(*mut drbd_connection); pub fn drbd_submit_bio(*mut bio);
-    pub fn drbd_bm_init(*mut drbd_device) -> c_int; pub fn drbd_bm_cleanup(*mut drbd_device);
-    pub fn drbd_bm_set_all(*mut drbd_device); pub fn drbd_bm_clear_all(*mut drbd_device);
-    pub fn drbd_destroy_device(*mut kref); pub fn drbd_delete_device(*mut drbd_device);
-    pub fn drbd_create_resource(*const c_char) -> *mut drbd_resource; pub fn drbd_free_resource(*mut drbd_resource);
-    pub fn drbd_worker(*mut drbd_thread) -> c_int; pub fn drbd_receiver(*mut drbd_thread) -> c_int;
-    pub fn drbd_ack_receiver(*mut drbd_thread) -> c_int; pub fn drbd_flush_workqueue(*mut drbd_work_queue);
+    pub fn drbd_init_set_defaults(_: *mut drbd_device); pub fn drbd_thread_start(_: *mut drbd_thread) -> c_int;
+    pub fn drbd_free_sock(_: *mut drbd_connection); pub fn drbd_submit_bio(_: *mut bio);
+    pub fn drbd_bm_init(_: *mut drbd_device) -> c_int; pub fn drbd_bm_cleanup(_: *mut drbd_device);
+    pub fn drbd_bm_set_all(_: *mut drbd_device); pub fn drbd_bm_clear_all(_: *mut drbd_device);
+    pub fn drbd_destroy_device(_: *mut kref); pub fn drbd_delete_device(_: *mut drbd_device);
+    pub fn drbd_create_resource(_: *const c_char) -> *mut drbd_resource; pub fn drbd_free_resource(_: *mut drbd_resource);
+    pub fn drbd_worker(_: *mut drbd_thread) -> c_int; pub fn drbd_receiver(_: *mut drbd_thread) -> c_int;
+    pub fn drbd_ack_receiver(_: *mut drbd_thread) -> c_int; pub fn drbd_flush_workqueue(_: *mut drbd_work_queue);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

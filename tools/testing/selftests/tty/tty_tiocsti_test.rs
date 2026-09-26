@@ -144,8 +144,7 @@ extern "C" {
         aslave: *mut c_int,
         name: *mut c_char,
         termp: *mut c_void,
-        winp: *mut c_void,
-    ) -> c_int;
+        winp: *mut c_void) -> c_int;
     fn setgroups(size: usize, list: *const c_uint) -> c_int;
     fn setgid(gid: c_uint) -> c_int;
     fn setuid(uid: c_uint) -> c_int;

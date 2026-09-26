@@ -1077,17 +1077,17 @@ unsafe extern "C" fn ima_release_policy(
 
     // CONFIG conditional compilation
     #[cfg(all(
-        not(feature = "CONFIG_IMA_WRITE_POLICY"),
-        not(feature = "CONFIG_IMA_READ_POLICY")
+        not(CONFIG_IMA_WRITE_POLICY),
+        not(CONFIG_IMA_READ_POLICY)
     ))]
     {
         // securityfs_remove(file->f_path.dentry);
     }
-    #[cfg(feature = "CONFIG_IMA_WRITE_POLICY")]
+    #[cfg(CONFIG_IMA_WRITE_POLICY)]
     {
         clear_bit(ima_fs_flags::IMA_FS_BUSY as i32, &mut ima_fs_flags);
     }
-    #[cfg(feature = "CONFIG_IMA_READ_POLICY")]
+    #[cfg(CONFIG_IMA_READ_POLICY)]
     {
         // inode->i_mode &= ~S_IWUSR;
     }
@@ -1131,7 +1131,7 @@ pub unsafe fn ima_fs_init() -> i32 {
 
     ret = create_securityfs_measurement_lists(false);
     // CONFIG_IMA_STAGING conditional
-    #[cfg(feature = "CONFIG_IMA_STAGING")]
+    #[cfg(CONFIG_IMA_STAGING)]
     if ret == 0 {
         ret = create_securityfs_measurement_lists(true);
         if ret == 0 {

@@ -99,18 +99,18 @@ pub const fn smart_dat(x: u32) -> u32 { SMART_CMD_WRITE_DATA | (x & 0xff) }
 pub const SMART_CMD_DELAY: u32 = 0x6 << 9;
 pub const fn smart_delay(ms: u32) -> u32 { SMART_CMD_DELAY | (ms & 0xff) }
 
-#[cfg(feature = "CONFIG_FB_PXA_SMARTPANEL")]
+#[cfg(CONFIG_FB_PXA_SMARTPANEL)]
 unsafe extern "C" {
     pub fn pxafb_smart_queue(info: *mut fb_info, cmds: *mut u16, n: libc::c_int) -> libc::c_int;
     pub fn pxafb_smart_flush(info: *mut fb_info) -> libc::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_FB_PXA_SMARTPANEL"))]
+#[cfg(not(CONFIG_FB_PXA_SMARTPANEL))]
 pub unsafe extern "C" fn pxafb_smart_queue(
     _info: *mut fb_info, _cmds: *mut u16, _n: libc::c_int,
 ) -> libc::c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_FB_PXA_SMARTPANEL"))]
+#[cfg(not(CONFIG_FB_PXA_SMARTPANEL))]
 pub unsafe extern "C" fn pxafb_smart_flush(_info: *mut fb_info) -> libc::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

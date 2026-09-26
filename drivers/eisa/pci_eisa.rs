@@ -35,12 +35,12 @@ unsafe fn pci_eisa_init(pdev: *mut pci_dev) -> i32
      * eisa_root_register() can only deal with a single io port resource,
      * so we use the first valid io port resource.
      */
-    pci_bus_for_each_resource((*pdev).bus, res) {
+    pci_bus_for_each_resource!((*pdev).bus, res, {
         if !res.is_null() && ((*res).flags & IORESOURCE_IO) != 0 {
             bus_res = res;
             break;
         }
-    }
+    });
 
     if bus_res.is_null() {
         dev_err(&mut (*pdev).dev, "No resources available\n");
@@ -75,14 +75,14 @@ unsafe fn pci_eisa_init_early() -> i32
     let mut dev: *mut pci_dev = core::ptr::null_mut();
     let mut ret: i32;
 
-    for_each_pci_dev(dev) {
+    for_each_pci_dev!(dev, {
         if ((*dev).class >> 8) == PCI_CLASS_BRIDGE_EISA {
             ret = pci_eisa_init(dev);
             if ret != 0 {
                 return ret;
             }
         }
-    }
+    });
 
     0
 }

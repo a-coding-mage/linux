@@ -133,7 +133,7 @@ pub unsafe extern "C" fn udbg_uart_init_mmio(addr: *mut U8, stride: u32) {
 }
 
 // CONFIG_PPC_PASEMI conditionally includes the following platform-specific implementation.
-#[cfg(feature = "CONFIG_PPC_PASEMI")]
+#[cfg(CONFIG_PPC_PASEMI)]
 mod pasemi {
     use super::*;
     const UDBG_UART_PAS_ADDR: *mut U8 = 0xfcff03f8 as *mut U8;
@@ -143,7 +143,7 @@ mod pasemi {
 }
 
 // CONFIG_PPC_EARLY_DEBUG_44x and CONFIG_PPC_EARLY_DEBUG_16550 are build-time conditions.
-#[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_44x")]
+#[cfg(CONFIG_PPC_EARLY_DEBUG_44x)]
 mod early_44x {
     use super::*;
     extern "C" {
@@ -156,7 +156,7 @@ mod early_44x {
     #[no_mangle] pub unsafe extern "C" fn udbg_init_44x_as1() { udbg_uart_in = Some(input); udbg_uart_out = Some(output); udbg_use_uart(); }
 }
 
-#[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_16550")]
+#[cfg(CONFIG_PPC_EARLY_DEBUG_16550)]
 mod early_16550 {
     use super::*;
     extern "C" {

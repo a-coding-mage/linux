@@ -5,9 +5,9 @@
 // `CONFIG_PHYSICAL_ALIGN`.
 
 /* Minimum kernel alignment, as a power of two */
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const MIN_KERNEL_ALIGN_LG2: usize = PMD_SHIFT;
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const MIN_KERNEL_ALIGN_LG2: usize = PAGE_SHIFT + THREAD_SIZE_ORDER;
 pub const MIN_KERNEL_ALIGN: usize = 1usize << MIN_KERNEL_ALIGN_LG2;
 
@@ -15,11 +15,11 @@ pub const MIN_KERNEL_ALIGN: usize = 1usize << MIN_KERNEL_ALIGN_LG2;
 // CONFIG_PHYSICAL_ALIGN must be a power of two and must be at least
 // MIN_KERNEL_ALIGN.
 
-#[cfg(feature = "CONFIG_KERNEL_BZIP2")]
+#[cfg(CONFIG_KERNEL_BZIP2)]
 pub const BOOT_HEAP_SIZE: usize = 0x400000;
 #[cfg(all(
-    not(feature = "CONFIG_KERNEL_BZIP2"),
-    feature = "CONFIG_KERNEL_ZSTD"
+    not(CONFIG_KERNEL_BZIP2),
+    CONFIG_KERNEL_ZSTD
 ))]
 /*
  * Zstd needs to allocate the ZSTD_DCtx in order to decompress the kernel.
@@ -28,12 +28,12 @@ pub const BOOT_HEAP_SIZE: usize = 0x400000;
  */
 pub const BOOT_HEAP_SIZE: usize = 0x30000;
 #[cfg(all(
-    not(feature = "CONFIG_KERNEL_BZIP2"),
-    not(feature = "CONFIG_KERNEL_ZSTD")
+    not(CONFIG_KERNEL_BZIP2),
+    not(CONFIG_KERNEL_ZSTD)
 ))]
 pub const BOOT_HEAP_SIZE: usize = 0x10000;
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const BOOT_STACK_SIZE: usize = 0x4000;
 
 /*
@@ -46,7 +46,7 @@ pub const BOOT_STACK_SIZE: usize = 0x4000;
  * The additional level5 table needed for 5-level paging is allocated from
  * trampoline_32bit memory.
  */
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const BOOT_INIT_PGT_SIZE: usize = 6 * 4096;
 
 /*
@@ -69,12 +69,12 @@ pub const BOOT_INIT_PGT_SIZE: usize = 6 * 4096;
  * Add 4 spare table in case decompressor touches anything beyond what is
  * accounted above. Warn if it happens.
  */
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const BOOT_PGT_SIZE_WARN: usize = 28 * 4096;
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const BOOT_PGT_SIZE: usize = 32 * 4096;
 
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const BOOT_STACK_SIZE: usize = 0x1000;
 
 pub const TRAMPOLINE_32BIT_SIZE: usize = 2 * PAGE_SIZE;

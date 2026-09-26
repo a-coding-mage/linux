@@ -28,6 +28,7 @@ pub unsafe fn nfc_hci_hcp_message_tx(
     let mut hci_len: i32;
     let mut err: i32;
     let mut firstfrag = true;
+    'out_skb_err: {
 
     cmd = kzalloc_obj::<hci_msg>();
     if cmd.is_null() {
@@ -66,7 +67,7 @@ pub unsafe fn nfc_hci_hcp_message_tx(
         skb = alloc_skb(skb_len as usize, GFP_KERNEL);
         if skb.is_null() {
             err = -ENOMEM;
-            goto out_skb_err;
+            break 'out_skb_err;
         }
         skb_reserve(skb, (*ndev).tx_headroom as usize);
 
@@ -107,7 +108,7 @@ pub unsafe fn nfc_hci_hcp_message_tx(
     if (*hdev).shutting_down {
         err = -ESHUTDOWN;
         mutex_unlock(&mut (*hdev).msg_tx_mutex);
-        goto out_skb_err;
+        break 'out_skb_err;
     }
 
     list_add_tail(&mut (*cmd).msg_l, &mut (*hdev).msg_tx_queue);
@@ -116,8 +117,8 @@ pub unsafe fn nfc_hci_hcp_message_tx(
     schedule_work(&mut (*hdev).msg_tx_work);
 
     return 0;
-
-out_skb_err:
+    }
+    
     skb_queue_purge(&mut (*cmd).msg_frags);
     kfree(cmd);
 

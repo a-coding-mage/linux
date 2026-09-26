@@ -87,13 +87,13 @@ unsafe fn decode_layoutrecall_args(_r:*mut svc_rqst,x:*mut xdr_stream,a:*mut cor
 
 // The remaining declarations preserve the source-level external callback implementation interfaces.
 extern "C" {
-    fn decode_devicenotify_args(*mut svc_rqst,*mut xdr_stream,*mut core::ffi::c_void)->__be32;
-    fn decode_cb_sequence_args(*mut svc_rqst,*mut xdr_stream,*mut core::ffi::c_void)->__be32;
-    fn decode_recallany_args(*mut svc_rqst,*mut xdr_stream,*mut core::ffi::c_void)->__be32;
-    fn decode_recallslot_args(*mut svc_rqst,*mut xdr_stream,*mut core::ffi::c_void)->__be32;
-    fn decode_notify_lock_args(*mut svc_rqst,*mut xdr_stream,*mut core::ffi::c_void)->__be32;
-    fn encode_getattr_res(*mut svc_rqst,*mut xdr_stream,*const core::ffi::c_void)->__be32;
-    fn encode_cb_sequence_res(*mut svc_rqst,*mut xdr_stream,*const core::ffi::c_void)->__be32;
+    fn decode_devicenotify_args(_: *mut svc_rqst,_: *mut xdr_stream,_: *mut core::ffi::c_void)->__be32;
+    fn decode_cb_sequence_args(_: *mut svc_rqst,_: *mut xdr_stream,_: *mut core::ffi::c_void)->__be32;
+    fn decode_recallany_args(_: *mut svc_rqst,_: *mut xdr_stream,_: *mut core::ffi::c_void)->__be32;
+    fn decode_recallslot_args(_: *mut svc_rqst,_: *mut xdr_stream,_: *mut core::ffi::c_void)->__be32;
+    fn decode_notify_lock_args(_: *mut svc_rqst,_: *mut xdr_stream,_: *mut core::ffi::c_void)->__be32;
+    fn encode_getattr_res(_: *mut svc_rqst,_: *mut xdr_stream,_: *const core::ffi::c_void)->__be32;
+    fn encode_cb_sequence_res(_: *mut svc_rqst,_: *mut xdr_stream,_: *const core::ffi::c_void)->__be32;
 }
 
 // Direct translations of the operation table and service version declarations.

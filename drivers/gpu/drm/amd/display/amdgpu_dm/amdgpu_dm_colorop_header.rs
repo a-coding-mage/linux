@@ -37,7 +37,7 @@ extern "C" {
     ) -> i32;
 
     // Preserved from: #if IS_ENABLED(CONFIG_DRM_AMD_DC_KUNIT_TEST)
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_build_default_pipeline(
         dev: *mut drm_device,
         plane: *mut drm_plane,

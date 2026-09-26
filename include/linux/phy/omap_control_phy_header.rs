@@ -71,22 +71,22 @@ pub const AM437X_CTRL_USB2_OTGSESSEND_EN: u32 = 1u32 << 20;
 
 // The following declarations are selected by the C build-time condition
 // IS_ENABLED(CONFIG_OMAP_CONTROL_PHY).
-#[cfg(feature = "CONFIG_OMAP_CONTROL_PHY")]
+#[cfg(CONFIG_OMAP_CONTROL_PHY)]
 extern "C" {
     pub fn omap_control_phy_power(dev: *mut device, on: i32);
     pub fn omap_control_usb_set_mode(dev: *mut device, mode: omap_control_usb_mode);
     pub fn omap_control_pcie_pcs(dev: *mut device, delay: u8);
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_CONTROL_PHY"))]
+#[cfg(not(CONFIG_OMAP_CONTROL_PHY))]
 #[inline]
 pub unsafe fn omap_control_phy_power(_dev: *mut device, _on: i32) {}
 
-#[cfg(not(feature = "CONFIG_OMAP_CONTROL_PHY"))]
+#[cfg(not(CONFIG_OMAP_CONTROL_PHY))]
 #[inline]
 pub unsafe fn omap_control_usb_set_mode(_dev: *mut device, _mode: omap_control_usb_mode) {}
 
-#[cfg(not(feature = "CONFIG_OMAP_CONTROL_PHY"))]
+#[cfg(not(CONFIG_OMAP_CONTROL_PHY))]
 #[inline]
 pub unsafe fn omap_control_pcie_pcs(_dev: *mut device, _delay: u8) {}
 

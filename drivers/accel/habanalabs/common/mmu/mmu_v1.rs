@@ -57,7 +57,7 @@ unsafe fn hl_mmu_v1_ctx_fini(ctx: *mut hl_ctx) {
     let hdev = (*ctx).hdev; dram_default_mapping_fini(ctx);
     if !hash_empty((*ctx).mmu_shadow_hash) { dev_err((*hdev).dev, "ctx %d is freed while it has pgts in use\n", (*ctx).asid); }
     let mut i = 0; let mut tmp: *mut hlist_node = core::ptr::null_mut(); let mut p: *mut pgt_info = core::ptr::null_mut();
-    hash_for_each_safe((*ctx).mmu_shadow_hash, i, tmp, p, node) { dev_err_ratelimited((*hdev).dev, "pgt_info of addr 0x%llx of asid %d was not destroyed, num_ptes: %d\n", (*p).phys_addr, (*ctx).asid, (*p).num_of_ptes); hl_mmu_dr_free_pgt_node(ctx, p); }
+    hash_for_each_safe!((*ctx).mmu_shadow_hash, i, tmp, p, node, { dev_err_ratelimited((*hdev).dev, "pgt_info of addr 0x%llx of asid %d was not destroyed, num_ptes: %d\n", (*p).phys_addr, (*ctx).asid, (*p).num_of_ptes); hl_mmu_dr_free_pgt_node(ctx, p); });
 }
 
 unsafe fn hl_mmu_v1_unmap(ctx: *mut hl_ctx, virt_addr: u64, is_dram_addr: bool) -> i32 {

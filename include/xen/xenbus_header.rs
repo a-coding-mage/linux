@@ -42,7 +42,7 @@ pub struct xenbus_device {
 
 #[macro_export]
 macro_rules! to_xenbus_device {
-    ($dev:expr) => { container_of_const!($dev, xenbus_device, dev) };
+    ($dev:expr) => { container_of_const!($dev, xenbus_device, $dev) };
 }
 
 #[repr(C)]

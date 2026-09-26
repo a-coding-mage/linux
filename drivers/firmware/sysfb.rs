@@ -101,14 +101,14 @@ pub unsafe extern "C" fn sysfb_handles_screen_info() -> bool {
     screen_info_video_type(si) != 0
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn sysfb_pci_dev_is_enabled(pdev: *mut pci_dev) -> bool {
     let mut command = 0u16;
     if pci_read_config_word(pdev, PCI_COMMAND, &mut command) != PCIBIOS_SUCCESSFUL { return false; }
     command & PCI_COMMAND_MEMORY != 0
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 unsafe fn sysfb_pci_dev_is_enabled(_pdev: *mut pci_dev) -> bool { false }
 
 unsafe fn sysfb_parent_dev(si: *const screen_info) -> *mut device {

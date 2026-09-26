@@ -2527,7 +2527,6 @@ pub const ixDIDT_TCP_WEIGHT0_3: u32 = 0x70;
 pub const ixDIDT_TCP_WEIGHT4_7: u32 = 0x71;
 pub const ixDIDT_TCP_WEIGHT8_11: u32 = 0x72;
 
-#endif /* GFX_7_0_D_H */
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

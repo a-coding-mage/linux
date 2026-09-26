@@ -160,11 +160,11 @@ unsafe fn clk_pll_set_rate(hw: *mut clk_hw, rate: c_ulong, _p_rate: c_ulong) -> 
 }
 
 pub static clk_pll_ops: clk_ops = clk_ops {
-    .enable = Some(clk_pll_enable),
-    .disable = Some(clk_pll_disable),
-    .recalc_rate = Some(clk_pll_recalc_rate),
-    .determine_rate = Some(clk_pll_determine_rate),
-    .set_rate = Some(clk_pll_set_rate),
+    enable: Some(clk_pll_enable),
+    disable: Some(clk_pll_disable),
+    recalc_rate: Some(clk_pll_recalc_rate),
+    determine_rate: Some(clk_pll_determine_rate),
+    set_rate: Some(clk_pll_set_rate),
 };
 
 unsafe fn wait_for_pll(pll: *mut clk_pll) -> c_int {
@@ -201,8 +201,8 @@ unsafe fn clk_pll_vote_enable(hw: *mut clk_hw) -> c_int {
 }
 
 pub static clk_pll_vote_ops: clk_ops = clk_ops {
-    .enable = Some(clk_pll_vote_enable),
-    .disable = Some(clk_disable_regmap),
+    enable: Some(clk_pll_vote_enable),
+    disable: Some(clk_disable_regmap),
 };
 
 unsafe fn clk_pll_configure(pll: *mut clk_pll, regmap: *mut regmap,
@@ -315,11 +315,11 @@ unsafe fn clk_pll_sr2_set_rate(hw: *mut clk_hw, rate: c_ulong,
 }
 
 pub static clk_pll_sr2_ops: clk_ops = clk_ops {
-    .enable = Some(clk_pll_sr2_enable),
-    .disable = Some(clk_pll_disable),
-    .set_rate = Some(clk_pll_sr2_set_rate),
-    .recalc_rate = Some(clk_pll_recalc_rate),
-    .determine_rate = Some(clk_pll_determine_rate),
+    enable: Some(clk_pll_sr2_enable),
+    disable: Some(clk_pll_disable),
+    set_rate: Some(clk_pll_sr2_set_rate),
+    recalc_rate: Some(clk_pll_recalc_rate),
+    determine_rate: Some(clk_pll_determine_rate),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

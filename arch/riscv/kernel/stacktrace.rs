@@ -6,7 +6,7 @@
 
 // Kernel dependency declarations are supplied by other translated files.
 
-#[cfg(feature = "CONFIG_FRAME_POINTER")]
+#[cfg(CONFIG_FRAME_POINTER)]
 mod frame_pointer {
     use super::*;
 
@@ -83,7 +83,7 @@ mod frame_pointer {
     }
 }
 
-#[cfg(not(feature = "CONFIG_FRAME_POINTER"))]
+#[cfg(not(CONFIG_FRAME_POINTER))]
 pub unsafe extern "C" fn walk_stackframe(
     task: *mut task_struct, regs: *mut pt_regs,
     fn_: Option<unsafe extern "C" fn(*mut core::ffi::c_void, usize) -> bool>,

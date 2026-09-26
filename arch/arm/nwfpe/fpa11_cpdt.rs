@@ -32,7 +32,7 @@ unsafe fn loadDouble(fn_: u32, p_mem: *const u32) {
     }
 }
 
-#[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+#[cfg(CONFIG_FPE_NWFPE_XP)]
 unsafe fn loadExtended(fn_: u32, p_mem: *const u32) {
     let fpa11 = GET_FPA11();
     let p = &mut (*fpa11).fpreg[fn_ as usize].fExtended as *mut _ as *mut u32;
@@ -51,7 +51,7 @@ unsafe fn loadMultiple(fn_: u32, p_mem: *const u32) {
     (*fpa11).fType[fn_ as usize] = ((x >> 14) & 3) as _;
     match (*fpa11).fType[fn_ as usize] {
         typeSingle | typeDouble => { *p.add(0) = p_mem.add(2).read_volatile(); *p.add(1) = p_mem.add(1).read_volatile(); *p.add(2) = 0; }
-        #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+        #[cfg(CONFIG_FPE_NWFPE_XP)]
         typeExtended => { *p.add(1) = p_mem.add(2).read_volatile(); *p.add(2) = p_mem.add(1).read_volatile(); *p.add(0) = (x as u32) & 0x80003fff; }
         _ => {}
     }
@@ -62,7 +62,7 @@ unsafe fn storeSingle(round_data: *mut roundingData, fn_: u32, p_mem: *mut u32) 
     let mut val: u32;
     match (*fpa11).fType[fn_ as usize] {
         typeDouble => { val = float64_to_float32(round_data, (*fpa11).fpreg[fn_ as usize].fDouble); }
-        #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+        #[cfg(CONFIG_FPE_NWFPE_XP)]
         typeExtended => { val = floatx80_to_float32(round_data, (*fpa11).fpreg[fn_ as usize].fExtended); }
         _ => { val = (*fpa11).fpreg[fn_ as usize].fSingle; }
     }
@@ -74,7 +74,7 @@ unsafe fn storeDouble(round_data: *mut roundingData, fn_: u32, p_mem: *mut u32) 
     let mut val = [0u32; 2];
     match (*fpa11).fType[fn_ as usize] {
         typeSingle => { val = float32_to_float64((*fpa11).fpreg[fn_ as usize].fSingle); }
-        #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+        #[cfg(CONFIG_FPE_NWFPE_XP)]
         typeExtended => { val = floatx80_to_float64(round_data, (*fpa11).fpreg[fn_ as usize].fExtended); }
         _ => { val = (*fpa11).fpreg[fn_ as usize].fDouble; }
     }
@@ -85,7 +85,7 @@ unsafe fn storeDouble(round_data: *mut roundingData, fn_: u32, p_mem: *mut u32) 
 }
 
 // The extended store is conditional in the original CONFIG_FPE_NWFPE_XP build.
-#[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+#[cfg(CONFIG_FPE_NWFPE_XP)]
 unsafe fn storeExtended(fn_: u32, p_mem: *mut u32) {
     let fpa11 = GET_FPA11();
     let mut val = [0u32; 3];
@@ -107,7 +107,7 @@ unsafe fn storeMultiple(fn_: u32, p_mem: *mut u32) {
     let n_type = (*fpa11).fType[fn_ as usize];
     match n_type {
         typeSingle | typeDouble => { p_mem.add(2).write_volatile(p.read()); p_mem.add(1).write_volatile(p.add(1).read()); p_mem.write_volatile((n_type as u32) << 14); }
-        #[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+        #[cfg(CONFIG_FPE_NWFPE_XP)]
         typeExtended => { p_mem.add(1).write_volatile(p.add(2).read()); p_mem.add(2).write_volatile(p.add(1).read()); p_mem.write_volatile((p.read() & 0x80003fff) | ((n_type as u32) << 14)); }
         _ => {}
     }
@@ -120,7 +120,7 @@ pub unsafe fn PerformLDF(opcode: u32) -> u32 {
     let p_final = if BIT_UP_SET(opcode) { p_base.add(getOffset(opcode) as usize) } else { p_base.sub(getOffset(opcode) as usize) };
     let p_address = if PREINDEXED(opcode) { p_final } else { p_base };
     let mut rc = 1;
-    match opcode & MASK_TRANSFER_LENGTH { TRANSFER_SINGLE => loadSingle(getFd(opcode), p_address), TRANSFER_DOUBLE => loadDouble(getFd(opcode), p_address), #[cfg(feature = "CONFIG_FPE_NWFPE_XP")] TRANSFER_EXTENDED => loadExtended(getFd(opcode), p_address), _ => rc = 0 }
+    match opcode & MASK_TRANSFER_LENGTH { TRANSFER_SINGLE => loadSingle(getFd(opcode), p_address), TRANSFER_DOUBLE => loadDouble(getFd(opcode), p_address), #[cfg(CONFIG_FPE_NWFPE_XP)] TRANSFER_EXTENDED => loadExtended(getFd(opcode), p_address), _ => rc = 0 }
     if write_back != 0 { writeRegister(getRn(opcode), p_final as usize as _); } rc
 }
 
@@ -129,7 +129,7 @@ pub unsafe fn PerformSTF(opcode: u32) -> u32 {
     let mut p_base = readRegister(getRn(opcode)) as *mut u32; let mut wb = WRITE_BACK(opcode);
     if REG_PC == getRn(opcode) { p_base = p_base.add(2); wb = 0; }
     let p_final = if BIT_UP_SET(opcode) { p_base.add(getOffset(opcode) as usize) } else { p_base.sub(getOffset(opcode) as usize) }; let p = if PREINDEXED(opcode) { p_final } else { p_base }; let mut rc=1;
-    match opcode & MASK_TRANSFER_LENGTH { TRANSFER_SINGLE=>storeSingle(&mut rd,getFd(opcode),p), TRANSFER_DOUBLE=>storeDouble(&mut rd,getFd(opcode),p), #[cfg(feature="CONFIG_FPE_NWFPE_XP")] TRANSFER_EXTENDED=>storeExtended(getFd(opcode),p), _=>rc=0 }
+    match opcode & MASK_TRANSFER_LENGTH { TRANSFER_SINGLE=>storeSingle(&mut rd,getFd(opcode),p), TRANSFER_DOUBLE=>storeDouble(&mut rd,getFd(opcode),p), #[cfg(CONFIG_FPE_NWFPE_XP)] TRANSFER_EXTENDED=>storeExtended(getFd(opcode),p), _=>rc=0 }
     if rd.exception != 0 { float_raise(rd.exception); } if wb != 0 { writeRegister(getRn(opcode),p_final as usize as _); } rc
 }
 

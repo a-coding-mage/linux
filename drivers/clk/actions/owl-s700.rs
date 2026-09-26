@@ -67,14 +67,14 @@ static mut clk_cvbs_pll_table: [clk_pll_table; 18] = [
     clk_pll_table { val: 43, rate: 45 * 12000000 }, clk_pll_table { val: 0, rate: 0 },
 ];
 
-static OWL_PLL_NO_PARENT!(clk_core_pll, "core_pll", CMU_COREPLL, 12000000, 9, 0, 8, 4, 174, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_dev_pll, "dev_pll", CMU_DEVPLL, 6000000, 8, 0, 8, 8, 126, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_ddr_pll, "ddr_pll", CMU_DDRPLL, 6000000, 8, 0, 8, 2, 180, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_nand_pll, "nand_pll", CMU_NANDPLL, 6000000, 8, 0, 8, 2, 86, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_display_pll, "display_pll", CMU_DISPLAYPLL, 6000000, 8, 0, 8, 2, 140, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_cvbs_pll, "cvbs_pll", CMU_CVBSPLL, 0, 8, 0, 8, 27, 43, Some(clk_cvbs_pll_table), CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_audio_pll, "audio_pll", CMU_AUDIOPLL, 0, 4, 0, 1, 0, 0, Some(clk_audio_pll_table), CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(clk_ethernet_pll, "ethernet_pll", CMU_ETHERNETPLL, 500000000, 0, 0, 0, 0, 0, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_core_pll, "core_pll", CMU_COREPLL, 12000000, 9, 0, 8, 4, 174, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_dev_pll, "dev_pll", CMU_DEVPLL, 6000000, 8, 0, 8, 8, 126, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_ddr_pll, "ddr_pll", CMU_DDRPLL, 6000000, 8, 0, 8, 2, 180, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_nand_pll, "nand_pll", CMU_NANDPLL, 6000000, 8, 0, 8, 2, 86, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_display_pll, "display_pll", CMU_DISPLAYPLL, 6000000, 8, 0, 8, 2, 140, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_cvbs_pll, "cvbs_pll", CMU_CVBSPLL, 0, 8, 0, 8, 27, 43, Some(clk_cvbs_pll_table), CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_audio_pll, "audio_pll", CMU_AUDIOPLL, 0, 4, 0, 1, 0, 0, Some(clk_audio_pll_table), CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(clk_ethernet_pll, "ethernet_pll", CMU_ETHERNETPLL, 500000000, 0, 0, 0, 0, 0, None, CLK_IGNORE_UNUSED);
 
 static cpu_clk_mux_p: [&str; 4] = ["losc", "hosc", "core_pll", "noc1_clk_div"];
 static dev_clk_p: [&str; 2] = ["hosc", "dev_pll"];
@@ -91,11 +91,11 @@ static lcd_clk_mux_p: [&str; 2] = ["display_pll", "dev_clk"];
 static i2s_clk_mux_p: [&str; 1] = ["audio_pll"];
 static sensor_clk_mux_p: [&str; 2] = ["hosc", "si"];
 
-static OWL_MUX!(clk_cpu, "cpu_clk", cpu_clk_mux_p, CMU_BUSCLK, 0, 2, CLK_SET_RATE_PARENT);
-static OWL_MUX!(clk_dev, "dev_clk", dev_clk_p, CMU_DEVPLL, 12, 1, CLK_SET_RATE_PARENT);
-static OWL_MUX!(clk_noc0_clk_mux, "noc0_clk_mux", noc_clk_mux_p, CMU_BUSCLK, 4, 3, CLK_SET_RATE_PARENT);
-static OWL_MUX!(clk_noc1_clk_mux, "noc1_clk_mux", noc_clk_mux_p, CMU_BUSCLK1, 4, 3, CLK_SET_RATE_PARENT);
-static OWL_MUX!(clk_hp_clk_mux, "hp_clk_mux", noc_clk_mux_p, CMU_BUSCLK1, 8, 3, CLK_SET_RATE_PARENT);
+OWL_MUX!(clk_cpu, "cpu_clk", cpu_clk_mux_p, CMU_BUSCLK, 0, 2, CLK_SET_RATE_PARENT);
+OWL_MUX!(clk_dev, "dev_clk", dev_clk_p, CMU_DEVPLL, 12, 1, CLK_SET_RATE_PARENT);
+OWL_MUX!(clk_noc0_clk_mux, "noc0_clk_mux", noc_clk_mux_p, CMU_BUSCLK, 4, 3, CLK_SET_RATE_PARENT);
+OWL_MUX!(clk_noc1_clk_mux, "noc1_clk_mux", noc_clk_mux_p, CMU_BUSCLK1, 4, 3, CLK_SET_RATE_PARENT);
+OWL_MUX!(clk_hp_clk_mux, "hp_clk_mux", noc_clk_mux_p, CMU_BUSCLK1, 8, 3, CLK_SET_RATE_PARENT);
 
 static sd_factor_table: [clk_factor_table; 54] = [
     /* bit0 ~ 4 */
@@ -120,57 +120,57 @@ static rmii_div_table: [clk_div_table; 3] = [{0,4},{1,10},{0,0}];
 static de_factor_table: [clk_factor_table; 10] = [{0,1,1},{1,2,3},{2,1,2},{3,2,5},{4,1,3},{5,1,4},{6,1,6},{7,1,8},{8,1,12},{0,0,0}];
 static hde_factor_table: [clk_factor_table; 9] = [{0,1,1},{1,2,3},{2,1,2},{3,2,5},{4,1,3},{5,1,4},{6,1,6},{7,1,8},{0,0,0}];
 
-static OWL_DIVIDER!(clk_noc0, "noc0_clk", "noc0_clk_mux", CMU_BUSCLK, 16, 2, None, 0, 0);
-static OWL_DIVIDER!(clk_noc1, "noc1_clk", "noc1_clk_mux", CMU_BUSCLK1, 16, 2, None, 0, 0);
-static OWL_DIVIDER!(clk_noc1_clk_div, "noc1_clk_div", "noc1_clk", CMU_BUSCLK1, 20, 1, None, 0, 0);
-static OWL_DIVIDER!(clk_hp_clk_div, "hp_clk_div", "hp_clk_mux", CMU_BUSCLK1, 12, 2, None, 0, 0);
-static OWL_DIVIDER!(clk_ahb, "ahb_clk", "hp_clk_div", CMU_BUSCLK1, 2, 2, None, 0, 0);
-static OWL_DIVIDER!(clk_apb, "apb_clk", "ahb_clk", CMU_BUSCLK1, 14, 2, None, 0, 0);
-static OWL_DIVIDER!(clk_sensor0, "sensor0", "sensor_src", CMU_SENSORCLK, 0, 4, None, 0, 0);
-static OWL_DIVIDER!(clk_sensor1, "sensor1", "sensor_src", CMU_SENSORCLK, 8, 4, None, 0, 0);
-static OWL_DIVIDER!(clk_rmii_ref, "rmii_ref", "ethernet_pll", CMU_ETHERNETPLL, 2, 1, Some(rmii_div_table), 0, 0);
+OWL_DIVIDER!(clk_noc0, "noc0_clk", "noc0_clk_mux", CMU_BUSCLK, 16, 2, None, 0, 0);
+OWL_DIVIDER!(clk_noc1, "noc1_clk", "noc1_clk_mux", CMU_BUSCLK1, 16, 2, None, 0, 0);
+OWL_DIVIDER!(clk_noc1_clk_div, "noc1_clk_div", "noc1_clk", CMU_BUSCLK1, 20, 1, None, 0, 0);
+OWL_DIVIDER!(clk_hp_clk_div, "hp_clk_div", "hp_clk_mux", CMU_BUSCLK1, 12, 2, None, 0, 0);
+OWL_DIVIDER!(clk_ahb, "ahb_clk", "hp_clk_div", CMU_BUSCLK1, 2, 2, None, 0, 0);
+OWL_DIVIDER!(clk_apb, "apb_clk", "ahb_clk", CMU_BUSCLK1, 14, 2, None, 0, 0);
+OWL_DIVIDER!(clk_sensor0, "sensor0", "sensor_src", CMU_SENSORCLK, 0, 4, None, 0, 0);
+OWL_DIVIDER!(clk_sensor1, "sensor1", "sensor_src", CMU_SENSORCLK, 8, 4, None, 0, 0);
+OWL_DIVIDER!(clk_rmii_ref, "rmii_ref", "ethernet_pll", CMU_ETHERNETPLL, 2, 1, Some(rmii_div_table), 0, 0);
 
-static OWL_GATE!(clk_gpio,"gpio","apb_clk",CMU_DEVCLKEN1,25,0,0); static OWL_GATE!(clk_dmac,"dmac","hp_clk_div",CMU_DEVCLKEN0,17,0,0); static OWL_GATE!(clk_timer,"timer","hosc",CMU_DEVCLKEN1,22,0,0);
-static OWL_GATE_NO_PARENT!(clk_dsi,"dsi_clk",CMU_DEVCLKEN0,2,0,0); static OWL_GATE_NO_PARENT!(clk_tvout,"tvout_clk",CMU_DEVCLKEN0,3,0,0); static OWL_GATE_NO_PARENT!(clk_hdmi_dev,"hdmi_dev",CMU_DEVCLKEN0,5,0,0);
-static OWL_GATE_NO_PARENT!(clk_usb3_480mpll0,"usb3_480mpll0",CMU_USBPLL,3,0,0); static OWL_GATE_NO_PARENT!(clk_usb3_480mphy0,"usb3_480mphy0",CMU_USBPLL,2,0,0); static OWL_GATE_NO_PARENT!(clk_usb3_5gphy,"usb3_5gphy",CMU_USBPLL,1,0,0); static OWL_GATE_NO_PARENT!(clk_usb3_cce,"usb3_cce",CMU_DEVCLKEN0,25,0,0);
-static OWL_GATE!(clk_i2c0,"i2c0","hosc",CMU_DEVCLKEN1,0,0,0); static OWL_GATE!(clk_i2c1,"i2c1","hosc",CMU_DEVCLKEN1,1,0,0); static OWL_GATE!(clk_i2c2,"i2c2","hosc",CMU_DEVCLKEN1,2,0,0); static OWL_GATE!(clk_i2c3,"i2c3","hosc",CMU_DEVCLKEN1,3,0,0);
-static OWL_GATE!(clk_spi0,"spi0","ahb_clk",CMU_DEVCLKEN1,4,0,0); static OWL_GATE!(clk_spi1,"spi1","ahb_clk",CMU_DEVCLKEN1,5,0,0); static OWL_GATE!(clk_spi2,"spi2","ahb_clk",CMU_DEVCLKEN1,6,0,0); static OWL_GATE!(clk_spi3,"spi3","ahb_clk",CMU_DEVCLKEN1,7,0,0);
-static OWL_GATE_NO_PARENT!(clk_usb2h0_pllen,"usbh0_pllen",CMU_USBPLL,12,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h0_phy,"usbh0_phy",CMU_USBPLL,10,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h0_cce,"usbh0_cce",CMU_DEVCLKEN0,26,0,0);
-static OWL_GATE_NO_PARENT!(clk_usb2h1_pllen,"usbh1_pllen",CMU_USBPLL,13,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h1_phy,"usbh1_phy",CMU_USBPLL,11,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h1_cce,"usbh1_cce",CMU_DEVCLKEN0,27,0,0); static OWL_GATE_NO_PARENT!(clk_irc_switch,"irc_switch",CMU_DEVCLKEN1,15,0,0);
+OWL_GATE!(clk_gpio,"gpio","apb_clk",CMU_DEVCLKEN1,25,0,0); static OWL_GATE!(clk_dmac,"dmac","hp_clk_div",CMU_DEVCLKEN0,17,0,0); static OWL_GATE!(clk_timer,"timer","hosc",CMU_DEVCLKEN1,22,0,0);
+OWL_GATE_NO_PARENT!(clk_dsi,"dsi_clk",CMU_DEVCLKEN0,2,0,0); static OWL_GATE_NO_PARENT!(clk_tvout,"tvout_clk",CMU_DEVCLKEN0,3,0,0); static OWL_GATE_NO_PARENT!(clk_hdmi_dev,"hdmi_dev",CMU_DEVCLKEN0,5,0,0);
+OWL_GATE_NO_PARENT!(clk_usb3_480mpll0,"usb3_480mpll0",CMU_USBPLL,3,0,0); static OWL_GATE_NO_PARENT!(clk_usb3_480mphy0,"usb3_480mphy0",CMU_USBPLL,2,0,0); static OWL_GATE_NO_PARENT!(clk_usb3_5gphy,"usb3_5gphy",CMU_USBPLL,1,0,0); static OWL_GATE_NO_PARENT!(clk_usb3_cce,"usb3_cce",CMU_DEVCLKEN0,25,0,0);
+OWL_GATE!(clk_i2c0,"i2c0","hosc",CMU_DEVCLKEN1,0,0,0); static OWL_GATE!(clk_i2c1,"i2c1","hosc",CMU_DEVCLKEN1,1,0,0); static OWL_GATE!(clk_i2c2,"i2c2","hosc",CMU_DEVCLKEN1,2,0,0); static OWL_GATE!(clk_i2c3,"i2c3","hosc",CMU_DEVCLKEN1,3,0,0);
+OWL_GATE!(clk_spi0,"spi0","ahb_clk",CMU_DEVCLKEN1,4,0,0); static OWL_GATE!(clk_spi1,"spi1","ahb_clk",CMU_DEVCLKEN1,5,0,0); static OWL_GATE!(clk_spi2,"spi2","ahb_clk",CMU_DEVCLKEN1,6,0,0); static OWL_GATE!(clk_spi3,"spi3","ahb_clk",CMU_DEVCLKEN1,7,0,0);
+OWL_GATE_NO_PARENT!(clk_usb2h0_pllen,"usbh0_pllen",CMU_USBPLL,12,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h0_phy,"usbh0_phy",CMU_USBPLL,10,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h0_cce,"usbh0_cce",CMU_DEVCLKEN0,26,0,0);
+OWL_GATE_NO_PARENT!(clk_usb2h1_pllen,"usbh1_pllen",CMU_USBPLL,13,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h1_phy,"usbh1_phy",CMU_USBPLL,11,0,0); static OWL_GATE_NO_PARENT!(clk_usb2h1_cce,"usbh1_cce",CMU_DEVCLKEN0,27,0,0); static OWL_GATE_NO_PARENT!(clk_irc_switch,"irc_switch",CMU_DEVCLKEN1,15,0,0);
 
-static OWL_COMP_DIV!(clk_csi,"csi",csi_clk_mux_p,OWL_MUX_HW!(CMU_CSICLK,4,1),OWL_GATE_HW!(CMU_DEVCLKEN0,13,0),OWL_DIVIDER_HW!(CMU_CSICLK,0,4,0,None),0);
-static OWL_COMP_DIV!(clk_si,"si",csi_clk_mux_p,OWL_MUX_HW!(CMU_SICLK,4,1),OWL_GATE_HW!(CMU_DEVCLKEN0,14,0),OWL_DIVIDER_HW!(CMU_SICLK,0,4,0,None),0);
-static OWL_COMP_FACTOR!(clk_de,"de",de_clk_mux_p,OWL_MUX_HW!(CMU_DECLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN0,0,0),OWL_FACTOR_HW!(CMU_DECLK,0,3,0,de_factor_table),0);
-static OWL_COMP_FACTOR!(clk_hde,"hde",hde_clk_mux_p,OWL_MUX_HW!(CMU_HDECLK,4,2),OWL_GATE_HW!(CMU_DEVCLKEN0,9,0),OWL_FACTOR_HW!(CMU_HDECLK,0,3,0,hde_factor_table),0);
-static OWL_COMP_FACTOR!(clk_vde,"vde",hde_clk_mux_p,OWL_MUX_HW!(CMU_VDECLK,4,2),OWL_GATE_HW!(CMU_DEVCLKEN0,10,0),OWL_FACTOR_HW!(CMU_VDECLK,0,3,0,hde_factor_table),0);
-static OWL_COMP_FACTOR!(clk_vce,"vce",hde_clk_mux_p,OWL_MUX_HW!(CMU_VCECLK,4,2),OWL_GATE_HW!(CMU_DEVCLKEN0,11,0),OWL_FACTOR_HW!(CMU_VCECLK,0,3,0,hde_factor_table),0);
-static OWL_COMP_DIV!(clk_nand,"nand",nand_clk_mux_p,OWL_MUX_HW!(CMU_NANDCCLK,8,2),OWL_GATE_HW!(CMU_DEVCLKEN0,21,0),OWL_DIVIDER_HW!(CMU_NANDCCLK,0,3,0,None),CLK_SET_RATE_PARENT);
-static OWL_COMP_FACTOR!(clk_sd0,"sd0",sd_clk_mux_p,OWL_MUX_HW!(CMU_SD0CLK,9,1),OWL_GATE_HW!(CMU_DEVCLKEN0,22,0),OWL_FACTOR_HW!(CMU_SD0CLK,0,9,0,sd_factor_table),0);
-static OWL_COMP_FACTOR!(clk_sd1,"sd1",sd_clk_mux_p,OWL_MUX_HW!(CMU_SD1CLK,9,1),OWL_GATE_HW!(CMU_DEVCLKEN0,23,0),OWL_FACTOR_HW!(CMU_SD1CLK,0,9,0,sd_factor_table),0);
-static OWL_COMP_FACTOR!(clk_sd2,"sd2",sd_clk_mux_p,OWL_MUX_HW!(CMU_SD2CLK,9,1),OWL_GATE_HW!(CMU_DEVCLKEN0,24,0),OWL_FACTOR_HW!(CMU_SD2CLK,0,9,0,sd_factor_table),0);
-static OWL_COMP_DIV!(clk_uart0,"uart0",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART0CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,8,0),OWL_DIVIDER_HW!(CMU_UART0CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_uart1,"uart1",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART1CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,9,0),OWL_DIVIDER_HW!(CMU_UART1CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_uart2,"uart2",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART2CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,10,0),OWL_DIVIDER_HW!(CMU_UART2CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_uart3,"uart3",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART3CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,11,0),OWL_DIVIDER_HW!(CMU_UART3CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_uart4,"uart4",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART4CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,12,0),OWL_DIVIDER_HW!(CMU_UART4CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_uart5,"uart5",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART5CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,13,0),OWL_DIVIDER_HW!(CMU_UART5CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_uart6,"uart6",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART6CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,14,0),OWL_DIVIDER_HW!(CMU_UART6CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
-static OWL_COMP_DIV!(clk_pwm0,"pwm0",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM0CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,16,0),OWL_DIVIDER_HW!(CMU_PWM0CLK,0,10,0,None),CLK_IGNORE_UNUSED);
-static OWL_COMP_DIV!(clk_pwm1,"pwm1",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM1CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,17,0),OWL_DIVIDER_HW!(CMU_PWM1CLK,0,10,0,None),0);
-static OWL_COMP_DIV!(clk_pwm2,"pwm2",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM2CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,18,0),OWL_DIVIDER_HW!(CMU_PWM2CLK,0,10,0,None),0);
-static OWL_COMP_DIV!(clk_pwm3,"pwm3",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM3CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,19,0),OWL_DIVIDER_HW!(CMU_PWM3CLK,0,10,0,None),0);
-static OWL_COMP_DIV!(clk_pwm4,"pwm4",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM4CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,20,0),OWL_DIVIDER_HW!(CMU_PWM4CLK,0,10,0,None),0);
-static OWL_COMP_DIV!(clk_pwm5,"pwm5",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM5CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,21,0),OWL_DIVIDER_HW!(CMU_PWM5CLK,0,10,0,None),0);
-static OWL_COMP_FACTOR!(clk_gpu3d,"gpu3d",gpu_clk_mux_p,OWL_MUX_HW!(CMU_GPU3DCLK,4,3),OWL_GATE_HW!(CMU_DEVCLKEN0,8,0),OWL_FACTOR_HW!(CMU_GPU3DCLK,0,3,0,hde_factor_table),0);
-static OWL_COMP_FACTOR!(clk_lcd,"lcd",lcd_clk_mux_p,OWL_MUX_HW!(CMU_LCDCLK,12,2),OWL_GATE_HW!(CMU_DEVCLKEN0,1,0),OWL_FACTOR_HW!(CMU_LCDCLK,0,9,0,lcd_factor_table),0);
-static OWL_COMP_DIV!(clk_hdmi_audio,"hdmia",i2s_clk_mux_p,OWL_MUX_HW!(CMU_AUDIOPLL,24,1),OWL_GATE_HW!(CMU_DEVCLKEN1,28,0),OWL_DIVIDER_HW!(CMU_AUDIOPLL,24,4,0,hdmia_div_table),0);
-static OWL_COMP_DIV!(clk_i2srx,"i2srx",i2s_clk_mux_p,OWL_MUX_HW!(CMU_AUDIOPLL,24,1),OWL_GATE_HW!(CMU_DEVCLKEN1,27,0),OWL_DIVIDER_HW!(CMU_AUDIOPLL,20,4,0,hdmia_div_table),0);
-static OWL_COMP_DIV!(clk_i2stx,"i2stx",i2s_clk_mux_p,OWL_MUX_HW!(CMU_AUDIOPLL,24,1),OWL_GATE_HW!(CMU_DEVCLKEN1,26,0),OWL_DIVIDER_HW!(CMU_AUDIOPLL,16,4,0,hdmia_div_table),0);
+OWL_COMP_DIV!(clk_csi,"csi",csi_clk_mux_p,OWL_MUX_HW!(CMU_CSICLK,4,1),OWL_GATE_HW!(CMU_DEVCLKEN0,13,0),OWL_DIVIDER_HW!(CMU_CSICLK,0,4,0,None),0);
+OWL_COMP_DIV!(clk_si,"si",csi_clk_mux_p,OWL_MUX_HW!(CMU_SICLK,4,1),OWL_GATE_HW!(CMU_DEVCLKEN0,14,0),OWL_DIVIDER_HW!(CMU_SICLK,0,4,0,None),0);
+OWL_COMP_FACTOR!(clk_de,"de",de_clk_mux_p,OWL_MUX_HW!(CMU_DECLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN0,0,0),OWL_FACTOR_HW!(CMU_DECLK,0,3,0,de_factor_table),0);
+OWL_COMP_FACTOR!(clk_hde,"hde",hde_clk_mux_p,OWL_MUX_HW!(CMU_HDECLK,4,2),OWL_GATE_HW!(CMU_DEVCLKEN0,9,0),OWL_FACTOR_HW!(CMU_HDECLK,0,3,0,hde_factor_table),0);
+OWL_COMP_FACTOR!(clk_vde,"vde",hde_clk_mux_p,OWL_MUX_HW!(CMU_VDECLK,4,2),OWL_GATE_HW!(CMU_DEVCLKEN0,10,0),OWL_FACTOR_HW!(CMU_VDECLK,0,3,0,hde_factor_table),0);
+OWL_COMP_FACTOR!(clk_vce,"vce",hde_clk_mux_p,OWL_MUX_HW!(CMU_VCECLK,4,2),OWL_GATE_HW!(CMU_DEVCLKEN0,11,0),OWL_FACTOR_HW!(CMU_VCECLK,0,3,0,hde_factor_table),0);
+OWL_COMP_DIV!(clk_nand,"nand",nand_clk_mux_p,OWL_MUX_HW!(CMU_NANDCCLK,8,2),OWL_GATE_HW!(CMU_DEVCLKEN0,21,0),OWL_DIVIDER_HW!(CMU_NANDCCLK,0,3,0,None),CLK_SET_RATE_PARENT);
+OWL_COMP_FACTOR!(clk_sd0,"sd0",sd_clk_mux_p,OWL_MUX_HW!(CMU_SD0CLK,9,1),OWL_GATE_HW!(CMU_DEVCLKEN0,22,0),OWL_FACTOR_HW!(CMU_SD0CLK,0,9,0,sd_factor_table),0);
+OWL_COMP_FACTOR!(clk_sd1,"sd1",sd_clk_mux_p,OWL_MUX_HW!(CMU_SD1CLK,9,1),OWL_GATE_HW!(CMU_DEVCLKEN0,23,0),OWL_FACTOR_HW!(CMU_SD1CLK,0,9,0,sd_factor_table),0);
+OWL_COMP_FACTOR!(clk_sd2,"sd2",sd_clk_mux_p,OWL_MUX_HW!(CMU_SD2CLK,9,1),OWL_GATE_HW!(CMU_DEVCLKEN0,24,0),OWL_FACTOR_HW!(CMU_SD2CLK,0,9,0,sd_factor_table),0);
+OWL_COMP_DIV!(clk_uart0,"uart0",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART0CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,8,0),OWL_DIVIDER_HW!(CMU_UART0CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_uart1,"uart1",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART1CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,9,0),OWL_DIVIDER_HW!(CMU_UART1CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_uart2,"uart2",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART2CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,10,0),OWL_DIVIDER_HW!(CMU_UART2CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_uart3,"uart3",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART3CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,11,0),OWL_DIVIDER_HW!(CMU_UART3CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_uart4,"uart4",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART4CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,12,0),OWL_DIVIDER_HW!(CMU_UART4CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_uart5,"uart5",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART5CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,13,0),OWL_DIVIDER_HW!(CMU_UART5CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_uart6,"uart6",uart_clk_mux_p,OWL_MUX_HW!(CMU_UART6CLK,16,1),OWL_GATE_HW!(CMU_DEVCLKEN1,14,0),OWL_DIVIDER_HW!(CMU_UART6CLK,0,9,CLK_DIVIDER_ROUND_CLOSEST,None),0);
+OWL_COMP_DIV!(clk_pwm0,"pwm0",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM0CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,16,0),OWL_DIVIDER_HW!(CMU_PWM0CLK,0,10,0,None),CLK_IGNORE_UNUSED);
+OWL_COMP_DIV!(clk_pwm1,"pwm1",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM1CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,17,0),OWL_DIVIDER_HW!(CMU_PWM1CLK,0,10,0,None),0);
+OWL_COMP_DIV!(clk_pwm2,"pwm2",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM2CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,18,0),OWL_DIVIDER_HW!(CMU_PWM2CLK,0,10,0,None),0);
+OWL_COMP_DIV!(clk_pwm3,"pwm3",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM3CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,19,0),OWL_DIVIDER_HW!(CMU_PWM3CLK,0,10,0,None),0);
+OWL_COMP_DIV!(clk_pwm4,"pwm4",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM4CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,20,0),OWL_DIVIDER_HW!(CMU_PWM4CLK,0,10,0,None),0);
+OWL_COMP_DIV!(clk_pwm5,"pwm5",pwm_clk_mux_p,OWL_MUX_HW!(CMU_PWM5CLK,12,1),OWL_GATE_HW!(CMU_DEVCLKEN1,21,0),OWL_DIVIDER_HW!(CMU_PWM5CLK,0,10,0,None),0);
+OWL_COMP_FACTOR!(clk_gpu3d,"gpu3d",gpu_clk_mux_p,OWL_MUX_HW!(CMU_GPU3DCLK,4,3),OWL_GATE_HW!(CMU_DEVCLKEN0,8,0),OWL_FACTOR_HW!(CMU_GPU3DCLK,0,3,0,hde_factor_table),0);
+OWL_COMP_FACTOR!(clk_lcd,"lcd",lcd_clk_mux_p,OWL_MUX_HW!(CMU_LCDCLK,12,2),OWL_GATE_HW!(CMU_DEVCLKEN0,1,0),OWL_FACTOR_HW!(CMU_LCDCLK,0,9,0,lcd_factor_table),0);
+OWL_COMP_DIV!(clk_hdmi_audio,"hdmia",i2s_clk_mux_p,OWL_MUX_HW!(CMU_AUDIOPLL,24,1),OWL_GATE_HW!(CMU_DEVCLKEN1,28,0),OWL_DIVIDER_HW!(CMU_AUDIOPLL,24,4,0,hdmia_div_table),0);
+OWL_COMP_DIV!(clk_i2srx,"i2srx",i2s_clk_mux_p,OWL_MUX_HW!(CMU_AUDIOPLL,24,1),OWL_GATE_HW!(CMU_DEVCLKEN1,27,0),OWL_DIVIDER_HW!(CMU_AUDIOPLL,20,4,0,hdmia_div_table),0);
+OWL_COMP_DIV!(clk_i2stx,"i2stx",i2s_clk_mux_p,OWL_MUX_HW!(CMU_AUDIOPLL,24,1),OWL_GATE_HW!(CMU_DEVCLKEN1,26,0),OWL_DIVIDER_HW!(CMU_AUDIOPLL,16,4,0,hdmia_div_table),0);
 
-static OWL_COMP_FIXED_FACTOR!(clk_pcm1,"pcm1","audio_pll",OWL_GATE_HW!(CMU_DEVCLKEN1,31,0),1,2,0);
-static OWL_COMP_DIV!(clk_sensor_src,"sensor_src",sensor_clk_mux_p,OWL_MUX_HW!(CMU_SENSORCLK,4,1),{0},OWL_DIVIDER_HW!(CMU_SENSORCLK,5,2,0,None),0);
-static OWL_COMP_FIXED_FACTOR!(clk_ethernet,"ethernet","ethernet_pll",OWL_GATE_HW!(CMU_DEVCLKEN1,23,0),1,20,0);
-static OWL_COMP_DIV_FIXED!(clk_thermal_sensor,"thermal_sensor","hosc",OWL_GATE_HW!(CMU_DEVCLKEN0,31,0),OWL_DIVIDER_HW!(CMU_SSTSCLK,20,10,0,None),0);
+OWL_COMP_FIXED_FACTOR!(clk_pcm1,"pcm1","audio_pll",OWL_GATE_HW!(CMU_DEVCLKEN1,31,0),1,2,0);
+OWL_COMP_DIV!(clk_sensor_src,"sensor_src",sensor_clk_mux_p,OWL_MUX_HW!(CMU_SENSORCLK,4,1),{0},OWL_DIVIDER_HW!(CMU_SENSORCLK,5,2,0,None),0);
+OWL_COMP_FIXED_FACTOR!(clk_ethernet,"ethernet","ethernet_pll",OWL_GATE_HW!(CMU_DEVCLKEN1,23,0),1,20,0);
+OWL_COMP_DIV_FIXED!(clk_thermal_sensor,"thermal_sensor","hosc",OWL_GATE_HW!(CMU_DEVCLKEN0,31,0),OWL_DIVIDER_HW!(CMU_SSTSCLK,20,10,0,None),0);
 
 // The following arrays and descriptor retain the C driver's externally visible
 // registration topology; their element types are provided by the kernel port.

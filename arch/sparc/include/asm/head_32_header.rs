@@ -42,7 +42,7 @@ pub const LINUX_SYSCALL_TRAP: &str =
 pub const BREAKPOINT_TRAP: &str = "b breakpoint_trap; rd %psr,%l0; nop; nop;";
 
 // CONFIG_KGDB selects the low-level KGDB trap; otherwise this is a bad trap.
-#[cfg(feature = "CONFIG_KGDB")]
+#[cfg(CONFIG_KGDB)]
 #[macro_export]
 macro_rules! KGDB_TRAP {
     ($num:expr) => {
@@ -50,7 +50,7 @@ macro_rules! KGDB_TRAP {
     };
 }
 
-#[cfg(not(feature = "CONFIG_KGDB"))]
+#[cfg(not(CONFIG_KGDB))]
 #[macro_export]
 macro_rules! KGDB_TRAP {
     ($num:expr) => { $crate::BAD_TRAP!($num) };

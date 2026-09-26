@@ -8,7 +8,7 @@ const _SOURCE_TRANSLATION: &str = r#"// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2021-2022, 2024, Qualcomm Innovation Center, Inc. All rights reserved.
  * Copyright (c) 2023, Linaro Limited
- * /
+ */
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -29,7 +29,7 @@ const _SOURCE_TRANSLATION: &str = r#"// SPDX-License-Identifier: GPL-2.0-only
 #include "gdsc.h"
 #include "reset.h"
 
-/* Need to match the order of clocks in DT binding * /
+/* Need to match the order of clocks in DT binding */
 enum {
 	DT_BI_TCXO,
 	DT_SLEEP_CLK,
@@ -4680,18 +4680,18 @@ static int gcc_sa8775p_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Keep some clocks always-on * /
-	qcom_branch_set_clk_en(regmap, 0x32004); /* GCC_CAMERA_AHB_CLK * /
-	qcom_branch_set_clk_en(regmap, 0x32020); /* GCC_CAMERA_XO_CLK * /
-	qcom_branch_set_clk_en(regmap, 0xc7004); /* GCC_DISP1_AHB_CLK * /
-	qcom_branch_set_clk_en(regmap, 0xc7018); /* GCC_DISP1_XO_CLK * /
-	qcom_branch_set_clk_en(regmap, 0x33004); /* GCC_DISP_AHB_CLK * /
-	qcom_branch_set_clk_en(regmap, 0x33018); /* GCC_DISP_XO_CLK * /
-	qcom_branch_set_clk_en(regmap, 0x7d004); /* GCC_GPU_CFG_AHB_CLK * /
-	qcom_branch_set_clk_en(regmap, 0x34004); /* GCC_VIDEO_AHB_CLK * /
-	qcom_branch_set_clk_en(regmap, 0x34024); /* GCC_VIDEO_XO_CLK * /
+	/* Keep some clocks always-on */
+	qcom_branch_set_clk_en(regmap, 0x32004); /* GCC_CAMERA_AHB_CLK */
+	qcom_branch_set_clk_en(regmap, 0x32020); /* GCC_CAMERA_XO_CLK */
+	qcom_branch_set_clk_en(regmap, 0xc7004); /* GCC_DISP1_AHB_CLK */
+	qcom_branch_set_clk_en(regmap, 0xc7018); /* GCC_DISP1_XO_CLK */
+	qcom_branch_set_clk_en(regmap, 0x33004); /* GCC_DISP_AHB_CLK */
+	qcom_branch_set_clk_en(regmap, 0x33018); /* GCC_DISP_XO_CLK */
+	qcom_branch_set_clk_en(regmap, 0x7d004); /* GCC_GPU_CFG_AHB_CLK */
+	qcom_branch_set_clk_en(regmap, 0x34004); /* GCC_VIDEO_AHB_CLK */
+	qcom_branch_set_clk_en(regmap, 0x34024); /* GCC_VIDEO_XO_CLK */
 
-	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks * /
+	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks */
 	qcom_branch_set_force_mem_core(regmap, gcc_ufs_phy_ice_core_clk, true);
 
 	return qcom_cc_really_probe(&pdev->dev, &gcc_sa8775p_desc, regmap);

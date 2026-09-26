@@ -60,7 +60,7 @@ pub unsafe fn inet_request_mark(sk: *const sock, skb: *mut sk_buff) -> u32 {
 pub unsafe fn inet_request_bound_dev_if(sk: *const sock, skb: *mut sk_buff) -> i32 {
     let bound_dev_if = READ_ONCE((*sk).sk_bound_dev_if);
     /* CONFIG_NET_L3_MASTER_DEV conditional retained from the C header. */
-    #[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+    #[cfg(CONFIG_NET_L3_MASTER_DEV)]
     {
         let net = sock_net(sk);
         if bound_dev_if == 0 && READ_ONCE((*net).ipv4.sysctl_tcp_l3mdev_accept) {
@@ -72,7 +72,7 @@ pub unsafe fn inet_request_bound_dev_if(sk: *const sock, skb: *mut sk_buff) -> i
 
 #[inline]
 pub unsafe fn inet_sk_bound_l3mdev(sk: *const sock) -> i32 {
-    #[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+    #[cfg(CONFIG_NET_L3_MASTER_DEV)]
     {
         let net = sock_net(sk);
         if !READ_ONCE((*net).ipv4.sysctl_tcp_l3mdev_accept) {
@@ -89,9 +89,9 @@ pub fn inet_bound_dev_eq(l3mdev_accept: bool, bound_dev_if: i32, dif: i32, sdif:
 
 #[inline]
 pub unsafe fn inet_sk_bound_dev_eq(net: *const net, bound_dev_if: i32, dif: i32, sdif: i32) -> bool {
-    #[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+    #[cfg(CONFIG_NET_L3_MASTER_DEV)]
     { return inet_bound_dev_eq(READ_ONCE((*net).ipv4.sysctl_tcp_l3mdev_accept) != 0, bound_dev_if, dif, sdif); }
-    #[cfg(not(feature = "CONFIG_NET_L3_MASTER_DEV"))]
+    #[cfg(not(CONFIG_NET_L3_MASTER_DEV))]
     { inet_bound_dev_eq(true, bound_dev_if, dif, sdif) }
 }
 
@@ -178,12 +178,12 @@ pub const IP_CMSG_ALL: ::core::ffi::c_ulong = IP_CMSG_PKTINFO | IP_CMSG_TTL | IP
 #[inline] pub unsafe fn inet_sk_dscp(inet: *const inet_sock) -> dscp_t { inet_dsfield_to_dscp(READ_ONCE((*inet).tos)) }
 
 #[inline] pub unsafe fn sk_to_full_sk(mut sk: *mut sock) -> *mut sock {
-    #[cfg(feature = "CONFIG_INET")]
+    #[cfg(CONFIG_INET)]
     { if !sk.is_null() && READ_ONCE((*sk).sk_state) == TCP_NEW_SYN_RECV { sk = (*inet_reqsk(sk)).rsk_listener; } if !sk.is_null() && READ_ONCE((*sk).sk_state) == TCP_TIME_WAIT { sk = core::ptr::null_mut(); } }
     sk
 }
 #[inline] pub unsafe fn sk_const_to_full_sk(mut sk: *const sock) -> *const sock {
-    #[cfg(feature = "CONFIG_INET")]
+    #[cfg(CONFIG_INET)]
     { if !sk.is_null() && READ_ONCE((*sk).sk_state) == TCP_NEW_SYN_RECV { sk = (*(sk as *const request_sock)).rsk_listener; } if !sk.is_null() && READ_ONCE((*sk).sk_state) == TCP_TIME_WAIT { sk = core::ptr::null(); } }
     sk
 }

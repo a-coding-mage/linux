@@ -168,13 +168,13 @@ struct PlatformDriver {
 }
 
 // C's CONFIG_PM branches select either the runtime PM operations or NULL.
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static MTK_RNG_PM_OPS: DevPmOps = DevPmOps {
     runtime_suspend: Some(mtk_rng_runtime_suspend),
     runtime_resume: Some(mtk_rng_runtime_resume),
 };
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 static MTK_RNG_PM_OPS: *const DevPmOps = core::ptr::null();
 
 // Equivalent of the const-compatible device match table.  The terminating entry

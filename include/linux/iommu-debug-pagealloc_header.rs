@@ -7,7 +7,7 @@
 
 // C dependency: CONFIG_IOMMU_DEBUG_PAGEALLOC
 
-#[cfg(feature = "CONFIG_IOMMU_DEBUG_PAGEALLOC")]
+#[cfg(CONFIG_IOMMU_DEBUG_PAGEALLOC)]
 extern "C" {
     pub static iommu_debug_initialized: StaticKeyFalse;
 
@@ -16,7 +16,7 @@ extern "C" {
     pub fn __iommu_debug_check_unmapped(page: *const page, numpages: i32);
 }
 
-#[cfg(feature = "CONFIG_IOMMU_DEBUG_PAGEALLOC")]
+#[cfg(CONFIG_IOMMU_DEBUG_PAGEALLOC)]
 #[inline]
 pub unsafe fn iommu_debug_check_unmapped(page: *const page, numpages: i32) {
     if static_branch_unlikely(&iommu_debug_initialized) {
@@ -24,7 +24,7 @@ pub unsafe fn iommu_debug_check_unmapped(page: *const page, numpages: i32) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_IOMMU_DEBUG_PAGEALLOC"))]
+#[cfg(not(CONFIG_IOMMU_DEBUG_PAGEALLOC))]
 #[inline]
 pub unsafe fn iommu_debug_check_unmapped(_page: *const page, _numpages: i32) {}
 

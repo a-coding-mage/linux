@@ -45,12 +45,12 @@ unsafe fn get_bank_config(bank: i32) -> u32 {
     if bank % 2 != 0 { res & 0xffff } else { res >> 16 }
 }
 
-#[cfg(any(feature = "CONFIG_SGI_IP28", feature = "CONFIG_32BIT"))]
+#[cfg(any(CONFIG_SGI_IP28, CONFIG_32BIT))]
 unsafe fn probe_memory() {
     /* prom detects all usable memory */
 }
 
-#[cfg(not(any(feature = "CONFIG_SGI_IP28", feature = "CONFIG_32BIT")))]
+#[cfg(not(any(CONFIG_SGI_IP28, CONFIG_32BIT)))]
 unsafe fn probe_memory() {
     /* Detect installed memory, which PROM misses */
     printk(KERN_INFO, "MC: Probing memory configuration:\n");
@@ -90,7 +90,7 @@ pub unsafe fn sgimc_init() {
 
     /* don't touch parity settings for IP28 */
     tmp = (*sgimc).cpuctrl0;
-    #[cfg(not(feature = "CONFIG_SGI_IP28"))]
+    #[cfg(not(CONFIG_SGI_IP28))]
     {
         tmp |= SGIMC_CCTRL0_EPERRGIO | SGIMC_CCTRL0_EPERRMEM;
     }
@@ -129,7 +129,7 @@ pub unsafe fn sgimc_init() {
     probe_memory();
 }
 
-#[cfg(feature = "CONFIG_SGI_IP28")]
+#[cfg(CONFIG_SGI_IP28)]
 pub unsafe fn prom_cleanup() {
     let mut mconfig1: u32;
     let mut flags: usize = 0;

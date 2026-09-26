@@ -27,7 +27,7 @@ extern "C" {
 }
 
 // Build-time condition preserved from CONFIG_HARDWARE_WATCHPOINTS.
-#[cfg(feature = "CONFIG_HARDWARE_WATCHPOINTS")]
+#[cfg(CONFIG_HARDWARE_WATCHPOINTS)]
 #[macro_export]
 macro_rules! __restore_watch {
     ($task:expr) => {
@@ -42,7 +42,7 @@ macro_rules! __restore_watch {
     };
 }
 
-#[cfg(not(feature = "CONFIG_HARDWARE_WATCHPOINTS"))]
+#[cfg(not(CONFIG_HARDWARE_WATCHPOINTS))]
 #[macro_export]
 macro_rules! __restore_watch {
     ($task:expr) => {{}};

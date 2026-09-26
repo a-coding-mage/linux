@@ -599,22 +599,22 @@ unsafe fn audioreach_widget_load_module_common(
     let mod_: *mut audioreach_module;
     let dobj: *mut snd_soc_dobj;
 
-    sg = audioreach_parse_sg_tokens(apm, &(*tplg_w).priv);
+    sg = audioreach_parse_sg_tokens(apm, &(*tplg_w).r#priv);
     if is_err(sg) {
         return ptr_err(sg);
     }
 
-    cont = audioreach_parse_cont_tokens(apm, sg, &(*tplg_w).priv);
+    cont = audioreach_parse_cont_tokens(apm, sg, &(*tplg_w).r#priv);
     if is_err(cont) {
         return ptr_err(cont);
     }
 
-    mod_ = audioreach_parse_common_tokens(apm, cont, &(*tplg_w).priv, w);
+    mod_ = audioreach_parse_common_tokens(apm, cont, &(*tplg_w).r#priv, w);
     if is_err_or_null(mod_) {
         return if !mod_.is_null() { ptr_err(mod_) } else { -ENODEV };
     }
 
-    (*mod_).data = audioreach_get_module_priv_data(&(*tplg_w).priv);
+    (*mod_).data = audioreach_get_module_priv_data(&(*tplg_w).r#priv);
 
     dobj = &mut (*w).dobj;
     (*dobj).private = mod_ as *mut c_void;
@@ -642,7 +642,7 @@ unsafe fn audioreach_widget_load_enc_dec_cnv(
 
     dobj = &mut (*w).dobj;
     mod_ = (*dobj).private as *mut audioreach_module;
-    mod_array = audioreach_get_module_array(&(*tplg_w).priv);
+    mod_array = audioreach_get_module_array(&(*tplg_w).r#priv);
     mod_elem = (*mod_array).value.as_ptr();
 
     while tkn_count <= le32_to_cpu((*mod_array).num_elems) as c_int - 1 {
@@ -835,7 +835,7 @@ unsafe fn audioreach_widget_load_buffer(
     dobj = &mut (*w).dobj;
     mod_ = (*dobj).private as *mut audioreach_module;
 
-    mod_array = audioreach_get_module_array(&(*tplg_w).priv);
+    mod_array = audioreach_get_module_array(&(*tplg_w).r#priv);
 
     match (*mod_).module_id {
         MODULE_ID_CODEC_DMA_SINK | MODULE_ID_CODEC_DMA_SOURCE => {
@@ -875,7 +875,7 @@ unsafe fn audioreach_widget_load_mixer(
     let dobj: *mut snd_soc_dobj;
     let mut tkn_count: c_int = 0;
 
-    w_array = (*tplg_w).priv.array.as_ptr();
+    w_array = (*tplg_w).r#priv.array.as_ptr();
 
     scontrol = kzalloc_obj::<snd_ar_control>();
     if scontrol.is_null() {
@@ -1287,7 +1287,7 @@ unsafe fn audioreach_control_load_mix(
     let mut tkn_count: c_int = 0;
 
     mc = container_of_const_snd_soc_tplg_mixer_control_from_hdr(hdr);
-    c_array = (*mc).priv.data as *const snd_soc_tplg_vendor_array;
+    c_array = (*mc).r#priv.data as *const snd_soc_tplg_vendor_array;
 
     c_elem = (*c_array).value.as_ptr();
 

@@ -41,10 +41,10 @@ type irq_hw_number_t = usize;
 #[repr(C)] pub struct altr_arria10_edac { pub dev:*mut device, pub ecc_mgr_map:*mut regmap, pub domain:*mut irq_domain, pub irq_chip:irq_chip, pub sb_irq:c_int, pub db_irq:c_int, pub a10_ecc_devices:list_head, pub panic_notifier:notifier_block }
 
 extern "C" {
-    fn regmap_read(*mut regmap,u32,*mut u32)->c_int; fn regmap_write(*mut regmap,u32,u32)->c_int; fn regmap_update_bits(*mut regmap,u32,u32,u32)->c_int;
-    fn readl(*mut u8)->u32; fn writel(u32,*mut u8); fn writew(u32,*mut u8); fn rmb(); fn wmb(); fn udelay(u32); fn panic(*const c_char)->!;
-    fn edac_mc_handle_error(u32,*mut mem_ctl_info,u32,usize,usize,u32,u32,u32,c_int,*const c_char,*const c_char); fn edac_device_handle_ce(*mut edac_device_ctl_info,u32,u32,*const c_char); fn edac_device_handle_ue(*mut edac_device_ctl_info,u32,u32,*const c_char);
-    fn arm_smccc_smc(usize,usize,usize,usize,usize,usize,usize,usize,*mut arm_smccc_res); fn flush_cache_all();
+    fn regmap_read(_: *mut regmap,_: u32,_: *mut u32)->c_int; fn regmap_write(_: *mut regmap,_: u32,_: u32)->c_int; fn regmap_update_bits(_: *mut regmap,_: u32,_: u32,_: u32)->c_int;
+    fn readl(_: *mut u8)->u32; fn writel(_: u32,_: *mut u8); fn writew(_: u32,_: *mut u8); fn rmb(); fn wmb(); fn udelay(_: u32); fn panic(_: *const c_char)->!;
+    fn edac_mc_handle_error(_: u32,_: *mut mem_ctl_info,_: u32,_: usize,_: usize,_: u32,_: u32,_: u32,_: c_int,_: *const c_char,_: *const c_char); fn edac_device_handle_ce(_: *mut edac_device_ctl_info,_: u32,_: u32,_: *const c_char); fn edac_device_handle_ue(_: *mut edac_device_ctl_info,_: u32,_: u32,_: *const c_char);
+    fn arm_smccc_smc(_: usize,_: usize,_: usize,_: usize,_: usize,_: usize,_: usize,_: usize,_: *mut arm_smccc_res); fn flush_cache_all();
 }
 
 unsafe fn altr_sdram_mc_err_handler(_irq:c_int, dev_id:*mut c_void)->irqreturn_t {

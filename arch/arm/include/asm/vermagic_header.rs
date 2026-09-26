@@ -18,18 +18,18 @@ pub const MODULE_ARCH_VERMAGIC_ARMVSN: &str = concat!(
  * corresponding Rust configuration is represented by the feature of the same
  * name.
  */
-#[cfg(feature = "CONFIG_ARM_PATCH_PHYS_VIRT")]
+#[cfg(CONFIG_ARM_PATCH_PHYS_VIRT)]
 pub const MODULE_ARCH_VERMAGIC_P2V: &str = "p2v8 ";
-#[cfg(not(feature = "CONFIG_ARM_PATCH_PHYS_VIRT"))]
+#[cfg(not(CONFIG_ARM_PATCH_PHYS_VIRT))]
 pub const MODULE_ARCH_VERMAGIC_P2V: &str = "";
 
 /* Add instruction set architecture tag to distinguish ARM/Thumb kernels.
  * CONFIG_THUMB2_KERNEL is a build-time C preprocessor condition; the Rust
  * feature of the same name preserves that condition.
  */
-#[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+#[cfg(CONFIG_THUMB2_KERNEL)]
 pub const MODULE_ARCH_VERMAGIC_ARMTHUMB: &str = "thumb2 ";
-#[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+#[cfg(not(CONFIG_THUMB2_KERNEL))]
 pub const MODULE_ARCH_VERMAGIC_ARMTHUMB: &str = "";
 
 pub const MODULE_ARCH_VERMAGIC: &str = concat!(

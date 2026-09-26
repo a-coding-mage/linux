@@ -83,8 +83,7 @@ pub struct dcn20_vmid {
 extern "C" {
     pub fn dcn20_vmid_setup(
         vmid: *mut dcn20_vmid,
-        config: *const dcn_vmid_page_table_config,
-    );
+        config: *const dcn_vmid_page_table_config);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

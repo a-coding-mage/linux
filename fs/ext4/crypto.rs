@@ -100,6 +100,8 @@ pub unsafe fn ext4_ioctl_get_encryption_pwsalt(
     }
 
     if uuid_is_zero((*sbi).s_es.s_encrypt_pw_salt.as_ptr()) {
+        'pwsalt_err_exit: {
+        'pwsalt_err_journal: {
         err = mnt_want_write_file(filp);
         if err != 0 {
             return err;
@@ -107,23 +109,25 @@ pub unsafe fn ext4_ioctl_get_encryption_pwsalt(
         handle = ext4_journal_start_sb(sb, EXT4_HT_MISC, 1);
         if IS_ERR(handle) {
             err = PTR_ERR(handle);
-            goto pwsalt_err_exit;
+            break 'pwsalt_err_exit;
         }
         err = ext4_journal_get_write_access(handle, sb, (*sbi).s_sbh, EXT4_JTR_NONE);
         if err != 0 {
-            goto pwsalt_err_journal;
+            break 'pwsalt_err_journal;
         }
         lock_buffer((*sbi).s_sbh);
         generate_random_uuid((*sbi).s_es.s_encrypt_pw_salt.as_mut_ptr());
         ext4_superblock_csum_set(sb);
         unlock_buffer((*sbi).s_sbh);
         err = ext4_handle_dirty_metadata(handle, core::ptr::null_mut(), (*sbi).s_sbh);
-pwsalt_err_journal:
+        }
+        
         err2 = ext4_journal_stop(handle);
         if err2 != 0 && err == 0 {
             err = err2;
         }
-pwsalt_err_exit:
+        }
+        
         mnt_drop_write_file(filp);
         if err != 0 {
             return err;

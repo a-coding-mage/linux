@@ -166,7 +166,7 @@ unsafe extern "C" fn efi_runtime_map_init() -> i32 {
     }
 
     i = 0;
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         entry = add_sysfs_runtime_map_entry(efi_kobj, i, md);
         if IS_ERR!(entry) {
             ret = PTR_ERR!(entry);
@@ -174,7 +174,7 @@ unsafe extern "C" fn efi_runtime_map_init() -> i32 {
         }
         *map_entries.add(i as usize) = entry;
         i += 1;
-    }
+    });
 
     if !IS_ERR!(entry) {
         return 0;

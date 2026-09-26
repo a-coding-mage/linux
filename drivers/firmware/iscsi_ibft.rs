@@ -38,11 +38,11 @@ extern "C" {
     static ibft_phys_addr: usize;
     fn memcmp(a:*const u8,b:*const u8,n:usize)->i32; fn printk(fmt:*const i8,...); fn kfree(p:*mut core::ffi::c_void);
     fn kzalloc(size:usize, flags:u32)->*mut core::ffi::c_void;
-    fn iscsi_boot_create_initiator(*mut iscsi_boot_kset,u8,*mut ibft_kobject,unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
-    fn iscsi_boot_create_ethernet(*mut iscsi_boot_kset,u8,*mut ibft_kobject,unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
-    fn iscsi_boot_create_target(*mut iscsi_boot_kset,u8,*mut ibft_kobject,unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
-    fn iscsi_boot_create_acpitbl(*mut iscsi_boot_kset,u8,*mut ibft_kobject,unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
-    fn iscsi_boot_create_kset(*const i8)->*mut iscsi_boot_kset; fn iscsi_boot_destroy_kset(*mut iscsi_boot_kset);
+    fn iscsi_boot_create_initiator(_: *mut iscsi_boot_kset,_: u8,_: *mut ibft_kobject,_: unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,_: i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
+    fn iscsi_boot_create_ethernet(_: *mut iscsi_boot_kset,_: u8,_: *mut ibft_kobject,_: unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,_: i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
+    fn iscsi_boot_create_target(_: *mut iscsi_boot_kset,_: u8,_: *mut ibft_kobject,_: unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,_: i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
+    fn iscsi_boot_create_acpitbl(_: *mut iscsi_boot_kset,_: u8,_: *mut ibft_kobject,_: unsafe extern "C" fn(*mut core::ffi::c_void,i32,*mut i8)->isize,unsafe extern "C" fn(*mut core::ffi::c_void,_: i32)->u32,unsafe extern "C" fn(*mut core::ffi::c_void));
+    fn iscsi_boot_create_kset(_: *const i8)->*mut iscsi_boot_kset; fn iscsi_boot_destroy_kset(_: *mut iscsi_boot_kset);
 }
 
 const ENODEV:i32=19; const ENOENT:i32=2; const ENOMEM:i32=12; const S_IRUGO:u32=0o444;

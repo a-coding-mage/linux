@@ -2,14 +2,14 @@
 
 // CONFIG_X86 selects the memory-encryption physical-address conversion in the
 // original header; these symbols are supplied by the surrounding translation.
-#[cfg(feature = "CONFIG_X86")]
+#[cfg(CONFIG_X86)]
 macro_rules! __psp_pa {
     ($x:expr) => {
         __sme_pa($x)
     };
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 macro_rules! __psp_pa {
     ($x:expr) => {
         __pa($x)

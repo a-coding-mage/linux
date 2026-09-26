@@ -645,21 +645,21 @@ static r9a09g056_resets: &[rzv2h_reset] = &[
 
 static r9a09g056_cpg_info: rzv2h_cpg_info = rzv2h_cpg_info {
 	/* Core Clocks */
-	.core_clks = r9a09g056_core_clks,
-	.num_core_clks = array_size!(r9a09g056_core_clks),
-	.last_dt_core_clk = LAST_DT_CORE_CLK,
-	.num_total_core_clks = MOD_CLK_BASE,
+	core_clks: r9a09g056_core_clks,
+	num_core_clks: array_size!(r9a09g056_core_clks),
+	last_dt_core_clk: LAST_DT_CORE_CLK,
+	num_total_core_clks: MOD_CLK_BASE,
 
 	/* Module Clocks */
-	.mod_clks = r9a09g056_mod_clks,
-	.num_mod_clks = array_size!(r9a09g056_mod_clks),
-	.num_hw_mod_clks = 25 * 16,
+	mod_clks: r9a09g056_mod_clks,
+	num_mod_clks: array_size!(r9a09g056_mod_clks),
+	num_hw_mod_clks: 25 * 16,
 
 	/* Resets */
-	.resets = r9a09g056_resets,
-	.num_resets = array_size!(r9a09g056_resets),
+	resets: r9a09g056_resets,
+	num_resets: array_size!(r9a09g056_resets),
 
-	.num_mstop_bits = 192,
+	num_mstop_bits: 192,
 ];
 
 

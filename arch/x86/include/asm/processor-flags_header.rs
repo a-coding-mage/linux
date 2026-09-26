@@ -3,10 +3,10 @@
 // Dependency intent preserved from <uapi/asm/processor-flags.h> and
 // <linux/mem_encrypt.h>.
 
-#[cfg(feature = "CONFIG_VM86")]
+#[cfg(CONFIG_VM86)]
 pub const X86_VM_MASK: u64 = X86_EFLAGS_VM;
 
-#[cfg(not(feature = "CONFIG_VM86"))]
+#[cfg(not(CONFIG_VM86))]
 pub const X86_VM_MASK: u64 = 0; // No VM86 support
 
 /*
@@ -33,29 +33,29 @@ pub const X86_VM_MASK: u64 = 0; // No VM86 support
  *
  * CR3_ADDR_MASK is the mask used by read_cr3_pa().
  */
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const CR3_ADDR_MASK: u64 = __sme_clr!(PHYSICAL_PAGE_MASK);
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const CR3_PCID_MASK: u64 = 0xFFFull;
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const CR3_NOFLUSH: u64 = 1u64 << 63;
 
 /*
  * CR3_ADDR_MASK needs at least bits 31:5 set on PAE systems, and we save
  * a tiny bit of code size by setting all the bits.
  */
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const CR3_ADDR_MASK: u64 = 0xFFFFFFFFu64;
 
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const CR3_PCID_MASK: u64 = 0u64;
 
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const CR3_NOFLUSH: u64 = 0;
 
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 pub const X86_CR3_PTI_PCID_USER_BIT: u32 = 11;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

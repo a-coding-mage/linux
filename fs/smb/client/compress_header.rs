@@ -30,14 +30,14 @@ pub enum smb_rqst {}
 #[repr(C)]
 pub enum cifs_tcon {}
 
-#[cfg(feature = "CONFIG_CIFS_COMPRESSION")]
+#[cfg(CONFIG_CIFS_COMPRESSION)]
 pub type compress_send_fn = unsafe extern "C" fn(
     server: *mut TCP_Server_Info,
     flags: core::ffi::c_int,
     rq: *mut smb_rqst,
 ) -> core::ffi::c_int;
 
-#[cfg(feature = "CONFIG_CIFS_COMPRESSION")]
+#[cfg(CONFIG_CIFS_COMPRESSION)]
 extern "C" {
     pub fn smb_compress(
         server: *mut TCP_Server_Info,
@@ -51,7 +51,7 @@ extern "C" {
     ) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_CIFS_COMPRESSION"))]
+#[cfg(not(CONFIG_CIFS_COMPRESSION))]
 #[inline]
 pub unsafe fn smb_compress(
     _unused1: *mut core::ffi::c_void,
@@ -61,7 +61,7 @@ pub unsafe fn smb_compress(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_CIFS_COMPRESSION"))]
+#[cfg(not(CONFIG_CIFS_COMPRESSION))]
 #[inline]
 pub unsafe fn should_compress(
     _unused1: *mut core::ffi::c_void,

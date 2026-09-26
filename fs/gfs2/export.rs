@@ -157,7 +157,7 @@ unsafe fn gfs2_fh_to_dentry(
     let fh = (*fid).raw.as_mut_ptr() as *mut u32;
 
     match fh_type {
-        GFS2_SMALL_FH_SIZE as i32 | GFS2_LARGE_FH_SIZE as i32 | GFS2_OLD_FH_SIZE as i32 => {
+        case if case == GFS2_SMALL_FH_SIZE as i32 || case == GFS2_LARGE_FH_SIZE as i32 || case == GFS2_OLD_FH_SIZE as i32 => {
             if fh_len < GFS2_SMALL_FH_SIZE as i32 {
                 return core::ptr::null_mut();
             }
@@ -181,7 +181,7 @@ unsafe fn gfs2_fh_to_parent(
     let fh = (*fid).raw.as_mut_ptr() as *mut u32;
 
     match fh_type {
-        GFS2_LARGE_FH_SIZE as i32 | GFS2_OLD_FH_SIZE as i32 => {
+        case if case == GFS2_LARGE_FH_SIZE as i32 || case == GFS2_OLD_FH_SIZE as i32 => {
             if fh_len < GFS2_LARGE_FH_SIZE as i32 {
                 return core::ptr::null_mut();
             }

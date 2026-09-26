@@ -13,7 +13,7 @@
 #[repr(C)]
 pub struct cpuinfo_arm {
     pub cpuid: u32,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub loops_per_jiffy: ::core::ffi::c_uint,
 }
 

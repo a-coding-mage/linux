@@ -48,7 +48,7 @@ pub struct platform_device;
 
 // The C declaration is selected by IS_ENABLED(CONFIG_REGULATOR). When the
 // configuration is disabled, the inline implementation returns NULL.
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 unsafe extern "C" {
     pub fn regulator_register_always_on(
         id: core::ffi::c_int,
@@ -59,7 +59,7 @@ unsafe extern "C" {
     ) -> *mut platform_device;
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_register_always_on(
     _id: core::ffi::c_int,

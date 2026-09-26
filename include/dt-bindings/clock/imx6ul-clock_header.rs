@@ -3,7 +3,6 @@
  * Copyright (C) 2015 Freescale Semiconductor, Inc.
  */
 
-#define __DT_BINDINGS_CLOCK_IMX6UL_H
 
 pub const IMX6UL_CLK_DUMMY: u32 = 0;
 pub const IMX6UL_CLK_CKIL: u32 = 1;

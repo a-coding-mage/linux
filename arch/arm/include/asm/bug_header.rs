@@ -48,8 +48,8 @@ macro_rules! __BUG {
                 "\t.hword {line}, 0",
                 ".popsection",
                 instr = const BUG_INSTR!($value),
-                file = sym $file,
-                line = const $line,
+                $file = sym $file,
+                $line = const $line,
             );
         }
         core::hint::unreachable_unchecked()

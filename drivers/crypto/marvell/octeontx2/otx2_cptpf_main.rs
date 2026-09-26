@@ -91,7 +91,7 @@ unsafe fn cptpf_flr_wq_destroy(p: *mut otx2_cptpf_dev) { if (*p).flr_wq.is_null(
 unsafe fn cptpf_sriov_configure(pdev: *mut pci_dev, num_vfs: i32) -> i32 { if num_vfs > 0 { cptpf_sriov_enable(pdev,num_vfs) } else { cptpf_sriov_disable(pdev) } }
 
 // External declarations mirror symbols provided by the included kernel headers.
-extern "C" { fn cptpf_sriov_enable(*mut pci_dev,i32)->i32; fn cptpf_sriov_disable(*mut pci_dev)->i32; }
+extern "C" { fn cptpf_sriov_enable(_: *mut pci_dev,_: i32)->i32; fn cptpf_sriov_disable(_: *mut pci_dev)->i32; }
 
 unsafe fn cptpf_disable_afpf_mbox_intr(p: *mut otx2_cptpf_dev) {
     otx2_cpt_write64((*p).reg_base, BLKADDR_RVUM, 0, RVU_PF_INT_ENA_W1C, 1);

@@ -3,14 +3,14 @@
 /* Build-time CONFIG_* conditions are retained as Rust cfg predicates. */
 macro_rules! cache_set {
     ($cfg:meta, $tab:ident, $ia:ident, $ka:ident, $kl:ident, $ua:ident, $ur:ident, $ck:ident, $cu:ident, $da:ident, $dm:ident, $du:ident, $df:ident) => {
-        #[cfg($cfg)] extern "C" {
+        #[$cfg($cfg)] extern "C" {
             fn $ia(); fn $ka(); fn $kl(); fn $ua(); fn $ur(_: usize, _: usize, _: u32);
             fn $ck(_: usize, _: usize); fn $cu(_: usize, _: usize) -> i32;
             fn $da(_: *mut core::ffi::c_void, _: usize);
             fn $dm(_: *const core::ffi::c_void, _: usize, _: i32); fn $du(_: *const core::ffi::c_void, _: usize, _: i32);
             fn $df(_: *const core::ffi::c_void, _: *const core::ffi::c_void);
         }
-        #[cfg($cfg)] static mut $tab: cpu_cache_fns = cpu_cache_fns {
+        #[$cfg($cfg)] static mut $tab: cpu_cache_fns = cpu_cache_fns {
             flush_icache_all: Some($ia), flush_kern_all: Some($ka), flush_kern_louis: Some($kl), flush_user_all: Some($ua), flush_user_range: Some($ur), coherent_kern_range: Some($ck), coherent_user_range: Some($cu), flush_kern_dcache_area: Some($da), dma_map_area: Some($dm), dma_unmap_area: Some($du), dma_flush_range: Some($df),
         };
     };

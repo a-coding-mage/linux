@@ -64,7 +64,7 @@ pub unsafe fn print_missing_facilities() {
     for i in 0..als.len() {
         val = !stfle_fac_list[i] & als[i];
         for j in 0..BITS_PER_LONG {
-            if (val & (1 as c_ulong << (BITS_PER_LONG - 1 - j))) == 0 {
+            if (val & ((1 as c_ulong) << (BITS_PER_LONG - 1 - j))) == 0 {
                 continue;
             }
             if first == 0 {

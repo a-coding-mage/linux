@@ -136,7 +136,7 @@ unsafe extern "C" fn unregister_sco() {
 
 // Conditional build section: #if IS_ENABLED(CONFIG_RV_MONITORS_KUNIT_TEST)
 // KUnit visibility and sco_kunit.h declarations are supplied by the build.
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 #[repr(C)]
 pub struct rv_sco_ops {
     pub mon: rv_monitor_ops,
@@ -146,7 +146,7 @@ pub struct rv_sco_ops {
     pub handle_schedule_exit: Option<unsafe extern "C" fn(*mut core::ffi::c_void, bool)>,
 }
 
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub static rv_sco_ops: rv_sco_ops = rv_sco_ops {
     mon: RV_MON_OPS_INIT!(),
     handle_sched_set_state: Some(handle_sched_set_state),

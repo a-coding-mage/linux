@@ -17,11 +17,11 @@ pub const X86_VENDOR_VORTEX: i32 = 11;
 pub const X86_VENDOR_NUM: i32 = 12;
 pub const X86_VENDOR_UNKNOWN: i32 = 0xff;
 
-#[cfg(feature = "CONFIG_X86_VSMP")]
+#[cfg(CONFIG_X86_VSMP)]
 pub const ARCH_MIN_TASKALIGN: usize = 1usize << INTERNODE_CACHE_SHIFT;
-#[cfg(feature = "CONFIG_X86_VSMP")]
+#[cfg(CONFIG_X86_VSMP)]
 pub const ARCH_MIN_MMSTRUCT_ALIGN: usize = 1usize << INTERNODE_CACHE_SHIFT;
-#[cfg(not(feature = "CONFIG_X86_VSMP"))]
+#[cfg(not(CONFIG_X86_VSMP))]
 pub const ARCH_MIN_MMSTRUCT_ALIGN: usize = 0;
 
 extern "C" {
@@ -79,8 +79,8 @@ pub union cpuinfo_x86_capability { pub x86_capability: [u32; NCAPINTS + NBUGINTS
 #[repr(C)]
 pub struct cpuinfo_x86 {
     pub vfm: cpuinfo_x86_vfm, pub x86_stepping: u8, pub platform: cpuinfo_x86_platform,
-    #[cfg(feature = "CONFIG_X86_64")] pub x86_tlbsize: i32,
-    #[cfg(feature = "CONFIG_X86_VMX_FEATURE_NAMES")] pub vmx_capability: [u32; NVMXINTS],
+    #[cfg(CONFIG_X86_64)] pub x86_tlbsize: i32,
+    #[cfg(CONFIG_X86_VMX_FEATURE_NAMES)] pub vmx_capability: [u32; NVMXINTS],
     pub x86_virt_bits: u8, pub x86_phys_bits: u8, pub extended_cpuid_level: u32,
     pub cpuid_level: i32, pub capability: cpuinfo_x86_capability,
     pub x86_vendor_id: [i8; 16], pub x86_model_id: [i8; 64],
@@ -113,7 +113,7 @@ pub unsafe fn l1tf_pfn_limit() -> usize { 1usize << (boot_cpu_data.x86_cache_bit
 #[inline] pub unsafe fn native_read_cr3_pa() -> usize { __native_read_cr3() & CR3_ADDR_MASK }
 #[inline] pub unsafe fn load_cr3(pgdir: *mut pgd_t) { write_cr3(__sme_pa(pgdir)); }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 #[repr(C, packed)]
 pub struct x86_hw_tss {
     pub back_link: u16, pub __blh: u16, pub sp0: usize, pub ss0: u16, pub __ss0h: u16,
@@ -124,7 +124,7 @@ pub struct x86_hw_tss {
     pub ds: u16, pub __dsh: u16, pub fs: u16, pub __fsh: u16, pub gs: u16, pub __gsh: u16,
     pub ldt: u16, pub __ldth: u16, pub trace: u16, pub io_bitmap_base: u16,
 }
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 #[repr(C, packed)]
 pub struct x86_hw_tss { pub reserved1: u32, pub sp0: u64, pub sp1: u64, pub sp2: u64, pub reserved2: u64, pub ist: [u64; 7], pub reserved3: u32, pub reserved4: u32, pub reserved5: u16, pub io_bitmap_base: u16 }
 
@@ -141,24 +141,24 @@ pub const IO_BITMAP_OFFSET_INVALID: usize = __KERNEL_TSS_LIMIT + 1;
 
 #[repr(C)] pub struct thread_struct {
     pub tls_array: [desc_struct; GDT_ENTRY_TLS_ENTRIES],
-    #[cfg(feature = "CONFIG_X86_32")] pub sp0: usize,
+    #[cfg(CONFIG_X86_32)] pub sp0: usize,
     pub sp: usize,
-    #[cfg(feature = "CONFIG_X86_32")] pub sysenter_cs: usize,
-    #[cfg(not(feature = "CONFIG_X86_32"))] pub es: u16,
-    #[cfg(not(feature = "CONFIG_X86_32"))] pub ds: u16,
-    #[cfg(not(feature = "CONFIG_X86_32"))] pub fsindex: u16,
-    #[cfg(not(feature = "CONFIG_X86_32"))] pub gsindex: u16,
-    #[cfg(feature = "CONFIG_X86_64")] pub fsbase: usize,
-    #[cfg(feature = "CONFIG_X86_64")] pub gsbase: usize,
-    #[cfg(not(feature = "CONFIG_X86_64"))] pub fs: usize,
-    #[cfg(not(feature = "CONFIG_X86_64"))] pub gs: usize,
+    #[cfg(CONFIG_X86_32)] pub sysenter_cs: usize,
+    #[cfg(not(CONFIG_X86_32))] pub es: u16,
+    #[cfg(not(CONFIG_X86_32))] pub ds: u16,
+    #[cfg(not(CONFIG_X86_32))] pub fsindex: u16,
+    #[cfg(not(CONFIG_X86_32))] pub gsindex: u16,
+    #[cfg(CONFIG_X86_64)] pub fsbase: usize,
+    #[cfg(CONFIG_X86_64)] pub gsbase: usize,
+    #[cfg(not(CONFIG_X86_64))] pub fs: usize,
+    #[cfg(not(CONFIG_X86_64))] pub gs: usize,
     pub ptrace_bps: [*mut perf_event; HBP_NUM], pub virtual_dr6: usize, pub ptrace_dr7: usize,
     pub cr2: usize, pub trap_nr: usize, pub error_code: usize,
-    #[cfg(feature = "CONFIG_VM86")] pub vm86: *mut vm86,
+    #[cfg(CONFIG_VM86)] pub vm86: *mut vm86,
     pub io_bitmap: *mut io_bitmap, pub iopl_emul: usize, pub iopl_warn: u32, pub pkru: u32,
-    #[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")] pub features: usize,
-    #[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")] pub features_locked: usize,
-    #[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")] pub shstk: thread_shstk,
+    #[cfg(CONFIG_X86_USER_SHADOW_STACK)] pub features: usize,
+    #[cfg(CONFIG_X86_USER_SHADOW_STACK)] pub features_locked: usize,
+    #[cfg(CONFIG_X86_USER_SHADOW_STACK)] pub shstk: thread_shstk,
 }
 
 extern "C" {

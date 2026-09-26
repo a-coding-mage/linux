@@ -110,10 +110,10 @@ unsafe fn flash_write(_file: *mut file, mut buf: *const u8, size: usize, ppos: *
 
 unsafe fn erase_block(n: i32) -> i32 {
     CSR_ROMWRITEREG.write(0); let _ = FLASH_BASE.add(0x8000).read_volatile(); kick_open(); FLASH_BASE.add(0x8000).write_volatile(0x50);
-    let ptr=FLASH_BASE.add(0x8000+(n as usize<<16)); let _=ptr.read_volatile(); kick_open(); ptr.write_volatile(0x20); ptr.write_volatile(0xD0); msleep(10);
+    let ptr=FLASH_BASE.add(0x8000+((n as usize)<<16)); let _=ptr.read_volatile(); kick_open(); ptr.write_volatile(0x20); ptr.write_volatile(0xD0); msleep(10);
     let timeout=jiffies+10*HZ; let mut c1=0u32; while c1&0x80==0 && time_before(jiffies,timeout) {msleep(10); c1=ptr.read_volatile() as u32;}
     kick_open(); ptr.write_volatile(0xff); if c1&0x20!=0 {FLASH_BASE.add(0x8000).write_volatile(0x50); return -2;} msleep(10);
-    let mut p=FLASH_BASE.add(n as usize<<16); for _ in 0..(16*1024) {if p.cast::<u32>().read_volatile()!=0xffffffff{return -1;} p=p.add(4);} 0
+    let mut p=FLASH_BASE.add((n as usize)<<16); for _ in 0..(16*1024) {if p.cast::<u32>().read_volatile()!=0xffffffff{return -1;} p=p.add(4);} 0
 }
 
 unsafe fn write_block(mut p: usize, mut buf: *const u8, mut count: i32) -> i32 {

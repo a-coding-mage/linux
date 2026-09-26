@@ -9,7 +9,7 @@
 pub struct xfs_mount;
 pub struct xfs_trans;
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 extern "C" {
     pub fn xfs_rtmount_readsb(mp: *mut xfs_mount) -> libc::c_int;
     pub fn xfs_rtmount_freesb(mp: *mut xfs_mount);
@@ -26,25 +26,25 @@ extern "C" {
     ) -> libc::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_growfs_rt(_mp: *mut xfs_mount, _input: *mut xfs_growfs_rt_t) -> libc::c_int {
     -libc::ENOSYS
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_rtalloc_reinit_frextents(_mp: *mut xfs_mount) -> libc::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_rtmount_readsb(_mp: *mut xfs_mount) -> libc::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_rtmount_freesb(_mp: *mut xfs_mount) {}
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_rtmount_init(mp: *mut xfs_mount) -> libc::c_int {
     // The C header only forward-declares xfs_mount; m_sb is defined elsewhere.
     // Equivalent field access is retained as an external dependency.
@@ -53,16 +53,16 @@ pub unsafe fn xfs_rtmount_init(mp: *mut xfs_mount) -> libc::c_int {
     -libc::ENOSYS
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_rtmount_inodes(mp: *mut xfs_mount) -> libc::c_int {
     let _ = mp;
     -libc::ENOSYS
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_rtunmount_inodes(_mp: *mut xfs_mount) {}
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_growfs_check_rtgeom(
     _mp: *const xfs_mount,
     _dblocks: xfs_rfsblock_t,

@@ -23,7 +23,7 @@
 #[inline]
 fn cvmx_pcsx_reg(offset: usize, block_id: usize, address: u64) -> u64 {
     let stride = match cvmx_get_octeon_family() {
-        OCTEON_CN68XX & OCTEON_FAMILY_MASK => 0x4000u64,
+        case if case == OCTEON_CN68XX & OCTEON_FAMILY_MASK => 0x4000u64,
         _ => 0x20000u64,
     };
     CVMX_ADD_IO_SEG(address) + ((offset as u64) + (block_id as u64) * stride) * 1024
@@ -73,7 +73,7 @@ extern "C" {
 macro_rules! pcsx_reg_union {
     ($union:ident, $s:ident) => {
         #[repr(C)]
-        pub union $union { pub u64: u64, pub s: $s }
+        pub $union $union { pub u64: u64, pub s: $s }
         #[repr(C)]
         #[derive(Copy, Clone)]
         pub struct $s { pub bits: u64 }

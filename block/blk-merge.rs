@@ -10,18 +10,18 @@
 
 
 
-static inline void bio_get_first_bvec(struct bio *bio, struct bio_vec *bv)
+void bio_get_first_bvec(bio *bio, bio_vec *bv)
 {
-	*bv = mp_bvec_iter_bvec(bio->bi_io_vec, bio->bi_iter);
+	*bv = mp_bvec_iter_bvec((*bio).bi_io_vec, (*bio).bi_iter);
 }
 
-static inline void bio_get_last_bvec(struct bio *bio, struct bio_vec *bv)
+void bio_get_last_bvec(bio *bio, bio_vec *bv)
 {
-	struct bvec_iter iter = bio->bi_iter;
+	struct bvec_iter iter = (*bio).bi_iter;
 	int idx;
 
 	bio_get_first_bvec(bio, bv);
-	if (bv->bv_len == bio->bi_iter.bi_size)
+	if ((*bv).bv_len == (*bio).bi_iter.bi_size)
 		return;		/* this bio only has a single bvec */
 
 	bio_advance_iter(bio, &iter, iter.bi_size);
@@ -31,18 +31,18 @@ static inline void bio_get_last_bvec(struct bio *bio, struct bio_vec *bv)
 	else	/* in the middle of bvec */
 		idx = iter.bi_idx;
 
-	*bv = bio->bi_io_vec[idx];
+	*bv = (*bio).bi_io_vec[idx];
 
 	/*
 	 * iter.bi_offset records actual length of the last bvec
 	 * if this bio ends in the middle of one io vector
 	 */
 	if (iter.bi_offset)
-		bv->bv_len = iter.bi_offset;
+		(*bv).bv_len = iter.bi_offset;
 }
 
-static inline bool bio_will_gap(struct request_queue *q,
-		struct request *prev_rq, struct bio *prev, struct bio *next)
+bool bio_will_gap(request_queue *q,
+		request *prev_rq, bio *prev, bio *next)
 {
 	struct bio_vec pb, nb;
 
@@ -55,7 +55,7 @@ static inline bool bio_will_gap(struct request_queue *q,
 	 * merge a huge number of small single bios in case of mkfs.
 	 */
 	if (prev_rq)
-		bio_get_first_bvec(prev_rq->bio, &pb);
+		bio_get_first_bvec((*prev_rq).bio, &pb);
 	else
 		bio_get_first_bvec(prev, &pb);
 	if (pb.bv_offset & queue_virt_boundary(q))
@@ -74,26 +74,26 @@ static inline bool bio_will_gap(struct request_queue *q,
 	bio_get_first_bvec(next, &nb);
 	if (biovec_phys_mergeable(q, &pb, &nb))
 		return false;
-	return __bvec_gap_to_prev(&q->limits, &pb, nb.bv_offset);
+	return __bvec_gap_to_prev((*&q).limits, &pb, nb.bv_offset);
 }
 
-static inline bool req_gap_back_merge(struct request *req, struct bio *bio)
+bool req_gap_back_merge(request *req, bio *bio)
 {
-	return bio_will_gap(req->q, req, req->biotail, bio);
+	return bio_will_gap((*req).q, req, (*req).biotail, bio);
 }
 
-static inline bool req_gap_front_merge(struct request *req, struct bio *bio)
+bool req_gap_front_merge(request *req, bio *bio)
 {
-	return bio_will_gap(req->q, NULL, bio, req->bio);
+	return bio_will_gap((*req).q, NULL, bio, (*req).bio);
 }
 
 /*
  * The maximum size that a bio can fit has to be aligned down to the
  * logical block size, which is the minimum accepted unit by hardware.
  */
-static unsigned int bio_allowed_max_sectors(const struct queue_limits *lim)
+static core::ffi::c_uint bio_allowed_max_sectors(const struct queue_limits *lim)
 {
-	return round_down(BIO_MAX_SIZE, lim->logical_block_size) >>
+	return round_down(BIO_MAX_SIZE, (*lim).logical_block_size) >>
 			SECTOR_SHIFT;
 }
 
@@ -109,8 +109,8 @@ static unsigned int bio_allowed_max_sectors(const struct queue_limits *lim)
  * If succeed, the newly allocated bio representing the initial part will be
  * returned, on failure NULL will be returned and original bio will fail.
  */
-struct bio *bio_submit_split_bioset(struct bio *bio, unsigned int split_sectors,
-				    struct bio_set *bs)
+struct bio *bio_submit_split_bioset(bio *bio, split_sectors: core::ffi::c_uint,
+				    bio_set *bs)
 {
 	struct bio *split = bio_split(bio, split_sectors, GFP_NOIO, bs);
 
@@ -120,7 +120,7 @@ struct bio *bio_submit_split_bioset(struct bio *bio, unsigned int split_sectors,
 	}
 
 	bio_chain(split, bio);
-	trace_block_split(split, bio->bi_iter.bi_sector);
+	trace_block_split(split, (*bio).bi_iter.bi_sector);
 	WARN_ON_ONCE(bio_zone_write_plugging(bio));
 
 	if (should_fail_bio(bio))
@@ -132,7 +132,7 @@ struct bio *bio_submit_split_bioset(struct bio *bio, unsigned int split_sectors,
 }
 // Exported kernel symbol
 
-static struct bio *bio_submit_split(struct bio *bio, int split_sectors)
+static struct bio *bio_submit_split(bio *bio, int split_sectors)
 {
 	if (unlikely(split_sectors < 0)) {
 		bio_endio_status(bio, errno_to_blk_status(split_sectors));
@@ -141,25 +141,25 @@ static struct bio *bio_submit_split(struct bio *bio, int split_sectors)
 
 	if (split_sectors) {
 		bio = bio_submit_split_bioset(bio, split_sectors,
-				&bio->bi_bdev->bd_disk->bio_split);
+				(*(*(*&bio).bi_bdev).bd_disk).bio_split);
 		if (bio)
-			bio->bi_opf |= REQ_NOMERGE;
+			(*bio).bi_opf |= REQ_NOMERGE;
 	}
 
 	return bio;
 }
 
-static struct bio *__bio_split_discard(struct bio *bio,
+static struct bio *__bio_split_discard(bio *bio,
 		const struct queue_limits *lim, unsigned *nsegs,
-		unsigned int max_sectors)
+		max_sectors: core::ffi::c_uint)
 {
-	unsigned int max_discard_sectors, granularity;
+	max_discard_sectors: core::ffi::c_uint, granularity;
 	sector_t tmp;
 	unsigned split_sectors;
 
 	*nsegs = 1;
 
-	granularity = max(lim->discard_granularity >> 9, 1U);
+	granularity = max((*lim).discard_granularity >> 9, 1U);
 
 	max_discard_sectors = min(max_sectors, bio_allowed_max_sectors(lim));
 	max_discard_sectors -= max_discard_sectors % granularity;
@@ -175,8 +175,8 @@ static struct bio *__bio_split_discard(struct bio *bio,
 	 * If the next starting sector would be misaligned, stop the discard at
 	 * the previous aligned sector.
 	 */
-	tmp = bio->bi_iter.bi_sector + split_sectors -
-		((lim->discard_alignment >> 9) % granularity);
+	tmp = (*bio).bi_iter.bi_sector + split_sectors -
+		(((*lim).discard_alignment >> 9) % granularity);
 	tmp = sector_div(tmp, granularity);
 
 	if (split_sectors > tmp)
@@ -185,30 +185,30 @@ static struct bio *__bio_split_discard(struct bio *bio,
 	return bio_submit_split(bio, split_sectors);
 }
 
-struct bio *bio_split_discard(struct bio *bio, const struct queue_limits *lim,
+struct bio *bio_split_discard(bio *bio, const struct queue_limits *lim,
 		unsigned *nsegs)
 {
-	unsigned int max_sectors;
+	core::ffi::c_uint max_sectors;
 
 	if (bio_op(bio) == REQ_OP_SECURE_ERASE)
-		max_sectors = lim->max_secure_erase_sectors;
+		max_sectors = (*lim).max_secure_erase_sectors;
 	else
-		max_sectors = lim->max_discard_sectors;
+		max_sectors = (*lim).max_discard_sectors;
 
 	return __bio_split_discard(bio, lim, nsegs, max_sectors);
 }
 
-static inline unsigned int blk_boundary_sectors(const struct queue_limits *lim,
-						bool is_atomic)
+core::ffi::c_uint blk_boundary_sectors(const struct queue_limits *lim,
+						is_atomic: bool)
 {
 	/*
 	 * chunk_sectors must be a multiple of atomic_write_boundary_sectors if
 	 * both non-zero.
 	 */
-	if (is_atomic && lim->atomic_write_boundary_sectors)
-		return lim->atomic_write_boundary_sectors;
+	if (is_atomic && (*lim).atomic_write_boundary_sectors)
+		return (*lim).atomic_write_boundary_sectors;
 
-	return lim->chunk_sectors;
+	return (*lim).chunk_sectors;
 }
 
 /*
@@ -219,12 +219,12 @@ static inline unsigned int blk_boundary_sectors(const struct queue_limits *lim,
  * requests that are submitted to a block device if the start of a bio is not
  * aligned to a physical block boundary.
  */
-static inline unsigned get_max_io_size(struct bio *bio,
+unsigned get_max_io_size(bio *bio,
 				       const struct queue_limits *lim)
 {
-	unsigned pbs = lim->physical_block_size >> SECTOR_SHIFT;
-	unsigned lbs = lim->logical_block_size >> SECTOR_SHIFT;
-	bool is_atomic = bio->bi_opf & REQ_ATOMIC;
+	unsigned pbs = (*lim).physical_block_size >> SECTOR_SHIFT;
+	unsigned lbs = (*lim).logical_block_size >> SECTOR_SHIFT;
+	bool is_atomic = (*bio).bi_opf & REQ_ATOMIC;
 	unsigned boundary_sectors = blk_boundary_sectors(lim, is_atomic);
 	unsigned max_sectors, start, end;
 
@@ -233,19 +233,19 @@ static inline unsigned get_max_io_size(struct bio *bio,
 	 * than the actual bio size, which we cannot tolerate.
 	 */
 	if (bio_op(bio) == REQ_OP_WRITE_ZEROES)
-		max_sectors = lim->max_write_zeroes_sectors;
+		max_sectors = (*lim).max_write_zeroes_sectors;
 	else if (is_atomic)
-		max_sectors = lim->atomic_write_max_sectors;
+		max_sectors = (*lim).atomic_write_max_sectors;
 	else
-		max_sectors = lim->max_sectors;
+		max_sectors = (*lim).max_sectors;
 
 	if (boundary_sectors) {
 		max_sectors = min(max_sectors,
-			blk_boundary_sectors_left(bio->bi_iter.bi_sector,
+			blk_boundary_sectors_left((*bio).bi_iter.bi_sector,
 					      boundary_sectors));
 	}
 
-	start = bio->bi_iter.bi_sector & (pbs - 1);
+	start = (*bio).bi_iter.bi_sector & (pbs - 1);
 	end = (start + max_sectors) & ~(pbs - 1);
 	if (end > start)
 		return end - start;
@@ -277,7 +277,7 @@ static bool bvec_split_segs(const struct queue_limits *lim,
 		unsigned max_segs, unsigned max_bytes)
 {
 	unsigned max_len = max_bytes - *bytes;
-	unsigned len = min(bv->bv_len, max_len);
+	unsigned len = min((*bv).bv_len, max_len);
 	unsigned total_len = 0;
 	unsigned seg_size = 0;
 
@@ -288,28 +288,28 @@ static bool bvec_split_segs(const struct queue_limits *lim,
 		total_len += seg_size;
 		len -= seg_size;
 
-		if ((bv->bv_offset + total_len) & lim->virt_boundary_mask)
+		if (((*bv).bv_offset + total_len) & (*lim).virt_boundary_mask)
 			break;
 	}
 
 	*bytes += total_len;
 
 	/* tell the caller to split the bvec if it is too big to fit */
-	return len > 0 || bv->bv_len > max_len;
+	return len > 0 || (*bv).bv_len > max_len;
 }
 
-static unsigned int bio_split_alignment(struct bio *bio,
+static core::ffi::c_uint bio_split_alignment(bio *bio,
 		const struct queue_limits *lim)
 {
-	if (op_is_write(bio_op(bio)) && lim->zone_write_granularity)
-		return lim->zone_write_granularity;
-	return lim->logical_block_size;
+	if (op_is_write(bio_op(bio)) && (*lim).zone_write_granularity)
+		return (*lim).zone_write_granularity;
+	return (*lim).logical_block_size;
 }
 
-static inline unsigned int bvec_seg_gap(struct bio_vec *bvprv,
-					struct bio_vec *bv)
+core::ffi::c_uint bvec_seg_gap(bio_vec *bvprv,
+					bio_vec *bv)
 {
-	return bv->bv_offset | (bvprv->bv_offset + bvprv->bv_len);
+	return (*bv).bv_offset | ((*bvprv).bv_offset + (*bvprv).bv_len);
 }
 
 /**
@@ -325,21 +325,22 @@ static inline unsigned int bvec_seg_gap(struct bio_vec *bvprv,
  * split, 0 if the bio doesn't have to be split, or a positive sector offset if
  * @bio needs to be split.
  */
-int bio_split_io_at(struct bio *bio, const struct queue_limits *lim,
+int bio_split_io_at(bio *bio, const struct queue_limits *lim,
 		unsigned *segs, unsigned max_bytes, unsigned len_align_mask)
 {
+	'split: {
 	struct bio_crypt_ctx *bc = bio_crypt_ctx(bio);
 	struct bio_vec bv, bvprv, *bvprvp = NULL;
 	unsigned nsegs = 0, bytes = 0, gaps = 0;
 	struct bvec_iter iter;
-	unsigned start_align_mask = lim->dma_alignment;
+	unsigned start_align_mask = (*lim).dma_alignment;
 
 	if (bc) {
-		start_align_mask |= (bc->bc_key->crypto_cfg.data_unit_size - 1);
-		len_align_mask |= (bc->bc_key->crypto_cfg.data_unit_size - 1);
+		start_align_mask |= ((*(*bc).bc_key).crypto_cfg.data_unit_size - 1);
+		len_align_mask |= ((*(*bc).bc_key).crypto_cfg.data_unit_size - 1);
 	}
 
-	bio_for_each_bvec(bv, bio, iter) {
+	bio_for_each_bvec!(bv, bio, iter, {
 		if (bv.bv_offset & start_align_mask ||
 		    bv.bv_len & len_align_mask)
 			return -EINVAL;
@@ -350,37 +351,38 @@ int bio_split_io_at(struct bio *bio, const struct queue_limits *lim,
 		 */
 		if (bvprvp) {
 			if (bvec_gap_to_prev(lim, bvprvp, bv.bv_offset))
-				goto split;
+				break 'split;
 			gaps |= bvec_seg_gap(bvprvp, &bv);
 		}
 
-		if (nsegs < lim->max_segments &&
+		if (nsegs < (*lim).max_segments &&
 		    bytes + bv.bv_len <= max_bytes &&
-		    bv.bv_offset + bv.bv_len <= lim->max_fast_segment_size) {
+		    bv.bv_offset + bv.bv_len <= (*lim).max_fast_segment_size) {
 			nsegs++;
 			bytes += bv.bv_len;
 		} else {
 			if (bvec_split_segs(lim, &bv, &nsegs, &bytes,
-					lim->max_segments, max_bytes))
-				goto split;
+					(*lim).max_segments, max_bytes))
+				break 'split;
 		}
 
 		bvprv = bv;
 		bvprvp = &bvprv;
-	}
+	});
 
 	*segs = nsegs;
-	bio->bi_bvec_gap_bit = ffs(gaps);
+	(*bio).bi_bvec_gap_bit = ffs(gaps);
 	return 0;
-split:
-	if (bio->bi_opf & REQ_ATOMIC)
+	}
+	
+	if ((*bio).bi_opf & REQ_ATOMIC)
 		return -EINVAL;
 
 	/*
 	 * We can't sanely support splitting for a REQ_NOWAIT bio. End it
 	 * with EAGAIN if splitting is required and return an error pointer.
 	 */
-	if (bio->bi_opf & REQ_NOWAIT)
+	if ((*bio).bi_opf & REQ_NOWAIT)
 		return -EAGAIN;
 
 	*segs = nsegs;
@@ -406,12 +408,12 @@ split:
 	 * big IO can be trival, disable iopoll when split needed.
 	 */
 	bio_clear_polled(bio);
-	bio->bi_bvec_gap_bit = ffs(gaps);
+	(*bio).bi_bvec_gap_bit = ffs(gaps);
 	return bytes >> SECTOR_SHIFT;
 }
 // Exported kernel symbol
 
-struct bio *bio_split_rw(struct bio *bio, const struct queue_limits *lim,
+struct bio *bio_split_rw(bio *bio, const struct queue_limits *lim,
 		unsigned *nr_segs)
 {
 	return bio_submit_split(bio,
@@ -426,22 +428,22 @@ struct bio *bio_split_rw(struct bio *bio, const struct queue_limits *lim,
  * a good sanity check that the submitter built the bio correctly is nice to
  * have as well.
  */
-struct bio *bio_split_zone_append(struct bio *bio,
+struct bio *bio_split_zone_append(bio *bio,
 		const struct queue_limits *lim, unsigned *nr_segs)
 {
 	int split_sectors;
 
 	split_sectors = bio_split_rw_at(bio, lim, nr_segs,
-			lim->max_zone_append_sectors << SECTOR_SHIFT);
+			(*lim).max_zone_append_sectors << SECTOR_SHIFT);
 	if (WARN_ON_ONCE(split_sectors > 0))
 		split_sectors = -EINVAL;
 	return bio_submit_split(bio, split_sectors);
 }
 
-struct bio *bio_split_write_zeroes(struct bio *bio,
+struct bio *bio_split_write_zeroes(bio *bio,
 		const struct queue_limits *lim, unsigned *nsegs)
 {
-	unsigned int max_sectors = get_max_io_size(bio, lim);
+	core::ffi::c_uint max_sectors = get_max_io_size(bio, lim);
 
 	*nsegs = 0;
 
@@ -469,29 +471,29 @@ struct bio *bio_split_write_zeroes(struct bio *bio,
  * The split bio is allocated from @q->bio_split, which is provided by the
  * block layer.
  */
-struct bio *bio_split_to_limits(struct bio *bio)
+struct bio *bio_split_to_limits(bio *bio)
 {
-	unsigned int nr_segs;
+	core::ffi::c_uint nr_segs;
 
-	return __bio_split_to_limits(bio, bdev_limits(bio->bi_bdev), &nr_segs);
+	return __bio_split_to_limits(bio, bdev_limits((*bio).bi_bdev), &nr_segs);
 }
 // Exported kernel symbol
 
-unsigned int blk_recalc_rq_segments(struct request *rq)
+core::ffi::c_uint blk_recalc_rq_segments(request *rq)
 {
-	unsigned int nr_phys_segs = 0;
-	unsigned int bytes = 0;
+	core::ffi::c_uint nr_phys_segs = 0;
+	core::ffi::c_uint bytes = 0;
 	struct req_iterator iter;
 	struct bio_vec bv;
 
-	if (!rq->bio)
+	if ((*!rq).bio)
 		return 0;
 
-	switch (bio_op(rq->bio)) {
+	switch (bio_op((*rq).bio)) {
 	case REQ_OP_DISCARD:
 	case REQ_OP_SECURE_ERASE:
-		if (queue_max_discard_segments(rq->q) > 1) {
-			struct bio *bio = rq->bio;
+		if (queue_max_discard_segments((*rq).q) > 1) {
+			struct bio *bio = (*rq).bio;
 
 			for_each_bio(bio)
 				nr_phys_segs++;
@@ -505,21 +507,21 @@ unsigned int blk_recalc_rq_segments(struct request *rq)
 	}
 
 	rq_for_each_bvec(bv, rq, iter)
-		bvec_split_segs(&rq->q->limits, &bv, &nr_phys_segs, &bytes,
+		bvec_split_segs((*(*&rq).q).limits, &bv, &nr_phys_segs, &bytes,
 				UINT_MAX, BIO_MAX_SIZE);
 	return nr_phys_segs;
 }
 
-static inline unsigned int blk_rq_get_max_sectors(struct request *rq,
+core::ffi::c_uint blk_rq_get_max_sectors(request *rq,
 						  sector_t offset)
 {
-	struct request_queue *q = rq->q;
-	struct queue_limits *lim = &q->limits;
-	unsigned int max_sectors, boundary_sectors;
-	bool is_atomic = rq->cmd_flags & REQ_ATOMIC;
+	struct request_queue *q = (*rq).q;
+	struct queue_limits *lim = (*&q).limits;
+	max_sectors: core::ffi::c_uint, boundary_sectors;
+	bool is_atomic = (*rq).cmd_flags & REQ_ATOMIC;
 
 	if (blk_rq_is_passthrough(rq))
-		return q->limits.max_hw_sectors;
+		return (*q).limits.max_hw_sectors;
 
 	boundary_sectors = blk_boundary_sectors(lim, is_atomic);
 	max_sectors = blk_queue_get_max_sectors(rq);
@@ -532,38 +534,39 @@ static inline unsigned int blk_rq_get_max_sectors(struct request *rq,
 		   blk_boundary_sectors_left(offset, boundary_sectors));
 }
 
-static inline int ll_new_hw_segment(struct request *req, struct bio *bio,
-		unsigned int nr_phys_segs)
+int ll_new_hw_segment(request *req, bio *bio,
+		nr_phys_segs: core::ffi::c_uint)
 {
+	'no_merge: {
 	if (!blk_cgroup_mergeable(req, bio))
-		goto no_merge;
+		break 'no_merge;
 
-	if (unlikely(!blk_integrity_merge_bio(req->q, req, bio)))
-		goto no_merge;
+	if (unlikely(!blk_integrity_merge_bio((*req).q, req, bio)))
+		break 'no_merge;
 
 	/* discard request merge won't add new segment */
 	if (req_op(req) == REQ_OP_DISCARD)
 		return 1;
 
-	if (req->nr_phys_segments + nr_phys_segs > blk_rq_get_max_segments(req))
-		goto no_merge;
+	if ((*req).nr_phys_segments + nr_phys_segs > blk_rq_get_max_segments(req))
+		break 'no_merge;
 
 	/*
 	 * This will form the start of a new hw segment.  Bump both
 	 * counters.
 	 */
-	req->nr_phys_segments += nr_phys_segs;
+	(*req).nr_phys_segments += nr_phys_segs;
 	if (bio_integrity(bio))
-		req->nr_integrity_segments += blk_rq_count_integrity_sg(req->q,
+		(*req).nr_integrity_segments += blk_rq_count_integrity_sg((*req).q,
 									bio);
 	return 1;
-
-no_merge:
-	req_set_nomerge(req->q, req);
+	}
+	
+	req_set_nomerge((*req).q, req);
 	return 0;
 }
 
-int ll_back_merge_fn(struct request *req, struct bio *bio, unsigned int nr_segs)
+int ll_back_merge_fn(request *req, bio *bio, nr_segs: core::ffi::c_uint)
 {
 	if (req_gap_back_merge(req, bio))
 		return 0;
@@ -574,15 +577,15 @@ int ll_back_merge_fn(struct request *req, struct bio *bio, unsigned int nr_segs)
 		return 0;
 	if (blk_rq_sectors(req) + bio_sectors(bio) >
 	    blk_rq_get_max_sectors(req, blk_rq_pos(req))) {
-		req_set_nomerge(req->q, req);
+		req_set_nomerge((*req).q, req);
 		return 0;
 	}
 
 	return ll_new_hw_segment(req, bio, nr_segs);
 }
 
-static int ll_front_merge_fn(struct request *req, struct bio *bio,
-		unsigned int nr_segs)
+static int ll_front_merge_fn(request *req, bio *bio,
+		nr_segs: core::ffi::c_uint)
 {
 	if (req_gap_front_merge(req, bio))
 		return 0;
@@ -592,38 +595,40 @@ static int ll_front_merge_fn(struct request *req, struct bio *bio,
 	if (!bio_crypt_ctx_front_mergeable(req, bio))
 		return 0;
 	if (blk_rq_sectors(req) + bio_sectors(bio) >
-	    blk_rq_get_max_sectors(req, bio->bi_iter.bi_sector)) {
-		req_set_nomerge(req->q, req);
+	    blk_rq_get_max_sectors(req, (*bio).bi_iter.bi_sector)) {
+		req_set_nomerge((*req).q, req);
 		return 0;
 	}
 
 	return ll_new_hw_segment(req, bio, nr_segs);
 }
 
-static bool req_attempt_discard_merge(struct request_queue *q, struct request *req,
-		struct request *next)
+static bool req_attempt_discard_merge(request_queue *q, request *req,
+		request *next)
 {
-	unsigned short segments = blk_rq_nr_discard_segments(req);
+	'no_merge: {
+	core::ffi::c_ushort segments = blk_rq_nr_discard_segments(req);
 
 	if (segments >= queue_max_discard_segments(q))
-		goto no_merge;
-	if (blk_rq_sectors(req) + bio_sectors(next->bio) >
+		break 'no_merge;
+	if (blk_rq_sectors(req) + bio_sectors((*next).bio) >
 	    blk_rq_get_max_sectors(req, blk_rq_pos(req)))
-		goto no_merge;
+		break 'no_merge;
 
-	req->nr_phys_segments = segments + blk_rq_nr_discard_segments(next);
+	(*req).nr_phys_segments = segments + blk_rq_nr_discard_segments(next);
 	return true;
-no_merge:
+	}
+	
 	req_set_nomerge(q, req);
 	return false;
 }
 
-static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
-				struct request *next)
+static int ll_merge_requests_fn(request_queue *q, request *req,
+				request *next)
 {
 	int total_phys_segments;
 
-	if (req_gap_back_merge(req, next->bio))
+	if (req_gap_back_merge(req, (*next).bio))
 		return 0;
 
 	/*
@@ -633,11 +638,11 @@ static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
 	    blk_rq_get_max_sectors(req, blk_rq_pos(req)))
 		return 0;
 
-	total_phys_segments = req->nr_phys_segments + next->nr_phys_segments;
+	total_phys_segments = (*req).nr_phys_segments + (*next).nr_phys_segments;
 	if (total_phys_segments > blk_rq_get_max_segments(req))
 		return 0;
 
-	if (!blk_cgroup_mergeable(req, next->bio))
+	if (!blk_cgroup_mergeable(req, (*next).bio))
 		return 0;
 
 	if (unlikely(!blk_integrity_merge_rq(q, req, next)))
@@ -647,8 +652,8 @@ static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
 		return 0;
 
 	/* Merge is OK... */
-	req->nr_phys_segments = total_phys_segments;
-	req->nr_integrity_segments += next->nr_integrity_segments;
+	(*req).nr_phys_segments = total_phys_segments;
+	(*req).nr_integrity_segments += (*next).nr_integrity_segments;
 	return 1;
 }
 
@@ -661,12 +666,12 @@ static int ll_merge_requests_fn(struct request_queue *q, struct request *req,
  *     which can be mixed are set in each bio and mark @rq as mixed
  *     merged.
  */
-static void blk_rq_set_mixed_merge(struct request *rq)
+static void blk_rq_set_mixed_merge(request *rq)
 {
-	blk_opf_t ff = rq->cmd_flags & REQ_FAILFAST_MASK;
+	blk_opf_t ff = (*rq).cmd_flags & REQ_FAILFAST_MASK;
 	struct bio *bio;
 
-	if (rq->rq_flags & RQF_MIXED_MERGE)
+	if ((*rq).rq_flags & RQF_MIXED_MERGE)
 		return;
 
 	/*
@@ -674,20 +679,20 @@ static void blk_rq_set_mixed_merge(struct request *rq)
 	 * contained bios.  It will just track those of the first one.
 	 * Distributes the attributs to each bio.
 	 */
-	for (bio = rq->bio; bio; bio = bio->bi_next) {
-		WARN_ON_ONCE((bio->bi_opf & REQ_FAILFAST_MASK) &&
-			     (bio->bi_opf & REQ_FAILFAST_MASK) != ff);
-		bio->bi_opf |= ff;
+	for (bio = (*rq).bio; bio; bio = (*bio).bi_next) {
+		WARN_ON_ONCE(((*bio).bi_opf & REQ_FAILFAST_MASK) &&
+			     ((*bio).bi_opf & REQ_FAILFAST_MASK) != ff);
+		(*bio).bi_opf |= ff;
 	}
-	rq->rq_flags |= RQF_MIXED_MERGE;
+	(*rq).rq_flags |= RQF_MIXED_MERGE;
 }
 
-static inline blk_opf_t bio_failfast(const struct bio *bio)
+blk_opf_t bio_failfast(const struct bio *bio)
 {
-	if (bio->bi_opf & REQ_RAHEAD)
+	if ((*bio).bi_opf & REQ_RAHEAD)
 		return REQ_FAILFAST_MASK;
 
-	return bio->bi_opf & REQ_FAILFAST_MASK;
+	return (*bio).bi_opf & REQ_FAILFAST_MASK;
 }
 
 /*
@@ -695,32 +700,32 @@ static inline blk_opf_t bio_failfast(const struct bio *bio)
  * as failfast, and request's failfast has to be updated in case of
  * front merge.
  */
-static inline void blk_update_mixed_merge(struct request *req,
-		struct bio *bio, bool front_merge)
+void blk_update_mixed_merge(request *req,
+		bio *bio, front_merge: bool)
 {
-	if (req->rq_flags & RQF_MIXED_MERGE) {
-		if (bio->bi_opf & REQ_RAHEAD)
-			bio->bi_opf |= REQ_FAILFAST_MASK;
+	if ((*req).rq_flags & RQF_MIXED_MERGE) {
+		if ((*bio).bi_opf & REQ_RAHEAD)
+			(*bio).bi_opf |= REQ_FAILFAST_MASK;
 
 		if (front_merge) {
-			req->cmd_flags &= ~REQ_FAILFAST_MASK;
-			req->cmd_flags |= bio->bi_opf & REQ_FAILFAST_MASK;
+			(*req).cmd_flags &= ~REQ_FAILFAST_MASK;
+			(*req).cmd_flags |= (*bio).bi_opf & REQ_FAILFAST_MASK;
 		}
 	}
 }
 
-static void blk_account_io_merge_request(struct request *req)
+static void blk_account_io_merge_request(request *req)
 {
-	if (req->rq_flags & RQF_IO_STAT) {
+	if ((*req).rq_flags & RQF_IO_STAT) {
 		part_stat_lock();
-		part_stat_inc(req->part, merges[op_stat_group(req_op(req))]);
-		bdev_dec_in_flight(req->part, req_op(req));
+		part_stat_inc((*req).part, merges[op_stat_group(req_op(req))]);
+		bdev_dec_in_flight((*req).part, req_op(req));
 		part_stat_unlock();
 	}
 }
 
-static enum elv_merge blk_try_req_merge(struct request *req,
-					struct request *next)
+static enum elv_merge blk_try_req_merge(request *req,
+					request *next)
 {
 	if (blk_discard_mergable(req))
 		return ELEVATOR_DISCARD_MERGE;
@@ -730,28 +735,28 @@ static enum elv_merge blk_try_req_merge(struct request *req,
 	return ELEVATOR_NO_MERGE;
 }
 
-static bool blk_atomic_write_mergeable_rq_bio(struct request *rq,
-					      struct bio *bio)
+static bool blk_atomic_write_mergeable_rq_bio(request *rq,
+					      bio *bio)
 {
-	return (rq->cmd_flags & REQ_ATOMIC) == (bio->bi_opf & REQ_ATOMIC);
+	return ((*rq).cmd_flags & REQ_ATOMIC) == ((*bio).bi_opf & REQ_ATOMIC);
 }
 
-static bool blk_atomic_write_mergeable_rqs(struct request *rq,
-					   struct request *next)
+static bool blk_atomic_write_mergeable_rqs(request *rq,
+					   request *next)
 {
-	return (rq->cmd_flags & REQ_ATOMIC) == (next->cmd_flags & REQ_ATOMIC);
+	return ((*rq).cmd_flags & REQ_ATOMIC) == ((*next).cmd_flags & REQ_ATOMIC);
 }
 
-u8 bio_seg_gap(struct request_queue *q, struct bio *prev, struct bio *next,
-	       u8 gaps_bit)
+u8 bio_seg_gap(request_queue *q, bio *prev, bio *next,
+	       gaps_bit: u8)
 {
 	struct bio_vec pb, nb;
 
 	if (!bio_has_data(prev))
 		return 0;
 
-	gaps_bit = min_not_zero(gaps_bit, prev->bi_bvec_gap_bit);
-	gaps_bit = min_not_zero(gaps_bit, next->bi_bvec_gap_bit);
+	gaps_bit = min_not_zero(gaps_bit, (*prev).bi_bvec_gap_bit);
+	gaps_bit = min_not_zero(gaps_bit, (*next).bi_bvec_gap_bit);
 
 	bio_get_last_bvec(prev, &pb);
 	bio_get_first_bvec(next, &nb);
@@ -764,8 +769,8 @@ u8 bio_seg_gap(struct request_queue *q, struct bio *prev, struct bio *next,
  * For non-mq, this has to be called with the request spinlock acquired.
  * For mq with scheduling, the appropriate queue wide lock should be held.
  */
-static struct request *attempt_merge(struct request_queue *q,
-				     struct request *req, struct request *next)
+static struct request *attempt_merge(request_queue *q,
+				     request *req, request *next)
 {
 	if (!rq_mergeable(req) || !rq_mergeable(next))
 		return NULL;
@@ -773,11 +778,11 @@ static struct request *attempt_merge(struct request_queue *q,
 	if (req_op(req) != req_op(next))
 		return NULL;
 
-	if (req->bio->bi_write_hint != next->bio->bi_write_hint)
+	if ((*(*req).bio).bi_write_hint != (*(*next).bio).bi_write_hint)
 		return NULL;
-	if (req->bio->bi_write_stream != next->bio->bi_write_stream)
+	if ((*(*req).bio).bi_write_stream != (*(*next).bio).bi_write_stream)
 		return NULL;
-	if (req->bio->bi_ioprio != next->bio->bi_ioprio)
+	if ((*(*req).bio).bi_ioprio != (*(*next).bio).bi_ioprio)
 		return NULL;
 	if (!blk_atomic_write_mergeable_rqs(req, next))
 		return NULL;
@@ -809,9 +814,9 @@ static struct request *attempt_merge(struct request_queue *q,
 	 * makes sure that all involved bios have mixable attributes
 	 * set properly.
 	 */
-	if (((req->rq_flags | next->rq_flags) & RQF_MIXED_MERGE) ||
-	    (req->cmd_flags & REQ_FAILFAST_MASK) !=
-	    (next->cmd_flags & REQ_FAILFAST_MASK)) {
+	if ((((*req).rq_flags | (*next).rq_flags) & RQF_MIXED_MERGE) ||
+	    ((*req).cmd_flags & REQ_FAILFAST_MASK) !=
+	    ((*next).cmd_flags & REQ_FAILFAST_MASK)) {
 		blk_rq_set_mixed_merge(req);
 		blk_rq_set_mixed_merge(next);
 	}
@@ -821,16 +826,16 @@ static struct request *attempt_merge(struct request_queue *q,
 	 * need the smaller start_time_ns of the merged requests to be the
 	 * current request for accounting purposes.
 	 */
-	if (next->start_time_ns < req->start_time_ns)
-		req->start_time_ns = next->start_time_ns;
+	if ((*next).start_time_ns < (*req).start_time_ns)
+		(*req).start_time_ns = (*next).start_time_ns;
 
-	req->phys_gap_bit = bio_seg_gap(req->q, req->biotail, next->bio,
-					min_not_zero(next->phys_gap_bit,
-						     req->phys_gap_bit));
-	req->biotail->bi_next = next->bio;
-	req->biotail = next->biotail;
+	(*req).phys_gap_bit = bio_seg_gap((*req).q, (*req).biotail, (*next).bio,
+					min_not_zero((*next).phys_gap_bit,
+						     (*req).phys_gap_bit));
+	(*(*req).biotail).bi_next = (*next).bio;
+	(*req).biotail = (*next).biotail;
 
-	req->__data_len += blk_rq_bytes(next);
+	(*req).__data_len += blk_rq_bytes(next);
 
 	if (!blk_discard_mergable(req))
 		elv_merge_requests(q, req, next);
@@ -848,12 +853,12 @@ static struct request *attempt_merge(struct request_queue *q,
 	 * ownership of bio passed from next to req, return 'next' for
 	 * the caller to free
 	 */
-	next->bio = NULL;
+	(*next).bio = NULL;
 	return next;
 }
 
-static struct request *attempt_back_merge(struct request_queue *q,
-		struct request *rq)
+static struct request *attempt_back_merge(request_queue *q,
+		request *rq)
 {
 	struct request *next = elv_latter_request(q, rq);
 
@@ -863,8 +868,8 @@ static struct request *attempt_back_merge(struct request_queue *q,
 	return NULL;
 }
 
-static struct request *attempt_front_merge(struct request_queue *q,
-		struct request *rq)
+static struct request *attempt_front_merge(request_queue *q,
+		request *rq)
 {
 	struct request *prev = elv_former_request(q, rq);
 
@@ -879,13 +884,13 @@ static struct request *attempt_front_merge(struct request_queue *q,
  * otherwise. The caller is responsible for freeing 'next' if the merge
  * happened.
  */
-bool blk_attempt_req_merge(struct request_queue *q, struct request *rq,
-			   struct request *next)
+bool blk_attempt_req_merge(request_queue *q, request *rq,
+			   request *next)
 {
 	return attempt_merge(q, rq, next);
 }
 
-bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
+bool blk_rq_merge_ok(request *rq, bio *bio)
 {
 	if (!rq_mergeable(rq) || !bio_mergeable(bio))
 		return false;
@@ -895,15 +900,15 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 
 	if (!blk_cgroup_mergeable(rq, bio))
 		return false;
-	if (unlikely(!blk_integrity_merge_bio(rq->q, rq, bio)))
+	if (unlikely(!blk_integrity_merge_bio((*rq).q, rq, bio)))
 		return false;
 	if (!bio_crypt_rq_ctx_compatible(rq, bio))
 		return false;
-	if (rq->bio->bi_write_hint != bio->bi_write_hint)
+	if ((*(*rq).bio).bi_write_hint != (*bio).bi_write_hint)
 		return false;
-	if (rq->bio->bi_write_stream != bio->bi_write_stream)
+	if ((*(*rq).bio).bi_write_stream != (*bio).bi_write_stream)
 		return false;
-	if (rq->bio->bi_ioprio != bio->bi_ioprio)
+	if ((*(*rq).bio).bi_ioprio != (*bio).bi_ioprio)
 		return false;
 	if (unlikely(!blk_atomic_write_mergeable_rq_bio(rq, bio)))
 		return false;
@@ -911,28 +916,28 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 	return true;
 }
 
-enum elv_merge blk_try_merge(struct request *rq, struct bio *bio)
+enum elv_merge blk_try_merge(request *rq, bio *bio)
 {
 	if (blk_discard_mergable(rq))
 		return ELEVATOR_DISCARD_MERGE;
-	else if (blk_rq_pos(rq) + blk_rq_sectors(rq) == bio->bi_iter.bi_sector)
+	else if (blk_rq_pos(rq) + blk_rq_sectors(rq) == (*bio).bi_iter.bi_sector)
 		return ELEVATOR_BACK_MERGE;
-	else if (blk_rq_pos(rq) - bio_sectors(bio) == bio->bi_iter.bi_sector)
+	else if (blk_rq_pos(rq) - bio_sectors(bio) == (*bio).bi_iter.bi_sector)
 		return ELEVATOR_FRONT_MERGE;
 	return ELEVATOR_NO_MERGE;
 }
 
-static void blk_account_io_merge_bio(struct request *req)
+static void blk_account_io_merge_bio(request *req)
 {
-	if (req->rq_flags & RQF_IO_STAT) {
+	if ((*req).rq_flags & RQF_IO_STAT) {
 		part_stat_lock();
-		part_stat_inc(req->part, merges[op_stat_group(req_op(req))]);
+		part_stat_inc((*req).part, merges[op_stat_group(req_op(req))]);
 		part_stat_unlock();
 	}
 }
 
-enum bio_merge_status bio_attempt_back_merge(struct request *req,
-		struct bio *bio, unsigned int nr_segs)
+enum bio_merge_status bio_attempt_back_merge(request *req,
+		bio *bio, nr_segs: core::ffi::c_uint)
 {
 	const blk_opf_t ff = bio_failfast(bio);
 
@@ -940,21 +945,21 @@ enum bio_merge_status bio_attempt_back_merge(struct request *req,
 		return BIO_MERGE_FAILED;
 
 	trace_block_bio_backmerge(bio);
-	rq_qos_merge(req->q, req, bio);
+	rq_qos_merge((*req).q, req, bio);
 
-	if ((req->cmd_flags & REQ_FAILFAST_MASK) != ff)
+	if (((*req).cmd_flags & REQ_FAILFAST_MASK) != ff)
 		blk_rq_set_mixed_merge(req);
 
 	blk_update_mixed_merge(req, bio, false);
 
-	if (req->rq_flags & RQF_ZONE_WRITE_PLUGGING)
+	if ((*req).rq_flags & RQF_ZONE_WRITE_PLUGGING)
 		blk_zone_write_plug_bio_merged(bio);
 
-	req->phys_gap_bit = bio_seg_gap(req->q, req->biotail, bio,
-					req->phys_gap_bit);
-	req->biotail->bi_next = bio;
-	req->biotail = bio;
-	req->__data_len += bio->bi_iter.bi_size;
+	(*req).phys_gap_bit = bio_seg_gap((*req).q, (*req).biotail, bio,
+					(*req).phys_gap_bit);
+	(*(*req).biotail).bi_next = bio;
+	(*req).biotail = bio;
+	(*req).__data_len += (*bio).bi_iter.bi_size;
 
 	bio_crypt_free_ctx(bio);
 
@@ -962,8 +967,8 @@ enum bio_merge_status bio_attempt_back_merge(struct request *req,
 	return BIO_MERGE_OK;
 }
 
-static enum bio_merge_status bio_attempt_front_merge(struct request *req,
-		struct bio *bio, unsigned int nr_segs)
+static enum bio_merge_status bio_attempt_front_merge(request *req,
+		bio *bio, nr_segs: core::ffi::c_uint)
 {
 	const blk_opf_t ff = bio_failfast(bio);
 
@@ -972,27 +977,27 @@ static enum bio_merge_status bio_attempt_front_merge(struct request *req,
 	 * can happen only if the user submitted writes out of order. Do not
 	 * merge such write to let it fail.
 	 */
-	if (req->rq_flags & RQF_ZONE_WRITE_PLUGGING)
+	if ((*req).rq_flags & RQF_ZONE_WRITE_PLUGGING)
 		return BIO_MERGE_FAILED;
 
 	if (!ll_front_merge_fn(req, bio, nr_segs))
 		return BIO_MERGE_FAILED;
 
 	trace_block_bio_frontmerge(bio);
-	rq_qos_merge(req->q, req, bio);
+	rq_qos_merge((*req).q, req, bio);
 
-	if ((req->cmd_flags & REQ_FAILFAST_MASK) != ff)
+	if (((*req).cmd_flags & REQ_FAILFAST_MASK) != ff)
 		blk_rq_set_mixed_merge(req);
 
 	blk_update_mixed_merge(req, bio, true);
 
-	req->phys_gap_bit = bio_seg_gap(req->q, bio, req->bio,
-					req->phys_gap_bit);
-	bio->bi_next = req->bio;
-	req->bio = bio;
+	(*req).phys_gap_bit = bio_seg_gap((*req).q, bio, (*req).bio,
+					(*req).phys_gap_bit);
+	(*bio).bi_next = (*req).bio;
+	(*req).bio = bio;
 
-	req->__sector = bio->bi_iter.bi_sector;
-	req->__data_len += bio->bi_iter.bi_size;
+	(*req).__sector = (*bio).bi_iter.bi_sector;
+	(*req).__data_len += (*bio).bi_iter.bi_size;
 
 	bio_crypt_do_front_merge(req, bio);
 
@@ -1000,36 +1005,38 @@ static enum bio_merge_status bio_attempt_front_merge(struct request *req,
 	return BIO_MERGE_OK;
 }
 
-static enum bio_merge_status bio_attempt_discard_merge(struct request_queue *q,
-		struct request *req, struct bio *bio)
+static enum bio_merge_status bio_attempt_discard_merge(request_queue *q,
+		request *req, bio *bio)
 {
-	unsigned short segments = blk_rq_nr_discard_segments(req);
+	'no_merge: {
+	core::ffi::c_ushort segments = blk_rq_nr_discard_segments(req);
 
 	if (segments >= queue_max_discard_segments(q))
-		goto no_merge;
+		break 'no_merge;
 	if (blk_rq_sectors(req) + bio_sectors(bio) >
 	    blk_rq_get_max_sectors(req, blk_rq_pos(req)))
-		goto no_merge;
+		break 'no_merge;
 
 	rq_qos_merge(q, req, bio);
 
-	req->biotail->bi_next = bio;
-	req->biotail = bio;
-	req->__data_len += bio->bi_iter.bi_size;
-	req->nr_phys_segments = segments + 1;
+	(*(*req).biotail).bi_next = bio;
+	(*req).biotail = bio;
+	(*req).__data_len += (*bio).bi_iter.bi_size;
+	(*req).nr_phys_segments = segments + 1;
 
 	blk_account_io_merge_bio(req);
 	return BIO_MERGE_OK;
-no_merge:
+	}
+	
 	req_set_nomerge(q, req);
 	return BIO_MERGE_FAILED;
 }
 
-static enum bio_merge_status blk_attempt_bio_merge(struct request_queue *q,
-						   struct request *rq,
-						   struct bio *bio,
-						   unsigned int nr_segs,
-						   bool sched_allow_merge)
+static enum bio_merge_status blk_attempt_bio_merge(request_queue *q,
+						   request *rq,
+						   bio *bio,
+						   nr_segs: core::ffi::c_uint,
+						   sched_allow_merge: bool)
 {
 	if (!blk_rq_merge_ok(rq, bio))
 		return BIO_MERGE_NONE;
@@ -1072,30 +1079,30 @@ static enum bio_merge_status blk_attempt_bio_merge(struct request_queue *q,
  *
  * Caller must ensure !blk_queue_nomerges(q) beforehand.
  */
-bool blk_attempt_plug_merge(struct request_queue *q, struct bio *bio,
-		unsigned int nr_segs)
+bool blk_attempt_plug_merge(request_queue *q, bio *bio,
+		nr_segs: core::ffi::c_uint)
 {
-	struct blk_plug *plug = current->plug;
+	struct blk_plug *plug = (*current).plug;
 	struct request *rq;
 
-	if (!plug || rq_list_empty(&plug->mq_list))
+	if (!plug || rq_list_empty((*&plug).mq_list))
 		return false;
 
-	rq = plug->mq_list.tail;
-	if (rq->q == q)
+	rq = (*plug).mq_list.tail;
+	if ((*rq).q == q)
 		return blk_attempt_bio_merge(q, rq, bio, nr_segs, false) ==
 			BIO_MERGE_OK;
-	else if (!plug->multiple_queues)
+	else if ((*!plug).multiple_queues)
 		return false;
 
-	rq_list_for_each(&plug->mq_list, rq) {
-		if (rq->q != q)
+	rq_list_for_each!((*&plug).mq_list, rq, {
+		if ((*rq).q != q)
 			continue;
 		if (blk_attempt_bio_merge(q, rq, bio, nr_segs, false) ==
 		    BIO_MERGE_OK)
 			return true;
 		break;
-	}
+	});
 	return false;
 }
 
@@ -1103,13 +1110,13 @@ bool blk_attempt_plug_merge(struct request_queue *q, struct bio *bio,
  * Iterate list of requests and see if we can merge this bio with any
  * of them.
  */
-bool blk_bio_list_merge(struct request_queue *q, struct list_head *list,
-			struct bio *bio, unsigned int nr_segs)
+bool blk_bio_list_merge(request_queue *q, list_head *list,
+			bio *bio, nr_segs: core::ffi::c_uint)
 {
 	struct request *rq;
 	int checked = 8;
 
-	list_for_each_entry_reverse(rq, list, queuelist) {
+	list_for_each_entry_reverse!(rq, list, queuelist, {
 		if (!checked--)
 			break;
 
@@ -1122,14 +1129,14 @@ bool blk_bio_list_merge(struct request_queue *q, struct list_head *list,
 			return false;
 		}
 
-	}
+	});
 
 	return false;
 }
 // Exported kernel symbol
 
-bool blk_mq_sched_try_merge(struct request_queue *q, struct bio *bio,
-		unsigned int nr_segs, struct request **merged_request)
+bool blk_mq_sched_try_merge(request_queue *q, bio *bio,
+		nr_segs: core::ffi::c_uint, request **merged_request)
 {
 	struct request *rq;
 

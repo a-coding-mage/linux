@@ -75,14 +75,14 @@ static vce_clk_mux_p: [&str; 4] = ["dev_clk", "display_pll_clk", "assist_pll_clk
 static i2s_clk_mux_p: [&str; 1] = ["audio_pll_clk"];
 static edp_clk_mux_p: [&str; 2] = ["assist_pll_clk", "display_pll_clk"];
 
-static OWL_PLL_NO_PARENT!(core_pll_clk, "core_pll_clk", CMU_COREPLL, 24000000, 9, 0, 8, 5, 107, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(dev_pll_clk, "dev_pll_clk", CMU_DEVPLL, 6000000, 8, 0, 8, 20, 180, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(ddr_pll_clk, "ddr_pll_clk", CMU_DDRPLL, 24000000, 8, 0, 8, 5, 45, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(nand_pll_clk, "nand_pll_clk", CMU_NANDPLL, 6000000, 8, 0, 8, 4, 100, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(display_pll_clk, "display_pll_clk", CMU_DISPLAYPLL, 6000000, 8, 0, 8, 20, 180, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(assist_pll_clk, "assist_pll_clk", CMU_ASSISTPLL, 500000000, 0, 0, 0, 0, 0, None, CLK_IGNORE_UNUSED);
-static OWL_PLL_NO_PARENT!(audio_pll_clk, "audio_pll_clk", CMU_AUDIOPLL, 0, 4, 0, 1, 0, 0, clk_audio_pll_table, CLK_IGNORE_UNUSED);
-static OWL_PLL!(edp_pll_clk, "edp_pll_clk", "edp24M_clk", CMU_EDPCLK, 0, 9, 0, 2, 0, 0, clk_edp_pll_table, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(core_pll_clk, "core_pll_clk", CMU_COREPLL, 24000000, 9, 0, 8, 5, 107, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(dev_pll_clk, "dev_pll_clk", CMU_DEVPLL, 6000000, 8, 0, 8, 20, 180, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(ddr_pll_clk, "ddr_pll_clk", CMU_DDRPLL, 24000000, 8, 0, 8, 5, 45, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(nand_pll_clk, "nand_pll_clk", CMU_NANDPLL, 6000000, 8, 0, 8, 4, 100, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(display_pll_clk, "display_pll_clk", CMU_DISPLAYPLL, 6000000, 8, 0, 8, 20, 180, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(assist_pll_clk, "assist_pll_clk", CMU_ASSISTPLL, 500000000, 0, 0, 0, 0, 0, None, CLK_IGNORE_UNUSED);
+OWL_PLL_NO_PARENT!(audio_pll_clk, "audio_pll_clk", CMU_AUDIOPLL, 0, 4, 0, 1, 0, 0, clk_audio_pll_table, CLK_IGNORE_UNUSED);
+OWL_PLL!(edp_pll_clk, "edp_pll_clk", "edp24M_clk", CMU_EDPCLK, 0, 9, 0, 2, 0, 0, clk_edp_pll_table, CLK_IGNORE_UNUSED);
 
 // Remaining composite declarations are intentionally expressed through the
 // corresponding external OWL construction macros to preserve layout/order.

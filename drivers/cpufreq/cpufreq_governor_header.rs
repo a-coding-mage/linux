@@ -43,8 +43,8 @@ pub unsafe fn to_dbs_data(attr_set: *mut gov_attr_set) -> *mut dbs_data {
  * sysfs show functions; their expansion is retained here as a Rust macro. */
 #[macro_export]
 macro_rules! gov_show_one_common {
-    ($file_name:ident) => {
-        unsafe fn $file_name##_show(attr_set: *mut gov_attr_set, buf: *mut core::ffi::c_char) -> isize {
+    ($file_name:tt) => {
+        unsafe fn ::kernel::macros::paste!([<$file_name _show>])(attr_set: *mut gov_attr_set, buf: *mut core::ffi::c_char) -> isize {
             let dbs_data = unsafe { to_dbs_data(attr_set) };
             unsafe { sysfs_emit!(buf, "%u\n", (*dbs_data).$file_name) }
         }

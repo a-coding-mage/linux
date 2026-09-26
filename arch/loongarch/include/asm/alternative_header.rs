@@ -77,7 +77,7 @@ macro_rules! OLDINSTR_2 {
     ($oldinstr:expr, $num1:tt, $num2:tt) => {
         concat!(
             "661:\n\t", $oldinstr, "\n662:\n",
-            ".fill -(\(", alt_max_short!(alt_rlen!($num1), alt_rlen!($num2)),
+            ".fill -((", alt_max_short!(alt_rlen!($num1), alt_rlen!($num2)),
             " - (", alt_slen!(), ")) > 0) * (", alt_max_short!(alt_rlen!($num1), alt_rlen!($num2)),
             " - (", alt_slen!(), ")) / 4, 4, 0x03400000\n",
             alt_end_marker!(), ":\n"

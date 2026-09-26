@@ -6,22 +6,22 @@
  * CONFIG_CPU_SH4 preprocessor symbols.  These Rust cfg predicates preserve
  * that selection intent.
  */
-#[cfg(all(feature = "CONFIG_CPU_LITTLE_ENDIAN", feature = "CONFIG_CPU_SH2"))]
+#[cfg(all(CONFIG_CPU_LITTLE_ENDIAN, CONFIG_CPU_SH2))]
 pub const MODULE_PROC_FAMILY: &str = "SH2LE ";
 
-#[cfg(all(feature = "CONFIG_CPU_LITTLE_ENDIAN", feature = "CONFIG_CPU_SH3"))]
+#[cfg(all(CONFIG_CPU_LITTLE_ENDIAN, CONFIG_CPU_SH3))]
 pub const MODULE_PROC_FAMILY: &str = "SH3LE ";
 
-#[cfg(all(feature = "CONFIG_CPU_LITTLE_ENDIAN", feature = "CONFIG_CPU_SH4"))]
+#[cfg(all(CONFIG_CPU_LITTLE_ENDIAN, CONFIG_CPU_SH4))]
 pub const MODULE_PROC_FAMILY: &str = "SH4LE ";
 
-#[cfg(all(not(feature = "CONFIG_CPU_LITTLE_ENDIAN"), feature = "CONFIG_CPU_SH2"))]
+#[cfg(all(not(CONFIG_CPU_LITTLE_ENDIAN), CONFIG_CPU_SH2))]
 pub const MODULE_PROC_FAMILY: &str = "SH2BE ";
 
-#[cfg(all(not(feature = "CONFIG_CPU_LITTLE_ENDIAN"), feature = "CONFIG_CPU_SH3"))]
+#[cfg(all(not(CONFIG_CPU_LITTLE_ENDIAN), CONFIG_CPU_SH3))]
 pub const MODULE_PROC_FAMILY: &str = "SH3BE ";
 
-#[cfg(all(not(feature = "CONFIG_CPU_LITTLE_ENDIAN"), feature = "CONFIG_CPU_SH4"))]
+#[cfg(all(not(CONFIG_CPU_LITTLE_ENDIAN), CONFIG_CPU_SH4))]
 pub const MODULE_PROC_FAMILY: &str = "SH4BE ";
 
 /* MODULE_ARCH_VERMAGIC is an alias of MODULE_PROC_FAMILY. */

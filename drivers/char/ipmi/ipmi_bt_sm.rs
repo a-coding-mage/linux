@@ -140,7 +140,7 @@ unsafe fn error_recovery(bt: *mut si_sm_data, status0: u8, mut code: u8) -> si_s
 unsafe fn bt_event(bt: *mut si_sm_data, time: i64) -> si_sm_result {
     let status0 = status(bt); (*bt).nonzero_status |= status0 as i32;
     if ((*bt).state as i32) < BT_STATE_WRITE_BYTES as i32 && status0 & BT_B2H_ATN != 0 { drain_bmc2host(bt); return SI_SM_CALL_WITH_DELAY; }
-    if (*bt).state != bt_states::BT_STATE_IDLE && (*bt).state as i32 < BT_STATE_PRINTME as i32 { (*bt).timeout -= time; if (*bt).timeout < 0 && (*bt).state as i32 < BT_STATE_RESET1 as i32 { return error_recovery(bt, status0, IPMI_TIMEOUT_ERR); } }
+    if (*bt).state != bt_states::BT_STATE_IDLE && ((*bt).state as i32) < BT_STATE_PRINTME as i32 { (*bt).timeout -= time; if (*bt).timeout < 0 && ((*bt).state as i32) < BT_STATE_RESET1 as i32 { return error_recovery(bt, status0, IPMI_TIMEOUT_ERR); } }
     match (*bt).state {
         bt_states::BT_STATE_IDLE => { if status0 & BT_SMS_ATN != 0 { control(bt, BT_SMS_ATN); return SI_SM_ATTN; } if status0 & BT_H_BUSY != 0 { control(bt, BT_H_BUSY); } SI_SM_IDLE }
         bt_states::BT_STATE_XACTION_START => { if status0 & (BT_B_BUSY|BT_H2B_ATN) != 0 { return SI_SM_CALL_WITH_DELAY; } if status(bt)&BT_H_BUSY != 0 { control(bt,BT_H_BUSY); } (*bt).state=bt_states::BT_STATE_WRITE_BYTES; SI_SM_CALL_WITHOUT_DELAY }

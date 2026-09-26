@@ -36,7 +36,7 @@ const CLKCFG_FDIV_MASK: u32 = 0x1f00; const CLKCFG_FDIV_USB_VAL: u32 = 0x0300; c
 #[repr(C)] pub struct mtmips_clk_data { pub clk_base:*mut mtmips_clk, pub num_clk_base:usize, pub clk_fixed:*mut mtmips_clk_fixed, pub num_clk_fixed:usize, pub clk_factor:*mut mtmips_clk_factor, pub num_clk_factor:usize, pub clk_periph:*mut mtmips_clk, pub num_clk_periph:usize }
 #[repr(C)] pub struct mtmips_clk_priv { pub sysc:*mut regmap, pub data:*const mtmips_clk_data }
 
-extern "C" { fn regmap_read(*mut regmap,u32,*mut u32)->c_int; fn regmap_write(*mut regmap,u32,u32)->c_int; fn regmap_update_bits(*mut regmap,u32,u32,u32)->c_int; }
+extern "C" { fn regmap_read(_: *mut regmap,_: u32,_: *mut u32)->c_int; fn regmap_write(_: *mut regmap,_: u32,_: u32)->c_int; fn regmap_update_bits(_: *mut regmap,_: u32,_: u32,_: u32)->c_int; }
 
 unsafe fn clk(c:*mut mtmips_clk)->*mut mtmips_clk_priv { (*c).priv_ }
 unsafe fn rate(c:*mut mtmips_clk, p:usize)->usize { let s=(*clk(c)).sysc; let mut t=0; regmap_read(s,SYSC_REG_SYSTEM_CONFIG,&mut t); (match t { _=>p }) }

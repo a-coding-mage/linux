@@ -70,39 +70,39 @@ pub unsafe fn cpu_probe() {
 
     /* Probe the underlying processor version/revision and adjust cpu_data setup accordingly. */
     match pvr {
-        0x205 => { boot_cpu_data.type = CPU_SH7750; boot_cpu_data.flags |= CPU_HAS_P2_FLUSH_BUG | CPU_HAS_PERF_COUNTER; }
-        0x206 => { boot_cpu_data.type = CPU_SH7750S; boot_cpu_data.flags |= CPU_HAS_P2_FLUSH_BUG | CPU_HAS_PERF_COUNTER; }
-        0x1100 => boot_cpu_data.type = CPU_SH7751,
-        0x2001 | 0x2004 => boot_cpu_data.type = CPU_SH7770,
+        0x205 => { boot_cpu_data.r#type = CPU_SH7750; boot_cpu_data.flags |= CPU_HAS_P2_FLUSH_BUG | CPU_HAS_PERF_COUNTER; }
+        0x206 => { boot_cpu_data.r#type = CPU_SH7750S; boot_cpu_data.flags |= CPU_HAS_P2_FLUSH_BUG | CPU_HAS_PERF_COUNTER; }
+        0x1100 => boot_cpu_data.r#type = CPU_SH7751,
+        0x2001 | 0x2004 => boot_cpu_data.r#type = CPU_SH7770,
         0x2006 | 0x200a => {
-            if prr == 0x61 { boot_cpu_data.type = CPU_SH7781; }
-            else if prr == 0xa1 { boot_cpu_data.type = CPU_SH7763; }
-            else { boot_cpu_data.type = CPU_SH7780; }
+            if prr == 0x61 { boot_cpu_data.r#type = CPU_SH7781; }
+            else if prr == 0xa1 { boot_cpu_data.r#type = CPU_SH7763; }
+            else { boot_cpu_data.r#type = CPU_SH7780; }
         }
-        0x3000 | 0x3003 | 0x3009 => boot_cpu_data.type = CPU_SH7343,
-        0x3004 | 0x3007 => boot_cpu_data.type = CPU_SH7785,
-        0x4004 | 0x4005 => { boot_cpu_data.type = CPU_SH7786; boot_cpu_data.flags |= CPU_HAS_PTEAEX | CPU_HAS_L2_CACHE; }
+        0x3000 | 0x3003 | 0x3009 => boot_cpu_data.r#type = CPU_SH7343,
+        0x3004 | 0x3007 => boot_cpu_data.r#type = CPU_SH7785,
+        0x4004 | 0x4005 => { boot_cpu_data.r#type = CPU_SH7786; boot_cpu_data.flags |= CPU_HAS_PTEAEX | CPU_HAS_L2_CACHE; }
         0x3008 => match prr {
-            0x50 | 0x51 => { boot_cpu_data.type = CPU_SH7723; boot_cpu_data.flags |= CPU_HAS_L2_CACHE; }
-            0x70 => boot_cpu_data.type = CPU_SH7366,
-            0xa0 | 0xa1 => boot_cpu_data.type = CPU_SH7722,
+            0x50 | 0x51 => { boot_cpu_data.r#type = CPU_SH7723; boot_cpu_data.flags |= CPU_HAS_L2_CACHE; }
+            0x70 => boot_cpu_data.r#type = CPU_SH7366,
+            0xa0 | 0xa1 => boot_cpu_data.r#type = CPU_SH7722,
             _ => {}
         },
         0x300b => match prr {
-            0x20 => { boot_cpu_data.type = CPU_SH7724; boot_cpu_data.flags |= CPU_HAS_L2_CACHE; }
-            0x10 | 0x11 => boot_cpu_data.type = CPU_SH7757,
-            0xd0 | 0x40 => boot_cpu_data.type = CPU_SH7372, // yon-ten-go
-            0xe0 => boot_cpu_data.type = CPU_SH7734, // SH7733/SH7734
+            0x20 => { boot_cpu_data.r#type = CPU_SH7724; boot_cpu_data.flags |= CPU_HAS_L2_CACHE; }
+            0x10 | 0x11 => boot_cpu_data.r#type = CPU_SH7757,
+            0xd0 | 0x40 => boot_cpu_data.r#type = CPU_SH7372, // yon-ten-go
+            0xe0 => boot_cpu_data.r#type = CPU_SH7734, // SH7733/SH7734
             _ => {}
         },
-        0x4000 | 0x4001 => boot_cpu_data.type = CPU_SHX3,
-        0x700 => { boot_cpu_data.type = CPU_SH4_501; boot_cpu_data.flags &= !CPU_HAS_FPU; boot_cpu_data.icache.ways = 2; boot_cpu_data.dcache.ways = 2; }
-        0x600 => { boot_cpu_data.type = CPU_SH4_202; boot_cpu_data.icache.ways = 2; boot_cpu_data.dcache.ways = 2; }
+        0x4000 | 0x4001 => boot_cpu_data.r#type = CPU_SHX3,
+        0x700 => { boot_cpu_data.r#type = CPU_SH4_501; boot_cpu_data.flags &= !CPU_HAS_FPU; boot_cpu_data.icache.ways = 2; boot_cpu_data.dcache.ways = 2; }
+        0x600 => { boot_cpu_data.r#type = CPU_SH4_202; boot_cpu_data.icache.ways = 2; boot_cpu_data.dcache.ways = 2; }
         0x500..=0x501 => {
             match prr {
-                0x10 => boot_cpu_data.type = CPU_SH7750R,
-                0x11 => boot_cpu_data.type = CPU_SH7751R,
-                0x50..=0x5f => boot_cpu_data.type = CPU_SH7760,
+                0x10 => boot_cpu_data.r#type = CPU_SH7750R,
+                0x11 => boot_cpu_data.r#type = CPU_SH7751R,
+                0x50..=0x5f => boot_cpu_data.r#type = CPU_SH7760,
                 _ => {}
             }
             boot_cpu_data.icache.ways = 2;

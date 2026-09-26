@@ -52,7 +52,7 @@ trace_event!(netif_rx, use net_dev_template, (struct sk_buff *skb));
 trace_event_class!(net_dev_rx_verbose_template,
     proto: (const struct sk_buff *skb),
     entry: {
-        string name = skb->dev->name; uint napi_id = if cfg!(feature = "CONFIG_NET_RX_BUSY_POLL") { if napi_id_valid(skb->napi_id) { skb->napi_id } else { 0 } } else { 0 };
+        string name = skb->dev->name; uint napi_id = if cfg!(CONFIG_NET_RX_BUSY_POLL) { if napi_id_valid(skb->napi_id) { skb->napi_id } else { 0 } } else { 0 };
         u16 queue_mapping = skb->queue_mapping; const_void skbaddr = skb;
         bool vlan_tagged = skb_vlan_tag_present(skb); u16 vlan_proto = ntohs(skb->vlan_proto); u16 vlan_tci = skb_vlan_tag_get(skb);
         u16 protocol = ntohs(skb->protocol); u8 ip_summed = skb->ip_summed; u32 hash = skb->hash; bool l4_hash = skb->l4_hash;

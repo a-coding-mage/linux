@@ -13,11 +13,11 @@ pub const SECCOMP_FILTER_FLAG_MASK: u32 = SECCOMP_FILTER_FLAG_TSYNC
 pub const SECCOMP_NOTIFY_ADDFD_SIZE_VER0: usize = 24;
 pub const SECCOMP_NOTIFY_ADDFD_SIZE_LATEST: usize = SECCOMP_NOTIFY_ADDFD_SIZE_VER0;
 
-#[cfg(feature = "CONFIG_SECCOMP")]
+#[cfg(CONFIG_SECCOMP)]
 extern "C" {
     pub fn __seccomp_permit_syscall() -> bool;
 
-    #[cfg(not(feature = "CONFIG_HAVE_ARCH_SECCOMP_FILTER"))]
+    #[cfg(not(CONFIG_HAVE_ARCH_SECCOMP_FILTER))]
     pub fn secure_computing_strict(this_syscall: i32);
 
     pub fn prctl_get_seccomp() -> ::core::ffi::c_long;
@@ -25,7 +25,7 @@ extern "C" {
         -> ::core::ffi::c_long;
 }
 
-#[cfg(all(feature = "CONFIG_SECCOMP", feature = "CONFIG_HAVE_ARCH_SECCOMP_FILTER"))]
+#[cfg(all(CONFIG_SECCOMP, CONFIG_HAVE_ARCH_SECCOMP_FILTER))]
 #[inline(always)]
 pub unsafe fn seccomp_permit_syscall() -> bool {
     // `unlikely(test_syscall_work(SECCOMP))` is supplied by the architecture dependencies.
@@ -35,60 +35,60 @@ pub unsafe fn seccomp_permit_syscall() -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_SECCOMP")]
+#[cfg(CONFIG_SECCOMP)]
 #[inline]
 pub unsafe fn seccomp_mode(s: *const seccomp) -> i32 {
     (*s).mode
 }
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 pub struct seccomp;
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 pub struct seccomp_data;
 
-#[cfg(all(not(feature = "CONFIG_SECCOMP"), feature = "CONFIG_HAVE_ARCH_SECCOMP_FILTER"))]
+#[cfg(all(not(CONFIG_SECCOMP), CONFIG_HAVE_ARCH_SECCOMP_FILTER))]
 #[inline]
 pub fn seccomp_permit_syscall() -> bool { true }
 
-#[cfg(all(not(feature = "CONFIG_SECCOMP"), not(feature = "CONFIG_HAVE_ARCH_SECCOMP_FILTER")))]
+#[cfg(all(not(CONFIG_SECCOMP), not(CONFIG_HAVE_ARCH_SECCOMP_FILTER)))]
 #[inline]
 pub fn secure_computing_strict(_this_syscall: i32) {}
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 #[inline]
 pub fn __seccomp_permit_syscall() -> bool { true }
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 #[inline]
 pub fn prctl_get_seccomp() -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 #[inline]
 pub unsafe fn prctl_set_seccomp(
     _arg2: ::core::ffi::c_ulong,
     _arg3: *mut ::core::ffi::c_char,
 ) -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 #[inline]
 pub unsafe fn seccomp_mode(_s: *mut seccomp) -> i32 { SECCOMP_MODE_DISABLED }
 
-#[cfg(feature = "CONFIG_SECCOMP_FILTER")]
+#[cfg(CONFIG_SECCOMP_FILTER)]
 extern "C" {
     pub fn seccomp_filter_release(tsk: *mut task_struct);
     pub fn get_seccomp_filter(tsk: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_SECCOMP_FILTER"))]
+#[cfg(not(CONFIG_SECCOMP_FILTER))]
 #[inline]
 pub fn seccomp_filter_release(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_SECCOMP_FILTER"))]
+#[cfg(not(CONFIG_SECCOMP_FILTER))]
 #[inline]
 pub fn get_seccomp_filter(_tsk: *mut task_struct) {}
 
-#[cfg(all(feature = "CONFIG_SECCOMP_FILTER", feature = "CONFIG_CHECKPOINT_RESTORE"))]
+#[cfg(all(CONFIG_SECCOMP_FILTER, CONFIG_CHECKPOINT_RESTORE))]
 extern "C" {
     pub fn seccomp_get_filter(
         task: *mut task_struct,
@@ -102,7 +102,7 @@ extern "C" {
     ) -> ::core::ffi::c_long;
 }
 
-#[cfg(not(all(feature = "CONFIG_SECCOMP_FILTER", feature = "CONFIG_CHECKPOINT_RESTORE")))]
+#[cfg(not(all(CONFIG_SECCOMP_FILTER, CONFIG_CHECKPOINT_RESTORE)))]
 #[inline]
 pub fn seccomp_get_filter(
     _task: *mut task_struct,
@@ -110,7 +110,7 @@ pub fn seccomp_get_filter(
     _data: *mut ::core::ffi::c_void,
 ) -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
 
-#[cfg(not(all(feature = "CONFIG_SECCOMP_FILTER", feature = "CONFIG_CHECKPOINT_RESTORE")))]
+#[cfg(not(all(CONFIG_SECCOMP_FILTER, CONFIG_CHECKPOINT_RESTORE)))]
 #[inline]
 pub fn seccomp_get_metadata(
     _task: *mut task_struct,
@@ -118,7 +118,7 @@ pub fn seccomp_get_metadata(
     _data: *mut ::core::ffi::c_void,
 ) -> ::core::ffi::c_long { -EINVAL as ::core::ffi::c_long }
 
-#[cfg(all(feature = "CONFIG_SECCOMP_CACHE_DEBUG"))]
+#[cfg(all(CONFIG_SECCOMP_CACHE_DEBUG))]
 extern "C" {
     pub fn proc_pid_seccomp_cache(
         m: *mut seq_file,

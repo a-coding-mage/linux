@@ -271,7 +271,7 @@ pub static mut codec_info_list: [asoc_sdw_codec_info; 1] = [asoc_sdw_codec_info 
 }];
 
 const fn ARRAY_SIZE<T, const N: usize>(_: &[T; N]) -> c_int { N as c_int }
-const fn GENMASK(h: c_int, l: c_int) -> c_uint { if h < l { 0 } else { ((1u64 << ((h - l + 1) as u32)) - 1) as c_uint << l } }
+const fn GENMASK(h: c_int, l: c_int) -> c_uint { if h < l { 0 } else { (((1u64 << ((h - l + 1) as u32)) - 1) as c_uint) << l } }
 const fn SDW_VERSION(adr: u64) -> c_uint { ((adr >> 44) & 0xf) as c_uint }
 const fn SDW_MFG_ID(adr: u64) -> c_uint { ((adr >> 24) & 0xffff) as c_uint }
 const fn SDW_PART_ID(adr: u64) -> c_uint { ((adr >> 8) & 0xffff) as c_uint }

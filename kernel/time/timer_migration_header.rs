@@ -86,7 +86,7 @@ pub struct tmigr_state_parts {
 }
 
 /* The declarations below are enabled when CONFIG_SMP and CONFIG_NO_HZ_COMMON are defined. */
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_NO_HZ_COMMON"))]
+#[cfg(all(CONFIG_SMP, CONFIG_NO_HZ_COMMON))]
 extern "C" {
     pub fn tmigr_handle_remote();
     pub fn tmigr_requires_handle_remote() -> bool;
@@ -97,15 +97,15 @@ extern "C" {
 }
 
 /* Fallback inline definitions when CONFIG_SMP or CONFIG_NO_HZ_COMMON is absent. */
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_NO_HZ_COMMON")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_NO_HZ_COMMON)))]
 #[inline]
 pub unsafe fn tmigr_handle_remote() {}
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_NO_HZ_COMMON")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_NO_HZ_COMMON)))]
 #[inline]
 pub unsafe fn tmigr_requires_handle_remote() -> bool { false }
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_NO_HZ_COMMON")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_NO_HZ_COMMON)))]
 #[inline]
 pub unsafe fn tmigr_cpu_activate() {}
 

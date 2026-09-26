@@ -178,8 +178,8 @@ pub static mut vmcs12_field_offsets: [u16; 0] = [];
 pub static mut nr_vmcs12_fields: u32 = 0;
 
 macro_rules! vmcs12_case64 {
-    ($enc:ident) => {
-        $enc##_HIGH | $enc
+    ($enc:tt) => {
+        ::kernel::macros::paste!([<$enc _HIGH>]) | $enc
     };
 }
 

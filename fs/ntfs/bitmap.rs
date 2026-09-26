@@ -53,6 +53,7 @@ pub unsafe fn ntfs_trim_fs(
 
     index = start_index;
     while index < end_index {
+        'out_unmap: {
         folio = ntfs_get_locked_folio((*(*vol).lcnbmp_ino).i_mapping,
             index, end_index, ra);
         if IS_ERR(folio) {
@@ -75,11 +76,12 @@ pub unsafe fn ntfs_trim_fs(
             if aligned_count >= (*range).minlen {
                 ret = blkdev_issue_discard((*(*vol).sb).s_bdev,
                     aligned_start >> 9, aligned_count >> 9, GFP_NOFS);
-                if ret != 0 { goto out_unmap; }
+                if ret != 0 { break 'out_unmap; }
                 trimmed += aligned_count;
             }
         }
-out_unmap:
+        }
+        
         kunmap_local(kaddr);
         folio_unlock(folio);
         folio_put(folio);
@@ -108,6 +110,8 @@ pub unsafe fn __ntfs_bitmap_set_bits_in_run(
     let mut bit: u8;
     let ni: *mut ntfs_inode = NTFS_I(vi);
     let vol: *mut ntfs_volume = (*ni).vol;
+    'rollback: {
+    'done: {
 
     ntfs_debug("Entering for i_ino 0x%llx, start_bit 0x%llx, count 0x%llx, value %u.%s",
         (*ni).mft_no, start_bit as u64, cnt as u64, value,
@@ -133,7 +137,7 @@ pub unsafe fn __ntfs_bitmap_set_bits_in_run(
             if value != 0 { *byte |= 1 << bit; } else { *byte &= !(1 << bit); }
             bit += 1;
         }
-        if cnt == 0 { goto done; }
+        if cnt == 0 { break 'done; }
         pos += 1;
     }
     len = core::cmp::min(cnt >> 3, PAGE_SIZE as i64 - pos as i64);
@@ -142,11 +146,11 @@ pub unsafe fn __ntfs_bitmap_set_bits_in_run(
     if (*ni).mft_no == FILE_Bitmap { ntfs_set_lcn_empty_bits(vol, index, value, (len << 3) as u64); }
     if cnt < 8 { len += pos as i64; }
     while index < end_index {
-        if cnt <= 0 { err = -EIO; goto rollback; }
+        if cnt <= 0 { err = -EIO; break 'rollback; }
         folio_mark_dirty(folio); folio_unlock(folio); kunmap_local(kaddr); folio_put(folio);
         index += 1;
         folio = read_mapping_folio(mapping, index, core::ptr::null_mut());
-        if IS_ERR(folio) { ntfs_error((*vi).i_sb, "Failed to map subsequent page (error %li), aborting.", PTR_ERR(folio)); err = PTR_ERR(folio); goto rollback; }
+        if IS_ERR(folio) { ntfs_error((*vi).i_sb, "Failed to map subsequent page (error %li), aborting.", PTR_ERR(folio)); err = PTR_ERR(folio); break 'rollback; }
         folio_lock(folio); kaddr = kmap_local_folio(folio, 0) as *mut u8;
         len = core::cmp::min(cnt >> 3, PAGE_SIZE as i64);
         core::ptr::write_bytes(kaddr, if value != 0 { 0xff } else { 0 }, len as usize);
@@ -158,9 +162,11 @@ pub unsafe fn __ntfs_bitmap_set_bits_in_run(
         if (*ni).mft_no == FILE_Bitmap { ntfs_set_lcn_empty_bits(vol, index, value, bit as u64); }
         while bit != 0 { bit -= 1; if value != 0 { *byte |= 1 << bit; } else { *byte &= !(1 << bit); } }
     }
-done:
+    }
+    
     folio_mark_dirty(folio); folio_unlock(folio); kunmap_local(kaddr); folio_put(folio); ntfs_debug("Done."); return 0;
-rollback:
+    }
+    
     if is_rollback { return err; }
     pos = if count != cnt { __ntfs_bitmap_set_bits_in_run(vi, start_bit, count - cnt, if value != 0 { 0 } else { 1 }, true) } else { 0 };
     if pos == 0 { ntfs_error((*vi).i_sb, "Failed to map subsequent page (error %i), aborting.", err); }

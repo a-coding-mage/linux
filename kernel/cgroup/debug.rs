@@ -54,13 +54,13 @@ unsafe fn current_css_set_read(seq: *mut seq_file, v: *mut core::ffi::c_void) ->
     seq_puts(seq, "\n");
 
     /* Print the css'es stored in the current css_set. */
-    for_each_subsys!(ss, i) {
+    for_each_subsys!(ss, i, {
         css = (*cset).subsys[(*ss).id as usize];
         if css.is_null() {
             continue;
         }
         seq_printf(seq, "%2d: %-4s\t- %p[%d]\n", (*ss).id, (*ss).name, css, (*css).id);
-    }
+    });
     spin_unlock_irq(&mut css_set_lock);
     cgroup_kn_unlock((*of).kn);
     0
@@ -79,11 +79,11 @@ unsafe fn current_css_set_cg_links_read(seq: *mut seq_file, v: *mut core::ffi::c
     if name_buf.is_null() { return -ENOMEM; }
     spin_lock_irq(&mut css_set_lock);
     let cset = task_css_set(current);
-    list_for_each_entry!(link, &(*cset).cgrp_links, cgrp_link) {
+    list_for_each_entry!(link, &(*cset).cgrp_links, cgrp_link, {
         let c = (*link).cgrp;
         cgroup_name(c, name_buf, NAME_MAX + 1);
         seq_printf(seq, "Root %d group %s\n", (*(*c).root).hierarchy_id, name_buf);
-    }
+    });
     spin_unlock_irq(&mut css_set_lock);
     kfree(name_buf);
     0
@@ -97,7 +97,7 @@ unsafe fn cgroup_css_links_read(seq: *mut seq_file, v: *mut core::ffi::c_void) -
     let mut extra_refs = 0;
     let mut threaded_csets = 0;
     spin_lock_irq(&mut css_set_lock);
-    list_for_each_entry!(link, &(*(*css).cgroup).cset_links, cset_link) {
+    list_for_each_entry!(link, &(*(*css).cgroup).cset_links, cset_link, {
         let cset = (*link).cset;
         let mut count = 0;
         let refcnt = refcount_read(&(*cset).refcount);
@@ -108,11 +108,11 @@ unsafe fn cgroup_css_links_read(seq: *mut seq_file, v: *mut core::ffi::c_void) -
         }
         if !list_empty(&(*cset).threaded_csets) {
             let mut idx = 0;
-            list_for_each_entry!(tcset, &(*cset).threaded_csets, threaded_csets_node) {
+            list_for_each_entry!(tcset, &(*cset).threaded_csets, threaded_csets_node, {
                 seq_puts(seq, if idx != 0 { "," } else { "<=" });
                 seq_printf(seq, "%pK", tcset);
                 idx += 1;
-            }
+            });
         } else {
             seq_printf(seq, " %d", refcnt);
             if refcnt - (*cset).nr_tasks > 0 {
@@ -124,18 +124,18 @@ unsafe fn cgroup_css_links_read(seq: *mut seq_file, v: *mut core::ffi::c_void) -
             }
         }
         seq_puts(seq, "\n");
-        list_for_each_entry!(task, &(*cset).tasks, cg_list) {
+        list_for_each_entry!(task, &(*cset).tasks, cg_list, {
             if count <= MAX_TASKS_SHOWN_PER_CSS { seq_printf(seq, "  task %d\n", task_pid_vnr(task)); }
             count += 1;
-        }
-        list_for_each_entry!(task, &(*cset).mg_tasks, cg_list) {
+        });
+        list_for_each_entry!(task, &(*cset).mg_tasks, cg_list, {
             if count <= MAX_TASKS_SHOWN_PER_CSS { seq_printf(seq, "  task %d\n", task_pid_vnr(task)); }
             count += 1;
-        }
+        });
         if count > MAX_TASKS_SHOWN_PER_CSS { seq_printf(seq, "  ... (%d)\n", count - MAX_TASKS_SHOWN_PER_CSS); }
         if (*cset).dead { seq_puts(seq, "    [dead]\n"); dead_cnt += 1; }
         WARN_ON(count != (*cset).nr_tasks);
-    }
+    });
     spin_unlock_irq(&mut css_set_lock);
     if dead_cnt == 0 && extra_refs == 0 && threaded_csets == 0 { return 0; }
     seq_puts(seq, "\n");
@@ -151,13 +151,13 @@ unsafe fn cgroup_subsys_states_read(seq: *mut seq_file, v: *mut core::ffi::c_voi
     if cgrp.is_null() { return -ENODEV; }
     let mut pbuf = [0i8; 16];
     let mut i = 0;
-    for_each_subsys!(ss, i) {
+    for_each_subsys!(ss, i, {
         let css = rcu_dereference_check!((*cgrp).subsys[(*ss).id as usize], true);
         if css.is_null() { continue; }
         pbuf[0] = 0;
         if !(*css).parent.is_null() { snprintf(pbuf.as_mut_ptr(), pbuf.len() - 1, " P=%d", (*(*css).parent).id); }
         seq_printf(seq, "%2d: %-4s\t- %p[%d] %d%s\n", (*ss).id, (*ss).name, css, (*css).id, atomic_read(&(*css).online_cnt), pbuf.as_ptr());
-    }
+    });
     cgroup_kn_unlock((*of).kn);
     0
 }
@@ -166,12 +166,12 @@ unsafe fn cgroup_masks_read_one(seq: *mut seq_file, name: *const i8, mask: u32) 
     let mut first = true;
     seq_printf(seq, "%-17s: ", name);
     let mut ssid = 0;
-    for_each_subsys!(ss, ssid) {
+    for_each_subsys!(ss, ssid, {
         if mask & (1u32 << ssid) == 0 { continue; }
         if !first { seq_puts(seq, ", "); }
         seq_puts(seq, (*ss).name);
         first = false;
-    }
+    });
     seq_putc(seq, '\n' as i32);
 }
 

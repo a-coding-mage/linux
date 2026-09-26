@@ -124,10 +124,10 @@ pub const JFFS2_SUMMARY_FRAME_SIZE: usize = core::mem::size_of::<jffs2_raw_summa
     + core::mem::size_of::<jffs2_sum_marker>();
 
 /* CONFIG_JFFS2_SUMMARY conditionally supplies the declarations below. */
-#[cfg(feature = "CONFIG_JFFS2_SUMMARY")]
+#[cfg(CONFIG_JFFS2_SUMMARY)]
 pub const fn jffs2_sum_active() -> i32 { 1 }
 
-#[cfg(feature = "CONFIG_JFFS2_SUMMARY")]
+#[cfg(CONFIG_JFFS2_SUMMARY)]
 unsafe extern "C" {
     pub fn jffs2_sum_init(c: *mut jffs2_sb_info) -> i32;
     pub fn jffs2_sum_exit(c: *mut jffs2_sb_info);
@@ -146,24 +146,24 @@ unsafe extern "C" {
         summary: *mut jffs2_raw_summary, sumlen: u32, pseudo_random: *mut u32) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const fn jffs2_sum_active() -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const fn jffs2_sum_init(_a: *mut jffs2_sb_info) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_exit(_a: *mut jffs2_sb_info) {}
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_disable_collecting(_a: *mut jffs2_summary) {}
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_is_disabled(_a: *mut jffs2_summary) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_reset_collected(_a: *mut jffs2_summary) {}
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_add_kvec(_a: *mut jffs2_sb_info, _b: *const kvec, _c: c_ulong, _d: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_write_sumnode(_a: *mut jffs2_sb_info) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_JFFS2_SUMMARY"))]
+#[cfg(not(CONFIG_JFFS2_SUMMARY))]
 pub const unsafe fn jffs2_sum_scan_sumnode(_a: *mut jffs2_sb_info, _b: *mut jffs2_eraseblock,
     _c: *mut jffs2_raw_summary, _d: u32, _e: *mut u32) -> i32 { 0 }
 

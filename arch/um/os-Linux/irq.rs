@@ -56,9 +56,9 @@ extern "C" {
 }
 
 extern "C" {
-    pub const IRQ_READ: UmIrqType;
-    pub const IRQ_WRITE: UmIrqType;
 }
+pub const IRQ_READ: UmIrqType;
+pub const IRQ_WRITE: UmIrqType;
 
 static mut EPOLLFd: i32 = -1;
 static mut EPOLL_EVENTS: [EpollEvent; MAX_EPOLL_EVENTS] = unsafe { core::mem::zeroed() };

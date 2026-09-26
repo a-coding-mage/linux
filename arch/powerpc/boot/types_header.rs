@@ -59,7 +59,6 @@ macro_rules! max_t {
 
 pub type bool = ::core::ffi::c_int;
 
-pub const true: bool = 1;
-pub const false: bool = 0;
+// C `true`/`false` (1/0) are Rust keywords; use `1`/`0` with this `bool`.
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

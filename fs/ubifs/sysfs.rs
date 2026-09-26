@@ -92,11 +92,14 @@ pub unsafe fn ubifs_sysfs_register(c: *mut UbifsInfo) -> i32 {
     let mut ret: i32;
     let mut n: i32;
     let mut dfs_dir_name: [u8; UBIFS_DFS_DIR_LEN] = [0; UBIFS_DFS_DIR_LEN];
+    'out_last: {
+    'out_free: {
+    'out_put: {
 
     (*c).stats = kzalloc_obj::<UbifsStatsInfo>();
     if (*c).stats.is_null() {
         ret = -ENOMEM;
-        goto!(out_last);
+        break 'out_last;
     }
     n = snprintf!(
         dfs_dir_name.as_mut_ptr(),
@@ -109,7 +112,7 @@ pub unsafe fn ubifs_sysfs_register(c: *mut UbifsInfo) -> i32 {
     if n >= UBIFS_DFS_DIR_LEN as i32 {
         // The array size is too small
         ret = -EINVAL;
-        goto!(out_free);
+        break 'out_free;
     }
 
     (*c).kobj.kset = &mut UBIFS_KSET;
@@ -123,17 +126,19 @@ pub unsafe fn ubifs_sysfs_register(c: *mut UbifsInfo) -> i32 {
         dfs_dir_name.as_ptr(),
     );
     if ret != 0 {
-        goto!(out_put);
+        break 'out_put;
     }
 
     return 0;
-
-out_put:
+    }
+    
     kobject_put(&mut (*c).kobj);
     wait_for_completion(&mut (*c).kobj_unregister);
-out_free:
+    }
+    
     kfree((*c).stats);
-out_last:
+    }
+    
     ubifs_err!(c, "cannot create sysfs entry for ubifs%d_%d, error %d\n", (*c).vi.ubi_num, (*c).vi.vol_id, ret);
     ret
 }

@@ -55,7 +55,7 @@ pub struct bcm_set_pcm_format_params {
 }
 
 // The CONFIG_BT_BCM build-time condition is preserved here as a Rust cfg.
-#[cfg(feature = "CONFIG_BT_BCM")]
+#[cfg(CONFIG_BT_BCM)]
 extern "C" {
     pub fn btbcm_check_bdaddr(hdev: *mut hci_dev) -> i32;
     pub fn btbcm_set_bdaddr(hdev: *mut hci_dev, bdaddr: *const bdaddr_t) -> i32;
@@ -82,19 +82,19 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_check_bdaddr(_hdev: *mut hci_dev) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_set_bdaddr(_hdev: *mut hci_dev, _bdaddr: *const bdaddr_t) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_read_pcm_int_params(
     _hdev: *mut hci_dev,
@@ -103,7 +103,7 @@ pub unsafe fn btbcm_read_pcm_int_params(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_write_pcm_int_params(
     _hdev: *mut hci_dev,
@@ -112,25 +112,25 @@ pub unsafe fn btbcm_write_pcm_int_params(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_patchram(_hdev: *mut hci_dev, _fw: *const firmware) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_setup_patchram(_hdev: *mut hci_dev) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_setup_apple(_hdev: *mut hci_dev) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_initialize(
     _hdev: *mut hci_dev,
@@ -140,7 +140,7 @@ pub unsafe fn btbcm_initialize(
     0
 }
 
-#[cfg(not(feature = "CONFIG_BT_BCM"))]
+#[cfg(not(CONFIG_BT_BCM))]
 #[inline]
 pub unsafe fn btbcm_finalize(
     _hdev: *mut hci_dev,

@@ -39,7 +39,7 @@ pub unsafe fn boot_init_stack_canary() {
 
     (*current).stack_canary = canary;
     /* CONFIG_STACKPROTECTOR_PER_TASK controls this assignment at build time. */
-    #[cfg(not(feature = "CONFIG_STACKPROTECTOR_PER_TASK"))]
+    #[cfg(not(CONFIG_STACKPROTECTOR_PER_TASK))]
     {
         __stack_chk_guard = (*current).stack_canary;
     }

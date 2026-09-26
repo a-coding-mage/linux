@@ -20,7 +20,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-pub const _nbif_6_3_1_SH_MASK_HEADER: u32 = ;
 
 
 // addressBlock: nbif_bif_cfg_dev0_rc_bifcfgdecp

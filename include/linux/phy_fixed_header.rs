@@ -17,7 +17,7 @@ pub struct net_device;
 pub struct phy_device;
 
 /* These declarations and definitions are selected by CONFIG_FIXED_PHY. */
-#[cfg(feature = "CONFIG_FIXED_PHY")]
+#[cfg(CONFIG_FIXED_PHY)]
 extern "C" {
     pub fn fixed_phy_change_carrier(
         dev: *mut net_device,
@@ -44,7 +44,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_FIXED_PHY"))]
+#[cfg(not(CONFIG_FIXED_PHY))]
 #[inline]
 pub unsafe fn fixed_phy_register(
     _status: *const fixed_phy_status,
@@ -54,14 +54,14 @@ pub unsafe fn fixed_phy_register(
     ERR_PTR(-ENODEV)
 }
 
-#[cfg(not(feature = "CONFIG_FIXED_PHY"))]
+#[cfg(not(CONFIG_FIXED_PHY))]
 #[inline]
 pub unsafe fn fixed_phy_register_100fd() -> *mut phy_device {
     /* Equivalent to ERR_PTR(-ENODEV); ERR_PTR is supplied by the surrounding translation. */
     ERR_PTR(-ENODEV)
 }
 
-#[cfg(not(feature = "CONFIG_FIXED_PHY"))]
+#[cfg(not(CONFIG_FIXED_PHY))]
 #[inline]
 pub unsafe fn fixed_phy_unregister(_phydev: *mut phy_device) {}
 

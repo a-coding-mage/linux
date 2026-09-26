@@ -23,11 +23,11 @@ pub const SECCOMP_ARCH_NATIVE_NR: _ = NR_syscalls;
 #[cfg(target_pointer_width = "64")]
 pub const SECCOMP_ARCH_NATIVE_NAME: &str = concat!("ppc64", __SECCOMP_ARCH_LE_NAME);
 
-#[cfg(all(target_pointer_width = "64", feature = "CONFIG_COMPAT"))]
+#[cfg(all(target_pointer_width = "64", CONFIG_COMPAT))]
 pub const SECCOMP_ARCH_COMPAT: _ = AUDIT_ARCH_PPC | __SECCOMP_ARCH_LE;
-#[cfg(all(target_pointer_width = "64", feature = "CONFIG_COMPAT"))]
+#[cfg(all(target_pointer_width = "64", CONFIG_COMPAT))]
 pub const SECCOMP_ARCH_COMPAT_NR: _ = NR_syscalls;
-#[cfg(all(target_pointer_width = "64", feature = "CONFIG_COMPAT"))]
+#[cfg(all(target_pointer_width = "64", CONFIG_COMPAT))]
 pub const SECCOMP_ARCH_COMPAT_NAME: &str = concat!("ppc", __SECCOMP_ARCH_LE_NAME);
 
 #[cfg(not(target_pointer_width = "64"))]

@@ -26,7 +26,7 @@ pub unsafe extern "C" fn local_icache_inv_all(_priv: *mut core::ffi::c_void) {
     sync_is();
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_ICACHE_INS")]
+#[cfg(CONFIG_CPU_HAS_ICACHE_INS)]
 pub unsafe extern "C" fn icache_inv_range(start: usize, end: usize) {
     let mut i = start & !(L1_CACHE_BYTES - 1);
     while i < end {
@@ -36,34 +36,34 @@ pub unsafe extern "C" fn icache_inv_range(start: usize, end: usize) {
     sync_is();
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_ICACHE_INS"))]
+#[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 #[repr(C)]
 struct CacheRange {
     start: usize,
     end: usize,
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_ICACHE_INS"))]
+#[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 #[repr(C)]
 struct CacheLock {
     _opaque: [u8; 0],
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_ICACHE_INS"))]
+#[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 extern "C" {
     static mut cache_lock: CacheLock;
     fn spin_lock_irqsave(lock: *mut CacheLock, flags: *mut usize);
     fn spin_unlock_irqrestore(lock: *mut CacheLock, flags: usize);
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_ICACHE_INS"))]
+#[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 #[inline]
 unsafe fn cache_op_line(i: usize, val: u32) {
     mtcr(b"cr22\0".as_ptr() as *const core::ffi::c_char, i as u32);
     mtcr(b"cr17\0".as_ptr() as *const core::ffi::c_char, val);
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_ICACHE_INS"))]
+#[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 pub unsafe extern "C" fn local_icache_inv_range(priv_: *mut core::ffi::c_void) {
     let param = &*(priv_ as *const CacheRange);
     let mut i = param.start & !(L1_CACHE_BYTES - 1);
@@ -78,7 +78,7 @@ pub unsafe extern "C" fn local_icache_inv_range(priv_: *mut core::ffi::c_void) {
     sync_is();
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_ICACHE_INS"))]
+#[cfg(not(CONFIG_CPU_HAS_ICACHE_INS))]
 pub unsafe extern "C" fn icache_inv_range(start: usize, end: usize) {
     let mut param = CacheRange { start, end };
     if irqs_disabled() {

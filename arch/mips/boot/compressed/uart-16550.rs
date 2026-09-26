@@ -7,14 +7,14 @@
 // provide the corresponding types, UART constants, address conversion, and
 // configuration-dependent definitions in the surrounding build.
 
-#[cfg(any(feature = "CONFIG_MACH_LOONGSON64", feature = "CONFIG_MIPS_MALTA"))]
+#[cfg(any(CONFIG_MACH_LOONGSON64, CONFIG_MIPS_MALTA))]
 const UART_BASE: usize = 0x1fd003f8;
 
-#[cfg(feature = "CONFIG_MACH_INGENIC")]
+#[cfg(CONFIG_MACH_INGENIC)]
 const INGENIC_UART_BASE_ADDR: usize =
     0x10030000 + 0x1000 * CONFIG_ZBOOT_INGENIC_UART;
 
-#[cfg(feature = "CONFIG_ECONET")]
+#[cfg(CONFIG_ECONET)]
 const EN75_UART_BASE: usize = 0x1fbf0003;
 
 // CKSEG1ADDR is supplied by asm/addrspace.h in the surrounding build.
@@ -22,29 +22,29 @@ extern "C" {
     fn CKSEG1ADDR(address: usize) -> usize;
 }
 
-#[cfg(any(feature = "CONFIG_MACH_LOONGSON64", feature = "CONFIG_MIPS_MALTA"))]
+#[cfg(any(CONFIG_MACH_LOONGSON64, CONFIG_MIPS_MALTA))]
 #[inline]
 unsafe fn port(offset: isize) -> usize {
     CKSEG1ADDR(UART_BASE).wrapping_add(offset as usize)
 }
 
-#[cfg(feature = "CONFIG_MACH_INGENIC")]
+#[cfg(CONFIG_MACH_INGENIC)]
 #[inline]
 unsafe fn port(offset: isize) -> usize {
     CKSEG1ADDR(INGENIC_UART_BASE_ADDR).wrapping_add((4isize * offset) as usize)
 }
 
-#[cfg(feature = "CONFIG_ECONET")]
+#[cfg(CONFIG_ECONET)]
 #[inline]
 unsafe fn port(offset: isize) -> usize {
     CKSEG1ADDR(EN75_UART_BASE).wrapping_add((4isize * offset) as usize)
 }
 
 #[cfg(not(any(
-    feature = "CONFIG_MACH_LOONGSON64",
-    feature = "CONFIG_MIPS_MALTA",
-    feature = "CONFIG_MACH_INGENIC",
-    feature = "CONFIG_ECONET"
+    CONFIG_MACH_LOONGSON64,
+    CONFIG_MIPS_MALTA,
+    CONFIG_MACH_INGENIC,
+    CONFIG_ECONET
 )))]
 compile_error!("please define the serial port address for your own machine");
 

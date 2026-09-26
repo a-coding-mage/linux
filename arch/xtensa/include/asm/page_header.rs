@@ -6,18 +6,18 @@
 
 // C includes are represented by the external symbols referenced below.
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const PAGE_OFFSET: usize = XCHAL_KSEG_CACHED_VADDR;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const PHYS_OFFSET: usize = XCHAL_KSEG_PADDR;
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const MAX_LOW_PFN: usize = PHYS_PFN(XCHAL_KSEG_PADDR) + PHYS_PFN(XCHAL_KSEG_SIZE);
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const PAGE_OFFSET: usize = CONFIG_DEFAULT_MEM_START;
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const PHYS_OFFSET: usize = CONFIG_DEFAULT_MEM_START;
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const MAX_LOW_PFN: usize = PHYS_PFN(0xffff_ffffusize);
 
 // If DCACHE_WAY_SIZE > PAGE_SIZE in the target configuration, use the
@@ -84,16 +84,16 @@ pub enum vm_area_struct {}
 unsafe extern "C" {
     pub fn clear_page(page: *mut core::ffi::c_void);
     pub fn copy_page(to: *mut core::ffi::c_void, from: *mut core::ffi::c_void);
-    #[cfg(all(feature = "CONFIG_MMU", feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
+    #[cfg(all(CONFIG_MMU, feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
     pub fn clear_page_alias(vaddr: *mut core::ffi::c_void, paddr: usize);
-    #[cfg(all(feature = "CONFIG_MMU", feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
+    #[cfg(all(CONFIG_MMU, feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
     pub fn copy_page_alias(to: *mut core::ffi::c_void, from: *mut core::ffi::c_void,
                            to_paddr: usize, from_paddr: usize);
 }
 
-#[cfg(all(feature = "CONFIG_MMU", feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
+#[cfg(all(CONFIG_MMU, feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
 pub const __HAVE_ARCH_COPY_USER_HIGHPAGE: bool = true;
-#[cfg(all(feature = "CONFIG_MMU", feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
+#[cfg(all(CONFIG_MMU, feature = "DCACHE_WAY_SIZE_GT_PAGE_SIZE"))]
 unsafe extern "C" {
     pub fn clear_user_highpage(page: *mut page, vaddr: usize);
     pub fn copy_user_highpage(to: *mut page, from: *mut page, vaddr: usize,
@@ -105,15 +105,15 @@ unsafe extern "C" {
 
 pub const ARCH_PFN_OFFSET: usize = PHYS_OFFSET >> PAGE_SHIFT;
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn ___pa(mut va: usize) -> usize {
     let mut off = va.wrapping_sub(PAGE_OFFSET);
     if off >= XCHAL_KSEG_SIZE { off = off.wrapping_sub(XCHAL_KSEG_SIZE); }
     // CONFIG_XIP_KERNEL selects the alternate Xtensa I/O mapping below.
-    #[cfg(not(feature = "CONFIG_XIP_KERNEL"))]
+    #[cfg(not(CONFIG_XIP_KERNEL))]
     { off.wrapping_add(PHYS_OFFSET) }
-    #[cfg(feature = "CONFIG_XIP_KERNEL")]
+    #[cfg(CONFIG_XIP_KERNEL)]
     {
         if off < XCHAL_KSEG_SIZE { return off.wrapping_add(PHYS_OFFSET); }
         off = off.wrapping_sub(XCHAL_KSEG_SIZE);
@@ -124,9 +124,9 @@ pub unsafe fn ___pa(mut va: usize) -> usize {
 
 #[inline]
 pub unsafe fn __pa(x: *const core::ffi::c_void) -> usize {
-    #[cfg(feature = "CONFIG_MMU")]
+    #[cfg(CONFIG_MMU)]
     { ___pa(x as usize) }
-    #[cfg(not(feature = "CONFIG_MMU"))]
+    #[cfg(not(CONFIG_MMU))]
     { (x as usize).wrapping_sub(PAGE_OFFSET).wrapping_add(PHYS_OFFSET) }
 }
 

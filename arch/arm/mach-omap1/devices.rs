@@ -3,28 +3,28 @@
 
 // C header dependencies are supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_RTC_DRV_OMAP")]
+#[cfg(CONFIG_RTC_DRV_OMAP)]
 const OMAP_RTC_BASE: usize = 0xfffb4800;
 
-#[cfg(feature = "CONFIG_RTC_DRV_OMAP")]
+#[cfg(CONFIG_RTC_DRV_OMAP)]
 static mut RTC_RESOURCES: [resource; 3] = [
     resource { start: OMAP_RTC_BASE, end: OMAP_RTC_BASE + 0x5f, flags: IORESOURCE_MEM, name: core::ptr::null() },
     resource { start: INT_RTC_TIMER, end: 0, flags: IORESOURCE_IRQ, name: core::ptr::null() },
     resource { start: INT_RTC_ALARM, end: 0, flags: IORESOURCE_IRQ, name: core::ptr::null() },
 ];
 
-#[cfg(feature = "CONFIG_RTC_DRV_OMAP")]
+#[cfg(CONFIG_RTC_DRV_OMAP)]
 static mut OMAP_RTC_DEVICE: platform_device = platform_device {
     name: b"omap_rtc\0".as_ptr() as *const _, id: -1,
     num_resources: 3, resource: unsafe { RTC_RESOURCES.as_mut_ptr() },
 };
 
-#[cfg(feature = "CONFIG_RTC_DRV_OMAP")]
+#[cfg(CONFIG_RTC_DRV_OMAP)]
 unsafe fn omap_init_rtc() { platform_device_register(&mut OMAP_RTC_DEVICE); }
-#[cfg(not(feature = "CONFIG_RTC_DRV_OMAP"))]
+#[cfg(not(CONFIG_RTC_DRV_OMAP))]
 unsafe fn omap_init_rtc() {}
 
-#[cfg(feature = "CONFIG_MMC_OMAP")]
+#[cfg(CONFIG_MMC_OMAP)]
 unsafe fn omap1_mmc_mux(mmc_controller: *mut omap_mmc_platform_data, controller_nr: i32) {
     if controller_nr == 0 {
         omap_cfg_reg(MMC_CMD); omap_cfg_reg(MMC_CLK); omap_cfg_reg(MMC_DAT0);
@@ -46,7 +46,7 @@ unsafe fn omap1_mmc_mux(mmc_controller: *mut omap_mmc_platform_data, controller_
     }
 }
 
-#[cfg(feature = "CONFIG_MMC_OMAP")]
+#[cfg(CONFIG_MMC_OMAP)]
 unsafe fn omap_mmc_add(name: *const i8, id: i32, base: usize, size: usize, irq: u32, rx_req: u32, tx_req: u32, data: *mut omap_mmc_platform_data) -> i32 {
     let pdev = platform_device_alloc(name, id);
     if pdev.is_null() { return -ENOMEM; }
@@ -66,7 +66,7 @@ unsafe fn omap_mmc_add(name: *const i8, id: i32, base: usize, size: usize, irq: 
     0
 }
 
-#[cfg(feature = "CONFIG_MMC_OMAP")]
+#[cfg(CONFIG_MMC_OMAP)]
 pub unsafe fn omap1_init_mmc(mmc_data: *mut *mut omap_mmc_platform_data, nr_controllers: i32) {
     for i in 0..nr_controllers {
         let data = *mmc_data.offset(i as isize); if data.is_null() { continue; }
@@ -80,15 +80,15 @@ pub unsafe fn omap1_init_mmc(mmc_data: *mut *mut omap_mmc_platform_data, nr_cont
     }
 }
 
-#[cfg(feature = "CONFIG_SPI_OMAP_UWIRE")]
+#[cfg(CONFIG_SPI_OMAP_UWIRE)]
 const OMAP_UWIRE_BASE: usize = 0xfffb3000;
-#[cfg(feature = "CONFIG_SPI_OMAP_UWIRE")]
+#[cfg(CONFIG_SPI_OMAP_UWIRE)]
 static mut UWIRE_RESOURCES: [resource; 1] = [resource { start: OMAP_UWIRE_BASE, end: OMAP_UWIRE_BASE + 0x20, flags: IORESOURCE_MEM, name: core::ptr::null() }];
-#[cfg(feature = "CONFIG_SPI_OMAP_UWIRE")]
+#[cfg(CONFIG_SPI_OMAP_UWIRE)]
 static mut OMAP_UWIRE_DEVICE: platform_device = platform_device { name: b"omap_uwire\0".as_ptr() as *const _, id: -1, num_resources: 1, resource: unsafe { UWIRE_RESOURCES.as_mut_ptr() } };
-#[cfg(feature = "CONFIG_SPI_OMAP_UWIRE")]
+#[cfg(CONFIG_SPI_OMAP_UWIRE)]
 unsafe fn omap_init_uwire() { platform_device_register(&mut OMAP_UWIRE_DEVICE); }
-#[cfg(not(feature = "CONFIG_SPI_OMAP_UWIRE"))]
+#[cfg(not(CONFIG_SPI_OMAP_UWIRE))]
 unsafe fn omap_init_uwire() {}
 
 const OMAP1_RNG_BASE: usize = 0xfffe5000;
@@ -96,9 +96,9 @@ static mut OMAP1_RNG_RESOURCES: [resource; 1] = [resource { start: OMAP1_RNG_BAS
 static mut OMAP1_RNG_DEVICE: platform_device = platform_device { name: b"omap_rng\0".as_ptr() as *const _, id: -1, num_resources: 1, resource: unsafe { OMAP1_RNG_RESOURCES.as_mut_ptr() } };
 unsafe fn omap1_init_rng() { if cpu_is_omap16xx() { platform_device_register(&mut OMAP1_RNG_DEVICE); } }
 
-#[cfg(feature = "CONFIG_OMAP_WATCHDOG")]
+#[cfg(CONFIG_OMAP_WATCHDOG)]
 static mut WDT_RESOURCES: [resource; 1] = [resource { start: 0xfffeb000, end: 0xfffeb07f, flags: IORESOURCE_MEM, name: core::ptr::null() }];
-#[cfg(feature = "CONFIG_OMAP_WATCHDOG")]
+#[cfg(CONFIG_OMAP_WATCHDOG)]
 static mut OMAP_WDT_DEVICE: platform_device = platform_device { name: b"omap_wdt\0".as_ptr() as *const _, id: -1, num_resources: 1, resource: unsafe { WDT_RESOURCES.as_mut_ptr() } };
 
 unsafe fn omap1_init_devices() -> i32 {
@@ -108,7 +108,7 @@ unsafe fn omap1_init_devices() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_OMAP_WATCHDOG")]
+#[cfg(CONFIG_OMAP_WATCHDOG)]
 unsafe fn omap_init_wdt() -> i32 {
     let mut pdata: omap_wd_timer_platform_data = core::mem::zeroed();
     if !cpu_is_omap16xx() { return -ENODEV; }

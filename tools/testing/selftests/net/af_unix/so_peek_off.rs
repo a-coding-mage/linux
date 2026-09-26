@@ -118,7 +118,7 @@ unsafe fn so_peek_off_setup(self_: *mut so_peek_off, variant: *const so_peek_off
             (*self_).fd[1],
             SOL_SOCKET,
             SO_PEEK_OFF,
-            &0_i32 as *const i32 as *const c_void,
+            &0i32 as *const i32 as *const c_void,
             core::mem::size_of::<c_int>() as socklen_t,
         )
     };
@@ -143,7 +143,7 @@ macro_rules! sendeq {
 
 macro_rules! recveq {
     ($fd:expr, $str:expr, $buflen:expr, $flags:expr) => {{
-        let mut buf = vec![0_u8; ($buflen) + 1];
+        let mut buf = vec![0u8; ($buflen) + 1];
         let bytes: ssize_t;
 
         bytes = unsafe { recv($fd, buf.as_mut_ptr() as *mut c_void, $buflen, $flags) };

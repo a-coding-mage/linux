@@ -46,16 +46,16 @@ macro_rules! switch_to {
 }
 
 // CONFIG_PPC_BOOK3S_64 selects the external implementation; otherwise this is an empty inline.
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 extern "C" {
     pub fn restore_math(regs: *mut pt_regs);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_BOOK3S_64"))]
+#[cfg(not(CONFIG_PPC_BOOK3S_64))]
 #[inline]
 pub unsafe fn restore_math(_regs: *mut pt_regs) {}
 
-#[cfg(feature = "CONFIG_PPC_FPU")]
+#[cfg(CONFIG_PPC_FPU)]
 extern "C" {
     pub fn enable_kernel_fp();
     pub fn flush_fp_to_thread(task: *mut task_struct);
@@ -63,27 +63,27 @@ extern "C" {
     pub fn save_fpu(task: *mut task_struct);
 }
 
-#[cfg(feature = "CONFIG_PPC_FPU")]
+#[cfg(CONFIG_PPC_FPU)]
 #[inline]
 pub unsafe fn disable_kernel_fp() {
     msr_check_and_clear(MSR_FP);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_FPU"))]
+#[cfg(not(CONFIG_PPC_FPU))]
 #[inline]
 pub unsafe fn save_fpu(_t: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PPC_FPU"))]
+#[cfg(not(CONFIG_PPC_FPU))]
 #[inline]
 pub unsafe fn flush_fp_to_thread(_t: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PPC_FPU"))]
+#[cfg(not(CONFIG_PPC_FPU))]
 #[inline]
 pub unsafe fn enable_kernel_fp() {
     BUILD_BUG();
 }
 
-#[cfg(feature = "CONFIG_ALTIVEC")]
+#[cfg(CONFIG_ALTIVEC)]
 extern "C" {
     pub fn enable_kernel_altivec();
     pub fn flush_altivec_to_thread(task: *mut task_struct);
@@ -91,57 +91,57 @@ extern "C" {
     pub fn save_altivec(task: *mut task_struct);
 }
 
-#[cfg(feature = "CONFIG_ALTIVEC")]
+#[cfg(CONFIG_ALTIVEC)]
 #[inline]
 pub unsafe fn disable_kernel_altivec() {
     msr_check_and_clear(MSR_VEC);
 }
 
-#[cfg(not(feature = "CONFIG_ALTIVEC"))]
+#[cfg(not(CONFIG_ALTIVEC))]
 #[inline]
 pub unsafe fn save_altivec(_t: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_ALTIVEC"))]
+#[cfg(not(CONFIG_ALTIVEC))]
 #[inline]
 pub unsafe fn __giveup_altivec(_t: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_ALTIVEC"))]
+#[cfg(not(CONFIG_ALTIVEC))]
 #[inline]
 pub unsafe fn enable_kernel_altivec() {
     BUILD_BUG();
 }
 
-#[cfg(not(feature = "CONFIG_ALTIVEC"))]
+#[cfg(not(CONFIG_ALTIVEC))]
 #[inline]
 pub unsafe fn disable_kernel_altivec() {
     BUILD_BUG();
 }
 
-#[cfg(feature = "CONFIG_VSX")]
+#[cfg(CONFIG_VSX)]
 extern "C" {
     pub fn enable_kernel_vsx();
     pub fn flush_vsx_to_thread(task: *mut task_struct);
 }
 
-#[cfg(feature = "CONFIG_VSX")]
+#[cfg(CONFIG_VSX)]
 #[inline]
 pub unsafe fn disable_kernel_vsx() {
     msr_check_and_clear(MSR_FP | MSR_VEC | MSR_VSX);
 }
 
-#[cfg(not(feature = "CONFIG_VSX"))]
+#[cfg(not(CONFIG_VSX))]
 #[inline]
 pub unsafe fn enable_kernel_vsx() {
     BUILD_BUG();
 }
 
-#[cfg(not(feature = "CONFIG_VSX"))]
+#[cfg(not(CONFIG_VSX))]
 #[inline]
 pub unsafe fn disable_kernel_vsx() {
     BUILD_BUG();
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 extern "C" {
     pub fn enable_kernel_spe();
     pub fn flush_spe_to_thread(task: *mut task_struct);
@@ -149,13 +149,13 @@ extern "C" {
     pub fn __giveup_spe(task: *mut task_struct);
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 #[inline]
 pub unsafe fn disable_kernel_spe() {
     msr_check_and_clear(MSR_SPE);
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 #[inline]
 pub unsafe fn __giveup_spe(_t: *mut task_struct) {}
 

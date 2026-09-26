@@ -13,9 +13,9 @@
 extern "C" {
     pub static mut checker_stack_use_none: probes_check_t;
     pub static mut checker_stack_use_unknown: probes_check_t;
-    #[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+    #[cfg(CONFIG_THUMB2_KERNEL)]
     pub static mut checker_stack_use_imm_0xx: probes_check_t;
-    #[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+    #[cfg(not(CONFIG_THUMB2_KERNEL))]
     pub static mut checker_stack_use_imm_x0x: probes_check_t;
     pub static mut checker_stack_use_imm_xxx: probes_check_t;
     pub static mut checker_stack_use_stmdx: probes_check_t;
@@ -25,11 +25,11 @@ extern "C" {
 pub enum StackUseType {
     STACK_USE_NONE,
     STACK_USE_UNKNOWN,
-    #[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+    #[cfg(CONFIG_THUMB2_KERNEL)]
     STACK_USE_FIXED_0XX,
-    #[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+    #[cfg(CONFIG_THUMB2_KERNEL)]
     STACK_USE_T32STRD,
-    #[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+    #[cfg(not(CONFIG_THUMB2_KERNEL))]
     STACK_USE_FIXED_X0X,
     STACK_USE_FIXED_XXX,
     STACK_USE_STMDX,
@@ -39,9 +39,9 @@ pub enum StackUseType {
 extern "C" {
     pub static stack_check_actions: [decode_action; 0];
 
-    #[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+    #[cfg(not(CONFIG_THUMB2_KERNEL))]
     pub static arm_stack_checker: [decode_checker; 0];
-    #[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+    #[cfg(not(CONFIG_THUMB2_KERNEL))]
     pub static arm_regs_checker: [decode_checker; 0];
 
     pub static t32_stack_checker: [decode_checker; 0];

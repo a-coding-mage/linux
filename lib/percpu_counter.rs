@@ -6,18 +6,18 @@
  * types, macros, functions, and per-CPU primitives are external dependencies.
  */
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 static mut PERCPU_COUNTERS: ListHead = ListHead::new();
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 static mut PERCPU_COUNTERS_LOCK: SpinLock = SpinLock::new();
 
-#[cfg(feature = "CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER")]
+#[cfg(CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER)]
 static PERCPU_COUNTER_DEBUG_DESCR: DebugObjDescr = DebugObjDescr {
     name: "percpu_counter",
     fixup_free: Some(percpu_counter_fixup_free),
 };
 
-#[cfg(feature = "CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER")]
+#[cfg(CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER)]
 unsafe fn percpu_counter_fixup_free(addr: *mut core::ffi::c_void, state: DebugObjState) -> bool {
     let fbc = addr as *mut PercpuCounter;
     match state {
@@ -30,25 +30,25 @@ unsafe fn percpu_counter_fixup_free(addr: *mut core::ffi::c_void, state: DebugOb
     }
 }
 
-#[cfg(feature = "CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER")]
+#[cfg(CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER)]
 #[inline]
 unsafe fn debug_percpu_counter_activate(fbc: *mut PercpuCounter) {
     debug_object_init(fbc, &PERCPU_COUNTER_DEBUG_DESCR);
     debug_object_activate(fbc, &PERCPU_COUNTER_DEBUG_DESCR);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER")]
+#[cfg(CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER)]
 #[inline]
 unsafe fn debug_percpu_counter_deactivate(fbc: *mut PercpuCounter) {
     debug_object_deactivate(fbc, &PERCPU_COUNTER_DEBUG_DESCR);
     debug_object_free(fbc, &PERCPU_COUNTER_DEBUG_DESCR);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER"))]
+#[cfg(not(CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER))]
 #[inline]
 unsafe fn debug_percpu_counter_activate(_fbc: *mut PercpuCounter) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER"))]
+#[cfg(not(CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER))]
 #[inline]
 unsafe fn debug_percpu_counter_deactivate(_fbc: *mut PercpuCounter) {}
 
@@ -63,7 +63,7 @@ pub unsafe fn percpu_counter_set(fbc: *mut PercpuCounter, amount: i64) {
     raw_spin_unlock_irqrestore(&mut (*fbc).lock, flags);
 }
 
-#[cfg(feature = "CONFIG_HAVE_CMPXCHG_LOCAL")]
+#[cfg(CONFIG_HAVE_CMPXCHG_LOCAL)]
 pub unsafe fn percpu_counter_add_batch(fbc: *mut PercpuCounter, amount: i64, batch: i32) {
     let mut count = this_cpu_read!(*(*fbc).counters);
     loop {
@@ -82,7 +82,7 @@ pub unsafe fn percpu_counter_add_batch(fbc: *mut PercpuCounter, amount: i64, bat
     }
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_CMPXCHG_LOCAL"))]
+#[cfg(not(CONFIG_HAVE_CMPXCHG_LOCAL))]
 pub unsafe fn percpu_counter_add_batch(fbc: *mut PercpuCounter, amount: i64, batch: i32) {
     let flags: c_ulong = 0;
     local_irq_save(flags);
@@ -132,13 +132,13 @@ pub unsafe fn __percpu_counter_init_many(
         let current = fbc.add(i as usize);
         raw_spin_lock_init(&mut (*current).lock);
         lockdep_set_class(&mut (*current).lock, key);
-        #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+        #[cfg(CONFIG_HOTPLUG_CPU)]
         init_list_head(&mut (*current).list);
         (*current).count = amount;
         (*current).counters = counters.add(i as usize * counter_size) as *mut i32;
         debug_percpu_counter_activate(current);
     }
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     {
         let flags: c_ulong = 0;
         spin_lock_irqsave(&mut PERCPU_COUNTERS_LOCK, flags);
@@ -151,7 +151,7 @@ pub unsafe fn __percpu_counter_init_many(
 pub unsafe fn percpu_counter_destroy_many(fbc: *mut PercpuCounter, nr_counters: u32) {
     if fbc.is_null() || (*fbc).counters.is_null() { return; }
     for i in 0..nr_counters { debug_percpu_counter_deactivate(fbc.add(i as usize)); }
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     {
         let flags: c_ulong = 0;
         spin_lock_irqsave(&mut PERCPU_COUNTERS_LOCK, flags);
@@ -171,7 +171,7 @@ unsafe fn compute_batch_value(_cpu: u32) -> i32 {
 }
 
 unsafe fn percpu_counter_cpu_dead(cpu: u32) -> i32 {
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     {
         compute_batch_value(cpu);
         spin_lock_irq(&mut PERCPU_COUNTERS_LOCK);

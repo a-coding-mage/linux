@@ -21,7 +21,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-#define _nbio_6_3_2_SH_MASK_HEADER
 
 
 // addressBlock: nbif0_nbif0_bif_bx_SYSDEC

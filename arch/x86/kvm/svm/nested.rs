@@ -21,7 +21,7 @@ const CC: u32 = KVM_NESTED_VMENTER_CONSISTENCY_CHECK;
 
 unsafe static c_void nested_svm_inject_npf_exit(*mut kvm_vcpu *vcpu,
 				       *mut x86_exception *fault,
-				       bool from_hardware)
+				       from_hardware: bool)
 {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	*mut vmcb *vmcb = svm.vmcb;
@@ -55,7 +55,7 @@ unsafe static c_void nested_svm_inject_npf_exit(*mut kvm_vcpu *vcpu,
 	nested_svm_vmexit(svm);
 }
 
-unsafe fn nested_svm_get_tdp_pdptr(*mut kvm_vcpu *vcpu, i32 index)
+unsafe fn nested_svm_get_tdp_pdptr(*mut kvm_vcpu *vcpu, index: i32)
 {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	u64 cr3 = svm.nested.ctl.nested_cr3;
@@ -238,7 +238,7 @@ i32  nested_svm_init_msrpm_merge_offsets(c_void)
 		MSR_AMD64_PERF_CNTR_GLOBAL_STATUS_CLR,
 		MSR_AMD64_PERF_CNTR_GLOBAL_STATUS_SET,
 	};
-	i32 i, j;
+	i: i32, j;
 
 	for (i = 0; i < ARRAY_SIZE(merge_msrs); i++) {
 		i32 bit_nr = svm_msrpm_bit_nr(merge_msrs[i]);
@@ -278,6 +278,7 @@ i32  nested_svm_init_msrpm_merge_offsets(c_void)
  */
 unsafe fn nested_svm_merge_msrpm(*mut kvm_vcpu *vcpu)
 {
+	'set_msrpm_base_pa: {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	nsvm_msrpm_merge_t *msrpm02 = svm.nested.msrpm;
 	nsvm_msrpm_merge_t *msrpm01 = svm.msrpm;
@@ -298,7 +299,7 @@ unsafe fn nested_svm_merge_msrpm(*mut kvm_vcpu *vcpu)
 		if (kvm_hv_hypercall_enabled(vcpu) &&
 		    hve.hv_enlightenments_control.msr_bitmap &&
 		    (svm.nested.ctl.clean & BIT(HV_VMCB_NESTED_ENLIGHTENMENTS)))
-			goto set_msrpm_base_pa;
+			break 'set_msrpm_base_pa;
 	}
 // end conditional compilation
 
@@ -321,7 +322,8 @@ unsafe fn nested_svm_merge_msrpm(*mut kvm_vcpu *vcpu)
 	svm.nested.force_msr_bitmap_recalc = false;
 
 // conditional compilation from C source
-set_msrpm_base_pa:
+	}
+	
 // end conditional compilation
 	svm.vmcb.control.msrpm_base_pa = __sme_set(__pa(svm.nested.msrpm));
 
@@ -331,7 +333,7 @@ set_msrpm_base_pa:
 /*
  * Bits 11:0 of bitmap address are ignored by hardware
  */
-unsafe fn nested_svm_check_bitmap_pa(*mut kvm_vcpu *vcpu, u64 pa, u32 size)
+unsafe fn nested_svm_check_bitmap_pa(*mut kvm_vcpu *vcpu, pa: u64, size: u32)
 {
 	u64 addr = PAGE_ALIGN(pa);
 
@@ -339,7 +341,7 @@ unsafe fn nested_svm_check_bitmap_pa(*mut kvm_vcpu *vcpu, u64 pa, u32 size)
 	    kvm_vcpu_is_legal_gpa(vcpu, addr + size - 1);
 }
 
-unsafe fn nested_svm_event_inj_valid_exept(*mut kvm_vcpu *vcpu, u8 vector)
+unsafe fn nested_svm_event_inj_valid_exept(*mut kvm_vcpu *vcpu, vector: u8)
 {
 	/*
 	 * Vectors that do not correspond to a defined exception are invalid
@@ -368,7 +370,7 @@ unsafe fn nested_svm_event_inj_valid_exept(*mut kvm_vcpu *vcpu, u8 vector)
  * - The type of event_inj is not one of the defined values.
  * - The type is SVM_EVTINJ_TYPE_EXEPT, but the vector is not a valid exception.
  */
-unsafe fn nested_svm_check_event_inj(*mut kvm_vcpu *vcpu, u32 event_inj)
+unsafe fn nested_svm_check_event_inj(*mut kvm_vcpu *vcpu, event_inj: u32)
 {
 	u32 type = event_inj & SVM_EVTINJ_TYPE_MASK;
 	u8 vector = event_inj & SVM_EVTINJ_VEC_MASK;
@@ -421,7 +423,7 @@ unsafe fn nested_vmcb_check_controls(*mut kvm_vcpu *vcpu,
 /* Common checks that apply to both L1 and L2 state.  */
 unsafe fn nested_vmcb_check_save(*mut kvm_vcpu *vcpu,
 				   *mut vmcb_save_area_cached *save,
-				   bool check_gpat)
+				   check_gpat: bool)
 {
 	if (CC(!(save.efer & EFER_SVME)))
 		return false;
@@ -695,8 +697,8 @@ unsafe static c_void nested_svm_transition_tlb_flush(*mut kvm_vcpu *vcpu)
  * Load guest's/host's cr3 on nested vmentry or vmexit. @nested_npt is true
  * if we are emulating VM-Entry into a guest with NPT enabled.
  */
-unsafe static i32 nested_svm_load_cr3(*mut kvm_vcpu *vcpu, usize cr3,
-			       bool nested_npt, bool reload_pdptrs)
+unsafe static i32 nested_svm_load_cr3(*mut kvm_vcpu *vcpu, cr3: usize,
+			       nested_npt: bool, reload_pdptrs: bool)
 {
 	if (CC(!kvm_vcpu_is_legal_cr3(vcpu, cr3)))
 		return -EINVAL;
@@ -810,7 +812,7 @@ unsafe static c_void nested_vmcb02_prepare_save(*mut vcpu_svm *svm)
 }
 
 #[inline]
-unsafe fn fn is_evtinj_soft(u32 evtinj)
+unsafe fn fn is_evtinj_soft(evtinj: u32)
 {
 	u32 type = evtinj & SVM_EVTINJ_TYPE_MASK;
 	u8 vector = evtinj & SVM_EVTINJ_VEC_MASK;
@@ -824,7 +826,7 @@ unsafe fn fn is_evtinj_soft(u32 evtinj)
 	return type == SVM_EVTINJ_TYPE_EXEPT && kvm_exception_is_soft(vector);
 }
 
-unsafe fn is_evtinj_nmi(u32 evtinj)
+unsafe fn is_evtinj_nmi(evtinj: u32)
 {
 	u32 type = evtinj & SVM_EVTINJ_TYPE_MASK;
 
@@ -1015,7 +1017,7 @@ unsafe static c_void nested_svm_copy_common_state(*mut vmcb *from_vmcb, *mut vmc
 	to_vmcb.save.spec_ctrl = from_vmcb.save.spec_ctrl;
 }
 
-i32 enter_svm_guest_mode(*mut kvm_vcpu *vcpu, u64 vmcb12_gpa, bool from_vmrun)
+i32 enter_svm_guest_mode(*mut kvm_vcpu *vcpu, vmcb12_gpa: u64, from_vmrun: bool)
 {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	*mut vmcb_ctrl_area_cached *control = &svm.nested.ctl;
@@ -1068,7 +1070,7 @@ i32 enter_svm_guest_mode(*mut kvm_vcpu *vcpu, u64 vmcb12_gpa, bool from_vmrun)
 	return 0;
 }
 
-unsafe static i32 nested_svm_copy_vmcb12_to_cache(*mut kvm_vcpu *vcpu, u64 vmcb12_gpa)
+unsafe static i32 nested_svm_copy_vmcb12_to_cache(*mut kvm_vcpu *vcpu, vmcb12_gpa: u64)
 {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	*mut vmcb *vmcb12;
@@ -1097,6 +1099,7 @@ unsafe static i32 nested_svm_copy_vmcb12_to_cache(*mut kvm_vcpu *vcpu, u64 vmcb1
 
 i32 nested_svm_vmrun(*mut kvm_vcpu *vcpu)
 {
+	'insn_retired: {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	i32 ret;
 	u64 vmcb12_gpa;
@@ -1144,7 +1147,7 @@ i32 nested_svm_vmrun(*mut kvm_vcpu *vcpu)
 		return 0;
 
 	if (ret)
-		goto insn_retired;
+		break 'insn_retired;
 
 	/*
 	 * Since vmcb01 is not in use, we can use it to store some of the L1
@@ -1173,8 +1176,8 @@ i32 nested_svm_vmrun(*mut kvm_vcpu *vcpu)
 
 		nested_svm_vmexit(svm);
 	}
-
-insn_retired:
+	}
+	
 	/*
 	 * A successful VMRUN is counted by the PMU in guest mode, so only
 	 * retire the instruction after potentially entering guest mode.
@@ -1464,6 +1467,7 @@ unsafe static c_void nested_svm_triple_fault(*mut kvm_vcpu *vcpu)
 
 i32 svm_allocate_nested(*mut vcpu_svm *svm)
 {
+	'err_free_vmcb02: {
 	*mut page *vmcb02_page;
 
 	if (svm.nested.initialized)
@@ -1477,12 +1481,12 @@ i32 svm_allocate_nested(*mut vcpu_svm *svm)
 
 	svm.nested.msrpm = svm_vcpu_alloc_msrpm();
 	if (!svm.nested.msrpm)
-		goto err_free_vmcb02;
+		break 'err_free_vmcb02;
 
 	svm.nested.initialized = true;
 	return 0;
-
-err_free_vmcb02:
+	}
+	
 	__free_page(vmcb02_page);
 	return -ENOMEM;
 }
@@ -1549,8 +1553,8 @@ c_void svm_leave_nested(*mut kvm_vcpu *vcpu)
 unsafe static i32 nested_svm_exit_handled_msr(*mut vcpu_svm *svm)
 {
 	gpa_t base = svm.nested.ctl.msrpm_base_pa;
-	i32 write, bit_nr;
-	u8 value, mask;
+	write: i32, bit_nr;
+	value: u8, mask;
 	u32 msr;
 
 	if (!(vmcb12_is_intercept(&svm.nested.ctl, INTERCEPT_MSR_PROT)))
@@ -1573,8 +1577,8 @@ unsafe static i32 nested_svm_exit_handled_msr(*mut vcpu_svm *svm)
 
 unsafe static i32 nested_svm_intercept_ioio(*mut vcpu_svm *svm)
 {
-	u32 port, size, iopm_len;
-	u16 val, mask;
+	port: u32, size, iopm_len;
+	val: u16, mask;
 	u8 start_bit;
 	u64 gpa;
 
@@ -1655,8 +1659,8 @@ i32 nested_svm_check_permissions(*mut kvm_vcpu *vcpu)
 	return 0;
 }
 
-unsafe fn nested_svm_is_exception_vmexit(*mut kvm_vcpu *vcpu, u8 vector,
-					   u32 error_code)
+unsafe fn nested_svm_is_exception_vmexit(*mut kvm_vcpu *vcpu, vector: u8,
+					   error_code: u32)
 {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 
@@ -1861,15 +1865,16 @@ unsafe static c_void nested_copy_vmcb_cache_to_control(*mut vmcb_control_area *d
 
 unsafe static i32 svm_get_nested_state(*mut kvm_vcpu *vcpu,
 				*mut kvm_nested_state  *user_kvm_nested_state,
-				u32 user_data_size)
+				user_data_size: u32)
 {
+	'out: {
 	*mut vcpu_svm *svm;
 	*mut vmcb_control_area *ctl;
 	usize r;
 	*mut kvm_nested_state kvm_state = {
-		.flags = 0,
-		.format = KVM_STATE_NESTED_FORMAT_SVM,
-		.size = sizeof(kvm_state),
+		flags: 0,
+		format: KVM_STATE_NESTED_FORMAT_SVM,
+		size: sizeof(kvm_state),
 	};
 	*mut vmcb  *user_vmcb = (*mut vmcb  *)
 		&user_kvm_nested_state.data.svm[0];
@@ -1880,7 +1885,7 @@ unsafe static i32 svm_get_nested_state(*mut kvm_vcpu *vcpu,
 	svm = to_svm(vcpu);
 
 	if (user_data_size < kvm_state.size)
-		goto out;
+		break 'out;
 
 	/* First fill in the header and copy it out.  */
 	if (is_guest_mode(vcpu)) {
@@ -1902,7 +1907,7 @@ unsafe static i32 svm_get_nested_state(*mut kvm_vcpu *vcpu,
 		return -EFAULT;
 
 	if (!is_guest_mode(vcpu))
-		goto out;
+		break 'out;
 
 	/*
 	 * Copy over the full size of the VMCB rather than just the size
@@ -1925,7 +1930,8 @@ unsafe static i32 svm_get_nested_state(*mut kvm_vcpu *vcpu,
 	if (copy_to_user(&user_vmcb.save, &svm.vmcb01.ptr.save,
 			 sizeof(user_vmcb.save)))
 		return -EFAULT;
-out:
+	}
+	
 	return kvm_state.size;
 }
 
@@ -1933,6 +1939,7 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 				*mut kvm_nested_state  *user_kvm_nested_state,
 				*mut kvm_nested_state *kvm_state)
 {
+	'out_free: {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	*mut vmcb  *user_vmcb = (*mut vmcb  *)
 		&user_kvm_nested_state.data.svm[0];
@@ -1993,7 +2000,7 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 	ret = -EINVAL;
 	__nested_copy_vmcb_control_to_cache(vcpu, &ctl_cached, ctl);
 	if (!nested_vmcb_check_controls(vcpu, &ctl_cached))
-		goto out_free;
+		break 'out_free;
 
 	/*
 	 * Processor state contains L2 state.  Check that it is
@@ -2001,7 +2008,7 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 	 */
 	cr0 = kvm_read_cr0(vcpu);
         if (((cr0 & X86_CR0_CD) == 0) && (cr0 & X86_CR0_NW))
-		goto out_free;
+		break 'out_free;
 
 	/*
 	 * Validate host state saved from before VMRUN (see
@@ -2015,7 +2022,7 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 	    !(save.cr0 & X86_CR0_PE) ||
 	    (save.rflags & X86_EFLAGS_VM) ||
 	    !nested_vmcb_check_save(vcpu, &save_cached, false))
-		goto out_free;
+		break 'out_free;
 
 	/*
 	 * Validate gPAT when the shared PAT quirk is disabled (i.e. L2
@@ -2027,7 +2034,7 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 			      !kvm_check_has_quirk(vcpu.kvm,
 						   KVM_X86_QUIRK_NESTED_SVM_SHARED_PAT);
 	if (use_separate_l2_pat && !kvm_pat_valid(kvm_state.hdr.svm.gpat))
-		goto out_free;
+		break 'out_free;
 
 	/*
 	 * All checks done, we can enter guest mode. Userspace provides
@@ -2075,7 +2082,7 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 	ret = nested_svm_load_cr3(&svm.vcpu, vcpu.arch.cr3,
 				  nested_npt_enabled(svm), false);
 	if (ret)
-		goto out_free;
+		break 'out_free;
 
 	svm.nested.force_msr_bitmap_recalc = true;
 
@@ -2083,7 +2090,8 @@ unsafe static i32 svm_set_nested_state(*mut kvm_vcpu *vcpu,
 		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
 
 	kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
-out_free:
+	}
+	
 	kfree(save);
 	kfree(ctl);
 
@@ -2126,9 +2134,9 @@ unsafe fn svm_get_nested_state_pages(*mut kvm_vcpu *vcpu)
 }
 
 unsafe static gpa_t svm_translate_nested_gpa(*mut kvm_vcpu *vcpu, gpa_t gpa,
-				      u64 access,
+				      access: u64,
 				      *mut x86_exception *exception,
-				      u64 pte_access)
+				      pte_access: u64)
 {
 	*mut vcpu_svm *svm = to_svm(vcpu);
 	*mut kvm_pagewalk *w = &vcpu.arch.ngpa_walk;
@@ -2144,15 +2152,15 @@ unsafe static gpa_t svm_translate_nested_gpa(*mut kvm_vcpu *vcpu, gpa_t gpa,
 }
 
 *mut kvm_x86_nested_ops svm_nested_ops  = {
-	.leave_nested = svm_leave_nested,
-	.translate_nested_gpa = svm_translate_nested_gpa,
-	.is_exception_vmexit = nested_svm_is_exception_vmexit,
-	.check_events = svm_check_nested_events,
-	.triple_fault = nested_svm_triple_fault,
-	.get_nested_state_pages = svm_get_nested_state_pages,
-	.get_state = svm_get_nested_state,
-	.set_state = svm_set_nested_state,
-	.hv_inject_synthetic_vmexit_post_tlb_flush = svm_hv_inject_synthetic_vmexit_post_tlb_flush,
+	leave_nested: svm_leave_nested,
+	translate_nested_gpa: svm_translate_nested_gpa,
+	is_exception_vmexit: nested_svm_is_exception_vmexit,
+	check_events: svm_check_nested_events,
+	triple_fault: nested_svm_triple_fault,
+	get_nested_state_pages: svm_get_nested_state_pages,
+	get_state: svm_get_nested_state,
+	set_state: svm_set_nested_state,
+	hv_inject_synthetic_vmexit_post_tlb_flush: svm_hv_inject_synthetic_vmexit_post_tlb_flush,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

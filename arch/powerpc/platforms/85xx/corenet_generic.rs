@@ -19,16 +19,14 @@ unsafe extern "C" {
         flags: u32,
         flags_b: u32,
         nr_irqs: u32,
-        name: *const u8,
-    ) -> *mut Mpic;
+        name: *const u8) -> *mut Mpic;
     fn mpic_init(mpic: *mut Mpic);
     fn mpc85xx_smp_init();
     fn swiotlb_detect_4g();
     fn of_platform_bus_probe(
         node: *mut core::ffi::c_void,
         matches: *const OfDeviceId,
-        parent: *mut core::ffi::c_void,
-    ) -> i32;
+        parent: *mut core::ffi::c_void) -> i32;
     fn of_machine_compatible_match(boards: *const *const u8) -> i32;
     fn of_machine_is_compatible(compat: *const u8) -> i32;
     fn snprintf(dst: *mut u8, size: usize, format: *const u8, ...) -> i32;
@@ -76,7 +74,7 @@ unsafe fn corenet_gen_pic_init() {
     let mut flags: u32 = MPIC_BIG_ENDIAN | MPIC_SINGLE_DEST_CPU | MPIC_NO_RESET;
 
     // !IS_ENABLED(CONFIG_HOTPLUG_CPU) && !IS_ENABLED(CONFIG_KEXEC_CORE)
-    #[cfg(not(any(feature = "CONFIG_HOTPLUG_CPU", feature = "CONFIG_KEXEC_CORE")))]
+    #[cfg(not(any(CONFIG_HOTPLUG_CPU, CONFIG_KEXEC_CORE)))]
     {
         flags |= MPIC_ENABLE_COREINT;
     }

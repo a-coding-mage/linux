@@ -3,7 +3,7 @@
 // Translated from pm-trace.h. The C header's linux/types.h and
 // asm/pm-trace.h dependencies are supplied externally.
 
-#[cfg(feature = "CONFIG_PM_TRACE")]
+#[cfg(CONFIG_PM_TRACE)]
 extern "C" {
     pub static mut pm_trace_enabled: core::ffi::c_int;
     pub static mut pm_trace_rtc_abused: bool;
@@ -21,19 +21,19 @@ pub struct device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_PM_TRACE")]
+#[cfg(CONFIG_PM_TRACE)]
 #[inline]
 pub unsafe fn pm_trace_rtc_valid() -> bool {
     !pm_trace_rtc_abused
 }
 
-#[cfg(feature = "CONFIG_PM_TRACE")]
+#[cfg(CONFIG_PM_TRACE)]
 #[inline]
 pub unsafe fn pm_trace_is_enabled() -> core::ffi::c_int {
     pm_trace_enabled
 }
 
-#[cfg(feature = "CONFIG_PM_TRACE")]
+#[cfg(CONFIG_PM_TRACE)]
 #[macro_export]
 macro_rules! TRACE_DEVICE {
     ($dev:expr) => {{
@@ -43,19 +43,19 @@ macro_rules! TRACE_DEVICE {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_PM_TRACE"))]
+#[cfg(not(CONFIG_PM_TRACE))]
 #[inline]
 pub const fn pm_trace_rtc_valid() -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_PM_TRACE"))]
+#[cfg(not(CONFIG_PM_TRACE))]
 #[inline]
 pub const fn pm_trace_is_enabled() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PM_TRACE"))]
+#[cfg(not(CONFIG_PM_TRACE))]
 #[macro_export]
 macro_rules! TRACE_DEVICE {
     ($dev:expr) => {{
@@ -63,7 +63,7 @@ macro_rules! TRACE_DEVICE {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_PM_TRACE"))]
+#[cfg(not(CONFIG_PM_TRACE))]
 #[macro_export]
 macro_rules! TRACE_RESUME {
     ($dev:expr) => {{
@@ -71,7 +71,7 @@ macro_rules! TRACE_RESUME {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_PM_TRACE"))]
+#[cfg(not(CONFIG_PM_TRACE))]
 #[macro_export]
 macro_rules! TRACE_SUSPEND {
     ($dev:expr) => {{

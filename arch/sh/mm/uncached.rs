@@ -27,12 +27,12 @@ unsafe extern "C" {
 }
 
 pub unsafe fn uncached_init() {
-    #[cfg(any(feature = "CONFIG_29BIT", not(feature = "CONFIG_MMU")))]
+    #[cfg(any(CONFIG_29BIT, not(CONFIG_MMU)))]
     {
         // P2SEG
         uncached_start = P2SEG;
     }
-    #[cfg(all(not(feature = "CONFIG_29BIT"), feature = "CONFIG_MMU"))]
+    #[cfg(all(not(CONFIG_29BIT), CONFIG_MMU))]
     {
         uncached_start = memory_end;
     }

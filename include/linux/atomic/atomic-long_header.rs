@@ -8,6 +8,20 @@ pub type atomic_long_t = atomic64_t;
 pub type atomic_long_t = atomic_t;
 
 // ATOMIC_LONG_INIT and atomic_long_cond_read_* select the corresponding atomic64/atomic forms.
+#[cfg(CONFIG_64BIT)]
+#[macro_export]
+macro_rules! ATOMIC_LONG_INIT {
+    ($i:expr) => {
+        ATOMIC64_INIT!($i)
+    };
+}
+#[cfg(not(CONFIG_64BIT))]
+#[macro_export]
+macro_rules! ATOMIC_LONG_INIT {
+    ($i:expr) => {
+        ATOMIC_INIT!($i)
+    };
+}
 
 macro_rules! atomic_long_dispatch {
     ($(#[$meta:meta])* fn $name:ident($($arg:ident : $ty:ty),*) -> $ret:ty { $body:tt }) => {

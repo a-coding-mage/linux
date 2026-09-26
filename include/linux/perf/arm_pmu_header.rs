@@ -7,26 +7,26 @@
 
 /* C header dependencies are supplied by the surrounding kernel translation. */
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
-pub const ARMPMU_MAX_HWEVENTS: usize = if cfg!(feature = "CONFIG_ARM") { 32 } else { 33 };
+#[cfg(CONFIG_ARM_PMU)]
+pub const ARMPMU_MAX_HWEVENTS: usize = if cfg!(CONFIG_ARM) { 32 } else { 33 };
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARMPMU_EVT_64BIT: u32 = 0x00001;
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARMPMU_EVT_47BIT: u32 = 0x00002;
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARMPMU_EVT_63BIT: u32 = 0x00004;
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const HW_OP_UNSUPPORTED: u32 = 0xFFFF;
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const CACHE_OP_UNSUPPORTED: u32 = 0xFFFF;
 
 /* C macros PERF_MAP_ALL_UNSUPPORTED and PERF_CACHE_MAP_ALL_UNSUPPORTED use
  * designated range initializers; their equivalent initializers depend on the
  * imported PERF_COUNT_HW_* constants and are retained by this declaration. */
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[repr(C)]
 pub struct pmu_hw_events {
     pub events: [*mut perf_event; ARMPMU_MAX_HWEVENTS],
@@ -37,7 +37,7 @@ pub struct pmu_hw_events {
     pub branch_users: u32,
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[repr(C)]
 pub enum armpmu_attr_groups {
     ARMPMU_ATTR_GROUP_COMMON,
@@ -47,7 +47,7 @@ pub enum armpmu_attr_groups {
     ARMPMU_NR_ATTR_GROUPS,
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[repr(C)]
 pub struct arm_pmu {
     pub pmu: pmu,
@@ -82,22 +82,22 @@ pub struct arm_pmu {
     pub acpi_cpuid: usize,
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARMV8_PMUV3_MAX_COMMON_EVENTS: usize = 0x40;
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARMV8_PMUV3_EXT_COMMON_EVENT_BASE: u32 = 0x4000;
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub type armpmu_init_fn = unsafe extern "C" fn(*mut arm_pmu) -> i32;
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[inline]
 pub unsafe fn to_arm_pmu(p: *mut pmu) -> *mut arm_pmu {
     /* Equivalent to container_of(p, struct arm_pmu, pmu). */
     (p as *mut u8).sub(core::mem::offset_of!(arm_pmu, pmu)) as *mut arm_pmu
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[repr(C)]
 pub struct pmu_probe_info {
     pub cpuid: u32,
@@ -105,7 +105,7 @@ pub struct pmu_probe_info {
     pub init: Option<armpmu_init_fn>,
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[macro_export]
 macro_rules! PMU_PROBE {
     ($cpuid:expr, $mask:expr, $fn_:expr) => {
@@ -113,13 +113,13 @@ macro_rules! PMU_PROBE {
     };
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[macro_export]
 macro_rules! ARM_PMU_PROBE {
     ($cpuid:expr, $fn_:expr) => { $crate::PMU_PROBE!($cpuid, ARM_CPU_PART_MASK, $fn_) };
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 #[macro_export]
 macro_rules! XSCALE_PMU_PROBE {
     ($version:expr, $fn_:expr) => {
@@ -127,15 +127,15 @@ macro_rules! XSCALE_PMU_PROBE {
     };
 }
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARM_PMU_XSCALE_MASK: u32 = (0xff << 24) | ARM_CPU_XSCALE_ARCH_MASK;
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 pub const ARMV8_PMU_PDEV_NAME: &str = "armv8-pmu";
 pub const ARMV8_SPE_PDEV_NAME: &str = "arm,spe-v1";
 pub const ARMV8_TRBE_PDEV_NAME: &str = "arm,trbe";
 
-#[cfg(feature = "CONFIG_ARM_PMU")]
+#[cfg(CONFIG_ARM_PMU)]
 extern "C" {
     pub fn armpmu_event_update(event: *mut perf_event) -> u64;
     pub fn armpmu_event_set_period(event: *mut perf_event) -> i32;
@@ -154,12 +154,12 @@ extern "C" {
     pub fn armpmu_free_irq(armpmu: *mut pmu_hw_events, irq: i32, cpu: i32);
 }
 
-#[cfg(all(feature = "CONFIG_ARM_PMU", feature = "CONFIG_ACPI"))]
+#[cfg(all(CONFIG_ARM_PMU, CONFIG_ACPI))]
 extern "C" { pub fn arm_pmu_acpi_probe(init_fn: armpmu_init_fn) -> i32; }
-#[cfg(all(feature = "CONFIG_ARM_PMU", not(feature = "CONFIG_ACPI")))]
+#[cfg(all(CONFIG_ARM_PMU, not(CONFIG_ACPI)))]
 pub unsafe fn arm_pmu_acpi_probe(_init_fn: armpmu_init_fn) -> i32 { 0 }
 
-#[cfg(all(feature = "CONFIG_ARM_PMU", feature = "CONFIG_KVM"))]
+#[cfg(all(CONFIG_ARM_PMU, CONFIG_KVM))]
 extern "C" { pub fn kvm_host_pmu_init(pmu: *mut arm_pmu); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

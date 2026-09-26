@@ -215,7 +215,7 @@ pub mod emux_effect {
         }
     }
 
-    #[cfg(feature = "CONFIG_SND_SEQUENCER_OSS")]
+    #[cfg(CONFIG_SND_SEQUENCER_OSS)]
     // Change effects - for OSS sequencer compatibility
     pub fn snd_emux_send_effect_oss(
         port: *const c_void,

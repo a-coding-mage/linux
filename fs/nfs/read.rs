@@ -54,7 +54,7 @@ pub unsafe extern "C" fn nfs_pageio_init_read(
     let mut pg_ops = &nfs_pgio_rw_ops as *const nfs_pageio_ops;
 
     // CONFIG_NFS_V4 build-time conditional preserved from the C source.
-    #[cfg(feature = "CONFIG_NFS_V4")]
+    #[cfg(CONFIG_NFS_V4)]
     {
         if !(*server).pnfs_curr_ld.is_null() && !force_mds {
             pg_ops = (*(*server).pnfs_curr_ld).pg_read_ops;

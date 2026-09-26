@@ -16,7 +16,7 @@ const CN_PROC_MSG_SIZE: usize = core::mem::size_of::<cn_msg>()
 
 #[inline]
 unsafe fn buffer_to_cn_msg(buffer: *mut u8) -> *mut cn_msg {
-    // BUILD_BUG_ON(sizeof(struct cn_msg) != 20);
+    // BUILD_BUG_ON(sizeof(cn_msg) != 20);
     (buffer.add(4)) as *mut cn_msg
 }
 
@@ -30,7 +30,7 @@ struct local_event {
     count: u32,
 }
 
-// DEFINE_PER_CPU(struct local_event, local_event) = {
+// DEFINE_PER_CPU(local_event, local_event) = {
 //     .lock = INIT_LOCAL_LOCK(lock),
 // };
 static mut local_event: local_event = local_event {

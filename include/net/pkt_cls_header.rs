@@ -49,7 +49,7 @@ extern "C" {
     pub fn tc_setup_cb_reoffload(block: *mut tcf_block, tp: *mut tcf_proto, add: bool, cb: *mut flow_setup_cb_t, ty: tc_setup_type, type_data: *mut core::ffi::c_void, cb_priv: *mut core::ffi::c_void, flags: *mut u32, in_hw_count: *mut u32) -> i32;
 }
 
-#[cfg(feature = "CONFIG_NET_CLS")]
+#[cfg(CONFIG_NET_CLS)]
 extern "C" {
     pub fn tcf_chain_get_by_act(block: *mut tcf_block, chain_index: u32) -> *mut tcf_chain;
     pub fn tcf_chain_put_by_act(chain: *mut tcf_chain);
@@ -103,8 +103,8 @@ pub struct tcf_exts {
 
 #[inline]
 pub unsafe fn tcf_exts_init(exts: *mut tcf_exts, net: *mut net, action: i32, police: i32) -> i32 {
-    #[cfg(feature = "CONFIG_NET_CLS")] { return tcf_exts_init_ex(exts, net, action, police, core::ptr::null_mut(), 0, false); }
-    #[cfg(not(feature = "CONFIG_NET_CLS"))] { let _ = (exts, net, action, police); return -EOPNOTSUPP; }
+    #[cfg(CONFIG_NET_CLS)] { return tcf_exts_init_ex(exts, net, action, police, core::ptr::null_mut(), 0, false); }
+    #[cfg(not(CONFIG_NET_CLS))] { let _ = (exts, net, action, police); return -EOPNOTSUPP; }
 }
 
 #[inline] pub unsafe fn tc_act_in_hw(act: *mut tc_action) -> bool { (*act).in_hw_count != 0 }
@@ -130,24 +130,24 @@ extern "C" {
 
 #[repr(C)] pub struct tcf_pkt_info { pub ptr: *mut u8, pub nexthdr: i32 }
 
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[repr(C)] pub struct tcf_ematch { pub ops: *mut tcf_ematch_ops, pub data: usize, pub datalen: u32, pub matchid: u16, pub flags: u16, pub net: *mut net }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[inline] pub unsafe fn tcf_em_is_container(em: *mut tcf_ematch) -> bool { (*em).ops.is_null() }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[inline] pub unsafe fn tcf_em_is_simple(em: *mut tcf_ematch) -> i32 { ((*em).flags & TCF_EM_SIMPLE) as i32 }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[inline] pub unsafe fn tcf_em_is_inverted(em: *mut tcf_ematch) -> i32 { ((*em).flags & TCF_EM_INVERT) as i32 }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[inline] pub unsafe fn tcf_em_last_match(em: *mut tcf_ematch) -> i32 { (((*em).flags & TCF_EM_REL_MASK) == TCF_EM_REL_END) as i32 }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[inline] pub unsafe fn tcf_em_early_end(em: *mut tcf_ematch, result: i32) -> i32 { if tcf_em_last_match(em) != 0 || (result == 0 && (*em).flags & TCF_EM_REL_AND != 0) || (result != 0 && (*em).flags & TCF_EM_REL_OR != 0) { 1 } else { 0 } }
 
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[repr(C)] pub struct tcf_ematch_tree { pub hdr: tcf_ematch_tree_hdr, pub matches: *mut tcf_ematch }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[repr(C)] pub struct tcf_ematch_ops { pub kind: i32, pub datalen: i32, pub change: Option<unsafe extern "C" fn(*mut net, *mut core::ffi::c_void, i32, *mut tcf_ematch) -> i32>, pub r#match: Option<unsafe extern "C" fn(*mut sk_buff, *mut tcf_ematch, *mut tcf_pkt_info) -> i32>, pub destroy: Option<unsafe extern "C" fn(*mut tcf_ematch)>, pub dump: Option<unsafe extern "C" fn(*mut sk_buff, *mut tcf_ematch) -> i32>, pub owner: *mut module, pub link: list_head }
-#[cfg(feature = "CONFIG_NET_EMATCH")]
+#[cfg(CONFIG_NET_EMATCH)]
 #[inline] pub unsafe fn tcf_em_tree_match(skb: *mut sk_buff, tree: *mut tcf_ematch_tree, info: *mut tcf_pkt_info) -> i32 { if (*tree).hdr.nmatches != 0 { __tcf_em_tree_match(skb, tree, info) } else { 1 } }
 
 #[inline] pub unsafe fn tcf_get_base_ptr(skb: *mut sk_buff, layer: i32) -> *mut u8 { match layer { TCF_LAYER_LINK => skb_mac_header(skb), TCF_LAYER_NETWORK => skb_network_header(skb), TCF_LAYER_TRANSPORT => if skb_transport_header_was_set(skb) { skb_transport_header(skb) } else { core::ptr::null_mut() }, _ => core::ptr::null_mut() } }

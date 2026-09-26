@@ -130,9 +130,9 @@ unsafe fn xive_spapr_shutdown(){plpar_int_reset(0);}
 unsafe fn xive_spapr_sync_source(hw_irq:u32){plpar_int_sync(0,hw_irq as usize);}
 
 // CONFIG_SMP-gated operations.
-#[cfg(feature="CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn xive_spapr_get_ipi(cpu:u32,xc:*mut XiveCpu)->i32{let irq=xive_irq_bitmap_alloc();if irq<0{return -ENXIO;}(*xc).hw_ipi=irq as u32;0}
-#[cfg(feature="CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn xive_spapr_put_ipi(_cpu:u32,xc:*mut XiveCpu){if (*xc).hw_ipi==XIVE_BAD_IRQ{return;}xive_irq_bitmap_free((*xc).hw_ipi as i32);(*xc).hw_ipi=XIVE_BAD_IRQ;}
 
 unsafe fn xive_spapr_setup_cpu(_cpu:u32,_xc:*mut XiveCpu){}

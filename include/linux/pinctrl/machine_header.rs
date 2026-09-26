@@ -133,7 +133,7 @@ macro_rules! PIN_MAP_CONFIGS_GROUP_HOG_DEFAULT { ($dev:expr, $grp:expr, $cfgs:ex
 pub struct device;
 
 /* CONFIG_PINCTRL conditional declarations. */
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 extern "C" {
     pub fn pinctrl_register_mappings(map: *const pinctrl_map, num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int;
     pub fn devm_pinctrl_register_mappings(dev: *mut device, map: *const pinctrl_map, num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int;
@@ -141,13 +141,13 @@ extern "C" {
     pub fn pinctrl_provide_dummies();
 }
 
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_register_mappings(_map: *const pinctrl_map, _num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn devm_pinctrl_register_mappings(_dev: *mut device, _map: *const pinctrl_map, _num_maps: ::core::ffi::c_uint) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_unregister_mappings(_map: *const pinctrl_map) {}
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 pub unsafe fn pinctrl_provide_dummies() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

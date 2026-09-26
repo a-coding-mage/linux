@@ -20,17 +20,17 @@ pub struct qcom_glink_smem {
 }
 
 // Build-time condition: IS_ENABLED(CONFIG_RPMSG_QCOM_GLINK).
-#[cfg(feature = "CONFIG_RPMSG_QCOM_GLINK")]
+#[cfg(CONFIG_RPMSG_QCOM_GLINK)]
 unsafe extern "C" {
     pub fn qcom_glink_ssr_notify(ssr_name: *const c_char);
 }
 
-#[cfg(not(feature = "CONFIG_RPMSG_QCOM_GLINK"))]
+#[cfg(not(CONFIG_RPMSG_QCOM_GLINK))]
 #[inline]
 pub unsafe fn qcom_glink_ssr_notify(_ssr_name: *const c_char) {}
 
 // Build-time condition: IS_ENABLED(CONFIG_RPMSG_QCOM_GLINK_SMEM).
-#[cfg(feature = "CONFIG_RPMSG_QCOM_GLINK_SMEM")]
+#[cfg(CONFIG_RPMSG_QCOM_GLINK_SMEM)]
 unsafe extern "C" {
     pub fn qcom_glink_smem_register(
         parent: *mut device,
@@ -39,7 +39,7 @@ unsafe extern "C" {
     pub fn qcom_glink_smem_unregister(glink: *mut qcom_glink_smem);
 }
 
-#[cfg(not(feature = "CONFIG_RPMSG_QCOM_GLINK_SMEM"))]
+#[cfg(not(CONFIG_RPMSG_QCOM_GLINK_SMEM))]
 #[inline]
 pub unsafe fn qcom_glink_smem_register(
     _parent: *mut device,
@@ -48,7 +48,7 @@ pub unsafe fn qcom_glink_smem_register(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_RPMSG_QCOM_GLINK_SMEM"))]
+#[cfg(not(CONFIG_RPMSG_QCOM_GLINK_SMEM))]
 #[inline]
 pub unsafe fn qcom_glink_smem_unregister(_glink: *mut qcom_glink_smem) {}
 

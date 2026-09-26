@@ -7,17 +7,17 @@
 // <asm/sibyte/sb1250.h>
 // <asm/sibyte/sb1250_int.h>
 
-#[cfg(feature = "CONFIG_SIBYTE_SENTOSA")]
+#[cfg(CONFIG_SIBYTE_SENTOSA)]
 pub const SIBYTE_BOARD_NAME: &str = "BCM91250E (Sentosa)";
 
-#[cfg(feature = "CONFIG_SIBYTE_RHONE")]
+#[cfg(CONFIG_SIBYTE_RHONE)]
 pub const SIBYTE_BOARD_NAME: &str = "BCM91125E (Rhone)";
 
 /* Generic bus chip selects */
-#[cfg(feature = "CONFIG_SIBYTE_RHONE")]
+#[cfg(CONFIG_SIBYTE_RHONE)]
 pub const LEDS_CS: i32 = 6;
 
-#[cfg(feature = "CONFIG_SIBYTE_RHONE")]
+#[cfg(CONFIG_SIBYTE_RHONE)]
 pub const LEDS_PHYS: u32 = 0x1d0a0000;
 
 /* GPIOs */

@@ -36,10 +36,10 @@ pub const fn cpu_scache_line_size() -> i32 {
 }
 
 // The C source selects this value using the build-time CONFIG_64BIT condition.
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const cpu_has_llsc: i32 = 0;
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub const cpu_has_llsc: i32 = 1;
 
 pub const cpu_has_mips16: i32 = 0;

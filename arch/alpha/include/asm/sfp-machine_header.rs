@@ -73,10 +73,10 @@ pub const _FP_KEEPNANFRACP: i32 = 1;
  * we should prefer any type of NaN in Fb, then Fa.
  */
 macro_rules! _FP_CHOOSENAN {
-    ($fs:ident, $wc:ident, $R:ident, $X:ident, $Y:ident, $OP:ident) => {{
-        $R##_s = $Y##_s;
+    ($fs:ident, $wc:ident, $R:tt, $X:ident, $Y:tt, $OP:ident) => {{
+        ::kernel::macros::paste!([<$R _s>]) = ::kernel::macros::paste!([<$Y _s>]);
         _FP_FRAC_COPY_$wc!($R, $X);
-        $R##_c = FP_CLS_NAN;
+        ::kernel::macros::paste!([<$R _c>]) = FP_CLS_NAN;
     }};
 }
 

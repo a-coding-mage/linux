@@ -79,7 +79,7 @@ unsafe fn tpm_dev_release(dev: *mut Device) {
     let chip = container_of!(dev, TpmChip, dev);
     mutex_lock(&mut IDR_LOCK); idr_remove(&mut DEV_NUMS_IDR, (*chip).dev_num); mutex_unlock(&mut IDR_LOCK);
     kfree((*chip).work_space.context_buf); kfree((*chip).work_space.session_buf);
-    #[cfg(feature = "CONFIG_TCG_TPM2_HMAC")] kfree_sensitive((*chip).auth);
+    #[cfg(CONFIG_TCG_TPM2_HMAC)] kfree_sensitive((*chip).auth);
     kfree(chip as *mut _);
 }
 
@@ -130,6 +130,6 @@ unsafe fn tpm_add_hwrng(chip: *mut TpmChip) -> i32 { if !tpm_is_hwrng_enabled(ch
 unsafe fn tpm_get_pcr_allocation(chip: *mut TpmChip) -> i32 { if tpm_is_firmware_upgrade(chip) { return 0; } let rc = if (*chip).flags & TPM_CHIP_FLAG_TPM2 != 0 { tpm2_get_pcr_allocation(chip) } else { tpm1_get_pcr_allocation(chip) }; if rc > 0 { -ENODEV } else { rc } }
 pub unsafe fn tpm_chip_bootstrap(chip: *mut TpmChip) -> i32 { if (*chip).flags & TPM_CHIP_FLAG_BOOTSTRAPPED != 0 { return 0; } let mut rc = tpm_chip_start(chip); if rc == 0 { rc = tpm_auto_startup(chip); if rc == 0 { rc = tpm_get_pcr_allocation(chip); } tpm_chip_stop(chip); } (*chip).flags |= TPM_CHIP_FLAG_BOOTSTRAPPED; rc }
 pub unsafe fn tpm_chip_register(chip: *mut TpmChip) -> i32 { let mut rc = tpm_chip_bootstrap(chip); if rc != 0 { return rc; } tpm_sysfs_add_device(chip); tpm_bios_log_setup(chip); tpm_add_ppi(chip); rc = tpm_add_hwrng(chip); if rc != 0 { tpm_bios_log_teardown(chip); return rc; } rc = tpm_add_char_device(chip); if rc != 0 { if tpm_is_hwrng_enabled(chip) { hwrng_unregister(&mut (*chip).hwrng); } tpm_bios_log_teardown(chip); return rc; } rc = tpm_add_legacy_sysfs(chip); if rc != 0 { tpm_chip_unregister(chip); } rc }
-pub unsafe fn tpm_chip_unregister(chip: *mut TpmChip) { #[cfg(feature = "CONFIG_TCG_TPM2_HMAC")] { if tpm_try_get_ops(chip) == 0 { tpm2_end_auth_session(chip); tpm_put_ops(chip); } } tpm_del_legacy_sysfs(chip); if tpm_is_hwrng_enabled(chip) { hwrng_unregister(&mut (*chip).hwrng); } tpm_bios_log_teardown(chip); if (*chip).flags & TPM_CHIP_FLAG_TPM2 != 0 && !tpm_is_firmware_upgrade(chip) { tpm_devs_remove(chip); } tpm_del_char_device(chip); }
+pub unsafe fn tpm_chip_unregister(chip: *mut TpmChip) { #[cfg(CONFIG_TCG_TPM2_HMAC)] { if tpm_try_get_ops(chip) == 0 { tpm2_end_auth_session(chip); tpm_put_ops(chip); } } tpm_del_legacy_sysfs(chip); if tpm_is_hwrng_enabled(chip) { hwrng_unregister(&mut (*chip).hwrng); } tpm_bios_log_teardown(chip); if (*chip).flags & TPM_CHIP_FLAG_TPM2 != 0 && !tpm_is_firmware_upgrade(chip) { tpm_devs_remove(chip); } tpm_del_char_device(chip); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

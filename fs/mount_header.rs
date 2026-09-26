@@ -20,9 +20,9 @@ pub struct mnt_namespace {
     pub poll: wait_queue_head_t,
     pub seq_origin: u64,
     pub event: u64,
-    #[cfg(feature = "CONFIG_FSNOTIFY")]
+    #[cfg(CONFIG_FSNOTIFY)]
     pub n_fsnotify_mask: u32,
-    #[cfg(feature = "CONFIG_FSNOTIFY")]
+    #[cfg(CONFIG_FSNOTIFY)]
     pub n_fsnotify_marks: *mut fsnotify_mark_connector,
     pub mnt_visible_mounts: hlist_head,
     pub nr_mounts: c_uint,
@@ -58,11 +58,11 @@ pub struct mount {
     pub mnt_mountpoint: *mut dentry,
     pub mnt: vfsmount,
     pub node: mount_node,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub mnt_pcp: *mut mnt_pcp,
-    #[cfg(not(feature = "CONFIG_SMP"))]
+    #[cfg(not(CONFIG_SMP))]
     pub mnt_count: c_int,
-    #[cfg(not(feature = "CONFIG_SMP"))]
+    #[cfg(not(CONFIG_SMP))]
     pub mnt_writers: c_int,
     pub mnt_mounts: list_head,
     pub mnt_child: list_head,
@@ -78,13 +78,13 @@ pub struct mount {
     pub mnt_ns: *mut mnt_namespace,
     pub mnt_mp: *mut mountpoint,
     pub mp_list: mount_mp_list,
-    #[cfg(feature = "CONFIG_FSNOTIFY")]
+    #[cfg(CONFIG_FSNOTIFY)]
     pub mnt_fsnotify_marks: *mut fsnotify_mark_connector,
-    #[cfg(feature = "CONFIG_FSNOTIFY")]
+    #[cfg(CONFIG_FSNOTIFY)]
     pub mnt_fsnotify_mask: u32,
-    #[cfg(feature = "CONFIG_FSNOTIFY")]
+    #[cfg(CONFIG_FSNOTIFY)]
     pub to_notify: list_head,
-    #[cfg(feature = "CONFIG_FSNOTIFY")]
+    #[cfg(CONFIG_FSNOTIFY)]
     pub prev_ns: *mut mnt_namespace,
     pub mnt_t_flags: c_int,
     pub mnt_id: c_int,
@@ -146,14 +146,14 @@ pub unsafe fn move_from_ns(mnt: *mut mount) {
 }
 pub unsafe fn to_mnt_ns(ns: *mut ns_common) -> *mut mnt_namespace { container_of!(ns, mnt_namespace, ns) }
 
-#[cfg(feature = "CONFIG_FSNOTIFY")]
+#[cfg(CONFIG_FSNOTIFY)]
 pub unsafe fn mnt_notify_add(m: *mut mount) {
     if (!(*m).mnt_ns.is_null() && !(*(*m).mnt_ns).n_fsnotify_marks.is_null()) ||
        (!(*m).prev_ns.is_null() && !(*(*m).prev_ns).n_fsnotify_marks.is_null()) {
         list_add_tail!(&mut (*m).to_notify, &mut notify_list);
     } else { (*m).prev_ns = (*m).mnt_ns; }
 }
-#[cfg(not(feature = "CONFIG_FSNOTIFY"))]
+#[cfg(not(CONFIG_FSNOTIFY))]
 pub unsafe fn mnt_notify_add(_m: *mut mount) {}
 
 #[repr(C)]

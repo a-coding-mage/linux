@@ -555,7 +555,7 @@ unsafe fn close_range_cloexec_syzbot() {
     ASSERT_GE!(pid, 0);
 
     if pid == 0 {
-        ret = unsafe { sys_close_range(3, !0_u32, CLOSE_RANGE_CLOEXEC) };
+        ret = unsafe { sys_close_range(3, !0u32, CLOSE_RANGE_CLOEXEC) };
         if ret != 0 {
             unsafe { exit(EXIT_FAILURE) };
         }
@@ -691,7 +691,7 @@ unsafe fn close_range_cloexec_unshare_syzbot() {
         ASSERT_GE!(pid, 0);
 
         if pid == 0 {
-            ret = unsafe { sys_close_range(3, !0_u32, CLOSE_RANGE_UNSHARE | CLOSE_RANGE_CLOEXEC) };
+            ret = unsafe { sys_close_range(3, !0u32, CLOSE_RANGE_UNSHARE | CLOSE_RANGE_CLOEXEC) };
             if ret != 0 {
                 unsafe { exit(EXIT_FAILURE) };
             }
@@ -789,7 +789,7 @@ unsafe fn close_range_bitmap_corruption() {
 
     if pid == 0 {
         /* unshare and truncate descriptor table down to 64 */
-        if unsafe { sys_close_range(64, !0_u32, CLOSE_RANGE_UNSHARE) } != 0 {
+        if unsafe { sys_close_range(64, !0u32, CLOSE_RANGE_UNSHARE) } != 0 {
             unsafe { exit(EXIT_FAILURE) };
         }
 

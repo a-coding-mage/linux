@@ -57,7 +57,7 @@ pub unsafe fn bpf_mmap_unlock_guard_get() -> *mut mmap_unlock_irq_work {
      * disabled context. Force the fallback code.
      */
     // if (IS_ENABLED(CONFIG_PREEMPT_RT))
-    #[cfg(feature = "CONFIG_PREEMPT_RT")]
+    #[cfg(CONFIG_PREEMPT_RT)]
     {
         return ERR_PTR(-EBUSY);
     }

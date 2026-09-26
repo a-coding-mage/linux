@@ -9,7 +9,7 @@
 
 // C headers and local headers are supplied by the surrounding kernel bindings.
 
-#[cfg(feature = "CONFIG_NFS_USE_KERNEL_DNS")]
+#[cfg(CONFIG_NFS_USE_KERNEL_DNS)]
 pub unsafe fn nfs_dns_resolve_name(
     net: *mut net,
     name: *mut ::std::os::raw::c_char,
@@ -29,12 +29,12 @@ pub unsafe fn nfs_dns_resolve_name(
     ret
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 const NFS_DNS_HASHBITS: u32 = 4;
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 const NFS_DNS_HASHTBL_SIZE: u32 = 1 << NFS_DNS_HASHBITS;
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 #[repr(C)]
 struct nfs_dns_ent {
     h: cache_head,
@@ -45,7 +45,7 @@ struct nfs_dns_ent {
     rcu_head: rcu_head,
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_ent_update(cnew: *mut cache_head, ckey: *mut cache_head) {
     let new = container_of!(cnew, nfs_dns_ent, h);
     let key = container_of!(ckey, nfs_dns_ent, h);
@@ -53,7 +53,7 @@ unsafe fn nfs_dns_ent_update(cnew: *mut cache_head, ckey: *mut cache_head) {
     (*new).addrlen = (*key).addrlen;
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_ent_init(cnew: *mut cache_head, ckey: *mut cache_head) {
     let new = container_of!(cnew, nfs_dns_ent, h);
     let key = container_of!(ckey, nfs_dns_ent, h);
@@ -68,20 +68,20 @@ unsafe fn nfs_dns_ent_init(cnew: *mut cache_head, ckey: *mut cache_head) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_ent_free_rcu(head: *mut rcu_head) {
     let item = container_of!(head, nfs_dns_ent, rcu_head);
     kfree((*item).hostname as *mut _);
     kfree(item as *mut _);
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_ent_put(r: *mut kref) {
     let item = container_of!(r, nfs_dns_ent, h.ref_);
     call_rcu(&mut (*item).rcu_head, nfs_dns_ent_free_rcu);
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_ent_alloc() -> *mut cache_head {
     let item = kmalloc_obj::<nfs_dns_ent>();
     if !item.is_null() {
@@ -93,17 +93,17 @@ unsafe fn nfs_dns_ent_alloc() -> *mut cache_head {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_hash(key: *const nfs_dns_ent) -> u32 { hash_str((*key).hostname, NFS_DNS_HASHBITS) }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_request(_cd: *mut cache_detail, ch: *mut cache_head, bpp: *mut *mut ::std::os::raw::c_char, blen: *mut i32) {
     let key = container_of!(ch, nfs_dns_ent, h);
     qword_add(bpp, blen, (*key).hostname);
     (*bpp).offset(-1).write(b'\n' as _);
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_upcall(cd: *mut cache_detail, ch: *mut cache_head) -> i32 {
     let key = container_of!(ch, nfs_dns_ent, h);
     if test_and_set_bit(CACHE_PENDING, &mut (*ch).flags) != 0 { return 0; }
@@ -112,29 +112,29 @@ unsafe fn nfs_dns_upcall(cd: *mut cache_detail, ch: *mut cache_head) -> i32 {
     sunrpc_cache_upcall_warn(cd, ch)
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_match(ca: *mut cache_head, cb: *mut cache_head) -> i32 {
     let a = container_of!(ca, nfs_dns_ent, h); let b = container_of!(cb, nfs_dns_ent, h);
     if (*a).namelen == 0 || (*a).namelen != (*b).namelen { return 0; }
     (memcmp((*a).hostname as *const _, (*b).hostname as *const _, (*a).namelen) == 0) as i32
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_lookup(cd: *mut cache_detail, key: *mut nfs_dns_ent) -> *mut nfs_dns_ent {
     let ch = sunrpc_cache_lookup_rcu(cd, &mut (*key).h, nfs_dns_hash(key));
     if ch.is_null() { core::ptr::null_mut() } else { container_of!(ch, nfs_dns_ent, h) }
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_ent_update_ref(cnew: *mut cache_head, ckey: *mut cache_head) { nfs_dns_ent_update(cnew, ckey); }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_update(cd: *mut cache_detail, new: *mut nfs_dns_ent, key: *mut nfs_dns_ent) -> *mut nfs_dns_ent {
     let ch = sunrpc_cache_update(cd, &mut (*new).h, &mut (*key).h, nfs_dns_hash(key));
     if ch.is_null() { core::ptr::null_mut() } else { container_of!(ch, nfs_dns_ent, h) }
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_parse(cd: *mut cache_detail, buf: *mut ::std::os::raw::c_char, buflen: i32) -> i32 {
     let mut buf1 = [0 as ::std::os::raw::c_char; NFS_DNS_HOSTNAME_MAXLEN as usize + 1];
     let mut key: nfs_dns_ent = core::mem::zeroed();
@@ -152,7 +152,7 @@ unsafe fn nfs_dns_parse(cd: *mut cache_detail, buf: *mut ::std::os::raw::c_char,
     cache_put(&mut (*item).h, cd); 0
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_show(m: *mut seq_file, _cd: *mut cache_detail, h: *mut cache_head) -> i32 {
     if h.is_null() { seq_puts(m, "# ip address      hostname        ttl\n"); return 0; }
     let item = container_of!(h, nfs_dns_ent, h); let mut ttl = (*item).h.expiry_time - seconds_since_boot(); if ttl < 0 { ttl = 0; }
@@ -160,12 +160,12 @@ unsafe fn nfs_dns_show(m: *mut seq_file, _cd: *mut cache_detail, h: *mut cache_h
     seq_printf(m, "%15s %ld\n", (*item).hostname, ttl); 0
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs4_dns_net_init(net: *mut net) -> i32 { nfs_dns_resolver_cache_init(net) }
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs4_dns_net_exit(net: *mut net) { nfs_dns_resolver_cache_destroy(net); }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn rpc_pipefs_event(nb: *mut notifier_block, event: u64, ptr: *mut core::ffi::c_void) -> i32 {
     let sb = ptr as *mut super_block; let net = (*sb).s_fs_info; let nn = net_generic(net, nfs_net_id); let cd = (*nn).nfs_dns_resolve; if cd.is_null() { return 0; }
     if try_module_get(THIS_MODULE) == 0 { return 0; }
@@ -173,7 +173,7 @@ unsafe fn rpc_pipefs_event(nb: *mut notifier_block, event: u64, ptr: *mut core::
     module_put(THIS_MODULE); ret
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 pub unsafe fn nfs_dns_resolve_name(net: *mut net, name: *mut ::std::os::raw::c_char, namelen: usize, ss: *mut sockaddr_storage, salen: usize) -> isize {
     let mut key: nfs_dns_ent = core::mem::zeroed(); key.hostname = name; key.namelen = namelen;
     let mut item = core::ptr::null_mut(); let nn = net_generic(net, nfs_net_id);
@@ -185,7 +185,7 @@ pub unsafe fn nfs_dns_resolve_name(net: *mut net, name: *mut ::std::os::raw::c_c
     ret
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn do_cache_lookup_wait(cd: *mut cache_detail, key: *mut nfs_dns_ent, item: *mut *mut nfs_dns_ent) -> isize {
     let dreq = nfs_cache_defer_req_alloc(); if dreq.is_null() { return -ENOMEM; }
     let mut ret = do_cache_lookup(cd, key, item, dreq);
@@ -193,25 +193,25 @@ unsafe fn do_cache_lookup_wait(cd: *mut cache_detail, key: *mut nfs_dns_ent, ite
     nfs_cache_defer_req_put(dreq); ret
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn do_cache_lookup(cd: *mut cache_detail, key: *mut nfs_dns_ent, item: *mut *mut nfs_dns_ent, dreq: *mut nfs_cache_defer_req) -> isize {
     *item = nfs_dns_lookup(cd, key); if !(*item).is_null() { let ret = cache_check(cd, &mut (**item).h, &mut (*dreq).req); if ret != 0 { *item = core::ptr::null_mut(); return ret as isize; } return 0; } -ENOMEM
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn do_cache_lookup_nowait(cd: *mut cache_detail, key: *mut nfs_dns_ent, item: *mut *mut nfs_dns_ent) -> isize {
     *item = nfs_dns_lookup(cd, key); if (*item).is_null() { return -ENOMEM; }
     if test_bit(CACHE_VALID, &(*(*item)).h.flags) == 0 || (*(*item)).h.expiry_time < seconds_since_boot() || (*cd).flush_time > (*(*item)).h.last_refresh { cache_put(&mut (*(*item)).h, cd); *item = core::ptr::null_mut(); return -ETIMEDOUT; }
     if test_bit(CACHE_NEGATIVE, &(*(*item)).h.flags) != 0 { cache_put(&mut (*(*item)).h, cd); *item = core::ptr::null_mut(); return -ENOENT; } 0
 }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_resolver_cache_init(net: *mut net) -> i32 { let nn = net_generic(net, nfs_net_id); (*nn).nfs_dns_resolve = cache_create_net(&mut nfs_dns_resolve_template, net); if IS_ERR((*nn).nfs_dns_resolve) { return PTR_ERR((*nn).nfs_dns_resolve); } let err = nfs_cache_register_net(net, (*nn).nfs_dns_resolve); if err != 0 { cache_destroy_net((*nn).nfs_dns_resolve, net); } err }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 unsafe fn nfs_dns_resolver_cache_destroy(net: *mut net) { let nn = net_generic(net, nfs_net_id); nfs_cache_unregister_net(net, (*nn).nfs_dns_resolve); cache_destroy_net((*nn).nfs_dns_resolve, net); }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 static mut nfs_dns_resolve_template: cache_detail = cache_detail {
     owner: THIS_MODULE, hash_size: NFS_DNS_HASHTBL_SIZE, name: b"dns_resolve\0".as_ptr() as _,
     cache_put: Some(nfs_dns_ent_put), cache_upcall: Some(nfs_dns_upcall), cache_request: Some(nfs_dns_request),
@@ -219,16 +219,16 @@ static mut nfs_dns_resolve_template: cache_detail = cache_detail {
     init: Some(nfs_dns_ent_init), update: Some(nfs_dns_ent_update_ref), alloc: Some(nfs_dns_ent_alloc),
 };
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 static mut nfs4_dns_resolver_ops: pernet_operations = pernet_operations { init: Some(nfs4_dns_net_init), exit: Some(nfs4_dns_net_exit) };
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 static mut nfs_dns_resolver_block: notifier_block = notifier_block { notifier_call: Some(rpc_pipefs_event) };
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 pub unsafe fn nfs_dns_resolver_init() -> i32 { let mut err = register_pernet_subsys(&mut nfs4_dns_resolver_ops); if err < 0 { return err; } err = rpc_pipefs_notifier_register(&mut nfs_dns_resolver_block); if err < 0 { unregister_pernet_subsys(&mut nfs4_dns_resolver_ops); } err }
 
-#[cfg(not(feature = "CONFIG_NFS_USE_KERNEL_DNS"))]
+#[cfg(not(CONFIG_NFS_USE_KERNEL_DNS))]
 pub unsafe fn nfs_dns_resolver_destroy() { rpc_pipefs_notifier_unregister(&mut nfs_dns_resolver_block); unregister_pernet_subsys(&mut nfs4_dns_resolver_ops); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

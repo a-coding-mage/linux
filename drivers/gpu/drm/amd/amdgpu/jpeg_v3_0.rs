@@ -91,7 +91,7 @@ unsafe fn jpeg_v3_0_sw_fini(ip_block: *mut amdgpu_ip_block) -> i32 {
 unsafe fn jpeg_v3_0_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     let ring = (*(*adev).jpeg.inst).ring_dec;
-    ((*adev).nbio.funcs->vcn_doorbell_range)(adev, (*ring).use_doorbell, (*adev).doorbell_index.vcn.vcn_ring0_1 << 1, 0);
+    ((*(*adev).nbio.funcs).vcn_doorbell_range)(adev, (*ring).use_doorbell, (*adev).doorbell_index.vcn.vcn_ring0_1 << 1, 0);
     amdgpu_ring_test_helper(ring)
 }
 
@@ -192,7 +192,7 @@ unsafe fn jpeg_v3_0_ring_reset(ring: *mut amdgpu_ring, _vmid: u32, timedout_fenc
 static jpeg_v3_0_ip_funcs: amd_ip_funcs = amd_ip_funcs { name: "jpeg_v3_0", early_init: jpeg_v3_0_early_init, sw_init: jpeg_v3_0_sw_init, sw_fini: jpeg_v3_0_sw_fini, hw_init: jpeg_v3_0_hw_init, hw_fini: jpeg_v3_0_hw_fini, suspend: jpeg_v3_0_suspend, resume: jpeg_v3_0_resume, is_idle: jpeg_v3_0_is_idle, wait_for_idle: jpeg_v3_0_wait_for_idle, set_clockgating_state: jpeg_v3_0_set_clockgating_state, set_powergating_state: jpeg_v3_0_set_powergating_state, dump_ip_state: amdgpu_jpeg_dump_ip_state, print_ip_state: amdgpu_jpeg_print_ip_state };
 
 static jpeg_v3_0_dec_ring_vm_funcs: amdgpu_ring_funcs = amdgpu_ring_funcs {
-    type: AMDGPU_RING_TYPE_VCN_JPEG, align_mask: 0xf, no_user_fence: true,
+    r#type: AMDGPU_RING_TYPE_VCN_JPEG, align_mask: 0xf, no_user_fence: true,
     get_rptr: jpeg_v3_0_dec_ring_get_rptr, get_wptr: jpeg_v3_0_dec_ring_get_wptr, set_wptr: jpeg_v3_0_dec_ring_set_wptr,
     parse_cs: amdgpu_jpeg_dec_parse_cs, emit_frame_size: SOC15_FLUSH_GPU_TLB_NUM_WREG * 6 + SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 8 + 8 + 18 + 18 + 8 + 16,
     emit_ib_size: 22, emit_ib: jpeg_v2_0_dec_ring_emit_ib, emit_fence: jpeg_v2_0_dec_ring_emit_fence, emit_vm_flush: jpeg_v2_0_dec_ring_emit_vm_flush,

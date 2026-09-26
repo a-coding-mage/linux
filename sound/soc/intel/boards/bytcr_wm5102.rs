@@ -25,7 +25,7 @@ pub struct byt_wm5102_private {
 }
 
 const fn bit(nr: c_uint) -> c_ulong {
-    1 as c_ulong << nr
+    (1 as c_ulong) << nr
 }
 
 const fn genmask(h: c_uint, l: c_uint) -> c_ulong {

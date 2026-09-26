@@ -40,10 +40,10 @@ pub const TSM_MR_F_RTMR: u32 = TSM_MR_F_LIVE | TSM_MR_F_WRITABLE;
 // supplied by the surrounding kernel translation.
 #[macro_export]
 macro_rules! TSM_MR_ {
-    ($mr:ident, $hash:ident) => {
+    ($mr:ident, $hash:tt) => {
         .mr_name = concat!(stringify!($mr), "\0").as_ptr() as *const core::ffi::c_char,
-        .mr_size = $hash##_DIGEST_SIZE,
-        .mr_hash = HASH_ALGO_##$hash,
+        .mr_size = ::kernel::macros::paste!([<$hash _DIGEST_SIZE>]),
+        .mr_hash = ::kernel::macros::paste!([<HASH_ALGO_ $hash>]),
         .mr_flags = TSM_MR_F_READABLE,
     };
 }

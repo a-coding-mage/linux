@@ -25,8 +25,8 @@ pub struct bug_entry {
 #[repr(C)] pub struct arch_va_list { _private: [u8; 0] }
 
 extern "C" {
-    static __start___bug_table: *mut bug_entry;
-    static __stop___bug_table: *mut bug_entry;
+    static __start___bug_table: [bug_entry; 0];
+    static __stop___bug_table: [bug_entry; 0];
     fn is_valid_bugaddr(bugaddr: usize) -> bool;
     fn kunit_is_suppressed_warning(value: bool) -> bool;
     fn disable_trace_on_warning();
@@ -106,8 +106,8 @@ unsafe fn bug_get_format(bug: *mut bug_entry) -> *const c_char {
 }
 
 pub unsafe fn find_bug(bugaddr: usize) -> *mut bug_entry {
-    let mut bug = __start___bug_table;
-    while bug < __stop___bug_table { if bugaddr == bug_addr(bug) { return bug; } bug = bug.add(1); }
+    let mut bug = __start___bug_table.as_ptr().cast_mut();
+    while bug < __stop___bug_table.as_ptr().cast_mut() { if bugaddr == bug_addr(bug) { return bug; } bug = bug.add(1); }
     module_find_bug(bugaddr)
 }
 
@@ -133,6 +133,6 @@ pub unsafe fn report_bug_entry(bug: *mut bug_entry, regs: *mut pt_regs) -> bug_t
 pub unsafe fn report_bug(bugaddr: usize, regs: *mut pt_regs) -> bug_trap_type { let r = warn_rcu_enter(); let ret = __report_bug(core::ptr::null_mut(), bugaddr, regs); warn_rcu_exit(r); ret }
 
 unsafe fn clear_once_table(mut start: *mut bug_entry, end: *mut bug_entry) { while start < end { (*start).flags &= !BUGFLAG_DONE; start = start.add(1); } }
-pub unsafe fn generic_bug_clear_once() { clear_once_table(__start___bug_table, __stop___bug_table); }
+pub unsafe fn generic_bug_clear_once() { clear_once_table(__start___bug_table.as_ptr().cast_mut(), __stop___bug_table.as_ptr().cast_mut()); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -77,7 +77,7 @@ pub unsafe fn polyval_preparekey_arch(key: *mut polyval_key, raw_key: *const u8)
 
 unsafe fn polyval_mul_arm64(a: *mut polyval_elem, b: *const polyval_elem) {
     if static_branch_likely(&have_asimd) && may_use_simd() {
-        static const ZEROES: [u8; crate::GHASH_BLOCK_SIZE] = [0; crate::GHASH_BLOCK_SIZE];
+        static ZEROES: [u8; crate::GHASH_BLOCK_SIZE] = [0; crate::GHASH_BLOCK_SIZE];
         if static_branch_likely(&have_pmull) {
             polyval_mul_pmull(a, b);
         } else {

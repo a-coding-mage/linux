@@ -5,13 +5,13 @@
 
 #[repr(C)]
 pub struct switch_stack {
-    #[cfg(feature = "CONFIG_CPU_HAS_HILO")]
+    #[cfg(CONFIG_CPU_HAS_HILO)]
     pub rhi: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_CPU_HAS_HILO")]
+    #[cfg(CONFIG_CPU_HAS_HILO)]
     pub rlo: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_CPU_HAS_HILO")]
+    #[cfg(CONFIG_CPU_HAS_HILO)]
     pub cr14: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_CPU_HAS_HILO")]
+    #[cfg(CONFIG_CPU_HAS_HILO)]
     pub pad: core::ffi::c_ulong,
 
     pub r4: core::ffi::c_ulong,

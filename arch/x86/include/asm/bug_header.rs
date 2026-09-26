@@ -72,7 +72,7 @@ macro_rules! WARN_CONDITION_STR { ($s:expr) => { "" }; }
 
 #[macro_export]
 macro_rules! _BUG_FLAGS { ($cond_str:expr, $ins:expr, $flags:expr, $extra:expr) => {{
-    unsafe { core::arch::asm!("1:\t{ins}", ins = const $ins, options(nostack, preserves_flags)); }
+    unsafe { core::arch::asm!("1:\t{ins}", $ins = const $ins, options(nostack, preserves_flags)); }
 }}; }
 
 pub const HAVE_ARCH_BUG: bool = true;

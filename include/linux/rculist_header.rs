@@ -26,17 +26,17 @@ macro_rules! list_for_each_rcu {
 }
 
 #[inline] pub fn check_arg_count_one<T>(_dummy: T) {}
-#[cfg(feature = "CONFIG_PROVE_RCU_LIST")]
+#[cfg(CONFIG_PROVE_RCU_LIST)]
 #[inline] pub unsafe fn __list_check_rcu<C>(_dummy: C, cond: bool) {
     RCU_LOCKDEP_WARN(!cond && !rcu_read_lock_any_held(), "RCU-list traversed in non-reader section!");
 }
-#[cfg(not(feature = "CONFIG_PROVE_RCU_LIST"))]
+#[cfg(not(CONFIG_PROVE_RCU_LIST))]
 #[inline] pub fn __list_check_rcu<C>(_dummy: C, _cond: bool) {}
-#[cfg(feature = "CONFIG_PROVE_RCU_LIST")]
+#[cfg(CONFIG_PROVE_RCU_LIST)]
 #[inline] pub unsafe fn __list_check_srcu(cond: bool) {
     RCU_LOCKDEP_WARN(!cond, "RCU-list traversed without holding the required lock!");
 }
-#[cfg(not(feature = "CONFIG_PROVE_RCU_LIST"))]
+#[cfg(not(CONFIG_PROVE_RCU_LIST))]
 #[inline] pub fn __list_check_srcu(_cond: bool) {}
 
 #[inline]

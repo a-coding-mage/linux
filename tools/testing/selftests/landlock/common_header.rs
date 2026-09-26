@@ -314,8 +314,8 @@ unsafe fn regex_escape(
 
     while *s != 0 {
         match *s {
-            b'$' as c_char | b'*' as c_char | b'.' as c_char | b'[' as c_char
-            | b'\\' as c_char | b']' as c_char | b'^' as c_char => {
+            case if case == b'$' as c_char || case == b'*' as c_char || case == b'.' as c_char || case == b'[' as c_char
+            | b'\\' as c_char | b']' as c_char || case == b'^' as c_char => {
                 if d >= dst.add(dst_size).sub(2) {
                     return -(ENOMEM as isize) as *mut c_char;
                 }

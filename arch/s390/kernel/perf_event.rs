@@ -24,11 +24,11 @@ unsafe fn is_in_guest(regs: *mut pt_regs) -> bool {
         return false;
     }
     // Preserve CONFIG_KVM conditional intent from the original source.
-    #[cfg(feature = "CONFIG_KVM")]
+    #[cfg(CONFIG_KVM)]
     {
         return instruction_pointer(regs) == sie_exit as usize;
     }
-    #[cfg(not(feature = "CONFIG_KVM"))]
+    #[cfg(not(CONFIG_KVM))]
     {
         false
     }

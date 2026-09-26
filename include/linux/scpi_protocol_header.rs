@@ -88,12 +88,12 @@ pub struct scpi_ops {
 }
 
 // Build-time condition preserved from IS_REACHABLE(CONFIG_ARM_SCPI_PROTOCOL).
-#[cfg(feature = "CONFIG_ARM_SCPI_PROTOCOL")]
+#[cfg(CONFIG_ARM_SCPI_PROTOCOL)]
 extern "C" {
     pub fn get_scpi_ops() -> *mut scpi_ops;
 }
 
-#[cfg(not(feature = "CONFIG_ARM_SCPI_PROTOCOL"))]
+#[cfg(not(CONFIG_ARM_SCPI_PROTOCOL))]
 #[inline]
 pub fn get_scpi_ops() -> *mut scpi_ops {
     core::ptr::null_mut()

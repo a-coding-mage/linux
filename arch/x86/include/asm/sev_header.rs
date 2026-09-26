@@ -36,7 +36,7 @@ pub const CC_BLOB_SEV_HDR_MAGIC: u32 = 0x45444d41;
 #[repr(C, packed)]
 pub struct CcBlobSevInfo { pub magic: u32, pub version: u16, pub reserved: u16, pub secrets_phys: u64, pub secrets_len: u32, pub rsvd1: u32, pub cpuid_phys: u64, pub cpuid_len: u32, pub rsvd2: u32 }
 
-pub unsafe extern "C" { pub fn do_vc_no_ghcb(regs: *mut PtRegs, exit_code: usize); }
+unsafe extern "C" { pub fn do_vc_no_ghcb(regs: *mut PtRegs, exit_code: usize); }
 
 #[inline]
 pub const fn lower_bits(val: u64, bits: u32) -> u64 { val & ((1u64 << bits) - 1) }

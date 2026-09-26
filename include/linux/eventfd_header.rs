@@ -27,7 +27,7 @@ pub struct eventfd_ctx;
 pub struct file;
 
 // CONFIG_EVENTFD selects the declaration branch below.
-#[cfg(feature = "CONFIG_EVENTFD")]
+#[cfg(CONFIG_EVENTFD)]
 extern "C" {
     pub fn eventfd_ctx_put(ctx: *mut eventfd_ctx);
     pub fn eventfd_fget(fd: i32) -> *mut file;
@@ -42,28 +42,28 @@ extern "C" {
     pub fn eventfd_ctx_do_read(ctx: *mut eventfd_ctx, cnt: *mut __u64);
 }
 
-#[cfg(feature = "CONFIG_EVENTFD")]
+#[cfg(CONFIG_EVENTFD)]
 #[inline]
 pub unsafe fn eventfd_signal_allowed() -> bool {
     !(*current).in_eventfd
 }
 
 // !CONFIG_EVENTFD error-layer definitions.
-#[cfg(not(feature = "CONFIG_EVENTFD"))]
+#[cfg(not(CONFIG_EVENTFD))]
 #[inline]
 pub unsafe fn eventfd_ctx_fdget(_fd: i32) -> *mut eventfd_ctx {
     ERR_PTR(-(ENOSYS as isize))
 }
 
-#[cfg(not(feature = "CONFIG_EVENTFD"))]
+#[cfg(not(CONFIG_EVENTFD))]
 #[inline]
 pub unsafe fn eventfd_signal_mask(_ctx: *mut eventfd_ctx, _mask: __poll_t) {}
 
-#[cfg(not(feature = "CONFIG_EVENTFD"))]
+#[cfg(not(CONFIG_EVENTFD))]
 #[inline]
 pub unsafe fn eventfd_ctx_put(_ctx: *mut eventfd_ctx) {}
 
-#[cfg(not(feature = "CONFIG_EVENTFD"))]
+#[cfg(not(CONFIG_EVENTFD))]
 #[inline]
 pub unsafe fn eventfd_ctx_remove_wait_queue(
     _ctx: *mut eventfd_ctx,
@@ -73,13 +73,13 @@ pub unsafe fn eventfd_ctx_remove_wait_queue(
     -(ENOSYS as i32)
 }
 
-#[cfg(not(feature = "CONFIG_EVENTFD"))]
+#[cfg(not(CONFIG_EVENTFD))]
 #[inline]
 pub unsafe fn eventfd_signal_allowed() -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_EVENTFD"))]
+#[cfg(not(CONFIG_EVENTFD))]
 #[inline]
 pub unsafe fn eventfd_ctx_do_read(_ctx: *mut eventfd_ctx, _cnt: *mut __u64) {}
 

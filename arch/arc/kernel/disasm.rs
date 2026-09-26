@@ -3,7 +3,7 @@
 
 // Linux dependencies and configuration conditions are supplied by the surrounding kernel.
 
-#[cfg(any(feature = "CONFIG_KGDB", feature = "CONFIG_ARC_EMUL_UNALIGNED", feature = "CONFIG_KPROBES"))]
+#[cfg(any(CONFIG_KGDB, CONFIG_ARC_EMUL_UNALIGNED, CONFIG_KPROBES))]
 pub unsafe fn disasm_instr(addr: usize, state: *mut disasm_state, userspace: i32,
                            regs: *mut pt_regs, cregs: *mut callee_regs) {
     let mut field_a: i32 = 0;

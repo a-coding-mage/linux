@@ -12,7 +12,7 @@ pub const DEVCG_DEV_CHAR: i16 = 2;
 pub const DEVCG_DEV_ALL: i16 = 4; /* this represents all devices */
 
 // Original condition: CONFIG_CGROUP_DEVICE || CONFIG_CGROUP_BPF.
-#[cfg(any(feature = "CONFIG_CGROUP_DEVICE", feature = "CONFIG_CGROUP_BPF"))]
+#[cfg(any(CONFIG_CGROUP_DEVICE, CONFIG_CGROUP_BPF))]
 extern "C" {
     pub fn devcgroup_check_permission(
         type_: i16,
@@ -22,7 +22,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(any(feature = "CONFIG_CGROUP_DEVICE", feature = "CONFIG_CGROUP_BPF"))]
+#[cfg(any(CONFIG_CGROUP_DEVICE, CONFIG_CGROUP_BPF))]
 #[inline]
 pub unsafe fn devcgroup_inode_permission(inode: *mut inode, mask: i32) -> i32 {
     let mut access: i16 = 0;
@@ -53,7 +53,7 @@ pub unsafe fn devcgroup_inode_permission(inode: *mut inode, mask: i32) -> i32 {
     devcgroup_check_permission(type_, imajor(inode), iminor(inode), access)
 }
 
-#[cfg(any(feature = "CONFIG_CGROUP_DEVICE", feature = "CONFIG_CGROUP_BPF"))]
+#[cfg(any(CONFIG_CGROUP_DEVICE, CONFIG_CGROUP_BPF))]
 #[inline]
 pub unsafe fn devcgroup_inode_mknod(mode: i32, dev: dev_t) -> i32 {
     let type_: i16;
@@ -76,19 +76,19 @@ pub unsafe fn devcgroup_inode_mknod(mode: i32, dev: dev_t) -> i32 {
 }
 
 // Original condition: neither CONFIG_CGROUP_DEVICE nor CONFIG_CGROUP_BPF.
-#[cfg(not(any(feature = "CONFIG_CGROUP_DEVICE", feature = "CONFIG_CGROUP_BPF")))]
+#[cfg(not(any(CONFIG_CGROUP_DEVICE, CONFIG_CGROUP_BPF)))]
 #[inline]
 pub unsafe fn devcgroup_check_permission(_type_: i16, _major: u32, _minor: u32, _access: i16) -> i32 {
     0
 }
 
-#[cfg(not(any(feature = "CONFIG_CGROUP_DEVICE", feature = "CONFIG_CGROUP_BPF")))]
+#[cfg(not(any(CONFIG_CGROUP_DEVICE, CONFIG_CGROUP_BPF)))]
 #[inline]
 pub unsafe fn devcgroup_inode_permission(_inode: *mut inode, _mask: i32) -> i32 {
     0
 }
 
-#[cfg(not(any(feature = "CONFIG_CGROUP_DEVICE", feature = "CONFIG_CGROUP_BPF")))]
+#[cfg(not(any(CONFIG_CGROUP_DEVICE, CONFIG_CGROUP_BPF)))]
 #[inline]
 pub unsafe fn devcgroup_inode_mknod(_mode: i32, _dev: dev_t) -> i32 {
     0

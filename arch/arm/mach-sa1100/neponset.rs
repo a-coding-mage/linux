@@ -113,7 +113,7 @@ unsafe extern "C" fn neponset_remove(dev: *mut PlatformDevice) {
     NEP = core::ptr::null_mut();
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn neponset_resume(dev: *mut Device) -> i32 {
     let _ = dev;
     let mut ret = 0;

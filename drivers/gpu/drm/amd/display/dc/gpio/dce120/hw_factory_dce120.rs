@@ -45,8 +45,8 @@ static DDC_DATA_REGS: [ddc_registers; 8] = [
     ddc_data_regs!(4),
     ddc_data_regs!(5),
     ddc_data_regs!(6),
-    ddc_vga_data_regs!,
-    ddc_i2c_data_regs!,
+    ddc_vga_data_regs!(),
+    ddc_i2c_data_regs!(),
 ];
 
 static DDC_CLK_REGS: [ddc_registers; 8] = [
@@ -56,8 +56,8 @@ static DDC_CLK_REGS: [ddc_registers; 8] = [
     ddc_clk_regs!(4),
     ddc_clk_regs!(5),
     ddc_clk_regs!(6),
-    ddc_vga_clk_regs!,
-    ddc_i2c_clk_regs!,
+    ddc_vga_clk_regs!(),
+    ddc_i2c_clk_regs!(),
 ];
 
 static DDC_SHIFT: ddc_sh_mask = DDC_MASK_SH_LIST!(__SHIFT);

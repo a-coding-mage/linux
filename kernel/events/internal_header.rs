@@ -8,9 +8,9 @@ pub const RING_BUFFER_WRITABLE: u32 = 0x01;
 pub struct perf_buffer {
     pub refcount: refcount_t,
     pub rcu_head: rcu_head,
-    #[cfg(feature = "CONFIG_PERF_USE_VMALLOC")]
+    #[cfg(CONFIG_PERF_USE_VMALLOC)]
     pub work: work_struct,
-    #[cfg(feature = "CONFIG_PERF_USE_VMALLOC")]
+    #[cfg(CONFIG_PERF_USE_VMALLOC)]
     pub page_order: i32,
     pub nr_pages: i32,
     pub overwrite: i32,
@@ -81,10 +81,10 @@ pub unsafe fn rb_toggle_paused(rb: *mut perf_buffer, pause: bool) {
 
 pub unsafe fn rb_has_aux(rb: *mut perf_buffer) -> bool { (*rb).aux_nr_pages != 0 }
 
-#[cfg(feature = "CONFIG_PERF_USE_VMALLOC")]
+#[cfg(CONFIG_PERF_USE_VMALLOC)]
 pub unsafe fn page_order(rb: *mut perf_buffer) -> i32 { (*rb).page_order }
 
-#[cfg(not(feature = "CONFIG_PERF_USE_VMALLOC"))]
+#[cfg(not(CONFIG_PERF_USE_VMALLOC))]
 pub unsafe fn page_order(_rb: *mut perf_buffer) -> i32 { 0 }
 
 pub unsafe fn data_page_nr(rb: *mut perf_buffer) -> i32 {
@@ -170,16 +170,16 @@ pub unsafe fn put_recursion_context(recursion: *mut u8, rctx: u8) {
     *recursion.add(rctx as usize) -= 1;
 }
 
-#[cfg(feature = "CONFIG_HAVE_PERF_USER_STACK_DUMP")]
+#[cfg(CONFIG_HAVE_PERF_USER_STACK_DUMP)]
 pub fn arch_perf_have_user_stack_dump() -> bool { true }
 
-#[cfg(not(feature = "CONFIG_HAVE_PERF_USER_STACK_DUMP"))]
+#[cfg(not(CONFIG_HAVE_PERF_USER_STACK_DUMP))]
 pub fn arch_perf_have_user_stack_dump() -> bool { false }
 
-#[cfg(feature = "CONFIG_HAVE_PERF_USER_STACK_DUMP")]
+#[cfg(CONFIG_HAVE_PERF_USER_STACK_DUMP)]
 pub unsafe fn perf_user_stack_pointer(regs: *mut c_void) -> usize { user_stack_pointer(regs) }
 
-#[cfg(not(feature = "CONFIG_HAVE_PERF_USER_STACK_DUMP"))]
+#[cfg(not(CONFIG_HAVE_PERF_USER_STACK_DUMP))]
 pub unsafe fn perf_user_stack_pointer(_regs: *mut c_void) -> usize { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

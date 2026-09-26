@@ -156,7 +156,7 @@ unsafe fn arc_pmu_add(event: *mut perf_event, flags: c_int) -> c_int { let cpu =
 #[repr(C)] pub struct platform_driver { _opaque: [u8; 0] }
 static ARC_PMU_MATCH: [of_device_id; 3] = [of_device_id { compatible: b"snps,arc700-pct\0".as_ptr() as _ }, of_device_id { compatible: b"snps,archs-pct\0".as_ptr() as _ }, of_device_id { compatible: core::ptr::null() }];
 
-#[cfg(feature = "CONFIG_ISA_ARCV2")]
+#[cfg(CONFIG_ISA_ARCV2)]
 unsafe extern "C" fn arc_pmu_intr(_: c_int, _: *mut c_void) -> irqreturn_t {
     arc_pmu_disable(&mut (*arc_pmu).pmu);
     let mut active = read_aux_reg(ARC_REG_PCT_INT_ACT);
@@ -180,7 +180,7 @@ unsafe extern "C" fn arc_pmu_intr(_: c_int, _: *mut c_void) -> irqreturn_t {
     IRQ_HANDLED
 }
 
-#[cfg(not(feature = "CONFIG_ISA_ARCV2"))]
+#[cfg(not(CONFIG_ISA_ARCV2))]
 unsafe extern "C" fn arc_pmu_intr(_: c_int, _: *mut c_void) -> irqreturn_t { IRQ_NONE }
 
 unsafe extern "C" fn arc_cpu_pmu_irq_init(data: *mut c_void) {

@@ -21,12 +21,12 @@ pub struct netns_smc {
     pub limit_smc_hs: bool, /* constraint on handshake */
 
     // #ifdef CONFIG_SYSCTL
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub smc_hdr: *mut ctl_table_header,
     // #endif
 
     // #if IS_ENABLED(CONFIG_SMC_HS_CTRL_BPF)
-    #[cfg(feature = "CONFIG_SMC_HS_CTRL_BPF")]
+    #[cfg(CONFIG_SMC_HS_CTRL_BPF)]
     pub hs_ctrl: *mut smc_hs_ctrl,
     // #endif /* CONFIG_SMC_HS_CTRL_BPF */
 

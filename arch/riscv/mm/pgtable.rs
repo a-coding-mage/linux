@@ -66,15 +66,15 @@ pub unsafe fn p4d_offset(pgd: *mut pgd_t, address: c_ulong) -> *mut p4d_t {
 
 // EXPORT_SYMBOL_GPL(p4d_offset);
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn p4d_set_huge(_p4d: *mut p4d_t, _addr: phys_addr_t, _prot: pgprot_t) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn p4d_clear_huge(_p4d: *mut p4d_t) {}
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn pud_set_huge(pud: *mut pud_t, phys: phys_addr_t, prot: pgprot_t) -> c_int {
     let new_pud = pfn_pud(__phys_to_pfn(phys), prot);
 
@@ -82,7 +82,7 @@ pub unsafe fn pud_set_huge(pud: *mut pud_t, phys: phys_addr_t, prot: pgprot_t) -
     1
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn pud_clear_huge(pud: *mut pud_t) -> c_int {
     if !pud_leaf(pudp_get(pud)) {
         return 0;
@@ -91,7 +91,7 @@ pub unsafe fn pud_clear_huge(pud: *mut pud_t) -> c_int {
     1
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn pud_free_pmd_page(pud: *mut pud_t, addr: c_ulong) -> c_int {
     let pmd = pud_pgtable(pudp_get(pud));
 
@@ -112,7 +112,7 @@ pub unsafe fn pud_free_pmd_page(pud: *mut pud_t, addr: c_ulong) -> c_int {
     1
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn pmd_set_huge(pmd: *mut pmd_t, phys: phys_addr_t, prot: pgprot_t) -> c_int {
     let new_pmd = pfn_pmd(__phys_to_pfn(phys), prot);
 
@@ -120,7 +120,7 @@ pub unsafe fn pmd_set_huge(pmd: *mut pmd_t, phys: phys_addr_t, prot: pgprot_t) -
     1
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn pmd_clear_huge(pmd: *mut pmd_t) -> c_int {
     if !pmd_leaf(pmdp_get(pmd)) {
         return 0;
@@ -129,7 +129,7 @@ pub unsafe fn pmd_clear_huge(pmd: *mut pmd_t) -> c_int {
     1
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_HUGE_VMAP")]
+#[cfg(CONFIG_HAVE_ARCH_HUGE_VMAP)]
 pub unsafe fn pmd_free_pte_page(pmd: *mut pmd_t, addr: c_ulong) -> c_int {
     let pte = pmd_page_vaddr(pmdp_get(pmd)) as *mut pte_t;
 
@@ -140,7 +140,7 @@ pub unsafe fn pmd_free_pte_page(pmd: *mut pmd_t, addr: c_ulong) -> c_int {
     1
 }
 
-#[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+#[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
 pub unsafe fn pmdp_collapse_flush(
     vma: *mut vm_area_struct,
     address: c_ulong,
@@ -162,7 +162,7 @@ pub unsafe fn pmdp_collapse_flush(
     pmd
 }
 
-#[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+#[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
 pub unsafe fn pudp_invalidate(
     vma: *mut vm_area_struct,
     address: c_ulong,

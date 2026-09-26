@@ -42,8 +42,7 @@ extern "C" {
     fn of_find_compatible_node(
         from: *mut device_node,
         ty: *const c_char,
-        compatible: *const c_char,
-    ) -> *mut device_node;
+        compatible: *const c_char) -> *mut device_node;
     fn of_find_device_by_node(np: *mut device_node) -> *mut platform_device;
     fn gen_pool_get(dev: *mut device, name: *const c_char) -> *mut gen_pool;
     fn gen_pool_alloc(pool: *mut gen_pool, size: usize) -> c_ulong;

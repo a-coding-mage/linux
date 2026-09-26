@@ -74,11 +74,11 @@ unsafe fn page_table_size(_: usize) -> usize { 0 }
 #[inline]
 unsafe fn pfn_align(v: usize) -> usize { (v + PAGE_SIZE - 1) & PAGE_MASK }
 
-#[cfg(feature = "CONFIG_MICROCODE_INITRD32")]
+#[cfg(CONFIG_MICROCODE_INITRD32)]
 static mut initrd_start_early: usize = 0;
-#[cfg(feature = "CONFIG_MICROCODE_INITRD32")]
+#[cfg(CONFIG_MICROCODE_INITRD32)]
 static mut initrd_pl2p_start: *mut pte_t = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_MICROCODE_INITRD32")]
+#[cfg(CONFIG_MICROCODE_INITRD32)]
 static mut initrd_pl2p_end: *mut pte_t = core::ptr::null_mut();
 
 unsafe fn i386_default_early_setup() {
@@ -88,18 +88,18 @@ unsafe fn i386_default_early_setup() {
         Some(setup_ioapic_ids_from_mpc);
 }
 
-#[cfg(feature = "CONFIG_MICROCODE_INITRD32")]
+#[cfg(CONFIG_MICROCODE_INITRD32)]
 unsafe fn zap_early_initrd_mapping() {
     let mut pl2p = initrd_pl2p_start;
     while pl2p < initrd_pl2p_end {
         (*pl2p).pte = 0;
-        if !cfg!(feature = "CONFIG_X86_PAE") {
+        if !cfg!(CONFIG_X86_PAE) {
             (*pl2p.add(PAGE_OFFSET >> PGDIR_SHIFT)).pte = 0;
         }
         pl2p = pl2p.add(1);
     }
 }
-#[cfg(not(feature = "CONFIG_MICROCODE_INITRD32"))]
+#[cfg(not(CONFIG_MICROCODE_INITRD32))]
 #[inline]
 unsafe fn zap_early_initrd_mapping() {}
 
@@ -123,7 +123,7 @@ unsafe fn init_map(mut pte: pte_t, ptep: &mut *mut pte_t, pl2p: &mut *mut usize,
     while (pte.pte & PTE_PFN_MASK) < limit {
         let pl2 = *ptep as usize | PDE_IDENT_ATTR;
         *pl2p = pl2;
-        if !cfg!(feature = "CONFIG_X86_PAE") {
+        if !cfg!(CONFIG_X86_PAE) {
             *(*pl2p).add(PAGE_OFFSET >> PGDIR_SHIFT) = pl2;
         }
         for _ in 0..PTRS_PER_PTE {
@@ -147,7 +147,7 @@ pub unsafe extern "C" fn mk_early_pgtbl_32() {
     let ptr = __pa_nodebug(core::ptr::addr_of!(_brk_end)) as *mut usize;
     *ptr = ptep as usize + PAGE_OFFSET;
 
-    #[cfg(feature = "CONFIG_MICROCODE_INITRD32")]
+    #[cfg(CONFIG_MICROCODE_INITRD32)]
     {
         let params = core::ptr::addr_of!(boot_params);
         if (*params).hdr.ramdisk_size == 0 || (*params).hdr.ramdisk_image == 0 {

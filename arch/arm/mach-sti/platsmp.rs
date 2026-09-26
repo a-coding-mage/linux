@@ -57,7 +57,7 @@ unsafe fn sti_smp_prepare_cpus(max_cpus: u32) {
     }
 
     // for_each_possible_cpu(cpu)
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         np = of_get_cpu_node(cpu, core::ptr::null_mut());
 
         if np.is_null() {
@@ -91,12 +91,12 @@ unsafe fn sti_smp_prepare_cpus(max_cpus: u32) {
         }
 
         set_cpu_possible(cpu, true);
-    }
+    });
 }
 
 pub static sti_smp_ops: smp_operations = smp_operations {
-    .smp_prepare_cpus: Some(sti_smp_prepare_cpus),
-    .smp_boot_secondary: Some(sti_boot_secondary),
+    smp_prepare_cpus: Some(sti_smp_prepare_cpus),
+    smp_boot_secondary: Some(sti_boot_secondary),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

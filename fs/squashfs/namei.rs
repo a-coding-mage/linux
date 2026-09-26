@@ -212,8 +212,8 @@ pub struct inode_operations {
 
 #[no_mangle]
 pub static squashfs_dir_inode_ops: inode_operations = inode_operations {
-    .lookup: Some(squashfs_lookup),
-    .listxattr: Some(squashfs_listxattr),
+    lookup: Some(squashfs_lookup),
+    listxattr: Some(squashfs_listxattr),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

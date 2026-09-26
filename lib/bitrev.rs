@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-only
-//
-// Dependencies supplied by the Linux kernel: linux/types.h, linux/module.h,
-// and linux/bitrev.h.
+//! The immutable byte-reversal table shared with generic C bit-reversal callers.
+//!
+//! Only the native owner imports this definition. Pure Rust callers import the
+//! translated header helpers, which do not define a second table or export.
 
-// MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
-// MODULE_DESCRIPTION("Bit ordering reversal functions");
-// MODULE_LICENSE("GPL");
-
+/// Original 256-byte lookup table, with its exact C linkage and array layout.
+#[rustfmt::skip]
+#[allow(non_upper_case_globals)]
+#[no_mangle]
 pub static byte_rev_table: [u8; 256] = [
 	0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
 	0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
@@ -41,7 +42,5 @@ pub static byte_rev_table: [u8; 256] = [
 	0x0f, 0x8f, 0x4f, 0xcf, 0x2f, 0xaf, 0x6f, 0xef,
 	0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff,
 ];
-
-// EXPORT_SYMBOL_GPL(byte_rev_table);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -218,7 +218,7 @@ pub unsafe fn __drm_sched_pending_job_iter_end(iter: drm_sched_pending_job_iter)
 #[macro_export]
 macro_rules! drm_sched_for_each_pending_job {
     ($job:expr, $sched:expr, $entity:expr) => {
-        /* Iterate ($sched).pending_list, filtering by entity when non-null. */
+        /* Iterate ($sched).pending_list, filtering by $entity when non-null. */
     };
 }
 

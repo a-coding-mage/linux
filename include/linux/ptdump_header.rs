@@ -73,7 +73,7 @@ extern "C" {
 
 pub unsafe fn debug_checkwx() {
     /* CONFIG_DEBUG_WX is a build-time condition supplied by the surrounding build. */
-    if cfg!(feature = "CONFIG_DEBUG_WX") {
+    if cfg!(CONFIG_DEBUG_WX) {
         ptdump_check_wx();
     }
 }

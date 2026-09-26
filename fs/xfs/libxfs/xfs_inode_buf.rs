@@ -63,7 +63,7 @@ pub unsafe fn xfs_inode_from_disk(ip: *mut xfs_inode, from: *mut xfs_dinode) -> 
     (*inode).i_generation = be32_to_cpu((*from).di_gen); (*inode).i_mode = be16_to_cpu((*from).di_mode);
     if (*inode).i_mode == 0 { return 0; }
     if (*from).di_version == 1 { set_nlink(inode, be16_to_cpu((*from).di_metatype)); (*ip).i_projid = 0; }
-    else { set_nlink(inode, be32_to_cpu((*from).di_nlink)); (*ip).i_projid = (be16_to_cpu((*from).di_projid_hi) as u32 << 16) | be16_to_cpu((*from).di_projid_lo) as u32; if xfs_dinode_is_metadir(from) { (*ip).i_metatype = be16_to_cpu((*from).di_metatype); } }
+    else { set_nlink(inode, be32_to_cpu((*from).di_nlink)); (*ip).i_projid = ((be16_to_cpu((*from).di_projid_hi) as u32) << 16) | be16_to_cpu((*from).di_projid_lo) as u32; if xfs_dinode_is_metadir(from) { (*ip).i_metatype = be16_to_cpu((*from).di_metatype); } }
     i_uid_write(inode, be32_to_cpu((*from).di_uid)); i_gid_write(inode, be32_to_cpu((*from).di_gid));
     inode_set_atime_to_ts(inode, xfs_inode_from_disk_ts(from, (*from).di_atime));
     inode_set_mtime_to_ts(inode, xfs_inode_from_disk_ts(from, (*from).di_mtime));

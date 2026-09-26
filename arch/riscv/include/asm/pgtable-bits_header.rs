@@ -18,7 +18,7 @@ pub const _PAGE_SOFT: usize = 3 << 8; // Reserved for software
 pub const _PAGE_SPECIAL: usize = 1 << 8; // RSW: 0x1
 
 /* CONFIG_MEM_SOFT_DIRTY */
-#[cfg(feature = "CONFIG_MEM_SOFT_DIRTY")]
+#[cfg(CONFIG_MEM_SOFT_DIRTY)]
 pub fn _PAGE_SOFT_DIRTY() -> usize {
     // ext_svrsw60t59b: bit 59 for soft-dirty tracking
     if riscv_has_extension_unlikely(RISCV_ISA_EXT_SVRSW60T59B) {
@@ -32,7 +32,7 @@ pub fn _PAGE_SOFT_DIRTY() -> usize {
  * Bit 3 is always zero for swap entry computation, so we
  * can borrow it for swap page soft-dirty tracking.
  */
-#[cfg(feature = "CONFIG_MEM_SOFT_DIRTY")]
+#[cfg(CONFIG_MEM_SOFT_DIRTY)]
 pub fn _PAGE_SWP_SOFT_DIRTY() -> usize {
     if riscv_has_extension_unlikely(RISCV_ISA_EXT_SVRSW60T59B) {
         _PAGE_EXEC
@@ -41,13 +41,13 @@ pub fn _PAGE_SWP_SOFT_DIRTY() -> usize {
     }
 }
 
-#[cfg(not(feature = "CONFIG_MEM_SOFT_DIRTY"))]
+#[cfg(not(CONFIG_MEM_SOFT_DIRTY))]
 pub const _PAGE_SOFT_DIRTY: usize = 0;
-#[cfg(not(feature = "CONFIG_MEM_SOFT_DIRTY"))]
+#[cfg(not(CONFIG_MEM_SOFT_DIRTY))]
 pub const _PAGE_SWP_SOFT_DIRTY: usize = 0;
 
 /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
-#[cfg(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")]
+#[cfg(CONFIG_HAVE_ARCH_USERFAULTFD_WP)]
 pub fn _PAGE_UFFD() -> usize {
     // ext_svrsw60t59b: Bit(60) for userfaultfd tracking
     if riscv_has_extension_unlikely(RISCV_ISA_EXT_SVRSW60T59B) {
@@ -61,7 +61,7 @@ pub fn _PAGE_UFFD() -> usize {
  * Bit 4 is not involved into swap entry computation, so we
  * can borrow it for swap page userfaultfd tracking.
  */
-#[cfg(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")]
+#[cfg(CONFIG_HAVE_ARCH_USERFAULTFD_WP)]
 pub fn _PAGE_SWP_UFFD() -> usize {
     if riscv_has_extension_unlikely(RISCV_ISA_EXT_SVRSW60T59B) {
         _PAGE_USER
@@ -70,9 +70,9 @@ pub fn _PAGE_SWP_UFFD() -> usize {
     }
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP"))]
+#[cfg(not(CONFIG_HAVE_ARCH_USERFAULTFD_WP))]
 pub const _PAGE_UFFD: usize = 0;
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP"))]
+#[cfg(not(CONFIG_HAVE_ARCH_USERFAULTFD_WP))]
 pub const _PAGE_SWP_UFFD: usize = 0;
 
 pub const _PAGE_TABLE: usize = _PAGE_PRESENT;

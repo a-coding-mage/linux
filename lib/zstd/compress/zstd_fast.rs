@@ -95,7 +95,7 @@ unsafe fn zstd_fast_no_dict(ms:*mut ZSTD_MatchState_t, ss:*mut SeqStore_t, rep:*
 
 // The remaining dictionary and external-dictionary paths retain the source algorithm;
 // wrappers are emitted with the same public ABI and specialization names.
-macro_rules! gen_fast { ($n:ident,$m:expr,$c:expr) => { #[allow(non_snake_case)] unsafe fn $n(ms:*mut ZSTD_MatchState_t,ss:*mut SeqStore_t,rep:*mut U32,src:*const c_void,n:usize)->usize { zstd_fast_no_dict(ms,ss,rep,src,n,$m,$c) } }; }
+macro_rules! gen_fast { ($n:ident,$m:expr,$c:expr) => { #[allow(non_snake_case)] unsafe fn $n(ms:*mut ZSTD_MatchState_t,ss:*mut SeqStore_t,rep:*mut U32,src:*const c_void,n:usize)->usize { zstd_fast_no_dict(ms,ss,rep,src,$n,$m,$c) } }; }
 gen_fast!(ZSTD_compressBlock_fast_noDict_4_1,4,1); gen_fast!(ZSTD_compressBlock_fast_noDict_5_1,5,1); gen_fast!(ZSTD_compressBlock_fast_noDict_6_1,6,1); gen_fast!(ZSTD_compressBlock_fast_noDict_7_1,7,1);
 gen_fast!(ZSTD_compressBlock_fast_noDict_4_0,4,0); gen_fast!(ZSTD_compressBlock_fast_noDict_5_0,5,0); gen_fast!(ZSTD_compressBlock_fast_noDict_6_0,6,0); gen_fast!(ZSTD_compressBlock_fast_noDict_7_0,7,0);
 

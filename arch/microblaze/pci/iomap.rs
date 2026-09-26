@@ -23,7 +23,7 @@ pub unsafe fn pcibios_vaddr_is_ioport(address: *mut c_void) -> c_int {
     let mut size: resource_size_t;
 
     spin_lock(&raw mut HOSE_SPINLOCK);
-    list_for_each_entry!(hose, &raw mut hose_list, list_node) {
+    list_for_each_entry!(hose, &raw mut hose_list, list_node, {
         size = pcibios_io_size(hose);
         if address >= (*hose).io_base_virt
             && address < ((*hose).io_base_virt).add(size as usize)
@@ -31,7 +31,7 @@ pub unsafe fn pcibios_vaddr_is_ioport(address: *mut c_void) -> c_int {
             ret = 1;
             break;
         }
-    }
+    });
     spin_unlock(&raw mut HOSE_SPINLOCK);
     ret
 }

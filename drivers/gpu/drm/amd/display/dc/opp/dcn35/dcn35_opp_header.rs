@@ -75,15 +75,13 @@ extern "C" {
         inst: u32,
         regs: *const dcn35_opp_registers,
         opp_shift: *const dcn35_opp_shift,
-        opp_mask: *const dcn35_opp_mask,
-    );
+        opp_mask: *const dcn35_opp_mask);
 
     pub fn dcn35_opp_set_fgcg(oppn20: *mut dcn20_opp, enable: bool);
 
     pub fn dcn35_opp_read_reg_state(
         opp: *mut output_pixel_processor,
-        opp_reg_state: *mut dcn_opp_reg_state,
-    );
+        opp_reg_state: *mut dcn_opp_reg_state);
 }
 
 // External types supplied by the included DCN2.0 and display headers.

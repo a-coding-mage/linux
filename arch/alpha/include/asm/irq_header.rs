@@ -18,76 +18,76 @@
  *
  * These cfg conditions preserve the original build-time configuration.
  */
-#[cfg(all(feature = "CONFIG_ALPHA_GENERIC", feature = "CONFIG_ALPHA_LEGACY_START_ADDRESS"))]
+#[cfg(all(CONFIG_ALPHA_GENERIC, CONFIG_ALPHA_LEGACY_START_ADDRESS))]
 pub const NR_IRQS: i32 = 128; /* max is RAWHIDE/TAKARA */
 
 #[cfg(all(
-    feature = "CONFIG_ALPHA_GENERIC",
-    not(feature = "CONFIG_ALPHA_LEGACY_START_ADDRESS")
+    CONFIG_ALPHA_GENERIC,
+    not(CONFIG_ALPHA_LEGACY_START_ADDRESS)
 ))]
 pub const NR_IRQS: i32 = 32768 + 16; /* marvel - 32 pids */
 
 #[cfg(any(
-    feature = "CONFIG_ALPHA_PC164",
-    feature = "CONFIG_ALPHA_LX164"
+    CONFIG_ALPHA_PC164,
+    CONFIG_ALPHA_LX164
 ))]
 pub const NR_IRQS: i32 = 35;
 
-#[cfg(feature = "CONFIG_ALPHA_MIKASA")]
+#[cfg(CONFIG_ALPHA_MIKASA)]
 pub const NR_IRQS: i32 = 32;
 
 #[cfg(any(
-    feature = "CONFIG_ALPHA_ALCOR",
-    feature = "CONFIG_ALPHA_MIATA",
-    feature = "CONFIG_ALPHA_RUFFIAN",
-    feature = "CONFIG_ALPHA_RX164",
-    feature = "CONFIG_ALPHA_NORITAKE"
+    CONFIG_ALPHA_ALCOR,
+    CONFIG_ALPHA_MIATA,
+    CONFIG_ALPHA_RUFFIAN,
+    CONFIG_ALPHA_RX164,
+    CONFIG_ALPHA_NORITAKE
 ))]
 pub const NR_IRQS: i32 = 48;
 
-#[cfg(any(feature = "CONFIG_ALPHA_SABLE", feature = "CONFIG_ALPHA_SX164"))]
+#[cfg(any(CONFIG_ALPHA_SABLE, CONFIG_ALPHA_SX164))]
 pub const NR_IRQS: i32 = 40;
 
-#[cfg(any(feature = "CONFIG_ALPHA_DP264", feature = "CONFIG_ALPHA_SHARK"))]
+#[cfg(any(CONFIG_ALPHA_DP264, CONFIG_ALPHA_SHARK))]
 pub const NR_IRQS: i32 = 64;
 
-#[cfg(feature = "CONFIG_ALPHA_TITAN")]
+#[cfg(CONFIG_ALPHA_TITAN)]
 pub const NR_IRQS: i32 = 80;
 
 #[cfg(any(
-    feature = "CONFIG_ALPHA_RAWHIDE",
-    feature = "CONFIG_ALPHA_TAKARA",
-    feature = "CONFIG_ALPHA_EIGER"
+    CONFIG_ALPHA_RAWHIDE,
+    CONFIG_ALPHA_TAKARA,
+    CONFIG_ALPHA_EIGER
 ))]
 pub const NR_IRQS: i32 = 128;
 
-#[cfg(feature = "CONFIG_ALPHA_WILDFIRE")]
+#[cfg(CONFIG_ALPHA_WILDFIRE)]
 pub const NR_IRQS: i32 = 2048; /* enuff for 8 QBBs */
 
-#[cfg(feature = "CONFIG_ALPHA_MARVEL")]
+#[cfg(CONFIG_ALPHA_MARVEL)]
 pub const NR_IRQS: i32 = 32768 + 16; /* marvel - 32 pids */
 
 #[cfg(not(any(
-    feature = "CONFIG_ALPHA_GENERIC",
-    feature = "CONFIG_ALPHA_PC164",
-    feature = "CONFIG_ALPHA_LX164",
-    feature = "CONFIG_ALPHA_MIKASA",
-    feature = "CONFIG_ALPHA_ALCOR",
-    feature = "CONFIG_ALPHA_MIATA",
-    feature = "CONFIG_ALPHA_RUFFIAN",
-    feature = "CONFIG_ALPHA_RX164",
-    feature = "CONFIG_ALPHA_NORITAKE",
-    feature = "CONFIG_ALPHA_SABLE",
-    feature = "CONFIG_ALPHA_SX164",
-    feature = "CONFIG_ALPHA_DP264",
-    feature = "CONFIG_ALPHA_SHARK",
-    feature = "CONFIG_ALPHA_TITAN",
-    feature = "CONFIG_ALPHA_RAWHIDE",
-    feature = "CONFIG_ALPHA_TAKARA",
-    feature = "CONFIG_ALPHA_EIGER",
-    feature = "CONFIG_ALPHA_WILDFIRE",
-    feature = "CONFIG_ALPHA_MARVEL"
-))]
+    CONFIG_ALPHA_GENERIC,
+    CONFIG_ALPHA_PC164,
+    CONFIG_ALPHA_LX164,
+    CONFIG_ALPHA_MIKASA,
+    CONFIG_ALPHA_ALCOR,
+    CONFIG_ALPHA_MIATA,
+    CONFIG_ALPHA_RUFFIAN,
+    CONFIG_ALPHA_RX164,
+    CONFIG_ALPHA_NORITAKE,
+    CONFIG_ALPHA_SABLE,
+    CONFIG_ALPHA_SX164,
+    CONFIG_ALPHA_DP264,
+    CONFIG_ALPHA_SHARK,
+    CONFIG_ALPHA_TITAN,
+    CONFIG_ALPHA_RAWHIDE,
+    CONFIG_ALPHA_TAKARA,
+    CONFIG_ALPHA_EIGER,
+    CONFIG_ALPHA_WILDFIRE,
+    CONFIG_ALPHA_MARVEL
+)))]
 pub const NR_IRQS: i32 = 16;
 
 #[inline]

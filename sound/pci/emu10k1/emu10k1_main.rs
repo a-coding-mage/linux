@@ -1439,7 +1439,7 @@ extern "C" fn snd_emu10k1_interrupt(_dev: *mut core::ffi::c_void) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static SAVED_REGS: &[u8] = &[
     CPF as u8, PTRX as u8, CVCF as u8, VTFT as u8, Z1 as u8, Z2 as u8, PSST as u8, DSL as u8,
     CCCA as u8, CCR as u8, 0, FXRT as u8, MAPA as u8, MAPB as u8, ENVVOL as u8, ATKHLDV as u8,
@@ -1448,10 +1448,10 @@ static SAVED_REGS: &[u8] = &[
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff,
 ];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static SAVED_REGS_AUDIGY: &[u8] = &[0, 0, 0, 0, 0, 0, 0, 0, 0xff];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn snd_emu10k1_suspend_regs(emu: *mut SndEmu10k1) {
     let mut i: c_int;
     let mut reg: *const u8;
@@ -1486,7 +1486,7 @@ pub unsafe fn snd_emu10k1_suspend_regs(emu: *mut SndEmu10k1) {
     (*emu).saved_hcfg = inl((*emu).port + HCFG as c_ulong);
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn snd_emu10k1_resume_init(emu: *mut SndEmu10k1) {
     if (*(*emu).card_capabilities).ca_cardbus_chip != 0 {
         snd_emu10k1_cardbus_init(emu);
@@ -1501,7 +1501,7 @@ pub unsafe fn snd_emu10k1_resume_init(emu: *mut SndEmu10k1) {
     snd_emu10k1_init(emu, (*emu).enable_ir);
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn snd_emu10k1_resume_regs(emu: *mut SndEmu10k1) {
     let mut i: c_int;
     let mut reg: *const u8;
@@ -1539,7 +1539,7 @@ pub unsafe fn snd_emu10k1_resume_regs(emu: *mut SndEmu10k1) {
     }
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn alloc_pm_buffer(emu: *mut SndEmu10k1) -> c_int {
     let mut size: c_int = SAVED_REGS.len() as c_int;
 
@@ -1559,7 +1559,7 @@ pub unsafe fn alloc_pm_buffer(emu: *mut SndEmu10k1) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn free_pm_buffer(emu: *mut SndEmu10k1) {
     vfree((*emu).saved_ptr as *mut core::ffi::c_void);
     snd_emu10k1_efx_free_pm_buffer(emu);

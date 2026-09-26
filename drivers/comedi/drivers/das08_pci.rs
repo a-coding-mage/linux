@@ -42,8 +42,7 @@ unsafe extern "C" {
 
     fn comedi_alloc_devpriv(
         dev: *mut comedi_device,
-        size: usize,
-    ) -> *mut das08_private_struct;
+        size: usize) -> *mut das08_private_struct;
     fn comedi_to_pci_dev(dev: *mut comedi_device) -> *mut pci_dev;
     fn comedi_pci_enable(dev: *mut comedi_device) -> i32;
     fn pci_resource_start(dev: *mut pci_dev, bar: u32) -> usize;
@@ -52,8 +51,7 @@ unsafe extern "C" {
     fn comedi_pci_auto_config(
         dev: *mut pci_dev,
         driver: *mut comedi_driver,
-        driver_data: usize,
-    ) -> i32;
+        driver_data: usize) -> i32;
     fn comedi_pci_auto_unconfig(dev: *mut pci_dev) -> i32;
 }
 

@@ -60,10 +60,11 @@ pub unsafe fn xchk_refcountbt_process_rmap_fragments(refchk: *mut xchk_refcnt_ch
     let mut next_rbno: xfs_agblock_t;
     let mut nr: xfs_nlink_t;
     let target_nr = r.refcount - r.seen;
+    'done: {
     if target_nr == 0 { return; }
     INIT_LIST_HEAD(&mut worklist); rbno = NULLAGBLOCK; bno = 0;
     list_for_each_entry!(frag, &r.fragments, list, xchk_refcnt_frag, {
-        if frag.rm.rm_startblock < bno { goto!(done); }
+        if frag.rm.rm_startblock < bno { break 'done; }
         bno = frag.rm.rm_startblock;
     });
     nr = 0;
@@ -73,7 +74,7 @@ pub unsafe fn xchk_refcountbt_process_rmap_fragments(refchk: *mut xchk_refcnt_ch
         if bno < rbno { rbno = bno; }
         list_move_tail(&mut frag.list, &mut worklist); nr += 1;
     });
-    if nr != target_nr { goto!(done); }
+    if nr != target_nr { break 'done; }
     while !list_empty(&r.fragments) {
         nr = 0; next_rbno = NULLAGBLOCK;
         list_for_each_entry_safe!(frag, n, &mut worklist, list, xchk_refcnt_frag, {
@@ -83,17 +84,18 @@ pub unsafe fn xchk_refcountbt_process_rmap_fragments(refchk: *mut xchk_refcnt_ch
         });
         list_for_each_entry_safe!(frag, n, &mut r.fragments, list, xchk_refcnt_frag, {
             bno = frag.rm.rm_startblock + frag.rm.rm_blockcount;
-            if frag.rm.rm_startblock != rbno { goto!(done); }
+            if frag.rm.rm_startblock != rbno { break 'done; }
             list_move_tail(&mut frag.list, &mut worklist);
             if next_rbno > bno { next_rbno = bno; }
             nr -= 1; if nr == 0 { break; }
         });
-        if nr != 0 { goto!(done); }
+        if nr != 0 { break 'done; }
         rbno = next_rbno;
     }
-    if rbno < r.bno + r.len { goto!(done); }
+    if rbno < r.bno + r.len { break 'done; }
     r.seen = r.refcount;
-done:
+    }
+    
     list_for_each_entry_safe!(frag, n, &mut worklist, list, xchk_refcnt_frag, { list_del(&mut frag.list); kfree(frag); });
     list_for_each_entry_safe!(frag, n, &mut r.fragments, list, xchk_refcnt_frag, { list_del(&mut frag.list); kfree(frag); });
 }

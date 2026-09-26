@@ -17,7 +17,7 @@ unsafe fn ftrace_shared_hotpatch_trampoline(end: *mut *const i8) -> *const i8 {
     let mut tstart = ftrace_shared_hotpatch_trampoline_br;
     let mut tend = ftrace_shared_hotpatch_trampoline_br_end;
     // CONFIG_EXPOLINE condition is supplied by the kernel build.
-    #[cfg(feature = "CONFIG_EXPOLINE")]
+    #[cfg(CONFIG_EXPOLINE)]
     if !nospec_disable {
         tstart = ftrace_shared_hotpatch_trampoline_exrl;
         tend = ftrace_shared_hotpatch_trampoline_exrl_end;
@@ -51,7 +51,7 @@ pub unsafe fn ftrace_init_nop(mod_: *mut module, rec: *mut dyn_ftrace) -> i32 {
     trampolines_end = __ftrace_hotpatch_trampolines_end;
     shared = ftrace_shared_hotpatch_trampoline(core::ptr::null_mut());
     // CONFIG_MODULES condition is supplied by the kernel build.
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     if !mod_.is_null() {
         next_trampoline = &raw mut (*mod_).arch.next_trampoline;
         trampolines_end = (*mod_).arch.trampolines_end;
@@ -125,7 +125,7 @@ pub unsafe fn arch_ftrace_update_code(command:i32){ftrace_modify_all_code(comman
 pub unsafe fn ftrace_arch_code_modify_post_process(){text_poke_sync_lock()}
 
 // CONFIG_FUNCTION_GRAPH_TRACER
-#[cfg(feature = "CONFIG_FUNCTION_GRAPH_TRACER")]
+#[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
 pub unsafe fn ftrace_graph_func(ip: usize, _parent_ip: usize, _op: *mut ftrace_ops, fregs: *mut ftrace_regs) {
     let regs = arch_ftrace_regs(fregs);
     let parent = &mut (*regs).regs.gprs[14];
@@ -137,7 +137,7 @@ pub unsafe fn ftrace_graph_func(ip: usize, _parent_ip: usize, _op: *mut ftrace_o
 }
 
 // CONFIG_KPROBES_ON_FTRACE
-#[cfg(feature = "CONFIG_KPROBES_ON_FTRACE")]
+#[cfg(CONFIG_KPROBES_ON_FTRACE)]
 pub unsafe fn kprobe_ftrace_handler(ip: usize, parent_ip: usize, _ops: *mut ftrace_ops, fregs: *mut ftrace_regs) {
     let mut kcb: *mut kprobe_ctlblk;
     let regs: *mut pt_regs;
@@ -166,7 +166,7 @@ pub unsafe fn kprobe_ftrace_handler(ip: usize, parent_ip: usize, _ops: *mut ftra
     ftrace_test_recursion_unlock(bit);
 }
 
-#[cfg(feature = "CONFIG_KPROBES_ON_FTRACE")]
+#[cfg(CONFIG_KPROBES_ON_FTRACE)]
 pub unsafe fn arch_prepare_kprobe_ftrace(p: *mut kprobe) -> i32 { (*p).ainsn.insn = core::ptr::null_mut(); 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

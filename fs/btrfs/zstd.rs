@@ -55,7 +55,7 @@ unsafe extern "C" fn zstd_reclaim_timer_fn(timer: *mut timer_list) {
     let mut next: *mut list_head;
     spin_lock(&mut (*zwsm).lock);
     if list_empty(&(*zwsm).lru_list) { spin_unlock(&mut (*zwsm).lock); return; }
-    list_for_each_prev_safe!(pos, next, &mut (*zwsm).lru_list) {
+    list_for_each_prev_safe!(pos, next, &mut (*zwsm).lru_list, {
         let victim = container_of!(pos, workspace, lru_list);
         if time_after((*victim).last_used, reclaim_threshold) { break; }
         if (*victim).req_level != 0 { continue; }
@@ -64,7 +64,7 @@ unsafe extern "C" fn zstd_reclaim_timer_fn(timer: *mut timer_list) {
         list_del(&mut (*victim).list);
         zstd_free_workspace(&mut (*victim).list);
         if list_empty(&(*zwsm).idle_ws[level]) { clear_bit(level, &mut (*zwsm).active_map); }
-    }
+    });
     if !list_empty(&(*zwsm).lru_list) { mod_timer(&mut (*zwsm).timer, jiffies + ZSTD_BTRFS_RECLAIM_JIFFIES); }
     spin_unlock(&mut (*zwsm).lock);
 }
@@ -111,7 +111,7 @@ pub unsafe fn zstd_free_workspace_manager(fs_info: *mut btrfs_fs_info) {
 unsafe fn zstd_find_workspace(fs_info: *mut btrfs_fs_info, level: i32) -> *mut list_head {
     let zwsm = (*fs_info).compr_wsm[BTRFS_COMPRESS_ZSTD] as *mut zstd_workspace_manager;
     let mut i = clip_level(level); ASSERT!(!zwsm.is_null()); spin_lock_bh(&mut (*zwsm).lock);
-    for_each_set_bit_from!(i, &mut (*zwsm).active_map, ZSTD_BTRFS_MAX_LEVEL) {
+    for_each_set_bit_from!(i, &mut (*zwsm).active_map, ZSTD_BTRFS_MAX_LEVEL, {
         if !list_empty(&(*zwsm).idle_ws[i]) {
             let ws = (*zwsm).idle_ws[i].next; let workspace = list_to_workspace(ws); list_del_init(ws);
             (*workspace).req_level = level;
@@ -119,7 +119,7 @@ unsafe fn zstd_find_workspace(fs_info: *mut btrfs_fs_info, level: i32) -> *mut l
             if list_empty(&(*zwsm).idle_ws[i]) { clear_bit(i, &mut (*zwsm).active_map); }
             spin_unlock_bh(&mut (*zwsm).lock); return ws;
         }
-    }
+    });
     spin_unlock_bh(&mut (*zwsm).lock); core::ptr::null_mut()
 }
 
@@ -157,17 +157,19 @@ pub unsafe fn zstd_alloc_workspace(fs_info: *mut btrfs_fs_info, level: i32) -> *
 // and zstd API declarations are supplied by the surrounding translation units.
 pub unsafe fn zstd_compress_bio(ws: *mut list_head, cb: *mut compressed_bio) -> i32 {
     let inode = (*cb).bbio.inode; let fs_info = (*(*inode).root).fs_info; let workspace = container_of!(ws, workspace, list); let mapping = (*inode).vfs_inode.i_mapping; let bio = &mut (*cb).bbio.bio; let mut ret = 0; let mut in_folio: *mut folio = core::ptr::null_mut(); let mut out_folio: *mut folio = core::ptr::null_mut(); let mut tot_in=0usize; let mut tot_out=0usize; let start=(*cb).start; let len=(*cb).len as usize; let end=start+len as u64; let min_folio_size=btrfs_min_folio_size(fs_info);
+    'compress_out: {
     (*workspace).params=zstd_get_btrfs_parameters((*workspace).req_level,len); let stream=zstd_init_cstream(&(*workspace).params,len,(*workspace).mem,(*workspace).size); if stream.is_null(){ btrfs_err(fs_info,c"zstd compression init failed"); return -EIO; }
     ret=btrfs_compress_filemap_get_folio(mapping,start,&mut in_folio); if ret<0{return ret;} (*workspace).in_buf.src=kmap_local_folio(in_folio,offset_in_folio(in_folio,start)); (*workspace).in_buf.pos=0; (*workspace).in_buf.size=btrfs_calc_input_length(in_folio,end,start);
-    out_folio=btrfs_alloc_compr_folio(fs_info,GFP_NOFS); if out_folio.is_null(){ret=-ENOMEM;goto compress_out;} (*workspace).out_buf.dst=folio_address(out_folio); (*workspace).out_buf.pos=0; (*workspace).out_buf.size=min_folio_size;
+    out_folio=btrfs_alloc_compr_folio(fs_info,GFP_NOFS); if out_folio.is_null(){ret=-ENOMEM;break 'compress_out;} (*workspace).out_buf.dst=folio_address(out_folio); (*workspace).out_buf.pos=0; (*workspace).out_buf.size=min_folio_size;
     loop { let r=zstd_compress_stream(stream,&mut (*workspace).out_buf,&mut (*workspace).in_buf); if zstd_is_error(r){ret=-EIO;break;} if tot_in+(*workspace).in_buf.pos>((*fs_info).sectorsize*2) && tot_in+(*workspace).in_buf.pos<tot_out+(*workspace).out_buf.pos {ret=-E2BIG;break;} if (*workspace).out_buf.pos>=(*workspace).out_buf.size {tot_out+=min_folio_size;if tot_out>=len||bio_add_folio(bio,out_folio,folio_size(out_folio),0)==0{ret=-E2BIG;break;} out_folio=btrfs_alloc_compr_folio(fs_info,GFP_NOFS);if out_folio.is_null(){ret=-ENOMEM;break;} (*workspace).out_buf.dst=folio_address(out_folio);(*workspace).out_buf.pos=0;(*workspace).out_buf.size=min_folio_size;} if tot_in+(*workspace).in_buf.pos>=len{tot_in+=(*workspace).in_buf.pos;break;} if (*workspace).in_buf.pos>=(*workspace).in_buf.size {tot_in+=(*workspace).in_buf.size;let cur=start+tot_in as u64;kunmap_local((*workspace).in_buf.src);folio_put(in_folio);ret=btrfs_compress_filemap_get_folio(mapping,cur,&mut in_folio);if ret<0{break;}(*workspace).in_buf.src=kmap_local_folio(in_folio,offset_in_folio(in_folio,cur));(*workspace).in_buf.pos=0;(*workspace).in_buf.size=btrfs_calc_input_length(in_folio,end,cur);} }
     if ret==0 {loop{let r=zstd_end_stream(stream,&mut (*workspace).out_buf);if zstd_is_error(r){ret=-EIO;break;}if r==0{tot_out+=(*workspace).out_buf.pos;if tot_out>=len||bio_add_folio(bio,out_folio,(*workspace).out_buf.pos,0)==0{ret=-E2BIG;}else{out_folio=core::ptr::null_mut();}break;}tot_out+=min_folio_size;if tot_out>=len||bio_add_folio(bio,out_folio,folio_size(out_folio),0)==0{ret=-E2BIG;break;}out_folio=btrfs_alloc_compr_folio(fs_info,GFP_NOFS);if out_folio.is_null(){ret=-ENOMEM;break;}(*workspace).out_buf.dst=folio_address(out_folio);(*workspace).out_buf.pos=0;(*workspace).out_buf.size=min_folio_size;}} if ret==0&&tot_out>=tot_in{ret=-E2BIG;}
-compress_out: if !out_folio.is_null(){btrfs_free_compr_folio(out_folio);} if !(*workspace).in_buf.src.is_null(){kunmap_local((*workspace).in_buf.src);folio_put(in_folio);} ret
+    }
+    if !out_folio.is_null(){btrfs_free_compr_folio(out_folio);} if !(*workspace).in_buf.src.is_null(){kunmap_local((*workspace).in_buf.src);folio_put(in_folio);} ret
 }
 
 pub unsafe fn zstd_decompress_bio(ws:*mut list_head,cb:*mut compressed_bio)->i32{let workspace=container_of!(ws,workspace,list);let fs_info=cb_to_fs_info(cb);let srclen=bio_get_size(&(*cb).bbio.bio);let mut ret=0;let mut total_out=0usize;let min=btrfs_min_folio_size(fs_info);let mut fi=core::mem::zeroed::<folio_iter>();bio_first_folio(&mut fi,&(*cb).bbio.bio,0);if fi.folio.is_null(){return -EINVAL;}let stream=zstd_init_dstream(ZSTD_BTRFS_MAX_INPUT,(*workspace).mem,(*workspace).size);if stream.is_null(){return -EIO;}(*workspace).in_buf.src=kmap_local_folio(fi.folio,0);(*workspace).in_buf.pos=0;(*workspace).in_buf.size=core::cmp::min(srclen,min);(*workspace).out_buf.dst=(*workspace).buf as *mut _;(*workspace).out_buf.pos=0;(*workspace).out_buf.size=(*fs_info).sectorsize;loop{let r=zstd_decompress_stream(stream,&mut (*workspace).out_buf,&mut (*workspace).in_buf);if zstd_is_error(r){ret=-EIO;break;}let start=total_out;total_out+=(*workspace).out_buf.pos;(*workspace).out_buf.pos=0;ret=btrfs_decompress_buf2page((*workspace).out_buf.dst,total_out-start,cb,start);if ret==0||(*workspace).in_buf.pos>=srclen||r==0{break;}if (*workspace).in_buf.pos==(*workspace).in_buf.size{kunmap_local((*workspace).in_buf.src);bio_next_folio(&mut fi,&(*cb).bbio.bio);if fi.folio.is_null(){ret=-EIO;break;}(*workspace).in_buf.src=kmap_local_folio(fi.folio,0);(*workspace).in_buf.pos=0;(*workspace).in_buf.size=core::cmp::min(srclen-(*workspace).in_buf.pos,min);}}if !(*workspace).in_buf.src.is_null(){kunmap_local((*workspace).in_buf.src);}ret}
 
-pub unsafe fn zstd_decompress(ws:*mut list_head,data_in:*const u8,dest_folio:*mut folio,dest_pgoff:usize,srclen:usize,destlen:usize)->i32{let workspace=container_of!(ws,workspace,list);let fs_info=btrfs_sb(folio_inode(dest_folio)->i_sb);let stream=zstd_init_dstream(ZSTD_BTRFS_MAX_INPUT,(*workspace).mem,(*workspace).size);if stream.is_null(){folio_zero_range(dest_folio,dest_pgoff,destlen);return -EIO;}(*workspace).in_buf=zstd_in_buffer{src:data_in,pos:0,size:srclen};(*workspace).out_buf=zstd_out_buffer{dst:(*workspace).buf as *mut _,pos:0,size:(*fs_info).sectorsize};let ret=zstd_decompress_stream(stream,&mut (*workspace).out_buf,&mut (*workspace).in_buf);let to_copy=(*workspace).out_buf.pos;if !zstd_is_error(ret){memcpy_to_folio(dest_folio,dest_pgoff,(*workspace).out_buf.dst,to_copy);}if to_copy<destlen{folio_zero_range(dest_folio,dest_pgoff+to_copy,destlen-to_copy);return -EIO;}ret as i32}
+pub unsafe fn zstd_decompress(ws:*mut list_head,data_in:*const u8,dest_folio:*mut folio,dest_pgoff:usize,srclen:usize,destlen:usize)->i32{let workspace=container_of!(ws,workspace,list);let fs_info=btrfs_sb((*folio_inode(dest_folio)).i_sb);let stream=zstd_init_dstream(ZSTD_BTRFS_MAX_INPUT,(*workspace).mem,(*workspace).size);if stream.is_null(){folio_zero_range(dest_folio,dest_pgoff,destlen);return -EIO;}(*workspace).in_buf=zstd_in_buffer{src:data_in,pos:0,size:srclen};(*workspace).out_buf=zstd_out_buffer{dst:(*workspace).buf as *mut _,pos:0,size:(*fs_info).sectorsize};let ret=zstd_decompress_stream(stream,&mut (*workspace).out_buf,&mut (*workspace).in_buf);let to_copy=(*workspace).out_buf.pos;if !zstd_is_error(ret){memcpy_to_folio(dest_folio,dest_pgoff,(*workspace).out_buf.dst,to_copy);}if to_copy<destlen{folio_zero_range(dest_folio,dest_pgoff+to_copy,destlen-to_copy);return -EIO;}ret as i32}
 
 #[repr(C)]
 pub struct btrfs_compress_levels { pub min_level:i32,pub max_level:i32,pub default_level:i32 }

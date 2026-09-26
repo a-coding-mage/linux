@@ -18,14 +18,14 @@
 /**
  * xxh32() - calculate the 32-bit hash of the input with a given seed.
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xxh32(input: *const core::ffi::c_void, length: usize, seed: u32) -> u32;
 }
 
 /**
  * xxh64() - calculate the 64-bit hash of the input with a given seed.
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xxh64(input: *const core::ffi::c_void, length: usize, seed: u64) -> u64;
 }
 
@@ -78,14 +78,14 @@ pub struct xxh64_state {
 /**
  * xxh64_reset() - reset the xxh64 state to start a new hashing operation
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xxh64_reset(state: *mut xxh64_state, seed: u64);
 }
 
 /**
  * xxh64_update() - hash the data given and update the xxh64 state
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xxh64_update(
         state: *mut xxh64_state,
         input: *const core::ffi::c_void,
@@ -96,7 +96,7 @@ pub unsafe extern "C" {
 /**
  * xxh64_digest() - produce the current xxh64 hash
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn xxh64_digest(state: *const xxh64_state) -> u64;
 }
 

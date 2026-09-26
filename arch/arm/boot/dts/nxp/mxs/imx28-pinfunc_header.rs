@@ -5,7 +5,6 @@
  * Copyright (C) 2013 Lothar Waßmann <LW@KARO-electronics.de>
  */
 
-#define __DT_BINDINGS_MX28_PINCTRL_H__
 
 // Dependency: mxs-pinfunc.h
 

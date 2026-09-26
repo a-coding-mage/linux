@@ -67,12 +67,12 @@ pub unsafe fn rtas_work_area_phys(area: *const rtas_work_area) -> phys_addr_t {
  * rtas_initialize() only.
  */
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 extern "C" {
     pub fn rtas_work_area_reserve_arena(limit: phys_addr_t);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_PSERIES"))]
+#[cfg(not(CONFIG_PPC_PSERIES))]
 #[inline]
 pub fn rtas_work_area_reserve_arena(_limit: phys_addr_t) {}
 

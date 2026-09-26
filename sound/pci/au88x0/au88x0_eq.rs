@@ -736,16 +736,16 @@ static vortex_levels_kcontrol: snd_kcontrol_new = snd_kcontrol_new {
 
 /* EQ band gain labels. */
 static EqBandLabels: [*const i8; 10] = [
-    c"EQ0 31Hz\0".as_ptr(),
-    c"EQ1 63Hz\0".as_ptr(),
-    c"EQ2 125Hz\0".as_ptr(),
-    c"EQ3 250Hz\0".as_ptr(),
-    c"EQ4 500Hz\0".as_ptr(),
-    c"EQ5 1KHz\0".as_ptr(),
-    c"EQ6 2KHz\0".as_ptr(),
-    c"EQ7 4KHz\0".as_ptr(),
-    c"EQ8 8KHz\0".as_ptr(),
-    c"EQ9 16KHz\0".as_ptr(),
+    c"EQ0 31Hz".as_ptr(),
+    c"EQ1 63Hz".as_ptr(),
+    c"EQ2 125Hz".as_ptr(),
+    c"EQ3 250Hz".as_ptr(),
+    c"EQ4 500Hz".as_ptr(),
+    c"EQ5 1KHz".as_ptr(),
+    c"EQ6 2KHz".as_ptr(),
+    c"EQ7 4KHz".as_ptr(),
+    c"EQ8 8KHz".as_ptr(),
+    c"EQ9 16KHz".as_ptr(),
 ];
 
 /* ALSA driver entry points. Init and exit. */

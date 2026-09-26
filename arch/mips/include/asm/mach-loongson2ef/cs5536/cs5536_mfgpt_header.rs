@@ -7,7 +7,7 @@
 // left external to this translation.
 
 // CONFIG_CS5536_MFGPT selects the external timer-control declarations.
-#[cfg(feature = "CONFIG_CS5536_MFGPT")]
+#[cfg(CONFIG_CS5536_MFGPT)]
 unsafe extern "C" {
     pub fn setup_mfgpt0_timer();
     pub fn disable_mfgpt0_counter();
@@ -15,15 +15,15 @@ unsafe extern "C" {
 }
 
 // Equivalent of the !CONFIG_CS5536_MFGPT static inline no-op functions.
-#[cfg(not(feature = "CONFIG_CS5536_MFGPT"))]
+#[cfg(not(CONFIG_CS5536_MFGPT))]
 #[inline]
 pub fn setup_mfgpt0_timer() {}
 
-#[cfg(not(feature = "CONFIG_CS5536_MFGPT"))]
+#[cfg(not(CONFIG_CS5536_MFGPT))]
 #[inline]
 pub fn disable_mfgpt0_counter() {}
 
-#[cfg(not(feature = "CONFIG_CS5536_MFGPT"))]
+#[cfg(not(CONFIG_CS5536_MFGPT))]
 #[inline]
 pub fn enable_mfgpt0_counter() {}
 

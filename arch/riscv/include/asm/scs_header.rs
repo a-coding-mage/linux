@@ -11,7 +11,7 @@
 /* CONFIG_SHADOW_CALL_STACK */
 
 /* Load init_shadow_call_stack to gp. */
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 macro_rules! scs_load_init_stack {
     () => {
         unsafe {
@@ -21,17 +21,17 @@ macro_rules! scs_load_init_stack {
 }
 
 /* Load the per-CPU IRQ shadow call stack to gp. */
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 macro_rules! scs_load_irq_stack {
     ($tmp:tt) => {
         unsafe {
-            core::arch::asm!("load_per_cpu gp, irq_shadow_call_stack_ptr, {tmp}", tmp = in(reg) $tmp);
+            core::arch::asm!("load_per_cpu gp, irq_shadow_call_stack_ptr, {tmp}", $tmp = in(reg) $tmp);
         }
     };
 }
 
 /* Load task_scs_sp(current) to gp. */
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 macro_rules! scs_load_current {
     () => {
         unsafe {
@@ -41,11 +41,11 @@ macro_rules! scs_load_current {
 }
 
 /* Load task_scs_sp(current) to gp, but only if tp has changed. */
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 macro_rules! scs_load_current_if_task_changed {
     ($prev:tt) => {
         unsafe {
-            core::arch::asm!("beq {prev}, tp, _skip_scs", prev = in(reg) $prev);
+            core::arch::asm!("beq {prev}, tp, _skip_scs", $prev = in(reg) $prev);
         }
         scs_load_current!();
         /* _skip_scs: */
@@ -53,7 +53,7 @@ macro_rules! scs_load_current_if_task_changed {
 }
 
 /* Save gp to task_scs_sp(current). */
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 macro_rules! scs_save_current {
     () => {
         unsafe {
@@ -64,27 +64,27 @@ macro_rules! scs_save_current {
 
 /* !CONFIG_SHADOW_CALL_STACK */
 
-#[cfg(not(feature = "CONFIG_SHADOW_CALL_STACK"))]
+#[cfg(not(CONFIG_SHADOW_CALL_STACK))]
 macro_rules! scs_load_init_stack {
     () => {};
 }
 
-#[cfg(not(feature = "CONFIG_SHADOW_CALL_STACK"))]
+#[cfg(not(CONFIG_SHADOW_CALL_STACK))]
 macro_rules! scs_load_irq_stack {
     ($tmp:tt) => {};
 }
 
-#[cfg(not(feature = "CONFIG_SHADOW_CALL_STACK"))]
+#[cfg(not(CONFIG_SHADOW_CALL_STACK))]
 macro_rules! scs_load_current {
     () => {};
 }
 
-#[cfg(not(feature = "CONFIG_SHADOW_CALL_STACK"))]
+#[cfg(not(CONFIG_SHADOW_CALL_STACK))]
 macro_rules! scs_load_current_if_task_changed {
     ($prev:tt) => {};
 }
 
-#[cfg(not(feature = "CONFIG_SHADOW_CALL_STACK"))]
+#[cfg(not(CONFIG_SHADOW_CALL_STACK))]
 macro_rules! scs_save_current {
     () => {};
 }

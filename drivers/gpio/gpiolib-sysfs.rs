@@ -33,15 +33,15 @@ pub type c_ulong = usize;
 #[repr(C)] pub struct gpiodev_data { pub exported_lines: list_head, pub gdev: *mut gpio_device, pub cdev_id: *mut device, pub cdev_base: *mut device }
 
 extern "C" {
-    fn gpiod_get_direction(*mut gpio_desc)->c_int; fn test_bit(c_int,*const c_ulong)->c_int;
-    fn gpiod_direction_output_raw(*mut gpio_desc,c_int)->isize; fn gpiod_direction_input(*mut gpio_desc)->isize;
-    fn gpiod_get_value_cansleep(*mut gpio_desc)->isize; fn gpiod_set_value_cansleep(*mut gpio_desc,c_long)->isize;
-    fn sysfs_emit(*mut c_char,*const c_char,...)->isize; fn kstrtol(*const c_char,c_uint,*mut c_long)->isize;
-    fn sysfs_streq(*const c_char,*const c_char)->bool; fn dev_get_drvdata(*mut device)->*mut c_void;
-    fn gpiod_to_irq(*mut gpio_desc)->c_int; fn gpiod_hwgpio(*mut gpio_desc)->c_int;
-    fn gpiod_request_user(*mut gpio_desc,*const c_char)->c_int; fn gpiod_free(*mut gpio_desc);
-    fn gpiod_export(*mut gpio_desc,bool)->c_int; fn gpiod_unexport(*mut gpio_desc);
-    fn gpio_to_desc(c_long)->*mut gpio_desc; fn gpio_device_get_desc(*mut gpio_device,c_uint)->*mut gpio_desc;
+    fn gpiod_get_direction(_: *mut gpio_desc)->c_int; fn test_bit(_: c_int,_: *const c_ulong)->c_int;
+    fn gpiod_direction_output_raw(_: *mut gpio_desc,_: c_int)->isize; fn gpiod_direction_input(_: *mut gpio_desc)->isize;
+    fn gpiod_get_value_cansleep(_: *mut gpio_desc)->isize; fn gpiod_set_value_cansleep(_: *mut gpio_desc,_: c_long)->isize;
+    fn sysfs_emit(_: *mut c_char,_: *const c_char,...)->isize; fn kstrtol(_: *const c_char,_: c_uint,_: *mut c_long)->isize;
+    fn sysfs_streq(_: *const c_char,_: *const c_char)->bool; fn dev_get_drvdata(_: *mut device)->*mut c_void;
+    fn gpiod_to_irq(_: *mut gpio_desc)->c_int; fn gpiod_hwgpio(_: *mut gpio_desc)->c_int;
+    fn gpiod_request_user(_: *mut gpio_desc,_: *const c_char)->c_int; fn gpiod_free(_: *mut gpio_desc);
+    fn gpiod_export(_: *mut gpio_desc,_: bool)->c_int; fn gpiod_unexport(_: *mut gpio_desc);
+    fn gpio_to_desc(_: c_long)->*mut gpio_desc; fn gpio_device_get_desc(_: *mut gpio_device,_: c_uint)->*mut gpio_desc;
 }
 
 const GPIOD_FLAG_IS_OUT: c_int = 0; const GPIOD_FLAG_ACTIVE_LOW: c_int = 1;

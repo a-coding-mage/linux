@@ -10,13 +10,13 @@
 /* Corresponds to the C header guard: _ASM_S390_NUMA_H. */
 
 /* Corresponds to CONFIG_NUMA. */
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn numa_setup();
 }
 
 /* CONFIG_NUMA disabled: static inline void numa_setup(void) { } */
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub fn numa_setup() {}
 

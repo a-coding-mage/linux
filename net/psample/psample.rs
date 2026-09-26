@@ -138,7 +138,7 @@ pub unsafe extern "C" fn psample_group_put(group: *mut psample_group) {
 
 // CONFIG_INET-dependent tunnel attribute helpers are preserved below as
 // declarations because their kernel ABI types and helpers are external.
-#[cfg(feature = "CONFIG_INET")]
+#[cfg(CONFIG_INET)]
 unsafe fn __psample_ip_tun_to_nlattr(skb: *mut sk_buff, tun_info: *mut ip_tunnel_info) -> i32 {
     let tun_proto = ip_tunnel_info_af(tun_info);
     let tun_opts = ip_tunnel_info_opts(tun_info);

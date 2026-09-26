@@ -34,13 +34,13 @@ pub unsafe fn s3c_pm_arch_show_resume_irqs() {
 
 /* make these defines, we currently do not have any need to change
  * the IRQ wake controls depending on the CPU we are running on */
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub const s3c_irqwake_eintallow: u32 = (1u32 << 28) - 1;
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub const s3c_irqwake_intallow: u32 = !0u32;
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub const s3c_irqwake_eintallow: u32 = 0;
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub const s3c_irqwake_intallow: u32 = 0;
 
 pub unsafe fn s3c_pm_restored_gpios() {

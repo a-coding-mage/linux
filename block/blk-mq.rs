@@ -44,23 +44,23 @@ const _BLK_MQ_C_SOURCE: &str = r###"
 #include "blk-mq-sched.h"
 #include "blk-rq-qos.h"
 
-static DEFINE_PER_CPU(struct llist_head, blk_cpu_done);
+static DEFINE_PER_CPU(llist_head, blk_cpu_done);
 static DEFINE_PER_CPU(call_single_data_t, blk_cpu_csd);
 static DEFINE_MUTEX(blk_mq_cpuhp_lock);
 
-static void blk_mq_insert_request(struct request *rq, blk_insert_t flags);
-static void blk_mq_request_bypass_insert(struct request *rq,
+static void blk_mq_insert_request(request *rq, blk_insert_t flags);
+static void blk_mq_request_bypass_insert(request *rq,
 		blk_insert_t flags);
-static void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
-		struct list_head *list);
-static int blk_hctx_poll(struct request_queue *q, struct blk_mq_hw_ctx *hctx,
-			 struct io_comp_batch *iob, unsigned int flags);
+static void blk_mq_try_issue_list_directly(blk_mq_hw_ctx *hctx,
+		list_head *list);
+static int blk_hctx_poll(request_queue *q, blk_mq_hw_ctx *hctx,
+			 io_comp_batch *iob, flags: core::ffi::c_uint);
 
 /*
  * Check if any of the ctx, dispatch list or elevator
  * have pending work in this hardware queue.
  */
-static bool blk_mq_hctx_has_pending(struct blk_mq_hw_ctx *hctx)
+static bool blk_mq_hctx_has_pending(blk_mq_hw_ctx *hctx)
 {
 	return !list_empty_careful(&hctx->dispatch) ||
 		sbitmap_any_bit_set(&hctx->ctx_map) ||
@@ -70,8 +70,8 @@ static bool blk_mq_hctx_has_pending(struct blk_mq_hw_ctx *hctx)
 /*
  * Mark this ctx as having pending work in this hardware queue
  */
-static void blk_mq_hctx_mark_pending(struct blk_mq_hw_ctx *hctx,
-				     struct blk_mq_ctx *ctx)
+static void blk_mq_hctx_mark_pending(blk_mq_hw_ctx *hctx,
+				     blk_mq_ctx *ctx)
 {
 	const int bit = ctx->index_hw[hctx->type];
 
@@ -79,8 +79,8 @@ static void blk_mq_hctx_mark_pending(struct blk_mq_hw_ctx *hctx,
 		sbitmap_set_bit(&hctx->ctx_map, bit);
 }
 
-static void blk_mq_hctx_clear_pending(struct blk_mq_hw_ctx *hctx,
-				      struct blk_mq_ctx *ctx)
+static void blk_mq_hctx_clear_pending(blk_mq_hw_ctx *hctx,
+				      blk_mq_ctx *ctx)
 {
 	const int bit = ctx->index_hw[hctx->type];
 
@@ -89,10 +89,10 @@ static void blk_mq_hctx_clear_pending(struct blk_mq_hw_ctx *hctx,
 
 struct mq_inflight {
 	struct block_device *part;
-	unsigned int inflight[2];
+	core::ffi::c_uint inflight[2];
 };
 
-static bool blk_mq_check_in_driver(struct request *rq, void *priv)
+static bool blk_mq_check_in_driver(request *rq, void *priv)
 {
 	struct mq_inflight *mi = priv;
 
@@ -104,7 +104,7 @@ static bool blk_mq_check_in_driver(struct request *rq, void *priv)
 	return true;
 }
 
-void blk_mq_in_driver_rw(struct block_device *part, unsigned int inflight[2])
+void blk_mq_in_driver_rw(block_device *part, core::ffi::c_uint inflight[2])
 {
 	struct mq_inflight mi = { .part = part };
 
@@ -115,8 +115,8 @@ void blk_mq_in_driver_rw(struct block_device *part, unsigned int inflight[2])
 }
 
 #ifdef CONFIG_LOCKDEP
-static bool blk_freeze_set_owner(struct request_queue *q,
-				 struct task_struct *owner)
+static bool blk_freeze_set_owner(request_queue *q,
+				 task_struct *owner)
 {
 	if (!owner)
 		return false;
@@ -137,7 +137,7 @@ static bool blk_freeze_set_owner(struct request_queue *q,
 }
 
 /* verify the last unfreeze in owner context */
-static bool blk_unfreeze_check_owner(struct request_queue *q)
+static bool blk_unfreeze_check_owner(request_queue *q)
 {
 	if (q->mq_freeze_owner != current)
 		return false;
@@ -150,20 +150,20 @@ static bool blk_unfreeze_check_owner(struct request_queue *q)
 
 #else
 
-static bool blk_freeze_set_owner(struct request_queue *q,
-				 struct task_struct *owner)
+static bool blk_freeze_set_owner(request_queue *q,
+				 task_struct *owner)
 {
 	return false;
 }
 
-static bool blk_unfreeze_check_owner(struct request_queue *q)
+static bool blk_unfreeze_check_owner(request_queue *q)
 {
 	return false;
 }
 #endif
 
-bool __blk_freeze_queue_start(struct request_queue *q,
-			      struct task_struct *owner)
+bool __blk_freeze_queue_start(request_queue *q,
+			      task_struct *owner)
 {
 	bool freeze;
 
@@ -181,21 +181,21 @@ bool __blk_freeze_queue_start(struct request_queue *q,
 	return freeze;
 }
 
-void blk_freeze_queue_start(struct request_queue *q)
+void blk_freeze_queue_start(request_queue *q)
 {
 	if (__blk_freeze_queue_start(q, current))
 		blk_freeze_acquire_lock(q);
 }
 EXPORT_SYMBOL_GPL(blk_freeze_queue_start);
 
-void blk_mq_freeze_queue_wait(struct request_queue *q)
+void blk_mq_freeze_queue_wait(request_queue *q)
 {
 	wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter));
 }
 EXPORT_SYMBOL_GPL(blk_mq_freeze_queue_wait);
 
-int blk_mq_freeze_queue_wait_timeout(struct request_queue *q,
-				     unsigned long timeout)
+int blk_mq_freeze_queue_wait_timeout(request_queue *q,
+				     timeout: core::ffi::c_ulong)
 {
 	return wait_event_timeout(q->mq_freeze_wq,
 					percpu_ref_is_zero(&q->q_usage_counter),
@@ -203,14 +203,14 @@ int blk_mq_freeze_queue_wait_timeout(struct request_queue *q,
 }
 EXPORT_SYMBOL_GPL(blk_mq_freeze_queue_wait_timeout);
 
-void blk_mq_freeze_queue_nomemsave(struct request_queue *q)
+void blk_mq_freeze_queue_nomemsave(request_queue *q)
 {
 	blk_freeze_queue_start(q);
 	blk_mq_freeze_queue_wait(q);
 }
 EXPORT_SYMBOL_GPL(blk_mq_freeze_queue_nomemsave);
 
-bool __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic)
+bool __blk_mq_unfreeze_queue(request_queue *q, force_atomic: bool)
 {
 	bool unfreeze;
 
@@ -229,7 +229,7 @@ bool __blk_mq_unfreeze_queue(struct request_queue *q, bool force_atomic)
 	return unfreeze;
 }
 
-void blk_mq_unfreeze_queue_nomemrestore(struct request_queue *q)
+void blk_mq_unfreeze_queue_nomemrestore(request_queue *q)
 {
 	if (__blk_mq_unfreeze_queue(q, false))
 		blk_unfreeze_release_lock(q);
@@ -243,14 +243,14 @@ EXPORT_SYMBOL_GPL(blk_mq_unfreeze_queue_nomemrestore);
  * by the same task.  This is fragile and should not be used if at all
  * possible.
  */
-void blk_freeze_queue_start_non_owner(struct request_queue *q)
+void blk_freeze_queue_start_non_owner(request_queue *q)
 {
 	__blk_freeze_queue_start(q, NULL);
 }
 EXPORT_SYMBOL_GPL(blk_freeze_queue_start_non_owner);
 
 /* non_owner variant of blk_mq_unfreeze_queue */
-void blk_mq_unfreeze_queue_non_owner(struct request_queue *q)
+void blk_mq_unfreeze_queue_non_owner(request_queue *q)
 {
 	__blk_mq_unfreeze_queue(q, false);
 }
@@ -260,9 +260,9 @@ EXPORT_SYMBOL_GPL(blk_mq_unfreeze_queue_non_owner);
  * FIXME: replace the scsi_internal_device_*block_nowait() calls in the
  * mpt3sas driver such that this function can be removed.
  */
-void blk_mq_quiesce_queue_nowait(struct request_queue *q)
+void blk_mq_quiesce_queue_nowait(request_queue *q)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	spin_lock_irqsave(&q->queue_lock, flags);
 	if (!q->quiesce_depth++)
@@ -280,7 +280,7 @@ EXPORT_SYMBOL_GPL(blk_mq_quiesce_queue_nowait);
  * function only waits for the quiesce on those request_queues that had
  * the quiesce flag set using blk_mq_quiesce_queue_nowait.
  */
-void blk_mq_wait_quiesce_done(struct blk_mq_tag_set *set)
+void blk_mq_wait_quiesce_done(blk_mq_tag_set *set)
 {
 	if (set->flags & BLK_MQ_F_BLOCKING)
 		synchronize_srcu(set->srcu);
@@ -298,7 +298,7 @@ EXPORT_SYMBOL_GPL(blk_mq_wait_quiesce_done);
  * sure no dispatch can happen until the queue is unquiesced via
  * blk_mq_unquiesce_queue().
  */
-void blk_mq_quiesce_queue(struct request_queue *q)
+void blk_mq_quiesce_queue(request_queue *q)
 {
 	blk_mq_quiesce_queue_nowait(q);
 	/* nothing to wait for non-mq queues */
@@ -314,9 +314,9 @@ EXPORT_SYMBOL_GPL(blk_mq_quiesce_queue);
  * This function recovers queue into the state before quiescing
  * which is done by blk_mq_quiesce_queue.
  */
-void blk_mq_unquiesce_queue(struct request_queue *q)
+void blk_mq_unquiesce_queue(request_queue *q)
 {
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	bool run_queue = false;
 
 	spin_lock_irqsave(&q->queue_lock, flags);
@@ -334,45 +334,45 @@ void blk_mq_unquiesce_queue(struct request_queue *q)
 }
 EXPORT_SYMBOL_GPL(blk_mq_unquiesce_queue);
 
-void blk_mq_quiesce_tagset(struct blk_mq_tag_set *set)
+void blk_mq_quiesce_tagset(blk_mq_tag_set *set)
 {
 	struct request_queue *q;
 
 	rcu_read_lock();
-	list_for_each_entry_rcu(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry_rcu!(q, &set->tag_list, tag_set_list, {
 		if (!blk_queue_skip_tagset_quiesce(q))
 			blk_mq_quiesce_queue_nowait(q);
-	}
+	});
 	rcu_read_unlock();
 
 	blk_mq_wait_quiesce_done(set);
 }
 EXPORT_SYMBOL_GPL(blk_mq_quiesce_tagset);
 
-void blk_mq_unquiesce_tagset(struct blk_mq_tag_set *set)
+void blk_mq_unquiesce_tagset(blk_mq_tag_set *set)
 {
 	struct request_queue *q;
 
 	rcu_read_lock();
-	list_for_each_entry_rcu(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry_rcu!(q, &set->tag_list, tag_set_list, {
 		if (!blk_queue_skip_tagset_quiesce(q))
 			blk_mq_unquiesce_queue(q);
-	}
+	});
 	rcu_read_unlock();
 }
 EXPORT_SYMBOL_GPL(blk_mq_unquiesce_tagset);
 
-void blk_mq_wake_waiters(struct request_queue *q)
+void blk_mq_wake_waiters(request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	queue_for_each_hw_ctx(q, hctx, i)
 		if (blk_mq_hw_queue_mapped(hctx))
 			blk_mq_tag_wakeup_all(hctx->tags, true);
 }
 
-void blk_rq_init(struct request_queue *q, struct request *rq)
+void blk_rq_init(request_queue *q, request *rq)
 {
 	memset(rq, 0, sizeof(*rq));
 
@@ -390,7 +390,7 @@ void blk_rq_init(struct request_queue *q, struct request *rq)
 EXPORT_SYMBOL(blk_rq_init);
 
 /* Set start and alloc time when the allocated request is actually used */
-static inline void blk_mq_rq_time_init(struct request *rq, u64 alloc_time_ns)
+void blk_mq_rq_time_init(request *rq, alloc_time_ns: u64)
 {
 #ifdef CONFIG_BLK_RQ_ALLOC_TIME
 	if (blk_queue_rq_alloc_time(rq->q))
@@ -400,8 +400,8 @@ static inline void blk_mq_rq_time_init(struct request *rq, u64 alloc_time_ns)
 #endif
 }
 
-static inline void blk_mq_bio_issue_init(struct request_queue *q,
-					 struct bio *bio)
+void blk_mq_bio_issue_init(request_queue *q,
+					 bio *bio)
 {
 #ifdef CONFIG_BLK_CGROUP
 	if (test_bit(QUEUE_FLAG_BIO_ISSUE_TIME, &q->queue_flags))
@@ -409,8 +409,8 @@ static inline void blk_mq_bio_issue_init(struct request_queue *q,
 #endif
 }
 
-static struct request *blk_mq_rq_ctx_init(struct blk_mq_alloc_data *data,
-		struct blk_mq_tags *tags, unsigned int tag)
+static struct request *blk_mq_rq_ctx_init(blk_mq_alloc_data *data,
+		blk_mq_tags *tags, tag: core::ffi::c_uint)
 {
 	struct blk_mq_ctx *ctx = data->ctx;
 	struct blk_mq_hw_ctx *hctx = data->hctx;
@@ -462,13 +462,13 @@ static struct request *blk_mq_rq_ctx_init(struct blk_mq_alloc_data *data,
 	return rq;
 }
 
-static inline struct request *
-__blk_mq_alloc_requests_batch(struct blk_mq_alloc_data *data)
+struct request *
+__blk_mq_alloc_requests_batch(blk_mq_alloc_data *data)
 {
-	unsigned int tag, tag_offset;
+	tag: core::ffi::c_uint, tag_offset;
 	struct blk_mq_tags *tags;
 	struct request *rq;
-	unsigned long tag_mask;
+	core::ffi::c_ulong tag_mask;
 	int i, nr = 0;
 
 	do {
@@ -500,7 +500,7 @@ __blk_mq_alloc_requests_batch(struct blk_mq_alloc_data *data)
 	return rq_list_pop(data->cached_rqs);
 }
 
-static void blk_mq_limit_depth(struct blk_mq_alloc_data *data)
+static void blk_mq_limit_depth(blk_mq_alloc_data *data)
 {
 	struct elevator_mq_ops *ops;
 
@@ -536,12 +536,12 @@ static void blk_mq_limit_depth(struct blk_mq_alloc_data *data)
 		ops->limit_depth(data->cmd_flags, data);
 }
 
-static struct request *__blk_mq_alloc_requests(struct blk_mq_alloc_data *data)
+static struct request *__blk_mq_alloc_requests(blk_mq_alloc_data *data)
 {
 	struct request_queue *q = data->q;
 	u64 alloc_time_ns = 0;
 	struct request *rq;
-	unsigned int tag;
+	core::ffi::c_uint tag;
 
 	/* alloc_time includes depth and tag waits */
 	if (blk_queue_rq_alloc_time(q))
@@ -596,21 +596,21 @@ retry:
 	return rq;
 }
 
-static struct request *blk_mq_rq_cache_fill(struct request_queue *q,
-					    struct blk_plug *plug,
+static struct request *blk_mq_rq_cache_fill(request_queue *q,
+					    blk_plug *plug,
 					    blk_opf_t opf,
 					    blk_mq_req_flags_t flags)
 {
 	struct blk_mq_alloc_data data = {
-		.q		= q,
-		.flags		= flags,
-		.shallow_depth	= 0,
-		.cmd_flags	= opf,
-		.rq_flags	= 0,
-		.nr_tags	= plug->nr_ios,
-		.cached_rqs	= &plug->cached_rqs,
-		.ctx		= NULL,
-		.hctx		= NULL
+		q: q,
+		flags: flags,
+		shallow_depth: 0,
+		cmd_flags: opf,
+		rq_flags: 0,
+		nr_tags: plug->nr_ios,
+		cached_rqs: &plug->cached_rqs,
+		ctx: NULL,
+		hctx: NULL
 	};
 	struct request *rq;
 
@@ -625,7 +625,7 @@ static struct request *blk_mq_rq_cache_fill(struct request_queue *q,
 	return rq;
 }
 
-static struct request *blk_mq_alloc_cached_request(struct request_queue *q,
+static struct request *blk_mq_alloc_cached_request(request_queue *q,
 						   blk_opf_t opf,
 						   blk_mq_req_flags_t flags)
 {
@@ -660,7 +660,7 @@ static struct request *blk_mq_alloc_cached_request(struct request_queue *q,
 	return rq;
 }
 
-struct request *blk_mq_alloc_request(struct request_queue *q, blk_opf_t opf,
+struct request *blk_mq_alloc_request(request_queue *q, blk_opf_t opf,
 		blk_mq_req_flags_t flags)
 {
 	struct request *rq;
@@ -668,15 +668,15 @@ struct request *blk_mq_alloc_request(struct request_queue *q, blk_opf_t opf,
 	rq = blk_mq_alloc_cached_request(q, opf, flags);
 	if (!rq) {
 		struct blk_mq_alloc_data data = {
-			.q		= q,
-			.flags		= flags,
-			.shallow_depth	= 0,
-			.cmd_flags	= opf,
-			.rq_flags	= 0,
-			.nr_tags	= 1,
-			.cached_rqs	= NULL,
-			.ctx		= NULL,
-			.hctx		= NULL
+			q: q,
+			flags: flags,
+			shallow_depth: 0,
+			cmd_flags: opf,
+			rq_flags: 0,
+			nr_tags: 1,
+			cached_rqs: NULL,
+			ctx: NULL,
+			hctx: NULL
 		};
 		int ret;
 
@@ -699,24 +699,24 @@ out_queue_exit:
 }
 EXPORT_SYMBOL(blk_mq_alloc_request);
 
-struct request *blk_mq_alloc_request_hctx(struct request_queue *q,
-	blk_opf_t opf, blk_mq_req_flags_t flags, unsigned int hctx_idx)
+struct request *blk_mq_alloc_request_hctx(request_queue *q,
+	blk_opf_t opf, blk_mq_req_flags_t flags, hctx_idx: core::ffi::c_uint)
 {
 	struct blk_mq_alloc_data data = {
-		.q		= q,
-		.flags		= flags,
-		.shallow_depth	= 0,
-		.cmd_flags	= opf,
-		.rq_flags	= 0,
-		.nr_tags	= 1,
-		.cached_rqs	= NULL,
-		.ctx		= NULL,
-		.hctx		= NULL
+		q: q,
+		flags: flags,
+		shallow_depth: 0,
+		cmd_flags: opf,
+		rq_flags: 0,
+		nr_tags: 1,
+		cached_rqs: NULL,
+		ctx: NULL,
+		hctx: NULL
 	};
 	u64 alloc_time_ns = 0;
 	struct request *rq;
-	unsigned int cpu;
-	unsigned int tag;
+	core::ffi::c_uint cpu;
+	core::ffi::c_uint tag;
 	int ret;
 
 	/* alloc_time includes depth and tag waits */
@@ -781,7 +781,7 @@ out_queue_exit:
 }
 EXPORT_SYMBOL_GPL(blk_mq_alloc_request_hctx);
 
-static void blk_mq_finish_request(struct request *rq)
+static void blk_mq_finish_request(request *rq)
 {
 	struct request_queue *q = rq->q;
 
@@ -798,7 +798,7 @@ static void blk_mq_finish_request(struct request *rq)
 	}
 }
 
-static void __blk_mq_free_request(struct request *rq)
+static void __blk_mq_free_request(request *rq)
 {
 	struct request_queue *q = rq->q;
 	struct blk_mq_ctx *ctx = rq->mq_ctx;
@@ -819,7 +819,7 @@ static void __blk_mq_free_request(struct request *rq)
 	blk_queue_exit(q);
 }
 
-void blk_mq_free_request(struct request *rq)
+void blk_mq_free_request(request *rq)
 {
 	struct request_queue *q = rq->q;
 
@@ -833,7 +833,7 @@ void blk_mq_free_request(struct request *rq)
 }
 EXPORT_SYMBOL_GPL(blk_mq_free_request);
 
-void blk_mq_free_plug_rqs(struct blk_plug *plug)
+void blk_mq_free_plug_rqs(blk_plug *plug)
 {
 	struct request *rq;
 
@@ -841,21 +841,21 @@ void blk_mq_free_plug_rqs(struct blk_plug *plug)
 		blk_mq_free_request(rq);
 }
 
-void blk_dump_rq_flags(struct request *rq, char *msg)
+void blk_dump_rq_flags(request *rq, char *msg)
 {
-	printk(KERN_INFO "%s: dev %s: flags=%llx\n", msg,
+	printk(c"\x016%s: dev %s: flags=%llx\n".as_ptr(), msg,
 		rq->q->disk ? rq->q->disk->disk_name : "?",
-		(__force unsigned long long) rq->cmd_flags);
+		(__force core::ffi::c_ulonglong) rq->cmd_flags);
 
-	printk(KERN_INFO "  sector %llu, nr/cnr %u/%u\n",
-	       (unsigned long long)blk_rq_pos(rq),
+	printk(c"\x016  sector %llu, nr/cnr %u/%u\n".as_ptr(),
+	       (core::ffi::c_ulonglong)blk_rq_pos(rq),
 	       blk_rq_sectors(rq), blk_rq_cur_sectors(rq));
-	printk(KERN_INFO "  bio %p, biotail %p, len %u\n",
+	printk(c"\x016  bio %p, biotail %p, len %u\n".as_ptr(),
 	       rq->bio, rq->biotail, blk_rq_bytes(rq));
 }
 EXPORT_SYMBOL(blk_dump_rq_flags);
 
-static void blk_account_io_completion(struct request *req, unsigned int bytes)
+static void blk_account_io_completion(request *req, bytes: core::ffi::c_uint)
 {
 	if (req->rq_flags & RQF_IO_STAT) {
 		const int sgrp = op_stat_group(req_op(req));
@@ -866,11 +866,9 @@ static void blk_account_io_completion(struct request *req, unsigned int bytes)
 	}
 }
 
-static void blk_print_req_error(struct request *req, blk_status_t status)
+static void blk_print_req_error(request *req, blk_status_t status)
 {
-	printk_ratelimited(KERN_ERR
-		"%s error, dev %s, sector %llu op 0x%x:(%s) flags 0x%x "
-		"phys_seg %u prio class %u\n",
+	printk_ratelimited(c"\x013%s error, dev %s, sector %llu op 0x%x:(%s) flags 0x%x phys_seg %u prio class %u\n".as_ptr(),
 		blk_status_to_str(status),
 		req->q->disk ? req->q->disk->disk_name : "?",
 		blk_rq_pos(req), (__force u32)req_op(req),
@@ -884,7 +882,7 @@ static void blk_print_req_error(struct request *req, blk_status_t status)
  * Fully end IO on a request. Does not support partial completions, or
  * errors.
  */
-static void blk_complete_request(struct request *req)
+static void blk_complete_request(request *req)
 {
 	const bool is_flush = (req->rq_flags & RQF_FLUSH_SEQ) != 0;
 	int total_bytes = blk_rq_bytes(req);
@@ -953,8 +951,8 @@ static void blk_complete_request(struct request *req)
  *     %false - this request doesn't have any more data
  *     %true  - this request has more data
  **/
-bool blk_update_request(struct request *req, blk_status_t error,
-		unsigned int nr_bytes)
+bool blk_update_request(request *req, blk_status_t error,
+		nr_bytes: core::ffi::c_uint)
 {
 	bool is_flush = req->rq_flags & RQF_FLUSH_SEQ;
 	bool quiet = req->rq_flags & RQF_QUIET;
@@ -1068,7 +1066,7 @@ bool blk_update_request(struct request *req, blk_status_t error,
 }
 EXPORT_SYMBOL_GPL(blk_update_request);
 
-static inline void blk_account_io_done(struct request *req, u64 now)
+void blk_account_io_done(request *req, now: u64)
 {
 	trace_block_io_done(req);
 
@@ -1089,7 +1087,7 @@ static inline void blk_account_io_done(struct request *req, u64 now)
 	}
 }
 
-static inline void blk_account_io_start(struct request *req)
+void blk_account_io_start(request *req)
 {
 	trace_block_io_start(req);
 
@@ -1118,7 +1116,7 @@ static inline void blk_account_io_start(struct request *req)
 	part_stat_unlock();
 }
 
-static inline void __blk_mq_end_request_acct(struct request *rq, u64 now)
+void __blk_mq_end_request_acct(request *rq, now: u64)
 {
 	if (rq->rq_flags & RQF_STATS)
 		blk_stat_add(rq, now);
@@ -1127,7 +1125,7 @@ static inline void __blk_mq_end_request_acct(struct request *rq, u64 now)
 	blk_account_io_done(rq, now);
 }
 
-inline void __blk_mq_end_request(struct request *rq, blk_status_t error)
+inline void __blk_mq_end_request(request *rq, blk_status_t error)
 {
 	if (blk_mq_need_time_stamp(rq))
 		__blk_mq_end_request_acct(rq, blk_time_get_ns());
@@ -1144,7 +1142,7 @@ inline void __blk_mq_end_request(struct request *rq, blk_status_t error)
 }
 EXPORT_SYMBOL(__blk_mq_end_request);
 
-void blk_mq_end_request(struct request *rq, blk_status_t error)
+void blk_mq_end_request(request *rq, blk_status_t error)
 {
 	if (blk_update_request(rq, error, blk_rq_bytes(rq)))
 		BUG();
@@ -1152,9 +1150,9 @@ void blk_mq_end_request(struct request *rq, blk_status_t error)
 }
 EXPORT_SYMBOL(blk_mq_end_request);
 
-#define TAG_COMP_BATCH		32
+pub const TAG_COMP_BATCH: u32 = 32;
 
-static inline void blk_mq_flush_tag_batch(struct blk_mq_hw_ctx *hctx,
+void blk_mq_flush_tag_batch(blk_mq_hw_ctx *hctx,
 					  int *tag_array, int nr_tags)
 {
 	struct request_queue *q = hctx->queue;
@@ -1165,7 +1163,7 @@ static inline void blk_mq_flush_tag_batch(struct blk_mq_hw_ctx *hctx,
 	percpu_ref_put_many(&q->q_usage_counter, nr_tags);
 }
 
-void blk_mq_end_request_batch(struct io_comp_batch *iob)
+void blk_mq_end_request_batch(io_comp_batch *iob)
 {
 	int tags[TAG_COMP_BATCH], nr_tags = 0;
 	struct blk_mq_hw_ctx *cur_hctx = NULL;
@@ -1215,7 +1213,7 @@ void blk_mq_end_request_batch(struct io_comp_batch *iob)
 }
 EXPORT_SYMBOL_GPL(blk_mq_end_request_batch);
 
-static void blk_complete_reqs(struct llist_head *list)
+static void blk_complete_reqs(llist_head *list)
 {
 	struct llist_node *entry = llist_reverse_order(llist_del_all(list));
 	struct request *rq, *next;
@@ -1229,7 +1227,7 @@ static __latent_entropy void blk_done_softirq(void)
 	blk_complete_reqs(this_cpu_ptr(&blk_cpu_done));
 }
 
-static int blk_softirq_cpu_dead(unsigned int cpu)
+static int blk_softirq_cpu_dead(cpu: core::ffi::c_uint)
 {
 	blk_complete_reqs(&per_cpu(blk_cpu_done, cpu));
 	return 0;
@@ -1240,7 +1238,7 @@ static void __blk_mq_complete_request_remote(void *data)
 	__raise_softirq_irqoff(BLOCK_SOFTIRQ);
 }
 
-static inline bool blk_mq_complete_need_ipi(struct request *rq)
+bool blk_mq_complete_need_ipi(request *rq)
 {
 	int cpu = raw_smp_processor_id();
 
@@ -1267,16 +1265,16 @@ static inline bool blk_mq_complete_need_ipi(struct request *rq)
 	return cpu_online(rq->mq_ctx->cpu);
 }
 
-static void blk_mq_complete_send_ipi(struct request *rq)
+static void blk_mq_complete_send_ipi(request *rq)
 {
-	unsigned int cpu;
+	core::ffi::c_uint cpu;
 
 	cpu = rq->mq_ctx->cpu;
 	if (llist_add(&rq->ipi_list, &per_cpu(blk_cpu_done, cpu)))
 		smp_call_function_single_async(cpu, &per_cpu(blk_cpu_csd, cpu));
 }
 
-static void blk_mq_raise_softirq(struct request *rq)
+static void blk_mq_raise_softirq(request *rq)
 {
 	struct llist_head *list;
 
@@ -1287,7 +1285,7 @@ static void blk_mq_raise_softirq(struct request *rq)
 	preempt_enable();
 }
 
-bool blk_mq_complete_request_remote(struct request *rq)
+bool blk_mq_complete_request_remote(request *rq)
 {
 	WRITE_ONCE(rq->state, MQ_RQ_COMPLETE);
 
@@ -1321,7 +1319,7 @@ EXPORT_SYMBOL_GPL(blk_mq_complete_request_remote);
  * Description:
  *	Complete a request by scheduling the ->complete_rq operation.
  **/
-void blk_mq_complete_request(struct request *rq)
+void blk_mq_complete_request(request *rq)
 {
 	if (!blk_mq_complete_request_remote(rq))
 		rq->q->mq_ops->complete(rq);
@@ -1336,7 +1334,7 @@ EXPORT_SYMBOL(blk_mq_complete_request);
  * is going to be processed now, so blk layer can do proper initializations
  * such as starting the timeout timer.
  */
-void blk_mq_start_request(struct request *rq)
+void blk_mq_start_request(request *rq)
 {
 	struct request_queue *q = rq->q;
 
@@ -1369,14 +1367,14 @@ EXPORT_SYMBOL(blk_mq_start_request);
  * queues. This is important for md arrays to benefit from merging
  * requests.
  */
-static inline unsigned short blk_plug_max_rq_count(struct blk_plug *plug)
+core::ffi::c_ushort blk_plug_max_rq_count(blk_plug *plug)
 {
 	if (plug->multiple_queues)
 		return BLK_MAX_REQUEST_COUNT * 2;
 	return BLK_MAX_REQUEST_COUNT;
 }
 
-static void blk_add_rq_to_plug(struct blk_plug *plug, struct request *rq)
+static void blk_add_rq_to_plug(blk_plug *plug, request *rq)
 {
 	struct request *last = rq_list_peek(&plug->mq_list);
 
@@ -1414,7 +1412,7 @@ static void blk_add_rq_to_plug(struct blk_plug *plug, struct request *rq)
  * Note:
  *    This function will invoke @done directly if the queue is dead.
  */
-void blk_execute_rq_nowait(struct request *rq, bool at_head)
+void blk_execute_rq_nowait(request *rq, at_head: bool)
 {
 	struct blk_mq_hw_ctx *hctx = rq->mq_hctx;
 
@@ -1438,7 +1436,7 @@ struct blk_rq_wait {
 	blk_status_t ret;
 };
 
-static enum rq_end_io_ret blk_end_sync_rq(struct request *rq, blk_status_t ret,
+static enum rq_end_io_ret blk_end_sync_rq(request *rq, blk_status_t ret,
 					  const struct io_comp_batch *iob)
 {
 	struct blk_rq_wait *wait = rq->end_io_data;
@@ -1448,7 +1446,7 @@ static enum rq_end_io_ret blk_end_sync_rq(struct request *rq, blk_status_t ret,
 	return RQ_END_IO_NONE;
 }
 
-bool blk_rq_is_poll(struct request *rq)
+bool blk_rq_is_poll(request *rq)
 {
 	if (!rq->mq_hctx)
 		return false;
@@ -1458,7 +1456,7 @@ bool blk_rq_is_poll(struct request *rq)
 }
 EXPORT_SYMBOL_GPL(blk_rq_is_poll);
 
-static void blk_rq_poll_completion(struct request *rq, struct completion *wait)
+static void blk_rq_poll_completion(request *rq, completion *wait)
 {
 	do {
 		blk_hctx_poll(rq->q, rq->mq_hctx, NULL, BLK_POLL_ONESHOT);
@@ -1476,11 +1474,11 @@ static void blk_rq_poll_completion(struct request *rq, struct completion *wait)
  *    for execution and wait for completion.
  * Return: The blk_status_t result provided to blk_mq_end_request().
  */
-blk_status_t blk_execute_rq(struct request *rq, bool at_head)
+blk_status_t blk_execute_rq(request *rq, at_head: bool)
 {
 	struct blk_mq_hw_ctx *hctx = rq->mq_hctx;
 	struct blk_rq_wait wait = {
-		.done = COMPLETION_INITIALIZER_ONSTACK(wait.done),
+		done: COMPLETION_INITIALIZER_ONSTACK(wait.done),
 	};
 
 	WARN_ON(irqs_disabled());
@@ -1502,7 +1500,7 @@ blk_status_t blk_execute_rq(struct request *rq, bool at_head)
 }
 EXPORT_SYMBOL(blk_execute_rq);
 
-static void __blk_mq_requeue_request(struct request *rq)
+static void __blk_mq_requeue_request(request *rq)
 {
 	struct request_queue *q = rq->q;
 
@@ -1517,10 +1515,10 @@ static void __blk_mq_requeue_request(struct request *rq)
 	}
 }
 
-void blk_mq_requeue_request(struct request *rq, bool kick_requeue_list)
+void blk_mq_requeue_request(request *rq, kick_requeue_list: bool)
 {
 	struct request_queue *q = rq->q;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	__blk_mq_requeue_request(rq);
 
@@ -1536,10 +1534,10 @@ void blk_mq_requeue_request(struct request *rq, bool kick_requeue_list)
 }
 EXPORT_SYMBOL(blk_mq_requeue_request);
 
-static void blk_mq_requeue_work(struct work_struct *work)
+static void blk_mq_requeue_work(work_struct *work)
 {
 	struct request_queue *q =
-		container_of(work, struct request_queue, requeue_work.work);
+		container_of(work, request_queue, requeue_work.work);
 	LIST_HEAD(rq_list);
 	LIST_HEAD(flush_list);
 	struct request *rq;
@@ -1550,7 +1548,7 @@ static void blk_mq_requeue_work(struct work_struct *work)
 	spin_unlock_irq(&q->requeue_lock);
 
 	while (!list_empty(&rq_list)) {
-		rq = list_entry(rq_list.next, struct request, queuelist);
+		rq = list_entry(rq_list.next, request, queuelist);
 		list_del_init(&rq->queuelist);
 		/*
 		 * If RQF_DONTPREP is set, the request has been started by the
@@ -1565,7 +1563,7 @@ static void blk_mq_requeue_work(struct work_struct *work)
 	}
 
 	while (!list_empty(&flush_list)) {
-		rq = list_entry(flush_list.next, struct request, queuelist);
+		rq = list_entry(flush_list.next, request, queuelist);
 		list_del_init(&rq->queuelist);
 		blk_mq_insert_request(rq, 0);
 	}
@@ -1573,26 +1571,26 @@ static void blk_mq_requeue_work(struct work_struct *work)
 	blk_mq_run_hw_queues(q, false);
 }
 
-void blk_mq_kick_requeue_list(struct request_queue *q)
+void blk_mq_kick_requeue_list(request_queue *q)
 {
 	kblockd_mod_delayed_work_on(WORK_CPU_UNBOUND, &q->requeue_work, 0);
 }
 EXPORT_SYMBOL(blk_mq_kick_requeue_list);
 
-void blk_mq_delay_kick_requeue_list(struct request_queue *q,
-				    unsigned long msecs)
+void blk_mq_delay_kick_requeue_list(request_queue *q,
+				    msecs: core::ffi::c_ulong)
 {
 	kblockd_mod_delayed_work_on(WORK_CPU_UNBOUND, &q->requeue_work,
 				    msecs_to_jiffies(msecs));
 }
 EXPORT_SYMBOL(blk_mq_delay_kick_requeue_list);
 
-static bool blk_is_flush_data_rq(struct request *rq)
+static bool blk_is_flush_data_rq(request *rq)
 {
 	return (rq->rq_flags & RQF_FLUSH_SEQ) && !is_flush_rq(rq);
 }
 
-static bool blk_mq_rq_inflight(struct request *rq, void *priv)
+static bool blk_mq_rq_inflight(request *rq, void *priv)
 {
 	/*
 	 * If we find a request that isn't idle we know the queue is busy
@@ -1616,7 +1614,7 @@ static bool blk_mq_rq_inflight(struct request *rq, void *priv)
 	return true;
 }
 
-bool blk_mq_queue_inflight(struct request_queue *q)
+bool blk_mq_queue_inflight(request_queue *q)
 {
 	bool busy = false;
 
@@ -1625,7 +1623,7 @@ bool blk_mq_queue_inflight(struct request_queue *q)
 }
 EXPORT_SYMBOL_GPL(blk_mq_queue_inflight);
 
-static void blk_mq_rq_timed_out(struct request *req)
+static void blk_mq_rq_timed_out(request *req)
 {
 	req->rq_flags |= RQF_TIMED_OUT;
 	if (req->q->mq_ops->timeout) {
@@ -1642,13 +1640,13 @@ static void blk_mq_rq_timed_out(struct request *req)
 
 struct blk_expired_data {
 	bool has_timedout_rq;
-	unsigned long next;
-	unsigned long timeout_start;
+	core::ffi::c_ulong next;
+	core::ffi::c_ulong timeout_start;
 };
 
-static bool blk_mq_req_expired(struct request *rq, struct blk_expired_data *expired)
+static bool blk_mq_req_expired(request *rq, blk_expired_data *expired)
 {
-	unsigned long deadline;
+	core::ffi::c_ulong deadline;
 
 	if (blk_mq_rq_state(rq) != MQ_RQ_IN_FLIGHT)
 		return false;
@@ -1666,7 +1664,7 @@ static bool blk_mq_req_expired(struct request *rq, struct blk_expired_data *expi
 	return false;
 }
 
-void blk_mq_put_rq_ref(struct request *rq)
+void blk_mq_put_rq_ref(request *rq)
 {
 	if (is_flush_rq(rq)) {
 		if (rq->end_io(rq, 0, NULL) == RQ_END_IO_FREE)
@@ -1676,7 +1674,7 @@ void blk_mq_put_rq_ref(struct request *rq)
 	}
 }
 
-static bool blk_mq_check_expired(struct request *rq, void *priv)
+static bool blk_mq_check_expired(request *rq, void *priv)
 {
 	struct blk_expired_data *expired = priv;
 
@@ -1694,7 +1692,7 @@ static bool blk_mq_check_expired(struct request *rq, void *priv)
 	return true;
 }
 
-static bool blk_mq_handle_expired(struct request *rq, void *priv)
+static bool blk_mq_handle_expired(request *rq, void *priv)
 {
 	struct blk_expired_data *expired = priv;
 
@@ -1703,15 +1701,15 @@ static bool blk_mq_handle_expired(struct request *rq, void *priv)
 	return true;
 }
 
-static void blk_mq_timeout_work(struct work_struct *work)
+static void blk_mq_timeout_work(work_struct *work)
 {
 	struct request_queue *q =
-		container_of(work, struct request_queue, timeout_work);
+		container_of(work, request_queue, timeout_work);
 	struct blk_expired_data expired = {
-		.timeout_start = jiffies,
+		timeout_start: jiffies,
 	};
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	/* A deadlock might occur if a request is stuck requiring a
 	 * timeout at the same time a queue freeze is waiting
@@ -1753,11 +1751,11 @@ static void blk_mq_timeout_work(struct work_struct *work)
 		 * also that no request has been pending for a while. Mark
 		 * each hctx as idle.
 		 */
-		queue_for_each_hw_ctx(q, hctx, i) {
+		queue_for_each_hw_ctx!(q, hctx, i, {
 			/* the hctx may be unmapped, so check it here */
 			if (blk_mq_hw_queue_mapped(hctx))
 				blk_mq_tag_idle(hctx);
-		}
+		});
 	}
 	blk_queue_exit(q);
 }
@@ -1767,7 +1765,7 @@ struct flush_busy_ctx_data {
 	struct list_head *list;
 };
 
-static bool flush_busy_ctx(struct sbitmap *sb, unsigned int bitnr, void *data)
+static bool flush_busy_ctx(sbitmap *sb, bitnr: core::ffi::c_uint, void *data)
 {
 	struct flush_busy_ctx_data *flush_data = data;
 	struct blk_mq_hw_ctx *hctx = flush_data->hctx;
@@ -1785,11 +1783,11 @@ static bool flush_busy_ctx(struct sbitmap *sb, unsigned int bitnr, void *data)
  * Process software queues that have been marked busy, splicing them
  * to the for-dispatch
  */
-void blk_mq_flush_busy_ctxs(struct blk_mq_hw_ctx *hctx, struct list_head *list)
+void blk_mq_flush_busy_ctxs(blk_mq_hw_ctx *hctx, list_head *list)
 {
 	struct flush_busy_ctx_data data = {
-		.hctx = hctx,
-		.list = list,
+		hctx: hctx,
+		list: list,
 	};
 
 	sbitmap_for_each_set(&hctx->ctx_map, flush_busy_ctx, &data);
@@ -1800,7 +1798,7 @@ struct dispatch_rq_data {
 	struct request *rq;
 };
 
-static bool dispatch_rq_from_ctx(struct sbitmap *sb, unsigned int bitnr,
+static bool dispatch_rq_from_ctx(sbitmap *sb, bitnr: core::ffi::c_uint,
 		void *data)
 {
 	struct dispatch_rq_data *dispatch_data = data;
@@ -1820,13 +1818,13 @@ static bool dispatch_rq_from_ctx(struct sbitmap *sb, unsigned int bitnr,
 	return !dispatch_data->rq;
 }
 
-struct request *blk_mq_dequeue_from_ctx(struct blk_mq_hw_ctx *hctx,
-					struct blk_mq_ctx *start)
+struct request *blk_mq_dequeue_from_ctx(blk_mq_hw_ctx *hctx,
+					blk_mq_ctx *start)
 {
 	unsigned off = start ? start->index_hw[hctx->type] : 0;
 	struct dispatch_rq_data data = {
-		.hctx = hctx,
-		.rq   = NULL,
+		hctx: hctx,
+		rq: NULL,
 	};
 
 	__sbitmap_for_each_set(&hctx->ctx_map, off,
@@ -1835,10 +1833,10 @@ struct request *blk_mq_dequeue_from_ctx(struct blk_mq_hw_ctx *hctx,
 	return data.rq;
 }
 
-bool __blk_mq_alloc_driver_tag(struct request *rq)
+bool __blk_mq_alloc_driver_tag(request *rq)
 {
 	struct sbitmap_queue *bt = &rq->mq_hctx->tags->bitmap_tags;
-	unsigned int tag_offset = rq->mq_hctx->tags->nr_reserved_tags;
+	core::ffi::c_uint tag_offset = rq->mq_hctx->tags->nr_reserved_tags;
 	int tag;
 
 	blk_mq_tag_busy(rq->mq_hctx);
@@ -1865,7 +1863,7 @@ static int blk_mq_dispatch_wake(wait_queue_entry_t *wait, unsigned mode,
 {
 	struct blk_mq_hw_ctx *hctx;
 
-	hctx = container_of(wait, struct blk_mq_hw_ctx, dispatch_wait);
+	hctx = container_of(wait, blk_mq_hw_ctx, dispatch_wait);
 
 	spin_lock(&hctx->dispatch_wait_lock);
 	if (!list_empty(&wait->entry)) {
@@ -1887,8 +1885,8 @@ static int blk_mq_dispatch_wake(wait_queue_entry_t *wait, unsigned mode,
  * restart. For both cases, take care to check the condition again after
  * marking us as waiting.
  */
-static bool blk_mq_mark_tag_wait(struct blk_mq_hw_ctx *hctx,
-				 struct request *rq)
+static bool blk_mq_mark_tag_wait(blk_mq_hw_ctx *hctx,
+				 request *rq)
 {
 	struct sbitmap_queue *sbq;
 	struct wait_queue_head *wq;
@@ -1972,8 +1970,8 @@ static bool blk_mq_mark_tag_wait(struct blk_mq_hw_ctx *hctx,
 	return true;
 }
 
-#define BLK_MQ_DISPATCH_BUSY_EWMA_WEIGHT  8
-#define BLK_MQ_DISPATCH_BUSY_EWMA_FACTOR  4
+pub const BLK_MQ_DISPATCH_BUSY_EWMA_WEIGHT: u32 = 8;
+pub const BLK_MQ_DISPATCH_BUSY_EWMA_FACTOR: u32 = 4;
 /*
  * Update dispatch busy with the Exponential Weighted Moving Average(EWMA):
  * - EWMA is one simple way to compute running average value
@@ -1981,9 +1979,9 @@ static bool blk_mq_mark_tag_wait(struct blk_mq_hw_ctx *hctx,
  * - take 4 as factor for avoiding to get too small(0) result, and this
  *   factor doesn't matter because EWMA decreases exponentially
  */
-static void blk_mq_update_dispatch_busy(struct blk_mq_hw_ctx *hctx, bool busy)
+static void blk_mq_update_dispatch_busy(blk_mq_hw_ctx *hctx, busy: bool)
 {
-	unsigned int ewma;
+	core::ffi::c_uint ewma;
 
 	ewma = hctx->dispatch_busy;
 
@@ -1998,10 +1996,10 @@ static void blk_mq_update_dispatch_busy(struct blk_mq_hw_ctx *hctx, bool busy)
 	hctx->dispatch_busy = ewma;
 }
 
-#define BLK_MQ_RESOURCE_DELAY	3		/* ms units */
+pub const BLK_MQ_RESOURCE_DELAY: u32 = 3;  /* ms units */
 
-static void blk_mq_handle_dev_resource(struct request *rq,
-				       struct list_head *list)
+static void blk_mq_handle_dev_resource(request *rq,
+				       list_head *list)
 {
 	list_add(&rq->queuelist, list);
 	__blk_mq_requeue_request(rq);
@@ -2013,8 +2011,8 @@ enum prep_dispatch {
 	PREP_DISPATCH_NO_BUDGET,
 };
 
-static enum prep_dispatch blk_mq_prep_dispatch_rq(struct request *rq,
-						  bool need_budget)
+static enum prep_dispatch blk_mq_prep_dispatch_rq(request *rq,
+						  need_budget: bool)
 {
 	struct blk_mq_hw_ctx *hctx = rq->mq_hctx;
 	int budget_token = -1;
@@ -2051,17 +2049,17 @@ static enum prep_dispatch blk_mq_prep_dispatch_rq(struct request *rq,
 }
 
 /* release all allocated budgets before calling to blk_mq_dispatch_rq_list */
-static void blk_mq_release_budgets(struct request_queue *q,
-		struct list_head *list)
+static void blk_mq_release_budgets(request_queue *q,
+		list_head *list)
 {
 	struct request *rq;
 
-	list_for_each_entry(rq, list, queuelist) {
+	list_for_each_entry!(rq, list, queuelist, {
 		int budget_token = blk_mq_get_rq_budget_token(rq);
 
 		if (budget_token >= 0)
 			blk_mq_put_dispatch_budget(q, budget_token);
-	}
+	});
 }
 
 /*
@@ -2072,8 +2070,8 @@ static void blk_mq_release_budgets(struct request_queue *q,
  *  1) did not queue everything initially scheduled to queue
  *  2) the last attempt to queue a request failed
  */
-static void blk_mq_commit_rqs(struct blk_mq_hw_ctx *hctx, int queued,
-			      bool from_schedule)
+static void blk_mq_commit_rqs(blk_mq_hw_ctx *hctx, int queued,
+			      from_schedule: bool)
 {
 	if (hctx->queue->mq_ops->commit_rqs && queued) {
 		trace_block_unplug(hctx->queue, queued, !from_schedule);
@@ -2084,8 +2082,8 @@ static void blk_mq_commit_rqs(struct blk_mq_hw_ctx *hctx, int queued,
 /*
  * Returns true if we did some work AND can potentially do more.
  */
-bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx *hctx, struct list_head *list,
-			     bool get_budget)
+bool blk_mq_dispatch_rq_list(blk_mq_hw_ctx *hctx, list_head *list,
+			     get_budget: bool)
 {
 	enum prep_dispatch prep;
 	struct request_queue *q = hctx->queue;
@@ -2104,7 +2102,7 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx *hctx, struct list_head *list,
 	do {
 		struct blk_mq_queue_data bd;
 
-		rq = list_first_entry(list, struct request, queuelist);
+		rq = list_first_entry(list, request, queuelist);
 
 		WARN_ON_ONCE(hctx != rq->mq_hctx);
 		prep = blk_mq_prep_dispatch_rq(rq, get_budget);
@@ -2212,7 +2210,7 @@ out:
 	return true;
 }
 
-static inline int blk_mq_first_mapped_cpu(struct blk_mq_hw_ctx *hctx)
+int blk_mq_first_mapped_cpu(blk_mq_hw_ctx *hctx)
 {
 	int cpu = cpumask_first_and(hctx->cpumask, cpu_online_mask);
 
@@ -2225,7 +2223,7 @@ static inline int blk_mq_first_mapped_cpu(struct blk_mq_hw_ctx *hctx)
  * ->next_cpu is always calculated from hctx->cpumask, so simply use
  * it for speeding up the check
  */
-static bool blk_mq_hctx_empty_cpumask(struct blk_mq_hw_ctx *hctx)
+static bool blk_mq_hctx_empty_cpumask(blk_mq_hw_ctx *hctx)
 {
         return hctx->next_cpu >= nr_cpu_ids;
 }
@@ -2236,7 +2234,7 @@ static bool blk_mq_hctx_empty_cpumask(struct blk_mq_hw_ctx *hctx)
  * For now we just round-robin here, switching for every
  * BLK_MQ_CPU_WORK_BATCH queued items.
  */
-static int blk_mq_hctx_next_cpu(struct blk_mq_hw_ctx *hctx)
+static int blk_mq_hctx_next_cpu(blk_mq_hw_ctx *hctx)
 {
 	bool tried = false;
 	int next_cpu = hctx->next_cpu;
@@ -2284,7 +2282,7 @@ select_cpu:
  *
  * Run a hardware queue asynchronously with a delay of @msecs.
  */
-void blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, unsigned long msecs)
+void blk_mq_delay_run_hw_queue(blk_mq_hw_ctx *hctx, msecs: core::ffi::c_ulong)
 {
 	if (unlikely(blk_mq_hctx_stopped(hctx)))
 		return;
@@ -2293,7 +2291,7 @@ void blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, unsigned long msecs)
 }
 EXPORT_SYMBOL(blk_mq_delay_run_hw_queue);
 
-static inline bool blk_mq_hw_queue_need_run(struct blk_mq_hw_ctx *hctx)
+bool blk_mq_hw_queue_need_run(blk_mq_hw_ctx *hctx)
 {
 	bool need_run;
 
@@ -2320,7 +2318,7 @@ static inline bool blk_mq_hw_queue_need_run(struct blk_mq_hw_ctx *hctx)
  * pending requests to be sent. If this is true, run the queue to send requests
  * to hardware.
  */
-void blk_mq_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async)
+void blk_mq_run_hw_queue(blk_mq_hw_ctx *hctx, r#async: bool)
 {
 	bool need_run;
 
@@ -2333,7 +2331,7 @@ void blk_mq_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async)
 
 	need_run = blk_mq_hw_queue_need_run(hctx);
 	if (!need_run) {
-		unsigned long flags;
+		core::ffi::c_ulong flags;
 
 		/*
 		 * Synchronize with blk_mq_unquiesce_queue(), because we check
@@ -2363,7 +2361,7 @@ EXPORT_SYMBOL(blk_mq_run_hw_queue);
  * Return prefered queue to dispatch from (if any) for non-mq aware IO
  * scheduler.
  */
-static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(struct request_queue *q)
+static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(request_queue *q)
 {
 	struct blk_mq_ctx *ctx = blk_mq_get_ctx(q);
 	/*
@@ -2385,15 +2383,15 @@ static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(struct request_queue *q)
  * @q: Pointer to the request queue to run.
  * @async: If we want to run the queue asynchronously.
  */
-void blk_mq_run_hw_queues(struct request_queue *q, bool async)
+void blk_mq_run_hw_queues(request_queue *q, r#async: bool)
 {
 	struct blk_mq_hw_ctx *hctx, *sq_hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	sq_hctx = NULL;
 	if (blk_queue_sq_sched(q))
 		sq_hctx = blk_mq_get_sq_hctx(q);
-	queue_for_each_hw_ctx(q, hctx, i) {
+	queue_for_each_hw_ctx!(q, hctx, i, {
 		if (blk_mq_hctx_stopped(hctx))
 			continue;
 		/*
@@ -2404,7 +2402,7 @@ void blk_mq_run_hw_queues(struct request_queue *q, bool async)
 		if (!sq_hctx || sq_hctx == hctx ||
 		    !list_empty_careful(&hctx->dispatch))
 			blk_mq_run_hw_queue(hctx, async);
-	}
+	});
 }
 EXPORT_SYMBOL(blk_mq_run_hw_queues);
 
@@ -2413,15 +2411,15 @@ EXPORT_SYMBOL(blk_mq_run_hw_queues);
  * @q: Pointer to the request queue to run.
  * @msecs: Milliseconds of delay to wait before running the queues.
  */
-void blk_mq_delay_run_hw_queues(struct request_queue *q, unsigned long msecs)
+void blk_mq_delay_run_hw_queues(request_queue *q, msecs: core::ffi::c_ulong)
 {
 	struct blk_mq_hw_ctx *hctx, *sq_hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	sq_hctx = NULL;
 	if (blk_queue_sq_sched(q))
 		sq_hctx = blk_mq_get_sq_hctx(q);
-	queue_for_each_hw_ctx(q, hctx, i) {
+	queue_for_each_hw_ctx!(q, hctx, i, {
 		if (blk_mq_hctx_stopped(hctx))
 			continue;
 		/*
@@ -2440,7 +2438,7 @@ void blk_mq_delay_run_hw_queues(struct request_queue *q, unsigned long msecs)
 		if (!sq_hctx || sq_hctx == hctx ||
 		    !list_empty_careful(&hctx->dispatch))
 			blk_mq_delay_run_hw_queue(hctx, msecs);
-	}
+	});
 }
 EXPORT_SYMBOL(blk_mq_delay_run_hw_queues);
 
@@ -2453,7 +2451,7 @@ EXPORT_SYMBOL(blk_mq_delay_run_hw_queues);
  * after blk_mq_stop_hw_queue() returns. Please use
  * blk_mq_quiesce_queue() for that requirement.
  */
-void blk_mq_stop_hw_queue(struct blk_mq_hw_ctx *hctx)
+void blk_mq_stop_hw_queue(blk_mq_hw_ctx *hctx)
 {
 	cancel_delayed_work(&hctx->run_work);
 
@@ -2470,17 +2468,17 @@ EXPORT_SYMBOL(blk_mq_stop_hw_queue);
  * after blk_mq_stop_hw_queues() returns. Please use
  * blk_mq_quiesce_queue() for that requirement.
  */
-void blk_mq_stop_hw_queues(struct request_queue *q)
+void blk_mq_stop_hw_queues(request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	queue_for_each_hw_ctx(q, hctx, i)
 		blk_mq_stop_hw_queue(hctx);
 }
 EXPORT_SYMBOL(blk_mq_stop_hw_queues);
 
-void blk_mq_start_hw_queue(struct blk_mq_hw_ctx *hctx)
+void blk_mq_start_hw_queue(blk_mq_hw_ctx *hctx)
 {
 	clear_bit(BLK_MQ_S_STOPPED, &hctx->state);
 
@@ -2488,17 +2486,17 @@ void blk_mq_start_hw_queue(struct blk_mq_hw_ctx *hctx)
 }
 EXPORT_SYMBOL(blk_mq_start_hw_queue);
 
-void blk_mq_start_hw_queues(struct request_queue *q)
+void blk_mq_start_hw_queues(request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	queue_for_each_hw_ctx(q, hctx, i)
 		blk_mq_start_hw_queue(hctx);
 }
 EXPORT_SYMBOL(blk_mq_start_hw_queues);
 
-void blk_mq_start_stopped_hw_queue(struct blk_mq_hw_ctx *hctx, bool async)
+void blk_mq_start_stopped_hw_queue(blk_mq_hw_ctx *hctx, r#async: bool)
 {
 	if (!blk_mq_hctx_stopped(hctx))
 		return;
@@ -2514,10 +2512,10 @@ void blk_mq_start_stopped_hw_queue(struct blk_mq_hw_ctx *hctx, bool async)
 }
 EXPORT_SYMBOL_GPL(blk_mq_start_stopped_hw_queue);
 
-void blk_mq_start_stopped_hw_queues(struct request_queue *q, bool async)
+void blk_mq_start_stopped_hw_queues(request_queue *q, r#async: bool)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	queue_for_each_hw_ctx(q, hctx, i)
 		blk_mq_start_stopped_hw_queue(hctx, async ||
@@ -2525,10 +2523,10 @@ void blk_mq_start_stopped_hw_queues(struct request_queue *q, bool async)
 }
 EXPORT_SYMBOL(blk_mq_start_stopped_hw_queues);
 
-static void blk_mq_run_work_fn(struct work_struct *work)
+static void blk_mq_run_work_fn(work_struct *work)
 {
 	struct blk_mq_hw_ctx *hctx =
-		container_of(work, struct blk_mq_hw_ctx, run_work.work);
+		container_of(work, blk_mq_hw_ctx, run_work.work);
 
 	blk_mq_run_dispatch_ops(hctx->queue,
 				blk_mq_sched_dispatch_requests(hctx));
@@ -2542,7 +2540,7 @@ static void blk_mq_run_work_fn(struct work_struct *work)
  * Should only be used carefully, when the caller knows we want to
  * bypass a potential IO scheduler on the target device.
  */
-static void blk_mq_request_bypass_insert(struct request *rq, blk_insert_t flags)
+static void blk_mq_request_bypass_insert(request *rq, blk_insert_t flags)
 {
 	struct blk_mq_hw_ctx *hctx = rq->mq_hctx;
 
@@ -2554,9 +2552,9 @@ static void blk_mq_request_bypass_insert(struct request *rq, blk_insert_t flags)
 	spin_unlock(&hctx->lock);
 }
 
-static void blk_mq_insert_requests(struct blk_mq_hw_ctx *hctx,
-		struct blk_mq_ctx *ctx, struct list_head *list,
-		bool run_queue_async)
+static void blk_mq_insert_requests(blk_mq_hw_ctx *hctx,
+		blk_mq_ctx *ctx, list_head *list,
+		run_queue_async: bool)
 {
 	struct request *rq;
 	enum hctx_type type = hctx->type;
@@ -2576,12 +2574,12 @@ static void blk_mq_insert_requests(struct blk_mq_hw_ctx *hctx,
 	 * preemption doesn't flush plug list, so it's possible ctx->cpu is
 	 * offline now
 	 */
-	list_for_each_entry(rq, list, queuelist) {
+	list_for_each_entry!(rq, list, queuelist, {
 		BUG_ON(rq->mq_ctx != ctx);
 		trace_block_rq_insert(rq);
 		if (rq->cmd_flags & REQ_NOWAIT)
 			run_queue_async = true;
-	}
+	});
 
 	spin_lock(&ctx->lock);
 	list_splice_tail_init(list, &ctx->rq_lists[type]);
@@ -2591,7 +2589,7 @@ out:
 	blk_mq_run_hw_queue(hctx, run_queue_async);
 }
 
-static void blk_mq_insert_request(struct request *rq, blk_insert_t flags)
+static void blk_mq_insert_request(request *rq, blk_insert_t flags)
 {
 	struct request_queue *q = rq->q;
 	struct blk_mq_ctx *ctx = rq->mq_ctx;
@@ -2653,8 +2651,8 @@ static void blk_mq_insert_request(struct request *rq, blk_insert_t flags)
 	}
 }
 
-static void blk_mq_bio_to_request(struct request *rq, struct bio *bio,
-		unsigned int nr_segs)
+static void blk_mq_bio_to_request(request *rq, bio *bio,
+		nr_segs: core::ffi::c_uint)
 {
 	int err;
 
@@ -2678,13 +2676,13 @@ static void blk_mq_bio_to_request(struct request *rq, struct bio *bio,
 	blk_account_io_start(rq);
 }
 
-static blk_status_t __blk_mq_issue_directly(struct blk_mq_hw_ctx *hctx,
-					    struct request *rq, bool last)
+static blk_status_t __blk_mq_issue_directly(blk_mq_hw_ctx *hctx,
+					    request *rq, last: bool)
 {
 	struct request_queue *q = rq->q;
 	struct blk_mq_queue_data bd = {
-		.rq = rq,
-		.last = last,
+		rq: rq,
+		last: last,
 	};
 	blk_status_t ret;
 
@@ -2711,7 +2709,7 @@ static blk_status_t __blk_mq_issue_directly(struct blk_mq_hw_ctx *hctx,
 	return ret;
 }
 
-static bool blk_mq_get_budget_and_tag(struct request *rq)
+static bool blk_mq_get_budget_and_tag(request *rq)
 {
 	int budget_token;
 
@@ -2736,8 +2734,8 @@ static bool blk_mq_get_budget_and_tag(struct request *rq)
  * we can try send it another time in the future. Requests inserted at this
  * queue have higher priority.
  */
-static void blk_mq_try_issue_directly(struct blk_mq_hw_ctx *hctx,
-		struct request *rq)
+static void blk_mq_try_issue_directly(blk_mq_hw_ctx *hctx,
+		request *rq)
 {
 	blk_status_t ret;
 
@@ -2768,7 +2766,7 @@ static void blk_mq_try_issue_directly(struct blk_mq_hw_ctx *hctx,
 	}
 }
 
-static blk_status_t blk_mq_request_issue_directly(struct request *rq, bool last)
+static blk_status_t blk_mq_request_issue_directly(request *rq, last: bool)
 {
 	struct blk_mq_hw_ctx *hctx = rq->mq_hctx;
 
@@ -2783,7 +2781,7 @@ static blk_status_t blk_mq_request_issue_directly(struct request *rq, bool last)
 	return __blk_mq_issue_directly(hctx, rq, last);
 }
 
-static void blk_mq_issue_direct(struct rq_list *rqs)
+static void blk_mq_issue_direct(rq_list *rqs)
 {
 	struct blk_mq_hw_ctx *hctx = NULL;
 	struct request *rq;
@@ -2822,15 +2820,15 @@ out:
 		blk_mq_commit_rqs(hctx, queued, false);
 }
 
-static void __blk_mq_flush_list(struct request_queue *q, struct rq_list *rqs)
+static void __blk_mq_flush_list(request_queue *q, rq_list *rqs)
 {
 	if (blk_queue_quiesced(q))
 		return;
 	q->mq_ops->queue_rqs(rqs);
 }
 
-static unsigned blk_mq_extract_queue_requests(struct rq_list *rqs,
-					      struct rq_list *queue_rqs)
+static unsigned blk_mq_extract_queue_requests(rq_list *rqs,
+					      rq_list *queue_rqs)
 {
 	struct request *rq = rq_list_pop(rqs);
 	struct request_queue *this_q = rq->q;
@@ -2858,7 +2856,7 @@ static unsigned blk_mq_extract_queue_requests(struct rq_list *rqs,
 	return depth;
 }
 
-static void blk_mq_dispatch_queue_requests(struct rq_list *rqs, unsigned depth)
+static void blk_mq_dispatch_queue_requests(rq_list *rqs, unsigned depth)
 {
 	struct request_queue *q = rq_list_peek(rqs)->q;
 
@@ -2879,12 +2877,12 @@ static void blk_mq_dispatch_queue_requests(struct rq_list *rqs, unsigned depth)
 	blk_mq_run_dispatch_ops(q, blk_mq_issue_direct(rqs));
 }
 
-static void blk_mq_dispatch_list(struct rq_list *rqs, bool from_sched)
+static void blk_mq_dispatch_list(rq_list *rqs, from_sched: bool)
 {
 	struct blk_mq_hw_ctx *this_hctx = NULL;
 	struct blk_mq_ctx *this_ctx = NULL;
 	struct rq_list requeue_list = {};
-	unsigned int depth = 0;
+	core::ffi::c_uint depth = 0;
 	bool is_passthrough = false;
 	LIST_HEAD(list);
 
@@ -2924,7 +2922,7 @@ static void blk_mq_dispatch_list(struct rq_list *rqs, bool from_sched)
 	percpu_ref_put(&this_hctx->queue->q_usage_counter);
 }
 
-static void blk_mq_dispatch_multiple_queue_requests(struct rq_list *rqs)
+static void blk_mq_dispatch_multiple_queue_requests(rq_list *rqs)
 {
 	do {
 		struct rq_list queue_rqs;
@@ -2937,9 +2935,9 @@ static void blk_mq_dispatch_multiple_queue_requests(struct rq_list *rqs)
 	} while (!rq_list_empty(rqs));
 }
 
-void blk_mq_flush_plug_list(struct blk_plug *plug, bool from_schedule)
+void blk_mq_flush_plug_list(blk_plug *plug, from_schedule: bool)
 {
-	unsigned int depth;
+	core::ffi::c_uint depth;
 
 	/*
 	 * We may have been called recursively midway through handling
@@ -2969,14 +2967,14 @@ void blk_mq_flush_plug_list(struct blk_plug *plug, bool from_schedule)
 	} while (!rq_list_empty(&plug->mq_list));
 }
 
-static void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
-		struct list_head *list)
+static void blk_mq_try_issue_list_directly(blk_mq_hw_ctx *hctx,
+		list_head *list)
 {
 	int queued = 0;
 	blk_status_t ret = BLK_STS_OK;
 
 	while (!list_empty(list)) {
-		struct request *rq = list_first_entry(list, struct request,
+		struct request *rq = list_first_entry(list, request,
 				queuelist);
 
 		list_del_init(&rq->queuelist);
@@ -3002,8 +3000,8 @@ out:
 		blk_mq_commit_rqs(hctx, queued, false);
 }
 
-static bool blk_mq_attempt_bio_merge(struct request_queue *q,
-				     struct bio *bio, unsigned int nr_segs)
+static bool blk_mq_attempt_bio_merge(request_queue *q,
+				     bio *bio, nr_segs: core::ffi::c_uint)
 {
 	if (!blk_queue_nomerges(q) && bio_mergeable(bio)) {
 		if (blk_attempt_plug_merge(q, bio, nr_segs))
@@ -3014,20 +3012,20 @@ static bool blk_mq_attempt_bio_merge(struct request_queue *q,
 	return false;
 }
 
-static struct request *blk_mq_get_new_requests(struct request_queue *q,
-					       struct blk_plug *plug,
-					       struct bio *bio)
+static struct request *blk_mq_get_new_requests(request_queue *q,
+					       blk_plug *plug,
+					       bio *bio)
 {
 	struct blk_mq_alloc_data data = {
-		.q		= q,
-		.flags		= 0,
-		.shallow_depth	= 0,
-		.cmd_flags	= bio->bi_opf,
-		.rq_flags	= 0,
-		.nr_tags	= 1,
-		.cached_rqs	= NULL,
-		.ctx		= NULL,
-		.hctx		= NULL
+		q: q,
+		flags: 0,
+		shallow_depth: 0,
+		cmd_flags: bio->bi_opf,
+		rq_flags: 0,
+		nr_tags: 1,
+		cached_rqs: NULL,
+		ctx: NULL,
+		hctx: NULL
 	};
 	struct request *rq;
 
@@ -3048,8 +3046,8 @@ static struct request *blk_mq_get_new_requests(struct request_queue *q,
 /*
  * Check if there is a suitable cached request and return it.
  */
-static struct request *blk_mq_get_cached_request(struct blk_plug *plug,
-		struct request_queue *q, blk_opf_t opf)
+static struct request *blk_mq_get_cached_request(blk_plug *plug,
+		request_queue *q, blk_opf_t opf)
 {
 	enum hctx_type type = blk_mq_get_hctx_type(opf);
 	struct request *rq;
@@ -3068,9 +3066,9 @@ static struct request *blk_mq_get_cached_request(struct blk_plug *plug,
 	return rq;
 }
 
-static bool bio_unaligned(const struct bio *bio, struct request_queue *q)
+static bool bio_unaligned(const struct bio *bio, request_queue *q)
 {
-	unsigned int bs_mask = queue_logical_block_size(q) - 1;
+	core::ffi::c_uint bs_mask = queue_logical_block_size(q) - 1;
 
 	/* .bi_sector of any zero sized bio need to be initialized */
 	if ((bio->bi_iter.bi_size & bs_mask) ||
@@ -3092,14 +3090,14 @@ static bool bio_unaligned(const struct bio *bio, struct request_queue *q)
  * It will not queue the request if there is an error with the bio, or at the
  * request creation.
  */
-void blk_mq_submit_bio(struct bio *bio)
+void blk_mq_submit_bio(bio *bio)
 {
 	struct request_queue *q = bdev_get_queue(bio->bi_bdev);
 	struct blk_plug *plug = current->plug;
 	const int is_sync = op_is_sync(bio->bi_opf);
-	unsigned int integrity_action;
+	core::ffi::c_uint integrity_action;
 	struct blk_mq_hw_ctx *hctx;
-	unsigned int nr_segs;
+	core::ffi::c_uint nr_segs;
 	struct request *rq;
 	blk_status_t ret;
 
@@ -3223,11 +3221,11 @@ queue_exit:
  * blk_insert_cloned_request - Helper for stacking drivers to submit a request
  * @rq: the request being queued
  */
-blk_status_t blk_insert_cloned_request(struct request *rq)
+blk_status_t blk_insert_cloned_request(request *rq)
 {
 	struct request_queue *q = rq->q;
-	unsigned int max_sectors = blk_queue_get_max_sectors(rq);
-	unsigned int max_segments = blk_rq_get_max_segments(rq);
+	core::ffi::c_uint max_sectors = blk_queue_get_max_sectors(rq);
+	core::ffi::c_uint max_segments = blk_rq_get_max_segments(rq);
 	blk_status_t ret;
 
 	if (blk_rq_sectors(rq) > max_sectors) {
@@ -3244,7 +3242,7 @@ blk_status_t blk_insert_cloned_request(struct request *rq)
 		if (max_sectors == 0)
 			return BLK_STS_NOTSUPP;
 
-		printk(KERN_ERR "%s: over max size limit. (%u > %u)\n",
+		printk(c"\x013%s: over max size limit. (%u > %u)\n".as_ptr(),
 			__func__, blk_rq_sectors(rq), max_sectors);
 		return BLK_STS_IOERR;
 	}
@@ -3255,7 +3253,7 @@ blk_status_t blk_insert_cloned_request(struct request *rq)
 	 */
 	rq->nr_phys_segments = blk_recalc_rq_segments(rq);
 	if (rq->nr_phys_segments > max_segments) {
-		printk(KERN_ERR "%s: over max segments limit. (%u > %u)\n",
+		printk(c"\x013%s: over max segments limit. (%u > %u)\n".as_ptr(),
 			__func__, rq->nr_phys_segments, max_segments);
 		return BLK_STS_IOERR;
 	}
@@ -3267,12 +3265,12 @@ blk_status_t blk_insert_cloned_request(struct request *rq)
 	 * queue just like nr_phys_segments above.
 	 */
 	if (blk_integrity_rq(rq) && rq->bio) {
-		unsigned short max_int_segs = queue_max_integrity_segments(q);
+		core::ffi::c_ushort max_int_segs = queue_max_integrity_segments(q);
 
 		rq->nr_integrity_segments =
 			blk_rq_count_integrity_sg(rq->q, rq->bio);
 		if (rq->nr_integrity_segments > max_int_segs) {
-			printk(KERN_ERR "%s: over max integrity segments limit. (%u > %u)\n",
+			printk(c"\x013%s: over max integrity segments limit. (%u > %u)\n".as_ptr(),
 				__func__, rq->nr_integrity_segments,
 				max_int_segs);
 			return BLK_STS_IOERR;
@@ -3308,7 +3306,7 @@ EXPORT_SYMBOL_GPL(blk_insert_cloned_request);
  * Description:
  *     Free all bios in @rq for a cloned request.
  */
-void blk_rq_unprep_clone(struct request *rq)
+void blk_rq_unprep_clone(request *rq)
 {
 	struct bio *bio;
 
@@ -3337,9 +3335,9 @@ EXPORT_SYMBOL_GPL(blk_rq_unprep_clone);
  *     So cloned bios must be completed before original bios, which means
  *     the caller must complete @rq before @rq_src.
  */
-int blk_rq_prep_clone(struct request *rq, struct request *rq_src,
-		      struct bio_set *bs, gfp_t gfp_mask,
-		      int (*bio_ctr)(struct bio *, struct bio *, void *),
+int blk_rq_prep_clone(request *rq, request *rq_src,
+		      bio_set *bs, gfp_t gfp_mask,
+		      int (*bio_ctr)(bio *, bio *, void *),
 		      void *data)
 {
 	struct bio *bio_src;
@@ -3347,7 +3345,7 @@ int blk_rq_prep_clone(struct request *rq, struct request *rq_src,
 	if (!bs)
 		bs = &fs_bio_set;
 
-	__rq_for_each_bio(bio_src, rq_src) {
+	__rq_for_each_bio!(bio_src, rq_src, {
 		struct bio *bio	 = bio_alloc_clone(rq->q->disk->part0, bio_src,
 					gfp_mask, bs);
 		if (!bio)
@@ -3364,7 +3362,7 @@ int blk_rq_prep_clone(struct request *rq, struct request *rq_src,
 		} else {
 			rq->bio = rq->biotail = bio;
 		}
-	}
+	});
 
 	/* Copy attributes of the original request to the clone request. */
 	rq->__sector = blk_rq_pos(rq_src);
@@ -3394,7 +3392,7 @@ EXPORT_SYMBOL_GPL(blk_rq_prep_clone);
  * Steal bios from a request and add them to a bio list.
  * The request must not have been partially completed before.
  */
-void blk_steal_bios(struct bio_list *list, struct request *rq)
+void blk_steal_bios(bio_list *list, request *rq)
 {
 	struct bio *bio;
 
@@ -3430,14 +3428,14 @@ void blk_steal_bios(struct bio_list *list, struct request *rq)
 }
 EXPORT_SYMBOL_GPL(blk_steal_bios);
 
-static size_t order_to_size(unsigned int order)
+static size_t order_to_size(order: core::ffi::c_uint)
 {
 	return (size_t)PAGE_SIZE << order;
 }
 
 /* called before freeing request pool in @tags */
-static void blk_mq_clear_rq_mapping(struct blk_mq_tags *drv_tags,
-				    struct blk_mq_tags *tags)
+static void blk_mq_clear_rq_mapping(blk_mq_tags *drv_tags,
+				    blk_mq_tags *tags)
 {
 	struct page *page;
 
@@ -3448,25 +3446,25 @@ static void blk_mq_clear_rq_mapping(struct blk_mq_tags *drv_tags,
 	if (!drv_tags || drv_tags == tags)
 		return;
 
-	list_for_each_entry(page, &tags->page_list, lru) {
-		unsigned long start = (unsigned long)page_address(page);
-		unsigned long end = start + order_to_size(page->private);
+	list_for_each_entry!(page, &tags->page_list, lru, {
+		core::ffi::c_ulong start = (core::ffi::c_ulong)page_address(page);
+		core::ffi::c_ulong end = start + order_to_size(page->private);
 		int i;
 
 		for (i = 0; i < drv_tags->nr_tags; i++) {
 			struct request *rq = drv_tags->rqs[i];
-			unsigned long rq_addr = (unsigned long)rq;
+			core::ffi::c_ulong rq_addr = (core::ffi::c_ulong)rq;
 
 			if (rq_addr >= start && rq_addr < end) {
 				WARN_ON_ONCE(req_ref_read(rq) != 0);
 				cmpxchg(&drv_tags->rqs[i], rq, NULL);
 			}
 		}
-	}
+	});
 }
 
-void blk_mq_free_rqs(struct blk_mq_tag_set *set, struct blk_mq_tags *tags,
-		     unsigned int hctx_idx)
+void blk_mq_free_rqs(blk_mq_tag_set *set, blk_mq_tags *tags,
+		     hctx_idx: core::ffi::c_uint)
 {
 	struct blk_mq_tags *drv_tags;
 
@@ -3498,7 +3496,7 @@ void blk_mq_free_rqs(struct blk_mq_tag_set *set, struct blk_mq_tags *tags,
 	 */
 }
 
-void blk_mq_free_rq_map(struct blk_mq_tag_set *set, struct blk_mq_tags *tags)
+void blk_mq_free_rq_map(blk_mq_tag_set *set, blk_mq_tags *tags)
 {
 	kfree(tags->rqs);
 	tags->rqs = NULL;
@@ -3508,14 +3506,14 @@ void blk_mq_free_rq_map(struct blk_mq_tag_set *set, struct blk_mq_tags *tags)
 	blk_mq_free_tags(set, tags);
 }
 
-static enum hctx_type hctx_idx_to_type(struct blk_mq_tag_set *set,
-		unsigned int hctx_idx)
+static enum hctx_type hctx_idx_to_type(blk_mq_tag_set *set,
+		hctx_idx: core::ffi::c_uint)
 {
 	int i;
 
 	for (i = 0; i < set->nr_maps; i++) {
-		unsigned int start = set->map[i].queue_offset;
-		unsigned int end = start + set->map[i].nr_queues;
+		core::ffi::c_uint start = set->map[i].queue_offset;
+		core::ffi::c_uint end = start + set->map[i].nr_queues;
 
 		if (hctx_idx >= start && hctx_idx < end)
 			break;
@@ -3527,18 +3525,18 @@ static enum hctx_type hctx_idx_to_type(struct blk_mq_tag_set *set,
 	return i;
 }
 
-static int blk_mq_get_hctx_node(struct blk_mq_tag_set *set,
-		unsigned int hctx_idx)
+static int blk_mq_get_hctx_node(blk_mq_tag_set *set,
+		hctx_idx: core::ffi::c_uint)
 {
 	enum hctx_type type = hctx_idx_to_type(set, hctx_idx);
 
 	return blk_mq_hw_queue_to_node(&set->map[type], hctx_idx);
 }
 
-static struct blk_mq_tags *blk_mq_alloc_rq_map(struct blk_mq_tag_set *set,
-					       unsigned int hctx_idx,
-					       unsigned int nr_tags,
-					       unsigned int reserved_tags)
+static struct blk_mq_tags *blk_mq_alloc_rq_map(blk_mq_tag_set *set,
+					       hctx_idx: core::ffi::c_uint,
+					       nr_tags: core::ffi::c_uint,
+					       reserved_tags: core::ffi::c_uint)
 {
 	int node = blk_mq_get_hctx_node(set, hctx_idx);
 	struct blk_mq_tags *tags;
@@ -3550,13 +3548,13 @@ static struct blk_mq_tags *blk_mq_alloc_rq_map(struct blk_mq_tag_set *set,
 	if (!tags)
 		return NULL;
 
-	tags->rqs = kcalloc_node(nr_tags, sizeof(struct request *),
+	tags->rqs = kcalloc_node(nr_tags, sizeof(request *),
 				 GFP_NOIO | __GFP_NOWARN | __GFP_NORETRY,
 				 node);
 	if (!tags->rqs)
 		goto err_free_tags;
 
-	tags->static_rqs = kcalloc_node(nr_tags, sizeof(struct request *),
+	tags->static_rqs = kcalloc_node(nr_tags, sizeof(request *),
 					GFP_NOIO | __GFP_NOWARN | __GFP_NORETRY,
 					node);
 	if (!tags->static_rqs)
@@ -3571,8 +3569,8 @@ err_free_tags:
 	return NULL;
 }
 
-static int blk_mq_init_request(struct blk_mq_tag_set *set, struct request *rq,
-			       unsigned int hctx_idx, int node)
+static int blk_mq_init_request(blk_mq_tag_set *set, request *rq,
+			       hctx_idx: core::ffi::c_uint, int node)
 {
 	int ret;
 
@@ -3586,11 +3584,11 @@ static int blk_mq_init_request(struct blk_mq_tag_set *set, struct request *rq,
 	return 0;
 }
 
-static int blk_mq_alloc_rqs(struct blk_mq_tag_set *set,
-			    struct blk_mq_tags *tags,
-			    unsigned int hctx_idx, unsigned int depth)
+static int blk_mq_alloc_rqs(blk_mq_tag_set *set,
+			    blk_mq_tags *tags,
+			    hctx_idx: core::ffi::c_uint, depth: core::ffi::c_uint)
 {
-	unsigned int i, j, entries_per_page, max_order = 4;
+	i: core::ffi::c_uint, j, entries_per_page, max_order = 4;
 	int node = blk_mq_get_hctx_node(set, hctx_idx);
 	size_t rq_size, left;
 
@@ -3601,7 +3599,7 @@ static int blk_mq_alloc_rqs(struct blk_mq_tag_set *set,
 	 * rq_size is the size of the request plus driver payload, rounded
 	 * to the cacheline size
 	 */
-	rq_size = round_up(sizeof(struct request) + set->cmd_size,
+	rq_size = round_up(sizeof(request) + set->cmd_size,
 				cache_line_size());
 	left = rq_size * depth;
 
@@ -3666,7 +3664,7 @@ struct rq_iter_data {
 	bool has_rq;
 };
 
-static bool blk_mq_has_request(struct request *rq, void *data)
+static bool blk_mq_has_request(request *rq, void *data)
 {
 	struct rq_iter_data *iter_data = data;
 
@@ -3676,12 +3674,12 @@ static bool blk_mq_has_request(struct request *rq, void *data)
 	return false;
 }
 
-static bool blk_mq_hctx_has_requests(struct blk_mq_hw_ctx *hctx)
+static bool blk_mq_hctx_has_requests(blk_mq_hw_ctx *hctx)
 {
 	struct blk_mq_tags *tags = hctx->sched_tags ?
 			hctx->sched_tags : hctx->tags;
 	struct rq_iter_data data = {
-		.hctx	= hctx,
+		hctx: hctx,
 	};
 	int srcu_idx;
 
@@ -3692,8 +3690,8 @@ static bool blk_mq_hctx_has_requests(struct blk_mq_hw_ctx *hctx)
 	return data.has_rq;
 }
 
-static bool blk_mq_hctx_has_online_cpu(struct blk_mq_hw_ctx *hctx,
-		unsigned int this_cpu)
+static bool blk_mq_hctx_has_online_cpu(blk_mq_hw_ctx *hctx,
+		this_cpu: core::ffi::c_uint)
 {
 	enum hctx_type type = hctx->type;
 	int cpu;
@@ -3703,7 +3701,7 @@ static bool blk_mq_hctx_has_online_cpu(struct blk_mq_hw_ctx *hctx,
 	 * might submit IOs on these isolated CPUs, so use the queue map to
 	 * check if all CPUs mapped to this hctx are offline
 	 */
-	for_each_online_cpu(cpu) {
+	for_each_online_cpu!(cpu, {
 		struct blk_mq_hw_ctx *h = blk_mq_map_queue_type(hctx->queue,
 				type, cpu);
 
@@ -3713,15 +3711,15 @@ static bool blk_mq_hctx_has_online_cpu(struct blk_mq_hw_ctx *hctx,
 		/* this hctx has at least one online CPU */
 		if (this_cpu != cpu)
 			return true;
-	}
+	});
 
 	return false;
 }
 
-static int blk_mq_hctx_notify_offline(unsigned int cpu, struct hlist_node *node)
+static int blk_mq_hctx_notify_offline(cpu: core::ffi::c_uint, hlist_node *node)
 {
 	struct blk_mq_hw_ctx *hctx = hlist_entry_safe(node,
-			struct blk_mq_hw_ctx, cpuhp_online);
+			blk_mq_hw_ctx, cpuhp_online);
 	int ret = 0;
 
 	if (!hctx->nr_ctx || blk_mq_hctx_has_online_cpu(hctx, cpu))
@@ -3770,7 +3768,7 @@ static int blk_mq_hctx_notify_offline(unsigned int cpu, struct hlist_node *node)
  * to be used for scheduling kworker only. For other usage, please call this
  * helper for checking if one CPU belongs to the specified hctx
  */
-static bool blk_mq_cpu_mapped_to_hctx(unsigned int cpu,
+static bool blk_mq_cpu_mapped_to_hctx(cpu: core::ffi::c_uint,
 		const struct blk_mq_hw_ctx *hctx)
 {
 	struct blk_mq_hw_ctx *mapped_hctx = blk_mq_map_queue_type(hctx->queue,
@@ -3779,10 +3777,10 @@ static bool blk_mq_cpu_mapped_to_hctx(unsigned int cpu,
 	return mapped_hctx == hctx;
 }
 
-static int blk_mq_hctx_notify_online(unsigned int cpu, struct hlist_node *node)
+static int blk_mq_hctx_notify_online(cpu: core::ffi::c_uint, hlist_node *node)
 {
 	struct blk_mq_hw_ctx *hctx = hlist_entry_safe(node,
-			struct blk_mq_hw_ctx, cpuhp_online);
+			blk_mq_hw_ctx, cpuhp_online);
 
 	if (blk_mq_cpu_mapped_to_hctx(cpu, hctx))
 		clear_bit(BLK_MQ_S_INACTIVE, &hctx->state);
@@ -3794,14 +3792,14 @@ static int blk_mq_hctx_notify_online(unsigned int cpu, struct hlist_node *node)
  * software queue to the hw queue dispatch list, and ensure that it
  * gets run.
  */
-static int blk_mq_hctx_notify_dead(unsigned int cpu, struct hlist_node *node)
+static int blk_mq_hctx_notify_dead(cpu: core::ffi::c_uint, hlist_node *node)
 {
 	struct blk_mq_hw_ctx *hctx;
 	struct blk_mq_ctx *ctx;
 	LIST_HEAD(tmp);
 	enum hctx_type type;
 
-	hctx = hlist_entry_safe(node, struct blk_mq_hw_ctx, cpuhp_dead);
+	hctx = hlist_entry_safe(node, blk_mq_hw_ctx, cpuhp_dead);
 	if (!blk_mq_cpu_mapped_to_hctx(cpu, hctx))
 		return 0;
 
@@ -3826,7 +3824,7 @@ static int blk_mq_hctx_notify_dead(unsigned int cpu, struct hlist_node *node)
 	return 0;
 }
 
-static void __blk_mq_remove_cpuhp(struct blk_mq_hw_ctx *hctx)
+static void __blk_mq_remove_cpuhp(blk_mq_hw_ctx *hctx)
 {
 	lockdep_assert_held(&blk_mq_cpuhp_lock);
 
@@ -3844,14 +3842,14 @@ static void __blk_mq_remove_cpuhp(struct blk_mq_hw_ctx *hctx)
 	}
 }
 
-static void blk_mq_remove_cpuhp(struct blk_mq_hw_ctx *hctx)
+static void blk_mq_remove_cpuhp(blk_mq_hw_ctx *hctx)
 {
 	mutex_lock(&blk_mq_cpuhp_lock);
 	__blk_mq_remove_cpuhp(hctx);
 	mutex_unlock(&blk_mq_cpuhp_lock);
 }
 
-static void __blk_mq_add_cpuhp(struct blk_mq_hw_ctx *hctx)
+static void __blk_mq_add_cpuhp(blk_mq_hw_ctx *hctx)
 {
 	lockdep_assert_held(&blk_mq_cpuhp_lock);
 
@@ -3865,7 +3863,7 @@ static void __blk_mq_add_cpuhp(struct blk_mq_hw_ctx *hctx)
 				&hctx->cpuhp_dead);
 }
 
-static void __blk_mq_remove_cpuhp_list(struct list_head *head)
+static void __blk_mq_remove_cpuhp_list(list_head *head)
 {
 	struct blk_mq_hw_ctx *hctx;
 
@@ -3880,7 +3878,7 @@ static void __blk_mq_remove_cpuhp_list(struct list_head *head)
  *
  * Safe to call if this `request_queue` is live
  */
-static void blk_mq_remove_hw_queues_cpuhp(struct request_queue *q)
+static void blk_mq_remove_hw_queues_cpuhp(request_queue *q)
 {
 	LIST_HEAD(hctx_list);
 
@@ -3902,10 +3900,10 @@ static void blk_mq_remove_hw_queues_cpuhp(struct request_queue *q)
  *
  * Safe to call if this `request_queue` is live
  */
-static void blk_mq_add_hw_queues_cpuhp(struct request_queue *q)
+static void blk_mq_add_hw_queues_cpuhp(request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	mutex_lock(&blk_mq_cpuhp_lock);
 	queue_for_each_hw_ctx(q, hctx, i)
@@ -3917,8 +3915,8 @@ static void blk_mq_add_hw_queues_cpuhp(struct request_queue *q)
  * Before freeing hw queue, clearing the flush request reference in
  * tags->rqs[] for avoiding potential UAF.
  */
-static void blk_mq_clear_flush_rq_mapping(struct blk_mq_tags *tags,
-		unsigned int queue_depth, struct request *flush_rq)
+static void blk_mq_clear_flush_rq_mapping(blk_mq_tags *tags,
+		queue_depth: core::ffi::c_uint, request *flush_rq)
 {
 	int i;
 
@@ -3932,18 +3930,18 @@ static void blk_mq_clear_flush_rq_mapping(struct blk_mq_tags *tags,
 		cmpxchg(&tags->rqs[i], flush_rq, NULL);
 }
 
-static void blk_free_flush_queue_callback(struct rcu_head *head)
+static void blk_free_flush_queue_callback(rcu_head *head)
 {
 	struct blk_flush_queue *fq =
-		container_of(head, struct blk_flush_queue, rcu_head);
+		container_of(head, blk_flush_queue, rcu_head);
 
 	blk_free_flush_queue(fq);
 }
 
 /* hctx->ctxs will be freed in queue's release handler */
-static void blk_mq_exit_hctx(struct request_queue *q,
-		struct blk_mq_tag_set *set,
-		struct blk_mq_hw_ctx *hctx, unsigned int hctx_idx)
+static void blk_mq_exit_hctx(request_queue *q,
+		blk_mq_tag_set *set,
+		blk_mq_hw_ctx *hctx, hctx_idx: core::ffi::c_uint)
 {
 	struct request *flush_rq = hctx->fq->flush_rq;
 
@@ -3968,23 +3966,23 @@ static void blk_mq_exit_hctx(struct request_queue *q,
 	spin_unlock(&q->unused_hctx_lock);
 }
 
-static void blk_mq_exit_hw_queues(struct request_queue *q,
-		struct blk_mq_tag_set *set, int nr_queue)
+static void blk_mq_exit_hw_queues(request_queue *q,
+		blk_mq_tag_set *set, int nr_queue)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
-	queue_for_each_hw_ctx(q, hctx, i) {
+	queue_for_each_hw_ctx!(q, hctx, i, {
 		if (i == nr_queue)
 			break;
 		blk_mq_remove_cpuhp(hctx);
 		blk_mq_exit_hctx(q, set, hctx, i);
-	}
+	});
 }
 
-static int blk_mq_init_hctx(struct request_queue *q,
-		struct blk_mq_tag_set *set,
-		struct blk_mq_hw_ctx *hctx, unsigned hctx_idx)
+static int blk_mq_init_hctx(request_queue *q,
+		blk_mq_tag_set *set,
+		blk_mq_hw_ctx *hctx, unsigned hctx_idx)
 {
 	gfp_t gfp = GFP_NOIO | __GFP_NOWARN | __GFP_NORETRY;
 
@@ -4017,13 +4015,13 @@ static int blk_mq_init_hctx(struct request_queue *q,
 }
 
 static struct blk_mq_hw_ctx *
-blk_mq_alloc_hctx(struct request_queue *q, struct blk_mq_tag_set *set,
+blk_mq_alloc_hctx(request_queue *q, blk_mq_tag_set *set,
 		int node)
 {
 	struct blk_mq_hw_ctx *hctx;
 	gfp_t gfp = GFP_NOIO | __GFP_NOWARN | __GFP_NORETRY;
 
-	hctx = kzalloc_node(sizeof(struct blk_mq_hw_ctx), gfp, node);
+	hctx = kzalloc_node(sizeof(blk_mq_hw_ctx), gfp, node);
 	if (!hctx)
 		goto fail_alloc_hctx;
 
@@ -4077,13 +4075,13 @@ blk_mq_alloc_hctx(struct request_queue *q, struct blk_mq_tag_set *set,
 	return NULL;
 }
 
-static void blk_mq_init_cpu_queues(struct request_queue *q,
-				   unsigned int nr_hw_queues)
+static void blk_mq_init_cpu_queues(request_queue *q,
+				   nr_hw_queues: core::ffi::c_uint)
 {
 	struct blk_mq_tag_set *set = q->tag_set;
-	unsigned int i, j;
+	i: core::ffi::c_uint, j;
 
-	for_each_possible_cpu(i) {
+	for_each_possible_cpu!(i, {
 		struct blk_mq_ctx *__ctx = per_cpu_ptr(q->queue_ctx, i);
 		struct blk_mq_hw_ctx *hctx;
 		int k;
@@ -4104,12 +4102,12 @@ static void blk_mq_init_cpu_queues(struct request_queue *q,
 			if (nr_hw_queues > 1 && hctx->numa_node == NUMA_NO_NODE)
 				hctx->numa_node = cpu_to_node(i);
 		}
-	}
+	});
 }
 
-struct blk_mq_tags *blk_mq_alloc_map_and_rqs(struct blk_mq_tag_set *set,
-					     unsigned int hctx_idx,
-					     unsigned int depth)
+struct blk_mq_tags *blk_mq_alloc_map_and_rqs(blk_mq_tag_set *set,
+					     hctx_idx: core::ffi::c_uint,
+					     depth: core::ffi::c_uint)
 {
 	struct blk_mq_tags *tags;
 	int ret;
@@ -4127,7 +4125,7 @@ struct blk_mq_tags *blk_mq_alloc_map_and_rqs(struct blk_mq_tag_set *set,
 	return tags;
 }
 
-static bool __blk_mq_alloc_map_and_rqs(struct blk_mq_tag_set *set,
+static bool __blk_mq_alloc_map_and_rqs(blk_mq_tag_set *set,
 				       int hctx_idx)
 {
 	if (blk_mq_is_shared_tags(set->flags)) {
@@ -4142,9 +4140,9 @@ static bool __blk_mq_alloc_map_and_rqs(struct blk_mq_tag_set *set,
 	return set->tags[hctx_idx];
 }
 
-void blk_mq_free_map_and_rqs(struct blk_mq_tag_set *set,
-			     struct blk_mq_tags *tags,
-			     unsigned int hctx_idx)
+void blk_mq_free_map_and_rqs(blk_mq_tag_set *set,
+			     blk_mq_tags *tags,
+			     hctx_idx: core::ffi::c_uint)
 {
 	if (tags) {
 		blk_mq_free_rqs(set, tags, hctx_idx);
@@ -4152,8 +4150,8 @@ void blk_mq_free_map_and_rqs(struct blk_mq_tag_set *set,
 	}
 }
 
-static void __blk_mq_free_map_and_rqs(struct blk_mq_tag_set *set,
-				      unsigned int hctx_idx)
+static void __blk_mq_free_map_and_rqs(blk_mq_tag_set *set,
+				      hctx_idx: core::ffi::c_uint)
 {
 	if (!blk_mq_is_shared_tags(set->flags))
 		blk_mq_free_map_and_rqs(set, set->tags[hctx_idx], hctx_idx);
@@ -4161,26 +4159,26 @@ static void __blk_mq_free_map_and_rqs(struct blk_mq_tag_set *set,
 	set->tags[hctx_idx] = NULL;
 }
 
-static void blk_mq_map_swqueue(struct request_queue *q)
+static void blk_mq_map_swqueue(request_queue *q)
 {
-	unsigned int j, hctx_idx;
-	unsigned long i;
+	j: core::ffi::c_uint, hctx_idx;
+	core::ffi::c_ulong i;
 	struct blk_mq_hw_ctx *hctx;
 	struct blk_mq_ctx *ctx;
 	struct blk_mq_tag_set *set = q->tag_set;
 
-	queue_for_each_hw_ctx(q, hctx, i) {
+	queue_for_each_hw_ctx!(q, hctx, i, {
 		cpumask_clear(hctx->cpumask);
 		hctx->nr_ctx = 0;
 		hctx->dispatch_from = NULL;
-	}
+	});
 
 	/*
 	 * Map software to hardware queues.
 	 *
 	 * If the cpu isn't present, the cpu is mapped to first hctx.
 	 */
-	for_each_possible_cpu(i) {
+	for_each_possible_cpu!(i, {
 
 		ctx = per_cpu_ptr(q->queue_ctx, i);
 		for (j = 0; j < set->nr_maps; j++) {
@@ -4227,9 +4225,9 @@ static void blk_mq_map_swqueue(struct request_queue *q)
 		for (; j < HCTX_MAX_TYPES; j++)
 			ctx->hctxs[j] = blk_mq_map_queue_type(q,
 					HCTX_TYPE_DEFAULT, i);
-	}
+	});
 
-	queue_for_each_hw_ctx(q, hctx, i) {
+	queue_for_each_hw_ctx!(q, hctx, i, {
 		int cpu;
 
 		/*
@@ -4265,10 +4263,10 @@ static void blk_mq_map_swqueue(struct request_queue *q)
 		 * here.
 		 */
 		rcu_read_lock();
-		for_each_cpu(cpu, hctx->cpumask) {
+		for_each_cpu!(cpu, hctx->cpumask, {
 			if (cpu_is_isolated(cpu))
 				cpumask_clear_cpu(cpu, hctx->cpumask);
-		}
+		});
 		rcu_read_unlock();
 
 		/*
@@ -4276,44 +4274,44 @@ static void blk_mq_map_swqueue(struct request_queue *q)
 		 */
 		hctx->next_cpu = blk_mq_first_mapped_cpu(hctx);
 		hctx->next_cpu_batch = BLK_MQ_CPU_WORK_BATCH;
-	}
+	});
 }
 
 /*
  * Caller needs to ensure that we're either frozen/quiesced, or that
  * the queue isn't live yet.
  */
-static void queue_set_hctx_shared(struct request_queue *q, bool shared)
+static void queue_set_hctx_shared(request_queue *q, shared: bool)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
-	queue_for_each_hw_ctx(q, hctx, i) {
+	queue_for_each_hw_ctx!(q, hctx, i, {
 		if (shared) {
 			hctx->flags |= BLK_MQ_F_TAG_QUEUE_SHARED;
 		} else {
 			blk_mq_tag_idle(hctx);
 			hctx->flags &= ~BLK_MQ_F_TAG_QUEUE_SHARED;
 		}
-	}
+	});
 }
 
-static void blk_mq_update_tag_set_shared(struct blk_mq_tag_set *set,
-					 bool shared)
+static void blk_mq_update_tag_set_shared(blk_mq_tag_set *set,
+					 shared: bool)
 {
 	struct request_queue *q;
-	unsigned int memflags;
+	core::ffi::c_uint memflags;
 
 	lockdep_assert_held(&set->tag_list_lock);
 
-	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry!(q, &set->tag_list, tag_set_list, {
 		memflags = blk_mq_freeze_queue(q);
 		queue_set_hctx_shared(q, shared);
 		blk_mq_unfreeze_queue(q, memflags);
-	}
+	});
 }
 
-static void blk_mq_del_queue_tag_set(struct request_queue *q)
+static void blk_mq_del_queue_tag_set(request_queue *q)
 {
 	struct blk_mq_tag_set *set = q->tag_set;
 
@@ -4328,8 +4326,8 @@ static void blk_mq_del_queue_tag_set(struct request_queue *q)
 	mutex_unlock(&set->tag_list_lock);
 }
 
-static void blk_mq_add_queue_tag_set(struct blk_mq_tag_set *set,
-				     struct request_queue *q)
+static void blk_mq_add_queue_tag_set(blk_mq_tag_set *set,
+				     request_queue *q)
 {
 	mutex_lock(&set->tag_list_lock);
 
@@ -4350,7 +4348,7 @@ static void blk_mq_add_queue_tag_set(struct blk_mq_tag_set *set,
 }
 
 /* All allocations will be freed in release handler of q->mq_kobj */
-static int blk_mq_alloc_ctxs(struct request_queue *q)
+static int blk_mq_alloc_ctxs(request_queue *q)
 {
 	struct blk_mq_ctxs *ctxs;
 	int cpu;
@@ -4359,14 +4357,14 @@ static int blk_mq_alloc_ctxs(struct request_queue *q)
 	if (!ctxs)
 		return -ENOMEM;
 
-	ctxs->queue_ctx = alloc_percpu(struct blk_mq_ctx);
+	ctxs->queue_ctx = alloc_percpu(blk_mq_ctx);
 	if (!ctxs->queue_ctx)
 		goto fail;
 
-	for_each_possible_cpu(cpu) {
+	for_each_possible_cpu!(cpu, {
 		struct blk_mq_ctx *ctx = per_cpu_ptr(ctxs->queue_ctx, cpu);
 		ctx->ctxs = ctxs;
-	}
+	});
 
 	q->mq_kobj = &ctxs->kobj;
 	q->queue_ctx = ctxs->queue_ctx;
@@ -4383,19 +4381,19 @@ static int blk_mq_alloc_ctxs(struct request_queue *q)
  * and headache because q->mq_kobj shouldn't have been introduced,
  * but we can't group ctx/kctx kobj without it.
  */
-void blk_mq_release(struct request_queue *q)
+void blk_mq_release(request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx, *next;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	queue_for_each_hw_ctx(q, hctx, i)
 		WARN_ON_ONCE(hctx && list_empty(&hctx->hctx_list));
 
 	/* all hctx are in .unused_hctx_list now */
-	list_for_each_entry_safe(hctx, next, &q->unused_hctx_list, hctx_list) {
+	list_for_each_entry_safe!(hctx, next, &q->unused_hctx_list, hctx_list, {
 		list_del_init(&hctx->hctx_list);
 		kobject_put(&hctx->kobj);
-	}
+	});
 
 	kfree(q->queue_hw_ctx);
 
@@ -4406,8 +4404,8 @@ void blk_mq_release(struct request_queue *q)
 	blk_mq_sysfs_deinit(q);
 }
 
-struct request_queue *blk_mq_alloc_queue(struct blk_mq_tag_set *set,
-		struct queue_limits *lim, void *queuedata)
+struct request_queue *blk_mq_alloc_queue(blk_mq_tag_set *set,
+		queue_limits *lim, void *queuedata)
 {
 	struct queue_limits default_lim = { };
 	struct request_queue *q;
@@ -4442,7 +4440,7 @@ EXPORT_SYMBOL(blk_mq_alloc_queue);
  *
  * Context: can sleep
  */
-void blk_mq_destroy_queue(struct request_queue *q)
+void blk_mq_destroy_queue(request_queue *q)
 {
 	WARN_ON_ONCE(!queue_is_mq(q));
 	WARN_ON_ONCE(blk_queue_registered(q));
@@ -4459,9 +4457,9 @@ void blk_mq_destroy_queue(struct request_queue *q)
 }
 EXPORT_SYMBOL(blk_mq_destroy_queue);
 
-struct gendisk *__blk_mq_alloc_disk(struct blk_mq_tag_set *set,
-		struct queue_limits *lim, void *queuedata,
-		struct lock_class_key *lkclass)
+struct gendisk *__blk_mq_alloc_disk(blk_mq_tag_set *set,
+		queue_limits *lim, void *queuedata,
+		lock_class_key *lkclass)
 {
 	struct request_queue *q;
 	struct gendisk *disk;
@@ -4481,9 +4479,8 @@ struct gendisk *__blk_mq_alloc_disk(struct blk_mq_tag_set *set,
 }
 EXPORT_SYMBOL(__blk_mq_alloc_disk);
 
-struct gendisk *blk_mq_alloc_disk_for_queue(struct request_queue *q,
-		struct lock_class_key *lkclass)
-{
+struct gendisk *blk_mq_alloc_disk_for_queue!(request_queue *q,
+		lock_class_key *lkclass, {
 	struct gendisk *disk;
 
 	if (!blk_get_queue(q))
@@ -4492,32 +4489,32 @@ struct gendisk *blk_mq_alloc_disk_for_queue(struct request_queue *q,
 	if (!disk)
 		blk_put_queue(q);
 	return disk;
-}
+});
 EXPORT_SYMBOL(blk_mq_alloc_disk_for_queue);
 
 /*
  * Only hctx removed from cpuhp list can be reused
  */
-static bool blk_mq_hctx_is_reusable(struct blk_mq_hw_ctx *hctx)
+static bool blk_mq_hctx_is_reusable(blk_mq_hw_ctx *hctx)
 {
 	return hlist_unhashed(&hctx->cpuhp_online) &&
 		hlist_unhashed(&hctx->cpuhp_dead);
 }
 
 static struct blk_mq_hw_ctx *blk_mq_alloc_and_init_hctx(
-		struct blk_mq_tag_set *set, struct request_queue *q,
+		blk_mq_tag_set *set, request_queue *q,
 		int hctx_idx, int node)
 {
 	struct blk_mq_hw_ctx *hctx = NULL, *tmp;
 
 	/* reuse dead hctx first */
 	spin_lock(&q->unused_hctx_lock);
-	list_for_each_entry(tmp, &q->unused_hctx_list, hctx_list) {
+	list_for_each_entry!(tmp, &q->unused_hctx_list, hctx_list, {
 		if (tmp->numa_node == node && blk_mq_hctx_is_reusable(tmp)) {
 			hctx = tmp;
 			break;
 		}
-	}
+	});
 	if (hctx)
 		list_del_init(&hctx->hctx_list);
 	spin_unlock(&q->unused_hctx_lock);
@@ -4538,8 +4535,8 @@ static struct blk_mq_hw_ctx *blk_mq_alloc_and_init_hctx(
 	return NULL;
 }
 
-static void __blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
-				     struct request_queue *q)
+static void __blk_mq_realloc_hw_ctxs(blk_mq_tag_set *set,
+				     request_queue *q)
 {
 	int i, j, end;
 	struct blk_mq_hw_ctx **hctxs = q->queue_hw_ctx;
@@ -4608,8 +4605,8 @@ static void __blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
 	}
 }
 
-static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
-				   struct request_queue *q)
+static void blk_mq_realloc_hw_ctxs(blk_mq_tag_set *set,
+				   request_queue *q)
 {
 	__blk_mq_realloc_hw_ctxs(set, q);
 
@@ -4620,8 +4617,8 @@ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
 	blk_mq_add_hw_queues_cpuhp(q);
 }
 
-int blk_mq_init_allocated_queue(struct blk_mq_tag_set *set,
-		struct request_queue *q)
+int blk_mq_init_allocated_queue(blk_mq_tag_set *set,
+		request_queue *q)
 {
 	/* mark the queue as mq asap */
 	q->mq_ops = set->ops;
@@ -4672,7 +4669,7 @@ err_exit:
 EXPORT_SYMBOL(blk_mq_init_allocated_queue);
 
 /* tags can _not_ be used after returning from blk_mq_exit_queue */
-void blk_mq_exit_queue(struct request_queue *q)
+void blk_mq_exit_queue(request_queue *q)
 {
 	struct blk_mq_tag_set *set = q->tag_set;
 
@@ -4682,7 +4679,7 @@ void blk_mq_exit_queue(struct request_queue *q)
 	blk_mq_del_queue_tag_set(q);
 }
 
-static int __blk_mq_alloc_rq_maps(struct blk_mq_tag_set *set)
+static int __blk_mq_alloc_rq_maps(blk_mq_tag_set *set)
 {
 	int i;
 
@@ -4719,9 +4716,9 @@ out_unwind:
  * may reduce the depth asked for, if memory is tight. set->queue_depth
  * will be updated to reflect the allocated depth.
  */
-static int blk_mq_alloc_set_map_and_rqs(struct blk_mq_tag_set *set)
+static int blk_mq_alloc_set_map_and_rqs(blk_mq_tag_set *set)
 {
-	unsigned int depth;
+	core::ffi::c_uint depth;
 	int err;
 
 	depth = set->queue_depth;
@@ -4749,7 +4746,7 @@ static int blk_mq_alloc_set_map_and_rqs(struct blk_mq_tag_set *set)
 	return 0;
 }
 
-static void blk_mq_update_queue_map(struct blk_mq_tag_set *set)
+static void blk_mq_update_queue_map(blk_mq_tag_set *set)
 {
 	/*
 	 * blk_mq_map_queues() and multiple .map_queues() implementations
@@ -4787,7 +4784,7 @@ static void blk_mq_update_queue_map(struct blk_mq_tag_set *set)
 }
 
 static struct blk_mq_tags **blk_mq_prealloc_tag_set_tags(
-				struct blk_mq_tag_set *set,
+				blk_mq_tag_set *set,
 				int new_nr_hw_queues)
 {
 	struct blk_mq_tags **new_tags;
@@ -4796,7 +4793,7 @@ static struct blk_mq_tags **blk_mq_prealloc_tag_set_tags(
 	if (set->nr_hw_queues >= new_nr_hw_queues)
 		return NULL;
 
-	new_tags = kcalloc_node(new_nr_hw_queues, sizeof(struct blk_mq_tags *),
+	new_tags = kcalloc_node(new_nr_hw_queues, sizeof(blk_mq_tags *),
 				GFP_KERNEL, set->numa_node);
 	if (!new_tags)
 		return ERR_PTR(-ENOMEM);
@@ -4833,7 +4830,7 @@ out_unwind:
  * requested depth down, if it's too large. In that case, the set
  * value will be stored in set->queue_depth.
  */
-int blk_mq_alloc_tag_set(struct blk_mq_tag_set *set)
+int blk_mq_alloc_tag_set(blk_mq_tag_set *set)
 {
 	int i, ret;
 
@@ -4894,7 +4891,7 @@ int blk_mq_alloc_tag_set(struct blk_mq_tag_set *set)
 
 	ret = -ENOMEM;
 	set->tags = kcalloc_node(set->nr_hw_queues,
-				 sizeof(struct blk_mq_tags *), GFP_KERNEL,
+				 sizeof(blk_mq_tags *), GFP_KERNEL,
 				 set->numa_node);
 	if (!set->tags)
 		goto out_cleanup_tags_srcu;
@@ -4939,9 +4936,9 @@ out_free_srcu:
 EXPORT_SYMBOL(blk_mq_alloc_tag_set);
 
 /* allocate and initialize a tagset for a simple single-queue device */
-int blk_mq_alloc_sq_tag_set(struct blk_mq_tag_set *set,
-		const struct blk_mq_ops *ops, unsigned int queue_depth,
-		unsigned int set_flags)
+int blk_mq_alloc_sq_tag_set(blk_mq_tag_set *set,
+		const struct blk_mq_ops *ops, queue_depth: core::ffi::c_uint,
+		set_flags: core::ffi::c_uint)
 {
 	memset(set, 0, sizeof(*set));
 	set->ops = ops;
@@ -4954,7 +4951,7 @@ int blk_mq_alloc_sq_tag_set(struct blk_mq_tag_set *set,
 }
 EXPORT_SYMBOL_GPL(blk_mq_alloc_sq_tag_set);
 
-void blk_mq_free_tag_set(struct blk_mq_tag_set *set)
+void blk_mq_free_tag_set(blk_mq_tag_set *set)
 {
 	int i, j;
 
@@ -4984,14 +4981,14 @@ void blk_mq_free_tag_set(struct blk_mq_tag_set *set)
 }
 EXPORT_SYMBOL(blk_mq_free_tag_set);
 
-struct elevator_tags *blk_mq_update_nr_requests(struct request_queue *q,
-						struct elevator_tags *et,
-						unsigned int nr)
+struct elevator_tags *blk_mq_update_nr_requests(request_queue *q,
+						elevator_tags *et,
+						nr: core::ffi::c_uint)
 {
 	struct blk_mq_tag_set *set = q->tag_set;
 	struct elevator_tags *old_et = NULL;
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	blk_mq_quiesce_queue(q);
 
@@ -5009,20 +5006,20 @@ struct elevator_tags *blk_mq_update_nr_requests(struct request_queue *q,
 		 * Non-shared hardware tags, nr is already checked from
 		 * queue_requests_store() and tags can't grow.
 		 */
-		queue_for_each_hw_ctx(q, hctx, i) {
+		queue_for_each_hw_ctx!(q, hctx, i, {
 			if (!hctx->tags)
 				continue;
 			sbitmap_queue_resize(&hctx->tags->bitmap_tags,
 				nr - hctx->tags->nr_reserved_tags);
-		}
+		});
 	} else if (nr <= q->elevator->et->nr_requests) {
 		/* Non-shared sched tags, and tags don't grow. */
-		queue_for_each_hw_ctx(q, hctx, i) {
+		queue_for_each_hw_ctx!(q, hctx, i, {
 			if (!hctx->sched_tags)
 				continue;
 			sbitmap_queue_resize(&hctx->sched_tags->bitmap_tags,
 				nr - hctx->sched_tags->nr_reserved_tags);
-		}
+		});
 	} else {
 		/* Non-shared sched tags, and tags grow */
 		queue_for_each_hw_ctx(q, hctx, i)
@@ -5047,8 +5044,8 @@ struct elevator_tags *blk_mq_update_nr_requests(struct request_queue *q,
 /*
  * Switch back to the elevator type stored in the xarray.
  */
-static void blk_mq_elv_switch_back(struct request_queue *q,
-		struct xarray *elv_tbl)
+static void blk_mq_elv_switch_back(request_queue *q,
+		xarray *elv_tbl)
 {
 	struct elv_change_ctx *ctx = xa_load(elv_tbl, q->id);
 
@@ -5066,8 +5063,8 @@ static void blk_mq_elv_switch_back(struct request_queue *q,
 /*
  * Stores elevator name and type in ctx and set current elevator to none.
  */
-static int blk_mq_elv_switch_none(struct request_queue *q,
-		struct xarray *elv_tbl)
+static int blk_mq_elv_switch_none(request_queue *q,
+		xarray *elv_tbl)
 {
 	struct elv_change_ctx *ctx;
 
@@ -5106,12 +5103,12 @@ static int blk_mq_elv_switch_none(struct request_queue *q,
 	return 0;
 }
 
-static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
+static void __blk_mq_update_nr_hw_queues(blk_mq_tag_set *set,
 							int nr_hw_queues)
 {
 	struct request_queue *q;
 	int prev_nr_hw_queues = set->nr_hw_queues;
-	unsigned int memflags;
+	core::ffi::c_uint memflags;
 	int i;
 	struct xarray elv_tbl;
 	struct blk_mq_tags **new_tags;
@@ -5135,10 +5132,10 @@ static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
 	if (blk_mq_alloc_sched_res_batch(&elv_tbl, set, nr_hw_queues) < 0)
 		goto out_free_ctx;
 
-	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry!(q, &set->tag_list, tag_set_list, {
 		blk_mq_debugfs_unregister_hctxs(q);
 		blk_mq_sysfs_unregister_hctxs(q);
-	}
+	});
 
 	/*
 	 * Switch IO scheduler to 'none', cleaning up the data associated
@@ -5164,7 +5161,7 @@ static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
 
 fallback:
 	blk_mq_update_queue_map(set);
-	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry!(q, &set->tag_list, tag_set_list, {
 		__blk_mq_realloc_hw_ctxs(set, q);
 
 		if (q->nr_hw_queues != set->nr_hw_queues) {
@@ -5179,23 +5176,23 @@ fallback:
 			goto fallback;
 		}
 		blk_mq_map_swqueue(q);
-	}
+	});
 switch_back:
 	/* The blk_mq_elv_switch_back unfreezes queue for us. */
-	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry!(q, &set->tag_list, tag_set_list, {
 		/* switch_back expects queue to be frozen */
 		if (!queues_frozen)
 			blk_mq_freeze_queue_nomemsave(q);
 		blk_mq_elv_switch_back(q, &elv_tbl);
-	}
+	});
 
-	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+	list_for_each_entry!(q, &set->tag_list, tag_set_list, {
 		blk_mq_sysfs_register_hctxs(q);
 		blk_mq_debugfs_register_hctxs(q);
 
 		blk_mq_remove_hw_queues_cpuhp(q);
 		blk_mq_add_hw_queues_cpuhp(q);
-	}
+	});
 
 out_free_ctx:
 	blk_mq_free_sched_ctx_batch(&elv_tbl);
@@ -5207,7 +5204,7 @@ out_free_ctx:
 		__blk_mq_free_map_and_rqs(set, i);
 }
 
-void blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set, int nr_hw_queues)
+void blk_mq_update_nr_hw_queues(blk_mq_tag_set *set, int nr_hw_queues)
 {
 	down_write(&set->update_nr_hwq_lock);
 	mutex_lock(&set->tag_list_lock);
@@ -5217,11 +5214,11 @@ void blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set, int nr_hw_queues)
 }
 EXPORT_SYMBOL_GPL(blk_mq_update_nr_hw_queues);
 
-static int blk_hctx_poll(struct request_queue *q, struct blk_mq_hw_ctx *hctx,
-			 struct io_comp_batch *iob, unsigned int flags)
+static int blk_hctx_poll(request_queue *q, blk_mq_hw_ctx *hctx,
+			 io_comp_batch *iob, flags: core::ffi::c_uint)
 {
 	int ret;
-	unsigned long timeout = jiffies + 2;
+	core::ffi::c_ulong timeout = jiffies + 2;
 
 	do {
 		ret = q->mq_ops->poll(hctx, iob);
@@ -5237,16 +5234,16 @@ static int blk_hctx_poll(struct request_queue *q, struct blk_mq_hw_ctx *hctx,
 	return 0;
 }
 
-int blk_mq_poll(struct request_queue *q, blk_qc_t cookie,
-		struct io_comp_batch *iob, unsigned int flags)
+int blk_mq_poll(request_queue *q, blk_qc_t cookie,
+		io_comp_batch *iob, flags: core::ffi::c_uint)
 {
 	if (!blk_mq_can_poll(q))
 		return 0;
 	return blk_hctx_poll(q, q->queue_hw_ctx[cookie], iob, flags);
 }
 
-int blk_rq_poll(struct request *rq, struct io_comp_batch *iob,
-		unsigned int poll_flags)
+int blk_rq_poll(request *rq, io_comp_batch *iob,
+		poll_flags: core::ffi::c_uint)
 {
 	struct request_queue *q = rq->q;
 	int ret;
@@ -5263,16 +5260,16 @@ int blk_rq_poll(struct request *rq, struct io_comp_batch *iob,
 }
 EXPORT_SYMBOL_GPL(blk_rq_poll);
 
-unsigned int blk_mq_rq_cpu(struct request *rq)
+core::ffi::c_uint blk_mq_rq_cpu(request *rq)
 {
 	return rq->mq_ctx->cpu;
 }
 EXPORT_SYMBOL(blk_mq_rq_cpu);
 
-void blk_mq_cancel_work_sync(struct request_queue *q)
+void blk_mq_cancel_work_sync(request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx;
-	unsigned long i;
+	core::ffi::c_ulong i;
 
 	cancel_delayed_work_sync(&q->requeue_work);
 

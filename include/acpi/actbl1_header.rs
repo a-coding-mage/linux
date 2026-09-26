@@ -1136,8 +1136,8 @@ pub unsafe fn GET_TPRN_BASE_ADDR(reg: u64) -> u64 { match "GET_TPRN_BASE_ADDR" {
  * - val (represents RW value to be set (u64))
  */
 // #define SET_TPRN_BASE_RW(reg, val) ACPI_REGISTER_INSERT_VALUE(reg,     \
-										ACPI_TPRN_BASE_RW_SHIFT,       \
-										ACPI_TPRN_BASE_RW_MASK, val);
+// 										ACPI_TPRN_BASE_RW_SHIFT,       \
+// 										ACPI_TPRN_BASE_RW_MASK, val);
 
 /*
  * SET_TPRN_BASE_ENABLE:
@@ -1149,8 +1149,8 @@ pub unsafe fn GET_TPRN_BASE_ADDR(reg: u64) -> u64 { match "GET_TPRN_BASE_ADDR" {
  * - val (represents Enable value to be set (u64))
  */
 // #define SET_TPRN_BASE_ENABLE(reg, val) ACPI_REGISTER_INSERT_VALUE(reg, \
-										ACPI_TPRN_BASE_ENABLE_SHIFT,   \
-										ACPI_TPRN_BASE_ENABLE_MASK, val);
+// 										ACPI_TPRN_BASE_ENABLE_SHIFT,   \
+// 										ACPI_TPRN_BASE_ENABLE_MASK, val);
 
 /*
  * SET_TPRN_BASE_ADDR:
@@ -1162,8 +1162,8 @@ pub unsafe fn GET_TPRN_BASE_ADDR(reg: u64) -> u64 { match "GET_TPRN_BASE_ADDR" {
  * - val (represents address value to be set (u64))
  */
 // #define SET_TPRN_BASE_ADDR(reg, val) ACPI_REGISTER_INSERT_VALUE(reg,   \
-										ACPI_TPRN_BASE_ADDR_SHIFT,     \
-										ACPI_TPRN_BASE_ADDR_MASK, val);
+// 										ACPI_TPRN_BASE_ADDR_SHIFT,     \
+// 										ACPI_TPRN_BASE_ADDR_MASK, val);
 
 /*
  * TPRn_LIMIT
@@ -1233,8 +1233,8 @@ pub unsafe fn GET_TPRN_LIMIT_ADDR(reg: u64) -> u64 { match "GET_TPRN_LIMIT_ADDR"
  * - val (represents RW value to be set (u64))
  */
 // #define SET_TPRN_LIMIT_RW(reg, val) ACPI_REGISTER_INSERT_VALUE(reg,            \
-										ACPI_TPRN_LIMIT_RW_SHIFT,              \
-										ACPI_TPRN_LIMIT_RW_MASK, val);
+// 										ACPI_TPRN_LIMIT_RW_SHIFT,              \
+// 										ACPI_TPRN_LIMIT_RW_MASK, val);
 
 /*
  * SET_TPRN_LIMIT_ADDR:
@@ -1246,8 +1246,8 @@ pub unsafe fn GET_TPRN_LIMIT_ADDR(reg: u64) -> u64 { match "GET_TPRN_LIMIT_ADDR"
  * - val (represents address value to be set (u64))
  */
 // #define SET_TPRN_LIMIT_ADDR(reg, val) ACPI_REGISTER_INSERT_VALUE(reg,          \
-										ACPI_TPRN_LIMIT_ADDR_SHIFT,            \
-										ACPI_TPRN_LIMIT_ADDR_MASK, val);
+// 										ACPI_TPRN_LIMIT_ADDR_SHIFT,            \
+// 										ACPI_TPRN_LIMIT_ADDR_MASK, val);
 
 /*
  * SERIALIZE_REQUEST

@@ -169,10 +169,10 @@ unsafe fn clear_trace_list() {
     while !trace.is_null() { let next = trace_list_next(trace); list_del(&mut (*trace).list); kfree(trace); trace = next; }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 static mut DOWNED_CPUS: cpumask_var_t = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn enter_uniprocessor() {
     let mut cpu: c_int;
     let mut err: c_int;
@@ -183,30 +183,30 @@ unsafe fn enter_uniprocessor() {
         cpumask_clear_cpu(cpumask_first(cpu_online_mask()), DOWNED_CPUS);
         if num_online_cpus() > 1 { pr_notice!("Disabling non-boot CPUs...\n"); }
         cpus_read_unlock();
-        for_each_cpu!(cpu, DOWNED_CPUS) {
+        for_each_cpu!(cpu, DOWNED_CPUS, {
             err = remove_cpu(cpu);
             if err == 0 { pr_info!("CPU{} is down.\n", cpu); }
             else { pr_err!("Error taking CPU{} down: {}\n", cpu, err); }
-        }
+        });
     }
     if num_online_cpus() > 1 { pr_warn!("multiple CPUs still online, may miss events.\n"); }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn leave_uniprocessor() {
     if !cpumask_available(DOWNED_CPUS) || cpumask_empty(DOWNED_CPUS) { return; }
     pr_notice!("Re-enabling CPUs...\n");
     let mut cpu: c_int;
-    for_each_cpu!(cpu, DOWNED_CPUS) {
+    for_each_cpu!(cpu, DOWNED_CPUS, {
         let err = add_cpu(cpu);
         if err == 0 { pr_info!("enabled CPU{}.\n", cpu); }
         else { pr_err!("cannot re-enable CPU{}: {}\n", cpu, err); }
-    }
+    });
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 unsafe fn enter_uniprocessor() { if num_online_cpus() > 1 { pr_warn!("multiple CPUs are online, may miss events. Suggest booting with maxcpus=1 kernel argument.\n"); } }
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 unsafe fn leave_uniprocessor() {}
 
 #[no_mangle]

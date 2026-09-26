@@ -100,13 +100,13 @@ macro_rules! log_err {
 }
 
 macro_rules! RUN_TEST {
-    ($name:ident) => {{
+    ($name:tt) => {{
         unsafe {
             if test__start_subtest(concat!(stringify!($name), "\0").as_ptr() as *const c_char) {
                 if ASSERT_OK(netns_create(), b"netns_create\0".as_ptr() as *const c_char) {
                     let token: *mut nstoken = open_netns(NETNS);
                     if ASSERT_OK_PTR(token, b"setns\0".as_ptr() as *const c_char) {
-                        test_ ## $name();
+                        ::kernel::macros::paste!([<test_ $name>])();
                         close_netns(token);
                     }
                     netns_delete();

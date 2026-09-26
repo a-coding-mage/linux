@@ -5,15 +5,15 @@
 // Dependency intent from <uapi/asm/mman.h> and the other included kernel headers
 // is preserved here; those names are supplied by the surrounding translation.
 
-#[cfg(all(feature = "CONFIG_PPC64", not(feature = "BUILD_VDSO")))]
+#[cfg(all(CONFIG_PPC64, not(feature = "BUILD_VDSO")))]
 pub unsafe fn arch_calc_vm_prot_bits(prot: ::core::ffi::c_ulong, pkey: ::core::ffi::c_ulong) -> vm_flags_t {
-    #[cfg(feature = "CONFIG_PPC_MEM_KEYS")]
+    #[cfg(CONFIG_PPC_MEM_KEYS)]
     {
         return (((if prot & PROT_SAO != 0 { VM_SAO } else { 0 })
             | pkey_to_vmflag_bits(pkey)) as vm_flags_t);
     }
 
-    #[cfg(not(feature = "CONFIG_PPC_MEM_KEYS"))]
+    #[cfg(not(CONFIG_PPC_MEM_KEYS))]
     {
         (if prot & PROT_SAO != 0 { VM_SAO } else { 0 }) as vm_flags_t
     }
@@ -21,7 +21,7 @@ pub unsafe fn arch_calc_vm_prot_bits(prot: ::core::ffi::c_ulong, pkey: ::core::f
 
 // C macro: arch_calc_vm_prot_bits(prot, pkey) arch_calc_vm_prot_bits(prot, pkey)
 
-#[cfg(all(feature = "CONFIG_PPC64", not(feature = "BUILD_VDSO")))]
+#[cfg(all(CONFIG_PPC64, not(feature = "BUILD_VDSO")))]
 pub unsafe fn arch_validate_prot(
     prot: ::core::ffi::c_ulong,
     _addr: ::core::ffi::c_ulong,
@@ -35,7 +35,7 @@ pub unsafe fn arch_validate_prot(
         }
         if firmware_has_feature(FW_FEATURE_LPAR)
             // IS_ENABLED(CONFIG_PPC_PROT_SAO_LPAR) is a build-time condition.
-            && !cfg!(feature = "CONFIG_PPC_PROT_SAO_LPAR")
+            && !cfg!(CONFIG_PPC_PROT_SAO_LPAR)
         {
             return false;
         }

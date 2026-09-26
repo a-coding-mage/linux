@@ -42,7 +42,7 @@ pub unsafe fn to_vchiq_driver(d: *mut device_driver) -> *mut vchiq_driver {
     container_of!(d, vchiq_driver, driver)
 }
 
-pub extern "C" {
+extern "C" {
     pub static vchiq_bus_type: bus_type;
 
     pub fn vchiq_device_register(

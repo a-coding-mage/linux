@@ -1,34 +1,34 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* Build-time CONFIG_PCI_XEN condition translated as a Rust feature. */
-#[cfg(feature = "CONFIG_PCI_XEN")]
+#[cfg(CONFIG_PCI_XEN)]
 extern "C" {
     pub fn pci_xen_init() -> ::core::ffi::c_int;
     pub fn pci_xen_hvm_init() -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_PCI_XEN")]
+#[cfg(CONFIG_PCI_XEN)]
 pub const pci_xen: ::core::ffi::c_int = 1;
 
-#[cfg(not(feature = "CONFIG_PCI_XEN"))]
+#[cfg(not(CONFIG_PCI_XEN))]
 pub const pci_xen: ::core::ffi::c_int = 0;
 
-#[cfg(not(feature = "CONFIG_PCI_XEN"))]
+#[cfg(not(CONFIG_PCI_XEN))]
 pub const pci_xen_init: ::core::ffi::c_int = 0;
 
-#[cfg(not(feature = "CONFIG_PCI_XEN"))]
+#[cfg(not(CONFIG_PCI_XEN))]
 #[inline]
 pub unsafe fn pci_xen_hvm_init() -> ::core::ffi::c_int {
     -1
 }
 
 /* Build-time CONFIG_XEN_PV_DOM0 condition translated as a Rust feature. */
-#[cfg(feature = "CONFIG_XEN_PV_DOM0")]
+#[cfg(CONFIG_XEN_PV_DOM0)]
 extern "C" {
     pub fn pci_xen_initial_domain() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_XEN_PV_DOM0"))]
+#[cfg(not(CONFIG_XEN_PV_DOM0))]
 #[inline]
 pub unsafe fn pci_xen_initial_domain() -> ::core::ffi::c_int {
     -1
@@ -42,7 +42,7 @@ pub struct pci_dev {
 
 /* Build-time CONFIG_PCI_MSI and CONFIG_PCI_XEN conditions translated as
  * Rust features. */
-#[cfg(all(feature = "CONFIG_PCI_MSI", feature = "CONFIG_PCI_XEN"))]
+#[cfg(all(CONFIG_PCI_MSI, CONFIG_PCI_XEN))]
 #[repr(C)]
 pub struct xen_pci_frontend_ops {
     pub enable_msi: Option<unsafe extern "C" fn(
@@ -58,12 +58,12 @@ pub struct xen_pci_frontend_ops {
     pub disable_msix: Option<unsafe extern "C" fn(dev: *mut pci_dev)>,
 }
 
-#[cfg(all(feature = "CONFIG_PCI_MSI", feature = "CONFIG_PCI_XEN"))]
+#[cfg(all(CONFIG_PCI_MSI, CONFIG_PCI_XEN))]
 extern "C" {
     pub static mut xen_pci_frontend: *mut xen_pci_frontend_ops;
 }
 
-#[cfg(all(feature = "CONFIG_PCI_MSI", feature = "CONFIG_PCI_XEN"))]
+#[cfg(all(CONFIG_PCI_MSI, CONFIG_PCI_XEN))]
 #[inline]
 pub unsafe fn xen_pci_frontend_enable_msi(
     dev: *mut pci_dev,
@@ -77,7 +77,7 @@ pub unsafe fn xen_pci_frontend_enable_msi(
     -ENOSYS
 }
 
-#[cfg(all(feature = "CONFIG_PCI_MSI", feature = "CONFIG_PCI_XEN"))]
+#[cfg(all(CONFIG_PCI_MSI, CONFIG_PCI_XEN))]
 #[inline]
 pub unsafe fn xen_pci_frontend_disable_msi(dev: *mut pci_dev) {
     if !xen_pci_frontend.is_null() {
@@ -87,7 +87,7 @@ pub unsafe fn xen_pci_frontend_disable_msi(dev: *mut pci_dev) {
     }
 }
 
-#[cfg(all(feature = "CONFIG_PCI_MSI", feature = "CONFIG_PCI_XEN"))]
+#[cfg(all(CONFIG_PCI_MSI, CONFIG_PCI_XEN))]
 #[inline]
 pub unsafe fn xen_pci_frontend_enable_msix(
     dev: *mut pci_dev,
@@ -102,7 +102,7 @@ pub unsafe fn xen_pci_frontend_enable_msix(
     -ENOSYS
 }
 
-#[cfg(all(feature = "CONFIG_PCI_MSI", feature = "CONFIG_PCI_XEN"))]
+#[cfg(all(CONFIG_PCI_MSI, CONFIG_PCI_XEN))]
 #[inline]
 pub unsafe fn xen_pci_frontend_disable_msix(dev: *mut pci_dev) {
     if !xen_pci_frontend.is_null() {

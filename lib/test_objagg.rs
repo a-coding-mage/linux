@@ -28,18 +28,18 @@ type DestroyFn = unsafe extern "C" fn(*mut c_void, *mut c_void);
 #[repr(C)] struct objagg_ops { obj_size: usize, delta_check: Option<CheckFn>, delta_create: Option<CreateFn>, delta_destroy: Option<DestroyFn>, root_create: Option<CreateFn>, root_destroy: Option<DestroyFn> }
 
 extern "C" {
-    fn objagg_obj_get(*mut objagg, *const tokey) -> *mut objagg_obj;
-    fn objagg_obj_put(*mut objagg, *mut objagg_obj);
-    fn objagg_obj_root_priv(*mut objagg_obj) -> *const root;
-    fn objagg_obj_delta_priv(*mut objagg_obj) -> *const delta;
-    fn objagg_create(*const objagg_ops, *mut objagg_hints, *mut world) -> *mut objagg;
-    fn objagg_destroy(*mut objagg);
-    fn objagg_stats_get(*mut objagg) -> *const objagg_stats;
-    fn objagg_stats_put(*const objagg_stats);
-    fn objagg_hints_get(*mut objagg, c_int) -> *mut objagg_hints;
-    fn objagg_hints_put(*mut objagg_hints);
-    fn objagg_hints_stats_get(*mut objagg_hints) -> *const objagg_stats;
-    fn get_random_bytes(*mut c_void, usize);
+    fn objagg_obj_get(_: *mut objagg, _: *const tokey) -> *mut objagg_obj;
+    fn objagg_obj_put(_: *mut objagg, _: *mut objagg_obj);
+    fn objagg_obj_root_priv(_: *mut objagg_obj) -> *const root;
+    fn objagg_obj_delta_priv(_: *mut objagg_obj) -> *const delta;
+    fn objagg_create(_: *const objagg_ops, _: *mut objagg_hints, _: *mut world) -> *mut objagg;
+    fn objagg_destroy(_: *mut objagg);
+    fn objagg_stats_get(_: *mut objagg) -> *const objagg_stats;
+    fn objagg_stats_put(_: *const objagg_stats);
+    fn objagg_hints_get(_: *mut objagg, _: c_int) -> *mut objagg_hints;
+    fn objagg_hints_put(_: *mut objagg_hints);
+    fn objagg_hints_stats_get(_: *mut objagg_hints) -> *const objagg_stats;
+    fn get_random_bytes(_: *mut c_void, _: usize);
     fn pr_err(fmt: *const c_char, ...);
     fn pr_debug(fmt: *const c_char, ...);
 }

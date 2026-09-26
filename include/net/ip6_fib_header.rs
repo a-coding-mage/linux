@@ -3,9 +3,9 @@
 
 // External kernel types, constants, and helpers are supplied by other translated units.
 
-#[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+#[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
 pub const FIB6_TABLE_HASHSZ: usize = 256;
-#[cfg(not(feature = "CONFIG_IPV6_MULTIPLE_TABLES"))]
+#[cfg(not(CONFIG_IPV6_MULTIPLE_TABLES))]
 pub const FIB6_TABLE_HASHSZ: usize = 1;
 pub const RT6_DEBUG: i32 = 2;
 
@@ -85,12 +85,12 @@ pub const RT6_TABLE_PREFIX: u32 = RT6_TABLE_MAIN;
     pub fib_seq: u32, pub tb6_gc_hlist: hlist_head,
 }
 
-#[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")] pub const FIB6_TABLE_MIN: u32 = 1;
-#[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")] pub const FIB6_TABLE_MAX: u32 = RT_TABLE_MAX;
-#[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")] pub const RT6_TABLE_LOCAL: u32 = RT_TABLE_LOCAL;
-#[cfg(not(feature = "CONFIG_IPV6_MULTIPLE_TABLES"))] pub const FIB6_TABLE_MIN: u32 = RT_TABLE_MAIN;
-#[cfg(not(feature = "CONFIG_IPV6_MULTIPLE_TABLES"))] pub const FIB6_TABLE_MAX: u32 = FIB6_TABLE_MIN;
-#[cfg(not(feature = "CONFIG_IPV6_MULTIPLE_TABLES"))] pub const RT6_TABLE_LOCAL: u32 = RT6_TABLE_MAIN;
+#[cfg(CONFIG_IPV6_MULTIPLE_TABLES)] pub const FIB6_TABLE_MIN: u32 = 1;
+#[cfg(CONFIG_IPV6_MULTIPLE_TABLES)] pub const FIB6_TABLE_MAX: u32 = RT_TABLE_MAX;
+#[cfg(CONFIG_IPV6_MULTIPLE_TABLES)] pub const RT6_TABLE_LOCAL: u32 = RT_TABLE_LOCAL;
+#[cfg(not(CONFIG_IPV6_MULTIPLE_TABLES))] pub const FIB6_TABLE_MIN: u32 = RT_TABLE_MAIN;
+#[cfg(not(CONFIG_IPV6_MULTIPLE_TABLES))] pub const FIB6_TABLE_MAX: u32 = FIB6_TABLE_MIN;
+#[cfg(not(CONFIG_IPV6_MULTIPLE_TABLES))] pub const RT6_TABLE_LOCAL: u32 = RT6_TABLE_MAIN;
 
 pub type pol_lookup_t = unsafe extern "C" fn(*mut net, *mut fib6_table, *mut flowi6, *const sk_buff, i32) -> *mut rt6_info;
 
@@ -139,9 +139,9 @@ extern "C" {
 }
 
 // CONFIG_IPV6 and CONFIG_IPV6_MULTIPLE_TABLES conditional declarations are retained by cfg intent.
-#[cfg(feature = "CONFIG_IPV6_MULTIPLE_TABLES")]
+#[cfg(CONFIG_IPV6_MULTIPLE_TABLES)]
 #[inline] pub unsafe fn fib6_has_custom_rules(net: *const net) -> bool { (*net).ipv6.fib6_has_custom_rules }
-#[cfg(not(feature = "CONFIG_IPV6_MULTIPLE_TABLES"))]
+#[cfg(not(CONFIG_IPV6_MULTIPLE_TABLES))]
 #[inline] pub unsafe fn fib6_has_custom_rules(_net: *const net) -> bool { false }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

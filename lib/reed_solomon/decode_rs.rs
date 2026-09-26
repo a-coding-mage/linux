@@ -300,7 +300,7 @@ unsafe {
     } else if !data.is_null() && !par.is_null() {
         i = 0;
         while i < count {
-            if *loc.add(i as usize) as i32 < nn - nroots {
+            if (*loc.add(i as usize) as i32) < nn - nroots {
                 *data.add((*loc.add(i as usize) as i32 - pad) as usize) ^= *b.add(i as usize) as _;
             } else {
                 *par.add((*loc.add(i as usize) as i32 - pad - len) as usize) ^= *b.add(i as usize) as _;

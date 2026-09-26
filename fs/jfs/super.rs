@@ -57,7 +57,23 @@ unsafe fn jfs_statfs(dentry: *mut dentry, buf: *mut kstatfs) -> i32 {
 
 unsafe fn jfs_put_super(sb:*mut super_block) { let sbi=JFS_SBI(sb); jfs_info!("In jfs_put_super"); jfs_quota_off_umount(sb); let rc=jfs_umount(sb); if rc!=0 { jfs_err!("jfs_umount failed with return code %d",rc); } unload_nls((*sbi).nls_tab); truncate_inode_pages((*sbi).direct_inode.i_mapping,0); iput((*sbi).direct_inode); kfree(sbi); }
 
-enum { Opt_integrity, Opt_nointegrity, Opt_iocharset, Opt_resize, Opt_resize_nosize, Opt_errors, Opt_ignore, Opt_err, Opt_quota, Opt_usrquota, Opt_grpquota, Opt_uid, Opt_gid, Opt_umask, Opt_discard, Opt_nodiscard, Opt_discard_minblk }
+pub const Opt_integrity: i32 = 0;
+pub const Opt_nointegrity: i32 = Opt_integrity + 1;
+pub const Opt_iocharset: i32 = Opt_nointegrity + 1;
+pub const Opt_resize: i32 = Opt_iocharset + 1;
+pub const Opt_resize_nosize: i32 = Opt_resize + 1;
+pub const Opt_errors: i32 = Opt_resize_nosize + 1;
+pub const Opt_ignore: i32 = Opt_errors + 1;
+pub const Opt_err: i32 = Opt_ignore + 1;
+pub const Opt_quota: i32 = Opt_err + 1;
+pub const Opt_usrquota: i32 = Opt_quota + 1;
+pub const Opt_grpquota: i32 = Opt_usrquota + 1;
+pub const Opt_uid: i32 = Opt_grpquota + 1;
+pub const Opt_gid: i32 = Opt_uid + 1;
+pub const Opt_umask: i32 = Opt_gid + 1;
+pub const Opt_discard: i32 = Opt_umask + 1;
+pub const Opt_nodiscard: i32 = Opt_discard + 1;
+pub const Opt_discard_minblk: i32 = Opt_nodiscard + 1;
 
 unsafe fn jfs_quota_off_umount(sb:*mut super_block) { for t in 0..MAXQUOTAS { jfs_quota_off(sb,t); } }
 unsafe fn jfs_quota_off(sb:*mut super_block, typ:i32)->i32 { dquot_quota_off(sb,typ) }

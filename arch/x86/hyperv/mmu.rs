@@ -86,7 +86,7 @@ unsafe fn hyperv_flush_tlb_multi(cpus: *const cpumask, info: *const flush_tlb_in
             return;
         }
 
-        for_each_cpu!(cpu, cpus) {
+        for_each_cpu!(cpu, cpus, {
             if do_lazy && cpu_is_lazy(cpu) { continue; }
             vcpu = hv_cpu_number_to_vp_number(cpu);
             if vcpu == VP_INVAL {
@@ -102,7 +102,7 @@ unsafe fn hyperv_flush_tlb_multi(cpus: *const cpumask, info: *const flush_tlb_in
                 return;
             }
             __set_bit(vcpu, &mut (*flush).processor_mask as *mut _ as *mut ulong);
-        }
+        });
 
         if (*flush).processor_mask == 0 {
             local_irq_restore(flags);

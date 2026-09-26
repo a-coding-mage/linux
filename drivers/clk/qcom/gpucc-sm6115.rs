@@ -7,21 +7,17 @@
 // Dependencies supplied by the kernel clock, platform, regmap, device-tree,
 // PLL, branch, RCG, GDSC, and reset subsystems are intentionally external.
 
-enum {
-    DT_BI_TCXO,
-    DT_GCC_GPU_GPLL0_CLK_SRC,
-    DT_GCC_GPU_GPLL0_DIV_CLK_SRC,
-}
+pub const DT_BI_TCXO: i32 = 0;
+pub const DT_GCC_GPU_GPLL0_CLK_SRC: i32 = DT_BI_TCXO + 1;
+pub const DT_GCC_GPU_GPLL0_DIV_CLK_SRC: i32 = DT_GCC_GPU_GPLL0_CLK_SRC + 1;
 
-enum {
-    P_BI_TCXO,
-    P_GPLL0_OUT_MAIN,
-    P_GPLL0_OUT_MAIN_DIV,
-    P_GPU_CC_PLL0_OUT_AUX2,
-    P_GPU_CC_PLL0_OUT_MAIN,
-    P_GPU_CC_PLL1_OUT_AUX,
-    P_GPU_CC_PLL1_OUT_MAIN,
-}
+pub const P_BI_TCXO: i32 = 0;
+pub const P_GPLL0_OUT_MAIN: i32 = P_BI_TCXO + 1;
+pub const P_GPLL0_OUT_MAIN_DIV: i32 = P_GPLL0_OUT_MAIN + 1;
+pub const P_GPU_CC_PLL0_OUT_AUX2: i32 = P_GPLL0_OUT_MAIN_DIV + 1;
+pub const P_GPU_CC_PLL0_OUT_MAIN: i32 = P_GPU_CC_PLL0_OUT_AUX2 + 1;
+pub const P_GPU_CC_PLL1_OUT_AUX: i32 = P_GPU_CC_PLL0_OUT_MAIN + 1;
+pub const P_GPU_CC_PLL1_OUT_MAIN: i32 = P_GPU_CC_PLL1_OUT_AUX + 1;
 
 static DEFAULT_VCO: [pll_vco; 1] = [pll_vco { min_freq: 1000000000, max_freq: 2000000000, val: 0 }];
 static PLL1_VCO: [pll_vco; 1] = [pll_vco { min_freq: 500000000, max_freq: 1000000000, val: 2 }];

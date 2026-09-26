@@ -19,82 +19,82 @@
  */
 
 /* CONFIG_SWAP_IO_SPACE selects the corresponding C preprocessor branch. */
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! ioswabb {
     ($x:expr) => { $x };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! __mem_ioswabb {
     ($x:expr) => { $x };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! ioswabw {
     ($x:expr) => { le16_to_cpu($x) };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! __mem_ioswabw {
     ($x:expr) => { $x };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! ioswabl {
     ($x:expr) => { le32_to_cpu($x) };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! __mem_ioswabl {
     ($x:expr) => { $x };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! ioswabq {
     ($x:expr) => { le64_to_cpu($x) };
 }
 
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 macro_rules! __mem_ioswabq {
     ($x:expr) => { $x };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! ioswabb {
     ($x:expr) => { $x };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! __mem_ioswabb {
     ($x:expr) => { $x };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! ioswabw {
     ($x:expr) => { $x };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! __mem_ioswabw {
     ($x:expr) => { cpu_to_le16($x) };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! ioswabl {
     ($x:expr) => { $x };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! __mem_ioswabl {
     ($x:expr) => { cpu_to_le32($x) };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! ioswabq {
     ($x:expr) => { $x };
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 macro_rules! __mem_ioswabq {
     ($x:expr) => { cpu_to_le32($x) };
 }

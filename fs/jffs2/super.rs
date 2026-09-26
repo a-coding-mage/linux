@@ -85,7 +85,8 @@ static mut jffs2_export_ops: export_operations = export_operations {
     fh_to_dentry: Some(jffs2_fh_to_dentry), fh_to_parent: Some(jffs2_fh_to_parent),
 };
 
-enum { Opt_override_compr, Opt_rp_size }
+pub const Opt_override_compr: i32 = 0;
+pub const Opt_rp_size: i32 = Opt_override_compr + 1;
 
 static jffs2_param_compr: [constant_table; 1] = [constant_table { name: core::ptr::null(), value: 0 }];
 static jffs2_fs_parameters: [fs_parameter_spec; 1] = [fs_parameter_spec { _private: 0 }];

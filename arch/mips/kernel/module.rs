@@ -137,7 +137,7 @@ pub unsafe fn apply_relocate_add(s: *mut Elf_Shdr, st: *const c_char, si: u32, r
 pub unsafe fn search_module_dbetables(addr: c_ulong) -> *const exception_table_entry {
     let mut e = core::ptr::null(); let mut dbe: *mut mod_arch_specific;
     spin_lock_irqsave(&mut dbe_lock, core::ptr::null_mut());
-    list_for_each_entry!(dbe, &mut dbe_list, dbe_list) { e = search_extable((*dbe).dbe_start, (*dbe).dbe_end - (*dbe).dbe_start, addr); if !e.is_null() { break; } }
+    list_for_each_entry!(dbe, &mut dbe_list, dbe_list, { e = search_extable((*dbe).dbe_start, (*dbe).dbe_end - (*dbe).dbe_start, addr); if !e.is_null() { break; } });
     spin_unlock_irqrestore(&mut dbe_lock, core::ptr::null_mut()); e
 }
 

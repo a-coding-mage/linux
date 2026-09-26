@@ -24,8 +24,8 @@ macro_rules! ASM_VDSO_EXTABLE_HANDLE {
         /*
          * .macro ASM_VDSO_EXTABLE_HANDLE from:req to:req
          *     .pushsection __ex_table, "a"
-         *     .long (from) - __ex_table
-         *     .long (to) - __ex_table
+         *     .long ($from) - __ex_table
+         *     .long ($to) - __ex_table
          *     .popsection
          * .endm
          */

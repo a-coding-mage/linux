@@ -84,7 +84,7 @@ extern "C" {
 }
 
 // Equivalent to the build-time CONFIG_QED_RDMA condition.
-#[cfg(feature = "CONFIG_QED_RDMA")]
+#[cfg(CONFIG_QED_RDMA)]
 extern "C" {
     pub fn qede_rdma_dev_add(dev: *mut qede_dev, recovery: bool) -> i32;
     pub fn qede_rdma_dev_event_open(dev: *mut qede_dev);
@@ -94,21 +94,21 @@ extern "C" {
     pub fn qede_rdma_event_change_mtu(edev: *mut qede_dev);
 }
 
-#[cfg(not(feature = "CONFIG_QED_RDMA"))]
+#[cfg(not(CONFIG_QED_RDMA))]
 pub unsafe fn qede_rdma_dev_add(_dev: *mut qede_dev, _recovery: bool) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_QED_RDMA"))]
+#[cfg(not(CONFIG_QED_RDMA))]
 pub unsafe fn qede_rdma_dev_event_open(_dev: *mut qede_dev) {}
 
-#[cfg(not(feature = "CONFIG_QED_RDMA"))]
+#[cfg(not(CONFIG_QED_RDMA))]
 pub unsafe fn qede_rdma_dev_event_close(_dev: *mut qede_dev) {}
 
-#[cfg(not(feature = "CONFIG_QED_RDMA"))]
+#[cfg(not(CONFIG_QED_RDMA))]
 pub unsafe fn qede_rdma_dev_remove(_dev: *mut qede_dev, _recovery: bool) {}
 
-#[cfg(not(feature = "CONFIG_QED_RDMA"))]
+#[cfg(not(CONFIG_QED_RDMA))]
 pub unsafe fn qede_rdma_event_changeaddr(_edr: *mut qede_dev) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

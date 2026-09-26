@@ -4,7 +4,7 @@
 
 // These items are available from the surrounding kernel translation.
 
-#[cfg(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_MEMFD_CREATE"))]
+#[cfg(all(CONFIG_SYSCTL, CONFIG_MEMFD_CREATE))]
 unsafe fn pid_mfd_noexec_dointvec_minmax(
     table: *const ctl_table,
     write: ::core::ffi::c_int,
@@ -39,7 +39,7 @@ unsafe fn pid_mfd_noexec_dointvec_minmax(
     err
 }
 
-#[cfg(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_MEMFD_CREATE"))]
+#[cfg(all(CONFIG_SYSCTL, CONFIG_MEMFD_CREATE))]
 static mut pid_ns_ctl_table_vm: [ctl_table; 1] = [ctl_table {
     procname: "memfd_noexec",
     data: unsafe {
@@ -52,13 +52,13 @@ static mut pid_ns_ctl_table_vm: [ctl_table; 1] = [ctl_table {
     extra2: SYSCTL_TWO,
 }];
 
-#[cfg(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_MEMFD_CREATE"))]
+#[cfg(all(CONFIG_SYSCTL, CONFIG_MEMFD_CREATE))]
 #[inline]
 unsafe fn register_pid_ns_sysctl_table_vm() {
     register_sysctl("vm", pid_ns_ctl_table_vm.as_ptr());
 }
 
-#[cfg(not(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_MEMFD_CREATE")))]
+#[cfg(not(all(CONFIG_SYSCTL, CONFIG_MEMFD_CREATE)))]
 #[inline]
 unsafe fn register_pid_ns_sysctl_table_vm() {}
 

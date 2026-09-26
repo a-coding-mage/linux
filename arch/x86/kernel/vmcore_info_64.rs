@@ -17,7 +17,7 @@ unsafe extern "C" {
     unsafe fn VMCOREINFO_LENGTH(value: *const u8, length: usize);
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 unsafe extern "C" {
     static node_data: u8;
     static MAX_NUMNODES: usize;
@@ -33,7 +33,7 @@ pub unsafe fn arch_crash_save_vmcoreinfo() {
         pgtable_l5_enabled(),
     );
 
-    #[cfg(feature = "CONFIG_NUMA")]
+    #[cfg(CONFIG_NUMA)]
     {
         VMCOREINFO_SYMBOL((&raw const node_data).cast::<u8>());
         VMCOREINFO_LENGTH((&raw const node_data).cast::<u8>(), MAX_NUMNODES);

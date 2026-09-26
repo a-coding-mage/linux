@@ -8,7 +8,7 @@ pub const BR_MCAST_DEFAULT_EHT_HOSTS_LIMIT: u32 = 512;
 pub union net_bridge_eht_addr {
     pub ip4: __be32,
     // Preserved from: #if IS_ENABLED(CONFIG_IPV6)
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub ip6: in6_addr,
 }
 
@@ -46,7 +46,7 @@ pub struct net_bridge_group_eht_set {
 }
 
 // Preserved from: #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-#[cfg(feature = "CONFIG_BRIDGE_IGMP_SNOOPING")]
+#[cfg(CONFIG_BRIDGE_IGMP_SNOOPING)]
 extern "C" {
     pub fn br_multicast_eht_clean_sets(pg: *mut net_bridge_port_group);
     pub fn br_multicast_eht_handle(
@@ -64,7 +64,7 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_IGMP_SNOOPING")]
+#[cfg(CONFIG_BRIDGE_IGMP_SNOOPING)]
 #[inline]
 pub unsafe fn br_multicast_eht_should_del_pg(
     pg: *const net_bridge_port_group,
@@ -73,7 +73,7 @@ pub unsafe fn br_multicast_eht_should_del_pg(
         && RB_EMPTY_ROOT!(&(*pg).eht_host_tree)
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_IGMP_SNOOPING")]
+#[cfg(CONFIG_BRIDGE_IGMP_SNOOPING)]
 #[inline]
 pub unsafe fn br_multicast_eht_hosts_over_limit(
     pg: *const net_bridge_port_group,
@@ -83,7 +83,7 @@ pub unsafe fn br_multicast_eht_hosts_over_limit(
     p.multicast_eht_hosts_cnt >= p.multicast_eht_hosts_limit
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_IGMP_SNOOPING")]
+#[cfg(CONFIG_BRIDGE_IGMP_SNOOPING)]
 #[inline]
 pub unsafe fn br_multicast_eht_hosts_inc(pg: *mut net_bridge_port_group) {
     let p = (*pg).key.port.as_mut().unwrap();
@@ -91,7 +91,7 @@ pub unsafe fn br_multicast_eht_hosts_inc(pg: *mut net_bridge_port_group) {
     p.multicast_eht_hosts_cnt += 1;
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_IGMP_SNOOPING")]
+#[cfg(CONFIG_BRIDGE_IGMP_SNOOPING)]
 #[inline]
 pub unsafe fn br_multicast_eht_hosts_dec(pg: *mut net_bridge_port_group) {
     let p = (*pg).key.port.as_mut().unwrap();

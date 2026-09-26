@@ -34,7 +34,9 @@ pub const REFCOUNT_SATURATED: i32 = i32::MIN / 2;
 
 #[macro_export]
 macro_rules! REFCOUNT_INIT {
-    ($n:expr) => { refcount_t { refs: atomic_init!($n) } };
+    ($n:expr) => {
+        refcount_t { refs: ATOMIC_INIT!($n) }
+    };
 }
 
 #[repr(C)]

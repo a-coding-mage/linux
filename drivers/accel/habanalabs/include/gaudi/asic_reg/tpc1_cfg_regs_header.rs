@@ -1221,7 +1221,6 @@ pub const mmTPC1_CFG_QM_SRF_30: u32 = 0xE46E38;
 
 pub const mmTPC1_CFG_QM_SRF_31: u32 = 0xE46E3C;
 
-#endif /* ASIC_REG_TPC1_CFG_REGS_H_ */
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

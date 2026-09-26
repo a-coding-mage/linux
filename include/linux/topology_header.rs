@@ -58,7 +58,7 @@ pub const fn node_distance(from: c_int, to: c_int) -> c_int {
 }
 
 // CONFIG_USE_PERCPU_NUMA_NODE_ID selects the following per-CPU implementation.
-#[cfg(feature = "CONFIG_USE_PERCPU_NUMA_NODE_ID")]
+#[cfg(CONFIG_USE_PERCPU_NUMA_NODE_ID)]
 extern "C" {
     pub static mut numa_node: c_int;
     pub fn raw_cpu_read_numa_node() -> c_int;
@@ -67,28 +67,28 @@ extern "C" {
     pub fn set_per_cpu_numa_node(cpu: c_int, node: c_int);
 }
 
-#[cfg(feature = "CONFIG_USE_PERCPU_NUMA_NODE_ID")]
+#[cfg(CONFIG_USE_PERCPU_NUMA_NODE_ID)]
 #[inline]
 pub unsafe fn numa_node_id() -> c_int { raw_cpu_read_numa_node() }
 
-#[cfg(feature = "CONFIG_USE_PERCPU_NUMA_NODE_ID")]
+#[cfg(CONFIG_USE_PERCPU_NUMA_NODE_ID)]
 #[inline]
 pub unsafe fn cpu_to_node_percpu(cpu: c_int) -> c_int { per_cpu_numa_node(cpu) }
 
-#[cfg(feature = "CONFIG_USE_PERCPU_NUMA_NODE_ID")]
+#[cfg(CONFIG_USE_PERCPU_NUMA_NODE_ID)]
 #[inline]
 pub unsafe fn set_numa_node(node: c_int) { this_cpu_write_numa_node(node) }
 
-#[cfg(feature = "CONFIG_USE_PERCPU_NUMA_NODE_ID")]
+#[cfg(CONFIG_USE_PERCPU_NUMA_NODE_ID)]
 #[inline]
 pub unsafe fn set_cpu_numa_node(cpu: c_int, node: c_int) { set_per_cpu_numa_node(cpu, node) }
 
-#[cfg(not(feature = "CONFIG_USE_PERCPU_NUMA_NODE_ID"))]
+#[cfg(not(CONFIG_USE_PERCPU_NUMA_NODE_ID))]
 #[inline]
 pub unsafe fn numa_node_id() -> c_int { cpu_to_node(raw_smp_processor_id()) }
 
 // CONFIG_HAVE_MEMORYLESS_NODES selects the per-CPU memory-node accessors.
-#[cfg(feature = "CONFIG_HAVE_MEMORYLESS_NODES")]
+#[cfg(CONFIG_HAVE_MEMORYLESS_NODES)]
 extern "C" {
     pub static mut _numa_mem_: c_int;
     pub fn this_cpu_write_numa_mem(node: c_int);
@@ -97,23 +97,23 @@ extern "C" {
     pub fn set_per_cpu_numa_mem(cpu: c_int, node: c_int);
 }
 
-#[cfg(feature = "CONFIG_HAVE_MEMORYLESS_NODES")]
+#[cfg(CONFIG_HAVE_MEMORYLESS_NODES)]
 #[inline]
 pub unsafe fn set_numa_mem(node: c_int) { this_cpu_write_numa_mem(node) }
-#[cfg(feature = "CONFIG_HAVE_MEMORYLESS_NODES")]
+#[cfg(CONFIG_HAVE_MEMORYLESS_NODES)]
 #[inline]
 pub unsafe fn numa_mem_id() -> c_int { raw_cpu_read_numa_mem() }
-#[cfg(feature = "CONFIG_HAVE_MEMORYLESS_NODES")]
+#[cfg(CONFIG_HAVE_MEMORYLESS_NODES)]
 #[inline]
 pub unsafe fn cpu_to_mem(cpu: c_int) -> c_int { per_cpu_numa_mem(cpu) }
-#[cfg(feature = "CONFIG_HAVE_MEMORYLESS_NODES")]
+#[cfg(CONFIG_HAVE_MEMORYLESS_NODES)]
 #[inline]
 pub unsafe fn set_cpu_numa_mem(cpu: c_int, node: c_int) { set_per_cpu_numa_mem(cpu, node) }
 
-#[cfg(not(feature = "CONFIG_HAVE_MEMORYLESS_NODES"))]
+#[cfg(not(CONFIG_HAVE_MEMORYLESS_NODES))]
 #[inline]
 pub unsafe fn numa_mem_id() -> c_int { numa_node_id() }
-#[cfg(not(feature = "CONFIG_HAVE_MEMORYLESS_NODES"))]
+#[cfg(not(CONFIG_HAVE_MEMORYLESS_NODES))]
 #[inline]
 pub unsafe fn cpu_to_mem(cpu: c_int) -> c_int { cpu_to_node(cpu) }
 
@@ -158,19 +158,19 @@ pub unsafe fn cpu_node_mask(cpu: c_int) -> *const cpumask {
 }
 
 // CONFIG_NUMA provides architecture-specific implementations.
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn sched_numa_find_nth_cpu(cpus: *const cpumask, cpu: c_int, node: c_int) -> c_int;
     pub fn sched_numa_hop_mask(node: c_uint, hops: c_uint) -> *const cpumask;
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn sched_numa_find_nth_cpu(cpus: *const cpumask, cpu: c_int, _node: c_int) -> c_int {
     cpumask_nth_and(cpu, cpus, cpu_online_mask)
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub unsafe fn sched_numa_hop_mask(_node: c_uint, _hops: c_uint) -> *const cpumask {
     core::ptr::null()

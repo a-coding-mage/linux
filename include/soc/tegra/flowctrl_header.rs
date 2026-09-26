@@ -36,7 +36,7 @@ pub const TEGRA30_FLOW_CTRL_CSR_WFE_BITMAP: u32 = 0xF << 4;
 pub const TEGRA30_FLOW_CTRL_CSR_WFI_BITMAP: u32 = 0xF << 8;
 
 /* CONFIG_SOC_TEGRA_FLOWCTRL: external flow-controller implementation. */
-#[cfg(feature = "CONFIG_SOC_TEGRA_FLOWCTRL")]
+#[cfg(CONFIG_SOC_TEGRA_FLOWCTRL)]
 extern "C" {
     pub fn flowctrl_read_cpu_csr(cpuid: u32) -> u32;
     pub fn flowctrl_write_cpu_csr(cpuid: u32, value: u32);
@@ -45,25 +45,25 @@ extern "C" {
     pub fn flowctrl_cpu_suspend_exit(cpuid: u32);
 }
 
-#[cfg(not(feature = "CONFIG_SOC_TEGRA_FLOWCTRL"))]
+#[cfg(not(CONFIG_SOC_TEGRA_FLOWCTRL))]
 #[inline]
 pub fn flowctrl_read_cpu_csr(_cpuid: u32) -> u32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SOC_TEGRA_FLOWCTRL"))]
+#[cfg(not(CONFIG_SOC_TEGRA_FLOWCTRL))]
 #[inline]
 pub fn flowctrl_write_cpu_csr(_cpuid: u32, _value: u32) {}
 
-#[cfg(not(feature = "CONFIG_SOC_TEGRA_FLOWCTRL"))]
+#[cfg(not(CONFIG_SOC_TEGRA_FLOWCTRL))]
 #[inline]
 pub fn flowctrl_write_cpu_halt(_cpuid: u32, _value: u32) {}
 
-#[cfg(not(feature = "CONFIG_SOC_TEGRA_FLOWCTRL"))]
+#[cfg(not(CONFIG_SOC_TEGRA_FLOWCTRL))]
 #[inline]
 pub fn flowctrl_cpu_suspend_enter(_cpuid: u32) {}
 
-#[cfg(not(feature = "CONFIG_SOC_TEGRA_FLOWCTRL"))]
+#[cfg(not(CONFIG_SOC_TEGRA_FLOWCTRL))]
 #[inline]
 pub fn flowctrl_cpu_suspend_exit(_cpuid: u32) {}
 

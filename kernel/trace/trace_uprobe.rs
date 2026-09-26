@@ -41,25 +41,25 @@ pub type u32_ = u32;
 #[repr(C)] pub struct UprobeDispatchData { pub tu:*mut TraceUprobe, pub bp_addr:c_ulong }
 
 extern "C" {
-    fn trace_probe_is_enabled(*const TraceProbe)->bool;
-    fn trace_probe_name(*const TraceProbe)->*const i8;
-    fn trace_probe_group_name(*const TraceProbe)->*const i8;
-    fn trace_probe_event_call(*const TraceProbe)->*mut TraceEventCall;
-    fn trace_probe_primary_from_call(*mut TraceEventCall)->*mut TraceProbe;
-    fn trace_probe_cleanup(*mut TraceProbe);
-    fn trace_probe_init(*mut TraceProbe,*const i8,*const i8,bool,c_int)->c_int;
-    fn trace_probe_load_flag(*const TraceProbe)->c_uint;
-    fn trace_probe_print_args(*mut TraceSeq,*mut TraceProbeArg,c_int,*mut u8,*mut UprobeTraceEntryHead)->c_int;
-    fn user_stack_pointer(*mut PtRegs)->c_ulong;
-    fn regs_get_register(*mut PtRegs,c_ulong)->c_ulong;
-    fn regs_return_value(*mut PtRegs)->c_ulong;
-    fn instruction_pointer(*mut PtRegs)->c_ulong;
-    fn copy_from_user(*mut core::ffi::c_void,*const core::ffi::c_void,usize)->usize;
-    fn strncpy_from_user(*mut u8,*const core::ffi::c_void,usize)->c_long;
-    fn strlen(*const i8)->usize;
-    fn strnlen_user(*const core::ffi::c_void,usize)->c_int;
-    fn memcpy(*mut core::ffi::c_void,*const core::ffi::c_void,usize);
-    fn memset(*mut core::ffi::c_void,c_int,usize);
+    fn trace_probe_is_enabled(_: *const TraceProbe)->bool;
+    fn trace_probe_name(_: *const TraceProbe)->*const i8;
+    fn trace_probe_group_name(_: *const TraceProbe)->*const i8;
+    fn trace_probe_event_call(_: *const TraceProbe)->*mut TraceEventCall;
+    fn trace_probe_primary_from_call(_: *mut TraceEventCall)->*mut TraceProbe;
+    fn trace_probe_cleanup(_: *mut TraceProbe);
+    fn trace_probe_init(_: *mut TraceProbe,_: *const i8,_: *const i8,_: bool,_: c_int)->c_int;
+    fn trace_probe_load_flag(_: *const TraceProbe)->c_uint;
+    fn trace_probe_print_args(_: *mut TraceSeq,_: *mut TraceProbeArg,_: c_int,_: *mut u8,_: *mut UprobeTraceEntryHead)->c_int;
+    fn user_stack_pointer(_: *mut PtRegs)->c_ulong;
+    fn regs_get_register(_: *mut PtRegs,_: c_ulong)->c_ulong;
+    fn regs_return_value(_: *mut PtRegs)->c_ulong;
+    fn instruction_pointer(_: *mut PtRegs)->c_ulong;
+    fn copy_from_user(_: *mut core::ffi::c_void,_: *const core::ffi::c_void,_: usize)->usize;
+    fn strncpy_from_user(_: *mut u8,_: *const core::ffi::c_void,_: usize)->c_long;
+    fn strlen(_: *const i8)->usize;
+    fn strnlen_user(_: *const core::ffi::c_void,_: usize)->c_int;
+    fn memcpy(_: *mut core::ffi::c_void,_: *const core::ffi::c_void,_: usize);
+    fn memset(_: *mut core::ffi::c_void,_: c_int,_: usize);
 }
 #[repr(C)] pub struct TraceSeq { _private:[u8;0] }
 

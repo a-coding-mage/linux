@@ -8,13 +8,13 @@
 // C includes and kernel-provided declarations are supplied by the surrounding
 // kernel translation unit.
 
-static unsafe extern "C" fn test_accept_func(
+unsafe extern "C" fn test_accept_func(
     _req: *mut handshake_req,
     _info: *mut genl_info,
     _fd: i32,
 ) -> i32 { 0 }
 
-static unsafe extern "C" fn test_done_func(
+unsafe extern "C" fn test_done_func(
     _req: *mut handshake_req,
     _status: i32,
     _info: *mut genl_info,

@@ -24,7 +24,7 @@ struct RtSigframe {
     rs_uc: ucontext,
 }
 
-#[cfg(feature = "CONFIG_MIPS_FP_SUPPORT")]
+#[cfg(CONFIG_MIPS_FP_SUPPORT)]
 unsafe fn copy_fp_to_sigcontext(sc: *mut core::ffi::c_void) -> i32 {
     let abi = (*current).thread.abi;
     let fpregs = (sc as *mut u8).add((*abi).off_sc_fpregs) as *mut u64;
@@ -40,10 +40,10 @@ unsafe fn copy_fp_to_sigcontext(sc: *mut core::ffi::c_void) -> i32 {
     err
 }
 
-#[cfg(not(feature = "CONFIG_MIPS_FP_SUPPORT"))]
+#[cfg(not(CONFIG_MIPS_FP_SUPPORT))]
 unsafe fn copy_fp_to_sigcontext(_sc: *mut core::ffi::c_void) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_MIPS_FP_SUPPORT")]
+#[cfg(CONFIG_MIPS_FP_SUPPORT)]
 unsafe fn copy_fp_from_sigcontext(sc: *mut core::ffi::c_void) -> i32 {
     let abi = (*current).thread.abi;
     let fpregs = (sc as *mut u8).add((*abi).off_sc_fpregs) as *mut u64;
@@ -61,7 +61,7 @@ unsafe fn copy_fp_from_sigcontext(sc: *mut core::ffi::c_void) -> i32 {
     err
 }
 
-#[cfg(not(feature = "CONFIG_MIPS_FP_SUPPORT"))]
+#[cfg(not(CONFIG_MIPS_FP_SUPPORT))]
 unsafe fn copy_fp_from_sigcontext(_sc: *mut core::ffi::c_void) -> i32 { 0 }
 
 unsafe fn save_hw_fp_context(sc: *mut core::ffi::c_void) -> i32 {
@@ -82,7 +82,7 @@ unsafe fn sc_to_extcontext(sc: *mut core::ffi::c_void) -> *mut core::ffi::c_void
     &mut (*uc).uc_extcontext as *mut _ as *mut core::ffi::c_void
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_MSA")]
+#[cfg(CONFIG_CPU_HAS_MSA)]
 unsafe fn save_msa_extcontext(buf: *mut core::ffi::c_void) -> i32 {
     let msa = buf as *mut msa_extcontext;
     if !thread_msa_context_live() { return 0; }
@@ -105,10 +105,10 @@ unsafe fn save_msa_extcontext(buf: *mut core::ffi::c_void) -> i32 {
     if err != 0 { -EFAULT } else { size_of::<msa_extcontext>() as i32 }
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_MSA"))]
+#[cfg(not(CONFIG_CPU_HAS_MSA))]
 unsafe fn save_msa_extcontext(_buf: *mut core::ffi::c_void) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_MSA")]
+#[cfg(CONFIG_CPU_HAS_MSA)]
 unsafe fn restore_msa_extcontext(buf: *mut core::ffi::c_void, size: u32) -> i32 {
     let msa = buf as *mut msa_extcontext;
     if size as usize != size_of::<msa_extcontext>() { return -EINVAL; }
@@ -133,7 +133,7 @@ unsafe fn restore_msa_extcontext(buf: *mut core::ffi::c_void, size: u32) -> i32 
     err
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_MSA"))]
+#[cfg(not(CONFIG_CPU_HAS_MSA))]
 unsafe fn restore_msa_extcontext(_buf: *mut core::ffi::c_void, _size: u32) -> i32 { SIGSYS }
 
 unsafe fn save_extcontext(mut buf: *mut core::ffi::c_void) -> i32 {
@@ -215,7 +215,7 @@ pub unsafe fn protected_restore_fp_context(sc: *mut core::ffi::c_void) -> i32 {
 pub unsafe fn setup_sigcontext(regs: *mut pt_regs, sc: *mut sigcontext) -> i32 {
     let mut err = __put_user((*regs).cp0_epc, &mut (*sc).sc_pc) | __put_user(0, &mut (*sc).sc_regs[0]);
     for i in 1..32 { err |= __put_user((*regs).regs[i], &mut (*sc).sc_regs[i]); }
-    #[cfg(feature = "CONFIG_CPU_HAS_SMARTMIPS")] { err |= __put_user((*regs).acx, &mut (*sc).sc_acx); }
+    #[cfg(CONFIG_CPU_HAS_SMARTMIPS)] { err |= __put_user((*regs).acx, &mut (*sc).sc_acx); }
     err |= __put_user((*regs).hi, &mut (*sc).sc_mdhi) | __put_user((*regs).lo, &mut (*sc).sc_mdlo);
     if cpu_has_dsp { err |= __put_user(mfhi1(), &mut (*sc).sc_hi1) | __put_user(mflo1(), &mut (*sc).sc_lo1) | __put_user(mfhi2(), &mut (*sc).sc_hi2) | __put_user(mflo2(), &mut (*sc).sc_lo2) | __put_user(mfhi3(), &mut (*sc).sc_hi3) | __put_user(mflo3(), &mut (*sc).sc_lo3) | __put_user(rddsp(DSP_MASK), &mut (*sc).sc_dsp); }
     err | protected_save_fp_context(sc as *mut _)
@@ -238,16 +238,16 @@ pub unsafe fn fpcsr_pending(fpcsr: *mut u32) -> i32 {
 pub unsafe fn restore_sigcontext(regs: *mut pt_regs, sc: *mut sigcontext) -> i32 {
     (*current).restart_block.fn_ = do_no_restart_syscall;
     let mut err = __get_user(&mut (*regs).cp0_epc, &(*sc).sc_pc);
-    #[cfg(feature = "CONFIG_CPU_HAS_SMARTMIPS")] { err |= __get_user(&mut (*regs).acx, &(*sc).sc_acx); }
+    #[cfg(CONFIG_CPU_HAS_SMARTMIPS)] { err |= __get_user(&mut (*regs).acx, &(*sc).sc_acx); }
     err |= __get_user(&mut (*regs).hi, &(*sc).sc_mdhi) | __get_user(&mut (*regs).lo, &(*sc).sc_mdlo);
     if cpu_has_dsp { let mut t=0; err |= __get_user(&mut t,&(*sc).sc_hi1); mthi1(t); err |= __get_user(&mut t,&(*sc).sc_lo1); mtlo1(t); err |= __get_user(&mut t,&(*sc).sc_hi2); mthi2(t); err |= __get_user(&mut t,&(*sc).sc_lo2); mtlo2(t); err |= __get_user(&mut t,&(*sc).sc_hi3); mthi3(t); err |= __get_user(&mut t,&(*sc).sc_lo3); mtlo3(t); err |= __get_user(&mut t,&(*sc).sc_dsp); wrdsp(t,DSP_MASK); }
     for i in 1..32 { err |= __get_user(&mut (*regs).regs[i], &(*sc).sc_regs[i]); }
     if err != 0 { err } else { protected_restore_fp_context(sc as *mut _) }
 }
 
-#[cfg(feature = "CONFIG_WAR_ICACHE_REFILLS")]
+#[cfg(CONFIG_WAR_ICACHE_REFILLS)]
 const SIGMASK: usize = !(cpu_icache_line_size() - 1);
-#[cfg(not(feature = "CONFIG_WAR_ICACHE_REFILLS"))]
+#[cfg(not(CONFIG_WAR_ICACHE_REFILLS))]
 const SIGMASK: usize = ALMASK;
 
 pub unsafe fn get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, mut frame_size: usize) -> *mut core::ffi::c_void {
@@ -256,10 +256,10 @@ pub unsafe fn get_sigframe(ksig: *mut ksignal, regs: *mut pt_regs, mut frame_siz
     sp -= 32; sp = sigsp(sp, ksig); ((sp - frame_size) & SIGMASK) as *mut _
 }
 
-#[cfg(feature = "CONFIG_TRAD_SIGNALS")]
+#[cfg(CONFIG_TRAD_SIGNALS)]
 pub unsafe fn sys_sigsuspend(uset: *mut sigset_t) -> isize { sys_rt_sigsuspend(uset, size_of::<sigset_t>()) }
 
-#[cfg(feature = "CONFIG_TRAD_SIGNALS")]
+#[cfg(CONFIG_TRAD_SIGNALS)]
 pub unsafe fn sys_sigaction(sig: i32, act: *const sigaction, oact: *mut sigaction) -> i32 {
     let mut new_ka = core::mem::zeroed(); let mut old_ka = core::mem::zeroed(); let mut err = 0;
     if !act.is_null() {

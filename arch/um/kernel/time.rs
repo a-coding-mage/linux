@@ -163,7 +163,7 @@ unsafe fn __time_travel_update_time(ns: u64, idle: bool) { if time_travel_mode =
 unsafe fn time_travel_first_event() -> *mut time_travel_event { list_first_entry_or_null!(&mut time_travel_events, time_travel_event, list) }
 
 #[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
-unsafe fn __time_travel_add_event(e: *mut time_travel_event, time: u64) { if (*e).pending { return; } (*e).pending = true; (*e).time = time; let mut flags = 0usize; local_irq_save(&mut flags); let mut tmp: *mut time_travel_event; list_for_each_entry!(tmp, &mut time_travel_events, list) { if (*tmp).time > (*e).time || ((*tmp).time == (*e).time && (*tmp).onstack && (*e).onstack) { list_add_tail!(&mut (*e).list, &mut (*tmp).list); return; } } list_add_tail!(&mut (*e).list, &mut time_travel_events); tmp = time_travel_first_event(); time_travel_ext_update_request((*tmp).time); time_travel_next_event = (*tmp).time; local_irq_restore(flags); }
+unsafe fn __time_travel_add_event(e: *mut time_travel_event, time: u64) { if (*e).pending { return; } (*e).pending = true; (*e).time = time; let mut flags = 0usize; local_irq_save(&mut flags); let mut tmp: *mut time_travel_event; list_for_each_entry!(tmp, &mut time_travel_events, list, { if (*tmp).time > (*e).time || ((*tmp).time == (*e).time && (*tmp).onstack && (*e).onstack) { list_add_tail!(&mut (*e).list, &mut (*tmp).list); return; } }); list_add_tail!(&mut (*e).list, &mut time_travel_events); tmp = time_travel_first_event(); time_travel_ext_update_request((*tmp).time); time_travel_next_event = (*tmp).time; local_irq_restore(flags); }
 
 #[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 unsafe fn time_travel_add_event(e: *mut time_travel_event, time: u64) { if (*e).fn_.is_none() { return; } __time_travel_add_event(e, time); }

@@ -45,7 +45,7 @@ pub const XDP_TXMD_FLAGS_LAUNCH_TIME: u64 = 1 << 2;
 pub const XDP_TX_METADATA: u32 = 1 << 0;
 pub const XDP_PACKET_HEADROOM: u32 = 256;
 
-#[cfg(feature = "CONFIG_XDP_SOCKETS")]
+#[cfg(CONFIG_XDP_SOCKETS)]
 extern "C" {
     pub fn xsk_tx_completed(pool: *mut xsk_buff_pool, nb_entries: u32);
     pub fn xsk_tx_peek_desc(pool: *mut xsk_buff_pool, desc: *mut xdp_desc) -> bool;
@@ -69,7 +69,7 @@ pub unsafe fn __xsk_pool_get_rx_frame_size(pool: *mut xsk_buff_pool) -> u32 { xs
 pub unsafe fn xsk_pool_get_rx_frag_step(pool: *mut xsk_buff_pool) -> u32 { if (*pool).unaligned { 0 } else { xsk_pool_get_chunk_size(pool) } }
 
 /* The following helpers retain the source interfaces; their implementations are external kernel helpers. */
-#[cfg(feature = "CONFIG_XDP_SOCKETS")]
+#[cfg(CONFIG_XDP_SOCKETS)]
 extern "C" {
     pub fn xp_set_rxq_info(pool: *mut xsk_buff_pool, rxq: *mut xdp_rxq_info);
     pub fn xp_fill_cb(pool: *mut xsk_buff_pool, desc: *mut xsk_cb_desc);
@@ -89,54 +89,54 @@ extern "C" {
     pub fn xp_dma_sync_for_device(pool: *mut xsk_buff_pool, dma: dma_addr_t, size: usize);
 }
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 pub unsafe fn xsk_tx_completed(_pool: *mut xsk_buff_pool, _nb_entries: u32) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_tx_peek_desc(_pool: *mut xsk_buff_pool, _desc: *mut xdp_desc) -> bool { false }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_tx_peek_release_desc_batch(_pool: *mut xsk_buff_pool, _max: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_tx_release(_pool: *mut xsk_buff_pool) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_get_pool_from_qid(_dev: *mut net_device, _queue_id: u16) -> *mut xsk_buff_pool { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_set_rx_need_wakeup(_pool: *mut xsk_buff_pool) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_set_tx_need_wakeup(_pool: *mut xsk_buff_pool) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_clear_rx_need_wakeup(_pool: *mut xsk_buff_pool) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_clear_tx_need_wakeup(_pool: *mut xsk_buff_pool) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_uses_need_wakeup(_pool: *mut xsk_buff_pool) -> bool { false }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_tx_peek_desc(_pool: *mut xsk_buff_pool, _desc: *mut xdp_desc) -> bool { false }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_tx_peek_release_desc_batch(_pool: *mut xsk_buff_pool, _max: u32) -> u32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_tx_release(_pool: *mut xsk_buff_pool) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_get_pool_from_qid(_dev: *mut net_device, _queue_id: u16) -> *mut xsk_buff_pool { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_set_rx_need_wakeup(_pool: *mut xsk_buff_pool) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_set_tx_need_wakeup(_pool: *mut xsk_buff_pool) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_clear_rx_need_wakeup(_pool: *mut xsk_buff_pool) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_clear_tx_need_wakeup(_pool: *mut xsk_buff_pool) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_uses_need_wakeup(_pool: *mut xsk_buff_pool) -> bool { false }
 
 /* CONFIG_XDP_SOCKETS fallback helpers from the header. */
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_get_headroom(_pool: *mut xsk_buff_pool) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_get_chunk_size(_pool: *mut xsk_buff_pool) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_get_rx_frame_size(_pool: *mut xsk_buff_pool) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_get_rx_frag_step(_pool: *mut xsk_buff_pool) -> u32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_get_headroom(_pool: *mut xsk_buff_pool) -> u32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_get_chunk_size(_pool: *mut xsk_buff_pool) -> u32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_get_rx_frame_size(_pool: *mut xsk_buff_pool) -> u32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_get_rx_frag_step(_pool: *mut xsk_buff_pool) -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))]
+#[cfg(not(CONFIG_XDP_SOCKETS))]
 pub unsafe fn xsk_pool_set_rxq_info(_pool: *mut xsk_buff_pool, _rxq: *mut xdp_rxq_info) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_fill_cb(_pool: *mut xsk_buff_pool, _desc: *mut xsk_cb_desc) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_dma_unmap(_pool: *mut xsk_buff_pool, _attrs: usize) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_pool_dma_map(_pool: *mut xsk_buff_pool, _dev: *mut device, _attrs: usize) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_xdp_get_dma(_xdp: *mut xdp_buff) -> dma_addr_t { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_xdp_get_frame_dma(_xdp: *mut xdp_buff) -> dma_addr_t { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_alloc(_pool: *mut xsk_buff_pool) -> *mut xdp_buff { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_is_eop_desc(_desc: *const xdp_desc) -> bool { false }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_alloc_batch(_pool: *mut xsk_buff_pool, _xdp: *mut *mut xdp_buff, _max: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_can_alloc(_pool: *mut xsk_buff_pool, _count: u32) -> bool { false }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_free(_xdp: *mut xdp_buff) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_add_frag(_head: *mut xdp_buff, _xdp: *mut xdp_buff) -> bool { false }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_get_frag(_first: *const xdp_buff) -> *mut xdp_buff { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_del_frag(_xdp: *mut xdp_buff) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_get_head(_first: *mut xdp_buff) -> *mut xdp_buff { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_get_tail(_first: *mut xdp_buff) -> *mut xdp_buff { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_set_size(_xdp: *mut xdp_buff, _size: u32) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_raw_get_dma(_pool: *mut xsk_buff_pool, _addr: u64) -> dma_addr_t { 0 }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_raw_get_data(_pool: *mut xsk_buff_pool, _addr: u64) -> *mut c_void { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_raw_get_ctx(_pool: *const xsk_buff_pool, _addr: u64, _options: u32) -> xdp_desc_ctx { xdp_desc_ctx { _private: [] } }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_valid_tx_metadata(_pool: *const xsk_buff_pool, _meta: *const xsk_tx_metadata, _flags: *mut u64) -> bool { false }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_tx_metadata_request(_pool: *const xsk_buff_pool, _pmeta: *mut *mut xsk_tx_metadata, _ops: *const xsk_tx_metadata_ops, _priv: *mut c_void) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn __xsk_buff_get_metadata(_pool: *const xsk_buff_pool, _data: *mut c_void, _options: u32) -> *mut xsk_tx_metadata { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_get_metadata(_pool: *mut xsk_buff_pool, _addr: u64, _options: u32) -> *mut xsk_tx_metadata { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_dma_sync_for_cpu(_xdp: *mut xdp_buff) {}
-#[cfg(not(feature = "CONFIG_XDP_SOCKETS"))] pub unsafe fn xsk_buff_raw_dma_sync_for_device(_pool: *mut xsk_buff_pool, _dma: dma_addr_t, _size: usize) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_fill_cb(_pool: *mut xsk_buff_pool, _desc: *mut xsk_cb_desc) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_dma_unmap(_pool: *mut xsk_buff_pool, _attrs: usize) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_pool_dma_map(_pool: *mut xsk_buff_pool, _dev: *mut device, _attrs: usize) -> i32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_xdp_get_dma(_xdp: *mut xdp_buff) -> dma_addr_t { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_xdp_get_frame_dma(_xdp: *mut xdp_buff) -> dma_addr_t { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_alloc(_pool: *mut xsk_buff_pool) -> *mut xdp_buff { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_is_eop_desc(_desc: *const xdp_desc) -> bool { false }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_alloc_batch(_pool: *mut xsk_buff_pool, _xdp: *mut *mut xdp_buff, _max: u32) -> u32 { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_can_alloc(_pool: *mut xsk_buff_pool, _count: u32) -> bool { false }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_free(_xdp: *mut xdp_buff) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_add_frag(_head: *mut xdp_buff, _xdp: *mut xdp_buff) -> bool { false }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_get_frag(_first: *const xdp_buff) -> *mut xdp_buff { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_del_frag(_xdp: *mut xdp_buff) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_get_head(_first: *mut xdp_buff) -> *mut xdp_buff { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_get_tail(_first: *mut xdp_buff) -> *mut xdp_buff { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_set_size(_xdp: *mut xdp_buff, _size: u32) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_raw_get_dma(_pool: *mut xsk_buff_pool, _addr: u64) -> dma_addr_t { 0 }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_raw_get_data(_pool: *mut xsk_buff_pool, _addr: u64) -> *mut c_void { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_raw_get_ctx(_pool: *const xsk_buff_pool, _addr: u64, _options: u32) -> xdp_desc_ctx { xdp_desc_ctx { _private: [] } }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_valid_tx_metadata(_pool: *const xsk_buff_pool, _meta: *const xsk_tx_metadata, _flags: *mut u64) -> bool { false }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_tx_metadata_request(_pool: *const xsk_buff_pool, _pmeta: *mut *mut xsk_tx_metadata, _ops: *const xsk_tx_metadata_ops, _priv: *mut c_void) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn __xsk_buff_get_metadata(_pool: *const xsk_buff_pool, _data: *mut c_void, _options: u32) -> *mut xsk_tx_metadata { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_get_metadata(_pool: *mut xsk_buff_pool, _addr: u64, _options: u32) -> *mut xsk_tx_metadata { core::ptr::null_mut() }
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_dma_sync_for_cpu(_xdp: *mut xdp_buff) {}
+#[cfg(not(CONFIG_XDP_SOCKETS))] pub unsafe fn xsk_buff_raw_dma_sync_for_device(_pool: *mut xsk_buff_pool, _dma: dma_addr_t, _size: usize) {}
 
 /* Enabled-configuration bodies delegate to the corresponding kernel pool primitives. */
-#[cfg(feature = "CONFIG_XDP_SOCKETS")]
+#[cfg(CONFIG_XDP_SOCKETS)]
 extern "C" {
     pub fn xsk_pool_set_rxq_info(pool: *mut xsk_buff_pool, rxq: *mut xdp_rxq_info);
     pub fn xsk_pool_fill_cb(pool: *mut xsk_buff_pool, desc: *mut xsk_cb_desc);

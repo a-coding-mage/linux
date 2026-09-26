@@ -161,7 +161,7 @@ unsafe fn pnv_ioda_setup_vf_PE(pdev: *mut pci_dev, num_vfs: u16) {
 
 unsafe fn pnv_pci_sriov_enable(pdev: *mut pci_dev, num_vfs: u16) -> i32 {
     let phb = pci_bus_to_pnvhb((*pdev).bus); let iov = pnv_iov_get(pdev);
-    if (*phb).type != PNV_PHB_IODA2 { pci_err(pdev, "SR-IOV is not supported on this PHB\n"); return -ENXIO; }
+    if (*phb).r#type != PNV_PHB_IODA2 { pci_err(pdev, "SR-IOV is not supported on this PHB\n"); return -ENXIO; }
     if iov.is_null() { dev_info(&mut (*pdev).dev, "don't support this SRIOV device with non 64bit-prefetchable IOV BAR\n"); return -ENOSPC; }
     let base_pe = pnv_ioda_alloc_pe(phb, num_vfs); if base_pe.is_null() { pci_err(pdev, "Unable to allocate PEs for %d VFs\n", num_vfs); return -EBUSY; }
     (*iov).vf_pe_arr = base_pe; (*iov).num_vfs = num_vfs;

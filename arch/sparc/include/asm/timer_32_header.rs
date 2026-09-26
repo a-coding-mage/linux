@@ -34,7 +34,7 @@ extern "C" {
 
 // #ifdef CONFIG_SMP
 // DECLARE_PER_CPU(struct clock_event_device, sparc32_clockevent);
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub static mut sparc32_clockevent: [crate::clock_event_device; crate::SUN4M_NCPUS];
 

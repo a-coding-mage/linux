@@ -28,7 +28,7 @@ pub struct compat_rt_sigframe {
     pub uc: compat_ucontext,
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn compat_restore_fp_state(
     regs: *mut pt_regs,
     sc_fpregs: *mut __riscv_fp_state,
@@ -59,7 +59,7 @@ unsafe fn compat_restore_fp_state(
     err
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn compat_save_fp_state(
     regs: *mut pt_regs,
     sc_fpregs: *mut __riscv_fp_state,
@@ -85,10 +85,10 @@ unsafe fn compat_save_fp_state(
     err
 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn compat_restore_fp_state(_regs: *mut pt_regs, _sc_fpregs: *mut __riscv_fp_state) -> core::ffi::c_long { 0 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn compat_save_fp_state(_regs: *mut pt_regs, _sc_fpregs: *mut __riscv_fp_state) -> core::ffi::c_long { 0 }
 
 unsafe fn compat_restore_sigcontext(

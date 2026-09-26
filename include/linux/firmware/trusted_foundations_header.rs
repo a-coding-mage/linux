@@ -32,7 +32,7 @@ pub struct trusted_foundations_platform_data {
 // CONFIG_TRUSTED_FOUNDATIONS is a build-time condition from the original
 // header. The enabled declarations are preserved here; the fallback inline
 // implementations are provided below for the disabled configuration.
-#[cfg(feature = "CONFIG_TRUSTED_FOUNDATIONS")]
+#[cfg(CONFIG_TRUSTED_FOUNDATIONS)]
 unsafe extern "C" {
     pub fn register_trusted_foundations(
         pd: *mut trusted_foundations_platform_data,
@@ -41,14 +41,14 @@ unsafe extern "C" {
     pub fn trusted_foundations_registered() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_TRUSTED_FOUNDATIONS"))]
+#[cfg(not(CONFIG_TRUSTED_FOUNDATIONS))]
 pub unsafe fn tf_dummy_write_sec(
     _val: ::core::ffi::c_ulong,
     _reg: ::core::ffi::c_uint,
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_TRUSTED_FOUNDATIONS"))]
+#[cfg(not(CONFIG_TRUSTED_FOUNDATIONS))]
 pub unsafe fn register_trusted_foundations(
     _pd: *mut trusted_foundations_platform_data,
 ) {
@@ -60,21 +60,21 @@ pub unsafe fn register_trusted_foundations(
     pr_err("Secondary processors as well as CPU PM will be disabled.\n");
 
     // IS_ENABLED(CONFIG_CACHE_L2X0) from the C header.
-    #[cfg(feature = "CONFIG_CACHE_L2X0")]
+    #[cfg(CONFIG_CACHE_L2X0)]
     {
         pr_err("L2X0 cache will be kept disabled.\n");
         outer_cache.write_sec = Some(tf_dummy_write_sec);
     }
 
     // IS_ENABLED(CONFIG_SMP) from the C header.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         setup_max_cpus = 0;
     }
     cpu_idle_poll_ctrl(true);
 }
 
-#[cfg(not(feature = "CONFIG_TRUSTED_FOUNDATIONS"))]
+#[cfg(not(CONFIG_TRUSTED_FOUNDATIONS))]
 pub unsafe fn of_register_trusted_foundations() {
     let np = of_find_compatible_node(
         ::core::ptr::null_mut(),
@@ -93,7 +93,7 @@ pub unsafe fn of_register_trusted_foundations() {
     register_trusted_foundations(::core::ptr::null_mut());
 }
 
-#[cfg(not(feature = "CONFIG_TRUSTED_FOUNDATIONS"))]
+#[cfg(not(CONFIG_TRUSTED_FOUNDATIONS))]
 pub unsafe fn trusted_foundations_registered() -> bool {
     false
 }

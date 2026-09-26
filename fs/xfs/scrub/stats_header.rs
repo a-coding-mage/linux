@@ -18,7 +18,7 @@ pub struct xchk_stats {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS")]
+#[cfg(CONFIG_XFS_ONLINE_SCRUB_STATS)]
 extern "C" {
     pub fn xchk_global_stats_setup(parent: *mut dentry) -> ::core::ffi::c_int;
     pub fn xchk_global_stats_teardown();
@@ -38,13 +38,13 @@ extern "C" {
     pub fn ktime_get_ns() -> u64;
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS")]
+#[cfg(CONFIG_XFS_ONLINE_SCRUB_STATS)]
 #[inline]
 pub unsafe fn xchk_stats_now() -> u64 {
     ktime_get_ns()
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS")]
+#[cfg(CONFIG_XFS_ONLINE_SCRUB_STATS)]
 #[inline]
 pub unsafe fn xchk_stats_elapsed_ns(since: u64) -> u64 {
     let now = xchk_stats_now();
@@ -61,47 +61,47 @@ pub unsafe fn xchk_stats_elapsed_ns(since: u64) -> u64 {
     now - since
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_global_stats_setup(_parent: *mut dentry) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_global_stats_teardown() {}
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_mount_stats_alloc(_mp: *mut xfs_mount) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_mount_stats_free(_mp: *mut xfs_mount) {}
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_stats_register(_cs: *mut xchk_stats, _parent: *mut dentry) {}
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_stats_unregister(_cs: *mut xchk_stats) {}
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_stats_now() -> u64 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_stats_elapsed_ns<T>(_x: T) -> u64 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB_STATS"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB_STATS))]
 #[inline]
 pub fn xchk_stats_merge(
     _mp: *mut xfs_mount,

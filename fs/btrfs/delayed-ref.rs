@@ -122,10 +122,10 @@ unsafe fn comp_data_refs(a: *const btrfs_delayed_ref_node, b: *const btrfs_delay
     if (*a).data_ref.objectid < (*b).data_ref.objectid { -1 } else if (*a).data_ref.objectid > (*b).data_ref.objectid { 1 } else if (*a).data_ref.offset < (*b).data_ref.offset { -1 } else if (*a).data_ref.offset > (*b).data_ref.offset { 1 } else { 0 }
 }
 unsafe fn comp_refs(a: *const btrfs_delayed_ref_node, b: *const btrfs_delayed_ref_node, check_seq: bool) -> i32 {
-    if (*a).type < (*b).type { return -1; } if (*a).type > (*b).type { return 1; }
-    if (*a).type == BTRFS_SHARED_BLOCK_REF_KEY || (*a).type == BTRFS_SHARED_DATA_REF_KEY {
+    if (*a).r#type < (*b).r#type { return -1; } if (*a).r#type > (*b).r#type { return 1; }
+    if (*a).r#type == BTRFS_SHARED_BLOCK_REF_KEY || (*a).r#type == BTRFS_SHARED_DATA_REF_KEY {
         if (*a).parent < (*b).parent { return -1; } if (*a).parent > (*b).parent { return 1; }
-    } else { if (*a).ref_root < (*b).ref_root { return -1; } if (*a).ref_root > (*b).ref_root { return 1; } if (*a).type == BTRFS_EXTENT_DATA_REF_KEY { let r=comp_data_refs(a,b); if r != 0{return r;} } }
+    } else { if (*a).ref_root < (*b).ref_root { return -1; } if (*a).ref_root > (*b).ref_root { return 1; } if (*a).r#type == BTRFS_EXTENT_DATA_REF_KEY { let r=comp_data_refs(a,b); if r != 0{return r;} } }
     if check_seq { if (*a).seq < (*b).seq {-1} else if (*a).seq > (*b).seq {1} else {0} } else {0}
 }
 
@@ -139,8 +139,8 @@ pub unsafe fn btrfs_check_delayed_seq(fs_info: *mut btrfs_fs_info, seq: u64) -> 
     if min_seq != 0 && seq >= min_seq { btrfs_debug(fs_info, "holding back delayed_ref %llu, lowest is %llu", seq, min_seq); 1 } else { 0 }
 }
 
-pub unsafe fn btrfs_init_tree_ref(r: *mut btrfs_ref, level: i32, mod_root: u64, skip_qgroup: bool) { (*r).tree_ref.level=level; (*r).type=BTRFS_REF_METADATA; (*r).skip_qgroup=skip_qgroup || !(btrfs_is_fstree((*r).ref_root) && (mod_root==0 || btrfs_is_fstree(mod_root))); }
-pub unsafe fn btrfs_init_data_ref(r: *mut btrfs_ref, ino: u64, offset: u64, mod_root: u64, skip_qgroup: bool) { (*r).data_ref.objectid=ino; (*r).data_ref.offset=offset; (*r).type=BTRFS_REF_DATA; (*r).skip_qgroup=skip_qgroup || !(btrfs_is_fstree((*r).ref_root) && (mod_root==0 || btrfs_is_fstree(mod_root))); }
+pub unsafe fn btrfs_init_tree_ref(r: *mut btrfs_ref, level: i32, mod_root: u64, skip_qgroup: bool) { (*r).tree_ref.level=level; (*r).r#type=BTRFS_REF_METADATA; (*r).skip_qgroup=skip_qgroup || !(btrfs_is_fstree((*r).ref_root) && (mod_root==0 || btrfs_is_fstree(mod_root))); }
+pub unsafe fn btrfs_init_data_ref(r: *mut btrfs_ref, ino: u64, offset: u64, mod_root: u64, skip_qgroup: bool) { (*r).data_ref.objectid=ino; (*r).data_ref.offset=offset; (*r).r#type=BTRFS_REF_DATA; (*r).skip_qgroup=skip_qgroup || !(btrfs_is_fstree((*r).ref_root) && (mod_root==0 || btrfs_is_fstree(mod_root))); }
 
 pub unsafe fn btrfs_put_delayed_ref(r: *mut btrfs_delayed_ref_node) { if refcount_dec_and_test(&mut (*r).refs) { kmem_cache_free(BTRFS_DELAYED_REF_NODE_CACHEP, r); } }
 

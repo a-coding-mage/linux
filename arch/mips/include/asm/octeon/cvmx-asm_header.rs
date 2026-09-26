@@ -63,7 +63,7 @@ macro_rules! CVMX_DCACHE_INVALIDATE { () => {{ $crate::CVMX_SYNC!(); unsafe { co
 
 #[macro_export]
 macro_rules! CVMX_CACHE {
-    ($op:expr, $address:expr, $offset:expr) => { unsafe { core::arch::asm!("cache {op}, {off}({base})", op = const $op, off = const $offset, base = in(reg) $address, options(nostack, preserves_flags)); } };
+    ($op:expr, $address:expr, $offset:expr) => { unsafe { core::arch::asm!("cache {op}, {off}({base})", $op = const $op, off = const $offset, base = in(reg) $address, options(nostack, preserves_flags)); } };
 }
 #[macro_export] macro_rules! CVMX_CACHE_LCKL2 { ($address:expr, $offset:expr) => { $crate::CVMX_CACHE!(31, $address, $offset); }; }
 #[macro_export] macro_rules! CVMX_CACHE_WBIL2 { ($address:expr, $offset:expr) => { $crate::CVMX_CACHE!(23, $address, $offset); }; }

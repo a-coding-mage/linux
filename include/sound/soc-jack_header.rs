@@ -89,7 +89,7 @@ extern "C" {
 }
 
 /* CONFIG_GPIOLIB declarations; when disabled, the C header supplies inline stubs. */
-#[cfg(feature = "CONFIG_GPIOLIB")]
+#[cfg(CONFIG_GPIOLIB)]
 extern "C" {
     pub fn snd_soc_jack_add_gpios(
         jack: *mut snd_soc_jack,
@@ -109,7 +109,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_GPIOLIB"))]
+#[cfg(not(CONFIG_GPIOLIB))]
 pub unsafe fn snd_soc_jack_add_gpios(
     _jack: *mut snd_soc_jack,
     _count: ::core::ffi::c_int,
@@ -118,7 +118,7 @@ pub unsafe fn snd_soc_jack_add_gpios(
     0
 }
 
-#[cfg(not(feature = "CONFIG_GPIOLIB"))]
+#[cfg(not(CONFIG_GPIOLIB))]
 pub unsafe fn snd_soc_jack_add_gpiods(
     _gpiod_dev: *mut device,
     _jack: *mut snd_soc_jack,
@@ -128,7 +128,7 @@ pub unsafe fn snd_soc_jack_add_gpiods(
     0
 }
 
-#[cfg(not(feature = "CONFIG_GPIOLIB"))]
+#[cfg(not(CONFIG_GPIOLIB))]
 pub unsafe fn snd_soc_jack_free_gpios(
     _jack: *mut snd_soc_jack,
     _count: ::core::ffi::c_int,

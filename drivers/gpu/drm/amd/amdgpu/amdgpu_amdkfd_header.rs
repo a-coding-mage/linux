@@ -130,7 +130,7 @@ extern "C" {
 
 // Configuration-gated declarations and inline fallbacks are preserved below.
 // CONFIG_DEBUG_FS and CONFIG_HSA_AMD are build-time conditions supplied by the kernel.
-#[cfg(feature = "CONFIG_DEBUG_FS")] extern "C" { pub fn kfd_debugfs_kfd_mem_limits(m: *mut seq_file, data: *mut c_void) -> i32; }
+#[cfg(CONFIG_DEBUG_FS)] extern "C" { pub fn kfd_debugfs_kfd_mem_limits(m: *mut seq_file, data: *mut c_void) -> i32; }
 
 #[inline] pub unsafe fn amdkfd_fence_check_mm(_f: *mut dma_fence, _mm: *mut mm_struct) -> bool { false }
 #[inline] pub unsafe fn to_amdgpu_amdkfd_fence(_f: *mut dma_fence) -> *mut amdgpu_amdkfd_fence { core::ptr::null_mut() }

@@ -55,7 +55,7 @@ unsafe fn rxrpc_local_cmp_key(
     if diff != 0 { return diff as isize; }
 
     match (*srx).transport.family {
-        AF_INET => {
+        case if case == AF_INET => {
             ((*local).srx.transport.sin.sin_port as u16)
                 .wrapping_sub((*srx).transport.sin.sin_port as u16)
                 .then(unsafe { memcmp(
@@ -64,7 +64,7 @@ unsafe fn rxrpc_local_cmp_key(
                     mem::size_of::<in_addr>(),
                 ) }) as isize
         }
-        #[cfg(CONFIG_AF_RXRPC_IPV6)]
+        case if case == #[cfg(CONFIG_AF_RXRPC_IPV6)]
         AF_INET6 => {
             ((*local).srx.transport.sin6.sin6_port as u16)
                 .wrapping_sub((*srx).transport.sin6.sin6_port as u16)
@@ -133,6 +133,7 @@ unsafe fn rxrpc_open_socket(local: *mut rxrpc_local, net: *mut net) -> i32 {
     let mut udp_conf: udp_port_cfg = mem::zeroed();
     let usk: *mut sock;
     let mut ret: i32;
+    'error_sock: {
     _enter!("%p{%d,%d}", local, srx.transport_type, srx.transport.family);
     udp_conf.family = srx.transport.family;
     udp_conf.use_udp_checksums = true;
@@ -160,12 +161,13 @@ unsafe fn rxrpc_open_socket(local: *mut rxrpc_local, net: *mut net) -> i32 {
         _ => BUG(),
     }
     let io_thread = kthread_run(rxrpc_io_thread, local, "krxrpcio/%u", ntohs(udp_conf.local_udp_port));
-    if IS_ERR(io_thread) { ret = PTR_ERR(io_thread); goto!(error_sock); }
+    if IS_ERR(io_thread) { ret = PTR_ERR(io_thread); break 'error_sock; }
     wait_for_completion(&mut (*local).io_thread_ready);
     WRITE_ONCE!((*local).io_thread, io_thread);
     _leave!(" = 0");
     return 0;
-error_sock:
+    }
+    
     kernel_sock_shutdown((*local).socket, SHUT_RDWR);
     (*local).socket.sk.sk_user_data = core::ptr::null_mut();
     sock_release((*local).socket);
@@ -179,19 +181,20 @@ pub unsafe fn rxrpc_lookup_local(net: *mut net, srx: *const sockaddr_rxrpc) -> *
     let mut local: *mut rxrpc_local = core::ptr::null_mut();
     let mut cursor: *mut hlist_node = core::ptr::null_mut();
     let mut diff: isize;
+    'addr_in_use: {
     mutex_lock(&mut (*rxnet).local_mutex);
     hlist_for_each!(cursor, &mut (*rxnet).local_endpoints, {
         local = hlist_entry!(cursor, rxrpc_local, link);
         diff = rxrpc_local_cmp_key(local, srx);
         if diff != 0 { continue; }
-        if (*srx).srx_service != 0 { local = core::ptr::null_mut(); goto!(addr_in_use); }
+        if (*srx).srx_service != 0 { local = core::ptr::null_mut(); break 'addr_in_use; }
         if !rxrpc_use_local(local, rxrpc_local_use_lookup).is_null() { break; }
-        goto!(found);
+        goto found;
     });
     local = rxrpc_alloc_local(net, srx);
-    if local.is_null() { goto!(nomem); }
+    if local.is_null() { goto nomem; }
     let ret = rxrpc_open_socket(local, net);
-    if ret < 0 { goto!(sock_error); }
+    if ret < 0 { goto sock_error; }
     if !cursor.is_null() { hlist_replace_rcu(cursor, &mut (*local).link); (*cursor).pprev = core::ptr::null_mut(); }
     else { hlist_add_head_rcu(&mut (*local).link, &mut (*rxnet).local_endpoints); }
 found:
@@ -202,7 +205,8 @@ sock_error:
     mutex_unlock(&mut (*rxnet).local_mutex);
     if !local.is_null() { call_rcu(&mut (*local).rcu, rxrpc_local_rcu); }
     _leave!(" = %d", ret); return ERR_PTR(ret);
-addr_in_use:
+    }
+    
     mutex_unlock(&mut (*rxnet).local_mutex); _leave!(" = -EADDRINUSE"); ERR_PTR(-EADDRINUSE)
 }
 

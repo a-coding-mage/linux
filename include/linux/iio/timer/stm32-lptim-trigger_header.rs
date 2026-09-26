@@ -27,14 +27,14 @@ pub const LPTIM4_CH1: &str = "lptim4_ch1";
 
 // When CONFIG_IIO_STM32_LPTIMER_TRIGGER is reachable, the implementation is
 // provided by the linked Linux IIO trigger code.
-#[cfg(feature = "CONFIG_IIO_STM32_LPTIMER_TRIGGER")]
+#[cfg(CONFIG_IIO_STM32_LPTIMER_TRIGGER)]
 unsafe extern "C" {
     pub fn is_stm32_lptim_trigger(trig: *mut iio_trigger) -> bool;
 }
 
 // Otherwise this is the C static-inline fallback.  The CONFIG_IIO... enabled
 // warning is represented by the original intent in this dependency-free file.
-#[cfg(not(feature = "CONFIG_IIO_STM32_LPTIMER_TRIGGER"))]
+#[cfg(not(CONFIG_IIO_STM32_LPTIMER_TRIGGER))]
 #[inline]
 pub unsafe fn is_stm32_lptim_trigger(_trig: *mut iio_trigger) -> bool {
     // pr_warn_once("stm32 lptim_trigger not linked in\n") when the optional

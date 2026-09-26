@@ -56,13 +56,13 @@ unsafe fn imsic_mrif_atomic_or(_mrif: *mut imsic_mrif, ptr: *mut c_ulong, val: c
 unsafe fn imsic_mrif_topei(mrif: *mut imsic_mrif, nr_eix: u32, nr_msis: u32) -> u32 {
     let threshold = imsic_mrif_atomic_or(mrif, &mut (*mrif).eithreshold, 0);
     let max_msi = if threshold != 0 && threshold <= nr_msis { threshold } else { nr_msis };
-    for ei in 0..nr_eix { let e = &mut (*mrif).eix[ei as usize]; let p = imsic_mrif_atomic_or(mrif, &mut e.eie[0], 0) & imsic_mrif_atomic_or(mrif, &mut e.eip[0], 0); if p == 0 { continue; } let imin = ei * BITS_PER_TYPE_U64 as u32; let imax = core::cmp::min(imin + BITS_PER_TYPE_U64 as u32, max_msi); for i in if imin == 0 { 1 } else { imin }..imax { if p & (1 as c_ulong << (i - imin)) != 0 { return (i << TOPEI_ID_SHIFT) | i; } } }
+    for ei in 0..nr_eix { let e = &mut (*mrif).eix[ei as usize]; let p = imsic_mrif_atomic_or(mrif, &mut e.eie[0], 0) & imsic_mrif_atomic_or(mrif, &mut e.eip[0], 0); if p == 0 { continue; } let imin = ei * BITS_PER_TYPE_U64 as u32; let imax = core::cmp::min(imin + BITS_PER_TYPE_U64 as u32, max_msi); for i in if imin == 0 { 1 } else { imin }..imax { if p & ((1 as c_ulong) << (i - imin)) != 0 { return (i << TOPEI_ID_SHIFT) | i; } } }
     0
 }
 
 unsafe fn imsic_mrif_isel_check(nr_eix: u32, isel: c_ulong) -> c_int {
     let num = if isel == IMSIC_EIDELIVERY || isel == IMSIC_EITHRESHOLD { 0 } else if (IMSIC_EIP0..=IMSIC_EIP63).contains(&(isel as c_int)) { isel - IMSIC_EIP0 as c_ulong } else if (IMSIC_EIE0..=IMSIC_EIE63).contains(&(isel as c_int)) { isel - IMSIC_EIE0 as c_ulong } else { return -ENOENT; };
-    if cfg!(not(feature = "CONFIG_32BIT")) && num & 1 != 0 { return -EINVAL; } if num / 2 >= nr_eix as c_ulong { return -EINVAL; } 0
+    if cfg!(not(CONFIG_32BIT)) && num & 1 != 0 { return -EINVAL; } if num / 2 >= nr_eix as c_ulong { return -EINVAL; } 0
 }
 
 unsafe fn imsic_mrif_rmw(mrif: *mut imsic_mrif, nr_eix: u32, isel: c_ulong, val: *mut c_ulong, new_val: c_ulong, wr_mask: c_ulong) -> c_int {

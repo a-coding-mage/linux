@@ -11,70 +11,70 @@
 // here as Cargo feature conditions with the corresponding names.
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780
 ))]
 pub const WTBST_HIGH: u32 = 0x55;
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780
 ))]
 pub const WTCNT_R: usize = 0xffcc0010; // WDTCNT
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780
 ))]
 pub const WTCSR: usize = 0xffcc0004; // WDTCSR
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780
 ))]
 pub const WTCNT: usize = 0xffcc0000; // WDTST
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780
 ))]
 pub const WTST: usize = WTCNT;
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780
 ))]
 pub const WTBST: usize = 0xffcc0008; // WDTBST
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7722",
-    feature = "CONFIG_CPU_SUBTYPE_SH7723",
-    feature = "CONFIG_CPU_SUBTYPE_SH7724"
+    CONFIG_CPU_SUBTYPE_SH7722,
+    CONFIG_CPU_SUBTYPE_SH7723,
+    CONFIG_CPU_SUBTYPE_SH7724
 ))]
 pub const WTCNT: usize = 0xa4520000;
 
 #[cfg(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7722",
-    feature = "CONFIG_CPU_SUBTYPE_SH7723",
-    feature = "CONFIG_CPU_SUBTYPE_SH7724"
+    CONFIG_CPU_SUBTYPE_SH7722,
+    CONFIG_CPU_SUBTYPE_SH7723,
+    CONFIG_CPU_SUBTYPE_SH7724
 ))]
 pub const WTCSR: usize = 0xa4520004;
 
 #[cfg(not(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780",
-    feature = "CONFIG_CPU_SUBTYPE_SH7722",
-    feature = "CONFIG_CPU_SUBTYPE_SH7723",
-    feature = "CONFIG_CPU_SUBTYPE_SH7724"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780,
+    CONFIG_CPU_SUBTYPE_SH7722,
+    CONFIG_CPU_SUBTYPE_SH7723,
+    CONFIG_CPU_SUBTYPE_SH7724
 )))]
 pub const WTCNT: usize = 0xffc00008;
 
 #[cfg(not(any(
-    feature = "CONFIG_CPU_SUBTYPE_SH7785",
-    feature = "CONFIG_CPU_SUBTYPE_SH7780",
-    feature = "CONFIG_CPU_SUBTYPE_SH7722",
-    feature = "CONFIG_CPU_SUBTYPE_SH7723",
-    feature = "CONFIG_CPU_SUBTYPE_SH7724"
+    CONFIG_CPU_SUBTYPE_SH7785,
+    CONFIG_CPU_SUBTYPE_SH7780,
+    CONFIG_CPU_SUBTYPE_SH7722,
+    CONFIG_CPU_SUBTYPE_SH7723,
+    CONFIG_CPU_SUBTYPE_SH7724
 )))]
 pub const WTCSR: usize = 0xffc0000c;
 

@@ -18,7 +18,7 @@
 pub const DMA_HEAP_VALID_FD_FLAGS: _ = O_CLOEXEC | O_ACCMODE;
 
 /* Currently no heap flags */
-pub const DMA_HEAP_VALID_HEAP_FLAGS: u64 = 0_u64;
+pub const DMA_HEAP_VALID_HEAP_FLAGS: u64 = 0u64;
 
 /**
  * struct dma_heap_allocation_data - metadata passed from userspace for

@@ -52,24 +52,24 @@ extern "C" {
 }
 
 // CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE selects the external test interface.
-#[cfg(feature = "CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE")]
+#[cfg(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE)]
 extern "C" {
     pub fn jent_raw_hires_entropy_store(value: u64) -> ::core::ffi::c_int;
     pub fn jent_testing_init();
     pub fn jent_testing_exit();
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE"))]
+#[cfg(not(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE))]
 #[inline]
 pub fn jent_raw_hires_entropy_store(_value: u64) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE"))]
+#[cfg(not(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE))]
 #[inline]
 pub fn jent_testing_init() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE"))]
+#[cfg(not(CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE))]
 #[inline]
 pub fn jent_testing_exit() {}
 

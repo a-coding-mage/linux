@@ -1,119 +1,130 @@
 // SPDX-License-Identifier: GPL-2.0
-/*
- * Helper function for splitting a string into an argv-like array.
- */
+//! Split an owned snapshot at kernel whitespace while retaining its hidden owner.
 
-use core::ffi::c_char;
+use kernel::bindings::{self, gfp_t};
+use kernel::ctype::isspace;
+use kernel::ffi::{c_char, c_int};
 
-pub type gfp_t = u32;
-
-extern "C" {
-    fn isspace(c: i32) -> i32;
-    fn kstrndup(s: *const c_char, max: usize, gfp: gfp_t) -> *mut c_char;
-    fn kfree(ptr: *mut core::ffi::c_void);
-    fn kmalloc_array(n: usize, size: usize, gfp: gfp_t) -> *mut *mut c_char;
-}
-
-extern "C" {
-    static KMALLOC_MAX_SIZE: usize;
-}
-
-unsafe fn count_argc(mut str_: *const c_char) -> i32 {
-    let mut count: i32 = 0;
-    let mut was_space: bool = true;
-
-    while *str_ != 0 {
-        if isspace(*str_ as i32) != 0 {
-            was_space = true;
-        } else if was_space {
-            was_space = false;
-            count += 1;
+// The kernel compiles the original signed counter with wrapping arithmetic.
+unsafe fn count_argc(mut string: *const c_char) -> c_int {
+    let mut count: c_int = 0;
+    let mut was_space = true;
+    // SAFETY: the caller supplies the uniquely owned, terminated snapshot.
+    unsafe {
+        while string.read() != 0 {
+            if isspace(string.read() as c_int) {
+                was_space = true;
+            } else if was_space {
+                was_space = false;
+                count = count.wrapping_add(1);
+            }
+            string = string.wrapping_add(1);
         }
-        str_ = str_.add(1);
     }
-
     count
 }
 
-/**
- * argv_free - free an argv
- * @argv: the argument vector to be freed
- *
- * Frees an argv and the strings it points to.
- */
+/// Free the hidden string owner and then its original pointer allocation.
+///
+/// # Safety
+///
+/// `argv` must be an outstanding return value from `argv_split`, including
+/// empty vectors. Its hidden slot at `argv[-1]` must remain intact. Public
+/// argument pointers may have changed; they do not own individual allocations.
 #[no_mangle]
 pub unsafe extern "C" fn argv_free(argv: *mut *mut c_char) {
-    let argv = argv.offset(-1);
-    kfree((*argv).cast());
-    kfree(argv.cast());
+    let owner = argv.wrapping_sub(1);
+    // SAFETY: the hidden slot and both allocations are owned by this vector.
+    unsafe {
+        bindings::kfree(owner.read().cast());
+        bindings::kfree(owner.cast());
+    }
 }
 
-/**
- * argv_split - split a string at whitespace, returning an argv
- * @gfp: the GFP mask used to allocate memory
- * @str: the string to be split
- * @argcp: returned argument count
- *
- * Returns: an array of pointers to strings which are split out from
- * @str.  This is performed by strictly splitting on white-space; no
- * quote processing is performed.  Multiple whitespace characters are
- * considered to be a single argument separator.  The returned array
- * is always NULL-terminated.  Returns NULL on memory allocation
- * failure.
- *
- * The source string at `str' may be undergoing concurrent alteration via
- * userspace sysctl activity (at least).  The argv_split() implementation
- * attempts to handle this gracefully by taking a local copy to work on.
- */
+/// Copy the source once and split that copy on the kernel's whitespace bytes.
+///
+/// Quotes and backslashes have no special meaning. The returned vector is
+/// NULL-terminated and must be released with `argv_free`. Allocation failure
+/// leaves `argcp` unchanged, and a null source also returns null.
+///
+/// # Safety
+///
+/// A nonnull source must satisfy `kstrndup`'s readable-string contract through
+/// its terminator or `KMALLOC_MAX_SIZE - 1` bytes. Source changes permitted by
+/// that C API never affect the later count or split of the private snapshot.
+/// A nonnull `argcp` must be writable and exclusively accessible. The GFP mask
+/// must be valid for the caller's allocation context.
 #[no_mangle]
 pub unsafe extern "C" fn argv_split(
     gfp: gfp_t,
-    str_: *const c_char,
-    argcp: *mut i32,
+    string: *const c_char,
+    argcp: *mut c_int,
 ) -> *mut *mut c_char {
-    let mut argv_str: *mut c_char;
-    let mut was_space: bool;
-    let mut argv: *mut *mut c_char;
-    let argv_ret: *mut *mut c_char;
-    let argc: i32;
-
-    argv_str = kstrndup(str_, KMALLOC_MAX_SIZE - 1, gfp);
-    if argv_str.is_null() {
+    // SAFETY: the source and GFP mask satisfy the original C allocation API.
+    let snapshot = unsafe {
+        bindings::kstrndup(string, bindings::KMALLOC_MAX_SIZE as usize - 1, gfp)
+    };
+    if snapshot.is_null() {
         return core::ptr::null_mut();
     }
 
-    argc = count_argc(argv_str);
-    argv = kmalloc_array(
-        (argc + 2) as usize,
-        core::mem::size_of::<*mut c_char>(),
-        gfp,
-    );
-    if argv.is_null() {
-        kfree(argv_str.cast());
-        return core::ptr::null_mut();
-    }
-
-    *argv = argv_str;
-    argv = argv.add(1);
-    argv_ret = argv;
-    was_space = true;
-    while *argv_str != 0 {
-        if isspace(*argv_str as i32) != 0 {
-            was_space = true;
-            *argv_str = 0;
-        } else if was_space {
-            was_space = false;
-            *argv = argv_str;
-            argv = argv.add(1);
+    // SAFETY: kstrndup returned a private, terminated, writable allocation.
+    let argc = unsafe { count_argc(snapshot) };
+    let slots = argc.wrapping_add(2) as usize;
+    let bytes = slots.checked_mul(core::mem::size_of::<*mut c_char>());
+    let owner: *mut *mut c_char = match bytes {
+        Some(bytes) => {
+            // The existing Rust slab helper is the same entry point used by
+            // Kmalloc. A null old allocation requests contiguous fresh memory;
+            // keep all caller GFP bits and the original array overflow check.
+            // No function symbol is invented for the C kmalloc_array macro.
+            // Its successful NULL-old path also traces kfree(NULL); this has
+            // no ownership effect, but allocation tracing is not identical.
+            // SAFETY: null is accepted, and pointer alignment is a power of two.
+            unsafe {
+                bindings::krealloc_node_align(
+                    core::ptr::null(),
+                    bytes,
+                    core::mem::align_of::<*mut c_char>(),
+                    gfp,
+                    bindings::NUMA_NO_NODE,
+                ).cast()
+            }
         }
-        argv_str = argv_str.add(1);
+        None => core::ptr::null_mut(),
+    };
+    if owner.is_null() {
+        // SAFETY: the snapshot is still wholly owned and has not escaped.
+        unsafe { bindings::kfree(snapshot.cast()) };
+        return core::ptr::null_mut();
     }
-    *argv = core::ptr::null_mut();
 
-    if !argcp.is_null() {
-        *argcp = argc;
+    // SAFETY: the checked allocation has argc+2 pointer slots: one hidden
+    // string owner, argc arguments and the public NULL terminator. Counting
+    // and splitting use the same exclusively owned snapshot and ctype rules.
+    unsafe {
+        owner.write(snapshot);
+        let result = owner.wrapping_add(1);
+        let mut output = result;
+        let mut cursor = snapshot;
+        let mut was_space = true;
+        while cursor.read() != 0 {
+            if isspace(cursor.read() as c_int) {
+                was_space = true;
+                cursor.write(0);
+            } else if was_space {
+                was_space = false;
+                output.write(cursor);
+                output = output.wrapping_add(1);
+            }
+            cursor = cursor.wrapping_add(1);
+        }
+        output.write(core::ptr::null_mut());
+        if !argcp.is_null() {
+            argcp.write(argc);
+        }
+        result
     }
-    argv_ret
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -24,7 +24,7 @@
 
 /* C includes are supplied by the surrounding translation unit. */
 
-static unsafe fn signal_type_to_atom_dig_mode(s: signal_type) -> u8 {
+unsafe fn signal_type_to_atom_dig_mode(s: signal_type) -> u8 {
     let mut atom_dig_mode: u8 = ATOM_TRANSMITTER_DIGMODE_V5_DP;
     match s {
         SIGNAL_TYPE_DISPLAY_PORT | SIGNAL_TYPE_EDP => {
@@ -49,7 +49,7 @@ static unsafe fn signal_type_to_atom_dig_mode(s: signal_type) -> u8 {
     atom_dig_mode
 }
 
-static unsafe fn hpd_sel_to_atom(id: hpd_source_id) -> u8 {
+unsafe fn hpd_sel_to_atom(id: hpd_source_id) -> u8 {
     let mut atom_hpd_sel: u8 = 0;
     match id {
         HPD_SOURCEID1 => atom_hpd_sel = ATOM_TRANSMITTER_CONFIG_V5_HPD1_SEL,
@@ -63,7 +63,7 @@ static unsafe fn hpd_sel_to_atom(id: hpd_source_id) -> u8 {
     atom_hpd_sel >> 4
 }
 
-static unsafe fn dig_encoder_sel_to_atom(_id: engine_id) -> u8 {
+unsafe fn dig_encoder_sel_to_atom(_id: engine_id) -> u8 {
     /* On any ASIC after DCE80, we manually program the DIG_FE
      * selection (see connect_dig_be_to_fe function of the link
      * encoder), so translation should always return 0 (no FE).
@@ -71,7 +71,7 @@ static unsafe fn dig_encoder_sel_to_atom(_id: engine_id) -> u8 {
     0
 }
 
-static unsafe fn clock_source_id_to_atom(id: clock_source_id, atom_pll_id: *mut u32) -> bool {
+unsafe fn clock_source_id_to_atom(id: clock_source_id, atom_pll_id: *mut u32) -> bool {
     let mut result = true;
     if !atom_pll_id.is_null() {
         match id {
@@ -99,7 +99,7 @@ static unsafe fn clock_source_id_to_atom(id: clock_source_id, atom_pll_id: *mut 
     result
 }
 
-static unsafe fn encoder_action_to_atom(action: bp_encoder_control_action) -> u8 {
+unsafe fn encoder_action_to_atom(action: bp_encoder_control_action) -> u8 {
     let mut atom_action: u8 = 0;
     match action {
         ENCODER_CONTROL_ENABLE => atom_action = ATOM_ENABLE,
@@ -113,7 +113,7 @@ static unsafe fn encoder_action_to_atom(action: bp_encoder_control_action) -> u8
     atom_action
 }
 
-static unsafe fn disp_power_gating_action_to_atom(action: bp_pipe_control_action) -> u8 {
+unsafe fn disp_power_gating_action_to_atom(action: bp_pipe_control_action) -> u8 {
     let mut atom_pipe_action: u8 = 0;
     match action {
         ASIC_PIPE_DISABLE => atom_pipe_action = ATOM_DISABLE,

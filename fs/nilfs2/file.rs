@@ -50,6 +50,8 @@ unsafe fn nilfs_page_mkwrite(vmf: *mut vm_fault) -> vm_fault_t {
     let mut ti: nilfs_transaction_info;
     let (mut bh, mut head): (*mut buffer_head, *mut buffer_head);
     let mut ret: c_int = 0;
+    'out: {
+    'mapped: {
 
     if unlikely(nilfs_near_disk_full((*(*inode).i_sb).s_fs_info)) {
         return VM_FAULT_SIGBUS; /* -ENOSPC */
@@ -63,14 +65,14 @@ unsafe fn nilfs_page_mkwrite(vmf: *mut vm_fault) -> vm_fault_t {
     {
         folio_unlock(folio);
         ret = -EFAULT; /* make the VM retry the fault */
-        goto out;
+        break 'out;
     }
 
     /*
      * check to see if the folio is mapped already (no holes)
      */
     if folio_test_mappedtodisk(folio) {
-        goto mapped;
+        break 'mapped;
     }
 
     head = folio_buffers(folio);
@@ -91,7 +93,7 @@ unsafe fn nilfs_page_mkwrite(vmf: *mut vm_fault) -> vm_fault_t {
 
         if fully_mapped != 0 {
             folio_set_mappedtodisk(folio);
-            goto mapped;
+            break 'mapped;
         }
     }
     folio_unlock(folio);
@@ -102,19 +104,19 @@ unsafe fn nilfs_page_mkwrite(vmf: *mut vm_fault) -> vm_fault_t {
     ret = nilfs_transaction_begin((*inode).i_sb, &mut ti, 1);
     /* never returns -ENOMEM, but may return -ENOSPC */
     if unlikely(ret != 0) {
-        goto out;
+        break 'out;
     }
 
     file_update_time((*vma).vm_file);
     ret = block_page_mkwrite(vma, vmf, nilfs_get_block);
     if ret != 0 {
         nilfs_transaction_abort((*inode).i_sb);
-        goto out;
+        break 'out;
     }
     nilfs_set_file_dirty(inode, 1 << (PAGE_SHIFT - (*inode).i_blkbits));
     nilfs_transaction_commit((*inode).i_sb);
-
-mapped:
+    }
+    
     /*
      * Since checksumming including data blocks is performed to determine
      * the validity of the log to be written and used for recovery, it is
@@ -122,15 +124,16 @@ mapped:
      * stable write requirement of the backing device.
      */
     folio_wait_writeback(folio);
-out:
+    }
+    
     sb_end_pagefault((*inode).i_sb);
     vmf_fs_error(ret)
 }
 
 static const struct vm_operations_struct nilfs_file_vm_ops = {
-    .fault = filemap_fault,
-    .map_pages = filemap_map_pages,
-    .page_mkwrite = nilfs_page_mkwrite,
+    fault: filemap_fault,
+    map_pages: filemap_map_pages,
+    page_mkwrite: nilfs_page_mkwrite,
 };
 
 unsafe fn nilfs_file_mmap_prepare(desc: *mut vm_area_desc) -> c_int {
@@ -143,29 +146,29 @@ unsafe fn nilfs_file_mmap_prepare(desc: *mut vm_area_desc) -> c_int {
  * We have mostly NULL's here: the current defaults are ok for
  * the nilfs filesystem.
  */
-pub const nilfs_file_operations: struct file_operations = struct file_operations {
-    .llseek = generic_file_llseek,
-    .read_iter = generic_file_read_iter,
-    .write_iter = generic_file_write_iter,
-    .unlocked_ioctl = nilfs_ioctl,
+pub const nilfs_file_operations: file_operations = file_operations {
+    llseek: generic_file_llseek,
+    read_iter: generic_file_read_iter,
+    write_iter: generic_file_write_iter,
+    unlocked_ioctl: nilfs_ioctl,
     // #ifdef CONFIG_COMPAT
-    .compat_ioctl = nilfs_compat_ioctl,
+    compat_ioctl: nilfs_compat_ioctl,
     // #endif /* CONFIG_COMPAT */
-    .mmap_prepare = nilfs_file_mmap_prepare,
-    .open = generic_file_open,
+    mmap_prepare: nilfs_file_mmap_prepare,
+    open: generic_file_open,
     /* .release = nilfs_release_file, */
-    .fsync = nilfs_sync_file,
-    .splice_read = filemap_splice_read,
-    .splice_write = iter_file_splice_write,
-    .setlease = generic_setlease,
+    fsync: nilfs_sync_file,
+    splice_read: filemap_splice_read,
+    splice_write: iter_file_splice_write,
+    setlease: generic_setlease,
 };
 
-pub const nilfs_file_inode_operations: struct inode_operations = struct inode_operations {
-    .setattr = nilfs_setattr,
-    .permission = nilfs_permission,
-    .fiemap = nilfs_fiemap,
-    .fileattr_get = nilfs_fileattr_get,
-    .fileattr_set = nilfs_fileattr_set,
+pub const nilfs_file_inode_operations: inode_operations = inode_operations {
+    setattr: nilfs_setattr,
+    permission: nilfs_permission,
+    fiemap: nilfs_fiemap,
+    fileattr_get: nilfs_fileattr_get,
+    fileattr_set: nilfs_fileattr_set,
 };
 
 /* end of file */

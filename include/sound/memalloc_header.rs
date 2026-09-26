@@ -48,21 +48,21 @@ pub const SNDRV_DMA_TYPE_UNKNOWN: i32 = 0; // not defined
 pub const SNDRV_DMA_TYPE_CONTINUOUS: i32 = 1; // continuous no-DMA memory
 pub const SNDRV_DMA_TYPE_DEV: i32 = 2; // generic device continuous
 pub const SNDRV_DMA_TYPE_DEV_WC: i32 = 5; // continuous write-combined
-#[cfg(feature = "CONFIG_GENERIC_ALLOCATOR")]
+#[cfg(CONFIG_GENERIC_ALLOCATOR)]
 pub const SNDRV_DMA_TYPE_DEV_IRAM: i32 = 4; // generic device iram-buffer
-#[cfg(not(feature = "CONFIG_GENERIC_ALLOCATOR"))]
+#[cfg(not(CONFIG_GENERIC_ALLOCATOR))]
 pub const SNDRV_DMA_TYPE_DEV_IRAM: i32 = SNDRV_DMA_TYPE_DEV;
 pub const SNDRV_DMA_TYPE_VMALLOC: i32 = 7; // vmalloc'ed buffer
 pub const SNDRV_DMA_TYPE_NONCONTIG: i32 = 8; // non-coherent SG buffer
 pub const SNDRV_DMA_TYPE_NONCOHERENT: i32 = 9; // non-coherent buffer
 
-#[cfg(feature = "CONFIG_SND_DMA_SGBUF")]
+#[cfg(CONFIG_SND_DMA_SGBUF)]
 pub const SNDRV_DMA_TYPE_DEV_SG: i32 = 3; // S/G pages
-#[cfg(feature = "CONFIG_SND_DMA_SGBUF")]
+#[cfg(CONFIG_SND_DMA_SGBUF)]
 pub const SNDRV_DMA_TYPE_DEV_WC_SG: i32 = 6; // SG write-combined
-#[cfg(not(feature = "CONFIG_SND_DMA_SGBUF"))]
+#[cfg(not(CONFIG_SND_DMA_SGBUF))]
 pub const SNDRV_DMA_TYPE_DEV_SG: i32 = SNDRV_DMA_TYPE_DEV; // no SG-buf support
-#[cfg(not(feature = "CONFIG_SND_DMA_SGBUF"))]
+#[cfg(not(CONFIG_SND_DMA_SGBUF))]
 pub const SNDRV_DMA_TYPE_DEV_WC_SG: i32 = SNDRV_DMA_TYPE_DEV_WC;
 
 /* info for buffer allocation */
@@ -119,12 +119,12 @@ pub enum snd_dma_sync_mode {
     SNDRV_DMA_SYNC_DEVICE,
 }
 
-#[cfg(feature = "CONFIG_HAS_DMA")]
+#[cfg(CONFIG_HAS_DMA)]
 extern "C" {
     pub fn snd_dma_buffer_sync(dmab: *mut snd_dma_buffer, mode: snd_dma_sync_mode);
 }
 
-#[cfg(not(feature = "CONFIG_HAS_DMA"))]
+#[cfg(not(CONFIG_HAS_DMA))]
 #[inline]
 pub unsafe fn snd_dma_buffer_sync(_dmab: *mut snd_dma_buffer, _mode: snd_dma_sync_mode) {}
 

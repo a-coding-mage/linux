@@ -40,13 +40,13 @@ type u32 = u32;
 #[repr(C)] pub struct completion { _private:[u8;0] }
 
 extern "C" {
-    fn seconds_since_boot()->time64_t; fn cache_get_rcu(*mut cache_head)->*mut cache_head; fn cache_get(*mut cache_head)->*mut cache_head; fn cache_put(*mut cache_head,*mut cache_detail); fn cache_is_expired(*mut cache_detail,*mut cache_head)->bool;
-    fn cache_fresh_unlocked(*mut cache_head,*mut cache_detail); fn cache_revisit_request(*mut cache_head); fn cache_dequeue(*mut cache_detail,*mut cache_head);
-    fn spin_lock(*mut spinlock_t); fn spin_unlock(*mut spinlock_t); fn set_bit(c_ulong,*mut c_ulong); fn test_bit(c_ulong,*const c_ulong)->bool; fn test_and_clear_bit(c_ulong,*mut c_ulong)->bool; fn test_and_set_bit(c_ulong,*mut c_ulong)->bool;
-    fn dprintk(*const c_char,...); fn trace_cache_entry_expired(*mut cache_detail,*mut cache_head); fn trace_cache_entry_make_negative(*mut cache_detail,*mut cache_head); fn trace_cache_entry_update(*mut cache_detail,*mut cache_head); fn trace_cache_entry_upcall(*mut cache_detail,*mut cache_head); fn trace_cache_entry_no_listener(*mut cache_detail,*mut cache_head);
-    fn kmalloc(usize,c_uint)->*mut c_void; fn kfree(*mut c_void); fn kvmalloc(usize,c_uint)->*mut c_void; fn kvfree(*mut c_void); fn copy_from_user(*mut c_void,*const c_void,usize)->usize; fn copy_to_user(*mut c_void,*const c_void,usize)->usize;
-    fn string_escape_str(*const c_char,*mut c_char,c_int,c_uint,*const c_char)->c_int; fn hex_byte_pack(*mut c_char,u8)->*mut c_char; fn hex_to_bin(c_char)->c_int; fn isodigit(c_char)->bool;
-    fn wake_up(*mut wait_queue_head_t); fn cond_resched(); fn get_random_u32_below(u32)->u32;
+    fn seconds_since_boot()->time64_t; fn cache_get_rcu(_: *mut cache_head)->*mut cache_head; fn cache_get(_: *mut cache_head)->*mut cache_head; fn cache_put(_: *mut cache_head,_: *mut cache_detail); fn cache_is_expired(_: *mut cache_detail,_: *mut cache_head)->bool;
+    fn cache_fresh_unlocked(_: *mut cache_head,_: *mut cache_detail); fn cache_revisit_request(_: *mut cache_head); fn cache_dequeue(_: *mut cache_detail,_: *mut cache_head);
+    fn spin_lock(_: *mut spinlock_t); fn spin_unlock(_: *mut spinlock_t); fn set_bit(_: c_ulong,_: *mut c_ulong); fn test_bit(_: c_ulong,_: *const c_ulong)->bool; fn test_and_clear_bit(_: c_ulong,_: *mut c_ulong)->bool; fn test_and_set_bit(_: c_ulong,_: *mut c_ulong)->bool;
+    fn dprintk(_: *const c_char,...); fn trace_cache_entry_expired(_: *mut cache_detail,_: *mut cache_head); fn trace_cache_entry_make_negative(_: *mut cache_detail,_: *mut cache_head); fn trace_cache_entry_update(_: *mut cache_detail,_: *mut cache_head); fn trace_cache_entry_upcall(_: *mut cache_detail,_: *mut cache_head); fn trace_cache_entry_no_listener(_: *mut cache_detail,_: *mut cache_head);
+    fn kmalloc(_: usize,_: c_uint)->*mut c_void; fn kfree(_: *mut c_void); fn kvmalloc(_: usize,_: c_uint)->*mut c_void; fn kvfree(_: *mut c_void); fn copy_from_user(_: *mut c_void,_: *const c_void,_: usize)->usize; fn copy_to_user(_: *mut c_void,_: *const c_void,_: usize)->usize;
+    fn string_escape_str(_: *const c_char,_: *mut c_char,_: c_int,_: c_uint,_: *const c_char)->c_int; fn hex_byte_pack(_: *mut c_char,_: u8)->*mut c_char; fn hex_to_bin(_: c_char)->c_int; fn isodigit(_: c_char)->bool;
+    fn wake_up(_: *mut wait_queue_head_t); fn cond_resched(); fn get_random_u32_below(_: u32)->u32;
 }
 
 const CACHE_VALID:c_ulong=0; const CACHE_NEGATIVE:c_ulong=1; const CACHE_PENDING:c_ulong=2; const CACHE_CLEANED:c_ulong=3; const CACHE_NEW_EXPIRY:time64_t=30; const EAGAIN:c_int=11; const ENOENT:c_int=2; const ETIMEDOUT:c_int=110; const EINVAL:c_int=22; const ENOMEM:c_int=12; const EFAULT:c_int=14; const E2BIG:c_int=7;

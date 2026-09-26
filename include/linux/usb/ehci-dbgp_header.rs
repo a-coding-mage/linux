@@ -46,7 +46,7 @@ pub const fn DBGP_PID_SET(data: u32, tok: u32) -> u32 { (data << 8) | tok }
 pub const fn DBGP_EPADDR(dev: u32, ep: u32) -> u32 { (dev << 8) | ep }
 
 /* CONFIG_EARLY_PRINTK_DBGP declarations. */
-#[cfg(feature = "CONFIG_EARLY_PRINTK_DBGP")]
+#[cfg(CONFIG_EARLY_PRINTK_DBGP)]
 extern "C" {
     pub fn early_dbgp_init(s: *mut core::ffi::c_char) -> i32;
     pub static mut early_dbgp_console: console;
@@ -62,38 +62,38 @@ pub struct usb_hcd {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 extern "C" {
     pub fn xen_dbgp_reset_prep(hcd: *mut usb_hcd) -> i32;
     pub fn xen_dbgp_external_startup(hcd: *mut usb_hcd) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe fn xen_dbgp_reset_prep(_hcd: *mut usb_hcd) -> i32 {
     1 /* Shouldn't this be 0? */
 }
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe fn xen_dbgp_external_startup(_hcd: *mut usb_hcd) -> i32 {
     -1
 }
 
 /* Call backs from ehci host driver to ehci debug driver */
-#[cfg(feature = "CONFIG_EARLY_PRINTK_DBGP")]
+#[cfg(CONFIG_EARLY_PRINTK_DBGP)]
 extern "C" {
     pub fn dbgp_external_startup(hcd: *mut usb_hcd) -> i32;
     pub fn dbgp_reset_prep(hcd: *mut usb_hcd) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_EARLY_PRINTK_DBGP"))]
+#[cfg(not(CONFIG_EARLY_PRINTK_DBGP))]
 #[inline]
 pub unsafe fn dbgp_reset_prep(hcd: *mut usb_hcd) -> i32 {
     xen_dbgp_reset_prep(hcd)
 }
 
-#[cfg(not(feature = "CONFIG_EARLY_PRINTK_DBGP"))]
+#[cfg(not(CONFIG_EARLY_PRINTK_DBGP))]
 #[inline]
 pub unsafe fn dbgp_external_startup(hcd: *mut usb_hcd) -> i32 {
     xen_dbgp_external_startup(hcd)

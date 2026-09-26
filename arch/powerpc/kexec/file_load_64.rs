@@ -203,7 +203,7 @@ pub unsafe fn load_crashdump_segments_ppc64(image: *mut kimage, kbuf: *mut kexec
 pub unsafe fn kexec_extra_fdt_size_ppc64(image: *mut kimage, rmem: *mut crash_mem) -> c_uint {
     let mut extra_size = if plpks_is_available() { plpks_get_passwordlen() as c_uint } else { 0 };
     let mut cpu_nodes = 0;
-    for_each_node_by_type!(_dn, "cpu") { cpu_nodes += 1; }
+    for_each_node_by_type!(_dn, "cpu", { cpu_nodes += 1; });
     if cpu_nodes > boot_cpu_node_count { extra_size += (cpu_nodes - boot_cpu_node_count) * cpu_node_size(); }
     if !rmem.is_null() && (*rmem).nr_ranges > 0 { extra_size += core::mem::size_of::<fdt_reserve_entry>() as c_uint * (*rmem).nr_ranges; }
     extra_size + kdump_extra_fdt_size_ppc64(image, cpu_nodes)
@@ -226,7 +226,7 @@ unsafe fn cpu_node_size() -> c_uint {
     if dn.is_null() { return 0; }
     SIZE += strlen((*dn).name) as c_uint + 5;
     let mut pp = core::ptr::null_mut();
-    for_each_property_of_node!(dn, pp) { SIZE += strlen((*pp).name) as c_uint; SIZE += (*pp).length; }
+    for_each_property_of_node!(dn, pp, { SIZE += strlen((*pp).name) as c_uint; SIZE += (*pp).length; });
     of_node_put(dn); SIZE
 }
 
@@ -251,11 +251,11 @@ unsafe fn copy_property(fdt: *mut c_void, node_offset: c_int, dn: *const device_
 unsafe fn update_pci_dma_nodes(fdt: *mut c_void, dmapropname: *const c_char) -> c_int {
     if !firmware_has_feature(FW_FEATURE_LPAR) { return 0; }
     let root = fdt_path_offset(fdt, c"/".as_ptr()); let mut ret = 0;
-    for_each_node_with_property!(_dn, dmapropname) {
+    for_each_node_with_property!(_dn, dmapropname, {
         let off = fdt_subnode_offset(fdt, root, of_node_full_name(_dn)); if off < 0 { continue; }
         ret = copy_property(fdt, off, _dn, c"ibm,dma-window".as_ptr()); if ret < 0 { break; }
         ret = copy_property(fdt, off, _dn, dmapropname); if ret < 0 { break; }
-    }
+    });
     ret
 }
 

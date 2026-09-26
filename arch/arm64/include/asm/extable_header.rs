@@ -38,7 +38,7 @@ extern "C" {
     pub fn insn_may_access_user(addr: c_ulong, esr: c_ulong) -> bool;
 }
 
-#[cfg(feature = "CONFIG_BPF_JIT")]
+#[cfg(CONFIG_BPF_JIT)]
 extern "C" {
     pub fn ex_handler_bpf(
         ex: *const exception_table_entry,
@@ -46,7 +46,7 @@ extern "C" {
     ) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_BPF_JIT"))]
+#[cfg(not(CONFIG_BPF_JIT))]
 #[inline]
 pub unsafe fn ex_handler_bpf(
     _ex: *const exception_table_entry,

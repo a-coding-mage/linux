@@ -65,23 +65,23 @@ pub unsafe fn vga_writeb(v: u8, a: *mut core::ffi::c_void) {
 
 // CONFIG_VGA_HOSE is a build-time condition from the original header.
 // Its enabled branch depends on linux/ioport.h and linux/pci.h declarations.
-#[cfg(feature = "CONFIG_VGA_HOSE")]
+#[cfg(CONFIG_VGA_HOSE)]
 pub unsafe fn __is_port_vga(a: usize) -> bool {
     a >= 0x3b0 && a < 0x3e0 && a != 0x3b3 && a != 0x3d3
 }
 
-#[cfg(feature = "CONFIG_VGA_HOSE")]
+#[cfg(CONFIG_VGA_HOSE)]
 pub unsafe fn __is_mem_vga(a: usize) -> bool {
     a >= 0xa0000 && a <= 0xc0000
 }
 
-#[cfg(not(feature = "CONFIG_VGA_HOSE"))]
+#[cfg(not(CONFIG_VGA_HOSE))]
 pub const pci_vga_hose: usize = 0;
 
-#[cfg(not(feature = "CONFIG_VGA_HOSE"))]
+#[cfg(not(CONFIG_VGA_HOSE))]
 pub const fn __is_port_vga(_a: usize) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_VGA_HOSE"))]
+#[cfg(not(CONFIG_VGA_HOSE))]
 pub const fn __is_mem_vga(_a: usize) -> bool { false }
 
 pub unsafe fn VGA_MAP_MEM(x: usize, s: usize) -> usize {

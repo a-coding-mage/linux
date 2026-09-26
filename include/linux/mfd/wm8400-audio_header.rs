@@ -1169,7 +1169,7 @@ pub const WM8400_FLL_OUTDIV_SHIFT: u16 = 0u16;  /* FLL_OUTDIV - [2:0] */
 pub const WM8400_FLL_OUTDIV_WIDTH: u16 = 3u16;  /* FLL_OUTDIV - [2:0] */
 
 struct wm8400;
-void wm8400_reset_codec_reg_cache(struct wm8400 *wm8400);
+void wm8400_reset_codec_reg_cache(wm8400 *wm8400);
 
 // C header guard omitted in Rust: #endif
 

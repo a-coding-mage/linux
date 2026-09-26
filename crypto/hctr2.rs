@@ -34,39 +34,39 @@ const POLYVAL_DIGEST_SIZE: usize = 16;
 #[repr(C)] pub struct hctr2_request_ctx { first_block: [u8; BLOCKCIPHER_BLOCK_SIZE], xctr_iv: [u8; BLOCKCIPHER_BLOCK_SIZE], bulk_part_dst: *mut scatterlist, bulk_part_src: *mut scatterlist, sg_src: [scatterlist; 2], sg_dst: [scatterlist; 2], hashed_tweak: polyval_elem, u: hctr2_union }
 
 extern "C" {
-    fn polyval_init(*mut polyval_ctx, *const polyval_key);
-    fn polyval_update(*mut polyval_ctx, *const u8, usize);
-    fn polyval_export_blkaligned(*mut polyval_ctx, *mut polyval_elem);
-    fn polyval_import_blkaligned(*mut polyval_ctx, *const polyval_key, *const polyval_elem);
-    fn polyval_preparekey(*mut polyval_key, *const u8);
-    fn polyval_final(*mut polyval_ctx, *mut u8);
-    fn crypto_skcipher_ctx(*mut crypto_skcipher) -> *mut hctr2_tfm_ctx;
-    fn crypto_skcipher_reqtfm(*mut skcipher_request) -> *mut crypto_skcipher;
-    fn skcipher_request_ctx(*mut skcipher_request) -> *mut hctr2_request_ctx;
-    fn crypto_cipher_setkey(*mut crypto_cipher,*const u8,u32)->i32;
-    fn crypto_skcipher_setkey(*mut crypto_skcipher,*const u8,u32)->i32;
-    fn crypto_cipher_encrypt_one(*mut crypto_cipher,*mut u8,*const u8);
-    fn crypto_cipher_decrypt_one(*mut crypto_cipher,*mut u8,*const u8);
-    fn crypto_xor(*mut u8,*const u8,usize);
-    fn crypto_xor_cpy(*mut u8,*const u8,*const u8,usize);
-    fn crypto_skcipher_encrypt(*mut skcipher_request)->i32;
-    fn skcipher_request_complete(*mut skcipher_request,i32);
-    fn skcipher_request_set_tfm(*mut skcipher_request,*mut crypto_skcipher);
-    fn skcipher_request_set_crypt(*mut skcipher_request,*mut scatterlist,*mut scatterlist,usize,*mut u8);
-    fn skcipher_request_set_callback(*mut skcipher_request,u32,Option<unsafe extern "C" fn(*mut c_void,i32)>,*mut skcipher_request);
-    fn scatterwalk_map_and_copy(*mut u8,*mut scatterlist,usize,usize,i32);
-    fn scatterwalk_ffwd(*mut scatterlist,*mut scatterlist,usize)->*mut scatterlist;
-    fn sg_miter_start(*mut sg_mapping_iter,*mut scatterlist,usize,u32);
-    fn sg_miter_next(*mut sg_mapping_iter)->i32;
-    fn sg_miter_stop(*mut sg_mapping_iter);
-    fn sg_nents(*mut scatterlist)->usize;
-    fn crypto_spawn_skcipher(*mut crypto_skcipher_spawn)->*mut crypto_skcipher;
-    fn crypto_spawn_cipher(*mut crypto_cipher_spawn)->*mut crypto_cipher;
-    fn crypto_free_skcipher(*mut crypto_skcipher);
-    fn crypto_free_cipher(*mut crypto_cipher);
-    fn crypto_register_templates(*mut crypto_template,usize)->i32;
-    fn crypto_unregister_templates(*mut crypto_template,usize)->i32;
-    fn memzero_explicit(*mut c_void,usize);
+    fn polyval_init(_: *mut polyval_ctx, _: *const polyval_key);
+    fn polyval_update(_: *mut polyval_ctx, _: *const u8, _: usize);
+    fn polyval_export_blkaligned(_: *mut polyval_ctx, _: *mut polyval_elem);
+    fn polyval_import_blkaligned(_: *mut polyval_ctx, _: *const polyval_key, _: *const polyval_elem);
+    fn polyval_preparekey(_: *mut polyval_key, _: *const u8);
+    fn polyval_final(_: *mut polyval_ctx, _: *mut u8);
+    fn crypto_skcipher_ctx(_: *mut crypto_skcipher) -> *mut hctr2_tfm_ctx;
+    fn crypto_skcipher_reqtfm(_: *mut skcipher_request) -> *mut crypto_skcipher;
+    fn skcipher_request_ctx(_: *mut skcipher_request) -> *mut hctr2_request_ctx;
+    fn crypto_cipher_setkey(_: *mut crypto_cipher,_: *const u8,_: u32)->i32;
+    fn crypto_skcipher_setkey(_: *mut crypto_skcipher,_: *const u8,_: u32)->i32;
+    fn crypto_cipher_encrypt_one(_: *mut crypto_cipher,_: *mut u8,_: *const u8);
+    fn crypto_cipher_decrypt_one(_: *mut crypto_cipher,_: *mut u8,_: *const u8);
+    fn crypto_xor(_: *mut u8,_: *const u8,_: usize);
+    fn crypto_xor_cpy(_: *mut u8,_: *const u8,_: *const u8,_: usize);
+    fn crypto_skcipher_encrypt(_: *mut skcipher_request)->i32;
+    fn skcipher_request_complete(_: *mut skcipher_request,_: i32);
+    fn skcipher_request_set_tfm(_: *mut skcipher_request,_: *mut crypto_skcipher);
+    fn skcipher_request_set_crypt(_: *mut skcipher_request,_: *mut scatterlist,_: *mut scatterlist,_: usize,_: *mut u8);
+    fn skcipher_request_set_callback(_: *mut skcipher_request,_: u32,_: Option<unsafe extern "C" fn(*mut c_void,i32)>,_: *mut skcipher_request);
+    fn scatterwalk_map_and_copy(_: *mut u8,_: *mut scatterlist,_: usize,_: usize,_: i32);
+    fn scatterwalk_ffwd(_: *mut scatterlist,_: *mut scatterlist,_: usize)->*mut scatterlist;
+    fn sg_miter_start(_: *mut sg_mapping_iter,_: *mut scatterlist,_: usize,_: u32);
+    fn sg_miter_next(_: *mut sg_mapping_iter)->i32;
+    fn sg_miter_stop(_: *mut sg_mapping_iter);
+    fn sg_nents(_: *mut scatterlist)->usize;
+    fn crypto_spawn_skcipher(_: *mut crypto_skcipher_spawn)->*mut crypto_skcipher;
+    fn crypto_spawn_cipher(_: *mut crypto_cipher_spawn)->*mut crypto_cipher;
+    fn crypto_free_skcipher(_: *mut crypto_skcipher);
+    fn crypto_free_cipher(_: *mut crypto_cipher);
+    fn crypto_register_templates(_: *mut crypto_template,_: usize)->i32;
+    fn crypto_unregister_templates(_: *mut crypto_template,_: usize)->i32;
+    fn memzero_explicit(_: *mut c_void,_: usize);
 }
 
 unsafe fn hctr2_hash_tweaklens(tctx: *mut hctr2_tfm_ctx) {
@@ -130,10 +130,10 @@ unsafe extern "C" fn hctr2_encrypt(req:*mut skcipher_request)->i32 { hctr2_crypt
 unsafe extern "C" fn hctr2_decrypt(req:*mut skcipher_request)->i32 { hctr2_crypt(req,false) }
 
 unsafe extern "C" {
-    fn hctr2_init_tfm(*mut crypto_skcipher)->i32;
-    fn hctr2_exit_tfm(*mut crypto_skcipher);
-    fn hctr2_create(*mut crypto_template,*mut *mut rtattr)->i32;
-    fn hctr2_create_base(*mut crypto_template,*mut *mut rtattr)->i32;
+    fn hctr2_init_tfm(_: *mut crypto_skcipher)->i32;
+    fn hctr2_exit_tfm(_: *mut crypto_skcipher);
+    fn hctr2_create(_: *mut crypto_template,_: *mut *mut rtattr)->i32;
+    fn hctr2_create_base(_: *mut crypto_template,_: *mut *mut rtattr)->i32;
 }
 
 /* The kernel's instance allocation and attribute helpers are external. */

@@ -162,7 +162,7 @@ unsafe fn ap_cpu_clock_probe(pdev: *mut platform_device) -> i32 {
     // clock registration are performed by the corresponding kernel helpers.
     let mut nclusters: i32 = 1;
     let mut dn: *mut device_node = core::ptr::null_mut();
-    for_each_of_cpu_node(&mut dn) {
+    for_each_of_cpu_node!(&mut dn, {
         let cpu = of_get_cpu_hwid(dn, 0);
         if warn_on(cpu == OF_BAD_ADDR) { of_node_put(dn); return -22; }
         if cpu & APN806_CLUSTER_NUM_MASK as u64 != 0 {
@@ -170,13 +170,13 @@ unsafe fn ap_cpu_clock_probe(pdev: *mut platform_device) -> i32 {
             of_node_put(dn);
             break;
         }
-    }
+    });
     let ap_cpu_clk = devm_kcalloc(dev, nclusters as usize, core::mem::size_of::<ap_cpu_clk>(), GFP_KERNEL);
     if ap_cpu_clk.is_null() { return -12; }
     let ap_cpu_data = devm_kzalloc(dev, struct_size_clk_data(nclusters as usize), GFP_KERNEL);
     if ap_cpu_data.is_null() { return -12; }
     let mut cluster_index: usize = 0;
-    for_each_of_cpu_node(&mut dn) {
+    for_each_of_cpu_node!(&mut dn, {
         let cpu = of_get_cpu_hwid(dn, 0);
         if warn_on(cpu == OF_BAD_ADDR) { of_node_put(dn); return -22; }
         cluster_index = ((cpu & APN806_CLUSTER_NUM_MASK as u64) >> APN806_CLUSTER_NUM_OFFSET) as usize;
@@ -185,7 +185,7 @@ unsafe fn ap_cpu_clock_probe(pdev: *mut platform_device) -> i32 {
         let parent = of_clk_get(np, cluster_index as i32);
         if is_err(parent) { dev_err(dev, "Could not get the clock parent\n"); of_node_put(dn); return -22; }
         let _ = parent;
-    }
+    });
     (*ap_cpu_data).num = cluster_index + 1;
     let ret = of_clk_add_hw_provider(np, of_clk_hw_onecell_get, ap_cpu_data);
     if ret != 0 { dev_err(dev, "failed to register OF clock provider\n"); }

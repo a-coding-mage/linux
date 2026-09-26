@@ -61,11 +61,11 @@ extern "C" {
     pub fn drm_mipi_dbi_crtc_helper_atomic_check(crtc: *mut drm_crtc, state: *mut drm_atomic_commit) -> i32;
     pub fn drm_mipi_dbi_crtc_helper_atomic_disable(crtc: *mut drm_crtc, state: *mut drm_atomic_commit);
     pub fn drm_mipi_dbi_connector_helper_get_modes(connector: *mut drm_connector) -> i32;
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub fn mipi_dbi_debugfs_init(minor: *mut drm_minor);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn mipi_dbi_debugfs_init(_minor: *mut drm_minor) {}
 
 // The following C macros expand to initializer fragments and retain their names for users

@@ -55,20 +55,20 @@ extern "C" {
 }
 
 // CONFIG_SMP is a build-time condition from the original header.
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn global_flush_tlb_page(mm: *mut mm_struct, vaddr: core::ffi::c_ulong) {
     __flush_tlb_page(CTX_HWBITS((*mm).context), vaddr);
 }
 
 // CONFIG_SMP branch from the original header.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn smp_flush_tlb_kernel_range(start: core::ffi::c_ulong, end: core::ffi::c_ulong);
     pub fn smp_flush_tlb_page(mm: *mut mm_struct, vaddr: core::ffi::c_ulong);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn global_flush_tlb_page(mm: *mut mm_struct, vaddr: core::ffi::c_ulong) {
     smp_flush_tlb_page(mm, vaddr);

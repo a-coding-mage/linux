@@ -49,7 +49,10 @@ static mut div4_table: clk_div4_table = clk_div4_table {
     div_mult_table: &raw mut div4_div_mult_table,
 };
 
-enum { DIV4_I, DIV4_SH, DIV4_P, DIV4_NR }
+pub const DIV4_I: i32 = 0;
+pub const DIV4_SH: i32 = DIV4_I + 1;
+pub const DIV4_P: i32 = DIV4_SH + 1;
+pub const DIV4_NR: i32 = DIV4_P + 1;
 
 // #define DIV4(_bit, _mask, _flags) SH_CLK_DIV4(&pll_clk, FRQCR, _bit, _mask, _flags)
 
@@ -67,8 +70,18 @@ const MSTPCR0: c_ulong = 0xffc8_0030;
 const MSTPCR1: c_ulong = 0xffc8_0034;
 const MSTPCR2: c_ulong = 0xffc1_0028;
 
-enum { MSTP004, MSTP000, MSTP127, MSTP114, MSTP113, MSTP112,
-       MSTP111, MSTP110, MSTP103, MSTP102, MSTP220, MSTP_NR }
+pub const MSTP004: i32 = 0;
+pub const MSTP000: i32 = MSTP004 + 1;
+pub const MSTP127: i32 = MSTP000 + 1;
+pub const MSTP114: i32 = MSTP127 + 1;
+pub const MSTP113: i32 = MSTP114 + 1;
+pub const MSTP112: i32 = MSTP113 + 1;
+pub const MSTP111: i32 = MSTP112 + 1;
+pub const MSTP110: i32 = MSTP111 + 1;
+pub const MSTP103: i32 = MSTP110 + 1;
+pub const MSTP102: i32 = MSTP103 + 1;
+pub const MSTP220: i32 = MSTP102 + 1;
+pub const MSTP_NR: i32 = MSTP220 + 1;
 
 static mut mstp_clks: [clk; MSTP_NR] = [
     /* MSTPCR0 */

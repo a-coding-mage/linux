@@ -62,30 +62,30 @@ pub struct sctp_association {
 }
 
 extern "C" {
-    fn sctp_make_datafrag_empty(*const sctp_association, *const sctp_sndrcvinfo, i32, __u8, gfp_t) -> *mut sctp_chunk;
-    fn sctp_make_idatafrag_empty(*const sctp_association, *const sctp_sndrcvinfo, i32, __u8, gfp_t) -> *mut sctp_chunk;
-    fn sctp_chunk_assign_ssn(*mut sctp_chunk);
-    fn sctp_chunk_assign_mid(*mut sctp_chunk);
-    fn sctp_validate_data(*mut sctp_chunk) -> bool;
-    fn sctp_validate_idata(*mut sctp_chunk) -> bool;
-    fn sctp_ulpq_tail_data(*mut sctp_ulpq, *mut sctp_chunk, gfp_t) -> i32;
-    fn sctp_ulpevent_idata(*mut sctp_ulpq, *mut sctp_chunk, gfp_t) -> i32;
-    fn do_ulpq_tail_event(*mut sctp_ulpq, *mut sctp_ulpevent) -> i32;
-    fn do_sctp_enqueue_event(*mut sctp_ulpq, *mut sctp_ulpevent) -> i32;
-    fn sctp_generate_fwdtsn(*mut sctp_outq, __u32);
-    fn sctp_generate_iftsn(*mut sctp_outq, __u32);
-    fn sctp_validate_fwdtsn(*mut sctp_chunk) -> bool;
-    fn sctp_validate_iftsn(*mut sctp_chunk) -> bool;
-    fn sctp_report_fwdtsn(*mut sctp_ulpq, __u32);
-    fn sctp_report_iftsn(*mut sctp_ulpq, __u32);
-    fn sctp_handle_fwdtsn(*mut sctp_ulpq, *mut sctp_chunk);
-    fn sctp_handle_iftsn(*mut sctp_ulpq, *mut sctp_chunk);
-    fn sctp_ulpq_renege(*mut sctp_ulpq, *mut sctp_chunk, gfp_t);
-    fn sctp_ulpq_partial_delivery(*mut sctp_ulpq, gfp_t);
-    fn sctp_ulpq_abort_pd(*mut sctp_ulpq, gfp_t);
-    fn sctp_ulpq_renege_events(*mut sctp_ulpq, *mut sctp_chunk, gfp_t);
-    fn sctp_intl_start_pd(*mut sctp_ulpq, gfp_t);
-    fn sctp_intl_abort_pd(*mut sctp_ulpq, gfp_t);
+    fn sctp_make_datafrag_empty(_: *const sctp_association, _: *const sctp_sndrcvinfo, _: i32, _: __u8, _: gfp_t) -> *mut sctp_chunk;
+    fn sctp_make_idatafrag_empty(_: *const sctp_association, _: *const sctp_sndrcvinfo, _: i32, _: __u8, _: gfp_t) -> *mut sctp_chunk;
+    fn sctp_chunk_assign_ssn(_: *mut sctp_chunk);
+    fn sctp_chunk_assign_mid(_: *mut sctp_chunk);
+    fn sctp_validate_data(_: *mut sctp_chunk) -> bool;
+    fn sctp_validate_idata(_: *mut sctp_chunk) -> bool;
+    fn sctp_ulpq_tail_data(_: *mut sctp_ulpq, _: *mut sctp_chunk, _: gfp_t) -> i32;
+    fn sctp_ulpevent_idata(_: *mut sctp_ulpq, _: *mut sctp_chunk, _: gfp_t) -> i32;
+    fn do_ulpq_tail_event(_: *mut sctp_ulpq, _: *mut sctp_ulpevent) -> i32;
+    fn do_sctp_enqueue_event(_: *mut sctp_ulpq, _: *mut sctp_ulpevent) -> i32;
+    fn sctp_generate_fwdtsn(_: *mut sctp_outq, _: __u32);
+    fn sctp_generate_iftsn(_: *mut sctp_outq, _: __u32);
+    fn sctp_validate_fwdtsn(_: *mut sctp_chunk) -> bool;
+    fn sctp_validate_iftsn(_: *mut sctp_chunk) -> bool;
+    fn sctp_report_fwdtsn(_: *mut sctp_ulpq, _: __u32);
+    fn sctp_report_iftsn(_: *mut sctp_ulpq, _: __u32);
+    fn sctp_handle_fwdtsn(_: *mut sctp_ulpq, _: *mut sctp_chunk);
+    fn sctp_handle_iftsn(_: *mut sctp_ulpq, _: *mut sctp_chunk);
+    fn sctp_ulpq_renege(_: *mut sctp_ulpq, _: *mut sctp_chunk, _: gfp_t);
+    fn sctp_ulpq_partial_delivery(_: *mut sctp_ulpq, _: gfp_t);
+    fn sctp_ulpq_abort_pd(_: *mut sctp_ulpq, _: gfp_t);
+    fn sctp_ulpq_renege_events(_: *mut sctp_ulpq, _: *mut sctp_chunk, _: gfp_t);
+    fn sctp_intl_start_pd(_: *mut sctp_ulpq, _: gfp_t);
+    fn sctp_intl_abort_pd(_: *mut sctp_ulpq, _: gfp_t);
 }
 
 pub static mut sctp_stream_interleave_0: sctp_stream_interleave = sctp_stream_interleave {

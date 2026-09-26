@@ -465,13 +465,13 @@ const u8 CALC_SB_TBL[512] = {
  * of the key bytes, and w, x, y, and z, are the column of constants from
  * the RS matrix, preprocessed through the poly_to_exp table. */
 // #define CALC_S(a, b, c, d, i, w, x, y, z) \
-   if (*key.add(i]) { \
-      tmp = poly_to_exp[*key.add(i] - 1]; \
-      (a) ^= exp_to_poly[tmp + (w)]; \
-      (b) ^= exp_to_poly[tmp + (x)]; \
-      (c) ^= exp_to_poly[tmp + (y)]; \
-      (d) ^= exp_to_poly[tmp + (z)]; \
-   }
+//    if (*key.add(i]) { \
+//       tmp = poly_to_exp[*key.add(i] - 1]; \
+//       (a) ^= exp_to_poly[tmp + (w)]; \
+//       (b) ^= exp_to_poly[tmp + (x)]; \
+//       (c) ^= exp_to_poly[tmp + (y)]; \
+//       (d) ^= exp_to_poly[tmp + (z)]; \
+//    }
 
 /* Macros to calculate the key-dependent S-boxes for a 128-bit key using
  * the S vector from CALC_S.  CALC_SB_2 computes a single entry in all
@@ -479,24 +479,24 @@ const u8 CALC_SB_TBL[512] = {
  * are the index numbers preprocessed through the Q0 and Q1 tables
  * respectively. */
 // #define CALC_SB_2(i, a, b) \
-   (*ctx).s[0][i] = MDS[0][Q0[(a) ^ sa] ^ se]; \
-   (*ctx).s[1][i] = MDS[1][Q0[(b) ^ sb] ^ sf]; \
-   (*ctx).s[2][i] = MDS[2][Q1[(a) ^ sc] ^ sg]; \
-   (*ctx).s[3][i] = MDS[3][Q1[(b) ^ sd] ^ sh]
+//    (*ctx).s[0][i] = MDS[0][Q0[(a) ^ sa] ^ se]; \
+//    (*ctx).s[1][i] = MDS[1][Q0[(b) ^ sb] ^ sf]; \
+//    (*ctx).s[2][i] = MDS[2][Q1[(a) ^ sc] ^ sg]; \
+//    (*ctx).s[3][i] = MDS[3][Q1[(b) ^ sd] ^ sh]
 
 /* Macro exactly like CALC_SB_2, but for 192-bit keys. */
 // #define CALC_SB192_2(i, a, b) \
-   (*ctx).s[0][i] = MDS[0][Q0[Q0[(b) ^ sa] ^ se] ^ si]; \
-   (*ctx).s[1][i] = MDS[1][Q0[Q1[(b) ^ sb] ^ sf] ^ sj]; \
-   (*ctx).s[2][i] = MDS[2][Q1[Q0[(a) ^ sc] ^ sg] ^ sk]; \
-   (*ctx).s[3][i] = MDS[3][Q1[Q1[(a) ^ sd] ^ sh] ^ sl];
+//    (*ctx).s[0][i] = MDS[0][Q0[Q0[(b) ^ sa] ^ se] ^ si]; \
+//    (*ctx).s[1][i] = MDS[1][Q0[Q1[(b) ^ sb] ^ sf] ^ sj]; \
+//    (*ctx).s[2][i] = MDS[2][Q1[Q0[(a) ^ sc] ^ sg] ^ sk]; \
+//    (*ctx).s[3][i] = MDS[3][Q1[Q1[(a) ^ sd] ^ sh] ^ sl];
 
 /* Macro exactly like CALC_SB_2, but for 256-bit keys. */
 // #define CALC_SB256_2(i, a, b) \
-   (*ctx).s[0][i] = MDS[0][Q0[Q0[Q1[(b) ^ sa] ^ se] ^ si] ^ sm]; \
-   (*ctx).s[1][i] = MDS[1][Q0[Q1[Q1[(a) ^ sb] ^ sf] ^ sj] ^ sn]; \
-   (*ctx).s[2][i] = MDS[2][Q1[Q0[Q0[(a) ^ sc] ^ sg] ^ sk] ^ so]; \
-   (*ctx).s[3][i] = MDS[3][Q1[Q1[Q0[(b) ^ sd] ^ sh] ^ sl] ^ sp];
+//    (*ctx).s[0][i] = MDS[0][Q0[Q0[Q1[(b) ^ sa] ^ se] ^ si] ^ sm]; \
+//    (*ctx).s[1][i] = MDS[1][Q0[Q1[Q1[(a) ^ sb] ^ sf] ^ sj] ^ sn]; \
+//    (*ctx).s[2][i] = MDS[2][Q1[Q0[Q0[(a) ^ sc] ^ sg] ^ sk] ^ so]; \
+//    (*ctx).s[3][i] = MDS[3][Q1[Q1[Q0[(b) ^ sd] ^ sh] ^ sl] ^ sp];
 
 /* Macros to calculate the whitening and round subkeys.  CALC_K_2 computes the
  * last two stages of the h() function for a given index (either 2i or 2i+1).
@@ -522,47 +522,47 @@ const u8 CALC_SB_TBL[512] = {
  * key byte to use.  CALC_K256 is identical to CALC_K but for using the
  * CALC_K256_2 macro instead of CALC_K_2. */
 // #define CALC_K_2(a, b, c, d, j) \
-     MDS[0][Q0[a ^ *key.add((j) + 8]] ^ *key.add(j]] \
-   ^ MDS[1][Q0[b ^ *key.add((j) + 9]] ^ *key.add((j) + 1]] \
-   ^ MDS[2][Q1[c ^ *key.add((j) + 10]] ^ *key.add((j) + 2]] \
-   ^ MDS[3][Q1[d ^ *key.add((j) + 11]] ^ *key.add((j) + 3]]
+//      MDS[0][Q0[a ^ *key.add((j) + 8]] ^ *key.add(j]] \
+//    ^ MDS[1][Q0[b ^ *key.add((j) + 9]] ^ *key.add((j) + 1]] \
+//    ^ MDS[2][Q1[c ^ *key.add((j) + 10]] ^ *key.add((j) + 2]] \
+//    ^ MDS[3][Q1[d ^ *key.add((j) + 11]] ^ *key.add((j) + 3]]
 // #define CALC_K(a, j, k, l, m, n) \
-   x = CALC_K_2 (k, l, k, l, 0); \
-   y = CALC_K_2 (m, n, m, n, 4); \
-   y = rol32(y, 8); \
-   x += y; y += x; (*ctx).a[j] = x; \
-   (*ctx).a[(j) + 1] = rol32(y, 9)
+//    x = CALC_K_2 (k, l, k, l, 0); \
+//    y = CALC_K_2 (m, n, m, n, 4); \
+//    y = rol32(y, 8); \
+//    x += y; y += x; (*ctx).a[j] = x; \
+//    (*ctx).a[(j) + 1] = rol32(y, 9)
 // #define CALC_K192_2(a, b, c, d, j) \
-   CALC_K_2 (Q0[a ^ *key.add((j) + 16]], \
-	     Q1[b ^ *key.add((j) + 17]], \
-	     Q0[c ^ *key.add((j) + 18]], \
-	     Q1[d ^ *key.add((j) + 19]], j)
+//    CALC_K_2 (Q0[a ^ *key.add((j) + 16]], \
+// 	     Q1[b ^ *key.add((j) + 17]], \
+// 	     Q0[c ^ *key.add((j) + 18]], \
+// 	     Q1[d ^ *key.add((j) + 19]], j)
 // #define CALC_K192(a, j, k, l, m, n) \
-   x = CALC_K192_2 (l, l, k, k, 0); \
-   y = CALC_K192_2 (n, n, m, m, 4); \
-   y = rol32(y, 8); \
-   x += y; y += x; (*ctx).a[j] = x; \
-   (*ctx).a[(j) + 1] = rol32(y, 9)
+//    x = CALC_K192_2 (l, l, k, k, 0); \
+//    y = CALC_K192_2 (n, n, m, m, 4); \
+//    y = rol32(y, 8); \
+//    x += y; y += x; (*ctx).a[j] = x; \
+//    (*ctx).a[(j) + 1] = rol32(y, 9)
 // #define CALC_K256_2(a, b, j) \
-   CALC_K192_2 (Q1[b ^ *key.add((j) + 24]], \
-	        Q1[a ^ *key.add((j) + 25]], \
-	        Q0[a ^ *key.add((j) + 26]], \
-	        Q0[b ^ *key.add((j) + 27]], j)
+//    CALC_K192_2 (Q1[b ^ *key.add((j) + 24]], \
+// 	        Q1[a ^ *key.add((j) + 25]], \
+// 	        Q0[a ^ *key.add((j) + 26]], \
+// 	        Q0[b ^ *key.add((j) + 27]], j)
 // #define CALC_K256(a, j, k, l, m, n) \
-   x = CALC_K256_2 (k, l, 0); \
-   y = CALC_K256_2 (m, n, 4); \
-   y = rol32(y, 8); \
-   x += y; y += x; (*ctx).a[j] = x; \
-   (*ctx).a[(j) + 1] = rol32(y, 9)
+//    x = CALC_K256_2 (k, l, 0); \
+//    y = CALC_K256_2 (m, n, 4); \
+//    y = rol32(y, 8); \
+//    x += y; y += x; (*ctx).a[j] = x; \
+//    (*ctx).a[(j) + 1] = rol32(y, 9)
 
 /* Perform the key setup. */
 unsafe fn __twofish_setkey(ctx: *mut twofish_ctx, key: *const u8,
-		     u32 key_len)
+		     key_len: u32)
 {
 	int i, j, k;
 
 	/* Temporaries for CALC_K. */
-	u32 x, y;
+	x: u32, y;
 
 	/* The S vector used to key the S-boxes, split up into individual bytes.
 	 * 128-bit keys use only sa through sh; 256-bit use all of them. */

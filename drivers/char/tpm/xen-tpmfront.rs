@@ -33,23 +33,23 @@ use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 }
 #[repr(C)] pub enum xenbus_state { XenbusStateInitialised, XenbusStateConnected, XenbusStateClosing, XenbusStateClosed }
 extern "C" {
-    fn dev_get_drvdata(*const device) -> *mut c_void; fn dev_set_drvdata(*mut device, *mut c_void);
-    fn wait_event_interruptible_timeout(*mut wait_queue_head_t, bool, c_ulong) -> c_long;
-    fn freezing(*mut c_void) -> bool; fn clear_thread_flag(c_int); fn tpm_msleep(c_ulong);
-    fn tpm_calc_ordinal_duration(*mut tpm_chip, u32) -> c_ulong; fn notify_remote_via_evtchn(c_uint);
-    fn wmb(); fn barrier(); fn wake_up_interruptible(*mut wait_queue_head_t);
-    fn tpmm_chip_alloc(*mut device, *const tpm_class_ops) -> *mut tpm_chip; fn init_waitqueue_head(*mut wait_queue_head_t);
-    fn xenbus_setup_ring(*mut xenbus_device, c_uint, *mut *mut c_void, c_uint, *mut c_int) -> c_int;
-    fn xenbus_alloc_evtchn(*mut xenbus_device, *mut c_uint) -> c_int;
-    fn bind_evtchn_to_irqhandler(c_uint, unsafe extern "C" fn(c_int, *mut c_void) -> irqreturn_t, c_ulong, *const c_char, *mut c_void) -> c_int;
-    fn xenbus_dev_fatal(*mut xenbus_device, c_int, *const c_char, ...); fn xenbus_transaction_start(*mut xenbus_transaction) -> c_int;
-    fn xenbus_printf(xenbus_transaction, *const c_char, *const c_char, *const c_char, ...) -> c_int;
-    fn xenbus_transaction_end(xenbus_transaction, c_int) -> c_int; fn xenbus_switch_state(*mut xenbus_device, xenbus_state);
-    fn xenbus_dev_error(*mut xenbus_device, c_int, *const c_char, ...); fn xenbus_teardown_ring(*mut *mut c_void, c_uint, *mut c_int);
-    fn unbind_from_irqhandler(c_int, *mut c_void); fn kfree(*mut c_void); fn tpm_get_timeouts(*mut tpm_chip) -> c_int;
-    fn tpm_chip_register(*mut tpm_chip) -> c_int; fn tpm_chip_unregister(*mut tpm_chip); fn device_unregister(*mut device);
-    fn xenbus_frontend_closed(*mut xenbus_device); fn xenbus_read_unsigned(*const c_char, *const c_char, c_uint) -> c_uint;
-    fn xenbus_register_frontend(*mut xenbus_driver) -> c_int; fn xenbus_unregister_driver(*mut xenbus_driver);
+    fn dev_get_drvdata(_: *const device) -> *mut c_void; fn dev_set_drvdata(_: *mut device, _: *mut c_void);
+    fn wait_event_interruptible_timeout(_: *mut wait_queue_head_t, _: bool, _: c_ulong) -> c_long;
+    fn freezing(_: *mut c_void) -> bool; fn clear_thread_flag(_: c_int); fn tpm_msleep(_: c_ulong);
+    fn tpm_calc_ordinal_duration(_: *mut tpm_chip, _: u32) -> c_ulong; fn notify_remote_via_evtchn(_: c_uint);
+    fn wmb(); fn barrier(); fn wake_up_interruptible(_: *mut wait_queue_head_t);
+    fn tpmm_chip_alloc(_: *mut device, _: *const tpm_class_ops) -> *mut tpm_chip; fn init_waitqueue_head(_: *mut wait_queue_head_t);
+    fn xenbus_setup_ring(_: *mut xenbus_device, _: c_uint, _: *mut *mut c_void, _: c_uint, _: *mut c_int) -> c_int;
+    fn xenbus_alloc_evtchn(_: *mut xenbus_device, _: *mut c_uint) -> c_int;
+    fn bind_evtchn_to_irqhandler(_: c_uint, _: unsafe extern "C" fn(c_int, *mut c_void) -> irqreturn_t, c_ulong, *const c_char, *mut c_void) -> c_int;
+    fn xenbus_dev_fatal(_: *mut xenbus_device, _: c_int, _: *const c_char, ...); fn xenbus_transaction_start(_: *mut xenbus_transaction) -> c_int;
+    fn xenbus_printf(_: xenbus_transaction, _: *const c_char, _: *const c_char, _: *const c_char, ...) -> c_int;
+    fn xenbus_transaction_end(_: xenbus_transaction, _: c_int) -> c_int; fn xenbus_switch_state(_: *mut xenbus_device, _: xenbus_state);
+    fn xenbus_dev_error(_: *mut xenbus_device, _: c_int, _: *const c_char, ...); fn xenbus_teardown_ring(_: *mut *mut c_void, _: c_uint, _: *mut c_int);
+    fn unbind_from_irqhandler(_: c_int, _: *mut c_void); fn kfree(_: *mut c_void); fn tpm_get_timeouts(_: *mut tpm_chip) -> c_int;
+    fn tpm_chip_register(_: *mut tpm_chip) -> c_int; fn tpm_chip_unregister(_: *mut tpm_chip); fn device_unregister(_: *mut device);
+    fn xenbus_frontend_closed(_: *mut xenbus_device); fn xenbus_read_unsigned(_: *const c_char, _: *const c_char, _: c_uint) -> c_uint;
+    fn xenbus_register_frontend(_: *mut xenbus_driver) -> c_int; fn xenbus_unregister_driver(_: *mut xenbus_driver);
     fn xen_domain() -> bool; fn xen_has_pv_devices() -> bool;
 }
 type c_long = isize;
@@ -92,7 +92,7 @@ unsafe extern "C" fn tpmfront_probe(dev: *mut xenbus_device, _: *const xenbus_de
 unsafe extern "C" fn tpmfront_remove(dev: *mut xenbus_device) { let chip = dev_get_drvdata(&(*dev).dev) as *mut tpm_chip; let p = dev_get_drvdata(&(*chip).dev) as *mut tpm_private; tpm_chip_unregister(chip); ring_free(p); dev_set_drvdata(&mut (*chip).dev, core::ptr::null_mut()); }
 unsafe extern "C" fn tpmfront_resume(dev: *mut xenbus_device) -> c_int { tpmfront_remove(dev); tpmfront_probe(dev, core::ptr::null()) }
 unsafe extern "C" fn backend_changed(dev: *mut xenbus_device, state: xenbus_state) { match state { xenbus_state::XenbusStateInitialised | xenbus_state::XenbusStateConnected => { if (*dev).state == xenbus_state::XenbusStateConnected { return; } if xenbus_read_unsigned((*dev).otherend, b"feature-protocol-v2\0".as_ptr() as *const c_char, 0) == 0 { return; } xenbus_switch_state(dev, xenbus_state::XenbusStateConnected); }, xenbus_state::XenbusStateClosing | xenbus_state::XenbusStateClosed => { device_unregister(&mut (*dev).dev); xenbus_frontend_closed(dev); }, _ => {} } }
-extern "C" { fn libc_kzalloc(usize) -> *mut c_void; }
+extern "C" { fn libc_kzalloc(_: usize) -> *mut c_void; }
 unsafe extern "C" fn xen_tpmfront_init() -> c_int { if !xen_domain() || !xen_has_pv_devices() { return -ENODEV; } xenbus_register_frontend(&mut TPMFRONT_DRIVER) }
 unsafe extern "C" fn xen_tpmfront_exit() { xenbus_unregister_driver(&mut TPMFRONT_DRIVER); }
 static mut TPMFRONT_DRIVER: xenbus_driver = xenbus_driver { ids: core::ptr::null(), probe: Some(tpmfront_probe), remove: Some(tpmfront_remove), resume: Some(tpmfront_resume), otherend_changed: Some(backend_changed) };

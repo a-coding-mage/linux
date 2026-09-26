@@ -75,7 +75,7 @@ unsafe fn io_process_timestamp_skb(
     let mut cqe: [io_uring_cqe; 2] = core::mem::zeroed();
     let mut ts: timespec64 = core::mem::zeroed();
 
-    // BUILD_BUG_ON(sizeof(struct io_uring_cqe) != sizeof(struct io_timespec));
+    // BUILD_BUG_ON(sizeof(io_uring_cqe) != sizeof(io_timespec));
     let ret = skb_get_tx_timestamp(skb, sk, &mut ts);
     if ret < 0 {
         return false;
@@ -124,14 +124,14 @@ unsafe fn io_uring_cmd_timestamp(
 
     // scoped_guard(spinlock_irq, &q->lock)
     {
-        skb_queue_walk_safe(q, skb, tmp) {
+        skb_queue_walk_safe!(q, skb, tmp, {
             // don't support skbs with payload
             if !skb_has_tx_timestamp(skb, sk) || (*skb).len != 0 {
                 continue;
             }
             __skb_unlink(skb, q);
             __skb_queue_tail(&mut list, skb);
-        }
+        });
     }
 
     loop {

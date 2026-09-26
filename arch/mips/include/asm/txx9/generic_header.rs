@@ -96,7 +96,7 @@ pub struct txx9_board_vec {
     pub arch_init: Option<unsafe extern "C" fn()>,
     pub device_init: Option<unsafe extern "C" fn()>,
     // Present when CONFIG_PCI is enabled: int (*pci_map_irq)(...)
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pub pci_map_irq: Option<unsafe extern "C" fn(*const pci_dev, u8, u8) -> c_int>,
 }
 
@@ -106,17 +106,17 @@ pub struct physmap_flash_data {
 }
 
 // Present when CONFIG_EARLY_PRINTK is enabled.
-#[cfg(feature = "CONFIG_EARLY_PRINTK")]
+#[cfg(CONFIG_EARLY_PRINTK)]
 extern "C" {
     pub static mut txx9_prom_putchar: Option<unsafe extern "C" fn(c_char)>;
 }
 
-#[cfg(feature = "CONFIG_EARLY_PRINTK")]
+#[cfg(CONFIG_EARLY_PRINTK)]
 extern "C" {
     pub fn txx9_sio_putchar_init(baseaddr: c_ulong);
 }
 
-#[cfg(not(feature = "CONFIG_EARLY_PRINTK"))]
+#[cfg(not(CONFIG_EARLY_PRINTK))]
 #[inline]
 pub unsafe fn txx9_sio_putchar_init(_baseaddr: c_ulong) {}
 

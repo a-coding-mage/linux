@@ -123,7 +123,7 @@ pub unsafe extern "C" fn kasan_init() {
     clear_pgds(KASAN_SHADOW_START, KASAN_SHADOW_END);
     kasan_pgd_populate(KASAN_SHADOW_START, KASAN_SHADOW_END, NUMA_NO_NODE, true);
     kasan_populate_early_shadow(mem_to_shadow(VMALLOC_START as *const _), mem_to_shadow(KFENCE_AREA_END as *const _));
-    for_each_mem_range(i, &mut pa_start, &mut pa_end) { let start = phys_to_virt(pa_start) as *mut _; let end = phys_to_virt(pa_end) as *mut _; kasan_map_populate(mem_to_shadow(start) as unsigned_long, mem_to_shadow(end) as unsigned_long, NUMA_NO_NODE); }
+    for_each_mem_range!(i, &mut pa_start, &mut pa_end, { let start = phys_to_virt(pa_start) as *mut _; let end = phys_to_virt(pa_end) as *mut _; kasan_map_populate(mem_to_shadow(start) as unsigned_long, mem_to_shadow(end) as unsigned_long, NUMA_NO_NODE); });
     kasan_map_populate(mem_to_shadow(MODULES_VADDR as *const _) as unsigned_long, mem_to_shadow(MODULES_END as *const _) as unsigned_long, NUMA_NO_NODE);
     for i in 0..PTRS_PER_PTE { set_pte(&mut kasan_early_shadow_pte[i], pfn_pte(__phys_to_pfn(__pa_symbol(kasan_early_shadow_page)), PAGE_KERNEL_RO)); }
     memset(kasan_early_shadow_page, 0, PAGE_SIZE); csr_write64(__pa_symbol(swapper_pg_dir), LOONGARCH_CSR_PGDH); local_flush_tlb_all();

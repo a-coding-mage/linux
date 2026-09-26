@@ -8,7 +8,7 @@
  */
 
 /* C: all declarations in this section are enabled when CONFIG_NFS_V4 is enabled. */
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 #[repr(C)]
 pub struct nfs_delegation {
     pub hash: hlist_node,
@@ -27,19 +27,19 @@ pub struct nfs_delegation {
     pub rcu: rcu_head,
 }
 
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_NEED_RECLAIM: i32 = 0;
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_RETURN_IF_CLOSED: i32 = 1;
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_REFERENCED: i32 = 2;
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_RETURNING: i32 = 3;
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_REVOKED: i32 = 4;
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_TEST_EXPIRED: i32 = 5;
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 pub const NFS_DELEGATION_DELEGTIME: i32 = 6;
 
 pub const NFS_DELEGATION_FLAG_TIME: c_ulong = 1 << 1;

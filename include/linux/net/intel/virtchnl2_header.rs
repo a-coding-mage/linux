@@ -594,7 +594,7 @@ pub struct virtchnl2_get_capabilities {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct virtchnl2_queue_reg_chunk {
-	type: u32,
+	r#type: u32,
 	start_queue_id: u32,
 	num_queues: u32,
 	pad: u32,
@@ -755,7 +755,7 @@ pub struct virtchnl2_vport {
 #[derive(Copy, Clone)]
 pub struct virtchnl2_txq_info {
 	dma_ring_addr: u64,
-	type: u32,
+	r#type: u32,
 	queue_id: u32,
 	relative_queue_id: u16,
 	model: u16,
@@ -829,7 +829,7 @@ pub struct virtchnl2_config_tx_queues {
 pub struct virtchnl2_rxq_info {
 	desc_ids: u64,
 	dma_ring_addr: u64,
-	type: u32,
+	r#type: u32,
 	queue_id: u32,
 	model: u16,
 	hdr_buffer_size: u16,
@@ -1205,7 +1205,7 @@ pub struct virtchnl2_rss_key {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct virtchnl2_queue_chunk {
-	type: u32,
+	r#type: u32,
 	start_queue_id: u32,
 	num_queues: u32,
 	pad: [u8; 4],
@@ -1314,7 +1314,7 @@ pub struct virtchnl2_loopback {
 #[derive(Copy, Clone)]
 pub struct virtchnl2_mac_addr {
 	addr: [u8; 6],
-	type: u8,
+	r#type: u8,
 	pad: u8,
 },
 /**
@@ -1679,9 +1679,9 @@ pub struct virtchnl2_get_lan_memory_regions {
 	pad: [u8; 6],
 	mem_reg: [virtchnl2_mem_region; 0],
 },
-#define VIRTCHNL2_MAX_NUM_PROTO_HDRS	4
-#define VIRTCHNL2_MAX_SIZE_RAW_PACKET	256
-#define VIRTCHNL2_MAX_NUM_ACTIONS	8
+pub const VIRTCHNL2_MAX_NUM_PROTO_HDRS: u32 = 4;
+pub const VIRTCHNL2_MAX_SIZE_RAW_PACKET: u32 = 256;
+pub const VIRTCHNL2_MAX_NUM_ACTIONS: u32 = 8;
 
 /**
  * struct virtchnl2_proto_hdr - represent one protocol header
@@ -1710,7 +1710,7 @@ pub struct virtchnl2_proto_hdr {
  * @pad: Padding bytes
  * @count: total number of protocol headers in proto_hdr. 0 for raw packet.
  * @proto_hdr: Array of protocol headers
- * @raw: struct holding raw packet buffer when count is 0
+ * @raw: holding raw packet buffer when count is 0
  */
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -1731,7 +1731,7 @@ pub union Anonymous {
 /**
  * struct virtchnl2_rule_action - struct representing single action for a flow
  * @action_type: see enum virtchnl2_action_types
- * @act_conf: union representing action depending on action_type.
+ * @act_conf: representing action depending on action_type.
  * @act_conf.q_id: queue id to redirect the packets to.
  * @act_conf.q_grp_id: queue group id to redirect the packets to.
  * @act_conf.ctr_id: used for count action. If input value 0xFFFFFFFF control

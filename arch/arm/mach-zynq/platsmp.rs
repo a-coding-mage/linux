@@ -54,9 +54,9 @@ pub struct smp_operations {
     pub smp_prepare_cpus: Option<unsafe extern "C" fn(u32)>,
     pub smp_boot_secondary: Option<unsafe extern "C" fn(u32, *mut task_struct) -> i32>,
     pub smp_secondary_init: Option<unsafe extern "C" fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe extern "C" fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe extern "C" fn(u32) -> i32>,
 }
 
@@ -133,7 +133,7 @@ unsafe extern "C" fn zynq_secondary_init(_cpu: u32) {
     zynq_core_pm_init();
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn zynq_cpu_kill(cpu: u32) -> i32 {
     let timeout = jiffies.wrapping_add(msecs_to_jiffies(50));
     while zynq_slcr_cpu_state_read(cpu) {
@@ -145,7 +145,7 @@ unsafe extern "C" fn zynq_cpu_kill(cpu: u32) -> i32 {
     1
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn zynq_cpu_die(cpu: u32) -> ! {
     zynq_slcr_cpu_state_write(cpu, true);
     loop {
@@ -161,9 +161,9 @@ pub static zynq_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(zynq_smp_prepare_cpus),
     smp_boot_secondary: Some(zynq_boot_secondary),
     smp_secondary_init: Some(zynq_secondary_init),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(zynq_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(zynq_cpu_kill),
 };
 

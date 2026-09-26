@@ -109,7 +109,7 @@ pub unsafe extern "C" fn fsverity_ioctl_measure(filp: *mut file, _uarg: *mut c_v
     if get_user(&mut (*arg_ptr).digest_size, &(*uarg).digest_size) != 0 {
         return -EFAULT;
     }
-    if (*arg_ptr).digest_size as usize < (*hash_alg).digest_size {
+    if ((*arg_ptr).digest_size as usize) < (*hash_alg).digest_size {
         return -EOVERFLOW;
     }
 

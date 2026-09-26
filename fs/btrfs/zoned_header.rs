@@ -22,7 +22,7 @@ pub struct btrfs_zoned_device_info {
 pub fn btrfs_finish_ordered_zoned(ordered: *mut btrfs_ordered_extent);
 
 // CONFIG_BLK_DEV_ZONED declarations.
-#[cfg(feature = "CONFIG_BLK_DEV_ZONED")]
+#[cfg(CONFIG_BLK_DEV_ZONED)]
 extern "C" {
     pub fn btrfs_get_dev_zone_info_all_devices(fs_info: *mut btrfs_fs_info) -> ::core::ffi::c_int;
     pub fn btrfs_get_dev_zone_info(device: *mut btrfs_device, populate_cache: bool) -> ::core::ffi::c_int;

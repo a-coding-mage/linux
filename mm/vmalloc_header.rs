@@ -6,7 +6,7 @@
 // Dependency intent: declarations from <linux/vmalloc.h> are supplied by the
 // surrounding translation unit.
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 extern "C" {
     pub fn vmalloc_init();
 
@@ -22,11 +22,11 @@ extern "C" {
     pub fn get_vm_area_page_order(vm: *mut vm_struct) -> ::core::ffi::c_uint;
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub fn vmalloc_init() {}
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn vmap_pages_range_noflush(
     _addr: ::core::ffi::c_ulong,
@@ -40,7 +40,7 @@ pub unsafe fn vmap_pages_range_noflush(
     -22
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn vunmap_range_noflush(
     _start: ::core::ffi::c_ulong,

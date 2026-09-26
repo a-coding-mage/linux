@@ -14,11 +14,11 @@
 static mut cci_ctrl_base: *mut core::ffi::c_void = core::ptr::null_mut();
 static mut cci_ctrl_phys: libc::c_ulong = 0;
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[repr(C)]
 struct cci_nb_ports { nb_ace: u32, nb_ace_lite: u32 }
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 static cci400_ports: cci_nb_ports = cci_nb_ports { nb_ace: 2, nb_ace_lite: 3 };
 
 #[repr(C)]
@@ -62,59 +62,59 @@ unsafe extern "C" fn cci_platform_probe(pdev: *mut platform_device) -> libc::c_i
 static mut cci_platform_driver: platform_driver = platform_driver { driver: driver { name: DRIVER_NAME.as_ptr() as *const _, of_match_table: arm_cci_matches.as_ptr() }, probe: Some(cci_platform_probe) };
 unsafe fn cci_platform_init() -> libc::c_int { platform_driver_register(&mut cci_platform_driver) }
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const CCI_PORT_CTRL: usize = 0x0;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const CCI_CTRL_STATUS: usize = 0xc;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const CCI_ENABLE_SNOOP_REQ: u32 = 0x1;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const CCI_ENABLE_DVM_REQ: u32 = 0x2;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const CCI_ENABLE_REQ: u32 = CCI_ENABLE_SNOOP_REQ | CCI_ENABLE_DVM_REQ;
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[repr(C)] #[derive(Copy, Clone, PartialEq)] enum cci_ace_port_type { ACE_INVALID_PORT = 0, ACE_PORT, ACE_LITE_PORT }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[repr(C)] struct cci_ace_port { base: *mut u8, phys: libc::c_ulong, port_type: cci_ace_port_type, dn: *mut device_node }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 static mut ports: *mut cci_ace_port = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 static mut nb_cci_ports: u32 = 0;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[repr(C)] #[derive(Copy, Clone)] struct cpu_port { mpidr: u64, port: u32 }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const PORT_VALID_SHIFT: u32 = 31;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 const PORT_VALID: u32 = 1u32 << PORT_VALID_SHIFT;
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 static mut cpu_port_array: [cpu_port; 256] = [cpu_port { mpidr: 0, port: 0 }; 256];
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[inline] unsafe fn init_cpu_port(port: *mut cpu_port, index: u32, mpidr: u64) { (*port).port = PORT_VALID | index; (*port).mpidr = mpidr; }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[inline] unsafe fn cpu_port_is_valid(port: *mut cpu_port) -> bool { ((*port).port & PORT_VALID) != 0 }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 #[inline] unsafe fn cpu_port_match(port: *mut cpu_port, mpidr: u64) -> bool { (*port).mpidr == (mpidr & 0xff00_ffff) }
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 unsafe fn __cci_ace_get_port(dn: *mut device_node, port_type: i32) -> i32 {
     let cci_portn = of_parse_phandle(dn, b"cci-control-port\0".as_ptr() as *const _, 0);
     for i in 0..nb_cci_ports { let p = ports.add(i as usize); if (*p).port_type as i32 == port_type && cci_portn == (*p).dn { return i as i32; } }
     -19
 }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 pub unsafe fn cci_ace_get_port(dn: *mut device_node) -> i32 { __cci_ace_get_port(dn, cci_ace_port_type::ACE_LITE_PORT as i32) }
 
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 unsafe fn cci_port_control(port: u32, enable: bool) { writel_relaxed(if enable { CCI_ENABLE_REQ } else { 0 }, ports.add(port as usize).as_ref().unwrap().base.add(CCI_PORT_CTRL)); while readl_relaxed(cci_ctrl_base.add(CCI_CTRL_STATUS)) & 1 != 0 {} }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 pub unsafe fn cci_disable_port_by_cpu(mpidr: u64) -> i32 { for cpu in 0..256 { if cpu_port_is_valid(&mut cpu_port_array[cpu]) && cpu_port_match(&mut cpu_port_array[cpu], mpidr) { cci_port_control(cpu_port_array[cpu].port, false); return 0; } } -19 }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 pub unsafe fn cci_enable_port_for_self() -> ! { loop { core::arch::asm!("wfi\n wfe", options(noreturn)); } }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 pub unsafe fn __cci_control_port_by_device(dn: *mut device_node, enable: bool) -> i32 { if dn.is_null() { return -19; } let port = __cci_ace_get_port(dn, cci_ace_port_type::ACE_LITE_PORT as i32); if port < 0 { return -19; } cci_port_control(port as u32, enable); 0 }
-#[cfg(feature = "CONFIG_ARM_CCI400_PORT_CTRL")]
+#[cfg(CONFIG_ARM_CCI400_PORT_CTRL)]
 pub unsafe fn __cci_control_port_by_index(port: u32, enable: bool) -> i32 { if port >= nb_cci_ports || (*ports.add(port as usize)).port_type == cci_ace_port_type::ACE_INVALID_PORT { return -19; } if (*ports.add(port as usize)).port_type == cci_ace_port_type::ACE_PORT { return -1; } cci_port_control(port, enable); 0 }
 
 extern "C" {

@@ -214,7 +214,7 @@ pub unsafe fn acpi_parse_mp_wake(
     if mp_wake.is_null() {
         return -EINVAL;
     }
-    if end - mp_wake as usize < ACPI_MADT_MP_WAKEUP_SIZE_V0 {
+    if end - (mp_wake as usize) < ACPI_MADT_MP_WAKEUP_SIZE_V0 {
         return -EINVAL;
     }
     if (*mp_wake).header.length < ACPI_MADT_MP_WAKEUP_SIZE_V0 {

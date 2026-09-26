@@ -930,7 +930,7 @@ pub unsafe extern "C" fn line6_disconnect(interface: *mut usb_interface) {
     snd_card_free_when_closed((*line6).card);
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 pub unsafe extern "C" fn line6_suspend(interface: *mut usb_interface, message: pm_message_t) -> i32 {
     let line6 = usb_get_intfdata(interface) as *mut usb_line6;
     let line6pcm = (*line6).line6pcm;
@@ -948,7 +948,7 @@ pub unsafe extern "C" fn line6_suspend(interface: *mut usb_interface, message: p
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 pub unsafe extern "C" fn line6_resume(interface: *mut usb_interface) -> i32 {
     let line6 = usb_get_intfdata(interface) as *mut usb_line6;
 

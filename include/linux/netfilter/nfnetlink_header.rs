@@ -88,12 +88,12 @@ pub unsafe fn nfnl_msg_put(skb: *mut sk_buff, portid: u32, seq: u32, type_: c_in
     nlh
 }
 
-#[cfg(feature = "CONFIG_PROVE_LOCKING")]
+#[cfg(CONFIG_PROVE_LOCKING)]
 extern "C" {
     pub fn lockdep_nfnl_is_held(subsys_id: __u8) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_PROVE_LOCKING"))]
+#[cfg(not(CONFIG_PROVE_LOCKING))]
 #[inline]
 pub unsafe fn lockdep_nfnl_is_held(_subsys_id: __u8) -> bool {
     true

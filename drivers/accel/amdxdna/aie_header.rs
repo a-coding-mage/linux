@@ -67,8 +67,8 @@ pub unsafe fn SMU_REG_OFF(ndev: *const amdxdna_dev, idx: usize) -> _ {
 // supplied by the consuming translation unit.
 #[macro_export]
 macro_rules! DEFINE_BAR_OFFSET {
-    ($reg_name:expr, $bar:ident, $reg_addr:expr) => {
-        [$reg_name] = ($bar##_BAR_INDEX, ($reg_addr) - $bar##_BAR_BASE)
+    ($reg_name:expr, $bar:tt, $reg_addr:expr) => {
+        [$reg_name] = (::kernel::macros::paste!([<$bar _BAR_INDEX>]), ($reg_addr) - ::kernel::macros::paste!([<$bar _BAR_BASE>]))
     };
 }
 

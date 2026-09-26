@@ -20,7 +20,7 @@ pub unsafe fn smp_mb__after_spinlock() {
 // #ifndef CONFIG_PPC_QUEUED_SPINLOCKS
 // static inline void pv_spinlocks_init(void) { }
 // #endif
-#[cfg(not(feature = "CONFIG_PPC_QUEUED_SPINLOCKS"))]
+#[cfg(not(CONFIG_PPC_QUEUED_SPINLOCKS))]
 #[inline(always)]
 pub unsafe fn pv_spinlocks_init() {}
 

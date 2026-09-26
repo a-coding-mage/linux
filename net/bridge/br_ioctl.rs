@@ -14,13 +14,13 @@ unsafe fn get_bridge_ifindices(net: *mut net, indices: *mut i32, num: i32) -> i3
     let mut i: i32 = 0;
 
     rcu_read_lock();
-    for_each_netdev_rcu!(net, dev) {
+    for_each_netdev_rcu!(net, dev, {
         if i >= num { break; }
         if netif_is_bridge_master(dev) {
             *indices.add(i as usize) = (*dev).ifindex;
             i += 1;
         }
-    }
+    });
     rcu_read_unlock();
     i
 }
@@ -28,11 +28,11 @@ unsafe fn get_bridge_ifindices(net: *mut net, indices: *mut i32, num: i32) -> i3
 /* called with RTNL */
 unsafe fn get_port_ifindices(br: *mut net_bridge, ifindices: *mut i32, num: i32) {
     let mut p: *mut net_bridge_port;
-    list_for_each_entry!(p, &(*br).port_list, list) {
+    list_for_each_entry!(p, &(*br).port_list, list, {
         if (*p).port_no < num {
             *ifindices.add((*p).port_no as usize) = (*(*p).dev).ifindex;
         }
-    }
+    });
 }
 
 /*

@@ -68,7 +68,7 @@ unsafe fn memfd_tag_pins(xas: *mut XaState) {
 
 pub unsafe fn memfd_alloc_folio(memfd: *mut File, mut idx: PgoffT) -> *mut Folio {
     // CONFIG_HUGETLB_PAGE conditional code is retained as the direct kernel path.
-    #[cfg(feature = "CONFIG_HUGETLB_PAGE")]
+    #[cfg(CONFIG_HUGETLB_PAGE)]
     {
         if is_file_hugepages(memfd) {
             let inode = file_inode(memfd);

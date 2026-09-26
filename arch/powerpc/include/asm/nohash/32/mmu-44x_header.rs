@@ -100,37 +100,37 @@ pub struct mm_context_t {
 }
 
 /* Build-time configuration conditionals from the C header are preserved below. */
-#[cfg(not(feature = "CONFIG_PPC_EARLY_DEBUG_44x"))]
+#[cfg(not(CONFIG_PPC_EARLY_DEBUG_44x))]
 pub const PPC44x_EARLY_TLBS: u32 = 1;
-#[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_44x")]
+#[cfg(CONFIG_PPC_EARLY_DEBUG_44x)]
 pub const PPC44x_EARLY_TLBS: u32 = 2;
-#[cfg(feature = "CONFIG_PPC_EARLY_DEBUG_44x")]
+#[cfg(CONFIG_PPC_EARLY_DEBUG_44x)]
 pub const PPC44x_EARLY_DEBUG_VIRTADDR: u32 = 0xf0000000 | (0u32 & 0xffff);
 
 pub const PPC_PIN_SIZE: u32 = 1 << 28; /* 256M */
 
 /* Page-size selection is build-time configuration; the original alternatives are retained. */
-#[cfg(feature = "CONFIG_PPC_4K_PAGES")]
+#[cfg(CONFIG_PPC_4K_PAGES)]
 pub const PPC44x_TLBE_SIZE: u32 = PPC44x_TLB_4K;
-#[cfg(feature = "CONFIG_PPC_4K_PAGES")]
+#[cfg(CONFIG_PPC_4K_PAGES)]
 pub const PPC47x_TLBE_SIZE: u32 = PPC47x_TLB0_4K;
-#[cfg(feature = "CONFIG_PPC_4K_PAGES")]
+#[cfg(CONFIG_PPC_4K_PAGES)]
 pub const mmu_virtual_psize: u32 = MMU_PAGE_4K;
-#[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+#[cfg(CONFIG_PPC_16K_PAGES)]
 pub const PPC44x_TLBE_SIZE: u32 = PPC44x_TLB_16K;
-#[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+#[cfg(CONFIG_PPC_16K_PAGES)]
 pub const PPC47x_TLBE_SIZE: u32 = PPC47x_TLB0_16K;
-#[cfg(feature = "CONFIG_PPC_16K_PAGES")]
+#[cfg(CONFIG_PPC_16K_PAGES)]
 pub const mmu_virtual_psize: u32 = MMU_PAGE_16K;
-#[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+#[cfg(CONFIG_PPC_64K_PAGES)]
 pub const PPC44x_TLBE_SIZE: u32 = PPC44x_TLB_64K;
-#[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+#[cfg(CONFIG_PPC_64K_PAGES)]
 pub const PPC47x_TLBE_SIZE: u32 = PPC47x_TLB0_64K;
-#[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+#[cfg(CONFIG_PPC_64K_PAGES)]
 pub const mmu_virtual_psize: u32 = MMU_PAGE_64K;
-#[cfg(feature = "CONFIG_PPC_256K_PAGES")]
+#[cfg(CONFIG_PPC_256K_PAGES)]
 pub const PPC44x_TLBE_SIZE: u32 = PPC44x_TLB_256K;
-#[cfg(feature = "CONFIG_PPC_256K_PAGES")]
+#[cfg(CONFIG_PPC_256K_PAGES)]
 pub const mmu_virtual_psize: u32 = MMU_PAGE_256K;
 
 pub const mmu_linear_psize: u32 = MMU_PAGE_256M;

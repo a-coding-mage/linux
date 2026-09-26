@@ -32,14 +32,14 @@ extern "C" {
 pub unsafe fn module_init_section(name:*const c_char)->bool { strstarts(name,b".init\0".as_ptr() as _) || strstarts(name,b".ARM.extab.init\0".as_ptr() as _) || strstarts(name,b".ARM.exidx.init\0".as_ptr() as _) }
 pub unsafe fn module_exit_section(name:*const c_char)->bool { strstarts(name,b".exit\0".as_ptr() as _) || strstarts(name,b".ARM.extab.exit\0".as_ptr() as _) || strstarts(name,b".ARM.exidx.exit\0".as_ptr() as _) }
 
-#[cfg(feature="CONFIG_ARM_HAS_GROUP_RELOCS")]
+#[cfg(CONFIG_ARM_HAS_GROUP_RELOCS)]
 unsafe fn get_group_rem(group:&mut u32, offset:&mut u32)->u32 { let mut val=*offset; let shift; loop { shift=if val!=0 {(31-__fls(val))&!1} else {32}; *offset=val; if val==0 {break} val &= 0xffffff >> shift; if *group==0 {break} *group-=1; } shift }
 
 const R_ARM_NONE:u32=0; const R_ARM_ABS32:u32=2; const R_ARM_TARGET1:u32=38; const R_ARM_PC24:u32=1; const R_ARM_CALL:u32=28; const R_ARM_JUMP24:u32=29; const R_ARM_V4BX:u32=40; const R_ARM_PREL31:u32=42; const R_ARM_REL32:u32=3;
 const R_ARM_MOVW_ABS_NC:u32=43; const R_ARM_MOVT_ABS:u32=44; const R_ARM_MOVW_PREL_NC:u32=45; const R_ARM_MOVT_PREL:u32=46;
-#[cfg(feature="CONFIG_ARM_HAS_GROUP_RELOCS")] const R_ARM_ALU_PC_G0_NC:u32=57;
-#[cfg(feature="CONFIG_ARM_HAS_GROUP_RELOCS")] const R_ARM_ALU_PC_G1_NC:u32=58;
-#[cfg(feature="CONFIG_ARM_HAS_GROUP_RELOCS")] const R_ARM_LDR_PC_G2:u32=59;
+#[cfg(CONFIG_ARM_HAS_GROUP_RELOCS)] const R_ARM_ALU_PC_G0_NC:u32=57;
+#[cfg(CONFIG_ARM_HAS_GROUP_RELOCS)] const R_ARM_ALU_PC_G1_NC:u32=58;
+#[cfg(CONFIG_ARM_HAS_GROUP_RELOCS)] const R_ARM_LDR_PC_G2:u32=59;
 extern "C" { fn ELF32_R_SYM(x:u32)->i32; fn ELF32_R_TYPE(x:u32)->u32; fn ELF32_ST_TYPE(x:u8)->u32; }
 const STT_FUNC:u32=2; const ENOEXEC:c_int=8; const EINVAL:c_int=22; const SHF_ALLOC:u32=2; const ELF_SECTION_UNWIND:u32=0x70000001;
 
@@ -57,8 +57,8 @@ pub unsafe fn apply_relocate(sechdrs:*mut Elf32_Shdr,strtab:*const c_char,symind
    R_ARM_PREL31=>{offset=((*(loc as *mut i32))<<1)>>1; offset=offset.wrapping_add((*sym).st_value as i32).wrapping_sub(loc as i32); if offset>=0x40000000||offset< -0x40000000{return -ENOEXEC;} let p=loc as *mut u32; *p=(*p&0x80000000)|(offset as u32&0x7fffffff);},
    R_ARM_REL32=>{*(loc as *mut u32)=(*(loc as *mut u32)).wrapping_add((*sym).st_value).wrapping_sub(loc as u32);},
    R_ARM_MOVW_ABS_NC|R_ARM_MOVT_ABS|R_ARM_MOVW_PREL_NC|R_ARM_MOVT_PREL=>{ tmp=__mem_to_opcode_arm(*(loc as *mut u32)); offset=sign_extend32(((tmp&0xf0000)>>4)|(tmp&0xfff),15); offset=offset.wrapping_add((*sym).st_value as i32); if ELF32_R_TYPE((*rel).r_info)==R_ARM_MOVT_PREL||ELF32_R_TYPE((*rel).r_info)==R_ARM_MOVW_PREL_NC{offset=offset.wrapping_sub(loc as i32);} if ELF32_R_TYPE((*rel).r_info)==R_ARM_MOVT_ABS||ELF32_R_TYPE((*rel).r_info)==R_ARM_MOVT_PREL{offset >>=16;} tmp=(tmp&0xfff0f000)|(((offset as u32&0xf000)<<4)|(offset as u32&0xfff)); *(loc as *mut u32)=__opcode_to_mem_arm(tmp); },
-   #[cfg(feature="CONFIG_ARM_HAS_GROUP_RELOCS")] R_ARM_ALU_PC_G0_NC|R_ARM_ALU_PC_G1_NC=>{ let mut group=if ELF32_R_TYPE((*rel).r_info)==R_ARM_ALU_PC_G0_NC{0}else{1}; tmp=__mem_to_opcode_arm(*(loc as *mut u32)); offset=ror32(tmp&0xff,(tmp&0xf00)>>7) as i32; if tmp&(1<<22)!=0{offset=-offset;} offset=offset.wrapping_add((*sym).st_value as i32).wrapping_sub(loc as i32); if offset<0{offset=-offset;tmp=(tmp&!(1<<23))|(1<<22);}else{tmp=(tmp&!(1<<22))|(1<<23);} let mut o=offset as u32; let shift=get_group_rem(&mut group,&mut o); if shift<24{o >>=24-shift;o|=(shift+8)<<7;} *(loc as *mut u32)=__opcode_to_mem_arm((tmp&!0xfff)|o); },
-   #[cfg(feature="CONFIG_ARM_HAS_GROUP_RELOCS")] R_ARM_LDR_PC_G2=>{tmp=__mem_to_opcode_arm(*(loc as *mut u32));offset=(tmp&0xfff) as i32;if tmp&(1<<23)==0{offset=-offset;}offset=offset.wrapping_add((*sym).st_value as i32).wrapping_sub(loc as i32);if offset<0{offset=-offset;tmp&=!(1<<23)}else{tmp|=1<<23}let mut g=2;let mut o=offset as u32;get_group_rem(&mut g,&mut o);if o>0xfff{return -ENOEXEC;}*(loc as *mut u32)=__opcode_to_mem_arm((tmp&!0xfff)|o);},
+   #[cfg(CONFIG_ARM_HAS_GROUP_RELOCS)] R_ARM_ALU_PC_G0_NC|R_ARM_ALU_PC_G1_NC=>{ let mut group=if ELF32_R_TYPE((*rel).r_info)==R_ARM_ALU_PC_G0_NC{0}else{1}; tmp=__mem_to_opcode_arm(*(loc as *mut u32)); offset=ror32(tmp&0xff,(tmp&0xf00)>>7) as i32; if tmp&(1<<22)!=0{offset=-offset;} offset=offset.wrapping_add((*sym).st_value as i32).wrapping_sub(loc as i32); if offset<0{offset=-offset;tmp=(tmp&!(1<<23))|(1<<22);}else{tmp=(tmp&!(1<<22))|(1<<23);} let mut o=offset as u32; let shift=get_group_rem(&mut group,&mut o); if shift<24{o >>=24-shift;o|=(shift+8)<<7;} *(loc as *mut u32)=__opcode_to_mem_arm((tmp&!0xfff)|o); },
+   #[cfg(CONFIG_ARM_HAS_GROUP_RELOCS)] R_ARM_LDR_PC_G2=>{tmp=__mem_to_opcode_arm(*(loc as *mut u32));offset=(tmp&0xfff) as i32;if tmp&(1<<23)==0{offset=-offset;}offset=offset.wrapping_add((*sym).st_value as i32).wrapping_sub(loc as i32);if offset<0{offset=-offset;tmp&=!(1<<23)}else{tmp|=1<<23}let mut g=2;let mut o=offset as u32;get_group_rem(&mut g,&mut o);if o>0xfff{return -ENOEXEC;}*(loc as *mut u32)=__opcode_to_mem_arm((tmp&!0xfff)|o);},
    _=>return -ENOEXEC,
   } rel=rel.add(1);
  }

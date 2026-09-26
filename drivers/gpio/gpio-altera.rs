@@ -155,6 +155,7 @@ unsafe fn altera_gpio_probe(pdev: *mut platform_device) -> c_int {
     let gc: *mut gpio_chip;
     let girq: *mut gpio_irq_chip;
     let mapped_irq: c_int;
+    'skip_irq: {
 
     altera_gc = devm_kzalloc(&mut (*pdev).dev, core::mem::size_of::<altera_gpio_chip>(), GFP_KERNEL);
     if altera_gc.is_null() {
@@ -205,7 +206,7 @@ unsafe fn altera_gpio_probe(pdev: *mut platform_device) -> c_int {
 
     mapped_irq = platform_get_irq_optional(pdev, 0);
     if mapped_irq < 0 {
-        goto skip_irq;
+        break 'skip_irq;
     }
 
     if device_property_read_u32(dev, "altr,interrupt-type", &mut reg) != 0 {
@@ -230,8 +231,8 @@ unsafe fn altera_gpio_probe(pdev: *mut platform_device) -> c_int {
     (*girq).default_type = IRQ_TYPE_NONE;
     (*girq).handler = Some(handle_bad_irq);
     *(*girq).parents = mapped_irq as c_uint;
-
-skip_irq:
+    }
+    
     ret = devm_gpiochip_add_data(dev, gc, altera_gc);
     if ret != 0 {
         dev_err(&mut (*pdev).dev, "Failed adding memory mapped gpiochip\n");

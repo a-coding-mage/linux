@@ -14,77 +14,77 @@
 /*
  * Capabilities is enabled when CONFIG_SECURITY is enabled.
  */
-#[cfg(feature = "CONFIG_SECURITY")]
+#[cfg(CONFIG_SECURITY)]
 pub const CAPABILITIES_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY"))]
+#[cfg(not(CONFIG_SECURITY))]
 pub const CAPABILITIES_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_SELINUX")]
+#[cfg(CONFIG_SECURITY_SELINUX)]
 pub const SELINUX_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_SELINUX"))]
+#[cfg(not(CONFIG_SECURITY_SELINUX))]
 pub const SELINUX_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_SMACK")]
+#[cfg(CONFIG_SECURITY_SMACK)]
 pub const SMACK_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_SMACK"))]
+#[cfg(not(CONFIG_SECURITY_SMACK))]
 pub const SMACK_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR")]
+#[cfg(CONFIG_SECURITY_APPARMOR)]
 pub const APPARMOR_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR))]
 pub const APPARMOR_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_TOMOYO")]
+#[cfg(CONFIG_SECURITY_TOMOYO)]
 pub const TOMOYO_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_TOMOYO"))]
+#[cfg(not(CONFIG_SECURITY_TOMOYO))]
 pub const TOMOYO_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_YAMA")]
+#[cfg(CONFIG_SECURITY_YAMA)]
 pub const YAMA_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_YAMA"))]
+#[cfg(not(CONFIG_SECURITY_YAMA))]
 pub const YAMA_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_LOADPIN")]
+#[cfg(CONFIG_SECURITY_LOADPIN)]
 pub const LOADPIN_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_LOADPIN"))]
+#[cfg(not(CONFIG_SECURITY_LOADPIN))]
 pub const LOADPIN_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_LOCKDOWN_LSM")]
+#[cfg(CONFIG_SECURITY_LOCKDOWN_LSM)]
 pub const LOCKDOWN_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_LOCKDOWN_LSM"))]
+#[cfg(not(CONFIG_SECURITY_LOCKDOWN_LSM))]
 pub const LOCKDOWN_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_SAFESETID")]
+#[cfg(CONFIG_SECURITY_SAFESETID)]
 pub const SAFESETID_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_SAFESETID"))]
+#[cfg(not(CONFIG_SECURITY_SAFESETID))]
 pub const SAFESETID_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_BPF_LSM")]
+#[cfg(CONFIG_BPF_LSM)]
 pub const BPF_LSM_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_BPF_LSM"))]
+#[cfg(not(CONFIG_BPF_LSM))]
 pub const BPF_LSM_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_LANDLOCK")]
+#[cfg(CONFIG_SECURITY_LANDLOCK)]
 pub const LANDLOCK_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_LANDLOCK"))]
+#[cfg(not(CONFIG_SECURITY_LANDLOCK))]
 pub const LANDLOCK_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_IMA")]
+#[cfg(CONFIG_IMA)]
 pub const IMA_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_IMA"))]
+#[cfg(not(CONFIG_IMA))]
 pub const IMA_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_EVM")]
+#[cfg(CONFIG_EVM)]
 pub const EVM_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_EVM"))]
+#[cfg(not(CONFIG_EVM))]
 pub const EVM_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY_IPE")]
+#[cfg(CONFIG_SECURITY_IPE)]
 pub const IPE_ENABLED: usize = 1;
-#[cfg(not(feature = "CONFIG_SECURITY_IPE"))]
+#[cfg(not(CONFIG_SECURITY_IPE))]
 pub const IPE_ENABLED: usize = 0;
 
-#[cfg(feature = "CONFIG_SECURITY")]
+#[cfg(CONFIG_SECURITY)]
 pub const MAX_LSM_COUNT: usize = CAPABILITIES_ENABLED
     + SELINUX_ENABLED
     + SMACK_ENABLED
@@ -100,7 +100,7 @@ pub const MAX_LSM_COUNT: usize = CAPABILITIES_ENABLED
     + EVM_ENABLED
     + IPE_ENABLED;
 
-#[cfg(not(feature = "CONFIG_SECURITY"))]
+#[cfg(not(CONFIG_SECURITY))]
 pub const MAX_LSM_COUNT: usize = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

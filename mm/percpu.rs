@@ -8,7 +8,7 @@
  * available for the dependency-bound lowering step.
  *
 // SPDX-License-Identifier: GPL-2.0-only
-/*
+/ *
  * mm/percpu.c - percpu memory allocator
  *
  * Copyright (C) 2009		SUSE Linux Products GmbH
@@ -73,7 +73,7 @@
  *
  * - use pcpu_setup_first_chunk() during percpu area initialization to
  *   setup the first chunk containing the kernel static percpu area
- * /
+ */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -110,33 +110,33 @@
 /*
  * The slots are sorted by the size of the biggest continuous free area.
  * 1-31 bytes share the same slot.
- * /
-#define PCPU_SLOT_BASE_SHIFT		5
-/* chunks in slots below this are subject to being sidelined on failed alloc * /
-#define PCPU_SLOT_FAIL_THRESHOLD	3
+ */
+pub const PCPU_SLOT_BASE_SHIFT: u32 = 5;
+/* chunks in slots below this are subject to being sidelined on failed alloc */
+pub const PCPU_SLOT_FAIL_THRESHOLD: u32 = 3;
 
-#define PCPU_EMPTY_POP_PAGES_LOW	2
-#define PCPU_EMPTY_POP_PAGES_HIGH	4
+pub const PCPU_EMPTY_POP_PAGES_LOW: u32 = 2;
+pub const PCPU_EMPTY_POP_PAGES_HIGH: u32 = 4;
 
 #ifdef CONFIG_SMP
-/* default addr <-> pcpu_ptr mapping, override in asm/percpu.h if necessary * /
+/* default addr <-> pcpu_ptr mapping, override in asm/percpu.h if necessary */
 #ifndef __addr_to_pcpu_ptr
 #define __addr_to_pcpu_ptr(addr)					\
-	(void __percpu *)((unsigned long)(addr) -			\
-			  (unsigned long)pcpu_base_addr	+		\
-			  (unsigned long)__per_cpu_start)
+	(void __percpu *)((core::ffi::c_ulong)(addr) -			\
+			  (core::ffi::c_ulong)pcpu_base_addr	+		\
+			  (core::ffi::c_ulong)__per_cpu_start)
 #endif
 #ifndef __pcpu_ptr_to_addr
 #define __pcpu_ptr_to_addr(ptr)						\
-	(void __force *)((unsigned long)(ptr) +				\
-			 (unsigned long)pcpu_base_addr -		\
-			 (unsigned long)__per_cpu_start)
+	(void __force *)((core::ffi::c_ulong)(ptr) +				\
+			 (core::ffi::c_ulong)pcpu_base_addr -		\
+			 (core::ffi::c_ulong)__per_cpu_start)
 #endif
-#else	/* CONFIG_SMP * /
-/* on UP, it's always identity mapped * /
+#else	/* CONFIG_SMP */
+/* on UP, it's always identity mapped */
 #define __addr_to_pcpu_ptr(addr)	(void __percpu *)(addr)
 #define __pcpu_ptr_to_addr(ptr)		(void __force *)(ptr)
-#endif	/* CONFIG_SMP * /
+#endif	/* CONFIG_SMP */
 
 static int pcpu_unit_pages __ro_after_init;
 static int pcpu_unit_size __ro_after_init;
@@ -148,44 +148,44 @@ int pcpu_sidelined_slot __ro_after_init;
 int pcpu_to_depopulate_slot __ro_after_init;
 static size_t pcpu_chunk_struct_size __ro_after_init;
 
-/* cpus with the lowest and highest unit addresses * /
-static unsigned int pcpu_low_unit_cpu __ro_after_init;
-static unsigned int pcpu_high_unit_cpu __ro_after_init;
+/* cpus with the lowest and highest unit addresses */
+static core::ffi::c_uint pcpu_low_unit_cpu __ro_after_init;
+static core::ffi::c_uint pcpu_high_unit_cpu __ro_after_init;
 
-/* the address of the first chunk which starts with the kernel static area * /
+/* the address of the first chunk which starts with the kernel static area */
 void *pcpu_base_addr __ro_after_init;
 
-static const int *pcpu_unit_map __ro_after_init;		/* cpu -> unit * /
-const unsigned long *pcpu_unit_offsets __ro_after_init;	/* cpu -> unit offset * /
+static const int *pcpu_unit_map __ro_after_init;		/* cpu -> unit */
+const core::ffi::c_ulong *pcpu_unit_offsets __ro_after_init;	/* cpu -> unit offset */
 
-/* group information, used for vm allocation * /
+/* group information, used for vm allocation */
 static int pcpu_nr_groups __ro_after_init;
-static const unsigned long *pcpu_group_offsets __ro_after_init;
+static core::ffi::c_ulong *pcpu_group_offsets __ro_after_init;
 static const size_t *pcpu_group_sizes __ro_after_init;
 
 /*
  * The first chunk which always exists.  Note that unlike other
  * chunks, this one can be allocated and mapped in several different
  * ways and thus often doesn't live in the vmalloc area.
- * /
+ */
 struct pcpu_chunk *pcpu_first_chunk __ro_after_init;
 
 /*
  * Optional reserved chunk.  This chunk reserves part of the first
  * chunk and serves it for reserved allocations.  When the reserved
  * region doesn't exist, the following variable is NULL.
- * /
+ */
 struct pcpu_chunk *pcpu_reserved_chunk __ro_after_init;
 
-DEFINE_SPINLOCK(pcpu_lock);	/* all internal data structures * /
-static DEFINE_MUTEX(pcpu_alloc_mutex);	/* chunk create/destroy, [de]pop, map ext * /
+DEFINE_SPINLOCK(pcpu_lock);	/* all internal data structures */
+static DEFINE_MUTEX(pcpu_alloc_mutex);	/* chunk create/destroy, [de]pop, map ext */
 
-struct list_head *pcpu_chunk_lists __ro_after_init; /* chunk list slots * /
+struct list_head *pcpu_chunk_lists __ro_after_init; /* chunk list slots */
 
 /*
  * The number of empty populated pages, protected by pcpu_lock.
  * The reserved chunk doesn't contribute to the count.
- * /
+ */
 int pcpu_nr_empty_pop_pages;
 
 /*
@@ -193,16 +193,16 @@ int pcpu_nr_empty_pop_pages;
  * pcpu_lock.  This number is kept per a unit per chunk (i.e. when a page gets
  * allocated/deallocated, it is allocated/deallocated in all units of a chunk
  * and increments/decrements this count by 1).
- * /
-static unsigned long pcpu_nr_populated;
+ */
+static core::ffi::c_ulong pcpu_nr_populated;
 
 /*
  * Balance work is used to populate or destroy chunks asynchronously.  We
  * try to keep the number of populated free pages between
  * PCPU_EMPTY_POP_PAGES_LOW and HIGH for atomic allocations and at most one
  * empty chunk.
- * /
-static void pcpu_balance_workfn(struct work_struct *work);
+ */
+static void pcpu_balance_workfn(work_struct *work);
 static DECLARE_WORK(pcpu_balance_work, pcpu_balance_workfn);
 static bool pcpu_async_enabled __read_mostly;
 static bool pcpu_atomic_alloc_failed;
@@ -220,24 +220,24 @@ static void pcpu_schedule_balance_work(void)
  *
  * RETURNS:
  * True if the address is served from this chunk.
- * /
-static bool pcpu_addr_in_chunk(struct pcpu_chunk *chunk, void *addr)
+ */
+static bool pcpu_addr_in_chunk(pcpu_chunk *chunk, void *addr)
 {
 	void *start_addr, *end_addr;
 
 	if (!chunk)
 		return false;
 
-	start_addr = chunk->base_addr + chunk->start_offset;
-	end_addr = chunk->base_addr + chunk->nr_pages * PAGE_SIZE -
-		   chunk->end_offset;
+	start_addr = (*chunk).base_addr + (*chunk).start_offset;
+	end_addr = (*chunk).base_addr + (*chunk).nr_pages * PAGE_SIZE -
+		   (*chunk).end_offset;
 
 	return addr >= start_addr && addr < end_addr;
 }
 
 static int __pcpu_size_to_slot(int size)
 {
-	int highbit = fls(size);	/* size is in bytes * /
+	int highbit = fls(size);	/* size is in bytes */
 	return max(highbit - PCPU_SLOT_BASE_SHIFT + 2, 1);
 }
 
@@ -250,65 +250,65 @@ static int pcpu_size_to_slot(int size)
 
 static int pcpu_chunk_slot(const struct pcpu_chunk *chunk)
 {
-	const struct pcpu_block_md *chunk_md = &chunk->chunk_md;
+	const struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 
-	if (chunk->free_bytes < PCPU_MIN_ALLOC_SIZE ||
-	    chunk_md->contig_hint == 0)
+	if ((*chunk).free_bytes < PCPU_MIN_ALLOC_SIZE ||
+	    (*chunk_md).contig_hint == 0)
 		return 0;
 
-	return pcpu_size_to_slot(chunk_md->contig_hint * PCPU_MIN_ALLOC_SIZE);
+	return pcpu_size_to_slot((*chunk_md).contig_hint * PCPU_MIN_ALLOC_SIZE);
 }
 
-/* set the pointer to a chunk in a page struct * /
-static void pcpu_set_page_chunk(struct page *page, struct pcpu_chunk *pcpu)
+/* set the pointer to a chunk in a page struct */
+static void pcpu_set_page_chunk(page *page, pcpu_chunk *pcpu)
 {
-	page->private = (unsigned long)pcpu;
+	(*page).private = (core::ffi::c_ulong)pcpu;
 }
 
-/* obtain pointer to a chunk from a page struct * /
-static struct pcpu_chunk *pcpu_get_page_chunk(struct page *page)
+/* obtain pointer to a chunk from a page struct */
+static struct pcpu_chunk *pcpu_get_page_chunk(page *page)
 {
-	return (struct pcpu_chunk *)page->private;
+	return (*(pcpu_chunk *)page).private;
 }
 
-static int __maybe_unused pcpu_page_idx(unsigned int cpu, int page_idx)
+static int __maybe_unused pcpu_page_idx(cpu: core::ffi::c_uint, int page_idx)
 {
 	return pcpu_unit_map[cpu] * pcpu_unit_pages + page_idx;
 }
 
-static unsigned long pcpu_unit_page_offset(unsigned int cpu, int page_idx)
+static core::ffi::c_ulong pcpu_unit_page_offset(cpu: core::ffi::c_uint, int page_idx)
 {
 	return pcpu_unit_offsets[cpu] + (page_idx << PAGE_SHIFT);
 }
 
-static unsigned long pcpu_chunk_addr(struct pcpu_chunk *chunk,
-				     unsigned int cpu, int page_idx)
+static core::ffi::c_ulong pcpu_chunk_addr(pcpu_chunk *chunk,
+				     cpu: core::ffi::c_uint, int page_idx)
 {
-	return (unsigned long)chunk->base_addr +
+	return (*(core::ffi::c_ulong)chunk).base_addr +
 	       pcpu_unit_page_offset(cpu, page_idx);
 }
 
 /*
  * The following are helper functions to help access bitmaps and convert
  * between bitmap offsets to address offsets.
- * /
-static unsigned long *pcpu_index_alloc_map(struct pcpu_chunk *chunk, int index)
+ */
+static core::ffi::c_ulong *pcpu_index_alloc_map(pcpu_chunk *chunk, int index)
 {
-	return chunk->alloc_map +
+	return (*chunk).alloc_map +
 	       (index * PCPU_BITMAP_BLOCK_BITS / BITS_PER_LONG);
 }
 
-static unsigned long pcpu_off_to_block_index(int off)
+static core::ffi::c_ulong pcpu_off_to_block_index(int off)
 {
 	return off / PCPU_BITMAP_BLOCK_BITS;
 }
 
-static unsigned long pcpu_off_to_block_off(int off)
+static core::ffi::c_ulong pcpu_off_to_block_off(int off)
 {
 	return off & (PCPU_BITMAP_BLOCK_BITS - 1);
 }
 
-static unsigned long pcpu_block_off_to_off(int index, int off)
+static core::ffi::c_ulong pcpu_block_off_to_off(int index, int off)
 {
 	return index * PCPU_BITMAP_BLOCK_BITS + off;
 }
@@ -322,14 +322,14 @@ static unsigned long pcpu_block_off_to_off(int index, int off)
  * Check to see if the allocation can fit in the block's contig hint.
  * Note, a chunk uses the same hints as a block so this can also check against
  * the chunk's contig hint.
- * /
-static bool pcpu_check_block_hint(struct pcpu_block_md *block, int bits,
+ */
+static bool pcpu_check_block_hint(pcpu_block_md *block, int bits,
 				  size_t align)
 {
-	int bit_off = ALIGN(block->contig_hint_start, align) -
-		block->contig_hint_start;
+	int bit_off = ALIGN((*block).contig_hint_start, align) -
+		(*block).contig_hint_start;
 
-	return bit_off + bits <= block->contig_hint;
+	return bit_off + bits <= (*block).contig_hint;
 }
 
 /*
@@ -342,8 +342,8 @@ static bool pcpu_check_block_hint(struct pcpu_block_md *block, int bits,
  * first fit.  However, if we know a scan_hint at position scan_hint_start
  * cannot fulfill an allocation, we can begin scanning from there knowing
  * the contig_hint will be our fallback.
- * /
-static int pcpu_next_hint(struct pcpu_block_md *block, int alloc_bits)
+ */
+static int pcpu_next_hint(pcpu_block_md *block, int alloc_bits)
 {
 	/*
 	 * The three conditions below determine if we can skip past the
@@ -351,13 +351,13 @@ static int pcpu_next_hint(struct pcpu_block_md *block, int alloc_bits)
 	 * contig_hint after the scan_hint (possibly not true iff
 	 * contig_hint == scan_hint).  Third, is the allocation request
 	 * larger than the scan_hint.
-	 * /
-	if (block->scan_hint &&
-	    block->contig_hint_start > block->scan_hint_start &&
-	    alloc_bits > block->scan_hint)
-		return block->scan_hint_start + block->scan_hint;
+	 */
+	if ((*block).scan_hint &&
+	    (*block).contig_hint_start > (*block).scan_hint_start &&
+	    alloc_bits > (*block).scan_hint)
+		return (*block).scan_hint_start + (*block).scan_hint;
 
-	return block->first_free;
+	return (*block).first_free;
 }
 
 /**
@@ -370,8 +370,8 @@ static int pcpu_next_hint(struct pcpu_block_md *block, int alloc_bits)
  * block->contig_hint and performs aggregation across blocks to find the
  * next hint.  It modifies bit_off and bits in-place to be consumed in the
  * loop.
- * /
-static void pcpu_next_md_free_region(struct pcpu_chunk *chunk, int *bit_off,
+ */
+static void pcpu_next_md_free_region(pcpu_chunk *chunk, int *bit_off,
 				     int *bits)
 {
 	int i = pcpu_off_to_block_index(*bit_off);
@@ -379,12 +379,12 @@ static void pcpu_next_md_free_region(struct pcpu_chunk *chunk, int *bit_off,
 	struct pcpu_block_md *block;
 
 	*bits = 0;
-	for (block = chunk->md_blocks + i; i < pcpu_chunk_nr_blocks(chunk);
+	for (block = (*chunk).md_blocks + i; i < pcpu_chunk_nr_blocks(chunk);
 	     block++, i++) {
-		/* handles contig area across blocks * /
+		/* handles contig area across blocks */
 		if (*bits) {
-			*bits += block->left_free;
-			if (block->left_free == PCPU_BITMAP_BLOCK_BITS)
+			*bits += (*block).left_free;
+			if ((*block).left_free == PCPU_BITMAP_BLOCK_BITS)
 				continue;
 			return;
 		}
@@ -396,19 +396,19 @@ static void pcpu_next_md_free_region(struct pcpu_chunk *chunk, int *bit_off,
 		 * right contig hint.  In the last case, it spills over into
 		 * the next block and should be handled by the contig area
 		 * across blocks code.
-		 * /
-		*bits = block->contig_hint;
-		if (*bits && block->contig_hint_start >= block_off &&
-		    *bits + block->contig_hint_start < PCPU_BITMAP_BLOCK_BITS) {
+		 */
+		*bits = (*block).contig_hint;
+		if (*bits && (*block).contig_hint_start >= block_off &&
+		    *bits + (*block).contig_hint_start < PCPU_BITMAP_BLOCK_BITS) {
 			*bit_off = pcpu_block_off_to_off(i,
-					block->contig_hint_start);
+					(*block).contig_hint_start);
 			return;
 		}
-		/* reset to satisfy the second predicate above * /
+		/* reset to satisfy the second predicate above */
 		block_off = 0;
 
-		*bits = block->right_free;
-		*bit_off = (i + 1) * PCPU_BITMAP_BLOCK_BITS - block->right_free;
+		*bits = (*block).right_free;
+		*bit_off = (i + 1) * PCPU_BITMAP_BLOCK_BITS - (*block).right_free;
 	}
 }
 
@@ -425,8 +425,8 @@ static void pcpu_next_md_free_region(struct pcpu_chunk *chunk, int *bit_off,
  * allocation.  block->first_free is returned if the allocation request fits
  * within the block to see if the request can be fulfilled prior to the contig
  * hint.
- * /
-static void pcpu_next_fit_region(struct pcpu_chunk *chunk, int alloc_bits,
+ */
+static void pcpu_next_fit_region(pcpu_chunk *chunk, int alloc_bits,
 				 int align, int *bit_off, int *bits)
 {
 	int i = pcpu_off_to_block_index(*bit_off);
@@ -434,38 +434,38 @@ static void pcpu_next_fit_region(struct pcpu_chunk *chunk, int alloc_bits,
 	struct pcpu_block_md *block;
 
 	*bits = 0;
-	for (block = chunk->md_blocks + i; i < pcpu_chunk_nr_blocks(chunk);
+	for (block = (*chunk).md_blocks + i; i < pcpu_chunk_nr_blocks(chunk);
 	     block++, i++) {
-		/* handles contig area across blocks * /
+		/* handles contig area across blocks */
 		if (*bits) {
-			*bits += block->left_free;
+			*bits += (*block).left_free;
 			if (*bits >= alloc_bits)
 				return;
-			if (block->left_free == PCPU_BITMAP_BLOCK_BITS)
+			if ((*block).left_free == PCPU_BITMAP_BLOCK_BITS)
 				continue;
 		}
 
-		/* check block->contig_hint * /
-		*bits = ALIGN(block->contig_hint_start, align) -
-			block->contig_hint_start;
+		/* check block->contig_hint */
+		*bits = ALIGN((*block).contig_hint_start, align) -
+			(*block).contig_hint_start;
 		/*
 		 * This uses the block offset to determine if this has been
 		 * checked in the prior iteration.
-		 * /
-		if (block->contig_hint &&
-		    block->contig_hint_start >= block_off &&
-		    block->contig_hint >= *bits + alloc_bits) {
+		 */
+		if ((*block).contig_hint &&
+		    (*block).contig_hint_start >= block_off &&
+		    (*block).contig_hint >= *bits + alloc_bits) {
 			int start = pcpu_next_hint(block, alloc_bits);
 
-			*bits += alloc_bits + block->contig_hint_start -
+			*bits += alloc_bits + (*block).contig_hint_start -
 				 start;
 			*bit_off = pcpu_block_off_to_off(i, start);
 			return;
 		}
-		/* reset to satisfy the second predicate above * /
+		/* reset to satisfy the second predicate above */
 		block_off = 0;
 
-		*bit_off = ALIGN(PCPU_BITMAP_BLOCK_BITS - block->right_free,
+		*bit_off = ALIGN(PCPU_BITMAP_BLOCK_BITS - (*block).right_free,
 				 align);
 		*bits = PCPU_BITMAP_BLOCK_BITS - *bit_off;
 		*bit_off = pcpu_block_off_to_off(i, *bit_off);
@@ -473,7 +473,7 @@ static void pcpu_next_fit_region(struct pcpu_chunk *chunk, int alloc_bits,
 			return;
 	}
 
-	/* no valid offsets were found - fail condition * /
+	/* no valid offsets were found - fail condition */
 	*bit_off = pcpu_chunk_map_bits(chunk);
 }
 
@@ -482,7 +482,7 @@ static void pcpu_next_fit_region(struct pcpu_chunk *chunk, int alloc_bits,
  * based on the metadata blocks and return the offset @bit_off and size in
  * bits of the free area @bits.  pcpu_for_each_fit_region only returns when
  * a fit is found for the allocation request.
- * /
+ */
 #define pcpu_for_each_md_free_region(chunk, bit_off, bits)		\
 	for (pcpu_next_md_free_region((chunk), &(bit_off), &(bits));	\
 	     (bit_off) < pcpu_chunk_map_bits((chunk));			\
@@ -509,7 +509,7 @@ static void pcpu_next_fit_region(struct pcpu_chunk *chunk, int alloc_bits,
  *
  * RETURNS:
  * Pointer to the allocated area on success, NULL on failure.
- * /
+ */
 static void *pcpu_mem_zalloc(size_t size, gfp_t gfp)
 {
 	if (WARN_ON_ONCE(!slab_is_available()))
@@ -526,24 +526,24 @@ static void *pcpu_mem_zalloc(size_t size, gfp_t gfp)
  * @ptr: memory to free
  *
  * Free @ptr.  @ptr should have been allocated using pcpu_mem_zalloc().
- * /
+ */
 static void pcpu_mem_free(void *ptr)
 {
 	kvfree(ptr);
 }
 
-static void __pcpu_chunk_move(struct pcpu_chunk *chunk, int slot,
-			      bool move_front)
+static void __pcpu_chunk_move(pcpu_chunk *chunk, int slot,
+			      move_front: bool)
 {
 	if (chunk != pcpu_reserved_chunk) {
 		if (move_front)
-			list_move(&chunk->list, &pcpu_chunk_lists[slot]);
+			list_move((*&chunk).list, &pcpu_chunk_lists[slot]);
 		else
-			list_move_tail(&chunk->list, &pcpu_chunk_lists[slot]);
+			list_move_tail((*&chunk).list, &pcpu_chunk_lists[slot]);
 	}
 }
 
-static void pcpu_chunk_move(struct pcpu_chunk *chunk, int slot)
+static void pcpu_chunk_move(pcpu_chunk *chunk, int slot)
 {
 	__pcpu_chunk_move(chunk, slot, true);
 }
@@ -560,37 +560,37 @@ static void pcpu_chunk_move(struct pcpu_chunk *chunk, int slot)
  *
  * CONTEXT:
  * pcpu_lock.
- * /
-static void pcpu_chunk_relocate(struct pcpu_chunk *chunk, int oslot)
+ */
+static void pcpu_chunk_relocate(pcpu_chunk *chunk, int oslot)
 {
 	int nslot = pcpu_chunk_slot(chunk);
 
-	/* leave isolated chunks in-place * /
-	if (chunk->isolated)
+	/* leave isolated chunks in-place */
+	if ((*chunk).isolated)
 		return;
 
 	if (oslot != nslot)
 		__pcpu_chunk_move(chunk, nslot, oslot < nslot);
 }
 
-static void pcpu_isolate_chunk(struct pcpu_chunk *chunk)
+static void pcpu_isolate_chunk(pcpu_chunk *chunk)
 {
 	lockdep_assert_held(&pcpu_lock);
 
-	if (!chunk->isolated) {
-		chunk->isolated = true;
-		pcpu_nr_empty_pop_pages -= chunk->nr_empty_pop_pages;
+	if ((*!chunk).isolated) {
+		(*chunk).isolated = true;
+		pcpu_nr_empty_pop_pages -= (*chunk).nr_empty_pop_pages;
 	}
-	list_move(&chunk->list, &pcpu_chunk_lists[pcpu_to_depopulate_slot]);
+	list_move((*&chunk).list, &pcpu_chunk_lists[pcpu_to_depopulate_slot]);
 }
 
-static void pcpu_reintegrate_chunk(struct pcpu_chunk *chunk)
+static void pcpu_reintegrate_chunk(pcpu_chunk *chunk)
 {
 	lockdep_assert_held(&pcpu_lock);
 
-	if (chunk->isolated) {
-		chunk->isolated = false;
-		pcpu_nr_empty_pop_pages += chunk->nr_empty_pop_pages;
+	if ((*chunk).isolated) {
+		(*chunk).isolated = false;
+		pcpu_nr_empty_pop_pages += (*chunk).nr_empty_pop_pages;
 		pcpu_chunk_relocate(chunk, -1);
 	}
 }
@@ -603,11 +603,11 @@ static void pcpu_reintegrate_chunk(struct pcpu_chunk *chunk)
  * This is used to keep track of the empty pages now based on the premise
  * a md_block covers a page.  The hint update functions recognize if a block
  * is made full or broken to calculate deltas for keeping track of free pages.
- * /
-static inline void pcpu_update_empty_pages(struct pcpu_chunk *chunk, int nr)
+ */
+void pcpu_update_empty_pages(pcpu_chunk *chunk, int nr)
 {
-	chunk->nr_empty_pop_pages += nr;
-	if (chunk != pcpu_reserved_chunk && !chunk->isolated)
+	(*chunk).nr_empty_pop_pages += nr;
+	if (chunk != pcpu_reserved_chunk && (*!chunk).isolated)
 		pcpu_nr_empty_pop_pages += nr;
 }
 
@@ -620,8 +620,8 @@ static inline void pcpu_update_empty_pages(struct pcpu_chunk *chunk, int nr)
  *
  * This is used to determine if the hint region [a, b) overlaps with the
  * allocated region [x, y).
- * /
-static inline bool pcpu_region_overlap(int a, int b, int x, int y)
+ */
+bool pcpu_region_overlap(int a, int b, int x, int y)
 {
 	return (a < y) && (x < b);
 }
@@ -635,69 +635,69 @@ static inline bool pcpu_region_overlap(int a, int b, int x, int y)
  * Updates a block given a known free area.  The region [start, end) is
  * expected to be the entirety of the free area within a block.  Chooses
  * the best starting offset if the contig hints are equal.
- * /
-static void pcpu_block_update(struct pcpu_block_md *block, int start, int end)
+ */
+static void pcpu_block_update(pcpu_block_md *block, int start, int end)
 {
 	int contig = end - start;
 
-	block->first_free = min(block->first_free, start);
+	(*block).first_free = min((*block).first_free, start);
 	if (start == 0)
-		block->left_free = contig;
+		(*block).left_free = contig;
 
-	if (end == block->nr_bits)
-		block->right_free = contig;
+	if (end == (*block).nr_bits)
+		(*block).right_free = contig;
 
-	if (contig > block->contig_hint) {
-		/* promote the old contig_hint to be the new scan_hint * /
-		if (start > block->contig_hint_start) {
-			if (block->contig_hint > block->scan_hint) {
-				block->scan_hint_start =
-					block->contig_hint_start;
-				block->scan_hint = block->contig_hint;
-			} else if (start < block->scan_hint_start) {
+	if (contig > (*block).contig_hint) {
+		/* promote the old contig_hint to be the new scan_hint */
+		if (start > (*block).contig_hint_start) {
+			if ((*block).contig_hint > (*block).scan_hint) {
+				(*block).scan_hint_start =
+					(*block).contig_hint_start;
+				(*block).scan_hint = (*block).contig_hint;
+			} else if (start < (*block).scan_hint_start) {
 				/*
 				 * The old contig_hint == scan_hint.  But, the
 				 * new contig is larger so hold the invariant
 				 * scan_hint_start < contig_hint_start.
-				 * /
-				block->scan_hint = 0;
+				 */
+				(*block).scan_hint = 0;
 			}
 		} else {
-			block->scan_hint = 0;
+			(*block).scan_hint = 0;
 		}
-		block->contig_hint_start = start;
-		block->contig_hint = contig;
-	} else if (contig == block->contig_hint) {
-		if (block->contig_hint_start &&
+		(*block).contig_hint_start = start;
+		(*block).contig_hint = contig;
+	} else if (contig == (*block).contig_hint) {
+		if ((*block).contig_hint_start &&
 		    (!start ||
-		     __ffs(start) > __ffs(block->contig_hint_start))) {
-			/* start has a better alignment so use it * /
-			block->contig_hint_start = start;
-			if (start < block->scan_hint_start &&
-			    block->contig_hint > block->scan_hint)
-				block->scan_hint = 0;
-		} else if (start > block->scan_hint_start ||
-			   block->contig_hint > block->scan_hint) {
+		     __ffs(start) > __ffs((*block).contig_hint_start))) {
+			/* start has a better alignment so use it */
+			(*block).contig_hint_start = start;
+			if (start < (*block).scan_hint_start &&
+			    (*block).contig_hint > (*block).scan_hint)
+				(*block).scan_hint = 0;
+		} else if (start > (*block).scan_hint_start ||
+			   (*block).contig_hint > (*block).scan_hint) {
 			/*
 			 * Knowing contig == contig_hint, update the scan_hint
 			 * if it is farther than or larger than the current
 			 * scan_hint.
-			 * /
-			block->scan_hint_start = start;
-			block->scan_hint = contig;
+			 */
+			(*block).scan_hint_start = start;
+			(*block).scan_hint = contig;
 		}
 	} else {
 		/*
 		 * The region is smaller than the contig_hint.  So only update
 		 * the scan_hint if it is larger than or equal and farther than
 		 * the current scan_hint.
-		 * /
-		if ((start < block->contig_hint_start &&
-		     (contig > block->scan_hint ||
-		      (contig == block->scan_hint &&
-		       start > block->scan_hint_start)))) {
-			block->scan_hint_start = start;
-			block->scan_hint = contig;
+		 */
+		if ((start < (*block).contig_hint_start &&
+		     (contig > (*block).scan_hint ||
+		      (contig == (*block).scan_hint &&
+		       start > (*block).scan_hint_start)))) {
+			(*block).scan_hint_start = start;
+			(*block).scan_hint = contig;
 		}
 	}
 }
@@ -717,8 +717,8 @@ static void pcpu_block_update(struct pcpu_block_md *block, int start, int end)
  * This takes a given free area hole and updates a block as it may change the
  * scan_hint.  We need to scan backwards to ensure we don't miss free bits
  * from alignment.
- * /
-static void pcpu_block_update_scan(struct pcpu_chunk *chunk, int bit_off,
+ */
+static void pcpu_block_update_scan(pcpu_chunk *chunk, int bit_off,
 				   int bits)
 {
 	int s_off = pcpu_off_to_block_off(bit_off);
@@ -730,9 +730,9 @@ static void pcpu_block_update_scan(struct pcpu_chunk *chunk, int bit_off,
 		return;
 
 	s_index = pcpu_off_to_block_index(bit_off);
-	block = chunk->md_blocks + s_index;
+	block = (*chunk).md_blocks + s_index;
 
-	/* scan backwards in case of alignment skipping free bits * /
+	/* scan backwards in case of alignment skipping free bits */
 	l_bit = find_last_bit(pcpu_index_alloc_map(chunk, s_index), s_off);
 	s_off = (s_off == l_bit) ? 0 : l_bit + 1;
 
@@ -750,21 +750,21 @@ static void pcpu_block_update_scan(struct pcpu_chunk *chunk, int bit_off,
  * the contig_hint or after if the scan_hint == contig_hint.  This cannot
  * be prevented on freeing as we want to find the largest area possibly
  * spanning blocks.
- * /
-static void pcpu_chunk_refresh_hint(struct pcpu_chunk *chunk, bool full_scan)
+ */
+static void pcpu_chunk_refresh_hint(pcpu_chunk *chunk, full_scan: bool)
 {
-	struct pcpu_block_md *chunk_md = &chunk->chunk_md;
+	struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 	int bit_off, bits;
 
-	/* promote scan_hint to contig_hint * /
-	if (!full_scan && chunk_md->scan_hint) {
-		bit_off = chunk_md->scan_hint_start + chunk_md->scan_hint;
-		chunk_md->contig_hint_start = chunk_md->scan_hint_start;
-		chunk_md->contig_hint = chunk_md->scan_hint;
-		chunk_md->scan_hint = 0;
+	/* promote scan_hint to contig_hint */
+	if (!full_scan && (*chunk_md).scan_hint) {
+		bit_off = (*chunk_md).scan_hint_start + (*chunk_md).scan_hint;
+		(*chunk_md).contig_hint_start = (*chunk_md).scan_hint_start;
+		(*chunk_md).contig_hint = (*chunk_md).scan_hint;
+		(*chunk_md).scan_hint = 0;
 	} else {
-		bit_off = chunk_md->first_free;
-		chunk_md->contig_hint = 0;
+		bit_off = (*chunk_md).first_free;
+		(*chunk_md).contig_hint = 0;
 	}
 
 	bits = 0;
@@ -779,27 +779,27 @@ static void pcpu_chunk_refresh_hint(struct pcpu_chunk *chunk, bool full_scan)
  *
  * Scans over the block beginning at first_free and updates the block
  * metadata accordingly.
- * /
-static void pcpu_block_refresh_hint(struct pcpu_chunk *chunk, int index)
+ */
+static void pcpu_block_refresh_hint(pcpu_chunk *chunk, int index)
 {
-	struct pcpu_block_md *block = chunk->md_blocks + index;
-	unsigned long *alloc_map = pcpu_index_alloc_map(chunk, index);
-	unsigned int start, end;	/* region start, region end * /
+	struct pcpu_block_md *block = (*chunk).md_blocks + index;
+	core::ffi::c_ulong *alloc_map = pcpu_index_alloc_map(chunk, index);
+	start: core::ffi::c_uint, end;	/* region start, region end */
 
-	/* promote scan_hint to contig_hint * /
-	if (block->scan_hint) {
-		start = block->scan_hint_start + block->scan_hint;
-		block->contig_hint_start = block->scan_hint_start;
-		block->contig_hint = block->scan_hint;
-		block->scan_hint = 0;
+	/* promote scan_hint to contig_hint */
+	if ((*block).scan_hint) {
+		start = (*block).scan_hint_start + (*block).scan_hint;
+		(*block).contig_hint_start = (*block).scan_hint_start;
+		(*block).contig_hint = (*block).scan_hint;
+		(*block).scan_hint = 0;
 	} else {
-		start = block->first_free;
-		block->contig_hint = 0;
+		start = (*block).first_free;
+		(*block).contig_hint = 0;
 	}
 
-	block->right_free = 0;
+	(*block).right_free = 0;
 
-	/* iterate over free areas and update the contig hints * /
+	/* iterate over free areas and update the contig hints */
 	for_each_clear_bitrange_from(start, end, alloc_map, PCPU_BITMAP_BLOCK_BITS)
 		pcpu_block_update(block, start, end);
 }
@@ -813,112 +813,112 @@ static void pcpu_block_refresh_hint(struct pcpu_chunk *chunk, int index)
  * Updates metadata for the allocation path.  The metadata only has to be
  * refreshed by a full scan iff the chunk's contig hint is broken.  Block level
  * scans are required if the block's contig hint is broken.
- * /
-static void pcpu_block_update_hint_alloc(struct pcpu_chunk *chunk, int bit_off,
+ */
+static void pcpu_block_update_hint_alloc(pcpu_chunk *chunk, int bit_off,
 					 int bits)
 {
-	struct pcpu_block_md *chunk_md = &chunk->chunk_md;
+	struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 	int nr_empty_pages = 0;
 	struct pcpu_block_md *s_block, *e_block, *block;
-	int s_index, e_index;	/* block indexes of the freed allocation * /
-	int s_off, e_off;	/* block offsets of the freed allocation * /
+	int s_index, e_index;	/* block indexes of the freed allocation */
+	int s_off, e_off;	/* block offsets of the freed allocation */
 
 	/*
 	 * Calculate per block offsets.
 	 * The calculation uses an inclusive range, but the resulting offsets
 	 * are [start, end).  e_index always points to the last block in the
 	 * range.
-	 * /
+	 */
 	s_index = pcpu_off_to_block_index(bit_off);
 	e_index = pcpu_off_to_block_index(bit_off + bits - 1);
 	s_off = pcpu_off_to_block_off(bit_off);
 	e_off = pcpu_off_to_block_off(bit_off + bits - 1) + 1;
 
-	s_block = chunk->md_blocks + s_index;
-	e_block = chunk->md_blocks + e_index;
+	s_block = (*chunk).md_blocks + s_index;
+	e_block = (*chunk).md_blocks + e_index;
 
 	/*
 	 * Update s_block.
-	 * /
-	if (s_block->contig_hint == PCPU_BITMAP_BLOCK_BITS)
+	 */
+	if ((*s_block).contig_hint == PCPU_BITMAP_BLOCK_BITS)
 		nr_empty_pages++;
 
 	/*
 	 * block->first_free must be updated if the allocation takes its place.
 	 * If the allocation breaks the contig_hint, a scan is required to
 	 * restore this hint.
-	 * /
-	if (s_off == s_block->first_free)
-		s_block->first_free = find_next_zero_bit(
+	 */
+	if (s_off == (*s_block).first_free)
+		(*s_block).first_free = find_next_zero_bit(
 					pcpu_index_alloc_map(chunk, s_index),
 					PCPU_BITMAP_BLOCK_BITS,
 					s_off + bits);
 
-	if (pcpu_region_overlap(s_block->scan_hint_start,
-				s_block->scan_hint_start + s_block->scan_hint,
+	if (pcpu_region_overlap((*s_block).scan_hint_start,
+				(*s_block).scan_hint_start + (*s_block).scan_hint,
 				s_off,
 				s_off + bits))
-		s_block->scan_hint = 0;
+		(*s_block).scan_hint = 0;
 
-	if (pcpu_region_overlap(s_block->contig_hint_start,
-				s_block->contig_hint_start +
-				s_block->contig_hint,
+	if (pcpu_region_overlap((*s_block).contig_hint_start,
+				(*s_block).contig_hint_start +
+				(*s_block).contig_hint,
 				s_off,
 				s_off + bits)) {
-		/* block contig hint is broken - scan to fix it * /
+		/* block contig hint is broken - scan to fix it */
 		if (!s_off)
-			s_block->left_free = 0;
+			(*s_block).left_free = 0;
 		pcpu_block_refresh_hint(chunk, s_index);
 	} else {
-		/* update left and right contig manually * /
-		s_block->left_free = min(s_block->left_free, s_off);
+		/* update left and right contig manually */
+		(*s_block).left_free = min((*s_block).left_free, s_off);
 		if (s_index == e_index)
-			s_block->right_free = min_t(int, s_block->right_free,
+			(*s_block).right_free = min_t(int, (*s_block).right_free,
 					PCPU_BITMAP_BLOCK_BITS - e_off);
 		else
-			s_block->right_free = 0;
+			(*s_block).right_free = 0;
 	}
 
 	/*
 	 * Update e_block.
-	 * /
+	 */
 	if (s_index != e_index) {
-		if (e_block->contig_hint == PCPU_BITMAP_BLOCK_BITS)
+		if ((*e_block).contig_hint == PCPU_BITMAP_BLOCK_BITS)
 			nr_empty_pages++;
 
 		/*
 		 * When the allocation is across blocks, the end is along
 		 * the left part of the e_block.
-		 * /
-		e_block->first_free = find_next_zero_bit(
+		 */
+		(*e_block).first_free = find_next_zero_bit(
 				pcpu_index_alloc_map(chunk, e_index),
 				PCPU_BITMAP_BLOCK_BITS, e_off);
 
 		if (e_off == PCPU_BITMAP_BLOCK_BITS) {
-			/* reset the block * /
+			/* reset the block */
 			e_block++;
 		} else {
-			if (e_off > e_block->scan_hint_start)
-				e_block->scan_hint = 0;
+			if (e_off > (*e_block).scan_hint_start)
+				(*e_block).scan_hint = 0;
 
-			e_block->left_free = 0;
-			if (e_off > e_block->contig_hint_start) {
-				/* contig hint is broken - scan to fix it * /
+			(*e_block).left_free = 0;
+			if (e_off > (*e_block).contig_hint_start) {
+				/* contig hint is broken - scan to fix it */
 				pcpu_block_refresh_hint(chunk, e_index);
 			} else {
-				e_block->right_free =
-					min_t(int, e_block->right_free,
+				(*e_block).right_free =
+					min_t(int, (*e_block).right_free,
 					      PCPU_BITMAP_BLOCK_BITS - e_off);
 			}
 		}
 
-		/* update in-between md_blocks * /
+		/* update in-between md_blocks */
 		nr_empty_pages += (e_index - s_index - 1);
 		for (block = s_block + 1; block < e_block; block++) {
-			block->scan_hint = 0;
-			block->contig_hint = 0;
-			block->left_free = 0;
-			block->right_free = 0;
+			(*block).scan_hint = 0;
+			(*block).contig_hint = 0;
+			(*block).left_free = 0;
+			(*block).right_free = 0;
 		}
 	}
 
@@ -927,25 +927,25 @@ static void pcpu_block_update_hint_alloc(struct pcpu_chunk *chunk, int bit_off,
 	 * populated with pages, while we account it here.  The number
 	 * of pages will be added back with pcpu_chunk_populated()
 	 * when populating pages.
-	 * /
+	 */
 	if (nr_empty_pages)
 		pcpu_update_empty_pages(chunk, -nr_empty_pages);
 
-	if (pcpu_region_overlap(chunk_md->scan_hint_start,
-				chunk_md->scan_hint_start +
-				chunk_md->scan_hint,
+	if (pcpu_region_overlap((*chunk_md).scan_hint_start,
+				(*chunk_md).scan_hint_start +
+				(*chunk_md).scan_hint,
 				bit_off,
 				bit_off + bits))
-		chunk_md->scan_hint = 0;
+		(*chunk_md).scan_hint = 0;
 
 	/*
 	 * The only time a full chunk scan is required is if the chunk
 	 * contig hint is broken.  Otherwise, it means a smaller space
 	 * was used and therefore the chunk contig hint is still correct.
-	 * /
-	if (pcpu_region_overlap(chunk_md->contig_hint_start,
-				chunk_md->contig_hint_start +
-				chunk_md->contig_hint,
+	 */
+	if (pcpu_region_overlap((*chunk_md).contig_hint_start,
+				(*chunk_md).contig_hint_start +
+				(*chunk_md).contig_hint,
 				bit_off,
 				bit_off + bits))
 		pcpu_chunk_refresh_hint(chunk, false);
@@ -968,29 +968,29 @@ static void pcpu_block_update_hint_alloc(struct pcpu_chunk *chunk, int bit_off,
  * chunk_md->contig_hint may be off by up to a page, but it will never be more
  * than the available space.  If the contig hint is contained in one block, it
  * will be accurate.
- * /
-static void pcpu_block_update_hint_free(struct pcpu_chunk *chunk, int bit_off,
+ */
+static void pcpu_block_update_hint_free(pcpu_chunk *chunk, int bit_off,
 					int bits)
 {
 	int nr_empty_pages = 0;
 	struct pcpu_block_md *s_block, *e_block, *block;
-	int s_index, e_index;	/* block indexes of the freed allocation * /
-	int s_off, e_off;	/* block offsets of the freed allocation * /
-	int start, end;		/* start and end of the whole free area * /
+	int s_index, e_index;	/* block indexes of the freed allocation */
+	int s_off, e_off;	/* block offsets of the freed allocation */
+	int start, end;		/* start and end of the whole free area */
 
 	/*
 	 * Calculate per block offsets.
 	 * The calculation uses an inclusive range, but the resulting offsets
 	 * are [start, end).  e_index always points to the last block in the
 	 * range.
-	 * /
+	 */
 	s_index = pcpu_off_to_block_index(bit_off);
 	e_index = pcpu_off_to_block_index(bit_off + bits - 1);
 	s_off = pcpu_off_to_block_off(bit_off);
 	e_off = pcpu_off_to_block_off(bit_off + bits - 1) + 1;
 
-	s_block = chunk->md_blocks + s_index;
-	e_block = chunk->md_blocks + e_index;
+	s_block = (*chunk).md_blocks + s_index;
+	e_block = (*chunk).md_blocks + e_index;
 
 	/*
 	 * Check if the freed area aligns with the block->contig_hint.
@@ -1001,51 +1001,51 @@ static void pcpu_block_update_hint_free(struct pcpu_chunk *chunk, int bit_off,
 	 * within each their respective blocks.  This is not necessarily
 	 * the entire free area as it may span blocks past the beginning
 	 * or end of the block.
-	 * /
+	 */
 	start = s_off;
-	if (s_off == s_block->contig_hint + s_block->contig_hint_start) {
-		start = s_block->contig_hint_start;
+	if (s_off == (*s_block).contig_hint + (*s_block).contig_hint_start) {
+		start = (*s_block).contig_hint_start;
 	} else {
 		/*
 		 * Scan backwards to find the extent of the free area.
 		 * find_last_bit returns the starting bit, so if the start bit
 		 * is returned, that means there was no last bit and the
 		 * remainder of the chunk is free.
-		 * /
+		 */
 		int l_bit = find_last_bit(pcpu_index_alloc_map(chunk, s_index),
 					  start);
 		start = (start == l_bit) ? 0 : l_bit + 1;
 	}
 
 	end = e_off;
-	if (e_off == e_block->contig_hint_start)
-		end = e_block->contig_hint_start + e_block->contig_hint;
+	if (e_off == (*e_block).contig_hint_start)
+		end = (*e_block).contig_hint_start + (*e_block).contig_hint;
 	else
 		end = find_next_bit(pcpu_index_alloc_map(chunk, e_index),
 				    PCPU_BITMAP_BLOCK_BITS, end);
 
-	/* update s_block * /
+	/* update s_block */
 	e_off = (s_index == e_index) ? end : PCPU_BITMAP_BLOCK_BITS;
 	if (!start && e_off == PCPU_BITMAP_BLOCK_BITS)
 		nr_empty_pages++;
 	pcpu_block_update(s_block, start, e_off);
 
-	/* freeing in the same block * /
+	/* freeing in the same block */
 	if (s_index != e_index) {
-		/* update e_block * /
+		/* update e_block */
 		if (end == PCPU_BITMAP_BLOCK_BITS)
 			nr_empty_pages++;
 		pcpu_block_update(e_block, 0, end);
 
-		/* reset md_blocks in the middle * /
+		/* reset md_blocks in the middle */
 		nr_empty_pages += (e_index - s_index - 1);
 		for (block = s_block + 1; block < e_block; block++) {
-			block->first_free = 0;
-			block->scan_hint = 0;
-			block->contig_hint_start = 0;
-			block->contig_hint = PCPU_BITMAP_BLOCK_BITS;
-			block->left_free = PCPU_BITMAP_BLOCK_BITS;
-			block->right_free = PCPU_BITMAP_BLOCK_BITS;
+			(*block).first_free = 0;
+			(*block).scan_hint = 0;
+			(*block).contig_hint_start = 0;
+			(*block).contig_hint = PCPU_BITMAP_BLOCK_BITS;
+			(*block).left_free = PCPU_BITMAP_BLOCK_BITS;
+			(*block).right_free = PCPU_BITMAP_BLOCK_BITS;
 		}
 	}
 
@@ -1057,11 +1057,11 @@ static void pcpu_block_update_hint_free(struct pcpu_chunk *chunk, int bit_off,
 	 * across blocks.  The contig_hint may be off by up to a page, but if
 	 * the contig_hint is contained in a block, it will be accurate with
 	 * the else condition below.
-	 * /
+	 */
 	if (((end - start) >= PCPU_BITMAP_BLOCK_BITS) || s_index != e_index)
 		pcpu_chunk_refresh_hint(chunk, true);
 	else
-		pcpu_block_update(&chunk->chunk_md,
+		pcpu_block_update((*&chunk).chunk_md,
 				  pcpu_block_off_to_off(s_index, start),
 				  end);
 }
@@ -1078,20 +1078,20 @@ static void pcpu_block_update_hint_free(struct pcpu_chunk *chunk, int bit_off,
  * RETURNS:
  * Bool if the backing pages are populated.
  * next_index is to skip over unpopulated blocks in pcpu_find_block_fit.
- * /
-static bool pcpu_is_populated(struct pcpu_chunk *chunk, int bit_off, int bits,
+ */
+static bool pcpu_is_populated(pcpu_chunk *chunk, int bit_off, int bits,
 			      int *next_off)
 {
-	unsigned int start, end;
+	start: core::ffi::c_uint, end;
 
 	start = PFN_DOWN(bit_off * PCPU_MIN_ALLOC_SIZE);
 	end = PFN_UP((bit_off + bits) * PCPU_MIN_ALLOC_SIZE);
 
-	start = find_next_zero_bit(chunk->populated, end, start);
+	start = find_next_zero_bit((*chunk).populated, end, start);
 	if (start >= end)
 		return true;
 
-	end = find_next_bit(chunk->populated, end, start + 1);
+	end = find_next_bit((*chunk).populated, end, start + 1);
 
 	*next_off = end * PAGE_SIZE / PCPU_MIN_ALLOC_SIZE;
 	return false;
@@ -1115,31 +1115,31 @@ static bool pcpu_is_populated(struct pcpu_chunk *chunk, int bit_off, int bits,
  * RETURNS:
  * The offset in the bitmap to begin searching.
  * -1 if no offset is found.
- * /
-static int pcpu_find_block_fit(struct pcpu_chunk *chunk, int alloc_bits,
-			       size_t align, bool pop_only)
+ */
+static int pcpu_find_block_fit(pcpu_chunk *chunk, int alloc_bits,
+			       size_t align, pop_only: bool)
 {
-	struct pcpu_block_md *chunk_md = &chunk->chunk_md;
+	struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 	int bit_off, bits, next_off;
 
 	/*
 	 * This is an optimization to prevent scanning by assuming if the
 	 * allocation cannot fit in the global hint, there is memory pressure
 	 * and creating a new chunk would happen soon.
-	 * /
+	 */
 	if (!pcpu_check_block_hint(chunk_md, alloc_bits, align))
 		return -1;
 
 	bit_off = pcpu_next_hint(chunk_md, alloc_bits);
 	bits = 0;
-	pcpu_for_each_fit_region(chunk, alloc_bits, align, bit_off, bits) {
+	pcpu_for_each_fit_region!(chunk, alloc_bits, align, bit_off, bits, {
 		if (!pop_only || pcpu_is_populated(chunk, bit_off, bits,
 						   &next_off))
 			break;
 
 		bit_off = next_off;
 		bits = 0;
-	}
+	});
 
 	if (bit_off == pcpu_chunk_map_bits(chunk))
 		return -1;
@@ -1166,20 +1166,20 @@ static int pcpu_find_block_fit(struct pcpu_chunk *chunk, int alloc_bits,
  * pcpu_block_update_scan() does scan backwards to try and recover what was
  * lost to alignment.  While this can cause scanning to miss earlier possible
  * free areas, smaller allocations will eventually fill those holes.
- * /
-static unsigned long pcpu_find_zero_area(unsigned long *map,
-					 unsigned long size,
-					 unsigned long start,
-					 unsigned long nr,
-					 unsigned long align_mask,
-					 unsigned long *largest_off,
-					 unsigned long *largest_bits)
+ */
+static core::ffi::c_ulong pcpu_find_zero_area(core::ffi::c_ulong *map,
+					 size: core::ffi::c_ulong,
+					 start: core::ffi::c_ulong,
+					 nr: core::ffi::c_ulong,
+					 align_mask: core::ffi::c_ulong,
+					 core::ffi::c_ulong *largest_off,
+					 core::ffi::c_ulong *largest_bits)
 {
-	unsigned long index, end, i, area_off, area_bits;
-again:
-	index = find_next_zero_bit(map, size, start);
+	index: core::ffi::c_ulong, end, i, area_off, area_bits;
+    'again: loop {
+    index = find_next_zero_bit(map, size, start);
 
-	/* Align allocation * /
+	/* Align allocation */
 	index = __ALIGN_MASK(index, align_mask);
 	area_off = index;
 
@@ -1189,7 +1189,7 @@ again:
 	i = find_next_bit(map, end, index);
 	if (i < end) {
 		area_bits = i - area_off;
-		/* remember largest unused area with best alignment * /
+		/* remember largest unused area with best alignment */
 		if (area_bits > *largest_bits ||
 		    (area_bits == *largest_bits && *largest_off &&
 		     (!area_off || __ffs(area_off) > __ffs(*largest_off)))) {
@@ -1198,9 +1198,11 @@ again:
 		}
 
 		start = i + 1;
-		goto again;
+		continue 'again;
 	}
 	return index;
+        break;
+    }
 }
 
 /**
@@ -1221,13 +1223,13 @@ again:
  * RETURNS:
  * Allocated addr offset in @chunk on success.
  * -1 if no matching area is found.
- * /
-static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
+ */
+static int pcpu_alloc_area(pcpu_chunk *chunk, int alloc_bits,
 			   size_t align, int start)
 {
-	struct pcpu_block_md *chunk_md = &chunk->chunk_md;
+	struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 	size_t align_mask = (align) ? (align - 1) : 0;
-	unsigned long area_off = 0, area_bits = 0;
+	core::ffi::c_ulong area_off = 0, area_bits = 0;
 	int bit_off, end, oslot;
 
 	lockdep_assert_held(&pcpu_lock);
@@ -1236,10 +1238,10 @@ static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
 
 	/*
 	 * Search to find a fit.
-	 * /
+	 */
 	end = min_t(int, start + alloc_bits + PCPU_BITMAP_BLOCK_BITS,
 		    pcpu_chunk_map_bits(chunk));
-	bit_off = pcpu_find_zero_area(chunk->alloc_map, end, start, alloc_bits,
+	bit_off = pcpu_find_zero_area((*chunk).alloc_map, end, start, alloc_bits,
 				      align_mask, &area_off, &area_bits);
 	if (bit_off >= end)
 		return -1;
@@ -1247,20 +1249,20 @@ static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
 	if (area_bits)
 		pcpu_block_update_scan(chunk, area_off, area_bits);
 
-	/* update alloc map * /
-	bitmap_set(chunk->alloc_map, bit_off, alloc_bits);
+	/* update alloc map */
+	bitmap_set((*chunk).alloc_map, bit_off, alloc_bits);
 
-	/* update boundary map * /
-	set_bit(bit_off, chunk->bound_map);
-	bitmap_clear(chunk->bound_map, bit_off + 1, alloc_bits - 1);
-	set_bit(bit_off + alloc_bits, chunk->bound_map);
+	/* update boundary map */
+	set_bit(bit_off, (*chunk).bound_map);
+	bitmap_clear((*chunk).bound_map, bit_off + 1, alloc_bits - 1);
+	set_bit(bit_off + alloc_bits, (*chunk).bound_map);
 
-	chunk->free_bytes -= alloc_bits * PCPU_MIN_ALLOC_SIZE;
+	(*chunk).free_bytes -= alloc_bits * PCPU_MIN_ALLOC_SIZE;
 
-	/* update first free bit * /
-	if (bit_off == chunk_md->first_free)
-		chunk_md->first_free = find_next_zero_bit(
-					chunk->alloc_map,
+	/* update first free bit */
+	if (bit_off == (*chunk_md).first_free)
+		(*chunk_md).first_free = find_next_zero_bit(
+					(*chunk).alloc_map,
 					pcpu_chunk_map_bits(chunk),
 					bit_off + alloc_bits);
 
@@ -1281,10 +1283,10 @@ static int pcpu_alloc_area(struct pcpu_chunk *chunk, int alloc_bits,
  *
  * RETURNS:
  * Number of freed bytes.
- * /
-static int pcpu_free_area(struct pcpu_chunk *chunk, int off)
+ */
+static int pcpu_free_area(pcpu_chunk *chunk, int off)
 {
-	struct pcpu_block_md *chunk_md = &chunk->chunk_md;
+	struct pcpu_block_md *chunk_md = (*&chunk).chunk_md;
 	int bit_off, bits, end, oslot, freed;
 
 	lockdep_assert_held(&pcpu_lock);
@@ -1293,24 +1295,24 @@ static int pcpu_free_area(struct pcpu_chunk *chunk, int off)
 
 	bit_off = off / PCPU_MIN_ALLOC_SIZE;
 
-	/* check invalid free * /
-	if (!test_bit(bit_off, chunk->alloc_map) ||
-	    !test_bit(bit_off, chunk->bound_map))
+	/* check invalid free */
+	if (!test_bit(bit_off, (*chunk).alloc_map) ||
+	    !test_bit(bit_off, (*chunk).bound_map))
 		return 0;
 
-	/* find end index * /
-	end = find_next_bit(chunk->bound_map, pcpu_chunk_map_bits(chunk),
+	/* find end index */
+	end = find_next_bit((*chunk).bound_map, pcpu_chunk_map_bits(chunk),
 			    bit_off + 1);
 	bits = end - bit_off;
-	bitmap_clear(chunk->alloc_map, bit_off, bits);
+	bitmap_clear((*chunk).alloc_map, bit_off, bits);
 
 	freed = bits * PCPU_MIN_ALLOC_SIZE;
 
-	/* update metadata * /
-	chunk->free_bytes += freed;
+	/* update metadata */
+	(*chunk).free_bytes += freed;
 
-	/* update first free bit * /
-	chunk_md->first_free = min(chunk_md->first_free, bit_off);
+	/* update first free bit */
+	(*chunk_md).first_free = min((*chunk_md).first_free, bit_off);
 
 	pcpu_block_update_hint_free(chunk, bit_off, bits);
 
@@ -1321,25 +1323,25 @@ static int pcpu_free_area(struct pcpu_chunk *chunk, int off)
 	return freed;
 }
 
-static void pcpu_init_md_block(struct pcpu_block_md *block, int nr_bits)
+static void pcpu_init_md_block(pcpu_block_md *block, int nr_bits)
 {
-	block->scan_hint = 0;
-	block->contig_hint = nr_bits;
-	block->left_free = nr_bits;
-	block->right_free = nr_bits;
-	block->first_free = 0;
-	block->nr_bits = nr_bits;
+	(*block).scan_hint = 0;
+	(*block).contig_hint = nr_bits;
+	(*block).left_free = nr_bits;
+	(*block).right_free = nr_bits;
+	(*block).first_free = 0;
+	(*block).nr_bits = nr_bits;
 }
 
-static void pcpu_init_md_blocks(struct pcpu_chunk *chunk)
+static void pcpu_init_md_blocks(pcpu_chunk *chunk)
 {
 	struct pcpu_block_md *md_block;
 
-	/* init the chunk's block * /
-	pcpu_init_md_block(&chunk->chunk_md, pcpu_chunk_map_bits(chunk));
+	/* init the chunk's block */
+	pcpu_init_md_block((*&chunk).chunk_md, pcpu_chunk_map_bits(chunk));
 
-	for (md_block = chunk->md_blocks;
-	     md_block != chunk->md_blocks + pcpu_chunk_nr_blocks(chunk);
+	for (md_block = (*chunk).md_blocks;
+	     md_block != (*chunk).md_blocks + pcpu_chunk_nr_blocks(chunk);
 	     md_block++)
 		pcpu_init_md_block(md_block, PCPU_BITMAP_BLOCK_BITS);
 }
@@ -1356,29 +1358,29 @@ static void pcpu_init_md_blocks(struct pcpu_chunk *chunk)
  *
  * RETURNS:
  * Chunk serving the region at @tmp_addr of @map_size.
- * /
-static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
+ */
+static struct pcpu_chunk * __init pcpu_alloc_first_chunk(tmp_addr: core::ffi::c_ulong,
 							 int map_size)
 {
 	struct pcpu_chunk *chunk;
-	unsigned long aligned_addr;
+	core::ffi::c_ulong aligned_addr;
 	int start_offset, offset_bits, region_size, region_bits;
 	size_t alloc_size;
 
-	/* region calculations * /
+	/* region calculations */
 	aligned_addr = tmp_addr & PAGE_MASK;
 
 	start_offset = tmp_addr - aligned_addr;
 	region_size = ALIGN(start_offset + map_size, PAGE_SIZE);
 
-	/* allocate chunk * /
+	/* allocate chunk */
 	alloc_size = struct_size(chunk, populated,
 				 BITS_TO_LONGS(region_size >> PAGE_SHIFT));
 	chunk = memblock_alloc_or_panic(alloc_size, SMP_CACHE_BYTES);
 
-	INIT_LIST_HEAD(&chunk->list);
+	INIT_LIST_HEAD((*&chunk).list);
 
-	chunk->base_addr = (void *)aligned_addr;
+	(*chunk).base_addr = (void *)aligned_addr;
 	chunk->start_offset = start_offset;
 	chunk->end_offset = region_size - chunk->start_offset - map_size;
 
@@ -1395,12 +1397,12 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
 	alloc_size = pcpu_chunk_nr_blocks(chunk) * sizeof(chunk->md_blocks[0]);
 	chunk->md_blocks = memblock_alloc_or_panic(alloc_size, SMP_CACHE_BYTES);
 #ifdef NEED_PCPUOBJ_EXT
-	/* first chunk is free to use * /
+	/* first chunk is free to use */
 	chunk->obj_exts = NULL;
 #endif
 	pcpu_init_md_blocks(chunk);
 
-	/* manage populated page bitmap * /
+	/* manage populated page bitmap */
 	chunk->immutable = true;
 	bitmap_fill(chunk->populated, chunk->nr_pages);
 	chunk->nr_populated = chunk->nr_pages;
@@ -1409,7 +1411,7 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
 	chunk->free_bytes = map_size;
 
 	if (chunk->start_offset) {
-		/* hide the beginning of the bitmap * /
+		/* hide the beginning of the bitmap */
 		offset_bits = chunk->start_offset / PCPU_MIN_ALLOC_SIZE;
 		bitmap_set(chunk->alloc_map, 0, offset_bits);
 		set_bit(0, chunk->bound_map);
@@ -1421,7 +1423,7 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
 	}
 
 	if (chunk->end_offset) {
-		/* hide the end of the bitmap * /
+		/* hide the end of the bitmap */
 		offset_bits = chunk->end_offset / PCPU_MIN_ALLOC_SIZE;
 		bitmap_set(chunk->alloc_map,
 			   pcpu_chunk_map_bits(chunk) - offset_bits,
@@ -1439,6 +1441,10 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
 
 static struct pcpu_chunk *pcpu_alloc_chunk(gfp_t gfp)
 {
+	'alloc_map_fail: {
+	'bound_map_fail: {
+	'md_blocks_fail: {
+	'objcg_fail: {
 	struct pcpu_chunk *chunk;
 	int region_bits;
 
@@ -1453,50 +1459,54 @@ static struct pcpu_chunk *pcpu_alloc_chunk(gfp_t gfp)
 	chunk->alloc_map = pcpu_mem_zalloc(BITS_TO_LONGS(region_bits) *
 					   sizeof(chunk->alloc_map[0]), gfp);
 	if (!chunk->alloc_map)
-		goto alloc_map_fail;
+		break 'alloc_map_fail;
 
 	chunk->bound_map = pcpu_mem_zalloc(BITS_TO_LONGS(region_bits + 1) *
 					   sizeof(chunk->bound_map[0]), gfp);
 	if (!chunk->bound_map)
-		goto bound_map_fail;
+		break 'bound_map_fail;
 
 	chunk->md_blocks = pcpu_mem_zalloc(pcpu_chunk_nr_blocks(chunk) *
 					   sizeof(chunk->md_blocks[0]), gfp);
 	if (!chunk->md_blocks)
-		goto md_blocks_fail;
+		break 'md_blocks_fail;
 
 #ifdef NEED_PCPUOBJ_EXT
 	if (need_pcpuobj_ext()) {
 		chunk->obj_exts =
 			pcpu_mem_zalloc(pcpu_chunk_map_bits(chunk) *
-					sizeof(struct pcpuobj_ext), gfp);
+					sizeof(pcpuobj_ext), gfp);
 		if (!chunk->obj_exts)
-			goto objcg_fail;
+			break 'objcg_fail;
 	}
 #endif
 
 	pcpu_init_md_blocks(chunk);
 
-	/* init metadata * /
+	/* init metadata */
 	chunk->free_bytes = chunk->nr_pages * PAGE_SIZE;
 
 	return chunk;
 
 #ifdef NEED_PCPUOBJ_EXT
-objcg_fail:
+	}
+	
 	pcpu_mem_free(chunk->md_blocks);
 #endif
-md_blocks_fail:
+	}
+	
 	pcpu_mem_free(chunk->bound_map);
-bound_map_fail:
+	}
+	
 	pcpu_mem_free(chunk->alloc_map);
-alloc_map_fail:
+	}
+	
 	pcpu_mem_free(chunk);
 
 	return NULL;
 }
 
-static void pcpu_free_chunk(struct pcpu_chunk *chunk)
+static void pcpu_free_chunk(pcpu_chunk *chunk)
 {
 	if (!chunk)
 		return;
@@ -1518,8 +1528,8 @@ static void pcpu_free_chunk(struct pcpu_chunk *chunk)
  * Pages in [@page_start,@page_end) have been populated to @chunk.  Update
  * the bookkeeping information accordingly.  Must be called after each
  * successful population.
- * /
-static void pcpu_chunk_populated(struct pcpu_chunk *chunk, int page_start,
+ */
+static void pcpu_chunk_populated(pcpu_chunk *chunk, int page_start,
 				 int page_end)
 {
 	int nr = page_end - page_start;
@@ -1542,8 +1552,8 @@ static void pcpu_chunk_populated(struct pcpu_chunk *chunk, int page_start,
  * Pages in [@page_start,@page_end) have been depopulated from @chunk.
  * Update the bookkeeping information accordingly.  Must be called after
  * each successful depopulation.
- * /
-static void pcpu_chunk_depopulated(struct pcpu_chunk *chunk,
+ */
+static void pcpu_chunk_depopulated(pcpu_chunk *chunk,
 				   int page_start, int page_end)
 {
 	int nr = page_end - page_start;
@@ -1572,15 +1582,15 @@ static void pcpu_chunk_depopulated(struct pcpu_chunk *chunk,
  * pcpu_destroy_chunk		- destroy a chunk, always preceded by full depop
  * pcpu_addr_to_page		- translate address to physical address
  * pcpu_verify_alloc_info	- check alloc_info is acceptable during init
- * /
-static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
+ */
+static int pcpu_populate_chunk(pcpu_chunk *chunk,
 			       int page_start, int page_end, gfp_t gfp);
-static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
+static void pcpu_depopulate_chunk(pcpu_chunk *chunk,
 				  int page_start, int page_end);
-static void pcpu_post_unmap_tlb_flush(struct pcpu_chunk *chunk,
+static void pcpu_post_unmap_tlb_flush(pcpu_chunk *chunk,
 				      int page_start, int page_end);
 static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp);
-static void pcpu_destroy_chunk(struct pcpu_chunk *chunk);
+static void pcpu_destroy_chunk(pcpu_chunk *chunk);
 static struct page *pcpu_addr_to_page(void *addr);
 static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai);
 
@@ -1599,14 +1609,14 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai);
  *
  * RETURNS:
  * The address of the found chunk.
- * /
+ */
 static struct pcpu_chunk *pcpu_chunk_addr_search(void *addr)
 {
-	/* is it in the dynamic region (first chunk)? * /
+	/* is it in the dynamic region (first chunk)? */
 	if (pcpu_addr_in_chunk(pcpu_first_chunk, addr))
 		return pcpu_first_chunk;
 
-	/* is it in the reserved region? * /
+	/* is it in the reserved region? */
 	if (pcpu_addr_in_chunk(pcpu_reserved_chunk, addr))
 		return pcpu_reserved_chunk;
 
@@ -1616,14 +1626,14 @@ static struct pcpu_chunk *pcpu_chunk_addr_search(void *addr)
 	 * current processor before looking it up in the vmalloc
 	 * space.  Note that any possible cpu id can be used here, so
 	 * there's no need to worry about preemption or cpu hotplug.
-	 * /
+	 */
 	addr += pcpu_unit_offsets[raw_smp_processor_id()];
 	return pcpu_get_page_chunk(pcpu_addr_to_page(addr));
 }
 
 #ifdef CONFIG_MEMCG
 static bool pcpu_memcg_pre_alloc_hook(size_t size, gfp_t gfp,
-				      struct obj_cgroup **objcgp)
+				      obj_cgroup **objcgp)
 {
 	struct obj_cgroup *objcg;
 
@@ -1641,8 +1651,8 @@ static bool pcpu_memcg_pre_alloc_hook(size_t size, gfp_t gfp,
 	return true;
 }
 
-static void pcpu_memcg_post_alloc_hook(struct obj_cgroup *objcg,
-				       struct pcpu_chunk *chunk, int off,
+static void pcpu_memcg_post_alloc_hook(obj_cgroup *objcg,
+				       pcpu_chunk *chunk, int off,
 				       size_t size)
 {
 	if (!objcg)
@@ -1661,7 +1671,7 @@ static void pcpu_memcg_post_alloc_hook(struct obj_cgroup *objcg,
 	}
 }
 
-static void pcpu_memcg_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
+static void pcpu_memcg_free_hook(pcpu_chunk *chunk, int off, size_t size)
 {
 	struct obj_cgroup *objcg;
 
@@ -1683,26 +1693,26 @@ static void pcpu_memcg_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
 	obj_cgroup_put(objcg);
 }
 
-#else /* CONFIG_MEMCG * /
+#else /* CONFIG_MEMCG */
 static bool
-pcpu_memcg_pre_alloc_hook(size_t size, gfp_t gfp, struct obj_cgroup **objcgp)
+pcpu_memcg_pre_alloc_hook(size_t size, gfp_t gfp, obj_cgroup **objcgp)
 {
 	return true;
 }
 
-static void pcpu_memcg_post_alloc_hook(struct obj_cgroup *objcg,
-				       struct pcpu_chunk *chunk, int off,
+static void pcpu_memcg_post_alloc_hook(obj_cgroup *objcg,
+				       pcpu_chunk *chunk, int off,
 				       size_t size)
 {
 }
 
-static void pcpu_memcg_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
+static void pcpu_memcg_free_hook(pcpu_chunk *chunk, int off, size_t size)
 {
 }
-#endif /* CONFIG_MEMCG * /
+#endif /* CONFIG_MEMCG */
 
 #ifdef CONFIG_MEM_ALLOC_PROFILING
-static void pcpu_alloc_tag_alloc_hook(struct pcpu_chunk *chunk, int off,
+static void pcpu_alloc_tag_alloc_hook(pcpu_chunk *chunk, int off,
 				      size_t size)
 {
 	if (mem_alloc_profiling_enabled() && likely(chunk->obj_exts)) {
@@ -1711,18 +1721,18 @@ static void pcpu_alloc_tag_alloc_hook(struct pcpu_chunk *chunk, int off,
 	}
 }
 
-static void pcpu_alloc_tag_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
+static void pcpu_alloc_tag_free_hook(pcpu_chunk *chunk, int off, size_t size)
 {
 	if (mem_alloc_profiling_enabled() && likely(chunk->obj_exts))
 		alloc_tag_sub(&chunk->obj_exts[off >> PCPU_MIN_ALLOC_SHIFT].tag, size);
 }
 #else
-static void pcpu_alloc_tag_alloc_hook(struct pcpu_chunk *chunk, int off,
+static void pcpu_alloc_tag_alloc_hook(pcpu_chunk *chunk, int off,
 				      size_t size)
 {
 }
 
-static void pcpu_alloc_tag_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
+static void pcpu_alloc_tag_free_hook(pcpu_chunk *chunk, int off, size_t size)
 {
 }
 #endif
@@ -1740,10 +1750,13 @@ static void pcpu_alloc_tag_free_hook(struct pcpu_chunk *chunk, int off, size_t s
  *
  * RETURNS:
  * Percpu pointer to the allocated area on success, NULL on failure.
- * /
-void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
+ */
+void __percpu *pcpu_alloc_noprof(size_t size, size_t align, reserved: bool,
 				 gfp_t gfp)
 {
+	'fail: {
+	'fail_unlock: {
+	'area_found: {
 	gfp_t pcpu_gfp;
 	bool is_atomic;
 	bool do_warn;
@@ -1752,7 +1765,7 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
 	struct pcpu_chunk *chunk, *next;
 	const char *err;
 	int slot, off, cpu, ret;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	void __percpu *ptr;
 	size_t bits, bit_align;
 
@@ -1766,7 +1779,7 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
 	 *
 	 * Do not pass __GFP_NOFAIL.  A small percpu allocation may need many
 	 * backing pages, making nofail reclaim too costly under NOIO/NOFS.
-	 * /
+	 */
 	pcpu_gfp = gfp & (GFP_NOIO | __GFP_NORETRY | __GFP_NOWARN);
 	is_atomic = !gfpflags_allow_blocking(gfp);
 	do_warn = !(gfp & __GFP_NOWARN);
@@ -1776,7 +1789,7 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
 	 * therefore alignment must be a minimum of that many bytes.
 	 * An allocation may have internal fragmentation from rounding up
 	 * of up to PCPU_MIN_ALLOC_SIZE - 1 bytes.
-	 * /
+	 */
 	if (unlikely(align < PCPU_MIN_ALLOC_SIZE))
 		align = PCPU_MIN_ALLOC_SIZE;
 
@@ -1799,7 +1812,7 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
 		 * pcpu_balance_workfn() allocates memory under this mutex,
 		 * and it may wait for memory reclaim. Allow current task
 		 * to become OOM victim, in case of memory pressure.
-		 * /
+		 */
 		if (gfp & __GFP_NOFAIL) {
 			mutex_lock(&pcpu_alloc_mutex);
 		} else if (mutex_lock_killable(&pcpu_alloc_mutex)) {
@@ -1810,29 +1823,29 @@ void __percpu *pcpu_alloc_noprof(size_t size, size_t align, bool reserved,
 
 	spin_lock_irqsave(&pcpu_lock, flags);
 
-	/* serve reserved allocations from the reserved chunk if available * /
+	/* serve reserved allocations from the reserved chunk if available */
 	if (reserved && pcpu_reserved_chunk) {
 		chunk = pcpu_reserved_chunk;
 
 		off = pcpu_find_block_fit(chunk, bits, bit_align, is_atomic);
 		if (off < 0) {
 			err = "alloc from reserved chunk failed";
-			goto fail_unlock;
+			break 'fail_unlock;
 		}
 
 		off = pcpu_alloc_area(chunk, bits, bit_align, off);
 		if (off >= 0)
-			goto area_found;
+			break 'area_found;
 
 		err = "alloc from reserved chunk failed";
-		goto fail_unlock;
+		break 'fail_unlock;
 	}
 
 restart:
-	/* search through normal chunks * /
+	/* search through normal chunks */
 	for (slot = pcpu_size_to_slot(size); slot <= pcpu_free_slot; slot++) {
-		list_for_each_entry_safe(chunk, next, &pcpu_chunk_lists[slot],
-					 list) {
+		list_for_each_entry_safe!(chunk, next, &pcpu_chunk_lists[slot],
+					 list, {
 			off = pcpu_find_block_fit(chunk, bits, bit_align,
 						  is_atomic);
 			if (off < 0) {
@@ -1844,24 +1857,24 @@ restart:
 			off = pcpu_alloc_area(chunk, bits, bit_align, off);
 			if (off >= 0) {
 				pcpu_reintegrate_chunk(chunk);
-				goto area_found;
+				break 'area_found;
 			}
-		}
+		});
 	}
 
 	spin_unlock_irqrestore(&pcpu_lock, flags);
 
 	if (is_atomic) {
 		err = "atomic alloc failed, no space left";
-		goto fail;
+		break 'fail;
 	}
 
-	/* No space left.  Create a new chunk. * /
+	/* No space left.  Create a new chunk. */
 	if (list_empty(&pcpu_chunk_lists[pcpu_free_slot])) {
 		chunk = pcpu_create_chunk(pcpu_gfp);
 		if (!chunk) {
 			err = "failed to allocate new chunk";
-			goto fail;
+			break 'fail;
 		}
 
 		spin_lock_irqsave(&pcpu_lock, flags);
@@ -1871,8 +1884,8 @@ restart:
 	}
 
 	goto restart;
-
-area_found:
+	}
+	
 	pcpu_stats_area_alloc(chunk, size);
 
 	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
@@ -1880,14 +1893,14 @@ area_found:
 
 	spin_unlock_irqrestore(&pcpu_lock, flags);
 
-	/* populate if not all pages are already there * /
+	/* populate if not all pages are already there */
 	if (!is_atomic) {
-		unsigned int page_end, rs, re;
+		page_end: core::ffi::c_uint, rs, re;
 
 		rs = PFN_DOWN(off);
 		page_end = PFN_UP(off + size);
 
-		for_each_clear_bitrange_from(rs, re, chunk->populated, page_end) {
+		for_each_clear_bitrange_from!(rs, re, chunk->populated, page_end, {
 			WARN_ON(chunk->immutable);
 
 			ret = pcpu_populate_chunk(chunk, rs, re, pcpu_gfp);
@@ -1896,16 +1909,16 @@ area_found:
 			if (ret) {
 				pcpu_free_area(chunk, off);
 				err = "failed to populate";
-				goto fail_unlock;
+				break 'fail_unlock;
 			}
 			pcpu_chunk_populated(chunk, rs, re);
 			spin_unlock_irqrestore(&pcpu_lock, flags);
-		}
+		});
 
 		mutex_unlock(&pcpu_alloc_mutex);
 	}
 
-	/* clear the areas and return address relative to base address * /
+	/* clear the areas and return address relative to base address */
 	for_each_possible_cpu(cpu)
 		memset((void *)pcpu_chunk_addr(chunk, cpu, 0) + off, 0, size);
 
@@ -1921,10 +1934,11 @@ area_found:
 	pcpu_alloc_tag_alloc_hook(chunk, off, size);
 
 	return ptr;
-
-fail_unlock:
+	}
+	
 	spin_unlock_irqrestore(&pcpu_lock, flags);
-fail:
+	}
+	
 	trace_percpu_alloc_percpu_fail(reserved, is_atomic, size, align);
 
 	if (do_warn) {
@@ -1941,7 +1955,7 @@ fail:
 	}
 
 	if (is_atomic) {
-		/* see the flag handling in pcpu_balance_workfn() * /
+		/* see the flag handling in pcpu_balance_workfn() */
 		pcpu_atomic_alloc_failed = true;
 		pcpu_schedule_balance_work();
 	} else {
@@ -1964,8 +1978,8 @@ EXPORT_SYMBOL_GPL(pcpu_alloc_noprof);
  *
  * CONTEXT:
  * pcpu_lock (can be dropped temporarily)
- * /
-static void pcpu_balance_free(bool empty_only)
+ */
+static void pcpu_balance_free(empty_only: bool)
 {
 	LIST_HEAD(to_free);
 	struct list_head *free_head = &pcpu_chunk_lists[pcpu_free_slot];
@@ -1976,34 +1990,34 @@ static void pcpu_balance_free(bool empty_only)
 	/*
 	 * There's no reason to keep around multiple unused chunks and VM
 	 * areas can be scarce.  Destroy all free chunks except for one.
-	 * /
-	list_for_each_entry_safe(chunk, next, free_head, list) {
+	 */
+	list_for_each_entry_safe!(chunk, next, free_head, list, {
 		WARN_ON(chunk->immutable);
 
-		/* spare the first one * /
-		if (chunk == list_first_entry(free_head, struct pcpu_chunk, list))
+		/* spare the first one */
+		if (chunk == list_first_entry(free_head, pcpu_chunk, list))
 			continue;
 
 		if (!empty_only || chunk->nr_empty_pop_pages == 0)
 			list_move(&chunk->list, &to_free);
-	}
+	});
 
 	if (list_empty(&to_free))
 		return;
 
 	spin_unlock_irq(&pcpu_lock);
-	list_for_each_entry_safe(chunk, next, &to_free, list) {
-		unsigned int rs, re;
+	list_for_each_entry_safe!(chunk, next, &to_free, list, {
+		rs: core::ffi::c_uint, re;
 
-		for_each_set_bitrange(rs, re, chunk->populated, chunk->nr_pages) {
+		for_each_set_bitrange!(rs, re, chunk->populated, chunk->nr_pages, {
 			pcpu_depopulate_chunk(chunk, rs, re);
 			spin_lock_irq(&pcpu_lock);
 			pcpu_chunk_depopulated(chunk, rs, re);
 			spin_unlock_irq(&pcpu_lock);
-		}
+		});
 		pcpu_destroy_chunk(chunk);
 		cond_resched();
-	}
+	});
 	spin_lock_irq(&pcpu_lock);
 }
 
@@ -2018,10 +2032,10 @@ static void pcpu_balance_free(bool empty_only)
  *
  * CONTEXT:
  * pcpu_lock (can be dropped temporarily)
- * /
+ */
 static void pcpu_balance_populated(void)
 {
-	/* gfp flags passed to underlying allocators * /
+	/* gfp flags passed to underlying allocators */
 	const gfp_t gfp = GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
 	struct pcpu_chunk *chunk;
 	int slot, nr_to_pop, ret;
@@ -2037,11 +2051,11 @@ static void pcpu_balance_populated(void)
 	 * failing indefinitely; however, large atomic allocs are not
 	 * something we support properly and can be highly unreliable and
 	 * inefficient.
-	 * /
+	 */
 retry_pop:
 	if (pcpu_atomic_alloc_failed) {
 		nr_to_pop = PCPU_EMPTY_POP_PAGES_HIGH;
-		/* best effort anyway, don't worry about synchronization * /
+		/* best effort anyway, don't worry about synchronization */
 		pcpu_atomic_alloc_failed = false;
 	} else {
 		nr_to_pop = clamp(PCPU_EMPTY_POP_PAGES_HIGH -
@@ -2050,22 +2064,22 @@ retry_pop:
 	}
 
 	for (slot = pcpu_size_to_slot(PAGE_SIZE); slot <= pcpu_free_slot; slot++) {
-		unsigned int nr_unpop = 0, rs, re;
+		core::ffi::c_uint nr_unpop = 0, rs, re;
 
 		if (!nr_to_pop)
 			break;
 
-		list_for_each_entry(chunk, &pcpu_chunk_lists[slot], list) {
+		list_for_each_entry!(chunk, &pcpu_chunk_lists[slot], list, {
 			nr_unpop = chunk->nr_pages - chunk->nr_populated;
 			if (nr_unpop)
 				break;
-		}
+		});
 
 		if (!nr_unpop)
 			continue;
 
-		/* @chunk can't go away while pcpu_alloc_mutex is held * /
-		for_each_clear_bitrange(rs, re, chunk->populated, chunk->nr_pages) {
+		/* @chunk can't go away while pcpu_alloc_mutex is held */
+		for_each_clear_bitrange!(rs, re, chunk->populated, chunk->nr_pages, {
 			int nr = min_t(int, re - rs, nr_to_pop);
 
 			spin_unlock_irq(&pcpu_lock);
@@ -2081,11 +2095,11 @@ retry_pop:
 
 			if (!nr_to_pop)
 				break;
-		}
+		});
 	}
 
 	if (nr_to_pop) {
-		/* ran out of chunks to populate, create a new one and retry * /
+		/* ran out of chunks to populate, create a new one and retry */
 		spin_unlock_irq(&pcpu_lock);
 		chunk = pcpu_create_chunk(gfp);
 		cond_resched();
@@ -2111,7 +2125,7 @@ retry_pop:
  * CONTEXT:
  * pcpu_lock (can be dropped temporarily)
  *
- * /
+ */
 static void pcpu_reclaim_populated(void)
 {
 	struct pcpu_chunk *chunk;
@@ -2127,25 +2141,25 @@ static void pcpu_reclaim_populated(void)
 	 * longer discoverable to allocations whom may populate pages.  The only
 	 * other accessor is the free path which only returns area back to the
 	 * allocator not touching the populated bitmap.
-	 * /
+	 */
 	while ((chunk = list_first_entry_or_null(
 			&pcpu_chunk_lists[pcpu_to_depopulate_slot],
-			struct pcpu_chunk, list))) {
+			pcpu_chunk, list))) {
 		WARN_ON(chunk->immutable);
 
 		/*
 		 * Scan chunk's pages in the reverse order to keep populated
 		 * pages close to the beginning of the chunk.
-		 * /
+		 */
 		freed_page_start = chunk->nr_pages;
 		freed_page_end = 0;
 		reintegrate = false;
 		for (i = chunk->nr_pages - 1, end = -1; i >= 0; i--) {
-			/* no more work to do * /
+			/* no more work to do */
 			if (chunk->nr_empty_pop_pages == 0)
 				break;
 
-			/* reintegrate chunk to prevent atomic alloc failures * /
+			/* reintegrate chunk to prevent atomic alloc failures */
 			if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_HIGH) {
 				reintegrate = true;
 				break;
@@ -2156,7 +2170,7 @@ static void pcpu_reclaim_populated(void)
 			 * extend the (i, end) range.  If i == 0, decrease
 			 * i and perform the depopulation to cover the last
 			 * (first) page in the chunk.
-			 * /
+			 */
 			block = chunk->md_blocks + i;
 			if (block->contig_hint == PCPU_BITMAP_BLOCK_BITS &&
 			    test_bit(i, chunk->populated)) {
@@ -2167,7 +2181,7 @@ static void pcpu_reclaim_populated(void)
 				i--;
 			}
 
-			/* depopulate if there is an active range * /
+			/* depopulate if there is an active range */
 			if (end == -1)
 				continue;
 
@@ -2180,11 +2194,11 @@ static void pcpu_reclaim_populated(void)
 			freed_page_start = min(freed_page_start, i + 1);
 			freed_page_end = max(freed_page_end, end + 1);
 
-			/* reset the range and continue * /
+			/* reset the range and continue */
 			end = -1;
 		}
 
-		/* batch tlb flush per chunk to amortize cost * /
+		/* batch tlb flush per chunk to amortize cost */
 		if (freed_page_start < freed_page_end) {
 			spin_unlock_irq(&pcpu_lock);
 			pcpu_post_unmap_tlb_flush(chunk,
@@ -2209,8 +2223,8 @@ static void pcpu_reclaim_populated(void)
  * For each chunk type, manage the number of fully free chunks and the number of
  * populated pages.  An important thing to consider is when pages are freed and
  * how they contribute to the global counts.
- * /
-static void pcpu_balance_workfn(struct work_struct *work)
+ */
+static void pcpu_balance_workfn(work_struct *work)
 {
 	/*
 	 * pcpu_balance_free() is called twice because the first time we may
@@ -2222,8 +2236,8 @@ static void pcpu_balance_workfn(struct work_struct *work)
 	 * Enforce GFP_NOIO allocations because we have pcpu_alloc users
 	 * constrained to GFP_NOIO/NOFS contexts and they could form lock
 	 * dependency through pcpu_alloc_mutex
-	 * /
-	unsigned int flags = memalloc_noio_save();
+	 */
+	core::ffi::c_uint flags = memalloc_noio_save();
 	mutex_lock(&pcpu_alloc_mutex);
 	spin_lock_irq(&pcpu_lock);
 
@@ -2245,12 +2259,12 @@ static void pcpu_balance_workfn(struct work_struct *work)
  *
  * CONTEXT:
  * Can be called from atomic context.
- * /
+ */
 void free_percpu(void __percpu *ptr)
 {
 	void *addr;
 	struct pcpu_chunk *chunk;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int size, off;
 	bool need_balance = false;
 
@@ -2268,7 +2282,7 @@ void free_percpu(void __percpu *ptr)
 	if (size == 0) {
 		spin_unlock_irqrestore(&pcpu_lock, flags);
 
-		/* invalid percpu free * /
+		/* invalid percpu free */
 		WARN_ON_ONCE(1);
 		return;
 	}
@@ -2281,7 +2295,7 @@ void free_percpu(void __percpu *ptr)
 	 * If there are more than one fully free chunks, wake up grim reaper.
 	 * If the chunk is isolated, it may be in the process of being
 	 * reclaimed.  Let reclaim manage cleaning up of that chunk.
-	 * /
+	 */
 	if (!chunk->isolated && chunk->free_bytes == pcpu_unit_size) {
 		struct pcpu_chunk *pos;
 
@@ -2304,28 +2318,28 @@ void free_percpu(void __percpu *ptr)
 }
 EXPORT_SYMBOL_GPL(free_percpu);
 
-bool __is_kernel_percpu_address(unsigned long addr, unsigned long *can_addr)
+bool __is_kernel_percpu_address(addr: core::ffi::c_ulong, core::ffi::c_ulong *can_addr)
 {
 #ifdef CONFIG_SMP
 	const size_t static_size = __per_cpu_end - __per_cpu_start;
 	void __percpu *base = __addr_to_pcpu_ptr(pcpu_base_addr);
-	unsigned int cpu;
+	core::ffi::c_uint cpu;
 
-	for_each_possible_cpu(cpu) {
+	for_each_possible_cpu!(cpu, {
 		void *start = per_cpu_ptr(base, cpu);
 		void *va = (void *)addr;
 
 		if (va >= start && va < start + static_size) {
 			if (can_addr) {
-				*can_addr = (unsigned long) (va - start);
-				*can_addr += (unsigned long)
+				*can_addr = (core::ffi::c_ulong) (va - start);
+				*can_addr += (core::ffi::c_ulong)
 					per_cpu_ptr(base, get_boot_cpu_id());
 			}
 			return true;
 		}
-	}
+	});
 #endif
-	/* on UP, can't distinguish from other static vars, always false * /
+	/* on UP, can't distinguish from other static vars, always false */
 	return false;
 }
 
@@ -2339,8 +2353,8 @@ bool __is_kernel_percpu_address(unsigned long addr, unsigned long *can_addr)
  *
  * RETURNS:
  * %true if @addr is from in-kernel static percpu area, %false otherwise.
- * /
-bool is_kernel_percpu_address(unsigned long addr)
+ */
+bool is_kernel_percpu_address(addr: core::ffi::c_ulong)
 {
 	return __is_kernel_percpu_address(addr, NULL);
 }
@@ -2367,13 +2381,13 @@ bool is_kernel_percpu_address(unsigned long addr)
  *
  * RETURNS:
  * The physical address for @addr.
- * /
+ */
 phys_addr_t per_cpu_ptr_to_phys(void *addr)
 {
 	void __percpu *base = __addr_to_pcpu_ptr(pcpu_base_addr);
 	bool in_first_chunk = false;
-	unsigned long first_low, first_high;
-	unsigned int cpu;
+	first_low: core::ffi::c_ulong, first_high;
+	core::ffi::c_uint cpu;
 
 	/*
 	 * The following test on unit_low/high isn't strictly
@@ -2384,21 +2398,21 @@ phys_addr_t per_cpu_ptr_to_phys(void *addr)
 	 * points to the beginning of the first chunk including the
 	 * static region.  Assumes good intent as the first chunk may
 	 * not be full (ie. < pcpu_unit_pages in size).
-	 * /
-	first_low = (unsigned long)pcpu_base_addr +
+	 */
+	first_low = (core::ffi::c_ulong)pcpu_base_addr +
 		    pcpu_unit_page_offset(pcpu_low_unit_cpu, 0);
-	first_high = (unsigned long)pcpu_base_addr +
+	first_high = (core::ffi::c_ulong)pcpu_base_addr +
 		     pcpu_unit_page_offset(pcpu_high_unit_cpu, pcpu_unit_pages);
-	if ((unsigned long)addr >= first_low &&
-	    (unsigned long)addr < first_high) {
-		for_each_possible_cpu(cpu) {
+	if ((core::ffi::c_ulong)addr >= first_low &&
+	    (core::ffi::c_ulong)addr < first_high) {
+		for_each_possible_cpu!(cpu, {
 			void *start = per_cpu_ptr(base, cpu);
 
 			if (addr >= start && addr < start + pcpu_unit_size) {
 				in_first_chunk = true;
 				break;
 			}
-		}
+		});
 	}
 
 	if (in_first_chunk) {
@@ -2426,7 +2440,7 @@ phys_addr_t per_cpu_ptr_to_phys(void *addr)
  * RETURNS:
  * Pointer to the allocated pcpu_alloc_info on success, NULL on
  * failure.
- * /
+ */
 struct pcpu_alloc_info * __init pcpu_alloc_alloc_info(int nr_groups,
 						      int nr_units)
 {
@@ -2461,8 +2475,8 @@ struct pcpu_alloc_info * __init pcpu_alloc_alloc_info(int nr_groups,
  * @ai: pcpu_alloc_info to free
  *
  * Free @ai which was allocated by pcpu_alloc_alloc_info().
- * /
-void __init pcpu_free_alloc_info(struct pcpu_alloc_info *ai)
+ */
+void __init pcpu_free_alloc_info(pcpu_alloc_info *ai)
 {
 	memblock_free(ai, ai->__ai_size);
 }
@@ -2473,7 +2487,7 @@ void __init pcpu_free_alloc_info(struct pcpu_alloc_info *ai)
  * @ai: allocation info to dump
  *
  * Print out information about @ai using loglevel @lvl.
- * /
+ */
 static void pcpu_dump_alloc_info(const char *lvl,
 				 const struct pcpu_alloc_info *ai)
 {
@@ -2481,7 +2495,7 @@ static void pcpu_dump_alloc_info(const char *lvl,
 	char empty_str[] = "--------";
 	int alloc = 0, alloc_end = 0;
 	int group, v;
-	int upa, apl;	/* units per alloc, allocs per line * /
+	int upa, apl;	/* units per alloc, allocs per line */
 
 	v = ai->nr_groups;
 	while (v /= 10)
@@ -2577,19 +2591,19 @@ static void pcpu_dump_alloc_info(const char *lvl,
  * share the same vm, but use offset regions in the area allocation map.
  * The chunk serving the dynamic region is circulated in the chunk slots
  * and available for dynamic allocation like any other chunk.
- * /
+ */
 void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 				   void *base_addr)
 {
 	size_t size_sum = ai->static_size + ai->reserved_size + ai->dyn_size;
 	size_t static_size, dyn_size;
-	unsigned long *group_offsets;
+	core::ffi::c_ulong *group_offsets;
 	size_t *group_sizes;
-	unsigned long *unit_off;
-	unsigned int cpu;
+	core::ffi::c_ulong *unit_off;
+	core::ffi::c_uint cpu;
 	int *unit_map;
 	int group, unit, i;
-	unsigned long tmp_addr;
+	core::ffi::c_ulong tmp_addr;
 	size_t alloc_size;
 
 #define PCPU_SETUP_BUG_ON(cond)	do {					\
@@ -2602,7 +2616,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	}								\
 } while (0)
 
-	/* sanity checks * /
+	/* sanity checks */
 	PCPU_SETUP_BUG_ON(ai->nr_groups <= 0);
 #ifdef CONFIG_SMP
 	PCPU_SETUP_BUG_ON(!ai->static_size);
@@ -2620,7 +2634,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 			    IS_ALIGNED(PAGE_SIZE, PCPU_BITMAP_BLOCK_SIZE)));
 	PCPU_SETUP_BUG_ON(pcpu_verify_alloc_info(ai) < 0);
 
-	/* process group information and build config tables accordingly * /
+	/* process group information and build config tables accordingly */
 	alloc_size = ai->nr_groups * sizeof(group_offsets[0]);
 	group_offsets = memblock_alloc_or_panic(alloc_size, SMP_CACHE_BYTES);
 
@@ -2657,7 +2671,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 			unit_map[cpu] = unit + i;
 			unit_off[cpu] = gi->base_offset + i * ai->unit_size;
 
-			/* determine low/high unit_cpu * /
+			/* determine low/high unit_cpu */
 			if (pcpu_low_unit_cpu == NR_CPUS ||
 			    unit_off[cpu] < unit_off[pcpu_low_unit_cpu])
 				pcpu_low_unit_cpu = cpu;
@@ -2671,7 +2685,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	for_each_possible_cpu(cpu)
 		PCPU_SETUP_BUG_ON(unit_map[cpu] == UINT_MAX);
 
-	/* we're done parsing the input, undefine BUG macro and dump config * /
+	/* we're done parsing the input, undefine BUG macro and dump config */
 #undef PCPU_SETUP_BUG_ON
 	pcpu_dump_alloc_info(KERN_DEBUG, ai);
 
@@ -2681,11 +2695,11 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	pcpu_unit_map = unit_map;
 	pcpu_unit_offsets = unit_off;
 
-	/* determine basic parameters * /
+	/* determine basic parameters */
 	pcpu_unit_pages = ai->unit_size >> PAGE_SHIFT;
 	pcpu_unit_size = pcpu_unit_pages << PAGE_SHIFT;
 	pcpu_atom_size = ai->atom_size;
-	pcpu_chunk_struct_size = struct_size((struct pcpu_chunk *)0, populated,
+	pcpu_chunk_struct_size = struct_size((pcpu_chunk *)0, populated,
 					     BITS_TO_LONGS(pcpu_unit_pages));
 
 	pcpu_stats_save_ai(ai);
@@ -2695,7 +2709,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	 *   sidelined_slot - isolated, depopulated chunks
 	 *   free_slot - fully free chunks
 	 *   to_depopulate_slot - isolated, chunks to depopulate
-	 * /
+	 */
 	pcpu_sidelined_slot = __pcpu_size_to_slot(pcpu_unit_size) + 1;
 	pcpu_free_slot = pcpu_sidelined_slot + 1;
 	pcpu_to_depopulate_slot = pcpu_free_slot + 1;
@@ -2714,7 +2728,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	 * expanding the dynamic region, therefore the dynamic region
 	 * can be shrunk to compensate while still staying above the
 	 * configured sizes.
-	 * /
+	 */
 	static_size = ALIGN(ai->static_size, PCPU_MIN_ALLOC_SIZE);
 	dyn_size = ai->dyn_size - (static_size - ai->static_size);
 
@@ -2728,24 +2742,24 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	 *   allocations from module load.
 	 * - dynamic (pcpu_first_chunk) - serves the dynamic part of the first
 	 *   chunk.
-	 * /
-	tmp_addr = (unsigned long)base_addr + static_size;
+	 */
+	tmp_addr = (core::ffi::c_ulong)base_addr + static_size;
 	if (ai->reserved_size)
 		pcpu_reserved_chunk = pcpu_alloc_first_chunk(tmp_addr,
 						ai->reserved_size);
-	tmp_addr = (unsigned long)base_addr + static_size + ai->reserved_size;
+	tmp_addr = (core::ffi::c_ulong)base_addr + static_size + ai->reserved_size;
 	pcpu_first_chunk = pcpu_alloc_first_chunk(tmp_addr, dyn_size);
 
 	pcpu_nr_empty_pop_pages = pcpu_first_chunk->nr_empty_pop_pages;
 	pcpu_chunk_relocate(pcpu_first_chunk, -1);
 
-	/* include all regions of the first chunk * /
+	/* include all regions of the first chunk */
 	pcpu_nr_populated += PFN_DOWN(size_sum);
 
 	pcpu_stats_chunk_alloc();
 	trace_percpu_create_chunk(base_addr);
 
-	/* we're done * /
+	/* we're done */
 	pcpu_base_addr = base_addr;
 }
 
@@ -2781,22 +2795,22 @@ static int __init percpu_alloc_setup(char *str)
 }
 early_param("percpu_alloc", percpu_alloc_setup);
 
-/*
+/ *
  * pcpu_embed_first_chunk() is used by the generic percpu setup.
  * Build it if needed by the arch config or the generic setup is going
  * to be used.
- * /
+ */
 #if defined(CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK) || \
 	!defined(CONFIG_HAVE_SETUP_PER_CPU_AREA)
 #define BUILD_EMBED_FIRST_CHUNK
 #endif
 
-/* build pcpu_page_first_chunk() iff needed by the arch config * /
+/* build pcpu_page_first_chunk() iff needed by the arch config */
 #if defined(CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK)
 #define BUILD_PAGE_FIRST_CHUNK
 #endif
 
-/* pcpu_build_alloc_info() is used by both embed and page first chunk * /
+/* pcpu_build_alloc_info() is used by both embed and page first chunk */
 #if defined(BUILD_EMBED_FIRST_CHUNK) || defined(BUILD_PAGE_FIRST_CHUNK)
 /**
  * pcpu_build_alloc_info - build alloc_info considering distances between CPUs
@@ -2818,7 +2832,7 @@ early_param("percpu_alloc", percpu_alloc_setup);
  * RETURNS:
  * On success, pointer to the new allocation_info is returned.  On
  * failure, ERR_PTR value is returned.
- * /
+ */
 static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 				size_t reserved_size, size_t dyn_size,
 				size_t atom_size,
@@ -2830,18 +2844,18 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	const size_t static_size = __per_cpu_end - __per_cpu_start;
 	int nr_groups = 1, nr_units = 0;
 	size_t size_sum, min_unit_size, alloc_size;
-	int upa, max_upa, best_upa;	/* units_per_alloc * /
+	int upa, max_upa, best_upa;	/* units_per_alloc */
 	int last_allocs, group, unit;
-	unsigned int cpu, tcpu;
+	cpu: core::ffi::c_uint, tcpu;
 	struct pcpu_alloc_info *ai;
-	unsigned int *cpu_map;
+	core::ffi::c_uint *cpu_map;
 
-	/* this function may be called multiple times * /
+	/* this function may be called multiple times */
 	memset(group_map, 0, sizeof(group_map));
 	memset(group_cnt, 0, sizeof(group_cnt));
 	cpumask_clear(&mask);
 
-	/* calculate size_sum and ensure dyn_size is enough for early alloc * /
+	/* calculate size_sum and ensure dyn_size is enough for early alloc */
 	size_sum = PFN_ALIGN(static_size + reserved_size +
 			    max_t(size_t, dyn_size, PERCPU_DYNAMIC_EARLY_SIZE));
 	dyn_size = size_sum - static_size - reserved_size;
@@ -2851,10 +2865,10 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	 * alloc_size is multiple of atom_size and is the smallest
 	 * which can accommodate 4k aligned segments which are equal to
 	 * or larger than min_unit_size.
-	 * /
+	 */
 	min_unit_size = max_t(size_t, size_sum, PCPU_MIN_UNIT_SIZE);
 
-	/* determine the maximum # of units that can fit in an allocation * /
+	/* determine the maximum # of units that can fit in an allocation */
 	alloc_size = roundup(min_unit_size, atom_size);
 	upa = alloc_size / min_unit_size;
 	while (alloc_size % upa || (offset_in_page(alloc_size / upa)))
@@ -2863,15 +2877,15 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 
 	cpumask_copy(&mask, cpu_possible_mask);
 
-	/* group cpus according to their proximity * /
+	/* group cpus according to their proximity */
 	for (group = 0; !cpumask_empty(&mask); group++) {
-		/* pop the group's first cpu * /
+		/* pop the group's first cpu */
 		cpu = cpumask_first(&mask);
 		group_map[cpu] = group;
 		group_cnt[group]++;
 		cpumask_clear_cpu(cpu, &mask);
 
-		for_each_cpu(tcpu, &mask) {
+		for_each_cpu!(tcpu, &mask, {
 			if (!cpu_distance_fn ||
 			    (cpu_distance_fn(cpu, tcpu) == LOCAL_DISTANCE &&
 			     cpu_distance_fn(tcpu, cpu) == LOCAL_DISTANCE)) {
@@ -2879,7 +2893,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 				group_cnt[group]++;
 				cpumask_clear_cpu(tcpu, &mask);
 			}
-		}
+		});
 	}
 	nr_groups = group;
 
@@ -2887,7 +2901,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	 * Wasted space is caused by a ratio imbalance of upa to group_cnt.
 	 * Expand the unit_size until we use >= 75% of the units allocated.
 	 * Related to atom_size, which could be much larger than the unit_size.
-	 * /
+	 */
 	last_allocs = INT_MAX;
 	best_upa = 0;
 	for (upa = max_upa; upa; upa--) {
@@ -2906,11 +2920,11 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 		 * Don't accept if wastage is over 1/3.  The
 		 * greater-than comparison ensures upa==1 always
 		 * passes the following check.
-		 * /
+		 */
 		if (wasted > num_possible_cpus() / 3)
 			continue;
 
-		/* and then don't consume more memory * /
+		/* and then don't consume more memory */
 		if (allocs > last_allocs)
 			break;
 		last_allocs = allocs;
@@ -2919,7 +2933,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	BUG_ON(!best_upa);
 	upa = best_upa;
 
-	/* allocate and fill alloc_info * /
+	/* allocate and fill alloc_info */
 	for (group = 0; group < nr_groups; group++)
 		nr_units += roundup(group_cnt[group], upa);
 
@@ -2947,7 +2961,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 		 * Initialize base_offset as if all groups are located
 		 * back-to-back.  The caller should update this to
 		 * reflect actual allocation.
-		 * /
+		 */
 		gi->base_offset = unit * ai->unit_size;
 
 		for_each_possible_cpu(cpu)
@@ -2961,10 +2975,10 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	return ai;
 }
 
-static void * __init pcpu_fc_alloc(unsigned int cpu, size_t size, size_t align,
+static void * __init pcpu_fc_alloc(cpu: core::ffi::c_uint, size_t size, size_t align,
 				   pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
 {
-	const unsigned long goal = __pa(MAX_DMA_ADDRESS);
+	const core::ffi::c_ulong goal = __pa(MAX_DMA_ADDRESS);
 #ifdef CONFIG_NUMA
 	int node = NUMA_NO_NODE;
 	void *ptr;
@@ -2996,7 +3010,7 @@ static void __init pcpu_fc_free(void *ptr, size_t size)
 {
 	memblock_free(ptr, size);
 }
-#endif /* BUILD_EMBED_FIRST_CHUNK || BUILD_PAGE_FIRST_CHUNK * /
+#endif /* BUILD_EMBED_FIRST_CHUNK || BUILD_PAGE_FIRST_CHUNK */
 
 #if defined(BUILD_EMBED_FIRST_CHUNK)
 /**
@@ -3029,17 +3043,19 @@ static void __init pcpu_fc_free(void *ptr, size_t size)
  *
  * RETURNS:
  * 0 on success, -errno on failure.
- * /
+ */
 int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 				  size_t atom_size,
 				  pcpu_fc_cpu_distance_fn_t cpu_distance_fn,
 				  pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
 {
+	'out_free: {
+	'out_free_areas: {
 	void *base = (void *)ULONG_MAX;
 	void **areas = NULL;
 	struct pcpu_alloc_info *ai;
 	size_t size_sum, areas_size;
-	unsigned long max_distance;
+	core::ffi::c_ulong max_distance;
 	int group, i, highest_group, rc = 0;
 
 	ai = pcpu_build_alloc_info(reserved_size, dyn_size, atom_size,
@@ -3053,27 +3069,27 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 	areas = memblock_alloc(areas_size, SMP_CACHE_BYTES);
 	if (!areas) {
 		rc = -ENOMEM;
-		goto out_free;
+		break 'out_free;
 	}
 
-	/* allocate, copy and determine base address & max_distance * /
+	/* allocate, copy and determine base address & max_distance */
 	highest_group = 0;
 	for (group = 0; group < ai->nr_groups; group++) {
 		struct pcpu_group_info *gi = &ai->groups[group];
-		unsigned int cpu = NR_CPUS;
+		core::ffi::c_uint cpu = NR_CPUS;
 		void *ptr;
 
 		for (i = 0; i < gi->nr_units && cpu == NR_CPUS; i++)
 			cpu = gi->cpu_map[i];
 		BUG_ON(cpu == NR_CPUS);
 
-		/* allocate space for the whole group * /
+		/* allocate space for the whole group */
 		ptr = pcpu_fc_alloc(cpu, gi->nr_units * ai->unit_size, atom_size, cpu_to_nd_fn);
 		if (!ptr) {
 			rc = -ENOMEM;
-			goto out_free_areas;
+			break 'out_free_areas;
 		}
-		/* kmemleak tracks the percpu allocations separately * /
+		/* kmemleak tracks the percpu allocations separately */
 		kmemleak_ignore_phys(__pa(ptr));
 		areas[group] = ptr;
 
@@ -3084,14 +3100,14 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 	max_distance = areas[highest_group] - base;
 	max_distance += ai->unit_size * ai->groups[highest_group].nr_units;
 
-	/* warn if maximum distance is further than 75% of vmalloc space * /
+	/* warn if maximum distance is further than 75% of vmalloc space */
 	if (max_distance > VMALLOC_TOTAL * 3 / 4) {
 		pr_warn("max_distance=0x%lx too large for vmalloc space 0x%lx\n",
 				max_distance, VMALLOC_TOTAL);
 #ifdef CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK
-		/* and fail if we have fallback * /
+		/* and fail if we have fallback */
 		rc = -EINVAL;
-		goto out_free_areas;
+		break 'out_free_areas;
 #endif
 	}
 
@@ -3099,24 +3115,24 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 	 * Copy data and free unused parts.  This should happen after all
 	 * allocations are complete; otherwise, we may end up with
 	 * overlapping groups.
-	 * /
+	 */
 	for (group = 0; group < ai->nr_groups; group++) {
 		struct pcpu_group_info *gi = &ai->groups[group];
 		void *ptr = areas[group];
 
 		for (i = 0; i < gi->nr_units; i++, ptr += ai->unit_size) {
 			if (gi->cpu_map[i] == NR_CPUS) {
-				/* unused unit, free whole * /
+				/* unused unit, free whole */
 				pcpu_fc_free(ptr, ai->unit_size);
 				continue;
 			}
-			/* copy and return the unused part * /
+			/* copy and return the unused part */
 			memcpy(ptr, __per_cpu_start, ai->static_size);
 			pcpu_fc_free(ptr + size_sum, ai->unit_size - size_sum);
 		}
 	}
 
-	/* base address is now known, determine group base offsets * /
+	/* base address is now known, determine group base offsets */
 	for (group = 0; group < ai->nr_groups; group++) {
 		ai->groups[group].base_offset = areas[group] - base;
 	}
@@ -3126,20 +3142,21 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 		ai->dyn_size, ai->unit_size);
 
 	pcpu_setup_first_chunk(ai, base);
-	goto out_free;
-
-out_free_areas:
+	break 'out_free;
+	}
+	
 	for (group = 0; group < ai->nr_groups; group++)
 		if (areas[group])
 			pcpu_fc_free(areas[group],
 				ai->groups[group].nr_units * ai->unit_size);
-out_free:
+	}
+	
 	pcpu_free_alloc_info(ai);
 	if (areas)
 		memblock_free(areas, areas_size);
 	return rc;
 }
-#endif /* BUILD_EMBED_FIRST_CHUNK * /
+#endif /* BUILD_EMBED_FIRST_CHUNK */
 
 #ifdef BUILD_PAGE_FIRST_CHUNK
 #include <linux/pgalloc.h>
@@ -3159,7 +3176,7 @@ out_free:
 #ifndef PTE_TABLE_SIZE
 #define PTE_TABLE_SIZE PAGE_SIZE
 #endif
-void __init __weak pcpu_populate_pte(unsigned long addr)
+void __init __weak pcpu_populate_pte(addr: core::ffi::c_ulong)
 {
 	pgd_t *pgd = pgd_offset_k(addr);
 	p4d_t *p4d;
@@ -3207,9 +3224,11 @@ void __init __weak pcpu_populate_pte(unsigned long addr)
  *
  * RETURNS:
  * 0 on success, -errno on failure.
- * /
+ */
 int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
 {
+	'out_free_ar: {
+	'enomem: {
 	static struct vm_struct vm;
 	struct pcpu_alloc_info *ai;
 	char psize_str[16];
@@ -3235,15 +3254,15 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 
 	unit_pages = ai->unit_size >> PAGE_SHIFT;
 
-	/* unaligned allocations can't be freed, round up to page size * /
+	/* unaligned allocations can't be freed, round up to page size */
 	pages_size = PFN_ALIGN(unit_pages * num_possible_cpus() *
 			       sizeof(pages[0]));
 	pages = memblock_alloc_or_panic(pages_size, SMP_CACHE_BYTES);
 
-	/* allocate pages * /
+	/* allocate pages */
 	j = 0;
 	for (unit = 0; unit < num_possible_cpus(); unit++) {
-		unsigned int cpu = ai->groups[0].cpu_map[unit];
+		core::ffi::c_uint cpu = ai->groups[0].cpu_map[unit];
 		for (i = 0; i < unit_pages; i++) {
 			void *ptr;
 
@@ -3251,27 +3270,27 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 			if (!ptr) {
 				pr_warn("failed to allocate %s page for cpu%u\n",
 						psize_str, cpu);
-				goto enomem;
+				break 'enomem;
 			}
-			/* kmemleak tracks the percpu allocations separately * /
+			/* kmemleak tracks the percpu allocations separately */
 			kmemleak_ignore_phys(__pa(ptr));
 			pages[j++] = virt_to_page(ptr);
 		}
 	}
 
-	/* allocate vm area, map the pages and copy static data * /
+	/* allocate vm area, map the pages and copy static data */
 	vm.flags = VM_ALLOC;
 	vm.size = num_possible_cpus() * ai->unit_size;
 	vm_area_register_early(&vm, PAGE_SIZE);
 
 	for (unit = 0; unit < num_possible_cpus(); unit++) {
-		unsigned long unit_addr =
-			(unsigned long)vm.addr + unit * ai->unit_size;
+		core::ffi::c_ulong unit_addr =
+			(core::ffi::c_ulong)vm.addr + unit * ai->unit_size;
 
 		for (i = 0; i < unit_pages; i++)
 			pcpu_populate_pte(unit_addr + (i << PAGE_SHIFT));
 
-		/* pte already populated, the following shouldn't fail * /
+		/* pte already populated, the following shouldn't fail */
 		rc = __pcpu_map_pages(unit_addr, &pages[unit * unit_pages],
 				      unit_pages, GFP_KERNEL);
 		if (rc < 0)
@@ -3279,28 +3298,29 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 
 		flush_cache_vmap_early(unit_addr, unit_addr + ai->unit_size);
 
-		/* copy static data * /
+		/* copy static data */
 		memcpy((void *)unit_addr, __per_cpu_start, ai->static_size);
 	}
 
-	/* we're ready, commit * /
+	/* we're ready, commit */
 	pr_info("%d %s pages/cpu s%zu r%zu d%zu\n",
 		unit_pages, psize_str, ai->static_size,
 		ai->reserved_size, ai->dyn_size);
 
 	pcpu_setup_first_chunk(ai, vm.addr);
-	goto out_free_ar;
-
-enomem:
+	break 'out_free_ar;
+	}
+	
 	while (--j >= 0)
 		pcpu_fc_free(page_address(pages[j]), PAGE_SIZE);
 	rc = -ENOMEM;
-out_free_ar:
+	}
+	
 	memblock_free(pages, pages_size);
 	pcpu_free_alloc_info(ai);
 	return rc;
 }
-#endif /* BUILD_PAGE_FIRST_CHUNK * /
+#endif /* BUILD_PAGE_FIRST_CHUNK */
 
 #ifndef	CONFIG_HAVE_SETUP_PER_CPU_AREA
 /*
@@ -3314,32 +3334,32 @@ out_free_ar:
  * generally a good idea TLB-wise because percpu area can piggy back
  * on the physical linear memory mapping which uses large page
  * mappings on applicable archs.
- * /
-unsigned long __per_cpu_offset[NR_CPUS] __read_mostly;
+ */
+core::ffi::c_ulong __per_cpu_offset[NR_CPUS] __read_mostly;
 EXPORT_SYMBOL(__per_cpu_offset);
 
 void __init setup_per_cpu_areas(void)
 {
-	unsigned long delta;
-	unsigned int cpu;
+	core::ffi::c_ulong delta;
+	core::ffi::c_uint cpu;
 	int rc;
 
 	/*
 	 * Always reserve area for module percpu variables.  That's
 	 * what the legacy allocator did.
-	 * /
+	 */
 	rc = pcpu_embed_first_chunk(PERCPU_MODULE_RESERVE, PERCPU_DYNAMIC_RESERVE,
 				    PAGE_SIZE, NULL, NULL);
 	if (rc < 0)
 		panic("Failed to initialize percpu areas.");
 
-	delta = (unsigned long)pcpu_base_addr - (unsigned long)__per_cpu_start;
+	delta = (core::ffi::c_ulong)pcpu_base_addr - (core::ffi::c_ulong)__per_cpu_start;
 	for_each_possible_cpu(cpu)
 		__per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu];
 }
-#endif	/* CONFIG_HAVE_SETUP_PER_CPU_AREA * /
+#endif	/* CONFIG_HAVE_SETUP_PER_CPU_AREA */
 
-#else	/* CONFIG_SMP * /
+#else	/* CONFIG_SMP */
 
 /*
  * UP percpu area setup.
@@ -3347,7 +3367,7 @@ void __init setup_per_cpu_areas(void)
  * UP always uses km-based percpu allocator with identity mapping.
  * Static percpu variables are indistinguishable from the usual static
  * variables and don't require any special preparation.
- * /
+ */
 void __init setup_per_cpu_areas(void)
 {
 	const size_t unit_size =
@@ -3360,7 +3380,7 @@ void __init setup_per_cpu_areas(void)
 	fc = memblock_alloc_from(unit_size, PAGE_SIZE, __pa(MAX_DMA_ADDRESS));
 	if (!ai || !fc)
 		panic("Failed to allocate memory for percpu areas.");
-	/* kmemleak tracks the percpu allocations separately * /
+	/* kmemleak tracks the percpu allocations separately */
 	kmemleak_ignore_phys(__pa(fc));
 
 	ai->dyn_size = unit_size;
@@ -3374,7 +3394,7 @@ void __init setup_per_cpu_areas(void)
 	pcpu_free_alloc_info(ai);
 }
 
-#endif	/* CONFIG_SMP * /
+#endif	/* CONFIG_SMP */
 
 /*
  * pcpu_nr_pages - calculate total number of populated backing pages
@@ -3386,8 +3406,8 @@ void __init setup_per_cpu_areas(void)
  *
  * RETURNS:
  * Total number of populated backing pages in use by the allocator.
- * /
-unsigned long pcpu_nr_pages(void)
+ */
+core::ffi::c_ulong pcpu_nr_pages(void)
 {
 	return data_race(READ_ONCE(pcpu_nr_populated)) * pcpu_nr_units;
 }
@@ -3396,7 +3416,7 @@ unsigned long pcpu_nr_pages(void)
  * Percpu allocator is initialized early during boot when neither slab or
  * workqueue is available.  Plug async management until everything is up
  * and running.
- * /
+ */
 static int __init percpu_enable_async(void)
 {
 	pcpu_async_enabled = true;

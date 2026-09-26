@@ -77,7 +77,7 @@ static mt8188_afe_rate mt8188_afe_rates[] = {
 	{ rate: 352800, reg_value: 24, },
 };
 
-i32 mt8188_afe_fs_timing(u32 rate)
+i32 mt8188_afe_fs_timing(rate: u32)
 {
 	i32 i;
 
@@ -88,8 +88,8 @@ i32 mt8188_afe_fs_timing(u32 rate)
 	return -EINVAL;
 }
 
-static i32 mt8188_memif_fs(struct snd_pcm_substream *substream,
-			   u32 rate)
+static i32 mt8188_memif_fs(snd_pcm_substream *substream,
+			   rate: u32)
 {
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct snd_soc_component *component = core::ptr::null_mut();
@@ -131,8 +131,8 @@ static i32 mt8188_memif_fs(struct snd_pcm_substream *substream,
 	return fs;
 }
 
-static i32 mt8188_irq_fs(struct snd_pcm_substream *substream,
-			 u32 rate)
+static i32 mt8188_irq_fs(snd_pcm_substream *substream,
+			 rate: u32)
 {
 	i32 fs = mt8188_memif_fs(substream, rate);
 
@@ -150,12 +150,10 @@ static i32 mt8188_irq_fs(struct snd_pcm_substream *substream,
 	return fs;
 }
 
-enum {
-	MT8188_AFE_CM0,
-	MT8188_AFE_CM1,
-	MT8188_AFE_CM2,
-	MT8188_AFE_CM_NUM,
-};
+pub const MT8188_AFE_CM0: i32 = 0;
+pub const MT8188_AFE_CM1: i32 = MT8188_AFE_CM0 + 1;
+pub const MT8188_AFE_CM2: i32 = MT8188_AFE_CM1 + 1;
+pub const MT8188_AFE_CM_NUM: i32 = MT8188_AFE_CM2 + 1;
 
 struct mt8188_afe_channel_merge {
 	i32 id;
@@ -218,7 +216,7 @@ static mt8188_afe_channel_merge
 	},
 };
 
-static i32 mt8188_afe_memif_is_ul(i32 id)
+static i32 mt8188_afe_memif_is_ul(id: i32)
 {
 	if (id >= MT8188_AFE_MEMIF_UL_START && id < MT8188_AFE_MEMIF_END)
 		return 1;
@@ -227,7 +225,7 @@ static i32 mt8188_afe_memif_is_ul(i32 id)
 }
 
 static mt8188_afe_channel_merge *
-	mt8188_afe_found_cm(struct snd_soc_dai *dai)
+	mt8188_afe_found_cm(snd_soc_dai *dai)
 {
 	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
 	i32 id = -EINVAL;
@@ -257,9 +255,9 @@ static mt8188_afe_channel_merge *
 	return &mt8188_afe_cm[id];
 }
 
-static i32 mt8188_afe_config_cm(struct mtk_base_afe *afe,
+static i32 mt8188_afe_config_cm(mtk_base_afe *afe,
 				const struct mt8188_afe_channel_merge *cm,
-				u32 channels)
+				channels: u32)
 {
 	if (!cm)
 		return -EINVAL;
@@ -282,9 +280,9 @@ static i32 mt8188_afe_config_cm(struct mtk_base_afe *afe,
 	return 0;
 }
 
-static i32 mt8188_afe_enable_cm(struct mtk_base_afe *afe,
+static i32 mt8188_afe_enable_cm(mtk_base_afe *afe,
 				const struct mt8188_afe_channel_merge *cm,
-				bool enable)
+				enable: bool)
 {
 	if (!cm)
 		return -EINVAL;
@@ -297,9 +295,10 @@ static i32 mt8188_afe_enable_cm(struct mtk_base_afe *afe,
 	return 0;
 }
 
-static i32 mt8188_afe_fe_startup(struct snd_pcm_substream *substream,
-				 struct snd_soc_dai *dai)
+static i32 mt8188_afe_fe_startup(snd_pcm_substream *substream,
+				 snd_soc_dai *dai)
 {
+	'out: {
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct snd_pcm_runtime *runtime = substream.runtime;
 	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
@@ -313,26 +312,27 @@ static i32 mt8188_afe_fe_startup(struct snd_pcm_substream *substream,
 				   MT8188_MEMIF_BUFFER_BYTES_ALIGN);
 
 	if (id != MT8188_AFE_MEMIF_DL7)
-		goto out;
+		break 'out;
 
 	ret = snd_pcm_hw_constraint_minmax(runtime,
 					   SNDRV_PCM_HW_PARAM_PERIOD_SIZE, 1,
 					   MT8188_MEMIF_DL7_MAX_PERIOD_SIZE);
 	if (ret < 0)
 		dev_dbg(afe.dev, "hw_constraint_minmax failed\n");
-out:
+	}
+	
 	return ret;
 }
 
-static c_void mt8188_afe_fe_shutdown(struct snd_pcm_substream *substream,
-				   struct snd_soc_dai *dai)
+static c_void mt8188_afe_fe_shutdown(snd_pcm_substream *substream,
+				   snd_soc_dai *dai)
 {
 	mtk_afe_fe_shutdown(substream, dai);
 }
 
-static i32 mt8188_afe_fe_hw_params(struct snd_pcm_substream *substream,
-				   struct snd_pcm_hw_params *params,
-				   struct snd_soc_dai *dai)
+static i32 mt8188_afe_fe_hw_params(snd_pcm_substream *substream,
+				   snd_pcm_hw_params *params,
+				   snd_soc_dai *dai)
 {
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
@@ -353,8 +353,8 @@ static i32 mt8188_afe_fe_hw_params(struct snd_pcm_substream *substream,
 	return mtk_afe_fe_hw_params(substream, params, dai);
 }
 
-static i32 mt8188_afe_fe_trigger(struct snd_pcm_substream *substream, i32 cmd,
-				 struct snd_soc_dai *dai)
+static i32 mt8188_afe_fe_trigger(snd_pcm_substream *substream, cmd: i32,
+				 snd_soc_dai *dai)
 {
 	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
 	const struct mt8188_afe_channel_merge *cm = mt8188_afe_found_cm(dai);
@@ -1620,8 +1620,8 @@ static SOC_VALUE_ENUM_SINGLE_DECL(ul10_fs_timing_sel_enum,
 				  mt8188_afe_fs_timing_sel_text,
 				  mt8188_afe_fs_timing_sel_values);
 
-static i32 mt8188_memif_1x_en_sel_put(struct snd_kcontrol *kcontrol,
-				      struct snd_ctl_elem_value *ucontrol)
+static i32 mt8188_memif_1x_en_sel_put(snd_kcontrol *kcontrol,
+				      snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
@@ -1643,8 +1643,8 @@ static i32 mt8188_memif_1x_en_sel_put(struct snd_kcontrol *kcontrol,
 	return ret;
 }
 
-static i32 mt8188_asys_irq_1x_en_sel_put(struct snd_kcontrol *kcontrol,
-					 struct snd_ctl_elem_value *ucontrol)
+static i32 mt8188_asys_irq_1x_en_sel_put(snd_kcontrol *kcontrol,
+					 snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
@@ -1663,15 +1663,15 @@ static i32 mt8188_asys_irq_1x_en_sel_put(struct snd_kcontrol *kcontrol,
 	return ret;
 }
 
-static i32 mt8188_memif_fs_timing_sel_get(struct snd_kcontrol *kcontrol,
-					  struct snd_ctl_elem_value *ucontrol)
+static i32 mt8188_memif_fs_timing_sel_get(snd_kcontrol *kcontrol,
+					  snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
 	struct mt8188_afe_private *afe_priv = afe.platform_priv;
 	struct mtk_dai_memif_priv *memif_priv;
 	u32 dai_id = kcontrol.id.device;
-	struct soc_enum *e = (struct soc_enum *)kcontrol.private_value;
+	struct soc_enum *e = (soc_enum *)kcontrol.private_value;
 
 	memif_priv = afe_priv.dai_priv[dai_id];
 
@@ -1681,15 +1681,15 @@ static i32 mt8188_memif_fs_timing_sel_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-static i32 mt8188_memif_fs_timing_sel_put(struct snd_kcontrol *kcontrol,
-					  struct snd_ctl_elem_value *ucontrol)
+static i32 mt8188_memif_fs_timing_sel_put(snd_kcontrol *kcontrol,
+					  snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
 	struct mt8188_afe_private *afe_priv = afe.platform_priv;
 	struct mtk_dai_memif_priv *memif_priv;
 	u32 dai_id = kcontrol.id.device;
-	struct soc_enum *e = (struct soc_enum *)kcontrol.private_value;
+	struct soc_enum *e = (soc_enum *)kcontrol.private_value;
 	u32 *item = ucontrol.value.enumerated.item;
 	u32 prev_item = 0;
 
@@ -2686,10 +2686,10 @@ static const i32 mt8188_afe_memif_const_irqs[MT8188_AFE_MEMIF_NUM] = {
 	[MT8188_AFE_MEMIF_UL10] = MT8188_AFE_IRQ_25,
 };
 
-static bool mt8188_is_volatile_reg(struct device *dev, u32 reg)
+static bool mt8188_is_volatile_reg(device *dev, reg: u32)
 {
 	/* these auto-gen reg has read-only bit, so put it as volatile */
-	/* volatile reg cannot be cached, so cannot be set when power off */
+	/*mut reg cannot be cached, so cannot be set when power off */
 	switch (reg) {
 	case AUDIO_TOP_CON0:
 	case AUDIO_TOP_CON1:
@@ -2942,8 +2942,9 @@ static regmap_config mt8188_afe_regmap_config = {
 const AFE_IRQ_CLR_BITS: u32 = 0x387;
 const ASYS_IRQ_CLR_BITS: u32 = 0xffff;
 
-static irqreturn_t mt8188_afe_irq_handler(i32 irq_id, c_void *dev_id)
+static irqreturn_t mt8188_afe_irq_handler(irq_id: i32, c_void *dev_id)
 {
+	'err_irq: {
 	struct mtk_base_afe *afe = dev_id;
 	u32 val = 0;
 	u32 asys_irq_clr_bits = 0;
@@ -2959,7 +2960,7 @@ static irqreturn_t mt8188_afe_irq_handler(i32 irq_id, c_void *dev_id)
 		dev_err(afe.dev, "%s irq status err\n", __func__);
 		afe_irq_clr_bits = AFE_IRQ_CLR_BITS;
 		asys_irq_clr_bits = ASYS_IRQ_CLR_BITS;
-		goto err_irq;
+		break 'err_irq;
 	}
 
 	ret = regmap_read(afe.regmap, AFE_IRQ_MASK, &mcu_irq_mask);
@@ -2967,7 +2968,7 @@ static irqreturn_t mt8188_afe_irq_handler(i32 irq_id, c_void *dev_id)
 		dev_err(afe.dev, "%s read irq mask err\n", __func__);
 		afe_irq_clr_bits = AFE_IRQ_CLR_BITS;
 		asys_irq_clr_bits = ASYS_IRQ_CLR_BITS;
-		goto err_irq;
+		break 'err_irq;
 	}
 
 	/* only clr cpu irq */
@@ -2995,8 +2996,8 @@ static irqreturn_t mt8188_afe_irq_handler(i32 irq_id, c_void *dev_id)
 
 		snd_pcm_period_elapsed(memif.substream);
 	}
-
-err_irq:
+	}
+	
 	/* clear irq */
 	if (asys_irq_clr_bits)
 		regmap_write(afe.regmap, ASYS_IRQ_CLR, asys_irq_clr_bits);
@@ -3006,27 +3007,29 @@ err_irq:
 	return IRQ_HANDLED;
 }
 
-static i32 mt8188_afe_runtime_suspend(struct device *dev)
+static i32 mt8188_afe_runtime_suspend(device *dev)
 {
+	'skip_regmap: {
 	struct mtk_base_afe *afe = dev_get_drvdata(dev);
 	struct mt8188_afe_private *afe_priv = afe.platform_priv;
 
 	if (!afe.regmap || afe_priv.pm_runtime_bypass_reg_ctl)
-		goto skip_regmap;
+		break 'skip_regmap;
 
 	mt8188_afe_disable_main_clock(afe);
 
 	regcache_cache_only(afe.regmap, true);
 	regcache_mark_dirty(afe.regmap);
-
-skip_regmap:
+	}
+	
 	mt8188_afe_disable_reg_rw_clk(afe);
 
 	return 0;
 }
 
-static i32 mt8188_afe_runtime_resume(struct device *dev)
+static i32 mt8188_afe_runtime_resume(device *dev)
 {
+	'skip_regmap: {
 	struct mtk_base_afe *afe = dev_get_drvdata(dev);
 	struct mt8188_afe_private *afe_priv = afe.platform_priv;
 	struct arm_smccc_res res;
@@ -3038,17 +3041,18 @@ static i32 mt8188_afe_runtime_resume(struct device *dev)
 	mt8188_afe_enable_reg_rw_clk(afe);
 
 	if (!afe.regmap || afe_priv.pm_runtime_bypass_reg_ctl)
-		goto skip_regmap;
+		break 'skip_regmap;
 
 	regcache_cache_only(afe.regmap, false);
 	regcache_sync(afe.regmap);
 
 	mt8188_afe_enable_main_clock(afe);
-skip_regmap:
+	}
+	
 	return 0;
 }
 
-static i32 init_memif_priv_data(struct mtk_base_afe *afe)
+static i32 init_memif_priv_data(mtk_base_afe *afe)
 {
 	struct mt8188_afe_private *afe_priv = afe.platform_priv;
 	struct mtk_dai_memif_priv *memif_priv;
@@ -3056,7 +3060,7 @@ static i32 init_memif_priv_data(struct mtk_base_afe *afe)
 
 	for (i = MT8188_AFE_MEMIF_START; i < MT8188_AFE_MEMIF_END; i++) {
 		memif_priv = devm_kzalloc(afe.dev,
-					  sizeof(struct mtk_dai_memif_priv),
+					  sizeof(mtk_dai_memif_priv),
 					  GFP_KERNEL);
 		if (!memif_priv)
 			return -ENOMEM;
@@ -3067,7 +3071,7 @@ static i32 init_memif_priv_data(struct mtk_base_afe *afe)
 	return 0;
 }
 
-static i32 mt8188_dai_memif_register(struct mtk_base_afe *afe)
+static i32 mt8188_dai_memif_register(mtk_base_afe *afe)
 {
 	struct mtk_base_afe_dai *dai;
 
@@ -3090,7 +3094,7 @@ static i32 mt8188_dai_memif_register(struct mtk_base_afe *afe)
 	return init_memif_priv_data(afe);
 }
 
-typedef i32 (*dai_register_cb)(struct mtk_base_afe *);
+typedef i32 (*dai_register_cb)(mtk_base_afe *);
 static const dai_register_cb dai_register_cbs[] = {
 	mt8188_dai_adda_register,
 	mt8188_dai_dmic_register,
@@ -3112,15 +3116,15 @@ static reg_sequence mt8188_cg_patch[] = {
 	{ AUDIO_TOP_CON1, 0xfffffff8 },
 };
 
-static i32 mt8188_afe_init_registers(struct mtk_base_afe *afe)
+static i32 mt8188_afe_init_registers(mtk_base_afe *afe)
 {
 	return regmap_multi_reg_write(afe.regmap,
 				      mt8188_afe_reg_defaults,
 				      ARRAY_SIZE(mt8188_afe_reg_defaults));
 }
 
-static i32 mt8188_afe_parse_of(struct mtk_base_afe *afe,
-			       struct device_node *np)
+static i32 mt8188_afe_parse_of(mtk_base_afe *afe,
+			       device_node *np)
 {
 #if IS_ENABLED(CONFIG_SND_SOC_MT6359)
 	struct mt8188_afe_private *afe_priv = afe.platform_priv;
@@ -3138,7 +3142,7 @@ static i32 mt8188_afe_parse_of(struct mtk_base_afe *afe,
 const MT8188_DELAY_US: u32 = 10;
 const MT8188_TIMEOUT_US: u32 = USEC_PER_SEC;
 
-static i32 bus_protect_enable(struct regmap *regmap)
+static i32 bus_protect_enable(regmap *regmap)
 {
 	i32 ret;
 	u32 val;
@@ -3164,7 +3168,7 @@ static i32 bus_protect_enable(struct regmap *regmap)
 	return ret;
 }
 
-static i32 bus_protect_disable(struct regmap *regmap)
+static i32 bus_protect_disable(regmap *regmap)
 {
 	i32 ret;
 	u32 val;
@@ -3190,14 +3194,15 @@ static i32 bus_protect_disable(struct regmap *regmap)
 	return ret;
 }
 
-static i32 mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+static i32 mt8188_afe_pcm_dev_probe(platform_device *pdev)
 {
+	'err_pm_put: {
 	struct mtk_base_afe *afe;
 	struct mt8188_afe_private *afe_priv;
 	struct device *dev = &pdev.dev;
 	struct reset_control *rstc;
 	struct regmap *infra_ao;
-	i32 i, irq_id, ret;
+	i: i32, irq_id, ret;
 
 	ret = of_reserved_mem_device_init(dev);
 	if (ret)
@@ -3339,14 +3344,14 @@ static i32 mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 					    &mt8188_afe_regmap_config);
 	if (IS_ERR(afe.regmap)) {
 		ret = PTR_ERR(afe.regmap);
-		goto err_pm_put;
+		break 'err_pm_put;
 	}
 
 	ret = regmap_register_patch(afe.regmap, mt8188_cg_patch,
 				    ARRAY_SIZE(mt8188_cg_patch));
 	if (ret < 0) {
 		dev_info(dev, "Failed to apply cg patch\n");
-		goto err_pm_put;
+		break 'err_pm_put;
 	}
 
 	/* register component */
@@ -3354,7 +3359,7 @@ static i32 mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 					      afe.dai_drivers, afe.num_dai_drivers);
 	if (ret) {
 		dev_warn(dev, "err_platform\n");
-		goto err_pm_put;
+		break 'err_pm_put;
 	}
 
 	mt8188_afe_init_registers(afe);
@@ -3366,7 +3371,8 @@ static i32 mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
 	regcache_mark_dirty(afe.regmap);
 
 	return 0;
-err_pm_put:
+	}
+	
 	pm_runtime_put_sync(dev);
 
 	return ret;

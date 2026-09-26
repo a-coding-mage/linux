@@ -126,7 +126,7 @@ pub unsafe fn validate_xmit_xfrm(
     x = (*sp).xvec[(*sp).len - 1];
     if (*xo).flags & XFRM_GRO != 0 || (*x).xso.dir == XFRM_DEV_OFFLOAD_IN { return skb; }
 
-    if (*x).xso.type == XFRM_DEV_OFFLOAD_PACKET && (*x).xso.dev != dev {
+    if (*x).xso.r#type == XFRM_DEV_OFFLOAD_PACKET && (*x).xso.dev != dev {
         kfree_skb(skb); dev_core_stats_tx_dropped_inc(dev); return null_mut();
     }
 
@@ -155,7 +155,7 @@ pub unsafe fn validate_xmit_xfrm(
         skb_push(skb, (*skb).data.offset_from(skb_mac_header(skb)) as _); return skb;
     }
 
-    skb_list_walk_safe(skb, skb2, nskb) {
+    skb_list_walk_safe!(skb, skb2, nskb, {
         esp_features |= (*(*skb2).dev).gso_partial_features;
         skb_mark_not_on_list(skb2);
         xo = xfrm_offload(skb2); (*xo).flags |= XFRM_DEV_RESUME;
@@ -168,7 +168,7 @@ pub unsafe fn validate_xmit_xfrm(
             if skb == skb2 { skb = nskb; } else { (*pskb).next = nskb; } continue;
         }
         skb_push(skb2, (*skb2).data.offset_from(skb_mac_header(skb2)) as _); pskb = skb2;
-    }
+    });
     if !skb.is_null() { (*skb).prev = pskb; }
     if !skb.is_null() { skb } else { ERR_PTR(-EINPROGRESS) }
 }

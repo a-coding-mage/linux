@@ -61,10 +61,10 @@ extern "C" {
 #[repr(C)] pub struct digital_data_exch { pub cb:Option<unsafe extern "C" fn(*mut u8,*mut sk_buff,i32)>,pub cb_context:*mut u8 }
 
 extern "C" {
- fn skb_push(*mut sk_buff,usize)->*mut u8; fn skb_pull(*mut sk_buff,usize)->*mut u8; fn skb_put(*mut sk_buff,usize)->*mut u8; fn skb_put_data(*mut sk_buff,*const u8,usize)->*mut u8;
- fn digital_skb_alloc(*mut nfc_digital_dev,usize)->*mut sk_buff; fn kfree_skb(*mut sk_buff); fn dev_kfree_skb(*mut sk_buff); fn pskb_copy(*mut sk_buff,u32)->*mut sk_buff; fn skb_get(*mut sk_buff);
- fn digital_in_send_cmd(*mut nfc_digital_dev,*mut sk_buff,u16,Option<unsafe extern "C" fn(*mut nfc_digital_dev,*mut u8,*mut sk_buff)>,*mut u8)->i32;
- fn digital_tg_send_cmd(*mut nfc_digital_dev,*mut sk_buff,u16,Option<unsafe extern "C" fn(*mut nfc_digital_dev,*mut u8,*mut sk_buff)>,*mut u8)->i32;
+ fn skb_push(_: *mut sk_buff,_: usize)->*mut u8; fn skb_pull(_: *mut sk_buff,_: usize)->*mut u8; fn skb_put(_: *mut sk_buff,_: usize)->*mut u8; fn skb_put_data(_: *mut sk_buff,_: *const u8,_: usize)->*mut u8;
+ fn digital_skb_alloc(_: *mut nfc_digital_dev,_: usize)->*mut sk_buff; fn kfree_skb(_: *mut sk_buff); fn dev_kfree_skb(_: *mut sk_buff); fn pskb_copy(_: *mut sk_buff,_: u32)->*mut sk_buff; fn skb_get(_: *mut sk_buff);
+ fn digital_in_send_cmd(_: *mut nfc_digital_dev,_: *mut sk_buff,_: u16,_: Option<unsafe extern "C" fn(*mut nfc_digital_dev,*mut u8,*mut sk_buff)>,_: *mut u8)->i32;
+ fn digital_tg_send_cmd(_: *mut nfc_digital_dev,_: *mut sk_buff,_: u16,_: Option<unsafe extern "C" fn(*mut nfc_digital_dev,*mut u8,*mut sk_buff)>,_: *mut u8)->i32;
 }
 
 unsafe fn digital_skb_push_dep_sod(d:*mut nfc_digital_dev,s:*mut sk_buff){ skb_push(s,1); (*s).data.write((*s).len as u8); if (*d).curr_rf_tech==0 { *skb_push(s,1)=DIGITAL_NFC_DEP_NFCA_SOD_SB; } }

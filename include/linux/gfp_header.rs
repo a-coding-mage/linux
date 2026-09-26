@@ -11,24 +11,24 @@ pub unsafe fn gfpflags_allow_spinning(gfp_flags: gfp_t) -> bool {
     (gfp_flags & __GFP_RECLAIM) != 0
 }
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 pub const OPT_ZONE_HIGHMEM: i32 = ZONE_HIGHMEM;
-#[cfg(not(feature = "CONFIG_HIGHMEM"))]
+#[cfg(not(CONFIG_HIGHMEM))]
 pub const OPT_ZONE_HIGHMEM: i32 = ZONE_NORMAL;
-#[cfg(feature = "CONFIG_ZONE_DMA")]
+#[cfg(CONFIG_ZONE_DMA)]
 pub const OPT_ZONE_DMA: i32 = ZONE_DMA;
-#[cfg(not(feature = "CONFIG_ZONE_DMA"))]
+#[cfg(not(CONFIG_ZONE_DMA))]
 pub const OPT_ZONE_DMA: i32 = ZONE_NORMAL;
-#[cfg(feature = "CONFIG_ZONE_DMA32")]
+#[cfg(CONFIG_ZONE_DMA32)]
 pub const OPT_ZONE_DMA32: i32 = ZONE_DMA32;
-#[cfg(not(feature = "CONFIG_ZONE_DMA32"))]
+#[cfg(not(CONFIG_ZONE_DMA32))]
 pub const OPT_ZONE_DMA32: i32 = ZONE_NORMAL;
 
 // Build-time CONFIG_ZONE_DEVICE condition preserved via cfg; ZONES_SHIFT and related
 // constants are supplied by the included kernel headers.
-#[cfg(all(feature = "CONFIG_ZONE_DEVICE", feature = "MAX_NR_ZONES_LE_5"))]
+#[cfg(all(CONFIG_ZONE_DEVICE, feature = "MAX_NR_ZONES_LE_5"))]
 pub const GFP_ZONES_SHIFT: i32 = 2;
-#[cfg(not(all(feature = "CONFIG_ZONE_DEVICE", feature = "MAX_NR_ZONES_LE_5")))]
+#[cfg(not(all(CONFIG_ZONE_DEVICE, feature = "MAX_NR_ZONES_LE_5")))]
 pub const GFP_ZONES_SHIFT: i32 = ZONES_SHIFT;
 
 pub const GFP_ZONE_TABLE: usize =
@@ -60,7 +60,7 @@ pub unsafe fn gfp_zone(flags: gfp_t) -> zone_type {
 }
 
 pub unsafe fn gfp_zonelist(flags: gfp_t) -> i32 {
-    #[cfg(feature = "CONFIG_NUMA")]
+    #[cfg(CONFIG_NUMA)]
     if unlikely((flags & __GFP_THISNODE) != 0) { return ZONELIST_NOFALLBACK; }
     ZONELIST_FALLBACK
 }
@@ -150,19 +150,19 @@ pub unsafe fn alloc_page_vma_noprof(gfp: gfp_t, vma: *mut vm_area_struct, addr: 
     &mut (*folio).page
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 pub unsafe fn alloc_pages_noprof_numa_fallback(gfp_mask: gfp_t, order: u32) -> *mut page {
     alloc_pages_node_noprof(numa_node_id(), gfp_mask, order)
 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 pub unsafe fn folio_alloc_noprof_numa_fallback(gfp: gfp_t, order: u32) -> *mut folio {
     __folio_alloc_node_noprof_inline(gfp, order, numa_node_id())
 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 pub unsafe fn folio_alloc_mpol_noprof_numa_fallback(gfp: gfp_t, order: u32, _mpol: *mut mempolicy, _ilx: pgoff_t, _nid: i32) -> *mut folio {
     folio_alloc_noprof_numa_fallback(gfp, order)
 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 pub unsafe fn vma_alloc_folio_noprof_numa_fallback(gfp: gfp_t, order: i32, _vma: *mut vm_area_struct, _addr: u64) -> *mut folio {
     folio_alloc_noprof_numa_fallback(gfp, order as u32)
 }

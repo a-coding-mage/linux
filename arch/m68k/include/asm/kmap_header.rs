@@ -15,37 +15,37 @@ pub const IOMAP_WRITETHROUGH: i32 = 3;
  * The declarations and functions below are present when CONFIG_MMU is set
  * in the C source.
  */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 extern "C" {
     pub fn __ioremap(physaddr: usize, size: usize, cacheflag: i32) -> *mut c_void;
     pub fn iounmap(addr: *mut c_void);
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn ioremap(physaddr: usize, size: usize) -> *mut c_void {
     __ioremap(physaddr, size, IOMAP_NOCACHE_SER)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn ioremap_wt(physaddr: usize, size: usize) -> *mut c_void {
     __ioremap(physaddr, size, IOMAP_WRITETHROUGH)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn memset_io(addr: *mut c_void, val: u8, count: i32) {
     core::ptr::write_bytes(addr as *mut u8, val, count as usize);
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn memcpy_fromio(dst: *mut c_void, src: *const c_void, count: i32) {
     core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, count as usize);
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn memcpy_toio(dst: *mut c_void, src: *const c_void, count: i32) {
     core::ptr::copy_nonoverlapping(src as *const u8, dst as *mut u8, count as usize);

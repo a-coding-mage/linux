@@ -70,7 +70,7 @@ unsafe fn get_typical_interval(data: *mut menu_device) -> u32 {
             avg += value as u64;
             variance += (value as u64) * (value as u64);
             if value as u32 > max { max = value as u32; }
-            if value as u32 < min { min = value as u32; }
+            if (value as u32) < min { min = value as u32; }
         }
         if max == 0 { return u32::MAX; }
         if divisor == INTERVALS as u32 {

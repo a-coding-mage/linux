@@ -16,7 +16,7 @@ pub union sock_exterr_skb_header {
     pub h4: inet_skb_parm,
     // Equivalent to IS_ENABLED(CONFIG_IPV6); enabled when the CONFIG_IPV6
     // feature is present in the consuming build.
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub h6: inet6_skb_parm,
 }
 

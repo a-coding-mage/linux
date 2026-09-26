@@ -7,7 +7,7 @@
 // use crate::ipmi_si::si_type;
 
 // Corresponds to CONFIG_IPMI_DMI_DECODE.
-#[cfg(feature = "CONFIG_IPMI_DMI_DECODE")]
+#[cfg(CONFIG_IPMI_DMI_DECODE)]
 unsafe extern "C" {
     pub fn ipmi_dmi_get_slave_addr(
         si_type: si_type,

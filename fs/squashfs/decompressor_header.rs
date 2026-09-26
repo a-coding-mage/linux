@@ -59,31 +59,31 @@ pub unsafe fn squashfs_comp_opts(
 }
 
 /* CONFIG_SQUASHFS_XZ controls this declaration. */
-#[cfg(feature = "CONFIG_SQUASHFS_XZ")]
+#[cfg(CONFIG_SQUASHFS_XZ)]
 extern "C" {
     pub static squashfs_xz_comp_ops: squashfs_decompressor;
 }
 
 /* CONFIG_SQUASHFS_LZ4 controls this declaration. */
-#[cfg(feature = "CONFIG_SQUASHFS_LZ4")]
+#[cfg(CONFIG_SQUASHFS_LZ4)]
 extern "C" {
     pub static squashfs_lz4_comp_ops: squashfs_decompressor;
 }
 
 /* CONFIG_SQUASHFS_LZO controls this declaration. */
-#[cfg(feature = "CONFIG_SQUASHFS_LZO")]
+#[cfg(CONFIG_SQUASHFS_LZO)]
 extern "C" {
     pub static squashfs_lzo_comp_ops: squashfs_decompressor;
 }
 
 /* CONFIG_SQUASHFS_ZLIB controls this declaration. */
-#[cfg(feature = "CONFIG_SQUASHFS_ZLIB")]
+#[cfg(CONFIG_SQUASHFS_ZLIB)]
 extern "C" {
     pub static squashfs_zlib_comp_ops: squashfs_decompressor;
 }
 
 /* CONFIG_SQUASHFS_ZSTD controls this declaration. */
-#[cfg(feature = "CONFIG_SQUASHFS_ZSTD")]
+#[cfg(CONFIG_SQUASHFS_ZSTD)]
 extern "C" {
     pub static squashfs_zstd_comp_ops: squashfs_decompressor;
 }

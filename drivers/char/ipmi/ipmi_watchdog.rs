@@ -46,16 +46,16 @@ const IPMI_SET_TIMEOUT_FORCE_HB: c_int = 2;
 #[repr(C)] pub struct ipmi_user_hndl { pub ipmi_recv_hndl: Option<unsafe extern "C" fn(*mut ipmi_recv_msg,*mut c_void)>, pub ipmi_watchdog_pretimeout: Option<unsafe extern "C" fn(*mut c_void)>, pub ipmi_panic_handler: Option<unsafe extern "C" fn(*mut c_void)> }
 
 extern "C" {
-    fn ipmi_request_supply_msgs(*mut ipmi_user,*mut ipmi_addr,c_int,*mut kernel_ipmi_msg,*mut c_void,*mut ipmi_smi_msg,*mut ipmi_recv_msg,c_int)->c_int;
-    fn ipmi_panic_request_and_wait(*mut ipmi_user,*mut ipmi_addr,*mut kernel_ipmi_msg);
-    fn ipmi_create_user(c_int,*const ipmi_user_hndl,*mut c_void,*mut *mut ipmi_user)->c_int;
-    fn ipmi_destroy_user(*mut ipmi_user); fn ipmi_get_version(*mut ipmi_user,*mut u8,*mut u8)->c_int;
-    fn ipmi_free_recv_msg(*mut ipmi_recv_msg); fn misc_register(*mut c_void)->c_int; fn misc_deregister(*mut c_void);
-    fn register_reboot_notifier(*mut notifier_block)->c_int; fn unregister_reboot_notifier(*mut notifier_block);
-    fn ipmi_smi_watcher_register(*mut c_void)->c_int; fn ipmi_smi_watcher_unregister(*mut c_void);
-    fn mutex_lock(*mut c_void); fn mutex_unlock(*mut c_void); fn wait_for_completion(*mut c_void);
-    fn atomic_set(*mut c_int,c_int); fn atomic_read(*mut c_int)->c_int; fn atomic_cmpxchg(*mut c_int,c_int,c_int)->c_int;
-    fn pr_warn(*const c_char,...); fn pr_err(*const c_char,...); fn pr_info(*const c_char,...); fn pr_crit(*const c_char,...);
+    fn ipmi_request_supply_msgs(_: *mut ipmi_user,_: *mut ipmi_addr,_: c_int,_: *mut kernel_ipmi_msg,_: *mut c_void,_: *mut ipmi_smi_msg,_: *mut ipmi_recv_msg,_: c_int)->c_int;
+    fn ipmi_panic_request_and_wait(_: *mut ipmi_user,_: *mut ipmi_addr,_: *mut kernel_ipmi_msg);
+    fn ipmi_create_user(_: c_int,_: *const ipmi_user_hndl,_: *mut c_void,_: *mut *mut ipmi_user)->c_int;
+    fn ipmi_destroy_user(_: *mut ipmi_user); fn ipmi_get_version(_: *mut ipmi_user,_: *mut u8,_: *mut u8)->c_int;
+    fn ipmi_free_recv_msg(_: *mut ipmi_recv_msg); fn misc_register(_: *mut c_void)->c_int; fn misc_deregister(_: *mut c_void);
+    fn register_reboot_notifier(_: *mut notifier_block)->c_int; fn unregister_reboot_notifier(_: *mut notifier_block);
+    fn ipmi_smi_watcher_register(_: *mut c_void)->c_int; fn ipmi_smi_watcher_unregister(_: *mut c_void);
+    fn mutex_lock(_: *mut c_void); fn mutex_unlock(_: *mut c_void); fn wait_for_completion(_: *mut c_void);
+    fn atomic_set(_: *mut c_int,_: c_int); fn atomic_read(_: *mut c_int)->c_int; fn atomic_cmpxchg(_: *mut c_int,_: c_int,_: c_int)->c_int;
+    fn pr_warn(_: *const c_char,...); fn pr_err(_: *const c_char,...); fn pr_info(_: *const c_char,...); fn pr_crit(_: *const c_char,...);
 }
 
 static mut nowayout: bool = true;

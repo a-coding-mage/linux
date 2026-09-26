@@ -93,14 +93,14 @@ unsafe fn sunxi_usb_clk_setup(node: *mut device_node, data: *const usb_clk_data,
     }
 
     for_each_set_bit!(i, &(*data).clk_mask as *const u32 as *const c_ulong,
-                      SUNXI_USB_MAX_SIZE) {
+                      SUNXI_USB_MAX_SIZE, {
         of_property_read_string_index(node, "clock-output-names\0".as_ptr() as *const c_char,
                                       j, &mut clk_name);
         *(*clk_data).clks.add(i) = clk_register_gate(core::ptr::null_mut(), clk_name,
                                                      clk_parent, 0, reg, i as u8, 0, lock);
         WARN_ON(IS_ERR(*(*clk_data).clks.add(i)));
         j += 1;
-    }
+    });
 
     (*clk_data).clk_num = i;
     of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);

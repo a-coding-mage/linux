@@ -56,9 +56,9 @@ static mut force: bool = false;
 #[cfg(all(CONFIG_PNP, CONFIG_ACPI))]
 unsafe fn has_hid(dev: *mut AcpiDevice, hid: *const c_char) -> c_int {
     let mut id: *mut AcpiHardwareId = ptr::null_mut();
-    list_for_each_entry!(id, (*dev).pnp.ids, list) {
+    list_for_each_entry!(id, (*dev).pnp.ids, list, {
         if strcmp(hid, (*id).id) == 0 { return 1; }
-    }
+    });
     0
 }
 

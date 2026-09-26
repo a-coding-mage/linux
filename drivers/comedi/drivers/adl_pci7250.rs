@@ -150,7 +150,7 @@ unsafe fn pci7250_auto_attach(dev: *mut comedi_device, _context_unused: u64) -> 
 
     /* Relay digital output. */
     s = (*dev).subdevices.add(0);
-    (*s).type = COMEDI_SUBD_DO;
+    (*s).r#type = COMEDI_SUBD_DO;
     (*s).subdev_flags = SDF_WRITABLE;
     (*s).n_chan = max_chans;
     (*s).maxdata = 1;
@@ -167,7 +167,7 @@ unsafe fn pci7250_auto_attach(dev: *mut comedi_device, _context_unused: u64) -> 
 
     /* Isolated digital input. */
     s = (*dev).subdevices.add(1);
-    (*s).type = COMEDI_SUBD_DI;
+    (*s).r#type = COMEDI_SUBD_DI;
     (*s).subdev_flags = SDF_READABLE;
     (*s).n_chan = max_chans;
     (*s).maxdata = 1;

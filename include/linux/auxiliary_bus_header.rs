@@ -134,13 +134,13 @@ extern "C" {
     pub fn dev_is_auxiliary(dev: *mut device) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_SYSFS"))]
+#[cfg(not(CONFIG_SYSFS))]
 #[inline]
 pub unsafe fn auxiliary_device_sysfs_irq_add(_auxdev: *mut auxiliary_device, _irq: i32) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SYSFS"))]
+#[cfg(not(CONFIG_SYSFS))]
 #[inline]
 pub unsafe fn auxiliary_device_sysfs_irq_remove(_auxdev: *mut auxiliary_device, _irq: i32) {}
 

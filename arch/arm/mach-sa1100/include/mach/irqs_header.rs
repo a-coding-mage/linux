@@ -92,9 +92,9 @@ pub const IRQ_BOARD_END: i32 = 77;
  * CONFIG_SHARP_LOCOMO is a build-time C preprocessor condition.  The Rust
  * feature below preserves the same conditional intent.
  */
-#[cfg(feature = "CONFIG_SHARP_LOCOMO")]
+#[cfg(CONFIG_SHARP_LOCOMO)]
 pub const NR_IRQS_LOCOMO: i32 = 4;
-#[cfg(not(feature = "CONFIG_SHARP_LOCOMO"))]
+#[cfg(not(CONFIG_SHARP_LOCOMO))]
 pub const NR_IRQS_LOCOMO: i32 = 0;
 
 /* C's #ifndef NR_IRQS: define this only when no external NR_IRQS exists. */

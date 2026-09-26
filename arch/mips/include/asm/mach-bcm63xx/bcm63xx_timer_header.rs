@@ -3,7 +3,7 @@
 
 use core::ffi::c_void;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn bcm63xx_timer_register(
         id: i32,
         callback: Option<unsafe extern "C" fn(data: *mut c_void)>,

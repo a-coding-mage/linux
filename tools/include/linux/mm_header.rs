@@ -50,7 +50,7 @@ pub unsafe fn phys_to_virt(address: c_ulong) -> *mut c_void {
 }
 
 #[inline]
-pub unsafe fn virt_to_phys(address: *volatile c_void) -> phys_addr_t {
+pub unsafe fn virt_to_phys(address: *mut c_void) -> phys_addr_t {
     address as phys_addr_t
 }
 

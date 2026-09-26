@@ -155,7 +155,7 @@ unsafe fn ___do_page_fault(regs: *mut pt_regs, address: ulong, error_code: ulong
         return SIGSEGV;
     }
     if unlikely!(faulthandler_disabled() || mm.is_null()) {
-        if is_user { printk_ratelimited!(KERN_ERR "Page fault in user mode with faulthandler_disabled()={} mm={:p}\n", faulthandler_disabled(), mm); }
+        if is_user { printk_ratelimited!(c"\x013Page fault in user mode with faulthandler_disabled()={} mm={:p}\n".as_ptr(), faulthandler_disabled(), mm); }
         return bad_area_nosemaphore(regs, address);
     }
     interrupt_cond_local_irq_enable(regs);
@@ -219,8 +219,8 @@ unsafe fn __bad_page_fault(regs: *mut pt_regs, sig: c_int) {
         INTERRUPT_ALIGNMENT => pr_alert!("BUG: Unable to handle kernel unaligned access at 0x{:08x}\n", (*regs).dar),
         _ => pr_alert!("BUG: Unable to handle unknown paging fault at 0x{:08x}\n", (*regs).dar),
     }
-    printk!(KERN_ALERT "Faulting instruction address: 0x{:08x}\n", (*regs).nip);
-    if task_stack_end_corrupted(current) { printk!(KERN_ALERT "Thread overran stack, or stack corrupted\n"); }
+    printk!(c"\x011Faulting instruction address: 0x{:08x}\n".as_ptr(), (*regs).nip);
+    if task_stack_end_corrupted(current) { printk!(c"\x011Thread overran stack, or stack corrupted\n".as_ptr()); }
     die("Kernel access of bad area", regs, sig);
 }
 

@@ -43,7 +43,7 @@ pub static mut rv_ext_sched_class: *mut sched_class = core::ptr::null_mut();
 unsafe extern "C" fn register_deadline() -> i32 {
     // Equivalent to IS_ENABLED(CONFIG_SCHED_CLASS_EXT); the build-time
     // configuration is supplied by the surrounding kernel build.
-    if cfg!(feature = "CONFIG_SCHED_CLASS_EXT") {
+    if cfg!(CONFIG_SCHED_CLASS_EXT) {
         rv_ext_sched_class = kallsyms_lookup_name(
             b"ext_sched_class\0".as_ptr() as *const core::ffi::c_char,
         ) as *mut sched_class;

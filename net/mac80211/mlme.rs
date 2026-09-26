@@ -1,7 +1,7 @@
 #![allow(dead_code, unused_variables, unused_mut, non_camel_case_types, non_snake_case, non_upper_case_globals)]
 /*
 // SPDX-License-Identifier: GPL-2.0-only
-/*
+/ *
  * BSS client mode implementation
  * Copyright 2003-2008, Jouni Malinen <j@w1.fi>
  * Copyright 2004, Instant802 Networks, Inc.
@@ -39,16 +39,16 @@
 #define IEEE80211_AUTH_TIMEOUT_LONG	(HZ / 2)
 #define IEEE80211_AUTH_TIMEOUT_SHORT	(HZ / 10)
 #define IEEE80211_AUTH_TIMEOUT_SAE	(HZ * 2)
-#define IEEE80211_AUTH_MAX_TRIES	3
+pub const IEEE80211_AUTH_MAX_TRIES: u32 = 3;
 #define IEEE80211_AUTH_WAIT_ASSOC	(HZ * 5)
 #define IEEE80211_AUTH_WAIT_SAE_RETRY	(HZ * 2)
 #define IEEE80211_ASSOC_TIMEOUT		(HZ / 5)
 #define IEEE80211_ASSOC_TIMEOUT_LONG	(HZ / 2)
 #define IEEE80211_ASSOC_TIMEOUT_SHORT	(HZ / 10)
-#define IEEE80211_ASSOC_MAX_TRIES	3
+pub const IEEE80211_ASSOC_MAX_TRIES: u32 = 3;
 
 #define IEEE80211_ADV_TTLM_SAFETY_BUFFER_MS (100 * USEC_PER_MSEC)
-#define IEEE80211_ADV_TTLM_ST_UNDERFLOW 0xff00
+pub const IEEE80211_ADV_TTLM_ST_UNDERFLOW: u32 = 0xff00;
 
 #define IEEE80211_NEG_TTLM_REQ_TIMEOUT (HZ / 5)
 
@@ -62,7 +62,7 @@ module_param(max_probe_tries, int, 0644);
 MODULE_PARM_DESC(max_probe_tries,
 		 "Maximum probe tries before disconnecting (reason 4).");
 
-/*
+/ *
  * Beacon loss timeout is calculated as N frames times the
  * advertised beacon interval.  This may need to be somewhat
  * higher than what hardware might detect to account for
@@ -75,12 +75,12 @@ module_param(beacon_loss_count, int, 0644);
 MODULE_PARM_DESC(beacon_loss_count,
 		 "Number of beacon intervals before we decide beacon was lost.");
 
-/*
+/ *
  * Time the connection can be idle before we probe
  * it to see if we can still talk to the AP.
   *\/
 #define IEEE80211_CONNECTION_IDLE_TIME	(30 * HZ)
-/*
+/ *
  * Time we wait for a probe response after sending
  * a probe request because of beacon loss or for
  * checking the connection still works.
@@ -91,13 +91,13 @@ MODULE_PARM_DESC(probe_wait_ms,
 		 "Maximum time(ms) to wait for probe response"
 		 " before disconnecting (reason 4).");
 
-/*
+/ *
  * How many Beacon frames need to have been used in average signal strength
  * before starting to indicate signal change events.
   *\/
-#define IEEE80211_SIGNAL_AVE_MIN_COUNT	4
+pub const IEEE80211_SIGNAL_AVE_MIN_COUNT: u32 = 4;
 
-/*
+/ *
  * We can have multiple work items (and connection probing)
  * scheduling this timer, but we need to take care to only
  * reschedule it when it should fire _earlier_ than it was
@@ -153,7 +153,7 @@ static int ecw2cw(int ecw)
 
 static bool ieee80211_chandef_usable(struct ieee80211_sub_if_data *sdata,
 				     const struct cfg80211_chan_def *chandef,
-				     u32 prohibited_flags)
+				     prohibited_flags: u32)
 {
 	if (!cfg80211_chandef_usable(sdata->local->hw.wiphy,
 				     chandef, prohibited_flags))
@@ -167,7 +167,7 @@ static bool ieee80211_chandef_usable(struct ieee80211_sub_if_data *sdata,
 }
 
 struct ieee80211_determine_ap_chan_data {
-	/* input data  *\/
+	/ * input data  *\/
 	struct ieee80211_channel *channel;
 	const struct ieee802_11_elems *elems;
 	const struct ieee80211_conn_settings *conn;
@@ -176,14 +176,14 @@ struct ieee80211_determine_ap_chan_data {
 	const struct cfg80211_chan_def *cur_chandef;
 	bool cur_dbe_used;
 
-	/* target chandef is filled in  *\/
+	/ * target chandef is filled in  *\/
 	struct cfg80211_chan_def *chandef;
 };
 
 struct ieee80211_determine_ap_chan_output {
-	/* filled to indicate UHR DBE was used  *\/
+	/ * filled to indicate UHR DBE was used  *\/
 	bool dbe_used;
-	/* and need to know non-DBE width  *\/
+	/ * and need to know non-DBE width  *\/
 	enum nl80211_chan_width non_dbe_width;
 };
 
@@ -220,11 +220,11 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 		.freq1_offset = channel->freq_offset,
 	};
 
-	/* get special S1G case out of the way  *\/
+	/ * get special S1G case out of the way  *\/
 	if (sband->band == NL80211_BAND_S1GHZ) {
 		if (!ieee80211_chandef_s1g_oper(sdata->local, elems->s1g_oper,
 						chandef)) {
-			/* Fallback to default 1MHz  *\/
+			/ * Fallback to default 1MHz  *\/
 			chandef->width = NL80211_CHAN_WIDTH_1;
 			chandef->s1g_primary_2mhz = false;
 		}
@@ -232,11 +232,11 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 		return IEEE80211_CONN_MODE_S1G;
 	}
 
-	/* get special 6 GHz case out of the way  *\/
+	/ * get special 6 GHz case out of the way  *\/
 	if (sband->band == NL80211_BAND_6GHZ) {
 		enum ieee80211_conn_mode mode = IEEE80211_CONN_MODE_HIGHEST;
 
-		/* this is an error  *\/
+		/ * this is an error  *\/
 		if (conn->mode < IEEE80211_CONN_MODE_HE)
 			return IEEE80211_CONN_MODE_LEGACY;
 
@@ -280,7 +280,7 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 		goto check_uhr;
 	}
 
-	/* now we have the progression HT, VHT, ...  *\/
+	/ * now we have the progression HT, VHT, ...  *\/
 	if (conn->mode < IEEE80211_CONN_MODE_HT)
 		return IEEE80211_CONN_MODE_LEGACY;
 
@@ -291,9 +291,9 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 
 	ht_cfreq = ieee80211_channel_to_frequency(ht_oper->primary_chan,
 						  channel->band);
-	/* check that channel matches the right operating channel  *\/
+	/ * check that channel matches the right operating channel  *\/
 	if (!ignore_ht_channel_mismatch && channel->center_freq != ht_cfreq) {
-		/*
+		/ *
 		 * It's possible that some APs are confused here;
 		 * Netgear WNDR3700 sometimes reports 4 higher than
 		 * the actual channel in association responses, but
@@ -314,7 +314,7 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 
 	vht_chandef = *chandef;
 
-	/*
+	/ *
 	 * having he_cap/he_oper parsed out implies we're at
 	 * least operating as HE STA
 	  *\/
@@ -322,7 +322,7 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 	    he_oper->he_oper_params & cpu_to_le32(IEEE80211_HE_OPERATION_VHT_OPER_INFO)) {
 		struct ieee80211_vht_operation he_oper_vht_cap;
 
-		/*
+		/ *
 		 * Set only first 3 bytes (other 2 aren't used in
 		 * ieee80211_chandef_vht_oper() anyway)
 		  *\/
@@ -334,7 +334,7 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 						&vht_chandef)) {
 			sdata_info(sdata,
 				   "HE AP VHT information is invalid, disabling HE\n");
-			/* this will cause us to re-parse as VHT STA  *\/
+			/ * this will cause us to re-parse as VHT STA  *\/
 			return IEEE80211_CONN_MODE_VHT;
 		}
 	} else if (!vht_oper || !elems->vht_cap_elem) {
@@ -360,7 +360,7 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 
 	*chandef = vht_chandef;
 
-	/* stick to current max mode if we or the AP don't have HE  *\/
+	/ * stick to current max mode if we or the AP don't have HE  *\/
 	if (conn->mode < IEEE80211_CONN_MODE_HE ||
 	    !elems->he_operation || !elems->he_cap) {
 		if (no_vht)
@@ -368,12 +368,12 @@ ieee80211_determine_ap_chan(struct ieee80211_sub_if_data *sdata,
 		return IEEE80211_CONN_MODE_VHT;
 	}
 
-	/* stick to HE if we or the AP don't have EHT  *\/
+	/ * stick to HE if we or the AP don't have EHT  *\/
 	if (conn->mode < IEEE80211_CONN_MODE_EHT ||
 	    !eht_oper || !elems->eht_cap)
 		return IEEE80211_CONN_MODE_HE;
 
-	/*
+	/ *
 	 * handle the case that the EHT operation indicates that it holds EHT
 	 * operation information (in case that the channel width differs from
 	 * the channel width reported in HT/VHT/HE).
@@ -413,7 +413,7 @@ check_uhr:
 		const struct ieee80211_uhr_dbe_info *dbe;
 		struct cfg80211_chan_def dbe_chandef;
 
-		/* frames other than beacons carry UHR capability too  *\/
+		/ * frames other than beacons carry UHR capability too  *\/
 		if (!elems->uhr_cap)
 			return IEEE80211_CONN_MODE_EHT;
 
@@ -426,7 +426,7 @@ check_uhr:
 			return IEEE80211_CONN_MODE_EHT;
 		}
 
-		/* DBE is not considered yet, so this works  *\/
+		/ * DBE is not considered yet, so this works  *\/
 		if (!cfg80211_chandef_npca_valid(sdata->local->hw.wiphy,
 						 &npca_chandef, npca) ||
 		    cfg80211_chandef_add_npca(sdata->local->hw.wiphy,
@@ -437,7 +437,7 @@ check_uhr:
 		}
 
 		uhr_cap = ieee80211_get_uhr_iftype_cap_vif(sband, &sdata->vif);
-		/* can't happen since we must have UHR to parse the elems  *\/
+		/ * can't happen since we must have UHR to parse the elems  *\/
 		if (WARN_ON(!uhr_cap))
 			return IEEE80211_CONN_MODE_EHT;
 
@@ -489,7 +489,7 @@ check_uhr:
 				return IEEE80211_CONN_MODE_EHT;
 			}
 
-			/* 1-4 are same in DBE capabilities, map 320-2 to 320  *\/
+			/ * 1-4 are same in DBE capabilities, map 320-2 to 320  *\/
 			if (dbe_bw_oper == IEEE80211_UHR_DBE_OPER_BW_320_2)
 				dbe_bw_oper = IEEE80211_UHR_DBE_MAX_BW_320;
 			if (dbe_bw_oper > dbe_bw_cap) {
@@ -508,7 +508,7 @@ check_uhr:
 		}
 
 		if (dbe &&
-		    /* maybe driver would like to never use DBE  *\/
+		    / * maybe driver would like to never use DBE  *\/
 		    uhr_cap->mac.mac_cap[1] & IEEE80211_UHR_MAC_CAP1_DBE_SUPP &&
 		    ieee80211_chandef_usable(sdata, &dbe_chandef,
 					     IEEE80211_CHAN_DISABLED)) {
@@ -555,7 +555,7 @@ ieee80211_verify_sta_ht_mcs_support(struct ieee80211_sub_if_data *sdata,
 	memcpy(&sta_ht_cap, &sband->ht_cap, sizeof(sta_ht_cap));
 	ieee80211_apply_htcap_overrides(sdata, &sta_ht_cap);
 
-	/*
+	/ *
 	 * Some Xfinity XB8 firmware advertises >1 spatial stream MCS indexes in
 	 * their basic HT-MCS set. On cards with lower spatial streams, the check
 	 * would fail, and we'd be stuck with no HT when it in fact work fine with
@@ -564,7 +564,7 @@ ieee80211_verify_sta_ht_mcs_support(struct ieee80211_sub_if_data *sdata,
 	if (!ieee80211_hw_check(&sdata->local->hw, STRICT))
 		return true;
 
-	/*
+	/ *
 	 * P802.11REVme/D7.0 - 6.5.4.2.4
 	 * ...
 	 * If the MLME of an HT STA receives an MLME-JOIN.request primitive
@@ -575,7 +575,7 @@ ieee80211_verify_sta_ht_mcs_support(struct ieee80211_sub_if_data *sdata,
 	 * ...
 	  *\/
 
-	/* Simply check that all basic rates are in the STA RX mask  *\/
+	/ * Simply check that all basic rates are in the STA RX mask  *\/
 	for (i = 0; i < IEEE80211_HT_MCS_MASK_LEN; i++) {
 		if ((ht_op->basic_set[i] & sta_ht_cap.mcs.rx_mask[i]) !=
 		    ht_op->basic_set[i])
@@ -592,7 +592,7 @@ ieee80211_verify_sta_vht_mcs_support(struct ieee80211_sub_if_data *sdata,
 				     const struct ieee80211_vht_operation *vht_op)
 {
 	struct ieee80211_sta_vht_cap sta_vht_cap;
-	u16 ap_min_req_set, sta_rx_mcs_map, sta_tx_mcs_map;
+	ap_min_req_set: u16, sta_rx_mcs_map, sta_tx_mcs_map;
 	int nss;
 
 	if (sband->band != NL80211_BAND_5GHZ)
@@ -608,7 +608,7 @@ ieee80211_verify_sta_vht_mcs_support(struct ieee80211_sub_if_data *sdata,
 	sta_rx_mcs_map = le16_to_cpu(sta_vht_cap.vht_mcs.rx_mcs_map);
 	sta_tx_mcs_map = le16_to_cpu(sta_vht_cap.vht_mcs.tx_mcs_map);
 
-	/*
+	/ *
 	 * Many APs are incorrectly advertising an all-zero value here,
 	 * which really means MCS 0-7 are required for 1-8 streams, but
 	 * they don't really mean it that way.
@@ -621,7 +621,7 @@ ieee80211_verify_sta_vht_mcs_support(struct ieee80211_sub_if_data *sdata,
 	if (!ieee80211_hw_check(&sdata->local->hw, STRICT))
 		return true;
 
-	/*
+	/ *
 	 * P802.11REVme/D7.0 - 6.5.4.2.4
 	 * ...
 	 * If the MLME of a VHT STA receives an MLME-JOIN.request primitive
@@ -663,20 +663,20 @@ ieee80211_verify_peer_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 				     const struct ieee80211_he_operation *he_op)
 {
 	struct ieee80211_he_mcs_nss_supp *he_mcs_nss_supp;
-	u16 mcs_80_map_tx, mcs_80_map_rx;
+	mcs_80_map_tx: u16, mcs_80_map_rx;
 	u16 ap_min_req_set;
 	int nss;
 
 	if (!he_cap)
 		return false;
 
-	/* mcs_nss is right after he_cap info  *\/
+	/ * mcs_nss is right after he_cap info  *\/
 	he_mcs_nss_supp = (void *)(he_cap + 1);
 
 	mcs_80_map_tx = le16_to_cpu(he_mcs_nss_supp->tx_mcs_80);
 	mcs_80_map_rx = le16_to_cpu(he_mcs_nss_supp->rx_mcs_80);
 
-	/* P802.11-REVme/D0.3
+	/ * P802.11-REVme/D0.3
 	 * 27.1.1 Introduction to the HE PHY
 	 * ...
 	 * An HE STA shall support the following features:
@@ -697,7 +697,7 @@ ieee80211_verify_peer_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 
 	ap_min_req_set = le16_to_cpu(he_op->he_mcs_nss_set);
 
-	/*
+	/ *
 	 * Apparently iPhone 13 (at least iOS version 15.3.1) sets this to all
 	 * zeroes, which is nonsense, and completely inconsistent with itself
 	 * (it doesn't have 8 streams). Accept the settings in this case anyway.
@@ -705,7 +705,7 @@ ieee80211_verify_peer_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 	if (!ieee80211_hw_check(&sdata->local->hw, STRICT) && !ap_min_req_set)
 		return true;
 
-	/* make sure the AP is consistent with itself
+	/ * make sure the AP is consistent with itself
 	 *
 	 * P802.11-REVme/D0.3
 	 * 26.17.1 Basic HE BSS operation
@@ -757,7 +757,7 @@ ieee80211_verify_sta_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 
 	ap_min_req_set = le16_to_cpu(he_op->he_mcs_nss_set);
 
-	/*
+	/ *
 	 * Apparently iPhone 13 (at least iOS version 15.3.1) sets this to all
 	 * zeroes, which is nonsense, and completely inconsistent with itself
 	 * (it doesn't have 8 streams). Accept the settings in this case anyway.
@@ -765,7 +765,7 @@ ieee80211_verify_sta_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 	if (!ieee80211_hw_check(&sdata->local->hw, STRICT) && !ap_min_req_set)
 		return true;
 
-	/* Need to go over for 80MHz, 160MHz and for 80+80  *\/
+	/ * Need to go over for 80MHz, 160MHz and for 80+80  *\/
 	for (i = 0; i < 3; i++) {
 		const struct ieee80211_he_mcs_nss_supp *sta_mcs_nss_supp =
 			&sta_he_cap->he_mcs_nss_supp;
@@ -776,7 +776,7 @@ ieee80211_verify_sta_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 		u8 nss;
 		bool verified = true;
 
-		/*
+		/ *
 		 * For each band there is a maximum of 8 spatial streams
 		 * possible. Each of the sta_mcs_map_* is a 16-bit struct built
 		 * of 2 bits per NSS (1-8), with the values defined in enum
@@ -793,7 +793,7 @@ ieee80211_verify_sta_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 			if (ap_val == IEEE80211_HE_MCS_NOT_SUPPORTED)
 				continue;
 
-			/*
+			/ *
 			 * Make sure the HE AP doesn't require MCSs that aren't
 			 * supported by the client as required by spec
 			 *
@@ -817,7 +817,7 @@ ieee80211_verify_sta_he_mcs_support(struct ieee80211_sub_if_data *sdata,
 			return true;
 	}
 
-	/* If here, STA doesn't meet AP's HE min requirements  *\/
+	/ * If here, STA doesn't meet AP's HE min requirements  *\/
 	return false;
 }
 
@@ -829,13 +829,13 @@ ieee80211_get_eht_cap_mcs_nss(const struct ieee80211_sta_he_cap *sta_he_cap,
 	u8 he_phy_cap0 = sta_he_cap->he_cap_elem.phy_cap_info[0];
 	u8 eht_phy_cap0 = sta_eht_cap->eht_cap_elem.phy_cap_info[0];
 
-	/* handle us being a 20 MHz-only EHT STA - with four values
+	/ * handle us being a 20 MHz-only EHT STA - with four values
 	 * for MCS 0-7, 8-9, 10-11, 12-13.
 	  *\/
 	if (!(he_phy_cap0 & IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_MASK_ALL))
 		return sta_eht_cap->eht_mcs_nss_supp.only_20mhz.rx_tx_max_nss[idx];
 
-	/* the others have MCS 0-9 together, rather than separately from 0-7  *\/
+	/ * the others have MCS 0-9 together, rather than separately from 0-7  *\/
 	if (idx > 0)
 		idx--;
 
@@ -846,11 +846,11 @@ ieee80211_get_eht_cap_mcs_nss(const struct ieee80211_sta_he_cap *sta_he_cap,
 		if (!(he_phy_cap0 &
 		      (IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_160MHZ_IN_5G |
 		       IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_80PLUS80_MHZ_IN_5G)))
-			return 0xff; /* pass check  *\/
+			return 0xff; / * pass check  *\/
 		return sta_eht_cap->eht_mcs_nss_supp.bw._160.rx_tx_max_nss[idx];
 	case 2:
 		if (!(eht_phy_cap0 & IEEE80211_EHT_PHY_CAP0_320MHZ_IN_6GHZ))
-			return 0xff; /* pass check  *\/
+			return 0xff; / * pass check  *\/
 		return sta_eht_cap->eht_mcs_nss_supp.bw._320.rx_tx_max_nss[idx];
 	}
 
@@ -876,7 +876,7 @@ ieee80211_verify_sta_eht_mcs_support(struct ieee80211_sub_if_data *sdata,
 	req = &eht_op->basic_mcs_nss;
 
 	for (i = 0; i < ARRAY_SIZE(req->rx_tx_max_nss); i++) {
-		u8 req_rx_nss, req_tx_nss;
+		req_rx_nss: u8, req_tx_nss;
 		unsigned int bw;
 
 		req_rx_nss = u8_get_bits(req->rx_tx_max_nss[i],
@@ -885,7 +885,7 @@ ieee80211_verify_sta_eht_mcs_support(struct ieee80211_sub_if_data *sdata,
 					 IEEE80211_EHT_MCS_NSS_TX);
 
 		for (bw = 0; bw < 3; bw++) {
-			u8 have, have_rx_nss, have_tx_nss;
+			have: u8, have_rx_nss, have_tx_nss;
 
 			have = ieee80211_get_eht_cap_mcs_nss(sta_he_cap,
 							     sta_eht_cap,
@@ -926,7 +926,7 @@ static void ieee80211_get_rates(struct ieee80211_supported_band *sband,
 		if ((rate * 5) > 110 && have_higher_than_11mbit)
 			*have_higher_than_11mbit = true;
 
-		/*
+		/ *
 		 * Skip membership selectors since they're not rates.
 		 *
 		 * Note: Even though the membership selector and the basic
@@ -960,7 +960,7 @@ static void ieee80211_get_rates(struct ieee80211_supported_band *sband,
 			}
 		}
 
-		/* Handle an unknown entry as if it is an unknown selector  *\/
+		/ * Handle an unknown entry as if it is an unknown selector  *\/
 		if (is_basic && unknown_rates_selectors && j == sband->n_bitrates)
 			set_bit(rate, unknown_rates_selectors);
 	}
@@ -997,24 +997,24 @@ static int ieee80211_chandef_num_widths(const struct cfg80211_chan_def *c)
 
 VISIBLE_IF_MAC80211_KUNIT int
 ieee80211_calc_chandef_subchan_offset(const struct cfg80211_chan_def *ap,
-				      u8 n_partial_subchans)
+				      n_partial_subchans: u8)
 {
 	int n = ieee80211_chandef_num_subchans(ap);
 	struct cfg80211_chan_def tmp = *ap;
 	int offset = 0;
 
-	/*
+	/ *
 	 * Given a chandef (in this context, it's the AP's) and a number
 	 * of subchannels that we want to look at ('n_partial_subchans'),
 	 * calculate the offset in number of subchannels between the full
 	 * and the subset with the desired width.
 	  *\/
 
-	/* same number of subchannels means no offset, obviously  *\/
+	/ * same number of subchannels means no offset, obviously  *\/
 	if (n == n_partial_subchans)
 		return 0;
 
-	/* don't WARN - misconfigured APs could cause this if their N > width  *\/
+	/ * don't WARN - misconfigured APs could cause this if their N > width  *\/
 	if (n < n_partial_subchans)
 		return 0;
 
@@ -1023,7 +1023,7 @@ ieee80211_calc_chandef_subchan_offset(const struct cfg80211_chan_def *ap,
 
 		ieee80211_chandef_downgrade(&tmp, NULL);
 
-		/*
+		/ *
 		 * if center_freq moved up, half the original channels
 		 * are gone now but were below, so increase offset
 		  *\/
@@ -1031,7 +1031,7 @@ ieee80211_calc_chandef_subchan_offset(const struct cfg80211_chan_def *ap,
 			offset += ieee80211_chandef_num_subchans(&tmp);
 	}
 
-	/*
+	/ *
 	 * 80+80 with secondary 80 below primary - four subchannels for it
 	 * (we cannot downgrade *to* 80+80, so no need to consider 'tmp')
 	  *\/
@@ -1056,13 +1056,13 @@ ieee80211_rearrange_tpe_psd(struct ieee80211_parsed_tpe_psd *psd,
 	if (!psd->valid)
 		return;
 
-	/* if N is zero, all defaults were used, no point in rearranging  *\/
+	/ * if N is zero, all defaults were used, no point in rearranging  *\/
 	if (!psd->n)
 		goto out;
 
 	BUILD_BUG_ON(sizeof(tmp) != sizeof(psd->power));
 
-	/*
+	/ *
 	 * This assumes that 'N' is consistent with the HE channel, as
 	 * it should be (otherwise the AP is broken).
 	 *
@@ -1096,7 +1096,7 @@ ieee80211_rearrange_tpe_psd(struct ieee80211_parsed_tpe_psd *psd,
 	 * the 'used chan'.
 	  *\/
 
-	/* first reorder according to AP channel  *\/
+	/ * first reorder according to AP channel  *\/
 	offset = ieee80211_calc_chandef_subchan_offset(ap, psd->n);
 	for (int i = 0; i < have; i++) {
 		if (i < offset)
@@ -1107,7 +1107,7 @@ ieee80211_rearrange_tpe_psd(struct ieee80211_parsed_tpe_psd *psd,
 			tmp[i] = psd->power[i];
 	}
 
-	/*
+	/ *
 	 * and then select the subset for the used channel
 	 * (set everything to defaults first in case a driver is confused)
 	  *\/
@@ -1117,7 +1117,7 @@ ieee80211_rearrange_tpe_psd(struct ieee80211_parsed_tpe_psd *psd,
 		psd->power[i] = tmp[offset + i];
 
 out:
-	/* limit, but don't lie if there are defaults in the data  *\/
+	/ * limit, but don't lie if there are defaults in the data  *\/
 	if (needed < psd->count)
 		psd->count = needed;
 }
@@ -1127,7 +1127,7 @@ static void ieee80211_rearrange_tpe(struct ieee80211_parsed_tpe *tpe,
 				    const struct cfg80211_chan_def *ap,
 				    const struct cfg80211_chan_def *used)
 {
-	/* ignore this completely for narrow/invalid channels  *\/
+	/ * ignore this completely for narrow/invalid channels  *\/
 	if (!ieee80211_chandef_num_subchans(ap) ||
 	    !ieee80211_chandef_num_subchans(used)) {
 		ieee80211_clear_tpe(tpe);
@@ -1140,7 +1140,7 @@ static void ieee80211_rearrange_tpe(struct ieee80211_parsed_tpe *tpe,
 		ieee80211_rearrange_tpe_psd(&tpe->psd_local[i], ap, used);
 		ieee80211_rearrange_tpe_psd(&tpe->psd_reg_client[i], ap, used);
 
-		/* limit this to the widths we actually need  *\/
+		/ * limit this to the widths we actually need  *\/
 		needed_pwr_count = ieee80211_chandef_num_widths(used);
 		if (needed_pwr_count < tpe->max_local[i].count)
 			tpe->max_local[i].count = needed_pwr_count;
@@ -1149,7 +1149,7 @@ static void ieee80211_rearrange_tpe(struct ieee80211_parsed_tpe *tpe,
 	}
 }
 
-/*
+/ *
  * The AP part of the channel request is used to distinguish settings
  * to the device used for wider bandwidth OFDMA. This is used in the
  * channel context code to assign two channel contexts even if they're
@@ -1184,7 +1184,7 @@ ieee80211_determine_chan_mode(struct ieee80211_sub_if_data *sdata,
 	const struct cfg80211_bss_ies *ies = rcu_dereference(cbss->ies);
 	struct ieee80211_bss *bss = (void *)cbss->priv;
 	struct ieee80211_channel *channel = cbss->channel;
-	/*
+	/ *
 	 * This is for parsing a beacon or probe response here, but it's
 	 * using the *BSS* elements which are synthetic for multi-BSSID,
 	 * created by cfg80211 based on multi-BSSID inheritance etc. As
@@ -1227,7 +1227,7 @@ again:
 					      &ap_chan_out);
 	conn->dbe_enabled = ap_chan_out.dbe_used;
 
-	/* this should be impossible since parsing depends on our mode  *\/
+	/ * this should be impossible since parsing depends on our mode  *\/
 	if (WARN_ON(ap_mode > conn->mode)) {
 		ret = -EINVAL;
 		goto free;
@@ -1320,12 +1320,12 @@ again:
 	if (conn->mode >= IEEE80211_CONN_MODE_UHR)
 		set_bit(BSS_MEMBERSHIP_SELECTOR_UHR_PHY, sta_selectors);
 
-	/*
+	/ *
 	 * We do not support EPD or GLK so never add them.
 	 * SAE_H2E is handled through userspace_selectors.
 	  *\/
 
-	/* Check if we support all required features  *\/
+	/ * Check if we support all required features  *\/
 	if (!bitmap_subset(unknown_rates_selectors, sta_selectors, 128)) {
 		link_id_info(sdata, link_id,
 			     "required basic rate or BSS membership selectors not supported or disabled, rejecting connection\n");
@@ -1425,7 +1425,7 @@ again:
 			     "required bandwidth not supported, disabling EHT\n");
 	}
 
-	/* the mode can only decrease, so this must terminate  *\/
+	/ * the mode can only decrease, so this must terminate  *\/
 	if (ap_mode != conn->mode) {
 		kfree(elems);
 		goto again;
@@ -1453,7 +1453,7 @@ free:
 EXPORT_SYMBOL_IF_MAC80211_KUNIT(ieee80211_determine_chan_mode);
 
 static void ieee80211_send_uhr_omp_req_dbe(struct ieee80211_sub_if_data *sdata,
-					   u16 link_mask, bool initial)
+					   link_mask: u16, initial: bool)
 {
 	struct ieee80211_mle_basic_common_info *common;
 	struct ieee80211_mle_per_sta_profile *per_sta;
@@ -1496,7 +1496,7 @@ static void ieee80211_send_uhr_omp_req_dbe(struct ieee80211_sub_if_data *sdata,
 	       3 + sizeof(*mle) + sizeof(*common) +
 	       IEEE80211_MLD_MAX_NUM_LINKS *
 		(2 + sizeof(*per_sta) +
-		 3 + sizeof(*tuple) /* single tuple for each link  *\/);
+		 3 + sizeof(*tuple) / * single tuple for each link  *\/);
 
 	skb = alloc_skb(size, GFP_KERNEL);
 	if (!skb)
@@ -1516,7 +1516,7 @@ static void ieee80211_send_uhr_omp_req_dbe(struct ieee80211_sub_if_data *sdata,
 		IEEE80211_PROTECTED_UHR_ACTION_LINK_RECONFIG_REQUEST;
 
 	sdata->u.mgd.dialog_token_alloc++;
-	/*
+	/ *
 	 * NOTE:
 	 * Driver and FW might both send these frames, and iwlwifi
 	 * decided that the driver uses odd numbers, FW uses even
@@ -1535,7 +1535,7 @@ static void ieee80211_send_uhr_omp_req_dbe(struct ieee80211_sub_if_data *sdata,
 	sdata->u.mgd.uhr_omp.dialog_token = sdata->u.mgd.dialog_token_alloc;
 	mgmt->u.action.uhr_link_reconf_req.dialog_token =
 		sdata->u.mgd.uhr_omp.dialog_token;
-	mgmt->u.action.uhr_link_reconf_req.type =
+	mgmt->u.action.uhr_link_reconf_req.r#type =
 		IEEE80211_UHR_LINK_RECONFIG_REQUEST_OMP_REQUEST;
 
 	skb_put_u8(skb, WLAN_EID_EXTENSION);
@@ -1565,7 +1565,7 @@ static void ieee80211_send_uhr_omp_req_dbe(struct ieee80211_sub_if_data *sdata,
 					 IEEE80211_MLE_STA_CONTROL_LINK_ID) |
 			le16_encode_bits(IEEE80211_MLE_STA_RECONF_CONTROL_OPERATION_TYPE_UHR_OMP_UPD,
 					 IEEE80211_MLE_STA_RECONF_CONTROL_OPERATION_TYPE);
-		per_sta->sta_info_len = 1; /* includes itself  *\/
+		per_sta->sta_info_len = 1; / * includes itself  *\/
 
 		skb_put_u8(skb, WLAN_EID_EXTENSION);
 		skb_put_u8(skb, 1 + sizeof(*tuple));
@@ -1593,7 +1593,7 @@ static void ieee80211_send_uhr_omp_req_dbe(struct ieee80211_sub_if_data *sdata,
 
 static int ieee80211_config_bw(struct ieee80211_link_data *link,
 			       struct ieee802_11_elems *elems,
-			       bool update, u64 *changed, u16 stype)
+			       update: bool, u64 *changed, stype: u16)
 {
 	struct ieee80211_channel *channel = link->conf->chanreq.oper.chan;
 	struct cfg80211_chan_def ap_chandef;
@@ -1627,14 +1627,14 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 		frame = "reassoc response";
 		break;
 	case IEEE80211_STYPE_ACTION:
-		/* the only action frame that gets here  *\/
+		/ * the only action frame that gets here  *\/
 		frame = "ML reconf response";
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/* don't track any bandwidth changes in legacy/S1G modes  *\/
+	/ * don't track any bandwidth changes in legacy/S1G modes  *\/
 	if (link->u.mgd.conn.mode == IEEE80211_CONN_MODE_LEGACY ||
 	    link->u.mgd.conn.mode == IEEE80211_CONN_MODE_S1G)
 		return 0;
@@ -1660,7 +1660,7 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 	ieee80211_set_chanreq_ap(sdata, &chanreq, &link->u.mgd.conn,
 				 &ap_chandef);
 
-	/*
+	/ *
 	 * if HT operation mode changed store the new one -
 	 * this may be applicable even if channel is identical
 	  *\/
@@ -1672,7 +1672,7 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 		}
 	}
 
-	/*
+	/ *
 	 * Downgrade the new channel if we associated with restricted
 	 * bandwidth capabilities. For example, if we associated as a
 	 * 20 MHz STA to a 40 MHz AP (due to regulatory, capabilities
@@ -1683,7 +1683,7 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 			ieee80211_min_bw_limit_from_chandef(&chanreq.oper))
 		ieee80211_chandef_downgrade(&chanreq.oper, NULL);
 
-	/* TPE element is not present in (re)assoc/ML reconfig response  *\/
+	/ * TPE element is not present in (re)assoc/ML reconfig response  *\/
 	if (stype == IEEE80211_STYPE_BEACON &&
 	    ap_chandef.chan->band == NL80211_BAND_6GHZ &&
 	    link->u.mgd.conn.mode >= IEEE80211_CONN_MODE_HE) {
@@ -1695,7 +1695,7 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 		}
 	}
 
-	/*
+	/ *
 	 * Beacons don't have the full information - we need to track
 	 * critical updates for NPCA parameters etc. For now only handle
 	 * association and link reconfiguration response.
@@ -1727,7 +1727,7 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 			params.moplen =
 				le32_get_bits(npca->params,
 					      IEEE80211_UHR_NPCA_PARAMS_MOPLEN);
-			/* don't change the enabled bit yet  *\/
+			/ * don't change the enabled bit yet  *\/
 			params.enabled = link->conf->npca.enabled;
 		}
 
@@ -1763,7 +1763,7 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 		return 0;
 	}
 
-	/*
+	/ *
 	 * We're tracking the current AP here, so don't do any further checks
 	 * here. This keeps us from playing ping-pong with regulatory, without
 	 * it the following can happen (for example):
@@ -1792,11 +1792,11 @@ static int ieee80211_config_bw(struct ieee80211_link_data *link,
 
 update_npca:
 	chanctx_conf = sdata_dereference(link->conf->chanctx_conf, sdata);
-	/* must be non-NULL when update is true  *\/
+	/ * must be non-NULL when update is true  *\/
 	if (WARN_ON(!chanctx_conf))
 		return -EINVAL;
 
-	/*
+	/ *
 	 * If we're not associated yet (i.e. in the process associating)
 	 * then the chanctx code won't have enabled NPCA in the link, so
 	 * if the channel context was set up with NPCA for us, enable it.
@@ -1810,10 +1810,10 @@ update_npca:
 	return 0;
 }
 
-/* frame sending functions  *\/
+/ * frame sending functions  *\/
 
 static void ieee80211_add_ht_ie(struct ieee80211_sub_if_data *sdata,
-				struct sk_buff *skb, u8 ap_ht_param,
+				struct sk_buff *skb, ap_ht_param: u8,
 				struct ieee80211_supported_band *sband,
 				struct ieee80211_channel *channel,
 				enum ieee80211_smps_mode smps,
@@ -1829,7 +1829,7 @@ static void ieee80211_add_ht_ie(struct ieee80211_sub_if_data *sdata,
 	memcpy(&ht_cap, &sband->ht_cap, sizeof(ht_cap));
 	ieee80211_apply_htcap_overrides(sdata, &ht_cap);
 
-	/* determine capability flags  *\/
+	/ * determine capability flags  *\/
 	cap = ht_cap.cap;
 
 	switch (ap_ht_param & IEEE80211_HT_PARAM_CHA_SEC_OFFSET) {
@@ -1847,7 +1847,7 @@ static void ieee80211_add_ht_ie(struct ieee80211_sub_if_data *sdata,
 		break;
 	}
 
-	/*
+	/ *
 	 * If 40 MHz was disabled associate as though we weren't
 	 * capable of 40 MHz -- some broken APs will never fall
 	 * back to trying to transmit in 20 MHz.
@@ -1857,7 +1857,7 @@ static void ieee80211_add_ht_ie(struct ieee80211_sub_if_data *sdata,
 		cap &= ~IEEE80211_HT_CAP_SGI_40;
 	}
 
-	/* set SM PS mode properly  *\/
+	/ * set SM PS mode properly  *\/
 	cap &= ~IEEE80211_HT_CAP_SM_PS;
 	switch (smps) {
 	case IEEE80211_SMPS_AUTOMATIC:
@@ -1878,12 +1878,12 @@ static void ieee80211_add_ht_ie(struct ieee80211_sub_if_data *sdata,
 		break;
 	}
 
-	/* reserve and fill IE  *\/
+	/ * reserve and fill IE  *\/
 	pos = skb_put(skb, sizeof(struct ieee80211_ht_cap) + 2);
 	ieee80211_ie_build_ht_cap(pos, &ht_cap, cap);
 }
 
-/* This function determines vht capability flags for the association
+/ * This function determines vht capability flags for the association
  * and builds the IE.
  * Note - the function returns true to own the MU-MIMO capability
   *\/
@@ -1897,7 +1897,7 @@ static bool ieee80211_add_vht_ie(struct ieee80211_sub_if_data *sdata,
 	u8 *pos;
 	u32 cap;
 	struct ieee80211_sta_vht_cap vht_cap;
-	u32 mask, ap_bf_sts, our_bf_sts;
+	mask: u32, ap_bf_sts, our_bf_sts;
 	bool mu_mimo_owner = false;
 
 	BUILD_BUG_ON(sizeof(vht_cap) != sizeof(sband->vht_cap));
@@ -1905,7 +1905,7 @@ static bool ieee80211_add_vht_ie(struct ieee80211_sub_if_data *sdata,
 	memcpy(&vht_cap, &sband->vht_cap, sizeof(vht_cap));
 	ieee80211_apply_vhtcap_overrides(sdata, &vht_cap);
 
-	/* determine capability flags  *\/
+	/ * determine capability flags  *\/
 	cap = vht_cap.cap;
 
 	if (conn->bw_limit <= IEEE80211_CONN_BW_LIMIT_80) {
@@ -1913,7 +1913,7 @@ static bool ieee80211_add_vht_ie(struct ieee80211_sub_if_data *sdata,
 		cap &= ~IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK;
 	}
 
-	/*
+	/ *
 	 * Some APs apparently get confused if our capabilities are better
 	 * than theirs, so restrict what we advertise in the assoc request.
 	  *\/
@@ -1927,7 +1927,7 @@ static bool ieee80211_add_vht_ie(struct ieee80211_sub_if_data *sdata,
 			cap &= ~IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE;
 	}
 
-	/*
+	/ *
 	 * If some other vif is using the MU-MIMO capability we cannot associate
 	 * using MU-MIMO - this will lead to contradictions in the group-id
 	 * mechanism.
@@ -1960,7 +1960,7 @@ static bool ieee80211_add_vht_ie(struct ieee80211_sub_if_data *sdata,
 		cap |= ap_bf_sts;
 	}
 
-	/* reserve and fill IE  *\/
+	/ * reserve and fill IE  *\/
 	pos = skb_put(skb, sizeof(struct ieee80211_vht_cap) + 2);
 	ieee80211_ie_build_vht_cap(pos, &vht_cap, cap);
 
@@ -1977,7 +1977,7 @@ static void ieee80211_assoc_add_rates(struct ieee80211_local *local,
 
 	if (assoc_data->supp_rates_len &&
 	    !ieee80211_hw_check(&local->hw, STRICT)) {
-		/*
+		/ *
 		 * Get all rates supported by the device and the AP as
 		 * some APs don't like getting a superset of their rates
 		 * in the association request (e.g. D-Link DAP 1353 in
@@ -1988,7 +1988,7 @@ static void ieee80211_assoc_add_rates(struct ieee80211_local *local,
 					 assoc_data->supp_rates_len,
 					 &rates);
 	} else {
-		/*
+		/ *
 		 * In case AP not provide any supported rates information
 		 * before association, we send information element(s) with
 		 * all rates that we support.
@@ -2019,20 +2019,20 @@ static size_t ieee80211_add_before_ht_elems(struct sk_buff *skb,
 		WLAN_EID_QOS_CAPA,
 		WLAN_EID_RRM_ENABLED_CAPABILITIES,
 		WLAN_EID_MOBILITY_DOMAIN,
-		WLAN_EID_FAST_BSS_TRANSITION,	/* reassoc only  *\/
-		WLAN_EID_RIC_DATA,		/* reassoc only  *\/
+		WLAN_EID_FAST_BSS_TRANSITION,	/ * reassoc only  *\/
+		WLAN_EID_RIC_DATA,		/ * reassoc only  *\/
 		WLAN_EID_SUPPORTED_REGULATORY_CLASSES,
 	};
 	static const u8 after_ric[] = {
 		WLAN_EID_SUPPORTED_REGULATORY_CLASSES,
 		WLAN_EID_HT_CAPABILITY,
 		WLAN_EID_BSS_COEX_2040,
-		/* luckily this is almost always there  *\/
+		/ * luckily this is almost always there  *\/
 		WLAN_EID_EXT_CAPABILITY,
 		WLAN_EID_QOS_TRAFFIC_CAPA,
 		WLAN_EID_TIM_BCAST_REQ,
 		WLAN_EID_INTERWORKING,
-		/* 60 GHz (Multi-band, DMG, MMS) can't happen  *\/
+		/ * 60 GHz (Multi-band, DMG, MMS) can't happen  *\/
 		WLAN_EID_VHT_CAPABILITY,
 		WLAN_EID_OPMODE_NOTIF,
 	};
@@ -2057,7 +2057,7 @@ static size_t ieee80211_add_before_vht_elems(struct sk_buff *skb,
 					     size_t offset)
 {
 	static const u8 before_vht[] = {
-		/*
+		/ *
 		 * no need to list the ones split off before HT
 		 * or generated here
 		  *\/
@@ -2066,14 +2066,14 @@ static size_t ieee80211_add_before_vht_elems(struct sk_buff *skb,
 		WLAN_EID_QOS_TRAFFIC_CAPA,
 		WLAN_EID_TIM_BCAST_REQ,
 		WLAN_EID_INTERWORKING,
-		/* 60 GHz (Multi-band, DMG, MMS) can't happen  *\/
+		/ * 60 GHz (Multi-band, DMG, MMS) can't happen  *\/
 	};
 	size_t noffset;
 
 	if (!elems_len)
 		return offset;
 
-	/* RIC already taken care of in ieee80211_add_before_ht_elems()  *\/
+	/ * RIC already taken care of in ieee80211_add_before_ht_elems()  *\/
 	noffset = ieee80211_ie_split(elems, elems_len,
 				     before_vht, ARRAY_SIZE(before_vht),
 				     offset);
@@ -2088,26 +2088,26 @@ static size_t ieee80211_add_before_he_elems(struct sk_buff *skb,
 					    size_t offset)
 {
 	static const u8 before_he[] = {
-		/*
+		/ *
 		 * no need to list the ones split off before VHT
 		 * or generated here
 		  *\/
 		WLAN_EID_OPMODE_NOTIF,
 		WLAN_EID_EXTENSION, WLAN_EID_EXT_FUTURE_CHAN_GUIDANCE,
-		/* 11ai elements  *\/
+		/ * 11ai elements  *\/
 		WLAN_EID_EXTENSION, WLAN_EID_EXT_FILS_SESSION,
 		WLAN_EID_EXTENSION, WLAN_EID_EXT_FILS_PUBLIC_KEY,
 		WLAN_EID_EXTENSION, WLAN_EID_EXT_FILS_KEY_CONFIRM,
 		WLAN_EID_EXTENSION, WLAN_EID_EXT_FILS_HLP_CONTAINER,
 		WLAN_EID_EXTENSION, WLAN_EID_EXT_FILS_IP_ADDR_ASSIGN,
-		/* TODO: add 11ah/11aj/11ak elements  *\/
+		/ * TODO: add 11ah/11aj/11ak elements  *\/
 	};
 	size_t noffset;
 
 	if (!elems_len)
 		return offset;
 
-	/* RIC already taken care of in ieee80211_add_before_ht_elems()  *\/
+	/ * RIC already taken care of in ieee80211_add_before_ht_elems()  *\/
 	noffset = ieee80211_ie_split(elems, elems_len,
 				     before_he, ARRAY_SIZE(before_he),
 				     offset);
@@ -2121,7 +2121,7 @@ static size_t ieee80211_add_before_reg_conn(struct sk_buff *skb,
 					    size_t offset)
 {
 	static const u8 before_reg_conn[] = {
-		/*
+		/ *
 		 * no need to list the ones split off before HE
 		 * or generated here
 		  *\/
@@ -2140,12 +2140,12 @@ static size_t ieee80211_add_before_reg_conn(struct sk_buff *skb,
 	return noffset;
 }
 
-#define PRESENT_ELEMS_MAX	8
-#define PRESENT_ELEM_EXT_OFFS	0x100
+pub const PRESENT_ELEMS_MAX: u32 = 8;
+pub const PRESENT_ELEM_EXT_OFFS: u32 = 0x100;
 
 static void
 ieee80211_assoc_add_ml_elem(struct ieee80211_sub_if_data *sdata,
-			    struct sk_buff *skb, u16 capab,
+			    struct sk_buff *skb, capab: u16,
 			    const struct element *ext_capa,
 			    const u16 *present_elems,
 			    struct ieee80211_mgd_assoc_data *assoc_data);
@@ -2177,7 +2177,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 	int i;
 
 #define ADD_PRESENT_ELEM(id) do {					\
-	/* need a last for termination - we use 0 == SSID  *\/		\
+	/ * need a last for termination - we use 0 == SSID  *\/		\
 	if (!WARN_ON(present_elems_len >= PRESENT_ELEMS_MAX - 1))	\
 		present_elems[present_elems_len++] = (id);		\
 } while (0)
@@ -2191,7 +2191,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 		smps_mode = IEEE80211_SMPS_OFF;
 
 	if (link) {
-		/*
+		/ *
 		 * 5/10 MHz scenarios are only viable without MLO, in which
 		 * case this pointer should be used ... All of this is a bit
 		 * unclear though, not sure this even works at all.
@@ -2228,13 +2228,13 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 		pos = skb_put(skb, 4);
 		*pos++ = WLAN_EID_PWR_CAPABILITY;
 		*pos++ = 2;
-		*pos++ = 0; /* min tx power  *\/
-		 /* max tx power  *\/
+		*pos++ = 0; / * min tx power  *\/
+		 / * max tx power  *\/
 		*pos++ = ieee80211_chandef_max_power(&chandef);
 		ADD_PRESENT_ELEM(WLAN_EID_PWR_CAPABILITY);
 	}
 
-	/*
+	/ *
 	 * Per spec, we shouldn't include the list of channels if we advertise
 	 * support for extended channel switching, but we've always done that;
 	 * (for now?) apply this restriction only on the (new) 6 GHz band.
@@ -2243,7 +2243,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 	    (sband->band != NL80211_BAND_6GHZ ||
 	     !ext_capa || ext_capa->datalen < 1 ||
 	     !(ext_capa->data[0] & WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING))) {
-		/* TODO: get this in reg domain format  *\/
+		/ * TODO: get this in reg domain format  *\/
 		pos = skb_put(skb, 2 * sband->n_channels + 2);
 		*pos++ = WLAN_EID_SUPPORTED_CHANNELS;
 		*pos++ = 2 * sband->n_channels;
@@ -2251,12 +2251,12 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 			int cf = sband->channels[i].center_freq;
 
 			*pos++ = ieee80211_frequency_to_channel(cf);
-			*pos++ = 1; /* one channel in the subband *\/
+			*pos++ = 1; / * one channel in the subband *\/
 		}
 		ADD_PRESENT_ELEM(WLAN_EID_SUPPORTED_CHANNELS);
 	}
 
-	/* if present, add any custom IEs that go before HT  *\/
+	/ * if present, add any custom IEs that go before HT  *\/
 	offset = ieee80211_add_before_ht_elems(skb, extra_elems,
 					       extra_elems_len,
 					       offset);
@@ -2270,7 +2270,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 		ADD_PRESENT_ELEM(WLAN_EID_HT_CAPABILITY);
 	}
 
-	/* if present, add any custom IEs that go before VHT  *\/
+	/ * if present, add any custom IEs that go before VHT  *\/
 	offset = ieee80211_add_before_vht_elems(skb, extra_elems,
 						extra_elems_len,
 						offset);
@@ -2288,7 +2288,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 		ADD_PRESENT_ELEM(WLAN_EID_VHT_CAPABILITY);
 	}
 
-	/* if present, add any custom IEs that go before HE  *\/
+	/ * if present, add any custom IEs that go before HE  *\/
 	offset = ieee80211_add_before_he_elems(skb, extra_elems,
 					       extra_elems_len,
 					       offset);
@@ -2301,16 +2301,16 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 			ieee80211_put_he_6ghz_cap(skb, sdata, smps_mode);
 	}
 
-	/*
+	/ *
 	 * if present, add any custom IEs that go before regulatory
 	 * connectivity element
 	  *\/
 	offset = ieee80211_add_before_reg_conn(skb, extra_elems,
 					       extra_elems_len, offset);
 
-	/* only add this on the assoc link, not in per-STA profiles  *\/
+	/ * only add this on the assoc link, not in per-STA profiles  *\/
 	if (link) {
-		/*
+		/ *
 		 * as per Section E.2.7 of IEEE 802.11 REVme D7.0, non-AP STA
 		 * capable of operating on the 6 GHz band shall transmit
 		 * regulatory connectivity element.
@@ -2318,7 +2318,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 		ieee80211_put_reg_conn(sdata, skb);
 	}
 
-	/*
+	/ *
 	 * careful - need to know about all the present elems before
 	 * calling ieee80211_assoc_add_ml_elem(), so add these if
 	 * we're going to put them after the ML element
@@ -2332,7 +2332,7 @@ ieee80211_add_link_elems(struct ieee80211_sub_if_data *sdata,
 		ieee80211_assoc_add_ml_elem(sdata, skb, orig_capab, ext_capa,
 					    present_elems, assoc_data);
 
-	/* crash if somebody gets it wrong  *\/
+	/ * crash if somebody gets it wrong  *\/
 	present_elems = NULL;
 
 	if (assoc_data->link[link_id].conn.mode >= IEEE80211_CONN_MODE_EHT)
@@ -2371,10 +2371,10 @@ static void ieee80211_add_non_inheritance_elem(struct sk_buff *skb,
 		u16 elem = outer[i];
 		bool have_inner = false;
 
-		/* should at least be sorted in the sense of normal -> ext  *\/
+		/ * should at least be sorted in the sense of normal -> ext  *\/
 		WARN_ON(at_extension && elem < PRESENT_ELEM_EXT_OFFS);
 
-		/* switch to extension list  *\/
+		/ * switch to extension list  *\/
 		if (!at_extension && elem >= PRESENT_ELEM_EXT_OFFS) {
 			at_extension = true;
 			if (!list_len)
@@ -2401,11 +2401,11 @@ static void ieee80211_add_non_inheritance_elem(struct sk_buff *skb,
 		added = true;
 	}
 
-	/* if we added a list but no extension list, make a zero-len one  *\/
+	/ * if we added a list but no extension list, make a zero-len one  *\/
 	if (added && (!at_extension || !list_len))
 		skb_put_u8(skb, 0);
 
-	/* if nothing added remove extension element completely  *\/
+	/ * if nothing added remove extension element completely  *\/
 	if (!added)
 		skb_trim(skb, skb_len);
 	else
@@ -2414,7 +2414,7 @@ static void ieee80211_add_non_inheritance_elem(struct sk_buff *skb,
 
 static void
 ieee80211_assoc_add_ml_elem(struct ieee80211_sub_if_data *sdata,
-			    struct sk_buff *skb, u16 capab,
+			    struct sk_buff *skb, capab: u16,
 			    const struct element *ext_capa,
 			    const u16 *outer_present_elems,
 			    struct ieee80211_mgd_assoc_data *assoc_data)
@@ -2447,14 +2447,14 @@ ieee80211_assoc_add_ml_elem(struct ieee80211_sub_if_data *sdata,
 			    IEEE80211_MLC_BASIC_PRES_MLD_CAPA_OP);
 	common = skb_put(skb, sizeof(*common));
 	common->len = sizeof(*common) +
-		      2;  /* MLD capa/ops  *\/
+		      2;  / * MLD capa/ops  *\/
 	memcpy(common->mld_mac_addr, sdata->vif.addr, ETH_ALEN);
 
-	/* add EML_CAPA only if needed, see Draft P802.11be_D2.1, 35.3.17  *\/
+	/ * add EML_CAPA only if needed, see Draft P802.11be_D2.1, 35.3.17  *\/
 	if (eml_capa &
 	    cpu_to_le16((IEEE80211_EML_CAP_EMLSR_SUPP |
 			 IEEE80211_EML_CAP_EMLMR_SUPPORT))) {
-		common->len += 2; /* EML capabilities  *\/
+		common->len += 2; / * EML capabilities  *\/
 		ml_elem->control |=
 			cpu_to_le16(IEEE80211_MLC_BASIC_PRES_EML_CAPA);
 		skb_put_data(skb, &eml_capa, sizeof(eml_capa));
@@ -2491,10 +2491,10 @@ ieee80211_assoc_add_ml_elem(struct ieee80211_sub_if_data *sdata,
 				   IEEE80211_MLE_STA_CONTROL_COMPLETE_PROFILE |
 				   IEEE80211_MLE_STA_CONTROL_STA_MAC_ADDR_PRESENT);
 		skb_put_data(skb, &ctrl, sizeof(ctrl));
-		skb_put_u8(skb, 1 + ETH_ALEN); /* STA Info Length  *\/
+		skb_put_u8(skb, 1 + ETH_ALEN); / * STA Info Length  *\/
 		skb_put_data(skb, assoc_data->link[link_id].addr,
 			     ETH_ALEN);
-		/*
+		/ *
 		 * Now add the contents of the (re)association request,
 		 * but the "listen interval" and "current AP address"
 		 * (if applicable) are skipped. So we only have
@@ -2543,23 +2543,23 @@ ieee80211_link_common_elems_size(struct ieee80211_sub_if_data *sdata,
 
 	sband = local->hw.wiphy->bands[cbss->channel->band];
 
-	/* add STA profile elements length  *\/
+	/ * add STA profile elements length  *\/
 	size += elems_len;
 
-	/* and supported rates length  *\/
+	/ * and supported rates length  *\/
 	size += 4 + sband->n_bitrates;
 
-	/* supported channels  *\/
+	/ * supported channels  *\/
 	size += 2 + 2 * sband->n_channels;
 
 	iftd = ieee80211_get_sband_iftype_data(sband, iftype);
 	if (iftd)
 		size += iftd->vendor_elems.len;
 
-	/* power capability  *\/
+	/ * power capability  *\/
 	size += 4;
 
-	/* HT, VHT, HE, EHT  *\/
+	/ * HT, VHT, HE, EHT  *\/
 	size += 2 + sizeof(struct ieee80211_ht_cap);
 	size += 2 + sizeof(struct ieee80211_vht_cap);
 	size += 2 + 1 + sizeof(struct ieee80211_he_cap_elem) +
@@ -2601,7 +2601,7 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 	size_t size;
 	int ret;
 
-	/* we know it's writable, cast away the const  *\/
+	/ * we know it's writable, cast away the const  *\/
 	if (assoc_data->ie_len)
 		ext_capa = (void *)cfg80211_find_elem(WLAN_EID_EXT_CAPABILITY,
 						      assoc_data->ie,
@@ -2610,12 +2610,12 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
 	size = local->hw.extra_tx_headroom +
-	       sizeof(*mgmt) + /* bit too much but doesn't matter  *\/
-	       2 + assoc_data->ssid_len + /* SSID  *\/
-	       assoc_data->ie_len + /* extra IEs  *\/
-	       (assoc_data->fils_kek_len ? 16 /* AES-SIV  *\/ : 0) +
-	       9 /* WMM  *\/ +
-	       4 /* regulatory connectivity, if 6 GHz is supported  *\/;
+	       sizeof(*mgmt) + / * bit too much but doesn't matter  *\/
+	       2 + assoc_data->ssid_len + / * SSID  *\/
+	       assoc_data->ie_len + / * extra IEs  *\/
+	       (assoc_data->fils_kek_len ? 16 / * AES-SIV  *\/ : 0) +
+	       9 / * WMM  *\/ +
+	       4 / * regulatory connectivity, if 6 GHz is supported  *\/;
 
 	for (link_id = 0; link_id < IEEE80211_MLD_MAX_NUM_LINKS; link_id++) {
 		struct cfg80211_bss *cbss = assoc_data->link[link_id].bss;
@@ -2629,28 +2629,28 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 		size += ieee80211_link_common_elems_size(sdata, iftype, cbss,
 							 elems_len);
 
-		/* non-inheritance element  *\/
+		/ * non-inheritance element  *\/
 		size += 2 + 2 + PRESENT_ELEMS_MAX;
 
-		/* should be the same across all BSSes  *\/
+		/ * should be the same across all BSSes  *\/
 		if (cbss->capability & WLAN_CAPABILITY_PRIVACY)
 			capab |= WLAN_CAPABILITY_PRIVACY;
 	}
 
 	if (ieee80211_vif_is_mld(&sdata->vif)) {
-		/* consider the multi-link element with STA profile  *\/
+		/ * consider the multi-link element with STA profile  *\/
 		size += sizeof(struct ieee80211_multi_link_elem);
-		/* max common info field in basic multi-link element  *\/
+		/ * max common info field in basic multi-link element  *\/
 		size += sizeof(struct ieee80211_mle_basic_common_info) +
-			2 + /* capa & op  *\/
-			2 + /* ext capa & op  *\/
-			2; /* EML capa  *\/
+			2 + / * capa & op  *\/
+			2 + / * ext capa & op  *\/
+			2; / * EML capa  *\/
 
-		/* The capability elements were already considered above  *\/
+		/ * The capability elements were already considered above  *\/
 		size += (n_links - 1) *
-			(1 + 1 + /* subelement ID/length  *\/
-			 2 + /* STA control  *\/
-			 1 + ETH_ALEN + 2 /* STA Info field  *\/);
+			(1 + 1 + / * subelement ID/length  *\/
+			 2 + / * STA control  *\/
+			 1 + ETH_ALEN + 2 / * STA Info field  *\/);
 	}
 
 	link = sdata_dereference(sdata->link[assoc_data->assoc_link_id], sdata);
@@ -2669,7 +2669,7 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 	if (ifmgd->flags & IEEE80211_STA_ENABLE_RRM)
 		capab |= WLAN_CAPABILITY_RADIO_MEASURE;
 
-	/* Set MBSSID support for HE AP if needed  *\/
+	/ * Set MBSSID support for HE AP if needed  *\/
 	if (ieee80211_hw_check(&local->hw, SUPPORTS_ONLY_HE_MULTI_BSSID) &&
 	    link->u.mgd.conn.mode >= IEEE80211_CONN_MODE_HE &&
 	    ext_capa && ext_capa->datalen >= 3)
@@ -2701,14 +2701,14 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 		info.subtype = IEEE80211_STYPE_ASSOC_REQ;
 	}
 
-	/* SSID  *\/
+	/ * SSID  *\/
 	pos = skb_put(skb, 2 + assoc_data->ssid_len);
 	ie_start = pos;
 	*pos++ = WLAN_EID_SSID;
 	*pos++ = assoc_data->ssid_len;
 	memcpy(pos, assoc_data->ssid, assoc_data->ssid_len);
 
-	/*
+	/ *
 	 * This bit is technically reserved, so it shouldn't matter for either
 	 * the AP or us, but it also means we shouldn't set it. However, we've
 	 * always set it in the past, and apparently some EHT APs check that
@@ -2720,7 +2720,7 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 	    !ieee80211_hw_check(&local->hw, STRICT))
 		capab |= WLAN_CAPABILITY_ESS;
 
-	/* add the elements for the assoc (main) link  *\/
+	/ * add the elements for the assoc (main) link  *\/
 	link_capab = capab;
 	offset = ieee80211_add_link_elems(sdata, skb, &link_capab,
 					  ext_capa,
@@ -2730,7 +2730,7 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 					  present_elems, assoc_data);
 	put_unaligned_le16(link_capab, capab_pos);
 
-	/* if present, add any custom non-vendor IEs  *\/
+	/ * if present, add any custom non-vendor IEs  *\/
 	if (assoc_data->ie_len) {
 		noffset = ieee80211_ie_split_vendor(assoc_data->ie,
 						    assoc_data->ie_len,
@@ -2751,7 +2751,7 @@ static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
 		pos = ieee80211_add_wmm_info_ie(skb_put(skb, 9), qos_info);
 	}
 
-	/* add any remaining custom (i.e. vendor specific here) IEs  *\/
+	/ * add any remaining custom (i.e. vendor specific here) IEs  *\/
 	if (assoc_data->ie_len) {
 		noffset = assoc_data->ie_len;
 		skb_put_data(skb, assoc_data->ie + offset, noffset - offset);
@@ -2814,7 +2814,7 @@ void ieee80211_send_pspoll(struct ieee80211_local *local,
 
 void ieee80211_send_nullfunc(struct ieee80211_local *local,
 			     struct ieee80211_sub_if_data *sdata,
-			     bool powersave)
+			     powersave: bool)
 {
 	struct sk_buff *skb;
 	struct ieee80211_hdr_3addr *nullfunc;
@@ -2849,7 +2849,7 @@ void ieee80211_send_4addr_nullfunc(struct ieee80211_local *local,
 	struct ieee80211_hdr *nullfunc;
 	__le16 fc;
 
-	if (WARN_ON(sdata->vif.type != NL80211_IFTYPE_STATION))
+	if (WARN_ON(sdata->vif.r#type != NL80211_IFTYPE_STATION))
 		return;
 
 	skb = dev_alloc_skb(local->hw.extra_tx_headroom + 30);
@@ -2872,7 +2872,7 @@ void ieee80211_send_4addr_nullfunc(struct ieee80211_local *local,
 	ieee80211_tx_skb(sdata, skb);
 }
 
-/* spectrum management related things  *\/
+/ * spectrum management related things  *\/
 static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 				      struct wiphy_work *work)
 {
@@ -2895,7 +2895,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 	if (!link->conf->csa_active)
 		return;
 
-	/*
+	/ *
 	 * If the link isn't active (now), we cannot wait for beacons, won't
 	 * have a reserved chanctx, etc. Just switch over the chandef and
 	 * update cfg80211 directly.
@@ -2919,7 +2919,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 		if (WARN_ON(!link_sta))
 			return;
 
-		/*
+		/ *
 		 * If the link was somehow deactivated in the middle of enabling
 		 * DBE while waiting for a response, this could be stuck, reset.
 		  *\/
@@ -2932,7 +2932,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 		return;
 	}
 
-	/*
+	/ *
 	 * using reservation isn't immediate as it may be deferred until later
 	 * with multi-vif. once reservation is complete it will re-schedule the
 	 * work with no reserved_chanctx so verify chandef to check if it
@@ -2940,7 +2940,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 	  *\/
 
 	if (link->reserved_chanctx) {
-		/*
+		/ *
 		 * with multi-vif csa driver may call ieee80211_csa_finish()
 		 * many times while waiting for other interfaces to use their
 		 * reservations
@@ -2970,7 +2970,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 
 	link->u.mgd.csa.waiting_bcn = true;
 
-	/*
+	/ *
 	 * The next beacon really should always be different, so this should
 	 * have no effect whatsoever. However, some APs (we observed this in
 	 * an Asus AXE11000), the beacon after the CSA might be identical to
@@ -2980,7 +2980,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 	  *\/
 	link->u.mgd.beacon_crc_valid = false;
 
-	/* apply new TPE restrictions immediately on the new channel  *\/
+	/ * apply new TPE restrictions immediately on the new channel  *\/
 	if (link->u.mgd.csa.ap_chandef.chan->band == NL80211_BAND_6GHZ &&
 	    link->u.mgd.conn.mode >= IEEE80211_CONN_MODE_HE) {
 		ieee80211_rearrange_tpe(&link->u.mgd.csa.tpe,
@@ -2994,7 +2994,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 		}
 	}
 
-	/*
+	/ *
 	 * It is not necessary to reset these timers if any link does not
 	 * have an active CSA and that link still receives the beacons
 	 * when other links have active CSA.
@@ -3004,7 +3004,7 @@ static void ieee80211_csa_switch_work(struct wiphy *wiphy,
 			return;
 	}
 
-	/*
+	/ *
 	 * Reset the beacon monitor and connection monitor timers when CSA
 	 * is active for all links in MLO when channel switch occurs in all
 	 * the links.
@@ -3049,7 +3049,7 @@ static void ieee80211_chswitch_post_beacon(struct ieee80211_link_data *link)
 	if (WARN_ON(!link_sta))
 		return;
 
-	/*
+	/ *
 	 * If DBE was being activated and CSA happened, this could be
 	 * on a wrong value. Reset it.
 	  *\/
@@ -3059,7 +3059,7 @@ static void ieee80211_chswitch_post_beacon(struct ieee80211_link_data *link)
 				  link->link_id);
 }
 
-void ieee80211_chswitch_done(struct ieee80211_vif *vif, bool success,
+void ieee80211_chswitch_done(struct ieee80211_vif *vif, success: bool,
 			     unsigned int link_id)
 {
 	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
@@ -3120,9 +3120,9 @@ struct sta_csa_rnr_iter_data {
 };
 
 static enum cfg80211_rnr_iter_ret
-ieee80211_sta_csa_rnr_iter(void *_data, u8 type,
+ieee80211_sta_csa_rnr_iter(void *_data, r#type: u8,
 			   const struct ieee80211_neighbor_ap_info *info,
-			   const u8 *tbtt_info, u8 tbtt_info_len)
+			   const u8 *tbtt_info, tbtt_info_len: u8)
 {
 	struct sta_csa_rnr_iter_data *data = _data;
 	struct ieee80211_link_data *link = data->link;
@@ -3149,9 +3149,9 @@ ieee80211_sta_csa_rnr_iter(void *_data, u8 type,
 	if (link_id != data->link->link_id)
 		return RNR_ITER_CONTINUE;
 
-	/* we found the entry for our link!  *\/
+	/ * we found the entry for our link!  *\/
 
-	/* this AP is confused, it had this right before ... just disconnect  *\/
+	/ * this AP is confused, it had this right before ... just disconnect  *\/
 	if (!ieee80211_operating_class_to_band(info->op_class, &band)) {
 		link_info(link,
 			  "AP now has invalid operating class in RNR, disconnect\n");
@@ -3176,7 +3176,7 @@ ieee80211_sta_other_link_csa_disappeared(struct ieee80211_link_data *link,
 		.link = link,
 	};
 
-	/*
+	/ *
 	 * If we get here, we see a beacon from another link without
 	 * CSA still being reported for it, so now we have to check
 	 * if the CSA was aborted or completed. This may not even be
@@ -3191,7 +3191,7 @@ ieee80211_sta_other_link_csa_disappeared(struct ieee80211_link_data *link,
 
 	data.mld_id = ieee80211_mle_get_mld_id((const void *)elems->ml_basic);
 
-	/*
+	/ *
 	 * So in order to do this, iterate the RNR element(s) and see
 	 * what channel is reported now.
 	  *\/
@@ -3206,7 +3206,7 @@ ieee80211_sta_other_link_csa_disappeared(struct ieee80211_link_data *link,
 		return;
 	}
 
-	/*
+	/ *
 	 * If it doesn't match the CSA, then assume it aborted. This
 	 * may erroneously detect that it was _not_ aborted when it
 	 * was in fact aborted, but only changed the bandwidth or the
@@ -3226,7 +3226,7 @@ enum ieee80211_csa_source {
 
 static void
 ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
-				 u64 timestamp, u32 device_timestamp,
+				 timestamp: u64, device_timestamp: u32,
 				 struct ieee802_11_elems *full_elems,
 				 struct ieee802_11_elems *csa_elems,
 				 enum ieee80211_csa_source source)
@@ -3275,7 +3275,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 
 		link->u.mgd.csa.tpe = csa_elems->csa_tpe;
 	} else {
-		/*
+		/ *
 		 * If there was no per-STA profile for this link, we
 		 * get called with csa_elems == NULL. This of course means
 		 * there are no CSA elements, so set res=1 indicating
@@ -3285,7 +3285,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 	}
 
 	if (res < 0) {
-		/* ignore this case, not a protected frame  *\/
+		/ * ignore this case, not a protected frame  *\/
 		if (source == IEEE80211_CSA_SOURCE_UNPROT_ACTION)
 			return;
 		goto drop_connection;
@@ -3295,12 +3295,12 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 		switch (source) {
 		case IEEE80211_CSA_SOURCE_PROT_ACTION:
 		case IEEE80211_CSA_SOURCE_UNPROT_ACTION:
-			/* already processing - disregard action frames  *\/
+			/ * already processing - disregard action frames  *\/
 			return;
 		case IEEE80211_CSA_SOURCE_BEACON:
 			if (link->u.mgd.csa.waiting_bcn) {
 				ieee80211_chswitch_post_beacon(link);
-				/*
+				/ *
 				 * If the CSA is still present after the switch
 				 * we need to consider it as a new CSA (possibly
 				 * to self). This happens by not returning here
@@ -3315,15 +3315,15 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 			}
 			break;
 		case IEEE80211_CSA_SOURCE_OTHER_LINK:
-			/* active link: we want to see the beacon to continue  *\/
+			/ * active link: we want to see the beacon to continue  *\/
 			if (ieee80211_vif_link_active(&sdata->vif,
 						      link->link_id))
 				return;
 
-			/* switch work ran, so just complete the process  *\/
+			/ * switch work ran, so just complete the process  *\/
 			if (link->u.mgd.csa.waiting_bcn) {
 				ieee80211_chswitch_post_beacon(link);
-				/*
+				/ *
 				 * If the CSA is still present after the switch
 				 * we need to consider it as a new CSA (possibly
 				 * to self). This happens by not returning here
@@ -3332,20 +3332,20 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 				break;
 			}
 
-			/* link still has CSA but we already know, do nothing  *\/
+			/ * link still has CSA but we already know, do nothing  *\/
 			if (!res)
 				return;
 
-			/* check in the RNR if the CSA aborted  *\/
+			/ * check in the RNR if the CSA aborted  *\/
 			ieee80211_sta_other_link_csa_disappeared(link,
 								 full_elems);
 			return;
 		}
 	}
 
-	/* no active CSA nor a new one  *\/
+	/ * no active CSA nor a new one  *\/
 	if (res) {
-		/*
+		/ *
 		 * However, we may have stopped queues when receiving a public
 		 * action frame that couldn't be protected, if it had the quiet
 		 * bit set. This is a trade-off, we want to be quiet as soon as
@@ -3359,7 +3359,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 		return;
 	}
 
-	/*
+	/ *
 	 * We don't really trust public action frames, but block queues (go to
 	 * quiet mode) for them anyway, we should get a beacon soon to either
 	 * know what the CSA really is, or figure out the public action frame
@@ -3411,7 +3411,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 		return;
 	}
 
-	/*
+	/ *
 	 * Drop all TDLS peers on the affected link - either we disconnect or
 	 * move to a different channel from this point on. There's no telling
 	 * what our peer will do.
@@ -3472,14 +3472,14 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 					  link->link_id, csa_ie.count,
 					  csa_ie.mode);
 
-	/* we may have to handle timeout for deactivated link in software  *\/
+	/ * we may have to handle timeout for deactivated link in software  *\/
 	now = ktime_get_boottime();
 	csa_time_tu = (max_t(int, csa_ie.count, 1) - 1) * link->conf->beacon_int;
 	link->u.mgd.csa.time = now + us_to_ktime(ieee80211_tu_to_usec(csa_time_tu));
 
 	if (ieee80211_vif_link_active(&sdata->vif, link->link_id) &&
 	    local->ops->channel_switch) {
-		/*
+		/ *
 		 * Use driver's channel switch callback, the driver will
 		 * later call ieee80211_chswitch_done(). It may deactivate
 		 * the link as well, we handle that elsewhere and queue
@@ -3489,13 +3489,13 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 		return;
 	}
 
-	/* channel switch handled in software  *\/
+	/ * channel switch handled in software  *\/
 	wiphy_hrtimer_work_queue(local->hw.wiphy,
 				 &link->u.mgd.csa.switch_work,
 				 link->u.mgd.csa.time - now);
 	return;
  drop_connection:
-	/*
+	/ *
 	 * This is just so that the disconnect flow will know that
 	 * we were trying to switch channel and failed. In case the
 	 * mode is 1 (we are not allowed to Tx), we will know not to
@@ -3516,9 +3516,9 @@ struct sta_bss_param_ch_cnt_data {
 };
 
 static enum cfg80211_rnr_iter_ret
-ieee80211_sta_bss_param_ch_cnt_iter(void *_data, u8 type,
+ieee80211_sta_bss_param_ch_cnt_iter(void *_data, r#type: u8,
 				    const struct ieee80211_neighbor_ap_info *info,
-				    const u8 *tbtt_info, u8 tbtt_info_len)
+				    const u8 *tbtt_info, tbtt_info_len: u8)
 {
 	struct sta_bss_param_ch_cnt_data *data = _data;
 	struct ieee80211_sub_if_data *sdata = data->sdata;
@@ -3580,7 +3580,7 @@ ieee80211_mgd_update_bss_param_ch_cnt(struct ieee80211_sub_if_data *sdata,
 	bss_param_ch_cnt =
 		ieee80211_mle_get_bss_param_ch_cnt((const void *)elems->ml_basic);
 
-	/*
+	/ *
 	 * Update bss_param_ch_cnt_link_id even if bss_param_ch_cnt
 	 * didn't change to indicate that we got a beacon on our own
 	 * link.
@@ -3594,7 +3594,7 @@ ieee80211_mgd_update_bss_param_ch_cnt(struct ieee80211_sub_if_data *sdata,
 
 static bool
 ieee80211_find_80211h_pwr_constr(struct ieee80211_channel *channel,
-				 const u8 *country_ie, u8 country_ie_len,
+				 const u8 *country_ie, country_ie_len: u8,
 				 const u8 *pwr_constr_elem,
 				 int *chan_pwr, int *pwr_reduction)
 {
@@ -3603,7 +3603,7 @@ ieee80211_find_80211h_pwr_constr(struct ieee80211_channel *channel,
 	int i, chan_increment;
 	bool have_chan_pwr = false;
 
-	/* Invalid IE  *\/
+	/ * Invalid IE  *\/
 	if (country_ie_len % 2 || country_ie_len < IEEE80211_COUNTRY_IE_MIN_LEN)
 		return false;
 
@@ -3623,7 +3623,7 @@ ieee80211_find_80211h_pwr_constr(struct ieee80211_channel *channel,
 		chan_increment = 4;
 		break;
 	case NL80211_BAND_6GHZ:
-		/*
+		/ *
 		 * In the 6 GHz band, the "maximum transmit power level"
 		 * field in the triplets is reserved, and thus will be
 		 * zero and we shouldn't use it to control TX power.
@@ -3633,7 +3633,7 @@ ieee80211_find_80211h_pwr_constr(struct ieee80211_channel *channel,
 		return false;
 	}
 
-	/* find channel  *\/
+	/ * find channel  *\/
 	while (country_ie_len >= 3) {
 		u8 first_channel = triplet->chans.first_channel;
 
@@ -3667,7 +3667,7 @@ static void ieee80211_find_cisco_dtpc(struct ieee80211_channel *channel,
 				      const u8 *cisco_dtpc_ie,
 				      int *pwr_level)
 {
-	/* From practical testing, the first data byte of the DTPC element
+	/ * From practical testing, the first data byte of the DTPC element
 	 * seems to contain the requested dBm level, and the CLI on Cisco
 	 * APs clearly state the range is -127 to 127 dBm, which indicates
 	 * a signed byte, although it seemingly never actually goes negative.
@@ -3679,7 +3679,7 @@ static void ieee80211_find_cisco_dtpc(struct ieee80211_channel *channel,
 static u64 ieee80211_handle_pwr_constr(struct ieee80211_link_data *link,
 				       struct ieee80211_channel *channel,
 				       struct ieee80211_mgmt *mgmt,
-				       const u8 *country_ie, u8 country_ie_len,
+				       const u8 *country_ie, country_ie_len: u8,
 				       const u8 *pwr_constr_ie,
 				       const u8 *cisco_dtpc_ie)
 {
@@ -3691,7 +3691,7 @@ static u64 ieee80211_handle_pwr_constr(struct ieee80211_link_data *link,
 	__le16 capab = mgmt->u.probe_resp.capab_info;
 
 	if (ieee80211_is_s1g_beacon(mgmt->frame_control))
-		return 0;	/* TODO  *\/
+		return 0;	/ * TODO  *\/
 
 	if (country_ie &&
 	    (capab & cpu_to_le16(WLAN_CAPABILITY_SPECTRUM_MGMT) ||
@@ -3712,7 +3712,7 @@ static u64 ieee80211_handle_pwr_constr(struct ieee80211_link_data *link,
 	if (!has_80211h_pwr && !has_cisco_pwr)
 		return 0;
 
-	/* If we have both 802.11h and Cisco DTPC, apply both limits
+	/ * If we have both 802.11h and Cisco DTPC, apply both limits
 	 * by picking the smallest of the two power levels advertised.
 	  *\/
 	if (has_80211h_pwr &&
@@ -3726,7 +3726,7 @@ static u64 ieee80211_handle_pwr_constr(struct ieee80211_link_data *link,
 			  "Limiting TX power to %d (%d - %d) dBm as advertised by %pM\n",
 			  pwr_level_80211h, chan_pwr, pwr_reduction_80211h,
 			  link->u.mgd.bssid);
-	} else {  /* has_cisco_pwr is always true here.  *\/
+	} else {  / * has_cisco_pwr is always true here.  *\/
 		new_ap_level = pwr_level_cisco;
 
 		if (link->ap_power_level == new_ap_level)
@@ -3743,13 +3743,13 @@ static u64 ieee80211_handle_pwr_constr(struct ieee80211_link_data *link,
 	return 0;
 }
 
-/* powersave  *\/
+/ * powersave  *\/
 static void ieee80211_enable_ps(struct ieee80211_local *local,
 				struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_conf *conf = &local->hw.conf;
 
-	/*
+	/ *
 	 * If we are scanning right now then the parameters will
 	 * take effect when scan finishes.
 	  *\/
@@ -3820,7 +3820,7 @@ static bool ieee80211_powersave_allowed(struct ieee80211_sub_if_data *sdata)
 	return authorized;
 }
 
-/* need to hold RTNL or interface lock  *\/
+/ * need to hold RTNL or interface lock  *\/
 void ieee80211_recalc_ps(struct ieee80211_local *local)
 {
 	struct ieee80211_sub_if_data *sdata, *found = NULL;
@@ -3836,15 +3836,15 @@ void ieee80211_recalc_ps(struct ieee80211_local *local)
 	list_for_each_entry(sdata, &local->interfaces, list) {
 		if (!ieee80211_sdata_running(sdata))
 			continue;
-		if (sdata->vif.type == NL80211_IFTYPE_AP) {
-			/* If an AP vif is found, then disable PS
+		if (sdata->vif.r#type == NL80211_IFTYPE_AP) {
+			/ * If an AP vif is found, then disable PS
 			 * by setting the count to zero thereby setting
 			 * ps_sdata to NULL.
 			  *\/
 			count = 0;
 			break;
 		}
-		if (sdata->vif.type != NL80211_IFTYPE_STATION)
+		if (sdata->vif.r#type != NL80211_IFTYPE_STATION)
 			continue;
 		found = sdata;
 		count++;
@@ -3858,7 +3858,7 @@ void ieee80211_recalc_ps(struct ieee80211_local *local)
 			timeout = 100;
 		local->hw.conf.dynamic_ps_timeout = timeout;
 
-		/* If the TIM IE is invalid, pretend the value is 1  *\/
+		/ * If the TIM IE is invalid, pretend the value is 1  *\/
 		if (!dtimper)
 			dtimper = 1;
 
@@ -3910,7 +3910,7 @@ void ieee80211_dynamic_ps_enable_work(struct wiphy *wiphy,
 	unsigned long flags;
 	int q;
 
-	/* can only happen when PS was just disabled anyway  *\/
+	/ * can only happen when PS was just disabled anyway  *\/
 	if (!sdata)
 		return;
 
@@ -3920,7 +3920,7 @@ void ieee80211_dynamic_ps_enable_work(struct wiphy *wiphy,
 		return;
 
 	if (local->hw.conf.dynamic_ps_timeout > 0) {
-		/* don't enter PS if TX frames are pending  *\/
+		/ * don't enter PS if TX frames are pending  *\/
 		if (drv_tx_frames_pending(local)) {
 			mod_timer(&local->dynamic_ps_timer, jiffies +
 				  msecs_to_jiffies(
@@ -3928,7 +3928,7 @@ void ieee80211_dynamic_ps_enable_work(struct wiphy *wiphy,
 			return;
 		}
 
-		/*
+		/ *
 		 * transmission can be stopped by others which leads to
 		 * dynamic_ps_timer expiry. Postpone the ps timer if it
 		 * is not the actual idle state.
@@ -3955,7 +3955,7 @@ void ieee80211_dynamic_ps_enable_work(struct wiphy *wiphy,
 				  local->hw.conf.dynamic_ps_timeout));
 		} else {
 			ieee80211_send_nullfunc(local, sdata, true);
-			/* Flush to get the tx status of nullfunc frame  *\/
+			/ * Flush to get the tx status of nullfunc frame  *\/
 			ieee80211_flush_queues(local, sdata, false);
 		}
 	}
@@ -4024,7 +4024,7 @@ __ieee80211_sta_handle_tspec_ac_params(struct ieee80211_sub_if_data *sdata)
 
 		switch (tx_tspec->action) {
 		case TX_TSPEC_ACTION_STOP_DOWNGRADE:
-			/* take the original parameters  *\/
+			/ * take the original parameters  *\/
 			if (drv_conf_tx(local, &sdata->deflink, ac,
 					&sdata->deflink.tx_conf[ac]))
 				link_err(&sdata->deflink,
@@ -4040,13 +4040,13 @@ __ieee80211_sta_handle_tspec_ac_params(struct ieee80211_sub_if_data *sdata)
 				ret = true;
 				break;
 			}
-			/* downgrade next lower non-ACM AC  *\/
+			/ * downgrade next lower non-ACM AC  *\/
 			for (non_acm_ac = ac + 1;
 			     non_acm_ac < IEEE80211_NUM_ACS;
 			     non_acm_ac++)
 				if (!(sdata->wmm_acm & BIT(7 - 2 * non_acm_ac)))
 					break;
-			/* Usually the loop will result in using BK even if it
+			/ * Usually the loop will result in using BK even if it
 			 * requires admission control, but such a configuration
 			 * makes no sense and we have to transmit somehow - the
 			 * AC selection does the same thing.
@@ -4068,7 +4068,7 @@ __ieee80211_sta_handle_tspec_ac_params(struct ieee80211_sub_if_data *sdata)
 						 HZ - now + 1);
 			break;
 		case TX_TSPEC_ACTION_NONE:
-			/* nothing now  *\/
+			/ * nothing now  *\/
 			break;
 		}
 	}
@@ -4116,7 +4116,7 @@ void ieee80211_mgd_set_link_qos_params(struct ieee80211_link_data *link)
 	}
 }
 
-/* MLME  *\/
+/ * MLME  *\/
 static bool
 _ieee80211_sta_wmm_params(struct ieee80211_local *local,
 			  struct ieee80211_link_data *link,
@@ -4140,14 +4140,14 @@ _ieee80211_sta_wmm_params(struct ieee80211_local *local,
 	if (!wmm_param)
 		return false;
 
-	if (wmm_param_len < 8 || wmm_param[5] /* version  *\/ != 1)
+	if (wmm_param_len < 8 || wmm_param[5] / * version  *\/ != 1)
 		return false;
 
 	if (ifmgd->flags & IEEE80211_STA_UAPSD_ENABLED)
 		uapsd_queues = ifmgd->uapsd_queues;
 
 	count = wmm_param[6] & 0x0f;
-	/* -1 is the initial value of ifmgd->mu_edca_last_param_set.
+	/ * -1 is the initial value of ifmgd->mu_edca_last_param_set.
 	 * if mu_edca was preset before and now it disappeared tell
 	 * the driver about it.
 	  *\/
@@ -4170,41 +4170,41 @@ _ieee80211_sta_wmm_params(struct ieee80211_local *local,
 		bool uapsd = false;
 
 		switch (aci) {
-		case 1: /* AC_BK  *\/
+		case 1: / * AC_BK  *\/
 			ac = IEEE80211_AC_BK;
 			if (acm)
-				sdata->wmm_acm |= BIT(1) | BIT(2); /* BK/-  *\/
+				sdata->wmm_acm |= BIT(1) | BIT(2); / * BK/-  *\/
 			if (uapsd_queues & IEEE80211_WMM_IE_STA_QOSINFO_AC_BK)
 				uapsd = true;
 			params[ac].mu_edca = !!mu_edca;
 			if (mu_edca)
 				params[ac].mu_edca_param_rec = mu_edca->ac_bk;
 			break;
-		case 2: /* AC_VI  *\/
+		case 2: / * AC_VI  *\/
 			ac = IEEE80211_AC_VI;
 			if (acm)
-				sdata->wmm_acm |= BIT(4) | BIT(5); /* CL/VI  *\/
+				sdata->wmm_acm |= BIT(4) | BIT(5); / * CL/VI  *\/
 			if (uapsd_queues & IEEE80211_WMM_IE_STA_QOSINFO_AC_VI)
 				uapsd = true;
 			params[ac].mu_edca = !!mu_edca;
 			if (mu_edca)
 				params[ac].mu_edca_param_rec = mu_edca->ac_vi;
 			break;
-		case 3: /* AC_VO  *\/
+		case 3: / * AC_VO  *\/
 			ac = IEEE80211_AC_VO;
 			if (acm)
-				sdata->wmm_acm |= BIT(6) | BIT(7); /* VO/NC  *\/
+				sdata->wmm_acm |= BIT(6) | BIT(7); / * VO/NC  *\/
 			if (uapsd_queues & IEEE80211_WMM_IE_STA_QOSINFO_AC_VO)
 				uapsd = true;
 			params[ac].mu_edca = !!mu_edca;
 			if (mu_edca)
 				params[ac].mu_edca_param_rec = mu_edca->ac_vo;
 			break;
-		case 0: /* AC_BE  *\/
+		case 0: / * AC_BE  *\/
 		default:
 			ac = IEEE80211_AC_BE;
 			if (acm)
-				sdata->wmm_acm |= BIT(0) | BIT(3); /* BE/EE  *\/
+				sdata->wmm_acm |= BIT(0) | BIT(3); / * BE/EE  *\/
 			if (uapsd_queues & IEEE80211_WMM_IE_STA_QOSINFO_AC_BE)
 				uapsd = true;
 			params[ac].mu_edca = !!mu_edca;
@@ -4237,7 +4237,7 @@ _ieee80211_sta_wmm_params(struct ieee80211_local *local,
 		ieee80211_regulatory_limit_wmm_params(sdata, &params[ac], ac);
 	}
 
-	/* WMM specification requires all 4 ACIs.  *\/
+	/ * WMM specification requires all 4 ACIs.  *\/
 	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
 		if (params[ac].cw_min == 0) {
 			link_info(link,
@@ -4265,7 +4265,7 @@ ieee80211_sta_wmm_params(struct ieee80211_local *local,
 
 	ieee80211_mgd_set_link_qos_params(link);
 
-	/* enable WMM or activate new settings  *\/
+	/ * enable WMM or activate new settings  *\/
 	link->conf->qos = true;
 	return true;
 }
@@ -4286,7 +4286,7 @@ static void ieee80211_stop_poll(struct ieee80211_sub_if_data *sdata)
 }
 
 static u64 ieee80211_handle_bss_capability(struct ieee80211_link_data *link,
-					   u16 capab, bool erp_valid, u8 erp)
+					   capab: u16, erp_valid: bool, erp: u8)
 {
 	struct ieee80211_bss_conf *bss_conf = link->conf;
 	struct ieee80211_supported_band *sband;
@@ -4338,7 +4338,7 @@ static u64 ieee80211_link_set_associated(struct ieee80211_link_data *link,
 	struct ieee80211_bss *bss = (void *)cbss->priv;
 	u64 changed = BSS_CHANGED_QOS;
 
-	/* not really used in MLO  *\/
+	/ * not really used in MLO  *\/
 	sdata->u.mgd.beacon_timeout =
 		usecs_to_jiffies(ieee80211_tu_to_usec(beacon_loss_count *
 						      bss_conf->beacon_int));
@@ -4383,7 +4383,7 @@ static u64 ieee80211_link_set_associated(struct ieee80211_link_data *link,
 		bss_conf->beacon_rate = NULL;
 	}
 
-	/* Tell the driver to monitor connection quality (if supported)  *\/
+	/ * Tell the driver to monitor connection quality (if supported)  *\/
 	if (sdata->vif.driver_flags & IEEE80211_VIF_SUPPORTS_CQM_RSSI &&
 	    bss_conf->cqm_rssi_thold)
 		changed |= BSS_CHANGED_CQM;
@@ -4423,14 +4423,14 @@ static void ieee80211_set_associated(struct ieee80211_sub_if_data *sdata,
 		changed[link_id] |= ieee80211_link_set_associated(link, cbss);
 	}
 
-	/* just to be sure  *\/
+	/ * just to be sure  *\/
 	ieee80211_stop_poll(sdata);
 
 	ieee80211_led_assoc(local, 1);
 
 	vif_cfg->assoc = 1;
 
-	/* Enable ARP filtering  *\/
+	/ * Enable ARP filtering  *\/
 	if (vif_cfg->arp_addr_cnt)
 		vif_changed |= BSS_CHANGED_ARP_FILTER;
 
@@ -4465,7 +4465,7 @@ static void ieee80211_set_associated(struct ieee80211_sub_if_data *sdata,
 
 	ieee80211_recalc_ps(local);
 
-	/* leave this here to not change ordering in non-MLO cases  *\/
+	/ * leave this here to not change ordering in non-MLO cases  *\/
 	if (!ieee80211_vif_is_mld(&sdata->vif))
 		ieee80211_recalc_smps(sdata, &sdata->deflink);
 	ieee80211_recalc_ps_vif(sdata);
@@ -4506,7 +4506,7 @@ static void ieee80211_ml_reconf_reset(struct ieee80211_sub_if_data *sdata)
 }
 
 static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
-				   u16 stype, u16 reason, bool tx,
+				   stype: u16, reason: u16, tx: bool,
 				   u8 *frame_buf)
 {
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
@@ -4563,14 +4563,14 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 		tx = tx_link_found;
 	}
 
-	/* other links will be destroyed  *\/
+	/ * other links will be destroyed  *\/
 	sdata->deflink.conf->bss = NULL;
 	sdata->deflink.conf->epcs_support = false;
 	sdata->deflink.smps_mode = IEEE80211_SMPS_OFF;
 
 	netif_carrier_off(sdata->dev);
 
-	/*
+	/ *
 	 * if we want to get out of ps before disassoc (why?) we have
 	 * to do it before sending disassoc, as otherwise the null-packet
 	 * won't be valid.
@@ -4581,13 +4581,13 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	}
 	local->ps_sdata = NULL;
 
-	/* disable per-vif ps  *\/
+	/ * disable per-vif ps  *\/
 	ieee80211_recalc_ps_vif(sdata);
 
-	/* make sure ongoing transmission finishes  *\/
+	/ * make sure ongoing transmission finishes  *\/
 	synchronize_net();
 
-	/*
+	/ *
 	 * drop any frame before deauth/disassoc, this can be data or
 	 * management frame. Since we are disconnecting, we should not
 	 * insist sending these frames which can take time and delay
@@ -4602,7 +4602,7 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 					       sdata->vif.cfg.ap_addr, stype,
 					       reason, true, frame_buf);
 
-		/* flush out frame - make sure the deauth was actually sent  *\/
+		/ * flush out frame - make sure the deauth was actually sent  *\/
 		ieee80211_flush_queues(local, sdata, false);
 
 		drv_mgd_complete_tx(sdata->local, sdata, &info);
@@ -4612,24 +4612,24 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 					       reason, false, frame_buf);
 	}
 
-	/* clear AP addr only after building the needed mgmt frames  *\/
+	/ * clear AP addr only after building the needed mgmt frames  *\/
 	eth_zero_addr(sdata->deflink.u.mgd.bssid);
 	eth_zero_addr(sdata->vif.cfg.ap_addr);
 
 	sdata->vif.cfg.ssid_len = 0;
 
-	/* Remove TDLS peers  *\/
+	/ * Remove TDLS peers  *\/
 	__sta_info_flush(sdata, false, -1, ap_sta);
 
 	if (sdata->vif.driver_flags & IEEE80211_VIF_REMOVE_AP_AFTER_DISASSOC) {
-		/* Only move the AP state  *\/
+		/ * Only move the AP state  *\/
 		sta_info_move_state(ap_sta, IEEE80211_STA_NONE);
 	} else {
-		/* Remove AP peer  *\/
+		/ * Remove AP peer  *\/
 		sta_info_flush(sdata, -1);
 	}
 
-	/* finally reset all BSS / config parameters  *\/
+	/ * finally reset all BSS / config parameters  *\/
 	if (!ieee80211_vif_is_mld(&sdata->vif))
 		changed |= ieee80211_reset_erp_info(sdata);
 
@@ -4641,13 +4641,13 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	memset(&sdata->vif.bss_conf.p2p_noa_attr, 0,
 	       sizeof(sdata->vif.bss_conf.p2p_noa_attr));
 
-	/* on the next assoc, re-program HT/VHT parameters  *\/
+	/ * on the next assoc, re-program HT/VHT parameters  *\/
 	memset(&ifmgd->ht_capa, 0, sizeof(ifmgd->ht_capa));
 	memset(&ifmgd->ht_capa_mask, 0, sizeof(ifmgd->ht_capa_mask));
 	memset(&ifmgd->vht_capa, 0, sizeof(ifmgd->vht_capa));
 	memset(&ifmgd->vht_capa_mask, 0, sizeof(ifmgd->vht_capa_mask));
 
-	/*
+	/ *
 	 * reset MU-MIMO ownership and group data in default link,
 	 * if used, other links are destroyed
 	  *\/
@@ -4664,14 +4664,14 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	timer_delete_sync(&local->dynamic_ps_timer);
 	wiphy_work_cancel(local->hw.wiphy, &local->dynamic_ps_enable_work);
 
-	/* Disable ARP filtering  *\/
+	/ * Disable ARP filtering  *\/
 	if (sdata->vif.cfg.arp_addr_cnt)
 		changed |= BSS_CHANGED_ARP_FILTER;
 
 	sdata->vif.bss_conf.qos = false;
 	if (!ieee80211_vif_is_mld(&sdata->vif)) {
 		changed |= BSS_CHANGED_QOS;
-		/* The BSSID (not really interesting) and HT changed  *\/
+		/ * The BSSID (not really interesting) and HT changed  *\/
 		changed |= BSS_CHANGED_BSSID | BSS_CHANGED_HT;
 		ieee80211_bss_info_change_notify(sdata, changed);
 	} else {
@@ -4679,14 +4679,14 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	}
 
 	if (sdata->vif.driver_flags & IEEE80211_VIF_REMOVE_AP_AFTER_DISASSOC) {
-		/*
+		/ *
 		 * After notifying the driver about the disassoc,
 		 * remove the ap sta.
 		  *\/
 		sta_info_flush(sdata, -1);
 	}
 
-	/* disassociated - set to defaults now  *\/
+	/ * disassociated - set to defaults now  *\/
 	ieee80211_set_wmm_default(&sdata->deflink, false, false);
 
 	timer_delete_sync(&sdata->u.mgd.conn_mon_timer);
@@ -4717,7 +4717,7 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	sdata->deflink.u.mgd.csa.ignored_same_chan = false;
 	ieee80211_vif_unblock_queues_csa(sdata);
 
-	/* existing TX TSPEC sessions no longer exist  *\/
+	/ * existing TX TSPEC sessions no longer exist  *\/
 	memset(ifmgd->tx_tspec, 0, sizeof(ifmgd->tx_tspec));
 	wiphy_delayed_work_cancel(local->hw.wiphy, &ifmgd->tx_tspec_wk);
 
@@ -4744,7 +4744,7 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
 	wiphy_work_cancel(sdata->local->hw.wiphy,
 			  &ifmgd->teardown_ttlm_work);
 
-	/* if disconnection happens in the middle of the ML reconfiguration
+	/ * if disconnection happens in the middle of the ML reconfiguration
 	 * flow, cfg80211 must called to release the BSS references obtained
 	 * when the flow started.
 	  *\/
@@ -4781,7 +4781,7 @@ static void ieee80211_reset_ap_probe(struct ieee80211_sub_if_data *sdata)
 	if (ieee80211_hw_check(&sdata->local->hw, CONNECTION_MONITOR))
 		return;
 
-	/*
+	/ *
 	 * We've received a probe response, but are not sure whether
 	 * we have or will be receiving any beacons or data, so let's
 	 * schedule the timers again, just in case.
@@ -4795,7 +4795,7 @@ static void ieee80211_reset_ap_probe(struct ieee80211_sub_if_data *sdata)
 
 static void ieee80211_sta_tx_wmm_ac_notify(struct ieee80211_sub_if_data *sdata,
 					   struct ieee80211_hdr *hdr,
-					   u16 tx_time)
+					   tx_time: u16)
 {
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 	u16 tid;
@@ -4838,7 +4838,7 @@ static void ieee80211_sta_tx_wmm_ac_notify(struct ieee80211_sub_if_data *sdata,
 }
 
 void ieee80211_sta_tx_notify(struct ieee80211_sub_if_data *sdata,
-			     struct ieee80211_hdr *hdr, bool ack, u16 tx_time)
+			     struct ieee80211_hdr *hdr, ack: bool, tx_time: u16)
 {
 	ieee80211_sta_tx_wmm_ac_notify(sdata, hdr, tx_time);
 
@@ -4876,7 +4876,7 @@ static void ieee80211_mgd_probe_ap_send(struct ieee80211_sub_if_data *sdata)
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
-	/*
+	/ *
 	 * Try sending broadcast probe requests for the last three
 	 * probe requests after the first ones failed since some
 	 * buggy APs only support broadcast probe requests.
@@ -4884,7 +4884,7 @@ static void ieee80211_mgd_probe_ap_send(struct ieee80211_sub_if_data *sdata)
 	if (ifmgd->probe_send_count >= unicast_limit)
 		dst = NULL;
 
-	/*
+	/ *
 	 * When the hardware reports an accurate Tx ACK status, it's
 	 * better to send a nullfunc frame instead of a probe request,
 	 * as it will kick us off the AP quickly if we aren't associated
@@ -4914,7 +4914,7 @@ static void ieee80211_mgd_probe_ap_send(struct ieee80211_sub_if_data *sdata)
 }
 
 static void ieee80211_mgd_probe_ap(struct ieee80211_sub_if_data *sdata,
-				   bool beacon)
+				   beacon: bool)
 {
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 	bool already = false;
@@ -4931,7 +4931,7 @@ static void ieee80211_mgd_probe_ap(struct ieee80211_sub_if_data *sdata,
 		return;
 
 	if (sdata->local->suspending) {
-		/* reschedule after resume  *\/
+		/ * reschedule after resume  *\/
 		ieee80211_reset_ap_probe(sdata);
 		return;
 	}
@@ -4944,7 +4944,7 @@ static void ieee80211_mgd_probe_ap(struct ieee80211_sub_if_data *sdata,
 		ieee80211_cqm_beacon_loss_notify(&sdata->vif, GFP_KERNEL);
 	}
 
-	/*
+	/ *
 	 * The driver/our work has already reported this event or the
 	 * connection monitoring has kicked in and we have already sent
 	 * a probe request. Or maybe the AP died and the driver keeps
@@ -4981,7 +4981,7 @@ struct sk_buff *ieee80211_ap_probereq_get(struct ieee80211_hw *hw,
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
-	if (WARN_ON(sdata->vif.type != NL80211_IFTYPE_STATION ||
+	if (WARN_ON(sdata->vif.r#type != NL80211_IFTYPE_STATION ||
 		    ieee80211_vif_is_mld(&sdata->vif)))
 		return NULL;
 
@@ -5014,8 +5014,8 @@ struct sk_buff *ieee80211_ap_probereq_get(struct ieee80211_hw *hw,
 EXPORT_SYMBOL(ieee80211_ap_probereq_get);
 
 static void ieee80211_report_disconnect(struct ieee80211_sub_if_data *sdata,
-					const u8 *buf, size_t len, bool tx,
-					u16 reason, bool reconnect)
+					const u8 *buf, size_t len, tx: bool,
+					reason: u16, reconnect: bool)
 {
 	struct ieee80211_event event = {
 		.type = MLME_EVENT,
@@ -5045,7 +5045,7 @@ static void __ieee80211_disconnect(struct ieee80211_sub_if_data *sdata)
 	if (!ifmgd->driver_disconnect) {
 		unsigned int link_id;
 
-		/*
+		/ *
 		 * AP is probably out of range (or not reachable for another
 		 * reason) so remove the bss structs for that AP. In the case
 		 * of multi-link, it's not clear that all of them really are
@@ -5070,7 +5070,7 @@ static void __ieee80211_disconnect(struct ieee80211_sub_if_data *sdata)
 					WLAN_REASON_DEAUTH_LEAVING :
 					WLAN_REASON_DISASSOC_DUE_TO_INACTIVITY,
 			       true, frame_buf);
-	/* the other links will be destroyed  *\/
+	/ * the other links will be destroyed  *\/
 	sdata->vif.bss_conf.csa_active = false;
 	sdata->deflink.u.mgd.csa.waiting_bcn = false;
 	sdata->deflink.u.mgd.csa.blocked_tx = false;
@@ -5089,7 +5089,7 @@ static void ieee80211_uhr_omp_req_status(struct ieee80211_sub_if_data *sdata)
 	struct ieee80211_link_data *link;
 	struct sta_info *ap;
 
-	/* timer and queued RX could overlap  *\/
+	/ * timer and queued RX could overlap  *\/
 	if (!links)
 		return;
 
@@ -5112,7 +5112,7 @@ static void ieee80211_uhr_omp_req_status(struct ieee80211_sub_if_data *sdata)
 		if (!(links & BIT(link->link_id)))
 			continue;
 
-		/* only handle transition to enabled for now  *\/
+		/ * only handle transition to enabled for now  *\/
 		if (!link->u.mgd.conn.dbe_enabled)
 			continue;
 
@@ -5124,7 +5124,7 @@ static void ieee80211_uhr_omp_req_status(struct ieee80211_sub_if_data *sdata)
 		ieee80211_link_sta_update_rc_bw(link, link_sta);
 	}
 
-	/* next round - send pending frames if needed  *\/
+	/ * next round - send pending frames if needed  *\/
 
 	if (sdata->u.mgd.uhr_omp.pending_init) {
 		links = sdata->u.mgd.uhr_omp.pending_init;
@@ -5170,7 +5170,7 @@ ieee80211_process_uhr_link_reconf_notif(struct ieee80211_sub_if_data *sdata,
 					struct ieee80211_mgmt *mgmt,
 					size_t len)
 {
-	switch (mgmt->u.action.uhr_link_reconf_notif.type) {
+	switch (mgmt->u.action.uhr_link_reconf_notif.r#type) {
 	case IEEE80211_UHR_LINK_RECONFIG_NOTIFY_OMP_RESPONSE:
 		ieee80211_process_uhr_omp_resp(sdata, mgmt);
 		break;
@@ -5242,14 +5242,14 @@ void ieee80211_connection_loss(struct ieee80211_vif *vif)
 }
 EXPORT_SYMBOL(ieee80211_connection_loss);
 
-void ieee80211_disconnect(struct ieee80211_vif *vif, bool reconnect)
+void ieee80211_disconnect(struct ieee80211_vif *vif, reconnect: bool)
 {
 	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
 	struct ieee80211_hw *hw = &sdata->local->hw;
 
 	trace_api_disconnect(sdata, reconnect);
 
-	if (WARN_ON(sdata->vif.type != NL80211_IFTYPE_STATION))
+	if (WARN_ON(sdata->vif.r#type != NL80211_IFTYPE_STATION))
 		return;
 
 	sdata->u.mgd.driver_disconnect = true;
@@ -5259,7 +5259,7 @@ void ieee80211_disconnect(struct ieee80211_vif *vif, bool reconnect)
 EXPORT_SYMBOL(ieee80211_disconnect);
 
 static void ieee80211_destroy_auth_data(struct ieee80211_sub_if_data *sdata,
-					bool assoc,
+					assoc: bool,
 					struct ieee80211_prep_tx_info *info)
 {
 	struct ieee80211_mgd_auth_data *auth_data = sdata->u.mgd.auth_data;
@@ -5272,7 +5272,7 @@ static void ieee80211_destroy_auth_data(struct ieee80211_sub_if_data *sdata,
 		drv_mgd_complete_tx(sdata->local, sdata, info);
 
 	if (!assoc) {
-		/*
+		/ *
 		 * we are not authenticated yet, the only timer that could be
 		 * running is the timeout for the authentication response which
 		 * which is not relevant anymore.
@@ -5280,7 +5280,7 @@ static void ieee80211_destroy_auth_data(struct ieee80211_sub_if_data *sdata,
 		timer_delete_sync(&sdata->u.mgd.timer);
 		sta_info_destroy_addr(sdata, auth_data->ap_addr);
 
-		/* other links are destroyed  *\/
+		/ * other links are destroyed  *\/
 		eth_zero_addr(sdata->deflink.u.mgd.bssid);
 		ieee80211_link_info_change_notify(sdata, &sdata->deflink,
 						  BSS_CHANGED_BSSID);
@@ -5315,7 +5315,7 @@ static void ieee80211_destroy_assoc_data(struct ieee80211_sub_if_data *sdata,
 		drv_mgd_complete_tx(sdata->local, sdata, info);
 
 	if (status != ASSOC_SUCCESS) {
-		/*
+		/ *
 		 * we are not associated yet, the only timer that could be
 		 * running is the timeout for the association response which
 		 * which is not relevant anymore.
@@ -5399,7 +5399,7 @@ static bool ieee80211_mark_sta_auth(struct ieee80211_sub_if_data *sdata)
 	ifmgd->auth_data->timeout_started = true;
 	run_again(sdata, ifmgd->auth_data->timeout);
 
-	/* move station state to auth  *\/
+	/ * move station state to auth  *\/
 	sta = sta_info_get(sdata, ap_addr);
 	if (!sta) {
 		WARN_ONCE(1, "%s: STA %pM not found", sdata->name, ap_addr);
@@ -5417,7 +5417,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 				   struct ieee80211_mgmt *mgmt, size_t len)
 {
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
-	u16 auth_alg, auth_transaction, status_code, encap_len;
+	auth_alg: u16, auth_transaction, status_code, encap_len;
 	struct ieee80211_event event = {
 		.type = MLME_EVENT,
 		.u.mlme.data = AUTH_EVENT,
@@ -5443,7 +5443,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 	auth_transaction = le16_to_cpu(mgmt->u.auth.auth_transaction);
 	status_code = le16_to_cpu(mgmt->u.auth.status_code);
 
-	/*
+	/ *
 	 * IEEE 802.1X Authentication:
 	 * Header + Authentication Algorithm Number(2 byte) + Authentication
 	 * Transaction Sequence Number(2 byte) + Status Code(2 byte) +
@@ -5474,7 +5474,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 			auth_fail = true;
 
 		if (!auth_fail) {
-			/* Indicates length of encapsulated EAPOL PDU  *\/
+			/ * Indicates length of encapsulated EAPOL PDU  *\/
 			encap_len = get_unaligned_le16(mgmt->u.auth.variable);
 		}
 		break;
@@ -5492,7 +5492,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 		     (auth_transaction == 1 &&
 		      (status_code == WLAN_STATUS_SAE_HASH_TO_ELEMENT ||
 		       status_code == WLAN_STATUS_SAE_PK)))) {
-			/* waiting for userspace now  *\/
+			/ * waiting for userspace now  *\/
 			ifmgd->auth_data->waiting = true;
 			ifmgd->auth_data->timeout =
 				jiffies + IEEE80211_AUTH_WAIT_SAE_RETRY;
@@ -5526,7 +5526,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 	case WLAN_AUTH_SHARED_KEY:
 		if (ifmgd->auth_data->expected_transaction != 4) {
 			ieee80211_auth_challenge(sdata, mgmt, len);
-			/* need another frame  *\/
+			/ * need another frame  *\/
 			return;
 		}
 		break;
@@ -5544,7 +5544,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 	     ifmgd->auth_data->expected_transaction == 2)) {
 		switch (ifmgd->auth_data->algorithm) {
 		case WLAN_AUTH_IEEE8021X:
-			/*
+			/ *
 			 * IEEE 802.1X authentication:
 			 * - When the full EAP handshake completes over the
 			 *   Authentication process, the responder sets the
@@ -5569,7 +5569,7 @@ static void ieee80211_rx_mgmt_auth(struct ieee80211_sub_if_data *sdata,
 			fallthrough;
 		default:
 			if (!ieee80211_mark_sta_auth(sdata))
-				return; /* ignore frame -- wait for timeout  *\/
+				return; / * ignore frame -- wait for timeout  *\/
 
 			break;
 		}
@@ -5591,7 +5591,7 @@ notify_driver:
 #define case_WLAN(type) \
 	case WLAN_REASON_##type: return #type
 
-const char *ieee80211_get_reason_code_string(u16 reason_code)
+const char *ieee80211_get_reason_code_string(reason_code: u16)
 {
 	switch (reason_code) {
 	case_WLAN(UNSPECIFIED);
@@ -5776,9 +5776,9 @@ static bool ieee80211_twt_bcast_support(struct ieee80211_sub_if_data *sdata,
 }
 
 static void ieee80211_epcs_changed(struct ieee80211_sub_if_data *sdata,
-				   bool enabled)
+				   enabled: bool)
 {
-	/* in any case this is called, dialog token should be reset  *\/
+	/ * in any case this is called, dialog token should be reset  *\/
 	sdata->u.mgd.epcs.dialog_token = 0;
 
 	if (sdata->u.mgd.epcs.enabled == enabled)
@@ -5891,7 +5891,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 	if (link_id == assoc_data->assoc_link_id) {
 		capab_info = le16_to_cpu(mgmt->u.assoc_resp.capab_info);
 
-		/*
+		/ *
 		 * we should not get to this flow unless the association was
 		 * successful, so set the status directly to success
 		  *\/
@@ -5910,7 +5910,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 				elems->prof->sta_info_len - 1;
 		int bss_param_ch_cnt;
 
-		/*
+		/ *
 		 * During parsing, we validated that these fields exist,
 		 * otherwise elems->prof would have been set to NULL.
 		  *\/
@@ -5995,7 +5995,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 		elems->ext_capab && elems->ext_capab_len >= 5 &&
 		(elems->ext_capab[4] & WLAN_EXT_CAPA5_TDLS_CH_SW_PROHIBITED);
 
-	/*
+	/ *
 	 * Some APs are erroneously not including some information in their
 	 * (re)association response frames. Try to recover by using the data
 	 * from the beacon or probe response. This seems to afflict mobile
@@ -6039,7 +6039,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 				   "AP bug: WMM param missing from AssocResp\n");
 		}
 
-		/*
+		/ *
 		 * Also check if we requested HT/VHT, otherwise the AP doesn't
 		 * have to include the IEs in the (re)association response.
 		  *\/
@@ -6074,7 +6074,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 		kfree(bss_elems);
 	}
 
-	/*
+	/ *
 	 * We previously checked these in the beacon/probe response, so
 	 * they should be present here. This is just a safety net.
 	 * Note that the ieee80211_config_bw() below would also check
@@ -6096,7 +6096,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 		goto out;
 	}
 
-	/* check/update if AP changed anything in assoc response vs. scan  *\/
+	/ * check/update if AP changed anything in assoc response vs. scan  *\/
 	if (ieee80211_config_bw(link, elems,
 				link_id == assoc_data->assoc_link_id,
 				changed,
@@ -6112,7 +6112,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 	}
 	sband = local->hw.wiphy->bands[link->conf->chanreq.oper.chan->band];
 
-	/* Set up internal HT/VHT capabilities  *\/
+	/ * Set up internal HT/VHT capabilities  *\/
 	if (elems->ht_cap_elem && link->u.mgd.conn.mode >= IEEE80211_CONN_MODE_HT)
 		ieee80211_ht_cap_ie_to_sta_ht_cap(sdata, &sband->ht_cap,
 						  elems->ht_cap_elem,
@@ -6123,7 +6123,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 		const struct ieee80211_vht_cap *bss_vht_cap = NULL;
 		const struct cfg80211_bss_ies *ies;
 
-		/*
+		/ *
 		 * Cisco AP module 9115 with FW 17.3 has a bug and sends a
 		 * too large maximum MPDU length in the association response
 		 * (indicating 12k) that it cannot actually process ...
@@ -6191,7 +6191,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 				!!(elems->eht_cap->fixed.mac_cap_info[0] &
 				   IEEE80211_EHT_MAC_CAP0_EPCS_PRIO_ACCESS);
 
-			/* EPCS might be already enabled but a new added link
+			/ * EPCS might be already enabled but a new added link
 			 * does not support EPCS. This should not really happen
 			 * in practice.
 			  *\/
@@ -6221,7 +6221,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 
 		bss_conf->uhr_support = link_sta->pub->uhr_cap.has_uhr;
 
-		/*
+		/ *
 		 * This assumes that the timeout is the same across all links,
 		 * maybe we should actually validate that.
 		  *\/
@@ -6273,7 +6273,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 
 		ieee80211_he_op_ie_to_bss_conf(&sdata->vif, elems->he_operation);
 		ieee80211_he_spr_ie_to_bss_conf(&sdata->vif, elems->he_spr);
-		/* TODO: OPEN: what happens if BSS color disable is set?  *\/
+		/ * TODO: OPEN: what happens if BSS color disable is set?  *\/
 	}
 
 	if (cbss->transmitted_bss) {
@@ -6284,7 +6284,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 		bss_conf->bssid_index = cbss->bssid_index;
 	}
 
-	/*
+	/ *
 	 * Some APs, e.g. Netgear WNDR3700, report invalid HT operation data
 	 * in their association response, so ignore that data for our own
 	 * configuration. If it changed since the last beacon, we'll get the
@@ -6293,13 +6293,13 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 
 	ieee80211_sta_init_nss_bw_capa(link_sta, &bss_conf->chanreq.oper);
 
-	/* If an operating mode notification element is present, use it.  *\/
+	/ * If an operating mode notification element is present, use it.  *\/
 	if (elems->opmode_notif)
 		__ieee80211_vht_handle_opmode(sdata, link_sta,
 					      *elems->opmode_notif,
 					      sband->band);
 
-	/*
+	/ *
 	 * Always handle WMM once after association regardless
 	 * of the first value the AP uses. Setting -1 here has
 	 * that effect because the AP values is an unsigned
@@ -6313,9 +6313,9 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 	} else if (!ieee80211_sta_wmm_params(local, link, elems->wmm_param,
 					     elems->wmm_param_len,
 					     elems->mu_edca_param_set)) {
-		/* still enable QoS since we might have HT/VHT  *\/
+		/ * still enable QoS since we might have HT/VHT  *\/
 		ieee80211_set_wmm_default(link, false, true);
-		/* disable WMM tracking in this case to disable
+		/ * disable WMM tracking in this case to disable
 		 * tracking WMM parameter changes in the beacon if
 		 * the parameters weren't actually valid. Doing so
 		 * avoids changing parameters very strangely when
@@ -6337,7 +6337,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
 		bss_conf->protected_keep_alive = false;
 	}
 
-	/* set assoc capability (AID was already set earlier),
+	/ * set assoc capability (AID was already set earlier),
 	 * ieee80211_set_associated() will tell the driver  *\/
 	bss_conf->assoc_capability = capab_info;
 
@@ -6364,7 +6364,7 @@ static int ieee80211_mgd_setup_link_sta(struct ieee80211_link_data *link,
 	memcpy(link_sta->addr, cbss->bssid, ETH_ALEN);
 	memcpy(link_sta->pub->addr, cbss->bssid, ETH_ALEN);
 
-	/* TODO: S1G Basic Rate Set is expressed elsewhere  *\/
+	/ * TODO: S1G Basic Rate Set is expressed elsewhere  *\/
 	if (cbss->channel->band == NL80211_BAND_S1GHZ) {
 		ieee80211_s1g_sta_rate_init(sta);
 		return 0;
@@ -6378,7 +6378,7 @@ static int ieee80211_mgd_setup_link_sta(struct ieee80211_link_data *link,
 			    &have_higher_than_11mbit,
 			    &min_rate, &min_rate_index);
 
-	/*
+	/ *
 	 * This used to be a workaround for basic rates missing
 	 * in the association response frame. Now that we no
 	 * longer use the basic rates from there, it probably
@@ -6403,7 +6403,7 @@ static int ieee80211_mgd_setup_link_sta(struct ieee80211_link_data *link,
 
 	link->conf->basic_rates = basic_rates;
 
-	/* cf. IEEE 802.11 9.2.12  *\/
+	/ * cf. IEEE 802.11 9.2.12  *\/
 	link->operating_11g_mode = sband->band == NL80211_BAND_2GHZ &&
 				   have_higher_than_11mbit;
 
@@ -6420,7 +6420,7 @@ static u8 ieee80211_max_rx_chains(struct ieee80211_link_data *link,
 	const struct ieee80211_vht_cap *vht_cap;
 	const struct ieee80211_he_cap_elem *he_cap;
 	const struct element *he_cap_elem;
-	u16 mcs_80_map, mcs_160_map;
+	mcs_80_map: u16, mcs_160_map;
 	int i, mcs_nss_size;
 	bool support_160;
 	u8 chains = 1;
@@ -6432,7 +6432,7 @@ static u8 ieee80211_max_rx_chains(struct ieee80211_link_data *link,
 	if (ht_cap_elem && ht_cap_elem->datalen >= sizeof(*ht_cap)) {
 		ht_cap = (void *)ht_cap_elem->data;
 		chains = ieee80211_mcs_to_chains(&ht_cap->mcs);
-		/*
+		/ *
 		 * TODO: use "Tx Maximum Number Spatial Streams Supported" and
 		 *	 "Tx Unequal Modulation Supported" fields.
 		  *\/
@@ -6453,7 +6453,7 @@ static u8 ieee80211_max_rx_chains(struct ieee80211_link_data *link,
 					IEEE80211_VHT_MCS_NOT_SUPPORTED)
 				break;
 		}
-		/* TODO: use "Tx Highest Supported Long GI Data Rate" field?  *\/
+		/ * TODO: use "Tx Highest Supported Long GI Data Rate" field?  *\/
 		chains = max(chains, nss);
 	}
 
@@ -6467,15 +6467,15 @@ static u8 ieee80211_max_rx_chains(struct ieee80211_link_data *link,
 	if (!he_cap_elem || he_cap_elem->datalen < sizeof(*he_cap) + 1)
 		return chains;
 
-	/* skip one byte ext_tag_id  *\/
+	/ * skip one byte ext_tag_id  *\/
 	he_cap = (void *)(he_cap_elem->data + 1);
 	mcs_nss_size = ieee80211_he_mcs_nss_size(he_cap);
 
-	/* invalid HE IE  *\/
+	/ * invalid HE IE  *\/
 	if (he_cap_elem->datalen < 1 + mcs_nss_size + sizeof(*he_cap))
 		return chains;
 
-	/* mcs_nss is right after he_cap info  *\/
+	/ * mcs_nss is right after he_cap info  *\/
 	he_mcs_nss_supp = (void *)(he_cap + 1);
 
 	mcs_80_map = le16_to_cpu(he_mcs_nss_supp->tx_mcs_80);
@@ -6512,7 +6512,7 @@ static void
 ieee80211_determine_our_sta_mode(struct ieee80211_sub_if_data *sdata,
 				 struct ieee80211_supported_band *sband,
 				 struct cfg80211_assoc_request *req,
-				 bool wmm_used, int link_id,
+				 wmm_used: bool, int link_id,
 				 struct ieee80211_conn_settings *conn)
 {
 	struct ieee80211_sta_ht_cap sta_ht_cap = sband->ht_cap;
@@ -6567,7 +6567,7 @@ ieee80211_determine_our_sta_mode(struct ieee80211_sub_if_data *sdata,
 		goto out;
 	}
 
-	/* HT is fine  *\/
+	/ * HT is fine  *\/
 	conn->mode = IEEE80211_CONN_MODE_HT;
 	conn->bw_limit = sta_ht_cap.cap & IEEE80211_HT_CAP_SUP_WIDTH_20_40 ?
 		IEEE80211_CONN_BW_LIMIT_40 :
@@ -6592,7 +6592,7 @@ ieee80211_determine_our_sta_mode(struct ieee80211_sub_if_data *sdata,
 			goto out;
 		}
 
-		/* Allow VHT if at least one channel on the sband supports 80 MHz  *\/
+		/ * Allow VHT if at least one channel on the sband supports 80 MHz  *\/
 		for (i = 0; i < sband->n_channels; i++) {
 			if (sband->channels[i].flags & (IEEE80211_CHAN_DISABLED |
 							IEEE80211_CHAN_NO_80MHZ))
@@ -6607,13 +6607,13 @@ ieee80211_determine_our_sta_mode(struct ieee80211_sub_if_data *sdata,
 					 "no 80 MHz channel support on 5 GHz, limiting to HT\n");
 			goto out;
 		}
-	} else if (is_5ghz) { /* !vht_supported but on 5 GHz  *\/
+	} else if (is_5ghz) { / * !vht_supported but on 5 GHz  *\/
 		mlme_link_id_dbg(sdata, link_id,
 				 "no VHT support on 5 GHz, limiting to HT\n");
 		goto out;
 	}
 
-	/* VHT - if we have - is fine, including 80 MHz, check 160 below again  *\/
+	/ * VHT - if we have - is fine, including 80 MHz, check 160 below again  *\/
 	if (sband->band != NL80211_BAND_2GHZ) {
 		conn->mode = IEEE80211_CONN_MODE_VHT;
 		conn->bw_limit = IEEE80211_CONN_BW_LIMIT_160;
@@ -6642,10 +6642,10 @@ ieee80211_determine_our_sta_mode(struct ieee80211_sub_if_data *sdata,
 		goto out;
 	}
 
-	/* so we have HE  *\/
+	/ * so we have HE  *\/
 	conn->mode = IEEE80211_CONN_MODE_HE;
 
-	/* check bandwidth  *\/
+	/ * check bandwidth  *\/
 	switch (sband->band) {
 	default:
 	case NL80211_BAND_2GHZ:
@@ -6699,7 +6699,7 @@ ieee80211_determine_our_sta_mode(struct ieee80211_sub_if_data *sdata,
 	}
 	conn->mode = IEEE80211_CONN_MODE_EHT;
 
-	/* check bandwidth  *\/
+	/ * check bandwidth  *\/
 	if (is_6ghz &&
 	    eht_cap->eht_cap_elem.phy_cap_info[0] & IEEE80211_EHT_PHY_CAP0_320MHZ_IN_6GHZ)
 		conn->bw_limit = IEEE80211_CONN_BW_LIMIT_320;
@@ -6732,7 +6732,7 @@ static void
 ieee80211_determine_our_sta_mode_auth(struct ieee80211_sub_if_data *sdata,
 				      struct ieee80211_supported_band *sband,
 				      struct cfg80211_auth_request *req,
-				      bool wmm_used,
+				      wmm_used: bool,
 				      struct ieee80211_conn_settings *conn)
 {
 	ieee80211_determine_our_sta_mode(sdata, sband, NULL, wmm_used,
@@ -6744,7 +6744,7 @@ static void
 ieee80211_determine_our_sta_mode_assoc(struct ieee80211_sub_if_data *sdata,
 				       struct ieee80211_supported_band *sband,
 				       struct cfg80211_assoc_request *req,
-				       bool wmm_used, int link_id,
+				       wmm_used: bool, int link_id,
 				       struct ieee80211_conn_settings *conn)
 {
 	struct ieee80211_conn_settings tmp;
@@ -6764,7 +6764,7 @@ static int ieee80211_prep_channel(struct ieee80211_sub_if_data *sdata,
 				  struct ieee80211_link_data *link,
 				  struct link_sta_info *link_sta,
 				  int link_id,
-				  struct cfg80211_bss *cbss, bool mlo,
+				  struct cfg80211_bss *cbss, mlo: bool,
 				  struct ieee80211_conn_settings *conn,
 				  unsigned long *userspace_selectors)
 {
@@ -6816,7 +6816,7 @@ static int ieee80211_prep_channel(struct ieee80211_sub_if_data *sdata,
 					&chanreq.oper);
 	}
 	rcu_read_unlock();
-	/* the element data was RCU protected so no longer valid anyway  *\/
+	/ * the element data was RCU protected so no longer valid anyway  *\/
 	kfree(elems);
 	elems = NULL;
 
@@ -6828,7 +6828,7 @@ static int ieee80211_prep_channel(struct ieee80211_sub_if_data *sdata,
 				     local->rx_chains);
 	rcu_read_unlock();
 
-	/*
+	/ *
 	 * If this fails (possibly due to channel context sharing
 	 * on incompatible channels, e.g. 80+80 and 160 sharing the
 	 * same control channel) try to use a smaller bandwidth.
@@ -6836,7 +6836,7 @@ static int ieee80211_prep_channel(struct ieee80211_sub_if_data *sdata,
 	ret = ieee80211_link_use_channel(link, &chanreq,
 					 IEEE80211_CHANCTX_SHARED);
 
-	/* don't downgrade for S1G channels, though.  *\/
+	/ * don't downgrade for S1G channels, though.  *\/
 	if (cfg80211_chandef_is_s1g(&chanreq.oper))
 		return ret;
 
@@ -6869,7 +6869,7 @@ static bool ieee80211_get_dtim(const struct cfg80211_bss_ies *ies,
 	if (dtim_period)
 		*dtim_period = valid ? tim->dtim_period : 0;
 
-	/* Check if value is overridden by non-transmitted profile  *\/
+	/ * Check if value is overridden by non-transmitted profile  *\/
 	if (!idx_ie || idx_ie[1] < 3)
 		return valid;
 
@@ -6884,7 +6884,7 @@ static bool ieee80211_get_dtim(const struct cfg80211_bss_ies *ies,
 	return true;
 }
 
-static u16 ieee80211_get_ttlm(u8 bm_size, u8 *data)
+static u16 ieee80211_get_ttlm(bm_size: u8, u8 *data)
 {
 	if (bm_size == 1)
 		return *data;
@@ -6897,10 +6897,10 @@ ieee80211_parse_adv_t2l(struct ieee80211_sub_if_data *sdata,
 			const struct ieee80211_ttlm_elem *ttlm,
 			struct ieee80211_adv_ttlm_info *ttlm_info)
 {
-	/* The element size was already validated in
+	/ * The element size was already validated in
 	 * ieee80211_tid_to_link_map_size_ok()
 	  *\/
-	u8 control, link_map_presence, map_size, tid;
+	control: u8, link_map_presence, map_size, tid;
 	u8 *pos;
 
 	memset(ttlm_info, 0, sizeof(*ttlm_info));
@@ -6921,7 +6921,7 @@ ieee80211_parse_adv_t2l(struct ieee80211_sub_if_data *sdata,
 	if (control & IEEE80211_TTLM_CONTROL_SWITCH_TIME_PRESENT) {
 		ttlm_info->switch_time = get_unaligned_le16(pos);
 
-		/* Since ttlm_info->switch_time == 0 means no switch time, bump
+		/ * Since ttlm_info->switch_time == 0 means no switch time, bump
 		 * it by 1.
 		  *\/
 		if (!ttlm_info->switch_time)
@@ -6945,7 +6945,7 @@ ieee80211_parse_adv_t2l(struct ieee80211_sub_if_data *sdata,
 	else
 		map_size = 2;
 
-	/* According to Draft P802.11be_D3.0 clause 35.3.7.1.7, an AP MLD shall
+	/ * According to Draft P802.11be_D3.0 clause 35.3.7.1.7, an AP MLD shall
 	 * not advertise a TID-to-link mapping that does not map all TIDs to the
 	 * same link set, reject frame if not all links have mapping
 	  *\/
@@ -6993,7 +6993,7 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
 	int err;
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
-	/*
+	/ *
 	 * station info was already allocated and inserted before
 	 * the association and should be available to us
 	  *\/
@@ -7023,7 +7023,7 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
 			}
 		}
 
-		/*
+		/ *
 		 * We do not support setting a negotiated TTLM during
 		 * association. As such, we can assume that if there is a TTLM,
 		 * then it is the currently active advertised TTLM.
@@ -7133,7 +7133,7 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
 		}
 	}
 
-	/* links might have changed due to rejected ones, set them again  *\/
+	/ * links might have changed due to rejected ones, set them again  *\/
 	ieee80211_vif_set_links(sdata, valid_links, dormant_links);
 
 	rate_control_rate_init_all_links(sta);
@@ -7167,14 +7167,14 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
 
 	ieee80211_set_associated(sdata, assoc_data, changed);
 
-	/*
+	/ *
 	 * If we're using 4-addr mode, let the AP know that we're
 	 * doing so, so that it can create the STA VLAN on its side
 	  *\/
 	if (ifmgd->use_4addr)
 		ieee80211_send_4addr_nullfunc(local, sdata);
 
-	/*
+	/ *
 	 * Start timer to probe the connection to the AP now.
 	 * Also start the timer that will detect beacon loss.
 	  *\/
@@ -7196,7 +7196,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 	struct ieee80211_mgd_assoc_data *assoc_data = ifmgd->assoc_data;
 	enum assoc_status assoc_status = ASSOC_ABANDON;
-	u16 capab_info, status_code, aid = 0;
+	capab_info: u16, status_code, aid = 0;
 	struct ieee80211_elems_parse_params parse_params = {
 		.bss = NULL,
 		.link_id = -1,
@@ -7234,7 +7234,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 	    !ether_addr_equal(assoc_data->ap_addr, mgmt->sa))
 		return;
 
-	/*
+	/ *
 	 * AssocResp and ReassocResp have identical structure, so process both
 	 * of them in this function.
 	  *\/
@@ -7252,7 +7252,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 		elem_start = mgmt->u.assoc_resp.variable;
 	}
 
-	/*
+	/ *
 	 * Note: this may not be perfect, AP might misbehave - if
 	 * anyone needs to rely on perfect complete notification
 	 * with the exact right subtype, then we need to track what
@@ -7280,7 +7280,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 	else if (status_code == WLAN_STATUS_SUCCESS)
 		goto destroy_assoc_data;
 
-	/*
+	/ *
 	 * The 5 MSB of the AID field are reserved for a non-S1G STA. For
 	 * an S1G STA the 3 MSBs are reserved.
 	 * (802.11-2016 9.4.1.8 AID field).
@@ -7297,7 +7297,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 	if (status_code == WLAN_STATUS_ASSOC_REJECTED_TEMPORARILY &&
 	    elems->timeout_int &&
 	    elems->timeout_int->type == WLAN_TIMEOUT_ASSOC_COMEBACK) {
-		u32 tu, ms;
+		tu: u32, ms;
 
 		cfg80211_assoc_comeback(sdata->dev, assoc_data->ap_addr,
 					le32_to_cpu(elems->timeout_int->value));
@@ -7364,7 +7364,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 
 		if (!ieee80211_assoc_success(sdata, mgmt, elems,
 					     elem_start, elem_len)) {
-			/* oops -- internal error -- send timeout for now  *\/
+			/ * oops -- internal error -- send timeout for now  *\/
 			assoc_status = ASSOC_TIMEOUT;
 			goto destroy_assoc_data;
 		}
@@ -7390,7 +7390,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 		if (!link)
 			continue;
 
-		/* get uapsd queues configuration - same for all links  *\/
+		/ * get uapsd queues configuration - same for all links  *\/
 		resp.uapsd_queues = 0;
 		for (ac = 0; ac < IEEE80211_NUM_ACS; ac++)
 			if (link->tx_conf[ac].uapsd)
@@ -7402,7 +7402,7 @@ static void ieee80211_rx_mgmt_assoc_resp(struct ieee80211_sub_if_data *sdata,
 		resp.ap_mld_addr = ap_mld_addr;
 	}
 
-	/*
+	/ *
 	 * If epp_peer set, unprotected (Re)Association Request/Response frames
 	 * are dropped, which ensures that the (re)association exchange is
 	 * encrypted over the air.
@@ -7463,7 +7463,7 @@ static void ieee80211_rx_mgmt_probe_resp(struct ieee80211_link_data *link,
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
-	/*
+	/ *
 	 * According to Draft P802.11ax D6.0 clause 26.17.2.3.2:
 	 * "If a 6 GHz AP receives a Probe Request frame  and responds with
 	 * a Probe Response frame [..], the Address 1 field of the Probe
@@ -7478,7 +7478,7 @@ static void ieee80211_rx_mgmt_probe_resp(struct ieee80211_link_data *link,
 	if (!ether_addr_equal(mgmt->da, sdata->vif.addr) &&
 	    (channel->band != NL80211_BAND_6GHZ ||
 	     !is_broadcast_ether_addr(mgmt->da)))
-		return; /* ignore ProbeResp to foreign address  *\/
+		return; / * ignore ProbeResp to foreign address  *\/
 
 	baselen = (u8 *) mgmt->u.probe_resp.variable - (u8 *) mgmt;
 	if (baselen > len)
@@ -7491,7 +7491,7 @@ static void ieee80211_rx_mgmt_probe_resp(struct ieee80211_link_data *link,
 		ieee80211_reset_ap_probe(sdata);
 }
 
-/*
+/ *
  * This is the canonical list of information elements we care about,
  * the filter code also gives us all changes to the Microsoft OUI
  * (00:50:F2) vendor IE which is used for WMM which we need to track,
@@ -7523,7 +7523,7 @@ static void ieee80211_handle_beacon_sig(struct ieee80211_link_data *link,
 {
 	struct ieee80211_sub_if_data *sdata = link->sdata;
 
-	/* Track average RSSI from the Beacon frames of the current AP  *\/
+	/ * Track average RSSI from the Beacon frames of the current AP  *\/
 
 	if (!link->u.mgd.tracking_signal_avg) {
 		link->u.mgd.tracking_signal_avg = true;
@@ -7546,7 +7546,7 @@ static void ieee80211_handle_beacon_sig(struct ieee80211_link_data *link,
 			.type = RSSI_EVENT,
 		};
 
-		/*
+		/ *
 		 * if signal crosses either of the boundaries, invoke callback
 		 * with appropriate parameters
 		  *\/
@@ -7630,7 +7630,7 @@ static void ieee80211_ml_reconf_work(struct wiphy *wiphy,
 	struct ieee80211_sub_if_data *sdata =
 		container_of(work, struct ieee80211_sub_if_data,
 			     u.mgd.ml_reconf_work.work);
-	u16 new_valid_links, new_active_links, new_dormant_links;
+	new_valid_links: u16, new_active_links, new_dormant_links;
 	int ret;
 
 	if (!sdata->u.mgd.removed_links)
@@ -7696,7 +7696,7 @@ static void ieee80211_ml_reconfiguration(struct ieee80211_sub_if_data *sdata,
 	if (!ieee80211_vif_is_mld(&sdata->vif) || !elems->ml_reconf)
 		return;
 
-	/* Directly parse the sub elements as the common information doesn't
+	/ * Directly parse the sub elements as the common information doesn't
 	 * hold any useful information.
 	  *\/
 	for_each_mle_subelement(sub, (const u8 *)elems->ml_reconf,
@@ -7720,12 +7720,12 @@ static void ieee80211_ml_reconfiguration(struct ieee80211_sub_if_data *sdata,
 
 		removed_links |= BIT(link_id);
 
-		/* the MAC address should not be included, but handle it  *\/
+		/ * the MAC address should not be included, but handle it  *\/
 		if (control &
 		    IEEE80211_MLE_STA_RECONF_CONTROL_STA_MAC_ADDR_PRESENT)
 			pos += 6;
 
-		/* According to Draft P802.11be_D3.0, the control should
+		/ * According to Draft P802.11be_D3.0, the control should
 		 * include the AP Removal Timer present. If the AP Removal Timer
 		 * is not present assume immediate removal.
 		  *\/
@@ -7736,7 +7736,7 @@ static void ieee80211_ml_reconfiguration(struct ieee80211_sub_if_data *sdata,
 
 	removed_links &= sdata->vif.valid_links;
 	if (!removed_links) {
-		/* In case the removal was cancelled, abort it  *\/
+		/ * In case the removal was cancelled, abort it  *\/
 		if (sdata->u.mgd.removed_links) {
 			sdata->u.mgd.removed_links = 0;
 			wiphy_hrtimer_work_cancel(sdata->local->hw.wiphy,
@@ -7775,8 +7775,8 @@ static void ieee80211_ml_reconfiguration(struct ieee80211_sub_if_data *sdata,
 }
 
 static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
-				    u16 active_links, u16 dormant_links,
-				    u16 suspended_links)
+				    active_links: u16, dormant_links: u16,
+				    suspended_links: u16)
 {
 	u64 changed = 0;
 	int ret;
@@ -7786,7 +7786,7 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
 		goto out;
 	}
 
-	/* If there is an active negotiated TTLM, it should be discarded by
+	/ * If there is an active negotiated TTLM, it should be discarded by
 	 * the new negotiated/advertised TTLM.
 	  *\/
 	if (sdata->vif.neg_ttlm.valid) {
@@ -7796,7 +7796,7 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
 	}
 
 	if (sdata->vif.active_links != active_links) {
-		/* usable links are affected when active_links are changed,
+		/ * usable links are affected when active_links are changed,
 		 * so notify the driver about the status change
 		  *\/
 		changed |= BSS_CHANGED_MLD_VALID_LINKS;
@@ -7835,7 +7835,7 @@ out:
 static void ieee80211_tid_to_link_map_work(struct wiphy *wiphy,
 					   struct wiphy_work *work)
 {
-	u16 new_active_links, new_dormant_links;
+	new_active_links: u16, new_dormant_links;
 	struct ieee80211_sub_if_data *sdata =
 		container_of(work, struct ieee80211_sub_if_data,
 			     u.mgd.ttlm_work.work);
@@ -7856,7 +7856,7 @@ static void ieee80211_tid_to_link_map_work(struct wiphy *wiphy,
 
 static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
 					  struct ieee802_11_elems *elems,
-					  u64 beacon_ts)
+					  beacon_ts: u64)
 {
 	u8 i;
 	int ret;
@@ -7866,13 +7866,13 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
 
 	if (!elems->ttlm_num) {
 		if (sdata->u.mgd.ttlm_info.switch_time) {
-			/* if a planned TID-to-link mapping was cancelled -
+			/ * if a planned TID-to-link mapping was cancelled -
 			 * abort it
 			  *\/
 			wiphy_hrtimer_work_cancel(sdata->local->hw.wiphy,
 						  &sdata->u.mgd.ttlm_work);
 		} else if (sdata->u.mgd.ttlm_info.active) {
-			/* if no TID-to-link element, set to default mapping in
+			/ * if no TID-to-link element, set to default mapping in
 			 * which all TIDs are mapped to all setup links
 			  *\/
 			ret = ieee80211_vif_set_links(sdata,
@@ -7903,11 +7903,11 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
 		}
 
 		if (ttlm_info.switch_time) {
-			u16 beacon_ts_tu, st_tu, delay;
+			beacon_ts_tu: u16, st_tu, delay;
 			u64 delay_usec;
 			u64 mask;
 
-			/* The t2l map switch time is indicated with a partial
+			/ * The t2l map switch time is indicated with a partial
 			 * TSF value (bits 10 to 25), get the partial beacon TS
 			 * as well, and calc the delay to the start time.
 			  *\/
@@ -7916,7 +7916,7 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
 			st_tu = ttlm_info.switch_time;
 			delay = st_tu - beacon_ts_tu;
 
-			/*
+			/ *
 			 * If the switch time is far in the future, then it
 			 * could also be the previous switch still being
 			 * announced.
@@ -7928,7 +7928,7 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
 
 			delay_usec = ieee80211_tu_to_usec(delay);
 
-			/* Link switching can take time, so schedule it
+			/ * Link switching can take time, so schedule it
 			 * 100ms before to be ready on time
 			  *\/
 			if (delay_usec > IEEE80211_ADV_TTLM_SAFETY_BUFFER_MS)
@@ -7980,7 +7980,7 @@ ieee80211_mgd_check_cross_link_csa(struct ieee80211_sub_if_data *sdata,
 
 		link_id = le16_get_bits(prof->control,
 					IEEE80211_MLE_STA_CONTROL_LINK_ID);
-		/* need a valid link ID, but also not our own, both AP bugs  *\/
+		/ * need a valid link ID, but also not our own, both AP bugs  *\/
 		if (link_id == reporting_link_id ||
 		    link_id >= IEEE80211_MLD_MAX_NUM_LINKS)
 			continue;
@@ -8017,7 +8017,7 @@ ieee80211_mgd_check_cross_link_csa(struct ieee80211_sub_if_data *sdata,
 			goto handle;
 		}
 
-		/* we can defragment in-place, won't use the buffer again  *\/
+		/ * we can defragment in-place, won't use the buffer again  *\/
 		len = cfg80211_defragment_element(sta_profiles[link_id],
 						  subelems, subelems_len,
 						  (void *)sta_profiles[link_id],
@@ -8035,12 +8035,12 @@ ieee80211_mgd_check_cross_link_csa(struct ieee80211_sub_if_data *sdata,
 						    IEEE80211_STYPE_BEACON,
 						    NULL);
 
-		/* memory allocation failed - let's hope that's transient  *\/
+		/ * memory allocation failed - let's hope that's transient  *\/
 		if (!prof_elems)
 			continue;
 
 handle:
-		/*
+		/ *
 		 * FIXME: the timings here are obviously incorrect,
 		 * but only older Intel drivers seem to care, and
 		 * those don't have MLO. If you really need this,
@@ -8063,14 +8063,14 @@ static bool ieee80211_mgd_ssid_mismatch(struct ieee80211_sub_if_data *sdata,
 	if (!elems->ssid)
 		return false;
 
-	/* hidden SSID: zero length  *\/
+	/ * hidden SSID: zero length  *\/
 	if (elems->ssid_len == 0)
 		return false;
 
 	if (elems->ssid_len != cfg->ssid_len)
 		return true;
 
-	/* hidden SSID: zeroed out  *\/
+	/ * hidden SSID: zeroed out  *\/
 	if (!memcmp(elems->ssid, zero_ssid, elems->ssid_len))
 		return false;
 
@@ -8094,7 +8094,7 @@ ieee80211_rx_beacon_freq_valid(struct ieee80211_local *local,
 	if (!chanctx->def.s1g_primary_2mhz)
 		return false;
 
-	/*
+	/ *
 	 * If we have an S1G interface with a 2MHz primary, beacons are
 	 * sent on the center frequency of the 2MHz primary. Find the sibling
 	 * 1MHz channel and calculate the 2MHz primary center frequency.
@@ -8140,8 +8140,8 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 
 	lockdep_assert_wiphy(local->hw.wiphy);
 
-	/* Process beacon from the current BSS  *\/
-	bssid = ieee80211_get_bssid(hdr, len, sdata->vif.type);
+	/ * Process beacon from the current BSS  *\/
+	bssid = ieee80211_get_bssid(hdr, len, sdata->vif.r#type);
 	if (ieee80211_is_s1g_beacon(mgmt->frame_control)) {
 		ext = (void *)mgmt;
 		variable = ext->u.s1g_beacon.variable +
@@ -8205,7 +8205,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 		else
 			bss_conf->ema_ap = false;
 
-		/* continue assoc process  *\/
+		/ * continue assoc process  *\/
 		ifmgd->assoc_data->timeout = jiffies;
 		ifmgd->assoc_data->timeout_started = true;
 		run_again(sdata, ifmgd->assoc_data->timeout);
@@ -8228,13 +8228,13 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 		ieee80211_reset_ap_probe(sdata);
 	}
 
-	/*
+	/ *
 	 * Push the beacon loss detection into the future since
 	 * we are processing a beacon from the AP just now.
 	  *\/
 	ieee80211_sta_reset_beacon_monitor(sdata);
 
-	/* TODO: CRC urrently not calculated on S1G Beacon Compatibility
+	/ * TODO: CRC urrently not calculated on S1G Beacon Compatibility
 	 * element (which carries the beacon interval). Don't forget to add a
 	 * bit to care_about_ies[] above if mac80211 is interested in a
 	 * changing S1G element.
@@ -8248,7 +8248,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 	if (!elems)
 		return;
 
-	/*
+	/ *
 	 * Note: with MBSSID and an EMA (or broken) AP, we could fail to find
 	 * the correct multi-BSSID profile for the non-transmitting AP we're
 	 * connected to. The result's elems->mbssid_nontx_profile_missing is
@@ -8278,7 +8278,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 		} else if (!local->pspolling && sdata->u.mgd.powersave) {
 			local->pspolling = true;
 
-			/*
+			/ *
 			 * Here is assumed that the driver will be
 			 * able to send ps-poll frame and receive a
 			 * response even though power save mode is
@@ -8290,7 +8290,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 		}
 	}
 
-	/*
+	/ *
 	 * P2P will almost certainly not have MBSSID, but this just
 	 * assumes that it would at least always inherit NoA anyway
 	 * since it's absent from the channel.
@@ -8306,18 +8306,18 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 					    (u8 *) &noa, sizeof(noa));
 		if (ret >= 2) {
 			if (link->u.mgd.p2p_noa_index != noa.index) {
-				/* valid noa_attr and index changed  *\/
+				/ * valid noa_attr and index changed  *\/
 				link->u.mgd.p2p_noa_index = noa.index;
 				memcpy(&bss_conf->p2p_noa_attr, &noa, sizeof(noa));
 				changed |= BSS_CHANGED_P2P_PS;
-				/*
+				/ *
 				 * make sure we update all information, the CRC
 				 * mechanism doesn't look at P2P attributes.
 				  *\/
 				link->u.mgd.beacon_crc_valid = false;
 			}
 		} else if (link->u.mgd.p2p_noa_index != -1) {
-			/* noa_attr not found and we had valid noa_attr before  *\/
+			/ * noa_attr not found and we had valid noa_attr before  *\/
 			link->u.mgd.p2p_noa_index = -1;
 			memset(&bss_conf->p2p_noa_attr, 0, sizeof(bss_conf->p2p_noa_attr));
 			changed |= BSS_CHANGED_P2P_PS;
@@ -8325,7 +8325,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 		}
 	}
 
-	/*
+	/ *
 	 * Update beacon timing and dtim count on every beacon appearance. This
 	 * will allow the driver to use the most updated values. Do it before
 	 * comparing this one with last received beacon.
@@ -8352,7 +8352,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 
 	ieee80211_rx_bss_info(link, mgmt, len, rx_status);
 
-	/*
+	/ *
 	 * This assumes that all members of a multiple BSS set must be
 	 * switching together, so we can parse channel switch elements
 	 * from the transmitted BSS even if our non-transmitted one is
@@ -8363,12 +8363,12 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 					 elems, elems,
 					 IEEE80211_CSA_SOURCE_BEACON);
 
-	/*
+	/ *
 	 * If we haven't had a beacon before, tell the driver about the
 	 * DTIM period (and beacon timing if desired) now.
 	  *\/
 	if (!link->u.mgd.have_beacon) {
-		/* a few bogus AP send dtim_period = 0 or no TIM IE  *\/
+		/ * a few bogus AP send dtim_period = 0 or no TIM IE  *\/
 		bss_conf->dtim_period = elems->dtim_period ?: 1;
 
 		changed |= BSS_CHANGED_BEACON_INFO;
@@ -8379,10 +8379,10 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 		ieee80211_recalc_ps_vif(sdata);
 	}
 
-	/* RNR isn't inside an MBSSID profile  *\/
+	/ * RNR isn't inside an MBSSID profile  *\/
 	ieee80211_mgd_update_bss_param_ch_cnt(sdata, bss_conf, elems);
 
-	/* assume ERP would be inherited anyway  *\/
+	/ * assume ERP would be inherited anyway  *\/
 	if (!ieee80211_is_s1g_beacon(hdr->frame_control)) {
 		u8 erp_value = 0;
 		bool erp_valid;
@@ -8399,7 +8399,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 				erp_valid, erp_value);
 	}
 
-	/*
+	/ *
 	 * There are some other things that we can only do when the
 	 * real non-transmitted profile was actually parsed, so exit
 	 * here before doing those.
@@ -8407,7 +8407,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 	if (elems->mbssid_nontx_profile_missing)
 		goto apply;
 
-	/*
+	/ *
 	 * This requires multi-link element, which is from the MBSSID profile.
 	 * Note that after this elems->ml_basic can no longer be used fully.
 	 *
@@ -8416,7 +8416,7 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
 	  *\/
 	ieee80211_mgd_check_cross_link_csa(sdata, rx_status->link_id, elems);
 
-	/*
+	/ *
 	 * EDCA parameters should be the same, but perhaps ACM can differ
 	 * between BSSes in an MBSSID set.
 	  *\/
@@ -8480,17 +8480,17 @@ free:
 static void ieee80211_apply_neg_ttlm(struct ieee80211_sub_if_data *sdata,
 				     struct ieee80211_neg_ttlm neg_ttlm)
 {
-	u16 new_active_links, new_dormant_links, new_suspended_links, map = 0;
+	new_active_links: u16, new_dormant_links, new_suspended_links, map = 0;
 	u8 i;
 
 	for (i = 0; i < IEEE80211_TTLM_NUM_TIDS; i++)
 		map |= neg_ttlm.downlink[i] | neg_ttlm.uplink[i];
 
-	/* If there is an active TTLM, unset previously suspended links  *\/
+	/ * If there is an active TTLM, unset previously suspended links  *\/
 	if (sdata->vif.neg_ttlm.valid)
 		sdata->vif.dormant_links &= ~sdata->vif.suspended_links;
 
-	/* exclude links that are already disabled by advertised TTLM  *\/
+	/ * exclude links that are already disabled by advertised TTLM  *\/
 	new_active_links =
 		map & sdata->vif.valid_links & ~sdata->vif.dormant_links;
 	new_suspended_links =
@@ -8521,7 +8521,7 @@ static void
 ieee80211_neg_ttlm_add_suggested_map(struct sk_buff *skb,
 				     struct ieee80211_neg_ttlm *neg_ttlm)
 {
-	u8 i, direction[IEEE80211_TTLM_MAX_CNT];
+	i: u8, direction[IEEE80211_TTLM_MAX_CNT];
 
 	if (memcmp(neg_ttlm->downlink, neg_ttlm->uplink,
 		   sizeof(neg_ttlm->downlink))) {
@@ -8532,7 +8532,7 @@ ieee80211_neg_ttlm_add_suggested_map(struct sk_buff *skb,
 	}
 
 	for (i = 0; i < ARRAY_SIZE(direction); i++) {
-		u8 tid, len, map_ind = 0, *len_pos, *map_ind_pos, *pos;
+		tid: u8, len, map_ind = 0, *len_pos, *map_ind_pos, *pos;
 		__le16 map;
 
 		len = sizeof(struct ieee80211_ttlm_elem) + 1 + 1;
@@ -8566,7 +8566,7 @@ ieee80211_neg_ttlm_add_suggested_map(struct sk_buff *skb,
 static void
 ieee80211_send_neg_ttlm_req(struct ieee80211_sub_if_data *sdata,
 			    struct ieee80211_neg_ttlm *neg_ttlm,
-			    u8 dialog_token)
+			    dialog_token: u8)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_mgmt *mgmt;
@@ -8633,7 +8633,7 @@ int ieee80211_req_neg_ttlm(struct ieee80211_sub_if_data *sdata,
 static void
 ieee80211_send_neg_ttlm_res(struct ieee80211_sub_if_data *sdata,
 			    enum ieee80211_neg_ttlm_res ttlm_res,
-			    u8 dialog_token,
+			    dialog_token: u8,
 			    struct ieee80211_neg_ttlm *neg_ttlm)
 {
 	struct ieee80211_local *local = sdata->local;
@@ -8685,17 +8685,17 @@ ieee80211_parse_neg_ttlm(struct ieee80211_sub_if_data *sdata,
 			 struct ieee80211_neg_ttlm *neg_ttlm,
 			 u8 *direction)
 {
-	u8 control, link_map_presence, map_size, tid;
+	control: u8, link_map_presence, map_size, tid;
 	u8 *pos;
 
-	/* The element size was already validated in
+	/ * The element size was already validated in
 	 * ieee80211_tid_to_link_map_size_ok()
 	  *\/
 	pos = (void *)ttlm->optional;
 
 	control = ttlm->control;
 
-	/* mapping switch time and expected duration fields are not expected
+	/ * mapping switch time and expected duration fields are not expected
 	 * in case of negotiated TTLM
 	  *\/
 	if (control & (IEEE80211_TTLM_CONTROL_SWITCH_TIME_PRESENT |
@@ -8766,7 +8766,7 @@ static void ieee80211_process_neg_ttlm_req(struct ieee80211_sub_if_data *sdata,
 					   struct ieee80211_mgmt *mgmt,
 					   size_t len)
 {
-	u8 dialog_token, direction[IEEE80211_TTLM_MAX_CNT] = {}, i;
+	dialog_token: u8, direction[IEEE80211_TTLM_MAX_CNT] = {}, i;
 	size_t ies_len;
 	enum ieee80211_neg_ttlm_res ttlm_res = NEG_TTLM_RES_ACCEPT;
 	struct ieee802_11_elems *elems = NULL;
@@ -8837,7 +8837,7 @@ static void ieee80211_process_neg_ttlm_res(struct ieee80211_sub_if_data *sdata,
 	wiphy_delayed_work_cancel(sdata->local->hw.wiphy,
 				  &sdata->u.mgd.neg_ttlm_timeout_work);
 
-	/* MLD station sends a TID to link mapping request, mainly to handle
+	/ * MLD station sends a TID to link mapping request, mainly to handle
 	 * BTM (BSS transition management) request, in which case it needs to
 	 * restrict the active links set.
 	 * In this case it's not expected that the MLD AP will reject the
@@ -8937,7 +8937,7 @@ static void ieee80211_sta_timer(struct timer_list *t)
 }
 
 void ieee80211_sta_connection_lost(struct ieee80211_sub_if_data *sdata,
-				   u8 reason, bool tx)
+				   reason: u8, tx: bool)
 {
 	u8 frame_buf[IEEE80211_DEAUTH_FRAME_LEN];
 
@@ -8977,7 +8977,7 @@ static int ieee80211_auth(struct ieee80211_sub_if_data *sdata)
 		sdata_info(sdata, "authentication with %pM timed out\n",
 			   auth_data->ap_addr);
 
-		/*
+		/ *
 		 * Most likely AP is not in the range so remove the
 		 * bss struct for that AP.
 		  *\/
@@ -9052,7 +9052,7 @@ static int ieee80211_do_assoc(struct ieee80211_sub_if_data *sdata)
 		sdata_info(sdata, "association with %pM timed out\n",
 			   assoc_data->ap_addr);
 
-		/*
+		/ *
 		 * Most likely AP is not in the range so remove the
 		 * bss struct for that AP.
 		  *\/
@@ -9085,7 +9085,7 @@ static int ieee80211_do_assoc(struct ieee80211_sub_if_data *sdata)
 }
 
 void ieee80211_mgd_conn_tx_status(struct ieee80211_sub_if_data *sdata,
-				  __le16 fc, bool acked)
+				  __le16 fc, acked: bool)
 {
 	struct ieee80211_local *local = sdata->local;
 
@@ -9128,7 +9128,7 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 			   !ifmgd->assoc_data->comeback &&
 			   (ieee80211_is_assoc_req(fc) ||
 			    ieee80211_is_reassoc_req(fc))) {
-			/*
+			/ *
 			 * Update association timeout based on the TX status
 			 * for the (Re)Association Request frame. Skip this if
 			 * we have already processed a (Re)Association Response
@@ -9151,7 +9151,7 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 	if (ifmgd->auth_data && ifmgd->auth_data->timeout_started &&
 	    time_after(jiffies, ifmgd->auth_data->timeout)) {
 		if (ifmgd->auth_data->done || ifmgd->auth_data->waiting) {
-			/*
+			/ *
 			 * ok ... we waited for assoc or continuation but
 			 * userspace didn't do it, so kill the auth data
 			  *\/
@@ -9202,7 +9202,7 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 		else
 			max_tries = max_probe_tries;
 
-		/* ACK received for nullfunc probing frame  *\/
+		/ * ACK received for nullfunc probing frame  *\/
 		if (!ifmgd->probe_send_count)
 			ieee80211_reset_ap_probe(sdata);
 		else if (ifmgd->nullfunc_failed) {
@@ -9235,7 +9235,7 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 				 ifmgd->probe_send_count, max_tries);
 			ieee80211_mgd_probe_ap_send(sdata);
 		} else {
-			/*
+			/ *
 			 * We actually lost the connection ... or did we?
 			 * Let's make sure!
 			  *\/
@@ -9252,7 +9252,7 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 static bool
 ieee80211_is_csa_in_progress(struct ieee80211_sub_if_data *sdata)
 {
-	/*
+	/ *
 	 * In MLO, check the CSA flags 'active' and 'waiting_bcn' for all
 	 * the links.
 	  *\/
@@ -9313,7 +9313,7 @@ ieee80211_latest_active_link_conn_timeout(struct ieee80211_sub_if_data *sdata)
 
 		timeout += IEEE80211_CONNECTION_IDLE_TIME;
 
-		/*
+		/ *
 		 * latest_timeout holds the timeout of the link
 		 * that will expire last among all links in an
 		 * non-AP MLD STA. This ensures that the connection
@@ -9341,7 +9341,7 @@ static void ieee80211_sta_conn_mon_timer(struct timer_list *t)
 
 	latest_timeout = ieee80211_latest_active_link_conn_timeout(sdata);
 
-	/*
+	/ *
 	 * If latest timeout is after now, then update timer to fire at
 	 * the later date, but do not actually probe at this time.
 	  *\/
@@ -9366,10 +9366,10 @@ static void ieee80211_sta_monitor_work(struct wiphy *wiphy,
 
 static void ieee80211_restart_sta_timer(struct ieee80211_sub_if_data *sdata)
 {
-	if (sdata->vif.type == NL80211_IFTYPE_STATION) {
+	if (sdata->vif.r#type == NL80211_IFTYPE_STATION) {
 		__ieee80211_stop_poll(sdata);
 
-		/* let's probe the connection once  *\/
+		/ * let's probe the connection once  *\/
 		if (!ieee80211_hw_check(&sdata->local->hw, CONNECTION_MONITOR))
 			wiphy_work_queue(sdata->local->hw.wiphy,
 					 &sdata->u.mgd.monitor_work);
@@ -9389,7 +9389,7 @@ void ieee80211_mgd_quiesce(struct ieee80211_sub_if_data *sdata)
 				ifmgd->auth_data->ap_addr :
 				ifmgd->assoc_data->ap_addr;
 
-		/*
+		/ *
 		 * If we are trying to authenticate / associate while suspending,
 		 * cfg80211 won't know and won't actually abort those attempts,
 		 * thus we need to do that ourselves.
@@ -9408,7 +9408,7 @@ void ieee80211_mgd_quiesce(struct ieee80211_sub_if_data *sdata)
 				      false);
 	}
 
-	/* This is a bit of a hack - we should find a better and more generic
+	/ * This is a bit of a hack - we should find a better and more generic
 	 * solution to this. Normally when suspending, cfg80211 will in fact
 	 * deauthenticate. However, it doesn't (and cannot) stop an ongoing
 	 * auth (not so important) or assoc (this is the problem) process.
@@ -9496,7 +9496,7 @@ static void ieee80211_ml_sta_reconf_timeout(struct wiphy *wiphy,
 	__ieee80211_disconnect(sdata);
 }
 
-/* interface setup  *\/
+/ * interface setup  *\/
 void ieee80211_sta_setup_sdata(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
@@ -9530,7 +9530,7 @@ void ieee80211_sta_setup_sdata(struct ieee80211_sub_if_data *sdata)
 	ifmgd->powersave = sdata->wdev.ps;
 	ifmgd->uapsd_queues = sdata->local->hw.uapsd_queues;
 	ifmgd->uapsd_max_sp_len = sdata->local->hw.uapsd_max_sp_len;
-	/* Setup TDLS data  *\/
+	/ * Setup TDLS data  *\/
 	spin_lock_init(&ifmgd->teardown_lock);
 	ifmgd->teardown_skb = NULL;
 	ifmgd->orig_teardown_skb = NULL;
@@ -9581,12 +9581,12 @@ void ieee80211_mgd_setup_link(struct ieee80211_link_data *link)
 		eth_random_addr(link->conf->addr);
 }
 
-/* scan finished notification  *\/
+/ * scan finished notification  *\/
 void ieee80211_mlme_notify_scan_completed(struct ieee80211_local *local)
 {
 	struct ieee80211_sub_if_data *sdata;
 
-	/* Restart STA timers  *\/
+	/ * Restart STA timers  *\/
 	rcu_read_lock();
 	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
 		if (ieee80211_sdata_running(sdata))
@@ -9597,9 +9597,9 @@ void ieee80211_mlme_notify_scan_completed(struct ieee80211_local *local)
 
 static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 				     struct cfg80211_bss *cbss, s8 link_id,
-				     const u8 *ap_mld_addr, bool assoc,
+				     const u8 *ap_mld_addr, assoc: bool,
 				     struct ieee80211_conn_settings *conn,
-				     bool override,
+				     r#override: bool,
 				     unsigned long *userspace_selectors)
 {
 	struct ieee80211_local *local = sdata->local;
@@ -9648,7 +9648,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 		goto out_err;
 	}
 
-	/* If a reconfig is happening, bail out  *\/
+	/ * If a reconfig is happening, bail out  *\/
 	if (local->in_reconfig) {
 		err = -EBUSY;
 		goto out_err;
@@ -9675,7 +9675,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 		new_sta->sta.mlo = mlo;
 	}
 
-	/*
+	/ *
 	 * Set up the information for the new channel before setting the
 	 * new channel. We can't - completely race-free - change the basic
 	 * rates bitmap and the channel (sband) that it refers to, but if
@@ -9711,7 +9711,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 
 		memcpy(link->u.mgd.bssid, cbss->bssid, ETH_ALEN);
 
-		/* set timing information  *\/
+		/ * set timing information  *\/
 		link->conf->beacon_int = cbss->beacon_interval;
 		ies = rcu_dereference(cbss->beacon_ies);
 		if (ies) {
@@ -9725,7 +9725,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 		} else if (!ieee80211_hw_check(&sdata->local->hw,
 					       TIMING_BEACON_ONLY)) {
 			ies = rcu_dereference(cbss->proberesp_ies);
-			/* must be non-NULL since beacon IEs were NULL  *\/
+			/ * must be non-NULL since beacon IEs were NULL  *\/
 			link->conf->sync_tsf = ies->tsf;
 			link->conf->sync_device_ts =
 				bss->device_ts_presp;
@@ -9742,7 +9742,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 		struct link_sta_info *link_sta;
 		struct sta_info *ap;
 
-		/*
+		/ *
 		 * Only set this if we're also going to calculate the AP
 		 * settings etc., otherwise this was set before in a
 		 * previous call. Note override is set to %true in assoc
@@ -9768,12 +9768,12 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 				sta_info_free(local, new_sta);
 			goto out_err;
 		}
-		/* pass out for use in assoc  *\/
+		/ * pass out for use in assoc  *\/
 		*conn = link->u.mgd.conn;
 	}
 
 	if (new_sta) {
-		/*
+		/ *
 		 * tell driver about BSSID, basic rates and timing
 		 * this was set up above, before setting the channel
 		  *\/
@@ -9796,7 +9796,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 	} else
 		WARN_ON_ONCE(!ether_addr_equal(link->u.mgd.bssid, cbss->bssid));
 
-	/* Cancel scan to ensure that nothing interferes with connection  *\/
+	/ * Cancel scan to ensure that nothing interferes with connection  *\/
 	if (local->scanning)
 		ieee80211_scan_cancel(local);
 
@@ -9813,7 +9813,7 @@ out_err:
 
 static bool ieee80211_mgd_csa_present(struct ieee80211_sub_if_data *sdata,
 				      const struct cfg80211_bss_ies *ies,
-				      u8 cur_channel, bool ignore_ecsa)
+				      cur_channel: u8, ignore_ecsa: bool)
 {
 	const struct element *csa_elem, *ecsa_elem;
 	struct ieee80211_channel_sw_ie *csa = NULL;
@@ -9882,7 +9882,7 @@ out:
 
 static void ieee80211_parse_cfg_selectors(unsigned long *userspace_selectors,
 					  const u8 *supported_selectors,
-					  u8 supported_selectors_len)
+					  supported_selectors_len: u8)
 {
 	if (supported_selectors) {
 		for (int i = 0; i < supported_selectors_len; i++) {
@@ -9890,13 +9890,13 @@ static void ieee80211_parse_cfg_selectors(unsigned long *userspace_selectors,
 				userspace_selectors);
 		}
 	} else {
-		/* Assume SAE_H2E support for backward compatibility.  *\/
+		/ * Assume SAE_H2E support for backward compatibility.  *\/
 		set_bit(BSS_MEMBERSHIP_SELECTOR_SAE_H2E,
 			userspace_selectors);
 	}
 }
 
-/* config hooks  *\/
+/ * config hooks  *\/
 int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 		       struct cfg80211_auth_request *req)
 {
@@ -9909,11 +9909,11 @@ int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_bss *bss;
 	u16 auth_alg;
 	int err;
-	bool cont_auth, wmm_used;
+	cont_auth: bool, wmm_used;
 
 	lockdep_assert_wiphy(sdata->local->hw.wiphy);
 
-	/* prepare auth data structure  *\/
+	/ * prepare auth data structure  *\/
 
 	switch (req->auth_type) {
 	case NL80211_AUTHTYPE_OPEN_SYSTEM:
@@ -9986,7 +9986,7 @@ int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 		auth_data->data_len += req->auth_data_len - 4;
 	}
 
-	/* Check if continuing authentication or trying to authenticate with the
+	/ * Check if continuing authentication or trying to authenticate with the
 	 * same BSS that we were in the process of authenticating with and avoid
 	 * removal and re-addition of the STA entry in
 	 * ieee80211_prep_connection().
@@ -10012,7 +10012,7 @@ int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 
 	auth_data->algorithm = auth_alg;
 
-	/* try to authenticate/probe  *\/
+	/ * try to authenticate/probe  *\/
 
 	if (ifmgd->auth_data) {
 		if (cont_auth && req->auth_type == NL80211_AUTHTYPE_SAE) {
@@ -10022,10 +10022,10 @@ int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 		ieee80211_destroy_auth_data(sdata, cont_auth, NULL);
 	}
 
-	/* prep auth_data so we don't go into idle on disassoc  *\/
+	/ * prep auth_data so we don't go into idle on disassoc  *\/
 	ifmgd->auth_data = auth_data;
 
-	/* If this is continuation of an ongoing SAE authentication exchange
+	/ * If this is continuation of an ongoing SAE authentication exchange
 	 * (i.e., request to send SAE Confirm) and the peer has already
 	 * confirmed, mark authentication completed since we are about to send
 	 * out SAE Confirm.
@@ -10054,7 +10054,7 @@ int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 					    false);
 	}
 
-	/* needed for transmitting the auth frame(s) properly  *\/
+	/ * needed for transmitting the auth frame(s) properly  *\/
 	memcpy(sdata->vif.cfg.ap_addr, auth_data->ap_addr, ETH_ALEN);
 
 	bss = (void *)req->bss->priv;
@@ -10091,7 +10091,7 @@ int ieee80211_mgd_auth(struct ieee80211_sub_if_data *sdata,
 		goto err_clear;
 	}
 
-	/* hold our own reference  *\/
+	/ * hold our own reference  *\/
 	cfg80211_ref_bss(local->hw.wiphy, auth_data->bss);
 	return 0;
 
@@ -10135,13 +10135,13 @@ ieee80211_setup_assoc_link(struct ieee80211_sub_if_data *sdata,
 	if (WARN_ON(!link))
 		return;
 
-	/* for MLO connections assume advertising all rates is OK  *\/
+	/ * for MLO connections assume advertising all rates is OK  *\/
 	if (!req->ap_mld_addr) {
 		assoc_data->supp_rates = bss->supp_rates;
 		assoc_data->supp_rates_len = bss->supp_rates_len;
 	}
 
-	/* copy and link elems for the STA profile  *\/
+	/ * copy and link elems for the STA profile  *\/
 	if (req->links[link_id].elems_len) {
 		memcpy(assoc_data->ie_pos, req->links[link_id].elems,
 		       req->links[link_id].elems_len);
@@ -10154,7 +10154,7 @@ ieee80211_setup_assoc_link(struct ieee80211_sub_if_data *sdata,
 	link->u.mgd.dtim_period = 0;
 	link->u.mgd.have_beacon = false;
 
-	/* override HT configuration only if the AP and we support it  *\/
+	/ * override HT configuration only if the AP and we support it  *\/
 	if (conn->mode >= IEEE80211_CONN_MODE_HT) {
 		struct ieee80211_sta_ht_cap sta_ht_cap;
 
@@ -10237,7 +10237,7 @@ ieee80211_mgd_get_ap_ht_vht_capa(struct ieee80211_sub_if_data *sdata,
 	const struct element *elem;
 	int err;
 
-	/* neither HT nor VHT elements used on 6 GHz  *\/
+	/ * neither HT nor VHT elements used on 6 GHz  *\/
 	if (band == NL80211_BAND_6GHZ)
 		return 0;
 
@@ -10259,14 +10259,14 @@ ieee80211_mgd_get_ap_ht_vht_capa(struct ieee80211_sub_if_data *sdata,
 	if (assoc_data->link[link_id].conn.mode < IEEE80211_CONN_MODE_VHT)
 		return 0;
 
-	/* some drivers want to support VHT on 2.4 GHz even  *\/
+	/ * some drivers want to support VHT on 2.4 GHz even  *\/
 	sband = sdata->local->hw.wiphy->bands[band];
 	if (!sband->vht_cap.vht_supported)
 		return 0;
 
 	rcu_read_lock();
 	elem = ieee80211_bss_get_elem(cbss, WLAN_EID_VHT_CAPABILITY);
-	/* but even then accept it not being present on the AP  *\/
+	/ * but even then accept it not being present on the AP  *\/
 	if (!elem && band == NL80211_BAND_2GHZ) {
 		err = 0;
 		goto out_rcu;
@@ -10294,7 +10294,7 @@ ieee80211_mgd_assoc_bss_has_mld_ext_capa_ops(struct cfg80211_assoc_request *req)
 	struct cfg80211_bss *bss;
 	const struct element *ml;
 
-	/* not an MLO connection if link_id < 0, so irrelevant  *\/
+	/ * not an MLO connection if link_id < 0, so irrelevant  *\/
 	if (req->link_id < 0)
 		return false;
 
@@ -10333,7 +10333,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_link_data *link;
 	u16 driver_ext_mld_capa_ops = 0;
 	struct cfg80211_bss *cbss;
-	bool override, uapsd_supported;
+	override: bool, uapsd_supported;
 	bool match_auth;
 	int i, err;
 	size_t size = sizeof(*assoc_data) + req->ie_len;
@@ -10375,7 +10375,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 	if (ift_ext_capa)
 		driver_ext_mld_capa_ops = ift_ext_capa->ext_mld_capa_and_ops;
 
-	/*
+	/ *
 	 * Many APs have broken parsing of the extended MLD capa/ops field,
 	 * dropping (re-)association request frames or replying with association
 	 * response with a failure status if it's present.
@@ -10425,7 +10425,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 	memcpy(&ifmgd->s1g_capa_mask, &req->s1g_capa_mask,
 	       sizeof(ifmgd->s1g_capa_mask));
 
-	/* keep some setup (AP STA, channel, ...) if matching  *\/
+	/ * keep some setup (AP STA, channel, ...) if matching  *\/
 	match_auth = ifmgd->auth_data &&
 		     ether_addr_equal(ifmgd->auth_data->ap_addr,
 				      assoc_data->ap_addr) &&
@@ -10551,7 +10551,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 		goto err_free;
 	}
 
-	/* Cleanup is delayed if auth_data matches  *\/
+	/ * Cleanup is delayed if auth_data matches  *\/
 	if (ifmgd->auth_data && !match_auth)
 		ieee80211_destroy_auth_data(sdata, false, NULL);
 
@@ -10564,7 +10564,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 	}
 
 	if (req->fils_kek) {
-		/* should already be checked in cfg80211 - so warn  *\/
+		/ * should already be checked in cfg80211 - so warn  *\/
 		if (WARN_ON(req->fils_kek_len > FILS_MAX_KEK_LEN)) {
 			err = -EINVAL;
 			goto err_free;
@@ -10578,14 +10578,14 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 		memcpy(assoc_data->fils_nonces, req->fils_nonces,
 		       2 * FILS_NONCE_LEN);
 
-	/* default timeout  *\/
+	/ * default timeout  *\/
 	assoc_data->timeout = jiffies;
 	assoc_data->timeout_started = true;
 
 	assoc_data->assoc_link_id = assoc_link_id;
 
 	if (req->ap_mld_addr) {
-		/* if there was no authentication, set up the link  *\/
+		/ * if there was no authentication, set up the link  *\/
 		err = ieee80211_vif_set_links(sdata, BIT(assoc_link_id), 0);
 		if (err)
 			goto err_clear;
@@ -10647,7 +10647,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 					req->crypto.control_port_over_nl80211;
 	sdata->control_port_no_preauth = req->crypto.control_port_no_preauth;
 
-	/* kick off associate process  *\/
+	/ * kick off associate process  *\/
 	ifmgd->assoc_data = assoc_data;
 
 	for (i = 0; i < ARRAY_SIZE(assoc_data->link); i++) {
@@ -10655,7 +10655,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 			continue;
 		if (i == assoc_data->assoc_link_id)
 			continue;
-		/* only calculate the mode, hence link/link_sta == NULL  *\/
+		/ * only calculate the mode, hence link/link_sta == NULL  *\/
 		err = ieee80211_prep_channel(sdata, NULL, NULL, i,
 					     assoc_data->link[i].bss, true,
 					     &assoc_data->link[i].conn,
@@ -10669,7 +10669,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 	memcpy(vif_cfg->ssid, assoc_data->ssid, assoc_data->ssid_len);
 	vif_cfg->ssid_len = assoc_data->ssid_len;
 
-	/* needed for transmitting the assoc frames properly  *\/
+	/ * needed for transmitting the assoc frames properly  *\/
 	memcpy(sdata->vif.cfg.ap_addr, assoc_data->ap_addr, ETH_ALEN);
 
 	err = ieee80211_prep_connection(sdata, cbss, req->link_id,
@@ -10686,7 +10686,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 		rcu_read_lock();
 		beacon_ies = rcu_dereference(req->bss->beacon_ies);
 		if (!beacon_ies) {
-			/*
+			/ *
 			 * Wait up to one beacon interval ...
 			 * should this be more if we miss one?
 			  *\/
@@ -10701,7 +10701,7 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 
 	run_again(sdata, assoc_data->timeout);
 
-	/* We are associating, clean up auth_data  *\/
+	/ * We are associating, clean up auth_data  *\/
 	if (ifmgd->auth_data)
 		ieee80211_destroy_auth_data(sdata, true, NULL);
 
@@ -10824,7 +10824,7 @@ void ieee80211_mgd_stop(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
 
-	/*
+	/ *
 	 * Make sure some work items will not run after this,
 	 * they will not do anything but might not have been
 	 * cancelled when disconnecting.
@@ -10886,10 +10886,10 @@ static void _ieee80211_enable_rssi_reports(struct ieee80211_sub_if_data *sdata,
 {
 	trace_api_enable_rssi_reports(sdata, rssi_min_thold, rssi_max_thold);
 
-	if (WARN_ON(sdata->vif.type != NL80211_IFTYPE_STATION))
+	if (WARN_ON(sdata->vif.r#type != NL80211_IFTYPE_STATION))
 		return;
 
-	/*
+	/ *
 	 * Scale up threshold values before storing it, as the RSSI averaging
 	 * algorithm uses a scaled up value as well. Change this scaling
 	 * factor if the RSSI averaging algorithm changes.
@@ -10932,10 +10932,10 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 	struct cfg80211_mlo_reconf_done_data done_data = {};
 	u16 sta_changed_links = sdata->u.mgd.reconf.added_links |
 		                sdata->u.mgd.reconf.removed_links;
-	u16 link_mask, valid_links;
+	link_mask: u16, valid_links;
 	unsigned int link_id;
 	size_t orig_len = len;
-	u8 i, group_key_data_len;
+	i: u8, group_key_data_len;
 	u8 *pos;
 
 	if (!ieee80211_vif_is_mld(&sdata->vif) ||
@@ -10971,12 +10971,12 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 			goto disconnect;
 		}
 
-		/* clear the corresponding link, to detect the case that
+		/ * clear the corresponding link, to detect the case that
 		 * the same link was included more than one time
 		  *\/
 		link_mask &= ~BIT(link_id);
 
-		/* Handle failure to remove links here. Failure to remove added
+		/ * Handle failure to remove links here. Failure to remove added
 		 * links will be done later in the flow.
 		  *\/
 		if (status != WLAN_STATUS_SUCCESS) {
@@ -10984,14 +10984,14 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 				   "mlo: reconf: failed on link=%u, status=%u\n",
 				   link_id, status);
 
-			/* The AP MLD failed to remove a link that was already
+			/ * The AP MLD failed to remove a link that was already
 			 * removed locally. As this is not expected behavior,
 			 * disconnect
 			  *\/
 			if (sdata->u.mgd.reconf.removed_links & BIT(link_id))
 				goto disconnect;
 
-			/* The AP MLD failed to add a link. Remove it from the
+			/ * The AP MLD failed to add a link. Remove it from the
 			 * added links.
 			  *\/
 			sdata->u.mgd.reconf.added_links &= ~BIT(link_id);
@@ -11017,7 +11017,7 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 		goto disconnect;
 	}
 
-	/* The Group Key Data field must be present when links are added. This
+	/ * The Group Key Data field must be present when links are added. This
 	 * field should be processed by userland.
 	  *\/
 	group_key_data_len = *pos++;
@@ -11025,7 +11025,7 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 	pos += group_key_data_len;
 	len -= group_key_data_len + 1;
 
-	/* Process the information for the added links  *\/
+	/ * Process the information for the added links  *\/
 	sta = sta_info_get(sdata, sdata->vif.cfg.ap_addr);
 	if (WARN_ON(!sta))
 		goto disconnect;
@@ -11102,7 +11102,7 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 						 &changed))
 			goto disconnect;
 
-		/* The AP MLD indicated success for this link, but the station
+		/ * The AP MLD indicated success for this link, but the station
 		 * profile status indicated otherwise. Since there is an
 		 * inconsistency in the ML reconfiguration response, disconnect
 		  *\/
@@ -11123,7 +11123,7 @@ ieee80211_process_ml_reconf_resp(struct ieee80211_sub_if_data *sdata,
 		   "mlo: reconf: current valid_links=0x%x, added=0x%x\n",
 		   valid_links, link_mask);
 
-	/* links might have changed due to rejected ones, set them again  *\/
+	/ * links might have changed due to rejected ones, set them again  *\/
 	ieee80211_vif_set_links(sdata, valid_links, sdata->vif.dormant_links);
 	ieee80211_vif_cfg_change_notify(sdata, BSS_CHANGED_MLD_VALID_LINKS);
 
@@ -11156,7 +11156,7 @@ disconnect:
 static struct sk_buff *
 ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 			      struct ieee80211_mgd_assoc_data *add_links_data,
-			      u16 removed_links, __le16 ext_mld_capa_ops)
+			      removed_links: u16, __le16 ext_mld_capa_ops)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct ieee80211_mgmt *mgmt;
@@ -11168,22 +11168,22 @@ ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 	unsigned int link_id;
 	__le16 eml_capa = 0, mld_capa_ops = 0;
 	struct ieee80211_tx_info *info;
-	u8 common_size, var_common_size;
+	common_size: u8, var_common_size;
 	u8 *ml_elem_len;
 	u16 capab = 0;
 
 	size = local->hw.extra_tx_headroom + sizeof(*mgmt);
 
-	/* Consider the maximal length of the reconfiguration ML element  *\/
+	/ * Consider the maximal length of the reconfiguration ML element  *\/
 	size += sizeof(struct ieee80211_multi_link_elem);
 
-	/* The Basic ML element and the Reconfiguration ML element have the same
+	/ * The Basic ML element and the Reconfiguration ML element have the same
 	 * fixed common information fields in the context of ML reconfiguration
 	 * action frame. The AP MLD MAC address must always be present
 	  *\/
 	common_size = sizeof(*common);
 
-	/* when adding links, the MLD capabilities must be present  *\/
+	/ * when adding links, the MLD capabilities must be present  *\/
 	var_common_size = 0;
 	if (add_links_data) {
 		const struct wiphy_iftype_ext_capab *ift_ext_capa =
@@ -11196,10 +11196,10 @@ ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 				cpu_to_le16(ift_ext_capa->mld_capa_and_ops);
 		}
 
-		/* MLD capabilities and operation  *\/
+		/ * MLD capabilities and operation  *\/
 		var_common_size += 2;
 
-		/* EML capabilities  *\/
+		/ * EML capabilities  *\/
 		if (eml_capa & cpu_to_le16((IEEE80211_EML_CAP_EMLSR_SUPP |
 					    IEEE80211_EML_CAP_EMLMR_SUPPORT)))
 			var_common_size += 2;
@@ -11208,7 +11208,7 @@ ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 	if (ext_mld_capa_ops)
 		var_common_size += 2;
 
-	/* Add the common information length  *\/
+	/ * Add the common information length  *\/
 	size += common_size + var_common_size;
 
 	for (link_id = 0; link_id < IEEE80211_MLD_MAX_NUM_LINKS; link_id++) {
@@ -11227,14 +11227,14 @@ ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 		elems_len = add_links_data->link[link_id].elems_len;
 		cbss = add_links_data->link[link_id].bss;
 
-		/* should be the same across all BSSes  *\/
+		/ * should be the same across all BSSes  *\/
 		if (cbss->capability & WLAN_CAPABILITY_PRIVACY)
 			capab |= WLAN_CAPABILITY_PRIVACY;
 
 		size += 2 + sizeof(struct ieee80211_mle_per_sta_profile) +
 			ETH_ALEN;
 
-		/* WMM  *\/
+		/ * WMM  *\/
 		size += 9;
 		size += ieee80211_link_common_elems_size(sdata, iftype, cbss,
 							 elems_len);
@@ -11247,23 +11247,23 @@ ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 	skb_reserve(skb, local->hw.extra_tx_headroom);
 	mgmt = skb_put_zero(skb, IEEE80211_MIN_ACTION_SIZE(ml_reconf_req));
 
-	/* Add the MAC header  *\/
+	/ * Add the MAC header  *\/
 	mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
 					  IEEE80211_STYPE_ACTION);
 	memcpy(mgmt->da, sdata->vif.cfg.ap_addr, ETH_ALEN);
 	memcpy(mgmt->sa, sdata->vif.addr, ETH_ALEN);
 	memcpy(mgmt->bssid, sdata->vif.cfg.ap_addr, ETH_ALEN);
 
-	/* Add the action frame fixed fields  *\/
+	/ * Add the action frame fixed fields  *\/
 	mgmt->u.action.category = WLAN_CATEGORY_PROTECTED_EHT;
 	mgmt->u.action.action_code = WLAN_PROTECTED_EHT_ACTION_LINK_RECONFIG_REQ;
 
-	/* allocate a dialog token and store it  *\/
+	/ * allocate a dialog token and store it  *\/
 	sdata->u.mgd.reconf.dialog_token = ++sdata->u.mgd.dialog_token_alloc;
 	mgmt->u.action.ml_reconf_req.dialog_token =
 		sdata->u.mgd.reconf.dialog_token;
 
-	/* Add the ML reconfiguration element and the common information   *\/
+	/ * Add the ML reconfiguration element and the common information   *\/
 	skb_put_u8(skb, WLAN_EID_EXTENSION);
 	ml_elem_len = skb_put(skb, 1);
 	skb_put_u8(skb, WLAN_EID_EXT_EHT_MULTI_LINK);
@@ -11299,13 +11299,13 @@ ieee80211_build_ml_reconf_req(struct ieee80211_sub_if_data *sdata,
 	if (sdata->u.mgd.flags & IEEE80211_STA_ENABLE_RRM)
 		capab |= WLAN_CAPABILITY_RADIO_MEASURE;
 
-	/* Add the per station profile  *\/
+	/ * Add the per station profile  *\/
 	for (link_id = 0; link_id < IEEE80211_MLD_MAX_NUM_LINKS; link_id++) {
 		u8 *subelem_len = NULL;
 		u16 ctrl;
 		const u8 *addr;
 
-		/* Skip links that are not changing  *\/
+		/ * Skip links that are not changing  *\/
 		if (!(removed_links & BIT(link_id)) &&
 		    (!add_links_data || !add_links_data->link[link_id].bss))
 			continue;
@@ -11391,7 +11391,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_mgd_assoc_data *data = NULL;
 	struct sta_info *sta;
 	struct sk_buff *skb;
-	u16 added_links, new_valid_links;
+	added_links: u16, new_valid_links;
 	u16 driver_ext_mld_capa_ops = 0;
 	int link_id, err;
 
@@ -11400,7 +11400,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 	      IEEE80211_MLD_CAP_OP_LINK_RECONF_SUPPORT))
 		return -EINVAL;
 
-	/* No support for concurrent ML reconfiguration operation  *\/
+	/ * No support for concurrent ML reconfiguration operation  *\/
 	if (sdata->u.mgd.reconf.added_links ||
 	    sdata->u.mgd.reconf.removed_links)
 		return -EBUSY;
@@ -11417,7 +11417,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 	if (WARN_ON(!sta))
 		return -ENOLINK;
 
-	/* Adding links to the set of valid link is done only after a successful
+	/ * Adding links to the set of valid link is done only after a successful
 	 * ML reconfiguration frame exchange. Here prepare the data for the ML
 	 * reconfiguration frame construction and allocate the required
 	 * resources
@@ -11488,7 +11488,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 			}
 		}
 
-		/* Require U-APSD support if we enabled it  *\/
+		/ * Require U-APSD support if we enabled it  *\/
 		if (sdata->u.mgd.flags & IEEE80211_STA_UAPSD_ENABLED &&
 		    !uapsd_supported) {
 			err = -EINVAL;
@@ -11501,7 +11501,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 			if (!data->link[link_id].bss)
 				continue;
 
-			/* only used to verify the mode, nothing is allocated  *\/
+			/ * only used to verify the mode, nothing is allocated  *\/
 			err = ieee80211_prep_channel(sdata, NULL, NULL, link_id,
 						     data->link[link_id].bss,
 						     true,
@@ -11512,7 +11512,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 		}
 	}
 
-	/* link removal is done before the ML reconfiguration frame exchange so
+	/ * link removal is done before the ML reconfiguration frame exchange so
 	 * that these links will not be used between their removal by the AP MLD
 	 * and before the station got the ML reconfiguration response. Based on
 	 * Section 35.3.6.4 in Draft P802.11be_D7.0 the AP MLD should accept the
@@ -11524,7 +11524,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 
 		new_valid_links = sdata->vif.valid_links & ~req->rem_links;
 
-		/* Should not be left with no valid links to perform the
+		/ * Should not be left with no valid links to perform the
 		 * ML reconfiguration
 		  *\/
 		if (!new_valid_links ||
@@ -11555,7 +11555,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 	if (ift_ext_capa)
 		driver_ext_mld_capa_ops = ift_ext_capa->ext_mld_capa_and_ops;
 
-	/* Build the SKB before the link removal as the construction of the
+	/ * Build the SKB before the link removal as the construction of the
 	 * station info for removed links requires the local address.
 	 * Invalidate the removed links, so that the transmission of the ML
 	 * reconfiguration request frame would not be done using them, as the AP
@@ -11583,7 +11583,7 @@ int ieee80211_mgd_assoc_ml_reconf(struct ieee80211_sub_if_data *sdata,
 			goto err_free;
 		}
 
-		/* notify the driver and upper layers  *\/
+		/ * notify the driver and upper layers  *\/
 		ieee80211_vif_cfg_change_notify(sdata,
 						BSS_CHANGED_MLD_VALID_LINKS);
 		cfg80211_links_removed(sdata->dev, req->rem_links);
@@ -11628,7 +11628,7 @@ static bool ieee80211_mgd_epcs_supp(struct ieee80211_sub_if_data *sdata)
 	return true;
 }
 
-int ieee80211_mgd_set_epcs(struct ieee80211_sub_if_data *sdata, bool enable)
+int ieee80211_mgd_set_epcs(struct ieee80211_sub_if_data *sdata, enable: bool)
 {
 	int frame_len = IEEE80211_MIN_ACTION_SIZE(epcs) + (enable ? 1 : 0);
 	struct ieee80211_local *local = sdata->local;
@@ -11642,7 +11642,7 @@ int ieee80211_mgd_set_epcs(struct ieee80211_sub_if_data *sdata, bool enable)
 	    !sdata->u.mgd.epcs.dialog_token)
 		return 0;
 
-	/* Do not allow enabling EPCS if the AP didn't respond yet.
+	/ * Do not allow enabling EPCS if the AP didn't respond yet.
 	 * However, allow disabling EPCS in such a case.
 	  *\/
 	if (sdata->u.mgd.epcs.dialog_token && enable)
@@ -11696,7 +11696,7 @@ static void ieee80211_ml_epcs(struct ieee80211_sub_if_data *sdata,
 	if (WARN_ON(!scratch))
 		return;
 
-	/* Directly parse the sub elements as the common information doesn't
+	/ * Directly parse the sub elements as the common information doesn't
 	 * hold any useful information.
 	  *\/
 	for_each_mle_subelement(sub, (const u8 *)elems->ml_epcs,
@@ -11762,12 +11762,12 @@ static void ieee80211_process_epcs_ena_resp(struct ieee80211_sub_if_data *sdata,
 	if (!ieee80211_mgd_epcs_supp(sdata))
 		return;
 
-	/* Handle dialog token and status code  *\/
+	/ * Handle dialog token and status code  *\/
 	pos = mgmt->u.action.epcs.variable;
 	dialog_token = *pos;
 	status_code = get_unaligned_le16(pos + 1);
 
-	/* An EPCS enable response with dialog token == 0 is an unsolicited
+	/ * An EPCS enable response with dialog token == 0 is an unsolicited
 	 * notification from the AP MLD. In such a case, EPCS should already be
 	 * enabled and status must be success
 	  *\/
@@ -11875,7 +11875,7 @@ void ieee80211_sta_rx_queued_frame(struct ieee80211_sub_if_data *sdata,
 			if (ies_len < 0)
 				break;
 
-			/* CSA IE cannot be overridden, no need for BSSID  *\/
+			/ * CSA IE cannot be overridden, no need for BSSID  *\/
 			elems = ieee802_11_parse_elems(mgmt->u.action.chan_switch.variable,
 						       ies_len,
 						       IEEE80211_FTYPE_MGMT |
@@ -11903,7 +11903,7 @@ void ieee80211_sta_rx_queued_frame(struct ieee80211_sub_if_data *sdata,
 			if (ies_len < 0)
 				break;
 
-			/*
+			/ *
 			 * extended CSA IE can't be overridden, no need for
 			 * BSSID
 			  *\/
@@ -11922,7 +11922,7 @@ void ieee80211_sta_rx_queued_frame(struct ieee80211_sub_if_data *sdata,
 				else
 					src = IEEE80211_CSA_SOURCE_UNPROT_ACTION;
 
-				/* for the handling code pretend it was an IE  *\/
+				/ * for the handling code pretend it was an IE  *\/
 				elems->ext_chansw_ie =
 					&mgmt->u.action.ext_chan_switch.data;
 

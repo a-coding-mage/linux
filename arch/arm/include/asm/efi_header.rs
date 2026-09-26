@@ -6,7 +6,7 @@
 // C dependencies supplied by other translation units/headers are intentionally
 // referenced here rather than reimplemented.
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     pub fn efi_init();
     pub fn arm_efi_init();
@@ -22,25 +22,25 @@ extern "C" {
     pub fn efi_virtmap_unload();
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 #[inline]
 pub unsafe fn arch_efi_call_virt_setup() {
     efi_virtmap_load();
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 #[inline]
 pub unsafe fn arch_efi_call_virt_teardown() {
     efi_virtmap_unload();
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 #[inline]
 pub unsafe fn efi_set_pgd(mm: *mut mm_struct) {
     check_and_switch_context(mm, core::ptr::null_mut());
 }
 
-#[cfg(feature = "CONFIG_CPU_TTBR0_PAN")]
+#[cfg(CONFIG_CPU_TTBR0_PAN)]
 #[macro_export]
 macro_rules! arch_efi_call_virt {
     ($p:expr, $f:ident $(, $args:expr)*) => {{
@@ -53,13 +53,13 @@ macro_rules! arch_efi_call_virt {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[macro_export]
 macro_rules! arm_efi_init {
     () => {};
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 pub const ARCH_EFI_IRQ_FLAGS_MASK: u32 =
     PSR_J_BIT | PSR_E_BIT | PSR_A_BIT | PSR_I_BIT | PSR_F_BIT | PSR_T_BIT | MODE_MASK;
 

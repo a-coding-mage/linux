@@ -349,13 +349,13 @@ const soc15_reg_entry sgpr64_init_regs_aldebaran[] = {
 fn gfx_v9_4_2_run_shader(amdgpu_device *adev,
 				 amdgpu_ring *ring,
 				 amdgpu_ib *ib,
-				 const u32 *shader_ptr, u32 shader_size,
-				 const soc15_reg_entry *init_regs, u32 regs_size,
-				 u32 compute_dim_x, u64 wb_gpu_addr, u32 pattern,
+				 const u32 *shader_ptr, shader_size: u32,
+				 const soc15_reg_entry *init_regs, regs_size: u32,
+				 compute_dim_x: u32, wb_gpu_addr: u64, pattern: u32,
 				 dma_fence **fence_ptr)
 {
 	int r, i;
-	u32 total_size, shader_offset;
+	total_size: u32, shader_offset;
 	u64 gpu_addr;
 
 	total_size = (regs_size * 3 + 4 + 5 + 5) * 4;
@@ -368,53 +368,53 @@ fn gfx_v9_4_2_run_shader(amdgpu_device *adev,
 	r = amdgpu_ib_get(adev, NULL, total_size,
 					AMDGPU_IB_POOL_DIRECT, ib);
 	if (r) {
-		dev_err(adev->dev, "failed to get ib (%d).\n", r);
+		dev_err((*adev).dev, "failed to get ib (%d).\n", r);
 		return r;
 	}
 
 	/* load the compute shaders */
 	for (i = 0; i < shader_size/sizeof(u32); i++)
-		ib->ptr[i + (shader_offset / 4)] = shader_ptr[i];
+		(*ib).ptr[i + (shader_offset / 4)] = shader_ptr[i];
 
 	/* init the ib length to 0 */
-	ib->length_dw = 0;
+	(*ib).length_dw = 0;
 
 	/* write the register state for the compute dispatch */
 	for (i = 0; i < regs_size; i++) {
-		ib->ptr[ib->length_dw++] = PACKET3(PACKET3_SET_SH_REG, 1);
-		ib->ptr[ib->length_dw++] = SOC15_REG_ENTRY_OFFSET(init_regs[i])
+		(*ib).ptr[(*ib).length_dw++] = PACKET3(PACKET3_SET_SH_REG, 1);
+		(*ib).ptr[(*ib).length_dw++] = SOC15_REG_ENTRY_OFFSET(init_regs[i])
 								- PACKET3_SET_SH_REG_START;
-		ib->ptr[ib->length_dw++] = init_regs[i].reg_value;
+		(*ib).ptr[(*ib).length_dw++] = init_regs[i].reg_value;
 	}
 
 	/* write the shader start address: mmCOMPUTE_PGM_LO, mmCOMPUTE_PGM_HI */
-	gpu_addr = (ib->gpu_addr + (u64)shader_offset) >> 8;
-	ib->ptr[ib->length_dw++] = PACKET3(PACKET3_SET_SH_REG, 2);
-	ib->ptr[ib->length_dw++] = SOC15_REG_OFFSET(GC, 0, regCOMPUTE_PGM_LO)
+	gpu_addr = ((*ib).gpu_addr + (u64)shader_offset) >> 8;
+	(*ib).ptr[(*ib).length_dw++] = PACKET3(PACKET3_SET_SH_REG, 2);
+	(*ib).ptr[(*ib).length_dw++] = SOC15_REG_OFFSET(GC, 0, regCOMPUTE_PGM_LO)
 							- PACKET3_SET_SH_REG_START;
-	ib->ptr[ib->length_dw++] = lower_32_bits(gpu_addr);
-	ib->ptr[ib->length_dw++] = upper_32_bits(gpu_addr);
+	(*ib).ptr[(*ib).length_dw++] = lower_32_bits(gpu_addr);
+	(*ib).ptr[(*ib).length_dw++] = upper_32_bits(gpu_addr);
 
 	/* write the wb buffer address */
-	ib->ptr[ib->length_dw++] = PACKET3(PACKET3_SET_SH_REG, 3);
-	ib->ptr[ib->length_dw++] = SOC15_REG_OFFSET(GC, 0, regCOMPUTE_USER_DATA_0)
+	(*ib).ptr[(*ib).length_dw++] = PACKET3(PACKET3_SET_SH_REG, 3);
+	(*ib).ptr[(*ib).length_dw++] = SOC15_REG_OFFSET(GC, 0, regCOMPUTE_USER_DATA_0)
 							- PACKET3_SET_SH_REG_START;
-	ib->ptr[ib->length_dw++] = lower_32_bits(wb_gpu_addr);
-	ib->ptr[ib->length_dw++] = upper_32_bits(wb_gpu_addr);
-	ib->ptr[ib->length_dw++] = pattern;
+	(*ib).ptr[(*ib).length_dw++] = lower_32_bits(wb_gpu_addr);
+	(*ib).ptr[(*ib).length_dw++] = upper_32_bits(wb_gpu_addr);
+	(*ib).ptr[(*ib).length_dw++] = pattern;
 
 	/* write dispatch packet */
-	ib->ptr[ib->length_dw++] = PACKET3(PACKET3_DISPATCH_DIRECT, 3);
-	ib->ptr[ib->length_dw++] = compute_dim_x; /* x */
-	ib->ptr[ib->length_dw++] = 1; /* y */
-	ib->ptr[ib->length_dw++] = 1; /* z */
-	ib->ptr[ib->length_dw++] =
+	(*ib).ptr[(*ib).length_dw++] = PACKET3(PACKET3_DISPATCH_DIRECT, 3);
+	(*ib).ptr[(*ib).length_dw++] = compute_dim_x; /* x */
+	(*ib).ptr[(*ib).length_dw++] = 1; /* y */
+	(*ib).ptr[(*ib).length_dw++] = 1; /* z */
+	(*ib).ptr[(*ib).length_dw++] =
 		REG_SET_FIELD(0, COMPUTE_DISPATCH_INITIATOR, COMPUTE_SHADER_EN, 1);
 
 	/* shedule the ib on the ring */
 	r = amdgpu_ib_schedule(ring, 1, ib, NULL, fence_ptr);
 	if (r) {
-		dev_err(adev->dev, "ib submit failed (%d).\n", r);
+		dev_err((*adev).dev, "ib submit failed (%d).\n", r);
 		amdgpu_ib_free(ib, NULL);
 	}
 	return r;
@@ -422,7 +422,7 @@ fn gfx_v9_4_2_run_shader(amdgpu_device *adev,
 
 fn gfx_v9_4_2_log_wave_assignment(amdgpu_device *adev, u32 *wb_ptr)
 {
-	u32 se, cu, simd, wave;
+	se: u32, cu, simd, wave;
 	u32 offset = 0;
 	char *str;
 	int size;
@@ -431,9 +431,9 @@ fn gfx_v9_4_2_log_wave_assignment(amdgpu_device *adev, u32 *wb_ptr)
 	if (!str)
 		return;
 
-	dev_dbg(adev->dev, "wave assignment:\n");
+	dev_dbg((*adev).dev, "wave assignment:\n");
 
-	for (se = 0; se < adev->gfx.config.max_shader_engines; se++) {
+	for (se = 0; se < (*adev).gfx.config.max_shader_engines; se++) {
 		for (cu = 0; cu < CU_ID_MAX; cu++) {
 			memset(str, 0, 256);
 			size = sprintf(str, "SE[%02d]CU[%02d]: ", se, cu);
@@ -445,7 +445,7 @@ fn gfx_v9_4_2_log_wave_assignment(amdgpu_device *adev, u32 *wb_ptr)
 				}
 				size += sprintf(str + size, "]  ");
 			}
-			dev_dbg(adev->dev, "%s\n", str);
+			dev_dbg((*adev).dev, "%s\n", str);
 		}
 	}
 
@@ -453,10 +453,9 @@ fn gfx_v9_4_2_log_wave_assignment(amdgpu_device *adev, u32 *wb_ptr)
 }
 
 fn gfx_v9_4_2_wait_for_waves_assigned(amdgpu_device *adev,
-					      u32 *wb_ptr, u32 mask,
-					      u32 pattern, u32 num_wave, bool wait)
-{
-	u32 se, cu, simd, wave;
+					      u32 *wb_ptr, mask: u32,
+					      pattern: u32, num_wave: u32, wait: bool) {
+	se: u32, cu, simd, wave;
 	u32 loop = 0;
 	u32 wave_cnt;
 	u32 offset;
@@ -465,7 +464,7 @@ fn gfx_v9_4_2_wait_for_waves_assigned(amdgpu_device *adev,
 		wave_cnt = 0;
 		offset = 0;
 
-		for (se = 0; se < adev->gfx.config.max_shader_engines; se++)
+		for (se = 0; se < (*adev).gfx.config.max_shader_engines; se++)
 			for (cu = 0; cu < CU_ID_MAX; cu++)
 				for (simd = 0; simd < SIMD_ID_MAX; simd++)
 					for (wave = 0; wave < WAVE_ID_MAX; wave++) {
@@ -482,7 +481,7 @@ fn gfx_v9_4_2_wait_for_waves_assigned(amdgpu_device *adev,
 		mdelay(1);
 	} while (++loop < 2000 && wait);
 
-	dev_err(adev->dev, "actual wave num: %d, expected wave num: %d\n",
+	dev_err((*adev).dev, "actual wave num: %d, expected wave num: %d\n",
 		wave_cnt, num_wave);
 
 	gfx_v9_4_2_log_wave_assignment(adev, wb_ptr);
@@ -492,8 +491,12 @@ fn gfx_v9_4_2_wait_for_waves_assigned(amdgpu_device *adev,
 
 fn gfx_v9_4_2_do_sgprs_init(amdgpu_device *adev)
 {
+	'pro_end: {
+	'disp0_failed: {
+	'disp1_failed: {
+	'disp2_failed: {
 	int r;
-	int wb_size = adev->gfx.config.max_shader_engines *
+	int wb_size = (*adev).gfx.config.max_shader_engines *
 			 CU_ID_MAX * SIMD_ID_MAX * WAVE_ID_MAX;
 	amdgpu_ib wb_ib;
 	amdgpu_ib disp_ibs[3];
@@ -502,8 +505,8 @@ fn gfx_v9_4_2_do_sgprs_init(amdgpu_device *adev)
 
 	/* bail if the compute ring is not ready */
 
-	if (!adev->gfx.compute_ring[0].sched.ready ||
-		 !adev->gfx.compute_ring[1].sched.ready)
+	if ((*!adev).gfx.compute_ring[0].sched.ready ||
+		 (*!adev).gfx.compute_ring[1].sched.ready)
 		return 0;
 
 	/* allocate the write-back buffer from IB */
@@ -511,58 +514,58 @@ fn gfx_v9_4_2_do_sgprs_init(amdgpu_device *adev)
 	r = amdgpu_ib_get(adev, NULL, (1 + wb_size) * sizeof(u32),
 			  AMDGPU_IB_POOL_DIRECT, &wb_ib);
 	if (r) {
-		dev_err(adev->dev, "failed to get ib (%d) for wb\n", r);
+		dev_err((*adev).dev, "failed to get ib (%d) for wb\n", r);
 		return r;
 	}
 	memset(wb_ib.ptr, 0, (1 + wb_size) * sizeof(u32));
 
 	r = gfx_v9_4_2_run_shader(adev,
-			&adev->gfx.compute_ring[0],
+			(*&adev).gfx.compute_ring[0],
 			&disp_ibs[0],
 			sgpr112_init_compute_shader_aldebaran,
 			sizeof(sgpr112_init_compute_shader_aldebaran),
 			sgpr112_init_regs_aldebaran,
 			ARRAY_SIZE(sgpr112_init_regs_aldebaran),
-			adev->gfx.cu_info.number,
+			(*adev).gfx.cu_info.number,
 			wb_ib.gpu_addr, pattern[0], &fences[0]);
 	if (r) {
-		dev_err(adev->dev, "failed to clear first 224 sgprs\n");
-		goto pro_end;
+		dev_err((*adev).dev, "failed to clear first 224 sgprs\n");
+		break 'pro_end;
 	}
 
 	r = gfx_v9_4_2_wait_for_waves_assigned(adev,
 			&wb_ib.ptr[1], 0b11,
 			pattern[0],
-			adev->gfx.cu_info.number * SIMD_ID_MAX * 2,
+			(*adev).gfx.cu_info.number * SIMD_ID_MAX * 2,
 			true);
 	if (r) {
-		dev_err(adev->dev, "wave coverage failed when clear first 224 sgprs\n");
+		dev_err((*adev).dev, "wave coverage failed when clear first 224 sgprs\n");
 		wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
-		goto disp0_failed;
+		break 'disp0_failed;
 	}
 
 	r = gfx_v9_4_2_run_shader(adev,
-			&adev->gfx.compute_ring[1],
+			(*&adev).gfx.compute_ring[1],
 			&disp_ibs[1],
 			sgpr96_init_compute_shader_aldebaran,
 			sizeof(sgpr96_init_compute_shader_aldebaran),
 			sgpr96_init_regs_aldebaran,
 			ARRAY_SIZE(sgpr96_init_regs_aldebaran),
-			adev->gfx.cu_info.number * 2,
+			(*adev).gfx.cu_info.number * 2,
 			wb_ib.gpu_addr, pattern[1], &fences[1]);
 	if (r) {
-		dev_err(adev->dev, "failed to clear next 576 sgprs\n");
-		goto disp0_failed;
+		dev_err((*adev).dev, "failed to clear next 576 sgprs\n");
+		break 'disp0_failed;
 	}
 
 	r = gfx_v9_4_2_wait_for_waves_assigned(adev,
 			&wb_ib.ptr[1], 0b11111100,
-			pattern[1], adev->gfx.cu_info.number * SIMD_ID_MAX * 6,
+			pattern[1], (*adev).gfx.cu_info.number * SIMD_ID_MAX * 6,
 			true);
 	if (r) {
-		dev_err(adev->dev, "wave coverage failed when clear first 576 sgprs\n");
+		dev_err((*adev).dev, "wave coverage failed when clear first 576 sgprs\n");
 		wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
-		goto disp1_failed;
+		break 'disp1_failed;
 	}
 
 	wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
@@ -570,75 +573,80 @@ fn gfx_v9_4_2_do_sgprs_init(amdgpu_device *adev)
 	/* wait for the GPU to finish processing the IB */
 	r = dma_fence_wait(fences[0], false);
 	if (r) {
-		dev_err(adev->dev, "timeout to clear first 224 sgprs\n");
-		goto disp1_failed;
+		dev_err((*adev).dev, "timeout to clear first 224 sgprs\n");
+		break 'disp1_failed;
 	}
 
 	r = dma_fence_wait(fences[1], false);
 	if (r) {
-		dev_err(adev->dev, "timeout to clear first 576 sgprs\n");
-		goto disp1_failed;
+		dev_err((*adev).dev, "timeout to clear first 576 sgprs\n");
+		break 'disp1_failed;
 	}
 
 	memset(wb_ib.ptr, 0, (1 + wb_size) * sizeof(u32));
 	r = gfx_v9_4_2_run_shader(adev,
-			&adev->gfx.compute_ring[0],
+			(*&adev).gfx.compute_ring[0],
 			&disp_ibs[2],
 			sgpr64_init_compute_shader_aldebaran,
 			sizeof(sgpr64_init_compute_shader_aldebaran),
 			sgpr64_init_regs_aldebaran,
 			ARRAY_SIZE(sgpr64_init_regs_aldebaran),
-			adev->gfx.cu_info.number,
+			(*adev).gfx.cu_info.number,
 			wb_ib.gpu_addr, pattern[2], &fences[2]);
 	if (r) {
-		dev_err(adev->dev, "failed to clear first 256 sgprs\n");
-		goto disp1_failed;
+		dev_err((*adev).dev, "failed to clear first 256 sgprs\n");
+		break 'disp1_failed;
 	}
 
 	r = gfx_v9_4_2_wait_for_waves_assigned(adev,
 			&wb_ib.ptr[1], 0b1111,
 			pattern[2],
-			adev->gfx.cu_info.number * SIMD_ID_MAX * 4,
+			(*adev).gfx.cu_info.number * SIMD_ID_MAX * 4,
 			true);
 	if (r) {
-		dev_err(adev->dev, "wave coverage failed when clear first 256 sgprs\n");
+		dev_err((*adev).dev, "wave coverage failed when clear first 256 sgprs\n");
 		wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
-		goto disp2_failed;
+		break 'disp2_failed;
 	}
 
 	wb_ib.ptr[0] = 0xdeadbeaf; /* stop waves */
 
 	r = dma_fence_wait(fences[2], false);
 	if (r) {
-		dev_err(adev->dev, "timeout to clear first 256 sgprs\n");
-		goto disp2_failed;
+		dev_err((*adev).dev, "timeout to clear first 256 sgprs\n");
+		break 'disp2_failed;
 	}
-
-disp2_failed:
+	}
+	
 	amdgpu_ib_free(&disp_ibs[2], NULL);
 	dma_fence_put(fences[2]);
-disp1_failed:
+	}
+	
 	amdgpu_ib_free(&disp_ibs[1], NULL);
 	dma_fence_put(fences[1]);
-disp0_failed:
+	}
+	
 	amdgpu_ib_free(&disp_ibs[0], NULL);
 	dma_fence_put(fences[0]);
-pro_end:
+	}
+	
 	amdgpu_ib_free(&wb_ib, NULL);
 
 	if (r)
-		dev_info(adev->dev, "Init SGPRS Failed\n");
+		dev_info((*adev).dev, "Init SGPRS Failed\n");
 	else
-		dev_info(adev->dev, "Init SGPRS Successfully\n");
+		dev_info((*adev).dev, "Init SGPRS Successfully\n");
 
 	return r;
 }
 
 fn gfx_v9_4_2_do_vgprs_init(amdgpu_device *adev)
 {
+	'pro_end: {
+	'disp_failed: {
 	int r;
 	/* CU_ID: 0~15, SIMD_ID: 0~3, WAVE_ID: 0 ~ 9 */
-	int wb_size = adev->gfx.config.max_shader_engines *
+	int wb_size = (*adev).gfx.config.max_shader_engines *
 			 CU_ID_MAX * SIMD_ID_MAX * WAVE_ID_MAX;
 	amdgpu_ib wb_ib;
 	amdgpu_ib disp_ib;
@@ -646,7 +654,7 @@ fn gfx_v9_4_2_do_vgprs_init(amdgpu_device *adev)
 	u32 pattern = 0xa;
 
 	/* bail if the compute ring is not ready */
-	if (!adev->gfx.compute_ring[0].sched.ready)
+	if ((*!adev).gfx.compute_ring[0].sched.ready)
 		return 0;
 
 	/* allocate the write-back buffer from IB */
@@ -654,52 +662,53 @@ fn gfx_v9_4_2_do_vgprs_init(amdgpu_device *adev)
 	r = amdgpu_ib_get(adev, NULL, (1 + wb_size) * sizeof(u32),
 			  AMDGPU_IB_POOL_DIRECT, &wb_ib);
 	if (r) {
-		dev_err(adev->dev, "failed to get ib (%d) for wb.\n", r);
+		dev_err((*adev).dev, "failed to get ib (%d) for wb.\n", r);
 		return r;
 	}
 	memset(wb_ib.ptr, 0, (1 + wb_size) * sizeof(u32));
 
 	r = gfx_v9_4_2_run_shader(adev,
-			&adev->gfx.compute_ring[0],
+			(*&adev).gfx.compute_ring[0],
 			&disp_ib,
 			vgpr_init_compute_shader_aldebaran,
 			sizeof(vgpr_init_compute_shader_aldebaran),
 			vgpr_init_regs_aldebaran,
 			ARRAY_SIZE(vgpr_init_regs_aldebaran),
-			adev->gfx.cu_info.number,
+			(*adev).gfx.cu_info.number,
 			wb_ib.gpu_addr, pattern, &fence);
 	if (r) {
-		dev_err(adev->dev, "failed to clear vgprs\n");
-		goto pro_end;
+		dev_err((*adev).dev, "failed to clear vgprs\n");
+		break 'pro_end;
 	}
 
 	/* wait for the GPU to finish processing the IB */
 	r = dma_fence_wait(fence, false);
 	if (r) {
-		dev_err(adev->dev, "timeout to clear vgprs\n");
-		goto disp_failed;
+		dev_err((*adev).dev, "timeout to clear vgprs\n");
+		break 'disp_failed;
 	}
 
 	r = gfx_v9_4_2_wait_for_waves_assigned(adev,
 			&wb_ib.ptr[1], 0b1,
 			pattern,
-			adev->gfx.cu_info.number * SIMD_ID_MAX,
+			(*adev).gfx.cu_info.number * SIMD_ID_MAX,
 			false);
 	if (r) {
-		dev_err(adev->dev, "failed to cover all simds when clearing vgprs\n");
-		goto disp_failed;
+		dev_err((*adev).dev, "failed to cover all simds when clearing vgprs\n");
+		break 'disp_failed;
 	}
-
-disp_failed:
+	}
+	
 	amdgpu_ib_free(&disp_ib, NULL);
 	dma_fence_put(fence);
-pro_end:
+	}
+	
 	amdgpu_ib_free(&wb_ib, NULL);
 
 	if (r)
-		dev_info(adev->dev, "Init VGPRS Failed\n");
+		dev_info((*adev).dev, "Init VGPRS Failed\n");
 	else
-		dev_info(adev->dev, "Init VGPRS Successfully\n");
+		dev_info((*adev).dev, "Init VGPRS Successfully\n");
 
 	return r;
 }
@@ -726,7 +735,7 @@ fn gfx_v9_4_2_query_sq_timeout_status(amdgpu_device *adev);
 fn gfx_v9_4_2_reset_sq_timeout_status(amdgpu_device *adev);
 
 void gfx_v9_4_2_init_golden_registers(amdgpu_device *adev,
-				      u32 die_id)
+				      die_id: u32)
 {
 	soc15_program_register_sequence(adev,
 					golden_settings_gc_9_4_2_alde,
@@ -745,7 +754,7 @@ void gfx_v9_4_2_init_golden_registers(amdgpu_device *adev,
 				ARRAY_SIZE(golden_settings_gc_9_4_2_alde_die_1));
 		break;
 	default:
-		dev_warn(adev->dev,
+		dev_warn((*adev).dev,
 			 "invalid die id %d, ignore channel fabricid remap settings\n",
 			 die_id);
 		break;
@@ -756,8 +765,8 @@ void gfx_v9_4_2_init_sq(amdgpu_device *adev)
 {
 	u32 data;
 
-	if (adev->gfx.mec_fw_version >= 98) {
-		adev->gmc.xnack_flags |= AMDGPU_GMC_XNACK_FLAG_CHAIN;
+	if ((*adev).gfx.mec_fw_version >= 98) {
+		(*adev).gmc.xnack_flags |= AMDGPU_GMC_XNACK_FLAG_CHAIN;
 		data = RREG32_SOC15(GC, 0, regSQ_CONFIG1);
 		data = REG_SET_FIELD(data, SQ_CONFIG1, DISABLE_XNACK_CHECK_IN_RETRY_DISABLE, 1);
 		WREG32_SOC15(GC, 0, regSQ_CONFIG1, data);
@@ -765,13 +774,13 @@ void gfx_v9_4_2_init_sq(amdgpu_device *adev)
 }
 
 void gfx_v9_4_2_debug_trap_config_init(amdgpu_device *adev,
-				u32 first_vmid,
-				u32 last_vmid)
+				first_vmid: u32,
+				last_vmid: u32)
 {
 	u32 data;
 	int i;
 
-	mutex_lock(&adev->srbm_mutex);
+	mutex_lock((*&adev).srbm_mutex);
 
 	for (i = first_vmid; i < last_vmid; i++) {
 		data = 0;
@@ -784,7 +793,7 @@ void gfx_v9_4_2_debug_trap_config_init(amdgpu_device *adev,
 	}
 
 	soc15_grbm_select(adev, 0, 0, 0, 0, 0);
-	mutex_unlock(&adev->srbm_mutex);
+	mutex_unlock((*&adev).srbm_mutex);
 
 	WREG32(SOC15_REG_OFFSET(GC, 0, regSPI_GDBG_TRAP_DATA0), 0);
 	WREG32(SOC15_REG_OFFSET(GC, 0, regSPI_GDBG_TRAP_DATA1), 0);
@@ -860,8 +869,8 @@ const soc15_reg_entry gfx_v9_4_2_edc_counter_regs[] = {
 	{ SOC15_REG_ENTRY(GC, 0, regGCEA_EDC_CNT3), 0, 1, 16 },
 };
 
-fn gfx_v9_4_2_select_se_sh(amdgpu_device *adev, u32 se_num,
-				  u32 sh_num, u32 instance)
+fn gfx_v9_4_2_select_se_sh(amdgpu_device *adev, se_num: u32,
+				  sh_num: u32, instance: u32)
 {
 	u32 data;
 
@@ -1466,23 +1475,23 @@ const soc15_reg_entry gfx_v9_4_2_ea_err_status_regs = {
 
 fn gfx_v9_4_2_get_reg_error_count(amdgpu_device *adev,
 					  const soc15_reg_entry *reg,
-					  u32 se_id, u32 inst_id,
-					  u32 value, u32 *sec_count,
+					  se_id: u32, inst_id: u32,
+					  value: u32, u32 *sec_count,
 					  u32 *ded_count)
 {
 	u32 i;
-	u32 sec_cnt, ded_cnt;
+	sec_cnt: u32, ded_cnt;
 
 	for (i = 0; i < ARRAY_SIZE(gfx_v9_4_2_ras_fields); i++) {
-		if (gfx_v9_4_2_ras_fields[i].reg_offset != reg->reg_offset ||
-		    gfx_v9_4_2_ras_fields[i].seg != reg->seg ||
-		    gfx_v9_4_2_ras_fields[i].inst != reg->inst)
+		if (gfx_v9_4_2_ras_fields[i].reg_offset != (*reg).reg_offset ||
+		    gfx_v9_4_2_ras_fields[i].seg != (*reg).seg ||
+		    gfx_v9_4_2_ras_fields[i].inst != (*reg).inst)
 			continue;
 
 		sec_cnt = SOC15_RAS_REG_FIELD_VAL(
 			value, gfx_v9_4_2_ras_fields[i], sec);
 		if (sec_cnt) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "GFX SubBlock %s, Instance[%d][%d], SEC %d\n",
 				 gfx_v9_4_2_ras_fields[i].name, se_id, inst_id,
 				 sec_cnt);
@@ -1492,7 +1501,7 @@ fn gfx_v9_4_2_get_reg_error_count(amdgpu_device *adev,
 		ded_cnt = SOC15_RAS_REG_FIELD_VAL(
 			value, gfx_v9_4_2_ras_fields[i], ded);
 		if (ded_cnt) {
-			dev_info(adev->dev,
+			dev_info((*adev).dev,
 				 "GFX SubBlock %s, Instance[%d][%d], DED %d\n",
 				 gfx_v9_4_2_ras_fields[i].name, se_id, inst_id,
 				 ded_cnt);
@@ -1507,7 +1516,7 @@ fn gfx_v9_4_2_get_reg_error_count(amdgpu_device *adev,
 fn gfx_v9_4_2_query_sram_edc_count(amdgpu_device *adev,
 				u32 *sec_count, u32 *ded_count)
 {
-	u32 i, j, k, data;
+	i: u32, j, k, data;
 	u32 sec_cnt = 0, ded_cnt = 0;
 
 	if (sec_count && ded_count) {
@@ -1515,7 +1524,7 @@ fn gfx_v9_4_2_query_sram_edc_count(amdgpu_device *adev,
 		*ded_count = 0;
 	}
 
-	mutex_lock(&adev->grbm_idx_mutex);
+	mutex_lock((*&adev).grbm_idx_mutex);
 
 	for (i = 0; i < ARRAY_SIZE(gfx_v9_4_2_edc_counter_regs); i++) {
 		for (j = 0; j < gfx_v9_4_2_edc_counter_regs[i].se_num; j++) {
@@ -1553,56 +1562,56 @@ fn gfx_v9_4_2_query_sram_edc_count(amdgpu_device *adev,
 	}
 
 	gfx_v9_4_2_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 
 	return 0;
 }
 
 fn gfx_v9_4_2_log_utc_edc_count(amdgpu_device *adev,
 					 gfx_v9_4_2_utc_block *blk,
-					 u32 instance, u32 sec_cnt,
-					 u32 ded_cnt)
+					 instance: u32, sec_cnt: u32,
+					 ded_cnt: u32)
 {
-	u32 bank, way, mem;
+	bank: u32, way, mem;
 	const char * const vml2_way_str[] = { "BIGK", "4K" };
 	const char * const utcl2_router_str[] = { "VMC", "APT" };
 
-	mem = instance % blk->num_mem_blocks;
-	way = (instance / blk->num_mem_blocks) % blk->num_ways;
-	bank = instance / (blk->num_mem_blocks * blk->num_ways);
+	mem = instance % (*blk).num_mem_blocks;
+	way = (instance / (*blk).num_mem_blocks) % (*blk).num_ways;
+	bank = instance / ((*blk).num_mem_blocks * (*blk).num_ways);
 
-	switch (blk->type) {
+	switch ((*blk).type) {
 	case VML2_MEM:
 		dev_info(
-			adev->dev,
+			(*adev).dev,
 			"GFX SubBlock UTC_VML2_BANK_CACHE_%d_%s_MEM%d, SED %d, DED %d\n",
 			bank, vml2_way_str[way], mem, sec_cnt, ded_cnt);
 		break;
 	case VML2_WALKER_MEM:
-		dev_info(adev->dev, "GFX SubBlock %s, SED %d, DED %d\n",
+		dev_info((*adev).dev, "GFX SubBlock %s, SED %d, DED %d\n",
 			 vml2_walker_mems[bank], sec_cnt, ded_cnt);
 		break;
 	case UTCL2_MEM:
 		dev_info(
-			adev->dev,
+			(*adev).dev,
 			"GFX SubBlock UTCL2_ROUTER_IFIF%d_GROUP0_%s, SED %d, DED %d\n",
 			bank, utcl2_router_str[mem], sec_cnt, ded_cnt);
 		break;
 	case ATC_L2_CACHE_2M:
 		dev_info(
-			adev->dev,
+			(*adev).dev,
 			"GFX SubBlock UTC_ATCL2_CACHE_2M_BANK%d_WAY%d_MEM, SED %d, DED %d\n",
 			bank, way, sec_cnt, ded_cnt);
 		break;
 	case ATC_L2_CACHE_32K:
 		dev_info(
-			adev->dev,
+			(*adev).dev,
 			"GFX SubBlock UTC_ATCL2_CACHE_32K_BANK%d_WAY%d_MEM%d, SED %d, DED %d\n",
 			bank, way, mem, sec_cnt, ded_cnt);
 		break;
 	case ATC_L2_CACHE_4K:
 		dev_info(
-			adev->dev,
+			(*adev).dev,
 			"GFX SubBlock UTC_ATCL2_CACHE_4K_BANK%d_WAY%d_MEM%d, SED %d, DED %d\n",
 			bank, way, mem, sec_cnt, ded_cnt);
 		break;
@@ -1613,8 +1622,8 @@ fn gfx_v9_4_2_query_utc_edc_count(amdgpu_device *adev,
 					  u32 *sec_count,
 					  u32 *ded_count)
 {
-	u32 i, j, data;
-	u32 sec_cnt, ded_cnt;
+	i: u32, j, data;
+	sec_cnt: u32, ded_cnt;
 	u32 num_instances;
 	gfx_v9_4_2_utc_block *blk;
 
@@ -1626,18 +1635,18 @@ fn gfx_v9_4_2_query_utc_edc_count(amdgpu_device *adev,
 	for (i = 0; i < ARRAY_SIZE(gfx_v9_4_2_utc_blocks); i++) {
 		blk = &gfx_v9_4_2_utc_blocks[i];
 		num_instances =
-			blk->num_banks * blk->num_ways * blk->num_mem_blocks;
+			(*blk).num_banks * (*blk).num_ways * (*blk).num_mem_blocks;
 		for (j = 0; j < num_instances; j++) {
-			WREG32(SOC15_REG_ENTRY_OFFSET(blk->idx_reg), j);
+			WREG32(SOC15_REG_ENTRY_OFFSET((*blk).idx_reg), j);
 
 			/* if sec/ded_count is NULL, just clear counter */
 			if (!sec_count || !ded_count) {
-				WREG32(SOC15_REG_ENTRY_OFFSET(blk->data_reg),
-				       blk->clear);
+				WREG32(SOC15_REG_ENTRY_OFFSET((*blk).data_reg),
+				       (*blk).clear);
 				continue;
 			}
 
-			data = RREG32(SOC15_REG_ENTRY_OFFSET(blk->data_reg));
+			data = RREG32(SOC15_REG_ENTRY_OFFSET((*blk).data_reg));
 			if (!data)
 				continue;
 
@@ -1647,8 +1656,8 @@ fn gfx_v9_4_2_query_utc_edc_count(amdgpu_device *adev,
 			*ded_count += ded_cnt;
 
 			/* clear counter after read */
-			WREG32(SOC15_REG_ENTRY_OFFSET(blk->data_reg),
-			       blk->clear);
+			WREG32(SOC15_REG_ENTRY_OFFSET((*blk).data_reg),
+			       (*blk).clear);
 
 			/* print the edc count */
 			if (sec_cnt || ded_cnt)
@@ -1669,16 +1678,16 @@ fn gfx_v9_4_2_query_ras_error_count(amdgpu_device *adev,
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__GFX))
 		return;
 
-	err_data->ue_count = 0;
-	err_data->ce_count = 0;
+	(*err_data).ue_count = 0;
+	(*err_data).ce_count = 0;
 
 	gfx_v9_4_2_query_sram_edc_count(adev, &sec_count, &ded_count);
-	err_data->ce_count += sec_count;
-	err_data->ue_count += ded_count;
+	(*err_data).ce_count += sec_count;
+	(*err_data).ue_count += ded_count;
 
 	gfx_v9_4_2_query_utc_edc_count(adev, &sec_count, &ded_count);
-	err_data->ce_count += sec_count;
-	err_data->ue_count += ded_count;
+	(*err_data).ce_count += sec_count;
+	(*err_data).ue_count += ded_count;
 
 }
 
@@ -1691,10 +1700,10 @@ fn gfx_v9_4_2_reset_utc_err_status(amdgpu_device *adev)
 
 fn gfx_v9_4_2_reset_ea_err_status(amdgpu_device *adev)
 {
-	u32 i, j;
+	i: u32, j;
 	u32 value;
 
-	mutex_lock(&adev->grbm_idx_mutex);
+	mutex_lock((*&adev).grbm_idx_mutex);
 	for (i = 0; i < gfx_v9_4_2_ea_err_status_regs.se_num; i++) {
 		for (j = 0; j < gfx_v9_4_2_ea_err_status_regs.instance;
 		     j++) {
@@ -1706,7 +1715,7 @@ fn gfx_v9_4_2_reset_ea_err_status(amdgpu_device *adev)
 		}
 	}
 	gfx_v9_4_2_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 }
 
 fn gfx_v9_4_2_reset_ras_error_count(amdgpu_device *adev)
@@ -1720,10 +1729,10 @@ fn gfx_v9_4_2_reset_ras_error_count(amdgpu_device *adev)
 
 fn gfx_v9_4_2_query_ea_err_status(amdgpu_device *adev)
 {
-	u32 i, j;
+	i: u32, j;
 	u32 reg_value;
 
-	mutex_lock(&adev->grbm_idx_mutex);
+	mutex_lock((*&adev).grbm_idx_mutex);
 
 	for (i = 0; i < gfx_v9_4_2_ea_err_status_regs.se_num; i++) {
 		for (j = 0; j < gfx_v9_4_2_ea_err_status_regs.instance;
@@ -1735,7 +1744,7 @@ fn gfx_v9_4_2_query_ea_err_status(amdgpu_device *adev)
 			if (REG_GET_FIELD(reg_value, GCEA_ERR_STATUS, SDP_RDRSP_STATUS) ||
 			    REG_GET_FIELD(reg_value, GCEA_ERR_STATUS, SDP_WRRSP_STATUS) ||
 			    REG_GET_FIELD(reg_value, GCEA_ERR_STATUS, SDP_RDRSP_DATAPARITY_ERROR)) {
-				dev_warn(adev->dev, "GCEA err detected at instance: %d, status: 0x%x!\n",
+				dev_warn((*adev).dev, "GCEA err detected at instance: %d, status: 0x%x!\n",
 						j, reg_value);
 			}
 			/* clear after read */
@@ -1746,7 +1755,7 @@ fn gfx_v9_4_2_query_ea_err_status(amdgpu_device *adev)
 	}
 
 	gfx_v9_4_2_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 }
 
 fn gfx_v9_4_2_query_utc_err_status(amdgpu_device *adev)
@@ -1755,19 +1764,19 @@ fn gfx_v9_4_2_query_utc_err_status(amdgpu_device *adev)
 
 	data = RREG32_SOC15(GC, 0, regUTCL2_MEM_ECC_STATUS);
 	if (data) {
-		dev_warn(adev->dev, "GFX UTCL2 Mem Ecc Status: 0x%x!\n", data);
+		dev_warn((*adev).dev, "GFX UTCL2 Mem Ecc Status: 0x%x!\n", data);
 		WREG32_SOC15(GC, 0, regUTCL2_MEM_ECC_STATUS, 0x3);
 	}
 
 	data = RREG32_SOC15(GC, 0, regVML2_MEM_ECC_STATUS);
 	if (data) {
-		dev_warn(adev->dev, "GFX VML2 Mem Ecc Status: 0x%x!\n", data);
+		dev_warn((*adev).dev, "GFX VML2 Mem Ecc Status: 0x%x!\n", data);
 		WREG32_SOC15(GC, 0, regVML2_MEM_ECC_STATUS, 0x3);
 	}
 
 	data = RREG32_SOC15(GC, 0, regVML2_WALKER_MEM_ECC_STATUS);
 	if (data) {
-		dev_warn(adev->dev, "GFX VML2 Walker Mem Ecc Status: 0x%x!\n", data);
+		dev_warn((*adev).dev, "GFX VML2 Walker Mem Ecc Status: 0x%x!\n", data);
 		WREG32_SOC15(GC, 0, regVML2_WALKER_MEM_ECC_STATUS, 0x3);
 	}
 }
@@ -1804,22 +1813,22 @@ fn gfx_v9_4_2_enable_watchdog_timer(amdgpu_device *adev)
 	if (amdgpu_watchdog_timer.timeout_fatal_disable &&
 	    (amdgpu_watchdog_timer.period < 1 ||
 	     amdgpu_watchdog_timer.period > 0x23)) {
-		dev_warn(adev->dev, "Watchdog period range is 1 to 0x23\n");
+		dev_warn((*adev).dev, "Watchdog period range is 1 to 0x23\n");
 		amdgpu_watchdog_timer.period = 0x23;
 	}
 	data = REG_SET_FIELD(data, SQ_TIMEOUT_CONFIG, PERIOD_SEL,
 			     amdgpu_watchdog_timer.period);
 
-	mutex_lock(&adev->grbm_idx_mutex);
-	for (i = 0; i < adev->gfx.config.max_shader_engines; i++) {
+	mutex_lock((*&adev).grbm_idx_mutex);
+	for (i = 0; i < (*adev).gfx.config.max_shader_engines; i++) {
 		gfx_v9_4_2_select_se_sh(adev, i, 0xffffffff, 0xffffffff);
 		WREG32_SOC15(GC, 0, regSQ_TIMEOUT_CONFIG, data);
 	}
 	gfx_v9_4_2_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 }
 
-static u32 wave_read_ind(amdgpu_device *adev, u32 simd, u32 wave, u32 address)
+static u32 wave_read_ind(amdgpu_device *adev, simd: u32, wave: u32, address: u32)
 {
 	WREG32_SOC15_RLC_EX(reg, GC, 0, regSQ_IND_INDEX,
 		(wave << SQ_IND_INDEX__WAVE_ID__SHIFT) |
@@ -1830,22 +1839,22 @@ static u32 wave_read_ind(amdgpu_device *adev, u32 simd, u32 wave, u32 address)
 }
 
 fn gfx_v9_4_2_log_cu_timeout_status(amdgpu_device *adev,
-					u32 status)
+					status: u32)
 {
-	amdgpu_cu_info *cu_info = &adev->gfx.cu_info;
-	u32 i, simd, wave;
+	amdgpu_cu_info *cu_info = (*&adev).gfx.cu_info;
+	i: u32, simd, wave;
 	u32 wave_status;
-	u32 wave_pc_lo, wave_pc_hi;
-	u32 wave_exec_lo, wave_exec_hi;
-	u32 wave_inst_dw0, wave_inst_dw1;
+	wave_pc_lo: u32, wave_pc_hi;
+	wave_exec_lo: u32, wave_exec_hi;
+	wave_inst_dw0: u32, wave_inst_dw1;
 	u32 wave_ib_sts;
 
 	for (i = 0; i < 32; i++) {
 		if (!((i << 1) & status))
 			continue;
 
-		simd = i / cu_info->max_waves_per_simd;
-		wave = i % cu_info->max_waves_per_simd;
+		simd = i / (*cu_info).max_waves_per_simd;
+		wave = i % (*cu_info).max_waves_per_simd;
 
 		wave_status = wave_read_ind(adev, simd, wave, ixSQ_WAVE_STATUS);
 		wave_pc_lo = wave_read_ind(adev, simd, wave, ixSQ_WAVE_PC_LO);
@@ -1861,7 +1870,7 @@ fn gfx_v9_4_2_log_cu_timeout_status(amdgpu_device *adev,
 		wave_ib_sts = wave_read_ind(adev, simd, wave, ixSQ_WAVE_IB_STS);
 
 		dev_info(
-			adev->dev,
+			(*adev).dev,
 			"\t SIMD %d, Wave %d: status 0x%x, pc 0x%llx, exec 0x%llx, inst 0x%llx, ib_sts 0x%x\n",
 			simd, wave, wave_status,
 			((u64)wave_pc_hi << 32 | wave_pc_lo),
@@ -1873,16 +1882,16 @@ fn gfx_v9_4_2_log_cu_timeout_status(amdgpu_device *adev,
 
 fn gfx_v9_4_2_query_sq_timeout_status(amdgpu_device *adev)
 {
-	u32 se_idx, sh_idx, cu_idx;
+	se_idx: u32, sh_idx, cu_idx;
 	u32 status;
 
-	mutex_lock(&adev->grbm_idx_mutex);
-	for (se_idx = 0; se_idx < adev->gfx.config.max_shader_engines;
+	mutex_lock((*&adev).grbm_idx_mutex);
+	for (se_idx = 0; se_idx < (*adev).gfx.config.max_shader_engines;
 	     se_idx++) {
-		for (sh_idx = 0; sh_idx < adev->gfx.config.max_sh_per_se;
+		for (sh_idx = 0; sh_idx < (*adev).gfx.config.max_sh_per_se;
 		     sh_idx++) {
 			for (cu_idx = 0;
-			     cu_idx < adev->gfx.config.max_cu_per_sh;
+			     cu_idx < (*adev).gfx.config.max_cu_per_sh;
 			     cu_idx++) {
 				gfx_v9_4_2_select_se_sh(adev, se_idx, sh_idx,
 							cu_idx);
@@ -1890,7 +1899,7 @@ fn gfx_v9_4_2_query_sq_timeout_status(amdgpu_device *adev)
 						      regSQ_TIMEOUT_STATUS);
 				if (status != 0) {
 					dev_info(
-						adev->dev,
+						(*adev).dev,
 						"GFX Watchdog Timeout: SE %d, SH %d, CU %d\n",
 						se_idx, sh_idx, cu_idx);
 					gfx_v9_4_2_log_cu_timeout_status(
@@ -1902,20 +1911,20 @@ fn gfx_v9_4_2_query_sq_timeout_status(amdgpu_device *adev)
 		}
 	}
 	gfx_v9_4_2_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 }
 
 fn gfx_v9_4_2_reset_sq_timeout_status(amdgpu_device *adev)
 {
-	u32 se_idx, sh_idx, cu_idx;
+	se_idx: u32, sh_idx, cu_idx;
 
-	mutex_lock(&adev->grbm_idx_mutex);
-	for (se_idx = 0; se_idx < adev->gfx.config.max_shader_engines;
+	mutex_lock((*&adev).grbm_idx_mutex);
+	for (se_idx = 0; se_idx < (*adev).gfx.config.max_shader_engines;
 	     se_idx++) {
-		for (sh_idx = 0; sh_idx < adev->gfx.config.max_sh_per_se;
+		for (sh_idx = 0; sh_idx < (*adev).gfx.config.max_sh_per_se;
 		     sh_idx++) {
 			for (cu_idx = 0;
-			     cu_idx < adev->gfx.config.max_cu_per_sh;
+			     cu_idx < (*adev).gfx.config.max_cu_per_sh;
 			     cu_idx++) {
 				gfx_v9_4_2_select_se_sh(adev, se_idx, sh_idx,
 							cu_idx);
@@ -1924,23 +1933,23 @@ fn gfx_v9_4_2_reset_sq_timeout_status(amdgpu_device *adev)
 		}
 	}
 	gfx_v9_4_2_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff);
-	mutex_unlock(&adev->grbm_idx_mutex);
+	mutex_unlock((*&adev).grbm_idx_mutex);
 }
 
 
 
 amdgpu_ras_block_hw_ops  gfx_v9_4_2_ras_ops = {
-		.query_ras_error_count = &gfx_v9_4_2_query_ras_error_count,
-		.reset_ras_error_count = &gfx_v9_4_2_reset_ras_error_count,
-		.query_ras_error_status = &gfx_v9_4_2_query_ras_error_status,
-		.reset_ras_error_status = &gfx_v9_4_2_reset_ras_error_status,
+		query_ras_error_count: &gfx_v9_4_2_query_ras_error_count,
+		reset_ras_error_count: &gfx_v9_4_2_reset_ras_error_count,
+		query_ras_error_status: &gfx_v9_4_2_query_ras_error_status,
+		reset_ras_error_status: &gfx_v9_4_2_reset_ras_error_status,
 };
 
 amdgpu_gfx_ras gfx_v9_4_2_ras = {
-	.ras_block = {
-		.hw_ops = &gfx_v9_4_2_ras_ops,
+	ras_block: {
+		hw_ops: &gfx_v9_4_2_ras_ops,
 	},
-	.enable_watchdog_timer = &gfx_v9_4_2_enable_watchdog_timer,
+	enable_watchdog_timer: &gfx_v9_4_2_enable_watchdog_timer,
 };
 
 

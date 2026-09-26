@@ -11,15 +11,15 @@ static mut init_signals: signal_struct = signal_struct {
     },
     multiprocess: HLIST_HEAD_INIT!(),
     rlim: INIT_RLIMITS,
-    #[cfg(feature = "CONFIG_CGROUPS")]
+    #[cfg(CONFIG_CGROUPS)]
     cgroup_threadgroup_rwsem: __RWSEM_INITIALIZER!(init_signals.cgroup_threadgroup_rwsem),
     cred_guard_mutex: __MUTEX_INITIALIZER!(init_signals.cred_guard_mutex),
     exec_update_lock: __RWSEM_INITIALIZER!(init_signals.exec_update_lock),
-    #[cfg(feature = "CONFIG_POSIX_TIMERS")]
+    #[cfg(CONFIG_POSIX_TIMERS)]
     posix_timers: HLIST_HEAD_INIT!(),
-    #[cfg(feature = "CONFIG_POSIX_TIMERS")]
+    #[cfg(CONFIG_POSIX_TIMERS)]
     ignored_posix_timers: HLIST_HEAD_INIT!(),
-    #[cfg(feature = "CONFIG_POSIX_TIMERS")]
+    #[cfg(CONFIG_POSIX_TIMERS)]
     cputimer: cputimer_struct { cputime_atomic: INIT_CPUTIME_ATOMIC },
     INIT_CPU_TIMERS!(init_signals)
     pids: [
@@ -46,7 +46,7 @@ pub static mut init_task_exec_state: task_exec_state = task_exec_state {
     user_ns: &raw mut init_user_ns,
 };
 
-#[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+#[cfg(CONFIG_SHADOW_CALL_STACK)]
 pub static mut init_shadow_call_stack: [u64; SCS_SIZE / core::mem::size_of::<u64>()] = {
     let mut value = [0; SCS_SIZE / core::mem::size_of::<u64>()];
     value[(SCS_SIZE / core::mem::size_of::<u64>()) - 1] = SCS_END_MAGIC;
@@ -89,9 +89,9 @@ pub struct AlignedInitTask(pub task_struct);
 
 #[no_mangle]
 pub static mut init_task: task_struct = task_struct {
-    #[cfg(feature = "CONFIG_THREAD_INFO_IN_TASK")]
+    #[cfg(CONFIG_THREAD_INFO_IN_TASK)]
     thread_info: INIT_THREAD_INFO!(init_task),
-    #[cfg(feature = "CONFIG_THREAD_INFO_IN_TASK")]
+    #[cfg(CONFIG_THREAD_INFO_IN_TASK)]
     stack_refcount: REFCOUNT_INIT!(1),
     __state: 0,
     stack: init_stack,
@@ -116,11 +116,11 @@ pub static mut init_task: task_struct = task_struct {
         time_slice: RR_TIMESLICE,
     },
     tasks: LIST_HEAD_INIT!(init_task.tasks),
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pushable_tasks: PLIST_NODE_INIT!(init_task.pushable_tasks, MAX_PRIO),
-    #[cfg(feature = "CONFIG_CGROUP_SCHED")]
+    #[cfg(CONFIG_CGROUP_SCHED)]
     sched_task_group: &raw mut root_task_group,
-    #[cfg(feature = "CONFIG_SCHED_CLASS_EXT")]
+    #[cfg(CONFIG_SCHED_CLASS_EXT)]
     scx: sched_ext_entity {
         dsq_list: dsq_list { node: LIST_HEAD_INIT!(init_task.scx.dsq_list.node) },
         sticky_cpu: -1,
@@ -145,7 +145,7 @@ pub static mut init_task: task_struct = task_struct {
     real_fs: &raw mut init_fs,
     fs: &raw mut init_fs,
     files: &raw mut init_files,
-    #[cfg(feature = "CONFIG_IO_URING")]
+    #[cfg(CONFIG_IO_URING)]
     io_uring: core::ptr::null_mut(),
     signal: &raw mut init_signals,
     sighand: &raw mut init_sighand,
@@ -163,77 +163,77 @@ pub static mut init_task: task_struct = task_struct {
     timer_slack_ns: 50000, /* 50 usec default slack */
     thread_pid: &raw mut init_struct_pid,
     thread_node: LIST_HEAD_INIT!(init_signals.thread_head),
-    #[cfg(feature = "CONFIG_AUDIT")]
+    #[cfg(CONFIG_AUDIT)]
     loginuid: INVALID_UID,
-    #[cfg(feature = "CONFIG_AUDIT")]
+    #[cfg(CONFIG_AUDIT)]
     sessionid: AUDIT_SID_UNSET,
-    #[cfg(feature = "CONFIG_PERF_EVENTS")]
+    #[cfg(CONFIG_PERF_EVENTS)]
     perf_event_mutex: __MUTEX_INITIALIZER!(init_task.perf_event_mutex),
-    #[cfg(feature = "CONFIG_PERF_EVENTS")]
+    #[cfg(CONFIG_PERF_EVENTS)]
     perf_event_list: LIST_HEAD_INIT!(init_task.perf_event_list),
-    #[cfg(feature = "CONFIG_PREEMPT_RCU")]
+    #[cfg(CONFIG_PREEMPT_RCU)]
     rcu_read_lock_nesting: 0,
-    #[cfg(feature = "CONFIG_PREEMPT_RCU")]
+    #[cfg(CONFIG_PREEMPT_RCU)]
     rcu_read_unlock_special: rcu_read_unlock_special { s: 0 },
-    #[cfg(feature = "CONFIG_PREEMPT_RCU")]
+    #[cfg(CONFIG_PREEMPT_RCU)]
     rcu_node_entry: LIST_HEAD_INIT!(init_task.rcu_node_entry),
-    #[cfg(feature = "CONFIG_PREEMPT_RCU")]
+    #[cfg(CONFIG_PREEMPT_RCU)]
     rcu_blocked_node: core::ptr::null_mut(),
-    #[cfg(feature = "CONFIG_TASKS_RCU")]
+    #[cfg(CONFIG_TASKS_RCU)]
     rcu_tasks_holdout: false,
-    #[cfg(feature = "CONFIG_TASKS_RCU")]
+    #[cfg(CONFIG_TASKS_RCU)]
     rcu_tasks_holdout_list: LIST_HEAD_INIT!(init_task.rcu_tasks_holdout_list),
-    #[cfg(feature = "CONFIG_TASKS_RCU")]
+    #[cfg(CONFIG_TASKS_RCU)]
     rcu_tasks_idle_cpu: -1,
-    #[cfg(feature = "CONFIG_TASKS_RCU")]
+    #[cfg(CONFIG_TASKS_RCU)]
     rcu_tasks_exit_list: LIST_HEAD_INIT!(init_task.rcu_tasks_exit_list),
-    #[cfg(feature = "CONFIG_TASKS_TRACE_RCU")]
+    #[cfg(CONFIG_TASKS_TRACE_RCU)]
     trc_reader_nesting: 0,
-    #[cfg(feature = "CONFIG_CPUSETS")]
+    #[cfg(CONFIG_CPUSETS)]
     mems_allowed_seq: SEQCNT_SPINLOCK_ZERO!(init_task.mems_allowed_seq, &raw mut init_task.alloc_lock),
     blocked_donor: core::ptr::null_mut(),
-    #[cfg(feature = "CONFIG_RT_MUTEXES")]
+    #[cfg(CONFIG_RT_MUTEXES)]
     pi_waiters: RB_ROOT_CACHED,
-    #[cfg(feature = "CONFIG_RT_MUTEXES")]
+    #[cfg(CONFIG_RT_MUTEXES)]
     pi_top_task: core::ptr::null_mut(),
     INIT_PREV_CPUTIME!(init_task)
-    #[cfg(feature = "CONFIG_VIRT_CPU_ACCOUNTING_GEN")]
+    #[cfg(CONFIG_VIRT_CPU_ACCOUNTING_GEN)]
     vtime: vtime_struct { seqcount: SEQCNT_ZERO!(init_task.vtime_seqcount), starttime: 0, state: VTIME_SYS },
-    #[cfg(feature = "CONFIG_NUMA_BALANCING")]
+    #[cfg(CONFIG_NUMA_BALANCING)]
     numa_preferred_nid: NUMA_NO_NODE,
-    #[cfg(feature = "CONFIG_NUMA_BALANCING")]
+    #[cfg(CONFIG_NUMA_BALANCING)]
     numa_group: core::ptr::null_mut(),
-    #[cfg(feature = "CONFIG_NUMA_BALANCING")]
+    #[cfg(CONFIG_NUMA_BALANCING)]
     numa_faults: core::ptr::null_mut(),
-    #[cfg(feature = "CONFIG_SCHED_CACHE")]
+    #[cfg(CONFIG_SCHED_CACHE)]
     preferred_llc: -1,
-    #[cfg(feature = "CONFIG_SCHED_CACHE")]
+    #[cfg(CONFIG_SCHED_CACHE)]
     pref_llc_queued: 0,
-    #[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+    #[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
     kasan_depth: 1,
-    #[cfg(feature = "CONFIG_KCSAN")]
+    #[cfg(CONFIG_KCSAN)]
     kcsan_ctx: kcsan_ctx { scoped_accesses: (LIST_POISON1, core::ptr::null_mut()) },
-    #[cfg(feature = "CONFIG_TRACE_IRQFLAGS")]
+    #[cfg(CONFIG_TRACE_IRQFLAGS)]
     softirqs_enabled: 1,
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     lockdep_depth: 0, /* no locks held yet */
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     curr_chain_key: INITIAL_CHAIN_KEY,
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     lockdep_recursion: 0,
-    #[cfg(feature = "CONFIG_FUNCTION_GRAPH_TRACER")]
+    #[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
     ret_stack: core::ptr::null_mut(),
-    #[cfg(feature = "CONFIG_FUNCTION_GRAPH_TRACER")]
+    #[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
     tracing_graph_pause: ATOMIC_INIT!(0),
-    #[cfg(all(feature = "CONFIG_TRACING", feature = "CONFIG_PREEMPTION"))]
+    #[cfg(all(CONFIG_TRACING, CONFIG_PREEMPTION))]
     trace_recursion: 0,
-    #[cfg(feature = "CONFIG_LIVEPATCH")]
+    #[cfg(CONFIG_LIVEPATCH)]
     patch_state: KLP_TRANSITION_IDLE,
-    #[cfg(feature = "CONFIG_SECURITY")]
+    #[cfg(CONFIG_SECURITY)]
     security: core::ptr::null_mut(),
-    #[cfg(feature = "CONFIG_SECCOMP_FILTER")]
+    #[cfg(CONFIG_SECCOMP_FILTER)]
     seccomp: seccomp_struct { filter_count: ATOMIC_INIT!(0) },
-    #[cfg(feature = "CONFIG_SCHED_MM_CID")]
+    #[cfg(CONFIG_SCHED_MM_CID)]
     mm_cid: mm_cid_struct { cid: MM_CID_UNSET },
 };
 
@@ -243,7 +243,7 @@ EXPORT_SYMBOL!(init_task);
  * Initial thread structure. Alignment of this is handled by a special
  * linker map entry.
  */
-#[cfg(not(feature = "CONFIG_THREAD_INFO_IN_TASK"))]
+#[cfg(not(CONFIG_THREAD_INFO_IN_TASK))]
 pub static mut init_thread_info: thread_info = INIT_THREAD_INFO!(init_task);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

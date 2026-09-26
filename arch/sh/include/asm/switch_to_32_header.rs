@@ -2,13 +2,13 @@
 
 /* C header guard __ASM_SH_SWITCH_TO_32_H */
 
-#[cfg(feature = "CONFIG_SH_DSP")]
+#[cfg(CONFIG_SH_DSP)]
 #[inline]
 pub unsafe fn is_dsp_enabled(tsk: *const task_struct) -> bool {
     ((*tsk).thread.dsp_status.status & SR_DSP) != 0
 }
 
-#[cfg(feature = "CONFIG_SH_DSP")]
+#[cfg(CONFIG_SH_DSP)]
 #[inline]
 pub unsafe fn __restore_dsp(tsk: *mut task_struct) {
     let mut ts2 = &mut (*tsk).thread.dsp_status as *mut _ as *mut u32;
@@ -23,7 +23,7 @@ pub unsafe fn __restore_dsp(tsk: *mut task_struct) {
     );
 }
 
-#[cfg(feature = "CONFIG_SH_DSP")]
+#[cfg(CONFIG_SH_DSP)]
 #[inline]
 pub unsafe fn __save_dsp(tsk: *mut task_struct) {
     let mut ts2 = (&mut (*tsk).thread.dsp_status as *mut _ as *mut u32).add(14);
@@ -37,15 +37,15 @@ pub unsafe fn __save_dsp(tsk: *mut task_struct) {
     );
 }
 
-#[cfg(not(feature = "CONFIG_SH_DSP"))]
+#[cfg(not(CONFIG_SH_DSP))]
 #[inline]
 pub unsafe fn is_dsp_enabled(_tsk: *const task_struct) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_SH_DSP"))]
+#[cfg(not(CONFIG_SH_DSP))]
 #[inline]
 pub unsafe fn __save_dsp(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_SH_DSP"))]
+#[cfg(not(CONFIG_SH_DSP))]
 #[inline]
 pub unsafe fn __restore_dsp(_tsk: *mut task_struct) {}
 

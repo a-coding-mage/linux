@@ -8,7 +8,7 @@
 
 /* Heavily inspired by the ppc64 code.  */
 
-static DEFINE_PER_CPU!(struct tlb_batch, tlb_batch);
+DEFINE_PER_CPU!(tlb_batch, tlb_batch);
 
 pub unsafe fn flush_tlb_pending() {
     let tb: *mut tlb_batch = &mut *get_cpu_var(tlb_batch);

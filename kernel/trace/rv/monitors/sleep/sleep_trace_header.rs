@@ -5,7 +5,7 @@
  */
 
 /* Corresponds to CONFIG_RV_MON_SLEEP. */
-#[cfg(feature = "CONFIG_RV_MON_SLEEP")]
+#[cfg(CONFIG_RV_MON_SLEEP)]
 mod config_rv_mon_sleep {
     use core::ffi::c_char;
 

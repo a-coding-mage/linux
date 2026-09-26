@@ -26,7 +26,7 @@
 
 // Forward declaration in C: cik_ih_set_interrupt_funcs.
 
-static unsafe fn cik_ih_enable_interrupts(adev: *mut amdgpu_device) {
+unsafe fn cik_ih_enable_interrupts(adev: *mut amdgpu_device) {
     let mut ih_cntl: u32 = RREG32!(mmIH_CNTL);
     let mut ih_rb_cntl: u32 = RREG32!(mmIH_RB_CNTL);
     ih_cntl |= IH_CNTL__ENABLE_INTR_MASK;
@@ -36,7 +36,7 @@ static unsafe fn cik_ih_enable_interrupts(adev: *mut amdgpu_device) {
     (*adev).irq.ih.enabled = true;
 }
 
-static unsafe fn cik_ih_disable_interrupts(adev: *mut amdgpu_device) {
+unsafe fn cik_ih_disable_interrupts(adev: *mut amdgpu_device) {
     let mut ih_rb_cntl: u32 = RREG32!(mmIH_RB_CNTL);
     let mut ih_cntl: u32 = RREG32!(mmIH_CNTL);
     ih_rb_cntl &= !IH_RB_CNTL__RB_ENABLE_MASK;
@@ -50,7 +50,7 @@ static unsafe fn cik_ih_disable_interrupts(adev: *mut amdgpu_device) {
     (*adev).irq.ih.rptr = 0;
 }
 
-static unsafe fn cik_ih_irq_init(adev: *mut amdgpu_device) -> i32 {
+unsafe fn cik_ih_irq_init(adev: *mut amdgpu_device) -> i32 {
     let ih: *mut amdgpu_ih_ring = &mut (*adev).irq.ih;
     let mut rb_bufsz: i32;
     let mut interrupt_cntl: u32;
@@ -86,12 +86,12 @@ static unsafe fn cik_ih_irq_init(adev: *mut amdgpu_device) -> i32 {
     0
 }
 
-static unsafe fn cik_ih_irq_disable(adev: *mut amdgpu_device) {
+unsafe fn cik_ih_irq_disable(adev: *mut amdgpu_device) {
     cik_ih_disable_interrupts(adev);
     mdelay(1);
 }
 
-static unsafe fn cik_ih_get_wptr(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) -> u32 {
+unsafe fn cik_ih_get_wptr(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) -> u32 {
     let mut wptr = le32_to_cpu(*(*ih).wptr_cpu);
     let mut tmp: u32;
     if ih == &mut (*adev).irq.ih_soft { return wptr & (*ih).ptr_mask; }
@@ -111,7 +111,7 @@ static unsafe fn cik_ih_get_wptr(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ri
 
 /* CIK IV Ring: each entry is 128 bits; fields are source id, source data,
  * ring id, VMID, and PASID, with reserved bits as documented in the C source. */
-static unsafe fn cik_ih_decode_iv(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring,
+unsafe fn cik_ih_decode_iv(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring,
                                   entry: *mut amdgpu_iv_entry) {
     let ring_index = (*ih).rptr >> 2;
     let mut dw = [0u32; 4];
@@ -128,11 +128,11 @@ static unsafe fn cik_ih_decode_iv(adev: *mut amdgpu_device, ih: *mut amdgpu_ih_r
     (*ih).rptr += 16;
 }
 
-static unsafe fn cik_ih_set_rptr(_adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) {
+unsafe fn cik_ih_set_rptr(_adev: *mut amdgpu_device, ih: *mut amdgpu_ih_ring) {
     WREG32!(mmIH_RB_RPTR, (*ih).rptr);
 }
 
-static unsafe fn cik_ih_early_init(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn cik_ih_early_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     let ret = amdgpu_irq_add_domain(adev);
     if ret != 0 { return ret; }
@@ -140,7 +140,7 @@ static unsafe fn cik_ih_early_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     0
 }
 
-static unsafe fn cik_ih_sw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn cik_ih_sw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     let mut r = amdgpu_ih_ring_init(adev, &mut (*adev).irq.ih, 64 * 1024, false);
     if r != 0 { return r; }
@@ -149,22 +149,22 @@ static unsafe fn cik_ih_sw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     amdgpu_irq_init(adev)
 }
 
-static unsafe fn cik_ih_sw_fini(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn cik_ih_sw_fini(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     amdgpu_irq_fini_sw(adev);
     amdgpu_irq_remove_domain(adev);
     0
 }
-static unsafe fn cik_ih_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_irq_init((*ip_block).adev) }
-static unsafe fn cik_ih_hw_fini(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_irq_disable((*ip_block).adev); 0 }
-static unsafe fn cik_ih_suspend(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_hw_fini(ip_block) }
-static unsafe fn cik_ih_resume(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_hw_init(ip_block) }
+unsafe fn cik_ih_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_irq_init((*ip_block).adev) }
+unsafe fn cik_ih_hw_fini(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_irq_disable((*ip_block).adev); 0 }
+unsafe fn cik_ih_suspend(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_hw_fini(ip_block) }
+unsafe fn cik_ih_resume(ip_block: *mut amdgpu_ip_block) -> i32 { cik_ih_hw_init(ip_block) }
 
-static unsafe fn cik_ih_is_idle(ip_block: *mut amdgpu_ip_block) -> bool {
+unsafe fn cik_ih_is_idle(ip_block: *mut amdgpu_ip_block) -> bool {
     let tmp = RREG32!(mmSRBM_STATUS);
     !(tmp & SRBM_STATUS__IH_BUSY_MASK != 0)
 }
-static unsafe fn cik_ih_wait_for_idle(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn cik_ih_wait_for_idle(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     for _i in 0..(*adev).usec_timeout {
         if RREG32!(mmSRBM_STATUS) & SRBM_STATUS__IH_BUSY_MASK == 0 { return 0; }
@@ -172,7 +172,7 @@ static unsafe fn cik_ih_wait_for_idle(ip_block: *mut amdgpu_ip_block) -> i32 {
     }
     -ETIMEDOUT
 }
-static unsafe fn cik_ih_soft_reset(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn cik_ih_soft_reset(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     let mut srbm_soft_reset: u32 = 0;
     let mut tmp = RREG32!(mmSRBM_STATUS);
@@ -186,8 +186,8 @@ static unsafe fn cik_ih_soft_reset(ip_block: *mut amdgpu_ip_block) -> i32 {
     }
     0
 }
-static unsafe fn cik_ih_set_clockgating_state(_ip_block: *mut amdgpu_ip_block, _state: amd_clockgating_state) -> i32 { 0 }
-static unsafe fn cik_ih_set_powergating_state(_ip_block: *mut amdgpu_ip_block, _state: amd_powergating_state) -> i32 { 0 }
+unsafe fn cik_ih_set_clockgating_state(_ip_block: *mut amdgpu_ip_block, _state: amd_clockgating_state) -> i32 { 0 }
+unsafe fn cik_ih_set_powergating_state(_ip_block: *mut amdgpu_ip_block, _state: amd_powergating_state) -> i32 { 0 }
 
 static cik_ih_ip_funcs: amd_ip_funcs = amd_ip_funcs {
     name: "cik_ih", early_init: Some(cik_ih_early_init), sw_init: Some(cik_ih_sw_init),
@@ -200,7 +200,7 @@ static cik_ih_ip_funcs: amd_ip_funcs = amd_ip_funcs {
 static cik_ih_funcs: amdgpu_ih_funcs = amdgpu_ih_funcs {
     get_wptr: Some(cik_ih_get_wptr), decode_iv: Some(cik_ih_decode_iv), set_rptr: Some(cik_ih_set_rptr),
 };
-static unsafe fn cik_ih_set_interrupt_funcs(adev: *mut amdgpu_device) { (*adev).irq.ih_funcs = &cik_ih_funcs; }
+unsafe fn cik_ih_set_interrupt_funcs(adev: *mut amdgpu_device) { (*adev).irq.ih_funcs = &cik_ih_funcs; }
 const cik_ih_ip_block: amdgpu_ip_block_version = amdgpu_ip_block_version {
     type_: AMD_IP_BLOCK_TYPE_IH, major: 2, minor: 0, rev: 0, funcs: &cik_ih_ip_funcs,
 };

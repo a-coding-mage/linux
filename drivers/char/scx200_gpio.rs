@@ -75,6 +75,8 @@ static mut scx200_gpio_cdev: cdev = cdev::ZERO; // use 1 cdev for all pins
 unsafe extern "C" fn scx200_gpio_init() -> i32 {
     let mut rc: i32;
     let mut devid: dev_t = 0;
+    'undo_malloc: {
+    'undo_platform_device_add: {
 
     if !scx200_gpio_present() {
         printk!(KERN_ERR, "{}: no SCx200 gpio present\n", DRVNAME);
@@ -89,7 +91,7 @@ unsafe extern "C" fn scx200_gpio_init() -> i32 {
 
     rc = platform_device_add(PDEV);
     if rc != 0 {
-        goto undo_malloc;
+        break 'undo_malloc;
     }
 
     // nsc_gpio uses dev_dbg(), so needs this
@@ -104,17 +106,18 @@ unsafe extern "C" fn scx200_gpio_init() -> i32 {
     }
     if rc < 0 {
         dev_err!(&(*PDEV).dev, "SCx200 chrdev_region err: %d\n", rc);
-        goto undo_platform_device_add;
+        break 'undo_platform_device_add;
     }
 
     cdev_init(&mut scx200_gpio_cdev, &scx200_gpio_fileops);
     cdev_add(&mut scx200_gpio_cdev, devid, MAX_PINS);
 
     return 0; // succeed
-
-undo_platform_device_add:
+    }
+    
     platform_device_del(PDEV);
-undo_malloc:
+    }
+    
     platform_device_put(PDEV);
     rc
 }

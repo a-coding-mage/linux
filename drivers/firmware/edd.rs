@@ -128,7 +128,7 @@ unsafe fn edd_show_info_flags(edev: *mut edd_device, buf: *mut c_char) -> ssize_
     flag!(EDD_INFO_DMA_BOUNDARY_ERROR_TRANSPARENT,"DMA boundary error transparent\n"); flag!(EDD_INFO_GEOMETRY_VALID,"geometry valid\n"); flag!(EDD_INFO_REMOVABLE,"removable\n"); flag!(EDD_INFO_WRITE_VERIFY,"write verify\n"); flag!(EDD_INFO_MEDIA_CHANGE_NOTIFICATION,"media change notification\n"); flag!(EDD_INFO_LOCKABLE,"lockable\n"); flag!(EDD_INFO_NO_MEDIA_PRESENT,"no media present\n"); flag!(EDD_INFO_USE_INT13_FN50,"use int13 fn50\n"); p.offset_from(buf) as ssize_t
 }
 
-macro_rules! simple_show { ($name:ident,$field:expr,$fmt:expr) => { unsafe fn $name(edev:*mut edd_device,buf:*mut c_char)->ssize_t { if edev.is_null()||buf.is_null()||edd_dev_get_info(edev).is_null(){return -EINVAL as ssize_t;} scnprintf(buf,PAGE_SIZE-1,$fmt,$field(edd_dev_get_info(edev))) as ssize_t } }; }
+macro_rules! simple_show { ($name:ident,$field:expr,$fmt:expr) => { unsafe fn $(*$name(edev:*mut edd_device,buf:*mut c_char)).ssize_t { if edev.is_null()||buf.is_null()||edd_dev_get_info(edev).is_null(){return -EINVAL as ssize_t;} scnprintf(buf,PAGE_SIZE-1,$fmt,$field(edd_dev_get_info(edev))) as ssize_t } }; }
 simple_show!(edd_show_legacy_max_cylinder, |i:*mut edd_info| (*i).legacy_max_cylinder, "%u\n");
 simple_show!(edd_show_legacy_max_head, |i:*mut edd_info| (*i).legacy_max_head, "%u\n");
 simple_show!(edd_show_legacy_sectors_per_track, |i:*mut edd_info| (*i).legacy_sectors_per_track, "%u\n");
@@ -137,7 +137,7 @@ simple_show!(edd_show_default_heads, |i:*mut edd_info| (*i).params.num_default_h
 simple_show!(edd_show_default_sectors_per_track, |i:*mut edd_info| (*i).params.sectors_per_track, "%u\n");
 simple_show!(edd_show_sectors, |i:*mut edd_info| (*i).params.number_of_sectors, "%llu\n");
 
-macro_rules! has_field { ($name:ident,$field:expr) => { unsafe fn $name(edev:*mut edd_device)->c_int { if edev.is_null()||edd_dev_get_info(edev).is_null(){0}else{($field(edd_dev_get_info(edev))>0) as c_int} } }; }
+macro_rules! has_field { ($name:ident,$field:expr) => { unsafe fn $(*$name(edev:*mut edd_device)).c_int { if edev.is_null()||edd_dev_get_info(edev).is_null(){0}else{($field(edd_dev_get_info(edev))>0) as c_int} } }; }
 has_field!(edd_has_legacy_max_cylinder,|i:*mut edd_info|(*i).legacy_max_cylinder); has_field!(edd_has_legacy_max_head,|i:*mut edd_info|(*i).legacy_max_head); has_field!(edd_has_legacy_sectors_per_track,|i:*mut edd_info|(*i).legacy_sectors_per_track); has_field!(edd_has_default_cylinders,|i:*mut edd_info|(*i).params.num_default_cylinders); has_field!(edd_has_default_heads,|i:*mut edd_info|(*i).params.num_default_heads); has_field!(edd_has_default_sectors_per_track,|i:*mut edd_info|(*i).params.sectors_per_track);
 
 unsafe fn edd_has_edd30(edev:*mut edd_device)->c_int { if edev.is_null()||edd_dev_get_info(edev).is_null(){return 0;} let i=edd_dev_get_info(edev); if (*i).params.key!=0xBEDD&&(*i).params.key!=0xDDBE{return 0;} if (*i).params.device_path_info_length!=44{return 0;} let mut c: u8=0; for n in 30..((*i).params.device_path_info_length as usize+30){c=c.wrapping_add(*((&(*i).params as *const _ as *const u8).add(n));} (c==0) as c_int }

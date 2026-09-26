@@ -46,16 +46,16 @@ dbl_fmpyfadd(
 	    u32 *status,
 	    *mut dbl_floating_pointdstptr)
 {
-	u32 opnd1p1, opnd1p2, opnd2p1, opnd2p2, opnd3p1, opnd3p2;
-	u32 tmpresp1, tmpresp2, tmpresp3, tmpresp4;
-	u32 rightp1, rightp2, rightp3, rightp4;
-	u32 resultp1, resultp2 = 0, resultp3 = 0, resultp4 = 0;
-	i32 mpy_exponent, add_exponent, count;
+	opnd1p1: u32, opnd1p2, opnd2p1, opnd2p2, opnd3p1, opnd3p2;
+	tmpresp1: u32, tmpresp2, tmpresp3, tmpresp4;
+	rightp1: u32, rightp2, rightp3, rightp4;
+	resultp1: u32, resultp2 = 0, resultp3 = 0, resultp4 = 0;
+	mpy_exponent: i32, add_exponent, count;
 	bool inexact = false, is_tiny = false;
 
-	u32 signlessleft1, signlessright1, save;
-	i32 result_exponent, diff_exponent;
-	i32 sign_save, jumpsize;
+	signlessleft1: u32, signlessright1, save;
+	result_exponent: i32, diff_exponent;
+	sign_save: i32, jumpsize;
 	
 	Dbl_copyfromptr(src1ptr,opnd1p1,opnd1p2);
 	Dbl_copyfromptr(src2ptr,opnd2p1,opnd2p2);
@@ -705,16 +705,16 @@ dbl_fmpynfadd(src1ptr,src2ptr,src3ptr,status,dstptr)
 *mut dbl_floating_pointsrc1ptr, *src2ptr, *src3ptr, *dstptr;
 u32 *status;
 {
-	u32 opnd1p1, opnd1p2, opnd2p1, opnd2p2, opnd3p1, opnd3p2;
-	u32 tmpresp1, tmpresp2, tmpresp3, tmpresp4;
-	u32 rightp1, rightp2, rightp3, rightp4;
-	u32 resultp1, resultp2 = 0, resultp3 = 0, resultp4 = 0;
-	i32 mpy_exponent, add_exponent, count;
+	opnd1p1: u32, opnd1p2, opnd2p1, opnd2p2, opnd3p1, opnd3p2;
+	tmpresp1: u32, tmpresp2, tmpresp3, tmpresp4;
+	rightp1: u32, rightp2, rightp3, rightp4;
+	resultp1: u32, resultp2 = 0, resultp3 = 0, resultp4 = 0;
+	mpy_exponent: i32, add_exponent, count;
 	bool inexact = false, is_tiny = false;
 
-	u32 signlessleft1, signlessright1, save;
-	i32 result_exponent, diff_exponent;
-	i32 sign_save, jumpsize;
+	signlessleft1: u32, signlessright1, save;
+	result_exponent: i32, diff_exponent;
+	sign_save: i32, jumpsize;
 	
 	Dbl_copyfromptr(src1ptr,opnd1p1,opnd1p2);
 	Dbl_copyfromptr(src2ptr,opnd2p1,opnd2p2);
@@ -1363,16 +1363,16 @@ sgl_fmpyfadd(src1ptr,src2ptr,src3ptr,status,dstptr)
 *mut sgl_floating_pointsrc1ptr, *src2ptr, *src3ptr, *dstptr;
 u32 *status;
 {
-	u32 opnd1, opnd2, opnd3;
-	u32 tmpresp1, tmpresp2;
-	u32 rightp1, rightp2;
-	u32 resultp1, resultp2 = 0;
-	i32 mpy_exponent, add_exponent, count;
+	opnd1: u32, opnd2, opnd3;
+	tmpresp1: u32, tmpresp2;
+	rightp1: u32, rightp2;
+	resultp1: u32, resultp2 = 0;
+	mpy_exponent: i32, add_exponent, count;
 	bool inexact = false, is_tiny = false;
 
-	u32 signlessleft1, signlessright1, save;
-	i32 result_exponent, diff_exponent;
-	i32 sign_save, jumpsize;
+	signlessleft1: u32, signlessright1, save;
+	result_exponent: i32, diff_exponent;
+	sign_save: i32, jumpsize;
 	
 	Sgl_copyfromptr(src1ptr,opnd1);
 	Sgl_copyfromptr(src2ptr,opnd2);
@@ -2004,16 +2004,16 @@ sgl_fmpynfadd(src1ptr,src2ptr,src3ptr,status,dstptr)
 *mut sgl_floating_pointsrc1ptr, *src2ptr, *src3ptr, *dstptr;
 u32 *status;
 {
-	u32 opnd1, opnd2, opnd3;
-	u32 tmpresp1, tmpresp2;
-	u32 rightp1, rightp2;
-	u32 resultp1, resultp2 = 0;
-	i32 mpy_exponent, add_exponent, count;
+	opnd1: u32, opnd2, opnd3;
+	tmpresp1: u32, tmpresp2;
+	rightp1: u32, rightp2;
+	resultp1: u32, resultp2 = 0;
+	mpy_exponent: i32, add_exponent, count;
 	bool inexact = false, is_tiny = false;
 
-	u32 signlessleft1, signlessright1, save;
-	i32 result_exponent, diff_exponent;
-	i32 sign_save, jumpsize;
+	signlessleft1: u32, signlessright1, save;
+	result_exponent: i32, diff_exponent;
+	sign_save: i32, jumpsize;
 	
 	Sgl_copyfromptr(src1ptr,opnd1);
 	Sgl_copyfromptr(src2ptr,opnd2);

@@ -30,8 +30,8 @@ pub unsafe fn ip_call_ra_chain(mut skb: *mut sk_buff) -> bool {
     false
 }
 
-// INDIRECT_CALLABLE_DECLARE(int udp_rcv(struct sk_buff *));
-// INDIRECT_CALLABLE_DECLARE(int tcp_v4_rcv(struct sk_buff *));
+// INDIRECT_CALLABLE_DECLARE(int udp_rcv(sk_buff *));
+// INDIRECT_CALLABLE_DECLARE(int tcp_v4_rcv(sk_buff *));
 pub unsafe fn ip_protocol_deliver_rcu(net: *mut net, skb: *mut sk_buff, mut protocol: i32) {
     let mut raw: i32;
     loop {
@@ -108,19 +108,23 @@ unsafe fn tcp_v4_early_demux(skb: *mut sk_buff) -> i32 {
 
 unsafe fn ip_rcv_finish_core(net: *mut net, skb: *mut sk_buff, dev: *mut net_device, hint: *const sk_buff) -> i32 {
     let mut iph = ip_hdr(skb); let mut drop_reason;
-    if ip_can_use_hint(skb, iph, hint) { drop_reason = ip_route_use_hint(skb, (*iph).daddr, (*iph).saddr, ip4h_dscp(iph), dev, hint); if drop_reason != 0 { goto_drop!(drop_error); } }
+    'drop_error: {
+    'drop: {
+    if ip_can_use_hint(skb, iph, hint) { drop_reason = ip_route_use_hint(skb, (*iph).daddr, (*iph).saddr, ip4h_dscp(iph), dev, hint); if drop_reason != 0 { break 'drop_error; } }
     if READ_ONCE((*net).ipv4.sysctl_ip_early_demux) && skb_dst(skb).is_null() && (*skb).sk.is_null() && !ip_is_fragment(iph) {
         if (*iph).protocol == IPPROTO_TCP && READ_ONCE((*net).ipv4.sysctl_tcp_early_demux) { tcp_v4_early_demux(skb); iph = ip_hdr(skb); }
-        else if (*iph).protocol == IPPROTO_UDP && READ_ONCE((*net).ipv4.sysctl_udp_early_demux) { drop_reason = udp_v4_early_demux(skb); if drop_reason != 0 { goto_drop!(drop_error); } iph = ip_hdr(skb); }
+        else if (*iph).protocol == IPPROTO_UDP && READ_ONCE((*net).ipv4.sysctl_udp_early_demux) { drop_reason = udp_v4_early_demux(skb); if drop_reason != 0 { break 'drop_error; } iph = ip_hdr(skb); }
     }
-    if !skb_valid_dst(skb) { drop_reason = ip_route_input_noref(skb, (*iph).daddr, (*iph).saddr, ip4h_dscp(iph), dev); if drop_reason != 0 { goto_drop!(drop_error); } }
+    if !skb_valid_dst(skb) { drop_reason = ip_route_input_noref(skb, (*iph).daddr, (*iph).saddr, ip4h_dscp(iph), dev); if drop_reason != 0 { break 'drop_error; } }
     else { let in_dev = __in_dev_get_rcu(dev); if !in_dev.is_null() && IN_DEV_ORCONF(in_dev, NOPOLICY) { (*IPCB(skb)).flags |= IPSKB_NOPOLICY; } }
-    if (*iph).ihl > 5 { drop_reason = ip_rcv_options(skb, dev); if drop_reason != 0 { goto_drop!(drop); } }
+    if (*iph).ihl > 5 { drop_reason = ip_rcv_options(skb, dev); if drop_reason != 0 { break 'drop; } }
     let rt = skb_rtable(skb); if (*rt).rt_type == RTN_MULTICAST { __IP_UPD_PO_STATS(net, IPSTATS_MIB_INMCAST, (*skb).len); } else if (*rt).rt_type == RTN_BROADCAST { __IP_UPD_PO_STATS(net, IPSTATS_MIB_INBCAST, (*skb).len); }
-    else if (*skb).pkt_type == PACKET_BROADCAST || (*skb).pkt_type == PACKET_MULTICAST { let d = __in_dev_get_rcu(dev); if !d.is_null() && IN_DEV_ORCONF(d, DROP_UNICAST_IN_L2_MULTICAST) { drop_reason = SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST; goto_drop!(drop); } }
+    else if (*skb).pkt_type == PACKET_BROADCAST || (*skb).pkt_type == PACKET_MULTICAST { let d = __in_dev_get_rcu(dev); if !d.is_null() && IN_DEV_ORCONF(d, DROP_UNICAST_IN_L2_MULTICAST) { drop_reason = SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST; break 'drop; } }
     return NET_RX_SUCCESS;
-drop: kfree_skb_reason(skb, drop_reason); return NET_RX_DROP;
-drop_error: if drop_reason == SKB_DROP_REASON_IP_RPFILTER { __NET_INC_STATS(net, LINUX_MIB_IPRPFILTER); } kfree_skb_reason(skb, drop_reason); return NET_RX_DROP;
+    }
+    kfree_skb_reason(skb, drop_reason); return NET_RX_DROP;
+    }
+    if drop_reason == SKB_DROP_REASON_IP_RPFILTER { __NET_INC_STATS(net, LINUX_MIB_IPRPFILTER); } kfree_skb_reason(skb, drop_reason); return NET_RX_DROP;
 }
 
 // The remaining receive/list plumbing is a direct translation of the C entry points.
@@ -143,7 +147,7 @@ pub unsafe fn ip_rcv_core(mut skb: *mut sk_buff, net: *mut net) -> *mut sk_buff 
 
 unsafe fn ip_sublist_rcv_finish(head: *mut list_head) {
     let mut skb: *mut sk_buff; let mut next: *mut sk_buff;
-    list_for_each_entry_safe!(skb, next, head, list) { skb_list_del_init(skb); dst_input(skb); }
+    list_for_each_entry_safe!(skb, next, head, list, { skb_list_del_init(skb); dst_input(skb); });
 }
 
 unsafe fn ip_extract_route_hint(net: *const net, skb: *mut sk_buff) -> *mut sk_buff {
@@ -153,12 +157,12 @@ unsafe fn ip_extract_route_hint(net: *const net, skb: *mut sk_buff) -> *mut sk_b
 
 unsafe fn ip_list_rcv_finish(net: *mut net, head: *mut list_head) {
     let mut skb: *mut sk_buff; let mut next: *mut sk_buff; let mut hint: *mut sk_buff = core::ptr::null_mut(); let mut curr_dst: *mut dst_entry = core::ptr::null_mut(); let mut sublist: list_head = LIST_HEAD_INIT;
-    list_for_each_entry_safe!(skb, next, head, list) {
+    list_for_each_entry_safe!(skb, next, head, list, {
         let dev = (*skb).dev; skb_list_del_init(skb); skb = l3mdev_ip_rcv(skb); if skb.is_null() { continue; }
         if ip_rcv_finish_core(net, skb, dev, hint) == NET_RX_DROP { continue; }
         let dst = skb_dst(skb); if curr_dst != dst { hint = ip_extract_route_hint(net, skb); if !list_empty(&sublist) { ip_sublist_rcv_finish(&mut sublist); } INIT_LIST_HEAD(&mut sublist); curr_dst = dst; }
         list_add_tail(&mut (*skb).list, &mut sublist);
-    }
+    });
     ip_sublist_rcv_finish(&mut sublist);
 }
 
@@ -169,11 +173,11 @@ unsafe fn ip_sublist_rcv(head: *mut list_head, dev: *mut net_device, net: *mut n
 
 pub unsafe fn ip_list_rcv(head: *mut list_head, _pt: *mut packet_type, _orig_dev: *mut net_device) {
     let mut curr_dev: *mut net_device = core::ptr::null_mut(); let mut curr_net: *mut net = core::ptr::null_mut(); let mut skb: *mut sk_buff; let mut next: *mut sk_buff; let mut sublist: list_head = LIST_HEAD_INIT;
-    list_for_each_entry_safe!(skb, next, head, list) {
+    list_for_each_entry_safe!(skb, next, head, list, {
         let dev = (*skb).dev; let net = dev_net(dev); skb_list_del_init(skb); skb = ip_rcv_core(skb, net); if skb.is_null() { continue; }
         if curr_dev != dev || curr_net != net { if !list_empty(&sublist) { ip_sublist_rcv(&mut sublist, curr_dev, curr_net); } INIT_LIST_HEAD(&mut sublist); curr_dev = dev; curr_net = net; }
         list_add_tail(&mut (*skb).list, &mut sublist);
-    }
+    });
     if !list_empty(&sublist) { ip_sublist_rcv(&mut sublist, curr_dev, curr_net); }
 }
 

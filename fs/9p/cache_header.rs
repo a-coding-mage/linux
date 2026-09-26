@@ -6,7 +6,7 @@
  */
 
 /* CONFIG_9P_FSCACHE selects the fscache-backed declarations. */
-#[cfg(feature = "CONFIG_9P_FSCACHE")]
+#[cfg(CONFIG_9P_FSCACHE)]
 extern "C" {
     pub fn v9fs_cache_session_get_cookie(
         v9ses: *mut v9fs_session_info,
@@ -17,7 +17,7 @@ extern "C" {
 }
 
 /* Fallback when CONFIG_9P_FSCACHE is not enabled. */
-#[cfg(not(feature = "CONFIG_9P_FSCACHE"))]
+#[cfg(not(CONFIG_9P_FSCACHE))]
 #[inline]
 pub unsafe fn v9fs_cache_inode_get_cookie(_inode: *mut inode) {}
 

@@ -151,21 +151,21 @@ unsafe fn rttm_cpu_starting(cpu: u32) -> i32 {
 unsafe fn rttm_probe(np: *mut device_node) -> i32 {
     let mut cpu: u32 = 0;
     let clkidx = num_possible_cpus();
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let to = per_cpu_ptr(&mut RTTM_TO, cpu);
         (*to).of_irq.index = cpu;
         (*to).of_base.index = cpu;
         if timer_of_init(np, to) != 0 {
             pr_err!("setup of timer {} failed", cpu);
             let mut cpu_rollback: u32 = 0;
-            for_each_possible_cpu!(cpu_rollback) {
+            for_each_possible_cpu!(cpu_rollback, {
                 if cpu_rollback == cpu { break; }
                 timer_of_cleanup(per_cpu_ptr(&mut RTTM_TO, cpu_rollback));
-            }
+            });
             return -22;
         }
         rttm_setup_timer((*to).of_base.base);
-    }
+    });
     let to = &mut RTTM_CS.to;
     to.of_base.index = clkidx;
     timer_of_init(np, to);

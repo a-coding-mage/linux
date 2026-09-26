@@ -101,7 +101,7 @@ pub unsafe extern "C" fn arch_kimage_file_post_load_cleanup(image: *mut Kimage) 
 }
 
 // CONFIG_CRASH_DUMP conditional declarations and definitions.
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe extern "C" fn arch_get_system_nr_ranges() -> u32 {
     // for exclusion of crashkernel region
     let mut nr_ranges: u32 = 2 + crashk_cma_cnt;
@@ -114,7 +114,7 @@ pub unsafe extern "C" fn arch_get_system_nr_ranges() -> u32 {
     nr_ranges
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe extern "C" fn arch_crash_populate_cmem(cmem: *mut CrashMem) -> i32 {
     let mut i: u64 = 0;
     let mut start: u64 = 0;
@@ -150,7 +150,7 @@ pub unsafe extern "C" fn load_other_segments(
     kbuf.image = image;
     kbuf.buf_min = kernel_load_addr.wrapping_add(kernel_size);
 
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     if (*image).r#type == KEXEC_TYPE_CRASH {
         let mut headers: *mut core::ffi::c_void = core::ptr::null_mut();
         let mut headers_sz: usize = 0;

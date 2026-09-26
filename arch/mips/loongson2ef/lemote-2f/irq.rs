@@ -50,7 +50,7 @@ pub unsafe fn mach_i8259_irq() -> i32 {
     irq
 }
 
-static unsafe fn i8259_irqdispatch() {
+unsafe fn i8259_irqdispatch() {
     let irq: i32 = mach_i8259_irq();
     if irq >= 0 {
         do_IRQ(irq);

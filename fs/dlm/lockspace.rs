@@ -36,20 +36,20 @@ extern "C" {
 pub type dlm_lockspace_t = dlm_ls;
 
 extern "C" {
-    fn kstrtoint(*const c_char, c_int, *mut c_int) -> c_int;
-    fn kstrtouint(*const c_char, c_int, *mut u32) -> c_int;
-    fn dlm_find_lockspace_local(*mut dlm_lockspace_t) -> *mut dlm_ls;
-    fn dlm_ls_stop(*mut dlm_ls); fn dlm_ls_start(*mut dlm_ls); fn dlm_put_lockspace(*mut dlm_ls);
-    fn dlm_no_directory(*mut dlm_ls) -> u32; fn dlm_recover_status(*mut dlm_ls) -> u32;
-    fn dlm_callback_start(*mut dlm_ls) -> c_int; fn dlm_callback_stop(*mut dlm_ls);
-    fn dlm_recoverd_start(*mut dlm_ls) -> c_int; fn dlm_recoverd_stop(*mut dlm_ls);
+    fn kstrtoint(_: *const c_char, _: c_int, _: *mut c_int) -> c_int;
+    fn kstrtouint(_: *const c_char, _: c_int, _: *mut u32) -> c_int;
+    fn dlm_find_lockspace_local(_: *mut dlm_lockspace_t) -> *mut dlm_ls;
+    fn dlm_ls_stop(_: *mut dlm_ls); fn dlm_ls_start(_: *mut dlm_ls); fn dlm_put_lockspace(_: *mut dlm_ls);
+    fn dlm_no_directory(_: *mut dlm_ls) -> u32; fn dlm_recover_status(_: *mut dlm_ls) -> u32;
+    fn dlm_callback_start(_: *mut dlm_ls) -> c_int; fn dlm_callback_stop(_: *mut dlm_ls);
+    fn dlm_recoverd_start(_: *mut dlm_ls) -> c_int; fn dlm_recoverd_stop(_: *mut dlm_ls);
     fn dlm_midcomms_start() -> c_int; fn dlm_midcomms_stop(); fn dlm_midcomms_shutdown();
     fn dlm_midcomms_version_wait(); fn dlm_user_daemon_available() -> bool;
-    fn dlm_clear_members(*mut dlm_ls); fn dlm_clear_members_gone(*mut dlm_ls);
-    fn dlm_device_deregister(*mut dlm_ls); fn dlm_purge_requestqueue(*mut dlm_ls);
-    fn dlm_create_debug_file(*mut dlm_ls); fn dlm_delete_debug_file(*mut dlm_ls);
-    fn dlm_free_lvb(*mut c_void); fn dlm_free_lkb(*mut dlm_lkb); fn dlm_free_rsb(*mut dlm_rsb);
-    fn dlm_rsb_scan(*mut c_void); fn log_print(*const c_char, ...); fn log_error(*mut dlm_ls,*const c_char,...); fn log_debug(*mut dlm_ls,*const c_char,...); fn log_rinfo(*mut dlm_ls,*const c_char,...);
+    fn dlm_clear_members(_: *mut dlm_ls); fn dlm_clear_members_gone(_: *mut dlm_ls);
+    fn dlm_device_deregister(_: *mut dlm_ls); fn dlm_purge_requestqueue(_: *mut dlm_ls);
+    fn dlm_create_debug_file(_: *mut dlm_ls); fn dlm_delete_debug_file(_: *mut dlm_ls);
+    fn dlm_free_lvb(_: *mut c_void); fn dlm_free_lkb(_: *mut dlm_lkb); fn dlm_free_rsb(_: *mut dlm_rsb);
+    fn dlm_rsb_scan(_: *mut c_void); fn log_print(_: *const c_char, ...); fn log_error(_: *mut dlm_ls,_: *const c_char,...); fn log_debug(_: *mut dlm_ls,_: *const c_char,...); fn log_rinfo(_: *mut dlm_ls,_: *const c_char,...);
 }
 
 /* The following functions retain the original C control flow.  Field access,

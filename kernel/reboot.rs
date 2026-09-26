@@ -19,21 +19,21 @@ extern "C" {
     static mut system_state:c_int; static mut reboot_mode:RebootMode; static mut panic_reboot_mode:RebootMode;
     static mut reboot_default:c_int; static mut reboot_cpu:c_int; static mut reboot_type:c_int; static mut reboot_force:c_int;
     static mut pm_power_off:Option<unsafe extern "C" fn()>;
-    fn kmsg_dump(c_int); fn machine_emergency_restart(); fn machine_restart(*mut c_char); fn machine_halt(); fn machine_power_off();
-    fn blocking_notifier_call_chain(*mut c_void,c_ulong,*mut c_void)->c_int; fn atomic_notifier_call_chain(*mut c_void,c_ulong,*mut c_void)->c_int;
-    fn blocking_notifier_chain_register(*mut c_void,*mut notifier_block)->c_int; fn blocking_notifier_chain_unregister(*mut c_void,*mut notifier_block)->c_int;
-    fn atomic_notifier_chain_register(*mut c_void,*mut notifier_block)->c_int; fn atomic_notifier_chain_unregister(*mut c_void,*mut notifier_block)->c_int;
-    fn atomic_notifier_chain_call_chain_is_empty(*mut c_void)->bool;
-    fn usermodehelper_disable(); fn device_shutdown(); fn syscore_shutdown(); fn cpu_hotplug_disable(); fn cpu_online(c_int)->bool; fn cpumask_first(*mut c_void)->c_int;
-    fn set_cpus_allowed_ptr(*mut c_void,*mut c_void); static mut current:*mut c_void; static mut cpu_online_mask:*mut c_void;
-    fn kernel_kexec()->c_int; fn hibernate()->c_int; fn reboot_pid_ns(*mut pid_namespace,c_uint)->c_int; fn do_exit(c_int);
-    fn ns_capable(*mut c_void,c_int)->bool; fn task_active_pid_ns(*mut c_void)->*mut pid_namespace; fn strncpy_from_user(*mut c_char,*mut c_void,usize)->isize;
-    fn mutex_lock(*mut c_void); fn mutex_unlock(*mut c_void); static mut system_transition_mutex:*mut c_void;
-    fn schedule_work(*mut work_struct); fn kill_cad_pid(c_int,c_int); fn argv_split(*mut c_void,*const c_char,*mut c_void)->*mut *mut c_char; fn argv_free(*mut *mut c_char); fn call_usermodehelper(*mut c_char,*mut *mut c_char,*mut *mut c_char,c_int)->c_int; fn emergency_sync(); fn pr_flush(c_int,bool);
-    fn schedule_delayed_work(*mut c_void,c_ulong); fn msecs_to_jiffies(c_int)->c_ulong; fn sysfs_streq(*const c_char,*const c_char)->bool; fn capable(c_int)->bool;
-    fn num_possible_cpus()->c_int; fn simple_strtoul(*const c_char,*mut *mut c_char,c_uint)->c_ulong; fn strchr(*const c_char,c_int)->*mut c_char; fn isdigit(c_int)->c_int;
-    fn sysfs_emit(*mut c_char,*const c_char,...)->isize; fn kstrtobool(*const c_char,*mut bool)->c_int; fn kstrtouint(*const c_char,c_uint,*mut c_uint)->c_int;
-    fn register_sysctl_init(*const c_char,*const c_void); fn kobject_create_and_add(*const c_char,*mut kobject)->*mut kobject; fn sysfs_create_group(*mut kobject,*const c_void)->c_int; fn kobject_put(*mut kobject);
+    fn kmsg_dump(_: c_int); fn machine_emergency_restart(); fn machine_restart(_: *mut c_char); fn machine_halt(); fn machine_power_off();
+    fn blocking_notifier_call_chain(_: *mut c_void,_: c_ulong,_: *mut c_void)->c_int; fn atomic_notifier_call_chain(_: *mut c_void,_: c_ulong,_: *mut c_void)->c_int;
+    fn blocking_notifier_chain_register(_: *mut c_void,_: *mut notifier_block)->c_int; fn blocking_notifier_chain_unregister(_: *mut c_void,_: *mut notifier_block)->c_int;
+    fn atomic_notifier_chain_register(_: *mut c_void,_: *mut notifier_block)->c_int; fn atomic_notifier_chain_unregister(_: *mut c_void,_: *mut notifier_block)->c_int;
+    fn atomic_notifier_chain_call_chain_is_empty(_: *mut c_void)->bool;
+    fn usermodehelper_disable(); fn device_shutdown(); fn syscore_shutdown(); fn cpu_hotplug_disable(); fn cpu_online(_: c_int)->bool; fn cpumask_first(_: *mut c_void)->c_int;
+    fn set_cpus_allowed_ptr(_: *mut c_void,_: *mut c_void); static mut current:*mut c_void; static mut cpu_online_mask:*mut c_void;
+    fn kernel_kexec()->c_int; fn hibernate()->c_int; fn reboot_pid_ns(_: *mut pid_namespace,_: c_uint)->c_int; fn do_exit(_: c_int);
+    fn ns_capable(_: *mut c_void,_: c_int)->bool; fn task_active_pid_ns(_: *mut c_void)->*mut pid_namespace; fn strncpy_from_user(_: *mut c_char,_: *mut c_void,_: usize)->isize;
+    fn mutex_lock(_: *mut c_void); fn mutex_unlock(_: *mut c_void); static mut system_transition_mutex:*mut c_void;
+    fn schedule_work(_: *mut work_struct); fn kill_cad_pid(_: c_int,_: c_int); fn argv_split(_: *mut c_void,_: *const c_char,_: *mut c_void)->*mut *mut c_char; fn argv_free(_: *mut *mut c_char); fn call_usermodehelper(_: *mut c_char,_: *mut *mut c_char,_: *mut *mut c_char,_: c_int)->c_int; fn emergency_sync(); fn pr_flush(_: c_int,_: bool);
+    fn schedule_delayed_work(_: *mut c_void,_: c_ulong); fn msecs_to_jiffies(_: c_int)->c_ulong; fn sysfs_streq(_: *const c_char,_: *const c_char)->bool; fn capable(_: c_int)->bool;
+    fn num_possible_cpus()->c_int; fn simple_strtoul(_: *const c_char,_: *mut *mut c_char,_: c_uint)->c_ulong; fn strchr(_: *const c_char,_: c_int)->*mut c_char; fn isdigit(_: c_int)->c_int;
+    fn sysfs_emit(_: *mut c_char,_: *const c_char,...)->isize; fn kstrtobool(_: *const c_char,_: *mut bool)->c_int; fn kstrtouint(_: *const c_char,_: c_uint,_: *mut c_uint)->c_int;
+    fn register_sysctl_init(_: *const c_char,_: *const c_void); fn kobject_create_and_add(_: *const c_char,_: *mut kobject)->*mut kobject; fn sysfs_create_group(_: *mut kobject,_: *const c_void)->c_int; fn kobject_put(_: *mut kobject);
 }
 
 static mut C_A_D:c_int=1; pub static mut cad_pid:*mut pid=core::ptr::null_mut();

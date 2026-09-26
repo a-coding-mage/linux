@@ -87,29 +87,29 @@ unsafe fn mfp_validate(mfp: i32) -> i32 { let gpio=mfp_to_gpio(mfp); if mfp > MF
     if d.keypad_gpio && MFP_AF(c)==0 && c&MFP_LPM_CAN_WAKEUP!=0 { if on!=0{PKWR|=d.mask}else{PKWR&=!d.mask} return 0; }
     if on!=0 && (PWER&d.mux_mask)&!d.mask!=0{return -16;} if d.can_wakeup&&c&MFP_LPM_CAN_WAKEUP!=0 { if on!=0 {PWER=(PWER&!d.mux_mask)|d.mask; if c&MFP_LPM_EDGE_RISE!=0{PRER|=d.mask}else{PRER&=!d.mask}; if c&MFP_LPM_EDGE_FALL!=0{PFER|=d.mask}else{PFER&=!d.mask};}else{PWER&=!d.mask;PRER&=!d.mask;PFER&=!d.mask;} } 0 }
 
-#[cfg(feature="CONFIG_PXA25x")] unsafe fn pxa25x_mfp_init(){ pxa_last_gpio=84; for i in 0..=84{GPIO_DESC[i as usize].valid=true;} for i in 0..=15{GPIO_DESC[i].can_wakeup=true;GPIO_DESC[i].mask=gpio_bit(i as i32);} for i in 86..=pxa_last_gpio { GPIO_DESC[i as usize].dir_inverted=true; } }
-#[cfg(not(feature="CONFIG_PXA25x"))] unsafe fn pxa25x_mfp_init(){}
+#[cfg(CONFIG_PXA25x)] unsafe fn pxa25x_mfp_init(){ pxa_last_gpio=84; for i in 0..=84{GPIO_DESC[i as usize].valid=true;} for i in 0..=15{GPIO_DESC[i].can_wakeup=true;GPIO_DESC[i].mask=gpio_bit(i as i32);} for i in 86..=pxa_last_gpio { GPIO_DESC[i as usize].dir_inverted=true; } }
+#[cfg(not(CONFIG_PXA25x))] unsafe fn pxa25x_mfp_init(){}
 
 static PXA27X_PKWR_GPIO:[i32;20]=[13,16,17,34,36,37,38,39,90,91,93,94,95,96,97,98,99,100,101,102];
 #[no_mangle] pub unsafe extern "C" fn keypad_set_wake(on:u32)->i32{let mut mask=0;for i in 0..20{let d=&GPIO_DESC[PXA27X_PKWR_GPIO[i] as usize];if MFP_AF(d.config)!=0&&d.config&MFP_LPM_CAN_WAKEUP!=0{mask|=d.mask;}}if on!=0{PKWR|=mask}else{PKWR&=!mask}0}
-#[cfg(feature="CONFIG_PXA27x")] unsafe fn pxa27x_mfp_init(){pxa_last_gpio=120;for i in 0..=120{if ![2,5,6,7,8].contains(&i){GPIO_DESC[i].valid=true;}}for i in 0..20{let g=PXA27X_PKWR_GPIO[i] as usize;GPIO_DESC[g].can_wakeup=true;GPIO_DESC[g].keypad_gpio=true;GPIO_DESC[g].mask=1<<i;}for i in 0..=15{if gpio_bit(i)&0x1e4!=0{continue;}GPIO_DESC[i].can_wakeup=true;GPIO_DESC[i].mask=gpio_bit(i as i32);}GPIO_DESC[35].can_wakeup=true;GPIO_DESC[35].mask=PWER_WE35;for &(g,m,mm) in &[(31,1<<19,3<<19),(113,2<<19,3<<19),(38,1<<16,7<<16),(53,2<<16,7<<16),(40,3<<16,7<<16),(36,4<<16,7<<16)]{GPIO_DESC[g].can_wakeup=true;GPIO_DESC[g].mask=m;GPIO_DESC[g].mux_mask=mm;}}
-#[cfg(not(feature="CONFIG_PXA27x"))] unsafe fn pxa27x_mfp_init(){}
+#[cfg(CONFIG_PXA27x)] unsafe fn pxa27x_mfp_init(){pxa_last_gpio=120;for i in 0..=120{if ![2,5,6,7,8].contains(&i){GPIO_DESC[i].valid=true;}}for i in 0..20{let g=PXA27X_PKWR_GPIO[i] as usize;GPIO_DESC[g].can_wakeup=true;GPIO_DESC[g].keypad_gpio=true;GPIO_DESC[g].mask=1<<i;}for i in 0..=15{if gpio_bit(i)&0x1e4!=0{continue;}GPIO_DESC[i].can_wakeup=true;GPIO_DESC[i].mask=gpio_bit(i as i32);}GPIO_DESC[35].can_wakeup=true;GPIO_DESC[35].mask=PWER_WE35;for &(g,m,mm) in &[(31,1<<19,3<<19),(113,2<<19,3<<19),(38,1<<16,7<<16),(53,2<<16,7<<16),(40,3<<16,7<<16),(36,4<<16,7<<16)]{GPIO_DESC[g].can_wakeup=true;GPIO_DESC[g].mask=m;GPIO_DESC[g].mux_mask=mm;}}
+#[cfg(not(CONFIG_PXA27x))] unsafe fn pxa27x_mfp_init(){}
 
 #[no_mangle] pub unsafe extern "C" fn pxa2xx_mfp_init()->i32{if !cpu_is_pxa2xx(){return 0;}if cpu_is_pxa25x(){pxa25x_mfp_init();}if cpu_is_pxa27x(){pxa27x_mfp_init();}PSSR=PSSR_RDH;for i in 0..=gpio_to_bank(pxa_last_gpio){GPDR_LPM[i as usize]=reg_read(gpdr(i*32));}0}
 
-#[cfg(feature="CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut SAVED_GAFR:[[u32;4];2]=[[0;4];2];
-#[cfg(feature="CONFIG_PM")] static mut SAVED_GPDR:[u32;4]=[0;4];
-#[cfg(feature="CONFIG_PM")] static mut SAVED_GPLR:[u32;4]=[0;4];
-#[cfg(feature="CONFIG_PM")] static mut SAVED_PGSR:[u32;4]=[0;4];
+#[cfg(CONFIG_PM)] static mut SAVED_GPDR:[u32;4]=[0;4];
+#[cfg(CONFIG_PM)] static mut SAVED_GPLR:[u32;4]=[0;4];
+#[cfg(CONFIG_PM)] static mut SAVED_PGSR:[u32;4]=[0;4];
 
-#[cfg(feature="CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa2xx_mfp_suspend()->i32 {
     for i in 0..pxa_last_gpio { let d=&GPIO_DESC[i as usize]; if d.config&MFP_LPM_KEEP_OUTPUT!=0 && reg_read(gpdr(i))&gpio_bit(i)!=0 { let a=pgsr(gpio_to_bank(i)); if reg_read(gplr(i))&gpio_bit(i)!=0{reg_write(a,reg_read(a)|gpio_bit(i));}else{reg_write(a,reg_read(a)&!gpio_bit(i));} } }
     for i in 0..=gpio_to_bank(pxa_last_gpio) { SAVED_GAFR[0][i as usize]=reg_read(gafr(0,i));SAVED_GAFR[1][i as usize]=reg_read(gafr(1,i));SAVED_GPDR[i as usize]=reg_read(gpdr(i*32));SAVED_GPLR[i as usize]=reg_read(gplr(i*32));SAVED_PGSR[i as usize]=reg_read(pgsr(i));reg_write(gpsr(i*32),SAVED_PGSR[i as usize]);reg_write(gpcr(i*32),!SAVED_PGSR[i as usize]); }
     for i in 0..pxa_last_gpio { let b=gpio_to_bank(i) as usize; let a=gpdr(i); if GPDR_LPM[b]&gpio_bit(i)!=0 || (GPIO_DESC[i as usize].config&MFP_LPM_KEEP_OUTPUT!=0 && SAVED_GPDR[b]&gpio_bit(i)!=0){reg_write(a,reg_read(a)|gpio_bit(i));}else{reg_write(a,reg_read(a)&!gpio_bit(i));} } 0
 }
-#[cfg(feature="CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa2xx_mfp_resume(){for i in 0..=gpio_to_bank(pxa_last_gpio){reg_write(gafr(0,i),SAVED_GAFR[0][i as usize]);reg_write(gafr(1,i),SAVED_GAFR[1][i as usize]);reg_write(gpsr(i*32),SAVED_GPLR[i as usize]);reg_write(gpcr(i*32),!SAVED_GPLR[i as usize]);reg_write(gpdr(i*32),SAVED_GPDR[i as usize]);reg_write(pgsr(i),SAVED_PGSR[i as usize]);}PSSR=PSSR_RDH|PSSR_PH;}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

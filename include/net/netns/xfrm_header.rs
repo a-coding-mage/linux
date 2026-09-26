@@ -71,7 +71,7 @@ pub struct netns_xfrm {
 
     pub xfrm4_dst_ops: dst_ops,
     // Present only when IPv6 support is enabled in the C build.
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub xfrm6_dst_ops: dst_ops,
     pub xfrm_state_lock: spinlock_t,
     pub xfrm_state_hash_generation: seqcount_spinlock_t,

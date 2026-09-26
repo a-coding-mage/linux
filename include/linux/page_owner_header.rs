@@ -2,7 +2,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 extern "C" {
     pub static mut page_owner_inited: static_key_false;
     pub static mut page_owner_ops: page_ext_operations;
@@ -22,7 +22,7 @@ extern "C" {
     fn static_branch_unlikely(key: *const static_key_false) -> bool;
 }
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 #[inline]
 pub unsafe fn reset_page_owner(page: *mut page, order: u16) {
     if static_branch_unlikely(&raw const page_owner_inited) {
@@ -30,7 +30,7 @@ pub unsafe fn reset_page_owner(page: *mut page, order: u16) {
     }
 }
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 #[inline]
 pub unsafe fn set_page_owner(page: *mut page, order: u16, gfp_mask: gfp_t) {
     if static_branch_unlikely(&raw const page_owner_inited) {
@@ -38,7 +38,7 @@ pub unsafe fn set_page_owner(page: *mut page, order: u16, gfp_mask: gfp_t) {
     }
 }
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 #[inline]
 pub unsafe fn split_page_owner(page: *mut page, old_order: core::ffi::c_int, new_order: core::ffi::c_int) {
     if static_branch_unlikely(&raw const page_owner_inited) {
@@ -46,7 +46,7 @@ pub unsafe fn split_page_owner(page: *mut page, old_order: core::ffi::c_int, new
     }
 }
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 #[inline]
 pub unsafe fn folio_copy_owner(newfolio: *mut folio, old: *mut folio) {
     if static_branch_unlikely(&raw const page_owner_inited) {
@@ -54,7 +54,7 @@ pub unsafe fn folio_copy_owner(newfolio: *mut folio, old: *mut folio) {
     }
 }
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 #[inline]
 pub unsafe fn folio_set_owner_migrate_reason(folio: *mut folio, reason: migrate_reason) {
     if static_branch_unlikely(&raw const page_owner_inited) {
@@ -62,7 +62,7 @@ pub unsafe fn folio_set_owner_migrate_reason(folio: *mut folio, reason: migrate_
     }
 }
 
-#[cfg(feature = "CONFIG_PAGE_OWNER")]
+#[cfg(CONFIG_PAGE_OWNER)]
 #[inline]
 pub unsafe fn dump_page_owner(page: *const page) {
     if static_branch_unlikely(&raw const page_owner_inited) {
@@ -70,15 +70,15 @@ pub unsafe fn dump_page_owner(page: *const page) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_PAGE_OWNER"))]
+#[cfg(not(CONFIG_PAGE_OWNER))]
 #[inline]
 pub unsafe fn reset_page_owner(_page: *mut page, _order: u16) {}
 
-#[cfg(not(feature = "CONFIG_PAGE_OWNER"))]
+#[cfg(not(CONFIG_PAGE_OWNER))]
 #[inline]
 pub unsafe fn set_page_owner(_page: *mut page, _order: u16, _gfp_mask: gfp_t) {}
 
-#[cfg(not(feature = "CONFIG_PAGE_OWNER"))]
+#[cfg(not(CONFIG_PAGE_OWNER))]
 #[inline]
 pub unsafe fn split_page_owner(
     _page: *mut page,
@@ -87,15 +87,15 @@ pub unsafe fn split_page_owner(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_PAGE_OWNER"))]
+#[cfg(not(CONFIG_PAGE_OWNER))]
 #[inline]
 pub unsafe fn folio_copy_owner(_newfolio: *mut folio, _folio: *mut folio) {}
 
-#[cfg(not(feature = "CONFIG_PAGE_OWNER"))]
+#[cfg(not(CONFIG_PAGE_OWNER))]
 #[inline]
 pub unsafe fn folio_set_owner_migrate_reason(_folio: *mut folio, _reason: migrate_reason) {}
 
-#[cfg(not(feature = "CONFIG_PAGE_OWNER"))]
+#[cfg(not(CONFIG_PAGE_OWNER))]
 #[inline]
 pub unsafe fn dump_page_owner(_page: *const page) {}
 

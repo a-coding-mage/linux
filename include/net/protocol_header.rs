@@ -43,7 +43,7 @@ pub struct net_protocol {
 }
 
 /* Enabled when CONFIG_IPV6 is enabled in the C build. */
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 #[repr(C)]
 pub struct inet6_protocol {
     pub handler: Option<unsafe extern "C" fn(skb: *mut sk_buff) -> ::core::ffi::c_int>,
@@ -62,9 +62,9 @@ pub struct inet6_protocol {
     pub secret: u32,
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 pub const INET6_PROTO_NOPOLICY: u32 = 0x1;
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 pub const INET6_PROTO_FINAL: u32 = 0x2;
 
 #[repr(C)]
@@ -98,7 +98,7 @@ extern "C" {
     pub static inet_offloads: [*const net_offload; MAX_INET_PROTOS];
     pub static inet6_offloads: [*const net_offload; MAX_INET_PROTOS];
 
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub static mut inet6_protos: [*mut inet6_protocol; MAX_INET_PROTOS];
 
     pub fn inet_add_protocol(prot: *const net_protocol, num: u8) -> ::core::ffi::c_int;
@@ -108,13 +108,13 @@ extern "C" {
     pub fn inet_register_protosw(p: *mut inet_protosw);
     pub fn inet_unregister_protosw(p: *mut inet_protosw);
 
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn inet6_add_protocol(prot: *const inet6_protocol, num: u8) -> ::core::ffi::c_int;
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn inet6_del_protocol(prot: *const inet6_protocol, num: u8) -> ::core::ffi::c_int;
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn inet6_register_protosw(p: *mut inet_protosw);
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub fn inet6_unregister_protosw(p: *mut inet_protosw);
 
     pub fn inet6_add_offload(prot: *const net_offload, num: u8) -> ::core::ffi::c_int;

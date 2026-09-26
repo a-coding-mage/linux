@@ -15,13 +15,13 @@ pub struct pci_dev {
 
 #[repr(C)]
 pub struct ssb_pcicore {
-    #[cfg(feature = "CONFIG_SSB_DRIVER_PCICORE")]
+    #[cfg(CONFIG_SSB_DRIVER_PCICORE)]
     pub dev: *mut ssb_device,
-    #[cfg(feature = "CONFIG_SSB_DRIVER_PCICORE")]
+    #[cfg(CONFIG_SSB_DRIVER_PCICORE)]
     pub setup_done: u8,
-    #[cfg(feature = "CONFIG_SSB_DRIVER_PCICORE")]
+    #[cfg(CONFIG_SSB_DRIVER_PCICORE)]
     pub hostmode: u8,
-    #[cfg(feature = "CONFIG_SSB_DRIVER_PCICORE")]
+    #[cfg(CONFIG_SSB_DRIVER_PCICORE)]
     pub cardbusmode: u8,
 }
 
@@ -96,7 +96,7 @@ pub const SSB_PCICORE_SBTOPCI_RC_READM: u32 = 0x00000020;
 /* PCIcore specific boardflags */
 pub const SSB_PCICORE_BFL_NOPCI: u32 = 0x00000400;
 
-#[cfg(feature = "CONFIG_SSB_DRIVER_PCICORE")]
+#[cfg(CONFIG_SSB_DRIVER_PCICORE)]
 extern "C" {
     pub fn ssb_pcicore_init(pc: *mut ssb_pcicore);
     pub fn ssb_pcicore_dev_irqvecs_enable(pc: *mut ssb_pcicore, dev: *mut ssb_device) -> i32;
@@ -104,16 +104,16 @@ extern "C" {
     pub fn ssb_pcicore_pcibios_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_PCICORE"))]
+#[cfg(not(CONFIG_SSB_DRIVER_PCICORE))]
 pub unsafe fn ssb_pcicore_init(_pc: *mut ssb_pcicore) {}
 
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_PCICORE"))]
+#[cfg(not(CONFIG_SSB_DRIVER_PCICORE))]
 pub unsafe fn ssb_pcicore_dev_irqvecs_enable(_pc: *mut ssb_pcicore, _dev: *mut ssb_device) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_PCICORE"))]
+#[cfg(not(CONFIG_SSB_DRIVER_PCICORE))]
 pub unsafe fn ssb_pcicore_plat_dev_init(_d: *mut pci_dev) -> i32 { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_PCICORE"))]
+#[cfg(not(CONFIG_SSB_DRIVER_PCICORE))]
 pub unsafe fn ssb_pcicore_pcibios_map_irq(_dev: *const pci_dev, _slot: u8, _pin: u8) -> i32 { -ENODEV }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

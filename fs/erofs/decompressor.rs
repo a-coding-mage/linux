@@ -53,15 +53,15 @@ unsafe fn z_erofs_lz4_prepare_dstpages(rq: *mut z_erofs_decompress_req, pagepool
 }
 
 unsafe fn z_erofs_lz4_handle_overlap(rq: *const z_erofs_decompress_req, mut inpage: *mut core::ffi::c_void, out: *mut core::ffi::c_void, inputmargin: *mut u32, maptype: *mut i32, may_inplace: bool) -> *mut u8 {
-    if !(*rq).inplace_io { if (*rq).inpages <= 1 { *maptype = 0; return inpage as *mut u8; } kunmap_local(inpage); let src = erofs_vm_map_ram((*rq).in, (*rq).inpages); if src.is_null() { return ERR_PTR(-ENOMEM); } *maptype = 1; return src as *mut u8; }
+    if !(*rq).inplace_io { if (*rq).inpages <= 1 { *maptype = 0; return inpage as *mut u8; } kunmap_local(inpage); let src = erofs_vm_map_ram((*rq).r#in, (*rq).inpages); if src.is_null() { return ERR_PTR(-ENOMEM); } *maptype = 1; return src as *mut u8; }
     let oend = (*rq).pageofs_out + (*rq).outputsize; let omargin = PAGE_ALIGN(oend) - oend;
     if !(*rq).partial_decoding && may_inplace && omargin >= LZ4_DECOMPRESS_INPLACE_MARGIN((*rq).inputsize) {
-        let mut i = 0; while i < (*rq).inpages && *(*rq).out.add((*rq).outpages - (*rq).inpages + i) == *(*rq).in.add(i) { i += 1; }
+        let mut i = 0; while i < (*rq).inpages && *(*rq).out.add((*rq).outpages - (*rq).inpages + i) == *(*rq).r#in.add(i) { i += 1; }
         if i >= (*rq).inpages { kunmap_local(inpage); *maptype = 3; return (out as usize + ((*rq).outpages - (*rq).inpages) * (1 << PAGE_SHIFT)) as *mut u8; }
     }
     let src = z_erofs_get_gbuf((*rq).inpages); if src.is_null() { DBG_BUGON(true); kunmap_local(inpage); return ERR_PTR(-EFAULT); }
     let mut copied = 0u32; let mut n = 0usize;
-    while copied < (*rq).inputsize { let cnt = core::cmp::min((*rq).inputsize - copied, PAGE_SIZE as u32 - *inputmargin); if inpage.is_null() { inpage = kmap_local_page(*(*rq).in.add(n)); } core::ptr::copy_nonoverlapping((inpage as *mut u8).add(*inputmargin as usize), (src as *mut u8).add(copied as usize), cnt as usize); kunmap_local(inpage); inpage = core::ptr::null_mut(); *inputmargin = 0; copied += cnt; n += 1; }
+    while copied < (*rq).inputsize { let cnt = core::cmp::min((*rq).inputsize - copied, PAGE_SIZE as u32 - *inputmargin); if inpage.is_null() { inpage = kmap_local_page(*(*rq).r#in.add(n)); } core::ptr::copy_nonoverlapping((inpage as *mut u8).add(*inputmargin as usize), (src as *mut u8).add(copied as usize), cnt as usize); kunmap_local(inpage); inpage = core::ptr::null_mut(); *inputmargin = 0; copied += cnt; n += 1; }
     *maptype = 2; src as *mut u8
 }
 
@@ -71,7 +71,7 @@ unsafe fn z_erofs_fixup_insize(rq: *mut z_erofs_decompress_req, padbuf: *const u
 }
 
 unsafe fn __z_erofs_lz4_decompress(rq: *mut z_erofs_decompress_req, dst: *mut u8) -> *const i8 {
-    let head = kmap_local_page(*(*rq).in); let mut margin = (*rq).pageofs_in;
+    let head = kmap_local_page(*(*rq).r#in); let mut margin = (*rq).pageofs_in;
     let reason = z_erofs_fixup_insize(rq, head.add((*rq).pageofs_in as usize), core::cmp::min((*rq).inputsize, (*(*rq).sb).s_blocksize - (*rq).pageofs_in));
     if !reason.is_null() { kunmap_local(head); return reason; }
     let inplace = ((*rq).pageofs_in + (*rq).inputsize) & ((*(*rq).sb).s_blocksize - 1) == 0;
@@ -91,8 +91,8 @@ unsafe fn z_erofs_lz4_decompress(rq: *mut z_erofs_decompress_req, pool: *mut *mu
 unsafe fn z_erofs_transform_plain(rq: *mut z_erofs_decompress_req, _pool: *mut *mut page) -> *const i8 {
     if (*rq).outputsize > (*rq).inputsize { return ERR_PTR(-EOPNOTSUPP) as *const i8; }
     let mut cur = 0u32; let mut ni = 0usize;
-    if (*rq).alg == Z_EROFS_COMPRESSION_INTERLACED { cur = (*(*rq).sb).s_blocksize - ((*rq).pageofs_out & ((*(*rq).sb).s_blocksize - 1)); let c = core::cmp::min(cur, (*rq).outputsize); if c != 0 && !(*(*rq).out).is_null() { let k = kmap_local_page(*(*rq).in.add((*rq).inpages - 1)); if *(*rq).out == *(*rq).in.add((*rq).inpages - 1) { core::ptr::copy(k.add((*rq).pageofs_in as usize), k.add((*rq).pageofs_out as usize), c as usize); } kunmap_local(k); } (*rq).outputsize -= c; }
-    while (*rq).outputsize != 0 { (*rq).pageofs_in = 0; let insz = core::cmp::min(PAGE_SIZE as u32 - (*rq).pageofs_in, (*rq).outputsize); (*rq).outputsize -= insz; if !(*(*rq).in.add(ni)).is_null() { let k = kmap_local_page(*(*rq).in.add(ni)); core::ptr::copy(k, k, insz as usize); kunmap_local(k); } cur += insz; ni += 1; }
+    if (*rq).alg == Z_EROFS_COMPRESSION_INTERLACED { cur = (*(*rq).sb).s_blocksize - ((*rq).pageofs_out & ((*(*rq).sb).s_blocksize - 1)); let c = core::cmp::min(cur, (*rq).outputsize); if c != 0 && !(*(*rq).out).is_null() { let k = kmap_local_page(*(*rq).r#in.add((*rq).inpages - 1)); if *(*rq).out == *(*rq).r#in.add((*rq).inpages - 1) { core::ptr::copy(k.add((*rq).pageofs_in as usize), k.add((*rq).pageofs_out as usize), c as usize); } kunmap_local(k); } (*rq).outputsize -= c; }
+    while (*rq).outputsize != 0 { (*rq).pageofs_in = 0; let insz = core::cmp::min(PAGE_SIZE as u32 - (*rq).pageofs_in, (*rq).outputsize); (*rq).outputsize -= insz; if !(*(*rq).r#in.add(ni)).is_null() { let k = kmap_local_page(*(*rq).r#in.add(ni)); core::ptr::copy(k, k, insz as usize); kunmap_local(k); } cur += insz; ni += 1; }
     DBG_BUGON(ni > (*rq).inpages); core::ptr::null()
 }
 

@@ -48,38 +48,38 @@ pub const LDCNTR: u32 = 0x428;
 pub const LDCNTR_DON: u32 = 1 << 0;
 pub const LDCNTR_DON2: u32 = 1 << 4;
 
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDLIRNR: u32 = 0x440;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_MINTEN: u32 = 1 << 15;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_FINTEN: u32 = 1 << 14;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_VSINTEN: u32 = 1 << 13;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_VEINTEN: u32 = 1 << 12;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_MINTS: u32 = 1 << 11;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_FINTS: u32 = 1 << 10;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_VSINTS: u32 = 1 << 9;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const LDINTR_VEINTS: u32 = 1 << 8;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const VINT_START: u32 = LDINTR_VSINTEN;
-#[cfg(feature = "CONFIG_CPU_SUBTYPE_SH7763")]
+#[cfg(CONFIG_CPU_SUBTYPE_SH7763)]
 pub const VINT_CHECK: u32 = LDINTR_VSINTS;
 
-#[cfg(not(feature = "CONFIG_CPU_SUBTYPE_SH7763"))]
+#[cfg(not(CONFIG_CPU_SUBTYPE_SH7763))]
 pub const LDINTR_VINTSEL: u32 = 1 << 12;
-#[cfg(not(feature = "CONFIG_CPU_SUBTYPE_SH7763"))]
+#[cfg(not(CONFIG_CPU_SUBTYPE_SH7763))]
 pub const LDINTR_VINTE: u32 = 1 << 8;
-#[cfg(not(feature = "CONFIG_CPU_SUBTYPE_SH7763"))]
+#[cfg(not(CONFIG_CPU_SUBTYPE_SH7763))]
 pub const LDINTR_VINTS: u32 = 1 << 0;
-#[cfg(not(feature = "CONFIG_CPU_SUBTYPE_SH7763"))]
+#[cfg(not(CONFIG_CPU_SUBTYPE_SH7763))]
 pub const VINT_START: u32 = LDINTR_VINTSEL;
-#[cfg(not(feature = "CONFIG_CPU_SUBTYPE_SH7763"))]
+#[cfg(not(CONFIG_CPU_SUBTYPE_SH7763))]
 pub const VINT_CHECK: u32 = LDINTR_VINTS;
 
 /* HSYNC polarity inversion */

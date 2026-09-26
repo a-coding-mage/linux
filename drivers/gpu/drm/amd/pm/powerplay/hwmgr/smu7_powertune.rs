@@ -904,10 +904,10 @@ static i32 smu7_program_pt_config_registers(pp_hwmgr *hwmgr,
 	PP_ASSERT_WITH_CODE((config_regs != core::ptr::null_mut()), "Invalid config register table.", return -EINVAL);
 
 	while ((*config_regs).offset != 0xFFFFFFFF) {
-		if ((*config_regs).type == GPU_CONFIGREG_CACHE)
+		if ((*config_regs).r#type == GPU_CONFIGREG_CACHE)
 			cache |= (((*config_regs).value << (*config_regs).shift) & (*config_regs).mask);
 		else {
-			switch ((*config_regs).type) {
+			switch ((*config_regs).r#type) {
 			case GPU_CONFIGREG_SMC_IND:
 				data = cgs_read_ind_register((*hwmgr).device, CGS_IND_REG__SMC, (*config_regs).offset);
 				break;
@@ -929,7 +929,7 @@ static i32 smu7_program_pt_config_registers(pp_hwmgr *hwmgr,
 			data |= (((*config_regs).value << (*config_regs).shift) & (*config_regs).mask);
 			data |= cache;
 
-			switch ((*config_regs).type) {
+			switch ((*config_regs).r#type) {
 			case GPU_CONFIGREG_SMC_IND:
 				cgs_write_ind_register((*hwmgr).device, CGS_IND_REG__SMC, (*config_regs).offset, data);
 				break;
@@ -959,7 +959,7 @@ i32 smu7_enable_didt_config(pp_hwmgr *hwmgr)
 {
 	i32 result;
 	u32 num_se = 0;
-	u32 count, value, value2;
+	count: u32, value, value2;
 	amdgpu_device *adev = (*hwmgr).adev;
 	u32 efuse;
 
@@ -1122,7 +1122,7 @@ i32 smu7_disable_smc_cac(pp_hwmgr *hwmgr)
 	return result;
 }
 
-i32 smu7_set_power_limit(pp_hwmgr *hwmgr, u32 n)
+i32 smu7_set_power_limit(pp_hwmgr *hwmgr, n: u32)
 {
 	smu7_hwmgr *data = (smu7_hwmgr as *mut _)((*hwmgr).backend);
 
@@ -1136,7 +1136,7 @@ i32 smu7_set_power_limit(pp_hwmgr *hwmgr, u32 n)
 }
 
 static i32 smu7_set_overdriver_target_tdp(pp_hwmgr *hwmgr,
-						u32 target_tdp)
+						target_tdp: u32)
 {
 	return smum_send_msg_to_smc_with_parameter(hwmgr,
 			PPSMC_MSG_OverDriveSetTargetTdp,
@@ -1241,7 +1241,7 @@ i32 smu7_power_control_set_level(pp_hwmgr *hwmgr)
 			(phm_ppt_v1_information as *mut _)((*hwmgr).pptable);
 	phm_cac_tdp_table *cac_table;
 
-	i32 adjust_percent, target_tdp;
+	adjust_percent: i32, target_tdp;
 	i32 result = 0;
 
 	if ((*hwmgr).pp_table_version == PP_TABLE_V1)

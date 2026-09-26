@@ -26,8 +26,8 @@
 // Dependency preserved from: dcn31/dcn31_dccg.h
 
 macro_rules! DCCG_SFII {
-    ($block:ident, $reg_name:ident, $field_prefix:ident, $field_name:ident, $inst:expr, $post_fix:ident) => {
-        .$field_prefix##_ $field_name[$inst] = $block##_ $inst##_ $reg_name##__##$field_prefix##_ $inst##_ $field_name##$post_fix
+    ($block:tt, $reg_name:tt, $field_prefix:tt, $field_name:tt, $inst:tt, $post_fix:tt) => {
+        .::kernel::macros::paste!([<$field_prefix _>]) $field_name[$inst] = ::kernel::macros::paste!([<$block _>]) ::kernel::macros::paste!([<$inst _>]) ::kernel::macros::paste!([<$reg_name __>])##::kernel::macros::paste!([<$field_prefix _>]) ::kernel::macros::paste!([<$inst _>]) ::kernel::macros::paste!([<$field_name $post_fix>])
     };
 }
 

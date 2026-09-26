@@ -17,16 +17,16 @@ macro_rules! SC_S390_REGS_TO_ARGS {
 }
 
 macro_rules! SYSCALL_DEFINE0 {
-    ($sname:ident) => {
+    ($sname:tt) => {
         SYSCALL_METADATA!(_$sname, 0);
-        // C token-pasting (`__s390x_sys_##sname`, `__do_sys_##sname`) is
+        // C token-pasting (`::kernel::macros::paste!([<__s390x_sys_ $sname>])`, `::kernel::macros::paste!([<__do_sys_ $sname>])`) is
         // retained here as macro intent; Rust identifier concatenation is a
         // build-environment concern.
         extern "C" {
             fn __s390x_sys_$sname(__unused: *mut pt_regs) -> core::ffi::c_long;
         }
         ALLOW_ERROR_INJECTION!(__s390x_sys_$sname, ERRNO);
-        // static inline long __do_sys_##sname(void)
+        // static inline long ::kernel::macros::paste!([<__do_sys_ $sname>])(void)
     };
 }
 

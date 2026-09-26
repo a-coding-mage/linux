@@ -65,12 +65,12 @@ macro_rules! CONFIG_CHUNK {
     }};
 }
 
-#[cfg(feature = "CONFIG_MCONSOLE")]
+#[cfg(CONFIG_MCONSOLE)]
 extern "C" {
     pub fn mconsole_register_dev(new: *mut mc_device);
 }
 
-#[cfg(not(feature = "CONFIG_MCONSOLE"))]
+#[cfg(not(CONFIG_MCONSOLE))]
 #[inline]
 pub unsafe fn mconsole_register_dev(_new: *mut mc_device) {}
 

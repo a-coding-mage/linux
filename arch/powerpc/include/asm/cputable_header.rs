@@ -48,9 +48,9 @@ extern "C" {
     pub static powerpc_base_platform: *const i8;
 }
 // CONFIG_JUMP_LABEL_FEATURE_CHECKS: cpu_feature_keys_init is supplied by the build.
-#[cfg(not(feature = "CONFIG_JUMP_LABEL_FEATURE_CHECKS"))]
+#[cfg(not(CONFIG_JUMP_LABEL_FEATURE_CHECKS))]
 #[inline] pub unsafe fn cpu_feature_keys_init() {}
-#[cfg(feature = "CONFIG_JUMP_LABEL_FEATURE_CHECKS")] extern "C" { pub fn cpu_feature_keys_init(); }
+#[cfg(CONFIG_JUMP_LABEL_FEATURE_CHECKS)] extern "C" { pub fn cpu_feature_keys_init(); }
 
 macro_rules! f { ($n:ident, $v:expr) => { pub const $n: u64 = $v; }; }
 f!(CPU_FTR_COHERENT_ICACHE,0x00000001); f!(CPU_FTR_ALTIVEC,0x00000002); f!(CPU_FTR_DBELL,0x00000004); f!(CPU_FTR_CAN_NAP,0x00000008); f!(CPU_FTR_DEBUG_LVL_EXC,0x10); f!(CPU_FTR_FPU_UNAVAILABLE,0x40); f!(CPU_FTR_LWSYNC,0x80); f!(CPU_FTR_NOEXECUTE,0x100); f!(CPU_FTR_EMB_HV,0x200);

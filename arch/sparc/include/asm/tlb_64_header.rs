@@ -9,7 +9,7 @@ use core::ffi::c_ulong;
 #[repr(C)]
 pub struct mm_struct;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn smp_flush_tlb_pending(
         mm: *mut mm_struct,
@@ -20,7 +20,7 @@ extern "C" {
     pub fn smp_flush_tlb_mm(mm: *mut mm_struct);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline(always)]
 pub unsafe fn do_flush_tlb_mm(mm: *mut mm_struct) {
     smp_flush_tlb_mm(mm);
@@ -28,7 +28,7 @@ pub unsafe fn do_flush_tlb_mm(mm: *mut mm_struct) {
 
 // Non-SMP configuration preserves the original direct call:
 // __flush_tlb_mm(CTX_HWBITS(mm->context), SECONDARY_CONTEXT)
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn do_flush_tlb_mm(mm: *mut mm_struct) {
     // TODO: translate mm->context through the supplied mm_struct definition.
@@ -60,7 +60,7 @@ macro_rules! tlb_flush {
  * and therefore we don't need a TLBI when freeing page-table pages.
  */
 
-#[cfg(feature = "CONFIG_MMU_GATHER_RCU_TABLE_FREE")]
+#[cfg(CONFIG_MMU_GATHER_RCU_TABLE_FREE)]
 #[inline(always)]
 pub const fn tlb_needs_table_invalidate() -> bool {
     false

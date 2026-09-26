@@ -1,4 +1,4 @@
-+/*
+/*
  * Copyright (C) 2017  Advanced Micro Devices, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -251,7 +251,5 @@ pub const mmTHM_TMON3_REMOTE_START: u32 = 0x01c0;
 pub const mmTHM_TMON3_REMOTE_START_BASE_IDX: u32 = 0;
 pub const mmTHM_TMON3_REMOTE_END: u32 = 0x01ff;
 pub const mmTHM_TMON3_REMOTE_END_BASE_IDX: u32 = 0;
-
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

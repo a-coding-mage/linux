@@ -22,9 +22,9 @@ pub struct Stackframe {
     pub lr: usize,
     pub pc: usize,
     // CONFIG_KRETPROBES adds these fields in the corresponding C build.
-    #[cfg(feature = "CONFIG_KRETPROBES")]
+    #[cfg(CONFIG_KRETPROBES)]
     pub kr_cur: *mut c_void,
-    #[cfg(feature = "CONFIG_KRETPROBES")]
+    #[cfg(CONFIG_KRETPROBES)]
     pub tsk: *mut c_void,
     pub ex_frame: bool,
 }
@@ -64,7 +64,7 @@ pub unsafe fn return_address(level: u32) -> *mut c_void {
     frame.lr = 0;
     // The C source uses the address of the local label `here` as the current PC.
     frame.pc = return_address as usize;
-    #[cfg(feature = "CONFIG_KRETPROBES")]
+    #[cfg(CONFIG_KRETPROBES)]
     {
         frame.kr_cur = core::ptr::null_mut();
         frame.tsk = current;

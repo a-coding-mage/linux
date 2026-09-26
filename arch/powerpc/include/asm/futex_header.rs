@@ -16,7 +16,7 @@ macro_rules! __futex_atomic_op {
                 "1: li {ret}, {fault}",
                 "b 0b",
                 old = inout(reg) $oldval,
-                ret = inout(reg) $ret,
+                $ret = inout(reg) $ret,
                 addr = in(reg) $uaddr,
                 arg = in(reg) $oparg,
                 fault = const -EFAULT,

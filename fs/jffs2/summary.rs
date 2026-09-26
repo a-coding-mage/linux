@@ -39,7 +39,7 @@ pub unsafe fn jffs2_sum_add_inode_mem(s: *mut jffs2_summary, ri: *mut jffs2_raw_
 
 pub unsafe fn jffs2_sum_add_dirent_mem(s: *mut jffs2_summary, rd: *mut jffs2_raw_dirent, ofs: u32) -> i32 {
     let temp = kmalloc((core::mem::size_of::<jffs2_sum_dirent_mem>() as u32)+(*rd).nsize, GFP_KERNEL) as *mut jffs2_sum_dirent_mem; if temp.is_null(){return -ENOMEM;}
-    (*temp).nodetype=(*rd).nodetype; (*temp).totlen=(*rd).totlen; (*temp).offset=cpu_to_je32(ofs); (*temp).pino=(*rd).pino; (*temp).version=(*rd).version; (*temp).ino=(*rd).ino; (*temp).nsize=(*rd).nsize; (*temp).type=(*rd).type; (*temp).next=core::ptr::null_mut();
+    (*temp).nodetype=(*rd).nodetype; (*temp).totlen=(*rd).totlen; (*temp).offset=cpu_to_je32(ofs); (*temp).pino=(*rd).pino; (*temp).version=(*rd).version; (*temp).ino=(*rd).ino; (*temp).nsize=(*rd).nsize; (*temp).r#type=(*rd).r#type; (*temp).next=core::ptr::null_mut();
     memcpy((*temp).name as *mut _, (*rd).name as *const _, (*rd).nsize as usize); jffs2_sum_add_mem(s,temp as *mut jffs2_sum_mem)
 }
 

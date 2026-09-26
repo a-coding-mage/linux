@@ -7,12 +7,12 @@ pub struct bpf_nf_ctx {
 }
 
 /* Build-time condition preserved from IS_ENABLED(CONFIG_NETFILTER_BPF_LINK). */
-#[cfg(feature = "CONFIG_NETFILTER_BPF_LINK")]
+#[cfg(CONFIG_NETFILTER_BPF_LINK)]
 extern "C" {
     pub fn bpf_nf_link_attach(attr: *const bpf_attr, prog: *mut bpf_prog) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NETFILTER_BPF_LINK"))]
+#[cfg(not(CONFIG_NETFILTER_BPF_LINK))]
 #[inline]
 pub unsafe fn bpf_nf_link_attach(_attr: *const bpf_attr, _prog: *mut bpf_prog) -> i32 {
     -95 // -EOPNOTSUPP

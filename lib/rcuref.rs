@@ -60,7 +60,7 @@ pub unsafe extern "C" fn rcuref_get_slowpath(ref_: *mut rcuref_t) -> bool {
      * object memory, but prevents the obvious reference count overflow
      * damage.
      */
-    if warn_once(cnt > RCUREF_MAXREF, c"rcuref saturated - leaking memory\0".as_ptr()) {
+    if warn_once(cnt > RCUREF_MAXREF, c"rcuref saturated - leaking memory".as_ptr()) {
         atomic_set(core::ptr::addr_of_mut!((*ref_).refcnt), RCUREF_SATURATED);
     }
     true
@@ -99,7 +99,7 @@ pub unsafe extern "C" fn rcuref_put_slowpath(ref_: *mut rcuref_t, mut cnt: c_uin
      * put() operation is imbalanced. Warn, put the reference count back to
      * DEAD and tell the caller to not deconstruct the object.
      */
-    if warn_once(cnt >= RCUREF_RELEASED, c"rcuref - imbalanced put()\0".as_ptr()) {
+    if warn_once(cnt >= RCUREF_RELEASED, c"rcuref - imbalanced put()".as_ptr()) {
         atomic_set(core::ptr::addr_of_mut!((*ref_).refcnt), RCUREF_DEAD);
         return false;
     }

@@ -167,12 +167,12 @@ pub unsafe fn netmem_get_dma_addr(netmem: netmem_ref) -> ::core::ffi::c_ulong {
     (*netmem_to_nmdesc(netmem)).dma_addr
 }
 
-#[cfg(feature = "CONFIG_NET_DEVMEM")]
+#[cfg(CONFIG_NET_DEVMEM)]
 pub unsafe fn net_is_devmem_iov(niov: *const net_iov) -> bool {
     (*niov).type_ == net_iov_type::NET_IOV_DMABUF
 }
 
-#[cfg(not(feature = "CONFIG_NET_DEVMEM"))]
+#[cfg(not(CONFIG_NET_DEVMEM))]
 pub unsafe fn net_is_devmem_iov(_niov: *const net_iov) -> bool { false }
 
 extern "C" {

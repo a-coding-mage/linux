@@ -41,7 +41,7 @@ pub struct device {
 }
 
 /* IS_ENABLED(CONFIG_QCOM_OCMEM) */
-#[cfg(feature = "CONFIG_QCOM_OCMEM")]
+#[cfg(CONFIG_QCOM_OCMEM)]
 extern "C" {
     pub fn of_get_ocmem(dev: *mut device) -> *mut ocmem;
     pub fn ocmem_allocate(
@@ -53,13 +53,13 @@ extern "C" {
 }
 
 /* IS_ENABLED(CONFIG_QCOM_OCMEM) is false */
-#[cfg(not(feature = "CONFIG_QCOM_OCMEM"))]
+#[cfg(not(CONFIG_QCOM_OCMEM))]
 #[inline]
 pub unsafe fn of_get_ocmem(_dev: *mut device) -> *mut ocmem {
     (-19isize) as *mut ocmem /* ERR_PTR(-ENODEV) */
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_OCMEM"))]
+#[cfg(not(CONFIG_QCOM_OCMEM))]
 #[inline]
 pub unsafe fn ocmem_allocate(
     _ocmem: *mut ocmem,
@@ -69,7 +69,7 @@ pub unsafe fn ocmem_allocate(
     (-19isize) as *mut ocmem_buf /* ERR_PTR(-ENODEV) */
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_OCMEM"))]
+#[cfg(not(CONFIG_QCOM_OCMEM))]
 #[inline]
 pub unsafe fn ocmem_free(
     _ocmem: *mut ocmem,

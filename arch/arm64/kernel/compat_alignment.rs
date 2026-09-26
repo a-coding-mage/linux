@@ -95,8 +95,8 @@ unsafe fn do_alignment_ldmstm(mut addr: libc::c_ulong, instr: u32, regs: *mut Pt
 unsafe fn thumb2arm(tinstr: u16) -> u32 {
     let l = ((tinstr & (1 << 11)) >> 11) as u32;
     match (tinstr & 0xf800) >> 11 {
-        0xc000 >> 11 | 0xc800 >> 11 => { let rn = ((tinstr & (7 << 8)) >> 8) as u32; let w = if ((l << rn) & (tinstr as u32 & 255)) != 0 { 0 } else { 1 << 21 }; 0xe8800000 | w | (l << 20) | (rn << 16) | (tinstr as u32 & 255) }
-        0xb000 >> 11 | 0xb800 >> 11 => { if tinstr & (3 << 9) == 0x0400 { const S: [u32; 4] = [0xe92d0000,0xe92d4000,0xe8bd0000,0xe8bd8000]; return S[((l << 1) | (((tinstr & (1 << 8)) >> 8) as u32)) as usize] | (tinstr as u32 & 255); } BAD_INSTR }
+        case if case == 0xc000 >> 11 || case == 0xc800 >> 11 => { let rn = ((tinstr & (7 << 8)) >> 8) as u32; let w = if ((l << rn) & (tinstr as u32 & 255)) != 0 { 0 } else { 1 << 21 }; 0xe8800000 | w | (l << 20) | (rn << 16) | (tinstr as u32 & 255) }
+        case if case == 0xb000 >> 11 || case == 0xb800 >> 11 => { if tinstr & (3 << 9) == 0x0400 { const S: [u32; 4] = [0xe92d0000,0xe92d4000,0xe8bd0000,0xe8bd8000]; return S[((l << 1) | (((tinstr & (1 << 8)) >> 8) as u32)) as usize] | (tinstr as u32 & 255); } BAD_INSTR }
         _ => BAD_INSTR,
     }
 }

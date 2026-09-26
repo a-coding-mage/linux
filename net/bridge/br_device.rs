@@ -112,7 +112,7 @@ unsafe fn br_get_link_ksettings(dev: *mut net_device, cmd: *mut ethtool_link_kse
 unsafe fn br_fix_features(dev: *mut net_device, features: netdev_features_t) -> netdev_features_t { br_features_recompute(netdev_priv(dev), features) }
 
 // CONFIG_NET_POLL_CONTROLLER conditionally supplies the following netpoll hooks.
-#[cfg(feature = "CONFIG_NET_POLL_CONTROLLER")]
+#[cfg(CONFIG_NET_POLL_CONTROLLER)]
 unsafe fn br_poll_controller(_dev: *mut net_device) {}
 
 unsafe fn br_add_slave(dev: *mut net_device, slave_dev: *mut net_device, extack: *mut netlink_ext_ack) -> c_int { br_add_if(netdev_priv(dev), slave_dev, extack) }

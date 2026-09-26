@@ -95,7 +95,7 @@ static BAD_ATA66_4: &[&str] = &[
 ];
 static BAD_ATA66_3: &[&str] = &["WDC AC310200R", NULL];
 
-static unsafe fn hpt36x_find_mode(ap: *mut ata_port, speed: i32) -> u32 {
+unsafe fn hpt36x_find_mode(ap: *mut ata_port, speed: i32) -> u32 {
     let mut clocks = (*(*ap).host).private_data as *mut hpt_clock;
     while (*clocks).xfer_mode != 0 {
         if (*clocks).xfer_mode as i32 == speed { return (*clocks).timing; }
@@ -105,7 +105,7 @@ static unsafe fn hpt36x_find_mode(ap: *mut ata_port, speed: i32) -> u32 {
     0xffff_ffff
 }
 
-static unsafe fn hpt_dma_broken(dev: *const ata_device, modestr: *const i8, list: *const *const i8) -> i32 {
+unsafe fn hpt_dma_broken(dev: *const ata_device, modestr: *const i8, list: *const *const i8) -> i32 {
     let mut model_num = [0u8; ATA_ID_PROD_LEN + 1];
     ata_id_c_string((*dev).id, model_num.as_mut_ptr(), ATA_ID_PROD, model_num.len());
     let i = match_string(list, -1, model_num.as_ptr() as *const i8);
@@ -113,7 +113,7 @@ static unsafe fn hpt_dma_broken(dev: *const ata_device, modestr: *const i8, list
     0
 }
 
-static unsafe fn hpt366_filter(adev: *mut ata_device, mut mask: u32) -> u32 {
+unsafe fn hpt366_filter(adev: *mut ata_device, mut mask: u32) -> u32 {
     if (*adev).class == ATA_DEV_ATA {
         if hpt_dma_broken(adev, c"UDMA".as_ptr(), BAD_ATA33.as_ptr() as *const *const i8) != 0 { mask &= !ATA_MASK_UDMA; }
         if hpt_dma_broken(adev, c"UDMA3".as_ptr(), BAD_ATA66_3.as_ptr() as *const *const i8) != 0 { mask &= !(0xF8 << ATA_SHIFT_UDMA); }
@@ -122,14 +122,14 @@ static unsafe fn hpt366_filter(adev: *mut ata_device, mut mask: u32) -> u32 {
     mask
 }
 
-static unsafe fn hpt36x_cable_detect(ap: *mut ata_port) -> i32 {
+unsafe fn hpt36x_cable_detect(ap: *mut ata_port) -> i32 {
     let pdev = to_pci_dev((*(*ap).host).dev);
     let mut ata66 = 0u8;
     pci_read_config_byte(pdev, 0x5A, &mut ata66);
     if ata66 & 2 != 0 { ATA_CBL_PATA40 } else { ATA_CBL_PATA80 }
 }
 
-static unsafe fn hpt366_set_mode(ap: *mut ata_port, adev: *mut ata_device, mode: u8) {
+unsafe fn hpt366_set_mode(ap: *mut ata_port, adev: *mut ata_device, mode: u8) {
     let pdev = to_pci_dev((*(*ap).host).dev);
     let addr = 0x40 + 4 * (*adev).devno;
     let mask = if mode < XFER_MW_DMA_0 { 0xc1f8ffff } else if mode < XFER_UDMA_0 { 0x303800ff } else { 0x30070000 };
@@ -140,10 +140,10 @@ static unsafe fn hpt366_set_mode(ap: *mut ata_port, adev: *mut ata_device, mode:
     pci_write_config_dword(pdev, addr, reg);
 }
 
-static unsafe fn hpt366_set_piomode(ap: *mut ata_port, adev: *mut ata_device) { hpt366_set_mode(ap, adev, (*adev).pio_mode); }
-static unsafe fn hpt366_set_dmamode(ap: *mut ata_port, adev: *mut ata_device) { hpt366_set_mode(ap, adev, (*adev).dma_mode); }
+unsafe fn hpt366_set_piomode(ap: *mut ata_port, adev: *mut ata_device) { hpt366_set_mode(ap, adev, (*adev).pio_mode); }
+unsafe fn hpt366_set_dmamode(ap: *mut ata_port, adev: *mut ata_device) { hpt366_set_mode(ap, adev, (*adev).dma_mode); }
 
-static unsafe fn hpt366_prereset(link: *mut ata_link, deadline: c_ulong) -> i32 {
+unsafe fn hpt366_prereset(link: *mut ata_link, deadline: c_ulong) -> i32 {
     let ap = (*link).ap;
     let pdev = to_pci_dev((*(*ap).host).dev);
     let bits = pci_bits { reg: 0x50, width: 1, mask: 0x30, val: 0x30 };
@@ -154,7 +154,7 @@ static unsafe fn hpt366_prereset(link: *mut ata_link, deadline: c_ulong) -> i32 
     ata_sff_prereset(link, deadline)
 }
 
-static unsafe fn hpt36x_init_chipset(dev: *mut pci_dev) {
+unsafe fn hpt36x_init_chipset(dev: *mut pci_dev) {
     let mut mcr1 = 0u8;
     pci_write_config_byte(dev, PCI_CACHE_LINE_SIZE, L1_CACHE_BYTES / 4);
     pci_write_config_byte(dev, PCI_LATENCY_TIMER, 0x78);
@@ -164,7 +164,7 @@ static unsafe fn hpt36x_init_chipset(dev: *mut pci_dev) {
     if mcr1 & 0x30 != 0 { pci_write_config_byte(dev, 0x50, mcr1 | 0x30); }
 }
 
-static unsafe fn hpt36x_init_one(dev: *mut pci_dev, _id: *const pci_device_id) -> i32 {
+unsafe fn hpt36x_init_one(dev: *mut pci_dev, _id: *const pci_device_id) -> i32 {
     let info_hpt366 = ata_port_info {
         flags: ATA_FLAG_SLAVE_POSS, pio_mask: ATA_PIO4, mwdma_mask: ATA_MWDMA2,
         udma_mask: ATA_UDMA4, port_ops: &hpt366_port_ops,
@@ -208,7 +208,7 @@ module_device_table!(pci, hpt36x);
 module_version!(DRV_VERSION);
 
 #[cfg(CONFIG_PM_SLEEP)]
-static unsafe fn hpt36x_reinit_one(dev: *mut pci_dev) -> i32 {
+unsafe fn hpt36x_reinit_one(dev: *mut pci_dev) -> i32 {
     let host = pci_get_drvdata(dev);
     let rc = ata_pci_device_do_resume(dev);
     if rc != 0 { return rc; }

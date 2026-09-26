@@ -124,12 +124,17 @@ pub type resource_size_t = phys_addr_t;
 pub type irq_hw_number_t = ::core::ffi::c_ulong;
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct atomic_t {
     pub counter: ::core::ffi::c_int,
 }
 
 #[macro_export]
-macro_rules! ATOMIC_INIT { ($i:expr) => { $i }; }
+macro_rules! ATOMIC_INIT {
+    ($i:expr) => {
+        atomic_t { counter: $i }
+    };
+}
 
 #[cfg(CONFIG_64BIT)]
 #[repr(C)]

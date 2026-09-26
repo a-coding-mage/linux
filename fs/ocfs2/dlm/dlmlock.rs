@@ -15,13 +15,13 @@ static mut dlm_next_cookie: u64 = 1;
 
 unsafe fn dlm_can_grant_new_lock(res: *mut dlm_lock, lock: *mut dlm_lock) -> i32 {
     let mut tmplock: *mut dlm_lock;
-    list_for_each_entry!(tmplock, unsafe { &mut (*res).granted }, list) {
+    list_for_each_entry!(tmplock, unsafe { &mut (*res).granted }, list, {
         if !dlm_lock_compatible((*tmplock).ml.type_, (*lock).ml.type_) { return 0; }
-    }
-    list_for_each_entry!(tmplock, unsafe { &mut (*res).converting }, list) {
+    });
+    list_for_each_entry!(tmplock, unsafe { &mut (*res).converting }, list, {
         if !dlm_lock_compatible((*tmplock).ml.type_, (*lock).ml.type_) { return 0; }
         if !dlm_lock_compatible((*tmplock).ml.convert_type, (*lock).ml.type_) { return 0; }
-    }
+    });
     1
 }
 

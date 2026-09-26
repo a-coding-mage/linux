@@ -34,7 +34,7 @@ pub const MT_MEMORY_RW_SO: ::core::ffi::c_uint = 16;
 pub const MT_MEMORY_DMA_READY: ::core::ffi::c_uint = 17;
 
 /* CONFIG_MMU declarations from the original conditional section. */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" {
     pub fn iotable_init(map: *mut map_desc, num: ::core::ffi::c_int);
     pub fn vm_reserve_area_early(
@@ -44,12 +44,12 @@ unsafe extern "C" {
     );
     pub fn create_mapping_late(mm: *mut mm_struct, md: *mut map_desc, ng: bool);
 
-    #[cfg(feature = "CONFIG_DEBUG_LL")]
+    #[cfg(CONFIG_DEBUG_LL)]
     pub fn debug_ll_addr(
         paddr: *mut ::core::ffi::c_ulong,
         vaddr: *mut ::core::ffi::c_ulong,
     );
-    #[cfg(feature = "CONFIG_DEBUG_LL")]
+    #[cfg(CONFIG_DEBUG_LL)]
     pub fn debug_ll_io_init();
 
     pub fn get_mem_type(type_: ::core::ffi::c_uint) -> *const mem_type;
@@ -61,22 +61,22 @@ unsafe extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "CONFIG_DEBUG_LL")))]
+#[cfg(all(CONFIG_MMU, not(CONFIG_DEBUG_LL)))]
 #[inline]
 pub fn debug_ll_io_init() {}
 
 /* Forward declarations supplied by other translated headers. */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub enum mm_struct {}
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub enum mem_type {}
 
 /* CONFIG_MMU-disabled macros are intentionally no-ops. */
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn iotable_init(_map: *mut map_desc, _num: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub unsafe fn vm_reserve_area_early(
     _addr: ::core::ffi::c_ulong,

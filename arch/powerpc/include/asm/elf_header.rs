@@ -112,10 +112,10 @@ pub fn stack_rnd_mask() -> usize {
     else { 0x3ffffusize >> (PAGE_SHIFT - 12) }
 }
 
-#[cfg(feature = "CONFIG_SPU_BASE")]
+#[cfg(CONFIG_SPU_BASE)]
 pub const NT_SPU: i32 = 1;
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline]
 pub unsafe fn get_cache_geometry(level: CacheLevel) -> u64 {
     (ppc64_caches.level.assoc << 16) | ppc64_caches.level.line_size

@@ -26,7 +26,7 @@ pub struct snd_usb_audio {
 }
 
 // CONFIG_SND_USB_AUDIO_MIDI_V2: when enabled, declares full MIDI v2 support
-#[cfg(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2")]
+#[cfg(CONFIG_SND_USB_AUDIO_MIDI_V2)]
 extern "C" {
     pub fn snd_usb_midi_v2_create(
         chip: *mut snd_usb_audio,
@@ -42,7 +42,7 @@ extern "C" {
 }
 
 // CONFIG_SND_USB_AUDIO_MIDI_V2: when disabled, fallback to MIDI 1.0 creation
-#[cfg(not(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2"))]
+#[cfg(not(CONFIG_SND_USB_AUDIO_MIDI_V2))]
 extern "C" {
     fn __snd_usbmidi_create(
         card: *mut snd_card,
@@ -54,7 +54,7 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2"))]
+#[cfg(not(CONFIG_SND_USB_AUDIO_MIDI_V2))]
 #[inline]
 pub fn snd_usb_midi_v2_create(
     chip: *mut snd_usb_audio,
@@ -74,19 +74,19 @@ pub fn snd_usb_midi_v2_create(
     }
 }
 
-#[cfg(not(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2"))]
+#[cfg(not(CONFIG_SND_USB_AUDIO_MIDI_V2))]
 #[inline]
 pub fn snd_usb_midi_v2_suspend_all(_chip: *mut snd_usb_audio) {}
 
-#[cfg(not(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2"))]
+#[cfg(not(CONFIG_SND_USB_AUDIO_MIDI_V2))]
 #[inline]
 pub fn snd_usb_midi_v2_resume_all(_chip: *mut snd_usb_audio) {}
 
-#[cfg(not(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2"))]
+#[cfg(not(CONFIG_SND_USB_AUDIO_MIDI_V2))]
 #[inline]
 pub fn snd_usb_midi_v2_disconnect_all(_chip: *mut snd_usb_audio) {}
 
-#[cfg(not(feature = "CONFIG_SND_USB_AUDIO_MIDI_V2"))]
+#[cfg(not(CONFIG_SND_USB_AUDIO_MIDI_V2))]
 #[inline]
 pub fn snd_usb_midi_v2_free_all(_chip: *mut snd_usb_audio) {}
 

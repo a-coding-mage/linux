@@ -104,11 +104,11 @@ macro_rules! __atomic_fetch_op_test {
             insns: &[
                 /* u64 val = operan1; */
                 BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, $operand1),
-                /* u64 old = atomic_fetch_add(&val, operand2); */
+                /* u64 old = atomic_fetch_add(&val, $operand2); */
                 BPF_MOV64_REG($dst_reg, BPF_REG_10),
                 BPF_MOV64_IMM($src_reg, $operand2),
                 BPF_ATOMIC_OP(BPF_DW, $op, $dst_reg, $src_reg, -8),
-                /* if (old != operand1) exit(1); */
+                /* if (old != $operand1) exit(1); */
                 BPF_JMP_IMM(BPF_JEQ, $src_reg, $operand1, 2),
                 BPF_MOV64_IMM(BPF_REG_0, 1),
                 BPF_EXIT_INSN(),

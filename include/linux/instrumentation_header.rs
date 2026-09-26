@@ -7,14 +7,14 @@
  * remain described by the inline-assembly comments below.
  */
 
-#[cfg(feature = "CONFIG_NOINSTR_VALIDATION")]
+#[cfg(CONFIG_NOINSTR_VALIDATION)]
 #[inline(always)]
 pub unsafe fn __instrumentation_begin(_c: usize) {
     // C: asm volatile(__stringify(c) ": nop\n\t" ANNOTATE_INSTR_BEGIN(...));
     core::arch::asm!("nop", options(nostack, preserves_flags));
 }
 
-#[cfg(feature = "CONFIG_NOINSTR_VALIDATION")]
+#[cfg(CONFIG_NOINSTR_VALIDATION)]
 #[inline(always)]
 pub unsafe fn __instrumentation_end(_c: usize) {
     // C: asm volatile(__stringify(c) ": nop\n\t" ANNOTATE_INSTR_END(...));
@@ -30,7 +30,7 @@ pub unsafe fn __instrumentation_end(_c: usize) {
  * has no direct equivalent, so the translated operations retain the same
  * ordering and side effect while passing a file-local marker value.
  */
-#[cfg(feature = "CONFIG_NOINSTR_VALIDATION")]
+#[cfg(CONFIG_NOINSTR_VALIDATION)]
 #[macro_export]
 macro_rules! instrumentation_begin {
     () => {{
@@ -38,7 +38,7 @@ macro_rules! instrumentation_begin {
     }};
 }
 
-#[cfg(feature = "CONFIG_NOINSTR_VALIDATION")]
+#[cfg(CONFIG_NOINSTR_VALIDATION)]
 #[macro_export]
 macro_rules! instrumentation_end {
     () => {{
@@ -46,7 +46,7 @@ macro_rules! instrumentation_end {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_NOINSTR_VALIDATION"))]
+#[cfg(not(CONFIG_NOINSTR_VALIDATION))]
 #[macro_export]
 macro_rules! instrumentation_begin {
     () => {{
@@ -54,7 +54,7 @@ macro_rules! instrumentation_begin {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_NOINSTR_VALIDATION"))]
+#[cfg(not(CONFIG_NOINSTR_VALIDATION))]
 #[macro_export]
 macro_rules! instrumentation_end {
     () => {{

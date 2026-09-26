@@ -5,7 +5,7 @@
  */
 
 /* Corresponds to the C preprocessor condition CONFIG_RV_MON_STS. */
-#[cfg(feature = "CONFIG_RV_MON_STS")]
+#[cfg(CONFIG_RV_MON_STS)]
 extern "C" {
     /*
      * DEFINE_EVENT(event_da_monitor, event_sts,

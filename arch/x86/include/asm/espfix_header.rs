@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* CONFIG_X86_ESPFIX64 build-time condition. */
-#[cfg(feature = "CONFIG_X86_ESPFIX64")]
+#[cfg(CONFIG_X86_ESPFIX64)]
 extern "C" {
     /* DECLARE_PER_CPU_READ_MOSTLY(unsigned long, espfix_stack); */
     pub static mut espfix_stack: usize;
@@ -13,7 +13,7 @@ extern "C" {
     pub fn init_espfix_ap(cpu: core::ffi::c_int);
 }
 
-#[cfg(not(feature = "CONFIG_X86_ESPFIX64"))]
+#[cfg(not(CONFIG_X86_ESPFIX64))]
 #[inline]
 pub fn init_espfix_ap(_cpu: core::ffi::c_int) {}
 

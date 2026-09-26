@@ -115,7 +115,7 @@ pub unsafe fn xfs_validate_blk_zone(
         return false;
     }
 
-    match (*zone).type {
+    match (*zone).r#type {
         BLK_ZONE_TYPE_CONVENTIONAL => xfs_validate_blk_zone_conv(mp, zone, zone_no),
         BLK_ZONE_TYPE_SEQWRITE_REQ => {
             xfs_validate_blk_zone_seq(mp, zone, zone_no, write_pointer)
@@ -125,7 +125,7 @@ pub unsafe fn xfs_validate_blk_zone(
                 mp,
                 "zoned %u has unsupported type 0x%x.",
                 zone_no,
-                (*zone).type,
+                (*zone).r#type,
             );
             false
         }

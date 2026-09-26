@@ -120,7 +120,7 @@ pub unsafe extern "C" fn profile_tick(type_: c_int) {
 }
 
 // The following /proc/profile implementation is conditional on CONFIG_PROC_FS.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 mod proc_profile {
     use super::*;
     pub unsafe extern "C" fn setup_profiling_timer(_mult: u32) -> c_int { -22 }

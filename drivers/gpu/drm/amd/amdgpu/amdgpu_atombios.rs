@@ -55,7 +55,7 @@
 //{
 //	struct amdgpu_i2c_bus_rec i2c;
 //
-//	memset(&i2c, 0, sizeof(struct amdgpu_i2c_bus_rec));
+//	memset(&i2c, 0, sizeof(amdgpu_i2c_bus_rec));
 //
 //	i2c.mask_clk_reg = le16_to_cpu(gpio->usClkMaskRegisterIndex);
 //	i2c.mask_data_reg = le16_to_cpu(gpio->usDataMaskRegisterIndex);
@@ -94,7 +94,7 @@
 //	return i2c;
 //}
 //
-//struct amdgpu_i2c_bus_rec amdgpu_atombios_lookup_i2c_gpio(struct amdgpu_device *adev,
+//struct amdgpu_i2c_bus_rec amdgpu_atombios_lookup_i2c_gpio(amdgpu_device *adev,
 //							  uint8_t id)
 //{
 //	struct atom_context *ctx = adev->mode_info.atom_context;
@@ -105,11 +105,11 @@
 //	uint16_t data_offset, size;
 //	int i, num_indices;
 //
-//	memset(&i2c, 0, sizeof(struct amdgpu_i2c_bus_rec));
+//	memset(&i2c, 0, sizeof(amdgpu_i2c_bus_rec));
 //	i2c.valid = false;
 //
 //	if (amdgpu_atom_parse_data_header(ctx, index, &size, NULL, NULL, &data_offset)) {
-//		i2c_info = (struct _ATOM_GPIO_I2C_INFO *)(ctx->bios + data_offset);
+//		i2c_info = (_ATOM_GPIO_I2C_INFO *)(ctx->bios + data_offset);
 //
 //		num_indices = amdgpu_atombios_gpio_i2c_num_entries(size);
 //
@@ -127,7 +127,7 @@
 //	return i2c;
 //}
 //
-//void amdgpu_atombios_i2c_init(struct amdgpu_device *adev)
+//void amdgpu_atombios_i2c_init(amdgpu_device *adev)
 //{
 //	struct atom_context *ctx = adev->mode_info.atom_context;
 //	ATOM_GPIO_I2C_ASSIGMENT *gpio;
@@ -139,7 +139,7 @@
 //	char stmp[32];
 //
 //	if (amdgpu_atom_parse_data_header(ctx, index, &size, NULL, NULL, &data_offset)) {
-//		i2c_info = (struct _ATOM_GPIO_I2C_INFO *)(ctx->bios + data_offset);
+//		i2c_info = (_ATOM_GPIO_I2C_INFO *)(ctx->bios + data_offset);
 //
 //		num_indices = amdgpu_atombios_gpio_i2c_num_entries(size);
 //
@@ -157,7 +157,7 @@
 //	}
 //}
 //
-//void amdgpu_atombios_oem_i2c_init(struct amdgpu_device *adev, u8 i2c_id)
+//void amdgpu_atombios_oem_i2c_init(amdgpu_device *adev, u8 i2c_id)
 //{
 //	struct atom_context *ctx = adev->mode_info.atom_context;
 //	ATOM_GPIO_I2C_ASSIGMENT *gpio;
@@ -169,7 +169,7 @@
 //	char stmp[32];
 //
 //	if (amdgpu_atom_parse_data_header(ctx, index, &size, NULL, NULL, &data_offset)) {
-//		i2c_info = (struct _ATOM_GPIO_I2C_INFO *)(ctx->bios + data_offset);
+//		i2c_info = (_ATOM_GPIO_I2C_INFO *)(ctx->bios + data_offset);
 //
 //		num_indices = amdgpu_atombios_gpio_i2c_num_entries(size);
 //
@@ -189,7 +189,7 @@
 //}
 //
 //struct amdgpu_gpio_rec
-//amdgpu_atombios_lookup_gpio(struct amdgpu_device *adev,
+//amdgpu_atombios_lookup_gpio(amdgpu_device *adev,
 //			    u8 id)
 //{
 //	struct atom_context *ctx = adev->mode_info.atom_context;
@@ -200,11 +200,11 @@
 //	u16 data_offset, size;
 //	int i, num_indices;
 //
-//	memset(&gpio, 0, sizeof(struct amdgpu_gpio_rec));
+//	memset(&gpio, 0, sizeof(amdgpu_gpio_rec));
 //	gpio.valid = false;
 //
 //	if (amdgpu_atom_parse_data_header(ctx, index, &size, NULL, NULL, &data_offset)) {
-//		gpio_info = (struct _ATOM_GPIO_PIN_LUT *)(ctx->bios + data_offset);
+//		gpio_info = (_ATOM_GPIO_PIN_LUT *)(ctx->bios + data_offset);
 //
 //		num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 //			sizeof(ATOM_GPIO_PIN_ASSIGNMENT);
@@ -228,13 +228,13 @@
 //}
 //
 //static struct amdgpu_hpd
-//amdgpu_atombios_get_hpd_info_from_gpio(struct amdgpu_device *adev,
+//amdgpu_atombios_get_hpd_info_from_gpio(amdgpu_device *adev,
 //				       struct amdgpu_gpio_rec *gpio)
 //{
 //	struct amdgpu_hpd hpd;
 //	u32 reg;
 //
-//	memset(&hpd, 0, sizeof(struct amdgpu_hpd));
+//	memset(&hpd, 0, sizeof(amdgpu_hpd));
 //
 //	reg = amdgpu_display_hpd_get_gpio_reg(adev);
 //
@@ -293,7 +293,7 @@
 //	DRM_MODE_CONNECTOR_Unknown
 //};
 //
-//bool amdgpu_atombios_has_dce_engine_info(struct amdgpu_device *adev)
+//bool amdgpu_atombios_has_dce_engine_info(amdgpu_device *adev)
 //{
 //	struct amdgpu_mode_info *mode_info = &adev->mode_info;
 //	struct atom_context *ctx = mode_info->atom_context;
@@ -320,7 +320,7 @@
 //		return false;
 //}
 //
-//bool amdgpu_atombios_get_connector_info_from_object_table(struct amdgpu_device *adev)
+//bool amdgpu_atombios_get_connector_info_from_object_table(amdgpu_device *adev)
 //{
 //	struct amdgpu_mode_info *mode_info = &adev->mode_info;
 //	struct atom_context *ctx = mode_info->atom_context;
@@ -587,7 +587,7 @@
 //	ATOM_FIRMWARE_INFO_V2_2 info_22;
 //};
 //
-//int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
+//int amdgpu_atombios_get_clock_info(amdgpu_device *adev)
 //{
 //	struct amdgpu_mode_info *mode_info = &adev->mode_info;
 //	int index = GetIndexIntoMasterTable(DATA, FirmwareInfo);
@@ -602,7 +602,7 @@
 //		struct amdgpu_pll *spll = &adev->clock.spll;
 //		struct amdgpu_pll *mpll = &adev->clock.mpll;
 //		union firmware_info *firmware_info =
-//			(union firmware_info *)(mode_info->atom_context->bios +
+//			(firmware_info *)(mode_info->atom_context->bios +
 //						data_offset);
 //		/* pixel clocks */
 //		ppll->reference_freq =
@@ -740,7 +740,7 @@
 //	ATOM_GFX_INFO_V2_1 info;
 //};
 //
-//int amdgpu_atombios_get_gfx_info(struct amdgpu_device *adev)
+//int amdgpu_atombios_get_gfx_info(amdgpu_device *adev)
 //{
 //	struct amdgpu_mode_info *mode_info = &adev->mode_info;
 //	int index = GetIndexIntoMasterTable(DATA, GFX_Info);
@@ -750,7 +750,7 @@
 //
 //	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, NULL,
 //				   &frev, &crev, &data_offset)) {
-//		union gfx_info *gfx_info = (union gfx_info *)
+//		union gfx_info *gfx_info = (gfx_info *)
 //			(mode_info->atom_context->bios + data_offset);
 //
 //		adev->gfx.config.max_shader_engines = gfx_info->info.max_shader_engines;
@@ -779,7 +779,7 @@
 // * Return vram width from integrated system info table, if available,
 // * or 0 if not.
 // */
-//int amdgpu_atombios_get_vram_width(struct amdgpu_device *adev)
+//int amdgpu_atombios_get_vram_width(amdgpu_device *adev)
 //{
 //	struct amdgpu_mode_info *mode_info = &adev->mode_info;
 //	int index = GetIndexIntoMasterTable(DATA, IntegratedSystemInfo);
@@ -790,7 +790,7 @@
 //	/* get any igp specific overrides */
 //	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
-//		igp_info = (union igp_info *)
+//		igp_info = (igp_info *)
 //			(mode_info->atom_context->bios + data_offset);
 //		switch (crev) {
 //		case 8:
@@ -804,7 +804,7 @@
 //	return 0;
 //}
 //
-//static void amdgpu_atombios_get_igp_ss_overrides(struct amdgpu_device *adev,
+//static void amdgpu_atombios_get_igp_ss_overrides(amdgpu_device *adev,
 //						 struct amdgpu_atom_ss *ss,
 //						 int id)
 //{
@@ -818,7 +818,7 @@
 //	/* get any igp specific overrides */
 //	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
-//		igp_info = (union igp_info *)
+//		igp_info = (igp_info *)
 //			(mode_info->atom_context->bios + data_offset);
 //		switch (crev) {
 //		case 6:
@@ -908,7 +908,7 @@
 //	struct _ATOM_ASIC_SS_ASSIGNMENT_V3 v3;
 //};
 //
-//bool amdgpu_atombios_get_asic_ss_info(struct amdgpu_device *adev,
+//bool amdgpu_atombios_get_asic_ss_info(amdgpu_device *adev,
 //				      struct amdgpu_atom_ss *ss,
 //				      int id, u32 clock)
 //{
@@ -929,19 +929,19 @@
 //			return false;
 //	}
 //
-//	memset(ss, 0, sizeof(struct amdgpu_atom_ss));
+//	memset(ss, 0, sizeof(amdgpu_atom_ss));
 //	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
 //
 //		ss_info =
-//			(union asic_ss_info *)(mode_info->atom_context->bios + data_offset);
+//			(asic_ss_info *)(mode_info->atom_context->bios + data_offset);
 //
 //		switch (frev) {
 //		case 1:
 //			num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 //				sizeof(ATOM_ASIC_SS_ASSIGNMENT);
 //
-//			ss_assign = (union asic_ss_assignment *)((u8 *)&ss_info->info.asSpreadSpectrum[0]);
+//			ss_assign = (asic_ss_assignment *)((u8 *)&ss_info->info.asSpreadSpectrum[0]);
 //			for (i = 0; i < num_indices; i++) {
 //				if ((ss_assign->v1.ucClockIndication == id) &&
 //				    (clock <= le32_to_cpu(ss_assign->v1.ulTargetClockRange))) {
@@ -952,14 +952,14 @@
 //					ss->percentage_divider = 100;
 //					return true;
 //				}
-//				ss_assign = (union asic_ss_assignment *)
+//				ss_assign = (asic_ss_assignment *)
 //					((u8 *)ss_assign + sizeof(ATOM_ASIC_SS_ASSIGNMENT));
 //			}
 //			break;
 //		case 2:
 //			num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 //				sizeof(ATOM_ASIC_SS_ASSIGNMENT_V2);
-//			ss_assign = (union asic_ss_assignment *)((u8 *)&ss_info->info_2.asSpreadSpectrum[0]);
+//			ss_assign = (asic_ss_assignment *)((u8 *)&ss_info->info_2.asSpreadSpectrum[0]);
 //			for (i = 0; i < num_indices; i++) {
 //				if ((ss_assign->v2.ucClockIndication == id) &&
 //				    (clock <= le32_to_cpu(ss_assign->v2.ulTargetClockRange))) {
@@ -974,14 +974,14 @@
 //						ss->rate /= 100;
 //					return true;
 //				}
-//				ss_assign = (union asic_ss_assignment *)
+//				ss_assign = (asic_ss_assignment *)
 //					((u8 *)ss_assign + sizeof(ATOM_ASIC_SS_ASSIGNMENT_V2));
 //			}
 //			break;
 //		case 3:
 //			num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 //				sizeof(ATOM_ASIC_SS_ASSIGNMENT_V3);
-//			ss_assign = (union asic_ss_assignment *)((u8 *)&ss_info->info_3.asSpreadSpectrum[0]);
+//			ss_assign = (asic_ss_assignment *)((u8 *)&ss_info->info_3.asSpreadSpectrum[0]);
 //			for (i = 0; i < num_indices; i++) {
 //				if ((ss_assign->v3.ucClockIndication == id) &&
 //				    (clock <= le32_to_cpu(ss_assign->v3.ulTargetClockRange))) {
@@ -1001,7 +1001,7 @@
 //						amdgpu_atombios_get_igp_ss_overrides(adev, ss, id);
 //					return true;
 //				}
-//				ss_assign = (union asic_ss_assignment *)
+//				ss_assign = (asic_ss_assignment *)
 //					((u8 *)ss_assign + sizeof(ATOM_ASIC_SS_ASSIGNMENT_V3));
 //			}
 //			break;
@@ -1024,7 +1024,7 @@
 //	struct _COMPUTE_GPU_CLOCK_OUTPUT_PARAMETERS_V1_6 v6_out;
 //};
 //
-//int amdgpu_atombios_get_clock_dividers(struct amdgpu_device *adev,
+//int amdgpu_atombios_get_clock_dividers(amdgpu_device *adev,
 //				       u8 clock_type,
 //				       u32 clock,
 //				       bool strobe_mode,
@@ -1035,7 +1035,7 @@
 //	u8 frev, crev;
 //
 //	memset(&args, 0, sizeof(args));
-//	memset(dividers, 0, sizeof(struct atom_clock_dividers));
+//	memset(dividers, 0, sizeof(atom_clock_dividers));
 //
 //	if (!amdgpu_atom_parse_cmd_header(adev->mode_info.atom_context, index, &frev, &crev))
 //		return -EINVAL;
@@ -1123,7 +1123,7 @@
 //}
 //
 //#ifdef CONFIG_DRM_AMDGPU_SI
-//int amdgpu_atombios_get_memory_pll_dividers(struct amdgpu_device *adev,
+//int amdgpu_atombios_get_memory_pll_dividers(amdgpu_device *adev,
 //					    u32 clock,
 //					    bool strobe_mode,
 //					    struct atom_mpll_param *mpll_param)
@@ -1133,7 +1133,7 @@
 //	u8 frev, crev;
 //
 //	memset(&args, 0, sizeof(args));
-//	memset(mpll_param, 0, sizeof(struct atom_mpll_param));
+//	memset(mpll_param, 0, sizeof(atom_mpll_param));
 //
 //	if (!amdgpu_atom_parse_cmd_header(adev->mode_info.atom_context, index, &frev, &crev))
 //		return -EINVAL;
@@ -1176,7 +1176,7 @@
 //	return 0;
 //}
 //
-//int amdgpu_atombios_set_engine_dram_timings(struct amdgpu_device *adev,
+//int amdgpu_atombios_set_engine_dram_timings(amdgpu_device *adev,
 //					    u32 eng_clock, u32 mem_clock)
 //{
 //	SET_ENGINE_CLOCK_PS_ALLOCATION args;
@@ -1196,7 +1196,7 @@
 //					 (uint32_t *)&args, sizeof(args));
 //}
 //
-//void amdgpu_atombios_get_default_voltages(struct amdgpu_device *adev,
+//void amdgpu_atombios_get_default_voltages(amdgpu_device *adev,
 //					  u16 *vddc, u16 *vddci, u16 *mvdd)
 //{
 //	struct amdgpu_mode_info *mode_info = &adev->mode_info;
@@ -1212,7 +1212,7 @@
 //	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, NULL,
 //				   &frev, &crev, &data_offset)) {
 //		firmware_info =
-//			(union firmware_info *)(mode_info->atom_context->bios +
+//			(firmware_info *)(mode_info->atom_context->bios +
 //						data_offset);
 //		*vddc = le16_to_cpu(firmware_info->info_14.usBootUpVDDCVoltage);
 //		if ((frev == 2) && (crev >= 2)) {
@@ -1229,7 +1229,7 @@
 //	struct _SET_VOLTAGE_PARAMETERS_V1_3 v3;
 //};
 //
-//int amdgpu_atombios_get_max_vddc(struct amdgpu_device *adev, u8 voltage_type,
+//int amdgpu_atombios_get_max_vddc(amdgpu_device *adev, u8 voltage_type,
 //			     u16 voltage_id, u16 *voltage)
 //{
 //	union set_voltage args;
@@ -1272,7 +1272,7 @@
 //	return 0;
 //}
 //
-//int amdgpu_atombios_get_leakage_vddc_based_on_leakage_idx(struct amdgpu_device *adev,
+//int amdgpu_atombios_get_leakage_vddc_based_on_leakage_idx(amdgpu_device *adev,
 //						      u16 *voltage,
 //						      u16 leakage_idx)
 //{
@@ -1309,7 +1309,7 @@
 //	return NULL;
 //}
 //
-//int amdgpu_atombios_get_svi2_info(struct amdgpu_device *adev,
+//int amdgpu_atombios_get_svi2_info(amdgpu_device *adev,
 //			      u8 voltage_type,
 //			      u8 *svd_gpio_id, u8 *svc_gpio_id)
 //{
@@ -1321,14 +1321,14 @@
 //
 //	if (amdgpu_atom_parse_data_header(adev->mode_info.atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
-//		voltage_info = (union voltage_object_info *)
+//		voltage_info = (voltage_object_info *)
 //			(adev->mode_info.atom_context->bios + data_offset);
 //
 //		switch (frev) {
 //		case 3:
 //			switch (crev) {
 //			case 1:
-//				voltage_object = (union voltage_object *)
+//				voltage_object = (voltage_object *)
 //					amdgpu_atombios_lookup_voltage_object_v3(&voltage_info->v3,
 //								      voltage_type,
 //								      VOLTAGE_OBJ_SVID2);
@@ -1354,7 +1354,7 @@
 //}
 //
 //bool
-//amdgpu_atombios_is_voltage_gpio(struct amdgpu_device *adev,
+//amdgpu_atombios_is_voltage_gpio(amdgpu_device *adev,
 //				u8 voltage_type, u8 voltage_mode)
 //{
 //	int index = GetIndexIntoMasterTable(DATA, VoltageObjectInfo);
@@ -1364,7 +1364,7 @@
 //
 //	if (amdgpu_atom_parse_data_header(adev->mode_info.atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
-//		voltage_info = (union voltage_object_info *)
+//		voltage_info = (voltage_object_info *)
 //			(adev->mode_info.atom_context->bios + data_offset);
 //
 //		switch (frev) {
@@ -1389,7 +1389,7 @@
 //	return false;
 //}
 //
-//int amdgpu_atombios_get_voltage_table(struct amdgpu_device *adev,
+//int amdgpu_atombios_get_voltage_table(amdgpu_device *adev,
 //				      u8 voltage_type, u8 voltage_mode,
 //				      struct atom_voltage_table *voltage_table)
 //{
@@ -1402,14 +1402,14 @@
 //
 //	if (amdgpu_atom_parse_data_header(adev->mode_info.atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
-//		voltage_info = (union voltage_object_info *)
+//		voltage_info = (voltage_object_info *)
 //			(adev->mode_info.atom_context->bios + data_offset);
 //
 //		switch (frev) {
 //		case 3:
 //			switch (crev) {
 //			case 1:
-//				voltage_object = (union voltage_object *)
+//				voltage_object = (voltage_object *)
 //					amdgpu_atombios_lookup_voltage_object_v3(&voltage_info->v3,
 //								      voltage_type, voltage_mode);
 //				if (voltage_object) {
@@ -1460,7 +1460,7 @@
 //#define DATA_EQU_PREV         0
 //#define DATA_FROM_TABLE       4
 //
-//int amdgpu_atombios_init_mc_reg_table(struct amdgpu_device *adev,
+//int amdgpu_atombios_init_mc_reg_table(amdgpu_device *adev,
 //				      u8 module_index,
 //				      struct atom_mc_reg_table *reg_table)
 //{
@@ -1470,11 +1470,11 @@
 //	u16 data_offset, size;
 //	union vram_info *vram_info;
 //
-//	memset(reg_table, 0, sizeof(struct atom_mc_reg_table));
+//	memset(reg_table, 0, sizeof(atom_mc_reg_table));
 //
 //	if (amdgpu_atom_parse_data_header(adev->mode_info.atom_context, index, &size,
 //				   &frev, &crev, &data_offset)) {
-//		vram_info = (union vram_info *)
+//		vram_info = (vram_info *)
 //			(adev->mode_info.atom_context->bios + data_offset);
 //		switch (frev) {
 //		case 1:
@@ -1554,7 +1554,7 @@
 //}
 //#endif
 //
-//bool amdgpu_atombios_has_gpu_virtualization_table(struct amdgpu_device *adev)
+//bool amdgpu_atombios_has_gpu_virtualization_table(amdgpu_device *adev)
 //{
 //	int index = GetIndexIntoMasterTable(DATA, GPUVirtualizationInfo);
 //	u8 frev, crev;
@@ -1567,7 +1567,7 @@
 //	return false;
 //}
 //
-//void amdgpu_atombios_scratch_regs_lock(struct amdgpu_device *adev, bool lock)
+//void amdgpu_atombios_scratch_regs_lock(amdgpu_device *adev, bool lock)
 //{
 //	uint32_t bios_6_scratch;
 //
@@ -1584,7 +1584,7 @@
 //	WREG32(adev->bios_scratch_reg_offset + 6, bios_6_scratch);
 //}
 //
-//static void amdgpu_atombios_scratch_regs_init(struct amdgpu_device *adev)
+//static void amdgpu_atombios_scratch_regs_init(amdgpu_device *adev)
 //{
 //	uint32_t bios_2_scratch, bios_6_scratch;
 //
@@ -1606,7 +1606,7 @@
 //	WREG32(adev->bios_scratch_reg_offset + 6, bios_6_scratch);
 //}
 //
-//void amdgpu_atombios_scratch_regs_engine_hung(struct amdgpu_device *adev,
+//void amdgpu_atombios_scratch_regs_engine_hung(amdgpu_device *adev,
 //					      bool hung)
 //{
 //	u32 tmp = RREG32(adev->bios_scratch_reg_offset + 3);
@@ -1619,7 +1619,7 @@
 //	WREG32(adev->bios_scratch_reg_offset + 3, tmp);
 //}
 //
-//void amdgpu_atombios_scratch_regs_set_backlight_level(struct amdgpu_device *adev,
+//void amdgpu_atombios_scratch_regs_set_backlight_level(amdgpu_device *adev,
 //						      u32 backlight_level)
 //{
 //	u32 tmp = RREG32(adev->bios_scratch_reg_offset + 2);
@@ -1631,7 +1631,7 @@
 //	WREG32(adev->bios_scratch_reg_offset + 2, tmp);
 //}
 //
-//bool amdgpu_atombios_scratch_need_asic_init(struct amdgpu_device *adev)
+//bool amdgpu_atombios_scratch_need_asic_init(amdgpu_device *adev)
 //{
 //	u32 tmp = RREG32(adev->bios_scratch_reg_offset + 7);
 //
@@ -1673,7 +1673,7 @@
 //#endif
 //}
 //
-//static int amdgpu_atombios_allocate_fb_scratch(struct amdgpu_device *adev)
+//static int amdgpu_atombios_allocate_fb_scratch(amdgpu_device *adev)
 //{
 //	struct atom_context *ctx = adev->mode_info.atom_context;
 //	int index = GetIndexIntoMasterTable(DATA, VRAM_UsageByFirmware);
@@ -1684,7 +1684,7 @@
 //	u64 size;
 //
 //	if (amdgpu_atom_parse_data_header(ctx, index, NULL, NULL, NULL, &data_offset)) {
-//		firmware_usage = (struct _ATOM_VRAM_USAGE_BY_FIRMWARE *)(ctx->bios + data_offset);
+//		firmware_usage = (_ATOM_VRAM_USAGE_BY_FIRMWARE *)(ctx->bios + data_offset);
 //
 //		DRM_DEBUG("atom firmware requested %08x %dkb\n",
 //			  le32_to_cpu(firmware_usage->asFirmwareVramReserveInfo[0].ulStartAddrUsedByFirmware),
@@ -1735,7 +1735,7 @@
 // * Provides a PLL register accessor for the atom interpreter (r4xx+).
 // * Returns the value of the PLL register.
 // */
-//static uint32_t cail_pll_read(struct card_info *info, uint32_t reg)
+//static uint32_t cail_pll_read(card_info *info, uint32_t reg)
 //{
 //	return 0;
 //}
@@ -1749,7 +1749,7 @@
 // *
 // * Provides a PLL register accessor for the atom interpreter (r4xx+).
 // */
-//static void cail_pll_write(struct card_info *info, uint32_t reg, uint32_t val)
+//static void cail_pll_write(card_info *info, uint32_t reg, uint32_t val)
 //{
 //
 //}
@@ -1763,7 +1763,7 @@
 // * Provides an MC register accessor for the atom interpreter (r4xx+).
 // * Returns the value of the MC register.
 // */
-//static uint32_t cail_mc_read(struct card_info *info, uint32_t reg)
+//static uint32_t cail_mc_read(card_info *info, uint32_t reg)
 //{
 //	return 0;
 //}
@@ -1777,7 +1777,7 @@
 // *
 // * Provides a MC register accessor for the atom interpreter (r4xx+).
 // */
-//static void cail_mc_write(struct card_info *info, uint32_t reg, uint32_t val)
+//static void cail_mc_write(card_info *info, uint32_t reg, uint32_t val)
 //{
 //
 //}
@@ -1791,7 +1791,7 @@
 // *
 // * Provides a MMIO register accessor for the atom interpreter (r4xx+).
 // */
-//static void cail_reg_write(struct card_info *info, uint32_t reg, uint32_t val)
+//static void cail_reg_write(card_info *info, uint32_t reg, uint32_t val)
 //{
 //	struct amdgpu_device *adev = drm_to_adev(info->dev);
 //
@@ -1807,7 +1807,7 @@
 // * Provides an MMIO register accessor for the atom interpreter (r4xx+).
 // * Returns the value of the MMIO register.
 // */
-//static uint32_t cail_reg_read(struct card_info *info, uint32_t reg)
+//static uint32_t cail_reg_read(card_info *info, uint32_t reg)
 //{
 //	struct amdgpu_device *adev = drm_to_adev(info->dev);
 //	uint32_t r;
@@ -1816,7 +1816,7 @@
 //	return r;
 //}
 //
-//static ssize_t amdgpu_atombios_get_vbios_version(struct device *dev,
+//static ssize_t amdgpu_atombios_get_vbios_version(device *dev,
 //						 struct device_attribute *attr,
 //						 char *buf)
 //{
@@ -1827,7 +1827,7 @@
 //	return sysfs_emit(buf, "%s\n", ctx->vbios_pn);
 //}
 //
-//static ssize_t amdgpu_atombios_get_vbios_build(struct device *dev,
+//static ssize_t amdgpu_atombios_get_vbios_build(device *dev,
 //					       struct device_attribute *attr,
 //					       char *buf)
 //{
@@ -1846,7 +1846,7 @@
 //	&dev_attr_vbios_version.attr, &dev_attr_vbios_build.attr, NULL
 //};
 //
-//static umode_t amdgpu_vbios_version_attrs_is_visible(struct kobject *kobj,
+//static umode_t amdgpu_vbios_version_attrs_is_visible(kobject *kobj,
 //						     struct attribute *attr,
 //						     int index)
 //{
@@ -1866,7 +1866,7 @@
 //	.is_visible = amdgpu_vbios_version_attrs_is_visible,
 //};
 //
-//int amdgpu_atombios_sysfs_init(struct amdgpu_device *adev)
+//int amdgpu_atombios_sysfs_init(amdgpu_device *adev)
 //{
 //	if (adev->mode_info.atom_context)
 //		return devm_device_add_group(adev->dev,
@@ -1884,7 +1884,7 @@
 // * interpreter (r4xx+).
 // * Called at driver shutdown.
 // */
-//void amdgpu_atombios_fini(struct amdgpu_device *adev)
+//void amdgpu_atombios_fini(amdgpu_device *adev)
 //{
 //	if (adev->mode_info.atom_context) {
 //		kfree(adev->mode_info.atom_context->scratch);
@@ -1906,10 +1906,10 @@
 // * Returns 0 on sucess, -ENOMEM on failure.
 // * Called at driver startup.
 // */
-//int amdgpu_atombios_init(struct amdgpu_device *adev)
+//int amdgpu_atombios_init(amdgpu_device *adev)
 //{
 //	struct card_info *atom_card_info =
-//	    kzalloc_obj(struct card_info);
+//	    kzalloc_obj(card_info);
 //
 //	if (!atom_card_info)
 //		return -ENOMEM;
@@ -1944,7 +1944,7 @@
 //	return 0;
 //}
 //
-//int amdgpu_atombios_get_data_table(struct amdgpu_device *adev,
+//int amdgpu_atombios_get_data_table(amdgpu_device *adev,
 //				   uint32_t table,
 //				   uint16_t *size,
 //				   uint8_t *frev,

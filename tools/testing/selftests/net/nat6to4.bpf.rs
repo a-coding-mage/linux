@@ -224,7 +224,7 @@ pub unsafe extern "C" fn sched_cls_egress4_snat4_prog(skb: *mut __sk_buff) -> i3
     }
 
     // Minimum IPv4 total length is the size of the header
-    if bpf_ntohs((*ip4).tot_len) as usize < core::mem::size_of_val(&*ip4) {
+    if (bpf_ntohs((*ip4).tot_len) as usize) < core::mem::size_of_val(&*ip4) {
         return TC_ACT_OK;
     }
 

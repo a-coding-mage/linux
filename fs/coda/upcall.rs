@@ -38,8 +38,8 @@ macro_rules! uparg { ($inp:ident, $outp:ident, $outsize:ident, $op:expr, $insize
     $outp = $inp as *mut outputArgs;
     $outsize = $insize;
 }} }
-macro_rules! insize { ($tag:ident) => { core::mem::size_of::<coda_$tag##_in>() as i32 }; }
-macro_rules! outsize { ($tag:ident) => { core::mem::size_of::<coda_$tag##_out>() as i32 }; }
+macro_rules! insize { ($tag:tt) => { core::mem::size_of::<coda_::kernel::macros::paste!([<$tag _in>])>() as i32 }; }
+macro_rules! outsize { ($tag:tt) => { core::mem::size_of::<coda_::kernel::macros::paste!([<$tag _out>])>() as i32 }; }
 macro_rules! size { ($tag:ident) => { core::cmp::max(insize!($tag), outsize!($tag)) }; }
 
 pub unsafe fn venus_rootfid(sb: *mut super_block, fidp: *mut CodaFid) -> i32 {

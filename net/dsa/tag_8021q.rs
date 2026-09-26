@@ -48,9 +48,9 @@ pub fn vid_is_dsa_8021q(vid: u16) -> bool { ((vid & DSA_8021Q_RSV_MASK) >> DSA_8
 
 unsafe fn dsa_tag_8021q_vlan_find(ctx: *mut Dsa8021qContext, port: i32, vid: u16) -> *mut DsaTag8021qVlan {
     let mut v: *mut DsaTag8021qVlan = core::ptr::null_mut();
-    list_for_each_entry!(v, &mut (*ctx).vlans, list) {
+    list_for_each_entry!(v, &mut (*ctx).vlans, list, {
         if (*v).vid == vid && (*v).port == port { return v; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -82,11 +82,11 @@ unsafe fn dsa_port_tag_8021q_vlan_match(dp: *mut DsaPort, info: *mut DsaNotifier
 pub unsafe fn dsa_switch_tag_8021q_vlan_add(ds: *mut DsaSwitch, info: *mut DsaNotifierTag8021qVlanInfo) -> i32 {
     if (*(*ds).ops).tag_8021q_vlan_add.is_none() || (*ds).tag_8021q_ctx.is_null() { return 0; }
     let mut dp: *mut DsaPort = core::ptr::null_mut();
-    dsa_switch_for_each_port!(dp, ds) { if dsa_port_tag_8021q_vlan_match(dp, info) { let mut flags = 0; if dsa_port_is_user(dp) { flags = BRIDGE_VLAN_INFO_UNTAGGED | BRIDGE_VLAN_INFO_PVID; } let err = dsa_port_do_tag_8021q_vlan_add(dp, (*info).vid, flags); if err != 0 { return err; } } } 0
+    dsa_switch_for_each_port!(dp, ds, { if dsa_port_tag_8021q_vlan_match(dp, info) { let mut flags = 0; if dsa_port_is_user(dp) { flags = BRIDGE_VLAN_INFO_UNTAGGED | BRIDGE_VLAN_INFO_PVID; } let err = dsa_port_do_tag_8021q_vlan_add(dp, (*info).vid, flags); if err != 0 { return err; } } }); 0
 }
 pub unsafe fn dsa_switch_tag_8021q_vlan_del(ds: *mut DsaSwitch, info: *mut DsaNotifierTag8021qVlanInfo) -> i32 {
     if (*(*ds).ops).tag_8021q_vlan_del.is_none() || (*ds).tag_8021q_ctx.is_null() { return 0; }
-    let mut dp: *mut DsaPort = core::ptr::null_mut(); dsa_switch_for_each_port!(dp, ds) { if dsa_port_tag_8021q_vlan_match(dp, info) { let err = dsa_port_do_tag_8021q_vlan_del(dp, (*info).vid); if err != 0 { return err; } } } 0
+    let mut dp: *mut DsaPort = core::ptr::null_mut(); dsa_switch_for_each_port!(dp, ds, { if dsa_port_tag_8021q_vlan_match(dp, info) { let err = dsa_port_do_tag_8021q_vlan_del(dp, (*info).vid); if err != 0 { return err; } } }); 0
 }
 
 pub unsafe fn dsa_tag_8021q_bridge_join(ds: *mut DsaSwitch, port: i32, bridge: DsaBridge, tx_fwd_offload: *mut bool, _extack: *mut NetlinkExtAck) -> i32 {
@@ -101,10 +101,10 @@ unsafe fn dsa_tag_8021q_setup(ds: *mut DsaSwitch) -> i32 { ASSERT_RTNL!(); for p
 unsafe fn dsa_tag_8021q_teardown(ds: *mut DsaSwitch) { ASSERT_RTNL!(); for port in 0..(*ds).num_ports { dsa_tag_8021q_port_teardown(ds, port); } }
 
 pub unsafe fn dsa_tag_8021q_register(ds: *mut DsaSwitch, proto: Be16) -> i32 { let ctx = kzalloc_obj!(Dsa8021qContext); if ctx.is_null() { return -12; } (*ctx).proto = proto; (*ctx).ds = ds; INIT_LIST_HEAD!(&mut (*ctx).vlans); (*ds).tag_8021q_ctx = ctx; let err = dsa_tag_8021q_setup(ds); if err != 0 { kfree!(ctx); return err; } 0 }
-pub unsafe fn dsa_tag_8021q_unregister(ds: *mut DsaSwitch) { let ctx = (*ds).tag_8021q_ctx; dsa_tag_8021q_teardown(ds); let mut v: *mut DsaTag8021qVlan = core::ptr::null_mut(); let mut n: *mut DsaTag8021qVlan = core::ptr::null_mut(); list_for_each_entry_safe!(v, n, &mut (*ctx).vlans, list) { list_del!(&mut (*v).list); kfree!(v); } (*ds).tag_8021q_ctx = core::ptr::null_mut(); kfree!(ctx); }
+pub unsafe fn dsa_tag_8021q_unregister(ds: *mut DsaSwitch) { let ctx = (*ds).tag_8021q_ctx; dsa_tag_8021q_teardown(ds); let mut v: *mut DsaTag8021qVlan = core::ptr::null_mut(); let mut n: *mut DsaTag8021qVlan = core::ptr::null_mut(); list_for_each_entry_safe!(v, n, &mut (*ctx).vlans, list, { list_del!(&mut (*v).list); kfree!(v); }); (*ds).tag_8021q_ctx = core::ptr::null_mut(); kfree!(ctx); }
 
 pub unsafe fn dsa_8021q_xmit(skb: *mut SkBuff, _netdev: *mut NetDevice, tpid: u16, tci: u16) -> *mut SkBuff { vlan_insert_tag(skb, htons(tpid), tci) }
-unsafe fn dsa_tag_8021q_find_port_by_vbid(conduit: *mut NetDevice, vbid: i32) -> *mut NetDevice { let cpu_dp = (*conduit).dsa_ptr; let dst = (*cpu_dp).dst; if vbid == 0 { return core::ptr::null_mut(); } let mut dp: *mut DsaPort = core::ptr::null_mut(); dsa_tree_for_each_user_port!(dp, dst) { if (*dp).bridge.is_null() || ((*dp).stp_state != BR_STATE_LEARNING && (*dp).stp_state != BR_STATE_FORWARDING) || (*dp).cpu_dp != cpu_dp { continue; } if dsa_port_bridge_num_get(dp) == vbid { return (*dp).user; } } core::ptr::null_mut() }
+unsafe fn dsa_tag_8021q_find_port_by_vbid(conduit: *mut NetDevice, vbid: i32) -> *mut NetDevice { let cpu_dp = (*conduit).dsa_ptr; let dst = (*cpu_dp).dst; if vbid == 0 { return core::ptr::null_mut(); } let mut dp: *mut DsaPort = core::ptr::null_mut(); dsa_tree_for_each_user_port!(dp, dst, { if (*dp).bridge.is_null() || ((*dp).stp_state != BR_STATE_LEARNING && (*dp).stp_state != BR_STATE_FORWARDING) || (*dp).cpu_dp != cpu_dp { continue; } if dsa_port_bridge_num_get(dp) == vbid { return (*dp).user; } }); core::ptr::null_mut() }
 pub unsafe fn dsa_tag_8021q_find_user(conduit: *mut NetDevice, source_port: i32, switch_id: i32, vid: i32, vbid: i32) -> *mut NetDevice { if source_port != -1 && switch_id != -1 { dsa_conduit_find_user(conduit, switch_id, source_port) } else if vbid >= 1 { dsa_tag_8021q_find_port_by_vbid(conduit, vbid) } else { dsa_find_designated_bridge_port_by_vid(conduit, vid) } }
 
 pub unsafe fn dsa_8021q_rcv(skb: *mut SkBuff, source_port: *mut i32, switch_id: *mut i32, vbid: *mut i32, vid: *mut i32) {

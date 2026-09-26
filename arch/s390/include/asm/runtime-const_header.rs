@@ -21,7 +21,7 @@ macro_rules! runtime_const_ptr {
                 ret = lateout(reg) __ret,
                 c1 = const 0x01234567_u64,
                 c2 = const 0x89abcdef_u64,
-                sym = sym $sym,
+                $sym = $sym $sym,
             );
         }
         __ret
@@ -39,7 +39,7 @@ macro_rules! runtime_const_shift_right_32 {
                 ".long 0b - .",
                 ".popsection",
                 ret = inout(reg) __ret,
-                sym = sym $sym,
+                $sym = $sym $sym,
             );
         }
         __ret
@@ -57,7 +57,7 @@ macro_rules! runtime_const_mask_32 {
                 ".long 0b - .",
                 ".popsection",
                 ret = inout(reg) __ret,
-                sym = sym $sym,
+                $sym = $sym $sym,
                 lateout("cc") _,
             );
         }

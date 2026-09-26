@@ -106,7 +106,7 @@ pub unsafe fn sort_extable(
     );
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe fn trim_init_extable(m: *mut module) {
     /* trim the beginning */
     while (*m).num_exentries != 0

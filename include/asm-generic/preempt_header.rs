@@ -89,37 +89,37 @@ pub unsafe fn should_resched(preempt_offset: i32) -> bool {
 
 // CONFIG_PREEMPTION declarations and macro mappings are conditional on the
 // corresponding build-time configuration and are supplied by the build.
-#[cfg(feature = "CONFIG_PREEMPTION")]
+#[cfg(CONFIG_PREEMPTION)]
 extern "C" {
     pub fn preempt_schedule();
     pub fn preempt_schedule_notrace();
 }
 
-#[cfg(all(feature = "CONFIG_PREEMPTION", feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))]
+#[cfg(all(CONFIG_PREEMPTION, CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))]
 extern "C" {
     pub fn dynamic_preempt_schedule();
     pub fn dynamic_preempt_schedule_notrace();
 }
 
-#[cfg(all(feature = "CONFIG_PREEMPTION", feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))]
+#[cfg(all(CONFIG_PREEMPTION, CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))]
 #[inline(always)]
 pub unsafe fn __preempt_schedule() {
     dynamic_preempt_schedule();
 }
 
-#[cfg(all(feature = "CONFIG_PREEMPTION", feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))]
+#[cfg(all(CONFIG_PREEMPTION, CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))]
 #[inline(always)]
 pub unsafe fn __preempt_schedule_notrace() {
     dynamic_preempt_schedule_notrace();
 }
 
-#[cfg(all(feature = "CONFIG_PREEMPTION", not(all(feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))))]
+#[cfg(all(CONFIG_PREEMPTION, not(all(CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))))]
 #[inline(always)]
 pub unsafe fn __preempt_schedule() {
     preempt_schedule();
 }
 
-#[cfg(all(feature = "CONFIG_PREEMPTION", not(all(feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))))]
+#[cfg(all(CONFIG_PREEMPTION, not(all(CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))))]
 #[inline(always)]
 pub unsafe fn __preempt_schedule_notrace() {
     preempt_schedule_notrace();

@@ -96,7 +96,7 @@ unsafe fn get_next_block(bd: *mut bunzip_data) -> i32 {
         let mut length = [0u8; MAX_SYMBOLS]; let mut temp = [0i32; MAX_HUFCODE_BITS+1];
         t = get_bits(bd, 5) as i32 - 1;
         for q in 0..sym_count as usize { loop { if t < 0 || t as usize > MAX_HUFCODE_BITS-1 { return RETVAL_DATA_ERROR; } k = get_bits(bd, 2) as i32; if k < 2 { (*bd).inbufBitCount += 1; break; } t += (((k+1)&2)-1); } length[q] = (t+1) as u8; }
-        let mut min_len = length[0] as i32; let mut max_len = min_len; for q in 1..sym_count as usize { if length[q] as i32 > max_len { max_len=length[q] as i32; } else if length[q] as i32 < min_len { min_len=length[q] as i32; } }
+        let mut min_len = length[0] as i32; let mut max_len = min_len; for q in 1..sym_count as usize { if length[q] as i32 > max_len { max_len=length[q] as i32; } else if (length[q] as i32) < min_len { min_len=length[q] as i32; } }
         let h = &mut (*bd).groups[g]; h.minLen=min_len; h.maxLen=max_len;
         let mut pp=0usize; for q in min_len..=max_len { temp[q as usize]=0; h.limit[q as usize]=0; for x in 0..sym_count as usize { if length[x] as i32==q { h.permute[pp]=x as i32; pp+=1; } } }
         for x in 0..sym_count as usize { temp[length[x] as usize]+=1; }

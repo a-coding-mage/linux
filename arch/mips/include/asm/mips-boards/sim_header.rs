@@ -17,7 +17,7 @@ macro_rules! simcfg {
         unsafe {
             core::arch::asm!(
                 "sltiu $0, $0, {code}",
-                code = const $code,
+                $code = const $code,
                 options(nostack, nomem, preserves_flags)
             );
         }

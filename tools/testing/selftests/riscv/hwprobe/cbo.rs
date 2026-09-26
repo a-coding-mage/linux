@@ -65,8 +65,7 @@ extern "C" {
         pair_count: usize,
         cpusetsize: usize,
         cpus: *mut c_ulong,
-        flags: u32,
-    ) -> c_long;
+        flags: u32) -> c_long;
 
     fn sigaction(sig: c_int, act: *const libc::sigaction, oldact: *mut libc::sigaction) -> c_int;
     fn sched_getaffinity(pid: c_int, cpusetsize: usize, mask: *mut libc::cpu_set_t) -> c_int;
@@ -75,8 +74,7 @@ extern "C" {
         argv: *mut *mut c_char,
         optstring: *const c_char,
         longopts: *const libc::option,
-        longindex: *mut c_int,
-    ) -> c_int;
+        longindex: *mut c_int) -> c_int;
     fn fprintf(stream: *mut c_void, format: *const c_char, ...) -> c_int;
     fn exit(status: c_int) -> !;
 

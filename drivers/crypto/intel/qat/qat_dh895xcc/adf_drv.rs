@@ -44,6 +44,10 @@ unsafe extern "C" fn adf_probe(
     let mut bar_nr: u32;
     let mut bar_mask: c_ulong;
     let mut ret: i32;
+    'out_err: {
+    'out_err_disable: {
+    'out_err_free_reg: {
+    'out_err_dev_stop: {
 
     match (*ent).device {
         PCI_DEVICE_ID_INTEL_QAT_DH895XCC => {}
@@ -78,7 +82,7 @@ unsafe extern "C" fn adf_probe(
     (*accel_dev).owner = THIS_MODULE;
     hw_data = kzalloc_node(core::mem::size_of::<adf_hw_device_data>(), GFP_KERNEL,
                            dev_to_node(&(*pdev).dev)) as *mut adf_hw_device_data;
-    if hw_data.is_null() { ret = -ENOMEM; goto out_err; }
+    if hw_data.is_null() { ret = -ENOMEM; break 'out_err; }
     (*accel_dev).hw_device = hw_data;
     adf_init_hw_data_dh895xcc((*accel_dev).hw_device);
     pci_read_config_byte(pdev, PCI_REVISION_ID, &mut (*accel_pci_dev).revid);
@@ -90,36 +94,39 @@ unsafe extern "C" fn adf_probe(
     if (*hw_data).accel_mask == 0 || (*hw_data).ae_mask == 0 ||
        (((!(*hw_data).ae_mask) & 0x01) != 0) {
         dev_err!(&(*pdev).dev, "No acceleration units found");
-        ret = -EFAULT; goto out_err;
+        ret = -EFAULT; break 'out_err;
     }
     ret = adf_cfg_dev_add(accel_dev);
-    if ret != 0 { goto out_err; }
+    if ret != 0 { break 'out_err; }
     pcie_set_readrq(pdev, 1024);
-    if pci_enable_device(pdev) != 0 { ret = -EFAULT; goto out_err; }
+    if pci_enable_device(pdev) != 0 { ret = -EFAULT; break 'out_err; }
     ret = dma_set_mask_and_coherent(&(*pdev).dev, DMA_BIT_MASK(48));
-    if ret != 0 { dev_err!(&(*pdev).dev, "No usable DMA configuration\n"); goto out_err_disable; }
-    if pci_request_regions(pdev, ADF_DH895XCC_DEVICE_NAME) != 0 { ret = -EFAULT; goto out_err_disable; }
+    if ret != 0 { dev_err!(&(*pdev).dev, "No usable DMA configuration\n"); break 'out_err_disable; }
+    if pci_request_regions(pdev, ADF_DH895XCC_DEVICE_NAME) != 0 { ret = -EFAULT; break 'out_err_disable; }
     (*hw_data).accel_capabilities_mask = ((*hw_data).get_accel_cap)(accel_dev);
     i = 0;
     bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
-    for_each_set_bit!(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2) {
+    for_each_set_bit!(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2, {
         let bar = &mut (*accel_pci_dev).pci_bars[i as usize]; i += 1;
         (*bar).base_addr = pci_resource_start(pdev, bar_nr);
         if (*bar).base_addr == 0 { break; }
         (*bar).size = pci_resource_len(pdev, bar_nr);
         (*bar).virt_addr = pci_iomap((*accel_pci_dev).pci_dev, bar_nr, 0);
-        if (*bar).virt_addr.is_null() { pci_err!(pdev, "Failed to map BAR %d\n", bar_nr); ret = -EFAULT; goto out_err_free_reg; }
-    }
-    if pci_save_state(pdev) != 0 { pci_err!(pdev, "Failed to save pci state\n"); ret = -ENOMEM; goto out_err_free_reg; }
+        if (*bar).virt_addr.is_null() { pci_err!(pdev, "Failed to map BAR %d\n", bar_nr); ret = -EFAULT; break 'out_err_free_reg; }
+    });
+    if pci_save_state(pdev) != 0 { pci_err!(pdev, "Failed to save pci state\n"); ret = -ENOMEM; break 'out_err_free_reg; }
     adf_dbgfs_init(accel_dev);
     ret = adf_dev_up(accel_dev, true);
-    if ret != 0 { goto out_err_dev_stop; }
+    if ret != 0 { break 'out_err_dev_stop; }
     return ret;
-
-out_err_dev_stop: adf_dev_down(accel_dev);
-out_err_free_reg: pci_release_regions((*accel_pci_dev).pci_dev);
-out_err_disable: pci_disable_device((*accel_pci_dev).pci_dev);
-out_err: adf_cleanup_accel(accel_dev); kfree(accel_dev as *mut c_void); return ret;
+    }
+    adf_dev_down(accel_dev);
+    }
+    pci_release_regions((*accel_pci_dev).pci_dev);
+    }
+    pci_disable_device((*accel_pci_dev).pci_dev);
+    }
+    adf_cleanup_accel(accel_dev); kfree(accel_dev as *mut c_void); return ret;
 }
 
 unsafe extern "C" fn adf_remove(pdev: *mut pci_dev) {

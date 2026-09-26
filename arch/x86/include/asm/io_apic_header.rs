@@ -58,7 +58,7 @@ pub struct ioapic_domain_cfg;
 pub const IOAPIC_MAP_ALLOC: u32 = 0x1;
 pub const IOAPIC_MAP_CHECK: u32 = 0x2;
 
-#[cfg(feature = "CONFIG_X86_IO_APIC")]
+#[cfg(CONFIG_X86_IO_APIC)]
 extern "C" {
     pub static mut nr_ioapics: i32;
     pub fn mpc_ioapic_id(ioapic: i32) -> i32;
@@ -100,45 +100,45 @@ extern "C" {
 /* mpc_intsrc, MAX_IRQ_SOURCES, NR_IRQS_LEGACY, and ENOMEM are supplied by
  * the architecture and kernel headers. */
 
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub const nr_ioapics: i32 = 0;
 
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub const IO_APIC_IRQ: i32 = 0;
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub const io_apic_assign_pci_irqs: i32 = 0;
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub const gsi_top: u32 = NR_IRQS_LEGACY;
 
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn ioapic_insert_resources() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn arch_early_ioapic_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn print_IO_APICs() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn mp_find_ioapic(_gsi: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn mp_map_gsi_to_irq(gsi: u32, _flags: u32, _info: *mut irq_alloc_info) -> i32 { gsi as i32 }
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn mp_unmap_irq(_irq: i32) {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn save_ioapic_entries() -> i32 { -ENOMEM }
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn mask_ioapic_entries() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn restore_ioapic_entries() -> i32 { -ENOMEM }
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn mp_save_irq(_m: *mut mpc_intsrc) {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn disable_ioapic_support() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn io_apic_init_mappings() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn setup_IO_APIC() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn enable_IO_APIC() {}
-#[cfg(not(feature = "CONFIG_X86_IO_APIC"))]
+#[cfg(not(CONFIG_X86_IO_APIC))]
 pub unsafe fn restore_boot_irq_mode() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

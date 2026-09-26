@@ -36,18 +36,18 @@ pub const KRB5_MAX_BLOCKSIZE: usize = 16;
 }
 
 extern "C" {
-    fn crypto_shash_update(*mut shash_desc,*const u8,usize)->i32; fn crypto_shash_init(*mut shash_desc)->i32;
-    fn crypto_shash_finup(*mut shash_desc,*const u8,usize,*mut u8)->i32; fn crypto_shash_final(*mut shash_desc,*mut u8)->i32;
-    fn crypto_shash_update_sg(*mut shash_desc,*mut scatterlist,usize,usize)->i32;
-    fn crypto_alloc_shash(*const i8,u32,u32)->*mut crypto_shash; fn crypto_free_shash(*mut crypto_shash);
-    fn crypto_shash_descsize(*mut crypto_shash)->usize; fn crypto_shash_digestsize(*mut crypto_shash)->usize;
-    fn crypto_alloc_sync_skcipher(*const i8,u32,u32)->*mut crypto_sync_skcipher; fn crypto_free_sync_skcipher(*mut crypto_sync_skcipher);
-    fn crypto_sync_skcipher_setkey(*mut crypto_sync_skcipher,*const u8,usize)->i32; fn crypto_sync_skcipher_blocksize(*mut crypto_sync_skcipher)->usize;
-    fn crypto_sync_skcipher_ivsize(*mut crypto_sync_skcipher)->usize; fn crypto_skcipher_encrypt(*mut c_void)->i32;
-    fn sg_init_one(*mut scatterlist,*mut u8,usize); fn sg_nents(*mut scatterlist)->usize;
-    fn sg_miter_start(*mut c_void,*mut scatterlist,usize,u32); fn sg_miter_skip(*mut c_void,usize); fn sg_miter_next(*mut c_void)->bool; fn sg_miter_stop(*mut c_void);
-    fn krb5_derive_Ke(*const krb5_enctype,*const krb5_buffer,u32,*mut krb5_buffer,usize)->i32; fn krb5_derive_Ki(*const krb5_enctype,*const krb5_buffer,u32,*mut krb5_buffer,usize)->i32; fn krb5_derive_Kc(*const krb5_enctype,*const krb5_buffer,u32,*mut krb5_buffer,usize)->i32;
-    fn krb5_aead_size(*mut crypto_aead)->usize; fn krb5_aead_ivsize(*mut crypto_aead)->usize; fn krb5_shash_size(*mut crypto_shash)->usize; fn krb5_digest_size(*mut crypto_shash)->usize;
+    fn crypto_shash_update(_: *mut shash_desc,_: *const u8,_: usize)->i32; fn crypto_shash_init(_: *mut shash_desc)->i32;
+    fn crypto_shash_finup(_: *mut shash_desc,_: *const u8,_: usize,_: *mut u8)->i32; fn crypto_shash_final(_: *mut shash_desc,_: *mut u8)->i32;
+    fn crypto_shash_update_sg(_: *mut shash_desc,_: *mut scatterlist,_: usize,_: usize)->i32;
+    fn crypto_alloc_shash(_: *const i8,_: u32,_: u32)->*mut crypto_shash; fn crypto_free_shash(_: *mut crypto_shash);
+    fn crypto_shash_descsize(_: *mut crypto_shash)->usize; fn crypto_shash_digestsize(_: *mut crypto_shash)->usize;
+    fn crypto_alloc_sync_skcipher(_: *const i8,_: u32,_: u32)->*mut crypto_sync_skcipher; fn crypto_free_sync_skcipher(_: *mut crypto_sync_skcipher);
+    fn crypto_sync_skcipher_setkey(_: *mut crypto_sync_skcipher,_: *const u8,_: usize)->i32; fn crypto_sync_skcipher_blocksize(_: *mut crypto_sync_skcipher)->usize;
+    fn crypto_sync_skcipher_ivsize(_: *mut crypto_sync_skcipher)->usize; fn crypto_skcipher_encrypt(_: *mut c_void)->i32;
+    fn sg_init_one(_: *mut scatterlist,_: *mut u8,_: usize); fn sg_nents(_: *mut scatterlist)->usize;
+    fn sg_miter_start(_: *mut c_void,_: *mut scatterlist,_: usize,_: u32); fn sg_miter_skip(_: *mut c_void,_: usize); fn sg_miter_next(_: *mut c_void)->bool; fn sg_miter_stop(_: *mut c_void);
+    fn krb5_derive_Ke(_: *const krb5_enctype,_: *const krb5_buffer,_: u32,_: *mut krb5_buffer,_: usize)->i32; fn krb5_derive_Ki(_: *const krb5_enctype,_: *const krb5_buffer,_: u32,_: *mut krb5_buffer,_: usize)->i32; fn krb5_derive_Kc(_: *const krb5_enctype,_: *const krb5_buffer,_: u32,_: *mut krb5_buffer,_: usize)->i32;
+    fn krb5_aead_size(_: *mut crypto_aead)->usize; fn krb5_aead_ivsize(_: *mut crypto_aead)->usize; fn krb5_shash_size(_: *mut crypto_shash)->usize; fn krb5_digest_size(_: *mut crypto_shash)->usize;
 }
 
 unsafe extern "C" fn rfc3961_nfold(source:*const krb5_buffer,result:*mut krb5_buffer) {
@@ -62,18 +62,18 @@ fn gcd(mut a:usize,mut b:usize)->usize { while b!=0 { let t=a%b; a=b; b=t; } a }
  * following declarations preserve the translated file-local interfaces; their
  * implementations are supplied by the surrounding kernel translation. */
 extern "C" {
-    fn rfc3961_calc_H(*const krb5_enctype,*const krb5_buffer,*mut krb5_buffer,usize)->i32;
-    fn rfc3961_calc_DK(*const krb5_enctype,*const krb5_buffer,*const krb5_buffer,*mut krb5_buffer,usize)->i32;
-    fn rfc3961_calc_E(*const krb5_enctype,*const krb5_buffer,*const krb5_buffer,*mut krb5_buffer,usize)->i32;
-    fn rfc3961_calc_PRF(*const krb5_enctype,*const krb5_buffer,*const krb5_buffer,*mut krb5_buffer,usize)->i32;
-    fn authenc_derive_encrypt_keys(*const krb5_enctype,*const krb5_buffer,u32,*mut krb5_buffer,usize)->i32;
-    fn authenc_load_encrypt_keys(*const krb5_enctype,*const krb5_buffer,*const krb5_buffer,*mut krb5_buffer,usize)->i32;
-    fn rfc3961_derive_checksum_key(*const krb5_enctype,*const krb5_buffer,u32,*mut krb5_buffer,usize)->i32;
-    fn rfc3961_load_checksum_key(*const krb5_enctype,*const krb5_buffer,*mut krb5_buffer,usize)->i32;
-    fn krb5_aead_encrypt(*const krb5_enctype,*mut crypto_aead,*mut scatterlist,u32,usize,usize,usize,bool)->isize;
-    fn krb5_aead_decrypt(*const krb5_enctype,*mut crypto_aead,*mut scatterlist,u32,*mut usize,*mut usize)->i32;
-    fn rfc3961_get_mic(*const krb5_enctype,*mut crypto_shash,*const krb5_buffer,*mut scatterlist,u32,usize,usize,usize)->isize;
-    fn rfc3961_verify_mic(*const krb5_enctype,*mut crypto_shash,*const krb5_buffer,*mut scatterlist,u32,*mut usize,*mut usize)->i32;
+    fn rfc3961_calc_H(_: *const krb5_enctype,_: *const krb5_buffer,_: *mut krb5_buffer,_: usize)->i32;
+    fn rfc3961_calc_DK(_: *const krb5_enctype,_: *const krb5_buffer,_: *const krb5_buffer,_: *mut krb5_buffer,_: usize)->i32;
+    fn rfc3961_calc_E(_: *const krb5_enctype,_: *const krb5_buffer,_: *const krb5_buffer,_: *mut krb5_buffer,_: usize)->i32;
+    fn rfc3961_calc_PRF(_: *const krb5_enctype,_: *const krb5_buffer,_: *const krb5_buffer,_: *mut krb5_buffer,_: usize)->i32;
+    fn authenc_derive_encrypt_keys(_: *const krb5_enctype,_: *const krb5_buffer,_: u32,_: *mut krb5_buffer,_: usize)->i32;
+    fn authenc_load_encrypt_keys(_: *const krb5_enctype,_: *const krb5_buffer,_: *const krb5_buffer,_: *mut krb5_buffer,_: usize)->i32;
+    fn rfc3961_derive_checksum_key(_: *const krb5_enctype,_: *const krb5_buffer,_: u32,_: *mut krb5_buffer,_: usize)->i32;
+    fn rfc3961_load_checksum_key(_: *const krb5_enctype,_: *const krb5_buffer,_: *mut krb5_buffer,_: usize)->i32;
+    fn krb5_aead_encrypt(_: *const krb5_enctype,_: *mut crypto_aead,_: *mut scatterlist,_: u32,_: usize,_: usize,_: usize,_: bool)->isize;
+    fn krb5_aead_decrypt(_: *const krb5_enctype,_: *mut crypto_aead,_: *mut scatterlist,_: u32,_: *mut usize,_: *mut usize)->i32;
+    fn rfc3961_get_mic(_: *const krb5_enctype,_: *mut crypto_shash,_: *const krb5_buffer,_: *mut scatterlist,_: u32,_: usize,_: usize,_: usize)->isize;
+    fn rfc3961_verify_mic(_: *const krb5_enctype,_: *mut crypto_shash,_: *const krb5_buffer,_: *mut scatterlist,_: u32,_: *mut usize,_: *mut usize)->i32;
 }
 
 pub static rfc3961_simplified_profile: krb5_crypto_profile = krb5_crypto_profile {

@@ -4,7 +4,6 @@
  */
 
 // #ifndef __DTS_IMX91_PINFUNC_H
-#define __DTS_IMX91_PINFUNC_H
 
 /*
  * The pin function ID is a tuple of

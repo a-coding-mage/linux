@@ -122,7 +122,7 @@ extern "C" {
     fn usb_driver_claim_interface(
         driver: *mut usb_driver,
         intf: *mut usb_interface,
-        priv: *mut core::ffi::c_void,
+        r#priv: *mut core::ffi::c_void,
     ) -> i32;
     fn line6_probe(
         interface: *mut usb_interface,

@@ -12,7 +12,7 @@
 static mut PERF_TRACE_BUF: [*mut core::ffi::c_char; PERF_NR_CONTEXTS] =
     [core::ptr::null_mut(); PERF_NR_CONTEXTS];
 
-/* Force it to be aligned to unsigned long to avoid misaligned accesses. */
+/* Force it to be aligned to core::ffi::c_ulong to avoid misaligned accesses. */
 #[repr(C)]
 struct PerfTrace([core::ffi::c_ulong; PERF_MAX_TRACE_SIZE / core::mem::size_of::<core::ffi::c_ulong>()]);
 
@@ -49,7 +49,7 @@ unsafe fn perf_trace_event_reg(tp_event: *mut trace_event_call, p_event: *mut pe
     if (*tp_event).perf_refcount > 1 { return 0; }
     list = alloc_percpu::<hlist_head>();
     if list.is_null() { goto_fail(tp_event, ret); return ret; }
-    for_each_possible_cpu!(cpu) { INIT_HLIST_HEAD(per_cpu_ptr(list, cpu)); }
+    for_each_possible_cpu!(cpu, { INIT_HLIST_HEAD(per_cpu_ptr(list, cpu)); });
     (*tp_event).perf_events = list;
     if TOTAL_REF_COUNT == 0 {
         for i in 0..PERF_NR_CONTEXTS {
@@ -95,17 +95,17 @@ unsafe fn perf_trace_event_init(t: *mut trace_event_call, p: *mut perf_event) ->
 pub unsafe fn perf_trace_init(p_event: *mut perf_event) -> i32 {
     let event_id = (*p_event).attr.config; let mut ret = -EINVAL;
     mutex_lock(&event_mutex);
-    list_for_each_entry!(tp_event, &ftrace_events, list) {
+    list_for_each_entry!(tp_event, &ftrace_events, list, {
         if (*tp_event).event.r#type == event_id && !(*tp_event).class.is_null() && (*(*tp_event).class).reg.is_some() && trace_event_try_get_ref(tp_event) {
             ret = perf_trace_event_init(tp_event, p_event); if ret != 0 { trace_event_put_ref(tp_event); } break;
         }
-    }
+    });
     mutex_unlock(&event_mutex); ret
 }
 
 pub unsafe fn perf_trace_destroy(p: *mut perf_event) { mutex_lock(&event_mutex); perf_trace_event_close(p); perf_trace_event_unreg(p); trace_event_put_ref((*p).tp_event); mutex_unlock(&event_mutex); }
 
-#[cfg(feature = "CONFIG_KPROBE_EVENTS")]
+#[cfg(CONFIG_KPROBE_EVENTS)]
 pub unsafe fn perf_kprobe_init(p: *mut perf_event, is_retprobe: bool) -> i32 {
     let mut ret; let mut func: *mut i8 = core::ptr::null_mut();
     if (*p).attr.kprobe_func != 0 { func = strndup_user(u64_to_user_ptr((*p).attr.kprobe_func), KSYM_NAME_LEN); if IS_ERR(func) { ret = PTR_ERR(func); return if ret == -EINVAL { -E2BIG } else { ret }; } if *func == 0 { kfree(func); func = core::ptr::null_mut(); } }
@@ -113,10 +113,10 @@ pub unsafe fn perf_kprobe_init(p: *mut perf_event, is_retprobe: bool) -> i32 {
     if IS_ERR(t) { ret = PTR_ERR(t); } else { mutex_lock(&event_mutex); ret = perf_trace_event_init(t, p); if ret != 0 { destroy_local_trace_kprobe(t); } mutex_unlock(&event_mutex); }
     kfree(func); ret
 }
-#[cfg(feature = "CONFIG_KPROBE_EVENTS")]
+#[cfg(CONFIG_KPROBE_EVENTS)]
 pub unsafe fn perf_kprobe_destroy(p: *mut perf_event) { mutex_lock(&event_mutex); perf_trace_event_close(p); perf_trace_event_unreg(p); trace_event_put_ref((*p).tp_event); mutex_unlock(&event_mutex); destroy_local_trace_kprobe((*p).tp_event); }
 
-#[cfg(feature = "CONFIG_UPROBE_EVENTS")]
+#[cfg(CONFIG_UPROBE_EVENTS)]
 pub unsafe fn perf_uprobe_init(p: *mut perf_event, ref_ctr_offset: usize, is_retprobe: bool) -> i32 {
     if (*p).attr.uprobe_path == 0 { return -EINVAL; }
     let path = strndup_user(u64_to_user_ptr((*p).attr.uprobe_path), PATH_MAX); if IS_ERR(path) { let r = PTR_ERR(path); return if r == -EINVAL { -E2BIG } else { r }; }
@@ -125,7 +125,7 @@ pub unsafe fn perf_uprobe_init(p: *mut perf_event, ref_ctr_offset: usize, is_ret
     if IS_ERR(t) { ret = PTR_ERR(t); } else { mutex_lock(&event_mutex); ret = perf_trace_event_init(t, p); if ret != 0 { destroy_local_trace_uprobe(t); } mutex_unlock(&event_mutex); }
     kfree(path); ret
 }
-#[cfg(feature = "CONFIG_UPROBE_EVENTS")]
+#[cfg(CONFIG_UPROBE_EVENTS)]
 pub unsafe fn perf_uprobe_destroy(p: *mut perf_event) { mutex_lock(&event_mutex); perf_trace_event_close(p); perf_trace_event_unreg(p); trace_event_put_ref((*p).tp_event); mutex_unlock(&event_mutex); destroy_local_trace_uprobe((*p).tp_event); }
 
 pub unsafe fn perf_trace_add(p: *mut perf_event, flags: i32) -> i32 {
@@ -146,7 +146,7 @@ pub unsafe fn perf_trace_buf_alloc(size: i32, regs: *mut *mut pt_regs, rctxp: *m
 }
 pub unsafe fn perf_trace_buf_update(record: *mut core::ffi::c_void, typ: u16) { tracing_generic_entry_update(record as *mut trace_entry, typ, tracing_gen_ctx()); }
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 unsafe fn perf_ftrace_function_call(ip: usize, parent_ip: usize, ops: *mut ftrace_ops, fregs: *mut ftrace_regs) {
     if !rcu_is_watching() { return; } let bit = ftrace_test_recursion_trylock(ip, parent_ip); if bit < 0 { return; }
     if (*ops).private as usize != smp_processor_id() as usize { ftrace_test_recursion_unlock(bit); return; }
@@ -158,12 +158,12 @@ unsafe fn perf_ftrace_function_call(ip: usize, parent_ip: usize, ops: *mut ftrac
     ftrace_test_recursion_unlock(bit);
 }
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 unsafe fn perf_ftrace_function_register(event: *mut perf_event) -> i32 { (*event).ftrace_ops.func = Some(perf_ftrace_function_call); (*event).ftrace_ops.private = nr_cpu_ids as *mut _; register_ftrace_function(&mut (*event).ftrace_ops) }
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 unsafe fn perf_ftrace_function_unregister(event: *mut perf_event) -> i32 { let ops = &mut (*event).ftrace_ops; let mut ret = 0; if ops.flags & FTRACE_OPS_FL_ENABLED != 0 { ret = unregister_ftrace_function(ops); } ftrace_free_filter(ops); ret }
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 pub unsafe fn perf_ftrace_event_register(_call: *mut trace_event_call, typ: trace_reg, data: *mut core::ffi::c_void) -> i32 {
     match typ { TRACE_REG_REGISTER | TRACE_REG_UNREGISTER => {}, TRACE_REG_PERF_REGISTER | TRACE_REG_PERF_UNREGISTER => return 0, TRACE_REG_PERF_OPEN => return perf_ftrace_function_register(data as *mut _), TRACE_REG_PERF_CLOSE => return perf_ftrace_function_unregister(data as *mut _), TRACE_REG_PERF_ADD => { (*(data as *mut perf_event)).ftrace_ops.private = smp_processor_id() as *mut _; return 1; }, TRACE_REG_PERF_DEL => { (*(data as *mut perf_event)).ftrace_ops.private = nr_cpu_ids as *mut _; return 1; } }
     -EINVAL

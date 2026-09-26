@@ -79,14 +79,14 @@ extern "C" {
     pub fn ksmbd_systime() -> i64;
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 #[repr(C)]
 pub struct ksmbd_const_name {
     pub const_value: u32,
     pub name: *const core::ffi::c_char,
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 extern "C" {
     pub fn ksmbd_proc_init() -> i32;
     pub fn ksmbd_proc_cleanup();
@@ -103,11 +103,11 @@ extern "C" {
                                  const_value: u32) -> *const core::ffi::c_char;
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn ksmbd_proc_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn ksmbd_proc_cleanup() {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn ksmbd_proc_reset() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -16,14 +16,14 @@ static mut __sbi_rfence: Option<unsafe extern "C" fn(i32, *const cpumask, usize,
 #[cfg(CONFIG_RISCV_SBI_V01)]
 unsafe fn __sbi_v01_cpumask_to_hartmask(cpu_mask: *const cpumask) -> usize {
     let mut hmask: usize = 0;
-    for_each_cpu!(cpuid, cpu_mask) {
+    for_each_cpu!(cpuid, cpu_mask, {
         let hartid = cpuid_to_hartid_map(cpuid);
         if hartid >= BITS_PER_LONG {
             pr_warn!("Unable to send any request to hartid > BITS_PER_LONG for SBI v0.1\n");
             break;
         }
         hmask |= BIT(hartid);
-    }
+    });
     hmask
 }
 
@@ -106,7 +106,7 @@ unsafe fn __sbi_rfence_v02_call(fid: usize, hmask: usize, hbase: usize, start: u
 unsafe fn __sbi_rfence_v02(fid: i32, mut cpu_mask: *const cpumask, start: usize, size: usize, arg4: usize, arg5: usize) -> i32 {
     if cpu_mask.is_null() || cpumask_empty(cpu_mask) { cpu_mask = cpu_online_mask; }
     let (mut hmask, mut hbase, mut htop) = (0usize, 0usize, 0usize);
-    for_each_cpu!(cpuid, cpu_mask) {
+    for_each_cpu!(cpuid, cpu_mask, {
         let hartid = cpuid_to_hartid_map(cpuid);
         if hmask != 0 {
             if hartid + BITS_PER_LONG <= htop || hbase + BITS_PER_LONG <= hartid { let result = __sbi_rfence_v02_call(fid as _, hmask, hbase, start, size, arg4, arg5); if result != 0 { return result; } hmask = 0; }
@@ -114,7 +114,7 @@ unsafe fn __sbi_rfence_v02(fid: i32, mut cpu_mask: *const cpumask, start: usize,
         }
         if hmask == 0 { hbase = hartid; htop = hartid; } else if hartid > htop { htop = hartid; }
         hmask |= BIT(hartid - hbase);
-    }
+    });
     if hmask != 0 { let result = __sbi_rfence_v02_call(fid as _, hmask, hbase, start, size, arg4, arg5); if result != 0 { return result; } }
     0
 }

@@ -197,7 +197,7 @@ pub unsafe extern "C" fn __gue_build_header(skb: *mut sk_buff, e: *mut ip_tunnel
     *sport = if (*e).sport != 0 { (*e).sport } else { udp_flow_src_port(dev_net((*skb).dev), skb, 0, 0, false) };
     let optlen = if (*e).flags & TUNNEL_ENCAP_FLAG_REMCSUM != 0 && (*skb).ip_summed == CHECKSUM_PARTIAL { GUE_PLEN_REMCSUM as usize + GUE_LEN_PRIV as usize } else { 0 };
     let hdrlen = core::mem::size_of::<guehdr>() + optlen; skb_push(skb, hdrlen);
-    let h = skb->data as *mut guehdr; (*h).control = 0; (*h).version = 0; (*h).hlen = (optlen >> 2) as u8; (*h).flags = 0; (*h).proto_ctype = *protocol;
+    let h = (*skb).data as *mut guehdr; (*h).control = 0; (*h).version = 0; (*h).hlen = (optlen >> 2) as u8; (*h).flags = 0; (*h).proto_ctype = *protocol;
     0
 }
 
@@ -236,9 +236,9 @@ unsafe fn fou_create(net: *mut net, cfg: *mut fou_cfg, sockp: *mut *mut socket) 
 
 unsafe fn fou_destroy(_net: *mut net, _cfg: *mut fou_cfg) -> c_int { -EINVAL }
 
-#[cfg(feature = "CONFIG_NET_FOU_IP_TUNNELS")]
+#[cfg(CONFIG_NET_FOU_IP_TUNNELS)]
 unsafe fn ip_tunnel_encap_add_fou_ops() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_NET_FOU_IP_TUNNELS"))]
+#[cfg(not(CONFIG_NET_FOU_IP_TUNNELS))]
 unsafe fn ip_tunnel_encap_add_fou_ops() -> c_int { 0 }
 unsafe fn ip_tunnel_encap_del_fou_ops() {}
 

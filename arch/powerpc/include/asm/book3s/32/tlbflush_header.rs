@@ -15,12 +15,12 @@ unsafe extern "C" {
 }
 
 // CONFIG_SMP selects the externally supplied _tlbie implementation.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     pub fn _tlbie(address: c_ulong);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn _tlbie(address: c_ulong) {
     core::arch::asm!("tlbie {0}; sync", in(reg) address, options(nostack));

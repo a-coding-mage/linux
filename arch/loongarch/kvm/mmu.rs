@@ -74,12 +74,12 @@ unsafe fn kvm_ptw_leaf(dir: *mut kvm_pte_t, mut addr: phys_addr_t, end: phys_add
     let child = __va(PHYSADDR(*dir)) as *mut kvm_pte_t;
     let mut entry = kvm_pgtable_offset(ctx, child, addr);
     while addr < end {
-        let next = addr + (0x1 as phys_addr_t << (*ctx).pgtable_shift);
+        let next = addr + ((0x1 as phys_addr_t) << (*ctx).pgtable_shift);
         if kvm_pte_present(ctx, entry) { ret |= ((*ctx).ops)(entry, addr, ctx); }
         entry = entry.add(1); addr = next;
     }
     if kvm_need_flush(ctx) {
-        let size = 0x1 as phys_addr_t << ((*ctx).pgtable_shift + PAGE_SHIFT - 3);
+        let size = (0x1 as phys_addr_t) << ((*ctx).pgtable_shift + PAGE_SHIFT - 3);
         if start + size == end { list_add_tail(child as *mut list_head, &mut (*ctx).list); *dir = (*ctx).invalid_ptes[((*ctx).level+1) as usize]; }
     }
     ret
@@ -95,7 +95,7 @@ unsafe fn kvm_ptw_dir(dir: *mut kvm_pte_t, mut addr: phys_addr_t, end: phys_addr
         }
         entry=entry.add(1); addr=next;
     }
-    if kvm_need_flush(ctx) { let size=0x1 as phys_addr_t << ((*ctx).pgtable_shift+PAGE_SHIFT-3); if start+size==end { list_add_tail(child as *mut list_head,&mut (*ctx).list); *dir=(*ctx).invalid_ptes[((*ctx).level+1) as usize]; } }
+    if kvm_need_flush(ctx) { let size=(0x1 as phys_addr_t) << ((*ctx).pgtable_shift+PAGE_SHIFT-3); if start+size==end { list_add_tail(child as *mut list_head,&mut (*ctx).list); *dir=(*ctx).invalid_ptes[((*ctx).level+1) as usize]; } }
     ret
 }
 
@@ -107,7 +107,7 @@ unsafe fn kvm_ptw_top(dir:*mut kvm_pte_t, mut addr:phys_addr_t, end:phys_addr_t,
 unsafe fn kvm_flush_range(kvm:*mut kvm,start_gfn:gfn_t,end_gfn:gfn_t,lock:i32) {
     let mut ctx=core::mem::zeroed::<kvm_ptw_ctx>(); ctx.ops=Some(kvm_flush_pte); ctx.flag=_KVM_FLUSH_PGTABLE; kvm_ptw_prepare(kvm,&mut ctx); INIT_LIST_HEAD(&mut ctx.list);
     if lock!=0 { spin_lock(&mut (*kvm).mmu_lock); kvm_ptw_top((*kvm).arch.pgd,start_gfn<<PAGE_SHIFT,end_gfn<<PAGE_SHIFT,&mut ctx); spin_unlock(&mut (*kvm).mmu_lock); } else { kvm_ptw_top((*kvm).arch.pgd,start_gfn<<PAGE_SHIFT,end_gfn<<PAGE_SHIFT,&mut ctx); }
-    kvm_flush_remote_tlbs(kvm); list_for_each_safe!(pos,temp,&mut ctx.list) { list_del(pos); free_page(pos as c_ulong); }
+    kvm_flush_remote_tlbs(kvm); list_for_each_safe!(pos,temp,&mut ctx.list, { list_del(pos); free_page(pos as c_ulong); });
 }
 
 unsafe fn kvm_mkclean_gpa_pt(kvm:*mut kvm,start:gfn_t,end:gfn_t)->i32 { let mut c=core::mem::zeroed::<kvm_ptw_ctx>(); c.ops=Some(kvm_mkclean_pte); kvm_ptw_prepare(kvm,&mut c); kvm_ptw_top((*kvm).arch.pgd,start<<PAGE_SHIFT,end<<PAGE_SHIFT,&mut c) }

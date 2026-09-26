@@ -15,43 +15,43 @@
  * should enforce the same configuration invariant.
  */
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 pub const MODULES_END: usize = CONFIG_PAGE_OFFSET;
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 pub const MODULES_SIZE: usize = CONFIG_MODULES_SIZE * SZ_1M;
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 pub const MODULES_VADDR: usize = MODULES_END - MODULES_SIZE;
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 pub const MODULES_BASE: usize = MODULES_VADDR & !(SZ_4M - 1);
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 pub const USER_TOP: usize = MODULES_BASE - SZ_4M;
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_32")]
+#[cfg(CONFIG_PPC_BOOK3S_32)]
 pub const MODULES_END: usize = CONFIG_PAGE_OFFSET & !(SZ_256M - 1);
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_32")]
+#[cfg(CONFIG_PPC_BOOK3S_32)]
 pub const MODULES_SIZE: usize = CONFIG_MODULES_SIZE * SZ_1M;
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_32")]
+#[cfg(CONFIG_PPC_BOOK3S_32)]
 pub const MODULES_VADDR: usize = MODULES_END - MODULES_SIZE;
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_32")]
+#[cfg(CONFIG_PPC_BOOK3S_32)]
 pub const MODULES_BASE: usize = MODULES_VADDR & !(SZ_256M - 1);
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_32")]
+#[cfg(CONFIG_PPC_BOOK3S_32)]
 pub const USER_TOP: usize = MODULES_BASE - SZ_4M;
 
-#[cfg(not(any(feature = "CONFIG_PPC_8xx", feature = "CONFIG_PPC_BOOK3S_32")))]
+#[cfg(not(any(CONFIG_PPC_8xx, CONFIG_PPC_BOOK3S_32)))]
 pub const USER_TOP: usize = (CONFIG_PAGE_OFFSET - SZ_128K) & !(SZ_128K - 1);
 
-#[cfg(feature = "CONFIG_TASK_SIZE_LT_USER_TOP")]
+#[cfg(CONFIG_TASK_SIZE_LT_USER_TOP)]
 pub const TASK_SIZE: usize = CONFIG_TASK_SIZE;
 
-#[cfg(not(feature = "CONFIG_TASK_SIZE_LT_USER_TOP"))]
+#[cfg(not(CONFIG_TASK_SIZE_LT_USER_TOP))]
 pub const TASK_SIZE: usize = USER_TOP;
 
 /*

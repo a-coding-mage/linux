@@ -89,7 +89,7 @@ extern "C" { pub fn to_platform_device(dev:*mut device)->*mut platform_device; p
 #[inline] pub unsafe fn pm80x_request_irq(p:*mut pm80x_chip, irq:i32, handler:irq_handler_t, flags:usize, name:*const i8, data:*mut core::ffi::c_void)->i32 { if (*p).irq_data.is_null() { return -22; } request_threaded_irq(regmap_irq_get_virq((*p).irq_data,irq),None,handler,flags,name,data) }
 #[inline] pub unsafe fn pm80x_free_irq(p:*mut pm80x_chip, irq:i32, data:*mut core::ffi::c_void) { if !(*p).irq_data.is_null() { free_irq(regmap_irq_get_virq((*p).irq_data,irq),data); } }
 /* CONFIG_PM conditional helpers are retained as declarations when enabled by the surrounding build. */
-#[cfg(feature="CONFIG_PM")] #[inline] pub unsafe fn pm80x_dev_suspend(dev:*mut device)->i32 { let p=to_platform_device(dev); let c=dev_get_drvdata((*p).dev.parent) as *mut pm80x_chip; let irq=platform_get_irq(p,0); if device_may_wakeup(dev) { set_bit(irq,&mut (*c).wu_flag); } 0 }
-#[cfg(feature="CONFIG_PM")] #[inline] pub unsafe fn pm80x_dev_resume(dev:*mut device)->i32 { let p=to_platform_device(dev); let c=dev_get_drvdata((*p).dev.parent) as *mut pm80x_chip; let irq=platform_get_irq(p,0); if device_may_wakeup(dev) { clear_bit(irq,&mut (*c).wu_flag); } 0 }
+#[cfg(CONFIG_PM)] #[inline] pub unsafe fn pm80x_dev_suspend(dev:*mut device)->i32 { let p=to_platform_device(dev); let c=dev_get_drvdata((*p).dev.parent) as *mut pm80x_chip; let irq=platform_get_irq(p,0); if device_may_wakeup(dev) { set_bit(irq,&mut (*c).wu_flag); } 0 }
+#[cfg(CONFIG_PM)] #[inline] pub unsafe fn pm80x_dev_resume(dev:*mut device)->i32 { let p=to_platform_device(dev); let c=dev_get_drvdata((*p).dev.parent) as *mut pm80x_chip; let irq=platform_get_irq(p,0); if device_may_wakeup(dev) { clear_bit(irq,&mut (*c).wu_flag); } 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

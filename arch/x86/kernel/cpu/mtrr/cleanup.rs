@@ -55,7 +55,7 @@ unsafe fn x86_get_mtrr_mem_range(r: *mut range, mut nr: i32, extra_base: usize, 
     nr = clean_sort_range(r, RANGE_NUM as i32); nr
 }
 
-#[cfg(feature = "CONFIG_MTRR_SANITIZER")]
+#[cfg(CONFIG_MTRR_SANITIZER)]
 unsafe fn sum_ranges(r: *mut range, nr: i32) -> usize { let mut s = 0; for i in 0..nr { s += (*r.add(i as usize)).end - (*r.add(i as usize)).start; } s }
 
 unsafe fn set_var_mtrr(reg: u32, basek: usize, sizek: usize, typ: u8) {

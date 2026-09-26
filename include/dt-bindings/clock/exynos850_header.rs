@@ -6,7 +6,6 @@
  * Device Tree binding constants for Exynos850 clock controller.
  */
 
-#define _DT_BINDINGS_CLOCK_EXYNOS_850_H
 
 /* CMU_TOP */
 pub const CLK_FOUT_SHARED0_PLL: u32 = 1;

@@ -117,7 +117,7 @@ unsafe fn get_cascade_timer(priv_: *mut timer_group_priv, ticks: u64) -> *mut mp
 unsafe fn get_timer(time: time64_t) -> *mut mpic_timer {
     let mut priv_: *mut timer_group_priv;
     let mut ticks: u64 = 0;
-    list_for_each_entry!(priv_, &mut timer_group_list, node) {
+    list_for_each_entry!(priv_, &mut timer_group_list, node, {
         if convert_time_to_ticks(priv_, time, &mut ticks) < 0 { return core::ptr::null_mut(); }
         if ticks > MAX_TICKS {
             if (*priv_).flags & FSL_GLOBAL_TIMER == 0 { return core::ptr::null_mut(); }
@@ -139,7 +139,7 @@ unsafe fn get_timer(time: time64_t) -> *mut mpic_timer {
             }
             spin_unlock_irqrestore(&mut (*priv_).lock, flags);
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -206,9 +206,9 @@ unsafe fn timer_group_get_irq(np: *mut device_node, priv_: *mut timer_group_priv
 unsafe fn timer_group_init(np: *mut device_node) { let _ = np; }
 unsafe fn mpic_timer_resume(data: *mut core::ffi::c_void) {
     let _ = data;
-    list_for_each_entry!(priv_: *mut timer_group_priv, &mut timer_group_list, node) {
+    list_for_each_entry!(priv_: *mut timer_group_priv, &mut timer_group_list, node, {
         if (*priv_).flags & FSL_GLOBAL_TIMER != 0 { setbits32((*priv_).group_tcr, MPIC_TIMER_TCR_CLKDIV); }
-    }
+    });
 }
 unsafe fn mpic_timer_init() -> i32 { if list_empty(&timer_group_list) { -ENODEV } else { 0 } }
 

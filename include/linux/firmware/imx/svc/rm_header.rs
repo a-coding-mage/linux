@@ -57,7 +57,7 @@ pub enum ImxScRmFunc {
 }
 
 /* CONFIG_IMX_SCU is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_IMX_SCU")]
+#[cfg(CONFIG_IMX_SCU)]
 extern "C" {
     pub fn imx_sc_rm_is_resource_owned(
         ipc: *mut crate::imx_sc_ipc,
@@ -70,13 +70,13 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub fn imx_sc_rm_is_resource_owned(_ipc: *mut crate::imx_sc_ipc, _resource: u16) -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub fn imx_sc_rm_get_resource_owner(
     _ipc: *mut crate::imx_sc_ipc,

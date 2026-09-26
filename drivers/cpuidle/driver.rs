@@ -23,26 +23,26 @@ unsafe fn __cpuidle_get_cpu_driver(cpu: i32) -> *mut cpuidle_driver {
 #[cfg(CONFIG_CPU_IDLE_MULTIPLE_DRIVERS)]
 unsafe fn __cpuidle_unset_driver(drv: *mut cpuidle_driver) {
     let mut cpu: i32;
-    for_each_cpu!(cpu, (*drv).cpumask) {
+    for_each_cpu!(cpu, (*drv).cpumask, {
         if drv != __cpuidle_get_cpu_driver(cpu) {
             continue;
         }
         per_cpu!(cpuidle_drivers, cpu) = core::ptr::null_mut();
-    }
+    });
 }
 
 #[cfg(CONFIG_CPU_IDLE_MULTIPLE_DRIVERS)]
 unsafe fn __cpuidle_set_driver(drv: *mut cpuidle_driver) -> i32 {
     let mut cpu: i32;
-    for_each_cpu!(cpu, (*drv).cpumask) {
+    for_each_cpu!(cpu, (*drv).cpumask, {
         let old_drv = __cpuidle_get_cpu_driver(cpu);
         if !old_drv.is_null() && old_drv != drv {
             return -EBUSY;
         }
-    }
-    for_each_cpu!(cpu, (*drv).cpumask) {
+    });
+    for_each_cpu!(cpu, (*drv).cpumask, {
         per_cpu!(cpuidle_drivers, cpu) = drv;
-    }
+    });
     0
 }
 
@@ -179,7 +179,7 @@ pub unsafe fn cpuidle_driver_state_disabled(drv: *mut cpuidle_driver, idx: i32, 
         (*drv).states[idx as usize].flags |= CPUIDLE_FLAG_UNUSABLE;
         goto_unlock!();
     }
-    for_each_cpu!(cpu, (*drv).cpumask) {
+    for_each_cpu!(cpu, (*drv).cpumask, {
         let dev = per_cpu!(cpuidle_devices, cpu);
         if dev.is_null() { continue; }
         if disable {
@@ -187,7 +187,7 @@ pub unsafe fn cpuidle_driver_state_disabled(drv: *mut cpuidle_driver, idx: i32, 
         } else {
             (*dev).states_usage[idx as usize].disable &= !CPUIDLE_STATE_DISABLED_BY_DRIVER;
         }
-    }
+    });
     spin_unlock(&mut cpuidle_driver_lock);
     mutex_unlock(&mut cpuidle_lock);
 }

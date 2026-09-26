@@ -24,7 +24,7 @@ unsafe fn wait_for_sync_step(step: i32) {
     let cpu: i32 = smp_processor_id();
     let mut i = cpu + 1;
     while i < cpu + threads_per_core {
-        while per_cpu_split_state(i).step as i32 < step {
+        while (per_cpu_split_state(i).step as i32) < step {
             core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
         }
         i += 1;

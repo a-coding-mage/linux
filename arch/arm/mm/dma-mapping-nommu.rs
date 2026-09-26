@@ -61,7 +61,7 @@ pub unsafe fn arch_sync_dma_for_cpu(
 
 pub unsafe fn arch_setup_dma_ops(dev: *mut device, coherent: bool) {
     // CONFIG_CPU_V7M is a build-time kernel configuration condition.
-    if cfg!(feature = "CONFIG_CPU_V7M") {
+    if cfg!(CONFIG_CPU_V7M) {
         /*
          * Cache support for v7m is optional, so can be treated as
          * coherent if no cache has been detected. Note that it is not

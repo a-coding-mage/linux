@@ -15,6 +15,8 @@ unsafe fn gfs2_print_trans(sdp: *mut gfs2_sbd, tr: *const gfs2_trans) {
 pub unsafe fn __gfs2_trans_begin(tr: *mut gfs2_trans, sdp: *mut gfs2_sbd,
                                 blocks: u32, mut revokes: u32, ip: c_ulong) -> c_int {
     let mut extra_revokes: u32 = 0;
+    'out_not_live: {
+    'reserved: {
     if (*current).journal_info != core::ptr::null_mut() {
         gfs2_print_trans(sdp, (*current).journal_info as *const gfs2_trans);
         BUG();
@@ -36,8 +38,8 @@ pub unsafe fn __gfs2_trans_begin(tr: *mut gfs2_trans, sdp: *mut gfs2_sbd,
     if gfs2_assert_warn(sdp, (*tr).tr_reserved > (*(*sdp).sd_jdesc).jd_blocks) { return -EINVAL; }
     sb_start_intwrite((*sdp).sd_vfs);
     down_read(&mut (*sdp).sd_log_flush_lock);
-    if unlikely(!test_bit(SDF_JOURNAL_LIVE, &(*sdp).sd_flags)) { goto out_not_live; }
-    if gfs2_log_try_reserve(sdp, tr, &mut extra_revokes) { goto reserved; }
+    if unlikely(!test_bit(SDF_JOURNAL_LIVE, &(*sdp).sd_flags)) { break 'out_not_live; }
+    if gfs2_log_try_reserve(sdp, tr, &mut extra_revokes) { break 'reserved; }
     up_read(&mut (*sdp).sd_log_flush_lock);
     gfs2_log_reserve(sdp, tr, &mut extra_revokes);
     down_read(&mut (*sdp).sd_log_flush_lock);
@@ -45,13 +47,15 @@ pub unsafe fn __gfs2_trans_begin(tr: *mut gfs2_trans, sdp: *mut gfs2_sbd,
         revokes = (*tr).tr_revokes + extra_revokes;
         gfs2_log_release_revokes(sdp, revokes);
         gfs2_log_release(sdp, (*tr).tr_reserved);
-        goto out_not_live;
+        break 'out_not_live;
     }
-reserved:
+    }
+    
     gfs2_log_release_revokes(sdp, extra_revokes);
     (*current).journal_info = tr as *mut _;
     return 0;
-out_not_live:
+    }
+    
     up_read(&mut (*sdp).sd_log_flush_lock);
     sb_end_intwrite((*sdp).sd_vfs);
     -EROFS

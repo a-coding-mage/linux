@@ -12,10 +12,10 @@ unsafe fn show_available_governors(_dev: *mut device, _attr: *mut device_attribu
     let mut i: ssize_t = 0;
     let mut tmp: *mut cpuidle_governor;
     mutex_lock(&cpuidle_lock);
-    list_for_each_entry!(tmp, &cpuidle_governors, governor_list) {
+    list_for_each_entry!(tmp, &cpuidle_governors, governor_list, {
         if i >= (PAGE_SIZE - (CPUIDLE_NAME_LEN + 2)) as ssize_t { break; }
         i += sysfs_emit_at(buf, i, "%.*s ", CPUIDLE_NAME_LEN, (*tmp).name);
-    }
+    });
     i += sysfs_emit_at(buf, i, "\n");
     mutex_unlock(&cpuidle_lock);
     i
@@ -42,20 +42,20 @@ unsafe fn store_current_governor(_dev: *mut device, _attr: *mut device_attribute
     if sscanf(buf, "%" CPUIDLE_NAME_LEN_STR "s", gov_name.as_mut_ptr()) != 1 { return -EINVAL as ssize_t; }
     mutex_lock(&cpuidle_lock);
     let mut ret = -EINVAL;
-    list_for_each_entry!(gov, &cpuidle_governors, governor_list) {
+    list_for_each_entry!(gov, &cpuidle_governors, governor_list, {
         if strncmp((*gov).name, gov_name.as_ptr(), CPUIDLE_NAME_LEN) == 0 {
             ret = cpuidle_switch_governor(gov);
             break;
         }
-    }
+    });
     mutex_unlock(&cpuidle_lock);
     if ret != 0 { ret as ssize_t } else { count as ssize_t }
 }
 
-static_device_attr!(available_governors, 0444, show_available_governors, None);
-static_device_attr!(current_driver, 0444, show_current_driver, None);
-static_device_attr!(current_governor, 0644, show_current_governor, store_current_governor);
-static_device_attr!(current_governor_ro, 0444, show_current_governor, None);
+static_device_attr!(available_governors, 0o444, show_available_governors, None);
+static_device_attr!(current_driver, 0o444, show_current_driver, None);
+static_device_attr!(current_governor, 0o644, show_current_governor, store_current_governor);
+static_device_attr!(current_governor_ro, 0o444, show_current_governor, None);
 
 static mut cpuidle_attrs: [*mut attribute; 5] = [
     &mut dev_attr_available_governors.attr, &mut dev_attr_current_driver.attr,
@@ -94,9 +94,9 @@ unsafe fn cpuidle_sysfs_release(kobj: *mut kobject) { let kdev = container_of!(k
 
 #[repr(C)] pub struct cpuidle_state_attr { pub attr: attribute, pub show: Option<unsafe extern "C" fn(*mut cpuidle_state, *mut cpuidle_state_usage, *mut c_char) -> ssize_t>, pub store: Option<unsafe extern "C" fn(*mut cpuidle_state, *mut cpuidle_state_usage, *const c_char, size_t) -> ssize_t> }
 
-macro_rules! state_show_u32 { ($n:ident) => { unsafe fn $n(s:*mut cpuidle_state, _: *mut cpuidle_state_usage, b:*mut c_char)->ssize_t { sysfs_emit(b, "%u\n", (*s).$n) } }; }
-macro_rules! state_show_ull { ($n:ident) => { unsafe fn $n(s:*mut cpuidle_state, u:*mut cpuidle_state_usage, b:*mut c_char)->ssize_t { sysfs_emit(b, "%llu\n", (*u).$n) } }; }
-macro_rules! state_show_str { ($n:ident) => { unsafe fn $n(s:*mut cpuidle_state, _: *mut cpuidle_state_usage, b:*mut c_char)->ssize_t { if (*s).$n[0] == 0 { sysfs_emit(b, "<null>\n") } else { sysfs_emit(b, "%s\n", (*s).$n.as_ptr()) } } }; }
+macro_rules! state_show_u32 { ($n:ident) => { unsafe fn $(*$n(s:*mut cpuidle_state, _: *mut cpuidle_state_usage, b:*mut c_char)).ssize_t { sysfs_emit(b, "%u\n", (*s).$n) } }; }
+macro_rules! state_show_ull { ($n:ident) => { unsafe fn $(*$n(s:*mut cpuidle_state, u:*mut cpuidle_state_usage, b:*mut c_char)).ssize_t { sysfs_emit(b, "%llu\n", (*u).$n) } }; }
+macro_rules! state_show_str { ($n:ident) => { unsafe fn $(*$n(s:*mut cpuidle_state, _: *mut cpuidle_state_usage, b:*mut c_char)).ssize_t { if (*s).$n[0] == 0 { sysfs_emit(b, "<null>\n") } else { sysfs_emit(b, "%s\n", (*s).$n.as_ptr()) } } }; }
 
 state_show_u32!(show_state_power_usage); state_show_ull!(show_state_usage); state_show_ull!(show_state_rejected);
 state_show_str!(show_state_name); state_show_str!(show_state_desc); state_show_ull!(show_state_above); state_show_ull!(show_state_below);

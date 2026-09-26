@@ -23,7 +23,7 @@ static const u32 golden_settings_iceland_a11: [u32; 12] = [
 static const u32 iceland_mgcg_cgcg_init: [u32; 3] =
     [mmMC_MEM_POWER_LS, 0xffffffff, 0x00000104];
 
-static fn gmc_v7_0_init_golden_registers(adev: *mut amdgpu_device) {
+fn gmc_v7_0_init_golden_registers(adev: *mut amdgpu_device) {
     unsafe { match (*adev).asic_type { CHIP_TOPAZ => {
         amdgpu_device_program_register_sequence(adev, iceland_mgcg_cgcg_init.as_ptr(),
             iceland_mgcg_cgcg_init.len());
@@ -32,7 +32,7 @@ static fn gmc_v7_0_init_golden_registers(adev: *mut amdgpu_device) {
     }, _ => {} } }
 }
 
-static fn gmc_v7_0_mc_stop(adev: *mut amdgpu_device) { unsafe {
+fn gmc_v7_0_mc_stop(adev: *mut amdgpu_device) { unsafe {
     let ip = amdgpu_device_ip_get_ip_block(adev, AMD_IP_BLOCK_TYPE_GMC);
     if ip.is_null() { return; }
     gmc_v7_0_wait_for_idle(ip);
@@ -45,7 +45,7 @@ static fn gmc_v7_0_mc_stop(adev: *mut amdgpu_device) { unsafe {
     udelay(100);
 } }
 
-static fn gmc_v7_0_mc_resume(adev: *mut amdgpu_device) { unsafe {
+fn gmc_v7_0_mc_resume(adev: *mut amdgpu_device) { unsafe {
     let mut tmp = RREG32(mmMC_SHARED_BLACKOUT_CNTL);
     tmp = REG_SET_FIELD(tmp, MC_SHARED_BLACKOUT_CNTL, BLACKOUT_MODE, 0);
     WREG32(mmMC_SHARED_BLACKOUT_CNTL, tmp);
@@ -54,7 +54,7 @@ static fn gmc_v7_0_mc_resume(adev: *mut amdgpu_device) { unsafe {
     WREG32(mmBIF_FB_EN, tmp);
 } }
 
-static fn gmc_v7_0_init_microcode(adev: *mut amdgpu_device) -> i32 { unsafe {
+fn gmc_v7_0_init_microcode(adev: *mut amdgpu_device) -> i32 { unsafe {
     DRM_DEBUG("\n");
     let chip = match (*adev).asic_type {
         CHIP_BONAIRE => "bonaire", CHIP_HAWAII => "hawaii", CHIP_TOPAZ => "topaz",
@@ -67,7 +67,7 @@ static fn gmc_v7_0_init_microcode(adev: *mut amdgpu_device) -> i32 { unsafe {
     r
 } }
 
-static fn gmc_v7_0_mc_load_microcode(adev: *mut amdgpu_device) -> i32 { unsafe {
+fn gmc_v7_0_mc_load_microcode(adev: *mut amdgpu_device) -> i32 { unsafe {
     if (*adev).gmc.fw.is_null() { return -EINVAL; }
     let hdr = (*adev).gmc.fw as *const mc_firmware_header_v1_0;
     amdgpu_ucode_print_mc_hdr(&(*hdr).header);
@@ -87,35 +87,35 @@ static fn gmc_v7_0_mc_load_microcode(adev: *mut amdgpu_device) -> i32 { unsafe {
     } 0
 } }
 
-static fn gmc_v7_0_vram_gtt_location(adev: *mut amdgpu_device, mc: *mut amdgpu_gmc) { unsafe {
+fn gmc_v7_0_vram_gtt_location(adev: *mut amdgpu_device, mc: *mut amdgpu_gmc) { unsafe {
     let base = ((RREG32(mmMC_VM_FB_LOCATION) & 0xffff) as u64) << 24;
     amdgpu_gmc_set_agp_default(adev, mc); amdgpu_gmc_vram_location(adev, mc, base);
     amdgpu_gmc_gart_location(adev, mc, AMDGPU_GART_PLACEMENT_BEST_FIT);
 } }
 
-static fn gmc_v7_0_flush_gpu_tlb(adev: *mut amdgpu_device, vmid: u32, _vmhub: u32, _flush_type: u32) { unsafe { WREG32(mmVM_INVALIDATE_REQUEST, 1 << vmid); } }
-static fn gmc_v7_0_flush_gpu_tlb_pasid(adev: *mut amdgpu_device, pasid: u16, _flush_type: u32, _all_hub: bool, _inst: u32) { unsafe {
+fn gmc_v7_0_flush_gpu_tlb(adev: *mut amdgpu_device, vmid: u32, _vmhub: u32, _flush_type: u32) { unsafe { WREG32(mmVM_INVALIDATE_REQUEST, 1 << vmid); } }
+fn gmc_v7_0_flush_gpu_tlb_pasid(adev: *mut amdgpu_device, pasid: u16, _flush_type: u32, _all_hub: bool, _inst: u32) { unsafe {
     let mut mask = 0; for vmid in 1..16 { let v = RREG32(mmATC_VMID0_PASID_MAPPING + vmid); if v & ATC_VMID0_PASID_MAPPING__VALID_MASK != 0 && v & ATC_VMID0_PASID_MAPPING__PASID_MASK == pasid as u32 { mask |= 1 << vmid; } }
     WREG32(mmVM_INVALIDATE_REQUEST, mask); RREG32(mmVM_INVALIDATE_RESPONSE);
 } }
-static fn gmc_v7_0_emit_flush_gpu_tlb(ring: *mut amdgpu_ring, vmid: u32, pd_addr: u64) -> u64 { unsafe {
+fn gmc_v7_0_emit_flush_gpu_tlb(ring: *mut amdgpu_ring, vmid: u32, pd_addr: u64) -> u64 { unsafe {
     let reg = if vmid < 8 { mmVM_CONTEXT0_PAGE_TABLE_BASE_ADDR + vmid } else { mmVM_CONTEXT8_PAGE_TABLE_BASE_ADDR + vmid - 8 };
     amdgpu_ring_emit_wreg(ring, reg, pd_addr >> 12); amdgpu_ring_emit_wreg(ring, mmVM_INVALIDATE_REQUEST, 1 << vmid); pd_addr
 } }
-static fn gmc_v7_0_emit_pasid_mapping(ring: *mut amdgpu_ring, vmid: u32, pasid: u32) { unsafe { amdgpu_ring_emit_wreg(ring, mmIH_VMID_0_LUT + vmid, pasid); } }
-static fn gmc_v7_0_get_vm_pde(_adev: *mut amdgpu_device, _level: i32, addr: *mut u64, _flags: *mut u64) { unsafe { BUG_ON(*addr & 0xFFFFFF0000000FFF); } }
-static fn gmc_v7_0_get_vm_pte(_adev: *mut amdgpu_device, _vm: *mut amdgpu_vm, _bo: *mut amdgpu_bo, _vm_flags: u32, flags: *mut u64) { unsafe { *flags &= !AMDGPU_PTE_EXECUTABLE; *flags &= !AMDGPU_PTE_PRT; } }
+fn gmc_v7_0_emit_pasid_mapping(ring: *mut amdgpu_ring, vmid: u32, pasid: u32) { unsafe { amdgpu_ring_emit_wreg(ring, mmIH_VMID_0_LUT + vmid, pasid); } }
+fn gmc_v7_0_get_vm_pde(_adev: *mut amdgpu_device, _level: i32, addr: *mut u64, _flags: *mut u64) { unsafe { BUG_ON(*addr & 0xFFFFFF0000000FFF); } }
+fn gmc_v7_0_get_vm_pte(_adev: *mut amdgpu_device, _vm: *mut amdgpu_vm, _bo: *mut amdgpu_bo, _vm_flags: u32, flags: *mut u64) { unsafe { *flags &= !AMDGPU_PTE_EXECUTABLE; *flags &= !AMDGPU_PTE_PRT; } }
 
-static fn gmc_v7_0_convert_vram_type(t: i32) -> i32 { match t { MC_SEQ_MISC0__MT__GDDR1=>AMDGPU_VRAM_TYPE_GDDR1, MC_SEQ_MISC0__MT__DDR2=>AMDGPU_VRAM_TYPE_DDR2, MC_SEQ_MISC0__MT__GDDR3=>AMDGPU_VRAM_TYPE_GDDR3, MC_SEQ_MISC0__MT__GDDR4=>AMDGPU_VRAM_TYPE_GDDR4, MC_SEQ_MISC0__MT__GDDR5=>AMDGPU_VRAM_TYPE_GDDR5, MC_SEQ_MISC0__MT__HBM=>AMDGPU_VRAM_TYPE_HBM, MC_SEQ_MISC0__MT__DDR3=>AMDGPU_VRAM_TYPE_DDR3, _=>AMDGPU_VRAM_TYPE_UNKNOWN } }
+fn gmc_v7_0_convert_vram_type(t: i32) -> i32 { match t { MC_SEQ_MISC0__MT__GDDR1=>AMDGPU_VRAM_TYPE_GDDR1, MC_SEQ_MISC0__MT__DDR2=>AMDGPU_VRAM_TYPE_DDR2, MC_SEQ_MISC0__MT__GDDR3=>AMDGPU_VRAM_TYPE_GDDR3, MC_SEQ_MISC0__MT__GDDR4=>AMDGPU_VRAM_TYPE_GDDR4, MC_SEQ_MISC0__MT__GDDR5=>AMDGPU_VRAM_TYPE_GDDR5, MC_SEQ_MISC0__MT__HBM=>AMDGPU_VRAM_TYPE_HBM, MC_SEQ_MISC0__MT__DDR3=>AMDGPU_VRAM_TYPE_DDR3, _=>AMDGPU_VRAM_TYPE_UNKNOWN } }
 
 // The remaining callbacks retain the original driver's register programming
 // and callback wiring.  Generated register constants and shared structures are
 // intentionally referenced as external dependencies.
-static fn gmc_v7_0_set_fault_enable_default(adev: *mut amdgpu_device, value: bool) { unsafe { let mut t=RREG32(mmVM_CONTEXT1_CNTL); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,RANGE_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,DUMMY_PAGE_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,PDE0_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,VALID_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,READ_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,WRITE_PROTECTION_FAULT_ENABLE_DEFAULT,value); WREG32(mmVM_CONTEXT1_CNTL,t); } }
-static fn gmc_v7_0_gart_disable(adev: *mut amdgpu_device) { unsafe { WREG32(mmVM_CONTEXT0_CNTL,0); WREG32(mmVM_CONTEXT1_CNTL,0); let mut t=RREG32(mmMC_VM_MX_L1_TLB_CNTL); t=REG_SET_FIELD(t,MC_VM_MX_L1_TLB_CNTL,ENABLE_L1_TLB,0); t=REG_SET_FIELD(t,MC_VM_MX_L1_TLB_CNTL,ENABLE_L1_FRAGMENT_PROCESSING,0); t=REG_SET_FIELD(t,MC_VM_MX_L1_TLB_CNTL,ENABLE_ADVANCED_DRIVER_MODEL,0); WREG32(mmMC_VM_MX_L1_TLB_CNTL,t); t=RREG32(mmVM_L2_CNTL); t=REG_SET_FIELD(t,VM_L2_CNTL,ENABLE_L2_CACHE,0); WREG32(mmVM_L2_CNTL,t); WREG32(mmVM_L2_CNTL2,0); } }
+fn gmc_v7_0_set_fault_enable_default(adev: *mut amdgpu_device, value: bool) { unsafe { let mut t=RREG32(mmVM_CONTEXT1_CNTL); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,RANGE_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,DUMMY_PAGE_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,PDE0_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,VALID_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,READ_PROTECTION_FAULT_ENABLE_DEFAULT,value); t=REG_SET_FIELD(t,VM_CONTEXT1_CNTL,WRITE_PROTECTION_FAULT_ENABLE_DEFAULT,value); WREG32(mmVM_CONTEXT1_CNTL,t); } }
+fn gmc_v7_0_gart_disable(adev: *mut amdgpu_device) { unsafe { WREG32(mmVM_CONTEXT0_CNTL,0); WREG32(mmVM_CONTEXT1_CNTL,0); let mut t=RREG32(mmMC_VM_MX_L1_TLB_CNTL); t=REG_SET_FIELD(t,MC_VM_MX_L1_TLB_CNTL,ENABLE_L1_TLB,0); t=REG_SET_FIELD(t,MC_VM_MX_L1_TLB_CNTL,ENABLE_L1_FRAGMENT_PROCESSING,0); t=REG_SET_FIELD(t,MC_VM_MX_L1_TLB_CNTL,ENABLE_ADVANCED_DRIVER_MODEL,0); WREG32(mmMC_VM_MX_L1_TLB_CNTL,t); t=RREG32(mmVM_L2_CNTL); t=REG_SET_FIELD(t,VM_L2_CNTL,ENABLE_L2_CACHE,0); WREG32(mmVM_L2_CNTL,t); WREG32(mmVM_L2_CNTL2,0); } }
 
-static fn gmc_v7_0_is_idle(ip: *mut amdgpu_ip_block) -> bool { unsafe { let t=RREG32(mmSRBM_STATUS); t & (SRBM_STATUS__MCB_BUSY_MASK|SRBM_STATUS__MCB_NON_DISPLAY_BUSY_MASK|SRBM_STATUS__MCC_BUSY_MASK|SRBM_STATUS__MCD_BUSY_MASK|SRBM_STATUS__VMC_BUSY_MASK)==0 } }
-static fn gmc_v7_0_wait_for_idle(ip: *mut amdgpu_ip_block) -> i32 { unsafe { for _ in 0..(*(*ip).adev).usec_timeout { if gmc_v7_0_is_idle(ip){return 0;} udelay(1); } -ETIMEDOUT } }
+fn gmc_v7_0_is_idle(ip: *mut amdgpu_ip_block) -> bool { unsafe { let t=RREG32(mmSRBM_STATUS); t & (SRBM_STATUS__MCB_BUSY_MASK|SRBM_STATUS__MCB_NON_DISPLAY_BUSY_MASK|SRBM_STATUS__MCC_BUSY_MASK|SRBM_STATUS__MCD_BUSY_MASK|SRBM_STATUS__VMC_BUSY_MASK)==0 } }
+fn gmc_v7_0_wait_for_idle(ip: *mut amdgpu_ip_block) -> i32 { unsafe { for _ in 0..(*(*ip).adev).usec_timeout { if gmc_v7_0_is_idle(ip){return 0;} udelay(1); } -ETIMEDOUT } }
 
 // Function-table declarations mirror the C implementation; fields not
 // representable without the generated external types remain source-level refs.

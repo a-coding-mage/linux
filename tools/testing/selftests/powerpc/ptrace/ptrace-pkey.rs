@@ -72,8 +72,8 @@ unsafe fn child(info: *mut shared_info) -> libc::c_int {
     pkey3 = sys_pkey_alloc(0, PKEY_UNRESTRICTED);
     CHILD_FAIL_IF!(pkey3 < 0, &mut (*info).child_sync);
 
-    (*info).amr1 |= 3u64 as libc::c_ulong << pkeyshift(pkey1);
-    (*info).amr2 |= 3u64 as libc::c_ulong << pkeyshift(pkey2);
+    (*info).amr1 |= (3u64 as libc::c_ulong) << pkeyshift(pkey1);
+    (*info).amr2 |= (3u64 as libc::c_ulong) << pkeyshift(pkey2);
     /*
      * invalid amr value where we try to force write
      * things which are deined by a uamor setting.
@@ -84,25 +84,25 @@ unsafe fn child(info: *mut shared_info) -> libc::c_int {
      * if PKEY_DISABLE_EXECUTE succeeded we should update the expected_iamr
      */
     if disable_execute {
-        (*info).expected_iamr |= 1u64 as libc::c_ulong << pkeyshift(pkey1);
+        (*info).expected_iamr |= (1u64 as libc::c_ulong) << pkeyshift(pkey1);
     } else {
-        (*info).expected_iamr &= !(1u64 as libc::c_ulong << pkeyshift(pkey1));
+        (*info).expected_iamr &= !((1u64 as libc::c_ulong) << pkeyshift(pkey1));
     }
 
     /*
      * We allocated pkey2 and pkey 3 above. Clear the IAMR bits.
      */
-    (*info).expected_iamr &= !(1u64 as libc::c_ulong << pkeyshift(pkey2));
-    (*info).expected_iamr &= !(1u64 as libc::c_ulong << pkeyshift(pkey3));
+    (*info).expected_iamr &= !((1u64 as libc::c_ulong) << pkeyshift(pkey2));
+    (*info).expected_iamr &= !((1u64 as libc::c_ulong) << pkeyshift(pkey3));
 
     /*
      * Create an IAMR value different from expected value.
      * Kernel will reject an IAMR and UAMOR change.
      */
     (*info).invalid_iamr =
-        (*info).expected_iamr | (1u64 as libc::c_ulong << pkeyshift(pkey1)
-            | 1u64 as libc::c_ulong << pkeyshift(pkey2));
-    (*info).invalid_uamor = (*info).expected_uamor & !(0x3u64 as libc::c_ulong << pkeyshift(pkey1));
+        (*info).expected_iamr | ((1u64 as libc::c_ulong) << pkeyshift(pkey1)
+            | (1u64 as libc::c_ulong) << pkeyshift(pkey2));
+    (*info).invalid_uamor = (*info).expected_uamor & !((0x3u64 as libc::c_ulong) << pkeyshift(pkey1));
 
     printf(
         b"%-30s AMR: %016lx pkey1: %d pkey2: %d pkey3: %d\n\0".as_ptr() as *const libc::c_char,

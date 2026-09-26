@@ -10,7 +10,7 @@
 
 static mut ECRYPTFS_NUM_MISCDEV_OPENS: atomic_t = atomic_t { counter: 0 };
 
-static unsafe fn ecryptfs_miscdev_poll(file: *mut file, pt: *mut poll_table) -> __poll_t {
+unsafe fn ecryptfs_miscdev_poll(file: *mut file, pt: *mut poll_table) -> __poll_t {
     let daemon = (*file).private_data as *mut ecryptfs_daemon;
     let mut mask: __poll_t = 0;
 
@@ -31,7 +31,7 @@ static unsafe fn ecryptfs_miscdev_poll(file: *mut file, pt: *mut poll_table) -> 
     return mask;
 }
 
-static unsafe fn ecryptfs_miscdev_open(_inode: *mut inode, file: *mut file) -> c_int {
+unsafe fn ecryptfs_miscdev_open(_inode: *mut inode, file: *mut file) -> c_int {
     let mut daemon: *mut ecryptfs_daemon = core::ptr::null_mut();
     let mut rc: c_int;
     mutex_lock(&mut ecryptfs_daemon_hash_mux);
@@ -58,7 +58,7 @@ static unsafe fn ecryptfs_miscdev_open(_inode: *mut inode, file: *mut file) -> c
     rc
 }
 
-static unsafe fn ecryptfs_miscdev_release(_inode: *mut inode, file: *mut file) -> c_int {
+unsafe fn ecryptfs_miscdev_release(_inode: *mut inode, file: *mut file) -> c_int {
     let daemon = (*file).private_data as *mut ecryptfs_daemon;
     mutex_lock(&mut (*daemon).mux);
     BUG_ON!((*daemon).flags & ECRYPTFS_DAEMON_MISCDEV_OPEN == 0);

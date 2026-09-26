@@ -22,7 +22,7 @@ pub const IOPRIO_CLASS_STRINGS: &[(&str, &str)] = &[
 #[allow(unused_macros)]
 macro_rules! trace_event { ($($t:tt)*) => {}; }
 
-#[cfg(feature = "CONFIG_BUFFER_HEAD")]
+#[cfg(CONFIG_BUFFER_HEAD)]
 trace_event! {
     class block_buffer {
         proto: (*mut buffer_head);

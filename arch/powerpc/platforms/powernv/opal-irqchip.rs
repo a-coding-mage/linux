@@ -173,6 +173,7 @@ pub unsafe extern "C" fn opal_event_init() -> c_int {
     let mut old_style = false;
     let mut i: c_int;
     let mut rc: c_int = 0;
+    'out: {
 
     if opal_node.is_null() {
         pr_warn(c"opal: Node not found\n".as_ptr());
@@ -190,7 +191,7 @@ pub unsafe extern "C" fn opal_event_init() -> c_int {
     if OPAL_EVENT_IRQCHIP.domain.is_null() {
         pr_warn(c"opal: Unable to create irq domain\n".as_ptr());
         rc = -ENOMEM;
-        goto out;
+        break 'out;
     }
 
     OPAL_IRQ_COUNT = of_irq_count(opal_node);
@@ -199,10 +200,10 @@ pub unsafe extern "C" fn opal_event_init() -> c_int {
         if rc > 0 { OPAL_IRQ_COUNT = rc; }
         old_style = true;
     }
-    if OPAL_IRQ_COUNT == 0 { goto out; }
+    if OPAL_IRQ_COUNT == 0 { break 'out; }
 
     OPAL_IRQS = kzalloc_objs::<resource>(OPAL_IRQ_COUNT as usize);
-    if WARN_ON(OPAL_IRQS.is_null()) { rc = -ENOMEM; goto out; }
+    if WARN_ON(OPAL_IRQS.is_null()) { rc = -ENOMEM; break 'out; }
 
     if old_style {
         i = 0;
@@ -220,7 +221,7 @@ pub unsafe extern "C" fn opal_event_init() -> c_int {
         }
     } else {
         rc = of_irq_to_resource_table(opal_node, OPAL_IRQS, OPAL_IRQ_COUNT);
-        if WARN_ON(rc < 0) { OPAL_IRQ_COUNT = 0; kfree(OPAL_IRQS as *mut c_void); goto out; }
+        if WARN_ON(rc < 0) { OPAL_IRQ_COUNT = 0; kfree(OPAL_IRQS as *mut c_void); break 'out; }
         if WARN_ON(rc < OPAL_IRQ_COUNT) { OPAL_IRQ_COUNT = rc; }
     }
 
@@ -235,7 +236,8 @@ pub unsafe extern "C" fn opal_event_init() -> c_int {
         i += 1;
     }
     rc = 0;
-out:
+    }
+    
     of_node_put(opal_node);
     rc
 }

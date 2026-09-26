@@ -109,9 +109,9 @@ unsafe fn zloop_close_imp_open_zone(zlo: *mut zloop_device) -> bool {
     lockdep_assert_held(&(*zlo).open_zones_lock);
     if zloop_can_open_zone(zlo) { return true; }
     let mut zone: *mut zloop_zone;
-    list_for_each_entry!(zone, &mut (*zlo).open_zones_lru_list, open_zone_entry) {
+    list_for_each_entry!(zone, &mut (*zlo).open_zones_lru_list, open_zone_entry, {
         if (*zone).cond == BLK_ZONE_COND_IMP_OPEN { (*zone).cond = BLK_ZONE_COND_CLOSED; list_del_init(&mut (*zone).open_zone_entry); (*zlo).nr_open_zones -= 1; return true; }
-    }
+    });
     false
 }
 unsafe fn zloop_open_closed_or_empty_zone(zlo: *mut zloop_device, zone: *mut zloop_zone, explicit: bool) -> bool {

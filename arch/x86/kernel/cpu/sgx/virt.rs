@@ -24,6 +24,8 @@ unsafe fn __sgx_vepc_fault(vepc: *mut sgx_vepc, vma: *mut vm_area_struct,
     let index: c_ulong;
     let pfn: c_ulong;
     let mut ret: c_int;
+    'err_free: {
+    'err_delete: {
 
     WARN_ON(!mutex_is_locked(&mut (*vepc).lock));
 
@@ -36,19 +38,20 @@ unsafe fn __sgx_vepc_fault(vepc: *mut sgx_vepc, vma: *mut vm_area_struct,
     if IS_ERR(epc_page) { return PTR_ERR(epc_page); }
 
     ret = xa_err(xa_store(&mut (*vepc).page_array, index, epc_page, GFP_KERNEL));
-    if ret != 0 { goto err_free; }
+    if ret != 0 { break 'err_free; }
 
     pfn = PFN_DOWN(sgx_get_epc_phys_addr(epc_page));
     ret = vmf_insert_pfn(vma, addr, pfn);
     if ret != VM_FAULT_NOPAGE {
         ret = -EFAULT;
-        goto err_delete;
+        break 'err_delete;
     }
     return 0;
-
-err_delete:
+    }
+    
     xa_erase(&mut (*vepc).page_array, index);
-err_free:
+    }
+    
     sgx_free_epc_page(epc_page);
     ret
 }

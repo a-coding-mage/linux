@@ -78,16 +78,16 @@ unsafe fn psurge_clr_ipi(cpu:i32){if cpu>0{if psurge_type==PSURGE_DUAL{out_8(psu
 unsafe extern "C" fn psurge_ipi_intr(_:i32,_:*mut c_void)->i32{psurge_clr_ipi(smp_processor_id());smp_ipi_demux();IRQ_HANDLED}
 unsafe extern "C" fn smp_psurge_cause_ipi(cpu:i32){psurge_set_ipi(cpu)}
 
-#[cfg(feature="CONFIG_PPC_PMAC32_PSURGE")]
+#[cfg(CONFIG_PPC_PMAC32_PSURGE)]
 unsafe fn psurge_quad_probe()->i32{let t=qin(PSURGE_QUAD_BOARD_ID) as i32;if t<PSURGE_QUAD_OKEE||t>PSURGE_QUAD_ICEGRASS||t!=(qin(PSURGE_QUAD_BOARD_ID)as i32){return PSURGE_DUAL} t}
-#[cfg(feature="CONFIG_PPC_PMAC32_PSURGE")]
+#[cfg(CONFIG_PPC_PMAC32_PSURGE)]
 unsafe fn smp_psurge_probe(){let dn=of_find_node_by_name(core::ptr::null_mut(),b"hammerhead\0".as_ptr());if dn.is_null(){return}of_node_put(dn);hhead_base=ioremap(HAMMERHEAD_BASE,0x800);quad_base=ioremap(PSURGE_QUAD_REG_ADDR,1024);psurge_sec_intr=hhead_base.add(HHEAD_SEC_INTR);psurge_type=psurge_quad_probe();let n=if psurge_type!=PSURGE_DUAL{smp_ops.as_mut().unwrap().give_timebase=Some(smp_generic_give_timebase);smp_ops.as_mut().unwrap().take_timebase=Some(smp_generic_take_timebase);4}else{ iounmap(quad_base);if in_8(hhead_base.add(HHEAD_CONFIG))&2==0{iounmap(hhead_base);psurge_type=PSURGE_NONE;return}2};if n>NR_CPUS{return}for i in 1..n{set_cpu_present(i,true)}}
-#[cfg(feature="CONFIG_PPC_PMAC32_PSURGE")]
+#[cfg(CONFIG_PPC_PMAC32_PSURGE)]
 #[no_mangle] pub static mut psurge_smp_ops:SmpOps=SmpOps{message_pass:None,cause_ipi:Some(smp_psurge_cause_ipi),cause_nmi_ipi:None,probe:Some(smp_psurge_probe),kick_cpu:None,setup_cpu:None,give_timebase:Some(smp_generic_give_timebase),take_timebase:Some(smp_generic_take_timebase),bringup_done:None,cpu_disable:None,cpu_die:None,cpu_offline_self:None};
 
 unsafe extern "C" fn smp_core99_give_timebase(){let mut f=0;local_irq_save(&mut f);while tb_req==0{barrier()}tb_req=0;if let Some(x)=pmac_tb_freeze{x(1)};mb();timebase=get_tb();mb();while timebase!=0{barrier()}mb();if let Some(x)=pmac_tb_freeze{x(0)};mb();local_irq_restore(f)}
 unsafe extern "C" fn smp_core99_take_timebase(){let mut f=0;local_irq_save(&mut f);tb_req=1;mb();while timebase==0{barrier()}mb();set_tb((timebase>>32)as u32,timebase as u32);timebase=0;mb();local_irq_restore(f)}
-unsafe fn core99_init_caches(cpu:i32){if cpu==0{let _=_get_L2CR()}else{_set_L2CR(0)}}
+unsafe fn core99_init_caches(cpu:i32){if cpu==0{let _=_get_L2CR();}else{_set_L2CR(0)}}
 unsafe extern "C" fn smp_core99_probe(){let mut n=0;let mut c=of_find_node_by_type(core::ptr::null_mut(),b"cpu\0".as_ptr());while !c.is_null(){n+=1;c=of_find_node_by_type(c,b"cpu\0".as_ptr())}if n<=1{return}pmac_pfunc_base_install();pmac_i2c_init();mpic_request_ipis();core99_init_caches(0)}
 unsafe extern "C" fn smp_core99_kick_cpu(nr:i32)->i32{if nr<0||nr>3{return -ENOENT}let mut f=0;local_irq_save(&mut f);let v=(PAGE_OFFSET+0x100)as*mut u32;let save=*v;patch_branch(v,__secondary_start_pmac_0 as usize+nr as usize*8,BRANCH_SET_LINK);pmac_call_feature(0,core::ptr::null_mut(),nr as u32,0);mdelay(1);patch_uint(v,save);local_irq_restore(f);0}
 unsafe extern "C" fn smp_core99_setup_cpu(cpu:i32){if cpu!=0{core99_init_caches(cpu)}mpic_setup_this_cpu()}

@@ -5,7 +5,7 @@
 
 // Dependency supplied by the Linux PHY API.
 
-#[cfg(feature = "CONFIG_FWNODE_MDIO")]
+#[cfg(CONFIG_FWNODE_MDIO)]
 extern "C" {
     pub fn fwnode_mdiobus_phy_device_register(
         mdio: *mut mii_bus,
@@ -21,7 +21,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_FWNODE_MDIO"))]
+#[cfg(not(CONFIG_FWNODE_MDIO))]
 pub unsafe extern "C" fn fwnode_mdiobus_phy_device_register(
     _mdio: *mut mii_bus,
     _phy: *mut phy_device,
@@ -31,7 +31,7 @@ pub unsafe extern "C" fn fwnode_mdiobus_phy_device_register(
     -EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_FWNODE_MDIO"))]
+#[cfg(not(CONFIG_FWNODE_MDIO))]
 pub unsafe extern "C" fn fwnode_mdiobus_register_phy(
     _bus: *mut mii_bus,
     _child: *mut fwnode_handle,

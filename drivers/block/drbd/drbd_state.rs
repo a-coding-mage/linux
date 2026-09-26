@@ -55,10 +55,10 @@ static () count_objects( drbd_resource *resource,
 		(*n_connections)++;
 }
 
-static  drbd_state_change *alloc_state_change(u32 n_devices, u32 n_connections, gfp_t gfp)
+static  drbd_state_change *alloc_state_change(n_devices: u32, n_connections: u32, gfp_t gfp)
 {
 	 drbd_state_change *state_change;
-	u32 size, n;
+	size: u32, n;
 
 	size = sizeof( drbd_state_change) +
 	       n_devices * sizeof( drbd_device_state_change) +
@@ -109,7 +109,7 @@ static  drbd_state_change *alloc_state_change(u32 n_devices, u32 n_connections, 
 	state_change.resource.susp_fen[OLD] = resource.susp_fen;
 
 	connection_state_change = state_change.connections;
-	for_each_connection(connection, resource) {
+	for_each_connection!(connection, resource, {
 		kref_get(&connection.kref);
 		connection_state_change.connection = connection;
 		connection_state_change.cstate[OLD] =
@@ -117,18 +117,18 @@ static  drbd_state_change *alloc_state_change(u32 n_devices, u32 n_connections, 
 		connection_state_change.peer_role[OLD] =
 			conn_highest_peer(connection);
 		connection_state_change++;
-	}
+	});
 
 	device_state_change = state_change.devices;
 	peer_device_state_change = state_change.peer_devices;
-	idr_for_each_entry(&resource.devices, device, vnr) {
+	idr_for_each_entry!(&resource.devices, device, vnr, {
 		kref_get(&device.kref);
 		device_state_change.device = device;
 		device_state_change.disk_state[OLD] = device.state.disk;
 
 		/* The peer_devices for each device have to be enumerated in
 		   the order of the connections. We may not use for_each_peer_device() here. */
-		for_each_connection(connection, resource) {
+		for_each_connection!(connection, resource, {
 			 drbd_peer_device *peer_device;
 
 			peer_device = conn_peer_device(connection, device.vnr);
@@ -145,9 +145,9 @@ static  drbd_state_change *alloc_state_change(u32 n_devices, u32 n_connections, 
 			peer_device_state_change.resync_susp_dependency[OLD] =
 				device.state.aftr_isp;
 			peer_device_state_change++;
-		}
+		});
 		device_state_change++;
-	}
+	});
 
 	return state_change;
 }
@@ -211,7 +211,7 @@ static () remember_new_state( drbd_state_change *state_change)
 () copy_old_to_new_state_change( drbd_state_change *state_change)
 {
 	 drbd_resource_state_change *resource_state_change = &state_change.resource[0];
-	u32 n_device, n_connection, n_peer_device, n_peer_devices;
+	n_device: u32, n_connection, n_peer_device, n_peer_devices;
 
 #define OLD_TO_NEW(x) \
 	(x[NEW] = x[OLD])
@@ -276,7 +276,7 @@ static () remember_new_state( drbd_state_change *state_change)
 	kfree(state_change);
 }
 
-static i32 w_after_state_ch( drbd_work *w, i32 unused);
+static i32 w_after_state_ch( drbd_work *w, unused: i32);
 static () after_state_ch( drbd_device *device,  drbd_state os,
 			    drbd_state ns,  chg_state_flags flags,
 			    drbd_state_change *);
@@ -299,7 +299,7 @@ bool conn_all_vols_unconf( drbd_connection *connection)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		if (device.state.disk != D_DISKLESS ||
 		    device.state.conn != C_STANDALONE ||
@@ -307,7 +307,7 @@ bool conn_all_vols_unconf( drbd_connection *connection)
 			rv = false;
 			break;
 		}
-	}
+	});
 	rcu_read_unlock();
 
 	return rv;
@@ -340,10 +340,10 @@ static  drbd_role min_role( drbd_role role1,  drbd_role role2)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		role = max_role(role, device.state.role);
-	}
+	});
 	rcu_read_unlock();
 
 	return role;
@@ -356,10 +356,10 @@ static  drbd_role min_role( drbd_role role1,  drbd_role role2)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		peer = max_role(peer, device.state.peer);
-	}
+	});
 	rcu_read_unlock();
 
 	return peer;
@@ -372,10 +372,10 @@ static  drbd_role min_role( drbd_role role1,  drbd_role role2)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		disk_state = max_t( drbd_disk_state, disk_state, device.state.disk);
-	}
+	});
 	rcu_read_unlock();
 
 	return disk_state;
@@ -388,10 +388,10 @@ static  drbd_role min_role( drbd_role role1,  drbd_role role2)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		disk_state = min_t( drbd_disk_state, disk_state, device.state.disk);
-	}
+	});
 	rcu_read_unlock();
 
 	return disk_state;
@@ -404,10 +404,10 @@ static  drbd_role min_role( drbd_role role1,  drbd_role role2)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		disk_state = max_t( drbd_disk_state, disk_state, device.state.pdsk);
-	}
+	});
 	rcu_read_unlock();
 
 	return disk_state;
@@ -420,10 +420,10 @@ static  drbd_role min_role( drbd_role role1,  drbd_role role2)
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		conn = min_t( drbd_conns, conn, device.state.conn);
-	}
+	});
 	rcu_read_unlock();
 
 	return conn;
@@ -564,6 +564,7 @@ static  drbd_state_rv
 drbd_req_state( drbd_device *device,  drbd_state mask,
 	        drbd_state val,  chg_state_flags f)
 {
+	 'abort: {
 	 completion done;
 	u64 flags;
 	 drbd_state os, ns;
@@ -583,7 +584,7 @@ drbd_req_state( drbd_device *device,  drbd_state mask,
 	rv = is_valid_transition(os, ns);
 	if (rv < SS_SUCCESS) {
 		spin_unlock_irqrestore(&device.resource.req_lock, flags);
-		goto abort;
+		break 'abort;
 	}
 
 	if (cl_wide_st_chg(device, os, ns)) {
@@ -595,14 +596,14 @@ drbd_req_state( drbd_device *device,  drbd_state mask,
 		if (rv < SS_SUCCESS) {
 			if (f & CS_VERBOSE)
 				print_st_err(device, os, ns, rv);
-			goto abort;
+			break 'abort;
 		}
 
 		if (drbd_send_state_req(first_peer_device(device), mask, val)) {
 			rv = SS_CW_FAILED_BY_PEER;
 			if (f & CS_VERBOSE)
 				print_st_err(device, os, ns, rv);
-			goto abort;
+			break 'abort;
 		}
 
 		wait_event(device.state_wait,
@@ -611,7 +612,7 @@ drbd_req_state( drbd_device *device,  drbd_state mask,
 		if (rv < SS_SUCCESS) {
 			if (f & CS_VERBOSE)
 				print_st_err(device, os, ns, rv);
-			goto abort;
+			break 'abort;
 		}
 		spin_lock_irqsave(&device.resource.req_lock, flags);
 		ns = apply_mask_val(drbd_read_state(device), mask, val);
@@ -626,8 +627,8 @@ drbd_req_state( drbd_device *device,  drbd_state mask,
 		D_ASSERT(device, current != first_peer_device(device).connection.worker.task);
 		wait_for_completion(&done);
 	}
-
-abort:
+	 }
+	 
 	if (buffer)
 		drbd_md_put_buffer(device);
 	if (f & CS_SERIALIZE)
@@ -679,7 +680,7 @@ request_detach( drbd_device *device)
 
 i32 drbd_request_detach_interruptible( drbd_device *device)
 {
-	i32 ret, rv;
+	ret: i32, rv;
 
 	drbd_suspend_io(device); /* so no-one is stuck in drbd_al_begin_io */
 	wait_event_interruptible(device.state_wait,
@@ -741,7 +742,7 @@ static () print_st( drbd_device *device, const  *mut i8name,  drbd_state ns)
 	print_st(device, "wanted", ns);
 }
 
-static long print_state_change( *mut i8pb,  drbd_state os,  drbd_state ns,
+static long print_state_change( pb: *mut i8,  drbd_state os,  drbd_state ns,
 			        chg_state_flags flags)
 {
 	 *mut i8pbp;
@@ -823,6 +824,7 @@ static () conn_pr_state_change( drbd_connection *connection,  drbd_state os,  dr
 static  drbd_state_rv
 is_valid_state( drbd_device *device,  drbd_state ns)
 {
+	'out: {
 	/* See drbd_state_sw_errors in drbd_strings.c */
 
 	 drbd_fencing_p fp;
@@ -847,7 +849,7 @@ is_valid_state( drbd_device *device,  drbd_state ns)
 	}
 
 	if (rv <= 0)
-		goto out; /* already found a reason to abort */
+		break 'out; /* already found a reason to abort */
 	else if (ns.role == R_SECONDARY && device.open_cnt)
 		rv = SS_DEVICE_IN_USE;
 
@@ -894,8 +896,8 @@ is_valid_state( drbd_device *device,  drbd_state ns)
 
 	else if (ns.conn >= C_CONNECTED && ns.pdsk == D_UNKNOWN)
 		rv = SS_CONNECTED_OUTDATES;
-
-out:
+	}
+	
 	rcu_read_unlock();
 
 	return rv;
@@ -1367,7 +1369,7 @@ _drbd_set_state( drbd_device *device,  drbd_state ns,
 			BM_BIT_TO_SECT(drbd_bm_bits(device) - device.ov_left);
 		if (device.ov_left)
 			drbd_info(device, "Online Verify reached sector %llu\n",
-				(u64 long)device.ov_start_sector);
+				(long: u64)device.ov_start_sector);
 	}
 
 	if ((os.conn == C_PAUSED_SYNC_T || os.conn == C_PAUSED_SYNC_S) &&
@@ -1405,7 +1407,7 @@ _drbd_set_state( drbd_device *device,  drbd_state ns,
 
 		if (ns.conn == C_VERIFY_S) {
 			drbd_info(device, "Starting Online Verify from sector %llu\n",
-					(u64 long)device.ov_position);
+					(long: u64)device.ov_position);
 			mod_timer(&device.resync_timer, jiffies);
 		}
 	}
@@ -1487,7 +1489,7 @@ _drbd_set_state( drbd_device *device,  drbd_state ns,
 	return rv;
 }
 
-static i32 w_after_state_ch( drbd_work *w, i32 unused)
+static i32 w_after_state_ch( drbd_work *w, unused: i32)
 {
 	 after_state_chg_work *ascw =
 		container_of(w,  after_state_chg_work, w);
@@ -1502,7 +1504,7 @@ static i32 w_after_state_ch( drbd_work *w, i32 unused)
 	return 0;
 }
 
-static () abw_start_sync( drbd_device *device, i32 rv)
+static () abw_start_sync( drbd_device *device, rv: i32)
 {
 	if (rv) {
 		drbd_err(device, "Writing the bitmap failed not starting resync.\n");
@@ -1522,7 +1524,7 @@ static () abw_start_sync( drbd_device *device, i32 rv)
 
 i32 drbd_bitmap_io_from_worker( drbd_device *device,
 		i32 (*io_fn)( drbd_device *,  drbd_peer_device *),
-		 *mut i8why,  bm_flag flags,
+		 why: *mut i8,  bm_flag flags,
 		 drbd_peer_device *peer_device)
 {
 	i32 rv;
@@ -1542,64 +1544,64 @@ i32 drbd_bitmap_io_from_worker( drbd_device *device,
 }
 
 i32 notify_resource_state_change( sk_buff *skb,
-				  u32 seq,
+				  seq: u32,
 				  () *state_change,
 				   drbd_notification_type type)
 {
 	 drbd_resource_state_change *resource_state_change = state_change;
 	 drbd_resource *resource = resource_state_change.resource;
 	 resource_info resource_info = {
-		.res_role = resource_state_change.role[NEW],
-		.res_susp = resource_state_change.susp[NEW],
-		.res_susp_nod = resource_state_change.susp_nod[NEW],
-		.res_susp_fen = resource_state_change.susp_fen[NEW],
+		res_role: resource_state_change.role[NEW],
+		res_susp: resource_state_change.susp[NEW],
+		res_susp_nod: resource_state_change.susp_nod[NEW],
+		res_susp_fen: resource_state_change.susp_fen[NEW],
 	};
 
 	return notify_resource_state(skb, seq, resource, &resource_info, type);
 }
 
 i32 notify_connection_state_change( sk_buff *skb,
-				    u32 seq,
+				    seq: u32,
 				    () *state_change,
 				     drbd_notification_type type)
 {
 	 drbd_connection_state_change *p = state_change;
 	 drbd_connection *connection = p.connection;
 	 connection_info connection_info = {
-		.conn_connection_state = p.cstate[NEW],
-		.conn_role = p.peer_role[NEW],
+		conn_connection_state: p.cstate[NEW],
+		conn_role: p.peer_role[NEW],
 	};
 
 	return notify_connection_state(skb, seq, connection, &connection_info, type);
 }
 
 i32 notify_device_state_change( sk_buff *skb,
-				u32 seq,
+				seq: u32,
 				() *state_change,
 				 drbd_notification_type type)
 {
 	 drbd_device_state_change *device_state_change = state_change;
 	 drbd_device *device = device_state_change.device;
 	 device_info device_info = {
-		.dev_disk_state = device_state_change.disk_state[NEW],
+		dev_disk_state: device_state_change.disk_state[NEW],
 	};
 
 	return notify_device_state(skb, seq, device, &device_info, type);
 }
 
 i32 notify_peer_device_state_change( sk_buff *skb,
-				     u32 seq,
+				     seq: u32,
 				     () *state_change,
 				      drbd_notification_type type)
 {
 	 drbd_peer_device_state_change *p = state_change;
 	 drbd_peer_device *peer_device = p.peer_device;
 	 peer_device_info peer_device_info = {
-		.peer_repl_state = p.repl_state[NEW],
-		.peer_disk_state = p.disk_state[NEW],
-		.peer_resync_susp_user = p.resync_susp_user[NEW],
-		.peer_resync_susp_peer = p.resync_susp_peer[NEW],
-		.peer_resync_susp_dependency = p.resync_susp_dependency[NEW],
+		peer_repl_state: p.repl_state[NEW],
+		peer_disk_state: p.disk_state[NEW],
+		peer_resync_susp_user: p.resync_susp_user[NEW],
+		peer_resync_susp_peer: p.resync_susp_peer[NEW],
+		peer_resync_susp_dependency: p.resync_susp_dependency[NEW],
 	};
 
 	return notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
@@ -1609,7 +1611,7 @@ static () broadcast_state_change( drbd_state_change *state_change)
 {
 	 drbd_resource_state_change *resource_state_change = &state_change.resource[0];
 	bool resource_state_has_changed;
-	u32 n_device, n_connection, n_peer_device, n_peer_devices;
+	n_device: u32, n_connection, n_peer_device, n_peer_devices;
 	i32 (*last_func)( sk_buff *, u32,
 		() *,  drbd_notification_type) = core::ptr::null_mut();
 	() *last_arg = core::ptr::null_mut();
@@ -1689,7 +1691,7 @@ static bool lost_contact_to_peer_data( drbd_disk_state os,  drbd_disk_state ns)
 	 * Connected Primary/Secondary UpToDate/UpToDate
 	 * NetworkFailure Primary/Unknown UpToDate/DUnknown (frozen)
 	 * ...
-	 * Connected Primary/Secondary UpToDate/Diskless (resumed; needs to bump uuid!)
+	 * Connected Primary/Secondary UpToDate/Diskless (resumed; needs to bump uuid!())
 	 */
 	if (os == D_UNKNOWN
 	&&  (ns == D_DISKLESS || ns == D_FAILED || ns == D_OUTDATED))
@@ -2045,7 +2047,7 @@ static () after_state_ch( drbd_device *device,  drbd_state os,
 	 drbd_state_change *state_change;
 };
 
-static i32 w_after_conn_state_ch( drbd_work *w, i32 unused)
+static i32 w_after_conn_state_ch( drbd_work *w, unused: i32)
 {
 	 after_conn_state_chg_work *acscw =
 		container_of(w,  after_conn_state_chg_work, w);
@@ -2088,13 +2090,13 @@ static i32 w_after_conn_state_ch( drbd_work *w, i32 unused)
 		/* case1: The outdate peer handler is successful: */
 		if (ns_max.pdsk <= D_OUTDATED) {
 			rcu_read_lock();
-			idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+			idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 				 drbd_device *device = peer_device.device;
 				if (test_bit(NEW_CUR_UUID, &device.flags)) {
 					drbd_uuid_new_current(device);
 					clear_bit(NEW_CUR_UUID, &device.flags);
 				}
-			}
+			});
 			rcu_read_unlock();
 			spin_lock_irq(&connection.resource.req_lock);
 			_tl_restart(connection, CONNECTION_LOST_WHILE_PENDING);
@@ -2115,17 +2117,17 @@ static () conn_old_common_state( drbd_connection *connection,  drbd_state *pcs, 
 {
 	 chg_state_flags flags = ~0;
 	 drbd_peer_device *peer_device;
-	i32 vnr, first_vol = 1;
+	vnr: i32, first_vol = 1;
 	 drbd_dev_state os, cs = {
 		{ .role = R_SECONDARY,
-		  .peer = R_UNKNOWN,
-		  .conn = connection.cstate,
-		  .disk = D_DISKLESS,
-		  .pdsk = D_UNKNOWN,
+		  peer: R_UNKNOWN,
+		  conn: connection.cstate,
+		  disk: D_DISKLESS,
+		  pdsk: D_UNKNOWN,
 		} };
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		os = device.state;
 
@@ -2149,7 +2151,7 @@ static () conn_old_common_state( drbd_connection *connection,  drbd_state *pcs, 
 
 		if (cs.pdsk != os.pdsk)
 			flags &= ~CS_DC_PDSK;
-	}
+	});
 	rcu_read_unlock();
 
 	*pf |= CS_DC_MASK;
@@ -2167,7 +2169,7 @@ conn_is_valid_transition( drbd_connection *connection,  drbd_state mask,  drbd_s
 	i32 vnr;
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		os = drbd_read_state(device);
 		ns = sanitize_state(device, os, apply_mask_val(os, mask, val), core::ptr::null_mut());
@@ -2194,7 +2196,7 @@ conn_is_valid_transition( drbd_connection *connection,  drbd_state mask,  drbd_s
 				print_st_err(device, os, ns, rv);
 			break;
 		}
-	}
+	});
 	rcu_read_unlock();
 
 	return rv;
@@ -2207,14 +2209,14 @@ conn_set_state( drbd_connection *connection,  drbd_state mask,  drbd_state val,
 	 drbd_state ns, os, ns_max = { };
 	 drbd_state ns_min = {
 		{ .role = R_MASK,
-		  .peer = R_MASK,
-		  .conn = val.conn,
-		  .disk = D_MASK,
-		  .pdsk = D_MASK
+		  peer: R_MASK,
+		  conn: val.conn,
+		  disk: D_MASK,
+		  pdsk: D_MASK
 		} };
 	 drbd_peer_device *peer_device;
 	 drbd_state_rv rv;
-	i32 vnr, number_of_volumes = 0;
+	vnr: i32, number_of_volumes = 0;
 
 	if (mask.conn == C_MASK) {
 		/* remember last connect time so request_timer_fn() won't
@@ -2227,7 +2229,7 @@ conn_set_state( drbd_connection *connection,  drbd_state mask,  drbd_state val,
 	}
 
 	rcu_read_lock();
-	idr_for_each_entry(&connection.peer_devices, peer_device, vnr) {
+	idr_for_each_entry!(&connection.peer_devices, peer_device, vnr, {
 		 drbd_device *device = peer_device.device;
 		number_of_volumes++;
 		os = drbd_read_state(device);
@@ -2251,16 +2253,16 @@ conn_set_state( drbd_connection *connection,  drbd_state mask,  drbd_state val,
 		ns_min.conn = min_t( drbd_conns, ns.conn, ns_min.conn);
 		ns_min.disk = min_t( drbd_disk_state, ns.disk, ns_min.disk);
 		ns_min.pdsk = min_t( drbd_disk_state, ns.pdsk, ns_min.pdsk);
-	}
+	});
 	rcu_read_unlock();
 
 	if (number_of_volumes == 0) {
 		ns_min = ns_max = ( drbd_state) { {
-				.role = R_SECONDARY,
-				.peer = R_UNKNOWN,
-				.conn = val.conn,
-				.disk = D_DISKLESS,
-				.pdsk = D_UNKNOWN
+				role: R_SECONDARY,
+				peer: R_UNKNOWN,
+				conn: val.conn,
+				disk: D_DISKLESS,
+				pdsk: D_UNKNOWN
 			} };
 	}
 
@@ -2294,6 +2296,7 @@ _conn_rq_cond( drbd_connection *connection,  drbd_state mask,  drbd_state val)
 _conn_request_state( drbd_connection *connection,  drbd_state mask,  drbd_state val,
 		     chg_state_flags flags)
 {
+	 'abort: {
 	 drbd_state_rv rv = SS_SUCCESS;
 	 after_conn_state_chg_work *acscw;
 	 drbd_conns oc = connection.cstate;
@@ -2304,12 +2307,12 @@ _conn_request_state( drbd_connection *connection,  drbd_state mask,  drbd_state 
 	if (mask.conn) {
 		rv = is_valid_conn_transition(oc, val.conn);
 		if (rv < SS_SUCCESS)
-			goto abort;
+			break 'abort;
 	}
 
 	rv = conn_is_valid_transition(connection, mask, val, flags);
 	if (rv < SS_SUCCESS)
-		goto abort;
+		break 'abort;
 
 	if (oc == C_WF_REPORT_PARAMS && val.conn == C_DISCONNECTING &&
 	    !(flags & (CS_LOCAL_ONLY | CS_HARD))) {
@@ -2342,7 +2345,7 @@ _conn_request_state( drbd_connection *connection,  drbd_state mask,  drbd_state 
 				connection.resource.req_lock);
 		clear_bit(CONN_WD_ST_CHG_REQ, &connection.flags);
 		if (rv < SS_SUCCESS)
-			goto abort;
+			break 'abort;
 	}
 
 	state_change = remember_old_state(connection.resource, GFP_ATOMIC);
@@ -2366,13 +2369,15 @@ _conn_request_state( drbd_connection *connection,  drbd_state mask,  drbd_state 
 	} else {
 		drbd_err(connection, "Could not kmalloc an acscw\n");
 	}
-
- abort:
+	 }
+	 
 	if (have_mutex) {
+		'abort_unlocked: {
 		/* mutex_unlock() "... must not be used in interrupt context.",
 		 * so give up the spinlock, then re-aquire it */
 		spin_unlock_irq(&connection.resource.req_lock);
- abort_unlocked:
+		}
+		
 		mutex_unlock(&connection.cstate_mutex);
 		spin_lock_irq(&connection.resource.req_lock);
 	}

@@ -76,7 +76,7 @@ unsafe extern "C" fn revo_set_rate_val(ak: *mut snd_akm4xxx, rate: c_uint) {
     snd_akm4xxx_reset(ak, 1);
     tmp = snd_akm4xxx_get(ak, 0, reg);
     tmp &= !(0x03 << shift) as c_uchar;
-    tmp |= (dfs as c_int << shift) as c_uchar;
+    tmp |= ((dfs as c_int) << shift) as c_uchar;
     /* snd_akm4xxx_write(ak, 0, reg, tmp); */
     snd_akm4xxx_set(ak, 0, reg, tmp); /* value is written in reset(0) */
     snd_akm4xxx_reset(ak, 0);

@@ -167,9 +167,9 @@ pub unsafe fn dma_buf_free_sgt(
         } else {
             let mut sgl: *mut scatterlist = core::ptr::null_mut();
             let mut i = 0;
-            for_each_sgtable_dma_sg(sgt, sgl, i) {
+            for_each_sgtable_dma_sg!(sgt, sgl, i, {
                 dma_unmap_phys((*attach).dev, sg_dma_address_value(sgl), sg_dma_len_value(sgl), dir, DMA_ATTR_MMIO);
-            }
+            });
         }
     }
     sg_free_table(sgt);

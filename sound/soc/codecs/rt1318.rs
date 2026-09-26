@@ -461,17 +461,17 @@ pub unsafe extern "C" fn rt1318_readable_register(dev: *mut device, reg: c_uint)
 pub unsafe extern "C" fn rt1318_dac_event(*mut snd_soc_dapm_widgetw,
 	*mut snd_kcontrolkcontrol, c_int event)
 {
-	*mut snd_soc_componentcomponent = snd_soc_dapm_to_component(w->dapm);
+	*mut snd_soc_componentcomponent = snd_soc_dapm_to_component((*w).dapm);
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		regmap_update_bits(rt1318->regmap, RT1318_PWR_STA1,
+		regmap_update_bits((*rt1318).regmap, RT1318_PWR_STA1,
 				RT1318_PDB_CTRL_MASK, RT1318_PDB_CTRL_HIGH);
 		break;
 
 	case SND_SOC_DAPM_POST_PMD:
-		regmap_update_bits(rt1318->regmap, RT1318_PWR_STA1,
+		regmap_update_bits((*rt1318).regmap, RT1318_PWR_STA1,
 				RT1318_PDB_CTRL_MASK, RT1318_PDB_CTRL_LOW);
 		break;
 
@@ -487,17 +487,17 @@ pub unsafe extern "C" fn rt1318_dvol_put(*mut snd_kcontrolkcontrol,
 	*mut snd_soc_componentcomponent = snd_kcontrol_chip(kcontrol);
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
-	rt1318->rt1318_dvol = ucontrol->value.integer.value[0];
+	(*rt1318).rt1318_dvol = (*ucontrol).value.integer.value[0];
 
-	if (rt1318->rt1318_dvol <= RT1318_DVOL_STEP && rt1318->rt1318_dvol >= 0) {
-		regmap_write(rt1318->regmap, RT1318_DA_VOL_L_8,
-			rt1318->rt1318_dvol >> 8);
-		regmap_write(rt1318->regmap, RT1318_DA_VOL_L_1_7,
-			rt1318->rt1318_dvol & 0xff);
-		regmap_write(rt1318->regmap, RT1318_DA_VOL_R_8,
-			rt1318->rt1318_dvol >> 8);
-		regmap_write(rt1318->regmap, RT1318_DA_VOL_R_1_7,
-			rt1318->rt1318_dvol & 0xff);
+	if ((*rt1318).rt1318_dvol <= RT1318_DVOL_STEP && (*rt1318).rt1318_dvol >= 0) {
+		regmap_write((*rt1318).regmap, RT1318_DA_VOL_L_8,
+			(*rt1318).rt1318_dvol >> 8);
+		regmap_write((*rt1318).regmap, RT1318_DA_VOL_L_1_7,
+			(*rt1318).rt1318_dvol & 0xff);
+		regmap_write((*rt1318).regmap, RT1318_DA_VOL_R_8,
+			(*rt1318).rt1318_dvol >> 8);
+		regmap_write((*rt1318).regmap, RT1318_DA_VOL_R_1_7,
+			(*rt1318).rt1318_dvol & 0xff);
 		return 1;
 	}
 
@@ -510,7 +510,7 @@ pub unsafe extern "C" fn rt1318_dvol_get(*mut snd_kcontrolkcontrol,
 	*mut snd_soc_componentcomponent = snd_kcontrol_chip(kcontrol);
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
-	ucontrol->value.integer.value[0] = rt1318->rt1318_dvol;
+	(*ucontrol).value.integer.value[0] = (*rt1318).rt1318_dvol;
 
 	return 0;
 }
@@ -536,9 +536,9 @@ static const struct snd_soc_dapm_route rt1318_dapm_routes[] = {
 	{"Amp", core::ptr::null_mut(), "DAC"},
 };
 
-pub unsafe extern "C" fn rt1318_get_clk_info(c_int sclk, c_int rate)
+pub unsafe extern "C" fn rt1318_get_clk_info(sclk: c_int, rate: c_int)
 {
-	c_int i, pd[] = {1, 2, 4, 8, 16, 24};
+	i: c_int, pd[] = {1, 2, 4, 8, 16, 24};
 
 	if (sclk <= 0 || rate <= 0)
 		return -EINVAL;
@@ -551,7 +551,7 @@ pub unsafe extern "C" fn rt1318_get_clk_info(c_int sclk, c_int rate)
 	return -EINVAL;
 }
 
-pub unsafe extern "C" fn rt1318_clk_ip_info(*mut snd_soc_componentcomponent, c_int lrclk)
+pub unsafe extern "C" fn rt1318_clk_ip_info(*mut snd_soc_componentcomponent, lrclk: c_int)
 {
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
@@ -559,22 +559,22 @@ pub unsafe extern "C" fn rt1318_clk_ip_info(*mut snd_soc_componentcomponent, c_i
 	case RT1318_LRCLK_48000:
 	case RT1318_LRCLK_44100:
 	case RT1318_LRCLK_16000:
-		regmap_update_bits(rt1318->regmap, RT1318_SRC_TCON,
+		regmap_update_bits((*rt1318).regmap, RT1318_SRC_TCON,
 				RT1318_SRCIN_F12288_MASK | RT1318_SRCIN_DACLK_MASK,
 				RT1318_SRCIN_TCON4 | RT1318_DACLK_TCON4);
 		break;
 	case RT1318_LRCLK_96000:
-		regmap_update_bits(rt1318->regmap, RT1318_SRC_TCON,
+		regmap_update_bits((*rt1318).regmap, RT1318_SRC_TCON,
 				RT1318_SRCIN_F12288_MASK | RT1318_SRCIN_DACLK_MASK,
 				RT1318_SRCIN_TCON4 | RT1318_DACLK_TCON2);
 		break;
 	case RT1318_LRCLK_192000:
-		regmap_update_bits(rt1318->regmap, RT1318_SRC_TCON,
+		regmap_update_bits((*rt1318).regmap, RT1318_SRC_TCON,
 				RT1318_SRCIN_F12288_MASK | RT1318_SRCIN_DACLK_MASK,
 				RT1318_SRCIN_TCON4 | RT1318_DACLK_TCON1);
 		break;
 	default:
-		dev_err(component->dev, "Unsupported clock rate.\n");
+		dev_err((*component).dev, "Unsupported clock rate.\n");
 		return -EINVAL;
 	}
 
@@ -584,20 +584,20 @@ pub unsafe extern "C" fn rt1318_clk_ip_info(*mut snd_soc_componentcomponent, c_i
 pub unsafe extern "C" fn rt1318_hw_params(*mut snd_pcm_substreamsubstream,
 	*mut snd_pcm_hw_paramsparams, *mut snd_soc_daidai)
 {
-	*mut snd_soc_componentcomponent = dai->component;
+	*mut snd_soc_componentcomponent = (*dai).component;
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 	c_int data_len = 0, ch_len = 0;
-	c_int pre_div, ret;
+	pre_div: c_int, ret;
 
-	rt1318->lrck = params_rate(params);
-	pre_div = rt1318_get_clk_info(rt1318->sysclk, rt1318->lrck);
+	(*rt1318).lrck = params_rate(params);
+	pre_div = rt1318_get_clk_info((*rt1318).sysclk, (*rt1318).lrck);
 	if (pre_div < 0) {
-		dev_err(component->dev, "Unsupported clock setting\n");
+		dev_err((*component).dev, "Unsupported clock setting\n");
 		return -EINVAL;
 	}
-	ret = rt1318_clk_ip_info(component, rt1318->lrck);
+	ret = rt1318_clk_ip_info(component, (*rt1318).lrck);
 	if (ret < 0) {
-		dev_err(component->dev, "Unsupported clock setting\n");
+		dev_err((*component).dev, "Unsupported clock setting\n");
 		return -EINVAL;
 	}
 
@@ -624,31 +624,31 @@ pub unsafe extern "C" fn rt1318_hw_params(*mut snd_pcm_substreamsubstream,
 		return -EINVAL;
 	}
 
-	regmap_update_bits(rt1318->regmap, RT1318_CLK2,
+	regmap_update_bits((*rt1318).regmap, RT1318_CLK2,
 				RT1318_DIV_AP_MASK | RT1318_DIV_DAMOD_MASK,
 				pre_div << RT1318_DIV_AP_SFT |
 				pre_div << RT1318_DIV_DAMOD_SFT);
-	regmap_update_bits(rt1318->regmap, RT1318_CLK3,
+	regmap_update_bits((*rt1318).regmap, RT1318_CLK3,
 				RT1318_AD_STO1_MASK | RT1318_AD_STO2_MASK,
 				pre_div << RT1318_AD_STO1_SFT |
 				pre_div << RT1318_AD_STO2_SFT);
-	regmap_update_bits(rt1318->regmap, RT1318_CLK4,
+	regmap_update_bits((*rt1318).regmap, RT1318_CLK4,
 				RT1318_AD_ANA_STO1_MASK | RT1318_AD_ANA_STO2_MASK,
 				pre_div << RT1318_AD_ANA_STO1_SFT |
 				pre_div << RT1318_AD_ANA_STO2_SFT);
-	regmap_update_bits(rt1318->regmap, RT1318_CLK5,
+	regmap_update_bits((*rt1318).regmap, RT1318_CLK5,
 				RT1318_DIV_FIFO_IN_MASK | RT1318_DIV_FIFO_OUT_MASK,
 				pre_div << RT1318_DIV_FIFO_IN_SFT |
 				pre_div << RT1318_DIV_FIFO_OUT_SFT);
-	regmap_update_bits(rt1318->regmap, RT1318_CLK6,
+	regmap_update_bits((*rt1318).regmap, RT1318_CLK6,
 				RT1318_DIV_NLMS_MASK | RT1318_DIV_AD_MONO_MASK |
 				RT1318_DIV_POST_G_MASK,  pre_div << RT1318_DIV_NLMS_SFT |
 				pre_div << RT1318_DIV_AD_MONO_SFT |
 				pre_div << RT1318_DIV_POST_G_SFT);
 
-	regmap_update_bits(rt1318->regmap, RT1318_TDM_CTRL2,
+	regmap_update_bits((*rt1318).regmap, RT1318_TDM_CTRL2,
 				RT1318_I2S_DL_MASK, data_len << RT1318_I2S_DL_SFT);
-	regmap_update_bits(rt1318->regmap, RT1318_TDM_CTRL3,
+	regmap_update_bits((*rt1318).regmap, RT1318_TDM_CTRL3,
 				RT1318_I2S_TX_CHL_MASK | RT1318_I2S_RX_CHL_MASK,
 				ch_len << RT1318_I2S_TX_CHL_SFT |
 				ch_len << RT1318_I2S_RX_CHL_SFT);
@@ -656,9 +656,9 @@ pub unsafe extern "C" fn rt1318_hw_params(*mut snd_pcm_substreamsubstream,
 	return 0;
 }
 
-pub unsafe extern "C" fn rt1318_set_dai_fmt(*mut snd_soc_daidai, c_uint fmt)
+pub unsafe extern "C" fn rt1318_set_dai_fmt(*mut snd_soc_daidai, fmt: c_uint)
 {
-	*mut snd_soc_componentcomponent = dai->component;
+	*mut snd_soc_componentcomponent = (*dai).component;
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 	c_uint reg_val = 0, reg_val2 = 0;
 
@@ -692,22 +692,22 @@ pub unsafe extern "C" fn rt1318_set_dai_fmt(*mut snd_soc_daidai, c_uint fmt)
 		return -EINVAL;
 	}
 
-	regmap_update_bits(rt1318->regmap, RT1318_TDM_CTRL1,
+	regmap_update_bits((*rt1318).regmap, RT1318_TDM_CTRL1,
 			RT1318_I2S_FMT_MASK, reg_val);
-	regmap_update_bits(rt1318->regmap, RT1318_TDM_CTRL1,
+	regmap_update_bits((*rt1318).regmap, RT1318_TDM_CTRL1,
 			RT1318_TDM_BCLK_MASK, reg_val2);
 
 	return 0;
 }
 
 pub unsafe extern "C" fn rt1318_set_dai_sysclk(*mut snd_soc_daidai,
-		c_int clk_id, c_uint freq, c_int dir)
+		clk_id: c_int, freq: c_uint, dir: c_int)
 {
-	*mut snd_soc_componentcomponent = dai->component;
+	*mut snd_soc_componentcomponent = (*dai).component;
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 	c_int reg_val = 0;
 
-	if (freq == rt1318->sysclk && clk_id == rt1318->sysclk_src)
+	if (freq == (*rt1318).sysclk && clk_id == (*rt1318).sysclk_src)
 		return 0;
 
 	switch (clk_id) {
@@ -736,14 +736,14 @@ pub unsafe extern "C" fn rt1318_set_dai_sysclk(*mut snd_soc_daidai,
 		reg_val |= RT1318_SYSCLK_RC3;
 		break;
 	default:
-		dev_err(component->dev, "Invalid clock id (%d)\n", clk_id);
+		dev_err((*component).dev, "Invalid clock id (%d)\n", clk_id);
 		return -EINVAL;
 	}
 
-	rt1318->sysclk = freq;
-	rt1318->sysclk_src = clk_id;
-	dev_dbg(dai->dev, "Sysclk is %dHz and clock id is %d\n", freq, clk_id);
-	regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+	(*rt1318).sysclk = freq;
+	(*rt1318).sysclk_src = clk_id;
+	dev_dbg((*dai).dev, "Sysclk is %dHz and clock id is %d\n", freq, clk_id);
+	regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_SYSCLK_SEL_MASK, reg_val);
 
 	return 0;
@@ -770,8 +770,9 @@ static const struct pll_calc_map pll_preset_table[] = {
 pub unsafe extern "C" fn rt1318_pll_calc(const c_uint freq_in,
 	const c_uint freq_out, *mut rt1318_pll_codepll_code)
 {
+	'code_find: {
 	c_int max_n = RT1318_PLL_N_MAX, max_m = RT1318_PLL_M_MAX;
-	c_int i, k, red, n_t, pll_out, in_t, out_t;
+	i: c_int, k, red, n_t, pll_out, in_t, out_t;
 	c_int n = 0, m = 0, m_t = 0;
 	c_int red_t = abs(freq_out - freq_in);
 	bool m_bypass = false, k_bypass = false;
@@ -787,7 +788,7 @@ pub unsafe extern "C" fn rt1318_pll_calc(const c_uint freq_in,
 			n = pll_preset_table[i].n;
 			m_bypass = pll_preset_table[i].m_bp;
 			k_bypass = pll_preset_table[i].k_bp;
-			goto code_find;
+			break 'code_find;
 		}
 	}
 
@@ -806,7 +807,7 @@ pub unsafe extern "C" fn rt1318_pll_calc(const c_uint freq_in,
 		if (in_t == pll_out) {
 			m_bypass = true;
 			n = n_t;
-			goto code_find;
+			break 'code_find;
 		}
 		red = abs(in_t - pll_out);
 		if (red < red_t) {
@@ -814,7 +815,7 @@ pub unsafe extern "C" fn rt1318_pll_calc(const c_uint freq_in,
 			n = n_t;
 			m = m_t;
 			if (red == 0)
-				goto code_find;
+				break 'code_find;
 			red_t = red;
 		}
 		for (m_t = 0; m_t <= max_m; m_t++) {
@@ -825,110 +826,111 @@ pub unsafe extern "C" fn rt1318_pll_calc(const c_uint freq_in,
 				n = n_t;
 				m = m_t;
 				if (red == 0)
-					goto code_find;
+					break 'code_find;
 				red_t = red;
 			}
 		}
 	}
 	pr_debug("Only get approximation about PLL\n");
+	}
+	
 
-code_find:
-
-	pll_code->m_bp = m_bypass;
-	pll_code->k_bp = k_bypass;
-	pll_code->m_code = m;
-	pll_code->n_code = n;
-	pll_code->k_code = k;
+	(*pll_code).m_bp = m_bypass;
+	(*pll_code).k_bp = k_bypass;
+	(*pll_code).m_code = m;
+	(*pll_code).n_code = n;
+	(*pll_code).k_code = k;
 	return 0;
 }
 
-pub unsafe extern "C" fn rt1318_set_dai_pll(*mut snd_soc_daidai, c_int pll_id, c_int source,
-			c_uint freq_in, c_uint freq_out)
+pub unsafe extern "C" fn rt1318_set_dai_pll(*mut snd_soc_daidai, pll_id: c_int, source: c_int,
+			freq_in: c_uint, freq_out: c_uint)
 {
-	*mut snd_soc_componentcomponent = dai->component;
+	*mut snd_soc_componentcomponent = (*dai).component;
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 	struct rt1318_pll_code pll_code;
 	c_int ret;
 
 	if (!freq_in || !freq_out) {
-		dev_dbg(component->dev, "PLL disabled\n");
-		rt1318->pll_in = 0;
-		rt1318->pll_out = 0;
+		dev_dbg((*component).dev, "PLL disabled\n");
+		(*rt1318).pll_in = 0;
+		(*rt1318).pll_out = 0;
 		return 0;
 	}
 
-	if (source == rt1318->pll_src && freq_in == rt1318->pll_in &&
-		freq_out == rt1318->pll_out)
+	if (source == (*rt1318).pll_src && freq_in == (*rt1318).pll_in &&
+		freq_out == (*rt1318).pll_out)
 		return 0;
 
 	switch (source) {
 	case RT1318_PLL_S_BCLK0:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_BCLK0);
 		break;
 	case RT1318_PLL_S_BCLK1:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_BCLK1);
 		break;
 	case RT1318_PLL_S_RC:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_RC);
 		break;
 	case RT1318_PLL_S_MCLK:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_MCLK);
 		break;
 	case RT1318_PLL_S_SDW_IN_PLL:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_SDW1);
 		break;
 	case RT1318_PLL_S_SDW_0:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_SDW2);
 		break;
 	case RT1318_PLL_S_SDW_1:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_SDW3);
 		break;
 	case RT1318_PLL_S_SDW_2:
-		regmap_update_bits(rt1318->regmap, RT1318_CLK1,
+		regmap_update_bits((*rt1318).regmap, RT1318_CLK1,
 			RT1318_PLLIN_MASK, RT1318_PLLIN_SDW4);
 		break;
 	default:
-		dev_err(component->dev, "Unknown PLL source %d\n", source);
+		dev_err((*component).dev, "Unknown PLL source %d\n", source);
 		return -EINVAL;
 	}
 
 	ret = rt1318_pll_calc(freq_in, freq_out, &pll_code);
 	if (ret < 0) {
-		dev_err(component->dev, "Unsupport input clock %d\n", freq_in);
+		dev_err((*component).dev, "Unsupport input clock %d\n", freq_in);
 		return ret;
 	}
 
-	dev_dbg(component->dev, "bypass=%d m=%d n=%d k=%d\n",
+	dev_dbg((*component).dev, "bypass=%d m=%d n=%d k=%d\n",
 		pll_code.m_bp, (pll_code.m_bp ? 0 : pll_code.m_code),
 		pll_code.n_code, pll_code.k_code);
 
-	regmap_update_bits(rt1318->regmap, RT1318_PLL1_K,
+	regmap_update_bits((*rt1318).regmap, RT1318_PLL1_K,
 			RT1318_K_PLL1_MASK, pll_code.k_code);
-	regmap_update_bits(rt1318->regmap, RT1318_PLL1_M,
+	regmap_update_bits((*rt1318).regmap, RT1318_PLL1_M,
 			RT1318_M_PLL1_MASK, (pll_code.m_bp ? 0 : pll_code.m_code));
-	regmap_update_bits(rt1318->regmap, RT1318_PLL1_N_8,
+	regmap_update_bits((*rt1318).regmap, RT1318_PLL1_N_8,
 			RT1318_N_8_PLL1_MASK, pll_code.n_code >> 8);
-	regmap_update_bits(rt1318->regmap, RT1318_PLL1_N_7_0,
+	regmap_update_bits((*rt1318).regmap, RT1318_PLL1_N_7_0,
 			RT1318_N_7_0_PLL1_MASK, pll_code.n_code);
 
-	rt1318->pll_in = freq_in;
-	rt1318->pll_out = freq_out;
-	rt1318->pll_src = source;
+	(*rt1318).pll_in = freq_in;
+	(*rt1318).pll_out = freq_out;
+	(*rt1318).pll_src = source;
 
 	return 0;
 }
 
-pub unsafe extern "C" fn rt1318_set_tdm_slot(*mut snd_soc_daidai, c_uint tx_mask,
-			c_uint rx_mask, c_int slots, c_int slot_width)
+pub unsafe extern "C" fn rt1318_set_tdm_slot(*mut snd_soc_daidai, tx_mask: c_uint,
+			rx_mask: c_uint, slots: c_int, slot_width: c_int)
 {
-	*mut snd_soc_componentcomponent = dai->component;
+	'_set_tdm_err_: {
+	*mut snd_soc_componentcomponent = (*dai).component;
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 	c_uint cn = 0, cl = 0, rx_slotnum;
 	c_int ret = 0, first_bit;
@@ -979,8 +981,8 @@ pub unsafe extern "C" fn rt1318_set_tdm_slot(*mut snd_soc_daidai, c_uint tx_mask
 	rx_slotnum = hweight_long(rx_mask);
 	if (rx_slotnum != 1) {
 		ret = -EINVAL;
-		dev_err(component->dev, "too many rx slots or zero slot\n");
-		goto _set_tdm_err_;
+		dev_err((*component).dev, "too many rx slots or zero slot\n");
+		break '_set_tdm_err_;
 	}
 
 	first_bit = __ffs(rx_mask);
@@ -989,7 +991,7 @@ pub unsafe extern "C" fn rt1318_set_tdm_slot(*mut snd_soc_daidai, c_uint tx_mask
 	case 2:
 	case 4:
 	case 6:
-		regmap_update_bits(rt1318->regmap,
+		regmap_update_bits((*rt1318).regmap,
 			RT1318_TDM_CTRL9,
 			RT1318_TDM_I2S_TX_L_DAC1_1_MASK |
 			RT1318_TDM_I2S_TX_R_DAC1_1_MASK,
@@ -1000,7 +1002,7 @@ pub unsafe extern "C" fn rt1318_set_tdm_slot(*mut snd_soc_daidai, c_uint tx_mask
 	case 3:
 	case 5:
 	case 7:
-		regmap_update_bits(rt1318->regmap,
+		regmap_update_bits((*rt1318).regmap,
 			RT1318_TDM_CTRL9,
 			RT1318_TDM_I2S_TX_L_DAC1_1_MASK |
 			RT1318_TDM_I2S_TX_R_DAC1_1_MASK,
@@ -1009,15 +1011,15 @@ pub unsafe extern "C" fn rt1318_set_tdm_slot(*mut snd_soc_daidai, c_uint tx_mask
 		break;
 	default:
 		ret = -EINVAL;
-		goto _set_tdm_err_;
+		break '_set_tdm_err_;
 	}
 
-	regmap_update_bits(rt1318->regmap, RT1318_TDM_CTRL2,
+	regmap_update_bits((*rt1318).regmap, RT1318_TDM_CTRL2,
 			RT1318_I2S_CH_TX_MASK | RT1318_I2S_CH_RX_MASK, cn);
-	regmap_update_bits(rt1318->regmap, RT1318_TDM_CTRL3,
+	regmap_update_bits((*rt1318).regmap, RT1318_TDM_CTRL3,
 			RT1318_I2S_TX_CHL_MASK | RT1318_I2S_RX_CHL_MASK, cl);
-
-_set_tdm_err_:
+	}
+	
 	return ret;
 }
 
@@ -1025,10 +1027,10 @@ pub unsafe extern "C" fn rt1318_probe(*mut snd_soc_componentcomponent)
 {
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
-	rt1318->component = component;
+	(*rt1318).component = component;
 
-	schedule_work(&rt1318->cali_work);
-	rt1318->rt1318_dvol = RT1318_DVOL_STEP;
+	schedule_work((*&rt1318).cali_work);
+	(*rt1318).rt1318_dvol = RT1318_DVOL_STEP;
 
 	return 0;
 }
@@ -1037,7 +1039,7 @@ pub unsafe extern "C" fn rt1318_remove(*mut snd_soc_componentcomponent)
 {
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
-	cancel_work_sync(&rt1318->cali_work);
+	cancel_work_sync((*&rt1318).cali_work);
 }
 
 #ifdef CONFIG_PM
@@ -1045,8 +1047,8 @@ pub unsafe extern "C" fn rt1318_suspend(*mut snd_soc_componentcomponent)
 {
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
-	regcache_cache_only(rt1318->regmap, true);
-	regcache_mark_dirty(rt1318->regmap);
+	regcache_cache_only((*rt1318).regmap, true);
+	regcache_mark_dirty((*rt1318).regmap);
 	return 0;
 }
 
@@ -1054,8 +1056,8 @@ pub unsafe extern "C" fn rt1318_resume(*mut snd_soc_componentcomponent)
 {
 	*mut rt1318_privrt1318 = snd_soc_component_get_drvdata(component);
 
-	regcache_cache_only(rt1318->regmap, false);
-	regcache_sync(rt1318->regmap);
+	regcache_cache_only((*rt1318).regmap, false);
+	regcache_sync((*rt1318).regmap);
 	return 0;
 }
 #else
@@ -1068,54 +1070,54 @@ pub unsafe extern "C" fn rt1318_resume(*mut snd_soc_componentcomponent)
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S8)
 
 static const struct snd_soc_dai_ops rt1318_aif_dai_ops = {
-	.hw_params = rt1318_hw_params,
-	.set_fmt = rt1318_set_dai_fmt,
-	.set_sysclk = rt1318_set_dai_sysclk,
-	.set_pll = rt1318_set_dai_pll,
-	.set_tdm_slot = rt1318_set_tdm_slot,
+	hw_params: rt1318_hw_params,
+	set_fmt: rt1318_set_dai_fmt,
+	set_sysclk: rt1318_set_dai_sysclk,
+	set_pll: rt1318_set_dai_pll,
+	set_tdm_slot: rt1318_set_tdm_slot,
 };
 
 static struct snd_soc_dai_driver rt1318_dai[] = {
 	{
-		.name = "rt1318-aif",
-		.id = 0,
-		.playback = {
-			.stream_name = "AIF1 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT1318_STEREO_RATES,
-			.formats = RT1318_FORMATS,
+		name: "rt1318-aif",
+		id: 0,
+		playback: {
+			stream_name: "AIF1 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT1318_STEREO_RATES,
+			formats: RT1318_FORMATS,
 		},
-		.ops = &rt1318_aif_dai_ops,
+		ops: &rt1318_aif_dai_ops,
 	}
 };
 
 static const struct snd_soc_component_driver soc_component_dev_rt1318 = {
-	.probe = rt1318_probe,
-	.remove = rt1318_remove,
-	.suspend = rt1318_suspend,
-	.resume = rt1318_resume,
-	.controls = rt1318_snd_controls,
-	.num_controls = ARRAY_SIZE(rt1318_snd_controls),
-	.dapm_widgets = rt1318_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(rt1318_dapm_widgets),
-	.dapm_routes = rt1318_dapm_routes,
-	.num_dapm_routes = ARRAY_SIZE(rt1318_dapm_routes),
-	.use_pmdown_time = 1,
-	.endianness = 1,
+	probe: rt1318_probe,
+	remove: rt1318_remove,
+	suspend: rt1318_suspend,
+	resume: rt1318_resume,
+	controls: rt1318_snd_controls,
+	num_controls: ARRAY_SIZE(rt1318_snd_controls),
+	dapm_widgets: rt1318_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(rt1318_dapm_widgets),
+	dapm_routes: rt1318_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(rt1318_dapm_routes),
+	use_pmdown_time: 1,
+	endianness: 1,
 };
 
 static const struct regmap_config rt1318_regmap = {
-	.reg_bits = 32,
-	.val_bits = 8,
-	.readable_reg = rt1318_readable_register,
-	.volatile_reg = rt1318_volatile_register,
-	.max_register = 0x41001888,
-	.reg_defaults = rt1318_reg,
-	.num_reg_defaults = ARRAY_SIZE(rt1318_reg),
-	.cache_type = REGCACHE_RBTREE,
-	.use_single_read = true,
-	.use_single_write = true,
+	reg_bits: 32,
+	val_bits: 8,
+	readable_reg: rt1318_readable_register,
+	volatile_reg: rt1318_volatile_register,
+	max_register: 0x41001888,
+	reg_defaults: rt1318_reg,
+	num_reg_defaults: ARRAY_SIZE(rt1318_reg),
+	cache_type: REGCACHE_RBTREE,
+	use_single_read: true,
+	use_single_write: true,
 };
 
 static const struct i2c_device_id rt1318_i2c_id[] = {
@@ -1141,112 +1143,112 @@ MODULE_DEVICE_TABLE(acpi, rt1318_acpi_match);
 pub unsafe extern "C" fn rt1318_parse_dt(*mut rt1318_privrt1318, *mut devicedev)
 {
 	device_property_read_u32(dev, "realtek,r0_l",
-		&rt1318->pdata.init_r0_l);
+		(*&rt1318).pdata.init_r0_l);
 	device_property_read_u32(dev, "realtek,r0_r",
-		&rt1318->pdata.init_r0_r);
+		(*&rt1318).pdata.init_r0_r);
 
 	return 0;
 }
 
 pub unsafe extern "C" fn rt1318_calibration_sequence(*mut rt1318_privrt1318)
 {
-	regmap_write(rt1318->regmap, RT1318_CLK1, 0x22);
-	regmap_write(rt1318->regmap, RT1318_PLL1_N_7_0, 0x06);
-	regmap_write(rt1318->regmap, RT1318_STP_TEMP_L, 0xCC);
-	regmap_write(rt1318->regmap, RT1318_STP_SEL_L, 0x40);
-	regmap_write(rt1318->regmap, RT1318_STP_SEL_R, 0x40);
-	regmap_write(rt1318->regmap, RT1318_SINE_GEN0, 0x20);
-	regmap_write(rt1318->regmap, RT1318_SPK_VOL_TH, 0x00);
-	regmap_write(rt1318->regmap, RT1318_FEEDBACK_PATH, 0x0B);
-	regmap_write(rt1318->regmap, RT1318_TCON, 0x1C);
-	regmap_write(rt1318->regmap, RT1318_TCON_RELATE, 0x58);
-	regmap_write(rt1318->regmap, RT1318_TCON_RELATE, 0x78);
-	regmap_write(rt1318->regmap, RT1318_STP_R0_EN_L, 0xC2);
+	regmap_write((*rt1318).regmap, RT1318_CLK1, 0x22);
+	regmap_write((*rt1318).regmap, RT1318_PLL1_N_7_0, 0x06);
+	regmap_write((*rt1318).regmap, RT1318_STP_TEMP_L, 0xCC);
+	regmap_write((*rt1318).regmap, RT1318_STP_SEL_L, 0x40);
+	regmap_write((*rt1318).regmap, RT1318_STP_SEL_R, 0x40);
+	regmap_write((*rt1318).regmap, RT1318_SINE_GEN0, 0x20);
+	regmap_write((*rt1318).regmap, RT1318_SPK_VOL_TH, 0x00);
+	regmap_write((*rt1318).regmap, RT1318_FEEDBACK_PATH, 0x0B);
+	regmap_write((*rt1318).regmap, RT1318_TCON, 0x1C);
+	regmap_write((*rt1318).regmap, RT1318_TCON_RELATE, 0x58);
+	regmap_write((*rt1318).regmap, RT1318_TCON_RELATE, 0x78);
+	regmap_write((*rt1318).regmap, RT1318_STP_R0_EN_L, 0xC2);
 }
 
 pub unsafe extern "C" fn rt1318_r0_calculate(*mut rt1318_privrt1318)
 {
-	c_uint r0_l, r0_l_byte0, r0_l_byte1, r0_l_byte2, r0_l_byte3;
-	c_uint r0_r, r0_r_byte0, r0_r_byte1, r0_r_byte2, r0_r_byte3;
-	c_uint r0_l_integer, r0_l_factor, r0_r_integer, r0_r_factor;
+	r0_l: c_uint, r0_l_byte0, r0_l_byte1, r0_l_byte2, r0_l_byte3;
+	r0_r: c_uint, r0_r_byte0, r0_r_byte1, r0_r_byte2, r0_r_byte3;
+	r0_l_integer: c_uint, r0_l_factor, r0_r_integer, r0_r_factor;
 	c_uint format = 16777216; /* 2^24 */
 
-	regmap_read(rt1318->regmap, RT1318_R0_L_24, &r0_l_byte0);
-	regmap_read(rt1318->regmap, RT1318_R0_L_23_16, &r0_l_byte1);
-	regmap_read(rt1318->regmap, RT1318_R0_L_15_8, &r0_l_byte2);
-	regmap_read(rt1318->regmap, RT1318_R0_L_7_0, &r0_l_byte3);
+	regmap_read((*rt1318).regmap, RT1318_R0_L_24, &r0_l_byte0);
+	regmap_read((*rt1318).regmap, RT1318_R0_L_23_16, &r0_l_byte1);
+	regmap_read((*rt1318).regmap, RT1318_R0_L_15_8, &r0_l_byte2);
+	regmap_read((*rt1318).regmap, RT1318_R0_L_7_0, &r0_l_byte3);
 	r0_l = r0_l_byte0 << 24 | r0_l_byte1 << 16 | r0_l_byte2 << 8 | r0_l_byte3;
 	r0_l_integer = format / r0_l;
 	r0_l_factor = (format * 10) / r0_l - r0_l_integer * 10;
 
-	regmap_read(rt1318->regmap, RT1318_R0_R_24, &r0_r_byte0);
-	regmap_read(rt1318->regmap, RT1318_R0_R_23_16, &r0_r_byte1);
-	regmap_read(rt1318->regmap, RT1318_R0_R_15_8, &r0_r_byte2);
-	regmap_read(rt1318->regmap, RT1318_R0_R_7_0, &r0_r_byte3);
+	regmap_read((*rt1318).regmap, RT1318_R0_R_24, &r0_r_byte0);
+	regmap_read((*rt1318).regmap, RT1318_R0_R_23_16, &r0_r_byte1);
+	regmap_read((*rt1318).regmap, RT1318_R0_R_15_8, &r0_r_byte2);
+	regmap_read((*rt1318).regmap, RT1318_R0_R_7_0, &r0_r_byte3);
 	r0_r = r0_r_byte0 << 24 | r0_r_byte1 << 16 | r0_r_byte2 << 8 | r0_r_byte3;
 	r0_r_integer = format / r0_r;
 	r0_r_factor = (format * 10) / r0_r - r0_r_integer * 10;
 
-	dev_dbg(rt1318->component->dev, "r0_l_ch:%d.%d ohm\n", r0_l_integer, r0_l_factor);
-	dev_dbg(rt1318->component->dev, "r0_r_ch:%d.%d ohm\n", r0_r_integer, r0_r_factor);
+	dev_dbg((*(*rt1318).component).dev, "r0_l_ch:%d.%d ohm\n", r0_l_integer, r0_l_factor);
+	dev_dbg((*(*rt1318).component).dev, "r0_r_ch:%d.%d ohm\n", r0_r_integer, r0_r_factor);
 }
 
 pub unsafe extern "C" fn rt1318_r0_restore(*mut rt1318_privrt1318)
 {
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_L_24,
-		(rt1318->pdata.init_r0_l >> 24) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_L_23_16,
-		(rt1318->pdata.init_r0_l >> 16) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_L_15_8,
-		(rt1318->pdata.init_r0_l >> 8) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_L_7_0,
-		(rt1318->pdata.init_r0_l >> 0) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_R_24,
-		(rt1318->pdata.init_r0_r >> 24) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_R_23_16,
-		(rt1318->pdata.init_r0_r >> 16) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_R_15_8,
-		(rt1318->pdata.init_r0_r >> 8) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_PRE_R0_R_7_0,
-		(rt1318->pdata.init_r0_r >> 0) & 0xff);
-	regmap_write(rt1318->regmap, RT1318_STP_SEL_L, 0x80);
-	regmap_write(rt1318->regmap, RT1318_STP_SEL_R, 0x80);
-	regmap_write(rt1318->regmap, RT1318_R0_CMP_L_FLAG, 0xc0);
-	regmap_write(rt1318->regmap, RT1318_R0_CMP_R_FLAG, 0xc0);
-	regmap_write(rt1318->regmap, RT1318_STP_R0_EN_L, 0xc0);
-	regmap_write(rt1318->regmap, RT1318_STP_R0_EN_R, 0xc0);
-	regmap_write(rt1318->regmap, RT1318_STP_TEMP_L, 0xcc);
-	regmap_write(rt1318->regmap, RT1318_TCON, 0x9c);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_L_24,
+		((*rt1318).pdata.init_r0_l >> 24) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_L_23_16,
+		((*rt1318).pdata.init_r0_l >> 16) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_L_15_8,
+		((*rt1318).pdata.init_r0_l >> 8) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_L_7_0,
+		((*rt1318).pdata.init_r0_l >> 0) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_R_24,
+		((*rt1318).pdata.init_r0_r >> 24) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_R_23_16,
+		((*rt1318).pdata.init_r0_r >> 16) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_R_15_8,
+		((*rt1318).pdata.init_r0_r >> 8) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_PRE_R0_R_7_0,
+		((*rt1318).pdata.init_r0_r >> 0) & 0xff);
+	regmap_write((*rt1318).regmap, RT1318_STP_SEL_L, 0x80);
+	regmap_write((*rt1318).regmap, RT1318_STP_SEL_R, 0x80);
+	regmap_write((*rt1318).regmap, RT1318_R0_CMP_L_FLAG, 0xc0);
+	regmap_write((*rt1318).regmap, RT1318_R0_CMP_R_FLAG, 0xc0);
+	regmap_write((*rt1318).regmap, RT1318_STP_R0_EN_L, 0xc0);
+	regmap_write((*rt1318).regmap, RT1318_STP_R0_EN_R, 0xc0);
+	regmap_write((*rt1318).regmap, RT1318_STP_TEMP_L, 0xcc);
+	regmap_write((*rt1318).regmap, RT1318_TCON, 0x9c);
 }
 
 pub unsafe extern "C" fn rt1318_calibrate(*mut rt1318_privrt1318)
 {
 	c_int chk_cnt = 30, count = 0;
-	c_int val, val2;
+	val: c_int, val2;
 
-	regmap_write(rt1318->regmap, RT1318_PWR_STA1, 0x1);
+	regmap_write((*rt1318).regmap, RT1318_PWR_STA1, 0x1);
 	usleep_range(0, 10000);
 	rt1318_calibration_sequence(rt1318);
 
 	while (count < chk_cnt) {
 		msleep(100);
-		regmap_read(rt1318->regmap, RT1318_R0_CMP_L_FLAG, &val);
-		regmap_read(rt1318->regmap, RT1318_R0_CMP_R_FLAG, &val2);
+		regmap_read((*rt1318).regmap, RT1318_R0_CMP_L_FLAG, &val);
+		regmap_read((*rt1318).regmap, RT1318_R0_CMP_R_FLAG, &val2);
 		val = (val >> 1) & 0x1;
 		val2 = (val2 >> 1) & 0x1;
 		if (val & val2) {
-			dev_dbg(rt1318->component->dev, "Calibration done.\n");
+			dev_dbg((*(*rt1318).component).dev, "Calibration done.\n");
 			break;
 		}
 		count++;
 		if (count == chk_cnt) {
-			regmap_write(rt1318->regmap, RT1318_PWR_STA1, 0x0);
+			regmap_write((*rt1318).regmap, RT1318_PWR_STA1, 0x0);
 			return RT1318_R0_CALIB_NOT_DONE;
 		}
 	}
-	regmap_write(rt1318->regmap, RT1318_PWR_STA1, 0x0);
-	regmap_read(rt1318->regmap, RT1318_R0_CMP_L_FLAG, &val);
-	regmap_read(rt1318->regmap, RT1318_R0_CMP_R_FLAG, &val2);
+	regmap_write((*rt1318).regmap, RT1318_PWR_STA1, 0x0);
+	regmap_read((*rt1318).regmap, RT1318_R0_CMP_L_FLAG, &val);
+	regmap_read((*rt1318).regmap, RT1318_R0_CMP_R_FLAG, &val2);
 	if ((val & 0x1) & (val2 & 0x1))
 		return RT1318_R0_IN_RANGE;
 	else
@@ -1256,26 +1258,26 @@ pub unsafe extern "C" fn rt1318_calibrate(*mut rt1318_privrt1318)
 pub unsafe extern "C" fn rt1318_calibration_work(*mut work_structwork)
 {
 	*mut rt1318_privrt1318 =
-		container_of(work, struct rt1318_priv, cali_work);
+		container_of(work, rt1318_priv, cali_work);
 	c_int ret;
 
-	if (rt1318->pdata.init_r0_l && rt1318->pdata.init_r0_r)
+	if ((*rt1318).pdata.init_r0_l && (*rt1318).pdata.init_r0_r)
 		rt1318_r0_restore(rt1318);
 	else {
 		ret = rt1318_calibrate(rt1318);
 		if (ret == RT1318_R0_IN_RANGE)
 			rt1318_r0_calculate(rt1318);
-		dev_dbg(rt1318->component->dev, "Calibrate R0 result:%d\n", ret);
+		dev_dbg((*(*rt1318).component).dev, "Calibrate R0 result:%d\n", ret);
 	}
 }
 
 pub unsafe extern "C" fn rt1318_i2c_probe(*mut i2c_clienti2c)
 {
-	*mut rt1318_platform_datapdata = dev_get_platdata(&i2c->dev);
+	*mut rt1318_platform_datapdata = dev_get_platdata((*&i2c).dev);
 	*mut rt1318_privrt1318;
-	c_int ret, val, val2, dev_id;
+	ret: c_int, val, val2, dev_id;
 
-	rt1318 = devm_kzalloc(&i2c->dev, sizeof(struct rt1318_priv),
+	rt1318 = devm_kzalloc((*&i2c).dev, sizeof(rt1318_priv),
 				GFP_KERNEL);
 	if (!rt1318)
 		return -ENOMEM;
@@ -1283,47 +1285,47 @@ pub unsafe extern "C" fn rt1318_i2c_probe(*mut i2c_clienti2c)
 	i2c_set_clientdata(i2c, rt1318);
 
 	if (pdata)
-		rt1318->pdata = *pdata;
+		(*rt1318).pdata = *pdata;
 	else
-		rt1318_parse_dt(rt1318, &i2c->dev);
+		rt1318_parse_dt(rt1318, (*&i2c).dev);
 
-	rt1318->regmap = devm_regmap_init_i2c(i2c, &rt1318_regmap);
-	if (IS_ERR(rt1318->regmap)) {
-		ret = PTR_ERR(rt1318->regmap);
-		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+	(*rt1318).regmap = devm_regmap_init_i2c(i2c, &rt1318_regmap);
+	if (IS_ERR((*rt1318).regmap)) {
+		ret = PTR_ERR((*rt1318).regmap);
+		dev_err((*&i2c).dev, "Failed to allocate register map: %d\n",
 			ret);
 		return ret;
 	}
 
-	regmap_read(rt1318->regmap, RT1318_DEV_ID1, &val);
-	regmap_read(rt1318->regmap, RT1318_DEV_ID2, &val2);
+	regmap_read((*rt1318).regmap, RT1318_DEV_ID1, &val);
+	regmap_read((*rt1318).regmap, RT1318_DEV_ID2, &val2);
 	dev_id = (val << 8) | val2;
 	if (dev_id != 0x6821) {
-		dev_err(&i2c->dev,
+		dev_err((*&i2c).dev,
 			"Device with ID register %#x is not rt1318\n",
 			dev_id);
 		return -ENODEV;
 	}
 
-	ret = regmap_register_patch(rt1318->regmap, init_list,
+	ret = regmap_register_patch((*rt1318).regmap, init_list,
 				    ARRAY_SIZE(init_list));
 	if (ret != 0)
-		dev_warn(&i2c->dev, "Failed to apply regmap patch: %d\n", ret);
+		dev_warn((*&i2c).dev, "Failed to apply regmap patch: %d\n", ret);
 
-	INIT_WORK(&rt1318->cali_work, rt1318_calibration_work);
+	INIT_WORK((*&rt1318).cali_work, rt1318_calibration_work);
 
-	return devm_snd_soc_register_component(&i2c->dev,
+	return devm_snd_soc_register_component((*&i2c).dev,
 		&soc_component_dev_rt1318, rt1318_dai, ARRAY_SIZE(rt1318_dai));
 }
 
 static struct i2c_driver rt1318_i2c_driver = {
-	.driver = {
-		.name = "rt1318",
-		.of_match_table = of_match_ptr(rt1318_of_match),
-		.acpi_match_table = ACPI_PTR(rt1318_acpi_match),
+	driver: {
+		name: "rt1318",
+		of_match_table: of_match_ptr(rt1318_of_match),
+		acpi_match_table: ACPI_PTR(rt1318_acpi_match),
 	},
-	.probe = rt1318_i2c_probe,
-	.id_table = rt1318_i2c_id,
+	probe: rt1318_i2c_probe,
+	id_table: rt1318_i2c_id,
 };
 module_i2c_driver(rt1318_i2c_driver);
 

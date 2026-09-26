@@ -539,7 +539,7 @@ unsafe extern "C" fn ublk_stripe_io_done(t: *mut ublk_thread, q: *mut ublk_queue
         let seq = user_data_to_tgt_data((*cqe).user_data) as usize;
         let s = (*io).private_data as *mut stripe_array;
 
-        if res < (*s).s[seq].nr_sects as c_int << 9 {
+        if res < ((*s).s[seq].nr_sects as c_int) << 9 {
             (*io).result = -EIO;
             ublk_err(
                 b"%s: short rw op %u res %d exp %u tag %u\n\0".as_ptr() as *const c_char,

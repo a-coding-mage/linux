@@ -37,9 +37,9 @@ pub unsafe fn gfs2_jindex_free(sdp: *mut gfs2_sbd) {
 
 unsafe fn jdesc_find_i(head: *mut list_head, jid: u32) -> *mut gfs2_jdesc {
     let mut jd: *mut gfs2_jdesc = core::ptr::null_mut();
-    list_for_each_entry(&mut jd, head, jd_list) {
+    list_for_each_entry!(&mut jd, head, jd_list, {
         if (*jd).jd_jid == jid { return jd; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -128,16 +128,16 @@ pub unsafe fn gfs2_free_inode(inode: *mut inode) { kmem_cache_free(gfs2_inode_ca
 
 pub unsafe fn free_local_statfs_inodes(sdp: *mut gfs2_sbd) {
     let mut lsi: *mut local_statfs_inode = core::ptr::null_mut(); let mut safe: *mut local_statfs_inode;
-    list_for_each_entry_safe(&mut lsi, &mut safe, &mut (*sdp).sd_sc_inodes_list, si_list) {
+    list_for_each_entry_safe!(&mut lsi, &mut safe, &mut (*sdp).sd_sc_inodes_list, si_list, {
         if (*lsi).si_jid == (*sdp).sd_jdesc.deref().jd_jid { (*sdp).sd_sc_inode = core::ptr::null_mut(); }
         if !(*lsi).si_sc_inode.is_null() { iput((*lsi).si_sc_inode); }
         list_del(&mut (*lsi).si_list); kfree(lsi.cast());
-    }
+    });
 }
 
 pub unsafe fn find_local_statfs_inode(sdp: *mut gfs2_sbd, index: u32) -> *mut inode {
     let mut lsi: *mut local_statfs_inode = core::ptr::null_mut();
-    list_for_each_entry(&mut lsi, &mut (*sdp).sd_sc_inodes_list, si_list) { if (*lsi).si_jid == index { return (*lsi).si_sc_inode; } }
+    list_for_each_entry!(&mut lsi, &mut (*sdp).sd_sc_inodes_list, si_list, { if (*lsi).si_jid == index { return (*lsi).si_sc_inode; } });
     core::ptr::null_mut()
 }
 

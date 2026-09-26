@@ -146,8 +146,7 @@ pub unsafe extern "C" fn plat_irq_dispatch() {
     let pending = read_c0_cause() & read_c0_status() & ST0_IM;
     if pending & CAUSEF_IP7 != 0 { do_IRQ(MIPS_CPU_IRQ_BASE + 7); }
     else if pending & CAUSEF_IP4 != 0 { do_IRQ(K_INT_TIMER_0 + cpu); }
-    #[cfg(CONFIG_SMP)]
-    else if pending & CAUSEF_IP3 != 0 { sb1250_mailbox_interrupt(); }
+    else if cfg!(CONFIG_SMP) && (pending & CAUSEF_IP3 != 0) { sb1250_mailbox_interrupt(); }
     else if pending & CAUSEF_IP2 != 0 { dispatch_ip2(); }
     else { spurious_interrupt(); }
 }

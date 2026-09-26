@@ -25,11 +25,11 @@ pub unsafe fn tracepoint_probe_register_may_exist(tp: *mut tracepoint, probe: *m
     tracepoint_probe_register_prio_may_exist(tp, probe, data, TRACEPOINT_DEFAULT_PRIO)
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 #[repr(C)]
 pub struct tp_module { pub list: list_head, pub mod_: *mut module }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 extern "C" {
     pub fn trace_module_has_bad_taint(m: *mut module) -> bool;
     pub fn register_tracepoint_module_notifier(nb: *mut notifier_block) -> c_int;
@@ -38,18 +38,18 @@ extern "C" {
     pub fn for_each_tracepoint_in_module(m: *mut module, fct: Option<unsafe extern "C" fn(*mut tracepoint, *mut module, *mut c_void)>, priv_: *mut c_void);
 }
 
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline] pub unsafe fn trace_module_has_bad_taint(_: *mut module) -> bool { false }
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline] pub unsafe fn register_tracepoint_module_notifier(_: *mut notifier_block) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline] pub unsafe fn unregister_tracepoint_module_notifier(_: *mut notifier_block) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline] pub unsafe fn for_each_module_tracepoint(_: Option<unsafe extern "C" fn(*mut tracepoint, *mut module, *mut c_void)>, _: *mut c_void) {}
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline] pub unsafe fn for_each_tracepoint_in_module(_: *mut module, _: Option<unsafe extern "C" fn(*mut tracepoint, *mut module, *mut c_void)>, _: *mut c_void) {}
 
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 extern "C" {
     pub static mut tracepoint_srcu: srcu_struct;
     pub fn synchronize_rcu_tasks_trace();
@@ -58,24 +58,24 @@ extern "C" {
     pub fn call_rcu_tasks_trace(rcu: *mut rcu_head, func: Option<unsafe extern "C" fn(*mut rcu_head)>);
 }
 
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 #[inline] pub unsafe fn tracepoint_synchronize_unregister() { synchronize_rcu_tasks_trace(); synchronize_srcu(&raw mut tracepoint_srcu); }
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 #[inline] pub unsafe fn tracepoint_is_faultable(tp: *mut tracepoint) -> bool { (*tp).ext != core::ptr::null_mut() && (*(*tp).ext).faultable }
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline] pub unsafe fn tracepoint_synchronize_unregister() {}
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline] pub unsafe fn tracepoint_is_faultable(_: *mut tracepoint) -> bool { false }
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 #[inline] pub unsafe fn call_tracepoint_unregister_atomic(r: *mut rcu_head, f: Option<unsafe extern "C" fn(*mut rcu_head)>) { call_srcu(&raw mut tracepoint_srcu, r, f) }
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 #[inline] pub unsafe fn call_tracepoint_unregister_syscall(r: *mut rcu_head, f: Option<unsafe extern "C" fn(*mut rcu_head)>) { call_rcu_tasks_trace(r, f) }
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline] pub unsafe fn call_tracepoint_unregister_atomic(_: *mut rcu_head, _: Option<unsafe extern "C" fn(*mut rcu_head)>) {}
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline] pub unsafe fn call_tracepoint_unregister_syscall(_: *mut rcu_head, _: Option<unsafe extern "C" fn(*mut rcu_head)>) {}
 
-#[cfg(feature = "CONFIG_HAVE_SYSCALL_TRACEPOINTS")]
+#[cfg(CONFIG_HAVE_SYSCALL_TRACEPOINTS)]
 extern "C" { pub fn syscall_regfunc() -> c_int; pub fn syscall_unregfunc(); }
 
 /* C macro compatibility: these intentionally retain token-level expansion semantics. */

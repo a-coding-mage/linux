@@ -124,13 +124,13 @@ unsafe extern "C" fn axp288_extcon_isr(_irq: i32, data: *mut core::ffi::c_void) 
 
 // Remaining platform-driver registration and lifecycle declarations are external-kernel bindings.
 unsafe extern "C" {
-    fn regmap_read(*mut Regmap, u32, *mut i32) -> i32; fn regmap_write(*mut Regmap, u32, u32) -> i32;
+    fn regmap_read(_: *mut Regmap, _: u32, _: *mut i32) -> i32; fn regmap_write(_: *mut Regmap, _: u32, _: u32) -> i32;
     fn iosf_mbi_block_punit_i2c_access() -> i32; fn iosf_mbi_unblock_punit_i2c_access();
-    fn extcon_get_state(*mut ExtconDev, u32) -> i32; fn extcon_set_state_sync(*mut ExtconDev, u32, bool) -> i32;
-    fn usb_role_switch_get_role(*mut UsbRoleSwitch) -> i32; fn usb_role_switch_set_role(*mut UsbRoleSwitch, i32) -> i32;
-    fn queue_work(*mut WorkqueueStruct, *mut WorkStruct) -> bool;
-    fn dev_err(*mut Device, *const str, ...); fn dev_dbg(*mut Device, *const str, ...); fn dev_warn(*mut Device, *const str, ...);
-    fn container_of_work(*mut WorkStruct) -> *mut Axp288ExtconInfo; fn container_of_nb(*mut NotifierBlock) -> *mut Axp288ExtconInfo;
+    fn extcon_get_state(_: *mut ExtconDev, _: u32) -> i32; fn extcon_set_state_sync(_: *mut ExtconDev, _: u32, _: bool) -> i32;
+    fn usb_role_switch_get_role(_: *mut UsbRoleSwitch) -> i32; fn usb_role_switch_set_role(_: *mut UsbRoleSwitch, _: i32) -> i32;
+    fn queue_work(_: *mut WorkqueueStruct, _: *mut WorkStruct) -> bool;
+    fn dev_err(_: *mut Device, _: *const str, ...); fn dev_dbg(_: *mut Device, _: *const str, ...); fn dev_warn(_: *mut Device, _: *const str, ...);
+    fn container_of_work(_: *mut WorkStruct) -> *mut Axp288ExtconInfo; fn container_of_nb(_: *mut NotifierBlock) -> *mut Axp288ExtconInfo;
 }
 
 /* The probe, suspend/resume, PM-ops, platform-device-id table, platform-driver

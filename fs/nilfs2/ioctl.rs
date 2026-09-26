@@ -26,7 +26,7 @@ unsafe fn nilfs_ioctl_wrap_copy(
         if nr < 0 { ret = nr as c_int; break; }
         if (dir & _IOC_READ) != 0 && copy_to_user(base.add((*argv).v_size as usize * i) as *mut c_void, buf, (*argv).v_size as usize * nr as usize) != 0 { ret = -EFAULT; break; }
         total += nr as usize;
-        if nr as usize < n { break; }
+        if (nr as usize) < n { break; }
         if pos == ppos { pos = pos.wrapping_add(n as u64); }
         i += n;
     }
@@ -95,7 +95,7 @@ unsafe extern "C" fn nilfs_ioctl_do_get_bdescs(n: *mut the_nilfs, _p: *mut u64, 
     up_read(&(*n).ns_segctor_sem); m as isize
 }
 
-unsafe fn nilfs_ioctl_get_info(inode:*mut inode, cmd:c_uint, argp:*mut c_void, membsz:usize, f:unsafe extern "C" fn(*mut the_nilfs,*mut u64,c_int,*mut c_void,usize,usize)->isize)->c_int { let n=(*(*inode).i_sb).s_fs_info as *mut the_nilfs; let mut a:nilfs_argv=std::mem::zeroed(); if copy_from_user(&mut a as *mut _ as *mut c_void,argp,std::mem::size_of::<nilfs_argv>())!=0{return -EFAULT;} if a.v_size as usize<membsz{return -EINVAL;} let r=nilfs_ioctl_wrap_copy(n,&mut a,_IOC_DIR(cmd),f); if r<0{return r;} if copy_to_user(argp,&a as *const _ as *const c_void,std::mem::size_of::<nilfs_argv>())!=0{-EFAULT}else{r} }
+unsafe fn nilfs_ioctl_get_info(inode:*mut inode, cmd:c_uint, argp:*mut c_void, membsz:usize, f:unsafe extern "C" fn(*mut the_nilfs,*mut u64,c_int,*mut c_void,usize,usize)->isize)->c_int { let n=(*(*inode).i_sb).s_fs_info as *mut the_nilfs; let mut a:nilfs_argv=std::mem::zeroed(); if copy_from_user(&mut a as *mut _ as *mut c_void,argp,std::mem::size_of::<nilfs_argv>())!=0{return -EFAULT;} if (a.v_size as usize)<membsz{return -EINVAL;} let r=nilfs_ioctl_wrap_copy(n,&mut a,_IOC_DIR(cmd),f); if r<0{return r;} if copy_to_user(argp,&a as *const _ as *const c_void,std::mem::size_of::<nilfs_argv>())!=0{-EFAULT}else{r} }
 
 /* Remaining ioctl handlers retain the kernel ABI and delegate to the corresponding NILFS primitives. */
 pub unsafe extern "C" fn nilfs_ioctl(filp:*mut file, cmd:c_uint, arg: c_ulong)->c_long {

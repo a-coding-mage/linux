@@ -22,7 +22,7 @@
 
 const ISP_MC_ADDR_ALIGN: u64 = 1024 * 32;
 
-static unsafe fn isp_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn isp_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     let isp = &mut (*adev).isp;
     if !(*isp).funcs.is_null() && (*(*isp).funcs).hw_init.is_some() {
@@ -31,7 +31,7 @@ static unsafe fn isp_hw_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     -ENODEV
 }
 
-static unsafe fn isp_hw_fini(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn isp_hw_fini(ip_block: *mut amdgpu_ip_block) -> i32 {
     let isp = &mut (*(*ip_block).adev).isp;
     if !(*isp).funcs.is_null() && (*(*isp).funcs).hw_fini.is_some() {
         return ((*(*isp).funcs).hw_fini.unwrap())(isp);
@@ -39,7 +39,7 @@ static unsafe fn isp_hw_fini(ip_block: *mut amdgpu_ip_block) -> i32 {
     -ENODEV
 }
 
-static unsafe fn isp_load_fw_by_psp(adev: *mut amdgpu_device) -> i32 {
+unsafe fn isp_load_fw_by_psp(adev: *mut amdgpu_device) -> i32 {
     let mut ucode_prefix = [0i8; 10];
     let mut r = 0i32;
     amdgpu_ucode_ip_version_decode(adev, ISP_HWIP, ucode_prefix.as_mut_ptr(), ucode_prefix.len());
@@ -61,7 +61,7 @@ static unsafe fn isp_load_fw_by_psp(adev: *mut amdgpu_device) -> i32 {
     r
 }
 
-static unsafe fn isp_early_init(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn isp_early_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     let adev = (*ip_block).adev;
     let isp = &mut (*adev).isp;
     match amdgpu_ip_version(adev, ISP_HWIP, 0) {
@@ -78,19 +78,19 @@ static unsafe fn isp_early_init(ip_block: *mut amdgpu_ip_block) -> i32 {
     0
 }
 
-static unsafe fn isp_is_idle(_ip_block: *mut amdgpu_ip_block) -> bool { true }
+unsafe fn isp_is_idle(_ip_block: *mut amdgpu_ip_block) -> bool { true }
 
-static unsafe fn isp_set_clockgating_state(
+unsafe fn isp_set_clockgating_state(
     _ip_block: *mut amdgpu_ip_block,
     _state: amd_clockgating_state,
 ) -> i32 { 0 }
 
-static unsafe fn isp_set_powergating_state(
+unsafe fn isp_set_powergating_state(
     _ip_block: *mut amdgpu_ip_block,
     _state: amd_powergating_state,
 ) -> i32 { 0 }
 
-static unsafe fn is_valid_isp_device(isp_parent: *mut device, amdgpu_dev: *mut device) -> i32 {
+unsafe fn is_valid_isp_device(isp_parent: *mut device, amdgpu_dev: *mut device) -> i32 {
     if isp_parent != amdgpu_dev { return -EINVAL; }
     0
 }
@@ -151,13 +151,13 @@ pub unsafe fn isp_kernel_buffer_free(buf_obj: *mut *mut c_void, gpu_addr: *mut u
     amdgpu_bo_free_kernel(buf_obj as *mut *mut amdgpu_bo, gpu_addr, cpu_addr);
 }
 
-static unsafe fn isp_resume(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn isp_resume(ip_block: *mut amdgpu_ip_block) -> i32 {
     let isp = &mut (*(*ip_block).adev).isp;
     if !(*isp).funcs.is_null() && (*(*isp).funcs).hw_resume.is_some() { return ((*(*isp).funcs).hw_resume.unwrap())(isp); }
     -ENODEV
 }
 
-static unsafe fn isp_suspend(ip_block: *mut amdgpu_ip_block) -> i32 {
+unsafe fn isp_suspend(ip_block: *mut amdgpu_ip_block) -> i32 {
     let isp = &mut (*(*ip_block).adev).isp;
     if !(*isp).funcs.is_null() && (*(*isp).funcs).hw_suspend.is_some() { return ((*(*isp).funcs).hw_suspend.unwrap())(isp); }
     -ENODEV

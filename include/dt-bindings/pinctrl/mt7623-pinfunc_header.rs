@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0 */
-#define __DTS_MT7623_PINFUNC_H
 
 // External dependency: <dt-bindings/pinctrl/mt65xx.h>
 

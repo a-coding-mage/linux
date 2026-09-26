@@ -28,7 +28,7 @@ macro_rules! HE_ASSIGN { ($($args:tt)*) => { $($args)* }; }
 // HE_STRUCT is RE_STRUCT and he_field is re_field in the source build.
 // These names are supplied by the remote-event dependency.
 
-#[cfg(feature = "CONFIG_NVHE_EL2_TRACING")]
+#[cfg(CONFIG_NVHE_EL2_TRACING)]
 macro_rules! HYP_EVENT {
     ($name:ident, ($($proto:tt)*), $struct:item, ($($assign:tt)*), $printk:tt) => {
         $struct
@@ -45,7 +45,7 @@ macro_rules! HYP_EVENT {
     };
 }
 
-#[cfg(feature = "CONFIG_NVHE_EL2_TRACING")]
+#[cfg(CONFIG_NVHE_EL2_TRACING)]
 extern "C" {
     pub fn tracing_reserve_entry(length: c_ulong) -> *mut c_void;
     pub fn tracing_commit_entry();
@@ -59,17 +59,17 @@ extern "C" {
     pub fn __tracing_enable_event(id: c_ushort, enable: bool) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn tracing_reserve_entry(_length: c_ulong) -> *mut c_void {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn tracing_commit_entry() {}
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 macro_rules! HYP_EVENT {
     ($name:ident, ($($proto:tt)*), $struct:item, ($($assign:tt)*), $printk:tt) => {
         #[inline(always)]
@@ -77,31 +77,31 @@ macro_rules! HYP_EVENT {
     };
 }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_load(_desc_va: c_ulong, _desc_size: size_t) -> c_int { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_unload() {}
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_enable(_enable: bool) -> c_int { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_swap_reader(_cpu: c_uint) -> c_int { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_update_clock(_mult: u32, _shift: u32, _epoch_ns: u64, _epoch_cyc: u64) {}
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_reset(_cpu: c_uint) -> c_int { -ENODEV }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 #[inline(always)]
 pub unsafe fn __tracing_enable_event(_id: c_ushort, _enable: bool) -> c_int { -ENODEV }
 

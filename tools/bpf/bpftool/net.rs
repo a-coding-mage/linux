@@ -210,8 +210,7 @@ extern "C" {
         level: c_int,
         option_name: c_int,
         option_value: *const c_void,
-        option_len: socklen_t,
-    ) -> c_int;
+        option_len: socklen_t) -> c_int;
     fn bind(socket: c_int, address: *const sockaddr, address_len: socklen_t) -> c_int;
     fn getsockname(socket: c_int, address: *mut sockaddr, address_len: *mut socklen_t) -> c_int;
     fn close(fd: c_int) -> c_int;
@@ -240,8 +239,7 @@ extern "C" {
         maxtype: c_int,
         head: *mut nlattr,
         len: c_int,
-        policy: *mut c_void,
-    ) -> c_int;
+        policy: *mut c_void) -> c_int;
     fn libbpf_nla_dump_errormsg(nlh: *mut nlmsghdr);
     fn libbpf_nla_getattr_str(attr: *mut nlattr) -> *const c_char;
     fn libbpf_nla_data(attr: *mut nlattr) -> *mut c_void;
@@ -253,8 +251,7 @@ extern "C" {
         tb: *mut *mut nlattr,
         kind: *const c_char,
         devname: *const c_char,
-        ifindex: c_int,
-    ) -> c_int;
+        ifindex: c_int) -> c_int;
     fn bpf_prog_get_fd_by_id(id: __u32) -> c_int;
     fn bpf_obj_get_info_by_fd(fd: c_int, info: *mut c_void, info_len: *__u32) -> c_int;
     fn get_prog_full_name(info: *mut bpf_prog_info, fd: c_int, name: *mut c_char, len: size_t);
@@ -266,15 +263,13 @@ extern "C" {
         query_flags: __u32,
         attach_flags: *mut __u32,
         prog_ids: *mut __u32,
-        prog_cnt: *mut __u32,
-    ) -> c_int;
+        prog_cnt: *mut __u32) -> c_int;
     fn bpf_xdp_attach(ifindex: c_int, prog_fd: c_int, flags: __u32, opts: *const c_void) -> c_int;
     fn bpf_prog_attach_opts(
         progfd: c_int,
         targetfd: c_int,
         type_: c_int,
-        opts: *mut bpf_prog_attach_opts,
-    ) -> c_int;
+        opts: *mut bpf_prog_attach_opts) -> c_int;
     fn bpf_prog_attach(progfd: c_int, targetfd: c_int, type_: c_int, flags: __u32) -> c_int;
     fn bpf_prog_detach(targetfd: c_int, type_: c_int) -> c_int;
     fn prog_parse_fd(argc: *mut c_int, argv: *mut *mut *mut c_char) -> c_int;

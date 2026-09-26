@@ -48,13 +48,13 @@ struct Ht16k33Keypad {
 enum I2cClient {} enum InputDev {} enum FbInfo {} enum Linedisp {}
 enum WaitQueueHead {} enum DelayedWork {} enum LedClassdev {}
 extern "C" {
-    fn i2c_smbus_write_byte(*mut I2cClient, u8) -> c_int;
-    fn i2c_smbus_write_i2c_block_data(*mut I2cClient, u8, c_int, *const u8) -> c_int;
-    fn i2c_smbus_write_block_data(*mut I2cClient, u8, u32, *const u8) -> c_int;
-    fn i2c_smbus_read_i2c_block_data(*mut I2cClient, u8, c_int, *mut u8) -> c_int;
-    fn schedule_delayed_work(*mut DelayedWork, c_ulong) -> bool;
-    fn cancel_delayed_work_sync(*mut DelayedWork) -> bool;
-    fn memcpy(*mut c_void, *const c_void, usize) -> *mut c_void;
+    fn i2c_smbus_write_byte(_: *mut I2cClient, _: u8) -> c_int;
+    fn i2c_smbus_write_i2c_block_data(_: *mut I2cClient, _: u8, _: c_int, _: *const u8) -> c_int;
+    fn i2c_smbus_write_block_data(_: *mut I2cClient, _: u8, _: u32, _: *const u8) -> c_int;
+    fn i2c_smbus_read_i2c_block_data(_: *mut I2cClient, _: u8, _: c_int, _: *mut u8) -> c_int;
+    fn schedule_delayed_work(_: *mut DelayedWork, _: c_ulong) -> bool;
+    fn cancel_delayed_work_sync(_: *mut DelayedWork) -> bool;
+    fn memcpy(_: *mut c_void, _: *const c_void, _: usize) -> *mut c_void;
 }
 
 #[inline] unsafe fn container_of<T, U>(p: *mut T, _field: usize) -> *mut U { p as *mut U }

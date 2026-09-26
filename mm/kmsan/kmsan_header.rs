@@ -163,12 +163,12 @@ pub const fn kmsan_depth_from_eb(extra_bits: u32) -> u32 {
 
 #[inline]
 pub unsafe fn kmsan_internal_is_module_addr(vaddr: *mut core::ffi::c_void) -> bool {
-    (vaddr as u64 >= MODULES_VADDR) && (vaddr as u64 < MODULES_END)
+    (vaddr as u64 >= MODULES_VADDR) && ((vaddr as u64) < MODULES_END)
 }
 
 #[inline]
 pub unsafe fn kmsan_internal_is_vmalloc_addr(addr: *mut core::ffi::c_void) -> bool {
-    (addr as u64 >= VMALLOC_START) && (addr as u64 < VMALLOC_END)
+    (addr as u64 >= VMALLOC_START) && ((addr as u64) < VMALLOC_END)
 }
 
 // External kernel declarations referenced by this header.

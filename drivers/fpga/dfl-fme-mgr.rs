@@ -136,7 +136,7 @@ unsafe fn fme_mgr_probe(pdev: *mut platform_device) -> i32 {
     }
     info.name = "DFL FME FPGA Manager";
     info.mops = &FME_MGR_OPS;
-    info.priv = priv_ as *mut core::ffi::c_void;
+    info.r#priv = priv_ as *mut core::ffi::c_void;
     info.compat_id = devm_kzalloc(dev, core::mem::size_of::<fpga_compat_id>(), GFP_KERNEL) as *mut fpga_compat_id;
     if info.compat_id.is_null() { return -ENOMEM; }
     fme_mgr_get_compat_id((*priv_).ioaddr, info.compat_id);

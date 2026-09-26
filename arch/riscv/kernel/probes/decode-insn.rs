@@ -26,7 +26,7 @@ pub unsafe fn riscv_probe_decode_insn(
      * TODO: the REJECTED ones below need to be implemented
      */
     // CONFIG_RISCV_ISA_C conditional compilation from the C source.
-    #[cfg(feature = "CONFIG_RISCV_ISA_C")]
+    #[cfg(CONFIG_RISCV_ISA_C)]
     {
         RISCV_INSN_REJECTED!(c_ebreak, insn);
 

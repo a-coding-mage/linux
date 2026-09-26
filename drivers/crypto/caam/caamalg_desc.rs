@@ -32,7 +32,7 @@ unsafe fn void aead_append_src_dst(desc: *mut u32, msg_type: u32)
 
 /* Set DK bit in class 1 operation if shared */
 #[inline]
-unsafe fn void append_dec_op1(desc: *mut u32, type: u32)
+unsafe fn void append_dec_op1(desc: *mut u32, r#type: u32)
 {
 	jump_cmd: *mut u32, *uncond_jump_cmd;
 
@@ -219,8 +219,8 @@ void cnstr_shdsc_aead_null_decap(desc: *mut u32, adata: *mut alginfo,
 // exported symbol
 
 unsafe fn init_sh_desc_key_aead(desc: *mut u32,
-				  const: *mut alginfo cdata,
-				  const: *mut alginfo adata,
+				  r#const: *mut alginfo cdata,
+				  r#const: *mut alginfo adata,
 				  is_rfc3686: bool, nonce: *mut u32, era: c_int)
 {
 	key_jump_cmd: *mut u32;
@@ -514,6 +514,7 @@ void cnstr_shdsc_aead_givencap(desc: *mut u32, cdata: *mut alginfo,
 			       nonce: *mut u32, const ctx1_iv_off: u32,
 			       is_qi: bool, era: c_int)
 {
+	'copy_iv: {
 	geniv: u32, moveiv;
 	wait_cmd: *mut u32;
 
@@ -541,7 +542,7 @@ void cnstr_shdsc_aead_givencap(desc: *mut u32, cdata: *mut alginfo,
 					LDST_SRCDST_BYTE_CONTEXT |
 					(ctx1_iv_off << LDST_OFFSET_SHIFT));
 
-		goto copy_iv;
+		break 'copy_iv;
 	}
 
 	/* Generate IV */
@@ -556,8 +557,8 @@ void cnstr_shdsc_aead_givencap(desc: *mut u32, cdata: *mut alginfo,
 		    (ctx1_iv_off << MOVE_OFFSET_SHIFT) |
 		    (ivsize << MOVE_LEN_SHIFT));
 	append_cmd(desc, CMD_LOAD | ENABLE_AUTO_INFO_FIFO);
-
-copy_iv:
+	}
+	
 	/* Copy IV to class 1 context */
 	append_move(desc, MOVE_SRC_CLASS1CTX | MOVE_DEST_OUTFIFO |
 		    (ctx1_iv_off << MOVE_OFFSET_SHIFT) |

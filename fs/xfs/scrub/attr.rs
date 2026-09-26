@@ -131,12 +131,12 @@ unsafe fn xchk_xattr_entry(ds: *mut xchk_da_btree, level: i32, buf_end: *mut u8,
     if (*ent).flags & XFS_ATTR_LOCAL != 0 {
         let lentry = xfs_attr3_leaf_name_local(leaf, idx);
         namesize = xfs_attr_leaf_entsize_local((*lentry).namelen, be16_to_cpu((*lentry).valuelen));
-        name_end = lentry as *mut u8 .add(namesize as usize);
+        name_end = (lentry as *mut u8).add(namesize as usize);
         if (*lentry).namelen == 0 { xchk_da_set_corrupt(ds, level); }
     } else {
         let rentry = xfs_attr3_leaf_name_remote(leaf, idx);
         namesize = xfs_attr_leaf_entsize_remote((*rentry).namelen);
-        name_end = rentry as *mut u8 .add(namesize as usize);
+        name_end = (rentry as *mut u8).add(namesize as usize);
         if (*rentry).namelen == 0 { xchk_da_set_corrupt(ds, level); }
         if (*rentry).valueblk == 0 && (*ent).flags & XFS_ATTR_INCOMPLETE == 0 { xchk_da_set_corrupt(ds, level); }
     }
@@ -170,7 +170,7 @@ unsafe fn xchk_xattr_block(ds: *mut xchk_da_btree, level: i32) -> i32 {
         let ent = entries.add(i as usize);
         let off = ent as usize - leaf as usize;
         if !xchk_xattr_set_map((*ds).sc, (*ab).usedmap, off as u32, core::mem::size_of::<xfs_attr_leaf_entry>() as u32) { xchk_da_set_corrupt(ds, level); return 0; }
-        xchk_xattr_entry(ds, level, (*blk).bp.b_addr as *mut u8 .add((*mp).m_attr_geo.blksize as usize), leaf, &mut leafhdr, ent, i, &mut usedbytes, &mut last_hashval);
+        xchk_xattr_entry(ds, level, ((*blk).bp.b_addr as *mut u8).add((*mp).m_attr_geo.blksize as usize), leaf, &mut leafhdr, ent, i, &mut usedbytes, &mut last_hashval);
         if (*(*ds).sc).sm.as_ref().unwrap().sm_flags & XFS_SCRUB_OFLAG_CORRUPT != 0 { return 0; }
     }
     for i in 0..XFS_ATTR_LEAF_MAPSIZE { if !xchk_xattr_set_map((*ds).sc, (*ab).freemap, leafhdr.freemap[i].base, leafhdr.freemap[i].size) { xchk_da_set_corrupt(ds, level); } if leafhdr.freemap[i].size == 0 && leafhdr.freemap[i].base > 0 { xchk_da_set_preen(ds, level); } }

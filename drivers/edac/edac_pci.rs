@@ -46,10 +46,10 @@ pub unsafe fn edac_pci_free_ctl_info(pci: *mut edac_pci_ctl_info) {
 unsafe fn find_edac_pci_by_dev(dev: *mut device) -> *mut edac_pci_ctl_info {
     let mut item: *mut list_head;
     edac_dbg(1, "\n");
-    list_for_each(item, &mut edac_pci_list) {
+    list_for_each!(item, &mut edac_pci_list, {
         let pci = list_entry!(item, edac_pci_ctl_info, link);
         if (*pci).dev == dev { return pci; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -59,7 +59,7 @@ unsafe fn add_edac_pci_to_global_list(pci: *mut edac_pci_ctl_info) -> c_int {
     let mut rover = find_edac_pci_by_dev((*pci).dev);
     if !rover.is_null() { goto_fail0(rover); return 1; }
 
-    list_for_each(item, &mut edac_pci_list) {
+    list_for_each!(item, &mut edac_pci_list, {
         rover = list_entry!(item, edac_pci_ctl_info, link);
         if (*rover).pci_idx >= (*pci).pci_idx {
             if (*rover).pci_idx == (*pci).pci_idx {
@@ -71,7 +71,7 @@ unsafe fn add_edac_pci_to_global_list(pci: *mut edac_pci_ctl_info) -> c_int {
             insert_before = item;
             break;
         }
-    }
+    });
     list_add_tail_rcu(&mut (*pci).link, insert_before);
     return 0;
 

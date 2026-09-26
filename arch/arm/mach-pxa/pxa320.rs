@@ -62,7 +62,7 @@ static mut pxa320_mfp_addr_map: [mfp_addr_map; 47] = [
     MFP_ADDR!(DF_IO7, 0x0284),
     MFP_ADDR!(DF_IO15, 0x0288),
 
-    MFP_ADDR_END!,
+    MFP_ADDR_END!(),
 ];
 
 unsafe fn pxa320_init() -> i32 {

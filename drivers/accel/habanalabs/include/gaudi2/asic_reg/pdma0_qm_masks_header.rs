@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
 //***********************************
-pub const ASIC_REG_PDMA0_QM_MASKS_H_: u32 = ;
 //
 // PDMA0_QM_GLBL_CFG0 
 pub const PDMA0_QM_GLBL_CFG0_PQF_EN_SHIFT: u32 = 0;

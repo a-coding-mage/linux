@@ -8,12 +8,12 @@ pub const BUGFLAG_UNWINDER: i32 = 1 << 1;
 
 /* CONFIG_GENERIC_BUG / CONFIG_DEBUG_BUGVERBOSE are build-time conditions
  * from the original header. */
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 pub const HAVE_ARCH_BUG: bool = true;
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 pub const HAVE_ARCH_WARN_ON: bool = true;
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 #[inline(always)]
 pub unsafe fn bug() -> ! {
     /* The original emits a .short TRAPA_BUG_OPCODE and a __bug_table entry.
@@ -21,13 +21,13 @@ pub unsafe fn bug() -> ! {
     core::hint::unreachable_unchecked()
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 #[inline(always)]
 pub unsafe fn __warn_flags(_cond_str: *const core::ffi::c_char, _flags: i32) {
     /* The original emits the trap and __bug_table entry; see bug(). */
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 #[inline(always)]
 pub fn warn_on(x: i32) -> i32 {
     let ret_warn_on: i32 = if x != 0 { 1 } else { 0 };
@@ -37,14 +37,14 @@ pub fn warn_on(x: i32) -> i32 {
     ret_warn_on
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 #[inline(always)]
 pub unsafe fn unwinder_bug() {
     /* The original emits TRAPA_BUG_OPCODE with BUGFLAG_UNWINDER. */
     __warn_flags(core::ptr::null(), BUGFLAG_UNWINDER);
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 #[inline(always)]
 pub fn unwinder_bug_on(x: i32) -> i32 {
     let ret_unwinder_on: i32 = if x != 0 { 1 } else { 0 };
@@ -54,9 +54,9 @@ pub fn unwinder_bug_on(x: i32) -> i32 {
     ret_unwinder_on
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub use bug as unwinder_bug;
-#[cfg(not(feature = "CONFIG_GENERIC_BUG"))]
+#[cfg(not(CONFIG_GENERIC_BUG))]
 pub use bug_on as unwinder_bug_on;
 
 #[repr(C)]

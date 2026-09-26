@@ -20,9 +20,9 @@ pub unsafe fn xrep_attempt(sc: *mut xfs_scrub, run: *mut xchk_stats_run) -> i32 
     trace_xrep_done(XFS_I(file_inode((*sc).file)), (*sc).sm, error);
     (*run).repair_ns += xchk_stats_elapsed_ns(repair_start);
     match error {
-        0 => { (*(*sc).sm).sm_flags &= !XFS_SCRUB_FLAGS_OUT; (*sc).flags |= XREP_ALREADY_FIXED; (*run).repair_succeeded = true; -EAGAIN }
-        -ECHRNG => { (*sc).flags |= XCHK_NEED_DRAIN; (*run).retries += 1; -EAGAIN }
-        -EDEADLOCK => {
+        case if case == 0 => { (*(*sc).sm).sm_flags &= !XFS_SCRUB_FLAGS_OUT; (*sc).flags |= XREP_ALREADY_FIXED; (*run).repair_succeeded = true; -EAGAIN }
+        case if case == -ECHRNG => { (*sc).flags |= XCHK_NEED_DRAIN; (*run).retries += 1; -EAGAIN }
+        case if case == -EDEADLOCK => {
             if (*sc).flags & XCHK_TRY_HARDER == 0 { (*sc).flags |= XCHK_TRY_HARDER; (*run).retries += 1; return -EAGAIN; }
             0
         }

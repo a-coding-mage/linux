@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Direct translation of the arm64 kernel process implementation. */
 
-#[cfg(all(feature = "CONFIG_STACKPROTECTOR", not(feature = "CONFIG_STACKPROTECTOR_PER_TASK")))]
+#[cfg(all(CONFIG_STACKPROTECTOR, not(CONFIG_STACKPROTECTOR_PER_TASK)))]
 #[no_mangle]
 pub static mut __stack_chk_guard: c_ulong = 0;
 
@@ -9,7 +9,7 @@ pub static mut __stack_chk_guard: c_ulong = 0;
 #[no_mangle]
 pub static mut pm_power_off: Option<unsafe extern "C" fn()> = None;
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub unsafe extern "C" fn arch_cpu_idle_dead() -> ! { cpu_die(); }
 
 pub unsafe extern "C" fn machine_shutdown() { smp_shutdown_nonboot_cpus(reboot_cpu); }
@@ -71,9 +71,9 @@ unsafe fn tls_thread_flush() { write_sysreg(0, tpidr_el0); if system_supports_tp
 unsafe fn flush_tagged_addr_state() { if IS_ENABLED_CONFIG_ARM64_TAGGED_ADDR_ABI { clear_thread_flag(TIF_TAGGED_ADDR); } }
 unsafe fn flush_poe() { if system_supports_poe() { write_sysreg_s(POR_EL0_INIT, SYS_POR_EL0); } }
 
-#[cfg(feature = "CONFIG_ARM64_GCS")]
+#[cfg(CONFIG_ARM64_GCS)]
 unsafe fn flush_gcs() { if system_supports_gcs() { (*current).thread.gcspr_el0=0; (*current).thread.gcs_base=0; (*current).thread.gcs_size=0; (*current).thread.gcs_el0_mode=0; (*current).thread.gcs_el0_locked=0; write_sysreg_s(GCSCRE0_EL1_nTR,SYS_GCSCRE0_EL1); write_sysreg_s(0,SYS_GCSPR_EL0); } }
-#[cfg(not(feature = "CONFIG_ARM64_GCS"))] unsafe fn flush_gcs() {}
+#[cfg(not(CONFIG_ARM64_GCS))] unsafe fn flush_gcs() {}
 
 pub unsafe extern "C" fn flush_thread() { fpsimd_flush_thread(); tls_thread_flush(); flush_ptrace_hw_breakpoint(current); flush_tagged_addr_state(); flush_poe(); flush_gcs(); }
 pub unsafe extern "C" fn arch_release_task_struct(tsk: *mut task_struct) { fpsimd_release_task(tsk); }
@@ -108,9 +108,9 @@ unsafe fn ssbs_thread_switch(next:*mut task_struct){if (*next).flags&PF_KTHREAD!
 pub static mut __entry_task: *mut task_struct = core::ptr::null_mut();
 unsafe fn entry_task_switch(next:*mut task_struct){__entry_task=next;}
 
-#[cfg(feature="CONFIG_ARM64_GCS")] pub unsafe extern "C" fn gcs_preserve_current_state(){(*current).thread.gcspr_el0=read_sysreg_s(SYS_GCSPR_EL0);}
-#[cfg(feature="CONFIG_ARM64_GCS")] unsafe fn gcs_thread_switch(next:*mut task_struct){if !system_supports_gcs(){return;}gcs_preserve_current_state();write_sysreg_s((*next).thread.gcspr_el0,SYS_GCSPR_EL0);if (*current).thread.gcs_el0_mode!=(*next).thread.gcs_el0_mode{gcs_set_el0_mode(next);}if task_gcs_el0_enabled(current)||task_gcs_el0_enabled(next){gcsb_dsync();}}
-#[cfg(not(feature="CONFIG_ARM64_GCS"))] unsafe fn gcs_thread_switch(_: *mut task_struct){}
+#[cfg(CONFIG_ARM64_GCS)] pub unsafe extern "C" fn gcs_preserve_current_state(){(*current).thread.gcspr_el0=read_sysreg_s(SYS_GCSPR_EL0);}
+#[cfg(CONFIG_ARM64_GCS)] unsafe fn gcs_thread_switch(next:*mut task_struct){if !system_supports_gcs(){return;}gcs_preserve_current_state();write_sysreg_s((*next).thread.gcspr_el0,SYS_GCSPR_EL0);if (*current).thread.gcs_el0_mode!=(*next).thread.gcs_el0_mode{gcs_set_el0_mode(next);}if task_gcs_el0_enabled(current)||task_gcs_el0_enabled(next){gcsb_dsync();}}
+#[cfg(not(CONFIG_ARM64_GCS))] unsafe fn gcs_thread_switch(_: *mut task_struct){}
 
 unsafe fn update_cntkctl_el1(next:*mut task_struct){let ti=task_thread_info(next);if test_ti_thread_flag(ti,TIF_TSC_SIGSEGV)||has_erratum_handler(read_cntvct_el0)||(IS_ENABLED_CONFIG_ARM64_ERRATUM_1418040&&this_cpu_has_cap(ARM64_WORKAROUND_1418040)&&is_compat_thread(ti)){sysreg_clear_set(cntkctl_el1,ARCH_TIMER_USR_VCT_ACCESS_EN,0);}else{sysreg_clear_set(cntkctl_el1,0,ARCH_TIMER_USR_VCT_ACCESS_EN);}}
 unsafe fn cntkctl_thread_switch(prev:*mut task_struct,next:*mut task_struct){let a=read_ti_thread_flags(task_thread_info(prev))&(_TIF_32BIT|_TIF_TSC_SIGSEGV);let b=read_ti_thread_flags(task_thread_info(next))&(_TIF_32BIT|_TIF_TSC_SIGSEGV);if a!=b{update_cntkctl_el1(next);}}
@@ -126,19 +126,19 @@ unsafe extern "C" fn get_wchan_cb(arg:*mut c_void,pc:c_ulong)->bool{let w=&mut *
 pub unsafe extern "C" fn __get_wchan(p:*mut task_struct)->c_ulong{let mut w=wchan_info{pc:0,count:0};if !try_get_task_stack(p){return 0;}arch_stack_walk(get_wchan_cb,&mut w,p,core::ptr::null_mut());put_task_stack(p);w.pc}
 pub unsafe extern "C" fn arch_align_stack(mut sp:c_ulong)->c_ulong{if ((*current).personality&ADDR_NO_RANDOMIZE)==0&&randomize_va_space!=0{sp-=get_random_u32_below(PAGE_SIZE) as c_ulong;}sp&!0xf}
 
-#[cfg(feature="CONFIG_COMPAT")] pub unsafe extern "C" fn compat_elf_check_arch(hdr:*const elf32_hdr)->bool{if !system_supports_32bit_el0()||(*hdr).e_machine!=EM_ARM||(*hdr).e_flags&EF_ARM_EABI_MASK==0{return false;}!static_branch_unlikely(&arm64_mismatched_32bit_el0)||!dl_task_check_affinity(current,system_32bit_el0_cpumask())}
+#[cfg(CONFIG_COMPAT)] pub unsafe extern "C" fn compat_elf_check_arch(hdr:*const elf32_hdr)->bool{if !system_supports_32bit_el0()||(*hdr).e_machine!=EM_ARM||(*hdr).e_flags&EF_ARM_EABI_MASK==0{return false;}!static_branch_unlikely(&arm64_mismatched_32bit_el0)||!dl_task_check_affinity(current,system_32bit_el0_cpumask())}
 pub unsafe extern "C" fn arch_setup_new_exec(){let mut mmflags=0;if is_compat_task(){mmflags=MMCF_AARCH32;if static_branch_unlikely(&arm64_mismatched_32bit_el0){force_compatible_cpus_allowed_ptr(current);}}else if static_branch_unlikely(&arm64_mismatched_32bit_el0){relax_compatible_cpus_allowed_ptr(current);}(*current).mm.context.flags=mmflags;ptrauth_thread_init_user();mte_thread_init_user();do_set_tsc_mode(PR_TSC_ENABLE);if task_spec_ssb_noexec(current){arch_prctl_spec_ctrl_set(current,PR_SPEC_STORE_BYPASS,PR_SPEC_ENABLE);}}
 
-#[cfg(feature="CONFIG_ARM64_TAGGED_ADDR_ABI")]
+#[cfg(CONFIG_ARM64_TAGGED_ADDR_ABI)]
 static mut tagged_addr_disabled: c_uint = 0;
-#[cfg(feature="CONFIG_ARM64_TAGGED_ADDR_ABI")]
+#[cfg(CONFIG_ARM64_TAGGED_ADDR_ABI)]
 pub unsafe extern "C" fn set_tagged_addr_ctrl(task:*mut task_struct,arg:c_ulong)->c_long{let mut valid_mask=PR_TAGGED_ADDR_ENABLE;let ti=task_thread_info(task);if is_compat_thread(ti){return -EINVAL;}if system_supports_mte(){valid_mask|=PR_MTE_TCF_SYNC|PR_MTE_TCF_ASYNC|PR_MTE_TAG_MASK;if cpus_have_cap(ARM64_MTE_STORE_ONLY){valid_mask|=PR_MTE_STORE_ONLY;}}if arg&!valid_mask!=0{return -EINVAL;}if arg&PR_TAGGED_ADDR_ENABLE!=0&&tagged_addr_disabled!=0{return -EINVAL;}if set_mte_ctrl(task,arg)!=0{return -EINVAL;}update_ti_thread_flag(ti,TIF_TAGGED_ADDR,arg&PR_TAGGED_ADDR_ENABLE!=0);0}
-#[cfg(feature="CONFIG_ARM64_TAGGED_ADDR_ABI")]
+#[cfg(CONFIG_ARM64_TAGGED_ADDR_ABI)]
 pub unsafe extern "C" fn get_tagged_addr_ctrl(task:*mut task_struct)->c_long{let ti=task_thread_info(task);if is_compat_thread(ti){return -EINVAL;}let mut ret=0;if test_ti_thread_flag(ti,TIF_TAGGED_ADDR){ret=PR_TAGGED_ADDR_ENABLE;}ret|get_mte_ctrl(task)}
 
 // Global sysctl: abi.tagged_addr_disabled, mode 0644, proc_dointvec_minmax,
 // bounded by SYSCTL_ZERO and SYSCTL_ONE.
-#[cfg(feature="CONFIG_ARM64_TAGGED_ADDR_ABI")]
+#[cfg(CONFIG_ARM64_TAGGED_ADDR_ABI)]
 unsafe fn tagged_addr_init()->c_int{if !register_sysctl(c"abi".as_ptr(),core::ptr::null_mut()){return -EINVAL;}0}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

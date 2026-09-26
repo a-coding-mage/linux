@@ -65,7 +65,7 @@ unsafe fn fsl_mc_write_msi_msg(msi_desc: *mut msi_desc, msg: *mut msi_msg) {
             (*mc_bus_dev).mc_io,
             MC_CMD_FLAG_INTR_DIS | MC_CMD_FLAG_PRI,
             (*mc_bus_dev).mc_handle,
-            (*owner_mc_dev).obj_desc.type,
+            (*owner_mc_dev).obj_desc.r#type,
             (*owner_mc_dev).obj_desc.id,
             (*mc_dev_irq).dev_irq_index,
             &mut irq_cfg,

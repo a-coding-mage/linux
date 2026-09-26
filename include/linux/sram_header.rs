@@ -9,7 +9,7 @@ pub struct gen_pool {
 }
 
 // Corresponds to CONFIG_SRAM_EXEC.
-#[cfg(feature = "CONFIG_SRAM_EXEC")]
+#[cfg(CONFIG_SRAM_EXEC)]
 unsafe extern "C" {
     pub fn sram_exec_copy(
         pool: *mut gen_pool,
@@ -20,7 +20,7 @@ unsafe extern "C" {
 }
 
 // Corresponds to the CONFIG_SRAM_EXEC-disabled build condition.
-#[cfg(not(feature = "CONFIG_SRAM_EXEC"))]
+#[cfg(not(CONFIG_SRAM_EXEC))]
 #[inline]
 pub unsafe fn sram_exec_copy(
     _pool: *mut gen_pool,

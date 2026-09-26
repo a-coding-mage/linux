@@ -16,25 +16,25 @@
 
 /* The original declarations are enabled only for the kernel build. */
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub type kprobe_opcode_t = u32;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const __ARCH_WANT_KPROBES_INSN_SLOT: bool = true;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct pt_regs {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 extern "C" {
     pub static mut optinsn_slot: kprobe_opcode_t;
 
@@ -55,22 +55,22 @@ extern "C" {
     pub fn kprobe_post_handler(regs: *mut pt_regs) -> i32;
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const MAX_INSN_SIZE: usize = 2;
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const MAX_OPTIMIZED_LENGTH: usize = core::mem::size_of::<kprobe_opcode_t>();
 /* MAX_OPTINSN_SIZE is the byte distance from optprobe_template_entry to end. */
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const RELATIVEJUMP_SIZE: usize = core::mem::size_of::<kprobe_opcode_t>();
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[inline]
 pub unsafe fn flush_insn_slot<T>(_p: *mut T) {}
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const kretprobe_blacklist_size: usize = 0;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct arch_specific_insn {
     /* copy of original instruction */
@@ -82,7 +82,7 @@ pub struct arch_specific_insn {
     pub boostable: i32,
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
@@ -90,7 +90,7 @@ pub struct prev_kprobe {
     pub saved_msr: usize,
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe_ctlblk {
     pub kprobe_status: usize,
@@ -98,7 +98,7 @@ pub struct kprobe_ctlblk {
     pub prev_kprobe: prev_kprobe,
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct arch_optimized_insn {
     pub copied_insn: [kprobe_opcode_t; 1],
@@ -106,11 +106,11 @@ pub struct arch_optimized_insn {
     pub insn: *mut kprobe_opcode_t,
 }
 
-#[cfg(not(feature = "CONFIG_KPROBES"))]
+#[cfg(not(CONFIG_KPROBES))]
 #[inline]
 pub unsafe fn kprobe_handler(_regs: *mut pt_regs) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_KPROBES"))]
+#[cfg(not(CONFIG_KPROBES))]
 #[inline]
 pub unsafe fn kprobe_post_handler(_regs: *mut pt_regs) -> i32 { 0 }
 

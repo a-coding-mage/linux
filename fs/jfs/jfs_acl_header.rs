@@ -18,7 +18,7 @@ pub enum dentry {}
 #[allow(non_camel_case_types)]
 pub enum posix_acl {}
 
-#[cfg(feature = "CONFIG_JFS_POSIX_ACL")]
+#[cfg(CONFIG_JFS_POSIX_ACL)]
 extern "C" {
     pub fn jfs_get_acl(inode: *mut inode, type_: core::ffi::c_int, rcu: bool)
         -> *mut posix_acl;
@@ -35,7 +35,7 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_JFS_POSIX_ACL"))]
+#[cfg(not(CONFIG_JFS_POSIX_ACL))]
 #[inline]
 pub fn jfs_init_acl(_tid: tid_t, _inode: *mut inode, _dir: *mut inode) -> core::ffi::c_int {
     0

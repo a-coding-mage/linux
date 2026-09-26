@@ -1,4 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0 */
+//! Original union-find declarations and initialization at stable addresses.
 /**
  * union_find.h - union-find data structure implementation
  *
@@ -8,21 +9,14 @@
  *
  * See Documentation/core-api/union_find.rst for documentation and samples.
  */
-
-#[repr(C)]
-pub struct uf_node {
-    pub parent: *mut uf_node,
-    pub rank: u32,
-}
+pub use kernel::bindings::{uf_find, uf_node, uf_union};
 
 /* This macro is used for static initialization of a union-find node. */
+/// Initializes a statically located union-find node with its own address.
 #[macro_export]
 macro_rules! UF_INIT_NODE {
-    ($node:ident) => {
-        uf_node {
-            parent: core::ptr::addr_of_mut!($node),
-            rank: 0,
-        }
+    ($node:expr) => {
+        $crate::union_find::uf_node_initializer(core::ptr::addr_of_mut!($node))
     };
 }
 
@@ -34,19 +28,28 @@ macro_rules! UF_INIT_NODE {
  * initializes its rank to 0.
  */
 #[inline]
+/// Initializes a node at its final address as a singleton set.
+///
+/// # Safety
+///
+/// `node` must be live, writable, and exclusively accessible. Its address
+/// must remain stable while any union-find operation or parent refers to it.
 pub unsafe fn uf_node_init(node: *mut uf_node) {
-    (*node).parent = node;
-    (*node).rank = 0;
+    // SAFETY: the caller supplies exclusive access to a live, writable node.
+    unsafe {
+        (*node).parent = node;
+        (*node).rank = 0;
+    }
 }
 
-/* find the root of a node */
-unsafe extern "C" {
-    pub fn uf_find(node: *mut uf_node) -> *mut uf_node;
-}
-
-/* Merge two intersecting nodes */
-unsafe extern "C" {
-    pub fn uf_union(node1: *mut uf_node, node2: *mut uf_node);
+/// Creates the initializer for a node stored at `node`.
+///
+/// Store the result at that address before using the union-find operations.
+pub const fn uf_node_initializer(node: *mut uf_node) -> uf_node {
+    uf_node {
+        parent: node,
+        rank: 0,
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

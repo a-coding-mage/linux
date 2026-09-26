@@ -23,12 +23,12 @@ unsafe fn find_bus_among_children(
         return bus;
     }
 
-    list_for_each_entry!(tmp, &(*bus).children, node) {
+    list_for_each_entry!(tmp, &(*bus).children, node, {
         child = find_bus_among_children(tmp, dn);
         if !child.is_null() {
             break;
         }
-    }
+    });
 
     child
 }
@@ -79,16 +79,16 @@ pub unsafe extern "C" fn pci_hp_remove_devices(bus: *mut pci_bus) {
     let mut child_bus: *mut pci_bus;
 
     /* First go down child busses */
-    list_for_each_entry!(child_bus, &(*bus).children, node) {
+    list_for_each_entry!(child_bus, &(*bus).children, node, {
         pci_hp_remove_devices(child_bus);
-    }
+    });
 
     pr_debug!("PCI: Removing devices on bus {:04x}:{:02x}\n",
         pci_domain_nr(bus), (*bus).number);
-    list_for_each_entry_safe_reverse!(dev, tmp, &(*bus).devices, bus_list) {
+    list_for_each_entry_safe_reverse!(dev, tmp, &(*bus).devices, bus_list, {
         pr_debug!("   Removing {}...\n", pci_name(dev));
         pci_stop_and_remove_bus_device(dev);
-    }
+    });
 }
 
 // EXPORT_SYMBOL_GPL(pci_hp_remove_devices);
@@ -108,7 +108,7 @@ unsafe fn traverse_siblings_and_scan_slot(start: *mut device_node, bus: *mut pci
     }
 
     /* Iterate all siblings */
-    for_each_child_of_node!(start, dn) {
+    for_each_child_of_node!(start, dn, {
         class = 0;
 
         if of_property_read_u32((*start).child, c"class-code", &mut class) == 0 {
@@ -118,7 +118,7 @@ unsafe fn traverse_siblings_and_scan_slot(start: *mut device_node, bus: *mut pci
                 pci_scan_slot(bus, PCI_DEVFN!(slotno, 0));
             }
         }
-    }
+    });
 }
 
 /**
@@ -168,14 +168,14 @@ pub unsafe extern "C" fn pci_hp_add_devices(bus: *mut pci_bus) {
          * them unless they are misconfigured (which will be done in
          * the second scan below).
          */
-        for_each_pci_bridge!(dev, bus) {
+        for_each_pci_bridge!(dev, bus, {
             max = pci_scan_bridge(bus, dev, max, 0);
-        }
+        });
 
         /* Scan bridges that need to be reconfigured */
-        for_each_pci_bridge!(dev, bus) {
+        for_each_pci_bridge!(dev, bus, {
             max = pci_scan_bridge(bus, dev, max, 1);
-        }
+        });
     }
     pcibios_finish_adding_to_bus(bus);
 }

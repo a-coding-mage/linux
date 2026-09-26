@@ -18,7 +18,7 @@ pub static mut hardirq_stack_inuse: bool = false;
 #[no_mangle]
 pub static mut irq_stack_backing_store: irq_stack;
 
-#[cfg(feature = "CONFIG_VMAP_STACK")]
+#[cfg(CONFIG_VMAP_STACK)]
 /*
  * VMAP the backing store with guard pages
  */
@@ -53,7 +53,7 @@ unsafe fn map_irq_stack(cpu: u32) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_VMAP_STACK"))]
+#[cfg(not(CONFIG_VMAP_STACK))]
 /*
  * If VMAP stacks are disabled due to KASAN, just use the per cpu
  * backing store without guard pages.

@@ -33,7 +33,7 @@ pub struct gpmc_onenand_info {
 }
 
 /* CONFIG_OMAP_GPMC is a build-time condition from the C environment. */
-#[cfg(feature = "CONFIG_OMAP_GPMC")]
+#[cfg(CONFIG_OMAP_GPMC)]
 extern "C" {
     pub fn gpmc_omap_get_nand_ops(regs: *mut gpmc_nand_regs, cs: i32) -> *mut gpmc_nand_ops;
 
@@ -56,7 +56,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_GPMC"))]
+#[cfg(not(CONFIG_OMAP_GPMC))]
 pub unsafe fn gpmc_omap_get_nand_ops(
     _regs: *mut gpmc_nand_regs,
     _cs: i32,
@@ -64,7 +64,7 @@ pub unsafe fn gpmc_omap_get_nand_ops(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_OMAP_GPMC"))]
+#[cfg(not(CONFIG_OMAP_GPMC))]
 pub unsafe fn gpmc_omap_onenand_set_timings(
     _dev: *mut device,
     _cs: i32,

@@ -160,7 +160,7 @@ pub struct stm32_timers {
 }
 
 // IS_REACHABLE(CONFIG_MFD_STM32_TIMERS) is a build-time kernel condition.
-#[cfg(feature = "CONFIG_MFD_STM32_TIMERS")]
+#[cfg(CONFIG_MFD_STM32_TIMERS)]
 extern "C" {
     pub fn stm32_timers_dma_burst_read(
         dev: *mut device,
@@ -173,7 +173,7 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_MFD_STM32_TIMERS"))]
+#[cfg(not(CONFIG_MFD_STM32_TIMERS))]
 #[inline]
 pub unsafe fn stm32_timers_dma_burst_read(
     _dev: *mut device,

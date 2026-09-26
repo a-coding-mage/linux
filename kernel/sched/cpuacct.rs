@@ -91,7 +91,7 @@ unsafe fn cpuacct_cpuusage_write(ca: *mut cpuacct, cpu: i32) {
 
 unsafe fn __cpuusage_read(css: *mut cgroup_subsys_state, index: CpuacctStatIndex) -> u64 {
     let ca = css_ca(css); let mut totalcpuusage = 0; let mut i = 0;
-    for_each_possible_cpu!(i) { totalcpuusage += cpuacct_cpuusage_read(ca, i, index); }
+    for_each_possible_cpu!(i, { totalcpuusage += cpuacct_cpuusage_read(ca, i, index); });
     totalcpuusage
 }
 
@@ -102,13 +102,13 @@ unsafe fn cpuusage_read(css: *mut cgroup_subsys_state, _cft: *mut cftype) -> u64
 unsafe fn cpuusage_write(css: *mut cgroup_subsys_state, _cft: *mut cftype, val: u64) -> i32 {
     if val != 0 { return -22; }
     let ca = css_ca(css); let mut cpu = 0;
-    for_each_possible_cpu!(cpu) { cpuacct_cpuusage_write(ca, cpu); }
+    for_each_possible_cpu!(cpu, { cpuacct_cpuusage_write(ca, cpu); });
     0
 }
 
 unsafe fn __cpuacct_percpu_seq_show(m: *mut seq_file, index: CpuacctStatIndex) -> i32 {
     let ca = css_ca(seq_css!(m)); let mut i = 0;
-    for_each_possible_cpu!(i) { seq_printf!(m, "%llu ", cpuacct_cpuusage_read(ca, i, index)); }
+    for_each_possible_cpu!(i, { seq_printf!(m, "%llu ", cpuacct_cpuusage_read(ca, i, index)); });
     seq_printf!(m, "\n"); 0
 }
 unsafe fn cpuacct_percpu_user_seq_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 { __cpuacct_percpu_seq_show(m, CpuacctStatIndex::CPUACCT_STAT_USER) }
@@ -122,12 +122,12 @@ unsafe fn cpuacct_all_seq_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> 
     while index < 2 { seq_printf!(m, " %s", CPUACCT_STAT_DESC[index]); index += 1; }
     seq_puts!(m, "\n");
     let mut cpu = 0;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         seq_printf!(m, "%d", cpu);
         index = 0;
         while index < 2 { seq_printf!(m, " %llu", cpuacct_cpuusage_read(ca, cpu, core::mem::transmute(index))); index += 1; }
         seq_puts!(m, "\n");
-    }
+    });
     0
 }
 
@@ -135,12 +135,12 @@ unsafe fn cpuacct_stats_show(sf: *mut seq_file, _v: *mut core::ffi::c_void) -> i
     let ca = css_ca(seq_css!(sf));
     let mut cputime = task_cputime::default();
     let mut cpu = 0;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let cpustat = (*per_cpu_ptr((*ca).cpustat, cpu)).cpustat.as_mut_ptr();
         cputime.utime += *cpustat.add(CPUTIME_USER) + *cpustat.add(CPUTIME_NICE);
         cputime.stime += *cpustat.add(CPUTIME_SYSTEM) + *cpustat.add(CPUTIME_IRQ) + *cpustat.add(CPUTIME_SOFTIRQ);
         cputime.sum_exec_runtime += *per_cpu_ptr((*ca).cpuusage, cpu);
-    }
+    });
     let mut val = [0u64; 2];
     cputime_adjust!(&mut cputime, &mut (*seq_css!(sf)).cgroup.prev_cputime, &mut val[0], &mut val[1]);
     let mut stat = 0;

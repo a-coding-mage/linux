@@ -95,10 +95,10 @@ pub unsafe extern "C" fn smp4d_smp_done() {
     let mut first = 0;
     let mut prev: *mut i32 = &mut first;
     let mut i = 0;
-    for_each_online_cpu!(i) {
+    for_each_online_cpu!(i, {
         *prev = i;
         prev = &mut cpu_data(i).next;
-    }
+    });
     *prev = first;
     (*local_ops).cache_all();
     smp_processors_ready = 1;

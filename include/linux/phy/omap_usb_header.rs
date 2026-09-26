@@ -16,14 +16,14 @@ macro_rules! phy_to_omapusb {
     };
 }
 
-#[cfg(any(feature = "CONFIG_OMAP_USB2", feature = "CONFIG_OMAP_USB2_MODULE"))]
+#[cfg(any(CONFIG_OMAP_USB2, CONFIG_OMAP_USB2_MODULE))]
 extern "C" {
     pub fn omap_usb2_set_comparator(
         comparator: *mut phy_companion,
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(any(feature = "CONFIG_OMAP_USB2", feature = "CONFIG_OMAP_USB2_MODULE")))]
+#[cfg(not(any(CONFIG_OMAP_USB2, CONFIG_OMAP_USB2_MODULE)))]
 #[inline]
 pub unsafe fn omap_usb2_set_comparator(
     _comparator: *mut phy_companion,

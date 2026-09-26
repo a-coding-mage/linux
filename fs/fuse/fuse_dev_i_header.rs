@@ -35,12 +35,12 @@ pub struct fuse_req {
     pub in_: fuse_req_in,
     pub out: fuse_req_out,
     pub waitq: wait_queue_head_t,
-    #[cfg(feature = "CONFIG_VIRTIO_FS")]
+    #[cfg(CONFIG_VIRTIO_FS)]
     pub argbuf: *mut c_void,
     pub chan: *mut fuse_chan,
-    #[cfg(feature = "CONFIG_FUSE_IO_URING")]
+    #[cfg(CONFIG_FUSE_IO_URING)]
     pub ring_entry: *mut c_void,
-    #[cfg(feature = "CONFIG_FUSE_IO_URING")]
+    #[cfg(CONFIG_FUSE_IO_URING)]
     pub ring_queue: *mut c_void,
     pub create_time: c_ulong,
 }
@@ -98,7 +98,7 @@ pub struct fuse_chan {
     pub max_pages: c_uint,
     pub pq_prealloc: *mut list_head,
     pub abort_with_err: bool,
-    #[cfg(feature = "CONFIG_FUSE_IO_URING")]
+    #[cfg(CONFIG_FUSE_IO_URING)]
     pub ring: *mut fuse_ring,
     pub timeout: fuse_chan_timeout,
 }

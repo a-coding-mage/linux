@@ -8,6 +8,9 @@ obj-$(CONFIG_PROC_FS)	+= proc.o
 obj-$(CONFIG_ZORRO_NAMES) +=  names.o
 
 hostprogs		:= gen-devlist
+ifneq ($(HOST_TOOLS_LANG),c)
+gen-devlist-rust		:= y
+endif
 
 # Files generated that shall be removed upon make clean
 clean-files := devlist.h
@@ -20,4 +23,3 @@ quiet_cmd_devlist = DEVLIST $@
       cmd_devlist = ( cd $(obj); ./gen-devlist ) < $<
 $(obj)/devlist.h: $(src)/zorro.ids $(obj)/gen-devlist
 	$(call cmd,devlist)
-

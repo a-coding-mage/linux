@@ -22,7 +22,7 @@ pub struct pt_regs {
     _private: [u8; 0],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn arch_do_IRQ(regs: *mut pt_regs);
 }
 

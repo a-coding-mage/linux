@@ -3,12 +3,12 @@
 
 /* Kernel include dependencies are supplied by other translated headers. */
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 extern "C" {
     pub static mut atm_proc_root: *mut proc_dir_entry;
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_atm_iobuf {
     pub length: ::core::ffi::c_int,
@@ -86,9 +86,9 @@ pub struct atm_dev {
     pub signal: ::core::ffi::c_char,
     pub link_rate: ::core::ffi::c_int,
     pub refcnt: refcount_t,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub proc_entry: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub proc_name: *mut ::core::ffi::c_char,
     pub class_dev: device,
     pub dev_list: list_head,
@@ -100,7 +100,7 @@ pub struct atmdev_ops {
     pub open: Option<unsafe extern "C" fn(*mut atm_vcc) -> ::core::ffi::c_int>,
     pub close: Option<unsafe extern "C" fn(*mut atm_vcc)>,
     pub ioctl: Option<unsafe extern "C" fn(*mut atm_dev, u32, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_COMPAT")]
+    #[cfg(CONFIG_COMPAT)]
     pub compat_ioctl: Option<unsafe extern "C" fn(*mut atm_dev, u32, *mut ::core::ffi::c_void) -> ::core::ffi::c_int>,
     pub send: Option<unsafe extern "C" fn(*mut atm_vcc, *mut sk_buff) -> ::core::ffi::c_int>,
     pub proc_read: Option<unsafe extern "C" fn(*mut atm_dev, *mut loff_t, *mut ::core::ffi::c_char) -> ::core::ffi::c_int>,

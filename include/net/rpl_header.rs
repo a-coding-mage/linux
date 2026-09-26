@@ -11,20 +11,20 @@
 
 // Equivalent of IS_ENABLED(CONFIG_IPV6_RPL_LWTUNNEL).  When the RPL
 // lightweight-tunnel configuration is enabled, these are external symbols.
-#[cfg(feature = "CONFIG_IPV6_RPL_LWTUNNEL")]
+#[cfg(CONFIG_IPV6_RPL_LWTUNNEL)]
 unsafe extern "C" {
     pub fn rpl_init() -> ::core::ffi::c_int;
     pub fn rpl_exit();
 }
 
 // Fallback used when CONFIG_IPV6_RPL_LWTUNNEL is disabled.
-#[cfg(not(feature = "CONFIG_IPV6_RPL_LWTUNNEL"))]
+#[cfg(not(CONFIG_IPV6_RPL_LWTUNNEL))]
 #[inline]
 pub fn rpl_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_IPV6_RPL_LWTUNNEL"))]
+#[cfg(not(CONFIG_IPV6_RPL_LWTUNNEL))]
 #[inline]
 pub fn rpl_exit() {}
 

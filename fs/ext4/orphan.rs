@@ -66,6 +66,7 @@ pub unsafe fn ext4_orphan_add(handle: *mut handle_t, inode: *mut inode) -> c_int
     let mut err = 0;
     let mut rc;
     let mut dirty = false;
+    'out: {
     if (*sbi).s_journal.is_null() || is_bad_inode(inode) != 0 { return 0; }
     WARN_ON_ONCE(!(inode_state_read_once(inode) & (I_NEW | I_FREEING)) != 0 && !inode_is_locked(inode));
     if ext4_inode_orphan_tracked(inode) != 0 { return 0; }
@@ -76,9 +77,9 @@ pub unsafe fn ext4_orphan_add(handle: *mut handle_t, inode: *mut inode) -> c_int
     }
     BUFFER_TRACE((*sbi).s_sbh, "get_write_access");
     err = ext4_journal_get_write_access(handle, sb, (*sbi).s_sbh, EXT4_JTR_NONE);
-    if err != 0 { goto out; }
+    if err != 0 { break 'out; }
     err = ext4_reserve_inode_write(handle, inode, iloc.as_mut_ptr());
-    if err != 0 { goto out; }
+    if err != 0 { break 'out; }
     mutex_lock(&mut (*sbi).s_orphan_lock);
     if NEXT_ORPHAN(inode) == 0 || NEXT_ORPHAN(inode) > le32_to_cpu((*sbi).s_es).s_inodes_count {
         NEXT_ORPHAN(inode) = le32_to_cpu((*sbi).s_es).s_last_orphan;
@@ -98,7 +99,8 @@ pub unsafe fn ext4_orphan_add(handle: *mut handle_t, inode: *mut inode) -> c_int
     } else { brelse((*iloc.as_ptr()).bh); }
     ext4_debug("superblock will point to %llu\n", (*inode).i_ino);
     ext4_debug("orphan inode %llu will point to %d\n", (*inode).i_ino, NEXT_ORPHAN(inode));
-out:
+    }
+    
     ext4_std_error(sb, err);
     err
 }

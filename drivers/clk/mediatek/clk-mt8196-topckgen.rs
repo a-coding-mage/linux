@@ -948,12 +948,12 @@ const mtk_composite top_aud_divs : &[&str] = &[
 };
 
 const mtk_clk_desc topck_desc = {
-	.factor_clks = top_divs,
-	.num_factor_clks = array_size!(top_divs),
-	.mux_clks = top_muxes,
-	.num_mux_clks = array_size!(top_muxes),
-	.composite_clks = top_aud_divs,
-	.num_composite_clks = array_size!(top_aud_divs)
+	factor_clks: top_divs,
+	num_factor_clks: array_size!(top_divs),
+	mux_clks: top_muxes,
+	num_mux_clks: array_size!(top_muxes),
+	composite_clks: top_aud_divs,
+	num_composite_clks: array_size!(top_aud_divs)
 };
 
 const of_device_id of_match_clk_mt8196_ck : &[&str] = &[
@@ -963,11 +963,11 @@ const of_device_id of_match_clk_mt8196_ck : &[&str] = &[
 // MODULE_DEVICE_TABLE(of, of_match_clk_mt8196_ck);
 
 static mut platform_driver clk_mt8196_topck_drv = {
-	.probe = mtk_clk_simple_probe,
-	.remove = mtk_clk_simple_remove,
-	.driver = {
-		.name = "clk-mt8196-topck",
-		.of_match_table = of_match_clk_mt8196_ck,
+	probe: mtk_clk_simple_probe,
+	remove: mtk_clk_simple_remove,
+	driver: {
+		name: "clk-mt8196-topck",
+		of_match_table: of_match_clk_mt8196_ck,
 	},
 };
 

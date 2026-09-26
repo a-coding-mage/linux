@@ -106,6 +106,6 @@ pub unsafe fn ksmbd_override_fsids(work:*mut ksmbd_work)->i32 { __ksmbd_override
 pub unsafe fn ksmbd_revert_fsids(work:*mut ksmbd_work) { (*work).saved_cred=ptr::null_mut(); }
 
 // Remaining kernel-facing declarations and large structure-dependent routines retain the C ABI shape.
-unsafe extern "C" { fn strlen(*const i8)->usize; fn strncmp(*const i8,*const i8,usize)->i32; fn strcmp(*const i8,*const i8)->i32; fn strnlen(*const i8,usize)->usize; fn ksmbd_debug(...); fn smb_get_msg(*mut core::ffi::c_void)->*mut core::ffi::c_void; }
+unsafe extern "C" { fn strlen(_: *const i8)->usize; fn strncmp(_: *const i8,_: *const i8,_: usize)->i32; fn strcmp(_: *const i8,_: *const i8)->i32; fn strnlen(_: *const i8,_: usize)->usize; fn ksmbd_debug(...); fn smb_get_msg(_: *mut core::ffi::c_void)->*mut core::ffi::c_void; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

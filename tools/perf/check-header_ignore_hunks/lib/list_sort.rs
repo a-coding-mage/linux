@@ -1,5 +1,5 @@
 // @@ -50,6 +50,7 @@
-//                      struct list_head *a, struct list_head *b)
+//                      struct list_head *a, list_head *b)
 // {
 let mut tail: *mut list_head = head;
 let mut count: u8 = 0;

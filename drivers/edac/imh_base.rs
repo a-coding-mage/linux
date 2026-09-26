@@ -23,8 +23,8 @@ macro_rules! NMCACHING { ($r:expr) => { GET_BITFIELD($r, 8, 8) }; }
 struct local_reg { pkg: i32, pbase: u64, size: u32, offset: u32, width: u8, vbase: *mut core::ffi::c_void, val: u64 }
 
 macro_rules! DEFINE_LOCAL_REG {
-    ($name:ident, $cfg:expr, $package:expr, $north:expr, $ip:ident, $idx:expr, $reg:ident) => {
-        let mut $name = local_reg { pkg: $package, pbase: (if $north { $cfg.mmio_base_l_north } else { $cfg.mmio_base_l_south }) + $cfg.$ip##_base + $cfg.$ip##_size * $idx, size: $cfg.$ip##_size, offset: $cfg.$ip##_reg_##$reg##_offset, width: $cfg.$ip##_reg_##$reg##_width, vbase: core::ptr::null_mut(), val: 0 };
+    ($name:ident, $cfg:expr, $package:expr, $north:expr, $ip:tt, $idx:expr, $reg:tt) => {
+        let mut $name = local_reg { pkg: $package, pbase: (if $north { $cfg.mmio_base_l_north } else { $cfg.mmio_base_l_south }) + $cfg.::kernel::macros::paste!([<$ip _base>]) + $cfg.::kernel::macros::paste!([<$ip _size>]) * $idx, size: $cfg.::kernel::macros::paste!([<$ip _size>]), offset: $cfg.::kernel::macros::paste!([<$ip _reg_>])##::kernel::macros::paste!([<$reg _offset>]), width: $cfg.::kernel::macros::paste!([<$ip _reg_>])##::kernel::macros::paste!([<$reg _width>]), vbase: core::ptr::null_mut(), val: 0 };
     };
 }
 
@@ -40,7 +40,7 @@ static mut dmr_reg_rrl_ddr_subch1: reg_rrl = REG_RRL_DEFINE!(0x6dc0, 0x6dd0, 0x6
 unsafe fn __read_local_reg(reg: *mut core::ffi::c_void) { let r = &mut *(reg as *mut local_reg); r.val = skx_readx(r.vbase.add(r.offset as usize), r.width); }
 unsafe fn read_local_reg(reg: *mut local_reg) -> bool {
     let mut cpu: i32 = 0;
-    for_each_online_cpu!(cpu) { if (*reg).pkg == topology_physical_package_id(cpu) { break; } }
+    for_each_online_cpu!(cpu, { if (*reg).pkg == topology_physical_package_id(cpu) { break; } });
     if cpu >= nr_cpu_ids { return false; }
     (*reg).vbase = ioremap((*reg).pbase, (*reg).size);
     if (*reg).vbase.is_null() { imh_printk!(KERN_ERR, b"Failed to ioremap 0x%llx\n\0".as_ptr(), (*reg).pbase); return false; }

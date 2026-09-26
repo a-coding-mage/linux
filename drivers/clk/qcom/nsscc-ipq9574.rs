@@ -48,77 +48,73 @@ const _SOURCE_TRANSLATION: &str = r###"// SPDX-License-Identifier: GPL-2.0-only
 #include "reset.h"
 
 /* Need to match the order of clocks in DT binding */
-enum {
-	DT_XO,
-	DT_BIAS_PLL_CC_CLK,
-	DT_BIAS_PLL_UBI_NC_CLK,
-	DT_GCC_GPLL0_OUT_AUX,
-	DT_UNIPHY0_NSS_RX_CLK,
-	DT_UNIPHY0_NSS_TX_CLK,
-	DT_UNIPHY1_NSS_RX_CLK,
-	DT_UNIPHY1_NSS_TX_CLK,
-	DT_UNIPHY2_NSS_RX_CLK,
-	DT_UNIPHY2_NSS_TX_CLK,
-};
+pub const DT_XO: i32 = 0;
+pub const DT_BIAS_PLL_CC_CLK: i32 = DT_XO + 1;
+pub const DT_BIAS_PLL_UBI_NC_CLK: i32 = DT_BIAS_PLL_CC_CLK + 1;
+pub const DT_GCC_GPLL0_OUT_AUX: i32 = DT_BIAS_PLL_UBI_NC_CLK + 1;
+pub const DT_UNIPHY0_NSS_RX_CLK: i32 = DT_GCC_GPLL0_OUT_AUX + 1;
+pub const DT_UNIPHY0_NSS_TX_CLK: i32 = DT_UNIPHY0_NSS_RX_CLK + 1;
+pub const DT_UNIPHY1_NSS_RX_CLK: i32 = DT_UNIPHY0_NSS_TX_CLK + 1;
+pub const DT_UNIPHY1_NSS_TX_CLK: i32 = DT_UNIPHY1_NSS_RX_CLK + 1;
+pub const DT_UNIPHY2_NSS_RX_CLK: i32 = DT_UNIPHY1_NSS_TX_CLK + 1;
+pub const DT_UNIPHY2_NSS_TX_CLK: i32 = DT_UNIPHY2_NSS_RX_CLK + 1;
 
-enum {
-	P_XO,
-	P_BIAS_PLL_CC_CLK,
-	P_BIAS_PLL_UBI_NC_CLK,
-	P_GCC_GPLL0_OUT_AUX,
-	P_UBI32_PLL_OUT_MAIN,
-	P_UNIPHY0_NSS_RX_CLK,
-	P_UNIPHY0_NSS_TX_CLK,
-	P_UNIPHY1_NSS_RX_CLK,
-	P_UNIPHY1_NSS_TX_CLK,
-	P_UNIPHY2_NSS_RX_CLK,
-	P_UNIPHY2_NSS_TX_CLK,
-};
+pub const P_XO: i32 = 0;
+pub const P_BIAS_PLL_CC_CLK: i32 = P_XO + 1;
+pub const P_BIAS_PLL_UBI_NC_CLK: i32 = P_BIAS_PLL_CC_CLK + 1;
+pub const P_GCC_GPLL0_OUT_AUX: i32 = P_BIAS_PLL_UBI_NC_CLK + 1;
+pub const P_UBI32_PLL_OUT_MAIN: i32 = P_GCC_GPLL0_OUT_AUX + 1;
+pub const P_UNIPHY0_NSS_RX_CLK: i32 = P_UBI32_PLL_OUT_MAIN + 1;
+pub const P_UNIPHY0_NSS_TX_CLK: i32 = P_UNIPHY0_NSS_RX_CLK + 1;
+pub const P_UNIPHY1_NSS_RX_CLK: i32 = P_UNIPHY0_NSS_TX_CLK + 1;
+pub const P_UNIPHY1_NSS_TX_CLK: i32 = P_UNIPHY1_NSS_RX_CLK + 1;
+pub const P_UNIPHY2_NSS_RX_CLK: i32 = P_UNIPHY1_NSS_TX_CLK + 1;
+pub const P_UNIPHY2_NSS_TX_CLK: i32 = P_UNIPHY2_NSS_RX_CLK + 1;
 
 static const struct alpha_pll_config ubi32_pll_config = {
-	.l = 0x3e,
-	.alpha = 0x6666,
-	.config_ctl_val = 0x200d4aa8,
-	.config_ctl_hi_val = 0x3c,
-	.main_output_mask = BIT(0),
-	.aux_output_mask = BIT(1),
-	.pre_div_val = 0x0,
-	.pre_div_mask = BIT(12),
-	.post_div_val = 0x0,
-	.post_div_mask = GENMASK(9, 8),
-	.alpha_en_mask = BIT(24),
-	.test_ctl_val = 0x1c0000c0,
-	.test_ctl_hi_val = 0x4000,
+	l: 0x3e,
+	alpha: 0x6666,
+	config_ctl_val: 0x200d4aa8,
+	config_ctl_hi_val: 0x3c,
+	main_output_mask: BIT(0),
+	aux_output_mask: BIT(1),
+	pre_div_val: 0x0,
+	pre_div_mask: BIT(12),
+	post_div_val: 0x0,
+	post_div_mask: GENMASK(9, 8),
+	alpha_en_mask: BIT(24),
+	test_ctl_val: 0x1c0000c0,
+	test_ctl_hi_val: 0x4000,
 };
 
 static struct clk_alpha_pll ubi32_pll_main = {
-	.offset = 0x28000,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_NSS_HUAYRA],
-	.flags = SUPPORTS_DYNAMIC_UPDATE,
-	.clkr = {
+	offset: 0x28000,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_NSS_HUAYRA],
+	flags: SUPPORTS_DYNAMIC_UPDATE,
+	clkr: {
 		.hw.init = &(const struct clk_init_data) {
-			.name = "ubi32_pll_main",
-			.parent_data = &(const struct clk_parent_data) {
-				.index = DT_XO,
+			name: "ubi32_pll_main",
+			parent_data: &(const struct clk_parent_data) {
+				index: DT_XO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_huayra_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_huayra_ops,
 		},
 	},
 };
 
 static struct clk_alpha_pll_postdiv ubi32_pll = {
-	.offset = 0x28000,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_NSS_HUAYRA],
-	.width = 2,
+	offset: 0x28000,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_NSS_HUAYRA],
+	width: 2,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "ubi32_pll",
-		.parent_hws = (const struct clk_hw *[]) {
+		name: "ubi32_pll",
+		parent_hws: (const struct clk_hw *[]) {
 			&ubi32_pll_main.clkr.hw
 		},
-		.num_parents = 1,
-		.ops = &clk_alpha_pll_postdiv_ro_ops,
-		.flags = CLK_SET_RATE_PARENT,
+		num_parents: 1,
+		ops: &clk_alpha_pll_postdiv_ro_ops,
+		flags: CLK_SET_RATE_PARENT,
 	},
 };
 
@@ -239,16 +235,16 @@ static const struct freq_tbl ftbl_nss_cc_ce_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_ce_clk_src = {
-	.cmd_rcgr = 0x28404,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_1,
-	.freq_tbl = ftbl_nss_cc_ce_clk_src,
+	cmd_rcgr: 0x28404,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_1,
+	freq_tbl: ftbl_nss_cc_ce_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ce_clk_src",
-		.parent_data = nss_cc_parent_data_1,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_1),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ce_clk_src",
+		parent_data: nss_cc_parent_data_1,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_1),
+		ops: &clk_rcg2_ops,
 	},
 };
 
@@ -258,16 +254,16 @@ static const struct freq_tbl ftbl_nss_cc_cfg_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_cfg_clk_src = {
-	.cmd_rcgr = 0x28104,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_3,
-	.freq_tbl = ftbl_nss_cc_cfg_clk_src,
+	cmd_rcgr: 0x28104,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_3,
+	freq_tbl: ftbl_nss_cc_cfg_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_cfg_clk_src",
-		.parent_data = nss_cc_parent_data_3,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_3),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_cfg_clk_src",
+		parent_data: nss_cc_parent_data_3,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_3),
+		ops: &clk_rcg2_ops,
 	},
 };
 
@@ -277,16 +273,16 @@ static const struct freq_tbl ftbl_nss_cc_clc_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_clc_clk_src = {
-	.cmd_rcgr = 0x28604,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_6,
-	.freq_tbl = ftbl_nss_cc_clc_clk_src,
+	cmd_rcgr: 0x28604,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_6,
+	freq_tbl: ftbl_nss_cc_clc_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_clc_clk_src",
-		.parent_data = nss_cc_parent_data_6,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_6),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_clc_clk_src",
+		parent_data: nss_cc_parent_data_6,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_6),
+		ops: &clk_rcg2_ops,
 	},
 };
 
@@ -298,45 +294,45 @@ static const struct freq_tbl ftbl_nss_cc_crypto_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_crypto_clk_src = {
-	.cmd_rcgr = 0x16008,
-	.mnd_width = 16,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_3,
-	.freq_tbl = ftbl_nss_cc_crypto_clk_src,
+	cmd_rcgr: 0x16008,
+	mnd_width: 16,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_3,
+	freq_tbl: ftbl_nss_cc_crypto_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_crypto_clk_src",
-		.parent_data = nss_cc_parent_data_3,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_3),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_crypto_clk_src",
+		parent_data: nss_cc_parent_data_3,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_3),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_haq_clk_src = {
-	.cmd_rcgr = 0x28304,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_1,
-	.freq_tbl = ftbl_nss_cc_ce_clk_src,
+	cmd_rcgr: 0x28304,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_1,
+	freq_tbl: ftbl_nss_cc_ce_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_haq_clk_src",
-		.parent_data = nss_cc_parent_data_1,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_1),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_haq_clk_src",
+		parent_data: nss_cc_parent_data_1,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_1),
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_imem_clk_src = {
-	.cmd_rcgr = 0xe008,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_1,
-	.freq_tbl = ftbl_nss_cc_ce_clk_src,
+	cmd_rcgr: 0xe008,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_1,
+	freq_tbl: ftbl_nss_cc_ce_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_imem_clk_src",
-		.parent_data = nss_cc_parent_data_1,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_1),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_imem_clk_src",
+		parent_data: nss_cc_parent_data_1,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_1),
+		ops: &clk_rcg2_ops,
 	},
 };
 
@@ -346,16 +342,16 @@ static const struct freq_tbl ftbl_nss_cc_int_cfg_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_int_cfg_clk_src = {
-	.cmd_rcgr = 0x287b4,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_3,
-	.freq_tbl = ftbl_nss_cc_int_cfg_clk_src,
+	cmd_rcgr: 0x287b4,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_3,
+	freq_tbl: ftbl_nss_cc_int_cfg_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_int_cfg_clk_src",
-		.parent_data = nss_cc_parent_data_3,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_3),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_int_cfg_clk_src",
+		parent_data: nss_cc_parent_data_3,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_3),
+		ops: &clk_rcg2_ops,
 	},
 };
 
@@ -488,185 +484,185 @@ static const struct freq_multi_tbl ftbl_nss_cc_port6_tx_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_port1_rx_clk_src = {
-	.cmd_rcgr = 0x28110,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_rx_clk_src,
+	cmd_rcgr: 0x28110,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_rx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port1_rx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port1_rx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port1_tx_clk_src = {
-	.cmd_rcgr = 0x2811c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_tx_clk_src,
+	cmd_rcgr: 0x2811c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_tx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port1_tx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port1_tx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port2_rx_clk_src = {
-	.cmd_rcgr = 0x28128,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_rx_clk_src,
+	cmd_rcgr: 0x28128,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_rx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port2_rx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port2_rx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port2_tx_clk_src = {
-	.cmd_rcgr = 0x28134,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_tx_clk_src,
+	cmd_rcgr: 0x28134,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_tx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port2_tx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port2_tx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port3_rx_clk_src = {
-	.cmd_rcgr = 0x28140,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_rx_clk_src,
+	cmd_rcgr: 0x28140,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_rx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port3_rx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port3_rx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port3_tx_clk_src = {
-	.cmd_rcgr = 0x2814c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_tx_clk_src,
+	cmd_rcgr: 0x2814c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_tx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port3_tx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port3_tx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port4_rx_clk_src = {
-	.cmd_rcgr = 0x28158,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_rx_clk_src,
+	cmd_rcgr: 0x28158,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_rx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port4_rx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port4_rx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port4_tx_clk_src = {
-	.cmd_rcgr = 0x28164,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_4,
-	.freq_multi_tbl = ftbl_nss_cc_port1_tx_clk_src,
+	cmd_rcgr: 0x28164,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_4,
+	freq_multi_tbl: ftbl_nss_cc_port1_tx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port4_tx_clk_src",
-		.parent_data = nss_cc_parent_data_4,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_4),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port4_tx_clk_src",
+		parent_data: nss_cc_parent_data_4,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_4),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port5_rx_clk_src = {
-	.cmd_rcgr = 0x28170,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_0,
-	.freq_multi_tbl = ftbl_nss_cc_port5_rx_clk_src,
+	cmd_rcgr: 0x28170,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_0,
+	freq_multi_tbl: ftbl_nss_cc_port5_rx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port5_rx_clk_src",
-		.parent_data = nss_cc_parent_data_0,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_0),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port5_rx_clk_src",
+		parent_data: nss_cc_parent_data_0,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_0),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port5_tx_clk_src = {
-	.cmd_rcgr = 0x2817c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_0,
-	.freq_multi_tbl = ftbl_nss_cc_port5_tx_clk_src,
+	cmd_rcgr: 0x2817c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_0,
+	freq_multi_tbl: ftbl_nss_cc_port5_tx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port5_tx_clk_src",
-		.parent_data = nss_cc_parent_data_0,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_0),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port5_tx_clk_src",
+		parent_data: nss_cc_parent_data_0,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_0),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port6_rx_clk_src = {
-	.cmd_rcgr = 0x28188,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_5,
-	.freq_multi_tbl = ftbl_nss_cc_port6_rx_clk_src,
+	cmd_rcgr: 0x28188,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_5,
+	freq_multi_tbl: ftbl_nss_cc_port6_rx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port6_rx_clk_src",
-		.parent_data = nss_cc_parent_data_5,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_5),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port6_rx_clk_src",
+		parent_data: nss_cc_parent_data_5,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_5),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_port6_tx_clk_src = {
-	.cmd_rcgr = 0x28194,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_5,
-	.freq_multi_tbl = ftbl_nss_cc_port6_tx_clk_src,
+	cmd_rcgr: 0x28194,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_5,
+	freq_multi_tbl: ftbl_nss_cc_port6_tx_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port6_tx_clk_src",
-		.parent_data = nss_cc_parent_data_5,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_5),
-		.ops = &clk_rcg2_fm_ops,
+		name: "nss_cc_port6_tx_clk_src",
+		parent_data: nss_cc_parent_data_5,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_5),
+		ops: &clk_rcg2_fm_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_ppe_clk_src = {
-	.cmd_rcgr = 0x28204,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_1,
-	.freq_tbl = ftbl_nss_cc_ce_clk_src,
+	cmd_rcgr: 0x28204,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_1,
+	freq_tbl: ftbl_nss_cc_ce_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ppe_clk_src",
-		.parent_data = nss_cc_parent_data_1,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ppe_clk_src",
+		parent_data: nss_cc_parent_data_1,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
@@ -680,2075 +676,2075 @@ static const struct freq_tbl ftbl_nss_cc_ubi0_clk_src[] = {
 };
 
 static struct clk_rcg2 nss_cc_ubi0_clk_src = {
-	.cmd_rcgr = 0x28704,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_2,
-	.freq_tbl = ftbl_nss_cc_ubi0_clk_src,
+	cmd_rcgr: 0x28704,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_2,
+	freq_tbl: ftbl_nss_cc_ubi0_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi0_clk_src",
-		.parent_data = nss_cc_parent_data_2,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_2),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ubi0_clk_src",
+		parent_data: nss_cc_parent_data_2,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_2),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_ubi1_clk_src = {
-	.cmd_rcgr = 0x2870c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_2,
-	.freq_tbl = ftbl_nss_cc_ubi0_clk_src,
+	cmd_rcgr: 0x2870c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_2,
+	freq_tbl: ftbl_nss_cc_ubi0_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi1_clk_src",
-		.parent_data = nss_cc_parent_data_2,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_2),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ubi1_clk_src",
+		parent_data: nss_cc_parent_data_2,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_2),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_ubi2_clk_src = {
-	.cmd_rcgr = 0x28714,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_2,
-	.freq_tbl = ftbl_nss_cc_ubi0_clk_src,
+	cmd_rcgr: 0x28714,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_2,
+	freq_tbl: ftbl_nss_cc_ubi0_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi2_clk_src",
-		.parent_data = nss_cc_parent_data_2,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_2),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ubi2_clk_src",
+		parent_data: nss_cc_parent_data_2,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_2),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_ubi3_clk_src = {
-	.cmd_rcgr = 0x2871c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_2,
-	.freq_tbl = ftbl_nss_cc_ubi0_clk_src,
+	cmd_rcgr: 0x2871c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_2,
+	freq_tbl: ftbl_nss_cc_ubi0_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi3_clk_src",
-		.parent_data = nss_cc_parent_data_2,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_2),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ubi3_clk_src",
+		parent_data: nss_cc_parent_data_2,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_2),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_ubi_axi_clk_src = {
-	.cmd_rcgr = 0x28724,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_7,
-	.freq_tbl = ftbl_nss_cc_clc_clk_src,
+	cmd_rcgr: 0x28724,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_7,
+	freq_tbl: ftbl_nss_cc_clc_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi_axi_clk_src",
-		.parent_data = nss_cc_parent_data_7,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_7),
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ubi_axi_clk_src",
+		parent_data: nss_cc_parent_data_7,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_7),
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_rcg2 nss_cc_ubi_nc_axi_bfdcd_clk_src = {
-	.cmd_rcgr = 0x2872c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = nss_cc_parent_map_1,
-	.freq_tbl = ftbl_nss_cc_ce_clk_src,
+	cmd_rcgr: 0x2872c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: nss_cc_parent_map_1,
+	freq_tbl: ftbl_nss_cc_ce_clk_src,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi_nc_axi_bfdcd_clk_src",
-		.parent_data = nss_cc_parent_data_1,
-		.num_parents = ARRAY_SIZE(nss_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_ops,
+		name: "nss_cc_ubi_nc_axi_bfdcd_clk_src",
+		parent_data: nss_cc_parent_data_1,
+		num_parents: ARRAY_SIZE(nss_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port1_rx_div_clk_src = {
-	.reg = 0x28118,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28118,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port1_rx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port1_rx_clk_src.clkr.hw,
+		name: "nss_cc_port1_rx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port1_rx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port1_tx_div_clk_src = {
-	.reg = 0x28124,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28124,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port1_tx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port1_tx_clk_src.clkr.hw,
+		name: "nss_cc_port1_tx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port1_tx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port2_rx_div_clk_src = {
-	.reg = 0x28130,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28130,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port2_rx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port2_rx_clk_src.clkr.hw,
+		name: "nss_cc_port2_rx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port2_rx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port2_tx_div_clk_src = {
-	.reg = 0x2813c,
-	.shift = 0,
-	.width = 9,
+	reg: 0x2813c,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port2_tx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port2_tx_clk_src.clkr.hw,
+		name: "nss_cc_port2_tx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port2_tx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port3_rx_div_clk_src = {
-	.reg = 0x28148,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28148,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port3_rx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port3_rx_clk_src.clkr.hw,
+		name: "nss_cc_port3_rx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port3_rx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port3_tx_div_clk_src = {
-	.reg = 0x28154,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28154,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port3_tx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port3_tx_clk_src.clkr.hw,
+		name: "nss_cc_port3_tx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port3_tx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port4_rx_div_clk_src = {
-	.reg = 0x28160,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28160,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port4_rx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port4_rx_clk_src.clkr.hw,
+		name: "nss_cc_port4_rx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port4_rx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port4_tx_div_clk_src = {
-	.reg = 0x2816c,
-	.shift = 0,
-	.width = 9,
+	reg: 0x2816c,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port4_tx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port4_tx_clk_src.clkr.hw,
+		name: "nss_cc_port4_tx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port4_tx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port5_rx_div_clk_src = {
-	.reg = 0x28178,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28178,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port5_rx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port5_rx_clk_src.clkr.hw,
+		name: "nss_cc_port5_rx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port5_rx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port5_tx_div_clk_src = {
-	.reg = 0x28184,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28184,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port5_tx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port5_tx_clk_src.clkr.hw,
+		name: "nss_cc_port5_tx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port5_tx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port6_rx_div_clk_src = {
-	.reg = 0x28190,
-	.shift = 0,
-	.width = 9,
+	reg: 0x28190,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port6_rx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port6_rx_clk_src.clkr.hw,
+		name: "nss_cc_port6_rx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port6_rx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_port6_tx_div_clk_src = {
-	.reg = 0x2819c,
-	.shift = 0,
-	.width = 9,
+	reg: 0x2819c,
+	shift: 0,
+	width: 9,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_port6_tx_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_port6_tx_clk_src.clkr.hw,
+		name: "nss_cc_port6_tx_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_port6_tx_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_ubi0_div_clk_src = {
-	.reg = 0x287a4,
-	.shift = 0,
-	.width = 4,
+	reg: 0x287a4,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi0_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ubi0_clk_src.clkr.hw,
+		name: "nss_cc_ubi0_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ubi0_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_ubi1_div_clk_src = {
-	.reg = 0x287a8,
-	.shift = 0,
-	.width = 4,
+	reg: 0x287a8,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi1_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ubi1_clk_src.clkr.hw,
+		name: "nss_cc_ubi1_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ubi1_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_ubi2_div_clk_src = {
-	.reg = 0x287ac,
-	.shift = 0,
-	.width = 4,
+	reg: 0x287ac,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi2_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ubi2_clk_src.clkr.hw,
+		name: "nss_cc_ubi2_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ubi2_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_ubi3_div_clk_src = {
-	.reg = 0x287b0,
-	.shift = 0,
-	.width = 4,
+	reg: 0x287b0,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_ubi3_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ubi3_clk_src.clkr.hw,
+		name: "nss_cc_ubi3_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ubi3_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_xgmac0_ptp_ref_div_clk_src = {
-	.reg = 0x28214,
-	.shift = 0,
-	.width = 4,
+	reg: 0x28214,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_xgmac0_ptp_ref_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ppe_clk_src.clkr.hw,
+		name: "nss_cc_xgmac0_ptp_ref_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ppe_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_xgmac1_ptp_ref_div_clk_src = {
-	.reg = 0x28218,
-	.shift = 0,
-	.width = 4,
+	reg: 0x28218,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_xgmac1_ptp_ref_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ppe_clk_src.clkr.hw,
+		name: "nss_cc_xgmac1_ptp_ref_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ppe_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_xgmac2_ptp_ref_div_clk_src = {
-	.reg = 0x2821c,
-	.shift = 0,
-	.width = 4,
+	reg: 0x2821c,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_xgmac2_ptp_ref_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ppe_clk_src.clkr.hw,
+		name: "nss_cc_xgmac2_ptp_ref_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ppe_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_xgmac3_ptp_ref_div_clk_src = {
-	.reg = 0x28220,
-	.shift = 0,
-	.width = 4,
+	reg: 0x28220,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_xgmac3_ptp_ref_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ppe_clk_src.clkr.hw,
+		name: "nss_cc_xgmac3_ptp_ref_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ppe_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_xgmac4_ptp_ref_div_clk_src = {
-	.reg = 0x28224,
-	.shift = 0,
-	.width = 4,
+	reg: 0x28224,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_xgmac4_ptp_ref_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ppe_clk_src.clkr.hw,
+		name: "nss_cc_xgmac4_ptp_ref_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ppe_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_regmap_div nss_cc_xgmac5_ptp_ref_div_clk_src = {
-	.reg = 0x28228,
-	.shift = 0,
-	.width = 4,
+	reg: 0x28228,
+	shift: 0,
+	width: 4,
 	.clkr.hw.init = &(const struct clk_init_data) {
-		.name = "nss_cc_xgmac5_ptp_ref_div_clk_src",
-		.parent_data = &(const struct clk_parent_data) {
-			.hw = &nss_cc_ppe_clk_src.clkr.hw,
+		name: "nss_cc_xgmac5_ptp_ref_div_clk_src",
+		parent_data: &(const struct clk_parent_data) {
+			hw: &nss_cc_ppe_clk_src.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_regmap_div_ro_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_regmap_div_ro_ops,
 	},
 };
 
 static struct clk_branch nss_cc_ce_apb_clk = {
-	.halt_reg = 0x2840c,
-	.clkr = {
-		.enable_reg = 0x2840c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2840c,
+	clkr: {
+		enable_reg: 0x2840c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ce_apb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ce_clk_src.clkr.hw,
+			name: "nss_cc_ce_apb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ce_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ce_axi_clk = {
-	.halt_reg = 0x28410,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28410,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28410,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28410,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ce_axi_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ce_clk_src.clkr.hw,
+			name: "nss_cc_ce_axi_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ce_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_clc_axi_clk = {
-	.halt_reg = 0x2860c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2860c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2860c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2860c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_clc_axi_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_clc_clk_src.clkr.hw,
+			name: "nss_cc_clc_axi_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_clc_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_crypto_clk = {
-	.halt_reg = 0x1601c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1601c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x1601c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1601c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_crypto_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_crypto_clk_src.clkr.hw,
+			name: "nss_cc_crypto_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_crypto_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_crypto_ppe_clk = {
-	.halt_reg = 0x28240,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28240,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28240,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28240,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_crypto_ppe_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_crypto_ppe_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_haq_ahb_clk = {
-	.halt_reg = 0x2830c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2830c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2830c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2830c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_haq_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_haq_clk_src.clkr.hw,
+			name: "nss_cc_haq_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_haq_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_haq_axi_clk = {
-	.halt_reg = 0x28310,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28310,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28310,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28310,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_haq_axi_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_haq_clk_src.clkr.hw,
+			name: "nss_cc_haq_axi_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_haq_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_imem_ahb_clk = {
-	.halt_reg = 0xe018,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0xe018,
-		.enable_mask = BIT(0),
+	halt_reg: 0xe018,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0xe018,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_imem_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_imem_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_imem_qsb_clk = {
-	.halt_reg = 0xe010,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0xe010,
-		.enable_mask = BIT(0),
+	halt_reg: 0xe010,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0xe010,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_imem_qsb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_imem_clk_src.clkr.hw,
+			name: "nss_cc_imem_qsb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_imem_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nss_csr_clk = {
-	.halt_reg = 0x281d0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281d0,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281d0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281d0,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nss_csr_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_nss_csr_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ce_apb_clk = {
-	.halt_reg = 0x28414,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28414,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28414,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28414,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ce_apb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ce_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ce_apb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ce_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ce_axi_clk = {
-	.halt_reg = 0x28418,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28418,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28418,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28418,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ce_axi_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ce_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ce_axi_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ce_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_clc_axi_clk = {
-	.halt_reg = 0x28610,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28610,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28610,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28610,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_clc_axi_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_clc_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_clc_axi_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_clc_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_crypto_clk = {
-	.halt_reg = 0x16020,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x16020,
-		.enable_mask = BIT(0),
+	halt_reg: 0x16020,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x16020,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_crypto_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_crypto_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_crypto_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_crypto_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_haq_ahb_clk = {
-	.halt_reg = 0x28314,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28314,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28314,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28314,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_haq_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_haq_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_haq_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_haq_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_haq_axi_clk = {
-	.halt_reg = 0x28318,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28318,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28318,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28318,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_haq_axi_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_haq_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_haq_axi_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_haq_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_imem_ahb_clk = {
-	.halt_reg = 0xe01c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0xe01c,
-		.enable_mask = BIT(0),
+	halt_reg: 0xe01c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0xe01c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_imem_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_imem_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_imem_qsb_clk = {
-	.halt_reg = 0xe014,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0xe014,
-		.enable_mask = BIT(0),
+	halt_reg: 0xe014,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0xe014,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_imem_qsb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_imem_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_imem_qsb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_imem_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_nss_csr_clk = {
-	.halt_reg = 0x281d4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281d4,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281d4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281d4,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_nss_csr_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_nss_csr_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ppe_cfg_clk = {
-	.halt_reg = 0x28248,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28248,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28248,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28248,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ppe_cfg_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ppe_cfg_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ppe_clk = {
-	.halt_reg = 0x28244,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28244,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28244,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28244,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ppe_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ppe_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ubi32_ahb0_clk = {
-	.halt_reg = 0x28788,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28788,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28788,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28788,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ubi32_ahb0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ubi32_ahb0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ubi32_axi0_clk = {
-	.halt_reg = 0x287a0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x287a0,
-		.enable_mask = BIT(0),
+	halt_reg: 0x287a0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x287a0,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ubi32_axi0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_axi_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ubi32_axi0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_axi_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ubi32_int0_ahb_clk = {
-	.halt_reg = 0x2878c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2878c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2878c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2878c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ubi32_int0_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_int_cfg_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ubi32_int0_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_int_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ubi32_nc_axi0_1_clk = {
-	.halt_reg = 0x287bc,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x287bc,
-		.enable_mask = BIT(0),
+	halt_reg: 0x287bc,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x287bc,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ubi32_nc_axi0_1_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ubi32_nc_axi0_1_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_nssnoc_ubi32_nc_axi0_clk = {
-	.halt_reg = 0x28764,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28764,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28764,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28764,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_nssnoc_ubi32_nc_axi0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_nssnoc_ubi32_nc_axi0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port1_mac_clk = {
-	.halt_reg = 0x2824c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2824c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2824c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2824c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port1_mac_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_port1_mac_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port1_rx_clk = {
-	.halt_reg = 0x281a0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281a0,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281a0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281a0,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port1_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port1_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_port1_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port1_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port1_tx_clk = {
-	.halt_reg = 0x281a4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281a4,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281a4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281a4,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port1_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port1_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_port1_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port1_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port2_mac_clk = {
-	.halt_reg = 0x28250,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28250,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28250,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28250,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port2_mac_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_port2_mac_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port2_rx_clk = {
-	.halt_reg = 0x281a8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281a8,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281a8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281a8,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port2_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port2_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_port2_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port2_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port2_tx_clk = {
-	.halt_reg = 0x281ac,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281ac,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281ac,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281ac,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port2_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port2_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_port2_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port2_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port3_mac_clk = {
-	.halt_reg = 0x28254,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28254,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28254,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28254,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port3_mac_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_port3_mac_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port3_rx_clk = {
-	.halt_reg = 0x281b0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281b0,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281b0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281b0,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port3_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port3_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_port3_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port3_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port3_tx_clk = {
-	.halt_reg = 0x281b4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281b4,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281b4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281b4,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port3_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port3_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_port3_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port3_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port4_mac_clk = {
-	.halt_reg = 0x28258,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28258,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28258,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28258,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port4_mac_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_port4_mac_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port4_rx_clk = {
-	.halt_reg = 0x281b8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281b8,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281b8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281b8,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port4_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port4_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_port4_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port4_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port4_tx_clk = {
-	.halt_reg = 0x281bc,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281bc,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281bc,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281bc,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port4_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port4_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_port4_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port4_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port5_mac_clk = {
-	.halt_reg = 0x2825c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2825c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2825c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2825c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port5_mac_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_port5_mac_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port5_rx_clk = {
-	.halt_reg = 0x281c0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281c0,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281c0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281c0,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port5_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port5_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_port5_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port5_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port5_tx_clk = {
-	.halt_reg = 0x281c4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281c4,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281c4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281c4,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port5_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port5_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_port5_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port5_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port6_mac_clk = {
-	.halt_reg = 0x28260,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28260,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28260,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28260,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port6_mac_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_port6_mac_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port6_rx_clk = {
-	.halt_reg = 0x281c8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281c8,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281c8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281c8,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port6_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port6_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_port6_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port6_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_port6_tx_clk = {
-	.halt_reg = 0x281cc,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x281cc,
-		.enable_mask = BIT(0),
+	halt_reg: 0x281cc,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x281cc,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_port6_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port6_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_port6_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port6_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ppe_edma_cfg_clk = {
-	.halt_reg = 0x2823c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2823c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2823c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2823c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ppe_edma_cfg_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_ppe_edma_cfg_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ppe_edma_clk = {
-	.halt_reg = 0x28238,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28238,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28238,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28238,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ppe_edma_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_ppe_edma_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ppe_switch_btq_clk = {
-	.halt_reg = 0x2827c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2827c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2827c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2827c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ppe_switch_btq_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_ppe_switch_btq_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ppe_switch_cfg_clk = {
-	.halt_reg = 0x28234,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28234,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28234,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28234,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ppe_switch_cfg_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_ppe_switch_cfg_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ppe_switch_clk = {
-	.halt_reg = 0x28230,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28230,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28230,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28230,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ppe_switch_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_ppe_switch_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ppe_switch_ipe_clk = {
-	.halt_reg = 0x2822c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2822c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2822c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2822c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ppe_switch_ipe_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ppe_clk_src.clkr.hw,
+			name: "nss_cc_ppe_switch_ipe_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ppe_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_ahb0_clk = {
-	.halt_reg = 0x28768,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28768,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28768,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28768,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_ahb0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_ahb0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_ahb1_clk = {
-	.halt_reg = 0x28770,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28770,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28770,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28770,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_ahb1_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_ahb1_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_ahb2_clk = {
-	.halt_reg = 0x28778,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28778,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28778,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28778,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_ahb2_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_ahb2_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_ahb3_clk = {
-	.halt_reg = 0x28780,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28780,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28780,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28780,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_ahb3_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_ahb3_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_axi0_clk = {
-	.halt_reg = 0x28790,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28790,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28790,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28790,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_axi0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_axi_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_axi0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_axi_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_axi1_clk = {
-	.halt_reg = 0x28794,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28794,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28794,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28794,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_axi1_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_axi_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_axi1_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_axi_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_axi2_clk = {
-	.halt_reg = 0x28798,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28798,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28798,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28798,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_axi2_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_axi_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_axi2_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_axi_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_axi3_clk = {
-	.halt_reg = 0x2879c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2879c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2879c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2879c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_axi3_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_axi_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_axi3_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_axi_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_core0_clk = {
-	.halt_reg = 0x28734,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28734,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28734,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28734,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_core0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi0_div_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_core0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi0_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_core1_clk = {
-	.halt_reg = 0x28738,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28738,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28738,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28738,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_core1_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi1_div_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_core1_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi1_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_core2_clk = {
-	.halt_reg = 0x2873c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2873c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2873c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2873c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_core2_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi2_div_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_core2_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi2_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_core3_clk = {
-	.halt_reg = 0x28740,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28740,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28740,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28740,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_core3_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi3_div_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_core3_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi3_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_intr0_ahb_clk = {
-	.halt_reg = 0x2876c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2876c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2876c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2876c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_intr0_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_int_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_intr0_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_int_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_intr1_ahb_clk = {
-	.halt_reg = 0x28774,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28774,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28774,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28774,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_intr1_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_int_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_intr1_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_int_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_intr2_ahb_clk = {
-	.halt_reg = 0x2877c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2877c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2877c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2877c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_intr2_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_int_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_intr2_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_int_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_intr3_ahb_clk = {
-	.halt_reg = 0x28784,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28784,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28784,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28784,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_intr3_ahb_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_int_cfg_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_intr3_ahb_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_int_cfg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_nc_axi0_clk = {
-	.halt_reg = 0x28744,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28744,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28744,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28744,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_nc_axi0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_nc_axi0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_nc_axi1_clk = {
-	.halt_reg = 0x2874c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2874c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2874c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2874c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_nc_axi1_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_nc_axi1_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_nc_axi2_clk = {
-	.halt_reg = 0x28754,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28754,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28754,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28754,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_nc_axi2_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_nc_axi2_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_nc_axi3_clk = {
-	.halt_reg = 0x2875c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2875c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2875c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2875c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_nc_axi3_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_nc_axi3_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_utcm0_clk = {
-	.halt_reg = 0x28748,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28748,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28748,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28748,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_utcm0_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_utcm0_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_utcm1_clk = {
-	.halt_reg = 0x28750,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28750,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28750,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28750,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_utcm1_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_utcm1_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_utcm2_clk = {
-	.halt_reg = 0x28758,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28758,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28758,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28758,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_utcm2_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_utcm2_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_ubi32_utcm3_clk = {
-	.halt_reg = 0x28760,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28760,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28760,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28760,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_ubi32_utcm3_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
+			name: "nss_cc_ubi32_utcm3_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_ubi_nc_axi_bfdcd_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port1_rx_clk = {
-	.halt_reg = 0x28904,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28904,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28904,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28904,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port1_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port1_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port1_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port1_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port1_tx_clk = {
-	.halt_reg = 0x28908,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28908,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28908,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28908,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port1_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port1_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port1_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port1_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port2_rx_clk = {
-	.halt_reg = 0x2890c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2890c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2890c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2890c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port2_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port2_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port2_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port2_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port2_tx_clk = {
-	.halt_reg = 0x28910,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28910,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28910,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28910,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port2_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port2_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port2_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port2_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port3_rx_clk = {
-	.halt_reg = 0x28914,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28914,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28914,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28914,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port3_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port3_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port3_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port3_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port3_tx_clk = {
-	.halt_reg = 0x28918,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28918,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28918,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28918,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port3_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port3_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port3_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port3_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port4_rx_clk = {
-	.halt_reg = 0x2891c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2891c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2891c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2891c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port4_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port4_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port4_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port4_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port4_tx_clk = {
-	.halt_reg = 0x28920,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28920,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28920,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28920,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port4_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port4_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port4_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port4_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port5_rx_clk = {
-	.halt_reg = 0x28924,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28924,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28924,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28924,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port5_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port5_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port5_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port5_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port5_tx_clk = {
-	.halt_reg = 0x28928,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28928,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28928,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28928,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port5_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port5_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port5_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port5_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port6_rx_clk = {
-	.halt_reg = 0x2892c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2892c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2892c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2892c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port6_rx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port6_rx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port6_rx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port6_rx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_uniphy_port6_tx_clk = {
-	.halt_reg = 0x28930,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28930,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28930,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28930,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_uniphy_port6_tx_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_port6_tx_div_clk_src.clkr.hw,
+			name: "nss_cc_uniphy_port6_tx_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_port6_tx_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_xgmac0_ptp_ref_clk = {
-	.halt_reg = 0x28264,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28264,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28264,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28264,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_xgmac0_ptp_ref_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_xgmac0_ptp_ref_div_clk_src.clkr.hw,
+			name: "nss_cc_xgmac0_ptp_ref_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_xgmac0_ptp_ref_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_xgmac1_ptp_ref_clk = {
-	.halt_reg = 0x28268,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28268,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28268,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28268,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_xgmac1_ptp_ref_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_xgmac1_ptp_ref_div_clk_src.clkr.hw,
+			name: "nss_cc_xgmac1_ptp_ref_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_xgmac1_ptp_ref_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_xgmac2_ptp_ref_clk = {
-	.halt_reg = 0x2826c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x2826c,
-		.enable_mask = BIT(0),
+	halt_reg: 0x2826c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x2826c,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_xgmac2_ptp_ref_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_xgmac2_ptp_ref_div_clk_src.clkr.hw,
+			name: "nss_cc_xgmac2_ptp_ref_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_xgmac2_ptp_ref_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_xgmac3_ptp_ref_clk = {
-	.halt_reg = 0x28270,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28270,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28270,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28270,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_xgmac3_ptp_ref_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_xgmac3_ptp_ref_div_clk_src.clkr.hw,
+			name: "nss_cc_xgmac3_ptp_ref_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_xgmac3_ptp_ref_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_xgmac4_ptp_ref_clk = {
-	.halt_reg = 0x28274,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28274,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28274,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28274,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_xgmac4_ptp_ref_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_xgmac4_ptp_ref_div_clk_src.clkr.hw,
+			name: "nss_cc_xgmac4_ptp_ref_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_xgmac4_ptp_ref_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 static struct clk_branch nss_cc_xgmac5_ptp_ref_clk = {
-	.halt_reg = 0x28278,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x28278,
-		.enable_mask = BIT(0),
+	halt_reg: 0x28278,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x28278,
+		enable_mask: BIT(0),
 		.hw.init = &(const struct clk_init_data) {
-			.name = "nss_cc_xgmac5_ptp_ref_clk",
-			.parent_data = &(const struct clk_parent_data) {
-				.hw = &nss_cc_xgmac5_ptp_ref_div_clk_src.clkr.hw,
+			name: "nss_cc_xgmac5_ptp_ref_clk",
+			parent_data: &(const struct clk_parent_data) {
+				hw: &nss_cc_xgmac5_ptp_ref_div_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
@@ -3036,11 +3032,11 @@ static const struct qcom_reset_map nss_cc_ipq9574_resets[] = {
 };
 
 static const struct regmap_config nss_cc_ipq9574_regmap_config = {
-	.reg_bits = 32,
-	.reg_stride = 4,
-	.val_bits = 32,
-	.max_register = 0x28a34,
-	.fast_io = true,
+	reg_bits: 32,
+	reg_stride: 4,
+	val_bits: 32,
+	max_register: 0x28a34,
+	fast_io: true,
 };
 
 static struct qcom_icc_hws_data icc_ipq9574_nss_hws[] = {
@@ -3051,17 +3047,17 @@ static struct qcom_icc_hws_data icc_ipq9574_nss_hws[] = {
 	{ MASTER_NSSNOC_IMEM_AHB, SLAVE_NSSNOC_IMEM_AHB, NSS_CC_NSSNOC_IMEM_AHB_CLK },
 };
 
-#define IPQ_NSSCC_ID	(9574 * 2) /* some unique value */
+pub const IPQ_NSSCC_ID: u32 = 9574 * 2;  /* some unique value */
 
 static const struct qcom_cc_desc nss_cc_ipq9574_desc = {
-	.config = &nss_cc_ipq9574_regmap_config,
-	.clks = nss_cc_ipq9574_clocks,
-	.num_clks = ARRAY_SIZE(nss_cc_ipq9574_clocks),
-	.resets = nss_cc_ipq9574_resets,
-	.num_resets = ARRAY_SIZE(nss_cc_ipq9574_resets),
-	.icc_hws = icc_ipq9574_nss_hws,
-	.num_icc_hws = ARRAY_SIZE(icc_ipq9574_nss_hws),
-	.icc_first_node_id = IPQ_NSSCC_ID,
+	config: &nss_cc_ipq9574_regmap_config,
+	clks: nss_cc_ipq9574_clocks,
+	num_clks: ARRAY_SIZE(nss_cc_ipq9574_clocks),
+	resets: nss_cc_ipq9574_resets,
+	num_resets: ARRAY_SIZE(nss_cc_ipq9574_resets),
+	icc_hws: icc_ipq9574_nss_hws,
+	num_icc_hws: ARRAY_SIZE(icc_ipq9574_nss_hws),
+	icc_first_node_id: IPQ_NSSCC_ID,
 };
 
 static const struct dev_pm_ops nss_cc_ipq9574_pm_ops = {
@@ -3074,7 +3070,7 @@ static const struct of_device_id nss_cc_ipq9574_match_table[] = {
 };
 MODULE_DEVICE_TABLE(of, nss_cc_ipq9574_match_table);
 
-static int nss_cc_ipq9574_probe(struct platform_device *pdev)
+static int nss_cc_ipq9574_probe(platform_device *pdev)
 {
 	struct regmap *regmap;
 	int ret;
@@ -3111,12 +3107,12 @@ static int nss_cc_ipq9574_probe(struct platform_device *pdev)
 }
 
 static struct platform_driver nss_cc_ipq9574_driver = {
-	.probe = nss_cc_ipq9574_probe,
-	.driver = {
-		.name = "qcom,nsscc-ipq9574",
-		.of_match_table = nss_cc_ipq9574_match_table,
-		.pm = &nss_cc_ipq9574_pm_ops,
-		.sync_state = icc_sync_state,
+	probe: nss_cc_ipq9574_probe,
+	driver: {
+		name: "qcom,nsscc-ipq9574",
+		of_match_table: nss_cc_ipq9574_match_table,
+		pm: &nss_cc_ipq9574_pm_ops,
+		sync_state: icc_sync_state,
 	},
 };
 

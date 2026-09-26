@@ -6,14 +6,14 @@
 // C dependencies supplied by the surrounding kernel translation.
 use crate::*;
 
-#[cfg(feature = "CONFIG_CRYPTO_DEV_ASPEED_DEBUG")]
+#[cfg(CONFIG_CRYPTO_DEV_ASPEED_DEBUG)]
 macro_rules! HACE_DBG {
     ($d:expr, $fmt:expr $(, $arg:expr)*) => {
         dev_info(($d).dev, concat!(module_path!(), "() ", $fmt) $(, $arg)*);
     };
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_ASPEED_DEBUG"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_ASPEED_DEBUG))]
 macro_rules! HACE_DBG {
     ($d:expr, $fmt:expr $(, $arg:expr)*) => {
         dev_dbg(($d).dev, concat!(module_path!(), "() ", $fmt) $(, $arg)*);
@@ -64,16 +64,16 @@ unsafe extern "C" fn aspeed_hace_hash_done_task(data: c_ulong) {
 }
 
 unsafe fn aspeed_hace_register(hace_dev: *mut aspeed_hace_dev) {
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH")]
+    #[cfg(CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH)]
     aspeed_register_hace_hash_algs(hace_dev);
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_ASPEED_HACE_CRYPTO")]
+    #[cfg(CONFIG_CRYPTO_DEV_ASPEED_HACE_CRYPTO)]
     aspeed_register_hace_crypto_algs(hace_dev);
 }
 
 unsafe fn aspeed_hace_unregister(hace_dev: *mut aspeed_hace_dev) {
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH")]
+    #[cfg(CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH)]
     aspeed_unregister_hace_hash_algs(hace_dev);
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_ASPEED_HACE_CRYPTO")]
+    #[cfg(CONFIG_CRYPTO_DEV_ASPEED_HACE_CRYPTO)]
     aspeed_unregister_hace_crypto_algs(hace_dev);
 }
 
@@ -87,6 +87,9 @@ unsafe extern "C" fn aspeed_hace_probe(pdev: *mut platform_device) -> i32 {
     let mut rc: i32;
     let hace_dev = devm_kzalloc((*pdev).dev, core::mem::size_of::<aspeed_hace_dev>(), GFP_KERNEL)
         as *mut aspeed_hace_dev;
+    'clk_exit: {
+    'err_engine_hash_start: {
+    'err_engine_crypto_start: {
     if hace_dev.is_null() { return -ENOMEM; }
 
     (*hace_dev).version = device_get_match_data((*pdev).dev) as usize;
@@ -121,48 +124,50 @@ unsafe extern "C" fn aspeed_hace_probe(pdev: *mut platform_device) -> i32 {
     }
 
     (*hace_dev).crypt_engine_hash = crypto_engine_alloc_init((*hace_dev).dev, true);
-    if (*hace_dev).crypt_engine_hash.is_null() { rc = -ENOMEM; goto clk_exit; }
+    if (*hace_dev).crypt_engine_hash.is_null() { rc = -ENOMEM; break 'clk_exit; }
     rc = crypto_engine_start((*hace_dev).crypt_engine_hash);
-    if rc != 0 { goto err_engine_hash_start; }
+    if rc != 0 { break 'err_engine_hash_start; }
     tasklet_init(&mut hash_engine.done_task, aspeed_hace_hash_done_task, hace_dev as c_ulong);
 
     (*hace_dev).crypt_engine_crypto = crypto_engine_alloc_init((*hace_dev).dev, true);
-    if (*hace_dev).crypt_engine_crypto.is_null() { rc = -ENOMEM; goto err_engine_hash_start; }
+    if (*hace_dev).crypt_engine_crypto.is_null() { rc = -ENOMEM; break 'err_engine_hash_start; }
     rc = crypto_engine_start((*hace_dev).crypt_engine_crypto);
-    if rc != 0 { goto err_engine_crypto_start; }
+    if rc != 0 { break 'err_engine_crypto_start; }
     tasklet_init(&mut crypto_engine.done_task, aspeed_hace_crypto_done_task, hace_dev as c_ulong);
 
     hash_engine.ahash_src_addr = dmam_alloc_coherent((*pdev).dev, ASPEED_HASH_SRC_DMA_BUF_LEN,
         &mut hash_engine.ahash_src_dma_addr, GFP_KERNEL);
     if hash_engine.ahash_src_addr.is_null() {
-        dev_err((*pdev).dev, "Failed to allocate dma buffer\n"); rc = -ENOMEM; goto err_engine_crypto_start;
+        dev_err((*pdev).dev, "Failed to allocate dma buffer\n"); rc = -ENOMEM; break 'err_engine_crypto_start;
     }
     crypto_engine.cipher_ctx = dmam_alloc_coherent((*pdev).dev, PAGE_SIZE,
         &mut crypto_engine.cipher_ctx_dma, GFP_KERNEL);
     if crypto_engine.cipher_ctx.is_null() {
-        dev_err((*pdev).dev, "Failed to allocate cipher ctx dma\n"); rc = -ENOMEM; goto err_engine_crypto_start;
+        dev_err((*pdev).dev, "Failed to allocate cipher ctx dma\n"); rc = -ENOMEM; break 'err_engine_crypto_start;
     }
     crypto_engine.cipher_addr = dmam_alloc_coherent((*pdev).dev, ASPEED_CRYPTO_SRC_DMA_BUF_LEN,
         &mut crypto_engine.cipher_dma_addr, GFP_KERNEL);
     if crypto_engine.cipher_addr.is_null() {
-        dev_err((*pdev).dev, "Failed to allocate cipher addr dma\n"); rc = -ENOMEM; goto err_engine_crypto_start;
+        dev_err((*pdev).dev, "Failed to allocate cipher addr dma\n"); rc = -ENOMEM; break 'err_engine_crypto_start;
     }
     if (*hace_dev).version == AST2600_VERSION {
         crypto_engine.dst_sg_addr = dmam_alloc_coherent((*pdev).dev, ASPEED_CRYPTO_DST_DMA_BUF_LEN,
             &mut crypto_engine.dst_sg_dma_addr, GFP_KERNEL);
         if crypto_engine.dst_sg_addr.is_null() {
-            dev_err((*pdev).dev, "Failed to allocate dst_sg dma\n"); rc = -ENOMEM; goto err_engine_crypto_start;
+            dev_err((*pdev).dev, "Failed to allocate dst_sg dma\n"); rc = -ENOMEM; break 'err_engine_crypto_start;
         }
     }
     aspeed_hace_register(hace_dev);
     dev_info((*pdev).dev, "Aspeed Crypto Accelerator successfully registered\n");
     return 0;
-
-err_engine_crypto_start:
+    }
+    
     crypto_engine_exit((*hace_dev).crypt_engine_crypto);
-err_engine_hash_start:
+    }
+    
     crypto_engine_exit((*hace_dev).crypt_engine_hash);
-clk_exit:
+    }
+    
     clk_disable_unprepare((*hace_dev).clk);
     rc
 }

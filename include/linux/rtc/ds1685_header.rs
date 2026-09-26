@@ -76,7 +76,7 @@ pub const RTC_CTRL_C_PAU_MASK: u32 = 0x70; pub const RTC_CTRL_D_VRT: u32 = bit!(
 pub const RTC_CTRL_4A_VRT2: u32 = bit!(7); pub const RTC_CTRL_4A_INCR: u32 = bit!(6);
 pub const RTC_CTRL_4A_PAB: u32 = bit!(3); pub const RTC_CTRL_4A_RF: u32 = bit!(2);
 pub const RTC_CTRL_4A_WF: u32 = bit!(1); pub const RTC_CTRL_4A_KF: u32 = bit!(0);
-#[cfg(not(any(feature = "CONFIG_RTC_DRV_DS1685", feature = "CONFIG_RTC_DRV_DS1689")))]
+#[cfg(not(any(CONFIG_RTC_DRV_DS1685, CONFIG_RTC_DRV_DS1689)))]
 pub const RTC_CTRL_4A_BME: u32 = bit!(5);
 pub const RTC_CTRL_4A_RWK_MASK: u32 = 0x07;
 pub const RTC_CTRL_4B_ABE: u32 = bit!(7); pub const RTC_CTRL_4B_E32K: u32 = bit!(6);
@@ -91,17 +91,17 @@ pub const RTC_BANK1_SSN_BYTE_4: u32 = 0x44; pub const RTC_BANK1_SSN_BYTE_5: u32 
 pub const RTC_BANK1_SSN_BYTE_6: u32 = 0x46; pub const RTC_BANK1_SSN_CRC: u32 = 0x47;
 pub const RTC_BANK1_RAM_DATA_PORT: u32 = 0x53;
 
-#[cfg(feature = "CONFIG_RTC_DRV_DS1685")] pub const RTC_BANK1_RAM_ADDR: u32 = 0x50;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_VCC_CTR_LSB: u32 = 0x54;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_VCC_CTR_MSB: u32 = 0x57;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_VBAT_CTR_LSB: u32 = 0x58;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_VBAT_CTR_MSB: u32 = 0x5b;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_PWR_CTR_LSB: u32 = 0x5c;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_PWR_CTR_MSB: u32 = 0x5d;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const RTC_BANK1_UNIQ_SN: u32 = 0x60;
-#[cfg(not(any(feature = "CONFIG_RTC_DRV_DS1685", feature = "CONFIG_RTC_DRV_DS1689")))] pub const RTC_BANK1_RAM_ADDR_LSB: u32 = 0x50;
-#[cfg(not(any(feature = "CONFIG_RTC_DRV_DS1685", feature = "CONFIG_RTC_DRV_DS1689")))] pub const RTC_BANK1_RAM_ADDR_MSB: u32 = 0x51;
-#[cfg(not(any(feature = "CONFIG_RTC_DRV_DS1685", feature = "CONFIG_RTC_DRV_DS1689")))] pub const RTC_BANK1_WRITE_CTR: u32 = 0x5e;
+#[cfg(CONFIG_RTC_DRV_DS1685)] pub const RTC_BANK1_RAM_ADDR: u32 = 0x50;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_VCC_CTR_LSB: u32 = 0x54;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_VCC_CTR_MSB: u32 = 0x57;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_VBAT_CTR_LSB: u32 = 0x58;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_VBAT_CTR_MSB: u32 = 0x5b;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_PWR_CTR_LSB: u32 = 0x5c;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_PWR_CTR_MSB: u32 = 0x5d;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const RTC_BANK1_UNIQ_SN: u32 = 0x60;
+#[cfg(not(any(CONFIG_RTC_DRV_DS1685, CONFIG_RTC_DRV_DS1689)))] pub const RTC_BANK1_RAM_ADDR_LSB: u32 = 0x50;
+#[cfg(not(any(CONFIG_RTC_DRV_DS1685, CONFIG_RTC_DRV_DS1689)))] pub const RTC_BANK1_RAM_ADDR_MSB: u32 = 0x51;
+#[cfg(not(any(CONFIG_RTC_DRV_DS1685, CONFIG_RTC_DRV_DS1689)))] pub const RTC_BANK1_WRITE_CTR: u32 = 0x5e;
 
 pub const RTC_MODEL_DS1685: u32 = 0x71; pub const RTC_MODEL_DS17285: u32 = 0x72;
 pub const RTC_MODEL_DS1689: u32 = 0x73; pub const RTC_MODEL_DS17485: u32 = 0x74;
@@ -116,11 +116,11 @@ pub const RTC_SQW_2HZ: u32 = 0x0f; pub const RTC_SQW_0HZ: u32 = 0x00;
 pub const RTC_SQW_32768HZ: u32 = 32768;
 pub const NVRAM_TIME_BASE: u32 = 0x0e; pub const NVRAM_BANK0_BASE: u32 = 0x40;
 pub const NVRAM_SZ_TIME: u32 = 50; pub const NVRAM_SZ_BANK0: u32 = 64;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1685")] pub const NVRAM_SZ_EXTND: u32 = 128;
-#[cfg(feature = "CONFIG_RTC_DRV_DS1689")] pub const NVRAM_SZ_EXTND: u32 = 0;
-#[cfg(feature = "CONFIG_RTC_DRV_DS17285")] pub const NVRAM_SZ_EXTND: u32 = 2048;
-#[cfg(feature = "CONFIG_RTC_DRV_DS17485")] pub const NVRAM_SZ_EXTND: u32 = 4096;
-#[cfg(feature = "CONFIG_RTC_DRV_DS17885")] pub const NVRAM_SZ_EXTND: u32 = 8192;
+#[cfg(CONFIG_RTC_DRV_DS1685)] pub const NVRAM_SZ_EXTND: u32 = 128;
+#[cfg(CONFIG_RTC_DRV_DS1689)] pub const NVRAM_SZ_EXTND: u32 = 0;
+#[cfg(CONFIG_RTC_DRV_DS17285)] pub const NVRAM_SZ_EXTND: u32 = 2048;
+#[cfg(CONFIG_RTC_DRV_DS17485)] pub const NVRAM_SZ_EXTND: u32 = 4096;
+#[cfg(CONFIG_RTC_DRV_DS17885)] pub const NVRAM_SZ_EXTND: u32 = 8192;
 pub const NVRAM_TOTAL_SZ_BANK0: u32 = NVRAM_SZ_TIME + NVRAM_SZ_BANK0;
 pub const NVRAM_TOTAL_SZ: u32 = NVRAM_TOTAL_SZ_BANK0 + NVRAM_SZ_EXTND;
 

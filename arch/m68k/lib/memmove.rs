@@ -26,7 +26,7 @@ pub unsafe fn memmove(mut dest: *mut core::ffi::c_void,
             src = csrc as *const core::ffi::c_void;
             n -= 1;
         }
-        #[cfg(feature = "CONFIG_M68000")]
+        #[cfg(CONFIG_M68000)]
         if (src as usize) & 1 != 0 {
             let mut cdest = dest as *mut u8;
             let mut csrc = src as *const u8;
@@ -84,7 +84,7 @@ pub unsafe fn memmove(mut dest: *mut core::ffi::c_void,
             src = csrc as *const core::ffi::c_void;
             n -= 1;
         }
-        #[cfg(feature = "CONFIG_M68000")]
+        #[cfg(CONFIG_M68000)]
         if (src as usize) & 1 != 0 {
             let mut cdest = dest as *mut u8;
             let mut csrc = src as *const u8;

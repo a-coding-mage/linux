@@ -210,7 +210,7 @@ unsafe extern "C" {
 }
 
 // These declarations are present when CONFIG_KUNIT is enabled.
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 unsafe extern "C" {
     pub fn kunit_assert_print_msg(message: *const va_format, stream: *mut string_stream);
     pub fn is_literal(text: *const c_char, value: i64) -> bool;

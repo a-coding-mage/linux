@@ -15,14 +15,14 @@
  */
 
 #[cfg(all(
-    feature = "CONFIG_PROC_FS",
-    any(feature = "CONFIG_JFS_DEBUG", feature = "CONFIG_JFS_STATISTICS")
+    CONFIG_PROC_FS,
+    any(CONFIG_JFS_DEBUG, CONFIG_JFS_STATISTICS)
 ))]
 pub const PROC_FS_JFS: () = ();
 
 #[cfg(all(
-    feature = "CONFIG_PROC_FS",
-    any(feature = "CONFIG_JFS_DEBUG", feature = "CONFIG_JFS_STATISTICS")
+    CONFIG_PROC_FS,
+    any(CONFIG_JFS_DEBUG, CONFIG_JFS_STATISTICS)
 ))]
 unsafe extern "C" {
     pub fn jfs_proc_init();
@@ -37,7 +37,7 @@ macro_rules! assert {
             unsafe {
                 printk(
                     KERN_CRIT,
-                    concat!("BUG at ", file!(), ":", line!(), " assert(", stringify!($p), ")\n"),
+                    concat!("BUG at ", file!(), ":", line!(), " assert!(", stringify!($p), ")\n"),
                 );
                 BUG();
             }
@@ -45,34 +45,34 @@ macro_rules! assert {
     }};
 }
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 #[macro_export]
 macro_rules! ASSERT {
     ($p:expr) => { $crate::assert!($p) };
 }
 
-#[cfg(not(feature = "CONFIG_JFS_DEBUG"))]
+#[cfg(not(CONFIG_JFS_DEBUG))]
 #[macro_export]
 macro_rules! ASSERT {
     ($p:expr) => {{ }};
 }
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 pub const JFS_LOGLEVEL_ERR: i32 = 1;
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 pub const JFS_LOGLEVEL_WARN: i32 = 2;
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 pub const JFS_LOGLEVEL_DEBUG: i32 = 3;
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 pub const JFS_LOGLEVEL_INFO: i32 = 4;
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 unsafe extern "C" {
     pub static mut jfsloglevel: i32;
     pub fn jfs_txanchor_proc_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> i32;
 }
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 #[macro_export]
 macro_rules! jfs_info {
     ($fmt:expr $(, $arg:expr)*) => {{
@@ -82,7 +82,7 @@ macro_rules! jfs_info {
     }};
 }
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 #[macro_export]
 macro_rules! jfs_debug {
     ($fmt:expr $(, $arg:expr)*) => {{
@@ -92,7 +92,7 @@ macro_rules! jfs_debug {
     }};
 }
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 #[macro_export]
 macro_rules! jfs_warn {
     ($fmt:expr $(, $arg:expr)*) => {{
@@ -102,7 +102,7 @@ macro_rules! jfs_warn {
     }};
 }
 
-#[cfg(feature = "CONFIG_JFS_DEBUG")]
+#[cfg(CONFIG_JFS_DEBUG)]
 #[macro_export]
 macro_rules! jfs_err {
     ($fmt:expr $(, $arg:expr)*) => {{
@@ -112,20 +112,20 @@ macro_rules! jfs_err {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_JFS_DEBUG"))]
+#[cfg(not(CONFIG_JFS_DEBUG))]
 #[macro_export]
 macro_rules! jfs_info { ($fmt:expr $(, $arg:expr)*) => {{ }}; }
-#[cfg(not(feature = "CONFIG_JFS_DEBUG"))]
+#[cfg(not(CONFIG_JFS_DEBUG))]
 #[macro_export]
 macro_rules! jfs_debug { ($fmt:expr $(, $arg:expr)*) => {{ }}; }
-#[cfg(not(feature = "CONFIG_JFS_DEBUG"))]
+#[cfg(not(CONFIG_JFS_DEBUG))]
 #[macro_export]
 macro_rules! jfs_warn { ($fmt:expr $(, $arg:expr)*) => {{ }}; }
-#[cfg(not(feature = "CONFIG_JFS_DEBUG"))]
+#[cfg(not(CONFIG_JFS_DEBUG))]
 #[macro_export]
 macro_rules! jfs_err { ($fmt:expr $(, $arg:expr)*) => {{ }}; }
 
-#[cfg(feature = "CONFIG_JFS_STATISTICS")]
+#[cfg(CONFIG_JFS_STATISTICS)]
 unsafe extern "C" {
     pub fn jfs_lmstats_proc_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> i32;
     pub fn jfs_txstats_proc_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> i32;
@@ -133,25 +133,25 @@ unsafe extern "C" {
     pub fn jfs_xtstat_proc_show(m: *mut seq_file, v: *mut core::ffi::c_void) -> i32;
 }
 
-#[cfg(feature = "CONFIG_JFS_STATISTICS")]
+#[cfg(CONFIG_JFS_STATISTICS)]
 #[macro_export]
 macro_rules! INCREMENT { ($x:expr) => { $x += 1 }; }
-#[cfg(feature = "CONFIG_JFS_STATISTICS")]
+#[cfg(CONFIG_JFS_STATISTICS)]
 #[macro_export]
 macro_rules! DECREMENT { ($x:expr) => { $x -= 1 }; }
-#[cfg(feature = "CONFIG_JFS_STATISTICS")]
+#[cfg(CONFIG_JFS_STATISTICS)]
 #[macro_export]
 macro_rules! HIGHWATERMARK {
     ($x:expr, $y:expr) => {{ if $x < $y { $x = $y; } }};
 }
 
-#[cfg(not(feature = "CONFIG_JFS_STATISTICS"))]
+#[cfg(not(CONFIG_JFS_STATISTICS))]
 #[macro_export]
 macro_rules! INCREMENT { ($x:expr) => {{ }}; }
-#[cfg(not(feature = "CONFIG_JFS_STATISTICS"))]
+#[cfg(not(CONFIG_JFS_STATISTICS))]
 #[macro_export]
 macro_rules! DECREMENT { ($x:expr) => {{ }}; }
-#[cfg(not(feature = "CONFIG_JFS_STATISTICS"))]
+#[cfg(not(CONFIG_JFS_STATISTICS))]
 #[macro_export]
 macro_rules! HIGHWATERMARK { ($x:expr, $y:expr) => {{ }}; }
 

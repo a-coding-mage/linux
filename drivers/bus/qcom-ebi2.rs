@@ -131,7 +131,7 @@ unsafe fn qcom_ebi2_probe(pdev: *mut platform_device) -> i32 {
     val &= !EBI2_CSN_MASK;
     writel(val, ebi2_base);
     let mut have_children = false;
-    for_each_available_child_of_node_scoped(np, child) {
+    for_each_available_child_of_node_scoped!(np, child, {
         let mut csindex: u32 = 0;
         let ret = of_property_read_u32(child, b"reg\0".as_ptr() as *const _, &mut csindex);
         if ret != 0 { return ret; }
@@ -141,7 +141,7 @@ unsafe fn qcom_ebi2_probe(pdev: *mut platform_device) -> i32 {
         }
         qcom_ebi2_setup_chipselect(child, dev, ebi2_base, ebi2_xmem, csindex);
         have_children = true;
-    }
+    });
     if have_children { return devm_of_platform_populate(dev); }
     0
 }

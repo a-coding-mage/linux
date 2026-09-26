@@ -67,10 +67,10 @@ extern "C" {
     pub fn pseries_machine_check_realmode(regs: *mut pt_regs) -> c_long;
     pub fn pSeries_machine_check_log_err();
 
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn smp_init_pseries();
 
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn smp_query_cpu_stopped(pcpu: c_uint) -> c_int;
 
     pub fn pseries_kexec_cpu_down(crash_shutdown: c_int, secondary: c_int);
@@ -91,14 +91,14 @@ extern "C" {
     pub fn queue_hotplug_event(hp_errlog: *mut pseries_hp_errorlog);
     pub fn handle_dlpar_errorlog(hp_errlog: *mut pseries_hp_errorlog) -> c_int;
 
-    #[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+    #[cfg(CONFIG_MEMORY_HOTPLUG)]
     pub fn dlpar_memory(hp_elog: *mut pseries_hp_errorlog) -> c_int;
-    #[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+    #[cfg(CONFIG_MEMORY_HOTPLUG)]
     pub fn dlpar_hp_pmem(hp_elog: *mut pseries_hp_errorlog) -> c_int;
 
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub fn dlpar_cpu(hp_elog: *mut pseries_hp_errorlog) -> c_int;
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub fn pseries_cpu_hotplug_init();
 
     pub fn pseries_root_bridge_prepare(bridge: *mut pci_host_bridge) -> c_int;
@@ -114,12 +114,12 @@ extern "C" {
     pub static mut pseries_security_flavor: u32;
     pub fn pseries_setup_security_mitigations();
 
-    #[cfg(feature = "CONFIG_PPC_64S_HASH_MMU")]
+    #[cfg(CONFIG_PPC_64S_HASH_MMU)]
     pub fn pseries_lpar_read_hblkrm_characteristics();
 
     pub fn pseries_rng_init();
 
-    #[cfg(feature = "CONFIG_SPAPR_TCE_IOMMU")]
+    #[cfg(CONFIG_SPAPR_TCE_IOMMU)]
     pub fn pSeries_pci_device_group(
         hose: *mut pci_controller,
         pdev: *mut pci_dev,
@@ -132,29 +132,29 @@ pub const QCSS_NOT_STOPPED: c_int = 2;
 pub const QCSS_HARDWARE_ERROR: c_int = -1;
 pub const QCSS_HARDWARE_BUSY: c_int = -2;
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub fn smp_init_pseries() {}
 
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub unsafe fn dlpar_memory(_hp_elog: *mut pseries_hp_errorlog) -> c_int {
     -95 /* -EOPNOTSUPP */
 }
 
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub unsafe fn dlpar_hp_pmem(_hp_elog: *mut pseries_hp_errorlog) -> c_int {
     -95 /* -EOPNOTSUPP */
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub unsafe fn dlpar_cpu(_hp_elog: *mut pseries_hp_errorlog) -> c_int {
     -95 /* -EOPNOTSUPP */
 }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub fn pseries_cpu_hotplug_init() {}
 
@@ -173,7 +173,7 @@ pub unsafe fn cmo_get_page_size() -> c_ulong {
     CMO_PageSize
 }
 
-#[cfg(not(feature = "CONFIG_PPC_64S_HASH_MMU"))]
+#[cfg(not(CONFIG_PPC_64S_HASH_MMU))]
 #[inline]
 pub fn pseries_lpar_read_hblkrm_characteristics() {}
 

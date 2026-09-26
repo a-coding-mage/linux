@@ -232,12 +232,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	MADERA_IRQ_DSP7_BUS_ERR,
 // C: };
 // C: 
-// C: int madera_clk_ev(struct snd_soc_dapm_widget *w,
-// C: 		  struct snd_kcontrol *kcontrol, int event)
+// C: int madera_clk_ev(snd_soc_dapm_widget *w,
+// C: 		  snd_kcontrol *kcontrol, int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	unsigned int val;
 // C: 	int clk_idx;
 // C: 	int ret;
@@ -274,9 +274,9 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_clk_ev);
 // C: 
-// C: static void madera_spin_sysclk(struct madera_priv *priv)
+// C: static void madera_spin_sysclk(madera_priv *priv)
 // C: {
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera *madera = priv->madera;
 // C: 	unsigned int val;
 // C: 	int ret, i;
 // C: 
@@ -298,11 +298,11 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	udelay(300);
 // C: }
 // C: 
-// C: int madera_sysclk_ev(struct snd_soc_dapm_widget *w,
-// C: 		     struct snd_kcontrol *kcontrol, int event)
+// C: int madera_sysclk_ev(snd_soc_dapm_widget *w,
+// C: 		     snd_kcontrol *kcontrol, int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
 // C: 
 // C: 	switch (event) {
 // C: 	case SND_SOC_DAPM_POST_PMU:
@@ -317,7 +317,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_sysclk_ev);
 // C: 
-// C: static int madera_check_speaker_overheat(struct madera *madera,
+// C: static int madera_check_speaker_overheat(madera *madera,
 // C: 					 bool *warn, bool *shutdown)
 // C: {
 // C: 	unsigned int val;
@@ -336,12 +336,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	return 0;
 // C: }
 // C: 
-// C: int madera_spk_ev(struct snd_soc_dapm_widget *w,
-// C: 		  struct snd_kcontrol *kcontrol, int event)
+// C: int madera_spk_ev(snd_soc_dapm_widget *w,
+// C: 		  snd_kcontrol *kcontrol, int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	bool warn, shutdown;
 // C: 	int ret;
 // C: 
@@ -374,7 +374,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 
 // C: static irqreturn_t madera_thermal_warn(int irq, void *data)
 // C: {
-// C: 	struct madera *madera = data;
+// C: 	madera *madera = data;
 // C: 	bool warn, shutdown;
 // C: 	int ret;
 // C: 
@@ -399,10 +399,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	return IRQ_HANDLED;
 // C: }
 // C: 
-// C: int madera_init_overheat(struct madera_priv *priv)
+// C: int madera_init_overheat(madera_priv *priv)
 // C: {
-// C: 	struct madera *madera = priv->madera;
-// C: 	struct device *dev = madera->dev;
+// C: 	madera *madera = priv->madera;
+// C: 	device *dev = madera->dev;
 // C: 	int ret;
 // C: 
 // C: 	ret = madera_request_irq(madera, MADERA_IRQ_SPK_OVERHEAT_WARN,
@@ -421,9 +421,9 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_init_overheat);
 // C: 
-// C: int madera_free_overheat(struct madera_priv *priv)
+// C: int madera_free_overheat(madera_priv *priv)
 // C: {
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera *madera = priv->madera;
 // C: 
 // C: 	madera_free_irq(madera, MADERA_IRQ_SPK_OVERHEAT_WARN, madera);
 // C: 	madera_free_irq(madera, MADERA_IRQ_SPK_OVERHEAT, madera);
@@ -432,7 +432,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_free_overheat);
 // C: 
-// C: static int madera_get_variable_u32_array(struct device *dev,
+// C: static int madera_get_variable_u32_array(device *dev,
 // C: 					 const char *propname,
 // C: 					 u32 *dest, int n_max,
 // C: 					 int multiple)
@@ -464,10 +464,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	return n;
 // C: }
 // C: 
-// C: static void madera_prop_get_inmode(struct madera_priv *priv)
+// C: static void madera_prop_get_inmode(madera_priv *priv)
 // C: {
-// C: 	struct madera *madera = priv->madera;
-// C: 	struct madera_codec_pdata *pdata = &madera->pdata.codec;
+// C: 	madera *madera = priv->madera;
+// C: 	madera_codec_pdata *pdata = &madera->pdata.codec;
 // C: 	u32 tmp[MADERA_MAX_INPUT * MADERA_MAX_MUXED_CHANNELS];
 // C: 	int n, i, in_idx, ch_idx;
 // C: 
@@ -492,10 +492,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	}
 // C: }
 // C: 
-// C: static void madera_prop_get_pdata(struct madera_priv *priv)
+// C: static void madera_prop_get_pdata(madera_priv *priv)
 // C: {
-// C: 	struct madera *madera = priv->madera;
-// C: 	struct madera_codec_pdata *pdata = &madera->pdata.codec;
+// C: 	madera *madera = priv->madera;
+// C: 	madera_codec_pdata *pdata = &madera->pdata.codec;
 // C: 	u32 out_mono[ARRAY_SIZE(pdata->out_mono)];
 // C: 	int i, n;
 // C: 
@@ -526,7 +526,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 				      ARRAY_SIZE(pdata->dmic_ref), 1);
 // C: }
 // C: 
-// C: int madera_core_init(struct madera_priv *priv)
+// C: int madera_core_init(madera_priv *priv)
 // C: {
 // C: 	int i;
 // C: 
@@ -546,7 +546,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_core_init);
 // C: 
-// C: int madera_core_free(struct madera_priv *priv)
+// C: int madera_core_free(madera_priv *priv)
 // C: {
 // C: 	mutex_destroy(&priv->rate_lock);
 // C: 
@@ -556,7 +556,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 
 // C: static void madera_debug_dump_domain_groups(const struct madera_priv *priv)
 // C: {
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera *madera = priv->madera;
 // C: 	int i;
 // C: 
 // C: 	for (i = 0; i < ARRAY_SIZE(priv->domain_group_ref); ++i)
@@ -564,12 +564,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 			priv->domain_group_ref[i]);
 // C: }
 // C: 
-// C: int madera_domain_clk_ev(struct snd_soc_dapm_widget *w,
-// C: 			 struct snd_kcontrol *kcontrol,
+// C: int madera_domain_clk_ev(snd_soc_dapm_widget *w,
+// C: 			 snd_kcontrol *kcontrol,
 // C: 			 int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
 // C: 	int dom_grp = w->shift;
 // C: 
 // C: 	if (dom_grp >= ARRAY_SIZE(priv->domain_group_ref)) {
@@ -604,14 +604,14 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_domain_clk_ev);
 // C: 
-// C: int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
-// C: 			  struct snd_ctl_elem_value *ucontrol)
+// C: int madera_out1_demux_put(snd_kcontrol *kcontrol,
+// C: 			  snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
-// C: 	struct snd_soc_dapm_context *dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
-// C: 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
+// C: 	snd_soc_dapm_context *dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
+// C: 	soc_enum *e = (soc_enum *)kcontrol->private_value;
 // C: 	unsigned int ep_sel, mux, change;
 // C: 	bool out_mono;
 // C: 	int ret;
@@ -693,10 +693,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_out1_demux_put);
 // C: 
-// C: int madera_out1_demux_get(struct snd_kcontrol *kcontrol,
-// C: 			  struct snd_ctl_elem_value *ucontrol)
+// C: int madera_out1_demux_get(snd_kcontrol *kcontrol,
+// C: 			  snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
+// C: 	snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
 // C: 	unsigned int val;
 // C: 
 // C: 	val = snd_soc_component_read(component, MADERA_OUTPUT_ENABLES_1);
@@ -708,15 +708,15 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_out1_demux_get);
 // C: 
-// C: static int madera_inmux_put(struct snd_kcontrol *kcontrol,
-// C: 			    struct snd_ctl_elem_value *ucontrol)
+// C: static int madera_inmux_put(snd_kcontrol *kcontrol,
+// C: 			    snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
-// C: 	struct snd_soc_dapm_context *dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
-// C: 	struct regmap *regmap = madera->regmap;
-// C: 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
+// C: 	snd_soc_dapm_context *dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
+// C: 	regmap *regmap = madera->regmap;
+// C: 	soc_enum *e = (soc_enum *)kcontrol->private_value;
 // C: 	unsigned int mux, val, mask;
 // C: 	unsigned int inmode;
 // C: 	bool changed;
@@ -931,12 +931,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 		return true;
 // C: }
 // C: 
-// C: static int madera_adsp_rate_get(struct snd_kcontrol *kcontrol,
-// C: 				struct snd_ctl_elem_value *ucontrol)
+// C: static int madera_adsp_rate_get(snd_kcontrol *kcontrol,
+// C: 				snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	soc_enum *e = (soc_enum *)kcontrol->private_value;
 // C: 	unsigned int cached_rate;
 // C: 	const int adsp_num = e->shift_l;
 // C: 	int item;
@@ -950,12 +950,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
-// C: 				struct snd_ctl_elem_value *ucontrol)
+// C: static int madera_adsp_rate_put(snd_kcontrol *kcontrol,
+// C: 				snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	soc_enum *e = (soc_enum *)kcontrol->private_value;
 // C: 	const int adsp_num = e->shift_l;
 // C: 	const unsigned int item = ucontrol->value.enumerated.item[0];
 // C: 
@@ -1018,8 +1018,8 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: };
 // C: EXPORT_SYMBOL_GPL(madera_adsp_rate_controls);
 // C: 
-// C: static int madera_write_adsp_clk_setting(struct madera_priv *priv,
-// C: 					 struct wm_adsp *dsp,
+// C: static int madera_write_adsp_clk_setting(madera_priv *priv,
+// C: 					 wm_adsp *dsp,
 // C: 					 unsigned int freq)
 // C: {
 // C: 	unsigned int val;
@@ -1063,11 +1063,11 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	return ret;
 // C: }
 // C: 
-// C: int madera_set_adsp_clk(struct madera_priv *priv, int dsp_num,
+// C: int madera_set_adsp_clk(madera_priv *priv, int dsp_num,
 // C: 			unsigned int freq)
 // C: {
-// C: 	struct wm_adsp *dsp = &priv->adsp[dsp_num];
-// C: 	struct madera *madera = priv->madera;
+// C: 	wm_adsp *dsp = &priv->adsp[dsp_num];
+// C: 	madera *madera = priv->madera;
 // C: 	unsigned int cur, new;
 // C: 	int ret;
 // C: 
@@ -1106,12 +1106,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_set_adsp_clk);
 // C: 
-// C: int madera_rate_put(struct snd_kcontrol *kcontrol,
-// C: 		    struct snd_ctl_elem_value *ucontrol)
+// C: int madera_rate_put(snd_kcontrol *kcontrol,
+// C: 		    snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	soc_enum *e = (soc_enum *)kcontrol->private_value;
 // C: 	unsigned int item = ucontrol->value.enumerated.item[0];
 // C: 	unsigned int val;
 // C: 	int ret;
@@ -1147,7 +1147,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_rate_put);
 // C: 
-// C: static void madera_configure_input_mode(struct madera *madera)
+// C: static void madera_configure_input_mode(madera *madera)
 // C: {
 // C: 	unsigned int dig_mode, ana_mode_l, ana_mode_r;
 // C: 	int max_analogue_inputs, max_dmic_sup, i;
@@ -1240,10 +1240,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	}
 // C: }
 // C: 
-// C: int madera_init_inputs(struct snd_soc_component *component)
+// C: int madera_init_inputs(snd_soc_component *component)
 // C: {
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 
 // C: 	madera_configure_input_mode(madera);
 // C: 
@@ -1260,13 +1260,13 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	{ "OUT6R", NULL, "OUT6L" },
 // C: };
 // C: 
-// C: int madera_init_outputs(struct snd_soc_component *component,
+// C: int madera_init_outputs(snd_soc_component *component,
 // C: 			const struct snd_soc_dapm_route *routes,
 // C: 			int n_mono_routes, int n_real)
 // C: {
-// C: 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	const struct madera_codec_pdata *pdata = &madera->pdata.codec;
 // C: 	unsigned int val;
 // C: 	int i;
@@ -1322,10 +1322,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_init_outputs);
 // C: 
-// C: int madera_init_bus_error_irq(struct madera_priv *priv, int dsp_num,
+// C: int madera_init_bus_error_irq(madera_priv *priv, int dsp_num,
 // C: 			      irq_handler_t handler)
 // C: {
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera *madera = priv->madera;
 // C: 	int ret;
 // C: 
 // C: 	ret = madera_request_irq(madera,
@@ -1341,9 +1341,9 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_init_bus_error_irq);
 // C: 
-// C: void madera_free_bus_error_irq(struct madera_priv *priv, int dsp_num)
+// C: void madera_free_bus_error_irq(madera_priv *priv, int dsp_num)
 // C: {
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera *madera = priv->madera;
 // C: 
 // C: 	madera_free_irq(madera,
 // C: 			madera_dsp_bus_error_irqs[dsp_num],
@@ -2209,12 +2209,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: };
 // C: EXPORT_SYMBOL_GPL(madera_output_anc_src);
 // C: 
-// C: int madera_dfc_put(struct snd_kcontrol *kcontrol,
-// C: 		   struct snd_ctl_elem_value *ucontrol)
+// C: int madera_dfc_put(snd_kcontrol *kcontrol,
+// C: 		   snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
-// C: 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
+// C: 	soc_enum *e = (soc_enum *)kcontrol->private_value;
 // C: 	unsigned int reg = e->reg;
 // C: 	unsigned int val;
 // C: 	int ret = 0;
@@ -2238,13 +2238,13 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_dfc_put);
 // C: 
-// C: int madera_lp_mode_put(struct snd_kcontrol *kcontrol,
-// C: 		       struct snd_ctl_elem_value *ucontrol)
+// C: int madera_lp_mode_put(snd_kcontrol *kcontrol,
+// C: 		       snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct soc_mixer_control *mc =
-// C: 		(struct soc_mixer_control *)kcontrol->private_value;
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
+// C: 	soc_mixer_control *mc =
+// C: 		(soc_mixer_control *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 // C: 	unsigned int val, mask;
 // C: 	int ret;
 // C: 
@@ -2288,7 +2288,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: };
 // C: EXPORT_SYMBOL_GPL(madera_drc_activity_output_mux);
 // C: 
-// C: static void madera_in_set_vu(struct madera_priv *priv, bool enable)
+// C: static void madera_in_set_vu(madera_priv *priv, bool enable)
 // C: {
 // C: 	unsigned int val;
 // C: 	int i, ret;
@@ -2308,11 +2308,11 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	}
 // C: }
 // C: 
-// C: int madera_in_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
+// C: int madera_in_ev(snd_soc_dapm_widget *w, snd_kcontrol *kcontrol,
 // C: 		 int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
 // C: 	unsigned int reg, val;
 // C: 
 // C: 	if (w->shift % 2)
@@ -2354,12 +2354,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_in_ev);
 // C: 
-// C: int madera_out_ev(struct snd_soc_dapm_widget *w,
-// C: 		  struct snd_kcontrol *kcontrol, int event)
+// C: int madera_out_ev(snd_soc_dapm_widget *w,
+// C: 		  snd_kcontrol *kcontrol, int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	int out_up_delay;
 // C: 
 // C: 	switch (madera->type) {
@@ -2454,12 +2454,12 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_out_ev);
 // C: 
-// C: int madera_hp_ev(struct snd_soc_dapm_widget *w,
-// C: 		 struct snd_kcontrol *kcontrol, int event)
+// C: int madera_hp_ev(snd_soc_dapm_widget *w,
+// C: 		 snd_kcontrol *kcontrol, int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	unsigned int mask = 1 << w->shift;
 // C: 	unsigned int out_num = w->shift / 2;
 // C: 	unsigned int val;
@@ -2506,10 +2506,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_hp_ev);
 // C: 
-// C: int madera_anc_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
+// C: int madera_anc_ev(snd_soc_dapm_widget *w, snd_kcontrol *kcontrol,
 // C: 		  int event)
 // C: {
-// C: 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+// C: 	snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 // C: 	unsigned int val;
 // C: 
 // C: 	switch (event) {
@@ -2543,10 +2543,10 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	45158400,
 // C: };
 // C: 
-// C: static int madera_set_opclk(struct snd_soc_component *component,
+// C: static int madera_set_opclk(snd_soc_component *component,
 // C: 			    unsigned int clk, unsigned int freq)
 // C: {
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
 // C: 	unsigned int mask = MADERA_OPCLK_DIV_MASK | MADERA_OPCLK_SEL_MASK;
 // C: 	unsigned int reg, val;
 // C: 	const unsigned int *rates;
@@ -2622,7 +2622,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	}
 // C: }
 // C: 
-// C: static int madera_get_legacy_dspclk_setting(struct madera *madera,
+// C: static int madera_get_legacy_dspclk_setting(madera *madera,
 // C: 					    unsigned int freq)
 // C: {
 // C: 	switch (freq) {
@@ -2649,7 +2649,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	}
 // C: }
 // C: 
-// C: static int madera_get_dspclk_setting(struct madera *madera,
+// C: static int madera_get_dspclk_setting(madera *madera,
 // C: 				     unsigned int freq,
 // C: 				     unsigned int *clock_2_val)
 // C: {
@@ -2669,7 +2669,7 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	}
 // C: }
 // C: 
-// C: static int madera_set_outclk(struct snd_soc_component *component,
+// C: static int madera_set_outclk(snd_soc_component *component,
 // C: 			     unsigned int source, unsigned int freq)
 // C: {
 // C: 	int div, div_inc, rate;
@@ -2721,11 +2721,11 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: 	return -EINVAL;
 // C: }
 // C: 
-// C: int madera_set_sysclk(struct snd_soc_component *component, int clk_id,
+// C: int madera_set_sysclk(snd_soc_component *component, int clk_id,
 // C: 		      int source, unsigned int freq, int dir)
 // C: {
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	char *name;
 // C: 	unsigned int reg, clock_2_val = 0;
 // C: 	unsigned int mask = MADERA_SYSCLK_FREQ_MASK | MADERA_SYSCLK_SRC_MASK;
@@ -2803,11 +2803,11 @@ pub const MADERA_FMT_LEFT_JUSTIFIED_MODE: c_int = 3;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_set_sysclk);
 // C: 
-// C: static int madera_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+// C: static int madera_set_fmt(snd_soc_dai *dai, unsigned int fmt)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = dai->component;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	int lrclk, bclk, mode, base;
 // C: 
 // C: 	base = dai->driver->base;
@@ -2982,13 +2982,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	.list	= madera_sr_vals,
 // C: };
 // C: 
-// C: static int madera_startup(struct snd_pcm_substream *substream,
-// C: 			  struct snd_soc_dai *dai)
+// C: static int madera_startup(snd_pcm_substream *substream,
+// C: 			  snd_soc_dai *dai)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera_dai_priv *dai_priv = &priv->dai[dai->id - 1];
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = dai->component;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera_dai_priv *dai_priv = &priv->dai[dai->id - 1];
+// C: 	madera *madera = priv->madera;
 // C: 	unsigned int base_rate;
 // C: 
 // C: 	if (!substream->runtime)
@@ -3034,13 +3034,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 					  &dai_priv->constraint);
 // C: }
 // C: 
-// C: static int madera_hw_params_rate(struct snd_pcm_substream *substream,
-// C: 				 struct snd_pcm_hw_params *params,
-// C: 				 struct snd_soc_dai *dai)
+// C: static int madera_hw_params_rate(snd_pcm_substream *substream,
+// C: 				 snd_pcm_hw_params *params,
+// C: 				 snd_soc_dai *dai)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera_dai_priv *dai_priv = &priv->dai[dai->id - 1];
+// C: 	snd_soc_component *component = dai->component;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera_dai_priv *dai_priv = &priv->dai[dai->id - 1];
 // C: 	int base = dai->driver->base;
 // C: 	int i, sr_val;
 // C: 	unsigned int reg, cur, tar;
@@ -3115,7 +3115,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return ret;
 // C: }
 // C: 
-// C: static int madera_aif_cfg_changed(struct snd_soc_component *component,
+// C: static int madera_aif_cfg_changed(snd_soc_component *component,
 // C: 				  int base, int bclk, int lrclk, int frame)
 // C: {
 // C: 	unsigned int val;
@@ -3136,13 +3136,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static int madera_hw_params(struct snd_pcm_substream *substream,
-// C: 			    struct snd_pcm_hw_params *params,
-// C: 			    struct snd_soc_dai *dai)
+// C: static int madera_hw_params(snd_pcm_substream *substream,
+// C: 			    snd_pcm_hw_params *params,
+// C: 			    snd_soc_dai *dai)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = dai->component;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	int base = dai->driver->base;
 // C: 	const int *rates;
 // C: 	int i, ret;
@@ -3278,14 +3278,14 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	}
 // C: }
 // C: 
-// C: static int madera_dai_set_sysclk(struct snd_soc_dai *dai,
+// C: static int madera_dai_set_sysclk(snd_soc_dai *dai,
 // C: 				 int clk_id, unsigned int freq, int dir)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera_dai_priv *dai_priv = &priv->dai[dai->id - 1];
-// C: 	struct snd_soc_dapm_route routes[2];
+// C: 	snd_soc_component *component = dai->component;
+// C: 	snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera_dai_priv *dai_priv = &priv->dai[dai->id - 1];
+// C: 	snd_soc_dapm_route routes[2];
 // C: 	int is_sync;
 // C: 
 // C: 	is_sync = madera_is_syncclk(clk_id);
@@ -3326,9 +3326,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return snd_soc_dapm_sync(dapm);
 // C: }
 // C: 
-// C: static int madera_set_tristate(struct snd_soc_dai *dai, int tristate)
+// C: static int madera_set_tristate(snd_soc_dai *dai, int tristate)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
+// C: 	snd_soc_component *component = dai->component;
 // C: 	int base = dai->driver->base;
 // C: 	unsigned int reg;
 // C: 	int ret;
@@ -3347,13 +3347,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 		return 0;
 // C: }
 // C: 
-// C: static void madera_set_channels_to_mask(struct snd_soc_dai *dai,
+// C: static void madera_set_channels_to_mask(snd_soc_dai *dai,
 // C: 					unsigned int base,
 // C: 					int channels, unsigned int mask)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = dai->component;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	int slot, i;
 // C: 
 // C: 	for (i = 0; i < channels; ++i) {
@@ -3370,11 +3370,11 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 		madera_aif_warn(dai, "Too many channels in TDM mask\n");
 // C: }
 // C: 
-// C: static int madera_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
+// C: static int madera_set_tdm_slot(snd_soc_dai *dai, unsigned int tx_mask,
 // C: 			       unsigned int rx_mask, int slots, int slot_width)
 // C: {
-// C: 	struct snd_soc_component *component = dai->component;
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	snd_soc_component *component = dai->component;
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
 // C: 	int base = dai->driver->base;
 // C: 	int rx_max_chan = dai->driver->playback.channels_max;
 // C: 	int tx_max_chan = dai->driver->capture.channels_max;
@@ -3428,9 +3428,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: };
 // C: EXPORT_SYMBOL_GPL(madera_simple_dai_ops);
 // C: 
-// C: int madera_init_dai(struct madera_priv *priv, int id)
+// C: int madera_init_dai(madera_priv *priv, int id)
 // C: {
-// C: 	struct madera_dai_priv *dai_priv = &priv->dai[id];
+// C: 	madera_dai_priv *dai_priv = &priv->dai[id];
 // C: 
 // C: 	dai_priv->clk = MADERA_CLK_SYSCLK_1;
 // C: 	dai_priv->constraint = madera_constraint;
@@ -3471,7 +3471,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	  768000,
 // C: };
 // C: 
-// C: struct madera_fll_gains {
+// C: madera_fll_gains {
 // C: 	unsigned int min;
 // C: 	unsigned int max;
 // C: 	int gain;		/* main gain */
@@ -3524,7 +3524,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return ratio;
 // C: }
 // C: 
-// C: static int madera_find_fratio(struct madera_fll *fll, unsigned int fref,
+// C: static int madera_find_fratio(madera_fll *fll, unsigned int fref,
 // C: 			      bool sync, int *fratio)
 // C: {
 // C: 	switch (fll->madera->type) {
@@ -3554,8 +3554,8 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	}
 // C: }
 // C: 
-// C: static int madera_calc_fratio(struct madera_fll *fll,
-// C: 			      struct madera_fll_cfg *cfg,
+// C: static int madera_calc_fratio(madera_fll *fll,
+// C: 			      madera_fll_cfg *cfg,
 // C: 			      unsigned int fref, bool sync)
 // C: {
 // C: 	int init_ratio, ratio;
@@ -3650,8 +3650,8 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return cfg->fratio + 1;
 // C: }
 // C: 
-// C: static int madera_find_fll_gain(struct madera_fll *fll,
-// C: 				struct madera_fll_cfg *cfg,
+// C: static int madera_find_fll_gain(madera_fll *fll,
+// C: 				madera_fll_cfg *cfg,
 // C: 				unsigned int fref,
 // C: 				const struct madera_fll_gains *gains,
 // C: 				int n_gains)
@@ -3671,8 +3671,8 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return -EINVAL;
 // C: }
 // C: 
-// C: static int madera_calc_fll(struct madera_fll *fll,
-// C: 			   struct madera_fll_cfg *cfg,
+// C: static int madera_calc_fll(madera_fll *fll,
+// C: 			   madera_fll_cfg *cfg,
 // C: 			   unsigned int fref, bool sync)
 // C: {
 // C: 	unsigned int gcd_fll;
@@ -3764,8 +3764,8 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static bool madera_write_fll(struct madera *madera, unsigned int base,
-// C: 			     struct madera_fll_cfg *cfg, int source,
+// C: static bool madera_write_fll(madera *madera, unsigned int base,
+// C: 			     madera_fll_cfg *cfg, int source,
 // C: 			     bool sync, int gain)
 // C: {
 // C: 	bool change, fll_change;
@@ -3821,9 +3821,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return fll_change;
 // C: }
 // C: 
-// C: static int madera_is_enabled_fll(struct madera_fll *fll, int base)
+// C: static int madera_is_enabled_fll(madera_fll *fll, int base)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	unsigned int reg;
 // C: 	int ret;
 // C: 
@@ -3837,9 +3837,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return reg & MADERA_FLL1_ENA;
 // C: }
 // C: 
-// C: static int madera_wait_for_fll(struct madera_fll *fll, bool requested)
+// C: static int madera_wait_for_fll(madera_fll *fll, bool requested)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	unsigned int val = 0;
 // C: 	bool status;
 // C: 	int i;
@@ -3870,8 +3870,8 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return -ETIMEDOUT;
 // C: }
 // C: 
-// C: static bool madera_set_fll_phase_integrator(struct madera_fll *fll,
-// C: 					    struct madera_fll_cfg *ref_cfg,
+// C: static bool madera_set_fll_phase_integrator(madera_fll *fll,
+// C: 					    madera_fll_cfg *ref_cfg,
 // C: 					    bool sync)
 // C: {
 // C: 	unsigned int val;
@@ -3892,13 +3892,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return reg_change;
 // C: }
 // C: 
-// C: static int madera_set_fll_clks_reg(struct madera_fll *fll, bool ena,
+// C: static int madera_set_fll_clks_reg(madera_fll *fll, bool ena,
 // C: 				   unsigned int reg, unsigned int mask,
 // C: 				   unsigned int shift)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	unsigned int src;
-// C: 	struct clk *clk;
+// C: 	clk *clk;
 // C: 	int ret;
 // C: 
 // C: 	ret = regmap_read(madera->regmap, reg, &src);
@@ -3932,7 +3932,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	}
 // C: }
 // C: 
-// C: static inline int madera_set_fll_clks(struct madera_fll *fll, int base, bool ena)
+// C: static inline int madera_set_fll_clks(madera_fll *fll, int base, bool ena)
 // C: {
 // C: 	return madera_set_fll_clks_reg(fll, ena,
 // C: 				       base + MADERA_FLL_CONTROL_6_OFFS,
@@ -3940,7 +3940,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 				       MADERA_FLL1_REFCLK_SRC_SHIFT);
 // C: }
 // C: 
-// C: static inline int madera_set_fllao_clks(struct madera_fll *fll, int base, bool ena)
+// C: static inline int madera_set_fllao_clks(madera_fll *fll, int base, bool ena)
 // C: {
 // C: 	return madera_set_fll_clks_reg(fll, ena,
 // C: 				       base + MADERA_FLLAO_CONTROL_6_OFFS,
@@ -3948,7 +3948,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 				       MADERA_FLL_AO_REFCLK_SRC_SHIFT);
 // C: }
 // C: 
-// C: static inline int madera_set_fllhj_clks(struct madera_fll *fll, int base, bool ena)
+// C: static inline int madera_set_fllhj_clks(madera_fll *fll, int base, bool ena)
 // C: {
 // C: 	return madera_set_fll_clks_reg(fll, ena,
 // C: 				       base + MADERA_FLL_CONTROL_1_OFFS,
@@ -3956,9 +3956,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 				       CS47L92_FLL1_REFCLK_SRC_SHIFT);
 // C: }
 // C: 
-// C: static void madera_disable_fll(struct madera_fll *fll)
+// C: static void madera_disable_fll(madera_fll *fll)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	unsigned int sync_base;
 // C: 	bool ref_change, sync_change;
 // C: 
@@ -3997,13 +3997,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	}
 // C: }
 // C: 
-// C: static int madera_enable_fll(struct madera_fll *fll)
+// C: static int madera_enable_fll(madera_fll *fll)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	bool have_sync = false;
 // C: 	int already_enabled = madera_is_enabled_fll(fll, fll->base);
 // C: 	int sync_enabled;
-// C: 	struct madera_fll_cfg cfg;
+// C: 	madera_fll_cfg cfg;
 // C: 	unsigned int sync_base;
 // C: 	int gain, ret;
 // C: 	bool fll_change = false;
@@ -4162,7 +4162,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return ret;
 // C: }
 // C: 
-// C: static int madera_apply_fll(struct madera_fll *fll)
+// C: static int madera_apply_fll(madera_fll *fll)
 // C: {
 // C: 	if (fll->fout) {
 // C: 		return madera_enable_fll(fll);
@@ -4172,7 +4172,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	}
 // C: }
 // C: 
-// C: int madera_set_fll_syncclk(struct madera_fll *fll, int source,
+// C: int madera_set_fll_syncclk(madera_fll *fll, int source,
 // C: 			   unsigned int fref, unsigned int fout)
 // C: {
 // C: 	/*
@@ -4191,7 +4191,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_set_fll_syncclk);
 // C: 
-// C: int madera_set_fll_refclk(struct madera_fll *fll, int source,
+// C: int madera_set_fll_refclk(madera_fll *fll, int source,
 // C: 			  unsigned int fref, unsigned int fout)
 // C: {
 // C: 	int ret;
@@ -4223,8 +4223,8 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_set_fll_refclk);
 // C: 
-// C: int madera_init_fll(struct madera *madera, int id, int base,
-// C: 		    struct madera_fll *fll)
+// C: int madera_init_fll(madera *madera, int id, int base,
+// C: 		    madera_fll *fll)
 // C: {
 // C: 	fll->id = id;
 // C: 	fll->base = base;
@@ -4266,7 +4266,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	{ MADERA_FLLAO_CONTROL_2,  0x82B1 },
 // C: };
 // C: 
-// C: struct madera_fllao_patch {
+// C: madera_fllao_patch {
 // C: 	unsigned int fin;
 // C: 	unsigned int fout;
 // C: 	const struct reg_sequence *patch;
@@ -4289,11 +4289,11 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	},
 // C: };
 // C: 
-// C: static int madera_enable_fll_ao(struct madera_fll *fll,
+// C: static int madera_enable_fll_ao(madera_fll *fll,
 // C: 				const struct reg_sequence *patch,
 // C: 				unsigned int patch_size)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	int already_enabled = madera_is_enabled_fll(fll, fll->base);
 // C: 	unsigned int val;
 // C: 	int i;
@@ -4345,9 +4345,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static int madera_disable_fll_ao(struct madera_fll *fll)
+// C: static int madera_disable_fll_ao(madera_fll *fll)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	bool change;
 // C: 
 // C: 	madera_fll_dbg(fll, "Disabling FLL_AO\n");
@@ -4381,7 +4381,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: int madera_set_fll_ao_refclk(struct madera_fll *fll, int source,
+// C: int madera_set_fll_ao_refclk(madera_fll *fll, int source,
 // C: 			     unsigned int fin, unsigned int fout)
 // C: {
 // C: 	int ret = 0;
@@ -4426,9 +4426,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_set_fll_ao_refclk);
 // C: 
-// C: static int madera_fllhj_disable(struct madera_fll *fll)
+// C: static int madera_fllhj_disable(madera_fll *fll)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	bool change;
 // C: 
 // C: 	madera_fll_dbg(fll, "Disabling FLL\n");
@@ -4470,9 +4470,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static int madera_fllhj_apply(struct madera_fll *fll, int fin)
+// C: static int madera_fllhj_apply(madera_fll *fll, int fin)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	int refdiv, fref, fout, lockdet_thr, fbdiv, hp, fast_clk, fllgcd;
 // C: 	bool frac = false;
 // C: 	unsigned int fll_n, min_n, max_n, ratio, theta, lambda;
@@ -4616,9 +4616,9 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static int madera_fllhj_enable(struct madera_fll *fll)
+// C: static int madera_fllhj_enable(madera_fll *fll)
 // C: {
-// C: 	struct madera *madera = fll->madera;
+// C: 	madera *madera = fll->madera;
 // C: 	int already_enabled = madera_is_enabled_fll(fll, fll->base);
 // C: 	int ret;
 // C: 
@@ -4681,7 +4681,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: static int madera_fllhj_validate(struct madera_fll *fll,
+// C: static int madera_fllhj_validate(madera_fll *fll,
 // C: 				 unsigned int ref_in,
 // C: 				 unsigned int fout)
 // C: {
@@ -4703,7 +4703,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	return 0;
 // C: }
 // C: 
-// C: int madera_fllhj_set_refclk(struct madera_fll *fll, int source,
+// C: int madera_fllhj_set_refclk(madera_fll *fll, int source,
 // C: 			    unsigned int fin, unsigned int fout)
 // C: {
 // C: 	int ret = 0;
@@ -4751,7 +4751,7 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C:  * Most systems have a single static configuration and should use
 // C:  * platform data instead.
 // C:  */
-// C: int madera_set_output_mode(struct snd_soc_component *component, int output,
+// C: int madera_set_output_mode(snd_soc_component *component, int output,
 // C: 			   bool differential)
 // C: {
 // C: 	unsigned int reg, val;
@@ -4791,13 +4791,13 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: 	}
 // C: }
 // C: 
-// C: int madera_eq_coeff_put(struct snd_kcontrol *kcontrol,
-// C: 			struct snd_ctl_elem_value *ucontrol)
+// C: int madera_eq_coeff_put(snd_kcontrol *kcontrol,
+// C: 			snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
-// C: 	struct soc_bytes *params = (void *)kcontrol->private_value;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
+// C: 	soc_bytes *params = (void *)kcontrol->private_value;
 // C: 	unsigned int val;
 // C: 	__be16 *data;
 // C: 	int len;
@@ -4837,12 +4837,12 @@ pub const MADERA_384K_RATE_MASK: c_int = (MADERA_384K_48K_RATE_MASK | ;
 // C: }
 // C: EXPORT_SYMBOL_GPL(madera_eq_coeff_put);
 // C: 
-// C: int madera_lhpf_coeff_put(struct snd_kcontrol *kcontrol,
-// C: 			  struct snd_ctl_elem_value *ucontrol)
+// C: int madera_lhpf_coeff_put(snd_kcontrol *kcontrol,
+// C: 			  snd_ctl_elem_value *ucontrol)
 // C: {
-// C: 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-// C: 	struct madera_priv *priv = snd_soc_component_get_drvdata(component);
-// C: 	struct madera *madera = priv->madera;
+// C: 	snd_soc_component *component = snd_kcontrol_chip(kcontrol);
+// C: 	madera_priv *priv = snd_soc_component_get_drvdata(component);
+// C: 	madera *madera = priv->madera;
 // C: 	__be16 *data = (__be16 *)ucontrol->value.bytes.data;
 // C: 	s16 val = be16_to_cpu(*data);
 // C: 

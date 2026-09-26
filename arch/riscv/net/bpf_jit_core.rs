@@ -51,6 +51,7 @@ pub unsafe fn bpf_int_jit_compile(
     let mut i: i32 = 0;
     let mut jit_data: *mut rv_jit_data;
     let ctx: *mut rv_jit_context;
+    'out_free_hdr: {
 
     if !(*prog).jit_requested {
         return prog;
@@ -70,7 +71,7 @@ pub unsafe fn bpf_int_jit_compile(
     if !(*ctx).offset.is_null() {
         extra_pass = true;
         prog_size = core::mem::size_of::<*mut u16>() * (*ctx).ninsns as usize;
-        goto_skip_init_ctx!(skip_init_ctx);
+        goto skip_init_ctx;
     }
 
     (*ctx).arena_vm_start = bpf_arena_get_kern_vm_start((*(*prog).aux).arena);
@@ -78,11 +79,11 @@ pub unsafe fn bpf_int_jit_compile(
     (*ctx).prog = prog;
     (*ctx).offset = kvzalloc_objs::<i32>((*prog).len as usize);
     if (*ctx).offset.is_null() {
-        goto_out_offset!(out_offset);
+        goto out_offset;
     }
 
     if build_body(ctx, extra_pass, core::ptr::null_mut()) != 0 {
-        goto_out_offset!(out_offset);
+        goto out_offset;
     }
 
     i = 0;
@@ -99,7 +100,7 @@ pub unsafe fn bpf_int_jit_compile(
         bpf_jit_build_prologue(ctx, bpf_is_subprog(prog));
         (*ctx).prologue_len = (*ctx).ninsns;
         if build_body(ctx, extra_pass, (*ctx).offset) != 0 {
-            goto_out_offset!(out_offset);
+            goto out_offset;
         }
         (*ctx).epilogue_offset = (*ctx).ninsns;
         bpf_jit_build_epilogue(ctx);
@@ -117,7 +118,7 @@ pub unsafe fn bpf_int_jit_compile(
                 bpf_prog_was_classic(prog),
             );
             if (*jit_data).ro_header.is_null() {
-                goto_out_offset!(out_offset);
+                goto out_offset;
             }
             (*ctx).ro_insns = (*jit_data).ro_image as *mut u16;
             (*ctx).insns = (*jit_data).image as *mut u16;
@@ -128,7 +129,7 @@ pub unsafe fn bpf_int_jit_compile(
 
     if i == NR_JIT_ITERATIONS {
         pr_err("bpf-jit: image did not converge in <%d> passes!\n", i);
-        goto_out_free_hdr!(out_free_hdr);
+        break 'out_free_hdr;
     }
     if extable_size != 0 {
         (*(*prog).aux).extable = ((*ctx).ro_insns as *mut u8).add(prog_size) as *mut _;
@@ -140,7 +141,7 @@ skip_init_ctx:
     (*ctx).nexentries = 0;
     bpf_jit_build_prologue(ctx, bpf_is_subprog(prog));
     if build_body(ctx, extra_pass, core::ptr::null_mut()) != 0 {
-        goto_out_free_hdr!(out_free_hdr);
+        break 'out_free_hdr;
     }
     bpf_jit_build_epilogue(ctx);
     if bpf_jit_enable > 1 {
@@ -150,7 +151,7 @@ skip_init_ctx:
         if WARN_ON(bpf_jit_binary_pack_finalize((*jit_data).ro_header, (*jit_data).header)) {
             (*jit_data).ro_header = core::ptr::null_mut();
             (*jit_data).header = core::ptr::null_mut();
-            goto_out_free_hdr!(out_free_hdr);
+            break 'out_free_hdr;
         }
     }
     (*prog).bpf_func = ((*ctx).ro_insns as *mut u8).add(cfi_get_offset()) as *mut _;
@@ -169,8 +170,8 @@ out_offset:
     kfree(jit_data as *mut _);
     (*(*prog).aux).jit_data = core::ptr::null_mut();
     return prog;
-
-out_free_hdr:
+    }
+    
     if extra_pass {
         (*prog).bpf_func = core::ptr::null_mut();
         (*prog).jited = 0;
@@ -180,7 +181,7 @@ out_free_hdr:
         bpf_arch_text_copy(&mut (*(*jit_data).ro_header).size as *mut _, &mut (*(*jit_data).header).size as *mut _, core::mem::size_of_val(&(*(*jit_data).header).size));
         bpf_jit_binary_pack_free((*jit_data).ro_header, (*jit_data).header);
     }
-    goto_out_offset!(out_offset);
+    goto out_offset;
 }
 
 pub unsafe fn bpf_jit_alloc_exec_limit() -> u64 { BPF_JIT_REGION_SIZE }

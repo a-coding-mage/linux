@@ -51,7 +51,7 @@ pub unsafe extern "C" fn __vdso_futex_robust_list64_try_unlock(
 }
 
 // CONFIG_X86_32 || CONFIG_COMPAT: preserved as a build-time condition.
-#[cfg(any(target_arch = "x86", feature = "CONFIG_COMPAT"))]
+#[cfg(any(target_arch = "x86", CONFIG_COMPAT))]
 pub unsafe extern "C" fn __vdso_futex_robust_list32_try_unlock(
     lock: *mut u32,
     tid: u32,

@@ -48,16 +48,16 @@ unsafe extern "C" {
 
 macro_rules! expect_equal {
     ($ret:ident, $val:expr, $expected:expr) => {{
-        let val = $val;
-        let expected = $expected;
-        if val != expected {
+        let $val = $val;
+        let $expected = $expected;
+        if $val != $expected {
             unsafe {
                 pr_debug(
                     b"%s:%d: %d != %d\n\0".as_ptr() as *const c_char,
                     concat!(file!(), "\0").as_ptr() as *const c_char,
                     line!() as c_int,
-                    val as c_int,
-                    expected as c_int,
+                    $val as c_int,
+                    $expected as c_int,
                 );
             }
             $ret = -1;
@@ -67,16 +67,16 @@ macro_rules! expect_equal {
 
 macro_rules! expect_equal64 {
     ($ret:ident, $val:expr, $expected:expr) => {{
-        let val = $val;
-        let expected = $expected;
-        if val != expected {
+        let $val = $val;
+        let $expected = $expected;
+        if $val != $expected {
             unsafe {
                 pr_debug(
                     b"%s:%d: %lld != %lld\n\0".as_ptr() as *const c_char,
                     concat!(file!(), "\0").as_ptr() as *const c_char,
                     line!() as c_int,
-                    val as i64,
-                    expected as i64,
+                    $val as i64,
+                    $expected as i64,
                 );
             }
             $ret = -1;

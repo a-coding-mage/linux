@@ -10,25 +10,25 @@
 // linux/module.h, linux/of_device.h, linux/platform_device.h,
 // clk-gate.h, and clk-mtk.h.
 
-static const mm0_cg_regs: MtkGateRegs = MtkGateRegs {
+static mm0_cg_regs: MtkGateRegs = MtkGateRegs {
     set_ofs: 0x104,
     clr_ofs: 0x108,
     sta_ofs: 0x100,
 };
 
-static const mm0_hwv_regs: MtkGateRegs = MtkGateRegs {
+static mm0_hwv_regs: MtkGateRegs = MtkGateRegs {
     set_ofs: 0x0020,
     clr_ofs: 0x0024,
     sta_ofs: 0x2c10,
 };
 
-static const mm1_cg_regs: MtkGateRegs = MtkGateRegs {
+static mm1_cg_regs: MtkGateRegs = MtkGateRegs {
     set_ofs: 0x114,
     clr_ofs: 0x118,
     sta_ofs: 0x110,
 };
 
-static const mm1_hwv_regs: MtkGateRegs = MtkGateRegs {
+static mm1_hwv_regs: MtkGateRegs = MtkGateRegs {
     set_ofs: 0x0028,
     clr_ofs: 0x002c,
     sta_ofs: 0x2c14,

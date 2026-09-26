@@ -54,7 +54,7 @@ extern "C" {
 
     pub fn register_early_console();
 
-    #[cfg(feature = "CONFIG_VMCP")]
+    #[cfg(CONFIG_VMCP)]
     pub fn vmcp_cma_reserve();
 
     pub fn report_user_fault(regs: *mut pt_regs, signr: libc::c_long, is_mm_fault: libc::c_int);
@@ -66,7 +66,7 @@ extern "C" {
     pub static mut oldmem_data: oldmem_data;
 }
 
-#[cfg(not(feature = "CONFIG_VMCP"))]
+#[cfg(not(CONFIG_VMCP))]
 #[inline]
 pub unsafe fn vmcp_cma_reserve() {}
 

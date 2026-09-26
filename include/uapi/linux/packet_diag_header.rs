@@ -29,15 +29,15 @@ pub struct packet_diag_msg {
 }
 
 // PACKET_DIAG_NONE, standard nl API requires this attribute!
-pub const PACKET_DIAG_INFO: i32 = 1;
-pub const PACKET_DIAG_MCLIST: i32 = 2;
-pub const PACKET_DIAG_RX_RING: i32 = 3;
-pub const PACKET_DIAG_TX_RING: i32 = 4;
-pub const PACKET_DIAG_FANOUT: i32 = 5;
-pub const PACKET_DIAG_UID: i32 = 6;
-pub const PACKET_DIAG_MEMINFO: i32 = 7;
-pub const PACKET_DIAG_FILTER: i32 = 8;
-pub const __PACKET_DIAG_MAX: i32 = 9;
+pub const PACKET_DIAG_INFO: i32 = 0;
+pub const PACKET_DIAG_MCLIST: i32 = 1;
+pub const PACKET_DIAG_RX_RING: i32 = 2;
+pub const PACKET_DIAG_TX_RING: i32 = 3;
+pub const PACKET_DIAG_FANOUT: i32 = 4;
+pub const PACKET_DIAG_UID: i32 = 5;
+pub const PACKET_DIAG_MEMINFO: i32 = 6;
+pub const PACKET_DIAG_FILTER: i32 = 7;
+pub const __PACKET_DIAG_MAX: i32 = 8;
 
 pub const PACKET_DIAG_MAX: i32 = __PACKET_DIAG_MAX - 1;
 

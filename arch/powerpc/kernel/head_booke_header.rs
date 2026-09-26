@@ -21,7 +21,7 @@ macro_rules! BOOKE_CLEAR_BTB { ($reg:tt) => { /* CONFIG_PPC_E500: BTB_FLUSH($reg
 macro_rules! NORMAL_EXCEPTION_PROLOG { ($trapno:expr, $intno:ident) => {
     /* mtspr SPRG_WSCRATCH0,r10; mfspr r10,SPRG_THREAD; save normal state;
      * test MSR_PR; allocate INT_FRAME_SIZE; save CR/GPR/SRR state;
-     * COMMON_EXCEPTION_PROLOG_END($trapno) */
+     * COMMON_EXCEPTION_PROLOG_END!($trapno) */
 } }
 macro_rules! COMMON_EXCEPTION_PROLOG_END { ($trapno:expr) => {
     /* save GPR0, frame marker, trap number, GPRs, NVGPRs, CTR, XER, and set r3 */
@@ -32,16 +32,16 @@ macro_rules! SYSCALL_ENTRY { ($trapno:expr, $intno:ident, $srr1:ident) => {
      * load SRR0, and branch to transfer_to_syscall */
 } }
 
-macro_rules! BOOKE_LOAD_EXC_LEVEL_STACK { ($level:ident) => {
-    /* load level##_STACK_BASE, select PIR slot under CONFIG_SMP, and allocate frame */
+macro_rules! BOOKE_LOAD_EXC_LEVEL_STACK { ($level:tt) => {
+    /* load ::kernel::macros::paste!([<$level _STACK_BASE>]), select PIR slot under CONFIG_SMP, and allocate frame */
 } }
 macro_rules! EXC_LEVEL_EXCEPTION_PROLOG { ($level:ident, $trapno:expr, $intno:ident, $srr0:ident, $srr1:ident) => {
-    /* save exception-level scratch registers, select user/kernel stack, save
-     * DEAR/ESR/SRR state, then COMMON_EXCEPTION_PROLOG_END($trapno) */
+    /* save exception-$level scratch registers, select user/kernel stack, save
+     * DEAR/ESR/SRR state, then COMMON_EXCEPTION_PROLOG_END!($trapno) */
 } }
 macro_rules! SAVE_xSRR { ($x_srr:ident) => {
-    /* mfspr r0,SPRN_##xSRR##0; stw r0,_##xSRR##0(r1);
-     * mfspr r0,SPRN_##xSRR##1; stw r0,_##xSRR##1(r1) */
+    /* mfspr r0,::kernel::macros::paste!([<SPRN_ xSRR>])##0; stw r0,::kernel::macros::paste!([<_ xSRR>])##0(r1);
+     * mfspr r0,::kernel::macros::paste!([<SPRN_ xSRR>])##1; stw r0,::kernel::macros::paste!([<_ xSRR>])##1(r1) */
 } }
 macro_rules! SAVE_MMU_REGS { () => {
     /* CONFIG_PPC_E500: save MAS0, MAS1, MAS2, MAS3, MAS6 and optional MAS7;
@@ -59,7 +59,7 @@ macro_rules! MCHECK_EXCEPTION_PROLOG { ($trapno:expr) => {
 } }
 
 macro_rules! GUEST_DOORBELL_EXCEPTION { () => {
-    /* START_EXCEPTION(GuestDoorbell); save SPRG/thread registers and CR;
+    /* START_EXCEPTION!(GuestDoorbell); save SPRG/thread registers and CR;
      * DO_KVM(BOOKE_INTERRUPT_GUEST_DBELL, SPRN_GSRR1); trap */
 } }
 macro_rules! START_EXCEPTION { ($label:ident) => { /* .align 5; $label: */ } }

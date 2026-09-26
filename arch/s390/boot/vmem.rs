@@ -41,10 +41,10 @@ unsafe fn is_kasan_populate_mode(mode: populate_mode) -> bool {
 
 unsafe fn pgtable_populate(addr: usize, end: usize, mode: populate_mode);
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 static mut pte_z: pte_t = pte_t { val: 0 };
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 unsafe fn kasan_populate(start: usize, end: usize, mode: populate_mode) {
     let sha_start = PAGE_ALIGN_DOWN(kasan_mem_to_shadow(start as *mut _ ) as usize);
     let sha_end = PAGE_ALIGN(kasan_mem_to_shadow(end as *mut _) as usize);
@@ -52,7 +52,7 @@ unsafe fn kasan_populate(start: usize, end: usize, mode: populate_mode) {
     pgtable_populate(sha_start, sha_end, mode);
 }
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 unsafe fn kasan_populate_shadow(kernel_start: usize, kernel_end: usize) {
     let pmd_z = __pmd(__pa(kasan_early_shadow_pte) | _SEGMENT_ENTRY);
     let pud_z = __pud(__pa(kasan_early_shadow_pmd) | _REGION3_ENTRY);
@@ -69,13 +69,13 @@ unsafe fn kasan_populate_shadow(kernel_start: usize, kernel_end: usize) {
     __arch_set_page_dat(kasan_early_shadow_pud, 1usize << CRST_ALLOC_ORDER);
     __arch_set_page_dat(kasan_early_shadow_pmd, 1usize << CRST_ALLOC_ORDER);
     __arch_set_page_dat(kasan_early_shadow_pte, 1);
-    for_each_physmem_usable_range!(i, &mut start, &mut end) {
+    for_each_physmem_usable_range!(i, &mut start, &mut end, {
         kasan_populate(__identity_va(start) as usize, __identity_va(end) as usize, populate_mode::POPULATE_KASAN_MAP_SHADOW);
         if memgap_start != 0 && physmem_info.info_source == MEM_DETECT_DIAG260 {
             kasan_populate(__identity_va(memgap_start) as usize, __identity_va(start) as usize, populate_mode::POPULATE_KASAN_ZERO_SHADOW);
         }
         memgap_start = end;
-    }
+    });
     kasan_populate(kernel_start + TEXT_OFFSET, kernel_end, populate_mode::POPULATE_KASAN_MAP_SHADOW);
     kasan_populate(0, __identity_va(0) as usize, populate_mode::POPULATE_KASAN_ZERO_SHADOW);
     kasan_populate(AMODE31_START, AMODE31_END, populate_mode::POPULATE_KASAN_ZERO_SHADOW);
@@ -84,7 +84,7 @@ unsafe fn kasan_populate_shadow(kernel_start: usize, kernel_end: usize) {
     kasan_populate(kernel_end, _REGION1_SIZE, populate_mode::POPULATE_KASAN_ZERO_SHADOW);
 }
 
-#[cfg(not(feature = "CONFIG_KASAN"))]
+#[cfg(not(CONFIG_KASAN))]
 unsafe fn kasan_populate_shadow(_: usize, _: usize) {}
 
 unsafe fn kasan_pgd_populate_zero_shadow(_: *mut pgd_t, _: usize, _: usize, _: populate_mode) -> bool { false }
@@ -176,7 +176,7 @@ unsafe fn pgtable_populate(addr: usize, end: usize, mode: populate_mode) {
 
 pub unsafe fn setup_vmem(kernel_start: usize, kernel_end: usize, asce_limit: usize) {
     let mut lowcore_address = 0; let (mut start, mut end): (usize, usize); let mut i: i32;
-    for_each_physmem_online_range!(i, &mut start, &mut end) { __arch_set_page_nodat(start as *mut _, (end - start) >> PAGE_SHIFT); }
+    for_each_physmem_online_range!(i, &mut start, &mut end, { __arch_set_page_nodat(start as *mut _, (end - start) >> PAGE_SHIFT); });
     let init_mm_pgd = init_mm.pgd; init_mm.pgd = swapper_pg_dir as *mut pgd_t;
     let (asce_type, asce_bits) = if asce_limit == _REGION1_SIZE { (_REGION2_ENTRY_EMPTY, _ASCE_TYPE_REGION2 | _ASCE_TABLE_LENGTH) } else { (_REGION3_ENTRY_EMPTY, _ASCE_TYPE_REGION3 | _ASCE_TABLE_LENGTH) };
     s390_invalid_asce.val = invalid_pg_dir | _ASCE_TYPE_REGION3 | _ASCE_TABLE_LENGTH;
@@ -184,7 +184,7 @@ pub unsafe fn setup_vmem(kernel_start: usize, kernel_end: usize, asce_limit: usi
     __arch_set_page_dat(swapper_pg_dir as *mut _, 1usize << CRST_ALLOC_ORDER); __arch_set_page_dat(invalid_pg_dir as *mut _, 1usize << CRST_ALLOC_ORDER);
     if machine_has_relocated_lowcore() { lowcore_address = LOWCORE_ALT_ADDRESS; }
     pgtable_populate(lowcore_address, lowcore_address + core::mem::size_of::<lowcore>(), populate_mode::POPULATE_LOWCORE);
-    for_each_physmem_usable_range!(i, &mut start, &mut end) { if start == 0 { start = core::mem::size_of::<lowcore>(); } pgtable_populate(__identity_va(start) as usize, __identity_va(end) as usize, populate_mode::POPULATE_IDENTITY); }
+    for_each_physmem_usable_range!(i, &mut start, &mut end, { if start == 0 { start = core::mem::size_of::<lowcore>(); } pgtable_populate(__identity_va(start) as usize, __identity_va(end) as usize, populate_mode::POPULATE_IDENTITY); });
     pgtable_populate(kernel_start + TEXT_OFFSET, kernel_end, populate_mode::POPULATE_KERNEL); pgtable_populate(AMODE31_START, AMODE31_END, populate_mode::POPULATE_DIRECT); pgtable_populate(__abs_lowcore, __abs_lowcore + core::mem::size_of::<lowcore>(), populate_mode::POPULATE_ABS_LOWCORE); pgtable_populate(__memcpy_real_area, __memcpy_real_area + PAGE_SIZE, populate_mode::POPULATE_NONE);
     memcpy_real_ptep = __identity_va(__virt_to_kpte(__memcpy_real_area)); kasan_populate_shadow(kernel_start, kernel_end); get_lowcore().kernel_asce.val = swapper_pg_dir | asce_bits; get_lowcore().user_asce = s390_invalid_asce; local_ctl_load(1, &get_lowcore().kernel_asce); local_ctl_load(7, &get_lowcore().user_asce); local_ctl_load(13, &get_lowcore().kernel_asce); init_mm.context.asce = get_lowcore().kernel_asce.val; init_mm.pgd = init_mm_pgd;
 }

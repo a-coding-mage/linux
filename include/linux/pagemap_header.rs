@@ -72,30 +72,30 @@ pub const MAX_XAS_ORDER: u32 = XA_CHUNK_SHIFT * 2 - 1;
 pub const MAX_PAGECACHE_ORDER: u32 = if MAX_XAS_ORDER < PREFERRED_MAX_PAGECACHE_ORDER { MAX_XAS_ORDER } else { PREFERRED_MAX_PAGECACHE_ORDER };
 
 extern "C" {
-    pub fn invalidate_mapping_pages(*mut address_space, pgoff_t, pgoff_t) -> usize;
-    pub fn invalidate_inode_pages2(*mut address_space) -> i32;
-    pub fn invalidate_inode_pages2_range(*mut address_space, pgoff_t, pgoff_t) -> i32;
-    pub fn kiocb_invalidate_pages(*mut kiocb, usize) -> i32;
-    pub fn kiocb_invalidate_post_direct_write(*mut kiocb, usize);
-    pub fn filemap_invalidate_pages(*mut address_space, loff_t, loff_t, bool) -> i32;
-    pub fn filemap_fdatawait_range(*mut address_space, loff_t, loff_t) -> i32;
-    pub fn filemap_write_and_wait_range(*mut address_space, loff_t, loff_t) -> i32;
-    pub fn __filemap_set_wb_err(*mut address_space, i32);
-    pub fn folio_mapping(*const folio) -> *mut address_space;
-    pub fn __filemap_get_folio_mpol(*mut address_space, pgoff_t, fgf_t, gfp_t, *mut mempolicy) -> *mut folio;
-    pub fn pagecache_get_page(*mut address_space, pgoff_t, fgf_t, gfp_t) -> *mut page;
-    pub fn filemap_get_entry(*mut address_space, pgoff_t) -> *mut c_void;
-    pub fn page_cache_next_miss(*mut address_space, pgoff_t, usize) -> pgoff_t;
-    pub fn page_cache_prev_miss(*mut address_space, pgoff_t, usize) -> pgoff_t;
-    pub fn __folio_lock(*mut folio); pub fn __folio_lock_killable(*mut folio) -> i32;
-    pub fn __folio_lock_or_retry(*mut folio, *mut vm_fault) -> vm_fault_t;
-    pub fn folio_unlock(*mut folio); pub fn folio_wait_bit(*mut folio, i32); pub fn folio_wait_bit_killable(*mut folio,i32)->i32;
-    pub fn folio_end_read(*mut folio,bool); pub fn folio_wait_writeback(*mut folio); pub fn folio_end_writeback(*mut folio);
-    pub fn filemap_add_folio(*mut address_space,*mut folio,pgoff_t,gfp_t)->i32; pub fn filemap_remove_folio(*mut folio);
-    pub fn filemap_range_has_writeback(*mut address_space,loff_t,loff_t)->bool;
-    pub fn read_cache_folio(*mut address_space,pgoff_t,Option<filler_t>,*mut file)->*mut folio;
-    pub fn read_cache_page(*mut address_space,pgoff_t,Option<filler_t>,*mut file)->*mut page;
-    pub fn mapping_tagged(*const address_space,u32)->bool;
+    pub fn invalidate_mapping_pages(_: *mut address_space, _: pgoff_t, _: pgoff_t) -> usize;
+    pub fn invalidate_inode_pages2(_: *mut address_space) -> i32;
+    pub fn invalidate_inode_pages2_range(_: *mut address_space, _: pgoff_t, _: pgoff_t) -> i32;
+    pub fn kiocb_invalidate_pages(_: *mut kiocb, _: usize) -> i32;
+    pub fn kiocb_invalidate_post_direct_write(_: *mut kiocb, _: usize);
+    pub fn filemap_invalidate_pages(_: *mut address_space, _: loff_t, _: loff_t, _: bool) -> i32;
+    pub fn filemap_fdatawait_range(_: *mut address_space, _: loff_t, _: loff_t) -> i32;
+    pub fn filemap_write_and_wait_range(_: *mut address_space, _: loff_t, _: loff_t) -> i32;
+    pub fn __filemap_set_wb_err(_: *mut address_space, _: i32);
+    pub fn folio_mapping(_: *const folio) -> *mut address_space;
+    pub fn __filemap_get_folio_mpol(_: *mut address_space, _: pgoff_t, _: fgf_t, _: gfp_t, _: *mut mempolicy) -> *mut folio;
+    pub fn pagecache_get_page(_: *mut address_space, _: pgoff_t, _: fgf_t, _: gfp_t) -> *mut page;
+    pub fn filemap_get_entry(_: *mut address_space, _: pgoff_t) -> *mut c_void;
+    pub fn page_cache_next_miss(_: *mut address_space, _: pgoff_t, _: usize) -> pgoff_t;
+    pub fn page_cache_prev_miss(_: *mut address_space, _: pgoff_t, _: usize) -> pgoff_t;
+    pub fn __folio_lock(_: *mut folio); pub fn __folio_lock_killable(_: *mut folio) -> i32;
+    pub fn __folio_lock_or_retry(_: *mut folio, _: *mut vm_fault) -> vm_fault_t;
+    pub fn folio_unlock(_: *mut folio); pub fn folio_wait_bit(_: *mut folio, _: i32); pub fn folio_wait_bit_killable(_: *mut folio,_: i32)->i32;
+    pub fn folio_end_read(_: *mut folio,_: bool); pub fn folio_wait_writeback(_: *mut folio); pub fn folio_end_writeback(_: *mut folio);
+    pub fn filemap_add_folio(_: *mut address_space,_: *mut folio,_: pgoff_t,_: gfp_t)->i32; pub fn filemap_remove_folio(_: *mut folio);
+    pub fn filemap_range_has_writeback(_: *mut address_space,_: loff_t,_: loff_t)->bool;
+    pub fn read_cache_folio(_: *mut address_space,_: pgoff_t,_: Option<filler_t>,_: *mut file)->*mut folio;
+    pub fn read_cache_page(_: *mut address_space,_: pgoff_t,_: Option<filler_t>,_: *mut file)->*mut page;
+    pub fn mapping_tagged(_: *const address_space,_: u32)->bool;
 }
 
 #[inline] pub unsafe fn filemap_fdatawait(m:*mut address_space)->i32 { filemap_fdatawait_range(m,0,LLONG_MAX) }

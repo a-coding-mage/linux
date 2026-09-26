@@ -133,7 +133,7 @@ pub struct ingenic_clk {
 #[macro_export]
 macro_rules! to_ingenic_clk {
     ($hw:expr) => {{
-        ($hw as *mut u8).wrapping_sub(core::mem::offset_of!(ingenic_clk, hw)) as *mut ingenic_clk
+        ($hw as *mut u8).wrapping_sub(core::mem::offset_of!(ingenic_clk, $hw)) as *mut ingenic_clk
     }};
 }
 

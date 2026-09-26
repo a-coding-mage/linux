@@ -52,7 +52,7 @@ pub unsafe fn unwind_recover_ret_addr(
         (*state).sp as *mut ::core::ffi::c_void,
     );
     // CONFIG_RETHOOK controls this block in the C build.
-    #[cfg(feature = "CONFIG_RETHOOK")]
+    #[cfg(CONFIG_RETHOOK)]
     {
         if is_rethook_trampoline(ip) {
             ip = rethook_find_ret_addr((*state).task, (*state).sp, &mut (*state).kr_cur);

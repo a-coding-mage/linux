@@ -21,8 +21,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef SMU_7_1_3_D_H
-#define SMU_7_1_3_D_H
 
 pub const mmGCK_SMC_IND_INDEX: u32 = 0x80;
 pub const mmGCK_SMC_IND_INDEX: u32 = 0x80;
@@ -2473,7 +2471,6 @@ pub const ixCURRENT_PG_STATUS_APU: u32 = 0xd020029c;
 pub const ixPWR_SVI2_STATUS: u32 = 0xC0200294;
 pub const ixPWR_SVI2_STATUS: u32 = 0xC0200294;
 
-#endif /* SMU_7_1_3_D_H */
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

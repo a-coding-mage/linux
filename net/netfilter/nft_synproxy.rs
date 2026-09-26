@@ -66,7 +66,7 @@ unsafe fn nft_synproxy_eval_v4(
 }
 
 // Preserved from #if IS_ENABLED(CONFIG_NF_TABLES_IPV6).
-#[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+#[cfg(CONFIG_NF_TABLES_IPV6)]
 unsafe fn nft_synproxy_eval_v6(
     priv_: *const nft_synproxy,
     regs: *mut nft_regs,
@@ -132,7 +132,7 @@ unsafe fn nft_synproxy_do_eval(
             nft_synproxy_eval_v4(priv_, regs, pkt, tcp, &mut _tcph, &mut opts);
             return;
         }
-        #[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+        #[cfg(CONFIG_NF_TABLES_IPV6)]
         x if x == htons(ETH_P_IPV6) => {
             nft_synproxy_eval_v6(priv_, regs, pkt, tcp, &mut _tcph, &mut opts);
             return;
@@ -167,7 +167,7 @@ unsafe fn nft_synproxy_do_init(
     if err != 0 { return err; }
     match (*ctx).family {
         NFPROTO_IPV4 => { err = nf_synproxy_ipv4_init(snet, (*ctx).net); if err != 0 { return nf_ct_failure((*ctx).net, (*ctx).family, err); } }
-        #[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+        #[cfg(CONFIG_NF_TABLES_IPV6)]
         NFPROTO_IPV6 => { err = nf_synproxy_ipv6_init(snet, (*ctx).net); if err != 0 { return nf_ct_failure((*ctx).net, (*ctx).family, err); } }
         NFPROTO_INET => {
             err = nf_synproxy_ipv4_init(snet, (*ctx).net); if err != 0 { return nf_ct_failure((*ctx).net, (*ctx).family, err); }
@@ -187,7 +187,7 @@ unsafe fn nft_synproxy_do_destroy(ctx: *const nft_ctx) {
     let snet = synproxy_pernet((*ctx).net);
     match (*ctx).family {
         NFPROTO_IPV4 => nf_synproxy_ipv4_fini(snet, (*ctx).net),
-        #[cfg(feature = "CONFIG_NF_TABLES_IPV6")]
+        #[cfg(CONFIG_NF_TABLES_IPV6)]
         NFPROTO_IPV6 => nf_synproxy_ipv6_fini(snet, (*ctx).net),
         NFPROTO_INET => { nf_synproxy_ipv4_fini(snet, (*ctx).net); nf_synproxy_ipv6_fini(snet, (*ctx).net); }
         _ => {}

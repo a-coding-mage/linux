@@ -15,7 +15,7 @@
 pub struct rv_sts_ops {
     pub mon: rv_kunit_mon,
     /* Preserved from: #ifdef CONFIG_X86_LOCAL_APIC */
-    #[cfg(feature = "CONFIG_X86_LOCAL_APIC")]
+    #[cfg(CONFIG_X86_LOCAL_APIC)]
     pub handle_vector_irq_entry: Option<unsafe extern "C" fn(data: *mut core::ffi::c_void, vector: core::ffi::c_int)>,
     pub handle_irq_disable: Option<unsafe extern "C" fn(
         data: *mut core::ffi::c_void,

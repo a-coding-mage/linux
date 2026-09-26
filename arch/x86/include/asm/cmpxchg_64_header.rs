@@ -63,7 +63,7 @@ macro_rules! __arch_cmpxchg128 {
         unsafe {
             core::arch::asm!(
                 concat!($lock, "cmpxchg16b [{ptr}]") ,
-                ptr = in(reg) $ptr,
+                $ptr = in(reg) $ptr,
                 inout("rax") low,
                 inout("rdx") high,
                 in("rbx") n_low,
@@ -103,7 +103,7 @@ macro_rules! __arch_try_cmpxchg128 {
         unsafe {
             core::arch::asm!(
                 concat!($lock, "cmpxchg16b [{ptr}]") ,
-                ptr = in(reg) $ptr,
+                $ptr = in(reg) $ptr,
                 inout("rax") low,
                 inout("rdx") high,
                 in("rbx") n_low,

@@ -41,8 +41,7 @@ extern "C" {
     fn of_clk_parent_fill(
         np: *mut device_node,
         parents: *mut *const CChar,
-        nparents: CUint,
-    ) -> CInt;
+        nparents: CUint) -> CInt;
     fn of_iomap(np: *mut device_node, index: CInt) -> *mut c_void;
     fn of_get_parent(np: *mut device_node) -> *mut device_node;
     fn of_node_put(np: *mut device_node);
@@ -58,8 +57,7 @@ extern "C" {
         shift: U8,
         width: U8,
         mux_flags: U8,
-        lock: *mut spinlock_t,
-    ) -> *mut clk;
+        lock: *mut spinlock_t) -> *mut clk;
     fn __clk_get_name(clk: *mut clk) -> *const CChar;
     fn clk_get_parent(clk: *mut clk) -> *mut clk;
     fn clk_get_rate(clk: *mut clk) -> CULong;
@@ -67,8 +65,7 @@ extern "C" {
     fn of_clk_add_provider(
         np: *mut device_node,
         get: *const c_void,
-        data: *mut clk,
-    ) -> CInt;
+        data: *mut clk) -> CInt;
     fn of_clk_src_simple_get;
     fn iounmap(addr: *mut c_void);
 }
@@ -138,14 +135,14 @@ unsafe fn st_of_clkgen_mux_setup(
         reg = of_iomap(parent_np, 0);
         of_node_put(parent_np);
         if reg.is_null() {
-            pr_err(c"%s: Failed to get base address\n", c"st_of_clkgen_mux_setup\0".as_ptr());
+            pr_err(c"%s: Failed to get base address\n", c"st_of_clkgen_mux_setup".as_ptr());
             return;
         }
     }
 
     parents = clkgen_mux_get_parents(np, &mut num_parents);
     if (parents as isize) < 0 && (parents as isize) >= -4095 {
-        pr_err(c"%s: Failed to get parents (%ld)\n", c"st_of_clkgen_mux_setup\0".as_ptr(), parents as isize);
+        pr_err(c"%s: Failed to get parents (%ld)\n", c"st_of_clkgen_mux_setup".as_ptr(), parents as isize);
         iounmap(reg);
         return;
     }
@@ -168,7 +165,7 @@ unsafe fn st_of_clkgen_mux_setup(
         return;
     }
 
-    pr_debug(c"%s: parent %s rate %u\n", c"__clk_get_name\0".as_ptr(), __clk_get_name(clk), __clk_get_name(clk_get_parent(clk)), clk_get_rate(clk) as CUint);
+    pr_debug(c"%s: parent %s rate %u\n", c"__clk_get_name".as_ptr(), __clk_get_name(clk), __clk_get_name(clk_get_parent(clk)), clk_get_rate(clk) as CUint);
 
     kfree(parents);
     of_clk_add_provider(np, of_clk_src_simple_get as *const c_void, clk);

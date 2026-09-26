@@ -50,13 +50,13 @@ extern "C" {
 }
 
 #[inline]
-fn config_errata_thead_mae() -> bool { cfg!(feature = "CONFIG_ERRATA_THEAD_MAE") }
+fn config_errata_thead_mae() -> bool { cfg!(CONFIG_ERRATA_THEAD_MAE) }
 #[inline]
-fn config_errata_thead_cmo() -> bool { cfg!(feature = "CONFIG_ERRATA_THEAD_CMO") }
+fn config_errata_thead_cmo() -> bool { cfg!(CONFIG_ERRATA_THEAD_CMO) }
 #[inline]
-fn config_errata_thead_pmu() -> bool { cfg!(feature = "CONFIG_ERRATA_THEAD_PMU") }
+fn config_errata_thead_pmu() -> bool { cfg!(CONFIG_ERRATA_THEAD_PMU) }
 #[inline]
-fn config_errata_thead_ghostwrite() -> bool { cfg!(feature = "CONFIG_ERRATA_THEAD_GHOSTWRITE") }
+fn config_errata_thead_ghostwrite() -> bool { cfg!(CONFIG_ERRATA_THEAD_GHOSTWRITE) }
 
 unsafe fn errata_probe_mae(stage: u32, arch_id: usize, impid: usize) -> bool {
     if !config_errata_thead_mae() { return false; }

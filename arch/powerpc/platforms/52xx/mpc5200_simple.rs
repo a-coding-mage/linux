@@ -85,14 +85,14 @@ pub struct MachineDesc {
 
 #[no_mangle]
 pub static mpc5200_simple_platform: MachineDesc = MachineDesc {
-    .name: b"mpc5200-simple-platform\0".as_ptr() as *const core::ffi::c_char,
-    .compatibles: BOARD.as_ptr(),
-    .setup_arch: Some(mpc5200_simple_setup_arch),
-    .discover_phbs: Some(mpc52xx_setup_pci),
-    .init: Some(mpc52xx_declare_of_platform_devices),
-    .init_irq: Some(mpc52xx_init_irq),
-    .get_irq: Some(mpc52xx_get_irq),
-    .restart: Some(mpc52xx_restart),
+    name: b"mpc5200-simple-platform\0".as_ptr() as *const core::ffi::c_char,
+    compatibles: BOARD.as_ptr(),
+    setup_arch: Some(mpc5200_simple_setup_arch),
+    discover_phbs: Some(mpc52xx_setup_pci),
+    init: Some(mpc52xx_declare_of_platform_devices),
+    init_irq: Some(mpc52xx_init_irq),
+    get_irq: Some(mpc52xx_get_irq),
+    restart: Some(mpc52xx_restart),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

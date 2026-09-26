@@ -134,7 +134,7 @@ pub unsafe extern "C" fn acpi_ex_opcode_1A_0T_1R(walk_state: *mut acpi_walk_stat
             /* Preserve the complete reference semantics: named objects, local/
              * argument references, Index(Buffer/Package), RefOf, and strings. */
             if ACPI_GET_DESCRIPTOR_TYPE(*operand) == ACPI_DESC_TYPE_NAMED { return_desc = acpi_ns_get_attached_object(*operand as *mut acpi_namespace_node); if return_desc.is_null() { status = AE_AML_OPERAND_TYPE; } else { acpi_ut_add_reference(return_desc); } }
-            else if (**operand).common.type == ACPI_TYPE_STRING { status = acpi_ns_get_node_unlocked((*walk_state).scope_info.scope.node, (**operand).string.pointer, ACPI_NS_SEARCH_PARENT, &mut return_desc as *mut _ as *mut *mut acpi_namespace_node); }
+            else if (**operand).common.r#type == ACPI_TYPE_STRING { status = acpi_ns_get_node_unlocked((*walk_state).scope_info.scope.node, (**operand).string.pointer, ACPI_NS_SEARCH_PARENT, &mut return_desc as *mut _ as *mut *mut acpi_namespace_node); }
             else { status = AE_AML_OPERAND_TYPE; }
         }
         _ => status = AE_AML_BAD_OPCODE,

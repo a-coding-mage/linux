@@ -94,6 +94,7 @@ unsafe fn codel_dequeue(
     let mut skb = dequeue_func(vars, ctx);
     let now: codel_time_t;
     let mut drop: bool;
+    'end: {
 
     if skb.is_null() {
         (*vars).first_above_time = 0;
@@ -112,7 +113,7 @@ unsafe fn codel_dequeue(
                 if (*params).ecn && INET_ECN_set_ce(skb) {
                     WRITE_ONCE!((*stats).ecn_mark, (*stats).ecn_mark + 1);
                     WRITE_ONCE!((*vars).drop_next, codel_control_law((*vars).drop_next, (*params).interval, (*vars).rec_inv_sqrt));
-                    goto end;
+                    break 'end;
                 }
                 (*stats).drop_len += skb_len_func(skb);
                 drop_func(skb, ctx);
@@ -148,7 +149,8 @@ unsafe fn codel_dequeue(
         WRITE_ONCE!((*vars).lastcount, (*vars).count);
         WRITE_ONCE!((*vars).drop_next, codel_control_law(now, (*params).interval, (*vars).rec_inv_sqrt));
     }
-end:
+    }
+    
     if !skb.is_null() && codel_time_after((*vars).ldelay, (*params).ce_threshold) {
         let mut set_ce = true;
         if (*params).ce_threshold_mask != 0 {

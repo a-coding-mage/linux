@@ -21,7 +21,7 @@ pub unsafe fn __atomic_release_fence() {
 #[inline(always)]
 pub unsafe fn arch_atomic_read(v: *const atomic_t) -> i32 {
     let t: i32;
-    if cfg!(feature = "CONFIG_PPC_KERNEL_PREFIXED") {
+    if cfg!(CONFIG_PPC_KERNEL_PREFIXED) {
         core::arch::asm!("lwz {0}, 0({1})", out(reg) t, in(reg) &(*v).counter);
     } else {
         core::arch::asm!("lwz {0}, 0({1})", out(reg) t, in(reg) &(*v).counter);
@@ -31,7 +31,7 @@ pub unsafe fn arch_atomic_read(v: *const atomic_t) -> i32 {
 
 #[inline(always)]
 pub unsafe fn arch_atomic_set(v: *mut atomic_t, i: i32) {
-    if cfg!(feature = "CONFIG_PPC_KERNEL_PREFIXED") {
+    if cfg!(CONFIG_PPC_KERNEL_PREFIXED) {
         core::arch::asm!("stw {0}, 0({1})", in(reg) i, in(reg) &mut (*v).counter);
     } else {
         core::arch::asm!("stw {0}, 0({1})", in(reg) i, in(reg) &mut (*v).counter);

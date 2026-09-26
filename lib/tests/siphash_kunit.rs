@@ -95,8 +95,8 @@ macro_rules! chk {
 }
 
 unsafe fn siphash_test(test: *mut kunit) {
-    let mut input = [0_u8; 64];
-    let mut input_unaligned = [0_u8; 65];
+    let mut input = [0u8; 64];
+    let mut input_unaligned = [0u8; 65];
     let mut i: u8 = 0;
 
     while i < 64 {

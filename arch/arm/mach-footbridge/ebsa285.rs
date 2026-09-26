@@ -11,16 +11,16 @@
 
 /* LEDs */
 // Preserve the original CONFIG_NEW_LEDS && CONFIG_LEDS_CLASS build condition.
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 const XBUS_AMBER_L: u8 = 1u8 << 0;
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 const XBUS_GREEN_L: u8 = 1u8 << 1;
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 const XBUS_RED_L: u8 = 1u8 << 2;
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 const XBUS_TOGGLE: u8 = 1u8 << 7;
 
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 #[repr(C)]
 struct ebsa285_led {
     cdev: led_classdev,
@@ -31,26 +31,26 @@ struct ebsa285_led {
  * The triggers lines up below will only be used if the
  * LED triggers are compiled in.
  */
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 #[repr(C)]
 struct ebsa285_led_desc {
     name: *const c_char,
     trigger: *const c_char,
 }
 
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 static ebsa285_leds: [ebsa285_led_desc; 3] = [
     ebsa285_led_desc { name: c"ebsa285:amber".as_ptr(), trigger: c"cpu0".as_ptr() },
     ebsa285_led_desc { name: c"ebsa285:green".as_ptr(), trigger: c"heartbeat".as_ptr() },
     ebsa285_led_desc { name: c"ebsa285:red".as_ptr(), trigger: core::ptr::null() },
 ];
 
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 static mut hw_led_state: u8 = 0;
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 static mut xbus: *mut core::ffi::c_void = core::ptr::null_mut();
 
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 unsafe fn ebsa285_led_set(cdev: *mut led_classdev, b: led_brightness) {
     let led = container_of!(cdev, ebsa285_led, cdev);
 
@@ -62,14 +62,14 @@ unsafe fn ebsa285_led_set(cdev: *mut led_classdev, b: led_brightness) {
     writeb(hw_led_state, xbus);
 }
 
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 unsafe fn ebsa285_led_get(cdev: *mut led_classdev) -> led_brightness {
     let led = container_of!(cdev, ebsa285_led, cdev);
 
     if hw_led_state & (*led).mask != 0 { LED_OFF } else { LED_FULL }
 }
 
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 unsafe fn ebsa285_leds_init() -> i32 {
     let mut i: usize;
 
@@ -113,7 +113,7 @@ unsafe fn ebsa285_leds_init() -> i32 {
  * Since we may have triggers on any subsystem, defer registration
  * until after subsystem_init.
  */
-#[cfg(all(feature = "CONFIG_NEW_LEDS", feature = "CONFIG_LEDS_CLASS"))]
+#[cfg(all(CONFIG_NEW_LEDS, CONFIG_LEDS_CLASS))]
 fs_initcall!(ebsa285_leds_init);
 
 // MACHINE_START(EBSA285, "EBSA285")

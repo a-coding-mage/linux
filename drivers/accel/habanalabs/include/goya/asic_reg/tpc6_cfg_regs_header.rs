@@ -10,8 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#ifndef ASIC_REG_TPC6_CFG_REGS_H_
-#define ASIC_REG_TPC6_CFG_REGS_H_
 
 /*
  *****************************************

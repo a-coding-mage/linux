@@ -48,14 +48,14 @@ unsafe extern "C" fn sysrq_tlbdump_othercpus(_dummy: *mut work_struct) {
 }
 
 // DECLARE_WORK(sysrq_tlbdump, sysrq_tlbdump_othercpus)
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 static mut sysrq_tlbdump: work_struct = work_struct::new(sysrq_tlbdump_othercpus);
 
 unsafe extern "C" fn sysrq_handle_tlbdump(key: u8) {
     let _ = key;
     sysrq_tlbdump_single(core::ptr::null_mut());
     // CONFIG_SMP
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     schedule_work(&raw mut sysrq_tlbdump);
 }
 

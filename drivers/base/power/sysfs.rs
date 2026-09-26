@@ -36,25 +36,25 @@ unsafe fn pm_qos_latency_tolerance_us_store(dev:*mut device,_a:*mut device_attri
 unsafe fn pm_qos_no_power_off_show(dev:*mut device,_a:*mut device_attribute,buf:*mut i8)->ssize_t{sysfs_emit(buf,b"%d\n\0".as_ptr() as *const i8,if dev_pm_qos_requested_flags(dev)&PM_QOS_FLAG_NO_POWER_OFF!=0{1}else{0})}
 unsafe fn pm_qos_no_power_off_store(dev:*mut device,_a:*mut device_attribute,buf:*const i8,n:usize)->ssize_t{let mut v=0;if kstrtoint(buf,0,&mut v)!=0||v<0||v>1{return -EINVAL}let r=dev_pm_qos_update_flags(dev,PM_QOS_FLAG_NO_POWER_OFF,v);if r<0{r}else{n as ssize_t}}
 
-#[cfg(feature="CONFIG_PM_SLEEP")]
-static _enabled:&[u8]=b"enabled\0"; #[cfg(feature="CONFIG_PM_SLEEP")] static _disabled:&[u8]=b"disabled\0";
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
+static _enabled:&[u8]=b"enabled\0"; #[cfg(CONFIG_PM_SLEEP)] static _disabled:&[u8]=b"disabled\0";
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_show(dev:*mut device,_a:*mut device_attribute,buf:*mut i8)->ssize_t{sysfs_emit(buf,b"%s\n\0".as_ptr() as *const i8,if device_can_wakeup(dev){if device_may_wakeup(dev){_enabled.as_ptr()}else{_disabled.as_ptr()}}else{b"\0".as_ptr()})}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_store(dev:*mut device,_a:*mut device_attribute,buf:*const i8,n:usize)->ssize_t{if !device_can_wakeup(dev){return -EINVAL}if sysfs_streq(buf,_enabled.as_ptr() as *const i8){device_set_wakeup_enable(dev,1)}else if sysfs_streq(buf,_disabled.as_ptr() as *const i8){device_set_wakeup_enable(dev,0)}else{return -EINVAL}n as ssize_t}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_count_show(dev:*mut device,_a:*mut device_attribute,buf:*mut i8)->ssize_t{let mut v=0u64;let mut ok=false;spin_lock_irq(&mut (*dev).power.lock);if !(*dev).power.wakeup.is_null(){v=(*(*dev).power.wakeup).wakeup_count;ok=true}spin_unlock_irq(&mut (*dev).power.lock);if ok{sysfs_emit(buf,b"%lu\n\0".as_ptr() as *const i8,v)}else{sysfs_emit(buf,b"\n\0".as_ptr() as *const i8)}}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_active_count_show(dev:*mut device,a:*mut device_attribute,b:*mut i8)->ssize_t{wakeup_count_show(dev,a,b)}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_abort_count_show(dev:*mut device,a:*mut device_attribute,b:*mut i8)->ssize_t{wakeup_count_show(dev,a,b)}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_expire_count_show(dev:*mut device,a:*mut device_attribute,b:*mut i8)->ssize_t{wakeup_count_show(dev,a,b)}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn wakeup_active_show(dev:*mut device,_a:*mut device_attribute,buf:*mut i8)->ssize_t{let mut v=0u32;let mut ok=false;spin_lock_irq(&mut (*dev).power.lock);if !(*dev).power.wakeup.is_null(){v=(*(*dev).power.wakeup).active;ok=true}spin_unlock_irq(&mut (*dev).power.lock);if ok{sysfs_emit(buf,b"%u\n\0".as_ptr() as *const i8,v)}else{sysfs_emit(buf,b"\n\0".as_ptr() as *const i8)}}
-#[cfg(feature="CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn dpm_sysfs_wakeup_change_owner(dev:*mut device,k:kuid_t,g:kgid_t)->c_int{if !(*dev).power.wakeup.is_null()&&!(*(*dev).power.wakeup).dev.is_null(){device_change_owner((*dev).power.wakeup.dev,k,g)}else{0}}
-#[cfg(not(feature="CONFIG_PM_SLEEP"))] unsafe fn dpm_sysfs_wakeup_change_owner(_:*mut device,_:kuid_t,_:kgid_t)->c_int{0}
+#[cfg(not(CONFIG_PM_SLEEP))] unsafe fn dpm_sysfs_wakeup_change_owner(_:*mut device,_:kuid_t,_:kgid_t)->c_int{0}
 
 unsafe fn dpm_sysfs_add_impl(dev:*mut device)->c_int{if device_pm_not_required(dev){return 0}let mut r=sysfs_create_group(&mut (*dev).kobj,pm_attr_group());if r!=0{return r}if !pm_runtime_has_no_callbacks(dev){r=sysfs_merge_group(&mut (*dev).kobj,pm_runtime_attr_group());if r!=0{sysfs_remove_group(&mut (*dev).kobj,pm_attr_group());return r}}if device_can_wakeup(dev){r=sysfs_merge_group(&mut (*dev).kobj,pm_wakeup_attr_group());if r!=0{sysfs_unmerge_group(&mut (*dev).kobj,pm_runtime_attr_group());sysfs_remove_group(&mut (*dev).kobj,pm_attr_group());return r}}r=pm_wakeup_source_sysfs_add(dev);if r!=0{sysfs_unmerge_group(&mut (*dev).kobj,pm_wakeup_attr_group());sysfs_unmerge_group(&mut (*dev).kobj,pm_runtime_attr_group());sysfs_remove_group(&mut (*dev).kobj,pm_attr_group())}r}
 

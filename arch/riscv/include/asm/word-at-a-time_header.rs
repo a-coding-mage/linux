@@ -66,7 +66,7 @@ pub const fn zero_bytemask(mask: usize) -> usize {
 
 // CONFIG_DCACHE_WORD_ACCESS is a build-time condition from the original
 // header.  The function is retained here under the corresponding cfg.
-#[cfg(feature = "CONFIG_DCACHE_WORD_ACCESS")]
+#[cfg(CONFIG_DCACHE_WORD_ACCESS)]
 #[inline]
 pub unsafe fn load_unaligned_zeropad(_addr: *const core::ffi::c_void) -> usize {
     /*

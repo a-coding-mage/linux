@@ -149,7 +149,7 @@ unsafe fn build_directory(mut depth: size_t, use_landlock: bool) -> c_int {
                     | LANDLOCK_ACCESS_FS_WRITE_FILE
                     | LANDLOCK_ACCESS_FS_MAKE_REG,
             };
-            ruleset_fd = landlock_create_ruleset(&attr, size_of::<landlock_ruleset_attr>(), 0_u32);
+            ruleset_fd = landlock_create_ruleset(&attr, size_of::<landlock_ruleset_attr>(), 0u32);
             if ruleset_fd < 0 {
                 err(1, c"landlock_create_ruleset".as_ptr());
             }

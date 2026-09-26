@@ -41,7 +41,7 @@ pub const REX_PROM_MAGIC: u32 = 0x3046_4354;
 #[inline]
 pub const fn prom_is_rex(magic: u32) -> bool {
     // CONFIG_CPU_R3000 is a build-time condition; non-R3000 builds return true.
-    !cfg!(feature = "CONFIG_CPU_R3000") || magic == REX_PROM_MAGIC
+    !cfg!(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC
 }
 
 /* 3MIN/MAXINE PROM entry points. */
@@ -82,15 +82,15 @@ extern "C" {
 }
 
 // The CONFIG_64BIT branch uses an O32 ABI dispatcher supplied elsewhere.
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const O32_STK_SIZE: usize = 512;
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 extern "C" {
     pub static mut o32_stk: [usize; O32_STK_SIZE];
 }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 #[inline]
 pub unsafe fn o32_get_stk() -> *mut usize {
     // Equivalent to __builtin_frame_address(0); target-specific frame access
@@ -103,52 +103,52 @@ pub unsafe fn o32_get_stk() -> *mut usize {
     }
 }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_bootinit() -> i32 { __rex_bootinit.unwrap()() }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_bootread() -> i32 { __rex_bootread.unwrap()() }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_getbitmap(x: *mut memmap) -> i32 { __rex_getbitmap.unwrap()(x) }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_slot_address(x: i32) -> *mut usize { __rex_slot_address.unwrap()(x) }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_gettcinfo() -> *mut core::ffi::c_void { __rex_gettcinfo.unwrap()() }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_getsysid() -> i32 { __rex_getsysid.unwrap()() }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn rex_clear_cache() { __rex_clear_cache.unwrap()() }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn prom_getchar() -> i32 { __prom_getchar.unwrap()() }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub unsafe fn prom_getenv(x: *mut i8) -> *mut i8 { __prom_getenv.unwrap()(x) }
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_bootinit as rex_bootinit;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_bootread as rex_bootread;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_getbitmap as rex_getbitmap;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_slot_address as rex_slot_address;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_gettcinfo as rex_gettcinfo;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_getsysid as rex_getsysid;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __rex_clear_cache as rex_clear_cache;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __prom_getchar as prom_getchar;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __prom_getenv as prom_getenv;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __prom_printf as prom_printf;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __pmax_open as pmax_open;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __pmax_lseek as pmax_lseek;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __pmax_read as pmax_read;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub use __pmax_close as pmax_close;
 
 extern "C" {

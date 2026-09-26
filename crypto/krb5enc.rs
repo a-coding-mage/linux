@@ -88,15 +88,17 @@ pub unsafe extern "C" fn krb5enc_setkey(
     let auth = (*ctx).auth;
     let flags = crypto_aead_get_flags(krb5enc);
     let mut err = -EINVAL;
-    if crypto_krb5enc_extractkeys(&mut keys, key, keylen) != 0 { goto!(out); }
+    'out: {
+    if crypto_krb5enc_extractkeys(&mut keys, key, keylen) != 0 { break 'out; }
     crypto_ahash_clear_flags(auth, CRYPTO_TFM_REQ_MASK);
     crypto_ahash_set_flags(auth, flags & CRYPTO_TFM_REQ_MASK);
     err = crypto_ahash_setkey(auth, keys.authkey, keys.authkeylen);
-    if err != 0 { goto!(out); }
+    if err != 0 { break 'out; }
     crypto_skcipher_clear_flags(enc, CRYPTO_TFM_REQ_MASK);
     crypto_skcipher_set_flags(enc, flags & CRYPTO_TFM_REQ_MASK);
     err = crypto_skcipher_setkey(enc, keys.enckey, keys.enckeylen);
-out:
+    }
+    
     memzero_explicit(&mut keys as *mut _ as *mut c_void, core::mem::size_of_val(&keys));
     err
 }

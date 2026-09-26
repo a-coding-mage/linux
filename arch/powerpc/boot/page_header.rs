@@ -17,18 +17,18 @@ pub const PAGE_MASK: usize = !(PAGE_SIZE - 1);
 #[macro_export]
 macro_rules! _ALIGN_UP {
     ($addr:expr, $size:expr) => {{
-        let addr = $addr;
-        let size = $size;
-        (addr + (size - 1)) & !(size - 1)
+        let $addr = $addr;
+        let $size = $size;
+        ($addr + ($size - 1)) & !($size - 1)
     }};
 }
 
 #[macro_export]
 macro_rules! _ALIGN_DOWN {
     ($addr:expr, $size:expr) => {{
-        let addr = $addr;
-        let size = $size;
-        addr & !(size - 1)
+        let $addr = $addr;
+        let $size = $size;
+        $addr & !($size - 1)
     }};
 }
 

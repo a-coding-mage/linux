@@ -31,7 +31,7 @@ unsafe fn psc_debug_dump() {
 
     i = 0x30;
     while i < 0x70 {
-        printk(KERN_DEBUG "PSC #%d:  IFR = 0x%02X IER = 0x%02X\n",
+        printk(c"\x017PSC #%d:  IFR = 0x%02X IER = 0x%02X\n".as_ptr(),
             i >> 4,
             psc_read_byte(pIFRbase + i),
             psc_read_byte(pIERbase + i));

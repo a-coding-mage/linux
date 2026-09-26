@@ -93,7 +93,7 @@ pub unsafe extern "C" fn spufs_mfc_callback(spu: *mut c_void) {
 #[no_mangle]
 pub unsafe extern "C" fn spu_switch_log_notify(spu: *mut c_void,
     ctx: *mut c_void, kind: u32, val: u32) {
-    extern "C" { fn spu_switch_log_notify_kernel(*mut c_void, *mut c_void, u32, u32); }
+    extern "C" { fn spu_switch_log_notify_kernel(_: *mut c_void, _: *mut c_void, _: u32, _: u32); }
     spu_switch_log_notify_kernel(spu, ctx, kind, val)
 }
 

@@ -5,24 +5,24 @@ use core::ffi::{c_char, c_int, c_ulong};
 
 // #include <linux/ioport.h>
 
-#[cfg(feature = "CONFIG_SUPERH")]
+#[cfg(CONFIG_SUPERH)]
 pub const INTC_NR_IRQS: usize = 512;
-#[cfg(not(feature = "CONFIG_SUPERH"))]
+#[cfg(not(CONFIG_SUPERH))]
 pub const INTC_NR_IRQS: usize = 1024;
 
 /*
  * Convert back and forth between INTEVT and IRQ values.
  */
-#[cfg(feature = "CONFIG_CPU_HAS_INTEVT")]
+#[cfg(CONFIG_CPU_HAS_INTEVT)]
 #[inline]
 pub const fn evt2irq(evt: u32) -> u32 { evt >> 5 }
-#[cfg(feature = "CONFIG_CPU_HAS_INTEVT")]
+#[cfg(CONFIG_CPU_HAS_INTEVT)]
 #[inline]
 pub const fn irq2evt(irq: u32) -> u32 { irq << 5 }
-#[cfg(not(feature = "CONFIG_CPU_HAS_INTEVT"))]
+#[cfg(not(CONFIG_CPU_HAS_INTEVT))]
 #[inline]
 pub const fn evt2irq(evt: u32) -> u32 { evt }
-#[cfg(not(feature = "CONFIG_CPU_HAS_INTEVT"))]
+#[cfg(not(CONFIG_CPU_HAS_INTEVT))]
 #[inline]
 pub const fn irq2evt(irq: u32) -> u32 { irq }
 
@@ -71,9 +71,9 @@ pub struct intc_mask_reg {
     pub clr_reg: c_ulong,
     pub reg_width: c_ulong,
     pub enum_ids: [intc_enum; 32],
-    #[cfg(feature = "CONFIG_INTC_BALANCING")]
+    #[cfg(CONFIG_INTC_BALANCING)]
     pub dist_reg: c_ulong,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub smp: c_ulong,
 }
 
@@ -84,7 +84,7 @@ pub struct intc_prio_reg {
     pub reg_width: c_ulong,
     pub field_width: c_ulong,
     pub enum_ids: [intc_enum; 16],
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub smp: c_ulong,
 }
 
@@ -96,17 +96,17 @@ pub struct intc_sense_reg {
     pub enum_ids: [intc_enum; 16],
 }
 
-#[cfg(feature = "CONFIG_INTC_BALANCING")]
+#[cfg(CONFIG_INTC_BALANCING)]
 #[macro_export]
 macro_rules! INTC_SMP_BALANCING { ($reg:expr) => { dist_reg: $reg }; }
-#[cfg(not(feature = "CONFIG_INTC_BALANCING"))]
+#[cfg(not(CONFIG_INTC_BALANCING))]
 #[macro_export]
 macro_rules! INTC_SMP_BALANCING { ($reg:expr) => {}; }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! INTC_SMP { ($stride:expr, $nr:expr) => { smp: ($stride) | (($nr) << 8) }; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! INTC_SMP { ($stride:expr, $nr:expr) => {}; }
 
@@ -153,12 +153,12 @@ extern "C" {
     pub fn intc_finalize();
 }
 
-#[cfg(feature = "CONFIG_INTC_USERIMASK")]
+#[cfg(CONFIG_INTC_USERIMASK)]
 extern "C" {
     pub fn register_intc_userimask(addr: c_ulong) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_INTC_USERIMASK"))]
+#[cfg(not(CONFIG_INTC_USERIMASK))]
 #[inline]
 pub unsafe fn register_intc_userimask(_addr: c_ulong) -> c_int { 0 }
 

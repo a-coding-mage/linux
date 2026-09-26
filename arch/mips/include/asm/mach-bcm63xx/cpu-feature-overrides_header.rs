@@ -26,7 +26,7 @@ pub const cpu_has_vtag_icache: i32 = 0;
 
 // Original condition: only define cpu_has_dc_aliases when
 // CONFIG_SYS_HAS_CPU_BMIPS4350 is not defined.
-#[cfg(not(feature = "CONFIG_SYS_HAS_CPU_BMIPS4350"))]
+#[cfg(not(CONFIG_SYS_HAS_CPU_BMIPS4350))]
 pub const cpu_has_dc_aliases: i32 = 0;
 
 pub const cpu_has_ic_fills_f_dc: i32 = 0;

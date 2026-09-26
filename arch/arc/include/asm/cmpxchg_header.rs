@@ -11,7 +11,7 @@
 #[macro_export]
 macro_rules! __cmpxchg {
     ($ptr:expr, $old:expr, $new:expr) => {{
-        // if (*ptr == old), *ptr = new
+        // if (*$ptr == $old), *$ptr = $new
         let mut _prev: _;
         unsafe {
             core::arch::asm!(
@@ -21,9 +21,9 @@ macro_rules! __cmpxchg {
                 "bnz 1b",
                 "2:",
                 prev = lateout(reg) _prev,
-                ptr = in(reg) $ptr,
-                old = in(reg) $old,
-                new = in(reg) $new,
+                $ptr = in(reg) $ptr,
+                $old = in(reg) $old,
+                $new = in(reg) $new,
                 options(nostack)
             );
         }
@@ -79,8 +79,8 @@ macro_rules! __arch_xchg {
         unsafe {
             core::arch::asm!(
                 "ex {val}, [{ptr}]",
-                val = inout(reg) _val_,
-                ptr = in(reg) $ptr,
+                $val = inout(reg) _val_,
+                $ptr = in(reg) $ptr,
                 options(nostack)
             );
         }
@@ -115,8 +115,8 @@ macro_rules! arch_xchg {
         unsafe {
             core::arch::asm!(
                 "ex {val}, [{ptr}]",
-                val = inout(reg) _val_,
-                ptr = in(reg) _p_,
+                $val = inout(reg) _val_,
+                $ptr = in(reg) _p_,
                 options(nostack)
             );
         }

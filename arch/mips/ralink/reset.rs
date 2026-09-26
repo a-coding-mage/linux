@@ -23,7 +23,7 @@ const RSTCTL_RESET_SYSTEM: u32 = 1u32 << 0;
 
 unsafe extern "C" fn ralink_restart(_command: *mut core::ffi::c_char) {
     // Preserved from IS_ENABLED(CONFIG_PCI); the build configuration supplies this condition.
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     {
         rt_sysc_m32(0, RSTCTL_RESET_PCI, SYSC_REG_RESET_CTRL);
         mdelay(50);

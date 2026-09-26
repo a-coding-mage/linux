@@ -63,9 +63,9 @@ pub struct smp_operations {
     pub smp_prepare_cpus: Option<unsafe extern "C" fn(u32)>,
     pub smp_boot_secondary:
         Option<unsafe extern "C" fn(u32, *mut task_struct) -> i32>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe extern "C" fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe extern "C" fn(u32) -> i32>,
 }
 
@@ -139,14 +139,14 @@ unsafe extern "C" fn m10v_smp_init(_max_cpus: u32) {
     }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn m10v_cpu_die(_l_cpu: u32) {
     gic_cpu_if_down(0);
     v7_exit_coherency_flush(louis);
     wfi();
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn m10v_cpu_kill(l_cpu: u32) -> i32 {
     let mpidr = cpu_logical_map(l_cpu);
     let cpu = mpidr_affinity_level(mpidr, 0);
@@ -158,9 +158,9 @@ unsafe extern "C" fn m10v_cpu_kill(l_cpu: u32) -> i32 {
 static mut M10V_SMP_OPS: smp_operations = smp_operations {
     smp_prepare_cpus: Some(m10v_smp_init),
     smp_boot_secondary: Some(m10v_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(m10v_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(m10v_cpu_kill),
 };
 

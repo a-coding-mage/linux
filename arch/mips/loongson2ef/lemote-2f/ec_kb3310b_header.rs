@@ -6,7 +6,7 @@
  *  Author: liujl <liujl@lemote.com>, 2008-03-14
  */
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn ec_read(addr: u16) -> u8;
     pub fn ec_write(addr: u16, val: u8);
     pub fn ec_query_seq(cmd: u8) -> i32;
@@ -15,7 +15,7 @@ pub unsafe extern "C" {
 }
 
 pub type sci_handler = unsafe extern "C" fn(status: i32) -> i32;
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut yeeloong_report_lid_status: Option<sci_handler>;
 }
 

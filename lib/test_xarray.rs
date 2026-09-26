@@ -21,34 +21,34 @@ void xa_dump(const struct xarray *xa) { }
 # endif
 // preprocessor directive: #undef XA_BUG_ON
 // preprocessor directive: #define XA_BUG_ON(xa, x) loop {					\
-	tests_run++;						\
-	if x {						\
-		printk("BUG at %s:%d\n", __func__, __LINE__);	\
-		xa_dump(xa);					\
-		dump_stack();					\
-	} else {						\
-		tests_passed++;					\
-	}							\
-} while 0
+// 	tests_run++;						\
+// 	if x {						\
+// 		printk("BUG at %s:%d\n", __func__, __LINE__);	\
+// 		xa_dump(xa);					\
+// 		dump_stack();					\
+// 	} else {						\
+// 		tests_passed++;					\
+// 	}							\
+// } while 0
 // preprocessor directive: #endif
 
-fn *mut core::ffi::c_voidxa_mk_index(u64 index)
+fn *mut core::ffi::c_voidxa_mk_index(index: u64)
 {
 	return xa_mk_value(index & i64::MAX as u64);
 }
 
-fn *mut core::ffi::c_voidxa_store_index(struct xarray *xa, u64 index, gfp_t gfp)
+fn *mut core::ffi::c_voidxa_store_index(xarray *xa, index: u64, gfp_t gfp)
 {
 	return xa_store(xa, index, xa_mk_index(index), gfp);
 }
 
-fn void xa_insert_index(struct xarray *xa, u64 index)
+fn void xa_insert_index(xarray *xa, index: u64)
 {
 	XA_BUG_ON(xa, xa_insert(xa, index, xa_mk_index(index),
 				GFP_KERNEL) != 0);
 }
 
-fn void xa_alloc_index(struct xarray *xa, u64 index, gfp_t gfp)
+fn void xa_alloc_index(xarray *xa, index: u64, gfp_t gfp)
 {
 	u32 id;
 
@@ -57,7 +57,7 @@ fn void xa_alloc_index(struct xarray *xa, u64 index, gfp_t gfp)
 	XA_BUG_ON(xa, id != index);
 }
 
-fn void xa_erase_index(struct xarray *xa, u64 index)
+fn void xa_erase_index(xarray *xa, index: u64)
 {
 	XA_BUG_ON(xa, xa_erase(xa, index) != xa_mk_index(index));
 	XA_BUG_ON(xa, xa_load(xa, index) != core::ptr::null_mut());
@@ -68,8 +68,8 @@ fn void xa_erase_index(struct xarray *xa, u64 index)
  * users outside the test suite because all current multislot users want
  * to use the advanced API.
  */
-fn *mut core::ffi::c_voidxa_store_order(struct xarray *xa, u64 index,
-		u32 order, *mut core::ffi::c_voidentry, gfp_t gfp)
+fn *mut core::ffi::c_voidxa_store_order(xarray *xa, index: u64,
+		order: u32, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	XA_STATE_ORDER(xas, xa, index, order);
 	*mut core::ffi::c_voidcurr;
@@ -83,7 +83,7 @@ fn *mut core::ffi::c_voidxa_store_order(struct xarray *xa, u64 index,
 	return curr;
 }
 
-unsafe fn void check_xa_err(struct xarray *xa)
+unsafe fn void check_xa_err(xarray *xa)
 {
 	XA_BUG_ON(xa, xa_err(xa_store_index(xa, 0, GFP_NOWAIT)) != 0);
 	XA_BUG_ON(xa, xa_err(xa_erase(xa, 0)) != 0);
@@ -99,7 +99,7 @@ unsafe fn void check_xa_err(struct xarray *xa)
 //	XA_BUG_ON(xa, xa_err(xa_store(xa, 0, xa_mk_internal(0), 0)) != -EINVAL);
 }
 
-unsafe fn void check_xas_retry(struct xarray *xa)
+unsafe fn void check_xas_retry(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 	*mut core::ffi::c_voidentry;
@@ -135,18 +135,18 @@ unsafe fn void check_xas_retry(struct xarray *xa)
 	xas_store(&xas, XA_RETRY_ENTRY);
 
 	xas_set(&xas, 0);
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		xas_store(&xas, xa_mk_index(xas.xa_index));
-	}
+	});
 	xas_unlock(&xas);
 
 	xa_erase_index(xa, 0);
 	xa_erase_index(xa, 1);
 }
 
-unsafe fn void check_xa_load(struct xarray *xa)
+unsafe fn void check_xa_load(xarray *xa)
 {
-	u64 i, j;
+	i: u64, j;
 
 	for (i = 0;  i < 1024;  i++) {
 		for (j = 0;  j < 1024;  j++) {
@@ -172,7 +172,7 @@ unsafe fn void check_xa_load(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_xa_mark_1(struct xarray *xa, u64 index)
+unsafe fn void check_xa_mark_1(xarray *xa, index: u64)
 {
 	u32 order;
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 8 : 1;
@@ -251,7 +251,7 @@ unsafe fn void check_xa_mark_1(struct xarray *xa, u64 index)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_xa_mark_2(struct xarray *xa)
+unsafe fn void check_xa_mark_2(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 	u64 index;
@@ -279,17 +279,17 @@ unsafe fn void check_xa_mark_2(struct xarray *xa)
 	XA_BUG_ON(xa, count != 1000);
 
 	xas_lock(&xas);
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		xas_init_marks(&xas);
 		XA_BUG_ON(xa, !xa_get_mark(xa, xas.xa_index, XA_MARK_0));
 		XA_BUG_ON(xa, !xas_get_mark(&xas, XA_MARK_0));
-	}
+	});
 	xas_unlock(&xas);
 
 	xa_destroy(xa);
 }
 
-unsafe fn void check_xa_mark_3(struct xarray *xa)
+unsafe fn void check_xa_mark_3(xarray *xa)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	XA_STATE(xas, xa, 0x41);
@@ -300,17 +300,17 @@ unsafe fn void check_xa_mark_3(struct xarray *xa)
 	xa_set_mark(xa, 0x41, XA_MARK_0);
 
 	rcu_read_lock();
-	xas_for_each_marked(&xas, entry, u64::MAX, XA_MARK_0) {
+	xas_for_each_marked!(&xas, entry, u64::MAX, XA_MARK_0, {
 		count++;
 		XA_BUG_ON(xa, entry != xa_mk_index(0x40));
-	}
+	});
 	XA_BUG_ON(xa, count != 1);
 	rcu_read_unlock();
 	xa_destroy(xa);
 // preprocessor directive: #endif
 }
 
-unsafe fn void check_xa_mark(struct xarray *xa)
+unsafe fn void check_xa_mark(xarray *xa)
 {
 	u64 index;
 
@@ -321,7 +321,7 @@ unsafe fn void check_xa_mark(struct xarray *xa)
 	check_xa_mark_3(xa);
 }
 
-unsafe fn void check_xa_shrink(struct xarray *xa)
+unsafe fn void check_xa_shrink(xarray *xa)
 {
 	XA_STATE(xas, xa, 1);
 	struct xa_node *node;
@@ -365,12 +365,12 @@ unsafe fn void check_xa_shrink(struct xarray *xa)
 		rcu_read_unlock();
 		XA_BUG_ON(xa, xa_load(xa, max + 1) != core::ptr::null_mut());
 		xa_erase_index(xa, u64::MAX);
-		XA_BUG_ON(xa, xa->xa_head != node);
+		XA_BUG_ON(xa, (*xa).xa_head != node);
 		xa_erase_index(xa, 0);
 	}
 }
 
-unsafe fn void check_insert(struct xarray *xa)
+unsafe fn void check_insert(xarray *xa)
 {
 	u64 i;
 
@@ -401,7 +401,7 @@ unsafe fn void check_insert(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_cmpxchg(struct xarray *xa)
+unsafe fn void check_cmpxchg(xarray *xa)
 {
 	*mut core::ffi::c_voidFIVE = xa_mk_value(5);
 	*mut core::ffi::c_voidSIX = xa_mk_value(6);
@@ -423,11 +423,11 @@ unsafe fn void check_cmpxchg(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_cmpxchg_order(struct xarray *xa)
+unsafe fn void check_cmpxchg_order(xarray *xa)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	*mut core::ffi::c_voidFIVE = xa_mk_value(5);
-	u32 i, order = 3;
+	i: u32, order = 3;
 
 	XA_BUG_ON(xa, xa_store_order(xa, 0, order, FIVE, GFP_KERNEL));
 
@@ -476,7 +476,7 @@ unsafe fn void check_cmpxchg_order(struct xarray *xa)
 // preprocessor directive: #endif
 }
 
-unsafe fn void check_reserve(struct xarray *xa)
+unsafe fn void check_reserve(xarray *xa)
 {
 	*mut core::ffi::c_voidentry;
 	u64 index;
@@ -519,14 +519,14 @@ unsafe fn void check_reserve(struct xarray *xa)
 	xa_store_index(xa, 7, GFP_KERNEL);
 
 	count = 0;
-	xa_for_each(xa, index, entry) {
+	xa_for_each!(xa, index, entry, {
 		XA_BUG_ON(xa, index != 5 && index != 7);
 		count++;
-	}
+	});
 	XA_BUG_ON(xa, count != 2);
 
 	/* If we free a reserved entry, we should be able to allocate it */
-	if xa->xa_flags & XA_FLAGS_ALLOC {
+	if (*xa).xa_flags & XA_FLAGS_ALLOC {
 		u32 id;
 
 		XA_BUG_ON(xa, xa_alloc(xa, &id, xa_mk_value(8),
@@ -542,11 +542,11 @@ unsafe fn void check_reserve(struct xarray *xa)
 	xa_destroy(xa);
 }
 
-unsafe fn void check_xas_erase(struct xarray *xa)
+unsafe fn void check_xas_erase(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 	*mut core::ffi::c_voidentry;
-	u64 i, j;
+	i: u64, j;
 
 	for (i = 0;  i < 200;  i++) {
 		for (j = i;  j < 2 * i + 17;  j++) {
@@ -570,19 +570,19 @@ unsafe fn void check_xas_erase(struct xarray *xa)
 
 		xas_set(&xas, 0);
 		j = i;
-		xas_for_each(&xas, entry, u64::MAX) {
+		xas_for_each!(&xas, entry, u64::MAX, {
 			XA_BUG_ON(xa, entry != xa_mk_index(j));
 			xas_store(&xas, core::ptr::null_mut());
 			j++;
-		}
+		});
 		xas_unlock(&xas);
 		XA_BUG_ON(xa, !xa_empty(xa));
 	}
 }
 
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
-unsafe fn void check_multi_store_1(struct xarray *xa, u64 index,
-		u32 order)
+unsafe fn void check_multi_store_1(xarray *xa, index: u64,
+		order: u32)
 {
 	XA_STATE(xas, xa, index);
 	u64 min = index & ~((1UL << order) - 1);
@@ -606,8 +606,8 @@ unsafe fn void check_multi_store_1(struct xarray *xa, u64 index,
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_multi_store_2(struct xarray *xa, u64 index,
-		u32 order)
+unsafe fn void check_multi_store_2(xarray *xa, index: u64,
+		order: u32)
 {
 	XA_STATE(xas, xa, index);
 	xa_store_order(xa, index, order, xa_mk_value(0), GFP_KERNEL);
@@ -620,8 +620,8 @@ unsafe fn void check_multi_store_2(struct xarray *xa, u64 index,
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_multi_store_3(struct xarray *xa, u64 index,
-		u32 order)
+unsafe fn void check_multi_store_3(xarray *xa, index: u64,
+		order: u32)
 {
 	XA_STATE(xas, xa, 0);
 	*mut core::ffi::c_voidentry;
@@ -630,16 +630,16 @@ unsafe fn void check_multi_store_3(struct xarray *xa, u64 index,
 	xa_store_order(xa, index, order, xa_mk_index(index), GFP_KERNEL);
 
 	xas_lock(&xas);
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		XA_BUG_ON(xa, entry != xa_mk_index(index));
 		n++;
-	}
+	});
 	XA_BUG_ON(xa, n != 1);
 	xas_set(&xas, index + 1);
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		XA_BUG_ON(xa, entry != xa_mk_index(index));
 		n++;
-	}
+	});
 	XA_BUG_ON(xa, n != 2);
 	xas_unlock(&xas);
 
@@ -647,10 +647,10 @@ unsafe fn void check_multi_store_3(struct xarray *xa, u64 index,
 }
 // preprocessor directive: #endif
 
-unsafe fn void check_multi_store(struct xarray *xa)
+unsafe fn void check_multi_store(xarray *xa)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
-	u64 i, j, k;
+	i: u64, j, k;
 	u32 max_order = (core::mem::size_of::<long>() == 4) ? 30 : 60;
 
 	/* Loading from any position returns the same value */
@@ -659,8 +659,8 @@ unsafe fn void check_multi_store(struct xarray *xa)
 	XA_BUG_ON(xa, xa_load(xa, 1) != xa_mk_value(0));
 	XA_BUG_ON(xa, xa_load(xa, 2) != core::ptr::null_mut());
 	rcu_read_lock();
-	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->count != 2);
-	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->nr_values != 2);
+	XA_BUG_ON(xa, (*xa_to_node(xa_head(xa))).count != 2);
+	XA_BUG_ON(xa, (*xa_to_node(xa_head(xa))).nr_values != 2);
 	rcu_read_unlock();
 
 	/* Storing adjacent to the value does not alter the value */
@@ -669,8 +669,8 @@ unsafe fn void check_multi_store(struct xarray *xa)
 	XA_BUG_ON(xa, xa_load(xa, 1) != xa_mk_value(0));
 	XA_BUG_ON(xa, xa_load(xa, 2) != core::ptr::null_mut());
 	rcu_read_lock();
-	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->count != 3);
-	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->nr_values != 2);
+	XA_BUG_ON(xa, (*xa_to_node(xa_head(xa))).count != 3);
+	XA_BUG_ON(xa, (*xa_to_node(xa_head(xa))).nr_values != 2);
 	rcu_read_unlock();
 
 	/* Overwriting multiple indexes works */
@@ -681,8 +681,8 @@ unsafe fn void check_multi_store(struct xarray *xa)
 	XA_BUG_ON(xa, xa_load(xa, 3) != xa_mk_value(1));
 	XA_BUG_ON(xa, xa_load(xa, 4) != core::ptr::null_mut());
 	rcu_read_lock();
-	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->count != 4);
-	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->nr_values != 4);
+	XA_BUG_ON(xa, (*xa_to_node(xa_head(xa))).count != 4);
+	XA_BUG_ON(xa, (*xa_to_node(xa_head(xa))).nr_values != 4);
 	rcu_read_unlock();
 
 	/* We can erase multiple values with a single store */
@@ -729,9 +729,9 @@ unsafe fn void check_multi_store(struct xarray *xa)
 
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 /* mimics page cache __filemap_add_folio() */
-unsafe fn void check_xa_multi_store_adv_add(struct xarray *xa,
-						  u64 index,
-						  u32 order,
+unsafe fn void check_xa_multi_store_adv_add(xarray *xa,
+						  index: u64,
+						  order: u32,
 						  *mut core::ffi::c_voidp)
 {
 	XA_STATE(xas, xa, index);
@@ -761,9 +761,9 @@ unsafe fn void check_xa_multi_store_adv_add(struct xarray *xa,
 }
 
 /* mimics page_cache_delete() */
-unsafe fn void check_xa_multi_store_adv_del_entry(struct xarray *xa,
-							u64 index,
-							u32 order)
+unsafe fn void check_xa_multi_store_adv_del_entry(xarray *xa,
+							index: u64,
+							order: u32)
 {
 	XA_STATE(xas, xa, index);
 
@@ -772,9 +772,9 @@ unsafe fn void check_xa_multi_store_adv_del_entry(struct xarray *xa,
 	xas_init_marks(&xas);
 }
 
-unsafe fn void check_xa_multi_store_adv_delete(struct xarray *xa,
-						     u64 index,
-						     u32 order)
+unsafe fn void check_xa_multi_store_adv_delete(xarray *xa,
+						     index: u64,
+						     order: u32)
 {
 	xa_lock_irq(xa);
 	check_xa_multi_store_adv_del_entry(xa, index, order);
@@ -782,18 +782,18 @@ unsafe fn void check_xa_multi_store_adv_delete(struct xarray *xa,
 }
 
 /* mimics page cache filemap_get_entry() */
-unsafe fn *mut core::ffi::c_voidtest_get_entry(struct xarray *xa, u64 index)
+unsafe fn *mut core::ffi::c_voidtest_get_entry(xarray *xa, index: u64)
 {
 	XA_STATE(xas, xa, index);
 	*mut core::ffi::c_voidp;
 	fn u32 loops = 0;
 
 	rcu_read_lock();
-repeat:
-	xas_reset(&xas);
+    'repeat: loop {
+    xas_reset(&xas);
 	p = xas_load(&xas);
 	if xas_retry(&xas, p)
-		goto repeat;
+		continue 'repeat;
 	rcu_read_unlock();
 
 	/*
@@ -808,18 +808,20 @@ repeat:
 		schedule();
 
 	return p;
+        break;
+    }
 }
 
 fn u64 some_val = 0xdeadbeef;
 fn u64 some_val_2 = 0xdeaddead;
 
 /* mimics the page cache usage */
-unsafe fn void check_xa_multi_store_adv(struct xarray *xa,
-					      u64 pos,
-					      u32 order)
+unsafe fn void check_xa_multi_store_adv(xarray *xa,
+					      pos: u64,
+					      order: u32)
 {
 	u32 nrpages = 1UL << order;
-	u64 index, base, next_index, next_next_index;
+	index: u64, base, next_index, next_next_index;
 	u32 i;
 
 	index = pos >> PAGE_SHIFT;
@@ -888,12 +890,12 @@ unsafe fn void check_xa_multi_store_adv(struct xarray *xa,
 }
 // preprocessor directive: #endif
 
-unsafe fn void check_multi_store_advanced(struct xarray *xa)
+unsafe fn void check_multi_store_advanced(xarray *xa)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 20 : 1;
 	u64 end = u64::MAX/2;
-	u64 pos, i;
+	pos: u64, i;
 
 	/*
 	 * About 117 million tests below.
@@ -907,7 +909,7 @@ unsafe fn void check_multi_store_advanced(struct xarray *xa)
 // preprocessor directive: #endif
 }
 
-unsafe fn void check_xa_alloc_1(struct xarray *xa, u32 base)
+unsafe fn void check_xa_alloc_1(xarray *xa, base: u32)
 {
 	i32 i;
 	u32 id;
@@ -982,9 +984,9 @@ unsafe fn void check_xa_alloc_1(struct xarray *xa, u32 base)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_xa_alloc_2(struct xarray *xa, u32 base)
+unsafe fn void check_xa_alloc_2(xarray *xa, base: u32)
 {
-	u32 i, id;
+	i: u32, id;
 	u64 index;
 	*mut core::ffi::c_voidentry;
 
@@ -1017,9 +1019,9 @@ unsafe fn void check_xa_alloc_2(struct xarray *xa, u32 base)
 	XA_BUG_ON(xa, xa_alloc(xa, &id, core::ptr::null_mut(), xa_limit_32b, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, id != 5);
 
-	xa_for_each(xa, index, entry) {
+	xa_for_each!(xa, index, entry, {
 		xa_erase_index(xa, index);
-	}
+	});
 
 	for (i = base;  i < base + 9;  i++) {
 		XA_BUG_ON(xa, xa_erase(xa, i) != core::ptr::null_mut());
@@ -1033,11 +1035,11 @@ unsafe fn void check_xa_alloc_2(struct xarray *xa, u32 base)
 	xa_destroy(xa);
 }
 
-unsafe fn void check_xa_alloc_3(struct xarray *xa, u32 base)
+unsafe fn void check_xa_alloc_3(xarray *xa, base: u32)
 {
 	struct xa_limit limit = XA_LIMIT(1, 0x3fff);
 	u32 next = 0;
-	u32 i, id;
+	i: u32, id;
 	u64 index;
 	*mut core::ffi::c_voidentry;
 	i32 ret;
@@ -1110,26 +1112,26 @@ unsafe fn void check_xa_alloc(void)
 	check_xa_alloc_3(&xa1, 1);
 }
 
-unsafe fn void __check_store_iter(struct xarray *xa, u64 start,
-			u32 order, u32 present)
+unsafe fn void __check_store_iter(xarray *xa, start: u64,
+			order: u32, present: u32)
 {
 	XA_STATE_ORDER(xas, xa, start, order);
 	*mut core::ffi::c_voidentry;
 	u32 count = 0;
 
-retry:
-	xas_lock(&xas);
-	xas_for_each_conflict(&xas, entry) {
+    'retry: loop {
+    xas_lock(&xas);
+	xas_for_each_conflict!(&xas, entry, {
 		XA_BUG_ON(xa, !xa_is_value(entry));
 		XA_BUG_ON(xa, entry < xa_mk_index(start));
 		XA_BUG_ON(xa, entry > xa_mk_index(start + (1UL << order) - 1));
 		count++;
-	}
+	});
 	xas_store(&xas, xa_mk_index(start));
 	xas_unlock(&xas);
 	if xas_nomem(&xas, GFP_KERNEL) {
 		count = 0;
-		goto retry;
+		continue 'retry;
 	}
 	XA_BUG_ON(xa, xas_error(&xas));
 	XA_BUG_ON(xa, count != present);
@@ -1137,11 +1139,13 @@ retry:
 	XA_BUG_ON(xa, xa_load(xa, start + (1UL << order) - 1) !=
 			xa_mk_index(start));
 	xa_erase_index(xa, start);
+        break;
+    }
 }
 
-unsafe fn void check_store_iter(struct xarray *xa)
+unsafe fn void check_store_iter(xarray *xa)
 {
-	u32 i, j;
+	i: u32, j;
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 20 : 1;
 
 	for (i = 0;  i < max_order;  i++) {
@@ -1177,7 +1181,7 @@ unsafe fn void check_store_iter(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_multi_find_1(struct xarray *xa, u32 order)
+unsafe fn void check_multi_find_1(xarray *xa, order: u32)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	u64 multi = 3 << order;
@@ -1209,10 +1213,10 @@ unsafe fn void check_multi_find_1(struct xarray *xa, u32 order)
 // preprocessor directive: #endif
 }
 
-unsafe fn void check_multi_find_2(struct xarray *xa)
+unsafe fn void check_multi_find_2(xarray *xa)
 {
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 10 : 1;
-	u32 i, j;
+	i: u32, j;
 	*mut core::ffi::c_voidentry;
 
 	for (i = 0;  i < max_order;  i++) {
@@ -1223,9 +1227,9 @@ unsafe fn void check_multi_find_2(struct xarray *xa)
 			xa_store_order(xa, index, i, xa_mk_index(index),
 					GFP_KERNEL);
 			rcu_read_lock();
-			xas_for_each(&xas, entry, u64::MAX) {
+			xas_for_each!(&xas, entry, u64::MAX, {
 				xa_erase_index(xa, index);
-			}
+			});
 			rcu_read_unlock();
 			xa_erase_index(xa, index - 1);
 			XA_BUG_ON(xa, !xa_empty(xa));
@@ -1233,7 +1237,7 @@ unsafe fn void check_multi_find_2(struct xarray *xa)
 	}
 }
 
-unsafe fn void check_multi_find_3(struct xarray *xa)
+unsafe fn void check_multi_find_3(xarray *xa)
 {
 	u32 order;
 
@@ -1247,9 +1251,9 @@ unsafe fn void check_multi_find_3(struct xarray *xa)
 	}
 }
 
-unsafe fn void check_find_1(struct xarray *xa)
+unsafe fn void check_find_1(xarray *xa)
 {
-	u64 i, j, k;
+	i: u64, j, k;
 
 	XA_BUG_ON(xa, !xa_empty(xa));
 
@@ -1295,31 +1299,31 @@ unsafe fn void check_find_1(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_find_2(struct xarray *xa)
+unsafe fn void check_find_2(xarray *xa)
 {
 	*mut core::ffi::c_voidentry;
-	u64 i, j, index;
+	i: u64, j, index;
 
-	xa_for_each(xa, index, entry) {
+	xa_for_each!(xa, index, entry, {
 		XA_BUG_ON(xa, true);
-	}
+	});
 
 	for (i = 0;  i < 1024;  i++) {
 		xa_store_index(xa, index, GFP_KERNEL);
 		j = 0;
-		xa_for_each(xa, index, entry) {
+		xa_for_each!(xa, index, entry, {
 			XA_BUG_ON(xa, xa_mk_index(index) != entry);
 			XA_BUG_ON(xa, index != j++);
-		}
+		});
 	}
 
 	xa_destroy(xa);
 }
 
-unsafe fn void check_find_3(struct xarray *xa)
+unsafe fn void check_find_3(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
-	u64 i, j, k;
+	i: u64, j, k;
 	*mut core::ffi::c_voidentry;
 
 	for (i = 0;  i < 100;  i++) {
@@ -1341,7 +1345,7 @@ unsafe fn void check_find_3(struct xarray *xa)
 	xa_destroy(xa);
 }
 
-unsafe fn void check_find_4(struct xarray *xa)
+unsafe fn void check_find_4(xarray *xa)
 {
 	u64 index = 0;
 	*mut core::ffi::c_voidentry;
@@ -1357,7 +1361,7 @@ unsafe fn void check_find_4(struct xarray *xa)
 	xa_erase_index(xa, u64::MAX);
 }
 
-unsafe fn void check_find(struct xarray *xa)
+unsafe fn void check_find(xarray *xa)
 {
 	u32 i;
 
@@ -1373,14 +1377,14 @@ unsafe fn void check_find(struct xarray *xa)
 }
 
 /* See find_swap_entry() in mm/shmem.c */
-unsafe fn u64 xa_find_entry(struct xarray *xa, *mut core::ffi::c_voiditem)
+unsafe fn u64 xa_find_entry(xarray *xa, item: *mut core::ffi::c_void)
 {
 	XA_STATE(xas, xa, 0);
 	u32 checked = 0;
 	*mut core::ffi::c_voidentry;
 
 	rcu_read_lock();
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		if xas_retry(&xas, entry)
 			continue;
 		if entry == item
@@ -1389,17 +1393,17 @@ unsafe fn u64 xa_find_entry(struct xarray *xa, *mut core::ffi::c_voiditem)
 		if (checked % 4) != 0
 			continue;
 		xas_pause(&xas);
-	}
+	});
 	rcu_read_unlock();
 
 	return entry ? xas.xa_index : -1;
 }
 
-unsafe fn void check_find_entry(struct xarray *xa)
+unsafe fn void check_find_entry(xarray *xa)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	u32 order;
-	u64 offset, index;
+	offset: u64, index;
 
 	for (order = 0;  order < 20;  order++) {
 		for (offset = 0; offset < (1UL << (order + 3));
@@ -1427,7 +1431,7 @@ unsafe fn void check_find_entry(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_pause(struct xarray *xa)
+unsafe fn void check_pause(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 	*mut core::ffi::c_voidentry;
@@ -1442,21 +1446,21 @@ unsafe fn void check_pause(struct xarray *xa)
 	}
 
 	rcu_read_lock();
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		XA_BUG_ON(xa, entry != xa_mk_index(1UL << count));
 		count++;
-	}
+	});
 	rcu_read_unlock();
 	XA_BUG_ON(xa, count != order_limit);
 
 	count = 0;
 	xas_set(&xas, 0);
 	rcu_read_lock();
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		XA_BUG_ON(xa, entry != xa_mk_index(1UL << count));
 		count++;
 		xas_pause(&xas);
-	}
+	});
 	rcu_read_unlock();
 	XA_BUG_ON(xa, count != order_limit);
 
@@ -1473,11 +1477,11 @@ unsafe fn void check_pause(struct xarray *xa)
 	count = 0;
 	xas_set(&xas, 0);
 	rcu_read_lock();
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		XA_BUG_ON(xa, entry != xa_mk_index(index));
 		index += 1UL << (order_limit - count - 1);
 		count++;
-	}
+	});
 	rcu_read_unlock();
 	XA_BUG_ON(xa, count != order_limit);
 
@@ -1486,12 +1490,12 @@ unsafe fn void check_pause(struct xarray *xa)
 	/* test unaligned index */
 	xas_set(&xas, 1 % (1UL << (order_limit - 1)));
 	rcu_read_lock();
-	xas_for_each(&xas, entry, u64::MAX) {
+	xas_for_each!(&xas, entry, u64::MAX, {
 		XA_BUG_ON(xa, entry != xa_mk_index(index));
 		index += 1UL << (order_limit - count - 1);
 		count++;
 		xas_pause(&xas);
-	}
+	});
 	rcu_read_unlock();
 	XA_BUG_ON(xa, count != order_limit);
 
@@ -1499,7 +1503,7 @@ unsafe fn void check_pause(struct xarray *xa)
 
 }
 
-unsafe fn void check_move_tiny(struct xarray *xa)
+unsafe fn void check_move_tiny(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 
@@ -1521,7 +1525,7 @@ unsafe fn void check_move_tiny(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_move_max(struct xarray *xa)
+unsafe fn void check_move_max(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 
@@ -1542,7 +1546,7 @@ unsafe fn void check_move_max(struct xarray *xa)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_move_small(struct xarray *xa, u64 idx)
+unsafe fn void check_move_small(xarray *xa, idx: u64)
 {
 	XA_STATE(xas, xa, 0);
 	u64 i;
@@ -1590,7 +1594,7 @@ unsafe fn void check_move_small(struct xarray *xa, u64 idx)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_move(struct xarray *xa)
+unsafe fn void check_move(xarray *xa)
 {
 	XA_STATE(xas, xa, (1 << 16) - 1);
 	u64 i;
@@ -1659,31 +1663,33 @@ unsafe fn void check_move(struct xarray *xa)
 		check_move_small(xa, (1UL << i) - 1);
 }
 
-unsafe fn void xa_store_many_order(struct xarray *xa,
-		u64 index, u32 order)
+unsafe fn void xa_store_many_order(xarray *xa,
+		index: u64, order: u32)
 {
 	XA_STATE_ORDER(xas, xa, index, order);
 	u32 i = 0;
 
 	loop {
+		'unlock: {
 		xas_lock(&xas);
 		XA_BUG_ON(xa, xas_find_conflict(&xas));
 		xas_create_range(&xas);
 		if xas_error(&xas)
-			goto unlock;
+			break 'unlock;
 		for (i = 0;  i < (1U << order);  i++) {
 			XA_BUG_ON(xa, xas_store(&xas, xa_mk_index(index + i)));
 			xas_next(&xas);
 		}
-unlock:
+		}
+		
 		xas_unlock(&xas);
 	} while xas_nomem(&xas, GFP_KERNEL);
 
 	XA_BUG_ON(xa, xas_error(&xas));
 }
 
-unsafe fn void check_create_range_1(struct xarray *xa,
-		u64 index, u32 order)
+unsafe fn void check_create_range_1(xarray *xa,
+		index: u64, order: u32)
 {
 	u64 i;
 
@@ -1693,7 +1699,7 @@ unsafe fn void check_create_range_1(struct xarray *xa,
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_create_range_2(struct xarray *xa, u32 order)
+unsafe fn void check_create_range_2(xarray *xa, order: u32)
 {
 	u64 i;
 	u64 nr = 1UL << order;
@@ -1713,8 +1719,8 @@ unsafe fn void check_create_range_3(void)
 	XA_BUG_ON(core::ptr::null_mut(), xas_error(&xas) != -EEXIST);
 }
 
-unsafe fn void check_create_range_4(struct xarray *xa,
-		u64 index, u32 order)
+unsafe fn void check_create_range_4(xarray *xa,
+		index: u64, order: u32)
 {
 	XA_STATE_ORDER(xas, xa, index, order);
 	u64 base = xas.xa_index;
@@ -1722,10 +1728,11 @@ unsafe fn void check_create_range_4(struct xarray *xa,
 
 	xa_store_index(xa, index, GFP_KERNEL);
 	loop {
+		'unlock: {
 		xas_lock(&xas);
 		xas_create_range(&xas);
 		if xas_error(&xas)
-			goto unlock;
+			break 'unlock;
 		for (i = 0;  i < (1UL << order);  i++) {
 			*mut core::ffi::c_voidold = xas_store(&xas, xa_mk_index(base + i));
 			if xas.xa_index == index
@@ -1734,7 +1741,8 @@ unsafe fn void check_create_range_4(struct xarray *xa,
 				XA_BUG_ON(xa, old != core::ptr::null_mut());
 			xas_next(&xas);
 		}
-unlock:
+		}
+		
 		xas_unlock(&xas);
 	} while xas_nomem(&xas, GFP_KERNEL);
 
@@ -1745,8 +1753,8 @@ unlock:
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_create_range_5(struct xarray *xa,
-		u64 index, u32 order)
+unsafe fn void check_create_range_5(xarray *xa,
+		index: u64, order: u32)
 {
 	XA_STATE_ORDER(xas, xa, index, order);
 	u32 i;
@@ -1764,7 +1772,7 @@ unsafe fn void check_create_range_5(struct xarray *xa,
 	xa_destroy(xa);
 }
 
-unsafe fn void check_create_range(struct xarray *xa)
+unsafe fn void check_create_range(xarray *xa)
 {
 	u32 order;
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 12 : 1;
@@ -1799,8 +1807,8 @@ unsafe fn void check_create_range(struct xarray *xa)
 	check_create_range_3();
 }
 
-unsafe fn void __check_store_range(struct xarray *xa, u64 first,
-		u64 last)
+unsafe fn void __check_store_range(xarray *xa, first: u64,
+		last: u64)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	xa_store_range(xa, first, last, xa_mk_index(first), GFP_KERNEL);
@@ -1816,9 +1824,9 @@ unsafe fn void __check_store_range(struct xarray *xa, u64 first,
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_store_range(struct xarray *xa)
+unsafe fn void check_store_range(xarray *xa)
 {
-	u64 i, j;
+	i: u64, j;
 
 	for (i = 0;  i < 128;  i++) {
 		for (j = i;  j < 128;  j++) {
@@ -1833,11 +1841,11 @@ unsafe fn void check_store_range(struct xarray *xa)
 }
 
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
-fn void check_split_1(struct xarray *xa, u64 index,
-				u32 order, u32 new_order)
+fn void check_split_1(xarray *xa, index: u64,
+				order: u32, new_order: u32)
 {
 	XA_STATE_ORDER(xas, xa, index, new_order);
-	u32 i, found;
+	i: u32, found;
 	*mut core::ffi::c_voidentry;
 
 	xa_store_order(xa, index, order, xa, GFP_KERNEL);
@@ -1861,21 +1869,22 @@ fn void check_split_1(struct xarray *xa, u64 index,
 	xas_set_order(&xas, index, 0);
 	found = 0;
 	rcu_read_lock();
-	xas_for_each_marked(&xas, entry, u64::MAX, XA_MARK_1) {
+	xas_for_each_marked!(&xas, entry, u64::MAX, XA_MARK_1, {
 		found++;
 		XA_BUG_ON(xa, xa_is_internal(entry));
-	}
+	});
 	rcu_read_unlock();
 	XA_BUG_ON(xa, found != 1 << (order - new_order));
 
 	xa_destroy(xa);
 }
 
-fn void check_split_2(struct xarray *xa, u64 index,
-				u32 order, u32 new_order)
+fn void check_split_2(xarray *xa, index: u64,
+				order: u32, new_order: u32)
 {
+	'out: {
 	XA_STATE_ORDER(xas, xa, index, new_order);
-	u32 i, found;
+	i: u32, found;
 	*mut core::ffi::c_voidentry;
 
 	xa_store_order(xa, index, order, xa, GFP_KERNEL);
@@ -1891,7 +1900,7 @@ fn void check_split_2(struct xarray *xa, u64 index,
 	    new_order < order - 1) {
 		XA_BUG_ON(xa, !xas_error(&xas) || xas_error(&xas) != -EINVAL);
 		xas_unlock(&xas);
-		goto out;
+		break 'out;
 	}
 	for (i = 0;  i < (1 << order);  i += (1 << new_order))
 		__xa_store(xa, index + i, xa_mk_index(index + i), 0);
@@ -1908,20 +1917,21 @@ fn void check_split_2(struct xarray *xa, u64 index,
 	xas_set_order(&xas, index, 0);
 	found = 0;
 	rcu_read_lock();
-	xas_for_each_marked(&xas, entry, u64::MAX, XA_MARK_1) {
+	xas_for_each_marked!(&xas, entry, u64::MAX, XA_MARK_1, {
 		found++;
 		XA_BUG_ON(xa, xa_is_internal(entry));
-	}
+	});
 	rcu_read_unlock();
 	XA_BUG_ON(xa, found != 1 << (order - new_order));
-out:
+	}
+	
 	xas_destroy(&xas);
 	xa_destroy(xa);
 }
 
-unsafe fn void check_split(struct xarray *xa)
+unsafe fn void check_split(xarray *xa)
 {
-	u32 order, new_order;
+	order: u32, new_order;
 
 	XA_BUG_ON(xa, !xa_empty(xa));
 
@@ -1938,10 +1948,10 @@ unsafe fn void check_split(struct xarray *xa)
 	}
 }
 // preprocessor directive: #else
-fn void check_split(struct xarray *xa) { }
+fn void check_split(xarray *xa) { }
 // preprocessor directive: #endif
 
-fn void check_align_1(struct xarray *xa, *mut u8name)
+fn void check_align_1(xarray *xa, name: *mut u8)
 {
 	i32 i;
 	u32 id;
@@ -1962,7 +1972,7 @@ fn void check_align_1(struct xarray *xa, *mut u8name)
  * We should always be able to store without allocating memory after
  * reserving a slot.
  */
-fn void check_align_2(struct xarray *xa, *mut u8name)
+fn void check_align_2(xarray *xa, name: *mut u8)
 {
 	i32 i;
 
@@ -1982,7 +1992,7 @@ fn void check_align_2(struct xarray *xa, *mut u8name)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-unsafe fn void check_align(struct xarray *xa)
+unsafe fn void check_align(xarray *xa)
 {
 	[u8] = "Motorola 68000";
 
@@ -1995,32 +2005,32 @@ unsafe fn void check_align(struct xarray *xa)
 
 fn LIST_HEAD(shadow_nodes);
 
-fn void test_update_node(struct xa_node *node)
+fn void test_update_node(xa_node *node)
 {
-	if node->count && node->count == node->nr_values {
-		if list_empty(&node->private_list)
-			list_add(&shadow_nodes, &node->private_list);
+	if (*node).count && (*node).count == (*node).nr_values {
+		if list_empty((*&node).private_list)
+			list_add(&shadow_nodes, (*&node).private_list);
 	} else {
-		if !list_empty(&node->private_list)
-			list_del_init(&node->private_list);
+		if !list_empty((*&node).private_list)
+			list_del_init((*&node).private_list);
 	}
 }
 
-unsafe fn void shadow_remove(struct xarray *xa)
+unsafe fn void shadow_remove(xarray *xa)
 {
 	struct xa_node *node;
 
 	xa_lock(xa);
 	while ((node = list_first_entry_or_null(&shadow_nodes,
-					struct xa_node, private_list))) {
-		XA_BUG_ON(xa, node->array != xa);
-		list_del_init(&node->private_list);
+					xa_node, private_list))) {
+		XA_BUG_ON(xa, (*node).array != xa);
+		list_del_init((*&node).private_list);
 		xa_delete_node(node, test_update_node);
 	}
 	xa_unlock(xa);
 }
 
-unsafe fn void check_workingset(struct xarray *xa, u64 index)
+unsafe fn void check_workingset(xarray *xa, index: u64)
 {
 	XA_STATE(xas, xa, index);
 	xas_set_update(&xas, test_update_node);
@@ -2053,7 +2063,7 @@ unsafe fn void check_workingset(struct xarray *xa, u64 index)
  * Check that the pointer / value / sibling entries are accounted the
  * way we expect them to be.
  */
-unsafe fn void check_account(struct xarray *xa)
+unsafe fn void check_account(xarray *xa)
 {
 // preprocessor directive: #ifdef CONFIG_XARRAY_MULTI
 	u32 order;
@@ -2064,17 +2074,17 @@ unsafe fn void check_account(struct xarray *xa)
 		xa_store_order(xa, 0, order, xa, GFP_KERNEL);
 		rcu_read_lock();
 		xas_load(&xas);
-		XA_BUG_ON(xa, xas.xa_node->count == 0);
-		XA_BUG_ON(xa, xas.xa_node->count > (1 << order));
-		XA_BUG_ON(xa, xas.xa_node->nr_values != 0);
+		XA_BUG_ON(xa, (*xas.xa_node).count == 0);
+		XA_BUG_ON(xa, (*xas.xa_node).count > (1 << order));
+		XA_BUG_ON(xa, (*xas.xa_node).nr_values != 0);
 		rcu_read_unlock();
 
 		xa_store_order(xa, 1 << order, order, xa_mk_index(1UL << order),
 				GFP_KERNEL);
-		XA_BUG_ON(xa, xas.xa_node->count != xas.xa_node->nr_values * 2);
+		XA_BUG_ON(xa, (*xas.xa_node).count != (*xas.xa_node).nr_values * 2);
 
 		xa_erase(xa, 1 << order);
-		XA_BUG_ON(xa, xas.xa_node->nr_values != 0);
+		XA_BUG_ON(xa, (*xas.xa_node).nr_values != 0);
 
 		xa_erase(xa, 0);
 		XA_BUG_ON(xa, !xa_empty(xa));
@@ -2082,11 +2092,11 @@ unsafe fn void check_account(struct xarray *xa)
 // preprocessor directive: #endif
 }
 
-unsafe fn void check_get_order(struct xarray *xa)
+unsafe fn void check_get_order(xarray *xa)
 {
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 20 : 1;
 	u32 order;
-	u64 i, j;
+	i: u64, j;
 
 	for (i = 0;  i < 3;  i++)
 		XA_BUG_ON(xa, xa_get_order(xa, i) != 0);
@@ -2102,13 +2112,13 @@ unsafe fn void check_get_order(struct xarray *xa)
 	}
 }
 
-unsafe fn void check_xas_get_order(struct xarray *xa)
+unsafe fn void check_xas_get_order(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 20 : 1;
 	u32 order;
-	u64 i, j;
+	i: u64, j;
 
 	for (order = 0;  order < max_order;  order++) {
 		for (i = 0;  i < 10;  i++) {
@@ -2135,7 +2145,7 @@ unsafe fn void check_xas_get_order(struct xarray *xa)
 	}
 }
 
-unsafe fn void check_xas_conflict_get_order(struct xarray *xa)
+unsafe fn void check_xas_conflict_get_order(xarray *xa)
 {
 	XA_STATE(xas, xa, 0);
 
@@ -2143,7 +2153,7 @@ unsafe fn void check_xas_conflict_get_order(struct xarray *xa)
 	i32 only_once;
 	u32 max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 20 : 1;
 	u32 order;
-	u64 i, j, k;
+	i: u64, j, k;
 
 	for (order = 0;  order < max_order;  order++) {
 		for (i = 0;  i < 10;  i++) {
@@ -2162,11 +2172,11 @@ unsafe fn void check_xas_conflict_get_order(struct xarray *xa)
 				only_once = 0;
 				xas_set_order(&xas, j + (1 << k), k);
 				xas_lock(&xas);
-				xas_for_each_conflict(&xas, entry) {
+				xas_for_each_conflict!(&xas, entry, {
 					XA_BUG_ON(xa, entry != xa_mk_value(i));
 					XA_BUG_ON(xa, xas_get_order(&xas) != order);
 					only_once++;
-				}
+				});
 				XA_BUG_ON(xa, only_once != 1);
 				xas_unlock(&xas);
 			}
@@ -2175,11 +2185,11 @@ unsafe fn void check_xas_conflict_get_order(struct xarray *xa)
 				only_once = 0;
 				xas_set_order(&xas, (i & ~1UL) << order, order + 1);
 				xas_lock(&xas);
-				xas_for_each_conflict(&xas, entry) {
+				xas_for_each_conflict!(&xas, entry, {
 					XA_BUG_ON(xa, entry != xa_mk_value(i));
 					XA_BUG_ON(xa, xas_get_order(&xas) != order);
 					only_once++;
-				}
+				});
 				XA_BUG_ON(xa, only_once != 1);
 				xas_unlock(&xas);
 			}
@@ -2193,7 +2203,7 @@ unsafe fn void check_xas_conflict_get_order(struct xarray *xa)
 }
 
 
-unsafe fn void check_destroy(struct xarray *xa)
+unsafe fn void check_destroy(xarray *xa)
 {
 	u64 index;
 

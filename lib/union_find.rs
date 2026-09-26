@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
-// Dependency: struct uf_node is supplied by linux/union_find.h.
+//! Union by unsigned rank and path splitting, with the original C ABI.
 
-#[repr(C)]
-pub struct uf_node {
-    pub parent: *mut uf_node,
-    pub rank: i32,
-}
+use kernel::bindings::uf_node;
 
 /**
  * uf_find - Find the root of a node and perform path compression
@@ -16,13 +12,22 @@ pub struct uf_node {
  *
  * Returns the root node of the set containing node.
  */
-pub unsafe fn uf_find(mut node: *mut uf_node) -> *mut uf_node {
-    let mut parent: *mut uf_node;
-
-    while (*node).parent != node {
-        parent = (*node).parent;
-        (*node).parent = (*parent).parent;
-        node = parent;
+/// Finds a root, redirecting each visited node to its grandparent.
+///
+/// # Safety
+///
+/// `node` must belong to a finite, initialized forest whose nodes remain live
+/// and at fixed addresses. The caller must exclusively access the forest.
+#[no_mangle]
+pub unsafe extern "C" fn uf_find(mut node: *mut uf_node) -> *mut uf_node {
+    // SAFETY: the caller guarantees all parent links reach a live root and
+    // that these raw-pointer updates cannot race with another forest access.
+    unsafe {
+        while (*node).parent != node {
+            let parent = (*node).parent;
+            (*node).parent = (*parent).parent;
+            node = parent;
+        }
     }
     node
 }
@@ -35,21 +40,31 @@ pub unsafe fn uf_find(mut node: *mut uf_node) -> *mut uf_node {
  * This function merges the sets containing node1 and node2, by comparing
  * the ranks to keep the tree balanced.
  */
-pub unsafe fn uf_union(node1: *mut uf_node, node2: *mut uf_node) {
-    let root1: *mut uf_node = uf_find(node1);
-    let root2: *mut uf_node = uf_find(node2);
+/// Merges two sets, retaining the first root when their ranks are equal.
+///
+/// # Safety
+///
+/// Both nodes must satisfy [`uf_find`]'s requirements. Their forests may
+/// overlap, but the caller must exclusively access both during this call.
+#[no_mangle]
+pub unsafe extern "C" fn uf_union(node1: *mut uf_node, node2: *mut uf_node) {
+    // SAFETY: both forests are valid and exclusively accessible by contract.
+    unsafe {
+        let root1 = uf_find(node1);
+        let root2 = uf_find(node2);
 
-    if root1 == root2 {
-        return;
-    }
+        if root1 == root2 {
+            return;
+        }
 
-    if (*root1).rank < (*root2).rank {
-        (*root1).parent = root2;
-    } else if (*root1).rank > (*root2).rank {
-        (*root2).parent = root1;
-    } else {
-        (*root2).parent = root1;
-        (*root1).rank += 1;
+        if (*root1).rank < (*root2).rank {
+            (*root1).parent = root2;
+        } else if (*root1).rank > (*root2).rank {
+            (*root2).parent = root1;
+        } else {
+            (*root2).parent = root1;
+            (*root1).rank = (*root1).rank.wrapping_add(1);
+        }
     }
 }
 

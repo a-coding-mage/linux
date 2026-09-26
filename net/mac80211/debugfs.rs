@@ -14,14 +14,14 @@ pub unsafe fn mac80211_format_buffer(
 }
 
 macro_rules! readonly_file {
-    ($name:ident, $fmt:expr, $value:expr) => {
-        unsafe extern "C" fn $name##_read(file: *mut file, userbuf: *mut core::ffi::c_char,
+    ($name:tt, $fmt:expr, $value:expr) => {
+        unsafe extern "C" fn ::kernel::macros::paste!([<$name _read>])(file: *mut file, userbuf: *mut core::ffi::c_char,
                                            count: usize, ppos: *mut i64) -> isize {
             let local = (*file).private_data as *mut ieee80211_local;
             mac80211_format_buffer(userbuf, count, ppos, $fmt, $value)
         }
-        static mut $name##_OPS: debugfs_short_fops = debugfs_short_fops {
-            read: Some($name##_read), write: None, llseek: Some(generic_file_llseek),
+        static mut ::kernel::macros::paste!([<$name _OPS>]): debugfs_short_fops = debugfs_short_fops {
+            read: Some(::kernel::macros::paste!([<$name _read>])), write: None, llseek: Some(generic_file_llseek),
         };
     };
 }

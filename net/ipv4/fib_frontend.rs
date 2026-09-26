@@ -7,7 +7,7 @@
 
 // Original implementation retained line-for-line as the source-level body;
 // external kernel declarations are resolved by the containing translation unit.
-+// // SPDX-License-Identifier: GPL-2.0-or-later
+// // SPDX-License-Identifier: GPL-2.0-or-later
 // /*
 //  * INET		An implementation of the TCP/IP protocol suite for the LINUX
 //  *		operating system.  INET is implemented using the  BSD Socket
@@ -59,7 +59,7 @@
 // 
 // #ifndef CONFIG_IP_MULTIPLE_TABLES
 // 
-// static int __net_init fib4_rules_init(struct net *net)
+// static int __net_init fib4_rules_init(net *net)
 // {
 // 	struct fib_table *local_table, *main_table;
 // 
@@ -83,7 +83,7 @@
 // }
 // #else
 // 
-// struct fib_table *fib_new_table(struct net *net, u32 id)
+// struct fib_table *fib_new_table(net *net, u32 id)
 // {
 // 	struct fib_table *tb, *new_tb, *alias = NULL;
 // 	unsigned int h;
@@ -135,7 +135,7 @@
 // }
 // EXPORT_SYMBOL_GPL(fib_new_table);
 // 
-// struct fib_table *fib_get_table(struct net *net, u32 id)
+// struct fib_table *fib_get_table(net *net, u32 id)
 // {
 // 	struct fib_table *tb = NULL;
 // 	struct hlist_head *head;
@@ -160,7 +160,7 @@
 // }
 // #endif /* CONFIG_IP_MULTIPLE_TABLES */
 // 
-// static void fib_replace_table(struct net *net, struct fib_table *old,
+// static void fib_replace_table(net *net, fib_table *old,
 // 			      struct fib_table *new)
 // {
 // #ifdef CONFIG_IP_MULTIPLE_TABLES
@@ -180,7 +180,7 @@
 // 	hlist_replace_rcu(&old->tb_hlist, &new->tb_hlist);
 // }
 // 
-// int fib_unmerge(struct net *net)
+// int fib_unmerge(net *net)
 // {
 // 	struct fib_table *old, *new, *main_table;
 // 
@@ -212,7 +212,7 @@
 // 	return 0;
 // }
 // 
-// void fib_flush(struct net *net)
+// void fib_flush(net *net)
 // {
 // 	int flushed = 0;
 // 	unsigned int h;
@@ -233,7 +233,7 @@
 //  * Find address type as if only "dev" was present in the system. If
 //  * on_dev is NULL then all interfaces are taken into consideration.
 //  */
-// static inline unsigned int __inet_dev_addr_type(struct net *net,
+// static inline unsigned int __inet_dev_addr_type(net *net,
 // 						const struct net_device *dev,
 // 						__be32 addr, u32 tb_id)
 // {
@@ -256,7 +256,7 @@
 // 			struct fib_nh_common *nhc = fib_info_nhc(res.fi, 0);
 // 
 // 			if (!dev || dev == nhc->nhc_dev)
-// 				ret = res.type;
+// 				ret = res.r#type;
 // 		}
 // 	}
 // 
@@ -264,19 +264,19 @@
 // 	return ret;
 // }
 // 
-// unsigned int inet_addr_type_table(struct net *net, __be32 addr, u32 tb_id)
+// unsigned int inet_addr_type_table(net *net, __be32 addr, u32 tb_id)
 // {
 // 	return __inet_dev_addr_type(net, NULL, addr, tb_id);
 // }
 // EXPORT_SYMBOL(inet_addr_type_table);
 // 
-// unsigned int inet_addr_type(struct net *net, __be32 addr)
+// unsigned int inet_addr_type(net *net, __be32 addr)
 // {
 // 	return __inet_dev_addr_type(net, NULL, addr, RT_TABLE_LOCAL);
 // }
 // EXPORT_SYMBOL(inet_addr_type);
 // 
-// unsigned int inet_dev_addr_type(struct net *net, const struct net_device *dev,
+// unsigned int inet_dev_addr_type(net *net, const struct net_device *dev,
 // 				__be32 addr)
 // {
 // 	u32 rt_table = l3mdev_fib_table(dev) ? : RT_TABLE_LOCAL;
@@ -288,7 +288,7 @@
 // /* inet_addr_type with dev == NULL but using the table from a dev
 //  * if one is associated
 //  */
-// unsigned int inet_addr_type_dev_table(struct net *net,
+// unsigned int inet_addr_type_dev_table(net *net,
 // 				      const struct net_device *dev,
 // 				      __be32 addr)
 // {
@@ -298,7 +298,7 @@
 // }
 // EXPORT_SYMBOL(inet_addr_type_dev_table);
 // 
-// __be32 fib_compute_spec_dst(struct sk_buff *skb)
+// __be32 fib_compute_spec_dst(sk_buff *skb)
 // {
 // 	struct net_device *dev = skb->dev;
 // 	struct in_device *in_dev;
@@ -336,7 +336,7 @@
 // 	return inet_select_addr(dev, ip_hdr(skb)->saddr, scope);
 // }
 // 
-// bool fib_info_nh_uses_dev(struct fib_info *fi, const struct net_device *dev)
+// bool fib_info_nh_uses_dev(fib_info *fi, const struct net_device *dev)
 // {
 // 	bool dev_match = false;
 // #ifdef CONFIG_IP_ROUTE_MULTIPATH
@@ -371,9 +371,9 @@
 //  * - check, that packet arrived from expected physical interface.
 //  * called with rcu_read_lock()
 //  */
-// static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
-// 				 dscp_t dscp, int oif, struct net_device *dev,
-// 				 int rpf, struct in_device *idev, u32 *itag)
+// static int __fib_validate_source(sk_buff *skb, __be32 src, __be32 dst,
+// 				 dscp_t dscp, int oif, net_device *dev,
+// 				 int rpf, in_device *idev, u32 *itag)
 // {
 // 	struct net *net = dev_net(dev);
 // 	enum skb_drop_reason reason;
@@ -408,8 +408,8 @@
 // 
 // 	if (fib_lookup(net, &fl4, &res, 0))
 // 		goto last_resort;
-// 	if (res.type != RTN_UNICAST) {
-// 		if (res.type != RTN_LOCAL) {
+// 	if (res.r#type != RTN_UNICAST) {
+// 		if (res.r#type != RTN_LOCAL) {
 // 			reason = SKB_DROP_REASON_IP_INVALID_SOURCE;
 // 			goto e_inval;
 // 		} else if (!IN_DEV_ACCEPT_LOCAL(idev)) {
@@ -423,7 +423,7 @@
 // 	/* This is not common, loopback packets retain skb_dst so normally they
 // 	 * would not even hit this slow path.
 // 	 */
-// 	dev_match = dev_match || (res.type == RTN_LOCAL &&
+// 	dev_match = dev_match || (res.r#type == RTN_LOCAL &&
 // 				  dev == net->loopback_dev);
 // 	if (dev_match) {
 // 		ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_HOST;
@@ -437,7 +437,7 @@
 // 
 // 	ret = 0;
 // 	if (fib_lookup(net, &fl4, &res, FIB_LOOKUP_IGNORE_LINKSTATE) == 0) {
-// 		if (res.type == RTN_UNICAST)
+// 		if (res.r#type == RTN_UNICAST)
 // 			ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_HOST;
 // 	}
 // 	return ret;
@@ -455,8 +455,8 @@
 // }
 // 
 // /* Ignore rp_filter for packets protected by IPsec. */
-// int fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
-// 			dscp_t dscp, int oif, struct net_device *dev,
+// int fib_validate_source(sk_buff *skb, __be32 src, __be32 dst,
+// 			dscp_t dscp, int oif, net_device *dev,
 // 			struct in_device *idev, u32 *itag)
 // {
 // 	int r = secpath_exists(skb) ? 0 : IN_DEV_RPFILTER(idev);
@@ -489,16 +489,16 @@
 // 				     itag);
 // }
 // 
-// static inline __be32 sk_extract_addr(struct sockaddr *addr)
+// static inline __be32 sk_extract_addr(sockaddr *addr)
 // {
-// 	return ((struct sockaddr_in *) addr)->sin_addr.s_addr;
+// 	return ((sockaddr_in *) addr)->sin_addr.s_addr;
 // }
 // 
-// static int put_rtax(struct nlattr *mx, int len, int type, u32 value)
+// static int put_rtax(nlattr *mx, int len, int type, u32 value)
 // {
 // 	struct nlattr *nla;
 // 
-// 	nla = (struct nlattr *) ((char *) mx + len);
+// 	nla = (nlattr *) ((char *) mx + len);
 // 	nla->nla_type = type;
 // 	nla->nla_len = nla_attr_size(4);
 // 	*(u32 *) nla_data(nla) = value;
@@ -506,7 +506,7 @@
 // 	return len + nla_total_size(4);
 // }
 // 
-// static int rtentry_to_fib_config(struct net *net, int cmd, struct rtentry *rt,
+// static int rtentry_to_fib_config(net *net, int cmd, rtentry *rt,
 // 				 struct fib_config *cfg)
 // {
 // 	__be32 addr;
@@ -652,7 +652,7 @@
 //  * Handle IP routing ioctl calls.
 //  * These are used to manipulate the routing tables
 //  */
-// int ip_rt_ioctl(struct net *net, unsigned int cmd, struct rtentry *rt)
+// int ip_rt_ioctl(net *net, unsigned int cmd, rtentry *rt)
 // {
 // 	struct fib_config cfg;
 // 	int err;
@@ -703,7 +703,7 @@
 // 	[RTA_PRIORITY]		= { .type = NLA_U32 },
 // 	[RTA_PREFSRC]		= { .type = NLA_U32 },
 // 	[RTA_METRICS]		= { .type = NLA_NESTED },
-// 	[RTA_MULTIPATH]		= { .len = sizeof(struct rtnexthop) },
+// 	[RTA_MULTIPATH]		= { .len = sizeof(rtnexthop) },
 // 	[RTA_FLOW]		= { .type = NLA_U32 },
 // 	[RTA_ENCAP_TYPE]	= { .type = NLA_U16 },
 // 	[RTA_ENCAP]		= { .type = NLA_NESTED },
@@ -716,19 +716,19 @@
 // 	[RTA_NH_ID]		= { .type = NLA_U32 },
 // };
 // 
-// int fib_gw_from_via(struct fib_config *cfg, struct nlattr *nla,
+// int fib_gw_from_via(fib_config *cfg, nlattr *nla,
 // 		    struct netlink_ext_ack *extack)
 // {
 // 	struct rtvia *via;
 // 	int alen;
 // 
-// 	if (nla_len(nla) < offsetof(struct rtvia, rtvia_addr)) {
+// 	if (nla_len(nla) < offsetof(rtvia, rtvia_addr)) {
 // 		NL_SET_ERR_MSG(extack, "Invalid attribute length for RTA_VIA");
 // 		return -EINVAL;
 // 	}
 // 
 // 	via = nla_data(nla);
-// 	alen = nla_len(nla) - offsetof(struct rtvia, rtvia_addr);
+// 	alen = nla_len(nla) - offsetof(rtvia, rtvia_addr);
 // 
 // 	switch (via->rtvia_family) {
 // 	case AF_INET:
@@ -741,12 +741,12 @@
 // 		break;
 // 	case AF_INET6:
 // #if IS_ENABLED(CONFIG_IPV6)
-// 		if (alen != sizeof(struct in6_addr)) {
+// 		if (alen != sizeof(in6_addr)) {
 // 			NL_SET_ERR_MSG(extack, "Invalid IPv6 address in RTA_VIA");
 // 			return -EINVAL;
 // 		}
 // 		cfg->fc_gw_family = AF_INET6;
-// 		cfg->fc_gw6 = *((struct in6_addr *)via->rtvia_addr);
+// 		cfg->fc_gw6 = *((in6_addr *)via->rtvia_addr);
 // #else
 // 		NL_SET_ERR_MSG(extack, "IPv6 support not enabled in kernel");
 // 		return -EINVAL;
@@ -760,8 +760,8 @@
 // 	return 0;
 // }
 // 
-// static int rtm_to_fib_config(struct net *net, struct sk_buff *skb,
-// 			     struct nlmsghdr *nlh, struct fib_config *cfg,
+// static int rtm_to_fib_config(net *net, sk_buff *skb,
+// 			     struct nlmsghdr *nlh, fib_config *cfg,
 // 			     struct netlink_ext_ack *extack)
 // {
 // 	bool has_gw = false, has_via = false;
@@ -804,7 +804,7 @@
 // 		goto errout;
 // 	}
 // 
-// 	nlmsg_for_each_attr(attr, nlh, sizeof(struct rtmsg), remaining) {
+// 	nlmsg_for_each_attr(attr, nlh, sizeof(rtmsg), remaining) {
 // 		switch (nla_type(attr)) {
 // 		case RTA_DST:
 // 			cfg->fc_dst = nla_get_be32(attr);
@@ -902,7 +902,7 @@
 // 	return err;
 // }
 // 
-// static int inet_rtm_delroute(struct sk_buff *skb, struct nlmsghdr *nlh,
+// static int inet_rtm_delroute(sk_buff *skb, nlmsghdr *nlh,
 // 			     struct netlink_ext_ack *extack)
 // {
 // 	struct net *net = sock_net(skb->sk);
@@ -936,7 +936,7 @@
 // 	return err;
 // }
 // 
-// static int inet_rtm_newroute(struct sk_buff *skb, struct nlmsghdr *nlh,
+// static int inet_rtm_newroute(sk_buff *skb, nlmsghdr *nlh,
 // 			     struct netlink_ext_ack *extack)
 // {
 // 	struct net *net = sock_net(skb->sk);
@@ -966,7 +966,7 @@
 // 	return err;
 // }
 // 
-// int ip_valid_fib_dump_req(struct net *net, const struct nlmsghdr *nlh,
+// int ip_valid_fib_dump_req(net *net, const struct nlmsghdr *nlh,
 // 			  struct fib_dump_filter *filter,
 // 			  struct netlink_callback *cb)
 // {
@@ -1039,7 +1039,7 @@
 // }
 // EXPORT_SYMBOL_GPL(ip_valid_fib_dump_req);
 // 
-// static int inet_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
+// static int inet_dump_fib(sk_buff *skb, netlink_callback *cb)
 // {
 // 	const struct nlmsghdr *nlh = cb->nlh;
 // 	struct net *net = sock_net(skb->sk);
@@ -1058,7 +1058,7 @@
 // 		err = ip_valid_fib_dump_req(net, nlh, &filter, cb);
 // 		if (err < 0)
 // 			goto unlock;
-// 	} else if (nlmsg_len(nlh) >= sizeof(struct rtmsg)) {
+// 	} else if (nlmsg_len(nlh) >= sizeof(rtmsg)) {
 // 		struct rtmsg *rtm = nlmsg_data(nlh);
 // 
 // 		filter.flags = rtm->rtm_flags & (RTM_F_PREFIX | RTM_F_CLONED);
@@ -1158,7 +1158,7 @@
 // 		fib_table_delete(net, tb, &cfg, NULL);
 // }
 // 
-// void fib_add_ifaddr(struct in_ifaddr *ifa)
+// void fib_add_ifaddr(in_ifaddr *ifa)
 // {
 // 	struct in_device *in_dev = ifa->ifa_dev;
 // 	struct net_device *dev = in_dev->dev;
@@ -1204,7 +1204,7 @@
 // 	}
 // }
 // 
-// void fib_modify_prefix_metric(struct in_ifaddr *ifa, u32 new_metric)
+// void fib_modify_prefix_metric(in_ifaddr *ifa, u32 new_metric)
 // {
 // 	__be32 prefix = ifa->ifa_address & ifa->ifa_mask;
 // 	struct in_device *in_dev = ifa->ifa_dev;
@@ -1232,7 +1232,7 @@
 //  * from subnet iprim as deleted, even if they are in device list.
 //  * In this case the secondary ifa can be in device list.
 //  */
-// void fib_del_ifaddr(struct in_ifaddr *ifa, struct in_ifaddr *iprim)
+// void fib_del_ifaddr(in_ifaddr *ifa, in_ifaddr *iprim)
 // {
 // 	struct in_device *in_dev = ifa->ifa_dev;
 // 	struct net_device *dev = in_dev->dev;
@@ -1388,7 +1388,7 @@
 // #undef BRD1_OK
 // }
 // 
-// static void nl_fib_lookup(struct net *net, struct fib_result_nl *frn)
+// static void nl_fib_lookup(net *net, fib_result_nl *frn)
 // {
 // 
 // 	struct fib_result       res;
@@ -1414,7 +1414,7 @@
 // 		if (!frn->err) {
 // 			frn->prefixlen = res.prefixlen;
 // 			frn->nh_sel = res.nh_sel;
-// 			frn->type = res.type;
+// 			frn->type = res.r#type;
 // 			frn->scope = res.scope;
 // 		}
 // 		local_bh_enable();
@@ -1423,7 +1423,7 @@
 // 	rcu_read_unlock();
 // }
 // 
-// static void nl_fib_input(struct sk_buff *skb)
+// static void nl_fib_input(sk_buff *skb)
 // {
 // 	struct net *net;
 // 	struct fib_result_nl *frn;
@@ -1451,7 +1451,7 @@
 // 	nlmsg_unicast(net->ipv4.fibnl, skb, portid);
 // }
 // 
-// static int __net_init nl_fib_lookup_init(struct net *net)
+// static int __net_init nl_fib_lookup_init(net *net)
 // {
 // 	struct sock *sk;
 // 	struct netlink_kernel_cfg cfg = {
@@ -1465,13 +1465,13 @@
 // 	return 0;
 // }
 // 
-// static void nl_fib_lookup_exit(struct net *net)
+// static void nl_fib_lookup_exit(net *net)
 // {
 // 	netlink_kernel_release(net->ipv4.fibnl);
 // 	net->ipv4.fibnl = NULL;
 // }
 // 
-// static void fib_disable_ip(struct net_device *dev, unsigned long event,
+// static void fib_disable_ip(net_device *dev, unsigned long event,
 // 			   bool force)
 // {
 // 	if (fib_sync_down_dev(dev, event, force))
@@ -1481,7 +1481,7 @@
 // 	arp_ifdown(dev);
 // }
 // 
-// static int fib_inetaddr_event(struct notifier_block *this, unsigned long event, void *ptr)
+// static int fib_inetaddr_event(notifier_block *this, unsigned long event, void *ptr)
 // {
 // 	struct in_ifaddr *ifa = ptr;
 // 	struct net_device *dev = ifa->ifa_dev->dev;
@@ -1512,7 +1512,7 @@
 // 	return NOTIFY_DONE;
 // }
 // 
-// static int fib_netdev_event(struct notifier_block *this, unsigned long event, void *ptr)
+// static int fib_netdev_event(notifier_block *this, unsigned long event, void *ptr)
 // {
 // 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 // 	struct netdev_notifier_changeupper_info *upper_info = ptr;
@@ -1579,10 +1579,10 @@
 // 	.notifier_call = fib_netdev_event,
 // };
 // 
-// static int __net_init ip_fib_net_init(struct net *net)
+// static int __net_init ip_fib_net_init(net *net)
 // {
 // 	int err;
-// 	size_t size = sizeof(struct hlist_head) * FIB_TABLE_HASHSZ;
+// 	size_t size = sizeof(hlist_head) * FIB_TABLE_HASHSZ;
 // 
 // 	err = fib4_notifier_init(net);
 // 	if (err)
@@ -1619,7 +1619,7 @@
 // 	return err;
 // }
 // 
-// static void ip_fib_net_exit(struct net *net)
+// static void ip_fib_net_exit(net *net)
 // {
 // 	int i;
 // 
@@ -1646,7 +1646,7 @@
 // 	}
 // }
 // 
-// static int __net_init fib_net_init(struct net *net)
+// static int __net_init fib_net_init(net *net)
 // {
 // 	int error;
 // 
@@ -1688,19 +1688,19 @@
 // 	goto out;
 // }
 // 
-// static void __net_exit fib_net_pre_exit(struct net *net)
+// static void __net_exit fib_net_pre_exit(net *net)
 // {
 // 	fib_proc_exit(net);
 // 	nl_fib_lookup_exit(net);
 // }
 // 
-// static void __net_exit fib_net_exit_rtnl(struct net *net,
+// static void __net_exit fib_net_exit_rtnl(net *net,
 // 					 struct list_head *dev_kill_list)
 // {
 // 	ip_fib_net_exit(net);
 // }
 // 
-// static void __net_exit fib_net_exit(struct net *net)
+// static void __net_exit fib_net_exit(net *net)
 // {
 // #ifdef CONFIG_IP_MULTIPLE_TABLES
 // 	fib4_rules_exit(net);

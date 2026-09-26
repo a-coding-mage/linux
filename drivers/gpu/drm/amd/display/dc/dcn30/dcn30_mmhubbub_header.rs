@@ -91,8 +91,7 @@ extern "C" {
         mcif_wb_regs: *const dcn30_mmhubbub_registers,
         mcif_wb_shift: *const dcn30_mmhubbub_shift,
         mcif_wb_mask: *const dcn30_mmhubbub_mask,
-        inst: ::core::ffi::c_int,
-    );
+        inst: ::core::ffi::c_int);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

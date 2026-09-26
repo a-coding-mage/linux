@@ -144,19 +144,19 @@ pub struct snd_soc_tplg_ops {
     pub bytes_ext_ops_count: i32,
 }
 
-#[cfg(feature = "CONFIG_SND_SOC_TOPOLOGY")]
+#[cfg(CONFIG_SND_SOC_TOPOLOGY)]
 pub unsafe fn snd_soc_tplg_get_data(hdr: *mut snd_soc_tplg_hdr) -> *const c_void {
     (hdr as *const u8).add(core::mem::size_of::<snd_soc_tplg_hdr>()) as *const c_void
 }
 
-#[cfg(feature = "CONFIG_SND_SOC_TOPOLOGY")]
+#[cfg(CONFIG_SND_SOC_TOPOLOGY)]
 extern "C" {
     pub fn snd_soc_tplg_component_load(comp: *mut snd_soc_component, ops: *const snd_soc_tplg_ops, fw: *const firmware) -> i32;
     pub fn snd_soc_tplg_component_remove(comp: *mut snd_soc_component) -> i32;
     pub fn snd_soc_tplg_widget_bind_event(w: *mut snd_soc_dapm_widget, events: *const snd_soc_tplg_widget_events, num_events: i32, event_type: u16) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_TOPOLOGY"))]
+#[cfg(not(CONFIG_SND_SOC_TOPOLOGY))]
 pub unsafe fn snd_soc_tplg_component_remove(_comp: *mut snd_soc_component) -> i32 { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

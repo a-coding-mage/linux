@@ -10,7 +10,7 @@
  */
 
 /* C build-time condition: CONFIG_SMP. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     pub fn armada_xp_secondary_startup();
 

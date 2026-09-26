@@ -38,7 +38,7 @@
 	return (u32)xa.xa_flags & 3;
 }
 
-#[inline] fn void xas_lock_type(*mut xa_statexas, u32 lock_type)
+#[inline] fn void xas_lock_type(*mut xa_statexas, lock_type: u32)
 {
 	if (lock_type == XA_LOCK_IRQ)
 		xas_lock_irq(xas);
@@ -48,7 +48,7 @@
 		xas_lock(xas);
 }
 
-#[inline] fn void xas_unlock_type(*mut xa_statexas, u32 lock_type)
+#[inline] fn void xas_unlock_type(*mut xa_statexas, lock_type: u32)
 {
 	if (lock_type == XA_LOCK_IRQ)
 		xas_unlock_irq(xas);
@@ -86,20 +86,20 @@
 }
 
 #[inline] fn bool node_get_mark(*mut xa_nodenode,
-		u32 offset, xa_mark_t mark)
+		offset: u32, xa_mark_t mark)
 {
 	return test_bit(offset, node_marks(node, mark));
 }
 
 /* returns true if the bit was set */
-#[inline] fn bool node_set_mark(*mut xa_nodenode, u32 offset,
+#[inline] fn bool node_set_mark(*mut xa_nodenode, offset: u32,
 				xa_mark_t mark)
 {
 	return __test_and_set_bit(offset, node_marks(node, mark));
 }
 
 /* returns true if the bit was set */
-#[inline] fn bool node_clear_mark(*mut xa_nodenode, u32 offset,
+#[inline] fn bool node_clear_mark(*mut xa_nodenode, offset: u32,
 				xa_mark_t mark)
 {
 	return __test_and_clear_bit(offset, node_marks(node, mark));
@@ -145,7 +145,7 @@ fn xas_squash_marks(const *mut xa_statexas)
 }
 
 /* extracts the offset within this node from the index */
-fn i32 get_offset(usize index, *mut xa_nodenode)
+fn i32 get_offset(index: usize, *mut xa_nodenode)
 {
 	return (index >> node.shift) & XA_CHUNK_MASK;
 }
@@ -156,7 +156,7 @@ fn xas_set_offset(*mut xa_statexas)
 }
 
 /* move the index either forwards (find) or backwards (sibling slot) */
-fn xas_move_index(*mut xa_statexas, usize offset)
+fn xas_move_index(*mut xa_statexas, offset: usize)
 {
 	u32 shift = xas.xa_node.shift;
 	xas.xa_index &= ~XA_CHUNK_MASK << shift;
@@ -362,7 +362,7 @@ fn xas_update(*mut xa_statexas, *mut xa_nodenode)
 		XA_NODE_BUG_ON(node, !list_empty(&node.private_list));
 }
 
-fn *xas_alloc(*mut xa_statexas, u32 shift)
+fn *xas_alloc(*mut xa_statexas, shift: u32)
 {
 	*mut xa_nodeparent = xas.xa_node;
 	*mut xa_nodenode = xas.xa_alloc;
@@ -433,14 +433,14 @@ fn long xas_max(*mut xa_statexas)
 }
 
 /* The maximum index that can be contained in the array without expanding it */
-fn long max_index(*mut core::ffi::c_voidentry)
+fn long max_index(entry: *mut core::ffi::c_void)
 {
 	if (!xa_is_node(entry))
 		return 0;
 	return (XA_CHUNK_SIZE << xa_to_node(entry).shift) - 1;
 }
 
-#[inline] fn *mut core::ffi::c_voidxa_zero_to_null(*mut core::ffi::c_voidentry)
+#[inline] fn *mut core::ffi::c_voidxa_zero_to_null(entry: *mut core::ffi::c_void)
 {
 	return xa_is_zero(entry) ? core::ptr::null_mut() : entry;
 }
@@ -567,7 +567,7 @@ fn xas_free_nodes(*mut xa_statexas, *mut xa_nodetop)
  * xas_expand adds nodes to the head of the tree until it has reached
  * sufficient height to be able to contain @xas.xa_index
  */
-fn xas_expand(*mut xa_statexas, *mut core::ffi::c_voidhead)
+fn xas_expand(*mut xa_statexas, head: *mut core::ffi::c_void)
 {
 	*mut xarrayxa = xas.xa;
 	*mut xa_nodenode = core::ptr::null_mut();
@@ -647,7 +647,7 @@ fn xas_expand(*mut xa_statexas, *mut core::ffi::c_voidhead)
  * If the slot was newly created, returns %core::ptr::null_mut().  If it failed to create the
  * slot, returns %core::ptr::null_mut() and indicates the error in @xas.
  */
-fn *xas_create(*mut xa_statexas, bool allow_root)
+fn *xas_create(*mut xa_statexas, allow_root: bool)
 {
 	*mut xarrayxa = xas.xa;
 	*mut core::ffi::c_voidentry;
@@ -714,6 +714,8 @@ fn *xas_create(*mut xa_statexas, bool allow_root)
  */
 void xas_create_range(*mut xa_statexas)
 {
+	'success: {
+	'restore: {
 	usize index = xas.xa_index;
 	u8 shift = xas.xa_shift;
 	u8 sibs = xas.xa_sibs;
@@ -727,9 +729,9 @@ void xas_create_range(*mut xa_statexas)
 	loop {
 		xas_create(xas, true);
 		if (xas_error(xas))
-			goto restore;
+			break 'restore;
 		if (xas.xa_index <= (index | XA_CHUNK_MASK))
-			goto success;
+			break 'success;
 		xas.xa_index -= XA_CHUNK_SIZE;
 
 		loop {
@@ -742,13 +744,14 @@ void xas_create_range(*mut xa_statexas)
 				break;
 		}
 	}
-
-restore:
+	}
+	
 	xas.xa_shift = shift;
 	xas.xa_sibs = sibs;
 	xas.xa_index = index;
 	return;
-success:
+	}
+	
 	xas.xa_index = index;
 	if (xas.xa_node)
 		xas_set_offset(xas);
@@ -756,7 +759,7 @@ success:
 
 
 fn update_node(*mut xa_statexas, *mut xa_nodenode,
-		i32 count, i32 values)
+		count: i32, values: i32)
 {
 	if (!node || (!count && !values))
 		return;
@@ -783,11 +786,11 @@ fn update_node(*mut xa_statexas, *mut xa_nodenode,
  *
  * Return: The old entry at this index.
  */
-*mut core::ffi::c_voidxas_store(*mut xa_statexas, *mut core::ffi::c_voidentry)
+*mut core::ffi::c_voidxas_store(*mut xa_statexas, entry: *mut core::ffi::c_void)
 {
 	*mut xa_nodenode;
 	void  **slot = &xas.xa.xa_head;
-	u32 offset, max;
+	offset: u32, max;
 	i32 count = 0;
 	i32 values = 0;
 	*mut core::ffi::c_voidfirst, *next;
@@ -964,7 +967,7 @@ void xas_init_marks(const *mut xa_statexas)
 
 
 // cfg: CONFIG_XARRAY_MULTI
-fn i32 node_get_marks(*mut xa_nodenode, u32 offset)
+fn i32 node_get_marks(*mut xa_nodenode, offset: u32)
 {
 	u32 marks = 0;
 	xa_mark_t mark = XA_MARK_0;
@@ -980,7 +983,7 @@ fn i32 node_get_marks(*mut xa_nodenode, u32 offset)
 	return marks;
 }
 
-#[inline] fn void node_mark_slots(*mut xa_nodenode, u32 sibs,
+#[inline] fn void node_mark_slots(*mut xa_nodenode, sibs: u32,
 		xa_mark_t mark)
 {
 	i32 i;
@@ -993,9 +996,9 @@ fn i32 node_get_marks(*mut xa_nodenode, u32 offset)
 	}
 }
 
-fn node_set_marks(*mut xa_nodenode, u32 offset,
+fn node_set_marks(*mut xa_nodenode, offset: u32,
 			*mut xa_nodechild, u32 sibs,
-			u32 marks)
+			marks: u32)
 {
 	xa_mark_t mark = XA_MARK_0;
 
@@ -1012,8 +1015,7 @@ fn node_set_marks(*mut xa_nodenode, u32 offset,
 }
 
 fn __xas_init_node_for_split(*mut xa_statexas,
-		*mut xa_nodenode, *mut core::ffi::c_voidentry)
-{
+		*mut xa_nodenode, entry: *mut core::ffi::c_void) {
 	u32 i;
 	*mut core::ffi::c_voidsibling = core::ptr::null_mut();
 	u32 mask = xas.xa_sibs;
@@ -1045,14 +1047,15 @@ fn __xas_init_node_for_split(*mut xa_statexas,
  *
  * Context: May sleep if @gfp flags permit.
  */
-void xas_split_alloc(*mut xa_statexas, *mut core::ffi::c_voidentry, u32 order,
+void xas_split_alloc(*mut xa_statexas, entry: *mut core::ffi::c_void, order: u32,
 		gfp_t gfp)
 {
+	'nomem: {
 	u32 sibs = (1 << (order % XA_CHUNK_SHIFT)) - 1;
 
 	/* XXX: no support for splitting really large entries yet */
 	if (WARN_ON(xas.xa_shift + 2 * XA_CHUNK_SHIFT <= order))
-		goto nomem;
+		break 'nomem;
 	if (xas.xa_shift + XA_CHUNK_SHIFT > order)
 		return;
 
@@ -1064,7 +1067,7 @@ void xas_split_alloc(*mut xa_statexas, *mut core::ffi::c_voidentry, u32 order,
 
 		node = kmem_cache_alloc_lru(radix_tree_node_cachep, xas.xa_lru, gfp);
 		if (!node)
-			goto nomem;
+			break 'nomem;
 
 		__xas_init_node_for_split(xas, node, entry);
 		RCU_INIT_POINTER(node.parent, xas.xa_alloc);
@@ -1072,7 +1075,8 @@ void xas_split_alloc(*mut xa_statexas, *mut core::ffi::c_voidentry, u32 order,
 	}
 
 	return;
-nomem:
+	}
+	
 	xas_destroy(xas);
 	xas_set_err(xas, -ENOMEM);
 }
@@ -1089,10 +1093,10 @@ nomem:
  *
  * Context: Any context.  The caller should hold the xa_lock.
  */
-void xas_split(*mut xa_statexas, *mut core::ffi::c_voidentry, u32 order)
+void xas_split(*mut xa_statexas, entry: *mut core::ffi::c_void, order: u32)
 {
 	u32 sibs = (1 << (order % XA_CHUNK_SHIFT)) - 1;
-	u32 offset, marks;
+	offset: u32, marks;
 	*mut xa_nodenode;
 	*mut core::ffi::c_voidcurr = xas_load(xas);
 	i32 values = 0;
@@ -1153,7 +1157,7 @@ void xas_split(*mut xa_statexas, *mut core::ffi::c_voidentry, u32 order)
  * Context: Any context.
  *
  */
-u32 xas_try_split_min_order(u32 order)
+u32 xas_try_split_min_order(order: u32)
 {
 	if (order % XA_CHUNK_SHIFT == 0)
 		return order == 0 ? 0 : order - 1;
@@ -1178,10 +1182,10 @@ u32 xas_try_split_min_order(u32 order)
  *
  * Context: Any context.  The caller should hold the xa_lock.
  */
-void xas_try_split(*mut xa_statexas, *mut core::ffi::c_voidentry, u32 order)
+void xas_try_split(*mut xa_statexas, entry: *mut core::ffi::c_void, order: u32)
 {
 	u32 sibs = (1 << (order % XA_CHUNK_SHIFT)) - 1;
-	u32 offset, marks;
+	offset: u32, marks;
 	*mut xa_nodenode;
 	*mut core::ffi::c_voidcurr = xas_load(xas);
 	i32 values = 0;
@@ -1467,6 +1471,8 @@ void xas_pause(*mut xa_statexas)
  */
 *mut core::ffi::c_voidxas_find_marked(*mut xa_statexas, usize max, xa_mark_t mark)
 {
+	'max: {
+	'out: {
 	bool advance = true;
 	u32 offset;
 	*mut core::ffi::c_voidentry;
@@ -1474,22 +1480,22 @@ void xas_pause(*mut xa_statexas)
 	if (xas_error(xas))
 		return core::ptr::null_mut();
 	if (xas.xa_index > max)
-		goto max;
+		break 'max;
 
 	if (!xas.xa_node) {
 		xas.xa_index = 1;
-		goto out;
+		break 'out;
 	} else if (xas_top(xas.xa_node)) {
 		advance = false;
 		entry = xa_head(xas.xa);
 		xas.xa_node = core::ptr::null_mut();
 		if (xas.xa_index > max_index(entry))
-			goto out;
+			break 'out;
 		if (!xa_is_node(entry)) {
 			if (xa_marked(xas.xa, mark))
 				return entry;
 			xas.xa_index = 1;
-			goto out;
+			break 'out;
 		}
 		xas.xa_node = xa_to_node(entry);
 		xas.xa_offset = xas.xa_index >> xas.xa_node.shift;
@@ -1519,7 +1525,7 @@ void xas_pause(*mut xa_statexas)
 			xas_move_index(xas, offset);
 			/* Mind the wrap */
 			if ((xas.xa_index - 1) >= max)
-				goto max;
+				break 'max;
 			xas.xa_offset = offset;
 			if (offset == XA_CHUNK_SIZE)
 				continue;
@@ -1535,12 +1541,13 @@ void xas_pause(*mut xa_statexas)
 		xas.xa_node = xa_to_node(entry);
 		xas_set_offset(xas);
 	}
-
-out:
+	}
+	
 	if (xas.xa_index > max)
-		goto max;
+		break 'max;
 	return set_bounds(xas);
-max:
+	}
+	
 	xas.xa_node = XAS_RESTART;
 	return core::ptr::null_mut();
 }
@@ -1630,7 +1637,7 @@ max:
 }
 
 
-fn *xas_result(*mut xa_statexas, *mut core::ffi::c_voidcurr)
+fn *xas_result(*mut xa_statexas, curr: *mut core::ffi::c_void)
 {
 	if (xas_error(xas))
 		curr = xas.xa_node;
@@ -1695,7 +1702,7 @@ fn *xas_result(*mut xa_statexas, *mut core::ffi::c_voidcurr)
  * release and reacquire xa_lock if @gfp flags permit.
  * Return: The old entry at this index or xa_err() if an error happened.
  */
-*mut core::ffi::c_void__xa_store(*mut xarrayxa, usize index, *mut core::ffi::c_voidentry, gfp_t gfp)
+*mut core::ffi::c_void__xa_store(*mut xarrayxa, usize index, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	XA_STATE(xas, xa, index);
 	*mut core::ffi::c_voidcurr;
@@ -1732,7 +1739,7 @@ fn *xas_result(*mut xa_statexas, *mut core::ffi::c_voidcurr)
  * cannot be stored in an XArray, or xa_err(-ENOMEM) if memory allocation
  * failed.
  */
-*mut core::ffi::c_voidxa_store(*mut xarrayxa, usize index, *mut core::ffi::c_voidentry, gfp_t gfp)
+*mut core::ffi::c_voidxa_store(*mut xarrayxa, usize index, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	*mut core::ffi::c_voidcurr;
 
@@ -1744,8 +1751,8 @@ fn *xas_result(*mut xa_statexas, *mut core::ffi::c_voidcurr)
 }
 
 
-#[inline] fn *mut core::ffi::c_void__xa_cmpxchg_raw(*mut xarrayxa, usize index,
-			*mut core::ffi::c_voidold, *mut core::ffi::c_voidentry, gfp_t gfp);
+#[inline] fn *mut core::ffi::c_void__xa_cmpxchg_raw(*mut xarrayxa, index: usize,
+			old: *mut core::ffi::c_void, entry: *mut core::ffi::c_void, gfp_t gfp);
 
 /**
  * __xa_cmpxchg() - Conditionally replace an entry in the XArray.
@@ -1767,14 +1774,14 @@ fn *xas_result(*mut xa_statexas, *mut core::ffi::c_voidcurr)
  * Return: The old value at this index or xa_err() if an error happened.
  */
 *mut core::ffi::c_void__xa_cmpxchg(*mut xarrayxa, usize index,
-			*mut core::ffi::c_voidold, *mut core::ffi::c_voidentry, gfp_t gfp)
+			old: *mut core::ffi::c_void, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	return xa_zero_to_null(__xa_cmpxchg_raw(xa, index, old, entry, gfp));
 }
 
 
-#[inline] fn *mut core::ffi::c_void__xa_cmpxchg_raw(*mut xarrayxa, usize index,
-			*mut core::ffi::c_voidold, *mut core::ffi::c_voidentry, gfp_t gfp)
+#[inline] fn *mut core::ffi::c_void__xa_cmpxchg_raw(*mut xarrayxa, index: usize,
+			old: *mut core::ffi::c_void, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	XA_STATE(xas, xa, index);
 	*mut core::ffi::c_voidcurr;
@@ -1810,7 +1817,7 @@ fn *xas_result(*mut xa_statexas, *mut core::ffi::c_voidcurr)
  * Return: 0 if the store succeeded.  -EBUSY if another entry was present.
  * -ENOMEM if memory could not be allocated.
  */
-i32 __xa_insert(*mut xarrayxa, usize index, *mut core::ffi::c_voidentry, gfp_t gfp)
+i32 __xa_insert(*mut xarrayxa, index: usize, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	*mut core::ffi::c_voidcurr;
 	i32 errno;
@@ -1826,8 +1833,8 @@ i32 __xa_insert(*mut xarrayxa, usize index, *mut core::ffi::c_voidentry, gfp_t g
 
 
 // cfg: CONFIG_XARRAY_MULTI
-fn xas_set_range(*mut xa_statexas, usize first,
-		usize last)
+fn xas_set_range(*mut xa_statexas, first: usize,
+		last: usize)
 {
 	u32 shift = 0;
 	usize sibs = last - first;
@@ -1876,7 +1883,7 @@ fn xas_set_range(*mut xa_statexas, usize first,
  * an XArray, or xa_err(-ENOMEM) if memory allocation failed.
  */
 *mut core::ffi::c_voidxa_store_range(*mut xarrayxa, usize first,
-		usize last, *mut core::ffi::c_voidentry, gfp_t gfp)
+		last: usize, entry: *mut core::ffi::c_void, gfp_t gfp)
 {
 	XA_STATE(xas, xa, 0);
 
@@ -1886,6 +1893,7 @@ fn xas_set_range(*mut xa_statexas, usize first,
 		return XA_ERROR(-EINVAL);
 
 	loop {
+		'unlock: {
 		xas_lock(&xas);
 		if (entry) {
 			u32 order = BITS_PER_LONG;
@@ -1894,16 +1902,17 @@ fn xas_set_range(*mut xa_statexas, usize first,
 			xas_set_order(&xas, last, order);
 			xas_create(&xas, true);
 			if (xas_error(&xas))
-				goto unlock;
+				break 'unlock;
 		}
 		loop {
 			xas_set_range(&xas, first, last);
 			xas_store(&xas, entry);
 			if (xas_error(&xas))
-				goto unlock;
+				break 'unlock;
 			first += xas_size(&xas);
 		}
-unlock:
+		}
+		
 		xas_unlock(&xas);
 	}
 
@@ -1951,7 +1960,7 @@ i32 xas_get_order(*mut xa_statexas)
  *
  * Return: A number between 0 and 63 indicating the order of the entry.
  */
-i32 xa_get_order(*mut xarrayxa, usize index)
+i32 xa_get_order(*mut xarrayxa, index: usize)
 {
 	XA_STATE(xas, xa, index);
 	i32 order = 0;
@@ -1988,7 +1997,7 @@ i32 xa_get_order(*mut xarrayxa, usize index)
  * Return: 0 on success, -ENOMEM if memory could not be allocated or
  * -EBUSY if there are no free entries in @limit.
  */
-i32 __xa_alloc(*mut xarrayxa, u32 *id, *mut core::ffi::c_voidentry,
+i32 __xa_alloc(*mut xarrayxa, u32 *id, entry: *mut core::ffi::c_void,
 		xa_limit limit, gfp_t gfp)
 {
 	XA_STATE(xas, xa, 0);
@@ -2040,7 +2049,7 @@ i32 __xa_alloc(*mut xarrayxa, u32 *id, *mut core::ffi::c_voidentry,
  * allocation succeeded after wrapping, -ENOMEM if memory could not be
  * allocated or -EBUSY if there are no free entries in @limit.
  */
-i32 __xa_alloc_cyclic(*mut xarrayxa, u32 *id, *mut core::ffi::c_voidentry,
+i32 __xa_alloc_cyclic(*mut xarrayxa, u32 *id, entry: *mut core::ffi::c_void,
 		xa_limit limit, u32 *next, gfp_t gfp)
 {
 	u32 min = limit.min;
@@ -2079,7 +2088,7 @@ i32 __xa_alloc_cyclic(*mut xarrayxa, u32 *id, *mut core::ffi::c_voidentry,
  *
  * Context: Any context.  Expects xa_lock to be held on entry.
  */
-void __xa_set_mark(*mut xarrayxa, usize index, xa_mark_t mark)
+void __xa_set_mark(*mut xarrayxa, index: usize, xa_mark_t mark)
 {
 	XA_STATE(xas, xa, index);
 	*mut core::ffi::c_voidentry = xas_load(&xas);
@@ -2097,7 +2106,7 @@ void __xa_set_mark(*mut xarrayxa, usize index, xa_mark_t mark)
  *
  * Context: Any context.  Expects xa_lock to be held on entry.
  */
-void __xa_clear_mark(*mut xarrayxa, usize index, xa_mark_t mark)
+void __xa_clear_mark(*mut xarrayxa, index: usize, xa_mark_t mark)
 {
 	XA_STATE(xas, xa, index);
 	*mut core::ffi::c_voidentry = xas_load(&xas);
@@ -2119,8 +2128,9 @@ void __xa_clear_mark(*mut xarrayxa, usize index, xa_mark_t mark)
  * Context: Any context.  Takes and releases the RCU lock.
  * Return: True if the entry at @index has this mark set, false if it doesn't.
  */
-bool xa_get_mark(*mut xarrayxa, usize index, xa_mark_t mark)
+bool xa_get_mark(*mut xarrayxa, index: usize, xa_mark_t mark)
 {
+	'found: {
 	XA_STATE(xas, xa, index);
 	*mut core::ffi::c_voidentry;
 
@@ -2128,12 +2138,13 @@ bool xa_get_mark(*mut xarrayxa, usize index, xa_mark_t mark)
 	entry = xas_start(&xas);
 	while (xas_get_mark(&xas, mark)) {
 		if (!xa_is_node(entry))
-			goto found;
+			break 'found;
 		entry = xas_descend(&xas, xa_to_node(entry));
 	}
 	rcu_read_unlock();
 	return false;
- found:
+	}
+	
 	rcu_read_unlock();
 	return true;
 }
@@ -2149,7 +2160,7 @@ bool xa_get_mark(*mut xarrayxa, usize index, xa_mark_t mark)
  *
  * Context: Process context.  Takes and releases the xa_lock.
  */
-void xa_set_mark(*mut xarrayxa, usize index, xa_mark_t mark)
+void xa_set_mark(*mut xarrayxa, index: usize, xa_mark_t mark)
 {
 	xa_lock(xa);
 	__xa_set_mark(xa, index, mark);
@@ -2167,7 +2178,7 @@ void xa_set_mark(*mut xarrayxa, usize index, xa_mark_t mark)
  *
  * Context: Process context.  Takes and releases the xa_lock.
  */
-void xa_clear_mark(*mut xarrayxa, usize index, xa_mark_t mark)
+void xa_clear_mark(*mut xarrayxa, index: usize, xa_mark_t mark)
 {
 	xa_lock(xa);
 	__xa_clear_mark(xa, index, mark);
@@ -2193,7 +2204,7 @@ void xa_clear_mark(*mut xarrayxa, usize index, xa_mark_t mark)
  * Return: The entry, if found, otherwise %core::ptr::null_mut().
  */
 *mut core::ffi::c_voidxa_find(*mut xarrayxa, usize *indexp,
-			usize max, xa_mark_t filter)
+			max: usize, xa_mark_t filter)
 {
 	XA_STATE(xas, xa, *indexp);
 	*mut core::ffi::c_voidentry;
@@ -2243,7 +2254,7 @@ fn xas_sibling(*mut xa_statexas)
  * Return: The pointer, if found, otherwise %core::ptr::null_mut().
  */
 *mut core::ffi::c_voidxa_find_after(*mut xarrayxa, usize *indexp,
-			usize max, xa_mark_t filter)
+			max: usize, xa_mark_t filter)
 {
 	XA_STATE(xas, xa, *indexp + 1);
 	*mut core::ffi::c_voidentry;
@@ -2274,38 +2285,38 @@ fn xas_sibling(*mut xa_statexas)
 
 
 fn i32 xas_extract_present(*mut xa_statexas, *mut core::ffi::c_void*dst,
-			usize max, u32 n)
+			max: usize, n: u32)
 {
 	*mut core::ffi::c_voidentry;
 	u32 i = 0;
 
 	rcu_read_lock();
-	xas_for_each(xas, entry, max) {
+	xas_for_each!(xas, entry, max, {
 		if (xas_retry(xas, entry))
 			continue;
 		dst[i++] = entry;
 		if (i == n)
 			break;
-	}
+	});
 	rcu_read_unlock();
 
 	return i;
 }
 
 fn i32 xas_extract_marked(*mut xa_statexas, *mut core::ffi::c_void*dst,
-			usize max, u32 n, xa_mark_t mark)
+			max: usize, n: u32, xa_mark_t mark)
 {
 	*mut core::ffi::c_voidentry;
 	u32 i = 0;
 
 	rcu_read_lock();
-	xas_for_each_marked(xas, entry, max, mark) {
+	xas_for_each_marked!(xas, entry, max, mark, {
 		if (xas_retry(xas, entry))
 			continue;
 		dst[i++] = entry;
 		if (i == n)
 			break;
-	}
+	});
 	rcu_read_unlock();
 
 	return i;
@@ -2339,8 +2350,8 @@ fn i32 xas_extract_marked(*mut xa_statexas, *mut core::ffi::c_void*dst,
  * Context: Any context.  Takes and releases the RCU lock.
  * Return: The number of entries copied.
  */
-u32 xa_extract(*mut xarrayxa, *mut core::ffi::c_void*dst, usize start,
-			usize max, u32 n, xa_mark_t filter)
+u32 xa_extract(*mut xarrayxa, *mut core::ffi::c_void*dst, start: usize,
+			max: usize, n: u32, xa_mark_t filter)
 {
 	XA_STATE(xas, xa, start);
 
@@ -2363,13 +2374,13 @@ u32 xa_extract(*mut xarrayxa, *mut core::ffi::c_void*dst, usize start,
 void xa_delete_node(*mut xa_nodenode, xa_update_node_t update)
 {
 	xa_state xas = {
-		.xa = node.array,
-		.xa_index = (usize)node.offset <<
+		xa: node.array,
+		xa_index: (usize)node.offset <<
 				(node.shift + XA_CHUNK_SHIFT),
-		.xa_shift = node.shift + XA_CHUNK_SHIFT,
-		.xa_offset = node.offset,
-		.xa_node = xa_parent_locked(node.array, node),
-		.xa_update = update,
+		xa_shift: node.shift + XA_CHUNK_SHIFT,
+		xa_offset: node.offset,
+		xa_node: xa_parent_locked(node.array, node),
+		xa_update: update,
 	};
 
 	xas_store(&xas, core::ptr::null_mut());
@@ -2409,7 +2420,7 @@ void xa_destroy(*mut xarrayxa)
 #ifdef XA_DEBUG
 void xa_dump_node(const *mut xa_nodenode)
 {
-	u32 i, j;
+	i: u32, j;
 
 	if (!node)
 		return;
@@ -2429,7 +2440,7 @@ void xa_dump_node(const *mut xa_nodenode)
 	pr_cont("\n");
 }
 
-void xa_dump_index(usize index, u32 shift)
+void xa_dump_index(index: usize, shift: u32)
 {
 	if (!shift)
 		pr_info("%lu: ", index);
@@ -2439,7 +2450,7 @@ void xa_dump_index(usize index, u32 shift)
 		pr_info("%lu-%lu: ", index, index | ((1UL << shift) - 1));
 }
 
-void xa_dump_entry(const *mut core::ffi::c_voidentry, usize index, usize shift)
+void xa_dump_entry(const *mut core::ffi::c_voidentry, index: usize, shift: usize)
 {
 	if (!entry)
 		return;

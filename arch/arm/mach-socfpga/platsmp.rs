@@ -101,7 +101,7 @@ unsafe fn socfpga_smp_prepare_cpus(max_cpus: u32) {
 }
 
 // CONFIG_HOTPLUG_CPU conditionally includes the following platform handlers.
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn socfpga_cpu_die(cpu: u32) {
     // Do WFI. If we wake up early, go back into WFI.
     loop {
@@ -109,7 +109,7 @@ unsafe fn socfpga_cpu_die(cpu: u32) {
     }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn socfpga_cpu_kill(cpu: u32) -> i32 {
     1
 }
@@ -118,18 +118,18 @@ unsafe fn socfpga_cpu_kill(cpu: u32) -> i32 {
 static socfpga_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(socfpga_smp_prepare_cpus),
     smp_boot_secondary: Some(socfpga_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(socfpga_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(socfpga_cpu_kill),
 };
 
 static socfpga_a10_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(socfpga_smp_prepare_cpus),
     smp_boot_secondary: Some(socfpga_a10_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(socfpga_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(socfpga_cpu_kill),
 };
 

@@ -73,7 +73,7 @@ pub unsafe extern "C" fn arc_init_IRQ() {
 
     /* Is timer high priority Interrupt (Level2 in ARCompact jargon) */
     // CONFIG_ARC_COMPACT_IRQ_LEVELS is a build-time configuration option.
-    if cfg!(feature = "CONFIG_ARC_COMPACT_IRQ_LEVELS") {
+    if cfg!(CONFIG_ARC_COMPACT_IRQ_LEVELS) {
         level_mask |= 1u32 << TIMER0_IRQ;
     }
 
@@ -212,7 +212,7 @@ unsafe extern "C" fn init_onchip_IRQ(
  *     over-written (this is deficiency in ARC700 Interrupt mechanism)
  */
 
-#[cfg(feature = "CONFIG_ARC_COMPACT_IRQ_LEVELS")]
+#[cfg(CONFIG_ARC_COMPACT_IRQ_LEVELS)]
 #[no_mangle]
 pub unsafe extern "C" fn arch_local_irq_enable() {
     let mut flags: usize = arch_local_save_flags();

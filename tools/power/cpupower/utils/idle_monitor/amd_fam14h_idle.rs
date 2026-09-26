@@ -65,7 +65,7 @@ pub struct cstate {
     pub desc: *const c_char,
     pub id: c_uint,
     pub range: c_uint,
-    pub get_count: Option<unsafe extern "C" fn(c_uint, *mut c_ulonglong, c_uint) -> c_int>,
+    pub get_count: Option<unsafe extern "C" fn(c_uint, long: *mut c_ulong, c_uint) -> c_int>,
     pub get_count_percent: Option<unsafe extern "C" fn(c_uint, *mut c_double, c_uint) -> c_int>,
 }
 

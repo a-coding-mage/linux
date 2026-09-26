@@ -24,7 +24,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-pub const _smuio_14_0_2_OFFSET_HEADER: u32 = ;
 // addressBlock: smuio_smuio_tsc_SmuSmuioDec
 // base address: 0x5a8a0
 pub const regPWROK_REFCLK_GAP_CYCLES: u32 = 0x0028;

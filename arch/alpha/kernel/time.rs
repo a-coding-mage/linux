@@ -15,11 +15,11 @@ pub static mut rtc_lock: u8 = 0;
 #[no_mangle]
 pub static mut est_cycle_freq: ::core::ffi::c_ulong = 0;
 
-#[cfg(feature = "CONFIG_IRQ_WORK")]
+#[cfg(CONFIG_IRQ_WORK)]
 #[no_mangle]
 pub static mut irq_work_pending: u8 = 0;
 
-#[cfg(feature = "CONFIG_IRQ_WORK")]
+#[cfg(CONFIG_IRQ_WORK)]
 #[no_mangle]
 pub unsafe extern "C" fn arch_irq_work_raise() {
     irq_work_pending = 1;
@@ -48,7 +48,7 @@ pub unsafe extern "C" fn rtc_timer_interrupt(
         ((*ce).event_handler)(ce);
     }
 
-    #[cfg(feature = "CONFIG_IRQ_WORK")]
+    #[cfg(CONFIG_IRQ_WORK)]
     if irq_work_pending != 0 {
         irq_work_pending = 0;
         irq_work_run();
@@ -177,10 +177,10 @@ pub unsafe fn common_init_rtc() {
     init_rtc_irq(::core::ptr::null_mut());
 }
 
-#[cfg(not(feature = "CONFIG_ALPHA_WTINT"))]
+#[cfg(not(CONFIG_ALPHA_WTINT))]
 unsafe extern "C" fn read_rpcc(cs: *mut clocksource) -> u64 { rpcc() as u64 }
 
-#[cfg(not(feature = "CONFIG_ALPHA_WTINT"))]
+#[cfg(not(CONFIG_ALPHA_WTINT))]
 static mut clocksource_rpcc: clocksource = clocksource {
     name: b"rpcc\0".as_ptr() as *const _,
     rating: 300,
@@ -260,13 +260,13 @@ pub unsafe fn time_init() {
         if diff < 0 { diff = -diff; }
         if diff as _ > tolerance { cycle_freq = est_cycle_freq; printk_estimated(cycle_freq); } else { est_cycle_freq = 0; }
     } else if validate_cc_value(cycle_freq) == 0 { printk_str("HWRPB cycle frequency bogus, and unable to estimate a proper value!\n"); }
-    #[cfg(not(feature = "CONFIG_ALPHA_WTINT"))]
+    #[cfg(not(CONFIG_ALPHA_WTINT))]
     if (*hwrpb).nr_processors == 1 { clocksource_register_hz(&mut clocksource_rpcc, cycle_freq); }
     (alpha_mv.init_rtc)();
     init_rtc_clockevent();
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe fn init_clockevent() {
     if alpha_using_qemu { init_qemu_clockevent(); } else { init_rtc_clockevent(); }
 }

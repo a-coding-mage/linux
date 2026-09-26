@@ -281,10 +281,11 @@ static pllout_monitor_sels: &[&str] = &["osc_25m", "osc_27m", "dummy", "dummy", 
 struct clk_hw_onecell_data *clk_hw_data;
 struct clk_hw **hws;
 
-unsafe fn imx8mq_clocks_probe(struct platform_device *pdev)
+unsafe fn imx8mq_clocks_probe(platform_device *pdev)
 {
-	struct device *dev = &pdev->dev;
-	struct device_node *np = dev->of_node;
+	'unregister_hws: {
+	struct device *dev = (*&pdev).dev;
+	struct device_node *np = (*dev).of_node;
 	void __iomem *base;
 	int err;
 
@@ -292,8 +293,8 @@ unsafe fn imx8mq_clocks_probe(struct platform_device *pdev)
 	if (WARN_ON(!clk_hw_data))
 		return -ENOMEM;
 
-	clk_hw_data->num = IMX8MQ_CLK_END;
-	hws = clk_hw_data->hws;
+	(*clk_hw_data).num = IMX8MQ_CLK_END;
+	hws = (*clk_hw_data).hws;
 
 	hws[IMX8MQ_CLK_DUMMY] = imx_clk_hw_fixed("dummy", 0);
 	hws[IMX8MQ_CLK_32K] = imx_get_clk_hw_by_name(np, "ckil");
@@ -309,7 +310,7 @@ unsafe fn imx8mq_clocks_probe(struct platform_device *pdev)
 	of_node_put(np);
 	if (WARN_ON(IS_ERR(base))) {
 		err = PTR_ERR(base);
-		goto unregister_hws;
+		break 'unregister_hws;
 	}
 
 	hws[IMX8MQ_ARM_PLL_REF_SEL] = imx_clk_hw_mux("arm_pll_ref_sel", base + 0x28, 16, 2, pll_ref_sels, ARRAY_SIZE(pll_ref_sels));
@@ -394,11 +395,11 @@ unsafe fn imx8mq_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MQ_CLK_MON_SEL] = imx_clk_hw_mux("pllout_monitor_sel", base + 0x74, 0, 4, pllout_monitor_sels, ARRAY_SIZE(pllout_monitor_sels));
 	hws[IMX8MQ_CLK_MON_CLK2_OUT] = imx_clk_hw_gate("pllout_monitor_clk2", "pllout_monitor_sel", base + 0x74, 4);
 
-	np = dev->of_node;
+	np = (*dev).of_node;
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base))) {
 		err = PTR_ERR(base);
-		goto unregister_hws;
+		break 'unregister_hws;
 	}
 
 	/* CORE */
@@ -591,24 +592,24 @@ unsafe fn imx8mq_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MQ_CLK_DRAM_ALT_ROOT] = imx_clk_hw_fixed_factor("dram_alt_root", "dram_alt", 1, 4);
 
 	hws[IMX8MQ_CLK_ARM] = imx_clk_hw_cpu("arm", "arm_a53_core",
-					   hws[IMX8MQ_CLK_A53_CORE]->clk,
-					   hws[IMX8MQ_CLK_A53_CORE]->clk,
-					   hws[IMX8MQ_ARM_PLL_OUT]->clk,
-					   hws[IMX8MQ_CLK_A53_DIV]->clk);
+					   (*hws[IMX8MQ_CLK_A53_CORE]).clk,
+					   (*hws[IMX8MQ_CLK_A53_CORE]).clk,
+					   (*hws[IMX8MQ_ARM_PLL_OUT]).clk,
+					   (*hws[IMX8MQ_CLK_A53_DIV]).clk);
 
 	imx_check_clk_hws(hws, IMX8MQ_CLK_END);
 
 	err = of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_hw_data);
 	if (err < 0) {
 		dev_err(dev, "failed to register hws for i.MX8MQ\n");
-		goto unregister_hws;
+		break 'unregister_hws;
 	}
 
 	imx_register_uart_clocks();
 
 	return 0;
-
-unregister_hws:
+	}
+	
 	imx_unregister_hw_clocks(hws, IMX8MQ_CLK_END);
 
 	return err;
@@ -622,15 +623,15 @@ static const struct of_device_id imx8mq_clk_of_match[] = {
 
 
 struct platform_driver imx8mq_clk_driver = {
-	.probe = imx8mq_clocks_probe,
-	.driver = {
-		.name = "imx8mq-ccm",
+	probe: imx8mq_clocks_probe,
+	driver: {
+		name: "imx8mq-ccm",
 		/*
 		 * Disable bind attributes: clocks are not removed and
 		 * reloading the driver will crash or break devices.
 		 */
-		.suppress_bind_attrs = true,
-		.of_match_table = imx8mq_clk_of_match,
+		suppress_bind_attrs: true,
+		of_match_table: imx8mq_clk_of_match,
 	},
 ];
 // module_platform_driver(imx8mq_clk_driver);

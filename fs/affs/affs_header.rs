@@ -98,10 +98,10 @@ pub const AFFS_MOUNT_SF_NO_TRUNCATE: usize = 0x1000;
 #[inline]
 pub unsafe fn AFFS_SB(sb: *mut super_block) -> *mut affs_sb_info { (*sb).s_fs_info as *mut affs_sb_info }
 
-pub unsafe extern "C" { pub fn affs_mark_sb_dirty(sb: *mut super_block); }
+unsafe extern "C" { pub fn affs_mark_sb_dirty(sb: *mut super_block); }
 
 // External declarations from amigaffs.c, bitmap.c, namei.c, inode.c, file.c, and dir.c.
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn affs_insert_hash(inode: *mut inode, bh: *mut buffer_head) -> core::ffi::c_int;
     pub fn affs_remove_hash(dir: *mut inode, rem_bh: *mut buffer_head) -> core::ffi::c_int;
     pub fn affs_remove_header(dentry: *mut dentry) -> core::ffi::c_int;

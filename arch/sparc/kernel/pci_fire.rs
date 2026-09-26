@@ -94,7 +94,7 @@ unsafe fn pci_fire_msiq_alloc(pbm: *mut pci_pbm_info) -> i32 {
     if pages == 0 { printk(KERN_ERR, "MSI: Cannot allocate MSI queues (o=%lu).\n", order); return -12; }
     memset(pages as *mut core::ffi::c_void, 0, PAGE_SIZE << order); (*pbm).msi_queues = pages as *mut core::ffi::c_void;
     upa_writeq(EVENT_QUEUE_BASE_ADDR_ALL_ONES | __pa((*pbm).msi_queues), (*pbm).pbm_regs + EVENT_QUEUE_BASE_ADDR_REG);
-    upa_writeq((*pbm).portid as u64 << 6, (*pbm).pbm_regs + IMONDO_DATA0); upa_writeq(0, (*pbm).pbm_regs + IMONDO_DATA1);
+    upa_writeq(((*pbm).portid as u64) << 6, (*pbm).pbm_regs + IMONDO_DATA0); upa_writeq(0, (*pbm).pbm_regs + IMONDO_DATA1);
     upa_writeq((*pbm).msi32_start, (*pbm).pbm_regs + MSI_32BIT_ADDR); upa_writeq((*pbm).msi64_start, (*pbm).pbm_regs + MSI_64BIT_ADDR);
     for i in 0..(*pbm).msiq_num as usize { upa_writeq(0, (*pbm).pbm_regs + event_queue_head(i)); upa_writeq(0, (*pbm).pbm_regs + event_queue_tail(i)); } 0
 }

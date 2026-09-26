@@ -142,7 +142,7 @@ unsafe fn xen_pv_smp_prepare_cpus(max_cpus: c_uint) {
     speculative_store_bypass_ht_init();
     xen_pmu_init(0);
     if xen_smp_intr_init(0) != 0 || xen_smp_intr_init_pv(0) != 0 { BUG(); }
-    if !alloc_cpumask_var(&mut xen_cpu_initialized_map, GFP_KERNEL) { panic(c"could not allocate xen_cpu_initialized_map\0".as_ptr()); }
+    if !alloc_cpumask_var(&mut xen_cpu_initialized_map, GFP_KERNEL) { panic(c"could not allocate xen_cpu_initialized_map".as_ptr()); }
     cpumask_copy(xen_cpu_initialized_map, cpumask_of(0));
     while num_possible_cpus() > 1 && num_possible_cpus() > max_cpus {
         cpu = nr_cpu_ids - 1;
@@ -232,7 +232,7 @@ unsafe fn xen_irq_work_interrupt_impl(_: c_int, _: *mut c_void) -> irqreturn_t {
 pub unsafe extern "C" fn xen_smp_count_cpus() {
     let mut cpus: c_uint = 0;
     while cpus < nr_cpu_ids { if HYPERVISOR_vcpu_op(VCPUOP_is_up, cpus, core::ptr::null_mut()) < 0 { break; } cpus += 1; }
-    pr_info(c"Xen PV: Detected %u vCPUS\n\0".as_ptr(), cpus);
+    pr_info(c"Xen PV: Detected %u vCPUS\n".as_ptr(), cpus);
     if cpus < nr_cpu_ids { set_nr_cpu_ids(cpus); }
 }
 

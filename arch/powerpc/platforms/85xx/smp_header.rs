@@ -2,13 +2,13 @@
 
 // Dependency: <linux/init.h>
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     pub fn mpc85xx_smp_init();
     pub fn mpc85xx_setup_pmc() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub fn mpc85xx_smp_init() {
     /* Nothing to do */

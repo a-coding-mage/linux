@@ -16,7 +16,7 @@ use core::mem;
 use core::ptr;
 
 // External types from dependencies (defined in other modules/headers)
-// struct snd_emux, struct snd_emux_port, struct snd_midi_channel, struct snd_sf_zone, etc.
+// struct snd_emux, snd_emux_port, snd_midi_channel, snd_sf_zone, etc.
 
 /*
  * Ensure a value is between two points
@@ -49,8 +49,7 @@ extern "C" {
         notep: *mut i32,
         vel: i32,
         chan: *mut snd_midi_channel,
-        table: *mut *mut snd_sf_zone,
-    ) -> i32;
+        table: *mut *mut snd_sf_zone) -> i32;
 
     fn snd_BUG_ON(cond: bool) -> bool;
     fn snd_soundfont_search_zone(
@@ -62,16 +61,14 @@ extern "C" {
         def_preset: i32,
         def_bank: i32,
         table: *mut *mut snd_sf_zone,
-        max_voices: i32,
-    ) -> i32;
+        max_voices: i32) -> i32;
     fn snd_emux_xg_control(port: *mut snd_emux_port, chan: *mut snd_midi_channel, type_: i32);
     fn snd_emux_send_effect(
         port: *mut snd_emux_port,
         chan: *mut snd_midi_channel,
         effect: i32,
         val: i32,
-        flag: i32,
-    );
+        flag: i32);
     fn snd_emux_setup_effect(vp: *mut snd_emux_voice);
     fn mod_timer(timer: *mut libc::c_void, expires: libc::c_ulong);
     fn jiffies() -> libc::c_ulong;
@@ -79,8 +76,7 @@ extern "C" {
     fn timer_container_of(
         emu: *mut snd_emux,
         t: *mut libc::c_void,
-        field: *const libc::c_char,
-    ) -> *mut snd_emux;
+        field: *const libc::c_char) -> *mut snd_emux;
 
     // External tables
     static snd_sf_vol_table: [i32; 128];

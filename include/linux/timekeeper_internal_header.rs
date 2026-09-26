@@ -17,9 +17,9 @@
 #[repr(C)]
 pub enum timekeeper_ids {
     TIMEKEEPER_CORE,
-    #[cfg(feature = "CONFIG_POSIX_AUX_CLOCKS")]
+    #[cfg(CONFIG_POSIX_AUX_CLOCKS)]
     TIMEKEEPER_AUX_FIRST,
-    #[cfg(feature = "CONFIG_POSIX_AUX_CLOCKS")]
+    #[cfg(CONFIG_POSIX_AUX_CLOCKS)]
     TIMEKEEPER_AUX_LAST = TIMEKEEPER_AUX_FIRST as isize + MAX_AUX_CLOCKS as isize - 1,
     TIMEKEEPERS_MAX,
 }

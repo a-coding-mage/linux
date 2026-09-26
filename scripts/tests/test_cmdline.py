@@ -604,32 +604,39 @@ rust_allowed_features := arbitrary_self_types,asm_goto,generic_arg_infer,used_wi
 include $(srctree)/scripts/Makefile.build
 ''')
     env=os.environ.copy();env['RUSTC_BOOTSTRAP']='1'
-    def build(selection):
-        result=run(['make','-rR','-f',str(wrapper),'CONFIG_RUST_CMDLINE='+selection,'lib/lib.a','V=1'],out,log,env,keep_cwd=True)
+    def build(selection, rbtree_selection):
+        result=run(['make','-rR','-f',str(wrapper),'CONFIG_RUST_CMDLINE='+selection,
+                    'CONFIG_RUST_RBTREE='+rbtree_selection,'lib/lib.a','V=1'],out,log,env,keep_cwd=True)
         line=next(l for l in result.splitlines() if l.startswith('ORIGINAL_SLOT='))
         members=line.split('=',1)[1].split()
         selected='cmdline_rust.o' if selection=='y' else 'cmdline.o'
+        unselected='cmdline.o' if selection=='y' else 'cmdline_rust.o'
+        assert members.count(selected)==1 and unselected not in members
         assert members[members.index(selected)-1]=='vsprintf.o'
-        assert members[members.index(selected)+1]=='rbtree.o'
+        adjacent='rbtree_rust.o' if rbtree_selection=='y' else 'rbtree.o'
+        assert members[members.index(selected)+1]==adjacent
         archive=run(['llvm-ar','t',str(out/'lib/lib.a')],out,log)
         assert archive.strip().endswith(selected) and len(archive.splitlines())==1
         return out/'lib'/selected
-    cobj=build('n'); initial=cobj.stat().st_mtime_ns
-    c_initial=initial
-    build('n'); assert initial==cobj.stat().st_mtime_ns
-    robj=build('y'); initial=robj.stat().st_mtime_ns
-    build('y'); assert initial==robj.stat().st_mtime_ns
-    command=(out/'lib/.cmdline_rust.o.cmd').read_text()
-    assert 'RUST_MODFILE=lib/cmdline ' in command
-    assert str(src/'lib/cmdline.rs') in command
-    # Touch only the private implementation; real dep-info must rebuild it.
-    import time
-    time.sleep(0.02)
-    (src/'lib/cmdline.rs').touch()
-    build('y'); assert initial!=robj.stat().st_mtime_ns
-    initial=robj.stat().st_mtime_ns
-    build('y'); assert initial==robj.stat().st_mtime_ns
-    build('n'); assert cobj.stat().st_mtime_ns==c_initial
+    # The neighboring provider has its own independent language selector.
+    # Check both choices so the donor's current rbtree configuration cannot
+    # hide an ordering or cmdline-selection regression.
+    for rbtree_selection in ('n','y'):
+        cobj=build('n',rbtree_selection); initial=cobj.stat().st_mtime_ns
+        c_initial=initial
+        build('n',rbtree_selection); assert initial==cobj.stat().st_mtime_ns
+        robj=build('y',rbtree_selection); initial=robj.stat().st_mtime_ns
+        build('y',rbtree_selection); assert initial==robj.stat().st_mtime_ns
+        command=(out/'lib/.cmdline_rust.o.cmd').read_text()
+        assert 'RUST_MODFILE=lib/cmdline ' in command
+        assert str(src/'lib/cmdline.rs') in command
+        # Touch only the private implementation; real dep-info must rebuild it.
+        time.sleep(0.02)
+        (src/'lib/cmdline.rs').touch()
+        build('y',rbtree_selection); assert initial!=robj.stat().st_mtime_ns
+        initial=robj.stat().st_mtime_ns
+        build('y',rbtree_selection); assert initial==robj.stat().st_mtime_ns
+        build('n',rbtree_selection); assert cobj.stat().st_mtime_ns==c_initial
     for artifact in (out/'lib').glob('.*.cmd'):
         shutil.copyfile(artifact,args.logs/(native.name+'-kbuild-'+artifact.name))
     print('PASS real private Kbuild C/Rust switching, dependencies, no-ops, owner and original slot',flush=True)

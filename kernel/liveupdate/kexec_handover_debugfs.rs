@@ -92,16 +92,18 @@ unsafe extern "C" fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const core
     let mut sub_fdt_dir: *mut dentry;
     let mut err: i32;
     let mut child: i32;
+    'err_out: {
+    'err_rmdir: {
 
     init_list_head(&mut (*dbg).fdt_list);
     dir = debugfs_create_dir(c"in".as_ptr(), debugfs_root);
-    if is_err(dir) { err = ptr_err(dir); goto!(err_out); }
+    if is_err(dir) { err = ptr_err(dir); break 'err_out; }
 
     sub_fdt_dir = debugfs_create_dir(c"sub_fdts".as_ptr(), dir);
-    if is_err(sub_fdt_dir) { err = ptr_err(sub_fdt_dir); goto!(err_rmdir); }
+    if is_err(sub_fdt_dir) { err = ptr_err(sub_fdt_dir); break 'err_rmdir; }
 
     err = __kho_debugfs_blob_add(&mut (*dbg).fdt_list, dir, c"fdt".as_ptr(), fdt, fdt_totalsize(fdt));
-    if err != 0 { goto!(err_rmdir); }
+    if err != 0 { break 'err_rmdir; }
 
     fdt_for_each_subnode!(child, fdt, 0, {
         let mut len: i32 = 0;
@@ -128,27 +130,30 @@ unsafe extern "C" fn kho_in_debugfs_init(dbg: *mut kho_debugfs, fdt: *const core
     (*dbg).dir = dir;
     (*dbg).sub_fdt_dir = sub_fdt_dir;
     return;
-
-    err_rmdir:;
+    }
+    ;
     debugfs_remove_recursive(dir);
-    err_out:;
+    }
+    ;
     // Failure to create /sys/kernel/debug/kho/in does not prevent reviving state from KHO.
     if err != 0 { pr_err!(c"failed exposing handover FDT in debugfs: %pe\n", err_ptr(err)); }
 }
 
 unsafe extern "C" fn kho_out_debugfs_init(dbg: *mut kho_debugfs) -> i32 {
     let dir = debugfs_create_dir(c"out".as_ptr(), debugfs_root);
+    'err_rmdir: {
     if is_err(dir) { return -ENOMEM; }
     let sub_fdt_dir = debugfs_create_dir(c"sub_fdts".as_ptr(), dir);
-    if is_err(sub_fdt_dir) { goto!(err_rmdir); }
+    if is_err(sub_fdt_dir) { break 'err_rmdir; }
     let mut f = debugfs_create_file(c"scratch_phys".as_ptr(), 0o400, dir, core::ptr::null_mut(), &scratch_phys_fops);
-    if is_err(f) { goto!(err_rmdir); }
+    if is_err(f) { break 'err_rmdir; }
     f = debugfs_create_file(c"scratch_len".as_ptr(), 0o400, dir, core::ptr::null_mut(), &scratch_len_fops);
-    if is_err(f) { goto!(err_rmdir); }
+    if is_err(f) { break 'err_rmdir; }
     (*dbg).dir = dir;
     (*dbg).sub_fdt_dir = sub_fdt_dir;
     return 0;
-    err_rmdir:;
+    }
+    ;
     debugfs_remove_recursive(dir);
     -ENOENT
 }

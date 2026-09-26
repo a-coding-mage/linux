@@ -53,9 +53,9 @@ unsafe fn acpi_processor_errata_local() -> i32 {
 
 unsafe fn cpufreq_add_device(name: *const i8) { let p=platform_device_register_simple(name, PLATFORM_DEVID_NONE, ptr::null_mut(), 0); if IS_ERR(p) { pr_info("%s device creation failed: %pe\n",name,p); } }
 
-#[cfg(feature="CONFIG_X86")]
+#[cfg(CONFIG_X86)]
 unsafe fn acpi_pcc_cpufreq_init() { let mut h=ptr::null_mut(); if ACPI_FAILURE(acpi_get_handle(ptr::null_mut(), b"\\_SB\0".as_ptr() as *const i8,&mut h)) { return; } if acpi_has_method(h,b"PCCH\0".as_ptr() as *const i8) { cpufreq_add_device(b"pcc-cpufreq\0".as_ptr() as *const i8); } }
-#[cfg(not(feature="CONFIG_X86"))] unsafe fn acpi_pcc_cpufreq_init() {}
+#[cfg(not(CONFIG_X86))] unsafe fn acpi_pcc_cpufreq_init() {}
 
 static mut processor_device_array: *mut *mut c_void = ptr::null_mut();
 
@@ -66,7 +66,7 @@ unsafe fn acpi_processor_set_per_cpu(pr:*mut acpi_processor, device:*mut acpi_de
     *slot=device as *mut c_void; processors.add((*pr).id as usize).write(pr); 0
 }
 
-#[cfg(feature="CONFIG_ACPI_HOTPLUG_CPU")]
+#[cfg(CONFIG_ACPI_HOTPLUG_CPU)]
 unsafe fn acpi_processor_hotadd_init(pr:*mut acpi_processor, device:*mut acpi_device)->i32 {
     if invalid_phys_cpuid((*pr).phys_id) { return -19; }
     cpu_maps_update_begin(); cpus_write_lock(); let mut ret=acpi_map_cpu((*pr).handle,(*pr).phys_id,(*pr).acpi_id,&mut (*pr).id);
@@ -74,11 +74,11 @@ unsafe fn acpi_processor_hotadd_init(pr:*mut acpi_processor, device:*mut acpi_de
     if ret==0 { ret=arch_register_cpu((*pr).id); if ret!=0 { processors.add((*pr).id as usize).write(ptr::null_mut()); acpi_unmap_cpu((*pr).id); } }
     if ret==0 { pr_info("CPU%d has been hot-added\n",(*pr).id); } cpus_write_unlock(); cpu_maps_update_done(); ret
 }
-#[cfg(not(feature="CONFIG_ACPI_HOTPLUG_CPU"))] unsafe fn acpi_processor_hotadd_init(_: *mut acpi_processor, _: *mut acpi_device)->i32 { -19 }
+#[cfg(not(CONFIG_ACPI_HOTPLUG_CPU))] unsafe fn acpi_processor_hotadd_init(_: *mut acpi_processor, _: *mut acpi_device)->i32 { -19 }
 
 unsafe fn acpi_processor_container_attach(_: *mut acpi_device, _: *const acpi_device_id)->i32 { 1 }
 
-#[cfg(feature="CONFIG_ACPI_PROCESSOR_CSTATE")]
+#[cfg(CONFIG_ACPI_PROCESSOR_CSTATE)]
 pub unsafe fn acpi_processor_claim_cst_control()->bool { static mut claimed:bool=false; if acpi_gbl_FADT.cst_control==0 || claimed { return true; } if ACPI_FAILURE(acpi_os_write_port(acpi_gbl_FADT.smi_command,acpi_gbl_FADT.cst_control,8)) { pr_warn("ACPI: Failed to claim processor _CST control\n"); return false; } claimed=true; true }
 
 // The remaining declarations and implementation use the exact external kernel
@@ -106,7 +106,7 @@ extern "C" { static mut acpi_gbl_FADT: fadt; }
 #[repr(C)] pub struct fadt { pub pm2_control_block:u64,pub pm2_control_length:u8,pub duty_offset:u8,pub duty_width:u8,pub cst_control:u8,pub smi_command:u16 }
 
 // Constants and helpers below are supplied by the kernel headers/dependency crate.
-extern "C" { fn dev_dbg(_: *mut device, _: *const i8, ...); fn dev_warn(_: *mut device, _: *const i8, ...); fn pr_info(_: *const i8, ...); fn pr_warn(_: *const i8, ...); fn pci_get_subsys(_:u16,u16,u16,u16,*mut pci_dev)->*mut pci_dev; fn pci_resource_start(*mut pci_dev,u32)->u64; fn pci_dev_put(*mut pci_dev); fn pci_read_config_byte(*mut pci_dev,u32,*mut u8); fn platform_device_register_simple(*const i8,i32,*mut c_void,u32)->*mut c_void; fn acpi_has_method(acpi_handle,*const i8)->bool; fn acpi_os_write_port(u16,u8,u32)->acpi_status; }
+extern "C" { fn dev_dbg(_: *mut device, _: *const i8, ...); fn dev_warn(_: *mut device, _: *const i8, ...); fn pr_info(_: *const i8, ...); fn pr_warn(_: *const i8, ...); fn pci_get_subsys(_:u16,_: u16,_: u16,_: u16,_: *mut pci_dev)->*mut pci_dev; fn pci_resource_start(_: *mut pci_dev,_: u32)->u64; fn pci_dev_put(_: *mut pci_dev); fn pci_read_config_byte(_: *mut pci_dev,_: u32,_: *mut u8); fn platform_device_register_simple(_: *const i8,_: i32,_: *mut c_void,_: u32)->*mut c_void; fn acpi_has_method(_: acpi_handle,_: *const i8)->bool; fn acpi_os_write_port(_: u16,_: u8,_: u32)->acpi_status; }
 const PCI_ANY_ID:u16=0xffff; const PCI_VENDOR_ID_INTEL:u16=0x8086; const PCI_DEVICE_ID_INTEL_82371AB:u16=0x7111; const PCI_DEVICE_ID_INTEL_82371AB_0:u16=0x7110; const PCI_DEVICE_ID_INTEL_82371AB_3:u16=0x7113; const PLATFORM_DEVID_NONE:i32=-1; const nr_cpu_ids:i32=256;
 
 /* Remaining C entry points are kept as external declarations so their ABI and

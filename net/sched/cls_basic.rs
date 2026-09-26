@@ -33,7 +33,7 @@ unsafe fn basic_classify(
     let head: *mut basic_head = rcu_dereference_bh((*tp).root);
     let mut f: *mut basic_filter;
 
-    list_for_each_entry_rcu!(f, (*head).flist, link) {
+    list_for_each_entry_rcu!(f, (*head).flist, link, {
         __this_cpu_inc!((*f).pf.rcnt);
         if !tcf_em_tree_match(skb, &mut (*f).ematches, core::ptr::null_mut()) {
             continue;
@@ -45,7 +45,7 @@ unsafe fn basic_classify(
             continue;
         }
         return r;
-    }
+    });
     -1
 }
 
@@ -53,11 +53,11 @@ unsafe fn basic_get(tp: *mut tcf_proto, handle: u32) -> *mut core::ffi::c_void {
     let head: *mut basic_head = rtnl_dereference((*tp).root);
     let mut f: *mut basic_filter;
 
-    list_for_each_entry!(f, (*head).flist, link) {
+    list_for_each_entry!(f, (*head).flist, link, {
         if (*f).handle == handle {
             return f as *mut core::ffi::c_void;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -92,7 +92,7 @@ unsafe fn basic_destroy(tp: *mut tcf_proto, _rtnl_held: bool, _extack: *mut netl
     let mut f: *mut basic_filter;
     let mut n: *mut basic_filter;
 
-    list_for_each_entry_safe!(f, n, (*head).flist, link) {
+    list_for_each_entry_safe!(f, n, (*head).flist, link, {
         list_del_rcu!(&mut (*f).link);
         tcf_unbind_filter(tp, &mut (*f).res);
         idr_remove(&mut (*head).handle_idr, (*f).handle);
@@ -101,7 +101,7 @@ unsafe fn basic_destroy(tp: *mut tcf_proto, _rtnl_held: bool, _extack: *mut netl
         } else {
             __basic_delete_filter(f);
         }
-    }
+    });
     idr_destroy(&mut (*head).handle_idr);
     kfree_rcu!(head, rcu);
 }

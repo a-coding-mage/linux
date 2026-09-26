@@ -24,11 +24,11 @@ pub const fn BIT_ULL(nr: u32) -> c_ulonglong {
 }
 
 pub const fn GENMASK(h: u32, l: u32) -> usize {
-    ((!0_usize) << l) & ((!0_usize) >> (usize::BITS - 1 - h))
+    ((!0usize) << l) & ((!0usize) >> (usize::BITS - 1 - h))
 }
 
 pub const fn GENMASK_ULL(h: u32, l: u32) -> c_ulonglong {
-    ((!0_u64) << l) & ((!0_u64) >> (u64::BITS - 1 - h))
+    ((!0u64) << l) & ((!0u64) >> (u64::BITS - 1 - h))
 }
 
 pub const CONFIG_TDP: c_int = 0x7f;

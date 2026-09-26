@@ -16,7 +16,7 @@ pub struct thermal_cooling_device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_PCIE_THERMAL")]
+#[cfg(CONFIG_PCIE_THERMAL)]
 extern "C" {
     pub fn pcie_cooling_device_register(
         port: *mut pci_dev,
@@ -24,7 +24,7 @@ extern "C" {
     pub fn pcie_cooling_device_unregister(cdev: *mut thermal_cooling_device);
 }
 
-#[cfg(not(feature = "CONFIG_PCIE_THERMAL"))]
+#[cfg(not(CONFIG_PCIE_THERMAL))]
 #[inline]
 pub unsafe fn pcie_cooling_device_register(
     _port: *mut pci_dev,
@@ -32,7 +32,7 @@ pub unsafe fn pcie_cooling_device_register(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_PCIE_THERMAL"))]
+#[cfg(not(CONFIG_PCIE_THERMAL))]
 #[inline]
 pub unsafe fn pcie_cooling_device_unregister(_cdev: *mut thermal_cooling_device) {}
 

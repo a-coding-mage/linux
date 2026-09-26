@@ -37,13 +37,13 @@ pub unsafe fn arch_xor_init() {
     xor_register(&raw const xor_block_32regs_p);
 
     /* Preserves CONFIG_CPU_HAS_LSX conditional compilation intent. */
-    #[cfg(feature = "CONFIG_CPU_HAS_LSX")]
+    #[cfg(CONFIG_CPU_HAS_LSX)]
     if cpu_has_lsx {
         xor_register(&raw const xor_block_lsx);
     }
 
     /* Preserves CONFIG_CPU_HAS_LASX conditional compilation intent. */
-    #[cfg(feature = "CONFIG_CPU_HAS_LASX")]
+    #[cfg(CONFIG_CPU_HAS_LASX)]
     if cpu_has_lasx {
         xor_register(&raw const xor_block_lasx);
     }

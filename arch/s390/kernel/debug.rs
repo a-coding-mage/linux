@@ -32,20 +32,20 @@ extern "C" {
     static mut debug_stoppable: i32;
     static mut __s390dbf_info: *mut *mut debug_info_t;
     static mut __s390dbf_info_end: *mut *mut debug_info_t;
-    fn debug_dflt_header_fn(*mut debug_info_t,*mut debug_view,i32,*mut debug_entry_t,*mut i8,usize)->i32;
-    fn debug_sprintf_format_fn(*mut debug_info_t,*mut debug_view,*mut i8,usize,*const i8)->i32;
-    fn debug_register_view(*mut debug_info_t,*mut debug_view)->i32;
-    fn debugfs_create_dir(*const i8,*mut dentry)->*mut dentry;
-    fn debugfs_create_file(*const i8,umode_t,*mut dentry,*mut debug_info_t,*const file_operations)->*mut dentry;
-    fn debugfs_remove(*mut dentry);
-    fn proc_dointvec(*const ctl_table,i32,*mut c_void,*mut usize,*mut loff_t)->i32;
-    fn register_sysctl(*const i8,*const ctl_table)->*mut c_void;
-    fn raw_spin_lock_irqsave(*mut raw_spinlock_t,*mut c_ulong);
-    fn raw_spin_unlock_irqrestore(*mut raw_spinlock_t,c_ulong);
-    fn raw_spin_trylock_irqsave(*mut raw_spinlock_t,*mut c_ulong)->bool;
-    fn raw_spin_lock_init(*mut raw_spinlock_t);
-    fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex);
-    fn smp_processor_id()->u32; fn store_tod_clock_ext(*mut tod_clock);
+    fn debug_dflt_header_fn(_: *mut debug_info_t,_: *mut debug_view,_: i32,_: *mut debug_entry_t,_: *mut i8,_: usize)->i32;
+    fn debug_sprintf_format_fn(_: *mut debug_info_t,_: *mut debug_view,_: *mut i8,_: usize,_: *const i8)->i32;
+    fn debug_register_view(_: *mut debug_info_t,_: *mut debug_view)->i32;
+    fn debugfs_create_dir(_: *const i8,_: *mut dentry)->*mut dentry;
+    fn debugfs_create_file(_: *const i8,_: umode_t,_: *mut dentry,_: *mut debug_info_t,_: *const file_operations)->*mut dentry;
+    fn debugfs_remove(_: *mut dentry);
+    fn proc_dointvec(_: *const ctl_table,_: i32,_: *mut c_void,_: *mut usize,_: *mut loff_t)->i32;
+    fn register_sysctl(_: *const i8,_: *const ctl_table)->*mut c_void;
+    fn raw_spin_lock_irqsave(_: *mut raw_spinlock_t,_: *mut c_ulong);
+    fn raw_spin_unlock_irqrestore(_: *mut raw_spinlock_t,_: c_ulong);
+    fn raw_spin_trylock_irqsave(_: *mut raw_spinlock_t,_: *mut c_ulong)->bool;
+    fn raw_spin_lock_init(_: *mut raw_spinlock_t);
+    fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex);
+    fn smp_processor_id()->u32; fn store_tod_clock_ext(_: *mut tod_clock);
     fn memcopy(dst:*mut c_void,src:*const c_void,n:usize); fn kmalloc(n:usize,flags:u32)->*mut c_void;
 }
 

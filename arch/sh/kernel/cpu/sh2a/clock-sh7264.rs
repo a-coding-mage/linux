@@ -71,7 +71,9 @@ static mut div4_table: clk_div4_table = clk_div4_table {
     div_mult_table: &raw mut div4_div_mult_table,
 };
 
-enum { DIV4_I, DIV4_P, DIV4_NR }
+pub const DIV4_I: i32 = 0;
+pub const DIV4_P: i32 = DIV4_I + 1;
+pub const DIV4_NR: i32 = DIV4_P + 1;
 
 /* The mask field specifies the div2 entries that are valid */
 static mut div4_clks: [clk; DIV4_NR] = [
@@ -79,12 +81,16 @@ static mut div4_clks: [clk; DIV4_NR] = [
     SH_CLK_DIV4(&raw mut pll_clk, FRQCR, 0, 0x78, CLK_ENABLE_REG_16BIT),
 ];
 
-enum {
-    MSTP77, MSTP74, MSTP72,
-    MSTP60,
-    MSTP35, MSTP34, MSTP33, MSTP32, MSTP30,
-    MSTP_NR,
-}
+pub const MSTP77: i32 = 0;
+pub const MSTP74: i32 = MSTP77 + 1;
+pub const MSTP72: i32 = MSTP74 + 1;
+pub const MSTP60: i32 = MSTP72 + 1;
+pub const MSTP35: i32 = MSTP60 + 1;
+pub const MSTP34: i32 = MSTP35 + 1;
+pub const MSTP33: i32 = MSTP34 + 1;
+pub const MSTP32: i32 = MSTP33 + 1;
+pub const MSTP30: i32 = MSTP32 + 1;
+pub const MSTP_NR: i32 = MSTP30 + 1;
 
 static mut mstp_clks: [clk; MSTP_NR] = [
     SH_CLK_MSTP8(&raw mut div4_clks[DIV4_P], STBCR7, 7, 0), /* SCIF */

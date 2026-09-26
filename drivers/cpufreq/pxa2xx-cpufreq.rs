@@ -96,22 +96,22 @@ extern "C" {
 const CPUFREQ_TABLE_END: u32 = u32::MAX;
 const CPUFREQ_NEED_INITIAL_FREQ_CHECK: u32 = 1;
 
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 unsafe fn pxa_cpufreq_change_voltage(f: *const pxa_freqs) -> i32 {
     if !cpu_is_pxa27x() || (*f).vmin == -1 || (*f).vmax == -1 { return 0; }
     let ret = regulator_set_voltage(vcc_core, (*f).vmin, (*f).vmax);
     if ret != 0 { pr_err(b"Failed to set vcc_core in [%dmV..%dmV]\0".as_ptr(), (*f).vmin, (*f).vmax); }
     ret
 }
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 unsafe fn pxa_cpufreq_init_voltages() {
     vcc_core = regulator_get(core::ptr::null_mut(), b"vcc_core\0".as_ptr());
     if vcc_core.is_null() { pr_info(b"Didn't find vcc_core regulator\n\0".as_ptr()); }
     else { pr_info(b"Found vcc_core regulator\n\0".as_ptr()); }
 }
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 unsafe fn pxa_cpufreq_change_voltage(_: *const pxa_freqs) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 unsafe fn pxa_cpufreq_init_voltages() {}
 
 unsafe fn find_freq_tables(table: *mut *mut cpufreq_frequency_table, freqs: *mut *const pxa_freqs) {

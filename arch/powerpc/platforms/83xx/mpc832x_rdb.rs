@@ -12,7 +12,7 @@
 
 // Linux and platform dependencies are supplied by the surrounding translation.
 
-#[cfg(feature = "CONFIG_QUICC_ENGINE")]
+#[cfg(CONFIG_QUICC_ENGINE)]
 unsafe fn of_fsl_spi_probe(
     type_: *mut core::ffi::c_char,
     compatible: *mut core::ffi::c_char,
@@ -25,7 +25,7 @@ unsafe fn of_fsl_spi_probe(
     let mut i: u32 = 0;
 
     // for_each_compatible_node(np, type, compatible)
-    for_each_compatible_node!(np, type_, compatible) {
+    for_each_compatible_node!(np, type_, compatible, {
         let mut ret: i32;
         let mut j: u32;
         let mut prop: *const core::ffi::c_void;
@@ -74,11 +74,11 @@ unsafe fn of_fsl_spi_probe(
         continue;
         err: pr_err!(c"%pOF: registration failed\n", np);
         i += 1;
-    }
+    });
     i as i32
 }
 
-#[cfg(feature = "CONFIG_QUICC_ENGINE")]
+#[cfg(CONFIG_QUICC_ENGINE)]
 unsafe fn fsl_spi_init(board_infos: *mut spi_board_info, num_board_infos: u32,
                        cs_control: Option<unsafe extern "C" fn(*mut spi_device, bool)>) -> i32 {
     let mut sysclk: u32 = u32::MAX;
@@ -97,21 +97,21 @@ unsafe fn fsl_spi_init(board_infos: *mut spi_board_info, num_board_infos: u32,
     spi_register_board_info(board_infos, num_board_infos)
 }
 
-#[cfg(feature = "CONFIG_QUICC_ENGINE")]
+#[cfg(CONFIG_QUICC_ENGINE)]
 unsafe extern "C" fn mpc83xx_spi_cs_control(spi: *mut spi_device, on: bool) {
     pr_debug!(c"%s %d %d\n", c"mpc83xx_spi_cs_control", spi_get_chipselect(spi, 0), on);
     par_io_data_set(3, 13, on);
 }
 
-#[cfg(feature = "CONFIG_QUICC_ENGINE")]
+#[cfg(CONFIG_QUICC_ENGINE)]
 static mut mpc832x_mmc_pdata: mmc_spi_platform_data = mmc_spi_platform_data { ocr_mask: MMC_VDD_33_34 };
-#[cfg(feature = "CONFIG_QUICC_ENGINE")]
+#[cfg(CONFIG_QUICC_ENGINE)]
 static mut mpc832x_spi_boardinfo: spi_board_info = spi_board_info {
     bus_num: 0x4c0, chip_select: 0, max_speed_hz: 50000000,
     modalias: *b"mmc_spi\0", platform_data: core::ptr::addr_of_mut!(mpc832x_mmc_pdata) as *mut _,
 };
 
-#[cfg(feature = "CONFIG_QUICC_ENGINE")]
+#[cfg(CONFIG_QUICC_ENGINE)]
 unsafe fn mpc832x_spi_init() -> i32 {
     par_io_config_pin(3, 0, 3, 0, 1, 0); // SPI1 MOSI, I/O
     par_io_config_pin(3, 1, 3, 0, 1, 0); // SPI1 MISO, I/O
@@ -128,7 +128,7 @@ unsafe fn mpc832x_spi_init() -> i32 {
 
 unsafe fn mpc832x_rdb_setup_arch() {
     mpc83xx_setup_arch();
-    #[cfg(feature = "CONFIG_QUICC_ENGINE")]
+    #[cfg(CONFIG_QUICC_ENGINE)]
     {
         let mut np = of_find_node_by_name(core::ptr::null_mut(), c"par_io".as_ptr());
         if !np.is_null() {

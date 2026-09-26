@@ -12,19 +12,19 @@ pub const ADF_GEN2_ERRMSK3: u32 = 0x3A000 + 0x1C;
 pub const ADF_GEN2_ERRMSK5: u32 = 0x3A000 + 0xDC;
 
 // CONFIG_PCI_IOV is a build-time C configuration condition.
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 extern "C" {
     pub fn adf_gen2_init_pf_pfvf_ops(pfvf_ops: *mut adf_pfvf_ops);
     pub fn adf_gen2_init_vf_pfvf_ops(pfvf_ops: *mut adf_pfvf_ops);
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn adf_gen2_init_pf_pfvf_ops(pfvf_ops: *mut adf_pfvf_ops) {
     (*pfvf_ops).enable_comms = Some(adf_pfvf_comms_disabled);
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn adf_gen2_init_vf_pfvf_ops(pfvf_ops: *mut adf_pfvf_ops) {
     (*pfvf_ops).enable_comms = Some(adf_pfvf_comms_disabled);

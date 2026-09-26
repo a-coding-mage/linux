@@ -103,24 +103,24 @@ pub unsafe fn x86_cpuid_family() -> u32 {
 extern "C" {
     pub static mut force_minrev: bool;
 
-    #[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+    #[cfg(CONFIG_CPU_SUP_AMD)]
     pub fn load_ucode_amd_bsp(ed: *mut EarlyLoadData, family: u32);
-    #[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+    #[cfg(CONFIG_CPU_SUP_AMD)]
     pub fn load_ucode_amd_ap(family: u32);
-    #[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+    #[cfg(CONFIG_CPU_SUP_AMD)]
     pub fn reload_ucode_amd(cpu: u32);
-    #[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+    #[cfg(CONFIG_CPU_SUP_AMD)]
     pub fn init_amd_microcode() -> *mut MicrocodeOps;
-    #[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+    #[cfg(CONFIG_CPU_SUP_AMD)]
     pub fn exit_amd_microcode();
 
-    #[cfg(feature = "CONFIG_CPU_SUP_INTEL")]
+    #[cfg(CONFIG_CPU_SUP_INTEL)]
     pub fn load_ucode_intel_bsp(ed: *mut EarlyLoadData);
-    #[cfg(feature = "CONFIG_CPU_SUP_INTEL")]
+    #[cfg(CONFIG_CPU_SUP_INTEL)]
     pub fn load_ucode_intel_ap();
-    #[cfg(feature = "CONFIG_CPU_SUP_INTEL")]
+    #[cfg(CONFIG_CPU_SUP_INTEL)]
     pub fn reload_ucode_intel();
-    #[cfg(feature = "CONFIG_CPU_SUP_INTEL")]
+    #[cfg(CONFIG_CPU_SUP_INTEL)]
     pub fn init_intel_microcode() -> *mut MicrocodeOps;
 }
 

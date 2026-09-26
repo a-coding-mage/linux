@@ -65,10 +65,10 @@ pub fn __rounddown_pow_of_two(n: c_ulong) -> c_ulong {
 #[macro_export]
 macro_rules! const_ilog2 {
     ($n:expr) => {{
-        let n = $n as u64;
-        if n < 2 { 0i32 }
-        else if n & (1u64 << 63) != 0 { 63 }
-        else { 63 - n.leading_zeros() as i32 }
+        let $n = $n as u64;
+        if $n < 2 { 0i32 }
+        else if $n & (1u64 << 63) != 0 { 63 }
+        else { 63 - $n.leading_zeros() as i32 }
     }};
 }
 
@@ -81,9 +81,9 @@ macro_rules! const_ilog2 {
 #[macro_export]
 macro_rules! ilog2 {
     ($n:expr) => {{
-        let n = $n;
-        if n < 2 { 0i32 }
-        else { (64 - (n as u64).leading_zeros() as i32 - 1) }
+        let $n = $n;
+        if $n < 2 { 0i32 }
+        else { (64 - ($n as u64).leading_zeros() as i32 - 1) }
     }};
 }
 
@@ -94,8 +94,8 @@ macro_rules! ilog2 {
 #[macro_export]
 macro_rules! roundup_pow_of_two {
     ($n:expr) => {{
-        let n = $n;
-        if n == 1 { 1usize } else { 1usize << ($crate::ilog2!(n - 1) + 1) }
+        let $n = $n;
+        if $n == 1 { 1usize } else { 1usize << ($crate::ilog2!($n - 1) + 1) }
     }};
 }
 
@@ -120,8 +120,8 @@ pub fn __order_base_2(n: c_ulong) -> i32 {
 #[macro_export]
 macro_rules! order_base_2 {
     ($n:expr) => {{
-        let n = $n;
-        if n == 0 || n == 1 { 0i32 } else { $crate::ilog2!(n - 1) + 1 }
+        let $n = $n;
+        if $n == 0 || $n == 1 { 0i32 } else { $crate::ilog2!($n - 1) + 1 }
     }};
 }
 
@@ -139,8 +139,8 @@ pub fn __bits_per(n: c_ulong) -> i32 {
 #[macro_export]
 macro_rules! bits_per {
     ($n:expr) => {{
-        let n = $n;
-        if n == 0 || n == 1 { 1i32 } else { $crate::ilog2!(n) + 1 }
+        let $n = $n;
+        if $n == 0 || $n == 1 { 1i32 } else { $crate::ilog2!($n) + 1 }
     }};
 }
 

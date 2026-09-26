@@ -86,7 +86,7 @@ pub unsafe fn module_enable_text_rox(mod_: *const module) -> i32 {
 
         if mem.is_rox {
             ret = execmem_restore_rox(mem.base, mem.size);
-        } else if cfg!(feature = "CONFIG_STRICT_MODULE_RWX") {
+        } else if cfg!(CONFIG_STRICT_MODULE_RWX) {
             ret = module_set_memory(mod_, type_, set_memory_rox);
         } else {
             ret = module_set_memory(mod_, type_, set_memory_x);
@@ -101,7 +101,7 @@ pub unsafe fn module_enable_text_rox(mod_: *const module) -> i32 {
 pub unsafe fn module_enable_rodata_ro(mod_: *const module) -> i32 {
     let mut ret;
 
-    if !cfg!(feature = "CONFIG_STRICT_MODULE_RWX") || !rodata_enabled {
+    if !cfg!(CONFIG_STRICT_MODULE_RWX) || !rodata_enabled {
         return 0;
     }
 
@@ -118,7 +118,7 @@ pub unsafe fn module_enable_rodata_ro(mod_: *const module) -> i32 {
 }
 
 pub unsafe fn module_enable_rodata_ro_after_init(mod_: *const module) -> i32 {
-    if !cfg!(feature = "CONFIG_STRICT_MODULE_RWX") || !rodata_enabled {
+    if !cfg!(CONFIG_STRICT_MODULE_RWX) || !rodata_enabled {
         return 0;
     }
 
@@ -126,7 +126,7 @@ pub unsafe fn module_enable_rodata_ro_after_init(mod_: *const module) -> i32 {
 }
 
 pub unsafe fn module_enable_data_nx(mod_: *const module) -> i32 {
-    if !cfg!(feature = "CONFIG_STRICT_MODULE_RWX") {
+    if !cfg!(CONFIG_STRICT_MODULE_RWX) {
         return 0;
     }
 
@@ -150,7 +150,7 @@ pub unsafe fn module_enforce_rwx_sections(
     let shf_wx = SHF_WRITE | SHF_EXECINSTR;
     let mut i = 0;
 
-    if !cfg!(feature = "CONFIG_STRICT_MODULE_RWX") {
+    if !cfg!(CONFIG_STRICT_MODULE_RWX) {
         return 0;
     }
 

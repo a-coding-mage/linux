@@ -58,7 +58,7 @@ unsafe fn kvm_rtc_eoi_tracking_restore_all(ioapic: *mut kvm_ioapic) {
     if RTC_GSI >= IOAPIC_NUM_PINS { return; }
     rtc_irq_eoi_tracking_reset(ioapic);
     let mut i = 0; let mut vcpu: *mut kvm_vcpu = core::ptr::null_mut();
-    kvm_for_each_vcpu(i, vcpu, (*ioapic).kvm) { __rtc_irq_eoi_tracking_restore_one(vcpu); }
+    kvm_for_each_vcpu!(i, vcpu, (*ioapic).kvm, { __rtc_irq_eoi_tracking_restore_one(vcpu); });
 }
 
 unsafe fn rtc_irq_eoi(ioapic: *mut kvm_ioapic, vcpu: *mut kvm_vcpu, vector: i32) {
@@ -73,10 +73,10 @@ unsafe fn rtc_irq_check_coalesced(ioapic: *mut kvm_ioapic) -> bool { (*ioapic).r
 unsafe fn ioapic_lazy_update_eoi(ioapic: *mut kvm_ioapic, irq: i32) {
     let entry = &mut (*ioapic).redirtbl[irq as usize];
     let mut i = 0; let mut vcpu: *mut kvm_vcpu = core::ptr::null_mut();
-    kvm_for_each_vcpu(i, vcpu, (*ioapic).kvm) {
+    kvm_for_each_vcpu!(i, vcpu, (*ioapic).kvm, {
         if !kvm_apic_match_dest(vcpu, core::ptr::null_mut(), APIC_DEST_NOSHORT, entry.fields.dest_id, entry.fields.dest_mode != 0) || kvm_apic_pending_eoi(vcpu, entry.fields.vector) != 0 { continue; }
         rtc_irq_eoi(ioapic, vcpu, entry.fields.vector); break;
-    }
+    });
 }
 
 unsafe fn ioapic_set_irq(ioapic: *mut kvm_ioapic, irq: u32, irq_level: i32, line_status: bool) -> i32 {
@@ -90,7 +90,7 @@ unsafe fn ioapic_set_irq(ioapic: *mut kvm_ioapic, irq: u32, irq_level: i32, line
 }
 
 unsafe fn kvm_ioapic_inject_all(ioapic: *mut kvm_ioapic, irr: c_ulong) {
-    rtc_irq_eoi_tracking_reset(ioapic); let mut idx = 0; for_each_set_bit(idx, &irr, IOAPIC_NUM_PINS) { ioapic_set_irq(ioapic, idx, 1, true); } kvm_rtc_eoi_tracking_restore_all(ioapic);
+    rtc_irq_eoi_tracking_reset(ioapic); let mut idx = 0; for_each_set_bit!(idx, &irr, IOAPIC_NUM_PINS, { ioapic_set_irq(ioapic, idx, 1, true); }); kvm_rtc_eoi_tracking_restore_all(ioapic);
 }
 
 #[no_mangle] pub unsafe extern "C" fn kvm_ioapic_scan_entry(vcpu: *mut kvm_vcpu, handled: *mut c_ulong) {

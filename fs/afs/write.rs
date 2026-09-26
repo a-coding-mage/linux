@@ -119,8 +119,8 @@ unsafe fn afs_issue_write_worker(work: *mut work_struct) {
     afs_wait_for_operation(op);
     ret = afs_put_operation(op);
     match ret {
-        0 => __set_bit!(NETFS_SREQ_MADE_PROGRESS, &mut (*subreq).flags),
-        -EACCES | -EPERM | -ENOKEY | -EKEYEXPIRED | -EKEYREJECTED | -EKEYREVOKED => {
+        case if case == 0 => __set_bit!(NETFS_SREQ_MADE_PROGRESS, &mut (*subreq).flags),
+        case if case == -EACCES || case == -EPERM || case == -ENOKEY || case == -EKEYEXPIRED || case == -EKEYREJECTED || case == -EKEYREVOKED => {
             if !(*wreq).netfs_priv2.is_null() {
                 set_bit!(NETFS_SREQ_NEED_RETRY, &mut (*subreq).flags);
             }
@@ -155,8 +155,8 @@ unsafe fn afs_retry_request(wreq: *mut netfs_io_request, stream: *mut netfs_io_s
         _ => {}
     }
 
-    match (*subreq).error {
-        -EACCES | -EPERM | -ENOKEY | -EKEYEXPIRED | -EKEYREJECTED | -EKEYREVOKED => {
+    match -((*subreq).error) {
+        EACCES | EPERM | ENOKEY | EKEYEXPIRED | EKEYREJECTED | EKEYREVOKED => {
             afs_get_writeback_key(wreq);
             if (*wreq).netfs_priv.is_null() {
                 (*stream).failed = true;

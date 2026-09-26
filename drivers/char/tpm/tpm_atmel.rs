@@ -246,28 +246,34 @@ unsafe fn init_atmel() -> i32 {
     let mut base: c_ulong = 0;
     let mut chip: *mut tpm_chip;
     let mut priv_: *mut tpm_atmel_priv;
+    'err_unreg_drv: {
+    'err_rel_reg: {
+    'err_unreg_dev: {
 
     rc = platform_driver_register(&mut atml_drv);
     if rc != 0 { return rc; }
     iobase = atmel_get_base_addr(&mut base, &mut region_size);
-    if iobase.is_null() { rc = -ENODEV; goto err_unreg_drv; }
+    if iobase.is_null() { rc = -ENODEV; break 'err_unreg_drv; }
     have_region = if atmel_request_region(base, region_size as c_ulong, "tpm_atmel0\0".as_ptr()).is_null() { 0 } else { 1 };
     pdev = platform_device_register_simple("tpm_atmel\0".as_ptr(), -1, core::ptr::null_mut(), 0);
-    if IS_ERR(pdev) { rc = PTR_ERR(pdev); goto err_rel_reg; }
+    if IS_ERR(pdev) { rc = PTR_ERR(pdev); break 'err_rel_reg; }
     priv_ = devm_kzalloc((*pdev).dev, core::mem::size_of::<tpm_atmel_priv>(), GFP_KERNEL);
-    if priv_.is_null() { rc = -ENOMEM; goto err_unreg_dev; }
+    if priv_.is_null() { rc = -ENOMEM; break 'err_unreg_dev; }
     (*priv_).iobase = iobase; (*priv_).base = base; (*priv_).have_region = have_region; (*priv_).region_size = region_size;
     chip = tpmm_chip_alloc(&mut (*pdev).dev, &tpm_atmel);
-    if IS_ERR(chip) { rc = PTR_ERR(chip); goto err_unreg_dev; }
+    if IS_ERR(chip) { rc = PTR_ERR(chip); break 'err_unreg_dev; }
     dev_set_drvdata(&mut (*chip).dev, priv_ as *mut c_void);
     rc = tpm_chip_register(chip);
-    if rc != 0 { goto err_unreg_dev; }
+    if rc != 0 { break 'err_unreg_dev; }
     return 0;
-err_unreg_dev:
+    }
+    
     platform_device_unregister(pdev);
-err_rel_reg:
+    }
+    
     if have_region != 0 { atmel_release_region(base, region_size as c_ulong); }
-err_unreg_drv:
+    }
+    
     platform_driver_unregister(&mut atml_drv);
     rc
 }

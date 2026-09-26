@@ -52,8 +52,7 @@ extern "C" {
         seq: *mut seq_file,
         ptr: *mut btf_ptr,
         ptr_size: u32,
-        flags: u64,
-    ) -> i64;
+        flags: u64) -> i64;
 }
 
 const ERANGE: i64 = 34;
@@ -83,13 +82,13 @@ pub unsafe extern "C" fn dump_task_struct(ctx: *mut bpf_iter__task) -> i32 {
 
         ret = bpf_seq_printf_btf(seq, &mut ptr, core::mem::size_of::<btf_ptr>() as u32, 0);
         match ret {
-            0 => {
+            case if case == 0 => {
                 tasks += 1;
             }
-            -ERANGE => {
+            case if case == -ERANGE => {
                 /* NULL task or task->fs, don't count it as an error. */
             }
-            -E2BIG => {
+            case if case == -E2BIG => {
                 return 1;
             }
             _ => {

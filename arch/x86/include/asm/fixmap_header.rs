@@ -14,11 +14,11 @@
 // Dependency: asm/kmap_size.h
 
 /* Exposed to assembly code for setting up initial page tables. */
-#[cfg(not(feature = "CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP"))]
+#[cfg(not(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP))]
 pub const FIXMAP_PMD_NUM: usize = 2;
-#[cfg(feature = "CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP")]
+#[cfg(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP)]
 pub const FIXMAP_PMD_NUM: usize = KM_PMDS + 2;
-#[cfg(feature = "CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP")]
+#[cfg(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP)]
 pub const KM_PMDS: usize = KM_MAX_IDX * ((CONFIG_NR_CPUS + 511) / 512);
 
 /* fixmap starts downwards from the 507th entry in level2_fixmap_pgt */
@@ -35,32 +35,32 @@ pub const FIXMAP_PMD_TOP: usize = 507;
 #[repr(u32)]
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum FixedAddresses {
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     FIX_HOLE,
-    #[cfg(all(not(feature = "CONFIG_X86_32"), feature = "CONFIG_X86_VSYSCALL_EMULATION"))]
+    #[cfg(all(not(CONFIG_X86_32), CONFIG_X86_VSYSCALL_EMULATION))]
     VSYSCALL_PAGE = ((FIXADDR_TOP - VSYSCALL_ADDR) >> PAGE_SHIFT) as u32,
 
     FIX_DBGP_BASE,
     FIX_EARLYCON_MEM_BASE,
-    #[cfg(feature = "CONFIG_PROVIDE_OHCI1394_DMA_INIT")]
+    #[cfg(CONFIG_PROVIDE_OHCI1394_DMA_INIT)]
     FIX_OHCI1394_BASE,
-    #[cfg(feature = "CONFIG_X86_LOCAL_APIC")]
+    #[cfg(CONFIG_X86_LOCAL_APIC)]
     FIX_APIC_BASE, /* local (CPU) APIC) -- required for SMP or not */
-    #[cfg(feature = "CONFIG_X86_IO_APIC")]
+    #[cfg(CONFIG_X86_IO_APIC)]
     FIX_IO_APIC_BASE_0,
-    #[cfg(feature = "CONFIG_X86_IO_APIC")]
+    #[cfg(CONFIG_X86_IO_APIC)]
     FIX_IO_APIC_BASE_END = FIX_IO_APIC_BASE_0 as u32 + MAX_IO_APICS as u32 - 1,
-    #[cfg(feature = "CONFIG_KMAP_LOCAL")]
+    #[cfg(CONFIG_KMAP_LOCAL)]
     FIX_KMAP_BEGIN, /* reserved pte's for temporary kernel mappings */
-    #[cfg(feature = "CONFIG_KMAP_LOCAL")]
+    #[cfg(CONFIG_KMAP_LOCAL)]
     FIX_KMAP_END = FIX_KMAP_BEGIN as u32 + (KM_MAX_IDX * NR_CPUS) as u32 - 1,
-    #[cfg(all(feature = "CONFIG_KMAP_LOCAL", feature = "CONFIG_PCI_MMCONFIG"))]
+    #[cfg(all(CONFIG_KMAP_LOCAL, CONFIG_PCI_MMCONFIG))]
     FIX_PCIE_MCFG,
-    #[cfg(feature = "CONFIG_PARAVIRT_XXL")]
+    #[cfg(CONFIG_PARAVIRT_XXL)]
     FIX_PARAVIRT_BOOTMAP,
-    #[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+    #[cfg(CONFIG_ACPI_APEI_GHES)]
     FIX_APEI_GHES_IRQ,
-    #[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+    #[cfg(CONFIG_ACPI_APEI_GHES)]
     FIX_APEI_GHES_NMI,
 
     __end_of_permanent_fixed_addresses,
@@ -71,9 +71,9 @@ pub enum FixedAddresses {
         & (!PTRS_PER_PTE as u32)) != 0)
         as u32,
     FIX_BTMAP_BEGIN = FIX_BTMAP_END as u32 + TOTAL_FIX_BTMAPS - 1,
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     FIX_WP_TEST,
-    #[cfg(feature = "CONFIG_INTEL_TXT")]
+    #[cfg(CONFIG_INTEL_TXT)]
     FIX_TBOOT_BASE,
     __end_of_fixed_addresses,
 }
@@ -101,7 +101,7 @@ pub const FIXADDR_START: usize = FIXADDR_TOP - FIXADDR_SIZE;
 pub const FIXADDR_TOT_SIZE: usize = (__end_of_fixed_addresses as usize) << PAGE_SHIFT;
 pub const FIXADDR_TOT_START: usize = FIXADDR_TOP - FIXADDR_TOT_SIZE;
 
-#[cfg(not(feature = "CONFIG_PARAVIRT_XXL"))]
+#[cfg(not(CONFIG_PARAVIRT_XXL))]
 #[inline]
 pub unsafe fn __set_fixmap(idx: FixedAddresses, phys: phys_addr_t, flags: pgprot_t) {
     native_set_fixmap(idx as c_uint, phys, flags);
@@ -109,7 +109,7 @@ pub unsafe fn __set_fixmap(idx: FixedAddresses, phys: phys_addr_t, flags: pgprot
 
 pub const FIXMAP_PAGE_NOCACHE: pgprot_t = PAGE_KERNEL_IO_NOCACHE;
 
-#[cfg(not(feature = "CONFIG_PARAVIRT_XXL"))]
+#[cfg(not(CONFIG_PARAVIRT_XXL))]
 #[inline]
 pub unsafe fn __late_set_fixmap(idx: FixedAddresses, phys: phys_addr_t, flags: pgprot_t) {
     __set_fixmap(idx, phys, flags);

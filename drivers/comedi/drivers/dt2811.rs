@@ -125,7 +125,7 @@ unsafe fn dt2811_ns_to_timer(nanosec: *mut u32, flags: u32) -> u32 {
     }}
     if ns_lo == COMEDI_MIN_SPEED as u64 { ns_lo = ns_hi; divisor_lo = divisor_hi; }
     if ns_hi == 0 { ns_hi = ns_lo; divisor_hi = divisor_lo; }
-    match flags & CMDF_ROUND_MASK { CMDF_ROUND_UP => {*nanosec = ns_lo as u32; divisor_lo}, CMDF_ROUND_DOWN => {*nanosec = ns_hi as u32; divisor_hi}, _ => if ns_hi - *nanosec as u64 < *nanosec as u64 - ns_lo {*nanosec = ns_lo as u32; divisor_lo} else {*nanosec = ns_hi as u32; divisor_hi} }
+    match flags & CMDF_ROUND_MASK { CMDF_ROUND_UP => {*nanosec = ns_lo as u32; divisor_lo}, CMDF_ROUND_DOWN => {*nanosec = ns_hi as u32; divisor_hi}, _ => if ns_hi - (*nanosec as u64) < *nanosec as u64 - ns_lo {*nanosec = ns_lo as u32; divisor_lo} else {*nanosec = ns_hi as u32; divisor_hi} }
 }
 
 unsafe fn dt2811_ai_eoc(dev: *mut comedi_device, _s: *mut comedi_subdevice, _insn: *mut comedi_insn, _context: c_ulong) -> c_int {

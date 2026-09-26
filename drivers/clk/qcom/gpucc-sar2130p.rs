@@ -64,7 +64,7 @@ static gpu_cc_ff_clk_src: clk_rcg2 = clk_rcg2 { cmd_rcgr: 0x9474, mnd_width: 0, 
 static gpu_cc_gmu_clk_src: clk_rcg2 = clk_rcg2 { cmd_rcgr: 0x9318, mnd_width: 0, hid_width: 5, parent_map: gpu_cc_parent_map_1.as_ptr(), freq_tbl: ftbl_gpu_cc_gmu_clk_src.as_ptr(), clkr: clk_regmap::with_flags("gpu_cc_gmu_clk_src", gpu_cc_parent_data_1.as_ptr(), 5, CLK_SET_RATE_PARENT, &clk_rcg2_shared_ops) };
 static gpu_cc_hub_clk_src: clk_rcg2 = clk_rcg2 { cmd_rcgr: 0x93ec, mnd_width: 0, hid_width: 5, parent_map: gpu_cc_parent_map_2.as_ptr(), freq_tbl: ftbl_gpu_cc_ff_clk_src.as_ptr(), clkr: clk_regmap::with_init("gpu_cc_hub_clk_src", gpu_cc_parent_data_2.as_ptr(), 4, &clk_rcg2_shared_ops) };
 
-macro_rules! branch { ($name:ident, $reg:expr, $halt:expr, $ops:expr) => { static $name: clk_branch = clk_branch { halt_reg: $reg, halt_check: $halt, clkr: clk_regmap::branch($reg, $name##_name, $ops) }; }; }
+macro_rules! branch { ($name:tt, $reg:expr, $halt:expr, $ops:expr) => { static $name: clk_branch = clk_branch { halt_reg: $reg, halt_check: $halt, clkr: clk_regmap::branch!($reg, ::kernel::macros::paste!([<$name _name>]), $ops) }; }; }
 branch!(gpu_cc_ahb_clk, 0x911c, BRANCH_HALT_DELAY, &clk_branch2_ops);
 branch!(gpu_cc_crc_ahb_clk, 0x9120, BRANCH_HALT_VOTED, &clk_branch2_ops);
 branch!(gpu_cc_cx_ff_clk, 0x914c, BRANCH_HALT, &clk_branch2_ops);

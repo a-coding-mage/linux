@@ -45,7 +45,7 @@ enum ClkIds {
 }
 
 macro_rules! DEF_PLL { ($name:expr, $id:expr, $offset:expr) => {
-    DEF_BASE!($name, $id, CLK_TYPE_GEN4_PLL2X_3X, CLK_MAIN, offset = $offset)
+    DEF_BASE!($name, $id, CLK_TYPE_GEN4_PLL2X_3X, CLK_MAIN, $offset = $offset)
 } }
 
 const CPG_PLL20CR: u32 = 0x0834;

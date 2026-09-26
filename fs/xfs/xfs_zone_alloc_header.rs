@@ -58,7 +58,7 @@ extern "C" {
     pub fn xfs_zoned_show_stats(m: *mut seq_file, mp: *mut xfs_mount);
 }
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 extern "C" {
     pub fn xfs_mount_zones(mp: *mut xfs_mount) -> ::core::ffi::c_int;
     pub fn xfs_unmount_zones(mp: *mut xfs_mount);
@@ -67,21 +67,21 @@ extern "C" {
     pub fn xfs_zone_gc_wakeup(mp: *mut xfs_mount);
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_mount_zones(_mp: *mut xfs_mount) -> ::core::ffi::c_int {
     -EIO
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_unmount_zones(_mp: *mut xfs_mount) {}
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_zone_gc_start(_mp: *mut xfs_mount) {}
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_zone_gc_stop(_mp: *mut xfs_mount) {}
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub unsafe fn xfs_zone_gc_wakeup(_mp: *mut xfs_mount) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

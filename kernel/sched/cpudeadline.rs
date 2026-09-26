@@ -125,7 +125,7 @@ pub unsafe fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut c
         let mut max_cap: c_ulong = 0;
         let mut max_cpu: i32 = -1;
         if !sched_asym_cpucap_active() { return 1; }
-        for_each_cpu!(cpu, later_mask) {
+        for_each_cpu!(cpu, later_mask, {
             if !dl_task_fits_capacity(p, cpu) {
                 cpumask_clear_cpu(cpu, later_mask);
                 let cap = arch_scale_cpu_capacity(cpu);
@@ -134,7 +134,7 @@ pub unsafe fn cpudl_find(cp: *mut cpudl, p: *mut task_struct, later_mask: *mut c
                     max_cpu = cpu;
                 }
             }
-        }
+        });
         if cpumask_empty(later_mask) { cpumask_set_cpu(max_cpu, later_mask); }
         1
     } else {
@@ -206,7 +206,7 @@ pub unsafe fn cpudl_init(cp: *mut cpudl) -> i32 {
         kfree((*cp).elements);
         return -ENOMEM;
     }
-    for_each_possible_cpu!(i) { (*(*cp).elements.add(i as usize)).idx = IDX_INVALID; }
+    for_each_possible_cpu!(i, { (*(*cp).elements.add(i as usize)).idx = IDX_INVALID; });
     0
 }
 

@@ -30,16 +30,16 @@ pub unsafe fn asm_offsets() {
     OFFSET!(TASK_TI_PREEMPT_COUNT, task_struct, thread_info.preempt_count);
     OFFSET!(TASK_TI_KERNEL_SP, task_struct, thread_info.kernel_sp);
     OFFSET!(TASK_TI_USER_SP, task_struct, thread_info.user_sp);
-    #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+    #[cfg(CONFIG_SHADOW_CALL_STACK)]
     OFFSET!(TASK_TI_SCS_SP, task_struct, thread_info.scs_sp);
-    #[cfg(feature = "CONFIG_64BIT")]
+    #[cfg(CONFIG_64BIT)]
     {
         OFFSET!(TASK_TI_A0, task_struct, thread_info.a0);
         OFFSET!(TASK_TI_A1, task_struct, thread_info.a1);
         OFFSET!(TASK_TI_A2, task_struct, thread_info.a2);
     }
     OFFSET!(TASK_TI_CPU_NUM, task_struct, thread_info.cpu);
-    #[cfg(feature = "CONFIG_RISCV_USER_CFI")]
+    #[cfg(CONFIG_RISCV_USER_CFI)]
     {
         OFFSET!(TASK_TI_CFI_STATE, task_struct, thread_info.user_cfi_state);
         OFFSET!(TASK_TI_USER_SSP, task_struct, thread_info.user_cfi_state.user_shdw_stk);

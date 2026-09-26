@@ -87,11 +87,11 @@ pub const TALITOS_FTR_SEC1: c_ulong = 0x10;
 /* Build-time CONFIG_CRYPTO_DEV_TALITOS1/2 conditions are supplied externally. */
 #[inline]
 pub unsafe fn has_ftr_sec1(priv_: *mut talitos_private) -> bool {
-    #[cfg(all(feature = "CONFIG_CRYPTO_DEV_TALITOS1", feature = "CONFIG_CRYPTO_DEV_TALITOS2"))]
+    #[cfg(all(CONFIG_CRYPTO_DEV_TALITOS1, CONFIG_CRYPTO_DEV_TALITOS2))]
     { return (*priv_).features & TALITOS_FTR_SEC1 != 0; }
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_TALITOS1")]
+    #[cfg(CONFIG_CRYPTO_DEV_TALITOS1)]
     { true }
-    #[cfg(not(feature = "CONFIG_CRYPTO_DEV_TALITOS1"))]
+    #[cfg(not(CONFIG_CRYPTO_DEV_TALITOS1))]
     { false }
 }
 

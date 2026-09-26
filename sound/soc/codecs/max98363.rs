@@ -325,7 +325,7 @@ const MAX98363_CLOCK_MON_SHIFT: c_uint = 0;
 const MAX98363_SPKMON_SHIFT: c_uint = 0;
 
 const fn bit(n: c_uint) -> c_ulong {
-    1 as c_ulong << n
+    (1 as c_ulong) << n
 }
 
 const fn genmask(high: c_int, low: c_int) -> c_uint {

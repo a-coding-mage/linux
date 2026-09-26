@@ -354,13 +354,13 @@ unsafe fn imx8mp_clocks_apply_constraints(*const imx8mp_clock_constraints)
 {
 	const struct imx8mp_clock_constraints *constr;
 
-	for (constr = constraints; constr->clkid; constr++)
-		clk_hw_set_rate_range(hws[constr->clkid], 0, constr->maxrate);
+	for (constr = constraints; (*constr).clkid; constr++)
+		clk_hw_set_rate_range(hws[(*constr).clkid], 0, (*constr).maxrate);
 }
 
-unsafe fn imx8mp_clocks_probe(struct platform_device *pdev) -> i32
+unsafe fn imx8mp_clocks_probe(platform_device *pdev) -> i32
 {
-	*mut device dev = &pdev->dev;
+	*mut device dev = (*&pdev).dev;
 	*mut device_node np;
 	*mut core::ffi::c_void anatop_base, *mut core::ffi::c_void ccm_base;
 	*const core::ffi::c_char opmode;
@@ -372,7 +372,7 @@ unsafe fn imx8mp_clocks_probe(struct platform_device *pdev) -> i32
 	if (WARN_ON(IS_ERR(anatop_base)))
 		return PTR_ERR(anatop_base);
 
-	np = dev->of_node;
+	np = (*dev).of_node;
 	ccm_base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(ccm_base)))
 		return PTR_ERR(ccm_base);
@@ -381,8 +381,8 @@ unsafe fn imx8mp_clocks_probe(struct platform_device *pdev) -> i32
 	if (WARN_ON(!clk_hw_data))
 		return -ENOMEM;
 
-	clk_hw_data->num = IMX8MP_CLK_END;
-	hws = clk_hw_data->hws;
+	(*clk_hw_data).num = IMX8MP_CLK_END;
+	hws = (*clk_hw_data).hws;
 
 	hws[IMX8MP_CLK_DUMMY] = imx_clk_hw_fixed("dummy", 0);
 	hws[IMX8MP_CLK_24M] = imx_get_clk_hw_by_name(np, "osc_24m");
@@ -661,10 +661,10 @@ unsafe fn imx8mp_clocks_probe(struct platform_device *pdev) -> i32
 	hws[IMX8MP_CLK_PDM_ROOT] = imx_clk_hw_gate2_shared2("pdm_root", "pdm", ccm_base + 0x4650, 0, &share_count_audio);
 
 	hws[IMX8MP_CLK_ARM] = imx_clk_hw_cpu("arm", "arm_a53_core",
-					     hws[IMX8MP_CLK_A53_CORE]->clk,
-					     hws[IMX8MP_CLK_A53_CORE]->clk,
-					     hws[IMX8MP_ARM_PLL_OUT]->clk,
-					     hws[IMX8MP_CLK_A53_DIV]->clk);
+					     (*hws[IMX8MP_CLK_A53_CORE]).clk,
+					     (*hws[IMX8MP_CLK_A53_CORE]).clk,
+					     (*hws[IMX8MP_ARM_PLL_OUT]).clk,
+					     (*hws[IMX8MP_CLK_A53_DIV]).clk);
 
 	imx_check_clk_hws(hws, IMX8MP_CLK_END);
 
@@ -697,15 +697,15 @@ static const struct of_device_id imx8mp_clk_of_match[] = {
 // MODULE_DEVICE_TABLE(of, imx8mp_clk_of_match);
 
 static struct platform_driver imx8mp_clk_driver = {
-	.probe = imx8mp_clocks_probe,
-	.driver = {
-		.name = "imx8mp-ccm",
+	probe: imx8mp_clocks_probe,
+	driver: {
+		name: "imx8mp-ccm",
 		/*
 		 * Disable bind attributes: clocks are not removed and
 		 * reloading the driver will crash or break devices.
 		 */
-		.suppress_bind_attrs = true,
-		.of_match_table = imx8mp_clk_of_match,
+		suppress_bind_attrs: true,
+		of_match_table: imx8mp_clk_of_match,
 	},
 };
 // module_platform_driver(imx8mp_clk_driver);

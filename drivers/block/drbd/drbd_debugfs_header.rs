@@ -4,7 +4,7 @@
 // linux/kernel.h, linux/module.h, linux/debugfs.h, and drbd_int.h.
 
 // C build-time condition: CONFIG_DEBUG_FS.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn drbd_debugfs_init();
     pub fn drbd_debugfs_cleanup();
@@ -22,43 +22,43 @@ extern "C" {
     pub fn drbd_debugfs_peer_device_cleanup(peer_device: *mut drbd_peer_device);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_init() {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_cleanup() {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_resource_add(_resource: *mut drbd_resource) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_resource_cleanup(_resource: *mut drbd_resource) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_connection_add(_connection: *mut drbd_connection) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_connection_cleanup(_connection: *mut drbd_connection) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_device_add(_device: *mut drbd_device) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_device_cleanup(_device: *mut drbd_device) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_peer_device_add(_peer_device: *mut drbd_peer_device) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn drbd_debugfs_peer_device_cleanup(_peer_device: *mut drbd_peer_device) {}
 

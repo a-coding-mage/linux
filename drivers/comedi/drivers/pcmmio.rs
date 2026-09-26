@@ -14,10 +14,16 @@ const PCMMIO_AI_MSB_REG: u32 = 0x01;
 const PCMMIO_AI_CMD_REG: u32 = 0x02;
 const PCMMIO_AI_CMD_SE: u8 = 1 << 7;
 const PCMMIO_AI_CMD_ODD_CHAN: u8 = 1 << 6;
-const PCMMIO_AI_CMD_CHAN_SEL = |x: u32| ((x & 0x3) << 4);
-const PCMMIO_AI_CMD_RANGE = |x: u32| ((x & 0x3) << 2);
+const fn PCMMIO_AI_CMD_CHAN_SEL(x: u32) -> u32 {
+    ((x & 0x3) << 4)
+}
+const fn PCMMIO_AI_CMD_RANGE(x: u32) -> u32 {
+    ((x & 0x3) << 2)
+}
 const PCMMIO_RESOURCE_REG: u32 = 0x02;
-const PCMMIO_RESOURCE_IRQ = |x: u32| ((x & 0xf) << 0);
+const fn PCMMIO_RESOURCE_IRQ(x: u32) -> u32 {
+    ((x & 0xf) << 0)
+}
 const PCMMIO_AI_STATUS_REG: u32 = 0x03;
 const PCMMIO_AI_STATUS_DATA_READY: u8 = 1 << 7;
 const PCMMIO_AI_STATUS_DATA_DMA_PEND: u8 = 1 << 6;
@@ -34,7 +40,9 @@ const PCMMIO_AI_RES_ENA_DIO_RES_ACCESS: u8 = 1 << 4;
 const PCMMIO_AI_2ND_ADC_OFFSET: u32 = 0x04;
 
 const PCMMIO_AO_LSB_REG: u32 = 0x08;
-const PCMMIO_AO_LSB_SPAN = |x: u32| ((x & 0xf) << 0);
+const fn PCMMIO_AO_LSB_SPAN(x: u32) -> u32 {
+    ((x & 0xf) << 0)
+}
 const PCMMIO_AO_MSB_REG: u32 = 0x09;
 const PCMMIO_AO_CMD_REG: u32 = 0x0a;
 const PCMMIO_AO_CMD_WR_SPAN: u8 = 0x2 << 4;
@@ -50,23 +58,33 @@ const PCMMIO_AO_CMD_RD_B1_CODE: u8 = 0xb << 4;
 const PCMMIO_AO_CMD_RD_B2_SPAN: u8 = 0xc << 4;
 const PCMMIO_AO_CMD_RD_B2_CODE: u8 = 0xd << 4;
 const PCMMIO_AO_CMD_NOP: u8 = 0xf << 4;
-const PCMMIO_AO_CMD_CHAN_SEL = |x: u32| ((x & 0x03) << 1);
+const fn PCMMIO_AO_CMD_CHAN_SEL(x: u32) -> u32 {
+    ((x & 0x03) << 1)
+}
 const PCMMIO_AO_CMD_CHAN_SEL_ALL: u8 = 0x0f;
 const PCMMIO_AO_STATUS_REG: u32 = 0x0b;
 const PCMMIO_AO_STATUS_DATA_READY: u8 = 1 << 7;
 const PCMMIO_AO_RESOURCE_ENA_REG: u32 = 0x0b;
 const PCMMIO_AO_2ND_DAC_OFFSET: u32 = 0x04;
 
-const PCMMIO_PORT_REG = |x: u32| 0x10 + x;
+const fn PCMMIO_PORT_REG(x: u32) -> u32 {
+    0x10 + x
+}
 const PCMMIO_INT_PENDING_REG: u32 = 0x16;
 const PCMMIO_PAGE_LOCK_REG: u32 = 0x17;
-const PCMMIO_LOCK_PORT = |x: u32| (1 << x) & 0x3f;
-const PCMMIO_PAGE = |x: u32| ((x & 0x3) << 6);
+const fn PCMMIO_LOCK_PORT(x: u32) -> u32 {
+    (1 << x) & 0x3f
+}
+const fn PCMMIO_PAGE(x: u32) -> u32 {
+    ((x & 0x3) << 6)
+}
 const PCMMIO_PAGE_MASK: u32 = PCMMIO_PAGE(3);
 const PCMMIO_PAGE_POL: i32 = 1;
 const PCMMIO_PAGE_ENAB: i32 = 2;
 const PCMMIO_PAGE_INT_ID: i32 = 3;
-const PCMMIO_PAGE_REG = |x: u32| 0x18 + x;
+const fn PCMMIO_PAGE_REG(x: u32) -> u32 {
+    0x18 + x
+}
 
 static pcmmio_ai_ranges: comedi_lrange = comedi_lrange { length: 4, range: [BIP_RANGE(5), BIP_RANGE(10), UNI_RANGE(5), UNI_RANGE(10)] };
 static pcmmio_ao_ranges: comedi_lrange = comedi_lrange { length: 6, range: [UNI_RANGE(5), UNI_RANGE(10), BIP_RANGE(5), BIP_RANGE(10), BIP_RANGE(2.5), RANGE(-2.5, 7.5)] };

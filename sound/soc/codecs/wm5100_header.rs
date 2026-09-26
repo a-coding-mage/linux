@@ -5313,8 +5313,8 @@ pub const WM5100_DSP3_ZM_END_MASK: u32 = 0xFFFF;  /* DSP3_ZM_END - [15:0] */
 pub const WM5100_DSP3_ZM_END_SHIFT: u32 = 0;  /* DSP3_ZM_END - [15:0] */
 pub const WM5100_DSP3_ZM_END_WIDTH: u32 = 16;  /* DSP3_ZM_END - [15:0] */
 
-bool wm5100_readable_register(struct device *dev, unsigned int reg);
-bool wm5100_volatile_register(struct device *dev, unsigned int reg);
+bool wm5100_readable_register(device *dev, reg: core::ffi::c_uint);
+bool wm5100_volatile_register(device *dev, reg: core::ffi::c_uint);
 
 extern struct reg_default wm5100_reg_defaults[WM5100_REGISTER_COUNT];
 

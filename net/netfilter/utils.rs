@@ -3,7 +3,7 @@
 
 #[cfg(CONFIG_INET)]
 pub unsafe fn nf_ip_checksum(
-    skb: *mut struct sk_buff,
+    skb: *mut sk_buff,
     hook: ::core::ffi::c_uint,
     dataoff: ::core::ffi::c_uint,
     protocol: u8,
@@ -62,8 +62,8 @@ pub unsafe fn nf_ip_checksum(
 }
 
 #[allow(non_snake_case)]
-static unsafe fn nf_ip_checksum_partial(
-    skb: *mut struct sk_buff,
+unsafe fn nf_ip_checksum_partial(
+    skb: *mut sk_buff,
     hook: ::core::ffi::c_uint,
     dataoff: ::core::ffi::c_uint,
     len: ::core::ffi::c_uint,
@@ -97,7 +97,7 @@ static unsafe fn nf_ip_checksum_partial(
 }
 
 pub unsafe fn nf_ip6_checksum(
-    skb: *mut struct sk_buff,
+    skb: *mut sk_buff,
     hook: ::core::ffi::c_uint,
     dataoff: ::core::ffi::c_uint,
     protocol: u8,
@@ -145,8 +145,8 @@ pub unsafe fn nf_ip6_checksum(
     csum
 }
 
-static unsafe fn nf_ip6_checksum_partial(
-    skb: *mut struct sk_buff,
+unsafe fn nf_ip6_checksum_partial(
+    skb: *mut sk_buff,
     hook: ::core::ffi::c_uint,
     dataoff: ::core::ffi::c_uint,
     len: ::core::ffi::c_uint,
@@ -191,7 +191,7 @@ static unsafe fn nf_ip6_checksum_partial(
 }
 
 pub unsafe fn nf_checksum(
-    skb: *mut struct sk_buff,
+    skb: *mut sk_buff,
     hook: ::core::ffi::c_uint,
     dataoff: ::core::ffi::c_uint,
     protocol: u8,
@@ -205,7 +205,7 @@ pub unsafe fn nf_checksum(
 }
 
 pub unsafe fn nf_checksum_partial(
-    skb: *mut struct sk_buff,
+    skb: *mut sk_buff,
     hook: ::core::ffi::c_uint,
     dataoff: ::core::ffi::c_uint,
     len: ::core::ffi::c_uint,
@@ -220,9 +220,9 @@ pub unsafe fn nf_checksum_partial(
 }
 
 pub unsafe fn nf_route(
-    net: *mut struct net,
-    dst: *mut *mut struct dst_entry,
-    fl: *mut struct flowi,
+    net: *mut net,
+    dst: *mut *mut dst_entry,
+    fl: *mut flowi,
     strict: bool,
     family: u16,
 ) -> ::core::ffi::c_int {
@@ -234,9 +234,9 @@ pub unsafe fn nf_route(
 }
 
 /* Only get and check the lengths, not do any hop-by-hop stuff. */
-pub unsafe fn nf_ip6_check_hbh_len(skb: *mut struct sk_buff, plen: *mut u32) -> ::core::ffi::c_int {
+pub unsafe fn nf_ip6_check_hbh_len(skb: *mut sk_buff, plen: *mut u32) -> ::core::ffi::c_int {
     let mut len: ::core::ffi::c_int;
-    let mut off: ::core::ffi::c_int = core::mem::size_of::<struct ipv6hdr>() as ::core::ffi::c_int;
+    let mut off: ::core::ffi::c_int = core::mem::size_of::<ipv6hdr>() as ::core::ffi::c_int;
     let mut nh: *mut u8;
 
     if !pskb_may_pull(skb, (off + 8) as _) { return -ENOMEM; }
@@ -258,7 +258,7 @@ pub unsafe fn nf_ip6_check_hbh_len(skb: *mut struct sk_buff, plen: *mut u32) -> 
             if *nh.add((off + 1) as usize) != 4 || (off & 3) != 2 { return -EBADMSG; }
             pkt_len = ntohl(*(nh.add((off + 2) as usize) as *const __be32));
             if pkt_len <= IPV6_MAXPLEN || (*ipv6_hdr(skb)).payload_len != 0 { return -EBADMSG; }
-            if pkt_len > (*skb).len - core::mem::size_of::<struct ipv6hdr>() as u32 { return -EBADMSG; }
+            if pkt_len > (*skb).len - core::mem::size_of::<ipv6hdr>() as u32 { return -EBADMSG; }
             *plen = pkt_len;
         }
         off += optlen;

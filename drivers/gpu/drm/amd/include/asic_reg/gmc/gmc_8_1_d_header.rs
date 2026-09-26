@@ -21,7 +21,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-pub const GMC_8_1_D_H: u32 = ;
 
 pub const mmMC_CONFIG: u32 = 0x800;
 pub const mmMC_ARB_ATOMIC: u32 = 0x9be;

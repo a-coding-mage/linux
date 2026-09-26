@@ -126,7 +126,7 @@ pub unsafe extern "C" fn gnss_serial_register(gserial: *mut gnss_serial) -> c_in
     let serdev = (*gserial).serdev;
     let ret;
     /* CONFIG_PM selects the runtime-PM path at build time. */
-    if cfg!(feature = "CONFIG_PM") {
+    if cfg!(CONFIG_PM) {
         pm_runtime_enable(&mut (*serdev).dev);
     } else {
         ret = gnss_serial_set_power(gserial, GNSS_SERIAL_ACTIVE);
@@ -134,7 +134,7 @@ pub unsafe extern "C" fn gnss_serial_register(gserial: *mut gnss_serial) -> c_in
     }
     ret = gnss_register_device((*gserial).gdev);
     if ret != 0 {
-        if cfg!(feature = "CONFIG_PM") { pm_runtime_disable(&mut (*serdev).dev); }
+        if cfg!(CONFIG_PM) { pm_runtime_disable(&mut (*serdev).dev); }
         else { gnss_serial_set_power(gserial, GNSS_SERIAL_OFF); }
     }
     ret
@@ -144,16 +144,16 @@ pub unsafe extern "C" fn gnss_serial_register(gserial: *mut gnss_serial) -> c_in
 pub unsafe extern "C" fn gnss_serial_deregister(gserial: *mut gnss_serial) {
     let serdev = (*gserial).serdev;
     gnss_deregister_device((*gserial).gdev);
-    if cfg!(feature = "CONFIG_PM") { pm_runtime_disable(&mut (*serdev).dev); }
+    if cfg!(CONFIG_PM) { pm_runtime_disable(&mut (*serdev).dev); }
     else { gnss_serial_set_power(gserial, GNSS_SERIAL_OFF); }
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" fn gnss_serial_runtime_suspend(dev: *mut device) -> c_int {
     gnss_serial_set_power(dev_get_drvdata(dev), GNSS_SERIAL_STANDBY)
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" fn gnss_serial_runtime_resume(dev: *mut device) -> c_int {
     gnss_serial_set_power(dev_get_drvdata(dev), GNSS_SERIAL_ACTIVE)
 }
@@ -162,13 +162,13 @@ unsafe extern "C" fn gnss_serial_prepare(dev: *mut device) -> c_int {
     if pm_runtime_suspended(dev) { 1 } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn gnss_serial_suspend(dev: *mut device) -> c_int {
     let gserial = dev_get_drvdata(dev);
     if pm_runtime_suspended(dev) { 0 } else { gnss_serial_set_power(gserial, GNSS_SERIAL_STANDBY) }
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn gnss_serial_resume(dev: *mut device) -> c_int {
     let gserial = dev_get_drvdata(dev);
     if pm_runtime_suspended(dev) { 0 } else { gnss_serial_set_power(gserial, GNSS_SERIAL_ACTIVE) }
@@ -179,13 +179,13 @@ unsafe extern "C" fn gnss_serial_resume(dev: *mut device) -> c_int {
 #[no_mangle]
 pub static gnss_serial_pm_ops: dev_pm_ops = dev_pm_ops {
     prepare: Some(gnss_serial_prepare),
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     suspend: Some(gnss_serial_suspend),
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     resume: Some(gnss_serial_resume),
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     runtime_suspend: Some(gnss_serial_runtime_suspend),
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     runtime_resume: Some(gnss_serial_runtime_resume),
 };
 

@@ -120,9 +120,9 @@ pub unsafe fn detect_physmem_online_ranges(max_physmem_end: usize) {
         physmem_info.info_source = MEM_DETECT_DIAG260;
     } else if max_physmem_end != 0 { add_physmem_online_range(0, max_physmem_end as u64); }
     boot_debug!("Online memory ranges (info source: %s):\n", get_physmem_info_source());
-    for_each_physmem_online_range!(i, &mut start, &mut end) {
+    for_each_physmem_online_range!(i, &mut start, &mut end, {
         boot_debug!(" online [%d]:   0x%016lx-0x%016lx\n", i, start, end);
-    }
+    });
 }
 
 pub unsafe fn physmem_set_usable_limit(limit: usize) {
@@ -137,11 +137,11 @@ unsafe fn die_oom(size: usize, align: usize, min: usize, max: usize) {
     if !is_prot_virt_guest() && early_command_line[0] != 0 { boot_emerg!("Kernel command line: %s\n", early_command_line); }
     boot_emerg!("Out of memory allocating %lu bytes 0x%lx aligned in range %lx:%lx\n", size, align, min, max);
     boot_emerg!("Reserved memory ranges:\n");
-    for_each_physmem_reserved_range!(t, range, &mut start, &mut end) {
+    for_each_physmem_reserved_range!(t, range, &mut start, &mut end, {
         boot_emerg!("%016lx %016lx %s\n", start, end, get_rr_type_name(t)); total_reserved_mem += end - start;
-    }
+    });
     boot_emerg!("Usable online memory ranges (info source: %s [%d]):\n", get_physmem_info_source(), physmem_info.info_source);
-    for_each_physmem_usable_range!(i, &mut start, &mut end) { boot_emerg!("%016lx %016lx\n", start, end); total_mem += end - start; }
+    for_each_physmem_usable_range!(i, &mut start, &mut end, { boot_emerg!("%016lx %016lx\n", start, end); total_mem += end - start; });
     boot_emerg!("Usable online memory total: %lu Reserved: %lu Free: %lu\n", total_mem, total_reserved_mem, if total_mem > total_reserved_mem { total_mem - total_reserved_mem } else { 0 });
     boot_panic!("Oom\n");
 }
@@ -168,6 +168,6 @@ pub unsafe fn physmem_alloc_range(typ: reserved_range_type, size: usize, align: 
 pub unsafe fn physmem_alloc(typ: reserved_range_type, size: usize, align: usize, die_on_oom: bool) -> usize { let range = &mut physmem_info.reserved[typ as usize]; let mut new_range: *mut reserved_range = core::ptr::null_mut(); let mut ranges_left = 0; let mut addr = __physmem_alloc_range(size, align, 0, physmem_alloc_pos, physmem_alloc_ranges, &mut ranges_left, die_on_oom); if addr == 0 { return 0; } if range.start != addr + size { if range.end != 0 { addr = __physmem_alloc_range(core::mem::size_of::<reserved_range>(), 0, 0, physmem_alloc_pos, physmem_alloc_ranges, &mut ranges_left, true); new_range = addr as *mut reserved_range; addr = __physmem_alloc_range(size, align, 0, addr, ranges_left, &mut ranges_left, die_on_oom); if addr == 0 { return 0; } *new_range = *range; range.chain = new_range; } range.end = addr + size; } if typ != RR_VMEM { boot_debug!("%-14s 0x%016lx-0x%016lx %-20s align 0x%lx split %d\n", "Alloc topdown:", addr, addr + size, get_rr_type_name(typ), align, !new_range.is_null()); } range.start = addr; physmem_alloc_pos = addr; physmem_alloc_ranges = ranges_left; addr }
 pub unsafe fn physmem_alloc_or_die(typ: reserved_range_type, size: usize, align: usize) -> usize { physmem_alloc(typ, size, align, true) }
 pub unsafe fn get_physmem_alloc_pos() -> usize { physmem_alloc_pos }
-pub unsafe fn dump_physmem_reserved() { boot_debug!("Reserved memory ranges:\n"); for_each_physmem_reserved_range!(t, range, &mut start, &mut end) { if end != 0 { boot_debug!("%-14s 0x%016lx-0x%016lx @%012lx chain %012lx\n", get_rr_type_name(t), start, end, range as usize, (*range).chain as usize); } } }
+pub unsafe fn dump_physmem_reserved() { boot_debug!("Reserved memory ranges:\n"); for_each_physmem_reserved_range!(t, range, &mut start, &mut end, { if end != 0 { boot_debug!("%-14s 0x%016lx-0x%016lx @%012lx chain %012lx\n", get_rr_type_name(t), start, end, range as usize, (*range).chain as usize); } }); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

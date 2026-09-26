@@ -24,19 +24,19 @@ unsafe extern "C" {
 }
 
 // The following conditional corresponds to IS_ENABLED(CONFIG_INFINIBAND_USER_ACCESS).
-#[cfg(feature = "CONFIG_INFINIBAND_USER_ACCESS")]
+#[cfg(CONFIG_INFINIBAND_USER_ACCESS)]
 unsafe extern "C" {
     pub fn ib_create_ucap(type_: rdma_user_cap) -> i32;
     pub fn ib_remove_ucap(type_: rdma_user_cap);
 }
 
-#[cfg(not(feature = "CONFIG_INFINIBAND_USER_ACCESS"))]
+#[cfg(not(CONFIG_INFINIBAND_USER_ACCESS))]
 #[inline]
 pub unsafe fn ib_create_ucap(_type_: rdma_user_cap) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_INFINIBAND_USER_ACCESS"))]
+#[cfg(not(CONFIG_INFINIBAND_USER_ACCESS))]
 #[inline]
 pub unsafe fn ib_remove_ucap(_type_: rdma_user_cap) {}
 

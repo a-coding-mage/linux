@@ -103,7 +103,7 @@ pub unsafe extern "C" fn machine_restart(command: *mut c_char) {
     }
 
     // CONFIG_SMP conditional code from the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         preempt_disable();
         smp_send_stop();
@@ -121,7 +121,7 @@ pub unsafe extern "C" fn machine_halt() {
     }
 
     // CONFIG_SMP conditional code from the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         preempt_disable();
         smp_send_stop();
@@ -134,7 +134,7 @@ pub unsafe extern "C" fn machine_power_off() {
     do_kernel_power_off();
 
     // CONFIG_SMP conditional code from the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         preempt_disable();
         smp_send_stop();

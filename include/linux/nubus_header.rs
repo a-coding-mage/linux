@@ -130,7 +130,7 @@ pub struct nubus_driver {
 }
 
 /* Generic NuBus interface functions, modelled after the PCI interface. */
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe extern "C" {
     pub static mut nubus_populate_procfs: bool;
     pub fn nubus_proc_init();
@@ -141,15 +141,15 @@ unsafe extern "C" {
     pub fn nubus_proc_add_rsrc(procdir: *mut proc_dir_entry, ent: *const nubus_dirent);
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn nubus_proc_init() {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn nubus_proc_add_board(_: *mut nubus_board) -> *mut proc_dir_entry { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn nubus_proc_add_rsrc_dir(_: *mut proc_dir_entry, _: *const nubus_dirent, _: *mut nubus_board) -> *mut proc_dir_entry { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn nubus_proc_add_rsrc_mem(_: *mut proc_dir_entry, _: *const nubus_dirent, _: u32) {}
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 pub unsafe fn nubus_proc_add_rsrc(_: *mut proc_dir_entry, _: *const nubus_dirent) {}
 
 #[macro_export]

@@ -20,7 +20,7 @@ unsafe fn ha_get_env(
         irqs_disabled()
     } else if env == preempt_off_opid {
         // C: if (IS_ENABLED(CONFIG_PREEMPTION)) ...; otherwise return true.
-        if cfg!(feature = "CONFIG_PREEMPTION") {
+        if cfg!(CONFIG_PREEMPTION) {
             ((preempt_count() & PREEMPT_MASK) > 0) as u64
         } else {
             1
@@ -131,14 +131,14 @@ module_author!("Gabriele Monaco <gmonaco@redhat.com>");
 module_description!("opid: operations with preemption and irq disabled.");
 
 // C condition: IS_ENABLED(CONFIG_RV_MONITORS_KUNIT_TEST).
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub static rv_opid_ops: rv_opid_ops = rv_opid_ops {
     mon: RV_MON_OPS_INIT!(),
     handle_sched_need_resched: handle_sched_need_resched,
     handle_sched_waking: handle_sched_waking,
 };
 
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 export_symbol_if_kunit!(rv_opid_ops);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -45,7 +45,7 @@ unsafe extern "C" {
 
 // Equivalent to: #if IS_ENABLED(CONFIG_DRM_AMD_DC_KUNIT_TEST)
 // C dependencies: <drm/drm_connector.h>, <drm/drm_crtc.h>
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 mod config_drm_amd_dc_kunit_test {
     #[repr(C)]
     pub struct drm_encoder {

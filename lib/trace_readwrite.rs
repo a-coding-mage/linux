@@ -9,7 +9,7 @@
 // The following declarations are provided by <trace/events/rwmmio.h>.
 use core::ffi::c_void;
 
-#[cfg(feature = "CONFIG_TRACE_MMIO_ACCESS")]
+#[cfg(CONFIG_TRACE_MMIO_ACCESS)]
 extern "C" {
     fn trace_rwmmio_write(
         caller_addr: usize,
@@ -37,7 +37,7 @@ extern "C" {
 
 // EXPORT_SYMBOL_GPL(log_write_mmio);
 // EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_write);
-#[cfg(feature = "CONFIG_TRACE_MMIO_ACCESS")]
+#[cfg(CONFIG_TRACE_MMIO_ACCESS)]
 #[no_mangle]
 pub unsafe extern "C" fn log_write_mmio(
     val: u64,
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn log_write_mmio(
 
 // EXPORT_SYMBOL_GPL(log_post_write_mmio);
 // EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_write);
-#[cfg(feature = "CONFIG_TRACE_MMIO_ACCESS")]
+#[cfg(CONFIG_TRACE_MMIO_ACCESS)]
 #[no_mangle]
 pub unsafe extern "C" fn log_post_write_mmio(
     val: u64,
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn log_post_write_mmio(
 
 // EXPORT_SYMBOL_GPL(log_read_mmio);
 // EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_read);
-#[cfg(feature = "CONFIG_TRACE_MMIO_ACCESS")]
+#[cfg(CONFIG_TRACE_MMIO_ACCESS)]
 #[no_mangle]
 pub unsafe extern "C" fn log_read_mmio(
     width: u8,
@@ -78,7 +78,7 @@ pub unsafe extern "C" fn log_read_mmio(
 
 // EXPORT_SYMBOL_GPL(log_post_read_mmio);
 // EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_read);
-#[cfg(feature = "CONFIG_TRACE_MMIO_ACCESS")]
+#[cfg(CONFIG_TRACE_MMIO_ACCESS)]
 #[no_mangle]
 pub unsafe extern "C" fn log_post_read_mmio(
     val: u64,

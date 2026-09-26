@@ -45,37 +45,37 @@ extern "C" {
     pub fn amdgpu_dm_crtc_vrr_active_irq(acrtc: *mut amdgpu_crtc) -> bool;
 
     // Preserved from #if IS_ENABLED(CONFIG_DRM_AMD_DC_KUNIT_TEST).
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_helper_mode_fixup(
         crtc: *mut drm_crtc,
         mode: *const drm_display_mode,
         adjusted_mode: *mut drm_display_mode,
     ) -> bool;
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_destroy_state(crtc: *mut drm_crtc, state: *mut drm_crtc_state);
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_duplicate_state(crtc: *mut drm_crtc) -> *mut drm_crtc_state;
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_reset_state(crtc: *mut drm_crtc);
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_count_crtc_active_planes(
         new_crtc_state: *mut drm_crtc_state,
     ) -> ::core::ffi::c_int;
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_update_crtc_active_planes(
         crtc: *mut drm_crtc,
         new_crtc_state: *mut drm_crtc_state,
     );
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_crtc_vblank_control_worker(work: *mut work_struct);
 
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+    #[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
     pub fn amdgpu_dm_idle_worker(work: *mut work_struct);
 
     pub fn amdgpu_dm_crtc_vrr_active(dm_state: *const dm_crtc_state) -> bool;

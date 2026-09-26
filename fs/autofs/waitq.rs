@@ -74,7 +74,7 @@ unsafe fn autofs_notify_daemon(sbi: *mut autofs_sb_info, wq: *mut autofs_wait_qu
     let pipe = get_file((*sbi).pipe);
     mutex_unlock(&mut (*sbi).wq_mutex);
     let ret = autofs_write(sbi, pipe, &pkt as *const _ as *const core::ffi::c_void, pktsz as i32);
-    match ret { 0 => {}, -ENOMEM | -ERESTARTSYS => { autofs_wait_release(sbi, (*wq).wait_queue_token, ret); }, _ => autofs_catatonic_mode(sbi) }
+    match ret { case if case == 0 => {}, case if case == -ENOMEM || case == -ERESTARTSYS => { autofs_wait_release(sbi, (*wq).wait_queue_token, ret); }, _ => autofs_catatonic_mode(sbi) }
     fput(pipe);
 }
 

@@ -47,8 +47,8 @@ pub struct vfio_pci_device_ops {
 // CONFIG_VFIO_PCI_DMABUF selects the external implementations; these declarations
 // preserve the disabled-build inline return values from the C header.
 extern "C" {
-    pub fn vfio_pci_core_fill_phys_vec(*mut phys_vec, *mut vfio_region_dma_range, usize, phys_addr_t, phys_addr_t) -> i32;
-    pub fn vfio_pci_core_get_dmabuf_phys(*mut vfio_pci_core_device, *mut *mut p2pdma_provider, u32, *mut phys_vec, *mut vfio_region_dma_range, usize) -> i32;
+    pub fn vfio_pci_core_fill_phys_vec(_: *mut phys_vec, _: *mut vfio_region_dma_range, _: usize, _: phys_addr_t, _: phys_addr_t) -> i32;
+    pub fn vfio_pci_core_get_dmabuf_phys(_: *mut vfio_pci_core_device, _: *mut *mut p2pdma_provider, _: u32, _: *mut phys_vec, _: *mut vfio_region_dma_range, _: usize) -> i32;
 }
 
 #[repr(C)]
@@ -109,39 +109,39 @@ pub struct vfio_pci_core_device {
 pub enum vfio_pci_io_width { VFIO_PCI_IO_WIDTH_1 = 1, VFIO_PCI_IO_WIDTH_2 = 2, VFIO_PCI_IO_WIDTH_4 = 4, VFIO_PCI_IO_WIDTH_8 = 8 }
 
 extern "C" {
-    pub fn vfio_pci_core_register_dev_region(*mut vfio_pci_core_device, u32, u32, *const vfio_pci_regops, usize, u32, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_close_device(*mut vfio_device);
-    pub fn vfio_pci_core_init_dev(*mut vfio_device) -> i32;
-    pub fn vfio_pci_core_release_dev(*mut vfio_device);
-    pub fn vfio_pci_core_register_device(*mut vfio_pci_core_device) -> i32;
-    pub fn vfio_pci_core_unregister_device(*mut vfio_pci_core_device);
+    pub fn vfio_pci_core_register_dev_region(_: *mut vfio_pci_core_device, _: u32, _: u32, _: *const vfio_pci_regops, _: usize, _: u32, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_close_device(_: *mut vfio_device);
+    pub fn vfio_pci_core_init_dev(_: *mut vfio_device) -> i32;
+    pub fn vfio_pci_core_release_dev(_: *mut vfio_device);
+    pub fn vfio_pci_core_register_device(_: *mut vfio_pci_core_device) -> i32;
+    pub fn vfio_pci_core_unregister_device(_: *mut vfio_pci_core_device);
     pub static vfio_pci_core_err_handlers: pci_error_handlers;
-    pub fn vfio_pci_core_sriov_configure(*mut vfio_pci_core_device, i32) -> i32;
-    pub fn vfio_pci_core_ioctl(*mut vfio_device, u32, usize) -> isize;
-    pub fn vfio_pci_core_ioctl_feature(*mut vfio_device, u32, *mut core::ffi::c_void, usize) -> i32;
-    pub fn vfio_pci_ioctl_get_region_info(*mut vfio_device, *mut vfio_region_info, *mut vfio_info_cap) -> i32;
-    pub fn vfio_pci_core_read(*mut vfio_device, *mut u8, usize, *mut loff_t) -> ssize_t;
-    pub fn vfio_pci_core_write(*mut vfio_device, *const u8, usize, *mut loff_t) -> ssize_t;
-    pub fn vfio_pci_vmf_insert_pfn(*mut vfio_pci_core_device, *mut vm_fault, usize, u32) -> vm_fault_t;
-    pub fn vfio_pci_core_mmap(*mut vfio_device, *mut vm_area_struct) -> i32;
-    pub fn vfio_pci_core_request(*mut vfio_device, u32);
-    pub fn vfio_pci_core_match(*mut vfio_device, *mut u8) -> i32;
-    pub fn vfio_pci_core_match_token_uuid(*mut vfio_device, *const uuid_t) -> i32;
-    pub fn vfio_pci_core_enable(*mut vfio_pci_core_device) -> i32;
-    pub fn vfio_pci_core_disable(*mut vfio_pci_core_device);
-    pub fn vfio_pci_core_finish_enable(*mut vfio_pci_core_device);
-    pub fn vfio_pci_core_aer_err_detected(*mut pci_dev, pci_channel_state_t) -> pci_ers_result_t;
-    pub fn vfio_pci_core_do_io_rw(*mut vfio_pci_core_device, bool, *mut core::ffi::c_void, *mut u8, loff_t, usize, usize, usize, bool, vfio_pci_io_width) -> ssize_t;
-    pub fn __vfio_pci_memory_enabled(*mut vfio_pci_core_device) -> bool;
-    pub fn vfio_pci_core_range_intersect_range(loff_t, usize, loff_t, usize, *mut loff_t, *mut usize, *mut usize) -> bool;
-    pub fn vfio_pci_core_iowrite8(*mut vfio_pci_core_device, bool, u8, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_iowrite16(*mut vfio_pci_core_device, bool, u16, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_iowrite32(*mut vfio_pci_core_device, bool, u32, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_iowrite64(*mut vfio_pci_core_device, bool, u64, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_ioread8(*mut vfio_pci_core_device, bool, *mut u8, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_ioread16(*mut vfio_pci_core_device, bool, *mut u16, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_ioread32(*mut vfio_pci_core_device, bool, *mut u32, *mut core::ffi::c_void) -> i32;
-    pub fn vfio_pci_core_ioread64(*mut vfio_pci_core_device, bool, *mut u64, *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_sriov_configure(_: *mut vfio_pci_core_device, _: i32) -> i32;
+    pub fn vfio_pci_core_ioctl(_: *mut vfio_device, _: u32, _: usize) -> isize;
+    pub fn vfio_pci_core_ioctl_feature(_: *mut vfio_device, _: u32, _: *mut core::ffi::c_void, _: usize) -> i32;
+    pub fn vfio_pci_ioctl_get_region_info(_: *mut vfio_device, _: *mut vfio_region_info, _: *mut vfio_info_cap) -> i32;
+    pub fn vfio_pci_core_read(_: *mut vfio_device, _: *mut u8, _: usize, _: *mut loff_t) -> ssize_t;
+    pub fn vfio_pci_core_write(_: *mut vfio_device, _: *const u8, _: usize, _: *mut loff_t) -> ssize_t;
+    pub fn vfio_pci_vmf_insert_pfn(_: *mut vfio_pci_core_device, _: *mut vm_fault, _: usize, _: u32) -> vm_fault_t;
+    pub fn vfio_pci_core_mmap(_: *mut vfio_device, _: *mut vm_area_struct) -> i32;
+    pub fn vfio_pci_core_request(_: *mut vfio_device, _: u32);
+    pub fn vfio_pci_core_match(_: *mut vfio_device, _: *mut u8) -> i32;
+    pub fn vfio_pci_core_match_token_uuid(_: *mut vfio_device, _: *const uuid_t) -> i32;
+    pub fn vfio_pci_core_enable(_: *mut vfio_pci_core_device) -> i32;
+    pub fn vfio_pci_core_disable(_: *mut vfio_pci_core_device);
+    pub fn vfio_pci_core_finish_enable(_: *mut vfio_pci_core_device);
+    pub fn vfio_pci_core_aer_err_detected(_: *mut pci_dev, _: pci_channel_state_t) -> pci_ers_result_t;
+    pub fn vfio_pci_core_do_io_rw(_: *mut vfio_pci_core_device, _: bool, _: *mut core::ffi::c_void, _: *mut u8, _: loff_t, _: usize, _: usize, _: usize, _: bool, _: vfio_pci_io_width) -> ssize_t;
+    pub fn __vfio_pci_memory_enabled(_: *mut vfio_pci_core_device) -> bool;
+    pub fn vfio_pci_core_range_intersect_range(_: loff_t, _: usize, _: loff_t, _: usize, _: *mut loff_t, _: *mut usize, _: *mut usize) -> bool;
+    pub fn vfio_pci_core_iowrite8(_: *mut vfio_pci_core_device, _: bool, _: u8, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_iowrite16(_: *mut vfio_pci_core_device, _: bool, _: u16, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_iowrite32(_: *mut vfio_pci_core_device, _: bool, _: u32, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_iowrite64(_: *mut vfio_pci_core_device, _: bool, _: u64, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_ioread8(_: *mut vfio_pci_core_device, _: bool, _: *mut u8, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_ioread16(_: *mut vfio_pci_core_device, _: bool, _: *mut u16, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_ioread32(_: *mut vfio_pci_core_device, _: bool, _: *mut u32, _: *mut core::ffi::c_void) -> i32;
+    pub fn vfio_pci_core_ioread64(_: *mut vfio_pci_core_device, _: bool, _: *mut u64, _: *mut core::ffi::c_void) -> i32;
 }
 
 #[inline]
@@ -151,7 +151,7 @@ pub unsafe fn is_aligned_for_order(vma: *const vm_area_struct, addr: usize, pfn:
 
 extern "C" {
     pub fn vfio_pci_core_get_iomap(vdev: *mut vfio_pci_core_device, bar: u32) -> *mut core::ffi::c_void;
-    pub fn vfio_pci_dma_buf_iommufd_map(*mut dma_buf_attachment, *mut phys_vec) -> i32;
+    pub fn vfio_pci_dma_buf_iommufd_map(_: *mut dma_buf_attachment, _: *mut phys_vec) -> i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

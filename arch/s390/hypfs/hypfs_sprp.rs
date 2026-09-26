@@ -22,19 +22,16 @@ unsafe extern "C" {
     fn get_zeroed_page(flags: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
     fn hypfs_sprp_diag304_external(
         data: *mut ::core::ffi::c_void,
-        cmd: ::core::ffi::c_ulong,
-    ) -> ::core::ffi::c_ulong;
+        cmd: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
     fn capable(capability: ::core::ffi::c_int) -> bool;
     fn copy_from_user(
         to: *mut ::core::ffi::c_void,
         from: *const ::core::ffi::c_void,
-        size: usize,
-    ) -> usize;
+        size: usize) -> usize;
     fn copy_to_user(
         to: *mut ::core::ffi::c_void,
         from: *const ::core::ffi::c_void,
-        size: usize,
-    ) -> usize;
+        size: usize) -> usize;
     fn kfree(object: *mut ::core::ffi::c_void);
     fn hypfs_dbfs_create_file(file: *mut hypfs_dbfs_file);
     fn hypfs_dbfs_remove_file(file: *mut hypfs_dbfs_file);
@@ -97,21 +94,22 @@ unsafe fn __hypfs_sprp_ioctl(
     let mut udata: *mut ::core::ffi::c_void;
     let data: *mut ::core::ffi::c_void;
     let mut rc: ::core::ffi::c_int;
+    'out: {
 
     rc = -ENOMEM;
     data = get_zeroed_page(GFP_KERNEL) as *mut ::core::ffi::c_void;
     diag304 = kzalloc_obj_hypfs_diag304();
     if data.is_null() || diag304.is_null() {
-        goto_out!(out);
+        break 'out;
     }
 
     rc = -EFAULT;
     if copy_from_user(diag304 as *mut ::core::ffi::c_void, user_area, core::mem::size_of::<hypfs_diag304>()) != 0 {
-        goto_out!(out);
+        break 'out;
     }
     rc = -EINVAL;
     if ((*diag304).args[0] >> 8) != 0 || (*diag304).args[1] > DIAG304_CMD_MAX {
-        goto_out!(out);
+        break 'out;
     }
 
     rc = -EFAULT;
@@ -119,7 +117,7 @@ unsafe fn __hypfs_sprp_ioctl(
     if ((*diag304).args[1] == DIAG304_SET_WEIGHTS || (*diag304).args[1] == DIAG304_SET_CAPPING)
         && copy_from_user(data, udata, PAGE_SIZE) != 0
     {
-        goto_out!(out);
+        break 'out;
     }
 
     cmd = *(&(*diag304).args[0] as *const _ as *const ::core::ffi::c_ulong);
@@ -129,13 +127,14 @@ unsafe fn __hypfs_sprp_ioctl(
         && copy_to_user(udata, data, PAGE_SIZE) != 0
     {
         rc = -EFAULT;
-        goto_out!(out);
+        break 'out;
     }
 
     rc = if copy_to_user(user_area, diag304 as *const ::core::ffi::c_void, core::mem::size_of::<hypfs_diag304>()) != 0 { -EFAULT } else { 0 };
 
-    goto_out!(out);
-    out: {
+    break 'out;
+    }
+    {
         kfree(diag304 as *mut ::core::ffi::c_void);
         free_page(data as ::core::ffi::c_ulong);
         rc

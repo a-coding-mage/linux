@@ -37,8 +37,8 @@ pub unsafe fn xfs_bmbt_disk_set_all(r: *mut xfs_bmbt_rec, s: *mut xfs_bmbt_irec)
     ASSERT((*s).br_startoff & xfs_mask64hi(64-BMBT_STARTOFF_BITLEN) == 0);
     ASSERT((*s).br_blockcount & xfs_mask64hi(64-BMBT_BLOCKCOUNT_BITLEN) == 0);
     ASSERT((*s).br_startblock & xfs_mask64hi(64-BMBT_STARTBLOCK_BITLEN) == 0);
-    put_unaligned_be64((extent_flag << 63) | ((*s).br_startoff as u64 << 9) | ((*s).br_startblock as u64 >> 43), &mut (*r).l0);
-    put_unaligned_be64(((*s).br_startblock as u64 << 21) | ((*s).br_blockcount as u64 & xfs_mask64lo(21)), &mut (*r).l1);
+    put_unaligned_be64((extent_flag << 63) | (((*s).br_startoff as u64) << 9) | ((*s).br_startblock as u64 >> 43), &mut (*r).l0);
+    put_unaligned_be64((((*s).br_startblock as u64) << 21) | ((*s).br_blockcount as u64 & xfs_mask64lo(21)), &mut (*r).l1);
 }
 
 pub unsafe fn xfs_bmbt_to_bmdr(mp: *mut xfs_mount, rblock: *mut xfs_btree_block, rblocklen: i32, dblock: *mut xfs_bmdr_block_t, dblocklen: i32) {

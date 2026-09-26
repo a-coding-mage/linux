@@ -95,7 +95,7 @@ fn strings(mut source: &[u8]) -> Result<Vec<u8>, String> {
                             value as u8
                         }
                         b'x' => {
-                            let mut value = 0_u8;
+                            let mut value = 0u8;
                             let mut digits = 0;
                             while let Some(digit) =
                                 source.first().and_then(|c| char::from(*c).to_digit(16))
@@ -114,7 +114,7 @@ fn strings(mut source: &[u8]) -> Result<Vec<u8>, String> {
                             let digits = source
                                 .get(..count)
                                 .ok_or("incomplete universal character name")?;
-                            let mut value = 0_u32;
+                            let mut value = 0u32;
                             for digit in digits {
                                 value = value * 16
                                     + char::from(*digit)

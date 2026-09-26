@@ -25,14 +25,15 @@ unsafe fn sctp_gso_segment(
 ) -> *mut sk_buff {
     let mut segs: *mut sk_buff = ERR_PTR(-EINVAL);
     let mut sh: *mut sctphdr;
+    'out: {
 
     if !skb_is_gso_sctp(skb) {
-        goto_out!(out);
+        break 'out;
     }
 
     sh = sctp_hdr(skb);
     if !pskb_may_pull(skb, core::mem::size_of::<sctphdr>()) {
-        goto_out!(out);
+        break 'out;
     }
 
     __skb_pull(skb, core::mem::size_of::<sctphdr>());
@@ -53,12 +54,12 @@ unsafe fn sctp_gso_segment(
         });
 
         segs = core::ptr::null_mut();
-        goto_out!(out);
+        break 'out;
     }
 
     segs = skb_segment(skb, (features | NETIF_F_HW_CSUM) & !NETIF_F_SG);
     if IS_ERR(segs) {
-        goto_out!(out);
+        break 'out;
     }
 
     /* All that is left is update SCTP CRC if necessary */
@@ -72,8 +73,8 @@ unsafe fn sctp_gso_segment(
             current = (*current).next;
         }
     }
-
-out:
+    }
+    
     segs
 }
 
@@ -91,22 +92,25 @@ static sctp6_offload: net_offload = net_offload {
 
 pub unsafe fn sctp_offload_init() -> c_int {
     let mut ret: c_int;
+    'out: {
+    'ipv4: {
 
     ret = inet_add_offload(&sctp_offload, IPPROTO_SCTP);
     if ret != 0 {
-        goto_out!(out);
+        break 'out;
     }
 
     ret = inet6_add_offload(&sctp6_offload, IPPROTO_SCTP);
     if ret != 0 {
-        goto_out!(ipv4);
+        break 'ipv4;
     }
 
     return ret;
-
-ipv4:
+    }
+    
     inet_del_offload(&sctp_offload, IPPROTO_SCTP);
-out:
+    }
+    
     ret
 }
 

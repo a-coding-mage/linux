@@ -935,22 +935,19 @@ unsafe extern "C" {
     pub fn wcd939x_sdw_free(
         wcd: *mut wcd939x_sdw_priv,
         substream: *mut snd_pcm_substream,
-        dai: *mut snd_soc_dai,
-    ) -> core::ffi::c_int;
+        dai: *mut snd_soc_dai) -> core::ffi::c_int;
 
     pub fn wcd939x_sdw_set_sdw_stream(
         wcd: *mut wcd939x_sdw_priv,
         dai: *mut snd_soc_dai,
         stream: *mut core::ffi::c_void,
-        direction: core::ffi::c_int,
-    ) -> core::ffi::c_int;
+        direction: core::ffi::c_int) -> core::ffi::c_int;
 
     pub fn wcd939x_sdw_hw_params(
         wcd: *mut wcd939x_sdw_priv,
         substream: *mut snd_pcm_substream,
         params: *mut snd_pcm_hw_params,
-        dai: *mut snd_soc_dai,
-    ) -> core::ffi::c_int;
+        dai: *mut snd_soc_dai) -> core::ffi::c_int;
 }
 
 #[cfg(not(CONFIG_SND_SOC_WCD939X_SDW))]

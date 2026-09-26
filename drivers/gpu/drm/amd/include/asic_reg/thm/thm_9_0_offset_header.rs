@@ -19,10 +19,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
+
 // addressBlock: thm_thm_SmuThmDec
 // base address: 0x59800
-
-+#define _thm_9_0_OFFSET_HEADER
 pub const mmTHM_TCON_CUR_TMP: u32 = 0x0000;
 pub const mmTHM_TCON_CUR_TMP_BASE_IDX: u32 = 0;
 pub const mmTHM_TCON_HTC: u32 = 0x0001;
@@ -357,6 +357,5 @@ pub const mmTHM_TMON3_REMOTE_START: u32 = 0x01c0;
 pub const mmTHM_TMON3_REMOTE_START_BASE_IDX: u32 = 0;
 pub const mmTHM_TMON3_REMOTE_END: u32 = 0x01ff;
 pub const mmTHM_TMON3_REMOTE_END_BASE_IDX: u32 = 0;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

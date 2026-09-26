@@ -84,7 +84,7 @@ pub unsafe fn enable_gart_translation(dev: *mut pci_dev, mut addr: u64) {
 
     /* address of the mappings table */
     addr >>= 12;
-    tmp = addr as u32 << 4;
+    tmp = (addr as u32) << 4;
     tmp &= !0xf;
     pci_write_config_dword(dev, AMD64_GARTTABLEBASE, tmp);
 

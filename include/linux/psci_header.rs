@@ -56,37 +56,37 @@ extern "C" {
 
 // The __init annotation is a kernel build/linker attribute and is preserved by
 // the surrounding integration rather than represented as a Rust ABI property.
-#[cfg(feature = "CONFIG_ARM_PSCI_FW")]
+#[cfg(CONFIG_ARM_PSCI_FW)]
 extern "C" {
     pub fn psci_dt_init() -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_ARM_PSCI_FW"))]
+#[cfg(not(CONFIG_ARM_PSCI_FW))]
 #[inline]
 pub fn psci_dt_init() -> core::ffi::c_int {
     0
 }
 
-#[cfg(all(feature = "CONFIG_ARM_PSCI_FW", feature = "CONFIG_ACPI"))]
+#[cfg(all(CONFIG_ARM_PSCI_FW, CONFIG_ACPI))]
 extern "C" {
     pub fn psci_acpi_init() -> core::ffi::c_int;
     pub fn acpi_psci_present() -> bool;
     pub fn acpi_psci_use_hvc() -> bool;
 }
 
-#[cfg(not(all(feature = "CONFIG_ARM_PSCI_FW", feature = "CONFIG_ACPI")))]
+#[cfg(not(all(CONFIG_ARM_PSCI_FW, CONFIG_ACPI)))]
 #[inline]
 pub fn psci_acpi_init() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_ARM_PSCI_FW", feature = "CONFIG_ACPI")))]
+#[cfg(not(all(CONFIG_ARM_PSCI_FW, CONFIG_ACPI)))]
 #[inline]
 pub fn acpi_psci_present() -> bool {
     false
 }
 
-#[cfg(not(all(feature = "CONFIG_ARM_PSCI_FW", feature = "CONFIG_ACPI")))]
+#[cfg(not(all(CONFIG_ARM_PSCI_FW, CONFIG_ACPI)))]
 #[inline]
 pub fn acpi_psci_use_hvc() -> bool {
     false

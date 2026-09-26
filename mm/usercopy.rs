@@ -60,10 +60,10 @@ unsafe fn check_stack_object(obj: *const c_void, len: usize) -> i32 {
     let stack = task_stack_page(current);
     let stackend = (stack as usize + THREAD_SIZE) as *const c_void;
 
-    if obj as usize + len <= stack as usize || stackend as usize <= obj as usize {
+    if obj as usize + len <= stack as usize || (stackend as usize) <= obj as usize {
         return NOT_STACK;
     }
-    if obj as usize < stack as usize || stackend as usize < obj as usize + len {
+    if (obj as usize) < stack as usize || (stackend as usize) < obj as usize + len {
         return BAD_STACK;
     }
 
@@ -75,9 +75,9 @@ unsafe fn check_stack_object(obj: *const c_void, len: usize) -> i32 {
     {
         // CONFIG_STACK_GROWSUP selects the alternate stack direction.
         #[cfg(CONFIG_STACK_GROWSUP)]
-        if current_stack_pointer as usize < obj as usize + len { return BAD_STACK; }
+        if (current_stack_pointer as usize) < obj as usize + len { return BAD_STACK; }
         #[cfg(not(CONFIG_STACK_GROWSUP))]
-        if obj as usize < current_stack_pointer as usize { return BAD_STACK; }
+        if (obj as usize) < current_stack_pointer as usize { return BAD_STACK; }
     }
     GOOD_STACK
 }

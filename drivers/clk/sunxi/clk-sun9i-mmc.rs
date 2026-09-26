@@ -80,6 +80,9 @@ unsafe fn sun9i_a80_mmc_config_clk_probe(pdev: *mut platform_device) -> c_int {
     let mut clk_parent: *const c_char;
     let mut r: *mut resource = core::ptr::null_mut();
     let (mut count, mut i, mut ret): (c_int, c_int, c_int);
+    'err_clk_register: {
+    'err_clk_provider: {
+    'err_rc_reg: {
 
     data = devm_kzalloc(&mut (*pdev).dev, core::mem::size_of::<Sun9iMmcClkData>(), GFP_KERNEL);
     if data.is_null() { return -ENOMEM; }
@@ -114,28 +117,30 @@ unsafe fn sun9i_a80_mmc_config_clk_probe(pdev: *mut platform_device) -> c_int {
             SUN9I_MMC_GATE_BIT, 0, &mut (*data).lock);
         if IS_ERR!(*(*clk_data).clks.add(i as usize)) {
             ret = PTR_ERR!(*(*clk_data).clks.add(i as usize));
-            goto!(err_clk_register);
+            break 'err_clk_register;
         }
         i += 1;
     }
 
     ret = of_clk_add_provider(np, of_clk_src_onecell_get, clk_data);
-    if ret != 0 { goto!(err_clk_provider); }
+    if ret != 0 { break 'err_clk_provider; }
     (*data).rcdev.owner = THIS_MODULE;
     (*data).rcdev.nr_resets = count as usize;
     (*data).rcdev.ops = &SUN9I_MMC_RESET_OPS;
     (*data).rcdev.of_node = (*pdev).dev.of_node;
     ret = reset_controller_register(&mut (*data).rcdev);
-    if ret != 0 { goto!(err_rc_reg); }
+    if ret != 0 { break 'err_rc_reg; }
     platform_set_drvdata(pdev, data);
     return 0;
-
-err_rc_reg:
+    }
+    
     of_clk_del_provider(np);
-err_clk_provider:
+    }
+    
     i = 0;
     while i < count { clk_unregister(*(*clk_data).clks.add(i as usize)); i += 1; }
-err_clk_register:
+    }
+    
     reset_control_assert((*data).reset);
     ret
 }

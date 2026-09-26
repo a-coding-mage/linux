@@ -32,12 +32,12 @@ static mut batadv_tp_prerandom: [u8; 4096] = [0; 4096];
 #[repr(i32)] pub enum batadv_tp_ack_reaction { OLD_ACK, IGNORE, RESEND_WAKEUP, WAKEUP }
 
 unsafe extern "C" {
-    fn batadv_netlink_tpmeter_notify(*mut batadv_priv,*const u8,u8,u32,u32,u32);
-    fn batadv_tp_is_error(i32)->bool; fn batadv_compare_eth(*const u8,*const u8)->bool;
-    fn batadv_seq_before(u32,u32)->bool; fn batadv_dbg(i32,*mut batadv_priv,*const i8,...);
-    fn batadv_orig_hash_find(*mut batadv_priv,*const u8)->*mut batadv_orig_node;
-    fn batadv_orig_node_put(*mut batadv_orig_node); fn batadv_primary_if_get_selected(*mut batadv_priv)->*mut batadv_hard_iface;
-    fn batadv_hardif_put(*mut batadv_hard_iface); fn batadv_send_skb_to_orig(*mut sk_buff,*mut batadv_orig_node,*mut c_void)->i32;
+    fn batadv_netlink_tpmeter_notify(_: *mut batadv_priv,_: *const u8,_: u8,_: u32,_: u32,_: u32);
+    fn batadv_tp_is_error(_: i32)->bool; fn batadv_compare_eth(_: *const u8,_: *const u8)->bool;
+    fn batadv_seq_before(_: u32,_: u32)->bool; fn batadv_dbg(_: i32,_: *mut batadv_priv,_: *const i8,...);
+    fn batadv_orig_hash_find(_: *mut batadv_priv,_: *const u8)->*mut batadv_orig_node;
+    fn batadv_orig_node_put(_: *mut batadv_orig_node); fn batadv_primary_if_get_selected(_: *mut batadv_priv)->*mut batadv_hard_iface;
+    fn batadv_hardif_put(_: *mut batadv_hard_iface); fn batadv_send_skb_to_orig(_: *mut sk_buff,_: *mut batadv_orig_node,_: *mut c_void)->i32;
 }
 
 #[inline] fn batadv_tp_session_cookie(session: &[u8;2], uid:u8)->u32 { ((uid as u32)<<16)|((session[0] as u32)<<8)|session[1] as u32 }

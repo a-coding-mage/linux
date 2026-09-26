@@ -139,7 +139,7 @@ unsafe fn nbio_v4_3_get_rom_offset(adev: *mut amdgpu_device) -> u32 {
 }
 
 /* CONFIG_PCIEASPM-dependent programming is retained as a conditional block. */
-#[cfg(feature = "CONFIG_PCIEASPM")]
+#[cfg(CONFIG_PCIEASPM)]
 unsafe fn nbio_v4_3_program_ltr(adev: *mut amdgpu_device) {
     let mut data = 0x35EB; data &= !EP_PCIE_TX_LTR_CNTL__LTR_PRIV_MSG_DIS_IN_PM_NON_D0_MASK; data &= !EP_PCIE_TX_LTR_CNTL__LTR_PRIV_RST_LTR_IN_DL_DOWN_MASK;
     let def = RREG32_SOC15!(NBIO, 0, regRCC_EP_DEV0_0_EP_PCIE_TX_LTR_CNTL); if def != data { WREG32_SOC15!(NBIO, 0, regRCC_EP_DEV0_0_EP_PCIE_TX_LTR_CNTL, data); }

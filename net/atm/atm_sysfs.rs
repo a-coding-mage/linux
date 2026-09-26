@@ -5,7 +5,7 @@
 
 const PAGE_SIZE: usize = 4096;
 
-// `container_of(cldev, struct atm_dev, class_dev)`.
+// `container_of(cldev, atm_dev, class_dev)`.
 unsafe fn to_atm_dev(cldev: *mut device) -> *mut atm_dev {
     (cldev as *mut u8).sub(offset_of!(atm_dev, class_dev)) as *mut atm_dev
 }

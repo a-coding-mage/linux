@@ -818,7 +818,7 @@ unsafe fn pcm512x_find_pll_coeff(dai: *mut snd_soc_dai, pllin_rate: c_ulong, pll
     }
     dev_dbg!(dev, "num / den = %lu / %lu\n", num, den);
     P = den as c_int;
-    if den <= 15 && num <= 16 * 63 && 1000000 <= pllin_rate / P as c_ulong && pllin_rate / P as c_ulong <= 20000000 {
+    if den <= 15 && num <= 16 * 63 && 1000000 <= pllin_rate / P as c_ulong && pllin_rate / (P as c_ulong) <= 20000000 {
         D = 0;
         R = 16;
         while R != 0 {
@@ -842,7 +842,7 @@ unsafe fn pcm512x_find_pll_coeff(dai: *mut snd_soc_dai, pllin_rate: c_ulong, pll
         dev_dbg!(dev, "num %lu den %lu common %lu\n", num, den, common);
         P = den as c_int;
         while P <= 15 {
-            if !(pllin_rate / P as c_ulong < 6667000 || 200000000 < pllin_rate / P as c_ulong) &&
+            if !(pllin_rate / (P as c_ulong) < 6667000 || 200000000 < pllin_rate / P as c_ulong) &&
                (num * P as c_ulong) % den == 0 {
                 K = num * P as c_ulong / den;
                 if K >= 40000 && K <= 120000 {
@@ -864,7 +864,7 @@ unsafe fn pcm512x_find_pll_coeff(dai: *mut snd_soc_dai, pllin_rate: c_ulong, pll
         dev_err!(dev, "Need a slower clock as pll-input\n");
         return -EINVAL;
     }
-    if pllin_rate / P as c_ulong < 6667000 {
+    if pllin_rate / (P as c_ulong) < 6667000 {
         dev_err!(dev, "Need a faster clock as pll-input\n");
         return -EINVAL;
     }

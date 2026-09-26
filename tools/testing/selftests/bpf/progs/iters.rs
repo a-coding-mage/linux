@@ -761,7 +761,7 @@ pub unsafe extern "C" fn clean_live_states(ctx: *const c_void) -> i32 {
 pub unsafe extern "C" fn absent_mark_in_the_middle_state() -> i32 { asm!("/* absent_mark_in_the_middle_state BPF assembly: r6 may become -31 before loop stack write */", "r0 = 0;", "exit;", options(noreturn)); }
 
 #[unsafe(no_mangle)]
-static unsafe extern "C" fn noop() -> i32 {
+unsafe extern "C" fn noop() -> i32 {
     asm!("r0 = 0;", "exit;", options(noreturn));
 }
 
@@ -771,7 +771,7 @@ pub unsafe extern "C" fn absent_mark_in_the_middle_state2() -> i32 { asm!("/* ab
 pub unsafe extern "C" fn absent_mark_in_the_middle_state3() -> i32 { asm!("/* absent_mark_in_the_middle_state3 BPF assembly: loop1 and loop1_wrapper subprogram calls */", "r0 = 0;", "exit;", options(noreturn)); }
 
 #[unsafe(no_mangle)]
-static unsafe extern "C" fn loop1() -> i32 {
+unsafe extern "C" fn loop1() -> i32 {
     asm!(
         "r6 = r1;", "r7 = r2;", "call bpf_get_prandom_u32;", "r8 = r0;",
         "loop_5:", "r1 = r7;", "call bpf_iter_num_next;", "if r0 == 0 goto loop_end_5;",
@@ -783,7 +783,7 @@ static unsafe extern "C" fn loop1() -> i32 {
 }
 
 #[unsafe(no_mangle)]
-static unsafe extern "C" fn loop1_wrapper() -> i32 {
+unsafe extern "C" fn loop1_wrapper() -> i32 {
     asm!("/* loop1_wrapper BPF assembly: maybe change r6 from -32 to -31 then call loop1 */", "r0 = 0;", "exit;", options(noreturn));
 }
 
@@ -797,7 +797,7 @@ pub unsafe extern "C" fn absent_mark_in_the_middle_state4() {
 }
 
 #[unsafe(no_mangle)]
-static unsafe extern "C" fn loop_cb4() {
+unsafe extern "C" fn loop_cb4() {
     asm!(
         "r9 = r2;", "r8 = *(u64 *)(r9 - 8);", "r6 = *(u64 *)(r9 - 16);", "call bpf_get_prandom_u32;",
         "if r0 > r8 goto use_fp16_6;", "1:", "call bpf_get_prandom_u32;", "if r0 > r8 goto update_fp16_6;",

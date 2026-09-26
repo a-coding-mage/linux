@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* CONFIG_PARAVIRT conditional from the original header. */
-#[cfg(feature = "CONFIG_PARAVIRT")]
+#[cfg(CONFIG_PARAVIRT)]
 mod config_paravirt {
     use core::ffi::c_void;
 
@@ -19,19 +19,19 @@ mod config_paravirt {
     }
 }
 
-#[cfg(not(feature = "CONFIG_PARAVIRT"))]
+#[cfg(not(CONFIG_PARAVIRT))]
 #[inline]
 pub const fn pv_ipi_init() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PARAVIRT"))]
+#[cfg(not(CONFIG_PARAVIRT))]
 #[inline]
 pub const fn pv_time_init() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PARAVIRT"))]
+#[cfg(not(CONFIG_PARAVIRT))]
 #[inline]
 pub const fn pv_spinlock_init() -> core::ffi::c_int {
     0

@@ -18,7 +18,7 @@ pub struct nf_conn_labels {
 pub unsafe fn nf_ct_labels_find(
     ct: *const crate::nf_conn,
 ) -> *mut crate::nf_conn_labels {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_LABELS")]
+    #[cfg(CONFIG_NF_CONNTRACK_LABELS)]
     {
         let ext = (*ct).ext;
 
@@ -31,7 +31,7 @@ pub unsafe fn nf_ct_labels_find(
             as *mut crate::nf_conn_labels;
     }
 
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_LABELS"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_LABELS))]
     {
         core::ptr::null_mut()
     }
@@ -41,7 +41,7 @@ pub unsafe fn nf_ct_labels_find(
 pub unsafe fn nf_ct_labels_ext_add(
     ct: *mut crate::nf_conn,
 ) -> *mut crate::nf_ct_ext {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_LABELS")]
+    #[cfg(CONFIG_NF_CONNTRACK_LABELS)]
     {
         let net = crate::nf_ct_net(ct);
 
@@ -52,7 +52,7 @@ pub unsafe fn nf_ct_labels_ext_add(
         return crate::nf_ct_ext_add(ct, crate::NF_CT_EXT_LABELS, crate::GFP_ATOMIC);
     }
 
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_LABELS"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_LABELS))]
     {
         core::ptr::null_mut()
     }
@@ -67,14 +67,14 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK_LABELS")]
+#[cfg(CONFIG_NF_CONNTRACK_LABELS)]
 extern "C" {
     pub fn nf_connlabels_get(net: *mut crate::net, bit: core::ffi::c_uint)
         -> core::ffi::c_int;
     pub fn nf_connlabels_put(net: *mut crate::net);
 }
 
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_LABELS"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_LABELS))]
 #[inline]
 pub unsafe fn nf_connlabels_get(
     _net: *mut crate::net,
@@ -83,7 +83,7 @@ pub unsafe fn nf_connlabels_get(
     0
 }
 
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_LABELS"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_LABELS))]
 #[inline]
 pub unsafe fn nf_connlabels_put(_net: *mut crate::net) {}
 

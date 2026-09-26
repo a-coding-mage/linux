@@ -25,7 +25,7 @@ static mut irq_target_cpu: [u32; MAX_IRQS] = [0; MAX_IRQS];
 static mut irq_banks: usize = DEFAULT_NR_REG_BANKS;
 static mut max_irqs: usize = DEFAULT_IRQS;
 static mut omap_secure_apis: u32 = 0;
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 static mut wakeupgen_context: [u32; MAX_NR_REG_BANKS] = [0; MAX_NR_REG_BANKS];
 
 #[repr(C)]
@@ -87,15 +87,15 @@ unsafe fn wakeupgen_irq_set_type(d: *mut irq_data, mut typ: u32) -> i32 {
     irq_chip_set_type_parent(d, typ)
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 static mut irqmasks: [[u32; MAX_NR_REG_BANKS]; 2] = [[0; MAX_NR_REG_BANKS]; 2];
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn _wakeupgen_save_masks(cpu: usize) { for i in 0..irq_banks { irqmasks[cpu][i] = wakeupgen_readl(i as u8, cpu as u32); } }
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn _wakeupgen_restore_masks(cpu: usize) { for i in 0..irq_banks { wakeupgen_writel(irqmasks[cpu][i], i as u8, cpu as u32); } }
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn _wakeupgen_set_all(cpu: u32, reg: u32) { for i in 0..irq_banks { wakeupgen_writel(reg, i as u8, cpu); } }
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn wakeupgen_irqmask_all(cpu: usize, set: u32) {
     let flags = raw_spin_lock_irqsave(&wakeupgen_lock);
     if set != 0 { _wakeupgen_save_masks(cpu); _wakeupgen_set_all(cpu as u32, WKG_MASK_ALL); }
@@ -103,7 +103,7 @@ unsafe fn wakeupgen_irqmask_all(cpu: usize, set: u32) {
     raw_spin_unlock_irqrestore(&wakeupgen_lock, flags);
 }
 
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn omap4_irq_save_context() {
     if omap_rev() == OMAP4430_REV_ES1_0 { return; }
     for i in 0..irq_banks { let mut val = wakeupgen_readl(i as u8, 0); sar_writel(val, WAKEUPGENENB_OFFSET_CPU0, i as u8); val = wakeupgen_readl(i as u8, 1); sar_writel(val, WAKEUPGENENB_OFFSET_CPU1, i as u8); sar_writel(0, WAKEUPGENENB_SECURE_OFFSET_CPU0, i as u8); sar_writel(0, WAKEUPGENENB_SECURE_OFFSET_CPU1, i as u8); }
@@ -111,26 +111,26 @@ unsafe fn omap4_irq_save_context() {
     val = readl_relaxed(wakeupgen_base.add(OMAP_PTMSYNCREQ_MASK)); writel_relaxed(val, sar_base.add(PTMSYNCREQ_MASK_OFFSET)); val = readl_relaxed(wakeupgen_base.add(OMAP_PTMSYNCREQ_EN)); writel_relaxed(val, sar_base.add(PTMSYNCREQ_EN_OFFSET));
     val = readl_relaxed(sar_base.add(SAR_BACKUP_STATUS_OFFSET)) | SAR_BACKUP_STATUS_WAKEUPGEN; writel_relaxed(val, sar_base.add(SAR_BACKUP_STATUS_OFFSET));
 }
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn omap5_irq_save_context() { for i in 0..irq_banks { let mut val=wakeupgen_readl(i as u8,0); sar_writel(val,OMAP5_WAKEUPGENENB_OFFSET_CPU0,i as u8); val=wakeupgen_readl(i as u8,1); sar_writel(val,OMAP5_WAKEUPGENENB_OFFSET_CPU1,i as u8); sar_writel(0,OMAP5_WAKEUPGENENB_SECURE_OFFSET_CPU0,i as u8); sar_writel(0,OMAP5_WAKEUPGENENB_SECURE_OFFSET_CPU1,i as u8); } }
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn am43xx_irq_save_context() { for i in 0..irq_banks { wakeupgen_context[i]=wakeupgen_readl(i as u8,0); wakeupgen_writel(0,i as u8,CPU0_ID); } }
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn irq_save_context() { if soc_is_dra7xx(){return;} if !wakeupgen_ops.is_null(){ if let Some(f)=(*wakeupgen_ops).save_context{f();} } }
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn irq_sar_clear() { if soc_is_dra7xx(){return;} let offset=if soc_is_omap54xx(){OMAP5_SAR_BACKUP_STATUS_OFFSET}else{SAR_BACKUP_STATUS_OFFSET}; let val=readl_relaxed(sar_base.add(offset)) & !SAR_BACKUP_STATUS_WAKEUPGEN; writel_relaxed(val,sar_base.add(offset)); }
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn am43xx_irq_restore_context(){for i in 0..irq_banks{wakeupgen_writel(wakeupgen_context[i],i as u8,CPU0_ID);}}
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn irq_restore_context(){if !wakeupgen_ops.is_null(){if let Some(f)=(*wakeupgen_ops).restore_context{f();}}}
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 unsafe fn irq_save_secure_context(){let ret=omap_secure_dispatcher(OMAP4_HAL_SAVEGIC_INDEX,FLAG_START_CRITICAL,0,0,0,0,0);if ret!=API_HAL_RET_VALUE_OK{pr_err("GIC and Wakeupgen context save failed\n");}}
 
 // The remaining domain/init declarations retain the kernel interfaces and control flow.
 // External kernel types, constants, and functions are intentionally unresolved here.
-#[cfg(feature = "CONFIG_CPU_PM")] static mut omap4_wakeupgen_ops: omap_wakeupgen_ops=omap_wakeupgen_ops{save_context:Some(omap4_irq_save_context),restore_context:Some(irq_sar_clear)};
-#[cfg(feature = "CONFIG_CPU_PM")] static mut omap5_wakeupgen_ops: omap_wakeupgen_ops=omap_wakeupgen_ops{save_context:Some(omap5_irq_save_context),restore_context:Some(irq_sar_clear)};
-#[cfg(feature = "CONFIG_CPU_PM")] static mut am43xx_wakeupgen_ops: omap_wakeupgen_ops=omap_wakeupgen_ops{save_context:Some(am43xx_irq_save_context),restore_context:Some(am43xx_irq_restore_context)};
+#[cfg(CONFIG_CPU_PM)] static mut omap4_wakeupgen_ops: omap_wakeupgen_ops=omap_wakeupgen_ops{save_context:Some(omap4_irq_save_context),restore_context:Some(irq_sar_clear)};
+#[cfg(CONFIG_CPU_PM)] static mut omap5_wakeupgen_ops: omap_wakeupgen_ops=omap_wakeupgen_ops{save_context:Some(omap5_irq_save_context),restore_context:Some(irq_sar_clear)};
+#[cfg(CONFIG_CPU_PM)] static mut am43xx_wakeupgen_ops: omap_wakeupgen_ops=omap_wakeupgen_ops{save_context:Some(am43xx_irq_save_context),restore_context:Some(am43xx_irq_restore_context)};
 
 // wakeupgen_domain_translate, wakeupgen_domain_alloc, wakeupgen_init, and IRQCHIP_DECLARE
 // require the surrounding Linux IRQ-domain binding definitions; their source-level behavior
@@ -171,13 +171,13 @@ unsafe fn wakeupgen_init(node: *mut device_node, parent: *mut device_node) -> i3
 unsafe fn omap_get_wakeupgen_base() -> *mut core::ffi::c_void { wakeupgen_base }
 unsafe fn omap_secure_apis_support() -> i32 { omap_secure_apis as i32 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn irq_hotplug_init() { cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,"arm/omap-wake:online",Some(omap_wakeupgen_cpu_online),None); cpuhp_setup_state_nocalls(CPUHP_ARM_OMAP_WAKE_DEAD,"arm/omap-wake:dead",None,Some(omap_wakeupgen_cpu_dead)); }
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))] unsafe fn irq_hotplug_init() {}
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")] unsafe fn omap_wakeupgen_cpu_online(cpu:u32)->i32{wakeupgen_irqmask_all(cpu as usize,0);0}
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")] unsafe fn omap_wakeupgen_cpu_dead(cpu:u32)->i32{wakeupgen_irqmask_all(cpu as usize,1);0}
-#[cfg(feature = "CONFIG_CPU_PM")] unsafe fn irq_pm_init(){if !IS_PM44XX_ERRATUM(PM_OMAP4_CPU_OSWR_DISABLE){cpu_pm_register_notifier(&mut irq_notifier_block);}}
-#[cfg(not(feature = "CONFIG_CPU_PM"))] unsafe fn irq_pm_init(){}
+#[cfg(not(CONFIG_HOTPLUG_CPU))] unsafe fn irq_hotplug_init() {}
+#[cfg(CONFIG_HOTPLUG_CPU)] unsafe fn omap_wakeupgen_cpu_online(cpu:u32)->i32{wakeupgen_irqmask_all(cpu as usize,0);0}
+#[cfg(CONFIG_HOTPLUG_CPU)] unsafe fn omap_wakeupgen_cpu_dead(cpu:u32)->i32{wakeupgen_irqmask_all(cpu as usize,1);0}
+#[cfg(CONFIG_CPU_PM)] unsafe fn irq_pm_init(){if !IS_PM44XX_ERRATUM(PM_OMAP4_CPU_OSWR_DISABLE){cpu_pm_register_notifier(&mut irq_notifier_block);}}
+#[cfg(not(CONFIG_CPU_PM))] unsafe fn irq_pm_init(){}
 
 // Kernel-provided declarations used by this translation.
 extern "C" {

@@ -69,23 +69,23 @@ const CLK_HCLK_DMA: usize = 8;
 const CLK_HCLK_BUF: usize = 9;
 const CLK_HCLK_RP: usize = 10;
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static mut reg_save: [[u32; 2]; 3] = [[ASS_CLK_SRC as u32, 0], [ASS_CLK_DIV as u32, 0], [ASS_CLK_GATE as u32, 0]];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn s5pv210_audss_clk_suspend(_data: *mut core::ffi::c_void) -> i32 {
     for i in 0..reg_save.len() { reg_save[i][1] = readl(reg_base.add(reg_save[i][0] as usize)); }
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn s5pv210_audss_clk_resume(_data: *mut core::ffi::c_void) {
     for i in 0..reg_save.len() { writel(reg_save[i][1], reg_base.add(reg_save[i][0] as usize)); }
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static s5pv210_audss_clk_syscore_ops: syscore_ops = syscore_ops { suspend: Some(s5pv210_audss_clk_suspend), resume: Some(s5pv210_audss_clk_resume) };
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static mut s5pv210_audss_clk_syscore: syscore = syscore { ops: &s5pv210_audss_clk_syscore_ops };
 
 // register s5pv210_audss clocks
@@ -118,7 +118,7 @@ unsafe extern "C" fn s5pv210_audss_clk_probe(pdev: *mut platform_device) -> i32 
     let names = [b"hclk_i2s_audss\0", b"hclk_uart_audss\0", b"hclk_hwa_audss\0", b"hclk_dma_audss\0", b"hclk_buf_audss\0", b"hclk_rp_audss\0"];
     for (n, bit) in names.iter().zip((0..6).rev()) { *table.add(CLK_HCLK_I2S + (5 - bit)) = clk_hw_register_gate(core::ptr::null_mut(), n.as_ptr() as *const _, hclk_p, 0, reg_base.add(ASS_CLK_GATE), bit, 0, &mut lock); }
     for i in 0..(*data).num { if (*table.add(i)).is_null() { ret = -1; break; } }
-    #[cfg(feature = "CONFIG_PM_SLEEP")] register_syscore(&mut s5pv210_audss_clk_syscore);
+    #[cfg(CONFIG_PM_SLEEP)] register_syscore(&mut s5pv210_audss_clk_syscore);
     ret
 }
 

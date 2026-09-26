@@ -57,10 +57,10 @@ extern "C" {
     pub fn xfs_buf_item_dirty_format(bip: *mut xfs_buf_log_item) -> bool;
     pub fn xfs_buf_inode_iodone(bp: *mut xfs_buf);
 
-    #[cfg(feature = "CONFIG_XFS_QUOTA")]
+    #[cfg(CONFIG_XFS_QUOTA)]
     pub fn xfs_buf_dquot_iodone(bp: *mut xfs_buf);
 
-    #[cfg(not(feature = "CONFIG_XFS_QUOTA"))]
+    #[cfg(not(CONFIG_XFS_QUOTA))]
     pub unsafe fn xfs_buf_dquot_iodone(_bp: *mut xfs_buf) {}
 
     pub fn xfs_buf_iodone(bp: *mut xfs_buf);

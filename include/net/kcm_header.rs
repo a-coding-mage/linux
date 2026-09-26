@@ -149,17 +149,17 @@ pub struct kcm_mux {
     pub kcm_tx_waiters: list_head,
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe extern "C" {
     pub fn kcm_proc_init() -> core::ffi::c_int;
     pub fn kcm_proc_exit();
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn kcm_proc_init() -> core::ffi::c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn kcm_proc_exit() {}
 

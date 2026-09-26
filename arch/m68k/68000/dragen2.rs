@@ -19,7 +19,7 @@
 unsafe fn dragen2_reset() {
     local_irq_disable();
 
-    #[cfg(feature = "CONFIG_INIT_LCD")]
+    #[cfg(CONFIG_INIT_LCD)]
     {
         PBDATA |= 0x20;                 /* disable CCFL light */
         PKDATA |= 0x4;                  /* disable LCD controller */
@@ -42,7 +42,7 @@ pub unsafe fn init_dragen2(command: *mut core::ffi::c_char, size: core::ffi::c_i
     let _ = (command, size);
     mach_reset = Some(dragen2_reset);
 
-    #[cfg(feature = "CONFIG_DIRECT_IO_ACCESS")]
+    #[cfg(CONFIG_DIRECT_IO_ACCESS)]
     {
         SCR = 0x10;                     /* allow user access to internal registers */
     }
@@ -77,7 +77,7 @@ pub unsafe fn init_dragen2(command: *mut core::ffi::c_char, size: core::ffi::c_i
     PDIQEG &= !PD(1);
     PDIRQEN |= PD(1);                   /* IRQ enabled */
 
-    #[cfg(feature = "CONFIG_INIT_LCD")]
+    #[cfg(CONFIG_INIT_LCD)]
     {
         /* initialize LCD controller */
         LSSA = screen_bits as _;

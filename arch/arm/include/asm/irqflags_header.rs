@@ -4,18 +4,18 @@
 // The C header's __KERNEL__ guard and build-time architecture conditions are
 // preserved here as conditional Rust items.
 
-#[cfg(feature = "CONFIG_CPU_V7M")]
+#[cfg(CONFIG_CPU_V7M)]
 pub const IRQMASK_REG_NAME_R: &str = "primask";
-#[cfg(feature = "CONFIG_CPU_V7M")]
+#[cfg(CONFIG_CPU_V7M)]
 pub const IRQMASK_REG_NAME_W: &str = "primask";
-#[cfg(feature = "CONFIG_CPU_V7M")]
+#[cfg(CONFIG_CPU_V7M)]
 pub const IRQMASK_I_BIT: usize = 1;
 
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 pub const IRQMASK_REG_NAME_R: &str = "cpsr";
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 pub const IRQMASK_REG_NAME_W: &str = "cpsr_c";
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 pub const IRQMASK_I_BIT: usize = PSR_I_BIT;
 
 #[cfg(feature = "LINUX_ARM_ARCH_GE_6")]
@@ -56,23 +56,23 @@ pub unsafe fn local_fiq_disable() {
     core::arch::asm!("cpsid f", options(nostack));
 }
 
-#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", not(feature = "CONFIG_CPU_V7M")))]
+#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", not(CONFIG_CPU_V7M)))]
 #[inline]
 pub unsafe fn local_abt_enable() {
     core::arch::asm!("cpsie a", options(nostack));
 }
 
-#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", not(feature = "CONFIG_CPU_V7M")))]
+#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", not(CONFIG_CPU_V7M)))]
 #[inline]
 pub unsafe fn local_abt_disable() {
     core::arch::asm!("cpsid a", options(nostack));
 }
 
-#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", feature = "CONFIG_CPU_V7M"))]
+#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", CONFIG_CPU_V7M))]
 #[inline]
 pub fn local_abt_enable() {}
 
-#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", feature = "CONFIG_CPU_V7M"))]
+#[cfg(all(feature = "LINUX_ARM_ARCH_GE_6", CONFIG_CPU_V7M))]
 #[inline]
 pub fn local_abt_disable() {}
 

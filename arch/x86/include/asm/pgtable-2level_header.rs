@@ -55,35 +55,35 @@ pub unsafe fn native_pte_clear(_mm: *mut mm_struct, _addr: ::core::ffi::c_ulong,
     *xp = native_make_pte(0);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn native_ptep_get_and_clear(xp: *mut pte_t) -> pte_t {
     __pte(xchg(&mut (*xp).pte_low, 0))
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! native_ptep_get_and_clear {
     ($xp:expr) => { native_local_ptep_get_and_clear($xp) };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn native_pmdp_get_and_clear(xp: *mut pmd_t) -> pmd_t {
     __pmd(xchg(xp as *mut pmdval_t, 0))
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! native_pmdp_get_and_clear {
     ($xp:expr) => { native_local_pmdp_get_and_clear($xp) };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn native_pudp_get_and_clear(xp: *mut pud_t) -> pud_t {
     __pud(xchg(xp as *mut pudval_t, 0))
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! native_pudp_get_and_clear {
     ($xp:expr) => { native_local_pudp_get_and_clear($xp) };
 }

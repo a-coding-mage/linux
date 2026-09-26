@@ -8,7 +8,7 @@
  *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *             http://www.samsung.com/
- * /
+ */
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -64,7 +64,7 @@ static int gc_thread_func(void *data)
 			gc_control.one_time = true;
 		}
 
-		/* give it a try one time * /
+		/* give it a try one time */
 		if (gc_th->gc_wake)
 			gc_th->gc_wake = false;
 
@@ -102,7 +102,7 @@ static int gc_thread_func(void *data)
 		 * Because it is possible that some segments can be
 		 * invalidated soon after by user update or deletion.
 		 * So, I'd like to wait some time to collect dirty segments.
-		 * /
+		 */
 		if (sbi->gc_mode == GC_URGENT_HIGH ||
 				sbi->gc_mode == GC_URGENT_MID) {
 			wait_ms = gc_th->urgent_sleep_time;
@@ -152,7 +152,7 @@ do_gc:
 		sync_mode = (F2FS_OPTION(sbi).bggc_mode == BGGC_MODE_SYNC) ||
 			(gc_boost && gc_th->boost_gc_greedy);
 
-		/* foreground GC was been triggered via f2fs_balance_fs() * /
+		/* foreground GC was been triggered via f2fs_balance_fs() */
 		if (foreground && !f2fs_sb_has_blkzoned(sbi))
 			sync_mode = false;
 
@@ -160,13 +160,13 @@ do_gc:
 		gc_control.no_bg_gc = foreground;
 		gc_control.nr_free_secs = foreground ? 1 : 0;
 
-		/* if return value is not zero, no victim was selected * /
+		/* if return value is not zero, no victim was selected */
 		if (f2fs_gc(sbi, &gc_control)) {
-			/* don't bother wait_ms by foreground gc * /
+			/* don't bother wait_ms by foreground gc */
 			if (!foreground)
 				wait_ms = gc_th->no_gc_sleep_time;
 		} else {
-			/* reset wait_ms to default sleep time * /
+			/* reset wait_ms to default sleep time */
 			if (wait_ms == gc_th->no_gc_sleep_time)
 				wait_ms = gc_th->min_sleep_time;
 		}
@@ -177,7 +177,7 @@ do_gc:
 		trace_f2fs_background_gc(sbi->sb, wait_ms,
 				prefree_segments(sbi), free_segments(sbi));
 
-		/* balancing f2fs's metadata periodically * /
+		/* balancing f2fs's metadata periodically */
 		f2fs_balance_fs_bg(sbi, true);
 next:
 		if (sbi->gc_mode != GC_NORMAL) {
@@ -306,14 +306,14 @@ static void select_policy(struct f2fs_sb_info *sbi, int gc_type,
 	/*
 	 * adjust candidates range, should select all dirty segments for
 	 * foreground GC and urgent GC cases.
-	 * /
+	 */
 	if (gc_type != FG_GC &&
 			(sbi->gc_mode != GC_URGENT_HIGH) &&
 			(p->gc_mode != GC_AT && p->alloc_mode != AT_SSR) &&
 			p->max_search > sbi->max_victim_search)
 		p->max_search = sbi->max_victim_search;
 
-	/* let's select beginning hot/small space first. * /
+	/* let's select beginning hot/small space first. */
 	if (f2fs_need_rand_seg_blk(sbi, type)) {
 		p->offset = get_random_u32_below(MAIN_SECS(sbi) *
 						SEGS_PER_SEC(sbi));
@@ -327,20 +327,20 @@ static void select_policy(struct f2fs_sb_info *sbi, int gc_type,
 static unsigned int get_max_cost(struct f2fs_sb_info *sbi,
 				struct victim_sel_policy *p)
 {
-	/* SSR allocates in a segment unit * /
+	/* SSR allocates in a segment unit */
 	if (p->alloc_mode == SSR)
 		return BLKS_PER_SEG(sbi);
 	else if (p->alloc_mode == AT_SSR)
 		return UINT_MAX;
 
-	/* LFS * /
+	/* LFS */
 	if (p->gc_mode == GC_GREEDY)
 		return SEGS_TO_BLKS(sbi, 2 * p->ofs_unit);
 	else if (p->gc_mode == GC_CB)
 		return UINT_MAX;
 	else if (p->gc_mode == GC_AT)
 		return UINT_MAX;
-	else /* No other gc_mode * /
+	else /* No other gc_mode */
 		return 0;
 }
 
@@ -353,7 +353,7 @@ static unsigned int check_bg_victims(struct f2fs_sb_info *sbi)
 	 * If the gc_type is FG_GC, we can select victim segments
 	 * selected by background GC before.
 	 * Those segments guarantee they have small valid blocks.
-	 * /
+	 */
 	for_each_set_bit(secno, dirty_i->victim_secmap, MAIN_SECS(sbi)) {
 		if (sec_usage_check(sbi, secno))
 			continue;
@@ -379,7 +379,7 @@ static unsigned int get_cb_cost(struct f2fs_sb_info *sbi, unsigned int segno)
 
 	u = BLKS_TO_SEGS(sbi, vblocks * 100);
 
-	/* Handle if the system time has changed by the user * /
+	/* Handle if the system time has changed by the user */
 	if (mtime < sit_i->min_mtime)
 		sit_i->min_mtime = mtime;
 	if (mtime > sit_i->max_mtime)
@@ -403,7 +403,7 @@ static inline unsigned int get_gc_cost(struct f2fs_sb_info *sbi,
 			CAP_BLKS_PER_SEC(sbi) * valid_thresh_ratio / 100))
 		return UINT_MAX;
 
-	/* alloc_mode == LFS * /
+	/* alloc_mode == LFS */
 	if (p->gc_mode == GC_GREEDY)
 		return get_valid_blocks(sbi, segno, true);
 	else if (p->gc_mode == GC_CB)
@@ -497,7 +497,7 @@ static void __insert_victim_entry(struct f2fs_sb_info *sbi,
 	struct victim_entry *ve;
 	bool left_most = true;
 
-	/* look up rb tree to find parent node * /
+	/* look up rb tree to find parent node */
 	while (*p) {
 		parent = *p;
 		ve = rb_entry(parent, struct victim_entry, rb_node);
@@ -531,7 +531,7 @@ static void add_victim_entry(struct f2fs_sb_info *sbi,
 	mtime = f2fs_get_section_mtime(sbi, segno);
 	f2fs_bug_on(sbi, mtime == INVALID_MTIME);
 
-	/* Handle if the system time has changed by the user * /
+	/* Handle if the system time has changed by the user */
 	if (mtime < sit_i->min_mtime)
 		sit_i->min_mtime = mtime;
 	if (mtime > sit_i->max_mtime)
@@ -541,7 +541,7 @@ static void add_victim_entry(struct f2fs_sb_info *sbi,
 	if (mtime > sit_i->dirty_max_mtime)
 		sit_i->dirty_max_mtime = mtime;
 
-	/* don't choose young section as candidate * /
+	/* don't choose young section as candidate */
 	if (sit_i->dirty_max_mtime - mtime < p->age_threshold)
 		return;
 
@@ -588,14 +588,14 @@ next:
 	if (ve->mtime >= max_mtime || ve->mtime < min_mtime)
 		goto skip;
 
-	/* age = 10000 * x% * 60 * /
+	/* age = 10000 * x% * 60 */
 	age = div64_u64(accu * (max_mtime - ve->mtime), total_time) *
 								age_weight;
 
 	vblocks = get_valid_blocks(sbi, ve->segno, true);
 	f2fs_bug_on(sbi, !vblocks || vblocks == sec_blocks);
 
-	/* u = 10000 * x% * 40 * /
+	/* u = 10000 * x% * 40 */
 	u = div64_u64(accu * (sec_blocks - vblocks), sec_blocks) *
 							(100 - age_weight);
 
@@ -620,7 +620,7 @@ skip:
 /*
  * select candidates around source section in range of
  * [target - dirty_threshold, target + dirty_threshold]
- * /
+ */
 static void atssr_lookup_victim(struct f2fs_sb_info *sbi,
 						struct victim_sel_policy *p)
 {
@@ -658,7 +658,7 @@ next_node:
 	vblocks = get_seg_entry(sbi, ve->segno)->ckpt_valid_blocks;
 	f2fs_bug_on(sbi, !vblocks);
 
-	/* rare case * /
+	/* rare case */
 	if (vblocks == BLKS_PER_SEG(sbi))
 		goto skip_node;
 
@@ -770,7 +770,7 @@ static int f2fs_gc_pinned_control(struct inode *inode, int gc_type,
  * and it does not remove it from dirty seglist.
  * When it is called from SSR segment selection, it finds a segment
  * which has minimum valid blocks and removes it from dirty seglist.
- * /
+ */
 int f2fs_get_victim(struct f2fs_sb_info *sbi, unsigned int *result,
 			int gc_type, int type, char alloc_mode,
 			unsigned long long age, bool one_time)
@@ -880,7 +880,7 @@ retry:
 		 * skip selecting the invalid segno (that is failed due to block
 		 * validity check failure during GC) to avoid endless GC loop in
 		 * such cases.
-		 * /
+		 */
 		if (test_bit(segno, sm->invalid_segmap))
 			goto next;
 #endif
@@ -890,13 +890,13 @@ retry:
 		if (sec_usage_check(sbi, secno))
 			goto next;
 
-		/* Don't touch checkpointed data * /
+		/* Don't touch checkpointed data */
 		if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
 			if (p.alloc_mode == LFS) {
 				/*
 				 * LFS is set to find source section during GC.
 				 * The victim should have no checkpointed data.
-				 * /
+				 */
 				if (get_ckpt_valid_blocks(sbi, segno, true))
 					goto next;
 			} else {
@@ -904,7 +904,7 @@ retry:
 				 * SSR | AT_SSR are set to find target segment
 				 * for writes which can be full by checkpointed
 				 * and newly written blocks.
-				 * /
+				 */
 				if (!f2fs_segment_has_free_slot(sbi, segno))
 					goto next;
 			}
@@ -943,7 +943,7 @@ next:
 		}
 	}
 
-	/* get victim for GC_AT/AT_SSR * /
+	/* get victim for GC_AT/AT_SSR */
 	if (is_atgc) {
 		lookup_victim_by_age(sbi, &p);
 		release_victim_entry(sbi);
@@ -1035,7 +1035,7 @@ static int check_valid_map(struct f2fs_sb_info *sbi,
  * This function compares node address got in summary with that in NAT.
  * On validity, copy that node with cold status, otherwise (invalid node)
  * ignore that.
- * /
+ */
 static int gc_node_segment(struct f2fs_sb_info *sbi,
 		struct f2fs_summary *sum, unsigned int segno, int gc_type,
 		struct blk_plug *plug)
@@ -1062,7 +1062,7 @@ next_step:
 		struct node_info ni;
 		int err;
 
-		/* stop BG_GC if there is not enough free sections. * /
+		/* stop BG_GC if there is not enough free sections. */
 		if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0, 0))
 			return submitted;
 
@@ -1080,12 +1080,12 @@ next_step:
 			continue;
 		}
 
-		/* phase == 2 * /
+		/* phase == 2 */
 		node_folio = f2fs_get_node_folio(sbi, nid, NODE_TYPE_REGULAR);
 		if (IS_ERR(node_folio))
 			continue;
 
-		/* block may become invalid during f2fs_get_node_folio * /
+		/* block may become invalid during f2fs_get_node_folio */
 		if (check_valid_map(sbi, segno, off) == 0) {
 			f2fs_folio_put(node_folio, true);
 			continue;
@@ -1124,7 +1124,7 @@ next_step:
  * blocks. If any node offsets, which point the other types of node blocks such
  * as indirect or double indirect node blocks, are given, it must be a caller's
  * bug.
- * /
+ */
 block_t f2fs_start_bidx_of_node(unsigned int node_ofs, struct inode *inode)
 {
 	unsigned int indirect_blks = 2 * NIDS_PER_BLOCK + 4;
@@ -1277,14 +1277,14 @@ static int ra_data_block(struct inode *inode, pgoff_t index)
 		goto put_folio;
 	}
 got_it:
-	/* read folio * /
+	/* read folio */
 	fio.folio = folio;
 	fio.new_blkaddr = fio.old_blkaddr = dn.data_blkaddr;
 
 	/*
 	 * don't cache encrypted data into meta inode until previous dirty
 	 * data were writebacked to avoid racing between GC and flush.
-	 * /
+	 */
 	f2fs_folio_wait_writeback(folio, DATA, true, true);
 
 	f2fs_wait_on_block_writeback(inode, dn.data_blkaddr);
@@ -1326,7 +1326,7 @@ out_iput:
 /*
  * Move data block via META_MAPPING while keeping locked data page.
  * This can be used to move blocks, aka LBAs, directly on disk.
- * /
+ */
 static int move_data_block(struct inode *inode, block_t bidx,
 				int gc_type, unsigned int segno, int off)
 {
@@ -1364,7 +1364,7 @@ static int move_data_block(struct inode *inode, block_t bidx,
 	}
 	f2fs_up_read(&F2FS_I(inode)->i_sem);
 
-	/* do not read out * /
+	/* do not read out */
 	folio = f2fs_grab_cache_folio(mapping, bidx, false);
 	if (IS_ERR(folio)) {
 		err = PTR_ERR(folio);
@@ -1394,7 +1394,7 @@ static int move_data_block(struct inode *inode, block_t bidx,
 	/*
 	 * don't cache encrypted data into meta inode until previous dirty
 	 * data were writebacked to avoid racing between GC and flush.
-	 * /
+	 */
 	f2fs_folio_wait_writeback(folio, DATA, true, true);
 
 	f2fs_wait_on_block_writeback(inode, dn.data_blkaddr);
@@ -1403,7 +1403,7 @@ static int move_data_block(struct inode *inode, block_t bidx,
 	if (err)
 		goto put_out;
 
-	/* read page * /
+	/* read page */
 	fio.folio = folio;
 	fio.new_blkaddr = fio.old_blkaddr = dn.data_blkaddr;
 
@@ -1419,7 +1419,7 @@ static int move_data_block(struct inode *inode, block_t bidx,
 
 	fio.encrypted_page = folio_file_page(mfolio, fio.old_blkaddr);
 
-	/* read source block in mfolio * /
+	/* read source block in mfolio */
 	if (!folio_test_uptodate(mfolio)) {
 		err = f2fs_submit_page_bio(&fio);
 		if (err) {
@@ -1443,12 +1443,12 @@ static int move_data_block(struct inode *inode, block_t bidx,
 
 	set_summary(&sum, dn.nid, dn.ofs_in_node, ni.version);
 
-	/* allocate block address * /
+	/* allocate block address */
 	err = f2fs_allocate_data_block(fio.sbi, NULL, fio.old_blkaddr, &newaddr,
 				&sum, type, NULL);
 	if (err) {
 		f2fs_folio_put(mfolio, true);
-		/* filesystem should shutdown, no need to recovery block * /
+		/* filesystem should shutdown, no need to recovery block */
 		goto up_out;
 	}
 
@@ -1462,7 +1462,7 @@ static int move_data_block(struct inode *inode, block_t bidx,
 
 	fio.encrypted_page = &efolio->page;
 
-	/* write target block * /
+	/* write target block */
 	f2fs_wait_on_page_writeback(fio.encrypted_page, DATA, true, true);
 	memcpy(page_address(fio.encrypted_page),
 				folio_address(mfolio), PAGE_SIZE);
@@ -1579,7 +1579,7 @@ out:
  * modify parent node.
  * If the parent node is not valid or the data block address is different,
  * the victim data block is ignored.
- * /
+ */
 static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
 		struct gc_inode_list *gc_list, unsigned int segno, int gc_type,
 		bool force_migrate, struct blk_plug *plug)
@@ -1599,7 +1599,7 @@ next_step:
 
 	for (off = 0; off < usable_blks_in_seg; off++, entry++) {
 		struct inode *inode;
-		struct node_info dni; /* dnode info for the data * /
+		struct node_info dni; /* dnode info for the data */
 		unsigned int ofs_in_node, nofs;
 		block_t start_bidx;
 		nid_t nid = le32_to_cpu(entry->nid);
@@ -1608,7 +1608,7 @@ next_step:
 		 * stop BG_GC if there is not enough free sections.
 		 * Or, stop GC if the segment becomes fully valid caused by
 		 * race condition along with SSR block allocation.
-		 * /
+		 */
 		if ((gc_type == BG_GC && has_not_enough_free_secs(sbi, 0, 0)) ||
 			(!force_migrate && get_valid_blocks(sbi, segno, true) ==
 							CAP_BLKS_PER_SEC(sbi)))
@@ -1628,7 +1628,7 @@ next_step:
 			continue;
 		}
 
-		/* Get an inode by ino with checking validity * /
+		/* Get an inode by ino with checking validity */
 		if (!is_alive(sbi, entry, &dni, start_addr + off, &nofs))
 			continue;
 
@@ -1704,7 +1704,7 @@ next_step:
 			continue;
 		}
 
-		/* phase 4 * /
+		/* phase 4 */
 		inode = find_gc_inode(gc_list, dni.ino);
 		if (inode) {
 			struct f2fs_inode_info *fi = F2FS_I(inode);
@@ -1724,7 +1724,7 @@ next_step:
 				}
 				locked = true;
 
-				/* wait for all inflight aio data * /
+				/* wait for all inflight aio data */
 				inode_dio_wait(inode);
 			}
 
@@ -1794,7 +1794,7 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
 		 * resulting in less than expected usable segments in the zone,
 		 * calculate the end segno in the zone which can be garbage
 		 * collected
-		 * /
+		 */
 		if (f2fs_sb_has_blkzoned(sbi))
 			sec_end_segno -= SEGS_PER_SEC(sbi) -
 					f2fs_usable_segs_in_sec(sbi);
@@ -1820,12 +1820,12 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
 
 	segno = rounddown(segno, sbi->sums_per_block);
 	sum_blk_cnt = DIV_ROUND_UP(end_segno - segno, sbi->sums_per_block);
-	/* readahead multi ssa blocks those have contiguous address * /
+	/* readahead multi ssa blocks those have contiguous address */
 	if (__is_large_section(sbi))
 		f2fs_ra_meta_pages(sbi, GET_SUM_BLOCK(sbi, segno),
 					sum_blk_cnt, META_SSA, true);
 
-	/* reference all summary page * /
+	/* reference all summary page */
 	while (segno < end_segno) {
 		struct folio *sum_folio = f2fs_get_sum_folio(sbi, segno);
 
@@ -1852,7 +1852,7 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
 	while (segno < end_segno) {
 		unsigned int cur_segno;
 
-		/* find segment summary of victim * /
+		/* find segment summary of victim */
 		struct folio *sum_folio = filemap_get_folio(META_MAPPING(sbi),
 					GET_SUM_BLOCK(sbi, segno));
 		unsigned int block_end_segno = rounddown(segno, sbi->sums_per_block)
@@ -1906,7 +1906,7 @@ static int do_garbage_collect(struct f2fs_sb_info *sbi,
 			 *   - check_valid_map()        - down_write(sentry_lock)
 			 *    - down_read(sentry_lock) - change_curseg()
 			 *                               - lock_page(sum_page)
-			 * /
+			 */
 			if (type == SUM_TYPE_NODE)
 				submitted += gc_node_segment(sbi, sum->entries,
 						cur_segno, gc_type, &plug);
@@ -1987,7 +1987,7 @@ gc_more:
 		goto stop;
 	}
 
-	/* Let's run FG_GC, if we don't have enough space. * /
+	/* Let's run FG_GC, if we don't have enough space. */
 	if (has_not_enough_free_secs(sbi, 0, 0)) {
 		gc_type = FG_GC;
 		gc_control->one_time = false;
@@ -1996,18 +1996,18 @@ gc_more:
 		 * For example, if there are many prefree_segments below given
 		 * threshold, we can make them free by checkpoint. Then, we
 		 * secure free segments which doesn't need fggc any more.
-		 * /
+		 */
 		if (prefree_segments(sbi)) {
 			stat_inc_cp_call_count(sbi, TOTAL_CALL);
 			ret = f2fs_write_checkpoint(sbi, &cpc);
 			if (ret)
 				goto stop;
-			/* Reset due to checkpoint * /
+			/* Reset due to checkpoint */
 			sec_freed = 0;
 		}
 	}
 
-	/* f2fs_balance_fs doesn't need to do BG_GC in critical path. * /
+	/* f2fs_balance_fs doesn't need to do BG_GC in critical path. */
 	if (gc_type == BG_GC && gc_control->no_bg_gc) {
 		ret = -EINVAL;
 		goto stop;
@@ -2019,7 +2019,7 @@ retry:
 	}
 	ret = __get_victim(sbi, &segno, gc_type, gc_control->one_time);
 	if (ret) {
-		/* allow to search victim from sections has pinned data * /
+		/* allow to search victim from sections has pinned data */
 		if (ret == -ENODATA && gc_type == FG_GC &&
 				f2fs_pinned_section_exists(DIRTY_I(sbi))) {
 			f2fs_unpin_all_sections(sbi, false);
@@ -2071,14 +2071,14 @@ retry:
 	/*
 	 * Write checkpoint to reclaim prefree segments.
 	 * We need more three extra sections for writer's data/node/dentry.
-	 * /
+	 */
 	if (free_sections(sbi) <= upper_secs + NR_GC_CHECKPOINT_SECS &&
 				prefree_segments(sbi)) {
 		stat_inc_cp_call_count(sbi, TOTAL_CALL);
 		ret = f2fs_write_checkpoint(sbi, &cpc);
 		if (ret)
 			goto stop;
-		/* Reset due to checkpoint * /
+		/* Reset due to checkpoint */
 		sec_freed = 0;
 	}
 go_gc_more:
@@ -2144,7 +2144,7 @@ void f2fs_build_gc_manager(struct f2fs_sb_info *sbi)
 {
 	sbi->gc_pin_file_threshold = DEF_GC_FAILED_PINNED_FILES;
 
-	/* give warm/cold data area from slower device * /
+	/* give warm/cold data area from slower device */
 	if (f2fs_is_multi_device(sbi) && !__is_large_section(sbi))
 		SIT_I(sbi)->last_victim[ALLOC_NEXT] =
 				GET_SEGNO(sbi, FDEV(0).end_blk) + 1;
@@ -2177,7 +2177,7 @@ int f2fs_gc_range(struct f2fs_sb_info *sbi,
 		/*
 		 * avoid migrating empty section, as it can be allocated by
 		 * log in parallel.
-		 * /
+		 */
 		if (!get_valid_blocks(sbi, segno, true))
 			goto next;
 
@@ -2187,7 +2187,7 @@ int f2fs_gc_range(struct f2fs_sb_info *sbi,
 		do_garbage_collect(sbi, segno, &gc_list, FG_GC, true, false);
 		put_gc_inode(&gc_list);
 
-		/* reset all pinned status during fggc * /
+		/* reset all pinned status during fggc */
 		f2fs_unpin_all_sections(sbi, true);
 
 		if (!dry_run && get_valid_blocks(sbi, segno, true)) {
@@ -2256,14 +2256,14 @@ static int free_segment_range(struct f2fs_sb_info *sbi,
 	FREE_I(sbi)->free_sections -= freed_secs;
 	spin_unlock(&FREE_I(sbi)->segmap_lock);
 
-	/* Move out cursegs from the target range * /
+	/* Move out cursegs from the target range */
 	for (type = CURSEG_HOT_DATA; type < NR_CURSEG_TYPE; type++) {
 		err = f2fs_allocate_segment_for_resize(sbi, type, start, end);
 		if (err)
 			goto out;
 	}
 
-	/* do GC to move out valid blocks in the range * /
+	/* do GC to move out valid blocks in the range */
 	err = f2fs_gc_range(sbi, start, end, dry_run, 0, false);
 	if (err || dry_run)
 		goto out;
@@ -2378,7 +2378,7 @@ int f2fs_resize_fs(struct file *filp, __u64 block_count)
 			return -EINVAL;
 	}
 
-	/* new fs size should align to section size * /
+	/* new fs size should align to section size */
 	div_u64_rem(block_count, BLKS_PER_SEC(sbi), &rem);
 	if (rem)
 		return -EINVAL;
@@ -2403,13 +2403,13 @@ int f2fs_resize_fs(struct file *filp, __u64 block_count)
 	shrunk_blocks = old_block_count - block_count;
 	secs = div_u64(shrunk_blocks, BLKS_PER_SEC(sbi));
 
-	/* stop other GC * /
+	/* stop other GC */
 	if (!f2fs_down_write_trylock_trace(&sbi->gc_lock, &glc)) {
 		err = -EAGAIN;
 		goto out_drop_write;
 	}
 
-	/* stop CP to protect MAIN_SEC in free_segment_range * /
+	/* stop CP to protect MAIN_SEC in free_segment_range */
 	f2fs_lock_op(sbi, &lc);
 
 	spin_lock(&sbi->stat_lock);

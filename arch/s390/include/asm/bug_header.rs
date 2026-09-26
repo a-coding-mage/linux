@@ -10,7 +10,7 @@ pub const MONCODE_BUG_ARG: u32 = 1;
 // The following items correspond to the CONFIG_BUG and
 // CONFIG_CC_HAS_ASM_IMMEDIATE_STRINGS conditional section in the C header.
 
-#[cfg(feature = "CONFIG_DEBUG_BUGVERBOSE")]
+#[cfg(CONFIG_DEBUG_BUGVERBOSE)]
 macro_rules! __BUG_ENTRY_VERBOSE {
     ($file:expr, $line:expr) => {
         concat!(
@@ -20,17 +20,17 @@ macro_rules! __BUG_ENTRY_VERBOSE {
     };
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_BUGVERBOSE"))]
+#[cfg(not(CONFIG_DEBUG_BUGVERBOSE))]
 macro_rules! __BUG_ENTRY_VERBOSE {
     ($file:expr, $line:expr) => { "" };
 }
 
-#[cfg(feature = "CONFIG_DEBUG_BUGVERBOSE_DETAILED")]
+#[cfg(CONFIG_DEBUG_BUGVERBOSE_DETAILED)]
 macro_rules! WARN_CONDITION_STR {
     ($cond_str:expr) => { $cond_str };
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_BUGVERBOSE_DETAILED"))]
+#[cfg(not(CONFIG_DEBUG_BUGVERBOSE_DETAILED))]
 macro_rules! WARN_CONDITION_STR {
     ($cond_str:expr) => { "" };
 }

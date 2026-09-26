@@ -46,8 +46,8 @@ unsafe fn rk3399_dmcfreq_target(dev: *mut device, freq: *mut usize, flags: u32) 
     a1 = (a1 & !RK3399_SET_ODT_PD_1_PD_IDLE) | (((( (*dmcfreq).pd_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) as u32) & RK3399_SET_ODT_PD_1_PD_IDLE);
     a0 = (a0 & !RK3399_SET_ODT_PD_0_STANDBY_IDLE) | (((( (*dmcfreq).standby_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) as u32) << 16 & RK3399_SET_ODT_PD_0_STANDBY_IDLE);
     a0 = (a0 & !RK3399_SET_ODT_PD_0_SR_IDLE) | ((((((*dmcfreq).sr_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) + 1023) / 1024) as u32 & RK3399_SET_ODT_PD_0_SR_IDLE);
-    a0 = (a0 & !RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE) | ((((((*dmcfreq).sr_mc_gate_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) + 1023) / 1024) as u32 << 8 & RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE);
-    a1 = (a1 & !RK3399_SET_ODT_PD_1_SRPD_LITE_IDLE) | ((((((*dmcfreq).srpd_lite_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) + 1023) / 1024) as u32 << 16 & RK3399_SET_ODT_PD_1_SRPD_LITE_IDLE);
+    a0 = (a0 & !RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE) | (((((((*dmcfreq).sr_mc_gate_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) + 1023) / 1024) as u32) << 8 & RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE);
+    a1 = (a1 & !RK3399_SET_ODT_PD_1_SRPD_LITE_IDLE) | (((((((*dmcfreq).srpd_lite_idle_ns as usize * ddrcon_mhz) / NSEC_PER_USEC) + 1023) / 1024) as u32) << 16 & RK3399_SET_ODT_PD_1_SRPD_LITE_IDLE);
     if !(*dmcfreq).regmap_pmu.is_null() {
         if target_rate >= (*dmcfreq).sr_idle_dis_freq as usize { a0 &= !RK3399_SET_ODT_PD_0_SR_IDLE; }
         if target_rate >= (*dmcfreq).sr_mc_gate_idle_dis_freq as usize { a0 &= !RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE; }

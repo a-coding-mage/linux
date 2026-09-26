@@ -34,13 +34,13 @@ pub unsafe fn pci_get_legacy_ide_irq(dev: *mut pci_dev, channel: i32) -> i32 {
 
 /* Under CONFIG_PCI this is an external initialization function; otherwise
  * the C macro expands to nothing. */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn set_pci_dma_ops(dma_ops: *const dma_map_ops);
 }
 
 /* CONFIG_PPC64 defines PCI_DISABLE_MWI. */
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const PCI_DISABLE_MWI: bool = true;
 
 extern "C" {

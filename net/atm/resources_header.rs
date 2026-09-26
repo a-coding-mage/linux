@@ -21,7 +21,7 @@ extern "C" {
 }
 
 /* CONFIG_PROC_FS conditional declarations. */
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 extern "C" {
     pub fn atm_dev_seq_start(
         seq: *mut crate::seq_file,
@@ -38,13 +38,13 @@ extern "C" {
     pub fn atm_proc_dev_deregister(dev: *mut crate::atm_dev);
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn atm_proc_dev_register(_dev: *mut crate::atm_dev) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PROC_FS"))]
+#[cfg(not(CONFIG_PROC_FS))]
 #[inline]
 pub fn atm_proc_dev_deregister(_dev: *mut crate::atm_dev) {
     /* nothing */

@@ -22,7 +22,7 @@ pub unsafe fn rtm_getroute_parse_ip_proto(
                     return 0;
                 }
             }
-            #[cfg(feature = "CONFIG_IPV6")]
+            #[cfg(CONFIG_IPV6)]
             IPPROTO_ICMPV6 => {
                 if family != AF_INET6 {
                     // Continue to the common unsupported-protocol path.

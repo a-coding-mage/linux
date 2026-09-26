@@ -102,7 +102,7 @@ pub const NETDEV_A_NAPI_THREADED: i32 = 8;
 pub const __NETDEV_A_NAPI_MAX: i32 = 9;
 pub const NETDEV_A_NAPI_MAX: i32 = __NETDEV_A_NAPI_MAX - 1;
 
-pub const __NETDEV_A_XSK_INFO_MAX: i32 = 1;
+pub const __NETDEV_A_XSK_INFO_MAX: i32 = 0;
 pub const NETDEV_A_XSK_INFO_MAX: i32 = __NETDEV_A_XSK_INFO_MAX - 1;
 
 pub const NETDEV_A_QUEUE_ID: i32 = 1;

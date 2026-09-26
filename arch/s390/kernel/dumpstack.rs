@@ -94,12 +94,12 @@ pub unsafe fn get_stack_info(
 pub unsafe fn show_stack(task: *mut task_struct, stack: *mut c_ulong, loglvl: *const c_char) {
     let mut state: unwind_state = core::mem::zeroed();
     printk(b"%sCall Trace:\n\0".as_ptr() as *const _, loglvl);
-    unwind_for_each_frame(&mut state, task, core::ptr::null_mut(), stack as c_ulong) {
+    unwind_for_each_frame!(&mut state, task, core::ptr::null_mut(), stack as c_ulong, {
         printk(
             if state.reliable { b"%s [<%016lx>] %pSR \n\0" } else { b"%s([<%016lx>] %pSR)\n\0" }.as_ptr() as *const _,
             loglvl, state.ip, state.ip as *mut core::ffi::c_void,
         );
-    }
+    });
     debug_show_held_locks(if !task.is_null() { task } else { current });
 }
 

@@ -915,7 +915,7 @@ unsafe fn fsl_sai_set_bclk(dai: *mut snd_soc_dai, tx: bool, freq: u32) -> c_int 
         if ratio == 1 && !support_1_1_ratio { id += 1; continue; }
         if (ratio & 1) != 0 && ratio > 1 { id += 1; continue; }
         let diff = ((clk_rate as i64) - (ratio as i64 * freq as i64)).abs() as u32;
-        if diff != 0 && clk_rate / diff as c_ulong < 1000 { id += 1; continue; }
+        if diff != 0 && clk_rate / (diff as c_ulong) < 1000 { id += 1; continue; }
         dev_dbg((*dai).dev, b"ratio %d for freq %dHz based on clock %ldHz\n\0".as_ptr() as *const c_char, ratio, freq, clk_rate);
         if diff < bestdiff {
             savediv = ratio;

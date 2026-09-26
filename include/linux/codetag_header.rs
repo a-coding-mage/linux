@@ -52,13 +52,13 @@ pub struct codetag_type_desc {
         end: *mut codetag,
     )>,
     /* CONFIG_MODULES fields are present when the corresponding build option is enabled. */
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     pub module_replaced: Option<unsafe extern "C" fn(*mut module, *mut module)>,
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     pub needs_section_mem: Option<unsafe extern "C" fn(*mut module, usize) -> bool>,
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     pub alloc_section_mem: Option<unsafe extern "C" fn(*mut module, usize, u32, usize) -> *mut c_void>,
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     pub free_section_mem: Option<unsafe extern "C" fn(*mut module, bool)>,
 }
 
@@ -101,7 +101,7 @@ unsafe extern "C" {
 }
 
 /* Retained conditional intent: enabled only with CONFIG_CODE_TAGGING and CONFIG_MODULES. */
-#[cfg(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES"))]
+#[cfg(all(CONFIG_CODE_TAGGING, CONFIG_MODULES))]
 unsafe extern "C" {
     pub fn codetag_needs_module_section(mod_: *mut module, name: *const c_char, size: c_ulong) -> bool;
     pub fn codetag_alloc_module_section(mod_: *mut module, name: *const c_char, size: c_ulong, prepend: u32, align: c_ulong) -> *mut c_void;
@@ -111,17 +111,17 @@ unsafe extern "C" {
     pub fn codetag_unload_module(mod_: *mut module);
 }
 
-#[cfg(not(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES")))]
+#[cfg(not(all(CONFIG_CODE_TAGGING, CONFIG_MODULES)))]
 pub unsafe fn codetag_needs_module_section(_: *mut module, _: *const c_char, _: c_ulong) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES")))]
+#[cfg(not(all(CONFIG_CODE_TAGGING, CONFIG_MODULES)))]
 pub unsafe fn codetag_alloc_module_section(_: *mut module, _: *const c_char, _: c_ulong, _: u32, _: c_ulong) -> *mut c_void { core::ptr::null_mut() }
-#[cfg(not(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES")))]
+#[cfg(not(all(CONFIG_CODE_TAGGING, CONFIG_MODULES)))]
 pub unsafe fn codetag_free_module_sections(_: *mut module) {}
-#[cfg(not(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES")))]
+#[cfg(not(all(CONFIG_CODE_TAGGING, CONFIG_MODULES)))]
 pub unsafe fn codetag_module_replaced(_: *mut module, _: *mut module) {}
-#[cfg(not(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES")))]
+#[cfg(not(all(CONFIG_CODE_TAGGING, CONFIG_MODULES)))]
 pub unsafe fn codetag_load_module(_: *mut module) -> i32 { 0 }
-#[cfg(not(all(feature = "CONFIG_CODE_TAGGING", feature = "CONFIG_MODULES")))]
+#[cfg(not(all(CONFIG_CODE_TAGGING, CONFIG_MODULES)))]
 pub unsafe fn codetag_unload_module(_: *mut module) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -47,8 +47,8 @@ extern "C" {
 }
 
 // x86 defines its own instance of sysfb_primary_display.
-#[cfg(any(feature = "CONFIG_SYSFB", feature = "CONFIG_EFI_EARLYCON", feature = "CONFIG_FIRMWARE_EDID"))]
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(any(CONFIG_SYSFB, CONFIG_EFI_EARLYCON, CONFIG_FIRMWARE_EDID))]
+#[cfg(not(CONFIG_X86))]
 #[no_mangle]
 pub static mut sysfb_primary_display: sysfb_display_info = unsafe { ::core::mem::zeroed() };
 
@@ -72,7 +72,7 @@ unsafe fn init_primary_display() {
             );
         }
 
-        if cfg!(feature = "CONFIG_EFI_EARLYCON") {
+        if cfg!(CONFIG_EFI_EARLYCON) {
             efi_earlycon_reprobe();
         }
     }
@@ -184,7 +184,7 @@ pub unsafe fn efi_init() {
     efi_esrt_init();
     efi_mokvar_table_init();
     memblock_reserve(data.phys_map & PAGE_MASK, PAGE_ALIGN(data.size + (data.phys_map & !PAGE_MASK)));
-    if cfg!(any(feature = "CONFIG_X86", feature = "CONFIG_SYSFB", feature = "CONFIG_EFI_EARLYCON")) {
+    if cfg!(any(CONFIG_X86, CONFIG_SYSFB, CONFIG_EFI_EARLYCON)) {
         init_primary_display();
     }
 }

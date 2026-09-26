@@ -26,17 +26,17 @@ atomic_t maple_tree_tests_passed;
 // preprocessor: #undef MT_BUG_ON
 
 // preprocessor: #define MT_BUG_ON(__tree, __x) do {					\
-	atomic_inc(&maple_tree_tests_run);				\
-	if __x {							\
-		pr_info("BUG at %s:%d (%u)\n",				\
-		__func__, __LINE__, __x);				\
-		pr_info("Pass: %u Run:%u\n",				\
-			atomic_read(&maple_tree_tests_passed),		\
-			atomic_read(&maple_tree_tests_run));		\
-	} else {							\
-		atomic_inc(&maple_tree_tests_passed);			\
-	}								\
-} while 0
+// 	atomic_inc(&maple_tree_tests_run);				\
+// 	if __x {							\
+// 		pr_info("BUG at %s:%d (%u)\n",				\
+// 		__func__, __LINE__, __x);				\
+// 		pr_info("Pass: %u Run:%u\n",				\
+// 			atomic_read(&maple_tree_tests_passed),		\
+// 			atomic_read(&maple_tree_tests_run));		\
+// 	} else {							\
+// 		atomic_inc(&maple_tree_tests_passed);			\
+// 	}								\
+// } while 0
 // preprocessor: #endif
 
 /* #define BENCH_SLOT_STORE */
@@ -61,37 +61,37 @@ atomic_t maple_tree_tests_passed;
 // preprocessor: #define mas_is_underflow(x)	((x)->status == ma_underflow)
 
 i32 mtree_insert_index(*mut maple_tree,
-				     u64 index, gfp_t gfp)
+				     index: u64, gfp_t gfp)
 {
 	return mtree_insert(mt, index, xa_mk_value(index & i64::MAX as u64), gfp);
 }
 
-void mtree_erase_index(*mut maple_tree, u64 index)
+void mtree_erase_index(*mut maple_tree, index: u64)
 {
 	MT_BUG_ON(mt, mtree_erase(mt, index) != xa_mk_value(index & i64::MAX as u64));
 	MT_BUG_ON(mt, mtree_load(mt, index) != core::ptr::null_mut());
 }
 
-i32 mtree_test_insert(*mut maple_tree, u64 index,
-				*mut core::ffi::c_voidptr)
+i32 mtree_test_insert(*mut maple_tree, index: u64,
+				ptr: *mut core::ffi::c_void)
 {
 	return mtree_insert(mt, index, ptr, GFP_KERNEL);
 }
 
 i32 mtree_test_store_range(*mut maple_tree,
-			u64 start, u64 end, *mut core::ffi::c_voidptr)
+			start: u64, end: u64, ptr: *mut core::ffi::c_void)
 {
 	return mtree_store_range(mt, start, end, ptr, GFP_KERNEL);
 }
 
-i32 mtree_test_store(*mut maple_tree, u64 start,
-				*mut core::ffi::c_voidptr)
+i32 mtree_test_store(*mut maple_tree, start: u64,
+				ptr: *mut core::ffi::c_void)
 {
 	return mtree_test_store_range(mt, start, start, ptr);
 }
 
 i32 mtree_test_insert_range(*mut maple_tree,
-			u64 start, u64 end, *mut core::ffi::c_voidptr)
+			start: u64, end: u64, ptr: *mut core::ffi::c_void)
 {
 	return mtree_insert_range(mt, start, end, ptr, GFP_KERNEL);
 }
@@ -108,8 +108,8 @@ i32 mtree_test_insert_range(*mut maple_tree,
 
 // preprocessor: #if defined(CONFIG_64BIT)
 void check_mtree_alloc_range(*mut maple_tree,
-		u64 start, u64 end, u64 size,
-		u64 expected, i32 eret, *mut core::ffi::c_voidptr)
+		start: u64, end: u64, size: u64,
+		expected: u64, eret: i32, ptr: *mut core::ffi::c_void)
 {
 
 	u64 result = expected + 1;
@@ -125,8 +125,8 @@ void check_mtree_alloc_range(*mut maple_tree,
 }
 
 void check_mtree_alloc_rrange(*mut maple_tree,
-		u64 start, u64 end, u64 size,
-		u64 expected, i32 eret, *mut core::ffi::c_voidptr)
+		start: u64, end: u64, size: u64,
+		expected: u64, eret: i32, ptr: *mut core::ffi::c_void)
 {
 
 	u64 result = expected + 1;
@@ -143,7 +143,7 @@ void check_mtree_alloc_rrange(*mut maple_tree,
 // preprocessor: #endif
 
 void check_load(*mut maple_tree,
-				       u64 index, *mut core::ffi::c_voidptr)
+				       index: u64, ptr: *mut core::ffi::c_void)
 {
 	*mut core::ffi::c_voidret = mtree_test_load(mt, index);
 
@@ -153,7 +153,7 @@ void check_load(*mut maple_tree,
 }
 
 void check_store_range(*mut maple_tree,
-		u64 start, u64 end, *mut core::ffi::c_voidptr, i32 expected)
+		start: u64, end: u64, ptr: *mut core::ffi::c_void, expected: i32)
 {
 	i32 ret = -EINVAL;
 	u64 i;
@@ -169,7 +169,7 @@ void check_store_range(*mut maple_tree,
 }
 
 void check_insert_range(*mut maple_tree,
-		u64 start, u64 end, *mut core::ffi::c_voidptr, i32 expected)
+		start: u64, end: u64, ptr: *mut core::ffi::c_void, expected: i32)
 {
 	i32 ret = -EINVAL;
 	u64 i;
@@ -185,7 +185,7 @@ void check_insert_range(*mut maple_tree,
 }
 
 void check_insert(*mut maple_tree,
-					 u64 index, *mut core::ffi::c_voidptr)
+					 index: u64, ptr: *mut core::ffi::c_void)
 {
 	i32 ret = -EINVAL;
 
@@ -194,7 +194,7 @@ void check_insert(*mut maple_tree,
 }
 
 void check_dup_insert(*mut maple_tree,
-				      u64 index, *mut core::ffi::c_voidptr)
+				      index: u64, ptr: *mut core::ffi::c_void)
 {
 	i32 ret = -EINVAL;
 
@@ -204,7 +204,7 @@ void check_dup_insert(*mut maple_tree,
 
 
 void check_index_load(*mut maple_tree,
-					     u64 index)
+					     index: u64)
 {
 	return check_load(mt, index, xa_mk_value(index & i64::MAX as u64));
 }
@@ -213,11 +213,11 @@ i32 not_empty(*mut maple_node)
 {
 	i32 i;
 
-	if node->parent
+	if (*node).parent
 		return 1;
 
-	for i in 0..=i < node->slot.len()
-		if node->slot[i]
+	for i in 0..=i < (*node).slot.len()
+		if (*node).slot[i]
 			return 1;
 
 	return 0;
@@ -225,7 +225,7 @@ i32 not_empty(*mut maple_node)
 
 
 void check_rev_seq(*mut maple_tree,
-					  u64 max, bool verbose)
+					  max: u64, verbose: bool)
 {
 	u64 i = max, j;
 
@@ -257,10 +257,10 @@ void check_rev_seq(*mut maple_tree,
 // preprocessor: #endif
 }
 
-void check_seq(*mut maple_tree, u64 max,
-		bool verbose)
+void check_seq(*mut maple_tree, max: u64,
+		verbose: bool)
 {
-	u64 i, j;
+	i: u64, j;
 
 	MT_BUG_ON(mt, !mtree_empty(mt));
 
@@ -288,7 +288,7 @@ void check_seq(*mut maple_tree, u64 max,
 
 void check_lb_not_empty(*mut maple_tree)
 {
-	u64 i, j;
+	i: u64, j;
 	u64 huge = 4000UL * 1000 * 1000;
 
 
@@ -313,7 +313,7 @@ void check_lower_bound_split(*mut maple_tree)
 
 void check_upper_bound_split(*mut maple_tree)
 {
-	u64 i, j;
+	i: u64, j;
 	u64 huge;
 
 	MT_BUG_ON(mt, !mtree_empty(mt));
@@ -347,7 +347,7 @@ void check_mid_split(*mut maple_tree)
 
 void check_rev_find(*mut maple_tree)
 {
-	i32 i, nr_entries = 200;
+	i: i32, nr_entries = 200;
 	*mut core::ffi::c_voidval;
 	MA_STATE(mas, mt, 0, 0);
 
@@ -439,7 +439,7 @@ void check_find(*mut maple_tree)
 	val = 0;
 	mas_set(&mas, val);
 	mas_lock(&mas);
-	mas_for_each(&mas, entry, u64::MAX) {
+	mas_for_each!(&mas, entry, u64::MAX, {
 		if val != 64
 			MT_BUG_ON(mt, xa_mk_value(val) != entry);
 		else
@@ -448,14 +448,14 @@ void check_find(*mut maple_tree)
 		/* For zero check. */
 		if !val
 			val = 1;
-	}
+	});
 	mas_unlock(&mas);
 
 	/* Test mas_pause */
 	val = 0;
 	mas_set(&mas, val);
 	mas_lock(&mas);
-	mas_for_each(&mas, entry, u64::MAX) {
+	mas_for_each!(&mas, entry, u64::MAX, {
 		if val != 64
 			MT_BUG_ON(mt, xa_mk_value(val) != entry);
 		else
@@ -468,12 +468,12 @@ void check_find(*mut maple_tree)
 		mas_pause(&mas);
 		mas_unlock(&mas);
 		mas_lock(&mas);
-	}
+	});
 	mas_unlock(&mas);
 
 	val = 0;
 	max = 300; /* A value big enough to include XA_ZERO_ENTRY at 64. */
-	mt_for_each(mt, entry, index, max) {
+	mt_for_each!(mt, entry, index, max, {
 		MT_BUG_ON(mt, xa_mk_value(val) != entry);
 		val <<= 2;
 		if val == 64 /* Skip zero entry. */
@@ -481,13 +481,13 @@ void check_find(*mut maple_tree)
 		/* For zero check. */
 		if !val
 			val = 1;
-	}
+	});
 
 	val = 0;
 	max = 0;
 	index = 0;
 	MT_BUG_ON(mt, mtree_insert_index(mt, u64::MAX, GFP_KERNEL));
-	mt_for_each(mt, entry, index, u64::MAX) {
+	mt_for_each!(mt, entry, index, u64::MAX, {
 		if val == top
 			MT_BUG_ON(mt, entry != xa_mk_value(i64::MAX as u64));
 		else
@@ -506,7 +506,7 @@ void check_find(*mut maple_tree)
 			val = 1;
 		max++;
 		MT_BUG_ON(mt, max > 25);
-	}
+	});
 	mtree_erase_index(mt, u64::MAX);
 
 	mas_reset(&mas);
@@ -527,7 +527,7 @@ void check_find(*mut maple_tree)
 	val = 0;
 	mas_set(&mas, 0);
 	mas_lock(&mas);
-	mas_for_each(&mas, entry, u64::MAX) {
+	mas_for_each!(&mas, entry, u64::MAX, {
 		if val == 64
 			MT_BUG_ON(mt, entry != XA_ZERO_ENTRY);
 		else if val == top
@@ -547,7 +547,7 @@ void check_find(*mut maple_tree)
 		mas_pause(&mas);
 		mas_unlock(&mas);
 		mas_lock(&mas);
-	}
+	});
 	mas_unlock(&mas);
 
 	mas_set(&mas, 1048576);
@@ -603,7 +603,7 @@ void check_find(*mut maple_tree)
 
 void check_find_2(*mut maple_tree)
 {
-	u64 i, j;
+	i: u64, j;
 	*mut core::ffi::c_voidentry;
 
 	MA_STATE(mas, mt, 0, 0);
@@ -617,10 +617,10 @@ void check_find_2(*mut maple_tree)
 		j = 0;
 		mas_set(&mas, 0);
 		rcu_read_lock();
-		mas_for_each(&mas, entry, u64::MAX) {
+		mas_for_each!(&mas, entry, u64::MAX, {
 			MT_BUG_ON(mt, entry != xa_mk_value(j));
 			j++;
-		}
+		});
 		rcu_read_unlock();
 		MT_BUG_ON(mt, j != i + 1);
 	}
@@ -630,13 +630,13 @@ void check_find_2(*mut maple_tree)
 		j = i + 1;
 		mas_set(&mas, 0);
 		rcu_read_lock();
-		mas_for_each(&mas, entry, u64::MAX) {
+		mas_for_each!(&mas, entry, u64::MAX, {
 			if xa_is_zero(entry)
 				continue;
 
 			MT_BUG_ON(mt, entry != xa_mk_value(j));
 			j++;
-		}
+		});
 		rcu_read_unlock();
 		MT_BUG_ON(mt, j != 256);
 	}
@@ -749,7 +749,7 @@ void check_alloc_rev_range(*mut maple_tree)
 		0,
 	};
 
-	i32 i, range_count = range.len();
+	i: i32, range_count = range.len();
 	i32 req_range_count = req_range.len();
 	u64 min = 0;
 
@@ -925,7 +925,7 @@ void check_alloc_range(*mut maple_tree)
 		34148798648 << 12,	/* Location is the same as min/max */
 		0,			/* Success */
 	};
-	i32 i, range_count = range.len();
+	i: i32, range_count = range.len();
 	i32 req_range_count = req_range.len();
 	u64 min = 0x565234af2000;
 	MA_STATE(mas, mt, 0, 0);
@@ -988,7 +988,7 @@ void check_alloc_range(*mut maple_tree)
 
 void check_ranges(*mut maple_tree)
 {
-	i32 i, val, val2;
+	i: i32, val, val2;
 	const u64 r[] = {
 		10, 15,
 		20, 25,
@@ -1821,7 +1821,7 @@ void check_gap_combining(*mut maple_tree)
 }
 void check_node_overwrite(*mut maple_tree)
 {
-	i32 i, max = 4000;
+	i: i32, max = 4000;
 
 	for i in 0..=i < max
 		mtree_test_store_range(mt, i*100, i*100 + 50, xa_mk_value(i*100));
@@ -1834,7 +1834,7 @@ void check_node_overwrite(*mut maple_tree)
 // preprocessor: #if defined(BENCH_SLOT_STORE)
 void bench_slot_store(*mut maple_tree)
 {
-	i32 i, brk = 105, max = 1040, brk_start = 100, count = 20000000;
+	i: i32, brk = 105, max = 1040, brk_start = 100, count = 20000000;
 
 	for i in 0..=i < max
 		mtree_store_range(mt, i, i + 5, xa_mk_value(i), GFP_KERNEL);
@@ -1850,7 +1850,7 @@ void bench_slot_store(*mut maple_tree)
 // preprocessor: #if defined(BENCH_NODE_STORE)
 void bench_node_store(*mut maple_tree)
 {
-	i32 i, overwrite = 76, max = 240, count = 20000000;
+	i: i32, overwrite = 76, max = 240, count = 20000000;
 
 	for i in 0..=i < max
 		mtree_store_range(mt, i, i + 5, xa_mk_value(i), GFP_KERNEL);
@@ -1869,7 +1869,7 @@ void bench_node_store(*mut maple_tree)
 // preprocessor: #if defined(BENCH_AWALK)
 void bench_awalk(*mut maple_tree)
 {
-	i32 i, max = 2500, count = 50000000;
+	i: i32, max = 2500, count = 50000000;
 	MA_STATE(mas, mt, 1470, 1470);
 
 	for i in 0..=i < max
@@ -1884,9 +1884,8 @@ void bench_awalk(*mut maple_tree)
 }
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_WALK)
-void bench_walk(*mut maple_tree)
-{
-	i32 i, max = 2500, count = 550000000;
+void bench_walk!(*mut maple_tree, {
+	i: i32, max = 2500, count = 550000000;
 	MA_STATE(mas, mt, 1470, 1470);
 
 	for i in 0..=i < max
@@ -1897,13 +1896,13 @@ void bench_walk(*mut maple_tree)
 		mas_reset(&mas);
 	}
 
-}
+});
 // preprocessor: #endif
 
 // preprocessor: #if defined(BENCH_LOAD)
 void bench_load(*mut maple_tree)
 {
-	i32 i, max = 2500, count = 550000000;
+	i: i32, max = 2500, count = 550000000;
 
 	for i in 0..=i < max
 		mtree_store_range(mt, i, i + 5, xa_mk_value(i), GFP_KERNEL);
@@ -1914,9 +1913,8 @@ void bench_load(*mut maple_tree)
 // preprocessor: #endif
 
 // preprocessor: #if defined(BENCH_MT_FOR_EACH)
-void bench_mt_for_each(*mut maple_tree)
-{
-	i32 i, count = 1000000;
+void bench_mt_for_each!(*mut maple_tree, {
+	i: i32, count = 1000000;
 	u64 max = 2500, index = 0;
 	*mut core::ffi::c_voidentry;
 
@@ -1926,21 +1924,20 @@ void bench_mt_for_each(*mut maple_tree)
 	for i in 0..=i < count {
 		u64 j = 0;
 
-		mt_for_each(mt, entry, index, max) {
+		mt_for_each!(mt, entry, index, max, {
 			MT_BUG_ON(mt, entry != xa_mk_value(j));
 			j += 5;
-		}
+		});
 
 		index = 0;
 	}
 
-}
+});
 // preprocessor: #endif
 
 // preprocessor: #if defined(BENCH_MAS_FOR_EACH)
-void bench_mas_for_each(*mut maple_tree)
-{
-	i32 i, count = 1000000;
+void bench_mas_for_each!(*mut maple_tree, {
+	i: i32, count = 1000000;
 	u64 max = 2500;
 	*mut core::ffi::c_voidentry;
 	MA_STATE(mas, mt, 0, 0);
@@ -1957,20 +1954,20 @@ void bench_mas_for_each(*mut maple_tree)
 	for i in 0..=i < count {
 		u64 j = 0;
 
-		mas_for_each(&mas, entry, max) {
+		mas_for_each!(&mas, entry, max, {
 			MT_BUG_ON(mt, entry != xa_mk_value(j));
 			j += 5;
-		}
+		});
 		mas_set(&mas, 0);
 	}
 	rcu_read_unlock();
 
-}
+});
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_MAS_PREV)
 void bench_mas_prev(*mut maple_tree)
 {
-	i32 i, count = 1000000;
+	i: i32, count = 1000000;
 	u64 max = 2500;
 	*mut core::ffi::c_voidentry;
 	MA_STATE(mas, mt, 0, 0);
@@ -2001,7 +1998,7 @@ void bench_mas_prev(*mut maple_tree)
 void check_forking(void)
 {
 	maple_tree mt, newmt;
-	i32 i, nr_entries = 134, ret;
+	i: i32, nr_entries = 134, ret;
 	*mut core::ffi::c_voidval;
 	MA_STATE(mas, &mt, 0, 0);
 	MA_STATE(newmas, &newmt, 0, 0);
@@ -2044,7 +2041,7 @@ void check_forking(void)
 
 void check_iteration(*mut maple_tree)
 {
-	i32 i, nr_entries = 125;
+	i: i32, nr_entries = 125;
 	*mut core::ffi::c_voidval;
 	MA_STATE(mas, mt, 0, 0);
 
@@ -2056,7 +2053,7 @@ void check_iteration(*mut maple_tree)
 
 	i = 0;
 	mas_lock(&mas);
-	mas_for_each(&mas, val, 925) {
+	mas_for_each!(&mas, val, 925, {
 		MT_BUG_ON(mt, mas.index != i * 10);
 		MT_BUG_ON(mt, mas.last != i * 10 + 9);
 		/* Overwrite end of entry 92 */
@@ -2066,14 +2063,14 @@ void check_iteration(*mut maple_tree)
 			mas_store(&mas, val);
 		}
 		i++;
-	}
+	});
 	/* Ensure mas_find() gets the next value */
 	val = mas_find(&mas, u64::MAX);
 	MT_BUG_ON(mt, val != xa_mk_value(i));
 
 	mas_set(&mas, 0);
 	i = 0;
-	mas_for_each(&mas, val, 785) {
+	mas_for_each!(&mas, val, 785, {
 		MT_BUG_ON(mt, mas.index != i * 10);
 		MT_BUG_ON(mt, mas.last != i * 10 + 9);
 		/* Overwrite start of entry 78 */
@@ -2084,13 +2081,13 @@ void check_iteration(*mut maple_tree)
 		} else {
 			i++;
 		}
-	}
+	});
 	val = mas_find(&mas, u64::MAX);
 	MT_BUG_ON(mt, val != xa_mk_value(i));
 
 	mas_set(&mas, 0);
 	i = 0;
-	mas_for_each(&mas, val, 765) {
+	mas_for_each!(&mas, val, 765, {
 		MT_BUG_ON(mt, mas.index != i * 10);
 		MT_BUG_ON(mt, mas.last != i * 10 + 9);
 		/* Overwrite end of entry 76 and advance to the end */
@@ -2100,7 +2097,7 @@ void check_iteration(*mut maple_tree)
 			mas_store(&mas, val);
 		}
 		i++;
-	}
+	});
 	/* Make sure the next find returns the one after 765, 766-769 */
 	val = mas_find(&mas, u64::MAX);
 	MT_BUG_ON(mt, val != xa_mk_value(76));
@@ -2113,7 +2110,7 @@ void check_mas_store_gfp(*mut maple_tree)
 {
 
 	maple_tree newmt;
-	i32 i, nr_entries = 135;
+	i: i32, nr_entries = 135;
 	*mut core::ffi::c_voidval;
 	MA_STATE(mas, mt, 0, 0);
 	MA_STATE(newmas, mt, 0, 0);
@@ -2129,11 +2126,11 @@ void check_mas_store_gfp(*mut maple_tree)
 	mas_lock(&newmas);
 	mas_reset(&newmas);
 	mas_set(&mas, 0);
-	mas_for_each(&mas, val, u64::MAX) {
+	mas_for_each!(&mas, val, u64::MAX, {
 		newmas.index = mas.index;
 		newmas.last = mas.last;
 		mas_store_gfp(&newmas, val, GFP_KERNEL);
-	}
+	});
 	mas_unlock(&newmas);
 	rcu_read_unlock();
 	mt_validate(&newmt);
@@ -2145,7 +2142,7 @@ void check_mas_store_gfp(*mut maple_tree)
 void bench_forking(void)
 {
 	maple_tree mt, newmt;
-	i32 i, nr_entries = 134, nr_fork = 80000, ret;
+	i: i32, nr_entries = 134, nr_fork = 80000, ret;
 	*mut core::ffi::c_voidval;
 	MA_STATE(mas, &mt, 0, 0);
 	MA_STATE(newmas, &newmt, 0, 0);
@@ -2192,7 +2189,7 @@ void bench_forking(void)
 
 void next_prev_test(*mut maple_tree)
 {
-	i32 i, nr_entries;
+	i: i32, nr_entries;
 	*mut core::ffi::c_voidval;
 	MA_STATE(mas, mt, 0, 0);
 	*mut maple_enode;
@@ -2227,17 +2224,17 @@ void next_prev_test(*mut maple_tree)
 	mas_reset(&mas);
 	mas_set(&mas, 0);
 	i = 0;
-	mas_for_each(&mas, val, 1000) {
+	mas_for_each!(&mas, val, 1000, {
 		i++;
-	}
+	});
 
 	mas_reset(&mas);
 	mas_set(&mas, 0);
 	i = 0;
-	mas_for_each(&mas, val, 1000) {
+	mas_for_each!(&mas, val, 1000, {
 		mas_pause(&mas);
 		i++;
-	}
+	});
 
 	/*
 	 * 680 - 685 = 0x61a00001930c
@@ -2375,7 +2372,7 @@ void next_prev_test(*mut maple_tree)
 void check_spanning_relatives(*mut maple_tree)
 {
 
-	u64 i, nr_entries = 1000;
+	i: u64, nr_entries = 1000;
 
 	for i in 0..=i <= nr_entries
 		mtree_store_range(mt, i*10, i*10 + 5,
@@ -2802,7 +2799,7 @@ void check_bnode_min_spanning(*mut maple_tree)
 
 void check_empty_area_window(*mut maple_tree)
 {
-	u64 i, nr_entries = 20;
+	i: u64, nr_entries = 20;
 	MA_STATE(mas, mt, 0, 0);
 
 	for i in 1..=i <= nr_entries
@@ -2889,7 +2886,7 @@ void check_empty_area_fill(*mut maple_tree)
 {
 	const u64 max = 0x25D78000;
 	u64 size;
-	i32 loop, shift;
+	loop: i32, shift;
 	MA_STATE(mas, mt, 0, 0);
 
 	mt_set_non_kernel(99999);
@@ -3713,6 +3710,7 @@ void alloc_cyclic_testing(*mut maple_tree)
 DEFINE_MTREE(tree);
 i32 maple_tree_seed(void)
 {
+	'skip: {
 	u64 set[] = { 5015, 5014, 5017, 25, 1000,
 				1001, 1002, 1003, 1005, 0,
 				5003, 5002};
@@ -3725,61 +3723,61 @@ i32 maple_tree_seed(void)
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_slot_store(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_NODE_STORE)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_node_store(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_AWALK)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_awalk(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_WALK)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_walk(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_LOAD)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_load(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_FORK)
 // preprocessor: #define BENCH
 	bench_forking();
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_MT_FOR_EACH)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_mt_for_each(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_MAS_FOR_EACH)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_mas_for_each(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 // preprocessor: #if defined(BENCH_MAS_PREV)
 // preprocessor: #define BENCH
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
 	bench_mas_prev(&tree);
 	mtree_destroy(&tree);
-	goto skip;
+	break 'skip;
 // preprocessor: #endif
 
 	mt_init_flags(&tree, MT_FLAGS_ALLOC_RANGE);
@@ -4001,7 +3999,8 @@ i32 maple_tree_seed(void)
 
 
 // preprocessor: #if defined(BENCH)
-skip:
+	}
+	
 // preprocessor: #endif
 	rcu_barrier();
 	pr_info("maple_tree: %u of %u tests passed\n",

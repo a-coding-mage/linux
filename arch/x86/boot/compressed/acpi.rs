@@ -171,7 +171,7 @@ pub unsafe fn count_immovable_mem_regions() -> i32 {
     let table_end = table_addr + (*table_header).length as c_ulong;
     let mut table = table_addr + core::mem::size_of::<acpi_table_srat>() as c_ulong;
     let mut num: i32 = 0;
-    while table + core::mem::size_of::<acpi_subtable_header>() as c_ulong < table_end {
+    while table + core::mem::size_of::<acpi_subtable_header>(() as c_ulong) < table_end {
         let sub_table = table as *mut acpi_subtable_header;
         if (*sub_table).length == 0 {
             debug_putstr(b"Invalid zero length SRAT subtable.\0".as_ptr() as *const c_char);

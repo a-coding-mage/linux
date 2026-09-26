@@ -36,7 +36,7 @@ pub unsafe fn kvm_mmu_spte_module_init() {
     kvm_host.maxphyaddr = kvm_get_host_maxphyaddr();
 }
 
-unsafe fn generation_mmio_spte_mask(gen: u64) -> u64 {
+unsafe fn generation_mmio_spte_mask(r#gen: u64) -> u64 {
     WARN_ON_ONCE(gen & !MMIO_SPTE_GEN_MASK);
     let mut mask = (gen << MMIO_SPTE_GEN_LOW_SHIFT) & MMIO_SPTE_GEN_LOW_MASK;
     mask |= (gen << MMIO_SPTE_GEN_HIGH_SHIFT) & MMIO_SPTE_GEN_HIGH_MASK;

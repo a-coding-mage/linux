@@ -84,7 +84,7 @@ unsafe fn fwctl_cmd_rpc(ucmd: *mut fwctl_ucmd) -> c_int {
     }
     let inbuf = kvzalloc((*cmd).in_len as usize, GFP_KERNEL_ACCOUNT);
     if inbuf.is_null() { return -ENOMEM; }
-    if copy_from_user(inbuf, u64_to_user_ptr((*cmd).in), (*cmd).in_len as usize) != 0 { return -EFAULT; }
+    if copy_from_user(inbuf, u64_to_user_ptr((*cmd).r#in), (*cmd).in_len as usize) != 0 { return -EFAULT; }
     let mut out_len = (*cmd).out_len as usize;
     let outbuf = ((*(*fwctl).ops).fw_rpc.unwrap())((*ucmd).uctx, (*cmd).scope, inbuf, (*cmd).in_len as usize, &mut out_len);
     if IS_ERR(outbuf) { return PTR_ERR(outbuf); }

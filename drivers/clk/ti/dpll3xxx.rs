@@ -131,7 +131,7 @@ unsafe fn _omap3_noncore_dpll_stop(clk: *mut clk_hw_omap) -> i32 {
 
 unsafe fn _lookup_dco(clk: *mut clk_hw_omap, dco: *mut u8, m: u16, n: u8) {
     let clkinp = clk_hw_get_rate(clk_hw_get_parent(&mut (*clk).hw));
-    *dco = if (clkinp / n as u64) * m as u64 < 1000000000 { 2 } else { 4 };
+    *dco = if (clkinp / n as u64) * (m as u64) < 1000000000 { 2 } else { 4 };
 }
 
 unsafe fn _lookup_sddiv(clk: *mut clk_hw_omap, sd_div: *mut u8, m: u16, n: u8) {

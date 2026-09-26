@@ -38,17 +38,17 @@ pub unsafe fn kernel_fpu_begin() {
 #[inline]
 pub unsafe fn fpregs_lock() {
     // CONFIG_PREEMPT_RT selects the preemption path in the original build.
-    #[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(not(CONFIG_PREEMPT_RT))]
     local_bh_disable();
-    #[cfg(feature = "CONFIG_PREEMPT_RT")]
+    #[cfg(CONFIG_PREEMPT_RT)]
     preempt_disable();
 }
 
 #[inline]
 pub unsafe fn fpregs_unlock() {
-    #[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+    #[cfg(not(CONFIG_PREEMPT_RT))]
     local_bh_enable();
-    #[cfg(feature = "CONFIG_PREEMPT_RT")]
+    #[cfg(CONFIG_PREEMPT_RT)]
     preempt_enable();
 }
 
@@ -56,11 +56,11 @@ extern "C" {
     pub fn fpregs_lock_and_load();
 }
 
-#[cfg(feature = "CONFIG_X86_DEBUG_FPU")]
+#[cfg(CONFIG_X86_DEBUG_FPU)]
 extern "C" {
     pub fn fpregs_assert_state_consistent();
 }
-#[cfg(not(feature = "CONFIG_X86_DEBUG_FPU"))]
+#[cfg(not(CONFIG_X86_DEBUG_FPU))]
 #[inline]
 pub fn fpregs_assert_state_consistent() {}
 
@@ -87,23 +87,23 @@ extern "C" {
     pub fn fpu_idle_fpregs();
 }
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 extern "C" {
     pub fn fpstate_free(fpu: *mut fpu);
 }
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 #[inline]
 pub unsafe fn fpstate_free(_fpu: *mut fpu) {}
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 extern "C" {
     pub fn fpu_update_guest_xfd(guest_fpu: *mut fpu_guest, xfd: u64);
     pub fn fpu_sync_guest_vmexit_xfd_state();
 }
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 #[inline]
 pub unsafe fn fpu_update_guest_xfd(_guest_fpu: *mut fpu_guest, _xfd: u64) {}
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 #[inline]
 pub unsafe fn fpu_sync_guest_vmexit_xfd_state() {}
 

@@ -498,14 +498,14 @@ unsafe extern "C" fn fsl_esai_set_dai_sysclk(
         ratio = (clk_rate / freq as c_ulong) as u32;
         if (ratio as c_ulong) * freq as c_ulong > clk_rate {
             ret = ((ratio as c_ulong) * freq as c_ulong - clk_rate) as c_int;
-        } else if (ratio as c_ulong) * freq as c_ulong < clk_rate {
+        } else if (ratio as c_ulong) * (freq as c_ulong) < clk_rate {
             ret = (clk_rate - (ratio as c_ulong) * freq as c_ulong) as c_int;
         } else {
             ret = 0;
         }
 
         /* Block if clock source can not be divided into the required rate */
-        if ret != 0 && clk_rate / ret as c_ulong < 1000 {
+        if ret != 0 && clk_rate / (ret as c_ulong) < 1000 {
             dev_err((*dai).dev, c"failed to derive required HCK%c rate\n".as_ptr(), if tx { 'T' as c_int } else { 'R' as c_int });
             return -EINVAL;
         }

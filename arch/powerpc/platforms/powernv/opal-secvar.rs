@@ -47,11 +47,11 @@ pub struct platform_device { _private: [u8; 0] }
 
 #[repr(C)]
 pub struct secvar_operations {
-    pub get: Option<unsafe extern "C" fn(*const c_char, u64_t, *mut u8_t, *mut u64_t) -> c_int>,
-    pub get_next: Option<unsafe extern "C" fn(*const c_char, *mut u64_t, u64_t) -> c_int>,
-    pub set: Option<unsafe extern "C" fn(*const c_char, u64_t, *mut u8_t, u64_t) -> c_int>,
+    pub get: Option<unsafe extern "C" fn(*const c_char, u64_t, _t: *mut u8, _t: *mut u64) -> c_int>,
+    pub get_next: Option<unsafe extern "C" fn(*const c_char, _t: *mut u64, u64_t) -> c_int>,
+    pub set: Option<unsafe extern "C" fn(*const c_char, u64_t, _t: *mut u8, u64_t) -> c_int>,
     pub format: Option<unsafe extern "C" fn(*mut c_char, usize) -> ssize_t>,
-    pub max_size: Option<unsafe extern "C" fn(*mut u64_t) -> c_int>,
+    pub max_size: Option<unsafe extern "C" fn(_t: *mut u64) -> c_int>,
 }
 
 #[repr(C)]

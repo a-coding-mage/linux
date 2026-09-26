@@ -768,7 +768,7 @@ pub const VER_GET_RESP_FLAGS_DEV_NOT_RDY_BACKING_STORE: u64 = 0x4;
 /* eject_cmpl (size:128b/16B) */
 #[repr(C)]
 pub struct eject_cmpl {
-	pub type: u16;
+	pub r#type: u16;
 pub const EJECT_CMPL_TYPE_MASK: u64 = 0x3f;
 pub const EJECT_CMPL_TYPE_SFT: u64 = 0;
 pub const EJECT_CMPL_TYPE_STAT_EJECT: u64 = 0x1a;
@@ -796,7 +796,7 @@ pub const EJECT_CMPL_ERRORS_BUFFER_ERROR_LAST: u64 = EJECT_CMPL_ERRORS_BUFFER_ER
 /* hwrm_cmpl (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_cmpl {
-	pub type: u16;
+	pub r#type: u16;
 pub const CMPL_TYPE_MASK: u64 = 0x3f;
 pub const CMPL_TYPE_SFT: u64 = 0;
 pub const CMPL_TYPE_HWRM_DONE: u64 = 0x20;
@@ -829,7 +829,7 @@ pub const FWD_REQ_CMPL_REQ_BUF_ADDR_SFT: u64 = 1;
 /* hwrm_fwd_resp_cmpl (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_fwd_resp_cmpl {
-	pub type: u16;
+	pub r#type: u16;
 pub const FWD_RESP_CMPL_TYPE_MASK: u64 = 0x3f;
 pub const FWD_RESP_CMPL_TYPE_SFT: u64 = 0;
 pub const FWD_RESP_CMPL_TYPE_HWRM_FWD_RESP: u64 = 0x24;
@@ -846,7 +846,7 @@ pub const FWD_RESP_CMPL_RESP_BUF_ADDR_SFT: u64 = 1;
 /* hwrm_async_event_cmpl (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -919,7 +919,7 @@ pub const ASYNC_EVENT_CMPL_OPAQUE_SFT: u64 = 1;
 /* hwrm_async_event_cmpl_link_status_change (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_link_status_change {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_LINK_STATUS_CHANGE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_LINK_STATUS_CHANGE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_LINK_STATUS_CHANGE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -950,7 +950,7 @@ pub const ASYNC_EVENT_CMPL_LINK_STATUS_CHANGE_EVENT_DATA1_PF_ID_SFT: u64 = 20;
 /* hwrm_async_event_cmpl_port_conn_not_allowed (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_port_conn_not_allowed {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -980,7 +980,7 @@ pub const ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_EVENT_DATA1_ENFORCEMENT_POLICY_
 /* hwrm_async_event_cmpl_link_speed_cfg_change (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_link_speed_cfg_change {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_LINK_SPEED_CFG_CHANGE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_LINK_SPEED_CFG_CHANGE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_LINK_SPEED_CFG_CHANGE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1005,7 +1005,7 @@ pub const ASYNC_EVENT_CMPL_LINK_SPEED_CFG_CHANGE_EVENT_DATA1_ILLEGAL_LINK_SPEED_
 /* hwrm_async_event_cmpl_reset_notify (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_reset_notify {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_RESET_NOTIFY_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_RESET_NOTIFY_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_RESET_NOTIFY_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1043,7 +1043,7 @@ pub const ASYNC_EVENT_CMPL_RESET_NOTIFY_EVENT_DATA1_DELAY_IN_100MS_TICKS_SFT: u6
 /* hwrm_async_event_cmpl_error_recovery (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_recovery {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_RECOVERY_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_RECOVERY_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_RECOVERY_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1068,7 +1068,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_RECOVERY_ENABLED: u6
 /* hwrm_async_event_cmpl_ring_monitor_msg (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_ring_monitor_msg {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_RING_MONITOR_MSG_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_RING_MONITOR_MSG_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_RING_MONITOR_MSG_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1095,7 +1095,7 @@ pub const ASYNC_EVENT_CMPL_RING_MONITOR_MSG_OPAQUE_SFT: u64 = 1;
 /* hwrm_async_event_cmpl_vf_cfg_change (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_vf_cfg_change {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_VF_CFG_CHANGE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_VF_CFG_CHANGE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_VF_CFG_CHANGE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1124,7 +1124,7 @@ pub const ASYNC_EVENT_CMPL_VF_CFG_CHANGE_EVENT_DATA1_TF_OWNERSHIP_RELEASE: u64 =
 /* hwrm_async_event_cmpl_default_vnic_change (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_default_vnic_change {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_DEFAULT_VNIC_CHANGE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_DEFAULT_VNIC_CHANGE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_DEFAULT_VNIC_CHANGE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1156,7 +1156,7 @@ pub const ASYNC_EVENT_CMPL_DEFAULT_VNIC_CHANGE_EVENT_DATA1_VF_ID_SFT: u64 = 10;
 /* hwrm_async_event_cmpl_hw_flow_aged (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_hw_flow_aged {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_HW_FLOW_AGED_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_HW_FLOW_AGED_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_HW_FLOW_AGED_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1183,7 +1183,7 @@ pub const ASYNC_EVENT_CMPL_HW_FLOW_AGED_EVENT_DATA1_FLOW_DIRECTION_LAST: u64 = A
 /* hwrm_async_event_cmpl_eem_cache_flush_req (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_eem_cache_flush_req {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_REQ_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_REQ_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_REQ_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1204,7 +1204,7 @@ pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_REQ_OPAQUE_SFT: u64 = 1;
 /* hwrm_async_event_cmpl_eem_cache_flush_done (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_eem_cache_flush_done {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_DONE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_DONE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_DONE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1227,7 +1227,7 @@ pub const ASYNC_EVENT_CMPL_EEM_CACHE_FLUSH_DONE_EVENT_DATA1_FID_SFT: u64 = 0;
 /* hwrm_async_event_cmpl_deferred_response (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_deferred_response {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_DEFERRED_RESPONSE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_DEFERRED_RESPONSE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_DEFERRED_RESPONSE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1250,7 +1250,7 @@ pub const ASYNC_EVENT_CMPL_DEFERRED_RESPONSE_OPAQUE_SFT: u64 = 1;
 /* hwrm_async_event_cmpl_echo_request (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_echo_request {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ECHO_REQUEST_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ECHO_REQUEST_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ECHO_REQUEST_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1271,7 +1271,7 @@ pub const ASYNC_EVENT_CMPL_ECHO_REQUEST_OPAQUE_SFT: u64 = 1;
 /* hwrm_async_event_cmpl_phc_update (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_phc_update {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_PHC_UPDATE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_PHC_UPDATE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_PHC_UPDATE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1305,7 +1305,7 @@ pub const ASYNC_EVENT_CMPL_PHC_UPDATE_EVENT_DATA1_PHC_TIME_MSB_SFT: u64 = 4;
 /* hwrm_async_event_cmpl_pps_timestamp (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_pps_timestamp {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_PPS_TIMESTAMP_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_PPS_TIMESTAMP_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_PPS_TIMESTAMP_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1336,7 +1336,7 @@ pub const ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA1_PPS_TIMESTAMP_LOWER_SFT: u6
 /* hwrm_async_event_cmpl_error_report (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1359,7 +1359,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_EVENT_DATA1_ERROR_TYPE_SFT: u64 = 0;
 /* hwrm_async_event_cmpl_dbg_buf_producer (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_dbg_buf_producer {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_DBG_BUF_PRODUCER_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_DBG_BUF_PRODUCER_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_DBG_BUF_PRODUCER_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1398,7 +1398,7 @@ pub const ASYNC_EVENT_CMPL_DBG_BUF_PRODUCER_EVENT_DATA1_TYPE_LAST: u64 = ASYNC_E
 /* hwrm_async_event_cmpl_hwrm_error (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_hwrm_error {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_HWRM_ERROR_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_HWRM_ERROR_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_HWRM_ERROR_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1426,7 +1426,7 @@ pub const ASYNC_EVENT_CMPL_HWRM_ERROR_EVENT_DATA1_TIMESTAMP: u64 = 0x1;
 /* hwrm_async_event_cmpl_error_report_base (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_base {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1462,7 +1462,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_LAST: u64 = 
 /* hwrm_async_event_cmpl_error_report_pause_storm (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_pause_storm {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_PAUSE_STORM_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_PAUSE_STORM_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_PAUSE_STORM_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1487,7 +1487,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_PAUSE_STORM_EVENT_DATA1_ERROR_TYPE_LAST:
 /* hwrm_async_event_cmpl_error_report_invalid_signal (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_invalid_signal {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1514,7 +1514,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_EVENT_DATA1_ERROR_TYPE_LA
 /* hwrm_async_event_cmpl_error_report_nvm (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_nvm {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1546,7 +1546,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_NVM_EVENT_DATA1_NVM_ERR_TYPE_LAST: u64 =
 /* hwrm_async_event_cmpl_error_report_doorbell_drop_threshold (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_doorbell_drop_threshold {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DOORBELL_DROP_THRESHOLD_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DOORBELL_DROP_THRESHOLD_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DOORBELL_DROP_THRESHOLD_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1573,7 +1573,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DOORBELL_DROP_THRESHOLD_EVENT_DATA1_EPOC
 /* hwrm_async_event_cmpl_error_report_thermal (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_thermal {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_THERMAL_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_THERMAL_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_THERMAL_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -1613,7 +1613,7 @@ pub const ASYNC_EVENT_CMPL_ERROR_REPORT_THERMAL_EVENT_DATA1_TRANSITION_DIR_LAST:
 /* hwrm_async_event_cmpl_error_report_dual_data_rate_not_supported (size:128b/16B) */
 #[repr(C)]
 pub struct hwrm_async_event_cmpl_error_report_dual_data_rate_not_supported {
-	pub type: u16;
+	pub r#type: u16;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DUAL_DATA_RATE_NOT_SUPPORTED_TYPE_MASK: u64 = 0x3f;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DUAL_DATA_RATE_NOT_SUPPORTED_TYPE_SFT: u64 = 0;
 pub const ASYNC_EVENT_CMPL_ERROR_REPORT_DUAL_DATA_RATE_NOT_SUPPORTED_TYPE_HWRM_ASYNC_EVENT: u64 = 0x2e;
@@ -3944,7 +3944,7 @@ pub struct hwrm_func_backing_store_cfg_v2_input {
 	pub seq_id: u16;
 	pub target_id: u16;
 	pub resp_addr: u64;
-	pub type: u16;
+	pub r#type: u16;
 pub const FUNC_BACKING_STORE_CFG_V2_REQ_TYPE_QP: u64 = 0x0;
 pub const FUNC_BACKING_STORE_CFG_V2_REQ_TYPE_SRQ: u64 = 0x1;
 pub const FUNC_BACKING_STORE_CFG_V2_REQ_TYPE_CQ: u64 = 0x2;
@@ -4032,7 +4032,7 @@ pub struct hwrm_func_backing_store_qcfg_v2_input {
 	pub seq_id: u16;
 	pub target_id: u16;
 	pub resp_addr: u64;
-	pub type: u16;
+	pub r#type: u16;
 pub const FUNC_BACKING_STORE_QCFG_V2_REQ_TYPE_QP: u64 = 0x0;
 pub const FUNC_BACKING_STORE_QCFG_V2_REQ_TYPE_SRQ: u64 = 0x1;
 pub const FUNC_BACKING_STORE_QCFG_V2_REQ_TYPE_CQ: u64 = 0x2;
@@ -4078,7 +4078,7 @@ pub struct hwrm_func_backing_store_qcfg_v2_output {
 	pub req_type: u16;
 	pub seq_id: u16;
 	pub resp_len: u16;
-	pub type: u16;
+	pub r#type: u16;
 pub const FUNC_BACKING_STORE_QCFG_V2_RESP_TYPE_QP: u64 = 0x0;
 pub const FUNC_BACKING_STORE_QCFG_V2_RESP_TYPE_SRQ: u64 = 0x1;
 pub const FUNC_BACKING_STORE_QCFG_V2_RESP_TYPE_CQ: u64 = 0x2;
@@ -4205,7 +4205,7 @@ pub struct hwrm_func_backing_store_qcaps_v2_input {
 	pub seq_id: u16;
 	pub target_id: u16;
 	pub resp_addr: u64;
-	pub type: u16;
+	pub r#type: u16;
 pub const FUNC_BACKING_STORE_QCAPS_V2_REQ_TYPE_QP: u64 = 0x0;
 pub const FUNC_BACKING_STORE_QCAPS_V2_REQ_TYPE_SRQ: u64 = 0x1;
 pub const FUNC_BACKING_STORE_QCAPS_V2_REQ_TYPE_CQ: u64 = 0x2;
@@ -4250,7 +4250,7 @@ pub struct hwrm_func_backing_store_qcaps_v2_output {
 	pub req_type: u16;
 	pub seq_id: u16;
 	pub resp_len: u16;
-	pub type: u16;
+	pub r#type: u16;
 pub const FUNC_BACKING_STORE_QCAPS_V2_RESP_TYPE_QP: u64 = 0x0;
 pub const FUNC_BACKING_STORE_QCAPS_V2_RESP_TYPE_SRQ: u64 = 0x1;
 pub const FUNC_BACKING_STORE_QCAPS_V2_RESP_TYPE_CQ: u64 = 0x2;
@@ -11142,7 +11142,7 @@ pub struct hwrm_dbg_log_buffer_flush_input {
 	pub seq_id: u16;
 	pub target_id: u16;
 	pub resp_addr: u64;
-	pub type: u16;
+	pub r#type: u16;
 pub const DBG_LOG_BUFFER_FLUSH_REQ_TYPE_SRT_TRACE: u64 = 0x0;
 pub const DBG_LOG_BUFFER_FLUSH_REQ_TYPE_SRT2_TRACE: u64 = 0x1;
 pub const DBG_LOG_BUFFER_FLUSH_REQ_TYPE_CRT_TRACE: u64 = 0x2;

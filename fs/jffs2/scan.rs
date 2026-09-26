@@ -9,7 +9,7 @@ static mut PSEUDO_RANDOM: u32 = 0;
 
 unsafe fn min_free(c: *mut jffs2_sb_info) -> u32 {
     let min = 2 * core::mem::size_of::<jffs2_raw_inode>() as u32;
-    #[cfg(feature = "CONFIG_JFFS2_FS_WRITEBUFFER")]
+    #[cfg(CONFIG_JFFS2_FS_WRITEBUFFER)]
     { if !jffs2_can_mark_obsolete(c) && min < (*c).wbuf_pagesize { return (*c).wbuf_pagesize; } }
     min
 }

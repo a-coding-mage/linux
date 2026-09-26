@@ -141,7 +141,7 @@ pub unsafe fn fserror_report(
         return;
     }
 
-    (*event).type = type_;
+    (*event).r#type = type_;
     (*event).pos = pos;
     (*event).len = len;
     (*event).error = error;

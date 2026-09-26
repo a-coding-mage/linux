@@ -70,7 +70,7 @@ pub const RBTX4927_ISA_IO_OFFSET: usize = 0;
 pub const RBTX4927_RTL_8019_BASE: usize = RBTX4927_ETHER_ADDR - mips_io_port_base;
 pub const RBTX4927_RTL_8019_IRQ: usize = TXX9_IRQ_BASE + TX4927_IR_INT(3);
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn rbtx4927_prom_init();
     pub fn rbtx4927_irq_setup();
 }
@@ -80,7 +80,7 @@ pub struct pci_dev {
     _private: [u8; 0],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn rbtx4927_pci_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> i32;
 }
 

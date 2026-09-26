@@ -39,7 +39,7 @@ unsafe fn bs_bio_slab_size(bs: *mut bio_set) -> u32 { (*bs).front_pad + core::me
 unsafe fn bio_slab_addr(bio: *mut bio) -> *mut core::ffi::c_void { (bio as *mut u8).sub((*(*bio).bi_pool).front_pad as usize) as *mut _ }
 
 pub unsafe extern "C" fn bio_uninit(bio: *mut bio) {
-    #[cfg(feature = "CONFIG_BLK_CGROUP")] { if !(*bio).bi_blkg.is_null() { blkg_put((*bio).bi_blkg); (*bio).bi_blkg = core::ptr::null_mut(); } }
+    #[cfg(CONFIG_BLK_CGROUP)] { if !(*bio).bi_blkg.is_null() { blkg_put((*bio).bi_blkg); (*bio).bi_blkg = core::ptr::null_mut(); } }
     if bio_integrity(bio) { bio_integrity_free(bio); } bio_crypt_free_ctx(bio);
 }
 
@@ -63,7 +63,7 @@ pub unsafe extern "C" fn bio_add_virt_nofail(bio:*mut bio,vaddr:*mut core::ffi::
 pub unsafe extern "C" fn bio_add_folio(bio:*mut bio,folio:*mut folio,len:usize,off:usize)->bool{if len>BIO_MAX_SIZE as usize{return false;}bio_add_page(bio,folio_page(folio,(off/PAGE_SIZE) as u64),len as u32,(off%PAGE_SIZE) as u32)>0}
 
 pub unsafe extern "C" fn __bio_advance(bio:*mut bio,bytes:u32){if bio_integrity(bio){bio_integrity_advance(bio,bytes);}bio_crypt_advance(bio,bytes);bio_advance_iter(bio,&mut (*bio).bi_iter,bytes);}
-pub unsafe extern "C" fn bio_free_pages(bio:*mut bio){let mut bv: *mut bio_vec=core::ptr::null_mut();let mut i=0;bio_for_each_segment_all(bv,bio,&mut i){__free_page((*bv).bv_page);}}
+pub unsafe extern "C" fn bio_free_pages(bio:*mut bio){let mut bv: *mut bio_vec=core::ptr::null_mut();let mut i=0;bio_for_each_segment_all!(bv,bio,&mut i, {__free_page((*bv).bv_page);});}
 
 // Remaining helpers retain the kernel ABI and are declared for translation linkage.
 extern "C" { fn bio_alloc_bioset(bdev:*mut block_device,nr_vecs:u16,opf:blk_opf_t,gfp:gfp_t,bs:*mut bio_set)->*mut bio; fn bio_put(bio:*mut bio); fn submit_bio(bio:*mut bio); fn bio_alloc(bdev:*mut block_device,nr:u32,opf:blk_opf_t,gfp:gfp_t)->*mut bio; }

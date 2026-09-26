@@ -91,7 +91,7 @@ unsafe fn amdgpu_gem_are_domains_valid(domains: u32) -> bool {
 }
 
 unsafe fn amdgpu_gem_timeout(timeout_ns: u64) -> usize {
-    if timeout_ns as i64 < 0 { return MAX_SCHEDULE_TIMEOUT; }
+    if (timeout_ns as i64) < 0 { return MAX_SCHEDULE_TIMEOUT; }
     let t=ktime_to_ns(ktime_sub(ns_to_ktime(timeout_ns),ktime_get())); if t<0{return 0;}
     let j=nsecs_to_jiffies(t as u64); if j>MAX_SCHEDULE_TIMEOUT{return MAX_SCHEDULE_TIMEOUT-1;} j
 }

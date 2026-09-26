@@ -70,7 +70,7 @@ unsafe fn dcn32_init_crb(*mut hubbub hubbub)
 	REG_UPDATE(DCHUBBUB_DEBUG_CTRL_0, DET_DEPTH, 0x47F);
 }
 
-unsafe fn hubbub32_set_sdp_control(*mut hubbub hubbub, bool dc_control)
+unsafe fn hubbub32_set_sdp_control(*mut hubbub hubbub, dc_control: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
@@ -78,7 +78,7 @@ unsafe fn hubbub32_set_sdp_control(*mut hubbub hubbub, bool dc_control)
 			SDPIF_PORT_CONTROL, dc_control);
 }
 
-() hubbub32_set_request_limit(*mut hubbub hubbub, i32 memory_channel_count, i32 words_per_channel)
+() hubbub32_set_request_limit(*mut hubbub hubbub, memory_channel_count: i32, words_per_channel: i32)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
@@ -95,7 +95,7 @@ unsafe fn hubbub32_set_sdp_control(*mut hubbub hubbub, bool dc_control)
 }
 
 
-() dcn32_program_det_size(*mut hubbub hubbub, i32 hubp_inst, u32 det_buffer_size_in_kbyte)
+() dcn32_program_det_size(*mut hubbub hubbub, hubp_inst: i32, det_buffer_size_in_kbyte: u32)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
@@ -130,7 +130,7 @@ unsafe fn hubbub32_set_sdp_control(*mut hubbub hubbub, bool dc_control)
 	}
 }
 
-() dcn32_program_compbuf_size(*mut hubbub hubbub, u32 compbuf_size_kb, bool safe_to_increase)
+() dcn32_program_compbuf_size(*mut hubbub hubbub, compbuf_size_kb: u32, safe_to_increase: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 compbuf_size_segments = (compbuf_size_kb + DCN32_CRB_SEGMENT_SIZE_KB - 1) / DCN32_CRB_SEGMENT_SIZE_KB;
@@ -152,9 +152,9 @@ unsafe fn hubbub32_set_sdp_control(*mut hubbub hubbub, bool dc_control)
 }
 
 unsafe fn convert_and_clamp(
-	u32 wm_ns,
-	u32 refclk_mhz,
-	u32 clamp_value)
+	wm_ns: u32,
+	refclk_mhz: u32,
+	clamp_value: u32)
 {
 	u32 ret_val = 0;
 	ret_val = wm_ns * refclk_mhz;
@@ -170,8 +170,8 @@ unsafe fn convert_and_clamp(
 bool hubbub32_program_urgent_watermarks(
 		*mut hubbub hubbub,
 		*mut dcn_watermark_set *watermarks,
-		u32 refclk_mhz,
-		bool safe_to_lower)
+		refclk_mhz: u32,
+		safe_to_lower: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 prog_wm_value;
@@ -360,8 +360,8 @@ bool hubbub32_program_urgent_watermarks(
 bool hubbub32_program_stutter_watermarks(
 		*mut hubbub hubbub,
 		*mut dcn_watermark_set *watermarks,
-		u32 refclk_mhz,
-		bool safe_to_lower)
+		refclk_mhz: u32,
+		safe_to_lower: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 prog_wm_value;
@@ -506,8 +506,8 @@ bool hubbub32_program_stutter_watermarks(
 bool hubbub32_program_pstate_watermarks(
 		*mut hubbub hubbub,
 		*mut dcn_watermark_set *watermarks,
-		u32 refclk_mhz,
-		bool safe_to_lower)
+		refclk_mhz: u32,
+		safe_to_lower: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 prog_wm_value;
@@ -659,8 +659,8 @@ bool hubbub32_program_pstate_watermarks(
 bool hubbub32_program_usr_watermarks(
 		*mut hubbub hubbub,
 		*mut dcn_watermark_set *watermarks,
-		u32 refclk_mhz,
-		bool safe_to_lower)
+		refclk_mhz: u32,
+		safe_to_lower: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	u32 prog_wm_value;
@@ -736,7 +736,7 @@ bool hubbub32_program_usr_watermarks(
 	return wm_pending;
 }
 
-() hubbub32_force_usr_retraining_allow(*mut hubbub hubbub, bool allow)
+() hubbub32_force_usr_retraining_allow(*mut hubbub hubbub, allow: bool)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 
@@ -753,8 +753,8 @@ bool hubbub32_program_usr_watermarks(
 unsafe fn hubbub32_program_watermarks(
 		*mut hubbub hubbub,
 		*mut dcn_watermark_set *watermarks,
-		u32 refclk_mhz,
-		bool safe_to_lower)
+		refclk_mhz: u32,
+		safe_to_lower: bool)
 {
 	*mut dc dc = (*hubbub).(*ctx).dc;
 	bool wm_pending = false;
@@ -874,7 +874,7 @@ unsafe fn hubbub32_wm_read_state(*mut hubbub hubbub,
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
 	*mut dcn_hubbub_wm_set s;
 
-	memset(wm as *mut _, 0, core::mem::size_of::<struct dcn_hubbub_wm>());
+	memset(wm as *mut _, 0, core::mem::size_of::<dcn_hubbub_wm>());
 
 	s = &(*wm).sets[0];
 	(*s).wm_set = 0;
@@ -971,7 +971,7 @@ unsafe fn hubbub32_wm_read_state(*mut hubbub hubbub,
 () hubbub32_get_mall_en(*mut hubbub hubbub, u32 *mall_in_use)
 {
 	*mut dcn20_hubbub hubbub2 = TO_DCN20_HUBBUB(hubbub);
-	u32 prefetch_complete, mall_en;
+	prefetch_complete: u32, mall_en;
 
 	REG_GET_2(DCHUBBUB_ARB_MALL_CNTL, MALL_IN_USE, &mall_en,
 			  MALL_PREFETCH_COMPLETE, &prefetch_complete);
@@ -1008,29 +1008,29 @@ unsafe fn hubbub32_wm_read_state(*mut hubbub hubbub,
 }
 
 static const struct hubbub_funcs hubbub32_funcs = {
-	.update_dchub = hubbub2_update_dchub,
-	.init_dchub_sys_ctx = hubbub3_init_dchub_sys_ctx,
-	.init_vm_ctx = hubbub2_init_vm_ctx,
-	.dcc_support_swizzle = hubbub3_dcc_support_swizzle,
-	.dcc_support_pixel_format = hubbub2_dcc_support_pixel_format,
-	.get_dcc_compression_cap = hubbub3_get_dcc_compression_cap,
-	.wm_read_state = hubbub32_wm_read_state,
-	.get_dchub_ref_freq = hubbub2_get_dchub_ref_freq,
-	.program_watermarks = hubbub32_program_watermarks,
-	.allow_self_refresh_control = hubbub1_allow_self_refresh_control,
-	.is_allow_self_refresh_enabled = hubbub1_is_allow_self_refresh_enabled,
-	.verify_allow_pstate_change_high = hubbub1_verify_allow_pstate_change_high,
-	.force_wm_propagate_to_pipes = hubbub32_force_wm_propagate_to_pipes,
-	.force_pstate_change_control = hubbub3_force_pstate_change_control,
-	.init_watermarks = hubbub32_init_watermarks,
-	.program_det_size = dcn32_program_det_size,
-	.program_compbuf_size = dcn32_program_compbuf_size,
-	.init_crb = dcn32_init_crb,
-	.hubbub_read_state = hubbub2_read_state,
-	.force_usr_retraining_allow = hubbub32_force_usr_retraining_allow,
-	.set_request_limit = hubbub32_set_request_limit,
-	.get_mall_en = hubbub32_get_mall_en,
-	.hubbub_read_reg_state = hubbub3_read_reg_state
+	update_dchub: hubbub2_update_dchub,
+	init_dchub_sys_ctx: hubbub3_init_dchub_sys_ctx,
+	init_vm_ctx: hubbub2_init_vm_ctx,
+	dcc_support_swizzle: hubbub3_dcc_support_swizzle,
+	dcc_support_pixel_format: hubbub2_dcc_support_pixel_format,
+	get_dcc_compression_cap: hubbub3_get_dcc_compression_cap,
+	wm_read_state: hubbub32_wm_read_state,
+	get_dchub_ref_freq: hubbub2_get_dchub_ref_freq,
+	program_watermarks: hubbub32_program_watermarks,
+	allow_self_refresh_control: hubbub1_allow_self_refresh_control,
+	is_allow_self_refresh_enabled: hubbub1_is_allow_self_refresh_enabled,
+	verify_allow_pstate_change_high: hubbub1_verify_allow_pstate_change_high,
+	force_wm_propagate_to_pipes: hubbub32_force_wm_propagate_to_pipes,
+	force_pstate_change_control: hubbub3_force_pstate_change_control,
+	init_watermarks: hubbub32_init_watermarks,
+	program_det_size: dcn32_program_det_size,
+	program_compbuf_size: dcn32_program_compbuf_size,
+	init_crb: dcn32_init_crb,
+	hubbub_read_state: hubbub2_read_state,
+	force_usr_retraining_allow: hubbub32_force_usr_retraining_allow,
+	set_request_limit: hubbub32_set_request_limit,
+	get_mall_en: hubbub32_get_mall_en,
+	hubbub_read_reg_state: hubbub3_read_reg_state
 };
 
 () hubbub32_construct(*mut dcn20_hubbub hubbub2,
@@ -1038,9 +1038,9 @@ static const struct hubbub_funcs hubbub32_funcs = {
 	const *mut dcn_hubbub_registers hubbub_regs,
 	const *mut dcn_hubbub_shift hubbub_shift,
 	const *mut dcn_hubbub_mask hubbub_mask,
-	i32 det_size_kb,
-	i32 pixel_chunk_size_kb,
-	i32 config_return_buffer_size_kb)
+	det_size_kb: i32,
+	pixel_chunk_size_kb: i32,
+	config_return_buffer_size_kb: i32)
 {
 	(*hubbub2).base.ctx = ctx;
 	(*hubbub2).base.funcs = &hubbub32_funcs;

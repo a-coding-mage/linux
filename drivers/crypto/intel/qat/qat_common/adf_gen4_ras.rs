@@ -10,7 +10,7 @@
 
 #define BITS_PER_REG(_n_) (sizeof(_n_) * BITS_PER_BYTE)
 
-unsafe fn enable_errsou_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn enable_errsou_reporting(csr: *mut core::ffi::c_void)
 {
 	/* Enable correctable error reporting in ERRSOU0 */
 	ADF_CSR_WR(csr, ADF_GEN4_ERRMSK0, 0);
@@ -35,7 +35,7 @@ unsafe fn enable_errsou_reporting(*mut core::ffi::c_voidcsr)
 		   ADF_GEN4_ERRSOU3_VFLRNOTIFY_BIT);
 }
 
-unsafe fn disable_errsou_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn disable_errsou_reporting(csr: *mut core::ffi::c_void)
 {
 	let mut val: u32 = 0;
 
@@ -55,9 +55,9 @@ unsafe fn disable_errsou_reporting(*mut core::ffi::c_voidcsr)
 }
 
 unsafe fn enable_ae_error_reporting(*mut adf_accel_devaccel_dev,
-				      *mut core::ffi::c_voidcsr)
+				      csr: *mut core::ffi::c_void)
 {
-	let mut ae_mask: u32 = GET_HW_DATA(accel_dev)->ae_mask;
+	let mut ae_mask: u32 = (*GET_HW_DATA(accel_dev)).ae_mask;
 
 	/* Enable Acceleration Engine correctable error reporting */
 	ADF_CSR_WR(csr, ADF_GEN4_HIAECORERRLOGENABLE_CPP0, ae_mask);
@@ -66,7 +66,7 @@ unsafe fn enable_ae_error_reporting(*mut adf_accel_devaccel_dev,
 	ADF_CSR_WR(csr, ADF_GEN4_HIAEUNCERRLOGENABLE_CPP0, ae_mask);
 }
 
-unsafe fn disable_ae_error_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn disable_ae_error_reporting(csr: *mut core::ffi::c_void)
 {
 	/* Disable Acceleration Engine correctable error reporting */
 	ADF_CSR_WR(csr, ADF_GEN4_HIAECORERRLOGENABLE_CPP0, 0);
@@ -76,7 +76,7 @@ unsafe fn disable_ae_error_reporting(*mut core::ffi::c_voidcsr)
 }
 
 unsafe fn enable_cpp_error_reporting(*mut adf_accel_devaccel_dev,
-				       *mut core::ffi::c_voidcsr)
+				       csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 
@@ -88,7 +88,7 @@ unsafe fn enable_cpp_error_reporting(*mut adf_accel_devaccel_dev,
 		   ADF_GEN4_CPP_CFC_ERR_CTRL_BITMASK);
 }
 
-unsafe fn disable_cpp_error_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn disable_cpp_error_reporting(csr: *mut core::ffi::c_void)
 {
 	/* Disable HI CPP Agents Command Parity Error Reporting */
 	ADF_CSR_WR(csr, ADF_GEN4_HICPPAGENTCMDPARERRLOGENABLE, 0);
@@ -97,7 +97,7 @@ unsafe fn disable_cpp_error_reporting(*mut core::ffi::c_voidcsr)
 		   ADF_GEN4_CPP_CFC_ERR_CTRL_DIS_BITMASK);
 }
 
-unsafe fn enable_ti_ri_error_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn enable_ti_ri_error_reporting(csr: *mut core::ffi::c_void)
 {
 	let mut reg: u32;
 
@@ -131,7 +131,7 @@ unsafe fn enable_ti_ri_error_reporting(*mut core::ffi::c_voidcsr)
 	ADF_CSR_WR(csr, ADF_GEN4_TIMISCCTL, reg);
 }
 
-unsafe fn disable_ti_ri_error_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn disable_ti_ri_error_reporting(csr: *mut core::ffi::c_void)
 {
 	let mut reg: u32;
 
@@ -168,7 +168,7 @@ unsafe fn disable_ti_ri_error_reporting(*mut core::ffi::c_voidcsr)
 }
 
 unsafe fn enable_rf_error_reporting(*mut adf_accel_devaccel_dev,
-				      *mut core::ffi::c_voidcsr)
+				      csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 
@@ -184,7 +184,7 @@ unsafe fn enable_rf_error_reporting(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn disable_rf_error_reporting(*mut adf_accel_devaccel_dev,
-				       *mut core::ffi::c_voidcsr)
+				       csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 
@@ -210,7 +210,7 @@ unsafe fn disable_rf_error_reporting(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn enable_ssm_error_reporting(*mut adf_accel_devaccel_dev,
-				       *mut core::ffi::c_voidcsr)
+				       csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut val: u32 = 0;
@@ -247,7 +247,7 @@ unsafe fn enable_ssm_error_reporting(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn disable_ssm_error_reporting(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr)
+					csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut val: u32 = 0;
@@ -299,7 +299,7 @@ unsafe fn disable_ssm_error_reporting(*mut adf_accel_devaccel_dev,
 			   (*err_mask).parerr_wat_wcp_mask);
 }
 
-unsafe fn enable_aram_error_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn enable_aram_error_reporting(csr: *mut core::ffi::c_void)
 {
 	ADF_CSR_WR(csr, ADF_GEN4_REG_ARAMCERRUERR_EN,
 		   ADF_GEN4_REG_ARAMCERRUERR_EN_BITMASK);
@@ -314,7 +314,7 @@ unsafe fn enable_aram_error_reporting(*mut core::ffi::c_voidcsr)
 		   ADF_GEN4_REG_CPPMEMTGTERR_EN_BITMASK);
 }
 
-unsafe fn disable_aram_error_reporting(*mut core::ffi::c_voidcsr)
+unsafe fn disable_aram_error_reporting(csr: *mut core::ffi::c_void)
 {
 	ADF_CSR_WR(csr, ADF_GEN4_REG_ARAMCERRUERR_EN, 0);
 	ADF_CSR_WR(csr, ADF_GEN4_REG_ARAMCERR, 0);
@@ -351,11 +351,11 @@ unsafe fn adf_gen4_disable_ras(*mut adf_accel_devaccel_dev)
 }
 
 unsafe fn adf_gen4_process_errsou0(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr)
+				     csr: *mut core::ffi::c_void)
 {
 	let mut aecorrerr: u32 = ADF_CSR_RD(csr, ADF_GEN4_HIAECORERRLOG_CPP0);
 
-	aecorrerr &= GET_HW_DATA(accel_dev)->ae_mask;
+	aecorrerr &= (*GET_HW_DATA(accel_dev)).ae_mask;
 
 	dev_warn(&GET_DEV(accel_dev),
 		 "Correctable error detected in AE: 0x%x\n",
@@ -368,7 +368,7 @@ unsafe fn adf_gen4_process_errsou0(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_cpp_aeunc(*mut adf_accel_devaccel_dev,
-				 *mut core::ffi::c_voidcsr, u32 errsou)
+				 csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut aeuncorerr: u32;
 
@@ -376,7 +376,7 @@ unsafe fn adf_handle_cpp_aeunc(*mut adf_accel_devaccel_dev,
 		return false;
 
 	aeuncorerr = ADF_CSR_RD(csr, ADF_GEN4_HIAEUNCERRLOG_CPP0);
-	aeuncorerr &= GET_HW_DATA(accel_dev)->ae_mask;
+	aeuncorerr &= (*GET_HW_DATA(accel_dev)).ae_mask;
 
 	dev_err(&GET_DEV(accel_dev),
 		"Uncorrectable error detected in AE: 0x%x\n",
@@ -390,7 +390,7 @@ unsafe fn adf_handle_cpp_aeunc(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_cppcmdparerr(*mut adf_accel_devaccel_dev,
-				    *mut core::ffi::c_voidcsr, u32 errsou)
+				    csr: *mut core::ffi::c_void, errsou: u32)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut cmdparerr: u32;
@@ -413,7 +413,7 @@ unsafe fn adf_handle_cppcmdparerr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ri_mem_par_err(*mut adf_accel_devaccel_dev,
-				      *mut core::ffi::c_voidcsr, u32 errsou)
+				      csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut *reset_required = false;
 	let mut rimem_parerr_sts: u32;
@@ -446,7 +446,7 @@ unsafe fn adf_handle_ri_mem_par_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ti_ci_par_sts(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, u32 errsou)
+				     csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ti_ci_par_sts: u32;
 
@@ -467,7 +467,7 @@ unsafe fn adf_handle_ti_ci_par_sts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ti_pullfub_par_sts(*mut adf_accel_devaccel_dev,
-					  *mut core::ffi::c_voidcsr, u32 errsou)
+					  csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ti_pullfub_par_sts: u32;
 
@@ -491,7 +491,7 @@ unsafe fn adf_handle_ti_pullfub_par_sts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ti_pushfub_par_sts(*mut adf_accel_devaccel_dev,
-					  *mut core::ffi::c_voidcsr, u32 errsou)
+					  csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ti_pushfub_par_sts: u32;
 
@@ -515,7 +515,7 @@ unsafe fn adf_handle_ti_pushfub_par_sts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ti_cd_par_sts(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, u32 errsou)
+				     csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ti_cd_par_sts: u32;
 
@@ -538,7 +538,7 @@ unsafe fn adf_handle_ti_cd_par_sts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ti_trnsb_par_sts(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr, u32 errsou)
+					csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ti_trnsb_par_sts: u32;
 
@@ -561,7 +561,7 @@ unsafe fn adf_handle_ti_trnsb_par_sts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_iosfp_cmd_parerr(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr, u32 errsou)
+					csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut rimiscsts: u32;
 
@@ -583,7 +583,7 @@ unsafe fn adf_handle_iosfp_cmd_parerr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_gen4_process_errsou1(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, u32 errsou,
+				     csr: *mut core::ffi::c_void, errsou: u32,
 				     bool **reset_required)
 {
 	**reset_required |= adf_handle_cpp_aeunc(accel_dev, csr, errsou);
@@ -598,7 +598,7 @@ unsafe fn adf_gen4_process_errsou1(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_uerrssmsh(*mut adf_accel_devaccel_dev,
-				 *mut core::ffi::c_voidcsr, u32 iastatssm)
+				 csr: *mut core::ffi::c_void, iastatssm: u32)
 {
 	let mut reg: u32;
 
@@ -620,7 +620,7 @@ unsafe fn adf_handle_uerrssmsh(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_cerrssmsh(*mut adf_accel_devaccel_dev,
-				 *mut core::ffi::c_voidcsr, u32 iastatssm)
+				 csr: *mut core::ffi::c_void, iastatssm: u32)
 {
 	let mut reg: u32;
 
@@ -642,7 +642,7 @@ unsafe fn adf_handle_cerrssmsh(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_pperr_err(*mut adf_accel_devaccel_dev,
-				 *mut core::ffi::c_voidcsr, u32 iastatssm)
+				 csr: *mut core::ffi::c_void, iastatssm: u32)
 {
 	let mut reg: u32;
 
@@ -664,8 +664,8 @@ unsafe fn adf_handle_pperr_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_poll_slicehang_csr(*mut adf_accel_devaccel_dev,
-				   *mut core::ffi::c_voidcsr, u32 slice_hang_offset,
-				   *mut core::ffi::c_charslice_name)
+				   csr: *mut core::ffi::c_void, slice_hang_offset: u32,
+				   slice_name: *mut core::ffi::c_char)
 {
 	let mut slice_hang_reg: u32 = ADF_CSR_RD(csr, slice_hang_offset);
 
@@ -679,7 +679,7 @@ unsafe fn adf_poll_slicehang_csr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_slice_hang_error(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr, u32 iastatssm)
+					csr: *mut core::ffi::c_void, iastatssm: u32)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 
@@ -704,7 +704,7 @@ unsafe fn adf_handle_slice_hang_error(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_spp_pullcmd_err(*mut adf_accel_devaccel_dev,
-				       *mut core::ffi::c_voidcsr)
+				       csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut *reset_required = false;
@@ -781,7 +781,7 @@ unsafe fn adf_handle_spp_pullcmd_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_spp_pulldata_err(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr)
+					csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut reg: u32;
@@ -847,7 +847,7 @@ unsafe fn adf_handle_spp_pulldata_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_spp_pushcmd_err(*mut adf_accel_devaccel_dev,
-				       *mut core::ffi::c_voidcsr)
+				       csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut *reset_required = false;
@@ -925,7 +925,7 @@ unsafe fn adf_handle_spp_pushcmd_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_spp_pushdata_err(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr)
+					csr: *mut core::ffi::c_void)
 {
 	*mut adf_dev_err_maskerr_mask = GET_ERR_MASK(accel_dev);
 	let mut reg: u32;
@@ -992,7 +992,7 @@ unsafe fn adf_handle_spp_pushdata_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_spppar_err(*mut adf_accel_devaccel_dev,
-				  *mut core::ffi::c_voidcsr, u32 iastatssm)
+				  csr: *mut core::ffi::c_void, iastatssm: u32)
 {
 	let mut *reset_required: bool;
 
@@ -1008,9 +1008,9 @@ unsafe fn adf_handle_spppar_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ssmcpppar_err(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, u32 iastatssm)
+				     csr: *mut core::ffi::c_void, iastatssm: u32)
 {
-	u32 reg, bits_num = BITS_PER_REG(reg);
+	reg: u32, bits_num = BITS_PER_REG(reg);
 	let mut *reset_required = false;
 	usize errs_bits;
 	let mut bit_iterator: u32;
@@ -1025,9 +1025,9 @@ unsafe fn adf_handle_ssmcpppar_err(*mut adf_accel_devaccel_dev,
 			"Fatal SSM CPP parity error: 0x%x\n", reg);
 
 		errs_bits = reg & ADF_GEN4_SSMCPPERR_FATAL_BITMASK;
-		for_each_set_bit(bit_iterator, &errs_bits, bits_num) {
+		for_each_set_bit!(bit_iterator, &errs_bits, bits_num, {
 			ADF_RAS_ERR_CTR_INC((*accel_dev).ras_errors, ADF_RAS_FATAL);
-		}
+		});
 		*reset_required = true;
 	}
 
@@ -1036,9 +1036,9 @@ unsafe fn adf_handle_ssmcpppar_err(*mut adf_accel_devaccel_dev,
 			"non-Fatal SSM CPP parity error: 0x%x\n", reg);
 		errs_bits = reg & ADF_GEN4_SSMCPPERR_UNCERR_BITMASK;
 
-		for_each_set_bit(bit_iterator, &errs_bits, bits_num) {
+		for_each_set_bit!(bit_iterator, &errs_bits, bits_num, {
 			ADF_RAS_ERR_CTR_INC((*accel_dev).ras_errors, ADF_RAS_UNCORR);
-		}
+		});
 	}
 
 	ADF_CSR_WR(csr, ADF_GEN4_SSMCPPERR, reg);
@@ -1047,7 +1047,7 @@ unsafe fn adf_handle_ssmcpppar_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_rf_parr_err(*mut adf_accel_devaccel_dev,
-				   *mut core::ffi::c_voidcsr, u32 iastatssm)
+				   csr: *mut core::ffi::c_void, iastatssm: u32)
 {
 	if (!(iastatssm & ADF_GEN4_IAINTSTATSSM_SSMSOFTERRORPARITY_BIT))
 		return;
@@ -1059,9 +1059,9 @@ unsafe fn adf_handle_rf_parr_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ser_err_ssmsh(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, u32 iastatssm)
+				     csr: *mut core::ffi::c_void, iastatssm: u32)
 {
-	u32 reg, bits_num = BITS_PER_REG(reg);
+	reg: u32, bits_num = BITS_PER_REG(reg);
 	let mut *reset_required = false;
 	usize errs_bits;
 	let mut bit_iterator: u32;
@@ -1079,9 +1079,9 @@ unsafe fn adf_handle_ser_err_ssmsh(*mut adf_accel_devaccel_dev,
 			"Fatal SER_SSMSH_ERR: 0x%x\n", reg);
 
 		errs_bits = reg & ADF_GEN4_SER_ERR_SSMSH_FATAL_BITMASK;
-		for_each_set_bit(bit_iterator, &errs_bits, bits_num) {
+		for_each_set_bit!(bit_iterator, &errs_bits, bits_num, {
 			ADF_RAS_ERR_CTR_INC((*accel_dev).ras_errors, ADF_RAS_FATAL);
-		}
+		});
 
 		*reset_required = true;
 	}
@@ -1091,9 +1091,9 @@ unsafe fn adf_handle_ser_err_ssmsh(*mut adf_accel_devaccel_dev,
 			"non-fatal SER_SSMSH_ERR: 0x%x\n", reg);
 
 		errs_bits = reg & ADF_GEN4_SER_ERR_SSMSH_UNCERR_BITMASK;
-		for_each_set_bit(bit_iterator, &errs_bits, bits_num) {
+		for_each_set_bit!(bit_iterator, &errs_bits, bits_num, {
 			ADF_RAS_ERR_CTR_INC((*accel_dev).ras_errors, ADF_RAS_UNCORR);
-		}
+		});
 	}
 
 	if (reg & ADF_GEN4_SER_ERR_SSMSH_CERR_BITMASK) {
@@ -1101,9 +1101,9 @@ unsafe fn adf_handle_ser_err_ssmsh(*mut adf_accel_devaccel_dev,
 			 "Correctable SER_SSMSH_ERR: 0x%x\n", reg);
 
 		errs_bits = reg & ADF_GEN4_SER_ERR_SSMSH_CERR_BITMASK;
-		for_each_set_bit(bit_iterator, &errs_bits, bits_num) {
+		for_each_set_bit!(bit_iterator, &errs_bits, bits_num, {
 			ADF_RAS_ERR_CTR_INC((*accel_dev).ras_errors, ADF_RAS_CORR);
-		}
+		});
 	}
 
 	ADF_CSR_WR(csr, ADF_GEN4_SER_ERR_SSMSH, reg);
@@ -1112,7 +1112,7 @@ unsafe fn adf_handle_ser_err_ssmsh(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_iaintstatssm(*mut adf_accel_devaccel_dev,
-				    *mut core::ffi::c_voidcsr)
+				    csr: *mut core::ffi::c_void)
 {
 	let mut iastatssm: u32 = ADF_CSR_RD(csr, ADF_GEN4_IAINTSTATSSM);
 	let mut *reset_required: bool;
@@ -1136,7 +1136,7 @@ unsafe fn adf_handle_iaintstatssm(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_exprpssmcmpr(*mut adf_accel_devaccel_dev,
-				    *mut core::ffi::c_voidcsr)
+				    csr: *mut core::ffi::c_void)
 {
 	let mut reg: u32 = ADF_CSR_RD(csr, ADF_GEN4_EXPRPSSMCPR);
 
@@ -1155,7 +1155,7 @@ unsafe fn adf_handle_exprpssmcmpr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_exprpssmxlt(*mut adf_accel_devaccel_dev,
-				   *mut core::ffi::c_voidcsr)
+				   csr: *mut core::ffi::c_void)
 {
 	let mut reg: u32 = ADF_CSR_RD(csr, ADF_GEN4_EXPRPSSMXLT);
 
@@ -1184,7 +1184,7 @@ unsafe fn adf_handle_exprpssmxlt(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_exprpssmdcpr(*mut adf_accel_devaccel_dev,
-				    *mut core::ffi::c_voidcsr)
+				    csr: *mut core::ffi::c_void)
 {
 	let mut reg: u32;
 	i32 i;
@@ -1216,8 +1216,8 @@ unsafe fn adf_handle_exprpssmdcpr(*mut adf_accel_devaccel_dev,
 	return false;
 }
 
-unsafe fn adf_handle_ssm(*mut adf_accel_devaccel_dev, *mut core::ffi::c_voidcsr,
-			   u32 errsou)
+unsafe fn adf_handle_ssm(*mut adf_accel_devaccel_dev, csr: *mut core::ffi::c_void,
+			   errsou: u32)
 {
 	let mut *reset_required: bool;
 
@@ -1233,7 +1233,7 @@ unsafe fn adf_handle_ssm(*mut adf_accel_devaccel_dev, *mut core::ffi::c_voidcsr,
 }
 
 unsafe fn adf_handle_cpp_cfc_err(*mut adf_accel_devaccel_dev,
-				   *mut core::ffi::c_voidcsr, u32 errsou)
+				   csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut *reset_required = false;
 	let mut reg: u32;
@@ -1271,7 +1271,7 @@ unsafe fn adf_handle_cpp_cfc_err(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_gen4_process_errsou2(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, u32 errsou,
+				     csr: *mut core::ffi::c_void, errsou: u32,
 				     bool **reset_required)
 {
 	**reset_required |= adf_handle_ssm(accel_dev, csr, errsou);
@@ -1279,7 +1279,7 @@ unsafe fn adf_gen4_process_errsou2(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_timiscsts(*mut adf_accel_devaccel_dev,
-				 *mut core::ffi::c_voidcsr, u32 errsou)
+				 csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut timiscsts: u32;
 
@@ -1297,7 +1297,7 @@ unsafe fn adf_handle_timiscsts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ricppintsts(*mut adf_accel_devaccel_dev,
-				   *mut core::ffi::c_voidcsr, u32 errsou)
+				   csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ricppintsts: u32;
 
@@ -1318,7 +1318,7 @@ unsafe fn adf_handle_ricppintsts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_ticppintsts(*mut adf_accel_devaccel_dev,
-				   *mut core::ffi::c_voidcsr, u32 errsou)
+				   csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut ticppintsts: u32;
 
@@ -1339,7 +1339,7 @@ unsafe fn adf_handle_ticppintsts(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_aramcerr(*mut adf_accel_devaccel_dev,
-				*mut core::ffi::c_voidcsr, u32 errsou)
+				csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut aram_cerr: u32;
 
@@ -1362,7 +1362,7 @@ unsafe fn adf_handle_aramcerr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_aramuerr(*mut adf_accel_devaccel_dev,
-				*mut core::ffi::c_voidcsr, u32 errsou)
+				csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut *reset_required = false;
 	let mut aramuerr: u32;
@@ -1399,7 +1399,7 @@ unsafe fn adf_handle_aramuerr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_reg_cppmemtgterr(*mut adf_accel_devaccel_dev,
-					*mut core::ffi::c_voidcsr, u32 errsou)
+					csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut *reset_required = false;
 	let mut cppmemtgterr: u32;
@@ -1435,10 +1435,10 @@ unsafe fn adf_handle_reg_cppmemtgterr(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_handle_atufaultstatus(*mut adf_accel_devaccel_dev,
-				      *mut core::ffi::c_voidcsr, u32 errsou)
+				      csr: *mut core::ffi::c_void, errsou: u32)
 {
 	let mut i: u32;
-	let mut max_rp_num: u32 = GET_HW_DATA(accel_dev)->num_banks;
+	let mut max_rp_num: u32 = (*GET_HW_DATA(accel_dev)).num_banks;
 
 	if (!(errsou & ADF_GEN4_ERRSOU3_ATUFAULTSTATUS_BIT))
 		return false;
@@ -1463,8 +1463,8 @@ unsafe fn adf_handle_atufaultstatus(*mut adf_accel_devaccel_dev,
 }
 
 unsafe fn adf_gen4_process_errsou3(*mut adf_accel_devaccel_dev,
-				     *mut core::ffi::c_voidcsr, *mut core::ffi::c_voidaram_csr,
-				     u32 errsou, bool **reset_required)
+				     csr: *mut core::ffi::c_void, aram_csr: *mut core::ffi::c_void,
+				     errsou: u32, bool **reset_required)
 {
 	**reset_required |= adf_handle_timiscsts(accel_dev, csr, errsou);
 	**reset_required |= adf_handle_ricppintsts(accel_dev, csr, errsou);

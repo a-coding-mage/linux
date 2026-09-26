@@ -19,9 +19,9 @@ enum tsx_ctrl_states {
     TSX_CTRL_NOT_SUPPORTED,
 }
 
-static mut tsx_ctrl_state: tsx_ctrl_states = if cfg!(feature = "CONFIG_X86_INTEL_TSX_MODE_AUTO") {
+static mut tsx_ctrl_state: tsx_ctrl_states = if cfg!(CONFIG_X86_INTEL_TSX_MODE_AUTO) {
     tsx_ctrl_states::TSX_CTRL_AUTO
-} else if cfg!(feature = "CONFIG_X86_INTEL_TSX_MODE_OFF") {
+} else if cfg!(CONFIG_X86_INTEL_TSX_MODE_OFF) {
     tsx_ctrl_states::TSX_CTRL_DISABLE
 } else {
     tsx_ctrl_states::TSX_CTRL_ENABLE

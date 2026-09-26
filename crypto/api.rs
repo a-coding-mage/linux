@@ -39,7 +39,7 @@ unsafe fn __crypto_alg_lookup(name: *const c_char, type_: u32, mask: u32) -> *mu
     let mut alg: *mut crypto_alg = core::ptr::null_mut();
     let mut best: i32 = -2;
     let mut q: *mut crypto_alg;
-    list_for_each_entry!(q, &raw mut crypto_alg_list, cra_list) {
+    list_for_each_entry!(q, &raw mut crypto_alg_list, cra_list, {
         let exact: bool;
         let fuzzy: bool;
         if crypto_is_moribund(q) { continue; }
@@ -52,7 +52,7 @@ unsafe fn __crypto_alg_lookup(name: *const c_char, type_: u32, mask: u32) -> *mu
         if !alg.is_null() { crypto_mod_put(alg); }
         alg = q;
         if exact { break; }
-    }
+    });
     alg
 }
 

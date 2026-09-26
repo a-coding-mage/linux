@@ -67,18 +67,18 @@ unsafe extern "C" {
 }
 
 // !CONFIG_FAULT_INJECTION
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION"))]
+#[cfg(not(CONFIG_FAULT_INJECTION))]
 pub struct fault_attr_disabled {}
 
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION"))]
+#[cfg(not(CONFIG_FAULT_INJECTION))]
 pub fn setup_fault_attr(_attr: *mut fault_attr_disabled, _str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int {
     0 // Note: 0 means error for __setup() handlers!
 }
 
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION"))]
+#[cfg(not(CONFIG_FAULT_INJECTION))]
 pub fn should_fail_ex(_attr: *mut fault_attr_disabled, _size: ssize_t, _flags: ::core::ffi::c_int) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION"))]
+#[cfg(not(CONFIG_FAULT_INJECTION))]
 pub fn should_fail(_attr: *mut fault_attr_disabled, _size: ssize_t) -> bool { false }
 
 // CONFIG_FAULT_INJECTION_DEBUG_FS
@@ -91,7 +91,7 @@ unsafe extern "C" {
 }
 
 // !CONFIG_FAULT_INJECTION_DEBUG_FS
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION_DEBUG_FS"))]
+#[cfg(not(CONFIG_FAULT_INJECTION_DEBUG_FS))]
 pub unsafe fn fault_create_debugfs_attr_disabled(
     _name: *const ::core::ffi::c_char,
     _parent: *mut dentry,
@@ -113,10 +113,10 @@ unsafe extern "C" {
 }
 
 // !CONFIG_FAULT_INJECTION_CONFIGFS
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION_CONFIGFS"))]
+#[cfg(not(CONFIG_FAULT_INJECTION_CONFIGFS))]
 pub struct fault_config_disabled {}
 
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION_CONFIGFS"))]
+#[cfg(not(CONFIG_FAULT_INJECTION_CONFIGFS))]
 pub fn fault_config_init_disabled(_config: *mut fault_config_disabled, _name: *const ::core::ffi::c_char) {}
 
 // CONFIG_FAIL_PAGE_ALLOC
@@ -125,7 +125,7 @@ unsafe extern "C" {
 }
 
 // !CONFIG_FAIL_PAGE_ALLOC
-#[cfg(not(feature = "CONFIG_FAIL_PAGE_ALLOC"))]
+#[cfg(not(CONFIG_FAIL_PAGE_ALLOC))]
 pub fn should_fail_alloc_page_disabled(_gfp_mask: gfp_t, _order: ::core::ffi::c_uint) -> bool { false }
 
 // CONFIG_FAILSLAB
@@ -134,7 +134,7 @@ unsafe extern "C" {
 }
 
 // !CONFIG_FAILSLAB
-#[cfg(not(feature = "CONFIG_FAILSLAB"))]
+#[cfg(not(CONFIG_FAILSLAB))]
 pub fn should_failslab_disabled(_s: *mut kmem_cache, _gfpflags: gfp_t) -> ::core::ffi::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

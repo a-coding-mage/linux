@@ -46,7 +46,7 @@ extern "C" {
 
 // CONFIG_BATMAN_ADV_MCAST selects the declarations below in the kernel build.
 // The cfg feature preserves that build-time condition for Rust consumers.
-#[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")]
+#[cfg(CONFIG_BATMAN_ADV_MCAST)]
 extern "C" {
     pub fn batadv_mcast_forw_mode(
         bat_priv: *mut batadv_priv,
@@ -100,7 +100,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_forw_mode(
     _bat_priv: *mut batadv_priv,
     _skb: *mut sk_buff,
@@ -110,7 +110,7 @@ pub unsafe fn batadv_mcast_forw_mode(
     batadv_forw_mode::BATADV_FORW_BCAST
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_forw_send(
     _bat_priv: *mut batadv_priv,
     skb: *mut sk_buff,
@@ -121,12 +121,12 @@ pub unsafe fn batadv_mcast_forw_send(
     NET_XMIT_DROP
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_init(_bat_priv: *mut batadv_priv) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_mesh_info_put(
     _msg: *mut sk_buff,
     _bat_priv: *mut batadv_priv,
@@ -134,7 +134,7 @@ pub unsafe fn batadv_mcast_mesh_info_put(
     0
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_flags_dump(
     _msg: *mut sk_buff,
     _cb: *mut netlink_callback,
@@ -142,13 +142,13 @@ pub unsafe fn batadv_mcast_flags_dump(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_free(_bat_priv: *mut batadv_priv) {}
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_purge_orig(_orig_node: *mut batadv_orig_node) {}
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 pub unsafe fn batadv_mcast_forw_mcsend(
     _bat_priv: *mut batadv_priv,
     skb: *mut sk_buff,

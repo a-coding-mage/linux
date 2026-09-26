@@ -89,7 +89,7 @@ pub struct snd_wss {
     pub release_dma: Option<unsafe extern "C" fn(*mut snd_wss, *mut ::core::ffi::c_void, ::core::ffi::c_int) -> ::core::ffi::c_int>,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn snd_wss_out(chip: *mut snd_wss, reg: u8, val: u8);
     pub fn snd_wss_in(chip: *mut snd_wss, reg: u8) -> u8;
     pub fn snd_cs4236_ext_out(chip: *mut snd_wss, reg: u8, val: u8);

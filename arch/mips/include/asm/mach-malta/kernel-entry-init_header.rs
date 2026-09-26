@@ -49,7 +49,7 @@ macro_rules! platform_eva_init {
 #[macro_export]
 macro_rules! kernel_entry_setup {
     () => {{
-        #[cfg(feature = "CONFIG_EVA")]
+        #[cfg(CONFIG_EVA)]
         unsafe {
             core::arch::asm!(
                 "sync", "ehb",
@@ -70,7 +70,7 @@ macro_rules! kernel_entry_setup {
 #[macro_export]
 macro_rules! smp_slave_setup {
     () => {{
-        #[cfg(feature = "CONFIG_EVA")]
+        #[cfg(CONFIG_EVA)]
         {
             unsafe { core::arch::asm!("sync", "ehb", options(nostack)); }
             $crate::platform_eva_init!();

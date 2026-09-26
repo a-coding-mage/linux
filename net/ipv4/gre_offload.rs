@@ -20,10 +20,11 @@ unsafe fn gre_gso_segment(mut skb: *mut sk_buff, mut features: netdev_features_t
     let mac_len: u16 = (*skb).mac_len;
     let mut gre_offset: i32;
     let mut outer_hlen: i32;
+    'out: {
 
-    if !(*skb).encapsulation { goto out; }
-    if unlikely(tnl_hlen < core::mem::size_of::<gre_base_hdr>() as i32) { goto out; }
-    if unlikely(!pskb_may_pull(skb, tnl_hlen)) { goto out; }
+    if !(*skb).encapsulation { break 'out; }
+    if unlikely(tnl_hlen < core::mem::size_of::<gre_base_hdr>() as i32) { break 'out; }
+    if unlikely(!pskb_may_pull(skb, tnl_hlen)) { break 'out; }
 
     (*skb).encapsulation = false;
     (*SKB_GSO_CB(skb)).encap_level = 0;
@@ -43,7 +44,7 @@ unsafe fn gre_gso_segment(mut skb: *mut sk_buff, mut features: netdev_features_t
     segs = skb_mac_gso_segment(skb, features);
     if IS_ERR_OR_NULL(segs) {
         skb_gso_error_unwind(skb, protocol, tnl_hlen, mac_offset, mac_len);
-        goto out;
+        break 'out;
     }
     gso_partial = ((*skb_shinfo(segs)).gso_type & SKB_GSO_PARTIAL) != 0;
     outer_hlen = skb_tnl_header_len(skb);
@@ -80,7 +81,8 @@ unsafe fn gre_gso_segment(mut skb: *mut sk_buff, mut features: netdev_features_t
         skb = (*skb).next;
         if skb.is_null() { break; }
     }
-out:
+    }
+    
     segs
 }
 
@@ -94,40 +96,42 @@ unsafe fn gre_gro_receive(head: *mut list_head, skb: *mut sk_buff) -> *mut sk_bu
     let mut flush = 1;
     let mut ptype: *mut packet_offload;
     let type_: __be16;
-    if (*NAPI_GRO_CB(skb)).encap_mark != 0 { goto out; }
+    'out: {
+    if (*NAPI_GRO_CB(skb)).encap_mark != 0 { break 'out; }
     (*NAPI_GRO_CB(skb)).encap_mark = 1;
     off = skb_gro_offset(skb);
     hlen = off + core::mem::size_of::<gre_base_hdr>() as u32;
     greh = skb_gro_header(skb, hlen, off);
-    if greh.is_null() { goto out; }
-    if ((*greh).flags & !(GRE_KEY | GRE_CSUM)) != 0 { goto out; }
-    if ((*greh).flags & GRE_CSUM) != 0 && (*NAPI_GRO_CB(skb)).is_fou { goto out; }
+    if greh.is_null() { break 'out; }
+    if ((*greh).flags & !(GRE_KEY | GRE_CSUM)) != 0 { break 'out; }
+    if ((*greh).flags & GRE_CSUM) != 0 && (*NAPI_GRO_CB(skb)).is_fou { break 'out; }
     type_ = (*greh).protocol;
     ptype = gro_find_receive_by_type(type_);
-    if ptype.is_null() { goto out; }
+    if ptype.is_null() { break 'out; }
     grehlen = GRE_HEADER_SECTION;
     if ((*greh).flags & GRE_KEY) != 0 { grehlen += GRE_HEADER_SECTION; }
     if ((*greh).flags & GRE_CSUM) != 0 { grehlen += GRE_HEADER_SECTION; }
     hlen = off + grehlen;
     if !skb_gro_may_pull(skb, hlen) {
         greh = skb_gro_header_slow(skb, hlen, off);
-        if greh.is_null() { goto out; }
+        if greh.is_null() { break 'out; }
     }
     if ((*greh).flags & GRE_CSUM) != 0 && !(*NAPI_GRO_CB(skb)).flush {
-        if skb_gro_checksum_simple_validate(skb) { goto out; }
+        if skb_gro_checksum_simple_validate(skb) { break 'out; }
         skb_gro_checksum_try_convert(skb, IPPROTO_GRE, null_compute_pseudo);
     }
-    list_for_each_entry(p, head, list) {
+    list_for_each_entry!(p, head, list, {
         let greh2 = ((*p).data.add(off as usize)) as *const gre_base_hdr;
         if !(*NAPI_GRO_CB(p)).same_flow { continue; }
         if (*greh2).flags != (*greh).flags || (*greh2).protocol != (*greh).protocol { (*NAPI_GRO_CB(p)).same_flow = false; continue; }
         if ((*greh).flags & GRE_KEY) != 0 && *((greh2.add(1)) as *const __be32) != *((greh.add(1)) as *const __be32) { (*NAPI_GRO_CB(p)).same_flow = false; continue; }
-    }
+    });
     skb_gro_pull(skb, grehlen);
     skb_gro_postpull_rcsum(skb, greh, grehlen);
     pp = call_gro_receive((*ptype).callbacks.gro_receive, head, skb);
     flush = 0;
-out:
+    }
+    
     skb_gro_flush_final(skb, pp, flush);
     pp
 }

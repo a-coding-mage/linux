@@ -143,7 +143,7 @@ macro_rules! __nolibc_syscall6 {
                 "int $0x80",
                 "popl %ebp",
                 "addl $4,%esp",
-                arg6 = in(reg) &_arg6,
+                $arg6 = in(reg) &_arg6,
                 in("ebx") $arg1,
                 in("ecx") $arg2,
                 in("edx") $arg3,

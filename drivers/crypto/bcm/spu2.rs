@@ -30,24 +30,24 @@ static mut spu2_cipher_mode_names: [&str; 8] = ["ECB", "CBC", "CTR", "CFB", "OFB
 static mut spu2_hash_type_names: [&str; 18] = ["None", "AES128", "AES192", "AES256", "Reserved", "Reserved", "MD5", "SHA1", "SHA224", "SHA256", "SHA384", "SHA512", "SHA512/224", "SHA512/256", "SHA3-224", "SHA3-256", "SHA3-384", "SHA3-512"];
 static mut spu2_hash_mode_names: [&str; 8] = ["CMAC", "CBC-MAC", "XCBC-MAC", "HMAC", "Rabin", "CCM", "GCM", "Reserved"];
 
-unsafe fn spu2_ciph_type_name(cipher_type: enum spu2_cipher_type) -> &'static str {
+unsafe fn spu2_ciph_type_name(cipher_type: spu2_cipher_type) -> &'static str {
     if cipher_type >= SPU2_CIPHER_TYPE_LAST { return "Reserved"; }
     spu2_cipher_type_names[cipher_type as usize]
 }
-unsafe fn spu2_ciph_mode_name(cipher_mode: enum spu2_cipher_mode) -> &'static str {
+unsafe fn spu2_ciph_mode_name(cipher_mode: spu2_cipher_mode) -> &'static str {
     if cipher_mode >= SPU2_CIPHER_MODE_LAST { return "Reserved"; }
     spu2_cipher_mode_names[cipher_mode as usize]
 }
-unsafe fn spu2_hash_type_name(hash_type: enum spu2_hash_type) -> &'static str {
+unsafe fn spu2_hash_type_name(hash_type: spu2_hash_type) -> &'static str {
     if hash_type >= SPU2_HASH_TYPE_LAST { return "Reserved"; }
     spu2_hash_type_names[hash_type as usize]
 }
-unsafe fn spu2_hash_mode_name(hash_mode: enum spu2_hash_mode) -> &'static str {
+unsafe fn spu2_hash_mode_name(hash_mode: spu2_hash_mode) -> &'static str {
     if hash_mode >= SPU2_HASH_MODE_LAST { return "Reserved"; }
     spu2_hash_mode_names[hash_mode as usize]
 }
 
-unsafe fn spu2_cipher_mode_xlate(cipher_mode: enum spu_cipher_mode, out: *mut enum spu2_cipher_mode) -> i32 {
+unsafe fn spu2_cipher_mode_xlate(cipher_mode: spu_cipher_mode, out: *mut spu2_cipher_mode) -> i32 {
     *out = match cipher_mode {
         CIPHER_MODE_ECB => SPU2_CIPHER_MODE_ECB,
         CIPHER_MODE_CBC => SPU2_CIPHER_MODE_CBC,
@@ -62,7 +62,7 @@ unsafe fn spu2_cipher_mode_xlate(cipher_mode: enum spu_cipher_mode, out: *mut en
     0
 }
 
-unsafe fn spu2_cipher_xlate(a: enum spu_cipher_alg, m: enum spu_cipher_mode, t: enum spu_cipher_type, ot: *mut enum spu2_cipher_type, om: *mut enum spu2_cipher_mode) -> i32 {
+unsafe fn spu2_cipher_xlate(a: spu_cipher_alg, m: spu_cipher_mode, t: spu_cipher_type, ot: *mut spu2_cipher_type, om: *mut spu2_cipher_mode) -> i32 {
     let mut err = spu2_cipher_mode_xlate(m, om);
     if err != 0 { flow_log!("Invalid cipher mode %d\n", m); return err; }
     match a {
@@ -82,7 +82,7 @@ unsafe fn spu2_cipher_xlate(a: enum spu_cipher_alg, m: enum spu_cipher_mode, t: 
     err
 }
 
-unsafe fn spu2_hash_mode_xlate(m: enum hash_mode, out: *mut enum spu2_hash_mode) -> i32 {
+unsafe fn spu2_hash_mode_xlate(m: hash_mode, out: *mut spu2_hash_mode) -> i32 {
     *out = match m {
         HASH_MODE_XCBC => SPU2_HASH_MODE_XCBC_MAC,
         HASH_MODE_CMAC => SPU2_HASH_MODE_CMAC,
@@ -93,7 +93,7 @@ unsafe fn spu2_hash_mode_xlate(m: enum hash_mode, out: *mut enum spu2_hash_mode)
     }; 0
 }
 
-unsafe fn spu2_hash_xlate(a: enum hash_alg, m: enum hash_mode, ht: enum hash_type, ct: enum spu_cipher_type, ot: *mut enum spu2_hash_type, om: *mut enum spu2_hash_mode) -> i32 {
+unsafe fn spu2_hash_xlate(a: hash_alg, m: hash_mode, ht: hash_type, ct: spu_cipher_type, ot: *mut spu2_hash_type, om: *mut spu2_hash_mode) -> i32 {
     let mut err = spu2_hash_mode_xlate(m, om);
     if err != 0 { flow_log!("Invalid hash mode %d\n", m); return err; }
     match a {
@@ -155,29 +155,29 @@ unsafe fn spu2_dump_omd(mut ptr: *mut u8, hkl: u16, ckl: u16, hil: u16, cil: u16
 
 pub unsafe fn spu2_dump_msg_hdr(buf: *mut u8, buf_len: u32) { let fmd = buf as *mut SPU2_FMD; packet_log!("\n"); packet_log!("SPU2 message header %p len: %u\n", buf, buf_len); spu2_dump_fmd(fmd); let omd = (fmd.add(1)) as *mut u8; let c1 = le64_to_cpu((*fmd).ctrl1); let hkl = ((c1 & SPU2_HASH_KEY_LEN) >> SPU2_HASH_KEY_LEN_SHIFT) as u16; let ckl = ((c1 & SPU2_CIPH_KEY_LEN) >> SPU2_CIPH_KEY_LEN_SHIFT) as u16; let cil = ((c1 & SPU2_IV_LEN) >> SPU2_IV_LEN_SHIFT) as u16; spu2_dump_omd(omd, hkl, ckl, 0, cil); let len = hkl + ckl + cil; if FMD_SIZE + len != buf_len as usize { packet_log!(" Packet parsed incorrectly. buf_len %u, sum of MD %zu\n", buf_len, FMD_SIZE + len); } packet_log!("\n"); }
 
-unsafe fn spu2_fmd_init(fmd: *mut SPU2_FMD, ct: enum spu2_cipher_type, cm: enum spu2_cipher_mode, key_len: u32, iv_len: u32) -> i32 { let c0 = ((ct as u64) << SPU2_CIPH_TYPE_SHIFT) | ((cm as u64) << SPU2_CIPH_MODE_SHIFT); let c1 = ((key_len as u64) << SPU2_CIPH_KEY_LEN_SHIFT) | ((iv_len as u64) << SPU2_IV_LEN_SHIFT) | ((SPU2_RET_FMD_ONLY as u64) << SPU2_RETURN_MD_SHIFT) | SPU2_RETURN_PAY; (*fmd).ctrl0 = cpu_to_le64(c0); (*fmd).ctrl1 = cpu_to_le64(c1); (*fmd).ctrl2 = cpu_to_le64(0); (*fmd).ctrl3 = cpu_to_le64(0); 0 }
+unsafe fn spu2_fmd_init(fmd: *mut SPU2_FMD, ct: spu2_cipher_type, cm: spu2_cipher_mode, key_len: u32, iv_len: u32) -> i32 { let c0 = ((ct as u64) << SPU2_CIPH_TYPE_SHIFT) | ((cm as u64) << SPU2_CIPH_MODE_SHIFT); let c1 = ((key_len as u64) << SPU2_CIPH_KEY_LEN_SHIFT) | ((iv_len as u64) << SPU2_IV_LEN_SHIFT) | ((SPU2_RET_FMD_ONLY as u64) << SPU2_RETURN_MD_SHIFT) | SPU2_RETURN_PAY; (*fmd).ctrl0 = cpu_to_le64(c0); (*fmd).ctrl1 = cpu_to_le64(c1); (*fmd).ctrl2 = cpu_to_le64(0); (*fmd).ctrl3 = cpu_to_le64(0); 0 }
 
-unsafe fn spu2_fmd_ctrl0_write(fmd: *mut SPU2_FMD, inbound: bool, auth_first: bool, proto: enum spu2_proto_sel, ct: enum spu2_cipher_type, cm: enum spu2_cipher_mode, ht: enum spu2_hash_type, hm: enum spu2_hash_mode) { let mut c = 0u64; if ct != SPU2_CIPHER_TYPE_NONE && !inbound { c |= SPU2_CIPH_ENCRYPT_EN; } c |= (ct as u64) << SPU2_CIPH_TYPE_SHIFT | (cm as u64) << SPU2_CIPH_MODE_SHIFT; if proto != SPU2_PROTO_RESV { c |= (proto as u64) << SPU2_PROTO_SEL_SHIFT; } if auth_first { c |= SPU2_HASH_FIRST; } if inbound && ht != SPU2_HASH_TYPE_NONE { c |= SPU2_CHK_TAG; } c |= (ht as u64) << SPU2_HASH_TYPE_SHIFT | (hm as u64) << SPU2_HASH_MODE_SHIFT; (*fmd).ctrl0 = cpu_to_le64(c); }
+unsafe fn spu2_fmd_ctrl0_write(fmd: *mut SPU2_FMD, inbound: bool, auth_first: bool, proto: spu2_proto_sel, ct: spu2_cipher_type, cm: spu2_cipher_mode, ht: spu2_hash_type, hm: spu2_hash_mode) { let mut c = 0u64; if ct != SPU2_CIPHER_TYPE_NONE && !inbound { c |= SPU2_CIPH_ENCRYPT_EN; } c |= (ct as u64) << SPU2_CIPH_TYPE_SHIFT | (cm as u64) << SPU2_CIPH_MODE_SHIFT; if proto != SPU2_PROTO_RESV { c |= (proto as u64) << SPU2_PROTO_SEL_SHIFT; } if auth_first { c |= SPU2_HASH_FIRST; } if inbound && ht != SPU2_HASH_TYPE_NONE { c |= SPU2_CHK_TAG; } c |= (ht as u64) << SPU2_HASH_TYPE_SHIFT | (hm as u64) << SPU2_HASH_MODE_SHIFT; (*fmd).ctrl0 = cpu_to_le64(c); }
 
-unsafe fn spu2_fmd_ctrl1_write(fmd: *mut SPU2_FMD, inbound: bool, assoc: u64, ak: u64, ck: u64, gen: bool, hiv: bool, riv: bool, ril: u64, rio: u64, civ: u64, digest: u64, retpay: bool, retmd: bool) { let mut c=0u64; if inbound && digest != 0 { c|=SPU2_TAG_LOC; } if assoc != 0 { c|=SPU2_HAS_AAD2|SPU2_RETURN_AAD2; } if ak!=0 { c|=(ak<<SPU2_HASH_KEY_LEN_SHIFT)&SPU2_HASH_KEY_LEN; } if ck!=0 { c|=(ck<<SPU2_CIPH_KEY_LEN_SHIFT)&SPU2_CIPH_KEY_LEN; } if gen {c|=SPU2_GENIV;} if hiv {c|=SPU2_HASH_IV;} if riv {c|=SPU2_RET_IV|ril<<SPU2_RET_IV_LEN_SHIFT|rio<<SPU2_IV_OFFSET_SHIFT;} c|=(civ<<SPU2_IV_LEN_SHIFT)&SPU2_IV_LEN; if digest!=0 {c|=(digest<<SPU2_HASH_TAG_LEN_SHIFT)&SPU2_HASH_TAG_LEN;} c|=(if retmd {SPU2_RET_FMD_ONLY} else {SPU2_RET_NO_MD})<<SPU2_RETURN_MD_SHIFT; if retpay {c|=SPU2_RETURN_PAY;} (*fmd).ctrl1=cpu_to_le64(c); }
+unsafe fn spu2_fmd_ctrl1_write(fmd: *mut SPU2_FMD, inbound: bool, assoc: u64, ak: u64, ck: u64, r#gen: bool, hiv: bool, riv: bool, ril: u64, rio: u64, civ: u64, digest: u64, retpay: bool, retmd: bool) { let mut c=0u64; if inbound && digest != 0 { c|=SPU2_TAG_LOC; } if assoc != 0 { c|=SPU2_HAS_AAD2|SPU2_RETURN_AAD2; } if ak!=0 { c|=(ak<<SPU2_HASH_KEY_LEN_SHIFT)&SPU2_HASH_KEY_LEN; } if ck!=0 { c|=(ck<<SPU2_CIPH_KEY_LEN_SHIFT)&SPU2_CIPH_KEY_LEN; } if gen {c|=SPU2_GENIV;} if hiv {c|=SPU2_HASH_IV;} if riv {c|=SPU2_RET_IV|ril<<SPU2_RET_IV_LEN_SHIFT|rio<<SPU2_IV_OFFSET_SHIFT;} c|=(civ<<SPU2_IV_LEN_SHIFT)&SPU2_IV_LEN; if digest!=0 {c|=(digest<<SPU2_HASH_TAG_LEN_SHIFT)&SPU2_HASH_TAG_LEN;} c|=(if retmd {SPU2_RET_FMD_ONLY} else {SPU2_RET_NO_MD})<<SPU2_RETURN_MD_SHIFT; if retpay {c|=SPU2_RETURN_PAY;} (*fmd).ctrl1=cpu_to_le64(c); }
 unsafe fn spu2_fmd_ctrl2_write(fmd:*mut SPU2_FMD, off:u64, _ak:u64,_ai:u64,_ck:u64,_ci:u64) { (*fmd).ctrl2=cpu_to_le64(off<<SPU2_PL_OFFSET_SHIFT); }
 unsafe fn spu2_fmd_ctrl3_write(fmd:*mut SPU2_FMD, len:u64) { (*fmd).ctrl3=cpu_to_le64(len&SPU2_PL_LEN); }
 
-pub unsafe fn spu2_ctx_max_payload(a: enum spu_cipher_alg, m: enum spu_cipher_mode, b: u32) -> u32 { if a==CIPHER_ALG_AES && m==CIPHER_MODE_CCM { SPU2_MAX_PAYLOAD-(SPU2_MAX_PAYLOAD%b) } else { SPU_MAX_PAYLOAD_INF } }
+pub unsafe fn spu2_ctx_max_payload(a: spu_cipher_alg, m: spu_cipher_mode, b: u32) -> u32 { if a==CIPHER_ALG_AES && m==CIPHER_MODE_CCM { SPU2_MAX_PAYLOAD-(SPU2_MAX_PAYLOAD%b) } else { SPU_MAX_PAYLOAD_INF } }
 pub unsafe fn spu2_payload_length(h:*mut u8)->u32 { (le64_to_cpu((*(h as *mut SPU2_FMD)).ctrl3)&SPU2_PL_LEN) as u32 }
 pub unsafe fn spu2_response_hdr_len(_a:u16,_e:u16,_h:bool)->u16 { FMD_SIZE as u16 }
-pub unsafe fn spu2_hash_pad_len(_a:enum hash_alg,_m:enum hash_mode,_c:u32,_b:u16)->u16 { 0 }
-pub unsafe fn spu2_gcm_ccm_pad_len(_m:enum spu_cipher_mode,_d:u32)->u32 { 0 }
-pub unsafe fn spu2_assoc_resp_len(_m:enum spu_cipher_mode, assoc:u32, iv:u32, enc:bool)->u32 { assoc + if enc {iv} else {0} }
-pub unsafe fn spu2_aead_ivlen(_m:enum spu_cipher_mode,_iv:u16)->u8 { 0 }
-pub unsafe fn spu2_hash_type(_s:u32)->enum hash_type { HASH_TYPE_FULL }
-pub unsafe fn spu2_digest_size(n:u32,_a:enum hash_alg,_h:enum hash_type)->u32 { n }
+pub unsafe fn spu2_hash_pad_len(_a:hash_alg,_m:hash_mode,_c:u32,_b:u16)->u16 { 0 }
+pub unsafe fn spu2_gcm_ccm_pad_len(_m:spu_cipher_mode,_d:u32)->u32 { 0 }
+pub unsafe fn spu2_assoc_resp_len(_m:spu_cipher_mode, assoc:u32, iv:u32, enc:bool)->u32 { assoc + if enc {iv} else {0} }
+pub unsafe fn spu2_aead_ivlen(_m:spu_cipher_mode,_iv:u16)->u8 { 0 }
+pub unsafe fn spu2_hash_type(_s:u32)->hash_type { HASH_TYPE_FULL }
+pub unsafe fn spu2_digest_size(n:u32,_a:hash_alg,_h:hash_type)->u32 { n }
 
-pub unsafe fn spu2_request_pad(mut p:*mut u8, g:u32, h:u32, alg:enum hash_alg, _mode:enum hash_mode, total:u32, stat:u32) { if g!=0 { memset!(p,0,g); p=p.add(g as usize); } if h!=0 { memset!(p,0,h); *p=0x80; p=p.add((h as usize)-8); let v=cpu_to_le64((total as u64)*8); if alg==HASH_ALG_MD5 { *(p as *mut __le64)=v; } else { *(p as *mut __be64)=cpu_to_be64((total as u64)*8); } p=p.add(8); } if stat!=0 { memset!(p,0,stat); } }
+pub unsafe fn spu2_request_pad(mut p:*mut u8, g:u32, h:u32, alg:hash_alg, _mode:hash_mode, total:u32, stat:u32) { if g!=0 { memset!(p,0,g); p=p.add(g as usize); } if h!=0 { memset!(p,0,h); *p=0x80; p=p.add((h as usize)-8); let v=cpu_to_le64((total as u64)*8); if alg==HASH_ALG_MD5 { *(p as *mut __le64)=v; } else { *(p as *mut __be64)=cpu_to_be64((total as u64)*8); } p=p.add(8); } if stat!=0 { memset!(p,0,stat); } }
 
 pub unsafe fn spu2_ccm_update_iv(_digest:u32, cp:*mut spu_cipher_parms, _assoc:u32, _chunks:u32, _enc:bool, esp:bool) { let l:i32=if esp {CCM_ESP_L_VALUE} else {(((*cp).iv_buf[0]&CCM_B0_L_PRIME)>>CCM_B0_L_PRIME_SHIFT) as i32+1}; (*cp).iv_len-= (1+l) as u32; memmove!((*cp).iv_buf,(*cp).iv_buf.add(1),(*cp).iv_len); }
 
-pub unsafe fn spu2_cipher_req_init(h:*mut u8, cp:*mut spu_cipher_parms)->u16 { let mut t=SPU2_CIPHER_TYPE_NONE; let mut m:enum spu2_cipher_mode=SPU2_CIPHER_MODE_ECB; if spu2_cipher_xlate((*cp).alg,(*cp).mode,(*cp).type_,&mut t,&mut m)!=0{return 0;} let f=h as *mut SPU2_FMD; if spu2_fmd_init(f,t,m,(*cp).key_len,(*cp).iv_len)!=0{return 0;} if !(*cp).key_buf.is_null()&&(*cp).key_len!=0 { memcpy!((f.add(1)) as *mut u8,(*cp).key_buf,(*cp).key_len); } (FMD_SIZE as u32+(*cp).key_len+(*cp).iv_len) as u16 }
+pub unsafe fn spu2_cipher_req_init(h:*mut u8, cp:*mut spu_cipher_parms)->u16 { let mut t=SPU2_CIPHER_TYPE_NONE; let mut m:spu2_cipher_mode=SPU2_CIPHER_MODE_ECB; if spu2_cipher_xlate((*cp).alg,(*cp).mode,(*cp).type_,&mut t,&mut m)!=0{return 0;} let f=h as *mut SPU2_FMD; if spu2_fmd_init(f,t,m,(*cp).key_len,(*cp).iv_len)!=0{return 0;} if !(*cp).key_buf.is_null()&&(*cp).key_len!=0 { memcpy!((f.add(1)) as *mut u8,(*cp).key_buf,(*cp).key_len); } (FMD_SIZE as u32+(*cp).key_len+(*cp).iv_len) as u16 }
 
 pub unsafe fn spu2_cipher_req_finish(h:*mut u8, len:u16, inbound:u32, cp:*mut spu_cipher_parms, data:u32) { let f=h as *mut SPU2_FMD; let mut c=le64_to_cpu((*f).ctrl0); if inbound!=0 {c&=!SPU2_CIPH_ENCRYPT_EN;} else {c|=SPU2_CIPH_ENCRYPT_EN;} (*f).ctrl0=cpu_to_le64(c); if (*cp).alg as u32!=0&&!(*cp).iv_buf.is_null()&&(*cp).iv_len!=0 {memcpy!((f.add(1) as *mut u8).add((*cp).key_len as usize),(*cp).iv_buf,(*cp).iv_len);} let mut c3=le64_to_cpu((*f).ctrl3); c3|=(data as u64)&SPU2_PL_LEN; (*f).ctrl3=cpu_to_le64(c3); packet_dump!("  SPU request header: ",h,len); }
 

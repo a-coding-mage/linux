@@ -23,25 +23,25 @@ extern "C" {
     fn apic_flat_calc_apicid(cpu: u32) -> u32;
 }
 
-static unsafe fn noop_send_IPI(_cpu: i32, _vector: i32) {}
+unsafe fn noop_send_IPI(_cpu: i32, _vector: i32) {}
 
-static unsafe fn noop_send_IPI_mask(_cpumask: *const cpumask, _vector: i32) {}
+unsafe fn noop_send_IPI_mask(_cpumask: *const cpumask, _vector: i32) {}
 
-static unsafe fn noop_send_IPI_mask_allbutself(
+unsafe fn noop_send_IPI_mask_allbutself(
     _cpumask: *const cpumask,
     _vector: i32,
 ) {
 }
 
-static unsafe fn noop_send_IPI_allbutself(_vector: i32) {}
+unsafe fn noop_send_IPI_allbutself(_vector: i32) {}
 
-static unsafe fn noop_send_IPI_all(_vector: i32) {}
+unsafe fn noop_send_IPI_all(_vector: i32) {}
 
-static unsafe fn noop_send_IPI_self(_vector: i32) {}
+unsafe fn noop_send_IPI_self(_vector: i32) {}
 
-static unsafe fn noop_apic_icr_write(_low: u32, _id: u32) {}
+unsafe fn noop_apic_icr_write(_low: u32, _id: u32) {}
 
-static unsafe fn noop_wakeup_secondary_cpu(
+unsafe fn noop_wakeup_secondary_cpu(
     _apicid: u32,
     _start_eip: usize,
     _cpu: u32,
@@ -49,22 +49,22 @@ static unsafe fn noop_wakeup_secondary_cpu(
     -1
 }
 
-static unsafe fn noop_apic_icr_read() -> u64 {
+unsafe fn noop_apic_icr_read() -> u64 {
     0
 }
 
-static unsafe fn noop_get_apic_id(_apicid: u32) -> u32 {
+unsafe fn noop_get_apic_id(_apicid: u32) -> u32 {
     0
 }
 
-static unsafe fn noop_apic_eoi() {}
+unsafe fn noop_apic_eoi() {}
 
-static unsafe fn noop_apic_read(_reg: u32) -> u32 {
+unsafe fn noop_apic_read(_reg: u32) -> u32 {
     WARN_ON_ONCE(boot_cpu_has(X86_FEATURE_APIC) && !apic_is_disabled);
     0
 }
 
-static unsafe fn noop_apic_write(_reg: u32, _val: u32) {
+unsafe fn noop_apic_write(_reg: u32, _val: u32) {
     WARN_ON_ONCE(boot_cpu_has(X86_FEATURE_APIC) && !apic_is_disabled);
 }
 

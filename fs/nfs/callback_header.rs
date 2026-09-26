@@ -184,7 +184,7 @@ pub struct cb_notify_lock_args {
     pub cbnl_valid: bool,
 }
 
-#[cfg(feature = "CONFIG_NFS_V4_2")]
+#[cfg(CONFIG_NFS_V4_2)]
 #[repr(C)]
 pub struct cb_offloadargs {
     pub coa_fh: nfs_fh,
@@ -201,7 +201,7 @@ extern "C" {
 }
 
 // Preserves the source condition: IS_ENABLED(CONFIG_NFS_V4).
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 extern "C" {
     pub fn nfs_callback_up(minorversion: u32, xprt: *mut rpc_xprt) -> libc::c_int;
     pub fn nfs_callback_down(minorversion: libc::c_int, net: *mut net, xprt: *mut rpc_xprt);

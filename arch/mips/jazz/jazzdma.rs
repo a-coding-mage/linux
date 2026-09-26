@@ -38,7 +38,7 @@ unsafe fn vdma_init() -> i32 {
     r4030_write_reg32(JAZZ_R4030_TRSTBL_BASE, CPHYSADDR(pgtbl as libc::c_ulong));
     r4030_write_reg32(JAZZ_R4030_TRSTBL_LIM, VDMA_PGTBL_SIZE);
     r4030_write_reg32(JAZZ_R4030_TRSTBL_INV, 0);
-    printk(KERN_INFO "VDMA: R4030 DMA pagetables initialized.\n");
+    printk(c"\x016VDMA: R4030 DMA pagetables initialized.\n".as_ptr());
     0
 }
 
@@ -102,10 +102,10 @@ unsafe fn jazz_dma_map_phys(dev:*mut device,phys:phys_addr_t,size:usize,dir:dma_
 unsafe fn jazz_dma_unmap_phys(dev:*mut device,dma_addr:dma_addr_t,size:usize,dir:dma_data_direction,attrs:libc::c_ulong){if attrs&DMA_ATTR_SKIP_CPU_SYNC==0{arch_sync_dma_for_cpu(vdma_log2phys(dma_addr),size,dir);}vdma_free(dma_addr);}
 unsafe fn jazz_dma_map_sg(dev:*mut device,sglist:*mut scatterlist,nents:i32,dir:dma_data_direction,attrs:libc::c_ulong)->i32{let mut i=0;let mut sg=sglist;while i<nents{if attrs&DMA_ATTR_SKIP_CPU_SYNC==0{arch_sync_dma_for_device(sg_phys(sg),(*sg).length,dir);}(*sg).dma_address=vdma_alloc(sg_phys(sg),(*sg).length as libc::c_ulong);if (*sg).dma_address==DMA_MAPPING_ERROR{return -EIO;}sg_dma_len(sg)=(*sg).length;i+=1;sg=sg_next(sg);}nents}
 unsafe fn jazz_dma_unmap_sg(dev:*mut device,sglist:*mut scatterlist,nents:i32,dir:dma_data_direction,attrs:libc::c_ulong){let mut i=0;let mut sg=sglist;while i<nents{if attrs&DMA_ATTR_SKIP_CPU_SYNC==0{arch_sync_dma_for_cpu(sg_phys(sg),(*sg).length,dir);}vdma_free((*sg).dma_address);i+=1;sg=sg_next(sg);}}
-unsafe fn jazz_dma_sync_single_for_device(dev:*mut device,addr:dma_addr_t,size:usize,dir:dma_data_direction){arch_sync_dma_for_device(vdma_log2phys(addr),size,dir)}
-unsafe fn jazz_dma_sync_single_for_cpu(dev:*mut device,addr:dma_addr_t,size:usize,dir:dma_data_direction){arch_sync_dma_for_cpu(vdma_log2phys(addr),size,dir)}
-unsafe fn jazz_dma_sync_sg_for_device(dev:*mut device,sgl:*mut scatterlist,nents:i32,dir:dma_data_direction){let mut i=0;let mut sg=sgl;while i<nents{arch_sync_dma_for_device(sg_phys(sg),(*sg).length,dir);i+=1;sg=sg_next(sg);}}
-unsafe fn jazz_dma_sync_sg_for_cpu(dev:*mut device,sgl:*mut scatterlist,nents:i32,dir:dma_data_direction){let mut i=0;let mut sg=sgl;while i<nents{arch_sync_dma_for_cpu(sg_phys(sg),(*sg).length,dir);i+=1;sg=sg_next(sg);}}
+unsafe fn jazz_dma_sync_single_for_device(dev:*mut device,addr:dma_addr_t,size:usize,dir:dma_data_direction) {arch_sync_dma_for_device(vdma_log2phys(addr),size,dir)}
+unsafe fn jazz_dma_sync_single_for_cpu(dev:*mut device,addr:dma_addr_t,size:usize,dir:dma_data_direction) {arch_sync_dma_for_cpu(vdma_log2phys(addr),size,dir)}
+unsafe fn jazz_dma_sync_sg_for_device(dev:*mut device,sgl:*mut scatterlist,nents:i32,dir:dma_data_direction) {let mut i=0;let mut sg=sgl;while i<nents{arch_sync_dma_for_device(sg_phys(sg),(*sg).length,dir);i+=1;sg=sg_next(sg);}}
+unsafe fn jazz_dma_sync_sg_for_cpu(dev:*mut device,sgl:*mut scatterlist,nents:i32,dir:dma_data_direction) {let mut i=0;let mut sg=sgl;while i<nents{arch_sync_dma_for_cpu(sg_phys(sg),(*sg).length,dir);i+=1;sg=sg_next(sg);}}
 
 /* DMA map operations and their external kernel dependencies. */
 pub static jazz_dma_ops: dma_map_ops = dma_map_ops { alloc: Some(jazz_dma_alloc), free: Some(jazz_dma_free), map_phys: Some(jazz_dma_map_phys), unmap_phys: Some(jazz_dma_unmap_phys), map_sg: Some(jazz_dma_map_sg), unmap_sg: Some(jazz_dma_unmap_sg), sync_single_for_cpu: Some(jazz_dma_sync_single_for_cpu), sync_single_for_device: Some(jazz_dma_sync_single_for_device), sync_sg_for_cpu: Some(jazz_dma_sync_sg_for_cpu), sync_sg_for_device: Some(jazz_dma_sync_sg_for_device), mmap: Some(dma_common_mmap), get_sgtable: Some(dma_common_get_sgtable), alloc_pages_op: Some(dma_common_alloc_pages), free_pages: Some(dma_common_free_pages) };

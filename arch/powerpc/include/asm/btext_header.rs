@@ -27,7 +27,7 @@ extern "C" {
     );
 
     // CONFIG_PPC32 selects the external implementation in btext.c.
-    #[cfg(feature = "CONFIG_PPC32")]
+    #[cfg(CONFIG_PPC32)]
     pub fn btext_prepare_BAT();
 
     pub fn btext_map();
@@ -45,7 +45,7 @@ extern "C" {
 
 // When CONFIG_PPC32 is not enabled, the C header supplies an empty inline
 // implementation. The Rust equivalent retains that behavior.
-#[cfg(not(feature = "CONFIG_PPC32"))]
+#[cfg(not(CONFIG_PPC32))]
 #[inline]
 pub unsafe fn btext_prepare_BAT() {}
 

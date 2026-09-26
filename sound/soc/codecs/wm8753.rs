@@ -32,10 +32,10 @@ static mut caps_charge: core::ffi::c_int = 2000;
 module_param!(caps_charge, int, 0);
 MODULE_PARM_DESC(caps_charge, "WM8753 cap charge time (msecs)");
 
-static int wm8753_hifi_write_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt);
-static int wm8753_voice_write_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt);
+static int wm8753_hifi_write_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint);
+static int wm8753_voice_write_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint);
 
 /*
  * wm8753 register cache
@@ -204,8 +204,8 @@ SOC_ENUM_SINGLE(WM8753_OUTCTL, 2, 2, wm8753_rout2_phase),
 ];
 
 
-static int wm8753_get_dai(struct snd_kcontrol *kcontrol,
-	struct snd_ctl_elem_value *ucontrol)
+static int wm8753_get_dai(snd_kcontrol *kcontrol,
+	snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -214,8 +214,8 @@ static int wm8753_get_dai(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-static int wm8753_set_dai(struct snd_kcontrol *kcontrol,
-	struct snd_ctl_elem_value *ucontrol)
+static int wm8753_set_dai(snd_kcontrol *kcontrol,
+	snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -680,13 +680,13 @@ struct _pll_div {
 
 /* The size in bits of the pll divide multiplied by 10
  * to allow rounding later */
-#define FIXED_PLL_SIZE ((1 << 22) * 10)
+pub const FIXED_PLL_SIZE: u32 = (1 << 22) * 10;
 
-static void pll_factors(struct _pll_div *pll_div, unsigned int target,
-	unsigned int source)
+static void pll_factors(_pll_div *pll_div, target: core::ffi::c_uint,
+	source: core::ffi::c_uint)
 {
 	u64 Kpart;
-	unsigned int K, Ndiv, Nmod;
+	core::ffi::c_uint K, Ndiv, Nmod;
 
 	Ndiv = target / source;
 	if (Ndiv < 6) {
@@ -697,12 +697,11 @@ static void pll_factors(struct _pll_div *pll_div, unsigned int target,
 		pll_div.div2 = 0;
 
 	if ((Ndiv < 6) || (Ndiv > 12))
-		printk(KERN_WARNING
-			"wm8753: unsupported N = %u\n", Ndiv);
+		printk(c"\x014wm8753: unsupported N = %u\n".as_ptr(), Ndiv);
 
 	pll_div.n = Ndiv;
 	Nmod = target % source;
-	Kpart = FIXED_PLL_SIZE * (long long)Nmod;
+	Kpart = FIXED_PLL_SIZE * (core::ffi::c_longlong)Nmod;
 
 	do_div(Kpart, source);
 
@@ -718,10 +717,10 @@ static void pll_factors(struct _pll_div *pll_div, unsigned int target,
 	pll_div.k = K;
 }
 
-static int wm8753_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
-		int source, unsigned int freq_in, unsigned int freq_out)
+static int wm8753_set_dai_pll(snd_soc_dai *codec_dai, int pll_id,
+		int source, freq_in: core::ffi::c_uint, freq_out: core::ffi::c_uint)
 {
-	u16 reg, enable;
+	reg: u16, enable;
 	int offset;
 	struct snd_soc_component *component = codec_dai.component;
 
@@ -841,8 +840,8 @@ static int get_coeff(int mclk, int rate)
 /*
  * Clock after PLL and dividers
  */
-static int wm8753_set_dai_sysclk(struct snd_soc_dai *codec_dai,
-		int clk_id, unsigned int freq, int dir)
+static int wm8753_set_dai_sysclk(snd_soc_dai *codec_dai,
+		int clk_id, freq: core::ffi::c_uint, int dir)
 {
 	struct snd_soc_component *component = codec_dai.component;
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -868,8 +867,8 @@ static int wm8753_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 /*
  * Set's ADC and Voice DAC format.
  */
-static int wm8753_vdac_adc_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_vdac_adc_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	u16 voice = snd_soc_component_read(component, WM8753_PCM) & 0x01ec;
 
@@ -900,9 +899,9 @@ static int wm8753_vdac_adc_set_dai_fmt(struct snd_soc_component *component,
 /*
  * Set PCM DAI bit size and sample rate.
  */
-static int wm8753_pcm_hw_params(struct snd_pcm_substream *substream,
-				struct snd_pcm_hw_params *params,
-				struct snd_soc_dai *dai)
+static int wm8753_pcm_hw_params(snd_pcm_substream *substream,
+				snd_pcm_hw_params *params,
+				snd_soc_dai *dai)
 {
 	struct snd_soc_component *component = dai.component;
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -936,10 +935,10 @@ static int wm8753_pcm_hw_params(struct snd_pcm_substream *substream,
 /*
  * Set's PCM dai fmt and BCLK.
  */
-static int wm8753_pcm_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_pcm_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
-	u16 voice, ioctl;
+	voice: u16, ioctl;
 
 	voice = snd_soc_component_read(component, WM8753_PCM) & 0x011f;
 	ioctl = snd_soc_component_read(component, WM8753_IOCTL) & 0x015d;
@@ -1002,7 +1001,7 @@ static int wm8753_pcm_set_dai_fmt(struct snd_soc_component *component,
 	return 0;
 }
 
-static int wm8753_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
+static int wm8753_set_dai_clkdiv(snd_soc_dai *codec_dai,
 		int div_id, int div)
 {
 	struct snd_soc_component *component = codec_dai.component;
@@ -1030,8 +1029,8 @@ static int wm8753_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 /*
  * Set's HiFi DAC format.
  */
-static int wm8753_hdac_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_hdac_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	u16 hifi = snd_soc_component_read(component, WM8753_HIFI) & 0x01e0;
 
@@ -1062,10 +1061,10 @@ static int wm8753_hdac_set_dai_fmt(struct snd_soc_component *component,
 /*
  * Set's I2S DAI format.
  */
-static int wm8753_i2s_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_i2s_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
-	u16 ioctl, hifi;
+	ioctl: u16, hifi;
 
 	hifi = snd_soc_component_read(component, WM8753_HIFI) & 0x013f;
 	ioctl = snd_soc_component_read(component, WM8753_IOCTL) & 0x00ae;
@@ -1131,9 +1130,9 @@ static int wm8753_i2s_set_dai_fmt(struct snd_soc_component *component,
 /*
  * Set PCM DAI bit size and sample rate.
  */
-static int wm8753_i2s_hw_params(struct snd_pcm_substream *substream,
-				struct snd_pcm_hw_params *params,
-				struct snd_soc_dai *dai)
+static int wm8753_i2s_hw_params(snd_pcm_substream *substream,
+				snd_pcm_hw_params *params,
+				snd_soc_dai *dai)
 {
 	struct snd_soc_component *component = dai.component;
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -1144,7 +1143,7 @@ static int wm8753_i2s_hw_params(struct snd_pcm_substream *substream,
 	/* is digital filter coefficient valid ? */
 	coeff = get_coeff(wm8753.sysclk, params_rate(params));
 	if (coeff < 0) {
-		printk(KERN_ERR "wm8753 invalid MCLK or rate\n");
+		printk(c"\x013wm8753 invalid MCLK or rate\n".as_ptr());
 		return coeff;
 	}
 	snd_soc_component_write(component, WM8753_SRATE1, srate | (coeff_div[coeff].sr << 1) |
@@ -1169,8 +1168,8 @@ static int wm8753_i2s_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-static int wm8753_mode1v_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_mode1v_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	u16 clock;
 
@@ -1181,14 +1180,14 @@ static int wm8753_mode1v_set_dai_fmt(struct snd_soc_component *component,
 	return wm8753_vdac_adc_set_dai_fmt(component, fmt);
 }
 
-static int wm8753_mode1h_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_mode1h_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	return wm8753_hdac_set_dai_fmt(component, fmt);
 }
 
-static int wm8753_mode2_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_mode2_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	u16 clock;
 
@@ -1199,8 +1198,8 @@ static int wm8753_mode2_set_dai_fmt(struct snd_soc_component *component,
 	return wm8753_vdac_adc_set_dai_fmt(component, fmt);
 }
 
-static int wm8753_mode3_4_set_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_mode3_4_set_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	u16 clock;
 
@@ -1213,8 +1212,8 @@ static int wm8753_mode3_4_set_dai_fmt(struct snd_soc_component *component,
 	return wm8753_vdac_adc_set_dai_fmt(component, fmt);
 }
 
-static int wm8753_hifi_write_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_hifi_write_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
 	int ret = 0;
@@ -1239,8 +1238,8 @@ static int wm8753_hifi_write_dai_fmt(struct snd_soc_component *component,
 	return wm8753_i2s_set_dai_fmt(component, fmt);
 }
 
-static int wm8753_hifi_set_dai_fmt(struct snd_soc_dai *codec_dai,
-		unsigned int fmt)
+static int wm8753_hifi_set_dai_fmt(snd_soc_dai *codec_dai,
+		fmt: core::ffi::c_uint)
 {
 	struct snd_soc_component *component = codec_dai.component;
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -1250,8 +1249,8 @@ static int wm8753_hifi_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	return wm8753_hifi_write_dai_fmt(component, fmt);
 };
 
-static int wm8753_voice_write_dai_fmt(struct snd_soc_component *component,
-		unsigned int fmt)
+static int wm8753_voice_write_dai_fmt(snd_soc_component *component,
+		fmt: core::ffi::c_uint)
 {
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
 	int ret = 0;
@@ -1269,8 +1268,8 @@ static int wm8753_voice_write_dai_fmt(struct snd_soc_component *component,
 	return 0;
 };
 
-static int wm8753_voice_set_dai_fmt(struct snd_soc_dai *codec_dai,
-		unsigned int fmt)
+static int wm8753_voice_set_dai_fmt(snd_soc_dai *codec_dai,
+		fmt: core::ffi::c_uint)
 {
 	struct snd_soc_component *component = codec_dai.component;
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
@@ -1280,7 +1279,7 @@ static int wm8753_voice_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	return wm8753_voice_write_dai_fmt(component, fmt);
 };
 
-static int wm8753_mute(struct snd_soc_dai *dai, int mute, int direction)
+static int wm8753_mute(snd_soc_dai *dai, int mute, int direction)
 {
 	struct snd_soc_component *component = dai.component;
 	u16 mute_reg = snd_soc_component_read(component, WM8753_DAC) & 0xfff7;
@@ -1301,17 +1300,17 @@ static int wm8753_mute(struct snd_soc_dai *dai, int mute, int direction)
 	return 0;
 }
 
-static void wm8753_charge_work(struct work_struct *work)
+static void wm8753_charge_work(work_struct *work)
 {
 	struct wm8753_priv *wm8753 =
-		container_of(work, struct wm8753_priv, charge_work.work);
+		container_of(work, wm8753_priv, charge_work.work);
 
 	/* Set to 500k */
 	regmap_update_bits(wm8753.regmap, WM8753_PWR1, 0x0180, 0x0100);
 }
 
-static int wm8753_set_bias_level(struct snd_soc_component *component,
-				 enum snd_soc_bias_level level)
+static int wm8753_set_bias_level(snd_soc_component *component,
+				 snd_soc_bias_level level)
 {
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
@@ -1365,65 +1364,65 @@ static int wm8753_set_bias_level(struct snd_soc_component *component,
  * 4. Voice disabled - HIFI over HIFI, uses voice DAI LRC for capture
  */
 static const struct snd_soc_dai_ops wm8753_dai_ops_hifi_mode = [
-	.hw_params	= wm8753_i2s_hw_params,
-	.mute_stream	= wm8753_mute,
-	.set_fmt	= wm8753_hifi_set_dai_fmt,
-	.set_clkdiv	= wm8753_set_dai_clkdiv,
-	.set_pll	= wm8753_set_dai_pll,
-	.set_sysclk	= wm8753_set_dai_sysclk,
-	.no_capture_mute = 1,
+	hw_params: wm8753_i2s_hw_params,
+	mute_stream: wm8753_mute,
+	set_fmt: wm8753_hifi_set_dai_fmt,
+	set_clkdiv: wm8753_set_dai_clkdiv,
+	set_pll: wm8753_set_dai_pll,
+	set_sysclk: wm8753_set_dai_sysclk,
+	no_capture_mute: 1,
 ];
 
 static const struct snd_soc_dai_ops wm8753_dai_ops_voice_mode = [
-	.hw_params	= wm8753_pcm_hw_params,
-	.mute_stream	= wm8753_mute,
-	.set_fmt	= wm8753_voice_set_dai_fmt,
-	.set_clkdiv	= wm8753_set_dai_clkdiv,
-	.set_pll	= wm8753_set_dai_pll,
-	.set_sysclk	= wm8753_set_dai_sysclk,
-	.no_capture_mute = 1,
+	hw_params: wm8753_pcm_hw_params,
+	mute_stream: wm8753_mute,
+	set_fmt: wm8753_voice_set_dai_fmt,
+	set_clkdiv: wm8753_set_dai_clkdiv,
+	set_pll: wm8753_set_dai_pll,
+	set_sysclk: wm8753_set_dai_sysclk,
+	no_capture_mute: 1,
 ];
 
 static struct snd_soc_dai_driver wm8753_dai[] = [
 /* DAI HiFi mode 1 */
 {	.name = "wm8753-hifi",
-	.playback = {
-		.stream_name = "HiFi Playback",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = WM8753_RATES,
-		.formats = WM8753_FORMATS
+	playback: {
+		stream_name: "HiFi Playback",
+		channels_min: 1,
+		channels_max: 2,
+		rates: WM8753_RATES,
+		formats: WM8753_FORMATS
 	},
-	.capture = { /* dummy for fast DAI switching */
-		.stream_name = "Capture",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = WM8753_RATES,
-		.formats = WM8753_FORMATS
+	capture: { /* dummy for fast DAI switching */
+		stream_name: "Capture",
+		channels_min: 1,
+		channels_max: 2,
+		rates: WM8753_RATES,
+		formats: WM8753_FORMATS
 	},
-	.ops = &wm8753_dai_ops_hifi_mode,
+	ops: &wm8753_dai_ops_hifi_mode,
 },
 /* DAI Voice mode 1 */
 {	.name = "wm8753-voice",
-	.playback = {
-		.stream_name = "Voice Playback",
-		.channels_min = 1,
-		.channels_max = 1,
-		.rates = WM8753_RATES,
-		.formats = WM8753_FORMATS,
+	playback: {
+		stream_name: "Voice Playback",
+		channels_min: 1,
+		channels_max: 1,
+		rates: WM8753_RATES,
+		formats: WM8753_FORMATS,
 	},
-	.capture = {
-		.stream_name = "Capture",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = WM8753_RATES,
-		.formats = WM8753_FORMATS,
+	capture: {
+		stream_name: "Capture",
+		channels_min: 1,
+		channels_max: 2,
+		rates: WM8753_RATES,
+		formats: WM8753_FORMATS,
 	},
-	.ops = &wm8753_dai_ops_voice_mode,
+	ops: &wm8753_dai_ops_voice_mode,
 },
 ];
 
-static int wm8753_resume(struct snd_soc_component *component)
+static int wm8753_resume(snd_soc_component *component)
 {
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
 
@@ -1432,7 +1431,7 @@ static int wm8753_resume(struct snd_soc_component *component)
 	return 0;
 }
 
-static int wm8753_probe(struct snd_soc_component *component)
+static int wm8753_probe(snd_soc_component *component)
 {
 	struct wm8753_priv *wm8753 = snd_soc_component_get_drvdata(component);
 	int ret;
@@ -1463,19 +1462,19 @@ static int wm8753_probe(struct snd_soc_component *component)
 }
 
 static const struct snd_soc_component_driver soc_component_dev_wm8753 = [
-	.probe			= wm8753_probe,
-	.resume			= wm8753_resume,
-	.set_bias_level		= wm8753_set_bias_level,
-	.controls		= wm8753_snd_controls,
-	.num_controls		= ARRAY_SIZE(wm8753_snd_controls),
-	.dapm_widgets		= wm8753_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(wm8753_dapm_widgets),
-	.dapm_routes		= wm8753_dapm_routes,
-	.num_dapm_routes	= ARRAY_SIZE(wm8753_dapm_routes),
-	.suspend_bias_off	= 1,
-	.idle_bias_on		= 1,
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
+	probe: wm8753_probe,
+	resume: wm8753_resume,
+	set_bias_level: wm8753_set_bias_level,
+	controls: wm8753_snd_controls,
+	num_controls: ARRAY_SIZE(wm8753_snd_controls),
+	dapm_widgets: wm8753_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(wm8753_dapm_widgets),
+	dapm_routes: wm8753_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(wm8753_dapm_routes),
+	suspend_bias_off: 1,
+	idle_bias_on: 1,
+	use_pmdown_time: 1,
+	endianness: 1,
 ];
 
 static const struct of_device_id wm8753_of_match[] = [
@@ -1485,24 +1484,24 @@ static const struct of_device_id wm8753_of_match[] = [
 MODULE_DEVICE_TABLE!(of, wm8753_of_match);
 
 static const struct regmap_config wm8753_regmap = [
-	.reg_bits = 7,
-	.val_bits = 9,
+	reg_bits: 7,
+	val_bits: 9,
 
-	.max_register = WM8753_ADCTL2,
-	.volatile_reg = wm8753_volatile,
+	max_register: WM8753_ADCTL2,
+	volatile_reg: wm8753_volatile,
 
-	.cache_type = REGCACHE_MAPLE,
-	.reg_defaults = wm8753_reg_defaults,
-	.num_reg_defaults = ARRAY_SIZE(wm8753_reg_defaults),
+	cache_type: REGCACHE_MAPLE,
+	reg_defaults: wm8753_reg_defaults,
+	num_reg_defaults: ARRAY_SIZE(wm8753_reg_defaults),
 ];
 
 #if defined(CONFIG_SPI_MASTER)
-static int wm8753_spi_probe(struct spi_device *spi)
+static int wm8753_spi_probe(spi_device *spi)
 {
 	struct wm8753_priv *wm8753;
 	int ret;
 
-	wm8753 = devm_kzalloc(&spi.dev, sizeof(struct wm8753_priv),
+	wm8753 = devm_kzalloc(&spi.dev, sizeof(wm8753_priv),
 			      GFP_KERNEL);
 	if (wm8753 == core::ptr::null_mut())
 		return -ENOMEM;
@@ -1526,21 +1525,21 @@ static int wm8753_spi_probe(struct spi_device *spi)
 }
 
 static struct spi_driver wm8753_spi_driver = [
-	.driver = {
-		.name	= "wm8753",
-		.of_match_table = wm8753_of_match,
+	driver: {
+		name: "wm8753",
+		of_match_table: wm8753_of_match,
 	},
-	.probe		= wm8753_spi_probe,
+	probe: wm8753_spi_probe,
 ];
 #endif /* CONFIG_SPI_MASTER */
 
 #if IS_ENABLED(CONFIG_I2C)
-static int wm8753_i2c_probe(struct i2c_client *i2c)
+static int wm8753_i2c_probe(i2c_client *i2c)
 {
 	struct wm8753_priv *wm8753;
 	int ret;
 
-	wm8753 = devm_kzalloc(&i2c.dev, sizeof(struct wm8753_priv),
+	wm8753 = devm_kzalloc(&i2c.dev, sizeof(wm8753_priv),
 			      GFP_KERNEL);
 	if (wm8753 == core::ptr::null_mut())
 		return -ENOMEM;
@@ -1570,12 +1569,12 @@ static const struct i2c_device_id wm8753_i2c_id[] = [
 MODULE_DEVICE_TABLE!(i2c, wm8753_i2c_id);
 
 static struct i2c_driver wm8753_i2c_driver = [
-	.driver = {
-		.name = "wm8753",
-		.of_match_table = wm8753_of_match,
+	driver: {
+		name: "wm8753",
+		of_match_table: wm8753_of_match,
 	},
-	.probe = wm8753_i2c_probe,
-	.id_table = wm8753_i2c_id,
+	probe: wm8753_i2c_probe,
+	id_table: wm8753_i2c_id,
 ];
 #endif
 
@@ -1585,14 +1584,14 @@ static int __init wm8753_modinit(void)
 #if IS_ENABLED(CONFIG_I2C)
 	ret = i2c_add_driver(&wm8753_i2c_driver);
 	if (ret != 0) {
-		printk(KERN_ERR "Failed to register wm8753 I2C driver: %d\n",
+		printk(c"\x013Failed to register wm8753 I2C driver: %d\n".as_ptr(),
 		       ret);
 	}
 #endif
 #if defined(CONFIG_SPI_MASTER)
 	ret = spi_register_driver(&wm8753_spi_driver);
 	if (ret != 0) {
-		printk(KERN_ERR "Failed to register wm8753 SPI driver: %d\n",
+		printk(c"\x013Failed to register wm8753 SPI driver: %d\n".as_ptr(),
 		       ret);
 	}
 #endif

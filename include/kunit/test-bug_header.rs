@@ -11,7 +11,7 @@
 use core::ffi::{c_char, c_int, c_void};
 
 /* Equivalent build-time condition for IS_ENABLED(CONFIG_KUNIT). */
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 mod kunit_enabled {
     use super::*;
 
@@ -97,17 +97,17 @@ mod kunit_enabled {
 }
 
 /* When CONFIG_KUNIT is disabled, these inline functions return immediately. */
-#[cfg(not(feature = "CONFIG_KUNIT"))]
+#[cfg(not(CONFIG_KUNIT))]
 pub unsafe fn kunit_get_current_test() -> *mut c_void {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_KUNIT"))]
+#[cfg(not(CONFIG_KUNIT))]
 pub unsafe fn kunit_is_suppressed_warning(_count: bool) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_KUNIT"))]
+#[cfg(not(CONFIG_KUNIT))]
 #[macro_export]
 macro_rules! kunit_fail_current_test {
     ($fmt:expr $(, $arg:expr)*) => {{}};

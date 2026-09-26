@@ -252,7 +252,7 @@ const CLK_CON_GAT_GATE_CLKCMU_SRDZ_BUS: usize = 0x2104;
 const CLK_CON_GAT_GATE_CLKCMU_SRDZ_IMGD: usize = 0x2108;
 const CLK_CON_GAT_GATE_CLKCMU_VPU_BUS: usize = 0x210c;
 
-static top_clk_regs: static const unsigned long top_clk_regs[]  = {[u64] = &[
+static top_clk_regs: static const core::ffi::c_ulong top_clk_regs[]  = {[u64] = &[
 	PLL_LOCKTIME_PLL_SHARED0,
 	PLL_LOCKTIME_PLL_SHARED1,
 	PLL_LOCKTIME_PLL_SHARED2,
@@ -1287,22 +1287,22 @@ static top_gate_clks: static const struct samsung_gate_clock top_gate_clks[]  = 
 ];
 
 static top_cmu_info: samsung_cmu_info = samsung_cmu_info {
-.pll_clks = top_pll_clks,
-.nr_pll_clks = top_pll_clks.len(),
-.mux_clks = top_mux_clks,
-.nr_mux_clks = top_mux_clks.len(),
-.div_clks = top_div_clks,
-.nr_div_clks = top_div_clks.len(),
-.fixed_factor_clks = top_fixed_factor_clks,
-.nr_fixed_factor_clks = top_fixed_factor_clks.len(),
-.gate_clks = top_gate_clks,
-.nr_gate_clks = top_gate_clks.len(),
-.nr_clk_ids = CLKS_NR_TOP,
-.clk_regs = top_clk_regs,
-.nr_clk_regs = top_clk_regs.len(),
+pll_clks: top_pll_clks,
+nr_pll_clks: top_pll_clks.len(),
+mux_clks: top_mux_clks,
+nr_mux_clks: top_mux_clks.len(),
+div_clks: top_div_clks,
+nr_div_clks: top_div_clks.len(),
+fixed_factor_clks: top_fixed_factor_clks,
+nr_fixed_factor_clks: top_fixed_factor_clks.len(),
+gate_clks: top_gate_clks,
+nr_gate_clks: top_gate_clks.len(),
+nr_clk_ids: CLKS_NR_TOP,
+clk_regs: top_clk_regs,
+nr_clk_regs: top_clk_regs.len(),
 ];
 
-static void __init exynos8895_cmu_top_init(struct device_node *np)
+static void __init exynos8895_cmu_top_init(device_node *np)
 {
 	exynos_arm64_register_cmu(NULL, np, &top_cmu_info);
 }
@@ -1352,7 +1352,7 @@ const CLK_CON_GAT_GOUT_BLK_PERIS_UID_WDT_CLUSTER0_IPCLKPORT_PCLK: usize = 0x2088
 const CLK_CON_GAT_GOUT_BLK_PERIS_UID_WDT_CLUSTER1_IPCLKPORT_PCLK: usize = 0x208c;
 const CLK_CON_GAT_GOUT_BLK_PERIS_UID_XIU_P_PERIS_IPCLKPORT_ACLK: usize = 0x2090;
 
-static peris_clk_regs: static const unsigned long peris_clk_regs[]  = {[u64] = &[
+static peris_clk_regs: static const core::ffi::c_ulong peris_clk_regs[]  = {[u64] = &[
 	PLL_CON0_MUX_CLKCMU_PERIS_BUS_USER,
 	PLL_CON2_MUX_CLKCMU_PERIS_BUS_USER,
 	CLK_CON_MUX_MUX_CLK_PERIS_GIC,
@@ -1527,17 +1527,17 @@ static peris_gate_clks: static const struct samsung_gate_clock peris_gate_clks[]
 ];
 
 static peris_cmu_info: samsung_cmu_info = samsung_cmu_info {
-.mux_clks = peris_mux_clks,
-.nr_mux_clks = peris_mux_clks.len(),
-.gate_clks = peris_gate_clks,
-.nr_gate_clks = peris_gate_clks.len(),
-.nr_clk_ids = CLKS_NR_PERIS,
-.clk_regs = peris_clk_regs,
-.nr_clk_regs = peris_clk_regs.len(),
-.clk_name = "bus",
+mux_clks: peris_mux_clks,
+nr_mux_clks: peris_mux_clks.len(),
+gate_clks: peris_gate_clks,
+nr_gate_clks: peris_gate_clks.len(),
+nr_clk_ids: CLKS_NR_PERIS,
+clk_regs: peris_clk_regs,
+nr_clk_regs: peris_clk_regs.len(),
+clk_name: "bus",
 ];
 
-static void __init exynos8895_cmu_peris_init(struct device_node *np)
+static void __init exynos8895_cmu_peris_init(device_node *np)
 {
 	exynos_arm64_register_cmu(NULL, np, &peris_cmu_info);
 }
@@ -1596,7 +1596,7 @@ const CLK_CON_GAT_GOUT_BLK_FSYS0_UID_XIU_D_FSYS0_IPCLKPORT_ACLK: usize = 0x2094;
 const CLK_CON_GAT_GOUT_BLK_FSYS0_UID_XIU_D_FSYS0_USB_IPCLKPORT_ACLK: usize = 0x2098;
 const CLK_CON_GAT_GOUT_BLK_FSYS0_UID_XIU_P_FSYS0_IPCLKPORT_ACLK: usize = 0x209c;
 
-static fsys0_clk_regs: static const unsigned long fsys0_clk_regs[]  = {[u64] = &[
+static fsys0_clk_regs: static const core::ffi::c_ulong fsys0_clk_regs[]  = {[u64] = &[
 	PLL_CON0_MUX_CLKCMU_FSYS0_BUS_USER,
 	PLL_CON2_MUX_CLKCMU_FSYS0_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_FSYS0_DPGTC_USER,
@@ -1817,14 +1817,14 @@ static fsys0_gate_clks: static const struct samsung_gate_clock fsys0_gate_clks[]
 ];
 
 static fsys0_cmu_info: samsung_cmu_info = samsung_cmu_info {
-.mux_clks = fsys0_mux_clks,
-.nr_mux_clks = fsys0_mux_clks.len(),
-.gate_clks = fsys0_gate_clks,
-.nr_gate_clks = fsys0_gate_clks.len(),
-.nr_clk_ids = CLKS_NR_FSYS0,
-.clk_regs = fsys0_clk_regs,
-.nr_clk_regs = fsys0_clk_regs.len(),
-.clk_name = "bus",
+mux_clks: fsys0_mux_clks,
+nr_mux_clks: fsys0_mux_clks.len(),
+gate_clks: fsys0_gate_clks,
+nr_gate_clks: fsys0_gate_clks.len(),
+nr_clk_ids: CLKS_NR_FSYS0,
+clk_regs: fsys0_clk_regs,
+nr_clk_regs: fsys0_clk_regs.len(),
+clk_name: "bus",
 ];
 
 /* ---- CMU_FSYS1 ---------------------------------------------------------- */
@@ -1879,7 +1879,7 @@ const CLK_CON_GAT_GOUT_BLK_FSYS1_UID_UFS_CARD_IPCLKPORT_I_FMP_CLK: usize = 0x20a
 const CLK_CON_GAT_GOUT_BLK_FSYS1_UID_XIU_D_FSYS1_IPCLKPORT_ACLK: usize = 0x20a8;
 const CLK_CON_GAT_GOUT_BLK_FSYS1_UID_XIU_P_FSYS1_IPCLKPORT_ACLK: usize = 0x20ac;
 
-static fsys1_clk_regs: static const unsigned long fsys1_clk_regs[]  = {[u64] = &[
+static fsys1_clk_regs: static const core::ffi::c_ulong fsys1_clk_regs[]  = {[u64] = &[
 	PLL_CON0_MUX_CLKCMU_FSYS1_BUS_USER,
 	PLL_CON2_MUX_CLKCMU_FSYS1_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_FSYS1_MMC_CARD_USER,
@@ -2116,14 +2116,14 @@ static fsys1_gate_clks: static const struct samsung_gate_clock fsys1_gate_clks[]
 ];
 
 static fsys1_cmu_info: samsung_cmu_info = samsung_cmu_info {
-.mux_clks = fsys1_mux_clks,
-.nr_mux_clks = fsys1_mux_clks.len(),
-.gate_clks = fsys1_gate_clks,
-.nr_gate_clks = fsys1_gate_clks.len(),
-.nr_clk_ids = CLKS_NR_FSYS1,
-.clk_regs = fsys1_clk_regs,
-.nr_clk_regs = fsys1_clk_regs.len(),
-.clk_name = "bus",
+mux_clks: fsys1_mux_clks,
+nr_mux_clks: fsys1_mux_clks.len(),
+gate_clks: fsys1_gate_clks,
+nr_gate_clks: fsys1_gate_clks.len(),
+nr_clk_ids: CLKS_NR_FSYS1,
+clk_regs: fsys1_clk_regs,
+nr_clk_regs: fsys1_clk_regs.len(),
+clk_name: "bus",
 ];
 
 /* ---- CMU_PERIC0 ---------------------------------------------------------- */
@@ -2161,7 +2161,7 @@ const CLK_CON_GAT_GOUT_BLK_PERIC0_UID_USI02_IPCLKPORT_I_SCLK_USI: usize = 0x2054
 const CLK_CON_GAT_GOUT_BLK_PERIC0_UID_USI03_IPCLKPORT_I_PCLK: usize = 0x2058;
 const CLK_CON_GAT_GOUT_BLK_PERIC0_UID_USI03_IPCLKPORT_I_SCLK_USI: usize = 0x205c;
 
-static peric0_clk_regs: static const unsigned long peric0_clk_regs[]  = {[u64] = &[
+static peric0_clk_regs: static const core::ffi::c_ulong peric0_clk_regs[]  = {[u64] = &[
 	PLL_CON0_MUX_CLKCMU_PERIC0_BUS_USER,
 	PLL_CON2_MUX_CLKCMU_PERIC0_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_PERIC0_UART_DBG_USER,
@@ -2305,14 +2305,14 @@ static peric0_gate_clks: static const struct samsung_gate_clock peric0_gate_clks
 ];
 
 static peric0_cmu_info: samsung_cmu_info = samsung_cmu_info {
-.mux_clks = peric0_mux_clks,
-.nr_mux_clks = peric0_mux_clks.len(),
-.gate_clks = peric0_gate_clks,
-.nr_gate_clks = peric0_gate_clks.len(),
-.nr_clk_ids = CLKS_NR_PERIC0,
-.clk_regs = peric0_clk_regs,
-.nr_clk_regs = peric0_clk_regs.len(),
-.clk_name = "bus",
+mux_clks: peric0_mux_clks,
+nr_mux_clks: peric0_mux_clks.len(),
+gate_clks: peric0_gate_clks,
+nr_gate_clks: peric0_gate_clks.len(),
+nr_clk_ids: CLKS_NR_PERIC0,
+clk_regs: peric0_clk_regs,
+nr_clk_regs: peric0_clk_regs.len(),
+clk_name: "bus",
 ];
 
 /* ---- CMU_PERIC1 ---------------------------------------------------------- */
@@ -2398,7 +2398,7 @@ const CLK_CON_GAT_GOUT_BLK_PERIC1_UID_USI13_IPCLKPORT_I_PCLK: usize = 0x20cc;
 const CLK_CON_GAT_GOUT_BLK_PERIC1_UID_USI13_IPCLKPORT_I_SCLK_USI: usize = 0x20d0;
 const CLK_CON_GAT_GOUT_BLK_PERIC1_UID_XIU_P_PERIC1_IPCLKPORT_ACLK: usize = 0x20d4;
 
-static peric1_clk_regs: static const unsigned long peric1_clk_regs[]  = {[u64] = &[
+static peric1_clk_regs: static const core::ffi::c_ulong peric1_clk_regs[]  = {[u64] = &[
 	PLL_CON0_MUX_CLKCMU_PERIC1_BUS_USER,
 	PLL_CON2_MUX_CLKCMU_PERIC1_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_PERIC1_SPEEDY2_USER,
@@ -2750,14 +2750,14 @@ static peric1_gate_clks: static const struct samsung_gate_clock peric1_gate_clks
 ];
 
 static peric1_cmu_info: samsung_cmu_info = samsung_cmu_info {
-.mux_clks = peric1_mux_clks,
-.nr_mux_clks = peric1_mux_clks.len(),
-.gate_clks = peric1_gate_clks,
-.nr_gate_clks = peric1_gate_clks.len(),
-.nr_clk_ids = CLKS_NR_PERIC1,
-.clk_regs = peric1_clk_regs,
-.nr_clk_regs = peric1_clk_regs.len(),
-.clk_name = "bus",
+mux_clks: peric1_mux_clks,
+nr_mux_clks: peric1_mux_clks.len(),
+gate_clks: peric1_gate_clks,
+nr_gate_clks: peric1_gate_clks.len(),
+nr_clk_ids: CLKS_NR_PERIC1,
+clk_regs: peric1_clk_regs,
+nr_clk_regs: peric1_clk_regs.len(),
+clk_name: "bus",
 ];
 
 

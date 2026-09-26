@@ -10,9 +10,9 @@ static mut CAPACITY_FREQ_REF: [c_ulong; NR_CPUS] = [0; NR_CPUS];
 
 unsafe fn supports_scale_freq_counters(cpus: *const cpumask) -> bool {
     let mut i: c_int = 0;
-    for_each_cpu!(i, cpus) {
+    for_each_cpu!(i, cpus, {
         if cpumask_test_cpu(i, &SCALE_FREQ_COUNTERS_MASK) { return true; }
-    }
+    });
     false
 }
 
@@ -33,13 +33,13 @@ pub unsafe fn topology_set_scale_freq_source(data: *mut scale_freq_data, cpus: *
     let mut cpu: c_int = 0;
     if cpumask_empty(&SCALE_FREQ_COUNTERS_MASK) { SCALE_FREQ_INVARIANT = topology_scale_freq_invariant(); }
     rcu_read_lock();
-    for_each_cpu!(cpu, cpus) {
+    for_each_cpu!(cpu, cpus, {
         let sfd = rcu_dereference!(SFT_DATA[cpu as usize]);
         if sfd.is_null() || (*sfd).source != SCALE_FREQ_SOURCE_ARCH {
             rcu_assign_pointer!(SFT_DATA[cpu as usize], data);
             cpumask_set_cpu(cpu, &mut SCALE_FREQ_COUNTERS_MASK);
         }
-    }
+    });
     rcu_read_unlock();
     update_scale_freq_invariant(true);
 }
@@ -47,13 +47,13 @@ pub unsafe fn topology_set_scale_freq_source(data: *mut scale_freq_data, cpus: *
 pub unsafe fn topology_clear_scale_freq_source(source: enum_scale_freq_source, cpus: *const cpumask) {
     let mut cpu: c_int = 0;
     rcu_read_lock();
-    for_each_cpu!(cpu, cpus) {
+    for_each_cpu!(cpu, cpus, {
         let sfd = rcu_dereference!(SFT_DATA[cpu as usize]);
         if !sfd.is_null() && (*sfd).source == source {
             rcu_assign_pointer!(SFT_DATA[cpu as usize], core::ptr::null_mut());
             cpumask_clear_cpu(cpu, &mut SCALE_FREQ_COUNTERS_MASK);
         }
-    }
+    });
     rcu_read_unlock();
     synchronize_rcu();
     update_scale_freq_invariant(false);
@@ -71,7 +71,7 @@ pub unsafe fn topology_set_freq_scale(cpus: *const cpumask, cur_freq: c_ulong, m
     if supports_scale_freq_counters(cpus) { return; }
     let scale = (cur_freq << SCHED_CAPACITY_SHIFT) / max_freq;
     let mut i: c_int = 0;
-    for_each_cpu!(i, cpus) { ARCH_FREQ_SCALE[i as usize] = scale; }
+    for_each_cpu!(i, cpus, { ARCH_FREQ_SCALE[i as usize] = scale; });
 }
 
 static mut HW_PRESSURE: [c_ulong; NR_CPUS] = [0; NR_CPUS];
@@ -80,11 +80,11 @@ pub unsafe fn topology_update_hw_pressure(cpus: *const cpumask, capped_freq: c_u
     let cpu = cpumask_first(cpus);
     let max_capacity = arch_scale_cpu_capacity(cpu);
     let max_freq: u32 = arch_scale_freq_ref(cpu);
-    let capacity = if max_freq as c_ulong <= capped_freq { max_capacity } else { mult_frac(max_capacity, capped_freq, max_freq as c_ulong) };
+    let capacity = if (max_freq as c_ulong) <= capped_freq { max_capacity } else { mult_frac(max_capacity, capped_freq, max_freq as c_ulong) };
     let pressure = max_capacity - capacity;
     trace_hw_pressure_update(cpu, pressure);
     let mut c: c_int = 0;
-    for_each_cpu!(c, cpus) { write_once!(&mut HW_PRESSURE[c as usize], pressure); }
+    for_each_cpu!(c, cpus, { write_once!(&mut HW_PRESSURE[c as usize], pressure); });
 }
 
 static mut UPDATE_TOPOLOGY: c_int = 0;
@@ -99,9 +99,9 @@ unsafe fn free_raw_capacity() -> c_int { kfree(RAW_CAPACITY as *mut c_void); RAW
 pub unsafe fn topology_normalize_cpu_scale() {
     if RAW_CAPACITY.is_null() { return; }
     let mut capacity_scale: u64 = 1; let mut cpu: c_int = 0;
-    for_each_possible_cpu!(cpu) { let capacity = (*RAW_CAPACITY.add(cpu as usize) as u64) * (if CAPACITY_FREQ_REF[cpu as usize] != 0 { CAPACITY_FREQ_REF[cpu as usize] } else { 1 }); capacity_scale = max(capacity, capacity_scale); }
+    for_each_possible_cpu!(cpu, { let capacity = (*RAW_CAPACITY.add(cpu as usize) as u64) * (if CAPACITY_FREQ_REF[cpu as usize] != 0 { CAPACITY_FREQ_REF[cpu as usize] } else { 1 }); capacity_scale = max(capacity, capacity_scale); });
     pr_debug!("cpu_capacity: capacity_scale=%llu\n", capacity_scale);
-    for_each_possible_cpu!(cpu) { let mut capacity = (*RAW_CAPACITY.add(cpu as usize) as u64) * (if CAPACITY_FREQ_REF[cpu as usize] != 0 { CAPACITY_FREQ_REF[cpu as usize] } else { 1 }); capacity = div64_u64(capacity << SCHED_CAPACITY_SHIFT, capacity_scale); topology_set_cpu_scale(cpu, capacity); pr_debug!("cpu_capacity: CPU%d cpu_capacity=%lu\n", cpu, topology_get_cpu_scale(cpu)); }
+    for_each_possible_cpu!(cpu, { let mut capacity = (*RAW_CAPACITY.add(cpu as usize) as u64) * (if CAPACITY_FREQ_REF[cpu as usize] != 0 { CAPACITY_FREQ_REF[cpu as usize] } else { 1 }); capacity = div64_u64(capacity << SCHED_CAPACITY_SHIFT, capacity_scale); topology_set_cpu_scale(cpu, capacity); pr_debug!("cpu_capacity: CPU%d cpu_capacity=%lu\n", cpu, topology_get_cpu_scale(cpu)); });
 }
 
 pub unsafe fn topology_parse_cpu_capacity(cpu_node: *mut device_node, cpu: c_int) -> bool {
@@ -142,7 +142,7 @@ pub unsafe fn update_siblings_masks(cpuid: c_uint) {
     let cpuid_topo = &mut CPU_TOPOLOGY[cpuid as usize]; let ret = detect_cache_attributes(cpuid as c_int);
     if ret != 0 && ret != -ENOENT { pr_info!("Early cacheinfo allocation failed, ret = %d\n", ret); }
     let mut cpu: c_int = 0;
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         let cpu_topo = &mut CPU_TOPOLOGY[cpu as usize];
         if last_level_cache_is_shared(cpu, cpuid as c_int) { cpumask_set_cpu(cpu, &mut cpuid_topo.llc_sibling); cpumask_set_cpu(cpuid as c_int, &mut cpu_topo.llc_sibling); }
         if cpuid_topo.package_id != cpu_topo.package_id { continue; }
@@ -151,7 +151,7 @@ pub unsafe fn update_siblings_masks(cpuid: c_uint) {
         if cpuid_topo.cluster_id >= 0 { cpumask_set_cpu(cpu, &mut cpuid_topo.cluster_sibling); cpumask_set_cpu(cpuid as c_int, &mut cpu_topo.cluster_sibling); }
         if cpuid_topo.core_id != cpu_topo.core_id { continue; }
         cpumask_set_cpu(cpuid as c_int, &mut cpu_topo.thread_sibling); cpumask_set_cpu(cpu, &mut cpuid_topo.thread_sibling);
-    }
+    });
 }
 
 unsafe fn clear_cpu_topology(cpu: c_int) {
@@ -159,14 +159,14 @@ unsafe fn clear_cpu_topology(cpu: c_int) {
     cpumask_clear(&mut t.llc_sibling); cpumask_set_cpu(cpu, &mut t.llc_sibling); cpumask_clear(&mut t.cluster_sibling); cpumask_set_cpu(cpu, &mut t.cluster_sibling); cpumask_clear(&mut t.core_sibling); cpumask_set_cpu(cpu, &mut t.core_sibling); cpumask_clear(&mut t.thread_sibling); cpumask_set_cpu(cpu, &mut t.thread_sibling);
 }
 
-pub unsafe fn reset_cpu_topology() { let mut cpu: c_uint = 0; for_each_possible_cpu!(cpu) { let t = &mut CPU_TOPOLOGY[cpu as usize]; t.thread_id = -1; t.core_id = -1; t.cluster_id = -1; t.package_id = -1; clear_cpu_topology(cpu as c_int); } }
+pub unsafe fn reset_cpu_topology() { let mut cpu: c_uint = 0; for_each_possible_cpu!(cpu, { let t = &mut CPU_TOPOLOGY[cpu as usize]; t.thread_id = -1; t.core_id = -1; t.cluster_id = -1; t.package_id = -1; clear_cpu_topology(cpu as c_int); }); }
 
 pub unsafe fn remove_cpu_topology(cpu: c_uint) {
     let mut sibling: c_int = 0;
-    for_each_cpu!(sibling, topology_core_cpumask(cpu as c_int)) { cpumask_clear_cpu(cpu as c_int, topology_core_cpumask(sibling)); }
-    for_each_cpu!(sibling, topology_sibling_cpumask(cpu as c_int)) { cpumask_clear_cpu(cpu as c_int, topology_sibling_cpumask(sibling)); }
-    for_each_cpu!(sibling, topology_cluster_cpumask(cpu as c_int)) { cpumask_clear_cpu(cpu as c_int, topology_cluster_cpumask(sibling)); }
-    for_each_cpu!(sibling, topology_llc_cpumask(cpu as c_int)) { cpumask_clear_cpu(cpu as c_int, topology_llc_cpumask(sibling)); }
+    for_each_cpu!(sibling, topology_core_cpumask(cpu as c_int), { cpumask_clear_cpu(cpu as c_int, topology_core_cpumask(sibling)); });
+    for_each_cpu!(sibling, topology_sibling_cpumask(cpu as c_int), { cpumask_clear_cpu(cpu as c_int, topology_sibling_cpumask(sibling)); });
+    for_each_cpu!(sibling, topology_cluster_cpumask(cpu as c_int), { cpumask_clear_cpu(cpu as c_int, topology_cluster_cpumask(sibling)); });
+    for_each_cpu!(sibling, topology_llc_cpumask(cpu as c_int), { cpumask_clear_cpu(cpu as c_int, topology_llc_cpumask(sibling)); });
     clear_cpu_topology(cpu as c_int);
 }
 
@@ -203,10 +203,10 @@ unsafe fn parse_cluster(cluster: *mut device_node, package_id: c_int, cluster_id
 unsafe fn parse_socket(socket:*mut device_node)->c_int { let mut package=0; let mut ret=0; let mut has=false; loop{let n=format!("socket{}",package);let c=of_get_child_by_name(socket,n.as_ptr() as *const c_char);if c.is_null(){break;}has=true;ret=parse_cluster(c,package,-1,0);if ret!=0{return ret;}package+=1;}if !has{ret=parse_cluster(socket,0,-1,0);}if ret!=0{MAX_SMT_THREAD_NUM=1;}cpu_smt_set_num_threads(MAX_SMT_THREAD_NUM,MAX_SMT_THREAD_NUM);ret }
 
 #[cfg(any(CONFIG_ARM64, CONFIG_RISCV))]
-unsafe fn parse_dt_topology()->c_int { let cn=of_find_node_by_path(b"/cpus\0".as_ptr() as *const c_char);if cn.is_null(){pr_err!("No CPU information found in DT\n");return 0;}let map=of_get_child_by_name(cn,b"cpu-map\0".as_ptr() as *const c_char);if map.is_null(){return 0;}let ret=parse_socket(map);if ret!=0{return ret;}topology_normalize_cpu_scale();let mut cpu=0;for_each_possible_cpu!(cpu){if CPU_TOPOLOGY[cpu as usize].package_id<0{return -EINVAL;}}0 }
+unsafe fn parse_dt_topology()->c_int { let cn=of_find_node_by_path(b"/cpus\0".as_ptr() as *const c_char);if cn.is_null(){pr_err!("No CPU information found in DT\n");return 0;}let map=of_get_child_by_name(cn,b"cpu-map\0".as_ptr() as *const c_char);if map.is_null(){return 0;}let ret=parse_socket(map);if ret!=0{return ret;}topology_normalize_cpu_scale();let mut cpu=0;for_each_possible_cpu!(cpu, {if CPU_TOPOLOGY[cpu as usize].package_id<0{return -EINVAL;}});0 }
 
 #[cfg(any(CONFIG_ARM64, CONFIG_RISCV))]
-pub unsafe fn init_cpu_topology(){reset_cpu_topology();let mut ret=parse_acpi_topology();if ret==0&&of_have_populated_dt(){ret=parse_dt_topology();}if ret!=0{reset_cpu_topology();}let mut cpu=0;for_each_possible_cpu!(cpu){ret=fetch_cache_info(cpu);if ret==0{continue;}if ret!=-ENOENT{pr_err!("Early cacheinfo failed, ret = %d\n",ret);}return;}}
+pub unsafe fn init_cpu_topology(){reset_cpu_topology();let mut ret=parse_acpi_topology();if ret==0&&of_have_populated_dt(){ret=parse_dt_topology();}if ret!=0{reset_cpu_topology();}let mut cpu=0;for_each_possible_cpu!(cpu, {ret=fetch_cache_info(cpu);if ret==0{continue;}if ret!=-ENOENT{pr_err!("Early cacheinfo failed, ret = %d\n",ret);}return;});}
 
 pub unsafe fn store_cpu_topology(cpuid:c_uint){let t=&mut CPU_TOPOLOGY[cpuid as usize];if t.package_id==-1{t.thread_id=-1;t.core_id=cpuid as c_int;t.package_id=cpu_to_node(cpuid as c_int);pr_debug!("CPU%u: package %d core %d thread %d\n",cpuid,t.package_id,t.core_id,t.thread_id);}update_siblings_masks(cpuid);}
 

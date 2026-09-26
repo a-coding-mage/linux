@@ -53,11 +53,11 @@ extern "C" {
     fn tick_setup_periodic(d:*mut clock_event_device, broadcast:i32); fn tick_broadcast(_: *mut cpumask);
     fn tick_handle_periodic(_: *mut clock_event_device); fn tick_clock_notify(); fn tick_receive_broadcast()->i32;
     fn tick_device_is_functional(_: *mut clock_event_device)->bool; fn clockevents_shutdown(_: *mut clock_event_device);
-    fn clockevents_exchange_device(_: *mut clock_event_device,*mut clock_event_device); fn clockevents_handle_noop(_: *mut clock_event_device);
+    fn clockevents_exchange_device(_: *mut clock_event_device,_: *mut clock_event_device); fn clockevents_handle_noop(_: *mut clock_event_device);
     fn clockevent_state_shutdown(_: *mut clock_event_device)->bool; fn clockevent_state_oneshot(_: *mut clock_event_device)->bool;
-    fn clockevents_program_event(_: *mut clock_event_device,ktime_t,bool)->i32; fn clockevents_tick_resume(_: *mut clock_event_device);
-    fn clockevents_switch_state(_: *mut clock_event_device,i32); fn tick_program_event(ktime_t,bool)->i32;
-    fn __clockevents_update_freq(_: *mut clock_event_device,u32)->i32; fn try_module_get(_: *mut c_void)->bool;
+    fn clockevents_program_event(_: *mut clock_event_device,_: ktime_t,_: bool)->i32; fn clockevents_tick_resume(_: *mut clock_event_device);
+    fn clockevents_switch_state(_: *mut clock_event_device,_: i32); fn tick_program_event(_: ktime_t,_: bool)->i32;
+    fn __clockevents_update_freq(_: *mut clock_event_device,_: u32)->i32; fn try_module_get(_: *mut c_void)->bool;
 }
 
 static mut tick_broadcast_device: tick_device = tick_device { evtdev: core::ptr::null_mut(), mode: TICKDEV_MODE_PERIODIC };

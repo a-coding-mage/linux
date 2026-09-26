@@ -19,7 +19,7 @@
 
 // C dependencies are supplied by the surrounding translation unit.
 
-static unsafe fn hpd_ack(irq_service: *mut irq_service, info: *const irq_source_info) -> bool {
+unsafe fn hpd_ack(irq_service: *mut irq_service, info: *const irq_source_info) -> bool {
     let addr: u32 = (*info).status_reg;
     let mut value: u32 = dm_read_reg((*irq_service).ctx, addr);
     let current_status = get_reg_field_value(value, DC_HPD_INT_STATUS, DC_HPD_SENSE_DELAYED);

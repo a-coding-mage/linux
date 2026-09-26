@@ -16,10 +16,10 @@ pub struct VioCmo {
 }
 
 static mut vio_bus_device: device = device { name: b"vio\0".as_ptr() as *mut c_char, ..device::ZERO };
-#[cfg(feature = "CONFIG_PPC_SMLPAR")]
+#[cfg(CONFIG_PPC_SMLPAR)]
 static mut vio_cmo: VioCmo = VioCmo::zero();
 
-#[cfg(feature = "CONFIG_PPC_SMLPAR")]
+#[cfg(CONFIG_PPC_SMLPAR)]
 unsafe fn vio_cmo_num_OF_devs() -> c_int {
     let root = of_find_node_by_name(core::ptr::null_mut(), b"vdevice\0".as_ptr() as *const c_char);
     let mut count = 0;
@@ -33,7 +33,7 @@ unsafe fn vio_cmo_num_OF_devs() -> c_int {
     of_node_put(root); count
 }
 
-#[cfg(feature = "CONFIG_PPC_SMLPAR")]
+#[cfg(CONFIG_PPC_SMLPAR)]
 unsafe fn vio_cmo_alloc(v: *mut vio_dev, mut size: usize) -> c_int {
     let mut flags = 0; let mut reserve_free = 0; let mut ret = -ENOMEM;
     spin_lock_irqsave(&mut vio_cmo.lock, &mut flags);
@@ -46,7 +46,7 @@ unsafe fn vio_cmo_alloc(v: *mut vio_dev, mut size: usize) -> c_int {
     spin_unlock_irqrestore(&mut vio_cmo.lock, flags); ret
 }
 
-#[cfg(feature = "CONFIG_PPC_SMLPAR")]
+#[cfg(CONFIG_PPC_SMLPAR)]
 unsafe fn vio_cmo_dealloc(v: *mut vio_dev, size: usize) {
     let mut flags=0; let mut spare_needed; let mut excess_freed=0; let mut reserve_freed=size; let mut balance=0;
     spin_lock_irqsave(&mut vio_cmo.lock, &mut flags); vio_cmo.curr -= size;
@@ -59,9 +59,9 @@ unsafe fn vio_cmo_dealloc(v: *mut vio_dev, size: usize) {
     spin_unlock_irqrestore(&mut vio_cmo.lock,flags);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_SMLPAR"))]
+#[cfg(not(CONFIG_PPC_SMLPAR))]
 pub unsafe fn vio_cmo_entitlement_update(_: usize) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_PPC_SMLPAR"))]
+#[cfg(not(CONFIG_PPC_SMLPAR))]
 pub unsafe fn vio_cmo_set_dev_desired(_: *mut vio_dev, _: usize) {}
 
 pub unsafe fn vio_h_cop_sync(vdev: *mut vio_dev, op: *mut vio_pfo_op) -> c_int {

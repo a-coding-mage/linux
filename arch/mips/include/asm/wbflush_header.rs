@@ -12,14 +12,14 @@
 // CONFIG_CPU_HAS_WB selects the implementation, matching the original
 // preprocessor condition.
 
-#[cfg(feature = "CONFIG_CPU_HAS_WB")]
+#[cfg(CONFIG_CPU_HAS_WB)]
 unsafe extern "C" {
     pub static mut __wbflush: Option<unsafe extern "C" fn()>;
     pub fn wbflush_setup();
     fn __sync();
 }
 
-#[cfg(feature = "CONFIG_CPU_HAS_WB")]
+#[cfg(CONFIG_CPU_HAS_WB)]
 #[inline]
 pub unsafe fn wbflush() {
     __sync();
@@ -28,16 +28,16 @@ pub unsafe fn wbflush() {
     }
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_WB"))]
+#[cfg(not(CONFIG_CPU_HAS_WB))]
 #[inline]
 pub fn wbflush_setup() {}
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_WB"))]
+#[cfg(not(CONFIG_CPU_HAS_WB))]
 unsafe extern "C" {
     fn fast_iob();
 }
 
-#[cfg(not(feature = "CONFIG_CPU_HAS_WB"))]
+#[cfg(not(CONFIG_CPU_HAS_WB))]
 #[inline]
 pub unsafe fn wbflush() {
     fast_iob();

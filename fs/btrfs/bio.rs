@@ -126,9 +126,9 @@ unsafe fn btrfs_end_repair_bio(repair_bbio: *mut btrfs_bio, dev: *mut btrfs_devi
     let mut paddrs: [phys_addr_t; BTRFS_MAX_BLOCKSIZE / PAGE_SIZE] = [0; BTRFS_MAX_BLOCKSIZE / PAGE_SIZE];
     let mut slot = 0;
     ASSERT(saved_iter.bi_size == (*fs_info).sectorsize);
-    btrfs_bio_for_each_block(paddr, &mut (*repair_bbio).bio, &mut saved_iter, step) {
+    btrfs_bio_for_each_block!(paddr, &mut (*repair_bbio).bio, &mut saved_iter, step, {
         ASSERT(slot < nr_steps); paddrs[slot] = paddr; slot += 1;
-    }
+    });
     if (*repair_bbio).bio.bi_status != 0 || !btrfs_data_csum_ok(repair_bbio, dev, 0, paddrs.as_mut_ptr()) {
         bio_reset(&mut (*repair_bbio).bio, core::ptr::null_mut(), REQ_OP_READ);
         (*repair_bbio).bio.bi_iter = (*repair_bbio).saved_iter;
@@ -171,7 +171,7 @@ unsafe fn btrfs_check_read_bio(bbio: *mut btrfs_bio, dev: *mut btrfs_device) {
     ASSERT(!inode.is_null());
     if (*bbio).bio.bi_pool == &mut btrfs_repair_bioset { btrfs_end_repair_bio(bbio, dev); return; }
     (*bbio).bio.bi_status = BLK_STS_OK;
-    btrfs_bio_for_each_block(paddr, &mut (*bbio).bio, iter, step) { paddrs[(offset / step) % nr_steps] = paddr; offset += step; if IS_ALIGNED(offset, sectorsize) && (status != 0 || !btrfs_data_csum_ok(bbio, dev, offset - sectorsize, paddrs.as_mut_ptr())) { fbio = repair_one_sector(bbio, offset - sectorsize, paddrs.as_mut_ptr(), fbio); } }
+    btrfs_bio_for_each_block!(paddr, &mut (*bbio).bio, iter, step, { paddrs[(offset / step) % nr_steps] = paddr; offset += step; if IS_ALIGNED(offset, sectorsize) && (status != 0 || !btrfs_data_csum_ok(bbio, dev, offset - sectorsize, paddrs.as_mut_ptr())) { fbio = repair_one_sector(bbio, offset - sectorsize, paddrs.as_mut_ptr(), fbio); } });
     if (*bbio).csum != (*bbio).csum_inline { kvfree((*bbio).csum as *mut c_void); }
     if !fbio.is_null() { btrfs_repair_done(fbio); } else { btrfs_bio_end_io(bbio, (*bbio).bio.bi_status); }
 }

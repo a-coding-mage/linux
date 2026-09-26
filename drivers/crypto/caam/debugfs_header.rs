@@ -17,7 +17,7 @@ pub struct caam_perfmon {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" {
     pub fn caam_debugfs_init(
         ctrlpriv: *mut caam_drv_private,
@@ -26,7 +26,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn caam_debugfs_init(
     _ctrlpriv: *mut caam_drv_private,
@@ -36,8 +36,8 @@ pub unsafe fn caam_debugfs_init(
 }
 
 #[cfg(all(
-    feature = "CONFIG_DEBUG_FS",
-    feature = "CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI"
+    CONFIG_DEBUG_FS,
+    CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI
 ))]
 unsafe extern "C" {
     pub fn caam_debugfs_qi_congested();
@@ -45,16 +45,16 @@ unsafe extern "C" {
 }
 
 #[cfg(not(all(
-    feature = "CONFIG_DEBUG_FS",
-    feature = "CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI"
+    CONFIG_DEBUG_FS,
+    CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI
 )))]
 #[inline]
 pub unsafe fn caam_debugfs_qi_congested() {
 }
 
 #[cfg(not(all(
-    feature = "CONFIG_DEBUG_FS",
-    feature = "CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI"
+    CONFIG_DEBUG_FS,
+    CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI
 )))]
 #[inline]
 pub unsafe fn caam_debugfs_qi_init(_ctrlpriv: *mut caam_drv_private) {

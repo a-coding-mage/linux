@@ -12,13 +12,13 @@ const EXIT_TO_USER_MODE_WORK: usize = _TIF_SIGPENDING | _TIF_NOTIFY_RESUME | _TI
     _TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY | _TIF_PATCH_PENDING |
     _TIF_NOTIFY_SIGNAL | _TIF_RSEQ | ARCH_EXIT_TO_USER_MODE_WORK;
 
-#[cfg(feature = "CONFIG_HRTIMER_REARM_DEFERRED")]
+#[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 const EXIT_TO_USER_MODE_WORK_SYSCALL: usize = EXIT_TO_USER_MODE_WORK;
-#[cfg(feature = "CONFIG_HRTIMER_REARM_DEFERRED")]
+#[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 const EXIT_TO_USER_MODE_WORK_IRQ: usize = EXIT_TO_USER_MODE_WORK | _TIF_HRTIMER_REARM;
-#[cfg(not(feature = "CONFIG_HRTIMER_REARM_DEFERRED"))]
+#[cfg(not(CONFIG_HRTIMER_REARM_DEFERRED))]
 const EXIT_TO_USER_MODE_WORK_SYSCALL: usize = EXIT_TO_USER_MODE_WORK;
-#[cfg(not(feature = "CONFIG_HRTIMER_REARM_DEFERRED"))]
+#[cfg(not(CONFIG_HRTIMER_REARM_DEFERRED))]
 const EXIT_TO_USER_MODE_WORK_IRQ: usize = EXIT_TO_USER_MODE_WORK;
 
 #[inline(always)]
@@ -128,22 +128,22 @@ pub struct irqentry_state {
 }
 pub type irqentry_state_t = irqentry_state;
 
-#[cfg(feature = "CONFIG_PREEMPT_DYNAMIC")]
-#[cfg(feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_CALL")]
+#[cfg(CONFIG_PREEMPT_DYNAMIC)]
+#[cfg(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)]
 #[inline]
 unsafe fn irqentry_exit_cond_resched() { static_call_irqentry_exit_cond_resched(); }
-#[cfg(feature = "CONFIG_PREEMPT_DYNAMIC")]
-#[cfg(all(not(feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_CALL"), feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))]
+#[cfg(CONFIG_PREEMPT_DYNAMIC)]
+#[cfg(all(not(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL), CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))]
 #[inline]
 unsafe fn irqentry_exit_cond_resched() { dynamic_irqentry_exit_cond_resched(); }
-#[cfg(not(feature = "CONFIG_PREEMPT_DYNAMIC"))]
+#[cfg(not(CONFIG_PREEMPT_DYNAMIC))]
 #[inline]
 unsafe fn irqentry_exit_cond_resched() { raw_irqentry_exit_cond_resched(); }
 
 #[inline(always)]
 unsafe fn irqentry_enter_from_kernel_mode(regs: *mut pt_regs) -> irqentry_state_t {
     let mut ret = irqentry_state_t { state: irqentry_state_union { exit_rcu: false } };
-    if !cfg!(feature = "CONFIG_TINY_RCU") && (is_idle_task(current) || arch_in_rcu_eqs()) {
+    if !cfg!(CONFIG_TINY_RCU) && (is_idle_task(current) || arch_in_rcu_eqs()) {
         lockdep_hardirqs_off(CALLER_ADDR0);
         ct_irq_enter();
         instrumentation_begin();
@@ -165,7 +165,7 @@ unsafe fn irqentry_enter_from_kernel_mode(regs: *mut pt_regs) -> irqentry_state_
 #[inline]
 unsafe fn irqentry_exit_to_kernel_mode_preempt(regs: *mut pt_regs, state: irqentry_state_t) {
     if regs_irqs_disabled(regs) || state.state.exit_rcu { return; }
-    if cfg!(feature = "CONFIG_PREEMPTION") { irqentry_exit_cond_resched(); }
+    if cfg!(CONFIG_PREEMPTION) { irqentry_exit_cond_resched(); }
 }
 
 #[inline(always)]

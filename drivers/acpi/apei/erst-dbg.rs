@@ -161,6 +161,7 @@ unsafe fn erst_dbg_write(
 ) -> isize {
     let mut rc: i32;
     let rcd: *mut cper_record_header;
+    'out: {
 
     if !capable(CAP_SYS_ADMIN) { return -EPERM as isize; }
     if usize_ > ERST_DBG_RECORD_LEN_MAX {
@@ -176,12 +177,13 @@ unsafe fn erst_dbg_write(
         erst_dbg_buf = p;
         erst_dbg_buf_len = usize_;
     }
-    if copy_from_user(erst_dbg_buf, ubuf, usize_) != 0 { rc = -EFAULT; goto out; }
+    if copy_from_user(erst_dbg_buf, ubuf, usize_) != 0 { rc = -EFAULT; break 'out; }
     rcd = erst_dbg_buf as *mut cper_record_header;
     rc = -EINVAL;
-    if (*rcd).record_length != usize_ { goto out; }
+    if (*rcd).record_length != usize_ { break 'out; }
     rc = erst_write(erst_dbg_buf);
-out:
+    }
+    
     mutex_unlock(&mut erst_dbg_mutex);
     if rc < 0 { rc as isize } else { usize_ as isize }
 }

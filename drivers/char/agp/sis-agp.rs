@@ -59,7 +59,7 @@ unsafe fn sis_delayed_enable(bridge: *mut agp_bridge_data, mode: u32) {
     command = agp_collect_device_status(bridge, mode, command);
     command |= AGPSTAT_AGP_ENABLE;
     rate = ((command & 0x7) << 2) as i32;
-    for_each_pci_dev!(device) {
+    for_each_pci_dev!(device, {
         let agp: u8 = pci_find_capability(device, PCI_CAP_ID_AGP);
         if agp == 0 { continue; }
         dev_info!(&(*(*agp_bridge).dev).dev, "putting AGP V3 device at {} into {}x mode\n", pci_name(device), rate);
@@ -70,7 +70,7 @@ unsafe fn sis_delayed_enable(bridge: *mut agp_bridge_data, mode: u32) {
             dev_info!(&(*(*agp_bridge).dev).dev, "SiS delay workaround: giving bridge time to recover\n");
             msleep(10);
         }
-    }
+    });
 }
 
 static mut sis_generic_sizes: [aper_size_info_8; 7] = [

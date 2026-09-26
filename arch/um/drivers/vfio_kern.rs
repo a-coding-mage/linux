@@ -27,23 +27,23 @@ use core::ffi::{c_char, c_int, c_void};
 #[repr(C)] struct uml_vfio_group { id: c_int, fd: c_int, users: c_int, list: list_head }
 
 extern "C" {
-    fn uml_vfio_user_set_container(c_int,c_int)->c_int; fn uml_vfio_user_unset_container(c_int,c_int);
-    fn uml_vfio_user_setup_iommu(c_int)->c_int; fn uml_vfio_user_open_group(c_int)->c_int;
-    fn uml_vfio_user_open_container()->c_int; fn uml_vfio_user_get_group_id(*const c_char)->c_int;
-    fn uml_vfio_user_setup_device(*mut uml_vfio_user_device,c_int,*const c_char)->c_int;
-    fn uml_vfio_user_teardown_device(*mut uml_vfio_user_device); fn uml_vfio_user_activate_irq(*mut uml_vfio_user_device,c_int)->c_int;
-    fn uml_vfio_user_deactivate_irq(*mut uml_vfio_user_device,c_int); fn uml_vfio_user_update_irqs(*mut uml_vfio_user_device)->c_int;
-    fn uml_vfio_user_cfgspace_read(*mut uml_vfio_user_device,u32,*mut u8,c_int)->c_int;
-    fn uml_vfio_user_cfgspace_write(*mut uml_vfio_user_device,u32,*const u8,c_int)->c_int;
-    fn uml_vfio_user_bar_read(*mut uml_vfio_user_device,c_int,u32,*mut c_void,c_int);
-    fn uml_vfio_user_bar_write(*mut uml_vfio_user_device,c_int,u32,*const c_void,c_int);
-    fn os_close_file(c_int); fn os_read_file(c_int,*mut u64,usize)->c_int;
-    fn generic_handle_irq(c_int); fn um_request_irq(c_int,c_int,c_int,unsafe extern "C" fn(c_int,*mut c_void)->c_int,c_int,*const c_char,*mut c_void)->c_int;
-    fn um_free_irq(c_int,*mut c_void); fn add_sigio_fd(c_int)->c_int; fn ignore_sigio_fd(c_int);
-    fn um_pci_device_register(*mut um_pci_device)->c_int; fn um_pci_device_unregister(*mut um_pci_device);
-    fn sigio_broken(); fn mconsole_register_dev(*mut mc_device);
-    fn strcmp(*const c_char,*const c_char)->c_int;
-    fn kmalloc(usize,c_int)->*mut c_void; fn kfree(*mut c_void); fn kstrdup(*const c_char,c_int)->*mut c_char;
+    fn uml_vfio_user_set_container(_: c_int,_: c_int)->c_int; fn uml_vfio_user_unset_container(_: c_int,_: c_int);
+    fn uml_vfio_user_setup_iommu(_: c_int)->c_int; fn uml_vfio_user_open_group(_: c_int)->c_int;
+    fn uml_vfio_user_open_container()->c_int; fn uml_vfio_user_get_group_id(_: *const c_char)->c_int;
+    fn uml_vfio_user_setup_device(_: *mut uml_vfio_user_device,_: c_int,_: *const c_char)->c_int;
+    fn uml_vfio_user_teardown_device(_: *mut uml_vfio_user_device); fn uml_vfio_user_activate_irq(_: *mut uml_vfio_user_device,_: c_int)->c_int;
+    fn uml_vfio_user_deactivate_irq(_: *mut uml_vfio_user_device,_: c_int); fn uml_vfio_user_update_irqs(_: *mut uml_vfio_user_device)->c_int;
+    fn uml_vfio_user_cfgspace_read(_: *mut uml_vfio_user_device,_: u32,_: *mut u8,_: c_int)->c_int;
+    fn uml_vfio_user_cfgspace_write(_: *mut uml_vfio_user_device,_: u32,_: *const u8,_: c_int)->c_int;
+    fn uml_vfio_user_bar_read(_: *mut uml_vfio_user_device,_: c_int,_: u32,_: *mut c_void,_: c_int);
+    fn uml_vfio_user_bar_write(_: *mut uml_vfio_user_device,_: c_int,_: u32,_: *const c_void,_: c_int);
+    fn os_close_file(_: c_int); fn os_read_file(_: c_int,_: *mut u64,_: usize)->c_int;
+    fn generic_handle_irq(_: c_int); fn um_request_irq(_: c_int,_: c_int,_: c_int,_: unsafe extern "C" fn(c_int,*mut c_void)->c_int,c_int,*const c_char,*mut c_void)->c_int;
+    fn um_free_irq(_: c_int,_: *mut c_void); fn add_sigio_fd(_: c_int)->c_int; fn ignore_sigio_fd(_: c_int);
+    fn um_pci_device_register(_: *mut um_pci_device)->c_int; fn um_pci_device_unregister(_: *mut um_pci_device);
+    fn sigio_broken(); fn mconsole_register_dev(_: *mut mc_device);
+    fn strcmp(_: *const c_char,_: *const c_char)->c_int;
+    fn kmalloc(_: usize,_: c_int)->*mut c_void; fn kfree(_: *mut c_void); fn kstrdup(_: *const c_char,_: c_int)->*mut c_char;
 }
 
 static mut UML_VFIO_CONTAINER: (c_int,c_int) = (-1,0);

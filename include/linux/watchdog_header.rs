@@ -67,9 +67,9 @@ pub struct watchdog_device {
 }
 
 /* Build-time CONFIG_WATCHDOG_NOWAYOUT / IS_BUILTIN condition. */
-#[cfg(feature = "CONFIG_WATCHDOG_NOWAYOUT")]
+#[cfg(CONFIG_WATCHDOG_NOWAYOUT)]
 pub const WATCHDOG_NOWAYOUT: bool = true;
-#[cfg(not(feature = "CONFIG_WATCHDOG_NOWAYOUT"))]
+#[cfg(not(CONFIG_WATCHDOG_NOWAYOUT))]
 pub const WATCHDOG_NOWAYOUT: bool = false;
 pub const WATCHDOG_NOWAYOUT_INIT_STATUS: c_ulong =
     (WATCHDOG_NOWAYOUT as c_ulong) << WDOG_NO_WAY_OUT;
@@ -131,9 +131,9 @@ pub unsafe fn watchdog_get_drvdata(wdd: *mut watchdog_device) -> *mut c_void {
     (*wdd).driver_data
 }
 
-#[cfg(feature = "CONFIG_WATCHDOG_PRETIMEOUT_GOV")]
+#[cfg(CONFIG_WATCHDOG_PRETIMEOUT_GOV)]
 extern "C" { pub fn watchdog_notify_pretimeout(wdd: *mut watchdog_device); }
-#[cfg(not(feature = "CONFIG_WATCHDOG_PRETIMEOUT_GOV"))]
+#[cfg(not(CONFIG_WATCHDOG_PRETIMEOUT_GOV))]
 pub unsafe fn watchdog_notify_pretimeout(_wdd: *mut watchdog_device) {
     /* C fallback calls pr_alert("watchdog%d: pretimeout event\n", wdd->id). */
 }

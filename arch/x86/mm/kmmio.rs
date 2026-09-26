@@ -85,9 +85,9 @@ unsafe fn kmmio_page_list(mut addr: c_ulong) -> *mut list_head {
 /* Get the kmmio at this addr (if any). You must be holding RCU read lock. */
 unsafe fn get_kmmio_probe(addr: c_ulong) -> *mut kmmio_probe {
     let mut p: *mut kmmio_probe = core::ptr::null_mut();
-    list_for_each_entry_rcu!(p, &mut kmmio_probes, list) {
+    list_for_each_entry_rcu!(p, &mut kmmio_probes, list, {
         if addr >= (*p).addr && addr < (*p).addr.wrapping_add((*p).len) { return p; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -100,9 +100,9 @@ unsafe fn get_kmmio_fault_page(mut addr: c_ulong) -> *mut kmmio_fault_page {
     if pte.is_null() { return core::ptr::null_mut(); }
     addr &= page_level_mask(l);
     head = kmmio_page_list(addr);
-    list_for_each_entry_rcu!(f, head, list) {
+    list_for_each_entry_rcu!(f, head, list, {
         if (*f).addr == addr { return f; }
-    }
+    });
     core::ptr::null_mut()
 }
 

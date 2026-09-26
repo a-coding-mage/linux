@@ -6,8 +6,7 @@
 // callers supply the corresponding cnum type, integer types, constants, and
 // generated function names from the cnum dependency.
 macro_rules! cnum_defs {
-    (
-        $cnum_t:ty, $ut:ty, $st:ty,
+    ($cnum_t:ty, $ut:ty, $st:ty,
         $ut_max:expr, $st_max:expr, $st_min:expr, $empty:expr,
         $from_urange:ident, $from_srange:ident, $urange_overflow:ident,
         $umin:ident, $umax:ident, $srange_overflow:ident, $smin:ident,

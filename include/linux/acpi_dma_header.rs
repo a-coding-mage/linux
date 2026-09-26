@@ -40,7 +40,7 @@ pub struct acpi_dma_filter_info {
     pub filter_fn: dma_filter_fn,
 }
 
-#[cfg(feature = "CONFIG_DMA_ACPI")]
+#[cfg(CONFIG_DMA_ACPI)]
 extern "C" {
     pub fn acpi_dma_controller_register(
         dev: *mut device,
@@ -69,7 +69,7 @@ extern "C" {
     ) -> *mut dma_chan;
 }
 
-#[cfg(not(feature = "CONFIG_DMA_ACPI"))]
+#[cfg(not(CONFIG_DMA_ACPI))]
 pub unsafe fn acpi_dma_controller_register(
     _dev: *mut device,
     _acpi_dma_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
@@ -78,12 +78,12 @@ pub unsafe fn acpi_dma_controller_register(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_DMA_ACPI"))]
+#[cfg(not(CONFIG_DMA_ACPI))]
 pub unsafe fn acpi_dma_controller_free(_dev: *mut device) -> core::ffi::c_int {
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_DMA_ACPI"))]
+#[cfg(not(CONFIG_DMA_ACPI))]
 pub unsafe fn devm_acpi_dma_controller_register(
     _dev: *mut device,
     _acpi_dma_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan>,
@@ -92,7 +92,7 @@ pub unsafe fn devm_acpi_dma_controller_register(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_DMA_ACPI"))]
+#[cfg(not(CONFIG_DMA_ACPI))]
 pub unsafe fn acpi_dma_request_slave_chan_by_index(
     _dev: *mut device,
     _index: usize,
@@ -100,7 +100,7 @@ pub unsafe fn acpi_dma_request_slave_chan_by_index(
     (-ENODEV as isize) as *mut dma_chan
 }
 
-#[cfg(not(feature = "CONFIG_DMA_ACPI"))]
+#[cfg(not(CONFIG_DMA_ACPI))]
 pub unsafe fn acpi_dma_request_slave_chan_by_name(
     _dev: *mut device,
     _name: *const core::ffi::c_char,
@@ -108,7 +108,7 @@ pub unsafe fn acpi_dma_request_slave_chan_by_name(
     (-ENODEV as isize) as *mut dma_chan
 }
 
-#[cfg(not(feature = "CONFIG_DMA_ACPI"))]
+#[cfg(not(CONFIG_DMA_ACPI))]
 pub const acpi_dma_simple_xlate: Option<unsafe extern "C" fn(*mut acpi_dma_spec, *mut acpi_dma) -> *mut dma_chan> = None;
 
 pub use acpi_dma_request_slave_chan_by_index as acpi_dma_request_slave_channel;

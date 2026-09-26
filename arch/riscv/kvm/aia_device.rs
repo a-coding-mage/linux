@@ -14,6 +14,7 @@ unsafe fn aia_create(dev: *mut kvm_device, _type: u32) -> i32 {
     let mut i: usize;
     let kvm = (*dev).kvm;
     let mut vcpu: *mut kvm_vcpu;
+    'out_unlock: {
 
     if irqchip_in_kernel(kvm) {
         return -EEXIST;
@@ -29,13 +30,13 @@ unsafe fn aia_create(dev: *mut kvm_device, _type: u32) -> i32 {
 
     kvm_for_each_vcpu!(i, vcpu, kvm, {
         if (*vcpu).arch.ran_atleast_once {
-            goto!(out_unlock);
+            break 'out_unlock;
         }
     });
     ret = 0;
     (*kvm).arch.aia.in_kernel = true;
-
-    out_unlock:
+    }
+    
     kvm_unlock_all_vcpus(kvm);
     ret
 }
@@ -153,12 +154,12 @@ unsafe fn aia_init(kvm: *mut kvm) -> i32 {
     let mut vcpu: *mut kvm_vcpu;
     kvm_for_each_vcpu!(idx, vcpu, kvm, {
         let vaia = &mut (*vcpu).arch.aia_context;
-        if vaia.imsic_addr == KVM_RISCV_AIA_UNDEF_ADDR { ret = -EINVAL; goto!(fail_cleanup_imsics); }
+        if vaia.imsic_addr == KVM_RISCV_AIA_UNDEF_ADDR { ret = -EINVAL; goto fail_cleanup_imsics; }
         if base_ppn == KVM_RISCV_AIA_UNDEF_ADDR { base_ppn = aia_imsic_ppn(aia, vaia.imsic_addr); }
-        if base_ppn != aia_imsic_ppn(aia, vaia.imsic_addr) { ret = -EINVAL; goto!(fail_cleanup_imsics); }
+        if base_ppn != aia_imsic_ppn(aia, vaia.imsic_addr) { ret = -EINVAL; goto fail_cleanup_imsics; }
         vaia.hart_index = aia_imsic_hart_index(aia, vaia.imsic_addr);
         ret = kvm_riscv_vcpu_aia_imsic_init(vcpu);
-        if ret != 0 { goto!(fail_cleanup_imsics); }
+        if ret != 0 { goto fail_cleanup_imsics; }
     });
     (*kvm).arch.aia.initialized = true;
     return 0;

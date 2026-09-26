@@ -35,7 +35,7 @@ extern "C" {
 macro_rules! GET_FAULTINFO_FROM_MC {
     ($f:expr, $mc:expr) => {
         unsafe {
-            $crate::GET_FAULTINFO_FROM_MC($f, $mc);
+            $crate::GET_FAULTINFO_FROM_MC!($f, $mc);
         }
     };
 }

@@ -4,7 +4,7 @@
 // Dependencies supplied by the surrounding translation unit:
 // debug.h, bitstream.h, compiler.h, fse.h, error_private.h, zstd_deps.h, bits.h
 
-static unsafe fn fse_build_dtable_internal(
+unsafe fn fse_build_dtable_internal(
     dt: *mut FSE_DTable, normalized_counter: *const i16, max_symbol_value: u32,
     table_log: u32, workspace: *mut c_void, wksp_size: usize,
 ) -> usize {

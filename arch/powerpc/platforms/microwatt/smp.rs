@@ -101,7 +101,7 @@ extern "C" {
     fn PPC_RAW_MFSPR(reg: i32, spr: i32) -> u32;
     fn PPC_RAW_BRANCH(offset: isize) -> u32;
     static __secondary_hold: u8;
-    const SPRN_PIR: i32;
 }
+const SPRN_PIR: i32;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

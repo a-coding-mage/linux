@@ -101,6 +101,9 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
     let mut nls_name: *mut ::core::ffi::c_char;
     let mut size: usize;
     let mut err: i32;
+    'fail_destroy_idr: {
+    'fail_free: {
+    'fail_unmap: {
 
     if (*fc).source.is_null() { return -EINVAL; }
     sbi = kzalloc_obj!(*sbi);
@@ -117,32 +120,32 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
         if (*sbi).nls.is_null() {
             vbg_err!("vboxsf: Count not load '%s' nls\n", nls_name);
             err = -EINVAL;
-            goto fail_destroy_idr;
+            break 'fail_destroy_idr;
         }
     }
     (*sbi).bdi_id = ida_alloc(&mut vboxsf_bdi_ida, GFP_KERNEL);
-    if (*sbi).bdi_id < 0 { err = (*sbi).bdi_id; goto fail_free; }
+    if (*sbi).bdi_id < 0 { err = (*sbi).bdi_id; break 'fail_free; }
     err = super_setup_bdi_name(sb, c"vboxsf-%d".as_ptr(), (*sbi).bdi_id);
-    if err != 0 { goto fail_free; }
+    if err != 0 { break 'fail_free; }
     (*(*sb).s_bdi).ra_pages = 0;
     (*(*sb).s_bdi).io_pages = 0;
 
     size = strlen((*fc).source) + 1;
     folder_name = kmalloc(SHFLSTRING_HEADER_SIZE + size, GFP_KERNEL);
-    if folder_name.is_null() { err = -ENOMEM; goto fail_free; }
+    if folder_name.is_null() { err = -ENOMEM; break 'fail_free; }
     (*folder_name).size = size;
     (*folder_name).length = size - 1;
     strscpy((*folder_name).string.utf8.as_mut_ptr(), (*fc).source, size);
     err = vboxsf_map_folder(folder_name, &mut (*sbi).root);
     kfree(folder_name as *mut core::ffi::c_void);
-    if err != 0 { vbg_err!("vboxsf: Host rejected mount of '%s' with error %d\n", (*fc).source, err); goto fail_free; }
+    if err != 0 { vbg_err!("vboxsf: Host rejected mount of '%s' with error %d\n", (*fc).source, err); break 'fail_free; }
 
     root_path.length = 1;
     root_path.size = 2;
     root_path.string.utf8[0] = b'/';
     root_path.string.utf8[1] = 0;
     err = vboxsf_stat(sbi, &root_path, &mut (*sbi).root_info);
-    if err != 0 { goto fail_unmap; }
+    if err != 0 { break 'fail_unmap; }
     // A failed query is advisory; preserve the default case-sensitive behavior.
     vboxsf_query_case_sensitive(sbi);
     (*sb).s_magic = VBOXSF_SUPER_MAGIC;
@@ -151,21 +154,23 @@ unsafe fn vboxsf_fill_super(sb: *mut super_block, fc: *mut fs_context) -> i32 {
     (*sb).s_op = &raw mut vboxsf_super_ops;
     set_default_d_op(sb, &vboxsf_dentry_ops);
     iroot = iget_locked(sb, 0);
-    if iroot.is_null() { err = -ENOMEM; goto fail_unmap; }
+    if iroot.is_null() { err = -ENOMEM; break 'fail_unmap; }
     vboxsf_init_inode(sbi, iroot, &(*sbi).root_info, false);
     unlock_new_inode(iroot);
     droot = d_make_root(iroot);
-    if droot.is_null() { err = -ENOMEM; goto fail_unmap; }
+    if droot.is_null() { err = -ENOMEM; break 'fail_unmap; }
     (*sb).s_root = droot;
     (*sb).s_fs_info = sbi as *mut core::ffi::c_void;
     return 0;
-
-fail_unmap:
+    }
+    
     vboxsf_unmap_folder((*sbi).root);
-fail_free:
+    }
+    
     if (*sbi).bdi_id >= 0 { ida_free(&mut vboxsf_bdi_ida, (*sbi).bdi_id); }
     if !(*sbi).nls.is_null() { unload_nls((*sbi).nls); }
-fail_destroy_idr:
+    }
+    
     idr_destroy(&mut (*sbi).ino_idr);
     kfree(sbi as *mut core::ffi::c_void);
     err
@@ -236,23 +241,29 @@ static mut vboxsf_super_ops: super_operations = super_operations {
 
 unsafe fn vboxsf_setup() -> i32 {
     let mut err: i32;
+    'fail_nomem: {
+    'fail_free_cache: {
+    'fail_disconnect: {
     mutex_lock(&mut vboxsf_setup_mutex);
     if vboxsf_setup_done { goto_success!(); }
     vboxsf_inode_cachep = kmem_cache_create(c"vboxsf_inode_cache".as_ptr(), core::mem::size_of::<vboxsf_inode>(), 0, SLAB_RECLAIM_ACCOUNT | SLAB_ACCOUNT, Some(vboxsf_inode_init_once));
-    if vboxsf_inode_cachep.is_null() { err = -ENOMEM; goto fail_nomem; }
+    if vboxsf_inode_cachep.is_null() { err = -ENOMEM; break 'fail_nomem; }
     err = vboxsf_connect();
-    if err != 0 { vbg_err!("vboxsf: err %d connecting to guest PCI-device\n", err); vbg_err!("vboxsf: make sure you are inside a VirtualBox VM\n"); vbg_err!("vboxsf: and check dmesg for vboxguest errors\n"); goto fail_free_cache; }
+    if err != 0 { vbg_err!("vboxsf: err %d connecting to guest PCI-device\n", err); vbg_err!("vboxsf: make sure you are inside a VirtualBox VM\n"); vbg_err!("vboxsf: and check dmesg for vboxguest errors\n"); break 'fail_free_cache; }
     err = vboxsf_set_utf8();
-    if err != 0 { vbg_err!("vboxsf_setutf8 error %d\n", err); goto fail_disconnect; }
+    if err != 0 { vbg_err!("vboxsf_setutf8 error %d\n", err); break 'fail_disconnect; }
     if !follow_symlinks { err = vboxsf_set_symlinks(); if err != 0 { vbg_warn!("vboxsf: Unable to show symlinks: %d\n", err); } }
     vboxsf_setup_done = true;
 success:
     mutex_unlock(&mut vboxsf_setup_mutex); return 0;
-fail_disconnect:
+    }
+    
     vboxsf_disconnect();
-fail_free_cache:
+    }
+    
     kmem_cache_destroy(vboxsf_inode_cachep);
-fail_nomem:
+    }
+    
     mutex_unlock(&mut vboxsf_setup_mutex); return err;
 }
 

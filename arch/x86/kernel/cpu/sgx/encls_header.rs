@@ -13,7 +13,7 @@ pub const fn encls_trapnr(r: i32) -> i32 {
 macro_rules! encls_warn {
     ($r:expr, $name:expr) => {{
         let _r: i32 = $r;
-        // Equivalent to WARN_ONCE(_r, "%s returned %d (0x%x)\n", name, _r, _r).
+        // Equivalent to WARN_ONCE(_r, "%s returned %d (0x%x)\n", $name, _r, _r).
         if _r != 0 {
             warn_once!("{} returned {} (0x{:x})\n", $name, _r, _r);
         }

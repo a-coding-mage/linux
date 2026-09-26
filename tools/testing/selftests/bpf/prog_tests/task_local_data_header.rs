@@ -451,7 +451,7 @@ macro_rules! TLD_DEFINE_KEY {
         static mut $key: $crate::tld_key_t = $crate::tld_key_t { off: 0 };
         /*
          * Original C uses __attribute__((constructor(101))) to initialize:
-         * key = __tld_create_key(name, size, false);
+         * $key = __tld_create_key($name, $size, false);
          */
     };
 }

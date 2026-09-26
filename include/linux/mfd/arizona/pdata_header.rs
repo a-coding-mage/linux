@@ -107,7 +107,7 @@ pub struct arizona_pdata {
     pub spk_fmt: [u32; ARIZONA_MAX_PDM_SPK],
     pub hap_act: u32,
     // CONFIG_GPIOLIB_LEGACY conditional field.
-    #[cfg(feature = "CONFIG_GPIOLIB_LEGACY")]
+    #[cfg(CONFIG_GPIOLIB_LEGACY)]
     pub irq_gpio: i32,
     pub gpsw: u32,
 }

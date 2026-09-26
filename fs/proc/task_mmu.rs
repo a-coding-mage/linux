@@ -5,7 +5,7 @@
  * Kernel-provided types, constants, and functions remain external dependencies.
  */
 
-+// // SPDX-License-Identifier: GPL-2.0
+// // SPDX-License-Identifier: GPL-2.0
 // #include <linux/pagewalk.h>
 // #include <linux/mm_inline.h>
 // #include <linux/hugetlb.h>
@@ -41,7 +41,7 @@
 // 
 // #define SEQ_PUT_DEC(str, val) \
 // 		seq_put_decimal_ull_width(m, str, (val) << (PAGE_SHIFT-10), 8)
-// void task_mem(struct seq_file *m, struct mm_struct *mm)
+// void task_mem(seq_file *m, mm_struct *mm)
 // {
 // 	unsigned long text, lib, swap, anon, file, shmem;
 // 	unsigned long hiwater_vm, total_vm, hiwater_rss, total_rss;
@@ -93,12 +93,12 @@
 // }
 // #undef SEQ_PUT_DEC
 // 
-// unsigned long task_vsize(struct mm_struct *mm)
+// unsigned long task_vsize(mm_struct *mm)
 // {
 // 	return PAGE_SIZE * mm->total_vm;
 // }
 // 
-// unsigned long task_statm(struct mm_struct *mm,
+// unsigned long task_statm(mm_struct *mm,
 // 			 unsigned long *shared, unsigned long *text,
 // 			 unsigned long *data, unsigned long *resident)
 // {
@@ -115,7 +115,7 @@
 // /*
 //  * Save get_task_policy() for show_numa_map().
 //  */
-// static void hold_task_mempolicy(struct proc_maps_private *priv)
+// static void hold_task_mempolicy(proc_maps_private *priv)
 // {
 // 	struct task_struct *task = priv->task;
 // 
@@ -124,22 +124,22 @@
 // 	mpol_get(priv->task_mempolicy);
 // 	task_unlock(task);
 // }
-// static void release_task_mempolicy(struct proc_maps_private *priv)
+// static void release_task_mempolicy(proc_maps_private *priv)
 // {
 // 	mpol_put(priv->task_mempolicy);
 // }
 // #else
-// static void hold_task_mempolicy(struct proc_maps_private *priv)
+// static void hold_task_mempolicy(proc_maps_private *priv)
 // {
 // }
-// static void release_task_mempolicy(struct proc_maps_private *priv)
+// static void release_task_mempolicy(proc_maps_private *priv)
 // {
 // }
 // #endif
 // 
 // #ifdef CONFIG_PER_VMA_LOCK
 // 
-// static inline int lock_ctx_mm(struct proc_maps_locking_ctx *lock_ctx)
+// static inline int lock_ctx_mm(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	int ret = mmap_read_lock_killable(lock_ctx->mm);
 // 
@@ -149,19 +149,19 @@
 // 	return ret;
 // }
 // 
-// static inline void unlock_ctx_mm(struct proc_maps_locking_ctx *lock_ctx)
+// static inline void unlock_ctx_mm(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	mmap_read_unlock(lock_ctx->mm);
 // 	lock_ctx->mmap_locked = false;
 // }
 // 
-// static void reset_lock_ctx(struct proc_maps_locking_ctx *lock_ctx)
+// static void reset_lock_ctx(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	lock_ctx->locked_vma = NULL;
 // 	lock_ctx->mmap_locked = false;
 // }
 // 
-// static void unlock_ctx_vma(struct proc_maps_locking_ctx *lock_ctx)
+// static void unlock_ctx_vma(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	if (lock_ctx->locked_vma) {
 // 		vma_end_read(lock_ctx->locked_vma);
@@ -169,7 +169,7 @@
 // 	}
 // }
 // 
-// static inline bool lock_vma_range(struct seq_file *m,
+// static inline bool lock_vma_range(seq_file *m,
 // 				  struct proc_maps_locking_ctx *lock_ctx)
 // {
 // 	rcu_read_lock();
@@ -178,7 +178,7 @@
 // 	return true;
 // }
 // 
-// static inline void unlock_vma_range(struct proc_maps_locking_ctx *lock_ctx)
+// static inline void unlock_vma_range(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	if (lock_ctx->mmap_locked) {
 // 		unlock_ctx_mm(lock_ctx);
@@ -188,7 +188,7 @@
 // 	}
 // }
 // 
-// static struct vm_area_struct *get_next_vma(struct proc_maps_private *priv,
+// static struct vm_area_struct *get_next_vma(proc_maps_private *priv,
 // 					   loff_t last_pos)
 // {
 // 	struct proc_maps_locking_ctx *lock_ctx = &priv->lock_ctx;
@@ -205,7 +205,7 @@
 // 	return vma;
 // }
 // 
-// static inline bool fallback_to_mmap_lock(struct proc_maps_private *priv,
+// static inline bool fallback_to_mmap_lock(proc_maps_private *priv,
 // 					 loff_t pos)
 // {
 // 	struct proc_maps_locking_ctx *lock_ctx = &priv->lock_ctx;
@@ -222,7 +222,7 @@
 // 	return true;
 // }
 // 
-// static inline void drop_rcu(struct proc_maps_private *priv)
+// static inline void drop_rcu(proc_maps_private *priv)
 // {
 // 	if (priv->lock_ctx.mmap_locked)
 // 		return;
@@ -230,7 +230,7 @@
 // 	rcu_read_unlock();
 // }
 // 
-// static inline void reacquire_rcu(struct proc_maps_private *priv)
+// static inline void reacquire_rcu(proc_maps_private *priv)
 // {
 // 	if (priv->lock_ctx.mmap_locked)
 // 		return;
@@ -242,45 +242,45 @@
 // 
 // #else /* CONFIG_PER_VMA_LOCK */
 // 
-// static inline int lock_ctx_mm(struct proc_maps_locking_ctx *lock_ctx)
+// static inline int lock_ctx_mm(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	return mmap_read_lock_killable(lock_ctx->mm);
 // }
 // 
-// static inline void unlock_ctx_mm(struct proc_maps_locking_ctx *lock_ctx)
+// static inline void unlock_ctx_mm(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	mmap_read_unlock(lock_ctx->mm);
 // }
 // 
-// static inline bool lock_vma_range(struct seq_file *m,
+// static inline bool lock_vma_range(seq_file *m,
 // 				  struct proc_maps_locking_ctx *lock_ctx)
 // {
 // 	return lock_ctx_mm(lock_ctx) == 0;
 // }
 // 
-// static inline void unlock_vma_range(struct proc_maps_locking_ctx *lock_ctx)
+// static inline void unlock_vma_range(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	unlock_ctx_mm(lock_ctx);
 // }
 // 
-// static struct vm_area_struct *get_next_vma(struct proc_maps_private *priv,
+// static struct vm_area_struct *get_next_vma(proc_maps_private *priv,
 // 					   loff_t last_pos)
 // {
 // 	return vma_next(&priv->iter);
 // }
 // 
-// static inline bool fallback_to_mmap_lock(struct proc_maps_private *priv,
+// static inline bool fallback_to_mmap_lock(proc_maps_private *priv,
 // 					 loff_t pos)
 // {
 // 	return false;
 // }
 // 
-// static inline void drop_rcu(struct proc_maps_private *priv) {}
-// static inline void reacquire_rcu(struct proc_maps_private *priv) {}
+// static inline void drop_rcu(proc_maps_private *priv) {}
+// static inline void reacquire_rcu(proc_maps_private *priv) {}
 // 
 // #endif /* CONFIG_PER_VMA_LOCK */
 // 
-// static struct vm_area_struct *proc_get_vma(struct seq_file *m, loff_t *ppos)
+// static struct vm_area_struct *proc_get_vma(seq_file *m, loff_t *ppos)
 // {
 // 	struct proc_maps_private *priv = m->private;
 // 	struct vm_area_struct *vma;
@@ -312,7 +312,7 @@
 // 	return vma;
 // }
 // 
-// static void *m_start(struct seq_file *m, loff_t *ppos)
+// static void *m_start(seq_file *m, loff_t *ppos)
 // {
 // 	struct proc_maps_private *priv = m->private;
 // 	struct proc_maps_locking_ctx *lock_ctx;
@@ -356,7 +356,7 @@
 // 	return proc_get_vma(m, ppos);
 // }
 // 
-// static void *m_next(struct seq_file *m, void *v, loff_t *ppos)
+// static void *m_next(seq_file *m, void *v, loff_t *ppos)
 // {
 // 	if (*ppos == SENTINEL_VMA_GATE) {
 // 		*ppos = SENTINEL_VMA_END;
@@ -365,7 +365,7 @@
 // 	return proc_get_vma(m, ppos);
 // }
 // 
-// static void m_stop(struct seq_file *m, void *v)
+// static void m_stop(seq_file *m, void *v)
 // {
 // 	struct proc_maps_private *priv = m->private;
 // 	struct mm_struct *mm = priv->lock_ctx.mm;
@@ -380,7 +380,7 @@
 // 	priv->task = NULL;
 // }
 // 
-// static int proc_maps_open(struct inode *inode, struct file *file,
+// static int proc_maps_open(inode *inode, file *file,
 // 			const struct seq_operations *ops, int psize)
 // {
 // 	struct proc_maps_private *priv = __seq_open_private(file, ops, psize);
@@ -400,7 +400,7 @@
 // 	return 0;
 // }
 // 
-// static int proc_map_release(struct inode *inode, struct file *file)
+// static int proc_map_release(inode *inode, file *file)
 // {
 // 	struct seq_file *seq = file->private_data;
 // 	struct proc_maps_private *priv = seq->private;
@@ -411,14 +411,14 @@
 // 	return seq_release_private(inode, file);
 // }
 // 
-// static int do_maps_open(struct inode *inode, struct file *file,
+// static int do_maps_open(inode *inode, file *file,
 // 			const struct seq_operations *ops)
 // {
 // 	return proc_maps_open(inode, file, ops,
-// 				sizeof(struct proc_maps_private));
+// 				sizeof(proc_maps_private));
 // }
 // 
-// static void get_vma_name(struct vm_area_struct *vma,
+// static void get_vma_name(vm_area_struct *vma,
 // 			 const struct path **path,
 // 			 const char **name,
 // 			 const char **name_fmt)
@@ -479,7 +479,7 @@
 // 	}
 // }
 // 
-// static void show_vma_header_prefix(struct seq_file *m,
+// static void show_vma_header_prefix(seq_file *m,
 // 				   unsigned long start, unsigned long end,
 // 				   vm_flags_t flags, unsigned long long pgoff,
 // 				   dev_t dev, u64 ino)
@@ -500,7 +500,7 @@
 // }
 // 
 // static void
-// show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
+// show_map_vma(seq_file *m, vm_area_struct *vma)
 // {
 // 	const struct path *path;
 // 	const char *name_fmt, *name;
@@ -536,7 +536,7 @@
 // 	seq_putc(m, '\n');
 // }
 // 
-// static int show_map(struct seq_file *m, void *v)
+// static int show_map(seq_file *m, void *v)
 // {
 // 	show_map_vma(m, v);
 // 	return 0;
@@ -549,7 +549,7 @@
 // 	.show	= show_map
 // };
 // 
-// static int pid_maps_open(struct inode *inode, struct file *file)
+// static int pid_maps_open(inode *inode, file *file)
 // {
 // 	return do_maps_open(inode, file, &proc_pid_maps_op);
 // }
@@ -569,14 +569,14 @@
 // 
 // #ifdef CONFIG_PER_VMA_LOCK
 // 
-// static int query_vma_setup(struct proc_maps_locking_ctx *lock_ctx)
+// static int query_vma_setup(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	reset_lock_ctx(lock_ctx);
 // 
 // 	return 0;
 // }
 // 
-// static void query_vma_teardown(struct proc_maps_locking_ctx *lock_ctx)
+// static void query_vma_teardown(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	if (lock_ctx->mmap_locked)
 // 		unlock_ctx_mm(lock_ctx);
@@ -584,7 +584,7 @@
 // 		unlock_ctx_vma(lock_ctx);
 // }
 // 
-// static struct vm_area_struct *query_vma_find_by_addr(struct proc_maps_locking_ctx *lock_ctx,
+// static struct vm_area_struct *query_vma_find_by_addr(proc_maps_locking_ctx *lock_ctx,
 // 						     unsigned long addr)
 // {
 // 	struct mm_struct *mm = lock_ctx->mm;
@@ -621,17 +621,17 @@
 // 
 // #else /* CONFIG_PER_VMA_LOCK */
 // 
-// static int query_vma_setup(struct proc_maps_locking_ctx *lock_ctx)
+// static int query_vma_setup(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	return mmap_read_lock_killable(lock_ctx->mm);
 // }
 // 
-// static void query_vma_teardown(struct proc_maps_locking_ctx *lock_ctx)
+// static void query_vma_teardown(proc_maps_locking_ctx *lock_ctx)
 // {
 // 	mmap_read_unlock(lock_ctx->mm);
 // }
 // 
-// static struct vm_area_struct *query_vma_find_by_addr(struct proc_maps_locking_ctx *lock_ctx,
+// static struct vm_area_struct *query_vma_find_by_addr(proc_maps_locking_ctx *lock_ctx,
 // 						     unsigned long addr)
 // {
 // 	return find_vma(lock_ctx->mm, addr);
@@ -639,7 +639,7 @@
 // 
 // #endif  /* CONFIG_PER_VMA_LOCK */
 // 
-// static struct vm_area_struct *query_matching_vma(struct proc_maps_locking_ctx *lock_ctx,
+// static struct vm_area_struct *query_matching_vma(proc_maps_locking_ctx *lock_ctx,
 // 						 unsigned long addr, u32 flags)
 // {
 // 	struct vm_area_struct *vma;
@@ -689,7 +689,7 @@
 // 	return ERR_PTR(-ENOENT);
 // }
 // 
-// static int do_procmap_query(struct mm_struct *mm, void __user *uarg)
+// static int do_procmap_query(mm_struct *mm, void __user *uarg)
 // {
 // 	struct proc_maps_locking_ctx lock_ctx = { .mm = mm };
 // 	struct procmap_query karg;
@@ -706,7 +706,7 @@
 // 	if (usize > PAGE_SIZE)
 // 		return -E2BIG;
 // 	/* argument struct should have at least query_flags and query_addr fields */
-// 	if (usize < offsetofend(struct procmap_query, query_addr))
+// 	if (usize < offsetofend(procmap_query, query_addr))
 // 		return -EINVAL;
 // 	err = copy_struct_from_user(&karg, sizeof(karg), uarg, usize);
 // 	if (err)
@@ -853,7 +853,7 @@
 // 	return err;
 // }
 // 
-// static long procfs_procmap_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+// static long procfs_procmap_ioctl(file *file, unsigned int cmd, unsigned long arg)
 // {
 // 	struct seq_file *seq = file->private_data;
 // 	struct proc_maps_private *priv = seq->private;
@@ -921,7 +921,7 @@
 // 	u64 swap_pss;
 // };
 // 
-// static void smaps_page_accumulate(struct mem_size_stats *mss,
+// static void smaps_page_accumulate(mem_size_stats *mss,
 // 		struct folio *folio, unsigned long size, unsigned long pss,
 // 		bool dirty, bool locked, bool private)
 // {
@@ -951,7 +951,7 @@
 // 	}
 // }
 // 
-// static void smaps_account(struct mem_size_stats *mss, struct page *page,
+// static void smaps_account(mem_size_stats *mss, page *page,
 // 		bool compound, bool young, bool dirty, bool locked,
 // 		bool present)
 // {
@@ -1028,7 +1028,7 @@
 // 
 // #ifdef CONFIG_SHMEM
 // static int smaps_pte_hole(unsigned long addr, unsigned long end,
-// 			  __always_unused int depth, struct mm_walk *walk)
+// 			  __always_unused int depth, mm_walk *walk)
 // {
 // 	struct mem_size_stats *mss = walk->private;
 // 	struct vm_area_struct *vma = walk->vma;
@@ -1043,7 +1043,7 @@
 // #define smaps_pte_hole		NULL
 // #endif /* CONFIG_SHMEM */
 // 
-// static void smaps_pte_hole_lookup(unsigned long addr, struct mm_walk *walk)
+// static void smaps_pte_hole_lookup(unsigned long addr, mm_walk *walk)
 // {
 // #ifdef CONFIG_SHMEM
 // 	if (walk->ops->pte_hole) {
@@ -1170,7 +1170,7 @@
 // 	return 0;
 // }
 // 
-// static void show_smap_vma_flags(struct seq_file *m, struct vm_area_struct *vma)
+// static void show_smap_vma_flags(seq_file *m, vm_area_struct *vma)
 // {
 // 	/*
 // 	 * Don't forget to update Documentation/ on changes.
@@ -1337,7 +1337,7 @@
 // };
 // 
 // static inline const struct mm_walk_ops *
-// get_smaps_walk_ops(struct proc_maps_private *priv)
+// get_smaps_walk_ops(proc_maps_private *priv)
 // {
 // 	if (priv->lock_ctx.mmap_locked)
 // 		return &smaps_walk_ops;
@@ -1345,7 +1345,7 @@
 // }
 // 
 // static inline const struct mm_walk_ops *
-// get_smaps_shmem_walk_ops(struct proc_maps_private *priv)
+// get_smaps_shmem_walk_ops(proc_maps_private *priv)
 // {
 // 	if (priv->lock_ctx.mmap_locked)
 // 		return  &smaps_shmem_walk_ops;
@@ -1355,13 +1355,13 @@
 // #else /* CONFIG_PER_VMA_LOCK */
 // 
 // static inline const struct mm_walk_ops *
-// get_smaps_walk_ops(struct proc_maps_private *priv)
+// get_smaps_walk_ops(proc_maps_private *priv)
 // {
 // 	return &smaps_walk_ops;
 // }
 // 
 // static inline const struct mm_walk_ops *
-// get_smaps_shmem_walk_ops(struct proc_maps_private *priv)
+// get_smaps_shmem_walk_ops(proc_maps_private *priv)
 // {
 // 	return &smaps_shmem_walk_ops;
 // }
@@ -1374,7 +1374,7 @@
 //  *
 //  * Use vm_start of @vma as the beginning address if @start is 0.
 //  */
-// static void smap_gather_stats(struct proc_maps_private *priv,
+// static void smap_gather_stats(proc_maps_private *priv,
 // 			      struct vm_area_struct *vma,
 // 			      struct mem_size_stats *mss, unsigned long start)
 // {
@@ -1423,7 +1423,7 @@
 // 		seq_put_decimal_ull_width(m, str, (val) >> 10, 8)
 // 
 // /* Show the contents common for smaps and smaps_rollup */
-// static void __show_smap(struct seq_file *m, const struct mem_size_stats *mss,
+// static void __show_smap(seq_file *m, const struct mem_size_stats *mss,
 // 	bool rollup_mode)
 // {
 // 	SEQ_PUT_DEC("Rss:            ", mss->resident);
@@ -1463,7 +1463,7 @@
 // 	seq_puts(m, " kB\n");
 // }
 // 
-// static int show_smap(struct seq_file *m, void *v)
+// static int show_smap(seq_file *m, void *v)
 // {
 // 	struct proc_maps_private *priv = m->private;
 // 	struct vm_area_struct *vma = v;
@@ -1491,7 +1491,7 @@
 // 	return 0;
 // }
 // 
-// static int show_smaps_rollup(struct seq_file *m, void *v)
+// static int show_smaps_rollup(seq_file *m, void *v)
 // {
 // 	struct proc_maps_private *priv = m->private;
 // 	struct mem_size_stats mss = {};
@@ -1621,12 +1621,12 @@
 // 	.show	= show_smap
 // };
 // 
-// static int pid_smaps_open(struct inode *inode, struct file *file)
+// static int pid_smaps_open(inode *inode, file *file)
 // {
 // 	return do_maps_open(inode, file, &proc_pid_smaps_op);
 // }
 // 
-// static int smaps_rollup_open(struct inode *inode, struct file *file)
+// static int smaps_rollup_open(inode *inode, file *file)
 // {
 // 	int ret;
 // 	struct proc_maps_private *priv;
@@ -1655,7 +1655,7 @@
 // 	return ret;
 // }
 // 
-// static int smaps_rollup_release(struct inode *inode, struct file *file)
+// static int smaps_rollup_release(inode *inode, file *file)
 // {
 // 	struct seq_file *seq = file->private_data;
 // 	struct proc_maps_private *priv = seq->private;
@@ -1694,7 +1694,7 @@
 // 	enum clear_refs_types type;
 // };
 // 
-// static inline bool pte_is_pinned(struct vm_area_struct *vma, unsigned long addr, pte_t pte)
+// static inline bool pte_is_pinned(vm_area_struct *vma, unsigned long addr, pte_t pte)
 // {
 // 	struct folio *folio;
 // 
@@ -1710,7 +1710,7 @@
 // 	return folio_maybe_dma_pinned(folio);
 // }
 // 
-// static inline void clear_soft_dirty(struct vm_area_struct *vma,
+// static inline void clear_soft_dirty(vm_area_struct *vma,
 // 		unsigned long addr, pte_t *pte)
 // {
 // 	if (!pgtable_supports_soft_dirty())
@@ -1742,7 +1742,7 @@
 // }
 // 
 // #if defined(CONFIG_TRANSPARENT_HUGEPAGE)
-// static inline void clear_soft_dirty_pmd(struct vm_area_struct *vma,
+// static inline void clear_soft_dirty_pmd(vm_area_struct *vma,
 // 		unsigned long addr, pmd_t *pmdp)
 // {
 // 	pmd_t old, pmd = *pmdp;
@@ -1768,14 +1768,14 @@
 // 	}
 // }
 // #else
-// static inline void clear_soft_dirty_pmd(struct vm_area_struct *vma,
+// static inline void clear_soft_dirty_pmd(vm_area_struct *vma,
 // 		unsigned long addr, pmd_t *pmdp)
 // {
 // }
 // #endif
 // 
 // static int clear_refs_pte_range(pmd_t *pmd, unsigned long addr,
-// 				unsigned long end, struct mm_walk *walk)
+// 				unsigned long end, mm_walk *walk)
 // {
 // 	struct clear_refs_private *cp = walk->private;
 // 	struct vm_area_struct *vma = walk->vma;
@@ -1862,7 +1862,7 @@
 // 	.walk_lock		= PGWALK_WRLOCK,
 // };
 // 
-// static ssize_t clear_refs_write(struct file *file, const char __user *buf,
+// static ssize_t clear_refs_write(file *file, const char __user *buf,
 // 				size_t count, loff_t *ppos)
 // {
 // 	struct task_struct *task;
@@ -1973,7 +1973,7 @@
 // 	return (pagemap_entry_t) { .pme = (frame & PM_PFRAME_MASK) | flags };
 // }
 // 
-// static int add_to_pagemap(pagemap_entry_t *pme, struct pagemapread *pm)
+// static int add_to_pagemap(pagemap_entry_t *pme, pagemapread *pm)
 // {
 // 	pm->buffer[pm->pos++] = *pme;
 // 	if (pm->pos >= pm->len)
@@ -1981,7 +1981,7 @@
 // 	return 0;
 // }
 // 
-// static bool __folio_page_mapped_exclusively(struct folio *folio, struct page *page)
+// static bool __folio_page_mapped_exclusively(folio *folio, page *page)
 // {
 // 	if (IS_ENABLED(CONFIG_PAGE_MAPCOUNT))
 // 		return folio_precise_page_mapcount(folio, page) == 1;
@@ -1989,7 +1989,7 @@
 // }
 // 
 // static int pagemap_pte_hole(unsigned long start, unsigned long end,
-// 			    __always_unused int depth, struct mm_walk *walk)
+// 			    __always_unused int depth, mm_walk *walk)
 // {
 // 	struct pagemapread *pm = walk->private;
 // 	unsigned long addr = start;
@@ -2028,7 +2028,7 @@
 // 	return err;
 // }
 // 
-// static pagemap_entry_t pte_to_pagemap_entry(struct pagemapread *pm,
+// static pagemap_entry_t pte_to_pagemap_entry(pagemapread *pm,
 // 		struct vm_area_struct *vma, unsigned long addr, pte_t pte)
 // {
 // 	u64 frame = 0, flags = 0;
@@ -2096,7 +2096,7 @@
 // 
 // #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 // static int pagemap_pmd_range_thp(pmd_t *pmdp, unsigned long addr,
-// 		unsigned long end, struct vm_area_struct *vma,
+// 		unsigned long end, vm_area_struct *vma,
 // 		struct pagemapread *pm)
 // {
 // 	unsigned int idx = (addr & ~PMD_MASK) >> PAGE_SHIFT;
@@ -2308,7 +2308,7 @@
 //  * determine which areas of memory are actually mapped and llseek to
 //  * skip over unmapped regions.
 //  */
-// static ssize_t pagemap_read(struct file *file, char __user *buf,
+// static ssize_t pagemap_read(file *file, char __user *buf,
 // 			    size_t count, loff_t *ppos)
 // {
 // 	struct mm_struct *mm = file->private_data;
@@ -2402,7 +2402,7 @@
 // 	return ret;
 // }
 // 
-// static int pagemap_open(struct inode *inode, struct file *file)
+// static int pagemap_open(inode *inode, file *file)
 // {
 // 	struct mm_struct *mm;
 // 
@@ -2413,7 +2413,7 @@
 // 	return 0;
 // }
 // 
-// static int pagemap_release(struct inode *inode, struct file *file)
+// static int pagemap_release(inode *inode, file *file)
 // {
 // 	struct mm_struct *mm = file->private_data;
 // 
@@ -2437,7 +2437,7 @@
 // 	struct page_region __user *vec_out;
 // };
 // 
-// static unsigned long pagemap_page_category(struct pagemap_scan_private *p,
+// static unsigned long pagemap_page_category(pagemap_scan_private *p,
 // 					   struct vm_area_struct *vma,
 // 					   unsigned long addr, pte_t pte)
 // {
@@ -2507,7 +2507,7 @@
 // 	return categories;
 // }
 // 
-// static void make_uffd_wp_pte(struct vm_area_struct *vma,
+// static void make_uffd_wp_pte(vm_area_struct *vma,
 // 			     unsigned long addr, pte_t *pte, pte_t ptent)
 // {
 // 	if (pte_present(ptent)) {
@@ -2526,7 +2526,7 @@
 // }
 // 
 // #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-// static unsigned long pagemap_thp_category(struct pagemap_scan_private *p,
+// static unsigned long pagemap_thp_category(pagemap_scan_private *p,
 // 					  struct vm_area_struct *vma,
 // 					  unsigned long addr, pmd_t pmd)
 // {
@@ -2579,7 +2579,7 @@
 // 	return categories;
 // }
 // 
-// static void make_uffd_wp_pmd(struct vm_area_struct *vma,
+// static void make_uffd_wp_pmd(vm_area_struct *vma,
 // 			     unsigned long addr, pmd_t *pmdp)
 // {
 // 	pmd_t old, pmd = *pmdp;
@@ -2596,7 +2596,7 @@
 // #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
 // 
 // #ifdef CONFIG_HUGETLB_PAGE
-// static unsigned long pagemap_hugetlb_category(struct vm_area_struct *vma,
+// static unsigned long pagemap_hugetlb_category(vm_area_struct *vma,
 // 					      pte_t pte)
 // {
 // 	unsigned long categories = PAGE_IS_HUGE;
@@ -2640,7 +2640,7 @@
 // 	return categories;
 // }
 // 
-// static void make_uffd_wp_huge_pte(struct vm_area_struct *vma,
+// static void make_uffd_wp_huge_pte(vm_area_struct *vma,
 // 				  unsigned long addr, pte_t *ptep,
 // 				  pte_t ptent)
 // {
@@ -2671,7 +2671,7 @@
 // #endif /* CONFIG_HUGETLB_PAGE */
 // 
 // #if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HUGETLB_PAGE)
-// static void pagemap_scan_backout_range(struct pagemap_scan_private *p,
+// static void pagemap_scan_backout_range(pagemap_scan_private *p,
 // 				       unsigned long addr, unsigned long end)
 // {
 // 	struct page_region *cur_buf = &p->vec_buf[p->vec_buf_index];
@@ -2819,7 +2819,7 @@
 // }
 // 
 // static int pagemap_scan_thp_entry(pmd_t *pmd, unsigned long start,
-// 				  unsigned long end, struct mm_walk *walk)
+// 				  unsigned long end, mm_walk *walk)
 // {
 // #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 // 	struct pagemap_scan_private *p = walk->private;
@@ -2870,7 +2870,7 @@
 // }
 // 
 // static int pagemap_scan_pmd_entry(pmd_t *pmd, unsigned long start,
-// 				  unsigned long end, struct mm_walk *walk)
+// 				  unsigned long end, mm_walk *walk)
 // {
 // 	struct pagemap_scan_private *p = walk->private;
 // 	struct vm_area_struct *vma = walk->vma;
@@ -3043,7 +3043,7 @@
 //  * is disabled on uffd-wp VMAs (hugetlb_unshare_all_pmds() at registration), so
 //  * the vma lock guards nothing that matters for these entries anyway.
 //  */
-// static int pagemap_scan_hugetlb_hole_wp(struct vm_area_struct *vma,
+// static int pagemap_scan_hugetlb_hole_wp(vm_area_struct *vma,
 // 					unsigned long addr, unsigned long end)
 // {
 // 	struct hstate *h = hstate_vma(vma);
@@ -3077,7 +3077,7 @@
 // }
 // #else
 // #define pagemap_scan_hugetlb_entry NULL
-// static int pagemap_scan_hugetlb_hole_wp(struct vm_area_struct *vma,
+// static int pagemap_scan_hugetlb_hole_wp(vm_area_struct *vma,
 // 					unsigned long addr, unsigned long end)
 // {
 // 	return 0;
@@ -3085,7 +3085,7 @@
 // #endif
 // 
 // static int pagemap_scan_pte_hole(unsigned long addr, unsigned long end,
-// 				 int depth, struct mm_walk *walk)
+// 				 int depth, mm_walk *walk)
 // {
 // 	struct pagemap_scan_private *p = walk->private;
 // 	struct vm_area_struct *vma = walk->vma;
@@ -3134,13 +3134,13 @@
 // 	.hugetlb_entry = pagemap_scan_hugetlb_entry,
 // };
 // 
-// static int pagemap_scan_get_args(struct pm_scan_arg *arg,
+// static int pagemap_scan_get_args(pm_scan_arg *arg,
 // 				 unsigned long uarg)
 // {
 // 	if (copy_from_user(arg, (void __user *)uarg, sizeof(*arg)))
 // 		return -EFAULT;
 // 
-// 	if (arg->size != sizeof(struct pm_scan_arg))
+// 	if (arg->size != sizeof(pm_scan_arg))
 // 		return -EINVAL;
 // 
 // 	/* Validate requested features */
@@ -3164,7 +3164,7 @@
 // 	if (UINT_MAX == SIZE_MAX && arg->vec_len > SIZE_MAX)
 // 		return -EINVAL;
 // 	if (arg->vec && !access_ok((void __user *)(long)arg->vec,
-// 				   size_mul(arg->vec_len, sizeof(struct page_region))))
+// 				   size_mul(arg->vec_len, sizeof(page_region))))
 // 		return -EFAULT;
 // 
 // 	/* Fixup default values */
@@ -3176,7 +3176,7 @@
 // 	return 0;
 // }
 // 
-// static int pagemap_scan_writeback_args(struct pm_scan_arg *arg,
+// static int pagemap_scan_writeback_args(pm_scan_arg *arg,
 // 				       unsigned long uargl)
 // {
 // 	struct pm_scan_arg __user *uarg	= (void __user *)uargl;
@@ -3187,7 +3187,7 @@
 // 	return 0;
 // }
 // 
-// static int pagemap_scan_init_bounce_buffer(struct pagemap_scan_private *p)
+// static int pagemap_scan_init_bounce_buffer(pagemap_scan_private *p)
 // {
 // 	if (!p->arg.vec_len)
 // 		return 0;
@@ -3199,12 +3199,12 @@
 // 		return -ENOMEM;
 // 
 // 	p->vec_buf->start = p->vec_buf->end = 0;
-// 	p->vec_out = (struct page_region __user *)(long)p->arg.vec;
+// 	p->vec_out = (page_region __user *)(long)p->arg.vec;
 // 
 // 	return 0;
 // }
 // 
-// static long pagemap_scan_flush_buffer(struct pagemap_scan_private *p)
+// static long pagemap_scan_flush_buffer(pagemap_scan_private *p)
 // {
 // 	const struct page_region *buf = p->vec_buf;
 // 	long n = p->vec_buf_index;
@@ -3231,7 +3231,7 @@
 // 	return n;
 // }
 // 
-// static long do_pagemap_scan(struct mm_struct *mm, unsigned long uarg)
+// static long do_pagemap_scan(mm_struct *mm, unsigned long uarg)
 // {
 // 	struct pagemap_scan_private p = {0};
 // 	unsigned long walk_start;
@@ -3304,7 +3304,7 @@
 // 	return ret;
 // }
 // 
-// static long do_pagemap_cmd(struct file *file, unsigned int cmd,
+// static long do_pagemap_cmd(file *file, unsigned int cmd,
 // 			   unsigned long arg)
 // {
 // 	struct mm_struct *mm = file->private_data;
@@ -3346,7 +3346,7 @@
 // 	struct numa_maps md;
 // };
 // 
-// static void gather_stats(struct page *page, struct numa_maps *md, int pte_dirty,
+// static void gather_stats(page *page, numa_maps *md, int pte_dirty,
 // 			unsigned long nr_pages)
 // {
 // 	struct folio *folio = page_folio(page);
@@ -3379,7 +3379,7 @@
 // 	md->node[folio_nid(folio)] += nr_pages;
 // }
 // 
-// static struct page *can_gather_numa_stats(pte_t pte, struct vm_area_struct *vma,
+// static struct page *can_gather_numa_stats(pte_t pte, vm_area_struct *vma,
 // 		unsigned long addr)
 // {
 // 	struct page *page;
@@ -3429,7 +3429,7 @@
 // #endif
 // 
 // static int gather_pte_stats(pmd_t *pmd, unsigned long addr,
-// 		unsigned long end, struct mm_walk *walk)
+// 		unsigned long end, mm_walk *walk)
 // {
 // 	struct numa_maps *md = walk->private;
 // 	struct vm_area_struct *vma = walk->vma;
@@ -3469,7 +3469,7 @@
 // }
 // #ifdef CONFIG_HUGETLB_PAGE
 // static int gather_hugetlb_stats(pte_t *pte, unsigned long hmask,
-// 		unsigned long addr, unsigned long end, struct mm_walk *walk)
+// 		unsigned long addr, unsigned long end, mm_walk *walk)
 // {
 // 	pte_t huge_pte;
 // 	struct numa_maps *md;
@@ -3492,7 +3492,7 @@
 // 
 // #else
 // static int gather_hugetlb_stats(pte_t *pte, unsigned long hmask,
-// 		unsigned long addr, unsigned long end, struct mm_walk *walk)
+// 		unsigned long addr, unsigned long end, mm_walk *walk)
 // {
 // 	return 0;
 // }
@@ -3512,7 +3512,7 @@
 // };
 // 
 // static inline const struct mm_walk_ops *
-// get_show_numa_ops(struct proc_maps_private *priv)
+// get_show_numa_ops(proc_maps_private *priv)
 // {
 // 	if (priv->lock_ctx.mmap_locked)
 // 		return &show_numa_ops;
@@ -3522,7 +3522,7 @@
 // #else /* CONFIG_PER_VMA_LOCK */
 // 
 // static inline const struct mm_walk_ops *
-// get_show_numa_ops(struct proc_maps_private *priv)
+// get_show_numa_ops(proc_maps_private *priv)
 // {
 // 	return &show_numa_ops;
 // }
@@ -3532,7 +3532,7 @@
 // /*
 //  * Display pages allocated per node and memory policy via /proc.
 //  */
-// static int show_numa_map(struct seq_file *m, void *v)
+// static int show_numa_map(seq_file *m, void *v)
 // {
 // 	struct numa_maps_private *numa_priv = m->private;
 // 	struct proc_maps_private *proc_priv = &numa_priv->proc_maps;
@@ -3622,10 +3622,10 @@
 // 	.show   = show_numa_map,
 // };
 // 
-// static int pid_numa_maps_open(struct inode *inode, struct file *file)
+// static int pid_numa_maps_open(inode *inode, file *file)
 // {
 // 	return proc_maps_open(inode, file, &proc_pid_numa_maps_op,
-// 				sizeof(struct numa_maps_private));
+// 				sizeof(numa_maps_private));
 // }
 // 
 // const struct file_operations proc_pid_numa_maps_operations = {

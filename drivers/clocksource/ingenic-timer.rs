@@ -7,7 +7,7 @@
 
 // Linux kernel dependencies supplied by the surrounding tree.
 
-static DEFINE_PER_CPU!(call_single_data_t, ingenic_cevt_csd);
+DEFINE_PER_CPU!(call_single_data_t, ingenic_cevt_csd);
 
 #[repr(C)]
 struct ingenic_soc_info {
@@ -119,21 +119,24 @@ unsafe extern "C" fn ingenic_tcu_setup_cevt(cpu: c_uint) -> c_int {
     let domain: *mut irq_domain;
     let rate: c_ulong;
     let mut err: c_int;
+    'err_clk_put: {
+    'err_clk_disable: {
+    'err_irq_dispose_mapping: {
 
     timer.clk = ingenic_tcu_get_clock((*tcu).np, timer.channel as c_int);
     if IS_ERR!(timer.clk) { return PTR_ERR!(timer.clk); }
     err = clk_prepare_enable(timer.clk);
-    if err != 0 { goto!(err_clk_put); }
+    if err != 0 { break 'err_clk_put; }
     rate = clk_get_rate(timer.clk);
-    if rate == 0 { err = -EINVAL; goto!(err_clk_disable); }
+    if rate == 0 { err = -EINVAL; break 'err_clk_disable; }
     domain = irq_find_host((*tcu).np);
-    if domain.is_null() { err = -ENODEV; goto!(err_clk_disable); }
+    if domain.is_null() { err = -ENODEV; break 'err_clk_disable; }
     timer_virq = irq_create_mapping(domain, timer.channel);
-    if timer_virq == 0 { err = -EINVAL; goto!(err_clk_disable); }
+    if timer_virq == 0 { err = -EINVAL; break 'err_clk_disable; }
     snprintf!(timer.name.as_mut_ptr(), timer.name.len(), "TCU%u", timer.channel);
     err = request_irq(timer_virq, Some(ingenic_tcu_cevt_cb), IRQF_TIMER,
                       timer.name.as_ptr(), timer);
-    if err != 0 { goto!(err_irq_dispose_mapping); }
+    if err != 0 { break 'err_irq_dispose_mapping; }
     timer.cpu = smp_processor_id();
     timer.cevt.cpumask = cpumask_of(smp_processor_id());
     timer.cevt.features = CLOCK_EVT_FEAT_ONESHOT;
@@ -143,12 +146,14 @@ unsafe extern "C" fn ingenic_tcu_setup_cevt(cpu: c_uint) -> c_int {
     timer.cevt.set_next_event = Some(ingenic_tcu_cevt_set_next);
     clockevents_config_and_register(&mut timer.cevt, rate, 10, 0xffff);
     return 0;
-
-err_irq_dispose_mapping:
+    }
+    
     irq_dispose_mapping(timer_virq);
-err_clk_disable:
+    }
+    
     clk_disable_unprepare(timer.clk);
-err_clk_put:
+    }
+    
     clk_put(timer.clk);
     err
 }

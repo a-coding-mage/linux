@@ -29,7 +29,7 @@ unsafe extern "C" {
     fn pm_runtime_mark_last_busy(dev: *mut c_void);
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 #[inline]
 pub unsafe fn blk_pm_resume_queue(pm: bool, q: *mut request_queue) -> i32 {
     if (*q).dev.is_null() || !blk_queue_pm_only(q) {
@@ -42,7 +42,7 @@ pub unsafe fn blk_pm_resume_queue(pm: bool, q: *mut request_queue) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 #[inline]
 pub unsafe fn blk_pm_mark_last_busy(rq: *mut request) {
     if !(*(*rq).q).dev.is_null() && ((*rq).rq_flags & RQF_PM) == 0 {
@@ -50,13 +50,13 @@ pub unsafe fn blk_pm_mark_last_busy(rq: *mut request) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub unsafe fn blk_pm_resume_queue(_pm: bool, _q: *mut request_queue) -> i32 {
     1
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub unsafe fn blk_pm_mark_last_busy(_rq: *mut request) {}
 

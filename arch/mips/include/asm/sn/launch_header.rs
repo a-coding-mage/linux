@@ -17,9 +17,9 @@
 
 pub const LAUNCH_MAGIC: u64 = 0xaddbead2addbead3;
 // CONFIG_SGI_IP27 controls these build-time constants.
-#[cfg(feature = "CONFIG_SGI_IP27")]
+#[cfg(CONFIG_SGI_IP27)]
 pub const LAUNCH_SIZEOF: usize = 0x100;
-#[cfg(feature = "CONFIG_SGI_IP27")]
+#[cfg(CONFIG_SGI_IP27)]
 pub const LAUNCH_PADSZ: usize = 0xa0;
 
 pub const LAUNCH_OFF_MAGIC: usize = 0x00; // Struct offsets for assembly

@@ -2,19 +2,19 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-#[cfg(feature = "CONFIG_UNWIND_USER")]
+#[cfg(CONFIG_UNWIND_USER)]
 pub const UNWIND_PENDING_BIT: u32 = 0;
-#[cfg(feature = "CONFIG_UNWIND_USER")]
+#[cfg(CONFIG_UNWIND_USER)]
 pub const UNWIND_USED_BIT: u32 = 1;
 
-#[cfg(feature = "CONFIG_UNWIND_USER")]
+#[cfg(CONFIG_UNWIND_USER)]
 pub const UNWIND_PENDING: usize = 1usize << UNWIND_PENDING_BIT;
 
-#[cfg(feature = "CONFIG_UNWIND_USER")]
+#[cfg(CONFIG_UNWIND_USER)]
 /* Set if the unwinding was used (directly or deferred) */
 pub const UNWIND_USED: usize = 1usize << UNWIND_USED_BIT;
 
-#[cfg(feature = "CONFIG_UNWIND_USER")]
+#[cfg(CONFIG_UNWIND_USER)]
 extern "C" {
     pub fn unwind_task_init(task: *mut task_struct);
     pub fn unwind_task_free(task: *mut task_struct);
@@ -28,7 +28,7 @@ extern "C" {
     pub fn unwind_deferred_task_exit(task: *mut task_struct);
 }
 
-#[cfg(feature = "CONFIG_UNWIND_USER")]
+#[cfg(CONFIG_UNWIND_USER)]
 #[inline(always)]
 pub unsafe fn unwind_reset_info() {
     let info: *mut unwind_task_info = &mut (*current).unwind_info;
@@ -62,21 +62,21 @@ pub unsafe fn unwind_reset_info() {
     }
 }
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_task_init(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_task_free(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_user_faultable(_trace: *mut unwind_stacktrace) -> i32 {
     -38
 }
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_deferred_init(
     _work: *mut unwind_work,
@@ -85,21 +85,21 @@ pub unsafe fn unwind_deferred_init(
     -38
 }
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_deferred_request(_work: *mut unwind_work, _timestamp: *mut u64) -> i32 {
     -38
 }
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_deferred_cancel(_work: *mut unwind_work) {}
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_deferred_task_exit(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_UNWIND_USER"))]
+#[cfg(not(CONFIG_UNWIND_USER))]
 #[inline]
 pub unsafe fn unwind_reset_info() {}
 

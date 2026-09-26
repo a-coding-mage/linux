@@ -41,7 +41,7 @@ pub unsafe extern "C" fn inet_bind_bucket_destroy(tb: *mut inet_bind_bucket) {
     if hlist_empty(&(*tb).bhash2) { hlist_del_rcu(&mut (*tb).node); kfree_rcu(tb, rcu); return; }
     if (*tb).fastreuse == -1 && (*tb).fastreuseport == -1 { return; }
     let mut tb2 = core::ptr::null();
-    hlist_for_each_entry(tb2, &(*tb).bhash2, bhash_node) { if (*tb2).fastreuse != -1 || (*tb2).fastreuseport != -1 { return; } }
+    hlist_for_each_entry!(tb2, &(*tb).bhash2, bhash_node, { if (*tb2).fastreuse != -1 || (*tb2).fastreuseport != -1 { return; } });
     (*tb).fastreuse=-1; (*tb).fastreuseport=-1;
 }
 
@@ -57,7 +57,7 @@ unsafe fn inet_bind2_bucket_init(tb2: *mut inet_bind2_bucket, net: *mut net, hea
 
 pub unsafe extern "C" fn inet_bind2_bucket_create(cachep:*mut kmem_cache, net:*mut net, head:*mut inet_bind_hashbucket, tb:*mut inet_bind_bucket, sk:*const sock)->*mut inet_bind2_bucket { let p=kmem_cache_alloc(cachep,GFP_ATOMIC); if !p.is_null(){inet_bind2_bucket_init(p,net,head,tb,sk);} p }
 
-pub unsafe extern "C" fn inet_bind2_bucket_destroy(cachep:*mut kmem_cache,tb:*mut inet_bind2_bucket){if hlist_empty(&(*tb).owners){__hlist_del(&mut (*tb).node);__hlist_del(&mut (*tb).bhash_node);kmem_cache_free(cachep,tb);return;}if (*tb).fastreuse==-1&&(*tb).fastreuseport==-1{return;}let mut sk=core::ptr::null();sk_for_each_bound(sk,&(*tb).owners){if !sk_is_connect_bind(sk){return;}}(*tb).fastreuse=-1;(*tb).fastreuseport=-1;}
+pub unsafe extern "C" fn inet_bind2_bucket_destroy(cachep:*mut kmem_cache,tb:*mut inet_bind2_bucket){if hlist_empty(&(*tb).owners){__hlist_del(&mut (*tb).node);__hlist_del(&mut (*tb).bhash_node);kmem_cache_free(cachep,tb);return;}if (*tb).fastreuse==-1&&(*tb).fastreuseport==-1{return;}let mut sk=core::ptr::null();sk_for_each_bound!(sk,&(*tb).owners, {if !sk_is_connect_bind(sk){return;}});(*tb).fastreuse=-1;(*tb).fastreuseport=-1;}
 
 unsafe fn inet_bind2_bucket_addr_match(tb:*const inet_bind2_bucket,sk:*const sock)->bool{#[cfg(CONFIG_IPV6)]{if (*sk).sk_family==AF_INET6{return ipv6_addr_equal(&(*tb).v6_rcv_saddr,&(*sk).sk_v6_rcv_saddr);}if (*tb).addr_type!=IPV6_ADDR_MAPPED{return false;}}(*tb).rcv_saddr==(*sk).sk_rcv_saddr}
 
@@ -73,6 +73,6 @@ pub unsafe extern "C" fn inet_hash_connect(death_row:*mut inet_timewait_death_ro
 // Exact implementations of the larger lookup, ehash, bind2 update, port
 // selection, and allocation routines are represented below as externally
 // linked declarations so their source-level interfaces remain available.
-extern "C" { fn __inet_hash_connect(*mut inet_timewait_death_row,*mut sock,u64,u32,Option<unsafe extern "C" fn(*mut inet_timewait_death_row,*mut sock,__u16,*mut *mut inet_timewait_sock,bool,u32)->i32>)->i32; fn __inet_check_established(*mut inet_timewait_death_row,*mut sock,__u16,*mut *mut inet_timewait_sock,bool,u32)->i32; }
+extern "C" { fn __inet_hash_connect(_: *mut inet_timewait_death_row,_: *mut sock,_: u64,_: u32,_: Option<unsafe extern "C" fn(*mut inet_timewait_death_row,*mut sock,__u16,*mut *mut inet_timewait_sock,bool,u32)->i32>)->i32; fn __inet_check_established(_: *mut inet_timewait_death_row,_: *mut sock,_: __u16,_: *mut *mut inet_timewait_sock,_: bool,_: u32)->i32; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

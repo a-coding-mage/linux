@@ -16,8 +16,8 @@ unsafe extern "C" {
  * mocked module and not the standard one from the base tree.
  */
 macro_rules! nfit_test_watermark {
-    ($x:ident) => {
-        // TODO: C's `x##_test` token pasting needs an identifier-concatenation
+    ($x:tt) => {
+        // TODO: C's `::kernel::macros::paste!([<$x _test>])` token pasting needs an identifier-concatenation
         // facility at the call site to form and export the generated symbol.
         pub extern "C" fn $x() -> ::core::ffi::c_int {
             pr_debug!("%s for nfit_test\n", KBUILD_MODNAME);

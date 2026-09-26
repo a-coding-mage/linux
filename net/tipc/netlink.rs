@@ -130,11 +130,11 @@ pub static tipc_genl_v2_ops: [genl_ops; 24] = [
     genl_ops { cmd: TIPC_NL_MON_GET, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP, doit: Some(tipc_nl_node_get_monitor), dumpit: Some(tipc_nl_node_dump_monitor) },
     genl_ops { cmd: TIPC_NL_MON_PEER_GET, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP_STRICT, dumpit: Some(tipc_nl_node_dump_monitor_peer) },
     genl_ops { cmd: TIPC_NL_PEER_REMOVE, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP, flags: GENL_UNS_ADMIN_PERM, doit: Some(tipc_nl_peer_rm) },
-    #[cfg(feature = "CONFIG_TIPC_MEDIA_UDP")]
+    #[cfg(CONFIG_TIPC_MEDIA_UDP)]
     genl_ops { cmd: TIPC_NL_UDP_GET_REMOTEIP, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP_STRICT, dumpit: Some(tipc_udp_nl_dump_remoteip) },
-    #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+    #[cfg(CONFIG_TIPC_CRYPTO)]
     genl_ops { cmd: TIPC_NL_KEY_SET, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP, flags: GENL_UNS_ADMIN_PERM, doit: Some(tipc_nl_node_set_key) },
-    #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+    #[cfg(CONFIG_TIPC_CRYPTO)]
     genl_ops { cmd: TIPC_NL_KEY_FLUSH, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP, flags: GENL_UNS_ADMIN_PERM, doit: Some(tipc_nl_node_flush_key) },
     genl_ops { cmd: TIPC_NL_ADDR_LEGACY_GET, validate: GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP, doit: Some(tipc_nl_net_addr_legacy_get) },
 ];

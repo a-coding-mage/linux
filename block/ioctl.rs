@@ -35,9 +35,9 @@ unsafe fn blkpg_ioctl(bdev: *mut block_device, arg: *mut blkpg_ioctl_arg) -> c_i
     blkpg_do_ioctl(bdev, udata, op)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] struct compat_blkpg_ioctl_arg { op: compat_int_t, flags: compat_int_t, datalen: compat_int_t, data: compat_caddr_t }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_blkpg_ioctl(bdev: *mut block_device, arg: *mut compat_blkpg_ioctl_arg) -> c_int {
     let mut udata = 0; let mut op = 0;
     if get_user(&mut op, &(*arg).op) != 0 || get_user(&mut udata, &(*arg).data) != 0 { return -EFAULT; }
@@ -100,9 +100,9 @@ unsafe fn put_long(p: *mut c_long, v: c_long) -> c_int { put_user(v, p) }
 unsafe fn put_ulong(p: *mut c_ulong, v: c_ulong) -> c_int { put_user(v, p) }
 unsafe fn put_u64(p: *mut u64, v: u64) -> c_int { put_user(v, p) }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_put_long(p: *mut compat_long_t, v: c_long) -> c_int { put_user(v, p) }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_put_ulong(p: *mut compat_ulong_t, v: compat_ulong_t) -> c_int { put_user(v, p) }
 
 #[repr(C)] enum pr_direction { PR_IN, PR_OUT }

@@ -28,7 +28,7 @@ static mut command_line: [c_char; COMMAND_LINE_SIZE] = [0; COMMAND_LINE_SIZE];
 
 #[inline]
 unsafe fn copy_edd() {
-    #[cfg(feature = "CONFIG_EDD")]
+    #[cfg(CONFIG_EDD)]
     { memcpy((*(&mut edd)).mbr_signature.as_mut_ptr() as *mut c_void, boot_params.edd_mbr_sig_buffer.as_ptr() as *const c_void, size_of_val(&edd.mbr_signature)); memcpy(edd.edd_info.as_mut_ptr() as *mut c_void, boot_params.eddbuf.as_ptr() as *const c_void, size_of_val(&edd.edd_info)); edd.mbr_signature_nr = boot_params.edd_mbr_sig_buf_entries; edd.edd_info_nr = boot_params.eddbuf_entries; }
 }
 
@@ -74,9 +74,9 @@ unsafe fn reserve_initrd() {
 }
 
 unsafe fn add_early_ima_buffer(phys_addr: u64) {
-    #[cfg(feature = "CONFIG_IMA")]
+    #[cfg(CONFIG_IMA)]
     { let data = early_memremap(phys_addr + size_of::<setup_data>() as u64, size_of::<ima_setup_data>()); if data.is_null() { pr_warn!("setup: failed to memremap ima_setup_data entry\n"); return; } let d = &mut *(data as *mut ima_setup_data); if d.size != 0 { memblock_reserve_kern(d.addr, d.size); ima_kexec_buffer_phys = d.addr; ima_kexec_buffer_size = d.size as usize; } early_memunmap(data, size_of::<ima_setup_data>()); }
-    #[cfg(not(feature = "CONFIG_IMA"))] pr_warn!("Passed IMA kexec data, but CONFIG_IMA not set. Ignoring.\n");
+    #[cfg(not(CONFIG_IMA))] pr_warn!("Passed IMA kexec data, but CONFIG_IMA not set. Ignoring.\n");
 }
 
 unsafe fn add_kho(phys_addr: u64, data_len: u32) {
@@ -125,9 +125,9 @@ pub unsafe fn setup_arch(cmdline_p: *mut *mut c_char) {
     olpc_ofw_detect(); idt_setup_early_traps(); early_cpu_init(); jump_label_init(); static_call_init(); early_ioremap_init(); setup_olpc_ofw_pgd(); parse_boot_params(); x86_init.oem.arch_setup(); early_reserve_memory(); iomem_resource.end=(1u64<<boot_cpu_data.x86_phys_bits)-1; e820__memory_setup(); parse_setup_data(); copy_edd(); setup_initial_init_mm(_text,_etext,_edata,_brk_end as *mut c_void); x86_configure_nx(); parse_early_param(); if efi_enabled(EFI_BOOT) { efi_memblock_x86_reserve_range(); } x86_report_nx(); apic_setup_apic_calls(); e820__finish_early_params(); if efi_enabled(EFI_BOOT){efi_init();} reserve_ibft_region(); x86_init.resources.dmi_setup(); init_hypervisor_platform(); tsc_early_init(); x86_init.resources.probe_roms(); setup_kernel_resources(); e820_add_kernel_range(); trim_bios_range(); max_pfn=e820__end_of_ram_pfn(); cache_bp_init(); if mtrr_trim_uncached_memory(max_pfn){max_pfn=e820__end_of_ram_pfn();} max_possible_pfn=max_pfn; kernel_randomize_memory(); check_x2apic(); max_low_pfn=if max_pfn>(1u64<<(32-PAGE_SHIFT)){e820__end_of_low_ram_pfn()}else{max_pfn}; x86_init.mpparse.find_mptable(); early_alloc_pgt_buf(); reserve_brk(); cleanup_highmap(); e820__memblock_setup(); mem_encrypt_setup_arch(); cc_random_init(); efi_find_mirror(); efi_esrt_init(); efi_mokvar_table_init(); efi_reserve_boot_services(); e820__memblock_alloc_reserved_mpc_new(); x86_platform.realmode_reserve(); init_mem_mapping(); cpu_init_replace_early_idt(); mmu_cr4_features=__read_cr4()&!X86_CR4_PCIDE; memblock_set_current_limit(get_max_mapped()); setup_log_buf(1); reserve_initrd(); acpi_table_upgrade(); acpi_boot_table_init(); vsmp_init(); io_delay_init(); early_platform_quirks(); early_acpi_boot_init(); x86_init.mpparse.early_parse_smp_cfg(); x86_flattree_get_config(); initmem_init(); dma_contiguous_reserve(max_pfn_mapped<<PAGE_SHIFT); arch_reserve_crashkernel(); if !early_xdbc_setup_hardware(){early_xdbc_register_console();} x86_init.paging.pagetable_init(); kasan_init(); sync_initial_page_table(); tboot_probe(); map_vsyscall(); x86_32_probe_apic(); early_quirks(); topology_apply_cmdline_limits_early(); acpi_boot_init(); x86_init.mpparse.parse_smp_cfg(); init_apic_mappings(); topology_init_possible_cpus(); init_cpu_to_node(); init_gi_nodes(); io_apic_init_mappings(); x86_init.hyper.guest_late_init(); e820__reserve_resources(); e820__register_nosave_regions(max_pfn); x86_init.resources.reserve_resources(); e820__setup_pci_gap(); x86_init.oem.banner(); x86_init.timers.wallclock_init(); therm_lvt_init(); mcheck_init(); register_refined_jiffies(PIT_TICK_RATE); unwind_init();
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub unsafe fn i386_reserve_resources() { request_resource(&mut iomem_resource,&mut video_ram_resource); reserve_standard_io_resources(); }
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub fn arch_cpu_is_hotpluggable(cpu: c_int) -> bool { cpu > 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

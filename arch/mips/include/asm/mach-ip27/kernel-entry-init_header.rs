@@ -26,7 +26,7 @@ pub const CACHE_CACHABLE_COW: u64 = 5 << 9;
 #[macro_export]
 macro_rules! mapped_kernel_setup_tlb {
     () => {{
-        #[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+        #[cfg(CONFIG_MAPPED_KERNEL)]
         unsafe {
             core::arch::asm!(
                 "dli t0, 0xffffffffc0000000",
@@ -55,7 +55,7 @@ macro_rules! mapped_kernel_setup_tlb {
                 "tlbwi",
             );
         }
-        #[cfg(not(feature = "CONFIG_MAPPED_KERNEL"))]
+        #[cfg(not(CONFIG_MAPPED_KERNEL))]
         unsafe {
             core::arch::asm!("mtc0 zero, CP0_WIRED");
         }

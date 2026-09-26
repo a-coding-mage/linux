@@ -14,13 +14,13 @@
 
 const PDC_CHASSIS_VER: &str = "0.05";
 
-#[cfg(feature = "CONFIG_PDC_CHASSIS")]
+#[cfg(CONFIG_PDC_CHASSIS)]
 static mut pdc_chassis_enabled: u32 = 1;
 
 /// pdc_chassis_setup() - Enable/disable pdc_chassis code at boot time.
 /// `str`: configuration param: 0 to disable chassis log.
 /// Returns 1.
-#[cfg(feature = "CONFIG_PDC_CHASSIS")]
+#[cfg(CONFIG_PDC_CHASSIS)]
 unsafe fn pdc_chassis_setup(mut str_: *mut core::ffi::c_char) -> i32 {
     // panic_timeout = simple_strtoul(str, NULL, 0);
     get_option(&mut str_, &raw mut pdc_chassis_enabled);
@@ -36,7 +36,7 @@ unsafe fn pdc_chassis_setup(mut str_: *mut core::ffi::c_char) -> i32 {
  */
 
 /// pdc_chassis_panic_event() - Called by the panic handler.
-#[cfg(feature = "CONFIG_PDC_CHASSIS")]
+#[cfg(CONFIG_PDC_CHASSIS)]
 unsafe extern "C" fn pdc_chassis_panic_event(
     _this: *mut notifier_block,
     _event: u64,
@@ -46,14 +46,14 @@ unsafe extern "C" fn pdc_chassis_panic_event(
     NOTIFY_DONE
 }
 
-#[cfg(feature = "CONFIG_PDC_CHASSIS")]
+#[cfg(CONFIG_PDC_CHASSIS)]
 static mut pdc_chassis_panic_block: notifier_block = notifier_block {
     notifier_call: Some(pdc_chassis_panic_event),
     priority: INT_MAX,
 };
 
 /// pdc_chassis_reboot_event() - Called by the reboot handler.
-#[cfg(feature = "CONFIG_PDC_CHASSIS")]
+#[cfg(CONFIG_PDC_CHASSIS)]
 unsafe extern "C" fn pdc_chassis_reboot_event(
     _this: *mut notifier_block,
     _event: u64,
@@ -63,7 +63,7 @@ unsafe extern "C" fn pdc_chassis_reboot_event(
     NOTIFY_DONE
 }
 
-#[cfg(feature = "CONFIG_PDC_CHASSIS")]
+#[cfg(CONFIG_PDC_CHASSIS)]
 static mut pdc_chassis_reboot_block: notifier_block = notifier_block {
     notifier_call: Some(pdc_chassis_reboot_event),
     priority: INT_MAX,
@@ -71,7 +71,7 @@ static mut pdc_chassis_reboot_block: notifier_block = notifier_block {
 
 /// parisc_pdc_chassis_init() - Called at boot time.
 pub unsafe extern "C" fn parisc_pdc_chassis_init() {
-    #[cfg(feature = "CONFIG_PDC_CHASSIS")]
+    #[cfg(CONFIG_PDC_CHASSIS)]
     if pdc_chassis_enabled != 0 {
         printk(
             KERN_INFO,
@@ -91,9 +91,9 @@ pub unsafe extern "C" fn parisc_pdc_chassis_init() {
 pub unsafe extern "C" fn pdc_chassis_send_status(message: i32) -> i32 {
     let mut retval: i32 = 0;
 
-    #[cfg(feature = "CONFIG_PDC_CHASSIS")]
+    #[cfg(CONFIG_PDC_CHASSIS)]
     if pdc_chassis_enabled != 0 {
-        #[cfg(feature = "CONFIG_64BIT")]
+        #[cfg(CONFIG_64BIT)]
         {
             if is_pdc_pat() != 0 {
                 retval = match message {
@@ -110,7 +110,7 @@ pub unsafe extern "C" fn pdc_chassis_send_status(message: i32) -> i32 {
             }
         }
 
-        #[cfg(not(feature = "CONFIG_64BIT"))]
+        #[cfg(not(CONFIG_64BIT))]
         {
             retval = match message {
                 PDC_CHASSIS_DIRECT_BSTART => pdc_chassis_disp(PDC_CHASSIS_DISP_DATA(OSTAT_INIT)),
@@ -123,7 +123,7 @@ pub unsafe extern "C" fn pdc_chassis_send_status(message: i32) -> i32 {
         }
     }
 
-    #[cfg(all(feature = "CONFIG_PDC_CHASSIS", feature = "CONFIG_CHASSIS_LCD_LED"))]
+    #[cfg(all(CONFIG_PDC_CHASSIS, CONFIG_CHASSIS_LCD_LED))]
     if retval != -1 {
         lcd_print(core::ptr::null());
     }
@@ -131,7 +131,7 @@ pub unsafe extern "C" fn pdc_chassis_send_status(message: i32) -> i32 {
     retval
 }
 
-#[cfg(all(feature = "CONFIG_PDC_CHASSIS_WARN", feature = "CONFIG_PROC_FS"))]
+#[cfg(all(CONFIG_PDC_CHASSIS_WARN, CONFIG_PROC_FS))]
 unsafe extern "C" fn pdc_chassis_warn_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
     let mut warn: u64 = 0;
     let warnreg: u32;
@@ -150,7 +150,7 @@ unsafe extern "C" fn pdc_chassis_warn_show(m: *mut seq_file, _v: *mut core::ffi:
     0
 }
 
-#[cfg(all(feature = "CONFIG_PDC_CHASSIS_WARN", feature = "CONFIG_PROC_FS"))]
+#[cfg(all(CONFIG_PDC_CHASSIS_WARN, CONFIG_PROC_FS))]
 unsafe extern "C" fn pdc_chassis_create_procfs() -> i32 {
     let mut test: u64 = 0;
     let ret = pdc_chassis_warn(&mut test);

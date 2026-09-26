@@ -59,7 +59,7 @@ pub unsafe fn ocfs2_hamming_fix_block(data: *mut core::ffi::c_void, blocksize: u
     ocfs2_hamming_fix(data, blocksize * 8, 0, fix);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn ocfs2_blockcheck_debug_install(stats: *mut ocfs2_blockcheck_stats, parent: *mut dentry) {
     let dir = debugfs_create_dir(b"blockcheck\0".as_ptr() as *const _, parent);
     (*stats).b_debug_dir = dir;
@@ -68,7 +68,7 @@ unsafe fn ocfs2_blockcheck_debug_install(stats: *mut ocfs2_blockcheck_stats, par
     debugfs_create_file(b"ecc_recoveries\0".as_ptr() as *const _, S_IFREG | S_IRUSR, dir, &mut (*stats).b_recover_count as *mut _, &blockcheck_fops);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 unsafe fn ocfs2_blockcheck_debug_install(_stats: *mut ocfs2_blockcheck_stats, _parent: *mut dentry) {}
 
 unsafe fn ocfs2_blockcheck_debug_remove(stats: *mut ocfs2_blockcheck_stats) {

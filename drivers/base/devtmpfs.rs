@@ -15,9 +15,9 @@
 
 // Kernel headers and "base.h" provide the external types, constants, and functions used here.
 
-#[cfg(feature = "CONFIG_DEVTMPFS_SAFE")]
+#[cfg(CONFIG_DEVTMPFS_SAFE)]
 const DEVTMPFS_MFLAGS: u64 = MS_SILENT | MS_NOEXEC | MS_NOSUID;
-#[cfg(not(feature = "CONFIG_DEVTMPFS_SAFE"))]
+#[cfg(not(CONFIG_DEVTMPFS_SAFE))]
 const DEVTMPFS_MFLAGS: u64 = MS_SILENT;
 
 static mut THREAD: *mut task_struct = core::ptr::null_mut();
@@ -47,7 +47,7 @@ static mut MNT: *mut vfsmount = core::ptr::null_mut();
 
 static mut INTERNAL_FS_TYPE: file_system_type = file_system_type {
     name: c"devtmpfs".as_ptr(),
-    init_fs_context: if cfg!(feature = "CONFIG_TMPFS") { shmem_init_fs_context } else { ramfs_init_fs_context },
+    init_fs_context: if cfg!(CONFIG_TMPFS) { shmem_init_fs_context } else { ramfs_init_fs_context },
     kill_sb: kill_anon_super,
 };
 
@@ -62,7 +62,7 @@ unsafe fn devtmpfs_get_tree(fc: *mut fs_context) -> i32 {
 static mut DEVTMPFS_CONTEXT_OPS: fs_context_operations = fs_context_operations::empty();
 
 unsafe fn devtmpfs_init_fs_context(fc: *mut fs_context) -> i32 {
-    let ret = if cfg!(feature = "CONFIG_TMPFS") { shmem_init_fs_context(fc) } else { ramfs_init_fs_context(fc) };
+    let ret = if cfg!(CONFIG_TMPFS) { shmem_init_fs_context(fc) } else { ramfs_init_fs_context(fc) };
     if ret < 0 { return ret; }
     (*fc).ops = &raw const DEVTMPFS_CONTEXT_OPS;
     0

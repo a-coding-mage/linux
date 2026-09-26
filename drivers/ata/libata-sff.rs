@@ -24,28 +24,28 @@
 unsafe  * struct workqueue_struct */ *ata_sff_wq;
 
 const  ata_port_operations ata_sff_port_ops = {
-	.inherits		= &ata_base_port_ops,
+	inherits: &ata_base_port_ops,
 
-	.qc_issue		= ata_sff_qc_issue,
-	.qc_fill_rtf		= ata_sff_qc_fill_rtf,
+	qc_issue: ata_sff_qc_issue,
+	qc_fill_rtf: ata_sff_qc_fill_rtf,
 
-	.freeze			= ata_sff_freeze,
-	.thaw			= ata_sff_thaw,
+	freeze: ata_sff_freeze,
+	thaw: ata_sff_thaw,
 	.reset.prereset		= ata_sff_prereset,
 	.reset.softreset	= ata_sff_softreset,
 	.reset.hardreset	= sata_sff_hardreset,
 	.reset.postreset	= ata_sff_postreset,
-	.error_handler		= ata_sff_error_handler,
+	error_handler: ata_sff_error_handler,
 
-	.sff_dev_select		= ata_sff_dev_select,
-	.sff_check_status	= ata_sff_check_status,
-	.sff_tf_load		= ata_sff_tf_load,
-	.sff_tf_read		= ata_sff_tf_read,
-	.sff_exec_command	= ata_sff_exec_command,
-	.sff_data_xfer		= ata_sff_data_xfer,
-	.sff_drain_fifo		= ata_sff_drain_fifo,
+	sff_dev_select: ata_sff_dev_select,
+	sff_check_status: ata_sff_check_status,
+	sff_tf_load: ata_sff_tf_load,
+	sff_tf_read: ata_sff_tf_read,
+	sff_exec_command: ata_sff_exec_command,
+	sff_data_xfer: ata_sff_data_xfer,
+	sff_drain_fifo: ata_sff_drain_fifo,
 
-	.lost_interrupt		= ata_sff_lost_interrupt,
+	lost_interrupt: ata_sff_lost_interrupt,
 };
 
 
@@ -62,7 +62,7 @@ const  ata_port_operations ata_sff_port_ops = {
  */
 u8 ata_sff_check_status(* struct ata_port */ *ap)
 {
-	return ioread8(ap->ioaddr.status_addr);
+	return ioread8((*ap).ioaddr.status_addr);
 }
 
 
@@ -82,19 +82,20 @@ u8 ata_sff_check_status(* struct ata_port */ *ap)
  */
 unsafe  bool ata_sff_altstatus(* struct ata_port */ *ap, u8 *status)
 {
+	'read: {
 	u8 tmp;
 
-	if (ap->ops->sff_check_altstatus) {
-		tmp = ap->ops->sff_check_altstatus(ap);
-		goto read;
+	if ((*(*ap).ops).sff_check_altstatus) {
+		tmp = (*(*ap).ops).sff_check_altstatus(ap);
+		break 'read;
 	}
-	if (ap->ioaddr.altstatus_addr) {
-		tmp = ioread8(ap->ioaddr.altstatus_addr);
-		goto read;
+	if ((*ap).ioaddr.altstatus_addr) {
+		tmp = ioread8((*ap).ioaddr.altstatus_addr);
+		break 'read;
 	}
 	return false;
-
-read:
+	}
+	
 	if (status)
 		*status = tmp;
 	return true;
@@ -120,7 +121,7 @@ unsafe  u8 ata_sff_irq_status(* struct ata_port */ *ap)
 	if (ata_sff_altstatus(ap, &status) && (status & ATA_BUSY))
 		return status;
 	/* Clear INTRQ latch */
-	status = ap->ops->sff_check_status(ap);
+	status = (*(*ap).ops).sff_check_status(ap);
 	return status;
 }
 
@@ -185,7 +186,7 @@ unsafe  () ata_sff_sync(* struct ata_port */ *ap)
 
 unsafe  i32 ata_sff_check_ready(* struct ata_link */ *link)
 {
-	u8 status = link->ap->ops->sff_check_status(link->ap);
+	u8 status = (*(*(*link).ap).ops).sff_check_status((*link).ap);
 
 	return ata_check_ready(status);
 }
@@ -204,7 +205,7 @@ unsafe  i32 ata_sff_check_ready(* struct ata_link */ *link)
  *	RETURNS:
  *	0 on success, -errno otherwise.
  */
-i32 ata_sff_wait_ready(* struct ata_link */ *link, usize deadline)
+i32 ata_sff_wait_ready(* struct ata_link */ *link, deadline: usize)
 {
 	return ata_wait_ready(link, deadline, ata_sff_check_ready);
 }
@@ -223,14 +224,14 @@ i32 ata_sff_wait_ready(* struct ata_link */ *link, usize deadline)
  *	LOCKING:
  *	Inherited from caller.
  */
-unsafe  bool ata_sff_set_devctl(* struct ata_port */ *ap, u8 ctl)
+unsafe  bool ata_sff_set_devctl(* struct ata_port */ *ap, ctl: u8)
 {
-	if (ap->ops->sff_set_devctl) {
-		ap->ops->sff_set_devctl(ap, ctl);
+	if ((*(*ap).ops).sff_set_devctl) {
+		(*(*ap).ops).sff_set_devctl(ap, ctl);
 		return true;
 	}
-	if (ap->ioaddr.ctl_addr) {
-		iowrite8(ctl, ap->ioaddr.ctl_addr);
+	if ((*ap).ioaddr.ctl_addr) {
+		iowrite8(ctl, (*ap).ioaddr.ctl_addr);
 		return true;
 	}
 
@@ -251,7 +252,7 @@ unsafe  bool ata_sff_set_devctl(* struct ata_port */ *ap, u8 ctl)
  *	LOCKING:
  *	caller.
  */
-() ata_sff_dev_select(* struct ata_port */ *ap, u32 device)
+() ata_sff_dev_select(* struct ata_port */ *ap, device: u32)
 {
 	u8 tmp;
 
@@ -260,7 +261,7 @@ unsafe  bool ata_sff_set_devctl(* struct ata_port */ *ap, u8 ctl)
 	else
 		tmp = ATA_DEVICE_OBS | ATA_DEV1;
 
-	iowrite8(tmp, ap->ioaddr.device_addr);
+	iowrite8(tmp, (*ap).ioaddr.device_addr);
 	ata_sff_pause(ap);	/* needed; also flushes, for mmio */
 }
 
@@ -283,16 +284,16 @@ unsafe  bool ata_sff_set_devctl(* struct ata_port */ *ap, u8 ctl)
  *	LOCKING:
  *	caller.
  */
-unsafe  () ata_dev_select(* struct ata_port */ *ap, u32 device,
-			   u32 wait, u32 can_sleep)
+unsafe  () ata_dev_select(* struct ata_port */ *ap, device: u32,
+			   wait: u32, can_sleep: u32)
 {
 	if (wait)
 		ata_wait_idle(ap);
 
-	ap->ops->sff_dev_select(ap, device);
+	(*(*ap).ops).sff_dev_select(ap, device);
 
 	if (wait) {
-		if (can_sleep && ap->link.device[device].class == ATA_DEV_ATAPI)
+		if (can_sleep && (*ap).link.device[device].class == ATA_DEV_ATAPI)
 			ata_msleep(ap, 150);
 		ata_wait_idle(ap);
 	}
@@ -313,19 +314,19 @@ unsafe  () ata_dev_select(* struct ata_port */ *ap, u32 device,
  */
 () ata_sff_irq_on(* struct ata_port */ *ap)
 {
-	if (ap->ops->sff_irq_on) {
-		ap->ops->sff_irq_on(ap);
+	if ((*(*ap).ops).sff_irq_on) {
+		(*(*ap).ops).sff_irq_on(ap);
 		return;
 	}
 
-	ap->ctl &= ~ATA_NIEN;
-	ap->last_ctl = ap->ctl;
+	(*ap).ctl &= ~ATA_NIEN;
+	(*ap).last_ctl = (*ap).ctl;
 
-	ata_sff_set_devctl(ap, ap->ctl);
+	ata_sff_set_devctl(ap, (*ap).ctl);
 	ata_wait_idle(ap);
 
-	if (ap->ops->sff_irq_clear)
-		ap->ops->sff_irq_clear(ap);
+	if ((*(*ap).ops).sff_irq_clear)
+		(*(*ap).ops).sff_irq_clear(ap);
 }
 
 
@@ -341,35 +342,35 @@ unsafe  () ata_dev_select(* struct ata_port */ *ap, u32 device,
  */
 () ata_sff_tf_load(* struct ata_port */ *ap, const  ata_taskfile *tf)
 {
-	* struct ata_ioports */ *ioaddr = &ap->ioaddr;
-	u32 is_addr = tf->flags & ATA_TFLAG_ISADDR;
+	* struct ata_ioports */ *ioaddr = (*&ap).ioaddr;
+	u32 is_addr = (*tf).flags & ATA_TFLAG_ISADDR;
 
-	if (tf->ctl != ap->last_ctl) {
-		if (ioaddr->ctl_addr)
-			iowrite8(tf->ctl, ioaddr->ctl_addr);
-		ap->last_ctl = tf->ctl;
+	if ((*tf).ctl != (*ap).last_ctl) {
+		if ((*ioaddr).ctl_addr)
+			iowrite8((*tf).ctl, (*ioaddr).ctl_addr);
+		(*ap).last_ctl = (*tf).ctl;
 		ata_wait_idle(ap);
 	}
 
-	if (is_addr && (tf->flags & ATA_TFLAG_LBA48)) {
-		WARN_ON_ONCE(!ioaddr->ctl_addr);
-		iowrite8(tf->hob_feature, ioaddr->feature_addr);
-		iowrite8(tf->hob_nsect, ioaddr->nsect_addr);
-		iowrite8(tf->hob_lbal, ioaddr->lbal_addr);
-		iowrite8(tf->hob_lbam, ioaddr->lbam_addr);
-		iowrite8(tf->hob_lbah, ioaddr->lbah_addr);
+	if (is_addr && ((*tf).flags & ATA_TFLAG_LBA48)) {
+		WARN_ON_ONCE((*!ioaddr).ctl_addr);
+		iowrite8((*tf).hob_feature, (*ioaddr).feature_addr);
+		iowrite8((*tf).hob_nsect, (*ioaddr).nsect_addr);
+		iowrite8((*tf).hob_lbal, (*ioaddr).lbal_addr);
+		iowrite8((*tf).hob_lbam, (*ioaddr).lbam_addr);
+		iowrite8((*tf).hob_lbah, (*ioaddr).lbah_addr);
 	}
 
 	if (is_addr) {
-		iowrite8(tf->feature, ioaddr->feature_addr);
-		iowrite8(tf->nsect, ioaddr->nsect_addr);
-		iowrite8(tf->lbal, ioaddr->lbal_addr);
-		iowrite8(tf->lbam, ioaddr->lbam_addr);
-		iowrite8(tf->lbah, ioaddr->lbah_addr);
+		iowrite8((*tf).feature, (*ioaddr).feature_addr);
+		iowrite8((*tf).nsect, (*ioaddr).nsect_addr);
+		iowrite8((*tf).lbal, (*ioaddr).lbal_addr);
+		iowrite8((*tf).lbam, (*ioaddr).lbam_addr);
+		iowrite8((*tf).lbah, (*ioaddr).lbah_addr);
 	}
 
-	if (tf->flags & ATA_TFLAG_DEVICE)
-		iowrite8(tf->device, ioaddr->device_addr);
+	if ((*tf).flags & ATA_TFLAG_DEVICE)
+		iowrite8((*tf).device, (*ioaddr).device_addr);
 
 	ata_wait_idle(ap);
 }
@@ -390,26 +391,26 @@ unsafe  () ata_dev_select(* struct ata_port */ *ap, u32 device,
  */
 () ata_sff_tf_read(* struct ata_port */ *ap, * struct ata_taskfile */ *tf)
 {
-	* struct ata_ioports */ *ioaddr = &ap->ioaddr;
+	* struct ata_ioports */ *ioaddr = (*&ap).ioaddr;
 
-	tf->status = ata_sff_check_status(ap);
-	tf->error = ioread8(ioaddr->error_addr);
-	tf->nsect = ioread8(ioaddr->nsect_addr);
-	tf->lbal = ioread8(ioaddr->lbal_addr);
-	tf->lbam = ioread8(ioaddr->lbam_addr);
-	tf->lbah = ioread8(ioaddr->lbah_addr);
-	tf->device = ioread8(ioaddr->device_addr);
+	(*tf).status = ata_sff_check_status(ap);
+	(*tf).error = ioread8((*ioaddr).error_addr);
+	(*tf).nsect = ioread8((*ioaddr).nsect_addr);
+	(*tf).lbal = ioread8((*ioaddr).lbal_addr);
+	(*tf).lbam = ioread8((*ioaddr).lbam_addr);
+	(*tf).lbah = ioread8((*ioaddr).lbah_addr);
+	(*tf).device = ioread8((*ioaddr).device_addr);
 
-	if (tf->flags & ATA_TFLAG_LBA48) {
-		if (likely(ioaddr->ctl_addr)) {
-			iowrite8(tf->ctl | ATA_HOB, ioaddr->ctl_addr);
-			tf->hob_feature = ioread8(ioaddr->error_addr);
-			tf->hob_nsect = ioread8(ioaddr->nsect_addr);
-			tf->hob_lbal = ioread8(ioaddr->lbal_addr);
-			tf->hob_lbam = ioread8(ioaddr->lbam_addr);
-			tf->hob_lbah = ioread8(ioaddr->lbah_addr);
-			iowrite8(tf->ctl, ioaddr->ctl_addr);
-			ap->last_ctl = tf->ctl;
+	if ((*tf).flags & ATA_TFLAG_LBA48) {
+		if (likely((*ioaddr).ctl_addr)) {
+			iowrite8((*tf).ctl | ATA_HOB, (*ioaddr).ctl_addr);
+			(*tf).hob_feature = ioread8((*ioaddr).error_addr);
+			(*tf).hob_nsect = ioread8((*ioaddr).nsect_addr);
+			(*tf).hob_lbal = ioread8((*ioaddr).lbal_addr);
+			(*tf).hob_lbam = ioread8((*ioaddr).lbam_addr);
+			(*tf).hob_lbah = ioread8((*ioaddr).lbah_addr);
+			iowrite8((*tf).ctl, (*ioaddr).ctl_addr);
+			(*ap).last_ctl = (*tf).ctl;
 		} else
 			WARN_ON_ONCE(1);
 	}
@@ -429,7 +430,7 @@ unsafe  () ata_dev_select(* struct ata_port */ *ap, u32 device,
  */
 () ata_sff_exec_command(* struct ata_port */ *ap, const  ata_taskfile *tf)
 {
-	iowrite8(tf->command, ap->ioaddr.command_addr);
+	iowrite8((*tf).command, (*ap).ioaddr.command_addr);
 	ata_sff_pause(ap);
 }
 
@@ -450,12 +451,12 @@ unsafe  () ata_dev_select(* struct ata_port */ *ap, u32 device,
 #[inline]
 unsafe fn () ata_tf_to_host(* struct ata_port */ *ap,
 				  const  ata_taskfile *tf,
-				  u32 tag)
+				  tag: u32)
 {
 	trace_ata_tf_load(ap, tf);
-	ap->ops->sff_tf_load(ap, tf);
+	(*(*ap).ops).sff_tf_load(ap, tf);
 	trace_ata_exec_command(ap, tf, tag);
-	ap->ops->sff_exec_command(ap, tf);
+	(*(*ap).ops).sff_exec_command(ap, tf);
 }
 
 /**
@@ -473,11 +474,11 @@ unsafe fn () ata_tf_to_host(* struct ata_port */ *ap,
  *	RETURNS:
  *	Bytes consumed.
  */
-u32 ata_sff_data_xfer(* struct ata_queued_cmd */ *qc, unsigned char *buf,
-			       u32 buflen, i32 rw)
+u32 ata_sff_data_xfer(* struct ata_queued_cmd */ *qc, core::ffi::c_uchar *buf,
+			       buflen: u32, rw: i32)
 {
-	* struct ata_port */ *ap = qc->dev->link->ap;
-	() __iomem *data_addr = ap->ioaddr.data_addr;
+	* struct ata_port */ *ap = (*(*(*qc).dev).link).ap;
+	() __iomem *data_addr = (*ap).ioaddr.data_addr;
 	u32 words = buflen >> 1;
 
 	/* Transfer multiple of 2 bytes */
@@ -488,7 +489,7 @@ u32 ata_sff_data_xfer(* struct ata_queued_cmd */ *qc, unsigned char *buf,
 
 	/* Transfer trailing byte, if any. */
 	if (unlikely(buflen & 0x01)) {
-		unsigned char pad[2] = { };
+		core::ffi::c_uchar pad[2] = { };
 
 		/* Point buf to the tail of buffer */
 		buf += buflen - 1;
@@ -528,16 +529,16 @@ u32 ata_sff_data_xfer(* struct ata_queued_cmd */ *qc, unsigned char *buf,
  *	Bytes consumed.
  */
 
-u32 ata_sff_data_xfer32(* struct ata_queued_cmd */ *qc, unsigned char *buf,
-			       u32 buflen, i32 rw)
+u32 ata_sff_data_xfer32(* struct ata_queued_cmd */ *qc, core::ffi::c_uchar *buf,
+			       buflen: u32, rw: i32)
 {
-	* struct ata_device */ *dev = qc->dev;
-	* struct ata_port */ *ap = dev->link->ap;
-	() __iomem *data_addr = ap->ioaddr.data_addr;
+	* struct ata_device */ *dev = (*qc).dev;
+	* struct ata_port */ *ap = (*(*dev).link).ap;
+	() __iomem *data_addr = (*ap).ioaddr.data_addr;
 	u32 words = buflen >> 2;
 	i32 slop = buflen & 3;
 
-	if (!(ap->pflags & ATA_PFLAG_PIO32))
+	if (!((*ap).pflags & ATA_PFLAG_PIO32))
 		return ata_sff_data_xfer(qc, buf, buflen, rw);
 
 	/* Transfer multiple of 4 bytes */
@@ -548,7 +549,7 @@ u32 ata_sff_data_xfer32(* struct ata_queued_cmd */ *qc, unsigned char *buf,
 
 	/* Transfer trailing bytes, if any */
 	if (unlikely(slop)) {
-		unsigned char pad[4] = { };
+		core::ffi::c_uchar pad[4] = { };
 
 		/* Point buf to the tail of buffer */
 		buf += buflen - slop;
@@ -576,13 +577,13 @@ u32 ata_sff_data_xfer32(* struct ata_queued_cmd */ *qc, unsigned char *buf,
 
 
 unsafe  () ata_pio_xfer(* struct ata_queued_cmd */ *qc, * struct page */ *page,
-		u32 offset, usize xfer_size)
+		offset: u32, xfer_size: usize)
 {
-	bool do_write = (qc->tf.flags & ATA_TFLAG_WRITE);
-	unsigned char *buf;
+	bool do_write = ((*qc).tf.flags & ATA_TFLAG_WRITE);
+	core::ffi::c_uchar *buf;
 
 	buf = kmap_atomic(page);
-	qc->ap->ops->sff_data_xfer(qc, buf + offset, xfer_size, do_write);
+	(*(*(*qc).ap).ops).sff_data_xfer(qc, buf + offset, xfer_size, do_write);
 	kunmap_atomic(buf);
 
 	if (!do_write && !PageSlab(page))
@@ -600,26 +601,26 @@ unsafe  () ata_pio_xfer(* struct ata_queued_cmd */ *qc, * struct page */ *page,
  */
 unsafe  () ata_pio_sector(* struct ata_queued_cmd */ *qc)
 {
-	* struct ata_port */ *ap = qc->ap;
+	* struct ata_port */ *ap = (*qc).ap;
 	* struct page */ *page;
-	u32 offset, count;
+	offset: u32, count;
 
-	if (!qc->cursg) {
-		qc->curbytes = qc->nbytes;
+	if ((*!qc).cursg) {
+		(*qc).curbytes = (*qc).nbytes;
 		return;
 	}
-	if (qc->curbytes == qc->nbytes - qc->sect_size)
-		ap->hsm_task_state = HSM_ST_LAST;
+	if ((*qc).curbytes == (*qc).nbytes - (*qc).sect_size)
+		(*ap).hsm_task_state = HSM_ST_LAST;
 
-	page = sg_page(qc->cursg);
-	offset = qc->cursg->offset + qc->cursg_ofs;
+	page = sg_page((*qc).cursg);
+	offset = (*(*qc).cursg).offset + (*qc).cursg_ofs;
 
 	/* get the current page and offset */
 	page += offset >> PAGE_SHIFT;
 	offset %= PAGE_SIZE;
 
 	/* don't overrun current sg */
-	count = min(qc->cursg->length - qc->cursg_ofs, qc->sect_size);
+	count = min((*(*qc).cursg).length - (*qc).cursg_ofs, (*qc).sect_size);
 
 	trace_ata_sff_pio_transfer_data(qc, offset, count);
 
@@ -637,14 +638,14 @@ unsafe  () ata_pio_sector(* struct ata_queued_cmd */ *qc)
 		ata_pio_xfer(qc, page, offset, count);
 	}
 
-	qc->curbytes += count;
-	qc->cursg_ofs += count;
+	(*qc).curbytes += count;
+	(*qc).cursg_ofs += count;
 
-	if (qc->cursg_ofs == qc->cursg->length) {
-		qc->cursg = sg_next(qc->cursg);
-		if (!qc->cursg)
-			ap->hsm_task_state = HSM_ST_LAST;
-		qc->cursg_ofs = 0;
+	if ((*qc).cursg_ofs == (*(*qc).cursg).length) {
+		(*qc).cursg = sg_next((*qc).cursg);
+		if ((*!qc).cursg)
+			(*ap).hsm_task_state = HSM_ST_LAST;
+		(*qc).cursg_ofs = 0;
 	}
 }
 
@@ -660,20 +661,20 @@ unsafe  () ata_pio_sector(* struct ata_queued_cmd */ *qc)
  */
 unsafe  () ata_pio_sectors(* struct ata_queued_cmd */ *qc)
 {
-	if (is_multi_taskfile(&qc->tf)) {
+	if (is_multi_taskfile((*&qc).tf)) {
 		/* READ/WRITE MULTIPLE */
 		u32 nsect;
 
-		WARN_ON_ONCE(qc->dev->multi_count == 0);
+		WARN_ON_ONCE((*(*qc).dev).multi_count == 0);
 
-		nsect = min((qc->nbytes - qc->curbytes) / qc->sect_size,
-			    qc->dev->multi_count);
+		nsect = min(((*qc).nbytes - (*qc).curbytes) / (*qc).sect_size,
+			    (*(*qc).dev).multi_count);
 		while (nsect--)
 			ata_pio_sector(qc);
 	} else
 		ata_pio_sector(qc);
 
-	ata_sff_sync(qc->ap); /* flush */
+	ata_sff_sync((*qc).ap); /* flush */
 }
 
 /**
@@ -690,26 +691,26 @@ unsafe  () ata_pio_sectors(* struct ata_queued_cmd */ *qc)
 unsafe  () atapi_send_cdb(* struct ata_port */ *ap, * struct ata_queued_cmd */ *qc)
 {
 	/* send SCSI cdb */
-	trace_atapi_send_cdb(qc, 0, qc->dev->cdb_len);
-	WARN_ON_ONCE(qc->dev->cdb_len < 12);
+	trace_atapi_send_cdb(qc, 0, (*(*qc).dev).cdb_len);
+	WARN_ON_ONCE((*(*qc).dev).cdb_len < 12);
 
-	ap->ops->sff_data_xfer(qc, qc->cdb, qc->dev->cdb_len, 1);
+	(*(*ap).ops).sff_data_xfer(qc, (*qc).cdb, (*(*qc).dev).cdb_len, 1);
 	ata_sff_sync(ap);
 	/* FIXME: If the CDB is for DMA do we need to do the transition delay
 	   or is bmdma_start guaranteed to do it ? */
-	switch (qc->tf.protocol) {
+	switch ((*qc).tf.protocol) {
 	case ATAPI_PROT_PIO:
-		ap->hsm_task_state = HSM_ST;
+		(*ap).hsm_task_state = HSM_ST;
 		break;
 	case ATAPI_PROT_NODATA:
-		ap->hsm_task_state = HSM_ST_LAST;
+		(*ap).hsm_task_state = HSM_ST_LAST;
 		break;
 #ifdef CONFIG_ATA_BMDMA
 	case ATAPI_PROT_DMA:
-		ap->hsm_task_state = HSM_ST_LAST;
+		(*ap).hsm_task_state = HSM_ST_LAST;
 		/* initiate bmdma */
-		trace_ata_bmdma_start(ap, &qc->tf, qc->tag);
-		ap->ops->bmdma_start(qc);
+		trace_ata_bmdma_start(ap, (*&qc).tf, (*qc).tag);
+		(*(*ap).ops).bmdma_start(qc);
 		break;
 #endif /* CONFIG_ATA_BMDMA */
 	default:
@@ -728,35 +729,35 @@ unsafe  () atapi_send_cdb(* struct ata_port */ *ap, * struct ata_queued_cmd */ *
  *	Inherited from caller.
  *
  */
-unsafe  i32 __atapi_pio_bytes(* struct ata_queued_cmd */ *qc, u32 bytes)
+unsafe  i32 __atapi_pio_bytes(* struct ata_queued_cmd */ *qc, bytes: u32)
 {
-	i32 rw = (qc->tf.flags & ATA_TFLAG_WRITE) ? WRITE : READ;
-	* struct ata_port */ *ap = qc->ap;
-	* struct ata_device */ *dev = qc->dev;
-	* struct ata_eh_info */ *ehi = &dev->link->eh_info;
+	i32 rw = ((*qc).tf.flags & ATA_TFLAG_WRITE) ? WRITE : READ;
+	* struct ata_port */ *ap = (*qc).ap;
+	* struct ata_device */ *dev = (*qc).dev;
+	* struct ata_eh_info */ *ehi = (*(*&dev).link).eh_info;
 	* struct scatterlist */ *sg;
 	* struct page */ *page;
-	unsigned char *buf;
-	u32 offset, count, consumed;
+	core::ffi::c_uchar *buf;
+	offset: u32, count, consumed;
 
-next_sg:
-	sg = qc->cursg;
+    'next_sg: loop {
+    sg = (*qc).cursg;
 	if (unlikely(!sg)) {
 		ata_ehi_push_desc(ehi, "unexpected or too much trailing data "
 				  "buf=%u cur=%u bytes=%u",
-				  qc->nbytes, qc->curbytes, bytes);
+				  (*qc).nbytes, (*qc).curbytes, bytes);
 		return -1;
 	}
 
 	page = sg_page(sg);
-	offset = sg->offset + qc->cursg_ofs;
+	offset = (*sg).offset + (*qc).cursg_ofs;
 
 	/* get the current page and offset */
 	page += offset >> PAGE_SHIFT;
 	offset %= PAGE_SIZE;
 
 	/* don't overrun current sg */
-	count = min(sg->length - qc->cursg_ofs, bytes);
+	count = min((*sg).length - (*qc).cursg_ofs, bytes);
 
 	/* don't cross page boundaries */
 	count = min(count, (u32)PAGE_SIZE - offset);
@@ -765,16 +766,16 @@ next_sg:
 
 	/* do the actual data transfer */
 	buf = kmap_atomic(page);
-	consumed = ap->ops->sff_data_xfer(qc, buf + offset, count, rw);
+	consumed = (*(*ap).ops).sff_data_xfer(qc, buf + offset, count, rw);
 	kunmap_atomic(buf);
 
 	bytes -= min(bytes, consumed);
-	qc->curbytes += count;
-	qc->cursg_ofs += count;
+	(*qc).curbytes += count;
+	(*qc).cursg_ofs += count;
 
-	if (qc->cursg_ofs == sg->length) {
-		qc->cursg = sg_next(qc->cursg);
-		qc->cursg_ofs = 0;
+	if ((*qc).cursg_ofs == (*sg).length) {
+		(*qc).cursg = sg_next((*qc).cursg);
+		(*qc).cursg_ofs = 0;
 	}
 
 	/*
@@ -784,8 +785,10 @@ next_sg:
 	 * made. Somebody should implement a proper sanity check.
 	 */
 	if (bytes)
-		goto next_sg;
+		continue 'next_sg;
 	return 0;
+        break;
+    }
 }
 
 /**
@@ -799,11 +802,13 @@ next_sg:
  */
 unsafe  () atapi_pio_bytes(* struct ata_queued_cmd */ *qc)
 {
-	* struct ata_port */ *ap = qc->ap;
-	* struct ata_device */ *dev = qc->dev;
-	* struct ata_eh_info */ *ehi = &dev->link->eh_info;
-	u32 ireason, bc_lo, bc_hi, bytes;
-	i32 i_write, do_write = (qc->tf.flags & ATA_TFLAG_WRITE) ? 1 : 0;
+	'err_out: {
+	'atapi_check: {
+	* struct ata_port */ *ap = (*qc).ap;
+	* struct ata_device */ *dev = (*qc).dev;
+	* struct ata_eh_info */ *ehi = (*(*&dev).link).eh_info;
+	ireason: u32, bc_lo, bc_hi, bytes;
+	i_write: i32, do_write = ((*qc).tf.flags & ATA_TFLAG_WRITE) ? 1 : 0;
 
 	/* Abuse qc->result_tf for temp storage of intermediate TF
 	 * here to save some kernel stack usage.
@@ -811,7 +816,7 @@ unsafe  () atapi_pio_bytes(* struct ata_queued_cmd */ *qc)
 	 * error, qc->result_tf is later overwritten by ata_qc_complete().
 	 * So, the correctness of qc->result_tf is not affected.
 	 */
-	ap->ops->sff_tf_read(ap, &qc->result_tf);
+	(*(*ap).ops).sff_tf_read(ap, &qc->result_tf);
 	ireason = qc->result_tf.nsect;
 	bc_lo = qc->result_tf.lbam;
 	bc_hi = qc->result_tf.lbah;
@@ -819,26 +824,27 @@ unsafe  () atapi_pio_bytes(* struct ata_queued_cmd */ *qc)
 
 	/* shall be cleared to zero, indicating xfer of data */
 	if (unlikely(ireason & ATAPI_COD))
-		goto atapi_check;
+		break 'atapi_check;
 
 	/* make sure transfer direction matches expected */
 	i_write = ((ireason & ATAPI_IO) == 0) ? 1 : 0;
 	if (unlikely(do_write != i_write))
-		goto atapi_check;
+		break 'atapi_check;
 
 	if (unlikely(!bytes))
-		goto atapi_check;
+		break 'atapi_check;
 
 	if (unlikely(__atapi_pio_bytes(qc, bytes)))
-		goto err_out;
+		break 'err_out;
 	ata_sff_sync(ap); /* flush */
 
 	return;
-
- atapi_check:
+	}
+	
 	ata_ehi_push_desc(ehi, "ATAPI check failed (ireason=0x%x bytes=%u)",
 			  ireason, bytes);
- err_out:
+	}
+	
 	qc->err_mask |= AC_ERR_HSM;
 	ap->hsm_task_state = HSM_ST_ERR;
 }
@@ -882,7 +888,7 @@ unsafe fn i32 ata_hsm_ok_in_wq(* struct ata_port */ *ap,
  *	If @in_wq is zero, spin_lock_irqsave(host lock).
  *	Otherwise, none on entry and grabs host lock.
  */
-unsafe  () ata_hsm_qc_complete(* struct ata_queued_cmd */ *qc, i32 in_wq)
+unsafe  () ata_hsm_qc_complete(* struct ata_queued_cmd */ *qc, in_wq: i32)
 {
 	* struct ata_port */ *ap = qc->ap;
 
@@ -915,7 +921,7 @@ unsafe  () ata_hsm_qc_complete(* struct ata_queued_cmd */ *qc, i32 in_wq)
  *	1 when poll next status needed, 0 otherwise.
  */
 i32 ata_sff_hsm_move(* struct ata_port */ *ap, * struct ata_queued_cmd */ *qc,
-		     u8 status, i32 in_wq)
+		     status: u8, in_wq: i32)
 {
 	* struct ata_link */ *link = qc->dev->link;
 	* struct ata_eh_info */ *ehi = &link->eh_info;
@@ -1175,13 +1181,13 @@ fsm_start:
 }
 
 
-() ata_sff_queue_delayed_work(* struct delayed_work */ *dwork, usize delay)
+() ata_sff_queue_delayed_work(* struct delayed_work */ *dwork, delay: usize)
 {
 	queue_delayed_work(ata_sff_wq, dwork, delay);
 }
 
 
-() ata_sff_queue_pio_task(* struct ata_link */ *link, usize delay)
+() ata_sff_queue_pio_task(* struct ata_link */ *link, delay: usize)
 {
 	* struct ata_port */ *ap = link->ap;
 
@@ -1217,11 +1223,12 @@ fsm_start:
 
 unsafe  () ata_sff_pio_task(* struct work_struct */ *work)
 {
+	'out_unlock: {
 	* struct ata_port */ *ap =
-		container_of(work, struct ata_port, sff_pio_task.work);
+		container_of(work, ata_port, sff_pio_task.work);
 	* struct ata_link */ *link = ap->sff_pio_task_link;
 	* struct ata_queued_cmd */ *qc;
-	u8 status, wait_mask;
+	status: u8, wait_mask;
 	i32 poll_next;
 
 	spin_lock_irq(ap->lock);
@@ -1231,11 +1238,11 @@ unsafe  () ata_sff_pio_task(* struct work_struct */ *work)
 	qc = ata_qc_from_tag(ap, link->active_tag);
 	if (!qc) {
 		ap->sff_pio_task_link = NULL;
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
-fsm_start:
-	WARN_ON_ONCE(ap->hsm_task_state == HSM_ST_IDLE);
+    'fsm_start: loop {
+    WARN_ON_ONCE(ap->hsm_task_state == HSM_ST_IDLE);
 
 	wait_mask = ATA_BUSY;
 	if (ap->hsm_task_state == HSM_ST_LAST)
@@ -1257,7 +1264,7 @@ fsm_start:
 		status = ata_sff_busy_wait(ap, wait_mask, 10);
 		if (status & wait_mask) {
 			ata_sff_queue_pio_task(link, ATA_SHORT_PAUSE);
-			goto out_unlock;
+			break 'out_unlock;
 		}
 	}
 
@@ -1273,8 +1280,11 @@ fsm_start:
 	 * may be running at this point.
 	 */
 	if (poll_next)
-		goto fsm_start;
-out_unlock:
+		continue 'fsm_start;
+        break;
+    }
+}
+	
 	spin_unlock_irq(ap->lock);
 }
 
@@ -1405,7 +1415,7 @@ unsafe  u32 ata_sff_idle_irq(* struct ata_port */ *ap)
 
 unsafe  u32 __ata_sff_port_intr(* struct ata_port */ *ap,
 					* struct ata_queued_cmd */ *qc,
-					bool hsmv_on_idle)
+					hsmv_on_idle: bool)
 {
 	u8 status;
 
@@ -1471,13 +1481,13 @@ u32 ata_sff_port_intr(* struct ata_port */ *ap, * struct ata_queued_cmd */ *qc)
 
 
 #[inline]
-unsafe fn irqreturn_t __ata_sff_interrupt(i32 irq, () *dev_instance,
+unsafe fn irqreturn_t __ata_sff_interrupt(irq: i32, () *dev_instance,
 	u32 (*port_intr)(* struct ata_port */ *, * struct ata_queued_cmd */ *))
 {
 	* struct ata_host */ *host = dev_instance;
 	bool retried = false;
 	u32 i;
-	u32 handled, idle, polling;
+	handled: u32, idle, polling;
 	usize flags;
 
 	/* TODO: make _irqsave conditional on x86 PCI IDE legacy mode */
@@ -1557,7 +1567,7 @@ retry:
  *	RETURNS:
  *	IRQ_NONE or IRQ_HANDLED.
  */
-irqreturn_t ata_sff_interrupt(i32 irq, () *dev_instance)
+irqreturn_t ata_sff_interrupt(irq: i32, () *dev_instance)
 {
 	return __ata_sff_interrupt(irq, dev_instance, ata_sff_port_intr);
 }
@@ -1663,7 +1673,7 @@ irqreturn_t ata_sff_interrupt(i32 irq, () *dev_instance)
  *	RETURNS:
  *	Always 0.
  */
-i32 ata_sff_prereset(* struct ata_link */ *link, usize deadline)
+i32 ata_sff_prereset(* struct ata_link */ *link, deadline: usize)
 {
 	* struct ata_eh_context */ *ehc = &link->eh_context;
 	i32 rc;
@@ -1710,10 +1720,10 @@ i32 ata_sff_prereset(* struct ata_link */ *link, usize deadline)
  *	LOCKING:
  *	caller.
  */
-unsafe  bool ata_devchk(* struct ata_port */ *ap, u32 device)
+unsafe  bool ata_devchk(* struct ata_port */ *ap, device: u32)
 {
 	* struct ata_ioports */ *ioaddr = &ap->ioaddr;
-	u8 nsect, lbal;
+	nsect: u8, lbal;
 
 	ap->ops->sff_dev_select(ap, device);
 
@@ -1756,7 +1766,7 @@ unsafe  bool ata_devchk(* struct ata_port */ *ap, u32 device)
  *	RETURNS:
  *	Device type - %ATA_DEV_ATA, %ATA_DEV_ATAPI or %ATA_DEV_NONE.
  */
-u32 ata_sff_dev_classify(* struct ata_device */ *dev, i32 present,
+u32 ata_sff_dev_classify(* struct ata_device */ *dev, present: i32,
 				  u8 *r_err)
 {
 	* struct ata_port */ *ap = dev->link->ap;
@@ -1826,14 +1836,14 @@ u32 ata_sff_dev_classify(* struct ata_device */ *dev, i32 present,
  *	0 on success, -ENODEV if some or all of devices in @devmask
  *	don't seem to exist.  -errno on other errors.
  */
-i32 ata_sff_wait_after_reset(* struct ata_link */ *link, u32 devmask,
-			     usize deadline)
+i32 ata_sff_wait_after_reset(* struct ata_link */ *link, devmask: u32,
+			     deadline: usize)
 {
 	* struct ata_port */ *ap = link->ap;
 	* struct ata_ioports */ *ioaddr = &ap->ioaddr;
 	u32 dev0 = devmask & (1 << 0);
 	u32 dev1 = devmask & (1 << 1);
-	i32 rc, ret = 0;
+	rc: i32, ret = 0;
 
 	ata_msleep(ap, ATA_WAIT_AFTER_RESET);
 
@@ -1858,7 +1868,7 @@ i32 ata_sff_wait_after_reset(* struct ata_link */ *link, u32 devmask,
 		 * much time on it.  We're gonna wait for !BSY anyway.
 		 */
 		for (i = 0; i < 2; i++) {
-			u8 nsect, lbal;
+			nsect: u8, lbal;
 
 			nsect = ioread8(ioaddr->nsect_addr);
 			lbal = ioread8(ioaddr->lbal_addr);
@@ -1886,8 +1896,8 @@ i32 ata_sff_wait_after_reset(* struct ata_link */ *link, u32 devmask,
 }
 
 
-unsafe  i32 ata_bus_softreset(* struct ata_port */ *ap, u32 devmask,
-			     usize deadline)
+unsafe  i32 ata_bus_softreset(* struct ata_port */ *ap, devmask: u32,
+			     deadline: usize)
 {
 	* struct ata_ioports */ *ioaddr = &ap->ioaddr;
 
@@ -1920,7 +1930,7 @@ unsafe  i32 ata_bus_softreset(* struct ata_port */ *ap, u32 devmask,
  *	0 on success, -errno otherwise.
  */
 i32 ata_sff_softreset(* struct ata_link */ *link, u32 *classes,
-		      usize deadline)
+		      deadline: usize)
 {
 	* struct ata_port */ *ap = link->ap;
 	u32 slave_possible = ap->flags & ATA_FLAG_SLAVE_POSS;
@@ -1972,7 +1982,7 @@ i32 ata_sff_softreset(* struct ata_link */ *link, u32 *classes,
  *	0 on success, -errno otherwise.
  */
 i32 sata_sff_hardreset(* struct ata_link */ *link, u32 *class,
-		       usize deadline)
+		       deadline: usize)
 {
 	* struct ata_eh_context */ *ehc = &link->eh_context;
 	const u32 *timing = sata_ehc_deb_timing(ehc);
@@ -2121,7 +2131,7 @@ i32 sata_sff_hardreset(* struct ata_link */ *link, u32 *class,
 
 #ifdef CONFIG_PCI
 
-unsafe  bool ata_resources_present(* struct pci_dev */ *pdev, i32 port)
+unsafe  bool ata_resources_present(* struct pci_dev */ *pdev, port: i32)
 {
 	i32 i;
 
@@ -2159,7 +2169,7 @@ i32 ata_pci_sff_init_host(* struct ata_host */ *host)
 	* struct device */ *gdev = host->dev;
 	* struct pci_dev */ *pdev = to_pci_dev(gdev);
 	u32 mask = 0;
-	i32 i, rc;
+	i: i32, rc;
 
 	/* request, iomap BARs and init port addresses accordingly */
 	for (i = 0; i < 2; i++) {
@@ -2199,8 +2209,8 @@ i32 ata_pci_sff_init_host(* struct ata_host */ *host)
 		ata_sff_std_ports(&ap->ioaddr);
 
 		ata_port_desc(ap, "cmd 0x%llx ctl 0x%llx",
-			(usize long)pci_resource_start(pdev, base),
-			(usize long)pci_resource_start(pdev, base + 1));
+			(long: usize)pci_resource_start(pdev, base),
+			(long: usize)pci_resource_start(pdev, base + 1));
 
 		mask |= 1 << i;
 	}
@@ -2233,6 +2243,7 @@ i32 ata_pci_sff_prepare_host(* struct pci_dev */ *pdev,
 			     const  ata_port_info * const *ppi,
 			     * struct ata_host */ **r_host)
 {
+	'err_out: {
 	* struct ata_host */ *host;
 	i32 rc;
 
@@ -2243,18 +2254,18 @@ i32 ata_pci_sff_prepare_host(* struct pci_dev */ *pdev,
 	if (!host) {
 		dev_err(&pdev->dev, "failed to allocate ATA host\n");
 		rc = -ENOMEM;
-		goto err_out;
+		break 'err_out;
 	}
 
 	rc = ata_pci_sff_init_host(host);
 	if (rc)
-		goto err_out;
+		break 'err_out;
 
 	devres_remove_group(&pdev->dev, NULL);
 	*r_host = host;
 	return 0;
-
-err_out:
+	}
+	
 	devres_release_group(&pdev->dev, NULL);
 	return rc;
 }
@@ -2280,6 +2291,7 @@ i32 ata_pci_sff_activate_host(* struct ata_host */ *host,
 			      irq_handler_t irq_handler,
 			      const  scsi_host_template *sht)
 {
+	'out: {
 	* struct device */ *dev = host->dev;
 	* struct pci_dev */ *pdev = to_pci_dev(dev);
 	const char *drv_name = dev_driver_string(host->dev);
@@ -2290,7 +2302,7 @@ i32 ata_pci_sff_activate_host(* struct ata_host */ *host,
 		return rc;
 
 	if ((pdev->class >> 8) == PCI_CLASS_STORAGE_IDE) {
-		u8 tmp8, mask = 0;
+		tmp8: u8, mask = 0;
 
 		/*
 		 * ATA spec says we should use legacy mode when one
@@ -2318,7 +2330,7 @@ i32 ata_pci_sff_activate_host(* struct ata_host */ *host,
 		rc = devm_request_irq(dev, pdev->irq, irq_handler,
 				      IRQF_SHARED, drv_name, host);
 		if (rc)
-			goto out;
+			break 'out;
 
 		for (i = 0; i < 2; i++) {
 			if (ata_port_is_dummy(host->ports[i]))
@@ -2331,7 +2343,7 @@ i32 ata_pci_sff_activate_host(* struct ata_host */ *host,
 					      irq_handler, IRQF_SHARED,
 					      drv_name, host);
 			if (rc)
-				goto out;
+				break 'out;
 
 			ata_port_desc_misc(host->ports[0],
 					   ATA_PRIMARY_IRQ(pdev));
@@ -2342,7 +2354,7 @@ i32 ata_pci_sff_activate_host(* struct ata_host */ *host,
 					      irq_handler, IRQF_SHARED,
 					      drv_name, host);
 			if (rc)
-				goto out;
+				break 'out;
 
 			ata_port_desc_misc(host->ports[1],
 					   ATA_SECONDARY_IRQ(pdev));
@@ -2350,7 +2362,8 @@ i32 ata_pci_sff_activate_host(* struct ata_host */ *host,
 	}
 
 	rc = ata_host_register(host, sht);
-out:
+	}
+	
 	if (rc == 0)
 		devres_remove_group(dev, NULL);
 	else
@@ -2376,8 +2389,9 @@ unsafe  const  ata_port_info *ata_sff_find_valid_pi(
 unsafe  i32 ata_pci_init_one(* struct pci_dev */ *pdev,
 		const  ata_port_info * const *ppi,
 		const  scsi_host_template *sht, () *host_priv,
-		i32 hflags, bool bmdma)
+		hflags: i32, bmdma: bool)
 {
+	'out: {
 	* struct device */ *dev = &pdev->dev;
 	const  ata_port_info *pi;
 	* struct ata_host */ *host = NULL;
@@ -2394,7 +2408,7 @@ unsafe  i32 ata_pci_init_one(* struct pci_dev */ *pdev,
 
 	rc = pcim_enable_device(pdev);
 	if (rc)
-		goto out;
+		break 'out;
 
 #ifdef CONFIG_ATA_BMDMA
 	if (bmdma)
@@ -2405,7 +2419,7 @@ unsafe  i32 ata_pci_init_one(* struct pci_dev */ *pdev,
 		/* prepare and activate SFF host */
 		rc = ata_pci_sff_prepare_host(pdev, ppi, &host);
 	if (rc)
-		goto out;
+		break 'out;
 	host->private_data = host_priv;
 	host->flags |= hflags;
 
@@ -2416,7 +2430,8 @@ unsafe  i32 ata_pci_init_one(* struct pci_dev */ *pdev,
 	} else
 #endif
 		rc = ata_pci_sff_activate_host(host, ata_sff_interrupt, sht);
-out:
+	}
+	
 	if (rc == 0)
 		devres_remove_group(&pdev->dev, NULL);
 	else
@@ -2449,7 +2464,7 @@ out:
  */
 i32 ata_pci_sff_init_one(* struct pci_dev */ *pdev,
 		 const  ata_port_info * const *ppi,
-		 const  scsi_host_template *sht, () *host_priv, i32 hflag)
+		 const  scsi_host_template *sht, () *host_priv, hflag: i32)
 {
 	return ata_pci_init_one(pdev, ppi, sht, host_priv, hflag, 0);
 }
@@ -2464,29 +2479,29 @@ i32 ata_pci_sff_init_one(* struct pci_dev */ *pdev,
 #ifdef CONFIG_ATA_BMDMA
 
 const  ata_port_operations ata_bmdma_port_ops = {
-	.inherits		= &ata_sff_port_ops,
+	inherits: &ata_sff_port_ops,
 
-	.error_handler		= ata_bmdma_error_handler,
-	.post_internal_cmd	= ata_bmdma_post_internal_cmd,
+	error_handler: ata_bmdma_error_handler,
+	post_internal_cmd: ata_bmdma_post_internal_cmd,
 
-	.qc_prep		= ata_bmdma_qc_prep,
-	.qc_issue		= ata_bmdma_qc_issue,
+	qc_prep: ata_bmdma_qc_prep,
+	qc_issue: ata_bmdma_qc_issue,
 
-	.sff_irq_clear		= ata_bmdma_irq_clear,
-	.bmdma_setup		= ata_bmdma_setup,
-	.bmdma_start		= ata_bmdma_start,
-	.bmdma_stop		= ata_bmdma_stop,
-	.bmdma_status		= ata_bmdma_status,
+	sff_irq_clear: ata_bmdma_irq_clear,
+	bmdma_setup: ata_bmdma_setup,
+	bmdma_start: ata_bmdma_start,
+	bmdma_stop: ata_bmdma_stop,
+	bmdma_status: ata_bmdma_status,
 
-	.port_start		= ata_bmdma_port_start,
+	port_start: ata_bmdma_port_start,
 };
 
 
 const  ata_port_operations ata_bmdma32_port_ops = {
-	.inherits		= &ata_bmdma_port_ops,
+	inherits: &ata_bmdma_port_ops,
 
-	.sff_data_xfer		= ata_sff_data_xfer32,
-	.port_start		= ata_bmdma_port_start32,
+	sff_data_xfer: ata_sff_data_xfer32,
+	port_start: ata_bmdma_port_start32,
 };
 
 
@@ -2506,12 +2521,12 @@ unsafe  () ata_bmdma_fill_sg(* struct ata_queued_cmd */ *qc)
 	* struct ata_port */ *ap = qc->ap;
 	* struct ata_bmdma_prd */ *prd = ap->bmdma_prd;
 	* struct scatterlist */ *sg;
-	u32 si, pi;
+	si: u32, pi;
 
 	pi = 0;
-	for_each_sg(qc->sg, sg, qc->n_elem, si) {
-		u32 addr, offset;
-		u32 sg_len, len;
+	for_each_sg!(qc->sg, sg, qc->n_elem, si, {
+		addr: u32, offset;
+		sg_len: u32, len;
 
 		/* determine if physical DMA addr spans 64K boundary.
 		 * Note h/w doesn't support 64-bit, so we unconditionally
@@ -2533,7 +2548,7 @@ unsafe  () ata_bmdma_fill_sg(* struct ata_queued_cmd */ *qc)
 			sg_len -= len;
 			addr += len;
 		}
-	}
+	});
 
 	prd[pi - 1].flags_len |= cpu_to_le32(ATA_PRD_EOT);
 }
@@ -2556,12 +2571,12 @@ unsafe  () ata_bmdma_fill_sg_dumb(* struct ata_queued_cmd */ *qc)
 	* struct ata_port */ *ap = qc->ap;
 	* struct ata_bmdma_prd */ *prd = ap->bmdma_prd;
 	* struct scatterlist */ *sg;
-	u32 si, pi;
+	si: u32, pi;
 
 	pi = 0;
-	for_each_sg(qc->sg, sg, qc->n_elem, si) {
-		u32 addr, offset;
-		u32 sg_len, len, blen;
+	for_each_sg!(qc->sg, sg, qc->n_elem, si, {
+		addr: u32, offset;
+		sg_len: u32, len, blen;
 
 		/* determine if physical DMA addr spans 64K boundary.
 		 * Note h/w doesn't support 64-bit, so we unconditionally
@@ -2592,7 +2607,7 @@ unsafe  () ata_bmdma_fill_sg_dumb(* struct ata_queued_cmd */ *qc)
 			sg_len -= len;
 			addr += len;
 		}
-	}
+	});
 
 	prd[pi - 1].flags_len |= cpu_to_le32(ATA_PRD_EOT);
 }
@@ -2764,7 +2779,7 @@ u32 ata_bmdma_port_intr(* struct ata_port */ *ap, * struct ata_queued_cmd */ *qc
  *	RETURNS:
  *	IRQ_NONE or IRQ_HANDLED.
  */
-irqreturn_t ata_bmdma_interrupt(i32 irq, () *dev_instance)
+irqreturn_t ata_bmdma_interrupt(irq: i32, () *dev_instance)
 {
 	return __ata_sff_interrupt(irq, dev_instance, ata_bmdma_port_intr);
 }
@@ -3084,7 +3099,7 @@ unsafe  () ata_bmdma_nodma(* struct ata_host */ *host, const char *reason)
 {
 	* struct device */ *gdev = host->dev;
 	* struct pci_dev */ *pdev = to_pci_dev(gdev);
-	i32 i, rc;
+	i: i32, rc;
 
 	/* No BAR4 allocation: No DMA */
 	if (pci_resource_start(pdev, 4) == 0) {
@@ -3123,7 +3138,7 @@ unsafe  () ata_bmdma_nodma(* struct ata_host */ *host, const char *reason)
 			host->flags |= ATA_HOST_SIMPLEX;
 
 		ata_port_desc(ap, "bmdma 0x%llx",
-		    (usize long)pci_resource_start(pdev, 4) + 8 * i);
+		    (long: usize)pci_resource_start(pdev, 4) + 8 * i);
 	}
 }
 
@@ -3178,7 +3193,7 @@ i32 ata_pci_bmdma_prepare_host(* struct pci_dev */ *pdev,
 i32 ata_pci_bmdma_init_one(* struct pci_dev */ *pdev,
 			   const  ata_port_info * const * ppi,
 			   const  scsi_host_template *sht, () *host_priv,
-			   i32 hflags)
+			   hflags: i32)
 {
 	return ata_pci_init_one(pdev, ppi, sht, host_priv, hflags, 1);
 }

@@ -8,7 +8,7 @@
 // CONFIG_HYPERV controls whether these trace events are emitted in the C
 // build.  Rust build configuration for that external dependency is preserved
 // by this conditional module.
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 pub mod hyperv_trace_events {
     use core::ffi::c_int;
 

@@ -98,18 +98,18 @@
 // conditional/preprocessor: #define MASK(x) (BIT(x) - 1)
 
 // conditional/preprocessor: #define MUX8_NOGATE_LOCK(_name, _parents, _offset, _clk_id, _lock)	\
-	TEGRA_INIT_DATA_TABLE(_name, NULL, NULL, _parents, _offset,	\
-			      29, MASK(3), 0, 0, 8, 1, TEGRA_DIVIDER_ROUND_UP,\
-			      0, TEGRA_PERIPH_NO_GATE, _clk_id,\
-			      _parents##_idx, 0, _lock)
+// 	TEGRA_INIT_DATA_TABLE(_name, NULL, NULL, _parents, _offset,	\
+// 			      29, MASK(3), 0, 0, 8, 1, TEGRA_DIVIDER_ROUND_UP,\
+// 			      0, TEGRA_PERIPH_NO_GATE, _clk_id,\
+// 			      _parents##_idx, 0, _lock)
 
 // conditional/preprocessor: #define NODIV(_name, _parents, _offset, \
-			      _mux_shift, _mux_mask, _clk_num, \
-			      _gate_flags, _clk_id, _lock)		\
-	TEGRA_INIT_DATA_TABLE(_name, NULL, NULL, _parents, _offset,\
-			_mux_shift, _mux_mask, 0, 0, 0, 0, 0,\
-			_clk_num, (_gate_flags) | TEGRA_PERIPH_NO_DIV,\
-			_clk_id, _parents##_idx, 0, _lock)
+// 			      _mux_shift, _mux_mask, _clk_num, \
+// 			      _gate_flags, _clk_id, _lock)		\
+// 	TEGRA_INIT_DATA_TABLE(_name, NULL, NULL, _parents, _offset,\
+// 			_mux_shift, _mux_mask, 0, 0, 0, 0, 0,\
+// 			_clk_num, (_gate_flags) | TEGRA_PERIPH_NO_DIV,\
+// 			_clk_id, _parents##_idx, 0, _lock)
 
 // conditional/preprocessor: #ifdef CONFIG_PM_SLEEP
 static mut cpu_clk_suspend_context {
@@ -144,12 +144,12 @@ static mut tegra124_input_freq[] = {
 };
 
 static mut div_nmp pllxc_nmp = {
-	.divm_shift = 0,
-	.divm_width = 8,
-	.divn_shift = 8,
-	.divn_width = 8,
-	.divp_shift = 20,
-	.divp_width = 4,
+	divm_shift: 0,
+	divm_width: 8,
+	divn_shift: 8,
+	divn_width: 8,
+	divp_shift: 20,
+	divp_width: 4,
 };
 
 static mut pdiv_map pllxc_p[] = {
@@ -182,27 +182,27 @@ static mut tegra_clk_pll_freq_table pll_x_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_x_params = {
-	.input_min = 12000000,
-	.input_max = 800000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000,	/* s/w policy, h/w capability 50 MHz */
-	.vco_min = 700000000,
-	.vco_max = 3000000000UL,
-	.base_reg = PLLX_BASE,
-	.misc_reg = PLLX_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLL_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.iddq_reg = PLLX_MISC3,
-	.iddq_bit_idx = 3,
-	.max_p = 6,
-	.dyn_ramp_reg = PLLX_MISC2,
-	.stepa_shift = 16,
-	.stepb_shift = 24,
-	.pdiv_tohw = pllxc_p,
-	.div_nmp = &pllxc_nmp,
-	.freq_table = pll_x_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+	input_min: 12000000,
+	input_max: 800000000,
+	cf_min: 12000000,
+	cf_max: 19200000,	/* s/w policy, h/w capability 50 MHz */
+	vco_min: 700000000,
+	vco_max: 3000000000UL,
+	base_reg: PLLX_BASE,
+	misc_reg: PLLX_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLL_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	iddq_reg: PLLX_MISC3,
+	iddq_bit_idx: 3,
+	max_p: 6,
+	dyn_ramp_reg: PLLX_MISC2,
+	stepa_shift: 16,
+	stepb_shift: 24,
+	pdiv_tohw: pllxc_p,
+	div_nmp: &pllxc_nmp,
+	freq_table: pll_x_freq_table,
+	flags: TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
 static mut tegra_clk_pll_freq_table pll_c_freq_table[] = {
@@ -216,36 +216,36 @@ static mut tegra_clk_pll_freq_table pll_c_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_c_params = {
-	.input_min = 12000000,
-	.input_max = 800000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 50 MHz */
-	.vco_min = 600000000,
-	.vco_max = 1400000000,
-	.base_reg = PLLC_BASE,
-	.misc_reg = PLLC_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLLC_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.iddq_reg = PLLC_MISC,
-	.iddq_bit_idx = PLLC_IDDQ_BIT,
-	.max_p = PLLXC_SW_MAX_P,
-	.dyn_ramp_reg = PLLC_MISC2,
-	.stepa_shift = 17,
-	.stepb_shift = 9,
-	.pdiv_tohw = pllxc_p,
-	.div_nmp = &pllxc_nmp,
-	.freq_table = pll_c_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+	input_min: 12000000,
+	input_max: 800000000,
+	cf_min: 12000000,
+	cf_max: 19200000, /* s/w policy, h/w capability 50 MHz */
+	vco_min: 600000000,
+	vco_max: 1400000000,
+	base_reg: PLLC_BASE,
+	misc_reg: PLLC_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLLC_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	iddq_reg: PLLC_MISC,
+	iddq_bit_idx: PLLC_IDDQ_BIT,
+	max_p: PLLXC_SW_MAX_P,
+	dyn_ramp_reg: PLLC_MISC2,
+	stepa_shift: 17,
+	stepb_shift: 9,
+	pdiv_tohw: pllxc_p,
+	div_nmp: &pllxc_nmp,
+	freq_table: pll_c_freq_table,
+	flags: TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
 static mut div_nmp pllcx_nmp = {
-	.divm_shift = 0,
-	.divm_width = 2,
-	.divn_shift = 8,
-	.divn_width = 8,
-	.divp_shift = 20,
-	.divp_width = 3,
+	divm_shift: 0,
+	divm_width: 2,
+	divn_shift: 8,
+	divn_width: 8,
+	divp_shift: 20,
+	divp_width: 3,
 };
 
 static mut pdiv_map pllc_p[] = {
@@ -270,56 +270,56 @@ static mut tegra_clk_pll_freq_table pll_cx_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_c2_params = {
-	.input_min = 12000000,
-	.input_max = 48000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000,
-	.vco_min = 600000000,
-	.vco_max = 1200000000,
-	.base_reg = PLLC2_BASE,
-	.misc_reg = PLLC2_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLL_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.pdiv_tohw = pllc_p,
-	.div_nmp = &pllcx_nmp,
-	.max_p = 7,
+	input_min: 12000000,
+	input_max: 48000000,
+	cf_min: 12000000,
+	cf_max: 19200000,
+	vco_min: 600000000,
+	vco_max: 1200000000,
+	base_reg: PLLC2_BASE,
+	misc_reg: PLLC2_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLL_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	pdiv_tohw: pllc_p,
+	div_nmp: &pllcx_nmp,
+	max_p: 7,
 	.ext_misc_reg[0] = 0x4f0,
 	.ext_misc_reg[1] = 0x4f4,
 	.ext_misc_reg[2] = 0x4f8,
-	.freq_table = pll_cx_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK,
+	freq_table: pll_cx_freq_table,
+	flags: TEGRA_PLL_USE_LOCK,
 };
 
 static mut tegra_clk_pll_params pll_c3_params = {
-	.input_min = 12000000,
-	.input_max = 48000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000,
-	.vco_min = 600000000,
-	.vco_max = 1200000000,
-	.base_reg = PLLC3_BASE,
-	.misc_reg = PLLC3_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLL_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.pdiv_tohw = pllc_p,
-	.div_nmp = &pllcx_nmp,
-	.max_p = 7,
+	input_min: 12000000,
+	input_max: 48000000,
+	cf_min: 12000000,
+	cf_max: 19200000,
+	vco_min: 600000000,
+	vco_max: 1200000000,
+	base_reg: PLLC3_BASE,
+	misc_reg: PLLC3_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLL_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	pdiv_tohw: pllc_p,
+	div_nmp: &pllcx_nmp,
+	max_p: 7,
 	.ext_misc_reg[0] = 0x504,
 	.ext_misc_reg[1] = 0x508,
 	.ext_misc_reg[2] = 0x50c,
-	.freq_table = pll_cx_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK,
+	freq_table: pll_cx_freq_table,
+	flags: TEGRA_PLL_USE_LOCK,
 };
 
 static mut div_nmp pllss_nmp = {
-	.divm_shift = 0,
-	.divm_width = 8,
-	.divn_shift = 8,
-	.divn_width = 8,
-	.divp_shift = 20,
-	.divp_width = 4,
+	divm_shift: 0,
+	divm_width: 8,
+	divn_shift: 8,
+	divn_width: 8,
+	divp_shift: 20,
+	divp_width: 4,
 };
 
 static mut pdiv_map pll12g_ssd_esd_p[] = {
@@ -351,26 +351,26 @@ static mut tegra_clk_pll_freq_table pll_c4_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_c4_params = {
-	.input_min = 12000000,
-	.input_max = 1000000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 38 MHz */
-	.vco_min = 600000000,
-	.vco_max = 1200000000,
-	.base_reg = PLLC4_BASE,
-	.misc_reg = PLLC4_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLLSS_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.iddq_reg = PLLC4_BASE,
-	.iddq_bit_idx = PLLSS_IDDQ_BIT,
-	.pdiv_tohw = pll12g_ssd_esd_p,
-	.div_nmp = &pllss_nmp,
+	input_min: 12000000,
+	input_max: 1000000000,
+	cf_min: 12000000,
+	cf_max: 19200000, /* s/w policy, h/w capability 38 MHz */
+	vco_min: 600000000,
+	vco_max: 1200000000,
+	base_reg: PLLC4_BASE,
+	misc_reg: PLLC4_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLLSS_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	iddq_reg: PLLC4_BASE,
+	iddq_bit_idx: PLLSS_IDDQ_BIT,
+	pdiv_tohw: pll12g_ssd_esd_p,
+	div_nmp: &pllss_nmp,
 	.ext_misc_reg[0] = 0x5ac,
 	.ext_misc_reg[1] = 0x5b0,
 	.ext_misc_reg[2] = 0x5b4,
-	.freq_table = pll_c4_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+	freq_table: pll_c4_freq_table,
+	flags: TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
 static mut pdiv_map pllm_p[] = {
@@ -402,35 +402,35 @@ static mut tegra_clk_pll_freq_table pll_m_freq_table[] = {
 };
 
 static mut div_nmp pllm_nmp = {
-	.divm_shift = 0,
-	.divm_width = 8,
-	.override_divm_shift = 0,
-	.divn_shift = 8,
-	.divn_width = 8,
-	.override_divn_shift = 8,
-	.divp_shift = 20,
-	.divp_width = 1,
-	.override_divp_shift = 27,
+	divm_shift: 0,
+	divm_width: 8,
+	override_divm_shift: 0,
+	divn_shift: 8,
+	divn_width: 8,
+	override_divn_shift: 8,
+	divp_shift: 20,
+	divp_width: 1,
+	override_divp_shift: 27,
 };
 
 static mut tegra_clk_pll_params pll_m_params = {
-	.input_min = 12000000,
-	.input_max = 500000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000,	/* s/w policy, h/w capability 50 MHz */
-	.vco_min = 400000000,
-	.vco_max = 1066000000,
-	.base_reg = PLLM_BASE,
-	.misc_reg = PLLM_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_delay = 300,
-	.max_p = 5,
-	.pdiv_tohw = pllm_p,
-	.div_nmp = &pllm_nmp,
-	.pmc_divnm_reg = PMC_PLLM_WB0_OVERRIDE,
-	.pmc_divp_reg = PMC_PLLM_WB0_OVERRIDE_2,
-	.freq_table = pll_m_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK,
+	input_min: 12000000,
+	input_max: 500000000,
+	cf_min: 12000000,
+	cf_max: 19200000,	/* s/w policy, h/w capability 50 MHz */
+	vco_min: 400000000,
+	vco_max: 1066000000,
+	base_reg: PLLM_BASE,
+	misc_reg: PLLM_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_delay: 300,
+	max_p: 5,
+	pdiv_tohw: pllm_p,
+	div_nmp: &pllm_nmp,
+	pmc_divnm_reg: PMC_PLLM_WB0_OVERRIDE,
+	pmc_divp_reg: PMC_PLLM_WB0_OVERRIDE_2,
+	freq_table: pll_m_freq_table,
+	flags: TEGRA_PLL_USE_LOCK,
 };
 
 static mut tegra_clk_pll_freq_table pll_e_freq_table[] = {
@@ -462,32 +462,32 @@ static mut pdiv_map plle_p[] = {
 };
 
 static mut div_nmp plle_nmp = {
-	.divm_shift = 0,
-	.divm_width = 8,
-	.divn_shift = 8,
-	.divn_width = 8,
-	.divp_shift = 24,
-	.divp_width = 4,
+	divm_shift: 0,
+	divm_width: 8,
+	divn_shift: 8,
+	divn_width: 8,
+	divp_shift: 24,
+	divp_width: 4,
 };
 
 static mut tegra_clk_pll_params pll_e_params = {
-	.input_min = 12000000,
-	.input_max = 1000000000,
-	.cf_min = 12000000,
-	.cf_max = 75000000,
-	.vco_min = 1600000000,
-	.vco_max = 2400000000U,
-	.base_reg = PLLE_BASE,
-	.misc_reg = PLLE_MISC,
-	.aux_reg = PLLE_AUX,
-	.lock_mask = PLLE_MISC_LOCK,
-	.lock_enable_bit_idx = PLLE_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.pdiv_tohw = plle_p,
-	.div_nmp = &plle_nmp,
-	.freq_table = pll_e_freq_table,
-	.flags = TEGRA_PLL_FIXED | TEGRA_PLL_HAS_LOCK_ENABLE,
-	.fixed_rate = 100000000,
+	input_min: 12000000,
+	input_max: 1000000000,
+	cf_min: 12000000,
+	cf_max: 75000000,
+	vco_min: 1600000000,
+	vco_max: 2400000000U,
+	base_reg: PLLE_BASE,
+	misc_reg: PLLE_MISC,
+	aux_reg: PLLE_AUX,
+	lock_mask: PLLE_MISC_LOCK,
+	lock_enable_bit_idx: PLLE_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	pdiv_tohw: plle_p,
+	div_nmp: &plle_nmp,
+	freq_table: pll_e_freq_table,
+	flags: TEGRA_PLL_FIXED | TEGRA_PLL_HAS_LOCK_ENABLE,
+	fixed_rate: 100000000,
 };
 
 static mut clk_div_table pll_re_div_table[] = {
@@ -501,40 +501,40 @@ static mut clk_div_table pll_re_div_table[] = {
 };
 
 static mut div_nmp pllre_nmp = {
-	.divm_shift = 0,
-	.divm_width = 8,
-	.divn_shift = 8,
-	.divn_width = 8,
-	.divp_shift = 16,
-	.divp_width = 4,
+	divm_shift: 0,
+	divm_width: 8,
+	divn_shift: 8,
+	divn_width: 8,
+	divp_shift: 16,
+	divp_width: 4,
 };
 
 static mut tegra_clk_pll_params pll_re_vco_params = {
-	.input_min = 12000000,
-	.input_max = 1000000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 38 MHz */
-	.vco_min = 300000000,
-	.vco_max = 600000000,
-	.base_reg = PLLRE_BASE,
-	.misc_reg = PLLRE_MISC,
-	.lock_mask = PLLRE_MISC_LOCK,
-	.lock_enable_bit_idx = PLLRE_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.iddq_reg = PLLRE_MISC,
-	.iddq_bit_idx = PLLRE_IDDQ_BIT,
-	.div_nmp = &pllre_nmp,
-	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE |
+	input_min: 12000000,
+	input_max: 1000000000,
+	cf_min: 12000000,
+	cf_max: 19200000, /* s/w policy, h/w capability 38 MHz */
+	vco_min: 300000000,
+	vco_max: 600000000,
+	base_reg: PLLRE_BASE,
+	misc_reg: PLLRE_MISC,
+	lock_mask: PLLRE_MISC_LOCK,
+	lock_enable_bit_idx: PLLRE_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	iddq_reg: PLLRE_MISC,
+	iddq_bit_idx: PLLRE_IDDQ_BIT,
+	div_nmp: &pllre_nmp,
+	flags: TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE |
 		 TEGRA_PLL_LOCK_MISC,
 };
 
 static mut div_nmp pllp_nmp = {
-	.divm_shift = 0,
-	.divm_width = 5,
-	.divn_shift = 8,
-	.divn_width = 10,
-	.divp_shift = 20,
-	.divp_width = 3,
+	divm_shift: 0,
+	divm_width: 5,
+	divn_shift: 8,
+	divn_width: 10,
+	divp_shift: 20,
+	divp_width: 3,
 };
 
 static mut tegra_clk_pll_freq_table pll_p_freq_table[] = {
@@ -547,21 +547,21 @@ static mut tegra_clk_pll_freq_table pll_p_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_p_params = {
-	.input_min = 2000000,
-	.input_max = 31000000,
-	.cf_min = 1000000,
-	.cf_max = 6000000,
-	.vco_min = 200000000,
-	.vco_max = 700000000,
-	.base_reg = PLLP_BASE,
-	.misc_reg = PLLP_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLL_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.div_nmp = &pllp_nmp,
-	.freq_table = pll_p_freq_table,
-	.fixed_rate = 408000000,
-	.flags = TEGRA_PLL_FIXED | TEGRA_PLL_USE_LOCK |
+	input_min: 2000000,
+	input_max: 31000000,
+	cf_min: 1000000,
+	cf_max: 6000000,
+	vco_min: 200000000,
+	vco_max: 700000000,
+	base_reg: PLLP_BASE,
+	misc_reg: PLLP_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLL_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	div_nmp: &pllp_nmp,
+	freq_table: pll_p_freq_table,
+	fixed_rate: 408000000,
+	flags: TEGRA_PLL_FIXED | TEGRA_PLL_USE_LOCK |
 		 TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
@@ -576,30 +576,30 @@ static mut tegra_clk_pll_freq_table pll_a_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_a_params = {
-	.input_min = 2000000,
-	.input_max = 31000000,
-	.cf_min = 1000000,
-	.cf_max = 6000000,
-	.vco_min = 200000000,
-	.vco_max = 700000000,
-	.base_reg = PLLA_BASE,
-	.misc_reg = PLLA_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLL_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.div_nmp = &pllp_nmp,
-	.freq_table = pll_a_freq_table,
-	.flags = TEGRA_PLL_HAS_CPCON | TEGRA_PLL_USE_LOCK |
+	input_min: 2000000,
+	input_max: 31000000,
+	cf_min: 1000000,
+	cf_max: 6000000,
+	vco_min: 200000000,
+	vco_max: 700000000,
+	base_reg: PLLA_BASE,
+	misc_reg: PLLA_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLL_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	div_nmp: &pllp_nmp,
+	freq_table: pll_a_freq_table,
+	flags: TEGRA_PLL_HAS_CPCON | TEGRA_PLL_USE_LOCK |
 		 TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
 static mut div_nmp plld_nmp = {
-	.divm_shift = 0,
-	.divm_width = 5,
-	.divn_shift = 8,
-	.divn_width = 11,
-	.divp_shift = 20,
-	.divp_width = 3,
+	divm_shift: 0,
+	divm_width: 5,
+	divn_shift: 8,
+	divn_width: 11,
+	divp_shift: 20,
+	divp_width: 3,
 };
 
 static mut tegra_clk_pll_freq_table pll_d_freq_table[] = {
@@ -621,20 +621,20 @@ static mut tegra_clk_pll_freq_table pll_d_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_d_params = {
-	.input_min = 2000000,
-	.input_max = 40000000,
-	.cf_min = 1000000,
-	.cf_max = 6000000,
-	.vco_min = 500000000,
-	.vco_max = 1000000000,
-	.base_reg = PLLD_BASE,
-	.misc_reg = PLLD_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLLDU_MISC_LOCK_ENABLE,
-	.lock_delay = 1000,
-	.div_nmp = &plld_nmp,
-	.freq_table = pll_d_freq_table,
-	.flags = TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
+	input_min: 2000000,
+	input_max: 40000000,
+	cf_min: 1000000,
+	cf_max: 6000000,
+	vco_min: 500000000,
+	vco_max: 1000000000,
+	base_reg: PLLD_BASE,
+	misc_reg: PLLD_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLLDU_MISC_LOCK_ENABLE,
+	lock_delay: 1000,
+	div_nmp: &plld_nmp,
+	freq_table: pll_d_freq_table,
+	flags: TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
 		 TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
@@ -648,27 +648,27 @@ static mut tegra_clk_pll_freq_table tegra124_pll_d2_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params tegra124_pll_d2_params = {
-	.input_min = 12000000,
-	.input_max = 1000000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 38 MHz */
-	.vco_min = 600000000,
-	.vco_max = 1200000000,
-	.base_reg = PLLD2_BASE,
-	.misc_reg = PLLD2_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLLSS_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.iddq_reg = PLLD2_BASE,
-	.iddq_bit_idx = PLLSS_IDDQ_BIT,
-	.pdiv_tohw = pll12g_ssd_esd_p,
-	.div_nmp = &pllss_nmp,
+	input_min: 12000000,
+	input_max: 1000000000,
+	cf_min: 12000000,
+	cf_max: 19200000, /* s/w policy, h/w capability 38 MHz */
+	vco_min: 600000000,
+	vco_max: 1200000000,
+	base_reg: PLLD2_BASE,
+	misc_reg: PLLD2_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLLSS_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	iddq_reg: PLLD2_BASE,
+	iddq_bit_idx: PLLSS_IDDQ_BIT,
+	pdiv_tohw: pll12g_ssd_esd_p,
+	div_nmp: &pllss_nmp,
 	.ext_misc_reg[0] = 0x570,
 	.ext_misc_reg[1] = 0x574,
 	.ext_misc_reg[2] = 0x578,
-	.max_p = 15,
-	.freq_table = tegra124_pll_d2_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+	max_p: 15,
+	freq_table: tegra124_pll_d2_freq_table,
+	flags: TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
 static mut tegra_clk_pll_freq_table pll_dp_freq_table[] = {
@@ -681,27 +681,27 @@ static mut tegra_clk_pll_freq_table pll_dp_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_dp_params = {
-	.input_min = 12000000,
-	.input_max = 1000000000,
-	.cf_min = 12000000,
-	.cf_max = 19200000, /* s/w policy, h/w capability 38 MHz */
-	.vco_min = 600000000,
-	.vco_max = 1200000000,
-	.base_reg = PLLDP_BASE,
-	.misc_reg = PLLDP_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLLSS_MISC_LOCK_ENABLE,
-	.lock_delay = 300,
-	.iddq_reg = PLLDP_BASE,
-	.iddq_bit_idx = PLLSS_IDDQ_BIT,
-	.pdiv_tohw = pll12g_ssd_esd_p,
-	.div_nmp = &pllss_nmp,
+	input_min: 12000000,
+	input_max: 1000000000,
+	cf_min: 12000000,
+	cf_max: 19200000, /* s/w policy, h/w capability 38 MHz */
+	vco_min: 600000000,
+	vco_max: 1200000000,
+	base_reg: PLLDP_BASE,
+	misc_reg: PLLDP_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLLSS_MISC_LOCK_ENABLE,
+	lock_delay: 300,
+	iddq_reg: PLLDP_BASE,
+	iddq_bit_idx: PLLSS_IDDQ_BIT,
+	pdiv_tohw: pll12g_ssd_esd_p,
+	div_nmp: &pllss_nmp,
 	.ext_misc_reg[0] = 0x598,
 	.ext_misc_reg[1] = 0x59c,
 	.ext_misc_reg[2] = 0x5a0,
-	.max_p = 5,
-	.freq_table = pll_dp_freq_table,
-	.flags = TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
+	max_p: 5,
+	freq_table: pll_dp_freq_table,
+	flags: TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
 static mut pdiv_map pllu_p[] = {
@@ -711,12 +711,12 @@ static mut pdiv_map pllu_p[] = {
 };
 
 static mut div_nmp pllu_nmp = {
-	.divm_shift = 0,
-	.divm_width = 5,
-	.divn_shift = 8,
-	.divn_width = 10,
-	.divp_shift = 20,
-	.divp_width = 1,
+	divm_shift: 0,
+	divm_width: 5,
+	divn_shift: 8,
+	divn_width: 10,
+	divp_shift: 20,
+	divp_width: 1,
 };
 
 static mut tegra_clk_pll_freq_table pll_u_freq_table[] = {
@@ -729,21 +729,21 @@ static mut tegra_clk_pll_freq_table pll_u_freq_table[] = {
 };
 
 static mut tegra_clk_pll_params pll_u_params = {
-	.input_min = 2000000,
-	.input_max = 40000000,
-	.cf_min = 1000000,
-	.cf_max = 6000000,
-	.vco_min = 480000000,
-	.vco_max = 960000000,
-	.base_reg = PLLU_BASE,
-	.misc_reg = PLLU_MISC,
-	.lock_mask = PLL_BASE_LOCK,
-	.lock_enable_bit_idx = PLLDU_MISC_LOCK_ENABLE,
-	.lock_delay = 1000,
-	.pdiv_tohw = pllu_p,
-	.div_nmp = &pllu_nmp,
-	.freq_table = pll_u_freq_table,
-	.flags = TEGRA_PLLU | TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
+	input_min: 2000000,
+	input_max: 40000000,
+	cf_min: 1000000,
+	cf_max: 6000000,
+	vco_min: 480000000,
+	vco_max: 960000000,
+	base_reg: PLLU_BASE,
+	misc_reg: PLLU_MISC,
+	lock_mask: PLL_BASE_LOCK,
+	lock_enable_bit_idx: PLLDU_MISC_LOCK_ENABLE,
+	lock_delay: 1000,
+	pdiv_tohw: pllu_p,
+	div_nmp: &pllu_nmp,
+	freq_table: pll_u_freq_table,
+	flags: TEGRA_PLLU | TEGRA_PLL_HAS_CPCON | TEGRA_PLL_SET_LFCON |
 		 TEGRA_PLL_USE_LOCK | TEGRA_PLL_HAS_LOCK_ENABLE,
 };
 
@@ -1028,7 +1028,7 @@ static void tegra124_periph_clk_init(void __iomem *clk_base,
 					    void __iomem *pmc_base)
 {
 	struct clk *clk;
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	/* xusb_ss_div2 */
 	clk = clk_register_fixed_factor(NULL, "xusb_ss_div2", "xusb_ss_src", 0,
@@ -1073,9 +1073,9 @@ static void tegra124_periph_clk_init(void __iomem *clk_base,
 		struct tegra_periph_init_data *init = &tegra124_periph[i];
 		struct clk **clkp;
 
-		clkp = tegra_lookup_dt_id(init->clk_id, tegra124_clks);
+		clkp = tegra_lookup_dt_id((*init).clk_id, tegra124_clks);
 		if (!clkp) {
-			pr_warn("clock %u not found\n", init->clk_id);
+			pr_warn("clock %u not found\n", (*init).clk_id);
 			continue;
 		}
 
@@ -1235,9 +1235,9 @@ unsafe fn tegra124_pll_init(void __iomem *clk_base,
 }
 
 /* Tegra124 CPU clock and reset control functions */
-unsafe fn tegra124_wait_cpu_in_reset(u32 cpu)
+unsafe fn tegra124_wait_cpu_in_reset(cpu: u32)
 {
-	unsigned int reg;
+	core::ffi::c_uint reg;
 
 	do {
 		reg = readl(clk_base + CLK_RST_CONTROLLER_CPU_CMPLX_STATUS);
@@ -1245,7 +1245,7 @@ unsafe fn tegra124_wait_cpu_in_reset(u32 cpu)
 	} while (!(reg & (1 << cpu)));  /* check CPU been reset or not */
 }
 
-unsafe fn tegra124_disable_cpu_clock(u32 cpu)
+unsafe fn tegra124_disable_cpu_clock(cpu: u32)
 {
 	/* flow controller would take care in the power sequence. */
 }
@@ -1277,11 +1277,11 @@ unsafe fn tegra124_cpu_clock_resume(void)
 // conditional/preprocessor: #endif
 
 static mut tegra_cpu_car_ops tegra124_cpu_car_ops = {
-	.wait_for_reset	= tegra124_wait_cpu_in_reset,
-	.disable_clock	= tegra124_disable_cpu_clock,
+	wait_for_reset: tegra124_wait_cpu_in_reset,
+	disable_clock: tegra124_disable_cpu_clock,
 // conditional/preprocessor: #ifdef CONFIG_PM_SLEEP
-	.suspend	= tegra124_cpu_clock_suspend,
-	.resume		= tegra124_cpu_clock_resume,
+	suspend: tegra124_cpu_clock_suspend,
+	resume: tegra124_cpu_clock_resume,
 // conditional/preprocessor: #endif
 };
 
@@ -1414,7 +1414,7 @@ unsafe fn tegra124_clock_deassert_dfll_dvco_reset(void)
 	tegra124_car_barrier();
 }
 
-unsafe fn tegra124_reset_assert(unsigned long id)
+unsafe fn tegra124_reset_assert(id: core::ffi::c_ulong)
 {
 	if (id == TEGRA124_RST_DFLL_DVCO)
 		tegra124_clock_assert_dfll_dvco_reset();
@@ -1424,7 +1424,7 @@ unsafe fn tegra124_reset_assert(unsigned long id)
 	return 0;
 }
 
-unsafe fn tegra124_reset_deassert(unsigned long id)
+unsafe fn tegra124_reset_deassert(id: core::ffi::c_ulong)
 {
 	if (id == TEGRA124_RST_DFLL_DVCO)
 		tegra124_clock_deassert_dfll_dvco_reset();
@@ -1450,13 +1450,13 @@ unsafe fn tegra132_clock_apply_init_table(void)
 
 /**
  * tegra124_132_clock_init_pre - clock initialization preamble for T124/T132
- * @np: struct device_node * of the DT node for the SoC CAR IP block
+ * @np: device_node * of the DT node for the SoC CAR IP block
  *
  * Register most of the clocks controlled by the CAR IP block.
  * Everything in this function should be common to Tegra124 and Tegra132.
  * No return value.
  */
-unsafe fn tegra124_132_clock_init_pre(struct device_node *np)
+unsafe fn tegra124_132_clock_init_pre(device_node *np)
 {
 	struct device_node *node;
 	u32 plld_base;
@@ -1505,7 +1505,7 @@ unsafe fn tegra124_132_clock_init_pre(struct device_node *np)
 	writel(plld_base, clk_base + PLLD_BASE);
 }
 
-static mut clk *tegra124_clk_src_onecell_get(struct of_phandle_args *clkspec,
+static mut clk *tegra124_clk_src_onecell_get(of_phandle_args *clkspec,
 						void *data)
 {
 	struct clk_hw *hw;
@@ -1517,7 +1517,7 @@ static mut clk *tegra124_clk_src_onecell_get(struct of_phandle_args *clkspec,
 
 	hw = __clk_get_hw(clk);
 
-	if (clkspec->args[0] == TEGRA124_CLK_EMC) {
+	if ((*clkspec).args[0] == TEGRA124_CLK_EMC) {
 		if (!tegra124_clk_emc_driver_available(hw))
 			return ERR_PTR(-EPROBE_DEFER);
 	}
@@ -1527,7 +1527,7 @@ static mut clk *tegra124_clk_src_onecell_get(struct of_phandle_args *clkspec,
 
 /**
  * tegra124_132_clock_init_post - clock initialization postamble for T124/T132
- * @np: struct device_node * of the DT node for the SoC CAR IP block
+ * @np: device_node * of the DT node for the SoC CAR IP block
  *
  * Register most of the clocks controlled by the CAR IP block.
  * Everything in this function should be common to Tegra124
@@ -1535,7 +1535,7 @@ static mut clk *tegra124_clk_src_onecell_get(struct of_phandle_args *clkspec,
  * tegra124_132_clock_init_pre(), otherwise clk_base will not be set.
  * No return value.
  */
-unsafe fn tegra124_132_clock_init_post(struct device_node *np)
+unsafe fn tegra124_132_clock_init_post(device_node *np)
 {
 	tegra_super_clk_gen4_init(clk_base, pmc_base, tegra124_clks,
 				  &pll_x_params);
@@ -1553,7 +1553,7 @@ unsafe fn tegra124_132_clock_init_post(struct device_node *np)
 
 /**
  * tegra124_clock_init - Tegra124-specific clock initialization
- * @np: struct device_node * of the DT node for the SoC CAR IP block
+ * @np: device_node * of the DT node for the SoC CAR IP block
  *
  * Register most SoC clocks for the Tegra124 system-on-chip.  Most of
  * this code is shared between the Tegra124 and Tegra132 SoCs,
@@ -1562,7 +1562,7 @@ unsafe fn tegra124_132_clock_init_post(struct device_node *np)
  * "nvidia,tegra124-car" string is encountered, and declared with
  * CLK_OF_DECLARE.  No return value.
  */
-unsafe fn tegra124_clock_init(struct device_node *np)
+unsafe fn tegra124_clock_init(device_node *np)
 {
 	tegra124_132_clock_init_pre(np);
 	tegra_clk_apply_init_table = tegra124_clock_apply_init_table;
@@ -1571,7 +1571,7 @@ unsafe fn tegra124_clock_init(struct device_node *np)
 
 /**
  * tegra132_clock_init - Tegra132-specific clock initialization
- * @np: struct device_node * of the DT node for the SoC CAR IP block
+ * @np: device_node * of the DT node for the SoC CAR IP block
  *
  * Register most SoC clocks for the Tegra132 system-on-chip.  Most of
  * this code is shared between the Tegra124 and Tegra132 SoCs,
@@ -1580,7 +1580,7 @@ unsafe fn tegra124_clock_init(struct device_node *np)
  * "nvidia,tegra132-car" string is encountered, and declared with
  * CLK_OF_DECLARE.  No return value.
  */
-unsafe fn tegra132_clock_init(struct device_node *np)
+unsafe fn tegra132_clock_init(device_node *np)
 {
 	tegra124_132_clock_init_pre(np);
 

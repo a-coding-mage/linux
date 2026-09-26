@@ -9,27 +9,27 @@
 macro_rules! check_enc_get_u {
     ($tp:ty, $v:expr, $field:expr, $res:expr) => {{
         let res: $tp = encode_bits($v, $field);
-        kunit_assert_false_msg!(context, res != $res,
-            "encode_bits({}, {}) is 0x{:x} != {}\n", stringify!($v), stringify!($field), res as u64, $res);
-        kunit_assert_false!(context, get_bits(res, $field) != $v);
+        kunit_assert_false_msg!(context, $res != $res,
+            "encode_bits({}, {}) is 0x{:x} != {}\n", stringify!($v), stringify!($field), $res as u64, $res);
+        kunit_assert_false!(context, get_bits($res, $field) != $v);
     }};
 }
 
 macro_rules! check_enc_get_le {
     ($tp:ty, $v:expr, $field:expr, $res:expr) => {{
         let res: Le<$tp> = encode_bits($v, $field);
-        kunit_assert_false_msg!(context, res != cpu_to_le(res),
-            "le encode_bits({}, {}) is 0x{:x} != 0x{:x}", stringify!($v), stringify!($field), le_to_cpu(res) as u64, $res as u64);
-        kunit_assert_false!(context, get_bits(le_to_cpu(res), $field) != $v);
+        kunit_assert_false_msg!(context, $res != cpu_to_le($res),
+            "le encode_bits({}, {}) is 0x{:x} != 0x{:x}", stringify!($v), stringify!($field), le_to_cpu($res) as u64, $res as u64);
+        kunit_assert_false!(context, get_bits(le_to_cpu($res), $field) != $v);
     }};
 }
 
 macro_rules! check_enc_get_be {
     ($tp:ty, $v:expr, $field:expr, $res:expr) => {{
         let res: Be<$tp> = encode_bits($v, $field);
-        kunit_assert_false_msg!(context, res != cpu_to_be(res),
-            "be encode_bits({}, {}) is 0x{:x} != 0x{:x}", stringify!($v), stringify!($field), be_to_cpu(res) as u64, $res as u64);
-        kunit_assert_false!(context, get_bits(be_to_cpu(res), $field) != $v);
+        kunit_assert_false_msg!(context, $res != cpu_to_be($res),
+            "be encode_bits({}, {}) is 0x{:x} != 0x{:x}", stringify!($v), stringify!($field), be_to_cpu($res) as u64, $res as u64);
+        kunit_assert_false!(context, get_bits(be_to_cpu($res), $field) != $v);
     }};
 }
 

@@ -41,11 +41,11 @@ pub type c_ulong = usize;
 
 #[repr(C)] pub struct tegra_smmu { _private: [u8; 0] }
 
-#[cfg(feature = "CONFIG_TEGRA_IOMMU_SMMU")]
+#[cfg(CONFIG_TEGRA_IOMMU_SMMU)]
 unsafe extern "C" { pub fn tegra_smmu_probe(dev: *mut device, soc: *const tegra_smmu_soc, mc: *mut tegra_mc) -> *mut tegra_smmu; pub fn tegra_smmu_remove(smmu: *mut tegra_smmu); }
-#[cfg(not(feature = "CONFIG_TEGRA_IOMMU_SMMU"))]
+#[cfg(not(CONFIG_TEGRA_IOMMU_SMMU))]
 pub unsafe fn tegra_smmu_probe(_: *mut device, _: *const tegra_smmu_soc, _: *mut tegra_mc) -> *mut tegra_smmu { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_TEGRA_IOMMU_SMMU"))]
+#[cfg(not(CONFIG_TEGRA_IOMMU_SMMU))]
 pub unsafe fn tegra_smmu_remove(_: *mut tegra_smmu) {}
 
 #[repr(C)] pub struct tegra_mc_reset { pub name: *const c_char, pub id: c_ulong, pub control: u32, pub status: u32, pub reset: u32, pub bit: u32 }
@@ -65,17 +65,17 @@ unsafe extern "C" { pub fn tegra_mc_icc_xlate(spec: *const of_phandle_args, data
 
 unsafe extern "C" { pub fn tegra_mc_write_emem_configuration(mc: *mut tegra_mc, rate: c_ulong) -> c_int; pub fn tegra_mc_get_emem_device_count(mc: *mut tegra_mc) -> u32; pub static tegra20_mc_regs: tegra_mc_regs; }
 
-#[cfg(feature = "CONFIG_TEGRA_MC")]
+#[cfg(CONFIG_TEGRA_MC)]
 unsafe extern "C" {
     pub fn devm_tegra_memory_controller_get(dev: *mut device) -> *mut tegra_mc;
     pub fn tegra_mc_probe_device(mc: *mut tegra_mc, dev: *mut device) -> c_int;
     pub fn tegra_mc_get_carveout_info(mc: *mut tegra_mc, id: u32, base: *mut phys_addr_t, size: *mut u64) -> c_int;
 }
-#[cfg(not(feature = "CONFIG_TEGRA_MC"))]
+#[cfg(not(CONFIG_TEGRA_MC))]
 pub unsafe fn devm_tegra_memory_controller_get(_: *mut device) -> *mut tegra_mc { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_TEGRA_MC"))]
+#[cfg(not(CONFIG_TEGRA_MC))]
 pub unsafe fn tegra_mc_probe_device(_: *mut tegra_mc, _: *mut device) -> c_int { -19 }
-#[cfg(not(feature = "CONFIG_TEGRA_MC"))]
+#[cfg(not(CONFIG_TEGRA_MC))]
 pub unsafe fn tegra_mc_get_carveout_info(_: *mut tegra_mc, _: u32, _: *mut phys_addr_t, _: *mut u64) -> c_int { -19 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

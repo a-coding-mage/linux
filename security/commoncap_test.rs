@@ -20,7 +20,6 @@
 
 extern "C" {
     // KUnit test context type from kunit/test.h
-    pub struct kunit;
 
     // Types from linux/uidgid.h and linux/user_namespace.h
     pub type vfsuid_t;
@@ -28,37 +27,15 @@ extern "C" {
     pub type kgid_t;
 
     // struct ns_common from linux/ns_common.h
-    #[repr(C)]
-    pub struct ns_common {
-        pub ns_ref: u32, // refcount field
-        pub inum: u32,
-    }
+
 
     // struct uid_gid_extent from linux/user_namespace.h
-    #[repr(C)]
-    pub struct uid_gid_extent {
-        pub first: u32,
-        pub lower_first: u32,
-        pub count: u32,
-    }
+
 
     // struct user_namespace from linux/user_namespace.h
-    #[repr(C)]
-    pub struct user_namespace {
-        pub parent: *mut user_namespace,
-        pub level: u32,
-        pub owner: kuid_t,
-        pub group: kgid_t,
-        pub ns: ns_common,
-        pub uid_map: uidgid_map,
-        pub gid_map: uidgid_map,
-    }
 
-    #[repr(C)]
-    pub struct uidgid_map {
-        pub extent: [uid_gid_extent; 340],
-        pub nr_extents: u32,
-    }
+
+
 
     // External kernel globals
     pub static init_user_ns: user_namespace;
@@ -85,6 +62,33 @@ extern "C" {
     // GFP_KERNEL constant
     pub static GFP_KERNEL: u32;
 }
+    #[repr(C)]
+    pub struct uidgid_map {
+        pub extent: [uid_gid_extent; 340],
+        pub nr_extents: u32,
+    }
+    #[repr(C)]
+    pub struct user_namespace {
+        pub parent: *mut user_namespace,
+        pub level: u32,
+        pub owner: kuid_t,
+        pub group: kgid_t,
+        pub ns: ns_common,
+        pub uid_map: uidgid_map,
+        pub gid_map: uidgid_map,
+    }
+    #[repr(C)]
+    pub struct uid_gid_extent {
+        pub first: u32,
+        pub lower_first: u32,
+        pub count: u32,
+    }
+    #[repr(C)]
+    pub struct ns_common {
+        pub ns_ref: u32, // refcount field
+        pub inum: u32,
+    }
+pub struct kunit;
 
 const GFP_KERNEL_VALUE: u32 = 0x00000000; // Kernel memory allocation flag
 

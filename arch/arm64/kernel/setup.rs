@@ -48,7 +48,7 @@ unsafe fn smp_build_mpidr_hash() {
     let mut bits = [0u32; 4];
     let mut ls: u32;
     let mut mask: u64 = 0;
-    for_each_possible_cpu!(i) { mask |= cpu_logical_map(i) ^ cpu_logical_map(0); }
+    for_each_possible_cpu!(i, { mask |= cpu_logical_map(i) ^ cpu_logical_map(0); });
     pr_debug!("mask of set bits %#llx\n", mask);
     for i in 0..4 {
         affinity = MPIDR_AFFINITY_LEVEL(mask, i);
@@ -92,7 +92,7 @@ unsafe fn request_standard_resources() {
     let res_size = NUM_STANDARD_RESOURCES as usize * core::mem::size_of::<resource>();
     STANDARD_RESOURCES = memblock_alloc_or_panic(res_size, SMP_CACHE_BYTES);
     let mut i = 0usize;
-    for_each_mem_region!(region) {
+    for_each_mem_region!(region, {
         let res = &mut *STANDARD_RESOURCES.add(i); i += 1;
         if memblock_is_nomap(region) {
             res.name = b"reserved\0".as_ptr() as *const c_char;
@@ -106,7 +106,7 @@ unsafe fn request_standard_resources() {
             res.end = __pfn_to_phys(memblock_region_memory_end_pfn(region)) - 1;
         }
         insert_resource(&mut iomem_resource, res);
-    }
+    });
 }
 
 unsafe fn reserve_memblock_reserved_regions() -> c_int {
@@ -114,12 +114,12 @@ unsafe fn reserve_memblock_reserved_regions() -> c_int {
         let mem = &mut *STANDARD_RESOURCES.add(i);
         let mem_size = resource_size(mem);
         if !memblock_is_region_reserved(mem.start, mem_size) { continue; }
-        for_each_reserved_mem_range!(j, r_start, r_end) {
+        for_each_reserved_mem_range!(j, r_start, r_end, {
             let start = core::cmp::max(PFN_PHYS(PFN_DOWN(r_start)), mem.start);
             let end = core::cmp::min(PFN_PHYS(PFN_UP(r_end)) - 1, mem.end);
             if start > mem.end || end < mem.start { continue; }
             reserve_region_with_split(mem, start, end, b"reserved\0".as_ptr() as *const c_char);
-        }
+        });
     }
     0
 }

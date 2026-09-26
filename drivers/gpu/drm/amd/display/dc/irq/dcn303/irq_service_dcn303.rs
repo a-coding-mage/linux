@@ -67,8 +67,8 @@ static mut dummy_irq_info_funcs: irq_source_info_funcs = irq_source_info_funcs {
 };
 
 macro_rules! base { ($seg:ident) => { DCN_BASE__INST0_SEG$seg }; }
-macro_rules! sri { ($reg_name:ident, $block:ident, $id:literal) => {
-    base!($id) + mm$block$id_$reg_name##_BASE_IDX + mm$block$id_$reg_name
+macro_rules! sri { ($reg_name:tt, $block:ident, $id:literal) => {
+    base!($id) + mm$block$id_::kernel::macros::paste!([<$reg_name _BASE_IDX>]) + mm$block$id_$reg_name
 }; }
 macro_rules! irq_reg_entry { ($block:ident, $num:literal, $reg1:ident, $mask1:ident, $reg2:ident, $mask2:ident) => {
     enable_reg: sri!($reg1, $block, $num),

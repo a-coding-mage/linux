@@ -24,7 +24,7 @@ static SPACE_NAMES: [&str; 8] = ["Space 0", "User Data", "User Program", "Space 
 
 extern "C" { fn die_if_kernel(s: *mut i8, fp: *mut pt_regs, nr: i32); }
 
-#[cfg(feature = "CONFIG_M68060")]
+#[cfg(CONFIG_M68060)]
 unsafe fn access_error060(fp: *mut frame) {
     let fslw = (*fp).un_.fmt4.pc;
     pr_debug!("fslw={:#x}, fa={:#x}\n", fslw, (*fp).un_.fmt4.effaddr);
@@ -47,7 +47,7 @@ unsafe fn access_error060(fp: *mut frame) {
     }
 }
 
-#[cfg(feature = "CONFIG_M68040")]
+#[cfg(CONFIG_M68040)]
 unsafe fn do_040writeback1(wbs: u16, wba: usize, wbd: usize) -> i32 {
     set_fc(wbs);
     let res = match wbs & WBSIZ_040 {
@@ -59,13 +59,13 @@ unsafe fn do_040writeback1(wbs: u16, wba: usize, wbd: usize) -> i32 {
     set_fc(USER_DATA); pr_debug!("do_040writeback1, res={}\n", res); res
 }
 
-#[cfg(feature = "CONFIG_M68040")]
+#[cfg(CONFIG_M68040)]
 unsafe fn fix_xframe040(fp: *mut frame, wba: usize, wbs: u16) {
     (*fp).un_.fmt7.faddr = wba; (*fp).un_.fmt7.ssw = wbs & 0xff;
     if wba != current().thread.faddr { (*fp).un_.fmt7.ssw |= MA_040; }
 }
 
-#[cfg(feature = "CONFIG_M68040")]
+#[cfg(CONFIG_M68040)]
 unsafe fn do_040writebacks(fp: *mut frame) {
     let mut res = 0;
     if (*fp).un_.fmt7.wb2s & WBV_040 != 0 && (*fp).un_.fmt7.wb2s & WBTT_040 == 0 {
@@ -79,7 +79,7 @@ unsafe fn do_040writebacks(fp: *mut frame) {
     if res != 0 { send_fault_sig(&mut (*fp).ptregs); }
 }
 
-#[cfg(feature = "CONFIG_M68040")]
+#[cfg(CONFIG_M68040)]
 pub unsafe extern "C" fn berr_040cleanup(fp: *mut frame) { (*fp).un_.fmt7.wb2s &= !4; (*fp).un_.fmt7.wb3s &= !4; do_040writebacks(fp); }
 
 /* The remaining handlers retain the original kernel control flow; architecture-specific
@@ -89,8 +89,8 @@ pub unsafe extern "C" fn buserr_c(fp: *mut frame) {
     if user_mode(&mut (*fp).ptregs) { current_mut().thread.esp0 = fp as usize; }
     pr_debug!("*** Bus Error *** Format is {:x}\n", (*fp).ptregs.format);
     match (*fp).ptregs.format {
-        #[cfg(feature = "CONFIG_M68060")] 4 => access_error060(fp),
-        #[cfg(feature = "CONFIG_M68040")] 7 => access_error040(fp),
+        #[cfg(CONFIG_M68060)] 4 => access_error060(fp),
+        #[cfg(CONFIG_M68040)] 7 => access_error040(fp),
         #[cfg(any(feature = "CPU_M68020_OR_M68030"))] 10 | 11 => bus_error030(fp),
         _ => { die_if_kernel(b"bad frame format\0".as_ptr() as *mut i8, &mut (*fp).ptregs, 0); force_sig(SIGSEGV); }
     }
@@ -100,7 +100,7 @@ pub unsafe extern "C" fn trap_c(fp: *mut frame) {
     let vector = ((*fp).ptregs.vector >> 2) & 0xff;
     if (*fp).ptregs.sr & PS_S != 0 {
         if vector == VEC_TRACE { return; }
-        #[cfg(feature = "CONFIG_MMU")] if fixup_exception(&mut (*fp).ptregs) { return; }
+        #[cfg(CONFIG_MMU)] if fixup_exception(&mut (*fp).ptregs) { return; }
         bad_super_trap(fp); return;
     }
     let (sig, code) = match vector {
@@ -173,7 +173,7 @@ pub unsafe fn die_if_kernel_rs(s: *mut i8, fp: *mut pt_regs, nr: i32) {
 pub unsafe extern "C" fn set_esp0(ssp: usize) { current_mut().thread.esp0 = ssp; }
 pub unsafe extern "C" fn fpsp040_die() { force_exit_sig(SIGSEGV); }
 
-#[cfg(feature = "CONFIG_M68KFPU_EMU")]
+#[cfg(CONFIG_M68KFPU_EMU)]
 pub unsafe extern "C" fn fpemu_signal(signal: i32, code: i32, addr: *mut core::ffi::c_void) { force_sig_fault(signal, code, addr); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

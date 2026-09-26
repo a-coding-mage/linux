@@ -14,31 +14,31 @@ unsafe fn dcn60_offset_to_id(
 ) -> bool {
     let _ = mask;
     match offset {
-        DCN_BASE__INST0_SEG2 + HPD0_DC_HPD_INT_STATUS => {
+        case if case == DCN_BASE__INST0_SEG2 + HPD0_DC_HPD_INT_STATUS => {
             *id = GPIO_ID_HPD;
             *en = GPIO_HPD_1;
             true
         }
-        DCN_BASE__INST0_SEG2 + HPD1_DC_HPD_INT_STATUS => {
+        case if case == DCN_BASE__INST0_SEG2 + HPD1_DC_HPD_INT_STATUS => {
             *id = GPIO_ID_HPD;
             *en = GPIO_HPD_2;
             true
         }
-        DCN_BASE__INST0_SEG2 + HPD2_DC_HPD_INT_STATUS => {
+        case if case == DCN_BASE__INST0_SEG2 + HPD2_DC_HPD_INT_STATUS => {
             *id = GPIO_ID_HPD;
             *en = GPIO_HPD_3;
             true
         }
-        DCN_BASE__INST0_SEG2 + HPD3_DC_HPD_INT_STATUS => {
+        case if case == DCN_BASE__INST0_SEG2 + HPD3_DC_HPD_INT_STATUS => {
             *id = GPIO_ID_HPD;
             *en = GPIO_HPD_4;
             true
         }
-        DCN_BASE__INST0_SEG2 + DC_I3C0_DC_I3CPAD_CONTROL0 => {
+        case if case == DCN_BASE__INST0_SEG2 + DC_I3C0_DC_I3CPAD_CONTROL0 => {
             *en = GPIO_DDC_LINE_DDC1;
             true
         }
-        DCN_BASE__INST0_SEG2 + DC_I3C1_DC_I3CPAD_CONTROL0 => {
+        case if case == DCN_BASE__INST0_SEG2 + DC_I3C1_DC_I3CPAD_CONTROL0 => {
             *en = GPIO_DDC_LINE_DDC2;
             true
         }

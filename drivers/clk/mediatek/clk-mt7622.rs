@@ -15,40 +15,40 @@ macro_rules! GATE_PERI0 { ($id:expr, $name:expr, $parent:expr, $shift:expr) => {
 macro_rules! GATE_PERI0_AO { ($id:expr, $name:expr, $parent:expr, $shift:expr) => { GATE_MTK_FLAGS!($id, $name, $parent, &peri0_cg_regs, $shift, &mtk_clk_gate_ops_setclr, CLK_IS_CRITICAL) }; }
 macro_rules! GATE_PERI1 { ($id:expr, $name:expr, $parent:expr, $shift:expr) => { GATE_MTK!($id, $name, $parent, &peri1_cg_regs, $shift, &mtk_clk_gate_ops_setclr) }; }
 
-static DEFINE_SPINLOCK!(mt7622_clk_lock);
+DEFINE_SPINLOCK!(mt7622_clk_lock);
 
-static const axi_parents: [&str; 7] = ["clkxtal", "syspll1_d2", "syspll_d5", "syspll1_d4", "univpll_d5", "univpll2_d2", "univpll_d7"];
-static const mem_parents: [&str; 2] = ["clkxtal", "dmpll_ck"];
-static const ddrphycfg_parents: [&str; 2] = ["clkxtal", "syspll1_d8"];
-static const eth_parents: [&str; 7] = ["clkxtal", "syspll1_d2", "univpll1_d2", "syspll1_d4", "univpll_d5", "clk_null", "univpll_d7"];
-static const pwm_parents: [&str; 2] = ["clkxtal", "univpll2_d4"];
-static const f10m_ref_parents: [&str; 2] = ["clkxtal", "syspll4_d16"];
-static const nfi_infra_parents: [&str; 15] = ["clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","univpll2_d8","syspll1_d8","univpll1_d8","syspll4_d2","univpll2_d4","univpll3_d2","syspll1_d4"];
-static const flash_parents: [&str; 8] = ["clkxtal","univpll_d80_d4","syspll2_d8","syspll3_d4","univpll3_d4","univpll1_d8","syspll2_d4","univpll2_d4"];
-static const uart_parents: [&str; 2] = ["clkxtal", "univpll2_d8"];
-static const spi0_parents: [&str; 8] = ["clkxtal","syspll3_d2","clkxtal","syspll2_d4","syspll4_d2","univpll2_d4","univpll1_d8","clkxtal"];
-static const spi1_parents: [&str; 8] = ["clkxtal","syspll3_d2","clkxtal","syspll4_d4","syspll4_d2","univpll2_d4","univpll1_d8","clkxtal"];
-static const msdc30_0_parents: [&str; 3] = ["clkxtal", "univpll2_d16", "univ48m"];
-static const a1sys_hp_parents: [&str; 4] = ["clkxtal", "aud1pll_ck", "aud2pll_ck", "clkxtal"];
-static const intdir_parents: [&str; 4] = ["clkxtal", "syspll_d2", "univpll_d2", "sgmiipll_ck"];
-static const aud_intbus_parents: [&str; 4] = ["clkxtal", "syspll1_d4", "syspll4_d2", "syspll3_d2"];
-static const pmicspi_parents: [&str; 6] = ["clkxtal", "clk_null", "clk_null", "clk_null", "clk_null", "univpll2_d16"];
-static const atb_parents: [&str; 3] = ["clkxtal", "syspll1_d2", "syspll_d5"];
-static const audio_parents: [&str; 4] = ["clkxtal", "syspll3_d4", "syspll4_d4", "univpll1_d16"];
-static const usb20_parents: [&str; 4] = ["clkxtal", "univpll3_d4", "syspll1_d8", "clkxtal"];
-static const aud1_parents: [&str; 2] = ["clkxtal", "aud1pll_ck"];
-static const aud2_parents: [&str; 2] = ["clkxtal", "aud2pll_ck"];
-static const asm_l_parents: [&str; 4] = ["clkxtal", "syspll_d5", "univpll2_d2", "univpll2_d4"];
-static const apll1_ck_parents: [&str; 2] = ["aud1_sel", "aud2_sel"];
-static const peribus_ck_parents: [&str; 2] = ["syspll1_d8", "syspll1_d4"];
+static axi_parents: [&str; 7] = ["clkxtal", "syspll1_d2", "syspll_d5", "syspll1_d4", "univpll_d5", "univpll2_d2", "univpll_d7"];
+static mem_parents: [&str; 2] = ["clkxtal", "dmpll_ck"];
+static ddrphycfg_parents: [&str; 2] = ["clkxtal", "syspll1_d8"];
+static eth_parents: [&str; 7] = ["clkxtal", "syspll1_d2", "univpll1_d2", "syspll1_d4", "univpll_d5", "clk_null", "univpll_d7"];
+static pwm_parents: [&str; 2] = ["clkxtal", "univpll2_d4"];
+static f10m_ref_parents: [&str; 2] = ["clkxtal", "syspll4_d16"];
+static nfi_infra_parents: [&str; 15] = ["clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","clkxtal","univpll2_d8","syspll1_d8","univpll1_d8","syspll4_d2","univpll2_d4","univpll3_d2","syspll1_d4"];
+static flash_parents: [&str; 8] = ["clkxtal","univpll_d80_d4","syspll2_d8","syspll3_d4","univpll3_d4","univpll1_d8","syspll2_d4","univpll2_d4"];
+static uart_parents: [&str; 2] = ["clkxtal", "univpll2_d8"];
+static spi0_parents: [&str; 8] = ["clkxtal","syspll3_d2","clkxtal","syspll2_d4","syspll4_d2","univpll2_d4","univpll1_d8","clkxtal"];
+static spi1_parents: [&str; 8] = ["clkxtal","syspll3_d2","clkxtal","syspll4_d4","syspll4_d2","univpll2_d4","univpll1_d8","clkxtal"];
+static msdc30_0_parents: [&str; 3] = ["clkxtal", "univpll2_d16", "univ48m"];
+static a1sys_hp_parents: [&str; 4] = ["clkxtal", "aud1pll_ck", "aud2pll_ck", "clkxtal"];
+static intdir_parents: [&str; 4] = ["clkxtal", "syspll_d2", "univpll_d2", "sgmiipll_ck"];
+static aud_intbus_parents: [&str; 4] = ["clkxtal", "syspll1_d4", "syspll4_d2", "syspll3_d2"];
+static pmicspi_parents: [&str; 6] = ["clkxtal", "clk_null", "clk_null", "clk_null", "clk_null", "univpll2_d16"];
+static atb_parents: [&str; 3] = ["clkxtal", "syspll1_d2", "syspll_d5"];
+static audio_parents: [&str; 4] = ["clkxtal", "syspll3_d4", "syspll4_d4", "univpll1_d16"];
+static usb20_parents: [&str; 4] = ["clkxtal", "univpll3_d4", "syspll1_d8", "clkxtal"];
+static aud1_parents: [&str; 2] = ["clkxtal", "aud1pll_ck"];
+static aud2_parents: [&str; 2] = ["clkxtal", "aud2pll_ck"];
+static asm_l_parents: [&str; 4] = ["clkxtal", "syspll_d5", "univpll2_d2", "univpll2_d4"];
+static apll1_ck_parents: [&str; 2] = ["aud1_sel", "aud2_sel"];
+static peribus_ck_parents: [&str; 2] = ["syspll1_d8", "syspll1_d4"];
 
-static const top0_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0x120, clr_ofs: 0x120, sta_ofs: 0x120 };
-static const top1_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0x128, clr_ofs: 0x128, sta_ofs: 0x128 };
-static const peri0_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0x8, clr_ofs: 0x10, sta_ofs: 0x18 };
-static const peri1_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0xC, clr_ofs: 0x14, sta_ofs: 0x1C };
+static top0_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0x120, clr_ofs: 0x120, sta_ofs: 0x120 };
+static top1_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0x128, clr_ofs: 0x128, sta_ofs: 0x128 };
+static peri0_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0x8, clr_ofs: 0x10, sta_ofs: 0x18 };
+static peri1_cg_regs: struct_mtk_gate_regs = struct_mtk_gate_regs { set_ofs: 0xC, clr_ofs: 0x14, sta_ofs: 0x1C };
 
 // The following descriptor tables retain the kernel's declarative clock data.
-static const top_fixed_clks: [struct_mtk_fixed_clk; 10] = [
+static top_fixed_clks: [struct_mtk_fixed_clk; 10] = [
     FIXED_CLK!(CLK_TOP_TO_U2_PHY, "to_u2_phy", "clkxtal", 31250000), FIXED_CLK!(CLK_TOP_TO_U2_PHY_1P, "to_u2_phy_1p", "clkxtal", 31250000),
     FIXED_CLK!(CLK_TOP_PCIE0_PIPE_EN, "pcie0_pipe_en", "clkxtal", 125000000), FIXED_CLK!(CLK_TOP_PCIE1_PIPE_EN, "pcie1_pipe_en", "clkxtal", 125000000),
     FIXED_CLK!(CLK_TOP_SSUSB_TX250M, "ssusb_tx250m", "clkxtal", 250000000), FIXED_CLK!(CLK_TOP_SSUSB_EQ_RX250M, "ssusb_eq_rx250m", "clkxtal", 250000000),
@@ -58,7 +58,7 @@ static const top_fixed_clks: [struct_mtk_fixed_clk; 10] = [
 
 // Factor, gate, divider, and composite entries are kept in their original
 // order and use the corresponding supplied MTK table constructors.
-static const top_divs: [_; 43] = [
+static top_divs: [_; 43] = [
     FACTOR!(CLK_TOP_TO_USB3_SYS,"to_usb3_sys","eth1pll",1,4), FACTOR!(CLK_TOP_P1_1MHZ,"p1_1mhz","eth1pll",1,500), FACTOR!(CLK_TOP_4MHZ,"free_run_4mhz","eth1pll",1,125), FACTOR!(CLK_TOP_P0_1MHZ,"p0_1mhz","eth1pll",1,500), FACTOR!(CLK_TOP_TXCLK_SRC_PRE,"txclk_src_pre","sgmiipll_d2",1,1), FACTOR!(CLK_TOP_RTC,"rtc","clkxtal",1,1024), FACTOR!(CLK_TOP_MEMPLL,"mempll","clkxtal",32,1), FACTOR!(CLK_TOP_DMPLL,"dmpll_ck","mempll",1,1),
     FACTOR!(CLK_TOP_SYSPLL_D2,"syspll_d2","mainpll",1,2), FACTOR!(CLK_TOP_SYSPLL1_D2,"syspll1_d2","mainpll",1,4), FACTOR!(CLK_TOP_SYSPLL1_D4,"syspll1_d4","mainpll",1,8), FACTOR!(CLK_TOP_SYSPLL1_D8,"syspll1_d8","mainpll",1,16), FACTOR!(CLK_TOP_SYSPLL2_D4,"syspll2_d4","mainpll",1,12), FACTOR!(CLK_TOP_SYSPLL2_D8,"syspll2_d8","mainpll",1,24), FACTOR!(CLK_TOP_SYSPLL_D5,"syspll_d5","mainpll",1,5), FACTOR!(CLK_TOP_SYSPLL3_D2,"syspll3_d2","mainpll",1,10), FACTOR!(CLK_TOP_SYSPLL3_D4,"syspll3_d4","mainpll",1,20), FACTOR!(CLK_TOP_SYSPLL4_D2,"syspll4_d2","mainpll",1,14), FACTOR!(CLK_TOP_SYSPLL4_D4,"syspll4_d4","mainpll",1,28), FACTOR!(CLK_TOP_SYSPLL4_D16,"syspll4_d16","mainpll",1,112),
     FACTOR!(CLK_TOP_UNIVPLL,"univpll","univ2pll",1,2), FACTOR!(CLK_TOP_UNIVPLL_D2,"univpll_d2","univpll",1,2), FACTOR!(CLK_TOP_UNIVPLL1_D2,"univpll1_d2","univpll",1,4), FACTOR!(CLK_TOP_UNIVPLL1_D4,"univpll1_d4","univpll",1,8), FACTOR!(CLK_TOP_UNIVPLL1_D8,"univpll1_d8","univpll",1,16), FACTOR!(CLK_TOP_UNIVPLL1_D16,"univpll1_d16","univpll",1,32), FACTOR!(CLK_TOP_UNIVPLL2_D2,"univpll2_d2","univpll",1,6), FACTOR!(CLK_TOP_UNIVPLL2_D4,"univpll2_d4","univpll",1,12), FACTOR!(CLK_TOP_UNIVPLL2_D8,"univpll2_d8","univpll",1,24), FACTOR!(CLK_TOP_UNIVPLL2_D16,"univpll2_d16","univpll",1,48), FACTOR!(CLK_TOP_UNIVPLL_D5,"univpll_d5","univpll",1,5), FACTOR!(CLK_TOP_UNIVPLL3_D2,"univpll3_d2","univpll",1,10), FACTOR!(CLK_TOP_UNIVPLL3_D4,"univpll3_d4","univpll",1,20), FACTOR!(CLK_TOP_UNIVPLL3_D16,"univpll3_d16","univpll",1,80), FACTOR!(CLK_TOP_UNIVPLL_D7,"univpll_d7","univpll",1,7), FACTOR!(CLK_TOP_UNIVPLL_D80_D4,"univpll_d80_d4","univpll",1,320), FACTOR!(CLK_TOP_UNIV48M,"univ48m","univpll",1,25), FACTOR!(CLK_TOP_SGMIIPLL,"sgmiipll_ck","sgmipll",1,1), FACTOR!(CLK_TOP_SGMIIPLL_D2,"sgmiipll_d2","sgmipll",1,2), FACTOR!(CLK_TOP_AUD1PLL,"aud1pll_ck","aud1pll",1,1), FACTOR!(CLK_TOP_AUD2PLL,"aud2pll_ck","aud2pll",1,1), FACTOR!(CLK_TOP_AUD_I2S2_MCK,"aud_i2s2_mck","i2s2_mck_sel",1,2), FACTOR!(CLK_TOP_TO_USB3_REF,"to_usb3_ref","univpll2_d4",1,4), FACTOR!(CLK_TOP_PCIE1_MAC_EN,"pcie1_mac_en","univpll1_d4",1,1), FACTOR!(CLK_TOP_PCIE0_MAC_EN,"pcie0_mac_en","univpll1_d4",1,1), FACTOR!(CLK_TOP_ETH_500M,"eth_500m","eth1pll",1,1),
@@ -83,11 +83,11 @@ static top_muxes: [_; 31] = [
 ];
 static peri_muxes: [_; 1] = [MUX!(CLK_PERIBUS_SEL,"peribus_ck_sel",peribus_ck_parents,0x05C,0,1)];
 
-static const topck_desc: struct_mtk_clk_desc = struct_mtk_clk_desc { clks: top_clks.as_ptr(), num_clks: top_clks.len(), fixed_clks: top_fixed_clks.as_ptr(), num_fixed_clks: top_fixed_clks.len(), factor_clks: top_divs.as_ptr(), num_factor_clks: top_divs.len(), composite_clks: top_muxes.as_ptr(), num_composite_clks: top_muxes.len(), divider_clks: top_adj_divs.as_ptr(), num_divider_clks: top_adj_divs.len(), clk_lock: &mt7622_clk_lock };
-static const peri_desc: struct_mtk_clk_desc = struct_mtk_clk_desc { clks: peri_clks.as_ptr(), num_clks: peri_clks.len(), composite_clks: peri_muxes.as_ptr(), num_composite_clks: peri_muxes.len(), rst_desc: &clk_rst_desc, clk_lock: &mt7622_clk_lock };
+static topck_desc: struct_mtk_clk_desc = struct_mtk_clk_desc { clks: top_clks.as_ptr(), num_clks: top_clks.len(), fixed_clks: top_fixed_clks.as_ptr(), num_fixed_clks: top_fixed_clks.len(), factor_clks: top_divs.as_ptr(), num_factor_clks: top_divs.len(), composite_clks: top_muxes.as_ptr(), num_composite_clks: top_muxes.len(), divider_clks: top_adj_divs.as_ptr(), num_divider_clks: top_adj_divs.len(), clk_lock: &mt7622_clk_lock };
+static peri_desc: struct_mtk_clk_desc = struct_mtk_clk_desc { clks: peri_clks.as_ptr(), num_clks: peri_clks.len(), composite_clks: peri_muxes.as_ptr(), num_composite_clks: peri_muxes.len(), rst_desc: &clk_rst_desc, clk_lock: &mt7622_clk_lock };
 
 static pericfg_rst_ofs: [u16; 2] = [0x0, 0x4];
-static const clk_rst_desc: struct_mtk_clk_rst_desc = struct_mtk_clk_rst_desc { version: MTK_RST_SIMPLE, rst_bank_ofs: pericfg_rst_ofs.as_ptr(), rst_bank_nr: 2 };
+static clk_rst_desc: struct_mtk_clk_rst_desc = struct_mtk_clk_rst_desc { version: MTK_RST_SIMPLE, rst_bank_ofs: pericfg_rst_ofs.as_ptr(), rst_bank_nr: 2 };
 
 // Device matching and driver registration retain the original externally
 // visible interfaces and callbacks.

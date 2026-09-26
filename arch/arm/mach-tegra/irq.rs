@@ -12,7 +12,7 @@
 
 const SGI_MASK: u32 = 0xFFFF;
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static mut tegra_gic_cpu_base: *mut core::ffi::c_void = core::ptr::null_mut();
 
 pub unsafe fn tegra_pending_sgi() -> bool {
@@ -28,7 +28,7 @@ pub unsafe fn tegra_pending_sgi() -> bool {
     false
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn tegra_gic_notifier(
     _self: *mut notifier_block,
     cmd: usize,
@@ -44,12 +44,12 @@ unsafe extern "C" fn tegra_gic_notifier(
     NOTIFY_OK
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static mut tegra_gic_notifier_block: notifier_block = notifier_block {
     notifier_call: Some(tegra_gic_notifier),
 };
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 static tegra114_dt_gic_match: [of_device_id; 2] = [
     of_device_id {
         compatible: b"arm,cortex-a15-gic\0".as_ptr() as *const i8,
@@ -59,7 +59,7 @@ static tegra114_dt_gic_match: [of_device_id; 2] = [
     },
 ];
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn tegra114_gic_cpu_pm_registration() {
     let dn = of_find_matching_node(core::ptr::null_mut(), tegra114_dt_gic_match.as_ptr());
 
@@ -72,7 +72,7 @@ unsafe fn tegra114_gic_cpu_pm_registration() {
     cpu_pm_register_notifier(&raw mut tegra_gic_notifier_block);
 }
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 unsafe fn tegra114_gic_cpu_pm_registration() {}
 
 static tegra_ictlr_match: [of_device_id; 3] = [

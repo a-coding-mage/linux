@@ -65,15 +65,15 @@ pub unsafe fn arch_show_interrupts(
     #[cfg(CONFIG_SMP)]
     {
         seq_puts(p, b" IPI: \0".as_ptr() as *const _);
-        for_each_online_cpu!(j) {
+        for_each_online_cpu!(j, {
             seq_printf(p, b"%10lu \0".as_ptr() as *const _, cpu_data[j as usize].ipi_count);
-        }
+        });
         seq_putc(p, b'\n' as ::core::ffi::c_int);
     }
     seq_puts(p, b" PMI: \0".as_ptr() as *const _);
-    for_each_online_cpu!(j) {
+    for_each_online_cpu!(j, {
         seq_printf(p, b"%10lu \0".as_ptr() as *const _, per_cpu!(irq_pmi_count, j));
-    }
+    });
     seq_puts(p, b" Performance Monitoring\n\0".as_ptr() as *const _);
     seq_printf(p, b" ERR: %10lu\n\0".as_ptr() as *const _, irq_err_count);
     0

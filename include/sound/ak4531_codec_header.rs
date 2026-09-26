@@ -50,17 +50,17 @@ pub unsafe extern "C" fn snd_ak4531_mixer(
     rak4531: *mut *mut snd_ak4531,
 ) -> core::ffi::c_int;
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 pub unsafe extern "C" fn snd_ak4531_suspend(ak4531: *mut snd_ak4531);
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 pub unsafe extern "C" fn snd_ak4531_resume(ak4531: *mut snd_ak4531);
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub unsafe fn snd_ak4531_suspend(_ak4531: *mut snd_ak4531) {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub unsafe fn snd_ak4531_resume(_ak4531: *mut snd_ak4531) {}
 

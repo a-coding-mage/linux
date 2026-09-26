@@ -56,7 +56,7 @@ extern "C" { pub fn dh_compute_value(req:*mut kpp_request)->c_int; pub fn dh_max
 #[repr(C)] pub struct dh_safe_prime { pub max_strength:c_uint, pub p_size:c_uint, pub p:*const c_char }
 #[repr(C)] pub struct dh_safe_prime_instance_ctx { pub dh_spawn:*mut c_void, pub safe_prime:*const dh_safe_prime }
 #[repr(C)] pub struct dh_safe_prime_tfm_ctx { pub dh_tfm:*mut crypto_kpp }
-#[cfg(feature="CONFIG_CRYPTO_DH_RFC7919_GROUPS")]
+#[cfg(CONFIG_CRYPTO_DH_RFC7919_GROUPS)]
 pub static SAFE_PRIME_G:[u8;1]=[2];
 
 // CONFIG_CRYPTO_DH_RFC7919_GROUPS controls the ffdhe2048/3072/4096/6144/8192

@@ -20,12 +20,12 @@ pub struct S390DiagnoseTraceEntry {
  * TP_fast_assign(__entry->nr = nr), TP_printk("nr=0x%x", __entry->nr)
  */
 
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 unsafe extern "C" {
     pub fn trace_s390_diagnose_norecursion(diag_nr: i32);
 }
 
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline]
 pub fn trace_s390_diagnose_norecursion(_diag_nr: i32) {}
 

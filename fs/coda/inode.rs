@@ -83,9 +83,7 @@ struct coda_fs_context {
     idx: i32,
 }
 
-enum {
-    Opt_fd,
-}
+pub const Opt_fd: i32 = 0;
 
 static coda_param_specs: [fs_parameter_spec; 2] = [
     fsparam_fd!(b"fd\0", Opt_fd),

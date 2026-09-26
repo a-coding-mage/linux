@@ -198,17 +198,17 @@ pub unsafe extern "C" fn metadata_dst_free(md_dst: *mut metadata_dst) {
 pub unsafe extern "C" fn metadata_dst_alloc_percpu(optslen: u8, type_: metadata_type, flags: gfp_t) -> *mut metadata_dst {
     let md = __alloc_percpu_gfp(core::mem::size_of::<metadata_dst>() + optslen as usize, core::mem::align_of::<metadata_dst>(), flags);
     if md.is_null() { return core::ptr::null_mut(); }
-    for_each_possible_cpu!(cpu) { __metadata_dst_init(per_cpu_ptr(md, cpu), type_, optslen); }
+    for_each_possible_cpu!(cpu, { __metadata_dst_init(per_cpu_ptr(md, cpu), type_, optslen); });
     md
 }
 
 pub unsafe extern "C" fn metadata_dst_free_percpu(md_dst: *mut metadata_dst) {
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let one = per_cpu_ptr(md_dst, cpu);
         #[cfg(CONFIG_DST_CACHE)]
         if (*one).type_ == METADATA_IP_TUNNEL { dst_cache_destroy(&mut (*one).u.tun_info.dst_cache); }
         if (*one).type_ == METADATA_XFRM { dst_release((*one).u.xfrm_info.dst_orig); }
-    }
+    });
     free_percpu(md_dst);
 }
 

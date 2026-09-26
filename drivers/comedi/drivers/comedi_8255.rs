@@ -132,7 +132,7 @@ unsafe fn __subdev_8255_init(dev: *mut ComediDevice, s: *mut ComediSubdevice, io
 }
 
 // CONFIG_HAS_IOPORT conditionally provides the I/O-mapped initializer.
-#[cfg(feature = "CONFIG_HAS_IOPORT")]
+#[cfg(CONFIG_HAS_IOPORT)]
 pub unsafe extern "C" fn subdev_8255_io_init(dev: *mut ComediDevice, s: *mut ComediSubdevice, regbase: usize) -> i32 { __subdev_8255_init(dev, s, Some(subdev_8255_io), regbase) }
 
 pub unsafe extern "C" fn subdev_8255_mm_init(dev: *mut ComediDevice, s: *mut ComediSubdevice, regbase: usize) -> i32 { __subdev_8255_init(dev, s, Some(subdev_8255_mmio), regbase) }

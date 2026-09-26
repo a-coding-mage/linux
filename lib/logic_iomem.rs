@@ -89,13 +89,13 @@ pub unsafe fn ioremap(offset: phys_addr_t, size: usize) -> *mut core::ffi::c_voi
     let mut found: *mut logic_iomem_region = core::ptr::null_mut();
 
     mutex_lock(&mut regions_mtx);
-    list_for_each_entry!(rreg, &regions_list, list, logic_iomem_region) {
+    list_for_each_entry!(rreg, &regions_list, list, logic_iomem_region, {
         if (*(*rreg).res).start > offset || (*(*rreg).res).end < offset + size - 1 {
             continue;
         }
         found = rreg;
         break;
-    }
+    });
 
     if !found.is_null() {
         for i in 0..MAX_AREAS {
@@ -144,9 +144,9 @@ pub unsafe fn iounmap(addr: *mut core::ffi::c_void) {
 
 #[cfg(not(CONFIG_INDIRECT_IOMEM_FALLBACK))]
 macro_rules! make_fallback {
-    ($op:ident, $ty:ty) => {
+    ($op:tt, $ty:ty) => {
         unsafe fn $op(addr: *const core::ffi::c_void) -> $ty { WARN!(1, "Invalid read at address %llx\n", addr as usize as u64); !0 as $ty }
-        unsafe fn $op##_write(val: $ty, addr: *mut core::ffi::c_void) { WARN!(1, "Invalid write at address %llx\n", addr as usize as u64); let _ = val; }
+        unsafe fn ::kernel::macros::paste!([<$op _write>])(val: $ty, addr: *mut core::ffi::c_void) { WARN!(1, "Invalid write at address %llx\n", addr as usize as u64); let _ = val; }
     };
 }
 

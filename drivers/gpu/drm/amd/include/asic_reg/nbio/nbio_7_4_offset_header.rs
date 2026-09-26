@@ -2446,2183 +2446,2183 @@ pub const cfgBIF_CFG_DEV0_EPF0_VF15_0_PCIE_ARI_CNTL: u32 = 0x032e;
 // addressBlock: nbio_nbif0_bif_bx_pf_SYSPFVFDEC
 // base address: 0x0
 pub const mmMM_INDEX: u32 = 0x0000;
-#define mmMM_INDEX_BASE_IDX                                                                            0
+pub const mmMM_INDEX_BASE_IDX: u32 = 0;
 pub const mmMM_DATA: u32 = 0x0001;
-#define mmMM_DATA_BASE_IDX                                                                             0
+pub const mmMM_DATA_BASE_IDX: u32 = 0;
 pub const mmMM_INDEX_HI: u32 = 0x0006;
-#define mmMM_INDEX_HI_BASE_IDX                                                                         0
+pub const mmMM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_bif_bx_SYSDEC
 // base address: 0x0
 pub const mmSYSHUB_INDEX_OVLP: u32 = 0x0008;
-#define mmSYSHUB_INDEX_OVLP_BASE_IDX                                                                   0
+pub const mmSYSHUB_INDEX_OVLP_BASE_IDX: u32 = 0;
 pub const mmSYSHUB_DATA_OVLP: u32 = 0x0009;
-#define mmSYSHUB_DATA_OVLP_BASE_IDX                                                                    0
+pub const mmSYSHUB_DATA_OVLP_BASE_IDX: u32 = 0;
 pub const mmPCIE_INDEX: u32 = 0x000c;
-#define mmPCIE_INDEX_BASE_IDX                                                                          0
+pub const mmPCIE_INDEX_BASE_IDX: u32 = 0;
 pub const mmPCIE_DATA: u32 = 0x000d;
-#define mmPCIE_DATA_BASE_IDX                                                                           0
+pub const mmPCIE_DATA_BASE_IDX: u32 = 0;
 pub const mmPCIE_INDEX2: u32 = 0x000e;
-#define mmPCIE_INDEX2_BASE_IDX                                                                         0
+pub const mmPCIE_INDEX2_BASE_IDX: u32 = 0;
 pub const mmPCIE_DATA2: u32 = 0x000f;
-#define mmPCIE_DATA2_BASE_IDX                                                                          0
+pub const mmPCIE_DATA2_BASE_IDX: u32 = 0;
 pub const mmSBIOS_SCRATCH_0: u32 = 0x0034;
-#define mmSBIOS_SCRATCH_0_BASE_IDX                                                                     1
+pub const mmSBIOS_SCRATCH_0_BASE_IDX: u32 = 1;
 pub const mmSBIOS_SCRATCH_1: u32 = 0x0035;
-#define mmSBIOS_SCRATCH_1_BASE_IDX                                                                     1
+pub const mmSBIOS_SCRATCH_1_BASE_IDX: u32 = 1;
 pub const mmSBIOS_SCRATCH_2: u32 = 0x0036;
-#define mmSBIOS_SCRATCH_2_BASE_IDX                                                                     1
+pub const mmSBIOS_SCRATCH_2_BASE_IDX: u32 = 1;
 pub const mmSBIOS_SCRATCH_3: u32 = 0x0037;
-#define mmSBIOS_SCRATCH_3_BASE_IDX                                                                     1
+pub const mmSBIOS_SCRATCH_3_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_0: u32 = 0x0038;
-#define mmBIOS_SCRATCH_0_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_0_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_1: u32 = 0x0039;
-#define mmBIOS_SCRATCH_1_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_1_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_2: u32 = 0x003a;
-#define mmBIOS_SCRATCH_2_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_2_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_3: u32 = 0x003b;
-#define mmBIOS_SCRATCH_3_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_3_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_4: u32 = 0x003c;
-#define mmBIOS_SCRATCH_4_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_4_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_5: u32 = 0x003d;
-#define mmBIOS_SCRATCH_5_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_5_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_6: u32 = 0x003e;
-#define mmBIOS_SCRATCH_6_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_6_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_7: u32 = 0x003f;
-#define mmBIOS_SCRATCH_7_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_7_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_8: u32 = 0x0040;
-#define mmBIOS_SCRATCH_8_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_8_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_9: u32 = 0x0041;
-#define mmBIOS_SCRATCH_9_BASE_IDX                                                                      1
+pub const mmBIOS_SCRATCH_9_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_10: u32 = 0x0042;
-#define mmBIOS_SCRATCH_10_BASE_IDX                                                                     1
+pub const mmBIOS_SCRATCH_10_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_11: u32 = 0x0043;
-#define mmBIOS_SCRATCH_11_BASE_IDX                                                                     1
+pub const mmBIOS_SCRATCH_11_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_12: u32 = 0x0044;
-#define mmBIOS_SCRATCH_12_BASE_IDX                                                                     1
+pub const mmBIOS_SCRATCH_12_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_13: u32 = 0x0045;
-#define mmBIOS_SCRATCH_13_BASE_IDX                                                                     1
+pub const mmBIOS_SCRATCH_13_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_14: u32 = 0x0046;
-#define mmBIOS_SCRATCH_14_BASE_IDX                                                                     1
+pub const mmBIOS_SCRATCH_14_BASE_IDX: u32 = 1;
 pub const mmBIOS_SCRATCH_15: u32 = 0x0047;
-#define mmBIOS_SCRATCH_15_BASE_IDX                                                                     1
+pub const mmBIOS_SCRATCH_15_BASE_IDX: u32 = 1;
 pub const mmBIF_RLC_INTR_CNTL: u32 = 0x004c;
-#define mmBIF_RLC_INTR_CNTL_BASE_IDX                                                                   1
+pub const mmBIF_RLC_INTR_CNTL_BASE_IDX: u32 = 1;
 pub const mmBIF_VCE_INTR_CNTL: u32 = 0x004d;
-#define mmBIF_VCE_INTR_CNTL_BASE_IDX                                                                   1
+pub const mmBIF_VCE_INTR_CNTL_BASE_IDX: u32 = 1;
 pub const mmBIF_UVD_INTR_CNTL: u32 = 0x004e;
-#define mmBIF_UVD_INTR_CNTL_BASE_IDX                                                                   1
+pub const mmBIF_UVD_INTR_CNTL_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR0: u32 = 0x006c;
-#define mmGFX_MMIOREG_CAM_ADDR0_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR0_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR0: u32 = 0x006d;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR0_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR0_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR1: u32 = 0x006e;
-#define mmGFX_MMIOREG_CAM_ADDR1_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR1_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR1: u32 = 0x006f;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR1_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR1_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR2: u32 = 0x0070;
-#define mmGFX_MMIOREG_CAM_ADDR2_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR2_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR2: u32 = 0x0071;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR2_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR2_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR3: u32 = 0x0072;
-#define mmGFX_MMIOREG_CAM_ADDR3_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR3_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR3: u32 = 0x0073;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR3_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR3_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR4: u32 = 0x0074;
-#define mmGFX_MMIOREG_CAM_ADDR4_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR4_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR4: u32 = 0x0075;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR4_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR4_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR5: u32 = 0x0076;
-#define mmGFX_MMIOREG_CAM_ADDR5_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR5_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR5: u32 = 0x0077;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR5_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR5_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR6: u32 = 0x0078;
-#define mmGFX_MMIOREG_CAM_ADDR6_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR6_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR6: u32 = 0x0079;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR6_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR6_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ADDR7: u32 = 0x007a;
-#define mmGFX_MMIOREG_CAM_ADDR7_BASE_IDX                                                               1
+pub const mmGFX_MMIOREG_CAM_ADDR7_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_REMAP_ADDR7: u32 = 0x007b;
-#define mmGFX_MMIOREG_CAM_REMAP_ADDR7_BASE_IDX                                                         1
+pub const mmGFX_MMIOREG_CAM_REMAP_ADDR7_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_CNTL: u32 = 0x007c;
-#define mmGFX_MMIOREG_CAM_CNTL_BASE_IDX                                                                1
+pub const mmGFX_MMIOREG_CAM_CNTL_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ZERO_CPL: u32 = 0x007d;
-#define mmGFX_MMIOREG_CAM_ZERO_CPL_BASE_IDX                                                            1
+pub const mmGFX_MMIOREG_CAM_ZERO_CPL_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_ONE_CPL: u32 = 0x007e;
-#define mmGFX_MMIOREG_CAM_ONE_CPL_BASE_IDX                                                             1
+pub const mmGFX_MMIOREG_CAM_ONE_CPL_BASE_IDX: u32 = 1;
 pub const mmGFX_MMIOREG_CAM_PROGRAMMABLE_CPL: u32 = 0x007f;
-#define mmGFX_MMIOREG_CAM_PROGRAMMABLE_CPL_BASE_IDX                                                    1
+pub const mmGFX_MMIOREG_CAM_PROGRAMMABLE_CPL_BASE_IDX: u32 = 1;
 
 
 // addressBlock: nbio_nbif0_syshub_mmreg_syshubdec
 // base address: 0x0
 pub const mmSYSHUB_INDEX: u32 = 0x0008;
-#define mmSYSHUB_INDEX_BASE_IDX                                                                        0
+pub const mmSYSHUB_INDEX_BASE_IDX: u32 = 0;
 pub const mmSYSHUB_DATA: u32 = 0x0009;
-#define mmSYSHUB_DATA_BASE_IDX                                                                         0
+pub const mmSYSHUB_DATA_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_strap_BIFDEC1
 // base address: 0x0
 pub const mmRCC_BIF_STRAP0: u32 = 0x0000;
-#define mmRCC_BIF_STRAP0_BASE_IDX                                                                      2
+pub const mmRCC_BIF_STRAP0_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_STRAP0: u32 = 0x0011;
-#define mmRCC_DEV0_EPF0_STRAP0_BASE_IDX                                                                2
+pub const mmRCC_DEV0_EPF0_STRAP0_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_ep_dev0_BIFDEC1
 // base address: 0x0
 pub const mmEP_PCIE_SCRATCH: u32 = 0x0025;
-#define mmEP_PCIE_SCRATCH_BASE_IDX                                                                     2
+pub const mmEP_PCIE_SCRATCH_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_CNTL: u32 = 0x0027;
-#define mmEP_PCIE_CNTL_BASE_IDX                                                                        2
+pub const mmEP_PCIE_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_INT_CNTL: u32 = 0x0028;
-#define mmEP_PCIE_INT_CNTL_BASE_IDX                                                                    2
+pub const mmEP_PCIE_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_INT_STATUS: u32 = 0x0029;
-#define mmEP_PCIE_INT_STATUS_BASE_IDX                                                                  2
+pub const mmEP_PCIE_INT_STATUS_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_RX_CNTL2: u32 = 0x002a;
-#define mmEP_PCIE_RX_CNTL2_BASE_IDX                                                                    2
+pub const mmEP_PCIE_RX_CNTL2_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_BUS_CNTL: u32 = 0x002b;
-#define mmEP_PCIE_BUS_CNTL_BASE_IDX                                                                    2
+pub const mmEP_PCIE_BUS_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_CFG_CNTL: u32 = 0x002c;
-#define mmEP_PCIE_CFG_CNTL_BASE_IDX                                                                    2
+pub const mmEP_PCIE_CFG_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_TX_LTR_CNTL: u32 = 0x002e;
-#define mmEP_PCIE_TX_LTR_CNTL_BASE_IDX                                                                 2
+pub const mmEP_PCIE_TX_LTR_CNTL_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_0: u32 = 0x002f;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_0_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_0_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_1: u32 = 0x002f;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_1_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_1_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_2: u32 = 0x002f;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_2_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_2_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_3: u32 = 0x002f;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_3_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_3_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_4: u32 = 0x0030;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_4_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_4_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_5: u32 = 0x0030;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_5_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_5_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_6: u32 = 0x0030;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_6_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_6_BASE_IDX: u32 = 2;
 pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_7: u32 = 0x0030;
-#define mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_7_BASE_IDX                                                    2
+pub const mmPCIE_F1_DPA_SUBSTATE_PWR_ALLOC_7_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_F0_DPA_CAP: u32 = 0x0034;
-#define mmEP_PCIE_F0_DPA_CAP_BASE_IDX                                                                  2
+pub const mmEP_PCIE_F0_DPA_CAP_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_F0_DPA_LATENCY_INDICATOR: u32 = 0x0035;
-#define mmEP_PCIE_F0_DPA_LATENCY_INDICATOR_BASE_IDX                                                    2
+pub const mmEP_PCIE_F0_DPA_LATENCY_INDICATOR_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_F0_DPA_CNTL: u32 = 0x0035;
-#define mmEP_PCIE_F0_DPA_CNTL_BASE_IDX                                                                 2
+pub const mmEP_PCIE_F0_DPA_CNTL_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_0: u32 = 0x0035;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_0_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_0_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_1: u32 = 0x0036;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_1_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_1_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_2: u32 = 0x0036;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_2_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_2_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_3: u32 = 0x0036;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_3_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_3_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_4: u32 = 0x0036;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_4_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_4_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_5: u32 = 0x0037;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_5_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_5_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_6: u32 = 0x0037;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_6_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_6_BASE_IDX: u32 = 2;
 pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_7: u32 = 0x0037;
-#define mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_7_BASE_IDX                                                    2
+pub const mmPCIE_F0_DPA_SUBSTATE_PWR_ALLOC_7_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_PME_CONTROL: u32 = 0x0037;
-#define mmEP_PCIE_PME_CONTROL_BASE_IDX                                                                 2
+pub const mmEP_PCIE_PME_CONTROL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIEP_RESERVED: u32 = 0x0038;
-#define mmEP_PCIEP_RESERVED_BASE_IDX                                                                   2
+pub const mmEP_PCIEP_RESERVED_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_TX_CNTL: u32 = 0x003a;
-#define mmEP_PCIE_TX_CNTL_BASE_IDX                                                                     2
+pub const mmEP_PCIE_TX_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_TX_REQUESTER_ID: u32 = 0x003b;
-#define mmEP_PCIE_TX_REQUESTER_ID_BASE_IDX                                                             2
+pub const mmEP_PCIE_TX_REQUESTER_ID_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_ERR_CNTL: u32 = 0x003c;
-#define mmEP_PCIE_ERR_CNTL_BASE_IDX                                                                    2
+pub const mmEP_PCIE_ERR_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_RX_CNTL: u32 = 0x003d;
-#define mmEP_PCIE_RX_CNTL_BASE_IDX                                                                     2
+pub const mmEP_PCIE_RX_CNTL_BASE_IDX: u32 = 2;
 pub const mmEP_PCIE_LC_SPEED_CNTL: u32 = 0x003e;
-#define mmEP_PCIE_LC_SPEED_CNTL_BASE_IDX                                                               2
+pub const mmEP_PCIE_LC_SPEED_CNTL_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dwn_dev0_BIFDEC1
 // base address: 0x0
 pub const mmDN_PCIE_RESERVED: u32 = 0x0040;
-#define mmDN_PCIE_RESERVED_BASE_IDX                                                                    2
+pub const mmDN_PCIE_RESERVED_BASE_IDX: u32 = 2;
 pub const mmDN_PCIE_SCRATCH: u32 = 0x0041;
-#define mmDN_PCIE_SCRATCH_BASE_IDX                                                                     2
+pub const mmDN_PCIE_SCRATCH_BASE_IDX: u32 = 2;
 pub const mmDN_PCIE_CNTL: u32 = 0x0043;
-#define mmDN_PCIE_CNTL_BASE_IDX                                                                        2
+pub const mmDN_PCIE_CNTL_BASE_IDX: u32 = 2;
 pub const mmDN_PCIE_CONFIG_CNTL: u32 = 0x0044;
-#define mmDN_PCIE_CONFIG_CNTL_BASE_IDX                                                                 2
+pub const mmDN_PCIE_CONFIG_CNTL_BASE_IDX: u32 = 2;
 pub const mmDN_PCIE_RX_CNTL2: u32 = 0x0045;
-#define mmDN_PCIE_RX_CNTL2_BASE_IDX                                                                    2
+pub const mmDN_PCIE_RX_CNTL2_BASE_IDX: u32 = 2;
 pub const mmDN_PCIE_BUS_CNTL: u32 = 0x0046;
-#define mmDN_PCIE_BUS_CNTL_BASE_IDX                                                                    2
+pub const mmDN_PCIE_BUS_CNTL_BASE_IDX: u32 = 2;
 pub const mmDN_PCIE_CFG_CNTL: u32 = 0x0047;
-#define mmDN_PCIE_CFG_CNTL_BASE_IDX                                                                    2
+pub const mmDN_PCIE_CFG_CNTL_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dwnp_dev0_BIFDEC1
 // base address: 0x0
 pub const mmPCIE_ERR_CNTL: u32 = 0x004f;
-#define mmPCIE_ERR_CNTL_BASE_IDX                                                                       2
+pub const mmPCIE_ERR_CNTL_BASE_IDX: u32 = 2;
 pub const mmPCIE_RX_CNTL: u32 = 0x0050;
-#define mmPCIE_RX_CNTL_BASE_IDX                                                                        2
+pub const mmPCIE_RX_CNTL_BASE_IDX: u32 = 2;
 pub const mmPCIE_LC_SPEED_CNTL: u32 = 0x0051;
-#define mmPCIE_LC_SPEED_CNTL_BASE_IDX                                                                  2
+pub const mmPCIE_LC_SPEED_CNTL_BASE_IDX: u32 = 2;
 pub const mmPCIE_LC_CNTL2: u32 = 0x0052;
-#define mmPCIE_LC_CNTL2_BASE_IDX                                                                       2
+pub const mmPCIE_LC_CNTL2_BASE_IDX: u32 = 2;
 pub const mmLTR_MSG_INFO_FROM_EP: u32 = 0x0054;
-#define mmLTR_MSG_INFO_FROM_EP_BASE_IDX                                                                2
+pub const mmLTR_MSG_INFO_FROM_EP_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_BIFPFVFDEC1[13440..14975]
 // base address: 0x3480
 pub const mmRCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_ERR_LOG_BASE_IDX                                                                         2
+pub const mmRCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DOORBELL_APER_EN_BASE_IDX                                                                2
+pub const mmRCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_CONFIG_MEMSIZE_BASE_IDX                                                                  2
+pub const mmRCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_CONFIG_RESERVED_BASE_IDX                                                                 2
+pub const mmRCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                                             2
+pub const mmRCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_BIFDEC1
 // base address: 0x0
 pub const mmRCC_ERR_INT_CNTL: u32 = 0x0086;
-#define mmRCC_ERR_INT_CNTL_BASE_IDX                                                                    2
+pub const mmRCC_ERR_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmRCC_BACO_CNTL_MISC: u32 = 0x0087;
-#define mmRCC_BACO_CNTL_MISC_BASE_IDX                                                                  2
+pub const mmRCC_BACO_CNTL_MISC_BASE_IDX: u32 = 2;
 pub const mmRCC_RESET_EN: u32 = 0x0088;
-#define mmRCC_RESET_EN_BASE_IDX                                                                        2
+pub const mmRCC_RESET_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_VDM_SUPPORT: u32 = 0x0089;
-#define mmRCC_VDM_SUPPORT_BASE_IDX                                                                     2
+pub const mmRCC_VDM_SUPPORT_BASE_IDX: u32 = 2;
 pub const mmRCC_MARGIN_PARAM_CNTL0: u32 = 0x008a;
-#define mmRCC_MARGIN_PARAM_CNTL0_BASE_IDX                                                              2
+pub const mmRCC_MARGIN_PARAM_CNTL0_BASE_IDX: u32 = 2;
 pub const mmRCC_MARGIN_PARAM_CNTL1: u32 = 0x008b;
-#define mmRCC_MARGIN_PARAM_CNTL1_BASE_IDX                                                              2
+pub const mmRCC_MARGIN_PARAM_CNTL1_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER_REG_RANGE0: u32 = 0x00be;
-#define mmRCC_PEER_REG_RANGE0_BASE_IDX                                                                 2
+pub const mmRCC_PEER_REG_RANGE0_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER_REG_RANGE1: u32 = 0x00bf;
-#define mmRCC_PEER_REG_RANGE1_BASE_IDX                                                                 2
+pub const mmRCC_PEER_REG_RANGE1_BASE_IDX: u32 = 2;
 pub const mmRCC_BUS_CNTL: u32 = 0x00c1;
-#define mmRCC_BUS_CNTL_BASE_IDX                                                                        2
+pub const mmRCC_BUS_CNTL_BASE_IDX: u32 = 2;
 pub const mmRCC_CONFIG_CNTL: u32 = 0x00c2;
-#define mmRCC_CONFIG_CNTL_BASE_IDX                                                                     2
+pub const mmRCC_CONFIG_CNTL_BASE_IDX: u32 = 2;
 pub const mmRCC_CONFIG_F0_BASE: u32 = 0x00c6;
-#define mmRCC_CONFIG_F0_BASE_BASE_IDX                                                                  2
+pub const mmRCC_CONFIG_F0_BASE_BASE_IDX: u32 = 2;
 pub const mmRCC_CONFIG_APER_SIZE: u32 = 0x00c7;
-#define mmRCC_CONFIG_APER_SIZE_BASE_IDX                                                                2
+pub const mmRCC_CONFIG_APER_SIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_CONFIG_REG_APER_SIZE: u32 = 0x00c8;
-#define mmRCC_CONFIG_REG_APER_SIZE_BASE_IDX                                                            2
+pub const mmRCC_CONFIG_REG_APER_SIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_XDMA_LO: u32 = 0x00c9;
-#define mmRCC_XDMA_LO_BASE_IDX                                                                         2
+pub const mmRCC_XDMA_LO_BASE_IDX: u32 = 2;
 pub const mmRCC_XDMA_HI: u32 = 0x00ca;
-#define mmRCC_XDMA_HI_BASE_IDX                                                                         2
+pub const mmRCC_XDMA_HI_BASE_IDX: u32 = 2;
 pub const mmRCC_FEATURES_CONTROL_MISC: u32 = 0x00cb;
-#define mmRCC_FEATURES_CONTROL_MISC_BASE_IDX                                                           2
+pub const mmRCC_FEATURES_CONTROL_MISC_BASE_IDX: u32 = 2;
 pub const mmRCC_BUSNUM_CNTL1: u32 = 0x00cc;
-#define mmRCC_BUSNUM_CNTL1_BASE_IDX                                                                    2
+pub const mmRCC_BUSNUM_CNTL1_BASE_IDX: u32 = 2;
 pub const mmRCC_BUSNUM_LIST0: u32 = 0x00cd;
-#define mmRCC_BUSNUM_LIST0_BASE_IDX                                                                    2
+pub const mmRCC_BUSNUM_LIST0_BASE_IDX: u32 = 2;
 pub const mmRCC_BUSNUM_LIST1: u32 = 0x00ce;
-#define mmRCC_BUSNUM_LIST1_BASE_IDX                                                                    2
+pub const mmRCC_BUSNUM_LIST1_BASE_IDX: u32 = 2;
 pub const mmRCC_BUSNUM_CNTL2: u32 = 0x00cf;
-#define mmRCC_BUSNUM_CNTL2_BASE_IDX                                                                    2
+pub const mmRCC_BUSNUM_CNTL2_BASE_IDX: u32 = 2;
 pub const mmRCC_CAPTURE_HOST_BUSNUM: u32 = 0x00d0;
-#define mmRCC_CAPTURE_HOST_BUSNUM_BASE_IDX                                                             2
+pub const mmRCC_CAPTURE_HOST_BUSNUM_BASE_IDX: u32 = 2;
 pub const mmRCC_HOST_BUSNUM: u32 = 0x00d1;
-#define mmRCC_HOST_BUSNUM_BASE_IDX                                                                     2
+pub const mmRCC_HOST_BUSNUM_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER0_FB_OFFSET_HI: u32 = 0x00d2;
-#define mmRCC_PEER0_FB_OFFSET_HI_BASE_IDX                                                              2
+pub const mmRCC_PEER0_FB_OFFSET_HI_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER0_FB_OFFSET_LO: u32 = 0x00d3;
-#define mmRCC_PEER0_FB_OFFSET_LO_BASE_IDX                                                              2
+pub const mmRCC_PEER0_FB_OFFSET_LO_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER1_FB_OFFSET_HI: u32 = 0x00d4;
-#define mmRCC_PEER1_FB_OFFSET_HI_BASE_IDX                                                              2
+pub const mmRCC_PEER1_FB_OFFSET_HI_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER1_FB_OFFSET_LO: u32 = 0x00d5;
-#define mmRCC_PEER1_FB_OFFSET_LO_BASE_IDX                                                              2
+pub const mmRCC_PEER1_FB_OFFSET_LO_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER2_FB_OFFSET_HI: u32 = 0x00d6;
-#define mmRCC_PEER2_FB_OFFSET_HI_BASE_IDX                                                              2
+pub const mmRCC_PEER2_FB_OFFSET_HI_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER2_FB_OFFSET_LO: u32 = 0x00d7;
-#define mmRCC_PEER2_FB_OFFSET_LO_BASE_IDX                                                              2
+pub const mmRCC_PEER2_FB_OFFSET_LO_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER3_FB_OFFSET_HI: u32 = 0x00d8;
-#define mmRCC_PEER3_FB_OFFSET_HI_BASE_IDX                                                              2
+pub const mmRCC_PEER3_FB_OFFSET_HI_BASE_IDX: u32 = 2;
 pub const mmRCC_PEER3_FB_OFFSET_LO: u32 = 0x00d9;
-#define mmRCC_PEER3_FB_OFFSET_LO_BASE_IDX                                                              2
+pub const mmRCC_PEER3_FB_OFFSET_LO_BASE_IDX: u32 = 2;
 pub const mmRCC_CMN_LINK_CNTL: u32 = 0x00de;
-#define mmRCC_CMN_LINK_CNTL_BASE_IDX                                                                   2
+pub const mmRCC_CMN_LINK_CNTL_BASE_IDX: u32 = 2;
 pub const mmRCC_EP_REQUESTERID_RESTORE: u32 = 0x00df;
-#define mmRCC_EP_REQUESTERID_RESTORE_BASE_IDX                                                          2
+pub const mmRCC_EP_REQUESTERID_RESTORE_BASE_IDX: u32 = 2;
 pub const mmRCC_LTR_LSWITCH_CNTL: u32 = 0x00e0;
-#define mmRCC_LTR_LSWITCH_CNTL_BASE_IDX                                                                2
+pub const mmRCC_LTR_LSWITCH_CNTL_BASE_IDX: u32 = 2;
 pub const mmRCC_MH_ARB_CNTL: u32 = 0x00e1;
-#define mmRCC_MH_ARB_CNTL_BASE_IDX                                                                     2
+pub const mmRCC_MH_ARB_CNTL_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_BIFDEC1
 // base address: 0x0
 pub const mmBIF_MM_INDACCESS_CNTL: u32 = 0x00e6;
-#define mmBIF_MM_INDACCESS_CNTL_BASE_IDX                                                               2
+pub const mmBIF_MM_INDACCESS_CNTL_BASE_IDX: u32 = 2;
 pub const mmBUS_CNTL: u32 = 0x00e7;
-#define mmBUS_CNTL_BASE_IDX                                                                            2
+pub const mmBUS_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_SCRATCH0: u32 = 0x00e8;
-#define mmBIF_SCRATCH0_BASE_IDX                                                                        2
+pub const mmBIF_SCRATCH0_BASE_IDX: u32 = 2;
 pub const mmBIF_SCRATCH1: u32 = 0x00e9;
-#define mmBIF_SCRATCH1_BASE_IDX                                                                        2
+pub const mmBIF_SCRATCH1_BASE_IDX: u32 = 2;
 pub const mmBX_RESET_EN: u32 = 0x00ed;
-#define mmBX_RESET_EN_BASE_IDX                                                                         2
+pub const mmBX_RESET_EN_BASE_IDX: u32 = 2;
 pub const mmMM_CFGREGS_CNTL: u32 = 0x00ee;
-#define mmMM_CFGREGS_CNTL_BASE_IDX                                                                     2
+pub const mmMM_CFGREGS_CNTL_BASE_IDX: u32 = 2;
 pub const mmBX_RESET_CNTL: u32 = 0x00f0;
-#define mmBX_RESET_CNTL_BASE_IDX                                                                       2
+pub const mmBX_RESET_CNTL_BASE_IDX: u32 = 2;
 pub const mmINTERRUPT_CNTL: u32 = 0x00f1;
-#define mmINTERRUPT_CNTL_BASE_IDX                                                                      2
+pub const mmINTERRUPT_CNTL_BASE_IDX: u32 = 2;
 pub const mmINTERRUPT_CNTL2: u32 = 0x00f2;
-#define mmINTERRUPT_CNTL2_BASE_IDX                                                                     2
+pub const mmINTERRUPT_CNTL2_BASE_IDX: u32 = 2;
 pub const mmCLKREQB_PAD_CNTL: u32 = 0x00f8;
-#define mmCLKREQB_PAD_CNTL_BASE_IDX                                                                    2
+pub const mmCLKREQB_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_FEATURES_CONTROL_MISC: u32 = 0x00fb;
-#define mmBIF_FEATURES_CONTROL_MISC_BASE_IDX                                                           2
+pub const mmBIF_FEATURES_CONTROL_MISC_BASE_IDX: u32 = 2;
 pub const mmBIF_DOORBELL_CNTL: u32 = 0x00fc;
-#define mmBIF_DOORBELL_CNTL_BASE_IDX                                                                   2
+pub const mmBIF_DOORBELL_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_DOORBELL_INT_CNTL: u32 = 0x00fd;
-#define mmBIF_DOORBELL_INT_CNTL_BASE_IDX                                                               2
+pub const mmBIF_DOORBELL_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_FB_EN: u32 = 0x00ff;
-#define mmBIF_FB_EN_BASE_IDX                                                                           2
+pub const mmBIF_FB_EN_BASE_IDX: u32 = 2;
 pub const mmBIF_INTR_CNTL: u32 = 0x0100;
-#define mmBIF_INTR_CNTL_BASE_IDX                                                                       2
+pub const mmBIF_INTR_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_MST_TRANS_PENDING_VF: u32 = 0x0109;
-#define mmBIF_MST_TRANS_PENDING_VF_BASE_IDX                                                            2
+pub const mmBIF_MST_TRANS_PENDING_VF_BASE_IDX: u32 = 2;
 pub const mmBIF_SLV_TRANS_PENDING_VF: u32 = 0x010a;
-#define mmBIF_SLV_TRANS_PENDING_VF_BASE_IDX                                                            2
+pub const mmBIF_SLV_TRANS_PENDING_VF_BASE_IDX: u32 = 2;
 pub const mmBACO_CNTL: u32 = 0x010b;
-#define mmBACO_CNTL_BASE_IDX                                                                           2
+pub const mmBACO_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BACO_EXIT_TIME0: u32 = 0x010c;
-#define mmBIF_BACO_EXIT_TIME0_BASE_IDX                                                                 2
+pub const mmBIF_BACO_EXIT_TIME0_BASE_IDX: u32 = 2;
 pub const mmBIF_BACO_EXIT_TIMER1: u32 = 0x010d;
-#define mmBIF_BACO_EXIT_TIMER1_BASE_IDX                                                                2
+pub const mmBIF_BACO_EXIT_TIMER1_BASE_IDX: u32 = 2;
 pub const mmBIF_BACO_EXIT_TIMER2: u32 = 0x010e;
-#define mmBIF_BACO_EXIT_TIMER2_BASE_IDX                                                                2
+pub const mmBIF_BACO_EXIT_TIMER2_BASE_IDX: u32 = 2;
 pub const mmBIF_BACO_EXIT_TIMER3: u32 = 0x010f;
-#define mmBIF_BACO_EXIT_TIMER3_BASE_IDX                                                                2
+pub const mmBIF_BACO_EXIT_TIMER3_BASE_IDX: u32 = 2;
 pub const mmBIF_BACO_EXIT_TIMER4: u32 = 0x0110;
-#define mmBIF_BACO_EXIT_TIMER4_BASE_IDX                                                                2
+pub const mmBIF_BACO_EXIT_TIMER4_BASE_IDX: u32 = 2;
 pub const mmMEM_TYPE_CNTL: u32 = 0x0111;
-#define mmMEM_TYPE_CNTL_BASE_IDX                                                                       2
+pub const mmMEM_TYPE_CNTL_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_CNTL: u32 = 0x0113;
-#define mmNBIF_GFX_ADDR_LUT_CNTL_BASE_IDX                                                              2
+pub const mmNBIF_GFX_ADDR_LUT_CNTL_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_0: u32 = 0x0114;
-#define mmNBIF_GFX_ADDR_LUT_0_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_0_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_1: u32 = 0x0115;
-#define mmNBIF_GFX_ADDR_LUT_1_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_1_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_2: u32 = 0x0116;
-#define mmNBIF_GFX_ADDR_LUT_2_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_2_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_3: u32 = 0x0117;
-#define mmNBIF_GFX_ADDR_LUT_3_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_3_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_4: u32 = 0x0118;
-#define mmNBIF_GFX_ADDR_LUT_4_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_4_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_5: u32 = 0x0119;
-#define mmNBIF_GFX_ADDR_LUT_5_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_5_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_6: u32 = 0x011a;
-#define mmNBIF_GFX_ADDR_LUT_6_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_6_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_7: u32 = 0x011b;
-#define mmNBIF_GFX_ADDR_LUT_7_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_7_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_8: u32 = 0x011c;
-#define mmNBIF_GFX_ADDR_LUT_8_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_8_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_9: u32 = 0x011d;
-#define mmNBIF_GFX_ADDR_LUT_9_BASE_IDX                                                                 2
+pub const mmNBIF_GFX_ADDR_LUT_9_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_10: u32 = 0x011e;
-#define mmNBIF_GFX_ADDR_LUT_10_BASE_IDX                                                                2
+pub const mmNBIF_GFX_ADDR_LUT_10_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_11: u32 = 0x011f;
-#define mmNBIF_GFX_ADDR_LUT_11_BASE_IDX                                                                2
+pub const mmNBIF_GFX_ADDR_LUT_11_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_12: u32 = 0x0120;
-#define mmNBIF_GFX_ADDR_LUT_12_BASE_IDX                                                                2
+pub const mmNBIF_GFX_ADDR_LUT_12_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_13: u32 = 0x0121;
-#define mmNBIF_GFX_ADDR_LUT_13_BASE_IDX                                                                2
+pub const mmNBIF_GFX_ADDR_LUT_13_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_14: u32 = 0x0122;
-#define mmNBIF_GFX_ADDR_LUT_14_BASE_IDX                                                                2
+pub const mmNBIF_GFX_ADDR_LUT_14_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_15: u32 = 0x0123;
-#define mmNBIF_GFX_ADDR_LUT_15_BASE_IDX                                                                2
+pub const mmNBIF_GFX_ADDR_LUT_15_BASE_IDX: u32 = 2;
 pub const mmREMAP_HDP_MEM_FLUSH_CNTL: u32 = 0x012d;
-#define mmREMAP_HDP_MEM_FLUSH_CNTL_BASE_IDX                                                            2
+pub const mmREMAP_HDP_MEM_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmREMAP_HDP_REG_FLUSH_CNTL: u32 = 0x012e;
-#define mmREMAP_HDP_REG_FLUSH_CNTL_BASE_IDX                                                            2
+pub const mmREMAP_HDP_REG_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_RB_CNTL: u32 = 0x012f;
-#define mmBIF_RB_CNTL_BASE_IDX                                                                         2
+pub const mmBIF_RB_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_RB_BASE: u32 = 0x0130;
-#define mmBIF_RB_BASE_BASE_IDX                                                                         2
+pub const mmBIF_RB_BASE_BASE_IDX: u32 = 2;
 pub const mmBIF_RB_RPTR: u32 = 0x0131;
-#define mmBIF_RB_RPTR_BASE_IDX                                                                         2
+pub const mmBIF_RB_RPTR_BASE_IDX: u32 = 2;
 pub const mmBIF_RB_WPTR: u32 = 0x0132;
-#define mmBIF_RB_WPTR_BASE_IDX                                                                         2
+pub const mmBIF_RB_WPTR_BASE_IDX: u32 = 2;
 pub const mmBIF_RB_WPTR_ADDR_HI: u32 = 0x0133;
-#define mmBIF_RB_WPTR_ADDR_HI_BASE_IDX                                                                 2
+pub const mmBIF_RB_WPTR_ADDR_HI_BASE_IDX: u32 = 2;
 pub const mmBIF_RB_WPTR_ADDR_LO: u32 = 0x0134;
-#define mmBIF_RB_WPTR_ADDR_LO_BASE_IDX                                                                 2
+pub const mmBIF_RB_WPTR_ADDR_LO_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_INDEX: u32 = 0x0135;
-#define mmMAILBOX_INDEX_BASE_IDX                                                                       2
+pub const mmMAILBOX_INDEX_BASE_IDX: u32 = 2;
 pub const mmBIF_MP1_INTR_CTRL: u32 = 0x0142;
-#define mmBIF_MP1_INTR_CTRL_BASE_IDX                                                                   2
+pub const mmBIF_MP1_INTR_CTRL_BASE_IDX: u32 = 2;
 pub const mmBIF_UVD_GPUIOV_CFG_SIZE: u32 = 0x0143;
-#define mmBIF_UVD_GPUIOV_CFG_SIZE_BASE_IDX                                                             2
+pub const mmBIF_UVD_GPUIOV_CFG_SIZE_BASE_IDX: u32 = 2;
 pub const mmBIF_VCE_GPUIOV_CFG_SIZE: u32 = 0x0144;
-#define mmBIF_VCE_GPUIOV_CFG_SIZE_BASE_IDX                                                             2
+pub const mmBIF_VCE_GPUIOV_CFG_SIZE_BASE_IDX: u32 = 2;
 pub const mmBIF_GFX_SDMA_GPUIOV_CFG_SIZE: u32 = 0x0145;
-#define mmBIF_GFX_SDMA_GPUIOV_CFG_SIZE_BASE_IDX                                                        2
+pub const mmBIF_GFX_SDMA_GPUIOV_CFG_SIZE_BASE_IDX: u32 = 2;
 pub const mmBIF_PERSTB_PAD_CNTL: u32 = 0x0148;
-#define mmBIF_PERSTB_PAD_CNTL_BASE_IDX                                                                 2
+pub const mmBIF_PERSTB_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_PX_EN_PAD_CNTL: u32 = 0x0149;
-#define mmBIF_PX_EN_PAD_CNTL_BASE_IDX                                                                  2
+pub const mmBIF_PX_EN_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_REFPADKIN_PAD_CNTL: u32 = 0x014a;
-#define mmBIF_REFPADKIN_PAD_CNTL_BASE_IDX                                                              2
+pub const mmBIF_REFPADKIN_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_CLKREQB_PAD_CNTL: u32 = 0x014b;
-#define mmBIF_CLKREQB_PAD_CNTL_BASE_IDX                                                                2
+pub const mmBIF_CLKREQB_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_PWRBRK_PAD_CNTL: u32 = 0x014c;
-#define mmBIF_PWRBRK_PAD_CNTL_BASE_IDX                                                                 2
+pub const mmBIF_PWRBRK_PAD_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_WAKEB_PAD_CNTL: u32 = 0x014d;
-#define mmBIF_WAKEB_PAD_CNTL_BASE_IDX                                                                  2
+pub const mmBIF_WAKEB_PAD_CNTL_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_pf_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BME_STATUS_BASE_IDX                                                                      2
+pub const mmBIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_ATOMIC_ERR_LOG_BASE_IDX                                                                  2
+pub const mmBIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmDOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmDOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                                                2
+pub const mmDOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmDOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmDOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                                                 2
+pub const mmDOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmDOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmDOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                                     2
+pub const mmDOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmHDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmHDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                                        2
+pub const mmHDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmHDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmHDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                                        2
+pub const mmHDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmGPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmGPU_HDP_FLUSH_REQ_BASE_IDX                                                                   2
+pub const mmGPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmGPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmGPU_HDP_FLUSH_DONE_BASE_IDX                                                                  2
+pub const mmGPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_TRANS_PENDING_BASE_IDX                                                                   2
+pub const mmBIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmNBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmNBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                                            2
+pub const mmNBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmMAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmMAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmMAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmMAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmMAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmMAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmMAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmMAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                                              2
+pub const mmMAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_CONTROL: u32 = 0x013e;
-#define mmMAILBOX_CONTROL_BASE_IDX                                                                     2
+pub const mmMAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmMAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmMAILBOX_INT_CNTL_BASE_IDX                                                                    2
+pub const mmMAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_VMHV_MAILBOX_BASE_IDX                                                                    2
+pub const mmBIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_gdc_GDCDEC
 // base address: 0x0
 pub const mmNGDC_SDP_PORT_CTRL: u32 = 0x01c2;
-#define mmNGDC_SDP_PORT_CTRL_BASE_IDX                                                                  2
+pub const mmNGDC_SDP_PORT_CTRL_BASE_IDX: u32 = 2;
 pub const mmSHUB_REGS_IF_CTL: u32 = 0x01c3;
-#define mmSHUB_REGS_IF_CTL_BASE_IDX                                                                    2
+pub const mmSHUB_REGS_IF_CTL_BASE_IDX: u32 = 2;
 pub const mmNGDC_MGCG_CTRL: u32 = 0x01ca;
-#define mmNGDC_MGCG_CTRL_BASE_IDX                                                                      2
+pub const mmNGDC_MGCG_CTRL_BASE_IDX: u32 = 2;
 pub const mmNGDC_RESERVED_0: u32 = 0x01cb;
-#define mmNGDC_RESERVED_0_BASE_IDX                                                                     2
+pub const mmNGDC_RESERVED_0_BASE_IDX: u32 = 2;
 pub const mmNGDC_RESERVED_1: u32 = 0x01cc;
-#define mmNGDC_RESERVED_1_BASE_IDX                                                                     2
+pub const mmNGDC_RESERVED_1_BASE_IDX: u32 = 2;
 pub const mmNGDC_SDP_PORT_CTRL_SOCCLK: u32 = 0x01cd;
-#define mmNGDC_SDP_PORT_CTRL_SOCCLK_BASE_IDX                                                           2
+pub const mmNGDC_SDP_PORT_CTRL_SOCCLK_BASE_IDX: u32 = 2;
 pub const mmBIF_SDMA0_DOORBELL_RANGE: u32 = 0x01d0;
-#define mmBIF_SDMA0_DOORBELL_RANGE_BASE_IDX                                                            2
+pub const mmBIF_SDMA0_DOORBELL_RANGE_BASE_IDX: u32 = 2;
 pub const mmBIF_SDMA1_DOORBELL_RANGE: u32 = 0x01d1;
-#define mmBIF_SDMA1_DOORBELL_RANGE_BASE_IDX                                                            2
+pub const mmBIF_SDMA1_DOORBELL_RANGE_BASE_IDX: u32 = 2;
 pub const mmBIF_IH_DOORBELL_RANGE: u32 = 0x01d2;
-#define mmBIF_IH_DOORBELL_RANGE_BASE_IDX                                                               2
+pub const mmBIF_IH_DOORBELL_RANGE_BASE_IDX: u32 = 2;
 pub const mmBIF_MMSCH0_DOORBELL_RANGE: u32 = 0x01d3;
-#define mmBIF_MMSCH0_DOORBELL_RANGE_BASE_IDX                                                           2
+pub const mmBIF_MMSCH0_DOORBELL_RANGE_BASE_IDX: u32 = 2;
 pub const mmBIF_ACV_DOORBELL_RANGE: u32 = 0x01d4;
-#define mmBIF_ACV_DOORBELL_RANGE_BASE_IDX                                                              2
+pub const mmBIF_ACV_DOORBELL_RANGE_BASE_IDX: u32 = 2;
 pub const mmBIF_DOORBELL_FENCE_CNTL: u32 = 0x01de;
-#define mmBIF_DOORBELL_FENCE_CNTL_BASE_IDX                                                             2
+pub const mmBIF_DOORBELL_FENCE_CNTL_BASE_IDX: u32 = 2;
 pub const mmS2A_MISC_CNTL: u32 = 0x01df;
-#define mmS2A_MISC_CNTL_BASE_IDX                                                                       2
+pub const mmS2A_MISC_CNTL_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_BIFDEC2
 // base address: 0x0
 pub const mmGFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmGFXMSIX_VECT0_ADDR_LO_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmGFXMSIX_VECT0_ADDR_HI_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmGFXMSIX_VECT0_MSG_DATA_BASE_IDX                                                              3
+pub const mmGFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmGFXMSIX_VECT0_CONTROL_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmGFXMSIX_VECT1_ADDR_LO_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmGFXMSIX_VECT1_ADDR_HI_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmGFXMSIX_VECT1_MSG_DATA_BASE_IDX                                                              3
+pub const mmGFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmGFXMSIX_VECT1_CONTROL_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmGFXMSIX_VECT2_ADDR_LO_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmGFXMSIX_VECT2_ADDR_HI_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmGFXMSIX_VECT2_MSG_DATA_BASE_IDX                                                              3
+pub const mmGFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmGFXMSIX_VECT2_CONTROL_BASE_IDX                                                               3
+pub const mmGFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmGFXMSIX_PBA: u32 = 0x0800;
-#define mmGFXMSIX_PBA_BASE_IDX                                                                         3
+pub const mmGFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf0_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF0_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF0_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF0_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf0_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF0_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF0_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF0_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF0_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF0_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF0_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF0_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF0_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF0_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF0_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF0_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF0_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF0_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF0_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF0_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf0_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF0_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF0_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF0_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF0_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF0_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF0_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF0_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF0_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF0_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF0_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF0_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF0_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF0_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF0_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF0_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF0_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF0_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf0_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF0_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF0_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf1_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF1_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF1_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF1_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf1_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF1_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF1_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF1_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF1_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF1_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF1_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF1_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF1_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF1_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF1_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF1_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF1_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF1_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF1_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF1_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf1_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF1_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF1_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF1_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF1_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF1_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF1_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF1_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF1_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF1_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF1_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF1_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF1_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF1_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF1_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF1_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF1_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF1_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf1_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF1_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF1_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf2_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF2_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF2_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF2_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf2_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF2_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF2_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF2_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF2_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF2_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF2_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF2_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF2_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF2_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF2_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF2_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF2_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF2_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF2_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF2_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf2_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF2_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF2_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF2_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF2_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF2_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF2_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF2_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF2_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF2_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF2_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF2_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF2_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF2_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF2_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF2_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF2_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF2_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf2_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF2_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF2_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf3_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF3_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF3_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF3_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf3_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF3_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF3_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF3_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF3_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF3_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF3_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF3_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF3_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF3_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF3_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF3_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF3_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF3_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF3_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF3_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf3_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF3_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF3_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF3_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF3_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF3_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF3_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF3_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF3_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF3_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF3_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF3_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF3_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF3_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF3_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF3_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF3_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF3_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf3_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF3_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF3_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf4_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF4_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF4_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF4_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf4_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF4_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF4_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF4_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF4_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF4_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF4_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF4_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF4_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF4_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF4_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF4_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF4_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF4_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF4_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF4_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf4_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF4_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF4_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF4_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF4_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF4_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF4_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF4_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF4_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF4_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF4_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF4_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF4_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF4_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF4_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF4_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF4_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF4_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf4_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF4_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF4_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf5_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF5_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF5_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF5_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf5_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF5_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF5_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF5_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF5_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF5_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF5_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF5_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF5_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF5_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF5_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF5_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF5_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF5_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF5_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF5_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf5_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF5_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF5_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF5_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF5_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF5_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF5_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF5_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF5_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF5_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF5_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF5_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF5_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF5_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF5_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF5_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF5_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF5_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf5_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF5_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF5_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf6_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF6_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF6_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF6_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf6_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF6_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF6_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF6_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF6_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF6_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF6_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF6_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF6_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF6_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF6_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF6_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF6_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF6_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF6_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF6_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf6_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF6_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF6_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF6_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF6_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF6_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF6_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF6_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF6_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF6_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF6_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF6_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF6_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF6_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF6_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF6_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF6_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF6_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf6_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF6_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF6_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf7_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF7_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF7_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF7_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf7_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF7_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF7_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF7_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF7_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF7_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF7_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF7_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF7_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF7_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF7_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF7_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF7_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF7_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF7_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF7_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf7_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF7_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF7_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF7_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF7_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF7_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF7_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF7_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF7_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF7_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF7_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF7_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF7_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF7_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF7_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF7_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF7_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF7_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf7_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF7_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF7_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf8_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF8_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF8_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF8_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf8_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF8_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF8_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF8_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF8_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF8_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF8_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF8_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF8_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF8_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF8_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF8_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF8_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF8_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF8_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF8_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf8_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF8_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF8_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF8_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF8_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF8_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF8_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF8_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF8_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF8_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF8_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF8_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF8_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF8_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF8_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF8_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF8_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF8_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf8_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF8_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF8_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf9_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF9_MM_DATA_BASE_IDX                                                        0
+pub const mmBIF_BX_DEV0_EPF0_VF9_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_HI_BASE_IDX                                                    0
+pub const mmBIF_BX_DEV0_EPF0_VF9_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf9_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF9_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF9_RCC_ERR_LOG_BASE_IDX                                                       2
+pub const mmRCC_DEV0_EPF0_VF9_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF9_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF9_RCC_DOORBELL_APER_EN_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF9_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF9_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF9_RCC_CONFIG_MEMSIZE_BASE_IDX                                                2
+pub const mmRCC_DEV0_EPF0_VF9_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF9_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF9_RCC_CONFIG_RESERVED_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF9_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF9_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF9_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                           2
+pub const mmRCC_DEV0_EPF0_VF9_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf9_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF9_BIF_BME_STATUS_BASE_IDX                                                 2
+pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF9_BIF_ATOMIC_ERR_LOG_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                            2
+pub const mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                                2
+pub const mmBIF_BX_DEV0_EPF0_VF9_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF9_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF9_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF9_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                   2
+pub const mmBIF_BX_DEV0_EPF0_VF9_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF9_GPU_HDP_FLUSH_REQ_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF9_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF9_GPU_HDP_FLUSH_DONE_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF9_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF9_BIF_TRANS_PENDING_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF9_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                       2
+pub const mmBIF_BX_DEV0_EPF0_VF9_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                         2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_CONTROL_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_INT_CNTL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF9_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF9_BIF_VMHV_MAILBOX_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF9_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf9_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_CONTROL_BASE_IDX                                             3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF9_GFXMSIX_PBA_BASE_IDX                                                       3
+pub const mmRCC_DEV0_EPF0_VF9_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf10_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_BASE_IDX                                                      0
+pub const mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF10_MM_DATA_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF10_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_HI_BASE_IDX                                                   0
+pub const mmBIF_BX_DEV0_EPF0_VF10_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf10_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF10_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF10_RCC_ERR_LOG_BASE_IDX                                                      2
+pub const mmRCC_DEV0_EPF0_VF10_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF10_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF10_RCC_DOORBELL_APER_EN_BASE_IDX                                             2
+pub const mmRCC_DEV0_EPF0_VF10_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF10_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF10_RCC_CONFIG_MEMSIZE_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF10_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF10_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF10_RCC_CONFIG_RESERVED_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF10_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF10_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF10_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
+pub const mmRCC_DEV0_EPF0_VF10_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf10_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF10_BIF_BME_STATUS_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF10_BIF_ATOMIC_ERR_LOG_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                          2
+pub const mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                               2
+pub const mmBIF_BX_DEV0_EPF0_VF10_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF10_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF10_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF10_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF10_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF10_GPU_HDP_FLUSH_REQ_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF10_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF10_GPU_HDP_FLUSH_DONE_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF10_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF10_BIF_TRANS_PENDING_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF10_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                      2
+pub const mmBIF_BX_DEV0_EPF0_VF10_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_CONTROL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_INT_CNTL_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF10_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF10_BIF_VMHV_MAILBOX_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF10_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf10_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF10_GFXMSIX_PBA_BASE_IDX                                                      3
+pub const mmRCC_DEV0_EPF0_VF10_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf11_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_BASE_IDX                                                      0
+pub const mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF11_MM_DATA_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF11_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_HI_BASE_IDX                                                   0
+pub const mmBIF_BX_DEV0_EPF0_VF11_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf11_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF11_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF11_RCC_ERR_LOG_BASE_IDX                                                      2
+pub const mmRCC_DEV0_EPF0_VF11_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF11_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF11_RCC_DOORBELL_APER_EN_BASE_IDX                                             2
+pub const mmRCC_DEV0_EPF0_VF11_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF11_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF11_RCC_CONFIG_MEMSIZE_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF11_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF11_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF11_RCC_CONFIG_RESERVED_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF11_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF11_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF11_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
+pub const mmRCC_DEV0_EPF0_VF11_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf11_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF11_BIF_BME_STATUS_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF11_BIF_ATOMIC_ERR_LOG_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                          2
+pub const mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                               2
+pub const mmBIF_BX_DEV0_EPF0_VF11_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF11_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF11_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF11_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF11_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF11_GPU_HDP_FLUSH_REQ_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF11_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF11_GPU_HDP_FLUSH_DONE_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF11_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF11_BIF_TRANS_PENDING_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF11_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                      2
+pub const mmBIF_BX_DEV0_EPF0_VF11_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_CONTROL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_INT_CNTL_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF11_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF11_BIF_VMHV_MAILBOX_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF11_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf11_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF11_GFXMSIX_PBA_BASE_IDX                                                      3
+pub const mmRCC_DEV0_EPF0_VF11_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf12_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_BASE_IDX                                                      0
+pub const mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF12_MM_DATA_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF12_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_HI_BASE_IDX                                                   0
+pub const mmBIF_BX_DEV0_EPF0_VF12_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf12_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF12_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF12_RCC_ERR_LOG_BASE_IDX                                                      2
+pub const mmRCC_DEV0_EPF0_VF12_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF12_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF12_RCC_DOORBELL_APER_EN_BASE_IDX                                             2
+pub const mmRCC_DEV0_EPF0_VF12_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF12_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF12_RCC_CONFIG_MEMSIZE_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF12_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF12_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF12_RCC_CONFIG_RESERVED_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF12_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF12_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF12_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
+pub const mmRCC_DEV0_EPF0_VF12_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf12_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF12_BIF_BME_STATUS_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF12_BIF_ATOMIC_ERR_LOG_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                          2
+pub const mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                               2
+pub const mmBIF_BX_DEV0_EPF0_VF12_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF12_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF12_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF12_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF12_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF12_GPU_HDP_FLUSH_REQ_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF12_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF12_GPU_HDP_FLUSH_DONE_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF12_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF12_BIF_TRANS_PENDING_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF12_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                      2
+pub const mmBIF_BX_DEV0_EPF0_VF12_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_CONTROL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_INT_CNTL_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF12_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF12_BIF_VMHV_MAILBOX_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF12_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf12_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF12_GFXMSIX_PBA_BASE_IDX                                                      3
+pub const mmRCC_DEV0_EPF0_VF12_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf13_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_BASE_IDX                                                      0
+pub const mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF13_MM_DATA_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF13_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_HI_BASE_IDX                                                   0
+pub const mmBIF_BX_DEV0_EPF0_VF13_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf13_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF13_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF13_RCC_ERR_LOG_BASE_IDX                                                      2
+pub const mmRCC_DEV0_EPF0_VF13_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF13_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF13_RCC_DOORBELL_APER_EN_BASE_IDX                                             2
+pub const mmRCC_DEV0_EPF0_VF13_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF13_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF13_RCC_CONFIG_MEMSIZE_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF13_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF13_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF13_RCC_CONFIG_RESERVED_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF13_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF13_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF13_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
+pub const mmRCC_DEV0_EPF0_VF13_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf13_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF13_BIF_BME_STATUS_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF13_BIF_ATOMIC_ERR_LOG_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                          2
+pub const mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                               2
+pub const mmBIF_BX_DEV0_EPF0_VF13_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF13_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF13_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF13_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF13_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF13_GPU_HDP_FLUSH_REQ_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF13_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF13_GPU_HDP_FLUSH_DONE_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF13_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF13_BIF_TRANS_PENDING_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF13_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                      2
+pub const mmBIF_BX_DEV0_EPF0_VF13_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_CONTROL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_INT_CNTL_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF13_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF13_BIF_VMHV_MAILBOX_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF13_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf13_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF13_GFXMSIX_PBA_BASE_IDX                                                      3
+pub const mmRCC_DEV0_EPF0_VF13_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf14_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_BASE_IDX                                                      0
+pub const mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF14_MM_DATA_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF14_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_HI_BASE_IDX                                                   0
+pub const mmBIF_BX_DEV0_EPF0_VF14_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf14_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF14_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF14_RCC_ERR_LOG_BASE_IDX                                                      2
+pub const mmRCC_DEV0_EPF0_VF14_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF14_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF14_RCC_DOORBELL_APER_EN_BASE_IDX                                             2
+pub const mmRCC_DEV0_EPF0_VF14_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF14_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF14_RCC_CONFIG_MEMSIZE_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF14_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF14_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF14_RCC_CONFIG_RESERVED_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF14_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF14_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF14_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
+pub const mmRCC_DEV0_EPF0_VF14_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf14_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF14_BIF_BME_STATUS_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF14_BIF_ATOMIC_ERR_LOG_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                          2
+pub const mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                               2
+pub const mmBIF_BX_DEV0_EPF0_VF14_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF14_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF14_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF14_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF14_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF14_GPU_HDP_FLUSH_REQ_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF14_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF14_GPU_HDP_FLUSH_DONE_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF14_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF14_BIF_TRANS_PENDING_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF14_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                      2
+pub const mmBIF_BX_DEV0_EPF0_VF14_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_CONTROL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_INT_CNTL_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF14_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF14_BIF_VMHV_MAILBOX_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF14_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf14_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF14_GFXMSIX_PBA_BASE_IDX                                                      3
+pub const mmRCC_DEV0_EPF0_VF14_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf15_SYSPFVFDEC
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX: u32 = 0x0000;
-#define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_BASE_IDX                                                      0
+pub const mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MM_DATA: u32 = 0x0001;
-#define mmBIF_BX_DEV0_EPF0_VF15_MM_DATA_BASE_IDX                                                       0
+pub const mmBIF_BX_DEV0_EPF0_VF15_MM_DATA_BASE_IDX: u32 = 0;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_HI: u32 = 0x0006;
-#define mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_HI_BASE_IDX                                                   0
+pub const mmBIF_BX_DEV0_EPF0_VF15_MM_INDEX_HI_BASE_IDX: u32 = 0;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf15_BIFPFVFDEC1
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF15_RCC_ERR_LOG: u32 = 0x0085;
-#define mmRCC_DEV0_EPF0_VF15_RCC_ERR_LOG_BASE_IDX                                                      2
+pub const mmRCC_DEV0_EPF0_VF15_RCC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF15_RCC_DOORBELL_APER_EN: u32 = 0x00c0;
-#define mmRCC_DEV0_EPF0_VF15_RCC_DOORBELL_APER_EN_BASE_IDX                                             2
+pub const mmRCC_DEV0_EPF0_VF15_RCC_DOORBELL_APER_EN_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF15_RCC_CONFIG_MEMSIZE: u32 = 0x00c3;
-#define mmRCC_DEV0_EPF0_VF15_RCC_CONFIG_MEMSIZE_BASE_IDX                                               2
+pub const mmRCC_DEV0_EPF0_VF15_RCC_CONFIG_MEMSIZE_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF15_RCC_CONFIG_RESERVED: u32 = 0x00c4;
-#define mmRCC_DEV0_EPF0_VF15_RCC_CONFIG_RESERVED_BASE_IDX                                              2
+pub const mmRCC_DEV0_EPF0_VF15_RCC_CONFIG_RESERVED_BASE_IDX: u32 = 2;
 pub const mmRCC_DEV0_EPF0_VF15_RCC_IOV_FUNC_IDENTIFIER: u32 = 0x00c5;
-#define mmRCC_DEV0_EPF0_VF15_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX                                          2
+pub const mmRCC_DEV0_EPF0_VF15_RCC_IOV_FUNC_IDENTIFIER_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_bif_bx_dev0_epf0_vf15_BIFPFVFDEC1
 // base address: 0x0
 pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_BME_STATUS: u32 = 0x00eb;
-#define mmBIF_BX_DEV0_EPF0_VF15_BIF_BME_STATUS_BASE_IDX                                                2
+pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_BME_STATUS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_ATOMIC_ERR_LOG: u32 = 0x00ec;
-#define mmBIF_BX_DEV0_EPF0_VF15_BIF_ATOMIC_ERR_LOG_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_ATOMIC_ERR_LOG_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_HIGH: u32 = 0x00f3;
-#define mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX                          2
+pub const mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_HIGH_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_LOW: u32 = 0x00f4;
-#define mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX                           2
+pub const mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_BASE_LOW_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_CNTL: u32 = 0x00f5;
-#define mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX                               2
+pub const mmBIF_BX_DEV0_EPF0_VF15_DOORBELL_SELFRING_GPA_APER_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_HDP_REG_COHERENCY_FLUSH_CNTL: u32 = 0x00f6;
-#define mmBIF_BX_DEV0_EPF0_VF15_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF15_HDP_REG_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_HDP_MEM_COHERENCY_FLUSH_CNTL: u32 = 0x00f7;
-#define mmBIF_BX_DEV0_EPF0_VF15_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX                                  2
+pub const mmBIF_BX_DEV0_EPF0_VF15_HDP_MEM_COHERENCY_FLUSH_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_GPU_HDP_FLUSH_REQ: u32 = 0x0106;
-#define mmBIF_BX_DEV0_EPF0_VF15_GPU_HDP_FLUSH_REQ_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF15_GPU_HDP_FLUSH_REQ_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_GPU_HDP_FLUSH_DONE: u32 = 0x0107;
-#define mmBIF_BX_DEV0_EPF0_VF15_GPU_HDP_FLUSH_DONE_BASE_IDX                                            2
+pub const mmBIF_BX_DEV0_EPF0_VF15_GPU_HDP_FLUSH_DONE_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_TRANS_PENDING: u32 = 0x0108;
-#define mmBIF_BX_DEV0_EPF0_VF15_BIF_TRANS_PENDING_BASE_IDX                                             2
+pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_TRANS_PENDING_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_NBIF_GFX_ADDR_LUT_BYPASS: u32 = 0x0112;
-#define mmBIF_BX_DEV0_EPF0_VF15_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX                                      2
+pub const mmBIF_BX_DEV0_EPF0_VF15_NBIF_GFX_ADDR_LUT_BYPASS_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW0: u32 = 0x0136;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW1: u32 = 0x0137;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW2: u32 = 0x0138;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW3: u32 = 0x0139;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_TRN_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW0: u32 = 0x013a;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW0_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW1: u32 = 0x013b;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW1_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW2: u32 = 0x013c;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW2_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW3: u32 = 0x013d;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX                                        2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_MSGBUF_RCV_DW3_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_CONTROL: u32 = 0x013e;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_CONTROL_BASE_IDX                                               2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_CONTROL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_INT_CNTL: u32 = 0x013f;
-#define mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_INT_CNTL_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF15_MAILBOX_INT_CNTL_BASE_IDX: u32 = 2;
 pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_VMHV_MAILBOX: u32 = 0x0140;
-#define mmBIF_BX_DEV0_EPF0_VF15_BIF_VMHV_MAILBOX_BASE_IDX                                              2
+pub const mmBIF_BX_DEV0_EPF0_VF15_BIF_VMHV_MAILBOX_BASE_IDX: u32 = 2;
 
 
 // addressBlock: nbio_nbif0_rcc_dev0_epf0_vf15_BIFDEC2
 // base address: 0x0
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_LO: u32 = 0x0400;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_HI: u32 = 0x0401;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_MSG_DATA: u32 = 0x0402;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_CONTROL: u32 = 0x0403;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT0_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_ADDR_LO: u32 = 0x0404;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_ADDR_HI: u32 = 0x0405;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_MSG_DATA: u32 = 0x0406;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_CONTROL: u32 = 0x0407;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT1_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_ADDR_LO: u32 = 0x0408;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_ADDR_LO_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_ADDR_LO_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_ADDR_HI: u32 = 0x0409;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_ADDR_HI_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_ADDR_HI_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_MSG_DATA: u32 = 0x040a;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_MSG_DATA_BASE_IDX                                           3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_MSG_DATA_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_CONTROL: u32 = 0x040b;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_CONTROL_BASE_IDX                                            3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_VECT2_CONTROL_BASE_IDX: u32 = 3;
 pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_PBA: u32 = 0x0800;
-#define mmRCC_DEV0_EPF0_VF15_GFXMSIX_PBA_BASE_IDX                                                      3
+pub const mmRCC_DEV0_EPF0_VF15_GFXMSIX_PBA_BASE_IDX: u32 = 3;
 
 
 

@@ -142,8 +142,8 @@ pub unsafe extern "C" fn jumpers_show(dev: *mut c_void, _attr: *mut c_void, buf:
 }
 
 macro_rules! ts5500_attr_bool {
-    ($field:ident) => {
-        pub unsafe extern "C" fn $field##_show(dev: *mut c_void, _attr: *mut c_void, buf: *mut c_char) -> isize {
+    ($field:tt) => {
+        pub unsafe extern "C" fn ::kernel::macros::paste!([<$field _show>])(dev: *mut c_void, _attr: *mut c_void, buf: *mut c_char) -> isize {
             sprintf(buf, b"%d\n\0".as_ptr() as *const c_char, (*dev_get_drvdata(dev)).$field as c_int)
         }
     };

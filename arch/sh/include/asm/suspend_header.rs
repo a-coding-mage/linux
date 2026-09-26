@@ -16,12 +16,12 @@ pub struct swsusp_arch_regs {
     pub bank1_regs: [c_ulong; 8],
 }
 
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 extern "C" {
     pub fn sh_mobile_setup_cpuidle() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE"))]
+#[cfg(not(CONFIG_CPU_IDLE))]
 #[inline]
 pub unsafe fn sh_mobile_setup_cpuidle() -> i32 {
     0

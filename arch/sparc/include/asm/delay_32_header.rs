@@ -23,14 +23,14 @@ unsafe extern "C" {
     pub fn __ndelay(nsecs: ::core::ffi::c_ulong, lpj: ::core::ffi::c_ulong);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn __udelay_val() -> ::core::ffi::c_ulong {
     // Equivalent to cpu_data(smp_processor_id()).udelay_val; the cpu-data
     // type and accessors are supplied by the dependent SPARC code.
     todo!("cpu_data(smp_processor_id()).udelay_val")
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe fn __udelay_val() -> ::core::ffi::c_ulong {
     unsafe extern "C" {
         static mut loops_per_jiffy: ::core::ffi::c_ulong;

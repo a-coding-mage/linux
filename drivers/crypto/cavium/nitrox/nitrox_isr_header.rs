@@ -19,7 +19,7 @@ unsafe extern "C" {
 }
 
 // CONFIG_PCI_IOV conditional from the C source.
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe extern "C" {
     pub fn nitrox_sriov_configure(
         pdev: *mut pci_dev,
@@ -27,7 +27,7 @@ unsafe extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_PCI_IOV"))]
+#[cfg(not(CONFIG_PCI_IOV))]
 #[inline]
 pub unsafe fn nitrox_sriov_configure(
     _pdev: *mut pci_dev,

@@ -111,7 +111,7 @@ unsafe fn omap_sx1_init() {
     omapfb_set_lcd_config(&SX1_LCD_CONFIG);
 }
 
-static mut SX1_GPIO_TABLE: gpiod_lookup_table = gpiod_lookup_table { dev_id: core::ptr::null(), table: [GPIO_LOOKUP!("gpio-0-15",1,"irda_off",GPIO_ACTIVE_HIGH), GPIO_LOOKUP!("gpio-0-15",11,"switch",GPIO_ACTIVE_HIGH), GPIO_LOOKUP!("gpio-0-15",15,"usb_on",GPIO_ACTIVE_HIGH), GPIO_LOOKUP_END!] };
+static mut SX1_GPIO_TABLE: gpiod_lookup_table = gpiod_lookup_table { dev_id: core::ptr::null(), table: [GPIO_LOOKUP!("gpio-0-15",1,"irda_off",GPIO_ACTIVE_HIGH), GPIO_LOOKUP!("gpio-0-15",11,"switch",GPIO_ACTIVE_HIGH), GPIO_LOOKUP!("gpio-0-15",15,"usb_on",GPIO_ACTIVE_HIGH), GPIO_LOOKUP_END!()] };
 
 // MACHINE_START(SX1, "OMAP310 based Siemens SX1")
 // .atag_offset = 0x100, .map_io = omap1_map_io, .init_early = omap1_init_early,

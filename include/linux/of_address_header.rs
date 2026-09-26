@@ -62,7 +62,7 @@ extern "C" {
 
 // CONFIG_OF_ADDRESS declarations and !CONFIG_OF_ADDRESS inline fallbacks are
 // preserved below as conditional Rust declarations.
-#[cfg(feature = "CONFIG_OF_ADDRESS")]
+#[cfg(CONFIG_OF_ADDRESS)]
 extern "C" {
     pub fn of_translate_address(np: *mut device_node, addr: *const __be32) -> u64;
     pub fn of_address_to_resource(dev: *mut device_node, index: c_int, r: *mut resource) -> c_int;
@@ -79,46 +79,46 @@ extern "C" {
     pub fn of_dma_is_coherent(np: *mut device_node) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_translate_address(_np: *mut device_node, _addr: *const __be32) -> u64 { OF_BAD_ADDR }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn __of_get_address(_dev: *mut device_node, _index: c_int, _bar_no: c_int, _size: *mut u64, _flags: *mut c_uint) -> *const __be32 { core::ptr::null() }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_property_read_reg(_np: *mut device_node, _idx: c_int, _addr: *mut u64, _size: *mut u64) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_pci_range_parser_init(_parser: *mut of_pci_range_parser, _node: *mut device_node) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_pci_dma_range_parser_init(_parser: *mut of_pci_range_parser, _node: *mut device_node) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_pci_range_parser_one(_parser: *mut of_pci_range_parser, _range: *mut of_pci_range) -> *mut of_pci_range { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_pci_address_to_resource(_dev: *mut device_node, _bar: c_int, _r: *mut resource) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_pci_range_to_resource(_range: *mut of_pci_range, _np: *mut device_node, _res: *mut resource) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_range_to_resource(_np: *mut device_node, _index: c_int, _res: *mut resource) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 #[inline]
 pub unsafe fn of_dma_is_coherent(_np: *mut device_node) -> bool { false }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 extern "C" {
     pub fn of_address_to_resource(dev: *mut device_node, index: c_int, r: *mut resource) -> c_int;
     pub fn of_iomap(node: *mut device_node, index: c_int) -> *mut core::ffi::c_void;
 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_address_to_resource(_dev: *mut device_node, _index: c_int, _r: *mut resource) -> c_int { -EINVAL }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_iomap(_device: *mut device_node, _index: c_int) -> *mut core::ffi::c_void { core::ptr::null_mut() }
 

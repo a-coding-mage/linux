@@ -14,7 +14,7 @@
 // linux/init.h, and linux/module.h.
 
 extern "C" {
-    static fn curve25519_generic(
+    fn curve25519_generic(
         mypublic: *mut u8,
         secret: *const u8,
         basepoint: *const u8,
@@ -34,7 +34,7 @@ static CURVE25519_BASE_POINT: [u8; CURVE25519_KEY_SIZE] = {
 
 // CONFIG_CRYPTO_LIB_CURVE25519_ARCH selects the architecture implementation.
 // The generic implementation is used here when it is not selected.
-#[cfg(not(feature = "CONFIG_CRYPTO_LIB_CURVE25519_ARCH"))]
+#[cfg(not(CONFIG_CRYPTO_LIB_CURVE25519_ARCH))]
 unsafe fn curve25519_arch(
     mypublic: *mut u8,
     secret: *const u8,
@@ -43,12 +43,12 @@ unsafe fn curve25519_arch(
     unsafe { curve25519_generic(mypublic, secret, basepoint) };
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_LIB_CURVE25519_ARCH"))]
+#[cfg(not(CONFIG_CRYPTO_LIB_CURVE25519_ARCH))]
 unsafe fn curve25519_base_arch(pub_: *mut u8, secret: *const u8) {
     unsafe { curve25519_generic(pub_, secret, CURVE25519_BASE_POINT.as_ptr()) };
 }
 
-#[cfg(feature = "CONFIG_CRYPTO_LIB_CURVE25519_ARCH")]
+#[cfg(CONFIG_CRYPTO_LIB_CURVE25519_ARCH)]
 extern "C" {
     fn curve25519_arch(
         mypublic: *mut u8,

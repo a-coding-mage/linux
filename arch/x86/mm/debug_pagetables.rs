@@ -26,7 +26,7 @@ pub struct FileOperations {
 extern "C" {
     static mut init_mm: MmStruct;
     static mut current: *mut TaskStruct;
-    #[cfg(all(feature = "CONFIG_EFI", target_arch = "x86_64"))]
+    #[cfg(all(CONFIG_EFI, target_arch = "x86_64"))]
     static mut efi_mm: MmStruct;
 
     fn ptdump_walk_pgd_level_debugfs(
@@ -53,9 +53,9 @@ pub struct TaskStruct {
 extern "C" {
     static ptdump_fops: FileOperations;
     static ptdump_curknl_fops: FileOperations;
-    #[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+    #[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
     static ptdump_curusr_fops: FileOperations;
-    #[cfg(all(feature = "CONFIG_EFI", target_arch = "x86_64"))]
+    #[cfg(all(CONFIG_EFI, target_arch = "x86_64"))]
     static ptdump_efi_fops: FileOperations;
 }
 
@@ -75,7 +75,7 @@ unsafe extern "C" fn ptdump_curknl_show(m: *mut SeqFile, _v: *mut c_void) -> i32
 
 // Equivalent of DEFINE_SHOW_ATTRIBUTE(ptdump_curknl).
 
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 unsafe extern "C" fn ptdump_curusr_show(m: *mut SeqFile, _v: *mut c_void) -> i32 {
     if !(*(*current).mm).pgd.is_null() {
         ptdump_walk_pgd_level_debugfs(m, (*current).mm, true);
@@ -85,7 +85,7 @@ unsafe extern "C" fn ptdump_curusr_show(m: *mut SeqFile, _v: *mut c_void) -> i32
 
 // Equivalent of DEFINE_SHOW_ATTRIBUTE(ptdump_curusr).
 
-#[cfg(all(feature = "CONFIG_EFI", target_arch = "x86_64"))]
+#[cfg(all(CONFIG_EFI, target_arch = "x86_64"))]
 unsafe extern "C" fn ptdump_efi_show(m: *mut SeqFile, _v: *mut c_void) -> i32 {
     if !efi_mm.pgd.is_null() {
         ptdump_walk_pgd_level_debugfs(m, &mut efi_mm, false);
@@ -115,7 +115,7 @@ unsafe extern "C" fn pt_dump_debug_init() -> i32 {
         &ptdump_curknl_fops,
     );
 
-    #[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+    #[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
     debugfs_create_file(
         b"current_user\0".as_ptr(),
         0o400,
@@ -123,7 +123,7 @@ unsafe extern "C" fn pt_dump_debug_init() -> i32 {
         core::ptr::null_mut(),
         &ptdump_curusr_fops,
     );
-    #[cfg(all(feature = "CONFIG_EFI", target_arch = "x86_64"))]
+    #[cfg(all(CONFIG_EFI, target_arch = "x86_64"))]
     debugfs_create_file(
         b"efi\0".as_ptr(),
         0o400,

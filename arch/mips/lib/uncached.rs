@@ -46,10 +46,8 @@ pub unsafe fn run_uncached(func: *mut core::ffi::c_void) -> libc::c_ulong {
     if sp >= CKSEG0 as libc::c_long && sp < CKSEG2 as libc::c_long {
         usp = CKSEG1ADDR(sp) as libc::c_long;
     }
-    #[cfg(CONFIG_64BIT)]
-    else if (sp as libc::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as libc::c_longlong
-        && (sp as libc::c_longlong) < PHYS_TO_XKPHYS(8, 0) as libc::c_longlong
-    {
+    else if cfg!(CONFIG_64BIT) && ((sp as libc::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as libc::c_longlong
+        && (sp as libc::c_longlong) < PHYS_TO_XKPHYS(8, 0) as libc::c_longlong) {
         usp = PHYS_TO_XKPHYS(
             K_CALG_UNCACHED,
             XKPHYS_TO_PHYS(sp as libc::c_longlong),
@@ -63,10 +61,8 @@ pub unsafe fn run_uncached(func: *mut core::ffi::c_void) -> libc::c_ulong {
     if lfunc >= CKSEG0 as libc::c_long && lfunc < CKSEG2 as libc::c_long {
         ufunc = CKSEG1ADDR(lfunc) as libc::c_long;
     }
-    #[cfg(CONFIG_64BIT)]
-    else if (lfunc as libc::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as libc::c_longlong
-        && (lfunc as libc::c_longlong) < PHYS_TO_XKPHYS(8, 0) as libc::c_longlong
-    {
+    else if cfg!(CONFIG_64BIT) && ((lfunc as libc::c_longlong) >= PHYS_TO_XKPHYS(0, 0) as libc::c_longlong
+        && (lfunc as libc::c_longlong) < PHYS_TO_XKPHYS(8, 0) as libc::c_longlong) {
         ufunc = PHYS_TO_XKPHYS(
             K_CALG_UNCACHED,
             XKPHYS_TO_PHYS(lfunc as libc::c_longlong),

@@ -21,21 +21,21 @@ pub const DELAY_ZERO: bool = true;
 pub const PARANOID_AVG: bool = false;
 pub const WAKEUP_PREEMPTION: bool = true;
 
-#[cfg(feature = "CONFIG_HRTIMER_REARM_DEFERRED")]
+#[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 pub const HRTICK: bool = true;
-#[cfg(not(feature = "CONFIG_HRTIMER_REARM_DEFERRED"))]
+#[cfg(not(CONFIG_HRTIMER_REARM_DEFERRED))]
 pub const HRTICK: bool = false;
 
-#[cfg(feature = "CONFIG_HRTIMER_REARM_DEFERRED")]
+#[cfg(CONFIG_HRTIMER_REARM_DEFERRED)]
 pub const HRTICK_DL: bool = true;
-#[cfg(not(feature = "CONFIG_HRTIMER_REARM_DEFERRED"))]
+#[cfg(not(CONFIG_HRTIMER_REARM_DEFERRED))]
 pub const HRTICK_DL: bool = false;
 
 pub const NONTASK_CAPACITY: bool = true;
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 pub const TTWU_QUEUE: bool = false;
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 pub const TTWU_QUEUE: bool = true;
 
 pub const SIS_UTIL: bool = true;
@@ -43,10 +43,10 @@ pub const WARN_DOUBLE_CLOCK: bool = false;
 
 /* HAVE_RT_PUSH_IPI controls whether this feature is defined in the C header. */
 #[cfg(feature = "HAVE_RT_PUSH_IPI")]
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 pub const RT_PUSH_IPI: bool = true;
 #[cfg(feature = "HAVE_RT_PUSH_IPI")]
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 pub const RT_PUSH_IPI: bool = false;
 
 pub const RT_RUNTIME_SHARE: bool = false;

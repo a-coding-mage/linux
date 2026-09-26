@@ -10,10 +10,10 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-static unsigned int connmark_tg_shift(
+static core::ffi::c_uint (*connmark_tg_shift(
     skb: *mut sk_buff,
     info: *const xt_connmark_tginfo2,
-) -> c_uint {
+)).c_uint {
     let mut ctinfo: ip_conntrack_info = unsafe { core::mem::zeroed() };
     let mut new_targetmark: u32;
     let ct: *mut nf_conn;
@@ -73,10 +73,10 @@ static unsigned int connmark_tg_shift(
     XT_CONTINUE
 }
 
-static unsigned int connmark_tg(
+static core::ffi::c_uint (*connmark_tg(
     skb: *mut sk_buff,
     par: *const xt_action_param,
-) -> c_uint {
+)).c_uint {
     let info: *const xt_connmark_tginfo1 = unsafe { (*par).targinfo as *const xt_connmark_tginfo1 };
     let info2 = xt_connmark_tginfo2 {
         ctmark: unsafe { (*info).ctmark },
@@ -89,15 +89,15 @@ static unsigned int connmark_tg(
     connmark_tg_shift(skb, &info2)
 }
 
-static unsigned int connmark_tg_v2(
+static core::ffi::c_uint (*connmark_tg_v2(
     skb: *mut sk_buff,
     par: *const xt_action_param,
-) -> c_uint {
+)).c_uint {
     let info: *const xt_connmark_tginfo2 = unsafe { (*par).targinfo as *const xt_connmark_tginfo2 };
     connmark_tg_shift(skb, info)
 }
 
-static fn connmark_tg_check(par: *const xt_tgchk_param) -> c_int {
+fn connmark_tg_check(par: *const xt_tgchk_param) -> c_int {
     let ret = unsafe { nf_ct_netns_get((*par).net, (*par).family) };
     if ret < 0 {
         unsafe { pr_info_ratelimited!("cannot load conntrack support for proto=%u\n", (*par).family); }
@@ -105,7 +105,7 @@ static fn connmark_tg_check(par: *const xt_tgchk_param) -> c_int {
     ret
 }
 
-static fn connmark_tg_check_v2(par: *const xt_tgchk_param) -> c_int {
+fn connmark_tg_check_v2(par: *const xt_tgchk_param) -> c_int {
     let info: *const xt_connmark_tginfo2 = unsafe { (*par).targinfo as *const xt_connmark_tginfo2 };
     unsafe {
         if (*info).shift_dir > D_SHIFT_RIGHT || (*info).shift_bits >= 32 {
@@ -115,11 +115,11 @@ static fn connmark_tg_check_v2(par: *const xt_tgchk_param) -> c_int {
     connmark_tg_check(par)
 }
 
-static fn connmark_tg_destroy(par: *const xt_tgdtor_param) {
+fn connmark_tg_destroy(par: *const xt_tgdtor_param) {
     unsafe { nf_ct_netns_put((*par).net, (*par).family); }
 }
 
-static fn connmark_mt(skb: *const sk_buff, par: *mut xt_action_param) -> bool {
+fn connmark_mt(skb: *const sk_buff, par: *mut xt_action_param) -> bool {
     let info: *const xt_connmark_mtinfo1 = unsafe { (*par).matchinfo as *const xt_connmark_mtinfo1 };
     let mut ctinfo: ip_conntrack_info = unsafe { core::mem::zeroed() };
     let ct: *const nf_conn;
@@ -134,7 +134,7 @@ static fn connmark_mt(skb: *const sk_buff, par: *mut xt_action_param) -> bool {
     }
 }
 
-static fn connmark_mt_check(par: *const xt_mtchk_param) -> c_int {
+fn connmark_mt_check(par: *const xt_mtchk_param) -> c_int {
     let ret = unsafe { nf_ct_netns_get((*par).net, (*par).family) };
     if ret < 0 {
         unsafe { pr_info_ratelimited!("cannot load conntrack support for proto=%u\n", (*par).family); }
@@ -142,7 +142,7 @@ static fn connmark_mt_check(par: *const xt_mtchk_param) -> c_int {
     ret
 }
 
-static fn connmark_mt_destroy(par: *const xt_mtdtor_param) {
+fn connmark_mt_destroy(par: *const xt_mtdtor_param) {
     unsafe { nf_ct_netns_put((*par).net, (*par).family); }
 }
 
@@ -150,7 +150,7 @@ static fn connmark_mt_destroy(par: *const xt_mtdtor_param) {
 static mut connmark_tg_reg: [xt_target; 4] = [unsafe { core::mem::zeroed() }; 4];
 static mut connmark_mt_reg: xt_match = unsafe { core::mem::zeroed() };
 
-static fn connmark_mt_init() -> c_int {
+fn connmark_mt_init() -> c_int {
     let mut ret = unsafe { xt_register_targets(connmark_tg_reg.as_mut_ptr(), connmark_tg_reg.len()) };
     if ret < 0 { return ret; }
     ret = unsafe { xt_register_match(&mut connmark_mt_reg) };
@@ -161,7 +161,7 @@ static fn connmark_mt_init() -> c_int {
     0
 }
 
-static fn connmark_mt_exit() {
+fn connmark_mt_exit() {
     unsafe {
         xt_unregister_match(&mut connmark_mt_reg);
         xt_unregister_targets(connmark_tg_reg.as_mut_ptr(), connmark_tg_reg.len());

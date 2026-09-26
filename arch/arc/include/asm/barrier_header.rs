@@ -7,7 +7,7 @@
  * CONFIG_ISA_ARCV2 is a build-time condition from the original header.
  * It is represented here by the corresponding Rust feature.
  */
-#[cfg(feature = "CONFIG_ISA_ARCV2")]
+#[cfg(CONFIG_ISA_ARCV2)]
 mod arc_v2_barriers {
     /*
      * ARCv2 based HS38 cores are in-order issue, but still weakly ordered
@@ -45,7 +45,7 @@ mod arc_v2_barriers {
     }
 }
 
-#[cfg(not(feature = "CONFIG_ISA_ARCV2"))]
+#[cfg(not(CONFIG_ISA_ARCV2))]
 mod arc_compact_barriers {
     /*
      * ARCompact based cores (ARC700) only have SYNC instruction which is super

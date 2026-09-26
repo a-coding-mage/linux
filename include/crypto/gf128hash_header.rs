@@ -41,11 +41,11 @@ pub struct ghash_key {
     // C conditional fields preserved below. The active layout depends on the
     // CONFIG_CRYPTO_LIB_GF128HASH_ARCH, CONFIG_PPC64, CONFIG_RISCV, and
     // CONFIG_S390 build configuration symbols.
-    #[cfg(all(feature = "CONFIG_CRYPTO_LIB_GF128HASH_ARCH", feature = "CONFIG_PPC64"))]
+    #[cfg(all(CONFIG_CRYPTO_LIB_GF128HASH_ARCH, CONFIG_PPC64))]
     pub htable: [[u64; 2]; 4],
     #[cfg(all(
-        feature = "CONFIG_CRYPTO_LIB_GF128HASH_ARCH",
-        any(feature = "CONFIG_RISCV", feature = "CONFIG_S390")
+        CONFIG_CRYPTO_LIB_GF128HASH_ARCH,
+        any(CONFIG_RISCV, CONFIG_S390)
     ))]
     pub h_raw: [u8; GHASH_BLOCK_SIZE],
     pub h: polyval_elem,
@@ -66,13 +66,13 @@ pub struct polyval_key {
     // The active field depends on CONFIG_CRYPTO_LIB_GF128HASH_ARCH and
     // CONFIG_ARM64/CONFIG_X86.
     #[cfg(all(
-        feature = "CONFIG_CRYPTO_LIB_GF128HASH_ARCH",
-        any(feature = "CONFIG_ARM64", feature = "CONFIG_X86")
+        CONFIG_CRYPTO_LIB_GF128HASH_ARCH,
+        any(CONFIG_ARM64, CONFIG_X86)
     ))]
     pub h_powers: [polyval_elem; 8],
     #[cfg(not(all(
-        feature = "CONFIG_CRYPTO_LIB_GF128HASH_ARCH",
-        any(feature = "CONFIG_ARM64", feature = "CONFIG_X86")
+        CONFIG_CRYPTO_LIB_GF128HASH_ARCH,
+        any(CONFIG_ARM64, CONFIG_X86)
     )))]
     pub h: polyval_elem,
 }

@@ -52,21 +52,22 @@ unsafe fn isofs_export_get_parent(child: *mut dentry) -> *mut dentry {
     let mut de: *mut iso_directory_record = core::ptr::null_mut();
     let mut bh: *mut buffer_head = core::ptr::null_mut();
     let mut rv: *mut dentry = core::ptr::null_mut();
+    'out: {
 
     /* "child" must always be a directory. */
     if !S_ISDIR((*child_inode).i_mode) {
-        printk(KERN_ERR "isofs: isofs_export_get_parent(): child is not a directory!\n");
+        printk(c"\x013isofs: isofs_export_get_parent(): child is not a directory!\n".as_ptr());
         rv = ERR_PTR(-EACCES);
-        goto out;
+        break 'out;
     }
 
     /* It is an invariant that the directory offset is zero.  If
      * it is not zero, it means the directory failed to be
      * normalized for some reason. */
     if (*e_child_inode).i_iget5_offset != 0 {
-        printk(KERN_ERR "isofs: isofs_export_get_parent(): child directory not normalized!\n");
+        printk(c"\x013isofs: isofs_export_get_parent(): child directory not normalized!\n".as_ptr());
         rv = ERR_PTR(-EACCES);
-        goto out;
+        break 'out;
     }
 
     /* The child inode has been normalized such that its
@@ -78,7 +79,7 @@ unsafe fn isofs_export_get_parent(child: *mut dentry) -> *mut dentry {
     bh = sb_bread((*child_inode).i_sb, parent_block);
     if bh.is_null() {
         rv = ERR_PTR(-EACCES);
-        goto out;
+        break 'out;
     }
 
     /* This is the "." entry. */
@@ -87,9 +88,9 @@ unsafe fn isofs_export_get_parent(child: *mut dentry) -> *mut dentry {
         || isonum_711((*de).name_len) != 1
         || (*de).name[0] != 0
     {
-        printk(KERN_ERR "isofs: Unable to find the \".\" directory for NFS.\n");
+        printk(c"\x013isofs: Unable to find the \".\" directory for NFS.\n".as_ptr());
         rv = ERR_PTR(-EACCES);
-        goto out;
+        break 'out;
     }
 
     /* The ".." entry is always the second entry. */
@@ -101,16 +102,17 @@ unsafe fn isofs_export_get_parent(child: *mut dentry) -> *mut dentry {
         || isonum_711((*de).name_len) != 1
         || (*de).name[0] != 1
     {
-        printk(KERN_ERR "isofs: Unable to find the \"..\" directory for NFS.\n");
+        printk(c"\x013isofs: Unable to find the \"..\" directory for NFS.\n".as_ptr());
         rv = ERR_PTR(-EACCES);
-        goto out;
+        break 'out;
     }
 
     /* Normalize */
     isofs_normalize_block_and_offset(de, &mut parent_block, &mut parent_offset);
 
     rv = d_obtain_alias(isofs_iget((*child_inode).i_sb, parent_block, parent_offset));
-out:
+    }
+    
     if !bh.is_null() {
         brelse(bh);
     }

@@ -71,7 +71,7 @@ macro_rules! pud_present {
 
 macro_rules! pud_clear {
     ($xp:expr) => {{
-        set_pud($xp, __pud(0));
+        set_pud!($xp, __pud(0));
     }};
 }
 

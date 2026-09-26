@@ -48,20 +48,20 @@ static LIST_HEAD(chan_list);
 static DEFINE_RWLOCK(chan_list_lock);
 
 static sk_buff *l2cap_build_cmd(l2cap_conn *conn,
-				       u8 code, u8 ident, u16 dlen, void *data);
-static void l2cap_send_cmd(l2cap_conn *conn, u8 ident, u8 code, u16 len,
+				       code: u8, ident: u8, dlen: u16, void *data);
+static void l2cap_send_cmd(l2cap_conn *conn, ident: u8, code: u8, len: u16,
 			   void *data);
 static int l2cap_build_conf_req(l2cap_chan *chan, void *data, size_t data_size);
 static void l2cap_send_disconn_req(l2cap_chan *chan, int err);
 
 static void l2cap_tx(l2cap_chan *chan, l2cap_ctrl *control,
-		     sk_buff_head *skbs, u8 event);
+		     sk_buff_head *skbs, event: u8);
 static void l2cap_retrans_timeout(work_struct *work);
 static void l2cap_monitor_timeout(work_struct *work);
 static void l2cap_ack_timeout(work_struct *work);
 
 #[inline]
-unsafe fn u8 bdaddr_type(u8 link_type, u8 bdaddr_type)
+unsafe fn u8 bdaddr_type(link_type: u8, bdaddr_type: u8)
 {
 	if link_type == LE_LINK {
 		if bdaddr_type == ADDR_LE_DEV_PUBLIC
@@ -76,38 +76,38 @@ unsafe fn u8 bdaddr_type(u8 link_type, u8 bdaddr_type)
 #[inline]
 unsafe fn u8 bdaddr_src_type(hci_conn *hcon)
 {
-	return bdaddr_type(hcon.type, hcon.src_type);
+	return bdaddr_type(hcon.r#type, hcon.src_type);
 }
 
 #[inline]
 unsafe fn u8 bdaddr_dst_type(hci_conn *hcon)
 {
-	return bdaddr_type(hcon.type, hcon.dst_type);
+	return bdaddr_type(hcon.r#type, hcon.dst_type);
 }
 
 /* ---- L2CAP channels ---- */
 
 static l2cap_chan *__l2cap_get_chan_by_dcid(l2cap_conn *conn,
-						   u16 cid)
+						   cid: u16)
 {
 	l2cap_chan *c;
 
-	list_for_each_entry(c, &conn.chan_l, list) {
+	list_for_each_entry!(c, &conn.chan_l, list, {
 		if c.dcid == cid
 			return c;
-	}
+	});
 	return core::ptr::null_mut();
 }
 
 static l2cap_chan *__l2cap_get_chan_by_scid(l2cap_conn *conn,
-						   u16 cid)
+						   cid: u16)
 {
 	l2cap_chan *c;
 
-	list_for_each_entry(c, &conn.chan_l, list) {
+	list_for_each_entry!(c, &conn.chan_l, list, {
 		if c.scid == cid
 			return c;
-	}
+	});
 	return core::ptr::null_mut();
 }
 
@@ -115,7 +115,7 @@ static l2cap_chan *__l2cap_get_chan_by_scid(l2cap_conn *conn,
  * Returns a reference locked channel.
  */
 static l2cap_chan *l2cap_get_chan_by_scid(l2cap_conn *conn,
-						 u16 cid)
+						 cid: u16)
 {
 	l2cap_chan *c;
 
@@ -134,7 +134,7 @@ static l2cap_chan *l2cap_get_chan_by_scid(l2cap_conn *conn,
  * Returns a reference locked channel.
  */
 static l2cap_chan *l2cap_get_chan_by_dcid(l2cap_conn *conn,
-						 u16 cid)
+						 cid: u16)
 {
 	l2cap_chan *c;
 
@@ -150,23 +150,23 @@ static l2cap_chan *l2cap_get_chan_by_dcid(l2cap_conn *conn,
 }
 
 static l2cap_chan *__l2cap_get_chan_by_ident(l2cap_conn *conn,
-						    u8 ident)
+						    ident: u8)
 {
 	l2cap_chan *c;
 
-	list_for_each_entry(c, &conn.chan_l, list) {
+	list_for_each_entry!(c, &conn.chan_l, list, {
 		if c.ident == ident
 			return c;
-	}
+	});
 	return core::ptr::null_mut();
 }
 
 static l2cap_chan *__l2cap_global_chan_by_addr(__le16 psm, bdaddr_t *src,
-						      u8 src_type)
+						      src_type: u8)
 {
 	l2cap_chan *c;
 
-	list_for_each_entry(c, &chan_list, global_l) {
+	list_for_each_entry!(c, &chan_list, global_l, {
 		if src_type == BDADDR_BREDR && c.src_type != BDADDR_BREDR
 			continue;
 
@@ -175,19 +175,20 @@ static l2cap_chan *__l2cap_global_chan_by_addr(__le16 psm, bdaddr_t *src,
 
 		if (c.sport == psm && !bacmp(&c.src, src))
 			return c;
-	}
+	});
 	return core::ptr::null_mut();
 }
 
 int l2cap_add_psm(l2cap_chan *chan, bdaddr_t *src, __le16 psm)
 {
+	'done: {
 	int err;
 
 	write_lock(&chan_list_lock);
 
 	if (psm && __l2cap_global_chan_by_addr(psm, src, chan.src_type)) {
 		err = -EADDRINUSE;
-		goto done;
+		break 'done;
 	}
 
 	if psm {
@@ -195,7 +196,7 @@ int l2cap_add_psm(l2cap_chan *chan, bdaddr_t *src, __le16 psm)
 		chan.sport = psm;
 		err = 0;
 	} else {
-		u16 p, start, end, incr;
+		p: u16, start, end, incr;
 
 		if chan.src_type == BDADDR_BREDR {
 			start = L2CAP_PSM_DYN_START;
@@ -208,17 +209,19 @@ int l2cap_add_psm(l2cap_chan *chan, bdaddr_t *src, __le16 psm)
 		}
 
 		err = -EINVAL;
-		for p = start;  p <= end;  p += incr
-			if (!__l2cap_global_chan_by_addr(cpu_to_le16(p), src,
-							 chan.src_type)) {
+		p = start;
+		while p <= end {
 				chan.psm   = cpu_to_le16(p);
 				chan.sport = cpu_to_le16(p);
 				err = 0;
 				break;
-			}
+		    p += incr
+			if (!__l2cap_global_chan_by_addr(cpu_to_le16(p), src,
+							 chan.src_type));
+		}
 	}
-
-done:
+	}
+	
 	write_unlock(&chan_list_lock);
 	return err;
 }
@@ -241,16 +244,18 @@ int l2cap_add_scid(l2cap_chan *chan,  __u16 scid)
 
 static u16 l2cap_alloc_cid(l2cap_conn *conn)
 {
-	u16 cid, dyn_end;
+	cid: u16, dyn_end;
 
-	if conn.hcon.type == LE_LINK
+	if conn.hcon.r#type == LE_LINK
 		dyn_end = L2CAP_CID_LE_DYN_END;
 	else
 		dyn_end = L2CAP_CID_DYN_END;
 
-	for cid = L2CAP_CID_DYN_START;  cid <= dyn_end;  cid++ {
+	cid = L2CAP_CID_DYN_START;
+	while cid <= dyn_end {
 		if (!__l2cap_get_chan_by_scid(conn, cid))
 			return cid;
+	    cid++;
 	}
 
 	return 0;
@@ -298,14 +303,14 @@ static void __set_monitor_timer(l2cap_chan *chan)
 }
 
 static sk_buff *l2cap_ertm_seq_in_queue(sk_buff_head *head,
-					       u16 seq)
+					       seq: u16)
 {
 	sk_buff *skb;
 
-	skb_queue_walk(head, skb) {
+	skb_queue_walk!(head, skb, {
 		if (bt_cb(skb).l2cap.txseq == seq)
 			return skb;
-	}
+	});
 
 	return core::ptr::null_mut();
 }
@@ -321,7 +326,7 @@ static sk_buff *l2cap_ertm_seq_in_queue(sk_buff_head *head,
  * allocs or frees.
  */
 
-static int l2cap_seq_list_init(l2cap_seq_list *seq_list, u16 size)
+static int l2cap_seq_list_init(l2cap_seq_list *seq_list, size: u16)
 {
 	size_t alloc_size, i;
 
@@ -338,21 +343,22 @@ static int l2cap_seq_list_init(l2cap_seq_list *seq_list, u16 size)
 	seq_list.mask = alloc_size - 1;
 	seq_list.head = L2CAP_SEQ_LIST_CLEAR;
 	seq_list.tail = L2CAP_SEQ_LIST_CLEAR;
-	for i = 0;  i < alloc_size;  i++
+	i = 0;
+	while i < alloc_size {
+	kfree(seq_list.list);
+	    i++
 		seq_list.list[i] = L2CAP_SEQ_LIST_CLEAR;
 
 	return 0;
 }
 
 #[inline]
-unsafe fn void l2cap_seq_list_free(l2cap_seq_list *seq_list)
-{
-	kfree(seq_list.list);
-}
+unsafe fn void l2cap_seq_list_free(l2cap_seq_list *seq_list);
+	}
 
 #[inline]
 unsafe fn bool l2cap_seq_list_contains(l2cap_seq_list *seq_list,
-					   u16 seq)
+					   seq: u16)
 {
 	/* Constant-time check for list membership */
 	return seq_list.list[seq & seq_list.mask] != L2CAP_SEQ_LIST_CLEAR;
@@ -382,15 +388,8 @@ static void l2cap_seq_list_clear(l2cap_seq_list *seq_list)
 	if seq_list.head == L2CAP_SEQ_LIST_CLEAR
 		return;
 
-	for i = 0;  i <= seq_list.mask;  i++
-		seq_list.list[i] = L2CAP_SEQ_LIST_CLEAR;
-
-	seq_list.head = L2CAP_SEQ_LIST_CLEAR;
-	seq_list.tail = L2CAP_SEQ_LIST_CLEAR;
-}
-
-static void l2cap_seq_list_append(l2cap_seq_list *seq_list, u16 seq)
-{
+	i = 0;
+	while i <= seq_list.mask {
 	u16 mask = seq_list.mask;
 
 	/* All appends happen in constant time */
@@ -405,10 +404,19 @@ static void l2cap_seq_list_append(l2cap_seq_list *seq_list, u16 seq)
 
 	seq_list.tail = seq;
 	seq_list.list[seq & mask] = L2CAP_SEQ_LIST_TAIL;
+	    i++
+		seq_list.list[i] = L2CAP_SEQ_LIST_CLEAR;
+
+	seq_list.head = L2CAP_SEQ_LIST_CLEAR;
+	seq_list.tail = L2CAP_SEQ_LIST_CLEAR;
 }
+
+static void l2cap_seq_list_append(l2cap_seq_list *seq_list, seq: u16);
+	}
 
 static void l2cap_chan_timeout(work_struct *work)
 {
+	'unlock: {
 	l2cap_chan *chan = container_of(work, l2cap_chan,
 					       chan_timer.work);
 	l2cap_conn *conn = chan.conn;
@@ -428,7 +436,7 @@ static void l2cap_chan_timeout(work_struct *work)
 	l2cap_chan_lock(chan);
 
 	if (test_bit(FLAG_DEL, &chan.flags))
-		goto unlock;
+		break 'unlock;
 
 	if chan.state == BT_CONNECTED || chan.state == BT_CONFIG
 		reason = ECONNREFUSED;
@@ -441,8 +449,8 @@ static void l2cap_chan_timeout(work_struct *work)
 	l2cap_chan_close(chan, reason);
 
 	chan.ops.close(chan);
-
-unlock:
+	}
+	
 	l2cap_chan_unlock(chan);
 	mutex_unlock(&conn.lock);
 	l2cap_chan_put(chan);
@@ -601,7 +609,7 @@ static __u16 l2cap_le_rx_credits(l2cap_chan *chan)
 	return DIV_ROUND_UP(chan.rx_avail - sdu_len, chan.mps);
 }
 
-static void l2cap_le_flowctl_init(l2cap_chan *chan, u16 tx_credits)
+static void l2cap_le_flowctl_init(l2cap_chan *chan, tx_credits: u16)
 {
 	chan.sdu = core::ptr::null_mut();
 	chan.sdu_last_frag = core::ptr::null_mut();
@@ -614,7 +622,7 @@ static void l2cap_le_flowctl_init(l2cap_chan *chan, u16 tx_credits)
 	skb_queue_head_init(&chan.tx_q);
 }
 
-static void l2cap_ecred_init(l2cap_chan *chan, u16 tx_credits)
+static void l2cap_ecred_init(l2cap_chan *chan, tx_credits: u16)
 {
 	l2cap_le_flowctl_init(chan, tx_credits);
 
@@ -638,7 +646,7 @@ void __l2cap_chan_add(l2cap_conn *conn, l2cap_chan *chan)
 	case L2CAP_CHAN_CONN_ORIENTED:
 		/* Alloc CID for connection-oriented socket */
 		chan.scid = l2cap_alloc_cid(conn);
-		if conn.hcon.type == ACL_LINK
+		if conn.hcon.r#type == ACL_LINK
 			chan.omtu = L2CAP_DEFAULT_MTU;
 		break;
 
@@ -739,15 +747,15 @@ void l2cap_chan_del(l2cap_chan *chan, int err)
 }
 // exported symbol
 
-static void __l2cap_chan_list_id(l2cap_conn *conn, u16 id,
+static void __l2cap_chan_list_id(l2cap_conn *conn, id: u16,
 				 l2cap_chan_func_t func, void *data)
 {
 	l2cap_chan *chan, *l;
 
-	list_for_each_entry_safe(chan, l, &conn.chan_l, list) {
+	list_for_each_entry_safe!(chan, l, &conn.chan_l, list, {
 		if chan.ident == id
 			func(chan, data);
-	}
+	});
 }
 
 static void __l2cap_chan_list(l2cap_conn *conn, l2cap_chan_func_t func,
@@ -755,9 +763,9 @@ static void __l2cap_chan_list(l2cap_conn *conn, l2cap_chan_func_t func,
 {
 	l2cap_chan *chan;
 
-	list_for_each_entry(chan, &conn.chan_l, list) {
+	list_for_each_entry!(chan, &conn.chan_l, list, {
 		func(chan, data);
-	}
+	});
 }
 
 void l2cap_chan_list(l2cap_conn *conn, l2cap_chan_func_t func,
@@ -782,12 +790,12 @@ static void l2cap_conn_update_id_addr(work_struct *work)
 
 	mutex_lock(&conn.lock);
 
-	list_for_each_entry(chan, &conn.chan_l, list) {
+	list_for_each_entry!(chan, &conn.chan_l, list, {
 		l2cap_chan_lock(chan);
 		bacpy(&chan.dst, &hcon.dst);
 		chan.dst_type = bdaddr_dst_type(hcon);
 		l2cap_chan_unlock(chan);
-	}
+	});
 
 	mutex_unlock(&conn.lock);
 }
@@ -865,9 +873,9 @@ void l2cap_chan_close(l2cap_chan *chan, int reason)
 
 	case BT_CONNECT2:
 		if chan.chan_type == L2CAP_CHAN_CONN_ORIENTED {
-			if conn.hcon.type == ACL_LINK
+			if conn.hcon.r#type == ACL_LINK
 				l2cap_chan_connect_reject(chan);
-			else if conn.hcon.type == LE_LINK {
+			else if conn.hcon.r#type == LE_LINK {
 				switch (chan.mode) {
 				case L2CAP_MODE_LE_FLOWCTL:
 					l2cap_chan_le_connect_reject(chan);
@@ -948,12 +956,12 @@ unsafe fn u8 l2cap_get_auth_type(l2cap_chan *chan)
 }
 
 /* Service level security */
-int l2cap_chan_check_security(l2cap_chan *chan, bool initiator)
+int l2cap_chan_check_security(l2cap_chan *chan, initiator: bool)
 {
 	l2cap_conn *conn = chan.conn;
 	__u8 auth_type;
 
-	if conn.hcon.type == LE_LINK
+	if conn.hcon.r#type == LE_LINK
 		return smp_conn_security(conn.hcon, chan.sec_level);
 
 	auth_type = l2cap_get_auth_type(chan);
@@ -968,7 +976,7 @@ static int l2cap_get_ident(l2cap_conn *conn)
 	int ident;
 
 	/* LE link does not support tools like l2ping so use the full range */
-	if conn.hcon.type == LE_LINK
+	if conn.hcon.r#type == LE_LINK
 		max = 255;
 	/* Get next available identificator.
 	 *    1 - 128 are used by kernel.
@@ -1000,7 +1008,7 @@ static int l2cap_get_ident(l2cap_conn *conn)
 }
 
 static void l2cap_send_acl(l2cap_conn *conn, sk_buff *skb,
-			   u8 flags)
+			   flags: u8)
 {
 	/* Check if the hcon still valid before attempting to send */
 	if (hci_conn_valid(conn.hcon.hdev, conn.hcon))
@@ -1009,7 +1017,7 @@ static void l2cap_send_acl(l2cap_conn *conn, sk_buff *skb,
 		kfree_skb(skb);
 }
 
-static void l2cap_send_cmd(l2cap_conn *conn, u8 ident, u8 code, u16 len,
+static void l2cap_send_cmd(l2cap_conn *conn, ident: u8, code: u8, len: u16,
 			   void *data)
 {
 	sk_buff *skb = l2cap_build_cmd(conn, code, ident, len, data);
@@ -1023,7 +1031,7 @@ static void l2cap_send_cmd(l2cap_conn *conn, u8 ident, u8 code, u16 len,
 	/* Use NO_FLUSH if supported or we have an LE link (which does
 	 * not support auto-flushing packets) */
 	if (lmp_no_flush_capable(conn.hcon.hdev) ||
-	    conn.hcon.type == LE_LINK)
+	    conn.hcon.r#type == LE_LINK)
 		flags = ACL_START_NO_FLUSH;
 	else
 		flags = ACL_START;
@@ -1046,7 +1054,7 @@ static void l2cap_do_send(l2cap_chan *chan, sk_buff *skb)
 	 * if the BR/EDR link supports it and flushing has not been
 	 * explicitly requested (through FLAG_FLUSHABLE).
 	 */
-	if (hcon.type == LE_LINK ||
+	if (hcon.r#type == LE_LINK ||
 	    (!test_bit(FLAG_FLUSHABLE, &chan.flags) &&
 	     lmp_no_flush_capable(hcon.hdev)))
 		flags = ACL_START_NO_FLUSH;
@@ -1057,16 +1065,16 @@ static void l2cap_do_send(l2cap_chan *chan, sk_buff *skb)
 	hci_send_acl(chan.conn.hchan, skb, flags);
 }
 
-static void __unpack_enhanced_control(u16 enh, l2cap_ctrl *control)
+static void __unpack_enhanced_control(enh: u16, l2cap_ctrl *control)
 {
 	control.reqseq = (enh & L2CAP_CTRL_REQSEQ) >> L2CAP_CTRL_REQSEQ_SHIFT;
-	control.final = (enh & L2CAP_CTRL_FINAL) >> L2CAP_CTRL_FINAL_SHIFT;
+	control.r#final = (enh & L2CAP_CTRL_FINAL) >> L2CAP_CTRL_FINAL_SHIFT;
 
 	if enh & L2CAP_CTRL_FRAME_TYPE {
 		/* S-Frame */
 		control.sframe = 1;
 		control.poll = (enh & L2CAP_CTRL_POLL) >> L2CAP_CTRL_POLL_SHIFT;
-		control.super = (enh & L2CAP_CTRL_SUPERVISE) >> L2CAP_CTRL_SUPER_SHIFT;
+		control.r#super = (enh & L2CAP_CTRL_SUPERVISE) >> L2CAP_CTRL_SUPER_SHIFT;
 
 		control.sar = 0;
 		control.txseq = 0;
@@ -1077,20 +1085,20 @@ static void __unpack_enhanced_control(u16 enh, l2cap_ctrl *control)
 		control.txseq = (enh & L2CAP_CTRL_TXSEQ) >> L2CAP_CTRL_TXSEQ_SHIFT;
 
 		control.poll = 0;
-		control.super = 0;
+		control.r#super = 0;
 	}
 }
 
-static void __unpack_extended_control(u32 ext, l2cap_ctrl *control)
+static void __unpack_extended_control(ext: u32, l2cap_ctrl *control)
 {
 	control.reqseq = (ext & L2CAP_EXT_CTRL_REQSEQ) >> L2CAP_EXT_CTRL_REQSEQ_SHIFT;
-	control.final = (ext & L2CAP_EXT_CTRL_FINAL) >> L2CAP_EXT_CTRL_FINAL_SHIFT;
+	control.r#final = (ext & L2CAP_EXT_CTRL_FINAL) >> L2CAP_EXT_CTRL_FINAL_SHIFT;
 
 	if ext & L2CAP_EXT_CTRL_FRAME_TYPE {
 		/* S-Frame */
 		control.sframe = 1;
 		control.poll = (ext & L2CAP_EXT_CTRL_POLL) >> L2CAP_EXT_CTRL_POLL_SHIFT;
-		control.super = (ext & L2CAP_EXT_CTRL_SUPERVISE) >> L2CAP_EXT_CTRL_SUPER_SHIFT;
+		control.r#super = (ext & L2CAP_EXT_CTRL_SUPERVISE) >> L2CAP_EXT_CTRL_SUPER_SHIFT;
 
 		control.sar = 0;
 		control.txseq = 0;
@@ -1101,7 +1109,7 @@ static void __unpack_extended_control(u32 ext, l2cap_ctrl *control)
 		control.txseq = (ext & L2CAP_EXT_CTRL_TXSEQ) >> L2CAP_EXT_CTRL_TXSEQ_SHIFT;
 
 		control.poll = 0;
-		control.super = 0;
+		control.r#super = 0;
 	}
 }
 
@@ -1125,11 +1133,11 @@ static u32 __pack_extended_control(l2cap_ctrl *control)
 	u32 packed;
 
 	packed = control.reqseq << L2CAP_EXT_CTRL_REQSEQ_SHIFT;
-	packed |= control.final << L2CAP_EXT_CTRL_FINAL_SHIFT;
+	packed |= control.r#final << L2CAP_EXT_CTRL_FINAL_SHIFT;
 
 	if control.sframe {
 		packed |= control.poll << L2CAP_EXT_CTRL_POLL_SHIFT;
-		packed |= control.super << L2CAP_EXT_CTRL_SUPER_SHIFT;
+		packed |= control.r#super << L2CAP_EXT_CTRL_SUPER_SHIFT;
 		packed |= L2CAP_EXT_CTRL_FRAME_TYPE;
 	} else {
 		packed |= control.sar << L2CAP_EXT_CTRL_SAR_SHIFT;
@@ -1144,11 +1152,11 @@ static u16 __pack_enhanced_control(l2cap_ctrl *control)
 	u16 packed;
 
 	packed = control.reqseq << L2CAP_CTRL_REQSEQ_SHIFT;
-	packed |= control.final << L2CAP_CTRL_FINAL_SHIFT;
+	packed |= control.r#final << L2CAP_CTRL_FINAL_SHIFT;
 
 	if control.sframe {
 		packed |= control.poll << L2CAP_CTRL_POLL_SHIFT;
-		packed |= control.super << L2CAP_CTRL_SUPER_SHIFT;
+		packed |= control.r#super << L2CAP_CTRL_SUPER_SHIFT;
 		packed |= L2CAP_CTRL_FRAME_TYPE;
 	} else {
 		packed |= control.sar << L2CAP_CTRL_SAR_SHIFT;
@@ -1173,7 +1181,7 @@ unsafe fn void __pack_control(l2cap_chan *chan,
 }
 
 #[inline]
-unsafe fn unsigned int __ertm_hdr_size(l2cap_chan *chan)
+unsafe fn core::ffi::c_uint __ertm_hdr_size(l2cap_chan *chan)
 {
 	if (test_bit(FLAG_EXT_CTRL, &chan.flags))
 		return L2CAP_EXT_HDR_SIZE;
@@ -1182,7 +1190,7 @@ unsafe fn unsigned int __ertm_hdr_size(l2cap_chan *chan)
 }
 
 static sk_buff *l2cap_create_sframe_pdu(l2cap_chan *chan,
-					       u32 control)
+					       control: u32)
 {
 	sk_buff *skb;
 	l2cap_hdr *lh;
@@ -1227,20 +1235,20 @@ static void l2cap_send_sframe(l2cap_chan *chan,
 
 	if (test_and_clear_bit(CONN_SEND_FBIT, &chan.conn_state) &&
 	    !control.poll)
-		control.final = 1;
+		control.r#final = 1;
 
-	if control.super == L2CAP_SUPER_RR
+	if control.r#super == L2CAP_SUPER_RR
 		clear_bit(CONN_RNR_SENT, &chan.conn_state);
-	else if control.super == L2CAP_SUPER_RNR
+	else if control.r#super == L2CAP_SUPER_RNR
 		set_bit(CONN_RNR_SENT, &chan.conn_state);
 
-	if control.super != L2CAP_SUPER_SREJ {
+	if control.r#super != L2CAP_SUPER_SREJ {
 		chan.last_acked_seq = control.reqseq;
 		__clear_ack_timer(chan);
 	}
 
 	BT_DBG("reqseq %d, final %d, poll %d, super %d", control.reqseq,
-	       control.final, control.poll, control.super);
+	       control.r#final, control.poll, control.r#super);
 
 	if (test_bit(FLAG_EXT_CTRL, &chan.flags))
 		control_field = __pack_extended_control(control);
@@ -1252,7 +1260,7 @@ static void l2cap_send_sframe(l2cap_chan *chan,
 		l2cap_do_send(chan, skb);
 }
 
-static void l2cap_send_rr_or_rnr(l2cap_chan *chan, bool poll)
+static void l2cap_send_rr_or_rnr(l2cap_chan *chan, poll: bool)
 {
 	l2cap_ctrl control;
 
@@ -1263,9 +1271,9 @@ static void l2cap_send_rr_or_rnr(l2cap_chan *chan, bool poll)
 	control.poll = poll;
 
 	if (test_bit(CONN_LOCAL_BUSY, &chan.conn_state))
-		control.super = L2CAP_SUPER_RNR;
+		control.r#super = L2CAP_SUPER_RNR;
 	else
-		control.super = L2CAP_SUPER_RR;
+		control.r#super = L2CAP_SUPER_RR;
 
 	control.reqseq = chan.buffer_seq;
 	l2cap_send_sframe(chan, &control);
@@ -1444,7 +1452,7 @@ static void l2cap_le_start(l2cap_chan *chan)
 
 static void l2cap_start_connection(l2cap_chan *chan)
 {
-	if chan.conn.hcon.type == LE_LINK {
+	if chan.conn.hcon.r#type == LE_LINK {
 		l2cap_le_start(chan);
 	} else {
 		l2cap_send_conn_req(chan);
@@ -1458,7 +1466,7 @@ static void l2cap_request_info(l2cap_conn *conn)
 	if conn.info_state & L2CAP_INFO_FEAT_MASK_REQ_SENT
 		return;
 
-	req.type = cpu_to_le16(L2CAP_IT_FEAT_MASK);
+	req.r#type = cpu_to_le16(L2CAP_IT_FEAT_MASK);
 
 	conn.info_state |= L2CAP_INFO_FEAT_MASK_REQ_SENT;
 	conn.info_ident = l2cap_get_ident(conn);
@@ -1495,7 +1503,7 @@ static void l2cap_do_start(l2cap_chan *chan)
 {
 	l2cap_conn *conn = chan.conn;
 
-	if conn.hcon.type == LE_LINK {
+	if conn.hcon.r#type == LE_LINK {
 		l2cap_le_start(chan);
 		return;
 	}
@@ -1674,16 +1682,16 @@ static void l2cap_conn_ready(l2cap_conn *conn)
 
 	BT_DBG("conn %p", conn);
 
-	if hcon.type == ACL_LINK
+	if hcon.r#type == ACL_LINK
 		l2cap_request_info(conn);
 
 	mutex_lock(&conn.lock);
 
-	list_for_each_entry(chan, &conn.chan_l, list) {
+	list_for_each_entry!(chan, &conn.chan_l, list, {
 
 		l2cap_chan_lock(chan);
 
-		if hcon.type == LE_LINK {
+		if hcon.r#type == LE_LINK {
 			l2cap_le_start(chan);
 		} else if chan.chan_type != L2CAP_CHAN_CONN_ORIENTED {
 			if conn.info_state & L2CAP_INFO_FEAT_MASK_REQ_DONE
@@ -1693,11 +1701,11 @@ static void l2cap_conn_ready(l2cap_conn *conn)
 		}
 
 		l2cap_chan_unlock(chan);
-	}
+	});
 
 	mutex_unlock(&conn.lock);
 
-	if hcon.type == LE_LINK
+	if hcon.r#type == LE_LINK
 		l2cap_le_conn_ready(conn);
 
 	queue_work(hcon.hdev.workqueue, &conn.pending_rx_work);
@@ -1710,10 +1718,10 @@ static void l2cap_conn_unreliable(l2cap_conn *conn, int err)
 
 	BT_DBG("conn %p", conn);
 
-	list_for_each_entry(chan, &conn.chan_l, list) {
+	list_for_each_entry!(chan, &conn.chan_l, list, {
 		if (test_bit(FLAG_FORCE_RELIABLE, &chan.flags))
 			l2cap_chan_set_err(chan, err);
-	}
+	});
 }
 
 static void l2cap_info_timeout(work_struct *work)
@@ -1744,6 +1752,7 @@ static void l2cap_info_timeout(work_struct *work)
 
 int l2cap_register_user(l2cap_conn *conn, l2cap_user *user)
 {
+	'out_unlock: {
 	int ret;
 
 	/* We need to check whether l2cap_conn is registered. If it is not, we
@@ -1756,23 +1765,23 @@ int l2cap_register_user(l2cap_conn *conn, l2cap_user *user)
 
 	if (!list_empty(&user.list)) {
 		ret = -EINVAL;
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	/* conn.hchan is core::ptr::null_mut() after l2cap_conn_del() was called */
 	if !conn.hchan {
 		ret = -ENODEV;
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	ret = user.probe(conn, user);
 	if ret
-		goto out_unlock;
+		break 'out_unlock;
 
 	list_add(&user.list, &conn.users);
 	ret = 0;
-
-out_unlock:
+	}
+	
 	mutex_unlock(&conn.lock);
 	return ret;
 }
@@ -1780,15 +1789,16 @@ out_unlock:
 
 void l2cap_unregister_user(l2cap_conn *conn, l2cap_user *user)
 {
+	'out_unlock: {
 	mutex_lock(&conn.lock);
 
 	if (list_empty(&user.list))
-		goto out_unlock;
+		break 'out_unlock;
 
 	list_del_init(&user.list);
 	user.remove(conn, user);
-
-out_unlock:
+	}
+	
 	mutex_unlock(&conn.lock);
 }
 // exported symbol
@@ -1833,7 +1843,7 @@ static void l2cap_conn_del(hci_conn *hcon, int err)
 	hcon.disc_timeout = 0;
 
 	/* Kill channels */
-	list_for_each_entry_safe(chan, l, &conn.chan_l, list) {
+	list_for_each_entry_safe!(chan, l, &conn.chan_l, list, {
 		l2cap_chan_hold(chan);
 		l2cap_chan_lock(chan);
 
@@ -1843,7 +1853,7 @@ static void l2cap_conn_del(hci_conn *hcon, int err)
 
 		l2cap_chan_unlock(chan);
 		l2cap_chan_put(chan);
-	}
+	});
 
 	hci_chan_del(conn.hchan);
 	conn.hchan = core::ptr::null_mut();
@@ -1866,14 +1876,14 @@ static void l2cap_conn_free(kref *ref)
 
 l2cap_conn *l2cap_conn_get(l2cap_conn *conn)
 {
-	kref_get(&conn.ref);
+	kref_get(&conn.r#ref);
 	return conn;
 }
 // exported symbol
 
 void l2cap_conn_put(l2cap_conn *conn)
 {
-	kref_put(&conn.ref, l2cap_conn_free);
+	kref_put(&conn.r#ref, l2cap_conn_free);
 }
 // exported symbol
 
@@ -1885,13 +1895,13 @@ void l2cap_conn_put(l2cap_conn *conn)
 static l2cap_chan *l2cap_global_chan_by_psm(int state, __le16 psm,
 						   bdaddr_t *src,
 						   bdaddr_t *dst,
-						   u8 link_type)
+						   link_type: u8)
 {
 	l2cap_chan *c, *tmp, *c1 = core::ptr::null_mut();
 
 	read_lock(&chan_list_lock);
 
-	list_for_each_entry_safe(c, tmp, &chan_list, global_l) {
+	list_for_each_entry_safe!(c, tmp, &chan_list, global_l, {
 		if state && c.state != state
 			continue;
 
@@ -1923,7 +1933,7 @@ static l2cap_chan *l2cap_global_chan_by_psm(int state, __le16 psm,
 			    (src_any && dst_any))
 				c1 = c;
 		}
-	}
+	});
 
 	if c1
 		c1 = l2cap_chan_hold_unless_zero(c1);
@@ -2034,7 +2044,7 @@ static int l2cap_ertm_send(l2cap_chan *chan)
 		control = &bt_cb(skb).l2cap;
 
 		if (test_and_clear_bit(CONN_SEND_FBIT, &chan.conn_state))
-			control.final = 1;
+			control.r#final = 1;
 
 		control.reqseq = chan.buffer_seq;
 		chan.last_acked_seq = chan.buffer_seq;
@@ -2112,9 +2122,9 @@ static void l2cap_ertm_resend(l2cap_chan *chan)
 
 		control.reqseq = chan.buffer_seq;
 		if (test_and_clear_bit(CONN_SEND_FBIT, &chan.conn_state))
-			control.final = 1;
+			control.r#final = 1;
 		else
-			control.final = 0;
+			control.r#final = 0;
 
 		if (skb_cloned(skb)) {
 			/* Cloned sk_buffs are read-only, so we need a
@@ -2180,19 +2190,19 @@ static void l2cap_retransmit_all(l2cap_chan *chan,
 		return;
 
 	if chan.unacked_frames {
-		skb_queue_walk(&chan.tx_q, skb) {
+		skb_queue_walk!(&chan.tx_q, skb, {
 			if (bt_cb(skb).l2cap.txseq == control.reqseq ||
 			    skb == chan.tx_send_head)
 				break;
-		}
+		});
 
-		skb_queue_walk_from(&chan.tx_q, skb) {
+		skb_queue_walk_from!(&chan.tx_q, skb, {
 			if skb == chan.tx_send_head
 				break;
 
 			l2cap_seq_list_append(&chan.retrans_list,
 					      bt_cb(skb).l2cap.txseq);
-		}
+		});
 
 		l2cap_ertm_resend(chan);
 	}
@@ -2214,7 +2224,7 @@ static void l2cap_send_ack(l2cap_chan *chan)
 	if (test_bit(CONN_LOCAL_BUSY, &chan.conn_state) &&
 	    chan.rx_state == L2CAP_RX_STATE_RECV) {
 		__clear_ack_timer(chan);
-		control.super = L2CAP_SUPER_RNR;
+		control.r#super = L2CAP_SUPER_RNR;
 		control.reqseq = chan.buffer_seq;
 		l2cap_send_sframe(chan, &control);
 	} else {
@@ -2237,7 +2247,7 @@ static void l2cap_send_ack(l2cap_chan *chan)
 
 		if frames_to_ack >= threshold {
 			__clear_ack_timer(chan);
-			control.super = L2CAP_SUPER_RR;
+			control.r#super = L2CAP_SUPER_RR;
 			control.reqseq = chan.buffer_seq;
 			l2cap_send_sframe(chan, &control);
 			frames_to_ack = 0;
@@ -2268,7 +2278,7 @@ unsafe fn int l2cap_skbuff_fromiovec(l2cap_chan *chan,
 	while len {
 		sk_buff *tmp;
 
-		count = min_t(unsigned int, conn.mtu, len);
+		count = min_t(core::ffi::c_uint, conn.mtu, len);
 
 		tmp = chan.ops.alloc_skb(chan, 0, count,
 					   msg.msg_flags & MSG_DONTWAIT);
@@ -2304,7 +2314,7 @@ static sk_buff *l2cap_create_connless_pdu(l2cap_chan *chan,
 	BT_DBG("chan %p psm 0x%2.2x len %zu", chan,
 	       __le16_to_cpu(chan.psm), len);
 
-	count = min_t(unsigned int, (conn.mtu - hlen), len);
+	count = min_t(core::ffi::c_uint, (conn.mtu - hlen), len);
 
 	skb = chan.ops.alloc_skb(chan, hlen, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2335,7 +2345,7 @@ static sk_buff *l2cap_create_basic_pdu(l2cap_chan *chan,
 
 	BT_DBG("chan %p len %zu", chan, len);
 
-	count = min_t(unsigned int, (conn.mtu - L2CAP_HDR_SIZE), len);
+	count = min_t(core::ffi::c_uint, (conn.mtu - L2CAP_HDR_SIZE), len);
 
 	skb = chan.ops.alloc_skb(chan, L2CAP_HDR_SIZE, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2357,7 +2367,7 @@ static sk_buff *l2cap_create_basic_pdu(l2cap_chan *chan,
 
 static sk_buff *l2cap_create_iframe_pdu(l2cap_chan *chan,
 					       msghdr *msg, size_t len,
-					       u16 sdulen)
+					       sdulen: u16)
 {
 	l2cap_conn *conn = chan.conn;
 	sk_buff *skb;
@@ -2377,7 +2387,7 @@ static sk_buff *l2cap_create_iframe_pdu(l2cap_chan *chan,
 	if chan.fcs == L2CAP_FCS_CRC16
 		hlen += L2CAP_FCS_SIZE;
 
-	count = min_t(unsigned int, (conn.mtu - hlen), len);
+	count = min_t(core::ffi::c_uint, (conn.mtu - hlen), len);
 
 	skb = chan.ops.alloc_skb(chan, hlen, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2480,7 +2490,7 @@ static int l2cap_segment_sdu(l2cap_chan *chan,
 
 static sk_buff *l2cap_create_le_flowctl_pdu(l2cap_chan *chan,
 						   msghdr *msg,
-						   size_t len, u16 sdulen)
+						   size_t len, sdulen: u16)
 {
 	l2cap_conn *conn = chan.conn;
 	sk_buff *skb;
@@ -2497,7 +2507,7 @@ static sk_buff *l2cap_create_le_flowctl_pdu(l2cap_chan *chan,
 	if sdulen
 		hlen += L2CAP_SDULEN_SIZE;
 
-	count = min_t(unsigned int, (conn.mtu - hlen), len);
+	count = min_t(core::ffi::c_uint, (conn.mtu - hlen), len);
 
 	skb = chan.ops.alloc_skb(chan, hlen, count,
 				   msg.msg_flags & MSG_DONTWAIT);
@@ -2712,7 +2722,7 @@ int l2cap_chan_send(l2cap_chan *chan, msghdr *msg, size_t len,
 }
 // exported symbol
 
-static void l2cap_send_srej(l2cap_chan *chan, u16 txseq)
+static void l2cap_send_srej(l2cap_chan *chan, txseq: u16)
 {
 	l2cap_ctrl control;
 	u16 seq;
@@ -2721,7 +2731,7 @@ static void l2cap_send_srej(l2cap_chan *chan, u16 txseq)
 
 	memset(&control, 0, core::mem::size_of::<_control));
 	control.sframe = 1;
-	control.super = L2CAP_SUPER_SREJ;
+	control.r#super = L2CAP_SUPER_SREJ;
 
 	for (seq = chan.expected_tx_seq; seq != txseq;
 	     seq = __next_seq(chan, seq)) {
@@ -2746,12 +2756,12 @@ static void l2cap_send_srej_tail(l2cap_chan *chan)
 
 	memset(&control, 0, core::mem::size_of::<_control));
 	control.sframe = 1;
-	control.super = L2CAP_SUPER_SREJ;
+	control.r#super = L2CAP_SUPER_SREJ;
 	control.reqseq = chan.srej_list.tail;
 	l2cap_send_sframe(chan, &control);
 }
 
-static void l2cap_send_srej_list(l2cap_chan *chan, u16 txseq)
+static void l2cap_send_srej_list(l2cap_chan *chan, txseq: u16)
 {
 	l2cap_ctrl control;
 	u16 initial_head;
@@ -2761,7 +2771,7 @@ static void l2cap_send_srej_list(l2cap_chan *chan, u16 txseq)
 
 	memset(&control, 0, core::mem::size_of::<_control));
 	control.sframe = 1;
-	control.super = L2CAP_SUPER_SREJ;
+	control.r#super = L2CAP_SUPER_SREJ;
 
 	/* Capture initial list head to allow only one pass through the list. */
 	initial_head = chan.srej_list.head;
@@ -2777,7 +2787,7 @@ static void l2cap_send_srej_list(l2cap_chan *chan, u16 txseq)
 	} while chan.srej_list.head != initial_head;
 }
 
-static void l2cap_process_reqseq(l2cap_chan *chan, u16 reqseq)
+static void l2cap_process_reqseq(l2cap_chan *chan, reqseq: u16)
 {
 	sk_buff *acked_skb;
 	u16 ackseq;
@@ -2821,7 +2831,7 @@ static void l2cap_abort_rx_srej_sent(l2cap_chan *chan)
 
 static void l2cap_tx_state_xmit(l2cap_chan *chan,
 				l2cap_ctrl *control,
-				sk_buff_head *skbs, u8 event)
+				sk_buff_head *skbs, event: u8)
 {
 	BT_DBG("chan %p, control %p, skbs %p, event %d", chan, control, skbs,
 	       event);
@@ -2857,7 +2867,7 @@ static void l2cap_tx_state_xmit(l2cap_chan *chan,
 
 			memset(&local_control, 0, core::mem::size_of::<_local_control));
 			local_control.sframe = 1;
-			local_control.super = L2CAP_SUPER_RR;
+			local_control.r#super = L2CAP_SUPER_RR;
 			local_control.poll = 1;
 			local_control.reqseq = chan.buffer_seq;
 			l2cap_send_sframe(chan, &local_control);
@@ -2893,7 +2903,7 @@ static void l2cap_tx_state_xmit(l2cap_chan *chan,
 
 static void l2cap_tx_state_wait_f(l2cap_chan *chan,
 				  l2cap_ctrl *control,
-				  sk_buff_head *skbs, u8 event)
+				  sk_buff_head *skbs, event: u8)
 {
 	BT_DBG("chan %p, control %p, skbs %p, event %d", chan, control, skbs,
 	       event);
@@ -2927,7 +2937,7 @@ static void l2cap_tx_state_wait_f(l2cap_chan *chan,
 			l2cap_ctrl local_control;
 			memset(&local_control, 0, core::mem::size_of::<_local_control));
 			local_control.sframe = 1;
-			local_control.super = L2CAP_SUPER_RR;
+			local_control.r#super = L2CAP_SUPER_RR;
 			local_control.poll = 1;
 			local_control.reqseq = chan.buffer_seq;
 			l2cap_send_sframe(chan, &local_control);
@@ -2942,7 +2952,7 @@ static void l2cap_tx_state_wait_f(l2cap_chan *chan,
 		// fallthrough;
 
 	case L2CAP_EV_RECV_FBIT:
-		if control && control.final {
+		if control && control.r#final {
 			__clear_monitor_timer(chan);
 			if chan.unacked_frames > 0
 				__set_retrans_timer(chan);
@@ -2969,7 +2979,7 @@ static void l2cap_tx_state_wait_f(l2cap_chan *chan,
 }
 
 static void l2cap_tx(l2cap_chan *chan, l2cap_ctrl *control,
-		     sk_buff_head *skbs, u8 event)
+		     sk_buff_head *skbs, event: u8)
 {
 	BT_DBG("chan %p, control %p, skbs %p, event %d, state %d",
 	       chan, control, skbs, event, chan.tx_state);
@@ -3009,7 +3019,7 @@ static void l2cap_raw_recv(l2cap_conn *conn, sk_buff *skb)
 
 	BT_DBG("conn %p", conn);
 
-	list_for_each_entry(chan, &conn.chan_l, list) {
+	list_for_each_entry!(chan, &conn.chan_l, list, {
 		if chan.chan_type != L2CAP_CHAN_RAW
 			continue;
 
@@ -3022,13 +3032,14 @@ static void l2cap_raw_recv(l2cap_conn *conn, sk_buff *skb)
 			continue;
 		if (chan.ops.recv(chan, nskb))
 			kfree_skb(nskb);
-	}
+	});
 }
 
 /* ---- L2CAP signalling commands ---- */
-static sk_buff *l2cap_build_cmd(l2cap_conn *conn, u8 code,
-				       u8 ident, u16 dlen, void *data)
+static sk_buff *l2cap_build_cmd(l2cap_conn *conn, code: u8,
+				       ident: u8, dlen: u16, void *data)
 {
+	'fail: {
 	sk_buff *skb, **frag;
 	l2cap_cmd_hdr *cmd;
 	l2cap_hdr *lh;
@@ -3041,7 +3052,7 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, u8 code,
 		return core::ptr::null_mut();
 
 	len = L2CAP_HDR_SIZE + L2CAP_CMD_HDR_SIZE + dlen;
-	count = min_t(unsigned int, conn.mtu, len);
+	count = min_t(core::ffi::c_uint, conn.mtu, len);
 
 	skb = bt_skb_alloc(count, GFP_KERNEL);
 	if !skb
@@ -3050,7 +3061,7 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, u8 code,
 	lh = skb_put(skb, L2CAP_HDR_SIZE);
 	lh.len = cpu_to_le16(L2CAP_CMD_HDR_SIZE + dlen);
 
-	if conn.hcon.type == LE_LINK
+	if conn.hcon.r#type == LE_LINK
 		lh.cid = cpu_to_le16(L2CAP_CID_LE_SIGNALING);
 	else
 		lh.cid = cpu_to_le16(L2CAP_CID_SIGNALING);
@@ -3071,11 +3082,11 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, u8 code,
 	/* Continuation fragments (no L2CAP header) */
 	frag = &skb_shinfo(skb).frag_list;
 	while len {
-		count = min_t(unsigned int, conn.mtu, len);
+		count = min_t(core::ffi::c_uint, conn.mtu, len);
 
 		*frag = bt_skb_alloc(count, GFP_KERNEL);
 		if !*frag
-			goto fail;
+			break 'fail;
 
 		skb_put_data(*frag, data, count);
 
@@ -3086,15 +3097,15 @@ static sk_buff *l2cap_build_cmd(l2cap_conn *conn, u8 code,
 	}
 
 	return skb;
-
-fail:
+	}
+	
 	kfree_skb(skb);
 	return core::ptr::null_mut();
 }
 
 #[inline]
 unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
-				     int *olen, unsigned long *val)
+				     int *olen, core::ffi::c_ulong *val)
 {
 	l2cap_conf_opt *opt = *ptr;
 	int len;
@@ -3113,7 +3124,7 @@ unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
 
 	*ptr += len;
 
-	*type = opt.type;
+	*type = opt.r#type;
 	*olen = opt.len;
 
 	switch (opt.len) {
@@ -3130,7 +3141,7 @@ unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
 		break;
 
 	default:
-		*val = (unsigned long) opt.val;
+		*val = (core::ffi::c_ulong) opt.val;
 		break;
 	}
 
@@ -3138,7 +3149,7 @@ unsafe fn int l2cap_get_conf_opt(void **ptr, void *end, int *type,
 	return len;
 }
 
-static void l2cap_add_conf_opt(void **ptr, u8 type, u8 len, unsigned long val, size_t size)
+static void l2cap_add_conf_opt(void **ptr, r#type: u8, len: u8, val: core::ffi::c_ulong, size_t size)
 {
 	l2cap_conf_opt *opt = *ptr;
 
@@ -3147,7 +3158,7 @@ static void l2cap_add_conf_opt(void **ptr, u8 type, u8 len, unsigned long val, s
 	if size < L2CAP_CONF_OPT_SIZE + len
 		return;
 
-	opt.type = type;
+	opt.r#type = type;
 	opt.len  = len;
 
 	switch (len) {
@@ -3199,11 +3210,12 @@ static void l2cap_add_opt_efs(void **ptr, l2cap_chan *chan, size_t size)
 	}
 
 	l2cap_add_conf_opt(ptr, L2CAP_CONF_EFS, core::mem::size_of::<_efs),
-			   (unsigned long) &efs, size);
+			   (core::ffi::c_ulong) &efs, size);
 }
 
 static void l2cap_ack_timeout(work_struct *work)
 {
+	'unlock: {
 	l2cap_chan *chan = container_of(work, l2cap_chan,
 					       ack_timer.work);
 	u16 frames_to_ack;
@@ -3213,15 +3225,15 @@ static void l2cap_ack_timeout(work_struct *work)
 	l2cap_chan_lock(chan);
 
 	if (test_bit(FLAG_DEL, &chan.flags))
-		goto unlock;
+		break 'unlock;
 
 	frames_to_ack = __seq_offset(chan, chan.buffer_seq,
 				     chan.last_acked_seq);
 
 	if frames_to_ack
 		l2cap_send_rr_or_rnr(chan, 0);
-
-unlock:
+	}
+	
 	l2cap_chan_unlock(chan);
 	l2cap_chan_put(chan);
 }
@@ -3407,7 +3419,7 @@ done:
 		rfc.max_pdu_size    = 0;
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (unsigned long) &rfc, endptr - ptr);
+				   (core::ffi::c_ulong) &rfc, endptr - ptr);
 		break;
 
 	case L2CAP_MODE_ERTM:
@@ -3427,7 +3439,7 @@ done:
 				       L2CAP_DEFAULT_TX_WINDOW);
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (unsigned long) &rfc, endptr - ptr);
+				   (core::ffi::c_ulong) &rfc, endptr - ptr);
 
 		if (test_bit(FLAG_EFS_ENABLE, &chan.flags))
 			l2cap_add_opt_efs(&ptr, chan, endptr - ptr);
@@ -3459,7 +3471,7 @@ done:
 		rfc.max_pdu_size = cpu_to_le16(size);
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (unsigned long) &rfc, endptr - ptr);
+				   (core::ffi::c_ulong) &rfc, endptr - ptr);
 
 		if (test_bit(FLAG_EFS_ENABLE, &chan.flags))
 			l2cap_add_opt_efs(&ptr, chan, endptr - ptr);
@@ -3489,7 +3501,7 @@ static int l2cap_parse_conf_req(l2cap_chan *chan, void *data, size_t data_size)
 	void *req_end = req + chan.conf_len;
 	int len = chan.conf_len;
 	int type, hint, olen;
-	unsigned long val;
+	core::ffi::c_ulong val;
 	l2cap_conf_rfc rfc = { .mode = L2CAP_MODE_BASIC };
 	l2cap_conf_efs efs;
 	u8 remote_efs = 0;
@@ -3593,7 +3605,7 @@ done:
 			return -ECONNREFUSED;
 
 		l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-				   (unsigned long) &rfc, endptr - ptr);
+				   (core::ffi::c_ulong) &rfc, endptr - ptr);
 	}
 
 	if result == L2CAP_CONF_SUCCESS {
@@ -3643,7 +3655,7 @@ done:
 
 				l2cap_add_conf_opt(&ptr, L2CAP_CONF_EFS,
 						   core::mem::size_of::<_efs),
-						   (unsigned long) &efs, endptr - ptr);
+						   (core::ffi::c_ulong) &efs, endptr - ptr);
 			} else {
 				/* Send PENDING Conf Rsp */
 				result = L2CAP_CONF_PENDING;
@@ -3676,7 +3688,7 @@ done:
 			set_bit(CONF_MODE_DONE, &chan.conf_state);
 
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC,
-					   core::mem::size_of::<_rfc), (unsigned long) &rfc, endptr - ptr);
+					   core::mem::size_of::<_rfc), (core::ffi::c_ulong) &rfc, endptr - ptr);
 
 			if (remote_efs &&
 			    test_bit(FLAG_EFS_ENABLE, &chan.flags)) {
@@ -3691,7 +3703,7 @@ done:
 					le32_to_cpu(efs.sdu_itime);
 				l2cap_add_conf_opt(&ptr, L2CAP_CONF_EFS,
 						   core::mem::size_of::<_efs),
-						   (unsigned long) &efs, endptr - ptr);
+						   (core::ffi::c_ulong) &efs, endptr - ptr);
 			}
 			break;
 
@@ -3705,7 +3717,7 @@ done:
 			set_bit(CONF_MODE_DONE, &chan.conf_state);
 
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-					   (unsigned long) &rfc, endptr - ptr);
+					   (core::ffi::c_ulong) &rfc, endptr - ptr);
 
 			break;
 
@@ -3734,7 +3746,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 	void *endptr = data + size;
 	void *rsp_end = rsp + len;
 	int type, olen;
-	unsigned long val;
+	core::ffi::c_ulong val;
 	l2cap_conf_rfc rfc = { .mode = L2CAP_MODE_BASIC };
 	l2cap_conf_efs efs;
 
@@ -3777,7 +3789,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 				return -ECONNREFUSED;
 			chan.fcs = 0;
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_RFC, core::mem::size_of::<_rfc),
-					   (unsigned long) &rfc, endptr - ptr);
+					   (core::ffi::c_ulong) &rfc, endptr - ptr);
 			break;
 
 		case L2CAP_CONF_EWS:
@@ -3797,7 +3809,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 			    efs.stype != chan.local_stype)
 				return -ECONNREFUSED;
 			l2cap_add_conf_opt(&ptr, L2CAP_CONF_EFS, core::mem::size_of::<_efs),
-					   (unsigned long) &efs, endptr - ptr);
+					   (core::ffi::c_ulong) &efs, endptr - ptr);
 			break;
 
 		case L2CAP_CONF_FCS:
@@ -3848,7 +3860,7 @@ static int l2cap_parse_conf_rsp(l2cap_chan *chan, void *rsp, int len,
 }
 
 static int l2cap_build_conf_rsp(l2cap_chan *chan, void *data,
-				u16 result, u16 flags)
+				result: u16, flags: u16)
 {
 	l2cap_conf_rsp *rsp = data;
 	void *ptr = rsp.data;
@@ -3995,18 +4007,18 @@ void __l2cap_connect_rsp_defer(l2cap_chan *chan)
 static void l2cap_conf_rfc_get(l2cap_chan *chan, void *rsp, int len)
 {
 	int type, olen;
-	unsigned long val;
+	core::ffi::c_ulong val;
 	void *rsp_end = rsp + len;
 	/* Use sane default values in case a misbehaving remote device
 	 * did not send an RFC or extended window size option.
 	 */
 	u16 txwin_ext = chan.ack_win;
 	l2cap_conf_rfc rfc = {
-		.mode = chan.mode,
-		.retrans_timeout = cpu_to_le16(L2CAP_DEFAULT_RETRANS_TO),
-		.monitor_timeout = cpu_to_le16(L2CAP_DEFAULT_MONITOR_TO),
-		.max_pdu_size = cpu_to_le16(chan.imtu),
-		.txwin_size = min_t(u16, chan.ack_win, L2CAP_DEFAULT_TX_WINDOW),
+		mode: chan.mode,
+		retrans_timeout: cpu_to_le16(L2CAP_DEFAULT_RETRANS_TO),
+		monitor_timeout: cpu_to_le16(L2CAP_DEFAULT_MONITOR_TO),
+		max_pdu_size: cpu_to_le16(chan.imtu),
+		txwin_size: min_t(u16, chan.ack_win, L2CAP_DEFAULT_TX_WINDOW),
 	};
 
 	BT_DBG("chan %p, rsp %p, len %d", chan, rsp, len);
@@ -4053,7 +4065,7 @@ static void l2cap_conf_rfc_get(l2cap_chan *chan, void *rsp, int len)
 
 #[inline]
 unsafe fn int l2cap_command_rej(l2cap_conn *conn,
-				    l2cap_cmd_hdr *cmd, u16 cmd_len,
+				    l2cap_cmd_hdr *cmd, cmd_len: u16,
 				    u8 *data)
 {
 	l2cap_cmd_rej_unk *rej = (l2cap_cmd_rej_unk *) data;
@@ -4110,7 +4122,7 @@ static l2cap_chan *l2cap_new_connection(l2cap_conn *conn,
 }
 
 static void l2cap_connect(l2cap_conn *conn, l2cap_cmd_hdr *cmd,
-			  u8 *data, u8 rsp_code)
+			  u8 *data, rsp_code: u8)
 {
 	l2cap_conn_req *req = (l2cap_conn_req *) data;
 	l2cap_conn_rsp rsp;
@@ -4214,7 +4226,7 @@ response:
 
 	if result == L2CAP_CR_PEND && status == L2CAP_CS_NO_INFO {
 		l2cap_info_req info;
-		info.type = cpu_to_le16(L2CAP_IT_FEAT_MASK);
+		info.r#type = cpu_to_le16(L2CAP_IT_FEAT_MASK);
 
 		conn.info_state |= L2CAP_INFO_FEAT_MASK_REQ_SENT;
 		conn.info_ident = l2cap_get_ident(conn);
@@ -4239,7 +4251,7 @@ response:
 }
 
 static int l2cap_connect_req(l2cap_conn *conn,
-			     l2cap_cmd_hdr *cmd, u16 cmd_len, u8 *data)
+			     l2cap_cmd_hdr *cmd, cmd_len: u16, u8 *data)
 {
 	if (cmd_len < core::mem::size_of::<_l2cap_conn_req))
 		return -EPROTO;
@@ -4249,11 +4261,11 @@ static int l2cap_connect_req(l2cap_conn *conn,
 }
 
 static int l2cap_connect_create_rsp(l2cap_conn *conn,
-				    l2cap_cmd_hdr *cmd, u16 cmd_len,
+				    l2cap_cmd_hdr *cmd, cmd_len: u16,
 				    u8 *data)
 {
 	l2cap_conn_rsp *rsp = (l2cap_conn_rsp *) data;
-	u16 scid, dcid, result, status;
+	scid: u16, dcid, result, status;
 	l2cap_chan *chan;
 	u8 req[128];
 	int err;
@@ -4339,7 +4351,7 @@ unsafe fn void set_default_fcs(l2cap_chan *chan)
 }
 
 static void l2cap_send_efs_conf_rsp(l2cap_chan *chan, void *data,
-				    u8 ident, u16 flags)
+				    ident: u8, flags: u16)
 {
 	l2cap_conn *conn = chan.conn;
 
@@ -4354,8 +4366,8 @@ static void l2cap_send_efs_conf_rsp(l2cap_chan *chan, void *data,
 					    L2CAP_CONF_SUCCESS, flags), data);
 }
 
-static void cmd_reject_invalid_cid(l2cap_conn *conn, u8 ident,
-				   u16 scid, u16 dcid)
+static void cmd_reject_invalid_cid(l2cap_conn *conn, ident: u8,
+				   scid: u16, dcid: u16)
 {
 	l2cap_cmd_rej_cid rej;
 
@@ -4368,11 +4380,11 @@ static void cmd_reject_invalid_cid(l2cap_conn *conn, u8 ident,
 
 #[inline]
 unsafe fn int l2cap_config_req(l2cap_conn *conn,
-				   l2cap_cmd_hdr *cmd, u16 cmd_len,
+				   l2cap_cmd_hdr *cmd, cmd_len: u16,
 				   u8 *data)
 {
 	l2cap_conf_req *req = (l2cap_conf_req *) data;
-	u16 dcid, flags;
+	dcid: u16, flags;
 	u8 rsp[64];
 	l2cap_chan *chan;
 	int len, err = 0;
@@ -4480,11 +4492,11 @@ unlock:
 
 #[inline]
 unsafe fn int l2cap_config_rsp(l2cap_conn *conn,
-				   l2cap_cmd_hdr *cmd, u16 cmd_len,
+				   l2cap_cmd_hdr *cmd, cmd_len: u16,
 				   u8 *data)
 {
 	l2cap_conf_rsp *rsp = (l2cap_conf_rsp *)data;
-	u16 scid, flags, result;
+	scid: u16, flags, result;
 	l2cap_chan *chan;
 	int len = cmd_len - core::mem::size_of::<_*rsp);
 	int err = 0;
@@ -4588,12 +4600,12 @@ done:
 
 #[inline]
 unsafe fn int l2cap_disconnect_req(l2cap_conn *conn,
-				       l2cap_cmd_hdr *cmd, u16 cmd_len,
+				       l2cap_cmd_hdr *cmd, cmd_len: u16,
 				       u8 *data)
 {
 	l2cap_disconn_req *req = (l2cap_disconn_req *) data;
 	l2cap_disconn_rsp rsp;
-	u16 dcid, scid;
+	dcid: u16, scid;
 	l2cap_chan *chan;
 
 	if (cmd_len != core::mem::size_of::<_*req))
@@ -4628,11 +4640,11 @@ unsafe fn int l2cap_disconnect_req(l2cap_conn *conn,
 
 #[inline]
 unsafe fn int l2cap_disconnect_rsp(l2cap_conn *conn,
-				       l2cap_cmd_hdr *cmd, u16 cmd_len,
+				       l2cap_cmd_hdr *cmd, cmd_len: u16,
 				       u8 *data)
 {
 	l2cap_disconn_rsp *rsp = (l2cap_disconn_rsp *) data;
-	u16 dcid, scid;
+	dcid: u16, scid;
 	l2cap_chan *chan;
 
 	if (cmd_len != core::mem::size_of::<_*rsp))
@@ -4666,7 +4678,7 @@ unsafe fn int l2cap_disconnect_rsp(l2cap_conn *conn,
 
 #[inline]
 unsafe fn int l2cap_information_req(l2cap_conn *conn,
-					l2cap_cmd_hdr *cmd, u16 cmd_len,
+					l2cap_cmd_hdr *cmd, cmd_len: u16,
 					u8 *data)
 {
 	l2cap_info_req *req = (l2cap_info_req *) data;
@@ -4675,7 +4687,7 @@ unsafe fn int l2cap_information_req(l2cap_conn *conn,
 	if (cmd_len != core::mem::size_of::<_*req))
 		return -EPROTO;
 
-	type = __le16_to_cpu(req.type);
+	type = __le16_to_cpu(req.r#type);
 
 	BT_DBG("type 0x%4.4x", type);
 
@@ -4683,7 +4695,7 @@ unsafe fn int l2cap_information_req(l2cap_conn *conn,
 		u8 buf[8];
 		u32 feat_mask = l2cap_feat_mask;
 		l2cap_info_rsp *rsp = (l2cap_info_rsp *) buf;
-		rsp.type   = cpu_to_le16(L2CAP_IT_FEAT_MASK);
+		rsp.r#type   = cpu_to_le16(L2CAP_IT_FEAT_MASK);
 		rsp.result = cpu_to_le16(L2CAP_IR_SUCCESS);
 		if !disable_ertm
 			feat_mask |= L2CAP_FEAT_ERTM | L2CAP_FEAT_STREAMING
@@ -4696,7 +4708,7 @@ unsafe fn int l2cap_information_req(l2cap_conn *conn,
 		u8 buf[12];
 		l2cap_info_rsp *rsp = (l2cap_info_rsp *) buf;
 
-		rsp.type   = cpu_to_le16(L2CAP_IT_FIXED_CHAN);
+		rsp.r#type   = cpu_to_le16(L2CAP_IT_FIXED_CHAN);
 		rsp.result = cpu_to_le16(L2CAP_IR_SUCCESS);
 		rsp.data[0] = conn.local_fixed_chan;
 		memset(rsp.data + 1, 0, 7);
@@ -4704,7 +4716,7 @@ unsafe fn int l2cap_information_req(l2cap_conn *conn,
 			       buf);
 	} else {
 		l2cap_info_rsp rsp;
-		rsp.type   = cpu_to_le16(type);
+		rsp.r#type   = cpu_to_le16(type);
 		rsp.result = cpu_to_le16(L2CAP_IR_NOTSUPP);
 		l2cap_send_cmd(conn, cmd.ident, L2CAP_INFO_RSP, core::mem::size_of::<_rsp),
 			       &rsp);
@@ -4715,16 +4727,16 @@ unsafe fn int l2cap_information_req(l2cap_conn *conn,
 
 #[inline]
 unsafe fn int l2cap_information_rsp(l2cap_conn *conn,
-					l2cap_cmd_hdr *cmd, u16 cmd_len,
+					l2cap_cmd_hdr *cmd, cmd_len: u16,
 					u8 *data)
 {
 	l2cap_info_rsp *rsp = (l2cap_info_rsp *) data;
-	u16 type, result;
+	type: u16, result;
 
 	if (cmd_len < core::mem::size_of::<_*rsp))
 		return -EPROTO;
 
-	type   = __le16_to_cpu(rsp.type);
+	type   = __le16_to_cpu(rsp.r#type);
 	result = __le16_to_cpu(rsp.result);
 
 	BT_DBG("type 0x%4.4x result 0x%2.2x", type, result);
@@ -4752,7 +4764,7 @@ unsafe fn int l2cap_information_rsp(l2cap_conn *conn,
 
 		if conn.feat_mask & L2CAP_FEAT_FIXED_CHAN {
 			l2cap_info_req req;
-			req.type = cpu_to_le16(L2CAP_IT_FIXED_CHAN);
+			req.r#type = cpu_to_le16(L2CAP_IT_FIXED_CHAN);
 
 			conn.info_ident = l2cap_get_ident(conn);
 
@@ -4782,12 +4794,12 @@ unsafe fn int l2cap_information_rsp(l2cap_conn *conn,
 #[inline]
 unsafe fn int l2cap_conn_param_update_req(l2cap_conn *conn,
 					      l2cap_cmd_hdr *cmd,
-					      u16 cmd_len, u8 *data)
+					      cmd_len: u16, u8 *data)
 {
 	hci_conn *hcon = conn.hcon;
 	l2cap_conn_param_update_req *req;
 	l2cap_conn_param_update_rsp rsp;
-	u16 min, max, latency, to_multiplier;
+	min: u16, max, latency, to_multiplier;
 	int err;
 
 	if hcon.role != HCI_ROLE_MASTER
@@ -4823,12 +4835,12 @@ unsafe fn int l2cap_conn_param_update_req(l2cap_conn *conn,
 }
 
 static int l2cap_le_connect_rsp(l2cap_conn *conn,
-				l2cap_cmd_hdr *cmd, u16 cmd_len,
+				l2cap_cmd_hdr *cmd, cmd_len: u16,
 				u8 *data)
 {
 	l2cap_le_conn_rsp *rsp = (l2cap_le_conn_rsp *) data;
 	hci_conn *hcon = conn.hcon;
-	u16 dcid, mtu, mps, credits, result;
+	dcid: u16, mtu, mps, credits, result;
 	l2cap_chan *chan;
 	int err, sec_level;
 
@@ -4907,7 +4919,7 @@ static int l2cap_le_connect_rsp(l2cap_conn *conn,
 	return err;
 }
 
-static void l2cap_put_ident(l2cap_conn *conn, u8 code, u8 id)
+static void l2cap_put_ident(l2cap_conn *conn, code: u8, id: u8)
 {
 	switch (code) {
 	case L2CAP_COMMAND_REJ:
@@ -4930,7 +4942,7 @@ static void l2cap_put_ident(l2cap_conn *conn, u8 code, u8 id)
 
 #[inline]
 unsafe fn int l2cap_bredr_sig_cmd(l2cap_conn *conn,
-				      l2cap_cmd_hdr *cmd, u16 cmd_len,
+				      l2cap_cmd_hdr *cmd, cmd_len: u16,
 				      u8 *data)
 {
 	int err = 0;
@@ -4991,13 +5003,13 @@ unsafe fn int l2cap_bredr_sig_cmd(l2cap_conn *conn,
 }
 
 static int l2cap_le_connect_req(l2cap_conn *conn,
-				l2cap_cmd_hdr *cmd, u16 cmd_len,
+				l2cap_cmd_hdr *cmd, cmd_len: u16,
 				u8 *data)
 {
 	l2cap_le_conn_req *req = (l2cap_le_conn_req *) data;
 	l2cap_le_conn_rsp rsp;
 	l2cap_chan *chan, *pchan;
-	u16 dcid, scid, credits, mtu, mps;
+	dcid: u16, scid, credits, mtu, mps;
 	__le16 psm;
 	u8 result;
 
@@ -5135,12 +5147,12 @@ response:
 
 #[inline]
 unsafe fn int l2cap_le_credits(l2cap_conn *conn,
-				   l2cap_cmd_hdr *cmd, u16 cmd_len,
+				   l2cap_cmd_hdr *cmd, cmd_len: u16,
 				   u8 *data)
 {
 	l2cap_le_credits *pkt;
 	l2cap_chan *chan;
-	u16 cid, credits, max_credits;
+	cid: u16, credits, max_credits;
 
 	if (cmd_len != core::mem::size_of::<_*pkt))
 		return -EPROTO;
@@ -5183,15 +5195,15 @@ unlock:
 
 #[inline]
 unsafe fn int l2cap_ecred_conn_req(l2cap_conn *conn,
-				       l2cap_cmd_hdr *cmd, u16 cmd_len,
+				       l2cap_cmd_hdr *cmd, cmd_len: u16,
 				       u8 *data)
 {
 	l2cap_ecred_conn_req *req = (void *) data;
 	DEFINE_RAW_FLEX(l2cap_ecred_conn_rsp, pdu, dcid, L2CAP_ECRED_MAX_CID);
 	l2cap_chan *chan, *pchan;
-	u16 mtu, mps;
+	mtu: u16, mps;
 	__le16 psm;
-	u8 result, rsp_len = 0;
+	result: u8, rsp_len = 0;
 	int i, num_scid = 0;
 	bool defer = false;
 
@@ -5352,12 +5364,12 @@ response:
 
 #[inline]
 unsafe fn int l2cap_ecred_conn_rsp(l2cap_conn *conn,
-				       l2cap_cmd_hdr *cmd, u16 cmd_len,
+				       l2cap_cmd_hdr *cmd, cmd_len: u16,
 				       u8 *data)
 {
 	l2cap_ecred_conn_rsp *rsp = (void *) data;
 	hci_conn *hcon = conn.hcon;
-	u16 mtu, mps, credits, result;
+	mtu: u16, mps, credits, result;
 	l2cap_chan *chan, *tmp;
 	int err = 0, sec_level;
 	int i = 0;
@@ -5480,12 +5492,12 @@ unsafe fn int l2cap_ecred_conn_rsp(l2cap_conn *conn,
 
 #[inline]
 unsafe fn int l2cap_ecred_reconf_req(l2cap_conn *conn,
-					 l2cap_cmd_hdr *cmd, u16 cmd_len,
+					 l2cap_cmd_hdr *cmd, cmd_len: u16,
 					 u8 *data)
 {
 	l2cap_ecred_reconf_req *req = (void *) data;
 	l2cap_ecred_reconf_rsp rsp;
-	u16 mtu, mps, result;
+	mtu: u16, mps, result;
 	l2cap_chan *chan[L2CAP_ECRED_MAX_CID] = {};
 	int i, num_scid;
 
@@ -5523,7 +5535,8 @@ unsafe fn int l2cap_ecred_reconf_req(l2cap_conn *conn,
 	result = L2CAP_RECONF_SUCCESS;
 
 	/* Check if each SCID, MTU and MPS are valid */
-	for i = 0;  i < num_scid;  i++ {
+	i = 0;
+	while i < num_scid {
 		u16 scid;
 
 		scid = __le16_to_cpu(req.scid[i]);
@@ -5560,12 +5573,15 @@ unsafe fn int l2cap_ecred_reconf_req(l2cap_conn *conn,
 			result = L2CAP_RECONF_INVALID_MPS;
 			goto respond;
 		}
+	    i++;
 	}
 
 	/* Commit the new MTU and MPS values after checking they are valid */
-	for i = 0;  i < num_scid;  i++ {
+	i = 0;
+	while i < num_scid {
 		chan[i].omtu = mtu;
 		chan[i].remote_mps = mps;
+	    i++;
 	}
 
 respond:
@@ -5579,7 +5595,7 @@ respond:
 
 #[inline]
 unsafe fn int l2cap_ecred_reconf_rsp(l2cap_conn *conn,
-					 l2cap_cmd_hdr *cmd, u16 cmd_len,
+					 l2cap_cmd_hdr *cmd, cmd_len: u16,
 					 u8 *data)
 {
 	l2cap_chan *chan, *tmp;
@@ -5594,14 +5610,14 @@ unsafe fn int l2cap_ecred_reconf_rsp(l2cap_conn *conn,
 	BT_DBG("result 0x%4.4x", result);
 
 	if !result {
-		list_for_each_entry(chan, &conn.chan_l, list) {
+		list_for_each_entry!(chan, &conn.chan_l, list, {
 			if chan.ident == cmd.ident
 				chan.ident = 0;
-		}
+		});
 		return 0;
 	}
 
-	list_for_each_entry_safe(chan, tmp, &conn.chan_l, list) {
+	list_for_each_entry_safe!(chan, tmp, &conn.chan_l, list, {
 		if chan.ident != cmd.ident
 			continue;
 
@@ -5613,14 +5629,14 @@ unsafe fn int l2cap_ecred_reconf_rsp(l2cap_conn *conn,
 
 		l2cap_chan_unlock(chan);
 		l2cap_chan_put(chan);
-	}
+	});
 
 	return 0;
 }
 
 #[inline]
 unsafe fn int l2cap_le_command_rej(l2cap_conn *conn,
-				       l2cap_cmd_hdr *cmd, u16 cmd_len,
+				       l2cap_cmd_hdr *cmd, cmd_len: u16,
 				       u8 *data)
 {
 	l2cap_cmd_rej_unk *rej = (l2cap_cmd_rej_unk *) data;
@@ -5648,7 +5664,7 @@ done:
 
 #[inline]
 unsafe fn int l2cap_le_sig_cmd(l2cap_conn *conn,
-				   l2cap_cmd_hdr *cmd, u16 cmd_len,
+				   l2cap_cmd_hdr *cmd, cmd_len: u16,
 				   u8 *data)
 {
 	int err = 0;
@@ -5721,7 +5737,7 @@ unsafe fn void l2cap_le_sig_channel(l2cap_conn *conn,
 	u16 len;
 	int err;
 
-	if hcon.type != LE_LINK
+	if hcon.r#type != LE_LINK
 		goto drop;
 
 	if skb.len < L2CAP_CMD_HDR_SIZE
@@ -5755,7 +5771,7 @@ drop:
 }
 
 #[inline]
-unsafe fn void l2cap_sig_send_rej(l2cap_conn *conn, u16 ident)
+unsafe fn void l2cap_sig_send_rej(l2cap_conn *conn, ident: u16)
 {
 	l2cap_cmd_rej_unk rej;
 
@@ -5764,7 +5780,7 @@ unsafe fn void l2cap_sig_send_rej(l2cap_conn *conn, u16 ident)
 }
 
 #[inline]
-unsafe fn void l2cap_sig_send_mtu_rej(l2cap_conn *conn, u8 ident)
+unsafe fn void l2cap_sig_send_mtu_rej(l2cap_conn *conn, ident: u8)
 {
 	l2cap_cmd_rej_mtu rej;
 
@@ -5777,14 +5793,15 @@ unsafe fn void l2cap_sig_send_mtu_rej(l2cap_conn *conn, u8 ident)
 unsafe fn void l2cap_sig_channel(l2cap_conn *conn,
 				     sk_buff *skb)
 {
+	'drop: {
 	hci_conn *hcon = conn.hcon;
 	l2cap_cmd_hdr *cmd;
 	int err;
 
 	l2cap_raw_recv(conn, skb);
 
-	if hcon.type != ACL_LINK
-		goto drop;
+	if hcon.r#type != ACL_LINK
+		break 'drop;
 
 	/*
 	 * Bluetooth Core v5.4, Vol 3, Part A, Section 4: the BR/EDR
@@ -5820,7 +5837,7 @@ unsafe fn void l2cap_sig_channel(l2cap_conn *conn,
 		BT_DBG("signaling packet exceeds MTU: %u > %u",
 		       skb.len, L2CAP_SIG_MTU);
 		l2cap_sig_send_mtu_rej(conn, ident);
-		goto drop;
+		break 'drop;
 	}
 
 	while skb.len >= L2CAP_CMD_HDR_SIZE {
@@ -5854,14 +5871,14 @@ unsafe fn void l2cap_sig_channel(l2cap_conn *conn,
 		BT_DBG("corrupted command");
 		l2cap_sig_send_rej(conn, 0);
 	}
-
-drop:
+	}
+	
 	kfree_skb(skb);
 }
 
 static int l2cap_check_fcs(l2cap_chan *chan,  sk_buff *skb)
 {
-	u16 our_fcs, rcv_fcs;
+	our_fcs: u16, rcv_fcs;
 	int hdr_size;
 
 	if (test_bit(FLAG_EXT_CTRL, &chan.flags))
@@ -5888,12 +5905,12 @@ static void l2cap_send_i_or_rr_or_rnr(l2cap_chan *chan)
 
 	memset(&control, 0, core::mem::size_of::<_control));
 	control.sframe = 1;
-	control.final = 1;
+	control.r#final = 1;
 	control.reqseq = chan.buffer_seq;
 	set_bit(CONN_SEND_FBIT, &chan.conn_state);
 
 	if (test_bit(CONN_LOCAL_BUSY, &chan.conn_state)) {
-		control.super = L2CAP_SUPER_RNR;
+		control.r#super = L2CAP_SUPER_RNR;
 		l2cap_send_sframe(chan, &control);
 	}
 
@@ -5909,7 +5926,7 @@ static void l2cap_send_i_or_rr_or_rnr(l2cap_chan *chan)
 		/* F-bit wasn't sent in an s-frame or i-frame yet, so
 		 * send it now.
 		 */
-		control.super = L2CAP_SUPER_RR;
+		control.r#super = L2CAP_SUPER_RR;
 		l2cap_send_sframe(chan, &control);
 	}
 }
@@ -6112,7 +6129,7 @@ static void l2cap_handle_srej(l2cap_chan *chan,
 	} else {
 		l2cap_pass_to_tx_fbit(chan, control);
 
-		if control.final {
+		if control.r#final {
 			if (chan.srej_save_reqseq != control.reqseq ||
 			    !test_and_clear_bit(CONN_SREJ_ACT,
 						&chan.conn_state))
@@ -6153,7 +6170,7 @@ static void l2cap_handle_rej(l2cap_chan *chan,
 
 	l2cap_pass_to_tx(chan, control);
 
-	if control.final {
+	if control.r#final {
 		if (!test_and_clear_bit(CONN_REJ_ACT, &chan.conn_state))
 			l2cap_retransmit_all(chan, control);
 	} else {
@@ -6164,7 +6181,7 @@ static void l2cap_handle_rej(l2cap_chan *chan,
 	}
 }
 
-static u8 l2cap_classify_txseq(l2cap_chan *chan, u16 txseq)
+static u8 l2cap_classify_txseq(l2cap_chan *chan, txseq: u16)
 {
 	BT_DBG("chan %p, txseq %d", chan, txseq);
 
@@ -6252,7 +6269,7 @@ static u8 l2cap_classify_txseq(l2cap_chan *chan, u16 txseq)
 
 static int l2cap_rx_state_recv(l2cap_chan *chan,
 			       l2cap_ctrl *control,
-			       sk_buff *skb, u8 event)
+			       sk_buff *skb, event: u8)
 {
 	l2cap_ctrl local_control;
 	int err = 0;
@@ -6300,10 +6317,10 @@ static int l2cap_rx_state_recv(l2cap_chan *chan,
 			if err
 				break;
 
-			if local_control.final {
+			if local_control.r#final {
 				if (!test_and_clear_bit(CONN_REJ_ACT,
 							&chan.conn_state)) {
-					local_control.final = 0;
+					local_control.r#final = 0;
 					l2cap_retransmit_all(chan, &local_control);
 					l2cap_ertm_send(chan);
 				}
@@ -6353,12 +6370,12 @@ static int l2cap_rx_state_recv(l2cap_chan *chan,
 		break;
 	case L2CAP_EV_RECV_RR:
 		l2cap_pass_to_tx(chan, control);
-		if control.final {
+		if control.r#final {
 			clear_bit(CONN_REMOTE_BUSY, &chan.conn_state);
 
 			if (!test_and_clear_bit(CONN_REJ_ACT,
 						&chan.conn_state)) {
-				control.final = 0;
+				control.r#final = 0;
 				l2cap_retransmit_all(chan, control);
 			}
 
@@ -6404,7 +6421,7 @@ static int l2cap_rx_state_recv(l2cap_chan *chan,
 
 static int l2cap_rx_state_srej_sent(l2cap_chan *chan,
 				    l2cap_ctrl *control,
-				    sk_buff *skb, u8 event)
+				    sk_buff *skb, event: u8)
 {
 	int err = 0;
 	u16 txseq = control.txseq;
@@ -6486,12 +6503,12 @@ static int l2cap_rx_state_srej_sent(l2cap_chan *chan,
 		break;
 	case L2CAP_EV_RECV_RR:
 		l2cap_pass_to_tx(chan, control);
-		if control.final {
+		if control.r#final {
 			clear_bit(CONN_REMOTE_BUSY, &chan.conn_state);
 
 			if (!test_and_clear_bit(CONN_REJ_ACT,
 						&chan.conn_state)) {
-				control.final = 0;
+				control.r#final = 0;
 				l2cap_retransmit_all(chan, control);
 			}
 
@@ -6523,7 +6540,7 @@ static int l2cap_rx_state_srej_sent(l2cap_chan *chan,
 			l2cap_ctrl rr_control;
 			memset(&rr_control, 0, core::mem::size_of::<_rr_control));
 			rr_control.sframe = 1;
-			rr_control.super = L2CAP_SUPER_RR;
+			rr_control.r#super = L2CAP_SUPER_RR;
 			rr_control.reqseq = chan.buffer_seq;
 			l2cap_send_sframe(chan, &rr_control);
 		}
@@ -6557,7 +6574,7 @@ static int l2cap_finish_move(l2cap_chan *chan)
 
 static int l2cap_rx_state_wait_p(l2cap_chan *chan,
 				 l2cap_ctrl *control,
-				 sk_buff *skb, u8 event)
+				 sk_buff *skb, event: u8)
 {
 	int err;
 
@@ -6595,11 +6612,11 @@ static int l2cap_rx_state_wait_p(l2cap_chan *chan,
 
 static int l2cap_rx_state_wait_f(l2cap_chan *chan,
 				 l2cap_ctrl *control,
-				 sk_buff *skb, u8 event)
+				 sk_buff *skb, event: u8)
 {
 	int err;
 
-	if !control.final
+	if !control.r#final
 		return -EPROTO;
 
 	clear_bit(CONN_REMOTE_BUSY, &chan.conn_state);
@@ -6627,7 +6644,7 @@ static int l2cap_rx_state_wait_f(l2cap_chan *chan,
 	return err;
 }
 
-static bool __valid_reqseq(l2cap_chan *chan, u16 reqseq)
+static bool __valid_reqseq(l2cap_chan *chan, reqseq: u16)
 {
 	/* Make sure reqseq is for a packet that has been sent but not acked */
 	u16 unacked;
@@ -6637,7 +6654,7 @@ static bool __valid_reqseq(l2cap_chan *chan, u16 reqseq)
 }
 
 static int l2cap_rx(l2cap_chan *chan, l2cap_ctrl *control,
-		    sk_buff *skb, u8 event)
+		    sk_buff *skb, event: u8)
 {
 	int err = 0;
 
@@ -6727,6 +6744,7 @@ static int l2cap_stream_rx(l2cap_chan *chan, l2cap_ctrl *control,
 
 static int l2cap_data_rcv(l2cap_chan *chan, sk_buff *skb)
 {
+	'drop: {
 	l2cap_ctrl *control = &bt_cb(skb).l2cap;
 	u16 len;
 	u8 event;
@@ -6741,7 +6759,7 @@ static int l2cap_data_rcv(l2cap_chan *chan, sk_buff *skb)
 	 * procedures and ask for retransmission.
 	 */
 	if (l2cap_check_fcs(chan, skb))
-		goto drop;
+		break 'drop;
 
 	if !control.sframe && control.sar == L2CAP_SAR_START
 		len -= L2CAP_SDULEN_SIZE;
@@ -6751,26 +6769,26 @@ static int l2cap_data_rcv(l2cap_chan *chan, sk_buff *skb)
 
 	if len > chan.mps {
 		l2cap_send_disconn_req(chan, ECONNRESET);
-		goto drop;
+		break 'drop;
 	}
 
 	if chan.ops.filter {
 		if (chan.ops.filter(chan, skb))
-			goto drop;
+			break 'drop;
 	}
 
 	if !control.sframe {
 		int err;
 
 		BT_DBG("iframe sar %d, reqseq %d, final %d, txseq %d",
-		       control.sar, control.reqseq, control.final,
+		       control.sar, control.reqseq, control.r#final,
 		       control.txseq);
 
 		/* Validate F-bit - F=0 always valid, F=1 only
 		 * valid in TX WAIT_F
 		 */
-		if control.final && chan.tx_state != L2CAP_TX_STATE_WAIT_F
-			goto drop;
+		if control.r#final && chan.tx_state != L2CAP_TX_STATE_WAIT_F
+			break 'drop;
 
 		if chan.mode != L2CAP_MODE_STREAMING {
 			event = L2CAP_EV_RECV_IFRAME;
@@ -6789,31 +6807,31 @@ static int l2cap_data_rcv(l2cap_chan *chan, sk_buff *skb)
 
 		/* Only I-frames are expected in streaming mode */
 		if chan.mode == L2CAP_MODE_STREAMING
-			goto drop;
+			break 'drop;
 
 		BT_DBG("sframe reqseq %d, final %d, poll %d, super %d",
-		       control.reqseq, control.final, control.poll,
-		       control.super);
+		       control.reqseq, control.r#final, control.poll,
+		       control.r#super);
 
 		if len != 0 {
 			BT_ERR("Trailing bytes: %d in sframe", len);
 			l2cap_send_disconn_req(chan, ECONNRESET);
-			goto drop;
+			break 'drop;
 		}
 
 		/* Validate F and P bits */
-		if (control.final && (control.poll ||
+		if (control.r#final && (control.poll ||
 				       chan.tx_state != L2CAP_TX_STATE_WAIT_F))
-			goto drop;
+			break 'drop;
 
-		event = rx_func_to_event[control.super];
+		event = rx_func_to_event[control.r#super];
 		if (l2cap_rx(chan, control, skb, event))
 			l2cap_send_disconn_req(chan, ECONNRESET);
 	}
 
 	return 0;
-
-drop:
+	}
+	
 	kfree_skb(skb);
 	return 0;
 }
@@ -6891,6 +6909,7 @@ static int l2cap_ecred_recv(l2cap_chan *chan, sk_buff *skb)
 
 static int l2cap_ecred_data_rcv(l2cap_chan *chan, sk_buff *skb)
 {
+	'failed: {
 	int err;
 
 	if !chan.rx_credits {
@@ -6930,7 +6949,7 @@ static int l2cap_ecred_data_rcv(l2cap_chan *chan, sk_buff *skb)
 
 		if (!pskb_may_pull(skb, L2CAP_SDULEN_SIZE)) {
 			err = -EINVAL;
-			goto failed;
+			break 'failed;
 		}
 
 		sdu_len = get_unaligned_le16(skb.data);
@@ -6944,13 +6963,13 @@ static int l2cap_ecred_data_rcv(l2cap_chan *chan, sk_buff *skb)
 			       sdu_len, chan.imtu);
 			l2cap_send_disconn_req(chan, ECONNRESET);
 			err = -EMSGSIZE;
-			goto failed;
+			break 'failed;
 		}
 
 		if skb.len > sdu_len {
 			BT_ERR("Too much LE L2CAP data received");
 			err = -EINVAL;
-			goto failed;
+			break 'failed;
 		}
 
 		if skb.len == sdu_len
@@ -6980,7 +6999,7 @@ static int l2cap_ecred_data_rcv(l2cap_chan *chan, sk_buff *skb)
 		BT_ERR("Too much LE L2CAP data received");
 		l2cap_send_disconn_req(chan, ECONNRESET);
 		err = -EINVAL;
-		goto failed;
+		break 'failed;
 	}
 
 	append_skb_frag(chan.sdu, skb, &chan.sdu_last_frag);
@@ -6994,8 +7013,8 @@ static int l2cap_ecred_data_rcv(l2cap_chan *chan, sk_buff *skb)
 			chan.sdu_len = 0;
 		}
 	}
-
-failed:
+	}
+	
 	if err {
 		kfree_skb(skb);
 		kfree_skb(chan.sdu);
@@ -7011,9 +7030,11 @@ failed:
 	return 0;
 }
 
-static void l2cap_data_channel(l2cap_conn *conn, u16 cid,
+static void l2cap_data_channel(l2cap_conn *conn, cid: u16,
 			       sk_buff *skb)
 {
+	'done: {
+	'drop: {
 	l2cap_chan *chan;
 
 	chan = l2cap_get_chan_by_scid(conn, cid);
@@ -7034,15 +7055,15 @@ static void l2cap_data_channel(l2cap_conn *conn, u16 cid,
 		l2cap_chan_ready(chan);
 
 	if chan.state != BT_CONNECTED
-		goto drop;
+		break 'drop;
 
 	switch (chan.mode) {
 	case L2CAP_MODE_LE_FLOWCTL:
 	case L2CAP_MODE_EXT_FLOWCTL:
 		if (l2cap_ecred_data_rcv(chan, skb) < 0)
-			goto drop;
+			break 'drop;
 
-		goto done;
+		break 'done;
 
 	case L2CAP_MODE_BASIC:
 		/* If socket recv buffers overflows we drop data here
@@ -7052,27 +7073,27 @@ static void l2cap_data_channel(l2cap_conn *conn, u16 cid,
 
 		if chan.imtu < skb.len {
 			BT_ERR("Dropping L2CAP data: receive buffer overflow");
-			goto drop;
+			break 'drop;
 		}
 
 		if (!chan.ops.recv(chan, skb))
-			goto done;
+			break 'done;
 		break;
 
 	case L2CAP_MODE_ERTM:
 	case L2CAP_MODE_STREAMING:
 		l2cap_data_rcv(chan, skb);
-		goto done;
+		break 'done;
 
 	default:
 		BT_DBG("chan %p: bad mode 0x%2.2x", chan, chan.mode);
 		break;
 	}
-
-drop:
+	}
+	
 	kfree_skb(skb);
-
-done:
+	}
+	
 	l2cap_chan_unlock(chan);
 	l2cap_chan_put(chan);
 }
@@ -7080,26 +7101,28 @@ done:
 static void l2cap_conless_channel(l2cap_conn *conn, __le16 psm,
 				  sk_buff *skb)
 {
+	'free_skb: {
+	'drop: {
 	hci_conn *hcon = conn.hcon;
 	l2cap_chan *chan;
 
-	if hcon.type != ACL_LINK
-		goto free_skb;
+	if hcon.r#type != ACL_LINK
+		break 'free_skb;
 
 	chan = l2cap_global_chan_by_psm(0, psm, &hcon.src, &hcon.dst,
 					ACL_LINK);
 	if !chan
-		goto free_skb;
+		break 'free_skb;
 
 	BT_DBG("chan %p, len %d", chan, skb.len);
 
 	l2cap_chan_lock(chan);
 
 	if chan.state != BT_BOUND && chan.state != BT_CONNECTED
-		goto drop;
+		break 'drop;
 
 	if chan.imtu < skb.len
-		goto drop;
+		break 'drop;
 
 	/* Store remote BD_ADDR and PSM for msg_name */
 	bacpy(&bt_cb(skb).l2cap.bdaddr, &hcon.dst);
@@ -7110,11 +7133,12 @@ static void l2cap_conless_channel(l2cap_conn *conn, __le16 psm,
 		l2cap_chan_put(chan);
 		return;
 	}
-
-drop:
+	}
+	
 	l2cap_chan_unlock(chan);
 	l2cap_chan_put(chan);
-free_skb:
+	}
+	
 	kfree_skb(skb);
 }
 
@@ -7122,7 +7146,7 @@ static void l2cap_recv_frame(l2cap_conn *conn, sk_buff *skb)
 {
 	l2cap_hdr *lh = (void *) skb.data;
 	hci_conn *hcon = conn.hcon;
-	u16 cid, len;
+	cid: u16, len;
 	__le16 psm;
 
 	if hcon.state != BT_CONNECTED {
@@ -7143,7 +7167,7 @@ static void l2cap_recv_frame(l2cap_conn *conn, sk_buff *skb)
 	/* Since we can't actively block incoming LE connections we must
 	 * at least ensure that we ignore incoming data from them.
 	 */
-	if (hcon.type == LE_LINK &&
+	if (hcon.r#type == LE_LINK &&
 	    hci_bdaddr_list_lookup(&hcon.hdev.reject_list, &hcon.dst,
 				   bdaddr_dst_type(hcon))) {
 		kfree_skb(skb);
@@ -7213,7 +7237,7 @@ static l2cap_conn *l2cap_conn_add(hci_conn *hcon)
 		return core::ptr::null_mut();
 	}
 
-	kref_init(&conn.ref);
+	kref_init(&conn.r#ref);
 	conn.hchan = hchan;
 
 	BT_DBG("hcon %p conn %p hchan %p", hcon, conn, hchan);
@@ -7250,7 +7274,7 @@ static l2cap_conn *l2cap_conn_add(hci_conn *hcon)
 	return conn;
 }
 
-static bool is_valid_psm(u16 psm, u8 dst_type)
+static bool is_valid_psm(psm: u16, dst_type: u8)
 {
 	if !psm
 		return false;
@@ -7289,9 +7313,11 @@ static void l2cap_chan_by_pid(l2cap_chan *chan, void *data)
 	d.count++;
 }
 
-int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
-		       bdaddr_t *dst, u8 dst_type, u16 timeout)
+int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, cid: u16,
+		       bdaddr_t *dst, dst_type: u8, timeout: u16)
 {
+	'done: {
+	'chan_unlock: {
 	l2cap_conn *conn;
 	hci_conn *hcon;
 	hci_dev *hdev;
@@ -7309,17 +7335,17 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 	if (!is_valid_psm(__le16_to_cpu(psm), dst_type) && !cid &&
 	    chan.chan_type != L2CAP_CHAN_RAW) {
 		err = -EINVAL;
-		goto done;
+		break 'done;
 	}
 
 	if chan.chan_type == L2CAP_CHAN_CONN_ORIENTED && !psm {
 		err = -EINVAL;
-		goto done;
+		break 'done;
 	}
 
 	if chan.chan_type == L2CAP_CHAN_FIXED && !cid {
 		err = -EINVAL;
-		goto done;
+		break 'done;
 	}
 
 	switch (chan.mode) {
@@ -7330,7 +7356,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 	case L2CAP_MODE_EXT_FLOWCTL:
 		if !enable_ecred {
 			err = -EOPNOTSUPP;
-			goto done;
+			break 'done;
 		}
 		break;
 	case L2CAP_MODE_ERTM:
@@ -7340,7 +7366,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 		// fallthrough;
 	default:
 		err = -EOPNOTSUPP;
-		goto done;
+		break 'done;
 	}
 
 	switch (chan.state) {
@@ -7349,12 +7375,12 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 	case BT_CONFIG:
 		/* Already connecting */
 		err = 0;
-		goto done;
+		break 'done;
 
 	case BT_CONNECTED:
 		/* Already connected */
 		err = -EISCONN;
-		goto done;
+		break 'done;
 
 	case BT_OPEN:
 	case BT_BOUND:
@@ -7363,7 +7389,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 
 	default:
 		err = -EBADFD;
-		goto done;
+		break 'done;
 	}
 
 	/* Set destination address and psm */
@@ -7398,7 +7424,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 
 	if (IS_ERR(hcon)) {
 		err = PTR_ERR(hcon);
-		goto done;
+		break 'done;
 	}
 
 	lockdep_assert_held(&hcon.hdev.lock);
@@ -7407,7 +7433,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 	if !conn {
 		hci_conn_drop(hcon);
 		err = -ENOMEM;
-		goto done;
+		break 'done;
 	}
 
 	if chan.mode == L2CAP_MODE_EXT_FLOWCTL {
@@ -7423,7 +7449,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 		if data.count > L2CAP_ECRED_CONN_SCID_MAX {
 			hci_conn_drop(hcon);
 			err = -EPROTO;
-			goto done;
+			break 'done;
 		}
 	}
 
@@ -7433,7 +7459,7 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 	if (cid && __l2cap_get_chan_by_dcid(conn, cid)) {
 		hci_conn_drop(hcon);
 		err = -EBUSY;
-		goto chan_unlock;
+		break 'chan_unlock;
 	}
 
 	/* Update source addr of the socket */
@@ -7465,11 +7491,12 @@ int l2cap_chan_connect(l2cap_chan *chan, __le16 psm, u16 cid,
 	}
 
 	err = 0;
-
-chan_unlock:
+	}
+	
 	l2cap_chan_unlock(chan);
 	mutex_unlock(&conn.lock);
-done:
+	}
+	
 	hci_dev_unlock(hdev);
 	hci_dev_put(hdev);
 	return err;
@@ -7516,7 +7543,7 @@ int l2cap_connect_ind(hci_dev *hdev, bdaddr_t *bdaddr)
 
 	/* Find listening sockets and check their link_mode */
 	read_lock(&chan_list_lock);
-	list_for_each_entry(c, &chan_list, global_l) {
+	list_for_each_entry!(c, &chan_list, global_l, {
 		if c.state != BT_LISTEN
 			continue;
 
@@ -7530,7 +7557,7 @@ int l2cap_connect_ind(hci_dev *hdev, bdaddr_t *bdaddr)
 			if (test_bit(FLAG_ROLE_SWITCH, &c.flags))
 				lm2 |= HCI_LM_MASTER;
 		}
-	}
+	});
 	read_unlock(&chan_list_lock);
 
 	return exact ? lm1 : lm2;
@@ -7552,7 +7579,7 @@ static l2cap_chan *l2cap_global_fixed_chan(l2cap_chan *c,
 	else
 		c = list_entry(chan_list.next, typeof(*c), global_l);
 
-	list_for_each_entry_from(c, &chan_list, global_l) {
+	list_for_each_entry_from!(c, &chan_list, global_l, {
 		if c.chan_type != L2CAP_CHAN_FIXED
 			continue;
 		if c.state != BT_LISTEN
@@ -7565,14 +7592,14 @@ static l2cap_chan *l2cap_global_fixed_chan(l2cap_chan *c,
 		c = l2cap_chan_hold_unless_zero(c);
 		read_unlock(&chan_list_lock);
 		return c;
-	}
+	});
 
 	read_unlock(&chan_list_lock);
 
 	return core::ptr::null_mut();
 }
 
-static void l2cap_connect_cfm(hci_conn *hcon, u8 status)
+static void l2cap_connect_cfm(hci_conn *hcon, status: u8)
 	__must_hold(&hcon.hdev.lock)
 {
 	hci_dev *hdev = hcon.hdev;
@@ -7580,7 +7607,7 @@ static void l2cap_connect_cfm(hci_conn *hcon, u8 status)
 	l2cap_chan *pchan;
 	u8 dst_type;
 
-	if hcon.type != ACL_LINK && hcon.type != LE_LINK
+	if hcon.r#type != ACL_LINK && hcon.r#type != LE_LINK
 		return;
 
 	BT_DBG("hcon %p bdaddr %pMR status %d", hcon, &hcon.dst, status);
@@ -7607,11 +7634,12 @@ static void l2cap_connect_cfm(hci_conn *hcon, u8 status)
 	 */
 	pchan = l2cap_global_fixed_chan(core::ptr::null_mut(), hcon);
 	while pchan {
+		'next: {
 		l2cap_chan *chan, *next;
 
 		/* Client fixed channels should override server ones */
 		if (__l2cap_get_chan_by_dcid(conn, pchan.scid))
-			goto next;
+			break 'next;
 
 		l2cap_chan_lock(pchan);
 		chan = l2cap_new_connection(conn, pchan);
@@ -7623,7 +7651,8 @@ static void l2cap_connect_cfm(hci_conn *hcon, u8 status)
 		}
 
 		l2cap_chan_unlock(pchan);
-next:
+		}
+		
 		next = l2cap_global_fixed_chan(pchan, hcon);
 		l2cap_chan_put(pchan);
 		pchan = next;
@@ -7648,10 +7677,10 @@ int l2cap_disconn_ind(hci_conn *hcon)
 	return ret;
 }
 
-static void l2cap_disconn_cfm(hci_conn *hcon, u8 reason)
+static void l2cap_disconn_cfm(hci_conn *hcon, reason: u8)
 	__must_hold(&hcon.hdev.lock)
 {
-	if hcon.type != ACL_LINK && hcon.type != LE_LINK
+	if hcon.r#type != ACL_LINK && hcon.r#type != LE_LINK
 		return;
 
 	BT_DBG("hcon %p reason %d", hcon, reason);
@@ -7660,7 +7689,7 @@ static void l2cap_disconn_cfm(hci_conn *hcon, u8 reason)
 }
 
 #[inline]
-unsafe fn void l2cap_check_encryption(l2cap_chan *chan, u8 encrypt)
+unsafe fn void l2cap_check_encryption(l2cap_chan *chan, encrypt: u8)
 {
 	if chan.chan_type != L2CAP_CHAN_CONN_ORIENTED
 		return;
@@ -7677,7 +7706,7 @@ unsafe fn void l2cap_check_encryption(l2cap_chan *chan, u8 encrypt)
 	}
 }
 
-static void l2cap_security_cfm(hci_conn *hcon, u8 status, u8 encrypt)
+static void l2cap_security_cfm(hci_conn *hcon, status: u8, encrypt: u8)
 	__must_hold(&hcon.hdev.lock)
 {
 	l2cap_conn *conn = hcon.l2cap_data;
@@ -7767,7 +7796,7 @@ static void l2cap_security_cfm(hci_conn *hcon, u8 status, u8 encrypt)
 
 /* Append fragment into frame respecting the maximum len of rx_skb */
 static int l2cap_recv_frag(l2cap_conn *conn, sk_buff *skb,
-			   u16 len)
+			   len: u16)
 {
 	if !conn.rx_skb {
 		/* Allocate skb for the complete frame (with header) */
@@ -7837,18 +7866,20 @@ l2cap_conn *l2cap_conn_hold_unless_zero(l2cap_conn *c)
 	if !c
 		return core::ptr::null_mut();
 
-	BT_DBG("conn %p orig refcnt %u", c, kref_read(&c.ref));
+	BT_DBG("conn %p orig refcnt %u", c, kref_read(&c.r#ref));
 
-	if (!kref_get_unless_zero(&c.ref))
+	if (!kref_get_unless_zero(&c.r#ref))
 		return core::ptr::null_mut();
 
 	return c;
 }
 // exported symbol
 
-int l2cap_recv_acldata(hci_dev *hdev, u16 handle,
-		       sk_buff *skb, u16 flags)
+int l2cap_recv_acldata(hci_dev *hdev, handle: u16,
+		       sk_buff *skb, flags: u16)
 {
+	'unlock: {
+	'drop: {
 	hci_conn *hcon;
 	l2cap_conn *conn;
 	int len;
@@ -7910,7 +7941,7 @@ int l2cap_recv_acldata(hci_dev *hdev, u16 handle,
 		if len == skb.len {
 			/* Complete frame received */
 			l2cap_recv_frame(conn, skb);
-			goto unlock;
+			break 'unlock;
 		}
 
 		BT_DBG("Start: total len %d, frag len %u", len, skb.len);
@@ -7935,12 +7966,12 @@ int l2cap_recv_acldata(hci_dev *hdev, u16 handle,
 			skb.len = len;
 			l2cap_recv_frame(conn, skb);
 			l2cap_conn_unreliable(conn, ECOMM);
-			goto unlock;
+			break 'unlock;
 		}
 
 		/* Append fragment into frame (with header) */
 		if (l2cap_recv_frag(conn, skb, len) < 0)
-			goto drop;
+			break 'drop;
 
 		break;
 
@@ -7950,14 +7981,14 @@ int l2cap_recv_acldata(hci_dev *hdev, u16 handle,
 		if !conn.rx_skb {
 			BT_ERR("Unexpected continuation frame (len %d)", skb.len);
 			l2cap_conn_unreliable(conn, ECOMM);
-			goto drop;
+			break 'drop;
 		}
 
 		/* Complete the L2CAP length if it has not been read */
 		if conn.rx_skb.len < L2CAP_LEN_SIZE {
 			if (l2cap_recv_len(conn, skb) < 0) {
 				l2cap_conn_unreliable(conn, ECOMM);
-				goto drop;
+				break 'drop;
 			}
 
 			/* Header still could not be read just continue */
@@ -7970,7 +8001,7 @@ int l2cap_recv_acldata(hci_dev *hdev, u16 handle,
 			       skb.len, conn.rx_len);
 			l2cap_recv_reset(conn);
 			l2cap_conn_unreliable(conn, ECOMM);
-			goto drop;
+			break 'drop;
 		}
 
 		/* Append fragment into frame (with header) */
@@ -7987,20 +8018,21 @@ int l2cap_recv_acldata(hci_dev *hdev, u16 handle,
 		}
 		break;
 	}
-
-drop:
+	}
+	
 	kfree_skb(skb);
-unlock:
+	}
+	
 	mutex_unlock(&conn.lock);
 	l2cap_conn_put(conn);
 	return 0;
 }
 
 static hci_cb l2cap_cb = {
-	.name		= "L2CAP",
-	.connect_cfm	= l2cap_connect_cfm,
-	.disconn_cfm	= l2cap_disconn_cfm,
-	.security_cfm	= l2cap_security_cfm,
+	name: "L2CAP",
+	connect_cfm: l2cap_connect_cfm,
+	disconn_cfm: l2cap_disconn_cfm,
+	security_cfm: l2cap_security_cfm,
 };
 
 static int l2cap_debugfs_show(seq_file *f, void *p)
@@ -8009,13 +8041,13 @@ static int l2cap_debugfs_show(seq_file *f, void *p)
 
 	read_lock(&chan_list_lock);
 
-	list_for_each_entry(c, &chan_list, global_l) {
+	list_for_each_entry!(c, &chan_list, global_l, {
 		seq_printf(f, "%pMR (%u) %pMR (%u) %d %d 0x%4.4x 0x%4.4x %d %d %d %d\n",
 			   &c.src, c.src_type, &c.dst, c.dst_type,
 			   c.state, __le16_to_cpu(c.psm),
 			   c.scid, c.dcid, c.imtu, c.omtu,
 			   c.sec_level, c.mode);
-	}
+	});
 
 	read_unlock(&chan_list_lock);
 

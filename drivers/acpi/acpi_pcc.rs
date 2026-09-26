@@ -45,6 +45,8 @@ unsafe extern "C" fn acpi_pcc_address_space_setup(
     let ctx: *mut acpi_pcc_info = handler_context as *mut acpi_pcc_info;
     let mut pcc_chan: *mut pcc_mbox_chan;
     let ret: acpi_status;
+    'err_free_data: {
+    'err_free_channel: {
 
     data = kzalloc_obj!(*data);
     if data.is_null() {
@@ -65,22 +67,23 @@ unsafe extern "C" fn acpi_pcc_address_space_setup(
     if IS_ERR((*data).pcc_chan) {
         pr_err!("Failed to find PCC channel for subspace %d\n", (*ctx).subspace_id);
         ret = AE_NOT_FOUND;
-        goto!(err_free_data);
+        break 'err_free_data;
     }
 
     pcc_chan = (*data).pcc_chan;
     if !(*(*(*pcc_chan).mchan).mbox).txdone_irq {
         pr_err!("This channel-%d does not support interrupt.\n", (*ctx).subspace_id);
         ret = AE_SUPPORT;
-        goto!(err_free_channel);
+        break 'err_free_channel;
     }
 
     *region_context = data as *mut core::ffi::c_void;
     return AE_OK;
-
-    err_free_channel:
+    }
+    
     pcc_mbox_free_channel((*data).pcc_chan);
-    err_free_data:
+    }
+    
     kfree(data);
 
     ret

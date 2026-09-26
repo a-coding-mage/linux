@@ -22,7 +22,7 @@ macro_rules! poll_timeout_us {
         loop {
             let __expired = __timeout_us != 0
                 && ktime_compare(ktime_get(), __timeout) > 0;
-            // Guarantee `op` and `cond` are evaluated after timeout expired.
+            // Guarantee `$op` and `$cond` are evaluated after timeout expired.
             barrier();
             $op;
             if $cond {
@@ -59,7 +59,7 @@ macro_rules! poll_timeout_us_atomic {
         }
         loop {
             let __expired = __timeout_us != 0 && __left_ns < 0;
-            // Guarantee `op` and `cond` are evaluated after timeout expired.
+            // Guarantee `$op` and `$cond` are evaluated after timeout expired.
             barrier();
             $op;
             if $cond {

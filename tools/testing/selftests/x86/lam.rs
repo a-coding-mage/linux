@@ -336,7 +336,7 @@ unsafe fn set_lam(lam: c_ulong) -> c_int {
     if lam == LAM_U57_BITS {
         ret = (ptr != !LAM_U57_MASK) as c_int;
     } else if lam == LAM_NONE {
-        ret = (ptr != !0_u64) as c_int;
+        ret = (ptr != !0u64) as c_int;
     }
 
     ret
@@ -380,7 +380,7 @@ unsafe fn get_lam() -> c_int {
     /* Check mask returned is expected */
     if ptr == !LAM_U57_MASK {
         ret = LAM_U57_BITS as c_int;
-    } else if ptr == !0_u64 {
+    } else if ptr == !0u64 {
         ret = LAM_NONE as c_int;
     }
 

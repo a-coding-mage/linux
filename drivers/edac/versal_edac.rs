@@ -135,12 +135,12 @@ unsafe fn enable_intr(p:&mut EdacPriv){let b=p.ddrmc_baseaddr;writel(PCSR_UNLOCK
 #[allow(dead_code)]
 unsafe fn disable_intr(p:&mut EdacPriv){let b=p.ddrmc_baseaddr;writel(PCSR_UNLOCK_VAL,b.add(XDDR_PCSR_OFFSET));writel(XDDR_IRQ_CE_MASK|XDDR_IRQ_UE_MASK,b.add(XDDR_IRQ_DIS_OFFSET));writel(PCSR_LOCK_VAL,b.add(XDDR_PCSR_OFFSET));}
 
-#[cfg(feature="CONFIG_EDAC_DEBUG")]
+#[cfg(CONFIG_EDAC_DEBUG)]
 unsafe fn poison_setup(p:&mut EdacPriv){let mut row=0;let mut col=0;let mut bank=0;let mut grp=0;let mut rank=0;let mut lrank=0;for i in 0..18{row|=(((p.err_inject_addr>>p.row_bit[i])&1)<<i)}for i in 0..10{col|=(((p.err_inject_addr>>p.col_bit[i])&1)<<i)}for i in 0..2{bank|=(((p.err_inject_addr>>p.bank_bit[i])&1)<<i);grp|=(((p.err_inject_addr>>p.grp_bit[i])&1)<<i);rank|=(((p.err_inject_addr>>p.rank_bit[i])&1)<<i)}for i in 0..3{lrank|=(((p.err_inject_addr>>p.lrank_bit[i])&1)<<i)}let ch=(p.err_inject_addr>>p.ch_bit)&1;writel(0,p.ddrmc_noc_baseaddr.add(XDDR_NOC_REG_ADEC12_OFFSET));writel(0,p.ddrmc_noc_baseaddr.add(XDDR_NOC_REG_ADEC13_OFFSET));writel((row&XDDR_NOC_ROW_MATCH_MASK)|field_prep(XDDR_NOC_COL_MATCH_MASK,col)|field_prep(XDDR_NOC_BANK_MATCH_MASK,bank)|field_prep(XDDR_NOC_GRP_MATCH_MASK,grp),p.ddrmc_noc_baseaddr.add(XDDR_NOC_REG_ADEC14_OFFSET));writel((rank&3)|field_prep(XDDR_NOC_LRANK_MATCH_MASK,lrank)|field_prep(XDDR_NOC_CH_MATCH_MASK,ch)|XDDR_NOC_MOD_SEL_MASK|XDDR_NOC_MATCH_EN_MASK,p.ddrmc_noc_baseaddr.add(XDDR_NOC_REG_ADEC15_OFFSET));}
 
 // Address-map setup mirrors the C register extraction and is intentionally kept
 // behind the same build-time debug condition.
-#[cfg(feature="CONFIG_EDAC_DEBUG")]
+#[cfg(CONFIG_EDAC_DEBUG)]
 unsafe fn setup_address_map(p:&mut EdacPriv){let b=p.ddrmc_noc_baseaddr;let mut v=readl(b.add(XDDR_NOC_REG_ADEC5_OFFSET));for i in 0..5{p.row_bit[i]=((v>>(i*6))&0x3f)}v=readl(b.add(XDDR_NOC_REG_ADEC6_OFFSET));for i in 0..5{p.row_bit[i+5]=((v>>(i*6))&0x3f)}v=readl(b.add(XDDR_NOC_REG_ADEC7_OFFSET));for i in 0..5{p.row_bit[i+10]=((v>>(i*6))&0x3f)}v=readl(b.add(XDDR_NOC_REG_ADEC8_OFFSET));p.row_bit[15]=v&0x3f;p.row_bit[16]=(v>>6)&0x3f;p.row_bit[17]=(v>>12)&0x3f;p.col_bit[0]=field_get(MASK_24,v);v=readl(b.add(XDDR_NOC_REG_ADEC9_OFFSET));for i in 0..5{p.col_bit[i+1]=(v>>(i*6))&0x3f}v=readl(b.add(XDDR_NOC_REG_ADEC10_OFFSET));for i in 0..4{p.col_bit[i+6]=(v>>(i*6))&0x3f}p.bank_bit[0]=field_get(MASK_24,v);v=readl(b.add(XDDR_NOC_REG_ADEC11_OFFSET));p.bank_bit[1]=v&MASK_0;p.grp_bit[0]=field_get(GRP_0_MASK,v);p.grp_bit[1]=field_get(GRP_1_MASK,v);p.ch_bit=field_get(CH_0_MASK,v);v=readl(b.add(XDDR_NOC_REG_ADEC4_OFFSET));p.rank_bit[0]=v&MASK_0;p.rank_bit[1]=field_get(RANK_1_MASK,v);p.lrank_bit[0]=field_get(LRANK_0_MASK,v);p.lrank_bit[1]=field_get(LRANK_1_MASK,v);p.lrank_bit[2]=field_get(MASK_24,v);}
 
 // C module registration and EDAC callbacks are declarations here because the

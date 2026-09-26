@@ -130,13 +130,13 @@ unsafe fn v9fs_xattr_handler_set(handler: *const xattr_handler, _idmap: *mut mnt
 static V9FS_XATTR_USER_HANDLER: xattr_handler = xattr_handler { prefix: XATTR_USER_PREFIX, get: Some(v9fs_xattr_handler_get), set: Some(v9fs_xattr_handler_set) };
 static V9FS_XATTR_TRUSTED_HANDLER: xattr_handler = xattr_handler { prefix: XATTR_TRUSTED_PREFIX, get: Some(v9fs_xattr_handler_get), set: Some(v9fs_xattr_handler_set) };
 
-#[cfg(feature = "CONFIG_9P_FS_SECURITY")]
+#[cfg(CONFIG_9P_FS_SECURITY)]
 static V9FS_XATTR_SECURITY_HANDLER: xattr_handler = xattr_handler { prefix: XATTR_SECURITY_PREFIX, get: Some(v9fs_xattr_handler_get), set: Some(v9fs_xattr_handler_set) };
 
 pub static V9FS_XATTR_HANDLERS: &[*const xattr_handler] = &[
     &V9FS_XATTR_USER_HANDLER,
     &V9FS_XATTR_TRUSTED_HANDLER,
-    #[cfg(feature = "CONFIG_9P_FS_SECURITY")]
+    #[cfg(CONFIG_9P_FS_SECURITY)]
     &V9FS_XATTR_SECURITY_HANDLER,
     core::ptr::null(),
 ];

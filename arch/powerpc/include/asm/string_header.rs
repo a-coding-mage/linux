@@ -84,19 +84,19 @@ extern "C" {
 }
 
 #[inline]
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub unsafe fn memset16(p: *mut u16, v: u16, n: __kernel_size_t) -> *mut ::core::ffi::c_void {
     __memset16(p, v, n * 2)
 }
 
 #[inline]
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub unsafe fn memset32(p: *mut u32, v: u32, n: __kernel_size_t) -> *mut ::core::ffi::c_void {
     __memset32(p, v, n * 4)
 }
 
 #[inline]
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub unsafe fn memset64(p: *mut u64, v: u64, n: __kernel_size_t) -> *mut ::core::ffi::c_void {
     __memset64(p, v, n * 8)
 }
@@ -105,7 +105,7 @@ pub unsafe fn memset64(p: *mut u64, v: u64, n: __kernel_size_t) -> *mut ::core::
 pub const __HAVE_ARCH_STRLEN: bool = true;
 
 extern "C" {
-    #[cfg(not(feature = "CONFIG_PPC64"))]
+    #[cfg(not(CONFIG_PPC64))]
     pub fn memset16(p: *mut u16, v: u16, n: __kernel_size_t)
         -> *mut ::core::ffi::c_void;
 }

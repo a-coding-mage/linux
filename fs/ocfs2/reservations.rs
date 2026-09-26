@@ -54,10 +54,10 @@ unsafe fn ocfs2_dump_resv(resmap: *mut ocfs2_reservation_map) {
     }
     mlog(ML_NOTICE, "%d reservations found. LRU follows\n", i);
     i = 0;
-    list_for_each_entry!(resv, &(*resmap).m_lru, r_lru) {
+    list_for_each_entry!(resv, &(*resmap).m_lru, r_lru, {
         mlog(ML_NOTICE, "LRU(%d) start: %u\tend: %u\tlen: %u\tlast_start: %u\tlast_len: %u\n", i, (*resv).r_start, ocfs2_resv_end(resv), (*resv).r_len, (*resv).r_last_start, (*resv).r_last_len);
         i += 1;
-    }
+    });
 }
 
 #[cfg(OCFS2_CHECK_RESERVATIONS)]
@@ -79,11 +79,11 @@ unsafe fn ocfs2_check_resmap(resmap: *mut ocfs2_reservation_map) {
     let mut off = 0; let mut i = 0; let mut node = rb_first(&(*resmap).m_reservations);
     while !node.is_null() {
         let resv = rb_entry(node, struct_ocfs2_alloc_reservation, r_node);
-        if i > 0 && (*resv).r_start <= off { mlog(ML_ERROR, "reservation %d has bad start off!\n", i); goto_bad!(resmap); }
-        if (*resv).r_len == 0 { mlog(ML_ERROR, "reservation %d has no length!\n", i); goto_bad!(resmap); }
-        if (*resv).r_start > ocfs2_resv_end(resv) { mlog(ML_ERROR, "reservation %d has invalid range!\n", i); goto_bad!(resmap); }
-        if ocfs2_resv_end(resv) >= (*resmap).m_bitmap_len { mlog(ML_ERROR, "reservation %d extends past bitmap!\n", i); goto_bad!(resmap); }
-        if ocfs2_validate_resmap_bits(resmap, i, resv) != 0 { goto_bad!(resmap); }
+        if i > 0 && (*resv).r_start <= off { mlog(ML_ERROR, "reservation %d has bad start off!\n", i); goto resmap; }
+        if (*resv).r_len == 0 { mlog(ML_ERROR, "reservation %d has no length!\n", i); goto resmap; }
+        if (*resv).r_start > ocfs2_resv_end(resv) { mlog(ML_ERROR, "reservation %d has invalid range!\n", i); goto resmap; }
+        if ocfs2_resv_end(resv) >= (*resmap).m_bitmap_len { mlog(ML_ERROR, "reservation %d extends past bitmap!\n", i); goto resmap; }
+        if ocfs2_validate_resmap_bits(resmap, i, resv) != 0 { goto resmap; }
         off = ocfs2_resv_end(resv); node = rb_next(node); i += 1;
     }
     return;

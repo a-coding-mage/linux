@@ -117,7 +117,7 @@ pub struct pruss {
 }
 
 /* CONFIG_TI_PRUSS declarations and fallback inline definitions. */
-#[cfg(feature = "CONFIG_TI_PRUSS")]
+#[cfg(CONFIG_TI_PRUSS)]
 extern "C" {
     pub fn pruss_get(rproc: *mut rproc) -> *mut pruss;
     pub fn pruss_put(pruss: *mut pruss);
@@ -136,44 +136,44 @@ extern "C" {
                                 enable: bool) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_get(_rproc: *mut rproc) -> *mut pruss {
     ERR_PTR(-EOPNOTSUPP)
 }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_put(_pruss: *mut pruss) {}
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_request_mem_region(_pruss: *mut pruss, _mem_id: pruss_mem,
                                        _region: *mut pruss_mem_region) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_release_mem_region(_pruss: *mut pruss,
                                        _region: *mut pruss_mem_region) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_cfg_get_gpmux(_pruss: *mut pruss, _pru_id: enum_pruss_pru_id,
                                   _mux: *mut u8) -> i32 { -EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_cfg_set_gpmux(_pruss: *mut pruss, _pru_id: enum_pruss_pru_id,
                                   _mux: u8) -> i32 { -EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_cfg_gpimode(_pruss: *mut pruss, _pru_id: enum_pruss_pru_id,
                                 _mode: pruss_gpi_mode) -> i32 { -EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_cfg_miirt_enable(_pruss: *mut pruss, _enable: bool) -> i32 {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_TI_PRUSS"))]
+#[cfg(not(CONFIG_TI_PRUSS))]
 pub unsafe fn pruss_cfg_xfr_enable(_pruss: *mut pruss, _pru_type: pru_type,
                                    _enable: bool) -> i32 { -EOPNOTSUPP }
 

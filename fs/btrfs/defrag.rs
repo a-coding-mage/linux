@@ -77,11 +77,11 @@ pub unsafe extern "C" fn btrfs_defrag_root(_root: *mut btrfs_root) -> i32 { 0 }
 pub unsafe extern "C" fn btrfs_defrag_file(_inode: *mut btrfs_inode, _ra: *mut file_ra_state, _range: *mut btrfs_ioctl_defrag_range_args, _newer_than: u64, _max_to_defrag: usize) -> i32 { 0 }
 
 extern "C" {
-    fn btrfs_test_opt(*mut btrfs_fs_info, u64) -> bool; fn btrfs_fs_closing(*mut btrfs_fs_info) -> bool;
-    fn btrfs_ino(*mut btrfs_inode) -> u64; fn btrfs_get_root_last_trans(*mut btrfs_root) -> u64; fn btrfs_root_id(*mut btrfs_root) -> u64;
-    fn test_bit(usize, *mut usize) -> bool; fn set_bit(usize, *mut usize); fn spin_lock(*mut usize); fn spin_unlock(*mut usize);
-    fn rb_find_add(*mut rb_node, *mut rb_root, unsafe fn(*mut rb_node,*const rb_node)->i32)->*mut rb_node;
-    fn kmem_cache_zalloc(*mut c_void, u32)->*mut c_void; fn kmem_cache_free(*mut c_void,*mut c_void); fn kmem_cache_create()->*mut c_void; fn kmem_cache_destroy(*mut c_void);
+    fn btrfs_test_opt(_: *mut btrfs_fs_info, _: u64) -> bool; fn btrfs_fs_closing(_: *mut btrfs_fs_info) -> bool;
+    fn btrfs_ino(_: *mut btrfs_inode) -> u64; fn btrfs_get_root_last_trans(_: *mut btrfs_root) -> u64; fn btrfs_root_id(_: *mut btrfs_root) -> u64;
+    fn test_bit(_: usize, _: *mut usize) -> bool; fn set_bit(_: usize, _: *mut usize); fn spin_lock(_: *mut usize); fn spin_unlock(_: *mut usize);
+    fn rb_find_add(_: *mut rb_node, _: *mut rb_root, _: unsafe fn(*mut rb_node,*const rb_node)->i32)->*mut rb_node;
+    fn kmem_cache_zalloc(_: *mut c_void, _: u32)->*mut c_void; fn kmem_cache_free(_: *mut c_void,_: *mut c_void); fn kmem_cache_create()->*mut c_void; fn kmem_cache_destroy(_: *mut c_void);
 }
 const GFP_NOFS: u32 = 0; const AUTO_DEFRAG: u64 = 0; const BTRFS_INODE_IN_DEFRAG: usize = 0;
 

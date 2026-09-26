@@ -46,7 +46,7 @@ pub struct usb_role_switch_desc {
 }
 
 // When CONFIG_USB_ROLE_SWITCH is enabled, these are provided by the USB role-switch implementation.
-#[cfg(feature = "CONFIG_USB_ROLE_SWITCH")]
+#[cfg(CONFIG_USB_ROLE_SWITCH)]
 extern "C" {
     pub fn usb_role_switch_set_role(
         sw: *mut usb_role_switch,
@@ -70,7 +70,7 @@ extern "C" {
 }
 
 // Fallbacks corresponding to the !IS_ENABLED(CONFIG_USB_ROLE_SWITCH) branch.
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_set_role(
     _sw: *mut usb_role_switch,
     _role: usb_role,
@@ -78,32 +78,32 @@ pub unsafe fn usb_role_switch_set_role(
     0
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_get_role(_sw: *mut usb_role_switch) -> usb_role {
     usb_role::USB_ROLE_NONE
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_get(_dev: *mut device) -> *mut usb_role_switch {
     crate::ERR_PTR(-crate::ENODEV)
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn fwnode_usb_role_switch_get(_node: *mut fwnode_handle) -> *mut usb_role_switch {
     crate::ERR_PTR(-crate::ENODEV)
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_put(_sw: *mut usb_role_switch) {}
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_find_by_fwnode(
     _fwnode: *const fwnode_handle,
 ) -> *mut usb_role_switch {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_register(
     _parent: *mut device,
     _desc: *const usb_role_switch_desc,
@@ -111,24 +111,24 @@ pub unsafe fn usb_role_switch_register(
     crate::ERR_PTR(-crate::ENODEV)
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_unregister(_sw: *mut usb_role_switch) {}
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_set_drvdata(
     _sw: *mut usb_role_switch,
     _data: *mut core::ffi::c_void,
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_switch_get_drvdata(
     _sw: *mut usb_role_switch,
 ) -> *mut core::ffi::c_void {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_USB_ROLE_SWITCH"))]
+#[cfg(not(CONFIG_USB_ROLE_SWITCH))]
 pub unsafe fn usb_role_string(_role: usb_role) -> *const core::ffi::c_char {
     c"unknown".as_ptr()
 }

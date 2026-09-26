@@ -116,8 +116,8 @@ pub unsafe fn timerlat_sample_assign(entry: *mut timerlat_sample_entry, s: *cons
 
 extern "C" {
     pub type pid_t;
-    pub const TASK_COMM_LEN: usize;
     pub fn show_softirq_name(vector: c_int) -> *const c_char;
 }
+pub const TASK_COMM_LEN: usize;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -77,7 +77,7 @@ pub unsafe fn current_is_kcompactd() -> core::ffi::c_int {
     (*current).flags & PF_KCOMPACTD
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 extern "C" {
     pub fn extfrag_for_order(zone: *mut zone, order: core::ffi::c_uint) -> core::ffi::c_uint;
     pub fn fragmentation_index(zone: *mut zone, order: core::ffi::c_uint) -> core::ffi::c_int;
@@ -112,23 +112,23 @@ extern "C" {
     pub fn wakeup_kcompactd(pgdat: *mut pg_data_t, order: core::ffi::c_int, highest_zoneidx: core::ffi::c_int);
 }
 
-#[cfg(not(feature = "CONFIG_COMPACTION"))]
+#[cfg(not(CONFIG_COMPACTION))]
 #[inline]
 pub unsafe fn reset_isolation_suitable(_pgdat: *mut pg_data_t) {}
 
-#[cfg(not(feature = "CONFIG_COMPACTION"))]
+#[cfg(not(CONFIG_COMPACTION))]
 #[inline]
 pub unsafe fn compaction_suitable(_zone: *mut zone, _order: core::ffi::c_int, _watermark: core::ffi::c_ulong, _highest_zoneidx: core::ffi::c_int) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_COMPACTION"))]
+#[cfg(not(CONFIG_COMPACTION))]
 #[inline]
 pub unsafe fn kcompactd_run(_nid: core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_COMPACTION"))]
+#[cfg(not(CONFIG_COMPACTION))]
 #[inline]
 pub unsafe fn kcompactd_stop(_nid: core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_COMPACTION"))]
+#[cfg(not(CONFIG_COMPACTION))]
 #[inline]
 pub unsafe fn wakeup_kcompactd(_pgdat: *mut pg_data_t, _order: core::ffi::c_int, _highest_zoneidx: core::ffi::c_int) {}
 
@@ -137,17 +137,17 @@ pub struct node {
     _private: [u8; 0],
 }
 
-#[cfg(all(feature = "CONFIG_COMPACTION", feature = "CONFIG_SYSFS", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_COMPACTION, CONFIG_SYSFS, CONFIG_NUMA))]
 extern "C" {
     pub fn compaction_register_node(node: *mut node) -> core::ffi::c_int;
     pub fn compaction_unregister_node(node: *mut node);
 }
 
-#[cfg(not(all(feature = "CONFIG_COMPACTION", feature = "CONFIG_SYSFS", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_COMPACTION, CONFIG_SYSFS, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn compaction_register_node(_node: *mut node) -> core::ffi::c_int { 0 }
 
-#[cfg(not(all(feature = "CONFIG_COMPACTION", feature = "CONFIG_SYSFS", feature = "CONFIG_NUMA")))]
+#[cfg(not(all(CONFIG_COMPACTION, CONFIG_SYSFS, CONFIG_NUMA)))]
 #[inline]
 pub unsafe fn compaction_unregister_node(_node: *mut node) {}
 

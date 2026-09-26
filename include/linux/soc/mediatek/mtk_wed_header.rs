@@ -88,11 +88,11 @@ extern "C" { pub static mut mtk_soc_wed_ops: *const mtk_wed_ops; }
 
 pub unsafe fn mtk_wed_device_attach(dev: *mut mtk_wed_device) -> i32 {
     let mut ret = -19i32;
-    #[cfg(feature = "CONFIG_NET_MEDIATEK_SOC_WED")]
+    #[cfg(CONFIG_NET_MEDIATEK_SOC_WED)]
     { (*dev).ops = mtk_soc_wed_ops; if !(*dev).ops.is_null() { ret = ((*(*dev).ops).attach.unwrap())(dev); } if ret != 0 { (*dev).ops = core::ptr::null(); } }
     ret
 }
-pub unsafe fn mtk_wed_get_rx_capa(dev: *mut mtk_wed_device) -> bool { #[cfg(feature = "CONFIG_NET_MEDIATEK_SOC_WED")] { if (*dev).version == 3 { return (*dev).wlan.hw_rro; } return (*dev).version != 1; } #[cfg(not(feature = "CONFIG_NET_MEDIATEK_SOC_WED"))] { let _ = dev; false } }
-pub unsafe fn mtk_wed_is_amsdu_supported(dev: *mut mtk_wed_device) -> bool { #[cfg(feature = "CONFIG_NET_MEDIATEK_SOC_WED")] { (*dev).version == 3 } #[cfg(not(feature = "CONFIG_NET_MEDIATEK_SOC_WED"))] { let _ = dev; false } }
+pub unsafe fn mtk_wed_get_rx_capa(dev: *mut mtk_wed_device) -> bool { #[cfg(CONFIG_NET_MEDIATEK_SOC_WED)] { if (*dev).version == 3 { return (*dev).wlan.hw_rro; } return (*dev).version != 1; } #[cfg(not(CONFIG_NET_MEDIATEK_SOC_WED))] { let _ = dev; false } }
+pub unsafe fn mtk_wed_is_amsdu_supported(dev: *mut mtk_wed_device) -> bool { #[cfg(CONFIG_NET_MEDIATEK_SOC_WED)] { (*dev).version == 3 } #[cfg(not(CONFIG_NET_MEDIATEK_SOC_WED))] { let _ = dev; false } }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

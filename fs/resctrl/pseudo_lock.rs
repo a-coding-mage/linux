@@ -53,22 +53,24 @@ unsafe fn pseudo_lock_cstates_relax(plr: *mut pseudo_lock_region) {
 
 unsafe fn pseudo_lock_cstates_constrain(plr: *mut pseudo_lock_region) -> c_int {
     let mut ret;
+    'out_err: {
     for_each_cpu!(cpu, (*(*plr).d).hdr.cpu_mask, {
         let pm_req = kzalloc_obj::<pseudo_lock_pm_req>();
         if pm_req.is_null() {
             rdt_last_cmd_puts(cstr!("Failure to allocate memory for PM QoS\n"));
-            ret = -ENOMEM; goto!(out_err);
+            ret = -ENOMEM; break 'out_err;
         }
         ret = dev_pm_qos_add_request(get_cpu_device(cpu), &mut (*pm_req).req,
                                      DEV_PM_QOS_RESUME_LATENCY, 30);
         if ret < 0 {
             rdt_last_cmd_printf(cstr!("Failed to add latency req CPU%d\n"), cpu);
-            kfree(pm_req); ret = -1; goto!(out_err);
+            kfree(pm_req); ret = -1; break 'out_err;
         }
         list_add(&mut (*pm_req).list, &mut (*plr).pm_reqs);
     });
     return 0;
-out_err:
+    }
+    
     pseudo_lock_cstates_relax(plr); ret
 }
 
@@ -80,13 +82,15 @@ unsafe fn pseudo_lock_region_clear(plr: *mut pseudo_lock_region) {
 
 unsafe fn pseudo_lock_region_init(plr: *mut pseudo_lock_region) -> c_int {
     let scope = (*(*plr).s).res.ctrl_scope; let ci;
+    'out_region: {
     if WARN_ON_ONCE(scope != RESCTRL_L2_CACHE && scope != RESCTRL_L3_CACHE) { return -ENODEV; }
     (*plr).cpu = cpumask_first(&(*(*plr).d).hdr.cpu_mask);
-    if !cpu_online((*plr).cpu) { rdt_last_cmd_printf(cstr!("CPU %u associated with cache not online\n"), (*plr).cpu); goto!(out_region); }
+    if !cpu_online((*plr).cpu) { rdt_last_cmd_printf(cstr!("CPU %u associated with cache not online\n"), (*plr).cpu); break 'out_region; }
     ci = get_cpu_cacheinfo_level((*plr).cpu, scope);
     if !ci.is_null() { (*plr).line_size = (*ci).coherency_line_size; (*plr).size = rdtgroup_cbm_to_size((*(*plr).s).res, (*plr).d, (*plr).cbm); return 0; }
     rdt_last_cmd_puts(cstr!("Unable to determine cache line size\n"));
-out_region: pseudo_lock_region_clear(plr); -1
+    }
+    pseudo_lock_region_clear(plr); -1
 }
 
 unsafe fn pseudo_lock_init(rdtgrp: *mut rdtgroup) -> c_int {
@@ -95,12 +99,14 @@ unsafe fn pseudo_lock_init(rdtgrp: *mut rdtgroup) -> c_int {
 }
 
 unsafe fn pseudo_lock_region_alloc(plr: *mut pseudo_lock_region) -> c_int {
-    let mut ret = pseudo_lock_region_init(plr); if ret < 0 { return ret; }
-    if (*plr).size > KMALLOC_MAX_SIZE { rdt_last_cmd_puts(cstr!("Requested region exceeds maximum size\n")); ret = -E2BIG; goto!(out_region); }
+    let mut ret = pseudo_lock_region_init(plr);
+    'out_region: { if ret < 0 { return ret; }
+    if (*plr).size > KMALLOC_MAX_SIZE { rdt_last_cmd_puts(cstr!("Requested region exceeds maximum size\n")); ret = -E2BIG; break 'out_region; }
     (*plr).kmem = kzalloc((*plr).size, GFP_KERNEL);
-    if (*plr).kmem.is_null() { rdt_last_cmd_puts(cstr!("Unable to allocate memory\n")); ret = -ENOMEM; goto!(out_region); }
+    if (*plr).kmem.is_null() { rdt_last_cmd_puts(cstr!("Unable to allocate memory\n")); ret = -ENOMEM; break 'out_region; }
     return 0;
-out_region: pseudo_lock_region_clear(plr); ret
+    }
+    pseudo_lock_region_clear(plr); ret
 }
 
 unsafe fn pseudo_lock_free(rdtgrp: *mut rdtgroup) { pseudo_lock_region_clear((*rdtgrp).plr); kfree((*rdtgrp).plr); (*rdtgrp).plr = core::ptr::null_mut(); }

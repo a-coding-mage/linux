@@ -90,12 +90,12 @@ extern "C" {
     pub static mut pci_bios: *mut pci_bios_ops;
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn pcibios_register_hba(hba: *mut pci_hba_data);
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub unsafe fn pcibios_register_hba(_x: *mut pci_hba_data) {}
 

@@ -8,15 +8,14 @@
 // clk-alpha-pll.h, clk-branch.h, clk-pll.h, clk-rcg.h, clk-regmap.h,
 // clk-regmap-divider.h, clk-regmap-mux.h, common.h, gdsc.h, reset.h.
 
-enum { DT_BI_TCXO, DT_SLEEP_CLK }
+pub const DT_BI_TCXO: i32 = 0;
+pub const DT_SLEEP_CLK: i32 = DT_BI_TCXO + 1;
 
-enum {
-    P_BI_TCXO,
-    P_SLEEP_CLK,
-    P_VIDEO_PLL0_OUT_AUX,
-    P_VIDEO_PLL0_OUT_AUX2,
-    P_VIDEO_PLL0_OUT_MAIN,
-}
+pub const P_BI_TCXO: i32 = 0;
+pub const P_SLEEP_CLK: i32 = P_BI_TCXO + 1;
+pub const P_VIDEO_PLL0_OUT_AUX: i32 = P_SLEEP_CLK + 1;
+pub const P_VIDEO_PLL0_OUT_AUX2: i32 = P_VIDEO_PLL0_OUT_AUX + 1;
+pub const P_VIDEO_PLL0_OUT_MAIN: i32 = P_VIDEO_PLL0_OUT_AUX2 + 1;
 
 static video_cc_pll0_vco: [pll_vco; 1] = [pll_vco { min_freq: 500000000, max_freq: 1000000000, val: 2 }];
 

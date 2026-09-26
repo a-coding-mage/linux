@@ -30,11 +30,11 @@ unsafe extern "C" {
     pub fn unregister_syscore(syscore: *mut syscore);
 
     // Preserved from the CONFIG_PM_SLEEP conditional declaration.
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub fn syscore_suspend() -> i32;
 
     // Preserved from the CONFIG_PM_SLEEP conditional declaration.
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub fn syscore_resume();
 
     pub fn syscore_shutdown();

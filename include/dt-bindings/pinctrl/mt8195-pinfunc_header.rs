@@ -5,7 +5,6 @@
  */
 
 // Conditional header guard: __MT8195_PINFUNC_H
-#define __MT8195_PINFUNC_H
 
 // External dependency: "mt65xx.h"
 

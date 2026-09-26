@@ -52,7 +52,7 @@ pub struct MoxRwtm {
     pub mac_address1: [u8; 6],
     pub mac_address2: [u8; 6],
     // Present when CONFIG_TURRIS_MOX_RWTM_KEYCTL is enabled.
-    #[cfg(feature = "CONFIG_TURRIS_MOX_RWTM_KEYCTL")]
+    #[cfg(CONFIG_TURRIS_MOX_RWTM_KEYCTL)]
     pub pubkey: [u8; MOX_ECC_PUBKEY_LEN],
 }
 
@@ -130,14 +130,14 @@ unsafe extern "C" fn mox_hwrng_read(rng: *mut hwrng, data: *mut core::ffi::c_voi
     mutex_unlock(&mut (*rwtm).busy); max as i32
 }
 
-#[cfg(feature = "CONFIG_TURRIS_MOX_RWTM_KEYCTL")]
+#[cfg(CONFIG_TURRIS_MOX_RWTM_KEYCTL)]
 unsafe fn mox_ecc_number_to_bin(dst: *mut u8, src: *const u32) {
     let mut tmp = [0u32; MOX_ECC_NUM_WORDS];
     cpu_to_be32_array(tmp.as_mut_ptr(), src, MOX_ECC_NUM_WORDS);
     core::ptr::copy_nonoverlapping((tmp.as_ptr() as *const u8).add(2), dst, MOX_ECC_NUM_LEN);
 }
 
-#[cfg(feature = "CONFIG_TURRIS_MOX_RWTM_KEYCTL")]
+#[cfg(CONFIG_TURRIS_MOX_RWTM_KEYCTL)]
 unsafe fn mox_ecc_public_key_to_bin(dst: *mut u8, src_first: u32, src_rest: *const u32) {
     *dst = (src_first >> 16) as u8; *dst.add(1) = (src_first >> 8) as u8; *dst.add(2) = src_first as u8;
     let mut tmp = [0u32; MOX_ECC_NUM_WORDS - 1];
@@ -145,7 +145,7 @@ unsafe fn mox_ecc_public_key_to_bin(dst: *mut u8, src_first: u32, src_rest: *con
     core::ptr::copy_nonoverlapping(tmp.as_ptr() as *const u8, dst.add(3), core::mem::size_of_val(&tmp));
 }
 
-#[cfg(not(feature = "CONFIG_TURRIS_MOX_RWTM_KEYCTL"))]
+#[cfg(not(CONFIG_TURRIS_MOX_RWTM_KEYCTL))]
 unsafe fn mox_register_signing_key(_: *mut MoxRwtm) -> i32 { 0 }
 
 unsafe fn rwtm_devm_mbox_release(mbox: *mut core::ffi::c_void) { mbox_free_channel(mbox as *mut mbox_chan); }

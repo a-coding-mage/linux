@@ -18,12 +18,12 @@ extern "C" {
  * Rust feature.  Enable the feature when the kernel configuration symbol is
  * enabled.
  */
-#[cfg(feature = "CONFIG_PXA25x")]
+#[cfg(CONFIG_PXA25x)]
 extern "C" {
     pub fn pxa25x_get_clk_frequency_khz(x: i32) -> u32;
 }
 
-#[cfg(not(feature = "CONFIG_PXA25x"))]
+#[cfg(not(CONFIG_PXA25x))]
 #[inline]
 pub const fn pxa25x_get_clk_frequency_khz(_x: i32) -> u32 {
     0
@@ -31,12 +31,12 @@ pub const fn pxa25x_get_clk_frequency_khz(_x: i32) -> u32 {
 
 /* The original CONFIG_PXA27x conditional is represented by the corresponding
  * Rust feature. */
-#[cfg(feature = "CONFIG_PXA27x")]
+#[cfg(CONFIG_PXA27x)]
 extern "C" {
     pub fn pxa27x_get_clk_frequency_khz(x: i32) -> u32;
 }
 
-#[cfg(not(feature = "CONFIG_PXA27x"))]
+#[cfg(not(CONFIG_PXA27x))]
 #[inline]
 pub const fn pxa27x_get_clk_frequency_khz(_x: i32) -> u32 {
     0

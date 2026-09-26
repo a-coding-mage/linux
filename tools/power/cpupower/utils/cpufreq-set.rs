@@ -56,8 +56,7 @@ unsafe extern "C" {
         argv: *mut *mut c_char,
         optstring: *const c_char,
         longopts: *const option,
-        longindex: *mut c_int,
-    ) -> c_int;
+        longindex: *mut c_int) -> c_int;
 
     fn cpufreq_get_policy(cpu: c_uint) -> *mut cpufreq_policy;
     fn cpufreq_put_policy(policy: *mut cpufreq_policy);

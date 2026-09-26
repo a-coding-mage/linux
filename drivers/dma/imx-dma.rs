@@ -25,15 +25,33 @@ const DMA_DBTOSR: usize = 0x0c; const DMA_DRTOSR: usize = 0x10; const DMA_DSESR:
 const DMA_DBOSR: usize = 0x18; const DMA_DBTOCR: usize = 0x1c; const DMA_WSRA: usize = 0x40;
 const DMA_XSRA: usize = 0x44; const DMA_YSRA: usize = 0x48; const DMA_WSRB: usize = 0x4c;
 const DMA_XSRB: usize = 0x50; const DMA_YSRB: usize = 0x54;
-const DMA_SAR: fn(usize)->usize = |x| 0x80 + (x << 6);
-const DMA_DAR: fn(usize)->usize = |x| 0x84 + (x << 6);
-const DMA_CNTR: fn(usize)->usize = |x| 0x88 + (x << 6);
-const DMA_CCR: fn(usize)->usize = |x| 0x8c + (x << 6);
-const DMA_RSSR: fn(usize)->usize = |x| 0x90 + (x << 6);
-const DMA_BLR: fn(usize)->usize = |x| 0x94 + (x << 6);
-const DMA_RTOR: fn(usize)->usize = |x| 0x98 + (x << 6);
-const DMA_BUCR: fn(usize)->usize = |x| 0x98 + (x << 6);
-const DMA_CCNR: fn(usize)->usize = |x| 0x9c + (x << 6);
+const fn DMA_SAR(x: usize) -> usize {
+    0x80 + (x << 6)
+}
+const fn DMA_DAR(x: usize) -> usize {
+    0x84 + (x << 6)
+}
+const fn DMA_CNTR(x: usize) -> usize {
+    0x88 + (x << 6)
+}
+const fn DMA_CCR(x: usize) -> usize {
+    0x8c + (x << 6)
+}
+const fn DMA_RSSR(x: usize) -> usize {
+    0x90 + (x << 6)
+}
+const fn DMA_BLR(x: usize) -> usize {
+    0x94 + (x << 6)
+}
+const fn DMA_RTOR(x: usize) -> usize {
+    0x98 + (x << 6)
+}
+const fn DMA_BUCR(x: usize) -> usize {
+    0x98 + (x << 6)
+}
+const fn DMA_CCNR(x: usize) -> usize {
+    0x9c + (x << 6)
+}
 const DCR_DRST:u32=1<<1; const DCR_DEN:u32=1; const DBTOCR_EN:u32=1<<15;
 const CCR_ACRPT:u32=1<<14; const CCR_DMOD_LINEAR:u32=0; const CCR_DMOD_2D:u32=1<<12;
 const CCR_DMOD_FIFO:u32=2<<12; const CCR_DMOD_EOBFIFO:u32=3<<12;

@@ -128,8 +128,7 @@ unsafe extern "C" {
         prot: c_int,
         flags: c_int,
         fd: c_int,
-        offset: isize,
-    ) -> *mut c_void;
+        offset: isize) -> *mut c_void;
     fn munmap(addr: *mut c_void, length: size_t) -> c_int;
     fn close(fd: c_int) -> c_int;
     fn getpagesize() -> c_int;
@@ -139,8 +138,7 @@ unsafe extern "C" {
         epfd: c_int,
         events: *mut epoll_event,
         maxevents: c_int,
-        timeout: c_int,
-    ) -> c_int;
+        timeout: c_int) -> c_int;
     fn clock_gettime(clk_id: c_int, tp: *mut timespec) -> c_int;
 
     fn bpf_map_get_info_by_fd(fd: c_int, info: *mut bpf_map_info, info_len: *__u32) -> c_int;

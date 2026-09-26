@@ -9,7 +9,7 @@
 // linux/mm.h and asm/pgtable.h
 
 // CONFIG_PPC64_ELF_ABI_V1
-#[cfg(feature = "CONFIG_PPC64_ELF_ABI_V1")]
+#[cfg(CONFIG_PPC64_ELF_ABI_V1)]
 pub const ARCH_FUNC_PREFIX: &str = ".";
 
 unsafe extern "C" {
@@ -32,11 +32,11 @@ pub unsafe fn arch_kfence_init_pool() -> bool {
 #[inline]
 pub unsafe fn kfence_early_init_enabled() -> bool {
     // IS_ENABLED(CONFIG_KFENCE) is a build-time kernel configuration test.
-    cfg!(feature = "CONFIG_KFENCE") && unsafe { kfence_early_init }
+    cfg!(CONFIG_KFENCE) && unsafe { kfence_early_init }
 }
 
 // CONFIG_PPC64
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline]
 pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> bool {
     let page = unsafe { virt_to_page(addr as *mut ::core::ffi::c_void) };
@@ -49,7 +49,7 @@ pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> 
 }
 
 // !CONFIG_PPC64
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 #[inline]
 pub unsafe fn kfence_protect_page(addr: ::core::ffi::c_ulong, protect: bool) -> bool {
     let kpte = unsafe { virt_to_kpte(addr) };

@@ -16,7 +16,7 @@
 // linux/io.h, linux/err.h, linux/init.h, common.h, prm44xx.h,
 // prm-regbits-44xx.h, voltage.h, and vp.h.
 
-static const omap4_vp_ops: omap_vp_ops = omap_vp_ops {
+static omap4_vp_ops: omap_vp_ops = omap_vp_ops {
     check_txdone: omap_prm_vp_check_txdone,
     clear_txdone: omap_prm_vp_clear_txdone,
 };
@@ -25,7 +25,7 @@ static const omap4_vp_ops: omap_vp_ops = omap_vp_ops {
  * VP data common to 44xx chips
  * XXX This stuff presumably belongs in the vp44xx.c or vp.c file.
  */
-static const omap4_vp_common: omap_vp_common = omap_vp_common {
+static omap4_vp_common: omap_vp_common = omap_vp_common {
     vpconfig_erroroffset_mask: OMAP4430_ERROROFFSET_MASK,
     vpconfig_errorgain_mask: OMAP4430_ERRORGAIN_MASK,
     vpconfig_initvoltage_mask: OMAP4430_INITVOLTAGE_MASK,

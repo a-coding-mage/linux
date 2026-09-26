@@ -11,7 +11,7 @@
  * source header.  The event machinery and its backing implementations are
  * supplied by the surrounding trace framework.
  */
-#[cfg(feature = "CONFIG_RV_MON_OPID")]
+#[cfg(CONFIG_RV_MON_OPID)]
 extern "C" {
     pub fn event_opid(
         state: *mut core::ffi::c_char,

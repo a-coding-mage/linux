@@ -3,9 +3,7 @@
  * Copyright (c) 2018-2023 The Linux Foundation. All rights reserved.
  */
 
-// Translated from qcom,ipq9574-gcc.h. The original header guard is omitted.
 
-+
 pub const GPLL0_MAIN: u32 = 0;
 pub const GPLL0: u32 = 1;
 pub const GPLL2_MAIN: u32 = 2;
@@ -203,6 +201,5 @@ pub const GCC_PCIE1_PIPE_CLK: u32 = 211;
 pub const GCC_PCIE2_PIPE_CLK: u32 = 212;
 pub const GCC_PCIE3_PIPE_CLK: u32 = 213;
 pub const GPLL0_OUT_AUX: u32 = 214;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -30,9 +30,9 @@ pub unsafe fn huge_pte_alloc(mm: *mut mm_struct, vma: *mut vm_area_struct, addr:
         else { pte = pmd_alloc(mm, pud, addr) as *mut pte_t; }
     } else {
         let pmd = pmd_alloc(mm, pud, addr); if pmd.is_null() { return core::ptr::null_mut(); }
-        for_each_napot_order!(order) {
+        for_each_napot_order!(order, {
             if napot_cont_size(order) == sz { pte = pte_alloc_huge(mm, pmd, addr & napot_cont_mask(order)); break; }
-        }
+        });
     }
     if !pte.is_null() {
         let pteval = ptep_get_lockless(pte);
@@ -52,9 +52,9 @@ pub unsafe fn huge_pte_offset(mm: *mut mm_struct, addr: c_ulong, sz: c_ulong) ->
     if sz == PMD_SIZE { return pmd as *mut pte_t; }
     if !pmd_present(pmdp_get(pmd)) { return core::ptr::null_mut(); }
     let mut pte: *mut pte_t = core::ptr::null_mut();
-    for_each_napot_order!(order) {
+    for_each_napot_order!(order, {
         if napot_cont_size(order) == sz { pte = pte_offset_huge(pmd, addr & napot_cont_mask(order)); break; }
-    }
+    });
     pte
 }
 
@@ -86,7 +86,7 @@ unsafe fn get_clear_contig_flush(mm: *mut mm_struct, addr: c_ulong, ptep: *mut p
 #[cfg(CONFIG_RISCV_ISA_SVNAPOT)]
 pub unsafe fn arch_make_huge_pte(mut entry: pte_t, shift: c_uint, flags: vm_flags_t) -> pte_t {
     let mut matched = false;
-    for_each_napot_order!(order) { if shift == napot_cont_shift(order) { entry = pte_mknapot(entry, order); matched = true; break; } }
+    for_each_napot_order!(order, { if shift == napot_cont_shift(order) { entry = pte_mknapot(entry, order); matched = true; break; } });
     if !matched { entry = pte_mkhuge(entry); } entry
 }
 
@@ -149,11 +149,11 @@ pub unsafe fn huge_pte_clear(mm: *mut mm_struct, mut addr: c_ulong, mut ptep: *m
 
 #[cfg(CONFIG_RISCV_ISA_SVNAPOT)]
 unsafe fn is_napot_size(size: c_ulong) -> bool {
-    if !has_svnapot() { return false; } for_each_napot_order!(order) { if size == napot_cont_size(order) { return true; } } false
+    if !has_svnapot() { return false; } for_each_napot_order!(order, { if size == napot_cont_size(order) { return true; } }); false
 }
 
 #[cfg(CONFIG_RISCV_ISA_SVNAPOT)]
-unsafe fn napot_hugetlbpages_init() -> c_int { if has_svnapot() { for_each_napot_order!(order) { hugetlb_add_hstate(order); } } 0 }
+unsafe fn napot_hugetlbpages_init() -> c_int { if has_svnapot() { for_each_napot_order!(order, { hugetlb_add_hstate(order); }); } 0 }
 #[cfg(CONFIG_RISCV_ISA_SVNAPOT)]
 arch_initcall!(napot_hugetlbpages_init);
 

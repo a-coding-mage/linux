@@ -23,14 +23,14 @@ unsafe fn qnx4_readdir(file: *mut struct_file, ctx: *mut struct_dir_context) -> 
     let mut ino: i32;
     let mut size: i32 = 0;
 
-    QNX4DEBUG((KERN_INFO "qnx4_readdir:i_size = %ld\n", (*inode).i_size as isize));
-    QNX4DEBUG((KERN_INFO "pos                 = %ld\n", (*ctx).pos as isize));
+    QNX4DEBUG((c"\x016qnx4_readdir:i_size = %ld\n".as_ptr(), (*inode).i_size as isize));
+    QNX4DEBUG((c"\x016pos                 = %ld\n".as_ptr(), (*ctx).pos as isize));
 
     while (*ctx).pos < (*inode).i_size {
         blknum = qnx4_block_map(inode, ((*ctx).pos >> QNX4_BLOCK_SIZE_BITS) as _);
         bh = sb_bread((*inode).i_sb, blknum);
         if bh.is_null() {
-            printk(KERN_ERR "qnx4_readdir: bread failed (%ld)\n", blknum);
+            printk(c"\x013qnx4_readdir: bread failed (%ld)\n".as_ptr(), blknum);
             return 0;
         }
         ix = (((*ctx).pos >> QNX4_DIR_ENTRY_SIZE_BITS) % QNX4_INODES_PER_BLOCK) as i32;
@@ -55,7 +55,7 @@ unsafe fn qnx4_readdir(file: *mut struct_file, ctx: *mut struct_dir_context) -> 
                     + (*de).link.dl_inode_ndx) as i32;
             }
 
-            QNX4DEBUG((KERN_INFO "qnx4_readdir:%.*s\n", size, fname));
+            QNX4DEBUG((c"\x016qnx4_readdir:%.*s\n".as_ptr(), size, fname));
             if !dir_emit(ctx, fname, size as usize, ino as _, DT_UNKNOWN) {
                 brelse(bh);
                 return 0;

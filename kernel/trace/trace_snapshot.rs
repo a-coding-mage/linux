@@ -32,18 +32,18 @@ extern "C" {
     static mut snapshot_at_boot: bool;
     static mut boot_snapshot_info: [c_char; 4096];
     static mut boot_snapshot_index: c_int;
-    fn trace_set_ring_buffer_expanded(*mut c_void); fn in_nmi()->bool; fn trace_array_puts(*mut trace_array,*const c_char);
-    fn tracer_tracing_off(*mut trace_array); fn tracer_uses_snapshot(*mut c_void)->bool; fn local_irq_save(*mut usize); fn local_irq_restore(usize);
-    fn update_max_tr(*mut trace_array,*mut task_struct,c_int,*mut c_void); fn current_task()->*mut task_struct; fn smp_processor_id()->c_int;
-    fn arch_spin_lock(*mut usize); fn arch_spin_unlock(*mut usize); fn local_irq_disable(); fn local_irq_enable();
-    fn ring_buffer_resize(*mut c_void,usize,c_int)->c_int; fn ring_buffer_subbuf_order_get(*mut c_void)->c_int; fn ring_buffer_subbuf_order_set(*mut c_void,c_int)->c_int;
-    fn per_cpu_entries(*mut c_void,c_int)->*mut usize; fn tracing_reset_online_cpus(*mut array_buffer); fn tracing_reset_cpu(*mut array_buffer,c_int);
-    fn lockdep_assert_held(*mut usize); fn spin_lock(*mut usize); fn spin_unlock(*mut usize); fn tracing_alloc_snapshot_instance(*mut trace_array)->c_int;
-    fn tracing_snapshot(); fn tracing_snapshot_instance(*mut trace_array); fn tracing_disarm_snapshot(*mut trace_array); fn tracing_arm_snapshot_locked(*mut trace_array)->c_int;
-    fn ring_buffer_record_is_set_on(*mut c_void)->bool; fn ring_buffer_record_on(*mut c_void); fn ring_buffer_record_off(*mut c_void); fn ring_buffer_wake_waiters(*mut c_void,c_int);
-    fn ring_buffer_swap_cpu(*mut c_void,*mut c_void,c_int)->c_int; fn trace_array_printk_buf(*mut c_void,usize,*const c_char,...);
-    fn trace_set_buffer_entries(*mut array_buffer,usize); fn allocate_trace_buffer(*mut trace_array,*mut array_buffer,usize)->c_int;
-    fn trace_array_put(*mut trace_array); fn synchronize_rcu();
+    fn trace_set_ring_buffer_expanded(_: *mut c_void); fn in_nmi()->bool; fn trace_array_puts(_: *mut trace_array,_: *const c_char);
+    fn tracer_tracing_off(_: *mut trace_array); fn tracer_uses_snapshot(_: *mut c_void)->bool; fn local_irq_save(_: *mut usize); fn local_irq_restore(_: usize);
+    fn update_max_tr(_: *mut trace_array,_: *mut task_struct,_: c_int,_: *mut c_void); fn current_task()->*mut task_struct; fn smp_processor_id()->c_int;
+    fn arch_spin_lock(_: *mut usize); fn arch_spin_unlock(_: *mut usize); fn local_irq_disable(); fn local_irq_enable();
+    fn ring_buffer_resize(_: *mut c_void,_: usize,_: c_int)->c_int; fn ring_buffer_subbuf_order_get(_: *mut c_void)->c_int; fn ring_buffer_subbuf_order_set(_: *mut c_void,_: c_int)->c_int;
+    fn per_cpu_entries(_: *mut c_void,_: c_int)->*mut usize; fn tracing_reset_online_cpus(_: *mut array_buffer); fn tracing_reset_cpu(_: *mut array_buffer,_: c_int);
+    fn lockdep_assert_held(_: *mut usize); fn spin_lock(_: *mut usize); fn spin_unlock(_: *mut usize); fn tracing_alloc_snapshot_instance(_: *mut trace_array)->c_int;
+    fn tracing_snapshot(); fn tracing_snapshot_instance(_: *mut trace_array); fn tracing_disarm_snapshot(_: *mut trace_array); fn tracing_arm_snapshot_locked(_: *mut trace_array)->c_int;
+    fn ring_buffer_record_is_set_on(_: *mut c_void)->bool; fn ring_buffer_record_on(_: *mut c_void); fn ring_buffer_record_off(_: *mut c_void); fn ring_buffer_wake_waiters(_: *mut c_void,_: c_int);
+    fn ring_buffer_swap_cpu(_: *mut c_void,_: *mut c_void,_: c_int)->c_int; fn trace_array_printk_buf(_: *mut c_void,_: usize,_: *const c_char,...);
+    fn trace_set_buffer_entries(_: *mut array_buffer,_: usize); fn allocate_trace_buffer(_: *mut trace_array,_: *mut array_buffer,_: usize)->c_int;
+    fn trace_array_put(_: *mut trace_array); fn synchronize_rcu();
 }
 
 static mut BOOT_SNAPSHOT_INFO: [c_char; 4096] = [0;4096];

@@ -91,7 +91,7 @@ unsafe fn gnss_write(file: *mut File, buf: *const u8, count: usize, _pos: *mut i
 unsafe fn gnss_insert_raw(gdev: *mut GnssDevice, buf: *const u8, count: usize) -> i32 { let ret = kfifo_in(&mut (*gdev).read_fifo, buf, count); wake_up_interruptible(&mut (*gdev).read_queue); ret }
 
 extern "C" {
-    fn get_device(*mut Device); fn put_device(*mut Device); fn stream_open(*mut Inode,*mut File); fn down_write(*mut RwSem); fn up_write(*mut RwSem); fn down_read(*mut RwSem); fn up_read(*mut RwSem); fn mutex_lock(*mut Mutex); fn mutex_unlock(*mut Mutex); fn mutex_lock_interruptible(*mut Mutex)->i32; fn wait_event_interruptible(*mut WaitQueue)->i32; fn kfifo_is_empty(*const Kfifo)->bool; fn kfifo_reset(*mut Kfifo); fn kfifo_to_user(*mut Kfifo,*mut u8,usize,*mut u32)->i32; fn kfifo_in(*mut Kfifo,*const u8,usize)->i32; fn wake_up_interruptible(*mut WaitQueue);
+    fn get_device(_: *mut Device); fn put_device(_: *mut Device); fn stream_open(_: *mut Inode,_: *mut File); fn down_write(_: *mut RwSem); fn up_write(_: *mut RwSem); fn down_read(_: *mut RwSem); fn up_read(_: *mut RwSem); fn mutex_lock(_: *mut Mutex); fn mutex_unlock(_: *mut Mutex); fn mutex_lock_interruptible(_: *mut Mutex)->i32; fn wait_event_interruptible(_: *mut WaitQueue)->i32; fn kfifo_is_empty(_: *const Kfifo)->bool; fn kfifo_reset(_: *mut Kfifo); fn kfifo_to_user(_: *mut Kfifo,_: *mut u8,_: usize,_: *mut u32)->i32; fn kfifo_in(_: *mut Kfifo,_: *const u8,_: usize)->i32; fn wake_up_interruptible(_: *mut WaitQueue);
 }
 
 #[no_mangle]
@@ -134,7 +134,7 @@ pub unsafe extern "C" fn gnss_module_init() -> i32 { alloc_chrdev_region(&mut gn
 pub unsafe extern "C" fn gnss_module_exit() { class_destroy(gnss_class); unregister_chrdev_region(gnss_first, GNSS_MINORS); ida_destroy(&mut gnss_minors); }
 
 extern "C" {
-    fn kzalloc_gnss() -> *mut GnssDevice; fn kfree(*mut core::ffi::c_void); fn ida_alloc_max(*mut Ida,i32)->i32; fn ida_free(*mut Ida,i32); fn ida_destroy(*mut Ida); fn init_rwsem(*mut RwSem); fn mutex_init(*mut Mutex); fn init_waitqueue_head(*mut WaitQueue); fn kfifo_alloc(*mut Kfifo,usize)->i32; fn kfifo_free(*mut Kfifo); fn kzalloc(usize)->*mut u8; fn cdev_device_add(*mut Cdev,*mut Device)->i32; fn cdev_device_del(*mut Cdev,*mut Device); fn sprintf(*mut u8,*const u8,...)->isize; fn alloc_chrdev_region(*mut DevT,u32,*const u8)->i32; fn unregister_chrdev_region(DevT,u32); fn class_destroy(*mut Class);
+    fn kzalloc_gnss() -> *mut GnssDevice; fn kfree(_: *mut core::ffi::c_void); fn ida_alloc_max(_: *mut Ida,_: i32)->i32; fn ida_free(_: *mut Ida,_: i32); fn ida_destroy(_: *mut Ida); fn init_rwsem(_: *mut RwSem); fn mutex_init(_: *mut Mutex); fn init_waitqueue_head(_: *mut WaitQueue); fn kfifo_alloc(_: *mut Kfifo,_: usize)->i32; fn kfifo_free(_: *mut Kfifo); fn kzalloc(_: usize)->*mut u8; fn cdev_device_add(_: *mut Cdev,_: *mut Device)->i32; fn cdev_device_del(_: *mut Cdev,_: *mut Device); fn sprintf(_: *mut u8,_: *const u8,...)->isize; fn alloc_chrdev_region(_: *mut DevT,_: u32,_: *const u8)->i32; fn unregister_chrdev_region(_: DevT,_: u32); fn class_destroy(_: *mut Class);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

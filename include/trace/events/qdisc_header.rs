@@ -93,10 +93,10 @@ macro_rules! trace_event_qdisc_dequeue {
             txq: $txq,
             packets: if !$skb.is_null() { $packets } else { 0 },
             skbaddr: $skb as *mut c_void,
-            ifindex: 0, // txq->dev ? txq->dev->ifindex : 0
-            handle: 0, // qdisc->handle
-            parent: 0, // qdisc->parent
-            txq_state: 0, // txq->state
+            ifindex: 0, // $txq->dev ? $txq->dev->ifindex : 0
+            handle: 0, // $qdisc->handle
+            parent: 0, // $qdisc->parent
+            txq_state: 0, // $txq->state
         }
     }};
 }
@@ -108,9 +108,9 @@ macro_rules! trace_event_qdisc_enqueue {
             qdisc: $qdisc,
             txq: $txq,
             skbaddr: $skb as *mut c_void,
-            ifindex: 0, // txq->dev ? txq->dev->ifindex : 0
-            handle: 0, // qdisc->handle
-            parent: 0, // qdisc->parent
+            ifindex: 0, // $txq->dev ? $txq->dev->ifindex : 0
+            handle: 0, // $qdisc->handle
+            parent: 0, // $qdisc->parent
         }
     }};
 }
@@ -120,9 +120,9 @@ macro_rules! trace_event_qdisc_drop {
     ($qdisc:expr, $txq:expr, $dev:expr, $skb:expr, $reason:expr) => {{
         qdisc_drop_entry {
             qdisc: $qdisc, txq: $txq, skbaddr: $skb as *mut c_void,
-            ifindex: 0, // dev ? dev->ifindex : 0
-            handle: 0, // qdisc->handle
-            parent: 0, // qdisc->parent
+            ifindex: 0, // $dev ? $dev->ifindex : 0
+            handle: 0, // $qdisc->handle
+            parent: 0, // $qdisc->parent
             reason: $reason, kind: core::ptr::null(),
         }
     }};

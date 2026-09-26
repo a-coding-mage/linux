@@ -114,7 +114,7 @@ pub unsafe fn arch_freq_get_on_cpu(mut cpu: i32) -> i32 {
 unsafe fn amu_fie_setup(cpus: *const cpumask) {
     let mut cpu = 0;
     if cpumask_available(amu_fie_cpus) && unlikely(cpumask_subset(cpus, amu_fie_cpus)) { return; }
-    for_each_cpu!(cpu, cpus) { if !freq_counters_valid(cpu) { return; } }
+    for_each_cpu!(cpu, cpus, { if !freq_counters_valid(cpu) { return; } });
     if !cpumask_available(amu_fie_cpus) && !zalloc_cpumask_var(&raw mut amu_fie_cpus, GFP_KERNEL) { WARN_ONCE!(true, "Failed to allocate FIE cpumask for CPUs[%*pbl]\n", cpumask_pr_args(cpus)); return; }
     cpumask_or(amu_fie_cpus, amu_fie_cpus, cpus);
     topology_set_scale_freq_source(&raw mut amu_sfd, cpus);

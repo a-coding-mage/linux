@@ -13,18 +13,18 @@ pub struct amd_iommu {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_AMD_IOMMU")]
+#[cfg(CONFIG_AMD_IOMMU)]
 extern "C" {
     pub fn amd_iommu_detect();
 }
 
-#[cfg(not(feature = "CONFIG_AMD_IOMMU"))]
+#[cfg(not(CONFIG_AMD_IOMMU))]
 #[inline]
 pub fn amd_iommu_detect() {}
 
 // IOMMU AVIC Function. The original declarations are enabled when both
 // CONFIG_AMD_IOMMU and CONFIG_IRQ_REMAP are enabled.
-#[cfg(all(feature = "CONFIG_AMD_IOMMU", feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(all(CONFIG_AMD_IOMMU, CONFIG_IRQ_REMAP))]
 extern "C" {
     pub fn amd_iommu_register_ga_log_notifier(
         notifier: Option<extern "C" fn(u32) -> i32>,
@@ -38,7 +38,7 @@ extern "C" {
     pub fn amd_iommu_deactivate_guest_mode(data: *mut core::ffi::c_void) -> i32;
 }
 
-#[cfg(not(all(feature = "CONFIG_AMD_IOMMU", feature = "CONFIG_IRQ_REMAP")))]
+#[cfg(not(all(CONFIG_AMD_IOMMU, CONFIG_IRQ_REMAP)))]
 #[inline]
 pub fn amd_iommu_register_ga_log_notifier(
     _notifier: Option<extern "C" fn(u32) -> i32>,
@@ -46,7 +46,7 @@ pub fn amd_iommu_register_ga_log_notifier(
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_AMD_IOMMU", feature = "CONFIG_IRQ_REMAP")))]
+#[cfg(not(all(CONFIG_AMD_IOMMU, CONFIG_IRQ_REMAP)))]
 #[inline]
 pub fn amd_iommu_update_ga(
     _data: *mut core::ffi::c_void,
@@ -56,7 +56,7 @@ pub fn amd_iommu_update_ga(
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_AMD_IOMMU", feature = "CONFIG_IRQ_REMAP")))]
+#[cfg(not(all(CONFIG_AMD_IOMMU, CONFIG_IRQ_REMAP)))]
 #[inline]
 pub fn amd_iommu_activate_guest_mode(
     _data: *mut core::ffi::c_void,
@@ -66,7 +66,7 @@ pub fn amd_iommu_activate_guest_mode(
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_AMD_IOMMU", feature = "CONFIG_IRQ_REMAP")))]
+#[cfg(not(all(CONFIG_AMD_IOMMU, CONFIG_IRQ_REMAP)))]
 #[inline]
 pub fn amd_iommu_deactivate_guest_mode(_data: *mut core::ffi::c_void) -> i32 {
     0
@@ -94,19 +94,19 @@ extern "C" {
     pub fn get_amd_iommu(idx: u32) -> *mut amd_iommu;
 }
 
-#[cfg(feature = "CONFIG_KVM_AMD_SEV")]
+#[cfg(CONFIG_KVM_AMD_SEV)]
 extern "C" {
     pub fn amd_iommu_snp_disable() -> i32;
     pub fn amd_iommu_sev_tio_supported() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_KVM_AMD_SEV"))]
+#[cfg(not(CONFIG_KVM_AMD_SEV))]
 #[inline]
 pub fn amd_iommu_snp_disable() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_KVM_AMD_SEV"))]
+#[cfg(not(CONFIG_KVM_AMD_SEV))]
 #[inline]
 pub fn amd_iommu_sev_tio_supported() -> bool {
     false

@@ -9,7 +9,7 @@
 
 // Linux dependencies supplied by the surrounding kernel translation.
 
-static DEFINE_SPINLOCK!(kernfs_pr_cont_lock);
+DEFINE_SPINLOCK!(kernfs_pr_cont_lock);
 static mut kernfs_pr_cont_buf: [c_char; PATH_MAX as usize] = [0; PATH_MAX as usize];
 
 macro_rules! rb_to_kn { ($x:expr) => { rb_entry($x, kernfs_node, rb) }; }

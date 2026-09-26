@@ -76,12 +76,12 @@ unsafe fn in_set(a: &[i32; 32], b: i32) -> bool {
 #[inline(always)]
 unsafe fn xdp_get_err_key(err: i32) -> u32 {
     match err {
-        0 => 0,
-        -EINVAL => 2,
-        -ENETDOWN => 3,
-        -EMSGSIZE => 4,
-        -EOPNOTSUPP => 5,
-        -ENOSPC => 6,
+        case if case == 0 => 0,
+        case if case == -EINVAL => 2,
+        case if case == -ENETDOWN => 3,
+        case if case == -EMSGSIZE => 4,
+        case if case == -EOPNOTSUPP => 5,
+        case if case == -ENOSPC => 6,
         _ => 1,
     }
 }

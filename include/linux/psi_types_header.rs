@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* The declarations below correspond to CONFIG_PSI. */
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum psi_task_count {
@@ -21,30 +21,30 @@ pub enum psi_task_count {
     NR_PSI_TASK_COUNTS = 4,
 }
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const TSK_IOWAIT: u32 = 1 << (NR_IOWAIT as u32);
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const TSK_MEMSTALL: u32 = 1 << (NR_MEMSTALL as u32);
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const TSK_RUNNING: u32 = 1 << (NR_RUNNING as u32);
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const TSK_MEMSTALL_RUNNING: u32 = 1 << (NR_MEMSTALL_RUNNING as u32);
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const TSK_ONCPU: u32 = 1 << (NR_PSI_TASK_COUNTS as u32);
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum psi_res {
     PSI_IO,
     PSI_MEM,
     PSI_CPU,
-    #[cfg(feature = "CONFIG_IRQ_TIME_ACCOUNTING")]
+    #[cfg(CONFIG_IRQ_TIME_ACCOUNTING)]
     PSI_IRQ,
     NR_PSI_RESOURCES,
 }
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum psi_states {
@@ -54,19 +54,19 @@ pub enum psi_states {
     PSI_MEM_FULL,
     PSI_CPU_SOME,
     PSI_CPU_FULL,
-    #[cfg(feature = "CONFIG_IRQ_TIME_ACCOUNTING")]
+    #[cfg(CONFIG_IRQ_TIME_ACCOUNTING)]
     PSI_IRQ_FULL,
     /* Only per-CPU, to weigh the CPU in the global average: */
     PSI_NONIDLE,
     NR_PSI_STATES,
 }
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const PSI_ONCPU: u32 = 1 << (NR_PSI_STATES as u32);
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 pub const PSI_STATE_RESCHEDULE: u32 = 1 << ((NR_PSI_STATES as u32) + 1);
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum psi_aggregators {
@@ -75,7 +75,7 @@ pub enum psi_aggregators {
     NR_PSI_AGGREGATORS,
 }
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 pub struct psi_group_cpu {
     /* 1st cacheline updated by the scheduler */
@@ -92,7 +92,7 @@ pub struct psi_group_cpu {
     pub times_prev: [[u32; NR_PSI_STATES as usize]; NR_PSI_AGGREGATORS as usize],
 }
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 pub struct psi_window {
     /* Window size in ns */
@@ -106,7 +106,7 @@ pub struct psi_window {
 }
 
 /* External kernel types are supplied by other translated headers. */
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 pub struct psi_trigger {
     pub state: psi_states,
@@ -122,7 +122,7 @@ pub struct psi_trigger {
     pub aggregator: psi_aggregators,
 }
 
-#[cfg(feature = "CONFIG_PSI")]
+#[cfg(CONFIG_PSI)]
 #[repr(C)]
 pub struct psi_group {
     pub parent: *mut psi_group,
@@ -152,10 +152,10 @@ pub struct psi_group {
     pub rtpoll_until: u64,
 }
 
-#[cfg(not(feature = "CONFIG_PSI"))]
+#[cfg(not(CONFIG_PSI))]
 pub const NR_PSI_RESOURCES: usize = 0;
 
-#[cfg(not(feature = "CONFIG_PSI"))]
+#[cfg(not(CONFIG_PSI))]
 #[repr(C)]
 pub struct psi_group {}
 

@@ -143,9 +143,9 @@ unsafe fn intersection_range_check() -> c_int {
     bitmap_free(intxn1); bitmap_free(intxn2); 0
 }
 
-#[cfg(feature = "CONFIG_INTERVAL_TREE_SPAN_ITER")]
+#[cfg(CONFIG_INTERVAL_TREE_SPAN_ITER)]
 unsafe fn span_iteration_check() -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_INTERVAL_TREE_SPAN_ITER"))]
+#[cfg(not(CONFIG_INTERVAL_TREE_SPAN_ITER))]
 unsafe fn span_iteration_check() -> c_int { 0 }
 
 #[no_mangle]

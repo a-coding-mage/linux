@@ -5,7 +5,7 @@
 
 use core::ffi::c_void;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn patch_insn_write(addr: *mut c_void, insn: *const c_void, len: usize) -> i32;
     pub fn patch_text_nosync(addr: *mut c_void, insns: *const c_void, len: usize) -> i32;
     pub fn patch_text_set_nosync(addr: *mut c_void, c: u8, len: usize) -> i32;

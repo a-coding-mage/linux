@@ -166,9 +166,9 @@ unsafe fn loongson3_cpufreq_cpu_init(policy: *mut CpufreqPolicy) -> i32 {
     (*policy).freq_table = (*per_cpu(FREQ_DATA, cpu)).table.as_ptr() as *mut CpufreqFrequencyTable;
     (*policy).suspend_freq = table_at(per_cpu(FREQ_DATA, cpu), (*per_cpu(FREQ_DATA, cpu)).def_freq_level as i32).frequency;
     cpumask_copy((*policy).cpus, topology_sibling_cpumask(cpu));
-    for_each_cpu(i, (*policy).cpus) {
+    for_each_cpu!(i, (*policy).cpus, {
         if i != cpu { per_cpu(FREQ_DATA, i) = per_cpu(FREQ_DATA, cpu); }
-    }
+    });
     0
 }
 

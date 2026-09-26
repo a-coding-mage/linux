@@ -35,13 +35,27 @@ pub struct legacy_cpu_model_info {
     pub model_names: [*const ::core::ffi::c_char; 16],
 }
 
-// #define cpu_dev_register(cpu_devX) ...
-// Registration is emitted by the platform/linker integration using the
-// .x86_cpu_dev.init section.
+// SAFETY: vendor descriptors are immutable tables of C strings and function
+// pointers, only read during CPU identification.
+unsafe impl Sync for cpu_dev {}
+
+/// `cpu_dev_register(cpu_devX)`: place a pointer to the vendor descriptor in
+/// the `.x86_cpu_dev.init` table walked by early CPU identification.
+#[macro_export]
+macro_rules! cpu_dev_register {
+    ($cpu_devX:ident) => {
+        ::kernel::macros::paste! {
+            #[used]
+            #[link_section = ".x86_cpu_dev.init"]
+            static [<__cpu_dev_ $cpu_devX>]: &cpu_dev = &$cpu_devX;
+        }
+    };
+}
 
 unsafe extern "C" {
-    pub static __x86_cpu_dev_start: *const *const cpu_dev;
-    pub static __x86_cpu_dev_end: *const *const cpu_dev;
+    // Linker-provided bounds of the `.x86_cpu_dev.init` pointer table.
+    pub static __x86_cpu_dev_start: [*const cpu_dev; 0];
+    pub static __x86_cpu_dev_end: [*const cpu_dev; 0];
 
     pub fn init_spectral_chicken(c: *mut cpuinfo_x86);
     pub fn get_cpu_cap(c: *mut cpuinfo_x86);

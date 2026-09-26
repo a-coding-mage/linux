@@ -46,7 +46,7 @@ macro_rules! LE_COMMON_REG_LIST_BASE { ($id:expr) => {
 }; }
 #[macro_export]
 macro_rules! LE_COMMON_REG_LIST { ($id:expr) => { LE_COMMON_REG_LIST_BASE!($id), SRI!(DP_DPHY_BS_SR_SWAP_CNTL, DP, $id), SRI!(DP_DPHY_INTERNAL_CTRL, DP, $id), SR!(DCI_MEM_PWR_STATUS) }; }
-#[cfg(feature = "CONFIG_DRM_AMD_DC_SI")]
+#[cfg(CONFIG_DRM_AMD_DC_SI)]
 #[macro_export]
 macro_rules! LE_DCE60_REG_LIST { ($id:expr) => {
     SRI!(DP_DPHY_INTERNAL_CTRL, DP, $id), SR!(DMCU_RAM_ACCESS_CTRL), SR!(DMCU_IRAM_RD_CTRL),
@@ -87,7 +87,7 @@ macro_rules! LE_DCE120_REG_LIST { ($id:expr) => { LE_COMMON_REG_LIST_BASE!($id),
 
 extern "C" {
     pub fn dce110_link_encoder_construct(enc110: *mut dce110_link_encoder, init_data: *const encoder_init_data, enc_features: *const encoder_feature_support, link_regs: *const dce110_link_enc_registers, aux_regs: *const dce110_link_enc_aux_registers, hpd_regs: *const dce110_link_enc_hpd_registers);
-    #[cfg(feature = "CONFIG_DRM_AMD_DC_SI")] pub fn dce60_link_encoder_construct(enc110: *mut dce110_link_encoder, init_data: *const encoder_init_data, enc_features: *const encoder_feature_support, link_regs: *const dce110_link_enc_registers, aux_regs: *const dce110_link_enc_aux_registers, hpd_regs: *const dce110_link_enc_hpd_registers);
+    #[cfg(CONFIG_DRM_AMD_DC_SI)] pub fn dce60_link_encoder_construct(enc110: *mut dce110_link_encoder, init_data: *const encoder_init_data, enc_features: *const encoder_feature_support, link_regs: *const dce110_link_enc_registers, aux_regs: *const dce110_link_enc_aux_registers, hpd_regs: *const dce110_link_enc_hpd_registers);
     pub fn dce110_link_encoder_validate_dvi_output(enc110: *const dce110_link_encoder, connector_signal: signal_type, signal: signal_type, crtc_timing: *const dc_crtc_timing) -> bool;
     pub fn dce110_link_encoder_validate_dp_output(enc110: *const dce110_link_encoder, crtc_timing: *const dc_crtc_timing) -> bool;
     pub fn dce110_link_encoder_validate_wireless_output(enc110: *const dce110_link_encoder, crtc_timing: *const dc_crtc_timing) -> bool;

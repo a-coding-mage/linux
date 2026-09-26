@@ -58,7 +58,7 @@ struct mm_struct {
 const VM_EXEC: usize = 0x0000_0004;
 const NR_CPUS: i32 = 1;
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[no_mangle]
 pub unsafe extern "C" fn migrate_flush_tlb_page(vma: *mut vm_area_struct, addr: usize) {
     let mm = (*vma).vm_mm;
@@ -82,7 +82,7 @@ pub unsafe extern "C" fn migrate_flush_tlb_page(vma: *mut vm_area_struct, addr: 
     tbi(tbi_type, addr);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[repr(C)]
 struct tlb_mm_and_addr {
     mm: *mut mm_struct,
@@ -90,7 +90,7 @@ struct tlb_mm_and_addr {
     tbi_type: i32, // 2 = DTB, 3 = ITB+DTB
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" fn ipi_flush_mm_and_page(x: *mut core::ffi::c_void) {
     let d = x as *mut tlb_mm_and_addr;
 
@@ -105,12 +105,12 @@ unsafe extern "C" fn ipi_flush_mm_and_page(x: *mut core::ffi::c_void) {
     tbi((*d).tbi_type, (*d).addr);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn asn_locked() -> bool {
     (*cpu_data.add(smp_processor_id() as usize)).asn_lock
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[no_mangle]
 pub unsafe extern "C" fn migrate_flush_tlb_page(vma: *mut vm_area_struct, addr: usize) {
     let mm = (*vma).vm_mm;

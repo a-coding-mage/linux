@@ -29,7 +29,7 @@ unsafe fn crypto_alg_match(p: *mut CryptoUserAlg, exact: i32) -> *mut CryptoAlg 
     let mut alg: *mut CryptoAlg = core::ptr::null_mut();
 
     down_read(&mut crypto_alg_sem);
-    list_for_each_entry!(q, crypto_alg_list, cra_list) {
+    list_for_each_entry!(q, crypto_alg_list, cra_list, {
         let mut matched = 0;
         if crypto_is_larval(q) { continue; }
         if ((*q).cra_flags ^ (*p).cru_type) & (*p).cru_mask != 0 { continue; }
@@ -42,7 +42,7 @@ unsafe fn crypto_alg_match(p: *mut CryptoUserAlg, exact: i32) -> *mut CryptoAlg 
         if !crypto_mod_get(q) { continue; }
         alg = q;
         break;
-    }
+    });
     up_read(&mut crypto_alg_sem);
     alg
 }
@@ -113,10 +113,10 @@ unsafe fn crypto_dump_report(skb: *mut SkBuff, cb: *mut NetlinkCallback) -> i32 
     let mut res;
     down_read(&mut crypto_alg_sem);
     let mut alg: *mut CryptoAlg;
-    list_for_each_entry!(alg, crypto_alg_list, cra_list) {
+    list_for_each_entry!(alg, crypto_alg_list, cra_list, {
         if pos >= start_pos { res = crypto_report_alg(alg, &mut info); if res == -EMSGSIZE { break; } if res != 0 { up_read(&mut crypto_alg_sem); return res; } }
         pos += 1;
-    }
+    });
     (*cb).args[0] = pos as _;
     res = (*skb).len as i32;
     up_read(&mut crypto_alg_sem);

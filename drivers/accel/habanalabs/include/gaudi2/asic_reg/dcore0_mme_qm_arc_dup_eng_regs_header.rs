@@ -10,8 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#ifndef ASIC_REG_DCORE0_MME_QM_ARC_DUP_ENG_REGS_H_
-#define ASIC_REG_DCORE0_MME_QM_ARC_DUP_ENG_REGS_H_
 
 /*
  *****************************************

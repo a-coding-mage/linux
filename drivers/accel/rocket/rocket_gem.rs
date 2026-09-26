@@ -11,7 +11,7 @@ unsafe fn rocket_gem_bo_free(obj: *mut drm_gem_object) {
 
     drm_WARN_ON((*obj).dev, refcount_read(&(*bo).base.pages_use_count) > 1);
 
-    unmapped = iommu_unmap((*bo).domain->domain, (*bo).mm.start, (*bo).size);
+    unmapped = iommu_unmap((*(*bo).domain).domain, (*bo).mm.start, (*bo).size);
     drm_WARN_ON((*obj).dev, unmapped != (*bo).size);
 
     mutex_lock(&mut (*rocket_priv).mm_lock);
@@ -61,6 +61,9 @@ unsafe fn rocket_ioctl_create_bo(
     let mut gem_obj: *mut drm_gem_object;
     let mut sgt: *mut sg_table;
     let mut ret: i32;
+    'err: {
+    'err_remove_node: {
+    'err_unmap: {
 
     shmem_obj = drm_gem_shmem_create(dev, (*args).size);
     if IS_ERR(shmem_obj) {
@@ -78,7 +81,7 @@ unsafe fn rocket_ioctl_create_bo(
     sgt = drm_gem_shmem_get_pages_sgt(shmem_obj);
     if IS_ERR(sgt) {
         ret = PTR_ERR(sgt);
-        goto err;
+        break 'err;
     }
 
     mutex_lock(&mut (*rocket_priv).mm_lock);
@@ -86,15 +89,15 @@ unsafe fn rocket_ioctl_create_bo(
                                      (*rkt_obj).size, PAGE_SIZE, 0, 0);
     mutex_unlock(&mut (*rocket_priv).mm_lock);
     if ret != 0 {
-        goto err;
+        break 'err;
     }
 
-    ret = iommu_map_sgtable((*rocket_priv).domain->domain, (*rkt_obj).mm.start,
+    ret = iommu_map_sgtable((*(*rocket_priv).domain).domain, (*rkt_obj).mm.start,
                             (*shmem_obj).sgt, IOMMU_READ | IOMMU_WRITE);
     if ret < 0 || ret < (*args).size as i32 {
         drm_err(dev, "failed to map buffer: size=%d request_size=%u\n", ret, (*args).size);
         ret = -ENOMEM;
-        goto err_remove_node;
+        break 'err_remove_node;
     }
 
     // iommu_map_sgtable might have aligned the size
@@ -104,21 +107,21 @@ unsafe fn rocket_ioctl_create_bo(
 
     ret = drm_gem_handle_create(file, gem_obj, &mut (*args).handle);
     if ret != 0 {
-        goto err_unmap;
+        break 'err_unmap;
     }
 
     drm_gem_object_put(gem_obj);
     return 0;
-
-err_unmap:
-    iommu_unmap((*rocket_priv).domain->domain, (*rkt_obj).mm.start, (*rkt_obj).size);
-
-err_remove_node:
+    }
+    
+    iommu_unmap((*(*rocket_priv).domain).domain, (*rkt_obj).mm.start, (*rkt_obj).size);
+    }
+    
     mutex_lock(&mut (*rocket_priv).mm_lock);
     drm_mm_remove_node(&mut (*rkt_obj).mm);
     mutex_unlock(&mut (*rocket_priv).mm_lock);
-
-err:
+    }
+    
     drm_gem_shmem_object_free(gem_obj);
     ret
 }

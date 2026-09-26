@@ -22,7 +22,7 @@
 // Dependency: the declarations supplied by "link_encoder.h" remain external.
 
 /* DCN30_HPO_FRL_LINK_ENC_FROM_HPO_FRL_LINK_ENC(hpo_frl_link_encoder):
- * container_of(hpo_frl_link_encoder, struct dcn30_hpo_frl_link_encoder, base)
+ * container_of(hpo_frl_link_encoder, dcn30_hpo_frl_link_encoder, base)
  */
 
 // DCN3_0_HPO_FRL_LINK_ENC_REG_LIST(id) expands to SR(...) register entries;
@@ -87,28 +87,24 @@ pub struct dcn30_hpo_frl_link_encoder {
 extern "C" {
     pub fn hpo_frl_link_enc3_setup_link_encoder(
         enc: *mut hpo_frl_link_encoder,
-        lane_count: i32,
-    );
+        lane_count: i32);
     pub fn hpo_frl_link_enc3_set_training_pattern(
         enc: *mut hpo_frl_link_encoder,
         lane0_pattern: u32,
         lane1_pattern: u32,
         lane2_pattern: u32,
-        lane3_pattern: u32,
-    );
+        lane3_pattern: u32);
     pub fn hpo_frl_link_enc3_get_training_pattern(
         enc: *mut hpo_frl_link_encoder,
         lane0_pattern: *mut u32,
         lane1_pattern: *mut u32,
         lane2_pattern: *mut u32,
-        lane3_pattern: *mut u32,
-    );
+        lane3_pattern: *mut u32);
     pub fn hpo_frl_link_enc3_enable_output(enc: *mut hpo_frl_link_encoder);
     pub fn hpo_frl_link_enc3_disable(enc: *mut hpo_frl_link_encoder);
     pub fn hpo_frl_link_enc3_read_state(
         enc: *mut hpo_frl_link_encoder,
-        state: *mut hpo_frl_link_enc_state,
-    );
+        state: *mut hpo_frl_link_enc_state);
     pub fn hpo_frl_link_enc3_destroy(enc: *mut *mut hpo_frl_link_encoder);
     pub fn hpo_frl_link_enc3_apply_vsdb_rcc_wa(enc: *mut hpo_frl_link_encoder);
     pub fn hpo_frl_link_encoder3_construct(
@@ -117,8 +113,7 @@ extern "C" {
         inst: u32,
         hpo_le_regs: *const dcn30_hpo_frl_link_encoder_registers,
         hpo_le_shift: *const dcn30_hpo_frl_link_encoder_shift,
-        hpo_le_mask: *const dcn30_hpo_frl_link_encoder_mask,
-    );
+        hpo_le_mask: *const dcn30_hpo_frl_link_encoder_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

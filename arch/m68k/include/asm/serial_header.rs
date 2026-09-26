@@ -17,21 +17,21 @@ pub const BASE_BAUD: i32 = 1_843_200 / 16;
 
 /* Standard COM flags (except for COM4, because of the 8514 problem). */
 /* The CONFIG_SERIAL_8250_DETECT_IRQ build-time condition is preserved here. */
-#[cfg(feature = "CONFIG_SERIAL_8250_DETECT_IRQ")]
+#[cfg(CONFIG_SERIAL_8250_DETECT_IRQ)]
 pub const STD_COM_FLAGS: _ = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_AUTO_IRQ;
-#[cfg(feature = "CONFIG_SERIAL_8250_DETECT_IRQ")]
+#[cfg(CONFIG_SERIAL_8250_DETECT_IRQ)]
 pub const STD_COM4_FLAGS: _ = UPF_BOOT_AUTOCONF | UPF_AUTO_IRQ;
 
-#[cfg(not(feature = "CONFIG_SERIAL_8250_DETECT_IRQ"))]
+#[cfg(not(CONFIG_SERIAL_8250_DETECT_IRQ))]
 pub const STD_COM_FLAGS: _ = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST;
-#[cfg(not(feature = "CONFIG_SERIAL_8250_DETECT_IRQ"))]
+#[cfg(not(CONFIG_SERIAL_8250_DETECT_IRQ))]
 pub const STD_COM4_FLAGS: _ = UPF_BOOT_AUTOCONF;
 
 /*
  * The CONFIG_ISA build-time condition is preserved here.  This macro
  * expands to the same four serial-port initializers as SERIAL_PORT_DFNS.
  */
-#[cfg(feature = "CONFIG_ISA")]
+#[cfg(CONFIG_ISA)]
 macro_rules! SERIAL_PORT_DFNS {
     () => {
         (0, BASE_BAUD, 0x3f8, 4, STD_COM_FLAGS),

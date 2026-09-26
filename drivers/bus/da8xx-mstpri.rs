@@ -138,7 +138,7 @@ unsafe fn da8xx_mstpri_probe(pdev: *mut core::ffi::c_void) -> i32 {
     let dev = pdev;
     let res = platform_get_resource(pdev, 0, 0); // IORESOURCE_MEM
     let mstpri = devm_ioremap_resource(dev, res);
-    if mstpri as isize < 0 {
+    if (mstpri as isize) < 0 {
         dev_err(dev, b"unable to map MSTPRI registers\n\0" as *const [u8] as *const i8);
         return ptr_err(mstpri);
     }

@@ -43,7 +43,7 @@ pub unsafe fn simu_branch(regs: *mut pt_regs, insn: loongarch_instruction) {
     match insn.reg2i16_format.opcode {
         beq_op => (*regs).csr_era = if (*regs).regs[rj] == (*regs).regs[rd] { target } else { pc + LOONGARCH_INSN_SIZE },
         bne_op => (*regs).csr_era = if (*regs).regs[rj] != (*regs).regs[rd] { target } else { pc + LOONGARCH_INSN_SIZE },
-        blt_op => (*regs).csr_era = if (*regs).regs[rj] as isize < (*regs).regs[rd] as isize { target } else { pc + LOONGARCH_INSN_SIZE },
+        blt_op => (*regs).csr_era = if ((*regs).regs[rj] as isize) < (*regs).regs[rd] as isize { target } else { pc + LOONGARCH_INSN_SIZE },
         bge_op => (*regs).csr_era = if (*regs).regs[rj] as isize >= (*regs).regs[rd] as isize { target } else { pc + LOONGARCH_INSN_SIZE },
         bltu_op => (*regs).csr_era = if (*regs).regs[rj] < (*regs).regs[rd] { target } else { pc + LOONGARCH_INSN_SIZE },
         bgeu_op => (*regs).csr_era = if (*regs).regs[rj] >= (*regs).regs[rd] { target } else { pc + LOONGARCH_INSN_SIZE },

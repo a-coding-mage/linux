@@ -57,7 +57,7 @@ pub const MVEBU_MBUS_MAX_WINNAME_SZ: u32 = 32;
 
 /* C dependency: phys_addr_t, size_t, bool, and __iomem are supplied elsewhere. */
 
-#[cfg(feature = "CONFIG_PLAT_ORION")]
+#[cfg(CONFIG_PLAT_ORION)]
 extern "C" {
     pub fn mv_mbus_dram_info() -> *const mbus_dram_target_info;
     pub fn mv_mbus_dram_info_nooverlap() -> *const mbus_dram_target_info;
@@ -69,17 +69,17 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PLAT_ORION"))]
+#[cfg(not(CONFIG_PLAT_ORION))]
 pub unsafe fn mv_mbus_dram_info() -> *const mbus_dram_target_info {
     core::ptr::null()
 }
 
-#[cfg(not(feature = "CONFIG_PLAT_ORION"))]
+#[cfg(not(CONFIG_PLAT_ORION))]
 pub unsafe fn mv_mbus_dram_info_nooverlap() -> *const mbus_dram_target_info {
     core::ptr::null()
 }
 
-#[cfg(not(feature = "CONFIG_PLAT_ORION"))]
+#[cfg(not(CONFIG_PLAT_ORION))]
 pub unsafe fn mvebu_mbus_get_io_win_info(
     _phyaddr: phys_addr_t,
     _size: *mut u32,
@@ -96,7 +96,7 @@ pub unsafe fn mvebu_mbus_get_io_win_info(
     -22 /* -EINVAL; supplied by linux/errno.h */
 }
 
-#[cfg(feature = "CONFIG_MVEBU_MBUS")]
+#[cfg(CONFIG_MVEBU_MBUS)]
 extern "C" {
     pub fn mvebu_mbus_save_cpu_target(store_addr: *mut u32) -> i32;
     pub fn mvebu_mbus_get_pcie_mem_aperture(res: *mut resource);
@@ -130,7 +130,7 @@ extern "C" {
     pub fn mvebu_mbus_dt_init(is_coherent: bool) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_MVEBU_MBUS"))]
+#[cfg(not(CONFIG_MVEBU_MBUS))]
 pub unsafe fn mvebu_mbus_get_dram_win_info(
     _phyaddr: phys_addr_t,
     _target: *mut u8,

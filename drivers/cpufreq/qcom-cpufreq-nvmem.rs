@@ -30,18 +30,18 @@ const IPQ8074_HAWKEYE_VERSION: u32 = 0; const IPQ8074_ACORN_VERSION: u32 = 1;
 
 extern "C" {
     static mut cpufreq_dt_pdev: *mut platform_device; static mut cpufreq_pdev: *mut platform_device;
-    fn nvmem_cell_read(*mut nvmem_cell, *mut usize) -> *mut U8; fn qcom_smem_get_soc_id(*mut U32) -> c_int;
-    fn kfree(*mut c_void); fn of_machine_get_match(*const of_device_id) -> *const of_device_id;
-    fn get_cpu_device(u32) -> *mut device; fn dev_pm_opp_of_get_opp_desc_node(*mut device) -> *mut device_node;
-    fn of_device_is_compatible(*mut device_node, *const c_char) -> c_int; fn of_nvmem_cell_get(*mut device_node, *const c_char) -> *mut nvmem_cell;
-    fn devm_kzalloc(*mut device, usize, u32) -> *mut c_void; fn dev_pm_opp_set_config(*mut device, *const dev_pm_opp_config) -> c_int;
-    fn dev_pm_domain_attach_list(*mut device, *const dev_pm_domain_attach_data, *mut *mut dev_pm_domain_list) -> c_int;
-    fn dev_pm_domain_detach_list(*mut dev_pm_domain_list); fn dev_pm_opp_clear_config(c_int); fn device_set_awake_path(*mut device);
-    fn platform_device_register_simple(*const c_char, c_int, *const c_void, usize) -> *mut platform_device;
-    fn platform_device_register_data(*mut device, *const c_char, c_int, *const c_void, usize) -> *mut platform_device;
-    fn platform_device_unregister(*mut platform_device); fn platform_driver_register(*mut platform_driver) -> c_int; fn platform_driver_unregister(*mut platform_driver);
-    fn platform_set_drvdata(*mut platform_device, *mut qcom_cpufreq_drv); fn platform_get_drvdata(*mut platform_device) -> *mut qcom_cpufreq_drv;
-    fn dev_get_drvdata(*mut device) -> *mut qcom_cpufreq_drv;
+    fn nvmem_cell_read(_: *mut nvmem_cell, _: *mut usize) -> *mut U8; fn qcom_smem_get_soc_id(_: *mut U32) -> c_int;
+    fn kfree(_: *mut c_void); fn of_machine_get_match(_: *const of_device_id) -> *const of_device_id;
+    fn get_cpu_device(_: u32) -> *mut device; fn dev_pm_opp_of_get_opp_desc_node(_: *mut device) -> *mut device_node;
+    fn of_device_is_compatible(_: *mut device_node, _: *const c_char) -> c_int; fn of_nvmem_cell_get(_: *mut device_node, _: *const c_char) -> *mut nvmem_cell;
+    fn devm_kzalloc(_: *mut device, _: usize, _: u32) -> *mut c_void; fn dev_pm_opp_set_config(_: *mut device, _: *const dev_pm_opp_config) -> c_int;
+    fn dev_pm_domain_attach_list(_: *mut device, _: *const dev_pm_domain_attach_data, _: *mut *mut dev_pm_domain_list) -> c_int;
+    fn dev_pm_domain_detach_list(_: *mut dev_pm_domain_list); fn dev_pm_opp_clear_config(_: c_int); fn device_set_awake_path(_: *mut device);
+    fn platform_device_register_simple(_: *const c_char, _: c_int, _: *const c_void, _: usize) -> *mut platform_device;
+    fn platform_device_register_data(_: *mut device, _: *const c_char, _: c_int, _: *const c_void, _: usize) -> *mut platform_device;
+    fn platform_device_unregister(_: *mut platform_device); fn platform_driver_register(_: *mut platform_driver) -> c_int; fn platform_driver_unregister(_: *mut platform_driver);
+    fn platform_set_drvdata(_: *mut platform_device, _: *mut qcom_cpufreq_drv); fn platform_get_drvdata(_: *mut platform_device) -> *mut qcom_cpufreq_drv;
+    fn dev_get_drvdata(_: *mut device) -> *mut qcom_cpufreq_drv;
 }
 
 unsafe fn err_ptr(p: *mut U8) -> bool { (p as isize) < 0 && (p as isize) >= -4095 }

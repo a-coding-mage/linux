@@ -12,8 +12,8 @@
 // linux/efi.h, asm/efi.h, and efistub.h.
 
 /* SHIM variables */
-static const shim_guid: efi_guid_t = EFI_SHIM_LOCK_GUID;
-static const shim_MokSBState_name: [efi_char16_t; 13] = [
+static shim_guid: efi_guid_t = EFI_SHIM_LOCK_GUID;
+static shim_MokSBState_name: [efi_char16_t; 13] = [
     'M' as efi_char16_t,
     'o' as efi_char16_t,
     'k' as efi_char16_t,

@@ -106,7 +106,7 @@ unsafe fn feat_matrix_length(edev: *mut ethosu_device, info: *mut ethosu_validat
     let es = 1u32 << (((*fm).precision >> if ofm { 1 } else { 2 }) & 3);
     match ((*fm).precision >> 6) & 3 {
         0 => { addr = addr.wrapping_add((x as i64).wrapping_mul((*fm).stride_x) as u64).wrapping_add(c as u64 * es as u64); }
-        1 => { addr = addr.wrapping_add((c / 16) as i64 .wrapping_mul((*fm).stride_c) as u64)
+        1 => { addr = addr.wrapping_add(((c / 16) as i64) .wrapping_mul((*fm).stride_c) as u64)
                     .wrapping_add((16 * x + (c & 0xf)) as u64 * es as u64); }
         _ => {}
     }

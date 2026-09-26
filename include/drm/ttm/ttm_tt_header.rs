@@ -101,7 +101,7 @@ pub struct ttm_backup_flags {
 }
 
 /* CONFIG_AGP conditional declarations are preserved as an intentional build-time dependency. */
-#[cfg(feature = "CONFIG_AGP")]
+#[cfg(CONFIG_AGP)]
 extern "C" {
     pub fn ttm_agp_tt_create(
         bo: *mut ttm_buffer_object, bridge: *mut agp_bridge_data, page_flags: u32,

@@ -51,7 +51,7 @@ pub struct ep93xx_regmap_adev {
 #[macro_export]
 macro_rules! to_ep93xx_regmap_adev {
     ($adev:expr) => {
-        crate::container_of!($adev, $crate::ep93xx_regmap_adev, adev)
+        crate::container_of!($adev, $crate::ep93xx_regmap_adev, $adev)
     };
 }
 

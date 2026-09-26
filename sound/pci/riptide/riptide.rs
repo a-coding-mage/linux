@@ -370,7 +370,7 @@ const DECIMM0_OUT: u8 = 28; const DECIMM1_OUT: u8 = 29; const DECIMM2_OUT: u8 = 
 const ACLNK2PADC: u8 = 37; const ACLNK2MODEM0RX: u8 = 38; const ACLNK2MIC: u8 = 39; const ACLNK2MODEM1RX: u8 = 40; const ACLNK2HNDMIC: u8 = 41;
 const DIGITAL_MIXER_OUT0: u8 = 42; const GAINFUNC0_OUT: u8 = 43; const GAINFUNC1_OUT: u8 = 44; const GAINFUNC2_OUT: u8 = 45; const GAINFUNC3_OUT: u8 = 46; const GAINFUNC4_OUT: u8 = 47; const SOFTMODEMTX: u8 = 48;
 const SPLITTER0_OUTL: u8 = 49; const SPLITTER0_OUTR: u8 = 50; const SPLITTER1_OUTL: u8 = 51; const SPLITTER1_OUTR: u8 = 52; const SPLITTER2_OUTL: u8 = 53; const SPLITTER2_OUTR: u8 = 54; const SPLITTER3_OUTL: u8 = 55; const SPLITTER3_OUTR: u8 = 56;
-const MERGER0_OUT: u8 = 57; const MERGER1_OUT: u8 = 59; const MERGER2_OUT: u8 = 61; const MERGER3_OUT: u8 = 63; const ARM2LBUS_FIFO_DIRECT: u8 = 65; const NO_OUT: u8 = 66;
+const MERGER0_OUT: u8 = 57; const MERGER1_OUT: u8 = 59; const MERGER2_OUT: u8 = 61; const MERGER3_OUT: u8 = 63; const ARM2LBUS_FIFO_DIRECT: u8 = 61; const NO_OUT: u8 = 66;
 
 const LBUS2ARM_FIFO0: u8 = 0; const LBUS2ARM_FIFO1: u8 = 1; const LBUS2ARM_FIFO2: u8 = 2; const LBUS2ARM_FIFO3: u8 = 3;
 const LBUS2ARM_FIFO4: u8 = 4; const LBUS2ARM_FIFO5: u8 = 5; const LBUS2ARM_FIFO6: u8 = 6; const LBUS2ARM_FIFO7: u8 = 7;

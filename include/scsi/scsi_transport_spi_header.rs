@@ -22,7 +22,7 @@ pub struct spi_transport_attrs {
     pub min_period: c_int,
     pub offset: c_int,
     pub max_offset: c_int,
-    pub width: u32,                /* unsigned int width:1; 0 - narrow, 1 - wide */
+    pub width: u32,                /* core::ffi::c_uint width:1; 0 - narrow, 1 - wide */
     pub max_width: u32,
     pub iu: u32,                   /* Information Units enabled */
     pub max_iu: u32,
@@ -78,7 +78,7 @@ pub unsafe fn spi_max_offset(x: *mut scsi_target) -> c_int { (*(x as *mut spi_tr
 macro_rules! spi_attr_accessor {
     ($name:ident, $field:ident) => {
         #[inline]
-        pub unsafe fn $name(x: *mut scsi_target) -> u32 {
+        pub unsafe fn $(*$name(x: *mut scsi_target)).u32 {
             (*(x as *mut spi_transport_attrs)).$field
         }
     };

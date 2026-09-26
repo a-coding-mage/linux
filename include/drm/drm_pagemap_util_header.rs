@@ -119,7 +119,7 @@ extern "C" {
         cache: *mut drm_pagemap_cache,
     ) -> *mut drm_pagemap;
 
-    #[cfg(feature = "CONFIG_PROVE_LOCKING")]
+    #[cfg(CONFIG_PROVE_LOCKING)]
     pub fn drm_pagemap_shrinker_might_lock(dpagemap: *mut drm_pagemap);
 
     pub fn drm_pagemap_release_owner(peer: *mut drm_pagemap_peer);
@@ -134,7 +134,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PROVE_LOCKING"))]
+#[cfg(not(CONFIG_PROVE_LOCKING))]
 #[inline]
 pub unsafe fn drm_pagemap_shrinker_might_lock(_dpagemap: *mut drm_pagemap) {}
 

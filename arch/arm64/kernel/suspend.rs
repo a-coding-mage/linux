@@ -36,7 +36,7 @@ extern "C" {
     fn __cpu_suspend_exit();
     fn unpause_graph_tracing();
     fn local_daif_restore(flags: u64);
-    fn fn(arg: u64) -> i32;
+    fn r#fn(arg: u64) -> i32;
     fn mpidr_hash_size() -> usize;
     fn kcalloc(n: usize, size: usize, flags: u32) -> *mut u64;
 }

@@ -72,39 +72,39 @@ pub struct rmap_walk_control {
 
 extern "C" {
     pub fn anon_vma_init();
-    pub fn folio_move_anon_rmap(*mut folio, *mut vm_area_struct);
-    pub fn folio_add_anon_rmap_ptes(*mut folio, *mut page, c_int, *mut vm_area_struct, c_ulong, rmap_t);
-    pub fn folio_add_anon_rmap_pmd(*mut folio, *mut page, *mut vm_area_struct, c_ulong, rmap_t);
-    pub fn folio_add_new_anon_rmap(*mut folio, *mut vm_area_struct, c_ulong, rmap_t);
-    pub fn folio_add_file_rmap_ptes(*mut folio, *mut page, c_int, *mut vm_area_struct);
-    pub fn folio_add_file_rmap_pmd(*mut folio, *mut page, *mut vm_area_struct);
-    pub fn folio_add_file_rmap_pud(*mut folio, *mut page, *mut vm_area_struct);
-    pub fn folio_remove_rmap_ptes(*mut folio, *mut page, c_int, *mut vm_area_struct);
-    pub fn folio_remove_rmap_pmd(*mut folio, *mut page, *mut vm_area_struct);
-    pub fn folio_remove_rmap_pud(*mut folio, *mut page, *mut vm_area_struct);
-    pub fn hugetlb_add_anon_rmap(*mut folio, *mut vm_area_struct, c_ulong, rmap_t);
-    pub fn hugetlb_add_new_anon_rmap(*mut folio, *mut vm_area_struct, c_ulong);
-    pub fn folio_referenced(*mut folio, c_int, *mut mem_cgroup, *mut vma_flags_t) -> c_int;
-    pub fn try_to_migrate(*mut folio, ttu_flags);
-    pub fn try_to_unmap(*mut folio, ttu_flags);
-    pub fn make_device_exclusive(*mut mm_struct, c_ulong, *mut c_void, *mut *mut folio) -> *mut page;
-    pub fn page_vma_mapped_walk(*mut page_vma_mapped_walk) -> bool;
-    pub fn page_address_in_vma(*const folio, *const page, *const vm_area_struct) -> c_ulong;
-    pub fn folio_mkclean(*mut folio) -> c_int;
-    pub fn mapping_wrprotect_range(*mut address_space, pgoff_t, c_ulong, c_ulong) -> c_int;
-    pub fn pfn_mkclean_range(c_ulong, c_ulong, pgoff_t, *mut vm_area_struct) -> c_int;
-    pub fn remove_migration_ptes(*mut folio, *mut folio, ttu_flags);
-    pub fn rmap_walk(*mut folio, *mut rmap_walk_control);
-    pub fn rmap_walk_locked(*mut folio, *mut rmap_walk_control);
-    pub fn folio_lock_anon_vma_read(*const folio, *mut rmap_walk_control) -> *mut anon_vma;
+    pub fn folio_move_anon_rmap(_: *mut folio, _: *mut vm_area_struct);
+    pub fn folio_add_anon_rmap_ptes(_: *mut folio, _: *mut page, _: c_int, _: *mut vm_area_struct, _: c_ulong, _: rmap_t);
+    pub fn folio_add_anon_rmap_pmd(_: *mut folio, _: *mut page, _: *mut vm_area_struct, _: c_ulong, _: rmap_t);
+    pub fn folio_add_new_anon_rmap(_: *mut folio, _: *mut vm_area_struct, _: c_ulong, _: rmap_t);
+    pub fn folio_add_file_rmap_ptes(_: *mut folio, _: *mut page, _: c_int, _: *mut vm_area_struct);
+    pub fn folio_add_file_rmap_pmd(_: *mut folio, _: *mut page, _: *mut vm_area_struct);
+    pub fn folio_add_file_rmap_pud(_: *mut folio, _: *mut page, _: *mut vm_area_struct);
+    pub fn folio_remove_rmap_ptes(_: *mut folio, _: *mut page, _: c_int, _: *mut vm_area_struct);
+    pub fn folio_remove_rmap_pmd(_: *mut folio, _: *mut page, _: *mut vm_area_struct);
+    pub fn folio_remove_rmap_pud(_: *mut folio, _: *mut page, _: *mut vm_area_struct);
+    pub fn hugetlb_add_anon_rmap(_: *mut folio, _: *mut vm_area_struct, _: c_ulong, _: rmap_t);
+    pub fn hugetlb_add_new_anon_rmap(_: *mut folio, _: *mut vm_area_struct, _: c_ulong);
+    pub fn folio_referenced(_: *mut folio, _: c_int, _: *mut mem_cgroup, _: *mut vma_flags_t) -> c_int;
+    pub fn try_to_migrate(_: *mut folio, _: ttu_flags);
+    pub fn try_to_unmap(_: *mut folio, _: ttu_flags);
+    pub fn make_device_exclusive(_: *mut mm_struct, _: c_ulong, _: *mut c_void, _: *mut *mut folio) -> *mut page;
+    pub fn page_vma_mapped_walk(_: *mut page_vma_mapped_walk) -> bool;
+    pub fn page_address_in_vma(_: *const folio, _: *const page, _: *const vm_area_struct) -> c_ulong;
+    pub fn folio_mkclean(_: *mut folio) -> c_int;
+    pub fn mapping_wrprotect_range(_: *mut address_space, _: pgoff_t, _: c_ulong, _: c_ulong) -> c_int;
+    pub fn pfn_mkclean_range(_: c_ulong, _: c_ulong, _: pgoff_t, _: *mut vm_area_struct) -> c_int;
+    pub fn remove_migration_ptes(_: *mut folio, _: *mut folio, _: ttu_flags);
+    pub fn rmap_walk(_: *mut folio, _: *mut rmap_walk_control);
+    pub fn rmap_walk_locked(_: *mut folio, _: *mut rmap_walk_control);
+    pub fn folio_lock_anon_vma_read(_: *const folio, _: *mut rmap_walk_control) -> *mut anon_vma;
 }
 
 #[cfg(CONFIG_MMU)]
 extern "C" {
-    pub fn hugetlb_try_dup_anon_rmap(*mut folio, *mut vm_area_struct) -> c_int;
-    pub fn hugetlb_try_share_anon_rmap(*mut folio) -> c_int;
-    pub fn hugetlb_add_file_rmap(*mut folio);
-    pub fn hugetlb_remove_rmap(*mut folio);
+    pub fn hugetlb_try_dup_anon_rmap(_: *mut folio, _: *mut vm_area_struct) -> c_int;
+    pub fn hugetlb_try_share_anon_rmap(_: *mut folio) -> c_int;
+    pub fn hugetlb_add_file_rmap(_: *mut folio);
+    pub fn hugetlb_remove_rmap(_: *mut folio);
 }
 
 /* Local macro equivalents for the header's one-element convenience wrappers. */
@@ -115,11 +115,11 @@ extern "C" {
 
 /* folio mapcount operations are supplied by the MM implementation. */
 extern "C" {
-    pub fn folio_set_large_mapcount(*mut folio, c_int, *mut vm_area_struct);
-    pub fn folio_add_large_mapcount(*mut folio, c_int, *mut vm_area_struct);
-    pub fn folio_add_return_large_mapcount(*mut folio, c_int, *mut vm_area_struct) -> c_int;
-    pub fn folio_sub_large_mapcount(*mut folio, c_int, *mut vm_area_struct);
-    pub fn folio_sub_return_large_mapcount(*mut folio, c_int, *mut vm_area_struct) -> c_int;
+    pub fn folio_set_large_mapcount(_: *mut folio, _: c_int, _: *mut vm_area_struct);
+    pub fn folio_add_large_mapcount(_: *mut folio, _: c_int, _: *mut vm_area_struct);
+    pub fn folio_add_return_large_mapcount(_: *mut folio, _: c_int, _: *mut vm_area_struct) -> c_int;
+    pub fn folio_sub_large_mapcount(_: *mut folio, _: c_int, _: *mut vm_area_struct);
+    pub fn folio_sub_return_large_mapcount(_: *mut folio, _: c_int, _: *mut vm_area_struct) -> c_int;
 }
 
 #[macro_export]

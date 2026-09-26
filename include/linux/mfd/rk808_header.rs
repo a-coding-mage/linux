@@ -1272,54 +1272,42 @@ pub const RK817_INT_POL_H: u32 = ((1u32) << 1);
 pub const RK817_INT_POL_L: u32 = 0;
 pub const fn RK809_BUCK5_CONFIG(i: u32) -> u32 { (RK817_BOOST_OTG_CFG + (i) * 1) }
 
-enum {
-	BUCK_ILMIN_50MA,
-	BUCK_ILMIN_100MA,
-	BUCK_ILMIN_150MA,
-	BUCK_ILMIN_200MA,
-	BUCK_ILMIN_250MA,
-	BUCK_ILMIN_300MA,
-	BUCK_ILMIN_350MA,
-	BUCK_ILMIN_400MA,
-};
-enum {
-	BOOST_ILMIN_75MA,
-	BOOST_ILMIN_100MA,
-	BOOST_ILMIN_125MA,
-	BOOST_ILMIN_150MA,
-	BOOST_ILMIN_175MA,
-	BOOST_ILMIN_200MA,
-	BOOST_ILMIN_225MA,
-	BOOST_ILMIN_250MA,
-};
-enum {
-	RK805_BUCK1_2_ILMAX_2500MA,
-	RK805_BUCK1_2_ILMAX_3000MA,
-	RK805_BUCK1_2_ILMAX_3500MA,
-	RK805_BUCK1_2_ILMAX_4000MA,
-};
-enum {
-	RK805_BUCK3_ILMAX_1500MA,
-	RK805_BUCK3_ILMAX_2000MA,
-	RK805_BUCK3_ILMAX_2500MA,
-	RK805_BUCK3_ILMAX_3000MA,
-};
-enum {
-	RK805_BUCK4_ILMAX_2000MA,
-	RK805_BUCK4_ILMAX_2500MA,
-	RK805_BUCK4_ILMAX_3000MA,
-	RK805_BUCK4_ILMAX_3500MA,
-};
-enum {
-	RK801_ID = 0x8010,
-	RK805_ID = 0x8050,
-	RK806_ID = 0x8060,
-	RK808_ID = 0x0000,
-	RK809_ID = 0x8090,
-	RK816_ID = 0x8160,
-	RK817_ID = 0x8170,
-	RK818_ID = 0x8180,
-};
+pub const BUCK_ILMIN_50MA: i32 = 0;
+pub const BUCK_ILMIN_100MA: i32 = BUCK_ILMIN_50MA + 1;
+pub const BUCK_ILMIN_150MA: i32 = BUCK_ILMIN_100MA + 1;
+pub const BUCK_ILMIN_200MA: i32 = BUCK_ILMIN_150MA + 1;
+pub const BUCK_ILMIN_250MA: i32 = BUCK_ILMIN_200MA + 1;
+pub const BUCK_ILMIN_300MA: i32 = BUCK_ILMIN_250MA + 1;
+pub const BUCK_ILMIN_350MA: i32 = BUCK_ILMIN_300MA + 1;
+pub const BUCK_ILMIN_400MA: i32 = BUCK_ILMIN_350MA + 1;
+pub const BOOST_ILMIN_75MA: i32 = 0;
+pub const BOOST_ILMIN_100MA: i32 = BOOST_ILMIN_75MA + 1;
+pub const BOOST_ILMIN_125MA: i32 = BOOST_ILMIN_100MA + 1;
+pub const BOOST_ILMIN_150MA: i32 = BOOST_ILMIN_125MA + 1;
+pub const BOOST_ILMIN_175MA: i32 = BOOST_ILMIN_150MA + 1;
+pub const BOOST_ILMIN_200MA: i32 = BOOST_ILMIN_175MA + 1;
+pub const BOOST_ILMIN_225MA: i32 = BOOST_ILMIN_200MA + 1;
+pub const BOOST_ILMIN_250MA: i32 = BOOST_ILMIN_225MA + 1;
+pub const RK805_BUCK1_2_ILMAX_2500MA: i32 = 0;
+pub const RK805_BUCK1_2_ILMAX_3000MA: i32 = RK805_BUCK1_2_ILMAX_2500MA + 1;
+pub const RK805_BUCK1_2_ILMAX_3500MA: i32 = RK805_BUCK1_2_ILMAX_3000MA + 1;
+pub const RK805_BUCK1_2_ILMAX_4000MA: i32 = RK805_BUCK1_2_ILMAX_3500MA + 1;
+pub const RK805_BUCK3_ILMAX_1500MA: i32 = 0;
+pub const RK805_BUCK3_ILMAX_2000MA: i32 = RK805_BUCK3_ILMAX_1500MA + 1;
+pub const RK805_BUCK3_ILMAX_2500MA: i32 = RK805_BUCK3_ILMAX_2000MA + 1;
+pub const RK805_BUCK3_ILMAX_3000MA: i32 = RK805_BUCK3_ILMAX_2500MA + 1;
+pub const RK805_BUCK4_ILMAX_2000MA: i32 = 0;
+pub const RK805_BUCK4_ILMAX_2500MA: i32 = RK805_BUCK4_ILMAX_2000MA + 1;
+pub const RK805_BUCK4_ILMAX_3000MA: i32 = RK805_BUCK4_ILMAX_2500MA + 1;
+pub const RK805_BUCK4_ILMAX_3500MA: i32 = RK805_BUCK4_ILMAX_3000MA + 1;
+pub const RK801_ID: i32 = 0x8010;
+pub const RK805_ID: i32 = 0x8050;
+pub const RK806_ID: i32 = 0x8060;
+pub const RK808_ID: i32 = 0x0000;
+pub const RK809_ID: i32 = 0x8090;
+pub const RK816_ID: i32 = 0x8160;
+pub const RK817_ID: i32 = 0x8170;
+pub const RK818_ID: i32 = 0x8180;
 struct rk808 {
 	struct device			*dev;
 	struct regmap_irq_chip_data	*irq_data;
@@ -1328,10 +1316,9 @@ struct rk808 {
 	const struct regmap_config	*regmap_cfg;
 	const struct regmap_irq_chip	*regmap_irq_chip;
 };
-void rk8xx_shutdown(struct device *dev);
-int rk8xx_probe(struct device *dev, int variant, unsigned int irq, struct regmap *regmap);
-int rk8xx_suspend(struct device *dev);
-int rk8xx_resume(struct device *dev);
-#endif /* __LINUX_REGULATOR_RK808_H */
+void rk8xx_shutdown(device *dev);
+int rk8xx_probe(device *dev, int variant, irq: core::ffi::c_uint, regmap *regmap);
+int rk8xx_suspend(device *dev);
+int rk8xx_resume(device *dev);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

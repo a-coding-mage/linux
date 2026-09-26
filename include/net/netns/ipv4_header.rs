@@ -44,7 +44,7 @@ pub struct inet_timewait_death_row {
     pub sysctl_max_tw_buckets: i32,
 }
 
-#[cfg(feature = "CONFIG_IP_ROUTE_MULTIPATH")]
+#[cfg(CONFIG_IP_ROUTE_MULTIPATH)]
 #[repr(C)]
 pub struct sysctl_fib_multipath_hash_seed {
     pub user_seed: u32,
@@ -95,39 +95,39 @@ pub struct netns_ipv4 {
     pub tcp_death_row: inet_timewait_death_row,
     pub udp_table: *mut udp_table,
 
-    #[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+    #[cfg(CONFIG_NET_UDP_TUNNEL)]
     pub udp_tunnel_gro: [udp_tunnel_gro; 2],
 
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub forw_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub frags_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub ipv4_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub route_hdr: *mut ctl_table_header,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub xfrm4_hdr: *mut ctl_table_header,
     pub devconf_all: *mut ipv4_devconf,
     pub devconf_dflt: *mut ipv4_devconf,
     pub ra_chain: *mut ip_ra_chain,
     pub ra_mutex: mutex,
 
-    #[cfg(feature = "CONFIG_IP_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IP_MULTIPLE_TABLES)]
     pub rules_ops: *mut fib_rules_ops,
-    #[cfg(feature = "CONFIG_IP_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IP_MULTIPLE_TABLES)]
     pub fib_main: *mut fib_table,
-    #[cfg(feature = "CONFIG_IP_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IP_MULTIPLE_TABLES)]
     pub fib_default: *mut fib_table,
-    #[cfg(feature = "CONFIG_IP_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IP_MULTIPLE_TABLES)]
     pub fib_table_hash_lock: spinlock_t,
-    #[cfg(feature = "CONFIG_IP_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IP_MULTIPLE_TABLES)]
     pub fib_rules_require_fldissect: u32,
-    #[cfg(feature = "CONFIG_IP_MULTIPLE_TABLES")]
+    #[cfg(CONFIG_IP_MULTIPLE_TABLES)]
     pub fib_has_custom_rules: bool,
     pub fib_has_custom_local_routes: bool,
     pub fib_offload_disabled: bool,
-    #[cfg(feature = "CONFIG_IP_ROUTE_CLASSID")]
+    #[cfg(CONFIG_IP_ROUTE_CLASSID)]
     pub fib_num_tclassid_users: atomic_t,
     pub fib_table_hash: *mut hlist_head,
     pub fibnl: *mut sock,
@@ -164,7 +164,7 @@ pub struct netns_ipv4 {
     // Shall we try to damage output packets if routing dev changes?
     pub sysctl_ip_dynaddr: u8,
     pub sysctl_ip_local_port_step_width: u32,
-    #[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+    #[cfg(CONFIG_NET_L3_MASTER_DEV)]
     pub sysctl_raw_l3mdev_accept: u8,
     pub sysctl_udp_early_demux: u8,
     pub sysctl_nexthop_compat_mode: u8,
@@ -240,7 +240,7 @@ pub struct netns_ipv4 {
     pub sysctl_udp_rmem_min: i32,
     pub sysctl_fib_notify_on_flag_change: u8,
     pub sysctl_tcp_syn_linear_timeouts: u8,
-    #[cfg(feature = "CONFIG_NET_L3_MASTER_DEV")]
+    #[cfg(CONFIG_NET_L3_MASTER_DEV)]
     pub sysctl_udp_l3mdev_accept: u8,
     pub sysctl_igmp_llm_reports: u8,
     pub sysctl_igmp_max_memberships: i32,
@@ -250,29 +250,29 @@ pub struct netns_ipv4 {
     pub ping_port_rover: u16,
     pub dev_addr_genid: atomic_t,
     pub sysctl_udp_child_hash_entries: u32,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub sysctl_local_reserved_ports: *mut usize,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub sysctl_ip_prot_sock: i32,
-    #[cfg(all(feature = "CONFIG_IP_MROUTE", not(feature = "CONFIG_IP_MROUTE_MULTIPLE_TABLES")))]
+    #[cfg(all(CONFIG_IP_MROUTE, not(CONFIG_IP_MROUTE_MULTIPLE_TABLES)))]
     pub mrt: *mut mr_table,
-    #[cfg(all(feature = "CONFIG_IP_MROUTE", feature = "CONFIG_IP_MROUTE_MULTIPLE_TABLES"))]
+    #[cfg(all(CONFIG_IP_MROUTE, CONFIG_IP_MROUTE_MULTIPLE_TABLES))]
     pub mr_tables: list_head,
-    #[cfg(all(feature = "CONFIG_IP_MROUTE", feature = "CONFIG_IP_MROUTE_MULTIPLE_TABLES"))]
+    #[cfg(all(CONFIG_IP_MROUTE, CONFIG_IP_MROUTE_MULTIPLE_TABLES))]
     pub mr_rules_ops: *mut fib_rules_ops,
-    #[cfg(feature = "CONFIG_IP_MROUTE")]
+    #[cfg(CONFIG_IP_MROUTE)]
     pub ipmr_notifier_ops: *mut fib_notifier_ops,
-    #[cfg(feature = "CONFIG_IP_MROUTE")]
+    #[cfg(CONFIG_IP_MROUTE)]
     pub ipmr_seq: atomic_t,
-    #[cfg(feature = "CONFIG_IP_MROUTE")]
+    #[cfg(CONFIG_IP_MROUTE)]
     pub mfc_mutex: mutex,
-    #[cfg(feature = "CONFIG_IP_ROUTE_MULTIPATH")]
+    #[cfg(CONFIG_IP_ROUTE_MULTIPATH)]
     pub sysctl_fib_multipath_hash_seed: sysctl_fib_multipath_hash_seed,
-    #[cfg(feature = "CONFIG_IP_ROUTE_MULTIPATH")]
+    #[cfg(CONFIG_IP_ROUTE_MULTIPATH)]
     pub sysctl_fib_multipath_hash_fields: u32,
-    #[cfg(feature = "CONFIG_IP_ROUTE_MULTIPATH")]
+    #[cfg(CONFIG_IP_ROUTE_MULTIPATH)]
     pub sysctl_fib_multipath_use_neigh: u8,
-    #[cfg(feature = "CONFIG_IP_ROUTE_MULTIPATH")]
+    #[cfg(CONFIG_IP_ROUTE_MULTIPATH)]
     pub sysctl_fib_multipath_hash_policy: u8,
     pub notifier_ops: *mut fib_notifier_ops,
     pub fib_seq: u32, // writes protected by rtnl_mutex

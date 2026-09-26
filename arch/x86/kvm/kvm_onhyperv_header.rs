@@ -4,7 +4,7 @@
  */
 
 /* The following declarations are enabled when CONFIG_HYPERV is enabled. */
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 extern "C" {
     pub fn hv_flush_remote_tlbs_range(
         kvm: *mut kvm,
@@ -15,7 +15,7 @@ extern "C" {
     pub fn hv_track_root_tdp(vcpu: *mut kvm_vcpu, root_tdp: hpa_t);
 }
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 #[inline]
 pub unsafe fn hv_get_partition_assist_page(vcpu: *mut kvm_vcpu) -> hpa_t {
     /*
@@ -40,13 +40,13 @@ pub unsafe fn hv_get_partition_assist_page(vcpu: *mut kvm_vcpu) -> hpa_t {
 }
 
 /* !CONFIG_HYPERV */
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn hv_flush_remote_tlbs(kvm: *mut kvm) -> ::core::ffi::c_int {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn hv_track_root_tdp(vcpu: *mut kvm_vcpu, root_tdp: hpa_t) {
 }

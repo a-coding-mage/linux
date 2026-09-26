@@ -66,9 +66,9 @@ pub type ssif_i2c_done = unsafe extern "C" fn(*mut ssif_info,c_int,*mut u8,c_uin
 #[repr(C)] pub enum ssif_intf_state { SSIF_IDLE, SSIF_GETTING_FLAGS, SSIF_GETTING_EVENTS, SSIF_CLEARING_FLAGS, SSIF_GETTING_MESSAGES }
 
 extern "C" {
- fn ipmi_smi_msg_received(*mut ipmi_smi,*mut ipmi_smi_msg); fn ipmi_alloc_smi_msg()->*mut ipmi_smi_msg; fn ipmi_free_smi_msg(*mut ipmi_smi_msg);
- fn ipmi_smi_watchdog_pretimeout(*mut ipmi_smi); fn ipmi_register_smi(*mut ipmi_smi_handlers,*mut c_void,*mut device,u8)->c_int; fn ipmi_unregister_smi(*mut ipmi_smi);
- fn i2c_smbus_write_block_data(*mut i2c_client,c_int,u8,*mut u8)->c_int; fn i2c_smbus_read_block_data(*mut i2c_client,c_int,*mut u8)->c_int;
+ fn ipmi_smi_msg_received(_: *mut ipmi_smi,_: *mut ipmi_smi_msg); fn ipmi_alloc_smi_msg()->*mut ipmi_smi_msg; fn ipmi_free_smi_msg(_: *mut ipmi_smi_msg);
+ fn ipmi_smi_watchdog_pretimeout(_: *mut ipmi_smi); fn ipmi_register_smi(_: *mut ipmi_smi_handlers,_: *mut c_void,_: *mut device,_: u8)->c_int; fn ipmi_unregister_smi(_: *mut ipmi_smi);
+ fn i2c_smbus_write_block_data(_: *mut i2c_client,_: c_int,_: u8,_: *mut u8)->c_int; fn i2c_smbus_read_block_data(_: *mut i2c_client,_: c_int,_: *mut u8)->c_int;
 }
 
 #[inline] unsafe fn ssif_inc_stat(s:*mut ssif_info, n:usize) { (*s).stats[n].counter = (*s).stats[n].counter.wrapping_add(1); }

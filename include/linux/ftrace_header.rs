@@ -76,8 +76,8 @@ pub const FTRACE_RETFUNC_DEPTH: usize=50; pub const FTRACE_RETSTACK_ALLOC_SIZE: 
 pub type trace_func_graph_ret_t=unsafe extern "C" fn(*mut ftrace_graph_ret,*mut fgraph_ops,*mut ftrace_regs);
 pub type trace_func_graph_ent_t=unsafe extern "C" fn(*mut ftrace_graph_ent,*mut fgraph_ops,*mut ftrace_regs)->c_int;
 #[repr(C)] pub struct ftrace_ret_stack { pub ret:usize,pub func:usize,pub retp:*mut usize }
-unsafe extern "C" { pub fn ftrace_graph_entry_stub(*mut ftrace_graph_ent,*mut fgraph_ops,*mut ftrace_regs)->c_int; pub fn ftrace_pids_enabled(*mut ftrace_ops)->bool; pub fn function_graph_enter_regs(usize,usize,usize,*mut usize,*mut ftrace_regs)->c_int; }
+unsafe extern "C" { pub fn ftrace_graph_entry_stub(_: *mut ftrace_graph_ent,_: *mut fgraph_ops,_: *mut ftrace_regs)->c_int; pub fn ftrace_pids_enabled(_: *mut ftrace_ops)->bool; pub fn function_graph_enter_regs(_: usize,_: usize,_: usize,_: *mut usize,_: *mut ftrace_regs)->c_int; }
 #[inline] pub unsafe fn function_graph_enter(ret:usize,func:usize,fp:usize,retp:*mut usize)->c_int { function_graph_enter_regs(ret,func,fp,retp,core::ptr::null_mut()) }
-unsafe extern "C" { pub fn ftrace_graph_init_task(*mut task_struct); pub fn ftrace_graph_exit_task(*mut task_struct); pub fn ftrace_graph_init_idle_task(*mut task_struct,c_int); pub fn pause_graph_tracing(); pub fn unpause_graph_tracing(); }
+unsafe extern "C" { pub fn ftrace_graph_init_task(_: *mut task_struct); pub fn ftrace_graph_exit_task(_: *mut task_struct); pub fn ftrace_graph_init_idle_task(_: *mut task_struct,_: c_int); pub fn pause_graph_tracing(); pub fn unpause_graph_tracing(); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

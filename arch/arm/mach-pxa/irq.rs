@@ -145,12 +145,12 @@ pub unsafe fn pxa_init_irq(
     pxa_init_irq_common(core::ptr::null_mut(), irq_nr, fn_);
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut saved_icmr: [usize; MAX_INTERNAL_IRQS / 32] = [0; MAX_INTERNAL_IRQS / 32];
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut saved_ipr: [usize; MAX_INTERNAL_IRQS] = [0; MAX_INTERNAL_IRQS];
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa_irq_suspend(_data: *mut core::ffi::c_void) -> i32 {
     let count = ((pxa_internal_irq_nr + 31) / 32) as usize;
     for i in 0..count {
@@ -166,7 +166,7 @@ unsafe fn pxa_irq_suspend(_data: *mut core::ffi::c_void) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa_irq_resume(_data: *mut core::ffi::c_void) {
     let count = ((pxa_internal_irq_nr + 31) / 32) as usize;
     for i in 0..count {
@@ -182,9 +182,9 @@ unsafe fn pxa_irq_resume(_data: *mut core::ffi::c_void) {
     __raw_writel(1, pxa_irq_base.add(ICCR));
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 unsafe fn pxa_irq_suspend(_data: *mut core::ffi::c_void) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 unsafe fn pxa_irq_resume(_data: *mut core::ffi::c_void) {}
 
 static mut pxa_irq_syscore_ops: syscore_ops = syscore_ops {
@@ -195,13 +195,13 @@ static mut pxa_irq_syscore_ops: syscore_ops = syscore_ops {
 
 pub static mut pxa_irq_syscore: syscore = syscore { ops: &mut pxa_irq_syscore_ops };
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 static intc_ids: [of_device_id; 2] = [
     of_device_id { compatible: "marvell,pxa-intc\0" },
     of_device_id::zeroed(),
 ];
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 pub unsafe fn pxa_dt_irq_init(
     fn_: Option<unsafe extern "C" fn(*mut irq_data, u32) -> i32>,
 ) {

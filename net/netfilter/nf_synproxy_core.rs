@@ -134,6 +134,6 @@ const TCPOPT_EOL:u8=0; const TCPOPT_NOP:u8=1; const TCPOPT_MSS:u32=2; const TCPO
 const TCPOLEN_MSS:u32=4; const TCPOLEN_WINDOW:u8=3; const TCPOLEN_TIMESTAMP:u8=10; const TCPOLEN_SACK_PERM:u8=2; const TCP_MAX_WSCALE:u8=14;
 const TCPOLEN_MSS_ALIGNED:u32=4; const TCPOLEN_TSTAMP_ALIGNED:u32=12; const TCPOLEN_SACKPERM_ALIGNED:u32=4; const TCPOLEN_WSCALE_ALIGNED:u32=4;
 const NF_SYNPROXY_OPT_MSS:u8=1; const NF_SYNPROXY_OPT_WSCALE:u8=2; const NF_SYNPROXY_OPT_TIMESTAMP:u8=4; const NF_SYNPROXY_OPT_SACK_PERM:u8=8; const NF_SYNPROXY_OPT_ECN:u8=16;
-extern "C" { fn skb_header_pointer(*const sk_buff,u32,u32,*mut u8)->*mut u8; fn get_unaligned_be16(*const u8)->u16; fn get_unaligned_be32(*const u8)->u32; fn put_unaligned_be32(u32,*mut u8); fn tcp_clock_ms()->u32; fn htonl(u32)->u32; fn cpu_to_be32(u32)->u32; fn skb_ensure_writable(*mut sk_buff,u32)->i32; fn CTINFO2DIR(u32)->u32; fn inet_proto_csum_replace4(*mut u16,*mut sk_buff,u32,u32,bool); }
+extern "C" { fn skb_header_pointer(_: *const sk_buff,_: u32,_: u32,_: *mut u8)->*mut u8; fn get_unaligned_be16(_: *const u8)->u16; fn get_unaligned_be32(_: *const u8)->u32; fn put_unaligned_be32(_: u32,_: *mut u8); fn tcp_clock_ms()->u32; fn htonl(_: u32)->u32; fn cpu_to_be32(_: u32)->u32; fn skb_ensure_writable(_: *mut sk_buff,_: u32)->i32; fn CTINFO2DIR(_: u32)->u32; fn inet_proto_csum_replace4(_: *mut u16,_: *mut sk_buff,_: u32,_: u32,_: bool); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

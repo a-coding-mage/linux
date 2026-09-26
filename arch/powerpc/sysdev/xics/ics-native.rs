@@ -209,11 +209,11 @@ pub unsafe fn ics_native_init() -> i32 {
 
     ics_native_irq_chip.irq_eoi = (*icp_ops).eoi;
 
-    for_each_compatible_node!(ics_ptr, core::ptr::null_mut(), "openpower,xics-sources") {
+    for_each_compatible_node!(ics_ptr, core::ptr::null_mut(), "openpower,xics-sources", {
         if ics_native_add_one(ics_ptr) == 0 {
             found_one = true;
         }
-    }
+    });
 
     if found_one {
         pr_info!("ICS native backend registered\\n");

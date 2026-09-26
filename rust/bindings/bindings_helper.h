@@ -99,6 +99,7 @@
 #include <linux/refcount.h>
 #include <linux/regulator/consumer.h>
 #include <linux/sched.h>
+#include <linux/sort.h>
 #include <linux/security.h>
 #include <linux/serdev.h>
 #include <linux/slab.h>
@@ -106,6 +107,7 @@
 #include <linux/task_work.h>
 #include <linux/tracepoint.h>
 #include <linux/usb.h>
+#include <linux/union_find.h>
 #include <linux/uuid.h>
 #include <linux/wait.h>
 #include <linux/win_minmax.h>
@@ -114,6 +116,14 @@
 #include <net/genetlink.h>
 #include <net/netlink.h>
 #include <trace/events/rust_sample.h>
+
+#ifdef CONFIG_RUST_EARLYCPIO
+#include <linux/earlycpio.h>
+#endif
+
+#ifdef CONFIG_RUST_ERRNAME
+#include "errname.h"
+#endif
 
 #ifdef CONFIG_RUST_X86_INSN
 #include <asm/insn.h>

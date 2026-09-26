@@ -4,26 +4,26 @@
  */
 
 /* CONFIG_ARC selects the ARC auxiliary-register builtins. */
-#[cfg(feature = "CONFIG_ARC")]
+#[cfg(CONFIG_ARC)]
 #[allow(non_snake_case)]
 unsafe extern "C" {
     fn __builtin_arc_lr(r: u32) -> u32;
     fn __builtin_arc_sr(v: u32, r: u32);
 }
 
-#[cfg(feature = "CONFIG_ARC")]
+#[cfg(CONFIG_ARC)]
 #[inline]
 pub unsafe fn read_aux_reg(r: u32) -> u32 {
     __builtin_arc_lr(r)
 }
 
-#[cfg(feature = "CONFIG_ARC")]
+#[cfg(CONFIG_ARC)]
 #[inline]
 pub unsafe fn write_aux_reg(r: u32, v: u32) {
     __builtin_arc_sr(v as u32, r);
 }
 
-#[cfg(not(feature = "CONFIG_ARC"))]
+#[cfg(not(CONFIG_ARC))]
 #[inline]
 pub unsafe fn read_aux_reg(_r: u32) -> i32 {
     0
@@ -33,7 +33,7 @@ pub unsafe fn read_aux_reg(_r: u32) -> i32 {
  * Function helps elide unused variable warning.
  * See: https://lists.infradead.org/pipermail/linux-snps-arc/2016-November/001748.html
  */
-#[cfg(not(feature = "CONFIG_ARC"))]
+#[cfg(not(CONFIG_ARC))]
 #[inline]
 pub unsafe fn write_aux_reg(_r: u32, _v: u32) {}
 

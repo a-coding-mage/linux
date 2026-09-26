@@ -381,8 +381,7 @@ extern "C" {
         ty: c_int,
         dev: *mut device,
         size: usize,
-        dmab: *mut snd_dma_buffer,
-    ) -> c_int;
+        dmab: *mut snd_dma_buffer) -> c_int;
     fn snd_dma_free_pages(dmab: *mut snd_dma_buffer);
     fn dma_request_slave_channel(dev: *mut device, name: *const c_char) -> *mut dma_chan;
     fn dma_release_channel(chan: *mut dma_chan);

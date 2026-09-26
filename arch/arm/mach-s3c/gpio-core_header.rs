@@ -36,7 +36,7 @@ pub struct samsung_gpio_chip {
     pub group: i32,
     pub lock: spinlock_t,
     // CONFIG_PM controls whether this field is present in the C build.
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub pm_save: [u32; 4],
     pub bitmap_gpio_int: u32,
 }
@@ -53,12 +53,12 @@ extern "C" {
 }
 
 // CONFIG_S3C_GPIO_TRACK selects the machine-specific GPIO tracking variant.
-#[cfg(feature = "CONFIG_S3C_GPIO_TRACK")]
+#[cfg(CONFIG_S3C_GPIO_TRACK)]
 extern "C" {
     pub static mut s3c_gpios: *mut samsung_gpio_chip;
 }
 
-#[cfg(feature = "CONFIG_S3C_GPIO_TRACK")]
+#[cfg(CONFIG_S3C_GPIO_TRACK)]
 #[inline]
 pub unsafe fn samsung_gpiolib_getchip(chip: u32) -> *mut samsung_gpio_chip {
     if chip < S3C_GPIO_END {
@@ -68,12 +68,12 @@ pub unsafe fn samsung_gpiolib_getchip(chip: u32) -> *mut samsung_gpio_chip {
     }
 }
 
-#[cfg(not(feature = "CONFIG_S3C_GPIO_TRACK"))]
+#[cfg(not(CONFIG_S3C_GPIO_TRACK))]
 extern "C" {
     pub static mut s3c24xx_gpios: samsung_gpio_chip;
 }
 
-#[cfg(not(feature = "CONFIG_S3C_GPIO_TRACK"))]
+#[cfg(not(CONFIG_S3C_GPIO_TRACK))]
 #[inline]
 pub unsafe fn samsung_gpiolib_getchip(pin: u32) -> *mut samsung_gpio_chip {
     if pin > S3C_GPIO_END {
@@ -86,30 +86,30 @@ pub unsafe fn samsung_gpiolib_getchip(pin: u32) -> *mut samsung_gpio_chip {
         .unwrap_or(core::ptr::null_mut())
 }
 
-#[cfg(not(feature = "CONFIG_S3C_GPIO_TRACK"))]
+#[cfg(not(CONFIG_S3C_GPIO_TRACK))]
 #[inline]
 pub unsafe fn s3c_gpiolib_track(_chip: *mut samsung_gpio_chip) {}
 
 // CONFIG_PM selects whether these power-management objects are external data
 // or null pointers, matching the C preprocessor definitions.
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 extern "C" {
     pub static mut samsung_gpio_pm_1bit: samsung_gpio_pm;
     pub static mut samsung_gpio_pm_2bit: samsung_gpio_pm;
     pub static mut samsung_gpio_pm_4bit: samsung_gpio_pm;
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 #[inline]
 pub const fn __gpio_pm(x: *mut samsung_gpio_pm) -> *mut samsung_gpio_pm { x }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub const samsung_gpio_pm_1bit: *mut samsung_gpio_pm = core::ptr::null_mut();
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub const samsung_gpio_pm_2bit: *mut samsung_gpio_pm = core::ptr::null_mut();
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 pub const samsung_gpio_pm_4bit: *mut samsung_gpio_pm = core::ptr::null_mut();
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub const fn __gpio_pm(_x: *mut samsung_gpio_pm) -> *mut samsung_gpio_pm {
     core::ptr::null_mut()

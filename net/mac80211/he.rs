@@ -23,19 +23,19 @@ unsafe fn ieee80211_update_from_he_6ghz_capa(
             WLAN_HT_CAP_SM_PS_DISABLED => IEEE80211_SMPS_OFF,
             _ => unreachable!(),
         };
-        (*(*link_sta).pub).smps_mode = smps_mode;
+        (*(*link_sta).r#pub).smps_mode = smps_mode;
     } else {
-        (*(*link_sta).pub).smps_mode = IEEE80211_SMPS_OFF;
+        (*(*link_sta).r#pub).smps_mode = IEEE80211_SMPS_OFF;
     }
 
-    (*(*link_sta).pub).agg.max_amsdu_len = match le16_get_bits((*he_6ghz_capa).capa,
+    (*(*link_sta).r#pub).agg.max_amsdu_len = match le16_get_bits((*he_6ghz_capa).capa,
                                                                IEEE80211_HE_6GHZ_CAP_MAX_MPDU_LEN) {
         IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_11454 => IEEE80211_MAX_MPDU_LEN_VHT_11454,
         IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_7991 => IEEE80211_MAX_MPDU_LEN_VHT_7991,
         IEEE80211_VHT_CAP_MAX_MPDU_LENGTH_3895 | _ => IEEE80211_MAX_MPDU_LEN_VHT_3895,
     };
     ieee80211_sta_recalc_aggregates(&mut (*sta).sta);
-    (*(*link_sta).pub).he_6ghz_capa = *he_6ghz_capa;
+    (*(*link_sta).r#pub).he_6ghz_capa = *he_6ghz_capa;
 }
 
 unsafe fn ieee80211_he_mcs_disable(he_mcs: *mut __le16) {
@@ -76,7 +76,7 @@ pub unsafe fn _ieee80211_he_cap_ie_to_sta_he_cap(
     he_6ghz_capa: *const ieee80211_he_6ghz_capa,
     link_sta: *mut link_sta_info,
 ) {
-    let he_cap = &mut (*(*link_sta).pub).he_cap;
+    let he_cap = &mut (*(*link_sta).r#pub).he_cap;
     core::ptr::write_bytes(he_cap as *mut _, 0, 1);
     if he_cap_ie.is_null() || own_he_cap_ptr.is_null() || !(*own_he_cap_ptr).has_he { return; }
     if WARN_ON_ONCE((*sdata).vif.r#type == NL80211_IFTYPE_NAN_DATA) { return; }
@@ -135,7 +135,7 @@ pub unsafe fn ieee80211_prepare_rx_omi_bw(pub_link_sta: *mut ieee80211_link_sta,
     let local = (*(*sta).sdata).local;
     let link_sta = sdata_dereference((*sta).link[(*pub_link_sta).link_id], (*sta).sdata);
     let link = sdata_dereference((*(*sta).sdata).link[(*pub_link_sta).link_id], (*sta).sdata);
-    if WARN_ON(link.is_null() || link_sta.is_null() || (*link_sta).pub != pub_link_sta) { return false; }
+    if WARN_ON(link.is_null() || link_sta.is_null() || (*link_sta).r#pub != pub_link_sta) { return false; }
     let conf = sdata_dereference((*(*link).conf).chanctx_conf, (*sta).sdata);
     if WARN_ON(conf.is_null()) { return false; }
     trace_api_prepare_rx_omi_bw(local, (*sta).sdata, link_sta, bw);
@@ -156,7 +156,7 @@ pub unsafe fn ieee80211_finalize_rx_omi_bw(pub_link_sta: *mut ieee80211_link_sta
     let local = (*(*sta).sdata).local;
     let link_sta = sdata_dereference((*sta).link[(*pub_link_sta).link_id], (*sta).sdata);
     let link = sdata_dereference((*(*sta).sdata).link[(*pub_link_sta).link_id], (*sta).sdata);
-    if WARN_ON(link.is_null() || link_sta.is_null() || (*link_sta).pub != pub_link_sta) { return; }
+    if WARN_ON(link.is_null() || link_sta.is_null() || (*link_sta).r#pub != pub_link_sta) { return; }
     let conf = sdata_dereference((*(*link).conf).chanctx_conf, (*sta).sdata);
     if WARN_ON(conf.is_null()) { return; }
     trace_api_finalize_rx_omi_bw(local, (*sta).sdata, link_sta);

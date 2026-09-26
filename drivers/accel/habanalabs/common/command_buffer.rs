@@ -13,6 +13,8 @@ unsafe fn cb_map_mem(ctx: *mut hl_ctx, cb: *mut hl_cb) -> i32 {
     let prop = &(*hdev).asic_prop;
     let page_size = prop.pmmu.page_size;
     let mut rc: i32;
+    'err_va_pool_free: {
+    'err_mmu_unmap: {
     if !(*hdev).supports_cb_mapping { dev_err_ratelimited((*hdev).dev, "Mapping a CB to the device's MMU is not supported\n"); return -EINVAL; }
     if (*cb).is_mmu_mapped { return 0; }
     (*cb).roundup_size = roundup((*cb).size, page_size);
@@ -20,15 +22,17 @@ unsafe fn cb_map_mem(ctx: *mut hl_ctx, cb: *mut hl_cb) -> i32 {
     if (*cb).virtual_addr == 0 { dev_err((*hdev).dev, "Failed to allocate device virtual address for CB\n"); return -ENOMEM; }
     mutex_lock(&mut (*hdev).mmu_lock);
     rc = hl_mmu_map_contiguous(ctx, (*cb).virtual_addr, (*cb).bus_address, (*cb).roundup_size);
-    if rc != 0 { dev_err((*hdev).dev, "Failed to map VA %#llx to CB\n", (*cb).virtual_addr); goto err_va_pool_free; }
+    if rc != 0 { dev_err((*hdev).dev, "Failed to map VA %#llx to CB\n", (*cb).virtual_addr); break 'err_va_pool_free; }
     rc = hl_mmu_invalidate_cache(hdev, false, MMU_OP_USERPTR | MMU_OP_SKIP_LOW_CACHE_INV);
-    if rc != 0 { goto err_mmu_unmap; }
+    if rc != 0 { break 'err_mmu_unmap; }
     mutex_unlock(&mut (*hdev).mmu_lock);
     (*cb).is_mmu_mapped = true;
     return 0;
-err_mmu_unmap:
+    }
+    
     hl_mmu_unmap_contiguous(ctx, (*cb).virtual_addr, (*cb).roundup_size);
-err_va_pool_free:
+    }
+    
     mutex_unlock(&mut (*hdev).mmu_lock);
     gen_pool_free((*ctx).cb_va_pool, (*cb).virtual_addr, (*cb).roundup_size);
     rc
@@ -82,12 +86,14 @@ unsafe fn hl_cb_mmap_mem_release(buf: *mut hl_mmap_mem_buf) { let cb = (*buf).pr
 
 unsafe fn hl_cb_mmap_mem_alloc(buf: *mut hl_mmap_mem_buf, _gfp: gfp_t, args: *mut core::ffi::c_void) -> i32 {
     let a = args as *mut hl_cb_mmap_mem_alloc_args; let ctx_id = (*(*a).ctx).asid; let mut cb: *mut hl_cb = core::ptr::null_mut(); let mut alloc_new = true;
+    'release_cb: {
     if !(*a).internal_cb { if (*a).cb_size < PAGE_SIZE { (*a).cb_size = PAGE_SIZE; } if ctx_id == HL_KERNEL_ASID_ID && (*a).cb_size <= (*(*a).hdev).asic_prop.cb_pool_cb_size { spin_lock(&mut (*(*a).hdev).cb_pool_lock); if !list_empty(&(*(*a).hdev).cb_pool) { cb = list_first_entry(&mut (*(*a).hdev).cb_pool, pool_list); list_del(&mut (*cb).pool_list); spin_unlock(&mut (*(*a).hdev).cb_pool_lock); alloc_new = false; } else { spin_unlock(&mut (*(*a).hdev).cb_pool_lock); dev_dbg((*(*a).hdev).dev, "CB pool is empty\n"); } } }
     if alloc_new { cb = hl_cb_alloc((*a).hdev, (*a).cb_size, ctx_id, (*a).internal_cb); if cb.is_null() { return -ENOMEM; } }
     (*cb).hdev = (*a).hdev; (*cb).ctx = (*a).ctx; (*cb).buf = buf; (*buf).mappable_size = (*cb).size; (*buf).private = cb; hl_ctx_get((*cb).ctx);
-    if (*a).map_cb { if ctx_id == HL_KERNEL_ASID_ID { dev_err((*(*a).hdev).dev, "CB mapping is not supported for kernel context\n"); goto release_cb; } if cb_map_mem((*a).ctx, cb) != 0 { goto release_cb; } }
+    if (*a).map_cb { if ctx_id == HL_KERNEL_ASID_ID { dev_err((*(*a).hdev).dev, "CB mapping is not supported for kernel context\n"); break 'release_cb; } if cb_map_mem((*a).ctx, cb) != 0 { break 'release_cb; } }
     hl_debugfs_add_cb(cb); return 0;
-release_cb: hl_ctx_put((*cb).ctx); cb_do_release((*a).hdev, cb); -EINVAL
+    }
+    hl_ctx_put((*cb).ctx); cb_do_release((*a).hdev, cb); -EINVAL
 }
 
 unsafe fn hl_cb_mmap(buf: *mut hl_mmap_mem_buf, vma: *mut vm_area_struct, _args: *mut core::ffi::c_void) -> i32 { let cb = (*buf).private as *mut hl_cb; ((*(*cb).hdev).asic_funcs).mmap((*cb).hdev, vma, (*cb).kernel_address, (*cb).bus_address, (*cb).size) }

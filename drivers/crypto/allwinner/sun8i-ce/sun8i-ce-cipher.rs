@@ -126,10 +126,10 @@ unsafe fn sun8i_ce_cipher_prepare(areq: *mut skcipher_request, cet: *mut ce_task
     if (*areq).src == (*areq).dst { nr_sgs = dma_map_sg((*ce).dev, (*areq).src, ns, DMA_BIDIRECTIONAL); if nr_sgs <= 0 || nr_sgs > MAX_SG { err = -EINVAL; } nr_sgd = nr_sgs; } else { nr_sgs = dma_map_sg((*ce).dev, (*areq).src, ns, DMA_TO_DEVICE); if nr_sgs <= 0 || nr_sgs > MAX_SG { err = -EINVAL; } else { nr_sgd = dma_map_sg((*ce).dev, (*areq).dst, nd, DMA_FROM_DEVICE); if nr_sgd <= 0 || nr_sgd > MAX_SG { err = -EINVAL; } } }
     if err != 0 { if nr_sgs > 0 { dma_unmap_sg((*ce).dev, (*areq).src, ns, DMA_TO_DEVICE); } if nr_sgd > 0 && (*areq).src != (*areq).dst { dma_unmap_sg((*ce).dev, (*areq).dst, nd, DMA_FROM_DEVICE); } if !(*areq).iv.is_null() && ivsize > 0 && !dma_mapping_error((*ce).dev, (*rctx).addr_iv) { dma_unmap_single((*ce).dev, (*rctx).addr_iv, ivsize, DMA_TO_DEVICE); } dma_unmap_single((*ce).dev, (*rctx).addr_key, (*op).keylen, DMA_TO_DEVICE); return err; }
     len = (*areq).cryptlen;
-    for_each_sg!((*areq).src, sg, nr_sgs, i) { (*cet).t_src[i].addr = desc_addr_val_le32(ce, sg_dma_address(sg)); todo = core::cmp::min(len, sg_dma_len(sg)); (*cet).t_src[i].len = cpu_to_le32!(todo / 4); len -= todo; }
+    for_each_sg!((*areq).src, sg, nr_sgs, i, { (*cet).t_src[i].addr = desc_addr_val_le32(ce, sg_dma_address(sg)); todo = core::cmp::min(len, sg_dma_len(sg)); (*cet).t_src[i].len = cpu_to_le32!(todo / 4); len -= todo; });
     if len > 0 { err = -EINVAL; }
     len = (*areq).cryptlen;
-    for_each_sg!((*areq).dst, sg, nr_sgd, i) { (*cet).t_dst[i].addr = desc_addr_val_le32(ce, sg_dma_address(sg)); todo = core::cmp::min(len, sg_dma_len(sg)); (*cet).t_dst[i].len = cpu_to_le32!(todo / 4); len -= todo; }
+    for_each_sg!((*areq).dst, sg, nr_sgd, i, { (*cet).t_dst[i].addr = desc_addr_val_le32(ce, sg_dma_address(sg)); todo = core::cmp::min(len, sg_dma_len(sg)); (*cet).t_dst[i].len = cpu_to_le32!(todo / 4); len -= todo; });
     if len > 0 { err = -EINVAL; }
     if err != 0 { if (*areq).src == (*areq).dst { dma_unmap_sg((*ce).dev, (*areq).src, ns, DMA_BIDIRECTIONAL); } else { dma_unmap_sg((*ce).dev, (*areq).src, ns, DMA_TO_DEVICE); dma_unmap_sg((*ce).dev, (*areq).dst, nd, DMA_FROM_DEVICE); } if !(*areq).iv.is_null() && ivsize > 0 && !dma_mapping_error((*ce).dev, (*rctx).addr_iv) { dma_unmap_single((*ce).dev, (*rctx).addr_iv, ivsize, DMA_TO_DEVICE); } dma_unmap_single((*ce).dev, (*rctx).addr_key, (*op).keylen, DMA_TO_DEVICE); return err; }
     (*rctx).nr_sgs = ns; (*rctx).nr_sgd = nd; 0

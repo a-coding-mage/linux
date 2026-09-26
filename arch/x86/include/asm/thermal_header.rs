@@ -2,7 +2,7 @@
 
 // The CONFIG_X86_THERMAL_VECTOR build condition is preserved using a Rust
 // feature of the same name.
-#[cfg(feature = "CONFIG_X86_THERMAL_VECTOR")]
+#[cfg(CONFIG_X86_THERMAL_VECTOR)]
 extern "C" {
     pub fn therm_lvt_init();
     pub fn intel_init_thermal(c: *mut cpuinfo_x86);
@@ -10,10 +10,10 @@ extern "C" {
     pub fn intel_thermal_interrupt();
 }
 
-#[cfg(not(feature = "CONFIG_X86_THERMAL_VECTOR"))]
+#[cfg(not(CONFIG_X86_THERMAL_VECTOR))]
 pub extern "C" fn therm_lvt_init() {}
 
-#[cfg(not(feature = "CONFIG_X86_THERMAL_VECTOR"))]
+#[cfg(not(CONFIG_X86_THERMAL_VECTOR))]
 pub extern "C" fn intel_init_thermal(_c: *mut cpuinfo_x86) {}
 
 

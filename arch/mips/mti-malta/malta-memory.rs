@@ -39,7 +39,7 @@ unsafe extern "C" fn free_init_pages_eva_malta(
 pub unsafe extern "C" fn fw_meminit() {
     // IS_ENABLED(CONFIG_EVA): this build-time condition is represented by the
     // surrounding kernel configuration.
-    let eva: bool = cfg!(feature = "CONFIG_EVA");
+    let eva: bool = cfg!(CONFIG_EVA);
 
     free_init_pages_eva = if eva {
         Some(free_init_pages_eva_malta)

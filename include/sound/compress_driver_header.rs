@@ -35,13 +35,13 @@ pub struct snd_compr_runtime {
     pub dma_addr: dma_addr_t,
     pub dma_bytes: usize,
     pub dma_buffer_p: *mut snd_dma_buffer,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub active_tasks: u32,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub total_tasks: u32,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub task_seqno: u64,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub tasks: list_head,
 }
 
@@ -76,13 +76,13 @@ pub struct snd_compr_ops {
     pub ack: Option<unsafe extern "C" fn(*mut snd_compr_stream, usize) -> core::ffi::c_int>,
     pub get_caps: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_caps) -> core::ffi::c_int>,
     pub get_codec_caps: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_codec_caps) -> core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub task_create: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub task_start: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub task_stop: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub task_free: Option<unsafe extern "C" fn(*mut snd_compr_stream, *mut snd_compr_task_runtime) -> core::ffi::c_int>,
 }
 
@@ -97,11 +97,11 @@ pub struct snd_compr {
     pub lock: mutex,
     pub device: core::ffi::c_int,
     pub use_pause_in_draining: bool,
-    #[cfg(feature = "CONFIG_SND_VERBOSE_PROCFS")]
+    #[cfg(CONFIG_SND_VERBOSE_PROCFS)]
     pub id: [core::ffi::c_char; 64],
-    #[cfg(feature = "CONFIG_SND_VERBOSE_PROCFS")]
+    #[cfg(CONFIG_SND_VERBOSE_PROCFS)]
     pub proc_root: *mut snd_info_entry,
-    #[cfg(feature = "CONFIG_SND_VERBOSE_PROCFS")]
+    #[cfg(CONFIG_SND_VERBOSE_PROCFS)]
     pub proc_info_entry: *mut snd_info_entry,
 }
 
@@ -112,7 +112,7 @@ extern "C" {
     pub fn snd_compr_malloc_pages(stream: *mut snd_compr_stream, size: usize) -> core::ffi::c_int;
     pub fn snd_compr_free_pages(stream: *mut snd_compr_stream) -> core::ffi::c_int;
     pub fn snd_compr_stop_error(stream: *mut snd_compr_stream, state: snd_pcm_state_t) -> core::ffi::c_int;
-    #[cfg(feature = "CONFIG_SND_COMPRESS_ACCEL")]
+    #[cfg(CONFIG_SND_COMPRESS_ACCEL)]
     pub fn snd_compr_task_finished(stream: *mut snd_compr_stream, task: *mut snd_compr_task_runtime);
 }
 

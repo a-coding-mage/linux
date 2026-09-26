@@ -50,6 +50,7 @@ unsafe fn nx_xcbc_empty(desc: *mut shash_desc, out: *mut u8) -> c_int {
     let mut in_sg: *mut nx_sg;
     let mut out_sg: *mut nx_sg;
     let mut keys = [[0u8; AES_BLOCK_SIZE]; 2];
+    'out: {
     let mut key = [0u8; 32];
     let mut rc: c_int = 0;
     let mut len: c_int;
@@ -73,7 +74,7 @@ unsafe fn nx_xcbc_empty(desc: *mut shash_desc, out: *mut u8) -> c_int {
     (*nx_ctx).op.inlen = ((*nx_ctx).in_sg.offset_from(in_sg) as usize) * core::mem::size_of::<nx_sg>();
     (*nx_ctx).op.outlen = ((*nx_ctx).out_sg.offset_from(out_sg) as usize) * core::mem::size_of::<nx_sg>();
     rc = nx_hcall_sync(nx_ctx, &mut (*nx_ctx).op, 0);
-    if rc != 0 { goto_out!(out); }
+    if rc != 0 { break 'out; }
     atomic_inc(&mut (*(*nx_ctx).stats).aes_ops);
 
     keys[1][0] ^= 0x80;
@@ -87,10 +88,10 @@ unsafe fn nx_xcbc_empty(desc: *mut shash_desc, out: *mut u8) -> c_int {
     (*nx_ctx).op.inlen = ((*nx_ctx).in_sg.offset_from(in_sg) as usize) * core::mem::size_of::<nx_sg>();
     (*nx_ctx).op.outlen = ((*nx_ctx).out_sg.offset_from(out_sg) as usize) * core::mem::size_of::<nx_sg>();
     rc = nx_hcall_sync(nx_ctx, &mut (*nx_ctx).op, 0);
-    if rc != 0 { goto_out!(out); }
+    if rc != 0 { break 'out; }
     atomic_inc(&mut (*(*nx_ctx).stats).aes_ops);
-
-out:
+    }
+    
     (*csbcpb).cpb.hdr.mode = NX_MODE_AES_XCBC_MAC;
     memcpy((*csbcpb).cpb.aes_xcbc.key.as_mut_ptr(), key.as_ptr(), AES_BLOCK_SIZE);
     NX_CPB_FDM(csbcpb) &= !NX_FDM_ENDE_ENCRYPT;
@@ -126,6 +127,7 @@ unsafe fn nx_xcbc_update(desc: *mut shash_desc, data: *const u8, len: c_uint) ->
     let mut total = len;
     let mut rc: c_int = 0;
     let mut data_len: c_int;
+    'out: {
 
     spin_lock_irqsave(&mut (*nx_ctx).lock, &mut irq_flags);
     memcpy((*csbcpb).cpb.aes_xcbc.out_cv_mac.as_mut_ptr(), (*sctx).state.as_ptr(), AES_BLOCK_SIZE);
@@ -135,16 +137,16 @@ unsafe fn nx_xcbc_update(desc: *mut shash_desc, data: *const u8, len: c_uint) ->
     max_sg_len = core::cmp::min(max_sg_len, (*nx_ctx).ap.databytelen / NX_PAGE_SIZE);
     data_len = AES_BLOCK_SIZE as c_int;
     out_sg = nx_build_sg_list((*nx_ctx).out_sg, (*sctx).state.as_mut_ptr(), &mut data_len, (*nx_ctx).ap.sglen);
-    if data_len != AES_BLOCK_SIZE as c_int { rc = -EINVAL; goto_out_unlock!(out); }
+    if data_len != AES_BLOCK_SIZE as c_int { rc = -EINVAL; break 'out; }
     (*nx_ctx).op.outlen = ((*nx_ctx).out_sg.offset_from(out_sg) as usize) * core::mem::size_of::<nx_sg>();
     loop {
         to_process = total & !(AES_BLOCK_SIZE as u32 - 1);
         in_sg = nx_build_sg_list(in_sg, data, &mut to_process as *mut u32 as *mut c_int, max_sg_len);
         (*nx_ctx).op.inlen = ((*nx_ctx).in_sg.offset_from(in_sg) as usize) * core::mem::size_of::<nx_sg>();
         memcpy((*csbcpb).cpb.aes_xcbc.cv.as_mut_ptr(), (*csbcpb).cpb.aes_xcbc.out_cv_mac.as_ptr(), AES_BLOCK_SIZE);
-        if (*nx_ctx).op.inlen == 0 || (*nx_ctx).op.outlen == 0 { rc = -EINVAL; goto_out_unlock!(out); }
+        if (*nx_ctx).op.inlen == 0 || (*nx_ctx).op.outlen == 0 { rc = -EINVAL; break 'out; }
         rc = nx_hcall_sync(nx_ctx, &mut (*nx_ctx).op, 0);
-        if rc != 0 { goto_out_unlock!(out); }
+        if rc != 0 { break 'out; }
         atomic_inc(&mut (*(*nx_ctx).stats).aes_ops);
         total -= to_process;
         data = data.add(to_process as usize);
@@ -153,7 +155,8 @@ unsafe fn nx_xcbc_update(desc: *mut shash_desc, data: *const u8, len: c_uint) ->
     }
     rc = total as c_int;
     memcpy((*sctx).state.as_mut_ptr(), (*csbcpb).cpb.aes_xcbc.out_cv_mac.as_ptr(), AES_BLOCK_SIZE);
-out:
+    }
+    
     spin_unlock_irqrestore(&mut (*nx_ctx).lock, irq_flags);
     rc
 }
@@ -167,28 +170,30 @@ unsafe fn nx_xcbc_finup(desc: *mut shash_desc, src: *const u8, nbytes: c_uint, o
     let mut irq_flags: c_ulong = 0;
     let mut rc: c_int = 0;
     let mut len: c_int;
+    'out: {
     spin_lock_irqsave(&mut (*nx_ctx).lock, &mut irq_flags);
     if nbytes != 0 {
         memcpy((*csbcpb).cpb.aes_xcbc.cv.as_mut_ptr(), (*sctx).state.as_ptr(), AES_BLOCK_SIZE);
     } else {
         rc = nx_xcbc_empty(desc, out);
-        goto_out_unlock!(out);
+        break 'out;
     }
     NX_CPB_FDM(csbcpb) &= !NX_FDM_INTERMEDIATE;
     len = nbytes as c_int;
     in_sg = nx_build_sg_list((*nx_ctx).in_sg, src as *mut u8, &mut len, (*nx_ctx).ap.sglen);
-    if len != nbytes as c_int { rc = -EINVAL; goto_out_unlock!(out); }
+    if len != nbytes as c_int { rc = -EINVAL; break 'out; }
     len = AES_BLOCK_SIZE as c_int;
     out_sg = nx_build_sg_list((*nx_ctx).out_sg, out, &mut len, (*nx_ctx).ap.sglen);
-    if len != AES_BLOCK_SIZE as c_int { rc = -EINVAL; goto_out_unlock!(out); }
+    if len != AES_BLOCK_SIZE as c_int { rc = -EINVAL; break 'out; }
     (*nx_ctx).op.inlen = ((*nx_ctx).in_sg.offset_from(in_sg) as usize) * core::mem::size_of::<nx_sg>();
     (*nx_ctx).op.outlen = ((*nx_ctx).out_sg.offset_from(out_sg) as usize) * core::mem::size_of::<nx_sg>();
-    if (*nx_ctx).op.outlen == 0 { rc = -EINVAL; goto_out_unlock!(out); }
+    if (*nx_ctx).op.outlen == 0 { rc = -EINVAL; break 'out; }
     rc = nx_hcall_sync(nx_ctx, &mut (*nx_ctx).op, 0);
-    if rc != 0 { goto_out_unlock!(out); }
+    if rc != 0 { break 'out; }
     atomic_inc(&mut (*(*nx_ctx).stats).aes_ops);
     memcpy(out, (*csbcpb).cpb.aes_xcbc.out_cv_mac.as_ptr(), AES_BLOCK_SIZE);
-out:
+    }
+    
     spin_unlock_irqrestore(&mut (*nx_ctx).lock, irq_flags);
     rc
 }

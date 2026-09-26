@@ -247,10 +247,10 @@ pub const LSM_ID_IMA: i32 = 0;
 pub const LSM_ORDER_LAST: i32 = -1;
 
 // Global variables
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 pub static mut ima_appraise: i32 = 0;
 
-#[cfg(feature = "CONFIG_IMA_APPRAISE")]
+#[cfg(CONFIG_IMA_APPRAISE)]
 pub static mut ima_appraise: i32 = IMA_APPRAISE_ENFORCE;
 
 pub static mut ima_hash_algo: i32 = HASH_ALGO_SHA1;
@@ -316,33 +316,28 @@ extern "C" {
         pcr: *mut i32,
         template_desc: *mut *mut ima_template_desc,
         func_data: *const c_char,
-        allowed_algos: *mut u32,
-    ) -> i32;
+        allowed_algos: *mut u32) -> i32;
     pub fn ima_d_path(
         path: *const path,
         pathbuf: *mut *mut c_char,
-        filename: *mut c_char,
-    ) -> *const c_char;
+        filename: *mut c_char) -> *const c_char;
     pub fn ima_rdwr_violation_check(
         file: *const file,
         iint: *mut ima_iint_cache,
         must_measure: i32,
         pathbuf: *mut *mut c_char,
         pathname: *mut *const c_char,
-        filename: *mut c_char,
-    );
+        filename: *mut c_char);
     pub fn ima_add_violation(
         file: *const file,
         pathname: *const c_char,
         iint: *mut ima_iint_cache,
         op: *const c_char,
-        cause: *const c_char,
-    );
+        cause: *const c_char);
     pub fn ima_detect_file_change(
         iint: *mut ima_iint_cache,
         inode: *const inode,
-        file: *const file,
-    ) -> bool;
+        file: *const file) -> bool;
     pub fn ima_update_xattr(iint: *mut ima_iint_cache, file: *const file);
     pub fn ima_collect_measurement(
         iint: *mut ima_iint_cache,
@@ -350,8 +345,7 @@ extern "C" {
         buf: *const u8,
         size: i32,
         hash_algo: i32,
-        modsig: *mut modsig,
-    ) -> i32;
+        modsig: *mut modsig) -> i32;
     pub fn ima_store_measurement(
         iint: *mut ima_iint_cache,
         file: *const file,
@@ -360,25 +354,21 @@ extern "C" {
         xattr_len: i32,
         modsig: *mut modsig,
         pcr: i32,
-        template_desc: *mut ima_template_desc,
-    );
+        template_desc: *mut ima_template_desc);
     pub fn ima_read_xattr(
         dentry: *mut dentry,
         xattr_value: *mut *mut evm_ima_xattr_data,
-        xattr_len: i32,
-    ) -> i32;
+        xattr_len: i32) -> i32;
     pub fn ima_read_modsig(
         func: i32,
         buf: *const u8,
         size: i32,
-        modsig: *mut *mut modsig,
-    ) -> i32;
+        modsig: *mut *mut modsig) -> i32;
     pub fn ima_free_modsig(modsig: *mut modsig);
     pub fn ima_template_has_modsig(template_desc: *mut ima_template_desc) -> bool;
     pub fn ima_get_hash_algo(
         xattr_value: *const evm_ima_xattr_data,
-        xattr_len: i32,
-    ) -> i32;
+        xattr_len: i32) -> i32;
     pub fn ima_check_blacklist(iint: *mut ima_iint_cache, modsig: *mut modsig, pcr: i32) -> i32;
     pub fn ima_appraise_measurement(
         func: i32,
@@ -388,8 +378,7 @@ extern "C" {
         xattr_value: *const evm_ima_xattr_data,
         xattr_len: i32,
         modsig: *mut modsig,
-        bprm_is_check: bool,
-    ) -> i32;
+        bprm_is_check: bool) -> i32;
     pub fn ima_audit_measurement(iint: *mut ima_iint_cache, pathname: *const c_char);
     pub fn ima_get_cache_status(iint: *mut ima_iint_cache, func: i32) -> i32;
     pub fn integrity_audit_msg(
@@ -399,8 +388,7 @@ extern "C" {
         op: *const c_char,
         cause: *const c_char,
         rc: i32,
-        unused: i32,
-    );
+        unused: i32);
     pub fn integrity_audit_message(
         audit_type: i32,
         inode: *const inode,
@@ -409,16 +397,14 @@ extern "C" {
         cause: *const c_char,
         rc: i32,
         unused: i32,
-        ret: i32,
-    );
+        ret: i32);
     pub fn integrity_inode_attrs_changed(real_inode: *const inode, inode: *const inode) -> bool;
     pub fn evm_metadata_changed(inode: *const inode, metadata_inode: *const inode) -> bool;
     pub fn vfs_getattr_nosec(
         path: *const path,
         stat: *mut kstat,
         request_mask: u32,
-        query_flags: u32,
-    ) -> i32;
+        query_flags: u32) -> i32;
     pub fn ima_appraise_parse_cmdline();
     pub fn ima_init_template_list();
     pub fn ima_init() -> i32;
@@ -429,34 +415,29 @@ extern "C" {
     pub fn security_add_hooks(
         hooks: *const security_hook_list,
         count: usize,
-        lsmid: *const lsm_id,
-    );
+        lsmid: *const lsm_id);
     pub fn security_current_getlsmprop_subj(prop: *mut lsm_prop);
     pub fn match_string(
         array: *const *const c_char,
         n: i32,
-        string: *const c_char,
-    ) -> i32;
+        string: *const c_char) -> i32;
     pub fn ima_inode_free_rcu(inode: *mut inode);
     pub fn ima_post_key_create_or_update();
     pub fn ima_lsm_policy_change() -> i32;
     pub fn ima_calc_buffer_hash(
         buf: *const u8,
         size: usize,
-        hash: *mut ima_digest_data,
-    ) -> i32;
+        hash: *mut ima_digest_data) -> i32;
     pub fn ima_alloc_init_template(
         event_data: *const ima_event_data,
         entry: *mut *mut ima_template_entry,
-        template: *mut ima_template_desc,
-    ) -> i32;
+        template: *mut ima_template_desc) -> i32;
     pub fn ima_store_template(
         entry: *mut ima_template_entry,
         violation: i32,
         inode: *const inode,
         buf: *const u8,
-        pcr: i32,
-    ) -> i32;
+        pcr: i32) -> i32;
     pub fn ima_free_template_entry(entry: *mut ima_template_entry);
     pub fn ima_measure_critical_data(
         event_label: *const c_char,
@@ -465,8 +446,7 @@ extern "C" {
         size: usize,
         hash: bool,
         digest: *mut u8,
-        digest_len: usize,
-    ) -> i32;
+        digest_len: usize) -> i32;
     pub fn func_measure_str(func: i32) -> *const c_char;
 
     pub static hash_algo_name: *const *const c_char;
@@ -752,6 +732,8 @@ extern "C" fn process_measurement(
         let mut template_desc: *mut ima_template_desc = ptr::null_mut();
         let mut pathbuf: *mut c_char = ptr::null_mut();
         let mut filename: [c_char; NAME_MAX] = [0; NAME_MAX];
+        'out_label: {
+        'out_locked_label: {
         let mut pathname: *const c_char = ptr::null();
         let mut rc = 0;
         let mut action = 0;
@@ -816,10 +798,10 @@ extern "C" fn process_measurement(
         inode_unlock(inode as *mut inode);
 
         if rc != 0 {
-            goto out_label;
+            break 'out_label;
         }
         if action == 0 {
-            goto out_label;
+            break 'out_label;
         }
 
         mutex_lock(&mut (*iint).mutex as *mut libc::c_void);
@@ -885,7 +867,7 @@ extern "C" fn process_measurement(
                     rc = ima_get_cache_status(iint, func_local);
                 }
             }
-            goto out_locked_label;
+            break 'out_locked_label;
         }
 
         if (action & IMA_APPRAISE_SUBMASK) != 0
@@ -906,12 +888,12 @@ extern "C" fn process_measurement(
 
         rc = ima_collect_measurement(iint, file, buf, size, hash_algo, modsig);
         if rc != 0 && rc != EBADF && rc != EINVAL {
-            goto out_locked_label;
+            break 'out_locked_label;
         }
 
         if read_id == READING_MODULE_COMPRESSED {
             must_appraise = 0;
-            goto out_locked_label;
+            break 'out_locked_label;
         }
 
         if pathbuf.is_null() {
@@ -978,16 +960,16 @@ extern "C" fn process_measurement(
                 0,
             );
         }
-
-        out_locked_label: if (mask & MAY_WRITE) != 0 && test_bit(IMA_DIGSIG as i32, &(*iint).atomic_flags)
+        }
+        if (mask & MAY_WRITE) != 0 && test_bit(IMA_DIGSIG as i32, &(*iint).atomic_flags)
             && ((*iint).flags & IMA_NEW_FILE) == 0 {
             rc = EACCES;
         }
         mutex_unlock(&mut (*iint).mutex as *mut libc::c_void);
         kfree(xattr_value as *mut u8);
         ima_free_modsig(modsig);
-
-        out_label: if !pathbuf.is_null() {
+        }
+        if !pathbuf.is_null() {
             __putname(pathbuf);
         }
         if must_appraise != 0 {
@@ -1502,6 +1484,7 @@ pub extern "C" fn process_buffer_measurement(
         let hash_hdr = container_of(&hash.hdr as *const ima_digest_data as *const u8, 0, 0)
             as *mut ima_digest_data;
         let mut digest_hash: [u8; IMA_MAX_DIGEST_SIZE] = [0; IMA_MAX_DIGEST_SIZE];
+        'out_label2: {
         let digest_hash_len = hash_digest_size[ima_hash_algo as usize];
         let mut violation = 0;
         let mut action = 0;
@@ -1519,7 +1502,7 @@ pub extern "C" fn process_buffer_measurement(
         if template.is_null() {
             ret = EINVAL;
             audit_cause = b"ima_template_desc_buf\0" as *const u8 as *const c_char;
-            goto out_label2;
+            break 'out_label2;
         }
 
         if func != 0 {
@@ -1552,7 +1535,7 @@ pub extern "C" fn process_buffer_measurement(
         ret = ima_calc_buffer_hash(buf, size as usize, iint.ima_hash);
         if ret < 0 {
             audit_cause = b"hashing_error\0" as *const u8 as *const c_char;
-            goto out_label2;
+            break 'out_label2;
         }
 
         if buf_hash {
@@ -1569,7 +1552,7 @@ pub extern "C" fn process_buffer_measurement(
             );
             if ret < 0 {
                 audit_cause = b"hashing_error\0" as *const u8 as *const c_char;
-                goto out_label2;
+                break 'out_label2;
             }
 
             event_data.buf = digest_hash.as_ptr();
@@ -1591,7 +1574,7 @@ pub extern "C" fn process_buffer_measurement(
         ret = ima_alloc_init_template(&event_data, &mut entry, template);
         if ret < 0 {
             audit_cause = b"alloc_entry\0" as *const u8 as *const c_char;
-            goto out_label2;
+            break 'out_label2;
         }
 
         ret = ima_store_template(entry, violation, ptr::null(), buf, pcr);
@@ -1599,8 +1582,8 @@ pub extern "C" fn process_buffer_measurement(
             audit_cause = b"store_entry\0" as *const u8 as *const c_char;
             ima_free_template_entry(entry);
         }
-
-        out_label2: if ret < 0 {
+        }
+        if ret < 0 {
             integrity_audit_message(
                 AUDIT_INTEGRITY_PCR,
                 ptr::null(),
@@ -1795,8 +1778,7 @@ extern "C" {
         idmap: *const mnt_idmap,
         inode: *const inode,
         mask: i32,
-        func: i32,
-    ) -> i32;
+        func: i32) -> i32;
 }
 
 pub const INTEGRITY_PASS: i32 = 0;

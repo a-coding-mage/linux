@@ -45,8 +45,8 @@ macro_rules! cpu_set {
     ($cpu:expr, $set:expr) => {{
         let cpu: usize = $cpu as usize;
         let bits = size_of::<c_ulong>() * 8;
-        let idx = cpu / bits;
-        let off = cpu % bits;
+        let idx = $cpu / bits;
+        let off = $cpu % bits;
         unsafe {
             let ptr = (*$set).bits.as_mut_ptr().add(idx);
             *ptr |= (1u64 << off) as c_ulong;

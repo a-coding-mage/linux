@@ -11,7 +11,6 @@
  ************************************/
 
 // #ifndef ASIC_REG_PSOC_RESET_CONF_MASKS_H_
-#define ASIC_REG_PSOC_RESET_CONF_MASKS_H_
 
 /*
  *****************************************

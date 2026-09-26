@@ -146,19 +146,19 @@ extern "C" {
 
 /* The remaining set/get helpers are declaration-only external kernel functions. */
 extern "C" {
-    pub fn param_set_byte(*const c_char, *const kernel_param) -> c_int; pub fn param_get_byte(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_short(*const c_char, *const kernel_param) -> c_int; pub fn param_get_short(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_ushort(*const c_char, *const kernel_param) -> c_int; pub fn param_get_ushort(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_int(*const c_char, *const kernel_param) -> c_int; pub fn param_get_int(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_uint(*const c_char, *const kernel_param) -> c_int; pub fn param_get_uint(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_long(*const c_char, *const kernel_param) -> c_int; pub fn param_get_long(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_ulong(*const c_char, *const kernel_param) -> c_int; pub fn param_get_ulong(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_ullong(*const c_char, *const kernel_param) -> c_int; pub fn param_get_ullong(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_hexint(*const c_char, *const kernel_param) -> c_int; pub fn param_get_hexint(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_charp(*const c_char, *const kernel_param) -> c_int; pub fn param_get_charp(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_bool(*const c_char, *const kernel_param) -> c_int; pub fn param_get_bool(*mut c_char, *const kernel_param) -> c_int;
-    pub fn param_set_bool_enable_only(*const c_char, *const kernel_param) -> c_int;
-    pub fn param_set_invbool(*const c_char, *const kernel_param) -> c_int; pub fn param_get_invbool(*mut c_char, *const kernel_param) -> c_int;
+    pub fn param_set_byte(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_byte(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_short(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_short(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_ushort(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_ushort(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_int(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_int(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_uint(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_uint(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_long(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_long(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_ulong(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_ulong(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_ullong(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_ullong(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_hexint(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_hexint(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_charp(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_charp(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_bool(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_bool(_: *mut c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_bool_enable_only(_: *const c_char, _: *const kernel_param) -> c_int;
+    pub fn param_set_invbool(_: *const c_char, _: *const kernel_param) -> c_int; pub fn param_get_invbool(_: *mut c_char, _: *const kernel_param) -> c_int;
 }
 
 #[cfg(feature = "modules")]

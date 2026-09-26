@@ -139,9 +139,9 @@ unsafe extern "C" fn mvme5100_setup_arch() {
 
 unsafe extern "C" fn mvme5100_setup_pci() {
     let mut np: *mut device_node = core::ptr::null_mut();
-    for_each_compatible_node!(np, c"pci", c"hawk-pci") {
+    for_each_compatible_node!(np, c"pci", c"hawk-pci", {
         mvme5100_add_bridge(np);
-    }
+    });
 }
 
 unsafe extern "C" fn mvme5100_show_cpuinfo(m: *mut seq_file) {

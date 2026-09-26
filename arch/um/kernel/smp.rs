@@ -9,12 +9,10 @@
 
 // Linux/UML dependencies supplied by other translation units.
 
-enum {
-    UML_IPI_RES = 0,
-    UML_IPI_CALL_SINGLE,
-    UML_IPI_CALL,
-    UML_IPI_STOP,
-}
+pub const UML_IPI_RES: i32 = 0;
+pub const UML_IPI_CALL_SINGLE: i32 = UML_IPI_RES + 1;
+pub const UML_IPI_CALL: i32 = UML_IPI_CALL_SINGLE + 1;
+pub const UML_IPI_STOP: i32 = UML_IPI_CALL + 1;
 
 pub unsafe fn arch_smp_send_reschedule(cpu: i32) {
     os_send_ipi(cpu, UML_IPI_RES);
@@ -34,12 +32,12 @@ pub unsafe fn smp_send_stop() {
     let mut cpu: i32;
     let me: i32 = smp_processor_id();
 
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         if cpu == me {
             continue;
         }
         os_send_ipi(cpu, UML_IPI_STOP);
-    }
+    });
 }
 
 unsafe fn ipi_handler(vector: i32, regs: *mut uml_pt_regs) {
@@ -89,10 +87,8 @@ pub unsafe fn uml_ipi_handler(vector: i32) {
 }
 
 /* AP states used only during CPU startup */
-enum {
-    UML_CPU_PAUSED = 0,
-    UML_CPU_RUNNING,
-}
+pub const UML_CPU_PAUSED: i32 = 0;
+pub const UML_CPU_RUNNING: i32 = UML_CPU_PAUSED + 1;
 
 static mut cpu_states: [i32; NR_CPUS as usize] = [0; NR_CPUS as usize];
 
@@ -145,7 +141,7 @@ pub unsafe fn smp_prepare_cpus(_max_cpus: u32) {
 
     os_init_smp();
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         if cpu == me {
             continue;
         }
@@ -163,7 +159,7 @@ pub unsafe fn smp_prepare_cpus(_max_cpus: u32) {
         if !cpu_present(cpu) {
             pr_crit!("CPU#{} failed to boot\n", cpu);
         }
-    }
+    });
 }
 
 pub unsafe fn __cpu_up(cpu: u32, tidle: *mut task_struct) -> i32 {

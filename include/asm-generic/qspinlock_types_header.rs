@@ -10,24 +10,28 @@
 /* Dependency supplied by the surrounding kernel translation. */
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct qspinlock_le_bytes {
     pub locked: u8,
     pub pending: u8,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct qspinlock_le_words {
     pub locked_pending: u16,
     pub tail: u16,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct qspinlock_be_words {
     pub tail: u16,
     pub locked_pending: u16,
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct qspinlock_be_bytes {
     pub reserved: [u8; 2],
     pub pending: u8,
@@ -35,6 +39,7 @@ pub struct qspinlock_be_bytes {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub union qspinlock_union {
     pub val: atomic_t,
     /* By using the whole 2nd least significant byte for the pending bit,
@@ -47,6 +52,7 @@ pub union qspinlock_union {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct qspinlock {
     pub data: qspinlock_union,
 }

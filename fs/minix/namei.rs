@@ -106,6 +106,7 @@ unsafe fn minix_mkdir(_idmap: *mut mnt_idmap, dir: *mut inode,
                       dentry: *mut dentry, mode: umode_t) -> *mut dentry {
     let inode;
     let mut err: i32;
+    'out_fail: {
 
     inode = minix_new_inode(dir, mode);
     if IS_ERR(inode) {
@@ -117,15 +118,15 @@ unsafe fn minix_mkdir(_idmap: *mut mnt_idmap, dir: *mut inode,
     inode_inc_link_count(inode);
 
     err = minix_make_empty(inode, dir);
-    if err != 0 { goto_out_fail!(out_fail); }
+    if err != 0 { break 'out_fail; }
 
     err = minix_add_link(dentry, inode);
-    if err != 0 { goto_out_fail!(out_fail); }
+    if err != 0 { break 'out_fail; }
 
     d_instantiate(dentry, inode);
     return ERR_PTR(err);
-
-out_fail:
+    }
+    
     inode_dec_link_count(inode);
     inode_dec_link_count(inode);
     iput(inode);

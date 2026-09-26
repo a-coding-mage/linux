@@ -75,7 +75,7 @@ pub unsafe fn iova_pfn(iovad: *mut iova_domain, iova_addr: dma_addr_t) -> c_ulon
 }
 
 /* IS_REACHABLE(CONFIG_IOMMU_IOVA), represented here by a build feature. */
-#[cfg(feature = "CONFIG_IOMMU_IOVA")]
+#[cfg(CONFIG_IOMMU_IOVA)]
 extern "C" {
     pub fn iova_cache_get() -> c_int;
     pub fn iova_cache_put();
@@ -92,37 +92,37 @@ extern "C" {
     pub fn put_iova_domain(iovad: *mut iova_domain);
 }
 
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn iova_cache_get() -> c_int { -ENOTSUPP as c_int }
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn iova_cache_put() {}
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn free_iova(_: *mut iova_domain, _: c_ulong) {}
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn __free_iova(_: *mut iova_domain, _: *mut iova) {}
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn alloc_iova(_: *mut iova_domain, _: c_ulong, _: c_ulong, _: bool) -> *mut iova { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn free_iova_fast(_: *mut iova_domain, _: c_ulong, _: c_ulong) {}
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn alloc_iova_fast(_: *mut iova_domain, _: c_ulong, _: c_ulong, _: bool) -> c_ulong { 0 }
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn reserve_iova(_: *mut iova_domain, _: c_ulong, _: c_ulong) -> *mut iova { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn init_iova_domain(_: *mut iova_domain, _: c_ulong, _: c_ulong) {}
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn find_iova(_: *mut iova_domain, _: c_ulong) -> *mut iova { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_IOMMU_IOVA"))]
+#[cfg(not(CONFIG_IOMMU_IOVA))]
 #[inline]
 pub unsafe fn put_iova_domain(_: *mut iova_domain) {}
 

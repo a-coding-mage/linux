@@ -17,7 +17,7 @@ unsafe fn nilfs_palloc_groups_per_desc_block(inode: *const inode) -> c_ulong {
 
 #[inline]
 unsafe fn nilfs_palloc_groups_count(inode: *const inode) -> c_ulong {
-    1 as c_ulong << (BITS_PER_LONG - ((*inode).i_blkbits + 3))
+    (1 as c_ulong) << (BITS_PER_LONG - ((*inode).i_blkbits + 3))
 }
 
 unsafe fn nilfs_palloc_init_blockgroup(inode: *mut inode, entry_size: c_uint) -> c_int {

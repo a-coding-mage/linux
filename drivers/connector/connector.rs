@@ -62,13 +62,13 @@ pub unsafe fn cn_netlink_send_mult(
         group = __group;
     } else {
         spin_lock_bh((*(*dev).cbdev).queue_lock);
-        list_for_each_entry(_cbq, (*(*dev).cbdev).queue_list, callback_entry) {
+        list_for_each_entry!(_cbq, (*(*dev).cbdev).queue_list, callback_entry, {
             if cn_cb_equal(&(*_cbq).id.id, &(*msg).id) != 0 {
                 found = 1;
                 group = (*_cbq).group;
                 break;
             }
-        }
+        });
         spin_unlock_bh((*(*dev).cbdev).queue_lock);
 
         if found == 0 {
@@ -125,13 +125,13 @@ unsafe fn cn_call_callback(skb: *mut sk_buff) -> i32 {
     }
 
     spin_lock_bh((*(*dev).cbdev).queue_lock);
-    list_for_each_entry(i, (*(*dev).cbdev).queue_list, callback_entry) {
+    list_for_each_entry!(i, (*(*dev).cbdev).queue_list, callback_entry, {
         if cn_cb_equal(&(*i).id.id, &(*msg).id) != 0 {
             refcount_inc(&mut (*i).refcnt);
             cbq = i;
             break;
         }
-    }
+    });
     spin_unlock_bh((*(*dev).cbdev).queue_lock);
 
     if !cbq.is_null() {
@@ -186,9 +186,9 @@ unsafe fn cn_proc_show(m: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
     let mut cbq: *mut cn_callback_entry;
     seq_printf(m, "Name            ID\n");
     spin_lock_bh((*dev).queue_lock);
-    list_for_each_entry(cbq, (*dev).queue_list, callback_entry) {
+    list_for_each_entry!(cbq, (*dev).queue_list, callback_entry, {
         seq_printf(m, "%-15s %u:%u\n", (*cbq).id.name, (*cbq).id.id.idx, (*cbq).id.id.val);
-    }
+    });
     spin_unlock_bh((*dev).queue_lock);
     0
 }

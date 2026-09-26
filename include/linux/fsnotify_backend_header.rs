@@ -122,9 +122,9 @@ pub const FSNOTIFY_MARK_FLAG_ALIVE:u32=0x0001; pub const FSNOTIFY_MARK_FLAG_ATTA
 #[inline] pub unsafe fn fsnotify_data_rename_target(data:*const c_void,ty:i32)->*mut inode { if ty==7 {(*(data as *const fsnotify_rename_data)).target} else {core::ptr::null_mut()} }
 #[inline] pub unsafe fn fsnotify_data_file_range(data:*const c_void,ty:i32)->*const file_range { if ty==1 {data as *const file_range} else {core::ptr::null()} }
 
-#[cfg(feature="CONFIG_FSNOTIFY")]
+#[cfg(CONFIG_FSNOTIFY)]
 extern "C" { pub fn fsnotify(mask:u32,data:*const c_void,data_type:i32,dir:*mut inode,name:*const qstr,inode:*mut inode,cookie:u32)->i32; pub fn fsnotify_pre_content(path:*const path,ppos:*const loff_t,count:usize)->i32; }
-#[cfg(not(feature="CONFIG_FSNOTIFY"))]
+#[cfg(not(CONFIG_FSNOTIFY))]
 #[inline] pub unsafe fn fsnotify_pre_content(_: *const path, _: *const loff_t, _: usize)->i32 {0}
 
 #[inline] pub unsafe fn fsnotify_parent_needed_mask(mask:u32)->u32 { if mask & FS_EVENT_ON_CHILD == 0 {0} else {mask & FS_EVENTS_POSS_TO_PARENT} }

@@ -59,12 +59,12 @@ pub unsafe extern "C" fn xillybus_init_chrdev(
     while enumerate {
         snprintf((*unit).name.as_mut_ptr(), UNITNAMELEN, c"%s_%02d", prefix, i);
         enumerate = false;
-        list_for_each_entry!(u, &raw mut unit_list, list_entry, XillyUnit) {
+        list_for_each_entry!(u, &raw mut unit_list, list_entry, XillyUnit, {
             if strcmp((*unit).name.as_ptr(), (*u).name.as_ptr()) == 0 {
                 enumerate = true;
                 break;
             }
-        }
+        });
         i += 1;
     }
 
@@ -141,9 +141,9 @@ pub unsafe extern "C" fn xillybus_cleanup_chrdev(private_data: *mut core::ffi::c
     let mut unit: *mut XillyUnit = core::ptr::null_mut();
     let mut iter: *mut XillyUnit;
     mutex_lock(&raw mut unit_mutex);
-    list_for_each_entry!(iter, &raw mut unit_list, list_entry, XillyUnit) {
+    list_for_each_entry!(iter, &raw mut unit_list, list_entry, XillyUnit, {
         if (*iter).private_data == private_data { unit = iter; break; }
-    }
+    });
     if unit.is_null() { dev_err(dev, c"Weird bug: Failed to find unit\n"); mutex_unlock(&raw mut unit_mutex); return; }
     minor = (*unit).lowest_minor;
     while minor < (*unit).lowest_minor + (*unit).num_nodes {
@@ -165,9 +165,9 @@ pub unsafe extern "C" fn xillybus_find_inode(inode: *mut inode, private_data: *m
     let mut unit: *mut XillyUnit = core::ptr::null_mut();
     let mut iter: *mut XillyUnit;
     mutex_lock(&raw mut unit_mutex);
-    list_for_each_entry!(iter, &raw mut unit_list, list_entry, XillyUnit) {
+    list_for_each_entry!(iter, &raw mut unit_list, list_entry, XillyUnit, {
         if (*iter).major == major && minor >= (*iter).lowest_minor && minor < (*iter).lowest_minor + (*iter).num_nodes { unit = iter; break; }
-    }
+    });
     if unit.is_null() { mutex_unlock(&raw mut unit_mutex); return -ENODEV; }
     *private_data = (*unit).private_data;
     *index = minor - (*unit).lowest_minor;

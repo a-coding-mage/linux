@@ -4,7 +4,6 @@
  * Copyright 2022 StarFive Technology Co., Ltd.
  */
 
-#define __DT_BINDINGS_CLOCK_STARFIVE_JH7110_CRG_H__
 
 /* PLL clocks */
 pub const JH7110_PLLCLK_PLL0_OUT: u32 = 0;

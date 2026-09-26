@@ -85,6 +85,7 @@ unsafe fn jh7110_ispcrg_probe(pdev: *mut platform_device) -> i32 {
     let top: *mut jh7110_top_sysclk;
     let mut idx: u32;
     let mut ret: i32;
+    'err_exit: {
 
     priv_ = devm_kzalloc(&mut (*pdev).dev,
                          struct_size(priv_, reg, JH7110_ISPCLK_END), GFP_KERNEL);
@@ -110,7 +111,7 @@ unsafe fn jh7110_ispcrg_probe(pdev: *mut platform_device) -> i32 {
     if ret < 0 { return dev_err_probe((*priv_).dev, ret, "failed to turn on power\n"); }
 
     ret = jh7110_isp_top_rst_init(priv_);
-    if ret != 0 { goto err_exit; }
+    if ret != 0 { break 'err_exit; }
 
     idx = 0;
     while idx < JH7110_ISPCLK_END {
@@ -138,17 +139,17 @@ unsafe fn jh7110_ispcrg_probe(pdev: *mut platform_device) -> i32 {
         (*clk).idx = idx;
         (*clk).max_div = max & JH71X0_CLK_DIV_MASK;
         ret = devm_clk_hw_register(&mut (*pdev).dev, &mut (*clk).hw);
-        if ret != 0 { goto err_exit; }
+        if ret != 0 { break 'err_exit; }
         idx += 1;
     }
 
     ret = devm_of_clk_add_hw_provider(&mut (*pdev).dev, jh71x0_clk_get, priv_);
-    if ret != 0 { goto err_exit; }
+    if ret != 0 { break 'err_exit; }
     ret = jh7110_reset_controller_register(priv_, "rst-isp", 3);
-    if ret != 0 { goto err_exit; }
+    if ret != 0 { break 'err_exit; }
     return 0;
-
-err_exit:
+    }
+    
     pm_runtime_put_sync((*priv_).dev);
     pm_runtime_disable((*priv_).dev);
     ret

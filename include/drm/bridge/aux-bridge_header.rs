@@ -25,18 +25,18 @@ pub struct device_node {
 // Dependency: enum drm_connector_status supplied by drm_connector.h.
 pub type drm_connector_status = i32;
 
-#[cfg(feature = "CONFIG_DRM_AUX_BRIDGE")]
+#[cfg(CONFIG_DRM_AUX_BRIDGE)]
 unsafe extern "C" {
     pub fn drm_aux_bridge_register(parent: *mut device) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_DRM_AUX_BRIDGE"))]
+#[cfg(not(CONFIG_DRM_AUX_BRIDGE))]
 #[inline]
 pub unsafe fn drm_aux_bridge_register(_parent: *mut device) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_DRM_AUX_HPD_BRIDGE")]
+#[cfg(CONFIG_DRM_AUX_HPD_BRIDGE)]
 unsafe extern "C" {
     pub fn devm_drm_dp_hpd_bridge_alloc(
         parent: *mut device,
@@ -56,7 +56,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_DRM_AUX_HPD_BRIDGE"))]
+#[cfg(not(CONFIG_DRM_AUX_HPD_BRIDGE))]
 #[inline]
 pub unsafe fn devm_drm_dp_hpd_bridge_alloc(
     _parent: *mut device,
@@ -65,7 +65,7 @@ pub unsafe fn devm_drm_dp_hpd_bridge_alloc(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_DRM_AUX_HPD_BRIDGE"))]
+#[cfg(not(CONFIG_DRM_AUX_HPD_BRIDGE))]
 #[inline]
 pub unsafe fn devm_drm_dp_hpd_bridge_add(
     _dev: *mut device,
@@ -74,7 +74,7 @@ pub unsafe fn devm_drm_dp_hpd_bridge_add(
     0
 }
 
-#[cfg(not(feature = "CONFIG_DRM_AUX_HPD_BRIDGE"))]
+#[cfg(not(CONFIG_DRM_AUX_HPD_BRIDGE))]
 #[inline]
 pub unsafe fn drm_dp_hpd_bridge_register(
     _parent: *mut device,
@@ -83,7 +83,7 @@ pub unsafe fn drm_dp_hpd_bridge_register(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_DRM_AUX_HPD_BRIDGE"))]
+#[cfg(not(CONFIG_DRM_AUX_HPD_BRIDGE))]
 #[inline]
 pub unsafe fn drm_aux_hpd_bridge_notify(
     _dev: *mut device,

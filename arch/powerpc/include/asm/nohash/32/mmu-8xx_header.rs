@@ -85,7 +85,7 @@ pub const PTE_FRAG_SIZE_SHIFT: u32 = 12;
 pub const PTE_FRAG_SIZE: usize = 1usize << 12;
 pub const mmu_linear_psize: u32 = MMU_PAGE_8M;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn mmu_pin_tlb(top: libc::c_ulong, readonly: bool);
 }
 
@@ -102,7 +102,7 @@ pub struct mmu_psize_def {
     pub shift: libc::c_uint,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut mmu_psize_defs: [mmu_psize_def; MMU_PAGE_COUNT as usize];
     pub static mut patch__itlbmiss_exit_1: i32;
     pub static mut patch__dtlbmiss_exit_1: i32;

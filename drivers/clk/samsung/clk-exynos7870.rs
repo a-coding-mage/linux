@@ -1473,10 +1473,10 @@ const Samsungcmu_info peri_cmu_info = {
 static int __init exynos7870_cmu_probe(PlatformDevice *pdev)
 {
 	const Samsungcmu_info *info;
-	Device *dev = &pdev->dev;
+	Device *dev = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }

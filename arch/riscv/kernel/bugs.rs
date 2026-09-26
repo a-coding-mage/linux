@@ -43,7 +43,7 @@ pub unsafe fn ghostwrite_set_vulnerable() {
  * Returns true if mitgated, false otherwise.
  */
 pub unsafe fn ghostwrite_enable_mitigation() -> bool {
-    if cfg!(feature = "CONFIG_RISCV_ISA_XTHEADVECTOR")
+    if cfg!(CONFIG_RISCV_ISA_XTHEADVECTOR)
         && ghostwrite_state == VULNERABLE
         && cpu_mitigations_off() == 0
     {
@@ -64,7 +64,7 @@ pub unsafe fn cpu_show_ghostwrite(
     _attr: *mut device_attribute,
     buf: *mut c_char,
 ) -> isize {
-    if cfg!(feature = "CONFIG_RISCV_ISA_XTHEADVECTOR") {
+    if cfg!(CONFIG_RISCV_ISA_XTHEADVECTOR) {
         match ghostwrite_state {
             UNAFFECTED => sysfs_emit(buf, b"Not affected\0".as_ptr() as *const c_char),
             MITIGATED => sysfs_emit(

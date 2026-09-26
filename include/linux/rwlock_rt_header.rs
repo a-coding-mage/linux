@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // This header is intended to be included through linux/spinlock.h.
 
-#[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 extern "C" {
     pub fn __rt_rwlock_init(
         rwlock: *mut rwlock_t,
@@ -10,7 +10,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
 #[inline(always)]
 pub unsafe fn __rt_rwlock_init(
     _rwlock: *mut rwlock_t,
@@ -101,13 +101,13 @@ pub unsafe fn write_lock(rwlock: *mut rwlock_t) {
     rt_write_lock(rwlock);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 #[inline(always)]
 pub unsafe fn write_lock_nested(rwlock: *mut rwlock_t, subclass: core::ffi::c_int) {
     rt_write_lock_nested(rwlock, subclass);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
 #[macro_export]
 macro_rules! write_lock_nested {
     ($lock:expr, $subclass:expr) => {{

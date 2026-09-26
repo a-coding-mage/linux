@@ -43,19 +43,19 @@ extern "C" {
  * currently limited to configurations where the "full" self-tests are enabled,
  * because it might be a bit too invasive to be part of the "fast" self-tests.
  */
-#[cfg(feature = "CONFIG_CRYPTO_SELFTESTS_FULL")]
+#[cfg(CONFIG_CRYPTO_SELFTESTS_FULL)]
 extern "C" {
     // DECLARE_PER_CPU(bool, crypto_simd_disabled_for_test)
     pub static mut crypto_simd_disabled_for_test: bool;
 }
 
-#[cfg(feature = "CONFIG_CRYPTO_SELFTESTS_FULL")]
+#[cfg(CONFIG_CRYPTO_SELFTESTS_FULL)]
 #[inline]
 pub unsafe fn crypto_simd_usable() -> bool {
     may_use_simd() && !crypto_simd_disabled_for_test
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_SELFTESTS_FULL"))]
+#[cfg(not(CONFIG_CRYPTO_SELFTESTS_FULL))]
 #[inline]
 pub unsafe fn crypto_simd_usable() -> bool {
     may_use_simd()

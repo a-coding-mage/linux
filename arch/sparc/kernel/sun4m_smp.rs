@@ -110,10 +110,10 @@ pub unsafe fn smp4m_smp_done() {
 
     /* setup cpu list for irq rotation */
     first = 0;
-    for_each_online_cpu!(i) {
+    for_each_online_cpu!(i, {
         *prev = i;
         prev = &mut cpu_data(i).next;
-    }
+    });
     *prev = first;
     ((*local_ops).cache_all)();
 

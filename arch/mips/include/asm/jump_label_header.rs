@@ -27,17 +27,17 @@ pub const WORD_INSN: &str = ".dword";
 #[cfg(not(target_pointer_width = "64"))]
 pub const WORD_INSN: &str = ".word";
 
-#[cfg(feature = "CONFIG_CPU_MICROMIPS")]
+#[cfg(CONFIG_CPU_MICROMIPS)]
 pub const B_INSN: &str = "b32";
-#[cfg(feature = "CONFIG_CPU_MICROMIPS")]
+#[cfg(CONFIG_CPU_MICROMIPS)]
 pub const J_INSN: &str = "j32";
-#[cfg(all(not(feature = "CONFIG_CPU_MICROMIPS"), feature = "MIPS_ISA_REV_6"))]
+#[cfg(all(not(CONFIG_CPU_MICROMIPS), feature = "MIPS_ISA_REV_6"))]
 pub const B_INSN: &str = "bc";
-#[cfg(all(not(feature = "CONFIG_CPU_MICROMIPS"), feature = "MIPS_ISA_REV_6"))]
+#[cfg(all(not(CONFIG_CPU_MICROMIPS), feature = "MIPS_ISA_REV_6"))]
 pub const J_INSN: &str = "bc";
-#[cfg(all(not(feature = "CONFIG_CPU_MICROMIPS"), not(feature = "MIPS_ISA_REV_6")))]
+#[cfg(all(not(CONFIG_CPU_MICROMIPS), not(feature = "MIPS_ISA_REV_6")))]
 pub const B_INSN: &str = "b";
-#[cfg(all(not(feature = "CONFIG_CPU_MICROMIPS"), not(feature = "MIPS_ISA_REV_6")))]
+#[cfg(all(not(CONFIG_CPU_MICROMIPS), not(feature = "MIPS_ISA_REV_6")))]
 pub const J_INSN: &str = "j";
 
 #[inline(always)]

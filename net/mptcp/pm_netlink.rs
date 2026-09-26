@@ -131,8 +131,7 @@ unsafe fn mptcp_event_add_subflow(skb: *mut sk_buff, ssk: *const sock) -> i32 {
     let issk = inet_sk(ssk); let sf = mptcp_subflow_ctx(ssk);
     if nla_put_u16(skb, MPTCP_ATTR_FAMILY, (*ssk).sk_family) != 0 { return -EMSGSIZE; }
     if (*ssk).sk_family == AF_INET { if nla_put_in_addr(skb, MPTCP_ATTR_SADDR4, (*issk).inet_saddr) != 0 || nla_put_in_addr(skb, MPTCP_ATTR_DADDR4, (*issk).inet_daddr) != 0 { return -EMSGSIZE; } }
-    #[cfg(CONFIG_MPTCP_IPV6)]
-    else if (*ssk).sk_family == AF_INET6 { if nla_put_in6_addr(skb, MPTCP_ATTR_SADDR6, &(*issk).pinet6.saddr) != 0 || nla_put_in6_addr(skb, MPTCP_ATTR_DADDR6, &(*ssk).sk_v6_daddr) != 0 { return -EMSGSIZE; } }
+    else if cfg!(CONFIG_MPTCP_IPV6) && ((*ssk).sk_family == AF_INET6) { if nla_put_in6_addr(skb, MPTCP_ATTR_SADDR6, &(*issk).pinet6.saddr) != 0 || nla_put_in6_addr(skb, MPTCP_ATTR_DADDR6, &(*ssk).sk_v6_daddr) != 0 { return -EMSGSIZE; } }
     else { WARN_ON_ONCE(1); return -EMSGSIZE; }
     if nla_put_be16(skb, MPTCP_ATTR_SPORT, (*issk).inet_sport) != 0 || nla_put_be16(skb, MPTCP_ATTR_DPORT, (*issk).inet_dport) != 0 || sf.is_null() { return -EMSGSIZE; }
     if nla_put_u8(skb, MPTCP_ATTR_LOC_ID, subflow_get_local_id(sf)) != 0 || nla_put_u8(skb, MPTCP_ATTR_REM_ID, (*sf).remote_id) != 0 { return -EMSGSIZE; } 0
@@ -161,8 +160,7 @@ pub unsafe fn mptcp_event_addr_announced(ssk: *const sock, info: *const mptcp_ad
     let nlh = genlmsg_put(skb, 0, 0, &mptcp_genl_family, 0, MPTCP_EVENT_ANNOUNCED);
     if nlh.is_null() || nla_put_u32(skb, MPTCP_ATTR_TOKEN, READ_ONCE((*msk).token)) != 0 || nla_put_u8(skb, MPTCP_ATTR_REM_ID, (*info).id) != 0 || nla_put_be16(skb, MPTCP_ATTR_DPORT, if (*info).port == 0 { inet_sk(ssk).inet_dport } else { (*info).port }) != 0 { nlmsg_free(skb); return; }
     if (*info).family == AF_INET { if nla_put_in_addr(skb, MPTCP_ATTR_DADDR4, (*info).addr.s_addr) != 0 { nlmsg_free(skb); return; } }
-    #[cfg(CONFIG_MPTCP_IPV6)]
-    else if (*info).family == AF_INET6 { if nla_put_in6_addr(skb, MPTCP_ATTR_DADDR6, &(*info).addr6) != 0 { nlmsg_free(skb); return; } }
+    else if cfg!(CONFIG_MPTCP_IPV6) && ((*info).family == AF_INET6) { if nla_put_in6_addr(skb, MPTCP_ATTR_DADDR6, &(*info).addr6) != 0 { nlmsg_free(skb); return; } }
     else { WARN_ON_ONCE(1); nlmsg_free(skb); return; }
     genlmsg_end(skb, nlh); mptcp_nl_mcast_send(net, skb, GFP_ATOMIC);
 }

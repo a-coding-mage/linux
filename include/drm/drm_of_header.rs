@@ -50,7 +50,7 @@ pub enum drm_lvds_dual_link_pixels {
 }
 
 // Under CONFIG_OF these are external functions; otherwise the inline fallbacks apply.
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 extern "C" {
     pub fn drm_of_crtc_port_mask(dev: *mut drm_device, port: *mut device_node) -> u32;
     pub fn drm_of_find_possible_crtcs(dev: *mut drm_device, port: *mut device_node) -> u32;
@@ -73,39 +73,39 @@ extern "C" {
     pub fn drm_of_get_data_lanes_count_remote(port: *const device_node, port_reg: i32, reg: i32, min: u32, max: u32) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_crtc_port_mask(_dev: *mut drm_device, _port: *mut device_node) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_find_possible_crtcs(_dev: *mut drm_device, _port: *mut device_node) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_component_match_add(_master: *mut device, _matchptr: *mut *mut component_match,
     _compare: Option<unsafe extern "C" fn(*mut device, *mut c_void) -> i32>, _node: *mut device_node) {}
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_component_probe(_dev: *mut device,
     _compare_of: Option<unsafe extern "C" fn(*mut device, *mut c_void) -> i32>,
     _m_ops: *const component_master_ops) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_encoder_active_endpoint(_node: *mut device_node, _encoder: *mut drm_encoder, _endpoint: *mut of_endpoint) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_get_panel_orientation(_np: *const device_node, _orientation: *mut drm_panel_orientation) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_find_panel_or_bridge(_np: *const device_node, _port: i32, _endpoint: i32, _panel: *mut *mut drm_panel, _bridge: *mut *mut drm_bridge) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_lvds_get_dual_link_pixel_order(_port1: *const device_node, _port2: *const device_node) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_lvds_get_dual_link_pixel_order_sink(_port1: *mut device_node, _port2: *mut device_node) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_lvds_get_data_mapping(_port: *const device_node) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_get_data_lanes_count(_endpoint: *const device_node, _min: u32, _max: u32) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_get_data_lanes_count_ep(_port: *const device_node, _port_reg: i32, _reg: i32, _min: u32, _max: u32) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 pub unsafe fn drm_of_get_data_lanes_count_remote(_port: *const device_node, _port_reg: i32, _reg: i32, _min: u32, _max: u32) -> i32 { -22 }
 
-#[cfg(all(feature = "CONFIG_OF", feature = "CONFIG_DRM_MIPI_DSI"))]
+#[cfg(all(CONFIG_OF, CONFIG_DRM_MIPI_DSI))]
 extern "C" { pub fn drm_of_get_dsi_bus(dev: *mut device) -> *mut mipi_dsi_host; }
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_DRM_MIPI_DSI")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_DRM_MIPI_DSI)))]
 pub unsafe fn drm_of_get_dsi_bus(_dev: *mut device) -> *mut mipi_dsi_host { core::ptr::without_provenance_mut((-22isize) as usize) }
 
 // CONFIG_OF && CONFIG_DRM_PANEL_BRIDGE supplies these external functions.

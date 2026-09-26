@@ -9,7 +9,7 @@
 
 /* The following declarations are conditional on CONFIG_ARCH_SPEAR3XX or
  * CONFIG_ARCH_SPEAR6XX in the original header. */
-#[cfg(any(feature = "CONFIG_ARCH_SPEAR3XX", feature = "CONFIG_ARCH_SPEAR6XX"))]
+#[cfg(any(CONFIG_ARCH_SPEAR3XX, CONFIG_ARCH_SPEAR6XX))]
 
 /* ICM1 - Low speed connection */
 pub const SPEAR_ICM1_2_BASE: usize = 0xD0000000;
@@ -35,7 +35,7 @@ pub const VA_SPEAR_ICM3_MISC_REG_BASE: usize =
     VA_SPEAR_ICM3_SMI_CTRL_BASE - SPEAR_ICM3_SMI_CTRL_BASE + SPEAR_ICM3_MISC_REG_BASE;
 
 /* Debug uart for linux, will be used for debug and uncompress messages */
-#[cfg(any(feature = "CONFIG_ARCH_SPEAR3XX", feature = "CONFIG_ARCH_SPEAR6XX"))]
+#[cfg(any(CONFIG_ARCH_SPEAR3XX, CONFIG_ARCH_SPEAR6XX))]
 pub const SPEAR_DBG_UART_BASE: usize = SPEAR_ICM1_UART_BASE;
 
 /* Sysctl base for spear platform */
@@ -48,7 +48,7 @@ pub const VA_SPEAR320_SOC_CONFIG_BASE: usize = 0xFE000000;
 
 /* The following declarations are conditional on CONFIG_ARCH_SPEAR13XX in the
  * original header. */
-#[cfg(feature = "CONFIG_ARCH_SPEAR13XX")]
+#[cfg(CONFIG_ARCH_SPEAR13XX)]
 
 pub const PERIP_GRP2_BASE: usize = 0xB3000000;
 pub const VA_PERIP_GRP2_BASE: usize = 0xF9000000;
@@ -80,7 +80,7 @@ pub const VA_L2CC_BASE: usize = 0xFB000000;
 pub const MCIF_CF_BASE: usize = 0xB2800000;
 
 /* Debug uart for linux, will be used for debug and uncompress messages */
-#[cfg(feature = "CONFIG_ARCH_SPEAR13XX")]
+#[cfg(CONFIG_ARCH_SPEAR13XX)]
 pub const SPEAR_DBG_UART_BASE: usize = UART_BASE;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

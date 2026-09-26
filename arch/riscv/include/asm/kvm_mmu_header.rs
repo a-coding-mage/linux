@@ -11,7 +11,7 @@
 ///
 /// External C declarations are preserved here; the referenced types are
 /// supplied by the surrounding translated kernel sources.
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn kvm_riscv_mmu_ioremap(
         kvm: *mut crate::kvm,
         gpa: crate::gpa_t,

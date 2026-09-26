@@ -54,17 +54,17 @@ pub struct sk_psock {
 }
 
 extern "C" {
-    pub fn sk_msg_alloc(*mut sock, *mut sk_msg, c_int, c_int) -> c_int;
-    pub fn sk_msg_clone(*mut sock, *mut sk_msg, *mut sk_msg, u32, u32) -> c_int;
-    pub fn sk_msg_trim(*mut sock, *mut sk_msg, c_int); pub fn sk_msg_free(*mut sock, *mut sk_msg) -> c_int;
-    pub fn sk_msg_free_nocharge(*mut sock, *mut sk_msg) -> c_int;
-    pub fn sk_msg_free_partial(*mut sock, *mut sk_msg, u32); pub fn sk_msg_free_partial_nocharge(*mut sock, *mut sk_msg, u32);
-    pub fn sk_msg_return(*mut sock, *mut sk_msg, c_int); pub fn sk_msg_return_zero(*mut sock, *mut sk_msg, c_int);
-    pub fn sk_msg_zerocopy_from_iter(*mut sock, *mut iov_iter, *mut sk_msg, u32) -> c_int;
-    pub fn sk_msg_memcopy_from_iter(*mut sock, *mut iov_iter, *mut sk_msg, u32) -> c_int;
-    pub fn sk_msg_recvmsg(*mut sock, *mut sk_psock, *mut msghdr, c_int, c_int) -> c_int;
-    pub fn __sk_msg_recvmsg(*mut sock, *mut sk_psock, *mut msghdr, c_int, c_int, *mut c_int) -> c_int;
-    pub fn sk_msg_is_readable(*mut sock) -> bool;
+    pub fn sk_msg_alloc(_: *mut sock, _: *mut sk_msg, _: c_int, _: c_int) -> c_int;
+    pub fn sk_msg_clone(_: *mut sock, _: *mut sk_msg, _: *mut sk_msg, _: u32, _: u32) -> c_int;
+    pub fn sk_msg_trim(_: *mut sock, _: *mut sk_msg, _: c_int); pub fn sk_msg_free(_: *mut sock, _: *mut sk_msg) -> c_int;
+    pub fn sk_msg_free_nocharge(_: *mut sock, _: *mut sk_msg) -> c_int;
+    pub fn sk_msg_free_partial(_: *mut sock, _: *mut sk_msg, _: u32); pub fn sk_msg_free_partial_nocharge(_: *mut sock, _: *mut sk_msg, _: u32);
+    pub fn sk_msg_return(_: *mut sock, _: *mut sk_msg, _: c_int); pub fn sk_msg_return_zero(_: *mut sock, _: *mut sk_msg, _: c_int);
+    pub fn sk_msg_zerocopy_from_iter(_: *mut sock, _: *mut iov_iter, _: *mut sk_msg, _: u32) -> c_int;
+    pub fn sk_msg_memcopy_from_iter(_: *mut sock, _: *mut iov_iter, _: *mut sk_msg, _: u32) -> c_int;
+    pub fn sk_msg_recvmsg(_: *mut sock, _: *mut sk_psock, _: *mut msghdr, _: c_int, _: c_int) -> c_int;
+    pub fn __sk_msg_recvmsg(_: *mut sock, _: *mut sk_psock, _: *mut msghdr, _: c_int, _: c_int, _: *mut c_int) -> c_int;
+    pub fn sk_msg_is_readable(_: *mut sock) -> bool;
 }
 
 #[inline] pub unsafe fn sk_msg_check_to_free(msg: *mut sk_msg, i: u32, bytes: u32) { WARN_ON((*msg).sg.end == i && bytes != 0); }
@@ -81,58 +81,58 @@ extern "C" {
 #[inline] pub unsafe fn sk_msg_to_ingress(msg: *const sk_msg) -> bool { ((*msg).flags & BPF_F_INGRESS) != 0 }
 
 // CONFIG_BPF_STREAM_PARSER and CONFIG_NET_SOCK_MSG are build-time conditions from the C header.
-extern "C" { pub fn sk_psock_init(*mut sock, c_int) -> *mut sk_psock; pub fn sk_psock_stop(*mut sk_psock); pub fn sk_psock_drop(*mut sock, *mut sk_psock); }
+extern "C" { pub fn sk_psock_init(_: *mut sock, _: c_int) -> *mut sk_psock; pub fn sk_psock_stop(_: *mut sk_psock); pub fn sk_psock_drop(_: *mut sock, _: *mut sk_psock); }
 
 extern "C" {
-    pub fn sk_msg_init(*mut sk_msg);
-    pub fn sk_msg_xfer(*mut sk_msg, *mut sk_msg, c_int, u32);
-    pub fn sk_msg_xfer_full(*mut sk_msg, *mut sk_msg);
-    pub fn sk_msg_elem(*mut sk_msg, c_int) -> *mut scatterlist;
-    pub fn sk_msg_elem_cpy(*mut sk_msg, c_int) -> scatterlist;
-    pub fn sk_msg_page(*mut sk_msg, c_int) -> *mut page;
-    pub fn sk_msg_compute_data_pointers(*mut sk_msg);
-    pub fn sk_msg_page_add(*mut sk_msg, *mut page, u32, u32);
-    pub fn sk_msg_sg_copy(*mut sk_msg, u32, bool);
-    pub fn sk_msg_sg_copy_assign(*mut sk_msg, u32, *const sk_msg, u32);
-    pub fn sk_msg_sg_copy_set(*mut sk_msg, u32);
-    pub fn sk_msg_sg_copy_clear(*mut sk_msg, u32);
-    pub fn sk_psock_set_state(*mut sk_psock, sk_psock_state_bits);
-    pub fn sk_psock_clear_state(*mut sk_psock, sk_psock_state_bits);
-    pub fn sk_psock_test_state(*const sk_psock, sk_psock_state_bits) -> bool;
-    pub fn sock_drop(*mut sock, *mut sk_buff);
-    pub fn sk_psock_get_msg_len_nolock(*mut sk_psock) -> u32;
-    pub fn sk_psock_msg_len_add_locked(*mut sk_psock, c_int);
-    pub fn sk_psock_msg_len_add(*mut sk_psock, c_int);
-    pub fn sk_psock_queue_msg(*mut sk_psock, *mut sk_msg) -> bool;
-    pub fn sk_psock_dequeue_msg(*mut sk_psock) -> *mut sk_msg;
-    pub fn sk_psock_peek_msg_locked(*mut sk_psock) -> *mut sk_msg;
-    pub fn sk_psock_peek_msg(*mut sk_psock) -> *mut sk_msg;
-    pub fn sk_psock_next_msg(*mut sk_psock, *mut sk_msg) -> *mut sk_msg;
-    pub fn sk_psock_queue_empty(*const sk_psock) -> bool;
-    pub fn kfree_sk_msg(*mut sk_msg);
-    pub fn sk_psock_report_error(*mut sk_psock, c_int);
-    pub fn sk_psock_start_verdict(*mut sock, *mut sk_psock); pub fn sk_psock_stop_verdict(*mut sock, *mut sk_psock);
-    pub fn sk_psock_msg_verdict(*mut sock, *mut sk_psock, *mut sk_msg) -> c_int;
-    pub fn sk_psock_free_link(*mut sk_psock_link);
-    pub fn sk_psock_link_pop(*mut sk_psock) -> *mut sk_psock_link;
-    pub fn sk_psock_cork_free(*mut sk_psock);
-    pub fn sk_psock_restore_proto(*mut sock, *mut sk_psock);
-    pub fn sk_psock_get(*mut sock) -> *mut sk_psock;
-    pub fn sk_psock_put(*mut sock, *mut sk_psock);
-    pub fn sk_psock_data_ready(*mut sock, *mut sk_psock);
-    pub fn psock_set_prog(*mut *mut bpf_prog, *mut bpf_prog);
-    pub fn psock_replace_prog(*mut *mut bpf_prog, *mut bpf_prog, *mut bpf_prog) -> c_int;
-    pub fn psock_progs_drop(*mut sk_psock_progs);
-    pub fn sk_msg_first_len(*mut sock) -> ssize_t;
+    pub fn sk_msg_init(_: *mut sk_msg);
+    pub fn sk_msg_xfer(_: *mut sk_msg, _: *mut sk_msg, _: c_int, _: u32);
+    pub fn sk_msg_xfer_full(_: *mut sk_msg, _: *mut sk_msg);
+    pub fn sk_msg_elem(_: *mut sk_msg, _: c_int) -> *mut scatterlist;
+    pub fn sk_msg_elem_cpy(_: *mut sk_msg, _: c_int) -> scatterlist;
+    pub fn sk_msg_page(_: *mut sk_msg, _: c_int) -> *mut page;
+    pub fn sk_msg_compute_data_pointers(_: *mut sk_msg);
+    pub fn sk_msg_page_add(_: *mut sk_msg, _: *mut page, _: u32, _: u32);
+    pub fn sk_msg_sg_copy(_: *mut sk_msg, _: u32, _: bool);
+    pub fn sk_msg_sg_copy_assign(_: *mut sk_msg, _: u32, _: *const sk_msg, _: u32);
+    pub fn sk_msg_sg_copy_set(_: *mut sk_msg, _: u32);
+    pub fn sk_msg_sg_copy_clear(_: *mut sk_msg, _: u32);
+    pub fn sk_psock_set_state(_: *mut sk_psock, _: sk_psock_state_bits);
+    pub fn sk_psock_clear_state(_: *mut sk_psock, _: sk_psock_state_bits);
+    pub fn sk_psock_test_state(_: *const sk_psock, _: sk_psock_state_bits) -> bool;
+    pub fn sock_drop(_: *mut sock, _: *mut sk_buff);
+    pub fn sk_psock_get_msg_len_nolock(_: *mut sk_psock) -> u32;
+    pub fn sk_psock_msg_len_add_locked(_: *mut sk_psock, _: c_int);
+    pub fn sk_psock_msg_len_add(_: *mut sk_psock, _: c_int);
+    pub fn sk_psock_queue_msg(_: *mut sk_psock, _: *mut sk_msg) -> bool;
+    pub fn sk_psock_dequeue_msg(_: *mut sk_psock) -> *mut sk_msg;
+    pub fn sk_psock_peek_msg_locked(_: *mut sk_psock) -> *mut sk_msg;
+    pub fn sk_psock_peek_msg(_: *mut sk_psock) -> *mut sk_msg;
+    pub fn sk_psock_next_msg(_: *mut sk_psock, _: *mut sk_msg) -> *mut sk_msg;
+    pub fn sk_psock_queue_empty(_: *const sk_psock) -> bool;
+    pub fn kfree_sk_msg(_: *mut sk_msg);
+    pub fn sk_psock_report_error(_: *mut sk_psock, _: c_int);
+    pub fn sk_psock_start_verdict(_: *mut sock, _: *mut sk_psock); pub fn sk_psock_stop_verdict(_: *mut sock, _: *mut sk_psock);
+    pub fn sk_psock_msg_verdict(_: *mut sock, _: *mut sk_psock, _: *mut sk_msg) -> c_int;
+    pub fn sk_psock_free_link(_: *mut sk_psock_link);
+    pub fn sk_psock_link_pop(_: *mut sk_psock) -> *mut sk_psock_link;
+    pub fn sk_psock_cork_free(_: *mut sk_psock);
+    pub fn sk_psock_restore_proto(_: *mut sock, _: *mut sk_psock);
+    pub fn sk_psock_get(_: *mut sock) -> *mut sk_psock;
+    pub fn sk_psock_put(_: *mut sock, _: *mut sk_psock);
+    pub fn sk_psock_data_ready(_: *mut sock, _: *mut sk_psock);
+    pub fn psock_set_prog(_: *mut *mut bpf_prog, _: *mut bpf_prog);
+    pub fn psock_replace_prog(_: *mut *mut bpf_prog, _: *mut bpf_prog, _: *mut bpf_prog) -> c_int;
+    pub fn psock_progs_drop(_: *mut sk_psock_progs);
+    pub fn sk_msg_first_len(_: *mut sock) -> ssize_t;
 }
 
 pub const BPF_F_STRPARSER: unsigned_long = 1 << 1;
 pub const BPF_F_PTR_MASK: unsigned_long = !(BPF_F_INGRESS | BPF_F_STRPARSER);
 extern "C" {
-    pub fn skb_bpf_strparser(*const sk_buff) -> bool; pub fn skb_bpf_set_strparser(*mut sk_buff);
-    pub fn skb_bpf_ingress(*const sk_buff) -> bool; pub fn skb_bpf_set_ingress(*mut sk_buff);
-    pub fn skb_bpf_set_redir(*mut sk_buff, *mut sock, bool);
-    pub fn skb_bpf_redirect_fetch(*const sk_buff) -> *mut sock; pub fn skb_bpf_redirect_clear(*mut sk_buff);
+    pub fn skb_bpf_strparser(_: *const sk_buff) -> bool; pub fn skb_bpf_set_strparser(_: *mut sk_buff);
+    pub fn skb_bpf_ingress(_: *const sk_buff) -> bool; pub fn skb_bpf_set_ingress(_: *mut sk_buff);
+    pub fn skb_bpf_set_redir(_: *mut sk_buff, _: *mut sock, _: bool);
+    pub fn skb_bpf_redirect_fetch(_: *const sk_buff) -> *mut sock; pub fn skb_bpf_redirect_clear(_: *mut sk_buff);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

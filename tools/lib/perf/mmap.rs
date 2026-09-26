@@ -570,7 +570,7 @@ macro_rules! pmevcntr_read {
         unsafe fn $name() -> u64 {
             unsafe {
                 let val: u64;
-                asm!(concat!("mrs {0}, ", $reg), out(reg) val);
+                asm!(concat!("mrs {0}, ", $reg), out($reg) val);
                 val
             }
         }
@@ -756,7 +756,7 @@ pub unsafe extern "C" fn perf_mmap__read_self(
         let mut cyc: u64 = 0;
         let mut time_offset: u64 = 0;
         let mut time_cycles: u64 = 0;
-        let mut time_mask: u64 = !0_u64;
+        let mut time_mask: u64 = !0u64;
 
         if pc.is_null() || !(*pc).cap_user_rdpmc() {
             return -1;

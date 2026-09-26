@@ -7,7 +7,7 @@
  * surrounding PowerPC headers.
  */
 
-#[cfg(all(target_arch = "powerpc64", any(feature = "CONFIG_PPC_CELL", feature = "CONFIG_PPC_E500")))]
+#[cfg(all(target_arch = "powerpc64", any(CONFIG_PPC_CELL, CONFIG_PPC_E500)))]
 #[inline(always)]
 pub unsafe fn mftb() -> usize {
     let mut rval: usize;
@@ -22,7 +22,7 @@ pub unsafe fn mftb() -> usize {
     rval
 }
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 #[inline(always)]
 pub unsafe fn mftb() -> usize {
     let mut rval: usize;
@@ -31,8 +31,8 @@ pub unsafe fn mftb() -> usize {
 }
 
 #[cfg(not(any(
-    all(target_arch = "powerpc64", any(feature = "CONFIG_PPC_CELL", feature = "CONFIG_PPC_E500")),
-    feature = "CONFIG_PPC_8xx"
+    all(target_arch = "powerpc64", any(CONFIG_PPC_CELL, CONFIG_PPC_E500)),
+    CONFIG_PPC_8xx
 )))]
 #[inline(always)]
 pub unsafe fn mftb() -> usize {
@@ -41,7 +41,7 @@ pub unsafe fn mftb() -> usize {
     rval
 }
 
-#[cfg(feature = "CONFIG_PPC_8xx")]
+#[cfg(CONFIG_PPC_8xx)]
 #[inline(always)]
 pub unsafe fn mftbu() -> usize {
     let mut rval: usize;
@@ -49,7 +49,7 @@ pub unsafe fn mftbu() -> usize {
     rval
 }
 
-#[cfg(not(feature = "CONFIG_PPC_8xx"))]
+#[cfg(not(CONFIG_PPC_8xx))]
 #[inline(always)]
 pub unsafe fn mftbu() -> usize {
     let mut rval: usize;

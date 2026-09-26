@@ -50,7 +50,7 @@ const INBUF_SIZE: usize = 128; const MAX_DEV: usize = 8;
 #[repr(C)] pub struct char_buf { pub inbuf:*mut i8,pub last:i32,pub nchar:i32 }
 #[repr(C)] pub struct lpvo { pub udev:*mut usb_device,pub interface:*mut usb_interface,pub limit_sem:semaphore,pub submitted:usb_anchor,pub bulk_in_urb:*mut urb,pub bulk_in_buffer:*mut u8,pub bulk_in_size:usize,pub bulk_in_filled:usize,pub bulk_in_copied:usize,pub bulk_in_endpoint_addr:u8,pub bulk_out_endpoint_addr:u8,pub errors:i32,pub ongoing_read:bool,pub err_lock:spinlock_t,pub kref:kref,pub io_mutex:mutex,pub bulk_in_wait:wait_queue_head_t }
 
-extern "C" { static mut debug:i32; fn lpvo_do_write(*mut c_void,*const i8,usize)->isize; fn lpvo_do_read(*mut c_void,*mut i8,usize)->isize; fn ktime_get_real_ts64(*mut timespec64); fn dev_err(*mut c_void,*const i8,...); fn dev_dbg(*mut c_void,*const i8,...); fn msleep(u32); fn send_command_placeholder(); }
+extern "C" { static mut debug:i32; fn lpvo_do_write(_: *mut c_void,_: *const i8,_: usize)->isize; fn lpvo_do_read(_: *mut c_void,_: *mut i8,_: usize)->isize; fn ktime_get_real_ts64(_: *mut timespec64); fn dev_err(_: *mut c_void,_: *const i8,...); fn dev_dbg(_: *mut c_void,_: *const i8,...); fn msleep(_: u32); fn send_command_placeholder(); }
 static mut lpvo_usb_interfaces:[*mut usb_interface;MAX_DEV]=[ptr::null_mut();MAX_DEV]; static mut usb_minors:[i32;MAX_DEV]=[0;MAX_DEV]; static mut assigned_usb_minors:i32=0; static mut minors_lock:mutex=mutex{_p:[]};
 unsafe fn gpib_dev(b:*mut gpib_board)->*mut c_void { (*( (*b).private_data as *mut usb_gpib_priv)).dev }
 unsafe fn write_loop(d:*mut c_void,m:&[u8])->i32 { lpvo_do_write(d,m.as_ptr() as *const i8,m.len()) as i32 }

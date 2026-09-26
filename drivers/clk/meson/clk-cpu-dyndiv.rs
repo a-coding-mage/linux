@@ -72,10 +72,10 @@ unsafe fn meson_clk_cpu_dyndiv_set_rate(
 }
 
 pub static meson_clk_cpu_dyndiv_ops: clk_ops = clk_ops {
-    .init = Some(clk_regmap_init),
-    .recalc_rate = Some(meson_clk_cpu_dyndiv_recalc_rate),
-    .determine_rate = Some(meson_clk_cpu_dyndiv_determine_rate),
-    .set_rate = Some(meson_clk_cpu_dyndiv_set_rate),
+    init: Some(clk_regmap_init),
+    recalc_rate: Some(meson_clk_cpu_dyndiv_recalc_rate),
+    determine_rate: Some(meson_clk_cpu_dyndiv_determine_rate),
+    set_rate: Some(meson_clk_cpu_dyndiv_set_rate),
 };
 
 // EXPORT_SYMBOL_NS_GPL(meson_clk_cpu_dyndiv_ops, "CLK_MESON");

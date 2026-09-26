@@ -67,7 +67,7 @@ pub struct omap1_clk {
 #[macro_export]
 macro_rules! to_omap1_clk {
     ($hw:expr) => {
-        unsafe { &mut *((($hw as *mut u8).sub(core::mem::offset_of!(omap1_clk, hw))) as *mut omap1_clk) }
+        unsafe { &mut *((($hw as *mut u8).sub(core::mem::offset_of!(omap1_clk, $hw))) as *mut omap1_clk) }
     };
 }
 

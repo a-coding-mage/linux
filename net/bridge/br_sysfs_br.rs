@@ -106,11 +106,11 @@ unsafe extern "C" fn no_linklocal_learn_show(_:*mut device,_:*mut device_attribu
 unsafe extern "C" fn no_linklocal_learn_store(d:*mut device,_:*mut device_attribute,b:*const i8,l:usize)->ssize_t { store_bridge_parm(d,b,l,set_no_linklocal_learn) }
 unsafe extern "C" fn set_no_linklocal_learn(br:*mut net_bridge,v:c_ulong,a:*mut netlink_ext_ack)->i32 { br_boolopt_toggle(br,0,v!=0,a) }
 
-#[cfg(feature="CONFIG_BRIDGE_IGMP_SNOOPING")]
+#[cfg(CONFIG_BRIDGE_IGMP_SNOOPING)]
 unsafe extern "C" fn multicast_router_show(_: *mut device,_:*mut device_attribute,_:*mut i8)->ssize_t { 0 }
-#[cfg(feature="CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 unsafe extern "C" fn nf_call_iptables_show(_: *mut device,_:*mut device_attribute,_:*mut i8)->ssize_t { 0 }
-#[cfg(feature="CONFIG_BRIDGE_VLAN_FILTERING")]
+#[cfg(CONFIG_BRIDGE_VLAN_FILTERING)]
 unsafe extern "C" fn vlan_filtering_show(_: *mut device,_:*mut device_attribute,_:*mut i8)->ssize_t { 0 }
 
 unsafe extern "C" fn brforward_read(_:*mut file,_:*mut kobject,_:*const bin_attribute,_:*mut i8,_:loff_t,_:usize)->ssize_t { 0 }

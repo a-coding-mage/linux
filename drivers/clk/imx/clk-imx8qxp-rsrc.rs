@@ -84,7 +84,7 @@ static IMX8QXP_CLK_SCU_RSRC_TABLE: [u32; 76] = [
 	IMX_SC_R_VPU_ENC_0,
 ];
 
-const IMX_CLK_SCU_RSRC_IMX8QXP: struct imx_clk_scu_rsrc_table = struct imx_clk_scu_rsrc_table {
+const IMX_CLK_SCU_RSRC_IMX8QXP: imx_clk_scu_rsrc_table = imx_clk_scu_rsrc_table {
 	rsrc: IMX8QXP_CLK_SCU_RSRC_TABLE.as_ptr(),
 	num: IMX8QXP_CLK_SCU_RSRC_TABLE.len() as u32,
 };

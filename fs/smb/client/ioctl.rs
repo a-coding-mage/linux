@@ -13,6 +13,7 @@ unsafe fn cifs_ioctl_query_info(xid: u32, filep: *mut file, p: c_ulong) -> c_lon
     let mut utf16_path: *mut le16 = core::ptr::null_mut();
     let mut root_path: le16 = 0;
     let mut rc: c_int = 0;
+    'ici_exit: {
 
     path = build_path_from_dentry(dentry, page);
     if IS_ERR(path) { free_dentry_path(page); return PTR_ERR(path) as c_long; }
@@ -20,13 +21,14 @@ unsafe fn cifs_ioctl_query_info(xid: u32, filep: *mut file, p: c_ulong) -> c_lon
     if *path == 0 { utf16_path = &mut root_path; }
     else {
         utf16_path = cifs_convert_path_to_utf16(path.add(1), cifs_sb);
-        if utf16_path.is_null() { rc = -ENOMEM; goto ici_exit; }
+        if utf16_path.is_null() { rc = -ENOMEM; break 'ici_exit; }
     }
     if !(*(*(*tcon).ses).server).ops.ioctl_query_info.is_none() {
         rc = (*(*(*tcon).ses).server).ops.ioctl_query_info.unwrap()(xid, tcon, cifs_sb, utf16_path,
             if (*filep).private_data.is_null() { 1 } else { 0 }, p);
     } else { rc = -EOPNOTSUPP; }
-ici_exit:
+    }
+    
     if utf16_path != &mut root_path { kfree(utf16_path); }
     free_dentry_path(page);
     rc as c_long
@@ -44,6 +46,8 @@ unsafe fn cifs_set_compression_by_path(xid: u32, filep: *mut file, tcon: *mut ci
     let page = alloc_dentry_path();
     let mut oplock: u32 = 0;
     let mut rc: c_int;
+    'out: {
+    'close: {
     if (*server).ops.open.is_none() || (*server).ops.close.is_none() || (*server).ops.query_file_info.is_none() { return -EOPNOTSUPP; }
     if cifs_sb_flags(cifs_sb) & CIFS_MOUNT_SERVER_INUM == 0 || (*cifs_sb).mnt_cifs_serverino_autodisabled { return -EOPNOTSUPP; }
     if d_unhashed((*filep).f_path.dentry) { return -ESTALE; }
@@ -52,20 +56,22 @@ unsafe fn cifs_set_compression_by_path(xid: u32, filep: *mut file, tcon: *mut ci
     oparms = CIFS_OPARMS(cifs_sb, tcon, full_path, FILE_WRITE_DATA | FILE_READ_ATTRIBUTES, FILE_OPEN, 0, ACL_NO_MODE);
     oparms.fid = &mut fid;
     rc = (*server).ops.open.unwrap()(xid, &mut oparms, &mut oplock, core::ptr::null_mut());
-    if rc != 0 { goto out; }
+    if rc != 0 { break 'out; }
     tmp_cfile = kzalloc_obj();
-    if tmp_cfile.is_null() { rc = -ENOMEM; goto close; }
+    if tmp_cfile.is_null() { rc = -ENOMEM; break 'close; }
     (*tmp_cfile).fid = fid;
     rc = (*server).ops.query_file_info.unwrap()(xid, tcon, tmp_cfile, &mut data);
-    if rc != 0 { goto close; }
+    if rc != 0 { break 'close; }
     let uniqueid = le64_to_cpu(data.fi.IndexNumber);
-    if uniqueid != (*CIFS_I(inode)).uniqueid { rc = -ESTALE; goto close; }
+    if uniqueid != (*CIFS_I(inode)).uniqueid { rc = -ESTALE; break 'close; }
     rc = (*server).ops.set_compression.unwrap()(xid, tcon, tmp_cfile, compression_state);
-close:
+    }
+    
     (*server).ops.close.unwrap()(xid, tcon, &mut fid);
     kfree(tmp_cfile);
     cifs_free_open_info(&mut data);
-out:
+    }
+    
     free_dentry_path(page); rc
 }
 

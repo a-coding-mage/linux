@@ -32,7 +32,7 @@ unsafe fn jiffies_to_clock_t(x: c_ulong) -> clock_t {
     let user_hz_nsec: u64 = NSEC_PER_SEC / USER_HZ;
 
     if tick_nsec % user_hz_nsec == 0 {
-        if CONFIG_HZ as u64 < USER_HZ {
+        if (CONFIG_HZ as u64) < USER_HZ {
             return x.wrapping_mul((USER_HZ / CONFIG_HZ as u64) as c_ulong) as clock_t;
         } else {
             return x.wrapping_div((CONFIG_HZ as u64 / USER_HZ) as c_ulong) as clock_t;

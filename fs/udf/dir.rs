@@ -52,7 +52,7 @@ unsafe fn udf_readdir(file: *mut file, ctx: *mut dir_context) -> c_int {
      * identifying beginning of dir entry (names are under user control),
      * we need to scan the directory from the beginning.
      */
-    if unsafe { !inode_eq_iversion(dir, *(file->private_data as *const u64)) } {
+    if unsafe { !inode_eq_iversion(dir, *((*file).private_data as *const u64)) } {
         emit_pos = nf_pos;
         nf_pos = 0;
     } else {
@@ -122,7 +122,7 @@ unsafe fn udf_readdir(file: *mut file, ctx: *mut dir_context) -> c_int {
     }
     unsafe { udf_fiiter_release(&mut iter) };
     if pos_valid {
-        unsafe { *(file->private_data as *mut u64) = inode_query_iversion(dir) };
+        unsafe { *((*file).private_data as *mut u64) = inode_query_iversion(dir) };
     }
     unsafe { kfree(fname as *mut core::ffi::c_void) };
     ret

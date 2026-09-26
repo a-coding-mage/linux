@@ -83,7 +83,7 @@ pub unsafe fn trace_event_printf(iter:*mut trace_iterator, fmt:*const c_char, mu
 extern "C" {
     fn trace_seq_puts(_: *mut trace_seq, _: *const c_char); fn trace_seq_putc(_: *mut trace_seq, _: c_int); fn trace_seq_printf(_: *mut trace_seq, _: *const c_char, ...)->c_int;
     fn trace_seq_buffer_ptr(_: *mut trace_seq)->*const c_char; fn trace_seq_init(_: *mut trace_seq); fn trace_handle_return(_: *mut trace_seq)->print_line_t;
-    fn trace_seq_bprintf(_: *mut trace_seq, _: *const c_char, _: *const c_uchar); fn trace_seq_bitmask(_: *mut trace_seq,*mut c_void,usize); fn trace_seq_bitmask_list(_: *mut trace_seq,*mut c_void,usize); fn trace_seq_hex_dump(_: *mut trace_seq,*const c_char,c_int,c_int,c_int,*const c_void,usize,bool);
+    fn trace_seq_bprintf(_: *mut trace_seq, _: *const c_char, _: *const c_uchar); fn trace_seq_bitmask(_: *mut trace_seq,_: *mut c_void,_: usize); fn trace_seq_bitmask_list(_: *mut trace_seq,_: *mut c_void,_: usize); fn trace_seq_hex_dump(_: *mut trace_seq,_: *const c_char,_: c_int,_: c_int,_: c_int,_: *const c_void,_: usize,_: bool);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

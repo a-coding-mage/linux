@@ -31,12 +31,12 @@ unsafe fn adf_get_vf_num(vf: *mut adf_accel_dev) -> u32 {
 
 unsafe fn adf_find_vf(bdf: u32) -> *mut vf_id_map {
     let mut itr: *mut list_head = (&raw mut vfs_table);
-    list_for_each(itr, &raw mut vfs_table) {
+    list_for_each!(itr, &raw mut vfs_table, {
         let ptr: *mut vf_id_map = list_entry(itr, vf_id_map, list);
         if (*ptr).bdf == bdf {
             return ptr;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -54,7 +54,7 @@ pub unsafe extern "C" fn adf_clean_vf_map(vf: bool) {
     let mut tmp: *mut list_head;
 
     mutex_lock(&raw mut table_lock);
-    list_for_each_safe(ptr, tmp, &raw mut vfs_table) {
+    list_for_each_safe!(ptr, tmp, &raw mut vfs_table, {
         map = list_entry(ptr, vf_id_map, list);
         if (*map).bdf != u32::MAX {
             id_map[(*map).id as usize] = 0;
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn adf_clean_vf_map(vf: bool) {
         }
         list_del(ptr);
         kfree(map);
-    }
+    });
     mutex_unlock(&raw mut table_lock);
 }
 
@@ -76,7 +76,7 @@ pub unsafe extern "C" fn adf_devmgr_update_class_index(hw_data: *mut adf_hw_devi
     let mut i = 0;
     let mut itr: *mut list_head;
 
-    list_for_each(itr, &raw mut accel_table) {
+    list_for_each!(itr, &raw mut accel_table, {
         let ptr: *mut adf_accel_dev = list_entry(itr, adf_accel_dev, list);
         if (*ptr).hw_device.dev_class == class {
             (*ptr).hw_device.instance_id = i;
@@ -85,7 +85,7 @@ pub unsafe extern "C" fn adf_devmgr_update_class_index(hw_data: *mut adf_hw_devi
         if i == (*class).instances {
             break;
         }
-    }
+    });
 }
 
 unsafe fn adf_find_free_id() -> u32 {
@@ -106,6 +106,7 @@ pub unsafe extern "C" fn adf_devmgr_add_dev(
 ) -> i32 {
     let mut ret = 0;
     let mut itr: *mut list_head;
+    'unlock: {
 
     if num_devices == ADF_MAX_DEVICES {
         dev_err(&GET_DEV(accel_dev), "Only support up to %d devices\n", ADF_MAX_DEVICES);
@@ -116,24 +117,24 @@ pub unsafe extern "C" fn adf_devmgr_add_dev(
     atomic_set(&raw mut (*accel_dev).ref_count, 0);
 
     if !(*accel_dev).is_vf || pf.is_null() {
-        list_for_each(itr, &raw mut accel_table) {
+        list_for_each!(itr, &raw mut accel_table, {
             let ptr: *mut adf_accel_dev = list_entry(itr, adf_accel_dev, list);
             if ptr == accel_dev {
                 ret = -EEXIST;
-                goto unlock;
+                break 'unlock;
             }
-        }
+        });
         list_add_tail(&raw mut (*accel_dev).list, &raw mut accel_table);
         (*accel_dev).accel_id = adf_find_free_id();
         if (*accel_dev).accel_id > ADF_MAX_DEVICES {
             ret = -EFAULT;
-            goto unlock;
+            break 'unlock;
         }
         num_devices += 1;
         let map: *mut vf_id_map = kzalloc_obj();
         if map.is_null() {
             ret = -ENOMEM;
-            goto unlock;
+            break 'unlock;
         }
         (*map).bdf = u32::MAX;
         (*map).id = (*accel_dev).accel_id;
@@ -153,18 +154,18 @@ pub unsafe extern "C" fn adf_devmgr_add_dev(
                 next = list_next_entry(next, list);
             }
             ret = 0;
-            goto unlock;
+            break 'unlock;
         }
         map = kzalloc_obj();
         if map.is_null() {
             ret = -ENOMEM;
-            goto unlock;
+            break 'unlock;
         }
         (*accel_dev).accel_id = adf_find_free_id();
         if (*accel_dev).accel_id > ADF_MAX_DEVICES {
             kfree(map);
             ret = -EFAULT;
-            goto unlock;
+            break 'unlock;
         }
         num_devices += 1;
         list_add_tail(&raw mut (*accel_dev).list, &raw mut accel_table);
@@ -175,7 +176,8 @@ pub unsafe extern "C" fn adf_devmgr_add_dev(
         list_add_tail(&raw mut (*map).list, &raw mut vfs_table);
     }
     mutex_init(&raw mut (*accel_dev).state_lock);
-unlock:
+    }
+    
     mutex_unlock(&raw mut table_lock);
     ret
 }
@@ -185,6 +187,7 @@ unsafe fn adf_devmgr_get_head() -> *mut list_head { &raw mut accel_table }
 /** Remove accel_dev from the acceleration framework. */
 #[no_mangle]
 pub unsafe extern "C" fn adf_devmgr_rm_dev(accel_dev: *mut adf_accel_dev, pf: *mut adf_accel_dev) {
+    'unlock_rm: {
     mutex_lock(&raw mut table_lock);
     if !(*accel_dev).is_vf || pf.is_null() {
         id_map[(*accel_dev).accel_id as usize] = 0;
@@ -193,7 +196,7 @@ pub unsafe extern "C" fn adf_devmgr_rm_dev(accel_dev: *mut adf_accel_dev, pf: *m
         let map = adf_find_vf(adf_get_vf_num(accel_dev));
         if map.is_null() {
             dev_err(&GET_DEV(accel_dev), "Failed to find VF map\n");
-            goto unlock_rm;
+            break 'unlock_rm;
         }
         (*map).fake_id -= 1;
         (*map).attached = false;
@@ -203,7 +206,8 @@ pub unsafe extern "C" fn adf_devmgr_rm_dev(accel_dev: *mut adf_accel_dev, pf: *m
             next = list_next_entry(next, list);
         }
     }
-unlock_rm:
+    }
+    
     mutex_destroy(&raw mut (*accel_dev).state_lock);
     list_del(&raw mut (*accel_dev).list);
     mutex_unlock(&raw mut table_lock);
@@ -214,13 +218,13 @@ unlock_rm:
 pub unsafe extern "C" fn adf_devmgr_pci_to_accel_dev(pci_dev: *mut pci_dev) -> *mut adf_accel_dev {
     let mut itr: *mut list_head;
     mutex_lock(&raw mut table_lock);
-    list_for_each(itr, &raw mut accel_table) {
+    list_for_each!(itr, &raw mut accel_table, {
         let ptr: *mut adf_accel_dev = list_entry(itr, adf_accel_dev, list);
         if (*ptr).accel_pci_dev.pci_dev == pci_dev {
             mutex_unlock(&raw mut table_lock);
             return ptr;
         }
-    }
+    });
     mutex_unlock(&raw mut table_lock);
     core::ptr::null_mut()
 }

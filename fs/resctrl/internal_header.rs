@@ -225,7 +225,7 @@ extern "C" {
     pub fn resctrl_io_alloc_closid(r: *mut rdt_resource) -> u32;
 }
 
-#[cfg(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK")]
+#[cfg(CONFIG_RESCTRL_FS_PSEUDO_LOCK)]
 extern "C" {
     pub fn rdtgroup_locksetup_enter(rdtgrp: *mut rdtgroup) -> i32;
     pub fn rdtgroup_locksetup_exit(rdtgrp: *mut rdtgroup) -> i32;
@@ -237,21 +237,21 @@ extern "C" {
     pub fn rdtgroup_pseudo_lock_remove(rdtgrp: *mut rdtgroup);
 }
 
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdtgroup_locksetup_enter(_: *mut rdtgroup) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdtgroup_locksetup_exit(_: *mut rdtgroup) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdtgroup_cbm_overlaps_pseudo_locked(_: *mut rdt_ctrl_domain, _: c_ulong) -> bool { false }
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdtgroup_pseudo_locked_in_hierarchy(_: *mut rdt_ctrl_domain) -> bool { false }
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdt_pseudo_lock_init() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdt_pseudo_lock_release() {}
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdtgroup_pseudo_lock_create(_: *mut rdtgroup) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_RESCTRL_FS_PSEUDO_LOCK"))]
+#[cfg(not(CONFIG_RESCTRL_FS_PSEUDO_LOCK))]
 pub unsafe fn rdtgroup_pseudo_lock_remove(_: *mut rdtgroup) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

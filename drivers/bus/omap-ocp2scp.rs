@@ -116,7 +116,7 @@ unsafe fn omap_ocp2scp_remove(pdev: *mut platform_device) {
 }
 
 // CONFIG_OF declarations and module registration are supplied by the kernel build.
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 #[repr(C)]
 struct of_device_id {
     compatible: *const core::ffi::c_char,
@@ -149,7 +149,7 @@ static mut omap_ocp2scp_driver: platform_driver = platform_driver {
     },
 };
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 static omap_ocp2scp_id_table: [of_device_id; 3] = [
     of_device_id { compatible: b"ti,omap-ocp2scp\0".as_ptr() as *const _ },
     of_device_id { compatible: b"ti,am437x-ocp2scp\0".as_ptr() as *const _ },

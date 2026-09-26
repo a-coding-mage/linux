@@ -27,7 +27,7 @@ pub struct amdgpu_smuio_funcs {
     _private: [u8; 0],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static smuio_v13_0_funcs: amdgpu_smuio_funcs;
 }
 

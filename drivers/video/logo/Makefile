@@ -11,6 +11,9 @@ obj-$(CONFIG_SPU_BASE)			+= logo_spe_clut224.o
 # How to generate logo's
 
 hostprogs := pnmtologo
+ifneq ($(HOST_TOOLS_LANG),c)
+pnmtologo-rust := y
+endif
 
 # Create commands like "pnmtologo -t mono -n logo_linux_mono -o ..."
 quiet_cmd_logo = LOGO    $@

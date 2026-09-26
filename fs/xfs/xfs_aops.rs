@@ -28,7 +28,7 @@ pub unsafe fn xfs_setfilesize(ip: *mut xfs_inode, offset: xfs_off_t, size: usize
 
 unsafe fn xfs_ioend_put_open_zones(ioend: *mut iomap_ioend) {
     let mut tmp: *mut iomap_ioend;
-    list_for_each_entry!(tmp, &(*ioend).io_list, io_list) { xfs_open_zone_put((*tmp).io_private); }
+    list_for_each_entry!(tmp, &(*ioend).io_list, io_list, { xfs_open_zone_put((*tmp).io_private); });
     if !(*ioend).io_private.is_null() { xfs_open_zone_put((*ioend).io_private); }
 }
 

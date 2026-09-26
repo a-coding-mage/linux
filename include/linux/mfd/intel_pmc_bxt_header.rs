@@ -27,7 +27,7 @@ pub struct intel_pmc_dev {
 }
 
 /* CONFIG_MFD_INTEL_PMC_BXT is a build-time kernel configuration option. */
-#[cfg(feature = "CONFIG_MFD_INTEL_PMC_BXT")]
+#[cfg(CONFIG_MFD_INTEL_PMC_BXT)]
 unsafe extern "C" {
     pub fn intel_pmc_gcr_read64(
         pmc: *mut intel_pmc_dev,
@@ -43,7 +43,7 @@ unsafe extern "C" {
     pub fn intel_pmc_s0ix_counter_read(pmc: *mut intel_pmc_dev, data: *mut u64) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_MFD_INTEL_PMC_BXT"))]
+#[cfg(not(CONFIG_MFD_INTEL_PMC_BXT))]
 #[inline]
 pub unsafe fn intel_pmc_gcr_read64(
     _pmc: *mut intel_pmc_dev,
@@ -53,7 +53,7 @@ pub unsafe fn intel_pmc_gcr_read64(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MFD_INTEL_PMC_BXT"))]
+#[cfg(not(CONFIG_MFD_INTEL_PMC_BXT))]
 #[inline]
 pub unsafe fn intel_pmc_gcr_update(
     _pmc: *mut intel_pmc_dev,
@@ -64,7 +64,7 @@ pub unsafe fn intel_pmc_gcr_update(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MFD_INTEL_PMC_BXT"))]
+#[cfg(not(CONFIG_MFD_INTEL_PMC_BXT))]
 #[inline]
 pub unsafe fn intel_pmc_s0ix_counter_read(_pmc: *mut intel_pmc_dev, _data: *mut u64) -> i32 {
     -ENOTSUPP

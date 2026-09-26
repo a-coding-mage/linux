@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 // Translated from fou6.c. Kernel dependencies are supplied externally.
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn fou6_build_udp(
     skb: *mut sk_buff,
     e: *mut ip_tunnel_encap,
@@ -30,7 +30,7 @@ unsafe fn fou6_build_udp(
     *protocol = IPPROTO_UDP as u8;
 }
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn fou6_build_header(
     skb: *mut sk_buff,
     e: *mut ip_tunnel_encap,
@@ -53,7 +53,7 @@ unsafe fn fou6_build_header(
     0
 }
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn gue6_build_header(
     skb: *mut sk_buff,
     e: *mut ip_tunnel_encap,
@@ -76,7 +76,7 @@ unsafe fn gue6_build_header(
     0
 }
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn gue6_err_proto_handler(
     proto: c_int,
     skb: *mut sk_buff,
@@ -95,7 +95,7 @@ unsafe fn gue6_err_proto_handler(
     -ENOENT
 }
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn gue6_err(
     skb: *mut sk_buff,
     opt: *mut inet6_skb_parm,
@@ -161,21 +161,21 @@ unsafe fn gue6_err(
     ret
 }
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 static fou_ip6tun_ops: ip6_tnl_encap_ops = ip6_tnl_encap_ops {
     encap_hlen: fou_encap_hlen,
     build_header: Some(fou6_build_header),
     err_handler: Some(gue6_err),
 };
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 static gue_ip6tun_ops: ip6_tnl_encap_ops = ip6_tnl_encap_ops {
     encap_hlen: gue_encap_hlen,
     build_header: Some(gue6_build_header),
     err_handler: Some(gue6_err),
 };
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn ip6_tnl_encap_add_fou_ops() -> c_int {
     let ret = ip6_tnl_encap_add_ops(&fou_ip6tun_ops, TUNNEL_ENCAP_FOU);
     if ret < 0 { pr_err!("can't add fou6 ops\n"); return ret; }
@@ -188,16 +188,16 @@ unsafe fn ip6_tnl_encap_add_fou_ops() -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_IPV6_FOU_TUNNEL")]
+#[cfg(CONFIG_IPV6_FOU_TUNNEL)]
 unsafe fn ip6_tnl_encap_del_fou_ops() {
     ip6_tnl_encap_del_ops(&fou_ip6tun_ops, TUNNEL_ENCAP_FOU);
     ip6_tnl_encap_del_ops(&gue_ip6tun_ops, TUNNEL_ENCAP_GUE);
 }
 
-#[cfg(not(feature = "CONFIG_IPV6_FOU_TUNNEL"))]
+#[cfg(not(CONFIG_IPV6_FOU_TUNNEL))]
 unsafe fn ip6_tnl_encap_add_fou_ops() -> c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_IPV6_FOU_TUNNEL"))]
+#[cfg(not(CONFIG_IPV6_FOU_TUNNEL))]
 unsafe fn ip6_tnl_encap_del_fou_ops() {}
 
 unsafe fn fou6_init() -> c_int {

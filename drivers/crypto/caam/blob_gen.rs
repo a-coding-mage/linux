@@ -73,6 +73,8 @@ pub unsafe extern "C" fn caam_process_blob(
     let moo: u32;
     let ret: c_int;
     let len: c_int;
+    'out_free: {
+    'out_unmap_in: {
 
     if (*info).key_mod_len > CAAM_BLOB_KEYMOD_LENGTH {
         return -EINVAL;
@@ -111,14 +113,14 @@ pub unsafe extern "C" fn caam_process_blob(
     if dma_mapping_error(jrdev, dma_in) {
         dev_err(jrdev, "unable to map input DMA buffer\n");
         ret = -ENOMEM;
-        goto out_free;
+        break 'out_free;
     }
 
     dma_out = dma_map_single(jrdev, (*info).output, output_len, DMA_FROM_DEVICE);
     if dma_mapping_error(jrdev, dma_out) {
         dev_err(jrdev, "unable to map output DMA buffer\n");
         ret = -ENOMEM;
-        goto out_unmap_in;
+        break 'out_unmap_in;
     }
 
     moo = check_caam_state(jrdev);
@@ -167,10 +169,12 @@ pub unsafe extern "C" fn caam_process_blob(
         (*info).output_len = output_len;
     }
     dma_unmap_single(jrdev, dma_out, output_len, DMA_FROM_DEVICE);
-out_unmap_in:
+    }
+    
     dma_unmap_single(jrdev, dma_in, len as usize,
                      if encap { DMA_BIDIRECTIONAL } else { DMA_TO_DEVICE });
-out_free:
+    }
+    
     kfree(desc as *mut c_void);
     ret
 }

@@ -10,10 +10,10 @@ pub const cpu_has_32fpr: i32 = 0;
 pub const cpu_has_counter: i32 = 1;
 
 // Conditional on CONFIG_BCM47XX_BCMA && !CONFIG_BCM47XX_SSB.
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const cpu_has_watch: i32 = 1;
 // Conditional on CONFIG_BCM47XX_SSB && !CONFIG_BCM47XX_BCMA.
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const cpu_has_watch: i32 = 0;
 
 pub const cpu_has_divec: i32 = 1;
@@ -41,23 +41,23 @@ pub const cpu_has_mips_2: i32 = 1;
 pub const cpu_has_mips_3: i32 = 0;
 pub const cpu_has_mips32r1: i32 = 1;
 // Conditional on CONFIG_BCM47XX_BCMA && !CONFIG_BCM47XX_SSB.
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const cpu_has_mips32r2: i32 = 1;
 // Conditional on CONFIG_BCM47XX_SSB && !CONFIG_BCM47XX_BCMA.
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const cpu_has_mips32r2: i32 = 0;
 pub const cpu_has_mips64r1: i32 = 0;
 pub const cpu_has_mips64r2: i32 = 0;
 
 // Conditional on CONFIG_BCM47XX_BCMA && !CONFIG_BCM47XX_SSB.
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const cpu_has_dsp: i32 = 1;
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const cpu_has_dsp2: i32 = 1;
 // Conditional on CONFIG_BCM47XX_SSB && !CONFIG_BCM47XX_BCMA.
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const cpu_has_dsp: i32 = 0;
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const cpu_has_dsp2: i32 = 0;
 pub const cpu_has_mipsmt: i32 = 0;
 // cpu_has_userlocal
@@ -66,27 +66,27 @@ pub const cpu_has_nofpuex: i32 = 0;
 pub const cpu_has_64bits: i32 = 0;
 pub const cpu_has_64bit_zero_reg: i32 = 0;
 // Conditional on CONFIG_BCM47XX_BCMA && !CONFIG_BCM47XX_SSB.
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const cpu_has_vint: i32 = 1;
 // Conditional on CONFIG_BCM47XX_SSB && !CONFIG_BCM47XX_BCMA.
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const cpu_has_vint: i32 = 0;
 pub const cpu_has_veic: i32 = 0;
 pub const cpu_has_inclusive_pcaches: i32 = 0;
 
 // Conditional on CONFIG_BCM47XX_BCMA && !CONFIG_BCM47XX_SSB.
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const fn cpu_dcache_line_size() -> i32 { 32 }
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const fn cpu_icache_line_size() -> i32 { 32 }
-#[cfg(all(feature = "CONFIG_BCM47XX_BCMA", not(feature = "CONFIG_BCM47XX_SSB")))]
+#[cfg(all(CONFIG_BCM47XX_BCMA, not(CONFIG_BCM47XX_SSB)))]
 pub const cpu_has_perf_cntr_intr_bit: i32 = 1;
 // Conditional on CONFIG_BCM47XX_SSB && !CONFIG_BCM47XX_BCMA.
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const fn cpu_dcache_line_size() -> i32 { 16 }
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const fn cpu_icache_line_size() -> i32 { 16 }
-#[cfg(all(feature = "CONFIG_BCM47XX_SSB", not(feature = "CONFIG_BCM47XX_BCMA")))]
+#[cfg(all(CONFIG_BCM47XX_SSB, not(CONFIG_BCM47XX_BCMA)))]
 pub const cpu_has_perf_cntr_intr_bit: i32 = 0;
 
 pub const fn cpu_scache_line_size() -> i32 { 0 }

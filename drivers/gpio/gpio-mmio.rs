@@ -122,7 +122,7 @@ unsafe fn gpio_mmio_dir_out_val_first(gc:*mut gpio_chip,gpio:u32,val:i32)->i32{(
 // The remaining platform-driver registration is represented below with the
 // same external kernel types and symbols; build-time CONFIG_GPIO_GENERIC_PLATFORM
 // controls whether it is included.
-#[cfg(feature = "CONFIG_GPIO_GENERIC_PLATFORM")]
+#[cfg(CONFIG_GPIO_GENERIC_PLATFORM)]
 unsafe fn gpio_mmio_setup_accessors(dev:*mut device, chip:*mut gpio_generic_chip, byte_be:bool)->i32{
     match (*chip).bits { 8=>{(*chip).read_reg=Some(gpio_mmio_read8);(*chip).write_reg=Some(gpio_mmio_write8)},16=>{if byte_be{(*chip).read_reg=Some(gpio_mmio_read16be);(*chip).write_reg=Some(gpio_mmio_write16be)}else{(*chip).read_reg=Some(gpio_mmio_read16);(*chip).write_reg=Some(gpio_mmio_write16)}},32=>{if byte_be{(*chip).read_reg=Some(gpio_mmio_read32be);(*chip).write_reg=Some(gpio_mmio_write32be)}else{(*chip).read_reg=Some(gpio_mmio_read32);(*chip).write_reg=Some(gpio_mmio_write32)}},64=>{if byte_be{return -EINVAL}(*chip).read_reg=Some(gpio_mmio_read64);(*chip).write_reg=Some(gpio_mmio_write64)},_=>{dev_err(dev,"unsupported data width %u bits\n",(*chip).bits);return -EINVAL}} 0 }
 

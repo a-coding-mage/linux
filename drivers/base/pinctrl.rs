@@ -24,9 +24,9 @@ pub struct dev_pin_info {
     pub p: *mut pinctrl,
     pub default_state: *mut pinctrl_state,
     pub init_state: *mut pinctrl_state,
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub sleep_state: *mut pinctrl_state,
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub idle_state: *mut pinctrl_state,
 }
 
@@ -60,9 +60,9 @@ const EINVAL: c_int = 22;
 
 const PINCTRL_STATE_DEFAULT: &[u8] = b"default\0";
 const PINCTRL_STATE_INIT: &[u8] = b"init\0";
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 const PINCTRL_STATE_SLEEP: &[u8] = b"sleep\0";
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 const PINCTRL_STATE_IDLE: &[u8] = b"idle\0";
 
 #[inline]
@@ -126,7 +126,7 @@ pub unsafe fn pinctrl_bind_pins(dev: *mut device) -> c_int {
         return cleanup_get(dev, ret);
     }
 
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     {
         /*
          * If power management is enabled, we also look for the optional

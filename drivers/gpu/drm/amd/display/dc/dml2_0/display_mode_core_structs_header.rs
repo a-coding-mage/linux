@@ -508,7 +508,7 @@ pub struct DmlPipe {
 	DCFClkDeepSleep: dml_float_t,
 	DPPPerSurface: dml_uint_t,
 	ScalerEnabled: dml_bool_t,
-	SourceScan: enum dml_rotation_angle,
+	SourceScan: dml_rotation_angle,
 	ViewportHeight: dml_uint_t,
 	ViewportHeightChroma: dml_uint_t,
 	BlockWidth256BytesY: dml_uint_t,
@@ -525,9 +525,9 @@ pub struct DmlPipe {
 	HTotal: dml_uint_t,
 	HActive: dml_uint_t,
 	DCCEnable: dml_bool_t,
-	ODMMode: enum dml_odm_mode,
-	SourcePixelFormat: enum dml_source_format_class,
-	SurfaceTiling: enum dml_swizzle_mode,
+	ODMMode: dml_odm_mode,
+	SourcePixelFormat: dml_source_format_class,
+	SurfaceTiling: dml_swizzle_mode,
 	BytePerPixelY: dml_uint_t,
 	BytePerPixelC: dml_uint_t,
 	ProgressiveToInterlaceUnitInOPP: dml_bool_t,
@@ -613,7 +613,7 @@ pub struct dml_plane_cfg_st {
 	VTapsChroma: [dml_uint_t; __DML_NUM_PLANES__],
 	LBBitPerPixel: [dml_uint_t; __DML_NUM_PLANES__],
 
-	SourceScan: [enum dml_rotation_angle; __DML_NUM_PLANES__],
+	SourceScan: [dml_rotation_angle; __DML_NUM_PLANES__],
 	ScalerRecoutWidth: [dml_uint_t; __DML_NUM_PLANES__],
 
 	DynamicMetadataEnable: [dml_bool_t; __DML_NUM_PLANES__],
@@ -626,19 +626,19 @@ pub struct dml_plane_cfg_st {
 	CursorBPP: [dml_uint_t; __DML_NUM_PLANES__],
 
 	setup_for_tdlut: [dml_bool_t; __DML_NUM_PLANES__],
-	tdlut_addressing_mode: [enum dml2_tdlut_addressing_mode; __DML_NUM_PLANES__],
-	tdlut_width_mode: [enum dml2_tdlut_width_mode; __DML_NUM_PLANES__],
+	tdlut_addressing_mode: [dml2_tdlut_addressing_mode; __DML_NUM_PLANES__],
+	tdlut_width_mode: [dml2_tdlut_width_mode; __DML_NUM_PLANES__],
 
-	UseMALLForStaticScreen: [enum dml_use_mall_for_static_screen_mode; __DML_NUM_PLANES__],
-	UseMALLForPStateChange: [enum dml_use_mall_for_pstate_change_mode; __DML_NUM_PLANES__],
+	UseMALLForStaticScreen: [dml_use_mall_for_static_screen_mode; __DML_NUM_PLANES__],
+	UseMALLForPStateChange: [dml_use_mall_for_pstate_change_mode; __DML_NUM_PLANES__],
 
 	BlendingAndTiming: [dml_uint_t; __DML_NUM_PLANES__], /// <brief From which timing group (like OTG) that this plane is getting its timing from. Mode check also need this info for example to check num OTG; encoder; dsc etc.
 }; // dml_plane_cfg_st,
 /// @brief Surface Parameters
 #[repr(C)]
 pub struct dml_surface_cfg_st {
-	SurfaceTiling: [enum dml_swizzle_mode; __DML_NUM_PLANES__],
-	SourcePixelFormat: [enum dml_source_format_class; __DML_NUM_PLANES__],
+	SurfaceTiling: [dml_swizzle_mode; __DML_NUM_PLANES__],
+	SourcePixelFormat: [dml_source_format_class; __DML_NUM_PLANES__],
 	PitchY: [dml_uint_t; __DML_NUM_PLANES__],
 	SurfaceWidthY: [dml_uint_t; __DML_NUM_PLANES__],
 	SurfaceHeightY: [dml_uint_t; __DML_NUM_PLANES__],
@@ -677,15 +677,15 @@ pub struct dml_timing_cfg_st {
 pub struct dml_output_cfg_st {
 	// Output Setting
 	DSCInputBitPerComponent: [dml_uint_t; __DML_NUM_PLANES__],
-	OutputFormat: [enum dml_output_format_class; __DML_NUM_PLANES__],
-	OutputEncoder: [enum dml_output_encoder_class; __DML_NUM_PLANES__],
+	OutputFormat: [dml_output_format_class; __DML_NUM_PLANES__],
+	OutputEncoder: [dml_output_encoder_class; __DML_NUM_PLANES__],
 	OutputMultistreamId: [dml_uint_t; __DML_NUM_PLANES__],
 	OutputMultistreamEn: [dml_bool_t; __DML_NUM_PLANES__],
 	OutputBpp: [dml_float_t; __DML_NUM_PLANES__], //< brief Use by mode_programming to specify a output bpp; user can use the output from mode_support (support.OutputBpp)
 	PixelClockBackEnd: [dml_float_t; __DML_NUM_PLANES__],
-	DSCEnable: [enum dml_dsc_enable; __DML_NUM_PLANES__], //< brief for mode support check; use to determine if dsc is required
+	DSCEnable: [dml_dsc_enable; __DML_NUM_PLANES__], //< brief for mode support check; use to determine if dsc is required
 	OutputLinkDPLanes: [dml_uint_t; __DML_NUM_PLANES__],
-	OutputLinkDPRate: [enum dml_output_link_dp_rate; __DML_NUM_PLANES__],
+	OutputLinkDPRate: [dml_output_link_dp_rate; __DML_NUM_PLANES__],
 	ForcedOutputLinkBPP: [dml_float_t; __DML_NUM_PLANES__],
 	AudioSampleRate: [dml_uint_t; __DML_NUM_PLANES__],
 	AudioSampleLayout: [dml_uint_t; __DML_NUM_PLANES__],
@@ -695,7 +695,7 @@ pub struct dml_output_cfg_st {
 /// @brief Writeback Setting
 #[repr(C)]
 pub struct dml_writeback_cfg_st {
-	WritebackPixelFormat: [enum dml_source_format_class; __DML_NUM_PLANES__],
+	WritebackPixelFormat: [dml_source_format_class; __DML_NUM_PLANES__],
 	WritebackEnable: [dml_bool_t; __DML_NUM_PLANES__],
 	ActiveWritebacksPerSurface: [dml_uint_t; __DML_NUM_PLANES__],
 	WritebackDestinationWidth: [dml_uint_t; __DML_NUM_PLANES__],
@@ -712,7 +712,7 @@ pub struct dml_writeback_cfg_st {
 //         resource will be set to what the mode_support layer recommends
 #[repr(C)]
 pub struct dml_hw_resource_st {
-	ODMMode: [enum dml_odm_mode; __DML_NUM_PLANES__], /// <brief ODM mode that is chosen in the mode check stage and will be used in mode programming stage
+	ODMMode: [dml_odm_mode; __DML_NUM_PLANES__], /// <brief ODM mode that is chosen in the mode check stage and will be used in mode programming stage
 	DPPPerSurface: [dml_uint_t; __DML_NUM_PLANES__], /// <brief How many DPPs are needed drive the surface to output. If MPCC or ODMC could be 2 or 4.
 	DSCEnabled: [dml_bool_t; __DML_NUM_PLANES__], /// <brief Indicate if the DSC is enabled; used in mode_programming
 	NumberOfDSCSlices: [dml_uint_t; __DML_NUM_PLANES__], /// <brief Indicate how many slices needed to support the given mode
@@ -721,9 +721,9 @@ pub struct dml_hw_resource_st {
 /// @brief To control the clk usage for model programming
 #[repr(C)]
 pub struct dml_clk_cfg_st {
-	dcfclk_option: enum dml_clk_cfg_policy, ///< brief Use for mode_program; user can select between use the min require clk req as calculated by DML or use the test-specific freq
-	dispclk_option: enum dml_clk_cfg_policy, ///< brief Use for mode_program; user can select between use the min require clk req as calculated by DML or use the test-specific freq
-	dppclk_option: [enum dml_clk_cfg_policy; __DML_NUM_PLANES__],
+	dcfclk_option: dml_clk_cfg_policy, ///< brief Use for mode_program; user can select between use the min require clk req as calculated by DML or use the test-specific freq
+	dispclk_option: dml_clk_cfg_policy, ///< brief Use for mode_program; user can select between use the min require clk req as calculated by DML or use the test-specific freq
+	dppclk_option: [dml_clk_cfg_policy; __DML_NUM_PLANES__],
 
 	dcfclk_mhz: dml_float_t,
 	dispclk_mhz: dml_float_t,
@@ -734,16 +734,16 @@ pub struct dml_clk_cfg_st {
 ///        Describe how to display a surface in multi-plane setup and output to different output and writeback using the specified timgin
 #[repr(C)]
 pub struct dml_display_cfg_st {
-	surface: struct dml_surface_cfg_st,
-	plane: struct dml_plane_cfg_st,
-	timing: struct dml_timing_cfg_st,
-	output: struct dml_output_cfg_st,
-	writeback: struct dml_writeback_cfg_st,
+	surface: dml_surface_cfg_st,
+	plane: dml_plane_cfg_st,
+	timing: dml_timing_cfg_st,
+	output: dml_output_cfg_st,
+	writeback: dml_writeback_cfg_st,
 	num_surfaces: dml_uint_t,
 	num_timings: dml_uint_t,
 
-	hw: struct dml_hw_resource_st, //< brief for mode programming
-	clk_overrides: struct dml_clk_cfg_st,   //< brief for mode programming clk override
+	hw: dml_hw_resource_st, //< brief for mode programming
+	clk_overrides: dml_clk_cfg_st,   //< brief for mode programming clk override
 }; // dml_display_cfg_st
 
 /// @brief DML mode evaluation and programming policy
@@ -753,13 +753,13 @@ pub struct dml_mode_eval_policy_st {
 	// -------------------
 	// Policy
 	// -------------------
-	MPCCombineUse: [enum dml_mpc_use_policy; __DML_NUM_PLANES__], /// <brief MPC Combine mode as selected by the user; used in mode check stage
-	ODMUse: [enum dml_odm_use_policy; __DML_NUM_PLANES__], /// <brief ODM mode as selected by the user; used in mode check stage
-	UseUnboundedRequesting: enum dml_unbounded_requesting_policy, ///< brief Unbounded request mode preference
-	ImmediateFlipRequirement: [enum dml_immediate_flip_requirement; __DML_NUM_PLANES__], /// <brief Is immediate flip a requirement for this plane. When host vm is present iflip is needed regardless
-	AllowForPStateChangeOrStutterInVBlank: [enum dml_prefetch_modes; __DML_NUM_PLANES__], /// <brief To specify if the DML should calculate the values for support different pwr saving features (cstate; pstate; etc.) during vblank
+	MPCCombineUse: [dml_mpc_use_policy; __DML_NUM_PLANES__], /// <brief MPC Combine mode as selected by the user; used in mode check stage
+	ODMUse: [dml_odm_use_policy; __DML_NUM_PLANES__], /// <brief ODM mode as selected by the user; used in mode check stage
+	UseUnboundedRequesting: dml_unbounded_requesting_policy, ///< brief Unbounded request mode preference
+	ImmediateFlipRequirement: [dml_immediate_flip_requirement; __DML_NUM_PLANES__], /// <brief Is immediate flip a requirement for this plane. When host vm is present iflip is needed regardless
+	AllowForPStateChangeOrStutterInVBlank: [dml_prefetch_modes; __DML_NUM_PLANES__], /// <brief To specify if the DML should calculate the values for support different pwr saving features (cstate; pstate; etc.) during vblank
 
-	AllowForPStateChangeOrStutterInVBlankFinal: enum dml_prefetch_modes,
+	AllowForPStateChangeOrStutterInVBlankFinal: dml_prefetch_modes,
 	dml_bool_t UseOnlyMaxPrefetchModes,
 	UseMinimumRequiredDCFCLK: dml_bool_t, //<brief When set the mode_check stage will figure the min DCFCLK freq to support the given display configuration. User can tell use the output DCFCLK for mode programming.
 	DRAMClockChangeRequirementFinal: dml_bool_t,
@@ -831,10 +831,10 @@ pub struct dml_mode_support_info_st {
 	PTEBufferSizeNotExceeded: [dml_bool_t; 2],
 	DCCMetaBufferSizeNotExceeded: [dml_bool_t; 2],
 	TotalVerticalActiveBandwidthSupport: [dml_bool_t; 2],
-	DRAMClockChangeSupport: [enum dml_dram_clock_change_support; 2],
+	DRAMClockChangeSupport: [dml_dram_clock_change_support; 2],
 	ActiveDRAMClockChangeLatencyMargin: [dml_float_t; __DML_NUM_PLANES__],
 	SubViewportLinesNeededInMALL: [dml_uint_t; __DML_NUM_PLANES__],
-	FCLKChangeSupport: [enum dml_fclock_change_support; 2],
+	FCLKChangeSupport: [dml_fclock_change_support; 2],
 	USRRetrainingSupport: [dml_bool_t; 2],
 	VActiveBandwithSupport: [dml_bool_t; 2],
 	PrefetchSupported: [dml_bool_t; 2],
@@ -849,15 +849,15 @@ pub struct dml_mode_support_info_st {
 	dml_bool_t NoTimeForPrefetch[2][__DML_NUM_PLANES__],
 	dml_bool_t NoTimeForDynamicMetadata[2][__DML_NUM_PLANES__],
 	MPCCombineEnable: [dml_bool_t; __DML_NUM_PLANES__], /// <brief Indicate if the MPC Combine enable in the given state and optimize mpc combine setting
-	ODMMode: [enum dml_odm_mode; __DML_NUM_PLANES__], /// <brief ODM mode that is chosen in the mode check stage and will be used in mode programming stage
+	ODMMode: [dml_odm_mode; __DML_NUM_PLANES__], /// <brief ODM mode that is chosen in the mode check stage and will be used in mode programming stage
 	DPPPerSurface: [dml_uint_t; __DML_NUM_PLANES__], /// <brief How many DPPs are needed drive the surface to output. If MPCC or ODMC could be 2 or 4.
 	DSCEnabled: [dml_bool_t; __DML_NUM_PLANES__], /// <brief Indicate if the DSC is actually required; used in mode_programming
 	FECEnabled: [dml_bool_t; __DML_NUM_PLANES__], /// <brief Indicate if the FEC is actually required
 	NumberOfDSCSlices: [dml_uint_t; __DML_NUM_PLANES__], /// <brief Indicate how many slices needed to support the given mode
 
 	OutputBpp: [dml_float_t; __DML_NUM_PLANES__],
-	OutputType: [enum dml_output_type_and_rate__type; __DML_NUM_PLANES__],
-	OutputRate: [enum dml_output_type_and_rate__rate; __DML_NUM_PLANES__],
+	OutputType: [dml_output_type_and_rate__type; __DML_NUM_PLANES__],
+	OutputRate: [dml_output_type_and_rate__rate; __DML_NUM_PLANES__],
 
 	AlignedDCCMetaPitchY: [dml_float_t; __DML_NUM_PLANES__], /// <brief Pitch value that is aligned to tiling setting
 	AlignedDCCMetaPitchC: [dml_float_t; __DML_NUM_PLANES__],
@@ -869,15 +869,15 @@ pub struct dml_mode_support_info_st {
 /// @brief Treat this as the intermediate values and outputs of mode check function. User can query the content of the struct to know more about the result of mode evaluation.
 #[repr(C)]
 pub struct mode_support_st {
-	ip: struct ip_params_st,
-	soc: struct soc_bounding_box_st,
-	state: struct soc_state_bounding_box_st, //<brief Per-state bbox values; only 1 state per compute
-	policy: struct dml_mode_eval_policy_st,
+	ip: ip_params_st,
+	soc: soc_bounding_box_st,
+	state: soc_state_bounding_box_st, //<brief Per-state bbox values; only 1 state per compute
+	policy: dml_mode_eval_policy_st,
 
 	state_idx: dml_uint_t, //<brief The power state idx for the power state under this computation
 	max_state_idx: dml_uint_t, //<brief The MAX power state idx
-	max_state: struct soc_state_bounding_box_st, //<brief The MAX power state; some algo needs to know the max state info to determine if
-	cache_display_cfg: struct dml_display_cfg_st, // <brief A copy of the current display cfg in consideration
+	max_state: soc_state_bounding_box_st, //<brief The MAX power state; some algo needs to know the max state info to determine if
+	cache_display_cfg: dml_display_cfg_st, // <brief A copy of the current display cfg in consideration
 
 	// Physical info; only using for programming
 	num_active_planes: dml_uint_t, // <brief As determined by either e2e_pipe_param or display_cfg
@@ -897,7 +897,7 @@ pub struct mode_support_st {
 	// ----------------------------------
 	// Mode Support Info and fail reason
 	// ----------------------------------
-	support: struct dml_mode_support_info_st,
+	support: dml_mode_support_info_st,
 
 	// These are calculated before the ModeSupport and ModeProgram step
 	// They represent the bound for the return buffer sizing
@@ -1016,8 +1016,8 @@ pub struct mode_support_st {
 	RequiresFEC: [dml_bool_t; __DML_NUM_PLANES__],
 	OutputBppPerState: [dml_float_t; __DML_NUM_PLANES__],
 	DSCDelayPerState: [dml_uint_t; __DML_NUM_PLANES__],
-	OutputTypePerState: [enum dml_output_type_and_rate__type; __DML_NUM_PLANES__],
-	OutputRatePerState: [enum dml_output_type_and_rate__rate; __DML_NUM_PLANES__],
+	OutputTypePerState: [dml_output_type_and_rate__type; __DML_NUM_PLANES__],
+	OutputRatePerState: [dml_output_type_and_rate__rate; __DML_NUM_PLANES__],
 
 	// Bandwidth Related Info
 	BandwidthAvailableForImmediateFlip: dml_float_t,
@@ -1037,8 +1037,8 @@ pub struct mode_support_st {
 	dml_float_t meta_row_bandwidth[2][__DML_NUM_PLANES__],
 	dml_float_t dpte_row_bandwidth[2][__DML_NUM_PLANES__],
 	// Something that should be feedback to caller
-	ODMModePerState: [enum dml_odm_mode; __DML_NUM_PLANES__],
-	ODMModeThisState: [enum dml_odm_mode; __DML_NUM_PLANES__],
+	ODMModePerState: [dml_odm_mode; __DML_NUM_PLANES__],
+	ODMModeThisState: [dml_odm_mode; __DML_NUM_PLANES__],
 	SurfaceSizeInMALL: [dml_uint_t; __DML_NUM_PLANES__],
 	dml_uint_t NoOfDPP[2][__DML_NUM_PLANES__],
 	NoOfDPPThisState: [dml_uint_t; __DML_NUM_PLANES__],
@@ -1222,7 +1222,7 @@ pub struct mode_program_st {
 
 	// ARB reg
 	DCHUBBUB_ARB_CSTATE_MAX_CAP_MODE: dml_bool_t,
-	Watermark: struct Watermarks,
+	Watermark: Watermarks,
 
 	// DCC compression control
 	DCCYMaxUncompressedBlock: [dml_uint_t; __DML_NUM_PLANES__],
@@ -1308,8 +1308,8 @@ pub struct mode_program_st {
 	// Latency and Support
 	MaxActiveFCLKChangeLatencySupported: dml_float_t,
 	USRRetrainingSupport: dml_bool_t,
-	FCLKChangeSupport: enum dml_fclock_change_support,
-	DRAMClockChangeSupport: enum dml_dram_clock_change_support,
+	FCLKChangeSupport: dml_fclock_change_support,
+	DRAMClockChangeSupport: dml_dram_clock_change_support,
 	MaxActiveDRAMClockChangeLatencySupported: [dml_float_t; __DML_NUM_PLANES__],
 	WritebackAllowFCLKChangeEndPosition: [dml_float_t; __DML_NUM_PLANES__],
 	WritebackAllowDRAMClockChangeEndPosition: [dml_float_t; __DML_NUM_PLANES__],
@@ -1325,7 +1325,7 @@ pub struct mode_program_st {
 #[repr(C)]
 pub struct soc_states_st {
 	num_states: dml_uint_t, /// <brief num of soc pwr states
-	state_array: [struct soc_state_bounding_box_st; __DML_MAX_STATE_ARRAY_SIZE__], /// <brief fixed size array that holds states struct
+	state_array: [soc_state_bounding_box_st; __DML_MAX_STATE_ARRAY_SIZE__], /// <brief fixed size array that holds states struct
 },
 #[repr(C)]
 pub struct UseMinimumDCFCLK_params_st {
@@ -1387,7 +1387,7 @@ pub struct UseMinimumDCFCLK_params_st {
 #[repr(C)]
 pub struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st {
 	USRRetrainingRequiredFinal: dml_bool_t,
-	enum dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
+	dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
 	dml_uint_t *PrefetchMode,
 	NumberOfActiveSurfaces: dml_uint_t,
 	MaxLineBufferLines: dml_uint_t,
@@ -1401,7 +1401,7 @@ pub struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st {
 	dml_uint_t *dpte_group_bytes,
 	dml_uint_t *meta_row_height,
 	dml_uint_t *meta_row_height_chroma,
-	mmSOCParameters: struct SOCParametersList,
+	mmSOCParameters: SOCParametersList,
 	WritebackChunkSize: dml_uint_t,
 	SOCCLK: dml_float_t,
 	DCFClkDeepSleep: dml_float_t,
@@ -1429,7 +1429,7 @@ pub struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st {
 	dml_uint_t *DSTXAfterScaler,
 	dml_uint_t *DSTYAfterScaler,
 	dml_bool_t *WritebackEnable,
-	enum dml_source_format_class *WritebackPixelFormat,
+	dml_source_format_class *WritebackPixelFormat,
 	dml_uint_t *WritebackDestinationWidth,
 	dml_uint_t *WritebackDestinationHeight,
 	dml_uint_t *WritebackSourceHeight,
@@ -1438,10 +1438,10 @@ pub struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st {
 
 	// Output
 	Watermark: *mut Watermarks,
-	enum dml_dram_clock_change_support *DRAMClockChangeSupport,
+	dml_dram_clock_change_support *DRAMClockChangeSupport,
 	dml_float_t *MaxActiveDRAMClockChangeLatencySupported,
 	dml_uint_t *SubViewportLinesNeededInMALL,
-	enum dml_fclock_change_support *FCLKChangeSupport,
+	dml_fclock_change_support *FCLKChangeSupport,
 	dml_float_t *MaxActiveFCLKChangeLatencySupported,
 	dml_bool_t *USRRetrainingSupport,
 	dml_float_t *ActiveDRAMClockChangeLatencyMargin
@@ -1454,8 +1454,8 @@ pub struct CalculateVMRowAndSwath_params_st {
 	PTEBufferSizeInRequestsLuma: dml_uint_t,
 	PTEBufferSizeInRequestsChroma: dml_uint_t,
 	DCCMetaBufferSizeBytes: dml_uint_t,
-	enum dml_use_mall_for_static_screen_mode *UseMALLForStaticScreen,
-	enum dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
+	dml_use_mall_for_static_screen_mode *UseMALLForStaticScreen,
+	dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
 	MALLAllocatedForDCN: dml_uint_t,
 	dml_uint_t *SwathWidthY,
 	dml_uint_t *SwathWidthC,
@@ -1516,7 +1516,7 @@ pub struct CalculateVMRowAndSwath_params_st {
 #[repr(C)]
 pub struct CalculateSwathAndDETConfiguration_params_st {
 	dml_uint_t *DETSizeOverride,
-	enum dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
+	dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
 	ConfigReturnBufferSizeInKByte: dml_uint_t,
 	ROBBufferSizeInKByte: dml_uint_t,
 	MaxTotalDETInKByte: dml_uint_t,
@@ -1525,18 +1525,18 @@ pub struct CalculateSwathAndDETConfiguration_params_st {
 	ForceSingleDPP: dml_bool_t,
 	NumberOfActiveSurfaces: dml_uint_t,
 	nomDETInKByte: dml_uint_t,
-	UseUnboundedRequestingFinal: enum dml_unbounded_requesting_policy,
+	UseUnboundedRequestingFinal: dml_unbounded_requesting_policy,
 	ConfigReturnBufferSegmentSizeInkByte: dml_uint_t,
 	CompressedBufferSegmentSizeInkByteFinal: dml_uint_t,
-	enum dml_output_encoder_class *Output,
+	dml_output_encoder_class *Output,
 	dml_float_t *ReadBandwidthLuma,
 	dml_float_t *ReadBandwidthChroma,
 	dml_float_t *MaximumSwathWidthLuma,
 	dml_float_t *MaximumSwathWidthChroma,
-	enum dml_rotation_angle *SourceScan,
+	dml_rotation_angle *SourceScan,
 	dml_bool_t *ViewportStationary,
-	enum dml_source_format_class *SourcePixelFormat,
-	enum dml_swizzle_mode *SurfaceTiling,
+	dml_source_format_class *SourcePixelFormat,
+	dml_swizzle_mode *SurfaceTiling,
 	dml_uint_t *ViewportWidth,
 	dml_uint_t *ViewportHeight,
 	dml_uint_t *ViewportXStart,
@@ -1551,7 +1551,7 @@ pub struct CalculateSwathAndDETConfiguration_params_st {
 	dml_uint_t *Read256BytesBlockHeightC,
 	dml_uint_t *Read256BytesBlockWidthY,
 	dml_uint_t *Read256BytesBlockWidthC,
-	enum dml_odm_mode *ODMMode,
+	dml_odm_mode *ODMMode,
 	dml_uint_t *BlendingAndTiming,
 	dml_uint_t *BytePerPixY,
 	dml_uint_t *BytePerPixC,
@@ -1580,7 +1580,7 @@ pub struct CalculateSwathAndDETConfiguration_params_st {
 #[repr(C)]
 pub struct CalculateStutterEfficiency_params_st {
 	CompressedBufferSizeInkByte: dml_uint_t,
-	enum dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
+	dml_use_mall_for_pstate_change_mode *UseMALLForPStateChange,
 	UnboundedRequestEnabled: dml_bool_t,
 	MetaFIFOSizeInKEntries: dml_uint_t,
 	ZeroSizeBufferEntries: dml_uint_t,
@@ -1616,7 +1616,7 @@ pub struct CalculateStutterEfficiency_params_st {
 	dml_uint_t *VTotal,
 	dml_float_t *PixelClock,
 	dml_float_t *VRatio,
-	enum dml_rotation_angle *SourceScan,
+	dml_rotation_angle *SourceScan,
 	dml_uint_t *BlockHeight256BytesY,
 	dml_uint_t *BlockWidth256BytesY,
 	dml_uint_t *BlockHeight256BytesC,
@@ -1651,7 +1651,7 @@ pub struct CalculatePrefetchSchedule_params_st {
 	DPPCLKDelayCNVCCursor: dml_float_t,
 	DISPCLKDelaySubtotal: dml_float_t,
 	DPP_RECOUT_WIDTH: dml_uint_t,
-	OutputFormat: enum dml_output_format_class,
+	OutputFormat: dml_output_format_class,
 	MaxInterDCNTileRepeaters: dml_uint_t,
 	VStartup: dml_uint_t,
 	MaxVStartup: dml_uint_t,
@@ -1705,7 +1705,7 @@ pub struct dml_core_mode_support_locals_st {
 	dummy_boolean: [dml_bool_t; 2],
 	dummy_integer: [dml_uint_t; 3],
 	dml_uint_t dummy_integer_array[22][__DML_NUM_PLANES__],
-	dummy_odm_mode: [enum dml_odm_mode; __DML_NUM_PLANES__],
+	dummy_odm_mode: [dml_odm_mode; __DML_NUM_PLANES__],
 	dml_bool_t dummy_boolean_array[2][__DML_NUM_PLANES__],
 	MaxVStartupAllPlanes: [dml_uint_t; 2],
 	dml_uint_t MaximumVStartup[2][__DML_NUM_PLANES__],
@@ -1716,10 +1716,10 @@ pub struct dml_core_mode_support_locals_st {
 	MaxPrefetchMode: [dml_uint_t; __DML_NUM_PLANES__],
 	dummy_single: [dml_float_t; 3],
 	dummy_single_array: [dml_float_t; __DML_NUM_PLANES__],
-	dummy_watermark: struct Watermarks,
-	mSOCParameters: struct SOCParametersList,
-	myPipe: struct DmlPipe,
-	SurfParameters: [struct DmlPipe; __DML_NUM_PLANES__],
+	dummy_watermark: Watermarks,
+	mSOCParameters: SOCParametersList,
+	myPipe: DmlPipe,
+	SurfParameters: [DmlPipe; __DML_NUM_PLANES__],
 	TotalNumberOfActiveWriteback: dml_uint_t,
 	MaximumSwathWidthSupportLuma: dml_uint_t,
 	MaximumSwathWidthSupportChroma: dml_uint_t,
@@ -1727,11 +1727,11 @@ pub struct dml_core_mode_support_locals_st {
 	MPCCombineMethodAsPossible: dml_bool_t,
 	TotalAvailablePipesSupportNoDSC: dml_bool_t,
 	NumberOfDPPNoDSC: dml_uint_t,
-	ODMModeNoDSC: enum dml_odm_mode,
+	ODMModeNoDSC: dml_odm_mode,
 	RequiredDISPCLKPerSurfaceNoDSC: dml_float_t,
 	TotalAvailablePipesSupportDSC: dml_bool_t,
 	NumberOfDPPDSC: dml_uint_t,
-	ODMModeDSC: enum dml_odm_mode,
+	ODMModeDSC: dml_odm_mode,
 	RequiredDISPCLKPerSurfaceDSC: dml_float_t,
 	NoChromaOrLinear: dml_bool_t,
 	BWOfNonCombinedSurfaceOfMaximumBandwidth: dml_float_t,
@@ -1765,12 +1765,12 @@ pub struct dml_core_mode_support_locals_st {
 pub struct dml_core_mode_programming_locals_st {
 	DSCFormatFactor: dml_uint_t,
 	dml_uint_t dummy_integer_array[2][__DML_NUM_PLANES__],
-	dummy_output_encoder_array: [enum dml_output_encoder_class; __DML_NUM_PLANES__],
+	dummy_output_encoder_array: [dml_output_encoder_class; __DML_NUM_PLANES__],
 	dml_float_t dummy_single_array[2][__DML_NUM_PLANES__],
 	dml_uint_t dummy_long_array[4][__DML_NUM_PLANES__],
 	dml_bool_t dummy_boolean_array[2][__DML_NUM_PLANES__],
 	dummy_boolean: [dml_bool_t; 1],
-	SurfaceParameters: [struct DmlPipe; __DML_NUM_PLANES__],
+	SurfaceParameters: [DmlPipe; __DML_NUM_PLANES__],
 	ReorderBytes: dml_uint_t,
 	VMDataOnlyReturnBW: dml_float_t,
 	HostVMInefficiencyFactor: dml_float_t,
@@ -1794,7 +1794,7 @@ pub struct dml_core_mode_programming_locals_st {
 	NonUrgentMaxTotalRDBandwidth: dml_float_t,
 	NonUrgentMaxTotalRDBandwidthNotIncludingMALLPrefetch: dml_float_t,
 	dummy_single: [dml_float_t; 2],
-	mmSOCParameters: struct SOCParametersList,
+	mmSOCParameters: SOCParametersList,
 	Tvstartup_margin: dml_float_t,
 	dlg_vblank_start: dml_float_t,
 	LSetup: dml_float_t,
@@ -1802,8 +1802,8 @@ pub struct dml_core_mode_programming_locals_st {
 	old_MIN_DST_Y_NEXT_START: dml_float_t,
 	TotalWRBandwidth: dml_float_t,
 	WRBandwidth: dml_float_t,
-	dummy_watermark: struct Watermarks,
-	myPipe: struct DmlPipe
+	dummy_watermark: Watermarks,
+	myPipe: DmlPipe
 },
 #[repr(C)]
 pub struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_locals_st {
@@ -1936,20 +1936,20 @@ pub struct CalculatePrefetchSchedule_locals_st {
 #[repr(C)]
 pub struct display_mode_lib_scratch_st {
 	// Scratch space for function locals
-	dml_core_mode_support_locals: struct dml_core_mode_support_locals_st,
-	dml_core_mode_programming_locals: struct dml_core_mode_programming_locals_st,
-	CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_locals: struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_locals_st,
-	CalculateVMRowAndSwath_locals: struct CalculateVMRowAndSwath_locals_st,
-	UseMinimumDCFCLK_locals: struct UseMinimumDCFCLK_locals_st,
-	CalculatePrefetchSchedule_locals: struct CalculatePrefetchSchedule_locals_st,
+	dml_core_mode_support_locals: dml_core_mode_support_locals_st,
+	dml_core_mode_programming_locals: dml_core_mode_programming_locals_st,
+	CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_locals: CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_locals_st,
+	CalculateVMRowAndSwath_locals: CalculateVMRowAndSwath_locals_st,
+	UseMinimumDCFCLK_locals: UseMinimumDCFCLK_locals_st,
+	CalculatePrefetchSchedule_locals: CalculatePrefetchSchedule_locals_st,
 
 	// Scratch space for function params
-	CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params: struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st,
-	CalculateVMRowAndSwath_params: struct CalculateVMRowAndSwath_params_st,
-	UseMinimumDCFCLK_params: struct UseMinimumDCFCLK_params_st,
-	CalculateSwathAndDETConfiguration_params: struct CalculateSwathAndDETConfiguration_params_st,
-	CalculateStutterEfficiency_params: struct CalculateStutterEfficiency_params_st,
-	CalculatePrefetchSchedule_params: struct CalculatePrefetchSchedule_params_st
+	CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params: CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st,
+	CalculateVMRowAndSwath_params: CalculateVMRowAndSwath_params_st,
+	UseMinimumDCFCLK_params: UseMinimumDCFCLK_params_st,
+	CalculateSwathAndDETConfiguration_params: CalculateSwathAndDETConfiguration_params_st,
+	CalculateStutterEfficiency_params: CalculateStutterEfficiency_params_st,
+	CalculatePrefetchSchedule_params: CalculatePrefetchSchedule_params_st
 },
 /// @brief Represent the overall soc/ip environment. It contains data structure represent the soc/ip characteristic and also structures that hold calculation output
 #[repr(C)]
@@ -1957,19 +1957,19 @@ pub struct display_mode_lib_st {
 	project: dml_uint_t,
 
 	//@brief Mode evaluation and programming policy
-	policy: struct dml_mode_eval_policy_st,
+	policy: dml_mode_eval_policy_st,
 
 	//@brief IP/SOC characteristic
-	ip: struct ip_params_st,
-	soc: struct soc_bounding_box_st,
-	states: struct soc_states_st,
+	ip: ip_params_st,
+	soc: soc_bounding_box_st,
+	states: soc_states_st,
 
 	//@brief Mode Support and Mode programming struct
 	// Used to hold input; intermediate and output of the calculations
-	ms: struct mode_support_st, // struct for mode support
-	mp: struct mode_program_st, // struct for mode programming
+	ms: mode_support_st, // struct for mode support
+	mp: mode_program_st, // struct for mode programming
 
-	scratch: struct display_mode_lib_scratch_st
+	scratch: display_mode_lib_scratch_st
 },
 #[repr(C)]
 pub struct dml_mode_support_ex_params_st {

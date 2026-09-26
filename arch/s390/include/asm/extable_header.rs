@@ -62,7 +62,7 @@ pub unsafe fn swap_ex_entry_fixup(
 
 // CONFIG_BPF_JIT selects the external implementation; otherwise this inline
 // handler always reports that it did not handle the exception.
-#[cfg(feature = "CONFIG_BPF_JIT")]
+#[cfg(CONFIG_BPF_JIT)]
 extern "C" {
     pub fn ex_handler_bpf(
         ex: *const exception_table_entry,
@@ -70,7 +70,7 @@ extern "C" {
     ) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_BPF_JIT"))]
+#[cfg(not(CONFIG_BPF_JIT))]
 #[inline]
 pub unsafe fn ex_handler_bpf(
     _ex: *const exception_table_entry,

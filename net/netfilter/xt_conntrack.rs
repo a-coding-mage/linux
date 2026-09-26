@@ -94,7 +94,7 @@ unsafe fn conntrack_mt(skb: *const sk_buff, par: *mut xt_action_param, state_mas
     if ((*info).match_flags & XT_CONNTRACK_ORIGDST) != 0 && (conntrack_mt_origdst(ct, info, xt_family(par)) != (((*info).invert_flags & XT_CONNTRACK_ORIGDST) == 0)) { return false; }
     if ((*info).match_flags & XT_CONNTRACK_REPLSRC) != 0 && (conntrack_mt_replsrc(ct, info, xt_family(par)) != (((*info).invert_flags & XT_CONNTRACK_REPLSRC) == 0)) { return false; }
     if ((*info).match_flags & XT_CONNTRACK_REPLDST) != 0 && (conntrack_mt_repldst(ct, info, xt_family(par)) != (((*info).invert_flags & XT_CONNTRACK_REPLDST) == 0)) { return false; }
-    if (*(*par).match).revision != 3 { if !ct_proto_port_check(info, ct) { return false; } } else if !ct_proto_port_check_v3((*par).matchinfo as *const xt_conntrack_mtinfo3, ct) { return false; }
+    if (*(*par).r#match).revision != 3 { if !ct_proto_port_check(info, ct) { return false; } } else if !ct_proto_port_check_v3((*par).matchinfo as *const xt_conntrack_mtinfo3, ct) { return false; }
     if ((*info).match_flags & XT_CONNTRACK_STATUS) != 0 && (((status_mask as u32 & (*ct).status) != 0) != (((*info).invert_flags & XT_CONNTRACK_STATUS) == 0)) { return false; }
     if ((*info).match_flags & XT_CONNTRACK_EXPIRES) != 0 { let expires = nf_ct_expires(ct) / HZ; if ((expires >= (*info).expires_min && expires <= (*info).expires_max) != (((*info).invert_flags & XT_CONNTRACK_EXPIRES) == 0)) { return false; } }
     true
@@ -109,9 +109,9 @@ unsafe fn conntrack_mt_destroy(par: *const xt_mtdtor_param) { nf_ct_netns_put((*
 
 // Registration table corresponding to the three C xt_match entries.
 static mut conntrack_mt_reg: [xt_match; 3] = [
-    xt_match { name: "conntrack", revision: 1, family: NFPROTO_UNSPEC, matchsize: core::mem::size_of::<xt_conntrack_mtinfo1>(), match: Some(conntrack_mt_v1), checkentry: Some(conntrack_mt_check), destroy: Some(conntrack_mt_destroy), me: THIS_MODULE },
-    xt_match { name: "conntrack", revision: 2, family: NFPROTO_UNSPEC, matchsize: core::mem::size_of::<xt_conntrack_mtinfo2>(), match: Some(conntrack_mt_v2), checkentry: Some(conntrack_mt_check), destroy: Some(conntrack_mt_destroy), me: THIS_MODULE },
-    xt_match { name: "conntrack", revision: 3, family: NFPROTO_UNSPEC, matchsize: core::mem::size_of::<xt_conntrack_mtinfo3>(), match: Some(conntrack_mt_v3), checkentry: Some(conntrack_mt_check), destroy: Some(conntrack_mt_destroy), me: THIS_MODULE },
+    xt_match { name: "conntrack", revision: 1, family: NFPROTO_UNSPEC, matchsize: core::mem::size_of::<xt_conntrack_mtinfo1>(), r#match: Some(conntrack_mt_v1), checkentry: Some(conntrack_mt_check), destroy: Some(conntrack_mt_destroy), me: THIS_MODULE },
+    xt_match { name: "conntrack", revision: 2, family: NFPROTO_UNSPEC, matchsize: core::mem::size_of::<xt_conntrack_mtinfo2>(), r#match: Some(conntrack_mt_v2), checkentry: Some(conntrack_mt_check), destroy: Some(conntrack_mt_destroy), me: THIS_MODULE },
+    xt_match { name: "conntrack", revision: 3, family: NFPROTO_UNSPEC, matchsize: core::mem::size_of::<xt_conntrack_mtinfo3>(), r#match: Some(conntrack_mt_v3), checkentry: Some(conntrack_mt_check), destroy: Some(conntrack_mt_destroy), me: THIS_MODULE },
 ];
 
 unsafe fn conntrack_mt_init() -> i32 { xt_register_matches(conntrack_mt_reg.as_mut_ptr(), conntrack_mt_reg.len()) }

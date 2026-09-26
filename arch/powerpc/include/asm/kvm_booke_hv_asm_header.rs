@@ -57,7 +57,7 @@
 #[macro_export]
 macro_rules! DO_KVM {
     ($intno:tt, $srr1:tt) => {
-        #[cfg(feature = "CONFIG_KVM_BOOKE_HV")]
+        #[cfg(CONFIG_KVM_BOOKE_HV)]
         unsafe {
             core::arch::asm!(
                 "mtocrf 0x80, r11",

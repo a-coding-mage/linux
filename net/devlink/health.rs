@@ -16,10 +16,10 @@ pub struct devlink_health_reporter {
 }
 
 unsafe fn devlink_fmsg_alloc() -> *mut devlink_fmsg { let p = kzalloc_obj::<devlink_fmsg>(); if p.is_null() { return core::ptr::null_mut(); } INIT_LIST_HEAD(&mut (*p).item_list); p }
-unsafe fn devlink_fmsg_free(fmsg: *mut devlink_fmsg) { let mut item: *mut devlink_fmsg_item = core::ptr::null_mut(); let mut tmp: *mut devlink_fmsg_item = core::ptr::null_mut(); list_for_each_entry_safe(item, tmp, &mut (*fmsg).item_list, list) { list_del(&mut (*item).list); kfree(item.cast()); } kfree(fmsg.cast()); }
+unsafe fn devlink_fmsg_free(fmsg: *mut devlink_fmsg) { let mut item: *mut devlink_fmsg_item = core::ptr::null_mut(); let mut tmp: *mut devlink_fmsg_item = core::ptr::null_mut(); list_for_each_entry_safe!(item, tmp, &mut (*fmsg).item_list, list, { list_del(&mut (*item).list); kfree(item.cast()); }); kfree(fmsg.cast()); }
 
 #[no_mangle] pub unsafe extern "C" fn devlink_health_reporter_priv(r: *mut devlink_health_reporter) -> *mut c_void { (*r).priv_ }
-unsafe fn __devlink_health_reporter_find_by_name(l: *mut list_head, n: *const c_char) -> *mut devlink_health_reporter { let mut r: *mut devlink_health_reporter = core::ptr::null_mut(); list_for_each_entry(r,l,list) { if strcmp((*(*r).ops).name,n)==0 { return r; } } core::ptr::null_mut() }
+unsafe fn __devlink_health_reporter_find_by_name(l: *mut list_head, n: *const c_char) -> *mut devlink_health_reporter { let mut r: *mut devlink_health_reporter = core::ptr::null_mut(); list_for_each_entry!(r,l,list, { if strcmp((*(*r).ops).name,n)==0 { return r; } }); core::ptr::null_mut() }
 unsafe fn devlink_health_reporter_find_by_name(d:*mut devlink,n:*const c_char)->*mut devlink_health_reporter { __devlink_health_reporter_find_by_name(&mut (*d).reporter_list,n) }
 unsafe fn devlink_port_health_reporter_find_by_name(p:*mut devlink_port,n:*const c_char)->*mut devlink_health_reporter { __devlink_health_reporter_find_by_name(&mut (*p).reporter_list,n) }
 

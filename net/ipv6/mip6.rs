@@ -51,7 +51,7 @@ unsafe fn mip6_mh_filter(_sk: *mut sock, skb: *mut sk_buff) -> i32 {
     let mh = skb_header_pointer(skb, skb_transport_offset(skb), core::mem::size_of::<ip6_mh>(), hdr.as_mut_ptr() as *mut _);
     if mh.is_null() { return -1; }
     if ((((*mh).ip6mh_hdrlen as usize + 1) << 3) as u32) > (*skb).len { return -1; }
-    if (*mh).ip6mh_hdrlen as i32 < mip6_mh_len((*mh).ip6mh_type as i32) {
+    if ((*mh).ip6mh_hdrlen as i32) < mip6_mh_len((*mh).ip6mh_type as i32) {
         net_dbg_ratelimited!("mip6: MH message too short: %d vs >=%d\n", (*mh).ip6mh_hdrlen, mip6_mh_len((*mh).ip6mh_type as i32));
         mip6_param_prob(skb, 0, core::mem::offset_of!(ip6_mh, ip6mh_hdrlen) as i32 + skb_network_header_len(skb));
         return -1;

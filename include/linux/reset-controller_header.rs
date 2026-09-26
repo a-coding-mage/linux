@@ -98,22 +98,22 @@ pub struct reset_controller_dev {
 }
 
 // #if IS_ENABLED(CONFIG_RESET_CONTROLLER)
-#[cfg(feature = "CONFIG_RESET_CONTROLLER")]
+#[cfg(CONFIG_RESET_CONTROLLER)]
 unsafe extern "C" {
     pub fn reset_controller_register(rcdev: *mut reset_controller_dev) -> ::core::ffi::c_int;
     pub fn reset_controller_unregister(rcdev: *mut reset_controller_dev);
     pub fn devm_reset_controller_register(dev: *mut device, rcdev: *mut reset_controller_dev) -> ::core::ffi::c_int;
 }
 // #else
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 pub unsafe fn reset_controller_register(_rcdev: *mut reset_controller_dev) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 pub unsafe fn reset_controller_unregister(_rcdev: *mut reset_controller_dev) {}
 
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 pub unsafe fn devm_reset_controller_register(
     _dev: *mut device,
     _rcdev: *mut reset_controller_dev,

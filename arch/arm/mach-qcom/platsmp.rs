@@ -61,7 +61,7 @@ const ENXIO: i32 = 6;
 const ENOMEM: i32 = 12;
 const ENODEV: i32 = 19;
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn qcom_cpu_die(_cpu: u32) { wfi(); }
 
 unsafe fn scss_release_secondary(_cpu: u32) -> i32 {

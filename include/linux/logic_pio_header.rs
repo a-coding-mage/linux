@@ -71,7 +71,7 @@ pub struct logic_pio_host_ops {
 
 // The following declarations and aliases are present only when CONFIG_INDIRECT_PIO
 // is enabled in the C build configuration.
-#[cfg(feature = "CONFIG_INDIRECT_PIO")]
+#[cfg(CONFIG_INDIRECT_PIO)]
 extern "C" {
     pub fn logic_inb(addr: usize) -> u8;
     pub fn logic_inw(addr: usize) -> u16;
@@ -93,9 +93,9 @@ extern "C" {
 // We reserve 0x4000 bytes for Indirect IO as so far this library is only
 // used by the HiSilicon LPC Host. If needed, we can reserve a wider IO
 // area by redefining the macro below.
-#[cfg(feature = "CONFIG_INDIRECT_PIO")]
+#[cfg(CONFIG_INDIRECT_PIO)]
 pub const PIO_INDIRECT_SIZE: usize = 0x4000;
-#[cfg(not(feature = "CONFIG_INDIRECT_PIO"))]
+#[cfg(not(CONFIG_INDIRECT_PIO))]
 pub const PIO_INDIRECT_SIZE: usize = 0;
 
 // IO_SPACE_LIMIT is supplied by the target environment.

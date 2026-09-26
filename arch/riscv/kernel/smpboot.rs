@@ -25,11 +25,11 @@ pub unsafe fn smp_prepare_cpus(max_cpus: u32) {
 
     if max_cpus == 0 { return; }
 
-    for_each_possible_cpu!(cpuid) {
+    for_each_possible_cpu!(cpuid, {
         if cpuid as u32 == curr_cpuid { continue; }
         set_cpu_present(cpuid as u32, true);
         numa_store_cpu_info(cpuid as u32);
-    }
+    });
 }
 
 #[cfg(CONFIG_ACPI)]
@@ -79,7 +79,7 @@ unsafe fn of_parse_and_init_cpus() {
     let mut cpuid = 1i32;
     let mut rc: i32;
 
-    for_each_of_cpu_node!(dn) {
+    for_each_of_cpu_node!(dn, {
         rc = riscv_early_of_processor_hartid(dn, &mut hart);
         if rc < 0 { continue; }
         if hart == cpuid_to_hartid_map(0) {
@@ -95,7 +95,7 @@ unsafe fn of_parse_and_init_cpus() {
         *cpuid_to_hartid_map_ptr(cpuid as u32) = hart;
         early_map_cpu_to_node(cpuid as u32, of_node_to_nid(dn));
         cpuid += 1;
-    }
+    });
     BUG_ON!(!found_boot_cpu);
     if cpuid > nr_cpu_ids {
         pr_warn!("Total number of cpus [{}] is greater than nr_cpus option value [{}]\n", cpuid, nr_cpu_ids);

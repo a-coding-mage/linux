@@ -17,7 +17,7 @@ pub struct rq_list {
 }
 
 // CONFIG_BLOCK
-#[cfg(feature = "CONFIG_BLOCK")]
+#[cfg(CONFIG_BLOCK)]
 #[repr(C)]
 pub struct blk_plug {
     pub mq_list: rq_list, // blk-mq requests
@@ -35,7 +35,7 @@ pub struct blk_plug {
     pub cb_list: list_head, // md requires an unplug callback
 }
 
-#[cfg(feature = "CONFIG_BLOCK")]
+#[cfg(CONFIG_BLOCK)]
 extern "C" {
     pub fn blk_start_plug(plug: *mut blk_plug);
     pub fn blk_start_plug_nr_ios(plug: *mut blk_plug, nr_ios: u16);
@@ -50,7 +50,7 @@ extern "C" {
     ) -> *mut blk_plug_cb;
 }
 
-#[cfg(feature = "CONFIG_BLOCK")]
+#[cfg(CONFIG_BLOCK)]
 #[inline]
 pub unsafe fn blk_flush_plug(plug: *mut blk_plug, async_: bool) {
     if !plug.is_null() {
@@ -58,7 +58,7 @@ pub unsafe fn blk_flush_plug(plug: *mut blk_plug, async_: bool) {
     }
 }
 
-#[cfg(feature = "CONFIG_BLOCK")]
+#[cfg(CONFIG_BLOCK)]
 #[inline(always)]
 pub unsafe fn blk_plug_invalidate_ts() {
     // Equivalent to: if (unlikely(current->flags & PF_BLOCK_TS))
@@ -68,7 +68,7 @@ pub unsafe fn blk_plug_invalidate_ts() {
     }
 }
 
-#[cfg(feature = "CONFIG_BLOCK")]
+#[cfg(CONFIG_BLOCK)]
 #[repr(C)]
 pub struct blk_plug_cb {
     pub list: list_head,
@@ -77,27 +77,27 @@ pub struct blk_plug_cb {
 }
 
 // CONFIG_BLOCK disabled
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[repr(C)]
 pub struct blk_plug {}
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn blk_start_plug(_plug: *mut blk_plug) {}
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn blk_start_plug_nr_ios(_plug: *mut blk_plug, _nr_ios: u16) {}
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn blk_finish_plug(_plug: *mut blk_plug) {}
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn blk_flush_plug(_plug: *mut blk_plug, _async_: bool) {}
 
-#[cfg(not(feature = "CONFIG_BLOCK"))]
+#[cfg(not(CONFIG_BLOCK))]
 #[inline]
 pub unsafe fn blk_plug_invalidate_ts() {}
 

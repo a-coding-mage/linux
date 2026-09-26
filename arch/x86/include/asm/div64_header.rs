@@ -25,7 +25,7 @@ macro_rules! do_div {
             unsafe {
                 core::arch::asm!(
                     "divl {base}",
-                    base = in(reg) __base,
+                    $base = in(reg) __base,
                     inout("eax") __low,
                     lateout("edx") __mod,
                     in("edx") __upper,

@@ -68,7 +68,7 @@ pub struct mb_cache;
 
 // CONFIG_EXT2_FS_XATTR controls whether the following external declarations
 // or the inline no-support implementations are selected.
-#[cfg(feature = "CONFIG_EXT2_FS_XATTR")]
+#[cfg(CONFIG_EXT2_FS_XATTR)]
 extern "C" {
     pub static ext2_xattr_user_handler: xattr_handler;
     pub static ext2_xattr_trusted_handler: xattr_handler;
@@ -82,27 +82,27 @@ extern "C" {
     pub static ext2_xattr_handlers: *const *const xattr_handler;
 }
 
-#[cfg(not(feature = "CONFIG_EXT2_FS_XATTR"))]
+#[cfg(not(CONFIG_EXT2_FS_XATTR))]
 pub unsafe fn ext2_xattr_get(_inode: *mut inode, _name_index: i32, _name: *const core::ffi::c_char, _buffer: *mut core::ffi::c_void, _size: usize) -> i32 { -libc::EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_EXT2_FS_XATTR"))]
+#[cfg(not(CONFIG_EXT2_FS_XATTR))]
 pub unsafe fn ext2_xattr_set(_inode: *mut inode, _name_index: i32, _name: *const core::ffi::c_char, _value: *const core::ffi::c_void, _size: usize, _flags: i32) -> i32 { -libc::EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_EXT2_FS_XATTR"))]
+#[cfg(not(CONFIG_EXT2_FS_XATTR))]
 pub unsafe fn ext2_xattr_delete_inode(_inode: *mut inode) {}
 
-#[cfg(not(feature = "CONFIG_EXT2_FS_XATTR"))]
+#[cfg(not(CONFIG_EXT2_FS_XATTR))]
 pub const ext2_xattr_handlers: *const *const xattr_handler = core::ptr::null();
 
-#[cfg(not(feature = "CONFIG_EXT2_FS_XATTR"))]
+#[cfg(not(CONFIG_EXT2_FS_XATTR))]
 pub const ext2_listxattr: Option<unsafe extern "C" fn()> = None;
 
-#[cfg(feature = "CONFIG_EXT2_FS_SECURITY")]
+#[cfg(CONFIG_EXT2_FS_SECURITY)]
 extern "C" {
     pub fn ext2_init_security(inode: *mut inode, dir: *mut inode, qstr: *const qstr) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_EXT2_FS_SECURITY"))]
+#[cfg(not(CONFIG_EXT2_FS_SECURITY))]
 pub unsafe fn ext2_init_security(_inode: *mut inode, _dir: *mut inode, _qstr: *const qstr) -> i32 { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

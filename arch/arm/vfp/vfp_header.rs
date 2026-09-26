@@ -142,7 +142,7 @@ pub const VFP_DOUBLE_SIGNIFICAND_QNAN: u64 = 1u64 << (VFP_DOUBLE_MANTISSA_BITS -
     let mut x = (val as u64) << (64 - VFP_DOUBLE_MANTISSA_BITS) >> 2;
     if (*s).exponent != 0 && (*s).exponent != 2047 { x |= 1u64 << 62; } (*s).significand = x;
 }
-#[inline] pub unsafe fn vfp_double_pack(s: *mut vfp_double) -> i64 { (((*s).sign as u64 << 48) + ((*s).exponent as u64 << VFP_DOUBLE_MANTISSA_BITS) + ((*s).significand >> VFP_DOUBLE_LOW_BITS)) as i64 }
+#[inline] pub unsafe fn vfp_double_pack(s: *mut vfp_double) -> i64 { ((((*s).sign as u64) << 48) + (((*s).exponent as u64) << VFP_DOUBLE_MANTISSA_BITS) + ((*s).significand >> VFP_DOUBLE_LOW_BITS)) as i64 }
 #[inline] pub unsafe fn vfp_double_type(s: *mut vfp_double) -> i32 { let mut t=VFP_NUMBER; if (*s).exponent==2047 { if (*s).significand==0 {t=VFP_INFINITY;} else if (*s).significand&VFP_DOUBLE_SIGNIFICAND_QNAN!=0 {t=VFP_QNAN;} else {t=VFP_SNAN;} } else if (*s).exponent==0 {if (*s).significand==0 {t|=VFP_ZERO;} else {t|=VFP_DENORMAL;}} t }
 extern "C" { pub fn vfp_double_normaliseround(dd: i32, vd: *mut vfp_double, fpscr: u32, exceptions: u32, func: *const i8) -> u32; pub fn vfp_estimate_sqrt_significand(exponent: u32, significand: u32) -> u32; }
 pub const VFP_NAN_FLAG: u32 = 0x100; pub const VFP_EXCEPTION_ERROR: u32 = !0u32 & !VFP_NAN_FLAG;

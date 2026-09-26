@@ -11,7 +11,7 @@
 static mut shared_pte_mask: pteval_t = L_PTE_MT_BUFFERABLE;
 
 #[cfg(__LINUX_ARM_ARCH_LT_6)]
-static unsafe fn do_adjust_pte(
+unsafe fn do_adjust_pte(
     vma: *mut vm_area_struct,
     address: c_ulong,
     pfn: c_ulong,
@@ -32,7 +32,7 @@ static unsafe fn do_adjust_pte(
 }
 
 #[cfg(__LINUX_ARM_ARCH_LT_6)]
-static unsafe fn adjust_pte(
+unsafe fn adjust_pte(
     vma: *mut vm_area_struct,
     address: c_ulong,
     pfn: c_ulong,
@@ -67,7 +67,7 @@ static unsafe fn adjust_pte(
 }
 
 #[cfg(__LINUX_ARM_ARCH_LT_6)]
-static unsafe fn make_coherent(
+unsafe fn make_coherent(
     mapping: *mut address_space,
     vma: *mut vm_area_struct,
     addr: c_ulong,
@@ -115,7 +115,7 @@ unsafe fn update_mmu_cache_range(
     }
 }
 
-static unsafe fn check_writebuffer(p1: *mut c_ulong, p2: *mut c_ulong) -> c_int {
+unsafe fn check_writebuffer(p1: *mut c_ulong, p2: *mut c_ulong) -> c_int {
     let zero: c_ulong = 0;
     let one: c_ulong = 1;
     local_irq_disable();

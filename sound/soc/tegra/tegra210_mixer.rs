@@ -250,14 +250,12 @@ unsafe extern "C" {
     fn devm_regmap_init_mmio(
         dev: *mut device,
         regs: *mut c_void,
-        config: *const regmap_config,
-    ) -> *mut regmap;
+        config: *const regmap_config) -> *mut regmap;
     fn devm_snd_soc_register_component(
         dev: *mut device,
         cmpnt: *const snd_soc_component_driver,
         dais: *mut snd_soc_dai_driver,
-        num_dais: c_uint,
-    ) -> c_int;
+        num_dais: c_uint) -> c_int;
     fn dev_err_probe(dev: *mut device, err: c_int, fmt: *const c_char, ...) -> c_int;
     fn dev_err(dev: *mut device, fmt: *const c_char, ...);
     fn regmap_default_zero_cb(reg: c_uint) -> c_uint;

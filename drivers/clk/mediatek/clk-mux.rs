@@ -107,7 +107,7 @@ unsafe fn mtk_clk_mux_uses_hwv(ops: *const ClkOps) -> bool { ops == &mtk_mux_gat
 unsafe fn mtk_clk_register_mux(dev: *mut Device, mux: *const MtkMux, regmap: *mut Regmap, regmap_hwv: *mut Regmap, lock: *mut SpinlockT) -> *mut ClkHw {
     let clk_mux = kzalloc_obj::<MtkClkMux>(); if clk_mux.is_null() { return ERR_PTR(-ENOMEM); }
     let mut init: ClkInitData = core::mem::zeroed(); init.name = (*mux).name; init.flags = (*mux).flags; init.parent_names = (*mux).parent_names; init.num_parents = (*mux).num_parents; init.ops = (*mux).ops;
-    if mtk_clk_mux_uses_hwv(init.ops) && regmap_hwv.is_null() { return dev_err_ptr_probe(dev, -ENXIO, c"regmap not found for hardware voter clocks\0".as_ptr()); }
+    if mtk_clk_mux_uses_hwv(init.ops) && regmap_hwv.is_null() { return dev_err_ptr_probe(dev, -ENXIO, c"regmap not found for hardware voter clocks".as_ptr()); }
     (*clk_mux).regmap = regmap; (*clk_mux).regmap_hwv = regmap_hwv; (*clk_mux).data = mux; (*clk_mux).lock = lock; (*clk_mux).hw.init = &mut init;
     let ret = clk_hw_register(dev, &mut (*clk_mux).hw); if ret != 0 { kfree(clk_mux); return ERR_PTR(ret); } &mut (*clk_mux).hw
 }

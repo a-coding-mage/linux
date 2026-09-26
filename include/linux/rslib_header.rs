@@ -34,7 +34,7 @@ pub struct rs_control {
 }
 
 // General purpose RS codec, 8-bit data width, symbol width 1-15 bit.
-#[cfg(feature = "CONFIG_REED_SOLOMON_ENC8")]
+#[cfg(CONFIG_REED_SOLOMON_ENC8)]
 unsafe extern "C" {
     pub fn encode_rs8(
         rs: *mut rs_control,
@@ -45,7 +45,7 @@ unsafe extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_REED_SOLOMON_DEC8")]
+#[cfg(CONFIG_REED_SOLOMON_DEC8)]
 unsafe extern "C" {
     pub fn decode_rs8(
         rs: *mut rs_control,
@@ -61,7 +61,7 @@ unsafe extern "C" {
 }
 
 // General purpose RS codec, 16-bit data width, symbol width 1-15 bit.
-#[cfg(feature = "CONFIG_REED_SOLOMON_ENC16")]
+#[cfg(CONFIG_REED_SOLOMON_ENC16)]
 unsafe extern "C" {
     pub fn encode_rs16(
         rs: *mut rs_control,
@@ -72,7 +72,7 @@ unsafe extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_REED_SOLOMON_DEC16")]
+#[cfg(CONFIG_REED_SOLOMON_DEC16)]
 unsafe extern "C" {
     pub fn decode_rs16(
         rs: *mut rs_control,

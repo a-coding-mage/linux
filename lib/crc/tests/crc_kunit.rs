@@ -124,7 +124,7 @@ unsafe fn crc_benchmark(test: *mut Kunit, crc_func: unsafe extern "C" fn(u64, *c
 // The following wrappers, variants, tests, benchmarks, KUnit case table, suite registration,
 // and module metadata preserve the source declarations under their CONFIG_* conditions.
 // External CRC functions and KUnit/kernel types are intentionally left as dependencies.
-#[cfg(any(feature = "CONFIG_CRC7", feature = "CONFIG_CRC16", feature = "CONFIG_CRC_T10DIF", feature = "CONFIG_CRC32", feature = "CONFIG_CRC64"))]
+#[cfg(any(CONFIG_CRC7, CONFIG_CRC16, CONFIG_CRC_T10DIF, CONFIG_CRC32, CONFIG_CRC64))]
 extern "C" {
     fn crc7_be(crc: u8, p: *const u8, len: usize) -> u8;
     fn crc16(crc: u16, p: *const u8, len: usize) -> u16;

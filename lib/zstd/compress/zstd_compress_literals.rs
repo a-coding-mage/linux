@@ -148,7 +148,7 @@ unsafe fn ZSTD_compressLiterals(
     if hType == set_compressed { (*nextHuf).repeatMode = HUF_repeat_check; }
 
     match lhSize {
-        3 => { if singleStream == 0 { assert!(srcSize >= MIN_LITERALS_FOR_4_STREAMS); } let lhc = hType + ((singleStream == 0) as U32 << 2) + ((srcSize as U32) << 4) + ((cLitSize as U32) << 14); MEM_writeLE24(ostart, lhc); }
+        3 => { if singleStream == 0 { assert!(srcSize >= MIN_LITERALS_FOR_4_STREAMS); } let lhc = hType + (((singleStream == 0) as U32) << 2) + ((srcSize as U32) << 4) + ((cLitSize as U32) << 14); MEM_writeLE24(ostart, lhc); }
         4 => { assert!(srcSize >= MIN_LITERALS_FOR_4_STREAMS); let lhc = hType + (2 << 2) + ((srcSize as U32) << 4) + ((cLitSize as U32) << 18); MEM_writeLE32(ostart, lhc); }
         5 => { assert!(srcSize >= MIN_LITERALS_FOR_4_STREAMS); let lhc = hType + (3 << 2) + ((srcSize as U32) << 4) + ((cLitSize as U32) << 22); MEM_writeLE32(ostart, lhc); *ostart.add(4) = (cLitSize >> 10) as BYTE; }
         _ => assert!(false),

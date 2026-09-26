@@ -32,7 +32,7 @@ pub const MT8186_MEMIF_PBUF_SIZE_NUM: u32 = 4;
 
 
 /*****************************************************************************
-/* AUDIO_TOP_CON0 */
+/ * AUDIO_TOP_CON0 */
 pub const RESERVED_SFT: u32 = 31 as u32;
 pub const RESERVED_MASK_SFT: u32 = BIT31u32 as u32;
 pub const AHB_IDLE_EN_INT_SFT: u32 = 30 as u32;

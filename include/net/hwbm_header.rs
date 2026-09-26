@@ -20,24 +20,24 @@ pub struct hwbm_pool {
     pub priv_: *mut ::core::ffi::c_void,
 }
 
-#[cfg(feature = "CONFIG_HWBM")]
+#[cfg(CONFIG_HWBM)]
 extern "C" {
     pub fn hwbm_buf_free(bm_pool: *mut hwbm_pool, buf: *mut ::core::ffi::c_void);
     pub fn hwbm_pool_refill(bm_pool: *mut hwbm_pool, gfp: crate::gfp_t) -> ::core::ffi::c_int;
     pub fn hwbm_pool_add(bm_pool: *mut hwbm_pool, buf_num: ::core::ffi::c_uint) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_HWBM"))]
+#[cfg(not(CONFIG_HWBM))]
 #[inline]
 pub unsafe fn hwbm_buf_free(_bm_pool: *mut hwbm_pool, _buf: *mut ::core::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_HWBM"))]
+#[cfg(not(CONFIG_HWBM))]
 #[inline]
 pub unsafe fn hwbm_pool_refill(_bm_pool: *mut hwbm_pool, _gfp: crate::gfp_t) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_HWBM"))]
+#[cfg(not(CONFIG_HWBM))]
 #[inline]
 pub unsafe fn hwbm_pool_add(_bm_pool: *mut hwbm_pool, _buf_num: ::core::ffi::c_uint) -> ::core::ffi::c_int {
     0

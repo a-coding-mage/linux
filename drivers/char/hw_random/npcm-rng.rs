@@ -11,7 +11,7 @@ const NPCM_RNGD_REG: usize = 0x04; // Data register
 const NPCM_RNGMODE_REG: usize = 0x08; // Mode register
 
 const NPCM_RNG_CLK_SET_62_5MHZ: u32 = 1 << 2; // 60-80 MHz
-const NPCM_RNG_CLK_SET_25MHZ: u32 = (0xf << 3) & (0x1f << 3); // 20-25 MHz
+const NPCM_RNG_CLK_SET_25MHZ: u32 = 0b11 << 3; // GENMASK(4, 3): 20-25 MHz
 const NPCM_RNG_DATA_VALID: u32 = 1 << 1;
 const NPCM_RNG_ENABLE: u32 = 1 << 0;
 const NPCM_RNG_M1ROSEL: u32 = 1 << 1;

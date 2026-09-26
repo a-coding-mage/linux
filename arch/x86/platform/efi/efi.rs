@@ -50,7 +50,7 @@ unsafe extern "C" fn setup_add_efi_memmap(_arg: *mut c_char) -> c_int {
 unsafe fn do_add_efi_memmap() {
     if !efi_enabled(EFI_MEMMAP) { return; }
     let mut md: *mut efi_memory_desc_t;
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         let start = (*md).phys_addr;
         let size = (*md).num_pages << EFI_PAGE_SHIFT;
         let e820_type: c_int;
@@ -70,16 +70,16 @@ unsafe fn do_add_efi_memmap() {
             _ => e820_type = E820_TYPE_RESERVED,
         }
         e820__range_add(start, size, e820_type);
-    }
+    });
     e820__update_table(efi_table_ptr());
 }
 
 unsafe fn do_efi_soft_reserve() -> bool {
     if !efi_enabled(EFI_MEMMAP) || !efi_soft_reserve_enabled() { return false; }
     let mut md: *mut efi_memory_desc_t;
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         if (*md).type_ == EFI_CONVENTIONAL_MEMORY && ((*md).attribute & EFI_MEMORY_SP) != 0 { return true; }
-    }
+    });
     false
 }
 
@@ -145,21 +145,21 @@ unsafe fn efi_clean_memmap() {
 
 unsafe fn efi_remove_e820_mmio() {
     let mut md: *mut efi_memory_desc_t; let mut i = 0;
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         if (*md).type_ == EFI_MEMORY_MAPPED_IO {
             let size = (*md).num_pages << EFI_PAGE_SHIFT; let start = (*md).phys_addr; let end = start + size - 1;
             if size >= 256 * 1024 { pr_info!("Remove mem%02u: MMIO range=[0x%08llx-0x%08llx] (%lluMB) from e820 map\n", i, start, end, size >> 20); e820__range_remove(start, size, E820_TYPE_RESERVED); }
             else { pr_info!("Not removing mem%02u: MMIO range=[0x%08llx-0x%08llx] (%lluKB) from e820 map\n", i, start, end, size >> 10); }
         } i += 1;
-    }
+    });
 }
 
 pub unsafe fn efi_print_memmap() {
     let mut md: *mut efi_memory_desc_t; let mut i = 0;
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         let mut buf = [0i8; 64];
         pr_info!("mem%02u: %s range=[0x%016llx-0x%016llx] (%lluMB)\n", i, efi_md_typeattr_format(buf.as_mut_ptr(), buf.len(), md), (*md).phys_addr, (*md).phys_addr + ((*md).num_pages << EFI_PAGE_SHIFT) - 1, (*md).num_pages >> (20 - EFI_PAGE_SHIFT)); i += 1;
-    }
+    });
 }
 
 // The remaining EFI setup and runtime mapping routines retain their C ABI and
@@ -185,13 +185,13 @@ pub unsafe fn efi_enter_virtual_mode() {
 
 unsafe fn efi_merge_regions() {
     let mut md: *mut efi_memory_desc_t; let mut prev: *mut efi_memory_desc_t = core::ptr::null_mut();
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         if prev.is_null() { prev = md; continue; }
         if (*prev).type_ != (*md).type_ || (*prev).attribute != (*md).attribute { prev = md; continue; }
         let prev_size = (*prev).num_pages << EFI_PAGE_SHIFT;
         if (*md).phys_addr == (*prev).phys_addr + prev_size { (*prev).num_pages += (*md).num_pages; (*md).type_ = EFI_RESERVED_TYPE; (*md).attribute = 0; continue; }
         prev = md;
-    }
+    });
 }
 
 unsafe fn realloc_pages(old_memmap: *mut c_void, old_shift: c_int) -> *mut c_void {

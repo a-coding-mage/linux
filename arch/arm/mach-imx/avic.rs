@@ -34,7 +34,7 @@ static mut avic_base: *mut core::ffi::c_void = core::ptr::null_mut();
 static mut mx25_ccm_base: *mut core::ffi::c_void = core::ptr::null_mut();
 static mut domain: *mut irq_domain = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_FIQ")]
+#[cfg(CONFIG_FIQ)]
 unsafe fn avic_set_irq_fiq(hwirq: u32, irq_type: u32) -> i32 {
     let mut irqt: u32;
     if hwirq >= AVIC_NUM_IRQS as u32 { return -22; }
@@ -50,14 +50,14 @@ unsafe fn avic_set_irq_fiq(hwirq: u32, irq_type: u32) -> i32 {
 }
 
 static mut avic_extra_irq: mxc_extra_irq = mxc_extra_irq {
-    #[cfg(feature = "CONFIG_FIQ")]
+    #[cfg(CONFIG_FIQ)]
     set_irq_fiq: Some(avic_set_irq_fiq),
 };
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut avic_saved_mask_reg: [u32; 2] = [0; 2];
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn avic_irq_suspend(d: *mut irq_data) {
     let gc = irq_data_get_irq_chip_data(d);
     let ct = (*gc).chip_types;
@@ -70,7 +70,7 @@ unsafe fn avic_irq_suspend(d: *mut irq_data) {
     }
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn avic_irq_resume(d: *mut irq_data) {
     let gc = irq_data_get_irq_chip_data(d);
     let ct = (*gc).chip_types;
@@ -130,7 +130,7 @@ unsafe fn mxc_init_irq(irqbase: *mut core::ffi::c_void) {
     for i in 0..(AVIC_NUM_IRQS / 32) { avic_init_gc(i as i32, irq_base + (i as i32) * 32); }
     for i in 0..8 { imx_writel(0, avic_base.add(avic_nipriority(i))); }
     set_handle_irq(avic_handle_irq);
-    #[cfg(feature = "CONFIG_FIQ")]
+    #[cfg(CONFIG_FIQ)]
     init_FIQ(FIQ_START);
     printk(KERN_INFO, "MXC IRQ initialized\n");
 }

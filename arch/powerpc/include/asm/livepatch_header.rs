@@ -7,14 +7,14 @@
 
 // Dependencies supplied by the corresponding scheduler and task-stack modules.
 
-#[cfg(feature = "CONFIG_LIVEPATCH_64")]
+#[cfg(CONFIG_LIVEPATCH_64)]
 #[inline]
 pub unsafe fn klp_init_thread_info(p: *mut task_struct) {
     // + 1 to account for STACK_END_MAGIC
     (*task_thread_info(p)).livepatch_sp = end_of_stack(p).add(1);
 }
 
-#[cfg(not(feature = "CONFIG_LIVEPATCH_64"))]
+#[cfg(not(CONFIG_LIVEPATCH_64))]
 #[inline]
 pub unsafe fn klp_init_thread_info(_p: *mut task_struct) {}
 

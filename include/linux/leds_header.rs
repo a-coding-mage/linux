@@ -51,18 +51,18 @@ pub const LED_SET_BRIGHTNESS_OFF: c_int=6; pub const LED_SET_BRIGHTNESS: c_int=7
 }
 
 extern "C" {
- pub fn led_classdev_register_ext(*mut device,*mut led_classdev,*mut led_init_data)->c_int;
- pub fn devm_led_classdev_register_ext(*mut device,*mut led_classdev,*mut led_init_data)->c_int;
- pub fn led_classdev_unregister(*mut led_classdev); pub fn devm_led_classdev_unregister(*mut device,*mut led_classdev);
- pub fn led_classdev_suspend(*mut led_classdev); pub fn led_classdev_resume(*mut led_classdev);
- pub fn led_add_lookup(*mut led_lookup_data); pub fn led_remove_lookup(*mut led_lookup_data);
- pub fn led_get(*mut device,*mut c_char)->*mut led_classdev; pub fn devm_led_get(*mut device,*mut c_char)->*mut led_classdev; pub fn led_put(*mut led_classdev);
- pub fn devm_of_led_get(*mut device,c_int)->*mut led_classdev; pub fn devm_of_led_get_optional(*mut device,c_int)->*mut led_classdev;
- pub fn led_blink_set(*mut led_classdev,*mut c_ulong,*mut c_ulong); pub fn led_blink_set_nosleep(*mut led_classdev,c_ulong,c_ulong);
- pub fn led_blink_set_oneshot(*mut led_classdev,*mut c_ulong,*mut c_ulong,c_int); pub fn led_set_brightness(*mut led_classdev,c_uint); pub fn led_set_brightness_sync(*mut led_classdev,c_uint)->c_int;
- pub fn led_mc_set_brightness(*mut led_classdev,*mut c_uint,c_uint,c_uint); pub fn led_update_brightness(*mut led_classdev)->c_int;
- pub fn led_get_default_pattern(*mut led_classdev,*mut c_uint)->*mut u32; pub fn led_sysfs_disable(*mut led_classdev); pub fn led_sysfs_enable(*mut led_classdev);
- pub fn led_compose_name(*mut device,*mut led_init_data,*mut c_char)->c_int; pub fn led_get_color_name(u8)->*const c_char;
+ pub fn led_classdev_register_ext(_: *mut device,_: *mut led_classdev,_: *mut led_init_data)->c_int;
+ pub fn devm_led_classdev_register_ext(_: *mut device,_: *mut led_classdev,_: *mut led_init_data)->c_int;
+ pub fn led_classdev_unregister(_: *mut led_classdev); pub fn devm_led_classdev_unregister(_: *mut device,_: *mut led_classdev);
+ pub fn led_classdev_suspend(_: *mut led_classdev); pub fn led_classdev_resume(_: *mut led_classdev);
+ pub fn led_add_lookup(_: *mut led_lookup_data); pub fn led_remove_lookup(_: *mut led_lookup_data);
+ pub fn led_get(_: *mut device,_: *mut c_char)->*mut led_classdev; pub fn devm_led_get(_: *mut device,_: *mut c_char)->*mut led_classdev; pub fn led_put(_: *mut led_classdev);
+ pub fn devm_of_led_get(_: *mut device,_: c_int)->*mut led_classdev; pub fn devm_of_led_get_optional(_: *mut device,_: c_int)->*mut led_classdev;
+ pub fn led_blink_set(_: *mut led_classdev,_: *mut c_ulong,_: *mut c_ulong); pub fn led_blink_set_nosleep(_: *mut led_classdev,_: c_ulong,_: c_ulong);
+ pub fn led_blink_set_oneshot(_: *mut led_classdev,_: *mut c_ulong,_: *mut c_ulong,_: c_int); pub fn led_set_brightness(_: *mut led_classdev,_: c_uint); pub fn led_set_brightness_sync(_: *mut led_classdev,_: c_uint)->c_int;
+ pub fn led_mc_set_brightness(_: *mut led_classdev,_: *mut c_uint,_: c_uint,_: c_uint); pub fn led_update_brightness(_: *mut led_classdev)->c_int;
+ pub fn led_get_default_pattern(_: *mut led_classdev,_: *mut c_uint)->*mut u32; pub fn led_sysfs_disable(_: *mut led_classdev); pub fn led_sysfs_enable(_: *mut led_classdev);
+ pub fn led_compose_name(_: *mut device,_: *mut led_init_data,_: *mut c_char)->c_int; pub fn led_get_color_name(_: u8)->*const c_char;
 }
 #[inline] pub unsafe fn led_sysfs_is_disabled(x:*mut led_classdev)->bool { (*x).flags & LED_SYSFS_DISABLE != 0 }
 

@@ -66,7 +66,7 @@ unsafe fn arm64_rsi_setup_memory() {
      * which we can't handle.  Bailing out early prevents the guest limping
      * on and dying later.
      */
-    for_each_mem_range!(i, &mut start, &mut end) {
+    for_each_mem_range!(i, &mut start, &mut end, {
         if rsi_set_memory_range_protected_safe(start, end) != 0 {
             panic!(
                 "Failed to set memory range to protected: %pa-%pa",
@@ -74,7 +74,7 @@ unsafe fn arm64_rsi_setup_memory() {
                 &end
             );
         }
-    }
+    });
 }
 
 /*

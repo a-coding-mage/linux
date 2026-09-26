@@ -19,7 +19,7 @@ unsafe fn qat_compression_free_instances(accel_dev: *mut adf_accel_dev) -> i32 {
     let mut inst: *mut qat_compression_instance;
     let mut i: i32;
 
-    list_for_each_safe(&mut list_ptr, &mut tmp, &mut (*accel_dev).compression_list) {
+    list_for_each_safe!(&mut list_ptr, &mut tmp, &mut (*accel_dev).compression_list, {
         inst = list_entry(list_ptr, qat_compression_instance, list);
 
         i = 0;
@@ -31,7 +31,7 @@ unsafe fn qat_compression_free_instances(accel_dev: *mut adf_accel_dev) -> i32 {
         if !(*inst).dc_rx.is_null() { adf_remove_ring((*inst).dc_rx); }
         list_del(list_ptr);
         kfree(inst as *mut core::ffi::c_void);
-    }
+    });
     0
 }
 
@@ -44,7 +44,7 @@ pub unsafe fn qat_compression_get_instance_node(node: i32, alg: i32) -> *mut qat
     let mut caps: u32;
     let mut mask: u32;
 
-    list_for_each(&mut itr, adf_devmgr_get_head()) {
+    list_for_each!(&mut itr, adf_devmgr_get_head(), {
         let tmp_dev = list_entry(itr, adf_accel_dev, list);
         let tmp_dev_node: i32 = dev_to_node(&mut GET_DEV(tmp_dev));
         if alg == QAT_ZSTD || alg == QAT_LZ4S {
@@ -57,10 +57,10 @@ pub unsafe fn qat_compression_get_instance_node(node: i32, alg: i32) -> *mut qat
             let ctr = atomic_read(&(*tmp_dev).ref_count) as usize;
             if best > ctr { accel_dev = tmp_dev; best = ctr; }
         }
-    }
+    });
     if accel_dev.is_null() {
         pr_debug_ratelimited!("QAT: Could not find a device on node %d\n", node);
-        list_for_each(&mut itr, adf_devmgr_get_head()) {
+        list_for_each!(&mut itr, adf_devmgr_get_head(), {
             let tmp_dev = list_entry(itr, adf_accel_dev, list);
             if alg == QAT_ZSTD || alg == QAT_LZ4S {
                 hw_data = (*tmp_dev).hw_device;
@@ -69,15 +69,15 @@ pub unsafe fn qat_compression_get_instance_node(node: i32, alg: i32) -> *mut qat
                 if caps & mask == 0 { continue; }
             }
             if adf_dev_started(tmp_dev) && !list_empty(&mut (*tmp_dev).compression_list) { accel_dev = tmp_dev; break; }
-        }
+        });
     }
     if accel_dev.is_null() { return core::ptr::null_mut(); }
     best = !0;
-    list_for_each(&mut itr, &mut (*accel_dev).compression_list) {
+    list_for_each!(&mut itr, &mut (*accel_dev).compression_list, {
         let tmp_inst = list_entry(itr, qat_compression_instance, list);
         let ctr = atomic_read(&(*tmp_inst).refctr) as usize;
         if best > ctr { inst = tmp_inst; best = ctr; }
-    }
+    });
     if !inst.is_null() {
         if adf_dev_get(accel_dev) != 0 { dev_err!(&mut GET_DEV(accel_dev), "Could not increment dev refctr\n"); return core::ptr::null_mut(); }
         atomic_inc(&mut (*inst).refctr);

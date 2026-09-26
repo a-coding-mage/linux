@@ -140,7 +140,7 @@ const fn BIT(nr: c_uint) -> c_ulong {
 }
 
 const fn GENMASK(h: usize, l: usize) -> c_uint {
-    ((!0_u32).wrapping_shl(l as u32) & (!0_u32).wrapping_shr((31 - h) as u32)) as c_uint
+    ((!0u32).wrapping_shl(l as u32) & (!0u32).wrapping_shr((31 - h) as u32)) as c_uint
 }
 
 const fn PM4125_SWRM_CH_MASK(ch: u8_) -> c_ulong {

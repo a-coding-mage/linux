@@ -46,7 +46,7 @@ unsafe fn panel_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut c
     };
     sysfs_emit(buf, "%s\n", panel)
 }
-static DEVICE_ATTR_RO!(panel);
+DEVICE_ATTR_RO!(panel);
 
 unsafe fn vertical_position_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> ssize_t {
     let vertical_position = match (*(*dev).physical_location).vertical_position {
@@ -57,7 +57,7 @@ unsafe fn vertical_position_show(dev: *mut device, _attr: *mut device_attribute,
     };
     sysfs_emit(buf, "%s\n", vertical_position)
 }
-static DEVICE_ATTR_RO!(vertical_position);
+DEVICE_ATTR_RO!(vertical_position);
 
 unsafe fn horizontal_position_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> ssize_t {
     let horizontal_position = match (*(*dev).physical_location).horizontal_position {
@@ -68,17 +68,17 @@ unsafe fn horizontal_position_show(dev: *mut device, _attr: *mut device_attribut
     };
     sysfs_emit(buf, "%s\n", horizontal_position)
 }
-static DEVICE_ATTR_RO!(horizontal_position);
+DEVICE_ATTR_RO!(horizontal_position);
 
 unsafe fn dock_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> ssize_t {
     sysfs_emit(buf, "%s\n", str_yes_no((*(*dev).physical_location).dock))
 }
-static DEVICE_ATTR_RO!(dock);
+DEVICE_ATTR_RO!(dock);
 
 unsafe fn lid_show(dev: *mut device, _attr: *mut device_attribute, buf: *mut core::ffi::c_char) -> ssize_t {
     sysfs_emit(buf, "%s\n", str_yes_no((*(*dev).physical_location).lid))
 }
-static DEVICE_ATTR_RO!(lid);
+DEVICE_ATTR_RO!(lid);
 
 static mut dev_attr_physical_location: [*mut attribute; 6] = [
     &mut dev_attr_panel.attr,

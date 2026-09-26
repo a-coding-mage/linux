@@ -550,359 +550,359 @@ pub const UV2H_EVENT_OCCURRED0_PROFILE_INT_MASK: u64 = 0x0400000000000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
 // 		unsigned long	rsvd_1_63:63;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
 // 		unsigned long	rsvd_1:1;
-		unsigned long	rh_hcerr:1;			/* RW */
-		unsigned long	lh0_hcerr:1;			/* RW */
-		unsigned long	lh1_hcerr:1;			/* RW */
-		unsigned long	gr0_hcerr:1;			/* RW */
-		unsigned long	gr1_hcerr:1;			/* RW */
-		unsigned long	ni0_hcerr:1;			/* RW */
-		unsigned long	ni1_hcerr:1;			/* RW */
-		unsigned long	lb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr0:1;			/* RW */
 // 		unsigned long	rsvd_10:1;
-		unsigned long	rh_aoerr0:1;			/* RW */
-		unsigned long	lh0_aoerr0:1;			/* RW */
-		unsigned long	lh1_aoerr0:1;			/* RW */
-		unsigned long	gr0_aoerr0:1;			/* RW */
-		unsigned long	gr1_aoerr0:1;			/* RW */
-		unsigned long	xb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr0:1;			/* RW */
 // 		unsigned long	rsvd_17_63:47;
 // 	} sx;
 
 	/* UVYH common struct */
 // 	struct uvyh_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
-		unsigned long	kt_hcerr:1;			/* RW */
-		unsigned long	rh0_hcerr:1;			/* RW */
-		unsigned long	rh1_hcerr:1;			/* RW */
-		unsigned long	lh0_hcerr:1;			/* RW */
-		unsigned long	lh1_hcerr:1;			/* RW */
-		unsigned long	lh2_hcerr:1;			/* RW */
-		unsigned long	lh3_hcerr:1;			/* RW */
-		unsigned long	xb_hcerr:1;			/* RW */
-		unsigned long	rdm_hcerr:1;			/* RW */
-		unsigned long	ni0_hcerr:1;			/* RW */
-		unsigned long	ni1_hcerr:1;			/* RW */
-		unsigned long	lb_aoerr0:1;			/* RW */
-		unsigned long	kt_aoerr0:1;			/* RW */
-		unsigned long	rh0_aoerr0:1;			/* RW */
-		unsigned long	rh1_aoerr0:1;			/* RW */
-		unsigned long	lh0_aoerr0:1;			/* RW */
-		unsigned long	lh1_aoerr0:1;			/* RW */
-		unsigned long	lh2_aoerr0:1;			/* RW */
-		unsigned long	lh3_aoerr0:1;			/* RW */
-		unsigned long	xb_aoerr0:1;			/* RW */
-		unsigned long	rdm_aoerr0:1;			/* RW */
-		unsigned long	rt0_aoerr0:1;			/* RW */
-		unsigned long	rt1_aoerr0:1;			/* RW */
-		unsigned long	ni0_aoerr0:1;			/* RW */
-		unsigned long	ni1_aoerr0:1;			/* RW */
-		unsigned long	lb_aoerr1:1;			/* RW */
-		unsigned long	kt_aoerr1:1;			/* RW */
-		unsigned long	rh0_aoerr1:1;			/* RW */
-		unsigned long	rh1_aoerr1:1;			/* RW */
-		unsigned long	lh0_aoerr1:1;			/* RW */
-		unsigned long	lh1_aoerr1:1;			/* RW */
-		unsigned long	lh2_aoerr1:1;			/* RW */
-		unsigned long	lh3_aoerr1:1;			/* RW */
-		unsigned long	xb_aoerr1:1;			/* RW */
-		unsigned long	rdm_aoerr1:1;			/* RW */
-		unsigned long	rt0_aoerr1:1;			/* RW */
-		unsigned long	rt1_aoerr1:1;			/* RW */
-		unsigned long	ni0_aoerr1:1;			/* RW */
-		unsigned long	ni1_aoerr1:1;			/* RW */
-		unsigned long	system_shutdown_int:1;		/* RW */
-		unsigned long	lb_irq_int_0:1;			/* RW */
-		unsigned long	lb_irq_int_1:1;			/* RW */
-		unsigned long	lb_irq_int_2:1;			/* RW */
-		unsigned long	lb_irq_int_3:1;			/* RW */
-		unsigned long	lb_irq_int_4:1;			/* RW */
-		unsigned long	lb_irq_int_5:1;			/* RW */
-		unsigned long	lb_irq_int_6:1;			/* RW */
-		unsigned long	lb_irq_int_7:1;			/* RW */
-		unsigned long	lb_irq_int_8:1;			/* RW */
-		unsigned long	lb_irq_int_9:1;			/* RW */
-		unsigned long	lb_irq_int_10:1;		/* RW */
-		unsigned long	lb_irq_int_11:1;		/* RW */
-		unsigned long	lb_irq_int_12:1;		/* RW */
-		unsigned long	lb_irq_int_13:1;		/* RW */
-		unsigned long	lb_irq_int_14:1;		/* RW */
-		unsigned long	lb_irq_int_15:1;		/* RW */
-		unsigned long	l1_nmi_int:1;			/* RW */
-		unsigned long	stop_clock:1;			/* RW */
-		unsigned long	asic_to_l1:1;			/* RW */
-		unsigned long	l1_to_asic:1;			/* RW */
-		unsigned long	la_seq_trigger:1;		/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	kt_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh2_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh3_hcerr:1;			/* RW */
+		core::ffi::c_ulong	xb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rdm_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	kt_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh2_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh3_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rdm_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rt0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rt1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	kt_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh2_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh3_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rdm_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rt0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rt1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	system_shutdown_int:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_0:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_1:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_2:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_3:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_4:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_5:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_6:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_7:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_8:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_9:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_10:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_11:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_12:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_13:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_14:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_15:1;		/* RW */
+		core::ffi::c_ulong	l1_nmi_int:1;			/* RW */
+		core::ffi::c_ulong	stop_clock:1;			/* RW */
+		core::ffi::c_ulong	asic_to_l1:1;			/* RW */
+		core::ffi::c_ulong	l1_to_asic:1;			/* RW */
+		core::ffi::c_ulong	la_seq_trigger:1;		/* RW */
 // 		unsigned long	rsvd_62_63:2;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
-		unsigned long	kt_hcerr:1;			/* RW */
-		unsigned long	rh0_hcerr:1;			/* RW */
-		unsigned long	rh1_hcerr:1;			/* RW */
-		unsigned long	lh0_hcerr:1;			/* RW */
-		unsigned long	lh1_hcerr:1;			/* RW */
-		unsigned long	lh2_hcerr:1;			/* RW */
-		unsigned long	lh3_hcerr:1;			/* RW */
-		unsigned long	xb_hcerr:1;			/* RW */
-		unsigned long	rdm_hcerr:1;			/* RW */
-		unsigned long	ni0_hcerr:1;			/* RW */
-		unsigned long	ni1_hcerr:1;			/* RW */
-		unsigned long	lb_aoerr0:1;			/* RW */
-		unsigned long	kt_aoerr0:1;			/* RW */
-		unsigned long	rh0_aoerr0:1;			/* RW */
-		unsigned long	rh1_aoerr0:1;			/* RW */
-		unsigned long	lh0_aoerr0:1;			/* RW */
-		unsigned long	lh1_aoerr0:1;			/* RW */
-		unsigned long	lh2_aoerr0:1;			/* RW */
-		unsigned long	lh3_aoerr0:1;			/* RW */
-		unsigned long	xb_aoerr0:1;			/* RW */
-		unsigned long	rdm_aoerr0:1;			/* RW */
-		unsigned long	rt0_aoerr0:1;			/* RW */
-		unsigned long	rt1_aoerr0:1;			/* RW */
-		unsigned long	ni0_aoerr0:1;			/* RW */
-		unsigned long	ni1_aoerr0:1;			/* RW */
-		unsigned long	lb_aoerr1:1;			/* RW */
-		unsigned long	kt_aoerr1:1;			/* RW */
-		unsigned long	rh0_aoerr1:1;			/* RW */
-		unsigned long	rh1_aoerr1:1;			/* RW */
-		unsigned long	lh0_aoerr1:1;			/* RW */
-		unsigned long	lh1_aoerr1:1;			/* RW */
-		unsigned long	lh2_aoerr1:1;			/* RW */
-		unsigned long	lh3_aoerr1:1;			/* RW */
-		unsigned long	xb_aoerr1:1;			/* RW */
-		unsigned long	rdm_aoerr1:1;			/* RW */
-		unsigned long	rt0_aoerr1:1;			/* RW */
-		unsigned long	rt1_aoerr1:1;			/* RW */
-		unsigned long	ni0_aoerr1:1;			/* RW */
-		unsigned long	ni1_aoerr1:1;			/* RW */
-		unsigned long	system_shutdown_int:1;		/* RW */
-		unsigned long	lb_irq_int_0:1;			/* RW */
-		unsigned long	lb_irq_int_1:1;			/* RW */
-		unsigned long	lb_irq_int_2:1;			/* RW */
-		unsigned long	lb_irq_int_3:1;			/* RW */
-		unsigned long	lb_irq_int_4:1;			/* RW */
-		unsigned long	lb_irq_int_5:1;			/* RW */
-		unsigned long	lb_irq_int_6:1;			/* RW */
-		unsigned long	lb_irq_int_7:1;			/* RW */
-		unsigned long	lb_irq_int_8:1;			/* RW */
-		unsigned long	lb_irq_int_9:1;			/* RW */
-		unsigned long	lb_irq_int_10:1;		/* RW */
-		unsigned long	lb_irq_int_11:1;		/* RW */
-		unsigned long	lb_irq_int_12:1;		/* RW */
-		unsigned long	lb_irq_int_13:1;		/* RW */
-		unsigned long	lb_irq_int_14:1;		/* RW */
-		unsigned long	lb_irq_int_15:1;		/* RW */
-		unsigned long	l1_nmi_int:1;			/* RW */
-		unsigned long	stop_clock:1;			/* RW */
-		unsigned long	asic_to_l1:1;			/* RW */
-		unsigned long	l1_to_asic:1;			/* RW */
-		unsigned long	la_seq_trigger:1;		/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	kt_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh2_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh3_hcerr:1;			/* RW */
+		core::ffi::c_ulong	xb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rdm_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	kt_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh2_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh3_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rdm_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rt0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rt1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	kt_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh2_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh3_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rdm_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rt0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rt1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	system_shutdown_int:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_0:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_1:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_2:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_3:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_4:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_5:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_6:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_7:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_8:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_9:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_10:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_11:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_12:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_13:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_14:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_15:1;		/* RW */
+		core::ffi::c_ulong	l1_nmi_int:1;			/* RW */
+		core::ffi::c_ulong	stop_clock:1;			/* RW */
+		core::ffi::c_ulong	asic_to_l1:1;			/* RW */
+		core::ffi::c_ulong	l1_to_asic:1;			/* RW */
+		core::ffi::c_ulong	la_seq_trigger:1;		/* RW */
 // 		unsigned long	rsvd_62_63:2;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
-		unsigned long	kt_hcerr:1;			/* RW */
-		unsigned long	rh_hcerr:1;			/* RW */
-		unsigned long	lh0_hcerr:1;			/* RW */
-		unsigned long	lh1_hcerr:1;			/* RW */
-		unsigned long	gr0_hcerr:1;			/* RW */
-		unsigned long	gr1_hcerr:1;			/* RW */
-		unsigned long	ni0_hcerr:1;			/* RW */
-		unsigned long	ni1_hcerr:1;			/* RW */
-		unsigned long	lb_aoerr0:1;			/* RW */
-		unsigned long	kt_aoerr0:1;			/* RW */
-		unsigned long	rh_aoerr0:1;			/* RW */
-		unsigned long	lh0_aoerr0:1;			/* RW */
-		unsigned long	lh1_aoerr0:1;			/* RW */
-		unsigned long	gr0_aoerr0:1;			/* RW */
-		unsigned long	gr1_aoerr0:1;			/* RW */
-		unsigned long	xb_aoerr0:1;			/* RW */
-		unsigned long	rtq0_aoerr0:1;			/* RW */
-		unsigned long	rtq1_aoerr0:1;			/* RW */
-		unsigned long	rtq2_aoerr0:1;			/* RW */
-		unsigned long	rtq3_aoerr0:1;			/* RW */
-		unsigned long	ni0_aoerr0:1;			/* RW */
-		unsigned long	ni1_aoerr0:1;			/* RW */
-		unsigned long	lb_aoerr1:1;			/* RW */
-		unsigned long	kt_aoerr1:1;			/* RW */
-		unsigned long	rh_aoerr1:1;			/* RW */
-		unsigned long	lh0_aoerr1:1;			/* RW */
-		unsigned long	lh1_aoerr1:1;			/* RW */
-		unsigned long	gr0_aoerr1:1;			/* RW */
-		unsigned long	gr1_aoerr1:1;			/* RW */
-		unsigned long	xb_aoerr1:1;			/* RW */
-		unsigned long	rtq0_aoerr1:1;			/* RW */
-		unsigned long	rtq1_aoerr1:1;			/* RW */
-		unsigned long	rtq2_aoerr1:1;			/* RW */
-		unsigned long	rtq3_aoerr1:1;			/* RW */
-		unsigned long	ni0_aoerr1:1;			/* RW */
-		unsigned long	ni1_aoerr1:1;			/* RW */
-		unsigned long	system_shutdown_int:1;		/* RW */
-		unsigned long	lb_irq_int_0:1;			/* RW */
-		unsigned long	lb_irq_int_1:1;			/* RW */
-		unsigned long	lb_irq_int_2:1;			/* RW */
-		unsigned long	lb_irq_int_3:1;			/* RW */
-		unsigned long	lb_irq_int_4:1;			/* RW */
-		unsigned long	lb_irq_int_5:1;			/* RW */
-		unsigned long	lb_irq_int_6:1;			/* RW */
-		unsigned long	lb_irq_int_7:1;			/* RW */
-		unsigned long	lb_irq_int_8:1;			/* RW */
-		unsigned long	lb_irq_int_9:1;			/* RW */
-		unsigned long	lb_irq_int_10:1;		/* RW */
-		unsigned long	lb_irq_int_11:1;		/* RW */
-		unsigned long	lb_irq_int_12:1;		/* RW */
-		unsigned long	lb_irq_int_13:1;		/* RW */
-		unsigned long	lb_irq_int_14:1;		/* RW */
-		unsigned long	lb_irq_int_15:1;		/* RW */
-		unsigned long	l1_nmi_int:1;			/* RW */
-		unsigned long	stop_clock:1;			/* RW */
-		unsigned long	asic_to_l1:1;			/* RW */
-		unsigned long	l1_to_asic:1;			/* RW */
-		unsigned long	la_seq_trigger:1;		/* RW */
-		unsigned long	ipi_int:1;			/* RW */
-		unsigned long	extio_int0:1;			/* RW */
-		unsigned long	extio_int1:1;			/* RW */
-		unsigned long	extio_int2:1;			/* RW */
-		unsigned long	extio_int3:1;			/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	kt_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	kt_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rtq0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rtq1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rtq2_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rtq3_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	kt_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rtq0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rtq1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rtq2_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rtq3_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	system_shutdown_int:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_0:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_1:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_2:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_3:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_4:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_5:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_6:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_7:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_8:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_9:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_10:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_11:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_12:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_13:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_14:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_15:1;		/* RW */
+		core::ffi::c_ulong	l1_nmi_int:1;			/* RW */
+		core::ffi::c_ulong	stop_clock:1;			/* RW */
+		core::ffi::c_ulong	asic_to_l1:1;			/* RW */
+		core::ffi::c_ulong	l1_to_asic:1;			/* RW */
+		core::ffi::c_ulong	la_seq_trigger:1;		/* RW */
+		core::ffi::c_ulong	ipi_int:1;			/* RW */
+		core::ffi::c_ulong	extio_int0:1;			/* RW */
+		core::ffi::c_ulong	extio_int1:1;			/* RW */
+		core::ffi::c_ulong	extio_int2:1;			/* RW */
+		core::ffi::c_ulong	extio_int3:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
-		unsigned long	qp_hcerr:1;			/* RW */
-		unsigned long	rh_hcerr:1;			/* RW */
-		unsigned long	lh0_hcerr:1;			/* RW */
-		unsigned long	lh1_hcerr:1;			/* RW */
-		unsigned long	gr0_hcerr:1;			/* RW */
-		unsigned long	gr1_hcerr:1;			/* RW */
-		unsigned long	ni0_hcerr:1;			/* RW */
-		unsigned long	ni1_hcerr:1;			/* RW */
-		unsigned long	lb_aoerr0:1;			/* RW */
-		unsigned long	qp_aoerr0:1;			/* RW */
-		unsigned long	rh_aoerr0:1;			/* RW */
-		unsigned long	lh0_aoerr0:1;			/* RW */
-		unsigned long	lh1_aoerr0:1;			/* RW */
-		unsigned long	gr0_aoerr0:1;			/* RW */
-		unsigned long	gr1_aoerr0:1;			/* RW */
-		unsigned long	xb_aoerr0:1;			/* RW */
-		unsigned long	rt_aoerr0:1;			/* RW */
-		unsigned long	ni0_aoerr0:1;			/* RW */
-		unsigned long	ni1_aoerr0:1;			/* RW */
-		unsigned long	lb_aoerr1:1;			/* RW */
-		unsigned long	qp_aoerr1:1;			/* RW */
-		unsigned long	rh_aoerr1:1;			/* RW */
-		unsigned long	lh0_aoerr1:1;			/* RW */
-		unsigned long	lh1_aoerr1:1;			/* RW */
-		unsigned long	gr0_aoerr1:1;			/* RW */
-		unsigned long	gr1_aoerr1:1;			/* RW */
-		unsigned long	xb_aoerr1:1;			/* RW */
-		unsigned long	rt_aoerr1:1;			/* RW */
-		unsigned long	ni0_aoerr1:1;			/* RW */
-		unsigned long	ni1_aoerr1:1;			/* RW */
-		unsigned long	system_shutdown_int:1;		/* RW */
-		unsigned long	lb_irq_int_0:1;			/* RW */
-		unsigned long	lb_irq_int_1:1;			/* RW */
-		unsigned long	lb_irq_int_2:1;			/* RW */
-		unsigned long	lb_irq_int_3:1;			/* RW */
-		unsigned long	lb_irq_int_4:1;			/* RW */
-		unsigned long	lb_irq_int_5:1;			/* RW */
-		unsigned long	lb_irq_int_6:1;			/* RW */
-		unsigned long	lb_irq_int_7:1;			/* RW */
-		unsigned long	lb_irq_int_8:1;			/* RW */
-		unsigned long	lb_irq_int_9:1;			/* RW */
-		unsigned long	lb_irq_int_10:1;		/* RW */
-		unsigned long	lb_irq_int_11:1;		/* RW */
-		unsigned long	lb_irq_int_12:1;		/* RW */
-		unsigned long	lb_irq_int_13:1;		/* RW */
-		unsigned long	lb_irq_int_14:1;		/* RW */
-		unsigned long	lb_irq_int_15:1;		/* RW */
-		unsigned long	l1_nmi_int:1;			/* RW */
-		unsigned long	stop_clock:1;			/* RW */
-		unsigned long	asic_to_l1:1;			/* RW */
-		unsigned long	l1_to_asic:1;			/* RW */
-		unsigned long	la_seq_trigger:1;		/* RW */
-		unsigned long	ipi_int:1;			/* RW */
-		unsigned long	extio_int0:1;			/* RW */
-		unsigned long	extio_int1:1;			/* RW */
-		unsigned long	extio_int2:1;			/* RW */
-		unsigned long	extio_int3:1;			/* RW */
-		unsigned long	profile_int:1;			/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	qp_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	qp_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rt_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	qp_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rt_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	system_shutdown_int:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_0:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_1:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_2:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_3:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_4:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_5:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_6:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_7:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_8:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_9:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_10:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_11:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_12:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_13:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_14:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_15:1;		/* RW */
+		core::ffi::c_ulong	l1_nmi_int:1;			/* RW */
+		core::ffi::c_ulong	stop_clock:1;			/* RW */
+		core::ffi::c_ulong	asic_to_l1:1;			/* RW */
+		core::ffi::c_ulong	l1_to_asic:1;			/* RW */
+		core::ffi::c_ulong	la_seq_trigger:1;		/* RW */
+		core::ffi::c_ulong	ipi_int:1;			/* RW */
+		core::ffi::c_ulong	extio_int0:1;			/* RW */
+		core::ffi::c_ulong	extio_int1:1;			/* RW */
+		core::ffi::c_ulong	extio_int2:1;			/* RW */
+		core::ffi::c_ulong	extio_int3:1;			/* RW */
+		core::ffi::c_ulong	profile_int:1;			/* RW */
 // 		unsigned long	rsvd_59_63:5;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_event_occurred0_s {
-		unsigned long	lb_hcerr:1;			/* RW */
-		unsigned long	qp_hcerr:1;			/* RW */
-		unsigned long	rh_hcerr:1;			/* RW */
-		unsigned long	lh0_hcerr:1;			/* RW */
-		unsigned long	lh1_hcerr:1;			/* RW */
-		unsigned long	gr0_hcerr:1;			/* RW */
-		unsigned long	gr1_hcerr:1;			/* RW */
-		unsigned long	ni0_hcerr:1;			/* RW */
-		unsigned long	ni1_hcerr:1;			/* RW */
-		unsigned long	lb_aoerr0:1;			/* RW */
-		unsigned long	qp_aoerr0:1;			/* RW */
-		unsigned long	rh_aoerr0:1;			/* RW */
-		unsigned long	lh0_aoerr0:1;			/* RW */
-		unsigned long	lh1_aoerr0:1;			/* RW */
-		unsigned long	gr0_aoerr0:1;			/* RW */
-		unsigned long	gr1_aoerr0:1;			/* RW */
-		unsigned long	xb_aoerr0:1;			/* RW */
-		unsigned long	rt_aoerr0:1;			/* RW */
-		unsigned long	ni0_aoerr0:1;			/* RW */
-		unsigned long	ni1_aoerr0:1;			/* RW */
-		unsigned long	lb_aoerr1:1;			/* RW */
-		unsigned long	qp_aoerr1:1;			/* RW */
-		unsigned long	rh_aoerr1:1;			/* RW */
-		unsigned long	lh0_aoerr1:1;			/* RW */
-		unsigned long	lh1_aoerr1:1;			/* RW */
-		unsigned long	gr0_aoerr1:1;			/* RW */
-		unsigned long	gr1_aoerr1:1;			/* RW */
-		unsigned long	xb_aoerr1:1;			/* RW */
-		unsigned long	rt_aoerr1:1;			/* RW */
-		unsigned long	ni0_aoerr1:1;			/* RW */
-		unsigned long	ni1_aoerr1:1;			/* RW */
-		unsigned long	system_shutdown_int:1;		/* RW */
-		unsigned long	lb_irq_int_0:1;			/* RW */
-		unsigned long	lb_irq_int_1:1;			/* RW */
-		unsigned long	lb_irq_int_2:1;			/* RW */
-		unsigned long	lb_irq_int_3:1;			/* RW */
-		unsigned long	lb_irq_int_4:1;			/* RW */
-		unsigned long	lb_irq_int_5:1;			/* RW */
-		unsigned long	lb_irq_int_6:1;			/* RW */
-		unsigned long	lb_irq_int_7:1;			/* RW */
-		unsigned long	lb_irq_int_8:1;			/* RW */
-		unsigned long	lb_irq_int_9:1;			/* RW */
-		unsigned long	lb_irq_int_10:1;		/* RW */
-		unsigned long	lb_irq_int_11:1;		/* RW */
-		unsigned long	lb_irq_int_12:1;		/* RW */
-		unsigned long	lb_irq_int_13:1;		/* RW */
-		unsigned long	lb_irq_int_14:1;		/* RW */
-		unsigned long	lb_irq_int_15:1;		/* RW */
-		unsigned long	l1_nmi_int:1;			/* RW */
-		unsigned long	stop_clock:1;			/* RW */
-		unsigned long	asic_to_l1:1;			/* RW */
-		unsigned long	l1_to_asic:1;			/* RW */
-		unsigned long	la_seq_trigger:1;		/* RW */
-		unsigned long	ipi_int:1;			/* RW */
-		unsigned long	extio_int0:1;			/* RW */
-		unsigned long	extio_int1:1;			/* RW */
-		unsigned long	extio_int2:1;			/* RW */
-		unsigned long	extio_int3:1;			/* RW */
-		unsigned long	profile_int:1;			/* RW */
+		core::ffi::c_ulong	lb_hcerr:1;			/* RW */
+		core::ffi::c_ulong	qp_hcerr:1;			/* RW */
+		core::ffi::c_ulong	rh_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lh1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	gr1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni0_hcerr:1;			/* RW */
+		core::ffi::c_ulong	ni1_hcerr:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	qp_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	rt_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr0:1;			/* RW */
+		core::ffi::c_ulong	lb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	qp_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rh_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	lh1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	gr0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	gr1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	xb_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	rt_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni0_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	ni1_aoerr1:1;			/* RW */
+		core::ffi::c_ulong	system_shutdown_int:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_0:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_1:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_2:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_3:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_4:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_5:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_6:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_7:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_8:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_9:1;			/* RW */
+		core::ffi::c_ulong	lb_irq_int_10:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_11:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_12:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_13:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_14:1;		/* RW */
+		core::ffi::c_ulong	lb_irq_int_15:1;		/* RW */
+		core::ffi::c_ulong	l1_nmi_int:1;			/* RW */
+		core::ffi::c_ulong	stop_clock:1;			/* RW */
+		core::ffi::c_ulong	asic_to_l1:1;			/* RW */
+		core::ffi::c_ulong	l1_to_asic:1;			/* RW */
+		core::ffi::c_ulong	la_seq_trigger:1;		/* RW */
+		core::ffi::c_ulong	ipi_int:1;			/* RW */
+		core::ffi::c_ulong	extio_int0:1;			/* RW */
+		core::ffi::c_ulong	extio_int1:1;			/* RW */
+		core::ffi::c_ulong	extio_int2:1;			/* RW */
+		core::ffi::c_ulong	extio_int3:1;			/* RW */
+		core::ffi::c_ulong	profile_int:1;			/* RW */
 // 		unsigned long	rsvd_59_63:5;
 // 	} s2;
 // };
@@ -1326,257 +1326,257 @@ pub const UV2H_EVENT_OCCURRED1_BAU_DASHBOARD_INT_MASK: u64 = 0x0008000000000000U
 
 	/* UVYH common struct */
 // 	struct uvyh_event_occurred1_s {
-		unsigned long	ipi_int:1;			/* RW */
-		unsigned long	extio_int0:1;			/* RW */
-		unsigned long	extio_int1:1;			/* RW */
-		unsigned long	extio_int2:1;			/* RW */
-		unsigned long	extio_int3:1;			/* RW */
-		unsigned long	profile_int:1;			/* RW */
-		unsigned long	bau_data:1;			/* RW */
-		unsigned long	proc_general:1;			/* RW */
-		unsigned long	xh_tlb_int0:1;			/* RW */
-		unsigned long	xh_tlb_int1:1;			/* RW */
-		unsigned long	xh_tlb_int2:1;			/* RW */
-		unsigned long	xh_tlb_int3:1;			/* RW */
-		unsigned long	xh_tlb_int4:1;			/* RW */
-		unsigned long	xh_tlb_int5:1;			/* RW */
-		unsigned long	rdm_tlb_int0:1;			/* RW */
-		unsigned long	rdm_tlb_int1:1;			/* RW */
-		unsigned long	rdm_tlb_int2:1;			/* RW */
-		unsigned long	rdm_tlb_int3:1;			/* RW */
-		unsigned long	rdm_tlb_int4:1;			/* RW */
-		unsigned long	rdm_tlb_int5:1;			/* RW */
-		unsigned long	rdm_tlb_int6:1;			/* RW */
-		unsigned long	rdm_tlb_int7:1;			/* RW */
-		unsigned long	rdm_tlb_int8:1;			/* RW */
-		unsigned long	rdm_tlb_int9:1;			/* RW */
-		unsigned long	rdm_tlb_int10:1;		/* RW */
-		unsigned long	rdm_tlb_int11:1;		/* RW */
-		unsigned long	rdm_tlb_int12:1;		/* RW */
-		unsigned long	rdm_tlb_int13:1;		/* RW */
-		unsigned long	rdm_tlb_int14:1;		/* RW */
-		unsigned long	rdm_tlb_int15:1;		/* RW */
-		unsigned long	rdm_tlb_int16:1;		/* RW */
-		unsigned long	rdm_tlb_int17:1;		/* RW */
-		unsigned long	rdm_tlb_int18:1;		/* RW */
-		unsigned long	rdm_tlb_int19:1;		/* RW */
-		unsigned long	rdm_tlb_int20:1;		/* RW */
-		unsigned long	rdm_tlb_int21:1;		/* RW */
-		unsigned long	rdm_tlb_int22:1;		/* RW */
-		unsigned long	rdm_tlb_int23:1;		/* RW */
+		core::ffi::c_ulong	ipi_int:1;			/* RW */
+		core::ffi::c_ulong	extio_int0:1;			/* RW */
+		core::ffi::c_ulong	extio_int1:1;			/* RW */
+		core::ffi::c_ulong	extio_int2:1;			/* RW */
+		core::ffi::c_ulong	extio_int3:1;			/* RW */
+		core::ffi::c_ulong	profile_int:1;			/* RW */
+		core::ffi::c_ulong	bau_data:1;			/* RW */
+		core::ffi::c_ulong	proc_general:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int16:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int17:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int18:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int19:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int20:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int21:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int22:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int23:1;		/* RW */
 // 		unsigned long	rsvd_38_63:26;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_event_occurred1_s {
-		unsigned long	ipi_int:1;			/* RW */
-		unsigned long	extio_int0:1;			/* RW */
-		unsigned long	extio_int1:1;			/* RW */
-		unsigned long	extio_int2:1;			/* RW */
-		unsigned long	extio_int3:1;			/* RW */
-		unsigned long	profile_int:1;			/* RW */
-		unsigned long	bau_data:1;			/* RW */
-		unsigned long	proc_general:1;			/* RW */
-		unsigned long	xh_tlb_int0:1;			/* RW */
-		unsigned long	xh_tlb_int1:1;			/* RW */
-		unsigned long	xh_tlb_int2:1;			/* RW */
-		unsigned long	xh_tlb_int3:1;			/* RW */
-		unsigned long	xh_tlb_int4:1;			/* RW */
-		unsigned long	xh_tlb_int5:1;			/* RW */
-		unsigned long	rdm_tlb_int0:1;			/* RW */
-		unsigned long	rdm_tlb_int1:1;			/* RW */
-		unsigned long	rdm_tlb_int2:1;			/* RW */
-		unsigned long	rdm_tlb_int3:1;			/* RW */
-		unsigned long	rdm_tlb_int4:1;			/* RW */
-		unsigned long	rdm_tlb_int5:1;			/* RW */
-		unsigned long	rdm_tlb_int6:1;			/* RW */
-		unsigned long	rdm_tlb_int7:1;			/* RW */
-		unsigned long	rdm_tlb_int8:1;			/* RW */
-		unsigned long	rdm_tlb_int9:1;			/* RW */
-		unsigned long	rdm_tlb_int10:1;		/* RW */
-		unsigned long	rdm_tlb_int11:1;		/* RW */
-		unsigned long	rdm_tlb_int12:1;		/* RW */
-		unsigned long	rdm_tlb_int13:1;		/* RW */
-		unsigned long	rdm_tlb_int14:1;		/* RW */
-		unsigned long	rdm_tlb_int15:1;		/* RW */
-		unsigned long	rdm_tlb_int16:1;		/* RW */
-		unsigned long	rdm_tlb_int17:1;		/* RW */
-		unsigned long	rdm_tlb_int18:1;		/* RW */
-		unsigned long	rdm_tlb_int19:1;		/* RW */
-		unsigned long	rdm_tlb_int20:1;		/* RW */
-		unsigned long	rdm_tlb_int21:1;		/* RW */
-		unsigned long	rdm_tlb_int22:1;		/* RW */
-		unsigned long	rdm_tlb_int23:1;		/* RW */
+		core::ffi::c_ulong	ipi_int:1;			/* RW */
+		core::ffi::c_ulong	extio_int0:1;			/* RW */
+		core::ffi::c_ulong	extio_int1:1;			/* RW */
+		core::ffi::c_ulong	extio_int2:1;			/* RW */
+		core::ffi::c_ulong	extio_int3:1;			/* RW */
+		core::ffi::c_ulong	profile_int:1;			/* RW */
+		core::ffi::c_ulong	bau_data:1;			/* RW */
+		core::ffi::c_ulong	proc_general:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	xh_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	rdm_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int16:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int17:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int18:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int19:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int20:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int21:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int22:1;		/* RW */
+		core::ffi::c_ulong	rdm_tlb_int23:1;		/* RW */
 // 		unsigned long	rsvd_38_63:26;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_event_occurred1_s {
-		unsigned long	profile_int:1;			/* RW */
-		unsigned long	bau_data:1;			/* RW */
-		unsigned long	proc_general:1;			/* RW */
-		unsigned long	gr0_tlb_int0:1;			/* RW */
-		unsigned long	gr0_tlb_int1:1;			/* RW */
-		unsigned long	gr0_tlb_int2:1;			/* RW */
-		unsigned long	gr0_tlb_int3:1;			/* RW */
-		unsigned long	gr0_tlb_int4:1;			/* RW */
-		unsigned long	gr0_tlb_int5:1;			/* RW */
-		unsigned long	gr0_tlb_int6:1;			/* RW */
-		unsigned long	gr0_tlb_int7:1;			/* RW */
-		unsigned long	gr0_tlb_int8:1;			/* RW */
-		unsigned long	gr0_tlb_int9:1;			/* RW */
-		unsigned long	gr0_tlb_int10:1;		/* RW */
-		unsigned long	gr0_tlb_int11:1;		/* RW */
-		unsigned long	gr0_tlb_int12:1;		/* RW */
-		unsigned long	gr0_tlb_int13:1;		/* RW */
-		unsigned long	gr0_tlb_int14:1;		/* RW */
-		unsigned long	gr0_tlb_int15:1;		/* RW */
-		unsigned long	gr0_tlb_int16:1;		/* RW */
-		unsigned long	gr0_tlb_int17:1;		/* RW */
-		unsigned long	gr0_tlb_int18:1;		/* RW */
-		unsigned long	gr0_tlb_int19:1;		/* RW */
-		unsigned long	gr0_tlb_int20:1;		/* RW */
-		unsigned long	gr0_tlb_int21:1;		/* RW */
-		unsigned long	gr0_tlb_int22:1;		/* RW */
-		unsigned long	gr0_tlb_int23:1;		/* RW */
-		unsigned long	gr1_tlb_int0:1;			/* RW */
-		unsigned long	gr1_tlb_int1:1;			/* RW */
-		unsigned long	gr1_tlb_int2:1;			/* RW */
-		unsigned long	gr1_tlb_int3:1;			/* RW */
-		unsigned long	gr1_tlb_int4:1;			/* RW */
-		unsigned long	gr1_tlb_int5:1;			/* RW */
-		unsigned long	gr1_tlb_int6:1;			/* RW */
-		unsigned long	gr1_tlb_int7:1;			/* RW */
-		unsigned long	gr1_tlb_int8:1;			/* RW */
-		unsigned long	gr1_tlb_int9:1;			/* RW */
-		unsigned long	gr1_tlb_int10:1;		/* RW */
-		unsigned long	gr1_tlb_int11:1;		/* RW */
-		unsigned long	gr1_tlb_int12:1;		/* RW */
-		unsigned long	gr1_tlb_int13:1;		/* RW */
-		unsigned long	gr1_tlb_int14:1;		/* RW */
-		unsigned long	gr1_tlb_int15:1;		/* RW */
-		unsigned long	gr1_tlb_int16:1;		/* RW */
-		unsigned long	gr1_tlb_int17:1;		/* RW */
-		unsigned long	gr1_tlb_int18:1;		/* RW */
-		unsigned long	gr1_tlb_int19:1;		/* RW */
-		unsigned long	gr1_tlb_int20:1;		/* RW */
-		unsigned long	gr1_tlb_int21:1;		/* RW */
-		unsigned long	gr1_tlb_int22:1;		/* RW */
-		unsigned long	gr1_tlb_int23:1;		/* RW */
+		core::ffi::c_ulong	profile_int:1;			/* RW */
+		core::ffi::c_ulong	bau_data:1;			/* RW */
+		core::ffi::c_ulong	proc_general:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int16:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int17:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int18:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int19:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int20:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int21:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int22:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int23:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int16:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int17:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int18:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int19:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int20:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int21:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int22:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int23:1;		/* RW */
 // 		unsigned long	rsvd_51_63:13;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_event_occurred1_s {
-		unsigned long	bau_data:1;			/* RW */
-		unsigned long	power_management_req:1;		/* RW */
-		unsigned long	message_accelerator_int0:1;	/* RW */
-		unsigned long	message_accelerator_int1:1;	/* RW */
-		unsigned long	message_accelerator_int2:1;	/* RW */
-		unsigned long	message_accelerator_int3:1;	/* RW */
-		unsigned long	message_accelerator_int4:1;	/* RW */
-		unsigned long	message_accelerator_int5:1;	/* RW */
-		unsigned long	message_accelerator_int6:1;	/* RW */
-		unsigned long	message_accelerator_int7:1;	/* RW */
-		unsigned long	message_accelerator_int8:1;	/* RW */
-		unsigned long	message_accelerator_int9:1;	/* RW */
-		unsigned long	message_accelerator_int10:1;	/* RW */
-		unsigned long	message_accelerator_int11:1;	/* RW */
-		unsigned long	message_accelerator_int12:1;	/* RW */
-		unsigned long	message_accelerator_int13:1;	/* RW */
-		unsigned long	message_accelerator_int14:1;	/* RW */
-		unsigned long	message_accelerator_int15:1;	/* RW */
-		unsigned long	gr0_tlb_int0:1;			/* RW */
-		unsigned long	gr0_tlb_int1:1;			/* RW */
-		unsigned long	gr0_tlb_int2:1;			/* RW */
-		unsigned long	gr0_tlb_int3:1;			/* RW */
-		unsigned long	gr0_tlb_int4:1;			/* RW */
-		unsigned long	gr0_tlb_int5:1;			/* RW */
-		unsigned long	gr0_tlb_int6:1;			/* RW */
-		unsigned long	gr0_tlb_int7:1;			/* RW */
-		unsigned long	gr0_tlb_int8:1;			/* RW */
-		unsigned long	gr0_tlb_int9:1;			/* RW */
-		unsigned long	gr0_tlb_int10:1;		/* RW */
-		unsigned long	gr0_tlb_int11:1;		/* RW */
-		unsigned long	gr0_tlb_int12:1;		/* RW */
-		unsigned long	gr0_tlb_int13:1;		/* RW */
-		unsigned long	gr0_tlb_int14:1;		/* RW */
-		unsigned long	gr0_tlb_int15:1;		/* RW */
-		unsigned long	gr1_tlb_int0:1;			/* RW */
-		unsigned long	gr1_tlb_int1:1;			/* RW */
-		unsigned long	gr1_tlb_int2:1;			/* RW */
-		unsigned long	gr1_tlb_int3:1;			/* RW */
-		unsigned long	gr1_tlb_int4:1;			/* RW */
-		unsigned long	gr1_tlb_int5:1;			/* RW */
-		unsigned long	gr1_tlb_int6:1;			/* RW */
-		unsigned long	gr1_tlb_int7:1;			/* RW */
-		unsigned long	gr1_tlb_int8:1;			/* RW */
-		unsigned long	gr1_tlb_int9:1;			/* RW */
-		unsigned long	gr1_tlb_int10:1;		/* RW */
-		unsigned long	gr1_tlb_int11:1;		/* RW */
-		unsigned long	gr1_tlb_int12:1;		/* RW */
-		unsigned long	gr1_tlb_int13:1;		/* RW */
-		unsigned long	gr1_tlb_int14:1;		/* RW */
-		unsigned long	gr1_tlb_int15:1;		/* RW */
-		unsigned long	rtc_interval_int:1;		/* RW */
-		unsigned long	bau_dashboard_int:1;		/* RW */
+		core::ffi::c_ulong	bau_data:1;			/* RW */
+		core::ffi::c_ulong	power_management_req:1;		/* RW */
+		core::ffi::c_ulong	message_accelerator_int0:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int1:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int2:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int3:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int4:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int5:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int6:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int7:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int8:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int9:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int10:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int11:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int12:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int13:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int14:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int15:1;	/* RW */
+		core::ffi::c_ulong	gr0_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	rtc_interval_int:1;		/* RW */
+		core::ffi::c_ulong	bau_dashboard_int:1;		/* RW */
 // 		unsigned long	rsvd_52_63:12;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_event_occurred1_s {
-		unsigned long	bau_data:1;			/* RW */
-		unsigned long	power_management_req:1;		/* RW */
-		unsigned long	message_accelerator_int0:1;	/* RW */
-		unsigned long	message_accelerator_int1:1;	/* RW */
-		unsigned long	message_accelerator_int2:1;	/* RW */
-		unsigned long	message_accelerator_int3:1;	/* RW */
-		unsigned long	message_accelerator_int4:1;	/* RW */
-		unsigned long	message_accelerator_int5:1;	/* RW */
-		unsigned long	message_accelerator_int6:1;	/* RW */
-		unsigned long	message_accelerator_int7:1;	/* RW */
-		unsigned long	message_accelerator_int8:1;	/* RW */
-		unsigned long	message_accelerator_int9:1;	/* RW */
-		unsigned long	message_accelerator_int10:1;	/* RW */
-		unsigned long	message_accelerator_int11:1;	/* RW */
-		unsigned long	message_accelerator_int12:1;	/* RW */
-		unsigned long	message_accelerator_int13:1;	/* RW */
-		unsigned long	message_accelerator_int14:1;	/* RW */
-		unsigned long	message_accelerator_int15:1;	/* RW */
-		unsigned long	gr0_tlb_int0:1;			/* RW */
-		unsigned long	gr0_tlb_int1:1;			/* RW */
-		unsigned long	gr0_tlb_int2:1;			/* RW */
-		unsigned long	gr0_tlb_int3:1;			/* RW */
-		unsigned long	gr0_tlb_int4:1;			/* RW */
-		unsigned long	gr0_tlb_int5:1;			/* RW */
-		unsigned long	gr0_tlb_int6:1;			/* RW */
-		unsigned long	gr0_tlb_int7:1;			/* RW */
-		unsigned long	gr0_tlb_int8:1;			/* RW */
-		unsigned long	gr0_tlb_int9:1;			/* RW */
-		unsigned long	gr0_tlb_int10:1;		/* RW */
-		unsigned long	gr0_tlb_int11:1;		/* RW */
-		unsigned long	gr0_tlb_int12:1;		/* RW */
-		unsigned long	gr0_tlb_int13:1;		/* RW */
-		unsigned long	gr0_tlb_int14:1;		/* RW */
-		unsigned long	gr0_tlb_int15:1;		/* RW */
-		unsigned long	gr1_tlb_int0:1;			/* RW */
-		unsigned long	gr1_tlb_int1:1;			/* RW */
-		unsigned long	gr1_tlb_int2:1;			/* RW */
-		unsigned long	gr1_tlb_int3:1;			/* RW */
-		unsigned long	gr1_tlb_int4:1;			/* RW */
-		unsigned long	gr1_tlb_int5:1;			/* RW */
-		unsigned long	gr1_tlb_int6:1;			/* RW */
-		unsigned long	gr1_tlb_int7:1;			/* RW */
-		unsigned long	gr1_tlb_int8:1;			/* RW */
-		unsigned long	gr1_tlb_int9:1;			/* RW */
-		unsigned long	gr1_tlb_int10:1;		/* RW */
-		unsigned long	gr1_tlb_int11:1;		/* RW */
-		unsigned long	gr1_tlb_int12:1;		/* RW */
-		unsigned long	gr1_tlb_int13:1;		/* RW */
-		unsigned long	gr1_tlb_int14:1;		/* RW */
-		unsigned long	gr1_tlb_int15:1;		/* RW */
-		unsigned long	rtc_interval_int:1;		/* RW */
-		unsigned long	bau_dashboard_int:1;		/* RW */
+		core::ffi::c_ulong	bau_data:1;			/* RW */
+		core::ffi::c_ulong	power_management_req:1;		/* RW */
+		core::ffi::c_ulong	message_accelerator_int0:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int1:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int2:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int3:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int4:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int5:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int6:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int7:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int8:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int9:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int10:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int11:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int12:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int13:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int14:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int15:1;	/* RW */
+		core::ffi::c_ulong	gr0_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	gr0_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	gr0_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int0:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int1:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int2:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int3:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int4:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int5:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int6:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int7:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int8:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int9:1;			/* RW */
+		core::ffi::c_ulong	gr1_tlb_int10:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int11:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int12:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int13:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int14:1;		/* RW */
+		core::ffi::c_ulong	gr1_tlb_int15:1;		/* RW */
+		core::ffi::c_ulong	rtc_interval_int:1;		/* RW */
+		core::ffi::c_ulong	bau_dashboard_int:1;		/* RW */
 // 		unsigned long	rsvd_52_63:12;
 // 	} s2;
 // };
@@ -1916,208 +1916,208 @@ pub const UV2H_EVENT_OCCURRED2_RTC_31_MASK: u64 = 0x0000000080000000UL;
 
 	/* UVYH common struct */
 // 	struct uvyh_event_occurred2_s {
-		unsigned long	rtc_interval_int:1;		/* RW */
-		unsigned long	bau_dashboard_int:1;		/* RW */
-		unsigned long	rtc_0:1;			/* RW */
-		unsigned long	rtc_1:1;			/* RW */
-		unsigned long	rtc_2:1;			/* RW */
-		unsigned long	rtc_3:1;			/* RW */
-		unsigned long	rtc_4:1;			/* RW */
-		unsigned long	rtc_5:1;			/* RW */
-		unsigned long	rtc_6:1;			/* RW */
-		unsigned long	rtc_7:1;			/* RW */
-		unsigned long	rtc_8:1;			/* RW */
-		unsigned long	rtc_9:1;			/* RW */
-		unsigned long	rtc_10:1;			/* RW */
-		unsigned long	rtc_11:1;			/* RW */
-		unsigned long	rtc_12:1;			/* RW */
-		unsigned long	rtc_13:1;			/* RW */
-		unsigned long	rtc_14:1;			/* RW */
-		unsigned long	rtc_15:1;			/* RW */
-		unsigned long	rtc_16:1;			/* RW */
-		unsigned long	rtc_17:1;			/* RW */
-		unsigned long	rtc_18:1;			/* RW */
-		unsigned long	rtc_19:1;			/* RW */
-		unsigned long	rtc_20:1;			/* RW */
-		unsigned long	rtc_21:1;			/* RW */
-		unsigned long	rtc_22:1;			/* RW */
-		unsigned long	rtc_23:1;			/* RW */
-		unsigned long	rtc_24:1;			/* RW */
-		unsigned long	rtc_25:1;			/* RW */
-		unsigned long	rtc_26:1;			/* RW */
-		unsigned long	rtc_27:1;			/* RW */
-		unsigned long	rtc_28:1;			/* RW */
-		unsigned long	rtc_29:1;			/* RW */
-		unsigned long	rtc_30:1;			/* RW */
-		unsigned long	rtc_31:1;			/* RW */
+		core::ffi::c_ulong	rtc_interval_int:1;		/* RW */
+		core::ffi::c_ulong	bau_dashboard_int:1;		/* RW */
+		core::ffi::c_ulong	rtc_0:1;			/* RW */
+		core::ffi::c_ulong	rtc_1:1;			/* RW */
+		core::ffi::c_ulong	rtc_2:1;			/* RW */
+		core::ffi::c_ulong	rtc_3:1;			/* RW */
+		core::ffi::c_ulong	rtc_4:1;			/* RW */
+		core::ffi::c_ulong	rtc_5:1;			/* RW */
+		core::ffi::c_ulong	rtc_6:1;			/* RW */
+		core::ffi::c_ulong	rtc_7:1;			/* RW */
+		core::ffi::c_ulong	rtc_8:1;			/* RW */
+		core::ffi::c_ulong	rtc_9:1;			/* RW */
+		core::ffi::c_ulong	rtc_10:1;			/* RW */
+		core::ffi::c_ulong	rtc_11:1;			/* RW */
+		core::ffi::c_ulong	rtc_12:1;			/* RW */
+		core::ffi::c_ulong	rtc_13:1;			/* RW */
+		core::ffi::c_ulong	rtc_14:1;			/* RW */
+		core::ffi::c_ulong	rtc_15:1;			/* RW */
+		core::ffi::c_ulong	rtc_16:1;			/* RW */
+		core::ffi::c_ulong	rtc_17:1;			/* RW */
+		core::ffi::c_ulong	rtc_18:1;			/* RW */
+		core::ffi::c_ulong	rtc_19:1;			/* RW */
+		core::ffi::c_ulong	rtc_20:1;			/* RW */
+		core::ffi::c_ulong	rtc_21:1;			/* RW */
+		core::ffi::c_ulong	rtc_22:1;			/* RW */
+		core::ffi::c_ulong	rtc_23:1;			/* RW */
+		core::ffi::c_ulong	rtc_24:1;			/* RW */
+		core::ffi::c_ulong	rtc_25:1;			/* RW */
+		core::ffi::c_ulong	rtc_26:1;			/* RW */
+		core::ffi::c_ulong	rtc_27:1;			/* RW */
+		core::ffi::c_ulong	rtc_28:1;			/* RW */
+		core::ffi::c_ulong	rtc_29:1;			/* RW */
+		core::ffi::c_ulong	rtc_30:1;			/* RW */
+		core::ffi::c_ulong	rtc_31:1;			/* RW */
 // 		unsigned long	rsvd_34_63:30;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_event_occurred2_s {
-		unsigned long	rtc_interval_int:1;		/* RW */
-		unsigned long	bau_dashboard_int:1;		/* RW */
-		unsigned long	rtc_0:1;			/* RW */
-		unsigned long	rtc_1:1;			/* RW */
-		unsigned long	rtc_2:1;			/* RW */
-		unsigned long	rtc_3:1;			/* RW */
-		unsigned long	rtc_4:1;			/* RW */
-		unsigned long	rtc_5:1;			/* RW */
-		unsigned long	rtc_6:1;			/* RW */
-		unsigned long	rtc_7:1;			/* RW */
-		unsigned long	rtc_8:1;			/* RW */
-		unsigned long	rtc_9:1;			/* RW */
-		unsigned long	rtc_10:1;			/* RW */
-		unsigned long	rtc_11:1;			/* RW */
-		unsigned long	rtc_12:1;			/* RW */
-		unsigned long	rtc_13:1;			/* RW */
-		unsigned long	rtc_14:1;			/* RW */
-		unsigned long	rtc_15:1;			/* RW */
-		unsigned long	rtc_16:1;			/* RW */
-		unsigned long	rtc_17:1;			/* RW */
-		unsigned long	rtc_18:1;			/* RW */
-		unsigned long	rtc_19:1;			/* RW */
-		unsigned long	rtc_20:1;			/* RW */
-		unsigned long	rtc_21:1;			/* RW */
-		unsigned long	rtc_22:1;			/* RW */
-		unsigned long	rtc_23:1;			/* RW */
-		unsigned long	rtc_24:1;			/* RW */
-		unsigned long	rtc_25:1;			/* RW */
-		unsigned long	rtc_26:1;			/* RW */
-		unsigned long	rtc_27:1;			/* RW */
-		unsigned long	rtc_28:1;			/* RW */
-		unsigned long	rtc_29:1;			/* RW */
-		unsigned long	rtc_30:1;			/* RW */
-		unsigned long	rtc_31:1;			/* RW */
+		core::ffi::c_ulong	rtc_interval_int:1;		/* RW */
+		core::ffi::c_ulong	bau_dashboard_int:1;		/* RW */
+		core::ffi::c_ulong	rtc_0:1;			/* RW */
+		core::ffi::c_ulong	rtc_1:1;			/* RW */
+		core::ffi::c_ulong	rtc_2:1;			/* RW */
+		core::ffi::c_ulong	rtc_3:1;			/* RW */
+		core::ffi::c_ulong	rtc_4:1;			/* RW */
+		core::ffi::c_ulong	rtc_5:1;			/* RW */
+		core::ffi::c_ulong	rtc_6:1;			/* RW */
+		core::ffi::c_ulong	rtc_7:1;			/* RW */
+		core::ffi::c_ulong	rtc_8:1;			/* RW */
+		core::ffi::c_ulong	rtc_9:1;			/* RW */
+		core::ffi::c_ulong	rtc_10:1;			/* RW */
+		core::ffi::c_ulong	rtc_11:1;			/* RW */
+		core::ffi::c_ulong	rtc_12:1;			/* RW */
+		core::ffi::c_ulong	rtc_13:1;			/* RW */
+		core::ffi::c_ulong	rtc_14:1;			/* RW */
+		core::ffi::c_ulong	rtc_15:1;			/* RW */
+		core::ffi::c_ulong	rtc_16:1;			/* RW */
+		core::ffi::c_ulong	rtc_17:1;			/* RW */
+		core::ffi::c_ulong	rtc_18:1;			/* RW */
+		core::ffi::c_ulong	rtc_19:1;			/* RW */
+		core::ffi::c_ulong	rtc_20:1;			/* RW */
+		core::ffi::c_ulong	rtc_21:1;			/* RW */
+		core::ffi::c_ulong	rtc_22:1;			/* RW */
+		core::ffi::c_ulong	rtc_23:1;			/* RW */
+		core::ffi::c_ulong	rtc_24:1;			/* RW */
+		core::ffi::c_ulong	rtc_25:1;			/* RW */
+		core::ffi::c_ulong	rtc_26:1;			/* RW */
+		core::ffi::c_ulong	rtc_27:1;			/* RW */
+		core::ffi::c_ulong	rtc_28:1;			/* RW */
+		core::ffi::c_ulong	rtc_29:1;			/* RW */
+		core::ffi::c_ulong	rtc_30:1;			/* RW */
+		core::ffi::c_ulong	rtc_31:1;			/* RW */
 // 		unsigned long	rsvd_34_63:30;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_event_occurred2_s {
-		unsigned long	message_accelerator_int0:1;	/* RW */
-		unsigned long	message_accelerator_int1:1;	/* RW */
-		unsigned long	message_accelerator_int2:1;	/* RW */
-		unsigned long	message_accelerator_int3:1;	/* RW */
-		unsigned long	message_accelerator_int4:1;	/* RW */
-		unsigned long	message_accelerator_int5:1;	/* RW */
-		unsigned long	message_accelerator_int6:1;	/* RW */
-		unsigned long	message_accelerator_int7:1;	/* RW */
-		unsigned long	message_accelerator_int8:1;	/* RW */
-		unsigned long	message_accelerator_int9:1;	/* RW */
-		unsigned long	message_accelerator_int10:1;	/* RW */
-		unsigned long	message_accelerator_int11:1;	/* RW */
-		unsigned long	message_accelerator_int12:1;	/* RW */
-		unsigned long	message_accelerator_int13:1;	/* RW */
-		unsigned long	message_accelerator_int14:1;	/* RW */
-		unsigned long	message_accelerator_int15:1;	/* RW */
-		unsigned long	rtc_interval_int:1;		/* RW */
-		unsigned long	bau_dashboard_int:1;		/* RW */
-		unsigned long	rtc_0:1;			/* RW */
-		unsigned long	rtc_1:1;			/* RW */
-		unsigned long	rtc_2:1;			/* RW */
-		unsigned long	rtc_3:1;			/* RW */
-		unsigned long	rtc_4:1;			/* RW */
-		unsigned long	rtc_5:1;			/* RW */
-		unsigned long	rtc_6:1;			/* RW */
-		unsigned long	rtc_7:1;			/* RW */
-		unsigned long	rtc_8:1;			/* RW */
-		unsigned long	rtc_9:1;			/* RW */
-		unsigned long	rtc_10:1;			/* RW */
-		unsigned long	rtc_11:1;			/* RW */
-		unsigned long	rtc_12:1;			/* RW */
-		unsigned long	rtc_13:1;			/* RW */
-		unsigned long	rtc_14:1;			/* RW */
-		unsigned long	rtc_15:1;			/* RW */
-		unsigned long	rtc_16:1;			/* RW */
-		unsigned long	rtc_17:1;			/* RW */
-		unsigned long	rtc_18:1;			/* RW */
-		unsigned long	rtc_19:1;			/* RW */
-		unsigned long	rtc_20:1;			/* RW */
-		unsigned long	rtc_21:1;			/* RW */
-		unsigned long	rtc_22:1;			/* RW */
-		unsigned long	rtc_23:1;			/* RW */
-		unsigned long	rtc_24:1;			/* RW */
-		unsigned long	rtc_25:1;			/* RW */
-		unsigned long	rtc_26:1;			/* RW */
-		unsigned long	rtc_27:1;			/* RW */
-		unsigned long	rtc_28:1;			/* RW */
-		unsigned long	rtc_29:1;			/* RW */
-		unsigned long	rtc_30:1;			/* RW */
-		unsigned long	rtc_31:1;			/* RW */
+		core::ffi::c_ulong	message_accelerator_int0:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int1:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int2:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int3:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int4:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int5:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int6:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int7:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int8:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int9:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int10:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int11:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int12:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int13:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int14:1;	/* RW */
+		core::ffi::c_ulong	message_accelerator_int15:1;	/* RW */
+		core::ffi::c_ulong	rtc_interval_int:1;		/* RW */
+		core::ffi::c_ulong	bau_dashboard_int:1;		/* RW */
+		core::ffi::c_ulong	rtc_0:1;			/* RW */
+		core::ffi::c_ulong	rtc_1:1;			/* RW */
+		core::ffi::c_ulong	rtc_2:1;			/* RW */
+		core::ffi::c_ulong	rtc_3:1;			/* RW */
+		core::ffi::c_ulong	rtc_4:1;			/* RW */
+		core::ffi::c_ulong	rtc_5:1;			/* RW */
+		core::ffi::c_ulong	rtc_6:1;			/* RW */
+		core::ffi::c_ulong	rtc_7:1;			/* RW */
+		core::ffi::c_ulong	rtc_8:1;			/* RW */
+		core::ffi::c_ulong	rtc_9:1;			/* RW */
+		core::ffi::c_ulong	rtc_10:1;			/* RW */
+		core::ffi::c_ulong	rtc_11:1;			/* RW */
+		core::ffi::c_ulong	rtc_12:1;			/* RW */
+		core::ffi::c_ulong	rtc_13:1;			/* RW */
+		core::ffi::c_ulong	rtc_14:1;			/* RW */
+		core::ffi::c_ulong	rtc_15:1;			/* RW */
+		core::ffi::c_ulong	rtc_16:1;			/* RW */
+		core::ffi::c_ulong	rtc_17:1;			/* RW */
+		core::ffi::c_ulong	rtc_18:1;			/* RW */
+		core::ffi::c_ulong	rtc_19:1;			/* RW */
+		core::ffi::c_ulong	rtc_20:1;			/* RW */
+		core::ffi::c_ulong	rtc_21:1;			/* RW */
+		core::ffi::c_ulong	rtc_22:1;			/* RW */
+		core::ffi::c_ulong	rtc_23:1;			/* RW */
+		core::ffi::c_ulong	rtc_24:1;			/* RW */
+		core::ffi::c_ulong	rtc_25:1;			/* RW */
+		core::ffi::c_ulong	rtc_26:1;			/* RW */
+		core::ffi::c_ulong	rtc_27:1;			/* RW */
+		core::ffi::c_ulong	rtc_28:1;			/* RW */
+		core::ffi::c_ulong	rtc_29:1;			/* RW */
+		core::ffi::c_ulong	rtc_30:1;			/* RW */
+		core::ffi::c_ulong	rtc_31:1;			/* RW */
 // 		unsigned long	rsvd_50_63:14;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_event_occurred2_s {
-		unsigned long	rtc_0:1;			/* RW */
-		unsigned long	rtc_1:1;			/* RW */
-		unsigned long	rtc_2:1;			/* RW */
-		unsigned long	rtc_3:1;			/* RW */
-		unsigned long	rtc_4:1;			/* RW */
-		unsigned long	rtc_5:1;			/* RW */
-		unsigned long	rtc_6:1;			/* RW */
-		unsigned long	rtc_7:1;			/* RW */
-		unsigned long	rtc_8:1;			/* RW */
-		unsigned long	rtc_9:1;			/* RW */
-		unsigned long	rtc_10:1;			/* RW */
-		unsigned long	rtc_11:1;			/* RW */
-		unsigned long	rtc_12:1;			/* RW */
-		unsigned long	rtc_13:1;			/* RW */
-		unsigned long	rtc_14:1;			/* RW */
-		unsigned long	rtc_15:1;			/* RW */
-		unsigned long	rtc_16:1;			/* RW */
-		unsigned long	rtc_17:1;			/* RW */
-		unsigned long	rtc_18:1;			/* RW */
-		unsigned long	rtc_19:1;			/* RW */
-		unsigned long	rtc_20:1;			/* RW */
-		unsigned long	rtc_21:1;			/* RW */
-		unsigned long	rtc_22:1;			/* RW */
-		unsigned long	rtc_23:1;			/* RW */
-		unsigned long	rtc_24:1;			/* RW */
-		unsigned long	rtc_25:1;			/* RW */
-		unsigned long	rtc_26:1;			/* RW */
-		unsigned long	rtc_27:1;			/* RW */
-		unsigned long	rtc_28:1;			/* RW */
-		unsigned long	rtc_29:1;			/* RW */
-		unsigned long	rtc_30:1;			/* RW */
-		unsigned long	rtc_31:1;			/* RW */
+		core::ffi::c_ulong	rtc_0:1;			/* RW */
+		core::ffi::c_ulong	rtc_1:1;			/* RW */
+		core::ffi::c_ulong	rtc_2:1;			/* RW */
+		core::ffi::c_ulong	rtc_3:1;			/* RW */
+		core::ffi::c_ulong	rtc_4:1;			/* RW */
+		core::ffi::c_ulong	rtc_5:1;			/* RW */
+		core::ffi::c_ulong	rtc_6:1;			/* RW */
+		core::ffi::c_ulong	rtc_7:1;			/* RW */
+		core::ffi::c_ulong	rtc_8:1;			/* RW */
+		core::ffi::c_ulong	rtc_9:1;			/* RW */
+		core::ffi::c_ulong	rtc_10:1;			/* RW */
+		core::ffi::c_ulong	rtc_11:1;			/* RW */
+		core::ffi::c_ulong	rtc_12:1;			/* RW */
+		core::ffi::c_ulong	rtc_13:1;			/* RW */
+		core::ffi::c_ulong	rtc_14:1;			/* RW */
+		core::ffi::c_ulong	rtc_15:1;			/* RW */
+		core::ffi::c_ulong	rtc_16:1;			/* RW */
+		core::ffi::c_ulong	rtc_17:1;			/* RW */
+		core::ffi::c_ulong	rtc_18:1;			/* RW */
+		core::ffi::c_ulong	rtc_19:1;			/* RW */
+		core::ffi::c_ulong	rtc_20:1;			/* RW */
+		core::ffi::c_ulong	rtc_21:1;			/* RW */
+		core::ffi::c_ulong	rtc_22:1;			/* RW */
+		core::ffi::c_ulong	rtc_23:1;			/* RW */
+		core::ffi::c_ulong	rtc_24:1;			/* RW */
+		core::ffi::c_ulong	rtc_25:1;			/* RW */
+		core::ffi::c_ulong	rtc_26:1;			/* RW */
+		core::ffi::c_ulong	rtc_27:1;			/* RW */
+		core::ffi::c_ulong	rtc_28:1;			/* RW */
+		core::ffi::c_ulong	rtc_29:1;			/* RW */
+		core::ffi::c_ulong	rtc_30:1;			/* RW */
+		core::ffi::c_ulong	rtc_31:1;			/* RW */
 // 		unsigned long	rsvd_32_63:32;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_event_occurred2_s {
-		unsigned long	rtc_0:1;			/* RW */
-		unsigned long	rtc_1:1;			/* RW */
-		unsigned long	rtc_2:1;			/* RW */
-		unsigned long	rtc_3:1;			/* RW */
-		unsigned long	rtc_4:1;			/* RW */
-		unsigned long	rtc_5:1;			/* RW */
-		unsigned long	rtc_6:1;			/* RW */
-		unsigned long	rtc_7:1;			/* RW */
-		unsigned long	rtc_8:1;			/* RW */
-		unsigned long	rtc_9:1;			/* RW */
-		unsigned long	rtc_10:1;			/* RW */
-		unsigned long	rtc_11:1;			/* RW */
-		unsigned long	rtc_12:1;			/* RW */
-		unsigned long	rtc_13:1;			/* RW */
-		unsigned long	rtc_14:1;			/* RW */
-		unsigned long	rtc_15:1;			/* RW */
-		unsigned long	rtc_16:1;			/* RW */
-		unsigned long	rtc_17:1;			/* RW */
-		unsigned long	rtc_18:1;			/* RW */
-		unsigned long	rtc_19:1;			/* RW */
-		unsigned long	rtc_20:1;			/* RW */
-		unsigned long	rtc_21:1;			/* RW */
-		unsigned long	rtc_22:1;			/* RW */
-		unsigned long	rtc_23:1;			/* RW */
-		unsigned long	rtc_24:1;			/* RW */
-		unsigned long	rtc_25:1;			/* RW */
-		unsigned long	rtc_26:1;			/* RW */
-		unsigned long	rtc_27:1;			/* RW */
-		unsigned long	rtc_28:1;			/* RW */
-		unsigned long	rtc_29:1;			/* RW */
-		unsigned long	rtc_30:1;			/* RW */
-		unsigned long	rtc_31:1;			/* RW */
+		core::ffi::c_ulong	rtc_0:1;			/* RW */
+		core::ffi::c_ulong	rtc_1:1;			/* RW */
+		core::ffi::c_ulong	rtc_2:1;			/* RW */
+		core::ffi::c_ulong	rtc_3:1;			/* RW */
+		core::ffi::c_ulong	rtc_4:1;			/* RW */
+		core::ffi::c_ulong	rtc_5:1;			/* RW */
+		core::ffi::c_ulong	rtc_6:1;			/* RW */
+		core::ffi::c_ulong	rtc_7:1;			/* RW */
+		core::ffi::c_ulong	rtc_8:1;			/* RW */
+		core::ffi::c_ulong	rtc_9:1;			/* RW */
+		core::ffi::c_ulong	rtc_10:1;			/* RW */
+		core::ffi::c_ulong	rtc_11:1;			/* RW */
+		core::ffi::c_ulong	rtc_12:1;			/* RW */
+		core::ffi::c_ulong	rtc_13:1;			/* RW */
+		core::ffi::c_ulong	rtc_14:1;			/* RW */
+		core::ffi::c_ulong	rtc_15:1;			/* RW */
+		core::ffi::c_ulong	rtc_16:1;			/* RW */
+		core::ffi::c_ulong	rtc_17:1;			/* RW */
+		core::ffi::c_ulong	rtc_18:1;			/* RW */
+		core::ffi::c_ulong	rtc_19:1;			/* RW */
+		core::ffi::c_ulong	rtc_20:1;			/* RW */
+		core::ffi::c_ulong	rtc_21:1;			/* RW */
+		core::ffi::c_ulong	rtc_22:1;			/* RW */
+		core::ffi::c_ulong	rtc_23:1;			/* RW */
+		core::ffi::c_ulong	rtc_24:1;			/* RW */
+		core::ffi::c_ulong	rtc_25:1;			/* RW */
+		core::ffi::c_ulong	rtc_26:1;			/* RW */
+		core::ffi::c_ulong	rtc_27:1;			/* RW */
+		core::ffi::c_ulong	rtc_28:1;			/* RW */
+		core::ffi::c_ulong	rtc_29:1;			/* RW */
+		core::ffi::c_ulong	rtc_30:1;			/* RW */
+		core::ffi::c_ulong	rtc_31:1;			/* RW */
 // 		unsigned long	rsvd_32_63:32;
 // 	} s2;
 // };
@@ -2143,31 +2143,31 @@ pub const UVH_EXTIO_INT0_BROADCAST_ENABLE_MASK: u64 = 0x0000000000000001UL;
 
 	/* UVH common struct */
 // 	struct uvh_extio_int0_broadcast_s {
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 		unsigned long	rsvd_1_63:63;
 // 	} s;
 
 	/* UV5 unique struct */
 // 	struct uv5h_extio_int0_broadcast_s {
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 		unsigned long	rsvd_1_63:63;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_extio_int0_broadcast_s {
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 		unsigned long	rsvd_1_63:63;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_extio_int0_broadcast_s {
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 		unsigned long	rsvd_1_63:63;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_extio_int0_broadcast_s {
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 		unsigned long	rsvd_1_63:63;
 // 	} s2;
 // };
@@ -2209,35 +2209,35 @@ pub const UV2H_GR0_GAM_GR_CONFIG_N_GR_MASK: u64 = 0x000000000000000fUL;
 	/* UVYH common struct */
 // 	struct uvyh_gr0_gam_gr_config_s {
 // 		unsigned long	rsvd_0_9:10;
-		unsigned long	subspace:1;			/* RW */
+		core::ffi::c_ulong	subspace:1;			/* RW */
 // 		unsigned long	rsvd_11_63:53;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_gr0_gam_gr_config_s {
 // 		unsigned long	rsvd_0_9:10;
-		unsigned long	subspace:1;			/* RW */
+		core::ffi::c_ulong	subspace:1;			/* RW */
 // 		unsigned long	rsvd_11_63:53;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_gr0_gam_gr_config_s {
 // 		unsigned long	rsvd_0_9:10;
-		unsigned long	subspace:1;			/* RW */
+		core::ffi::c_ulong	subspace:1;			/* RW */
 // 		unsigned long	rsvd_11_63:53;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_gr0_gam_gr_config_s {
-		unsigned long	m_skt:6;			/* RW */
-		unsigned long	undef_6_9:4;			/* Undefined */
-		unsigned long	subspace:1;			/* RW */
+		core::ffi::c_ulong	m_skt:6;			/* RW */
+		core::ffi::c_ulong	undef_6_9:4;			/* Undefined */
+		core::ffi::c_ulong	subspace:1;			/* RW */
 // 		unsigned long	reserved:53;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_gr0_gam_gr_config_s {
-		unsigned long	n_gr:4;				/* RW */
+		core::ffi::c_ulong	n_gr:4;				/* RW */
 // 		unsigned long	reserved:60;
 // 	} s2;
 // };
@@ -2276,72 +2276,72 @@ pub const UVXH_GR0_TLB_INT0_CONFIG_APIC_ID_MASK: u64 = 0xffffffff00000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_gr0_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_gr0_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_gr0_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_gr0_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_gr0_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s2;
 // };
 
@@ -2379,72 +2379,72 @@ pub const UVXH_GR0_TLB_INT1_CONFIG_APIC_ID_MASK: u64 = 0xffffffff00000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_gr0_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_gr0_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_gr0_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_gr0_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_gr0_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s2;
 // };
 
@@ -2482,72 +2482,72 @@ pub const UVXH_GR1_TLB_INT0_CONFIG_APIC_ID_MASK: u64 = 0xffffffff00000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_gr1_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_gr1_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_gr1_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_gr1_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_gr1_tlb_int0_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s2;
 // };
 
@@ -2585,72 +2585,72 @@ pub const UVXH_GR1_TLB_INT1_CONFIG_APIC_ID_MASK: u64 = 0xffffffff00000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_gr1_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_gr1_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_gr1_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_gr1_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_gr1_tlb_int1_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s2;
 // };
 
@@ -2669,31 +2669,31 @@ pub const UVH_INT_CMPB_REAL_TIME_CMPB_MASK: u64 = 0x00ffffffffffffffUL;
 
 	/* UVH common struct */
 // 	struct uvh_int_cmpb_s {
-		unsigned long	real_time_cmpb:56;		/* RW */
+		core::ffi::c_ulong	real_time_cmpb:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s;
 
 	/* UV5 unique struct */
 // 	struct uv5h_int_cmpb_s {
-		unsigned long	real_time_cmpb:56;		/* RW */
+		core::ffi::c_ulong	real_time_cmpb:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_int_cmpb_s {
-		unsigned long	real_time_cmpb:56;		/* RW */
+		core::ffi::c_ulong	real_time_cmpb:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_int_cmpb_s {
-		unsigned long	real_time_cmpb:56;		/* RW */
+		core::ffi::c_ulong	real_time_cmpb:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_int_cmpb_s {
-		unsigned long	real_time_cmpb:56;		/* RW */
+		core::ffi::c_ulong	real_time_cmpb:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s2;
 // };
@@ -2721,57 +2721,57 @@ pub const UVH_IPI_INT_SEND_MASK: u64 = 0x8000000000000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_ipi_int_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	delivery_mode:3;		/* RW */
-		unsigned long	destmode:1;			/* RW */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	delivery_mode:3;		/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
 // 		unsigned long	rsvd_12_15:4;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 		unsigned long	rsvd_48_62:15;
-		unsigned long	send:1;				/* WP */
+		core::ffi::c_ulong	send:1;				/* WP */
 // 	} s;
 
 	/* UV5 unique struct */
 // 	struct uv5h_ipi_int_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	delivery_mode:3;		/* RW */
-		unsigned long	destmode:1;			/* RW */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	delivery_mode:3;		/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
 // 		unsigned long	rsvd_12_15:4;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 		unsigned long	rsvd_48_62:15;
-		unsigned long	send:1;				/* WP */
+		core::ffi::c_ulong	send:1;				/* WP */
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_ipi_int_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	delivery_mode:3;		/* RW */
-		unsigned long	destmode:1;			/* RW */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	delivery_mode:3;		/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
 // 		unsigned long	rsvd_12_15:4;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 		unsigned long	rsvd_48_62:15;
-		unsigned long	send:1;				/* WP */
+		core::ffi::c_ulong	send:1;				/* WP */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_ipi_int_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	delivery_mode:3;		/* RW */
-		unsigned long	destmode:1;			/* RW */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	delivery_mode:3;		/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
 // 		unsigned long	rsvd_12_15:4;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 		unsigned long	rsvd_48_62:15;
-		unsigned long	send:1;				/* WP */
+		core::ffi::c_ulong	send:1;				/* WP */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_ipi_int_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	delivery_mode:3;		/* RW */
-		unsigned long	destmode:1;			/* RW */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	delivery_mode:3;		/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
 // 		unsigned long	rsvd_12_15:4;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 		unsigned long	rsvd_48_62:15;
-		unsigned long	send:1;				/* WP */
+		core::ffi::c_ulong	send:1;				/* WP */
 // 	} s2;
 // };
 
@@ -2820,90 +2820,90 @@ pub const UV3H_NODE_ID_RESERVED_2_MASK: u64 = 0x0002000000000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
 // 		unsigned long	rsvd_32_63:32;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
-		unsigned long	node_id:15;			/* RW */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
+		core::ffi::c_ulong	node_id:15;			/* RW */
 // 		unsigned long	rsvd_47_49:3;
-		unsigned long	nodes_per_bit:7;		/* RO */
-		unsigned long	ni_port:5;			/* RO */
+		core::ffi::c_ulong	nodes_per_bit:7;		/* RO */
+		core::ffi::c_ulong	ni_port:5;			/* RO */
 // 		unsigned long	rsvd_62_63:2;
 // 	} sx;
 
 	/* UVYH common struct */
 // 	struct uvyh_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
-		unsigned long	node_id:7;			/* RW */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
+		core::ffi::c_ulong	node_id:7;			/* RW */
 // 		unsigned long	rsvd_39_56:18;
-		unsigned long	ni_port:6;			/* RO */
+		core::ffi::c_ulong	ni_port:6;			/* RO */
 // 		unsigned long	rsvd_63:1;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
-		unsigned long	node_id:7;			/* RW */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
+		core::ffi::c_ulong	node_id:7;			/* RW */
 // 		unsigned long	rsvd_39_56:18;
-		unsigned long	ni_port:6;			/* RO */
+		core::ffi::c_ulong	ni_port:6;			/* RO */
 // 		unsigned long	rsvd_63:1;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
-		unsigned long	node_id:15;			/* RW */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
+		core::ffi::c_ulong	node_id:15;			/* RW */
 // 		unsigned long	rsvd_47:1;
-		unsigned long	router_select:1;		/* RO */
+		core::ffi::c_ulong	router_select:1;		/* RO */
 // 		unsigned long	rsvd_49:1;
-		unsigned long	nodes_per_bit:7;		/* RO */
-		unsigned long	ni_port:5;			/* RO */
+		core::ffi::c_ulong	nodes_per_bit:7;		/* RO */
+		core::ffi::c_ulong	ni_port:5;			/* RO */
 // 		unsigned long	rsvd_62_63:2;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
-		unsigned long	node_id:15;			/* RW */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
+		core::ffi::c_ulong	node_id:15;			/* RW */
 // 		unsigned long	rsvd_47:1;
-		unsigned long	router_select:1;		/* RO */
+		core::ffi::c_ulong	router_select:1;		/* RO */
 // 		unsigned long	rsvd_49:1;
-		unsigned long	nodes_per_bit:7;		/* RO */
-		unsigned long	ni_port:5;			/* RO */
+		core::ffi::c_ulong	nodes_per_bit:7;		/* RO */
+		core::ffi::c_ulong	ni_port:5;			/* RO */
 // 		unsigned long	rsvd_62_63:2;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_node_id_s {
-		unsigned long	force1:1;			/* RO */
-		unsigned long	manufacturer:11;		/* RO */
-		unsigned long	part_number:16;			/* RO */
-		unsigned long	revision:4;			/* RO */
-		unsigned long	node_id:15;			/* RW */
+		core::ffi::c_ulong	force1:1;			/* RO */
+		core::ffi::c_ulong	manufacturer:11;		/* RO */
+		core::ffi::c_ulong	part_number:16;			/* RO */
+		core::ffi::c_ulong	revision:4;			/* RO */
+		core::ffi::c_ulong	node_id:15;			/* RW */
 // 		unsigned long	rsvd_47_49:3;
-		unsigned long	nodes_per_bit:7;		/* RO */
-		unsigned long	ni_port:5;			/* RO */
+		core::ffi::c_ulong	nodes_per_bit:7;		/* RO */
+		core::ffi::c_ulong	ni_port:5;			/* RO */
 // 		unsigned long	rsvd_62_63:2;
 // 	} s2;
 // };
@@ -2926,17 +2926,17 @@ pub const UVYH_NODE_PRESENT_0_NODES_MASK: u64 = 0xffffffffffffffffUL;
 
 	/* UVH common struct */
 // 	struct uvh_node_present_0_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_node_present_0_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_node_present_0_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s5;
 // };
 
@@ -2958,17 +2958,17 @@ pub const UVYH_NODE_PRESENT_1_NODES_MASK: u64 = 0xffffffffffffffffUL;
 
 	/* UVH common struct */
 // 	struct uvh_node_present_1_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_node_present_1_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_node_present_1_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s5;
 // };
 
@@ -2998,27 +2998,27 @@ pub const UVXH_NODE_PRESENT_TABLE_NODES_MASK: u64 = 0xffffffffffffffffUL;
 
 	/* UVH common struct */
 // 	struct uvh_node_present_table_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_node_present_table_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_node_present_table_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_node_present_table_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_node_present_table_s {
-		unsigned long	nodes:64;			/* RW */
+		core::ffi::c_ulong	nodes:64;			/* RW */
 // 	} s2;
 // };
 
@@ -3044,34 +3044,34 @@ pub const UVYH_RH10_GAM_ADDR_MAP_CONFIG_MK_TME_KEYID_BITS_MASK: u64 = 0x00000000
 
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_addr_map_config_s {
-		unsigned long	undef_0_5:6;			/* Undefined */
-		unsigned long	n_skt:3;			/* RW */
-		unsigned long	undef_9_11:3;			/* Undefined */
-		unsigned long	ls_enable:1;			/* RW */
-		unsigned long	undef_13_15:3;			/* Undefined */
-		unsigned long	mk_tme_keyid_bits:4;		/* RW */
+		core::ffi::c_ulong	undef_0_5:6;			/* Undefined */
+		core::ffi::c_ulong	n_skt:3;			/* RW */
+		core::ffi::c_ulong	undef_9_11:3;			/* Undefined */
+		core::ffi::c_ulong	ls_enable:1;			/* RW */
+		core::ffi::c_ulong	undef_13_15:3;			/* Undefined */
+		core::ffi::c_ulong	mk_tme_keyid_bits:4;		/* RW */
 // 		unsigned long	rsvd_20_63:44;
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_addr_map_config_s {
-		unsigned long	undef_0_5:6;			/* Undefined */
-		unsigned long	n_skt:3;			/* RW */
-		unsigned long	undef_9_11:3;			/* Undefined */
-		unsigned long	ls_enable:1;			/* RW */
-		unsigned long	undef_13_15:3;			/* Undefined */
-		unsigned long	mk_tme_keyid_bits:4;		/* RW */
+		core::ffi::c_ulong	undef_0_5:6;			/* Undefined */
+		core::ffi::c_ulong	n_skt:3;			/* RW */
+		core::ffi::c_ulong	undef_9_11:3;			/* Undefined */
+		core::ffi::c_ulong	ls_enable:1;			/* RW */
+		core::ffi::c_ulong	undef_13_15:3;			/* Undefined */
+		core::ffi::c_ulong	mk_tme_keyid_bits:4;		/* RW */
 // 		unsigned long	rsvd_20_63:44;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_addr_map_config_s {
-		unsigned long	undef_0_5:6;			/* Undefined */
-		unsigned long	n_skt:3;			/* RW */
-		unsigned long	undef_9_11:3;			/* Undefined */
-		unsigned long	ls_enable:1;			/* RW */
-		unsigned long	undef_13_15:3;			/* Undefined */
-		unsigned long	mk_tme_keyid_bits:4;		/* RW */
+		core::ffi::c_ulong	undef_0_5:6;			/* Undefined */
+		core::ffi::c_ulong	n_skt:3;			/* RW */
+		core::ffi::c_ulong	undef_9_11:3;			/* Undefined */
+		core::ffi::c_ulong	ls_enable:1;			/* RW */
+		core::ffi::c_ulong	undef_13_15:3;			/* Undefined */
+		core::ffi::c_ulong	mk_tme_keyid_bits:4;		/* RW */
 // 	} s5;
 // };
 
@@ -3103,29 +3103,29 @@ pub const UVYH_RH10_GAM_GRU_OVERLAY_CONFIG_ENABLE_MASK: u64 = 0x8000000000000000
 
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_gru_overlay_config_s {
-		unsigned long	undef_0_24:25;			/* Undefined */
-		unsigned long	base:27;			/* RW */
-		unsigned long	n_gru:3;			/* RW */
-		unsigned long	undef_55_62:8;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_0_24:25;			/* Undefined */
+		core::ffi::c_ulong	base:27;			/* RW */
+		core::ffi::c_ulong	n_gru:3;			/* RW */
+		core::ffi::c_ulong	undef_55_62:8;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_gru_overlay_config_s {
-		unsigned long	undef_0_24:25;			/* Undefined */
-		unsigned long	base:27;			/* RW */
-		unsigned long	n_gru:3;			/* RW */
-		unsigned long	undef_55_62:8;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_0_24:25;			/* Undefined */
+		core::ffi::c_ulong	base:27;			/* RW */
+		core::ffi::c_ulong	n_gru:3;			/* RW */
+		core::ffi::c_ulong	undef_55_62:8;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_gru_overlay_config_s {
-		unsigned long	undef_0_24:25;			/* Undefined */
-		unsigned long	base:27;			/* RW */
-		unsigned long	n_gru:3;			/* RW */
-		unsigned long	undef_55_62:8;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_0_24:25;			/* Undefined */
+		core::ffi::c_ulong	base:27;			/* RW */
+		core::ffi::c_ulong	n_gru:3;			/* RW */
+		core::ffi::c_ulong	undef_55_62:8;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s5;
 // };
 
@@ -3158,31 +3158,31 @@ pub const UVYH_RH10_GAM_MMIOH_OVERLAY_CONFIG0_ENABLE_MASK: u64 = 0x8000000000000
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s5;
 // };
 
@@ -3215,31 +3215,31 @@ pub const UVYH_RH10_GAM_MMIOH_OVERLAY_CONFIG1_ENABLE_MASK: u64 = 0x8000000000000
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s5;
 // };
 
@@ -3265,19 +3265,19 @@ pub const UVYH_RH10_GAM_MMIOH_REDIRECT_CONFIG0_NASID_MASK: u64 = 0x0000000000000
 
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:7;			/* RW */
+		core::ffi::c_ulong	nasid:7;			/* RW */
 // 		unsigned long	rsvd_7_63:57;
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:7;			/* RW */
+		core::ffi::c_ulong	nasid:7;			/* RW */
 // 		unsigned long	rsvd_7_63:57;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:7;			/* RW */
+		core::ffi::c_ulong	nasid:7;			/* RW */
 // 		unsigned long	rsvd_7_63:57;
 // 	} s5;
 // };
@@ -3304,19 +3304,19 @@ pub const UVYH_RH10_GAM_MMIOH_REDIRECT_CONFIG1_NASID_MASK: u64 = 0x0000000000000
 
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:7;			/* RW */
+		core::ffi::c_ulong	nasid:7;			/* RW */
 // 		unsigned long	rsvd_7_63:57;
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:7;			/* RW */
+		core::ffi::c_ulong	nasid:7;			/* RW */
 // 		unsigned long	rsvd_7_63:57;
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:7;			/* RW */
+		core::ffi::c_ulong	nasid:7;			/* RW */
 // 		unsigned long	rsvd_7_63:57;
 // 	} s5;
 // };
@@ -3347,26 +3347,26 @@ pub const UVYH_RH10_GAM_MMR_OVERLAY_CONFIG_ENABLE_MASK: u64 = 0x8000000000000000
 
 	/* UVH common struct */
 // 	struct uvh_rh10_gam_mmr_overlay_config_s {
-		unsigned long	undef_0_24:25;			/* Undefined */
-		unsigned long	base:27;			/* RW */
-		unsigned long	undef_52_62:11;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_0_24:25;			/* Undefined */
+		core::ffi::c_ulong	base:27;			/* RW */
+		core::ffi::c_ulong	undef_52_62:11;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVYH common struct */
 // 	struct uvyh_rh10_gam_mmr_overlay_config_s {
-		unsigned long	undef_0_24:25;			/* Undefined */
-		unsigned long	base:27;			/* RW */
-		unsigned long	undef_52_62:11;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_0_24:25;			/* Undefined */
+		core::ffi::c_ulong	base:27;			/* RW */
+		core::ffi::c_ulong	undef_52_62:11;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rh10_gam_mmr_overlay_config_s {
-		unsigned long	undef_0_24:25;			/* Undefined */
-		unsigned long	base:27;			/* RW */
-		unsigned long	undef_52_62:11;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_0_24:25;			/* Undefined */
+		core::ffi::c_ulong	base:27;			/* RW */
+		core::ffi::c_ulong	undef_52_62:11;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s5;
 // };
 
@@ -3399,35 +3399,35 @@ pub const UV2H_RH_GAM_ADDR_MAP_CONFIG_M_SKT_MASK: u64 = 0x000000000000003fUL;
 	/* UVH common struct */
 // 	struct uvh_rh_gam_addr_map_config_s {
 // 		unsigned long	rsvd_0_5:6;
-		unsigned long	n_skt:4;			/* RW */
+		core::ffi::c_ulong	n_skt:4;			/* RW */
 // 		unsigned long	rsvd_10_63:54;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_addr_map_config_s {
 // 		unsigned long	rsvd_0_5:6;
-		unsigned long	n_skt:4;			/* RW */
+		core::ffi::c_ulong	n_skt:4;			/* RW */
 // 		unsigned long	rsvd_10_63:54;
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_addr_map_config_s {
 // 		unsigned long	rsvd_0_5:6;
-		unsigned long	n_skt:4;			/* RW */
+		core::ffi::c_ulong	n_skt:4;			/* RW */
 // 		unsigned long	rsvd_10_63:54;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_addr_map_config_s {
-		unsigned long	m_skt:6;			/* RW */
-		unsigned long	n_skt:4;			/* RW */
+		core::ffi::c_ulong	m_skt:6;			/* RW */
+		core::ffi::c_ulong	n_skt:4;			/* RW */
 // 		unsigned long	rsvd_10_63:54;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_addr_map_config_s {
-		unsigned long	m_skt:6;			/* RW */
-		unsigned long	n_skt:4;			/* RW */
+		core::ffi::c_ulong	m_skt:6;			/* RW */
+		core::ffi::c_ulong	n_skt:4;			/* RW */
 // 		unsigned long	rsvd_10_63:54;
 // 	} s2;
 // };
@@ -3457,51 +3457,51 @@ pub const UVXH_RH_GAM_ALIAS_0_OVERLAY_CONFIG_ENABLE_MASK: u64 = 0x80000000000000
 	/* UVH common struct */
 // 	struct uvh_rh_gam_alias_0_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_alias_0_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_alias_0_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_alias_0_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_alias_0_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s2;
 // };
 
@@ -3526,35 +3526,35 @@ pub const UVXH_RH_GAM_ALIAS_0_REDIRECT_CONFIG_DEST_BASE_MASK: u64 = 0x00003fffff
 	/* UVH common struct */
 // 	struct uvh_rh_gam_alias_0_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_alias_0_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_alias_0_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_alias_0_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_alias_0_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s2;
 // };
@@ -3584,51 +3584,51 @@ pub const UVXH_RH_GAM_ALIAS_1_OVERLAY_CONFIG_ENABLE_MASK: u64 = 0x80000000000000
 	/* UVH common struct */
 // 	struct uvh_rh_gam_alias_1_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_alias_1_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_alias_1_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_alias_1_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_alias_1_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s2;
 // };
 
@@ -3653,35 +3653,35 @@ pub const UVXH_RH_GAM_ALIAS_1_REDIRECT_CONFIG_DEST_BASE_MASK: u64 = 0x00003fffff
 	/* UVH common struct */
 // 	struct uvh_rh_gam_alias_1_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_alias_1_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_alias_1_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_alias_1_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_alias_1_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s2;
 // };
@@ -3711,51 +3711,51 @@ pub const UVXH_RH_GAM_ALIAS_2_OVERLAY_CONFIG_ENABLE_MASK: u64 = 0x80000000000000
 	/* UVH common struct */
 // 	struct uvh_rh_gam_alias_2_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_alias_2_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_alias_2_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_alias_2_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_alias_2_overlay_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	base:8;				/* RW */
+		core::ffi::c_ulong	base:8;				/* RW */
 // 		unsigned long	rsvd_32_47:16;
-		unsigned long	m_alias:5;			/* RW */
+		core::ffi::c_ulong	m_alias:5;			/* RW */
 // 		unsigned long	rsvd_53_62:10;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s2;
 // };
 
@@ -3780,35 +3780,35 @@ pub const UVXH_RH_GAM_ALIAS_2_REDIRECT_CONFIG_DEST_BASE_MASK: u64 = 0x00003fffff
 	/* UVH common struct */
 // 	struct uvh_rh_gam_alias_2_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_alias_2_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_alias_2_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_alias_2_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_alias_2_redirect_config_s {
 // 		unsigned long	rsvd_0_23:24;
-		unsigned long	dest_base:22;			/* RW */
+		core::ffi::c_ulong	dest_base:22;			/* RW */
 // 		unsigned long	rsvd_46_63:18;
 // 	} s2;
 // };
@@ -3866,60 +3866,60 @@ pub const UV2H_RH_GAM_GRU_OVERLAY_CONFIG_BASE_MASK: u64 = 0x00003ffff0000000UL;
 // 	struct uvh_rh_gam_gru_overlay_config_s {
 // 		unsigned long	rsvd_0_45:46;
 // 		unsigned long	rsvd_46_51:6;
-		unsigned long	n_gru:4;			/* RW */
+		core::ffi::c_ulong	n_gru:4;			/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_gru_overlay_config_s {
 // 		unsigned long	rsvd_0_45:46;
 // 		unsigned long	rsvd_46_51:6;
-		unsigned long	n_gru:4;			/* RW */
+		core::ffi::c_ulong	n_gru:4;			/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4A unique struct */
 // 	struct uv4ah_rh_gam_gru_overlay_config_s {
 // 		unsigned long	rsvd_0_24:25;
-		unsigned long	undef_25:1;			/* Undefined */
-		unsigned long	base:26;			/* RW */
-		unsigned long	n_gru:4;			/* RW */
+		core::ffi::c_ulong	undef_25:1;			/* Undefined */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	n_gru:4;			/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4a;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_gru_overlay_config_s {
 // 		unsigned long	rsvd_0_24:25;
-		unsigned long	undef_25:1;			/* Undefined */
-		unsigned long	base:20;			/* RW */
+		core::ffi::c_ulong	undef_25:1;			/* Undefined */
+		core::ffi::c_ulong	base:20;			/* RW */
 // 		unsigned long	rsvd_46_51:6;
-		unsigned long	n_gru:4;			/* RW */
+		core::ffi::c_ulong	n_gru:4;			/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_gru_overlay_config_s {
 // 		unsigned long	rsvd_0_27:28;
-		unsigned long	base:18;			/* RW */
+		core::ffi::c_ulong	base:18;			/* RW */
 // 		unsigned long	rsvd_46_51:6;
-		unsigned long	n_gru:4;			/* RW */
+		core::ffi::c_ulong	n_gru:4;			/* RW */
 // 		unsigned long	rsvd_56_61:6;
-		unsigned long	mode:1;				/* RW */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	mode:1;				/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_gru_overlay_config_s {
 // 		unsigned long	rsvd_0_27:28;
-		unsigned long	base:18;			/* RW */
+		core::ffi::c_ulong	base:18;			/* RW */
 // 		unsigned long	rsvd_46_51:6;
-		unsigned long	n_gru:4;			/* RW */
+		core::ffi::c_ulong	n_gru:4;			/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s2;
 // };
 
@@ -3952,31 +3952,31 @@ pub const UV2H_RH_GAM_MMIOH_OVERLAY_CONFIG_ENABLE_MASK: u64 = 0x8000000000000000
 	/* UVH common struct */
 // 	struct uvh_rh_gam_mmioh_overlay_config_s {
 // 		unsigned long	rsvd_0_26:27;
-		unsigned long	base:19;			/* RW */
-		unsigned long	m_io:6;				/* RW */
-		unsigned long	n_io:4;				/* RW */
+		core::ffi::c_ulong	base:19;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
+		core::ffi::c_ulong	n_io:4;				/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_mmioh_overlay_config_s {
 // 		unsigned long	rsvd_0_26:27;
-		unsigned long	base:19;			/* RW */
-		unsigned long	m_io:6;				/* RW */
-		unsigned long	n_io:4;				/* RW */
+		core::ffi::c_ulong	base:19;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
+		core::ffi::c_ulong	n_io:4;				/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_mmioh_overlay_config_s {
 // 		unsigned long	rsvd_0_26:27;
-		unsigned long	base:19;			/* RW */
-		unsigned long	m_io:6;				/* RW */
-		unsigned long	n_io:4;				/* RW */
+		core::ffi::c_ulong	base:19;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
+		core::ffi::c_ulong	n_io:4;				/* RW */
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s2;
 // };
 
@@ -4028,51 +4028,51 @@ pub const UV3H_RH_GAM_MMIOH_OVERLAY_CONFIG0_ENABLE_MASK: u64 = 0x800000000000000
 	/* UVH common struct */
 // 	struct uvh_rh_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4A unique struct */
 // 	struct uv4ah_rh_gam_mmioh_overlay_config0_mmr_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4a;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_mmioh_overlay_config0_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 // };
 
@@ -4124,51 +4124,51 @@ pub const UV3H_RH_GAM_MMIOH_OVERLAY_CONFIG1_ENABLE_MASK: u64 = 0x800000000000000
 	/* UVH common struct */
 // 	struct uvh_rh_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4A unique struct */
 // 	struct uv4ah_rh_gam_mmioh_overlay_config1_mmr_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:26;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:26;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
-		unsigned long	undef_62:1;			/* Undefined */
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	undef_62:1;			/* Undefined */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4a;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_mmioh_overlay_config1_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
-		unsigned long	m_io:6;				/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
+		core::ffi::c_ulong	m_io:6;				/* RW */
 // 		unsigned long	n_io:4;
 // 		unsigned long	rsvd_56_62:7;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 // };
 
@@ -4210,30 +4210,30 @@ pub const UV3H_RH_GAM_MMIOH_REDIRECT_CONFIG0_NASID_MASK: u64 = 0x0000000000007ff
 
 	/* UVH common struct */
 // 	struct uvh_rh_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} sx;
 
 // 	struct uv4ah_rh_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:12;			/* RW */
+		core::ffi::c_ulong	nasid:12;			/* RW */
 // 		unsigned long	rsvd_12_63:52;
 // 	} s4a;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_mmioh_redirect_config0_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} s3;
 // };
@@ -4276,30 +4276,30 @@ pub const UV3H_RH_GAM_MMIOH_REDIRECT_CONFIG1_NASID_MASK: u64 = 0x0000000000007ff
 
 	/* UVH common struct */
 // 	struct uvh_rh_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} sx;
 
 // 	struct uv4ah_rh_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:12;			/* RW */
+		core::ffi::c_ulong	nasid:12;			/* RW */
 // 		unsigned long	rsvd_12_63:52;
 // 	} s4a;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_mmioh_redirect_config1_s {
-		unsigned long	nasid:15;			/* RW */
+		core::ffi::c_ulong	nasid:15;			/* RW */
 // 		unsigned long	rsvd_15_63:49;
 // 	} s3;
 // };
@@ -4348,41 +4348,41 @@ pub const UV4AH_RH_GAM_GRU_OVERLAY_CONFIG_BASE_MASK: u64 = 0x000ffffffc000000UL;
 	/* UVH common struct */
 // 	struct uvh_rh_gam_mmr_overlay_config_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
 // 		unsigned long	rsvd_46_62:17;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_rh_gam_mmr_overlay_config_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
 // 		unsigned long	rsvd_46_62:17;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} sx;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rh_gam_mmr_overlay_config_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
 // 		unsigned long	rsvd_46_62:17;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rh_gam_mmr_overlay_config_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
 // 		unsigned long	rsvd_46_62:17;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rh_gam_mmr_overlay_config_s {
 // 		unsigned long	rsvd_0_25:26;
-		unsigned long	base:20;			/* RW */
+		core::ffi::c_ulong	base:20;			/* RW */
 // 		unsigned long	rsvd_46_62:17;
-		unsigned long	enable:1;			/* RW */
+		core::ffi::c_ulong	enable:1;			/* RW */
 // 	} s2;
 // };
 
@@ -4406,31 +4406,31 @@ pub const UVH_RTC_REAL_TIME_CLOCK_MASK: u64 = 0x00ffffffffffffffUL;
 
 	/* UVH common struct */
 // 	struct uvh_rtc_s {
-		unsigned long	real_time_clock:56;		/* RW */
+		core::ffi::c_ulong	real_time_clock:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rtc_s {
-		unsigned long	real_time_clock:56;		/* RW */
+		core::ffi::c_ulong	real_time_clock:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rtc_s {
-		unsigned long	real_time_clock:56;		/* RW */
+		core::ffi::c_ulong	real_time_clock:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rtc_s {
-		unsigned long	real_time_clock:56;		/* RW */
+		core::ffi::c_ulong	real_time_clock:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rtc_s {
-		unsigned long	real_time_clock:56;		/* RW */
+		core::ffi::c_ulong	real_time_clock:56;		/* RW */
 // 		unsigned long	rsvd_56_63:8;
 // 	} s2;
 // };
@@ -4464,72 +4464,72 @@ pub const UVH_RTC1_INT_CONFIG_APIC_ID_MASK: u64 = 0xffffffff00000000UL;
 
 	/* UVH common struct */
 // 	struct uvh_rtc1_int_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s;
 
 	/* UV5 unique struct */
 // 	struct uv5h_rtc1_int_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_rtc1_int_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_rtc1_int_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_rtc1_int_config_s {
-		unsigned long	vector_:8;			/* RW */
-		unsigned long	dm:3;				/* RW */
-		unsigned long	destmode:1;			/* RW */
-		unsigned long	status:1;			/* RO */
-		unsigned long	p:1;				/* RO */
+		core::ffi::c_ulong	vector_:8;			/* RW */
+		core::ffi::c_ulong	dm:3;				/* RW */
+		core::ffi::c_ulong	destmode:1;			/* RW */
+		core::ffi::c_ulong	status:1;			/* RO */
+		core::ffi::c_ulong	p:1;				/* RO */
 // 		unsigned long	rsvd_14:1;
-		unsigned long	t:1;				/* RO */
-		unsigned long	m:1;				/* RW */
+		core::ffi::c_ulong	t:1;				/* RO */
+		core::ffi::c_ulong	m:1;				/* RW */
 // 		unsigned long	rsvd_17_31:15;
-		unsigned long	apic_id:32;			/* RW */
+		core::ffi::c_ulong	apic_id:32;			/* RW */
 // 	} s2;
 // };
 
@@ -4581,37 +4581,37 @@ pub const UV2H_SCRATCH5_SCRATCH5_MASK: u64 = 0xffffffffffffffffUL;
 
 	/* UVH common struct */
 // 	struct uvh_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} s;
 
 	/* UVXH common struct */
 // 	struct uvxh_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} sx;
 
 	/* UVYH common struct */
 // 	struct uvyh_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} sy;
 
 	/* UV5 unique struct */
 // 	struct uv5h_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} s5;
 
 	/* UV4 unique struct */
 // 	struct uv4h_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} s4;
 
 	/* UV3 unique struct */
 // 	struct uv3h_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} s3;
 
 	/* UV2 unique struct */
 // 	struct uv2h_scratch5_s {
-		unsigned long	scratch5:64;			/* RW */
+		core::ffi::c_ulong	scratch5:64;			/* RW */
 // 	} s2;
 // };
 

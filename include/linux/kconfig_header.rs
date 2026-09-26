@@ -2,9 +2,9 @@
 
 // The generated configuration header is supplied by the surrounding build.
 
-#[cfg(feature = "CONFIG_CPU_BIG_ENDIAN")]
+#[cfg(CONFIG_CPU_BIG_ENDIAN)]
 pub const __BIG_ENDIAN: i32 = 4321;
-#[cfg(not(feature = "CONFIG_CPU_BIG_ENDIAN"))]
+#[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
 pub const __LITTLE_ENDIAN: i32 = 1234;
 
 // Rust has no preprocessor token-pasting equivalent in the language itself;

@@ -19,9 +19,9 @@ pub const MCFTIMER_TCR: u32 = 0x08; /* Timer Capture reg (r/w) */
 pub const MCFTIMER_TCN: u32 = 0x0C; /* Timer Counter reg (r/w) */
 
 /* CONFIG_M53xx or CONFIG_M5441x selects the alternate timer event address. */
-#[cfg(any(feature = "CONFIG_M53xx", feature = "CONFIG_M5441x"))]
+#[cfg(any(CONFIG_M53xx, CONFIG_M5441x))]
 pub const MCFTIMER_TER: u32 = 0x03; /* Timer Event reg (r/w) */
-#[cfg(not(any(feature = "CONFIG_M53xx", feature = "CONFIG_M5441x")))]
+#[cfg(not(any(CONFIG_M53xx, CONFIG_M5441x)))]
 pub const MCFTIMER_TER: u32 = 0x11; /* Timer Event reg (r/w) */
 
 /*

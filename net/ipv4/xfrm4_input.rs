@@ -57,7 +57,7 @@ pub unsafe extern "C" fn xfrm4_transport_finish(skb: *mut sk_buff, async_: i32) 
     (*iph).protocol = XFRM_MODE_SKB_CB(skb).protocol;
 
     // #ifndef CONFIG_NETFILTER: preserved as source conditional intent.
-    if !cfg!(feature = "CONFIG_NETFILTER") && async_ == 0 {
+    if !cfg!(CONFIG_NETFILTER) && async_ == 0 {
         return -((*iph).protocol as i32);
     }
 
@@ -147,7 +147,7 @@ unsafe fn __xfrm4_udp_encap_rcv(sk: *mut sock, skb: *mut sk_buff, pull: bool) ->
     iph = ip_hdr(skb);
     iphlen = ((*iph).ihl as i32) << 2;
     (*iph).tot_len = htons(ntohs((*iph).tot_len).wrapping_sub(len as u16));
-    if (*skb).len as i32 < iphlen + len {
+    if ((*skb).len as i32) < iphlen + len {
         /* packet is too small!?! */
         return -EINVAL;
     }

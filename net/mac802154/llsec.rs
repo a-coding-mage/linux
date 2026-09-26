@@ -26,20 +26,20 @@ unsafe fn mac802154_llsec_init(sec: *mut mac802154_llsec) {
 
 unsafe fn mac802154_llsec_destroy(sec: *mut mac802154_llsec) {
     let mut sl = core::ptr::null_mut(); let mut sn = core::ptr::null_mut();
-    list_for_each_entry_safe(sl, sn, &(*sec).table.security_levels, list) {
+    list_for_each_entry_safe!(sl, sn, &(*sec).table.security_levels, list, {
         let msl = container_of(sl, mac802154_llsec_seclevel, level);
         list_del(core::ptr::addr_of_mut!((*sl).list)); kfree_sensitive(msl);
-    }
+    });
     let mut dev = core::ptr::null_mut(); let mut dn = core::ptr::null_mut();
-    list_for_each_entry_safe(dev, dn, &(*sec).table.devices, list) {
+    list_for_each_entry_safe!(dev, dn, &(*sec).table.devices, list, {
         let mdev = container_of(dev, mac802154_llsec_device, dev);
         list_del(core::ptr::addr_of_mut!((*dev).list)); llsec_dev_free(mdev);
-    }
+    });
     let mut key = core::ptr::null_mut(); let mut kn = core::ptr::null_mut();
-    list_for_each_entry_safe(key, kn, &(*sec).table.keys, list) {
+    list_for_each_entry_safe!(key, kn, &(*sec).table.keys, list, {
         let mkey = container_of((*key).key, mac802154_llsec_key, key);
         list_del(core::ptr::addr_of_mut!((*key).list)); llsec_key_put(mkey); kfree_sensitive(key);
-    }
+    });
 }
 
 unsafe fn mac802154_llsec_get_params(sec: *mut mac802154_llsec, params: *mut ieee802154_llsec_params) -> i32 {
@@ -78,7 +78,7 @@ unsafe fn goto_err_tfm(key: *mut mac802154_llsec_key, upto: usize) { for i in 0.
 unsafe fn llsec_key_release(ref_: *mut kref) { let key = container_of(ref_, mac802154_llsec_key, ref_); for tfm in (*key).tfm { crypto_free_aead(tfm); } crypto_free_sync_skcipher((*key).tfm0); kfree_sensitive(key); }
 unsafe fn llsec_key_get(key: *mut mac802154_llsec_key) -> *mut mac802154_llsec_key { kref_get(core::ptr::addr_of_mut!((*key).ref_)); key }
 
-unsafe fn llsec_dev_free(dev: *mut mac802154_llsec_device) { let mut p=core::ptr::null_mut(); let mut n=core::ptr::null_mut(); list_for_each_entry_safe(p,n,&(*dev).dev.keys,list) { let d=container_of(p,mac802154_llsec_device_key,devkey); list_del(core::ptr::addr_of_mut!((*p).list)); kfree_sensitive(d); } kfree_sensitive(dev); }
+unsafe fn llsec_dev_free(dev: *mut mac802154_llsec_device) { let mut p=core::ptr::null_mut(); let mut n=core::ptr::null_mut(); list_for_each_entry_safe!(p,n,&(*dev).dev.keys,list, { let d=container_of(p,mac802154_llsec_device_key,devkey); list_del(core::ptr::addr_of_mut!((*p).list)); kfree_sensitive(d); }); kfree_sensitive(dev); }
 
 unsafe fn llsec_dev_use_shortaddr(short_addr: __le16) -> bool { short_addr != cpu_to_le16(IEEE802154_ADDR_UNDEF) && short_addr != cpu_to_le16(0xffff) }
 unsafe fn llsec_dev_hash_short(short_addr: __le16, pan_id: __le16) -> u32 { ((__force_u16(short_addr) as u32)<<16) | __force_u16(pan_id) as u32 }
@@ -93,10 +93,10 @@ unsafe fn llsec_key_id_equal(a: *const ieee802154_llsec_key_id, b: *const ieee80
 
 unsafe fn mac802154_llsec_key_add(sec:*mut mac802154_llsec,id:*const ieee802154_llsec_key_id,key:*const ieee802154_llsec_key)->i32 {
     if ((*key).frame_types & (1<<IEEE802154_FC_TYPE_MAC_CMD)) == 0 && (*key).cmd_frame_ids != 0 { return -EINVAL; }
-    let mut pos=core::ptr::null_mut(); list_for_each_entry(pos,&(*sec).table.keys,list) { if llsec_key_id_equal(&(*pos).id,id) { return -EEXIST; } }
+    let mut pos=core::ptr::null_mut(); list_for_each_entry!(pos,&(*sec).table.keys,list, { if llsec_key_id_equal(&(*pos).id,id) { return -EEXIST; } });
     let new=kzalloc_obj::<ieee802154_llsec_key_entry>(); if new.is_null(){return -ENOMEM;} let mkey=llsec_key_alloc(key); if mkey.is_null(){kfree_sensitive(new);return -ENOMEM;} (*new).id=*id; (*new).key=&mut (*mkey).key; list_add_rcu(&mut (*new).list,&mut (*sec).table.keys); 0
 }
-unsafe fn mac802154_llsec_key_del(sec:*mut mac802154_llsec,key:*const ieee802154_llsec_key_id)->i32 { let mut p=core::ptr::null_mut(); list_for_each_entry(p,&(*sec).table.keys,list){if llsec_key_id_equal(&(*p).id,key){list_del_rcu(&mut (*p).list);return 0;}} -ENOENT }
+unsafe fn mac802154_llsec_key_del(sec:*mut mac802154_llsec,key:*const ieee802154_llsec_key_id)->i32 { let mut p=core::ptr::null_mut(); list_for_each_entry!(p,&(*sec).table.keys,list, {if llsec_key_id_equal(&(*p).id,key){list_del_rcu(&mut (*p).list);return 0;}}); -ENOENT }
 
 unsafe fn mac802154_llsec_dev_add(_sec:*mut mac802154_llsec,_dev:*const ieee802154_llsec_device)->i32 { -ENOSYS }
 unsafe fn mac802154_llsec_dev_del(_sec:*mut mac802154_llsec,_addr:__le64)->i32 { -ENOSYS }

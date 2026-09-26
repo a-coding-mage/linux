@@ -4571,302 +4571,302 @@ atomic_long_dec_if_positive(atomic_long_t *v)
 }
 
 // C preprocessor directive omitted: #define xchg(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_xchg(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_xchg(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define xchg_acquire(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_xchg_acquire(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_xchg_acquire(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define xchg_release(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_xchg_release(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_xchg_release(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define xchg_relaxed(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_xchg_relaxed(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_xchg_relaxed(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg_acquire(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg_acquire(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg_acquire(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg_release(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg_release(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg_release(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg_relaxed(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg_relaxed(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg_relaxed(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg64(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg64(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg64(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg64_acquire(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg64_acquire(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg64_acquire(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg64_release(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg64_release(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg64_release(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg64_relaxed(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg64_relaxed(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg64_relaxed(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg128(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg128(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg128(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg128_acquire(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg128_acquire(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg128_acquire(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg128_release(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg128_release(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg128_release(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg128_relaxed(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg128_relaxed(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg128_relaxed(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg_acquire(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg_release(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg_relaxed(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg64(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg64(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg64(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg64_acquire(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg64_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg64_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg64_release(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg64_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg64_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg64_relaxed(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg64_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg64_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg128(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg128(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg128(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg128_acquire(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg128_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg128_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg128_release(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	kcsan_release(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg128_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	kcsan_release(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg128_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg128_relaxed(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg128_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg128_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg_local(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg_local(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg_local(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg64_local(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg64_local(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg64_local(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define cmpxchg128_local(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_cmpxchg128_local(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_cmpxchg128_local(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define sync_cmpxchg(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_sync_cmpxchg(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_sync_cmpxchg(__ai_ptr, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg_local(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg64_local(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg64_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg64_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define try_cmpxchg128_local(ptr, oldp, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	typeof(oldp) __ai_oldp = (oldp); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
-	raw_try_cmpxchg128_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	typeof(oldp) __ai_oldp = (oldp); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	instrument_read_write(__ai_oldp, core::mem::size_of_val(&*__ai_oldp)); \
+// 	raw_try_cmpxchg128_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+// })
 
 // C preprocessor directive omitted: #define sync_try_cmpxchg(ptr, ...) \
-({ \
-	typeof(ptr) __ai_ptr = (ptr); \
-	kcsan_mb(); \
-	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
-	raw_sync_try_cmpxchg(__ai_ptr, __VA_ARGS__); \
-})
+// ({ \
+// 	typeof(ptr) __ai_ptr = (ptr); \
+// 	kcsan_mb(); \
+// 	instrument_atomic_read_write(__ai_ptr, core::mem::size_of_val(&*__ai_ptr)); \
+// 	raw_sync_try_cmpxchg(__ai_ptr, __VA_ARGS__); \
+// })
 
 
 // C preprocessor directive omitted: #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */

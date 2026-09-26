@@ -28,7 +28,7 @@ static mut scx_rescue_sat_delta_ns: i64 = 0;
 static mut scx_rescue_decay_halflife: usize = 0;
 static mut scx_rescue_overload_after: usize = 0;
 
-#[cfg(feature = "CONFIG_EXT_SUB_SCHED")]
+#[cfg(CONFIG_EXT_SUB_SCHED)]
 extern "C" {
     pub fn scx_skip_subtree_pre(pos: *mut scx_sched, root: *mut scx_sched) -> *mut scx_sched;
     pub fn scx_next_descendant_pre(pos: *mut scx_sched, root: *mut scx_sched) -> *mut scx_sched;
@@ -77,14 +77,14 @@ extern "C" {
     pub fn scx_pstack_recursion_on_caps_updated(prog: *mut c_void);
 }
 
-#[cfg(not(feature = "CONFIG_EXT_SUB_SCHED"))]
+#[cfg(not(CONFIG_EXT_SUB_SCHED))]
 pub unsafe fn scx_bpf_sub_grant(_: u64, _: u64, _: *const scx_cmask,
                                 _: *mut scx_cmask, _: *const bpf_prog_aux) -> i32 { -95 }
-#[cfg(not(feature = "CONFIG_EXT_SUB_SCHED"))]
+#[cfg(not(CONFIG_EXT_SUB_SCHED))]
 pub unsafe fn scx_bpf_sub_revoke(_: u64, _: u64, _: *const scx_cmask, _: *const bpf_prog_aux) {}
-#[cfg(not(feature = "CONFIG_EXT_SUB_SCHED"))]
+#[cfg(not(CONFIG_EXT_SUB_SCHED))]
 pub unsafe fn scx_bpf_sub_caps(_: u64, _: u64, _: *mut scx_cmask, _: *const bpf_prog_aux) -> i32 { -95 }
-#[cfg(not(feature = "CONFIG_EXT_SUB_SCHED"))]
+#[cfg(not(CONFIG_EXT_SUB_SCHED))]
 pub unsafe fn scx_bpf_sub_kill_bstr(_: u64, _: *mut c_char, _: *mut u64, _: u32, _: *const bpf_prog_aux) -> i32 { -95 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

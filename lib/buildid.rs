@@ -180,10 +180,10 @@ pub unsafe fn build_id_parse_file(file: *mut file, build_id: *mut u8, size: *mut
 pub unsafe fn build_id_parse_buf(buf: *const c_void, build_id: *mut u8, buf_size: u32) -> i32 { let mut r = MaybeUninit::<freader>::zeroed(); freader_init_from_mem(r.as_mut_ptr(), buf.cast(), buf_size as u64); let err = parse_build_id(r.as_mut_ptr(), build_id, ptr::null_mut(), 0, buf_size); freader_cleanup(r.as_mut_ptr()); err }
 
 // Conditional on CONFIG_STACKTRACE_BUILD_ID || CONFIG_VMCORE_INFO in the source build.
-#[cfg(any(feature = "CONFIG_STACKTRACE_BUILD_ID", feature = "CONFIG_VMCORE_INFO"))]
+#[cfg(any(CONFIG_STACKTRACE_BUILD_ID, CONFIG_VMCORE_INFO))]
 #[no_mangle] pub static mut vmlinux_build_id: [u8; BUILD_ID_SIZE_MAX] = [0; BUILD_ID_SIZE_MAX];
 
-#[cfg(any(feature = "CONFIG_STACKTRACE_BUILD_ID", feature = "CONFIG_VMCORE_INFO"))]
+#[cfg(any(CONFIG_STACKTRACE_BUILD_ID, CONFIG_VMCORE_INFO))]
 pub unsafe fn init_vmlinux_build_id() { extern "C" { static __start_notes: c_void; static __stop_notes: c_void; } let size = (&__stop_notes as *const _ as usize - &__start_notes as *const _ as usize) as u32; build_id_parse_buf(&__start_notes, vmlinux_build_id.as_mut_ptr(), size); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

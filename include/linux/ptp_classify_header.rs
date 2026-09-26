@@ -68,7 +68,7 @@ pub struct ptp_header {
     pub log_message_interval: u8,
 }
 
-#[cfg(feature = "CONFIG_NET_PTP_CLASSIFY")]
+#[cfg(CONFIG_NET_PTP_CLASSIFY)]
 extern "C" {
     pub fn ptp_classify_raw(skb: *const sk_buff) -> u32;
     pub fn ptp_parse_header(skb: *mut sk_buff, type_: u32) -> *mut ptp_header;
@@ -106,15 +106,15 @@ pub unsafe fn ptp_header_update_correction(
     (*skb).ip_summed = CHECKSUM_NONE;
 }
 
-#[cfg(not(feature = "CONFIG_NET_PTP_CLASSIFY"))]
+#[cfg(not(CONFIG_NET_PTP_CLASSIFY))]
 pub fn ptp_classifier_init() {}
-#[cfg(not(feature = "CONFIG_NET_PTP_CLASSIFY"))]
+#[cfg(not(CONFIG_NET_PTP_CLASSIFY))]
 pub unsafe fn ptp_classify_raw(_skb: *mut sk_buff) -> u32 { PTP_CLASS_NONE }
-#[cfg(not(feature = "CONFIG_NET_PTP_CLASSIFY"))]
+#[cfg(not(CONFIG_NET_PTP_CLASSIFY))]
 pub unsafe fn ptp_parse_header(_skb: *mut sk_buff, _type_: u32) -> *mut ptp_header { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NET_PTP_CLASSIFY"))]
+#[cfg(not(CONFIG_NET_PTP_CLASSIFY))]
 pub unsafe fn ptp_get_msgtype(_hdr: *const ptp_header, _type_: u32) -> u8 { PTP_MSGTYPE_SYNC }
-#[cfg(not(feature = "CONFIG_NET_PTP_CLASSIFY"))]
+#[cfg(not(CONFIG_NET_PTP_CLASSIFY))]
 pub unsafe fn ptp_msg_is_sync(_skb: *mut sk_buff, _type_: u32) -> bool { false }
 
 // Types and checksum functions are supplied by included kernel headers.

@@ -34,18 +34,18 @@ pub const CRASHK_CMA_RANGES_MAX: c_int = 4;
 // Defined when CONFIG_CMA && CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION.
 // #define CRASHKERNEL_CMA
 // #define CRASHKERNEL_CMA_RANGES_MAX (CRASHK_CMA_RANGES_MAX)
-#[cfg(all(feature = "CONFIG_CMA", feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION"))]
+#[cfg(all(CONFIG_CMA, CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION))]
 pub const CRASHKERNEL_CMA_RANGES_MAX: c_int = CRASHK_CMA_RANGES_MAX;
 
-#[cfg(not(all(feature = "CONFIG_CMA", feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")))]
+#[cfg(not(all(CONFIG_CMA, CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)))]
 pub const CRASHKERNEL_CMA_RANGES_MAX: c_int = 0;
 
-#[cfg(all(feature = "CONFIG_CMA", feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION"))]
+#[cfg(all(CONFIG_CMA, CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION))]
 extern "C" {
     pub static mut crashk_cma_cnt: c_int;
 }
 
-#[cfg(not(all(feature = "CONFIG_CMA", feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")))]
+#[cfg(not(all(CONFIG_CMA, CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)))]
 pub const crashk_cma_cnt: c_int = 0;
 
 extern "C" {
@@ -63,34 +63,34 @@ extern "C" {
 }
 
 // CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 #[inline]
 pub fn arch_add_crash_res_to_iomem() -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 pub const DEFAULT_CRASH_KERNEL_LOW_SIZE: usize = 128usize << 20;
 
 // The C defaults are SZ_2M, SZ_4G, and memblock_end_of_DRAM(), respectively.
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 pub const CRASH_ALIGN: usize = 2usize << 20;
 
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 pub const CRASH_ADDR_LOW_MAX: usize = 4usize << 30;
 
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 extern "C" {
     pub fn memblock_end_of_DRAM() -> c_ulonglong;
 }
 
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 #[inline]
 pub unsafe fn crash_addr_high_max() -> c_ulonglong {
     memblock_end_of_DRAM()
 }
 
-#[cfg(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION")]
+#[cfg(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION)]
 extern "C" {
     pub fn reserve_crashkernel_generic(
         crash_size: c_ulonglong,
@@ -100,7 +100,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION"))]
+#[cfg(not(CONFIG_ARCH_HAS_GENERIC_CRASHKERNEL_RESERVATION))]
 #[inline]
 pub fn reserve_crashkernel_generic(
     _crash_size: c_ulonglong,

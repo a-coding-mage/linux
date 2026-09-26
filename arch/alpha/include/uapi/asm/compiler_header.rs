@@ -11,7 +11,7 @@
 macro_rules! __kernel_insbl {
     ($val:expr, $shift:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("insbl {val},{shift},{out}", val = in(reg) $val, shift = in(reg) $shift, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("insbl {val},{shift},{out}", $val = in(reg) $val, $shift = in(reg) $shift, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -19,7 +19,7 @@ macro_rules! __kernel_insbl {
 macro_rules! __kernel_inswl {
     ($val:expr, $shift:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("inswl {val},{shift},{out}", val = in(reg) $val, shift = in(reg) $shift, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("inswl {val},{shift},{out}", $val = in(reg) $val, $shift = in(reg) $shift, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -27,7 +27,7 @@ macro_rules! __kernel_inswl {
 macro_rules! __kernel_insql {
     ($val:expr, $shift:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("insql {val},{shift},{out}", val = in(reg) $val, shift = in(reg) $shift, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("insql {val},{shift},{out}", $val = in(reg) $val, $shift = in(reg) $shift, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -35,7 +35,7 @@ macro_rules! __kernel_insql {
 macro_rules! __kernel_inslh {
     ($val:expr, $shift:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("inslh {val},{shift},{out}", val = in(reg) $val, shift = in(reg) $shift, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("inslh {val},{shift},{out}", $val = in(reg) $val, $shift = in(reg) $shift, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -43,7 +43,7 @@ macro_rules! __kernel_inslh {
 macro_rules! __kernel_extbl {
     ($val:expr, $shift:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("extbl {val},{shift},{out}", val = in(reg) $val, shift = in(reg) $shift, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("extbl {val},{shift},{out}", $val = in(reg) $val, $shift = in(reg) $shift, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -51,7 +51,7 @@ macro_rules! __kernel_extbl {
 macro_rules! __kernel_extwl {
     ($val:expr, $shift:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("extwl {val},{shift},{out}", val = in(reg) $val, shift = in(reg) $shift, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("extwl {val},{shift},{out}", $val = in(reg) $val, $shift = in(reg) $shift, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -59,7 +59,7 @@ macro_rules! __kernel_extwl {
 macro_rules! __kernel_cmpbge {
     ($a:expr, $b:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!("cmpbge {a},{b},{out}", a = in(reg) $a, b = in(reg) $b, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!("cmpbge {a},{b},{out}", $a = in(reg) $a, $b = in(reg) $b, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -69,7 +69,7 @@ macro_rules! __kernel_cmpbge {
 macro_rules! __kernel_cttz {
     ($x:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!(".arch ev67; cttz {x},{out}", x = in(reg) $x, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!(".arch ev67; cttz {x},{out}", $x = in(reg) $x, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -77,7 +77,7 @@ macro_rules! __kernel_cttz {
 macro_rules! __kernel_ctlz {
     ($x:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!(".arch ev67; ctlz {x},{out}", x = in(reg) $x, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!(".arch ev67; ctlz {x},{out}", $x = in(reg) $x, out = lateout(reg) __kir); }
         __kir
     }};
 }
@@ -85,7 +85,7 @@ macro_rules! __kernel_ctlz {
 macro_rules! __kernel_ctpop {
     ($x:expr) => {{
         let mut __kir: ::core::ffi::c_ulong;
-        unsafe { ::core::arch::asm!(".arch ev67; ctpop {x},{out}", x = in(reg) $x, out = lateout(reg) __kir); }
+        unsafe { ::core::arch::asm!(".arch ev67; ctpop {x},{out}", $x = in(reg) $x, out = lateout(reg) __kir); }
         __kir
     }};
 }

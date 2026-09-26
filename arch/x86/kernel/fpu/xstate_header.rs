@@ -96,9 +96,9 @@ macro_rules! XSTATE_XRESTORE { ($st:expr, $lmask:expr, $hmask:expr) => {{
     xstate_xrestore($st, $lmask, $hmask);
 }} }
 
-#[cfg(all(target_arch = "x86_64", feature = "CONFIG_X86_DEBUG_FPU"))]
+#[cfg(all(target_arch = "x86_64", CONFIG_X86_DEBUG_FPU))]
 extern "C" { pub fn xfd_validate_state(fpstate: *mut fpstate, mask: u64, rstor: bool); }
-#[cfg(not(all(target_arch = "x86_64", feature = "CONFIG_X86_DEBUG_FPU")))]
+#[cfg(not(all(target_arch = "x86_64", CONFIG_X86_DEBUG_FPU)))]
 #[inline] pub unsafe fn xfd_validate_state(_: *mut fpstate, _: u64, _: bool) {}
 
 #[cfg(target_arch = "x86_64")]

@@ -26,7 +26,7 @@ fn s3c_pm_restore_uarts(_is_s3c24xx: bool) {}
 /* suspend memory checking */
 
 // CONFIG_SAMSUNG_PM_CHECK is a build-time configuration condition.
-#[cfg(feature = "CONFIG_SAMSUNG_PM_CHECK")]
+#[cfg(CONFIG_SAMSUNG_PM_CHECK)]
 extern "C" {
     fn s3c_pm_check_prepare();
     fn s3c_pm_check_restore();
@@ -34,19 +34,19 @@ extern "C" {
     fn s3c_pm_check_store();
 }
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM_CHECK"))]
+#[cfg(not(CONFIG_SAMSUNG_PM_CHECK))]
 #[inline]
 fn s3c_pm_check_prepare() {}
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM_CHECK"))]
+#[cfg(not(CONFIG_SAMSUNG_PM_CHECK))]
 #[inline]
 fn s3c_pm_check_restore() {}
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM_CHECK"))]
+#[cfg(not(CONFIG_SAMSUNG_PM_CHECK))]
 #[inline]
 fn s3c_pm_check_cleanup() {}
 
-#[cfg(not(feature = "CONFIG_SAMSUNG_PM_CHECK"))]
+#[cfg(not(CONFIG_SAMSUNG_PM_CHECK))]
 #[inline]
 fn s3c_pm_check_store() {}
 

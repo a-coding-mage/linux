@@ -47,7 +47,7 @@ pub struct pt_regs { pub regs: [usize; 32], pub cp0_epc: usize, pub cp0_badvaddr
 pub static reg16to32: [i32; 8] = [16, 17, 2, 3, 4, 5, 6, 7];
 static reg16to32st: [i32; 8] = [0, 17, 2, 3, 4, 5, 6, 7];
 
-/* Access-helper operations preserve the C Load*/Store* fault-and-result ABI. */
+/* Access-helper operations preserve the C Load/Store fault-and-result ABI. */
 unsafe fn emulate_load_store_insn(regs: *mut pt_regs, addr: *mut u8, pc: *mut u32) {
     let origpc = (*regs).cp0_epc;
     let orig31 = (*regs).regs[31];

@@ -113,7 +113,7 @@ struct cpu_hw_events {
 
 	u32		txn_flags;
 };
-  DEFINE_PER_CPU(struct cpu_hw_events, cpu_hw_events) = { .enabled = 1, };
+  DEFINE_PER_CPU(cpu_hw_events, cpu_hw_events) = { .enabled = 1, };
 
 /* An event map describes the characteristics of a performance
  * counter event.  In particular it gives the encoding as well as
@@ -133,15 +133,15 @@ const PIC_LOWER	0x02
 /* Encode a perf_event_map entry into a long.  */
   u64 perf_event_encode(const  perf_event_map *pmap)
 {
-	return ((u64) pmap->encoding << 16) | pmap->pic_mask;
+	return ((u64) (*pmap).encoding << 16) | (*pmap).pic_mask;
 }
 
-  u8 perf_event_get_msk(u64 val)
+  u8 perf_event_get_msk(val: u64)
 {
 	return val & 0xff;
 }
 
-  u64 perf_event_get_enc(u64 val)
+  u64 perf_event_get_enc(val: u64)
 {
 	return val >> 16;
 }
@@ -184,16 +184,16 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 {
 	u64 val;
 
-	val = pcr_ops->read_pic(0);
+	val = (*pcr_ops).read_pic(0);
 	if (idx == PIC_UPPER_INDEX)
 		val >>= 32;
 
 	return val & 0xffffffff;
 }
 
-  void sparc_default_write_pmc(int idx, u64 val)
+  void sparc_default_write_pmc(int idx, val: u64)
 {
-	u64 shift, mask, pic;
+	shift: u64, mask, pic;
 
 	shift = 0;
 	if (idx == PIC_UPPER_INDEX)
@@ -202,10 +202,10 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 	mask = ((u64) 0xffffffff) << shift;
 	val <<= shift;
 
-	pic = pcr_ops->read_pic(0);
+	pic = (*pcr_ops).read_pic(0);
 	pic &= ~mask;
 	pic |= val;
-	pcr_ops->write_pic(0, pic);
+	(*pcr_ops).write_pic(0, pic);
 }
 
   const  perf_event_map ultra3_perfmon_event_map[] = {
@@ -322,23 +322,23 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 };
 
   const  sparc_pmu ultra3_pmu = {
-	.event_map	= ultra3_event_map,
-	.cache_map	= &ultra3_cache_map,
-	.max_events	= ARRAY_SIZE(ultra3_perfmon_event_map),
-	.read_pmc	= sparc_default_read_pmc,
-	.write_pmc	= sparc_default_write_pmc,
-	.upper_shift	= 11,
-	.lower_shift	= 4,
-	.event_mask	= 0x3f,
-	.user_bit	= PCR_UTRACE,
-	.priv_bit	= PCR_STRACE,
-	.upper_nop	= 0x1c,
-	.lower_nop	= 0x14,
-	.flags		= (SPARC_PMU_ALL_EXCLUDES_SAME |
+	event_map: ultra3_event_map,
+	cache_map: &ultra3_cache_map,
+	max_events: ARRAY_SIZE(ultra3_perfmon_event_map),
+	read_pmc: sparc_default_read_pmc,
+	write_pmc: sparc_default_write_pmc,
+	upper_shift: 11,
+	lower_shift: 4,
+	event_mask: 0x3f,
+	user_bit: PCR_UTRACE,
+	priv_bit: PCR_STRACE,
+	upper_nop: 0x1c,
+	lower_nop: 0x14,
+	flags: (SPARC_PMU_ALL_EXCLUDES_SAME |
 			   SPARC_PMU_HAS_CONFLICTS),
-	.max_hw_events	= 2,
-	.num_pcrs	= 1,
-	.num_pic_regs	= 1,
+	max_hw_events: 2,
+	num_pcrs: 1,
+	num_pic_regs: 1,
 };
 
 /* Niagara1 is very limited.  The upper PIC is hard-locked to count
@@ -460,23 +460,23 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 };
 
   const  sparc_pmu niagara1_pmu = {
-	.event_map	= niagara1_event_map,
-	.cache_map	= &niagara1_cache_map,
-	.max_events	= ARRAY_SIZE(niagara1_perfmon_event_map),
-	.read_pmc	= sparc_default_read_pmc,
-	.write_pmc	= sparc_default_write_pmc,
-	.upper_shift	= 0,
-	.lower_shift	= 4,
-	.event_mask	= 0x7,
-	.user_bit	= PCR_UTRACE,
-	.priv_bit	= PCR_STRACE,
-	.upper_nop	= 0x0,
-	.lower_nop	= 0x0,
-	.flags		= (SPARC_PMU_ALL_EXCLUDES_SAME |
+	event_map: niagara1_event_map,
+	cache_map: &niagara1_cache_map,
+	max_events: ARRAY_SIZE(niagara1_perfmon_event_map),
+	read_pmc: sparc_default_read_pmc,
+	write_pmc: sparc_default_write_pmc,
+	upper_shift: 0,
+	lower_shift: 4,
+	event_mask: 0x7,
+	user_bit: PCR_UTRACE,
+	priv_bit: PCR_STRACE,
+	upper_nop: 0x0,
+	lower_nop: 0x0,
+	flags: (SPARC_PMU_ALL_EXCLUDES_SAME |
 			   SPARC_PMU_HAS_CONFLICTS),
-	.max_hw_events	= 2,
-	.num_pcrs	= 1,
-	.num_pic_regs	= 1,
+	max_hw_events: 2,
+	num_pcrs: 1,
+	num_pic_regs: 1,
 };
 
   const  perf_event_map niagara2_perfmon_event_map[] = {
@@ -595,25 +595,25 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 };
 
   const  sparc_pmu niagara2_pmu = {
-	.event_map	= niagara2_event_map,
-	.cache_map	= &niagara2_cache_map,
-	.max_events	= ARRAY_SIZE(niagara2_perfmon_event_map),
-	.read_pmc	= sparc_default_read_pmc,
-	.write_pmc	= sparc_default_write_pmc,
-	.upper_shift	= 19,
-	.lower_shift	= 6,
-	.event_mask	= 0xfff,
-	.user_bit	= PCR_UTRACE,
-	.priv_bit	= PCR_STRACE,
-	.hv_bit		= PCR_N2_HTRACE,
-	.irq_bit	= 0x30,
-	.upper_nop	= 0x220,
-	.lower_nop	= 0x220,
-	.flags		= (SPARC_PMU_ALL_EXCLUDES_SAME |
+	event_map: niagara2_event_map,
+	cache_map: &niagara2_cache_map,
+	max_events: ARRAY_SIZE(niagara2_perfmon_event_map),
+	read_pmc: sparc_default_read_pmc,
+	write_pmc: sparc_default_write_pmc,
+	upper_shift: 19,
+	lower_shift: 6,
+	event_mask: 0xfff,
+	user_bit: PCR_UTRACE,
+	priv_bit: PCR_STRACE,
+	hv_bit: PCR_N2_HTRACE,
+	irq_bit: 0x30,
+	upper_nop: 0x220,
+	lower_nop: 0x220,
+	flags: (SPARC_PMU_ALL_EXCLUDES_SAME |
 			   SPARC_PMU_HAS_CONFLICTS),
-	.max_hw_events	= 2,
-	.num_pcrs	= 1,
-	.num_pic_regs	= 1,
+	max_hw_events: 2,
+	num_pcrs: 1,
+	num_pic_regs: 1,
 };
 
   const  perf_event_map niagara4_perfmon_event_map[] = {
@@ -733,35 +733,35 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 
   u32 sparc_vt_read_pmc(int idx)
 {
-	u64 val = pcr_ops->read_pic(idx);
+	u64 val = (*pcr_ops).read_pic(idx);
 
 	return val & 0xffffffff;
 }
 
-  void sparc_vt_write_pmc(int idx, u64 val)
+  void sparc_vt_write_pmc(int idx, val: u64)
 {
 	u64 pcr;
 
-	pcr = pcr_ops->read_pcr(idx);
+	pcr = (*pcr_ops).read_pcr(idx);
 	/* ensure ov and ntc are reset */
 	pcr &= ~(PCR_N4_OV | PCR_N4_NTC);
 
-	pcr_ops->write_pic(idx, val & 0xffffffff);
+	(*pcr_ops).write_pic(idx, val & 0xffffffff);
 
-	pcr_ops->write_pcr(idx, pcr);
+	(*pcr_ops).write_pcr(idx, pcr);
 }
 
   const  sparc_pmu niagara4_pmu = {
-	.event_map	= niagara4_event_map,
-	.cache_map	= &niagara4_cache_map,
-	.max_events	= ARRAY_SIZE(niagara4_perfmon_event_map),
-	.read_pmc	= sparc_vt_read_pmc,
-	.write_pmc	= sparc_vt_write_pmc,
-	.upper_shift	= 5,
-	.lower_shift	= 5,
-	.event_mask	= 0x7ff,
-	.user_bit	= PCR_N4_UTRACE,
-	.priv_bit	= PCR_N4_STRACE,
+	event_map: niagara4_event_map,
+	cache_map: &niagara4_cache_map,
+	max_events: ARRAY_SIZE(niagara4_perfmon_event_map),
+	read_pmc: sparc_vt_read_pmc,
+	write_pmc: sparc_vt_write_pmc,
+	upper_shift: 5,
+	lower_shift: 5,
+	event_mask: 0x7ff,
+	user_bit: PCR_N4_UTRACE,
+	priv_bit: PCR_N4_STRACE,
 
 	/* We explicitly don't support hypervisor tracing.  The T4
 	 * generates the overflow event for precise events via a trap
@@ -770,175 +770,175 @@ const SPARC_PMU_HAS_CONFLICTS		0x00000002
 	 * Essentially, the overflow event reporting is completely
 	 * unusable when you have hypervisor mode tracing enabled.
 	 */
-	.hv_bit		= 0,
+	hv_bit: 0,
 
-	.irq_bit	= PCR_N4_TOE,
-	.upper_nop	= 0,
-	.lower_nop	= 0,
-	.flags		= 0,
-	.max_hw_events	= 4,
-	.num_pcrs	= 4,
-	.num_pic_regs	= 4,
+	irq_bit: PCR_N4_TOE,
+	upper_nop: 0,
+	lower_nop: 0,
+	flags: 0,
+	max_hw_events: 4,
+	num_pcrs: 4,
+	num_pic_regs: 4,
 };
 
   const  sparc_pmu sparc_m7_pmu = {
-	.event_map	= niagara4_event_map,
-	.cache_map	= &niagara4_cache_map,
-	.max_events	= ARRAY_SIZE(niagara4_perfmon_event_map),
-	.read_pmc	= sparc_vt_read_pmc,
-	.write_pmc	= sparc_vt_write_pmc,
-	.upper_shift	= 5,
-	.lower_shift	= 5,
-	.event_mask	= 0x7ff,
-	.user_bit	= PCR_N4_UTRACE,
-	.priv_bit	= PCR_N4_STRACE,
+	event_map: niagara4_event_map,
+	cache_map: &niagara4_cache_map,
+	max_events: ARRAY_SIZE(niagara4_perfmon_event_map),
+	read_pmc: sparc_vt_read_pmc,
+	write_pmc: sparc_vt_write_pmc,
+	upper_shift: 5,
+	lower_shift: 5,
+	event_mask: 0x7ff,
+	user_bit: PCR_N4_UTRACE,
+	priv_bit: PCR_N4_STRACE,
 
 	/* We explicitly don't support hypervisor tracing. */
-	.hv_bit		= 0,
+	hv_bit: 0,
 
-	.irq_bit	= PCR_N4_TOE,
-	.upper_nop	= 0,
-	.lower_nop	= 0,
-	.flags		= 0,
-	.max_hw_events	= 4,
-	.num_pcrs	= 4,
-	.num_pic_regs	= 4,
+	irq_bit: PCR_N4_TOE,
+	upper_nop: 0,
+	lower_nop: 0,
+	flags: 0,
+	max_hw_events: 4,
+	num_pcrs: 4,
+	num_pic_regs: 4,
 };
   const  sparc_pmu *sparc_pmu __read_mostly;
 
-  u64 event_encoding(u64 event_id, int idx)
+  u64 event_encoding(event_id: u64, int idx)
 {
 	if (idx == PIC_UPPER_INDEX)
-		event_id <<= sparc_pmu->upper_shift;
+		event_id <<= (*sparc_pmu).upper_shift;
 	else
-		event_id <<= sparc_pmu->lower_shift;
+		event_id <<= (*sparc_pmu).lower_shift;
 	return event_id;
 }
 
-  u64 mask_for_index(int idx)
-{
-	return event_encoding(sparc_pmu->event_mask, idx);
-}
+  u64 mask_for_index!(int idx, {
+	return event_encoding((*sparc_pmu).event_mask, idx);
+});
 
-  u64 nop_for_index(int idx)
-{
+  u64 nop_for_index!(int idx, {
 	return event_encoding(idx == PIC_UPPER_INDEX ?
-			      sparc_pmu->upper_nop :
-			      sparc_pmu->lower_nop, idx);
-}
+			      (*sparc_pmu).upper_nop :
+			      (*sparc_pmu).lower_nop, idx);
+});
 
 #[inline]
-unsafe fn void sparc_pmu_enable_event(struct cpu_hw_events *cpuc, struct hw_perf_event *hwc, int idx)
+unsafe fn void sparc_pmu_enable_event(cpu_hw_events *cpuc, hw_perf_event *hwc, int idx)
 {
-	u64 enc, val, mask = mask_for_index(idx);
+	enc: u64, val, mask = mask_for_index(idx);
 	int pcr_index = 0;
 
-	if (sparc_pmu->num_pcrs > 1)
+	if ((*sparc_pmu).num_pcrs > 1)
 		pcr_index = idx;
 
-	enc = perf_event_get_enc(cpuc->events[idx]);
+	enc = perf_event_get_enc((*cpuc).events[idx]);
 
-	val = cpuc->pcr[pcr_index];
+	val = (*cpuc).pcr[pcr_index];
 	val &= ~mask;
 	val |= event_encoding(enc, idx);
-	cpuc->pcr[pcr_index] = val;
+	(*cpuc).pcr[pcr_index] = val;
 
-	pcr_ops->write_pcr(pcr_index, cpuc->pcr[pcr_index]);
+	(*pcr_ops).write_pcr(pcr_index, (*cpuc).pcr[pcr_index]);
 }
 
 #[inline]
-unsafe fn void sparc_pmu_disable_event(struct cpu_hw_events *cpuc, struct hw_perf_event *hwc, int idx)
+unsafe fn void sparc_pmu_disable_event(cpu_hw_events *cpuc, hw_perf_event *hwc, int idx)
 {
 	u64 mask = mask_for_index(idx);
 	u64 nop = nop_for_index(idx);
 	int pcr_index = 0;
 	u64 val;
 
-	if (sparc_pmu->num_pcrs > 1)
+	if ((*sparc_pmu).num_pcrs > 1)
 		pcr_index = idx;
 
-	val = cpuc->pcr[pcr_index];
+	val = (*cpuc).pcr[pcr_index];
 	val &= ~mask;
 	val |= nop;
-	cpuc->pcr[pcr_index] = val;
+	(*cpuc).pcr[pcr_index] = val;
 
-	pcr_ops->write_pcr(pcr_index, cpuc->pcr[pcr_index]);
+	(*pcr_ops).write_pcr(pcr_index, (*cpuc).pcr[pcr_index]);
 }
 
-  u64 sparc_perf_event_update(struct perf_event *event,
-				   struct hw_perf_event *hwc, int idx)
+  u64 sparc_perf_event_update(perf_event *event,
+				   hw_perf_event *hwc, int idx)
 {
 	int shift = 64 - 32;
-	u64 prev_raw_count, new_raw_count;
+	prev_raw_count: u64, new_raw_count;
 	i64 delta;
 
-again:
-	prev_raw_count = local64_read(&hwc->prev_count);
-	new_raw_count = sparc_pmu->read_pmc(idx);
+    'again: loop {
+    prev_raw_count = local64_read((*&hwc).prev_count);
+	new_raw_count = (*sparc_pmu).read_pmc(idx);
 
-	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+	if (local64_cmpxchg((*&hwc).prev_count, prev_raw_count,
 			     new_raw_count) != prev_raw_count)
-		goto again;
+		continue 'again;
 
 	delta = (new_raw_count << shift) - (prev_raw_count << shift);
 	delta >>= shift;
 
-	local64_add(delta, &event->count);
-	local64_sub(delta, &hwc->period_left);
+	local64_add(delta, (*&event).count);
+	local64_sub(delta, (*&hwc).period_left);
 
 	return new_raw_count;
+        break;
+    }
 }
 
-  int sparc_perf_event_set_period(struct perf_event *event,
-				       struct hw_perf_event *hwc, int idx)
+  int sparc_perf_event_set_period(perf_event *event,
+				       hw_perf_event *hwc, int idx)
 {
-	i64 left = local64_read(&hwc->period_left);
-	i64 period = hwc->sample_period;
+	i64 left = local64_read((*&hwc).period_left);
+	i64 period = (*hwc).sample_period;
 	int ret = 0;
 
 	/* The period may have been changed by PERF_EVENT_IOC_PERIOD */
-	if (unlikely(period != hwc->last_period))
-		left = period - (hwc->last_period - left);
+	if (unlikely(period != (*hwc).last_period))
+		left = period - ((*hwc).last_period - left);
 
 	if (unlikely(left <= -period)) {
 		left = period;
-		local64_set(&hwc->period_left, left);
-		hwc->last_period = period;
+		local64_set((*&hwc).period_left, left);
+		(*hwc).last_period = period;
 		ret = 1;
 	}
 
 	if (unlikely(left <= 0)) {
 		left += period;
-		local64_set(&hwc->period_left, left);
-		hwc->last_period = period;
+		local64_set((*&hwc).period_left, left);
+		(*hwc).last_period = period;
 		ret = 1;
 	}
 	if (left > MAX_PERIOD)
 		left = MAX_PERIOD;
 
-	local64_set(&hwc->prev_count, (u64)-left);
+	local64_set((*&hwc).prev_count, (u64)-left);
 
-	sparc_pmu->write_pmc(idx, (u64)(-left) & 0xffffffff);
+	(*sparc_pmu).write_pmc(idx, (u64)(-left) & 0xffffffff);
 
 	perf_event_update_userpage(event);
 
 	return ret;
 }
 
-  void read_in_all_counters(struct cpu_hw_events *cpuc)
+  void read_in_all_counters(cpu_hw_events *cpuc)
 {
 	int i;
 
-	for (i = 0; i < cpuc->n_events; i++) {
-		struct perf_event *cp = cpuc->event[i];
+	for (i = 0; i < (*cpuc).n_events; i++) {
+		struct perf_event *cp = (*cpuc).event[i];
 
-		if (cpuc->current_idx[i] != PIC_NO_INDEX &&
-		    cpuc->current_idx[i] != cp->hw.idx) {
-			sparc_perf_event_update(cp, &cp->hw,
-						cpuc->current_idx[i]);
-			cpuc->current_idx[i] = PIC_NO_INDEX;
-			if (cp->hw.state & PERF_HES_STOPPED)
-				cp->hw.state |= PERF_HES_ARCH;
+		if ((*cpuc).current_idx[i] != PIC_NO_INDEX &&
+		    (*cpuc).current_idx[i] != (*cp).hw.idx) {
+			sparc_perf_event_update(cp, (*&cp).hw,
+						(*cpuc).current_idx[i]);
+			(*cpuc).current_idx[i] = PIC_NO_INDEX;
+			if ((*cp).hw.state & PERF_HES_STOPPED)
+				(*cp).hw.state |= PERF_HES_ARCH;
 		}
 	}
 }
@@ -949,174 +949,177 @@ again:
  * For such chips we require that all of the events have the same
  * configuration, so just fetch the settings from the first entry.
  */
-  void calculate_single_pcr(struct cpu_hw_events *cpuc)
+  void calculate_single_pcr(cpu_hw_events *cpuc)
 {
+	'out: {
 	int i;
 
-	if (!cpuc->n_added)
-		goto out;
+	if ((*!cpuc).n_added)
+		break 'out;
 
 	/* Assign to counters all unassigned events.  */
-	for (i = 0; i < cpuc->n_events; i++) {
-		struct perf_event *cp = cpuc->event[i];
-		struct hw_perf_event *hwc = &cp->hw;
-		int idx = hwc->idx;
+	for (i = 0; i < (*cpuc).n_events; i++) {
+		struct perf_event *cp = (*cpuc).event[i];
+		struct hw_perf_event *hwc = (*&cp).hw;
+		int idx = (*hwc).idx;
 		u64 enc;
 
-		if (cpuc->current_idx[i] != PIC_NO_INDEX)
+		if ((*cpuc).current_idx[i] != PIC_NO_INDEX)
 			continue;
 
 		sparc_perf_event_set_period(cp, hwc, idx);
-		cpuc->current_idx[i] = idx;
+		(*cpuc).current_idx[i] = idx;
 
-		enc = perf_event_get_enc(cpuc->events[i]);
-		cpuc->pcr[0] &= ~mask_for_index(idx);
-		if (hwc->state & PERF_HES_ARCH) {
-			cpuc->pcr[0] |= nop_for_index(idx);
+		enc = perf_event_get_enc((*cpuc).events[i]);
+		(*cpuc).pcr[0] &= ~mask_for_index(idx);
+		if ((*hwc).state & PERF_HES_ARCH) {
+			(*cpuc).pcr[0] |= nop_for_index(idx);
 		} else {
-			cpuc->pcr[0] |= event_encoding(enc, idx);
-			hwc->state = 0;
+			(*cpuc).pcr[0] |= event_encoding(enc, idx);
+			(*hwc).state = 0;
 		}
 	}
-out:
-	cpuc->pcr[0] |= cpuc->event[0]->hw.config_base;
+	}
+	
+	(*cpuc).pcr[0] |= (*(*cpuc).event[0]).hw.config_base;
 }
 
-  void sparc_pmu_start(struct perf_event *event, int flags);
+  void sparc_pmu_start(perf_event *event, int flags);
 
 /* On this PMU each PIC has its own PCR control register.  */
-  void calculate_multiple_pcrs(struct cpu_hw_events *cpuc)
+  void calculate_multiple_pcrs(cpu_hw_events *cpuc)
 {
+	'out: {
 	int i;
 
-	if (!cpuc->n_added)
-		goto out;
+	if ((*!cpuc).n_added)
+		break 'out;
 
-	for (i = 0; i < cpuc->n_events; i++) {
-		struct perf_event *cp = cpuc->event[i];
-		struct hw_perf_event *hwc = &cp->hw;
-		int idx = hwc->idx;
+	for (i = 0; i < (*cpuc).n_events; i++) {
+		struct perf_event *cp = (*cpuc).event[i];
+		struct hw_perf_event *hwc = (*&cp).hw;
+		int idx = (*hwc).idx;
 
-		if (cpuc->current_idx[i] != PIC_NO_INDEX)
+		if ((*cpuc).current_idx[i] != PIC_NO_INDEX)
 			continue;
 
-		cpuc->current_idx[i] = idx;
+		(*cpuc).current_idx[i] = idx;
 
-		if (cp->hw.state & PERF_HES_ARCH)
+		if ((*cp).hw.state & PERF_HES_ARCH)
 			continue;
 
 		sparc_pmu_start(cp, PERF_EF_RELOAD);
 	}
-out:
-	for (i = 0; i < cpuc->n_events; i++) {
-		struct perf_event *cp = cpuc->event[i];
-		int idx = cp->hw.idx;
+	}
+	
+	for (i = 0; i < (*cpuc).n_events; i++) {
+		struct perf_event *cp = (*cpuc).event[i];
+		int idx = (*cp).hw.idx;
 
-		cpuc->pcr[idx] |= cp->hw.config_base;
+		(*cpuc).pcr[idx] |= (*cp).hw.config_base;
 	}
 }
 
 /* If performance event entries have been added, move existing events
  * around (if necessary) and then assign new entries to counters.
  */
-  void update_pcrs_for_enable(struct cpu_hw_events *cpuc)
-{
-	if (cpuc->n_added)
+  void update_pcrs_for_enable!(cpu_hw_events *cpuc, {
+	if ((*cpuc).n_added)
 		read_in_all_counters(cpuc);
 
-	if (sparc_pmu->num_pcrs == 1) {
+	if ((*sparc_pmu).num_pcrs == 1) {
 		calculate_single_pcr(cpuc);
 	} else {
 		calculate_multiple_pcrs(cpuc);
 	}
-}
+});
 
-  void sparc_pmu_enable(struct pmu *pmu)
+  void sparc_pmu_enable(pmu *pmu)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int i;
 
-	if (cpuc->enabled)
+	if ((*cpuc).enabled)
 		return;
 
-	cpuc->enabled = 1;
+	(*cpuc).enabled = 1;
 	barrier();
 
-	if (cpuc->n_events)
+	if ((*cpuc).n_events)
 		update_pcrs_for_enable(cpuc);
 
-	for (i = 0; i < sparc_pmu->num_pcrs; i++)
-		pcr_ops->write_pcr(i, cpuc->pcr[i]);
+	for (i = 0; i < (*sparc_pmu).num_pcrs; i++)
+		(*pcr_ops).write_pcr(i, (*cpuc).pcr[i]);
 }
 
-  void sparc_pmu_disable(struct pmu *pmu)
+  void sparc_pmu_disable(pmu *pmu)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int i;
 
-	if (!cpuc->enabled)
+	if ((*!cpuc).enabled)
 		return;
 
-	cpuc->enabled = 0;
-	cpuc->n_added = 0;
+	(*cpuc).enabled = 0;
+	(*cpuc).n_added = 0;
 
-	for (i = 0; i < sparc_pmu->num_pcrs; i++) {
-		u64 val = cpuc->pcr[i];
+	for (i = 0; i < (*sparc_pmu).num_pcrs; i++) {
+		u64 val = (*cpuc).pcr[i];
 
-		val &= ~(sparc_pmu->user_bit | sparc_pmu->priv_bit |
-			 sparc_pmu->hv_bit | sparc_pmu->irq_bit);
-		cpuc->pcr[i] = val;
-		pcr_ops->write_pcr(i, cpuc->pcr[i]);
+		val &= ~((*sparc_pmu).user_bit | (*sparc_pmu).priv_bit |
+			 (*sparc_pmu).hv_bit | (*sparc_pmu).irq_bit);
+		(*cpuc).pcr[i] = val;
+		(*pcr_ops).write_pcr(i, (*cpuc).pcr[i]);
 	}
 }
 
-  int active_event_index(struct cpu_hw_events *cpuc,
-			      struct perf_event *event)
+  int active_event_index(cpu_hw_events *cpuc,
+			      perf_event *event)
 {
 	int i;
 
-	for (i = 0; i < cpuc->n_events; i++) {
-		if (cpuc->event[i] == event)
+	for (i = 0; i < (*cpuc).n_events; i++) {
+		if ((*cpuc).event[i] == event)
 			break;
 	}
-	BUG_ON(i == cpuc->n_events);
-	return cpuc->current_idx[i];
+	BUG_ON(i == (*cpuc).n_events);
+	return (*cpuc).current_idx[i];
 }
 
-  void sparc_pmu_start(struct perf_event *event, int flags)
+  void sparc_pmu_start(perf_event *event, int flags)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int idx = active_event_index(cpuc, event);
 
 	if (flags & PERF_EF_RELOAD) {
-		WARN_ON_ONCE(!(event->hw.state & PERF_HES_UPTODATE));
-		sparc_perf_event_set_period(event, &event->hw, idx);
+		WARN_ON_ONCE(!((*event).hw.state & PERF_HES_UPTODATE));
+		sparc_perf_event_set_period(event, (*&event).hw, idx);
 	}
 
-	event->hw.state = 0;
+	(*event).hw.state = 0;
 
-	sparc_pmu_enable_event(cpuc, &event->hw, idx);
+	sparc_pmu_enable_event(cpuc, (*&event).hw, idx);
 
 	perf_event_update_userpage(event);
 }
 
-  void sparc_pmu_stop(struct perf_event *event, int flags)
+  void sparc_pmu_stop(perf_event *event, int flags)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int idx = active_event_index(cpuc, event);
 
-	if (!(event->hw.state & PERF_HES_STOPPED)) {
-		sparc_pmu_disable_event(cpuc, &event->hw, idx);
-		event->hw.state |= PERF_HES_STOPPED;
+	if (!((*event).hw.state & PERF_HES_STOPPED)) {
+		sparc_pmu_disable_event(cpuc, (*&event).hw, idx);
+		(*event).hw.state |= PERF_HES_STOPPED;
 	}
 
-	if (!(event->hw.state & PERF_HES_UPTODATE) && (flags & PERF_EF_UPDATE)) {
-		sparc_perf_event_update(event, &event->hw, idx);
-		event->hw.state |= PERF_HES_UPTODATE;
+	if (!((*event).hw.state & PERF_HES_UPTODATE) && (flags & PERF_EF_UPDATE)) {
+		sparc_perf_event_update(event, (*&event).hw, idx);
+		(*event).hw.state |= PERF_HES_UPTODATE;
 	}
 }
 
-  void sparc_pmu_del(struct perf_event *event, int _flags)
+  void sparc_pmu_del(perf_event *event, int _flags)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	u64 flags;
@@ -1124,8 +1127,8 @@ out:
 
 	local_irq_save(flags);
 
-	for (i = 0; i < cpuc->n_events; i++) {
-		if (event == cpuc->event[i]) {
+	for (i = 0; i < (*cpuc).n_events; i++) {
+		if (event == (*cpuc).event[i]) {
 			/* Absorb the final count and turn off the
 			 * event.
 			 */
@@ -1134,16 +1137,16 @@ out:
 			/* Shift remaining entries down into
 			 * the existing slot.
 			 */
-			while (++i < cpuc->n_events) {
-				cpuc->event[i - 1] = cpuc->event[i];
-				cpuc->events[i - 1] = cpuc->events[i];
-				cpuc->current_idx[i - 1] =
-					cpuc->current_idx[i];
+			while (++i < (*cpuc).n_events) {
+				(*cpuc).event[i - 1] = (*cpuc).event[i];
+				(*cpuc).events[i - 1] = (*cpuc).events[i];
+				(*cpuc).current_idx[i - 1] =
+					(*cpuc).current_idx[i];
 			}
 
 			perf_event_update_userpage(event);
 
-			cpuc->n_events--;
+			(*cpuc).n_events--;
 			break;
 		}
 	}
@@ -1151,11 +1154,11 @@ out:
 	local_irq_restore(flags);
 }
 
-  void sparc_pmu_read(struct perf_event *event)
+  void sparc_pmu_read(perf_event *event)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int idx = active_event_index(cpuc, event);
-	struct hw_perf_event *hwc = &event->hw;
+	struct hw_perf_event *hwc = (*&event).hw;
 
 	sparc_perf_event_update(event, hwc, idx);
 }
@@ -1169,8 +1172,8 @@ out:
 	int i;
 
 	stop_nmi_watchdog(core::ptr::null_mut());
-	for (i = 0; i < sparc_pmu->num_pcrs; i++)
-		cpuc->pcr[i] = pcr_ops->read_pcr(i);
+	for (i = 0; i < (*sparc_pmu).num_pcrs; i++)
+		(*cpuc).pcr[i] = (*pcr_ops).read_pcr(i);
 }
 
   void perf_event_grab_pmc(void)
@@ -1198,12 +1201,12 @@ out:
 	}
 }
 
-  const  perf_event_map *sparc_map_cache_event(u64 config)
+  const  perf_event_map *sparc_map_cache_event(config: u64)
 {
-	u32 cache_type, cache_op, cache_result;
+	cache_type: u32, cache_op, cache_result;
 	const  perf_event_map *pmap;
 
-	if (!sparc_pmu->cache_map)
+	if ((*!sparc_pmu).cache_map)
 		return ERR_PTR(-ENOENT);
 
 	cache_type = (config >>  0) & 0xff;
@@ -1218,18 +1221,18 @@ out:
 	if (cache_result >= PERF_COUNT_HW_CACHE_RESULT_MAX)
 		return ERR_PTR(-EINVAL);
 
-	pmap = &((*sparc_pmu->cache_map)[cache_type][cache_op][cache_result]);
+	pmap = &(((**sparc_pmu).cache_map)[cache_type][cache_op][cache_result]);
 
-	if (pmap->encoding == CACHE_OP_UNSUPPORTED)
+	if ((*pmap).encoding == CACHE_OP_UNSUPPORTED)
 		return ERR_PTR(-ENOENT);
 
-	if (pmap->encoding == CACHE_OP_NONSENSE)
+	if ((*pmap).encoding == CACHE_OP_NONSENSE)
 		return ERR_PTR(-EINVAL);
 
 	return pmap;
 }
 
-  void hw_perf_event_destroy(struct perf_event *event)
+  void hw_perf_event_destroy(perf_event *event)
 {
 	perf_event_release_pmc();
 }
@@ -1244,9 +1247,10 @@ out:
  * to the per-cpu cpuc->current_idx[] slots, see the code in
  * maybe_change_configuration() for details.
  */
-  int sparc_check_constraints(struct perf_event **evts,
+  int sparc_check_constraints(perf_event **evts,
 				   u64 *events, int n_ev)
 {
+	'success: {
 	u8 msk0 = 0, msk1 = 0;
 	int idx0 = 0;
 
@@ -1256,14 +1260,14 @@ out:
 	if (!n_ev)
 		return 0;
 
-	if (n_ev > sparc_pmu->max_hw_events)
+	if (n_ev > (*sparc_pmu).max_hw_events)
 		return -1;
 
-	if (!(sparc_pmu->flags & SPARC_PMU_HAS_CONFLICTS)) {
+	if (!((*sparc_pmu).flags & SPARC_PMU_HAS_CONFLICTS)) {
 		int i;
 
 		for (i = 0; i < n_ev; i++)
-			evts[i]->hw.idx = i;
+			(*evts[i]).hw.idx = i;
 		return 0;
 	}
 
@@ -1271,7 +1275,7 @@ out:
 	if (n_ev == 1) {
 		if (msk0 & PIC_LOWER)
 			idx0 = 1;
-		goto success;
+		break 'success;
 	}
 	BUG_ON(n_ev != 2);
 	msk1 = perf_event_get_msk(events[1]);
@@ -1279,7 +1283,7 @@ out:
 	/* If both events can go on any counter, OK.  */
 	if (msk0 == (PIC_UPPER | PIC_LOWER) &&
 	    msk1 == (PIC_UPPER | PIC_LOWER))
-		goto success;
+		break 'success;
 
 	/* If one event is limited to a specific counter,
 	 * and the other can go on both, OK.
@@ -1288,14 +1292,14 @@ out:
 	    msk1 == (PIC_UPPER | PIC_LOWER)) {
 		if (msk0 & PIC_LOWER)
 			idx0 = 1;
-		goto success;
+		break 'success;
 	}
 
 	if ((msk1 == PIC_UPPER || msk1 == PIC_LOWER) &&
 	    msk0 == (PIC_UPPER | PIC_LOWER)) {
 		if (msk1 & PIC_UPPER)
 			idx0 = 1;
-		goto success;
+		break 'success;
 	}
 
 	/* If the events are fixed to different counters, OK.  */
@@ -1303,26 +1307,26 @@ out:
 	    (msk0 == PIC_LOWER && msk1 == PIC_UPPER)) {
 		if (msk0 & PIC_LOWER)
 			idx0 = 1;
-		goto success;
+		break 'success;
 	}
 
 	/* Otherwise, there is a conflict.  */
 	return -1;
-
-success:
-	evts[0]->hw.idx = idx0;
+	}
+	
+	(*evts[0]).hw.idx = idx0;
 	if (n_ev == 2)
-		evts[1]->hw.idx = idx0 ^ 1;
+		(*evts[1]).hw.idx = idx0 ^ 1;
 	return 0;
 }
 
-  int check_excludes(struct perf_event **evts, int n_prev, int n_new)
+  int check_excludes(perf_event **evts, int n_prev, int n_new)
 {
 	int eu = 0, ek = 0, eh = 0;
 	struct perf_event *event;
 	int i, n, first;
 
-	if (!(sparc_pmu->flags & SPARC_PMU_ALL_EXCLUDES_SAME))
+	if (!((*sparc_pmu).flags & SPARC_PMU_ALL_EXCLUDES_SAME))
 		return 0;
 
 	n = n_prev + n_new;
@@ -1333,13 +1337,13 @@ success:
 	for (i = 0; i < n; i++) {
 		event = evts[i];
 		if (first) {
-			eu = event->attr.exclude_user;
-			ek = event->attr.exclude_kernel;
-			eh = event->attr.exclude_hv;
+			eu = (*event).attr.exclude_user;
+			ek = (*event).attr.exclude_kernel;
+			eh = (*event).attr.exclude_hv;
 			first = 0;
-		} else if (event->attr.exclude_user != eu ||
-			   event->attr.exclude_kernel != ek ||
-			   event->attr.exclude_hv != eh) {
+		} else if ((*event).attr.exclude_user != eu ||
+			   (*event).attr.exclude_kernel != ek ||
+			   (*event).attr.exclude_hv != eh) {
 			return -EAGAIN;
 		}
 	}
@@ -1347,8 +1351,8 @@ success:
 	return 0;
 }
 
-  int collect_events(struct perf_event *group, int max_count,
-			  struct perf_event *evts[], u64 *events,
+  int collect_events(perf_event *group, int max_count,
+			  perf_event *evts[], u64 *events,
 			  int *current_idx)
 {
 	struct perf_event *event;
@@ -1358,70 +1362,73 @@ success:
 		if (n >= max_count)
 			return -1;
 		evts[n] = group;
-		events[n] = group->hw.event_base;
+		events[n] = (*group).hw.event_base;
 		current_idx[n++] = PIC_NO_INDEX;
 	}
-	for_each_sibling_event(event, group) {
+	for_each_sibling_event!(event, group, {
 		if (!is_software_event(event) &&
-		    event->state != PERF_EVENT_STATE_OFF) {
+		    (*event).state != PERF_EVENT_STATE_OFF) {
 			if (n >= max_count)
 				return -1;
 			evts[n] = event;
-			events[n] = event->hw.event_base;
+			events[n] = (*event).hw.event_base;
 			current_idx[n++] = PIC_NO_INDEX;
 		}
-	}
+	});
 	return n;
 }
 
-  int sparc_pmu_add(struct perf_event *event, int ef_flags)
+  int sparc_pmu_add(perf_event *event, int ef_flags)
 {
+	'out: {
+	'nocheck: {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int n0, ret = -EAGAIN;
 	u64 flags;
 
 	local_irq_save(flags);
 
-	n0 = cpuc->n_events;
-	if (n0 >= sparc_pmu->max_hw_events)
-		goto out;
+	n0 = (*cpuc).n_events;
+	if (n0 >= (*sparc_pmu).max_hw_events)
+		break 'out;
 
-	cpuc->event[n0] = event;
-	cpuc->events[n0] = event->hw.event_base;
-	cpuc->current_idx[n0] = PIC_NO_INDEX;
+	(*cpuc).event[n0] = event;
+	(*cpuc).events[n0] = (*event).hw.event_base;
+	(*cpuc).current_idx[n0] = PIC_NO_INDEX;
 
-	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+	(*event).hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
 	if (!(ef_flags & PERF_EF_START))
-		event->hw.state |= PERF_HES_ARCH;
+		(*event).hw.state |= PERF_HES_ARCH;
 
 	/*
 	 * If group events scheduling transaction was started,
 	 * skip the schedulability test here, it will be performed
 	 * at commit time(->commit_txn) as a whole
 	 */
-	if (cpuc->txn_flags & PERF_PMU_TXN_ADD)
-		goto nocheck;
+	if ((*cpuc).txn_flags & PERF_PMU_TXN_ADD)
+		break 'nocheck;
 
-	if (check_excludes(cpuc->event, n0, 1))
-		goto out;
-	if (sparc_check_constraints(cpuc->event, cpuc->events, n0 + 1))
-		goto out;
-
-nocheck:
-	cpuc->n_events++;
-	cpuc->n_added++;
+	if (check_excludes((*cpuc).event, n0, 1))
+		break 'out;
+	if (sparc_check_constraints((*cpuc).event, (*cpuc).events, n0 + 1))
+		break 'out;
+	}
+	
+	(*cpuc).n_events++;
+	(*cpuc).n_added++;
 
 	ret = 0;
-out:
+	}
+	
 	local_irq_restore(flags);
 	return ret;
 }
 
-  int sparc_pmu_event_init(struct perf_event *event)
+  int sparc_pmu_event_init(perf_event *event)
 {
-	struct perf_event_attr *attr = &event->attr;
+	struct perf_event_attr *attr = (*&event).attr;
 	struct perf_event *evts[MAX_HWEVENTS];
-	struct hw_perf_event *hwc = &event->hw;
+	struct hw_perf_event *hwc = (*&event).hw;
 	u64 events[MAX_HWEVENTS];
 	int current_idx_dmy[MAX_HWEVENTS];
 	const  perf_event_map *pmap;
@@ -1434,15 +1441,15 @@ out:
 	if (has_branch_stack(event))
 		return -EOPNOTSUPP;
 
-	switch (attr->type) {
+	switch ((*attr).type) {
 	case PERF_TYPE_HARDWARE:
-		if (attr->config >= sparc_pmu->max_events)
+		if ((*attr).config >= (*sparc_pmu).max_events)
 			return -EINVAL;
-		pmap = sparc_pmu->event_map(attr->config);
+		pmap = (*sparc_pmu).event_map((*attr).config);
 		break;
 
 	case PERF_TYPE_HW_CACHE:
-		pmap = sparc_map_cache_event(attr->config);
+		pmap = sparc_map_cache_event((*attr).config);
 		if (IS_ERR(pmap))
 			return PTR_ERR(pmap);
 		break;
@@ -1457,33 +1464,33 @@ out:
 	}
 
 	if (pmap) {
-		hwc->event_base = perf_event_encode(pmap);
+		(*hwc).event_base = perf_event_encode(pmap);
 	} else {
 		/*
 		 * User gives us "(encoding << 16) | pic_mask" for
 		 * PERF_TYPE_RAW events.
 		 */
-		hwc->event_base = attr->config;
+		(*hwc).event_base = (*attr).config;
 	}
 
 	/* We save the enable bits in the config_base.  */
-	hwc->config_base = sparc_pmu->irq_bit;
-	if (!attr->exclude_user)
-		hwc->config_base |= sparc_pmu->user_bit;
-	if (!attr->exclude_kernel)
-		hwc->config_base |= sparc_pmu->priv_bit;
-	if (!attr->exclude_hv)
-		hwc->config_base |= sparc_pmu->hv_bit;
+	(*hwc).config_base = (*sparc_pmu).irq_bit;
+	if ((*!attr).exclude_user)
+		(*hwc).config_base |= (*sparc_pmu).user_bit;
+	if ((*!attr).exclude_kernel)
+		(*hwc).config_base |= (*sparc_pmu).priv_bit;
+	if ((*!attr).exclude_hv)
+		(*hwc).config_base |= (*sparc_pmu).hv_bit;
 
 	n = 0;
-	if (event->group_leader != event) {
-		n = collect_events(event->group_leader,
-				   sparc_pmu->max_hw_events - 1,
+	if ((*event).group_leader != event) {
+		n = collect_events((*event).group_leader,
+				   (*sparc_pmu).max_hw_events - 1,
 				   evts, events, current_idx_dmy);
 		if (n < 0)
 			return -EINVAL;
 	}
-	events[n] = hwc->event_base;
+	events[n] = (*hwc).event_base;
 	evts[n] = event;
 
 	if (check_excludes(evts, n, 1))
@@ -1492,18 +1499,18 @@ out:
 	if (sparc_check_constraints(evts, events, n + 1))
 		return -EINVAL;
 
-	hwc->idx = PIC_NO_INDEX;
+	(*hwc).idx = PIC_NO_INDEX;
 
 	/* Try to do all error checking before this point, as unwinding
 	 * state after grabbing the PMC is difficult.
 	 */
 	perf_event_grab_pmc();
-	event->destroy = hw_perf_event_destroy;
+	(*event).destroy = hw_perf_event_destroy;
 
-	if (!hwc->sample_period) {
-		hwc->sample_period = MAX_PERIOD;
-		hwc->last_period = hwc->sample_period;
-		local64_set(&hwc->period_left, hwc->sample_period);
+	if ((*!hwc).sample_period) {
+		(*hwc).sample_period = MAX_PERIOD;
+		(*hwc).last_period = (*hwc).sample_period;
+		local64_set((*&hwc).period_left, (*hwc).sample_period);
 	}
 
 	return 0;
@@ -1514,13 +1521,13 @@ out:
  * Set the flag to make pmu::enable() not perform the
  * schedulability test, it will be performed at commit time
  */
-  void sparc_pmu_start_txn(struct pmu *pmu, u32 txn_flags)
+  void sparc_pmu_start_txn(pmu *pmu, txn_flags: u32)
 {
 	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
 
-	WARN_ON_ONCE(cpuhw->txn_flags);		/* txn already in flight */
+	WARN_ON_ONCE((*cpuhw).txn_flags);		/* txn already in flight */
 
-	cpuhw->txn_flags = txn_flags;
+	(*cpuhw).txn_flags = txn_flags;
 	if (txn_flags & ~PERF_PMU_TXN_ADD)
 		return;
 
@@ -1532,15 +1539,15 @@ out:
  * Clear the flag and pmu::enable() will perform the
  * schedulability test.
  */
-  void sparc_pmu_cancel_txn(struct pmu *pmu)
+  void sparc_pmu_cancel_txn(pmu *pmu)
 {
 	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
 	u32 txn_flags;
 
-	WARN_ON_ONCE(!cpuhw->txn_flags);	/* no txn in flight */
+	WARN_ON_ONCE((*!cpuhw).txn_flags);	/* no txn in flight */
 
-	txn_flags = cpuhw->txn_flags;
-	cpuhw->txn_flags = 0;
+	txn_flags = (*cpuhw).txn_flags;
+	(*cpuhw).txn_flags = 0;
 	if (txn_flags & ~PERF_PMU_TXN_ADD)
 		return;
 
@@ -1552,7 +1559,7 @@ out:
  * Perform the group schedulability test as a whole
  * Return 0 if success
  */
-  int sparc_pmu_commit_txn(struct pmu *pmu)
+  int sparc_pmu_commit_txn(pmu *pmu)
 {
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 	int n;
@@ -1560,7 +1567,7 @@ out:
 	if (!sparc_pmu)
 		return -EINVAL;
 
-	WARN_ON_ONCE(!cpuc->txn_flags);	/* no txn in flight */
+	WARN_ON_ONCE((*!cpuc).txn_flags);	/* no txn in flight */
 
 	if (cpuc->txn_flags & ~PERF_PMU_TXN_ADD) {
 		cpuc->txn_flags = 0;
@@ -1579,17 +1586,17 @@ out:
 }
 
   struct pmu pmu = {
-	.pmu_enable	= sparc_pmu_enable,
-	.pmu_disable	= sparc_pmu_disable,
-	.event_init	= sparc_pmu_event_init,
-	.add		= sparc_pmu_add,
-	.del		= sparc_pmu_del,
-	.start		= sparc_pmu_start,
-	.stop		= sparc_pmu_stop,
-	.read		= sparc_pmu_read,
-	.start_txn	= sparc_pmu_start_txn,
-	.cancel_txn	= sparc_pmu_cancel_txn,
-	.commit_txn	= sparc_pmu_commit_txn,
+	pmu_enable: sparc_pmu_enable,
+	pmu_disable: sparc_pmu_disable,
+	event_init: sparc_pmu_event_init,
+	add: sparc_pmu_add,
+	del: sparc_pmu_del,
+	start: sparc_pmu_start,
+	stop: sparc_pmu_stop,
+	read: sparc_pmu_read,
+	start_txn: sparc_pmu_start_txn,
+	cancel_txn: sparc_pmu_cancel_txn,
+	commit_txn: sparc_pmu_commit_txn,
 };
 
 void perf_event_print_debug(void)
@@ -1615,8 +1622,8 @@ void perf_event_print_debug(void)
 	local_irq_restore(flags);
 }
 
-  int __kprobes perf_event_nmi_handler(struct notifier_block *self,
-					    u64 cmd, void *__args)
+  int __kprobes perf_event_nmi_handler(notifier_block *self,
+					    cmd: u64, void *__args)
 {
 	struct die_args *args = __args;
 	struct perf_sample_data data;
@@ -1684,7 +1691,7 @@ void perf_event_print_debug(void)
 }
 
   __read_mostly struct notifier_block perf_event_nmi_notifier = {
-	.notifier_call		= perf_event_nmi_handler,
+	notifier_call: perf_event_nmi_handler,
 };
 
   bool __init supported_pmu(void)
@@ -1738,10 +1745,10 @@ void perf_event_print_debug(void)
 }
 pure_initcall(init_hw_perf_events);
 
-void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
-			   struct pt_regs *regs)
+void perf_callchain_kernel(perf_callchain_entry_ctx *entry,
+			   pt_regs *regs)
 {
-	u64 ksp, fp;
+	ksp: u64, fp;
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 	int graph = 0;
 #endif
@@ -1760,8 +1767,8 @@ void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
 		if (!kstack_valid(current_thread_info(), fp))
 			break;
 
-		sf = (struct sparc_stackf *) fp;
-		regs = (struct pt_regs *) (sf + 1);
+		sf = (sparc_stackf *) fp;
+		regs = (pt_regs *) (sf + 1);
 
 		if (kstack_is_trap_frame(current_thread_info(), regs)) {
 			if (user_mode(regs))
@@ -1790,7 +1797,7 @@ void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
 
 #[inline]
 unsafe fn int
-valid_user_frame(const void __user *fp, u64 size)
+valid_user_frame(const void __user *fp, size: u64)
 {
 	/* addresses should be at least 4-byte aligned */
 	if (((u64) fp) & 3)
@@ -1799,8 +1806,8 @@ valid_user_frame(const void __user *fp, u64 size)
 	return (__range_not_ok(fp, size, TASK_SIZE) == 0);
 }
 
-  void perf_callchain_user_64(struct perf_callchain_entry_ctx *entry,
-				   struct pt_regs *regs)
+  void perf_callchain_user_64(perf_callchain_entry_ctx *entry,
+				   pt_regs *regs)
 {
 	u64 ufp;
 
@@ -1810,7 +1817,7 @@ valid_user_frame(const void __user *fp, u64 size)
 		struct sparc_stackf sf;
 		u64 pc;
 
-		usf = (struct sparc_stackf __user *)ufp;
+		usf = (sparc_stackf __user *)ufp;
 		if (!valid_user_frame(usf, sizeof(sf)))
 			break;
 
@@ -1823,8 +1830,8 @@ valid_user_frame(const void __user *fp, u64 size)
 	} while (entry->nr < entry->max_stack);
 }
 
-  void perf_callchain_user_32(struct perf_callchain_entry_ctx *entry,
-				   struct pt_regs *regs)
+  void perf_callchain_user_32(perf_callchain_entry_ctx *entry,
+				   pt_regs *regs)
 {
 	u64 ufp;
 
@@ -1837,7 +1844,7 @@ valid_user_frame(const void __user *fp, u64 size)
 			struct sparc_stackf sf;
 
 			ufp += STACK_BIAS;
-			usf = (struct sparc_stackf __user *)ufp;
+			usf = (sparc_stackf __user *)ufp;
 			if (__copy_from_user_inatomic(&sf, usf, sizeof(sf)))
 				break;
 			pc = sf.callers_pc & 0xffffffff;
@@ -1845,7 +1852,7 @@ valid_user_frame(const void __user *fp, u64 size)
 		} else {
 			struct sparc_stackf32 __user *usf;
 			struct sparc_stackf32 sf;
-			usf = (struct sparc_stackf32 __user *)ufp;
+			usf = (sparc_stackf32 __user *)ufp;
 			if (__copy_from_user_inatomic(&sf, usf, sizeof(sf)))
 				break;
 			pc = sf.callers_pc;
@@ -1856,7 +1863,7 @@ valid_user_frame(const void __user *fp, u64 size)
 }
 
 void
-perf_callchain_user(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+perf_callchain_user(perf_callchain_entry_ctx *entry, pt_regs *regs)
 {
 	u64 saved_fault_address = current_thread_info()->fault_address;
 	u8 saved_fault_code = get_thread_fault_code();

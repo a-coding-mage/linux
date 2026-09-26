@@ -880,13 +880,13 @@ kernel_c_items! {
 #define WM8400_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S24_LE)
 
 static const struct snd_soc_dai_ops wm8400_dai_ops = {
-	.hw_params = wm8400_hw_params,
-	.mute_stream = wm8400_mute,
-	.set_fmt = wm8400_set_dai_fmt,
-	.set_clkdiv = wm8400_set_dai_clkdiv,
-	.set_sysclk = wm8400_set_dai_sysclk,
-	.set_pll = wm8400_set_dai_pll,
-	.no_capture_mute = 1,
+	hw_params: wm8400_hw_params,
+	mute_stream: wm8400_mute,
+	set_fmt: wm8400_set_dai_fmt,
+	set_clkdiv: wm8400_set_dai_clkdiv,
+	set_sysclk: wm8400_set_dai_sysclk,
+	set_pll: wm8400_set_dai_pll,
+	no_capture_mute: 1,
 };
 
 /*
@@ -897,38 +897,38 @@ static const struct snd_soc_dai_ops wm8400_dai_ops = {
  * 2. ADC on Primary Interface/DAC on secondary
  */
 static struct snd_soc_dai_driver wm8400_dai = {
-	.name = "wm8400-hifi",
-	.playback = {
-		.stream_name = "Playback",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = WM8400_RATES,
-		.formats = WM8400_FORMATS,
+	name: "wm8400-hifi",
+	playback: {
+		stream_name: "Playback",
+		channels_min: 1,
+		channels_max: 2,
+		rates: WM8400_RATES,
+		formats: WM8400_FORMATS,
 	},
-	.capture = {
-		.stream_name = "Capture",
-		.channels_min = 1,
-		.channels_max = 2,
-		.rates = WM8400_RATES,
-		.formats = WM8400_FORMATS,
+	capture: {
+		stream_name: "Capture",
+		channels_min: 1,
+		channels_max: 2,
+		rates: WM8400_RATES,
+		formats: WM8400_FORMATS,
 	},
-	.ops = &wm8400_dai_ops,
+	ops: &wm8400_dai_ops,
 };
 
 static const struct snd_soc_component_driver soc_component_dev_wm8400 = {
-	.probe			= wm8400_component_probe,
-	.remove			= wm8400_component_remove,
-	.set_bias_level		= wm8400_set_bias_level,
-	.controls		= wm8400_snd_controls,
-	.num_controls		= ARRAY_SIZE(wm8400_snd_controls),
-	.dapm_widgets		= wm8400_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(wm8400_dapm_widgets),
-	.dapm_routes		= wm8400_dapm_routes,
-	.num_dapm_routes	= ARRAY_SIZE(wm8400_dapm_routes),
-	.suspend_bias_off	= 1,
-	.idle_bias_on		= 1,
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
+	probe: wm8400_component_probe,
+	remove: wm8400_component_remove,
+	set_bias_level: wm8400_set_bias_level,
+	controls: wm8400_snd_controls,
+	num_controls: ARRAY_SIZE(wm8400_snd_controls),
+	dapm_widgets: wm8400_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(wm8400_dapm_widgets),
+	dapm_routes: wm8400_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(wm8400_dapm_routes),
+	suspend_bias_off: 1,
+	idle_bias_on: 1,
+	use_pmdown_time: 1,
+	endianness: 1,
 };
 }
 
@@ -942,8 +942,7 @@ extern "C" {
         dev: *mut device,
         cmpnt_drv: *const c_void,
         dai_drv: *mut c_void,
-        num_dai: c_int,
-    ) -> c_int;
+        num_dai: c_int) -> c_int;
 }
 
 unsafe fn wm8400_probe(pdev: *mut platform_device) -> c_int {
@@ -957,10 +956,10 @@ unsafe fn wm8400_probe(pdev: *mut platform_device) -> c_int {
 
 kernel_c_items! {
 static struct platform_driver wm8400_codec_driver = {
-	.driver = {
-		   .name = "wm8400-codec",
+	driver: {
+		   name: "wm8400-codec",
 		   },
-	.probe = wm8400_probe,
+	probe: wm8400_probe,
 };
 
 module_platform_driver(wm8400_codec_driver);

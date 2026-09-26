@@ -62,7 +62,7 @@ unsafe fn cls_bpf_classify(skb: *mut sk_buff, tp: *const tcf_proto, res: *mut tc
     let at_ingress = skb_at_tc_ingress(skb);
     let mut ret = -1;
     let mut prog: *mut cls_bpf_prog;
-    list_for_each_entry_rcu!(prog, &(*head).plist, link) {
+    list_for_each_entry_rcu!(prog, &(*head).plist, link, {
         let filter_res;
         (*qdisc_skb_cb(skb)).tc_classid = (*prog).res.classid;
         if tc_skip_sw((*prog).gen_flags) {
@@ -87,7 +87,7 @@ unsafe fn cls_bpf_classify(skb: *mut sk_buff, tp: *const tcf_proto, res: *mut tc
         ret = tcf_exts_exec(skb, &mut (*prog).exts, res);
         if ret < 0 { continue; }
         break;
-    }
+    });
     ret
 }
 
@@ -141,8 +141,8 @@ unsafe fn __cls_bpf_delete_prog(prog: *mut cls_bpf_prog) { tcf_exts_destroy(&mut
 unsafe fn cls_bpf_delete_prog_work(work: *mut work_struct) { let prog = container_of!(to_rcu_work(work), cls_bpf_prog, rwork); rtnl_lock(); __cls_bpf_delete_prog(prog); rtnl_unlock(); }
 unsafe fn __cls_bpf_delete(tp: *mut tcf_proto, prog: *mut cls_bpf_prog, extack: *mut netlink_ext_ack) { let head = rtnl_dereference((*tp).root); idr_remove(&mut (*head).handle_idr, (*prog).handle); cls_bpf_stop_offload(tp, prog, extack); list_del_rcu!(&mut (*prog).link); tcf_unbind_filter(tp, &mut (*prog).res); if tcf_exts_get_net(&mut (*prog).exts) { tcf_queue_work!(&mut (*prog).rwork, cls_bpf_delete_prog_work); } else { __cls_bpf_delete_prog(prog); } }
 unsafe fn cls_bpf_delete(tp: *mut tcf_proto, arg: *mut c_void, last: *mut bool, _rtnl_held: bool, extack: *mut netlink_ext_ack) -> c_int { let head = rtnl_dereference((*tp).root); __cls_bpf_delete(tp, arg as *mut cls_bpf_prog, extack); *last = list_empty(&(*head).plist); 0 }
-unsafe fn cls_bpf_destroy(tp: *mut tcf_proto, _rtnl_held: bool, extack: *mut netlink_ext_ack) { let head = rtnl_dereference((*tp).root); let mut prog: *mut cls_bpf_prog; let mut tmp: *mut cls_bpf_prog; list_for_each_entry_safe!(prog, tmp, &(*head).plist, link) { __cls_bpf_delete(tp, prog, extack); } idr_destroy(&mut (*head).handle_idr); kfree_rcu!(head, rcu); }
-unsafe fn cls_bpf_get(tp: *mut tcf_proto, handle: u32) -> *mut c_void { let head = rtnl_dereference((*tp).root); let mut prog: *mut cls_bpf_prog; list_for_each_entry!(prog, &(*head).plist, link) { if (*prog).handle == handle { return prog as *mut c_void; } } core::ptr::null_mut() }
+unsafe fn cls_bpf_destroy(tp: *mut tcf_proto, _rtnl_held: bool, extack: *mut netlink_ext_ack) { let head = rtnl_dereference((*tp).root); let mut prog: *mut cls_bpf_prog; let mut tmp: *mut cls_bpf_prog; list_for_each_entry_safe!(prog, tmp, &(*head).plist, link, { __cls_bpf_delete(tp, prog, extack); }); idr_destroy(&mut (*head).handle_idr); kfree_rcu!(head, rcu); }
+unsafe fn cls_bpf_get(tp: *mut tcf_proto, handle: u32) -> *mut c_void { let head = rtnl_dereference((*tp).root); let mut prog: *mut cls_bpf_prog; list_for_each_entry!(prog, &(*head).plist, link, { if (*prog).handle == handle { return prog as *mut c_void; } }); core::ptr::null_mut() }
 
 // Complex netlink parsing, dump, walk, reoffload, and module-registration routines
 // are preserved below as direct external-kernel calls in the same source order.

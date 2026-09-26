@@ -38,7 +38,7 @@ unsafe fn fetch_pptt_cache(table_hdr: *mut acpi_table_header, pptt_ref: u32) -> 
 }
 
 unsafe fn upgrade_pptt_cache(cache: *mut acpi_pptt_cache) -> *mut acpi_pptt_cache_v1 {
-    if (*cache).header.length as usize < core::mem::size_of::<acpi_pptt_cache_v1>() {
+    if ((*cache).header.length as usize) < core::mem::size_of::<acpi_pptt_cache_v1>() {
         return core::ptr::null_mut();
     }
     if (*cache).flags & ACPI_PPTT_CACHE_ID_VALID == 0 {
@@ -146,7 +146,7 @@ unsafe fn acpi_find_processor_node(table_hdr: *mut acpi_table_header, acpi_cpu_i
         let cpu_node = entry as *mut acpi_pptt_processor;
         if (*entry).length == 0 { pr_warn!("Invalid zero length subtable\n"); break; }
         if (*entry).typ == ACPI_PPTT_TYPE_PROCESSOR && acpi_cpu_id == (*cpu_node).acpi_processor_id
-            && entry as usize + (*entry).length as usize <= table_end
+            && entry as usize + ((*entry).length as usize) <= table_end
             && (*entry).length as usize == proc_sz + (*cpu_node).number_of_priv_resources as usize * core::mem::size_of::<u32>()
             && acpi_pptt_leaf_node(table_hdr, cpu_node) != 0 { return cpu_node; }
         entry = (entry as *mut u8).add((*entry).length as usize) as *mut acpi_subtable_header;

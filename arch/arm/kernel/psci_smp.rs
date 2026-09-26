@@ -145,13 +145,13 @@ pub struct SmpOperations {
 }
 
 pub static psci_smp_ops: SmpOperations = SmpOperations {
-    .smp_boot_secondary: psci_boot_secondary,
+    smp_boot_secondary: psci_boot_secondary,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    .cpu_disable: psci_cpu_disable,
+    cpu_disable: psci_cpu_disable,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    .cpu_die: psci_cpu_die,
+    cpu_die: psci_cpu_die,
     #[cfg(CONFIG_HOTPLUG_CPU)]
-    .cpu_kill: psci_cpu_kill,
+    cpu_kill: psci_cpu_kill,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

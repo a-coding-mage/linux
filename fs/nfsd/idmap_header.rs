@@ -37,41 +37,37 @@
 
 #[cfg(CONFIG_NFSD_V4)]
 unsafe extern "C" {
-    pub fn nfsd_idmap_init(net: *mut struct net) -> i32;
-    pub fn nfsd_idmap_shutdown(net: *mut struct net);
+    pub fn nfsd_idmap_init(net: *mut net) -> i32;
+    pub fn nfsd_idmap_shutdown(net: *mut net);
 }
 
 #[cfg(not(CONFIG_NFSD_V4))]
-pub unsafe fn nfsd_idmap_init(_net: *mut struct net) -> i32 {
+pub unsafe fn nfsd_idmap_init(_net: *mut net) -> i32 {
     0
 }
 
 #[cfg(not(CONFIG_NFSD_V4))]
-pub unsafe fn nfsd_idmap_shutdown(_net: *mut struct net) {}
+pub unsafe fn nfsd_idmap_shutdown(_net: *mut net) {}
 
 unsafe extern "C" {
     pub fn nfsd_map_name_to_uid(
-        rqst: *mut struct svc_rqst,
+        rqst: *mut svc_rqst,
         name: *const core::ffi::c_char,
         len: usize,
-        uid: *mut kuid_t,
-    ) -> __be32;
+        uid: *mut kuid_t) -> __be32;
     pub fn nfsd_map_name_to_gid(
-        rqst: *mut struct svc_rqst,
+        rqst: *mut svc_rqst,
         name: *const core::ffi::c_char,
         len: usize,
-        gid: *mut kgid_t,
-    ) -> __be32;
+        gid: *mut kgid_t) -> __be32;
     pub fn nfsd4_encode_user(
-        xdr: *mut struct xdr_stream,
-        rqst: *mut struct svc_rqst,
-        uid: kuid_t,
-    ) -> __be32;
+        xdr: *mut xdr_stream,
+        rqst: *mut svc_rqst,
+        uid: kuid_t) -> __be32;
     pub fn nfsd4_encode_group(
-        xdr: *mut struct xdr_stream,
-        rqst: *mut struct svc_rqst,
-        gid: kgid_t,
-    ) -> __be32;
+        xdr: *mut xdr_stream,
+        rqst: *mut svc_rqst,
+        gid: kgid_t) -> __be32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

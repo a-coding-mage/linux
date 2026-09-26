@@ -41,6 +41,7 @@ unsafe fn fsverity_init_merkle_tree_params(
     let mut err: i32;
     let mut blocks: u64;
     let mut blocks_in_level: [u64; FS_VERITY_MAX_LEVELS as usize] = [0; FS_VERITY_MAX_LEVELS as usize];
+    'out_err: {
     let mut offset: u64;
     let mut level: i32;
 
@@ -57,14 +58,14 @@ unsafe fn fsverity_init_merkle_tree_params(
         (*params).hashstate = fsverity_prepare_hash_state(hash_alg, salt, salt_size);
         if (*params).hashstate.is_null() {
             err = -ENOMEM;
-            goto out_err;
+            break 'out_err;
         }
     }
 
     if log_blocksize < 10 || log_blocksize > PAGE_SHIFT || log_blocksize > (*inode).i_blkbits {
         fsverity_warn(inode, "Unsupported log_blocksize: %u", log_blocksize);
         err = -EINVAL;
-        goto out_err;
+        break 'out_err;
     }
     (*params).log_blocksize = log_blocksize;
     (*params).block_size = 1u32 << log_blocksize;
@@ -73,12 +74,12 @@ unsafe fn fsverity_init_merkle_tree_params(
 
     if WARN_ON_ONCE(!is_power_of_2((*params).digest_size)) {
         err = -EINVAL;
-        goto out_err;
+        break 'out_err;
     }
     if (*params).block_size < 2 * (*params).digest_size {
         fsverity_warn(inode, "Merkle tree block size (%u) too small for hash algorithm \"%s\"", (*params).block_size, (*hash_alg).name);
         err = -EINVAL;
-        goto out_err;
+        break 'out_err;
     }
     (*params).log_digestsize = ilog2((*params).digest_size);
     (*params).log_arity = log_blocksize - (*params).log_digestsize;
@@ -90,7 +91,7 @@ unsafe fn fsverity_init_merkle_tree_params(
         if (*params).num_levels >= FS_VERITY_MAX_LEVELS {
             fsverity_err(inode, "Too many levels in Merkle tree");
             err = -EFBIG;
-            goto out_err;
+            break 'out_err;
         }
         blocks = (blocks + (*params).hashes_per_block as u64 - 1) >> (*params).log_arity;
         blocks_in_level[(*params).num_levels as usize] = blocks;
@@ -108,15 +109,15 @@ unsafe fn fsverity_init_merkle_tree_params(
     if (((*params).block_size != PAGE_SIZE && offset > (1u64 << 23)) || offset > ULONG_MAX as u64) {
         fsverity_err(inode, "Too many blocks in Merkle tree");
         err = -EFBIG;
-        goto out_err;
+        break 'out_err;
     }
 
     fsverity_hash_block(params, page_address(ZERO_PAGE(0)), (*params).zero_digest.as_mut_ptr());
     (*params).tree_size = offset << log_blocksize;
     (*params).tree_pages = PAGE_ALIGN((*params).tree_size) >> PAGE_SHIFT;
     return 0;
-
-out_err:
+    }
+    
     kfree((*params).hashstate);
     core::ptr::write_bytes(params as *mut u8, 0, core::mem::size_of::<merkle_tree_params>());
     err

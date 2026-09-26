@@ -46,7 +46,7 @@ pub struct hsr_tag {
 pub const HSR_HLEN: u32 = 6;
 
 // The following configuration condition corresponds to IS_ENABLED(CONFIG_HSR).
-#[cfg(feature = "CONFIG_HSR")]
+#[cfg(CONFIG_HSR)]
 extern "C" {
     pub fn is_hsr_master(dev: *mut net_device) -> bool;
     pub fn hsr_get_version(dev: *mut net_device, ver: *mut hsr_version) -> ::core::ffi::c_int;
@@ -61,12 +61,12 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_HSR"))]
+#[cfg(not(CONFIG_HSR))]
 pub unsafe fn is_hsr_master(_dev: *mut net_device) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_HSR"))]
+#[cfg(not(CONFIG_HSR))]
 pub unsafe fn hsr_get_version(
     _dev: *mut net_device,
     _ver: *mut hsr_version,
@@ -74,7 +74,7 @@ pub unsafe fn hsr_get_version(
     -EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_HSR"))]
+#[cfg(not(CONFIG_HSR))]
 pub unsafe fn hsr_get_port_ndev(
     _ndev: *mut net_device,
     _pt: hsr_port_type,
@@ -82,7 +82,7 @@ pub unsafe fn hsr_get_port_ndev(
     ERR_PTR(-EINVAL)
 }
 
-#[cfg(not(feature = "CONFIG_HSR"))]
+#[cfg(not(CONFIG_HSR))]
 pub unsafe fn hsr_get_port_type(
     _hsr_dev: *mut net_device,
     _dev: *mut net_device,

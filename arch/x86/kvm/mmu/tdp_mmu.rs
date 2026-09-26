@@ -25,49 +25,42 @@ extern "C" {
     pub fn kvm_tdp_mmu_unmap_gfn_range(
         kvm: *mut kvm,
         range: *mut kvm_gfn_range,
-        flush: bool,
-    ) -> bool;
+        flush: bool) -> bool;
     pub fn kvm_tdp_mmu_age_gfn_range(kvm: *mut kvm, range: *mut kvm_gfn_range) -> bool;
     pub fn kvm_tdp_mmu_test_age_gfn(kvm: *mut kvm, range: *mut kvm_gfn_range) -> bool;
     pub fn kvm_tdp_mmu_wrprot_slot(
         kvm: *mut kvm,
         slot: *const kvm_memory_slot,
-        min_level: i32,
-    ) -> bool;
+        min_level: i32) -> bool;
     pub fn kvm_tdp_mmu_clear_dirty_slot(kvm: *mut kvm, slot: *const kvm_memory_slot);
     pub fn kvm_tdp_mmu_clear_dirty_pt_masked(
         kvm: *mut kvm,
         slot: *mut kvm_memory_slot,
         gfn: u64,
         mask: usize,
-        wrprot: bool,
-    );
+        wrprot: bool);
     pub fn kvm_tdp_mmu_recover_huge_pages(kvm: *mut kvm, slot: *const kvm_memory_slot);
     pub fn kvm_tdp_mmu_write_protect_gfn(
         kvm: *mut kvm,
         slot: *mut kvm_memory_slot,
         gfn: u64,
-        min_level: i32,
-    ) -> bool;
+        min_level: i32) -> bool;
     pub fn kvm_tdp_mmu_get_walk(
         vcpu: *mut kvm_vcpu,
         addr: u64,
         sptes: *mut u64,
-        root_level: *mut i32,
-    ) -> i32;
+        root_level: *mut i32) -> i32;
     pub fn kvm_tdp_mmu_fast_pf_get_last_sptep(
         vcpu: *mut kvm_vcpu,
         gfn: u64,
-        spte: *mut u64,
-    ) -> *mut u64;
+        spte: *mut u64) -> *mut u64;
     pub fn kvm_tdp_mmu_try_split_huge_pages(
         kvm: *mut kvm,
         slot: *const kvm_memory_slot,
         start: u64,
         end: u64,
         target_level: i32,
-        shared: bool,
-    );
+        shared: bool);
 }
 
 // Opaque declarations mirror the structures supplied by mmu.h and related

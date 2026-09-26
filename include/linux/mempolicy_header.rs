@@ -6,7 +6,7 @@
 
 pub const NO_INTERLEAVE_INDEX: ::core::primitive::c_ulong = !0;
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[repr(C)]
 pub struct mempolicy {
     pub refcnt: atomic_t,
@@ -18,62 +18,62 @@ pub struct mempolicy {
     pub rcu: rcu_head,
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[repr(C)]
 pub union mempolicy_w {
     pub cpuset_mems_allowed: nodemask_t,
     pub user_nodemask: nodemask_t,
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn __mpol_put(pol: *mut mempolicy);
     pub fn __mpol_dup(pol: *mut mempolicy) -> *mut mempolicy;
     pub fn __mpol_equal(a: *mut mempolicy, b: *mut mempolicy) -> bool;
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn mpol_put(pol: *mut mempolicy) {
     if !pol.is_null() { __mpol_put(pol); }
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn mpol_needs_cond_ref(pol: *mut mempolicy) -> ::core::ffi::c_int {
     ( (!pol.is_null()) && ((*pol).flags & MPOL_F_SHARED != 0) ) as ::core::ffi::c_int
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn mpol_cond_put(pol: *mut mempolicy) {
     if mpol_needs_cond_ref(pol) != 0 { __mpol_put(pol); }
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn mpol_dup(mut pol: *mut mempolicy) -> *mut mempolicy {
     if !pol.is_null() { pol = __mpol_dup(pol); }
     pol
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn mpol_get(pol: *mut mempolicy) {
     if !pol.is_null() { atomic_inc(&mut (*pol).refcnt); }
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn mpol_equal(a: *mut mempolicy, b: *mut mempolicy) -> bool {
     if a == b { true } else { __mpol_equal(a, b) }
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[repr(C)]
 pub struct shared_policy { pub root: rb_root, pub lock: rwlock_t }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[repr(C)]
 pub struct sp_node {
     pub nd: rb_node,
@@ -82,7 +82,7 @@ pub struct sp_node {
     pub policy: *mut mempolicy,
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn vma_dup_policy(src: *mut vm_area_struct, dst: *mut vm_area_struct) -> ::core::ffi::c_int;
     pub fn mpol_shared_policy_init(sp: *mut shared_policy, mpol: *mut mempolicy);
@@ -111,54 +111,54 @@ extern "C" {
     pub fn mempolicy_set_node_perf(node: ::core::ffi::c_uint, coords: *mut access_coordinate) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[repr(C)]
 pub struct mempolicy {}
 
 // CONFIG_NUMA-disabled inline implementations.
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn get_task_policy(_: *mut task_struct) -> *mut mempolicy { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_equal(_: *mut mempolicy, _: *mut mempolicy) -> bool { true }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_put(_: *mut mempolicy) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_cond_put(_: *mut mempolicy) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_get(_: *mut mempolicy) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[repr(C)] pub struct shared_policy {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_shared_policy_init(_: *mut shared_policy, _: *mut mempolicy) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_free_shared_policy(_: *mut shared_policy) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_shared_policy_lookup(_: *mut shared_policy, _: pgoff_t) -> *mut mempolicy { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn get_vma_policy(_: *mut vm_area_struct, _: ::core::ffi::c_ulong, _: ::core::ffi::c_int, ilx: *mut pgoff_t) -> *mut mempolicy { *ilx = 0; core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn vma_dup_policy(_: *mut vm_area_struct, _: *mut vm_area_struct) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn numa_policy_init() {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn numa_default_policy() {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_rebind_task(_: *mut task_struct, _: *const nodemask_t) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_rebind_mm(_: *mut mm_struct, _: *mut nodemask_t) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn huge_node(_: *mut vm_area_struct, _: ::core::ffi::c_ulong, _: gfp_t, mpol: *mut *mut mempolicy, nodemask: *mut *mut nodemask_t) -> ::core::ffi::c_int { *mpol = core::ptr::null_mut(); *nodemask = core::ptr::null_mut(); 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn init_nodemask_of_mempolicy(_: *mut nodemask_t) -> bool { false }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn do_migrate_pages(_: *mut mm_struct, _: *const nodemask_t, _: *const nodemask_t, _: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn check_highest_zone(_: ::core::ffi::c_int) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_misplaced(_: *mut folio, _: *mut vm_fault, _: ::core::ffi::c_ulong) -> ::core::ffi::c_int { -1 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_put_task_policy(_: *mut task_struct) {}
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline] pub unsafe fn mpol_is_preferred_many(_: *mut mempolicy) -> bool { false }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

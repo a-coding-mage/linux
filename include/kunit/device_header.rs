@@ -10,7 +10,7 @@
 
 // The C header guard `_KUNIT_DEVICE_H` is omitted in Rust.
 // All declarations below are conditional on CONFIG_KUNIT being enabled.
-#[cfg(feature = "CONFIG_KUNIT")]
+#[cfg(CONFIG_KUNIT)]
 mod kunit_config {
     use core::ffi::c_char;
 

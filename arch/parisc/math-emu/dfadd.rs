@@ -27,6 +27,7 @@ pub unsafe fn dbl_fadd(
     let mut jumpsize: i32;
     let mut inexact = FALSE;
     let mut underflowtrap;
+    'round: {
 
     Dbl_copyfromptr(leftptr, leftp1, leftp2);
     Dbl_copyfromptr(rightptr, rightp1, rightp2);
@@ -120,22 +121,24 @@ pub unsafe fn dbl_fadd(
     if (save as i32) < 0 {
         Dbl_subtract_withextension(leftp1, leftp2, rightp1, rightp2, extent, resultp1, resultp2);
         if Dbl_iszero_hidden(resultp1) {
+            'underflow: {
             sign_save = Dbl_signextendedsign(resultp1);
             Dbl_leftshiftby1_withextent(resultp1, resultp2, extent, resultp1, resultp2);
             if Dbl_iszero(resultp1, resultp2) { if Is_rounding_mode(ROUNDMINUS) { Dbl_setone_sign(resultp1); } Dbl_copytoptr(resultp1, resultp2, dstptr); return NOEXCEPTION; }
             result_exponent -= 1;
-            if Dbl_isone_hidden(resultp1) { if result_exponent == 0 { goto underflow; } Dbl_set_sign(resultp1, sign_save); Ext_leftshiftby1(extent); goto round; }
+            if Dbl_isone_hidden(resultp1) { if result_exponent == 0 { break 'underflow; } Dbl_set_sign(resultp1, sign_save); Ext_leftshiftby1(extent); break 'round; }
             underflowtrap = Is_underflowtrap_enabled();
-            if !underflowtrap && result_exponent == 0 { goto underflow; }
+            if !underflowtrap && result_exponent == 0 { break 'underflow; }
             Ext_leftshiftby1(extent);
-            while Dbl_iszero_hiddenhigh7mantissa(resultp1) { Dbl_leftshiftby8(resultp1, resultp2); result_exponent -= 8; if result_exponent <= 0 && !underflowtrap { goto underflow; } }
-            if Dbl_iszero_hiddenhigh3mantissa(resultp1) { Dbl_leftshiftby4(resultp1, resultp2); result_exponent -= 4; if result_exponent <= 0 && !underflowtrap { goto underflow; } }
+            while Dbl_iszero_hiddenhigh7mantissa(resultp1) { Dbl_leftshiftby8(resultp1, resultp2); result_exponent -= 8; if result_exponent <= 0 && !underflowtrap { break 'underflow; } }
+            if Dbl_iszero_hiddenhigh3mantissa(resultp1) { Dbl_leftshiftby4(resultp1, resultp2); result_exponent -= 4; if result_exponent <= 0 && !underflowtrap { break 'underflow; } }
             jumpsize = Dbl_hiddenhigh3mantissa(resultp1);
-            if jumpsize > 7 { if result_exponent <= 0 { goto underflow; } Dbl_set_sign(resultp1, sign_save); Dbl_set_exponent(resultp1, result_exponent); Dbl_copytoptr(resultp1, resultp2, dstptr); return NOEXCEPTION; }
+            if jumpsize > 7 { if result_exponent <= 0 { break 'underflow; } Dbl_set_sign(resultp1, sign_save); Dbl_set_exponent(resultp1, result_exponent); Dbl_copytoptr(resultp1, resultp2, dstptr); return NOEXCEPTION; }
             Dbl_sethigh4bits(resultp1, sign_save);
             match jumpsize { 1 => { Dbl_leftshiftby3(resultp1, resultp2); result_exponent -= 3; }, 2 | 3 => { Dbl_leftshiftby2(resultp1, resultp2); result_exponent -= 2; }, 4..=7 => { Dbl_leftshiftby1(resultp1, resultp2); result_exponent -= 1; }, _ => {} }
             if result_exponent > 0 { Dbl_set_exponent(resultp1, result_exponent); Dbl_copytoptr(resultp1, resultp2, dstptr); return NOEXCEPTION; }
-            underflow:
+            }
+            
             if Is_underflowtrap_enabled() { Dbl_set_sign(resultp1, sign_save); Dbl_setwrapped_exponent(resultp1, result_exponent, unfl); Dbl_copytoptr(resultp1, resultp2, dstptr); return UNDERFLOWEXCEPTION; }
             Dbl_fix_overshift(resultp1, resultp2, 1 - result_exponent, extent); Dbl_clear_signexponent(resultp1); Dbl_set_sign(resultp1, sign_save); Dbl_copytoptr(resultp1, resultp2, dstptr); return NOEXCEPTION;
         }
@@ -143,7 +146,8 @@ pub unsafe fn dbl_fadd(
         Dbl_addition(leftp1, leftp2, rightp1, rightp2, resultp1, resultp2);
         if Dbl_isone_hiddenoverflow(resultp1) { Dbl_rightshiftby1_withextent(resultp2, extent, extent); Dbl_arithrightshiftby1(resultp1, resultp2); result_exponent += 1; }
     }
-    round:
+    }
+    
     if Ext_isnotzero(extent) {
         inexact = TRUE;
         match Rounding_mode() {

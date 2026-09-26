@@ -140,9 +140,9 @@ unsafe extern "C" fn caam_jr_alloc() -> *mut device {
     spin_lock(&mut driver_data.jr_alloc_lock);
     if list_empty(&mut driver_data.jr_list) { spin_unlock(&mut driver_data.jr_alloc_lock); return ERR_PTR(-ENODEV); }
     let mut jrpriv: *mut caam_drv_private_jr;
-    list_for_each_entry!(jrpriv, &mut driver_data.jr_list, list_node) {
+    list_for_each_entry!(jrpriv, &mut driver_data.jr_list, list_node, {
         let tfm_cnt = atomic_read(&(*jrpriv).tfm_count); if tfm_cnt < min_tfm_cnt { min_tfm_cnt = tfm_cnt; min_jrpriv = jrpriv; } if min_tfm_cnt == 0 { break; }
-    }
+    });
     if !min_jrpriv.is_null() { atomic_inc(&mut (*min_jrpriv).tfm_count); dev = (*min_jrpriv).dev; }
     spin_unlock(&mut driver_data.jr_alloc_lock); dev
 }

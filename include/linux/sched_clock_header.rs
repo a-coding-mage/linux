@@ -4,7 +4,7 @@
  */
 
 // C build condition: CONFIG_GENERIC_SCHED_CLOCK.
-#[cfg(feature = "CONFIG_GENERIC_SCHED_CLOCK")]
+#[cfg(CONFIG_GENERIC_SCHED_CLOCK)]
 #[repr(C)]
 pub struct clock_read_data {
     pub epoch_ns: u64,
@@ -15,7 +15,7 @@ pub struct clock_read_data {
     pub shift: u32,
 }
 
-#[cfg(feature = "CONFIG_GENERIC_SCHED_CLOCK")]
+#[cfg(CONFIG_GENERIC_SCHED_CLOCK)]
 unsafe extern "C" {
     pub fn sched_clock_read_begin(seq: *mut core::ffi::c_uint) -> *mut clock_read_data;
     pub fn sched_clock_read_retry(seq: core::ffi::c_uint) -> core::ffi::c_int;
@@ -27,11 +27,11 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_SCHED_CLOCK"))]
+#[cfg(not(CONFIG_GENERIC_SCHED_CLOCK))]
 #[inline]
 pub const fn generic_sched_clock_init() {}
 
-#[cfg(not(feature = "CONFIG_GENERIC_SCHED_CLOCK"))]
+#[cfg(not(CONFIG_GENERIC_SCHED_CLOCK))]
 #[inline]
 pub fn sched_clock_register(
     _read: Option<unsafe extern "C" fn() -> u64>,

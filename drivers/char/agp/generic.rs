@@ -56,7 +56,7 @@ const ENTRIES_PER_PAGE: usize = PAGE_SIZE / core::mem::size_of::<usize>();
 pub unsafe fn agp_allocate_memory(bridge: *mut agp_bridge_data, page_count: usize, type_: u32) -> *mut agp_memory {
     if bridge.is_null() { return core::ptr::null_mut(); }
     let cur = atomic_read(&(*bridge).current_memory_agp);
-    if cur + page_count as i32 > (*bridge).max_memory_agp || cur + page_count as i32 < page_count as i32 { return core::ptr::null_mut(); }
+    if cur + page_count as i32 > (*bridge).max_memory_agp || cur + (page_count as i32) < page_count as i32 { return core::ptr::null_mut(); }
     if type_ >= AGP_USER_TYPES { let n = agp_generic_alloc_user(page_count, type_ as i32); if !n.is_null() { (*n).bridge = bridge; } return n; }
     if type_ != 0 { let n = ((*(*bridge).driver).alloc_by_type)(page_count, type_ as i32); if !n.is_null() { (*n).bridge = bridge; } return n; }
     let scratch = (page_count + ENTRIES_PER_PAGE - 1) / ENTRIES_PER_PAGE;

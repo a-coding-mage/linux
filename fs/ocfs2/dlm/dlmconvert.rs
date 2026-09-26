@@ -52,13 +52,13 @@ unsafe fn __dlmconvert_master(dlm: *mut dlm_ctxt, res: *mut dlm_lock_resource,
         }
     }
     if type_ <= (*lock).ml.type_ { goto_grant!(status, lock, res, type_, call_ast, kick_thread); }
-    for_each_entry!(tmplock, &(*res).granted, list) {
+    for_each_entry!(tmplock, &(*res).granted, list, {
         if tmplock == lock { continue; }
         if !dlm_lock_compatible((*tmplock).ml.type_, type_) { goto_switch!(status, lock, res, type_, flags, kick_thread); }
-    }
-    for_each_entry!(tmplock, &(*res).converting, list) {
+    });
+    for_each_entry!(tmplock, &(*res).converting, list, {
         if !dlm_lock_compatible((*tmplock).ml.type_, type_) || !dlm_lock_compatible((*tmplock).ml.convert_type, type_) { goto_switch!(status, lock, res, type_, flags, kick_thread); }
-    }
+    });
     goto_grant!(status, lock, res, type_, call_ast, kick_thread);
 }
 
@@ -128,7 +128,7 @@ pub unsafe fn dlm_convert_lock_handler(msg: *mut o2net_msg, _len: u32, data: *mu
     if res.is_null() { status = DLM_IVLOCKID; goto_leave!(status, dlm, res, lock, call_ast, ast_reserved, kick_thread); }
     spin_lock(&mut (*res).spinlock);
     status = __dlm_lockres_state_to_status(res);
-    if status == DLM_NORMAL { for_each_entry!(lock, &(*res).granted, list) { if (*lock).ml.cookie == (*cnv).cookie && (*lock).ml.node == (*cnv).node_idx { dlm_lock_get(lock); break; } } }
+    if status == DLM_NORMAL { for_each_entry!(lock, &(*res).granted, list, { if (*lock).ml.cookie == (*cnv).cookie && (*lock).ml.node == (*cnv).node_idx { dlm_lock_get(lock); break; } }); }
     spin_unlock(&mut (*res).spinlock);
     if lock.is_null() { status = DLM_IVLOCKID; goto_leave!(status, dlm, res, lock, call_ast, ast_reserved, kick_thread); }
     if flags & LKM_PUT_LVB != 0 { (*(*lock).lksb).flags |= DLM_LKSB_PUT_LVB; core::ptr::copy_nonoverlapping((*cnv).lvb.as_ptr(), (*(*lock).lksb).lvb.as_mut_ptr(), DLM_LVB_LEN as usize); } else if flags & LKM_GET_LVB != 0 { (*(*lock).lksb).flags |= DLM_LKSB_GET_LVB; }

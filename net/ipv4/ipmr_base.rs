@@ -49,29 +49,29 @@ pub unsafe fn mr_mfc_find_parent(mrt: *mut mr_table, hasharg: *mut c_void, paren
     let list = rhltable_lookup(&mut (*mrt).mfc_hash, hasharg, *(*mrt).ops.rht_params);
     let mut tmp: *mut rhlist_head = core::ptr::null_mut();
     let mut c: *mut mr_mfc;
-    rhl_for_each_entry_rcu!(c, tmp, list, mnode) {
+    rhl_for_each_entry_rcu!(c, tmp, list, mnode, {
         if parent == -1 || parent == (*c).mfc_parent { return c as *mut c_void; }
-    }
+    });
     core::ptr::null_mut()
 }
 
 pub unsafe fn mr_mfc_find_any_parent(mrt: *mut mr_table, vifi: c_int) -> *mut c_void {
     let list = rhltable_lookup(&mut (*mrt).mfc_hash, (*mrt).ops.cmparg_any, *(*mrt).ops.rht_params);
     let mut tmp = core::ptr::null_mut(); let mut c: *mut mr_mfc;
-    rhl_for_each_entry_rcu!(c, tmp, list, mnode) {
+    rhl_for_each_entry_rcu!(c, tmp, list, mnode, {
         if (*c).mfc_un.res.ttls[vifi as usize] < 255 { return c as *mut c_void; }
-    }
+    });
     core::ptr::null_mut()
 }
 
 pub unsafe fn mr_mfc_find_any(mrt: *mut mr_table, vifi: c_int, hasharg: *mut c_void) -> *mut c_void {
     let list = rhltable_lookup(&mut (*mrt).mfc_hash, hasharg, *(*mrt).ops.rht_params);
     let mut tmp = core::ptr::null_mut(); let mut c: *mut mr_mfc; let mut proxy: *mut mr_mfc;
-    rhl_for_each_entry_rcu!(c, tmp, list, mnode) {
+    rhl_for_each_entry_rcu!(c, tmp, list, mnode, {
         if (*c).mfc_un.res.ttls[vifi as usize] < 255 { return c as *mut c_void; }
         proxy = mr_mfc_find_any_parent(mrt, (*c).mfc_parent) as *mut mr_mfc;
         if !proxy.is_null() && (*proxy).mfc_un.res.ttls[vifi as usize] < 255 { return c as *mut c_void; }
-    }
+    });
     mr_mfc_find_any_parent(mrt, vifi)
 }
 

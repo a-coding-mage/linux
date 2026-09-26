@@ -65,7 +65,7 @@ unsafe fn afs_proc_rootcell_write(file: *mut file, buf: *mut c_char, size: usize
 
 static afs_vol_types: [[c_char; 3]; 3] = [*b"RW\0", *b"RO\0", *b"BK\0"];
 
-unsafe fn afs_proc_cell_volumes_show(m: *mut seq_file, v: *mut c_void) -> c_int { if v == SEQ_START_TOKEN { seq_puts(m, "USE VID      TY NAME\n"); return 0; } let vol = hlist_entry(v, afs_volume, proc_link); seq_printf(m, c"%3d %08llx %s %s\n".as_ptr(), refcount_read(&(*vol).ref_), (*vol).vid, afs_vol_types[(*vol).type as usize].as_ptr(), (*vol).name); 0 }
+unsafe fn afs_proc_cell_volumes_show(m: *mut seq_file, v: *mut c_void) -> c_int { if v == SEQ_START_TOKEN { seq_puts(m, "USE VID      TY NAME\n"); return 0; } let vol = hlist_entry(v, afs_volume, proc_link); seq_printf(m, c"%3d %08llx %s %s\n".as_ptr(), refcount_read(&(*vol).ref_), (*vol).vid, afs_vol_types[(*vol).r#type as usize].as_ptr(), (*vol).name); 0 }
 unsafe fn afs_proc_cell_volumes_start(m:*mut seq_file,p:*mut loff_t)->*mut c_void { rcu_read_lock(); let cell=pde_data(file_inode((*m).file)); seq_hlist_start_head_rcu(&mut (*cell).proc_volumes,*p) }
 unsafe fn afs_proc_cell_volumes_next(m:*mut seq_file,v:*mut c_void,p:*mut loff_t)->*mut c_void { let cell=pde_data(file_inode((*m).file)); seq_hlist_next_rcu(v,&mut (*cell).proc_volumes,p) }
 unsafe fn afs_proc_cell_volumes_stop(_: *mut seq_file,_:*mut c_void){rcu_read_unlock();}

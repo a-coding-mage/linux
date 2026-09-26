@@ -24,7 +24,7 @@
 
 // C dependencies supplied by the surrounding translation unit.
 
-#[cfg(feature = "CONFIG_DRM_AMD_DC_SI")]
+#[cfg(CONFIG_DRM_AMD_DC_SI)]
 unsafe extern "C" {
     fn dal_hw_factory_dce60_init(factory: *mut hw_factory);
 }
@@ -58,7 +58,7 @@ pub unsafe fn dal_hw_factory_init(
     let _ = dce_environment;
 
     match dce_version {
-        #[cfg(feature = "CONFIG_DRM_AMD_DC_SI")]
+        #[cfg(CONFIG_DRM_AMD_DC_SI)]
         crate::DCE_VERSION_6_0
         | crate::DCE_VERSION_6_1
         | crate::DCE_VERSION_6_4 => {

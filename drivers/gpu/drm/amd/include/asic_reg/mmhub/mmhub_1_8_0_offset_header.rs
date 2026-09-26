@@ -20,7 +20,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-#ifndef _mmhub_1_8_0_OFFSET_HEADER
 
 
 
@@ -3361,6 +3360,5 @@ pub const regMM_CANE_CE_ERR_STATUS_LO: u32 = 0x0d8f;
 pub const regMM_CANE_CE_ERR_STATUS_LO_BASE_IDX: u32 = 0;
 pub const regMM_CANE_CE_ERR_STATUS_HI: u32 = 0x0d90;
 pub const regMM_CANE_CE_ERR_STATUS_HI_BASE_IDX: u32 = 0;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

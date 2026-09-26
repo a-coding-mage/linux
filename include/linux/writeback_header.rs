@@ -80,7 +80,7 @@ pub unsafe fn wbc_to_tag(wbc: *mut writeback_control) -> xa_mark_t {
     } else { PAGECACHE_TAG_DIRTY }
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn writeback_inodes_sb(sb: *mut super_block, reason: wb_reason);
     pub fn writeback_inodes_sb_nr(sb: *mut super_block, nr: usize, reason: wb_reason);
     pub fn try_to_writeback_inodes_sb(sb: *mut super_block, reason: wb_reason);
@@ -140,7 +140,7 @@ pub struct dirty_throttle_control {
 }
 
 #[cfg(CONFIG_CGROUP_WRITEBACK)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn __inode_attach_wb(inode: *mut inode, folio: *mut folio);
     pub fn wbc_detach_inode(wbc: *mut writeback_control);
     pub fn wbc_account_cgroup_owner(wbc: *mut writeback_control, folio: *mut folio, bytes: usize);

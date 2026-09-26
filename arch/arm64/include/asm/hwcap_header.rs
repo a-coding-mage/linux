@@ -76,14 +76,14 @@ macro_rules! ELF_HWCAP2 { () => { $crate::cpu_get_elf_hwcap2() }; }
 macro_rules! ELF_HWCAP3 { () => { $crate::cpu_get_elf_hwcap3() }; }
 
 // CONFIG_COMPAT is a build-time configuration condition from the kernel.
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 macro_rules! COMPAT_ELF_HWCAP { () => { $crate::compat_elf_hwcap }; }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 macro_rules! COMPAT_ELF_HWCAP2 { () => { $crate::compat_elf_hwcap2 }; }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 macro_rules! COMPAT_ELF_HWCAP3 { () => { $crate::compat_elf_hwcap3 }; }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 extern "C" {
     pub static mut compat_elf_hwcap: u32;
     pub static mut compat_elf_hwcap2: u32;
@@ -93,9 +93,9 @@ extern "C" {
 #[repr(u32)]
 pub enum Cap {
     CAP_HWCAP = 1,
-    #[cfg(feature = "CONFIG_COMPAT")]
+    #[cfg(CONFIG_COMPAT)]
     CAP_COMPAT_HWCAP,
-    #[cfg(feature = "CONFIG_COMPAT")]
+    #[cfg(CONFIG_COMPAT)]
     CAP_COMPAT_HWCAP2,
 }
 

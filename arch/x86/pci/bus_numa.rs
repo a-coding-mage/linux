@@ -36,9 +36,10 @@ pub unsafe fn x86_pci_root_bus_resources(bus: i32, resources: *mut list_head) {
     let mut root_res: *mut pci_root_res;
     let mut window: *mut resource_entry;
     let mut found = false;
+    'default_resources: {
 
     if info.is_null() {
-        goto_default_resources!(default_resources);
+        break 'default_resources;
     }
 
     printk!(KERN_DEBUG, "PCI: root bus %02x: hardware-probed resources\n", bus);
@@ -60,8 +61,8 @@ pub unsafe fn x86_pci_root_bus_resources(bus: i32, resources: *mut list_head) {
     });
 
     return;
-
-    default_resources: {
+    }
+    {
         /*
          * We don't have any host bridge aperture information from the
          * "native host bridge drivers," e.g., amd_bus or broadcom_bus,
@@ -109,13 +110,14 @@ pub unsafe fn update_res(
 ) {
     let mut res: *mut resource;
     let mut root_res: *mut pci_root_res;
+    'addit: {
 
     if start > end || start == RESOURCE_SIZE_MAX {
         return;
     }
 
     if !merge {
-        goto_addit!(addit);
+        break 'addit;
     }
 
     /* try to merge it with old one */
@@ -142,8 +144,8 @@ pub unsafe fn update_res(
         (*res).end = final_end;
         return;
     });
-
-    addit: {
+    }
+    {
         /* need to add that */
         root_res = kzalloc_obj!(pci_root_res);
         if root_res.is_null() {

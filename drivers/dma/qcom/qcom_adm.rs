@@ -39,9 +39,9 @@ const ADM_MAX_CHANNELS: usize = 16;
 #[repr(C)] pub struct adm_device { pub regs:*mut c_void, pub dev:*mut device, pub common:dma_device, pub dma_parms:device_dma_parameters, pub channels:*mut adm_chan, pub ee:u32, pub core_clk:*mut clk, pub iface_clk:*mut clk, pub clk_reset:*mut reset_control, pub c0_reset:*mut reset_control, pub c1_reset:*mut reset_control, pub c2_reset:*mut reset_control, pub irq:i32 }
 
 extern "C" {
-    type virt_dma_desc; type virt_dma_chan; type dma_chan; type dma_device; type device; type dma_slave_config; type device_dma_parameters; type list_head; type clk; type reset_control; type scatterlist; type of_phandle_args; type of_dma; type platform_device;
-    type dma_addr_t; type dma_transfer_direction;
 }
+type virt_dma_desc; type virt_dma_chan; type dma_chan; type dma_device; type device; type dma_slave_config; type device_dma_parameters; type list_head; type clk; type reset_control; type scatterlist; type of_phandle_args; type of_dma; type platform_device;
+type dma_addr_t; type dma_transfer_direction;
 
 unsafe fn adm_get_blksize(burst:u32)->i32 { match burst {16=>0,32=>1,64=>2,128=>3,192=>4,256=>5,_=>-22} }
 unsafe fn adm_free_chan(_chan:*mut dma_chan) { vchan_free_chan_resources(core::ptr::null_mut()); }
@@ -59,7 +59,7 @@ unsafe fn adm_channel_init(adev:*mut adm_device, chan:*mut adm_chan, index:u32) 
 
 // Remaining driver entry points retain the exact external Linux-kernel API surface.
 extern "C" {
- fn vchan_free_chan_resources(*mut virt_dma_chan); fn sg_dma_len(*mut scatterlist)->u32; fn sg_dma_address(*mut scatterlist)->u32; fn sg_is_last(*mut scatterlist)->bool; fn kfree(*mut c_void); fn dma_unmap_single(*mut device,dma_addr_t,usize,u32); fn container_of_async(*mut virt_dma_desc)->*mut adm_async_desc; fn vchan_init(*mut virt_dma_chan,*mut dma_device); fn dma_async_device_register(*mut dma_device)->i32;
+ fn vchan_free_chan_resources(_: *mut virt_dma_chan); fn sg_dma_len(_: *mut scatterlist)->u32; fn sg_dma_address(_: *mut scatterlist)->u32; fn sg_is_last(_: *mut scatterlist)->bool; fn kfree(_: *mut c_void); fn dma_unmap_single(_: *mut device,_: dma_addr_t,_: usize,_: u32); fn container_of_async(_: *mut virt_dma_desc)->*mut adm_async_desc; fn vchan_init(_: *mut virt_dma_chan,_: *mut dma_device); fn dma_async_device_register(_: *mut dma_device)->i32;
 }
 static mut adm_dma_driver: *mut c_void = core::ptr::null_mut();
 

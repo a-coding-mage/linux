@@ -31,9 +31,9 @@ unsafe fn ocfs2_global_mem2diskdqb(dp: *mut c_void, dquot: *mut dquot) {
 
 unsafe fn ocfs2_global_is_id(dp: *mut c_void, dquot: *mut dquot) -> c_int {
     let d = dp as *mut ocfs2_global_disk_dqblk;
-    let oinfo = sb_dqinfo((*dquot).dq_sb, (*dquot).dq_id.type).dqi_priv as *mut ocfs2_mem_dqinfo;
+    let oinfo = sb_dqinfo((*dquot).dq_sb, (*dquot).dq_id.r#type).dqi_priv as *mut ocfs2_mem_dqinfo;
     if qtree_entry_unused(&(*oinfo).dqi_gi, dp) { return 0; }
-    if qid_eq(make_kqid(&init_user_ns, (*dquot).dq_id.type, le32_to_cpu((*d).dqb_id)), (*dquot).dq_id) { 1 } else { 0 }
+    if qid_eq(make_kqid(&init_user_ns, (*dquot).dq_id.r#type, le32_to_cpu((*d).dqb_id)), (*dquot).dq_id) { 1 } else { 0 }
 }
 
 #[no_mangle]

@@ -7,9 +7,7 @@
 // the surrounding translation environment.
 
 #[repr(u32)]
-enum {
-    DT_BI_TCXO_PAD = 0,
-}
+pub const DT_BI_TCXO_PAD: i32 = 0;
 
 static mut tcsr_dp_rx_0_clkref_en: clk_branch = clk_branch {
     halt_reg: 0xa008,

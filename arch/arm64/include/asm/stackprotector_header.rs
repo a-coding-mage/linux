@@ -37,13 +37,13 @@ pub struct TaskStruct {
 #[inline(always)]
 pub unsafe fn boot_init_stack_canary() {
     // CONFIG_STACKPROTECTOR is a build-time condition from the original C header.
-    #[cfg(feature = "CONFIG_STACKPROTECTOR")]
+    #[cfg(CONFIG_STACKPROTECTOR)]
     {
         let canary: c_ulong = get_random_canary();
 
         (*current).stack_canary = canary;
         // IS_ENABLED(CONFIG_STACKPROTECTOR_PER_TASK) is a build-time condition.
-        #[cfg(not(feature = "CONFIG_STACKPROTECTOR_PER_TASK"))]
+        #[cfg(not(CONFIG_STACKPROTECTOR_PER_TASK))]
         {
             __stack_chk_guard = (*current).stack_canary;
         }

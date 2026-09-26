@@ -138,7 +138,7 @@ pub unsafe fn br_flood(br: *mut net_bridge, skb: *mut sk_buff, pkt_type: br_pkt_
     let mut prev: *mut net_bridge_port = core::ptr::null_mut();
     let mut p: *mut net_bridge_port;
     br_tc_skb_miss_set(skb, pkt_type != BR_PKT_BROADCAST);
-    list_for_each_entry_rcu!(p, &(*br).port_list, list) {
+    list_for_each_entry_rcu!(p, &(*br).port_list, list, {
         match pkt_type {
             BR_PKT_UNICAST if !test_bit(BR_FLOOD_BIT, &(*p).flags) => continue,
             BR_PKT_MULTICAST if !test_bit(BR_MCAST_FLOOD_BIT, &(*p).flags) && (*skb).dev != (*br).dev => continue,
@@ -153,7 +153,7 @@ pub unsafe fn br_flood(br: *mut net_bridge, skb: *mut sk_buff, pkt_type: br_pkt_
         }
         prev = maybe_deliver(prev, p, skb, local_orig);
         if IS_ERR(prev) { reason = if PTR_ERR(prev) == -ENOMEM { SKB_DROP_REASON_NOMEM } else { SKB_DROP_REASON_NOT_SPECIFIED }; break; }
-    }
+    });
     if !prev.is_null() { if local_rcv { deliver_clone(prev, skb, local_orig); } else { __br_forward(prev, skb, local_orig); } }
     else if !local_rcv { kfree_skb_reason(skb, reason); }
 }

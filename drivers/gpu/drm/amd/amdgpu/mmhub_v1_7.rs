@@ -54,8 +54,8 @@ u64 mmhub_v1_7_get_fb_location(*mut amdgpu_deviceadev)
 	return base;
 }
 
-void mmhub_v1_7_setup_vm_pt_regs(*mut amdgpu_deviceadev, u32 vmid,
-				u64 page_table_base)
+void mmhub_v1_7_setup_vm_pt_regs(*mut amdgpu_deviceadev, vmid: u32,
+				page_table_base: u64)
 {
 	*mut amdgpu_vmhubhub = &(*adev).vmhub[AMDGPU_MMHUB0(0)];
 
@@ -409,7 +409,7 @@ void mmhub_v1_7_gart_disable(*mut amdgpu_deviceadev)
  * @adev: amdgpu_device pointer
  * @value: true redirects VM faults to the default page
  */
-void mmhub_v1_7_set_fault_enable_default(*mut amdgpu_deviceadev, bool value)
+void mmhub_v1_7_set_fault_enable_default(*mut amdgpu_deviceadev, value: bool)
 {
 	u32 tmp;
 
@@ -475,9 +475,9 @@ void mmhub_v1_7_init(*mut amdgpu_deviceadev)
 }
 
 void mmhub_v1_7_update_medium_grain_clock_gating(*mut amdgpu_deviceadev,
-							bool enable)
+							enable: bool)
 {
-	u32 def, data, def1, data1, def2 = 0, data2 = 0;
+	def: u32, data, def1, data1, def2 = 0, data2 = 0;
 
 	def  = data  = RREG32_SOC15(MMHUB, 0, regATC_L2_MISC_CG);
 
@@ -529,9 +529,9 @@ void mmhub_v1_7_update_medium_grain_clock_gating(*mut amdgpu_deviceadev,
 }
 
 void mmhub_v1_7_update_medium_grain_light_sleep(*mut amdgpu_deviceadev,
-						       bool enable)
+						       enable: bool)
 {
-	u32 def, data;
+	def: u32, data;
 
 	def = data = RREG32_SOC15(MMHUB, 0, regATC_L2_MISC_CG);
 
@@ -545,7 +545,7 @@ void mmhub_v1_7_update_medium_grain_light_sleep(*mut amdgpu_deviceadev,
 }
 
 int mmhub_v1_7_set_clockgating(*mut amdgpu_deviceadev,
-			       enum amd_clockgating_state state)
+			       amd_clockgating_state state)
 {
 	if (amdgpu_sriov_vf(adev))
 		return 0;
@@ -565,7 +565,7 @@ int mmhub_v1_7_set_clockgating(*mut amdgpu_deviceadev,
 
 void mmhub_v1_7_get_clockgating(*mut amdgpu_deviceadev, u64 *flags)
 {
-	u32 data, data1;
+	data: u32, data1;
 
 	if (amdgpu_sriov_vf(adev))
 		*flags = 0;
@@ -1224,12 +1224,12 @@ const struct soc15_reg_entry mmhub_v1_7_edc_cnt_regs[] = {
 };
 int mmhub_v1_7_get_ras_error_count(*mut amdgpu_deviceadev,
 					  const *mut soc15_reg_entryreg,
-					  u32 value,
+					  value: u32,
 					  u32 *sec_count,
 					  u32 *ded_count)
 {
 	u32 i;
-	u32 sec_cnt, ded_cnt;
+	sec_cnt: u32, ded_cnt;
 
 	for (i = 0; i < (mmhub_v1_7_ras_fields.len()); i++) {
 		if(mmhub_v1_7_ras_fields[i].reg_offset != (*reg).reg_offset)

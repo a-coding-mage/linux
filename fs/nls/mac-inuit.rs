@@ -485,8 +485,8 @@ static charset2upper: [u8; 256] = nls_table {
 unsafe fn uni2char(uni: u32, out: *mut u8, boundlen: i32)
 {
 	let uni2charset: *const u8;
-	unsigned char cl = (uni & 0x00ff) as u8;
-	unsigned char ch = ((uni & 0xff00) >> 8) as usize;
+	core::ffi::c_uchar cl = (uni & 0x00ff) as u8;
+	core::ffi::c_uchar ch = ((uni & 0xff00) >> 8) as usize;
 
 	if (boundlen <= 0)
 		return -ENAMETOOLONG;
@@ -508,19 +508,19 @@ unsafe fn char2uni(rawstring: *const u8, boundlen: i32, uni: *mut u32)
 }
 
 static mut table: nls_table = nls_table {
-	.charset	= "macinuit",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "macinuit",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 };
 
-static fn init_nls_macinuit(void)
+fn init_nls_macinuit(void)
 {
 	return register_nls(&raw mut table);
 }
 
-static fn exit_nls_macinuit(void)
+fn exit_nls_macinuit(void)
 {
 	unregister_nls(&raw mut table);
 }

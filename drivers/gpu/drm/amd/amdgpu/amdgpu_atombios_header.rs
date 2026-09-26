@@ -117,23 +117,23 @@ extern "C" {
     pub fn amdgpu_atombios_get_vram_width(adev: *mut amdgpu_device) -> i32;
     pub fn amdgpu_atombios_get_asic_ss_info(adev: *mut amdgpu_device, ss: *mut amdgpu_atom_ss, id: i32, clock: u32) -> bool;
     pub fn amdgpu_atombios_get_clock_dividers(adev: *mut amdgpu_device, clock_type: u8, clock: u32, strobe_mode: bool, dividers: *mut atom_clock_dividers) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_get_memory_pll_dividers(adev: *mut amdgpu_device, clock: u32, strobe_mode: bool, mpll_param: *mut atom_mpll_param) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_set_engine_dram_timings(adev: *mut amdgpu_device, eng_clock: u32, mem_clock: u32) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_is_voltage_gpio(adev: *mut amdgpu_device, voltage_type: u8, voltage_mode: u8) -> bool;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_get_voltage_table(adev: *mut amdgpu_device, voltage_type: u8, voltage_mode: u8, voltage_table: *mut atom_voltage_table) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_init_mc_reg_table(adev: *mut amdgpu_device, module_index: u8, reg_table: *mut atom_mc_reg_table) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_get_max_vddc(adev: *mut amdgpu_device, voltage_type: u8, voltage_id: u16, voltage: *mut u16) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_get_leakage_vddc_based_on_leakage_idx(adev: *mut amdgpu_device, voltage: *mut u16, leakage_idx: u16) -> i32;
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_get_default_voltages(adev: *mut amdgpu_device, vddc: *mut u16, vddci: *mut u16, mvdd: *mut u16);
-    #[cfg(feature = "CONFIG_DRM_AMDGPU_SI")]
+    #[cfg(CONFIG_DRM_AMDGPU_SI)]
     pub fn amdgpu_atombios_get_svi2_info(adev: *mut amdgpu_device, voltage_type: u8, svd_gpio_id: *mut u8, svc_gpio_id: *mut u8) -> i32;
     pub fn amdgpu_atombios_has_gpu_virtualization_table(adev: *mut amdgpu_device) -> bool;
     pub fn amdgpu_atombios_scratch_regs_lock(adev: *mut amdgpu_device, lock: bool);

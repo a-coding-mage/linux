@@ -24,9 +24,9 @@
 
 // External declarations and constants are supplied by the translated dependency files.
 
-static const DP_VGA_DONGLE_BRANCH_DEV_NAME: &[u8] = b"DpVga\0";
-static const DP_DVI_CONVERTER_ID_4: &[u8] = b"m2DVIa\0";
-static const DP_DVI_CONVERTER_ID_5: &[u8] = b"3393N2\0";
+static DP_VGA_DONGLE_BRANCH_DEV_NAME: &[u8] = b"DpVga\0";
+static DP_DVI_CONVERTER_ID_4: &[u8] = b"m2DVIa\0";
+static DP_DVI_CONVERTER_ID_5: &[u8] = b"3393N2\0";
 
 #[repr(C)]
 struct i2c_payloads { payloads: vector }

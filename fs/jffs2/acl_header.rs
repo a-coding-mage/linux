@@ -29,7 +29,7 @@ pub struct jffs2_acl_header {
 }
 
 // CONFIG_JFFS2_FS_POSIX_ACL is a build-time configuration condition.
-#[cfg(feature = "CONFIG_JFFS2_FS_POSIX_ACL")]
+#[cfg(CONFIG_JFFS2_FS_POSIX_ACL)]
 extern "C" {
     pub fn jffs2_get_acl(inode: *mut inode, type_: core::ffi::c_int, rcu: bool) -> *mut posix_acl;
     pub fn jffs2_set_acl(
@@ -46,28 +46,28 @@ extern "C" {
     pub fn jffs2_init_acl_post(_: *mut inode) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_JFFS2_FS_POSIX_ACL))]
 macro_rules! jffs2_get_acl {
     () => {
         core::ptr::null_mut::<posix_acl>()
     };
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_JFFS2_FS_POSIX_ACL))]
 macro_rules! jffs2_set_acl {
     ($($arg:tt)*) => {
         core::ptr::null_mut::<()>()
     };
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_JFFS2_FS_POSIX_ACL))]
 macro_rules! jffs2_init_acl_pre {
     ($($arg:tt)*) => {
         0
     };
 }
 
-#[cfg(not(feature = "CONFIG_JFFS2_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_JFFS2_FS_POSIX_ACL))]
 macro_rules! jffs2_init_acl_post {
     ($($arg:tt)*) => {
         0

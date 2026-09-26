@@ -23,7 +23,7 @@ unsafe fn ieee802154_del_iface_deprecated(_wpan_phy: *mut wpan_phy, dev: *mut ne
     ieee802154_if_remove(sdata);
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn ieee802154_suspend(wpan_phy: *mut wpan_phy) -> c_int {
     let local = wpan_phy_priv(wpan_phy);
     if (*local).open_count == 0 { (*local).suspended = true; return 0; }
@@ -34,7 +34,7 @@ unsafe fn ieee802154_suspend(wpan_phy: *mut wpan_phy) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn ieee802154_resume(wpan_phy: *mut wpan_phy) -> c_int {
     let local = wpan_phy_priv(wpan_phy);
     if (*local).open_count != 0 {
@@ -46,9 +46,9 @@ unsafe fn ieee802154_resume(wpan_phy: *mut wpan_phy) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const ieee802154_suspend: Option<unsafe fn(*mut wpan_phy) -> c_int> = None;
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const ieee802154_resume: Option<unsafe fn(*mut wpan_phy) -> c_int> = None;
 
 unsafe fn ieee802154_add_iface(phy: *mut wpan_phy, name: *const c_char,
@@ -126,38 +126,38 @@ unsafe fn mac802154_disassociate(_phy: *mut wpan_phy, _dev: *mut wpan_dev, _targ
     -EINVAL
 }
 
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_get_llsec_table(_phy: *mut wpan_phy, dev: *mut wpan_dev, table: *mut *mut ieee802154_llsec_table) {
     let sdata = IEEE802154_DEV_TO_SUB_IF((*dev).netdev); *table = &mut (*sdata).sec.table;
 }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_lock_llsec_table(_phy: *mut wpan_phy, dev: *mut wpan_dev) { mutex_lock(&mut (*IEEE802154_DEV_TO_SUB_IF((*dev).netdev)).sec_mtx); }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_unlock_llsec_table(_phy: *mut wpan_phy, dev: *mut wpan_dev) { mutex_unlock(&mut (*IEEE802154_DEV_TO_SUB_IF((*dev).netdev)).sec_mtx); }
 
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_set_llsec_params(_phy: *mut wpan_phy, dev: *mut wpan_dev, params: *const ieee802154_llsec_params, changed: c_int) -> c_int {
     let s = IEEE802154_DEV_TO_SUB_IF((*dev).netdev); mutex_lock(&mut (*s).sec_mtx); let r = mac802154_llsec_set_params(&mut (*s).sec, params, changed); mutex_unlock(&mut (*s).sec_mtx); r
 }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_get_llsec_params(_phy: *mut wpan_phy, dev: *mut wpan_dev, params: *mut ieee802154_llsec_params) -> c_int {
     let s = IEEE802154_DEV_TO_SUB_IF((*dev).netdev); mutex_lock(&mut (*s).sec_mtx); let r = mac802154_llsec_get_params(&mut (*s).sec, params); mutex_unlock(&mut (*s).sec_mtx); r
 }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_add_llsec_key(_p: *mut wpan_phy, d: *mut wpan_dev, id: *const ieee802154_llsec_key_id, key: *const ieee802154_llsec_key) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_key_add(&mut (*s).sec,id,key); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_del_llsec_key(_p: *mut wpan_phy, d: *mut wpan_dev, id: *const ieee802154_llsec_key_id) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_key_del(&mut (*s).sec,id); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_add_seclevel(_p: *mut wpan_phy, d: *mut wpan_dev, x: *const ieee802154_llsec_seclevel) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_seclevel_add(&mut (*s).sec,x); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_del_seclevel(_p: *mut wpan_phy, d: *mut wpan_dev, x: *const ieee802154_llsec_seclevel) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_seclevel_del(&mut (*s).sec,x); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_add_device(_p: *mut wpan_phy, d: *mut wpan_dev, x: *const ieee802154_llsec_device) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_dev_add(&mut (*s).sec,x); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_del_device(_p: *mut wpan_phy, d: *mut wpan_dev, a: __le64) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_dev_del(&mut (*s).sec,a); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_add_devkey(_p: *mut wpan_phy, d: *mut wpan_dev, a: __le64, k: *const ieee802154_llsec_device_key) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_devkey_add(&mut (*s).sec,a,k); mutex_unlock(&mut (*s).sec_mtx); r }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 unsafe fn ieee802154_del_devkey(_p: *mut wpan_phy, d: *mut wpan_dev, a: __le64, k: *const ieee802154_llsec_device_key) -> c_int { let s=IEEE802154_DEV_TO_SUB_IF((*d).netdev); mutex_lock(&mut (*s).sec_mtx); let r=mac802154_llsec_devkey_del(&mut (*s).sec,a,k); mutex_unlock(&mut (*s).sec_mtx); r }
 
 // The operation table is defined by the surrounding kernel bindings.

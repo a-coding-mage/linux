@@ -119,12 +119,12 @@ pub struct regulator_init_data {
     pub driver_data: *mut core::ffi::c_void,
 }
 
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 extern "C" {
     pub fn regulator_has_full_constraints();
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub fn regulator_has_full_constraints() {}
 

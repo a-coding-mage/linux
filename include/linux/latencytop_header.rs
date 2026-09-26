@@ -18,13 +18,13 @@ pub struct task_struct {
 
 // CONFIG_LATENCYTOP is a build-time C configuration condition.  Enable the
 // following items when the corresponding Rust configuration is selected.
-#[cfg(feature = "CONFIG_LATENCYTOP")]
+#[cfg(CONFIG_LATENCYTOP)]
 pub const LT_SAVECOUNT: usize = 32;
 
-#[cfg(feature = "CONFIG_LATENCYTOP")]
+#[cfg(CONFIG_LATENCYTOP)]
 pub const LT_BACKTRACEDEPTH: usize = 12;
 
-#[cfg(feature = "CONFIG_LATENCYTOP")]
+#[cfg(CONFIG_LATENCYTOP)]
 #[repr(C)]
 pub struct latency_record {
     pub backtrace: [usize; LT_BACKTRACEDEPTH],
@@ -33,7 +33,7 @@ pub struct latency_record {
     pub max: usize,
 }
 
-#[cfg(feature = "CONFIG_LATENCYTOP")]
+#[cfg(CONFIG_LATENCYTOP)]
 extern "C" {
     pub static mut latencytop_enabled: c_int;
     pub fn __account_scheduler_latency(
@@ -43,7 +43,7 @@ extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_LATENCYTOP")]
+#[cfg(CONFIG_LATENCYTOP)]
 #[inline]
 pub unsafe fn account_scheduler_latency(
     task: *mut task_struct,
@@ -56,12 +56,12 @@ pub unsafe fn account_scheduler_latency(
     }
 }
 
-#[cfg(feature = "CONFIG_LATENCYTOP")]
+#[cfg(CONFIG_LATENCYTOP)]
 extern "C" {
     pub fn clear_tsk_latency_tracing(p: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_LATENCYTOP"))]
+#[cfg(not(CONFIG_LATENCYTOP))]
 #[inline]
 pub unsafe fn account_scheduler_latency(
     _task: *mut task_struct,
@@ -70,7 +70,7 @@ pub unsafe fn account_scheduler_latency(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_LATENCYTOP"))]
+#[cfg(not(CONFIG_LATENCYTOP))]
 #[inline]
 pub unsafe fn clear_tsk_latency_tracing(_p: *mut task_struct) {
 }

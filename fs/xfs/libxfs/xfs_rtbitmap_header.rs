@@ -168,7 +168,7 @@ pub unsafe fn xfs_rtblock_ops(mp: *mut xfs_mount, type_: xfs_rtg_inodes) -> *con
 pub struct xfs_rtalloc_rec { pub ar_startext: xfs_rtxnum_t, pub ar_extcount: xfs_rtbxlen_t }
 pub type xfs_rtalloc_query_range_fn = unsafe extern "C" fn(*mut xfs_rtgroup, *mut xfs_trans, *const xfs_rtalloc_rec, *mut core::ffi::c_void) -> i32;
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 extern "C" {
     pub fn xfs_rtbuf_cache_relse(args: *mut xfs_rtalloc_args);
     pub fn xfs_rtbitmap_read_buf(args: *mut xfs_rtalloc_args, block: xfs_fileoff_t) -> i32;
@@ -194,11 +194,11 @@ extern "C" {
     pub fn xfs_rtsummary_create(rtg: *mut xfs_rtgroup, ip: *mut xfs_inode, tp: *mut xfs_trans, init: bool) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 #[inline]
 pub unsafe fn xfs_rtfree_blocks(_: *mut xfs_trans, _: *mut xfs_rtgroup, _: xfs_fsblock_t, _: xfs_filblks_t) -> i32 { -ENOSYS }
 
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 #[inline]
 pub unsafe fn xfs_rtbitmap_blockcount_len(_: *mut xfs_mount, _: xfs_rtbxlen_t) -> xfs_filblks_t { 0 }
 

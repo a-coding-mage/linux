@@ -55,24 +55,24 @@ pub unsafe extern "C" fn for_each_kernel_tracepoint(f:unsafe extern "C" fn(*mut 
 
 // CONFIG_MODULES section. Kernel list, notifier, taint, and module symbols are
 // supplied by the surrounding kernel bindings.
-#[cfg(feature="CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe extern "C" fn trace_module_has_bad_taint(m:*mut module)->bool {
     (*m).taints & !((1usize<<0)|(1usize<<1)|(1usize<<2)|(1usize<<3)|(1usize<<4)) != 0
 }
-#[cfg(feature="CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe extern "C" fn for_each_tracepoint_in_module(m:*mut module,f:unsafe extern "C" fn(*mut tracepoint,*mut module,*mut core::ffi::c_void),p:*mut core::ffi::c_void){
     if m.is_null(){return} let mut i=0;while i<(*m).num_tracepoints{f(tracepoint_ptr_deref((*m).tracepoints_ptrs.add(i)),m,p);i+=1}
 }
-#[cfg(feature="CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe extern "C" fn for_each_module_tracepoint(_f:unsafe extern "C" fn(*mut tracepoint,*mut module,*mut core::ffi::c_void),_p:*mut core::ffi::c_void) {}
 
-#[cfg(feature="CONFIG_HAVE_SYSCALL_TRACEPOINTS")]
+#[cfg(CONFIG_HAVE_SYSCALL_TRACEPOINTS)]
 static mut sys_tracepoint_refcount:i32=0;
-#[cfg(feature="CONFIG_HAVE_SYSCALL_TRACEPOINTS")]
+#[cfg(CONFIG_HAVE_SYSCALL_TRACEPOINTS)]
 extern "C" { fn read_lock(_: *mut core::ffi::c_void); fn read_unlock(_: *mut core::ffi::c_void); fn set_task_syscall_work(_: *mut core::ffi::c_void, _: usize); fn clear_task_syscall_work(_: *mut core::ffi::c_void, _: usize); }
-#[cfg(feature="CONFIG_HAVE_SYSCALL_TRACEPOINTS")]
+#[cfg(CONFIG_HAVE_SYSCALL_TRACEPOINTS)]
 pub unsafe extern "C" fn syscall_regfunc()->i32 { if sys_tracepoint_refcount==0 { /* for_each_process_thread(p,t): kernel task-list iteration */ } sys_tracepoint_refcount+=1;0 }
-#[cfg(feature="CONFIG_HAVE_SYSCALL_TRACEPOINTS")]
+#[cfg(CONFIG_HAVE_SYSCALL_TRACEPOINTS)]
 pub unsafe extern "C" fn syscall_unregfunc(){sys_tracepoint_refcount-=1;if sys_tracepoint_refcount==0 { /* for_each_process_thread(p,t): kernel task-list iteration */ }}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

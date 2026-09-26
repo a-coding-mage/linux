@@ -141,9 +141,9 @@ pub unsafe fn dcn32_smu_set_pme_workaround(clk_mgr: *mut clk_mgr_internal) {
 }
 
 unsafe fn dcn32_get_hard_min_status_supported(clk_mgr: *mut clk_mgr_internal) -> bool {
-    if ASICREV_IS_GC_11_0_0((*clk_mgr).base.ctx->asic_id.hw_internal_rev) {
+    if ASICREV_IS_GC_11_0_0((*(*clk_mgr).base.ctx).asic_id.hw_internal_rev) {
         if (*clk_mgr).smu_ver >= 0x4e6a00 { return true; }
-    } else if ASICREV_IS_GC_11_0_2((*clk_mgr).base.ctx->asic_id.hw_internal_rev) {
+    } else if ASICREV_IS_GC_11_0_2((*(*clk_mgr).base.ctx).asic_id.hw_internal_rev) {
         if (*clk_mgr).smu_ver >= 0x524e00 { return true; }
     } else if (*clk_mgr).smu_ver >= 0x503900 { return true; }
     false

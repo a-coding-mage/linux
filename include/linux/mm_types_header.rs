@@ -18,13 +18,13 @@ pub const AT_VECTOR_SIZE: usize = 2 * (AT_VECTOR_SIZE_ARCH + AT_VECTOR_SIZE_BASE
     pub data: page_data,
     pub page_type_or_mapcount: page_type_or_mapcount,
     pub _refcount: atomic_t,
-    #[cfg(feature = "CONFIG_MEMCG")] pub memcg_data: c_ulong,
-    #[cfg(all(not(feature = "CONFIG_MEMCG"), feature = "CONFIG_SLAB_OBJ_EXT"))]
+    #[cfg(CONFIG_MEMCG)] pub memcg_data: c_ulong,
+    #[cfg(all(not(CONFIG_MEMCG), CONFIG_SLAB_OBJ_EXT))]
     pub _unused_slab_obj_exts: c_ulong,
     #[cfg(feature = "WANT_PAGE_VIRTUAL")] pub virtual_: *mut c_void,
     #[cfg(feature = "LAST_CPUPID_NOT_IN_PAGE_FLAGS")] pub _last_cpupid: c_int,
-    #[cfg(feature = "CONFIG_KMSAN")] pub kmsan_shadow: *mut page,
-    #[cfg(feature = "CONFIG_KMSAN")] pub kmsan_origin: *mut page,
+    #[cfg(CONFIG_KMSAN)] pub kmsan_shadow: *mut page,
+    #[cfg(CONFIG_KMSAN)] pub kmsan_origin: *mut page,
 }
 #[repr(C)] pub union page_data {
     pub cache: page_cache_data,
@@ -72,7 +72,7 @@ pub const FOLIO_MM_IDS_SHARED_BIT: c_ulong = 1u64 << FOLIO_MM_IDS_SHARED_BITNUM;
     pub _pt_pad_2: c_ulong,
     pub __page_type: c_uint,
     pub __page_refcount: atomic_t,
-    #[cfg(feature = "CONFIG_MEMCG")] pub pt_memcg_data: c_ulong,
+    #[cfg(CONFIG_MEMCG)] pub pt_memcg_data: c_ulong,
 }
 #[repr(C)] pub union ptdesc_data { pub pt_rcu_head: rcu_head, pub pt_list: list_head, pub pmd_huge_pte: pgtable_t }
 #[inline] pub const unsafe fn ptdesc_page(pt: *mut ptdesc) -> *mut page { pt as *mut page }

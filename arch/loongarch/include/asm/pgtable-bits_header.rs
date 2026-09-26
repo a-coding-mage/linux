@@ -5,76 +5,76 @@
 
 /* Page table bits */
 
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_VALID_SHIFT: u32 = 0;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_ACCESSED_SHIFT: u32 = 0; /* Reuse Valid for Accessed */
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_DIRTY_SHIFT: u32 = 1;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_PLV_SHIFT: u32 = 2; /* 2~3, two bits */
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _CACHE_SHIFT: u32 = 4; /* 4~5, two bits */
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_GLOBAL_SHIFT: u32 = 6;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_HUGE_SHIFT: u32 = 6; /* HUGE is a PMD bit */
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_PRESENT_SHIFT: u32 = 7;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_PFN_SHIFT: u32 = 8;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_HGLOBAL_SHIFT: u32 = 12; /* HGlobal is a PMD bit */
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_SWP_EXCLUSIVE_SHIFT: u32 = 13;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_PFN_END_SHIFT: u32 = 28;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_WRITE_SHIFT: u32 = 29;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_MODIFIED_SHIFT: u32 = 30;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const _PAGE_PRESENT_INVALID_SHIFT: u32 = 31;
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_VALID_SHIFT: u32 = 0;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_ACCESSED_SHIFT: u32 = 0; /* Reuse Valid for Accessed */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_DIRTY_SHIFT: u32 = 1;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_PLV_SHIFT: u32 = 2; /* 2~3, two bits */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _CACHE_SHIFT: u32 = 4; /* 4~5, two bits */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_GLOBAL_SHIFT: u32 = 6;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_HUGE_SHIFT: u32 = 6; /* HUGE is a PMD bit */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_PRESENT_SHIFT: u32 = 7;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_WRITE_SHIFT: u32 = 8;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_MODIFIED_SHIFT: u32 = 9;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_PROTNONE_SHIFT: u32 = 10;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_SPECIAL_SHIFT: u32 = 11;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_PFN_SHIFT: u32 = 12;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_HGLOBAL_SHIFT: u32 = 12; /* HGlobal is a PMD bit */
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_SWP_EXCLUSIVE_SHIFT: u32 = 23;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_PFN_END_SHIFT: u32 = 48;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_PRESENT_INVALID_SHIFT: u32 = 60;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_NO_READ_SHIFT: u32 = 61;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_NO_EXEC_SHIFT: u32 = 62;
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const _PAGE_RPLV_SHIFT: u32 = 63;
 
 /* Used by software */
@@ -83,13 +83,13 @@ macro_rules! _PAGE_PRESENT_INVALID { () => { (1usize << _PAGE_PRESENT_INVALID_SH
 macro_rules! _PAGE_WRITE { () => { (1usize << _PAGE_WRITE_SHIFT) }; }
 macro_rules! _PAGE_ACCESSED { () => { (1usize << _PAGE_ACCESSED_SHIFT) }; }
 macro_rules! _PAGE_MODIFIED { () => { (1usize << _PAGE_MODIFIED_SHIFT) }; }
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 macro_rules! _PAGE_PROTNONE { () => { 0usize }; }
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 macro_rules! _PAGE_SPECIAL { () => { 0usize }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! _PAGE_PROTNONE { () => { (1usize << _PAGE_PROTNONE_SHIFT) }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! _PAGE_SPECIAL { () => { (1usize << _PAGE_SPECIAL_SHIFT) }; }
 
 /* We borrow bit 13/23 to store the exclusive marker in swap PTEs. */
@@ -102,17 +102,17 @@ macro_rules! _PAGE_PLV { () => { (3usize << _PAGE_PLV_SHIFT) }; }
 macro_rules! _PAGE_GLOBAL { () => { (1usize << _PAGE_GLOBAL_SHIFT) }; }
 macro_rules! _PAGE_HUGE { () => { (1usize << _PAGE_HUGE_SHIFT) }; }
 macro_rules! _PAGE_HGLOBAL { () => { (1usize << _PAGE_HGLOBAL_SHIFT) }; }
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 macro_rules! _PAGE_NO_READ { () => { 0usize }; }
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 macro_rules! _PAGE_NO_EXEC { () => { 0usize }; }
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 macro_rules! _PAGE_RPLV { () => { 0usize }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! _PAGE_NO_READ { () => { (1usize << _PAGE_NO_READ_SHIFT) }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! _PAGE_NO_EXEC { () => { (1usize << _PAGE_NO_EXEC_SHIFT) }; }
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 macro_rules! _PAGE_RPLV { () => { (1usize << _PAGE_RPLV_SHIFT) }; }
 macro_rules! _CACHE_MASK { () => { (3usize << _CACHE_SHIFT) }; }
 macro_rules! PFN_PTE_SHIFT { () => { (PAGE_SHIFT - 12 + _PAGE_PFN_SHIFT) }; }

@@ -52,7 +52,7 @@ pub enum CpuPmEvent {
 }
 
 /* `CONFIG_CPU_PM` is a build-time configuration condition from the C header. */
-#[cfg(feature = "CONFIG_CPU_PM")]
+#[cfg(CONFIG_CPU_PM)]
 extern "C" {
     pub fn cpu_pm_register_notifier(nb: *mut notifier_block) -> i32;
     pub fn cpu_pm_unregister_notifier(nb: *mut notifier_block) -> i32;
@@ -62,37 +62,37 @@ extern "C" {
     pub fn cpu_cluster_pm_exit() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_CPU_PM"))]
+#[cfg(not(CONFIG_CPU_PM))]
 #[inline]
 pub unsafe fn cpu_pm_register_notifier(_nb: *mut notifier_block) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_PM"))]
+#[cfg(not(CONFIG_CPU_PM))]
 #[inline]
 pub unsafe fn cpu_pm_unregister_notifier(_nb: *mut notifier_block) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_PM"))]
+#[cfg(not(CONFIG_CPU_PM))]
 #[inline]
 pub unsafe fn cpu_pm_enter() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_PM"))]
+#[cfg(not(CONFIG_CPU_PM))]
 #[inline]
 pub unsafe fn cpu_pm_exit() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_PM"))]
+#[cfg(not(CONFIG_CPU_PM))]
 #[inline]
 pub unsafe fn cpu_cluster_pm_enter() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_PM"))]
+#[cfg(not(CONFIG_CPU_PM))]
 #[inline]
 pub unsafe fn cpu_cluster_pm_exit() -> i32 {
     0

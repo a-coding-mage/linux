@@ -139,10 +139,10 @@ macro_rules! EXCEPTION_EPILOGUE {
 macro_rules! FAKE_RET_FROM_EXCPN { () => {{ unsafe { core::arch::asm!("lr r9, [status32]", "bclr r9, r9, {ae}", "bset r9, r9, {ie}", "kflag r9", ae = const STATUS_AE_BIT, ie = const STATUS_IE_BIT); } }}; }
 
 #[macro_export]
-macro_rules! GET_CURR_THR_INFO_FROM_SP { ($reg:tt) => {{ unsafe { core::arch::asm!("bmskn {r}, sp, {shift}", r = lateout(reg) _, shift = const (THREAD_SHIFT - 1)); } }}; }
+macro_rules! GET_CURR_THR_INFO_FROM_SP { ($reg:tt) => {{ unsafe { core::arch::asm!("bmskn {r}, sp, {shift}", r = lateout($reg) _, shift = const (THREAD_SHIFT - 1)); } }}; }
 
 #[macro_export]
-macro_rules! GET_CPU_ID { ($reg:tt) => {{ unsafe { core::arch::asm!("lr {r}, [identity]", "xbfu {r}, {r}, 0xE8", r = lateout(reg) _); } }}; }
+macro_rules! GET_CPU_ID { ($reg:tt) => {{ unsafe { core::arch::asm!("lr {r}, [identity]", "xbfu {r}, {r}, 0xE8", r = lateout($reg) _); } }}; }
 
 #[macro_export]
 macro_rules! SAVE_ABI_CALLEE_REGS { () => {{ unsafe { core::arch::asm!("push r13", "push r14", "push r15", "push r16", "push r17", "push r18", "push r19", "push r20", "push r21", "push r22", "push r23", "push r24", "push r25"); }}; }}

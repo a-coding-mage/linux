@@ -45,9 +45,9 @@ extern "C" {
     pub fn netfilter_log_init() -> i32;
 
     /* nf_hooks_lwtunnel.c; conditional on CONFIG_LWTUNNEL in the C build. */
-    #[cfg(feature = "CONFIG_LWTUNNEL")]
+    #[cfg(CONFIG_LWTUNNEL)]
     pub fn netfilter_lwtunnel_init() -> i32;
-    #[cfg(feature = "CONFIG_LWTUNNEL")]
+    #[cfg(CONFIG_LWTUNNEL)]
     pub fn netfilter_lwtunnel_fini();
 
     /* core.c */

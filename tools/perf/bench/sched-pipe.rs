@@ -422,7 +422,7 @@ unsafe fn resize_pipes(wfd1: c_int, wfd2: c_int) -> c_int {
 
     r1 = fcntl(wfd1, F_SETPIPE_SZ, write_size);
     r2 = fcntl(wfd2, F_SETPIPE_SZ, write_size);
-    if r1 < 0 || r2 < 0 || r1 as c_uint < write_size || r2 as c_uint < write_size {
+    if r1 < 0 || r2 < 0 || (r1 as c_uint) < write_size || (r2 as c_uint) < write_size {
         fprintf(
             libc::stderr,
             c"--write-size %u exceeds /proc/sys/fs/pipe-max-size\n".as_ptr(),

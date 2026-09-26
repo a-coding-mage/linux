@@ -37,7 +37,7 @@
  *
  *   Assume we are unable to simply make the reservation because we do not *mut have enough *mut space *   -> *mut reserve_bytes create a reserve_ticket with ->bytes set to our reservation, add it *mut to the tail of (*space_info).tickets, kick async flush *mut thread *   ->*mut handle_reserve_ticket wait on (*ticket).wait for ->bytes to be reduced to 0, or ->error to be *mut set on the ticket.
  *
- *   -> btrfs_async_reclaim_metadata_space/*mut btrfs_async_reclaim_data_space Flushes various things attempting to free up space.
+ *   -> btrfs_async_reclaim_metadata_space/ *mut btrfs_async_reclaim_data_space Flushes various things attempting to free up space.
  *
  *   -> btrfs_try_granting_tickets()
  *     This is called by anything that either subtracts space *mut from (*space_info).bytes_may_use, ->bytes_pinned, etc, or adds to *mut the (*space_info).total_bytes.  This loops through the ->priority_tickets *mut and then the ->tickets list checking to see if the reservation can *mut be completed.  If it can the space is added to (*space_info).bytes_may_use *mut and the ticket is woken up.
@@ -104,7 +104,7 @@ const BTRFS_ZONED_SYNC_RECLAIM_BATCH: u64 = (5);
 /*
  * Calculate chunk size depending on volume type (regular or zoned).
  */
-unsafe fn calc_chunk_size(const *mut btrfs_fs_info fs_info, u64 flags)
+unsafe fn calc_chunk_size(const *mut btrfs_fs_info fs_info, flags: u64)
 {
 	if (btrfs_is_zoned(fs_info))
 		return (*fs_info).zone_size;
@@ -123,11 +123,11 @@ unsafe fn calc_chunk_size(const *mut btrfs_fs_info fs_info, u64 flags)
 	return SZ_256M;
 }
 
-/*
+/ *
  * Update default chunk size.
  */
 unsafe fn btrfs_update_space_info_chunk_size(*mut btrfs_space_info space_info,
-					u64 chunk_size)
+					chunk_size: u64)
 {
 	WRITE_ONCE((*space_info).chunk_size, chunk_size);
 }
@@ -153,7 +153,7 @@ unsafe fn init_space_info(*mut btrfs_fs_info info,
 		(*space_info).bg_reclaim_threshold = BTRFS_DEFAULT_ZONED_RECLAIM_THRESH;
 }
 
-unsafe fn create_space_info_sub_group(*mut btrfs_space_info parent, u64 flags,
+unsafe fn create_space_info_sub_group(*mut btrfs_space_info parent, flags: u64,
 				       btrfs_space_info_sub_group id, int index)
 {
 	*mut btrfs_fs_info fs_info = (*parent).fs_info;
@@ -179,8 +179,9 @@ unsafe fn create_space_info_sub_group(*mut btrfs_space_info parent, u64 flags,
 	return ret;
 }
 
-unsafe fn create_space_info(*mut btrfs_fs_info info, u64 flags)
+unsafe fn create_space_info(*mut btrfs_fs_info info, flags: u64)
 {
+	'out_free: {
 
 	*mut btrfs_space_info space_info;
 	int ret = 0;
@@ -202,7 +203,7 @@ unsafe fn create_space_info(*mut btrfs_fs_info info, u64 flags)
 							  0);
 
 		if ret
-			goto out_free;
+			break 'out_free;
 	}
 
 	ret = btrfs_sysfs_add_space_info_type(space_info);
@@ -214,8 +215,8 @@ unsafe fn create_space_info(*mut btrfs_fs_info info, u64 flags)
 		(*info).data_sinfo = space_info;
 
 	return ret;
-
-out_free:
+	}
+	
 	kfree(space_info);
 	return ret;
 }
@@ -300,17 +301,17 @@ unsafe fn btrfs_add_bg_to_space_info(*mut btrfs_fs_info info,
 }
 
 *mut btrfs_space_info btrfs_find_space_info(const *mut btrfs_fs_info info,
-					       u64 flags)
+					       flags: u64)
 {
 	const *mut list_head head = &(*info).space_info;
 	*mut btrfs_space_info found;
 
 	flags &= BTRFS_BLOCK_GROUP_TYPE_MASK;
 
-	list_for_each_entry(found, head, list) {
+	list_for_each_entry!(found, head, list, {
 		if (*found).flags & flags
 			return found;
-	}
+	});
 	return NULL;
 }
 
@@ -361,7 +362,7 @@ unsafe fn calc_available_free_space(const *mut btrfs_space_info space_info,
 	}
 	data_chunk_size = calc_effective_data_chunk_size(fs_info);
 
-	/*
+	/ *
 	 * Since data allocations immediately use block groups as part of *mut the reservation, because we assume that data reservations will == *mut actual usage, we could potentially overcommit and then immediately have *mut that available space used by a data allocation, which could put us in *mut a bind when we get close to filling the file system.
 	 *
 	 * To handle this simply remove the data_chunk_size from the *mut available space.  If we are relatively empty this won't affect our ability *mut to overcommit much, and if we're very close to full it'll keep us *mut from getting into a position where we've given ourselves very *mut little metadata wiggle room.
@@ -389,7 +390,7 @@ unsafe fn calc_available_free_space(const *mut btrfs_space_info space_info,
 }
 
 #[inline] fn unsafe fn check_can_overcommit(const *mut btrfs_space_info space_info,
-					u64 space_info_used_bytes, u64 bytes,
+					space_info_used_bytes: u64, bytes: u64,
 					btrfs_reserve_flush_enum flush)
 {
 	const u64 avail = calc_available_free_space(space_info, flush);
@@ -398,7 +399,7 @@ unsafe fn calc_available_free_space(const *mut btrfs_space_info space_info,
 }
 
 #[inline] fn unsafe fn can_overcommit(const *mut btrfs_space_info space_info,
-				  u64 space_info_used_bytes, u64 bytes,
+				  space_info_used_bytes: u64, bytes: u64,
 				  btrfs_reserve_flush_enum flush)
 {
 	/* Don't overcommit when in mixed mode. */
@@ -408,7 +409,7 @@ unsafe fn calc_available_free_space(const *mut btrfs_space_info space_info,
 	return check_can_overcommit(space_info, space_info_used_bytes, bytes, flush);
 }
 
-unsafe fn btrfs_can_overcommit(const *mut btrfs_space_info space_info, u64 bytes,
+unsafe fn btrfs_can_overcommit(const *mut btrfs_space_info space_info, bytes: u64,
 			  btrfs_reserve_flush_enum flush)
 {
 	u64 used;
@@ -436,7 +437,7 @@ unsafe fn remove_ticket(*mut btrfs_space_info space_info,
 	}
 
 	spin_lock(&(*ticket).lock);
-	/*
+	/ *
 	 * If we are called from a task waiting on the ticket, it may *mut happen that before it sets an error on the ticket, a reclaim task was *mut able to satisfy the ticket. In that case ignore the error.
 	 */
 	if error && (*ticket).bytes > 0
@@ -489,7 +490,7 @@ again:
 
 #define DUMP_BLOCK_RSV(fs_info, rsv_name)				\
 do {									\
-	*mut btrfs_block_rsv __rsv = &(fs_info)->rsv_name;		\
+	*mut btrfs_block_rsv __rsv = (*&(fs_info)).rsv_name;		\
 	spin_lock(&(*__rsv).lock);					\
 	btrfs_info(fs_info, #rsv_name ": size %llu reserved %llu",	\
 		   (*__rsv).size, (*__rsv).reserved);			\
@@ -525,8 +526,8 @@ unsafe fn __btrfs_dump_space_info(const *mut btrfs_space_info info)
 		(*info).bytes_readonly, (*info).bytes_zone_unusable);
 }
 
-unsafe fn btrfs_dump_space_info(*mut btrfs_space_info info, u64 bytes,
-			   bool dump_block_groups)
+unsafe fn btrfs_dump_space_info(*mut btrfs_space_info info, bytes: u64,
+			   dump_block_groups: bool)
 {
 	*mut btrfs_fs_info fs_info = (*info).fs_info;
 	*mut btrfs_block_group cache;
@@ -543,7 +544,7 @@ unsafe fn btrfs_dump_space_info(*mut btrfs_space_info info, u64 bytes,
 
 	down_read(&(*info).groups_sem);
 again:
-	list_for_each_entry(cache, &(*info).block_groups[index], list) {
+	list_for_each_entry!(cache, &(*info).block_groups[index], list, {
 		u64 avail;
 
 		spin_lock(&(*cache).lock);
@@ -557,7 +558,7 @@ again:
 		spin_unlock(&(*cache).lock);
 		btrfs_dump_free_space(cache, bytes);
 		total_avail += avail;
-	}
+	});
 	if ++index < BTRFS_NR_RAID_TYPES
 		goto again;
 	up_read(&(*info).groups_sem);
@@ -566,7 +567,7 @@ again:
 }
 
 #[inline] fn unsafe fn calc_reclaim_items_nr(const *mut btrfs_fs_info fs_info,
-					u64 to_reclaim)
+					to_reclaim: u64)
 {
 	u64 bytes;
 	u64 nr;
@@ -578,11 +579,11 @@ again:
 	return nr;
 }
 
-/*
+/ *
  * shrink metadata reservation for *mut delalloc /
 unsafe fn shrink_delalloc(*mut btrfs_space_info space_info,
-			    u64 to_reclaim, bool wait_ordered,
-			    bool for_preempt)
+			    to_reclaim: u64, wait_ordered: bool,
+			    for_preempt: bool)
 {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
 	*mut btrfs_trans_handle trans;
@@ -597,11 +598,11 @@ unsafe fn shrink_delalloc(*mut btrfs_space_info space_info,
 	if delalloc_bytes == 0 && ordered_bytes == 0
 		return;
 
-	/* Calc the number of the pages we need flush for space *mut reservation /
+	/ * Calc the number of the pages we need flush for space *mut reservation /
 	if to_reclaim == U64_MAX {
 		items = U64_MAX;
 	} else {
-		/*
+		/ *
 		 * to_reclaim is set to however much metadata we need *mut to reclaim, but reclaiming that much data doesn't really *mut track exactly.  What we really want to do is reclaim full inode'*mut s worth of reservations, however that's not available to *mut us here.  We will take a fraction of the delalloc bytes for *mut our flushing loops and hope for the best.  Delalloc will *mut expand the amount we write to cover an entire dirty extent, *mut which will reclaim the metadata reservation for that range.  *mut If it's not enough subsequent flush stages will be *mut more aggressive.
 		 */
 		to_reclaim = max(to_reclaim, delalloc_bytes >> 3);
@@ -618,6 +619,7 @@ unsafe fn shrink_delalloc(*mut btrfs_space_info space_info,
 
 	loops = 0;
 	while ((delalloc_bytes || ordered_bytes) && loops < 3) {
+		'skip_async: {
 		u64 temp = min(delalloc_bytes, to_reclaim) >> PAGE_SHIFT;
 		long nr_pages = min_t(u64, temp, LONG_MAX);
 		int async_pages;
@@ -634,7 +636,7 @@ unsafe fn shrink_delalloc(*mut btrfs_space_info space_info,
 		 */
 		async_pages = atomic_read(&(*fs_info).async_delalloc_pages);
 		if !async_pages
-			goto skip_async;
+			break 'skip_async;
 
 		/*
 		 * We don't want to wait forever, if we wrote less pages in *mut this loop than we have outstanding, only wait for that number *mut of pages, otherwise we can wait for all async pages to *mut finish before continuing.
@@ -646,7 +648,8 @@ unsafe fn shrink_delalloc(*mut btrfs_space_info space_info,
 		wait_event((*fs_info).async_submit_wait,
 			   atomic_read(&(*fs_info).async_delalloc_pages) <=
 			   async_pages);
-skip_async:
+		}
+		
 		loops++;
 		if wait_ordered && !trans {
 			btrfs_wait_ordered_roots(fs_info, items, NULL);
@@ -680,8 +683,8 @@ skip_async:
 /*
  * Try to flush some data based on policy set by @state. This is only *mut advisory and may fail for various reasons. The caller is supposed to examine *mut the state of @space_info to detect the outcome.
  */
-unsafe fn flush_space(*mut btrfs_space_info space_info, u64 num_bytes,
-			btrfs_flush_state state, bool for_preempt)
+unsafe fn flush_space(*mut btrfs_space_info space_info, num_bytes: u64,
+			btrfs_flush_state state, for_preempt: bool)
 {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
 	*mut btrfs_root root = (*fs_info).tree_root;
@@ -809,7 +812,7 @@ unsafe fn need_preemptive_reclaim(const *mut btrfs_space_info space_info)
 {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
 	const u64 global_rsv_size = btrfs_block_rsv_reserved(&(*fs_info).global_block_rsv);
-	u64 ordered, delalloc;
+	ordered: u64, delalloc;
 	u64 thresh;
 	u64 used;
 
@@ -1081,7 +1084,7 @@ unsafe fn btrfs_preempt_reclaim_metadata_space(*mut work_struct work)
 	while (need_preemptive_reclaim(space_info)) {
 		btrfs_flush_state flush;
 		u64 delalloc_size = 0;
-		u64 to_reclaim, block_rsv_size;
+		to_reclaim: u64, block_rsv_size;
 		const u64 global_rsv_size = btrfs_block_rsv_reserved(global_rsv);
 		const u64 bytes_may_use = (*space_info).bytes_may_use;
 		const u64 bytes_pinned = (*space_info).bytes_pinned;
@@ -1172,6 +1175,7 @@ static const btrfs_flush_state data_flush_states[] = {
 
 unsafe fn do_async_reclaim_data_space(*mut btrfs_space_info space_info)
 {
+	'aborted_fs: {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
 	u64 last_tickets_id;
 	btrfs_flush_state flush_state = 0;
@@ -1196,7 +1200,7 @@ unsafe fn do_async_reclaim_data_space(*mut btrfs_space_info space_info)
 
 		/* Something happened, fail everything and bail. */
 		if (unlikely(BTRFS_FS_ERROR(fs_info)))
-			goto aborted_fs;
+			break 'aborted_fs;
 		last_tickets_id = (*space_info).tickets_id;
 		spin_unlock(&(*space_info).lock);
 	}
@@ -1230,14 +1234,14 @@ unsafe fn do_async_reclaim_data_space(*mut btrfs_space_info space_info)
 
 			/* Something happened, fail everything and bail. */
 			if (unlikely(BTRFS_FS_ERROR(fs_info)))
-				goto aborted_fs;
+				break 'aborted_fs;
 
 		}
 		spin_unlock(&(*space_info).lock);
 	}
 	return;
-
-aborted_fs:
+	}
+	
 	maybe_fail_all_tickets(space_info);
 	(*space_info).flush = false;
 	spin_unlock(&(*space_info).lock);
@@ -1395,7 +1399,7 @@ unsafe fn wait_reserve_ticket(*mut btrfs_space_info space_info,
  */
 unsafe fn handle_reserve_ticket(*mut btrfs_space_info space_info,
 				 *mut reserve_ticket ticket,
-				 u64 start_ns, u64 orig_bytes,
+				 start_ns: u64, orig_bytes: u64,
 				 btrfs_reserve_flush_enum flush)
 {
 	int ret;
@@ -1480,7 +1484,7 @@ unsafe fn handle_reserve_ticket(*mut btrfs_space_info space_info,
  *
  * @space_info: space info we want to allocate *mut from @orig_bytes: number of bytes we *mut want @flush:      whether or not we can flush to make our *mut reservation * This will reserve orig_bytes number of bytes from the space info *mut associated with the block_rsv.  If there is not enough space it will make an attempt *mut to flush out space to make room.  It will do this by flushing delalloc *mut if possible or committing the transaction.  If flush is 0 then no attempts *mut to regain reservations will be made and this will fail if there is not *mut enough space already.
  */
-unsafe fn reserve_bytes(*mut btrfs_space_info space_info, u64 orig_bytes,
+unsafe fn reserve_bytes(*mut btrfs_space_info space_info, orig_bytes: u64,
 			 btrfs_reserve_flush_enum flush)
 {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
@@ -1603,7 +1607,7 @@ unsafe fn reserve_bytes(*mut btrfs_space_info space_info, u64 orig_bytes,
  * @space_info: the space_info we're allocating *mut for @orig_bytes: number of bytes we *mut want @flush:      whether or not we can flush to make our *mut reservation * This will reserve orig_bytes number of bytes from the space info *mut associated with the block_rsv.  If there is not enough space it will make an attempt *mut to flush out space to make room.  It will do this by flushing delalloc *mut if possible or committing the transaction.  If flush is 0 then no attempts *mut to regain reservations will be made and this will fail if there is not *mut enough space already.
  */
 unsafe fn btrfs_reserve_metadata_bytes(*mut btrfs_space_info space_info,
-				 u64 orig_bytes,
+				 orig_bytes: u64,
 				 btrfs_reserve_flush_enum flush)
 {
 	int ret;
@@ -1626,7 +1630,7 @@ unsafe fn btrfs_reserve_metadata_bytes(*mut btrfs_space_info space_info,
  *
  * @space_info: the space_info we're allocating *mut for @bytes:   number of bytes we *mut need @flush:   how we are allowed to *mut flush * This will reserve bytes from the data space info.  If there is not *mut enough space then we will attempt to flush space as specified by flush.
  */
-unsafe fn btrfs_reserve_data_bytes(*mut btrfs_space_info space_info, u64 bytes,
+unsafe fn btrfs_reserve_data_bytes(*mut btrfs_space_info space_info, bytes: u64,
 			     btrfs_reserve_flush_enum flush)
 {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
@@ -1638,7 +1642,7 @@ unsafe fn btrfs_reserve_data_bytes(*mut btrfs_space_info space_info, u64 bytes,
 	       flush == BTRFS_RESERVE_NO_FLUSH, "flush=%d", flush);
 	ASSERT(!(*current).journal_info || flush != BTRFS_RESERVE_FLUSH_DATA,
 	       "(*current).journal_info=0x%lx flush=%d",
-	       (unsigned long)(*current).journal_info, flush);
+	       (core::ffi::c_ulong)(*current).journal_info, flush);
 
 	ret = reserve_bytes(space_info, bytes, flush);
 	if ret == -ENOSPC {
@@ -1651,16 +1655,15 @@ unsafe fn btrfs_reserve_data_bytes(*mut btrfs_space_info space_info, u64 bytes,
 }
 
 /* Dump all the space infos when we abort a transaction due to ENOSPC. */
-unsafe fn btrfs_dump_space_info_for_trans_abort(*mut btrfs_fs_info fs_info)
-{
+unsafe fn btrfs_dump_space_info_for_trans_abort(*mut btrfs_fs_info fs_info) {
 	*mut btrfs_space_info space_info;
 
 	btrfs_info(fs_info, "dumping space info:");
-	list_for_each_entry(space_info, &(*fs_info).space_info, list) {
+	list_for_each_entry!(space_info, &(*fs_info).space_info, list, {
 		spin_lock(&(*space_info).lock);
 		__btrfs_dump_space_info(space_info);
 		spin_unlock(&(*space_info).lock);
-	}
+	});
 	dump_global_block_rsv(fs_info);
 }
 
@@ -1679,7 +1682,7 @@ unsafe fn btrfs_account_ro_block_groups_free_space(*mut btrfs_space_info sinfo)
 		return 0;
 
 	spin_lock(&(*sinfo).lock);
-	list_for_each_entry(block_group, &(*sinfo).ro_bgs, ro_list) {
+	list_for_each_entry!(block_group, &(*sinfo).ro_bgs, ro_list, {
 		spin_lock(&(*block_group).lock);
 
 		if !(*block_group).ro {
@@ -1692,13 +1695,13 @@ unsafe fn btrfs_account_ro_block_groups_free_space(*mut btrfs_space_info sinfo)
 			       (*block_group).used) * factor;
 
 		spin_unlock(&(*block_group).lock);
-	}
+	});
 	spin_unlock(&(*sinfo).lock);
 
 	return free_bytes;
 }
 
-unsafe fn calc_pct_ratio(u64 x, u64 y)
+unsafe fn calc_pct_ratio(x: u64, y: u64)
 {
 	int ret;
 
@@ -1717,7 +1720,7 @@ lose_precision:
 	goto again;
 }
 
-/*
+/ *
  * A reasonable buffer for unallocated space is 10 data block_groups.
  * If we claw this back repeatedly, we can still achieve *mut efficient utilization when near full, and not do too much reclaim *mut while always maintaining a solid buffer for workloads that *mut quickly allocate and pressure the unallocated space.
  */
@@ -1793,8 +1796,8 @@ unsafe fn do_reclaim_sweep(*mut btrfs_space_info space_info, int raid)
 	spin_unlock(&(*space_info).lock);
 
 	down_read(&(*space_info).groups_sem);
-again:
-	list_for_each_entry(bg, &(*space_info).block_groups[raid], list) {
+    'again: loop {
+    list_for_each_entry!(bg, &(*space_info).block_groups[raid], list, {
 		u64 thresh;
 		bool reclaim = false;
 
@@ -1810,7 +1813,7 @@ again:
 		if reclaim
 			btrfs_mark_bg_to_reclaim(bg);
 		btrfs_put_block_group(bg);
-	}
+	});
 
 	/*
 	 * In situations where we are very motivated to reclaim (low unalloc)
@@ -1820,11 +1823,13 @@ again:
 	 */
 	if !will_reclaim && urgent {
 		urgent = false;
-		goto again;
+		continue 'again;
 	}
 
 	up_read(&(*space_info).groups_sem);
 	return will_reclaim;
+        break;
+    }
 }
 
 unsafe fn btrfs_space_info_update_reclaimable(*mut btrfs_space_info space_info, s64 bytes)
@@ -1839,7 +1844,7 @@ unsafe fn btrfs_space_info_update_reclaimable(*mut btrfs_space_info space_info, 
 		btrfs_set_periodic_reclaim_ready(space_info, true);
 }
 
-unsafe fn btrfs_set_periodic_reclaim_ready(*mut btrfs_space_info space_info, bool ready)
+unsafe fn btrfs_set_periodic_reclaim_ready(*mut btrfs_space_info space_info, ready: bool)
 {
 	lockdep_assert_held(&(*space_info).lock);
 	if (!READ_ONCE((*space_info).periodic_reclaim))
@@ -1872,7 +1877,7 @@ unsafe fn btrfs_reclaim_sweep(const *mut btrfs_fs_info fs_info)
 	int raid;
 	*mut btrfs_space_info space_info;
 
-	list_for_each_entry(space_info, &(*fs_info).space_info, list) {
+	list_for_each_entry!(space_info, &(*fs_info).space_info, list, {
 		if (!btrfs_should_periodic_reclaim(space_info))
 			continue;
 		for (raid = 0; raid < BTRFS_NR_RAID_TYPES; raid++) {
@@ -1882,11 +1887,12 @@ unsafe fn btrfs_reclaim_sweep(const *mut btrfs_fs_info fs_info)
 				spin_unlock(&(*space_info).lock);
 			}
 		}
-	}
+	});
 }
 
-unsafe fn btrfs_return_free_space(*mut btrfs_space_info space_info, u64 len)
+unsafe fn btrfs_return_free_space(*mut btrfs_space_info space_info, len: u64)
 {
+	'grant: {
 	*mut btrfs_fs_info fs_info = (*space_info).fs_info;
 	*mut btrfs_block_rsv global_rsv = &(*fs_info).global_block_rsv;
 
@@ -1894,7 +1900,7 @@ unsafe fn btrfs_return_free_space(*mut btrfs_space_info space_info, u64 len)
 
 	/* Prioritize the global reservation to receive the freed space. */
 	if (*global_rsv).space_info != space_info
-		goto grant;
+		break 'grant;
 
 	spin_lock(&(*global_rsv).lock);
 	if !(*global_rsv).full {
@@ -1907,8 +1913,8 @@ unsafe fn btrfs_return_free_space(*mut btrfs_space_info space_info, u64 len)
 		len -= to_add;
 	}
 	spin_unlock(&(*global_rsv).lock);
-
-grant:
+	}
+	
 	/* Add to any tickets we may have. */
 	if len
 		btrfs_try_granting_tickets(space_info);

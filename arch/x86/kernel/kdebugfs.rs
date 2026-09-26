@@ -83,7 +83,7 @@ pub const EFAULT: isize = 14;
 #[no_mangle]
 pub static mut arch_debugfs_dir: *mut dentry = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 #[repr(C)]
 pub struct setup_data_node {
     pub paddr: u64,
@@ -91,7 +91,7 @@ pub struct setup_data_node {
     pub len: u32,
 }
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 unsafe extern "C" fn setup_data_read(file: *mut file, user_buf: *mut c_char, count: usize, ppos: *mut i64) -> isize {
     let node = (*file).private_data as *mut setup_data_node;
     let mut remain: usize;
@@ -120,14 +120,14 @@ unsafe extern "C" fn setup_data_read(file: *mut file, user_buf: *mut c_char, cou
     count as isize
 }
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 static fops_setup_data: file_operations = file_operations {
     read: Some(setup_data_read),
     open: Some(simple_open),
     llseek: Some(default_llseek),
 };
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 unsafe fn create_setup_data_node(parent: *mut dentry, no: c_int, node: *mut setup_data_node) {
     let mut buf = [0 as c_char; 16];
     sprintf(buf.as_mut_ptr(), b"%d\0".as_ptr() as *const c_char, no);
@@ -136,7 +136,7 @@ unsafe fn create_setup_data_node(parent: *mut dentry, no: c_int, node: *mut setu
     debugfs_create_file(b"data\0".as_ptr() as *const c_char, S_IRUGO, d, node as *mut c_void, &fops_setup_data);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 unsafe fn create_setup_data_nodes(parent: *mut dentry) -> c_int {
     let d = debugfs_create_dir(b"setup_data\0".as_ptr() as *const c_char, parent);
     let mut pa_data = boot_params.hdr.setup_data;
@@ -170,10 +170,10 @@ unsafe fn create_setup_data_nodes(parent: *mut dentry) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 static mut boot_params_blob: debugfs_blob_wrapper = debugfs_blob_wrapper { data: core::ptr::null_mut(), size: 0 };
 
-#[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+#[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
 unsafe fn boot_params_kdebugfs_init() -> c_int {
     let dbp = debugfs_create_dir(b"boot_params\0".as_ptr() as *const c_char, arch_debugfs_dir);
     debugfs_create_x16(b"version\0".as_ptr() as *const c_char, S_IRUGO, dbp, &mut boot_params.hdr.version);
@@ -186,9 +186,9 @@ unsafe fn boot_params_kdebugfs_init() -> c_int {
 
 unsafe fn arch_kdebugfs_init() -> c_int {
     arch_debugfs_dir = debugfs_create_dir(b"x86\0".as_ptr() as *const c_char, core::ptr::null_mut());
-    #[cfg(feature = "CONFIG_DEBUG_BOOT_PARAMS")]
+    #[cfg(CONFIG_DEBUG_BOOT_PARAMS)]
     { return boot_params_kdebugfs_init(); }
-    #[cfg(not(feature = "CONFIG_DEBUG_BOOT_PARAMS"))]
+    #[cfg(not(CONFIG_DEBUG_BOOT_PARAMS))]
     { 0 }
 }
 

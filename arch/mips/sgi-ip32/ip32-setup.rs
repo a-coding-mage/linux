@@ -14,12 +14,12 @@ use core::ffi::{c_char, c_int, c_uint, c_uchar, c_void};
 
 // Linux and MIPS headers supply the declarations referenced below.
 
-#[cfg(feature = "CONFIG_SGI_O2MACE_ETH")]
+#[cfg(CONFIG_SGI_O2MACE_ETH)]
 extern "C" {
     static mut o2meth_eaddr: [c_uchar; 8];
 }
 
-#[cfg(feature = "CONFIG_SGI_O2MACE_ETH")]
+#[cfg(CONFIG_SGI_O2MACE_ETH)]
 #[inline]
 unsafe fn str2hexnum(c: c_uchar) -> c_uchar {
     if c >= b'0' && c <= b'9' {
@@ -31,7 +31,7 @@ unsafe fn str2hexnum(c: c_uchar) -> c_uchar {
     0 // foo
 }
 
-#[cfg(feature = "CONFIG_SGI_O2MACE_ETH")]
+#[cfg(CONFIG_SGI_O2MACE_ETH)]
 #[inline]
 unsafe fn str2eaddr(ea: *mut c_uchar, mut string: *mut c_uchar) {
     for i in 0..6 {
@@ -74,7 +74,7 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_SGI_O2MACE_ETH")]
+#[cfg(CONFIG_SGI_O2MACE_ETH)]
 pub unsafe extern "C" fn plat_mem_setup_eth() {
     let mac = ArcGetEnvironmentVariable(b"eaddr\0".as_ptr() as *const c_char);
     str2eaddr(o2meth_eaddr.as_mut_ptr(), mac as *mut c_uchar);
@@ -97,10 +97,10 @@ pub unsafe extern "C" fn plat_time_init() {
 pub unsafe extern "C" fn plat_mem_setup() {
     board_be_init = ip32_be_init;
 
-    #[cfg(feature = "CONFIG_SGI_O2MACE_ETH")]
+    #[cfg(CONFIG_SGI_O2MACE_ETH)]
     plat_mem_setup_eth();
 
-    #[cfg(feature = "CONFIG_SERIAL_CORE_CONSOLE")]
+    #[cfg(CONFIG_SERIAL_CORE_CONSOLE)]
     {
         let con = ArcGetEnvironmentVariable(b"console\0".as_ptr() as *const c_char);
         if !con.is_null() && *con == b'd' as c_char {

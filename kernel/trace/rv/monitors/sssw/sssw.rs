@@ -182,7 +182,7 @@ unsafe extern "C" fn unregister_sssw() {
 
 // Preserved conditional intent: this block is present when
 // CONFIG_RV_MONITORS_KUNIT_TEST is enabled.
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub struct rv_sssw_ops {
     pub mon: (),
     pub handle_sched_set_state: unsafe extern "C" fn(*mut core::ffi::c_void, *mut task_struct, core::ffi::c_int),
@@ -191,7 +191,7 @@ pub struct rv_sssw_ops {
     pub handle_signal_deliver: unsafe extern "C" fn(*mut core::ffi::c_void, core::ffi::c_int, *mut kernel_siginfo, *mut k_sigaction),
 }
 
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 #[no_mangle]
 pub static rv_sssw_ops_instance: rv_sssw_ops = rv_sssw_ops {
     mon: (),

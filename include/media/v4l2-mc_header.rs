@@ -56,7 +56,7 @@ pub struct media_link {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_MEDIA_CONTROLLER")]
+#[cfg(CONFIG_MEDIA_CONTROLLER)]
 extern "C" {
     /** v4l2_mc_create_media_graph() - create Media Controller links at the graph. */
     pub fn v4l2_mc_create_media_graph(mdev: *mut media_device) -> c_int;
@@ -97,33 +97,33 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l2_mc_create_media_graph(_mdev: *mut media_device) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l_enable_media_source(_vdev: *mut video_device) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l_disable_media_source(_vdev: *mut video_device) {}
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l_vb2q_enable_media_source(_q: *mut vb2_queue) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l2_pipeline_pm_get(_entity: *mut media_entity) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l2_pipeline_pm_put(_entity: *mut media_entity) {}
 
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn v4l2_pipeline_link_notify(
     _link: *mut media_link,
     _flags: u32,

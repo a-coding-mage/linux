@@ -71,9 +71,10 @@ class NativeListSortArtifacts(unittest.TestCase):
         self.assertEqual(members.count(owner.resolve()), 1)
         self.assertNotIn((build / 'lib/list_sort.o').resolve(), members)
         position = members.index(owner.resolve())
+        uuid_owner = 'lib/uuid_rust.o' if config.get('RUST_UUID') == 'y' else 'lib/uuid.o'
         self.assertEqual(members[position - 1:position + 2],
                          [(build / name).resolve() for name in
-                          ('lib/scatterlist.o', 'lib/list_sort_rust.o', 'lib/uuid.o')])
+                          ('lib/scatterlist.o', 'lib/list_sort_rust.o', uuid_owner)])
         dependencies = [ROOT / name for name in
                         ('lib/list_sort.rs', 'include/linux/list_sort_header.rs',
                          'rust/ffi_export.rs', 'include/linux/export_header.rs')]
@@ -201,24 +202,28 @@ class ListSortTest(unittest.TestCase):
                            '\n$(info LIST_SORT_ORDER=$(real-obj-y))\n'
                            '.PHONY: selected\nselected: $(filter lib/list_sort.o lib/list_sort_rust.o,$(real-obj-y))\n')
         (self.out / 'lib').mkdir()
-        for setting, owner, other in [('', 'list_sort.c', 'list_sort_rust.rs'),
-                                       ('n', 'list_sort.c', 'list_sort_rust.rs'),
-                                       ('y', 'list_sort_rust.rs', 'list_sort.c')]:
-            result = self.command(['make', '--no-print-directory', '-n', '-f', wrapper,
-                'selected', 'obj=lib', 'srctree=' + str(ROOT), 'srcroot=' + str(ROOT),
-                'objtree=' + str(self.out), 'VPATH=' + str(ROOT),
-                'CONFIG_RUST_LIST_SORT=' + setting, 'CC=clang',
-                'RUSTC_OR_CLIPPY=' + self.rust, 'SHELL=' + shutil.which('true')])
-            self.assertIn(str(ROOT / 'lib' / owner), result.stdout)
-            self.assertNotIn(str(ROOT / 'lib' / other), result.stdout)
-            order = re.search(r'^LIST_SORT_ORDER=(.*)$', result.stdout, re.M).group(1).split()
-            selected = 'lib/list_sort_rust.o' if setting == 'y' else 'lib/list_sort.o'
-            position = order.index(selected)
-            self.assertEqual(order[position - 1:position + 2],
-                             ['lib/scatterlist.o', selected, 'lib/uuid.o'])
-            if setting == 'y':
-                self.assertIn('--emit=dep-info=', result.stdout)
-                self.assertIn('fixdep', result.stdout)
+        for uuid in ('n', 'y'):
+            for setting, owner, other in [('', 'list_sort.c', 'list_sort_rust.rs'),
+                                           ('n', 'list_sort.c', 'list_sort_rust.rs'),
+                                           ('y', 'list_sort_rust.rs', 'list_sort.c')]:
+                with self.subTest(list_sort=setting, uuid=uuid):
+                    result = self.command(['make', '--no-print-directory', '-n', '-f', wrapper,
+                        'selected', 'obj=lib', 'srctree=' + str(ROOT), 'srcroot=' + str(ROOT),
+                        'objtree=' + str(self.out), 'VPATH=' + str(ROOT),
+                        'CONFIG_RUST_LIST_SORT=' + setting, 'CONFIG_RUST_UUID=' + uuid,
+                        'CC=clang', 'RUSTC_OR_CLIPPY=' + self.rust,
+                        'SHELL=' + shutil.which('true')])
+                    self.assertIn(str(ROOT / 'lib' / owner), result.stdout)
+                    self.assertNotIn(str(ROOT / 'lib' / other), result.stdout)
+                    order = re.search(r'^LIST_SORT_ORDER=(.*)$', result.stdout, re.M).group(1).split()
+                    selected = 'lib/list_sort_rust.o' if setting == 'y' else 'lib/list_sort.o'
+                    position = order.index(selected)
+                    uuid_owner = 'lib/uuid_rust.o' if uuid == 'y' else 'lib/uuid.o'
+                    self.assertEqual(order[position - 1:position + 2],
+                                     ['lib/scatterlist.o', selected, uuid_owner])
+                    if setting == 'y':
+                        self.assertIn('--emit=dep-info=', result.stdout)
+                        self.assertIn('fixdep', result.stdout)
 
     def test_kbuild_incremental_dependencies(self):
         self.require_native()

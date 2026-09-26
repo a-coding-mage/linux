@@ -34,14 +34,14 @@ const L2_WRITETHROUGH_KIRKWOOD: u32 = 1 << 4;
 
 #[inline]
 unsafe fn l2_get_va(paddr: usize) -> usize {
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         /* Because range ops can't be done on physical addresses, install a
          * virtual mapping only for the TLB lookup to occur. */
         let vaddr = kmap_atomic_pfn(paddr >> PAGE_SHIFT);
         return vaddr as usize + (paddr & !PAGE_MASK);
     }
-    #[cfg(not(feature = "CONFIG_HIGHMEM"))]
+    #[cfg(not(CONFIG_HIGHMEM))]
     {
         __phys_to_virt(paddr)
     }
@@ -49,7 +49,7 @@ unsafe fn l2_get_va(paddr: usize) -> usize {
 
 #[inline]
 unsafe fn l2_put_va(vaddr: usize) {
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         kunmap_atomic(vaddr as *mut core::ffi::c_void);
     }
@@ -219,10 +219,10 @@ pub unsafe fn feroceon_l2_init(l2_wt_override_arg: i32) {
 }
 
 // CONFIG_OF declarations and feroceon_of_init are preserved below.
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe fn feroceon_of_init() -> i32 {
     let mut l2_wt_override_of = false;
-    #[cfg(feature = "CONFIG_CACHE_FEROCEON_L2_WRITETHROUGH")]
+    #[cfg(CONFIG_CACHE_FEROCEON_L2_WRITETHROUGH)]
     { l2_wt_override_of = true; }
     let node = of_find_matching_node(core::ptr::null_mut(), feroceon_ids.as_ptr());
     if !node.is_null() && of_device_is_compatible(node, b"marvell,kirkwood-cache\0".as_ptr()) {

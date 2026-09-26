@@ -43,7 +43,7 @@ pub struct seq_file {
 #[repr(C)]
 pub struct pinconf_ops {
     // Present when CONFIG_GENERIC_PINCONF is enabled.
-    #[cfg(feature = "CONFIG_GENERIC_PINCONF")]
+    #[cfg(CONFIG_GENERIC_PINCONF)]
     pub is_generic: bool,
 
     pub pin_config_get: Option<unsafe extern "C" fn(

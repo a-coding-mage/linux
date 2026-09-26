@@ -9,14 +9,14 @@
 // Dependencies supplied by the surrounding kernel translation:
 // linux/perf/riscv_pmu.h, asm/kvm_vcpu_insn.h, asm/sbi.h
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 pub const RISCV_KVM_MAX_FW_CTRS: usize = 32;
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 pub const RISCV_KVM_MAX_HW_CTRS: usize = 32;
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 pub const RISCV_KVM_MAX_COUNTERS: usize = RISCV_KVM_MAX_HW_CTRS + RISCV_KVM_MAX_FW_CTRS;
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 #[repr(C)]
 pub struct kvm_fw_event {
     /* Current value of the event */
@@ -25,7 +25,7 @@ pub struct kvm_fw_event {
     pub started: bool,
 }
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 #[repr(C)]
 pub struct kvm_pmc {
     pub idx: u8,
@@ -39,7 +39,7 @@ pub struct kvm_pmc {
     pub vcpu: *mut kvm_vcpu,
 }
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 #[repr(C)]
 pub struct kvm_pmu {
     pub pmc: [kvm_pmc; RISCV_KVM_MAX_COUNTERS],
@@ -60,31 +60,31 @@ pub struct kvm_pmu {
     pub sdata: *mut riscv_pmu_snapshot_data,
 }
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 #[inline]
 pub unsafe fn vcpu_to_pmu(vcpu: *mut kvm_vcpu) -> *mut kvm_pmu {
     &mut (*vcpu).arch.pmu_context
 }
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 #[inline]
 pub unsafe fn pmu_to_vcpu(pmu: *mut kvm_pmu) -> *mut kvm_vcpu {
     container_of!(pmu, kvm_vcpu, arch.pmu_context)
 }
 
-#[cfg(feature = "CONFIG_32BIT")]
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_32BIT)]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 macro_rules! KVM_RISCV_VCPU_HPMCOUNTER_CSR_FUNCS {
     () => { { base: CSR_CYCLEH, count: 32, func: kvm_riscv_vcpu_pmu_read_hpm },
             { base: CSR_CYCLE, count: 32, func: kvm_riscv_vcpu_pmu_read_hpm } };
 }
 
-#[cfg(all(not(feature = "CONFIG_32BIT"), feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(all(not(CONFIG_32BIT), CONFIG_RISCV_PMU_SBI))]
 macro_rules! KVM_RISCV_VCPU_HPMCOUNTER_CSR_FUNCS {
     () => { { base: CSR_CYCLE, count: 32, func: kvm_riscv_vcpu_pmu_read_hpm } };
 }
 
-#[cfg(feature = "CONFIG_RISCV_PMU_SBI")]
+#[cfg(CONFIG_RISCV_PMU_SBI)]
 extern "C" {
     pub fn kvm_riscv_vcpu_pmu_incr_fw(vcpu: *mut kvm_vcpu, fid: ::core::ffi::c_ulong) -> i32;
     pub fn kvm_riscv_vcpu_pmu_read_hpm(vcpu: *mut kvm_vcpu, csr_num: u32, val: *mut ::core::ffi::c_ulong, new_val: ::core::ffi::c_ulong, wr_mask: ::core::ffi::c_ulong) -> i32;
@@ -102,11 +102,11 @@ extern "C" {
     pub fn kvm_riscv_vcpu_pmu_reset(vcpu: *mut kvm_vcpu);
 }
 
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 #[repr(C)]
 pub struct kvm_pmu {}
 
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_read_legacy(vcpu: *mut kvm_vcpu, csr_num: u32, val: *mut ::core::ffi::c_ulong, _new_val: ::core::ffi::c_ulong, _wr_mask: ::core::ffi::c_ulong) -> i32 {
     if csr_num == CSR_CYCLE || csr_num == CSR_INSTRET {
         *val = 0;
@@ -116,18 +116,18 @@ pub unsafe fn kvm_riscv_vcpu_pmu_read_legacy(vcpu: *mut kvm_vcpu, csr_num: u32, 
     }
 }
 
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 macro_rules! KVM_RISCV_VCPU_HPMCOUNTER_CSR_FUNCS {
     () => { { base: CSR_CYCLE, count: 3, func: kvm_riscv_vcpu_pmu_read_legacy } };
 }
 
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_init(_vcpu: *mut kvm_vcpu) {}
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_incr_fw(_vcpu: *mut kvm_vcpu, _fid: ::core::ffi::c_ulong) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_deinit(_vcpu: *mut kvm_vcpu) {}
-#[cfg(not(feature = "CONFIG_RISCV_PMU_SBI"))]
+#[cfg(not(CONFIG_RISCV_PMU_SBI))]
 pub unsafe fn kvm_riscv_vcpu_pmu_reset(_vcpu: *mut kvm_vcpu) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

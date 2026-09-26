@@ -29,7 +29,7 @@ extern "C" {
     pub fn ERR_PTR(error: isize) -> *mut c_void;
 }
 
-#[cfg(feature = "CONFIG_HWSPINLOCK")]
+#[cfg(CONFIG_HWSPINLOCK)]
 extern "C" {
     pub fn hwspin_lock_register(bank: *mut hwspinlock_device, dev: *mut device,
         ops: *const hwspinlock_ops, base_id: c_int, num_locks: c_int) -> c_int;
@@ -51,29 +51,29 @@ extern "C" {
         ops: *const hwspinlock_ops, base_id: c_int, num_locks: c_int) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn hwspin_lock_request_specific(_id: c_uint) -> *mut hwspinlock {
     ERR_PTR(-19) as *mut hwspinlock /* -ENODEV */
 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn hwspin_lock_free(_hwlock: *mut hwspinlock) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn __hwspin_lock_timeout(_hwlock: *mut hwspinlock, _to: c_uint, _mode: c_int,
     _flags: *mut c_ulong) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn __hwspin_trylock(_hwlock: *mut hwspinlock, _mode: c_int,
     _flags: *mut c_ulong) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn __hwspin_unlock(_hwlock: *mut hwspinlock, _mode: c_int, _flags: *mut c_ulong) {}
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn hwspin_lock_bust(_hwlock: *mut hwspinlock, _id: c_uint) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn of_hwspin_lock_get_id(_np: *mut device_node, _index: c_int) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn of_hwspin_lock_get_id_byname(_np: *mut device_node, _name: *const c_char) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn devm_hwspin_lock_free(_dev: *mut device, _hwlock: *mut hwspinlock) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_HWSPINLOCK"))]
+#[cfg(not(CONFIG_HWSPINLOCK))]
 pub unsafe fn devm_hwspin_lock_request_specific(_dev: *mut device, _id: c_uint) -> *mut hwspinlock {
     ERR_PTR(-19) as *mut hwspinlock /* -ENODEV */
 }

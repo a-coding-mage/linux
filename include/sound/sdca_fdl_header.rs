@@ -65,7 +65,7 @@ pub const SDCA_CTL_XU_FDLD_MASK: u32 =
     | SDCA_CTL_XU_FDLD_NEEDS_SET;
 
 // CONFIG_SND_SOC_SDCA_FDL is represented by the equivalent Rust feature.
-#[cfg(feature = "CONFIG_SND_SOC_SDCA_FDL")]
+#[cfg(CONFIG_SND_SOC_SDCA_FDL)]
 extern "C" {
     pub fn sdca_fdl_alloc_state(interrupt: *mut sdca_interrupt) -> i32;
     pub fn sdca_fdl_free_state(interrupt: *mut sdca_interrupt);
@@ -82,20 +82,20 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_FDL"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_FDL))]
 pub unsafe fn sdca_fdl_alloc_state(_interrupt: *mut sdca_interrupt) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_FDL"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_FDL))]
 pub unsafe fn sdca_fdl_free_state(_interrupt: *mut sdca_interrupt) {}
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_FDL"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_FDL))]
 pub unsafe fn sdca_fdl_process(_interrupt: *mut sdca_interrupt) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_FDL"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_FDL))]
 pub unsafe fn sdca_fdl_sync(
     _dev: *mut device,
     _function: *mut sdca_function_data,
@@ -104,7 +104,7 @@ pub unsafe fn sdca_fdl_sync(
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_FDL"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_FDL))]
 pub unsafe fn sdca_reset_function(
     _dev: *mut device,
     _function: *mut sdca_function_data,

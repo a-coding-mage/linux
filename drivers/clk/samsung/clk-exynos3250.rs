@@ -797,24 +797,24 @@ unsafe fn exynos3_core_down_clock(reg_base: *mut core::ffi::c_void)
 }
 
 static cmu_info: samsung_cmu_info = {
-	.pll_clks		= exynos3250_plls,
-	.nr_pll_clks		= ARRAY_SIZE(exynos3250_plls),
-	.mux_clks		= mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(mux_clks),
-	.div_clks		= div_clks,
-	.nr_div_clks		= ARRAY_SIZE(div_clks),
-	.gate_clks		= gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(gate_clks),
-	.fixed_factor_clks	= fixed_factor_clks,
-	.nr_fixed_factor_clks	= ARRAY_SIZE(fixed_factor_clks),
-	.cpu_clks		= exynos3250_cpu_clks,
-	.nr_cpu_clks		= ARRAY_SIZE(exynos3250_cpu_clks),
-	.nr_clk_ids		= CLKS_NR_MAIN,
-	.clk_regs		= exynos3250_cmu_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(exynos3250_cmu_clk_regs),
+	pll_clks: exynos3250_plls,
+	nr_pll_clks: ARRAY_SIZE(exynos3250_plls),
+	mux_clks: mux_clks,
+	nr_mux_clks: ARRAY_SIZE(mux_clks),
+	div_clks: div_clks,
+	nr_div_clks: ARRAY_SIZE(div_clks),
+	gate_clks: gate_clks,
+	nr_gate_clks: ARRAY_SIZE(gate_clks),
+	fixed_factor_clks: fixed_factor_clks,
+	nr_fixed_factor_clks: ARRAY_SIZE(fixed_factor_clks),
+	cpu_clks: exynos3250_cpu_clks,
+	nr_cpu_clks: ARRAY_SIZE(exynos3250_cpu_clks),
+	nr_clk_ids: CLKS_NR_MAIN,
+	clk_regs: exynos3250_cmu_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(exynos3250_cmu_clk_regs),
 };
 
-static void __init exynos3250_cmu_init(struct device_node *np)
+static void __init exynos3250_cmu_init(device_node *np)
 {
 	struct samsung_clk_provider *ctx;
 
@@ -822,7 +822,7 @@ static void __init exynos3250_cmu_init(struct device_node *np)
 	if (!ctx)
 		return;
 
-	exynos3_core_down_clock(ctx->reg_base);
+	exynos3_core_down_clock((*ctx).reg_base);
 }
 CLK_OF_DECLARE(exynos3250_cmu, "samsung,exynos3250-cmu", exynos3250_cmu_init);
 
@@ -919,18 +919,18 @@ static exynos3250_dmc_plls: &[samsung_pll_clock] = &[ {
 };
 
 static dmc_cmu_info: samsung_cmu_info = {
-	.pll_clks		= exynos3250_dmc_plls,
-	.nr_pll_clks		= ARRAY_SIZE(exynos3250_dmc_plls),
-	.mux_clks		= dmc_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(dmc_mux_clks),
-	.div_clks		= dmc_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(dmc_div_clks),
-	.nr_clk_ids		= CLKS_NR_DMC,
-	.clk_regs		= exynos3250_cmu_dmc_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(exynos3250_cmu_dmc_clk_regs),
+	pll_clks: exynos3250_dmc_plls,
+	nr_pll_clks: ARRAY_SIZE(exynos3250_dmc_plls),
+	mux_clks: dmc_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(dmc_mux_clks),
+	div_clks: dmc_div_clks,
+	nr_div_clks: ARRAY_SIZE(dmc_div_clks),
+	nr_clk_ids: CLKS_NR_DMC,
+	clk_regs: exynos3250_cmu_dmc_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(exynos3250_cmu_dmc_clk_regs),
 };
 
-static void __init exynos3250_cmu_dmc_init(struct device_node *np)
+static void __init exynos3250_cmu_dmc_init(device_node *np)
 {
 	samsung_cmu_register_one(np, &dmc_cmu_info);
 }
@@ -1065,16 +1065,16 @@ static isp_gate_clks: &[samsung_gate_clock] = &[ {
 };
 
 static isp_cmu_info: samsung_cmu_info = {
-	.div_clks	= isp_div_clks,
-	.nr_div_clks	= ARRAY_SIZE(isp_div_clks),
-	.gate_clks	= isp_gate_clks,
-	.nr_gate_clks	= ARRAY_SIZE(isp_gate_clks),
-	.nr_clk_ids	= CLKS_NR_ISP,
+	div_clks: isp_div_clks,
+	nr_div_clks: ARRAY_SIZE(isp_div_clks),
+	gate_clks: isp_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(isp_gate_clks),
+	nr_clk_ids: CLKS_NR_ISP,
 };
 
-static int __init exynos3250_cmu_isp_probe(struct platform_device *pdev)
+static int __init exynos3250_cmu_isp_probe(platform_device *pdev)
 {
-	struct device_node *np = pdev->dev.of_node;
+	struct device_node *np = (*pdev).dev.of_node;
 
 	samsung_cmu_register_one(np, &isp_cmu_info);
 	return 0;
@@ -1086,10 +1086,10 @@ static exynos3250_cmu_isp_of_match: &[of_device_id] = &[ {
 };
 
 static struct platform_driver exynos3250_cmu_isp_driver __initdata = {
-	.driver = {
-		.name = "exynos3250-cmu-isp",
-		.suppress_bind_attrs = true,
-		.of_match_table = exynos3250_cmu_isp_of_match,
+	driver: {
+		name: "exynos3250-cmu-isp",
+		suppress_bind_attrs: true,
+		of_match_table: exynos3250_cmu_isp_of_match,
 	},
 };
 

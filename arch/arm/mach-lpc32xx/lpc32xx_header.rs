@@ -16,7 +16,7 @@ macro_rules! io_v2p { ($x:expr) => { $x }; }
 
 
 macro_rules! _SBF { ($f:expr, $v:expr) => { (($v) << ($f)) }; }
-macro_rules! _BIT { ($n:expr) => { _SBF($n, 1) }; }
+macro_rules! _BIT { ($n:expr) => { _SBF!($n, 1) }; }
 
 /*
  * AHB 0 physical base addresses
@@ -171,7 +171,7 @@ pub const LPC32XX_CLKPWR_IRDA_CLK_CTRL: u32 = _PMREG(0x0E0);
 pub const LPC32XX_CLKPWR_UART_CLK_CTRL: u32 = _PMREG(0x0E4);
 pub const LPC32XX_CLKPWR_DMA_CLK_CTRL: u32 = _PMREG(0x0E8);
 pub const LPC32XX_CLKPWR_AUTOCLOCK: u32 = _PMREG(0x0EC);
-macro_rules! LPC32XX_CLKPWR_DEVID { ($x:expr) => { _PMREG(0x130 + ($x)) }; }
+macro_rules! LPC32XX_CLKPWR_DEVID { ($x:expr) => { _PMREG!(0x130 + ($x)) }; }
 
 /*
  * clkpwr_debug_ctrl register definitions
@@ -469,7 +469,7 @@ pub const LPC32XX_CLKPWR_TESTCLK_TESTCLK2_EN: u32 = _BIT(0);
 /*
  * clkpwr_sw_int register definitions
  */
-macro_rules! LPC32XX_CLKPWR_SW_INT { ($n:expr) => { (_BIT(0) | ((($n) & 0x7F) << 1)) }; }
+macro_rules! LPC32XX_CLKPWR_SW_INT { ($n:expr) => { (_BIT!(0) | ((($n) & 0x7F) << 1)) }; }
 macro_rules! LPC32XX_CLKPWR_SW_GET_ARG { ($n:expr) => { ((($n) & 0xFE) >> 1) }; }
 
 /*

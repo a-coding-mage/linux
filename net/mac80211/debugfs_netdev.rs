@@ -115,12 +115,12 @@ unsafe extern "C" fn ieee80211_set_smps(link: *mut ieee80211_link_data, smps_mod
     if (*(*local).hw.wiphy).features & NL80211_FEATURE_STATIC_SMPS == 0 && smps_mode == IEEE80211_SMPS_STATIC { return -EINVAL; }
     if (*(*local).hw.wiphy).features & NL80211_FEATURE_DYNAMIC_SMPS == 0 &&
        (smps_mode == IEEE80211_SMPS_DYNAMIC || smps_mode == IEEE80211_SMPS_AUTOMATIC) { return -EINVAL; }
-    if (*sdata).vif.type != NL80211_IFTYPE_STATION { return -EOPNOTSUPP; }
+    if (*sdata).vif.r#type != NL80211_IFTYPE_STATION { return -EOPNOTSUPP; }
     __ieee80211_request_smps_mgd(sdata, link, smps_mode)
 }
 
 unsafe extern "C" fn ieee80211_if_fmt_smps(link: *const ieee80211_link_data, buf: *mut c_char, buflen: c_int) -> ssize_t {
-    if (*(*link).sdata).vif.type == NL80211_IFTYPE_STATION {
+    if (*(*link).sdata).vif.r#type == NL80211_IFTYPE_STATION {
         return snprintf(buf, buflen, b"request: %s\nused: %s\n\0".as_ptr() as *const c_char,
                         smps_modes[(*link).u.mgd.req_smps as usize], smps_modes[(*link).smps_mode as usize]);
     }
@@ -190,7 +190,7 @@ pub unsafe extern "C" fn ieee80211_link_debugfs_remove(link: *mut ieee80211_link
 }
 
 pub unsafe extern "C" fn ieee80211_link_debugfs_drv_add(link: *mut ieee80211_link_data) {
-    if (*(*link).sdata).vif.type == NL80211_IFTYPE_MONITOR || WARN_ON((*link).debugfs_dir.is_null()) { return; }
+    if (*(*link).sdata).vif.r#type == NL80211_IFTYPE_MONITOR || WARN_ON((*link).debugfs_dir.is_null()) { return; }
     drv_link_add_debugfs((*(*link).sdata).local, (*link).sdata, (*link).conf, (*link).debugfs_dir);
 }
 

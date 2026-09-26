@@ -32,7 +32,7 @@ pub struct wiphy {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESSAGE_TRACING")]
+#[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]
 pub unsafe extern "C" fn __sdata_info(fmt: *const c_char, mut args: ...) {
     let mut vaf = va_format {
         fmt,
@@ -47,7 +47,7 @@ pub unsafe extern "C" fn __sdata_info(fmt: *const c_char, mut args: ...) {
     // va_end(args);
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESSAGE_TRACING")]
+#[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]
 pub unsafe extern "C" fn __sdata_dbg(print: bool, fmt: *const c_char, mut args: ...) {
     let mut vaf = va_format {
         fmt,
@@ -64,7 +64,7 @@ pub unsafe extern "C" fn __sdata_dbg(print: bool, fmt: *const c_char, mut args: 
     // va_end(args);
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESSAGE_TRACING")]
+#[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]
 pub unsafe extern "C" fn __sdata_err(fmt: *const c_char, mut args: ...) {
     let mut vaf = va_format {
         fmt,
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn __sdata_err(fmt: *const c_char, mut args: ...) {
     // va_end(args);
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESSAGE_TRACING")]
+#[cfg(CONFIG_MAC80211_MESSAGE_TRACING)]
 pub unsafe extern "C" fn __wiphy_dbg(
     wiphy: *mut wiphy,
     print: bool,

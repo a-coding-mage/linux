@@ -7,12 +7,12 @@ pub enum Pageflags {
     PG_head, PG_waiters, PG_active, PG_workingset, PG_owner_priv_1, PG_owner_2,
     PG_arch_1, PG_reserved, PG_private, PG_private_2, PG_reclaim, PG_swapbacked,
     PG_unevictable, PG_dropbehind,
-    #[cfg(feature = "CONFIG_MMU")] PG_mlocked,
-    #[cfg(feature = "CONFIG_MEMORY_FAILURE")] PG_hwpoison,
-    #[cfg(all(feature = "CONFIG_PAGE_IDLE_FLAG", feature = "CONFIG_64BIT"))] PG_young,
-    #[cfg(all(feature = "CONFIG_PAGE_IDLE_FLAG", feature = "CONFIG_64BIT"))] PG_idle,
-    #[cfg(feature = "CONFIG_ARCH_USES_PG_ARCH_2")] PG_arch_2,
-    #[cfg(feature = "CONFIG_ARCH_USES_PG_ARCH_3")] PG_arch_3,
+    #[cfg(CONFIG_MMU)] PG_mlocked,
+    #[cfg(CONFIG_MEMORY_FAILURE)] PG_hwpoison,
+    #[cfg(all(CONFIG_PAGE_IDLE_FLAG, CONFIG_64BIT))] PG_young,
+    #[cfg(all(CONFIG_PAGE_IDLE_FLAG, CONFIG_64BIT))] PG_idle,
+    #[cfg(CONFIG_ARCH_USES_PG_ARCH_2)] PG_arch_2,
+    #[cfg(CONFIG_ARCH_USES_PG_ARCH_3)] PG_arch_3,
     __NR_PAGEFLAGS,
 }
 
@@ -120,10 +120,10 @@ extern "C" {
     paste::paste! { pub unsafe fn [<folio_test_ $name>](_: *const struct_folio) -> bool { test_bit(Pageflags::[<PG_ $name>] as usize, const_folio_flags(_, $page)) } }
 }; }
 
-#[cfg(feature = "CONFIG_MEMORY_FAILURE")] pub const __PG_HWPOISON: usize = 1usize << Pageflags::PG_hwpoison as usize;
-#[cfg(not(feature = "CONFIG_MEMORY_FAILURE"))] pub const __PG_HWPOISON: usize = 0;
-#[cfg(feature = "CONFIG_MMU")] pub const __PG_MLOCKED: usize = 1usize << Pageflags::PG_mlocked as usize;
-#[cfg(not(feature = "CONFIG_MMU"))] pub const __PG_MLOCKED: usize = 0;
+#[cfg(CONFIG_MEMORY_FAILURE)] pub const __PG_HWPOISON: usize = 1usize << Pageflags::PG_hwpoison as usize;
+#[cfg(not(CONFIG_MEMORY_FAILURE))] pub const __PG_HWPOISON: usize = 0;
+#[cfg(CONFIG_MMU)] pub const __PG_MLOCKED: usize = 1usize << Pageflags::PG_mlocked as usize;
+#[cfg(not(CONFIG_MMU))] pub const __PG_MLOCKED: usize = 0;
 
 pub const PAGE_FLAGS_PRIVATE: usize = (1usize << Pageflags::PG_private as usize) | (1usize << Pageflags::PG_private_2 as usize);
 pub const PG_head_mask: usize = 1usize << Pageflags::PG_head as usize;

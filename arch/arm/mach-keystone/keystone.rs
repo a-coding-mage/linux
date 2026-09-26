@@ -97,10 +97,10 @@ unsafe extern "C" fn keystone_pm_runtime_init() -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_ARM_LPAE")]
+#[cfg(CONFIG_ARM_LPAE)]
 const BUS_NOTIFY_ADD_DEVICE: c_ulong = 0x0001;
 
-#[cfg(feature = "CONFIG_ARM_LPAE")]
+#[cfg(CONFIG_ARM_LPAE)]
 unsafe extern "C" fn keystone_platform_notifier(
     _nb: *mut NotifierBlock,
     event: c_ulong,
@@ -132,13 +132,13 @@ unsafe extern "C" fn keystone_platform_notifier(
     NOTIFY_OK
 }
 
-#[cfg(feature = "CONFIG_ARM_LPAE")]
+#[cfg(CONFIG_ARM_LPAE)]
 static mut platform_nb: NotifierBlock = NotifierBlock {
     notifier_call: Some(keystone_platform_notifier),
 };
 
 unsafe extern "C" fn keystone_init() {
-    #[cfg(feature = "CONFIG_ARM_LPAE")]
+    #[cfg(CONFIG_ARM_LPAE)]
     {
         // if (PHYS_OFFSET >= KEYSTONE_HIGH_PHYS_START)
         // PHYS_OFFSET is supplied by the architecture configuration.

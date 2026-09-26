@@ -98,7 +98,7 @@ pub unsafe fn dprc_get_obj(mc_io: *mut fsl_mc_io, cmd_flags: u32, token: u16, ob
     let mut cmd: fsl_mc_command = core::mem::zeroed(); let p = cmd.params.as_mut_ptr() as *mut dprc_cmd_get_obj;
     cmd.header = mc_encode_cmd_header(DPRC_CMDID_GET_OBJ, cmd_flags, token); (*p).obj_index = cpu_to_le32(obj_index as u32);
     let err = mc_send_command(mc_io, &mut cmd); if err != 0 { return err; } let r = cmd.params.as_ptr() as *const dprc_rsp_get_obj;
-    (*obj_desc).id = le32_to_cpu((*r).id); (*obj_desc).vendor = le16_to_cpu((*r).vendor); (*obj_desc).irq_count = (*r).irq_count; (*obj_desc).region_count = (*r).region_count; (*obj_desc).state = le32_to_cpu((*r).state); (*obj_desc).ver_major = le16_to_cpu((*r).version_major); (*obj_desc).ver_minor = le16_to_cpu((*r).version_minor); (*obj_desc).flags = le16_to_cpu((*r).flags); strscpy_pad((*obj_desc).type.as_mut_ptr(), (*r).type.as_ptr(), 16); strscpy_pad((*obj_desc).label.as_mut_ptr(), (*r).label.as_ptr(), 16); 0
+    (*obj_desc).id = le32_to_cpu((*r).id); (*obj_desc).vendor = le16_to_cpu((*r).vendor); (*obj_desc).irq_count = (*r).irq_count; (*obj_desc).region_count = (*r).region_count; (*obj_desc).state = le32_to_cpu((*r).state); (*obj_desc).ver_major = le16_to_cpu((*r).version_major); (*obj_desc).ver_minor = le16_to_cpu((*r).version_minor); (*obj_desc).flags = le16_to_cpu((*r).flags); strscpy_pad((*obj_desc).r#type.as_mut_ptr(), (*r).r#type.as_ptr(), 16); strscpy_pad((*obj_desc).label.as_mut_ptr(), (*r).label.as_ptr(), 16); 0
 }
 
 pub unsafe fn dprc_set_obj_irq(mc_io: *mut fsl_mc_io, cmd_flags: u32, token: u16, obj_type: *mut i8, obj_id: i32, irq_index: u8, irq_cfg: *const dprc_irq_cfg) -> i32 {

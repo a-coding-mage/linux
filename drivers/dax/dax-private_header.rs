@@ -81,16 +81,16 @@ pub unsafe fn to_dax_mapping(dev: *mut device) -> *mut dax_mapping {
     (dev as *mut u8).sub(::core::mem::offset_of!(dax_mapping, dev)) as *mut dax_mapping
 }
 
-#[cfg(feature = "CONFIG_TRANSPARENT_HUGEPAGE")]
+#[cfg(CONFIG_TRANSPARENT_HUGEPAGE)]
 #[inline]
 pub fn dax_align_valid(align: usize) -> bool {
-    if align == PUD_SIZE && cfg!(feature = "CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD") { return true; }
+    if align == PUD_SIZE && cfg!(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD) { return true; }
     if align == PMD_SIZE && has_transparent_hugepage() { return true; }
     if align == PAGE_SIZE { return true; }
     false
 }
 
-#[cfg(not(feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(not(CONFIG_TRANSPARENT_HUGEPAGE))]
 #[inline]
 pub fn dax_align_valid(align: usize) -> bool { align == PAGE_SIZE }
 

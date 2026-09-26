@@ -1025,7 +1025,7 @@ unsafe fn snd_pcm_oss_period_size(substream: *mut snd_pcm_substream, oss_params:
         let mut sd = if (*runtime).oss.subdivision == 0 { 4 } else { (*runtime).oss.subdivision };
         if (*runtime).oss.subdivision == 0 {
             if oss_period_size / sd as ssize_t > 4096 { sd *= 2; }
-            if oss_period_size / sd as ssize_t < 4096 { sd = 1; }
+            if oss_period_size / (sd as ssize_t) < 4096 { sd = 1; }
         }
         oss_period_size /= sd as ssize_t;
         if oss_period_size < 16 { oss_period_size = 16; }

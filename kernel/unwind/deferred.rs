@@ -3,7 +3,7 @@
 
 // Kernel dependencies are supplied by the surrounding translation.
 
-const CAN_USE_IN_NMI: bool = cfg!(feature = "CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG");
+const CAN_USE_IN_NMI: bool = cfg!(CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG);
 const RESERVED_BITS: c_ulong = UNWIND_PENDING | UNWIND_USED;
 const UNWIND_MAX_ENTRIES: usize = (SZ_4K - core::mem::size_of::<unwind_cache>()) / core::mem::size_of::<c_long>();
 
@@ -82,12 +82,12 @@ unsafe fn process_unwind_deferred(task: *mut task_struct) {
     if !(*info).cache.is_null() { bits &= !(*info).cache.unwind_completed; }
     cookie = (*info).id.id;
     let _srcu = guard_srcu(&UNWIND_SRCU);
-    list_for_each_entry_srcu(work, &CALLBACKS, list, srcu_read_lock_held(&UNWIND_SRCU)) {
+    list_for_each_entry_srcu!(work, &CALLBACKS, list, srcu_read_lock_held(&UNWIND_SRCU), {
         if test_bit(work.bit, &bits) {
             (work.func)(work, &trace, cookie);
             if !(*info).cache.is_null() { (*info).cache.unwind_completed |= BIT(work.bit); }
         }
-    }
+    });
 }
 
 unsafe fn unwind_deferred_task_work(_head: *mut callback_head) { process_unwind_deferred(current); }
@@ -133,10 +133,10 @@ pub unsafe fn unwind_deferred_cancel(work: *mut unwind_work) {
     clear_bit(bit, &mut UNWIND_MASK);
     synchronize_srcu(&UNWIND_SRCU);
     let _rcu = guard_rcu();
-    for_each_process_thread(g, t) {
+    for_each_process_thread!(g, t, {
         atomic_long_andnot(BIT(bit), &mut (*t).unwind_info.unwind_mask);
         if !(*t).unwind_info.cache.is_null() { clear_bit(bit, &mut (*t).unwind_info.cache.unwind_completed); }
-    }
+    });
 }
 
 pub unsafe fn unwind_deferred_init(work: *mut unwind_work, func: unwind_callback_t) -> c_int {

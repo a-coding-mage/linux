@@ -13,6 +13,8 @@ unsafe fn tcf_vlan_act(skb: *mut sk_buff, a: *const tc_action,
     let mut p: *mut tcf_vlan_params;
     let mut err: i32;
     let mut tci: u16;
+    'drop: {
+    'out: {
 
     tcf_lastuse_update(&mut (*v).tcf_tm);
     tcf_action_update_bstats(&mut (*v).common, skb);
@@ -29,16 +31,16 @@ unsafe fn tcf_vlan_act(skb: *mut sk_buff, a: *const tc_action,
     match (*p).tcfv_action {
         TCA_VLAN_ACT_POP => {
             err = skb_vlan_pop(skb);
-            if err != 0 { goto drop; }
+            if err != 0 { break 'drop; }
         }
         TCA_VLAN_ACT_PUSH => {
             err = skb_vlan_push(skb, (*p).tcfv_push_proto,
                 (*p).tcfv_push_vid | ((*p).tcfv_push_prio << VLAN_PRIO_SHIFT));
-            if err != 0 { goto drop; }
+            if err != 0 { break 'drop; }
         }
         TCA_VLAN_ACT_MODIFY => {
             /* No-op if no vlan tag (either hw-accel or in-payload) */
-            if !skb_vlan_tagged(skb) { goto out; }
+            if !skb_vlan_tagged(skb) { break 'out; }
             /* extract existing tag (and guarantee no hw-accel tag) */
             if skb_vlan_tag_present(skb) {
                 tci = skb_vlan_tag_get(skb);
@@ -46,7 +48,7 @@ unsafe fn tcf_vlan_act(skb: *mut sk_buff, a: *const tc_action,
             } else {
                 /* in-payload vlan tag, pop it */
                 err = __skb_vlan_pop(skb, &mut tci);
-                if err != 0 { goto drop; }
+                if err != 0 { break 'drop; }
             }
             /* replace the vid */
             tci = (tci & !VLAN_VID_MASK) | (*p).tcfv_push_vid;
@@ -60,23 +62,23 @@ unsafe fn tcf_vlan_act(skb: *mut sk_buff, a: *const tc_action,
         }
         TCA_VLAN_ACT_POP_ETH => {
             err = skb_eth_pop(skb);
-            if err != 0 { goto drop; }
+            if err != 0 { break 'drop; }
         }
         TCA_VLAN_ACT_PUSH_ETH => {
             err = skb_eth_push(skb, (*p).tcfv_push_dst, (*p).tcfv_push_src);
-            if err != 0 { goto drop; }
+            if err != 0 { break 'drop; }
         }
         _ => BUG!(),
     }
-
-out:
+    }
+    
     if skb_at_tc_ingress(skb) {
         skb_pull_rcsum(skb, (*skb).mac_len);
     }
     skb_reset_mac_len(skb);
     return (*p).action;
-
-drop:
+    }
+    
     tcf_action_inc_drop_qstats(&mut (*v).common);
     TC_ACT_SHOT
 }
@@ -97,6 +99,11 @@ unsafe fn tcf_vlan_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     let tn = net_generic(net, (*(&raw const act_vlan_ops)).net_id);
     let bind = (flags & TCA_ACT_FLAGS_BIND) != 0;
     let mut tb: [*mut nlattr; TCA_VLAN_MAX + 1] = [core::ptr::null_mut(); TCA_VLAN_MAX + 1];
+    'proto: {
+    'range: {
+    'invalid: {
+    'release_idr: {
+    'put_chain: {
     let mut goto_ch: *mut tcf_chain = core::ptr::null_mut();
     let mut push_prio_exists = false;
     let mut p: *mut tcf_vlan_params;
@@ -125,18 +132,18 @@ unsafe fn tcf_vlan_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     match (*parm).v_action {
         TCA_VLAN_ACT_POP | TCA_VLAN_ACT_POP_ETH => {}
         TCA_VLAN_ACT_PUSH | TCA_VLAN_ACT_MODIFY => {
-            if tb[TCA_VLAN_PUSH_VLAN_ID].is_null() { goto invalid; }
+            if tb[TCA_VLAN_PUSH_VLAN_ID].is_null() { break 'invalid; }
             push_vid = nla_get_u16(tb[TCA_VLAN_PUSH_VLAN_ID]);
-            if push_vid >= VLAN_VID_MASK { goto range; }
+            if push_vid >= VLAN_VID_MASK { break 'range; }
             if !tb[TCA_VLAN_PUSH_VLAN_PROTOCOL].is_null() {
                 push_proto = nla_get_be16(tb[TCA_VLAN_PUSH_VLAN_PROTOCOL]);
-                if push_proto != htons(ETH_P_8021Q) && push_proto != htons(ETH_P_8021AD) { goto proto; }
+                if push_proto != htons(ETH_P_8021Q) && push_proto != htons(ETH_P_8021AD) { break 'proto; }
             } else { push_proto = htons(ETH_P_8021Q); }
             push_prio_exists = !tb[TCA_VLAN_PUSH_VLAN_PRIORITY].is_null();
             if push_prio_exists { push_prio = nla_get_u8(tb[TCA_VLAN_PUSH_VLAN_PRIORITY]); }
         }
         TCA_VLAN_ACT_PUSH_ETH => {
-            if tb[TCA_VLAN_PUSH_ETH_DST].is_null() || tb[TCA_VLAN_PUSH_ETH_SRC].is_null() { goto invalid; }
+            if tb[TCA_VLAN_PUSH_ETH_DST].is_null() || tb[TCA_VLAN_PUSH_ETH_SRC].is_null() { break 'invalid; }
         }
         _ => goto invalid,
     }
@@ -149,10 +156,10 @@ unsafe fn tcf_vlan_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
         tcf_idr_release(*a, bind); return -EEXIST;
     }
     err = tcf_action_check_ctrlact((*parm).action, tp, &mut goto_ch, extack);
-    if err < 0 { goto release_idr; }
+    if err < 0 { break 'release_idr; }
     v = to_vlan(*a);
     p = kzalloc_obj::<tcf_vlan_params>();
-    if p.is_null() { err = -ENOMEM; goto put_chain; }
+    if p.is_null() { err = -ENOMEM; break 'put_chain; }
     (*p).tcfv_action = action;
     (*p).tcfv_push_vid = push_vid;
     (*p).tcfv_push_prio = push_prio;
@@ -170,15 +177,20 @@ unsafe fn tcf_vlan_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
     if !p.is_null() { kfree_rcu(p, rcu); }
     return ret;
-put_chain:
+    }
+    
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
-release_idr:
+    }
+    
     tcf_idr_release(*a, bind); return err;
-invalid:
+    }
+    
     if exists { tcf_idr_release(*a, bind); } else { tcf_idr_cleanup(tn, index); } return -EINVAL;
-range:
+    }
+    
     if exists { tcf_idr_release(*a, bind); } else { tcf_idr_cleanup(tn, index); } return -ERANGE;
-proto:
+    }
+    
     if exists { tcf_idr_release(*a, bind); } else { tcf_idr_cleanup(tn, index); } return -EPROTONOSUPPORT;
 }
 
@@ -193,6 +205,7 @@ unsafe fn tcf_vlan_dump(skb: *mut sk_buff, a: *mut tc_action, bind: i32, ref_: i
     let v = to_vlan(a);
     let p;
     let mut opt: tc_vlan = core::mem::zeroed();
+    'nla_put_failure: {
     opt.index = (*v).tcf_index;
     opt.refcnt = refcount_read(&(*v).tcf_refcnt) - ref_;
     opt.bindcnt = atomic_read(&(*v).tcf_bindcnt) - bind;
@@ -200,19 +213,20 @@ unsafe fn tcf_vlan_dump(skb: *mut sk_buff, a: *mut tc_action, bind: i32, ref_: i
     rcu_read_lock();
     p = rcu_dereference((*v).vlan_p);
     opt.action = (*p).action; opt.v_action = (*p).tcfv_action;
-    if nla_put(skb, TCA_VLAN_PARMS, size_of::<tc_vlan>(), &opt) { goto nla_put_failure; }
+    if nla_put(skb, TCA_VLAN_PARMS, size_of::<tc_vlan>(), &opt) { break 'nla_put_failure; }
     if ((*p).tcfv_action == TCA_VLAN_ACT_PUSH || (*p).tcfv_action == TCA_VLAN_ACT_MODIFY) &&
        (nla_put_u16(skb, TCA_VLAN_PUSH_VLAN_ID, (*p).tcfv_push_vid) ||
         nla_put_be16(skb, TCA_VLAN_PUSH_VLAN_PROTOCOL, (*p).tcfv_push_proto) ||
-        ((*p).tcfv_push_prio_exists && nla_put_u8(skb, TCA_VLAN_PUSH_VLAN_PRIORITY, (*p).tcfv_push_prio))) { goto nla_put_failure; }
+        ((*p).tcfv_push_prio_exists && nla_put_u8(skb, TCA_VLAN_PUSH_VLAN_PRIORITY, (*p).tcfv_push_prio))) { break 'nla_put_failure; }
     if (*p).tcfv_action == TCA_VLAN_ACT_PUSH_ETH {
-        if nla_put(skb, TCA_VLAN_PUSH_ETH_DST, ETH_ALEN, (*p).tcfv_push_dst.as_ptr()) { goto nla_put_failure; }
-        if nla_put(skb, TCA_VLAN_PUSH_ETH_SRC, ETH_ALEN, (*p).tcfv_push_src.as_ptr()) { goto nla_put_failure; }
+        if nla_put(skb, TCA_VLAN_PUSH_ETH_DST, ETH_ALEN, (*p).tcfv_push_dst.as_ptr()) { break 'nla_put_failure; }
+        if nla_put(skb, TCA_VLAN_PUSH_ETH_SRC, ETH_ALEN, (*p).tcfv_push_src.as_ptr()) { break 'nla_put_failure; }
     }
     tcf_tm_dump(&mut t, &(*v).tcf_tm);
-    if nla_put_64bit(skb, TCA_VLAN_TM, size_of::<tcf_t>(), &t, TCA_VLAN_PAD) { goto nla_put_failure; }
+    if nla_put_64bit(skb, TCA_VLAN_TM, size_of::<tcf_t>(), &t, TCA_VLAN_PAD) { break 'nla_put_failure; }
     rcu_read_unlock(); return (*skb).len;
-nla_put_failure:
+    }
+    
     rcu_read_unlock(); nlmsg_trim(skb, b); -1
 }
 

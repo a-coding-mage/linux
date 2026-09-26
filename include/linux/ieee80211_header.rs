@@ -159,27 +159,27 @@ pub IEEE80211_PV1_FCTL_RELAYED: u64 = 0x4000;
 pub IEEE80211_PV1_FCTL_ACK_POLICY: u64 = 0x8000;
 pub IEEE80211_PV1_FCTL_CTL_EXT: u64 = 0x0f00;
 
-pub unsafe fn bool ieee80211_sn_less(u16 sn1, u16 sn2)
+pub unsafe fn bool ieee80211_sn_less(sn1: u16, sn2: u16)
 {
 	return ((sn1 - sn2) & IEEE80211_SN_MASK) > (IEEE80211_SN_MODULO >> 1);
 }
 
-pub unsafe fn bool ieee80211_sn_less_eq(u16 sn1, u16 sn2)
+pub unsafe fn bool ieee80211_sn_less_eq(sn1: u16, sn2: u16)
 {
 	return ((sn2 - sn1) & IEEE80211_SN_MASK) <= (IEEE80211_SN_MODULO >> 1);
 }
 
-pub unsafe fn u16 ieee80211_sn_add(u16 sn1, u16 sn2)
+pub unsafe fn u16 ieee80211_sn_add(sn1: u16, sn2: u16)
 {
 	return (sn1 + sn2) & IEEE80211_SN_MASK;
 }
 
-pub unsafe fn u16 ieee80211_sn_inc(u16 sn)
+pub unsafe fn u16 ieee80211_sn_inc(sn: u16)
 {
 	return ieee80211_sn_add(sn, 1);
 }
 
-pub unsafe fn u16 ieee80211_sn_sub(u16 sn1, u16 sn2)
+pub unsafe fn u16 ieee80211_sn_sub(sn1: u16, sn2: u16)
 {
 	return (sn1 - sn2) & IEEE80211_SN_MASK;
 }
@@ -337,7 +337,7 @@ pub struct ieee80211_trigger {
  * ieee80211_has_tods - check if IEEE80211_FCTL_TODS is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame has to-DS set
  */
-pub unsafe fn bool ieee80211_has_tods(u16 fc)
+pub unsafe fn bool ieee80211_has_tods(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_TODS)) != 0;
 }
@@ -346,7 +346,7 @@ pub unsafe fn bool ieee80211_has_tods(u16 fc)
  * ieee80211_has_fromds - check if IEEE80211_FCTL_FROMDS is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame has from-DS set
  */
-pub unsafe fn bool ieee80211_has_fromds(u16 fc)
+pub unsafe fn bool ieee80211_has_fromds(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FROMDS)) != 0;
 }
@@ -355,7 +355,7 @@ pub unsafe fn bool ieee80211_has_fromds(u16 fc)
  * ieee80211_has_a4 - check if IEEE80211_FCTL_TODS and IEEE80211_FCTL_FROMDS are set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not it's a 4-address frame (from-DS and to-DS set)
  */
-pub unsafe fn bool ieee80211_has_a4(u16 fc)
+pub unsafe fn bool ieee80211_has_a4(fc: u16)
 {
 	u16 tmp = cpu_to_le16(IEEE80211_FCTL_TODS | IEEE80211_FCTL_FROMDS);
 	return (fc & tmp) == tmp;
@@ -365,7 +365,7 @@ pub unsafe fn bool ieee80211_has_a4(u16 fc)
  * ieee80211_has_morefrags - check if IEEE80211_FCTL_MOREFRAGS is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame has more fragments (more frags bit set)
  */
-pub unsafe fn bool ieee80211_has_morefrags(u16 fc)
+pub unsafe fn bool ieee80211_has_morefrags(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)) != 0;
 }
@@ -374,7 +374,7 @@ pub unsafe fn bool ieee80211_has_morefrags(u16 fc)
  * ieee80211_has_retry - check if IEEE80211_FCTL_RETRY is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the retry flag is set
  */
-pub unsafe fn bool ieee80211_has_retry(u16 fc)
+pub unsafe fn bool ieee80211_has_retry(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_RETRY)) != 0;
 }
@@ -383,7 +383,7 @@ pub unsafe fn bool ieee80211_has_retry(u16 fc)
  * ieee80211_has_pm - check if IEEE80211_FCTL_PM is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the power management flag is set
  */
-pub unsafe fn bool ieee80211_has_pm(u16 fc)
+pub unsafe fn bool ieee80211_has_pm(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_PM)) != 0;
 }
@@ -392,7 +392,7 @@ pub unsafe fn bool ieee80211_has_pm(u16 fc)
  * ieee80211_has_moredata - check if IEEE80211_FCTL_MOREDATA is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the more data flag is set
  */
-pub unsafe fn bool ieee80211_has_moredata(u16 fc)
+pub unsafe fn bool ieee80211_has_moredata(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_MOREDATA)) != 0;
 }
@@ -401,7 +401,7 @@ pub unsafe fn bool ieee80211_has_moredata(u16 fc)
  * ieee80211_has_protected - check if IEEE80211_FCTL_PROTECTED is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the protected flag is set
  */
-pub unsafe fn bool ieee80211_has_protected(u16 fc)
+pub unsafe fn bool ieee80211_has_protected(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_PROTECTED)) != 0;
 }
@@ -410,7 +410,7 @@ pub unsafe fn bool ieee80211_has_protected(u16 fc)
  * ieee80211_has_order - check if IEEE80211_FCTL_ORDER is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the order flag is set
  */
-pub unsafe fn bool ieee80211_has_order(u16 fc)
+pub unsafe fn bool ieee80211_has_order(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_ORDER)) != 0;
 }
@@ -419,7 +419,7 @@ pub unsafe fn bool ieee80211_has_order(u16 fc)
  * ieee80211_is_mgmt - check if type is IEEE80211_FTYPE_MGMT
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame type is management
  */
-pub unsafe fn bool ieee80211_is_mgmt(u16 fc)
+pub unsafe fn bool ieee80211_is_mgmt(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT);
@@ -429,7 +429,7 @@ pub unsafe fn bool ieee80211_is_mgmt(u16 fc)
  * ieee80211_is_ctl - check if type is IEEE80211_FTYPE_CTL
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame type is control
  */
-pub unsafe fn bool ieee80211_is_ctl(u16 fc)
+pub unsafe fn bool ieee80211_is_ctl(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL);
@@ -439,7 +439,7 @@ pub unsafe fn bool ieee80211_is_ctl(u16 fc)
  * ieee80211_is_data - check if type is IEEE80211_FTYPE_DATA
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a data frame
  */
-pub unsafe fn bool ieee80211_is_data(u16 fc)
+pub unsafe fn bool ieee80211_is_data(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_DATA);
@@ -449,7 +449,7 @@ pub unsafe fn bool ieee80211_is_data(u16 fc)
  * ieee80211_is_ext - check if type is IEEE80211_FTYPE_EXT
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame type is extended
  */
-pub unsafe fn bool ieee80211_is_ext(u16 fc)
+pub unsafe fn bool ieee80211_is_ext(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_EXT);
@@ -460,7 +460,7 @@ pub unsafe fn bool ieee80211_is_ext(u16 fc)
  * ieee80211_is_data_qos - check if type is IEEE80211_FTYPE_DATA and IEEE80211_STYPE_QOS_DATA is set
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a QoS data frame
  */
-pub unsafe fn bool ieee80211_is_data_qos(u16 fc)
+pub unsafe fn bool ieee80211_is_data_qos(fc: u16)
 {
 	/*
 	 * mask with QOS_DATA rather than IEEE80211_FCTL_STYPE as we just *need to check the one bit
@@ -474,7 +474,7 @@ pub unsafe fn bool ieee80211_is_data_qos(u16 fc)
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a QoS data frame that has data
  *	(i.e. is not null data)
  */
-pub unsafe fn bool ieee80211_is_data_present(u16 fc)
+pub unsafe fn bool ieee80211_is_data_present(fc: u16)
 {
 	/*
 	 * mask with 0x40 and test that that bit is clear to only return *true for the data-containing substypes.
@@ -487,7 +487,7 @@ pub unsafe fn bool ieee80211_is_data_present(u16 fc)
  * ieee80211_is_assoc_req - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ASSOC_REQ
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an association request
  */
-pub unsafe fn bool ieee80211_is_assoc_req(u16 fc)
+pub unsafe fn bool ieee80211_is_assoc_req(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ASSOC_REQ);
@@ -497,7 +497,7 @@ pub unsafe fn bool ieee80211_is_assoc_req(u16 fc)
  * ieee80211_is_assoc_resp - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ASSOC_RESP
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an association response
  */
-pub unsafe fn bool ieee80211_is_assoc_resp(u16 fc)
+pub unsafe fn bool ieee80211_is_assoc_resp(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ASSOC_RESP);
@@ -507,7 +507,7 @@ pub unsafe fn bool ieee80211_is_assoc_resp(u16 fc)
  * ieee80211_is_reassoc_req - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_REASSOC_REQ
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a reassociation request
  */
-pub unsafe fn bool ieee80211_is_reassoc_req(u16 fc)
+pub unsafe fn bool ieee80211_is_reassoc_req(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_REASSOC_REQ);
@@ -517,7 +517,7 @@ pub unsafe fn bool ieee80211_is_reassoc_req(u16 fc)
  * ieee80211_is_reassoc_resp - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_REASSOC_RESP
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a reassociation response
  */
-pub unsafe fn bool ieee80211_is_reassoc_resp(u16 fc)
+pub unsafe fn bool ieee80211_is_reassoc_resp(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_REASSOC_RESP);
@@ -527,7 +527,7 @@ pub unsafe fn bool ieee80211_is_reassoc_resp(u16 fc)
  * ieee80211_is_assoc - check if (Re)association request/response frame
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an (re)association request or response
  */
-pub unsafe fn bool ieee80211_is_assoc(u16 fc)
+pub unsafe fn bool ieee80211_is_assoc(fc: u16)
 {
 	return ieee80211_is_assoc_req(fc) || ieee80211_is_reassoc_req(fc) ||
 	       ieee80211_is_assoc_resp(fc) || ieee80211_is_reassoc_resp(fc);
@@ -537,7 +537,7 @@ pub unsafe fn bool ieee80211_is_assoc(u16 fc)
  * ieee80211_is_probe_req - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_PROBE_REQ
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a probe request
  */
-pub unsafe fn bool ieee80211_is_probe_req(u16 fc)
+pub unsafe fn bool ieee80211_is_probe_req(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_REQ);
@@ -547,7 +547,7 @@ pub unsafe fn bool ieee80211_is_probe_req(u16 fc)
  * ieee80211_is_probe_resp - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_PROBE_RESP
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a probe response
  */
-pub unsafe fn bool ieee80211_is_probe_resp(u16 fc)
+pub unsafe fn bool ieee80211_is_probe_resp(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_PROBE_RESP);
@@ -557,7 +557,7 @@ pub unsafe fn bool ieee80211_is_probe_resp(u16 fc)
  * ieee80211_is_beacon - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_BEACON
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a (regular, not S1G) beacon
  */
-pub unsafe fn bool ieee80211_is_beacon(u16 fc)
+pub unsafe fn bool ieee80211_is_beacon(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_BEACON);
@@ -567,7 +567,7 @@ pub unsafe fn bool ieee80211_is_beacon(u16 fc)
  * ieee80211_is_atim - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ATIM
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an ATIM frame
  */
-pub unsafe fn bool ieee80211_is_atim(u16 fc)
+pub unsafe fn bool ieee80211_is_atim(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ATIM);
@@ -577,7 +577,7 @@ pub unsafe fn bool ieee80211_is_atim(u16 fc)
  * ieee80211_is_disassoc - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_DISASSOC
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a disassociation frame
  */
-pub unsafe fn bool ieee80211_is_disassoc(u16 fc)
+pub unsafe fn bool ieee80211_is_disassoc(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_DISASSOC);
@@ -587,7 +587,7 @@ pub unsafe fn bool ieee80211_is_disassoc(u16 fc)
  * ieee80211_is_auth - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_AUTH
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an authentication frame
  */
-pub unsafe fn bool ieee80211_is_auth(u16 fc)
+pub unsafe fn bool ieee80211_is_auth(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_AUTH);
@@ -597,7 +597,7 @@ pub unsafe fn bool ieee80211_is_auth(u16 fc)
  * ieee80211_is_deauth - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_DEAUTH
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a deauthentication frame
  */
-pub unsafe fn bool ieee80211_is_deauth(u16 fc)
+pub unsafe fn bool ieee80211_is_deauth(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_DEAUTH);
@@ -607,7 +607,7 @@ pub unsafe fn bool ieee80211_is_deauth(u16 fc)
  * ieee80211_is_action - check if IEEE80211_FTYPE_MGMT && IEEE80211_STYPE_ACTION
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an action frame
  */
-pub unsafe fn bool ieee80211_is_action(u16 fc)
+pub unsafe fn bool ieee80211_is_action(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_MGMT | IEEE80211_STYPE_ACTION);
@@ -617,7 +617,7 @@ pub unsafe fn bool ieee80211_is_action(u16 fc)
  * ieee80211_is_back_req - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_BACK_REQ
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a block-ACK request frame
  */
-pub unsafe fn bool ieee80211_is_back_req(u16 fc)
+pub unsafe fn bool ieee80211_is_back_req(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_BACK_REQ);
@@ -627,7 +627,7 @@ pub unsafe fn bool ieee80211_is_back_req(u16 fc)
  * ieee80211_is_back - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_BACK
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a block-ACK frame
  */
-pub unsafe fn bool ieee80211_is_back(u16 fc)
+pub unsafe fn bool ieee80211_is_back(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_BACK);
@@ -637,7 +637,7 @@ pub unsafe fn bool ieee80211_is_back(u16 fc)
  * ieee80211_is_pspoll - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_PSPOLL
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a PS-poll frame
  */
-pub unsafe fn bool ieee80211_is_pspoll(u16 fc)
+pub unsafe fn bool ieee80211_is_pspoll(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_PSPOLL);
@@ -647,7 +647,7 @@ pub unsafe fn bool ieee80211_is_pspoll(u16 fc)
  * ieee80211_is_rts - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_RTS
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an RTS frame
  */
-pub unsafe fn bool ieee80211_is_rts(u16 fc)
+pub unsafe fn bool ieee80211_is_rts(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_RTS);
@@ -657,7 +657,7 @@ pub unsafe fn bool ieee80211_is_rts(u16 fc)
  * ieee80211_is_cts - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_CTS
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a CTS frame
  */
-pub unsafe fn bool ieee80211_is_cts(u16 fc)
+pub unsafe fn bool ieee80211_is_cts(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CTS);
@@ -667,7 +667,7 @@ pub unsafe fn bool ieee80211_is_cts(u16 fc)
  * ieee80211_is_ack - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_ACK
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is an ACK frame
  */
-pub unsafe fn bool ieee80211_is_ack(u16 fc)
+pub unsafe fn bool ieee80211_is_ack(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_ACK);
@@ -677,7 +677,7 @@ pub unsafe fn bool ieee80211_is_ack(u16 fc)
  * ieee80211_is_cfend - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_CFEND
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a CF-end frame
  */
-pub unsafe fn bool ieee80211_is_cfend(u16 fc)
+pub unsafe fn bool ieee80211_is_cfend(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CFEND);
@@ -687,7 +687,7 @@ pub unsafe fn bool ieee80211_is_cfend(u16 fc)
  * ieee80211_is_cfendack - check if IEEE80211_FTYPE_CTL && IEEE80211_STYPE_CFENDACK
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a CF-end-ack frame
  */
-pub unsafe fn bool ieee80211_is_cfendack(u16 fc)
+pub unsafe fn bool ieee80211_is_cfendack(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_CFENDACK);
@@ -697,7 +697,7 @@ pub unsafe fn bool ieee80211_is_cfendack(u16 fc)
  * ieee80211_is_nullfunc - check if frame is a regular (non-QoS) nullfunc frame
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a nullfunc frame
  */
-pub unsafe fn bool ieee80211_is_nullfunc(u16 fc)
+pub unsafe fn bool ieee80211_is_nullfunc(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_NULLFUNC);
@@ -707,7 +707,7 @@ pub unsafe fn bool ieee80211_is_nullfunc(u16 fc)
  * ieee80211_is_qos_nullfunc - check if frame is a QoS nullfunc frame
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a QoS nullfunc frame
  */
-pub unsafe fn bool ieee80211_is_qos_nullfunc(u16 fc)
+pub unsafe fn bool ieee80211_is_qos_nullfunc(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_DATA | IEEE80211_STYPE_QOS_NULLFUNC);
@@ -717,7 +717,7 @@ pub unsafe fn bool ieee80211_is_qos_nullfunc(u16 fc)
  * ieee80211_is_trigger - check if frame is trigger frame
  * @fc: frame control field in little-endian *byteorder Return: whether or not the frame is a trigger frame
  */
-pub unsafe fn bool ieee80211_is_trigger(u16 fc)
+pub unsafe fn bool ieee80211_is_trigger(fc: u16)
 {
 	return (fc & cpu_to_le16(IEEE80211_FCTL_FTYPE | IEEE80211_FCTL_STYPE)) ==
 	       cpu_to_le16(IEEE80211_FTYPE_CTL | IEEE80211_STYPE_TRIGGER);
@@ -727,7 +727,7 @@ pub unsafe fn bool ieee80211_is_trigger(u16 fc)
  * ieee80211_is_any_nullfunc - check if frame is regular or QoS nullfunc frame
  * @fc: frame control bytes in little-endian *byteorder Return: whether or not the frame is a nullfunc or QoS nullfunc frame
  */
-pub unsafe fn bool ieee80211_is_any_nullfunc(u16 fc)
+pub unsafe fn bool ieee80211_is_any_nullfunc(fc: u16)
 {
 	return (ieee80211_is_nullfunc(fc) || ieee80211_is_qos_nullfunc(fc));
 }
@@ -736,7 +736,7 @@ pub unsafe fn bool ieee80211_is_any_nullfunc(u16 fc)
  * ieee80211_is_first_frag - check if IEEE80211_SCTL_FRAG is not set
  * @seq_ctrl: frame sequence control bytes in little-endian *byteorder Return: whether or not the frame is the first fragment (also true *if it's not fragmented at all)
  */
-pub unsafe fn bool ieee80211_is_first_frag(u16 seq_ctrl)
+pub unsafe fn bool ieee80211_is_first_frag(seq_ctrl: u16)
 {
 	return (seq_ctrl & cpu_to_le16(IEEE80211_SCTL_FRAG)) == 0;
 }
@@ -747,13 +747,13 @@ pub unsafe fn bool ieee80211_is_first_frag(u16 seq_ctrl)
  */
 pub unsafe fn bool ieee80211_is_frag(struct *ieee80211_hdr hdr)
 {
-	return ieee80211_has_morefrags(hdr->frame_control) ||
-	       hdr->seq_ctrl & cpu_to_le16(IEEE80211_SCTL_FRAG);
+	return ieee80211_has_morefrags((*hdr).frame_control) ||
+	       (*hdr).seq_ctrl & cpu_to_le16(IEEE80211_SCTL_FRAG);
 }
 
 pub unsafe fn u16 ieee80211_get_sn(struct *ieee80211_hdr hdr)
 {
-	return le16_get_bits(hdr->seq_ctrl, IEEE80211_SCTL_SEQ);
+	return le16_get_bits((*hdr).seq_ctrl, IEEE80211_SCTL_SEQ);
 }
 
 /**
@@ -845,7 +845,7 @@ pub struct ieee80211_sec_chan_offs_ie {
 #[repr(C, packed)]
 pub struct ieee80211_wide_bw_chansw_ie {
 	u8 new_channel_width;
-	u8 new_center_freq_seg0, new_center_freq_seg1;
+	new_center_freq_seg0: u8, new_center_freq_seg1;
 } __packed;
 
 /**
@@ -1159,7 +1159,7 @@ pub BSS_MEMBERSHIP_SELECTOR_UHR_PHY: u64 = 120;
 
 pub BSS_MEMBERSHIP_SELECTOR_MIN: u64 = BSS_MEMBERSHIP_SELECTOR_UHR_PHY;
 
-#define IEEE80211_MIN_ACTION_SIZE(type)	offsetofend(struct ieee80211_mgmt, u.action.type)
+#define IEEE80211_MIN_ACTION_SIZE(type)	offsetofend(ieee80211_mgmt, u.action.r#type)
 
 /* Link Reconfiguration Status Duple field */
 #[repr(C, packed)]
@@ -1391,20 +1391,16 @@ pub WLAN_ERP_USE_PROTECTION: u64 = (1<<1);
 pub WLAN_ERP_BARKER_PREAMBLE: u64 = (1<<2);
 
 /* WLAN_ERP_BARKER_PREAMBLE values */
-enum {
-	WLAN_ERP_PREAMBLE_SHORT = 0,
-	WLAN_ERP_PREAMBLE_LONG = 1,
-};
+pub const WLAN_ERP_PREAMBLE_SHORT: i32 = 0;
+pub const WLAN_ERP_PREAMBLE_LONG: i32 = 1;
 
 /* Band ID, 802.11ad #8.4.1.45 */
-enum {
-	IEEE80211_BANDID_TV_WS = 0, /* TV white spaces */
-	IEEE80211_BANDID_SUB1  = 1, /* Sub-1 GHz (excluding TV white spaces) */
-	IEEE80211_BANDID_2G    = 2, /* 2.4 GHz */
-	IEEE80211_BANDID_3G    = 3, /* 3.6 GHz */
-	IEEE80211_BANDID_5G    = 4, /* 4.9 and 5 GHz */
-	IEEE80211_BANDID_60G   = 5, /* 60 GHz */
-};
+pub const IEEE80211_BANDID_TV_WS: i32 = 0;
+pub const IEEE80211_BANDID_SUB1: i32 = 1;
+pub const IEEE80211_BANDID_2G: i32 = 2;
+pub const IEEE80211_BANDID_3G: i32 = 3;
+pub const IEEE80211_BANDID_5G: i32 = 4;
+pub const IEEE80211_BANDID_60G: i32 = 5;
 
 /* Status codes */
 enum ieee80211_statuscode {
@@ -2085,7 +2081,7 @@ enum ieee80211_timeout_interval_type {
 
 /**
  * struct ieee80211_timeout_interval_ie - Timeout Interval element
- * @type: type, see &enum ieee80211_timeout_interval_type
+ * @type: type, see &ieee80211_timeout_interval_type
  * @value: timeout interval value
  */
 #[repr(C, packed)]
@@ -2108,7 +2104,7 @@ enum ieee80211_idle_options {
  * This structure refers to "BSS Max idle period element"
  *
  * @max_idle_period: indicates the time period during which a station *can refrain from transmitting frames to its associated AP without *being disassociated. In units of 1000 TUs.
- * @idle_options: indicates the options associated with the BSS idle *capability as specified in &enum ieee80211_idle_options.
+ * @idle_options: indicates the options associated with the BSS idle *capability as specified in &ieee80211_idle_options.
  */
 #[repr(C, packed)]
 pub struct ieee80211_bss_max_idle_period_ie {
@@ -2266,10 +2262,10 @@ pub unsafe fn *u8 ieee80211_get_qos_ctl(struct *ieee80211_hdr hdr)
 	} *qos;
 
 	qos = (void *)hdr;
-	if (ieee80211_has_a4(qos->addr3.frame_control))
-		return (u8 *)&qos->addr4.qos_ctrl;
+	if (ieee80211_has_a4((*qos).addr3.frame_control))
+		return (u8 *)&(*qos).addr4.qos_ctrl;
 	else
-		return (u8 *)&qos->addr3.qos_ctrl;
+		return (u8 *)&(*qos).addr3.qos_ctrl;
 }
 
 /**
@@ -2291,11 +2287,11 @@ pub unsafe fn u8 ieee80211_get_tid(struct *ieee80211_hdr hdr)
  */
 pub unsafe fn *u8 ieee80211_get_SA(struct *ieee80211_hdr hdr)
 {
-	if (ieee80211_has_a4(hdr->frame_control))
-		return hdr->addr4;
-	if (ieee80211_has_fromds(hdr->frame_control))
-		return hdr->addr3;
-	return hdr->addr2;
+	if (ieee80211_has_a4((*hdr).frame_control))
+		return (*hdr).addr4;
+	if (ieee80211_has_fromds((*hdr).frame_control))
+		return (*hdr).addr3;
+	return (*hdr).addr2;
 }
 
 /**
@@ -2306,10 +2302,10 @@ pub unsafe fn *u8 ieee80211_get_SA(struct *ieee80211_hdr hdr)
  */
 pub unsafe fn *u8 ieee80211_get_DA(struct *ieee80211_hdr hdr)
 {
-	if (ieee80211_has_tods(hdr->frame_control))
-		return hdr->addr3;
+	if (ieee80211_has_tods((*hdr).frame_control))
+		return (*hdr).addr3;
 	else
-		return hdr->addr1;
+		return (*hdr).addr1;
 }
 
 /**
@@ -2318,8 +2314,8 @@ pub unsafe fn *u8 ieee80211_get_DA(struct *ieee80211_hdr hdr)
  */
 pub unsafe fn bool ieee80211_is_bufferable_mmpdu(struct *sk_buff skb)
 {
-	struct *ieee80211_mgmt mgmt = (void *)skb->data;
-	u16 fc = mgmt->frame_control;
+	struct *ieee80211_mgmt mgmt = (*(void *)skb).data;
+	u16 fc = (*mgmt).frame_control;
 
 	/*
 	 * IEEE 802.11 REVme D2.0 definition of bufferable MMPDU;
@@ -2334,17 +2330,17 @@ pub unsafe fn bool ieee80211_is_bufferable_mmpdu(struct *sk_buff skb)
 	if (!ieee80211_is_action(fc))
 		return false;
 
-	if (skb->len < IEEE80211_MIN_ACTION_SIZE(action_code))
+	if ((*skb).len < IEEE80211_MIN_ACTION_SIZE(action_code))
 		return true;
 
 	/* action frame - additionally check for non-bufferable FTM */
 
-	if (mgmt->u.action.category != WLAN_CATEGORY_PUBLIC &&
-	    mgmt->u.action.category != WLAN_CATEGORY_PROTECTED_DUAL_OF_ACTION)
+	if ((*mgmt).u.action.category != WLAN_CATEGORY_PUBLIC &&
+	    (*mgmt).u.action.category != WLAN_CATEGORY_PROTECTED_DUAL_OF_ACTION)
 		return true;
 
-	if (mgmt->u.action.action_code == WLAN_PUB_ACTION_FTM_REQUEST ||
-	    mgmt->u.action.action_code == WLAN_PUB_ACTION_FTM_RESPONSE)
+	if ((*mgmt).u.action.action_code == WLAN_PUB_ACTION_FTM_REQUEST ||
+	    (*mgmt).u.action.action_code == WLAN_PUB_ACTION_FTM_RESPONSE)
 		return false;
 
 	return true;
@@ -2357,17 +2353,17 @@ pub unsafe fn bool ieee80211_is_bufferable_mmpdu(struct *sk_buff skb)
  */
 pub unsafe fn bool _ieee80211_is_robust_mgmt_frame(struct *ieee80211_hdr hdr)
 {
-	if (ieee80211_is_disassoc(hdr->frame_control) ||
-	    ieee80211_is_deauth(hdr->frame_control))
+	if (ieee80211_is_disassoc((*hdr).frame_control) ||
+	    ieee80211_is_deauth((*hdr).frame_control))
 		return true;
 
-	if (ieee80211_is_action(hdr->frame_control)) {
+	if (ieee80211_is_action((*hdr).frame_control)) {
 		*u8 category;
 
 		/*
 		 * Action frames, excluding Public Action frames, are *Robust Management Frames. However, if we are looking at a *Protected frame, skip the check since the data may be encrypted *and the frame has already been found to be a Robust *Management Frame (by the other end).
 		 */
-		if (ieee80211_has_protected(hdr->frame_control))
+		if (ieee80211_has_protected((*hdr).frame_control))
 			return true;
 		category = ((u8 *) hdr) + 24;
 		*return category != WLAN_CATEGORY_PUBLIC &&
@@ -2389,9 +2385,9 @@ pub unsafe fn bool _ieee80211_is_robust_mgmt_frame(struct *ieee80211_hdr hdr)
  */
 pub unsafe fn bool ieee80211_is_robust_mgmt_frame(struct *sk_buff skb)
 {
-	if (skb->len < IEEE80211_MIN_ACTION_SIZE(category))
+	if ((*skb).len < IEEE80211_MIN_ACTION_SIZE(category))
 		return false;
-	return _ieee80211_is_robust_mgmt_frame((void *)skb->data);
+	return _ieee80211_is_robust_mgmt_frame((*(void *)skb).data);
 }
 
 /**
@@ -2400,15 +2396,15 @@ pub unsafe fn bool ieee80211_is_robust_mgmt_frame(struct *sk_buff skb)
  * @len: length of the *frame Return: whether or not the frame is a public action frame
  */
 pub unsafe fn bool ieee80211_is_public_action(struct *ieee80211_hdr hdr,
-					      usize len)
+					      len: usize)
 {
 	struct *ieee80211_mgmt mgmt = (void *)hdr;
 
 	if (len < IEEE80211_MIN_ACTION_SIZE(category))
 		return false;
-	if (!ieee80211_is_action(hdr->frame_control))
+	if (!ieee80211_is_action((*hdr).frame_control))
 		return false;
-	return mgmt->u.action.category == WLAN_CATEGORY_PUBLIC;
+	return (*mgmt).u.action.category == WLAN_CATEGORY_PUBLIC;
 }
 
 /**
@@ -2420,14 +2416,14 @@ pub unsafe fn bool ieee80211_is_public_action(struct *ieee80211_hdr hdr,
 pub unsafe fn bool
 ieee80211_is_protected_dual_of_public_action(struct *sk_buff skb)
 {
-	struct *ieee80211_mgmt mgmt = (void *)skb->data;
+	struct *ieee80211_mgmt mgmt = (*(void *)skb).data;
 	u8 action;
 
-	if (!ieee80211_is_public_action((void *)skb->data, skb->len) ||
-	    skb->len < IEEE80211_MIN_ACTION_SIZE(action_code))
+	if (!ieee80211_is_public_action((*(void *)skb).data, (*skb).len) ||
+	    (*skb).len < IEEE80211_MIN_ACTION_SIZE(action_code))
 		return false;
 
-	action = mgmt->u.action.action_code;
+	action = (*mgmt).u.action.action_code;
 
 	return action != WLAN_PUB_ACTION_20_40_BSS_COEX &&
 		action != WLAN_PUB_ACTION_DSE_REG_LOC_ANN &&
@@ -2448,12 +2444,12 @@ pub unsafe fn bool _ieee80211_is_group_privacy_action(struct *ieee80211_hdr hdr)
 {
 	struct *ieee80211_mgmt mgmt = (void *)hdr;
 
-	if (!ieee80211_is_action(hdr->frame_control) ||
-	    !is_multicast_ether_addr(hdr->addr1))
+	if (!ieee80211_is_action((*hdr).frame_control) ||
+	    !is_multicast_ether_addr((*hdr).addr1))
 		return false;
 
-	return mgmt->u.action.category == WLAN_CATEGORY_MESH_ACTION ||
-	       mgmt->u.action.category == WLAN_CATEGORY_MULTIHOP_ACTION;
+	return (*mgmt).u.action.category == WLAN_CATEGORY_MESH_ACTION ||
+	       (*mgmt).u.action.category == WLAN_CATEGORY_MULTIHOP_ACTION;
 }
 
 /**
@@ -2462,25 +2458,25 @@ pub unsafe fn bool _ieee80211_is_group_privacy_action(struct *ieee80211_hdr hdr)
  */
 pub unsafe fn bool ieee80211_is_group_privacy_action(struct *sk_buff skb)
 {
-	if (skb->len < IEEE80211_MIN_ACTION_SIZE(category))
+	if ((*skb).len < IEEE80211_MIN_ACTION_SIZE(category))
 		return false;
-	return _ieee80211_is_group_privacy_action((void *)skb->data);
+	return _ieee80211_is_group_privacy_action((*(void *)skb).data);
 }
 
 /**
  * ieee80211_tu_to_usec - convert time units (TU) to microseconds
  * @tu: the *TUs Return: the time value converted to microseconds
  */
-pub unsafe fn unsigned long ieee80211_tu_to_usec(unsigned long tu)
+pub unsafe fn core::ffi::c_ulong ieee80211_tu_to_usec(tu: core::ffi::c_ulong)
 {
 	return 1024 * tu;
 }
 
 pub unsafe fn bool __ieee80211_check_tim(struct *ieee80211_tim_ie tim,
-					 u8 tim_len, u16 aid)
+					 tim_len: u8, aid: u16)
 {
 	u8 mask;
-	u8 index, indexn1, indexn2;
+	index: u8, indexn1, indexn2;
 
 	if (unlikely(!tim || tim_len < sizeof(*tim)))
 		return false;
@@ -2489,7 +2485,7 @@ pub unsafe fn bool __ieee80211_check_tim(struct *ieee80211_tim_ie tim,
 	index = aid / 8;
 	mask  = 1 << (aid & 7);
 
-	indexn1 = tim->bitmap_ctrl & 0xfe;
+	indexn1 = (*tim).bitmap_ctrl & 0xfe;
 	indexn2 = tim_len + indexn1 - 4;
 
 	if (index < indexn1 || index > indexn2)
@@ -2497,7 +2493,7 @@ pub unsafe fn bool __ieee80211_check_tim(struct *ieee80211_tim_ie tim,
 
 	index -= indexn1;
 
-	return !!(tim->virtual_map[index] & mask);
+	return !!((*tim).virtual_map[index] & mask);
 }
 
 /**
@@ -2509,7 +2505,7 @@ pub unsafe fn bool __ieee80211_check_tim(struct *ieee80211_tim_ie tim,
 pub unsafe fn int ieee80211_get_tdls_action(struct *sk_buff skb)
 {
 	if (!skb_is_nonlinear(skb) &&
-	    skb->len > (skb_network_offset(skb) + 2)) {
+	    (*skb).len > (skb_network_offset(skb) + 2)) {
 		/* Point to where the indication of TDLS should start */
 		*u8 tdls_data = skb_network_header(skb) - 2;
 
@@ -2548,12 +2544,12 @@ pub KHZ_F: u64 = "%d.%03d";
  */
 pub unsafe fn bool ieee80211_action_contains_tpc(struct *sk_buff skb)
 {
-	struct *ieee80211_mgmt mgmt = (void *)skb->data;
+	struct *ieee80211_mgmt mgmt = (*(void *)skb).data;
 
-	if (!ieee80211_is_action(mgmt->frame_control))
+	if (!ieee80211_is_action((*mgmt).frame_control))
 		return false;
 
-	if (skb->len < IEEE80211_MIN_ACTION_SIZE(tpc_report))
+	if ((*skb).len < IEEE80211_MIN_ACTION_SIZE(tpc_report))
 		return false;
 
 	/*
@@ -2565,17 +2561,17 @@ pub unsafe fn bool ieee80211_action_contains_tpc(struct *sk_buff skb)
 	 *
 	 * The spectrum management's tpc_report struct is used here both *for parsing tpc_report and radio measurement's link measurement *report frame, since the relevant part is identical in both frames.
 	 */
-	if (mgmt->u.action.category != WLAN_CATEGORY_SPECTRUM_MGMT &&
-	    mgmt->u.action.category != WLAN_CATEGORY_RADIO_MEASUREMENT)
+	if ((*mgmt).u.action.category != WLAN_CATEGORY_SPECTRUM_MGMT &&
+	    (*mgmt).u.action.category != WLAN_CATEGORY_RADIO_MEASUREMENT)
 		return false;
 
 	/* both spectrum mgmt and link measurement have same action code */
-	if (mgmt->u.action.action_code != WLAN_ACTION_SPCT_TPC_RPRT)
+	if ((*mgmt).u.action.action_code != WLAN_ACTION_SPCT_TPC_RPRT)
 		return false;
 
-	if (mgmt->u.action.tpc_report.tpc_elem_id != WLAN_EID_TPC_REPORT ||
-	    mgmt->u.action.tpc_report.tpc_elem_length !=
-	    sizeof(struct ieee80211_tpc_report_ie))
+	if ((*mgmt).u.action.tpc_report.tpc_elem_id != WLAN_EID_TPC_REPORT ||
+	    (*mgmt).u.action.tpc_report.tpc_elem_length !=
+	    sizeof(ieee80211_tpc_report_ie))
 		return false;
 
 	return true;
@@ -2587,16 +2583,16 @@ pub unsafe fn bool ieee80211_action_contains_tpc(struct *sk_buff skb)
  */
 pub unsafe fn bool ieee80211_is_timing_measurement(struct *sk_buff skb)
 {
-	struct *ieee80211_mgmt mgmt = (void *)skb->data;
+	struct *ieee80211_mgmt mgmt = (*(void *)skb).data;
 
-	if (skb->len < IEEE80211_MIN_ACTION_SIZE(wnm_timing_msr))
+	if ((*skb).len < IEEE80211_MIN_ACTION_SIZE(wnm_timing_msr))
 		return false;
 
-	if (!ieee80211_is_action(mgmt->frame_control))
+	if (!ieee80211_is_action((*mgmt).frame_control))
 		return false;
 
-	if (mgmt->u.action.category == WLAN_CATEGORY_WNM_UNPROTECTED &&
-	    mgmt->u.action.action_code ==
+	if ((*mgmt).u.action.category == WLAN_CATEGORY_WNM_UNPROTECTED &&
+	    (*mgmt).u.action.action_code ==
 			WLAN_UNPROTECTED_WNM_ACTION_TIMING_MEASUREMENT_RESPONSE)
 		return true;
 
@@ -2609,15 +2605,15 @@ pub unsafe fn bool ieee80211_is_timing_measurement(struct *sk_buff skb)
  */
 pub unsafe fn bool ieee80211_is_ftm(struct *sk_buff skb)
 {
-	struct *ieee80211_mgmt mgmt = (void *)skb->data;
+	struct *ieee80211_mgmt mgmt = (*(void *)skb).data;
 
-	if (skb->len < IEEE80211_MIN_ACTION_SIZE(ftm))
+	if ((*skb).len < IEEE80211_MIN_ACTION_SIZE(ftm))
 		return false;
 
-	if (!ieee80211_is_public_action((void *)mgmt, skb->len))
+	if (!ieee80211_is_public_action((void *)mgmt, (*skb).len))
 		return false;
 
-	return mgmt->u.action.action_code == WLAN_PUB_ACTION_FTM_RESPONSE;
+	return (*mgmt).u.action.action_code == WLAN_PUB_ACTION_FTM_RESPONSE;
 }
 
 #[repr(C, packed)]
@@ -2629,31 +2625,31 @@ pub struct element {
 
 /* element iteration helpers */
 #define for_each_element(_elem, _data, _datalen)			\
-	for (_elem = (struct element *)(_data);			\
+	for (_elem = (element *)(_data);			\
 	     (u8 *)(_data) + (_datalen) - (u8 *)_elem >=	\
 		(int)sizeof(*_elem) &&					\
 	     (u8 *)(_data) + (_datalen) - (u8 *)_elem >=	\
-		(int)sizeof(*_elem) + _elem->datalen;			\
-	     _elem = (struct element *)(_elem->data + _elem->datalen))
+		(int)sizeof(*_elem) + (*_elem).datalen;			\
+	     _elem = (element *)((*_elem).data + (*_elem).datalen))
 
 #define for_each_element_id(element, _id, data, datalen)		\
 	for_each_element(element, data, datalen)			\
-		if (element->id == (_id))
+		if ((*element).id == (_id))
 
 #define for_each_element_extid(element, extid, _data, _datalen)		\
 	for_each_element(element, _data, _datalen)			\
-		if (element->id == WLAN_EID_EXTENSION &&		\
-		    element->datalen > 0 &&				\
-		    element->data[0] == (extid))
+		if ((*element).id == WLAN_EID_EXTENSION &&		\
+		    (*element).datalen > 0 &&				\
+		    (*element).data[0] == (extid))
 
 #define for_each_subelement(sub, element)				\
-	for_each_element(sub, (element)->data, (element)->datalen)
+	for_each_element(sub, (*(element)).data, (*(element)).datalen)
 
 #define for_each_subelement_id(sub, id, element)			\
-	for_each_element_id(sub, id, (element)->data, (element)->datalen)
+	for_each_element_id(sub, id, (*(element)).data, (*(element)).datalen)
 
 #define for_each_subelement_extid(sub, extid, element)			\
-	for_each_element_extid(sub, extid, (element)->data, (element)->datalen)
+	for_each_element_extid(sub, extid, (*(element)).data, (*(element)).datalen)
 
 /**
  * for_each_element_completed - determine if element parsing consumed all data
@@ -2666,11 +2662,10 @@ pub struct element {
  *
  * If some data was malformed, this returns %false since the last *parsed element will not fill the whole remaining data.
  */
-pub unsafe fn bool for_each_element_completed(struct *element element,
-					      *void data, usize datalen)
-{
+pub unsafe fn bool for_each_element_completed!(struct *element element,
+					      *void data, usize datalen, {
 	return (u8 *)element == (u8 *)data + datalen;
-}
+});
 
 /*
  * RSNX Capabilities:
@@ -2782,7 +2777,7 @@ pub struct ieee80211_tbtt_info_ge_11 {
  * @s1g: whether the TIM is from an S1G *PPDU Return: whether or not traffic is indicated in the TIM for the given AID
  */
 pub unsafe fn bool ieee80211_check_tim(struct *ieee80211_tim_ie tim,
-				       u8 tim_len, u16 aid, bool s1g)
+				       tim_len: u8, aid: u16, s1g: bool)
 {
 	return s1g ? ieee80211_s1g_check_tim(tim, tim_len, aid) :
 		     __ieee80211_check_tim(tim, tim_len, aid);

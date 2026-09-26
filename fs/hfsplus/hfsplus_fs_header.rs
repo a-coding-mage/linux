@@ -89,25 +89,25 @@ pub const HFSPLUS_UTC_OFFSET:u32=2082844800;
 // Declarations exported by the corresponding C implementation files.
 extern "C" {
     pub fn hfsplus_create_attr_tree_cache()->i32; pub fn hfsplus_destroy_attr_tree_cache();
-    pub fn hfsplus_block_allocate(*mut super_block,u32,u32,*mut u32)->i32; pub fn hfsplus_block_free(*mut super_block,u32,u32)->i32;
-    pub fn hfs_btree_open(*mut super_block,u32)->*mut hfs_btree; pub fn hfs_btree_close(*mut hfs_btree);
-    pub fn hfs_btree_write(*mut hfs_btree)->i32; pub fn hfs_bmap_reserve(*mut hfs_btree,u32)->i32;
-    pub fn hfs_bmap_alloc(*mut hfs_btree)->*mut hfs_bnode; pub fn hfs_bmap_free(*mut hfs_bnode);
-    pub fn hfs_bnode_read(*mut hfs_bnode,*mut core::ffi::c_void,u32,u32); pub fn hfs_bnode_read_u16(*mut hfs_bnode,u32)->u16; pub fn hfs_bnode_read_u8(*mut hfs_bnode,u32)->u8;
-    pub fn hfs_bnode_write(*mut hfs_bnode,*mut core::ffi::c_void,u32,u32); pub fn hfs_bnode_write_u16(*mut hfs_bnode,u32,u16);
-    pub fn hfs_bnode_clear(*mut hfs_bnode,u32,u32); pub fn hfs_bnode_copy(*mut hfs_bnode,u32,*mut hfs_bnode,u32,u32); pub fn hfs_bnode_move(*mut hfs_bnode,u32,u32,u32);
-    pub fn hfs_bnode_dump(*mut hfs_bnode); pub fn hfs_bnode_unlink(*mut hfs_bnode); pub fn hfs_bnode_findhash(*mut hfs_btree,u32)->*mut hfs_bnode;
-    pub fn hfs_bnode_unhash(*mut hfs_bnode); pub fn hfs_bnode_find(*mut hfs_btree,u32)->*mut hfs_bnode; pub fn hfs_bnode_free(*mut hfs_bnode);
-    pub fn hfs_bnode_create(*mut hfs_btree,u32)->*mut hfs_bnode; pub fn hfs_bnode_get(*mut hfs_bnode); pub fn hfs_bnode_put(*mut hfs_bnode); pub fn hfs_bnode_need_zeroout(*mut hfs_btree)->bool;
-    pub fn hfs_brec_lenoff(*mut hfs_bnode,u16,*mut u16)->u16; pub fn hfs_brec_keylen(*mut hfs_bnode,u16)->u16; pub fn hfs_brec_insert(*mut hfs_find_data,*mut core::ffi::c_void,u32)->i32; pub fn hfs_brec_remove(*mut hfs_find_data)->i32;
-    pub fn hfs_find_init(*mut hfs_btree,*mut hfs_find_data)->i32; pub fn hfs_find_exit(*mut hfs_find_data); pub fn hfs_brec_find(*mut hfs_find_data,Option<SearchStrategyT>)->i32; pub fn hfs_brec_read(*mut hfs_find_data,*mut core::ffi::c_void,u32)->i32; pub fn hfs_brec_goto(*mut hfs_find_data,i32)->i32;
+    pub fn hfsplus_block_allocate(_: *mut super_block,_: u32,_: u32,_: *mut u32)->i32; pub fn hfsplus_block_free(_: *mut super_block,_: u32,_: u32)->i32;
+    pub fn hfs_btree_open(_: *mut super_block,_: u32)->*mut hfs_btree; pub fn hfs_btree_close(_: *mut hfs_btree);
+    pub fn hfs_btree_write(_: *mut hfs_btree)->i32; pub fn hfs_bmap_reserve(_: *mut hfs_btree,_: u32)->i32;
+    pub fn hfs_bmap_alloc(_: *mut hfs_btree)->*mut hfs_bnode; pub fn hfs_bmap_free(_: *mut hfs_bnode);
+    pub fn hfs_bnode_read(_: *mut hfs_bnode,_: *mut core::ffi::c_void,_: u32,_: u32); pub fn hfs_bnode_read_u16(_: *mut hfs_bnode,_: u32)->u16; pub fn hfs_bnode_read_u8(_: *mut hfs_bnode,_: u32)->u8;
+    pub fn hfs_bnode_write(_: *mut hfs_bnode,_: *mut core::ffi::c_void,_: u32,_: u32); pub fn hfs_bnode_write_u16(_: *mut hfs_bnode,_: u32,_: u16);
+    pub fn hfs_bnode_clear(_: *mut hfs_bnode,_: u32,_: u32); pub fn hfs_bnode_copy(_: *mut hfs_bnode,_: u32,_: *mut hfs_bnode,_: u32,_: u32); pub fn hfs_bnode_move(_: *mut hfs_bnode,_: u32,_: u32,_: u32);
+    pub fn hfs_bnode_dump(_: *mut hfs_bnode); pub fn hfs_bnode_unlink(_: *mut hfs_bnode); pub fn hfs_bnode_findhash(_: *mut hfs_btree,_: u32)->*mut hfs_bnode;
+    pub fn hfs_bnode_unhash(_: *mut hfs_bnode); pub fn hfs_bnode_find(_: *mut hfs_btree,_: u32)->*mut hfs_bnode; pub fn hfs_bnode_free(_: *mut hfs_bnode);
+    pub fn hfs_bnode_create(_: *mut hfs_btree,_: u32)->*mut hfs_bnode; pub fn hfs_bnode_get(_: *mut hfs_bnode); pub fn hfs_bnode_put(_: *mut hfs_bnode); pub fn hfs_bnode_need_zeroout(_: *mut hfs_btree)->bool;
+    pub fn hfs_brec_lenoff(_: *mut hfs_bnode,_: u16,_: *mut u16)->u16; pub fn hfs_brec_keylen(_: *mut hfs_bnode,_: u16)->u16; pub fn hfs_brec_insert(_: *mut hfs_find_data,_: *mut core::ffi::c_void,_: u32)->i32; pub fn hfs_brec_remove(_: *mut hfs_find_data)->i32;
+    pub fn hfs_find_init(_: *mut hfs_btree,_: *mut hfs_find_data)->i32; pub fn hfs_find_exit(_: *mut hfs_find_data); pub fn hfs_brec_find(_: *mut hfs_find_data,_: Option<SearchStrategyT>)->i32; pub fn hfs_brec_read(_: *mut hfs_find_data,_: *mut core::ffi::c_void,_: u32)->i32; pub fn hfs_brec_goto(_: *mut hfs_find_data,_: i32)->i32;
 }
 
 // Remaining external declarations retain the header's public interfaces.
 extern "C" {
-    pub fn hfsplus_get_block(*mut inode,sector_t,*mut buffer_head,i32)->i32; pub fn hfsplus_file_extend(*mut inode,bool)->i32; pub fn hfsplus_file_truncate(*mut inode);
-    pub fn hfsplus_iget(*mut super_block,usize)->*mut inode; pub fn hfsplus_mark_mdb_dirty(*mut super_block); pub fn hfsplus_commit_superblock(*mut super_block)->i32;
-    pub fn hfsplus_submit_bio(*mut super_block,sector_t,*mut core::ffi::c_void,*mut *mut core::ffi::c_void,blk_opf_t)->i32; pub fn hfsplus_read_wrapper(*mut super_block)->i32;
+    pub fn hfsplus_get_block(_: *mut inode,_: sector_t,_: *mut buffer_head,_: i32)->i32; pub fn hfsplus_file_extend(_: *mut inode,_: bool)->i32; pub fn hfsplus_file_truncate(_: *mut inode);
+    pub fn hfsplus_iget(_: *mut super_block,_: usize)->*mut inode; pub fn hfsplus_mark_mdb_dirty(_: *mut super_block); pub fn hfsplus_commit_superblock(_: *mut super_block)->i32;
+    pub fn hfsplus_submit_bio(_: *mut super_block,_: sector_t,_: *mut core::ffi::c_void,_: *mut *mut core::ffi::c_void,_: blk_opf_t)->i32; pub fn hfsplus_read_wrapper(_: *mut super_block)->i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

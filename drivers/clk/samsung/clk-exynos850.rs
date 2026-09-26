@@ -553,20 +553,20 @@ static struct samsung_gate_clock top_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info top_cmu_info  = {
-	.pll_clks		= top_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(top_pll_clks),
-	.mux_clks		= top_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(top_mux_clks),
-	.div_clks		= top_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(top_div_clks),
-	.gate_clks		= top_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(top_gate_clks),
-	.nr_clk_ids		= CLKS_NR_TOP,
-	.clk_regs		= top_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(top_clk_regs),
+	pll_clks: top_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(top_pll_clks),
+	mux_clks: top_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(top_mux_clks),
+	div_clks: top_div_clks,
+	nr_div_clks: ARRAY_SIZE(top_div_clks),
+	gate_clks: top_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(top_gate_clks),
+	nr_clk_ids: CLKS_NR_TOP,
+	clk_regs: top_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(top_clk_regs),
 };
 
-static unsafe fn exynos850_cmu_top_init(struct device_node *np)
+unsafe fn exynos850_cmu_top_init(device_node *np)
 {
 	exynos_arm64_register_cmu(NULL, np, &top_cmu_info);
 }
@@ -699,18 +699,18 @@ static struct samsung_gate_clock apm_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info apm_cmu_info  = {
-	.mux_clks		= apm_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(apm_mux_clks),
-	.div_clks		= apm_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(apm_div_clks),
-	.gate_clks		= apm_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(apm_gate_clks),
-	.fixed_clks		= apm_fixed_clks,
-	.nr_fixed_clks		= ARRAY_SIZE(apm_fixed_clks),
-	.nr_clk_ids		= CLKS_NR_APM,
-	.clk_regs		= apm_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(apm_clk_regs),
-	.clk_name		= "dout_clkcmu_apm_bus",
+	mux_clks: apm_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(apm_mux_clks),
+	div_clks: apm_div_clks,
+	nr_div_clks: ARRAY_SIZE(apm_div_clks),
+	gate_clks: apm_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(apm_gate_clks),
+	fixed_clks: apm_fixed_clks,
+	nr_fixed_clks: ARRAY_SIZE(apm_fixed_clks),
+	nr_clk_ids: CLKS_NR_APM,
+	clk_regs: apm_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(apm_clk_regs),
+	clk_name: "dout_clkcmu_apm_bus",
 };
 
 /* ---- CMU_AUD ------------------------------------------------------------- */
@@ -980,20 +980,20 @@ static struct samsung_gate_clock aud_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info aud_cmu_info  = {
-	.pll_clks		= aud_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(aud_pll_clks),
-	.mux_clks		= aud_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(aud_mux_clks),
-	.div_clks		= aud_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(aud_div_clks),
-	.gate_clks		= aud_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(aud_gate_clks),
-	.fixed_clks		= aud_fixed_clks,
-	.nr_fixed_clks		= ARRAY_SIZE(aud_fixed_clks),
-	.nr_clk_ids		= CLKS_NR_AUD,
-	.clk_regs		= aud_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(aud_clk_regs),
-	.clk_name		= "dout_aud",
+	pll_clks: aud_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(aud_pll_clks),
+	mux_clks: aud_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(aud_mux_clks),
+	div_clks: aud_div_clks,
+	nr_div_clks: ARRAY_SIZE(aud_div_clks),
+	gate_clks: aud_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(aud_gate_clks),
+	fixed_clks: aud_fixed_clks,
+	nr_fixed_clks: ARRAY_SIZE(aud_fixed_clks),
+	nr_clk_ids: CLKS_NR_AUD,
+	clk_regs: aud_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(aud_clk_regs),
+	clk_name: "dout_aud",
 };
 
 /* ---- CMU_CMGP ------------------------------------------------------------ */
@@ -1085,18 +1085,18 @@ static struct samsung_gate_clock cmgp_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info cmgp_cmu_info  = {
-	.mux_clks		= cmgp_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmgp_mux_clks),
-	.div_clks		= cmgp_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cmgp_div_clks),
-	.gate_clks		= cmgp_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(cmgp_gate_clks),
-	.fixed_clks		= cmgp_fixed_clks,
-	.nr_fixed_clks		= ARRAY_SIZE(cmgp_fixed_clks),
-	.nr_clk_ids		= CLKS_NR_CMGP,
-	.clk_regs		= cmgp_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmgp_clk_regs),
-	.clk_name		= "gout_clkcmu_cmgp_bus",
+	mux_clks: cmgp_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmgp_mux_clks),
+	div_clks: cmgp_div_clks,
+	nr_div_clks: ARRAY_SIZE(cmgp_div_clks),
+	gate_clks: cmgp_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cmgp_gate_clks),
+	fixed_clks: cmgp_fixed_clks,
+	nr_fixed_clks: ARRAY_SIZE(cmgp_fixed_clks),
+	nr_clk_ids: CLKS_NR_CMGP,
+	clk_regs: cmgp_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmgp_clk_regs),
+	clk_name: "gout_clkcmu_cmgp_bus",
 };
 
 /* ---- CMU_CPUCL0 ---------------------------------------------------------- */
@@ -1285,24 +1285,24 @@ static struct samsung_cpu_clock cpucl0_cpu_clks[]  = {
 };
 
 static struct samsung_cmu_info cpucl0_cmu_info  = {
-	.pll_clks		= cpucl0_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(cpucl0_pll_clks),
-	.mux_clks		= cpucl0_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cpucl0_mux_clks),
-	.div_clks		= cpucl0_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cpucl0_div_clks),
-	.gate_clks		= cpucl0_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(cpucl0_gate_clks),
-	.cpu_clks		= cpucl0_cpu_clks,
-	.nr_cpu_clks		= ARRAY_SIZE(cpucl0_cpu_clks),
-	.nr_clk_ids		= CLKS_NR_CPUCL0,
-	.clk_regs		= cpucl0_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cpucl0_clk_regs),
-	.clk_name		= "dout_cpucl0_switch",
-	.manual_plls		= true,
+	pll_clks: cpucl0_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(cpucl0_pll_clks),
+	mux_clks: cpucl0_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cpucl0_mux_clks),
+	div_clks: cpucl0_div_clks,
+	nr_div_clks: ARRAY_SIZE(cpucl0_div_clks),
+	gate_clks: cpucl0_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cpucl0_gate_clks),
+	cpu_clks: cpucl0_cpu_clks,
+	nr_cpu_clks: ARRAY_SIZE(cpucl0_cpu_clks),
+	nr_clk_ids: CLKS_NR_CPUCL0,
+	clk_regs: cpucl0_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cpucl0_clk_regs),
+	clk_name: "dout_cpucl0_switch",
+	manual_plls: true,
 };
 
-static unsafe fn exynos850_cmu_cpucl0_init(struct device_node *np)
+unsafe fn exynos850_cmu_cpucl0_init(device_node *np)
 {
 	exynos_arm64_register_cmu(NULL, np, &cpucl0_cmu_info);
 }
@@ -1440,24 +1440,24 @@ static struct samsung_cpu_clock cpucl1_cpu_clks[]  = {
 };
 
 static struct samsung_cmu_info cpucl1_cmu_info  = {
-	.pll_clks		= cpucl1_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(cpucl1_pll_clks),
-	.mux_clks		= cpucl1_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cpucl1_mux_clks),
-	.div_clks		= cpucl1_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cpucl1_div_clks),
-	.gate_clks		= cpucl1_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(cpucl1_gate_clks),
-	.cpu_clks		= cpucl1_cpu_clks,
-	.nr_cpu_clks		= ARRAY_SIZE(cpucl1_cpu_clks),
-	.nr_clk_ids		= CLKS_NR_CPUCL1,
-	.clk_regs		= cpucl1_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cpucl1_clk_regs),
-	.clk_name		= "dout_cpucl1_switch",
-	.manual_plls		= true,
+	pll_clks: cpucl1_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(cpucl1_pll_clks),
+	mux_clks: cpucl1_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cpucl1_mux_clks),
+	div_clks: cpucl1_div_clks,
+	nr_div_clks: ARRAY_SIZE(cpucl1_div_clks),
+	gate_clks: cpucl1_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cpucl1_gate_clks),
+	cpu_clks: cpucl1_cpu_clks,
+	nr_cpu_clks: ARRAY_SIZE(cpucl1_cpu_clks),
+	nr_clk_ids: CLKS_NR_CPUCL1,
+	clk_regs: cpucl1_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cpucl1_clk_regs),
+	clk_name: "dout_cpucl1_switch",
+	manual_plls: true,
 };
 
-static unsafe fn exynos850_cmu_cpucl1_init(struct device_node *np)
+unsafe fn exynos850_cmu_cpucl1_init(device_node *np)
 {
 	exynos_arm64_register_cmu(NULL, np, &cpucl1_cmu_info);
 }
@@ -1548,18 +1548,18 @@ static struct samsung_gate_clock g3d_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info g3d_cmu_info  = {
-	.pll_clks		= g3d_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(g3d_pll_clks),
-	.mux_clks		= g3d_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(g3d_mux_clks),
-	.div_clks		= g3d_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(g3d_div_clks),
-	.gate_clks		= g3d_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(g3d_gate_clks),
-	.nr_clk_ids		= CLKS_NR_G3D,
-	.clk_regs		= g3d_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(g3d_clk_regs),
-	.clk_name		= "dout_g3d_switch",
+	pll_clks: g3d_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(g3d_pll_clks),
+	mux_clks: g3d_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(g3d_mux_clks),
+	div_clks: g3d_div_clks,
+	nr_div_clks: ARRAY_SIZE(g3d_div_clks),
+	gate_clks: g3d_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(g3d_gate_clks),
+	nr_clk_ids: CLKS_NR_G3D,
+	clk_regs: g3d_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(g3d_clk_regs),
+	clk_name: "dout_g3d_switch",
 };
 
 /* ---- CMU_HSI ------------------------------------------------------------- */
@@ -1654,14 +1654,14 @@ static struct samsung_gate_clock hsi_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info hsi_cmu_info  = {
-	.mux_clks		= hsi_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(hsi_mux_clks),
-	.gate_clks		= hsi_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(hsi_gate_clks),
-	.nr_clk_ids		= CLKS_NR_HSI,
-	.clk_regs		= hsi_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(hsi_clk_regs),
-	.clk_name		= "dout_hsi_bus",
+	mux_clks: hsi_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(hsi_mux_clks),
+	gate_clks: hsi_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(hsi_gate_clks),
+	nr_clk_ids: CLKS_NR_HSI,
+	clk_regs: hsi_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(hsi_clk_regs),
+	clk_name: "dout_hsi_bus",
 };
 
 /* ---- CMU_IS -------------------------------------------------------------- */
@@ -1784,16 +1784,16 @@ static struct samsung_gate_clock is_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info is_cmu_info  = {
-	.mux_clks		= is_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(is_mux_clks),
-	.div_clks		= is_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(is_div_clks),
-	.gate_clks		= is_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(is_gate_clks),
-	.nr_clk_ids		= CLKS_NR_IS,
-	.clk_regs		= is_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(is_clk_regs),
-	.clk_name		= "dout_is_bus",
+	mux_clks: is_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(is_mux_clks),
+	div_clks: is_div_clks,
+	nr_div_clks: ARRAY_SIZE(is_div_clks),
+	gate_clks: is_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(is_gate_clks),
+	nr_clk_ids: CLKS_NR_IS,
+	clk_regs: is_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(is_clk_regs),
+	clk_name: "dout_is_bus",
 };
 
 /* ---- CMU_MFCMSCL --------------------------------------------------------- */
@@ -1893,16 +1893,16 @@ static struct samsung_gate_clock mfcmscl_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info mfcmscl_cmu_info  = {
-	.mux_clks		= mfcmscl_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(mfcmscl_mux_clks),
-	.div_clks		= mfcmscl_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(mfcmscl_div_clks),
-	.gate_clks		= mfcmscl_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(mfcmscl_gate_clks),
-	.nr_clk_ids		= CLKS_NR_MFCMSCL,
-	.clk_regs		= mfcmscl_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(mfcmscl_clk_regs),
-	.clk_name		= "dout_mfcmscl_mfc",
+	mux_clks: mfcmscl_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(mfcmscl_mux_clks),
+	div_clks: mfcmscl_div_clks,
+	nr_div_clks: ARRAY_SIZE(mfcmscl_div_clks),
+	gate_clks: mfcmscl_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(mfcmscl_gate_clks),
+	nr_clk_ids: CLKS_NR_MFCMSCL,
+	clk_regs: mfcmscl_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(mfcmscl_clk_regs),
+	clk_name: "dout_mfcmscl_mfc",
 };
 
 /* ---- CMU_PERI ------------------------------------------------------------ */
@@ -2074,19 +2074,19 @@ static struct samsung_gate_clock peri_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info peri_cmu_info  = {
-	.mux_clks		= peri_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(peri_mux_clks),
-	.div_clks		= peri_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(peri_div_clks),
-	.gate_clks		= peri_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(peri_gate_clks),
-	.nr_clk_ids		= CLKS_NR_PERI,
-	.clk_regs		= peri_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(peri_clk_regs),
-	.clk_name		= "dout_peri_bus",
+	mux_clks: peri_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(peri_mux_clks),
+	div_clks: peri_div_clks,
+	nr_div_clks: ARRAY_SIZE(peri_div_clks),
+	gate_clks: peri_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(peri_gate_clks),
+	nr_clk_ids: CLKS_NR_PERI,
+	clk_regs: peri_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(peri_clk_regs),
+	clk_name: "dout_peri_bus",
 };
 
-static unsafe fn exynos850_cmu_peri_init(struct device_node *np)
+unsafe fn exynos850_cmu_peri_init(device_node *np)
 {
 	exynos_arm64_register_cmu(NULL, np, &peri_cmu_info);
 }
@@ -2189,16 +2189,16 @@ static struct samsung_gate_clock core_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info core_cmu_info  = {
-	.mux_clks		= core_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(core_mux_clks),
-	.div_clks		= core_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(core_div_clks),
-	.gate_clks		= core_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(core_gate_clks),
-	.nr_clk_ids		= CLKS_NR_CORE,
-	.clk_regs		= core_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(core_clk_regs),
-	.clk_name		= "dout_core_bus",
+	mux_clks: core_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(core_mux_clks),
+	div_clks: core_div_clks,
+	nr_div_clks: ARRAY_SIZE(core_div_clks),
+	gate_clks: core_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(core_gate_clks),
+	nr_clk_ids: CLKS_NR_CORE,
+	clk_regs: core_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(core_clk_regs),
+	clk_name: "dout_core_bus",
 };
 
 /* ---- CMU_DPU ------------------------------------------------------------- */
@@ -2263,70 +2263,70 @@ static struct samsung_gate_clock dpu_gate_clks[]  = {
 };
 
 static struct samsung_cmu_info dpu_cmu_info  = {
-	.mux_clks		= dpu_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(dpu_mux_clks),
-	.div_clks		= dpu_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(dpu_div_clks),
-	.gate_clks		= dpu_gate_clks,
-	.nr_gate_clks		= ARRAY_SIZE(dpu_gate_clks),
-	.nr_clk_ids		= CLKS_NR_DPU,
-	.clk_regs		= dpu_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(dpu_clk_regs),
-	.clk_name		= "dout_dpu",
+	mux_clks: dpu_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(dpu_mux_clks),
+	div_clks: dpu_div_clks,
+	nr_div_clks: ARRAY_SIZE(dpu_div_clks),
+	gate_clks: dpu_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(dpu_gate_clks),
+	nr_clk_ids: CLKS_NR_DPU,
+	clk_regs: dpu_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(dpu_clk_regs),
+	clk_name: "dout_dpu",
 };
 
 /* ---- platform_driver ----------------------------------------------------- */
 
-static int __init exynos850_cmu_probe(struct platform_device *pdev)
+static int __init exynos850_cmu_probe(platform_device *pdev)
 {
 	const struct samsung_cmu_info *info;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }
 
 static struct of_device_id exynos850_cmu_of_match[] = {
 	{
-		.compatible = "samsung,exynos850-cmu-apm",
-		.data = &apm_cmu_info,
+		compatible: "samsung,exynos850-cmu-apm",
+		data: &apm_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-aud",
-		.data = &aud_cmu_info,
+		compatible: "samsung,exynos850-cmu-aud",
+		data: &aud_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-cmgp",
-		.data = &cmgp_cmu_info,
+		compatible: "samsung,exynos850-cmu-cmgp",
+		data: &cmgp_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-g3d",
-		.data = &g3d_cmu_info,
+		compatible: "samsung,exynos850-cmu-g3d",
+		data: &g3d_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-hsi",
-		.data = &hsi_cmu_info,
+		compatible: "samsung,exynos850-cmu-hsi",
+		data: &hsi_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-is",
-		.data = &is_cmu_info,
+		compatible: "samsung,exynos850-cmu-is",
+		data: &is_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-mfcmscl",
-		.data = &mfcmscl_cmu_info,
+		compatible: "samsung,exynos850-cmu-mfcmscl",
+		data: &mfcmscl_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-core",
-		.data = &core_cmu_info,
+		compatible: "samsung,exynos850-cmu-core",
+		data: &core_cmu_info,
 	}, {
-		.compatible = "samsung,exynos850-cmu-dpu",
-		.data = &dpu_cmu_info,
+		compatible: "samsung,exynos850-cmu-dpu",
+		data: &dpu_cmu_info,
 	}, {
 	},
 };
 
 static struct platform_driver exynos850_cmu_driver __refdata = {
-	.driver	= {
-		.name = "exynos850-cmu",
-		.of_match_table = exynos850_cmu_of_match,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "exynos850-cmu",
+		of_match_table: exynos850_cmu_of_match,
+		suppress_bind_attrs: true,
 	},
-	.probe = exynos850_cmu_probe,
+	probe: exynos850_cmu_probe,
 };
 
 static int __init exynos850_cmu_init(void)

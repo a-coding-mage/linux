@@ -12,10 +12,10 @@
 // Dependencies supplied by the surrounding kernel environment:
 // linux/init.h, linux/kernel.h, asm/clock.h, asm/freq.h, asm/io.h
 
-static const pll1rate: [i32; 6] = [1, 2, 3, 4, 6, 8];
-static const pfc_divisors: [i32; 7] = [1, 2, 3, 4, 6, 8, 12];
+static pll1rate: [i32; 6] = [1, 2, 3, 4, 6, 8];
+static pfc_divisors: [i32; 7] = [1, 2, 3, 4, 6, 8, 12];
 // #define ifc_divisors pfc_divisors
-static const ifc_divisors: [i32; 7] = pfc_divisors;
+static ifc_divisors: [i32; 7] = pfc_divisors;
 
 static mut pll2_mult: u32 = 0;
 

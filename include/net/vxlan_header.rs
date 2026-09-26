@@ -176,7 +176,7 @@ pub const VXLAN_VNI_STATS_TX_ERRORS: u32 = 5;
     pub vni: __be32, pub offloaded: bool, pub added_by_user: bool,
 }
 
-#[cfg(feature = "CONFIG_VXLAN")]
+#[cfg(CONFIG_VXLAN)]
 extern "C" {
     pub fn vxlan_fdb_find_uc(dev: *mut net_device, mac: *const u8, vni: __be32, fdb_info: *mut switchdev_notifier_vxlan_fdb_info) -> c_int;
     pub fn vxlan_fdb_replay(dev: *const net_device, vni: __be32, nb: *mut notifier_block, extack: *mut netlink_ext_ack) -> c_int;

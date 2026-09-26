@@ -1353,7 +1353,7 @@ static perf_event__min_size: [u32; PERF_RECORD_HEADER_MAX] = [0; PERF_RECORD_HEA
 #[no_mangle]
 pub unsafe extern "C" fn perf_event__too_small(event: *const perf_event, min: *mut u32) -> bool {
     let min_sz = perf_event__min_size[(*event).header.type_ as usize];
-    if min_sz != 0 && (*event).header.size as u32  < min_sz {
+    if min_sz != 0 && ((*event).header.size as u32)  < min_sz {
         if !min.is_null() {
             *min = min_sz;
         }

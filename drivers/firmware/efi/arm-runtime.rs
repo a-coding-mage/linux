@@ -10,7 +10,7 @@
 // Linux and architecture headers from the original translation unit supply
 // the types, constants, globals, macros, and external functions used below.
 
-#[cfg(any(feature = "CONFIG_PTDUMP_DEBUGFS", feature = "CONFIG_ARM_PTDUMP_DEBUGFS"))]
+#[cfg(any(CONFIG_PTDUMP_DEBUGFS, CONFIG_ARM_PTDUMP_DEBUGFS))]
 static mut EFI_PTDUMP_INFO: ptdump_info = ptdump_info {
     mm: unsafe { &mut efi_mm },
     markers: &[
@@ -21,7 +21,7 @@ static mut EFI_PTDUMP_INFO: ptdump_info = ptdump_info {
     base_addr: 0,
 };
 
-#[cfg(any(feature = "CONFIG_PTDUMP_DEBUGFS", feature = "CONFIG_ARM_PTDUMP_DEBUGFS"))]
+#[cfg(any(CONFIG_PTDUMP_DEBUGFS, CONFIG_ARM_PTDUMP_DEBUGFS))]
 unsafe fn ptdump_init() -> i32 {
     if efi_enabled(EFI_RUNTIME_SERVICES) {
         ptdump_debugfs_register(&mut EFI_PTDUMP_INFO, "efi_page_tables\0");

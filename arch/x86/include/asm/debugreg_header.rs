@@ -96,16 +96,16 @@ pub unsafe fn local_db_restore(dr7: usize) {
     }
 }
 
-#[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+#[cfg(CONFIG_CPU_SUP_AMD)]
 pub unsafe extern "C" fn amd_set_dr_addr_mask(mask: usize, dr: u32);
-#[cfg(feature = "CONFIG_CPU_SUP_AMD")]
+#[cfg(CONFIG_CPU_SUP_AMD)]
 pub unsafe extern "C" fn amd_get_dr_addr_mask(dr: u32) -> usize;
 
-#[cfg(not(feature = "CONFIG_CPU_SUP_AMD"))]
+#[cfg(not(CONFIG_CPU_SUP_AMD))]
 #[inline]
 pub unsafe fn amd_set_dr_addr_mask(_mask: usize, _dr: u32) {}
 
-#[cfg(not(feature = "CONFIG_CPU_SUP_AMD"))]
+#[cfg(not(CONFIG_CPU_SUP_AMD))]
 #[inline]
 pub unsafe fn amd_get_dr_addr_mask(_dr: u32) -> usize { 0 }
 
@@ -113,7 +113,7 @@ pub unsafe fn amd_get_dr_addr_mask(_dr: u32) -> usize { 0 }
 pub unsafe fn get_debugctlmsr() -> usize {
     let mut debugctlmsr: usize = 0;
 
-    #[cfg(not(feature = "CONFIG_X86_DEBUGCTLMSR"))]
+    #[cfg(not(CONFIG_X86_DEBUGCTLMSR))]
     if boot_cpu_data.x86 < 6 {
         return 0;
     }
@@ -123,7 +123,7 @@ pub unsafe fn get_debugctlmsr() -> usize {
 
 #[inline]
 pub unsafe fn update_debugctlmsr(debugctlmsr: usize) {
-    #[cfg(not(feature = "CONFIG_X86_DEBUGCTLMSR"))]
+    #[cfg(not(CONFIG_X86_DEBUGCTLMSR))]
     if boot_cpu_data.x86 < 6 {
         return;
     }

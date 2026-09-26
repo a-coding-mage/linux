@@ -27,7 +27,7 @@
 // MODULE_LICENSE("GPL");
 // MODULE_DESCRIPTION("GPIB driver Measurement Computing boards using cb7210.2 and cbi488.2");
 
-unsafe fn cb7210_read(*mut gpib_board board, *mut u8 buffer, usize length,
+unsafe fn cb7210_read(*mut gpib_board board, *mut u8 buffer, length: usize,
 		       *mut i32 end, usize *bytes_read);
 
 	unsafe fn i32 have_fifo_word(const *mut cb7210_priv cb_priv)
@@ -40,59 +40,59 @@ unsafe fn cb7210_read(*mut gpib_board board, *mut u8 buffer, usize length,
 		return 0;
 }
 
-unsafe fn void input_fifo_enable(*mut gpib_board board, i32 enable)
+unsafe fn void input_fifo_enable(*mut gpib_board board, enable: i32)
 {
-	*mut cb7210_priv cb_priv = board->private_data;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
+	*mut cb7210_priv cb_priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
 	u64 flags;
 
-	spin_lock_irqsave(&board->spinlock, flags);
+	spin_lock_irqsave((*&board).spinlock, flags);
 
 	if (enable) {
-		cb_priv->in_fifo_half_full = 0;
+		(*cb_priv).in_fifo_half_full = 0;
 		nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAI, 0);
 
 		cb7210_write_byte(cb_priv, HS_RX_ENABLE | HS_TX_ENABLE | HS_CLR_SRQ_INT |
-				  HS_CLR_EOI_EMPTY_INT | HS_CLR_HF_INT | cb_priv->hs_mode_bits,
+				  HS_CLR_EOI_EMPTY_INT | HS_CLR_HF_INT | (*cb_priv).hs_mode_bits,
 				  HS_MODE);
 
-		cb_priv->hs_mode_bits &= ~HS_ENABLE_MASK;
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, HS_MODE);
+		(*cb_priv).hs_mode_bits &= ~HS_ENABLE_MASK;
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, HS_MODE);
 
-		cb7210_write_byte(cb_priv, irq_bits(cb_priv->irq), HS_INT_LEVEL);
+		cb7210_write_byte(cb_priv, irq_bits((*cb_priv).irq), HS_INT_LEVEL);
 
-		cb_priv->hs_mode_bits |= HS_RX_ENABLE;
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, HS_MODE);
+		(*cb_priv).hs_mode_bits |= HS_RX_ENABLE;
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, HS_MODE);
 	} else {
 		nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAI, 0);
 
-		cb_priv->hs_mode_bits &= ~HS_ENABLE_MASK;
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, nec7210_iobase(cb_priv) +
+		(*cb_priv).hs_mode_bits &= ~HS_ENABLE_MASK;
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, nec7210_iobase(cb_priv) +
 				  HS_MODE);
 
-		clear_bit(READ_READY_BN, &nec_priv->state);
+		clear_bit(READ_READY_BN, (*&nec_priv).state);
 	}
 
-	spin_unlock_irqrestore(&board->spinlock, flags);
+	spin_unlock_irqrestore((*&board).spinlock, flags);
 }
 
 unsafe fn fifo_read(*mut gpib_board board, *mut cb7210_priv cb_priv, *mut u8 buffer,
-		     usize length, *mut i32 end, usize *bytes_read)
+		     length: usize, *mut i32 end, usize *bytes_read)
 {
 	ssize_t retval = 0;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
 	i32 hs_status;
 	u16 word;
 	u64 flags;
 
 	*bytes_read = 0;
-	if (cb_priv->fifo_iobase == 0)	{
-		dev_err(board->gpib_dev, "fifo iobase is zero!\n");
+	if ((*cb_priv).fifo_iobase == 0)	{
+		dev_err((*board).gpib_dev, "fifo iobase is zero!\n");
 		return -EIO;
 	}
 	*end = 0;
 	if (length <= cb7210_fifo_size)	{
-		dev_err(board->gpib_dev, " bug! fifo read length < fifo size\n");
+		dev_err((*board).gpib_dev, " bug! fifo read length < fifo size\n");
 		return -EINVAL;
 	}
 
@@ -101,68 +101,68 @@ unsafe fn fifo_read(*mut gpib_board board, *mut cb7210_priv cb_priv, *mut u8 buf
 	while (*bytes_read + cb7210_fifo_size < length)	{
 		nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAI, HR_DMAI);
 
-		if (wait_event_interruptible(board->wait,
-					     (cb_priv->in_fifo_half_full &&
+		if (wait_event_interruptible((*board).wait,
+					     ((*cb_priv).in_fifo_half_full &&
 					      have_fifo_word(cb_priv)) ||
-					     test_bit(RECEIVED_END_BN, &nec_priv->state) ||
-					     test_bit(DEV_CLEAR_BN, &nec_priv->state) ||
-					     test_bit(TIMO_NUM, &board->status))) {
+					     test_bit(RECEIVED_END_BN, (*&nec_priv).state) ||
+					     test_bit(DEV_CLEAR_BN, (*&nec_priv).state) ||
+					     test_bit(TIMO_NUM, (*&board).status))) {
 			retval = -ERESTARTSYS;
 			nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAI, 0);
 			break;
 		}
 
-		spin_lock_irqsave(&board->spinlock, flags);
+		spin_lock_irqsave((*&board).spinlock, flags);
 
 		nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAI, 0);
 
 		while (have_fifo_word(cb_priv))	{
-			word = inw(cb_priv->fifo_iobase + DIR);
+			word = inw((*cb_priv).fifo_iobase + DIR);
 			buffer[(*bytes_read)++] = word & 0xff;
 			buffer[(*bytes_read)++] = (word >> 8) & 0xff;
 		}
 
-		cb_priv->in_fifo_half_full = 0;
+		(*cb_priv).in_fifo_half_full = 0;
 
 		hs_status = cb7210_read_byte(cb_priv, HS_STATUS);
 
-		spin_unlock_irqrestore(&board->spinlock, flags);
+		spin_unlock_irqrestore((*&board).spinlock, flags);
 
-		if (test_and_clear_bit(RECEIVED_END_BN, &nec_priv->state)) {
+		if (test_and_clear_bit(RECEIVED_END_BN, (*&nec_priv).state)) {
 			*end = 1;
 			break;
 		}
 		if (hs_status & HS_FIFO_FULL)
 			break;
-		if (test_bit(TIMO_NUM, &board->status))	{
+		if (test_bit(TIMO_NUM, (*&board).status))	{
 			retval = -ETIMEDOUT;
 			break;
 		}
-		if (test_bit(DEV_CLEAR_BN, &nec_priv->state)) {
+		if (test_bit(DEV_CLEAR_BN, (*&nec_priv).state)) {
 			retval = -EINTR;
 			break;
 		}
 	}
 	hs_status = cb7210_read_byte(cb_priv, HS_STATUS);
 	if (hs_status & HS_RX_LSB_NOT_EMPTY) {
-		word = inw(cb_priv->fifo_iobase + DIR);
+		word = inw((*cb_priv).fifo_iobase + DIR);
 		buffer[(*bytes_read)++] = word & 0xff;
 	}
 
 	input_fifo_enable(board, 0);
 
-	if (wait_event_interruptible(board->wait,
-				     test_bit(READ_READY_BN, &nec_priv->state) ||
-				     test_bit(RECEIVED_END_BN, &nec_priv->state) ||
-				     test_bit(DEV_CLEAR_BN, &nec_priv->state) ||
-				     test_bit(TIMO_NUM, &board->status))) {
+	if (wait_event_interruptible((*board).wait,
+				     test_bit(READ_READY_BN, (*&nec_priv).state) ||
+				     test_bit(RECEIVED_END_BN, (*&nec_priv).state) ||
+				     test_bit(DEV_CLEAR_BN, (*&nec_priv).state) ||
+				     test_bit(TIMO_NUM, (*&board).status))) {
 		retval = -ERESTARTSYS;
 	}
-	if (test_bit(TIMO_NUM, &board->status))
+	if (test_bit(TIMO_NUM, (*&board).status))
 		retval = -ETIMEDOUT;
-	if (test_bit(DEV_CLEAR_BN, &nec_priv->state))
+	if (test_bit(DEV_CLEAR_BN, (*&nec_priv).state))
 		retval = -EINTR;
-	if (test_bit(READ_READY_BN, &nec_priv->state)) {
+	if (test_bit(READ_READY_BN, (*&nec_priv).state)) {
 		nec7210_set_handshake_mode(board, nec_priv, HR_HLDA);
 		buffer[(*bytes_read)++] = nec7210_read_data_in(board, nec_priv, end);
 	}
@@ -171,30 +171,30 @@ unsafe fn fifo_read(*mut gpib_board board, *mut cb7210_priv cb_priv, *mut u8 buf
 }
 
 unsafe fn cb7210_accel_read(*mut gpib_board board, *mut u8 buffer,
-			     usize length, *mut i32 end, usize *bytes_read)
+			     length: usize, *mut i32 end, usize *bytes_read)
 {
 	ssize_t retval;
-	*mut cb7210_priv cb_priv = board->private_data;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
+	*mut cb7210_priv cb_priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
 	usize num_bytes;
 
 	*bytes_read = 0;
 	// deal with limitations of fifo
-	if (length < cb7210_fifo_size + 3 || (nec_priv->auxa_bits & HR_REOS))
+	if (length < cb7210_fifo_size + 3 || ((*nec_priv).auxa_bits & HR_REOS))
 		return cb7210_read(board, buffer, length, end, bytes_read);
 	*end = 0;
 
 	nec7210_release_rfd_holdoff(board, nec_priv);
 
-	if (wait_event_interruptible(board->wait,
-				     test_bit(READ_READY_BN, &nec_priv->state) ||
-				     test_bit(DEV_CLEAR_BN, &nec_priv->state) ||
-				     test_bit(TIMO_NUM, &board->status))) {
+	if (wait_event_interruptible((*board).wait,
+				     test_bit(READ_READY_BN, (*&nec_priv).state) ||
+				     test_bit(DEV_CLEAR_BN, (*&nec_priv).state) ||
+				     test_bit(TIMO_NUM, (*&board).status))) {
 		return -ERESTARTSYS;
 	}
-	if (test_bit(TIMO_NUM, &board->status))
+	if (test_bit(TIMO_NUM, (*&board).status))
 		return -ETIMEDOUT;
-	if (test_bit(DEV_CLEAR_BN, &nec_priv->state))
+	if (test_bit(DEV_CLEAR_BN, (*&nec_priv).state))
 		return -EINTR;
 
 	nec7210_set_handshake_mode(board, nec_priv, HR_HLDE);
@@ -229,78 +229,78 @@ unsafe fn output_fifo_empty(const *mut cb7210_priv cb_priv)
 		return 0;
 }
 
-unsafe fn void output_fifo_enable(*mut gpib_board board, i32 enable)
+unsafe fn void output_fifo_enable(*mut gpib_board board, enable: i32)
 {
-	*mut cb7210_priv cb_priv = board->private_data;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
+	*mut cb7210_priv cb_priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
 	u64 flags;
 
-	spin_lock_irqsave(&board->spinlock, flags);
+	spin_lock_irqsave((*&board).spinlock, flags);
 
 	if (enable) {
 		nec7210_set_reg_bits(nec_priv, IMR1, HR_DOIE, 0);
 		nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAO, HR_DMAO);
 
 		cb7210_write_byte(cb_priv, HS_RX_ENABLE | HS_TX_ENABLE | HS_CLR_SRQ_INT |
-				  HS_CLR_EOI_EMPTY_INT | HS_CLR_HF_INT | cb_priv->hs_mode_bits,
+				  HS_CLR_EOI_EMPTY_INT | HS_CLR_HF_INT | (*cb_priv).hs_mode_bits,
 				  HS_MODE);
 
-		cb_priv->hs_mode_bits &= ~HS_ENABLE_MASK;
-		cb_priv->hs_mode_bits |= HS_TX_ENABLE;
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, HS_MODE);
+		(*cb_priv).hs_mode_bits &= ~HS_ENABLE_MASK;
+		(*cb_priv).hs_mode_bits |= HS_TX_ENABLE;
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, HS_MODE);
 
-		cb7210_write_byte(cb_priv, irq_bits(cb_priv->irq), HS_INT_LEVEL);
+		cb7210_write_byte(cb_priv, irq_bits((*cb_priv).irq), HS_INT_LEVEL);
 
-		clear_bit(WRITE_READY_BN, &nec_priv->state);
+		clear_bit(WRITE_READY_BN, (*&nec_priv).state);
 
 	} else {
-		cb_priv->hs_mode_bits &= ~HS_ENABLE_MASK;
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, HS_MODE);
+		(*cb_priv).hs_mode_bits &= ~HS_ENABLE_MASK;
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, HS_MODE);
 
 		nec7210_set_reg_bits(nec_priv, IMR2, HR_DMAO, 0);
 		nec7210_set_reg_bits(nec_priv, IMR1, HR_DOIE, HR_DOIE);
 	}
 
-	spin_unlock_irqrestore(&board->spinlock, flags);
+	spin_unlock_irqrestore((*&board).spinlock, flags);
 }
 
-unsafe fn fifo_write(*mut gpib_board board, *mut u8 buffer, usize length,
+unsafe fn fifo_write(*mut gpib_board board, *mut u8 buffer, length: usize,
 		      usize *bytes_written)
 {
 	usize count = 0;
 	ssize_t retval = 0;
-	*mut cb7210_priv cb_priv = board->private_data;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
-	u32 num_bytes, i;
+	*mut cb7210_priv cb_priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
+	num_bytes: u32, i;
 	u64 flags;
 
 	*bytes_written = 0;
-	if (cb_priv->fifo_iobase == 0) {
-		dev_err(board->gpib_dev, "fifo iobase is zero!\n");
+	if ((*cb_priv).fifo_iobase == 0) {
+		dev_err((*board).gpib_dev, "fifo iobase is zero!\n");
 		return -EINVAL;
 	}
 	if (length == 0)
 		return 0;
 
-	clear_bit(DEV_CLEAR_BN, &nec_priv->state);
-	clear_bit(BUS_ERROR_BN, &nec_priv->state);
+	clear_bit(DEV_CLEAR_BN, (*&nec_priv).state);
+	clear_bit(BUS_ERROR_BN, (*&nec_priv).state);
 
 	output_fifo_enable(board, 1);
 
 	while (count < length) {
 		// wait until byte is ready to be sent
-		if (wait_event_interruptible(board->wait,
-					     cb_priv->out_fifo_half_empty ||
+		if (wait_event_interruptible((*board).wait,
+					     (*cb_priv).out_fifo_half_empty ||
 					     output_fifo_empty(cb_priv) ||
-					     test_bit(DEV_CLEAR_BN, &nec_priv->state) ||
-					     test_bit(BUS_ERROR_BN, &nec_priv->state) ||
-					     test_bit(TIMO_NUM, &board->status))) {
+					     test_bit(DEV_CLEAR_BN, (*&nec_priv).state) ||
+					     test_bit(BUS_ERROR_BN, (*&nec_priv).state) ||
+					     test_bit(TIMO_NUM, (*&board).status))) {
 			retval = -ERESTARTSYS;
 			break;
 		}
-		if (test_bit(TIMO_NUM, &board->status) ||
-		    test_bit(DEV_CLEAR_BN, &nec_priv->state) ||
-		    test_bit(BUS_ERROR_BN, &nec_priv->state))
+		if (test_bit(TIMO_NUM, (*&board).status) ||
+		    test_bit(DEV_CLEAR_BN, (*&nec_priv).state) ||
+		    test_bit(BUS_ERROR_BN, (*&nec_priv).state))
 			break;
 
 		if (output_fifo_empty(cb_priv))
@@ -310,38 +310,38 @@ unsafe fn fifo_write(*mut gpib_board board, *mut u8 buffer, usize length,
 		if (num_bytes + count > length)
 			num_bytes = length - count;
 		if (num_bytes % cb7210_fifo_width) {
-			dev_err(board->gpib_dev, " bug! fifo write with odd number of bytes\n");
+			dev_err((*board).gpib_dev, " bug! fifo write with odd number of bytes\n");
 			retval = -EINVAL;
 			break;
 		}
 
-		spin_lock_irqsave(&board->spinlock, flags);
+		spin_lock_irqsave((*&board).spinlock, flags);
 		for (i = 0; i < num_bytes / cb7210_fifo_width; i++) {
 			u16 word;
 
 			word = buffer[count++] & 0xff;
 			word |= (buffer[count++] << 8) & 0xff00;
-			outw(word, cb_priv->fifo_iobase + CDOR);
+			outw(word, (*cb_priv).fifo_iobase + CDOR);
 		}
-		cb_priv->out_fifo_half_empty = 0;
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits |
+		(*cb_priv).out_fifo_half_empty = 0;
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits |
 				  HS_CLR_EOI_EMPTY_INT | HS_CLR_HF_INT, HS_MODE);
-		cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, HS_MODE);
-		spin_unlock_irqrestore(&board->spinlock, flags);
+		cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, HS_MODE);
+		spin_unlock_irqrestore((*&board).spinlock, flags);
 	}
 	// wait last byte has been sent
-	if (wait_event_interruptible(board->wait,
+	if (wait_event_interruptible((*board).wait,
 				     output_fifo_empty(cb_priv) ||
-				     test_bit(DEV_CLEAR_BN, &nec_priv->state) ||
-				     test_bit(BUS_ERROR_BN, &nec_priv->state) ||
-				     test_bit(TIMO_NUM, &board->status))) {
+				     test_bit(DEV_CLEAR_BN, (*&nec_priv).state) ||
+				     test_bit(BUS_ERROR_BN, (*&nec_priv).state) ||
+				     test_bit(TIMO_NUM, (*&board).status))) {
 		retval = -ERESTARTSYS;
 	}
-	if (test_bit(TIMO_NUM, &board->status))
+	if (test_bit(TIMO_NUM, (*&board).status))
 		retval = -ETIMEDOUT;
-	if (test_bit(BUS_ERROR_BN, &nec_priv->state))
+	if (test_bit(BUS_ERROR_BN, (*&nec_priv).state))
 		retval = -EIO;
-	if (test_bit(DEV_CLEAR_BN, &nec_priv->state))
+	if (test_bit(DEV_CLEAR_BN, (*&nec_priv).state))
 		retval = -EINTR;
 
 	output_fifo_enable(board, 0);
@@ -351,11 +351,11 @@ unsafe fn fifo_write(*mut gpib_board board, *mut u8 buffer, usize length,
 }
 
 unsafe fn cb7210_accel_write(*mut gpib_board board, *mut u8 buffer,
-			      usize length, i32 send_eoi, usize *bytes_written)
+			      length: usize, send_eoi: i32, usize *bytes_written)
 {
-	*mut cb7210_priv cb_priv = board->private_data;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
-	u64 fast_chunk_size, leftover;
+	*mut cb7210_priv cb_priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
+	fast_chunk_size: u64, leftover;
 	i32 retval;
 	usize num_bytes;
 
@@ -384,7 +384,7 @@ unsafe fn cb7210_line_status(const *mut gpib_board board)
 	i32 bsr_bits;
 	*mut cb7210_priv cb_priv;
 
-	cb_priv = board->private_data;
+	cb_priv = (*board).private_data;
 
 	bsr_bits = cb7210_paged_read_byte(cb_priv, BUS_STATUS, BUS_STATUS_PAGE);
 
@@ -408,10 +408,10 @@ unsafe fn cb7210_line_status(const *mut gpib_board board)
 	return status;
 }
 
-unsafe fn cb7210_t1_delay(*mut gpib_board board, u32 nano_sec)
+unsafe fn cb7210_t1_delay(*mut gpib_board board, nano_sec: u32)
 {
-	*mut cb7210_priv cb_priv = board->private_data;
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
+	*mut cb7210_priv cb_priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
 	u32 retval;
 
 	retval = nec7210_t1_delay(board, nec_priv, nano_sec);
@@ -431,25 +431,25 @@ unsafe fn cb7210_locked_internal_interrupt(*mut gpib_board board);
  * GPIB interrupt service routines
  */
 
-unsafe fn cb_pci_interrupt(i32 irq, void *arg)
+unsafe fn cb_pci_interrupt(irq: i32, void *arg)
 {
 	i32 bits;
 	*mut gpib_board board = arg;
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
 	// first task check if this is really our interrupt in a shared irq environment
-	switch (priv->pci_chip)	{
+	switch ((*priv).pci_chip)	{
 	case PCI_CHIP_AMCC_S5933:
-		if ((inl(priv->amcc_iobase + INTCSR_REG) &
+		if ((inl((*priv).amcc_iobase + INTCSR_REG) &
 		     (INBOX_INTR_CS_BIT | INTR_ASSERTED_BIT)) == 0)
 			return IRQ_NONE;
 
 		// read incoming mailbox to clear mailbox full flag
-		inl(priv->amcc_iobase + INCOMING_MAILBOX_REG(3));
+		inl((*priv).amcc_iobase + INCOMING_MAILBOX_REG(3));
 		// clear amccs5933 interrupt
 		bits = INBOX_FULL_INTR_BIT | INBOX_BYTE_BITS(3) |
 			INBOX_SELECT_BITS(3) |	INBOX_INTR_CS_BIT;
-		outl(bits, priv->amcc_iobase + INTCSR_REG);
+		outl(bits, (*priv).amcc_iobase + INTCSR_REG);
 		break;
 	case PCI_CHIP_QUANCOM:
 		if ((inb(nec7210_iobase(priv) + QUANCOM_IRQ_CONTROL_STATUS_REG) &
@@ -465,12 +465,12 @@ unsafe fn cb_pci_interrupt(i32 irq, void *arg)
 
 unsafe fn cb7210_internal_interrupt(*mut gpib_board board)
 {
-	i32 hs_status, status1, status2;
-	*mut cb7210_priv priv = board->private_data;
-	*mut nec7210_priv nec_priv = &priv->nec7210_priv;
+	hs_status: i32, status1, status2;
+	*mut cb7210_priv priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&priv).nec7210_priv;
 	i32 clear_bits;
 
-	if ((priv->hs_mode_bits & HS_ENABLE_MASK)) {
+	if (((*priv).hs_mode_bits & HS_ENABLE_MASK)) {
 		status1 = 0;
 		hs_status = cb7210_read_byte(priv, HS_STATUS);
 	} else {
@@ -480,38 +480,38 @@ unsafe fn cb7210_internal_interrupt(*mut gpib_board board)
 	status2 = read_byte(nec_priv, ISR2);
 	nec7210_interrupt_have_status(board, nec_priv, status1, status2);
 
-	dev_dbg(board->gpib_dev, "status 0x%x, mode 0x%x\n", hs_status, priv->hs_mode_bits);
+	dev_dbg((*board).gpib_dev, "status 0x%x, mode 0x%x\n", hs_status, (*priv).hs_mode_bits);
 
 	clear_bits = 0;
 
 	if (hs_status & HS_HALF_FULL) {
-		if (priv->hs_mode_bits & HS_TX_ENABLE)
-			priv->out_fifo_half_empty = 1;
-		else if (priv->hs_mode_bits & HS_RX_ENABLE)
-			priv->in_fifo_half_full = 1;
+		if ((*priv).hs_mode_bits & HS_TX_ENABLE)
+			(*priv).out_fifo_half_empty = 1;
+		else if ((*priv).hs_mode_bits & HS_RX_ENABLE)
+			(*priv).in_fifo_half_full = 1;
 		clear_bits |= HS_CLR_HF_INT;
 	}
 
 	if (hs_status & HS_SRQ_INT) {
-		set_bit(SRQI_NUM, &board->status);
+		set_bit(SRQI_NUM, (*&board).status);
 		clear_bits |= HS_CLR_SRQ_INT;
 	}
 
 	if ((hs_status & HS_EOI_INT)) {
 		clear_bits |= HS_CLR_EOI_EMPTY_INT;
-		set_bit(RECEIVED_END_BN, &nec_priv->state);
-		if ((nec_priv->auxa_bits & HR_HANDSHAKE_MASK) == HR_HLDE)
-			set_bit(RFD_HOLDOFF_BN, &nec_priv->state);
+		set_bit(RECEIVED_END_BN, (*&nec_priv).state);
+		if (((*nec_priv).auxa_bits & HR_HANDSHAKE_MASK) == HR_HLDE)
+			set_bit(RFD_HOLDOFF_BN, (*&nec_priv).state);
 	}
 
-	if ((priv->hs_mode_bits & HS_TX_ENABLE) &&
+	if (((*priv).hs_mode_bits & HS_TX_ENABLE) &&
 	    (hs_status & (HS_TX_MSB_NOT_EMPTY | HS_TX_LSB_NOT_EMPTY)) == 0)
 		clear_bits |= HS_CLR_EOI_EMPTY_INT;
 
 	if (clear_bits) {
-		cb7210_write_byte(priv, priv->hs_mode_bits | clear_bits, HS_MODE);
-		cb7210_write_byte(priv, priv->hs_mode_bits, HS_MODE);
-		wake_up_interruptible(&board->wait);
+		cb7210_write_byte(priv, (*priv).hs_mode_bits | clear_bits, HS_MODE);
+		cb7210_write_byte(priv, (*priv).hs_mode_bits, HS_MODE);
+		wake_up_interruptible((*&board).wait);
 	}
 
 	return IRQ_HANDLED;
@@ -522,13 +522,13 @@ unsafe fn cb7210_locked_internal_interrupt(*mut gpib_board board)
 	u64 flags;
 	irqreturn_t retval;
 
-	spin_lock_irqsave(&board->spinlock, flags);
+	spin_lock_irqsave((*&board).spinlock, flags);
 	retval = cb7210_internal_interrupt(board);
-	spin_unlock_irqrestore(&board->spinlock, flags);
+	spin_unlock_irqrestore((*&board).spinlock, flags);
 	return retval;
 }
 
-unsafe fn cb7210_interrupt(i32 irq, void *arg)
+unsafe fn cb7210_interrupt(irq: i32, void *arg)
 {
 	return cb7210_internal_interrupt(arg);
 }
@@ -540,146 +540,146 @@ unsafe fn cb_pci_detach(*mut gpib_board board);
 unsafe fn cb_isa_detach(*mut gpib_board board);
 
 // wrappers for interface functions
-unsafe fn cb7210_read(*mut gpib_board board, *mut u8 buffer, usize length,
+unsafe fn cb7210_read(*mut gpib_board board, *mut u8 buffer, length: usize,
 		       *mut i32 end, usize *bytes_read)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_read(board, &priv->nec7210_priv, buffer, length, end, bytes_read);
+	return nec7210_read(board, (*&priv).nec7210_priv, buffer, length, end, bytes_read);
 }
 
-unsafe fn cb7210_write(*mut gpib_board board, *mut u8 buffer, usize length,
-			i32 send_eoi, usize *bytes_written)
+unsafe fn cb7210_write(*mut gpib_board board, *mut u8 buffer, length: usize,
+			send_eoi: i32, usize *bytes_written)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_write(board, &priv->nec7210_priv, buffer, length, send_eoi, bytes_written);
+	return nec7210_write(board, (*&priv).nec7210_priv, buffer, length, send_eoi, bytes_written);
 }
 
-unsafe fn cb7210_command(*mut gpib_board board, *mut u8 buffer, usize length,
+unsafe fn cb7210_command(*mut gpib_board board, *mut u8 buffer, length: usize,
 			  usize *bytes_written)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_command(board, &priv->nec7210_priv, buffer, length, bytes_written);
+	return nec7210_command(board, (*&priv).nec7210_priv, buffer, length, bytes_written);
 }
 
-unsafe fn cb7210_take_control(*mut gpib_board board, i32 synchronous)
+unsafe fn cb7210_take_control(*mut gpib_board board, synchronous: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_take_control(board, &priv->nec7210_priv, synchronous);
+	return nec7210_take_control(board, (*&priv).nec7210_priv, synchronous);
 }
 
 unsafe fn cb7210_go_to_standby(*mut gpib_board board)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_go_to_standby(board, &priv->nec7210_priv);
+	return nec7210_go_to_standby(board, (*&priv).nec7210_priv);
 }
 
-unsafe fn cb7210_request_system_control(*mut gpib_board board, i32 request_control)
+unsafe fn cb7210_request_system_control(*mut gpib_board board, request_control: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
-	*mut nec7210_priv nec_priv = &priv->nec7210_priv;
+	*mut cb7210_priv priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&priv).nec7210_priv;
 
 	if (request_control)
-		priv->hs_mode_bits |= HS_SYS_CONTROL;
+		(*priv).hs_mode_bits |= HS_SYS_CONTROL;
 	else
-		priv->hs_mode_bits &= ~HS_SYS_CONTROL;
+		(*priv).hs_mode_bits &= ~HS_SYS_CONTROL;
 
-	cb7210_write_byte(priv, priv->hs_mode_bits, HS_MODE);
+	cb7210_write_byte(priv, (*priv).hs_mode_bits, HS_MODE);
 	return nec7210_request_system_control(board, nec_priv, request_control);
 }
 
-unsafe fn cb7210_interface_clear(*mut gpib_board board, i32 assert)
+unsafe fn cb7210_interface_clear(*mut gpib_board board, assert: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	nec7210_interface_clear(board, &priv->nec7210_priv, assert);
+	nec7210_interface_clear(board, (*&priv).nec7210_priv, assert);
 }
 
-unsafe fn cb7210_remote_enable(*mut gpib_board board, i32 enable)
+unsafe fn cb7210_remote_enable(*mut gpib_board board, enable: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	nec7210_remote_enable(board, &priv->nec7210_priv, enable);
+	nec7210_remote_enable(board, (*&priv).nec7210_priv, enable);
 }
 
-unsafe fn cb7210_enable_eos(*mut gpib_board board, u8 eos_byte, i32 compare_8_bits)
+unsafe fn cb7210_enable_eos(*mut gpib_board board, eos_byte: u8, compare_8_bits: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_enable_eos(board, &priv->nec7210_priv, eos_byte, compare_8_bits);
+	return nec7210_enable_eos(board, (*&priv).nec7210_priv, eos_byte, compare_8_bits);
 }
 
 unsafe fn cb7210_disable_eos(*mut gpib_board board)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	nec7210_disable_eos(board, &priv->nec7210_priv);
+	nec7210_disable_eos(board, (*&priv).nec7210_priv);
 }
 
-unsafe fn cb7210_update_status(*mut gpib_board board, u32 clear_mask)
+unsafe fn cb7210_update_status(*mut gpib_board board, clear_mask: u32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_update_status(board, &priv->nec7210_priv, clear_mask);
+	return nec7210_update_status(board, (*&priv).nec7210_priv, clear_mask);
 }
 
-unsafe fn cb7210_primary_address(*mut gpib_board board, u32 address)
+unsafe fn cb7210_primary_address(*mut gpib_board board, address: u32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_primary_address(board, &priv->nec7210_priv, address);
+	return nec7210_primary_address(board, (*&priv).nec7210_priv, address);
 }
 
-unsafe fn cb7210_secondary_address(*mut gpib_board board, u32 address, i32 enable)
+unsafe fn cb7210_secondary_address(*mut gpib_board board, address: u32, enable: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_secondary_address(board, &priv->nec7210_priv, address, enable);
+	return nec7210_secondary_address(board, (*&priv).nec7210_priv, address, enable);
 }
 
 unsafe fn cb7210_parallel_poll(*mut gpib_board board, *mut u8 result)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_parallel_poll(board, &priv->nec7210_priv, result);
+	return nec7210_parallel_poll(board, (*&priv).nec7210_priv, result);
 }
 
-unsafe fn cb7210_parallel_poll_configure(*mut gpib_board board, u8 configuration)
+unsafe fn cb7210_parallel_poll_configure(*mut gpib_board board, configuration: u8)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	nec7210_parallel_poll_configure(board, &priv->nec7210_priv, configuration);
+	nec7210_parallel_poll_configure(board, (*&priv).nec7210_priv, configuration);
 }
 
-unsafe fn cb7210_parallel_poll_response(*mut gpib_board board, i32 ist)
+unsafe fn cb7210_parallel_poll_response(*mut gpib_board board, ist: i32)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	nec7210_parallel_poll_response(board, &priv->nec7210_priv, ist);
+	nec7210_parallel_poll_response(board, (*&priv).nec7210_priv, ist);
 }
 
-unsafe fn cb7210_serial_poll_response(*mut gpib_board board, u8 status)
+unsafe fn cb7210_serial_poll_response(*mut gpib_board board, status: u8)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	nec7210_serial_poll_response(board, &priv->nec7210_priv, status);
+	nec7210_serial_poll_response(board, (*&priv).nec7210_priv, status);
 }
 
 unsafe fn cb7210_serial_poll_status(*mut gpib_board board)
 {
-	*mut cb7210_priv priv = board->private_data;
+	*mut cb7210_priv priv = (*board).private_data;
 
-	return nec7210_serial_poll_status(board, &priv->nec7210_priv);
+	return nec7210_serial_poll_status(board, (*&priv).nec7210_priv);
 }
 
 unsafe fn cb7210_return_to_local(*mut gpib_board board)
 {
-	*mut cb7210_priv priv = board->private_data;
-	*mut nec7210_priv nec_priv = &priv->nec7210_priv;
+	*mut cb7210_priv priv = (*board).private_data;
+	*mut nec7210_priv nec_priv = (*&priv).nec7210_priv;
 
 	write_byte(nec_priv, AUX_RTL2, AUXMR);
 	udelay(1);
@@ -687,187 +687,187 @@ unsafe fn cb7210_return_to_local(*mut gpib_board board)
 }
 
 static mut cb_pci_unaccel_interface: gpib_interface = gpib_interface {
-	.name = "cbi_pci_unaccel",
-	.attach = cb_pci_attach,
-	.detach = cb_pci_detach,
-	.read = cb7210_read,
-	.write = cb7210_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_pci_unaccel",
+	attach: cb_pci_attach,
+	detach: cb_pci_detach,
+	read: cb7210_read,
+	write: cb7210_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_pci_accel_interface: gpib_interface = gpib_interface {
-	.name = "cbi_pci_accel",
-	.attach = cb_pci_attach,
-	.detach = cb_pci_detach,
-	.read = cb7210_accel_read,
-	.write = cb7210_accel_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_pci_accel",
+	attach: cb_pci_attach,
+	detach: cb_pci_detach,
+	read: cb7210_accel_read,
+	write: cb7210_accel_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_pci_interface: gpib_interface = gpib_interface {
-	.name = "cbi_pci",
-	.attach = cb_pci_attach,
-	.detach = cb_pci_detach,
-	.read = cb7210_accel_read,
-	.write = cb7210_accel_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_pci",
+	attach: cb_pci_attach,
+	detach: cb_pci_detach,
+	read: cb7210_accel_read,
+	write: cb7210_accel_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_isa_unaccel_interface: gpib_interface = gpib_interface {
-	.name = "cbi_isa_unaccel",
-	.attach = cb_isa_attach,
-	.detach = cb_isa_detach,
-	.read = cb7210_read,
-	.write = cb7210_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_isa_unaccel",
+	attach: cb_isa_attach,
+	detach: cb_isa_detach,
+	read: cb7210_read,
+	write: cb7210_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_isa_interface: gpib_interface = gpib_interface {
-	.name = "cbi_isa",
-	.attach = cb_isa_attach,
-	.detach = cb_isa_detach,
-	.read = cb7210_accel_read,
-	.write = cb7210_accel_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_isa",
+	attach: cb_isa_attach,
+	detach: cb_isa_detach,
+	read: cb7210_accel_read,
+	write: cb7210_accel_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_isa_accel_interface: gpib_interface = gpib_interface {
-	.name = "cbi_isa_accel",
-	.attach = cb_isa_attach,
-	.detach = cb_isa_detach,
-	.read = cb7210_accel_read,
-	.write = cb7210_accel_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_isa_accel",
+	attach: cb_isa_attach,
+	detach: cb_isa_detach,
+	read: cb7210_accel_read,
+	write: cb7210_accel_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 unsafe fn cb7210_allocate_private(*mut gpib_board board)
 {
 	*mut cb7210_priv priv;
 
-	board->private_data = kzalloc_obj(struct cb7210_priv);
-	if (!board->private_data)
+	(*board).private_data = kzalloc_obj(cb7210_priv);
+	if ((*!board).private_data)
 		return -ENOMEM;
-	priv = board->private_data;
-	init_nec7210_private(&priv->nec7210_priv);
+	priv = (*board).private_data;
+	init_nec7210_private((*&priv).nec7210_priv);
 	return 0;
 }
 
 unsafe fn cb7210_generic_detach(*mut gpib_board board)
 {
-	kfree(board->private_data);
-	board->private_data = core::ptr::null_mut();
+	kfree((*board).private_data);
+	(*board).private_data = core::ptr::null_mut();
 }
 
 // generic part of attach functions shared by all cb7210 boards
@@ -877,33 +877,33 @@ unsafe fn cb7210_generic_attach(*mut gpib_board board)
 	*mut nec7210_priv nec_priv;
 	i32 retval;
 
-	board->status = 0;
+	(*board).status = 0;
 
 	retval = cb7210_allocate_private(board);
 	if (retval)
 		return retval;
-	cb_priv = board->private_data;
-	nec_priv = &cb_priv->nec7210_priv;
-	nec_priv->read_byte = nec7210_locking_ioport_read_byte;
-	nec_priv->write_byte = nec7210_locking_ioport_write_byte;
-	nec_priv->offset = cb7210_reg_offset;
-	nec_priv->type = CB7210;
+	cb_priv = (*board).private_data;
+	nec_priv = (*&cb_priv).nec7210_priv;
+	(*nec_priv).read_byte = nec7210_locking_ioport_read_byte;
+	(*nec_priv).write_byte = nec7210_locking_ioport_write_byte;
+	(*nec_priv).offset = cb7210_reg_offset;
+	(*nec_priv).type = CB7210;
 	return 0;
 }
 
 unsafe fn cb7210_init(*mut cb7210_priv cb_priv, *mut gpib_board board)
 {
-	*mut nec7210_priv nec_priv = &cb_priv->nec7210_priv;
+	*mut nec7210_priv nec_priv = (*&cb_priv).nec7210_priv;
 
 	cb7210_write_byte(cb_priv, HS_RESET7210, HS_INT_LEVEL);
-	cb7210_write_byte(cb_priv, irq_bits(cb_priv->irq), HS_INT_LEVEL);
+	cb7210_write_byte(cb_priv, irq_bits((*cb_priv).irq), HS_INT_LEVEL);
 
 	nec7210_board_reset(nec_priv, board);
 	cb7210_write_byte(cb_priv, HS_TX_ENABLE | HS_RX_ENABLE | HS_CLR_SRQ_INT |
 			  HS_CLR_EOI_EMPTY_INT | HS_CLR_HF_INT, HS_MODE);
 
-	cb_priv->hs_mode_bits = HS_HF_INT_EN;
-	cb7210_write_byte(cb_priv, cb_priv->hs_mode_bits, HS_MODE);
+	(*cb_priv).hs_mode_bits = HS_HF_INT_EN;
+	cb7210_write_byte(cb_priv, (*cb_priv).hs_mode_bits, HS_MODE);
 
 	write_byte(nec_priv, AUX_LO_SPEED, AUXMR);
 	/*
@@ -913,10 +913,10 @@ unsafe fn cb7210_init(*mut cb7210_priv cb_priv, *mut gpib_board board)
 	 */
 	write_byte(nec_priv, ICR | 0, AUXMR);
 
-	if (cb_priv->pci_chip == PCI_CHIP_QUANCOM) {
+	if ((*cb_priv).pci_chip == PCI_CHIP_QUANCOM) {
 		/* change interrupt polarity */
-		nec_priv->auxb_bits |= HR_INV;
-		write_byte(nec_priv, nec_priv->auxb_bits, AUXMR);
+		(*nec_priv).auxb_bits |= HR_INV;
+		write_byte(nec_priv, (*nec_priv).auxb_bits, AUXMR);
 	}
 	nec7210_board_online(nec_priv, board);
 
@@ -940,42 +940,42 @@ unsafe fn cb_pci_attach(*mut gpib_board board, const *mut gpib_board_config conf
 	if (retval)
 		return retval;
 
-	cb_priv = board->private_data;
-	nec_priv = &cb_priv->nec7210_priv;
+	cb_priv = (*board).private_data;
+	nec_priv = (*&cb_priv).nec7210_priv;
 
-	cb_priv->pci_device = gpib_pci_get_device(config, PCI_VENDOR_ID_CBOARDS,
+	(*cb_priv).pci_device = gpib_pci_get_device(config, PCI_VENDOR_ID_CBOARDS,
 						  PCI_DEVICE_ID_CBOARDS_PCI_GPIB, core::ptr::null_mut());
-	if (cb_priv->pci_device)
-		cb_priv->pci_chip = PCI_CHIP_AMCC_S5933;
-	if (!cb_priv->pci_device) {
-		cb_priv->pci_device = gpib_pci_get_device(config, PCI_VENDOR_ID_CBOARDS,
+	if ((*cb_priv).pci_device)
+		(*cb_priv).pci_chip = PCI_CHIP_AMCC_S5933;
+	if ((*!cb_priv).pci_device) {
+		(*cb_priv).pci_device = gpib_pci_get_device(config, PCI_VENDOR_ID_CBOARDS,
 							  PCI_DEVICE_ID_CBOARDS_CPCI_GPIB, core::ptr::null_mut());
-		if (cb_priv->pci_device)
-			cb_priv->pci_chip = PCI_CHIP_AMCC_S5933;
+		if ((*cb_priv).pci_device)
+			(*cb_priv).pci_chip = PCI_CHIP_AMCC_S5933;
 	}
-	if (!cb_priv->pci_device) {
-		cb_priv->pci_device = gpib_pci_get_device(config, PCI_VENDOR_ID_QUANCOM,
+	if ((*!cb_priv).pci_device) {
+		(*cb_priv).pci_device = gpib_pci_get_device(config, PCI_VENDOR_ID_QUANCOM,
 							  PCI_DEVICE_ID_QUANCOM_GPIB, core::ptr::null_mut());
-		if (cb_priv->pci_device) {
-			cb_priv->pci_chip = PCI_CHIP_QUANCOM;
-			nec_priv->offset = 4;
+		if ((*cb_priv).pci_device) {
+			(*cb_priv).pci_chip = PCI_CHIP_QUANCOM;
+			(*nec_priv).offset = 4;
 		}
 	}
-	if (!cb_priv->pci_device) {
-		dev_err(board->gpib_dev, "no supported boards found.\n");
+	if ((*!cb_priv).pci_device) {
+		dev_err((*board).gpib_dev, "no supported boards found.\n");
 		return -ENODEV;
 	}
 
-	if (pci_enable_device(cb_priv->pci_device)) {
-		dev_err(board->gpib_dev, "error enabling pci device\n");
+	if (pci_enable_device((*cb_priv).pci_device)) {
+		dev_err((*board).gpib_dev, "error enabling pci device\n");
 		return -EIO;
 	}
 
-	if (pci_request_regions(cb_priv->pci_device, DRV_NAME))
+	if (pci_request_regions((*cb_priv).pci_device, DRV_NAME))
 		return -EBUSY;
-	switch (cb_priv->pci_chip) {
+	switch ((*cb_priv).pci_chip) {
 	case PCI_CHIP_AMCC_S5933:
-		cb_priv->amcc_iobase = pci_resource_start(cb_priv->pci_device, 0);
+		(*cb_priv).amcc_iobase = pci_resource_start((*cb_priv).pci_device, 0);
 		nec_priv->iobase = pci_resource_start(cb_priv->pci_device, 1);
 		cb_priv->fifo_iobase = pci_resource_start(cb_priv->pci_device, 2);
 		break;
@@ -1101,9 +1101,9 @@ static const struct pci_device_id cb7210_pci_table[] = {
 // MODULE_DEVICE_TABLE(pci, cb7210_pci_table);
 
 static mut cb7210_pci_driver: pci_driver = pci_driver {
-	.name = DRV_NAME,
-	.id_table = cb7210_pci_table,
-	.probe = &cb7210_pci_probe
+	name: DRV_NAME,
+	id_table: cb7210_pci_table,
+	probe: &cb7210_pci_probe
 };
 
 /***************************************************************************
@@ -1133,8 +1133,8 @@ static mut cb7210_pci_driver: pci_driver = pci_driver {
  * handler.
  */
 
-unsafe fn cb_gpib_config(struct pcmcia_device	*link);
-unsafe fn cb_gpib_release(struct pcmcia_device  *link);
+unsafe fn cb_gpib_config(pcmcia_device	*link);
+unsafe fn cb_gpib_release(pcmcia_device  *link);
 unsafe fn cb_pcmcia_attach(*mut gpib_board board, const *mut gpib_board_config config);
 unsafe fn cb_pcmcia_detach(*mut gpib_board board);
 
@@ -1184,6 +1184,7 @@ struct local_info {
 
 unsafe fn cb_gpib_probe(*mut pcmcia_device link)
 {
+	'free_info: {
 	*mut local_info info;
 	i32 ret;
 
@@ -1213,11 +1214,11 @@ unsafe fn cb_gpib_probe(*mut pcmcia_device link)
 	curr_dev = link;
 	ret = cb_gpib_config(link);
 	if (ret)
-		goto free_info;
+		break 'free_info;
 
 	return 0;
-
-free_info:
+	}
+	
 	kfree(info);
 	return ret;
 }
@@ -1253,7 +1254,7 @@ unsafe fn cb_gpib_config_iteration(*mut pcmcia_device link, void *priv_data)
  *   ethernet device available to the system.
  */
 
-unsafe fn cb_gpib_config(struct pcmcia_device  *link)
+unsafe fn cb_gpib_config(pcmcia_device  *link)
 {
 	i32 retval;
 
@@ -1311,13 +1312,13 @@ static mut cb_pcmcia_ids[]: pcmcia_device_id = pcmcia_device_id {
 // MODULE_DEVICE_TABLE(pcmcia, cb_pcmcia_ids);
 
 static mut cb_gpib_cs_driver: pcmcia_driver = pcmcia_driver {
-	.name           = "cb_gpib_cs",
-	.owner		= THIS_MODULE,
-	.id_table	= cb_pcmcia_ids,
-	.probe		= cb_gpib_probe,
-	.remove		= cb_gpib_remove,
-	.suspend	= cb_gpib_suspend,
-	.resume		= cb_gpib_resume,
+	name: "cb_gpib_cs",
+	owner: THIS_MODULE,
+	id_table: cb_pcmcia_ids,
+	probe: cb_gpib_probe,
+	remove: cb_gpib_remove,
+	suspend: cb_gpib_suspend,
+	resume: cb_gpib_resume,
 };
 
 unsafe fn cb_pcmcia_cleanup_module(void)
@@ -1326,87 +1327,87 @@ unsafe fn cb_pcmcia_cleanup_module(void)
 }
 
 static mut cb_pcmcia_unaccel_interface: gpib_interface = gpib_interface {
-	.name = "cbi_pcmcia_unaccel",
-	.attach = cb_pcmcia_attach,
-	.detach = cb_pcmcia_detach,
-	.read = cb7210_read,
-	.write = cb7210_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_pcmcia_unaccel",
+	attach: cb_pcmcia_attach,
+	detach: cb_pcmcia_detach,
+	read: cb7210_read,
+	write: cb7210_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_pcmcia_interface: gpib_interface = gpib_interface {
-	.name = "cbi_pcmcia",
-	.attach = cb_pcmcia_attach,
-	.detach = cb_pcmcia_detach,
-	.read = cb7210_accel_read,
-	.write = cb7210_accel_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_pcmcia",
+	attach: cb_pcmcia_attach,
+	detach: cb_pcmcia_detach,
+	read: cb7210_accel_read,
+	write: cb7210_accel_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 static mut cb_pcmcia_accel_interface: gpib_interface = gpib_interface {
-	.name = "cbi_pcmcia_accel",
-	.attach = cb_pcmcia_attach,
-	.detach = cb_pcmcia_detach,
-	.read = cb7210_accel_read,
-	.write = cb7210_accel_write,
-	.command = cb7210_command,
-	.take_control = cb7210_take_control,
-	.go_to_standby = cb7210_go_to_standby,
-	.request_system_control = cb7210_request_system_control,
-	.interface_clear = cb7210_interface_clear,
-	.remote_enable = cb7210_remote_enable,
-	.enable_eos = cb7210_enable_eos,
-	.disable_eos = cb7210_disable_eos,
-	.parallel_poll = cb7210_parallel_poll,
-	.parallel_poll_configure = cb7210_parallel_poll_configure,
-	.parallel_poll_response = cb7210_parallel_poll_response,
-	.local_parallel_poll_mode = core::ptr::null_mut(), // XXX
-	.line_status = cb7210_line_status,
-	.update_status = cb7210_update_status,
-	.primary_address = cb7210_primary_address,
-	.secondary_address = cb7210_secondary_address,
-	.serial_poll_response = cb7210_serial_poll_response,
-	.serial_poll_status = cb7210_serial_poll_status,
-	.t1_delay = cb7210_t1_delay,
-	.return_to_local = cb7210_return_to_local,
+	name: "cbi_pcmcia_accel",
+	attach: cb_pcmcia_attach,
+	detach: cb_pcmcia_detach,
+	read: cb7210_accel_read,
+	write: cb7210_accel_write,
+	command: cb7210_command,
+	take_control: cb7210_take_control,
+	go_to_standby: cb7210_go_to_standby,
+	request_system_control: cb7210_request_system_control,
+	interface_clear: cb7210_interface_clear,
+	remote_enable: cb7210_remote_enable,
+	enable_eos: cb7210_enable_eos,
+	disable_eos: cb7210_disable_eos,
+	parallel_poll: cb7210_parallel_poll,
+	parallel_poll_configure: cb7210_parallel_poll_configure,
+	parallel_poll_response: cb7210_parallel_poll_response,
+	local_parallel_poll_mode: core::ptr::null_mut(), // XXX
+	line_status: cb7210_line_status,
+	update_status: cb7210_update_status,
+	primary_address: cb7210_primary_address,
+	secondary_address: cb7210_secondary_address,
+	serial_poll_response: cb7210_serial_poll_response,
+	serial_poll_status: cb7210_serial_poll_status,
+	t1_delay: cb7210_t1_delay,
+	return_to_local: cb7210_return_to_local,
 };
 
 unsafe fn cb_pcmcia_attach(*mut gpib_board board, const *mut gpib_board_config config)
@@ -1467,6 +1468,16 @@ unsafe fn cb_pcmcia_detach(*mut gpib_board board)
 
 unsafe fn __init cb7210_init_module(void)
 {
+	'err_pci: {
+	'err_isa: {
+	'err_pci_accel: {
+	'err_pci_unaccel: {
+	'err_isa_accel: {
+	'err_isa_unaccel: {
+	'err_pcmcia: {
+	'err_pcmcia_accel: {
+	'err_pcmcia_unaccel: {
+	'err_pcmcia_driver: {
 	i32 ret;
 
 	ret = pci_register_driver(&cb7210_pci_driver);
@@ -1478,88 +1489,98 @@ unsafe fn __init cb7210_init_module(void)
 	ret = gpib_register_driver(&cb_pci_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_pci;
+		break 'err_pci;
 	}
 
 	ret = gpib_register_driver(&cb_isa_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_isa;
+		break 'err_isa;
 	}
 
 	ret = gpib_register_driver(&cb_pci_accel_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_pci_accel;
+		break 'err_pci_accel;
 	}
 
 	ret = gpib_register_driver(&cb_pci_unaccel_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_pci_unaccel;
+		break 'err_pci_unaccel;
 	}
 
 	ret = gpib_register_driver(&cb_isa_accel_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_isa_accel;
+		break 'err_isa_accel;
 	}
 
 	ret = gpib_register_driver(&cb_isa_unaccel_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_isa_unaccel;
+		break 'err_isa_unaccel;
 	}
 
 // #ifdef CONFIG_GPIB_PCMCIA
 	ret = gpib_register_driver(&cb_pcmcia_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_pcmcia;
+		break 'err_pcmcia;
 	}
 
 	ret = gpib_register_driver(&cb_pcmcia_accel_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_pcmcia_accel;
+		break 'err_pcmcia_accel;
 	}
 
 	ret = gpib_register_driver(&cb_pcmcia_unaccel_interface, THIS_MODULE);
 	if (ret) {
 		pr_err("gpib_register_driver failed: error = %d\n", ret);
-		goto err_pcmcia_unaccel;
+		break 'err_pcmcia_unaccel;
 	}
 
 	ret = pcmcia_register_driver(&cb_gpib_cs_driver);
 	if (ret) {
 		pr_err("pcmcia_register_driver failed: error = %d\n", ret);
-		goto err_pcmcia_driver;
+		break 'err_pcmcia_driver;
 	}
 // #endif
 
 	return 0;
 
 // #ifdef CONFIG_GPIB_PCMCIA
-err_pcmcia_driver:
+	}
+	
 	gpib_unregister_driver(&cb_pcmcia_unaccel_interface);
-err_pcmcia_unaccel:
+	}
+	
 	gpib_unregister_driver(&cb_pcmcia_accel_interface);
-err_pcmcia_accel:
+	}
+	
 	gpib_unregister_driver(&cb_pcmcia_interface);
-err_pcmcia:
+	}
+	
 // #endif
 	gpib_unregister_driver(&cb_isa_unaccel_interface);
-err_isa_unaccel:
+	}
+	
 	gpib_unregister_driver(&cb_isa_accel_interface);
-err_isa_accel:
+	}
+	
 	gpib_unregister_driver(&cb_pci_unaccel_interface);
-err_pci_unaccel:
+	}
+	
 	gpib_unregister_driver(&cb_pci_accel_interface);
-err_pci_accel:
+	}
+	
 	gpib_unregister_driver(&cb_isa_interface);
-err_isa:
+	}
+	
 	gpib_unregister_driver(&cb_pci_interface);
-err_pci:
+	}
+	
 	pci_unregister_driver(&cb7210_pci_driver);
 
 	return ret;

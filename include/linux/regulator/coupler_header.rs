@@ -35,7 +35,7 @@ pub struct regulator_coupler {
 pub struct regulator_dev;
 
 /* CONFIG_REGULATOR selects the external implementations below. */
-#[cfg(feature = "CONFIG_REGULATOR")]
+#[cfg(CONFIG_REGULATOR)]
 extern "C" {
     pub fn regulator_coupler_register(coupler: *mut regulator_coupler) -> i32;
     pub fn regulator_check_consumers(
@@ -63,13 +63,13 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_coupler_register(_coupler: *mut regulator_coupler) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_check_consumers(
     _rdev: *mut regulator_dev,
@@ -80,7 +80,7 @@ pub unsafe fn regulator_check_consumers(
     -22 /* -EINVAL */
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_check_voltage(
     _rdev: *mut regulator_dev,
@@ -90,13 +90,13 @@ pub unsafe fn regulator_check_voltage(
     -22 /* -EINVAL */
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_get_voltage_rdev(_rdev: *mut regulator_dev) -> i32 {
     -22 /* -EINVAL */
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_set_voltage_rdev(
     _rdev: *mut regulator_dev,
@@ -107,7 +107,7 @@ pub unsafe fn regulator_set_voltage_rdev(
     -22 /* -EINVAL */
 }
 
-#[cfg(not(feature = "CONFIG_REGULATOR"))]
+#[cfg(not(CONFIG_REGULATOR))]
 #[inline]
 pub unsafe fn regulator_do_balance_voltage(
     _rdev: *mut regulator_dev,

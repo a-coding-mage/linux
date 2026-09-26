@@ -83,7 +83,7 @@ pub unsafe extern "C" fn mpic_msi_reserve_hwirq(mpic: *mut Mpic, hwirq: IrqHwNum
     msi_bitmap_reserve_hwirq(&mut (*mpic).msi_bitmap, hwirq);
 }
 
-#[cfg(feature = "CONFIG_MPIC_U3_HT_IRQS")]
+#[cfg(CONFIG_MPIC_U3_HT_IRQS)]
 unsafe extern "C" fn mpic_msi_reserve_u3_hwirqs(mpic: *mut Mpic) -> c_int {
     let mut hwirq: IrqHwNumber = 0;
     let ops = (*(*mpic).irqhost).ops;
@@ -151,7 +151,7 @@ unsafe extern "C" fn mpic_msi_reserve_u3_hwirqs(mpic: *mut Mpic) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_MPIC_U3_HT_IRQS"))]
+#[cfg(not(CONFIG_MPIC_U3_HT_IRQS))]
 unsafe extern "C" fn mpic_msi_reserve_u3_hwirqs(_mpic: *mut Mpic) -> c_int {
     -1
 }

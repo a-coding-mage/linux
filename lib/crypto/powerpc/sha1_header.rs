@@ -8,10 +8,10 @@
 /* Dependencies supplied by the surrounding kernel translation. */
 
 /* CONFIG_SPE conditional from the original header. */
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 pub const MAX_BYTES: usize = 2048;
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 extern "C" {
     pub fn ppc_spe_sha1_transform(
         state: *mut sha1_block_state,
@@ -20,21 +20,21 @@ extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn spe_begin() {
     /* We just start SPE operations and will save SPE registers later. */
     preempt_disable();
     enable_kernel_spe();
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn spe_end() {
     disable_kernel_spe();
     /* reenable preemption */
     preempt_enable();
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn sha1_blocks(
     state: *mut sha1_block_state,
     mut data: *const u8,
@@ -57,7 +57,7 @@ unsafe fn sha1_blocks(
 }
 
 /* CONFIG_SPE disabled branch from the original header. */
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 extern "C" {
     pub fn powerpc_sha_transform(
         state: *mut sha1_block_state,
@@ -65,7 +65,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn sha1_blocks(
     state: *mut sha1_block_state,
     mut data: *const u8,

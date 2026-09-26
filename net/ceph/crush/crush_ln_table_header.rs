@@ -84,7 +84,7 @@ pub static mut __RH_LH_tbl: [i64; 258] = [
 ];
 
 
-/*
+/ *
  * LL_tbl[k] = 2^48*log2(1.0+k/2^15)
  */
 pub static mut __LL_tbl: [i64; 256] = [

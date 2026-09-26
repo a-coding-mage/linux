@@ -31,8 +31,10 @@ const INTEL_QEPCON_SWPAB: u32 = 1 << 5;
 const INTEL_QEPCON_OP_MODE: u32 = 1 << 6;
 const INTEL_QEPCON_PH_ERR: u32 = 1 << 7;
 const INTEL_QEPCON_COUNT_RST_MODE: u32 = 1 << 8;
-const INTEL_QEPCON_INDX_GATING_MASK: u32 = (0x3ff << 9) & !((1 << 9) - 1);
-const INTEL_QEPCON_INDX_GATING = |n: u32| ((n & 3) << 9);
+const INTEL_QEPCON_INDX_GATING_MASK: u32 = 0b11 << 9; // GENMASK(10, 9)
+const fn INTEL_QEPCON_INDX_GATING(n: u32) -> u32 {
+    ((n & 3) << 9)
+}
 const INTEL_QEPCON_INDX_PAL_PBL: u32 = 0 << 9;
 const INTEL_QEPCON_INDX_PAL_PBH: u32 = 1 << 9;
 const INTEL_QEPCON_INDX_PAH_PBL: u32 = 2 << 9;
@@ -41,7 +43,9 @@ const INTEL_QEPCON_CAP_MODE: u32 = 1 << 11;
 const INTEL_QEPCON_FIFO_THRE_MASK: u32 = 0x7 << 12;
 const INTEL_QEPCON_FIFO_EMPTY: u32 = 1 << 15;
 
-const INTEL_QEPFLT_MAX_COUNT = |n: u32| n & 0x1fffff;
+const fn INTEL_QEPFLT_MAX_COUNT(n: u32) -> u32 {
+    n & 0x1fffff
+}
 const INTEL_QEPINT_FIFOCRIT: u32 = 1 << 5;
 const INTEL_QEPINT_FIFOENTRY: u32 = 1 << 4;
 const INTEL_QEPINT_QEPDIR: u32 = 1 << 3;

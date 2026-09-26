@@ -39,7 +39,7 @@ pub unsafe fn llc_build_and_send_pkt(sk: *mut sock, skb: *mut sk_buff) -> i32 {
         return rc;
     }
     ev = llc_conn_ev(skb);
-    (*ev).type = LLC_CONN_EV_TYPE_PRIM;
+    (*ev).r#type = LLC_CONN_EV_TYPE_PRIM;
     (*ev).prim = LLC_DATA_PRIM;
     (*ev).prim_type = LLC_PRIM_TYPE_REQ;
     (*skb).dev = (*llc).dev;
@@ -77,7 +77,7 @@ pub unsafe fn llc_establish_connection(
         skb = alloc_skb(0, GFP_ATOMIC);
         if !skb.is_null() {
             let ev: *mut llc_conn_state_ev = llc_conn_ev(skb);
-            (*ev).type = LLC_CONN_EV_TYPE_PRIM;
+            (*ev).r#type = LLC_CONN_EV_TYPE_PRIM;
             (*ev).prim = LLC_CONN_PRIM;
             (*ev).prim_type = LLC_PRIM_TYPE_REQ;
             skb_set_owner_w(skb, sk);
@@ -115,7 +115,7 @@ pub unsafe fn llc_send_disc(sk: *mut sock) -> u16 {
     skb_set_owner_w(skb, sk);
     (*sk).sk_state = TCP_CLOSING;
     ev = llc_conn_ev(skb);
-    (*ev).type = LLC_CONN_EV_TYPE_PRIM;
+    (*ev).r#type = LLC_CONN_EV_TYPE_PRIM;
     (*ev).prim = LLC_DISC_PRIM;
     (*ev).prim_type = LLC_PRIM_TYPE_REQ;
     rc = llc_conn_state_process(sk, skb) as u16;

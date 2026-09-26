@@ -58,8 +58,7 @@ extern "C" {
     pub fn dpp35_dppclk_control(
         dpp_base: *mut dpp,
         dppclk_div: bool,
-        enable: bool,
-    );
+        enable: bool);
 
     pub fn dpp35_construct(
         dpp3: *mut dcn3_dpp,
@@ -67,15 +66,13 @@ extern "C" {
         inst: u32,
         tf_regs: *const dcn3_dpp_registers,
         tf_shift: *const dcn35_dpp_shift,
-        tf_mask: *const dcn35_dpp_mask,
-    ) -> bool;
+        tf_mask: *const dcn35_dpp_mask) -> bool;
 
     pub fn dpp35_set_fgcg(dpp: *mut dcn3_dpp, enable: bool);
 
     pub fn dpp35_program_bias_and_scale_fcnv(
         dpp_base: *mut dpp,
-        bias_and_scale: *mut dc_bias_and_scale,
-    );
+        bias_and_scale: *mut dc_bias_and_scale);
 }
 
 

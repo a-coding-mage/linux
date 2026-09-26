@@ -102,7 +102,7 @@ unsafe fn module_xz_decompress(info: *mut load_info, buf: *const c_void, size: u
     if size < signature.len() || core::slice::from_raw_parts(buf as *const u8, signature.len()) != signature { pr_err!("not an xz compressed module\n"); return -EINVAL as isize; }
     let dec = xz_dec_init(XZ_DYNALLOC, u32::MAX);
     if dec.is_null() { return -ENOMEM as isize; }
-    let mut b: xz_buf = core::mem::zeroed(); b.in_size = size; b.in = buf; b.in_pos = 0;
+    let mut b: xz_buf = core::mem::zeroed(); b.in_size = size; b.r#in = buf; b.in_pos = 0;
     let mut total = 0usize; let mut ret;
     loop { let p = module_get_next_page(info); if IS_ERR(p) { ret = PTR_ERR(p); break; } b.out = kmap_local_page(p); b.out_pos = 0; b.out_size = PAGE_SIZE as usize; ret = xz_dec_run(dec, &mut b); kunmap_local(b.out); total += b.out_pos; if b.out_pos != PAGE_SIZE as usize || ret != XZ_OK { break; } }
     xz_dec_end(dec); if ret != XZ_STREAM_END { pr_err!("decompression failed with status %d\n", ret); return -EINVAL as isize; } total as isize

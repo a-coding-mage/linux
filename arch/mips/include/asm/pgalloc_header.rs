@@ -11,7 +11,7 @@
 // left external. The original header defines __HAVE_ARCH_PMD_ALLOC_ONE and
 // __HAVE_ARCH_PUD_ALLOC_ONE and includes asm-generic/pgalloc.h.
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn pmd_init(addr: *mut core::ffi::c_void);
     pub fn pgd_init(addr: *mut core::ffi::c_void);
     pub fn pgd_alloc(mm: *mut mm_struct) -> *mut pgd_t;

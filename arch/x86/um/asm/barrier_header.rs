@@ -9,7 +9,7 @@
  * to devices.
  */
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 #[inline(always)]
 pub unsafe fn mb() {
     // The C implementation uses `alternative` to select mfence when
@@ -17,7 +17,7 @@ pub unsafe fn mb() {
     core::arch::asm!("lock addl $0, 0(%esp)", options(att_syntax, preserves_flags));
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 #[inline(always)]
 pub unsafe fn rmb() {
     // The C implementation uses `alternative` to select lfence when
@@ -25,7 +25,7 @@ pub unsafe fn rmb() {
     core::arch::asm!("lock addl $0, 0(%esp)", options(att_syntax, preserves_flags));
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 #[inline(always)]
 pub unsafe fn wmb() {
     // The C implementation uses `alternative` to select sfence when
@@ -33,19 +33,19 @@ pub unsafe fn wmb() {
     core::arch::asm!("lock addl $0, 0(%esp)", options(att_syntax, preserves_flags));
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 #[inline(always)]
 pub unsafe fn mb() {
     core::arch::asm!("mfence", options(nostack, preserves_flags));
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 #[inline(always)]
 pub unsafe fn rmb() {
     core::arch::asm!("lfence", options(nostack, preserves_flags));
 }
 
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 #[inline(always)]
 pub unsafe fn wmb() {
     core::arch::asm!("sfence", options(nostack, preserves_flags));

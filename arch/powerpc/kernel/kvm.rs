@@ -129,12 +129,12 @@ unsafe fn kvm_check_ins(inst: *mut u32, features: u32) {
     }
 }
 
-#[cfg(feature = "CONFIG_BOOKE")]
+#[cfg(CONFIG_BOOKE)]
 unsafe fn kvm_patch_ins_wrtee(inst: *mut u32, rt: u32, imm_one: i32) {
     let _ = (inst, rt, imm_one);
 }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_32")]
+#[cfg(CONFIG_PPC_BOOK3S_32)]
 unsafe fn kvm_patch_ins_mtsrin(inst: *mut u32, rt: u32, rb: u32) {
     let _ = (inst, rt, rb);
 }

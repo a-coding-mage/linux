@@ -508,7 +508,7 @@ pub unsafe fn bpf_load_and_run(opts: *mut bpf_load_and_run_opts) -> c_int {
     attr.test.ctx_in = (*opts).ctx as c_long as c_ulong;
     attr.test.ctx_size_in = (*(*opts).ctx).sz;
     err = skel_sys_bpf(BPF_PROG_RUN, &mut attr, test_run_attr_sz as c_uint);
-    if err < 0 || attr.test.retval as c_int < 0 {
+    if err < 0 || (attr.test.retval as c_int) < 0 {
         if err < 0 {
             (*opts).errstr = b"failed to execute loader prog\0".as_ptr() as *const c_char;
             err = -errno;

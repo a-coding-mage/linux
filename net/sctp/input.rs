@@ -80,8 +80,8 @@ unsafe fn sctp_backlog_rcv(mut sk: *mut sock, skb: *mut sk_buff) -> i32 {
         bh_unlock_sock(sk); local_bh_enable(); if backloged != 0 { return 0; }
     } else if !sctp_newsk_ready(sk) { if sk_add_backlog(sk, skb, READ_ONCE((*sk).sk_rcvbuf)) == 0 { return 0; } sctp_chunk_free(chunk); }
     else { sctp_inq_push(inqueue, chunk); }
-    if (*rcvr).type == SCTP_EP_TYPE_ASSOCIATION { sctp_transport_put(t); }
-    else if (*rcvr).type == SCTP_EP_TYPE_SOCKET { sctp_endpoint_put(sctp_ep(rcvr)); }
+    if (*rcvr).r#type == SCTP_EP_TYPE_ASSOCIATION { sctp_transport_put(t); }
+    else if (*rcvr).r#type == SCTP_EP_TYPE_SOCKET { sctp_endpoint_put(sctp_ep(rcvr)); }
     else { BUG(); }
     0
 }
@@ -89,7 +89,7 @@ unsafe fn sctp_backlog_rcv(mut sk: *mut sock, skb: *mut sk_buff) -> i32 {
 unsafe fn sctp_add_backlog(sk: *mut sock, skb: *mut sk_buff) -> i32 {
     let chunk = (*SCTP_INPUT_CB(skb)).chunk; let rcvr = (*chunk).rcvr;
     let ret = sk_add_backlog(sk, skb, READ_ONCE((*sk).sk_rcvbuf));
-    if ret == 0 { if (*rcvr).type == SCTP_EP_TYPE_ASSOCIATION { sctp_transport_hold((*chunk).transport); } else if (*rcvr).type == SCTP_EP_TYPE_SOCKET { sctp_endpoint_hold(sctp_ep(rcvr)); } else { BUG(); } }
+    if ret == 0 { if (*rcvr).r#type == SCTP_EP_TYPE_ASSOCIATION { sctp_transport_hold((*chunk).transport); } else if (*rcvr).r#type == SCTP_EP_TYPE_SOCKET { sctp_endpoint_hold(sctp_ep(rcvr)); } else { BUG(); } }
     ret
 }
 
@@ -108,7 +108,7 @@ unsafe fn sctp_icmp_proto_unreachable(sk: *mut sock, asoc: *mut sctp_association
 }
 
 unsafe fn sctp_rcv_ootb(skb: *mut sk_buff) -> i32 {
-    let mut offset = 0; loop { if offset + core::mem::size_of::<sctp_chunkhdr>() > (*skb).len { break; } let mut tmp: sctp_chunkhdr = core::mem::zeroed(); let ch = skb_header_pointer(skb, offset, core::mem::size_of::<sctp_chunkhdr>(), &mut tmp); if ch.is_null() || ntohs((*ch).length) < core::mem::size_of::<sctp_chunkhdr>() { break; } let end = offset + SCTP_PAD4(ntohs((*ch).length)); if end > (*skb).len { break; } if (*ch).type == SCTP_CID_ABORT || (*ch).type == SCTP_CID_SHUTDOWN_COMPLETE || ((*ch).type == SCTP_CID_INIT && ch as *mut u8 != (*skb).data) { return 1; } offset = end; if end >= (*skb).len { break; } } 0
+    let mut offset = 0; loop { if offset + core::mem::size_of::<sctp_chunkhdr>() > (*skb).len { break; } let mut tmp: sctp_chunkhdr = core::mem::zeroed(); let ch = skb_header_pointer(skb, offset, core::mem::size_of::<sctp_chunkhdr>(), &mut tmp); if ch.is_null() || ntohs((*ch).length) < core::mem::size_of::<sctp_chunkhdr>() { break; } let end = offset + SCTP_PAD4(ntohs((*ch).length)); if end > (*skb).len { break; } if (*ch).r#type == SCTP_CID_ABORT || (*ch).r#type == SCTP_CID_SHUTDOWN_COMPLETE || ((*ch).r#type == SCTP_CID_INIT && ch as *mut u8 != (*skb).data) { return 1; } offset = end; if end >= (*skb).len { break; } } 0
 }
 
 // The remaining lookup/hash and ICMP entry points retain the kernel interfaces.

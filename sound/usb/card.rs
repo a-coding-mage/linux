@@ -398,7 +398,7 @@ extern "C" {
     fn usb_driver_claim_interface(
         driver: *mut usb_driver,
         iface: *mut usb_interface,
-        priv: *mut c_void,
+        r#priv: *mut c_void,
     ) -> c_int;
     fn usb_set_interface(dev: *mut usb_device, ifnum: c_int, alternate: c_int) -> c_int;
     fn usb_get_intfdata(intf: *mut usb_interface) -> *mut c_void;

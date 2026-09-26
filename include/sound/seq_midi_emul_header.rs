@@ -89,7 +89,7 @@ pub const SNDRV_MIDI_SYSEX_GS_PROGRAM: i32 = 7;
 pub const SNDRV_MIDI_SYSEX_GS_DRUM_CHANNEL: i32 = 8;
 pub const SNDRV_MIDI_SYSEX_XG_ON: i32 = 9;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn snd_midi_process_event(ops: *const snd_midi_op, ev: *mut snd_seq_event, chanset: *mut snd_midi_channel_set);
     pub fn snd_midi_channel_set_clear(chset: *mut snd_midi_channel_set);
     pub fn snd_midi_channel_alloc_set(n: i32) -> *mut snd_midi_channel_set;

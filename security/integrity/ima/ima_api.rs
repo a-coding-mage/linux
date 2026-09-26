@@ -26,24 +26,6 @@ use std::ptr;
 // External types and functions from kernel/ima modules
 extern "C" {
     // Types (declared externally)
-    pub struct ima_template_entry;
-    pub struct ima_iint_cache;
-    pub struct ima_template_desc;
-    pub struct ima_event_data;
-    pub struct ima_digest_data;
-    pub struct ima_max_digest_data;
-    pub struct inode;
-    pub struct file;
-    pub struct cred;
-    pub struct lsm_prop;
-    pub struct mnt_idmap;
-    pub struct evm_ima_xattr_data;
-    pub struct modsig;
-    pub struct name_snapshot;
-    pub struct kstat;
-    pub struct path;
-    pub struct audit_buffer;
-    pub struct dentry;
 
     // External functions
     fn kfree(ptr: *const std::ffi::c_void);
@@ -162,6 +144,24 @@ extern "C" {
     pub static hash_digest_size: [usize; 256];
     pub static hash_algo_name: [*const c_char; 256];
 }
+pub struct ima_template_entry;
+pub struct ima_iint_cache;
+pub struct ima_template_desc;
+pub struct ima_event_data;
+pub struct ima_digest_data;
+pub struct ima_max_digest_data;
+pub struct inode;
+pub struct file;
+pub struct cred;
+pub struct lsm_prop;
+pub struct mnt_idmap;
+pub struct evm_ima_xattr_data;
+pub struct modsig;
+pub struct name_snapshot;
+pub struct kstat;
+pub struct path;
+pub struct audit_buffer;
+pub struct dentry;
 
 // External flags
 const IMA_MEASURE: c_int = 0x00000001;

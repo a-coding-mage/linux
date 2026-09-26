@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Direct Rust translation of linux/arch/m68k/kernel/sys_m68k.c. */
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn sys_mmap2(addr: usize, len: usize, prot: usize,
                                     flags: usize, fd: usize, pgoff: usize) -> isize {
     ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 unsafe fn virt_to_phys_040(vaddr: usize) -> usize {
     let mut mmusr: usize;
@@ -15,7 +15,7 @@ unsafe fn virt_to_phys_040(vaddr: usize) -> usize {
     if mmusr & MMU_R_040 != 0 { mmusr & PAGE_MASK } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn cache_flush_040(mut addr: usize, scope: i32, cache: i32, mut len: usize) -> i32 {
     let mut paddr: usize;
     let mut i: usize;
@@ -46,12 +46,12 @@ unsafe fn cache_flush_040(mut addr: usize, scope: i32, cache: i32, mut len: usiz
     } 0
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline] unsafe fn virt_to_phys_060(vaddr: usize) -> usize {
     let mut paddr = vaddr; core::arch::asm!(".chip 68060\n\tplpar ({0})\n\t.chip 68k", inout(reg) paddr); paddr
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn cache_flush_060(mut addr: usize, scope: i32, cache: i32, mut len: usize) -> i32 {
     let mut paddr; let mut i;
     match scope {
@@ -64,7 +64,7 @@ unsafe fn cache_flush_060(mut addr: usize, scope: i32, cache: i32, mut len: usiz
     } 0
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn sys_cacheflush(addr: usize, scope: i32, cache: i32, len: usize) -> i32 {
     if scope < FLUSH_SCOPE_LINE || scope > FLUSH_SCOPE_ALL || cache & !FLUSH_CACHE_BOTH != 0 { return -EINVAL; }
     if scope == FLUSH_SCOPE_ALL && !capable(CAP_SYS_ADMIN) { return -EPERM; }
@@ -75,10 +75,10 @@ pub unsafe extern "C" fn sys_cacheflush(addr: usize, scope: i32, cache: i32, len
     }; mmap_read_unlock((*current).mm); ret
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub unsafe extern "C" fn sys_cacheflush(_: usize, _: i32, _: i32, _: usize) -> i32 { flush_cache_all(); 0 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn sys_atomic_cmpxchg_32(mut newval: usize, oldval: i32, _d3: i32, _d4: i32, _d5: i32, mem: *mut usize) -> i32 {
     loop {
         let mm = (*current).cast::<task_struct>();
@@ -92,7 +92,7 @@ pub unsafe extern "C" fn sys_atomic_cmpxchg_32(mut newval: usize, oldval: i32, _
     }
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub unsafe extern "C" fn sys_atomic_cmpxchg_32(newval: usize, oldval: i32, _d3: i32, _d4: i32, _d5: i32, mem: *mut usize) -> i32 {
     let mm = (*current).cast::<mm_struct>(); mmap_read_lock(mm);
     let mem_value = core::ptr::read_volatile(mem);

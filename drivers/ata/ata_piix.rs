@@ -85,40 +85,29 @@
 const DRV_NAME: &str = "ata_piix";
 const DRV_VERSION: &str = "2.13";
 
-enum {
-	PIIX_IOCFG		= 0x54, /* IDE I/O configuration register */
-	ICH5_PMR		= 0x90, /* address map register */
-	ICH5_PCS		= 0x92,	/* port control and status */
-	PIIX_SIDPR_BAR		= 5,
-	PIIX_SIDPR_LEN		= 16,
-	PIIX_SIDPR_IDX		= 0,
-	PIIX_SIDPR_DATA		= 4,
-
-	PIIX_FLAG_CHECKINTR	= (1 << 28), /* make sure PCI INTx enabled */
-	PIIX_FLAG_SIDPR		= (1 << 29), /* SATA idx/data pair regs */
-
-	PIIX_PATA_FLAGS		= ATA_FLAG_SLAVE_POSS,
-	PIIX_SATA_FLAGS		= ATA_FLAG_SATA | PIIX_FLAG_CHECKINTR,
-
-	PIIX_FLAG_PIO16		= (1 << 30), /*support 16bit PIO only*/
-
-	PIIX_80C_PRI		= (1 << 5) | (1 << 4),
-	PIIX_80C_SEC		= (1 << 7) | (1 << 6),
-
-	/* constants for mapping table */
-	P0			= 0,  /* port 0 */
-	P1			= 1,  /* port 1 */
-	P2			= 2,  /* port 2 */
-	P3			= 3,  /* port 3 */
-	IDE			= -1, /* IDE */
-	NA			= -2, /* not available */
-	RV			= -3, /* reserved */
-
-	PIIX_AHCI_DEVICE	= 6,
-
-	/* host->flags bits */
-	PIIX_HOST_BROKEN_SUSPEND = (1 << 24),
-};
+pub const PIIX_IOCFG: i32 = 0x54;
+pub const ICH5_PMR: i32 = 0x90;
+pub const ICH5_PCS: i32 = 0x92;
+pub const PIIX_SIDPR_BAR: i32 = 5;
+pub const PIIX_SIDPR_LEN: i32 = 16;
+pub const PIIX_SIDPR_IDX: i32 = 0;
+pub const PIIX_SIDPR_DATA: i32 = 4;
+pub const PIIX_FLAG_CHECKINTR: i32 = (1 << 28);
+pub const PIIX_FLAG_SIDPR: i32 = (1 << 29);
+pub const PIIX_PATA_FLAGS: i32 = ATA_FLAG_SLAVE_POSS;
+pub const PIIX_SATA_FLAGS: i32 = ATA_FLAG_SATA | PIIX_FLAG_CHECKINTR;
+pub const PIIX_FLAG_PIO16: i32 = (1 << 30);
+pub const PIIX_80C_PRI: i32 = (1 << 5) | (1 << 4);
+pub const PIIX_80C_SEC: i32 = (1 << 7) | (1 << 6);
+pub const P0: i32 = 0;
+pub const P1: i32 = 1;
+pub const P2: i32 = 2;
+pub const P3: i32 = 3;
+pub const IDE: i32 = -1;
+pub const NA: i32 = -2;
+pub const RV: i32 = -3;
+pub const PIIX_AHCI_DEVICE: i32 = 6;
+pub const PIIX_HOST_BROKEN_SUSPEND: i32 = (1 << 24);
 
 enum piix_controller_ids {
 	/* controller IDs */
@@ -153,376 +142,376 @@ struct piix_host_priv {
 	void __iomem *sidpr;
 };
 
-static unsigned int in_module_init = 1;
+static core::ffi::c_uint in_module_init = 1;
 
 static const struct pci_device_id piix_pci_tbl[] = {
 	/* Intel PIIX3 for the 430HX etc */
 	{
 		PCI_DEVICE(0x8086, 0x7010),
-		.driver_data = piix_pata_mwdma,
+		driver_data: piix_pata_mwdma,
 	}, {
 		/* VMware ICH4 */
 		PCI_DEVICE_SUB(0x8086, 0x7111, 0x15ad, 0x1976),
-		.driver_data = piix_pata_vmw,
+		driver_data: piix_pata_vmw,
 	}, {
 		/* Intel PIIX4 for the 430TX/440BX/MX chipset: UDMA 33 */
 		/* Also PIIX4E (fn3 rev 2) and PIIX4M (fn3 rev 3) */
 		PCI_DEVICE(0x8086, 0x7111),
-		.driver_data = piix_pata_33,
+		driver_data: piix_pata_33,
 	}, {
 		/* Intel PIIX4 */
 		PCI_DEVICE(0x8086, 0x7199),
-		.driver_data = piix_pata_33,
+		driver_data: piix_pata_33,
 	}, {
 		/* Intel PIIX4 */
 		PCI_DEVICE(0x8086, 0x7601),
-		.driver_data = piix_pata_33,
+		driver_data: piix_pata_33,
 	}, {
 		/* Intel PIIX */
 		PCI_DEVICE(0x8086, 0x84CA),
-		.driver_data = piix_pata_33,
+		driver_data: piix_pata_33,
 	}, {
 		/* Intel ICH (i810, i815, i840) UDMA 66*/
 		PCI_DEVICE(0x8086, 0x2411),
-		.driver_data = ich_pata_66,
+		driver_data: ich_pata_66,
 	}, {
 		/* Intel ICH0 : UDMA 33*/
 		PCI_DEVICE(0x8086, 0x2421),
-		.driver_data = ich_pata_33,
+		driver_data: ich_pata_33,
 	}, {
 		/* Intel ICH2M */
 		PCI_DEVICE(0x8086, 0x244A),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* Intel ICH2 (i810E2, i845, 850, 860) UDMA 100 */
 		PCI_DEVICE(0x8086, 0x244B),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/*  Intel ICH3M */
 		PCI_DEVICE(0x8086, 0x248A),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* Intel ICH3 (E7500/1) UDMA 100 */
 		PCI_DEVICE(0x8086, 0x248B),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* Intel ICH4-L */
 		PCI_DEVICE(0x8086, 0x24C1),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* Intel ICH4 (i845GV, i845E, i852, i855) UDMA 100 */
 		PCI_DEVICE(0x8086, 0x24CA),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		PCI_DEVICE(0x8086, 0x24CB),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* Intel ICH5 */
 		PCI_DEVICE(0x8086, 0x24DB),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* C-ICH (i810E2) */
 		PCI_DEVICE(0x8086, 0x245B),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* ESB (855GME/875P + 6300ESB) UDMA 100  */
 		PCI_DEVICE(0x8086, 0x25A2),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* ICH6 (and 6) (i915) UDMA 100 */
 		PCI_DEVICE(0x8086, 0x266F),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	}, {
 		/* ICH7/7-R (i945, i975) UDMA 100*/
 		PCI_DEVICE(0x8086, 0x27DF),
-		.driver_data = ich_pata_100_nomwdma1,
+		driver_data: ich_pata_100_nomwdma1,
 	}, {
 		PCI_DEVICE(0x8086, 0x269E),
-		.driver_data = ich_pata_100_nomwdma1,
+		driver_data: ich_pata_100_nomwdma1,
 	}, {
 		/* ICH8 Mobile PATA Controller */
 		PCI_DEVICE(0x8086, 0x2850),
-		.driver_data = ich_pata_100,
+		driver_data: ich_pata_100,
 	},
 
 	/* SATA ports */
 	{
 		/* 82801EB (ICH5) */
 		PCI_DEVICE(0x8086, 0x24d1),
-		.driver_data = ich5_sata,
+		driver_data: ich5_sata,
 	}, {
 		/* 82801EB (ICH5) */
 		PCI_DEVICE(0x8086, 0x24df),
-		.driver_data = ich5_sata,
+		driver_data: ich5_sata,
 	}, {
 		/* 6300ESB (ICH5 variant with broken PCS present bits) */
 		PCI_DEVICE(0x8086, 0x25a3),
-		.driver_data = ich5_sata,
+		driver_data: ich5_sata,
 	}, {
 		/* 6300ESB pretending RAID */
 		PCI_DEVICE(0x8086, 0x25b0),
-		.driver_data = ich5_sata,
+		driver_data: ich5_sata,
 	}, {
 		/* 82801FB/FW (ICH6/ICH6W) */
 		PCI_DEVICE(0x8086, 0x2651),
-		.driver_data = ich6_sata,
+		driver_data: ich6_sata,
 	}, {
 		/* 82801FR/FRW (ICH6R/ICH6RW) */
 		PCI_DEVICE(0x8086, 0x2652),
-		.driver_data = ich6_sata,
+		driver_data: ich6_sata,
 	}, {
 		/* 82801FBM ICH6M (ICH6R with only port 0 and 2 implemented).
 		 * Attach iff the controller is in IDE mode. */
 		PCI_DEVICE(0x8086, 0x2653),
-		.class = PCI_CLASS_STORAGE_IDE << 8,
-		.class_mask = 0xffff00,
-		.driver_data = ich6m_sata,
+		class: PCI_CLASS_STORAGE_IDE << 8,
+		class_mask: 0xffff00,
+		driver_data: ich6m_sata,
 	}, {
 		/* 82801GB/GR/GH (ICH7, identical to ICH6) */
 		PCI_DEVICE(0x8086, 0x27c0),
-		.driver_data = ich6_sata,
+		driver_data: ich6_sata,
 	}, {
 		/* 82801GBM/GHM (ICH7M, identical to ICH6M)  */
 		PCI_DEVICE(0x8086, 0x27c4),
-		.driver_data = ich6m_sata,
+		driver_data: ich6m_sata,
 	}, {
 		/* Enterprise Southbridge 2 (631xESB/632xESB) */
 		PCI_DEVICE(0x8086, 0x2680),
-		.driver_data = ich6_sata,
+		driver_data: ich6_sata,
 	}, {
 		/* SATA Controller 1 IDE (ICH8) */
 		PCI_DEVICE(0x8086, 0x2820),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller 2 IDE (ICH8) */
 		PCI_DEVICE(0x8086, 0x2825),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* Mobile SATA Controller IDE (ICH8M), Apple */
 		PCI_DEVICE_SUB(0x8086, 0x2828, 0x106b, 0x00a0),
-		.driver_data = ich8m_apple_sata,
+		driver_data: ich8m_apple_sata,
 	}, {
 		PCI_DEVICE_SUB(0x8086, 0x2828, 0x106b, 0x00a1),
-		.driver_data = ich8m_apple_sata,
+		driver_data: ich8m_apple_sata,
 	}, {
 		PCI_DEVICE_SUB(0x8086, 0x2828, 0x106b, 0x00a3),
-		.driver_data = ich8m_apple_sata,
+		driver_data: ich8m_apple_sata,
 	}, {
 		/* Mobile SATA Controller IDE (ICH8M) */
 		PCI_DEVICE(0x8086, 0x2828),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (ICH9) */
 		PCI_DEVICE(0x8086, 0x2920),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (ICH9) */
 		PCI_DEVICE(0x8086, 0x2921),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (ICH9) */
 		PCI_DEVICE(0x8086, 0x2926),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (ICH9M) */
 		PCI_DEVICE(0x8086, 0x2928),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (ICH9M) */
 		PCI_DEVICE(0x8086, 0x292d),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (ICH9M) */
 		PCI_DEVICE(0x8086, 0x292e),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (Tolapai) */
 		PCI_DEVICE(0x8086, 0x5028),
-		.driver_data = tolapai_sata,
+		driver_data: tolapai_sata,
 	}, {
 		/* SATA Controller IDE (ICH10) */
 		PCI_DEVICE(0x8086, 0x3a00),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (ICH10) */
 		PCI_DEVICE(0x8086, 0x3a06),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (ICH10) */
 		PCI_DEVICE(0x8086, 0x3a20),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (ICH10) */
 		PCI_DEVICE(0x8086, 0x3a26),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (PCH) */
 		PCI_DEVICE(0x8086, 0x3b20),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (PCH) */
 		PCI_DEVICE(0x8086, 0x3b21),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (PCH) */
 		PCI_DEVICE(0x8086, 0x3b26),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (PCH) */
 		PCI_DEVICE(0x8086, 0x3b28),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (PCH) */
 		PCI_DEVICE(0x8086, 0x3b2d),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (PCH) */
 		PCI_DEVICE(0x8086, 0x3b2e),
-		.driver_data = ich8_sata,
+		driver_data: ich8_sata,
 	}, {
 		/* SATA Controller IDE (CPT) */
 		PCI_DEVICE(0x8086, 0x1c00),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (CPT) */
 		PCI_DEVICE(0x8086, 0x1c01),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (CPT) */
 		PCI_DEVICE(0x8086, 0x1c08),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (CPT) */
 		PCI_DEVICE(0x8086, 0x1c09),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (PBG) */
 		PCI_DEVICE(0x8086, 0x1d00),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (PBG) */
 		PCI_DEVICE(0x8086, 0x1d08),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Panther Point) */
 		PCI_DEVICE(0x8086, 0x1e00),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Panther Point) */
 		PCI_DEVICE(0x8086, 0x1e01),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Panther Point) */
 		PCI_DEVICE(0x8086, 0x1e08),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Panther Point) */
 		PCI_DEVICE(0x8086, 0x1e09),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Lynx Point) */
 		PCI_DEVICE(0x8086, 0x8c00),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Lynx Point) */
 		PCI_DEVICE(0x8086, 0x8c01),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Lynx Point) */
 		PCI_DEVICE(0x8086, 0x8c08),
-		.driver_data = ich8_2port_sata_snb,
+		driver_data: ich8_2port_sata_snb,
 	}, {
 		/* SATA Controller IDE (Lynx Point) */
 		PCI_DEVICE(0x8086, 0x8c09),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Lynx Point-LP) */
 		PCI_DEVICE(0x8086, 0x9c00),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Lynx Point-LP) */
 		PCI_DEVICE(0x8086, 0x9c01),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Lynx Point-LP) */
 		PCI_DEVICE(0x8086, 0x9c08),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Lynx Point-LP) */
 		PCI_DEVICE(0x8086, 0x9c09),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (DH89xxCC) */
 		PCI_DEVICE(0x8086, 0x2326),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Avoton) */
 		PCI_DEVICE(0x8086, 0x1f20),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Avoton) */
 		PCI_DEVICE(0x8086, 0x1f21),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Avoton) */
 		PCI_DEVICE(0x8086, 0x1f30),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Avoton) */
 		PCI_DEVICE(0x8086, 0x1f31),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (Wellsburg) */
 		PCI_DEVICE(0x8086, 0x8d00),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Wellsburg) */
 		PCI_DEVICE(0x8086, 0x8d08),
-		.driver_data = ich8_2port_sata_snb,
+		driver_data: ich8_2port_sata_snb,
 	}, {
 		/* SATA Controller IDE (Wellsburg) */
 		PCI_DEVICE(0x8086, 0x8d60),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (Wellsburg) */
 		PCI_DEVICE(0x8086, 0x8d68),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (BayTrail) */
 		PCI_DEVICE(0x8086, 0x0F20),
-		.driver_data = ich8_2port_sata_byt,
+		driver_data: ich8_2port_sata_byt,
 	}, {
 		PCI_DEVICE(0x8086, 0x0F21),
-		.driver_data = ich8_2port_sata_byt,
+		driver_data: ich8_2port_sata_byt,
 	}, {
 		/* SATA Controller IDE (Coleto Creek) */
 		PCI_DEVICE(0x8086, 0x23a6),
-		.driver_data = ich8_2port_sata,
+		driver_data: ich8_2port_sata,
 	}, {
 		/* SATA Controller IDE (9 Series) */
 		PCI_DEVICE(0x8086, 0x8c88),
-		.driver_data = ich8_2port_sata_snb,
+		driver_data: ich8_2port_sata_snb,
 	}, {
 		/* SATA Controller IDE (9 Series) */
 		PCI_DEVICE(0x8086, 0x8c89),
-		.driver_data = ich8_2port_sata_snb,
+		driver_data: ich8_2port_sata_snb,
 	}, {
 		/* SATA Controller IDE (9 Series) */
 		PCI_DEVICE(0x8086, 0x8c80),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	}, {
 		/* SATA Controller IDE (9 Series) */
 		PCI_DEVICE(0x8086, 0x8c81),
-		.driver_data = ich8_sata_snb,
+		driver_data: ich8_sata_snb,
 	},
 
 	{ }	/* terminate list */
 };
 
 static const struct piix_map_db ich5_map_db = {
-	.mask = 0x7,
-	.port_enable = 0x3,
-	.map = {
+	mask: 0x7,
+	port_enable: 0x3,
+	map: {
 		/* PM   PS   SM   SS       MAP  */
 		{  P0,  NA,  P1,  NA }, /* 000b */
 		{  P1,  NA,  P0,  NA }, /* 001b */
@@ -536,9 +525,9 @@ static const struct piix_map_db ich5_map_db = {
 };
 
 static const struct piix_map_db ich6_map_db = {
-	.mask = 0x3,
-	.port_enable = 0xf,
-	.map = {
+	mask: 0x3,
+	port_enable: 0xf,
+	map: {
 		/* PM   PS   SM   SS       MAP */
 		{  P0,  P2,  P1,  P3 }, /* 00b */
 		{ IDE, IDE,  P1,  P3 }, /* 01b */
@@ -548,14 +537,14 @@ static const struct piix_map_db ich6_map_db = {
 };
 
 static const struct piix_map_db ich6m_map_db = {
-	.mask = 0x3,
-	.port_enable = 0x5,
+	mask: 0x3,
+	port_enable: 0x5,
 
 	/* Map 01b isn't specified in the doc but some notebooks use
 	 * it anyway.  MAP 01b have been spotted on both ICH6M and
 	 * ICH7M.
 	 */
-	.map = {
+	map: {
 		/* PM   PS   SM   SS       MAP */
 		{  P0,  P2,  NA,  NA }, /* 00b */
 		{ IDE, IDE,  P1,  P3 }, /* 01b */
@@ -565,9 +554,9 @@ static const struct piix_map_db ich6m_map_db = {
 };
 
 static const struct piix_map_db ich8_map_db = {
-	.mask = 0x3,
-	.port_enable = 0xf,
-	.map = {
+	mask: 0x3,
+	port_enable: 0xf,
+	map: {
 		/* PM   PS   SM   SS       MAP */
 		{  P0,  P2,  P1,  P3 }, /* 00b (hardwired when in AHCI) */
 		{  RV,  RV,  RV,  RV },
@@ -577,9 +566,9 @@ static const struct piix_map_db ich8_map_db = {
 };
 
 static const struct piix_map_db ich8_2port_map_db = {
-	.mask = 0x3,
-	.port_enable = 0x3,
-	.map = {
+	mask: 0x3,
+	port_enable: 0x3,
+	map: {
 		/* PM   PS   SM   SS       MAP */
 		{  P0,  NA,  P1,  NA }, /* 00b */
 		{  RV,  RV,  RV,  RV }, /* 01b */
@@ -589,9 +578,9 @@ static const struct piix_map_db ich8_2port_map_db = {
 };
 
 static const struct piix_map_db ich8m_apple_map_db = {
-	.mask = 0x3,
-	.port_enable = 0x1,
-	.map = {
+	mask: 0x3,
+	port_enable: 0x1,
+	map: {
 		/* PM   PS   SM   SS       MAP */
 		{  P0,  NA,  NA,  NA }, /* 00b */
 		{  RV,  RV,  RV,  RV },
@@ -601,9 +590,9 @@ static const struct piix_map_db ich8m_apple_map_db = {
 };
 
 static const struct piix_map_db tolapai_map_db = {
-	.mask = 0x3,
-	.port_enable = 0x3,
-	.map = {
+	mask: 0x3,
+	port_enable: 0x3,
+	map: {
 		/* PM   PS   SM   SS       MAP */
 		{  P0,  NA,  P1,  NA }, /* 00b */
 		{  RV,  RV,  RV,  RV }, /* 01b */
@@ -667,10 +656,10 @@ static const struct ich_laptop ich_laptop[] = {
 	{ 0, }
 };
 
-static int piix_port_start(struct ata_port *ap)
+static int piix_port_start(ata_port *ap)
 {
-	if (!(ap->flags & PIIX_FLAG_PIO16))
-		ap->pflags |= ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
+	if (!((*ap).flags & PIIX_FLAG_PIO16))
+		(*ap).pflags |= ATA_PFLAG_PIO32 | ATA_PFLAG_PIO32CHANGE;
 
 	return ata_bmdma_port_start(ap);
 }
@@ -686,26 +675,26 @@ static int piix_port_start(struct ata_port *ap)
  *	None (inherited from caller).
  */
 
-static int ich_pata_cable_detect(struct ata_port *ap)
+static int ich_pata_cable_detect(ata_port *ap)
 {
-	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
-	struct piix_host_priv *hpriv = ap->host->private_data;
+	struct pci_dev *pdev = to_pci_dev((*(*ap).host).dev);
+	struct piix_host_priv *hpriv = (*(*ap).host).private_data;
 	const struct ich_laptop *lap = &ich_laptop[0];
 	u8 mask;
 
 	/* Check for specials */
-	while (lap->device) {
-		if (lap->device == pdev->device &&
-		    lap->subvendor == pdev->subsystem_vendor &&
-		    lap->subdevice == pdev->subsystem_device)
+	while ((*lap).device) {
+		if ((*lap).device == (*pdev).device &&
+		    (*lap).subvendor == (*pdev).subsystem_vendor &&
+		    (*lap).subdevice == (*pdev).subsystem_device)
 			return ATA_CBL_PATA40_SHORT;
 
 		lap++;
 	}
 
 	/* check BIOS cable detect results */
-	mask = ap->port_no == 0 ? PIIX_80C_PRI : PIIX_80C_SEC;
-	if ((hpriv->saved_iocfg & mask) == 0)
+	mask = (*ap).port_no == 0 ? PIIX_80C_PRI : PIIX_80C_SEC;
+	if (((*hpriv).saved_iocfg & mask) == 0)
 		return ATA_CBL_PATA40;
 	return ATA_CBL_PATA80;
 }
@@ -718,26 +707,26 @@ static int ich_pata_cable_detect(struct ata_port *ap)
  *	LOCKING:
  *	None (inherited from caller).
  */
-static int piix_pata_prereset(struct ata_link *link, unsigned long deadline)
+static int piix_pata_prereset(ata_link *link, deadline: core::ffi::c_ulong)
 {
-	struct ata_port *ap = link->ap;
-	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
+	struct ata_port *ap = (*link).ap;
+	struct pci_dev *pdev = to_pci_dev((*(*ap).host).dev);
 
-	if (!pci_test_config_bits(pdev, &piix_enable_bits[ap->port_no]))
+	if (!pci_test_config_bits(pdev, &piix_enable_bits[(*ap).port_no]))
 		return -ENOENT;
 	return ata_sff_prereset(link, deadline);
 }
 
 static DEFINE_SPINLOCK(piix_lock);
 
-static void piix_set_timings(struct ata_port *ap, struct ata_device *adev,
-			     u8 pio)
+static void piix_set_timings(ata_port *ap, ata_device *adev,
+			     pio: u8)
 {
-	struct pci_dev *dev	= to_pci_dev(ap->host->dev);
-	unsigned long flags;
-	unsigned int is_slave	= (adev->devno != 0);
-	unsigned int master_port= ap->port_no ? 0x42 : 0x40;
-	unsigned int slave_port	= 0x44;
+	struct pci_dev *dev	= to_pci_dev((*(*ap).host).dev);
+	core::ffi::c_ulong flags;
+	core::ffi::c_uint is_slave	= ((*adev).devno != 0);
+	core::ffi::c_uint master_port= (*ap).port_no ? 0x42 : 0x40;
+	core::ffi::c_uint slave_port	= 0x44;
 	u16 master_data;
 	u8 slave_data;
 	u8 udma_enable;
@@ -760,13 +749,13 @@ static void piix_set_timings(struct ata_port *ap, struct ata_device *adev,
 	if (ata_pio_need_iordy(adev))
 		control |= 2;	/* IE enable */
 	/* Intel specifies that the PPE functionality is for disk only */
-	if (adev->class == ATA_DEV_ATA)
+	if ((*adev).class == ATA_DEV_ATA)
 		control |= 4;	/* PPE enable */
 	/*
 	 * If the drive MWDMA is faster than it can do PIO then
 	 * we must force PIO into PIO0
 	 */
-	if (adev->pio_mode < XFER_PIO_0 + pio)
+	if ((*adev).pio_mode < XFER_PIO_0 + pio)
 		/* Enable DMA timing only */
 		control |= 8;	/* PIO cycles in PIO0 */
 
@@ -783,10 +772,10 @@ static void piix_set_timings(struct ata_port *ap, struct ata_device *adev,
 		/* enable PPE1, IE1 and TIME1 as needed */
 		master_data |= (control << 4);
 		pci_read_config_byte(dev, slave_port, &slave_data);
-		slave_data &= (ap->port_no ? 0x0f : 0xf0);
+		slave_data &= ((*ap).port_no ? 0x0f : 0xf0);
 		/* Load the timing nibble for this slave */
 		slave_data |= ((timings[pio][0] << 2) | timings[pio][1])
-						<< (ap->port_no ? 4 : 0);
+						<< ((*ap).port_no ? 4 : 0);
 	} else {
 		/* clear ISP|RCT|TIME0|IE0|PPE0|DTE0 */
 		master_data &= 0xccf0;
@@ -807,9 +796,9 @@ static void piix_set_timings(struct ata_port *ap, struct ata_device *adev,
 	/* Ensure the UDMA bit is off - it will be turned back on if
 	   UDMA is selected */
 
-	if (ap->udma_mask) {
+	if ((*ap).udma_mask) {
 		pci_read_config_byte(dev, 0x48, &udma_enable);
-		udma_enable &= ~(1 << (2 * ap->port_no + adev->devno));
+		udma_enable &= ~(1 << (2 * (*ap).port_no + (*adev).devno));
 		pci_write_config_byte(dev, 0x48, udma_enable);
 	}
 
@@ -827,9 +816,9 @@ static void piix_set_timings(struct ata_port *ap, struct ata_device *adev,
  *	None (inherited from caller).
  */
 
-static void piix_set_piomode(struct ata_port *ap, struct ata_device *adev)
+static void piix_set_piomode(ata_port *ap, ata_device *adev)
 {
-	piix_set_timings(ap, adev, adev->pio_mode - XFER_PIO_0);
+	piix_set_timings(ap, adev, (*adev).pio_mode - XFER_PIO_0);
 }
 
 /**
@@ -844,16 +833,16 @@ static void piix_set_piomode(struct ata_port *ap, struct ata_device *adev)
  *	None (inherited from caller).
  */
 
-static void do_pata_set_dmamode(struct ata_port *ap, struct ata_device *adev, int isich)
+static void do_pata_set_dmamode(ata_port *ap, ata_device *adev, int isich)
 {
-	struct pci_dev *dev	= to_pci_dev(ap->host->dev);
-	unsigned long flags;
-	u8 speed		= adev->dma_mode;
-	int devid		= adev->devno + 2 * ap->port_no;
+	struct pci_dev *dev	= to_pci_dev((*(*ap).host).dev);
+	core::ffi::c_ulong flags;
+	u8 speed		= (*adev).dma_mode;
+	int devid		= (*adev).devno + 2 * (*ap).port_no;
 	u8 udma_enable		= 0;
 
 	if (speed >= XFER_UDMA_0) {
-		unsigned int udma = speed - XFER_UDMA_0;
+		core::ffi::c_uint udma = speed - XFER_UDMA_0;
 		u16 udma_timing;
 		u16 ideconf;
 		int u_clock, u_speed;
@@ -900,8 +889,8 @@ static void do_pata_set_dmamode(struct ata_port *ap, struct ata_device *adev, in
 		spin_unlock_irqrestore(&piix_lock, flags);
 	} else {
 		/* MWDMA is driven by the PIO timings. */
-		unsigned int mwdma = speed - XFER_MW_DMA_0;
-		const unsigned int needed_pio[3] = {
+		core::ffi::c_uint mwdma = speed - XFER_MW_DMA_0;
+		const core::ffi::c_uint needed_pio[3] = {
 			XFER_PIO_0, XFER_PIO_3, XFER_PIO_4
 		};
 		int pio = needed_pio[mwdma] - XFER_PIO_0;
@@ -922,7 +911,7 @@ static void do_pata_set_dmamode(struct ata_port *ap, struct ata_device *adev, in
  *	None (inherited from caller).
  */
 
-static void piix_set_dmamode(struct ata_port *ap, struct ata_device *adev)
+static void piix_set_dmamode(ata_port *ap, ata_device *adev)
 {
 	do_pata_set_dmamode(ap, adev, 0);
 }
@@ -938,7 +927,7 @@ static void piix_set_dmamode(struct ata_port *ap, struct ata_device *adev)
  *	None (inherited from caller).
  */
 
-static void ich_set_dmamode(struct ata_port *ap, struct ata_device *adev)
+static void ich_set_dmamode(ata_port *ap, ata_device *adev)
 {
 	do_pata_set_dmamode(ap, adev, 1);
 }
@@ -957,55 +946,55 @@ static const int piix_sidx_map[] = {
 	[SCR_CONTROL]	= 1,
 };
 
-static void piix_sidpr_sel(struct ata_link *link, unsigned int reg)
+static void piix_sidpr_sel(ata_link *link, reg: core::ffi::c_uint)
 {
-	struct ata_port *ap = link->ap;
-	struct piix_host_priv *hpriv = ap->host->private_data;
+	struct ata_port *ap = (*link).ap;
+	struct piix_host_priv *hpriv = (*(*ap).host).private_data;
 
-	iowrite32(((ap->port_no * 2 + link->pmp) << 8) | piix_sidx_map[reg],
-		  hpriv->sidpr + PIIX_SIDPR_IDX);
+	iowrite32((((*ap).port_no * 2 + (*link).pmp) << 8) | piix_sidx_map[reg],
+		  (*hpriv).sidpr + PIIX_SIDPR_IDX);
 }
 
-static int piix_sidpr_scr_read(struct ata_link *link,
-			       unsigned int reg, u32 *val)
+static int piix_sidpr_scr_read(ata_link *link,
+			       reg: core::ffi::c_uint, u32 *val)
 {
-	struct piix_host_priv *hpriv = link->ap->host->private_data;
+	struct piix_host_priv *hpriv = (*(*(*link).ap).host).private_data;
 
 	if (reg >= ARRAY_SIZE(piix_sidx_map))
 		return -EINVAL;
 
 	piix_sidpr_sel(link, reg);
-	*val = ioread32(hpriv->sidpr + PIIX_SIDPR_DATA);
+	*val = ioread32((*hpriv).sidpr + PIIX_SIDPR_DATA);
 	return 0;
 }
 
-static int piix_sidpr_scr_write(struct ata_link *link,
-				unsigned int reg, u32 val)
+static int piix_sidpr_scr_write(ata_link *link,
+				reg: core::ffi::c_uint, val: u32)
 {
-	struct piix_host_priv *hpriv = link->ap->host->private_data;
+	struct piix_host_priv *hpriv = (*(*(*link).ap).host).private_data;
 
 	if (reg >= ARRAY_SIZE(piix_sidx_map))
 		return -EINVAL;
 
 	piix_sidpr_sel(link, reg);
-	iowrite32(val, hpriv->sidpr + PIIX_SIDPR_DATA);
+	iowrite32(val, (*hpriv).sidpr + PIIX_SIDPR_DATA);
 	return 0;
 }
 
-static int piix_sidpr_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
+static int piix_sidpr_set_lpm(ata_link *link, ata_lpm_policy policy,
 			      unsigned hints)
 {
 	return sata_link_scr_lpm(link, policy, false);
 }
 
-static bool piix_irq_check(struct ata_port *ap)
+static bool piix_irq_check(ata_port *ap)
 {
-	unsigned char host_stat;
+	core::ffi::c_uchar host_stat;
 
-	if (unlikely(!ap->ioaddr.bmdma_addr))
+	if (unlikely((*!ap).ioaddr.bmdma_addr))
 		return false;
 
-	host_stat = ap->ops->bmdma_status(ap);
+	host_stat = (*(*ap).ops).bmdma_status(ap);
 	trace_ata_bmdma_status(ap, host_stat);
 
 	return host_stat & ATA_DMA_INTR;
@@ -1016,133 +1005,133 @@ static int piix_broken_suspend(void)
 {
 	static const struct dmi_system_id sysids[] = {
 		{
-			.ident = "TECRA M3",
-			.matches = {
+			ident: "TECRA M3",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "TECRA M3"),
 			},
 		},
 		{
-			.ident = "TECRA M3",
-			.matches = {
+			ident: "TECRA M3",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Tecra M3"),
 			},
 		},
 		{
-			.ident = "TECRA M3",
-			.matches = {
+			ident: "TECRA M3",
+			matches: {
 				DMI_MATCH(DMI_OEM_STRING, "Tecra M3,"),
 			},
 		},
 		{
-			.ident = "TECRA M4",
-			.matches = {
+			ident: "TECRA M4",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Tecra M4"),
 			},
 		},
 		{
-			.ident = "TECRA M4",
-			.matches = {
+			ident: "TECRA M4",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "TECRA M4"),
 			},
 		},
 		{
-			.ident = "TECRA M5",
-			.matches = {
+			ident: "TECRA M5",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "TECRA M5"),
 			},
 		},
 		{
-			.ident = "TECRA M6",
-			.matches = {
+			ident: "TECRA M6",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "TECRA M6"),
 			},
 		},
 		{
-			.ident = "TECRA M7",
-			.matches = {
+			ident: "TECRA M7",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "TECRA M7"),
 			},
 		},
 		{
-			.ident = "TECRA A8",
-			.matches = {
+			ident: "TECRA A8",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "TECRA A8"),
 			},
 		},
 		{
-			.ident = "Satellite R20",
-			.matches = {
+			ident: "Satellite R20",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Satellite R20"),
 			},
 		},
 		{
-			.ident = "Satellite R25",
-			.matches = {
+			ident: "Satellite R25",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Satellite R25"),
 			},
 		},
 		{
-			.ident = "Satellite U200",
-			.matches = {
+			ident: "Satellite U200",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Satellite U200"),
 			},
 		},
 		{
-			.ident = "Satellite U200",
-			.matches = {
+			ident: "Satellite U200",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "SATELLITE U200"),
 			},
 		},
 		{
-			.ident = "Satellite Pro U200",
-			.matches = {
+			ident: "Satellite Pro U200",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "SATELLITE PRO U200"),
 			},
 		},
 		{
-			.ident = "Satellite U205",
-			.matches = {
+			ident: "Satellite U205",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Satellite U205"),
 			},
 		},
 		{
-			.ident = "SATELLITE U205",
-			.matches = {
+			ident: "SATELLITE U205",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "SATELLITE U205"),
 			},
 		},
 		{
-			.ident = "Satellite Pro A120",
-			.matches = {
+			ident: "Satellite Pro A120",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Satellite Pro A120"),
 			},
 		},
 		{
-			.ident = "Portege M500",
-			.matches = {
+			ident: "Portege M500",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "PORTEGE M500"),
 			},
 		},
 		{
-			.ident = "VGN-BX297XP",
-			.matches = {
+			ident: "VGN-BX297XP",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "VGN-BX297XP"),
 			},
@@ -1172,10 +1161,10 @@ static int piix_broken_suspend(void)
 	return 0;
 }
 
-static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
+static int piix_pci_device_suspend(pci_dev *pdev, pm_message_t mesg)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	ata_host_suspend(host, mesg);
 
@@ -1191,29 +1180,29 @@ static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 		 * know if e.g. the BIOS will change its device state
 		 * when we suspend.
 		 */
-		if (pdev->current_state == PCI_D0)
-			pdev->current_state = PCI_UNKNOWN;
+		if ((*pdev).current_state == PCI_D0)
+			(*pdev).current_state = PCI_UNKNOWN;
 
 		/* tell resume that it's waking up from broken suspend */
-		spin_lock_irqsave(&host->lock, flags);
-		host->flags |= PIIX_HOST_BROKEN_SUSPEND;
-		spin_unlock_irqrestore(&host->lock, flags);
+		spin_lock_irqsave((*&host).lock, flags);
+		(*host).flags |= PIIX_HOST_BROKEN_SUSPEND;
+		spin_unlock_irqrestore((*&host).lock, flags);
 	} else
 		ata_pci_device_do_suspend(pdev, mesg);
 
 	return 0;
 }
 
-static int piix_pci_device_resume(struct pci_dev *pdev)
+static int piix_pci_device_resume(pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 	int rc;
 
-	if (host->flags & PIIX_HOST_BROKEN_SUSPEND) {
-		spin_lock_irqsave(&host->lock, flags);
-		host->flags &= ~PIIX_HOST_BROKEN_SUSPEND;
-		spin_unlock_irqrestore(&host->lock, flags);
+	if ((*host).flags & PIIX_HOST_BROKEN_SUSPEND) {
+		spin_lock_irqsave((*&host).lock, flags);
+		(*host).flags &= ~PIIX_HOST_BROKEN_SUSPEND;
+		spin_unlock_irqrestore((*&host).lock, flags);
 
 		pci_set_power_state(pdev, PCI_D0);
 		pci_restore_state(pdev);
@@ -1224,7 +1213,7 @@ static int piix_pci_device_resume(struct pci_dev *pdev)
 		 */
 		rc = pci_reenable_device(pdev);
 		if (rc)
-			dev_err(&pdev->dev,
+			dev_err((*&pdev).dev,
 				"failed to enable device after resume (%d)\n",
 				rc);
 	} else
@@ -1237,7 +1226,7 @@ static int piix_pci_device_resume(struct pci_dev *pdev)
 }
 #endif
 
-static u8 piix_vmw_bmdma_status(struct ata_port *ap)
+static u8 piix_vmw_bmdma_status(ata_port *ap)
 {
 	return ata_bmdma_status(ap) & ~ATA_DMA_ERR;
 }
@@ -1247,28 +1236,28 @@ static const struct scsi_host_template piix_sht = {
 };
 
 static struct ata_port_operations piix_sata_ops = {
-	.inherits		= &ata_bmdma32_port_ops,
-	.sff_irq_check		= piix_irq_check,
-	.port_start		= piix_port_start,
+	inherits: &ata_bmdma32_port_ops,
+	sff_irq_check: piix_irq_check,
+	port_start: piix_port_start,
 };
 
 static struct ata_port_operations piix_pata_ops = {
-	.inherits		= &piix_sata_ops,
-	.cable_detect		= ata_cable_40wire,
-	.set_piomode		= piix_set_piomode,
-	.set_dmamode		= piix_set_dmamode,
+	inherits: &piix_sata_ops,
+	cable_detect: ata_cable_40wire,
+	set_piomode: piix_set_piomode,
+	set_dmamode: piix_set_dmamode,
 	.reset.prereset		= piix_pata_prereset,
 };
 
 static struct ata_port_operations piix_vmw_ops = {
-	.inherits		= &piix_pata_ops,
-	.bmdma_status		= piix_vmw_bmdma_status,
+	inherits: &piix_pata_ops,
+	bmdma_status: piix_vmw_bmdma_status,
 };
 
 static struct ata_port_operations ich_pata_ops = {
-	.inherits		= &piix_pata_ops,
-	.cable_detect		= ich_pata_cable_detect,
-	.set_dmamode		= ich_set_dmamode,
+	inherits: &piix_pata_ops,
+	cable_detect: ich_pata_cable_detect,
+	set_dmamode: ich_set_dmamode,
 };
 
 static struct attribute *piix_sidpr_shost_attrs[] = {
@@ -1281,141 +1270,141 @@ ATTRIBUTE_GROUPS(piix_sidpr_shost);
 
 static const struct scsi_host_template piix_sidpr_sht = {
 	ATA_BMDMA_SHT(DRV_NAME),
-	.shost_groups		= piix_sidpr_shost_groups,
+	shost_groups: piix_sidpr_shost_groups,
 };
 
 static struct ata_port_operations piix_sidpr_sata_ops = {
-	.inherits		= &piix_sata_ops,
+	inherits: &piix_sata_ops,
 	.reset.hardreset	= sata_std_hardreset,
-	.scr_read		= piix_sidpr_scr_read,
-	.scr_write		= piix_sidpr_scr_write,
-	.set_lpm		= piix_sidpr_set_lpm,
+	scr_read: piix_sidpr_scr_read,
+	scr_write: piix_sidpr_scr_write,
+	set_lpm: piix_sidpr_set_lpm,
 };
 
 static struct ata_port_info piix_port_info[] = {
 	[piix_pata_mwdma] =	/* PIIX3 MWDMA only */
 	{
-		.flags		= PIIX_PATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
-		.port_ops	= &piix_pata_ops,
+		flags: PIIX_PATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
+		port_ops: &piix_pata_ops,
 	},
 
 	[piix_pata_33] =	/* PIIX4 at 33MHz */
 	{
-		.flags		= PIIX_PATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
-		.udma_mask	= ATA_UDMA2,
-		.port_ops	= &piix_pata_ops,
+		flags: PIIX_PATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
+		udma_mask: ATA_UDMA2,
+		port_ops: &piix_pata_ops,
 	},
 
 	[ich_pata_33] =		/* ICH0 - ICH at 33Mhz*/
 	{
-		.flags		= PIIX_PATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA12_ONLY, /* Check: maybe MWDMA0 is ok  */
-		.udma_mask	= ATA_UDMA2,
-		.port_ops	= &ich_pata_ops,
+		flags: PIIX_PATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA12_ONLY, /* Check: maybe MWDMA0 is ok  */
+		udma_mask: ATA_UDMA2,
+		port_ops: &ich_pata_ops,
 	},
 
 	[ich_pata_66] =		/* ICH controllers up to 66MHz */
 	{
-		.flags		= PIIX_PATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA12_ONLY, /* MWDMA0 is broken on chip */
-		.udma_mask	= ATA_UDMA4,
-		.port_ops	= &ich_pata_ops,
+		flags: PIIX_PATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA12_ONLY, /* MWDMA0 is broken on chip */
+		udma_mask: ATA_UDMA4,
+		port_ops: &ich_pata_ops,
 	},
 
 	[ich_pata_100] =
 	{
-		.flags		= PIIX_PATA_FLAGS | PIIX_FLAG_CHECKINTR,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA12_ONLY,
-		.udma_mask	= ATA_UDMA5,
-		.port_ops	= &ich_pata_ops,
+		flags: PIIX_PATA_FLAGS | PIIX_FLAG_CHECKINTR,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA12_ONLY,
+		udma_mask: ATA_UDMA5,
+		port_ops: &ich_pata_ops,
 	},
 
 	[ich_pata_100_nomwdma1] =
 	{
-		.flags		= PIIX_PATA_FLAGS | PIIX_FLAG_CHECKINTR,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2_ONLY,
-		.udma_mask	= ATA_UDMA5,
-		.port_ops	= &ich_pata_ops,
+		flags: PIIX_PATA_FLAGS | PIIX_FLAG_CHECKINTR,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2_ONLY,
+		udma_mask: ATA_UDMA5,
+		port_ops: &ich_pata_ops,
 	},
 
 	[ich5_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich6_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich6m_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich8_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich8_2port_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[tolapai_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich8m_apple_sata] =
 	{
-		.flags		= PIIX_SATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[piix_pata_vmw] =
 	{
-		.flags		= PIIX_PATA_FLAGS,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
-		.udma_mask	= ATA_UDMA2,
-		.port_ops	= &piix_vmw_ops,
+		flags: PIIX_PATA_FLAGS,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
+		udma_mask: ATA_UDMA2,
+		port_ops: &piix_vmw_ops,
 	},
 
 	/*
@@ -1424,30 +1413,30 @@ static struct ata_port_info piix_port_info[] = {
 	 */
 	[ich8_sata_snb] =
 	{
-		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR | PIIX_FLAG_PIO16,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR | PIIX_FLAG_PIO16,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich8_2port_sata_snb] =
 	{
-		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR
+		flags: PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR
 					| PIIX_FLAG_PIO16,
-		.pio_mask	= ATA_PIO4,
-		.mwdma_mask	= ATA_MWDMA2,
-		.udma_mask	= ATA_UDMA6,
-		.port_ops	= &piix_sata_ops,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 	[ich8_2port_sata_byt] =
 	{
-		.flags          = PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR | PIIX_FLAG_PIO16,
-		.pio_mask       = ATA_PIO4,
-		.mwdma_mask     = ATA_MWDMA2,
-		.udma_mask      = ATA_UDMA6,
-		.port_ops       = &piix_sata_ops,
+		flags: PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR | PIIX_FLAG_PIO16,
+		pio_mask: ATA_PIO4,
+		mwdma_mask: ATA_MWDMA2,
+		udma_mask: ATA_UDMA6,
+		port_ops: &piix_sata_ops,
 	},
 
 };
@@ -1455,7 +1444,7 @@ static struct ata_port_info piix_port_info[] = {
 // #define AHCI_PCI_BAR 5
 // #define AHCI_GLOBAL_CTL 0x04
 // #define AHCI_ENABLE (1 << 31)
-static int piix_disable_ahci(struct pci_dev *pdev)
+static int piix_disable_ahci(pci_dev *pdev)
 {
 	void __iomem *mmio;
 	u32 tmp;
@@ -1495,7 +1484,7 @@ static int piix_disable_ahci(struct pci_dev *pdev)
  *	they are found return an error code so we can turn off DMA
  */
 
-static int piix_check_450nx_errata(struct pci_dev *ata_dev)
+static int piix_check_450nx_errata(pci_dev *ata_dev)
 {
 	struct pci_dev *pdev = NULL;
 	u16 cfg;
@@ -1506,14 +1495,14 @@ static int piix_check_450nx_errata(struct pci_dev *ata_dev)
 		   A PCI quirk checks bit 6 already */
 		pci_read_config_word(pdev, 0x41, &cfg);
 		/* Only on the original revision: IDE DMA can hang */
-		if (pdev->revision == 0x00)
+		if ((*pdev).revision == 0x00)
 			no_piix_dma = 1;
 		/* On all revisions below 5 PXB bus lock must be disabled for IDE */
-		else if (cfg & (1<<14) && pdev->revision < 5)
+		else if (cfg & (1<<14) && (*pdev).revision < 5)
 			no_piix_dma = 2;
 	}
 	if (no_piix_dma)
-		dev_warn(&ata_dev->dev,
+		dev_warn((*&ata_dev).dev,
 			 "450NX errata present, disabling IDE DMA%s\n",
 			 no_piix_dma == 2 ? " - a BIOS update may resolve this"
 			 : "");
@@ -1521,15 +1510,15 @@ static int piix_check_450nx_errata(struct pci_dev *ata_dev)
 	return no_piix_dma;
 }
 
-static void piix_init_pcs(struct ata_host *host,
+static void piix_init_pcs(ata_host *host,
 			  const struct piix_map_db *map_db)
 {
-	struct pci_dev *pdev = to_pci_dev(host->dev);
-	u16 pcs, new_pcs;
+	struct pci_dev *pdev = to_pci_dev((*host).dev);
+	pcs: u16, new_pcs;
 
 	pci_read_config_word(pdev, ICH5_PCS, &pcs);
 
-	new_pcs = pcs | map_db->port_enable;
+	new_pcs = pcs | (*map_db).port_enable;
 
 	if (new_pcs != pcs) {
 		pci_write_config_word(pdev, ICH5_PCS, new_pcs);
@@ -1537,8 +1526,8 @@ static void piix_init_pcs(struct ata_host *host,
 	}
 }
 
-static const int *piix_init_sata_map(struct pci_dev *pdev,
-				     struct ata_port_info *pinfo,
+static const int *piix_init_sata_map(pci_dev *pdev,
+				     ata_port_info *pinfo,
 				     const struct piix_map_db *map_db)
 {
 	const int *map;
@@ -1549,7 +1538,7 @@ static const int *piix_init_sata_map(struct pci_dev *pdev,
 
 	pci_read_config_byte(pdev, ICH5_PMR, &map_value);
 
-	map = map_db->map[map_value & map_db->mask];
+	map = (*map_db).map[map_value & (*map_db).mask];
 
 	for (i = 0; i < 4; i++) {
 		switch (map[i]) {
@@ -1576,17 +1565,17 @@ static const int *piix_init_sata_map(struct pci_dev *pdev,
 			break;
 		}
 	}
-	dev_info(&pdev->dev, "MAP [%s ]\n", buf);
+	dev_info((*&pdev).dev, "MAP [%s ]\n", buf);
 
 	if (invalid_map)
-		dev_err(&pdev->dev, "invalid MAP value %u\n", map_value);
+		dev_err((*&pdev).dev, "invalid MAP value %u\n", map_value);
 
 	return map;
 }
 
-static bool piix_no_sidpr(struct ata_host *host)
+static bool piix_no_sidpr(ata_host *host)
 {
-	struct pci_dev *pdev = to_pci_dev(host->dev);
+	struct pci_dev *pdev = to_pci_dev((*host).dev);
 
 	/*
 	 * Samsung DB-P70 only has three ATA ports exposed and
@@ -1606,10 +1595,10 @@ static bool piix_no_sidpr(struct ata_host *host)
 	 *
 	 * https://bugzilla.novell.com/show_bug.cgi?id=441420
 	 */
-	if (pdev->vendor == PCI_VENDOR_ID_INTEL && pdev->device == 0x2920 &&
-	    pdev->subsystem_vendor == PCI_VENDOR_ID_SAMSUNG &&
-	    pdev->subsystem_device == 0xb049) {
-		dev_warn(host->dev,
+	if ((*pdev).vendor == PCI_VENDOR_ID_INTEL && (*pdev).device == 0x2920 &&
+	    (*pdev).subsystem_vendor == PCI_VENDOR_ID_SAMSUNG &&
+	    (*pdev).subsystem_device == 0xb049) {
+		dev_warn((*host).dev,
 			 "Samsung DB-P70 detected, disabling SIDPR\n");
 		return true;
 	}
@@ -1617,23 +1606,23 @@ static bool piix_no_sidpr(struct ata_host *host)
 	return false;
 }
 
-static int piix_init_sidpr(struct ata_host *host)
+static int piix_init_sidpr(ata_host *host)
 {
-	struct pci_dev *pdev = to_pci_dev(host->dev);
-	struct piix_host_priv *hpriv = host->private_data;
-	struct ata_link *link0 = &host->ports[0]->link;
+	struct pci_dev *pdev = to_pci_dev((*host).dev);
+	struct piix_host_priv *hpriv = (*host).private_data;
+	struct ata_link *link0 = (*(*&host).ports[0]).link;
 	u32 scontrol;
 	int i, rc;
 
 	/* check for availability */
 	for (i = 0; i < 4; i++)
-		if (hpriv->map[i] == IDE)
+		if ((*hpriv).map[i] == IDE)
 			return 0;
 
 	if (piix_no_sidpr(host))
 		return 0;
 
-	if (!(host->ports[0]->flags & PIIX_FLAG_SIDPR))
+	if (!((*(*host).ports[0]).flags & PIIX_FLAG_SIDPR))
 		return 0;
 
 	if (pci_resource_start(pdev, PIIX_SIDPR_BAR) == 0 ||
@@ -1643,7 +1632,7 @@ static int piix_init_sidpr(struct ata_host *host)
 	if (pcim_iomap_regions(pdev, 1 << PIIX_SIDPR_BAR, DRV_NAME))
 		return 0;
 
-	hpriv->sidpr = pcim_iomap_table(pdev)[PIIX_SIDPR_BAR];
+	(*hpriv).sidpr = pcim_iomap_table(pdev)[PIIX_SIDPR_BAR];
 
 	/* SCR access via SIDPR doesn't work on some configurations.
 	 * Give it a test drive by inhibiting power save modes which
@@ -1661,7 +1650,7 @@ static int piix_init_sidpr(struct ata_host *host)
 		piix_sidpr_scr_read(link0, SCR_CONTROL, &scontrol);
 
 		if ((scontrol & 0xf00) != 0x300) {
-			dev_info(host->dev,
+			dev_info((*host).dev,
 				 "SCR access via SIDPR is available but doesn't work\n");
 			return 0;
 		}
@@ -1669,11 +1658,11 @@ static int piix_init_sidpr(struct ata_host *host)
 
 	/* okay, SCRs available, set ops and ask libata for slave_link */
 	for (i = 0; i < 2; i++) {
-		struct ata_port *ap = host->ports[i];
+		struct ata_port *ap = (*host).ports[i];
 
-		ap->ops = &piix_sidpr_sata_ops;
+		(*ap).ops = &piix_sidpr_sata_ops;
 
-		if (ap->flags & ATA_FLAG_SLAVE_POSS) {
+		if ((*ap).flags & ATA_FLAG_SLAVE_POSS) {
 			rc = ata_slave_link_init(ap);
 			if (rc)
 				return rc;
@@ -1683,7 +1672,7 @@ static int piix_init_sidpr(struct ata_host *host)
 	return 0;
 }
 
-static void piix_iocfg_bit18_quirk(struct ata_host *host)
+static void piix_iocfg_bit18_quirk(ata_host *host)
 {
 	static const struct dmi_system_id sysids[] = {
 		{
@@ -1691,8 +1680,8 @@ static void piix_iocfg_bit18_quirk(struct ata_host *host)
 			 * isn't used to boot the system which
 			 * disables the channel.
 			 */
-			.ident = "M570U",
-			.matches = {
+			ident: "M570U",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "Clevo Co."),
 				DMI_MATCH(DMI_PRODUCT_NAME, "M570U"),
 			},
@@ -1700,8 +1689,8 @@ static void piix_iocfg_bit18_quirk(struct ata_host *host)
 
 		{ }	/* terminate list */
 	};
-	struct pci_dev *pdev = to_pci_dev(host->dev);
-	struct piix_host_priv *hpriv = host->private_data;
+	struct pci_dev *pdev = to_pci_dev((*host).dev);
+	struct piix_host_priv *hpriv = (*host).private_data;
 
 	if (!dmi_check_system(sysids))
 		return;
@@ -1710,33 +1699,33 @@ static void piix_iocfg_bit18_quirk(struct ata_host *host)
 	 * seem to use it to disable a channel.  Clear the bit on the
 	 * affected systems.
 	 */
-	if (hpriv->saved_iocfg & (1 << 18)) {
-		dev_info(&pdev->dev, "applying IOCFG bit18 quirk\n");
+	if ((*hpriv).saved_iocfg & (1 << 18)) {
+		dev_info((*&pdev).dev, "applying IOCFG bit18 quirk\n");
 		pci_write_config_dword(pdev, PIIX_IOCFG,
-				       hpriv->saved_iocfg & ~(1 << 18));
+				       (*hpriv).saved_iocfg & ~(1 << 18));
 	}
 }
 
-static bool piix_broken_system_poweroff(struct pci_dev *pdev)
+static bool piix_broken_system_poweroff(pci_dev *pdev)
 {
 	static const struct dmi_system_id broken_systems[] = {
 		{
-			.ident = "HP Compaq 2510p",
-			.matches = {
+			ident: "HP Compaq 2510p",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "HP Compaq 2510p"),
 			},
 			/* PCI slot number of the controller */
-			.driver_data = (void *)0x1FUL,
+			driver_data: (void *)0x1FUL,
 		},
 		{
-			.ident = "HP Compaq nc6000",
-			.matches = {
+			ident: "HP Compaq nc6000",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "HP Compaq nc6000"),
 			},
 			/* PCI slot number of the controller */
-			.driver_data = (void *)0x1FUL,
+			driver_data: (void *)0x1FUL,
 		},
 
 		{ }	/* terminate list */
@@ -1744,9 +1733,9 @@ static bool piix_broken_system_poweroff(struct pci_dev *pdev)
 	const struct dmi_system_id *dmi = dmi_first_match(broken_systems);
 
 	if (dmi) {
-		unsigned long slot = (unsigned long)dmi->driver_data;
+		core::ffi::c_ulong slot = (*(core::ffi::c_ulong)dmi).driver_data;
 		/* apply the quirk only to on-board controllers */
-		return slot == PCI_SLOT(pdev->devfn);
+		return slot == PCI_SLOT((*pdev).devfn);
 	}
 
 	return false;
@@ -1759,7 +1748,7 @@ module_param(prefer_ms_hyperv, int, 0);
 	"0 - Use ATA drivers, "
 	"1 (Default) - Use the paravirtualization drivers.");
 
-static void piix_ignore_devices_quirk(struct ata_host *host)
+static void piix_ignore_devices_quirk(ata_host *host)
 {
 #if IS_ENABLED(CONFIG_HYPERV_STORAGE)
 	static const struct dmi_system_id ignore_hyperv[] = {
@@ -1770,8 +1759,8 @@ static void piix_ignore_devices_quirk(struct ata_host *host)
 			 * are only exposed on the emulated controller.
 			 * Request we ignore ATA devices on this host.
 			 */
-			.ident = "Hyper-V Virtual Machine",
-			.matches = {
+			ident: "Hyper-V Virtual Machine",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR,
 						"Microsoft Corporation"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Virtual Machine"),
@@ -1787,8 +1776,8 @@ static void piix_ignore_devices_quirk(struct ata_host *host)
 			 * a Virtual PC guest. This entry allows ata_piix to
 			 * drive the emulated hardware.
 			 */
-			.ident = "MS Virtual PC 2007",
-			.matches = {
+			ident: "MS Virtual PC 2007",
+			matches: {
 				DMI_MATCH(DMI_SYS_VENDOR,
 						"Microsoft Corporation"),
 				DMI_MATCH(DMI_PRODUCT_NAME, "Virtual Machine"),
@@ -1801,9 +1790,9 @@ static void piix_ignore_devices_quirk(struct ata_host *host)
 	const struct dmi_system_id *allow = dmi_first_match(allow_virtual_pc);
 
 	if (ignore && !allow && prefer_ms_hyperv) {
-		host->flags |= ATA_HOST_IGNORE_ATA;
-		dev_info(host->dev, "%s detected, ATA device ignore set\n",
-			ignore->ident);
+		(*host).flags |= ATA_HOST_IGNORE_ATA;
+		dev_info((*host).dev, "%s detected, ATA device ignore set\n",
+			(*ignore).ident);
 	}
 #endif
 }
@@ -1823,33 +1812,33 @@ static void piix_ignore_devices_quirk(struct ata_host *host)
  *	Zero on success, or -ERRNO value.
  */
 
-static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+static int piix_init_one(pci_dev *pdev, const struct pci_device_id *ent)
 {
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 	struct ata_port_info port_info[2];
 	const struct ata_port_info *ppi[] = { &port_info[0], &port_info[1] };
 	const struct scsi_host_template *sht = &piix_sht;
-	unsigned long port_flags;
+	core::ffi::c_ulong port_flags;
 	struct ata_host *host;
 	struct piix_host_priv *hpriv;
 	int rc;
 
-	ata_print_version_once(&pdev->dev, DRV_VERSION);
+	ata_print_version_once((*&pdev).dev, DRV_VERSION);
 
 	/* no hotplugging support for later devices (FIXME) */
-	if (!in_module_init && ent->driver_data >= ich5_sata)
+	if (!in_module_init && (*ent).driver_data >= ich5_sata)
 		return -ENODEV;
 
 	if (piix_broken_system_poweroff(pdev)) {
-		piix_port_info[ent->driver_data].flags |=
+		piix_port_info[(*ent).driver_data].flags |=
 				ATA_FLAG_NO_POWEROFF_SPINDOWN |
 					ATA_FLAG_NO_HIBERNATE_SPINDOWN;
-		dev_info(&pdev->dev, "quirky BIOS, skipping spindown "
+		dev_info((*&pdev).dev, "quirky BIOS, skipping spindown "
 				"on poweroff and hibernation\n");
 	}
 
-	port_info[0] = piix_port_info[ent->driver_data];
-	port_info[1] = piix_port_info[ent->driver_data];
+	port_info[0] = piix_port_info[(*ent).driver_data];
+	port_info[1] = piix_port_info[(*ent).driver_data];
 
 	port_flags = port_info[0].flags;
 
@@ -1867,13 +1856,13 @@ static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * because some ACPI implementations mess up cable related
 	 * bits on _STM.  Reported on kernel bz#11879.
 	 */
-	pci_read_config_dword(pdev, PIIX_IOCFG, &hpriv->saved_iocfg);
+	pci_read_config_dword(pdev, PIIX_IOCFG, (*&hpriv).saved_iocfg);
 
 	/* ICH6R may be driven by either ata_piix or ahci driver
 	 * regardless of BIOS configuration.  Make sure AHCI mode is
 	 * off.
 	 */
-	if (pdev->vendor == PCI_VENDOR_ID_INTEL && pdev->device == 0x2652) {
+	if ((*pdev).vendor == PCI_VENDOR_ID_INTEL && (*pdev).device == 0x2652) {
 		rc = piix_disable_ahci(pdev);
 		if (rc)
 			return rc;
@@ -1881,21 +1870,21 @@ static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* SATA map init can change port_info, do it before prepping host */
 	if (port_flags & ATA_FLAG_SATA)
-		hpriv->map = piix_init_sata_map(pdev, port_info,
-					piix_map_db_table[ent->driver_data]);
+		(*hpriv).map = piix_init_sata_map(pdev, port_info,
+					piix_map_db_table[(*ent).driver_data]);
 
 	rc = ata_pci_bmdma_prepare_host(pdev, ppi, &host);
 	if (rc)
 		return rc;
-	host->private_data = hpriv;
+	(*host).private_data = hpriv;
 
 	/* initialize controller */
 	if (port_flags & ATA_FLAG_SATA) {
-		piix_init_pcs(host, piix_map_db_table[ent->driver_data]);
+		piix_init_pcs(host, piix_map_db_table[(*ent).driver_data]);
 		rc = piix_init_sidpr(host);
 		if (rc)
 			return rc;
-		if (host->ports[0]->ops == &piix_sidpr_sata_ops)
+		if ((*(*host).ports[0]).ops == &piix_sidpr_sata_ops)
 			sht = &piix_sidpr_sht;
 	}
 
@@ -1915,12 +1904,12 @@ static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		/* This writes into the master table but it does not
 		   really matter for this errata as we will apply it to
 		   all the PIIX devices on the board */
-		host->ports[0]->mwdma_mask = 0;
-		host->ports[0]->udma_mask = 0;
-		host->ports[1]->mwdma_mask = 0;
-		host->ports[1]->udma_mask = 0;
+		(*(*host).ports[0]).mwdma_mask = 0;
+		(*(*host).ports[0]).udma_mask = 0;
+		(*(*host).ports[1]).mwdma_mask = 0;
+		(*(*host).ports[1]).udma_mask = 0;
 	}
-	host->flags |= ATA_HOST_PARALLEL_SCAN;
+	(*host).flags |= ATA_HOST_PARALLEL_SCAN;
 
 	/* Allow hosts to specify device types to ignore when scanning. */
 	piix_ignore_devices_quirk(host);
@@ -1929,24 +1918,24 @@ static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return ata_pci_sff_activate_host(host, ata_bmdma_interrupt, sht);
 }
 
-static void piix_remove_one(struct pci_dev *pdev)
+static void piix_remove_one(pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
-	struct piix_host_priv *hpriv = host->private_data;
+	struct piix_host_priv *hpriv = (*host).private_data;
 
-	pci_write_config_dword(pdev, PIIX_IOCFG, hpriv->saved_iocfg);
+	pci_write_config_dword(pdev, PIIX_IOCFG, (*hpriv).saved_iocfg);
 
 	ata_pci_remove_one(pdev);
 }
 
 static struct pci_driver piix_pci_driver = {
-	.name			= DRV_NAME,
-	.id_table		= piix_pci_tbl,
-	.probe			= piix_init_one,
-	.remove			= piix_remove_one,
+	name: DRV_NAME,
+	id_table: piix_pci_tbl,
+	probe: piix_init_one,
+	remove: piix_remove_one,
 #ifdef CONFIG_PM_SLEEP
-	.suspend		= piix_pci_device_suspend,
-	.resume			= piix_pci_device_resume,
+	suspend: piix_pci_device_suspend,
+	resume: piix_pci_device_resume,
 #endif
 };
 

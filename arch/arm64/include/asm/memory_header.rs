@@ -22,7 +22,7 @@ pub const FIXADDR_TOP: usize = (!0usize) - (SZ_8M - 1);
 
 // VA_BITS_MIN is selected by CONFIG_ARM64_16K_PAGES when VA_BITS > 48.
 pub const VA_BITS_MIN: usize = if VA_BITS > 48 {
-    if cfg!(feature = "CONFIG_ARM64_16K_PAGES") { 47 } else { 48 }
+    if cfg!(CONFIG_ARM64_16K_PAGES) { 47 } else { 48 }
 } else { VA_BITS };
 #[inline] pub const fn _PAGE_END(va: usize) -> usize { (!0usize) << (va - 1) }
 
@@ -30,19 +30,19 @@ pub const KERNEL_START: usize = _text as usize;
 pub const KERNEL_END: usize = _end as usize;
 
 // KASAN shadow layout is selected by CONFIG_KASAN_GENERIC/CONFIG_KASAN_SW_TAGS.
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 pub const KASAN_SHADOW_OFFSET: u64 = CONFIG_KASAN_SHADOW_OFFSET;
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 pub const KASAN_SHADOW_END: u64 = (1u64 << (64 - KASAN_SHADOW_SCALE_SHIFT)) + KASAN_SHADOW_OFFSET;
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 pub const KASAN_SHADOW_START: u64 = KASAN_SHADOW_END - (1u64 << (vabits_actual() - KASAN_SHADOW_SCALE_SHIFT));
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 pub const PAGE_END: u64 = KASAN_SHADOW_START;
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 pub const KASAN_THREAD_SHIFT: usize = 1;
-#[cfg(not(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS")))]
+#[cfg(not(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS)))]
 pub const KASAN_THREAD_SHIFT: usize = 0;
-#[cfg(not(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS")))]
+#[cfg(not(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS)))]
 pub const PAGE_END: usize = _PAGE_END(VA_BITS_MIN);
 
 pub const DIRECT_MAP_PHYSMEM_END: usize = __pa(PAGE_END - 1);
@@ -72,7 +72,7 @@ pub const MT_S2_FWB_NORMAL_NC: u32 = 5;
 pub const MT_S2_FWB_DEVICE_nGnRE: u32 = 1;
 pub const MT_S2_FWB_AS_S1: u32 = 7;
 
-pub const IOREMAP_MAX_ORDER: usize = if cfg!(feature = "CONFIG_ARM64_4K_PAGES") { PUD_SHIFT } else { PMD_SHIFT };
+pub const IOREMAP_MAX_ORDER: usize = if cfg!(CONFIG_ARM64_4K_PAGES) { PUD_SHIFT } else { PMD_SHIFT };
 pub const RESERVED_SWAPPER_OFFSET: usize = PAGE_SIZE;
 pub const TRAMP_SWAPPER_OFFSET: usize = 2 * PAGE_SIZE;
 
@@ -89,10 +89,10 @@ extern "C" {
 }
 #[inline] pub unsafe fn PHYS_OFFSET() -> i64 { debug_assert!((memstart_addr & 1) == 0); memstart_addr }
 #[inline] pub unsafe fn kaslr_offset() -> u64 { (&_text as *const u8 as u64) - KIMAGE_VADDR as u64 }
-#[cfg(feature = "CONFIG_RANDOMIZE_BASE")] extern "C" { pub fn kaslr_init(); pub static __kaslr_is_enabled: bool; }
-#[cfg(feature = "CONFIG_RANDOMIZE_BASE")] pub unsafe fn kaslr_enabled() -> bool { __kaslr_is_enabled }
-#[cfg(not(feature = "CONFIG_RANDOMIZE_BASE"))] pub unsafe fn kaslr_init() {}
-#[cfg(not(feature = "CONFIG_RANDOMIZE_BASE"))] pub fn kaslr_enabled() -> bool { false }
+#[cfg(CONFIG_RANDOMIZE_BASE)] extern "C" { pub fn kaslr_init(); pub static __kaslr_is_enabled: bool; }
+#[cfg(CONFIG_RANDOMIZE_BASE)] pub unsafe fn kaslr_enabled() -> bool { __kaslr_is_enabled }
+#[cfg(not(CONFIG_RANDOMIZE_BASE))] pub unsafe fn kaslr_init() {}
+#[cfg(not(CONFIG_RANDOMIZE_BASE))] pub fn kaslr_enabled() -> bool { false }
 
 pub const MIN_MEMBLOCK_ADDR: u64 = 0;
 pub const MAX_MEMBLOCK_ADDR: u64 = u64::MAX;
@@ -100,9 +100,9 @@ pub const PHYS_PFN_OFFSET: usize = (PHYS_OFFSET() as usize) >> PAGE_SHIFT;
 
 #[inline] pub unsafe fn __untagged_addr(addr: u64) -> u64 { ((addr as i64) << 8 >> 8) as u64 }
 #[inline] pub unsafe fn untagged_addr(addr: u64) -> u64 { addr & __untagged_addr(addr) }
-#[cfg(any(feature = "CONFIG_KASAN_SW_TAGS", feature = "CONFIG_KASAN_HW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_SW_TAGS, CONFIG_KASAN_HW_TAGS))]
 #[inline] pub fn __tag_shifted(tag: u8) -> u64 { (tag as u64) << 56 }
-#[cfg(not(any(feature = "CONFIG_KASAN_SW_TAGS", feature = "CONFIG_KASAN_HW_TAGS")))]
+#[cfg(not(any(CONFIG_KASAN_SW_TAGS, CONFIG_KASAN_HW_TAGS)))]
 #[inline] pub fn __tag_shifted(_tag: u8) -> u64 { 0 }
 #[inline] pub unsafe fn __tag_reset(addr: u64) -> u64 { __untagged_addr(addr) }
 #[inline] pub fn __tag_get(addr: u64) -> u8 { (addr >> 56) as u8 }

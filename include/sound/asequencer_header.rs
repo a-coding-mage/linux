@@ -65,7 +65,7 @@ macro_rules! snd_seq_ev_is_reltime { ($ev:expr) => {{ snd_seq_ev_timemode_type!(
 macro_rules! snd_seq_ev_is_ump {
     ($ev:expr) => {{
         // CONFIG_SND_SEQ_UMP is a build-time configuration supplied externally.
-        cfg!(feature = "CONFIG_SND_SEQ_UMP") && unsafe { (*$ev).flags & SNDRV_SEQ_EVENT_UMP != 0 }
+        cfg!(CONFIG_SND_SEQ_UMP) && unsafe { (*$ev).flags & SNDRV_SEQ_EVENT_UMP != 0 }
     }};
 }
 

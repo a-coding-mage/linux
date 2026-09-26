@@ -22,7 +22,7 @@ pub struct kcore_list {
 }
 
 /* CONFIG_PROC_KCORE */
-#[cfg(feature = "CONFIG_PROC_KCORE")]
+#[cfg(CONFIG_PROC_KCORE)]
 extern "C" {
     pub fn kclist_add(
         new: *mut kcore_list,
@@ -36,7 +36,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PROC_KCORE"))]
+#[cfg(not(CONFIG_PROC_KCORE))]
 pub unsafe fn kclist_add(
     _new: *mut kcore_list,
     _addr: *mut core::ffi::c_void,

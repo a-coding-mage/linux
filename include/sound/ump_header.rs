@@ -39,25 +39,25 @@ pub struct snd_ump_endpoint {
     pub input_pending: i32,
     pub open_mutex: mutex,
     pub groups: [snd_ump_group; SNDRV_UMP_MAX_GROUPS],
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_locks: [spinlock_t; 2],
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_rmidi: *mut snd_rawmidi,
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_substreams: [[*mut snd_rawmidi_substream; SNDRV_UMP_MAX_GROUPS]; 2],
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_mapping: [core::ffi::c_uchar; SNDRV_UMP_MAX_GROUPS],
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_out_opens: i32,
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub legacy_out_rfile: snd_rawmidi_file,
-    #[cfg(feature = "CONFIG_SND_UMP_LEGACY_RAWMIDI")]
+    #[cfg(CONFIG_SND_UMP_LEGACY_RAWMIDI)]
     pub out_cvts: *mut ump_cvt_to_ump,
-    #[cfg(feature = "CONFIG_SND_SEQUENCER")]
+    #[cfg(CONFIG_SND_SEQUENCER)]
     pub seq_dev: *mut snd_seq_device,
-    #[cfg(feature = "CONFIG_SND_SEQUENCER")]
+    #[cfg(CONFIG_SND_SEQUENCER)]
     pub seq_ops: *const snd_seq_ump_ops,
-    #[cfg(feature = "CONFIG_SND_SEQUENCER")]
+    #[cfg(CONFIG_SND_SEQUENCER)]
     pub seq_client: *mut core::ffi::c_void,
 }
 

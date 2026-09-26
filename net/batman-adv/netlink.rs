@@ -28,25 +28,25 @@ pub const BATADV_FLAG_NEED_VLAN: u32 = 4;
 pub static mut batadv_netlink_family: genl_family = genl_family { _private: [] };
 
 extern "C" {
-    fn nlmsg_find_attr(*const nlmsghdr, u32, c_int) -> *mut nlattr;
-    fn nla_len(*mut nlattr) -> usize; fn nla_get_u8(*mut nlattr) -> u8; fn nla_get_u16(*mut nlattr) -> u16;
-    fn nla_get_u32(*mut nlattr) -> u32; fn nla_data(*mut nlattr) -> *mut u8;
-    fn nlmsg_new(usize, u32) -> *mut sk_buff; fn nlmsg_free(*mut sk_buff);
-    fn genlmsg_put(*mut sk_buff,u32,u32,*mut genl_family,c_int,u32)->*mut c_void;
-    fn genlmsg_end(*mut sk_buff,*mut c_void); fn genlmsg_cancel(*mut sk_buff,*mut c_void);
-    fn genlmsg_reply(*mut sk_buff,*mut genl_info)->c_int;
-    fn genlmsg_multicast_netns(*mut genl_family,*mut net,*mut sk_buff,u32,u32,u32)->c_int;
-    fn nla_put_u8(*mut sk_buff,c_int,u8)->c_int; fn nla_put_u16(*mut sk_buff,c_int,u16)->c_int;
-    fn nla_put_u32(*mut sk_buff,c_int,u32)->c_int; fn nla_put_string(*mut sk_buff,c_int,*const c_char)->c_int;
-    fn nla_put(*mut sk_buff,c_int,usize,*const u8)->c_int; fn nla_put_flag(*mut sk_buff,c_int)->c_int;
-    fn nla_put_u64_64bit(*mut sk_buff,c_int,u64,c_int)->c_int;
-    fn dev_net(*mut net_device)->*mut net; fn dev_get_by_index(*mut net,c_int)->*mut net_device; fn dev_put(*mut net_device);
-    fn sock_net(*mut c_void)->*mut net; fn netdev_priv(*mut net_device)->*mut batadv_priv;
-    fn batadv_meshif_is_valid(*mut net_device)->bool; fn batadv_meshif_vlan_get(*mut batadv_priv,u16)->*mut batadv_meshif_vlan;
-    fn batadv_meshif_vlan_put(*mut batadv_meshif_vlan); fn batadv_hardif_get_by_netdev(*mut net_device)->*mut batadv_hard_iface;
-    fn batadv_hardif_put(*mut batadv_hard_iface); fn batadv_tp_start(*mut batadv_priv,*const u8,u32,*mut u32);
-    fn batadv_tp_stop(*mut batadv_priv,*const u8,u8); fn rtnl_lock(); fn rtnl_unlock();
-    fn genl_register_family(*mut genl_family)->c_int; fn genl_unregister_family(*mut genl_family);
+    fn nlmsg_find_attr(_: *const nlmsghdr, _: u32, _: c_int) -> *mut nlattr;
+    fn nla_len(_: *mut nlattr) -> usize; fn nla_get_u8(_: *mut nlattr) -> u8; fn nla_get_u16(_: *mut nlattr) -> u16;
+    fn nla_get_u32(_: *mut nlattr) -> u32; fn nla_data(_: *mut nlattr) -> *mut u8;
+    fn nlmsg_new(_: usize, _: u32) -> *mut sk_buff; fn nlmsg_free(_: *mut sk_buff);
+    fn genlmsg_put(_: *mut sk_buff,_: u32,_: u32,_: *mut genl_family,_: c_int,_: u32)->*mut c_void;
+    fn genlmsg_end(_: *mut sk_buff,_: *mut c_void); fn genlmsg_cancel(_: *mut sk_buff,_: *mut c_void);
+    fn genlmsg_reply(_: *mut sk_buff,_: *mut genl_info)->c_int;
+    fn genlmsg_multicast_netns(_: *mut genl_family,_: *mut net,_: *mut sk_buff,_: u32,_: u32,_: u32)->c_int;
+    fn nla_put_u8(_: *mut sk_buff,_: c_int,_: u8)->c_int; fn nla_put_u16(_: *mut sk_buff,_: c_int,_: u16)->c_int;
+    fn nla_put_u32(_: *mut sk_buff,_: c_int,_: u32)->c_int; fn nla_put_string(_: *mut sk_buff,_: c_int,_: *const c_char)->c_int;
+    fn nla_put(_: *mut sk_buff,_: c_int,_: usize,_: *const u8)->c_int; fn nla_put_flag(_: *mut sk_buff,_: c_int)->c_int;
+    fn nla_put_u64_64bit(_: *mut sk_buff,_: c_int,_: u64,_: c_int)->c_int;
+    fn dev_net(_: *mut net_device)->*mut net; fn dev_get_by_index(_: *mut net,_: c_int)->*mut net_device; fn dev_put(_: *mut net_device);
+    fn sock_net(_: *mut c_void)->*mut net; fn netdev_priv(_: *mut net_device)->*mut batadv_priv;
+    fn batadv_meshif_is_valid(_: *mut net_device)->bool; fn batadv_meshif_vlan_get(_: *mut batadv_priv,_: u16)->*mut batadv_meshif_vlan;
+    fn batadv_meshif_vlan_put(_: *mut batadv_meshif_vlan); fn batadv_hardif_get_by_netdev(_: *mut net_device)->*mut batadv_hard_iface;
+    fn batadv_hardif_put(_: *mut batadv_hard_iface); fn batadv_tp_start(_: *mut batadv_priv,_: *const u8,_: u32,_: *mut u32);
+    fn batadv_tp_stop(_: *mut batadv_priv,_: *const u8,_: u8); fn rtnl_lock(); fn rtnl_unlock();
+    fn genl_register_family(_: *mut genl_family)->c_int; fn genl_unregister_family(_: *mut genl_family);
 }
 
 pub unsafe fn batadv_netlink_get_ifindex(nlh: *const nlmsghdr, attrtype: c_int) -> c_int {

@@ -110,19 +110,19 @@ unsafe fn vlan_changelink(
     if !(*data.add(IFLA_VLAN_INGRESS_QOS)).is_null() {
         let mut attr: *mut struct_nlattr = core::ptr::null_mut();
         let mut rem: i32 = 0;
-        nla_for_each_nested_type!(attr, IFLA_VLAN_QOS_MAPPING, *data.add(IFLA_VLAN_INGRESS_QOS), rem) {
+        nla_for_each_nested_type!(attr, IFLA_VLAN_QOS_MAPPING, *data.add(IFLA_VLAN_INGRESS_QOS), rem, {
             let m = nla_data(attr) as *mut struct_ifla_vlan_qos_mapping;
             vlan_dev_set_ingress_priority(dev, (*m).to, (*m).from);
-        }
+        });
     }
     if !(*data.add(IFLA_VLAN_EGRESS_QOS)).is_null() {
         let mut attr: *mut struct_nlattr = core::ptr::null_mut();
         let mut rem: i32 = 0;
-        nla_for_each_nested_type!(attr, IFLA_VLAN_QOS_MAPPING, *data.add(IFLA_VLAN_EGRESS_QOS), rem) {
+        nla_for_each_nested_type!(attr, IFLA_VLAN_QOS_MAPPING, *data.add(IFLA_VLAN_EGRESS_QOS), rem, {
             let m = nla_data(attr) as *mut struct_ifla_vlan_qos_mapping;
             err = vlan_dev_set_egress_priority(dev, (*m).from, (*m).to);
             if err != 0 { return err; }
-        }
+        });
     }
     0
 }

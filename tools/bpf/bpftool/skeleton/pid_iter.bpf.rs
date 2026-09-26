@@ -48,8 +48,7 @@ unsafe extern "C" {
     pub fn bpf_probe_read_kernel_str(
         dst: *mut core::ffi::c_void,
         size: u32,
-        unsafe_ptr: *const core::ffi::c_void,
-    ) -> i64;
+        unsafe_ptr: *const core::ffi::c_void) -> i64;
     pub fn bpf_seq_write(seq: *mut core::ffi::c_void, data: *const core::ffi::c_void, len: u32) -> i64;
 }
 
@@ -194,7 +193,7 @@ pub unsafe extern "C" fn iter(ctx: *mut bpf_iter__task_file) -> i32 {
 
     if unsafe { obj_type == bpf_obj_type::BPF_OBJ_LINK } {
         /* Original C additionally checks:
-         * bpf_core_enum_value_exists(enum bpf_link_type___local,
+         * bpf_core_enum_value_exists(bpf_link_type___local,
          *                            BPF_LINK_TYPE_PERF_EVENT___local)
          */
         let link = unsafe { (*file).private_data as *mut bpf_link };

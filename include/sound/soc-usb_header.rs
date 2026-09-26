@@ -69,7 +69,7 @@ pub struct device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SND_SOC_USB")]
+#[cfg(CONFIG_SND_SOC_USB)]
 extern "C" {
     pub fn snd_soc_usb_find_supported_format(
         card_idx: ::core::ffi::c_int,
@@ -91,25 +91,25 @@ extern "C" {
     pub fn snd_soc_usb_remove_port(usb: *mut snd_soc_usb);
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_find_supported_format(_: ::core::ffi::c_int, _: *mut snd_pcm_hw_params, _: ::core::ffi::c_int) -> ::core::ffi::c_int { -22 }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_connect(_: *mut device, _: *mut snd_soc_usb_device) -> ::core::ffi::c_int { -19 }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_disconnect(_: *mut device, _: *mut snd_soc_usb_device) -> ::core::ffi::c_int { -22 }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_find_priv_data(_: *mut device) -> *mut ::core::ffi::c_void { ::core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_setup_offload_jack(_: *mut snd_soc_component, _: *mut snd_soc_jack) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_update_offload_route(_: *mut device, _: ::core::ffi::c_int, _: ::core::ffi::c_int, _: ::core::ffi::c_int, _: snd_soc_usb_kctl, _: *mut ::core::ffi::c_long) -> ::core::ffi::c_int { -19 }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_allocate_port(_: *mut snd_soc_component, _: *mut ::core::ffi::c_void) -> *mut snd_soc_usb { ::core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_free_port(_: *mut snd_soc_usb) {}
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_add_port(_: *mut snd_soc_usb) {}
-#[cfg(not(feature = "CONFIG_SND_SOC_USB"))]
+#[cfg(not(CONFIG_SND_SOC_USB))]
 pub unsafe fn snd_soc_usb_remove_port(_: *mut snd_soc_usb) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

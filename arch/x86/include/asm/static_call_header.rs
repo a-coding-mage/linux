@@ -50,14 +50,14 @@ macro_rules! ARCH_DEFINE_STATIC_CALL_TRAMP {
     };
 }
 
-#[cfg(feature = "CONFIG_MITIGATION_RETHUNK")]
+#[cfg(CONFIG_MITIGATION_RETHUNK)]
 macro_rules! ARCH_DEFINE_STATIC_CALL_NULL_TRAMP {
     ($name:ident) => {
         __ARCH_DEFINE_STATIC_CALL_TRAMP!($name, "jmp __x86_return_thunk");
     };
 }
 
-#[cfg(not(feature = "CONFIG_MITIGATION_RETHUNK"))]
+#[cfg(not(CONFIG_MITIGATION_RETHUNK))]
 macro_rules! ARCH_DEFINE_STATIC_CALL_NULL_TRAMP {
     ($name:ident) => {
         __ARCH_DEFINE_STATIC_CALL_TRAMP!($name, "ret; int3; nop; nop; nop");
@@ -87,7 +87,7 @@ unsafe extern "C" {
 
 macro_rules! static_call_update_early {
     ($name:ident, $func:expr) => {{
-        // `typeof(&STATIC_CALL_TRAMP(name))` is preserved by the function
+        // `typeof(&STATIC_CALL_TRAMP($name))` is preserved by the function
         // pointer cast; key/trampoline address macros are external.
         let __f = $func;
         unsafe {

@@ -59,12 +59,12 @@ unsafe fn _get_pwrdm(dev: *mut device) -> *mut powerdomain {
 
     spin_lock_irqsave(&raw mut iommu_lock, &mut flags);
 
-    list_for_each_entry!(entry, &raw mut cache, node) {
+    list_for_each_entry!(entry, &raw mut cache, node, {
         if (*entry).dev == dev {
             pwrdm = (*entry).pwrdm;
             break;
         }
-    }
+    });
 
     spin_unlock_irqrestore(&raw mut iommu_lock, flags);
 

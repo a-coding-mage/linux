@@ -35,9 +35,9 @@ unsafe fn __ioremap_check_ram(res: *mut resource) -> c_uint {
     start_pfn = ((*res).start + PAGE_SIZE - 1) >> PAGE_SHIFT;
     stop_pfn = ((*res).end + 1) >> PAGE_SHIFT;
     if stop_pfn > start_pfn {
-        for_each_valid_pfn!(pfn, start_pfn, stop_pfn) {
+        for_each_valid_pfn!(pfn, start_pfn, stop_pfn, {
             if !PageReserved(pfn_to_page(pfn)) { return IORES_MAP_SYSTEM_RAM; }
-        }
+        });
     }
     0
 }
@@ -151,7 +151,7 @@ pub unsafe fn ioremap_prot(phys_addr: resource_size_t, size: c_ulong, prot: pgpr
 
 pub unsafe fn iounmap(mut addr: *mut c_void) {
     if WARN_ON_ONCE!(!is_ioremap_addr(addr)) { return; }
-    if addr as c_ulong >= phys_to_virt(ISA_START_ADDRESS) && addr as c_ulong < phys_to_virt(ISA_END_ADDRESS) { WARN!(1, "iounmap() called for ISA range not obtained using ioremap()\n"); return; }
+    if addr as c_ulong >= phys_to_virt(ISA_START_ADDRESS) && (addr as c_ulong) < phys_to_virt(ISA_END_ADDRESS) { WARN!(1, "iounmap() called for ISA range not obtained using ioremap()\n"); return; }
     mmiotrace_iounmap(addr);
     addr = ((addr as c_ulong) & PAGE_MASK) as *mut c_void;
     let p = find_vm_area(addr);

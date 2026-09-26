@@ -8,7 +8,7 @@ macro_rules! mfcr {
         unsafe {
             core::arch::asm!(
                 concat!("mfcr {0}, ", $reg, "\n"),
-                out(reg) tmp,
+                out($reg) tmp,
             );
         }
         tmp
@@ -20,7 +20,7 @@ macro_rules! mtcr {
         unsafe {
             core::arch::asm!(
                 concat!("mtcr {0}, ", $reg, "\n"),
-                in(reg) $val,
+                in($reg) $val,
             );
         }
     }};

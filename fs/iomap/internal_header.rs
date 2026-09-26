@@ -15,14 +15,14 @@ pub unsafe fn iomap_max_bio_size(iomap: *const iomap) -> usize {
     BIO_MAX_SIZE
 }
 
-pub extern "C" {
+extern "C" {
     pub fn iomap_finish_ioend_buffered_read(ioend: *mut iomap_ioend) -> u32;
     pub fn iomap_finish_ioend_direct(ioend: *mut iomap_ioend) -> u32;
 }
 
 /* CONFIG_BLOCK conditional declaration. */
 #[cfg(CONFIG_BLOCK)]
-pub extern "C" {
+extern "C" {
     pub fn iomap_bio_read_folio_range_sync(
         iter: *const iomap_iter,
         folio: *mut folio,

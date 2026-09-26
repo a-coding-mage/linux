@@ -68,18 +68,18 @@ macro_rules! EXTEND_CLASS { ($($args:tt)*) => { /* source EXTEND_CLASS */ }; }
 #[macro_export]
 macro_rules! EXTEND_CLASS_COND { ($($args:tt)*) => { /* source EXTEND_CLASS_COND */ }; }
 #[macro_export]
-macro_rules! CLASS { ($name:ident, $var:ident) => { let mut $var = class_$name##_constructor; }; }
+macro_rules! CLASS { ($name:tt, $var:ident) => { let mut $var = class_::kernel::macros::paste!([<$name _constructor>]); }; }
 #[macro_export]
 macro_rules! CLASS_INIT { ($name:ident, $var:ident, $init:expr) => { let mut $var = $init; }; }
 #[macro_export]
 macro_rules! scoped_class { ($($args:tt)*) => { /* source scoped_class */ }; }
 
 #[macro_export]
-macro_rules! DEFINE_CLASS_IS_UNCONDITIONAL { ($name:ident) => { const class_$name##_is_conditional: bool = false; }; }
+macro_rules! DEFINE_CLASS_IS_UNCONDITIONAL { ($name:tt) => { const class_::kernel::macros::paste!([<$name _is_conditional>]): bool = false; }; }
 #[macro_export]
-macro_rules! DEFINE_CLASS_IS_GUARD { ($name:ident) => { const class_$name##_is_conditional: bool = false; }; }
+macro_rules! DEFINE_CLASS_IS_GUARD { ($name:tt) => { const class_::kernel::macros::paste!([<$name _is_conditional>]): bool = false; }; }
 #[macro_export]
-macro_rules! DEFINE_CLASS_IS_COND_GUARD { ($name:ident) => { const class_$name##_is_conditional: bool = true; }; }
+macro_rules! DEFINE_CLASS_IS_COND_GUARD { ($name:tt) => { const class_::kernel::macros::paste!([<$name _is_conditional>]): bool = true; }; }
 #[macro_export]
 macro_rules! DEFINE_GUARD { ($($args:tt)*) => { /* source DEFINE_GUARD */ }; }
 #[macro_export]
@@ -89,7 +89,7 @@ macro_rules! guard { ($name:ident) => { CLASS!($name, guard); }; }
 #[macro_export]
 macro_rules! ACQUIRE { ($name:ident, $var:ident) => { CLASS!($name, $var); }; }
 #[macro_export]
-macro_rules! ACQUIRE_ERR { ($name:ident, $var:expr) => { class_$name##_lock_err($var) }; }
+macro_rules! ACQUIRE_ERR { ($name:tt, $var:expr) => { class_::kernel::macros::paste!([<$name _lock_err>])($var) }; }
 #[macro_export]
 macro_rules! scoped_guard { ($($args:tt)*) => { /* source scoped_guard */ }; }
 #[macro_export]

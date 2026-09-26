@@ -67,6 +67,6 @@ pub unsafe fn gfs2_ea_dealloc(ip:*mut gfs2_inode,initialized:bool)->i32 { gfs2_e
 
 // The following declarations are external dependencies from the kernel/GFS2
 // headers, not implementations invented by this translation.
-extern "C" { fn gfs2_listxattr_impl(*mut dentry,*mut i8,usize)->isize; fn gfs2_xattr_acl_get_impl(*mut gfs2_inode,*const i8,*mut *mut i8)->i32; fn __gfs2_xattr_set_impl(*mut inode,*const i8,*const c_void,usize,i32,i32)->i32; fn gfs2_ea_dealloc_impl(*mut gfs2_inode,bool)->i32; }
+extern "C" { fn gfs2_listxattr_impl(_: *mut dentry,_: *mut i8,_: usize)->isize; fn gfs2_xattr_acl_get_impl(_: *mut gfs2_inode,_: *const i8,_: *mut *mut i8)->i32; fn __gfs2_xattr_set_impl(_: *mut inode,_: *const i8,_: *const c_void,_: usize,_: i32,_: i32)->i32; fn gfs2_ea_dealloc_impl(_: *mut gfs2_inode,_: bool)->i32; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

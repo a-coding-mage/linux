@@ -40,21 +40,21 @@ static mut ATCA_OEM_POWEROFF_HOOK: Option<unsafe extern "C" fn(*mut ipmi_user)> 
 #[repr(C)] pub struct ipmi_smi_watcher { pub owner: *mut c_void, pub new_smi: Option<unsafe extern "C" fn(c_int, *mut device)>, pub smi_gone: Option<unsafe extern "C" fn(c_int)> }
 
 extern "C" {
-    fn param_set_int(*const c_char, *const c_void) -> c_int;
-    fn ipmi_request_supply_msgs(*mut ipmi_user, *mut ipmi_addr, c_int, *mut kernel_ipmi_msg, *mut completion, *mut ipmi_smi_msg, *mut ipmi_recv_msg, c_int) -> c_int;
-    fn ipmi_poll_interface(*mut ipmi_user);
-    fn init_completion(*mut completion);
-    fn wait_for_completion(*mut completion);
-    fn complete(*mut completion);
+    fn param_set_int(_: *const c_char, _: *const c_void) -> c_int;
+    fn ipmi_request_supply_msgs(_: *mut ipmi_user, _: *mut ipmi_addr, _: c_int, _: *mut kernel_ipmi_msg, _: *mut completion, _: *mut ipmi_smi_msg, _: *mut ipmi_recv_msg, _: c_int) -> c_int;
+    fn ipmi_poll_interface(_: *mut ipmi_user);
+    fn init_completion(_: *mut completion);
+    fn wait_for_completion(_: *mut completion);
+    fn complete(_: *mut completion);
     fn atomic_set(v: *mut atomic_t, n: c_int);
     fn atomic_read(v: *const atomic_t) -> c_int;
     fn atomic_dec(v: *mut atomic_t);
     fn cpu_relax();
-    fn ipmi_create_user(c_int, *const ipmi_user_hndl, *mut c_void, *mut *mut ipmi_user) -> c_int;
-    fn ipmi_destroy_user(*mut ipmi_user);
-    fn ipmi_smi_watcher_register(*mut ipmi_smi_watcher) -> c_int;
-    fn ipmi_smi_watcher_unregister(*mut ipmi_smi_watcher);
-    fn memcmp(*const c_void, *const c_void, usize) -> c_int;
+    fn ipmi_create_user(_: c_int, _: *const ipmi_user_hndl, _: *mut c_void, _: *mut *mut ipmi_user) -> c_int;
+    fn ipmi_destroy_user(_: *mut ipmi_user);
+    fn ipmi_smi_watcher_register(_: *mut ipmi_smi_watcher) -> c_int;
+    fn ipmi_smi_watcher_unregister(_: *mut ipmi_smi_watcher);
+    fn memcmp(_: *const c_void, _: *const c_void, _: usize) -> c_int;
 }
 
 const IPMI_SYSTEM_INTERFACE_ADDR_TYPE: u16 = 0x0c;

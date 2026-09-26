@@ -22,7 +22,6 @@
  */
 
 // #ifndef DCE_11_0_SH_MASK_H
-#define DCE_11_0_SH_MASK_H
 
 pub const PIPE0_PG_CONFIG__PIPE0_POWER_FORCEON_MASK: u32 = 0x1;
 pub const PIPE0_PG_CONFIG__PIPE0_POWER_FORCEON__SHIFT: u32 = 0x0;

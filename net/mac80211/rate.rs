@@ -47,8 +47,8 @@ pub unsafe fn rate_control_tx_status(local: *mut ieee80211_local, st: *mut ieee8
     if ref_.is_null() || !test_sta_flag(sta, WLAN_STA_RATE_CONTROL) || (*st).info.band >= NUM_NL80211_BANDS { return; }
     let sband = (*(*(*local).hw.wiphy).bands)[(*st).info.band as usize];
     spin_lock_bh(&mut (*sta).rate_ctrl_lock);
-    if !(*(*ref_).ops).tx_status_ext.is_none() { ((*(*ref_).ops).tx_status_ext.unwrap())((*ref_).priv, sband, priv_sta, st); }
-    else if !(*st).skb.is_null() { ((*(*ref_).ops).tx_status)((*ref_).priv, sband, (*st).sta, priv_sta, (*st).skb); }
+    if !(*(*ref_).ops).tx_status_ext.is_none() { ((*(*ref_).ops).tx_status_ext.unwrap())((*ref_).r#priv, sband, priv_sta, st); }
+    else if !(*st).skb.is_null() { ((*(*ref_).ops).tx_status)((*ref_).r#priv, sband, (*st).sta, priv_sta, (*st).skb); }
     else { WARN_ON_ONCE(true); }
     spin_unlock_bh(&mut (*sta).rate_ctrl_lock);
 }
@@ -58,7 +58,7 @@ pub unsafe fn rate_control_rate_update(local: *mut ieee80211_local, sband: *mut 
     if !ref_.is_null() && !(*(*ref_).ops).rate_update.is_none() {
         rcu_read_lock(); let c = rcu_dereference((*(*sta).sdata).vif.bss_conf.chanctx_conf);
         if WARN_ON(c.is_null()) { rcu_read_unlock(); return; }
-        spin_lock_bh(&mut (*sta).rate_ctrl_lock); ((*(*ref_).ops).rate_update.unwrap())((*ref_).priv, sband, &(*c).def, ista, priv_sta, changed); spin_unlock_bh(&mut (*sta).rate_ctrl_lock); rcu_read_unlock();
+        spin_lock_bh(&mut (*sta).rate_ctrl_lock); ((*(*ref_).ops).rate_update.unwrap())((*ref_).r#priv, sband, &(*c).def, ista, priv_sta, changed); spin_unlock_bh(&mut (*sta).rate_ctrl_lock); rcu_read_unlock();
     }
     if (*sta).uploaded { drv_link_sta_rc_update(local, (*sta).sdata, (*link_sta).pub_, changed); }
 }

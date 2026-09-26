@@ -9,7 +9,7 @@
 // #include <linux/posix_acl_xattr.h>
 // #include <linux/xattr.h>
 
-#[cfg(feature = "CONFIG_EROFS_FS_XATTR")]
+#[cfg(CONFIG_EROFS_FS_XATTR)]
 extern "C" {
     pub static erofs_xattr_handlers: *const *const xattr_handler;
 
@@ -22,17 +22,17 @@ extern "C" {
     ) -> isize;
 }
 
-#[cfg(not(feature = "CONFIG_EROFS_FS_XATTR"))]
+#[cfg(not(CONFIG_EROFS_FS_XATTR))]
 #[inline]
 pub unsafe fn erofs_xattr_prefixes_init(_sb: *mut super_block) -> ::std::os::raw::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_EROFS_FS_XATTR"))]
+#[cfg(not(CONFIG_EROFS_FS_XATTR))]
 #[inline]
 pub unsafe fn erofs_xattr_prefixes_cleanup(_sb: *mut super_block) {}
 
-#[cfg(not(feature = "CONFIG_EROFS_FS_XATTR"))]
+#[cfg(not(CONFIG_EROFS_FS_XATTR))]
 pub const erofs_listxattr: Option<
     unsafe extern "C" fn(
         *mut dentry,
@@ -41,10 +41,10 @@ pub const erofs_listxattr: Option<
     ) -> isize,
 > = None;
 
-#[cfg(not(feature = "CONFIG_EROFS_FS_XATTR"))]
+#[cfg(not(CONFIG_EROFS_FS_XATTR))]
 pub const erofs_xattr_handlers: Option<*const *const xattr_handler> = None;
 
-#[cfg(feature = "CONFIG_EROFS_FS_POSIX_ACL")]
+#[cfg(CONFIG_EROFS_FS_POSIX_ACL)]
 extern "C" {
     pub fn erofs_get_acl(
         inode: *mut inode,
@@ -53,7 +53,7 @@ extern "C" {
     ) -> *mut posix_acl;
 }
 
-#[cfg(not(feature = "CONFIG_EROFS_FS_POSIX_ACL"))]
+#[cfg(not(CONFIG_EROFS_FS_POSIX_ACL))]
 pub const erofs_get_acl: Option<
     unsafe extern "C" fn(*mut inode, ::std::os::raw::c_int, bool) -> *mut posix_acl,
 > = None;

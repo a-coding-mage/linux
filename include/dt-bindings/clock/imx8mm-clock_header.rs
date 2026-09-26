@@ -3,9 +3,8 @@
  * Copyright 2017-2018 NXP
  */
 
-// Translated from the C device-tree clock binding header.
 
-+pub const IMX8MM_CLK_DUMMY: u32 = 0;
+pub const IMX8MM_CLK_DUMMY: u32 = 0;
 pub const IMX8MM_CLK_32K: u32 = 1;
 pub const IMX8MM_CLK_24M: u32 = 2;
 pub const IMX8MM_OSC_HDMI_CLK: u32 = 3;
@@ -71,6 +70,8 @@ pub const IMX8MM_SYS_PLL2_250M: u32 = 62;
 pub const IMX8MM_SYS_PLL2_333M: u32 = 63;
 pub const IMX8MM_SYS_PLL2_500M: u32 = 64;
 pub const IMX8MM_SYS_PLL2_1000M: u32 = 65;
+
+/* core */
 pub const IMX8MM_CLK_A53_SRC: u32 = 66;
 pub const IMX8MM_CLK_M4_SRC: u32 = 67;
 pub const IMX8MM_CLK_VPU_SRC: u32 = 68;
@@ -86,6 +87,8 @@ pub const IMX8MM_CLK_M4_DIV: u32 = 77;
 pub const IMX8MM_CLK_VPU_DIV: u32 = 78;
 pub const IMX8MM_CLK_GPU3D_DIV: u32 = 79;
 pub const IMX8MM_CLK_GPU2D_DIV: u32 = 80;
+
+/* bus */
 pub const IMX8MM_CLK_MAIN_AXI: u32 = 81;
 pub const IMX8MM_CLK_ENET_AXI: u32 = 82;
 pub const IMX8MM_CLK_NAND_USDHC_BUS: u32 = 83;
@@ -98,10 +101,12 @@ pub const IMX8MM_CLK_GPU_AXI: u32 = 89;
 pub const IMX8MM_CLK_GPU_AHB: u32 = 90;
 pub const IMX8MM_CLK_NOC: u32 = 91;
 pub const IMX8MM_CLK_NOC_APB: u32 = 92;
+
 pub const IMX8MM_CLK_AHB: u32 = 93;
 pub const IMX8MM_CLK_AUDIO_AHB: u32 = 94;
 pub const IMX8MM_CLK_IPG_ROOT: u32 = 95;
 pub const IMX8MM_CLK_IPG_AUDIO_ROOT: u32 = 96;
+
 pub const IMX8MM_CLK_DRAM_ALT: u32 = 97;
 pub const IMX8MM_CLK_DRAM_APB: u32 = 98;
 pub const IMX8MM_CLK_VPU_G1: u32 = 99;
@@ -164,6 +169,7 @@ pub const IMX8MM_CLK_ECSPI3: u32 = 155;
 pub const IMX8MM_CLK_PDM: u32 = 156;
 pub const IMX8MM_CLK_VPU_H1: u32 = 157;
 pub const IMX8MM_CLK_CLKO1: u32 = 158;
+
 pub const IMX8MM_CLK_ECSPI1_ROOT: u32 = 159;
 pub const IMX8MM_CLK_ECSPI2_ROOT: u32 = 160;
 pub const IMX8MM_CLK_ECSPI3_ROOT: u32 = 161;
@@ -225,16 +231,21 @@ pub const IMX8MM_CLK_PDM_IPG: u32 = 216;
 pub const IMX8MM_CLK_GPU2D_ROOT: u32 = 217;
 pub const IMX8MM_CLK_MU_ROOT: u32 = 218;
 pub const IMX8MM_CLK_CSI1_ROOT: u32 = 219;
+
 pub const IMX8MM_CLK_DRAM_CORE: u32 = 220;
 pub const IMX8MM_CLK_DRAM_ALT_ROOT: u32 = 221;
+
 pub const IMX8MM_CLK_NAND_USDHC_BUS_RAWNAND_CLK: u32 = 222;
+
 pub const IMX8MM_CLK_GPIO1_ROOT: u32 = 223;
 pub const IMX8MM_CLK_GPIO2_ROOT: u32 = 224;
 pub const IMX8MM_CLK_GPIO3_ROOT: u32 = 225;
 pub const IMX8MM_CLK_GPIO4_ROOT: u32 = 226;
 pub const IMX8MM_CLK_GPIO5_ROOT: u32 = 227;
+
 pub const IMX8MM_CLK_SNVS_ROOT: u32 = 228;
 pub const IMX8MM_CLK_GIC: u32 = 229;
+
 pub const IMX8MM_SYS_PLL1_40M_CG: u32 = 230;
 pub const IMX8MM_SYS_PLL1_80M_CG: u32 = 231;
 pub const IMX8MM_SYS_PLL1_100M_CG: u32 = 232;
@@ -251,18 +262,23 @@ pub const IMX8MM_SYS_PLL2_200M_CG: u32 = 242;
 pub const IMX8MM_SYS_PLL2_250M_CG: u32 = 243;
 pub const IMX8MM_SYS_PLL2_333M_CG: u32 = 244;
 pub const IMX8MM_SYS_PLL2_500M_CG: u32 = 245;
+
 pub const IMX8MM_CLK_M4_CORE: u32 = 246;
 pub const IMX8MM_CLK_VPU_CORE: u32 = 247;
 pub const IMX8MM_CLK_GPU3D_CORE: u32 = 248;
 pub const IMX8MM_CLK_GPU2D_CORE: u32 = 249;
+
 pub const IMX8MM_CLK_CLKO2: u32 = 250;
+
 pub const IMX8MM_CLK_A53_CORE: u32 = 251;
+
 pub const IMX8MM_CLK_CLKOUT1_SEL: u32 = 252;
 pub const IMX8MM_CLK_CLKOUT1_DIV: u32 = 253;
 pub const IMX8MM_CLK_CLKOUT1: u32 = 254;
 pub const IMX8MM_CLK_CLKOUT2_SEL: u32 = 255;
 pub const IMX8MM_CLK_CLKOUT2_DIV: u32 = 256;
 pub const IMX8MM_CLK_CLKOUT2: u32 = 257;
+
 pub const IMX8MM_CLK_END: u32 = 258;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

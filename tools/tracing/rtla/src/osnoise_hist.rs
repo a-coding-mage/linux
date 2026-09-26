@@ -141,7 +141,7 @@ unsafe extern "C" {
 
 macro_rules! for_each_monitored_cpu {
 	($cpu:ident, $common:expr, $body:block) => {{
-		/* C source uses for_each_monitored_cpu(cpu, &params->common). */
+		/* C source uses for_each_monitored_cpu!($cpu, &params->$common). */
 		let mut $cpu: c_int = 0;
 		while $cpu < nr_cpus {
 			let _ = $common;

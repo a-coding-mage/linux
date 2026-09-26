@@ -49,14 +49,14 @@ pub struct user_event_mm {
     pub put_rwork: rcu_work,
 }
 
-#[cfg(feature = "CONFIG_USER_EVENTS")]
+#[cfg(CONFIG_USER_EVENTS)]
 unsafe extern "C" {
     pub fn user_event_mm_dup(t: *mut task_struct, old_mm: *mut user_event_mm);
     pub fn user_event_mm_remove(t: *mut task_struct);
     pub static mut current: *mut task_struct;
 }
 
-#[cfg(feature = "CONFIG_USER_EVENTS")]
+#[cfg(CONFIG_USER_EVENTS)]
 #[inline]
 pub unsafe fn user_events_fork(t: *mut task_struct, clone_flags: u64) {
     let old_mm: *mut user_event_mm;
@@ -77,7 +77,7 @@ pub unsafe fn user_events_fork(t: *mut task_struct, clone_flags: u64) {
     user_event_mm_dup(t, old_mm);
 }
 
-#[cfg(feature = "CONFIG_USER_EVENTS")]
+#[cfg(CONFIG_USER_EVENTS)]
 #[inline]
 pub unsafe fn user_events_execve(t: *mut task_struct) {
     if t.is_null() || (*t).user_event_mm.is_null() {
@@ -87,7 +87,7 @@ pub unsafe fn user_events_execve(t: *mut task_struct) {
     user_event_mm_remove(t);
 }
 
-#[cfg(feature = "CONFIG_USER_EVENTS")]
+#[cfg(CONFIG_USER_EVENTS)]
 #[inline]
 pub unsafe fn user_events_exit(t: *mut task_struct) {
     if t.is_null() || (*t).user_event_mm.is_null() {
@@ -97,15 +97,15 @@ pub unsafe fn user_events_exit(t: *mut task_struct) {
     user_event_mm_remove(t);
 }
 
-#[cfg(not(feature = "CONFIG_USER_EVENTS"))]
+#[cfg(not(CONFIG_USER_EVENTS))]
 #[inline]
 pub unsafe fn user_events_fork(_t: *mut task_struct, _clone_flags: u64) {}
 
-#[cfg(not(feature = "CONFIG_USER_EVENTS"))]
+#[cfg(not(CONFIG_USER_EVENTS))]
 #[inline]
 pub unsafe fn user_events_execve(_t: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_USER_EVENTS"))]
+#[cfg(not(CONFIG_USER_EVENTS))]
 #[inline]
 pub unsafe fn user_events_exit(_t: *mut task_struct) {}
 

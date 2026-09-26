@@ -25,9 +25,9 @@ static mut bcm_pci_mem_resource: resource = resource {
 static mut bcm_pci_io_resource: resource = resource {
     name: "bcm63xx PCI IO space",
     start: BCM_PCI_IO_BASE_PA,
-    #[cfg(feature = "CONFIG_CARDBUS")]
+    #[cfg(CONFIG_CARDBUS)]
     end: BCM_PCI_IO_HALF_PA,
-    #[cfg(not(feature = "CONFIG_CARDBUS"))]
+    #[cfg(not(CONFIG_CARDBUS))]
     end: BCM_PCI_IO_END_PA,
     flags: IORESOURCE_IO,
 };
@@ -39,7 +39,7 @@ pub static mut bcm63xx_controller: pci_controller = pci_controller {
 };
 
 /* We handle Cardbus via a fake Cardbus bridge. */
-#[cfg(feature = "CONFIG_CARDBUS")]
+#[cfg(CONFIG_CARDBUS)]
 static mut bcm_cb_mem_resource: resource = resource {
     name: "bcm63xx Cardbus memory space",
     start: BCM_CB_MEM_BASE_PA,
@@ -47,7 +47,7 @@ static mut bcm_cb_mem_resource: resource = resource {
     flags: IORESOURCE_MEM,
 };
 
-#[cfg(feature = "CONFIG_CARDBUS")]
+#[cfg(CONFIG_CARDBUS)]
 static mut bcm_cb_io_resource: resource = resource {
     name: "bcm63xx Cardbus IO space",
     start: BCM_PCI_IO_HALF_PA + 1,
@@ -55,7 +55,7 @@ static mut bcm_cb_io_resource: resource = resource {
     flags: IORESOURCE_IO,
 };
 
-#[cfg(feature = "CONFIG_CARDBUS")]
+#[cfg(CONFIG_CARDBUS)]
 pub static mut bcm63xx_cb_controller: pci_controller = pci_controller {
     pci_ops: &bcm63xx_cb_ops,
     io_resource: &bcm_cb_io_resource,
@@ -176,7 +176,7 @@ unsafe fn bcm63xx_register_pci() -> i32 {
     val |= CARDBUS_PCI_IDSEL << PCMCIA_C1_CBIDSEL_SHIFT;
     bcm_pcmcia_writel(val, PCMCIA_C1_REG);
 
-    #[cfg(feature = "CONFIG_CARDBUS")]
+    #[cfg(CONFIG_CARDBUS)]
     {
         val = BCM_CB_MEM_BASE_PA & MPI_L2P_BASE_MASK;
         bcm_mpi_writel(val, MPI_L2PMEMBASE2_REG);
@@ -184,7 +184,7 @@ unsafe fn bcm63xx_register_pci() -> i32 {
         val |= MPI_L2PREMAP_ENABLED_MASK | MPI_L2PREMAP_IS_CARDBUS_MASK;
         bcm_mpi_writel(val, MPI_L2PMEMREMAP2_REG);
     }
-    #[cfg(not(feature = "CONFIG_CARDBUS"))]
+    #[cfg(not(CONFIG_CARDBUS))]
     bcm_mpi_writel(0, MPI_L2PMEMREMAP2_REG);
 
     val = BCM_PCI_IO_BASE_PA & MPI_L2P_BASE_MASK;
@@ -225,7 +225,7 @@ unsafe fn bcm63xx_register_pci() -> i32 {
     val |= MPI_LOCINT_MASK(MPI_LOCINT_EXT_PCI_INT);
     bcm_mpi_writel(val, MPI_LOCINT_REG);
     register_pci_controller(&bcm63xx_controller);
-    #[cfg(feature = "CONFIG_CARDBUS")]
+    #[cfg(CONFIG_CARDBUS)]
     register_pci_controller(&bcm63xx_cb_controller);
     request_mem_region(BCM_PCI_IO_BASE_PA, BCM_PCI_IO_SIZE, "bcm63xx PCI IO space");
     0

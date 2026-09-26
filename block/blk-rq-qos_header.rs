@@ -81,7 +81,7 @@ pub unsafe fn rq_wait_init(rq_wait: *mut rq_wait) {
     init_waitqueue_head(&mut (*rq_wait).wait);
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn rq_qos_add(rqos: *mut rq_qos, disk: *mut gendisk, id: rq_qos_id, ops: *const rq_qos_ops) -> ::core::ffi::c_int;
     pub fn rq_qos_del(rqos: *mut rq_qos);
 }
@@ -89,7 +89,7 @@ pub unsafe extern "C" {
 pub type acquire_inflight_cb_t = unsafe extern "C" fn(*mut rq_wait, *mut ::core::ffi::c_void) -> bool;
 pub type cleanup_cb_t = unsafe extern "C" fn(*mut rq_wait, *mut ::core::ffi::c_void);
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn rq_qos_wait(rqw: *mut rq_wait, private_data: *mut ::core::ffi::c_void, acquire_inflight_cb: Option<acquire_inflight_cb_t>, cleanup_cb: Option<cleanup_cb_t>);
     pub fn rq_wait_inc_below(rq_wait: *mut rq_wait, limit: ::core::ffi::c_uint) -> bool;
     pub fn rq_depth_scale_up(rqd: *mut rq_depth) -> bool;

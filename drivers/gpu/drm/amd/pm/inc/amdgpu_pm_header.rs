@@ -103,7 +103,7 @@ pub struct amdgpu_device_attr_entry {
 // C macro equivalent; `container_of` is supplied by the surrounding bindings.
 #[macro_export]
 macro_rules! to_amdgpu_device_attr {
-    ($dev_attr:expr) => { container_of!($dev_attr, amdgpu_device_attr, dev_attr) };
+    ($dev_attr:expr) => { container_of!($dev_attr, amdgpu_device_attr, $dev_attr) };
 }
 
 // The following attribute-construction macros preserve the C macro interface;

@@ -68,413 +68,127 @@ pub const HCI_VIRTIO: _ = 10;
 pub const HCI_IPC: _ = 11;
 
 /* HCI device quirks */
-enum {
-	/* When this quirk is set, the HCI Reset command is send when
-	 * closing the transport instead of when opening it.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_RESET_ON_CLOSE,
-
-	/* When this quirk is set, the device is turned into a raw-only
-	 * device and it will stay in unconfigured state.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_RAW_DEVICE,
-
-	/* When this quirk is set, the buffer sizes reported by
-	 * HCI Read Buffer Size command are corrected if invalid.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_FIXUP_BUFFER_SIZE,
-
-	/* When this quirk is set, then a controller that does not
-	 * indicate support for Inquiry Result with RSSI is assumed to
-	 * support it anyway. Some early Bluetooth 1.2 controllers had
-	 * wrongly configured local features that will require forcing
-	 * them to enable this mode. Getting RSSI information with the
-	 * inquiry responses is preferred since it allows for a better
-	 * user experience.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_FIXUP_INQUIRY_MODE,
-
-	/* When this quirk is set, then the HCI Read Local Supported
-	 * Commands command is not supported. In general Bluetooth 1.2
-	 * and later controllers should support this command. However
-	 * some controllers indicate Bluetooth 1.2 support, but do
-	 * not support this command.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_BROKEN_LOCAL_COMMANDS,
-
-	/* When this quirk is set, then no stored link key handling
-	 * is performed. This is mainly due to the fact that the
-	 * HCI Delete Stored Link Key command is advertised, but
-	 * not supported.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_BROKEN_STORED_LINK_KEY,
-
-	/* When this quirk is set, an external configuration step
-	 * is required and will be indicated with the controller
-	 * configuration.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_EXTERNAL_CONFIG,
-
-	/* When this quirk is set, the public Bluetooth address
-	 * initially reported by HCI Read BD Address command
-	 * is considered invalid. Controller configuration is
-	 * required before this device can be used.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_INVALID_BDADDR,
-
-	/* When this quirk is set, the public Bluetooth address
-	 * initially reported by HCI Read BD Address command
-	 * is considered invalid. The public BD Address can be
-	 * specified in the fwnode property 'local-bd-address'.
-	 * If this property does not exist or is invalid controller
-	 * configuration is required before this device can be used.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_USE_BDADDR_PROPERTY,
-
-	/* When this quirk is set, the Bluetooth Device Address provided by
-	 * the 'local-bd-address' fwnode property is incorrectly specified in
-	 * big-endian order.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BDADDR_PROPERTY_BROKEN,
-
-	/* When this quirk is set, the duplicate filtering during
-	 * scanning is based on Bluetooth devices addresses. To allow
-	 * RSSI based updates, restart scanning if needed.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_STRICT_DUPLICATE_FILTER,
-
-	/* When this quirk is set, LE scan and BR/EDR inquiry is done
-	 * simultaneously, otherwise it's interleaved.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_SIMULTANEOUS_DISCOVERY,
-
-	/* When this quirk is set, the enabling of diagnostic mode is
-	 * not persistent over HCI Reset. Every time the controller
-	 * is brought up it needs to be reprogrammed.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_NON_PERSISTENT_DIAG,
-
-	/* When this quirk is set, setup() would be run after every
-	 * open() and not just after the first open().
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 *
-	 */
-	HCI_QUIRK_NON_PERSISTENT_SETUP,
-
-	/* When this quirk is set, wide band speech is supported by
-	 * the driver since no reliable mechanism exist to report
-	 * this from the hardware, a driver flag is use to convey
-	 * this support
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
-
-	/* When this quirk is set consider Sync Flow Control as supported by
-	 * the driver.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_SYNC_FLOWCTL_SUPPORTED,
-
-	/* When this quirk is set, the LE states reported through the
-	 * HCI_LE_READ_SUPPORTED_STATES are invalid/broken.
-	 *
-	 * This mechanism is necessary as many controllers have been seen has
-	 * having trouble initiating a connectable advertisement despite the
-	 * state combination being reported as supported.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_LE_STATES,
-
-	/* When this quirk is set, then erroneous data reporting
-	 * is ignored. This is mainly due to the fact that the HCI
-	 * Read Default Erroneous Data Reporting command is advertised,
-	 * but not supported; these controllers often reply with unknown
-	 * command and tend to lock up randomly. Needing a hard reset.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
-
-	/*
-	 * When this quirk is set, then the hci_suspend_notifier is not
-	 * registered. This is intended for devices which drop completely
-	 * from the bus on system-suspend and which will show up as a new
-	 * HCI after resume.
-	 */
-	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
-
-	/*
-	 * When this quirk is set, LE tx power is not queried on startup
-	 * and the min/max tx power values default to HCI_TX_POWER_INVALID.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
-
-	/* When this quirk is set, HCI_OP_SET_EVENT_FLT requests with
-	 * HCI_FLT_CLEAR_ALL are ignored and event filtering is
-	 * completely avoided. A subset of the CSR controller
-	 * clones struggle with this and instantly lock up.
-	 *
-	 * Note that devices using this must (separately) disable
-	 * runtime suspend, because event filtering takes place there.
-	 */
-	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
-
-	/*
-	 * When this quirk is set, disables the use of
-	 * HCI_OP_ENHANCED_SETUP_SYNC_CONN command to setup SCO connections.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
-
-	/*
-	 * When this quirk is set, the HCI_OP_LE_SET_EXT_SCAN_ENABLE command is
-	 * disabled. This is required for some Broadcom controllers which
-	 * erroneously claim to support extended scanning.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_EXT_SCAN,
-
-	/*
-	 * When this quirk is set, the HCI_OP_GET_MWS_TRANSPORT_CONFIG command is
-	 * disabled. This is required for some Broadcom controllers which
-	 * erroneously claim to support MWS Transport Layer Configuration.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG,
-
-	/* When this quirk is set, max_page for local extended features
-	 * is set to 1, even if controller reports higher number. Some
-	 * controllers (e.g. RTL8723CS) report more pages, but they
-	 * don't actually support features declared there.
-	 */
-	HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2,
-
-	/*
-	 * When this quirk is set, the HCI_OP_LE_SET_RPA_TIMEOUT command is
-	 * skipped during initialization. This is required for the Actions
-	 * Semiconductor ATS2851 based controllers, which erroneously claims
-	 * to support it.
-	 */
-	HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT,
-
-	/*
-	 * When this quirk is set, the HCI_OP_LE_EXT_CREATE_CONN command is
-	 * disabled. This is required for the Actions Semiconductor ATS2851
-	 * based controllers, which erroneously claims to support it.
-	 */
-	HCI_QUIRK_BROKEN_EXT_CREATE_CONN,
-
-	/*
-	 * When this quirk is set, the command WRITE_AUTH_PAYLOAD_TIMEOUT is
-	 * skipped. This is required for the Actions Semiconductor ATS2851
-	 * based controllers, due to a race condition in pairing process.
-	 */
-	HCI_QUIRK_BROKEN_WRITE_AUTH_PAYLOAD_TIMEOUT,
-
-	/* When this quirk is set, MSFT extension monitor tracking by
-	 * address filter is supported. Since tracking quantity of each
-	 * pattern is limited, this feature supports tracking multiple
-	 * devices concurrently if controller supports multiple
-	 * address filters.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_USE_MSFT_EXT_ADDRESS_FILTER,
-
-	/*
-	 * When this quirk is set, LE Coded PHY shall not be used. This is
-	 * required for some Intel controllers which erroneously claim to
-	 * support it but it causes problems with extended scanning.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_BROKEN_LE_CODED,
-
-	/*
-	 * When this quirk is set, the HCI_OP_READ_ENC_KEY_SIZE command is
-	 * skipped during an HCI_EV_ENCRYPT_CHANGE event. This is required
-	 * for Actions Semiconductor ATS2851 based controllers, which erroneously
-	 * claim to support it.
-	 */
-	HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE,
-
-	/*
-	 * When this quirk is set, the reserved bits of Primary/Secondary_PHY
-	 * inside the LE Extended Advertising Report events are discarded.
-	 * This is required for some Apple/Broadcom controllers which
-	 * abuse these reserved bits for unrelated flags.
-	 *
-	 * This quirk can be set before hci_register_dev is called or
-	 * during the hdev->setup vendor callback.
-	 */
-	HCI_QUIRK_FIXUP_LE_EXT_ADV_REPORT_PHY,
-
-	/* When this quirk is set, the HCI_OP_READ_VOICE_SETTING command is
-	 * skipped. This is required for a subset of the CSR controller clones
-	 * which erroneously claim to support it.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_BROKEN_READ_VOICE_SETTING,
-
-	/* When this quirk is set, the HCI_OP_READ_PAGE_SCAN_TYPE command is
-	 * skipped. This is required for a subset of the CSR controller clones
-	 * which erroneously claim to support it.
-	 *
-	 * This quirk must be set before hci_register_dev is called.
-	 */
-	HCI_QUIRK_BROKEN_READ_PAGE_SCAN_TYPE,
-
-	__HCI_NUM_QUIRKS,
-};
+pub const HCI_QUIRK_RESET_ON_CLOSE: i32 = 0;
+pub const HCI_QUIRK_RAW_DEVICE: i32 = HCI_QUIRK_RESET_ON_CLOSE + 1;
+pub const HCI_QUIRK_FIXUP_BUFFER_SIZE: i32 = HCI_QUIRK_RAW_DEVICE + 1;
+pub const HCI_QUIRK_FIXUP_INQUIRY_MODE: i32 = HCI_QUIRK_FIXUP_BUFFER_SIZE + 1;
+pub const HCI_QUIRK_BROKEN_LOCAL_COMMANDS: i32 = HCI_QUIRK_FIXUP_INQUIRY_MODE + 1;
+pub const HCI_QUIRK_BROKEN_STORED_LINK_KEY: i32 = HCI_QUIRK_BROKEN_LOCAL_COMMANDS + 1;
+pub const HCI_QUIRK_EXTERNAL_CONFIG: i32 = HCI_QUIRK_BROKEN_STORED_LINK_KEY + 1;
+pub const HCI_QUIRK_INVALID_BDADDR: i32 = HCI_QUIRK_EXTERNAL_CONFIG + 1;
+pub const HCI_QUIRK_USE_BDADDR_PROPERTY: i32 = HCI_QUIRK_INVALID_BDADDR + 1;
+pub const HCI_QUIRK_BDADDR_PROPERTY_BROKEN: i32 = HCI_QUIRK_USE_BDADDR_PROPERTY + 1;
+pub const HCI_QUIRK_STRICT_DUPLICATE_FILTER: i32 = HCI_QUIRK_BDADDR_PROPERTY_BROKEN + 1;
+pub const HCI_QUIRK_SIMULTANEOUS_DISCOVERY: i32 = HCI_QUIRK_STRICT_DUPLICATE_FILTER + 1;
+pub const HCI_QUIRK_NON_PERSISTENT_DIAG: i32 = HCI_QUIRK_SIMULTANEOUS_DISCOVERY + 1;
+pub const HCI_QUIRK_NON_PERSISTENT_SETUP: i32 = HCI_QUIRK_NON_PERSISTENT_DIAG + 1;
+pub const HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED: i32 = HCI_QUIRK_NON_PERSISTENT_SETUP + 1;
+pub const HCI_QUIRK_SYNC_FLOWCTL_SUPPORTED: i32 = HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED + 1;
+pub const HCI_QUIRK_BROKEN_LE_STATES: i32 = HCI_QUIRK_SYNC_FLOWCTL_SUPPORTED + 1;
+pub const HCI_QUIRK_BROKEN_ERR_DATA_REPORTING: i32 = HCI_QUIRK_BROKEN_LE_STATES + 1;
+pub const HCI_QUIRK_NO_SUSPEND_NOTIFIER: i32 = HCI_QUIRK_BROKEN_ERR_DATA_REPORTING + 1;
+pub const HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER: i32 = HCI_QUIRK_NO_SUSPEND_NOTIFIER + 1;
+pub const HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL: i32 = HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER + 1;
+pub const HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN: i32 = HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL + 1;
+pub const HCI_QUIRK_BROKEN_EXT_SCAN: i32 = HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN + 1;
+pub const HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG: i32 = HCI_QUIRK_BROKEN_EXT_SCAN + 1;
+pub const HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2: i32 = HCI_QUIRK_BROKEN_MWS_TRANSPORT_CONFIG + 1;
+pub const HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT: i32 = HCI_QUIRK_BROKEN_LOCAL_EXT_FEATURES_PAGE_2 + 1;
+pub const HCI_QUIRK_BROKEN_EXT_CREATE_CONN: i32 = HCI_QUIRK_BROKEN_SET_RPA_TIMEOUT + 1;
+pub const HCI_QUIRK_BROKEN_WRITE_AUTH_PAYLOAD_TIMEOUT: i32 = HCI_QUIRK_BROKEN_EXT_CREATE_CONN + 1;
+pub const HCI_QUIRK_USE_MSFT_EXT_ADDRESS_FILTER: i32 = HCI_QUIRK_BROKEN_WRITE_AUTH_PAYLOAD_TIMEOUT + 1;
+pub const HCI_QUIRK_BROKEN_LE_CODED: i32 = HCI_QUIRK_USE_MSFT_EXT_ADDRESS_FILTER + 1;
+pub const HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE: i32 = HCI_QUIRK_BROKEN_LE_CODED + 1;
+pub const HCI_QUIRK_FIXUP_LE_EXT_ADV_REPORT_PHY: i32 = HCI_QUIRK_BROKEN_READ_ENC_KEY_SIZE + 1;
+pub const HCI_QUIRK_BROKEN_READ_VOICE_SETTING: i32 = HCI_QUIRK_FIXUP_LE_EXT_ADV_REPORT_PHY + 1;
+pub const HCI_QUIRK_BROKEN_READ_PAGE_SCAN_TYPE: i32 = HCI_QUIRK_BROKEN_READ_VOICE_SETTING + 1;
+pub const __HCI_NUM_QUIRKS: i32 = HCI_QUIRK_BROKEN_READ_PAGE_SCAN_TYPE + 1;
 
 /* HCI device flags */
-enum {
-	HCI_UP,
-	HCI_INIT,
-	HCI_RUNNING,
-
-	HCI_PSCAN,
-	HCI_ISCAN,
-	HCI_AUTH,
-	HCI_ENCRYPT,
-	HCI_INQUIRY,
-
-	HCI_RAW,
-
-	HCI_RESET,
-};
+pub const HCI_UP: i32 = 0;
+pub const HCI_INIT: i32 = HCI_UP + 1;
+pub const HCI_RUNNING: i32 = HCI_INIT + 1;
+pub const HCI_PSCAN: i32 = HCI_RUNNING + 1;
+pub const HCI_ISCAN: i32 = HCI_PSCAN + 1;
+pub const HCI_AUTH: i32 = HCI_ISCAN + 1;
+pub const HCI_ENCRYPT: i32 = HCI_AUTH + 1;
+pub const HCI_INQUIRY: i32 = HCI_ENCRYPT + 1;
+pub const HCI_RAW: i32 = HCI_INQUIRY + 1;
+pub const HCI_RESET: i32 = HCI_RAW + 1;
 
 /* HCI socket flags */
-enum {
-	HCI_SOCK_TRUSTED,
-	HCI_MGMT_INDEX_EVENTS,
-	HCI_MGMT_UNCONF_INDEX_EVENTS,
-	HCI_MGMT_EXT_INDEX_EVENTS,
-	HCI_MGMT_EXT_INFO_EVENTS,
-	HCI_MGMT_OPTION_EVENTS,
-	HCI_MGMT_SETTING_EVENTS,
-	HCI_MGMT_DEV_CLASS_EVENTS,
-	HCI_MGMT_LOCAL_NAME_EVENTS,
-	HCI_MGMT_OOB_DATA_EVENTS,
-	HCI_MGMT_EXP_FEATURE_EVENTS,
-};
+pub const HCI_SOCK_TRUSTED: i32 = 0;
+pub const HCI_MGMT_INDEX_EVENTS: i32 = HCI_SOCK_TRUSTED + 1;
+pub const HCI_MGMT_UNCONF_INDEX_EVENTS: i32 = HCI_MGMT_INDEX_EVENTS + 1;
+pub const HCI_MGMT_EXT_INDEX_EVENTS: i32 = HCI_MGMT_UNCONF_INDEX_EVENTS + 1;
+pub const HCI_MGMT_EXT_INFO_EVENTS: i32 = HCI_MGMT_EXT_INDEX_EVENTS + 1;
+pub const HCI_MGMT_OPTION_EVENTS: i32 = HCI_MGMT_EXT_INFO_EVENTS + 1;
+pub const HCI_MGMT_SETTING_EVENTS: i32 = HCI_MGMT_OPTION_EVENTS + 1;
+pub const HCI_MGMT_DEV_CLASS_EVENTS: i32 = HCI_MGMT_SETTING_EVENTS + 1;
+pub const HCI_MGMT_LOCAL_NAME_EVENTS: i32 = HCI_MGMT_DEV_CLASS_EVENTS + 1;
+pub const HCI_MGMT_OOB_DATA_EVENTS: i32 = HCI_MGMT_LOCAL_NAME_EVENTS + 1;
+pub const HCI_MGMT_EXP_FEATURE_EVENTS: i32 = HCI_MGMT_OOB_DATA_EVENTS + 1;
 
 /*
  * BR/EDR and/or LE controller flags: the flags defined here should represent
  * states from the controller.
  */
-enum {
-	HCI_SETUP,
-	HCI_CONFIG,
-	HCI_DEBUGFS_CREATED,
-	HCI_POWERING_DOWN,
-	HCI_AUTO_OFF,
-	HCI_RFKILLED,
-	HCI_MGMT,
-	HCI_BONDABLE,
-	HCI_SERVICE_CACHE,
-	HCI_KEEP_DEBUG_KEYS,
-	HCI_USE_DEBUG_KEYS,
-	HCI_UNREGISTER,
-	HCI_UNCONFIGURED,
-	HCI_USER_CHANNEL,
-	HCI_EXT_CONFIGURED,
-	HCI_LE_ADV,
-	HCI_LE_ADV_0,
-	HCI_LE_PER_ADV,
-	HCI_LE_SCAN,
-	HCI_SSP_ENABLED,
-	HCI_SC_ENABLED,
-	HCI_SC_ONLY,
-	HCI_PRIVACY,
-	HCI_LIMITED_PRIVACY,
-	HCI_RPA_EXPIRED,
-	HCI_RPA_RESOLVING,
-	HCI_LE_ENABLED,
-	HCI_ADVERTISING,
-	HCI_ADVERTISING_CONNECTABLE,
-	HCI_CONNECTABLE,
-	HCI_DISCOVERABLE,
-	HCI_LIMITED_DISCOVERABLE,
-	HCI_LINK_SECURITY,
-	HCI_PERIODIC_INQ,
-	HCI_FAST_CONNECTABLE,
-	HCI_BREDR_ENABLED,
-	HCI_LE_SCAN_INTERRUPTED,
-	HCI_WIDEBAND_SPEECH_ENABLED,
-	HCI_EVENT_FILTER_CONFIGURED,
-	HCI_PA_SYNC,
-	HCI_SCO_FLOWCTL,
-
-	HCI_DUT_MODE,
-	HCI_VENDOR_DIAG,
-	HCI_FORCE_BREDR_SMP,
-	HCI_FORCE_STATIC_ADDR,
-	HCI_LL_RPA_RESOLUTION,
-	HCI_CMD_PENDING,
-	HCI_FORCE_NO_MITM,
-	HCI_QUALITY_REPORT,
-	HCI_OFFLOAD_CODECS_ENABLED,
-	HCI_LE_SIMULTANEOUS_ROLES,
-	HCI_CMD_DRAIN_WORKQUEUE,
-
-	HCI_MESH_EXPERIMENTAL,
-	HCI_MESH,
-	HCI_MESH_SENDING,
-
-	__HCI_NUM_FLAGS,
-};
+pub const HCI_SETUP: i32 = 0;
+pub const HCI_CONFIG: i32 = HCI_SETUP + 1;
+pub const HCI_DEBUGFS_CREATED: i32 = HCI_CONFIG + 1;
+pub const HCI_POWERING_DOWN: i32 = HCI_DEBUGFS_CREATED + 1;
+pub const HCI_AUTO_OFF: i32 = HCI_POWERING_DOWN + 1;
+pub const HCI_RFKILLED: i32 = HCI_AUTO_OFF + 1;
+pub const HCI_MGMT: i32 = HCI_RFKILLED + 1;
+pub const HCI_BONDABLE: i32 = HCI_MGMT + 1;
+pub const HCI_SERVICE_CACHE: i32 = HCI_BONDABLE + 1;
+pub const HCI_KEEP_DEBUG_KEYS: i32 = HCI_SERVICE_CACHE + 1;
+pub const HCI_USE_DEBUG_KEYS: i32 = HCI_KEEP_DEBUG_KEYS + 1;
+pub const HCI_UNREGISTER: i32 = HCI_USE_DEBUG_KEYS + 1;
+pub const HCI_UNCONFIGURED: i32 = HCI_UNREGISTER + 1;
+pub const HCI_USER_CHANNEL: i32 = HCI_UNCONFIGURED + 1;
+pub const HCI_EXT_CONFIGURED: i32 = HCI_USER_CHANNEL + 1;
+pub const HCI_LE_ADV: i32 = HCI_EXT_CONFIGURED + 1;
+pub const HCI_LE_ADV_0: i32 = HCI_LE_ADV + 1;
+pub const HCI_LE_PER_ADV: i32 = HCI_LE_ADV_0 + 1;
+pub const HCI_LE_SCAN: i32 = HCI_LE_PER_ADV + 1;
+pub const HCI_SSP_ENABLED: i32 = HCI_LE_SCAN + 1;
+pub const HCI_SC_ENABLED: i32 = HCI_SSP_ENABLED + 1;
+pub const HCI_SC_ONLY: i32 = HCI_SC_ENABLED + 1;
+pub const HCI_PRIVACY: i32 = HCI_SC_ONLY + 1;
+pub const HCI_LIMITED_PRIVACY: i32 = HCI_PRIVACY + 1;
+pub const HCI_RPA_EXPIRED: i32 = HCI_LIMITED_PRIVACY + 1;
+pub const HCI_RPA_RESOLVING: i32 = HCI_RPA_EXPIRED + 1;
+pub const HCI_LE_ENABLED: i32 = HCI_RPA_RESOLVING + 1;
+pub const HCI_ADVERTISING: i32 = HCI_LE_ENABLED + 1;
+pub const HCI_ADVERTISING_CONNECTABLE: i32 = HCI_ADVERTISING + 1;
+pub const HCI_CONNECTABLE: i32 = HCI_ADVERTISING_CONNECTABLE + 1;
+pub const HCI_DISCOVERABLE: i32 = HCI_CONNECTABLE + 1;
+pub const HCI_LIMITED_DISCOVERABLE: i32 = HCI_DISCOVERABLE + 1;
+pub const HCI_LINK_SECURITY: i32 = HCI_LIMITED_DISCOVERABLE + 1;
+pub const HCI_PERIODIC_INQ: i32 = HCI_LINK_SECURITY + 1;
+pub const HCI_FAST_CONNECTABLE: i32 = HCI_PERIODIC_INQ + 1;
+pub const HCI_BREDR_ENABLED: i32 = HCI_FAST_CONNECTABLE + 1;
+pub const HCI_LE_SCAN_INTERRUPTED: i32 = HCI_BREDR_ENABLED + 1;
+pub const HCI_WIDEBAND_SPEECH_ENABLED: i32 = HCI_LE_SCAN_INTERRUPTED + 1;
+pub const HCI_EVENT_FILTER_CONFIGURED: i32 = HCI_WIDEBAND_SPEECH_ENABLED + 1;
+pub const HCI_PA_SYNC: i32 = HCI_EVENT_FILTER_CONFIGURED + 1;
+pub const HCI_SCO_FLOWCTL: i32 = HCI_PA_SYNC + 1;
+pub const HCI_DUT_MODE: i32 = HCI_SCO_FLOWCTL + 1;
+pub const HCI_VENDOR_DIAG: i32 = HCI_DUT_MODE + 1;
+pub const HCI_FORCE_BREDR_SMP: i32 = HCI_VENDOR_DIAG + 1;
+pub const HCI_FORCE_STATIC_ADDR: i32 = HCI_FORCE_BREDR_SMP + 1;
+pub const HCI_LL_RPA_RESOLUTION: i32 = HCI_FORCE_STATIC_ADDR + 1;
+pub const HCI_CMD_PENDING: i32 = HCI_LL_RPA_RESOLUTION + 1;
+pub const HCI_FORCE_NO_MITM: i32 = HCI_CMD_PENDING + 1;
+pub const HCI_QUALITY_REPORT: i32 = HCI_FORCE_NO_MITM + 1;
+pub const HCI_OFFLOAD_CODECS_ENABLED: i32 = HCI_QUALITY_REPORT + 1;
+pub const HCI_LE_SIMULTANEOUS_ROLES: i32 = HCI_OFFLOAD_CODECS_ENABLED + 1;
+pub const HCI_CMD_DRAIN_WORKQUEUE: i32 = HCI_LE_SIMULTANEOUS_ROLES + 1;
+pub const HCI_MESH_EXPERIMENTAL: i32 = HCI_CMD_DRAIN_WORKQUEUE + 1;
+pub const HCI_MESH: i32 = HCI_MESH_EXPERIMENTAL + 1;
+pub const HCI_MESH_SENDING: i32 = HCI_MESH + 1;
+pub const __HCI_NUM_FLAGS: i32 = HCI_MESH_SENDING + 1;
 
 /* HCI timeouts */
 pub const HCI_DISCONN_TIMEOUT: _ = msecs_to_jiffies(2000)	/* 2 seconds */;
@@ -1253,22 +967,22 @@ pub const HCI_OP_WRITE_CA_TIMEOUT: _ = 0x0c16;
 pub const HCI_OP_WRITE_PG_TIMEOUT: _ = 0x0c18;
 
 pub const HCI_OP_WRITE_SCAN_ENABLE: _ = 0x0c1a;
-	#define SCAN_DISABLED		0x00
-	#define SCAN_INQUIRY		0x01
-	#define SCAN_PAGE		0x02
+	pub const SCAN_DISABLED: u32 = 0x00;
+	pub const SCAN_INQUIRY: u32 = 0x01;
+	pub const SCAN_PAGE: u32 = 0x02;
 
 pub const HCI_OP_READ_AUTH_ENABLE: _ = 0x0c1f;
 
 pub const HCI_OP_WRITE_AUTH_ENABLE: _ = 0x0c20;
-	#define AUTH_DISABLED		0x00
-	#define AUTH_ENABLED		0x01
+	pub const AUTH_DISABLED: u32 = 0x00;
+	pub const AUTH_ENABLED: u32 = 0x01;
 
 pub const HCI_OP_READ_ENCRYPT_MODE: _ = 0x0c21;
 
 pub const HCI_OP_WRITE_ENCRYPT_MODE: _ = 0x0c22;
-	#define ENCRYPT_DISABLED	0x00
-	#define ENCRYPT_P2P		0x01
-	#define ENCRYPT_BOTH		0x02
+	pub const ENCRYPT_DISABLED: u32 = 0x00;
+	pub const ENCRYPT_P2P: u32 = 0x01;
+	pub const ENCRYPT_BOTH: u32 = 0x02;
 
 pub const HCI_OP_READ_CLASS_OF_DEV: _ = 0x0c23;
 #[repr(C, packed)]
@@ -1361,8 +1075,8 @@ pub struct hci_rp_read_inq_rsp_tx_power {
 } __packed;
 
 pub const HCI_OP_READ_DEF_ERR_DATA_REPORTING: _ = 0x0c5a;
-	#define ERR_DATA_REPORTING_DISABLED	0x00
-	#define ERR_DATA_REPORTING_ENABLED	0x01
+	pub const ERR_DATA_REPORTING_DISABLED: u32 = 0x00;
+	pub const ERR_DATA_REPORTING_ENABLED: u32 = 0x01;
 #[repr(C, packed)]
 pub struct hci_rp_read_def_err_data_reporting {
 	u8     status;
@@ -1708,8 +1422,8 @@ pub struct hci_rp_read_page_scan_type {
 } __packed;
 
 pub const HCI_OP_WRITE_PAGE_SCAN_TYPE: _ = 0x0c47;
-	#define PAGE_SCAN_TYPE_STANDARD		0x00
-	#define PAGE_SCAN_TYPE_INTERLACED	0x01
+	pub const PAGE_SCAN_TYPE_STANDARD: u32 = 0x00;
+	pub const PAGE_SCAN_TYPE_INTERLACED: u32 = 0x01;
 
 pub const HCI_OP_READ_RSSI: _ = 0x1405;
 #[repr(C, packed)]
@@ -3761,24 +3475,24 @@ pub struct hci_iso_ts_data_hdr {
 	u16	slen;
 };
 
-static inline struct hci_event_hdr *hci_event_hdr(const struct sk_buff *skb)
+struct hci_event_hdr *hci_event_hdr(const struct sk_buff *skb)
 {
-	return (struct hci_event_hdr *) skb->data;
+	return (hci_event_hdr *) (*skb).data;
 }
 
-static inline struct hci_acl_hdr *hci_acl_hdr(const struct sk_buff *skb)
+struct hci_acl_hdr *hci_acl_hdr(const struct sk_buff *skb)
 {
-	return (struct hci_acl_hdr *) skb->data;
+	return (hci_acl_hdr *) (*skb).data;
 }
 
-static inline struct hci_sco_hdr *hci_sco_hdr(const struct sk_buff *skb)
+struct hci_sco_hdr *hci_sco_hdr(const struct sk_buff *skb)
 {
-	return (struct hci_sco_hdr *) skb->data;
+	return (hci_sco_hdr *) (*skb).data;
 }
 
-static inline struct hci_iso_hdr *hci_iso_hdr(const struct sk_buff *skb)
+struct hci_iso_hdr *hci_iso_hdr(const struct sk_buff *skb)
 {
-	return (struct hci_iso_hdr *)skb->data;
+	return (*(hci_iso_hdr *)skb).data;
 }
 
 /* Command opcode pack/unpack */
@@ -3791,14 +3505,14 @@ static inline struct hci_iso_hdr *hci_iso_hdr(const struct sk_buff *skb)
 // #define hci_handle(h)		(h & 0x0fff)
 // #define hci_flags(h)		(h >> 12)
 
-static inline u16 hci_acl_handle(const struct sk_buff *skb)
+u16 hci_acl_handle(const struct sk_buff *skb)
 {
-	return hci_handle(u16_to_cpu(hci_acl_hdr(skb)->handle));
+	return hci_handle(u16_to_cpu((*hci_acl_hdr(skb)).handle));
 }
 
-static inline u16 hci_acl_dlen(const struct sk_buff *skb)
+u16 hci_acl_dlen(const struct sk_buff *skb)
 {
-	return u16_to_cpu(hci_acl_hdr(skb)->dlen);
+	return u16_to_cpu((*hci_acl_hdr(skb)).dlen);
 }
 
 /* ISO handle and flags pack/unpack */
@@ -3808,7 +3522,7 @@ static inline u16 hci_acl_dlen(const struct sk_buff *skb)
 
 /* ISO data length and flags pack/unpack */
 // #define hci_iso_data_len_pack(h, f)	((__u16) (((h) & 0x0fff) | \
-						  (((f) & 0x3) << 14)))
+// 						  (((f) & 0x3) << 14)))
 // #define hci_iso_data_len(h)		((h) & 0x0fff)
 // #define hci_iso_data_flags(h)		((h) >> 14)
 
@@ -3816,7 +3530,7 @@ static inline u16 hci_acl_dlen(const struct sk_buff *skb)
 pub const HCI_TRANSPORT_SCO_ESCO: _ = 0x01;
 
 /* le24 support */
-static inline void hci_cpu_to_le24(u32 val, u8 dst[3])
+void hci_cpu_to_le24(val: u32, u8 dst[3])
 {
 	dst[0] = val & 0xff;
 	dst[1] = (val & 0xff00) >> 8;

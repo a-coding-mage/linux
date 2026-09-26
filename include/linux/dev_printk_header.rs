@@ -16,7 +16,7 @@ pub struct dev_printk_info {
     pub device: [core::ffi::c_char; PRINTK_INFO_DEVICE_LEN],
 }
 
-#[cfg(feature = "CONFIG_PRINTK")]
+#[cfg(CONFIG_PRINTK)]
 extern "C" {
     pub fn dev_vprintk_emit(level: i32, dev: *const device, fmt: *const core::ffi::c_char, args: *mut core::ffi::c_void) -> i32;
     pub fn dev_printk_emit(level: i32, dev: *const device, fmt: *const core::ffi::c_char, ...) -> i32;
@@ -30,25 +30,25 @@ extern "C" {
     pub fn _dev_info(dev: *const device, fmt: *const core::ffi::c_char, ...);
 }
 
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn dev_vprintk_emit(_level: i32, _dev: *const device, _fmt: *const core::ffi::c_char, _args: *mut core::ffi::c_void) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn dev_printk_emit(_level: i32, _dev: *const device, _fmt: *const core::ffi::c_char, _: ...) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn __dev_printk(_level: *const core::ffi::c_char, _dev: *const device, _vaf: *mut core::ffi::c_void) {}
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 pub unsafe fn _dev_printk(_level: *const core::ffi::c_char, _dev: *const device, _fmt: *const core::ffi::c_char, _: ...) {}
 
-#[cfg(not(feature = "CONFIG_PRINTK"))]
+#[cfg(not(CONFIG_PRINTK))]
 macro_rules! empty_dev_fn { ($name:ident) => { pub unsafe fn $name(_dev: *const device, _fmt: *const core::ffi::c_char, _: ...) {} }; }
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_emerg);
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_crit);
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_alert);
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_err);
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_warn);
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_notice);
-#[cfg(not(feature = "CONFIG_PRINTK"))] empty_dev_fn!(_dev_info);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_emerg);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_crit);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_alert);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_err);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_warn);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_notice);
+#[cfg(not(CONFIG_PRINTK))] empty_dev_fn!(_dev_info);
 
 // C preprocessor logging macros, retained as Rust macros with equivalent
 // argument forwarding and conditional intent.

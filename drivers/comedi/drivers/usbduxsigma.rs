@@ -51,22 +51,22 @@ const USBDUXSIGMA_PWM_OFF_CMD: u8 = 8;
 #[repr(C)] pub struct usbduxsigma_private { pub n_ai_urbs:c_int, pub n_ao_urbs:c_int, pub ai_urbs:*mut *mut urb, pub ao_urbs:*mut *mut urb, pub pwm_urb:*mut urb, pub pwm_period:c_uint, pub pwm_delay:u8, pub pwm_buf_sz:c_int, pub in_buf:*mut u32, pub insn_buf:*mut u8, pub high_speed:u32, pub ai_cmd_running:u32, pub ao_cmd_running:u32, pub pwm_cmd_running:u32, pub ai_timer:c_uint, pub ao_timer:c_uint, pub ai_counter:c_uint, pub ao_counter:c_uint, pub ai_interval:c_uint, pub dux_commands:*mut u8, pub mut_: mutex }
 
 extern "C" {
-    fn usb_kill_urb(*mut urb); fn usb_submit_urb(*mut urb,c_uint)->c_int;
-    fn usb_bulk_msg(*mut usb_device,c_uint,*mut u8,c_int,*mut c_int,c_int)->c_int;
-    fn usb_sndbulkpipe(*mut usb_device,c_uint)->c_uint; fn usb_rcvbulkpipe(*mut usb_device,c_uint)->c_uint;
-    fn usb_rcvisocpipe(*mut usb_device,c_uint)->c_uint; fn usb_sndisocpipe(*mut usb_device,c_uint)->c_uint;
-    fn usb_alloc_urb(c_int,c_uint)->*mut urb; fn usb_free_urb(*mut urb);
-    fn usb_control_msg(*mut usb_device,c_uint,c_int,c_int,c_int,c_int,*mut u8,usize,c_int)->c_int;
-    fn usb_sndctrlpipe(*mut usb_device,c_uint)->c_uint; fn usb_set_interface(*mut usb_device,c_int,c_int)->c_int;
-    fn usb_set_intfdata(*mut usb_interface,*mut c_void);
-    fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex); fn mutex_init(*mut mutex); fn mutex_destroy(*mut mutex);
-    fn comedi_to_usb_dev(*mut comedi_device)->*mut usb_device; fn comedi_to_usb_interface(*mut comedi_device)->*mut usb_interface;
-    fn comedi_event(*mut comedi_device,*mut comedi_subdevice); fn comedi_offset_munge(*mut comedi_subdevice,u32)->u32;
-    fn comedi_buf_write_samples(*mut comedi_subdevice,*mut u32,c_uint)->bool; fn comedi_buf_read_samples(*mut comedi_subdevice,*mut u16,c_uint)->bool;
-    fn comedi_dio_insn_config(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut c_uint,c_uint)->c_int; fn comedi_dio_update_state(*mut comedi_subdevice,*mut c_uint);
-    fn comedi_readback_insn_read(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut c_uint)->c_int;
-    fn comedi_alloc_devpriv(*mut comedi_device,usize)->*mut usbduxsigma_private; fn comedi_alloc_subdevices(*mut comedi_device,c_uint)->c_int; fn comedi_alloc_subdev_readback(*mut comedi_subdevice)->c_int;
-    fn comedi_load_firmware(*mut comedi_device,*mut c_void,*const u8,unsafe extern "C" fn(*mut comedi_device,*const u8,usize,c_ulong)->c_int,c_ulong)->c_int;
+    fn usb_kill_urb(_: *mut urb); fn usb_submit_urb(_: *mut urb,_: c_uint)->c_int;
+    fn usb_bulk_msg(_: *mut usb_device,_: c_uint,_: *mut u8,_: c_int,_: *mut c_int,_: c_int)->c_int;
+    fn usb_sndbulkpipe(_: *mut usb_device,_: c_uint)->c_uint; fn usb_rcvbulkpipe(_: *mut usb_device,_: c_uint)->c_uint;
+    fn usb_rcvisocpipe(_: *mut usb_device,_: c_uint)->c_uint; fn usb_sndisocpipe(_: *mut usb_device,_: c_uint)->c_uint;
+    fn usb_alloc_urb(_: c_int,_: c_uint)->*mut urb; fn usb_free_urb(_: *mut urb);
+    fn usb_control_msg(_: *mut usb_device,_: c_uint,_: c_int,_: c_int,_: c_int,_: c_int,_: *mut u8,_: usize,_: c_int)->c_int;
+    fn usb_sndctrlpipe(_: *mut usb_device,_: c_uint)->c_uint; fn usb_set_interface(_: *mut usb_device,_: c_int,_: c_int)->c_int;
+    fn usb_set_intfdata(_: *mut usb_interface,_: *mut c_void);
+    fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex); fn mutex_init(_: *mut mutex); fn mutex_destroy(_: *mut mutex);
+    fn comedi_to_usb_dev(_: *mut comedi_device)->*mut usb_device; fn comedi_to_usb_interface(_: *mut comedi_device)->*mut usb_interface;
+    fn comedi_event(_: *mut comedi_device,_: *mut comedi_subdevice); fn comedi_offset_munge(_: *mut comedi_subdevice,_: u32)->u32;
+    fn comedi_buf_write_samples(_: *mut comedi_subdevice,_: *mut u32,_: c_uint)->bool; fn comedi_buf_read_samples(_: *mut comedi_subdevice,_: *mut u16,_: c_uint)->bool;
+    fn comedi_dio_insn_config(_: *mut comedi_device,_: *mut comedi_subdevice,_: *mut comedi_insn,_: *mut c_uint,_: c_uint)->c_int; fn comedi_dio_update_state(_: *mut comedi_subdevice,_: *mut c_uint);
+    fn comedi_readback_insn_read(_: *mut comedi_device,_: *mut comedi_subdevice,_: *mut comedi_insn,_: *mut c_uint)->c_int;
+    fn comedi_alloc_devpriv(_: *mut comedi_device,_: usize)->*mut usbduxsigma_private; fn comedi_alloc_subdevices(_: *mut comedi_device,_: c_uint)->c_int; fn comedi_alloc_subdev_readback(_: *mut comedi_subdevice)->c_int;
+    fn comedi_load_firmware(_: *mut comedi_device,_: *mut c_void,_: *const u8,_: unsafe extern "C" fn(*mut comedi_device,*const u8,usize,c_ulong)->c_int,c_ulong)->c_int;
 }
 
 #[inline] unsafe fn priv_(dev:*mut comedi_device)->*mut usbduxsigma_private { (*dev).private }

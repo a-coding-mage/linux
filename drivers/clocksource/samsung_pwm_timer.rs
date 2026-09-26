@@ -212,7 +212,7 @@ pub unsafe extern "C" fn samsung_pwm_clocksource_init(base: *mut u8, irqs: *cons
 
 // Preserved from CONFIG_TIMER_OF builds; the surrounding kernel supplies the
 // device-tree iteration and registration machinery.
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 unsafe fn samsung_pwm_alloc(np: *mut device_node, variant: *const samsung_pwm_variant) -> i32 {
     core::ptr::copy_nonoverlapping(variant, &mut pwm.variant, 1);
     for i in 0..SAMSUNG_PWM_NUM { pwm.irq[i] = irq_of_parse_and_map(np, i as i32); }
@@ -225,24 +225,24 @@ unsafe fn samsung_pwm_alloc(np: *mut device_node, variant: *const samsung_pwm_va
     ret
 }
 
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 static s3c24xx_variant: samsung_pwm_variant = samsung_pwm_variant { bits: 16, div_base: 1, has_tint_cstat: false, tclk_mask: 1 << 4, output_mask: 0 };
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 unsafe extern "C" fn s3c2410_pwm_clocksource_init(np: *mut device_node) -> i32 { samsung_pwm_alloc(np, &s3c24xx_variant) }
 
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 static s3c64xx_variant: samsung_pwm_variant = samsung_pwm_variant { bits: 32, div_base: 0, has_tint_cstat: true, tclk_mask: (1 << 7) | (1 << 6) | (1 << 5), output_mask: 0 };
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 unsafe extern "C" fn s3c64xx_pwm_clocksource_init(np: *mut device_node) -> i32 { samsung_pwm_alloc(np, &s3c64xx_variant) }
 
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 static s5p64x0_variant: samsung_pwm_variant = samsung_pwm_variant { bits: 32, div_base: 0, has_tint_cstat: true, tclk_mask: 0, output_mask: 0 };
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 unsafe extern "C" fn s5p64x0_pwm_clocksource_init(np: *mut device_node) -> i32 { samsung_pwm_alloc(np, &s5p64x0_variant) }
 
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 static s5p_variant: samsung_pwm_variant = samsung_pwm_variant { bits: 32, div_base: 0, has_tint_cstat: true, tclk_mask: 1 << 5, output_mask: 0 };
-#[cfg(feature = "CONFIG_TIMER_OF")]
+#[cfg(CONFIG_TIMER_OF)]
 unsafe extern "C" fn s5p_pwm_clocksource_init(np: *mut device_node) -> i32 { samsung_pwm_alloc(np, &s5p_variant) }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

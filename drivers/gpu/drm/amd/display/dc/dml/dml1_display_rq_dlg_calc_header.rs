@@ -70,7 +70,7 @@ pub struct _vcs_dpi_display_e2e_pipe_params_st {
     _private: [u8; 0],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dml1_extract_rq_regs(
         mode_lib: *mut display_mode_lib,
         rq_regs: *mut _vcs_dpi_display_rq_regs_st,

@@ -73,8 +73,8 @@ macro_rules! dmub_dcn35_fields {
 }
 
 macro_rules! offset_field { ($x:ident) => { pub $x: u32, }; }
-macro_rules! shift_field { ($r:ident, $f:ident) => { pub $r##__$f: u8, }; }
-macro_rules! mask_field { ($r:ident, $f:ident) => { pub $r##__$f: u32, }; }
+macro_rules! shift_field { ($r:tt, $f:ident) => { pub ::kernel::macros::paste!([<$r __>])$f: u8, }; }
+macro_rules! mask_field { ($r:tt, $f:ident) => { pub ::kernel::macros::paste!([<$r __>])$f: u32, }; }
 
 #[repr(C)] pub struct dmub_srv_dcn35_reg_offset { dmub_dcn35_regs!(offset_field) }
 #[repr(C)] pub struct dmub_srv_dcn35_reg_shift { dmub_dcn35_fields!(shift_field) }

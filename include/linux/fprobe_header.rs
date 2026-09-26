@@ -69,7 +69,7 @@ pub unsafe fn fprobe_shared_with_kprobes(fp: *mut fprobe) -> bool {
     !fp.is_null() && ((*fp).flags & FPROBE_FL_KPROBE_SHARED) != 0
 }
 
-#[cfg(feature = "CONFIG_FPROBE")]
+#[cfg(CONFIG_FPROBE)]
 unsafe extern "C" {
     pub fn register_fprobe(
         fp: *mut fprobe,
@@ -84,7 +84,7 @@ unsafe extern "C" {
     pub fn fprobe_count_ips_from_filter(filter: *const c_char, notfilter: *const c_char) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn register_fprobe(
     _fp: *mut fprobe,
@@ -94,13 +94,13 @@ pub unsafe fn register_fprobe(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn register_fprobe_ips(_fp: *mut fprobe, _addrs: *mut c_ulong, _num: c_int) -> c_int {
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn register_fprobe_syms(
     _fp: *mut fprobe,
@@ -110,19 +110,19 @@ pub unsafe fn register_fprobe_syms(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn unregister_fprobe(_fp: *mut fprobe) -> c_int { -EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn unregister_fprobe_async(_fp: *mut fprobe) -> c_int { -EOPNOTSUPP }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn fprobe_is_registered(_fp: *mut fprobe) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_FPROBE"))]
+#[cfg(not(CONFIG_FPROBE))]
 #[inline]
 pub unsafe fn fprobe_count_ips_from_filter(
     _filter: *const c_char,

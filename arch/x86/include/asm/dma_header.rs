@@ -24,9 +24,9 @@ pub const MAX_DMA_PFN: usize = ((16usize * 1024 * 1024) >> PAGE_SHIFT);
 pub const MAX_DMA32_PFN: usize = 1usize << (32 - PAGE_SHIFT);
 
 // CONFIG_X86_32 selects PAGE_OFFSET + 0x1000000; otherwise this is __va(MAX_DMA_PFN << PAGE_SHIFT).
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub const MAX_DMA_ADDRESS: usize = PAGE_OFFSET + 0x1000000;
-#[cfg(not(feature = "CONFIG_X86_32"))]
+#[cfg(not(CONFIG_X86_32))]
 pub const MAX_DMA_ADDRESS: usize = __va(MAX_DMA_PFN << PAGE_SHIFT);
 
 pub const IO_DMA1_BASE: u16 = 0x00;
@@ -71,7 +71,7 @@ pub const DMA_MODE_WRITE: u8 = 0x48;
 pub const DMA_MODE_CASCADE: u8 = 0xC0;
 pub const DMA_AUTOINIT: u8 = 0x10;
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 extern "C" {
     pub static mut dma_spin_lock: spinlock_t;
     pub fn spin_lock_irqsave(lock: *mut spinlock_t, flags: *mut c_ulong);
@@ -80,7 +80,7 @@ extern "C" {
     pub fn free_dma(dmanr: u32);
 }
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 #[inline]
 pub unsafe fn claim_dma_lock() -> c_ulong {
     let mut flags: c_ulong = 0;
@@ -88,7 +88,7 @@ pub unsafe fn claim_dma_lock() -> c_ulong {
     flags
 }
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 #[inline]
 pub unsafe fn release_dma_lock(flags: c_ulong) { spin_unlock_irqrestore(&raw mut dma_spin_lock, flags); }
 

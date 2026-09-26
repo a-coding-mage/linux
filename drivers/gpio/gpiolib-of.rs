@@ -21,18 +21,18 @@ use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 #[repr(u32)] enum of_gpio_flags { OF_GPIO_ACTIVE_LOW=1, OF_GPIO_SINGLE_ENDED=2, OF_GPIO_OPEN_DRAIN=4, OF_GPIO_TRANSITORY=8, OF_GPIO_PULL_UP=16, OF_GPIO_PULL_DOWN=32, OF_GPIO_PULL_DISABLE=64 }
 
 extern "C" {
-    fn of_count_phandle_with_args(*const device_node,*const c_char,*const c_char)->c_int;
-    fn of_device_is_compatible(*const device_node,*const c_char)->bool; fn strcmp(*const c_char,*const c_char)->c_int;
-    fn to_of_node(*const fwnode_handle)->*mut device_node; fn device_match_of_node(*const device,*const device_node)->bool;
-    fn gpio_device_find(*const c_void, Option<unsafe extern "C" fn(*mut gpio_chip,*const c_void)->c_int>)->*mut gpio_device;
-    fn gpio_device_get_chip(*mut gpio_device)->*mut gpio_chip; fn gpiochip_get_desc(*mut gpio_chip,c_int)->*mut gpio_desc;
-    fn of_parse_phandle_with_args_map(*const device_node,*const c_char,*const c_char,c_int,*mut of_phandle_args)->c_int;
-    fn of_node_put(*mut device_node); fn of_node_full_name(*const device_node)->*const c_char;
-    fn of_property_read_bool(*const device_node,*const c_char)->bool; fn of_property_present(*const device_node,*const c_char)->bool;
-    fn gpiochip_add_pin_range(*mut gpio_chip,*const c_char,c_uint,c_int,c_uint)->c_int;
-    fn gpiochip_add_pingroup_range(*mut gpio_chip,*mut pinctrl_dev,c_uint,*const c_char)->c_int;
-    fn of_pinctrl_get(*mut device_node)->*mut pinctrl_dev; fn pinctrl_dev_get_devname(*mut pinctrl_dev)->*const c_char;
-    fn dev_of_node(*const device)->*mut device_node; fn of_property_read_string_index(*const device_node,*const c_char,c_uint,*mut *const c_char)->c_int;
+    fn of_count_phandle_with_args(_: *const device_node,_: *const c_char,_: *const c_char)->c_int;
+    fn of_device_is_compatible(_: *const device_node,_: *const c_char)->bool; fn strcmp(_: *const c_char,_: *const c_char)->c_int;
+    fn to_of_node(_: *const fwnode_handle)->*mut device_node; fn device_match_of_node(_: *const device,_: *const device_node)->bool;
+    fn gpio_device_find(_: *const c_void, _: Option<unsafe extern "C" fn(*mut gpio_chip,*const c_void)->c_int>)->*mut gpio_device;
+    fn gpio_device_get_chip(_: *mut gpio_device)->*mut gpio_chip; fn gpiochip_get_desc(_: *mut gpio_chip,_: c_int)->*mut gpio_desc;
+    fn of_parse_phandle_with_args_map(_: *const device_node,_: *const c_char,_: *const c_char,_: c_int,_: *mut of_phandle_args)->c_int;
+    fn of_node_put(_: *mut device_node); fn of_node_full_name(_: *const device_node)->*const c_char;
+    fn of_property_read_bool(_: *const device_node,_: *const c_char)->bool; fn of_property_present(_: *const device_node,_: *const c_char)->bool;
+    fn gpiochip_add_pin_range(_: *mut gpio_chip,_: *const c_char,_: c_uint,_: c_int,_: c_uint)->c_int;
+    fn gpiochip_add_pingroup_range(_: *mut gpio_chip,_: *mut pinctrl_dev,_: c_uint,_: *const c_char)->c_int;
+    fn of_pinctrl_get(_: *mut device_node)->*mut pinctrl_dev; fn pinctrl_dev_get_devname(_: *mut pinctrl_dev)->*const c_char;
+    fn dev_of_node(_: *const device)->*mut device_node; fn of_property_read_string_index(_: *const device_node,_: *const c_char,_: c_uint,_: *mut *const c_char)->c_int;
 }
 
 const EINVAL:c_int=-22; const ENOENT:c_int=-2; const EPROBE_DEFER:c_int=-517;

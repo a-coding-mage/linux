@@ -12,11 +12,11 @@ fn const vm_operations_struct xfs_file_vm_ops;
 bool
 fn xfs_is_falloc_aligned(
 	*mut xfs_inodeip,
-	i64			pos,
-	i64		len)
+	pos: i64,
+	len: i64)
 {
 	u32		alloc_unit = fn xfs_inode_alloc_unitsize(ip);
-	fn if(!fn is_power_of_2(alloc_unit))
+	fn r#if(!fn is_power_of_2(alloc_unit))
 		return fn isaligned_64(pos, alloc_unit) &&
 		       fn isaligned_64(len, alloc_unit);
 	return !((pos | len) & (alloc_unit - 1));
@@ -31,11 +31,11 @@ fn xfs_is_falloc_aligned(
 pub i32
 fn xfs_dir_fsync(
 	*mut filefile,
-	i64			start,
-	i64			end,
-	i32			datasync)
+	start: i64,
+	end: i64,
+	datasync: i32)
 {
-	*mut xfs_inodeip = fn XFS_I(file->f_mapping->host);
+	*mut xfs_inodeip = fn XFS_I((*(*file).f_mapping).host);
 	fn trace_xfs_dir_fsync(ip);
 	return fn xfs_log_force_inode(ip);
 }
@@ -63,39 +63,39 @@ fn xfs_dir_fsync(
 fn i32
 fn xfs_fsync_flush_log(
 	*mut xfs_inodeip,
-	bool			datasync,
+	datasync: bool,
 	i32			*log_flushed)
 {
-	*mut xfs_inode_log_itemiip = ip->i_itemp;
+	*mut xfs_inode_log_itemiip = (*ip).i_itemp;
 	xfs_csn_t		seq = 0;
-	fn spin_lock(&iip->ili_lock);
-	fn if(datasync)
-		seq = iip->ili_datasync_seq;
+	fn spin_lock((*&iip).ili_lock);
+	fn r#if(datasync)
+		seq = (*iip).ili_datasync_seq;
 	else
-		seq = iip->ili_commit_seq;
-	fn spin_unlock(&iip->ili_lock);
-	fn if(!seq)
+		seq = (*iip).ili_commit_seq;
+	fn spin_unlock((*&iip).ili_lock);
+	fn r#if(!seq)
 		return 0;
-	return fn xfs_log_force_seq(ip->i_mount, seq, XFS_LOG_SYNC,
+	return fn xfs_log_force_seq((*ip).i_mount, seq, XFS_LOG_SYNC,
 					  log_flushed);
 }
 
 pub i32
 fn xfs_file_fsync(
 	*mut filefile,
-	i64			start,
-	i64			end,
-	i32			datasync)
+	start: i64,
+	end: i64,
+	datasync: i32)
 {
-	*mut xfs_inodeip = fn XFS_I(file->f_mapping->host);
-	*mut xfs_mountmp = ip->i_mount;
-	i32			error, err2;
+	*mut xfs_inodeip = fn XFS_I((*(*file).f_mapping).host);
+	*mut xfs_mountmp = (*ip).i_mount;
+	error: i32, err2;
 	i32			log_flushed = 0;
 	fn trace_xfs_file_fsync(ip);
 	error = fn file_write_and_wait_range(file, start, end);
-	fn if(error)
+	fn r#if(error)
 		return error;
-	fn if(fn xfs_is_shutdown(mp))
+	fn r#if(fn xfs_is_shutdown(mp))
 		return -EIO;
 	fn xfs_iflags_clear(ip, XFS_ITRUNCATED);
 	/*
@@ -104,17 +104,17 @@ fn xfs_file_fsync(
 	 * ensure newly written file data make it to disk before logging the new
 	 * inode size in case of an extending write.
 	 */
-	fn if(fn XFS_IS_REALTIME_INODE(ip) && mp->m_rtdev_targp != mp->m_ddev_targp)
-		error = fn blkdev_issue_flush(mp->m_rtdev_targp->bt_bdev);
-	else fn if(mp->m_logdev_targp != mp->m_ddev_targp)
-		error = fn blkdev_issue_flush(mp->m_ddev_targp->bt_bdev);
+	fn r#if(fn XFS_IS_REALTIME_INODE(ip) && (*mp).m_rtdev_targp != (*mp).m_ddev_targp)
+		error = fn blkdev_issue_flush((*(*mp).m_rtdev_targp).bt_bdev);
+	else fn r#if((*mp).m_logdev_targp != (*mp).m_ddev_targp)
+		error = fn blkdev_issue_flush((*(*mp).m_ddev_targp).bt_bdev);
 	/*
 	 * If the inode has a inode log item attached, it may need the journal
 	 * flushed to persist any changes the log item might be tracking.
 	 */
-	fn if(ip->i_itemp) {
+	fn r#if((*ip).i_itemp) {
 		err2 = fn xfs_fsync_flush_log(ip, datasync, &log_flushed);
-		fn if(err2 && !error)
+		fn r#if(err2 && !error)
 			error = err2;
 	}
 
@@ -128,11 +128,11 @@ fn xfs_file_fsync(
 	 * are flushed before the log force, so this fallback only applies
 	 * when the file data target is the same as the log target.
 	 */
-	fn if(!log_flushed) {
+	fn r#if(!log_flushed) {
 		*mut xfs_buftargfile_targp = fn xfs_inode_buftarg(ip);
-		fn if(mp->m_logdev_targp == file_targp) {
-			err2 = fn blkdev_issue_flush(file_targp->bt_bdev);
-			fn if(err2 && !error)
+		fn r#if((*mp).m_logdev_targp == file_targp) {
+			err2 = fn blkdev_issue_flush((*file_targp).bt_bdev);
+			fn r#if(err2 && !error)
 				error = err2;
 		}
 	}
@@ -143,11 +143,11 @@ fn xfs_file_fsync(
 fn i32
 fn xfs_ilock_iocb(
 	*mut kiocbiocb,
-	u32		lock_mode)
+	lock_mode: u32)
 {
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(iocb->ki_filp));
-	fn if(iocb->ki_flags & IOCB_NOWAIT) {
-		fn if(!fn xfs_ilock_nowait(ip, lock_mode))
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*iocb).ki_filp));
+	fn r#if((*iocb).ki_flags & IOCB_NOWAIT) {
+		fn r#if(!fn xfs_ilock_nowait(ip, lock_mode))
 			return -EAGAIN;
 	} else {
 		fn xfs_ilock(ip, lock_mode);
@@ -159,18 +159,17 @@ fn xfs_ilock_iocb(
 fn i32
 fn xfs_ilock_iocb_for_write(
 	*mut kiocbiocb,
-	u32		*lock_mode)
-{
+	u32		*lock_mode) {
 	isize			ret;
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(iocb->ki_filp));
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*iocb).ki_filp));
 	ret = fn xfs_ilock_iocb(iocb, *lock_mode);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	/*
 	 * If a reflink remap is in progress we always need to take the iolock
 	 * exclusively to wait for it to finish.
 	 */
-	fn if(*lock_mode == XFS_IOLOCK_SHARED &&
+	fn r#if(*lock_mode == XFS_IOLOCK_SHARED &&
 	    fn xfs_iflags_test(ip, XFS_IREMAPPING)) {
 		fn xfs_iunlock(ip, *lock_mode);
 		*lock_mode = XFS_IOLOCK_EXCL;
@@ -188,39 +187,39 @@ fn()
 fn xfs_dio_read_bounce_submit_io(
 	const iomap_iter	*iter,
 	*mut biobio,
-	i64			file_offset)
+	file_offset: i64)
 {
-	fn iomap_init_ioend(iter->inode, bio, file_offset, IOMAP_IOEND_DIRECT);
-	bio->bi_end_io = xfs_end_bio;
+	fn iomap_init_ioend((*iter).inode, bio, file_offset, IOMAP_IOEND_DIRECT);
+	(*bio).bi_end_io = xfs_end_bio;
 	fn submit_bio(bio);
 }
 
 fn const iomap_dio_ops xfs_dio_read_bounce_ops = {
-	.submit_io	= xfs_dio_read_bounce_submit_io,
-	.bio_set	= &iomap_ioend_bioset,
+	submit_io: xfs_dio_read_bounce_submit_io,
+	bio_set: &iomap_ioend_bioset,
 };
 pub isize
 fn xfs_file_dio_read(
 	*mut kiocbiocb,
 	*mut iov_iterto)
 {
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(iocb->ki_filp));
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*iocb).ki_filp));
 	isize			ret;
 	fn trace_xfs_file_direct_read(iocb, to);
-	fn if(!fn iov_iter_count(to))
+	fn r#if(!fn iov_iter_count(to))
 		return 0; /* skip atime */
 
-	fn file_accessed(iocb->ki_filp);
+	fn file_accessed((*iocb).ki_filp);
 	ret = fn xfs_ilock_iocb(iocb, XFS_IOLOCK_SHARED);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
-	fn if(fn mapping_stable_writes(iocb->ki_filp->f_mapping)) {
+	fn r#if(fn mapping_stable_writes((*(*iocb).ki_filp).f_mapping)) {
 		ret = fn iomap_dio_rw(iocb, to, &xfs_read_iomap_ops,
 				&xfs_dio_read_bounce_ops, IOMAP_DIO_BOUNCE,
 				core::ptr::fn null_mut(), 0);
 	} else {
 		ret = fn iomap_dio_read_simple(iocb, to, xfs_read_iomap_begin);
-		fn if(ret == -ENOTBLK)
+		fn r#if(ret == -ENOTBLK)
 			ret = fn iomap_dio_rw(iocb, to, &xfs_read_iomap_ops, core::ptr::fn null_mut(),
 					0, core::ptr::fn null_mut(), 0);
 	}
@@ -233,18 +232,18 @@ fn xfs_file_dax_read(
 	*mut kiocbiocb,
 	*mut iov_iterto)
 {
-	*mut xfs_inodeip = fn XFS_I(iocb->ki_filp->f_mapping->host);
+	*mut xfs_inodeip = fn XFS_I((*(*(*iocb).ki_filp).f_mapping).host);
 	isize			ret = 0;
 	fn trace_xfs_file_dax_read(iocb, to);
-	fn if(!fn iov_iter_count(to))
+	fn r#if(!fn iov_iter_count(to))
 		return 0; /* skip atime */
 
 	ret = fn xfs_ilock_iocb(iocb, XFS_IOLOCK_SHARED);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	ret = fn dax_iomap_rw(iocb, to, &xfs_read_iomap_ops);
 	fn xfs_iunlock(ip, XFS_IOLOCK_SHARED);
-	fn file_accessed(iocb->ki_filp);
+	fn file_accessed((*iocb).ki_filp);
 	return ret;
 }
 
@@ -253,11 +252,11 @@ fn xfs_file_buffered_read(
 	*mut kiocbiocb,
 	*mut iov_iterto)
 {
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(iocb->ki_filp));
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*iocb).ki_filp));
 	isize			ret;
 	fn trace_xfs_file_buffered_read(iocb, to);
 	ret = fn xfs_ilock_iocb(iocb, XFS_IOLOCK_SHARED);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	ret = fn generic_file_read_iter(iocb, to);
 	fn xfs_iunlock(ip, XFS_IOLOCK_SHARED);
@@ -269,19 +268,19 @@ fn xfs_file_read_iter(
 	*mut kiocbiocb,
 	*mut iov_iterto)
 {
-	*mut inodeinode = fn file_inode(iocb->ki_filp);
+	*mut inodeinode = fn file_inode((*iocb).ki_filp);
 	*mut xfs_mountmp = fn XFS_I(inode)->i_mount;
 	isize			ret = 0;
 	fn XFS_STATS_INC(mp, xs_read_calls);
-	fn if(fn xfs_is_shutdown(mp))
+	fn r#if(fn xfs_is_shutdown(mp))
 		return -EIO;
-	fn if(fn IS_DAX(inode))
+	fn r#if(fn IS_DAX(inode))
 		ret = fn xfs_file_dax_read(iocb, to);
-	else fn if(iocb->ki_flags & IOCB_DIRECT)
+	else fn r#if((*iocb).ki_flags & IOCB_DIRECT)
 		ret = fn xfs_file_dio_read(iocb, to);
 	else
 		ret = fn xfs_file_buffered_read(iocb, to);
-	fn if(ret > 0)
+	fn r#if(ret > 0)
 		fn XFS_STATS_ADD(mp, xs_read_bytes, ret);
 	return ret;
 }
@@ -291,21 +290,21 @@ fn xfs_file_splice_read(
 	*mut filein,
 	i64			*ppos,
 	*mut pipe_inode_infopipe,
-	usize			len,
-	u32		flags)
+	len: usize,
+	flags: u32)
 {
 	*mut inodeinode = fn file_inode(in);
 	*mut xfs_inodeip = fn XFS_I(inode);
-	*mut xfs_mountmp = ip->i_mount;
+	*mut xfs_mountmp = (*ip).i_mount;
 	isize			ret = 0;
 	fn XFS_STATS_INC(mp, xs_read_calls);
-	fn if(fn xfs_is_shutdown(mp))
+	fn r#if(fn xfs_is_shutdown(mp))
 		return -EIO;
 	fn trace_xfs_file_splice_read(ip, *ppos, len);
 	fn xfs_ilock(ip, XFS_IOLOCK_SHARED);
 	ret = fn filemap_splice_read(in, ppos, pipe, len, flags);
 	fn xfs_iunlock(ip, XFS_IOLOCK_SHARED);
-	fn if(ret > 0)
+	fn r#if(ret > 0)
 		fn XFS_STATS_ADD(mp, xs_read_bytes, ret);
 	return ret;
 }
@@ -322,11 +321,11 @@ fn xfs_file_write_zero_eof(
 	*mut kiocbiocb,
 	*mut iov_iterfrom,
 	u32		*iolock,
-	usize			count,
+	count: usize,
 	bool			*drained_dio,
 	*mut xfs_zone_alloc_ctxac)
 {
-	*mut xfs_inodeip = fn XFS_I(iocb->ki_filp->f_mapping->host);
+	*mut xfs_inodeip = fn XFS_I((*(*(*iocb).ki_filp).f_mapping).host);
 	i64			isize;
 	i32			error;
 	/*
@@ -338,22 +337,22 @@ fn xfs_file_write_zero_eof(
 	 * XFS_IOLOCK_EXCL so we are guaranteed to see the latest EOF value and
 	 * hence be able to correctly determine if we need to run zeroing.
 	 */
-	fn spin_lock(&ip->i_flags_lock);
+	fn spin_lock((*&ip).i_flags_lock);
 	isize = fn i_size_read(fn VFS_I(ip));
-	fn if(iocb->ki_pos <= isize) {
-		fn spin_unlock(&ip->i_flags_lock);
+	fn r#if((*iocb).ki_pos <= isize) {
+		fn spin_unlock((*&ip).i_flags_lock);
 		return 0;
 	}
-	fn spin_unlock(&ip->i_flags_lock);
-	fn if(iocb->ki_flags & IOCB_NOWAIT)
+	fn spin_unlock((*&ip).i_flags_lock);
+	fn r#if((*iocb).ki_flags & IOCB_NOWAIT)
 		return -EAGAIN;
-	fn if(!*drained_dio) {
+	fn r#if(!*drained_dio) {
 		/*
 		 * If zeroing is needed and we are currently holding the iolock
 		 * shared, we need to update it to exclusive which implies
 		 * having to redo all checks before.
 		 */
-		fn if(*iolock == XFS_IOLOCK_SHARED) {
+		fn r#if(*iolock == XFS_IOLOCK_SHARED) {
 			fn xfs_iunlock(ip, *iolock);
 			*iolock = XFS_IOLOCK_EXCL;
 			fn xfs_ilock(ip, *iolock);
@@ -372,9 +371,9 @@ fn xfs_file_write_zero_eof(
 		return 1;
 	}
 
-	fn trace_xfs_zero_eof(ip, isize, iocb->ki_pos - isize);
+	fn trace_xfs_zero_eof(ip, isize, (*iocb).ki_pos - isize);
 	fn xfs_ilock(ip, XFS_MMAPLOCK_EXCL);
-	error = fn xfs_zero_range(ip, isize, iocb->ki_pos - isize, ac, core::ptr::fn null_mut());
+	error = fn xfs_zero_range(ip, isize, (*iocb).ki_pos - isize, ac, core::ptr::fn null_mut());
 	fn xfs_iunlock(ip, XFS_MMAPLOCK_EXCL);
 	return error;
 }
@@ -393,37 +392,37 @@ fn xfs_file_write_checks(
 	u32		*iolock,
 	*mut xfs_zone_alloc_ctxac)
 {
-	*mut inodeinode = iocb->ki_filp->f_mapping->host;
+	*mut inodeinode = (*(*(*iocb).ki_filp).f_mapping).host;
 	usize			count = fn iov_iter_count(from);
 	bool			drained_dio = false;
 	isize			error;
-restart:
-	error = fn generic_write_checks(iocb, from);
-	fn if(error <= 0)
+    'restart: loop {
+    error = fn generic_write_checks(iocb, from);
+	fn r#if(error <= 0)
 		return error;
-	fn if(iocb->ki_flags & IOCB_NOWAIT) {
+	fn r#if((*iocb).ki_flags & IOCB_NOWAIT) {
 		error = fn break_layout(inode, false);
-		fn if(error == -EWOULDBLOCK)
+		fn r#if(error == -EWOULDBLOCK)
 			error = -EAGAIN;
 	} else {
 		error = fn xfs_break_layouts(inode, iolock, BREAK_WRITE);
 	}
 
-	fn if(error)
+	fn r#if(error)
 		return error;
 	/*
 	 * For changing security info in fn file_remove_privs() we need i_rwsem
 	 * exclusively.
 	 */
-	fn if(*iolock == XFS_IOLOCK_SHARED && !fn IS_NOSEC(inode)) {
+	fn r#if(*iolock == XFS_IOLOCK_SHARED && !fn IS_NOSEC(inode)) {
 		fn xfs_iunlock(fn XFS_I(inode), *iolock);
 		*iolock = XFS_IOLOCK_EXCL;
 		error = fn xfs_ilock_iocb(iocb, *iolock);
-		fn if(error) {
+		fn r#if(error) {
 			*iolock = 0;
 			return error;
 		}
-		goto restart;
+		continue 'restart;
 	}
 
 	/*
@@ -436,16 +435,18 @@ restart:
 	 * EOF can not move backwards, only forwards. Hence we only need to take
 	 * the slow path when we are at or beyond the current EOF.
 	 */
-	fn if(iocb->ki_pos > fn i_size_read(inode)) {
+	fn r#if((*iocb).ki_pos > fn i_size_read(inode)) {
 		error = fn xfs_file_write_zero_eof(iocb, from, iolock, count,
 				&drained_dio, ac);
-		fn if(error == 1)
-			goto restart;
-		fn if(error)
+		fn r#if(error == 1)
+			continue 'restart;
+		fn r#if(error)
 			return error;
 	}
 
 	return fn kiocb_modified(iocb);
+        break;
+    }
 }
 
 fn isize
@@ -453,12 +454,12 @@ fn xfs_zoned_write_space_reserve(
 	*mut xfs_mountmp,
 	*mut kiocbiocb,
 	*mut iov_iterfrom,
-	u32			flags,
+	flags: u32,
 	*mut xfs_zone_alloc_ctxac)
 {
 	i64				count = fn iov_iter_count(from);
 	i32				error;
-	fn if(iocb->ki_flags & IOCB_NOWAIT)
+	fn r#if((*iocb).ki_flags & IOCB_NOWAIT)
 		flags |= XFS_ZR_NOWAIT;
 	/*
 	 * Check the rlimit and LFS boundary first so that we don't over-reserve
@@ -470,8 +471,8 @@ fn xfs_zoned_write_space_reserve(
 	 * used and our extra space reservation will be returned after finishing
 	 * the write.
 	 */
-	error = fn generic_write_check_limits(iocb->ki_filp, iocb->ki_pos, &count);
-	fn if(error)
+	error = fn generic_write_check_limits((*iocb).ki_filp, (*iocb).ki_pos, &count);
+	fn r#if(error)
 		return error;
 	/*
 	 * Sloppily round up count to file system blocks.
@@ -503,42 +504,42 @@ fn xfs_zoned_write_space_reserve(
 fn i32
 fn xfs_dio_endio_set_isize(
 	*mut inodeinode,
-	i64			offset,
-	isize			size)
+	offset: i64,
+	size: isize)
 {
 	*mut xfs_inodeip = fn XFS_I(inode);
-	fn if(offset + size <= fn i_size_read(inode))
+	fn r#if(offset + size <= fn i_size_read(inode))
 		return 0;
-	fn spin_lock(&ip->i_flags_lock);
-	fn if(offset + size <= fn i_size_read(inode)) {
-		fn spin_unlock(&ip->i_flags_lock);
+	fn spin_lock((*&ip).i_flags_lock);
+	fn r#if(offset + size <= fn i_size_read(inode)) {
+		fn spin_unlock((*&ip).i_flags_lock);
 		return 0;
 	}
 
 	fn i_size_write(inode, offset + size);
-	fn spin_unlock(&ip->i_flags_lock);
+	fn spin_unlock((*&ip).i_flags_lock);
 	return fn xfs_setfilesize(ip, offset, size);
 }
 
 fn i32
 fn xfs_zoned_dio_write_end_io(
 	*mut kiocbiocb,
-	isize			size,
-	i32			error,
-	u32		flags)
+	size: isize,
+	error: i32,
+	flags: u32)
 {
-	*mut inodeinode = fn file_inode(iocb->ki_filp);
+	*mut inodeinode = fn file_inode((*iocb).ki_filp);
 	*mut xfs_inodeip = fn XFS_I(inode);
 	u32		nofs_flag;
 	fn ASSERT(!(flags & (IOMAP_DIO_UNWRITTEN | IOMAP_DIO_COW)));
-	fn trace_xfs_end_io_direct_write(ip, iocb->ki_pos, size);
-	fn if(fn xfs_is_shutdown(ip->i_mount))
+	fn trace_xfs_end_io_direct_write(ip, (*iocb).ki_pos, size);
+	fn r#if(fn xfs_is_shutdown((*ip).i_mount))
 		return -EIO;
-	fn if(error || !size)
+	fn r#if(error || !size)
 		return error;
-	fn XFS_STATS_ADD(ip->i_mount, xs_write_bytes, size);
+	fn XFS_STATS_ADD((*ip).i_mount, xs_write_bytes, size);
 	nofs_flag = fn memalloc_nofs_save();
-	error = fn xfs_dio_endio_set_isize(inode, iocb->ki_pos, size);
+	error = fn xfs_dio_endio_set_isize(inode, (*iocb).ki_pos, size);
 	fn memalloc_nofs_restore(nofs_flag);
 	return error;
 }
@@ -546,40 +547,41 @@ fn xfs_zoned_dio_write_end_io(
 fn i32
 fn xfs_dio_write_end_io(
 	*mut kiocbiocb,
-	isize			size,
-	i32			error,
-	u32		flags)
+	size: isize,
+	error: i32,
+	flags: u32)
 {
-	*mut inodeinode = fn file_inode(iocb->ki_filp);
+	'out: {
+	*mut inodeinode = fn file_inode((*iocb).ki_filp);
 	*mut xfs_inodeip = fn XFS_I(inode);
-	i64			offset = iocb->ki_pos;
+	i64			offset = (*iocb).ki_pos;
 	u32		nofs_flag;
 	fn ASSERT(!fn xfs_is_zoned_inode(ip));
 	fn trace_xfs_end_io_direct_write(ip, offset, size);
-	fn if(fn xfs_is_shutdown(ip->i_mount))
+	fn r#if(fn xfs_is_shutdown((*ip).i_mount))
 		return -EIO;
-	fn if(error)
+	fn r#if(error)
 		return error;
-	fn if(!size)
+	fn r#if(!size)
 		return 0;
 	/*
 	 * Capture amount written on completion as we can't reliably account
 	 * for it on submission.
 	 */
-	fn XFS_STATS_ADD(ip->i_mount, xs_write_bytes, size);
+	fn XFS_STATS_ADD((*ip).i_mount, xs_write_bytes, size);
 	/*
 	 * We can allocate memory here while doing writeback on behalf of
 	 * memory reclaim.  To avoid memory allocation deadlocks set the
 	 * task-wide nofs context for the following operations.
 	 */
 	nofs_flag = fn memalloc_nofs_save();
-	fn if(flags & IOMAP_DIO_COW) {
-		fn if(iocb->ki_flags & IOCB_ATOMIC)
+	fn r#if(flags & IOMAP_DIO_COW) {
+		fn r#if((*iocb).ki_flags & IOCB_ATOMIC)
 			error = fn xfs_reflink_end_atomic_cow(ip, offset, size);
 		else
 			error = fn xfs_reflink_end_cow(ip, offset, size);
-		fn if(error)
-			goto out;
+		fn r#if(error)
+			break 'out;
 	}
 
 	/*
@@ -588,9 +590,9 @@ fn xfs_dio_write_end_io(
 	 * earlier allows a racing dio read to find unwritten extents before
 	 * they are converted.
 	 */
-	fn if(flags & IOMAP_DIO_UNWRITTEN) {
+	fn r#if(flags & IOMAP_DIO_UNWRITTEN) {
 		error = fn xfs_iomap_write_unwritten(ip, offset, size, true);
-		goto out;
+		break 'out;
 	}
 
 	/*
@@ -600,44 +602,45 @@ fn xfs_dio_write_end_io(
 	 * if necessary.
 	 */
 	error = fn xfs_dio_endio_set_isize(inode, offset, size);
-out:
+	}
+	
 	fn memalloc_nofs_restore(nofs_flag);
 	return error;
 }
 
 fn const iomap_dio_ops xfs_dio_write_ops = {
-	.end_io		= xfs_dio_write_end_io,
+	end_io: xfs_dio_write_end_io,
 };
 fn()
 fn xfs_dio_zoned_submit_io(
 	const iomap_iter	*iter,
 	*mut biobio,
-	i64			file_offset)
+	file_offset: i64)
 {
-	*mut xfs_mountmp = fn XFS_I(iter->inode)->i_mount;
-	*mut xfs_zone_alloc_ctxac = iter->private;
+	*mut xfs_mountmp = fn XFS_I((*iter).inode)->i_mount;
+	*mut xfs_zone_alloc_ctxac = (*iter).private;
 	xfs_filblks_t		count_fsb;
 	*mut iomap_ioendioend;
-	count_fsb = fn XFS_B_TO_FSB(mp, bio->bi_iter.bi_size);
-	fn if(count_fsb > ac->reserved_blocks) {
+	count_fsb = fn XFS_B_TO_FSB(mp, (*bio).bi_iter.bi_size);
+	fn r#if(count_fsb > (*ac).reserved_blocks) {
 		fn xfs_err(mp,
 "fn allocation(%lld) larger than fn reservation(%lld).",
-			count_fsb, ac->reserved_blocks);
+			count_fsb, (*ac).reserved_blocks);
 		fn xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
 		fn bio_io_error(bio);
 		return;
 	}
-	ac->reserved_blocks -= count_fsb;
-	bio->bi_end_io = xfs_end_bio;
-	ioend = fn iomap_init_ioend(iter->inode, bio, file_offset,
+	(*ac).reserved_blocks -= count_fsb;
+	(*bio).bi_end_io = xfs_end_bio;
+	ioend = fn iomap_init_ioend((*iter).inode, bio, file_offset,
 			IOMAP_IOEND_DIRECT);
-	fn xfs_zone_alloc_and_submit(ioend, &ac->open_zone);
+	fn xfs_zone_alloc_and_submit(ioend, (*&ac).open_zone);
 }
 
 fn const iomap_dio_ops xfs_dio_zoned_write_ops = {
-	.bio_set	= &iomap_ioend_bioset,
-	.submit_io	= xfs_dio_zoned_submit_io,
-	.end_io		= xfs_zoned_dio_write_end_io,
+	bio_set: &iomap_ioend_bioset,
+	submit_io: xfs_dio_zoned_submit_io,
+	end_io: xfs_zoned_dio_write_end_io,
 };
 /*
  * Handle block aligned direct I/O writes.
@@ -651,6 +654,7 @@ fn xfs_file_dio_write_aligned(
 	const iomap_dio_ops *dops,
 	*mut xfs_zone_alloc_ctxac)
 {
+	'out_unlock: {
 	u32		iolock = XFS_IOLOCK_SHARED;
 	u32		dio_flags = 0;
 	isize			ret;
@@ -659,28 +663,29 @@ fn xfs_file_dio_write_aligned(
 	 * block size and not just the device sector size because we need to
 	 * allocate a block-aligned amount of space for each write.
 	 */
-	fn if(fn xfs_is_always_cow_inode(ip))
+	fn r#if(fn xfs_is_always_cow_inode(ip))
 		dio_flags |= IOMAP_DIO_FSBLOCK_ALIGNED;
 	ret = fn xfs_ilock_iocb_for_write(iocb, &iolock);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	ret = fn xfs_file_write_checks(iocb, from, &iolock, ac);
-	fn if(ret)
-		goto out_unlock;
+	fn r#if(ret)
+		break 'out_unlock;
 	/*
 	 * We don't need to hold the IOLOCK exclusively across the IO, so demote
 	 * the iolock back to shared if we had to take the exclusive lock in
 	 * fn xfs_file_write_checks() for other reasons.
 	 */
-	fn if(iolock == XFS_IOLOCK_EXCL) {
+	fn r#if(iolock == XFS_IOLOCK_EXCL) {
 		fn xfs_ilock_demote(ip, XFS_IOLOCK_EXCL);
 		iolock = XFS_IOLOCK_SHARED;
 	}
-	fn if(fn mapping_stable_writes(iocb->ki_filp->f_mapping))
+	fn r#if(fn mapping_stable_writes((*(*iocb).ki_filp).f_mapping))
 		dio_flags |= IOMAP_DIO_BOUNCE;
 	fn trace_xfs_file_direct_write(iocb, from);
 	ret = fn iomap_dio_rw(iocb, from, ops, dops, dio_flags, ac, 0);
-out_unlock:
+	}
+	
 	fn xfs_iunlock(ip, iolock);
 	return ret;
 }
@@ -696,13 +701,13 @@ fn xfs_file_dio_write_zoned(
 {
 	xfs_zone_alloc_ctx ac = { };
 	isize			ret;
-	ret = fn xfs_zoned_write_space_reserve(ip->i_mount, iocb, from, 0, &ac);
-	fn if(ret < 0)
+	ret = fn xfs_zoned_write_space_reserve((*ip).i_mount, iocb, from, 0, &ac);
+	fn r#if(ret < 0)
 		return ret;
 	ret = fn xfs_file_dio_write_aligned(ip, iocb, from,
 			&xfs_zoned_direct_write_iomap_ops,
 			&xfs_dio_zoned_write_ops, &ac);
-	fn xfs_zoned_space_unreserve(ip->i_mount, &ac);
+	fn xfs_zoned_space_unreserve((*ip).i_mount, &ac);
 	return ret;
 }
 
@@ -722,33 +727,34 @@ fn xfs_file_dio_write_atomic(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
+	'out_unlock: {
 	u32		iolock = XFS_IOLOCK_SHARED;
-	isize			ret, ocount = fn iov_iter_count(from);
+	ret: isize, ocount = fn iov_iter_count(from);
 	u32		dio_flags = 0;
 	const iomap_ops	*dops;
 	/*
 	 * HW offload should be faster, so try that first if it is already
 	 * known that the write length is not too large.
 	 */
-	fn if(ocount > fn xfs_inode_buftarg(ip)->bt_awu_max)
+	fn r#if(ocount > fn xfs_inode_buftarg(ip)->bt_awu_max)
 		dops = &xfs_atomic_write_cow_iomap_ops;
 	else
 		dops = &xfs_direct_write_iomap_ops;
-retry:
-	ret = fn xfs_ilock_iocb_for_write(iocb, &iolock);
-	fn if(ret)
+    'retry: loop {
+    ret = fn xfs_ilock_iocb_for_write(iocb, &iolock);
+	fn r#if(ret)
 		return ret;
 	ret = fn xfs_file_write_checks(iocb, from, &iolock, core::ptr::fn null_mut());
-	fn if(ret)
-		goto out_unlock;
+	fn r#if(ret)
+		break 'out_unlock;
 	/* Demote similar to fn xfs_file_dio_write_aligned() */
-	fn if(iolock == XFS_IOLOCK_EXCL) {
+	fn r#if(iolock == XFS_IOLOCK_EXCL) {
 		fn xfs_ilock_demote(ip, XFS_IOLOCK_EXCL);
 		iolock = XFS_IOLOCK_SHARED;
 	}
 
 	fn trace_xfs_file_direct_write(iocb, from);
-	fn if(fn mapping_stable_writes(iocb->ki_filp->f_mapping))
+	fn r#if(fn mapping_stable_writes((*(*iocb).ki_filp).f_mapping))
 		dio_flags |= IOMAP_DIO_BOUNCE;
 	ret = fn iomap_dio_rw(iocb, from, dops, &xfs_dio_write_ops, dio_flags,
 			core::ptr::fn null_mut(), 0);
@@ -758,14 +764,16 @@ retry:
 	 * possible. The REQ_ATOMIC-based method is typically not possible if
 	 * the write spans multiple extents or the disk blocks are misaligned.
 	 */
-	fn if(ret == -ENOPROTOOPT && dops == &xfs_direct_write_iomap_ops) {
+	fn r#if(ret == -ENOPROTOOPT && dops == &xfs_direct_write_iomap_ops) {
 		fn xfs_iunlock(ip, iolock);
 		dops = &xfs_atomic_write_cow_iomap_ops;
-		goto retry;
+		continue 'retry;
 	}
-
-out_unlock:
-	fn if(iolock)
+        break;
+    }
+}
+	
+	fn r#if(iolock)
 		fn xfs_iunlock(ip, iolock);
 	return ret;
 }
@@ -793,6 +801,7 @@ fn xfs_file_dio_write_unaligned(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
+	'out_unlock: {
 	usize			isize = fn i_size_read(fn VFS_I(ip));
 	usize			count = fn iov_iter_count(from);
 	u32		iolock = XFS_IOLOCK_SHARED;
@@ -803,39 +812,41 @@ fn xfs_file_dio_write_unaligned(
 	 * that the DIO code always does for partial tail blocks beyond EOF, so
 	 * don't even bother trying the fast path in this case.
 	 */
-	fn if(iocb->ki_pos > isize || iocb->ki_pos + count >= isize) {
-		fn if(iocb->ki_flags & IOCB_NOWAIT)
+	fn r#if((*iocb).ki_pos > isize || (*iocb).ki_pos + count >= isize) {
+		'retry_exclusive: {
+		fn r#if((*iocb).ki_flags & IOCB_NOWAIT)
 			return -EAGAIN;
-retry_exclusive:
+		}
+		
 		iolock = XFS_IOLOCK_EXCL;
 		flags = IOMAP_DIO_FORCE_WAIT;
 	}
 
 	ret = fn xfs_ilock_iocb_for_write(iocb, &iolock);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	/*
 	 * We can't properly handle unaligned direct I/O to reflink files yet,
 	 * as we can't unshare a partial block.
 	 */
-	fn if(fn xfs_is_cow_inode(ip)) {
+	fn r#if(fn xfs_is_cow_inode(ip)) {
 		fn trace_xfs_reflink_bounce_dio_write(iocb, from);
 		ret = -ENOTBLK;
-		goto out_unlock;
+		break 'out_unlock;
 	}
 
 	ret = fn xfs_file_write_checks(iocb, from, &iolock, core::ptr::fn null_mut());
-	fn if(ret)
-		goto out_unlock;
+	fn r#if(ret)
+		break 'out_unlock;
 	/*
 	 * If we are doing exclusive unaligned I/O, this must be the only I/O
 	 * in-flight.  Otherwise we risk data corruption due to unwritten extent
 	 * conversions from the AIO end_io handler.  Wait for all other I/O to
 	 * drain first.
 	 */
-	fn if(flags & IOMAP_DIO_FORCE_WAIT)
+	fn r#if(flags & IOMAP_DIO_FORCE_WAIT)
 		fn inode_dio_wait(fn VFS_I(ip));
-	fn if(fn mapping_stable_writes(iocb->ki_filp->f_mapping))
+	fn r#if(fn mapping_stable_writes((*(*iocb).ki_filp).f_mapping))
 		flags |= IOMAP_DIO_BOUNCE;
 	fn trace_xfs_file_direct_write(iocb, from);
 	ret = fn iomap_dio_rw(iocb, from, &xfs_direct_write_iomap_ops,
@@ -845,14 +856,14 @@ retry_exclusive:
 	 * layer rejected it for mapping or locking reasons. If we are doing
 	 * nonblocking user I/O, propagate the error.
 	 */
-	fn if(ret == -EAGAIN && !(iocb->ki_flags & IOCB_NOWAIT)) {
+	fn r#if(ret == -EAGAIN && !((*iocb).ki_flags & IOCB_NOWAIT)) {
 		fn ASSERT(flags & IOMAP_DIO_OVERWRITE_ONLY);
 		fn xfs_iunlock(ip, iolock);
 		goto retry_exclusive;
 	}
-
-out_unlock:
-	fn if(iolock)
+	}
+	
+	fn r#if(iolock)
 		fn xfs_iunlock(ip, iolock);
 	return ret;
 }
@@ -862,17 +873,17 @@ fn xfs_file_dio_write(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(iocb->ki_filp));
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*iocb).ki_filp));
 	*mut xfs_buftargtarget = fn xfs_inode_buftarg(ip);
 	usize			count = fn iov_iter_count(from);
 	/* direct I/O must be aligned to device logical sector size */
-	fn if((iocb->ki_pos | count) & target->bt_logical_sectormask)
+	fn r#if(((*iocb).ki_pos | count) & (*target).bt_logical_sectormask)
 		return -EINVAL;
-	fn if((iocb->ki_pos | count) & ip->i_mount->m_blockmask)
+	fn r#if(((*iocb).ki_pos | count) & (*(*ip).i_mount).m_blockmask)
 		return fn xfs_file_dio_write_unaligned(ip, iocb, from);
-	fn if(fn xfs_is_zoned_inode(ip))
+	fn r#if(fn xfs_is_zoned_inode(ip))
 		return fn xfs_file_dio_write_zoned(ip, iocb, from);
-	fn if(iocb->ki_flags & IOCB_ATOMIC)
+	fn r#if((*iocb).ki_flags & IOCB_ATOMIC)
 		return fn xfs_file_dio_write_atomic(ip, iocb, from);
 	return fn xfs_file_dio_write_aligned(ip, iocb, from,
 			&xfs_direct_write_iomap_ops, &xfs_dio_write_ops, core::ptr::fn null_mut());
@@ -883,31 +894,33 @@ fn xfs_file_dax_write(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
-	*mut inodeinode = iocb->ki_filp->f_mapping->host;
+	'out: {
+	*mut inodeinode = (*(*(*iocb).ki_filp).f_mapping).host;
 	*mut xfs_inodeip = fn XFS_I(inode);
 	u32		iolock = XFS_IOLOCK_EXCL;
-	isize			ret, error = 0;
+	ret: isize, error = 0;
 	i64			pos;
 	ret = fn xfs_ilock_iocb(iocb, iolock);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	ret = fn xfs_file_write_checks(iocb, from, &iolock, core::ptr::fn null_mut());
-	fn if(ret)
-		goto out;
-	pos = iocb->ki_pos;
+	fn r#if(ret)
+		break 'out;
+	pos = (*iocb).ki_pos;
 	fn trace_xfs_file_dax_write(iocb, from);
 	ret = fn dax_iomap_rw(iocb, from, &xfs_dax_write_iomap_ops);
-	fn if(ret > 0 && iocb->ki_pos > fn i_size_read(inode)) {
-		fn i_size_write(inode, iocb->ki_pos);
+	fn r#if(ret > 0 && (*iocb).ki_pos > fn i_size_read(inode)) {
+		fn i_size_write(inode, (*iocb).ki_pos);
 		error = fn xfs_setfilesize(ip, pos, ret);
 	}
-out:
-	fn if(iolock)
+	}
+	
+	fn r#if(iolock)
 		fn xfs_iunlock(ip, iolock);
-	fn if(error)
+	fn r#if(error)
 		return error;
-	fn if(ret > 0) {
-		fn XFS_STATS_ADD(ip->i_mount, xs_write_bytes, ret);
+	fn r#if(ret > 0) {
+		fn XFS_STATS_ADD((*ip).i_mount, xs_write_bytes, ret);
 		/* Handle various SYNC-type writes */
 		ret = fn generic_write_sync(iocb, ret);
 	}
@@ -919,19 +932,20 @@ fn xfs_file_buffered_write(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
-	*mut inodeinode = iocb->ki_filp->f_mapping->host;
+	'out: {
+	*mut inodeinode = (*(*(*iocb).ki_filp).f_mapping).host;
 	*mut xfs_inodeip = fn XFS_I(inode);
 	isize			ret;
 	bool			cleared_space = false;
 	u32		iolock;
-write_retry:
-	iolock = XFS_IOLOCK_EXCL;
+    'write_retry: loop {
+    iolock = XFS_IOLOCK_EXCL;
 	ret = fn xfs_ilock_iocb(iocb, iolock);
-	fn if(ret)
+	fn r#if(ret)
 		return ret;
 	ret = fn xfs_file_write_checks(iocb, from, &iolock, core::ptr::fn null_mut());
-	fn if(ret)
-		goto out;
+	fn r#if(ret)
+		break 'out;
 	fn trace_xfs_file_buffered_write(iocb, from);
 	ret = fn iomap_file_buffered_write(iocb, from,
 			&xfs_buffered_write_iomap_ops, &xfs_iomap_write_ops,
@@ -946,26 +960,28 @@ write_retry:
 	 * running at the same time.  Use a synchronous scan to increase the
 	 * effectiveness of the scan.
 	 */
-	fn if(ret == -EDQUOT && !cleared_space) {
+	fn r#if(ret == -EDQUOT && !cleared_space) {
 		fn xfs_iunlock(ip, iolock);
 		fn xfs_blockgc_free_quota(ip, XFS_ICWALK_FLAG_SYNC);
 		cleared_space = true;
-		goto write_retry;
-	} else fn if(ret == -ENOSPC && !cleared_space) {
+		continue 'write_retry;
+	} else fn r#if(ret == -ENOSPC && !cleared_space) {
 		xfs_icwalk	icw = {0};
 		cleared_space = true;
-		fn xfs_flush_inodes(ip->i_mount);
+		fn xfs_flush_inodes((*ip).i_mount);
 		fn xfs_iunlock(ip, iolock);
 		icw.icw_flags = XFS_ICWALK_FLAG_SYNC;
-		fn xfs_blockgc_free_space(ip->i_mount, &icw);
-		goto write_retry;
+		fn xfs_blockgc_free_space((*ip).i_mount, &icw);
+		continue 'write_retry;
 	}
-
-out:
-	fn if(iolock)
+        break;
+    }
+}
+	
+	fn r#if(iolock)
 		fn xfs_iunlock(ip, iolock);
-	fn if(ret > 0) {
-		fn XFS_STATS_ADD(ip->i_mount, xs_write_bytes, ret);
+	fn r#if(ret > 0) {
+		fn XFS_STATS_ADD((*ip).i_mount, xs_write_bytes, ret);
 		/* Handle various SYNC-type writes */
 		ret = fn generic_write_sync(iocb, ret);
 	}
@@ -977,21 +993,23 @@ fn xfs_file_buffered_write_zoned(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
-	*mut xfs_inodeip = fn XFS_I(iocb->ki_filp->f_mapping->host);
-	*mut xfs_mountmp = ip->i_mount;
+	'out_unreserve: {
+	'out_unlock: {
+	*mut xfs_inodeip = fn XFS_I((*(*(*iocb).ki_filp).f_mapping).host);
+	*mut xfs_mountmp = (*ip).i_mount;
 	u32		iolock = XFS_IOLOCK_EXCL;
 	bool			cleared_space = false;
 	xfs_zone_alloc_ctx ac = { };
 	isize			ret;
 	ret = fn xfs_zoned_write_space_reserve(mp, iocb, from, XFS_ZR_GREEDY, &ac);
-	fn if(ret < 0)
+	fn r#if(ret < 0)
 		return ret;
 	ret = fn xfs_ilock_iocb(iocb, iolock);
-	fn if(ret)
-		goto out_unreserve;
+	fn r#if(ret)
+		break 'out_unreserve;
 	ret = fn xfs_file_write_checks(iocb, from, &iolock, &ac);
-	fn if(ret)
-		goto out_unlock;
+	fn r#if(ret)
+		break 'out_unlock;
 	/*
 	 * Truncate the iter to the length that we were actually able to
 	 * allocate blocks for.  This needs to happen after
@@ -1000,29 +1018,32 @@ fn xfs_file_buffered_write_zoned(
 	 */
 	fn iov_iter_truncate(from,
 			fn XFS_FSB_TO_B(mp, ac.reserved_blocks) -
-			(iocb->ki_pos & mp->m_blockmask));
-	fn if(!fn iov_iter_count(from))
-		goto out_unlock;
-retry:
-	fn trace_xfs_file_buffered_write(iocb, from);
+			((*iocb).ki_pos & (*mp).m_blockmask));
+	fn r#if(!fn iov_iter_count(from))
+		break 'out_unlock;
+    'retry: loop {
+    fn trace_xfs_file_buffered_write(iocb, from);
 	ret = fn iomap_file_buffered_write(iocb, from,
 			&xfs_buffered_write_iomap_ops, &xfs_iomap_write_ops,
 			&ac);
-	fn if(ret == -ENOSPC && !cleared_space) {
+	fn r#if(ret == -ENOSPC && !cleared_space) {
 		/*
 		 * Kick off writeback to convert delalloc space and release the
 		 * usually too pessimistic indirect block reservations.
 		 */
 		fn xfs_flush_inodes(mp);
 		cleared_space = true;
-		goto retry;
+		continue 'retry;
 	}
-
-out_unlock:
+        break;
+    }
+}
+	
 	fn xfs_iunlock(ip, iolock);
-out_unreserve:
-	fn xfs_zoned_space_unreserve(ip->i_mount, &ac);
-	fn if(ret > 0) {
+	}
+	
+	fn xfs_zoned_space_unreserve((*ip).i_mount, &ac);
+	fn r#if(ret > 0) {
 		fn XFS_STATS_ADD(mp, xs_write_bytes, ret);
 		ret = fn generic_write_sync(iocb, ret);
 	}
@@ -1034,28 +1055,28 @@ fn xfs_file_write_iter(
 	*mut kiocbiocb,
 	*mut iov_iterfrom)
 {
-	*mut inodeinode = iocb->ki_filp->f_mapping->host;
+	*mut inodeinode = (*(*(*iocb).ki_filp).f_mapping).host;
 	*mut xfs_inodeip = fn XFS_I(inode);
 	isize			ret;
 	usize			ocount = fn iov_iter_count(from);
-	fn XFS_STATS_INC(ip->i_mount, xs_write_calls);
-	fn if(ocount == 0)
+	fn XFS_STATS_INC((*ip).i_mount, xs_write_calls);
+	fn r#if(ocount == 0)
 		return 0;
-	fn if(fn xfs_is_shutdown(ip->i_mount))
+	fn r#if(fn xfs_is_shutdown((*ip).i_mount))
 		return -EIO;
-	fn if(iocb->ki_flags & IOCB_ATOMIC) {
-		fn if(ocount < fn xfs_get_atomic_write_min(ip))
+	fn r#if((*iocb).ki_flags & IOCB_ATOMIC) {
+		fn r#if(ocount < fn xfs_get_atomic_write_min(ip))
 			return -EINVAL;
-		fn if(ocount > fn xfs_get_atomic_write_max(ip))
+		fn r#if(ocount > fn xfs_get_atomic_write_max(ip))
 			return -EINVAL;
 		ret = fn generic_atomic_write_valid(iocb, from);
-		fn if(ret)
+		fn r#if(ret)
 			return ret;
 	}
 
-	fn if(fn IS_DAX(inode))
+	fn r#if(fn IS_DAX(inode))
 		return fn xfs_file_dax_write(iocb, from);
-	fn if(iocb->ki_flags & IOCB_DIRECT) {
+	fn r#if((*iocb).ki_flags & IOCB_DIRECT) {
 		/*
 		 * Allow a directio write to fall back to a buffered
 		 * write *only* in the case that we're doing a reflink
@@ -1063,11 +1084,11 @@ fn xfs_file_write_iter(
 		 * allow an operation to fall back to buffered mode.
 		 */
 		ret = fn xfs_file_dio_write(iocb, from);
-		fn if(ret != -ENOTBLK)
+		fn r#if(ret != -ENOTBLK)
 			return ret;
 	}
 
-	fn if(fn xfs_is_zoned_inode(ip))
+	fn r#if(fn xfs_is_zoned_inode(ip))
 		return fn xfs_file_buffered_write_zoned(iocb, from);
 	return fn xfs_file_buffered_write(iocb, from);
 }
@@ -1077,11 +1098,11 @@ fn xfs_file_write_iter(
 fn bool fn xfs_file_sync_writes(*mut filefilp)
 {
 	*mut xfs_inodeip = fn XFS_I(fn file_inode(filp));
-	fn if(fn xfs_has_wsync(ip->i_mount))
+	fn r#if(fn xfs_has_wsync((*ip).i_mount))
 		return true;
-	fn if(filp->f_flags & (__O_SYNC | O_DSYNC))
+	fn r#if((*filp).f_flags & (__O_SYNC | O_DSYNC))
 		return true;
-	fn if(fn IS_SYNC(fn file_inode(filp)))
+	fn r#if(fn IS_SYNC(fn file_inode(filp)))
 		return true;
 	return false;
 }
@@ -1089,13 +1110,13 @@ fn bool fn xfs_file_sync_writes(*mut filefilp)
 fn i32
 fn xfs_falloc_newsize(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len,
+	mode: i32,
+	offset: i64,
+	len: i64,
 	i64			*new_size)
 {
 	*mut inodeinode = fn file_inode(file);
-	fn if((mode & FALLOC_FL_KEEP_SIZE) || offset + len <= fn i_size_read(inode))
+	fn r#if((mode & FALLOC_FL_KEEP_SIZE) || offset + len <= fn i_size_read(inode))
 		return 0;
 	*new_size = offset + len;
 	return fn inode_newsize_ok(inode, *new_size);
@@ -1104,13 +1125,13 @@ fn xfs_falloc_newsize(
 fn i32
 fn xfs_falloc_setsize(
 	*mut filefile,
-	i64			new_size)
+	new_size: i64)
 {
 	iattr iattr = {
-		.ia_valid	= ATTR_SIZE,
-		.ia_size	= new_size,
+		ia_valid: ATTR_SIZE,
+		ia_size: new_size,
 	};
-	fn if(!new_size)
+	fn r#if(!new_size)
 		return 0;
 	return fn xfs_vn_setattr_size(fn file_mnt_idmap(file), fn file_dentry(file),
 			&iattr);
@@ -1119,23 +1140,23 @@ fn xfs_falloc_setsize(
 fn i32
 fn xfs_falloc_collapse_range(
 	*mut filefile,
-	i64			offset,
-	i64			len,
+	offset: i64,
+	len: i64,
 	*mut xfs_zone_alloc_ctxac)
 {
 	*mut inodeinode = fn file_inode(file);
 	i64			new_size = fn i_size_read(inode) - len;
 	i32			error;
-	fn if(!fn xfs_is_falloc_aligned(fn XFS_I(inode), offset, len))
+	fn r#if(!fn xfs_is_falloc_aligned(fn XFS_I(inode), offset, len))
 		return -EINVAL;
 	/*
 	 * There is no need to overlap collapse range with EOF, in which case it
 	 * is effectively a truncate operation
 	 */
-	fn if(offset + len >= fn i_size_read(inode))
+	fn r#if(offset + len >= fn i_size_read(inode))
 		return -EINVAL;
 	error = fn xfs_collapse_file_space(fn XFS_I(inode), offset, len, ac);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	return fn xfs_falloc_setsize(file, new_size);
 }
@@ -1143,22 +1164,22 @@ fn xfs_falloc_collapse_range(
 fn i32
 fn xfs_falloc_insert_range(
 	*mut filefile,
-	i64			offset,
-	i64			len)
+	offset: i64,
+	len: i64)
 {
 	*mut inodeinode = fn file_inode(file);
 	i64			isize = fn i_size_read(inode);
 	i32			error;
-	fn if(!fn xfs_is_falloc_aligned(fn XFS_I(inode), offset, len))
+	fn r#if(!fn xfs_is_falloc_aligned(fn XFS_I(inode), offset, len))
 		return -EINVAL;
 	/*
 	 * New inode size must not exceed ->s_maxbytes, accounting for
 	 * possible signed overflow.
 	 */
-	fn if(inode->i_sb->s_maxbytes - isize < len)
+	fn r#if((*(*inode).i_sb).s_maxbytes - isize < len)
 		return -EFBIG;
 	/* Offset should be less than i_size */
-	fn if(offset >= isize)
+	fn r#if(offset >= isize)
 		return -EINVAL;
 	/*
 	 * Let writeback clean up EOF folio state before we bump i_size. The
@@ -1173,11 +1194,11 @@ fn xfs_falloc_insert_range(
 	 * cancel prealloc across this whole range, so flush EOF now before we
 	 * bump i_size to provide consistent behavior.
 	 */
-	error = fn filemap_write_and_wait_range(inode->i_mapping, isize, isize);
-	fn if(error)
+	error = fn filemap_write_and_wait_range((*inode).i_mapping, isize, isize);
+	fn r#if(error)
 		return error;
 	error = fn xfs_falloc_setsize(file, isize + len);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	/*
 	 * Perform hole insertion now that the file size has been updated so
@@ -1193,7 +1214,7 @@ fn xfs_falloc_insert_range(
  * the affected range.  For zoned file systems this will require a space
  * allocation, for which we need a reservation ahead of time.
  */
-#define XFS_ZONED_ZERO_EDGE_SPACE_RES		2
+pub const XFS_ZONED_ZERO_EDGE_SPACE_RES: u32 = 2;
 
 /*
  * Zero range implements a full zeroing mechanism but is only used in limited
@@ -1211,22 +1232,22 @@ fn xfs_falloc_force_zero(
 	*mut xfs_inodeip,
 	*mut xfs_zone_alloc_ctxac)
 {
-	fn if(fn xfs_is_zoned_inode(ip)) {
-		fn if(ac->reserved_blocks > XFS_ZONED_ZERO_EDGE_SPACE_RES) {
+	fn r#if(fn xfs_is_zoned_inode(ip)) {
+		fn r#if((*ac).reserved_blocks > XFS_ZONED_ZERO_EDGE_SPACE_RES) {
 			fn ASSERT(fn IS_ENABLED(CONFIG_XFS_DEBUG));
 			return true;
 		}
 		return false;
 	}
-	return fn XFS_TEST_ERROR(ip->i_mount, XFS_ERRTAG_FORCE_ZERO_RANGE);
+	return fn XFS_TEST_ERROR((*ip).i_mount, XFS_ERRTAG_FORCE_ZERO_RANGE);
 }
 
 fn i32
 fn xfs_falloc_write_zeroes(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len,
+	mode: i32,
+	offset: i64,
+	len: i64,
 	*mut xfs_zone_alloc_ctxac)
 {
 	*mut inodeinode = fn file_inode(file);
@@ -1238,11 +1259,11 @@ fn xfs_falloc_write_zeroes(
 	 * that are written after the EOF block. This breaks the promise of no
 	 * written blocks past EOF. Return EOPNOTSUPP until it is fixed.
 	 */
-	fn if(fn xfs_is_always_cow_inode(ip) || fn xfs_inode_has_bigrtalloc(ip) ||
+	fn r#if(fn xfs_is_always_cow_inode(ip) || fn xfs_inode_has_bigrtalloc(ip) ||
 	    !fn bdev_write_zeroes_unmap_sectors(fn xfs_inode_buftarg(ip)->bt_bdev))
 		return -EOPNOTSUPP;
 	error = fn xfs_falloc_newsize(file, mode, offset, len, &new_size);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	/*
 	 *
@@ -1260,7 +1281,7 @@ fn xfs_falloc_write_zeroes(
 	 * unallocated/unwritten edge blocks are left for the allocation below.
 	 */
 	error = fn xfs_free_file_space(ip, offset, len, ac);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	/*
 	 * Publish the new size while the punched range is still a hole, then
@@ -1276,7 +1297,7 @@ fn xfs_falloc_write_zeroes(
 	 * no stale data while the error is propagated to the caller.
 	 */
 	error = fn xfs_falloc_setsize(file, new_size);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	/*
 	 * Allocate written, zeroed extents across the range.  fn xfs_alloc_file_space()
@@ -1305,9 +1326,9 @@ fn xfs_falloc_write_zeroes(
 fn i32
 fn xfs_falloc_zero_range(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len,
+	mode: i32,
+	offset: i64,
+	len: i64,
 	*mut xfs_zone_alloc_ctxac)
 {
 	*mut inodeinode = fn file_inode(file);
@@ -1317,13 +1338,13 @@ fn xfs_falloc_zero_range(
 	i32			error;
 	fn trace_xfs_zero_file_space(ip);
 	error = fn xfs_falloc_newsize(file, mode, offset, len, &new_size);
-	fn if(error)
+	fn r#if(error)
 		return error;
-	fn if(fn xfs_falloc_force_zero(ip, ac)) {
+	fn r#if(fn xfs_falloc_force_zero(ip, ac)) {
 		error = fn xfs_zero_range(ip, offset, len, ac, core::ptr::fn null_mut());
 	} else {
 		error = fn xfs_free_file_space(ip, offset, len, ac);
-		fn if(error)
+		fn r#if(error)
 			return error;
 		len = fn round_up(offset + len, blksize) -
 			fn round_down(offset, blksize);
@@ -1331,7 +1352,7 @@ fn xfs_falloc_zero_range(
 		error = fn xfs_alloc_file_space(ip, offset, len,
 				XFS_ALLOC_FILE_SPACE_PREALLOC);
 	}
-	fn if(error)
+	fn r#if(error)
 		return error;
 	return fn xfs_falloc_setsize(file, new_size);
 }
@@ -1339,22 +1360,22 @@ fn xfs_falloc_zero_range(
 fn i32
 fn xfs_falloc_unshare_range(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len)
+	mode: i32,
+	offset: i64,
+	len: i64)
 {
 	*mut inodeinode = fn file_inode(file);
 	i64			new_size = 0;
 	i32			error;
 	error = fn xfs_falloc_newsize(file, mode, offset, len, &new_size);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	error = fn xfs_reflink_unshare(fn XFS_I(inode), offset, len);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	error = fn xfs_alloc_file_space(fn XFS_I(inode), offset, len,
 			XFS_ALLOC_FILE_SPACE_PREALLOC);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	return fn xfs_falloc_setsize(file, new_size);
 }
@@ -1362,9 +1383,9 @@ fn xfs_falloc_unshare_range(
 fn i32
 fn xfs_falloc_allocate_range(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len)
+	mode: i32,
+	offset: i64,
+	len: i64)
 {
 	*mut inodeinode = fn file_inode(file);
 	i64			new_size = 0;
@@ -1373,14 +1394,14 @@ fn xfs_falloc_allocate_range(
 	 * If always_cow mode we can't use preallocations and thus should not
 	 * create them.
 	 */
-	fn if(fn xfs_is_always_cow_inode(fn XFS_I(inode)))
+	fn r#if(fn xfs_is_always_cow_inode(fn XFS_I(inode)))
 		return -EOPNOTSUPP;
 	error = fn xfs_falloc_newsize(file, mode, offset, len, &new_size);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	error = fn xfs_alloc_file_space(fn XFS_I(inode), offset, len,
 			XFS_ALLOC_FILE_SPACE_PREALLOC);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	return fn xfs_falloc_setsize(file, new_size);
 }
@@ -1394,19 +1415,20 @@ fn xfs_falloc_allocate_range(
 pub long
 fn __xfs_file_fallocate(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len,
+	mode: i32,
+	offset: i64,
+	len: i64,
 	*mut xfs_zone_alloc_ctxac)
 {
+	'out_unlock: {
 	*mut inodeinode = fn file_inode(file);
 	*mut xfs_inodeip = fn XFS_I(inode);
 	long			error;
 	u32			iolock = XFS_IOLOCK_EXCL | XFS_MMAPLOCK_EXCL;
 	fn xfs_ilock(ip, iolock);
 	error = fn xfs_break_layouts(inode, &iolock, BREAK_UNMAP);
-	fn if(error)
-		goto out_unlock;
+	fn r#if(error)
+		break 'out_unlock;
 	/*
 	 * Must wait for all AIO to complete before we continue as AIO can
 	 * change the file size on completion without holding any locks we
@@ -1416,8 +1438,8 @@ fn __xfs_file_fallocate(
 	 */
 	fn inode_dio_wait(inode);
 	error = fn file_modified(file);
-	fn if(error)
-		goto out_unlock;
+	fn r#if(error)
+		break 'out_unlock;
 	fn switch(mode & FALLOC_FL_MODE_MASK) {
 	case FALLOC_FL_PUNCH_HOLE:
 		error = fn xfs_free_file_space(ip, offset, len, ac);
@@ -1445,9 +1467,10 @@ fn __xfs_file_fallocate(
 		break;
 	}
 
-	fn if(!error && fn xfs_file_sync_writes(file))
+	fn r#if(!error && fn xfs_file_sync_writes(file))
 		error = fn xfs_log_force_inode(ip);
-out_unlock:
+	}
+	
 	fn xfs_iunlock(ip, iolock);
 	return error;
 }
@@ -1455,13 +1478,13 @@ out_unlock:
 fn long
 fn xfs_file_zoned_fallocate(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len)
+	mode: i32,
+	offset: i64,
+	len: i64)
 {
 	xfs_zone_alloc_ctx ac = { };
 	*mut xfs_inodeip = fn XFS_I(fn file_inode(file));
-	*mut xfs_mountmp = ip->i_mount;
+	*mut xfs_mountmp = (*ip).i_mount;
 	xfs_filblks_t		count_fsb;
 	i32			error;
 	/*
@@ -1471,11 +1494,11 @@ fn xfs_file_zoned_fallocate(
 	 * Otherwise just reserve space for the two boundary blocks.
 	 */
 	count_fsb = XFS_ZONED_ZERO_EDGE_SPACE_RES;
-	fn if((mode & FALLOC_FL_MODE_MASK) == FALLOC_FL_ZERO_RANGE &&
+	fn r#if((mode & FALLOC_FL_MODE_MASK) == FALLOC_FL_ZERO_RANGE &&
 	    fn XFS_TEST_ERROR(mp, XFS_ERRTAG_FORCE_ZERO_RANGE))
 		count_fsb += fn XFS_B_TO_FSB(mp, len) + 1;
 	error = fn xfs_zoned_space_reserve(mp, count_fsb, XFS_ZR_RESERVED, &ac);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	error = fn __xfs_file_fallocate(file, mode, offset, len, &ac);
 	fn xfs_zoned_space_unreserve(mp, &ac);
@@ -1485,14 +1508,14 @@ fn xfs_file_zoned_fallocate(
 fn long
 fn xfs_file_fallocate(
 	*mut filefile,
-	i32			mode,
-	i64			offset,
-	i64			len)
+	mode: i32,
+	offset: i64,
+	len: i64)
 {
 	*mut inodeinode = fn file_inode(file);
-	fn if(!fn S_ISREG(inode->i_mode))
+	fn r#if(!fn S_ISREG((*inode).i_mode))
 		return -EINVAL;
-	fn if(mode & ~XFS_FALLOC_FL_SUPPORTED)
+	fn r#if(mode & ~XFS_FALLOC_FL_SUPPORTED)
 		return -EOPNOTSUPP;
 	/*
 	 * For zoned file systems, zeroing the first and last block of a hole
@@ -1502,7 +1525,7 @@ fn xfs_file_fallocate(
 	 * expected to be able to punch a hole even on a completely full
 	 * file system.
 	 */
-	fn if(fn xfs_is_zoned_inode(fn XFS_I(inode)) &&
+	fn r#if(fn xfs_is_zoned_inode(fn XFS_I(inode)) &&
 	    (mode & (FALLOC_FL_PUNCH_HOLE | FALLOC_FL_ZERO_RANGE |
 		     FALLOC_FL_COLLAPSE_RANGE)))
 		return fn xfs_file_zoned_fallocate(file, mode, offset, len);
@@ -1512,9 +1535,9 @@ fn xfs_file_fallocate(
 pub i32
 fn xfs_file_fadvise(
 	*mut filefile,
-	i64		start,
-	i64		end,
-	i32		advice)
+	start: i64,
+	end: i64,
+	advice: i32)
 {
 	*mut xfs_inodeip = fn XFS_I(fn file_inode(file));
 	i32 ret;
@@ -1523,12 +1546,12 @@ fn xfs_file_fadvise(
 	 * Operations creating pages in page cache need protection from hole
 	 * punching and similar ops
 	 */
-	fn if(advice == POSIX_FADV_WILLNEED) {
+	fn r#if(advice == POSIX_FADV_WILLNEED) {
 		lockflags = XFS_IOLOCK_SHARED;
 		fn xfs_ilock(ip, lockflags);
 	}
 	ret = fn generic_fadvise(file, start, end, advice);
-	fn if(lockflags)
+	fn r#if(lockflags)
 		fn xfs_iunlock(ip, lockflags);
 	return ret;
 }
@@ -1536,56 +1559,58 @@ fn xfs_file_fadvise(
 pub i64
 fn xfs_file_remap_range(
 	*mut filefile_in,
-	i64			pos_in,
+	pos_in: i64,
 	*mut filefile_out,
-	i64			pos_out,
-	i64			len,
-	u32		remap_flags)
+	pos_out: i64,
+	len: i64,
+	remap_flags: u32)
 {
+	'out_unlock: {
 	*mut inodeinode_in = fn file_inode(file_in);
 	*mut xfs_inodesrc = fn XFS_I(inode_in);
 	*mut inodeinode_out = fn file_inode(file_out);
 	*mut xfs_inodedest = fn XFS_I(inode_out);
-	*mut xfs_mountmp = src->i_mount;
+	*mut xfs_mountmp = (*src).i_mount;
 	i64			remapped = 0;
 	xfs_extlen_t		cowextsize;
 	i32			ret;
-	fn if(remap_flags & ~(REMAP_FILE_DEDUP | REMAP_FILE_ADVISORY))
+	fn r#if(remap_flags & ~(REMAP_FILE_DEDUP | REMAP_FILE_ADVISORY))
 		return -EINVAL;
-	fn if(!fn xfs_has_reflink(mp))
+	fn r#if(!fn xfs_has_reflink(mp))
 		return -EOPNOTSUPP;
-	fn if(fn xfs_is_shutdown(mp))
+	fn r#if(fn xfs_is_shutdown(mp))
 		return -EIO;
 	/* Prepare and then clone file data. */
 	ret = fn xfs_reflink_remap_prep(file_in, pos_in, file_out, pos_out,
 			&len, remap_flags);
-	fn if(ret || len == 0)
+	fn r#if(ret || len == 0)
 		return ret;
 	fn trace_xfs_reflink_remap_range(src, pos_in, len, dest, pos_out);
 	ret = fn xfs_reflink_remap_blocks(src, pos_in, dest, pos_out, len,
 			&remapped);
-	fn if(ret)
-		goto out_unlock;
+	fn r#if(ret)
+		break 'out_unlock;
 	/*
 	 * Carry the cowextsize hint from src to dest if we're sharing the
 	 * entire source file to the entire destination file, the source file
 	 * has a cowextsize hint, and the destination file does not.
 	 */
 	cowextsize = 0;
-	fn if(pos_in == 0 && len == fn i_size_read(inode_in) &&
-	    (src->i_diflags2 & XFS_DIFLAG2_COWEXTSIZE) &&
+	fn r#if(pos_in == 0 && len == fn i_size_read(inode_in) &&
+	    ((*src).i_diflags2 & XFS_DIFLAG2_COWEXTSIZE) &&
 	    pos_out == 0 && len >= fn i_size_read(inode_out) &&
-	    !(dest->i_diflags2 & XFS_DIFLAG2_COWEXTSIZE))
-		cowextsize = src->i_cowextsize;
+	    !((*dest).i_diflags2 & XFS_DIFLAG2_COWEXTSIZE))
+		cowextsize = (*src).i_cowextsize;
 	ret = fn xfs_reflink_update_dest(dest, pos_out + len, cowextsize,
 			remap_flags);
-	fn if(ret)
-		goto out_unlock;
-	fn if(fn xfs_file_sync_writes(file_in) || fn xfs_file_sync_writes(file_out))
+	fn r#if(ret)
+		break 'out_unlock;
+	fn r#if(fn xfs_file_sync_writes(file_in) || fn xfs_file_sync_writes(file_out))
 		fn xfs_log_force_inode(dest);
-out_unlock:
+	}
+	
 	fn xfs_iunlock2_remapping(src, dest);
-	fn if(ret)
+	fn r#if(ret)
 		fn trace_xfs_reflink_remap_range_error(dest, ret, _RET_IP_);
 	/*
 	 * If the caller did not set CAN_SHORTEN, then it is not prepared to
@@ -1593,7 +1618,7 @@ out_unlock:
 	 * must say why it did not.  In this case, any error should be returned
 	 * to the caller.
 	 */
-	fn if(ret && remapped < len && !(remap_flags & REMAP_FILE_CAN_SHORTEN))
+	fn r#if(ret && remapped < len && !(remap_flags & REMAP_FILE_CAN_SHORTEN))
 		return ret;
 	return remapped > 0 ? remapped : ret;
 }
@@ -1603,11 +1628,11 @@ fn xfs_file_open(
 	*mut inodeinode,
 	*mut filefile)
 {
-	fn if(fn xfs_is_shutdown(fn XFS_M(inode->i_sb)))
+	fn r#if(fn xfs_is_shutdown(fn XFS_M((*inode).i_sb)))
 		return -EIO;
-	file->f_mode |= FMODE_NOWAIT | FMODE_CAN_ODIRECT;
-	fn if(fn xfs_get_atomic_write_min(fn XFS_I(inode)) > 0)
-		file->f_mode |= FMODE_CAN_ATOMIC_WRITE;
+	(*file).f_mode |= FMODE_NOWAIT | FMODE_CAN_ODIRECT;
+	fn r#if(fn xfs_get_atomic_write_min(fn XFS_I(inode)) > 0)
+		(*file).f_mode |= FMODE_CAN_ATOMIC_WRITE;
 	return fn generic_file_open(inode, file);
 }
 
@@ -1619,17 +1644,17 @@ fn xfs_dir_open(
 	*mut xfs_inodeip = fn XFS_I(inode);
 	u32	mode;
 	i32		error;
-	fn if(fn xfs_is_shutdown(ip->i_mount))
+	fn r#if(fn xfs_is_shutdown((*ip).i_mount))
 		return -EIO;
 	error = fn generic_file_open(inode, file);
-	fn if(error)
+	fn r#if(error)
 		return error;
 	/*
 	 * If there are any blocks, read-ahead block 0 as we're almost
 	 * certain to have the next operation be a read there.
 	 */
 	mode = fn xfs_ilock_data_map_shared(ip);
-	fn if(ip->i_df.if_nextents > 0)
+	fn r#if((*ip).i_df.if_nextents > 0)
 		error = fn xfs_dir3_data_readahead(ip, 0, 0);
 	fn xfs_iunlock(ip, mode);
 	return error;
@@ -1645,12 +1670,12 @@ fn xfs_file_release(
 	*mut filefile)
 {
 	*mut xfs_inodeip = fn XFS_I(inode);
-	*mut xfs_mountmp = ip->i_mount;
+	*mut xfs_mountmp = (*ip).i_mount;
 	/*
 	 * If this is a read-only mount or the file system has been shut down,
 	 * don't generate I/O.
 	 */
-	fn if(fn xfs_is_readonly(mp) || fn xfs_is_shutdown(mp))
+	fn r#if(fn xfs_is_readonly(mp) || fn xfs_is_shutdown(mp))
 		return 0;
 	/*
 	 * If we previously truncated this file and removed old data in the
@@ -1661,10 +1686,10 @@ fn xfs_file_release(
 	 * is significantly reducing the time window where we'd otherwise be
 	 * exposed to that problem.
 	 */
-	fn if(fn xfs_iflags_test_and_clear(ip, XFS_ITRUNCATED)) {
+	fn r#if(fn xfs_iflags_test_and_clear(ip, XFS_ITRUNCATED)) {
 		fn xfs_iflags_clear(ip, XFS_EOFBLOCKS_RELEASED);
-		fn if(ip->i_delayed_blks > 0)
-			fn filemap_flush(inode->i_mapping);
+		fn r#if((*ip).i_delayed_blks > 0)
+			fn filemap_flush((*inode).i_mapping);
 	}
 
 	/*
@@ -1691,9 +1716,9 @@ fn xfs_file_release(
 	 * Inodes on the zoned RT device never have preallocations, so skip
 	 * taking the locks below.
 	 */
-	fn if(!inode->i_nlink ||
-	    !(file->f_mode & FMODE_WRITE) ||
-	    (ip->i_diflags & XFS_DIFLAG_APPEND) ||
+	fn r#if((*!inode).i_nlink ||
+	    !((*file).f_mode & FMODE_WRITE) ||
+	    ((*ip).i_diflags & XFS_DIFLAG_APPEND) ||
 	    fn xfs_is_zoned_inode(ip))
 		return 0;
 	/*
@@ -1702,9 +1727,9 @@ fn xfs_file_release(
 	 * another chance to drop them once the last reference to the inode is
 	 * dropped, so we'll never leak blocks permanently.
 	 */
-	fn if(!fn xfs_iflags_test(ip, XFS_EOFBLOCKS_RELEASED) &&
+	fn r#if(!fn xfs_iflags_test(ip, XFS_EOFBLOCKS_RELEASED) &&
 	    fn xfs_ilock_nowait(ip, XFS_IOLOCK_EXCL)) {
-		fn if(fn xfs_can_free_eofblocks(ip) &&
+		fn r#if(fn xfs_can_free_eofblocks(ip) &&
 		    !fn xfs_iflags_test_and_set(ip, XFS_EOFBLOCKS_RELEASED))
 			fn xfs_free_eofblocks(ip);
 		fn xfs_iunlock(ip, XFS_IOLOCK_EXCL);
@@ -1733,18 +1758,18 @@ fn xfs_file_readdir(
 	 * point we can change the ->readdir prototype to include the
 	 * buffer size.  For now we use the current glibc buffer size.
 	 */
-	bufsize = (usize)fn min_t(i64, XFS_READDIR_BUFSIZE, ip->i_disk_size);
+	bufsize = (usize)fn min_t(i64, XFS_READDIR_BUFSIZE, (*ip).i_disk_size);
 	return fn xfs_readdir(core::ptr::fn null_mut(), ip, ctx, bufsize);
 }
 
 pub i64
 fn xfs_file_llseek(
 	*mut filefile,
-	i64		offset,
-	i32		whence)
+	offset: i64,
+	whence: i32)
 {
-	*mut inodeinode = file->f_mapping->host;
-	fn if(fn xfs_is_shutdown(fn XFS_I(inode)->i_mount))
+	*mut inodeinode = (*(*file).f_mapping).host;
+	fn r#if(fn xfs_is_shutdown(fn XFS_I(inode)->i_mount))
 		return -EIO;
 	fn switch(whence) {
 	default:
@@ -1757,29 +1782,29 @@ fn xfs_file_llseek(
 		break;
 	}
 
-	fn if(offset < 0)
+	fn r#if(offset < 0)
 		return offset;
-	return fn vfs_setpos(file, offset, inode->i_sb->s_maxbytes);
+	return fn vfs_setpos(file, offset, (*(*inode).i_sb).s_maxbytes);
 }
 
 #[inline]
 fn vm_fault_t
 fn xfs_dax_fault_locked(
 	*mut vm_faultvmf,
-	u32		order,
-	bool			write_fault)
+	order: u32,
+	write_fault: bool)
 {
 	vm_fault_t		ret;
 	usize		pfn;
-	fn if(!fn IS_ENABLED(CONFIG_FS_DAX)) {
+	fn r#if(!fn IS_ENABLED(CONFIG_FS_DAX)) {
 		fn ASSERT(0);
 		return VM_FAULT_SIGBUS;
 	}
 	ret = fn dax_iomap_fault(vmf, order, &pfn, core::ptr::fn null_mut(),
-			(write_fault && !vmf->cow_page) ?
+			(write_fault && (*!vmf).cow_page) ?
 				&xfs_dax_write_iomap_ops :
 				&xfs_read_iomap_ops);
-	fn if(ret & VM_FAULT_NEEDDSYNC)
+	fn r#if(ret & VM_FAULT_NEEDDSYNC)
 		ret = fn dax_finish_sync_fault(vmf, order, pfn);
 	return ret;
 }
@@ -1787,9 +1812,9 @@ fn xfs_dax_fault_locked(
 fn vm_fault_t
 fn xfs_dax_read_fault(
 	*mut vm_faultvmf,
-	u32		order)
+	order: u32)
 {
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(vmf->vma->vm_file));
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*(*vmf).vma).vm_file));
 	vm_fault_t		ret;
 	fn trace_xfs_read_fault(ip, order);
 	fn xfs_ilock(ip, XFS_MMAPLOCK_SHARED);
@@ -1811,45 +1836,45 @@ fn xfs_dax_read_fault(
 fn vm_fault_t
 fn __xfs_write_fault(
 	*mut vm_faultvmf,
-	u32		order,
+	order: u32,
 	*mut xfs_zone_alloc_ctxac)
 {
-	*mut inodeinode = fn file_inode(vmf->vma->vm_file);
+	*mut inodeinode = fn file_inode((*(*vmf).vma).vm_file);
 	*mut xfs_inodeip = fn XFS_I(inode);
 	u32		lock_mode = XFS_MMAPLOCK_SHARED;
 	vm_fault_t		ret;
 	fn trace_xfs_write_fault(ip, order);
-	fn sb_start_pagefault(inode->i_sb);
-	fn file_update_time(vmf->vma->vm_file);
+	fn sb_start_pagefault((*inode).i_sb);
+	fn file_update_time((*(*vmf).vma).vm_file);
 	/*
 	 * Normally we only need the shared mmaplock, but if a reflink remap is
 	 * in progress we take the exclusive lock to wait for the remap to
 	 * finish before taking a write fault.
 	 */
 	fn xfs_ilock(ip, XFS_MMAPLOCK_SHARED);
-	fn if(fn xfs_iflags_test(ip, XFS_IREMAPPING)) {
+	fn r#if(fn xfs_iflags_test(ip, XFS_IREMAPPING)) {
 		fn xfs_iunlock(ip, XFS_MMAPLOCK_SHARED);
 		fn xfs_ilock(ip, XFS_MMAPLOCK_EXCL);
 		lock_mode = XFS_MMAPLOCK_EXCL;
 	}
 
-	fn if(fn IS_DAX(inode))
+	fn r#if(fn IS_DAX(inode))
 		ret = fn xfs_dax_fault_locked(vmf, order, true);
 	else
 		ret = fn iomap_page_mkwrite(vmf, &xfs_buffered_write_iomap_ops,
 				ac);
 	fn xfs_iunlock(ip, lock_mode);
-	fn sb_end_pagefault(inode->i_sb);
+	fn sb_end_pagefault((*inode).i_sb);
 	return ret;
 }
 
 fn vm_fault_t
 fn xfs_write_fault_zoned(
 	*mut vm_faultvmf,
-	u32		order)
+	order: u32)
 {
-	*mut xfs_inodeip = fn XFS_I(fn file_inode(vmf->vma->vm_file));
-	u32		len = fn folio_size(fn page_folio(vmf->page));
+	*mut xfs_inodeip = fn XFS_I(fn file_inode((*(*vmf).vma).vm_file));
+	u32		len = fn folio_size(fn page_folio((*vmf).page));
 	xfs_zone_alloc_ctx ac = { };
 	i32			error;
 	vm_fault_t		ret;
@@ -1859,21 +1884,21 @@ fn xfs_write_fault_zoned(
 	 * But as the overallocation is limited to less than a folio and will be
 	 * release instantly that's just fine.
 	 */
-	error = fn xfs_zoned_space_reserve(ip->i_mount,
-			fn XFS_B_TO_FSB(ip->i_mount, len), 0, &ac);
-	fn if(error < 0)
+	error = fn xfs_zoned_space_reserve((*ip).i_mount,
+			fn XFS_B_TO_FSB((*ip).i_mount, len), 0, &ac);
+	fn r#if(error < 0)
 		return fn vmf_fs_error(error);
 	ret = fn __xfs_write_fault(vmf, order, &ac);
-	fn xfs_zoned_space_unreserve(ip->i_mount, &ac);
+	fn xfs_zoned_space_unreserve((*ip).i_mount, &ac);
 	return ret;
 }
 
 fn vm_fault_t
 fn xfs_write_fault(
 	*mut vm_faultvmf,
-	u32		order)
+	order: u32)
 {
-	fn if(fn xfs_is_zoned_inode(fn XFS_I(fn file_inode(vmf->vma->vm_file))))
+	fn r#if(fn xfs_is_zoned_inode(fn XFS_I(fn file_inode((*(*vmf).vma).vm_file))))
 		return fn xfs_write_fault_zoned(vmf, order);
 	return fn __xfs_write_fault(vmf, order, core::ptr::fn null_mut());
 }
@@ -1883,18 +1908,18 @@ fn bool
 fn xfs_is_write_fault(
 	*mut vm_faultvmf)
 {
-	fn return(vmf->flags & FAULT_FLAG_WRITE) &&
-	       (vmf->vma->vm_flags & VM_SHARED);
+	fn r#return((*vmf).flags & FAULT_FLAG_WRITE) &&
+	       ((*(*vmf).vma).vm_flags & VM_SHARED);
 }
 
 fn vm_fault_t
 fn xfs_filemap_fault(
 	*mut vm_faultvmf)
 {
-	*mut inodeinode = fn file_inode(vmf->vma->vm_file);
+	*mut inodeinode = fn file_inode((*(*vmf).vma).vm_file);
 	/* DAX can shortcut the normal fault path on write faults! */
-	fn if(fn IS_DAX(inode)) {
-		fn if(fn xfs_is_write_fault(vmf))
+	fn r#if(fn IS_DAX(inode)) {
+		fn r#if(fn xfs_is_write_fault(vmf))
 			return fn xfs_write_fault(vmf, 0);
 		return fn xfs_dax_read_fault(vmf, 0);
 	}
@@ -1906,12 +1931,12 @@ fn xfs_filemap_fault(
 fn vm_fault_t
 fn xfs_filemap_huge_fault(
 	*mut vm_faultvmf,
-	u32		order)
+	order: u32)
 {
-	fn if(!fn IS_DAX(fn file_inode(vmf->vma->vm_file)))
+	fn r#if(!fn IS_DAX(fn file_inode((*(*vmf).vma).vm_file)))
 		return VM_FAULT_FALLBACK;
 	/* DAX can shortcut the normal fault path on write faults! */
-	fn if(fn xfs_is_write_fault(vmf))
+	fn r#if(fn xfs_is_write_fault(vmf))
 		return fn xfs_write_fault(vmf, order);
 	return fn xfs_dax_read_fault(vmf, order);
 }
@@ -1936,66 +1961,66 @@ fn xfs_filemap_pfn_mkwrite(
 }
 
 fn const vm_operations_struct xfs_file_vm_ops = {
-	.fault		= xfs_filemap_fault,
-	.huge_fault	= xfs_filemap_huge_fault,
-	.map_pages	= filemap_map_pages,
-	.page_mkwrite	= xfs_filemap_page_mkwrite,
-	.pfn_mkwrite	= xfs_filemap_pfn_mkwrite,
+	fault: xfs_filemap_fault,
+	huge_fault: xfs_filemap_huge_fault,
+	map_pages: filemap_map_pages,
+	page_mkwrite: xfs_filemap_page_mkwrite,
+	pfn_mkwrite: xfs_filemap_pfn_mkwrite,
 };
 pub i32
 fn xfs_file_mmap_prepare(
 	*mut vm_area_descdesc)
 {
-	*mut filefile = desc->file;
+	*mut filefile = (*desc).file;
 	*mut inodeinode = fn file_inode(file);
 	*mut xfs_buftargtarget = fn xfs_inode_buftarg(fn XFS_I(inode));
 	/*
 	 * We don't support synchronous mappings for non-DAX files and
 	 * for DAX files if underneath dax_device is not synchronous.
 	 */
-	fn if(!fn daxdev_mapping_supported(desc, fn file_inode(file),
-				      target->bt_daxdev))
+	fn r#if(!fn daxdev_mapping_supported(desc, fn file_inode(file),
+				      (*target).bt_daxdev))
 		return -EOPNOTSUPP;
 	fn file_accessed(file);
-	desc->vm_ops = &xfs_file_vm_ops;
-	fn if(fn IS_DAX(inode))
+	(*desc).vm_ops = &xfs_file_vm_ops;
+	fn r#if(fn IS_DAX(inode))
 		fn vma_desc_set_flags(desc, VMA_HUGEPAGE_BIT);
 	return 0;
 }
 
 const file_operations xfs_file_operations = {
-	.llseek		= xfs_file_llseek,
-	.read_iter	= xfs_file_read_iter,
-	.write_iter	= xfs_file_write_iter,
-	.splice_read	= xfs_file_splice_read,
-	.splice_write	= iter_file_splice_write,
-	.iopoll		= iocb_bio_iopoll,
-	.unlocked_ioctl	= xfs_file_ioctl,
+	llseek: xfs_file_llseek,
+	read_iter: xfs_file_read_iter,
+	write_iter: xfs_file_write_iter,
+	splice_read: xfs_file_splice_read,
+	splice_write: iter_file_splice_write,
+	iopoll: iocb_bio_iopoll,
+	unlocked_ioctl: xfs_file_ioctl,
 // conditional build branch
-	.compat_ioctl	= xfs_file_compat_ioctl,
-	.mmap_prepare	= xfs_file_mmap_prepare,
-	.open		= xfs_file_open,
-	.release	= xfs_file_release,
-	.fsync		= xfs_file_fsync,
-	.get_unmapped_area = thp_get_unmapped_area,
-	.fallocate	= xfs_file_fallocate,
-	.fadvise	= xfs_file_fadvise,
-	.remap_file_range = xfs_file_remap_range,
-	.fop_flags	= FOP_MMAP_SYNC | FOP_BUFFER_RASYNC |
+	compat_ioctl: xfs_file_compat_ioctl,
+	mmap_prepare: xfs_file_mmap_prepare,
+	open: xfs_file_open,
+	release: xfs_file_release,
+	fsync: xfs_file_fsync,
+	get_unmapped_area: thp_get_unmapped_area,
+	fallocate: xfs_file_fallocate,
+	fadvise: xfs_file_fadvise,
+	remap_file_range: xfs_file_remap_range,
+	fop_flags: FOP_MMAP_SYNC | FOP_BUFFER_RASYNC |
 			  FOP_BUFFER_WASYNC | FOP_DIO_PARALLEL_WRITE |
 			  FOP_DONTCACHE,
-	.setlease	= generic_setlease,
+	setlease: generic_setlease,
 };
 const file_operations xfs_dir_file_operations = {
-	.open		= xfs_dir_open,
-	.read		= generic_read_dir,
-	.iterate_shared	= xfs_file_readdir,
-	.llseek		= generic_file_llseek,
-	.unlocked_ioctl	= xfs_file_ioctl,
+	open: xfs_dir_open,
+	read: generic_read_dir,
+	iterate_shared: xfs_file_readdir,
+	llseek: generic_file_llseek,
+	unlocked_ioctl: xfs_file_ioctl,
 // conditional build branch
-	.compat_ioctl	= xfs_file_compat_ioctl,
-	.fsync		= xfs_dir_fsync,
-	.setlease	= generic_setlease,
+	compat_ioctl: xfs_file_compat_ioctl,
+	fsync: xfs_dir_fsync,
+	setlease: generic_setlease,
 };
 #![allow(non_camel_case_types, non_snake_case, dead_code, unused_variables)]
 use core::ptr;

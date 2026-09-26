@@ -74,12 +74,12 @@ atomic64_fetch!(__lse_atomic64_fetch_andnot_relaxed,"ldclr"); atomic64_fetch!(__
 atomic64_fetch!(__lse_atomic64_fetch_or_relaxed,"ldset"); atomic64_fetch!(__lse_atomic64_fetch_or_acquire,"ldseta"); atomic64_fetch!(__lse_atomic64_fetch_or_release,"ldsetl"); atomic64_fetch!(__lse_atomic64_fetch_or,"ldsetal");
 atomic64_fetch!(__lse_atomic64_fetch_xor_relaxed,"ldeor"); atomic64_fetch!(__lse_atomic64_fetch_xor_acquire,"ldeora"); atomic64_fetch!(__lse_atomic64_fetch_xor_release,"ldeorl"); atomic64_fetch!(__lse_atomic64_fetch_xor,"ldeoral");
 atomic64_fetch!(__lse_atomic64_fetch_add_relaxed,"ldadd"); atomic64_fetch!(__lse_atomic64_fetch_add_acquire,"ldadda"); atomic64_fetch!(__lse_atomic64_fetch_add_release,"ldaddl"); atomic64_fetch!(__lse_atomic64_fetch_add,"ldaddal");
-macro_rules! atomic64_sub {($n:ident,$a:ident)=>{#[inline(always)]pub unsafe fn $n(i:i64,v:*mut atomic64_t)->i64{$a(-i,v)}};}
+macro_rules! atomic64_sub {($n:ident,$a:ident) => {#[inline(always)]pub unsafe fn $n(i:i64,v:*mut atomic64_t)->i64{$a(-i,v)}};}
 atomic64_sub!(__lse_atomic64_fetch_sub_relaxed,__lse_atomic64_fetch_add_relaxed); atomic64_sub!(__lse_atomic64_fetch_sub_acquire,__lse_atomic64_fetch_add_acquire); atomic64_sub!(__lse_atomic64_fetch_sub_release,__lse_atomic64_fetch_add_release); atomic64_sub!(__lse_atomic64_fetch_sub,__lse_atomic64_fetch_add);
-macro_rules! atomic64_ret {($a:ident,$s:ident,$fa:ident,$fs:ident)=>{#[inline(always)]pub unsafe fn $a(i:i64,v:*mut atomic64_t)->i64{$fa(i,v).wrapping_add(i)} #[inline(always)]pub unsafe fn $s(i:i64,v:*mut atomic64_t)->i64{$fs(i,v).wrapping_sub(i)}};}
+macro_rules! atomic64_ret {($a:ident,$s:ident,$fa:ident,$fs:ident) => {#[inline(always)]pub unsafe fn $a(i:i64,v:*mut atomic64_t)->i64{$fa(i,v).wrapping_add(i)} #[inline(always)]pub unsafe fn $s(i:i64,v:*mut atomic64_t)->i64{$fs(i,v).wrapping_sub(i)}};}
 atomic64_ret!(__lse_atomic64_add_return_relaxed,__lse_atomic64_sub_return_relaxed,__lse_atomic64_fetch_add_relaxed,__lse_atomic64_fetch_sub_relaxed); atomic64_ret!(__lse_atomic64_add_return_acquire,__lse_atomic64_sub_return_acquire,__lse_atomic64_fetch_add_acquire,__lse_atomic64_fetch_sub_acquire); atomic64_ret!(__lse_atomic64_add_return_release,__lse_atomic64_sub_return_release,__lse_atomic64_fetch_add_release,__lse_atomic64_fetch_sub_release); atomic64_ret!(__lse_atomic64_add_return,__lse_atomic64_sub_return,__lse_atomic64_fetch_add,__lse_atomic64_fetch_sub);
 #[inline(always)]pub unsafe fn __lse_atomic64_and(i:i64,v:*mut atomic64_t){__lse_atomic64_andnot(!i,v)}
-macro_rules! atomic64_and {($n:ident,$f:ident)=>{#[inline(always)]pub unsafe fn $n(i:i64,v:*mut atomic64_t)->i64{$f(!i,v)}};}
+macro_rules! atomic64_and {($n:ident,$f:ident) => {#[inline(always)]pub unsafe fn $n(i:i64,v:*mut atomic64_t)->i64{$f(!i,v)}};}
 atomic64_and!(__lse_atomic64_fetch_and_relaxed,__lse_atomic64_fetch_andnot_relaxed); atomic64_and!(__lse_atomic64_fetch_and_acquire,__lse_atomic64_fetch_andnot_acquire); atomic64_and!(__lse_atomic64_fetch_and_release,__lse_atomic64_fetch_andnot_release); atomic64_and!(__lse_atomic64_fetch_and,__lse_atomic64_fetch_andnot);
 
 macro_rules! cmpxchg_case {

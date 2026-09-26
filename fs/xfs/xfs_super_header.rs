@@ -7,28 +7,28 @@
 // Dependency intent: declarations from <linux/exportfs.h> and configuration
 // symbols supplied by the surrounding kernel translation are external.
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 extern "C" {
     pub fn xfs_qm_init() -> ::core::ffi::c_int;
     pub fn xfs_qm_exit();
 }
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 pub const XFS_QUOTA_STRING: &str = "quota, ";
-#[cfg(not(feature = "CONFIG_XFS_QUOTA"))]
+#[cfg(not(CONFIG_XFS_QUOTA))]
 pub const XFS_QUOTA_STRING: &str = "";
 
-#[cfg(feature = "CONFIG_XFS_POSIX_ACL")]
+#[cfg(CONFIG_XFS_POSIX_ACL)]
 pub const XFS_ACL_STRING: &str = "ACLs, ";
-#[cfg(not(feature = "CONFIG_XFS_POSIX_ACL"))]
+#[cfg(not(CONFIG_XFS_POSIX_ACL))]
 pub const XFS_ACL_STRING: &str = "";
 
-#[cfg(feature = "CONFIG_XFS_POSIX_ACL")]
+#[cfg(CONFIG_XFS_POSIX_ACL)]
 #[macro_export]
 macro_rules! set_posix_acl_flag {
     ($sb:expr) => {{ ($sb).s_flags |= SB_POSIXACL; }};
 }
-#[cfg(not(feature = "CONFIG_XFS_POSIX_ACL"))]
+#[cfg(not(CONFIG_XFS_POSIX_ACL))]
 #[macro_export]
 macro_rules! set_posix_acl_flag {
     ($sb:expr) => {{ }};
@@ -36,29 +36,29 @@ macro_rules! set_posix_acl_flag {
 
 pub const XFS_SECURITY_STRING: &str = "security attributes, ";
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 pub const XFS_REALTIME_STRING: &str = "realtime, ";
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 pub const XFS_REALTIME_STRING: &str = "";
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_SCRUB")]
+#[cfg(CONFIG_XFS_ONLINE_SCRUB)]
 pub const XFS_SCRUB_STRING: &str = "scrub, ";
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_SCRUB"))]
+#[cfg(not(CONFIG_XFS_ONLINE_SCRUB))]
 pub const XFS_SCRUB_STRING: &str = "";
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 pub const XFS_REPAIR_STRING: &str = "repair, ";
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_REPAIR"))]
+#[cfg(not(CONFIG_XFS_ONLINE_REPAIR))]
 pub const XFS_REPAIR_STRING: &str = "";
 
-#[cfg(feature = "CONFIG_XFS_WARN")]
+#[cfg(CONFIG_XFS_WARN)]
 pub const XFS_WARN_STRING: &str = "verbose warnings, ";
-#[cfg(not(feature = "CONFIG_XFS_WARN"))]
+#[cfg(not(CONFIG_XFS_WARN))]
 pub const XFS_WARN_STRING: &str = "";
 
-#[cfg(feature = "CONFIG_XFS_ASSERT_FATAL")]
+#[cfg(CONFIG_XFS_ASSERT_FATAL)]
 pub const XFS_ASSERT_FATAL_STRING: &str = "fatal assert, ";
-#[cfg(not(feature = "CONFIG_XFS_ASSERT_FATAL"))]
+#[cfg(not(CONFIG_XFS_ASSERT_FATAL))]
 pub const XFS_ASSERT_FATAL_STRING: &str = "";
 
 #[cfg(feature = "DEBUG")]

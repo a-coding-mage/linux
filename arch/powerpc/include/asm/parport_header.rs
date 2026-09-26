@@ -45,7 +45,7 @@ pub unsafe fn parport_pc_find_nonpci_ports(autoirq: i32, autodma: i32) -> i32 {
     let mut np: *mut device_node = core::ptr::null_mut();
     let mut count: i32 = 0;
 
-    for_each_compatible_node!(np, "parallel", "pnpPNP,400") {
+    for_each_compatible_node!(np, "parallel", "pnpPNP,400", {
         let mut propsize: i32 = 0;
         let prop: *const u32 = of_get_property(
             np,
@@ -69,7 +69,7 @@ pub unsafe fn parport_pc_find_nonpci_ports(autoirq: i32, autodma: i32) -> i32 {
         {
             count += 1;
         }
-    }
+    });
     count
 }
 

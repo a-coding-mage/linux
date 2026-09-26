@@ -71,9 +71,9 @@ unsafe fn cnb20le_res(bus: u8, slot: u8, func: u8) {
     res.flags = IORESOURCE_BUS;
     printk!(KERN_INFO, "CNB20LE PCI Host Bridge (domain 0000 %pR)\n", &res);
 
-    list_for_each_entry!(root_res, &(*info).resources, list) {
+    list_for_each_entry!(root_res, &(*info).resources, list, {
         printk!(KERN_INFO, "host bridge window %pR\n", &(*root_res).res);
-    }
+    });
 }
 
 unsafe fn broadcom_postcore_init() -> i32 {

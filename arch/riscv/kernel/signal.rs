@@ -26,7 +26,7 @@ struct rt_sigframe {
     sigreturn_code: [u32; 2],
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn restore_fp_state(regs: *mut pt_regs, sc_fpregs: *mut __riscv_fp_state) -> c_long {
     let state: *mut __riscv_d_ext_state = &mut (*sc_fpregs).d;
     let err = __copy_from_user(&mut (*current).thread.fstate as *mut _, state as *const _, core::mem::size_of::<__riscv_d_ext_state>());
@@ -35,16 +35,16 @@ unsafe fn restore_fp_state(regs: *mut pt_regs, sc_fpregs: *mut __riscv_fp_state)
     0
 }
 
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 unsafe fn save_fp_state(regs: *mut pt_regs, sc_fpregs: *mut __riscv_fp_state) -> c_long {
     let state: *mut __riscv_d_ext_state = &mut (*sc_fpregs).d;
     fstate_save(current, regs);
     __copy_to_user(state as *mut _, &(*current).thread.fstate as *const _, core::mem::size_of::<__riscv_d_ext_state>())
 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn save_fp_state(_: *mut pt_regs, _: *mut __riscv_fp_state) -> c_long { 0 }
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 unsafe fn restore_fp_state(_: *mut pt_regs, _: *mut __riscv_fp_state) -> c_long { 0 }
 
 unsafe fn save_v_state(regs: *mut pt_regs, sc_vec: *mut c_void) -> c_long {
@@ -195,7 +195,7 @@ unsafe fn handle_signal(ksig: *mut ksignal, regs: *mut pt_regs) {
 #[no_mangle]
 pub unsafe extern "C" fn arch_do_signal_or_restart(regs: *mut pt_regs) {
     let mut continue_addr = 0; let mut restart_addr = 0; let mut retval = 0; let mut ksig = core::mem::MaybeUninit::<ksignal>::uninit(); let syscall = (*regs).cause == EXC_SYSCALL;
-    if syscall { continue_addr = (*regs).epc; restart_addr = continue_addr - 4; retval = (*regs).a0 as c_long; (*regs).cause = !0; match retval { -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR | -ERESTART_RESTARTBLOCK => { (*regs).a0 = (*regs).orig_a0; (*regs).epc = restart_addr; }, _ => {} } }
+    if syscall { continue_addr = (*regs).epc; restart_addr = continue_addr - 4; retval = (*regs).a0 as c_long; (*regs).cause = !0; match retval { case if case == -ERESTARTNOHAND || case == -ERESTARTSYS || case == -ERESTARTNOINTR || case == -ERESTART_RESTARTBLOCK => { (*regs).a0 = (*regs).orig_a0; (*regs).epc = restart_addr; }, _ => {} } }
     if get_signal(ksig.as_mut_ptr()) { let ksig = ksig.as_mut_ptr(); if (*regs).epc == restart_addr && (retval == -ERESTARTNOHAND || retval == -ERESTART_RESTARTBLOCK || (retval == -ERESTARTSYS && ((*ksig).ka.sa.sa_flags & SA_RESTART) == 0)) { (*regs).a0 = -EINTR as c_ulong; (*regs).epc = continue_addr; } handle_signal(ksig, regs); return; }
     if syscall && (*regs).epc == restart_addr && retval == -ERESTART_RESTARTBLOCK { (*regs).a7 = __NR_restart_syscall; }
     restore_saved_sigmask();
@@ -207,7 +207,7 @@ pub unsafe fn init_rt_signal_env() {
     signal_minsigstksz = get_rt_frame_size(true) as c_ulong;
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_SIGFRAME")]
+#[cfg(CONFIG_DYNAMIC_SIGFRAME)]
 pub unsafe fn sigaltstack_size_valid(ss_size: usize) -> bool { ss_size > get_rt_frame_size(false) }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -111,8 +111,7 @@ extern "C" {
         dev: *mut c_void,
         n: c_uint,
         size: usize,
-        gfp_flags: u32,
-    ) -> *mut c_void;
+        gfp_flags: u32) -> *mut c_void;
     fn devm_kzalloc(dev: *mut c_void, size: usize, gfp_flags: u32) -> *mut c_void;
     fn kfree(ptr: *mut c_void);
 
@@ -122,8 +121,7 @@ extern "C" {
     fn snd_pcm_hw_constraint_single(
         runtime: *mut c_void,
         var: c_int,
-        val: c_uint,
-    ) -> c_int;
+        val: c_uint) -> c_int;
     fn snd_pcm_hw_rule_add(
         runtime: *mut c_void,
         flags: c_int,
@@ -139,25 +137,21 @@ extern "C" {
         tx_mask: u32,
         rx_mask: u32,
         slots: c_int,
-        slot_width: c_int,
-    ) -> c_int;
+        slot_width: c_int) -> c_int;
     fn snd_soc_dai_set_sysclk(
         dai: *mut c_void,
         clk_id: c_int,
         freq: c_uint,
-        dir: c_int,
-    ) -> c_int;
+        dir: c_int) -> c_int;
 
     fn snd_soc_dapm_new_controls(
         dapm: *mut c_void,
         widgets: *const c_void,
-        num: c_int,
-    ) -> c_int;
+        num: c_int) -> c_int;
     fn snd_soc_dapm_add_routes(
         dapm: *mut c_void,
         routes: *const c_void,
-        num: c_int,
-    ) -> c_int;
+        num: c_int) -> c_int;
 
     fn snd_soc_of_parse_card_name(card: *mut c_void, propname: *const c_char) -> c_int;
 
@@ -206,7 +200,7 @@ const SNDRV_PCM_HW_PARAM_RATE: c_int = 10;
 const SND_SOC_CLOCK_IN: c_int = 0;
 
 unsafe fn j721e_configure_refclk(
-    priv: *mut J721ePriv,
+    r#priv: *mut J721ePriv,
     audio_domain: c_uint,
     rate: c_uint,
 ) -> c_int {
@@ -381,7 +375,7 @@ unsafe fn j721e_audio_startup(substream: *mut c_void) -> c_int {
     ret
 }
 
-unsafe fn goto_out(domain: &mut J721eAudioDomain, priv: *mut J721ePriv, ret: c_int) {
+unsafe fn goto_out(domain: &mut J721eAudioDomain, r#priv: *mut J721ePriv, ret: c_int) {
     if ret != 0 {
         domain.active -= 1;
     }
@@ -673,7 +667,7 @@ static J721E_AUDIO_OF_MATCH: [OfDeviceIdEntry; 4] = [
     },
 ];
 
-unsafe fn j721e_calculate_rate_range(priv: *mut J721ePriv) -> c_int {
+unsafe fn j721e_calculate_rate_range(r#priv: *mut J721ePriv) -> c_int {
     let match_data = (*priv).match_data;
     let domain_clocks = &(*priv).audio_domains[0].mcasp;
     let mut min_rate: c_uint;
@@ -735,7 +729,7 @@ unsafe fn j721e_calculate_rate_range(priv: *mut J721ePriv) -> c_int {
 }
 
 unsafe fn j721e_soc_probe_cpb(
-    priv: *mut J721ePriv,
+    r#priv: *mut J721ePriv,
     link_idx: *mut c_int,
     conf_idx: *mut c_int,
 ) -> c_int {
@@ -794,7 +788,7 @@ unsafe fn j721e_soc_probe_cpb(
 }
 
 unsafe fn j721e_soc_probe_ivi(
-    priv: *mut J721ePriv,
+    r#priv: *mut J721ePriv,
     link_idx: *mut c_int,
     conf_idx: *mut c_int,
 ) -> c_int {

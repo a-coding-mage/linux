@@ -13,7 +13,7 @@ pub struct nf_bridge_frag_data {
 
 // CONFIG_BRIDGE_NETFILTER controls whether the following bridge-netfilter
 // implementation is enabled.
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 extern "C" {
     pub fn br_handle_frame_finish(
         net: *mut net,
@@ -22,7 +22,7 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn br_drop_fake_rtable(skb: *mut sk_buff) {
     let dst: *mut dst_entry = skb_dst(skb);
@@ -32,19 +32,19 @@ pub unsafe fn br_drop_fake_rtable(skb: *mut sk_buff) {
     }
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_info_get(skb: *const sk_buff) -> *mut nf_bridge_info {
     skb_ext_find(skb, SKB_EXT_BRIDGE_NF)
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_info_exists(skb: *const sk_buff) -> bool {
     skb_ext_exist(skb, SKB_EXT_BRIDGE_NF)
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_get_physinif(skb: *const sk_buff) -> core::ffi::c_int {
     let nf_bridge: *const nf_bridge_info = nf_bridge_info_get(skb);
@@ -56,7 +56,7 @@ pub unsafe fn nf_bridge_get_physinif(skb: *const sk_buff) -> core::ffi::c_int {
     (*nf_bridge).physinif
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_get_physoutif(skb: *const sk_buff) -> core::ffi::c_int {
     let nf_bridge: *const nf_bridge_info = nf_bridge_info_get(skb);
@@ -72,7 +72,7 @@ pub unsafe fn nf_bridge_get_physoutif(skb: *const sk_buff) -> core::ffi::c_int {
     }
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_get_physindev(
     skb: *const sk_buff,
@@ -87,7 +87,7 @@ pub unsafe fn nf_bridge_get_physindev(
     }
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_get_physoutdev(skb: *const sk_buff) -> *mut net_device {
     let nf_bridge: *const nf_bridge_info = nf_bridge_info_get(skb);
@@ -99,7 +99,7 @@ pub unsafe fn nf_bridge_get_physoutdev(skb: *const sk_buff) -> *mut net_device {
     }
 }
 
-#[cfg(feature = "CONFIG_BRIDGE_NETFILTER")]
+#[cfg(CONFIG_BRIDGE_NETFILTER)]
 #[inline]
 pub unsafe fn nf_bridge_in_prerouting(skb: *const sk_buff) -> bool {
     let nf_bridge: *const nf_bridge_info = nf_bridge_info_get(skb);
@@ -107,11 +107,11 @@ pub unsafe fn nf_bridge_in_prerouting(skb: *const sk_buff) -> bool {
     !nf_bridge.is_null() && (*nf_bridge).in_prerouting
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE_NETFILTER"))]
+#[cfg(not(CONFIG_BRIDGE_NETFILTER))]
 #[inline]
 pub unsafe fn br_drop_fake_rtable(_skb: *mut sk_buff) {}
 
-#[cfg(not(feature = "CONFIG_BRIDGE_NETFILTER"))]
+#[cfg(not(CONFIG_BRIDGE_NETFILTER))]
 #[inline]
 pub unsafe fn nf_bridge_in_prerouting(_skb: *const sk_buff) -> bool {
     false

@@ -49,51 +49,51 @@ page_bit!(_PAGE_PAT, _PAGE_BIT_PAT); page_bit!(_PAGE_PAT_LARGE, _PAGE_BIT_PAT_LA
 page_bit!(_PAGE_SPECIAL, _PAGE_BIT_SPECIAL); page_bit!(_PAGE_CPA_TEST, _PAGE_BIT_CPA_TEST);
 page_bit!(_PAGE_KERNEL_4K, _PAGE_BIT_KERNEL_4K);
 
-#[cfg(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS")]
+#[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
 page_bit!(_PAGE_PKEY_BIT0, _PAGE_BIT_PKEY_BIT0);
-#[cfg(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS")]
+#[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
 page_bit!(_PAGE_PKEY_BIT1, _PAGE_BIT_PKEY_BIT1);
-#[cfg(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS")]
+#[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
 page_bit!(_PAGE_PKEY_BIT2, _PAGE_BIT_PKEY_BIT2);
-#[cfg(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS")]
+#[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
 page_bit!(_PAGE_PKEY_BIT3, _PAGE_BIT_PKEY_BIT3);
-#[cfg(not(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS"))]
+#[cfg(not(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS))]
 pub const _PAGE_PKEY_BIT0: pteval_t = 0;
-#[cfg(not(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS"))]
+#[cfg(not(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS))]
 pub const _PAGE_PKEY_BIT1: pteval_t = 0;
-#[cfg(not(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS"))]
+#[cfg(not(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS))]
 pub const _PAGE_PKEY_BIT2: pteval_t = 0;
-#[cfg(not(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS"))]
+#[cfg(not(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS))]
 pub const _PAGE_PKEY_BIT3: pteval_t = 0;
 
 pub const _PAGE_PKEY_MASK: pteval_t = _PAGE_PKEY_BIT0 | _PAGE_PKEY_BIT1 | _PAGE_PKEY_BIT2 | _PAGE_PKEY_BIT3;
-#[cfg(any(target_pointer_width = "64", feature = "CONFIG_X86_PAE"))]
+#[cfg(any(target_pointer_width = "64", CONFIG_X86_PAE))]
 pub const _PAGE_KNL_ERRATUM_MASK: pteval_t = _PAGE_DIRTY | _PAGE_ACCESSED;
-#[cfg(not(any(target_pointer_width = "64", feature = "CONFIG_X86_PAE")))]
+#[cfg(not(any(target_pointer_width = "64", CONFIG_X86_PAE)))]
 pub const _PAGE_KNL_ERRATUM_MASK: pteval_t = 0;
-#[cfg(feature = "CONFIG_MEM_SOFT_DIRTY")]
+#[cfg(CONFIG_MEM_SOFT_DIRTY)]
 pub const _PAGE_SOFT_DIRTY: pteval_t = (1 as pteval_t) << _PAGE_BIT_SOFT_DIRTY;
-#[cfg(not(feature = "CONFIG_MEM_SOFT_DIRTY"))]
+#[cfg(not(CONFIG_MEM_SOFT_DIRTY))]
 pub const _PAGE_SOFT_DIRTY: pteval_t = 0;
-#[cfg(feature = "CONFIG_MEM_SOFT_DIRTY")]
+#[cfg(CONFIG_MEM_SOFT_DIRTY)]
 pub const _PAGE_SWP_SOFT_DIRTY: pteval_t = _PAGE_RW;
-#[cfg(not(feature = "CONFIG_MEM_SOFT_DIRTY"))]
+#[cfg(not(CONFIG_MEM_SOFT_DIRTY))]
 pub const _PAGE_SWP_SOFT_DIRTY: pteval_t = 0;
-#[cfg(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")]
+#[cfg(CONFIG_HAVE_ARCH_USERFAULTFD_WP)]
 pub const _PAGE_UFFD: pteval_t = (1 as pteval_t) << _PAGE_BIT_UFFD;
-#[cfg(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")]
+#[cfg(CONFIG_HAVE_ARCH_USERFAULTFD_WP)]
 pub const _PAGE_SWP_UFFD: pteval_t = _PAGE_USER;
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP"))]
+#[cfg(not(CONFIG_HAVE_ARCH_USERFAULTFD_WP))]
 pub const _PAGE_UFFD: pteval_t = 0;
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP"))]
+#[cfg(not(CONFIG_HAVE_ARCH_USERFAULTFD_WP))]
 pub const _PAGE_SWP_UFFD: pteval_t = 0;
-#[cfg(any(target_pointer_width = "64", feature = "CONFIG_X86_PAE"))]
+#[cfg(any(target_pointer_width = "64", CONFIG_X86_PAE))]
 pub const _PAGE_NX: pteval_t = (1 as pteval_t) << _PAGE_BIT_NX;
-#[cfg(any(target_pointer_width = "64", feature = "CONFIG_X86_PAE"))]
+#[cfg(any(target_pointer_width = "64", CONFIG_X86_PAE))]
 pub const _PAGE_SOFTW4: pteval_t = (1 as pteval_t) << _PAGE_BIT_SOFTW4;
-#[cfg(not(any(target_pointer_width = "64", feature = "CONFIG_X86_PAE")))]
+#[cfg(not(any(target_pointer_width = "64", CONFIG_X86_PAE)))]
 pub const _PAGE_NX: pteval_t = 0;
-#[cfg(not(any(target_pointer_width = "64", feature = "CONFIG_X86_PAE")))]
+#[cfg(not(any(target_pointer_width = "64", CONFIG_X86_PAE)))]
 pub const _PAGE_SOFTW4: pteval_t = 0;
 pub const _PAGE_SAVED_DIRTY: pteval_t = (1 as pteval_t) << _PAGE_BIT_SAVED_DIRTY;
 pub const _PAGE_DIRTY_BITS: pteval_t = _PAGE_DIRTY | _PAGE_SAVED_DIRTY;
@@ -128,9 +128,9 @@ pub fn __pg(x: pgprotval_t) -> pgprot_t { __pgprot(x) }
 pub fn pgprot_nx(prot: pgprot_t) -> pgprot_t { __pgprot(pgprot_val(prot) | _PAGE_NX) }
 
 pub const PGD_PAE_PAGE_MASK: i64 = PAGE_MASK as i64;
-#[cfg(feature = "CONFIG_X86_PAE")]
+#[cfg(CONFIG_X86_PAE)]
 pub const PGD_ALLOWED_BITS: u64 = PGD_PAE_PHYS_MASK | _PAGE_PRESENT as u64 | _PAGE_PWT as u64 | _PAGE_PCD as u64 | _PAGE_SOFTW1 as u64 | _PAGE_SOFTW2 as u64 | _PAGE_SOFTW3 as u64;
-#[cfg(not(feature = "CONFIG_X86_PAE"))]
+#[cfg(not(CONFIG_X86_PAE))]
 pub const PGD_ALLOWED_BITS: u64 = !0u64;
 #[inline]
 pub fn native_make_pgd(val: pgdval_t) -> pgd_t { pgd_t { pgd: val & PGD_ALLOWED_BITS as pgdval_t } }

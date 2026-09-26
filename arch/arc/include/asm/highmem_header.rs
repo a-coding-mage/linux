@@ -5,7 +5,7 @@
 
 // C header guard: _ASM_HIGHMEM_H
 // The following declarations are present only when CONFIG_HIGHMEM is enabled.
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 mod config_highmem {
     // C dependencies: <uapi/asm/page.h>, <asm/kmap_size.h>, and
     // <asm/cacheflush.h> provide these constants and functions.

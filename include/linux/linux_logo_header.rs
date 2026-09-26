@@ -37,12 +37,12 @@ unsafe extern "C" {
 }
 
 // CONFIG_FB_LOGO_EXTRA is a build-time configuration condition from the C header.
-#[cfg(feature = "CONFIG_FB_LOGO_EXTRA")]
+#[cfg(CONFIG_FB_LOGO_EXTRA)]
 unsafe extern "C" {
     pub fn fb_append_extra_logo(logo: *const linux_logo, n: u32);
 }
 
-#[cfg(not(feature = "CONFIG_FB_LOGO_EXTRA"))]
+#[cfg(not(CONFIG_FB_LOGO_EXTRA))]
 #[inline]
 pub unsafe fn fb_append_extra_logo(_logo: *const linux_logo, _n: u32) {}
 

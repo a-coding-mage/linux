@@ -134,23 +134,25 @@ unsafe extern "C" fn cuse_process_init_reply(args: *mut FuseArgs, error: Int) {
     let ia = container_of!(args, CuseInitArgs, ap.args); let fc = (*ia).fc; let ap = &mut (*ia).ap;
     let cc = fc_to_cc(fc); let arg = &mut (*ia).output; let folio = (*ap).folios[0]; let mut devinfo = CuseDevinfo { name: core::ptr::null() };
     let mut dev: *mut Device; let mut cdev: *mut Cdev; let mut devt: DevT; let mut rc: Int; let mut i: Int;
-    if error != 0 || (*arg).major != FUSE_KERNEL_VERSION || (*arg).minor < 11 { goto!(err); }
+    'err_cdev: {
+    if error != 0 || (*arg).major != FUSE_KERNEL_VERSION || (*arg).minor < 11 { goto err; }
     (*fc).minor = (*arg).minor; (*fc).max_read = max_t!((*arg).max_read, 4096); (*fc).max_write = max_t!((*arg).max_write, 4096);
     (*cc).unrestricted_ioctl = ((*arg).flags & CUSE_UNRESTRICTED_IOCTL) != 0;
-    rc = cuse_parse_devinfo(folio_address(folio), (*ap).args.out_args[1].size, &mut devinfo); if rc != 0 { goto!(err); }
+    rc = cuse_parse_devinfo(folio_address(folio), (*ap).args.out_args[1].size, &mut devinfo); if rc != 0 { goto err; }
     devt = mkdev((*arg).dev_major, (*arg).dev_minor);
     rc = if major(devt) == 0 { alloc_chrdev_region(&mut devt, minor(devt), 1, devinfo.name) } else { register_chrdev_region(devt, 1, devinfo.name) };
-    if rc != 0 { pr_err!("failed to register chrdev region\n"); goto!(err); }
-    dev = kzalloc_device(); if dev.is_null() { rc = -ENOMEM; goto!(err_region); }
+    if rc != 0 { pr_err!("failed to register chrdev region\n"); goto err; }
+    dev = kzalloc_device(); if dev.is_null() { rc = -ENOMEM; goto err_region; }
     device_initialize(dev); (*dev).class = CUSE_CLASS; (*dev).devt = devt; (*dev).release = Some(cuse_gendev_release); dev_set_drvdata(dev, cc); dev_set_name(dev, b"%s\0".as_ptr() as *const CChar, devinfo.name);
     mutex_lock(&mut CUSE_LOCK);
-    for i in 0..CUSE_CONNTBL_LEN { let mut pos: *mut CuseConn; list_for_each_entry!(pos, &mut CUSE_CONNTBL[i], list, { if strcmp(dev_name((*pos).dev), dev_name(dev)) == 0 { goto!(err_unlock); } }); }
-    rc = device_add(dev); if rc != 0 { goto!(err_unlock); }
-    cdev = cdev_alloc(); if cdev.is_null() { rc = -ENOMEM; goto!(err_dev); }
-    (*cdev).owner = THIS_MODULE; (*cdev).ops = &CUSE_FRONTEND_FOPS; rc = cdev_add(cdev, devt, 1); if rc != 0 { goto!(err_cdev); }
+    for i in 0..CUSE_CONNTBL_LEN { let mut pos: *mut CuseConn; list_for_each_entry!(pos, &mut CUSE_CONNTBL[i], list, { if strcmp(dev_name((*pos).dev), dev_name(dev)) == 0 { goto err_unlock; } }); }
+    rc = device_add(dev); if rc != 0 { goto err_unlock; }
+    cdev = cdev_alloc(); if cdev.is_null() { rc = -ENOMEM; goto err_dev; }
+    (*cdev).owner = THIS_MODULE; (*cdev).ops = &CUSE_FRONTEND_FOPS; rc = cdev_add(cdev, devt, 1); if rc != 0 { break 'err_cdev; }
     (*cc).dev = dev; (*cc).cdev = cdev; list_add(&mut (*cc).list, cuse_conntbl_head(devt)); mutex_unlock(&mut CUSE_LOCK); device_uevent_add(dev);
 out: kfree(ia as *mut core::ffi::c_void); folio_put(folio); return;
-err_cdev: cdev_del(cdev); err_dev: device_del(dev); err_unlock: mutex_unlock(&mut CUSE_LOCK); put_device(dev); err_region: unregister_chrdev_region(devt, 1); err: fuse_chan_abort((*fc).chan, false); goto!(out);
+    }
+    cdev_del(cdev); err_dev: device_del(dev); err_unlock: mutex_unlock(&mut CUSE_LOCK); put_device(dev); err_region: unregister_chrdev_region(devt, 1); err: fuse_chan_abort((*fc).chan, false); goto out;
 }
 
 unsafe extern "C" fn cuse_fc_release(fc: *mut FuseConn) { kfree(fc_to_cc(fc) as *mut core::ffi::c_void); }

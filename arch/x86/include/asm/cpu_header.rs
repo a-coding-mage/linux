@@ -3,18 +3,18 @@
 // C header dependencies: linux/device.h, linux/cpu.h, linux/topology.h,
 // linux/nodemask.h, linux/percpu.h, asm/ibt.h, and asm/cpuid/leaf_types.h.
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 // C macro: cpu_physical_id(cpu) expands to boot_cpu_physical_apicid.
 pub const fn cpu_physical_id(_cpu: usize) -> u32 {
     boot_cpu_physical_apicid
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe extern "C" {
     static boot_cpu_physical_apicid: u32;
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" {
     pub fn soft_restart_cpu();
 }
@@ -32,7 +32,7 @@ unsafe extern "C" {
     pub fn cpuid_model(l: *const leaf_0x1_0) -> u32;
 }
 
-#[cfg(feature = "CONFIG_X86_BUS_LOCK_DETECT")]
+#[cfg(CONFIG_X86_BUS_LOCK_DETECT)]
 unsafe extern "C" {
     pub fn sld_setup(c: *mut cpuinfo_x86);
     pub fn handle_user_split_lock(regs: *mut pt_regs, error_code: isize) -> bool;
@@ -42,40 +42,40 @@ unsafe extern "C" {
     pub fn bus_lock_init();
 }
 
-#[cfg(not(feature = "CONFIG_X86_BUS_LOCK_DETECT"))]
+#[cfg(not(CONFIG_X86_BUS_LOCK_DETECT))]
 #[inline]
 pub unsafe fn sld_setup(_c: *mut cpuinfo_x86) {}
 
-#[cfg(not(feature = "CONFIG_X86_BUS_LOCK_DETECT"))]
+#[cfg(not(CONFIG_X86_BUS_LOCK_DETECT))]
 #[inline]
 pub unsafe fn handle_user_split_lock(_regs: *mut pt_regs, _error_code: isize) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86_BUS_LOCK_DETECT"))]
+#[cfg(not(CONFIG_X86_BUS_LOCK_DETECT))]
 #[inline]
 pub unsafe fn handle_guest_split_lock(_ip: usize) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_X86_BUS_LOCK_DETECT"))]
+#[cfg(not(CONFIG_X86_BUS_LOCK_DETECT))]
 #[inline]
 pub unsafe fn handle_bus_lock(_regs: *mut pt_regs) {}
 
-#[cfg(not(feature = "CONFIG_X86_BUS_LOCK_DETECT"))]
+#[cfg(not(CONFIG_X86_BUS_LOCK_DETECT))]
 #[inline]
 pub unsafe fn split_lock_init() {}
 
-#[cfg(not(feature = "CONFIG_X86_BUS_LOCK_DETECT"))]
+#[cfg(not(CONFIG_X86_BUS_LOCK_DETECT))]
 #[inline]
 pub unsafe fn bus_lock_init() {}
 
-#[cfg(feature = "CONFIG_IA32_FEAT_CTL")]
+#[cfg(CONFIG_IA32_FEAT_CTL)]
 unsafe extern "C" {
     pub fn init_ia32_feat_ctl(c: *mut cpuinfo_x86);
 }
 
-#[cfg(not(feature = "CONFIG_IA32_FEAT_CTL"))]
+#[cfg(not(CONFIG_IA32_FEAT_CTL))]
 #[inline]
 pub unsafe fn init_ia32_feat_ctl(_c: *mut cpuinfo_x86) {}
 

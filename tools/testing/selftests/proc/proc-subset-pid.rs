@@ -60,8 +60,7 @@ unsafe extern "C" {
 		target: *const c_char,
 		filesystemtype: *const c_char,
 		mountflags: c_ulong,
-		data: *const c_void,
-	) -> c_int;
+		data: *const c_void) -> c_int;
 	fn open(pathname: *const c_char, flags: c_int, ...) -> c_int;
 	fn opendir(name: *const c_char) -> *mut DIR;
 	fn readdir(dirp: *mut DIR) -> *mut dirent;
@@ -116,18 +115,9 @@ unsafe fn string_is_pid(mut s: *const c_char) -> bool {
 			let ch = *s;
 			s = s.add(1);
 			match ch {
-				b'0' as c_char
-				| b'1' as c_char
-				| b'2' as c_char
-				| b'3' as c_char
-				| b'4' as c_char
-				| b'5' as c_char
-				| b'6' as c_char
-				| b'7' as c_char
-				| b'8' as c_char
-				| b'9' as c_char => continue,
+				case if case == b'0' as c_char || case == b'1' as c_char || case == b'2' as c_char || case == b'3' as c_char || case == b'4' as c_char || case == b'5' as c_char || case == b'6' as c_char || case == b'7' as c_char || case == b'8' as c_char || case == b'9' as c_char => continue,
 
-				0 => return true,
+				case if case == 0 => return true,
 
 				_ => return false,
 			}

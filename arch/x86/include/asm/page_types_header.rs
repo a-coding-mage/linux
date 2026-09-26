@@ -8,13 +8,13 @@ pub const __VIRTUAL_MASK: usize = (1usize << __VIRTUAL_MASK_SHIFT) - 1;
 /* Cast P*D_MASK to a signed type so that it is sign-extended if
    virtual addresses are 32-bits but physical addresses are larger
    (ie, 32-bit PAE). */
-#[cfg(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK")]
+#[cfg(CONFIG_DYNAMIC_PHYSICAL_MASK)]
 #[inline]
 pub fn __PHYSICAL_MASK() -> phys_addr_t {
     unsafe { physical_mask }
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK"))]
+#[cfg(not(CONFIG_DYNAMIC_PHYSICAL_MASK))]
 pub const __PHYSICAL_MASK: phys_addr_t =
     ((1u64 << __PHYSICAL_MASK_SHIFT) - 1) as phys_addr_t;
 
@@ -33,13 +33,13 @@ pub fn PHYSICAL_PUD_PAGE_MASK() -> phys_addr_t {
     ((PUD_MASK as isize) as phys_addr_t) & __PHYSICAL_MASK_VALUE()
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK")]
+#[cfg(CONFIG_DYNAMIC_PHYSICAL_MASK)]
 #[inline]
 fn __PHYSICAL_MASK_VALUE() -> phys_addr_t {
     unsafe { physical_mask }
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK"))]
+#[cfg(not(CONFIG_DYNAMIC_PHYSICAL_MASK))]
 #[inline]
 fn __PHYSICAL_MASK_VALUE() -> phys_addr_t {
     __PHYSICAL_MASK
@@ -64,13 +64,13 @@ pub const __START_KERNEL: usize = __START_KERNEL_map + LOAD_PHYSICAL_ADDR;
 
 // CONFIG_X86_64 selects asm/page_64_types.h and PUD_SHIFT; otherwise
 // asm/page_32_types.h is selected and PMD_SHIFT is used.
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const IOREMAP_MAX_ORDER: usize = PUD_SHIFT;
 
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const IOREMAP_MAX_ORDER: usize = PMD_SHIFT;
 
-#[cfg(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK")]
+#[cfg(CONFIG_DYNAMIC_PHYSICAL_MASK)]
 extern "C" {
     pub static mut physical_mask: phys_addr_t;
 }

@@ -129,10 +129,10 @@ unsafe fn dn_serial_print(mut str_: *const u8) { while *str_ != 0 { if *str_ == 
 unsafe fn dn_dummy_reset() { dn_serial_print(b"The end !\n\0".as_ptr()); loop {} }
 unsafe fn dn_get_model(model:*mut u8) { strcpy(model,b"Apollo \0".as_ptr()); if apollo_model>=APOLLO_DN3000 && apollo_model<=APOLLO_DN4500 { strcat(model,apollo_models[(apollo_model-APOLLO_DN3000) as usize].as_ptr()); } }
 
-#[cfg(feature = "CONFIG_HEARTBEAT")]
+#[cfg(CONFIG_HEARTBEAT)]
 static mut dn_cpuctrl: u16 = 0xff00;
 
-#[cfg(feature = "CONFIG_HEARTBEAT")]
+#[cfg(CONFIG_HEARTBEAT)]
 unsafe fn dn_heartbeat(on: i32) {
     if on != 0 { dn_cpuctrl &= !0x100; cpuctrl = dn_cpuctrl; }
     else { dn_cpuctrl &= !0x100; dn_cpuctrl |= 0x100; cpuctrl = dn_cpuctrl; }

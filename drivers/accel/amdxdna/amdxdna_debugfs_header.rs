@@ -11,12 +11,12 @@ pub struct amdxdna_dev {
 
 // Equivalent of CONFIG_DEBUG_FS. The feature name preserves the source
 // build-time condition and is expected to be supplied by the build system.
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" {
     pub fn amdxdna_debugfs_init(xdna: *mut amdxdna_dev);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn amdxdna_debugfs_init(_xdna: *mut amdxdna_dev) {}
 

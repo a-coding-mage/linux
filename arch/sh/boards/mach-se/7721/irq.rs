@@ -7,12 +7,8 @@
 
 // Linux kernel dependencies supplied by the surrounding build.
 
-enum {
-    UNUSED = 0,
-
-    /* board specific interrupt sources */
-    MRSHPC,
-}
+pub const UNUSED: i32 = 0;
+pub const MRSHPC: i32 = UNUSED + 1;
 
 static mut VECTORS: [intc_vect; 1] = [INTC_IRQ!(MRSHPC, MRSHPC_IRQ0)];
 

@@ -30,7 +30,7 @@ pub unsafe fn to_ethosu_bo(obj: *mut drm_gem_object) -> *mut ethosu_gem_object {
     to_drm_gem_dma_obj(obj) as *mut ethosu_gem_object
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn ethosu_gem_create_object(
         ddev: *mut drm_device,
         size: usize,

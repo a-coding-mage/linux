@@ -30,9 +30,9 @@ pub const EXT4_INODE_WRITEBACK_DATA_MODE: i32 = 0x04;
 #[inline] pub unsafe fn ext4_data_trans_blocks(sb: *mut super_block) -> u32 { ext4_singled_data_trans_blocks(sb) + EXT4_XATTR_TRANS_BLOCKS - 2 + ext4_maxquotas_trans_blocks(sb) }
 #[inline] pub unsafe fn ext4_meta_trans_blocks(sb: *mut super_block) -> u32 { EXT4_XATTR_TRANS_BLOCKS + ext4_maxquotas_trans_blocks(sb) }
 
-#[cfg(feature = "CONFIG_QUOTA")]
+#[cfg(CONFIG_QUOTA)]
 #[inline] pub unsafe fn ext4_quota_trans_blocks(sb: *mut super_block) -> i32 { if ext4_quota_capable(sb) != 0 { 1 } else { 0 } }
-#[cfg(not(feature = "CONFIG_QUOTA"))]
+#[cfg(not(CONFIG_QUOTA))]
 #[inline] pub unsafe fn ext4_quota_trans_blocks(_sb: *mut super_block) -> i32 { 0 }
 #[inline] pub unsafe fn ext4_maxquotas_trans_blocks(sb: *mut super_block) -> u32 { (EXT4_MAXQUOTAS as u32) * ext4_quota_trans_blocks(sb) as u32 }
 

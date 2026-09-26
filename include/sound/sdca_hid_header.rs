@@ -12,24 +12,24 @@ pub enum sdca_entity {}
 pub enum sdca_interrupt {}
 
 /* Corresponds to IS_ENABLED(CONFIG_SND_SOC_SDCA_HID). */
-#[cfg(feature = "CONFIG_SND_SOC_SDCA_HID")]
+#[cfg(CONFIG_SND_SOC_SDCA_HID)]
 unsafe extern "C" {
     pub fn sdca_add_hid_device(interrupt: *mut sdca_interrupt) -> ::core::ffi::c_int;
     pub fn sdca_destroy_hid_device(interrupt: *mut sdca_interrupt);
     pub fn sdca_hid_process_report(interrupt: *mut sdca_interrupt) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_HID"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_HID))]
 #[inline]
 pub unsafe fn sdca_add_hid_device(_interrupt: *mut sdca_interrupt) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_HID"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_HID))]
 #[inline]
 pub unsafe fn sdca_destroy_hid_device(_interrupt: *mut sdca_interrupt) {}
 
-#[cfg(not(feature = "CONFIG_SND_SOC_SDCA_HID"))]
+#[cfg(not(CONFIG_SND_SOC_SDCA_HID))]
 #[inline]
 pub unsafe fn sdca_hid_process_report(_interrupt: *mut sdca_interrupt) -> ::core::ffi::c_int {
     0

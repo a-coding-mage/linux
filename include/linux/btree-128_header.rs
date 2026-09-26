@@ -137,8 +137,7 @@ extern "C" {
         opaque: ::std::os::raw::c_ulong,
         key: *mut ::std::os::raw::c_ulong,
         index: usize,
-        func: *mut ::std::ffi::c_void,
-    );
+        func: *mut ::std::ffi::c_void);
 }
 
 pub type visitor128_t = unsafe extern "C" fn(

@@ -88,19 +88,19 @@ unsafe extern "C" {
 }
 
 // CONFIG_SYSCTL is a build-time condition from the original header.
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" {
     pub fn xfs_sysctl_register() -> ::core::ffi::c_int;
     pub fn xfs_sysctl_unregister();
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 #[inline]
 pub const fn xfs_sysctl_register() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 #[inline]
 pub fn xfs_sysctl_unregister() {}
 

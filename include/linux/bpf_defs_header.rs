@@ -7,7 +7,7 @@
 // C header guard: _LINUX_BPF_DEFS_H
 
 // CONFIG_BPF_SYSCALL selects the externally provided implementation.
-#[cfg(feature = "CONFIG_BPF_SYSCALL")]
+#[cfg(CONFIG_BPF_SYSCALL)]
 extern "C" {
     pub fn bpf_arena_handle_page_fault(
         addr: libc::c_ulong,
@@ -18,7 +18,7 @@ extern "C" {
 
 // When CONFIG_BPF_SYSCALL is not enabled, the C static inline implementation
 // returns false.
-#[cfg(not(feature = "CONFIG_BPF_SYSCALL"))]
+#[cfg(not(CONFIG_BPF_SYSCALL))]
 #[inline]
 pub fn bpf_arena_handle_page_fault(
     _addr: libc::c_ulong,

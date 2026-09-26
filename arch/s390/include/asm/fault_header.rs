@@ -25,14 +25,14 @@ pub struct teid_bits {
 }
 
 impl teid_bits {
-    pub const ADDR_MASK: core::ffi::c_ulong = (1 as core::ffi::c_ulong << 52) - 1;
+    pub const ADDR_MASK: core::ffi::c_ulong = ((1 as core::ffi::c_ulong) << 52) - 1;
     pub const FSI_SHIFT: u32 = 52;
-    pub const FSI_MASK: core::ffi::c_ulong = 0x3 as core::ffi::c_ulong << Self::FSI_SHIFT;
-    pub const B56_MASK: core::ffi::c_ulong = 1 as core::ffi::c_ulong << 56;
-    pub const B60_MASK: core::ffi::c_ulong = 1 as core::ffi::c_ulong << 60;
-    pub const B61_MASK: core::ffi::c_ulong = 1 as core::ffi::c_ulong << 61;
+    pub const FSI_MASK: core::ffi::c_ulong = (0x3 as core::ffi::c_ulong) << Self::FSI_SHIFT;
+    pub const B56_MASK: core::ffi::c_ulong = (1 as core::ffi::c_ulong) << 56;
+    pub const B60_MASK: core::ffi::c_ulong = (1 as core::ffi::c_ulong) << 60;
+    pub const B61_MASK: core::ffi::c_ulong = (1 as core::ffi::c_ulong) << 61;
     pub const AS_SHIFT: u32 = 62;
-    pub const AS_MASK: core::ffi::c_ulong = 0x3 as core::ffi::c_ulong << Self::AS_SHIFT;
+    pub const AS_MASK: core::ffi::c_ulong = (0x3 as core::ffi::c_ulong) << Self::AS_SHIFT;
 
     #[inline]
     pub const fn addr(self) -> core::ffi::c_ulong {

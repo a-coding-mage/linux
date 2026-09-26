@@ -12,9 +12,9 @@
 
 // Dependency supplied by asm/page.h.
 
-#[cfg(feature = "CONFIG_16KSTACKS")]
+#[cfg(CONFIG_16KSTACKS)]
 pub const THREAD_SIZE_ORDER: usize = 1;
-#[cfg(not(feature = "CONFIG_16KSTACKS"))]
+#[cfg(not(CONFIG_16KSTACKS))]
 pub const THREAD_SIZE_ORDER: usize = 0;
 
 pub const THREAD_SIZE: usize = PAGE_SIZE << THREAD_SIZE_ORDER;

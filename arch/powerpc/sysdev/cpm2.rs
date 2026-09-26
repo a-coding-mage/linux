@@ -48,12 +48,12 @@ pub const CPM_MAP_SIZE: usize = 0x40000;
 pub const MAX_CR_CMD_LOOPS: i32 = 10000;
 
 pub unsafe fn cpm2_reset() {
-    #[cfg(feature = "CONFIG_PPC_85xx")]
+    #[cfg(CONFIG_PPC_85xx)]
     { cpm2_immr = ioremap(get_immrbase() + 0x80000, CPM_MAP_SIZE); }
-    #[cfg(not(feature = "CONFIG_PPC_85xx"))]
+    #[cfg(not(CONFIG_PPC_85xx))]
     { cpm2_immr = ioremap(get_immrbase(), CPM_MAP_SIZE); }
     cpmp = &mut (*cpm2_immr).im_cpm;
-    #[cfg(not(feature = "CONFIG_PPC_EARLY_DEBUG_CPM"))]
+    #[cfg(not(CONFIG_PPC_EARLY_DEBUG_CPM))]
     { cpm_command( CPM_CR_RST, 0); }
 }
 

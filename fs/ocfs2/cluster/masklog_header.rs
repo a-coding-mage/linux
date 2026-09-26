@@ -34,9 +34,9 @@ pub const MLOG_INITIAL_AND_MASK: u64 = ML_ERROR | ML_NOTICE;
 pub const MLOG_MASK_PREFIX: u64 = 0;
 
 // Build-time CONFIG_OCFS2_DEBUG_MASKLOG intent from the C header.
-#[cfg(feature = "CONFIG_OCFS2_DEBUG_MASKLOG")]
+#[cfg(CONFIG_OCFS2_DEBUG_MASKLOG)]
 pub const ML_ALLOWED_BITS: u64 = !0u64;
-#[cfg(not(feature = "CONFIG_OCFS2_DEBUG_MASKLOG"))]
+#[cfg(not(CONFIG_OCFS2_DEBUG_MASKLOG))]
 pub const ML_ALLOWED_BITS: u64 = ML_ERROR | ML_NOTICE;
 
 pub const MLOG_MAX_BITS: usize = 64;

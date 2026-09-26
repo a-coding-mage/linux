@@ -12,22 +12,22 @@ pub static mut show_unhandled_signals: i32 = 1;
 
 unsafe fn unhandled_fault(address: c_ulong, tsk: *mut task_struct, regs: *mut pt_regs) {
     if address < PAGE_SIZE {
-        printk(KERN_ALERT "Unable to handle kernel NULL pointer dereference\n");
+        printk(c"\x011Unable to handle kernel NULL pointer dereference\n".as_ptr());
     } else {
-        printk(KERN_ALERT "Unable to handle kernel paging request at virtual address %016lx\n", address);
+        printk(c"\x011Unable to handle kernel paging request at virtual address %016lx\n".as_ptr(), address);
     }
-    printk(KERN_ALERT "tsk->{mm,active_mm}->context = %016lx\n",
+    printk(c"\x011tsk->{mm,active_mm}->context = %016lx\n".as_ptr(),
            if !(*tsk).mm.is_null() { CTX_HWBITS((*(*tsk).mm).context) } else { CTX_HWBITS((*(*tsk).active_mm).context) });
-    printk(KERN_ALERT "tsk->{mm,active_mm}->pgd = %016lx\n",
+    printk(c"\x011tsk->{mm,active_mm}->pgd = %016lx\n".as_ptr(),
            if !(*tsk).mm.is_null() { (*(*tsk).mm).pgd as c_ulong } else { (*(*tsk).active_mm).pgd as c_ulong });
     die_if_kernel("Oops", regs);
 }
 
 unsafe fn bad_kernel_pc(regs: *mut pt_regs, vaddr: c_ulong) {
-    printk(KERN_CRIT "OOPS: Bogus kernel PC [%016lx] in fault handler\n", (*regs).tpc);
-    printk(KERN_CRIT "OOPS: RPC [%016lx]\n", (*regs).u_regs[15]);
+    printk(c"\x012OOPS: Bogus kernel PC [%016lx] in fault handler\n".as_ptr(), (*regs).tpc);
+    printk(c"\x012OOPS: RPC [%016lx]\n".as_ptr(), (*regs).u_regs[15]);
     printk("OOPS: RPC <%pS>\n", (*regs).u_regs[15] as *mut c_void);
-    printk(KERN_CRIT "OOPS: Fault was to vaddr[%lx]\n", vaddr);
+    printk(c"\x012OOPS: Fault was to vaddr[%lx]\n".as_ptr(), vaddr);
     dump_stack();
     unhandled_fault((*regs).tpc, current, regs);
 }
@@ -72,8 +72,8 @@ unsafe fn show_signal_msg(regs: *mut pt_regs, sig: i32, code: i32, address: c_ul
            if task_pid_nr(tsk) > 1 { KERN_INFO } else { KERN_EMERG }, (*tsk).comm,
            task_pid_nr(tsk), address, (*regs).tpc as *mut c_void,
            (*regs).u_regs[UREG_I7] as *mut c_void, (*regs).u_regs[UREG_FP] as *mut c_void, code);
-    print_vma_addr(KERN_CONT " in ", (*regs).tpc);
-    printk(KERN_CONT "\n");
+    print_vma_addr(c"\x01c in ".as_ptr(), (*regs).tpc);
+    printk(c"\x01c\n".as_ptr());
 }
 
 unsafe fn do_fault_siginfo(code: i32, sig: i32, regs: *mut pt_regs, fault_addr: c_ulong, insn: u32, fault_code: i32) {
@@ -112,7 +112,7 @@ unsafe fn do_kernel_fault(regs: *mut pt_regs, si_code: i32, fault_code: i32, ins
 
 unsafe fn bogus_32bit_fault_tpc(regs: *mut pt_regs) {
     static mut times: i32 = 0;
-    if times < 10 { times += 1; printk(KERN_ERR "FAULT[%s:%d]: 32-bit process reports 64-bit TPC [%lx]\n", (*current).comm, (*current).pid, (*regs).tpc); }
+    if times < 10 { times += 1; printk(c"\x013FAULT[%s:%d]: 32-bit process reports 64-bit TPC [%lx]\n".as_ptr(), (*current).comm, (*current).pid, (*regs).tpc); }
     show_regs(regs);
 }
 
@@ -127,26 +127,29 @@ pub unsafe fn do_sparc64_fault(regs: *mut pt_regs) {
     let mut address: c_ulong;
     let mut mm_rss: c_ulong;
     let mut flags: u32 = FAULT_FLAG_DEFAULT;
+    'do_sigbus: {
+    'intr_or_no_mm: {
+    'out_of_memory: {
     fault_code = get_thread_fault_code();
     if kprobe_page_fault(regs, 0) != 0 { exception_exit(prev_state); return; }
     si_code = SEGV_MAPERR;
     address = current_thread_info().fault_address;
     if fault_code & FAULT_CODE_ITLB != 0 && fault_code & FAULT_CODE_DTLB != 0 { BUG(); }
     if test_thread_flag(TIF_32BIT) != 0 {
-        if (*regs).tstate & TSTATE_PRIV == 0 && unlikely((*regs).tpc >> 32 != 0) { bogus_32bit_fault_tpc(regs); goto intr_or_no_mm; }
-        if unlikely(address >> 32 != 0) { goto intr_or_no_mm; }
+        if (*regs).tstate & TSTATE_PRIV == 0 && unlikely((*regs).tpc >> 32 != 0) { bogus_32bit_fault_tpc(regs); break 'intr_or_no_mm; }
+        if unlikely(address >> 32 != 0) { break 'intr_or_no_mm; }
     }
     if (*regs).tstate & TSTATE_PRIV != 0 {
         let tpc = (*regs).tpc;
         if !((tpc >= KERNBASE && tpc < __init_end as c_ulong) || (tpc >= MODULES_VADDR && tpc < MODULES_END)) { bad_kernel_pc(regs, address); exception_exit(prev_state); return; }
     } else { flags |= FAULT_FLAG_USER; }
-    if faulthandler_disabled() || mm.is_null() { goto intr_or_no_mm; }
+    if faulthandler_disabled() || mm.is_null() { break 'intr_or_no_mm; }
     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
     if !mmap_read_trylock(mm) {
         if (*regs).tstate & TSTATE_PRIV != 0 && search_exception_tables((*regs).tpc).is_null() { insn = get_fault_insn(regs, insn); goto handle_kernel_fault; }
         'retry: loop { mmap_read_lock(mm); break 'retry; }
     }
-    if fault_code & FAULT_CODE_BAD_RA != 0 { goto do_sigbus; }
+    if fault_code & FAULT_CODE_BAD_RA != 0 { break 'do_sigbus; }
     vma = find_vma(mm, address);
     if vma.is_null() { goto bad_area; }
     if (fault_code & (FAULT_CODE_DTLB | FAULT_CODE_WRITE | FAULT_CODE_WINFIXUP)) == FAULT_CODE_DTLB && (*vma).vm_flags & VM_WRITE != 0 {
@@ -169,7 +172,7 @@ pub unsafe fn do_sparc64_fault(regs: *mut pt_regs) {
     fault = handle_mm_fault(vma, address, flags, regs);
     if fault_signal_pending(fault, regs) { if (*regs).tstate & TSTATE_PRIV != 0 { insn = get_fault_insn(regs, insn); goto handle_kernel_fault; } exception_exit(prev_state); return; }
     if fault & VM_FAULT_COMPLETED != 0 { goto lock_released; }
-    if unlikely(fault & VM_FAULT_ERROR != 0) { if fault & VM_FAULT_OOM != 0 { goto out_of_memory; } else if fault & VM_FAULT_SIGSEGV != 0 { goto bad_area; } else if fault & VM_FAULT_SIGBUS != 0 { goto do_sigbus; } BUG(); }
+    if unlikely(fault & VM_FAULT_ERROR != 0) { if fault & VM_FAULT_OOM != 0 { break 'out_of_memory; } else if fault & VM_FAULT_SIGSEGV != 0 { goto bad_area; } else if fault & VM_FAULT_SIGBUS != 0 { break 'do_sigbus; } BUG(); }
     if fault & VM_FAULT_RETRY != 0 { flags |= FAULT_FLAG_TRIED; goto retry; }
     mmap_read_unlock(mm);
     'lock_released: {
@@ -183,9 +186,12 @@ pub unsafe fn do_sparc64_fault(regs: *mut pt_regs) {
     bad_area: mmap_read_unlock(mm);
     bad_area_nosemaphore: insn = get_fault_insn(regs, insn);
     handle_kernel_fault: do_kernel_fault(regs, si_code, fault_code, insn, address); exception_exit(prev_state); return;
-    out_of_memory: insn = get_fault_insn(regs, insn); mmap_read_unlock(mm); if (*regs).tstate & TSTATE_PRIV == 0 { pagefault_out_of_memory(); exception_exit(prev_state); return; } goto handle_kernel_fault;
-    intr_or_no_mm: insn = get_fault_insn(regs, 0); goto handle_kernel_fault;
-    do_sigbus: insn = get_fault_insn(regs, insn); mmap_read_unlock(mm); do_fault_siginfo(BUS_ADRERR, SIGBUS, regs, address, insn, fault_code); if (*regs).tstate & TSTATE_PRIV != 0 { goto handle_kernel_fault; }
+    }
+    insn = get_fault_insn(regs, insn); mmap_read_unlock(mm); if (*regs).tstate & TSTATE_PRIV == 0 { pagefault_out_of_memory(); exception_exit(prev_state); return; } goto handle_kernel_fault;
+    }
+    insn = get_fault_insn(regs, 0); goto handle_kernel_fault;
+    }
+    insn = get_fault_insn(regs, insn); mmap_read_unlock(mm); do_fault_siginfo(BUS_ADRERR, SIGBUS, regs, address, insn, fault_code); if (*regs).tstate & TSTATE_PRIV != 0 { goto handle_kernel_fault; }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

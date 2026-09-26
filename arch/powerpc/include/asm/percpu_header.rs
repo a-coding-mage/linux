@@ -8,7 +8,7 @@
  * CONFIG_SMP; those build-time conditions are retained here as comments.
  */
 
-#[cfg(all(target_arch = "powerpc64", feature = "CONFIG_SMP"))]
+#[cfg(all(target_arch = "powerpc64", CONFIG_SMP))]
 #[macro_export]
 macro_rules! __my_cpu_offset {
     () => {
@@ -19,16 +19,16 @@ macro_rules! __my_cpu_offset {
 /* Supplied by the platform's jump-label implementation when
  * CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK && CONFIG_SMP are enabled. */
 #[cfg(all(
-    feature = "CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK",
-    feature = "CONFIG_SMP"
+    CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK,
+    CONFIG_SMP
 ))]
 extern "C" {
     static mut __percpu_first_chunk_is_paged: StaticKeyFalse;
 }
 
 #[cfg(all(
-    feature = "CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK",
-    feature = "CONFIG_SMP"
+    CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK,
+    CONFIG_SMP
 ))]
 #[inline]
 pub unsafe fn percpu_first_chunk_is_paged() -> bool {
@@ -36,8 +36,8 @@ pub unsafe fn percpu_first_chunk_is_paged() -> bool {
 }
 
 #[cfg(not(all(
-    feature = "CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK",
-    feature = "CONFIG_SMP"
+    CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK,
+    CONFIG_SMP
 )))]
 pub const percpu_first_chunk_is_paged: bool = false;
 

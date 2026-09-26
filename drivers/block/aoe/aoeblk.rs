@@ -126,14 +126,14 @@ unsafe extern "C" fn aoe_debugfs_show(s: *mut seq_file, _ignored: *mut c_void) -
 }
 
 DEFINE_SHOW_ATTRIBUTE!(aoe_debugfs);
-static DEVICE_ATTR!(state, 0o444, aoedisk_show_state, None);
-static DEVICE_ATTR!(mac, 0o444, aoedisk_show_mac, None);
-static DEVICE_ATTR!(netif, 0o444, aoedisk_show_netif, None);
+DEVICE_ATTR!(state, 0o444, aoedisk_show_state, None);
+DEVICE_ATTR!(mac, 0o444, aoedisk_show_mac, None);
+DEVICE_ATTR!(netif, 0o444, aoedisk_show_netif, None);
 static mut dev_attr_firmware_version: device_attribute = device_attribute {
     attr: attribute { name: cstr_ptr!("firmware-version"), mode: 0o444 },
     show: Some(aoedisk_show_fwver), store: None,
 };
-static DEVICE_ATTR!(payload, 0o444, aoedisk_show_payload, None);
+DEVICE_ATTR!(payload, 0o444, aoedisk_show_payload, None);
 
 static mut AOE_ATTRS: [*mut attribute; 6] = [
     &mut dev_attr_state.attr, &mut dev_attr_mac.attr, &mut dev_attr_netif.attr,
@@ -197,21 +197,29 @@ static AOE_MQ_OPS: blk_mq_ops = blk_mq_ops { queue_rq: Some(aoeblk_queue_rq) };
 pub unsafe extern "C" fn aoeblk_gdalloc(vp: *mut c_void) {
     let d = vp as *mut aoedev; let mut gd: *mut gendisk; let mut mp: *mut mempool_t; let mut set: *mut blk_mq_tag_set; let ssize: sector_t; let mut flags: ulong = 0; let mut late = 0; let mut err: i32;
     let lim = queue_limits { max_hw_sectors: aoe_maxsectors, io_opt: SZ_2M, features: BLK_FEAT_ROTATIONAL };
+    'err: {
+    'err_mempool: {
+    'err_tagset: {
+    'out_disk_cleanup: {
     spin_lock_irqsave!(&(*d).lock, flags);
     if (*d).flags & DEVFL_GDALLOC != 0 && (*d).flags & DEVFL_TKILL == 0 && (*d).flags & DEVFL_GD_NOW == 0 { (*d).flags |= DEVFL_GD_NOW; } else { late = 1; }
     spin_unlock_irqrestore!(&(*d).lock, flags); if late != 0 { return; }
     mp = mempool_create!(MIN_BUFS, mempool_alloc_slab, mempool_free_slab, BUF_POOL_CACHE);
-    if mp.is_null() { printk!(KERN_ERR "aoe: cannot allocate bufpool for {}.{}\n", (*d).aoemajor, (*d).aoeminor); goto err; }
+    if mp.is_null() { printk!(KERN_ERR "aoe: cannot allocate bufpool for {}.{}\n", (*d).aoemajor, (*d).aoeminor); break 'err; }
     set = &mut (*d).tag_set; (*set).ops = &AOE_MQ_OPS; (*set).cmd_size = core::mem::size_of::<aoe_req>(); (*set).nr_hw_queues = 1; (*set).queue_depth = 128; (*set).numa_node = NUMA_NO_NODE;
-    err = blk_mq_alloc_tag_set!(set); if err != 0 { pr_err!("aoe: cannot allocate tag set for {}.{}\n", (*d).aoemajor, (*d).aoeminor); goto err_mempool; }
-    gd = blk_mq_alloc_disk!(set, &lim, d); if IS_ERR!(gd) { pr_err!("aoe: cannot allocate block queue for {}.{}\n", (*d).aoemajor, (*d).aoeminor); goto err_tagset; }
+    err = blk_mq_alloc_tag_set!(set); if err != 0 { pr_err!("aoe: cannot allocate tag set for {}.{}\n", (*d).aoemajor, (*d).aoeminor); break 'err_mempool; }
+    gd = blk_mq_alloc_disk!(set, &lim, d); if IS_ERR!(gd) { pr_err!("aoe: cannot allocate block queue for {}.{}\n", (*d).aoemajor, (*d).aoeminor); break 'err_tagset; }
     spin_lock_irqsave!(&(*d).lock, flags); WARN_ON!((*d).flags & DEVFL_GD_NOW == 0); WARN_ON!((*d).flags & DEVFL_GDALLOC == 0); WARN_ON!((*d).flags & DEVFL_TKILL != 0); WARN_ON!(!(*d).gd.is_null()); WARN_ON!((*d).flags & DEVFL_UP != 0);
     (*d).bufpool = mp; (*d).blkq = (*gd).queue; (*d).gd = gd; (*gd).major = AOE_MAJOR; (*gd).first_minor = (*d).sysminor; (*gd).minors = AOE_PARTITIONS; (*gd).fops = &AOE_BDOPS; (*gd).private_data = d; ssize = (*d).ssize; snprintf!((*gd).disk_name, "etherd/e{}.{}", (*d).aoemajor, (*d).aoeminor); (*d).flags &= !DEVFL_GDALLOC; (*d).flags |= DEVFL_UP; spin_unlock_irqrestore!(&(*d).lock, flags);
-    set_capacity!(gd, ssize); err = device_add_disk!(core::ptr::null_mut(), gd, AOE_ATTR_GROUPS.as_ptr()); if err != 0 { goto out_disk_cleanup; } aoedisk_add_debugfs(d); spin_lock_irqsave!(&(*d).lock, flags); WARN_ON!((*d).flags & DEVFL_GD_NOW == 0); (*d).flags &= !DEVFL_GD_NOW; spin_unlock_irqrestore!(&(*d).lock, flags); return;
-out_disk_cleanup: put_disk!(gd);
-err_tagset: blk_mq_free_tag_set!(set);
-err_mempool: mempool_destroy!(mp);
-err: spin_lock_irqsave!(&(*d).lock, flags); (*d).flags &= !DEVFL_GD_NOW; queue_work!(aoe_wq, &mut (*d).work); spin_unlock_irqrestore!(&(*d).lock, flags);
+    set_capacity!(gd, ssize); err = device_add_disk!(core::ptr::null_mut(), gd, AOE_ATTR_GROUPS.as_ptr()); if err != 0 { break 'out_disk_cleanup; } aoedisk_add_debugfs(d); spin_lock_irqsave!(&(*d).lock, flags); WARN_ON!((*d).flags & DEVFL_GD_NOW == 0); (*d).flags &= !DEVFL_GD_NOW; spin_unlock_irqrestore!(&(*d).lock, flags); return;
+    }
+    put_disk!(gd);
+    }
+    blk_mq_free_tag_set!(set);
+    }
+    mempool_destroy!(mp);
+    }
+    spin_lock_irqsave!(&(*d).lock, flags); (*d).flags &= !DEVFL_GD_NOW; queue_work!(aoe_wq, &mut (*d).work); spin_unlock_irqrestore!(&(*d).lock, flags);
 }
 
 pub unsafe extern "C" fn aoeblk_exit() { debugfs_remove_recursive!(AOE_DEBUGFS_DIR); AOE_DEBUGFS_DIR = core::ptr::null_mut(); kmem_cache_destroy!(BUF_POOL_CACHE); }

@@ -104,7 +104,7 @@ static mut PRIO_REGISTERS: [intc_prio_reg; 25] = [
 static mut INTC_DESC: intc_desc = DECLARE_INTC_DESC!("sh7269", VECTORS, GROUPS, MASK_REGISTERS, PRIO_REGISTERS, None);
 
 macro_rules! sci_device { ($n:literal, $base:literal, $bri:literal, $eri:literal, $rxi:literal, $txi:literal) => {
-    static mut scif$ n _platform_data: plat_sci_port = plat_sci_port { scscr: SCSCR_REIE, type_: PORT_SCIF, regtype: SCIx_SH2_SCIF_FIFODATA_REGTYPE };
+    static mut scif$ $n _platform_data: plat_sci_port = plat_sci_port { scscr: SCSCR_REIE, type_: PORT_SCIF, regtype: SCIx_SH2_SCIF_FIFODATA_REGTYPE };
 } }
 // The eight SCIF platform devices and their resources retain the C table layout.
 static mut SCIF_DEVICES: [platform_device; 8] = [

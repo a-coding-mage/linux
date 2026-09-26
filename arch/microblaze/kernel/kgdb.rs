@@ -125,7 +125,7 @@ pub unsafe fn kgdb_arch_handle_exception(
     let mut address: c_ulong = 0;
 
     match *remcom_in_buffer {
-        b'c' as c_char => {
+        case if case == b'c' as c_char => {
             /* handle the optional parameter */
             ptr = remcom_in_buffer.add(1);
             if kgdb_hex2long(&mut ptr, &mut address) {

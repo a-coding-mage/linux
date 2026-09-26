@@ -18,7 +18,7 @@ pub static mut sysctl_fb_tunnels_only_for_init_net: c_int = 0;
 #[no_mangle]
 pub static mut sysctl_devconf_inherit_init_net: c_int = 0;
 
-#[cfg(any(feature = "CONFIG_NET_FLOW_LIMIT", feature = "CONFIG_RPS"))]
+#[cfg(any(CONFIG_NET_FLOW_LIMIT, CONFIG_RPS))]
 unsafe fn dump_cpumask(buffer: *mut c_void, lenp: *mut usize, ppos: *mut loff_t,
                         mask: *mut cpumask) -> c_int {
     if *ppos != 0 || *lenp == 0 { *lenp = 0; return 0; }
@@ -36,10 +36,10 @@ unsafe fn dump_cpumask(buffer: *mut c_void, lenp: *mut usize, ppos: *mut loff_t,
     0
 }
 
-#[cfg(feature = "CONFIG_RPS")]
+#[cfg(CONFIG_RPS)]
 static mut rps_default_mask_mutex: mutex = DEFINE_MUTEX!();
 
-#[cfg(feature = "CONFIG_RPS")]
+#[cfg(CONFIG_RPS)]
 unsafe fn rps_default_mask_sysctl(table: *const ctl_table, write: c_int, buffer: *mut c_void,
                                    lenp: *mut usize, ppos: *mut loff_t) -> c_int {
     let net = (*table).data as *mut net;
@@ -54,7 +54,7 @@ unsafe fn rps_default_mask_sysctl(table: *const ctl_table, write: c_int, buffer:
     err
 }
 
-#[cfg(feature = "CONFIG_RPS")]
+#[cfg(CONFIG_RPS)]
 unsafe fn rps_sock_flow_sysctl(table: *const ctl_table, write: c_int, buffer: *mut c_void,
                                lenp: *mut usize, ppos: *mut loff_t) -> c_int {
     static mut SOCK_FLOW_MUTEX: mutex = DEFINE_MUTEX!();
@@ -88,10 +88,10 @@ unsafe fn rps_sock_flow_sysctl(table: *const ctl_table, write: c_int, buffer: *m
     ret
 }
 
-#[cfg(feature = "CONFIG_NET_FLOW_LIMIT")]
+#[cfg(CONFIG_NET_FLOW_LIMIT)]
 static mut flow_limit_update_mutex: mutex = DEFINE_MUTEX!();
 
-#[cfg(feature = "CONFIG_NET_FLOW_LIMIT")]
+#[cfg(CONFIG_NET_FLOW_LIMIT)]
 unsafe fn flow_limit_table_len_sysctl(table: *const ctl_table, write: c_int, buffer: *mut c_void,
                                       lenp: *mut usize, ppos: *mut loff_t) -> c_int {
     mutex_lock(&raw mut flow_limit_update_mutex);
@@ -103,7 +103,7 @@ unsafe fn flow_limit_table_len_sysctl(table: *const ctl_table, write: c_int, buf
     ret
 }
 
-#[cfg(feature = "CONFIG_NET_SCHED")]
+#[cfg(CONFIG_NET_SCHED)]
 unsafe fn set_default_qdisc(table: *const ctl_table, write: c_int, buffer: *mut c_void,
                             lenp: *mut usize, ppos: *mut loff_t) -> c_int {
     let mut id = [0 as c_char; IFNAMSIZ];
@@ -145,7 +145,7 @@ unsafe fn proc_do_skb_defer_max(table: *const ctl_table, write: c_int, buffer: *
     mutex_unlock(&raw mut M); ret
 }
 
-#[cfg(feature = "CONFIG_BPF_JIT")]
+#[cfg(CONFIG_BPF_JIT)]
 unsafe fn proc_dointvec_minmax_bpf_enable(table: *const ctl_table, write: c_int, buffer: *mut c_void,
                                           lenp: *mut usize, ppos: *mut loff_t) -> c_int {
     let mut value = *((*table).data as *mut c_int);

@@ -37,10 +37,10 @@ macro_rules! MITE_FCR { ($x:expr) => { 0x40usize + MITE_CHAN!($x) }; }
 
 const CHOR_DMARESET:u32=BIT!(31); const CHOR_SET_SEND_TC:u32=BIT!(11); const CHOR_CLR_SEND_TC:u32=BIT!(10); const CHOR_SET_LPAUSE:u32=BIT!(9); const CHOR_CLR_LPAUSE:u32=BIT!(8); const CHOR_CLRDONE:u32=BIT!(7); const CHOR_CLRRB:u32=BIT!(6); const CHOR_CLRLC:u32=BIT!(5); const CHOR_FRESET:u32=BIT!(4); const CHOR_ABORT:u32=BIT!(3); const CHOR_STOP:u32=BIT!(2); const CHOR_CONT:u32=BIT!(1); const CHOR_START:u32=BIT!(0);
 const CHCR_SET_DMA_IE:u32=BIT!(31); const CHCR_CLR_DMA_IE:u32=BIT!(30); const CHCR_CLR_LINKP_IE:u32=BIT!(28); const CHCR_CLR_SAR_IE:u32=BIT!(26); const CHCR_CLR_DONE_IE:u32=BIT!(24); const CHCR_CLR_MRDY_IE:u32=BIT!(22); const CHCR_CLR_DRDY_IE:u32=BIT!(20); const CHCR_SET_LC_IE:u32=BIT!(19); const CHCR_CLR_LC_IE:u32=BIT!(18); const CHCR_CLR_CONT_RB_IE:u32=BIT!(16);
-macro_rules! CHCR_FIFO {($x:expr)=>{(($x&1)<<15)}} macro_rules! CHCR_BURST {($x:expr)=>{(($x&1)<<14)}} macro_rules! CHCR_DIR {($x:expr)=>{(($x&1)<<3)}} macro_rules! CHCR_MODE {($x:expr)=>{($x&7)}}
+macro_rules! CHCR_FIFO {($x:expr) => {(($x&1)<<15)}} macro_rules! CHCR_BURST {($x:expr) => {(($x&1)<<14)}} macro_rules! CHCR_DIR {($x:expr) => {(($x&1)<<3)}} macro_rules! CHCR_MODE {($x:expr) => {($x&7)}}
 const CHCR_BURSTEN:u32=CHCR_BURST!(1); const CHCR_BYTE_SWAP_DEVICE:u32=BIT!(6); const CHCR_BYTE_SWAP_MEMORY:u32=BIT!(4); const CHCR_DEV_TO_MEM:u32=CHCR_DIR!(1); const CHCR_LINKSHORT:u32=CHCR_MODE!(4);
 const CHSR_DONE:u32=BIT!(25); const CHSR_LINKC:u32=BIT!(19); const CHSR_XFERR:u32=BIT!(9);
-macro_rules! CR_RL {($x:expr)=>{(($x&7)<<21)}} macro_rules! CR_REQS {($x:expr)=>{(($x&7)<<16)}} macro_rules! CR_ASEQ {($x:expr)=>{(($x&3)<<10)}} macro_rules! CR_PSIZE {($x:expr)=>{(($x&3)<<8)}} macro_rules! CR_PORT {($x:expr)=>{(($x&3)<<6)}}
+macro_rules! CR_RL {($x:expr) => {(($x&7)<<21)}} macro_rules! CR_REQS {($x:expr) => {(($x&7)<<16)}} macro_rules! CR_ASEQ {($x:expr) => {(($x&3)<<10)}} macro_rules! CR_PSIZE {($x:expr) => {(($x&3)<<8)}} macro_rules! CR_PORT {($x:expr) => {(($x&3)<<6)}}
 const CR_ASEQUP:u32=CR_ASEQ!(1); const CR_PSIZE8:u32=CR_PSIZE!(1); const CR_PSIZE16:u32=CR_PSIZE!(2); const CR_PSIZE32:u32=CR_PSIZE!(3); const CR_PORTIO:u32=CR_PORT!(1); const CR_AMDEVICE:u32=BIT!(0);
 
 unsafe fn MITE_IODWBSR_1_WSIZE_bits(size: u32) -> u32 { (31 - size.leading_zeros() - 1) & 0x1f }

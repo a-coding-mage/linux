@@ -9,15 +9,15 @@
 
 static mut guts: *mut ccsr_guts = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_FSL_PMC")]
+#[cfg(CONFIG_FSL_PMC)]
 unsafe fn mpc85xx_irq_mask(_cpu: i32) {
 }
 
-#[cfg(feature = "CONFIG_FSL_PMC")]
+#[cfg(CONFIG_FSL_PMC)]
 unsafe fn mpc85xx_irq_unmask(_cpu: i32) {
 }
 
-#[cfg(feature = "CONFIG_FSL_PMC")]
+#[cfg(CONFIG_FSL_PMC)]
 unsafe fn mpc85xx_cpu_die(_cpu: i32) {
     let mut tmp: u32;
 
@@ -36,7 +36,7 @@ unsafe fn mpc85xx_cpu_die(_cpu: i32) {
     );
 }
 
-#[cfg(feature = "CONFIG_FSL_PMC")]
+#[cfg(CONFIG_FSL_PMC)]
 unsafe fn mpc85xx_cpu_up_prepare(_cpu: i32) {
 }
 
@@ -66,13 +66,13 @@ static mpc85xx_smp_guts_ids: [of_device_id; 8] = [
 
 static mpc85xx_pm_ops: fsl_pm_ops = fsl_pm_ops {
     freeze_time_base: Some(mpc85xx_freeze_time_base),
-    #[cfg(feature = "CONFIG_FSL_PMC")]
+    #[cfg(CONFIG_FSL_PMC)]
     irq_mask: Some(mpc85xx_irq_mask),
-    #[cfg(feature = "CONFIG_FSL_PMC")]
+    #[cfg(CONFIG_FSL_PMC)]
     irq_unmask: Some(mpc85xx_irq_unmask),
-    #[cfg(feature = "CONFIG_FSL_PMC")]
+    #[cfg(CONFIG_FSL_PMC)]
     cpu_die: Some(mpc85xx_cpu_die),
-    #[cfg(feature = "CONFIG_FSL_PMC")]
+    #[cfg(CONFIG_FSL_PMC)]
     cpu_up_prepare: Some(mpc85xx_cpu_up_prepare),
 };
 

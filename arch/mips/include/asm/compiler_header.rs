@@ -52,32 +52,32 @@ macro_rules! GCC_OFF_SMALL_ASM {
 
 /* The following configuration branches preserve the original build-time
  * CONFIG_CPU_MIPSR6 / CONFIG_CPU_MIPSR5 selection. */
-#[cfg(feature = "CONFIG_CPU_MIPSR6")]
+#[cfg(CONFIG_CPU_MIPSR6)]
 pub const MIPS_ISA_LEVEL: &str = "mips64r6";
-#[cfg(feature = "CONFIG_CPU_MIPSR6")]
+#[cfg(CONFIG_CPU_MIPSR6)]
 pub const MIPS_ISA_ARCH_LEVEL: &str = MIPS_ISA_LEVEL;
-#[cfg(feature = "CONFIG_CPU_MIPSR6")]
+#[cfg(CONFIG_CPU_MIPSR6)]
 pub const MIPS_ISA_LEVEL_RAW: &str = "mips64r6";
-#[cfg(feature = "CONFIG_CPU_MIPSR6")]
+#[cfg(CONFIG_CPU_MIPSR6)]
 pub const MIPS_ISA_ARCH_LEVEL_RAW: &str = MIPS_ISA_LEVEL_RAW;
 
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), feature = "CONFIG_CPU_MIPSR5"))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), CONFIG_CPU_MIPSR5))]
 pub const MIPS_ISA_LEVEL: &str = "mips64r5";
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), feature = "CONFIG_CPU_MIPSR5"))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), CONFIG_CPU_MIPSR5))]
 pub const MIPS_ISA_ARCH_LEVEL: &str = MIPS_ISA_LEVEL;
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), feature = "CONFIG_CPU_MIPSR5"))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), CONFIG_CPU_MIPSR5))]
 pub const MIPS_ISA_LEVEL_RAW: &str = "mips64r5";
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), feature = "CONFIG_CPU_MIPSR5"))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), CONFIG_CPU_MIPSR5))]
 pub const MIPS_ISA_ARCH_LEVEL_RAW: &str = MIPS_ISA_LEVEL_RAW;
 
 /* MIPS64 is a superset of MIPS32 */
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), not(feature = "CONFIG_CPU_MIPSR5")))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), not(CONFIG_CPU_MIPSR5)))]
 pub const MIPS_ISA_LEVEL: &str = "mips64r2";
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), not(feature = "CONFIG_CPU_MIPSR5")))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), not(CONFIG_CPU_MIPSR5)))]
 pub const MIPS_ISA_ARCH_LEVEL: &str = "arch=r4000";
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), not(feature = "CONFIG_CPU_MIPSR5")))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), not(CONFIG_CPU_MIPSR5)))]
 pub const MIPS_ISA_LEVEL_RAW: &str = "mips64r2";
-#[cfg(all(not(feature = "CONFIG_CPU_MIPSR6"), not(feature = "CONFIG_CPU_MIPSR5")))]
+#[cfg(all(not(CONFIG_CPU_MIPSR6), not(CONFIG_CPU_MIPSR5)))]
 pub const MIPS_ISA_ARCH_LEVEL_RAW: &str = MIPS_ISA_LEVEL_RAW;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

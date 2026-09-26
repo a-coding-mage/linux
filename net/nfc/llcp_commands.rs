@@ -78,10 +78,10 @@ pub unsafe fn nfc_llcp_free_sdp_tlv(sdp: *mut nfc_llcp_sdp_tlv) { kfree((*sdp).t
 pub unsafe fn nfc_llcp_free_sdp_tlv_list(head: *mut hlist_head) {
     let mut sdp: *mut nfc_llcp_sdp_tlv = core::ptr::null_mut();
     let mut n: *mut hlist_node = core::ptr::null_mut();
-    hlist_for_each_entry_safe!(sdp, n, head, node) {
+    hlist_for_each_entry_safe!(sdp, n, head, node, {
         hlist_del(&mut (*sdp).node);
         nfc_llcp_free_sdp_tlv(sdp);
-    }
+    });
 }
 
 pub unsafe fn nfc_llcp_parse_gb_tlv(local: *mut nfc_llcp_local, tlv_array: *const u8,

@@ -6,7 +6,7 @@
 // Kernel and architecture headers from the C source provide the external
 // types, constants, functions, and macros referenced below.
 
-#[cfg(all(feature = "CONFIG_STACKPROTECTOR", not(feature = "CONFIG_STACKPROTECTOR_PER_TASK")))]
+#[cfg(all(CONFIG_STACKPROTECTOR, not(CONFIG_STACKPROTECTOR_PER_TASK)))]
 #[no_mangle]
 pub static mut __stack_chk_guard: c_ulong = 0;
 
@@ -62,7 +62,7 @@ pub unsafe fn start_thread(regs: *mut pt_regs, pc: c_ulong, sp: c_ulong) {
     set_shstk_lock(current, false); set_shstk_status(current, false); set_shstk_base(current, 0, 0); set_active_shstk(current, 0);
     set_indir_lp_lock(current, false); set_indir_lp_status(current, false);
     // CONFIG_64BIT: select the user XLEN according to compatibility mode.
-    #[cfg(feature = "CONFIG_64BIT")]
+    #[cfg(CONFIG_64BIT)]
     { (*regs).status &= !SR_UXL; if is_compat_task() { (*regs).status |= SR_UXL_32; } else { (*regs).status |= SR_UXL_64; } }
 }
 
@@ -98,25 +98,25 @@ pub unsafe fn copy_thread(p: *mut task_struct, args: *const kernel_clone_args) -
 
 pub unsafe fn arch_task_cache_init() { riscv_v_setup_ctx_cache(); }
 
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 pub const PMLEN_0: c_int = 0;
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 pub const PMLEN_7: c_int = 7;
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 pub const PMLEN_16: c_int = 16;
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 static mut have_user_pmlen_7: bool = false;
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 static mut have_user_pmlen_16: bool = false;
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 static mut tagged_addr_disabled: c_uint = 0;
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 static tagged_addr_sysctl_table: [ctl_table; 2] = [
     ctl_table { procname: b"tagged_addr_disabled\0".as_ptr() as *mut c_char, mode: 0o644, data: core::ptr::null_mut(), maxlen: core::mem::size_of::<c_int>(), proc_handler: Some(proc_dointvec_minmax), extra1: SYSCTL_ZERO, extra2: SYSCTL_ONE },
     ctl_table::default(),
 ];
 
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 pub unsafe fn set_tagged_addr_ctrl(task: *mut task_struct, arg: c_ulong) -> c_long {
     let valid_mask = PR_PMLEN_MASK | PR_TAGGED_ADDR_ENABLE; let ti = task_thread_info(task); let mm = (*task).mm; let mut pmm; let mut pmlen = FIELD_GET(PR_PMLEN_MASK, arg) as c_uchar;
     if !riscv_has_extension_unlikely(RISCV_ISA_EXT_SUPM) || is_compat_thread(ti) || arg & !valid_mask != 0 { return -EINVAL as c_long; }
@@ -128,16 +128,16 @@ pub unsafe fn set_tagged_addr_ctrl(task: *mut task_struct, arg: c_ulong) -> c_lo
     envcfg_update_bits(task, ENVCFG_PMM, pmm); (*mm).context.pmlen = pmlen; mmap_write_unlock(mm); 0
 }
 
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 pub unsafe fn get_tagged_addr_ctrl(task: *mut task_struct) -> c_long {
     let ti = task_thread_info(task); if !riscv_has_extension_unlikely(RISCV_ISA_EXT_SUPM) || is_compat_thread(ti) { return -EINVAL as c_long; }
     let mut ret = 0; match (*task).thread.envcfg & ENVCFG_PMM { ENVCFG_PMM_PMLEN_7 => ret = FIELD_PREP(PR_PMLEN_MASK, PMLEN_7), ENVCFG_PMM_PMLEN_16 => ret = FIELD_PREP(PR_PMLEN_MASK, PMLEN_16), _ => {} } if (*(*task).mm).context.pmlen != 0 { ret |= PR_TAGGED_ADDR_ENABLE; } ret as c_long
 }
 
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 unsafe fn try_to_set_pmm(value: c_ulong) -> bool { csr_set(CSR_ENVCFG, value); (csr_read_clear(CSR_ENVCFG, ENVCFG_PMM) & ENVCFG_PMM) == value }
 
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 pub unsafe fn tagged_addr_init() -> c_int {
     if !riscv_has_extension_unlikely(RISCV_ISA_EXT_SUPM) { return 0; }
     csr_clear(CSR_ENVCFG, ENVCFG_PMM); have_user_pmlen_7 = try_to_set_pmm(ENVCFG_PMM_PMLEN_7); have_user_pmlen_16 = try_to_set_pmm(ENVCFG_PMM_PMLEN_16);

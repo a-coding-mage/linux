@@ -874,7 +874,7 @@ unsafe extern "C" fn wtm_init(ice: *mut snd_ice1712) -> c_int {
 }
 
 unsafe fn wtm_eeprom() -> [c_uchar; 256] {
-    let mut data = [0_u8; 256];
+    let mut data = [0u8; 256];
     data[ICE_EEP2_SYSCONF] = 0x67; /*SYSCONF: clock 192KHz, mpu401,
                                     * 4ADC, 8DAC */
     data[ICE_EEP2_ACLINK] = 0x80; /* ACLINK : I2S */

@@ -202,7 +202,7 @@ pub unsafe fn get_lowcore() -> *mut lowcore {
     core::ptr::null_mut()
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut lowcore_ptr: *mut *mut lowcore;
 }
 

@@ -6,7 +6,7 @@
 // The C header guards, include directives, assembler-only guard, and generic
 // bitops includes are represented by the surrounding translation unit.
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 #[inline]
 pub unsafe fn clz(x: u32) -> i32 {
     let res: u32;
@@ -21,7 +21,7 @@ pub unsafe fn clz(x: u32) -> i32 {
     res as i32
 }
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 #[inline]
 pub const fn constant_fls(mut x: u32) -> i32 {
     let mut r: i32 = 32;
@@ -34,7 +34,7 @@ pub const fn constant_fls(mut x: u32) -> i32 {
     r
 }
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 #[inline]
 pub unsafe fn fls(x: u32) -> i32 {
     // __builtin_constant_p(x) is a compiler-folding condition in C.
@@ -42,13 +42,13 @@ pub unsafe fn fls(x: u32) -> i32 {
     32 - clz(x)
 }
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 #[inline]
 pub unsafe fn __fls(x: usize) -> usize {
     if x == 0 { 0 } else { (fls(x as u32) - 1) as usize }
 }
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 #[macro_export]
 macro_rules! ffs {
     ($x:expr) => {{
@@ -57,13 +57,13 @@ macro_rules! ffs {
     }};
 }
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 #[inline]
 pub unsafe fn __ffs(word: usize) -> usize {
     if word == 0 { word } else { (ffs!(word) - 1) as usize }
 }
 
-#[cfg(not(feature = "CONFIG_ISA_ARCOMPACT"))]
+#[cfg(not(CONFIG_ISA_ARCOMPACT))]
 #[inline]
 pub unsafe fn fls(x: u32) -> i32 {
     let n: u32;
@@ -77,14 +77,14 @@ pub unsafe fn fls(x: u32) -> i32 {
     n as i32
 }
 
-#[cfg(not(feature = "CONFIG_ISA_ARCOMPACT"))]
+#[cfg(not(CONFIG_ISA_ARCOMPACT))]
 #[inline]
 pub unsafe fn __fls(x: usize) -> usize {
     // __builtin_constant_p(x) selects the equivalent compile-time expression.
     if x != 0 { (usize::BITS - 1 - x.leading_zeros()) as usize } else { 0 }
 }
 
-#[cfg(not(feature = "CONFIG_ISA_ARCOMPACT"))]
+#[cfg(not(CONFIG_ISA_ARCOMPACT))]
 #[inline]
 pub unsafe fn ffs(x: u32) -> i32 {
     let n: u32;
@@ -99,7 +99,7 @@ pub unsafe fn ffs(x: u32) -> i32 {
     n as i32
 }
 
-#[cfg(not(feature = "CONFIG_ISA_ARCOMPACT"))]
+#[cfg(not(CONFIG_ISA_ARCOMPACT))]
 #[inline]
 pub unsafe fn __ffs(x: usize) -> usize {
     let n: usize;

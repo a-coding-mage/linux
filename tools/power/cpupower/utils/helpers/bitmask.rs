@@ -21,7 +21,7 @@ unsafe extern "C" {
     fn snprintf(s: *mut c_char, n: usize, format: *const c_char, ...) -> c_int;
 }
 
-/* How many bits in an unsigned long */
+/* How many bits in an core::ffi::c_ulong */
 const fn bitsperlong() -> usize {
     8 * mem::size_of::<c_ulong>()
 }
@@ -106,9 +106,9 @@ unsafe fn _setbit(bmp: *mut bitmask, n: c_uint, v: c_uint) {
         unsafe {
             let p = (*bmp).maskp.add(n as usize / bitsperlong());
             if v != 0 {
-                *p |= 1 as c_ulong << (n as usize % bitsperlong());
+                *p |= (1 as c_ulong) << (n as usize % bitsperlong());
             } else {
-                *p &= !(1 as c_ulong << (n as usize % bitsperlong()));
+                *p &= !((1 as c_ulong) << (n as usize % bitsperlong()));
             }
         }
     }

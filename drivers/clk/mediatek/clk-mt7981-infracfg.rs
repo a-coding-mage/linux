@@ -10,7 +10,7 @@
 // C dependencies: linux clock/provider, platform-device, clk-mtk, clk-gate,
 // clk-mux, and the MT7981 clock bindings are supplied by other translation units.
 
-static DEFINE_SPINLOCK!(mt7981_clk_lock);
+DEFINE_SPINLOCK!(mt7981_clk_lock);
 
 static infra_divs: [mtk_fixed_factor; 1] = [
     FACTOR!(CLK_INFRA_66M_MCK, "infra_66m_mck", "sysaxi_sel", 1, 2),

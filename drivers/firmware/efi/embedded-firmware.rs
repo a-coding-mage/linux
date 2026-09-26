@@ -121,8 +121,8 @@ pub unsafe fn efi_check_for_embedded_firmwares() {
             continue;
         }
 
-        for_each_efi_memory_desc!(md) {
-            if (*md).type != EFI_BOOT_SERVICES_CODE {
+        for_each_efi_memory_desc!(md, {
+            if (*md).r#type != EFI_BOOT_SERVICES_CODE {
                 continue;
             }
 
@@ -130,7 +130,7 @@ pub unsafe fn efi_check_for_embedded_firmwares() {
             if r == 0 {
                 break;
             }
-        }
+        });
         i += 1;
     }
 
@@ -150,12 +150,12 @@ pub unsafe fn efi_get_embedded_fw(
         return -ENOENT;
     }
 
-    list_for_each_entry!(iter, &mut efi_embedded_fw_list, list) {
+    list_for_each_entry!(iter, &mut efi_embedded_fw_list, list, {
         if strcmp(name, (*iter).name) == 0 {
             fw = iter;
             break;
         }
-    }
+    });
 
     if fw.is_null() {
         return -ENOENT;

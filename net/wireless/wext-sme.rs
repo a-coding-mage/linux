@@ -385,13 +385,13 @@ pub unsafe fn cfg80211_wext_siwgenie(
     if ie_len != 0 {
         let mut elem: *const element = core::ptr::null();
 
-        for_each_element(elem, extra, ie_len) {
+        for_each_element!(elem, extra, ie_len, {
             /* nothing */
-        }
+        });
 
-        if !for_each_element_completed(elem, extra, ie_len) {
+        if !for_each_element_completed!(elem, extra, ie_len, {
             return -EINVAL;
-        }
+        });
 
         ie = kmemdup(extra as *const core::ffi::c_void, ie_len, GFP_KERNEL) as *mut u8;
         if ie.is_null() {

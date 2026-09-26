@@ -992,20 +992,20 @@ static top_fixed_factor_clks: &[samsung_fixed_factor_clock] = &[
 };
 
 static top_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.pll_clks		= top_pll_clks,
-	.nr_pll_clks		= top_pll_clks.len(),
-	.mux_clks		= top_mux_clks,
-	.nr_mux_clks		= top_mux_clks.len(),
-	.div_clks		= top_div_clks,
-	.nr_div_clks		= top_div_clks.len(),
-	.fixed_factor_clks	= top_fixed_factor_clks,
-	.nr_fixed_factor_clks	= top_fixed_factor_clks.len(),
-	.nr_clk_ids		= CLKS_NR_TOP,
-	.clk_regs		= top_clk_regs,
-	.nr_clk_regs		= top_clk_regs.len(),
+	pll_clks: top_pll_clks,
+	nr_pll_clks: top_pll_clks.len(),
+	mux_clks: top_mux_clks,
+	nr_mux_clks: top_mux_clks.len(),
+	div_clks: top_div_clks,
+	nr_div_clks: top_div_clks.len(),
+	fixed_factor_clks: top_fixed_factor_clks,
+	nr_fixed_factor_clks: top_fixed_factor_clks.len(),
+	nr_clk_ids: CLKS_NR_TOP,
+	clk_regs: top_clk_regs,
+	nr_clk_regs: top_clk_regs.len(),
 };
 
-static void __init exynosautov920_cmu_top_init(struct device_node *np)
+static void __init exynosautov920_cmu_top_init(device_node *np)
 {
 	exynos_arm64_register_cmu(core::ptr::null_mut(), np, &top_cmu_info);
 }
@@ -1122,19 +1122,19 @@ static cpucl0_div_clks: &[samsung_div_clock] = &[
 };
 
 static cpucl0_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.pll_clks		= cpucl0_pll_clks,
-	.nr_pll_clks		= cpucl0_pll_clks.len(),
-	.mux_clks		= cpucl0_mux_clks,
-	.nr_mux_clks		= cpucl0_mux_clks.len(),
-	.div_clks		= cpucl0_div_clks,
-	.nr_div_clks		= cpucl0_div_clks.len(),
-	.nr_clk_ids		= CLKS_NR_CPUCL0,
-	.clk_regs		= cpucl0_clk_regs,
-	.nr_clk_regs		= cpucl0_clk_regs.len(),
-	.clk_name		= "cpucl0",
+	pll_clks: cpucl0_pll_clks,
+	nr_pll_clks: cpucl0_pll_clks.len(),
+	mux_clks: cpucl0_mux_clks,
+	nr_mux_clks: cpucl0_mux_clks.len(),
+	div_clks: cpucl0_div_clks,
+	nr_div_clks: cpucl0_div_clks.len(),
+	nr_clk_ids: CLKS_NR_CPUCL0,
+	clk_regs: cpucl0_clk_regs,
+	nr_clk_regs: cpucl0_clk_regs.len(),
+	clk_name: "cpucl0",
 };
 
-static void __init exynosautov920_cmu_cpucl0_init(struct device_node *np)
+static void __init exynosautov920_cmu_cpucl0_init(device_node *np)
 {
 	exynos_arm64_register_cmu(core::ptr::null_mut(), np, &cpucl0_cmu_info);
 }
@@ -1224,19 +1224,19 @@ static cpucl1_div_clks: &[samsung_div_clock] = &[
 };
 
 static cpucl1_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.pll_clks		= cpucl1_pll_clks,
-	.nr_pll_clks		= cpucl1_pll_clks.len(),
-	.mux_clks		= cpucl1_mux_clks,
-	.nr_mux_clks		= cpucl1_mux_clks.len(),
-	.div_clks		= cpucl1_div_clks,
-	.nr_div_clks		= cpucl1_div_clks.len(),
-	.nr_clk_ids		= CLKS_NR_CPUCL1,
-	.clk_regs		= cpucl1_clk_regs,
-	.nr_clk_regs		= cpucl1_clk_regs.len(),
-	.clk_name		= "cpucl1",
+	pll_clks: cpucl1_pll_clks,
+	nr_pll_clks: cpucl1_pll_clks.len(),
+	mux_clks: cpucl1_mux_clks,
+	nr_mux_clks: cpucl1_mux_clks.len(),
+	div_clks: cpucl1_div_clks,
+	nr_div_clks: cpucl1_div_clks.len(),
+	nr_clk_ids: CLKS_NR_CPUCL1,
+	clk_regs: cpucl1_clk_regs,
+	nr_clk_regs: cpucl1_clk_regs.len(),
+	clk_name: "cpucl1",
 };
 
-static void __init exynosautov920_cmu_cpucl1_init(struct device_node *np)
+static void __init exynosautov920_cmu_cpucl1_init(device_node *np)
 {
 	exynos_arm64_register_cmu(core::ptr::null_mut(), np, &cpucl1_cmu_info);
 }
@@ -1326,19 +1326,19 @@ static cpucl2_div_clks: &[samsung_div_clock] = &[
 };
 
 static cpucl2_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.pll_clks		= cpucl2_pll_clks,
-	.nr_pll_clks		= cpucl2_pll_clks.len(),
-	.mux_clks		= cpucl2_mux_clks,
-	.nr_mux_clks		= cpucl2_mux_clks.len(),
-	.div_clks		= cpucl2_div_clks,
-	.nr_div_clks		= cpucl2_div_clks.len(),
-	.nr_clk_ids		= CLKS_NR_CPUCL2,
-	.clk_regs		= cpucl2_clk_regs,
-	.nr_clk_regs		= cpucl2_clk_regs.len(),
-	.clk_name		= "cpucl2",
+	pll_clks: cpucl2_pll_clks,
+	nr_pll_clks: cpucl2_pll_clks.len(),
+	mux_clks: cpucl2_mux_clks,
+	nr_mux_clks: cpucl2_mux_clks.len(),
+	div_clks: cpucl2_div_clks,
+	nr_div_clks: cpucl2_div_clks.len(),
+	nr_clk_ids: CLKS_NR_CPUCL2,
+	clk_regs: cpucl2_clk_regs,
+	nr_clk_regs: cpucl2_clk_regs.len(),
+	clk_name: "cpucl2",
 };
 
-static void __init exynosautov920_cmu_cpucl2_init(struct device_node *np)
+static void __init exynosautov920_cmu_cpucl2_init(device_node *np)
 {
 	exynos_arm64_register_cmu(core::ptr::null_mut(), np, &cpucl2_cmu_info);
 }
@@ -1477,14 +1477,14 @@ static peric0_div_clks: &[samsung_div_clock] = &[
 };
 
 static peric0_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks		= peric0_mux_clks,
-	.nr_mux_clks		= peric0_mux_clks.len(),
-	.div_clks		= peric0_div_clks,
-	.nr_div_clks		= peric0_div_clks.len(),
-	.nr_clk_ids		= CLKS_NR_PERIC0,
-	.clk_regs		= peric0_clk_regs,
-	.nr_clk_regs		= peric0_clk_regs.len(),
-	.clk_name		= "noc",
+	mux_clks: peric0_mux_clks,
+	nr_mux_clks: peric0_mux_clks.len(),
+	div_clks: peric0_div_clks,
+	nr_div_clks: peric0_div_clks.len(),
+	nr_clk_ids: CLKS_NR_PERIC0,
+	clk_regs: peric0_clk_regs,
+	nr_clk_regs: peric0_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_PERIC1 --------------------------------------------------------- */
@@ -1617,14 +1617,14 @@ static peric1_div_clks: &[samsung_div_clock] = &[
 };
 
 static peric1_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks		= peric1_mux_clks,
-	.nr_mux_clks		= peric1_mux_clks.len(),
-	.div_clks		= peric1_div_clks,
-	.nr_div_clks		= peric1_div_clks.len(),
-	.nr_clk_ids		= CLKS_NR_PERIC1,
-	.clk_regs		= peric1_clk_regs,
-	.nr_clk_regs		= peric1_clk_regs.len(),
-	.clk_name		= "noc",
+	mux_clks: peric1_mux_clks,
+	nr_mux_clks: peric1_mux_clks.len(),
+	div_clks: peric1_div_clks,
+	nr_div_clks: peric1_div_clks.len(),
+	nr_clk_ids: CLKS_NR_PERIC1,
+	clk_regs: peric1_clk_regs,
+	nr_clk_regs: peric1_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_MISC --------------------------------------------------------- */
@@ -1669,16 +1669,16 @@ static misc_fixed_factor_clks: &[samsung_fixed_factor_clock] = &[
 };
 
 static misc_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks		= misc_mux_clks,
-	.nr_mux_clks		= misc_mux_clks.len(),
-	.div_clks		= misc_div_clks,
-	.nr_div_clks		= misc_div_clks.len(),
-	.fixed_factor_clks	= misc_fixed_factor_clks,
-	.nr_fixed_factor_clks	= misc_fixed_factor_clks.len(),
-	.nr_clk_ids		= CLKS_NR_MISC,
-	.clk_regs		= misc_clk_regs,
-	.nr_clk_regs		= misc_clk_regs.len(),
-	.clk_name		= "noc",
+	mux_clks: misc_mux_clks,
+	nr_mux_clks: misc_mux_clks.len(),
+	div_clks: misc_div_clks,
+	nr_div_clks: misc_div_clks.len(),
+	fixed_factor_clks: misc_fixed_factor_clks,
+	nr_fixed_factor_clks: misc_fixed_factor_clks.len(),
+	nr_clk_ids: CLKS_NR_MISC,
+	clk_regs: misc_clk_regs,
+	nr_clk_regs: misc_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_HSI0 --------------------------------------------------------- */
@@ -1707,14 +1707,14 @@ static hsi0_div_clks: &[samsung_div_clock] = &[
 };
 
 static hsi0_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks		= hsi0_mux_clks,
-	.nr_mux_clks		= hsi0_mux_clks.len(),
-	.div_clks		= hsi0_div_clks,
-	.nr_div_clks		= hsi0_div_clks.len(),
-	.nr_clk_ids		= CLKS_NR_HSI0,
-	.clk_regs		= hsi0_clk_regs,
-	.nr_clk_regs		= hsi0_clk_regs.len(),
-	.clk_name		= "noc",
+	mux_clks: hsi0_mux_clks,
+	nr_mux_clks: hsi0_mux_clks.len(),
+	div_clks: hsi0_div_clks,
+	nr_div_clks: hsi0_div_clks.len(),
+	nr_clk_ids: CLKS_NR_HSI0,
+	clk_regs: hsi0_clk_regs,
+	nr_clk_regs: hsi0_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_HSI1 --------------------------------------------------------- */
@@ -1750,12 +1750,12 @@ static hsi1_mux_clks: &[samsung_mux_clock] = &[
 };
 
 static hsi1_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks		= hsi1_mux_clks,
-	.nr_mux_clks		= hsi1_mux_clks.len(),
-	.nr_clk_ids		= CLKS_NR_HSI1,
-	.clk_regs		= hsi1_clk_regs,
-	.nr_clk_regs		= hsi1_clk_regs.len(),
-	.clk_name		= "noc",
+	mux_clks: hsi1_mux_clks,
+	nr_mux_clks: hsi1_mux_clks.len(),
+	nr_clk_ids: CLKS_NR_HSI1,
+	clk_regs: hsi1_clk_regs,
+	nr_clk_regs: hsi1_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_HSI2 --------------------------------------------------------- */
@@ -1814,16 +1814,16 @@ static hsi2_div_clks: &[samsung_div_clock] = &[
 };
 
 static hsi2_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.pll_clks               = hsi2_pll_clks,
-	.nr_pll_clks            = hsi2_pll_clks.len(),
-	.mux_clks               = hsi2_mux_clks,
-	.nr_mux_clks            = hsi2_mux_clks.len(),
-	.div_clks               = hsi2_div_clks,
-	.nr_div_clks            = hsi2_div_clks.len(),
-	.nr_clk_ids             = CLKS_NR_HSI2,
-	.clk_regs               = hsi2_clk_regs,
-	.nr_clk_regs            = hsi2_clk_regs.len(),
-	.clk_name               = "noc",
+	pll_clks: hsi2_pll_clks,
+	nr_pll_clks: hsi2_pll_clks.len(),
+	mux_clks: hsi2_mux_clks,
+	nr_mux_clks: hsi2_mux_clks.len(),
+	div_clks: hsi2_div_clks,
+	nr_div_clks: hsi2_div_clks.len(),
+	nr_clk_ids: CLKS_NR_HSI2,
+	clk_regs: hsi2_clk_regs,
+	nr_clk_regs: hsi2_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_M2M --------------------------------------------------------- */
@@ -1857,14 +1857,14 @@ static m2m_div_clks: &[samsung_div_clock] = &[
 };
 
 static m2m_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks               = m2m_mux_clks,
-	.nr_mux_clks            = m2m_mux_clks.len(),
-	.div_clks               = m2m_div_clks,
-	.nr_div_clks            = m2m_div_clks.len(),
-	.nr_clk_ids             = CLKS_NR_M2M,
-	.clk_regs               = m2m_clk_regs,
-	.nr_clk_regs            = m2m_clk_regs.len(),
-	.clk_name               = "noc",
+	mux_clks: m2m_mux_clks,
+	nr_mux_clks: m2m_mux_clks.len(),
+	div_clks: m2m_div_clks,
+	nr_div_clks: m2m_div_clks.len(),
+	nr_clk_ids: CLKS_NR_M2M,
+	clk_regs: m2m_clk_regs,
+	nr_clk_regs: m2m_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_MFC --------------------------------------------------------- */
@@ -1898,14 +1898,14 @@ static mfc_div_clks: &[samsung_div_clock] = &[
 };
 
 static mfc_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks               = mfc_mux_clks,
-	.nr_mux_clks            = mfc_mux_clks.len(),
-	.div_clks               = mfc_div_clks,
-	.nr_div_clks            = mfc_div_clks.len(),
-	.nr_clk_ids             = CLKS_NR_MFC,
-	.clk_regs               = mfc_clk_regs,
-	.nr_clk_regs            = mfc_clk_regs.len(),
-	.clk_name               = "noc",
+	mux_clks: mfc_mux_clks,
+	nr_mux_clks: mfc_mux_clks.len(),
+	div_clks: mfc_div_clks,
+	nr_div_clks: mfc_div_clks.len(),
+	nr_clk_ids: CLKS_NR_MFC,
+	clk_regs: mfc_clk_regs,
+	nr_clk_regs: mfc_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_MFD --------------------------------------------------------- */
@@ -1934,14 +1934,14 @@ static mfd_div_clks: &[samsung_div_clock] = &[
 };
 
 static mfd_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.mux_clks               = mfd_mux_clks,
-	.nr_mux_clks            = mfd_mux_clks.len(),
-	.div_clks               = mfd_div_clks,
-	.nr_div_clks            = mfd_div_clks.len(),
-	.nr_clk_ids             = CLKS_NR_MFD,
-	.clk_regs               = mfd_clk_regs,
-	.nr_clk_regs            = mfd_clk_regs.len(),
-	.clk_name               = "noc",
+	mux_clks: mfd_mux_clks,
+	nr_mux_clks: mfd_mux_clks.len(),
+	div_clks: mfd_div_clks,
+	nr_div_clks: mfd_div_clks.len(),
+	nr_clk_ids: CLKS_NR_MFD,
+	clk_regs: mfd_clk_regs,
+	nr_clk_regs: mfd_clk_regs.len(),
+	clk_name: "noc",
 };
 
 /* ---- CMU_G3D --------------------------------------------------------- */
@@ -1982,69 +1982,69 @@ static g3d_mux_clks: &[samsung_mux_clock] = &[
 };
 
 static g3d_cmu_info: samsung_cmu_info = samsung_cmu_info {
-	.pll_clks               = g3d_pll_clks,
-	.nr_pll_clks            = g3d_pll_clks.len(),
-	.mux_clks               = g3d_mux_clks,
-	.nr_mux_clks            = g3d_mux_clks.len(),
-	.nr_clk_ids             = CLKS_NR_G3D,
-	.clk_regs               = g3d_clk_regs,
-	.nr_clk_regs            = g3d_clk_regs.len(),
-	.clk_name               = "noc",
+	pll_clks: g3d_pll_clks,
+	nr_pll_clks: g3d_pll_clks.len(),
+	mux_clks: g3d_mux_clks,
+	nr_mux_clks: g3d_mux_clks.len(),
+	nr_clk_ids: CLKS_NR_G3D,
+	clk_regs: g3d_clk_regs,
+	nr_clk_regs: g3d_clk_regs.len(),
+	clk_name: "noc",
 };
 
-unsafe fn exynosautov920_cmu_probe(struct platform_device *pdev)
+unsafe fn exynosautov920_cmu_probe(platform_device *pdev)
 {
 	const struct samsung_cmu_info *info;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }
 
 static exynosautov920_cmu_of_match: &[of_device_id] = &[
 	{
-		.compatible = "samsung,exynosautov920-cmu-peric0",
-		.data = &peric0_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-peric0",
+		data: &peric0_cmu_info,
 	}, {
-		 .compatible = "samsung,exynosautov920-cmu-peric1",
-		 .data = &peric1_cmu_info,
+		 compatible: "samsung,exynosautov920-cmu-peric1",
+		 data: &peric1_cmu_info,
 	}, {
-		 .compatible = "samsung,exynosautov920-cmu-misc",
-		 .data = &misc_cmu_info,
+		 compatible: "samsung,exynosautov920-cmu-misc",
+		 data: &misc_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-hsi0",
-		.data = &hsi0_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-hsi0",
+		data: &hsi0_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-hsi1",
-		.data = &hsi1_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-hsi1",
+		data: &hsi1_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-hsi2",
-		.data = &hsi2_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-hsi2",
+		data: &hsi2_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-m2m",
-		.data = &m2m_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-m2m",
+		data: &m2m_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-mfc",
-		.data = &mfc_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-mfc",
+		data: &mfc_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-mfd",
-		.data = &mfd_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-mfd",
+		data: &mfd_cmu_info,
 	}, {
-		.compatible = "samsung,exynosautov920-cmu-g3d",
-		.data = &g3d_cmu_info,
+		compatible: "samsung,exynosautov920-cmu-g3d",
+		data: &g3d_cmu_info,
 	},
 	{ }
 };
 
 static struct platform_driver exynosautov920_cmu_driver  = {
-	.driver = {
-		.name = "exynosautov920-cmu",
-		.of_match_table = exynosautov920_cmu_of_match,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "exynosautov920-cmu",
+		of_match_table: exynosautov920_cmu_of_match,
+		suppress_bind_attrs: true,
 	},
-	.probe = exynosautov920_cmu_probe,
+	probe: exynosautov920_cmu_probe,
 };
 
 unsafe fn exynosautov920_cmu_init(void)

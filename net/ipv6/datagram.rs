@@ -26,7 +26,7 @@ pub unsafe fn ip6_datagram_dst_update(sk: *mut sock, fix_sk_saddr: bool) -> i32 
     }
     let fl6 = &mut (*inet_sk(sk)).cork.fl.u.ip6; ip6_datagram_flow_key_init(fl6, sk);
     rcu_read_lock(); let opt = if !flowlabel.is_null() { (*flowlabel).opt } else { rcu_dereference((*np).opt) };
-    let final_p = fl6_update_dst(fl6, opt, &mut (*np).final); rcu_read_unlock();
+    let final_p = fl6_update_dst(fl6, opt, &mut (*np).r#final); rcu_read_unlock();
     let dst = ip6_dst_lookup_flow(sock_net(sk), sk, fl6, final_p); let mut err = 0;
     if IS_ERR(dst) { err = PTR_ERR(dst); } else {
         if fix_sk_saddr {

@@ -82,6 +82,9 @@ unsafe fn clk_mt6795_pericfg_probe(pdev: *mut PlatformDevice) -> i32 {
     let node: *mut DeviceNode = (*pdev).dev.of_node;
     let base: *mut core::ffi::c_void;
     let mut ret: i32;
+    'free_clk_data: {
+    'unregister_gates: {
+    'unregister_composites: {
 
     base = devm_platform_ioremap_resource(pdev, 0);
     if IS_ERR!(base) {
@@ -95,31 +98,33 @@ unsafe fn clk_mt6795_pericfg_probe(pdev: *mut PlatformDevice) -> i32 {
 
     ret = mtk_register_reset_controller_with_dev(&mut (*pdev).dev, &CLK_RST_DESC);
     if ret != 0 {
-        goto!(free_clk_data);
+        break 'free_clk_data;
     }
 
     ret = mtk_clk_register_gates(&mut (*pdev).dev, node, PERI_GATES.as_ptr(), ARRAY_SIZE!(PERI_GATES), clk_data);
     if ret != 0 {
-        goto!(free_clk_data);
+        break 'free_clk_data;
     }
 
     ret = mtk_clk_register_composites(&mut (*pdev).dev, PERI_CLKS.as_ptr(), ARRAY_SIZE!(PERI_CLKS), base, &mut MT6795_PERI_CLK_LOCK, clk_data);
     if ret != 0 {
-        goto!(unregister_gates);
+        break 'unregister_gates;
     }
 
     ret = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
     if ret != 0 {
-        goto!(unregister_composites);
+        break 'unregister_composites;
     }
 
     return 0;
-
-unregister_composites:
+    }
+    
     mtk_clk_unregister_composites(PERI_CLKS.as_ptr(), ARRAY_SIZE!(PERI_CLKS), clk_data);
-unregister_gates:
+    }
+    
     mtk_clk_unregister_gates(PERI_GATES.as_ptr(), ARRAY_SIZE!(PERI_GATES), clk_data);
-free_clk_data:
+    }
+    
     mtk_free_clk_data(clk_data);
     ret
 }

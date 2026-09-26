@@ -65,7 +65,7 @@ unsafe fn viot_check_bounds(hdr: *const acpi_viot_header) -> c_int {
     let end = (viot as *mut u8).add((*viot).header_size()) as *mut acpi_viot_header;
     let hdr_end = (hdr as *mut u8).add(core::mem::size_of::<acpi_viot_header>());
     if hdr < start || hdr_end > end { return -75; }
-    if (*hdr).length as usize < core::mem::size_of::<acpi_viot_header>() { return -22; }
+    if ((*hdr).length as usize) < core::mem::size_of::<acpi_viot_header>() { return -22; }
     0
 }
 

@@ -101,7 +101,7 @@ pub unsafe fn bitstream_read_u32(is: *mut input_bitstream) -> u32 {
 
 #[inline(always)]
 pub unsafe fn bitstream_read_bytes(is: *mut input_bitstream, dst_buffer: *mut core::ffi::c_void, count: usize) -> *mut core::ffi::c_void {
-    if (*is).end.offset_from((*is).next) as usize < count { return core::ptr::null_mut(); }
+    if ((*is).end.offset_from((*is).next) as usize) < count { return core::ptr::null_mut(); }
     core::ptr::copy_nonoverlapping((*is).next, dst_buffer as *mut u8, count);
     (*is).next = (*is).next.add(count);
     (dst_buffer as *mut u8).add(count) as *mut core::ffi::c_void

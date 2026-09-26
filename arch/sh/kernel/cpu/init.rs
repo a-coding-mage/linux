@@ -10,52 +10,52 @@
 
 // Kernel and architecture dependencies are supplied by the surrounding tree.
 
-#[cfg(feature = "CONFIG_SH_FPU")]
+#[cfg(CONFIG_SH_FPU)]
 const CPU_HAS_FPU: i32 = 1;
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 const CPU_HAS_FPU: i32 = 0;
-#[cfg(feature = "CONFIG_SH_DSP")]
+#[cfg(CONFIG_SH_DSP)]
 const CPU_HAS_DSP: i32 = 1;
-#[cfg(not(feature = "CONFIG_SH_DSP"))]
+#[cfg(not(CONFIG_SH_DSP))]
 const CPU_HAS_DSP: i32 = 0;
 
-#[cfg(feature = "CONFIG_SPECULATIVE_EXECUTION")]
+#[cfg(CONFIG_SPECULATIVE_EXECUTION)]
 const CPUOPM: u32 = 0xff2f0000;
-#[cfg(feature = "CONFIG_SPECULATIVE_EXECUTION")]
+#[cfg(CONFIG_SPECULATIVE_EXECUTION)]
 const CPUOPM_RABD: u32 = 1 << 5;
 
-#[cfg(feature = "CONFIG_SPECULATIVE_EXECUTION")]
+#[cfg(CONFIG_SPECULATIVE_EXECUTION)]
 unsafe fn speculative_execution_init() {
     __raw_writel(__raw_readl(CPUOPM) & !CPUOPM_RABD, CPUOPM);
     let _ = __raw_readl(CPUOPM);
     ctrl_barrier();
 }
-#[cfg(not(feature = "CONFIG_SPECULATIVE_EXECUTION"))]
+#[cfg(not(CONFIG_SPECULATIVE_EXECUTION))]
 unsafe fn speculative_execution_init() {}
 
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 const EXPMASK: u32 = 0xff2f0004;
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 const EXPMASK_RTEDS: u32 = 1 << 0;
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 const EXPMASK_BRDSSLP: u32 = 1 << 1;
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 const EXPMASK_MMCAW: u32 = 1 << 4;
 
-#[cfg(feature = "CONFIG_CPU_SH4A")]
+#[cfg(CONFIG_CPU_SH4A)]
 unsafe fn expmask_init() {
     let mut expmask = __raw_readl(EXPMASK);
     expmask &= !(EXPMASK_RTEDS | EXPMASK_BRDSSLP | EXPMASK_MMCAW);
     __raw_writel(expmask, EXPMASK);
     ctrl_barrier();
 }
-#[cfg(not(feature = "CONFIG_CPU_SH4A"))]
+#[cfg(not(CONFIG_CPU_SH4A))]
 unsafe fn expmask_init() {}
 
 #[no_mangle]
 pub unsafe extern "C" fn l2_cache_init() {}
 
-#[cfg(not(feature = "CONFIG_CPU_J2"))]
+#[cfg(not(CONFIG_CPU_J2))]
 unsafe fn cache_init() {
     jump_to_uncached();
     let ccr = __raw_readl(SH_CCR);
@@ -91,17 +91,17 @@ unsafe fn cache_init() {
     if current_cpu_data.dcache.ways > 1 { flags |= CCR_CACHE_EMODE; }
     #[cfg(feature = "CCR_CACHE_EMODE")]
     if current_cpu_data.dcache.ways <= 1 { flags &= !CCR_CACHE_EMODE; }
-    #[cfg(feature = "CONFIG_CACHE_WRITETHROUGH")]
+    #[cfg(CONFIG_CACHE_WRITETHROUGH)]
     { flags |= CCR_CACHE_WT; }
-    #[cfg(feature = "CONFIG_CACHE_WRITEBACK")]
+    #[cfg(CONFIG_CACHE_WRITEBACK)]
     { flags |= CCR_CACHE_CB; }
-    #[cfg(not(any(feature = "CONFIG_CACHE_WRITETHROUGH", feature = "CONFIG_CACHE_WRITEBACK")))]
+    #[cfg(not(any(CONFIG_CACHE_WRITETHROUGH, CONFIG_CACHE_WRITEBACK)))]
     { flags &= !CCR_CACHE_ENABLE; }
     l2_cache_init();
     __raw_writel(flags, SH_CCR);
     back_to_cached();
 }
-#[cfg(feature = "CONFIG_CPU_J2")]
+#[cfg(CONFIG_CPU_J2)]
 unsafe fn cache_init() {}
 
 const fn cshape(totalsize: u32, linesize: u32, assoc: u32) -> u32 {
@@ -125,12 +125,12 @@ unsafe fn fpu_init() {
     clear_used_math();
 }
 
-#[cfg(feature = "CONFIG_SH_DSP")]
+#[cfg(CONFIG_SH_DSP)]
 unsafe fn release_dsp() {
     let mut sr: usize;
     core::arch::asm!("stc sr, {0}", "and {1}, {0}", "ldc {0}, sr", out(reg) sr, in(reg) (!SR_DSP));
 }
-#[cfg(feature = "CONFIG_SH_DSP")]
+#[cfg(CONFIG_SH_DSP)]
 unsafe fn dsp_init() {
     let mut sr: usize;
     core::arch::asm!("stc sr, {0}", "or {1}, {0}", "ldc {0}, sr", "nop", "stc sr, {0}", out(reg) sr, in(reg) SR_DSP);
@@ -138,7 +138,7 @@ unsafe fn dsp_init() {
     if dsp_disabled && current_cpu_data.flags & CPU_HAS_DSP != 0 { printk("DSP Disabled\n"); current_cpu_data.flags &= !CPU_HAS_DSP; }
     release_dsp();
 }
-#[cfg(not(feature = "CONFIG_SH_DSP"))]
+#[cfg(not(CONFIG_SH_DSP))]
 unsafe fn dsp_init() {}
 
 #[no_mangle]
@@ -152,9 +152,9 @@ pub unsafe extern "C" fn cpu_init() {
     current_cpu_data.dcache.way_size = current_cpu_data.dcache.sets * current_cpu_data.dcache.linesz;
     cache_init();
     if raw_smp_processor_id() == 0 {
-        #[cfg(feature = "CONFIG_MMU")]
+        #[cfg(CONFIG_MMU)]
         { shm_align_mask = core::cmp::max(current_cpu_data.dcache.way_size - 1, PAGE_SIZE - 1); }
-        #[cfg(not(feature = "CONFIG_MMU"))]
+        #[cfg(not(CONFIG_MMU))]
         { shm_align_mask = PAGE_SIZE - 1; }
         detect_cache_shape();
     }

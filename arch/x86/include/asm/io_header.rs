@@ -121,9 +121,9 @@ extern "C" {
 
 pub const IO_SPACE_LIMIT: u16 = 0xffff;
 
-#[cfg(feature = "CONFIG_AMD_MEM_ENCRYPT")]
+#[cfg(CONFIG_AMD_MEM_ENCRYPT)]
 extern "C" { pub fn phys_mem_access_encrypted(phys_addr: u64, size: u64) -> bool; }
-#[cfg(not(feature = "CONFIG_AMD_MEM_ENCRYPT"))]
+#[cfg(not(CONFIG_AMD_MEM_ENCRYPT))]
 #[inline] pub fn phys_mem_access_encrypted(_phys_addr: u64, _size: u64) -> bool { true }
 
 extern "C" {

@@ -60,6 +60,8 @@ pub unsafe fn unwind_next_frame(state: *mut unwind_state) -> bool {
 	let mut sp: ::core::ffi::c_ulong;
 	let mut ip: ::core::ffi::c_ulong;
 	let reliable: bool;
+	'out_stop: {
+	'out_err: {
 
 	regs = (*state).regs;
 	if unlikely(!regs.is_null()) {
@@ -82,7 +84,7 @@ pub unsafe fn unwind_next_frame(state: *mut unwind_state) -> bool {
 			/* Non-zero back-chain points to the previous frame */
 			if unlikely(outside_of_stack(state, sp)) {
 				if !update_stack_info(state, sp) {
-					goto out_err;
+					break 'out_err;
 				}
 			}
 			sf = sp as *mut stack_frame;
@@ -92,17 +94,17 @@ pub unsafe fn unwind_next_frame(state: *mut unwind_state) -> bool {
 			/* No back-chain, look for a pt_regs structure */
 			sp = (*state).sp + STACK_FRAME_OVERHEAD;
 			if !on_stack(info, sp, ::core::mem::size_of::<pt_regs>()) {
-				goto out_err;
+				break 'out_err;
 			}
 			regs = sp as *mut pt_regs;
 			if is_final_pt_regs(state, regs) {
-				goto out_stop;
+				break 'out_stop;
 			}
 			ip = READ_ONCE_NOCHECK((*regs).psw.addr);
 			sp = READ_ONCE_NOCHECK((*regs).gprs[15]);
 			if unlikely(outside_of_stack(state, sp)) {
 				if !update_stack_info(state, sp) {
-					goto out_err;
+					break 'out_err;
 				}
 			}
 			reliable = true;
@@ -111,7 +113,7 @@ pub unsafe fn unwind_next_frame(state: *mut unwind_state) -> bool {
 
 	/* Sanity check: ABI requires SP to be aligned 8 bytes. */
 	if (sp & 0x7) != 0 {
-		goto out_err;
+		break 'out_err;
 	}
 
 	/* Update unwind state */
@@ -120,10 +122,11 @@ pub unsafe fn unwind_next_frame(state: *mut unwind_state) -> bool {
 	(*state).reliable = reliable;
 	(*state).ip = unwind_recover_ret_addr(state, ip);
 	return true;
-
-out_err:
+	}
+	
 	(*state).error = true;
-out_stop:
+	}
+	
 	(*state).stack_info.type_ = STACK_TYPE_UNKNOWN;
 	false
 }

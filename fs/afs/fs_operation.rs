@@ -201,8 +201,8 @@ unsafe fn afs_begin_vnode_operation(op: *mut afs_operation) -> bool {
 /* Tidy up a filesystem cursor and unlock the vnode. */
 unsafe fn afs_end_vnode_operation(op: *mut afs_operation) {
     _enter!("");
-    match afs_op_error(op) {
-        -EDESTADDRREQ | -EADDRNOTAVAIL | -ENETUNREACH | -EHOSTUNREACH => afs_dump_edestaddrreq(op),
+    match -(afs_op_error(op)) {
+        EDESTADDRREQ | EADDRNOTAVAIL | ENETUNREACH | EHOSTUNREACH => afs_dump_edestaddrreq(op),
         _ => (),
     }
     afs_drop_io_locks(op);

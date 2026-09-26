@@ -17,9 +17,9 @@ unsafe extern "C" {
     pub fn __flush_dcache_page(addr: *mut core::ffi::c_void, flush_icache: c_int);
     pub fn flush_dcache_folio_impl(folio: *mut folio);
 
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn smp_flush_dcache_folio_impl(folio: *mut folio, cpu: c_int);
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn flush_dcache_folio_all(mm: *mut mm_struct, folio: *mut folio);
 
     pub fn __flush_dcache_range(start: c_ulong, end: c_ulong);
@@ -66,13 +66,13 @@ pub unsafe fn flush_cache_page(vma: *mut vm_area_struct, _page: c_ulong, _pfn: c
     flush_cache_mm((*vma).vm_mm);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn smp_flush_dcache_folio_impl(folio: *mut folio, _cpu: c_int) {
     flush_dcache_folio_impl(folio);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline(always)]
 pub unsafe fn flush_dcache_folio_all(_mm: *mut mm_struct, folio: *mut folio) {
     flush_dcache_folio_impl(folio);

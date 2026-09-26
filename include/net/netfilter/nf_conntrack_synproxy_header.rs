@@ -38,11 +38,11 @@ pub struct nf_conn_synproxy {
 #[inline]
 pub unsafe fn nfct_synproxy(ct: *const nf_conn) -> *mut nf_conn_synproxy {
     // IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)
-    #[cfg(feature = "CONFIG_NETFILTER_SYNPROXY")]
+    #[cfg(CONFIG_NETFILTER_SYNPROXY)]
     {
         nf_ct_ext_find(ct, NF_CT_EXT_SYNPROXY)
     }
-    #[cfg(not(feature = "CONFIG_NETFILTER_SYNPROXY"))]
+    #[cfg(not(CONFIG_NETFILTER_SYNPROXY))]
     {
         core::ptr::null_mut()
     }
@@ -51,11 +51,11 @@ pub unsafe fn nfct_synproxy(ct: *const nf_conn) -> *mut nf_conn_synproxy {
 #[inline]
 pub unsafe fn nfct_synproxy_ext_add(ct: *mut nf_conn) -> *mut nf_conn_synproxy {
     // IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)
-    #[cfg(feature = "CONFIG_NETFILTER_SYNPROXY")]
+    #[cfg(CONFIG_NETFILTER_SYNPROXY)]
     {
         nf_ct_ext_add(ct, NF_CT_EXT_SYNPROXY, GFP_ATOMIC)
     }
-    #[cfg(not(feature = "CONFIG_NETFILTER_SYNPROXY"))]
+    #[cfg(not(CONFIG_NETFILTER_SYNPROXY))]
     {
         core::ptr::null_mut()
     }
@@ -67,7 +67,7 @@ pub unsafe fn nf_ct_add_synproxy(
     tmpl: *const nf_conn,
 ) -> bool {
     // IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)
-    #[cfg(feature = "CONFIG_NETFILTER_SYNPROXY")]
+    #[cfg(CONFIG_NETFILTER_SYNPROXY)]
     {
         if !tmpl.is_null() && !nfct_synproxy(tmpl).is_null() {
             if nfct_seqadj_ext_add(ct).is_null() {

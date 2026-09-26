@@ -118,7 +118,7 @@ extern "C" {
 }
 
 /* CONFIG_IIO_BUFFER is a build-time kernel configuration condition. */
-#[cfg(feature = "CONFIG_IIO_BUFFER")]
+#[cfg(CONFIG_IIO_BUFFER)]
 extern "C" {
     pub fn itg3200_remove_trigger(indio_dev: *mut iio_dev);
     pub fn itg3200_probe_trigger(indio_dev: *mut iio_dev) -> i32;
@@ -126,19 +126,19 @@ extern "C" {
     pub fn itg3200_buffer_unconfigure(indio_dev: *mut iio_dev);
 }
 
-#[cfg(not(feature = "CONFIG_IIO_BUFFER"))]
+#[cfg(not(CONFIG_IIO_BUFFER))]
 #[inline]
 pub unsafe fn itg3200_remove_trigger(_indio_dev: *mut iio_dev) {}
 
-#[cfg(not(feature = "CONFIG_IIO_BUFFER"))]
+#[cfg(not(CONFIG_IIO_BUFFER))]
 #[inline]
 pub unsafe fn itg3200_probe_trigger(_indio_dev: *mut iio_dev) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_IIO_BUFFER"))]
+#[cfg(not(CONFIG_IIO_BUFFER))]
 #[inline]
 pub unsafe fn itg3200_buffer_configure(_indio_dev: *mut iio_dev) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_IIO_BUFFER"))]
+#[cfg(not(CONFIG_IIO_BUFFER))]
 #[inline]
 pub unsafe fn itg3200_buffer_unconfigure(_indio_dev: *mut iio_dev) {}
 

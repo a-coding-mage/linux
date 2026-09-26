@@ -152,7 +152,7 @@ unsafe fn yerr_msg(ys: *mut ynl_sock, s: &'static [u8]) { if !ys.is_null() { cfm
 unsafe fn yerr_code(ys: *mut ynl_sock, code: c_int) { if !ys.is_null() { (*ys).err.code = code; } }
 unsafe fn yerr_set(ys: *mut ynl_sock, code: c_int, s: &'static [u8]) { yerr_msg(ys, s); yerr_code(ys, code); }
 unsafe fn nlmsg_data(nlh: *const nlmsghdr) -> *mut c_void { (nlh as *mut u8).add(size_of::<nlmsghdr>()) as *mut c_void }
-unsafe fn nlmsg_ok(nlh: *const nlmsghdr, rem: ssize_t) -> bool { rem >= size_of::<nlmsghdr>() as isize && (*nlh).nlmsg_len as isize >= size_of::<nlmsghdr>() as isize && (*nlh).nlmsg_len as isize <= rem }
+unsafe fn nlmsg_ok(nlh: *const nlmsghdr, rem: ssize_t) -> bool { rem >= size_of::<nlmsghdr>() as isize && (*nlh).nlmsg_len as isize >= size_of::<nlmsghdr>() as isize && ((*nlh).nlmsg_len as isize) <= rem }
 fn nlmsg_align(len: usize) -> usize { (len + 3) & !3 }
 
 unsafe fn ynl_err_walk_is_sel(policy: *const ynl_policy_nest, attr: *const nlattr) -> bool {
@@ -538,7 +538,7 @@ unsafe fn ynl_check_alien(ys: *mut ynl_sock, nlh: *const nlmsghdr, rsp_cmd: __u3
     if (*(*ys).family).is_classic {
         if (*nlh).nlmsg_type as __u32 != rsp_cmd { return ynl_ntf_parse(ys, nlh); }
     } else {
-        if ynl_nlmsg_data_len(nlh) as usize  < size_of::<genlmsghdr>() { yerr_set(ys, YNL_ERROR_INV_RESP, b"Kernel responded with truncated message\0"); return -1; }
+        if (ynl_nlmsg_data_len(nlh) as usize)  < size_of::<genlmsghdr>() { yerr_set(ys, YNL_ERROR_INV_RESP, b"Kernel responded with truncated message\0"); return -1; }
         let gehdr = ynl_nlmsg_data(nlh) as *mut genlmsghdr;
         if (*gehdr).cmd as __u32 != rsp_cmd { return ynl_ntf_parse(ys, nlh); }
     }

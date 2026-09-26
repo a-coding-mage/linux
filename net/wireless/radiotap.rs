@@ -10,43 +10,43 @@
 // linux/kernel.h, linux/export.h, net/cfg80211.h,
 // net/ieee80211_radiotap.h, and linux/unaligned.h.
 
-static rtap_namespace_sizes: [struct radiotap_align_size; 22] = [
-    struct radiotap_align_size { align: 8, size: 8 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 2, size: 4 },
-    struct radiotap_align_size { align: 2, size: 2 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 2, size: 2 },
-    struct radiotap_align_size { align: 2, size: 2 },
-    struct radiotap_align_size { align: 2, size: 2 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 2, size: 2 },
-    struct radiotap_align_size { align: 2, size: 2 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 1 },
-    struct radiotap_align_size { align: 1, size: 3 },
-    struct radiotap_align_size { align: 4, size: 8 },
-    struct radiotap_align_size { align: 2, size: 12 },
-    struct radiotap_align_size { align: 0, size: 0 },
+static rtap_namespace_sizes: [radiotap_align_size; 22] = [
+    radiotap_align_size { align: 8, size: 8 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 2, size: 4 },
+    radiotap_align_size { align: 2, size: 2 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 2, size: 2 },
+    radiotap_align_size { align: 2, size: 2 },
+    radiotap_align_size { align: 2, size: 2 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 2, size: 2 },
+    radiotap_align_size { align: 2, size: 2 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 1 },
+    radiotap_align_size { align: 1, size: 3 },
+    radiotap_align_size { align: 4, size: 8 },
+    radiotap_align_size { align: 2, size: 12 },
+    radiotap_align_size { align: 0, size: 0 },
 ];
 
-static radiotap_ns: struct ieee80211_radiotap_namespace = struct ieee80211_radiotap_namespace {
+static radiotap_ns: ieee80211_radiotap_namespace = ieee80211_radiotap_namespace {
     n_bits: rtap_namespace_sizes.len(),
     align_size: rtap_namespace_sizes.as_ptr(),
 };
 
 pub unsafe fn ieee80211_radiotap_iterator_init(
-    iterator: *mut struct ieee80211_radiotap_iterator,
-    radiotap_header: *mut struct ieee80211_radiotap_header,
+    iterator: *mut ieee80211_radiotap_iterator,
+    radiotap_header: *mut ieee80211_radiotap_header,
     max_length: i32,
-    vns: *const struct ieee80211_radiotap_vendor_namespaces,
+    vns: *const ieee80211_radiotap_vendor_namespaces,
 ) -> i32 {
-    if max_length < core::mem::size_of::<struct ieee80211_radiotap_header>() as i32 { return -EINVAL; }
+    if max_length < core::mem::size_of::<ieee80211_radiotap_header>() as i32 { return -EINVAL; }
     if (*radiotap_header).it_version != 0 { return -EINVAL; }
     if max_length < get_unaligned_le16(&(*radiotap_header).it_len) as i32 { return -EINVAL; }
 
@@ -75,7 +75,7 @@ pub unsafe fn ieee80211_radiotap_iterator_init(
     0
 }
 
-unsafe fn find_ns(iterator: *mut struct ieee80211_radiotap_iterator, oui: u32, subns: u8) {
+unsafe fn find_ns(iterator: *mut ieee80211_radiotap_iterator, oui: u32, subns: u8) {
     (*iterator).current_namespace = core::ptr::null();
     if (*iterator)._vns.is_null() { return; }
     for i in 0..(*(*iterator)._vns).n_ns {
@@ -87,7 +87,7 @@ unsafe fn find_ns(iterator: *mut struct ieee80211_radiotap_iterator, oui: u32, s
 }
 
 pub unsafe fn ieee80211_radiotap_iterator_next(
-    iterator: *mut struct ieee80211_radiotap_iterator,
+    iterator: *mut ieee80211_radiotap_iterator,
 ) -> i32 {
     loop {
         let mut hit = 0;
@@ -129,6 +129,6 @@ pub unsafe fn ieee80211_radiotap_iterator_next(
     }
 }
 
-#[inline(always)] unsafe fn goto_next_entry(iterator: *mut struct ieee80211_radiotap_iterator) { (*iterator)._bitmap_shifter >>= 1; (*iterator)._arg_index += 1; }
+#[inline(always)] unsafe fn goto_next_entry(iterator: *mut ieee80211_radiotap_iterator) { (*iterator)._bitmap_shifter >>= 1; (*iterator)._arg_index += 1; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

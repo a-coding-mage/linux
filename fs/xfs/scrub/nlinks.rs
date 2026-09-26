@@ -52,7 +52,7 @@ unsafe fn xchk_nlinks_collect_dirent(sc: *mut xfs_scrub, dp: *mut xfs_inode, _da
     let mut error = 0;
     if dotdot { if xchk_inode_is_dirtree_root(dp) { error = xchk_nlinks_update_incore(xnc, ino, 1, 0, 0); } else if !xfs_has_parent((*sc).mp) { error = xchk_nlinks_update_incore(xnc, ino, 0, 1, 0); } }
     if error == 0 && !dot && !dotdot { error = xchk_nlinks_update_incore(xnc, ino, 1, 0, 0); }
-    if error == 0 && !dot && !dotdot && (*name).type == XFS_DIR3_FT_DIR { error = xchk_nlinks_update_incore(xnc, I_INO(dp), 0, 0, 1); }
+    if error == 0 && !dot && !dotdot && (*name).r#type == XFS_DIR3_FT_DIR { error = xchk_nlinks_update_incore(xnc, I_INO(dp), 0, 0, 1); }
     mutex_unlock(&mut (*xnc).lock); if error != 0 { xchk_iscan_abort(&mut (*xnc).collect_iscan); xchk_set_incomplete(sc); } error
 }
 

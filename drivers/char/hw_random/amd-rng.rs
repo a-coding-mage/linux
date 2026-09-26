@@ -114,44 +114,49 @@ unsafe fn amd_rng_mod_init() -> i32 {
     let mut ent: *const pci_device_id;
     let mut pmbase: u32 = 0;
     let mut priv_: *mut amd768_priv;
+    'found: {
 
-    for_each_pci_dev!(pdev) {
+    for_each_pci_dev!(pdev, {
         ent = pci_match_id(pci_tbl.as_ptr(), pdev);
-        if !ent.is_null() { goto!(found); }
-    }
+        if !ent.is_null() { break 'found; }
+    });
     /* Device not found. */
     return -ENODEV;
-
-    found: {
+    }
+    {
+        'put_dev: {
+        'out: {
+        'err_iomap: {
+        'err_hwrng: {
         err = pci_read_config_dword(pdev, 0x58, &mut pmbase);
         if err != 0 {
             err = pcibios_err_to_errno(err);
-            goto!(put_dev);
+            break 'put_dev;
         }
 
         pmbase &= 0x0000FF00;
         if pmbase == 0 {
             err = -EIO;
-            goto!(put_dev);
+            break 'put_dev;
         }
 
         priv_ = kzalloc_obj::<amd768_priv>();
         if priv_.is_null() {
             err = -ENOMEM;
-            goto!(put_dev);
+            break 'put_dev;
         }
 
         if !request_region(pmbase as usize + PMBASE_OFFSET, PMBASE_SIZE, DRV_NAME) {
             dev_err!((*pdev).dev, "AMD768-HWRNG region 0x%x already in use!\n", pmbase + 0xF0);
             err = -EBUSY;
-            goto!(out);
+            break 'out;
         }
 
         (*priv_).iobase = ioport_map(pmbase as usize + PMBASE_OFFSET, PMBASE_SIZE);
         if (*priv_).iobase.is_null() {
             pr_err!("AMD768-HWRNGCannot map ioport\n");
             err = -EINVAL;
-            goto!(err_iomap);
+            break 'err_iomap;
         }
 
         amd_rng.priv_ = priv_ as usize;
@@ -162,14 +167,17 @@ unsafe fn amd_rng_mod_init() -> i32 {
         err = hwrng_register(&mut amd_rng);
         if err != 0 {
             pr_err!("AMD768-HWRNG registering failed (%d)\n", err);
-            goto!(err_hwrng);
+            break 'err_hwrng;
         }
         return 0;
-
-        err_hwrng: ioport_unmap((*priv_).iobase);
-        err_iomap: release_region(pmbase as usize + PMBASE_OFFSET, PMBASE_SIZE);
-        out: kfree(priv_ as *mut core::ffi::c_void);
-        put_dev: pci_dev_put(pdev);
+        }
+        ioport_unmap((*priv_).iobase);
+        }
+        release_region(pmbase as usize + PMBASE_OFFSET, PMBASE_SIZE);
+        }
+        kfree(priv_ as *mut core::ffi::c_void);
+        }
+        pci_dev_put(pdev);
     }
     err
 }

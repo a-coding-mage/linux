@@ -8,10 +8,10 @@
  */
 
 /* Translated from the C header.  CONFIG_FUNCTION_TRACER controls this block. */
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 pub const MCOUNT_INSN_SIZE: usize = 4; /* sizeof mcount call */
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 unsafe extern "C" {
     pub fn _mcount();
     pub fn prepare_ftrace_return(
@@ -21,10 +21,10 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 pub use _mcount as mcount;
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[inline(always)]
 pub unsafe fn mcount_addr() -> usize {
     _mcount as usize
@@ -35,7 +35,7 @@ pub unsafe fn mcount_addr() -> usize {
  * .fixup and __ex_table entries.  These declarations preserve their low-level
  * interface and assembly intent for the target architecture.
  */
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[macro_export]
 macro_rules! safe_load {
     ($load:expr, $src:expr, $dst:expr, $error:expr) => {{
@@ -60,7 +60,7 @@ macro_rules! safe_load {
     }};
 }
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[macro_export]
 macro_rules! safe_store {
     ($store:expr, $src:expr, $dst:expr, $error:expr) => {{
@@ -85,37 +85,37 @@ macro_rules! safe_store {
     }};
 }
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[macro_export]
 macro_rules! safe_load_code {
     ($dst:expr, $src:expr, $error:expr) => { $crate::safe_load!("lw", $src, $dst, $error) };
 }
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[macro_export]
 macro_rules! safe_store_code {
     ($src:expr, $dst:expr, $error:expr) => { $crate::safe_store!("sw", $src, $dst, $error) };
 }
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[macro_export]
 macro_rules! safe_load_stack {
     ($dst:expr, $src:expr, $error:expr) => { $crate::safe_load!("PTR_L", $src, $dst, $error) };
 }
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 #[macro_export]
 macro_rules! safe_store_stack {
     ($src:expr, $dst:expr, $error:expr) => { $crate::safe_store!("PTR_S", $src, $dst, $error) };
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 #[inline(always)]
 pub fn ftrace_call_adjust(addr: usize) -> usize { addr }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 #[repr(C)]
 pub struct DynArchFtrace;
 
 /* CONFIG_FTRACE_SYSCALLS: ARCH_HAS_SYSCALL_MATCH_SYM_NAME */
-#[cfg(feature = "CONFIG_FTRACE_SYSCALLS")]
+#[cfg(CONFIG_FTRACE_SYSCALLS)]
 pub unsafe fn arch_syscall_match_sym_name(sym: *const u8, name: *const u8) -> bool {
     unsafe extern "C" {
         fn strcmp(a: *const u8, b: *const u8) -> i32;

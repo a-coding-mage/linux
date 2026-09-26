@@ -76,46 +76,46 @@ pub unsafe fn rdev_set_lbt_mode(rdev: *mut cfg802154_registered_device, wpan_dev
 pub unsafe fn rdev_set_ackreq_default(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, ackreq: bool) -> core::ffi::c_int { let ret = ((*(*rdev).ops).set_ackreq_default)(&mut (*rdev).wpan_phy, wpan_dev, ackreq); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
 
 // CONFIG_IEEE802154_NL802154_EXPERIMENTAL: declarations below are available only in that build configuration.
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_trigger_scan(rdev: *mut cfg802154_registered_device, request: *mut cfg802154_scan_request) -> core::ffi::c_int { if (*(*rdev).ops).trigger_scan.is_none() { return -EOPNOTSUPP; } let ret = ((*(*rdev).ops).trigger_scan.unwrap())(&mut (*rdev).wpan_phy, request); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_abort_scan(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev) -> core::ffi::c_int { if (*(*rdev).ops).abort_scan.is_none() { return -EOPNOTSUPP; } let ret = ((*(*rdev).ops).abort_scan.unwrap())(&mut (*rdev).wpan_phy, wpan_dev); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
 
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_send_beacons(rdev: *mut cfg802154_registered_device, request: *mut cfg802154_beacon_request) -> core::ffi::c_int { if (*(*rdev).ops).send_beacons.is_none() { return -EOPNOTSUPP; } let ret = ((*(*rdev).ops).send_beacons.unwrap())(&mut (*rdev).wpan_phy, request); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_stop_beacons(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev) -> core::ffi::c_int { if (*(*rdev).ops).stop_beacons.is_none() { return -EOPNOTSUPP; } let ret = ((*(*rdev).ops).stop_beacons.unwrap())(&mut (*rdev).wpan_phy, wpan_dev); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_associate(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, coord: *mut ieee802154_addr) -> core::ffi::c_int { if (*(*rdev).ops).associate.is_none() { return -EOPNOTSUPP; } let ret = ((*(*rdev).ops).associate.unwrap())(&mut (*rdev).wpan_phy, wpan_dev, coord); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_disassociate(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, target: *mut ieee802154_addr) -> core::ffi::c_int { if (*(*rdev).ops).disassociate.is_none() { return -EOPNOTSUPP; } let ret = ((*(*rdev).ops).disassociate.unwrap())(&mut (*rdev).wpan_phy, wpan_dev, target); trace_802154_rdev_return_int(&mut (*rdev).wpan_phy, ret); ret }
 
 // TODO this is already a nl802154, so move into ieee802154.
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_get_llsec_table(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, table: *mut *mut ieee802154_llsec_table) { ((*(*rdev).ops).get_llsec_table)(&mut (*rdev).wpan_phy, wpan_dev, table); }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_lock_llsec_table(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev) { ((*(*rdev).ops).lock_llsec_table)(&mut (*rdev).wpan_phy, wpan_dev); }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_unlock_llsec_table(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev) { ((*(*rdev).ops).unlock_llsec_table)(&mut (*rdev).wpan_phy, wpan_dev); }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_get_llsec_params(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, params: *mut ieee802154_llsec_params) -> core::ffi::c_int { ((*(*rdev).ops).get_llsec_params)(&mut (*rdev).wpan_phy, wpan_dev, params) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_set_llsec_params(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, params: *const ieee802154_llsec_params, changed: u32) -> core::ffi::c_int { ((*(*rdev).ops).set_llsec_params)(&mut (*rdev).wpan_phy, wpan_dev, params, changed) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_add_llsec_key(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, id: *const ieee802154_llsec_key_id, key: *const ieee802154_llsec_key) -> core::ffi::c_int { ((*(*rdev).ops).add_llsec_key)(&mut (*rdev).wpan_phy, wpan_dev, id, key) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_del_llsec_key(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, id: *const ieee802154_llsec_key_id) -> core::ffi::c_int { ((*(*rdev).ops).del_llsec_key)(&mut (*rdev).wpan_phy, wpan_dev, id) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_add_seclevel(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, sl: *const ieee802154_llsec_seclevel) -> core::ffi::c_int { ((*(*rdev).ops).add_seclevel)(&mut (*rdev).wpan_phy, wpan_dev, sl) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_del_seclevel(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, sl: *const ieee802154_llsec_seclevel) -> core::ffi::c_int { ((*(*rdev).ops).del_seclevel)(&mut (*rdev).wpan_phy, wpan_dev, sl) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_add_device(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, dev_desc: *const ieee802154_llsec_device) -> core::ffi::c_int { ((*(*rdev).ops).add_device)(&mut (*rdev).wpan_phy, wpan_dev, dev_desc) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_del_device(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, extended_addr: __le64) -> core::ffi::c_int { ((*(*rdev).ops).del_device)(&mut (*rdev).wpan_phy, wpan_dev, extended_addr) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_add_devkey(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, extended_addr: __le64, devkey: *const ieee802154_llsec_device_key) -> core::ffi::c_int { ((*(*rdev).ops).add_devkey)(&mut (*rdev).wpan_phy, wpan_dev, extended_addr, devkey) }
-#[cfg(feature = "CONFIG_IEEE802154_NL802154_EXPERIMENTAL")]
+#[cfg(CONFIG_IEEE802154_NL802154_EXPERIMENTAL)]
 pub unsafe fn rdev_del_devkey(rdev: *mut cfg802154_registered_device, wpan_dev: *mut wpan_dev, extended_addr: __le64, devkey: *const ieee802154_llsec_device_key) -> core::ffi::c_int { ((*(*rdev).ops).del_devkey)(&mut (*rdev).wpan_phy, wpan_dev, extended_addr, devkey) }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

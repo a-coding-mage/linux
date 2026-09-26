@@ -34,15 +34,15 @@ pub unsafe fn acpi_processor_update_tsd_coord() -> i32 {
     let covered_cpus = zalloc_cpumask_var(GFP_KERNEL);
     if covered_cpus.is_null() { return -ENOMEM; }
 
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let pr = per_cpu!(processors, i);
         if pr.is_null() { continue; }
         let pthrottling = &mut (*pr).throttling;
         if !pthrottling.tsd_valid_flag { retval = -EINVAL; break; }
-    }
+    });
     if retval != 0 { goto_err_ret!(covered_cpus, retval); }
 
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let pr = per_cpu!(processors, i);
         if pr.is_null() || cpumask_test_cpu(i, covered_cpus) { continue; }
         let pthrottling = &mut (*pr).throttling;
@@ -51,7 +51,7 @@ pub unsafe fn acpi_processor_update_tsd_coord() -> i32 {
         cpumask_set_cpu(i, covered_cpus);
         if pdomain.num_processors <= 1 { continue; }
         count_target = pdomain.num_processors;
-        for_each_possible_cpu!(j) {
+        for_each_possible_cpu!(j, {
             if i == j { continue; }
             let match_pr = per_cpu!(processors, j);
             if match_pr.is_null() { continue; }
@@ -63,8 +63,8 @@ pub unsafe fn acpi_processor_update_tsd_coord() -> i32 {
             }
             cpumask_set_cpu(j, covered_cpus);
             cpumask_set_cpu(j, pthrottling.shared_cpu_map);
-        }
-        for_each_possible_cpu!(j) {
+        });
+        for_each_possible_cpu!(j, {
             if i == j { continue; }
             let match_pr = per_cpu!(processors, j);
             if match_pr.is_null() { continue; }
@@ -72,10 +72,10 @@ pub unsafe fn acpi_processor_update_tsd_coord() -> i32 {
             if match_pthrottling.domain_info.domain == pdomain.domain {
                 cpumask_copy(match_pthrottling.shared_cpu_map, pthrottling.shared_cpu_map);
             }
-        }
-    }
+        });
+    });
     free_cpumask_var(covered_cpus);
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let pr = per_cpu!(processors, i);
         if pr.is_null() { continue; }
         if retval != 0 {
@@ -83,7 +83,7 @@ pub unsafe fn acpi_processor_update_tsd_coord() -> i32 {
             cpumask_clear(p.shared_cpu_map); cpumask_set_cpu(i, p.shared_cpu_map);
             p.shared_type = DOMAIN_COORD_TYPE_SW_ALL;
         }
-    }
+    });
     retval
 }
 
@@ -175,21 +175,21 @@ pub unsafe fn __acpi_processor_set_throttling_impl(pr: *mut AcpiProcessor, state
     if !(*pr).flags.throttling || state < 0 || state > (*pr).throttling.state_count - 1 || cpu_is_offline((*pr).id) { return -ENODEV; }
     let mut t = ThrottlingTstate { cpu: (*pr).id, target_state: state };
     let p = &(*pr).throttling;
-    for_each_cpu_and!(i, cpu_online_mask, p.shared_cpu_map) { t.cpu = i; acpi_processor_throttling_notifier(THROTTLING_PRECHANGE, &mut t); }
+    for_each_cpu_and!(i, cpu_online_mask, p.shared_cpu_map, { t.cpu = i; acpi_processor_throttling_notifier(THROTTLING_PRECHANGE, &mut t); });
     if p.shared_type == DOMAIN_COORD_TYPE_SW_ANY {
         let mut arg = AcpiProcessorThrottlingArg { pr, target_state: state, force };
         call_on_cpu((*pr).id, acpi_processor_throttling_fn, &mut arg, direct)
     } else {
         let mut ret = 0;
-        for_each_cpu_and!(i, cpu_online_mask, p.shared_cpu_map) {
+        for_each_cpu_and!(i, cpu_online_mask, p.shared_cpu_map, {
             let match_pr = per_cpu!(processors, i);
             if match_pr.is_null() || !(*match_pr).flags.throttling { continue; }
             let mut arg = AcpiProcessorThrottlingArg { pr: match_pr, target_state: state, force };
             ret = call_on_cpu((*pr).id, acpi_processor_throttling_fn, &mut arg, direct);
-        }
+        });
         ret
     };
-    for_each_cpu_and!(i, cpu_online_mask, p.shared_cpu_map) { t.cpu = i; acpi_processor_throttling_notifier(THROTTLING_POSTCHANGE, &mut t); }
+    for_each_cpu_and!(i, cpu_online_mask, p.shared_cpu_map, { t.cpu = i; acpi_processor_throttling_notifier(THROTTLING_POSTCHANGE, &mut t); });
     0
 }
 

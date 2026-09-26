@@ -25,7 +25,7 @@ unsafe fn meson_clk_mpll_data(clk: *mut clk_regmap) -> *mut meson_clk_mpll_data 
 unsafe fn rate_from_params(parent_rate: c_ulong, sdm: c_uint, n2: c_uint) -> c_long {
     let divisor = SDM_DEN * n2 as u64 + sdm as u64;
 
-    if n2 as u64 < N2_MIN {
+    if (n2 as u64) < N2_MIN {
         return -EINVAL as c_long;
     }
 

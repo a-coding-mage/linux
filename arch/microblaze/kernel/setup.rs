@@ -41,16 +41,16 @@ pub unsafe fn setup_arch(cmdline_p: *mut *mut u8) {
     xilinx_pci_init();
 }
 
-#[cfg(feature = "CONFIG_MTD_UCLINUX")]
+#[cfg(CONFIG_MTD_UCLINUX)]
 #[inline]
 pub unsafe fn get_romfs_len(addr: *mut u32) -> u32 {
-    #[cfg(feature = "CONFIG_ROMFS_FS")]
+    #[cfg(CONFIG_ROMFS_FS)]
     {
         if core::slice::from_raw_parts(addr as *const u8, 8) == b"-rom1fs-" {
             return u32::from_be((*addr.add(2)).to_be());
         }
     }
-    #[cfg(feature = "CONFIG_CRAMFS")]
+    #[cfg(CONFIG_CRAMFS)]
     {
         if *addr == u32::from_le(0x28cd3d45) {
             return u32::from_le(*addr.add(1));
@@ -74,7 +74,7 @@ pub unsafe fn machine_early_init(
     let mut dst: *mut usize;
     let mut offset: u32 = 0;
 
-    #[cfg(feature = "CONFIG_MTD_UCLINUX")]
+    #[cfg(CONFIG_MTD_UCLINUX)]
     {
         let mut romfs_size: i32;
         let mut romfs_base: u32;
@@ -102,7 +102,7 @@ pub unsafe fn machine_early_init(
     if fdt != 0 { pr_info!("FDT at 0x{:08x}\n", fdt); }
     else { pr_info!("Compiled-in FDT at {:?}\n", _fdt_start); }
 
-    #[cfg(feature = "CONFIG_MTD_UCLINUX")]
+    #[cfg(CONFIG_MTD_UCLINUX)]
     {
         pr_info!("Found romfs @ 0x{:08x} (0x{:08x})\n", romfs_base, romfs_size);
         pr_info!("#### klimit {:?} ####\n", old_klimit);
@@ -111,12 +111,12 @@ pub unsafe fn machine_early_init(
         pr_info!("New klimit: 0x{:08x}\n", klimit);
     }
 
-    #[cfg(feature = "CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR")]
+    #[cfg(CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR)]
     if msr != 0 { pr_info!("!!!Your kernel has setup MSR instruction but "); pr_cont!("CPU don't have it {:x}\n", msr); }
-    #[cfg(not(feature = "CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR"))]
+    #[cfg(not(CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR))]
     if msr == 0 { pr_info!("!!!Your kernel not setup MSR instruction but "); pr_cont!("CPU have it {:x}\n", msr); }
 
-    #[cfg(not(feature = "CONFIG_MANUAL_RESET_VECTOR"))]
+    #[cfg(not(CONFIG_MANUAL_RESET_VECTOR))]
     { offset = 0x2; }
     dst = (offset as usize * core::mem::size_of::<u32>()) as *mut usize;
     src = __ivt_start.add(offset as usize);
@@ -127,13 +127,13 @@ pub unsafe fn machine_early_init(
 
 pub unsafe fn time_init() { of_clk_init(core::ptr::null()); setup_cpuinfo_clk(); timer_probe(); }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 pub static mut of_debugfs_root: *mut dentry = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn microblaze_debugfs_init() -> i32 { of_debugfs_root = debugfs_create_dir(b"microblaze\0".as_ptr(), core::ptr::null_mut()); 0 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn debugfs_tlb() -> i32 { debugfs_create_u32(b"tlb_skip\0".as_ptr(), S_IRUGO, of_debugfs_root, &mut tlb_skip); 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

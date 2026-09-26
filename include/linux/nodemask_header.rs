@@ -78,7 +78,7 @@ macro_rules! first_unset_node { ($a:expr) => { unsafe { __first_unset_node(&$a) 
 #[inline(always)] pub unsafe fn node_set_state(node:i32,state:node_states){if MAX_NUMNODES>1{__node_set(node,&mut node_states[state as usize]);}}
 #[inline(always)] pub unsafe fn node_clear_state(node:i32,state:node_states){if MAX_NUMNODES>1{__node_clear(node,&mut node_states[state as usize]);}}
 #[inline(always)] pub unsafe fn num_node_state(state:node_states)->i32{if MAX_NUMNODES>1{__nodes_weight(&node_states[state as usize],MAX_NUMNODES)}else{1}}
-#[inline(always)] pub unsafe fn node_random(maskp:*const nodemask_t)->i32 { #[cfg(all(feature="CONFIG_NUMA",any()))] { let n=find_random_bit((*maskp).bits.as_ptr(),MAX_NUMNODES); return if n<MAX_NUMNODES {n as i32} else {NUMA_NO_NODE}; } 0 }
+#[inline(always)] pub unsafe fn node_random(maskp:*const nodemask_t)->i32 { #[cfg(all(CONFIG_NUMA,any()))] { let n=find_random_bit((*maskp).bits.as_ptr(),MAX_NUMNODES); return if n<MAX_NUMNODES {n as i32} else {NUMA_NO_NODE}; } 0 }
 macro_rules! num_online_nodes { () => { unsafe { num_node_state(node_states::N_ONLINE) } }; }
 macro_rules! num_possible_nodes { () => { unsafe { num_node_state(node_states::N_POSSIBLE) } }; }
 macro_rules! node_online { ($n:expr) => { unsafe { node_state($n,node_states::N_ONLINE) } }; }

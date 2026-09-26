@@ -29,7 +29,7 @@ pub unsafe fn get_random_canary() -> usize {
 // When CONFIG_STACKPROTECTOR or CONFIG_ARM64_PTR_AUTH is enabled, the
 // architecture-specific asm/stackprotector.h declarations are supplied by the
 // surrounding translation.
-#[cfg(not(any(feature = "CONFIG_STACKPROTECTOR", feature = "CONFIG_ARM64_PTR_AUTH")))]
+#[cfg(not(any(CONFIG_STACKPROTECTOR, CONFIG_ARM64_PTR_AUTH)))]
 #[inline]
 pub fn boot_init_stack_canary() {}
 

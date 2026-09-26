@@ -61,7 +61,7 @@ pub const REF_PRISTINE: u32 = 2; pub const REF_NORMAL: u32 = 3;
 #[repr(C)] pub struct jffs2_inode_cache {
     pub scan_dents: *mut jffs2_full_dirent, pub nodes: *mut jffs2_raw_node_ref, pub class: u8,
     pub flags: u8, pub state: u16, pub ino: u32, pub next: *mut jffs2_inode_cache,
-    #[cfg(feature = "CONFIG_JFFS2_FS_XATTR")] pub xref: *mut jffs2_xattr_ref,
+    #[cfg(CONFIG_JFFS2_FS_XATTR)] pub xref: *mut jffs2_xattr_ref,
     pub pino_nlink: u32,
 }
 pub const INO_STATE_UNCHECKED:u16=0; pub const INO_STATE_CHECKING:u16=1; pub const INO_STATE_PRESENT:u16=2;

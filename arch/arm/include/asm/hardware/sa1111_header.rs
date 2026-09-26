@@ -82,7 +82,7 @@ pub const SA1111_SAITR: u32 = 0x5c;
 pub const SA1111_SADR: u32 = 0x80;
 
 /* The following serial-audio definitions are excluded for CONFIG_ARCH_PXA. */
-#[cfg(not(feature = "CONFIG_ARCH_PXA"))]
+#[cfg(not(CONFIG_ARCH_PXA))]
 pub mod serial_audio {
     pub const SACR0_ENB: u32 = 1 << 0; pub const SACR0_BCKD: u32 = 1 << 2; pub const SACR0_RST: u32 = 1 << 3;
     pub const SACR1_AMSL: u32 = 1 << 0; pub const SACR1_L3EN: u32 = 1 << 1; pub const SACR1_L3MB: u32 = 1 << 2; pub const SACR1_DREC: u32 = 1 << 3; pub const SACR1_DRPL: u32 = 1 << 4; pub const SACR1_ENLBF: u32 = 1 << 5;

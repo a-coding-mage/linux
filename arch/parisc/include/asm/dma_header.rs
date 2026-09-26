@@ -69,18 +69,18 @@ pub unsafe fn get_dma_residue(dmanr: u32) -> i32 {
 #[inline]
 pub unsafe fn enable_dma(dmanr: u32) {
     // CONFIG_SUPERIO conditionally includes the following hardware access.
-    #[cfg(feature = "CONFIG_SUPERIO")]
+    #[cfg(CONFIG_SUPERIO)]
     if dmanr <= 3 { outb(dmanr as u8, DMA1_MASK_REG as u16); }
-    #[cfg(feature = "CONFIG_SUPERIO")]
+    #[cfg(CONFIG_SUPERIO)]
     if dmanr > 3 { outb((dmanr & 3) as u8, DMA2_MASK_REG as u16); }
 }
 
 #[inline]
 pub unsafe fn disable_dma(dmanr: u32) {
     // CONFIG_SUPERIO conditionally includes the following hardware access.
-    #[cfg(feature = "CONFIG_SUPERIO")]
+    #[cfg(CONFIG_SUPERIO)]
     if dmanr <= 3 { outb((dmanr | 4) as u8, DMA1_MASK_REG as u16); }
-    #[cfg(feature = "CONFIG_SUPERIO")]
+    #[cfg(CONFIG_SUPERIO)]
     if dmanr > 3 { outb(((dmanr & 3) | 4) as u8, DMA2_MASK_REG as u16); }
 }
 

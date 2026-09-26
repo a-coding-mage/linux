@@ -38,36 +38,36 @@
 // dependency: "bios_parser_types_internal.h"
 
 // macro: EXEC_BIOS_CMD_TABLE(command, params)\
-	(amdgpu_atom_execute_table(((struct amdgpu_device *)bp->base.ctx->driver_context)->mode_info.atom_context, \
-		GetIndexIntoMasterTable(COMMAND, command), \
-		(uint32_t *)&params, sizeof(params)) == 0)
+// 	(amdgpu_atom_execute_table((*((*(*(amdgpu_device *)bp).base.ctx).driver_context)).mode_info.atom_context, \
+// 		GetIndexIntoMasterTable(COMMAND, command), \
+// 		(uint32_t *)&params, sizeof(params)) == 0)
 
 // macro: BIOS_CMD_TABLE_REVISION(command, frev, crev)\
-	amdgpu_atom_parse_cmd_header(((struct amdgpu_device *)bp->base.ctx->driver_context)->mode_info.atom_context, \
-		GetIndexIntoMasterTable(COMMAND, command), &frev, &crev)
+// 	amdgpu_atom_parse_cmd_header((*((*(*(amdgpu_device *)bp).base.ctx).driver_context)).mode_info.atom_context, \
+// 		GetIndexIntoMasterTable(COMMAND, command), &frev, &crev)
 
 // macro: BIOS_CMD_TABLE_PARA_REVISION(command)\
-	bios_cmd_table_para_revision(bp->base.ctx->driver_context, \
-		GetIndexIntoMasterTable(COMMAND, command))
+// 	bios_cmd_table_para_revision((*(*bp).base.ctx).driver_context, \
+// 		GetIndexIntoMasterTable(COMMAND, command))
 
-static void init_dig_encoder_control(struct bios_parser *bp);
-static void init_transmitter_control(struct bios_parser *bp);
-static void init_set_pixel_clock(struct bios_parser *bp);
-static void init_enable_spread_spectrum_on_ppll(struct bios_parser *bp);
-static void init_adjust_display_pll(struct bios_parser *bp);
-static void init_select_crtc_source(struct bios_parser *bp);
-static void init_dac_encoder_control(struct bios_parser *bp);
-static void init_dac_load_detection(struct bios_parser *bp);
-static void init_dac_output_control(struct bios_parser *bp);
-static void init_set_crtc_timing(struct bios_parser *bp);
-static void init_enable_crtc(struct bios_parser *bp);
-static void init_enable_crtc_mem_req(struct bios_parser *bp);
-static void init_external_encoder_control(struct bios_parser *bp);
-static void init_enable_disp_power_gating(struct bios_parser *bp);
-static void init_program_clock(struct bios_parser *bp);
-static void init_set_dce_clock(struct bios_parser *bp);
+static void init_dig_encoder_control(bios_parser *bp);
+static void init_transmitter_control(bios_parser *bp);
+static void init_set_pixel_clock(bios_parser *bp);
+static void init_enable_spread_spectrum_on_ppll(bios_parser *bp);
+static void init_adjust_display_pll(bios_parser *bp);
+static void init_select_crtc_source(bios_parser *bp);
+static void init_dac_encoder_control(bios_parser *bp);
+static void init_dac_load_detection(bios_parser *bp);
+static void init_dac_output_control(bios_parser *bp);
+static void init_set_crtc_timing(bios_parser *bp);
+static void init_enable_crtc(bios_parser *bp);
+static void init_enable_crtc_mem_req(bios_parser *bp);
+static void init_external_encoder_control(bios_parser *bp);
+static void init_enable_disp_power_gating(bios_parser *bp);
+static void init_program_clock(bios_parser *bp);
+static void init_set_dce_clock(bios_parser *bp);
 
-void dal_bios_parser_init_cmd_tbl(struct bios_parser *bp)
+void dal_bios_parser_init_cmd_tbl(bios_parser *bp)
 {
 	init_dig_encoder_control(bp);
 	init_transmitter_control(bp);
@@ -93,7 +93,7 @@ static uint32_t bios_cmd_table_para_revision(void *dev,
 	struct amdgpu_device *adev = dev;
 	uint8_t frev, crev;
 
-	if (amdgpu_atom_parse_cmd_header(adev->mode_info.atom_context,
+	if (amdgpu_atom_parse_cmd_header((*adev).mode_info.atom_context,
 					index,
 					&frev, &crev))
 		return crev;
@@ -109,34 +109,34 @@ static uint32_t bios_cmd_table_para_revision(void *dev,
  ********************************************************************************
  *******************************************************************************/
 static enum bp_result encoder_control_digx_v3(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl);
+	bios_parser *bp,
+	bp_encoder_control *cntl);
 
 static enum bp_result encoder_control_digx_v4(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl);
+	bios_parser *bp,
+	bp_encoder_control *cntl);
 
 static enum bp_result encoder_control_digx_v5(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl);
+	bios_parser *bp,
+	bp_encoder_control *cntl);
 
-static void init_encoder_control_dig_v1(struct bios_parser *bp);
+static void init_encoder_control_dig_v1(bios_parser *bp);
 
-static void init_dig_encoder_control(struct bios_parser *bp)
+static void init_dig_encoder_control(bios_parser *bp)
 {
 	uint32_t version =
 		BIOS_CMD_TABLE_PARA_REVISION(DIGxEncoderControl);
 
 	switch (version) {
 	case 2:
-		bp->cmd_tbl.dig_encoder_control = encoder_control_digx_v3;
+		(*bp).cmd_tbl.dig_encoder_control = encoder_control_digx_v3;
 		break;
 	case 4:
-		bp->cmd_tbl.dig_encoder_control = encoder_control_digx_v4;
+		(*bp).cmd_tbl.dig_encoder_control = encoder_control_digx_v4;
 		break;
 
 	case 5:
-		bp->cmd_tbl.dig_encoder_control = encoder_control_digx_v5;
+		(*bp).cmd_tbl.dig_encoder_control = encoder_control_digx_v5;
 		break;
 
 	default:
@@ -146,50 +146,50 @@ static void init_dig_encoder_control(struct bios_parser *bp)
 }
 
 static enum bp_result encoder_control_dig_v1(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl);
+	bios_parser *bp,
+	bp_encoder_control *cntl);
 static enum bp_result encoder_control_dig1_v1(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl);
+	bios_parser *bp,
+	bp_encoder_control *cntl);
 static enum bp_result encoder_control_dig2_v1(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl);
+	bios_parser *bp,
+	bp_encoder_control *cntl);
 
-static void init_encoder_control_dig_v1(struct bios_parser *bp)
+static void init_encoder_control_dig_v1(bios_parser *bp)
 {
-	struct cmd_tbl *cmd_tbl = &bp->cmd_tbl;
+	struct cmd_tbl *cmd_tbl = (*&bp).cmd_tbl;
 
 	if (1 == BIOS_CMD_TABLE_PARA_REVISION(DIG1EncoderControl))
-		cmd_tbl->encoder_control_dig1 = encoder_control_dig1_v1;
+		(*cmd_tbl).encoder_control_dig1 = encoder_control_dig1_v1;
 	else
-		cmd_tbl->encoder_control_dig1 = core::ptr::null_mut();
+		(*cmd_tbl).encoder_control_dig1 = core::ptr::null_mut();
 
 	if (1 == BIOS_CMD_TABLE_PARA_REVISION(DIG2EncoderControl))
-		cmd_tbl->encoder_control_dig2 = encoder_control_dig2_v1;
+		(*cmd_tbl).encoder_control_dig2 = encoder_control_dig2_v1;
 	else
-		cmd_tbl->encoder_control_dig2 = core::ptr::null_mut();
+		(*cmd_tbl).encoder_control_dig2 = core::ptr::null_mut();
 
-	cmd_tbl->dig_encoder_control = encoder_control_dig_v1;
+	(*cmd_tbl).dig_encoder_control = encoder_control_dig_v1;
 }
 
 static enum bp_result encoder_control_dig_v1(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl)
+	bios_parser *bp,
+	bp_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
-	struct cmd_tbl *cmd_tbl = &bp->cmd_tbl;
+	struct cmd_tbl *cmd_tbl = (*&bp).cmd_tbl;
 
 	if (cntl != core::ptr::null_mut())
-		switch (cntl->engine_id) {
+		switch ((*cntl).engine_id) {
 		case ENGINE_ID_DIGA:
-			if (cmd_tbl->encoder_control_dig1 != core::ptr::null_mut())
+			if ((*cmd_tbl).encoder_control_dig1 != core::ptr::null_mut())
 				result =
-					cmd_tbl->encoder_control_dig1(bp, cntl);
+					(*cmd_tbl).encoder_control_dig1(bp, cntl);
 			break;
 		case ENGINE_ID_DIGB:
-			if (cmd_tbl->encoder_control_dig2 != core::ptr::null_mut())
+			if ((*cmd_tbl).encoder_control_dig2 != core::ptr::null_mut())
 				result =
-					cmd_tbl->encoder_control_dig2(bp, cntl);
+					(*cmd_tbl).encoder_control_dig2(bp, cntl);
 			break;
 
 		default:
@@ -200,13 +200,13 @@ static enum bp_result encoder_control_dig_v1(
 }
 
 static enum bp_result encoder_control_dig1_v1(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl)
+	bios_parser *bp,
+	bp_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_ENCODER_CONTROL_PARAMETERS_V2 params = {0};
 
-	bp->cmd_helper->assign_control_parameter(bp->cmd_helper, cntl, &params);
+	(*(*bp).cmd_helper).assign_control_parameter((*bp).cmd_helper, cntl, &params);
 
 	if (EXEC_BIOS_CMD_TABLE(DIG1EncoderControl, params))
 		result = BP_RESULT_OK;
@@ -215,13 +215,13 @@ static enum bp_result encoder_control_dig1_v1(
 }
 
 static enum bp_result encoder_control_dig2_v1(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl)
+	bios_parser *bp,
+	bp_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_ENCODER_CONTROL_PARAMETERS_V2 params = {0};
 
-	bp->cmd_helper->assign_control_parameter(bp->cmd_helper, cntl, &params);
+	(*(*bp).cmd_helper).assign_control_parameter((*bp).cmd_helper, cntl, &params);
 
 	if (EXEC_BIOS_CMD_TABLE(DIG2EncoderControl, params))
 		result = BP_RESULT_OK;
@@ -229,7 +229,7 @@ static enum bp_result encoder_control_dig2_v1(
 	return result;
 }
 
-static uint8_t dc_color_depth_to_atom(enum dc_color_depth color_depth)
+static uint8_t dc_color_depth_to_atom(dc_color_depth color_depth)
 {
 	switch (color_depth) {
 	case COLOR_DEPTH_UNDEFINED:
@@ -252,28 +252,28 @@ static uint8_t dc_color_depth_to_atom(enum dc_color_depth color_depth)
 }
 
 static enum bp_result encoder_control_digx_v3(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl)
+	bios_parser *bp,
+	bp_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_ENCODER_CONTROL_PARAMETERS_V3 params = {0};
 
-	if (LANE_COUNT_FOUR < cntl->lanes_number)
+	if (LANE_COUNT_FOUR < (*cntl).lanes_number)
 		params.acConfig.ucDPLinkRate = 1; /* dual link 2.7GHz */
 	else
 		params.acConfig.ucDPLinkRate = 0; /* single link 1.62GHz */
 
-	params.acConfig.ucDigSel = (uint8_t)(cntl->engine_id);
+	params.acConfig.ucDigSel = (uint8_t)((*cntl).engine_id);
 
 	/* We need to convert from KHz units into 10KHz units */
-	params.ucAction = bp->cmd_helper->encoder_action_to_atom(cntl->action);
-	params.usPixelClock = cpu_to_le16((uint16_t)(cntl->pixel_clock / 10));
+	params.ucAction = (*(*bp).cmd_helper).encoder_action_to_atom((*cntl).action);
+	params.usPixelClock = cpu_to_le16((uint16_t)((*cntl).pixel_clock / 10));
 	params.ucEncoderMode =
-			(uint8_t)bp->cmd_helper->encoder_mode_bp_to_atom(
-					cntl->signal,
-					cntl->enable_dp_audio);
-	params.ucLaneNum = (uint8_t)(cntl->lanes_number);
-	params.ucBitPerColor = dc_color_depth_to_atom(cntl->color_depth);
+			(*(*(uint8_t)bp).cmd_helper).encoder_mode_bp_to_atom(
+					(*cntl).signal,
+					(*cntl).enable_dp_audio);
+	params.ucLaneNum = (uint8_t)((*cntl).lanes_number);
+	params.ucBitPerColor = dc_color_depth_to_atom((*cntl).color_depth);
 
 	if (EXEC_BIOS_CMD_TABLE(DIGxEncoderControl, params))
 		result = BP_RESULT_OK;
@@ -282,28 +282,28 @@ static enum bp_result encoder_control_digx_v3(
 }
 
 static enum bp_result encoder_control_digx_v4(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl)
+	bios_parser *bp,
+	bp_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_ENCODER_CONTROL_PARAMETERS_V4 params = {0};
 
-	if (LANE_COUNT_FOUR < cntl->lanes_number)
+	if (LANE_COUNT_FOUR < (*cntl).lanes_number)
 		params.acConfig.ucDPLinkRate = 1; /* dual link 2.7GHz */
 	else
 		params.acConfig.ucDPLinkRate = 0; /* single link 1.62GHz */
 
-	params.acConfig.ucDigSel = (uint8_t)(cntl->engine_id);
+	params.acConfig.ucDigSel = (uint8_t)((*cntl).engine_id);
 
 	/* We need to convert from KHz units into 10KHz units */
-	params.ucAction = bp->cmd_helper->encoder_action_to_atom(cntl->action);
-	params.usPixelClock = cpu_to_le16((uint16_t)(cntl->pixel_clock / 10));
+	params.ucAction = (*(*bp).cmd_helper).encoder_action_to_atom((*cntl).action);
+	params.usPixelClock = cpu_to_le16((uint16_t)((*cntl).pixel_clock / 10));
 	params.ucEncoderMode =
-			(uint8_t)(bp->cmd_helper->encoder_mode_bp_to_atom(
-					cntl->signal,
-					cntl->enable_dp_audio));
-	params.ucLaneNum = (uint8_t)(cntl->lanes_number);
-	params.ucBitPerColor = dc_color_depth_to_atom(cntl->color_depth);
+			(uint8_t)((*(*bp).cmd_helper).encoder_mode_bp_to_atom(
+					(*cntl).signal,
+					(*cntl).enable_dp_audio));
+	params.ucLaneNum = (uint8_t)((*cntl).lanes_number);
+	params.ucBitPerColor = dc_color_depth_to_atom((*cntl).color_depth);
 
 	if (EXEC_BIOS_CMD_TABLE(DIGxEncoderControl, params))
 		result = BP_RESULT_OK;
@@ -312,25 +312,25 @@ static enum bp_result encoder_control_digx_v4(
 }
 
 static enum bp_result encoder_control_digx_v5(
-	struct bios_parser *bp,
-	struct bp_encoder_control *cntl)
+	bios_parser *bp,
+	bp_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	ENCODER_STREAM_SETUP_PARAMETERS_V5 params = {0};
 
-	params.ucDigId = (uint8_t)(cntl->engine_id);
-	params.ucAction = bp->cmd_helper->encoder_action_to_atom(cntl->action);
+	params.ucDigId = (uint8_t)((*cntl).engine_id);
+	params.ucAction = (*(*bp).cmd_helper).encoder_action_to_atom((*cntl).action);
 
-	params.ulPixelClock = cntl->pixel_clock / 10;
+	params.ulPixelClock = (*cntl).pixel_clock / 10;
 	params.ucDigMode =
-			(uint8_t)(bp->cmd_helper->encoder_mode_bp_to_atom(
-					cntl->signal,
-					cntl->enable_dp_audio));
-	params.ucLaneNum = (uint8_t)(cntl->lanes_number);
-	params.ucBitPerColor = dc_color_depth_to_atom(cntl->color_depth);
+			(uint8_t)((*(*bp).cmd_helper).encoder_mode_bp_to_atom(
+					(*cntl).signal,
+					(*cntl).enable_dp_audio));
+	params.ucLaneNum = (uint8_t)((*cntl).lanes_number);
+	params.ucBitPerColor = dc_color_depth_to_atom((*cntl).color_depth);
 
-	if (cntl->signal == SIGNAL_TYPE_HDMI_TYPE_A)
-		switch (cntl->color_depth) {
+	if ((*cntl).signal == SIGNAL_TYPE_HDMI_TYPE_A)
+		switch ((*cntl).color_depth) {
 		case COLOR_DEPTH_101010:
 			params.ulPixelClock =
 				(params.ulPixelClock * 30) / 24;
@@ -362,22 +362,22 @@ static enum bp_result encoder_control_digx_v5(
  *******************************************************************************/
 
 static enum bp_result transmitter_control_v2(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl);
+	bios_parser *bp,
+	bp_transmitter_control *cntl);
 static enum bp_result transmitter_control_v3(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl);
+	bios_parser *bp,
+	bp_transmitter_control *cntl);
 static enum bp_result transmitter_control_v4(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl);
+	bios_parser *bp,
+	bp_transmitter_control *cntl);
 static enum bp_result transmitter_control_v1_5(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl);
+	bios_parser *bp,
+	bp_transmitter_control *cntl);
 static enum bp_result transmitter_control_v1_6(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl);
+	bios_parser *bp,
+	bp_transmitter_control *cntl);
 
-static void init_transmitter_control(struct bios_parser *bp)
+static void init_transmitter_control(bios_parser *bp)
 {
 	uint8_t frev;
 	uint8_t crev = 0;
@@ -387,39 +387,39 @@ static void init_transmitter_control(struct bios_parser *bp)
 		BREAK_TO_DEBUGGER();
 	switch (crev) {
 	case 2:
-		bp->cmd_tbl.transmitter_control = transmitter_control_v2;
+		(*bp).cmd_tbl.transmitter_control = transmitter_control_v2;
 		break;
 	case 3:
-		bp->cmd_tbl.transmitter_control = transmitter_control_v3;
+		(*bp).cmd_tbl.transmitter_control = transmitter_control_v3;
 		break;
 	case 4:
-		bp->cmd_tbl.transmitter_control = transmitter_control_v4;
+		(*bp).cmd_tbl.transmitter_control = transmitter_control_v4;
 		break;
 	case 5:
-		bp->cmd_tbl.transmitter_control = transmitter_control_v1_5;
+		(*bp).cmd_tbl.transmitter_control = transmitter_control_v1_5;
 		break;
 	case 6:
-		bp->cmd_tbl.transmitter_control = transmitter_control_v1_6;
+		(*bp).cmd_tbl.transmitter_control = transmitter_control_v1_6;
 		break;
 	default:
 		dm_output_to_console("Don't have transmitter_control for v%d\n", crev);
-		bp->cmd_tbl.transmitter_control = core::ptr::null_mut();
+		(*bp).cmd_tbl.transmitter_control = core::ptr::null_mut();
 		break;
 	}
 }
 
 static enum bp_result transmitter_control_v2(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl)
+	bios_parser *bp,
+	bp_transmitter_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_TRANSMITTER_CONTROL_PARAMETERS_V2 params;
 	enum connector_id connector_id =
-		dal_graphics_object_id_get_connector_id(cntl->connector_obj_id);
+		dal_graphics_object_id_get_connector_id((*cntl).connector_obj_id);
 
 	memset(&params, 0, sizeof(params));
 
-	switch (cntl->transmitter) {
+	switch ((*cntl).transmitter) {
 	case TRANSMITTER_UNIPHY_A:
 	case TRANSMITTER_UNIPHY_B:
 	case TRANSMITTER_UNIPHY_C:
@@ -432,7 +432,7 @@ static enum bp_result transmitter_control_v2(
 		return BP_RESULT_BADINPUT;
 	}
 
-	switch (cntl->action) {
+	switch ((*cntl).action) {
 	case TRANSMITTER_CONTROL_INIT:
 		if ((CONNECTOR_ID_DUAL_LINK_DVII == connector_id) ||
 				(CONNECTOR_ID_DUAL_LINK_DVID == connector_id))
@@ -446,16 +446,16 @@ static enum bp_result transmitter_control_v2(
 
 		/* connector object id */
 		params.usInitInfo =
-				cpu_to_le16((uint8_t)cntl->connector_obj_id.id);
+				cpu_to_le16((*(uint8_t)cntl).connector_obj_id.id);
 		break;
 	case TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS:
 		/* voltage swing and pre-emphsis */
-		params.asMode.ucLaneSel = (uint8_t)cntl->lane_select;
-		params.asMode.ucLaneSet = (uint8_t)cntl->lane_settings;
+		params.asMode.ucLaneSel = (*(uint8_t)cntl).lane_select;
+		params.asMode.ucLaneSet = (*(uint8_t)cntl).lane_settings;
 		break;
 	default:
 		/* if dual-link */
-		if (LANE_COUNT_FOUR < cntl->lanes_number) {
+		if (LANE_COUNT_FOUR < (*cntl).lanes_number) {
 			/* on ENABLE/DISABLE this bit should be set according to
 			 * actual timing (number of lanes)
 			 * Bit0: dual link connector flag
@@ -468,13 +468,13 @@ static enum bp_result transmitter_control_v2(
 			 * We need to convert from KHz units into 20KHz units
 			 */
 			params.usPixelClock =
-					cpu_to_le16((uint16_t)(cntl->pixel_clock / 20));
+					cpu_to_le16((uint16_t)((*cntl).pixel_clock / 20));
 		} else
 			/* link rate, half for dual link
 			 * We need to convert from KHz units into 10KHz units
 			 */
 			params.usPixelClock =
-					cpu_to_le16((uint16_t)(cntl->pixel_clock / 10));
+					cpu_to_le16((uint16_t)((*cntl).pixel_clock / 10));
 		break;
 	}
 
@@ -482,11 +482,11 @@ static enum bp_result transmitter_control_v2(
 	 * 01 - incoherent mode
 	 */
 
-	params.acConfig.fCoherentMode = cntl->coherent;
+	params.acConfig.fCoherentMode = (*cntl).coherent;
 
-	if ((TRANSMITTER_UNIPHY_B == cntl->transmitter)
-			|| (TRANSMITTER_UNIPHY_D == cntl->transmitter)
-			|| (TRANSMITTER_UNIPHY_F == cntl->transmitter))
+	if ((TRANSMITTER_UNIPHY_B == (*cntl).transmitter)
+			|| (TRANSMITTER_UNIPHY_D == (*cntl).transmitter)
+			|| (TRANSMITTER_UNIPHY_F == (*cntl).transmitter))
 		/* Bit2: Transmitter Link selection
 		 * =0 when bit0=0, single link A/C/E, when bit0=1,
 		 * master link A/C/E
@@ -495,7 +495,7 @@ static enum bp_result transmitter_control_v2(
 		 */
 		params.acConfig.ucLinkSel = 1;
 
-	if (ENGINE_ID_DIGB == cntl->engine_id)
+	if (ENGINE_ID_DIGB == (*cntl).engine_id)
 		/* Bit3: Transmitter data source selection
 		 * =0 DIGA is data source.
 		 * =1 DIGB is data source.
@@ -518,10 +518,10 @@ static enum bp_result transmitter_control_v2(
 	 * =3 reserved
 	 */
 	params.acConfig.ucTransmitterSel =
-			(uint8_t)bp->cmd_helper->transmitter_bp_to_atom(
-					cntl->transmitter);
+			(*(*(uint8_t)bp).cmd_helper).transmitter_bp_to_atom(
+					(*cntl).transmitter);
 
-	params.ucAction = (uint8_t)cntl->action;
+	params.ucAction = (*(uint8_t)cntl).action;
 
 	if (EXEC_BIOS_CMD_TABLE(UNIPHYTransmitterControl, params))
 		result = BP_RESULT_OK;
@@ -530,21 +530,21 @@ static enum bp_result transmitter_control_v2(
 }
 
 static enum bp_result transmitter_control_v3(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl)
+	bios_parser *bp,
+	bp_transmitter_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_TRANSMITTER_CONTROL_PARAMETERS_V3 params;
 	uint32_t pll_id;
 	enum connector_id conn_id =
-			dal_graphics_object_id_get_connector_id(cntl->connector_obj_id);
-	const struct command_table_helper *cmd = bp->cmd_helper;
+			dal_graphics_object_id_get_connector_id((*cntl).connector_obj_id);
+	const struct command_table_helper *cmd = (*bp).cmd_helper;
 	bool dual_link_conn = (CONNECTOR_ID_DUAL_LINK_DVII == conn_id)
 					|| (CONNECTOR_ID_DUAL_LINK_DVID == conn_id);
 
 	memset(&params, 0, sizeof(params));
 
-	switch (cntl->transmitter) {
+	switch ((*cntl).transmitter) {
 	case TRANSMITTER_UNIPHY_A:
 	case TRANSMITTER_UNIPHY_B:
 	case TRANSMITTER_UNIPHY_C:
@@ -557,11 +557,11 @@ static enum bp_result transmitter_control_v3(
 		return BP_RESULT_BADINPUT;
 	}
 
-	if (!cmd->clock_source_id_to_atom(cntl->pll_id, &pll_id))
+	if ((*!cmd).clock_source_id_to_atom((*cntl).pll_id, &pll_id))
 		return BP_RESULT_BADINPUT;
 
 	/* fill information based on the action */
-	switch (cntl->action) {
+	switch ((*cntl).action) {
 	case TRANSMITTER_CONTROL_INIT:
 		if (dual_link_conn) {
 			/* on INIT this bit should be set according to the
@@ -575,15 +575,15 @@ static enum bp_result transmitter_control_v3(
 
 		/* connector object id */
 		params.usInitInfo =
-				cpu_to_le16((uint8_t)(cntl->connector_obj_id.id));
+				cpu_to_le16((uint8_t)((*cntl).connector_obj_id.id));
 		break;
 	case TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS:
 		/* votage swing and pre-emphsis */
-		params.asMode.ucLaneSel = (uint8_t)cntl->lane_select;
-		params.asMode.ucLaneSet = (uint8_t)cntl->lane_settings;
+		params.asMode.ucLaneSel = (*(uint8_t)cntl).lane_select;
+		params.asMode.ucLaneSet = (*(uint8_t)cntl).lane_settings;
 		break;
 	default:
-		if (dual_link_conn && cntl->multi_path)
+		if (dual_link_conn && (*cntl).multi_path)
 			/* on ENABLE/DISABLE this bit should be set according to
 			 * actual timing (number of lanes)
 			 * Bit0: dual link connector flag
@@ -593,7 +593,7 @@ static enum bp_result transmitter_control_v3(
 			params.acConfig.fDualLinkConnector = 1;
 
 		/* if dual-link */
-		if (LANE_COUNT_FOUR < cntl->lanes_number) {
+		if (LANE_COUNT_FOUR < (*cntl).lanes_number) {
 			/* on ENABLE/DISABLE this bit should be set according to
 			 * actual timing (number of lanes)
 			 * Bit0: dual link connector flag
@@ -606,13 +606,13 @@ static enum bp_result transmitter_control_v3(
 			 * We need to convert from KHz units into 20KHz units
 			 */
 			params.usPixelClock =
-					cpu_to_le16((uint16_t)(cntl->pixel_clock / 20));
+					cpu_to_le16((uint16_t)((*cntl).pixel_clock / 20));
 		} else {
 			/* link rate, half for dual link
 			 * We need to convert from KHz units into 10KHz units
 			 */
 			params.usPixelClock =
-					cpu_to_le16((uint16_t)(cntl->pixel_clock / 10));
+					cpu_to_le16((uint16_t)((*cntl).pixel_clock / 10));
 		}
 		break;
 	}
@@ -621,11 +621,11 @@ static enum bp_result transmitter_control_v3(
 	 * 01 - incoherent mode
 	 */
 
-	params.acConfig.fCoherentMode = cntl->coherent;
+	params.acConfig.fCoherentMode = (*cntl).coherent;
 
-	if ((TRANSMITTER_UNIPHY_B == cntl->transmitter)
-		|| (TRANSMITTER_UNIPHY_D == cntl->transmitter)
-		|| (TRANSMITTER_UNIPHY_F == cntl->transmitter))
+	if ((TRANSMITTER_UNIPHY_B == (*cntl).transmitter)
+		|| (TRANSMITTER_UNIPHY_D == (*cntl).transmitter)
+		|| (TRANSMITTER_UNIPHY_F == (*cntl).transmitter))
 		/* Bit2: Transmitter Link selection
 		 * =0 when bit0=0, single link A/C/E, when bit0=1,
 		 * master link A/C/E
@@ -634,7 +634,7 @@ static enum bp_result transmitter_control_v3(
 		 */
 		params.acConfig.ucLinkSel = 1;
 
-	if (ENGINE_ID_DIGB == cntl->engine_id)
+	if (ENGINE_ID_DIGB == (*cntl).engine_id)
 		/* Bit3: Transmitter data source selection
 		 * =0 DIGA is data source.
 		 * =1 DIGB is data source.
@@ -649,13 +649,13 @@ static enum bp_result transmitter_control_v3(
 	 * =3 reserved
 	 */
 	params.acConfig.ucTransmitterSel =
-			(uint8_t)cmd->transmitter_bp_to_atom(cntl->transmitter);
+			(*(uint8_t)cmd).transmitter_bp_to_atom((*cntl).transmitter);
 
-	params.ucLaneNum = (uint8_t)cntl->lanes_number;
+	params.ucLaneNum = (*(uint8_t)cntl).lanes_number;
 
 	params.acConfig.ucRefClkSource = (uint8_t)pll_id;
 
-	params.ucAction = (uint8_t)cntl->action;
+	params.ucAction = (*(uint8_t)cntl).action;
 
 	if (EXEC_BIOS_CMD_TABLE(UNIPHYTransmitterControl, params))
 		result = BP_RESULT_OK;
@@ -664,19 +664,19 @@ static enum bp_result transmitter_control_v3(
 }
 
 static enum bp_result transmitter_control_v4(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl)
+	bios_parser *bp,
+	bp_transmitter_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DIG_TRANSMITTER_CONTROL_PARAMETERS_V4 params;
 	uint32_t ref_clk_src_id;
 	enum connector_id conn_id =
-			dal_graphics_object_id_get_connector_id(cntl->connector_obj_id);
-	const struct command_table_helper *cmd = bp->cmd_helper;
+			dal_graphics_object_id_get_connector_id((*cntl).connector_obj_id);
+	const struct command_table_helper *cmd = (*bp).cmd_helper;
 
 	memset(&params, 0, sizeof(params));
 
-	switch (cntl->transmitter) {
+	switch ((*cntl).transmitter) {
 	case TRANSMITTER_UNIPHY_A:
 	case TRANSMITTER_UNIPHY_B:
 	case TRANSMITTER_UNIPHY_C:
@@ -689,10 +689,10 @@ static enum bp_result transmitter_control_v4(
 		return BP_RESULT_BADINPUT;
 	}
 
-	if (!cmd->clock_source_id_to_ref_clk_src(cntl->pll_id, &ref_clk_src_id))
+	if ((*!cmd).clock_source_id_to_ref_clk_src((*cntl).pll_id, &ref_clk_src_id))
 		return BP_RESULT_BADINPUT;
 
-	switch (cntl->action) {
+	switch ((*cntl).action) {
 	case TRANSMITTER_CONTROL_INIT:
 	{
 		if ((CONNECTOR_ID_DUAL_LINK_DVII == conn_id) ||
@@ -707,13 +707,13 @@ static enum bp_result transmitter_control_v4(
 
 		/* connector object id */
 		params.usInitInfo =
-				cpu_to_le16((uint8_t)(cntl->connector_obj_id.id));
+				cpu_to_le16((uint8_t)((*cntl).connector_obj_id.id));
 	}
 	break;
 	case TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS:
 		/* votage swing and pre-emphsis */
-		params.asMode.ucLaneSel = (uint8_t)(cntl->lane_select);
-		params.asMode.ucLaneSet = (uint8_t)(cntl->lane_settings);
+		params.asMode.ucLaneSel = (uint8_t)((*cntl).lane_select);
+		params.asMode.ucLaneSet = (uint8_t)((*cntl).lane_settings);
 		break;
 	default:
 		if ((CONNECTOR_ID_DUAL_LINK_DVII == conn_id) ||
@@ -727,18 +727,18 @@ static enum bp_result transmitter_control_v4(
 			params.acConfig.fDualLinkConnector = 1;
 
 		/* if dual-link */
-		if (LANE_COUNT_FOUR < cntl->lanes_number)
+		if (LANE_COUNT_FOUR < (*cntl).lanes_number)
 			/* link rate, half for dual link
 			 * We need to convert from KHz units into 20KHz units
 			 */
 			params.usPixelClock =
-					cpu_to_le16((uint16_t)(cntl->pixel_clock / 20));
+					cpu_to_le16((uint16_t)((*cntl).pixel_clock / 20));
 		else {
 			/* link rate, half for dual link
 			 * We need to convert from KHz units into 10KHz units
 			 */
 			params.usPixelClock =
-					cpu_to_le16((uint16_t)(cntl->pixel_clock / 10));
+					cpu_to_le16((uint16_t)((*cntl).pixel_clock / 10));
 		}
 		break;
 	}
@@ -747,11 +747,11 @@ static enum bp_result transmitter_control_v4(
 	 * 01 - incoherent mode
 	 */
 
-	params.acConfig.fCoherentMode = cntl->coherent;
+	params.acConfig.fCoherentMode = (*cntl).coherent;
 
-	if ((TRANSMITTER_UNIPHY_B == cntl->transmitter)
-		|| (TRANSMITTER_UNIPHY_D == cntl->transmitter)
-		|| (TRANSMITTER_UNIPHY_F == cntl->transmitter))
+	if ((TRANSMITTER_UNIPHY_B == (*cntl).transmitter)
+		|| (TRANSMITTER_UNIPHY_D == (*cntl).transmitter)
+		|| (TRANSMITTER_UNIPHY_F == (*cntl).transmitter))
 		/* Bit2: Transmitter Link selection
 		 * =0 when bit0=0, single link A/C/E, when bit0=1,
 		 * master link A/C/E
@@ -760,7 +760,7 @@ static enum bp_result transmitter_control_v4(
 		 */
 		params.acConfig.ucLinkSel = 1;
 
-	if (ENGINE_ID_DIGB == cntl->engine_id)
+	if (ENGINE_ID_DIGB == (*cntl).engine_id)
 		/* Bit3: Transmitter data source selection
 		 * =0 DIGA is data source.
 		 * =1 DIGB is data source.
@@ -775,10 +775,10 @@ static enum bp_result transmitter_control_v4(
 	 * =3 reserved
 	 */
 	params.acConfig.ucTransmitterSel =
-		(uint8_t)(cmd->transmitter_bp_to_atom(cntl->transmitter));
-	params.ucLaneNum = (uint8_t)(cntl->lanes_number);
+		(uint8_t)((*cmd).transmitter_bp_to_atom((*cntl).transmitter));
+	params.ucLaneNum = (uint8_t)((*cntl).lanes_number);
 	params.acConfig.ucRefClkSource = (uint8_t)(ref_clk_src_id);
-	params.ucAction = (uint8_t)(cntl->action);
+	params.ucAction = (uint8_t)((*cntl).action);
 
 	if (EXEC_BIOS_CMD_TABLE(UNIPHYTransmitterControl, params))
 		result = BP_RESULT_OK;
@@ -787,31 +787,31 @@ static enum bp_result transmitter_control_v4(
 }
 
 static enum bp_result transmitter_control_v1_5(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl)
+	bios_parser *bp,
+	bp_transmitter_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
-	const struct command_table_helper *cmd = bp->cmd_helper;
+	const struct command_table_helper *cmd = (*bp).cmd_helper;
 	DIG_TRANSMITTER_CONTROL_PARAMETERS_V1_5 params;
 
 	memset(&params, 0, sizeof(params));
-	params.ucPhyId = cmd->phy_id_to_atom(cntl->transmitter);
-	params.ucAction = (uint8_t)cntl->action;
-	params.ucLaneNum = (uint8_t)cntl->lanes_number;
-	params.ucConnObjId = (uint8_t)cntl->connector_obj_id.id;
+	params.ucPhyId = (*cmd).phy_id_to_atom((*cntl).transmitter);
+	params.ucAction = (*(uint8_t)cntl).action;
+	params.ucLaneNum = (*(uint8_t)cntl).lanes_number;
+	params.ucConnObjId = (*(uint8_t)cntl).connector_obj_id.id;
 
 	params.ucDigMode =
-		cmd->signal_type_to_atom_dig_mode(cntl->signal);
+		(*cmd).signal_type_to_atom_dig_mode((*cntl).signal);
 	params.asConfig.ucPhyClkSrcId =
-		cmd->clock_source_id_to_atom_phy_clk_src_id(cntl->pll_id);
+		(*cmd).clock_source_id_to_atom_phy_clk_src_id((*cntl).pll_id);
 	/* 00 - coherent mode */
-	params.asConfig.ucCoherentMode = cntl->coherent;
+	params.asConfig.ucCoherentMode = (*cntl).coherent;
 	params.asConfig.ucHPDSel =
-		cmd->hpd_sel_to_atom(cntl->hpd_sel);
+		(*cmd).hpd_sel_to_atom((*cntl).hpd_sel);
 	params.ucDigEncoderSel =
-		cmd->dig_encoder_sel_to_atom(cntl->engine_id);
-	params.ucDPLaneSet = (uint8_t) cntl->lane_settings;
-	params.usSymClock = cpu_to_le16((uint16_t) (cntl->pixel_clock / 10));
+		(*cmd).dig_encoder_sel_to_atom((*cntl).engine_id);
+	params.ucDPLaneSet = (uint8_t) (*cntl).lane_settings;
+	params.usSymClock = cpu_to_le16((uint16_t) ((*cntl).pixel_clock / 10));
 	/*
 	 * In SI/TN case, caller have to set usPixelClock as following:
 	 * DP mode: usPixelClock = DP_LINK_CLOCK/10
@@ -822,8 +822,8 @@ static enum bp_result transmitter_control_v1_5(
 	 * (=1: 8bpp, =1.25: 10bpp, =1.5:12bpp, =2: 16bpp)
 	 * LVDS mode: usPixelClock = pixel clock
 	 */
-	if  (cntl->signal == SIGNAL_TYPE_HDMI_TYPE_A) {
-		switch (cntl->color_depth) {
+	if  ((*cntl).signal == SIGNAL_TYPE_HDMI_TYPE_A) {
+		switch ((*cntl).color_depth) {
 		case COLOR_DEPTH_101010:
 			params.usSymClock =
 				cpu_to_le16((le16_to_cpu(params.usSymClock) * 30) / 24);
@@ -848,27 +848,27 @@ static enum bp_result transmitter_control_v1_5(
 }
 
 static enum bp_result transmitter_control_v1_6(
-	struct bios_parser *bp,
-	struct bp_transmitter_control *cntl)
+	bios_parser *bp,
+	bp_transmitter_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
-	const struct command_table_helper *cmd = bp->cmd_helper;
+	const struct command_table_helper *cmd = (*bp).cmd_helper;
 	DIG_TRANSMITTER_CONTROL_PARAMETERS_V1_6 params;
 
 	memset(&params, 0, sizeof(params));
-	params.ucPhyId = cmd->phy_id_to_atom(cntl->transmitter);
-	params.ucAction = (uint8_t)cntl->action;
+	params.ucPhyId = (*cmd).phy_id_to_atom((*cntl).transmitter);
+	params.ucAction = (*(uint8_t)cntl).action;
 
-	if (cntl->action == TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS)
-		params.ucDPLaneSet = (uint8_t)cntl->lane_settings;
+	if ((*cntl).action == TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS)
+		params.ucDPLaneSet = (*(uint8_t)cntl).lane_settings;
 	else
-		params.ucDigMode = cmd->signal_type_to_atom_dig_mode(cntl->signal);
+		params.ucDigMode = (*cmd).signal_type_to_atom_dig_mode((*cntl).signal);
 
-	params.ucLaneNum = (uint8_t)cntl->lanes_number;
-	params.ucHPDSel = cmd->hpd_sel_to_atom(cntl->hpd_sel);
-	params.ucDigEncoderSel = cmd->dig_encoder_sel_to_atom(cntl->engine_id);
-	params.ucConnObjId = (uint8_t)cntl->connector_obj_id.id;
-	params.ulSymClock = cntl->pixel_clock/10;
+	params.ucLaneNum = (*(uint8_t)cntl).lanes_number;
+	params.ucHPDSel = (*cmd).hpd_sel_to_atom((*cntl).hpd_sel);
+	params.ucDigEncoderSel = (*cmd).dig_encoder_sel_to_atom((*cntl).engine_id);
+	params.ucConnObjId = (*(uint8_t)cntl).connector_obj_id.id;
+	params.ulSymClock = (*cntl).pixel_clock/10;
 
 	/*
 	 * In SI/TN case, caller have to set usPixelClock as following:
@@ -880,9 +880,9 @@ static enum bp_result transmitter_control_v1_6(
 	 * (=1: 8bpp, =1.25: 10bpp, =1.5:12bpp, =2: 16bpp)
 	 * LVDS mode: usPixelClock = pixel clock
 	 */
-	switch (cntl->signal) {
+	switch ((*cntl).signal) {
 	case SIGNAL_TYPE_HDMI_TYPE_A:
-		switch (cntl->color_depth) {
+		switch ((*cntl).color_depth) {
 		case COLOR_DEPTH_101010:
 			params.ulSymClock =
 				cpu_to_le16((le16_to_cpu(params.ulSymClock) * 30) / 24);
@@ -917,44 +917,44 @@ static enum bp_result transmitter_control_v1_6(
  *******************************************************************************/
 
 static enum bp_result set_pixel_clock_v3(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params);
 static enum bp_result set_pixel_clock_v5(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params);
 static enum bp_result set_pixel_clock_v6(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params);
 static enum bp_result set_pixel_clock_v7(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params);
 
-static void init_set_pixel_clock(struct bios_parser *bp)
+static void init_set_pixel_clock(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(SetPixelClock)) {
 	case 3:
-		bp->cmd_tbl.set_pixel_clock = set_pixel_clock_v3;
+		(*bp).cmd_tbl.set_pixel_clock = set_pixel_clock_v3;
 		break;
 	case 5:
-		bp->cmd_tbl.set_pixel_clock = set_pixel_clock_v5;
+		(*bp).cmd_tbl.set_pixel_clock = set_pixel_clock_v5;
 		break;
 	case 6:
-		bp->cmd_tbl.set_pixel_clock = set_pixel_clock_v6;
+		(*bp).cmd_tbl.set_pixel_clock = set_pixel_clock_v6;
 		break;
 	case 7:
-		bp->cmd_tbl.set_pixel_clock = set_pixel_clock_v7;
+		(*bp).cmd_tbl.set_pixel_clock = set_pixel_clock_v7;
 		break;
 	default:
 		dm_output_to_console("Don't have set_pixel_clock for v%d\n",
 			 BIOS_CMD_TABLE_PARA_REVISION(SetPixelClock));
-		bp->cmd_tbl.set_pixel_clock = core::ptr::null_mut();
+		(*bp).cmd_tbl.set_pixel_clock = core::ptr::null_mut();
 		break;
 	}
 }
 
 static enum bp_result set_pixel_clock_v3(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	PIXEL_CLOCK_PARAMETERS_V3 *params;
@@ -962,43 +962,43 @@ static enum bp_result set_pixel_clock_v3(
 
 	memset(&allocation, 0, sizeof(allocation));
 
-	if (CLOCK_SOURCE_ID_PLL1 == bp_params->pll_id)
+	if (CLOCK_SOURCE_ID_PLL1 == (*bp_params).pll_id)
 		allocation.sPCLKInput.ucPpll = ATOM_PPLL1;
-	else if (CLOCK_SOURCE_ID_PLL2 == bp_params->pll_id)
+	else if (CLOCK_SOURCE_ID_PLL2 == (*bp_params).pll_id)
 		allocation.sPCLKInput.ucPpll = ATOM_PPLL2;
 	else
 		return BP_RESULT_BADINPUT;
 
 	allocation.sPCLKInput.usRefDiv =
-			cpu_to_le16((uint16_t)bp_params->reference_divider);
+			cpu_to_le16((*(uint16_t)bp_params).reference_divider);
 	allocation.sPCLKInput.usFbDiv =
-			cpu_to_le16((uint16_t)bp_params->feedback_divider);
+			cpu_to_le16((*(uint16_t)bp_params).feedback_divider);
 	allocation.sPCLKInput.ucFracFbDiv =
-			(uint8_t)(bp_params->fractional_feedback_divider / 100000);
+			(uint8_t)((*bp_params).fractional_feedback_divider / 100000);
 	allocation.sPCLKInput.ucPostDiv =
-			(uint8_t)bp_params->pixel_clock_post_divider;
+			(*(uint8_t)bp_params).pixel_clock_post_divider;
 
 	/* We need to convert from 100Hz units into 10KHz units */
 	allocation.sPCLKInput.usPixelClock =
-			cpu_to_le16((uint16_t)(bp_params->target_pixel_clock_100hz / 100));
+			cpu_to_le16((uint16_t)((*bp_params).target_pixel_clock_100hz / 100));
 
 	params = (PIXEL_CLOCK_PARAMETERS_V3 *)&allocation.sPCLKInput;
-	params->ucTransmitterId =
-			bp->cmd_helper->encoder_id_to_atom(
+	(*params).ucTransmitterId =
+			(*(*bp).cmd_helper).encoder_id_to_atom(
 					dal_graphics_object_id_get_encoder_id(
-							bp_params->encoder_object_id));
-	params->ucEncoderMode =
-			(uint8_t)(bp->cmd_helper->encoder_mode_bp_to_atom(
-					bp_params->signal_type, false));
+							(*bp_params).encoder_object_id));
+	(*params).ucEncoderMode =
+			(uint8_t)((*(*bp).cmd_helper).encoder_mode_bp_to_atom(
+					(*bp_params).signal_type, false));
 
-	if (bp_params->flags.FORCE_PROGRAMMING_OF_PLL)
-		params->ucMiscInfo |= PIXEL_CLOCK_MISC_FORCE_PROG_PPLL;
+	if ((*bp_params).flags.FORCE_PROGRAMMING_OF_PLL)
+		(*params).ucMiscInfo |= PIXEL_CLOCK_MISC_FORCE_PROG_PPLL;
 
-	if (bp_params->flags.USE_E_CLOCK_AS_SOURCE_FOR_D_CLOCK)
-		params->ucMiscInfo |= PIXEL_CLOCK_MISC_USE_ENGINE_FOR_DISPCLK;
+	if ((*bp_params).flags.USE_E_CLOCK_AS_SOURCE_FOR_D_CLOCK)
+		(*params).ucMiscInfo |= PIXEL_CLOCK_MISC_USE_ENGINE_FOR_DISPCLK;
 
-	if (CONTROLLER_ID_D1 != bp_params->controller_id)
-		params->ucMiscInfo |= PIXEL_CLOCK_MISC_CRTC_SEL_CRTC2;
+	if (CONTROLLER_ID_D1 != (*bp_params).controller_id)
+		(*params).ucMiscInfo |= PIXEL_CLOCK_MISC_CRTC_SEL_CRTC2;
 
 	if (EXEC_BIOS_CMD_TABLE(SetPixelClock, allocation))
 		result = BP_RESULT_OK;
@@ -1025,8 +1025,8 @@ typedef struct _SET_PIXEL_CLOCK_PS_ALLOCATION_V6 {
 #endif
 
 static enum bp_result set_pixel_clock_v5(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SET_PIXEL_CLOCK_PS_ALLOCATION_V5 clk;
@@ -1035,8 +1035,8 @@ static enum bp_result set_pixel_clock_v5(
 
 	memset(&clk, 0, sizeof(clk));
 
-	if (bp->cmd_helper->clock_source_id_to_atom(bp_params->pll_id, &pll_id)
-			&& bp->cmd_helper->controller_id_to_atom(
+	if ((*(*bp).cmd_helper).clock_source_id_to_atom((*bp_params).pll_id, &pll_id)
+			&& (*bp).cmd_helper->controller_id_to_atom(
 					bp_params->controller_id, &controller_id)) {
 		clk.sPCLKInput.ucCRTC = controller_id;
 		clk.sPCLKInput.ucPpll = (uint8_t)pll_id;
@@ -1095,8 +1095,8 @@ static enum bp_result set_pixel_clock_v5(
 }
 
 static enum bp_result set_pixel_clock_v6(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SET_PIXEL_CLOCK_PS_ALLOCATION_V6 clk;
@@ -1187,8 +1187,8 @@ static enum bp_result set_pixel_clock_v6(
 }
 
 static enum bp_result set_pixel_clock_v7(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	PIXEL_CLOCK_PARAMETERS_V7 clk;
@@ -1262,19 +1262,19 @@ static enum bp_result set_pixel_clock_v7(
  ********************************************************************************
  *******************************************************************************/
 static enum bp_result enable_spread_spectrum_on_ppll_v1(
-	struct bios_parser *bp,
-	struct bp_spread_spectrum_parameters *bp_params,
-	bool enable);
+	bios_parser *bp,
+	bp_spread_spectrum_parameters *bp_params,
+	enable: bool);
 static enum bp_result enable_spread_spectrum_on_ppll_v2(
-	struct bios_parser *bp,
-	struct bp_spread_spectrum_parameters *bp_params,
-	bool enable);
+	bios_parser *bp,
+	bp_spread_spectrum_parameters *bp_params,
+	enable: bool);
 static enum bp_result enable_spread_spectrum_on_ppll_v3(
-	struct bios_parser *bp,
-	struct bp_spread_spectrum_parameters *bp_params,
-	bool enable);
+	bios_parser *bp,
+	bp_spread_spectrum_parameters *bp_params,
+	enable: bool);
 
-static void init_enable_spread_spectrum_on_ppll(struct bios_parser *bp)
+static void init_enable_spread_spectrum_on_ppll(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(EnableSpreadSpectrumOnPPLL)) {
 	case 1:
@@ -1298,9 +1298,9 @@ static void init_enable_spread_spectrum_on_ppll(struct bios_parser *bp)
 }
 
 static enum bp_result enable_spread_spectrum_on_ppll_v1(
-	struct bios_parser *bp,
-	struct bp_spread_spectrum_parameters *bp_params,
-	bool enable)
+	bios_parser *bp,
+	bp_spread_spectrum_parameters *bp_params,
+	enable: bool)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	ENABLE_SPREAD_SPECTRUM_ON_PPLL params;
@@ -1342,9 +1342,9 @@ static enum bp_result enable_spread_spectrum_on_ppll_v1(
 }
 
 static enum bp_result enable_spread_spectrum_on_ppll_v2(
-	struct bios_parser *bp,
-	struct bp_spread_spectrum_parameters *bp_params,
-	bool enable)
+	bios_parser *bp,
+	bp_spread_spectrum_parameters *bp_params,
+	enable: bool)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	ENABLE_SPREAD_SPECTRUM_ON_PPLL_V2 params;
@@ -1394,9 +1394,9 @@ static enum bp_result enable_spread_spectrum_on_ppll_v2(
 }
 
 static enum bp_result enable_spread_spectrum_on_ppll_v3(
-	struct bios_parser *bp,
-	struct bp_spread_spectrum_parameters *bp_params,
-	bool enable)
+	bios_parser *bp,
+	bp_spread_spectrum_parameters *bp_params,
+	enable: bool)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	ENABLE_SPREAD_SPECTRUM_ON_PPLL_V3 params;
@@ -1471,13 +1471,13 @@ static enum bp_result enable_spread_spectrum_on_ppll_v3(
  *******************************************************************************/
 
 static enum bp_result adjust_display_pll_v2(
-	struct bios_parser *bp,
-	struct bp_adjust_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_adjust_pixel_clock_parameters *bp_params);
 static enum bp_result adjust_display_pll_v3(
-	struct bios_parser *bp,
-	struct bp_adjust_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_adjust_pixel_clock_parameters *bp_params);
 
-static void init_adjust_display_pll(struct bios_parser *bp)
+static void init_adjust_display_pll(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(AdjustDisplayPll)) {
 	case 2:
@@ -1495,8 +1495,8 @@ static void init_adjust_display_pll(struct bios_parser *bp)
 }
 
 static enum bp_result adjust_display_pll_v2(
-	struct bios_parser *bp,
-	struct bp_adjust_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_adjust_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	ADJUST_DISPLAY_PLL_PS_ALLOCATION params = { 0 };
@@ -1538,8 +1538,8 @@ static enum bp_result adjust_display_pll_v2(
 }
 
 static enum bp_result adjust_display_pll_v3(
-	struct bios_parser *bp,
-	struct bp_adjust_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_adjust_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	ADJUST_DISPLAY_PLL_PS_ALLOCATION_V3 params;
@@ -1599,16 +1599,16 @@ static enum bp_result adjust_display_pll_v3(
  *******************************************************************************/
 
 static enum bp_result select_crtc_source_v1(
-	struct bios_parser *bp,
-	struct bp_crtc_source_select *bp_params);
+	bios_parser *bp,
+	bp_crtc_source_select *bp_params);
 static enum bp_result select_crtc_source_v2(
-	struct bios_parser *bp,
-	struct bp_crtc_source_select *bp_params);
+	bios_parser *bp,
+	bp_crtc_source_select *bp_params);
 static enum bp_result select_crtc_source_v3(
-	struct bios_parser *bp,
-	struct bp_crtc_source_select *bp_params);
+	bios_parser *bp,
+	bp_crtc_source_select *bp_params);
 
-static void init_select_crtc_source(struct bios_parser *bp)
+static void init_select_crtc_source(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(SelectCRTC_Source)) {
 	case 1:
@@ -1627,8 +1627,8 @@ static void init_select_crtc_source(struct bios_parser *bp)
 }
 
 static enum bp_result select_crtc_source_v1(
-	struct bios_parser *bp,
-	struct bp_crtc_source_select *bp_params)
+	bios_parser *bp,
+	bp_crtc_source_select *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SELECT_CRTC_SOURCE_PS_ALLOCATION params;
@@ -1654,7 +1654,7 @@ static enum bp_result select_crtc_source_v1(
 }
 
 static bool select_crtc_source_v2_encoder_id(
-	enum engine_id engine_id, uint8_t *out_encoder_id)
+	engine_id engine_id, uint8_t *out_encoder_id)
 {
 	uint8_t encoder_id = 0;
 
@@ -1695,7 +1695,7 @@ static bool select_crtc_source_v2_encoder_id(
 }
 
 static bool select_crtc_source_v2_encoder_mode(
-	enum signal_type signal_type, uint8_t *out_encoder_mode)
+	signal_type signal_type, uint8_t *out_encoder_mode)
 {
 	uint8_t encoder_mode = 0;
 
@@ -1731,8 +1731,8 @@ static bool select_crtc_source_v2_encoder_mode(
 }
 
 static enum bp_result select_crtc_source_v2(
-	struct bios_parser *bp,
-	struct bp_crtc_source_select *bp_params)
+	bios_parser *bp,
+	bp_crtc_source_select *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SELECT_CRTC_SOURCE_PARAMETERS_V3 params;
@@ -1756,8 +1756,8 @@ static enum bp_result select_crtc_source_v2(
 }
 
 static enum bp_result select_crtc_source_v3(
-	struct bios_parser *bp,
-	struct bp_crtc_source_select *bp_params)
+	bios_parser *bp,
+	bp_crtc_source_select *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SELECT_CRTC_SOURCE_PARAMETERS_V3 params;
@@ -1791,17 +1791,17 @@ static enum bp_result select_crtc_source_v3(
  *******************************************************************************/
 
 static enum bp_result dac1_encoder_control_v1(
-	struct bios_parser *bp,
-	enum bp_encoder_control_action action,
+	bios_parser *bp,
+	bp_encoder_control_action action,
 	uint32_t pixel_clock,
 	uint8_t dac_standard);
 static enum bp_result dac2_encoder_control_v1(
-	struct bios_parser *bp,
-	enum bp_encoder_control_action action,
+	bios_parser *bp,
+	bp_encoder_control_action action,
 	uint32_t pixel_clock,
 	uint8_t dac_standard);
 
-static void init_dac_encoder_control(struct bios_parser *bp)
+static void init_dac_encoder_control(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(DAC1EncoderControl)) {
 	case 1:
@@ -1823,7 +1823,7 @@ static void init_dac_encoder_control(struct bios_parser *bp)
 
 static void dac_encoder_control_prepare_params(
 	DAC_ENCODER_CONTROL_PS_ALLOCATION *params,
-	enum bp_encoder_control_action action,
+	bp_encoder_control_action action,
 	uint32_t pixel_clock,
 	uint8_t dac_standard)
 {
@@ -1842,8 +1842,8 @@ static void dac_encoder_control_prepare_params(
 }
 
 static enum bp_result dac1_encoder_control_v1(
-	struct bios_parser *bp,
-	enum bp_encoder_control_action action,
+	bios_parser *bp,
+	bp_encoder_control_action action,
 	uint32_t pixel_clock,
 	uint8_t dac_standard)
 {
@@ -1863,8 +1863,8 @@ static enum bp_result dac1_encoder_control_v1(
 }
 
 static enum bp_result dac2_encoder_control_v1(
-	struct bios_parser *bp,
-	enum bp_encoder_control_action action,
+	bios_parser *bp,
+	bp_encoder_control_action action,
 	uint32_t pixel_clock,
 	uint8_t dac_standard)
 {
@@ -1892,14 +1892,14 @@ static enum bp_result dac2_encoder_control_v1(
  *******************************************************************************/
 
 static enum bp_result dac_load_detection_v1(
-	struct bios_parser *bp,
-	struct bp_load_detection_parameters *bp_params);
+	bios_parser *bp,
+	bp_load_detection_parameters *bp_params);
 
 static enum bp_result dac_load_detection_v3(
-	struct bios_parser *bp,
-	struct bp_load_detection_parameters *bp_params);
+	bios_parser *bp,
+	bp_load_detection_parameters *bp_params);
 
-static void init_dac_load_detection(struct bios_parser *bp)
+static void init_dac_load_detection(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(DAC_LoadDetection)) {
 	case 1:
@@ -1914,8 +1914,8 @@ static void init_dac_load_detection(struct bios_parser *bp)
 }
 
 static void dac_load_detect_prepare_params(
-	struct _DAC_LOAD_DETECTION_PS_ALLOCATION *params,
-	enum engine_id engine_id,
+	_DAC_LOAD_DETECTION_PS_ALLOCATION *params,
+	engine_id engine_id,
 	uint16_t device_id,
 	uint8_t misc)
 {
@@ -1930,8 +1930,8 @@ static void dac_load_detect_prepare_params(
 }
 
 static enum bp_result dac_load_detection_v1(
-	struct bios_parser *bp,
-	struct bp_load_detection_parameters *bp_params)
+	bios_parser *bp,
+	bp_load_detection_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DAC_LOAD_DETECTION_PS_ALLOCATION params;
@@ -1949,8 +1949,8 @@ static enum bp_result dac_load_detection_v1(
 }
 
 static enum bp_result dac_load_detection_v3(
-	struct bios_parser *bp,
-	struct bp_load_detection_parameters *bp_params)
+	bios_parser *bp,
+	bp_load_detection_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DAC_LOAD_DETECTION_PS_ALLOCATION params;
@@ -1981,13 +1981,13 @@ static enum bp_result dac_load_detection_v3(
  ********************************************************************************
  *******************************************************************************/
 static enum bp_result dac1_output_control_v1(
-	struct bios_parser *bp,
-	bool enable);
+	bios_parser *bp,
+	enable: bool);
 static enum bp_result dac2_output_control_v1(
-	struct bios_parser *bp,
-	bool enable);
+	bios_parser *bp,
+	enable: bool);
 
-static void init_dac_output_control(struct bios_parser *bp)
+static void init_dac_output_control(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(DAC1OutputControl)) {
 	case 1:
@@ -2008,7 +2008,7 @@ static void init_dac_output_control(struct bios_parser *bp)
 }
 
 static enum bp_result dac1_output_control_v1(
-	struct bios_parser *bp, bool enable)
+	bios_parser *bp, enable: bool)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DISPLAY_DEVICE_OUTPUT_CONTROL_PS_ALLOCATION params;
@@ -2025,7 +2025,7 @@ static enum bp_result dac1_output_control_v1(
 }
 
 static enum bp_result dac2_output_control_v1(
-	struct bios_parser *bp, bool enable)
+	bios_parser *bp, enable: bool)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	DISPLAY_DEVICE_OUTPUT_CONTROL_PS_ALLOCATION params;
@@ -2050,13 +2050,13 @@ static enum bp_result dac2_output_control_v1(
  *******************************************************************************/
 
 static enum bp_result set_crtc_using_dtd_timing_v3(
-	struct bios_parser *bp,
-	struct bp_hw_crtc_timing_parameters *bp_params);
+	bios_parser *bp,
+	bp_hw_crtc_timing_parameters *bp_params);
 static enum bp_result set_crtc_timing_v1(
-	struct bios_parser *bp,
-	struct bp_hw_crtc_timing_parameters *bp_params);
+	bios_parser *bp,
+	bp_hw_crtc_timing_parameters *bp_params);
 
-static void init_set_crtc_timing(struct bios_parser *bp)
+static void init_set_crtc_timing(bios_parser *bp)
 {
 	uint32_t dtd_version =
 			BIOS_CMD_TABLE_PARA_REVISION(SetCRTC_UsingDTDTiming);
@@ -2086,8 +2086,8 @@ static void init_set_crtc_timing(struct bios_parser *bp)
 }
 
 static enum bp_result set_crtc_timing_v1(
-	struct bios_parser *bp,
-	struct bp_hw_crtc_timing_parameters *bp_params)
+	bios_parser *bp,
+	bp_hw_crtc_timing_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SET_CRTC_TIMING_PARAMETERS_PS_ALLOCATION params = {0};
@@ -2159,8 +2159,8 @@ static enum bp_result set_crtc_timing_v1(
 }
 
 static enum bp_result set_crtc_using_dtd_timing_v3(
-	struct bios_parser *bp,
-	struct bp_hw_crtc_timing_parameters *bp_params)
+	bios_parser *bp,
+	bp_hw_crtc_timing_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 	SET_CRTC_USING_DTD_TIMING_PARAMETERS params = {0};
@@ -2248,11 +2248,11 @@ static enum bp_result set_crtc_using_dtd_timing_v3(
  *******************************************************************************/
 
 static enum bp_result enable_crtc_v1(
-	struct bios_parser *bp,
-	enum controller_id controller_id,
-	bool enable);
+	bios_parser *bp,
+	controller_id controller_id,
+	enable: bool);
 
-static void init_enable_crtc(struct bios_parser *bp)
+static void init_enable_crtc(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(EnableCRTC)) {
 	case 1:
@@ -2267,9 +2267,9 @@ static void init_enable_crtc(struct bios_parser *bp)
 }
 
 static enum bp_result enable_crtc_v1(
-	struct bios_parser *bp,
-	enum controller_id controller_id,
-	bool enable)
+	bios_parser *bp,
+	controller_id controller_id,
+	enable: bool)
 {
 	bool result = BP_RESULT_FAILURE;
 	ENABLE_CRTC_PARAMETERS params = {0};
@@ -2300,11 +2300,11 @@ static enum bp_result enable_crtc_v1(
  *******************************************************************************/
 
 static enum bp_result enable_crtc_mem_req_v1(
-	struct bios_parser *bp,
-	enum controller_id controller_id,
-	bool enable);
+	bios_parser *bp,
+	controller_id controller_id,
+	enable: bool);
 
-static void init_enable_crtc_mem_req(struct bios_parser *bp)
+static void init_enable_crtc_mem_req(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(EnableCRTCMemReq)) {
 	case 1:
@@ -2317,9 +2317,9 @@ static void init_enable_crtc_mem_req(struct bios_parser *bp)
 }
 
 static enum bp_result enable_crtc_mem_req_v1(
-	struct bios_parser *bp,
-	enum controller_id controller_id,
-	bool enable)
+	bios_parser *bp,
+	controller_id controller_id,
+	enable: bool)
 {
 	bool result = BP_RESULT_BADINPUT;
 	ENABLE_CRTC_PARAMETERS params = {0};
@@ -2351,13 +2351,13 @@ static enum bp_result enable_crtc_mem_req_v1(
  *******************************************************************************/
 
 static enum bp_result program_clock_v5(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params);
 static enum bp_result program_clock_v6(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params);
 
-static void init_program_clock(struct bios_parser *bp)
+static void init_program_clock(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(SetPixelClock)) {
 	case 5:
@@ -2375,8 +2375,8 @@ static void init_program_clock(struct bios_parser *bp)
 }
 
 static enum bp_result program_clock_v5(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 
@@ -2406,8 +2406,8 @@ static enum bp_result program_clock_v5(
 }
 
 static enum bp_result program_clock_v6(
-	struct bios_parser *bp,
-	struct bp_pixel_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_pixel_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 
@@ -2453,11 +2453,11 @@ static enum bp_result program_clock_v6(
  *******************************************************************************/
 
 static enum bp_result external_encoder_control_v3(
-	struct bios_parser *bp,
-	struct bp_external_encoder_control *cntl);
+	bios_parser *bp,
+	bp_external_encoder_control *cntl);
 
 static void init_external_encoder_control(
-	struct bios_parser *bp)
+	bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(ExternalEncoderControl)) {
 	case 3:
@@ -2471,8 +2471,8 @@ static void init_external_encoder_control(
 }
 
 static enum bp_result external_encoder_control_v3(
-	struct bios_parser *bp,
-	struct bp_external_encoder_control *cntl)
+	bios_parser *bp,
+	bp_external_encoder_control *cntl)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 
@@ -2579,12 +2579,12 @@ static enum bp_result external_encoder_control_v3(
  *******************************************************************************/
 
 static enum bp_result enable_disp_power_gating_v2_1(
-	struct bios_parser *bp,
-	enum controller_id crtc_id,
-	enum bp_pipe_control_action action);
+	bios_parser *bp,
+	controller_id crtc_id,
+	bp_pipe_control_action action);
 
 static void init_enable_disp_power_gating(
-	struct bios_parser *bp)
+	bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(EnableDispPowerGating)) {
 	case 1:
@@ -2600,9 +2600,9 @@ static void init_enable_disp_power_gating(
 }
 
 static enum bp_result enable_disp_power_gating_v2_1(
-	struct bios_parser *bp,
-	enum controller_id crtc_id,
-	enum bp_pipe_control_action action)
+	bios_parser *bp,
+	controller_id crtc_id,
+	bp_pipe_control_action action)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 
@@ -2631,10 +2631,10 @@ static enum bp_result enable_disp_power_gating_v2_1(
  ********************************************************************************
  *******************************************************************************/
 static enum bp_result set_dce_clock_v2_1(
-	struct bios_parser *bp,
-	struct bp_set_dce_clock_parameters *bp_params);
+	bios_parser *bp,
+	bp_set_dce_clock_parameters *bp_params);
 
-static void init_set_dce_clock(struct bios_parser *bp)
+static void init_set_dce_clock(bios_parser *bp)
 {
 	switch (BIOS_CMD_TABLE_PARA_REVISION(SetDCEClock)) {
 	case 1:
@@ -2649,8 +2649,8 @@ static void init_set_dce_clock(struct bios_parser *bp)
 }
 
 static enum bp_result set_dce_clock_v2_1(
-	struct bios_parser *bp,
-	struct bp_set_dce_clock_parameters *bp_params)
+	bios_parser *bp,
+	bp_set_dce_clock_parameters *bp_params)
 {
 	enum bp_result result = BP_RESULT_FAILURE;
 

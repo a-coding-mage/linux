@@ -104,7 +104,7 @@ pub unsafe extern "C" fn setup_arch(cmdline_p: *mut *mut core::ffi::c_char) {
     smp_start_cpus();
 }
 
-static unsafe extern "C" fn c_start(_m: *mut seq_file, pos: *mut i64) -> *mut core::ffi::c_void {
+unsafe extern "C" fn c_start(_m: *mut seq_file, pos: *mut i64) -> *mut core::ffi::c_void {
     if *pos < nr_cpu_ids as i64 {
         (*pos as usize + 1) as *mut core::ffi::c_void
     } else {
@@ -112,14 +112,14 @@ static unsafe extern "C" fn c_start(_m: *mut seq_file, pos: *mut i64) -> *mut co
     }
 }
 
-static unsafe extern "C" fn c_next(m: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut i64) -> *mut core::ffi::c_void {
+unsafe extern "C" fn c_next(m: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut i64) -> *mut core::ffi::c_void {
     *pos += 1;
     c_start(m, pos)
 }
 
-static unsafe extern "C" fn c_stop(_m: *mut seq_file, _v: *mut core::ffi::c_void) {}
+unsafe extern "C" fn c_stop(_m: *mut seq_file, _v: *mut core::ffi::c_void) {}
 
-static unsafe extern "C" fn show_cpuinfo(m: *mut seq_file, v: *mut core::ffi::c_void) -> core::ffi::c_int {
+unsafe extern "C" fn show_cpuinfo(m: *mut seq_file, v: *mut core::ffi::c_void) -> core::ffi::c_int {
     let cpu = v as usize as i64 - 1;
     #[cfg(CONFIG_SMP)]
     if !cpu_online(cpu as core::ffi::c_int) {

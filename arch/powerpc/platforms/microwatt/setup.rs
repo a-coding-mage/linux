@@ -37,7 +37,7 @@ unsafe fn microwatt_populate() -> core::ffi::c_int {
 unsafe fn microwatt_probe() -> core::ffi::c_int {
     // Main reason for having this is to start the other CPU(s)
     // IS_ENABLED(CONFIG_SMP) is a build-time configuration condition.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     unsafe {
         microwatt_init_smp();
     }

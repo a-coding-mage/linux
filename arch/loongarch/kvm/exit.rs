@@ -11,7 +11,7 @@ unsafe fn kvm_emu_cpucfg(vcpu: *mut kvm_vcpu, inst: larch_inst) -> i32 {
     let index = (*vcpu).arch.gprs[rj] as u32;
     preempt_disable();
     match index {
-        0..=(KVM_MAX_CPUCFG_REGS - 1) => (*vcpu).arch.gprs[rd] = (*vcpu).arch.cpucfg[index as usize] as _ ,
+        i if i < KVM_MAX_CPUCFG_REGS => (*vcpu).arch.gprs[rd] = (*vcpu).arch.cpucfg[index as usize] as _ ,
         CPUCFG_KVM_SIG => (*vcpu).arch.gprs[rd] = *(KVM_SIGNATURE as *const u32) as _,
         CPUCFG_KVM_FEATURE => (*vcpu).arch.gprs[rd] = ((*vcpu).kvm.as_ref().unwrap().arch.pv_features & LOONGARCH_PV_FEAT_MASK) as _,
         _ => (*vcpu).arch.gprs[rd] = 0,

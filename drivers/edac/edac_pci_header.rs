@@ -21,7 +21,7 @@
 
 /* C dependencies are supplied by the surrounding kernel translation unit. */
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[repr(C)]
 pub struct edac_pci_counter {
     pub pe_count: atomic_t,
@@ -31,7 +31,7 @@ pub struct edac_pci_counter {
 /*
  * Abstract edac_pci control info structure
  */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[repr(C)]
 pub struct edac_pci_ctl_info {
     /* for global list of edac_pci_ctl_info structs */
@@ -54,14 +54,14 @@ pub struct edac_pci_ctl_info {
     pub kobj: kobject,
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[macro_export]
 macro_rules! to_edac_pci_ctl_work {
     ($w:expr) => { container_of!($w, edac_pci_ctl_info, work) };
 }
 
 /* write all or some bits in a byte-register */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn pci_write_bits8(pdev: *mut pci_dev, offset: core::ffi::c_int,
                               mut value: u8, mask: u8) {
@@ -76,7 +76,7 @@ pub unsafe fn pci_write_bits8(pdev: *mut pci_dev, offset: core::ffi::c_int,
 }
 
 /* write all or some bits in a word-register */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn pci_write_bits16(pdev: *mut pci_dev, offset: core::ffi::c_int,
                                mut value: u16, mask: u16) {
@@ -91,7 +91,7 @@ pub unsafe fn pci_write_bits16(pdev: *mut pci_dev, offset: core::ffi::c_int,
 }
 
 /* write all or some bits in a dword-register */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn pci_write_bits32(pdev: *mut pci_dev, offset: core::ffi::c_int,
                                mut value: u32, mask: u32) {

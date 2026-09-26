@@ -38,7 +38,7 @@ static mut tx4927_pci_ops:pci_ops=pci_ops{read:Some(tx4927_pci_config_read),writ
 #[repr(C)] struct opts{trdyto:u8,retryto:u8,gbwc:u16} static mut tx4927_pci_opts:opts=opts{trdyto:0,retryto:0,gbwc:0xfe0};
 
 #[no_mangle] pub unsafe extern "C" fn tx4927_pcibios_setup(s:*mut u8)->*mut u8{if strncmp(s,b"trdyto=\0".as_ptr(),7)==0{let mut v=0; if kstrtou8(s.add(7),0,&mut v)==0{tx4927_pci_opts.trdyto=v};return core::ptr::null_mut()} if strncmp(s,b"retryto=\0".as_ptr(),8)==0{let mut v=0;if kstrtou8(s.add(8),0,&mut v)==0{tx4927_pci_opts.retryto=v};return core::ptr::null_mut()} if strncmp(s,b"gbwc=\0".as_ptr(),5)==0{let mut v=0;if kstrtou16(s.add(5),0,&mut v)==0{tx4927_pci_opts.gbwc=v};return core::ptr::null_mut()} s}
-extern "C"{fn strncmp(*const u8,*const u8,usize)->i32;fn kstrtou8(*const u8,u32,*mut u8)->i32;fn kstrtou16(*const u8,u32,*mut u16)->i32;fn PCI_DEVFN(u32,u32)->u32;}
+extern "C"{fn strncmp(_: *const u8,_: *const u8,_: usize)->i32;fn kstrtou8(_: *const u8,_: u32,_: *mut u8)->i32;fn kstrtou16(_: *const u8,_: u32,_: *mut u16)->i32;fn PCI_DEVFN(_: u32,_: u32)->u32;}
 
 // The setup routine's MMIO register sequence is preserved verbatim in the
 // following low-level implementation; register offsets/constants are supplied

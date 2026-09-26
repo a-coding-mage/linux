@@ -19,15 +19,15 @@ pub const __NR_64_Linux: i32 = 5000;
 pub const __NR_O32_Linux: i32 = 4000;
 
 // Build-time configuration condition from CONFIG_MIPS32_N32.
-#[cfg(feature = "CONFIG_MIPS32_N32")]
+#[cfg(CONFIG_MIPS32_N32)]
 pub const NR_syscalls: i32 = __NR_N32_Linux + __NR_N32_Linux_syscalls;
 
 // Build-time configuration condition from CONFIG_64BIT.
-#[cfg(all(not(feature = "CONFIG_MIPS32_N32"), feature = "CONFIG_64BIT"))]
+#[cfg(all(not(CONFIG_MIPS32_N32), CONFIG_64BIT))]
 pub const NR_syscalls: i32 = __NR_64_Linux + __NR_64_Linux_syscalls;
 
 // Build-time fallback when neither CONFIG_MIPS32_N32 nor CONFIG_64BIT is set.
-#[cfg(all(not(feature = "CONFIG_MIPS32_N32"), not(feature = "CONFIG_64BIT")))]
+#[cfg(all(not(CONFIG_MIPS32_N32), not(CONFIG_64BIT)))]
 pub const NR_syscalls: i32 = __NR_O32_Linux + __NR_O32_Linux_syscalls;
 
 // The following declarations correspond to the non-assembler branch.
@@ -49,15 +49,15 @@ pub const __ARCH_WANT_SYS_SIGPENDING: bool = true;
 pub const __ARCH_WANT_SYS_SIGPROCMASK: bool = true;
 
 // Build-time condition from CONFIG_32BIT.
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const __ARCH_WANT_STAT64: bool = true;
 
 // Build-time inverse condition: CONFIG_64BIT.
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const __ARCH_WANT_COMPAT_STAT: bool = true;
 
 // Build-time conditions from CONFIG_32BIT or CONFIG_MIPS32_O32.
-#[cfg(any(feature = "CONFIG_32BIT", feature = "CONFIG_MIPS32_O32"))]
+#[cfg(any(CONFIG_32BIT, CONFIG_MIPS32_O32))]
 pub const __ARCH_WANT_SYS_TIME32: bool = true;
 
 pub const __ARCH_WANT_SYS_FORK: bool = true;

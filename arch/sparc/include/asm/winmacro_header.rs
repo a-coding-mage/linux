@@ -124,13 +124,13 @@ macro_rules! SAVE_BOLIXED_USER_STACK { ($cur_reg:ident, $scratch:ident) => {{ un
 /* LOAD_CURRENT has architecture-specific implementations.  The CONFIG_SMP
  * branch is preserved as conditional intent; the non-SMP form is available
  * through the same macro interface. */
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[macro_export]
 macro_rules! LOAD_CURRENT { ($dest_reg:ident, $idreg:ident) => {{ unsafe { core::arch::asm!(concat!(
     "sethi %hi(current_set), %", stringify!($idreg), ";\n",
     "ld [%", stringify!($idreg), " + %lo(current_set)], %", stringify!($dest_reg), ";")) } }}; }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! LOAD_CURRENT {
     ($dest_reg:ident, $idreg:ident) => {{ unsafe { core::arch::asm!(concat!(

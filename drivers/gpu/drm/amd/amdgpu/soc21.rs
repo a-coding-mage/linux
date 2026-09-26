@@ -167,7 +167,7 @@ static const amdgpu_video_codecs vcn_5_3_0_video_codecs_decode_vcn0 = {
 };
 
 
-static i32 soc21_query_video_codecs(amdgpu_device *adev, bool encode,
+static i32 soc21_query_video_codecs(amdgpu_device *adev, encode: bool,
 				 const amdgpu_video_codecs **codecs)
 {
 	if (adev.vcn.num_vcn_inst == hweight8(adev.vcn.harvest_config))
@@ -222,9 +222,9 @@ static i32 soc21_query_video_codecs(amdgpu_device *adev, bool encode,
 	}
 }
 
-static u32 soc21_didt_rreg(amdgpu_device *adev, u32 reg)
+static u32 soc21_didt_rreg(amdgpu_device *adev, reg: u32)
 {
-	unsigned long flags, address, data;
+	flags: core::ffi::c_ulong, address, data;
 	u32 r;
 
 	address = SOC15_REG_OFFSET(GC, 0, regDIDT_IND_INDEX);
@@ -237,9 +237,9 @@ static u32 soc21_didt_rreg(amdgpu_device *adev, u32 reg)
 	return r;
 }
 
-static c_void soc21_didt_wreg(amdgpu_device *adev, u32 reg, u32 v)
+static c_void soc21_didt_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
-	unsigned long flags, address, data;
+	flags: core::ffi::c_ulong, address, data;
 
 	address = SOC15_REG_OFFSET(GC, 0, regDIDT_IND_INDEX);
 	data = SOC15_REG_OFFSET(GC, 0, regDIDT_IND_DATA);
@@ -268,7 +268,7 @@ static u32 soc21_get_xclk(amdgpu_device *adev)
 
 
 c_void soc21_grbm_select(amdgpu_device *adev,
-		     u32 me, u32 pipe, u32 queue, u32 vmid)
+		     me: u32, pipe: u32, queue: u32, vmid: u32)
 {
 	u32 grbm_gfx_cntl = 0;
 	grbm_gfx_cntl = REG_SET_FIELD(grbm_gfx_cntl, GRBM_GFX_CNTL, PIPEID, pipe);
@@ -308,8 +308,8 @@ static soc15_allowed_register_entry soc21_allowed_read_registers[] = {
 };
 
 static u32 soc21_get_register_value(amdgpu_device *adev,
-				      bool indexed, u32 se_num,
-				      u32 sh_num, u32 reg_offset)
+				      indexed: bool, se_num: u32,
+				      sh_num: u32, reg_offset: u32)
 {
 	if (indexed) {
 		return amdgpu_read_indexed_register(adev, se_num, sh_num, reg_offset);
@@ -320,8 +320,8 @@ static u32 soc21_get_register_value(amdgpu_device *adev,
 	}
 }
 
-static i32 soc21_read_register(amdgpu_device *adev, u32 se_num,
-			    u32 sh_num, u32 reg_offset, u32 *value)
+static i32 soc21_read_register(amdgpu_device *adev, se_num: u32,
+			    sh_num: u32, reg_offset: u32, u32 *value)
 {
 	u32 i;
 	soc15_allowed_register_entry  *en;
@@ -444,13 +444,13 @@ static i32 soc21_asic_reset(amdgpu_device *adev)
 	return ret;
 }
 
-static i32 soc21_set_uvd_clocks(amdgpu_device *adev, u32 vclk, u32 dclk)
+static i32 soc21_set_uvd_clocks(amdgpu_device *adev, vclk: u32, dclk: u32)
 {
 	/* todo */
 	return 0;
 }
 
-static i32 soc21_set_vce_clocks(amdgpu_device *adev, u32 evclk, u32 ecclk)
+static i32 soc21_set_vce_clocks(amdgpu_device *adev, evclk: u32, ecclk: u32)
 {
 	/* todo */
 	return 0;
@@ -518,7 +518,7 @@ static c_void soc21_init_doorbell_index(amdgpu_device *adev)
 }
 
 static i32 soc21_update_umd_stable_pstate(amdgpu_device *adev,
-					  bool enter)
+					  enter: bool)
 {
 	if (enter)
 		amdgpu_gfx_rlc_enter_safe_mode(adev, 0);
@@ -1011,7 +1011,7 @@ static i32 soc21_common_suspend(amdgpu_ip_block *ip_block)
 
 static bool soc21_need_reset_on_resume(amdgpu_device *adev)
 {
-	u32 sol_reg1, sol_reg2;
+	sol_reg1: u32, sol_reg2;
 
 	/* Will reset for the following suspend abort cases.
 	 * 1) Only reset dGPU side.

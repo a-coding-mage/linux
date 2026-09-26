@@ -106,9 +106,18 @@ static hfs_super_operations: super_operations = super_operations {
     statfs: Some(hfs_statfs), show_options: Some(hfs_show_options),
 };
 
-enum { opt_uid, opt_gid, opt_umask, opt_file_umask, opt_dir_umask,
-       opt_part, opt_session, opt_type, opt_creator, opt_quiet,
-       opt_codepage, opt_iocharset }
+pub const opt_uid: i32 = 0;
+pub const opt_gid: i32 = opt_uid + 1;
+pub const opt_umask: i32 = opt_gid + 1;
+pub const opt_file_umask: i32 = opt_umask + 1;
+pub const opt_dir_umask: i32 = opt_file_umask + 1;
+pub const opt_part: i32 = opt_dir_umask + 1;
+pub const opt_session: i32 = opt_part + 1;
+pub const opt_type: i32 = opt_session + 1;
+pub const opt_creator: i32 = opt_type + 1;
+pub const opt_quiet: i32 = opt_creator + 1;
+pub const opt_codepage: i32 = opt_quiet + 1;
+pub const opt_iocharset: i32 = opt_codepage + 1;
 
 static hfs_param_spec: [fs_parameter_spec; 13] = [
     fsparam_u32!("uid", opt_uid), fsparam_u32!("gid", opt_gid),

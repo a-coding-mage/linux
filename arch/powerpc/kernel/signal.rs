@@ -8,7 +8,7 @@
 
 // Dependencies are supplied by the surrounding kernel translation unit.
 
-#[cfg(feature = "CONFIG_VSX")]
+#[cfg(CONFIG_VSX)]
 pub unsafe fn copy_fpr_to_user(to: *mut core::ffi::c_void, task: *mut task_struct) -> c_ulong {
     let mut buf: [u64; ELF_NFPREG] = [0; ELF_NFPREG];
     let mut i: c_int = 0;
@@ -17,7 +17,7 @@ pub unsafe fn copy_fpr_to_user(to: *mut core::ffi::c_void, task: *mut task_struc
     __copy_to_user(to, buf.as_ptr() as *const core::ffi::c_void, ELF_NFPREG * core::mem::size_of::<f64>())
 }
 
-#[cfg(feature = "CONFIG_VSX")]
+#[cfg(CONFIG_VSX)]
 pub unsafe fn copy_fpr_from_user(task: *mut task_struct, from: *mut core::ffi::c_void) -> c_ulong {
     let mut buf: [u64; ELF_NFPREG] = [0; ELF_NFPREG];
     if __copy_from_user(buf.as_mut_ptr() as *mut core::ffi::c_void, from, ELF_NFPREG * core::mem::size_of::<f64>()) != 0 { return 1; }
@@ -27,14 +27,14 @@ pub unsafe fn copy_fpr_from_user(task: *mut task_struct, from: *mut core::ffi::c
     0
 }
 
-#[cfg(feature = "CONFIG_VSX")]
+#[cfg(CONFIG_VSX)]
 pub unsafe fn copy_vsx_to_user(to: *mut core::ffi::c_void, task: *mut task_struct) -> c_ulong {
     let mut buf: [u64; ELF_NVSRHALFREG] = [0; ELF_NVSRHALFREG];
     for i in 0..ELF_NVSRHALFREG { buf[i] = (*task).thread.fp_state.fpr[i][TS_VSRLOWOFFSET]; }
     __copy_to_user(to, buf.as_ptr() as *const core::ffi::c_void, ELF_NVSRHALFREG * core::mem::size_of::<f64>())
 }
 
-#[cfg(feature = "CONFIG_VSX")]
+#[cfg(CONFIG_VSX)]
 pub unsafe fn copy_vsx_from_user(task: *mut task_struct, from: *mut core::ffi::c_void) -> c_ulong {
     let mut buf: [u64; ELF_NVSRHALFREG] = [0; ELF_NVSRHALFREG];
     if __copy_from_user(buf.as_mut_ptr() as *mut core::ffi::c_void, from, ELF_NVSRHALFREG * core::mem::size_of::<f64>()) != 0 { return 1; }
@@ -48,7 +48,7 @@ pub unsafe fn get_min_sigframe_size() -> c_ulong {
     if IS_ENABLED(CONFIG_PPC64) { get_min_sigframe_size_64() } else { get_min_sigframe_size_32() }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn get_min_sigframe_size_compat() -> c_ulong { get_min_sigframe_size_32() }
 
 pub unsafe fn get_sigframe(ksig: *mut ksignal, tsk: *mut task_struct, frame_size: usize, is_32: c_int) -> *mut core::ffi::c_void {
@@ -99,7 +99,7 @@ unsafe fn do_signal(tsk: *mut task_struct) {
 unsafe fn get_tm_stackpointer(tsk: *mut task_struct) -> c_ulong {
     let regs = (*tsk).thread.regs;
     let mut ret = (*regs).gpr[1];
-    #[cfg(feature = "CONFIG_PPC_TRANSACTIONAL_MEM")]
+    #[cfg(CONFIG_PPC_TRANSACTIONAL_MEM)]
     { BUG_ON(tsk != current); if MSR_TM_ACTIVE((*regs).msr) { preempt_disable(); tm_reclaim_current(TM_CAUSE_SIGNAL); if MSR_TM_TRANSACTIONAL((*regs).msr) { ret = (*tsk).thread.ckpt_regs.gpr[1]; } regs_set_return_msr(regs, (*regs).msr & !MSR_TS_MASK); preempt_enable(); } }
     ret
 }

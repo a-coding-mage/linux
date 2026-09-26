@@ -77,13 +77,13 @@ pub unsafe extern "C" fn setup_barrier_nospec() {
 }
 unsafe extern "C" fn handle_nospectre_v1(_p: *mut i8) -> i32 { no_nospec = true; 0 }
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 unsafe extern "C" fn handle_nospectre_v2(_p: *mut i8) -> i32 { no_spectrev2 = true; 0 }
 
-#[cfg(feature = "CONFIG_PPC_E500")]
+#[cfg(CONFIG_PPC_E500)]
 pub unsafe extern "C" fn setup_spectre_v2() { if no_spectrev2 || cpu_mitigations_off() { do_btb_flush_fixups(); } else { btb_flush_enabled = true; } }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 pub unsafe extern "C" fn cpu_show_meltdown(_dev: *mut Device, _attr: *mut DeviceAttribute, buf: *mut i8) -> isize {
     let thread_priv = security_ftr_enabled(SEC_FTR_L1D_THREAD_PRIV);
     if rfi_flush {
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn cpu_show_meltdown(_dev: *mut Device, _attr: *mut Device
     if !security_ftr_enabled(SEC_FTR_L1D_FLUSH_HV) && !security_ftr_enabled(SEC_FTR_L1D_FLUSH_PR) { return sysfs_emit(buf, b"Not affected\n\0".as_ptr() as *const i8); }
     sysfs_emit(buf, b"Vulnerable\n\0".as_ptr() as *const i8)
 }
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 pub unsafe extern "C" fn cpu_show_l1tf(dev: *mut Device, attr: *mut DeviceAttribute, buf: *mut i8) -> isize { cpu_show_meltdown(dev, attr, buf) }
 
 pub unsafe extern "C" fn cpu_show_spectre_v1(_dev: *mut Device, _attr: *mut DeviceAttribute, buf: *mut i8) -> isize {
@@ -118,16 +118,16 @@ pub unsafe extern "C" fn cpu_show_spectre_v2(_dev: *mut Device, _attr: *mut Devi
     seq_buf_printf(&mut s, b"\n\0".as_ptr() as *const i8); s.len as isize
 }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 static mut stf_enabled_flush_types: StfBarrierType = StfBarrierType::STF_BARRIER_NONE;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] static mut no_stf_barrier: bool = false;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] static mut stf_barrier: bool = false;
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] unsafe extern "C" fn handle_no_stf_barrier(_p: *mut i8) -> i32 { pr_info(b"stf-barrier: disabled on command line.\0".as_ptr() as *const i8); no_stf_barrier = true; 0 }
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] pub unsafe extern "C" fn stf_barrier_type_get() -> StfBarrierType { stf_enabled_flush_types }
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] unsafe extern "C" fn handle_ssbd(p: *mut i8) -> i32 { if p.is_null() { return 0; } let _ = p; 1 }
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] unsafe extern "C" fn handle_no_ssbd(_p: *mut i8) -> i32 { handle_no_stf_barrier(core::ptr::null_mut()) }
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] unsafe fn stf_barrier_enable(enable: bool) { if enable { do_stf_barrier_fixups(stf_enabled_flush_types); } else { do_stf_barrier_fixups(StfBarrierType::STF_BARRIER_NONE); } stf_barrier = enable; }
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")] pub unsafe extern "C" fn setup_stf_barrier() { let typ = if cpu_has_feature(CPU_FTR_ARCH_300) { StfBarrierType::STF_BARRIER_EIEIO } else if cpu_has_feature(CPU_FTR_ARCH_207S) { StfBarrierType::STF_BARRIER_SYNC_ORI } else if cpu_has_feature(CPU_FTR_ARCH_206) { StfBarrierType::STF_BARRIER_FALLBACK } else { StfBarrierType::STF_BARRIER_NONE }; let enable = security_ftr_enabled(SEC_FTR_FAVOUR_SECURITY) && security_ftr_enabled(SEC_FTR_STF_BARRIER); stf_enabled_flush_types = typ; if !no_stf_barrier && !cpu_mitigations_off() { stf_barrier_enable(enable); } }
+#[cfg(CONFIG_PPC_BOOK3S_64)] static mut no_stf_barrier: bool = false;
+#[cfg(CONFIG_PPC_BOOK3S_64)] static mut stf_barrier: bool = false;
+#[cfg(CONFIG_PPC_BOOK3S_64)] unsafe extern "C" fn handle_no_stf_barrier(_p: *mut i8) -> i32 { pr_info(b"stf-barrier: disabled on command line.\0".as_ptr() as *const i8); no_stf_barrier = true; 0 }
+#[cfg(CONFIG_PPC_BOOK3S_64)] pub unsafe extern "C" fn stf_barrier_type_get() -> StfBarrierType { stf_enabled_flush_types }
+#[cfg(CONFIG_PPC_BOOK3S_64)] unsafe extern "C" fn handle_ssbd(p: *mut i8) -> i32 { if p.is_null() { return 0; } let _ = p; 1 }
+#[cfg(CONFIG_PPC_BOOK3S_64)] unsafe extern "C" fn handle_no_ssbd(_p: *mut i8) -> i32 { handle_no_stf_barrier(core::ptr::null_mut()) }
+#[cfg(CONFIG_PPC_BOOK3S_64)] unsafe fn stf_barrier_enable(enable: bool) { if enable { do_stf_barrier_fixups(stf_enabled_flush_types); } else { do_stf_barrier_fixups(StfBarrierType::STF_BARRIER_NONE); } stf_barrier = enable; }
+#[cfg(CONFIG_PPC_BOOK3S_64)] pub unsafe extern "C" fn setup_stf_barrier() { let typ = if cpu_has_feature(CPU_FTR_ARCH_300) { StfBarrierType::STF_BARRIER_EIEIO } else if cpu_has_feature(CPU_FTR_ARCH_207S) { StfBarrierType::STF_BARRIER_SYNC_ORI } else if cpu_has_feature(CPU_FTR_ARCH_206) { StfBarrierType::STF_BARRIER_FALLBACK } else { StfBarrierType::STF_BARRIER_NONE }; let enable = security_ftr_enabled(SEC_FTR_FAVOUR_SECURITY) && security_ftr_enabled(SEC_FTR_STF_BARRIER); stf_enabled_flush_types = typ; if !no_stf_barrier && !cpu_mitigations_off() { stf_barrier_enable(enable); } }
 
 // The remaining debugfs wiring, branch-cache patching, RFI/entry/uaccess flush
 // controls, and command-line handlers retain their C ABI and are declared here

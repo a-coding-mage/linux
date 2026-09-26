@@ -24,7 +24,7 @@ unsafe fn dfl_id_alloc(t:dfl_id_type,dev:*mut device)->i32{mutex_lock(&mut dfl_i
 unsafe fn dfl_id_free(t:dfl_id_type,id:i32){mutex_lock(&mut dfl_id_mutex);idr_remove(&mut dfl_devs[t as usize].id,id);mutex_unlock(&mut dfl_id_mutex)}
 unsafe fn dfh_id_to_type(id:u16)->dfl_id_type{for(i,d)in dfl_devs.iter().enumerate(){if d.dfh_id==id{return i as _}}DFL_ID_MAX}
 
-#[no_mangle] pub unsafe extern "C" fn dfl_fpga_port_ops_get(f:*mut dfl_feature_dev_data)->*mut dfl_fpga_port_ops{let mut o=ptr::null_mut();mutex_lock(&mut dfl_port_ops_mutex);list_for_each_entry(o,&dfl_port_ops_list,node){if strcmp((*f).pdev_name,(*o).name)==0{if !try_module_get((*o).owner){o=ptr::null_mut()}break}}mutex_unlock(&mut dfl_port_ops_mutex);o}
+#[no_mangle] pub unsafe extern "C" fn dfl_fpga_port_ops_get(f:*mut dfl_feature_dev_data)->*mut dfl_fpga_port_ops{let mut o=ptr::null_mut();mutex_lock(&mut dfl_port_ops_mutex);list_for_each_entry!(o,&dfl_port_ops_list,node, {if strcmp((*f).pdev_name,(*o).name)==0{if !try_module_get((*o).owner){o=ptr::null_mut()}break}});mutex_unlock(&mut dfl_port_ops_mutex);o}
 #[no_mangle] pub unsafe extern "C" fn dfl_fpga_port_ops_put(o:*mut dfl_fpga_port_ops){if !o.is_null()&&!(*o).owner.is_null(){module_put((*o).owner)}}
 #[no_mangle] pub unsafe extern "C" fn dfl_fpga_port_ops_add(o:*mut dfl_fpga_port_ops){mutex_lock(&mut dfl_port_ops_mutex);list_add_tail(&mut(*o).node,&mut dfl_port_ops_list);mutex_unlock(&mut dfl_port_ops_mutex)}
 #[no_mangle] pub unsafe extern "C" fn dfl_fpga_port_ops_del(o:*mut dfl_fpga_port_ops){mutex_lock(&mut dfl_port_ops_mutex);list_del(&mut(*o).node);mutex_unlock(&mut dfl_port_ops_mutex)}

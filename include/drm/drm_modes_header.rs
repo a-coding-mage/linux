@@ -36,7 +36,7 @@ pub const DRM_MODE_FMT: &str = "\"%s\": %d %d %d %d %d %d %d %d %d %d 0x%x 0x%x"
 macro_rules! DRM_MODE_RES_MM { ($res:expr, $dpi:expr) => { (($res) * 254u64) / (($dpi) * 10u64) } }
 #[macro_export]
 macro_rules! DRM_MODE_INIT { ($hz:expr, $hd:expr, $vd:expr, $hd_mm:expr, $vd_mm:expr) => {
-    __DRM_MODE_INIT(($hd) * ($vd) * ($hz) / 1000, $hd, $vd, $hd_mm, $vd_mm)
+    __DRM_MODE_INIT!(($hd) * ($vd) * ($hz) / 1000, $hd, $vd, $hd_mm, $vd_mm)
 } }
 // C initializer macro; expand at the containing struct-literal site.
 #[macro_export]
@@ -47,7 +47,7 @@ macro_rules! __DRM_MODE_INIT { ($pix:expr, $hd:expr, $vd:expr, $hd_mm:expr, $vd_
 } }
 #[macro_export]
 macro_rules! DRM_SIMPLE_MODE { ($hd:expr, $vd:expr, $hd_mm:expr, $vd_mm:expr) => {
-    __DRM_MODE_INIT(1, $hd, $vd, $hd_mm, $vd_mm)
+    __DRM_MODE_INIT!(1, $hd, $vd, $hd_mm, $vd_mm)
 } }
 
 #[repr(C)]
@@ -127,21 +127,21 @@ pub unsafe fn drm_mode_analog_pal_576i(dev: *mut drm_device) -> *mut drm_display
 }
 
 // The CONFIG_OF branch is supplied by the target kernel configuration.
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_get_drm_display_mode(_np: *mut device_node, _dmode: *mut drm_display_mode,
                                       _bus_flags: *mut u32, _index: i32) -> i32 { -EINVAL }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_get_drm_panel_display_mode(_np: *mut device_node, _dmode: *mut drm_display_mode,
                                             _bus_flags: *mut u32) -> i32 { -EINVAL }
 
 extern "C" {
-    pub type drm_device; pub type drm_mode_modeinfo; pub type drm_connector;
-    pub type drm_display_info; pub type drm_cmdline_mode; pub type videomode;
-    pub type list_head; pub type hdmi_picture_aspect; pub type drm_connector_tv_mode;
-    pub type device_node; const EINVAL: i32;
 }
+pub type drm_device; pub type drm_mode_modeinfo; pub type drm_connector;
+pub type drm_display_info; pub type drm_cmdline_mode; pub type videomode;
+pub type list_head; pub type hdmi_picture_aspect; pub type drm_connector_tv_mode;
+pub type device_node; const EINVAL: i32;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

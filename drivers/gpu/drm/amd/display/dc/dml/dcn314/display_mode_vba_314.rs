@@ -41,10 +41,10 @@
  * remain as-is as it provides us with a guarantee from HW that it is correct.
  */
 
-#define BPP_INVALID 0
-#define BPP_BLENDED_PIPE 0xffffffff
-#define DCN314_MAX_DSC_IMAGE_WIDTH 5184
-#define DCN314_MAX_FMT_420_BUFFER_WIDTH 4096
+pub const BPP_INVALID: u32 = 0;
+pub const BPP_BLENDED_PIPE: u32 = 0xffffffff;
+pub const DCN314_MAX_DSC_IMAGE_WIDTH: u32 = 5184;
+pub const DCN314_MAX_FMT_420_BUFFER_WIDTH: u32 = 4096;
 
 // For DML-C changes that hasn't been propagated to VBA yet
 //#define __DML_VBA_ALLOW_DELTA__
@@ -52,10 +52,10 @@
 // Move these to ip parameters/constant
 
 // At which vstartup the DML start to try if the mode can be supported
-#define __DML_VBA_MIN_VSTARTUP__    9
+pub const __DML_VBA_MIN_VSTARTUP__: u32 = 9;
 
 // Delay in DCFCLK from ARB to DET (1st num is ARB to SDPIF, 2nd number is SDPIF to DET)
-#define __DML_ARB_TO_RET_DELAY__    (7 + 95)
+pub const __DML_ARB_TO_RET_DELAY__: u32 = 7 + 95;
 
 // fudge factor for min dcfclk calclation
 #define __DML_MIN_DCFCLK_FACTOR__   1.15
@@ -65,20 +65,20 @@ typedef struct {
 	double DISPCLK;
 	double PixelClock;
 	double DCFCLKDeepSleep;
-	unsigned int DPPPerPlane;
+	core::ffi::c_uint DPPPerPlane;
 	bool ScalerEnabled;
 	double VRatio;
 	double VRatioChroma;
 	enum scan_direction_class SourceScan;
-	unsigned int BlockWidth256BytesY;
-	unsigned int BlockHeight256BytesY;
-	unsigned int BlockWidth256BytesC;
-	unsigned int BlockHeight256BytesC;
-	unsigned int InterlaceEnable;
-	unsigned int NumberOfCursors;
-	unsigned int VBlank;
-	unsigned int HTotal;
-	unsigned int DCCEnable;
+	core::ffi::c_uint BlockWidth256BytesY;
+	core::ffi::c_uint BlockHeight256BytesY;
+	core::ffi::c_uint BlockWidth256BytesC;
+	core::ffi::c_uint BlockHeight256BytesC;
+	core::ffi::c_uint InterlaceEnable;
+	core::ffi::c_uint NumberOfCursors;
+	core::ffi::c_uint VBlank;
+	core::ffi::c_uint HTotal;
+	core::ffi::c_uint DCCEnable;
 	bool ODMCombineIsEnabled;
 	enum source_format_class SourcePixelFormat;
 	int BytePerPixelY;
@@ -86,72 +86,72 @@ typedef struct {
 	bool ProgressiveToInterlaceUnitInOPP;
 } Pipe;
 
-#define BPP_INVALID 0
-#define BPP_BLENDED_PIPE 0xffffffff
+pub const BPP_INVALID: u32 = 0;
+pub const BPP_BLENDED_PIPE: u32 = 0xffffffff;
 
 static bool CalculateBytePerPixelAnd256BBlockSizes(
-		enum source_format_class SourcePixelFormat,
-		enum dm_swizzle_mode SurfaceTiling,
-		unsigned int *BytePerPixelY,
-		unsigned int *BytePerPixelC,
+		source_format_class SourcePixelFormat,
+		dm_swizzle_mode SurfaceTiling,
+		core::ffi::c_uint *BytePerPixelY,
+		core::ffi::c_uint *BytePerPixelC,
 		double *BytePerPixelDETY,
 		double *BytePerPixelDETC,
-		unsigned int *BlockHeight256BytesY,
-		unsigned int *BlockHeight256BytesC,
-		unsigned int *BlockWidth256BytesY,
-		unsigned int *BlockWidth256BytesC);
-static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib);
-static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib);
-static unsigned int dscceComputeDelay(
-		unsigned int bpc,
+		core::ffi::c_uint *BlockHeight256BytesY,
+		core::ffi::c_uint *BlockHeight256BytesC,
+		core::ffi::c_uint *BlockWidth256BytesY,
+		core::ffi::c_uint *BlockWidth256BytesC);
+static void DisplayPipeConfiguration(display_mode_lib *mode_lib);
+static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(display_mode_lib *mode_lib);
+static core::ffi::c_uint dscceComputeDelay(
+		bpc: core::ffi::c_uint,
 		double BPP,
-		unsigned int sliceWidth,
-		unsigned int numSlices,
-		enum output_format_class pixelFormat,
-		enum output_encoder_class Output);
-static unsigned int dscComputeDelay(enum output_format_class pixelFormat, enum output_encoder_class Output);
+		sliceWidth: core::ffi::c_uint,
+		numSlices: core::ffi::c_uint,
+		output_format_class pixelFormat,
+		output_encoder_class Output);
+static core::ffi::c_uint dscComputeDelay(output_format_class pixelFormat, output_encoder_class Output);
 static bool CalculatePrefetchSchedule(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		double HostVMInefficiencyFactor,
 		Pipe *myPipe,
-		unsigned int DSCDelay,
+		core::ffi::c_uint DSCDelay,
 		double DPPCLKDelaySubtotalPlusCNVCFormater,
 		double DPPCLKDelaySCL,
 		double DPPCLKDelaySCLLBOnly,
 		double DPPCLKDelayCNVCCursor,
 		double DISPCLKDelaySubtotal,
-		unsigned int DPP_RECOUT_WIDTH,
-		enum output_format_class OutputFormat,
-		unsigned int MaxInterDCNTileRepeaters,
-		unsigned int VStartup,
-		unsigned int MaxVStartup,
-		unsigned int GPUVMPageTableLevels,
+		core::ffi::c_uint DPP_RECOUT_WIDTH,
+		output_format_class OutputFormat,
+		core::ffi::c_uint MaxInterDCNTileRepeaters,
+		core::ffi::c_uint VStartup,
+		core::ffi::c_uint MaxVStartup,
+		core::ffi::c_uint GPUVMPageTableLevels,
 		bool GPUVMEnable,
 		bool HostVMEnable,
-		unsigned int HostVMMaxNonCachedPageTableLevels,
+		core::ffi::c_uint HostVMMaxNonCachedPageTableLevels,
 		double HostVMMinPageSize,
 		bool DynamicMetadataEnable,
 		bool DynamicMetadataVMEnabled,
 		int DynamicMetadataLinesBeforeActiveRequired,
-		unsigned int DynamicMetadataTransmittedBytes,
+		core::ffi::c_uint DynamicMetadataTransmittedBytes,
 		double UrgentLatency,
 		double UrgentExtraLatency,
 		double TCalc,
-		unsigned int PDEAndMetaPTEBytesFrame,
-		unsigned int MetaRowByte,
-		unsigned int PixelPTEBytesPerRow,
+		core::ffi::c_uint PDEAndMetaPTEBytesFrame,
+		core::ffi::c_uint MetaRowByte,
+		core::ffi::c_uint PixelPTEBytesPerRow,
 		double PrefetchSourceLinesY,
-		unsigned int SwathWidthY,
+		core::ffi::c_uint SwathWidthY,
 		double VInitPreFillY,
-		unsigned int MaxNumSwathY,
+		core::ffi::c_uint MaxNumSwathY,
 		double PrefetchSourceLinesC,
-		unsigned int SwathWidthC,
+		core::ffi::c_uint SwathWidthC,
 		double VInitPreFillC,
-		unsigned int MaxNumSwathC,
+		core::ffi::c_uint MaxNumSwathC,
 		int swath_width_luma_ub,
 		int swath_width_chroma_ub,
-		unsigned int SwathHeightY,
-		unsigned int SwathHeightC,
+		core::ffi::c_uint SwathHeightY,
+		core::ffi::c_uint SwathHeightC,
 		double TWait,
 		double *DSTXAfterScaler,
 		double *DSTYAfterScaler,
@@ -169,7 +169,7 @@ static bool CalculatePrefetchSchedule(
 		double *Tdmdl_vm,
 		double *Tdmdl,
 		double *TSetup,
-		unsigned int *VUpdateOffsetPix,
+		core::ffi::c_uint *VUpdateOffsetPix,
 		double *VUpdateWidthPix,
 		double *VReadyOffsetPix);
 static double RoundToDFSGranularityUp(double Clock, double VCOSpeed);
@@ -177,94 +177,94 @@ static double RoundToDFSGranularityDown(double Clock, double VCOSpeed);
 static void CalculateDCCConfiguration(
 		bool DCCEnabled,
 		bool DCCProgrammingAssumesScanDirectionUnknown,
-		enum source_format_class SourcePixelFormat,
-		unsigned int SurfaceWidthLuma,
-		unsigned int SurfaceWidthChroma,
-		unsigned int SurfaceHeightLuma,
-		unsigned int SurfaceHeightChroma,
+		source_format_class SourcePixelFormat,
+		core::ffi::c_uint SurfaceWidthLuma,
+		core::ffi::c_uint SurfaceWidthChroma,
+		core::ffi::c_uint SurfaceHeightLuma,
+		core::ffi::c_uint SurfaceHeightChroma,
 		double DETBufferSize,
-		unsigned int RequestHeight256ByteLuma,
-		unsigned int RequestHeight256ByteChroma,
-		enum dm_swizzle_mode TilingFormat,
-		unsigned int BytePerPixelY,
-		unsigned int BytePerPixelC,
+		core::ffi::c_uint RequestHeight256ByteLuma,
+		core::ffi::c_uint RequestHeight256ByteChroma,
+		dm_swizzle_mode TilingFormat,
+		core::ffi::c_uint BytePerPixelY,
+		core::ffi::c_uint BytePerPixelC,
 		double BytePerPixelDETY,
 		double BytePerPixelDETC,
-		enum scan_direction_class ScanOrientation,
-		unsigned int *MaxUncompressedBlockLuma,
-		unsigned int *MaxUncompressedBlockChroma,
-		unsigned int *MaxCompressedBlockLuma,
-		unsigned int *MaxCompressedBlockChroma,
-		unsigned int *IndependentBlockLuma,
-		unsigned int *IndependentBlockChroma);
+		scan_direction_class ScanOrientation,
+		core::ffi::c_uint *MaxUncompressedBlockLuma,
+		core::ffi::c_uint *MaxUncompressedBlockChroma,
+		core::ffi::c_uint *MaxCompressedBlockLuma,
+		core::ffi::c_uint *MaxCompressedBlockChroma,
+		core::ffi::c_uint *IndependentBlockLuma,
+		core::ffi::c_uint *IndependentBlockChroma);
 static double CalculatePrefetchSourceLines(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		double VRatio,
 		double vtaps,
 		bool Interlace,
 		bool ProgressiveToInterlaceUnitInOPP,
-		unsigned int SwathHeight,
-		unsigned int ViewportYStart,
+		core::ffi::c_uint SwathHeight,
+		core::ffi::c_uint ViewportYStart,
 		double *VInitPreFill,
-		unsigned int *MaxNumSwath);
-static unsigned int CalculateVMAndRowBytes(
-		struct display_mode_lib *mode_lib,
+		core::ffi::c_uint *MaxNumSwath);
+static core::ffi::c_uint CalculateVMAndRowBytes(
+		display_mode_lib *mode_lib,
 		bool DCCEnable,
-		unsigned int BlockHeight256Bytes,
-		unsigned int BlockWidth256Bytes,
-		enum source_format_class SourcePixelFormat,
-		unsigned int SurfaceTiling,
-		unsigned int BytePerPixel,
-		enum scan_direction_class ScanDirection,
-		unsigned int SwathWidth,
-		unsigned int ViewportHeight,
+		core::ffi::c_uint BlockHeight256Bytes,
+		core::ffi::c_uint BlockWidth256Bytes,
+		source_format_class SourcePixelFormat,
+		core::ffi::c_uint SurfaceTiling,
+		core::ffi::c_uint BytePerPixel,
+		scan_direction_class ScanDirection,
+		core::ffi::c_uint SwathWidth,
+		core::ffi::c_uint ViewportHeight,
 		bool GPUVMEnable,
 		bool HostVMEnable,
-		unsigned int HostVMMaxNonCachedPageTableLevels,
-		unsigned int GPUVMMinPageSize,
-		unsigned int HostVMMinPageSize,
-		unsigned int PTEBufferSizeInRequests,
-		unsigned int Pitch,
-		unsigned int DCCMetaPitch,
-		unsigned int *MacroTileWidth,
-		unsigned int *MetaRowByte,
-		unsigned int *PixelPTEBytesPerRow,
+		core::ffi::c_uint HostVMMaxNonCachedPageTableLevels,
+		core::ffi::c_uint GPUVMMinPageSize,
+		core::ffi::c_uint HostVMMinPageSize,
+		core::ffi::c_uint PTEBufferSizeInRequests,
+		core::ffi::c_uint Pitch,
+		core::ffi::c_uint DCCMetaPitch,
+		core::ffi::c_uint *MacroTileWidth,
+		core::ffi::c_uint *MetaRowByte,
+		core::ffi::c_uint *PixelPTEBytesPerRow,
 		bool *PTEBufferSizeNotExceeded,
-		unsigned int *dpte_row_width_ub,
-		unsigned int *dpte_row_height,
-		unsigned int *MetaRequestWidth,
-		unsigned int *MetaRequestHeight,
-		unsigned int *meta_row_width,
-		unsigned int *meta_row_height,
-		unsigned int *vm_group_bytes,
-		unsigned int *dpte_group_bytes,
-		unsigned int *PixelPTEReqWidth,
-		unsigned int *PixelPTEReqHeight,
-		unsigned int *PTERequestSize,
-		unsigned int *DPDE0BytesFrame,
-		unsigned int *MetaPTEBytesFrame);
-static double CalculateTWait(unsigned int PrefetchMode, double DRAMClockChangeLatency, double UrgentLatency, double SREnterPlusExitTime);
+		core::ffi::c_uint *dpte_row_width_ub,
+		core::ffi::c_uint *dpte_row_height,
+		core::ffi::c_uint *MetaRequestWidth,
+		core::ffi::c_uint *MetaRequestHeight,
+		core::ffi::c_uint *meta_row_width,
+		core::ffi::c_uint *meta_row_height,
+		core::ffi::c_uint *vm_group_bytes,
+		core::ffi::c_uint *dpte_group_bytes,
+		core::ffi::c_uint *PixelPTEReqWidth,
+		core::ffi::c_uint *PixelPTEReqHeight,
+		core::ffi::c_uint *PTERequestSize,
+		core::ffi::c_uint *DPDE0BytesFrame,
+		core::ffi::c_uint *MetaPTEBytesFrame);
+static double CalculateTWait(core::ffi::c_uint PrefetchMode, double DRAMClockChangeLatency, double UrgentLatency, double SREnterPlusExitTime);
 static void CalculateRowBandwidth(
 		bool GPUVMEnable,
-		enum source_format_class SourcePixelFormat,
+		source_format_class SourcePixelFormat,
 		double VRatio,
 		double VRatioChroma,
 		bool DCCEnable,
 		double LineTime,
-		unsigned int MetaRowByteLuma,
-		unsigned int MetaRowByteChroma,
-		unsigned int meta_row_height_luma,
-		unsigned int meta_row_height_chroma,
-		unsigned int PixelPTEBytesPerRowLuma,
-		unsigned int PixelPTEBytesPerRowChroma,
-		unsigned int dpte_row_height_luma,
-		unsigned int dpte_row_height_chroma,
+		core::ffi::c_uint MetaRowByteLuma,
+		core::ffi::c_uint MetaRowByteChroma,
+		meta_row_height_luma: core::ffi::c_uint,
+		meta_row_height_chroma: core::ffi::c_uint,
+		core::ffi::c_uint PixelPTEBytesPerRowLuma,
+		core::ffi::c_uint PixelPTEBytesPerRowChroma,
+		dpte_row_height_luma: core::ffi::c_uint,
+		dpte_row_height_chroma: core::ffi::c_uint,
 		double *meta_row_bw,
 		double *dpte_row_bw);
 
 static void CalculateFlipSchedule(
-		struct display_mode_lib *mode_lib,
-		unsigned int k,
+		display_mode_lib *mode_lib,
+		k: core::ffi::c_uint,
 		double HostVMInefficiencyFactor,
 		double UrgentExtraLatency,
 		double UrgentLatency,
@@ -272,14 +272,14 @@ static void CalculateFlipSchedule(
 		double MetaRowBytes,
 		double DPTEBytesPerRow);
 static double CalculateWriteBackDelay(
-		enum source_format_class WritebackPixelFormat,
+		source_format_class WritebackPixelFormat,
 		double WritebackHRatio,
 		double WritebackVRatio,
-		unsigned int WritebackVTaps,
+		core::ffi::c_uint WritebackVTaps,
 		int WritebackDestinationWidth,
 		int WritebackDestinationHeight,
 		int WritebackSourceHeight,
-		unsigned int HTotal);
+		core::ffi::c_uint HTotal);
 
 static void CalculateVupdateAndDynamicMetadataParameters(
 		int MaxInterDCNTileRepeaters,
@@ -297,46 +297,46 @@ static void CalculateVupdateAndDynamicMetadataParameters(
 		double *Tdmbf,
 		double *Tdmec,
 		double *Tdmsks,
-		unsigned int *VUpdateOffsetPix,
+		core::ffi::c_uint *VUpdateOffsetPix,
 		double *VUpdateWidthPix,
 		double *VReadyOffsetPix);
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
-		struct display_mode_lib *mode_lib,
-		unsigned int PrefetchMode,
+		display_mode_lib *mode_lib,
+		core::ffi::c_uint PrefetchMode,
 		double DCFCLK,
 		double ReturnBW,
 		double UrgentLatency,
 		double ExtraLatency,
 		double SOCCLK,
 		double DCFCLKDeepSleep,
-		unsigned int DETBufferSizeY[],
-		unsigned int DETBufferSizeC[],
-		unsigned int SwathHeightY[],
-		unsigned int SwathHeightC[],
+		core::ffi::c_uint DETBufferSizeY[],
+		core::ffi::c_uint DETBufferSizeC[],
+		core::ffi::c_uint SwathHeightY[],
+		core::ffi::c_uint SwathHeightC[],
 		double SwathWidthY[],
 		double SwathWidthC[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint DPPPerPlane[],
 		double BytePerPixelDETY[],
 		double BytePerPixelDETC[],
 		bool UnboundedRequestEnabled,
-		unsigned int CompressedBufferSizeInkByte,
-		enum clock_change_support *DRAMClockChangeSupport,
+		core::ffi::c_uint CompressedBufferSizeInkByte,
+		clock_change_support *DRAMClockChangeSupport,
 		double *StutterExitWatermark,
 		double *StutterEnterPlusExitWatermark,
 		double *Z8StutterExitWatermark,
 		double *Z8StutterEnterPlusExitWatermark);
 
 static void CalculateDCFCLKDeepSleep(
-		struct display_mode_lib *mode_lib,
-		unsigned int NumberOfActivePlanes,
-		unsigned int BytePerPixelY[],
-		unsigned int BytePerPixelC[],
+		display_mode_lib *mode_lib,
+		core::ffi::c_uint NumberOfActivePlanes,
+		core::ffi::c_uint BytePerPixelY[],
+		core::ffi::c_uint BytePerPixelC[],
 		double VRatio[],
 		double VRatioChroma[],
 		double SwathWidthY[],
 		double SwathWidthC[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint DPPPerPlane[],
 		double HRatio[],
 		double HRatioChroma[],
 		double PixelClock[],
@@ -351,13 +351,13 @@ static void CalculateDCFCLKDeepSleep(
 static void CalculateUrgentBurstFactor(
 		int swath_width_luma_ub,
 		int swath_width_chroma_ub,
-		unsigned int SwathHeightY,
-		unsigned int SwathHeightC,
+		core::ffi::c_uint SwathHeightY,
+		core::ffi::c_uint SwathHeightC,
 		double LineTime,
 		double UrgentLatency,
 		double CursorBufferSize,
-		unsigned int CursorWidth,
-		unsigned int CursorBPP,
+		core::ffi::c_uint CursorWidth,
+		core::ffi::c_uint CursorBPP,
 		double VRatio,
 		double VRatioC,
 		double BytePerPixelInDETY,
@@ -372,7 +372,7 @@ static void CalculateUrgentBurstFactor(
 static double RequiredDTBCLK(
 		bool DSCEnable,
 		double PixelClock,
-		enum output_format_class OutputFormat,
+		output_format_class OutputFormat,
 		double OutputBPP,
 		int DSCSlices,
 		int HTotal,
@@ -381,34 +381,34 @@ static double RequiredDTBCLK(
 		int AudioLayoutSingle);
 
 static void UseMinimumDCFCLK(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
 		int ReorderingBytes);
 
 static void CalculatePixelDeliveryTimes(
-		unsigned int NumberOfActivePlanes,
+		core::ffi::c_uint NumberOfActivePlanes,
 		double VRatio[],
 		double VRatioChroma[],
 		double VRatioPrefetchY[],
 		double VRatioPrefetchC[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[],
+		core::ffi::c_uint DPPPerPlane[],
 		double HRatio[],
 		double HRatioChroma[],
 		double PixelClock[],
 		double PSCL_THROUGHPUT[],
 		double PSCL_THROUGHPUT_CHROMA[],
 		double DPPCLK[],
-		unsigned int BytePerPixelC[],
-		enum scan_direction_class SourceScan[],
-		unsigned int NumberOfCursors[],
-		unsigned int CursorWidth[][DC__NUM_CURSOR__MAX],
-		unsigned int CursorBPP[][DC__NUM_CURSOR__MAX],
-		unsigned int BlockWidth256BytesY[],
-		unsigned int BlockHeight256BytesY[],
-		unsigned int BlockWidth256BytesC[],
-		unsigned int BlockHeight256BytesC[],
+		core::ffi::c_uint BytePerPixelC[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint NumberOfCursors[],
+		core::ffi::c_uint CursorWidth[][DC__NUM_CURSOR__MAX],
+		core::ffi::c_uint CursorBPP[][DC__NUM_CURSOR__MAX],
+		core::ffi::c_uint BlockWidth256BytesY[],
+		core::ffi::c_uint BlockHeight256BytesY[],
+		core::ffi::c_uint BlockWidth256BytesC[],
+		core::ffi::c_uint BlockHeight256BytesC[],
 		double DisplayPipeLineDeliveryTimeLuma[],
 		double DisplayPipeLineDeliveryTimeChroma[],
 		double DisplayPipeLineDeliveryTimeLumaPrefetch[],
@@ -421,39 +421,39 @@ static void CalculatePixelDeliveryTimes(
 		double CursorRequestDeliveryTimePrefetch[]);
 
 static void CalculateMetaAndPTETimes(
-		unsigned int NumberOfActivePlanes,
+		core::ffi::c_uint NumberOfActivePlanes,
 		bool GPUVMEnable,
 		int MetaChunkSize,
 		int MinMetaChunkSizeBytes,
-		unsigned int HTotal[],
+		core::ffi::c_uint HTotal[],
 		double VRatio[],
 		double VRatioChroma[],
 		double DestinationLinesToRequestRowInVBlank[],
 		double DestinationLinesToRequestRowInImmediateFlip[],
 		bool DCCEnable[],
 		double PixelClock[],
-		unsigned int BytePerPixelY[],
-		unsigned int BytePerPixelC[],
-		enum scan_direction_class SourceScan[],
-		unsigned int dpte_row_height[],
-		unsigned int dpte_row_height_chroma[],
-		unsigned int meta_row_width[],
-		unsigned int meta_row_width_chroma[],
-		unsigned int meta_row_height[],
-		unsigned int meta_row_height_chroma[],
-		unsigned int meta_req_width[],
-		unsigned int meta_req_width_chroma[],
-		unsigned int meta_req_height[],
-		unsigned int meta_req_height_chroma[],
-		unsigned int dpte_group_bytes[],
-		unsigned int PTERequestSizeY[],
-		unsigned int PTERequestSizeC[],
-		unsigned int PixelPTEReqWidthY[],
-		unsigned int PixelPTEReqHeightY[],
-		unsigned int PixelPTEReqWidthC[],
-		unsigned int PixelPTEReqHeightC[],
-		unsigned int dpte_row_width_luma_ub[],
-		unsigned int dpte_row_width_chroma_ub[],
+		core::ffi::c_uint BytePerPixelY[],
+		core::ffi::c_uint BytePerPixelC[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint dpte_row_height[],
+		core::ffi::c_uint dpte_row_height_chroma[],
+		core::ffi::c_uint meta_row_width[],
+		core::ffi::c_uint meta_row_width_chroma[],
+		core::ffi::c_uint meta_row_height[],
+		core::ffi::c_uint meta_row_height_chroma[],
+		core::ffi::c_uint meta_req_width[],
+		core::ffi::c_uint meta_req_width_chroma[],
+		core::ffi::c_uint meta_req_height[],
+		core::ffi::c_uint meta_req_height_chroma[],
+		core::ffi::c_uint dpte_group_bytes[],
+		core::ffi::c_uint PTERequestSizeY[],
+		core::ffi::c_uint PTERequestSizeC[],
+		core::ffi::c_uint PixelPTEReqWidthY[],
+		core::ffi::c_uint PixelPTEReqHeightY[],
+		core::ffi::c_uint PixelPTEReqWidthC[],
+		core::ffi::c_uint PixelPTEReqHeightC[],
+		core::ffi::c_uint dpte_row_width_luma_ub[],
+		core::ffi::c_uint dpte_row_width_chroma_ub[],
 		double DST_Y_PER_PTE_ROW_NOM_L[],
 		double DST_Y_PER_PTE_ROW_NOM_C[],
 		double DST_Y_PER_META_ROW_NOM_L[],
@@ -472,29 +472,29 @@ static void CalculateMetaAndPTETimes(
 		double time_per_pte_group_flip_chroma[]);
 
 static void CalculateVMGroupAndRequestTimes(
-		unsigned int NumberOfActivePlanes,
+		core::ffi::c_uint NumberOfActivePlanes,
 		bool GPUVMEnable,
-		unsigned int GPUVMMaxPageTableLevels,
-		unsigned int HTotal[],
-		unsigned int BytePerPixelC[],
+		core::ffi::c_uint GPUVMMaxPageTableLevels,
+		core::ffi::c_uint HTotal[],
+		core::ffi::c_uint BytePerPixelC[],
 		double DestinationLinesToRequestVMInVBlank[],
 		double DestinationLinesToRequestVMInImmediateFlip[],
 		bool DCCEnable[],
 		double PixelClock[],
-		unsigned int dpte_row_width_luma_ub[],
-		unsigned int dpte_row_width_chroma_ub[],
-		unsigned int vm_group_bytes[],
-		unsigned int dpde0_bytes_per_frame_ub_l[],
-		unsigned int dpde0_bytes_per_frame_ub_c[],
-		unsigned int meta_pte_bytes_per_frame_ub_l[],
-		unsigned int meta_pte_bytes_per_frame_ub_c[],
+		core::ffi::c_uint dpte_row_width_luma_ub[],
+		core::ffi::c_uint dpte_row_width_chroma_ub[],
+		core::ffi::c_uint vm_group_bytes[],
+		core::ffi::c_uint dpde0_bytes_per_frame_ub_l[],
+		core::ffi::c_uint dpde0_bytes_per_frame_ub_c[],
+		core::ffi::c_uint meta_pte_bytes_per_frame_ub_l[],
+		core::ffi::c_uint meta_pte_bytes_per_frame_ub_c[],
 		double TimePerVMGroupVBlank[],
 		double TimePerVMGroupFlip[],
 		double TimePerVMRequestVBlank[],
 		double TimePerVMRequestFlip[]);
 
 static void CalculateStutterEfficiency(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		int CompressedBufferSizeInkByte,
 		bool UnboundedRequestEnabled,
 		int ConfigReturnBufferSizeInKByte,
@@ -515,29 +515,29 @@ static void CalculateStutterEfficiency(
 		bool ProgressiveToInterlaceUnitInOPP,
 		bool Interlace[],
 		double MinTTUVBlank[],
-		unsigned int DPPPerPlane[],
-		unsigned int DETBufferSizeY[],
-		unsigned int BytePerPixelY[],
+		core::ffi::c_uint DPPPerPlane[],
+		core::ffi::c_uint DETBufferSizeY[],
+		core::ffi::c_uint BytePerPixelY[],
 		double BytePerPixelDETY[],
 		double SwathWidthY[],
-		unsigned int SwathHeightY[],
-		unsigned int SwathHeightC[],
+		core::ffi::c_uint SwathHeightY[],
+		core::ffi::c_uint SwathHeightC[],
 		double NetDCCRateLuma[],
 		double NetDCCRateChroma[],
 		double DCCFractionOfZeroSizeRequestsLuma[],
 		double DCCFractionOfZeroSizeRequestsChroma[],
-		unsigned int HTotal[],
-		unsigned int VTotal[],
+		core::ffi::c_uint HTotal[],
+		core::ffi::c_uint VTotal[],
 		double PixelClock[],
 		double VRatio[],
-		enum scan_direction_class SourceScan[],
-		unsigned int BlockHeight256BytesY[],
-		unsigned int BlockWidth256BytesY[],
-		unsigned int BlockHeight256BytesC[],
-		unsigned int BlockWidth256BytesC[],
-		unsigned int DCCYMaxUncompressedBlock[],
-		unsigned int DCCCMaxUncompressedBlock[],
-		unsigned int VActive[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint BlockHeight256BytesY[],
+		core::ffi::c_uint BlockWidth256BytesY[],
+		core::ffi::c_uint BlockHeight256BytesC[],
+		core::ffi::c_uint BlockWidth256BytesC[],
+		core::ffi::c_uint DCCYMaxUncompressedBlock[],
+		core::ffi::c_uint DCCCMaxUncompressedBlock[],
+		core::ffi::c_uint VActive[],
 		bool DCCEnable[],
 		bool WritebackEnable[],
 		double ReadBandwidthPlaneLuma[],
@@ -555,72 +555,72 @@ static void CalculateStutterEfficiency(
 static void CalculateSwathAndDETConfiguration(
 		bool ForceSingleDPP,
 		int NumberOfActivePlanes,
-		unsigned int DETBufferSizeInKByte,
+		core::ffi::c_uint DETBufferSizeInKByte,
 		double MaximumSwathWidthLuma[],
 		double MaximumSwathWidthChroma[],
-		enum scan_direction_class SourceScan[],
-		enum source_format_class SourcePixelFormat[],
-		enum dm_swizzle_mode SurfaceTiling[],
-		unsigned int ViewportWidth[],
-		unsigned int ViewportHeight[],
-		unsigned int SurfaceWidthY[],
-		unsigned int SurfaceWidthC[],
-		unsigned int SurfaceHeightY[],
-		unsigned int SurfaceHeightC[],
-		unsigned int Read256BytesBlockHeightY[],
-		unsigned int Read256BytesBlockHeightC[],
-		unsigned int Read256BytesBlockWidthY[],
-		unsigned int Read256BytesBlockWidthC[],
-		enum odm_combine_mode ODMCombineEnabled[],
-		unsigned int BlendingAndTiming[],
-		unsigned int BytePerPixY[],
-		unsigned int BytePerPixC[],
+		scan_direction_class SourceScan[],
+		source_format_class SourcePixelFormat[],
+		dm_swizzle_mode SurfaceTiling[],
+		core::ffi::c_uint ViewportWidth[],
+		core::ffi::c_uint ViewportHeight[],
+		core::ffi::c_uint SurfaceWidthY[],
+		core::ffi::c_uint SurfaceWidthC[],
+		core::ffi::c_uint SurfaceHeightY[],
+		core::ffi::c_uint SurfaceHeightC[],
+		core::ffi::c_uint Read256BytesBlockHeightY[],
+		core::ffi::c_uint Read256BytesBlockHeightC[],
+		core::ffi::c_uint Read256BytesBlockWidthY[],
+		core::ffi::c_uint Read256BytesBlockWidthC[],
+		odm_combine_mode ODMCombineEnabled[],
+		core::ffi::c_uint BlendingAndTiming[],
+		core::ffi::c_uint BytePerPixY[],
+		core::ffi::c_uint BytePerPixC[],
 		double BytePerPixDETY[],
 		double BytePerPixDETC[],
-		unsigned int HActive[],
+		core::ffi::c_uint HActive[],
 		double HRatio[],
 		double HRatioChroma[],
-		unsigned int DPPPerPlane[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[],
+		core::ffi::c_uint DPPPerPlane[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[],
 		double SwathWidth[],
 		double SwathWidthChroma[],
-		unsigned int SwathHeightY[],
-		unsigned int SwathHeightC[],
-		unsigned int DETBufferSizeY[],
-		unsigned int DETBufferSizeC[],
+		core::ffi::c_uint SwathHeightY[],
+		core::ffi::c_uint SwathHeightC[],
+		core::ffi::c_uint DETBufferSizeY[],
+		core::ffi::c_uint DETBufferSizeC[],
 		bool ViewportSizeSupportPerPlane[],
 		bool *ViewportSizeSupport);
 static void CalculateSwathWidth(
 		bool ForceSingleDPP,
 		int NumberOfActivePlanes,
-		enum source_format_class SourcePixelFormat[],
-		enum scan_direction_class SourceScan[],
-		unsigned int ViewportWidth[],
-		unsigned int ViewportHeight[],
-		unsigned int SurfaceWidthY[],
-		unsigned int SurfaceWidthC[],
-		unsigned int SurfaceHeightY[],
-		unsigned int SurfaceHeightC[],
-		enum odm_combine_mode ODMCombineEnabled[],
-		unsigned int BytePerPixY[],
-		unsigned int BytePerPixC[],
-		unsigned int Read256BytesBlockHeightY[],
-		unsigned int Read256BytesBlockHeightC[],
-		unsigned int Read256BytesBlockWidthY[],
-		unsigned int Read256BytesBlockWidthC[],
-		unsigned int BlendingAndTiming[],
-		unsigned int HActive[],
+		source_format_class SourcePixelFormat[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint ViewportWidth[],
+		core::ffi::c_uint ViewportHeight[],
+		core::ffi::c_uint SurfaceWidthY[],
+		core::ffi::c_uint SurfaceWidthC[],
+		core::ffi::c_uint SurfaceHeightY[],
+		core::ffi::c_uint SurfaceHeightC[],
+		odm_combine_mode ODMCombineEnabled[],
+		core::ffi::c_uint BytePerPixY[],
+		core::ffi::c_uint BytePerPixC[],
+		core::ffi::c_uint Read256BytesBlockHeightY[],
+		core::ffi::c_uint Read256BytesBlockHeightC[],
+		core::ffi::c_uint Read256BytesBlockWidthY[],
+		core::ffi::c_uint Read256BytesBlockWidthC[],
+		core::ffi::c_uint BlendingAndTiming[],
+		core::ffi::c_uint HActive[],
 		double HRatio[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint DPPPerPlane[],
 		double SwathWidthSingleDPPY[],
 		double SwathWidthSingleDPPC[],
 		double SwathWidthY[],
 		double SwathWidthC[],
-		unsigned int MaximumSwathHeightY[],
-		unsigned int MaximumSwathHeightC[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[]);
+		core::ffi::c_uint MaximumSwathHeightY[],
+		core::ffi::c_uint MaximumSwathHeightC[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[]);
 
 static double CalculateExtraLatency(
 		int RoundTripPingLatencyCycles,
@@ -634,8 +634,8 @@ static double CalculateExtraLatency(
 		bool GPUVMEnable,
 		bool HostVMEnable,
 		int NumberOfActivePlanes,
-		unsigned int NumberOfDPP[],
-		unsigned int dpte_group_bytes[],
+		core::ffi::c_uint NumberOfDPP[],
+		core::ffi::c_uint dpte_group_bytes[],
 		double HostVMInefficiencyFactor,
 		double HostVMMinPageSize,
 		int HostVMMaxNonCachedPageTableLevels);
@@ -649,8 +649,8 @@ static double CalculateExtraLatencyBytes(
 		bool GPUVMEnable,
 		bool HostVMEnable,
 		int NumberOfActivePlanes,
-		unsigned int NumberOfDPP[],
-		unsigned int dpte_group_bytes[],
+		core::ffi::c_uint NumberOfDPP[],
+		core::ffi::c_uint dpte_group_bytes[],
 		double HostVMInefficiencyFactor,
 		double HostVMMinPageSize,
 		int HostVMMaxNonCachedPageTableLevels);
@@ -665,30 +665,30 @@ static double CalculateUrgentLatency(
 		double FabricClockSingle);
 
 static void CalculateUnboundedRequestAndCompressedBufferSize(
-		unsigned int DETBufferSizeInKByte,
+		core::ffi::c_uint DETBufferSizeInKByte,
 		int ConfigReturnBufferSizeInKByte,
-		enum unbounded_requesting_policy UseUnboundedRequestingFinal,
+		unbounded_requesting_policy UseUnboundedRequestingFinal,
 		int TotalActiveDPP,
 		bool NoChromaPlanes,
 		int MaxNumDPP,
 		int CompressedBufferSegmentSizeInkByteFinal,
-		enum output_encoder_class *Output,
+		output_encoder_class *Output,
 		bool *UnboundedRequestEnabled,
-		unsigned int *CompressedBufferSizeInkByte);
+		core::ffi::c_uint *CompressedBufferSizeInkByte);
 
-static bool UnboundedRequest(enum unbounded_requesting_policy UseUnboundedRequestingFinal, int TotalNumberOfActiveDPP, bool NoChroma, enum output_encoder_class Output);
-static unsigned int CalculateMaxVStartup(
-		unsigned int VTotal,
-		unsigned int VActive,
-		unsigned int VBlankNom,
-		unsigned int HTotal,
+static bool UnboundedRequest(unbounded_requesting_policy UseUnboundedRequestingFinal, int TotalNumberOfActiveDPP, bool NoChroma, output_encoder_class Output);
+static core::ffi::c_uint CalculateMaxVStartup(
+		core::ffi::c_uint VTotal,
+		core::ffi::c_uint VActive,
+		core::ffi::c_uint VBlankNom,
+		core::ffi::c_uint HTotal,
 		double PixelClock,
 		bool ProgressiveTointerlaceUnitinOPP,
 		bool Interlace,
-		unsigned int VBlankNomDefaultUS,
+		core::ffi::c_uint VBlankNomDefaultUS,
 		double WritebackDelayTime);
 
-void dml314_recalculate(struct display_mode_lib *mode_lib)
+void dml314_recalculate(display_mode_lib *mode_lib)
 {
 	ModeSupportAndSystemConfiguration(mode_lib);
 	PixelClockAdjustmentForProgressiveToInterlaceUnit(mode_lib);
@@ -699,13 +699,13 @@ void dml314_recalculate(struct display_mode_lib *mode_lib)
 	DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(mode_lib);
 }
 
-static unsigned int dscceComputeDelay(
-		unsigned int bpc,
+static core::ffi::c_uint dscceComputeDelay(
+		bpc: core::ffi::c_uint,
 		double BPP,
-		unsigned int sliceWidth,
-		unsigned int numSlices,
-		enum output_format_class pixelFormat,
-		enum output_encoder_class Output)
+		sliceWidth: core::ffi::c_uint,
+		numSlices: core::ffi::c_uint,
+		output_format_class pixelFormat,
+		output_encoder_class Output)
 {
 	// valid bpc         = source bits per component in the set of {8, 10, 12}
 	// valid bpp         = increments of 1/16 of a bit
@@ -716,10 +716,10 @@ static unsigned int dscceComputeDelay(
 	//valid pixelFormat = pixel/color format in the set of {:N444_RGB, :S422, :N422, :N420}
 
 	// fixed value
-	unsigned int rcModelSize = 8192;
+	core::ffi::c_uint rcModelSize = 8192;
 
 	// N422/N420 operate at 2 pixels per clock
-	unsigned int pixelsPerClock = 0, lstall, D, initalXmitDelay, w, s, ix, wx, P, l0, a, ax, L, Delay, pixels;
+	core::ffi::c_uint pixelsPerClock = 0, lstall, D, initalXmitDelay, w, s, ix, wx, P, l0, a, ax, L, Delay, pixels;
 
 	if (pixelFormat == dm_420)
 		pixelsPerClock = 2;
@@ -734,7 +734,7 @@ static unsigned int dscceComputeDelay(
 		pixelsPerClock = 1;
 
 	//initial transmit delay as per PPS
-	initalXmitDelay = (unsigned int)dml_round(rcModelSize / 2.0 / BPP / pixelsPerClock);
+	initalXmitDelay = (core::ffi::c_uint)dml_round(rcModelSize / 2.0 / BPP / pixelsPerClock);
 
 	//compute ssm delay
 	if (bpc == 8)
@@ -774,9 +774,9 @@ static unsigned int dscceComputeDelay(
 	return pixels;
 }
 
-static unsigned int dscComputeDelay(enum output_format_class pixelFormat, enum output_encoder_class Output)
+static core::ffi::c_uint dscComputeDelay(output_format_class pixelFormat, output_encoder_class Output)
 {
-	unsigned int Delay = 0;
+	core::ffi::c_uint Delay = 0;
 
 	if (pixelFormat == dm_420) {
 		//   sfr
@@ -866,47 +866,47 @@ static unsigned int dscComputeDelay(enum output_format_class pixelFormat, enum o
 }
 
 static bool CalculatePrefetchSchedule(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		double HostVMInefficiencyFactor,
 		Pipe *myPipe,
-		unsigned int DSCDelay,
+		core::ffi::c_uint DSCDelay,
 		double DPPCLKDelaySubtotalPlusCNVCFormater,
 		double DPPCLKDelaySCL,
 		double DPPCLKDelaySCLLBOnly,
 		double DPPCLKDelayCNVCCursor,
 		double DISPCLKDelaySubtotal,
-		unsigned int DPP_RECOUT_WIDTH,
-		enum output_format_class OutputFormat,
-		unsigned int MaxInterDCNTileRepeaters,
-		unsigned int VStartup,
-		unsigned int MaxVStartup,
-		unsigned int GPUVMPageTableLevels,
+		core::ffi::c_uint DPP_RECOUT_WIDTH,
+		output_format_class OutputFormat,
+		core::ffi::c_uint MaxInterDCNTileRepeaters,
+		core::ffi::c_uint VStartup,
+		core::ffi::c_uint MaxVStartup,
+		core::ffi::c_uint GPUVMPageTableLevels,
 		bool GPUVMEnable,
 		bool HostVMEnable,
-		unsigned int HostVMMaxNonCachedPageTableLevels,
+		core::ffi::c_uint HostVMMaxNonCachedPageTableLevels,
 		double HostVMMinPageSize,
 		bool DynamicMetadataEnable,
 		bool DynamicMetadataVMEnabled,
 		int DynamicMetadataLinesBeforeActiveRequired,
-		unsigned int DynamicMetadataTransmittedBytes,
+		core::ffi::c_uint DynamicMetadataTransmittedBytes,
 		double UrgentLatency,
 		double UrgentExtraLatency,
 		double TCalc,
-		unsigned int PDEAndMetaPTEBytesFrame,
-		unsigned int MetaRowByte,
-		unsigned int PixelPTEBytesPerRow,
+		core::ffi::c_uint PDEAndMetaPTEBytesFrame,
+		core::ffi::c_uint MetaRowByte,
+		core::ffi::c_uint PixelPTEBytesPerRow,
 		double PrefetchSourceLinesY,
-		unsigned int SwathWidthY,
+		core::ffi::c_uint SwathWidthY,
 		double VInitPreFillY,
-		unsigned int MaxNumSwathY,
+		core::ffi::c_uint MaxNumSwathY,
 		double PrefetchSourceLinesC,
-		unsigned int SwathWidthC,
+		core::ffi::c_uint SwathWidthC,
 		double VInitPreFillC,
-		unsigned int MaxNumSwathC,
+		core::ffi::c_uint MaxNumSwathC,
 		int swath_width_luma_ub,
 		int swath_width_chroma_ub,
-		unsigned int SwathHeightY,
-		unsigned int SwathHeightC,
+		core::ffi::c_uint SwathHeightY,
+		core::ffi::c_uint SwathHeightC,
 		double TWait,
 		double *DSTXAfterScaler,
 		double *DSTYAfterScaler,
@@ -924,7 +924,7 @@ static bool CalculatePrefetchSchedule(
 		double *Tdmdl_vm,
 		double *Tdmdl,
 		double *TSetup,
-		unsigned int *VUpdateOffsetPix,
+		core::ffi::c_uint *VUpdateOffsetPix,
 		double *VUpdateWidthPix,
 		double *VReadyOffsetPix)
 {
@@ -934,7 +934,7 @@ static bool CalculatePrefetchSchedule(
 	(void)SwathWidthC;
 
 	bool MyError = false;
-	unsigned int DPPCycles, DISPCLKCycles;
+	core::ffi::c_uint DPPCycles, DISPCLKCycles;
 	double DSTTotalPixelsAfterScaler;
 	double LineTime;
 	double dst_y_prefetch_equ;
@@ -951,7 +951,7 @@ static bool CalculatePrefetchSchedule(
 	double TimeForFetchingMetaPTE = 0;
 	double TimeForFetchingRowInVBlank = 0;
 	double LinesToRequestPrefetchPixelData = 0;
-	unsigned int HostVMDynamicLevelsTrips;
+	core::ffi::c_uint HostVMDynamicLevelsTrips;
 	double trip_to_mem;
 	double Tvm_trips;
 	double Tr0_trips;
@@ -984,16 +984,16 @@ static bool CalculatePrefetchSchedule(
 #endif
 	CalculateVupdateAndDynamicMetadataParameters(
 			MaxInterDCNTileRepeaters,
-			myPipe->DPPCLK,
-			myPipe->DISPCLK,
-			myPipe->DCFCLKDeepSleep,
-			myPipe->PixelClock,
-			myPipe->HTotal,
-			myPipe->VBlank,
+			(*myPipe).DPPCLK,
+			(*myPipe).DISPCLK,
+			(*myPipe).DCFCLKDeepSleep,
+			(*myPipe).PixelClock,
+			(*myPipe).HTotal,
+			(*myPipe).VBlank,
 			DynamicMetadataTransmittedBytes,
 			DynamicMetadataLinesBeforeActiveRequired,
-			myPipe->InterlaceEnable,
-			myPipe->ProgressiveToInterlaceUnitInOPP,
+			(*myPipe).InterlaceEnable,
+			(*myPipe).ProgressiveToInterlaceUnitInOPP,
 			TSetup,
 			&Tdmbf,
 			&Tdmec,
@@ -1002,7 +1002,7 @@ static bool CalculatePrefetchSchedule(
 			VUpdateWidthPix,
 			VReadyOffsetPix);
 
-	LineTime = myPipe->HTotal / myPipe->PixelClock;
+	LineTime = (*myPipe).HTotal / (*myPipe).PixelClock;
 	trip_to_mem = UrgentLatency;
 	Tvm_trips = UrgentExtraLatency + trip_to_mem * (GPUVMPageTableLevels * (HostVMDynamicLevelsTrips + 1) - 1);
 
@@ -1039,41 +1039,41 @@ static bool CalculatePrefetchSchedule(
 
 	*Tdmdl_vm = (DynamicMetadataEnable == true && DynamicMetadataVMEnabled == true && GPUVMEnable == true ? TWait + Tvm_trips : 0);
 
-	if (myPipe->ScalerEnabled)
-		DPPCycles = (unsigned int)(DPPCLKDelaySubtotalPlusCNVCFormater + DPPCLKDelaySCL);
+	if ((*myPipe).ScalerEnabled)
+		DPPCycles = (core::ffi::c_uint)(DPPCLKDelaySubtotalPlusCNVCFormater + DPPCLKDelaySCL);
 	else
-		DPPCycles = (unsigned int)(DPPCLKDelaySubtotalPlusCNVCFormater + DPPCLKDelaySCLLBOnly);
+		DPPCycles = (core::ffi::c_uint)(DPPCLKDelaySubtotalPlusCNVCFormater + DPPCLKDelaySCLLBOnly);
 
-	DPPCycles = (unsigned int)(DPPCycles + myPipe->NumberOfCursors * DPPCLKDelayCNVCCursor);
+	DPPCycles = (core::ffi::c_uint)(DPPCycles + (*myPipe).NumberOfCursors * DPPCLKDelayCNVCCursor);
 
-	DISPCLKCycles = (unsigned int)DISPCLKDelaySubtotal;
+	DISPCLKCycles = (core::ffi::c_uint)DISPCLKDelaySubtotal;
 
-	if (myPipe->DPPCLK == 0.0 || myPipe->DISPCLK == 0.0)
+	if ((*myPipe).DPPCLK == 0.0 || (*myPipe).DISPCLK == 0.0)
 		return true;
 
-	*DSTXAfterScaler = DPPCycles * myPipe->PixelClock / myPipe->DPPCLK + DISPCLKCycles * myPipe->PixelClock / myPipe->DISPCLK + DSCDelay;
+	*DSTXAfterScaler = DPPCycles * (*myPipe).PixelClock / (*myPipe).DPPCLK + DISPCLKCycles * (*myPipe).PixelClock / (*myPipe).DISPCLK + DSCDelay;
 
 #ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: DPPCycles: %d\n", __func__, DPPCycles);
-	dml_print("DML::%s: PixelClock: %f\n", __func__, myPipe->PixelClock);
-	dml_print("DML::%s: DPPCLK: %f\n", __func__, myPipe->DPPCLK);
+	dml_print("DML::%s: PixelClock: %f\n", __func__, (*myPipe).PixelClock);
+	dml_print("DML::%s: DPPCLK: %f\n", __func__, (*myPipe).DPPCLK);
 	dml_print("DML::%s: DISPCLKCycles: %d\n", __func__, DISPCLKCycles);
-	dml_print("DML::%s: DISPCLK: %f\n", __func__, myPipe->DISPCLK);
+	dml_print("DML::%s: DISPCLK: %f\n", __func__, (*myPipe).DISPCLK);
 	dml_print("DML::%s: DSCDelay: %d\n", __func__, DSCDelay);
 	dml_print("DML::%s: DSTXAfterScaler: %d\n", __func__, *DSTXAfterScaler);
-	dml_print("DML::%s: ODMCombineIsEnabled: %d\n", __func__, myPipe->ODMCombineIsEnabled);
+	dml_print("DML::%s: ODMCombineIsEnabled: %d\n", __func__, (*myPipe).ODMCombineIsEnabled);
 #endif
 
-	*DSTXAfterScaler = *DSTXAfterScaler + ((myPipe->ODMCombineIsEnabled) ? 18 : 0) + (myPipe->DPPPerPlane - 1) * DPP_RECOUT_WIDTH;
+	*DSTXAfterScaler = *DSTXAfterScaler + (((*myPipe).ODMCombineIsEnabled) ? 18 : 0) + ((*myPipe).DPPPerPlane - 1) * DPP_RECOUT_WIDTH;
 
-	if (OutputFormat == dm_420 || (myPipe->InterlaceEnable && myPipe->ProgressiveToInterlaceUnitInOPP))
+	if (OutputFormat == dm_420 || ((*myPipe).InterlaceEnable && (*myPipe).ProgressiveToInterlaceUnitInOPP))
 		*DSTYAfterScaler = 1;
 	else
 		*DSTYAfterScaler = 0;
 
-	DSTTotalPixelsAfterScaler = *DSTYAfterScaler * myPipe->HTotal + *DSTXAfterScaler;
-	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / myPipe->HTotal, 1);
-	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - ((double) (*DSTYAfterScaler * myPipe->HTotal));
+	DSTTotalPixelsAfterScaler = *DSTYAfterScaler * (*myPipe).HTotal + *DSTXAfterScaler;
+	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / (*myPipe).HTotal, 1);
+	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - ((double) (*DSTYAfterScaler * (*myPipe).HTotal));
 
 #ifdef __DML_VBA_DEBUG__
 	dml_print("DML::%s: DSTXAfterScaler: %d (final)\n", __func__, *DSTXAfterScaler);
@@ -1086,7 +1086,7 @@ static bool CalculatePrefetchSchedule(
 	Tr0_trips_rounded = dml_ceil(4.0 * Tr0_trips / LineTime, 1) / 4 * LineTime;
 
 #ifdef __DML_VBA_ALLOW_DELTA__
-	if (!myPipe->DCCEnable) {
+	if ((*!myPipe).DCCEnable) {
 		Tr0_trips = 0.0;
 		Tr0_trips_rounded = 0.0;
 	}
@@ -1103,21 +1103,21 @@ static bool CalculatePrefetchSchedule(
 		} else {
 			*Tno_bw = 0;
 		}
-	} else if (!myPipe->DCCEnable) {
+	} else if ((*!myPipe).DCCEnable) {
 		*Tno_bw = LineTime;
 	} else {
 		*Tno_bw = LineTime / 4;
 	}
 
-	if (myPipe->SourcePixelFormat == dm_420_8 || myPipe->SourcePixelFormat == dm_420_10 || myPipe->SourcePixelFormat == dm_420_12)
-		bytes_pp = myPipe->BytePerPixelY + myPipe->BytePerPixelC / 4;
+	if ((*myPipe).SourcePixelFormat == dm_420_8 || (*myPipe).SourcePixelFormat == dm_420_10 || (*myPipe).SourcePixelFormat == dm_420_12)
+		bytes_pp = (*myPipe).BytePerPixelY + (*myPipe).BytePerPixelC / 4;
 	else
-		bytes_pp = myPipe->BytePerPixelY + myPipe->BytePerPixelC;
+		bytes_pp = (*myPipe).BytePerPixelY + (*myPipe).BytePerPixelC;
 	/*rev 99*/
-	prefetch_bw_pr = bytes_pp * myPipe->PixelClock / (double) myPipe->DPPPerPlane;
-	prefetch_bw_pr = dml_min(1, myPipe->VRatio) * prefetch_bw_pr;
+	prefetch_bw_pr = bytes_pp * (*myPipe).PixelClock / (double) (*myPipe).DPPPerPlane;
+	prefetch_bw_pr = dml_min(1, (*myPipe).VRatio) * prefetch_bw_pr;
 	max_Tsw = dml_max(PrefetchSourceLinesY, PrefetchSourceLinesC) * LineTime;
-	prefetch_sw_bytes = PrefetchSourceLinesY * swath_width_luma_ub * myPipe->BytePerPixelY + PrefetchSourceLinesC * swath_width_chroma_ub * myPipe->BytePerPixelC;
+	prefetch_sw_bytes = PrefetchSourceLinesY * swath_width_luma_ub * (*myPipe).BytePerPixelY + PrefetchSourceLinesC * swath_width_chroma_ub * (*myPipe).BytePerPixelC;
 	prefetch_bw_oto = dml_max(prefetch_bw_pr, prefetch_sw_bytes / max_Tsw);
 
 	min_Lsw = dml_max(1, dml_max(PrefetchSourceLinesY, PrefetchSourceLinesC) / max_vratio_pre);
@@ -1128,11 +1128,11 @@ static bool CalculatePrefetchSchedule(
 
 
 #ifdef __DML_VBA_DEBUG__
-	dml_print("DML: HTotal: %d\n", myPipe->HTotal);
+	dml_print("DML: HTotal: %d\n", (*myPipe).HTotal);
 	dml_print("DML: prefetch_bw_oto: %f\n", prefetch_bw_oto);
 	dml_print("DML: PrefetchSourceLinesY: %f\n", PrefetchSourceLinesY);
 	dml_print("DML: swath_width_luma_ub: %d\n", swath_width_luma_ub);
-	dml_print("DML: BytePerPixelY: %d\n", myPipe->BytePerPixelY);
+	dml_print("DML: BytePerPixelY: %d\n", (*myPipe).BytePerPixelY);
 	dml_print("DML: Tsw_oto: %f\n", Tsw_oto);
 #endif
 
@@ -1141,7 +1141,7 @@ static bool CalculatePrefetchSchedule(
 	else
 		Tvm_oto = LineTime / 4.0;
 
-	if ((GPUVMEnable == true || myPipe->DCCEnable == true)) {
+	if ((GPUVMEnable == true || (*myPipe).DCCEnable == true)) {
 		Tr0_oto = dml_max4((MetaRowByte + PixelPTEBytesPerRow * HostVMInefficiencyFactor) / prefetch_bw_oto, Tr0_trips, // PREVIOUS_ERROR (missing this term)
 				LineTime - Tvm_oto,
 				LineTime / 4);
@@ -1164,7 +1164,7 @@ static bool CalculatePrefetchSchedule(
 	Tvm_oto_lines = dml_ceil(4.0 * Tvm_oto / LineTime, 1) / 4.0;
 	Tr0_oto_lines = dml_ceil(4.0 * Tr0_oto / LineTime, 1) / 4.0;
 	dst_y_prefetch_oto = Tvm_oto_lines + 2 * Tr0_oto_lines + Lsw_oto;
-	dst_y_prefetch_equ =  VStartup - (*TSetup + dml_max(TWait + TCalc, *Tdmdl)) / LineTime - (*DSTYAfterScaler + *DSTXAfterScaler / myPipe->HTotal);
+	dst_y_prefetch_equ =  VStartup - (*TSetup + dml_max(TWait + TCalc, *Tdmdl)) / LineTime - (*DSTYAfterScaler + *DSTXAfterScaler / (*myPipe).HTotal);
 	dst_y_prefetch_equ = dml_min(dst_y_prefetch_equ, 63.75); // limit to the reg limit of U6.2 for DST_Y_PREFETCH
 	dst_y_prefetch_equ = dml_floor(4.0 * (dst_y_prefetch_equ + 0.125), 1) / 4.0;
 	Tpre_rounded = dst_y_prefetch_equ * LineTime;
@@ -1310,7 +1310,7 @@ static bool CalculatePrefetchSchedule(
 					Tvm_equ = LineTime / 4;
 				}
 
-				if ((GPUVMEnable == true || myPipe->DCCEnable == true)) {
+				if ((GPUVMEnable == true || (*myPipe).DCCEnable == true)) {
 					Tr0_equ = dml_max4(
 							(MetaRowByte + PixelPTEBytesPerRow * HostVMInefficiencyFactor) / prefetch_bw_equ,
 							Tr0_trips,
@@ -1346,7 +1346,7 @@ static bool CalculatePrefetchSchedule(
 		LinesToRequestPrefetchPixelData = *DestinationLinesForPrefetch
 		// See note above dated 5/30/2018
 		//                      - ((NumberOfCursors > 0 || GPUVMEnable || DCCEnable) ?
-				- ((GPUVMEnable || myPipe->DCCEnable) ? (*DestinationLinesToRequestVMInVBlank + 2 * *DestinationLinesToRequestRowInVBlank) : 0.0); // TODO: Did someone else add this??
+				- ((GPUVMEnable || (*myPipe).DCCEnable) ? (*DestinationLinesToRequestVMInVBlank + 2 * *DestinationLinesToRequestRowInVBlank) : 0.0); // TODO: Did someone else add this??
 #else
 		LinesToRequestPrefetchPixelData = *DestinationLinesForPrefetch - *DestinationLinesToRequestVMInVBlank - 2 * *DestinationLinesToRequestRowInVBlank;
 #endif
@@ -1415,18 +1415,18 @@ static bool CalculatePrefetchSchedule(
 			}
 
 #ifdef __DML_VBA_DEBUG__
-			dml_print("DML::%s: BytePerPixelY = %d\n", __func__, myPipe->BytePerPixelY);
+			dml_print("DML::%s: BytePerPixelY = %d\n", __func__, (*myPipe).BytePerPixelY);
 			dml_print("DML::%s: swath_width_luma_ub = %d\n", __func__, swath_width_luma_ub);
 			dml_print("DML::%s: LineTime = %f\n", __func__, LineTime);
 #endif
 
-			*RequiredPrefetchPixDataBWLuma = (double) PrefetchSourceLinesY / LinesToRequestPrefetchPixelData * myPipe->BytePerPixelY * swath_width_luma_ub / LineTime;
+			*RequiredPrefetchPixDataBWLuma = (double) PrefetchSourceLinesY / LinesToRequestPrefetchPixelData * (*myPipe).BytePerPixelY * swath_width_luma_ub / LineTime;
 
 #ifdef __DML_VBA_DEBUG__
 			dml_print("DML::%s: RequiredPrefetchPixDataBWLuma = %f\n", __func__, *RequiredPrefetchPixDataBWLuma);
 #endif
 
-			*RequiredPrefetchPixDataBWChroma = (double) PrefetchSourceLinesC / LinesToRequestPrefetchPixelData * myPipe->BytePerPixelC * swath_width_chroma_ub
+			*RequiredPrefetchPixDataBWChroma = (double) PrefetchSourceLinesC / LinesToRequestPrefetchPixelData * (*myPipe).BytePerPixelC * swath_width_chroma_ub
 					/ LineTime;
 		} else {
 			MyError = true;
@@ -1446,12 +1446,12 @@ static bool CalculatePrefetchSchedule(
 		dml_print(
 				"DML:  Tsw: %fus = time to fetch enough pixel data and cursor data to feed the scalers init position and detile\n",
 				(double) LinesToRequestPrefetchPixelData * LineTime);
-		dml_print("DML: To: %fus - time for propagation from scaler to optc\n", (*DSTYAfterScaler + ((double) (*DSTXAfterScaler) / (double) myPipe->HTotal)) * LineTime);
+		dml_print("DML: To: %fus - time for propagation from scaler to optc\n", (*DSTYAfterScaler + ((double) (*DSTXAfterScaler) / (double) (*myPipe).HTotal)) * LineTime);
 		dml_print("DML: Tvstartup - TSetup - Tcalc - Twait - Tpre - To > 0\n");
 		dml_print(
 				"DML: Tslack(pre): %fus - time left over in schedule\n",
 				VStartup * LineTime - TimeForFetchingMetaPTE - 2 * TimeForFetchingRowInVBlank
-						- (*DSTYAfterScaler + ((double) (*DSTXAfterScaler) / (double) myPipe->HTotal)) * LineTime - TWait - TCalc - *TSetup);
+						- (*DSTYAfterScaler + ((double) (*DSTXAfterScaler) / (double) (*myPipe).HTotal)) * LineTime - TWait - TCalc - *TSetup);
 		dml_print("DML: row_bytes = dpte_row_bytes (per_pipe) = PixelPTEBytesPerRow = : %d\n", PixelPTEBytesPerRow);
 
 	} else {
@@ -1529,26 +1529,26 @@ static double RoundToDFSGranularityDown(double Clock, double VCOSpeed)
 static void CalculateDCCConfiguration(
 		bool DCCEnabled,
 		bool DCCProgrammingAssumesScanDirectionUnknown,
-		enum source_format_class SourcePixelFormat,
-		unsigned int SurfaceWidthLuma,
-		unsigned int SurfaceWidthChroma,
-		unsigned int SurfaceHeightLuma,
-		unsigned int SurfaceHeightChroma,
+		source_format_class SourcePixelFormat,
+		core::ffi::c_uint SurfaceWidthLuma,
+		core::ffi::c_uint SurfaceWidthChroma,
+		core::ffi::c_uint SurfaceHeightLuma,
+		core::ffi::c_uint SurfaceHeightChroma,
 		double DETBufferSize,
-		unsigned int RequestHeight256ByteLuma,
-		unsigned int RequestHeight256ByteChroma,
-		enum dm_swizzle_mode TilingFormat,
-		unsigned int BytePerPixelY,
-		unsigned int BytePerPixelC,
+		core::ffi::c_uint RequestHeight256ByteLuma,
+		core::ffi::c_uint RequestHeight256ByteChroma,
+		dm_swizzle_mode TilingFormat,
+		core::ffi::c_uint BytePerPixelY,
+		core::ffi::c_uint BytePerPixelC,
 		double BytePerPixelDETY,
 		double BytePerPixelDETC,
-		enum scan_direction_class ScanOrientation,
-		unsigned int *MaxUncompressedBlockLuma,
-		unsigned int *MaxUncompressedBlockChroma,
-		unsigned int *MaxCompressedBlockLuma,
-		unsigned int *MaxCompressedBlockChroma,
-		unsigned int *IndependentBlockLuma,
-		unsigned int *IndependentBlockChroma)
+		scan_direction_class ScanOrientation,
+		core::ffi::c_uint *MaxUncompressedBlockLuma,
+		core::ffi::c_uint *MaxUncompressedBlockChroma,
+		core::ffi::c_uint *MaxCompressedBlockLuma,
+		core::ffi::c_uint *MaxCompressedBlockChroma,
+		core::ffi::c_uint *IndependentBlockLuma,
+		core::ffi::c_uint *IndependentBlockChroma)
 {
 	(void)SurfaceWidthChroma;
 	(void)SurfaceHeightChroma;
@@ -1564,14 +1564,14 @@ static void CalculateDCCConfiguration(
 	double detile_buf_vp_horz_limit;
 	double detile_buf_vp_vert_limit;
 
-	unsigned int MAS_vp_horz_limit;
-	unsigned int MAS_vp_vert_limit;
-	unsigned int max_vp_horz_width;
-	unsigned int max_vp_vert_height;
-	unsigned int eff_surf_width_l;
-	unsigned int eff_surf_width_c;
-	unsigned int eff_surf_height_l;
-	unsigned int eff_surf_height_c;
+	core::ffi::c_uint MAS_vp_horz_limit;
+	core::ffi::c_uint MAS_vp_vert_limit;
+	core::ffi::c_uint max_vp_horz_width;
+	core::ffi::c_uint max_vp_vert_height;
+	core::ffi::c_uint eff_surf_width_l;
+	core::ffi::c_uint eff_surf_width_c;
+	core::ffi::c_uint eff_surf_height_l;
+	core::ffi::c_uint eff_surf_height_c;
 
 	int full_swath_bytes_horz_wc_l;
 	int full_swath_bytes_horz_wc_c;
@@ -1794,45 +1794,45 @@ static void CalculateDCCConfiguration(
 }
 
 static double CalculatePrefetchSourceLines(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		double VRatio,
 		double vtaps,
 		bool Interlace,
 		bool ProgressiveToInterlaceUnitInOPP,
-		unsigned int SwathHeight,
-		unsigned int ViewportYStart,
+		core::ffi::c_uint SwathHeight,
+		core::ffi::c_uint ViewportYStart,
 		double *VInitPreFill,
-		unsigned int *MaxNumSwath)
+		core::ffi::c_uint *MaxNumSwath)
 {
-	struct vba_vars_st *v = &mode_lib->vba;
-	unsigned int MaxPartialSwath;
+	struct vba_vars_st *v = (*&mode_lib).vba;
+	core::ffi::c_uint MaxPartialSwath;
 
 	if (ProgressiveToInterlaceUnitInOPP)
 		*VInitPreFill = dml_floor((VRatio + vtaps + 1) / 2.0, 1);
 	else
 		*VInitPreFill = dml_floor((VRatio + vtaps + 1 + Interlace * 0.5 * VRatio) / 2.0, 1);
 
-	if (!v->IgnoreViewportPositioning) {
+	if ((*!v).IgnoreViewportPositioning) {
 
-		*MaxNumSwath = (unsigned int)(dml_ceil((*VInitPreFill - 1.0) / SwathHeight, 1) + 1.0);
+		*MaxNumSwath = (core::ffi::c_uint)(dml_ceil((*VInitPreFill - 1.0) / SwathHeight, 1) + 1.0);
 
 		if (*VInitPreFill > 1.0)
-			MaxPartialSwath = (unsigned int) (*VInitPreFill - 2) % SwathHeight;
+			MaxPartialSwath = (core::ffi::c_uint) (*VInitPreFill - 2) % SwathHeight;
 		else
-			MaxPartialSwath = (unsigned int) (*VInitPreFill + SwathHeight - 2) % SwathHeight;
-		MaxPartialSwath = (unsigned int)dml_max(1U, MaxPartialSwath);
+			MaxPartialSwath = (core::ffi::c_uint) (*VInitPreFill + SwathHeight - 2) % SwathHeight;
+		MaxPartialSwath = (core::ffi::c_uint)dml_max(1U, MaxPartialSwath);
 
 	} else {
 
 		if (ViewportYStart != 0)
 			dml_print("WARNING DML: using viewport y position of 0 even though actual viewport y position is non-zero in prefetch source lines calculation\n");
 
-		*MaxNumSwath = (unsigned int)dml_ceil(*VInitPreFill / SwathHeight, 1);
+		*MaxNumSwath = (core::ffi::c_uint)dml_ceil(*VInitPreFill / SwathHeight, 1);
 
 		if (*VInitPreFill > 1.0)
-			MaxPartialSwath = (unsigned int) (*VInitPreFill - 1) % SwathHeight;
+			MaxPartialSwath = (core::ffi::c_uint) (*VInitPreFill - 1) % SwathHeight;
 		else
-			MaxPartialSwath = (unsigned int) (*VInitPreFill + SwathHeight - 1) % SwathHeight;
+			MaxPartialSwath = (core::ffi::c_uint) (*VInitPreFill + SwathHeight - 1) % SwathHeight;
 	}
 
 #ifdef __DML_VBA_DEBUG__
@@ -1840,7 +1840,7 @@ static double CalculatePrefetchSourceLines(
 	dml_print("DML::%s: vtaps = %f\n", __func__, vtaps);
 	dml_print("DML::%s: VInitPreFill = %f\n", __func__, *VInitPreFill);
 	dml_print("DML::%s: ProgressiveToInterlaceUnitInOPP = %d\n", __func__, ProgressiveToInterlaceUnitInOPP);
-	dml_print("DML::%s: IgnoreViewportPositioning = %d\n", __func__, v->IgnoreViewportPositioning);
+	dml_print("DML::%s: IgnoreViewportPositioning = %d\n", __func__, (*v).IgnoreViewportPositioning);
 	dml_print("DML::%s: SwathHeight = %d\n", __func__, SwathHeight);
 	dml_print("DML::%s: MaxPartialSwath = %d\n", __func__, MaxPartialSwath);
 	dml_print("DML::%s: MaxNumSwath = %d\n", __func__, *MaxNumSwath);
@@ -1849,62 +1849,62 @@ static double CalculatePrefetchSourceLines(
 	return *MaxNumSwath * SwathHeight + MaxPartialSwath;
 }
 
-static unsigned int CalculateVMAndRowBytes(
-		struct display_mode_lib *mode_lib,
+static core::ffi::c_uint CalculateVMAndRowBytes(
+		display_mode_lib *mode_lib,
 		bool DCCEnable,
-		unsigned int BlockHeight256Bytes,
-		unsigned int BlockWidth256Bytes,
-		enum source_format_class SourcePixelFormat,
-		unsigned int SurfaceTiling,
-		unsigned int BytePerPixel,
-		enum scan_direction_class ScanDirection,
-		unsigned int SwathWidth,
-		unsigned int ViewportHeight,
+		core::ffi::c_uint BlockHeight256Bytes,
+		core::ffi::c_uint BlockWidth256Bytes,
+		source_format_class SourcePixelFormat,
+		core::ffi::c_uint SurfaceTiling,
+		core::ffi::c_uint BytePerPixel,
+		scan_direction_class ScanDirection,
+		core::ffi::c_uint SwathWidth,
+		core::ffi::c_uint ViewportHeight,
 		bool GPUVMEnable,
 		bool HostVMEnable,
-		unsigned int HostVMMaxNonCachedPageTableLevels,
-		unsigned int GPUVMMinPageSize,
-		unsigned int HostVMMinPageSize,
-		unsigned int PTEBufferSizeInRequests,
-		unsigned int Pitch,
-		unsigned int DCCMetaPitch,
-		unsigned int *MacroTileWidth,
-		unsigned int *MetaRowByte,
-		unsigned int *PixelPTEBytesPerRow,
+		core::ffi::c_uint HostVMMaxNonCachedPageTableLevels,
+		core::ffi::c_uint GPUVMMinPageSize,
+		core::ffi::c_uint HostVMMinPageSize,
+		core::ffi::c_uint PTEBufferSizeInRequests,
+		core::ffi::c_uint Pitch,
+		core::ffi::c_uint DCCMetaPitch,
+		core::ffi::c_uint *MacroTileWidth,
+		core::ffi::c_uint *MetaRowByte,
+		core::ffi::c_uint *PixelPTEBytesPerRow,
 		bool *PTEBufferSizeNotExceeded,
-		unsigned int *dpte_row_width_ub,
-		unsigned int *dpte_row_height,
-		unsigned int *MetaRequestWidth,
-		unsigned int *MetaRequestHeight,
-		unsigned int *meta_row_width,
-		unsigned int *meta_row_height,
-		unsigned int *vm_group_bytes,
-		unsigned int *dpte_group_bytes,
-		unsigned int *PixelPTEReqWidth,
-		unsigned int *PixelPTEReqHeight,
-		unsigned int *PTERequestSize,
-		unsigned int *DPDE0BytesFrame,
-		unsigned int *MetaPTEBytesFrame)
+		core::ffi::c_uint *dpte_row_width_ub,
+		core::ffi::c_uint *dpte_row_height,
+		core::ffi::c_uint *MetaRequestWidth,
+		core::ffi::c_uint *MetaRequestHeight,
+		core::ffi::c_uint *meta_row_width,
+		core::ffi::c_uint *meta_row_height,
+		core::ffi::c_uint *vm_group_bytes,
+		core::ffi::c_uint *dpte_group_bytes,
+		core::ffi::c_uint *PixelPTEReqWidth,
+		core::ffi::c_uint *PixelPTEReqHeight,
+		core::ffi::c_uint *PTERequestSize,
+		core::ffi::c_uint *DPDE0BytesFrame,
+		core::ffi::c_uint *MetaPTEBytesFrame)
 {
 	(void)SourcePixelFormat;
-	struct vba_vars_st *v = &mode_lib->vba;
-	unsigned int MPDEBytesFrame;
-	unsigned int DCCMetaSurfaceBytes;
-	unsigned int MacroTileSizeBytes;
-	unsigned int MacroTileHeight;
-	unsigned int ExtraDPDEBytesFrame;
-	unsigned int PDEAndMetaPTEBytesFrame;
-	unsigned int PixelPTEReqHeightPTEs = 0;
-	unsigned int HostVMDynamicLevels = 0;
+	struct vba_vars_st *v = (*&mode_lib).vba;
+	core::ffi::c_uint MPDEBytesFrame;
+	core::ffi::c_uint DCCMetaSurfaceBytes;
+	core::ffi::c_uint MacroTileSizeBytes;
+	core::ffi::c_uint MacroTileHeight;
+	core::ffi::c_uint ExtraDPDEBytesFrame;
+	core::ffi::c_uint PDEAndMetaPTEBytesFrame;
+	core::ffi::c_uint PixelPTEReqHeightPTEs = 0;
+	core::ffi::c_uint HostVMDynamicLevels = 0;
 	double FractionOfPTEReturnDrop;
 
 	if (GPUVMEnable == true && HostVMEnable == true) {
 		if (HostVMMinPageSize < 2048) {
 			HostVMDynamicLevels = HostVMMaxNonCachedPageTableLevels;
 		} else if (HostVMMinPageSize >= 2048 && HostVMMinPageSize < 1048576) {
-			HostVMDynamicLevels = (unsigned int)dml_max(0, (int) HostVMMaxNonCachedPageTableLevels - 1);
+			HostVMDynamicLevels = (core::ffi::c_uint)dml_max(0, (int) HostVMMaxNonCachedPageTableLevels - 1);
 		} else {
-			HostVMDynamicLevels = (unsigned int)dml_max(0, (int) HostVMMaxNonCachedPageTableLevels - 2);
+			HostVMDynamicLevels = (core::ffi::c_uint)dml_max(0, (int) HostVMMaxNonCachedPageTableLevels - 2);
 		}
 	}
 
@@ -1912,17 +1912,17 @@ static unsigned int CalculateVMAndRowBytes(
 	*MetaRequestWidth = 8 * BlockWidth256Bytes;
 	if (ScanDirection != dm_vert) {
 		*meta_row_height = *MetaRequestHeight;
-		*meta_row_width = (unsigned int)(dml_ceil((double) SwathWidth - 1, *MetaRequestWidth) + *MetaRequestWidth);
-		*MetaRowByte = (unsigned int)(*meta_row_width * *MetaRequestHeight * BytePerPixel / 256.0);
+		*meta_row_width = (core::ffi::c_uint)(dml_ceil((double) SwathWidth - 1, *MetaRequestWidth) + *MetaRequestWidth);
+		*MetaRowByte = (core::ffi::c_uint)(*meta_row_width * *MetaRequestHeight * BytePerPixel / 256.0);
 	} else {
 		*meta_row_height = *MetaRequestWidth;
-		*meta_row_width = (unsigned int)(dml_ceil((double) SwathWidth - 1, *MetaRequestHeight) + *MetaRequestHeight);
-		*MetaRowByte = (unsigned int)(*meta_row_width * *MetaRequestWidth * BytePerPixel / 256.0);
+		*meta_row_width = (core::ffi::c_uint)(dml_ceil((double) SwathWidth - 1, *MetaRequestHeight) + *MetaRequestHeight);
+		*MetaRowByte = (core::ffi::c_uint)(*meta_row_width * *MetaRequestWidth * BytePerPixel / 256.0);
 	}
-	DCCMetaSurfaceBytes = (unsigned int)(DCCMetaPitch * (dml_ceil(ViewportHeight - 1, 64 * BlockHeight256Bytes) + 64 * BlockHeight256Bytes) * BytePerPixel / 256);
+	DCCMetaSurfaceBytes = (core::ffi::c_uint)(DCCMetaPitch * (dml_ceil(ViewportHeight - 1, 64 * BlockHeight256Bytes) + 64 * BlockHeight256Bytes) * BytePerPixel / 256);
 	if (GPUVMEnable == true) {
 		*MetaPTEBytesFrame = (int)((dml_ceil((double) (DCCMetaSurfaceBytes - 4.0 * 1024.0) / (8 * 4.0 * 1024), 1) + 1) * 64);
-		MPDEBytesFrame = 128 * (v->GPUVMMaxPageTableLevels - 1);
+		MPDEBytesFrame = 128 * ((*v).GPUVMMaxPageTableLevels - 1);
 	} else {
 		*MetaPTEBytesFrame = 0;
 		MPDEBytesFrame = 0;
@@ -1943,7 +1943,7 @@ static unsigned int CalculateVMAndRowBytes(
 	}
 	*MacroTileWidth = MacroTileSizeBytes / BytePerPixel / MacroTileHeight;
 
-	if (GPUVMEnable == true && v->GPUVMMaxPageTableLevels > 1) {
+	if (GPUVMEnable == true && (*v).GPUVMMaxPageTableLevels > 1) {
 		if (ScanDirection != dm_vert) {
 			*DPDE0BytesFrame = (int)(64
 					* (dml_ceil(
@@ -1957,7 +1957,7 @@ static unsigned int CalculateVMAndRowBytes(
 									/ (8 * 2097152),
 							1) + 1));
 		}
-		ExtraDPDEBytesFrame = 128 * (v->GPUVMMaxPageTableLevels - 2);
+		ExtraDPDEBytesFrame = 128 * ((*v).GPUVMMaxPageTableLevels - 2);
 	} else {
 		*DPDE0BytesFrame = 0;
 		ExtraDPDEBytesFrame = 0;
@@ -1983,7 +1983,7 @@ static unsigned int CalculateVMAndRowBytes(
 	if (SurfaceTiling == dm_sw_linear) {
 		PixelPTEReqHeightPTEs = 1;
 		*PixelPTEReqHeight = 1;
-		*PixelPTEReqWidth = (unsigned int)(32768.0 / BytePerPixel);
+		*PixelPTEReqWidth = (core::ffi::c_uint)(32768.0 / BytePerPixel);
 		*PTERequestSize = 64;
 		FractionOfPTEReturnDrop = 0;
 	} else if (GPUVMMinPageSize == 4 && MacroTileSizeBytes > 4096) {
@@ -2001,7 +2001,7 @@ static unsigned int CalculateVMAndRowBytes(
 	}
 
 	if (SurfaceTiling == dm_sw_linear) {
-		*dpte_row_height = (unsigned int)dml_min(128, 1 << (unsigned int) dml_floor(dml_log2(PTEBufferSizeInRequests * *PixelPTEReqWidth / Pitch), 1));
+		*dpte_row_height = (core::ffi::c_uint)dml_min(128, 1 << (core::ffi::c_uint) dml_floor(dml_log2(PTEBufferSizeInRequests * *PixelPTEReqWidth / Pitch), 1));
 		*dpte_row_width_ub = (int)((dml_ceil((double)(Pitch * *dpte_row_height - 1) / *PixelPTEReqWidth, 1) + 1) * *PixelPTEReqWidth);
 		*PixelPTEBytesPerRow = *dpte_row_width_ub / *PixelPTEReqWidth * *PTERequestSize;
 	} else if (ScanDirection != dm_vert) {
@@ -2009,7 +2009,7 @@ static unsigned int CalculateVMAndRowBytes(
 		*dpte_row_width_ub = (int)((dml_ceil((double) (SwathWidth - 1) / *PixelPTEReqWidth, 1) + 1) * *PixelPTEReqWidth);
 		*PixelPTEBytesPerRow = *dpte_row_width_ub / *PixelPTEReqWidth * *PTERequestSize;
 	} else {
-		*dpte_row_height = (unsigned int)dml_min(*PixelPTEReqWidth, *MacroTileWidth);
+		*dpte_row_height = (core::ffi::c_uint)dml_min(*PixelPTEReqWidth, *MacroTileWidth);
 		*dpte_row_width_ub = (int)((dml_ceil((double) (SwathWidth - 1) / *PixelPTEReqHeight, 1) + 1) * *PixelPTEReqHeight);
 		*PixelPTEBytesPerRow = *dpte_row_width_ub / *PixelPTEReqHeight * *PTERequestSize;
 	}
@@ -2048,139 +2048,139 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
+static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(display_mode_lib *mode_lib)
 {
-	struct vba_vars_st *v = &mode_lib->vba;
-	unsigned int j, k;
+	struct vba_vars_st *v = (*&mode_lib).vba;
+	j: core::ffi::c_uint, k;
 	double HostVMInefficiencyFactor = 1.0;
 	bool NoChromaPlanes = true;
 	int ReorderBytes;
 	double VMDataOnlyReturnBW;
 	double MaxTotalRDBandwidth = 0;
-	int PrefetchMode = v->PrefetchModePerState[v->VoltageLevel][v->maxMpcComb];
+	int PrefetchMode = (*v).PrefetchModePerState[(*v).VoltageLevel][(*v).maxMpcComb];
 
-	v->WritebackDISPCLK = 0.0;
-	v->DISPCLKWithRamping = 0;
-	v->DISPCLKWithoutRamping = 0;
-	v->GlobalDPPCLK = 0.0;
+	(*v).WritebackDISPCLK = 0.0;
+	(*v).DISPCLKWithRamping = 0;
+	(*v).DISPCLKWithoutRamping = 0;
+	(*v).GlobalDPPCLK = 0.0;
 	/* DAL custom code: need to update ReturnBW in case min dcfclk is overridden */
 	{
 	double IdealFabricAndSDPPortBandwidthPerState = dml_min(
-			v->ReturnBusWidth * v->DCFCLKState[v->VoltageLevel][v->maxMpcComb],
-			v->FabricClockPerState[v->VoltageLevel] * v->FabricDatapathToDCNDataReturn);
-	double IdealDRAMBandwidthPerState = v->DRAMSpeedPerState[v->VoltageLevel] * v->NumberOfChannels * v->DRAMChannelWidth;
+			(*v).ReturnBusWidth * (*v).DCFCLKState[(*v).VoltageLevel][(*v).maxMpcComb],
+			(*v).FabricClockPerState[(*v).VoltageLevel] * (*v).FabricDatapathToDCNDataReturn);
+	double IdealDRAMBandwidthPerState = (*v).DRAMSpeedPerState[(*v).VoltageLevel] * (*v).NumberOfChannels * (*v).DRAMChannelWidth;
 
-	if (v->HostVMEnable != true) {
-		v->ReturnBW = dml_min(
-				IdealFabricAndSDPPortBandwidthPerState * v->PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
-				IdealDRAMBandwidthPerState * v->PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelDataOnly / 100.0);
+	if ((*v).HostVMEnable != true) {
+		(*v).ReturnBW = dml_min(
+				IdealFabricAndSDPPortBandwidthPerState * (*v).PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
+				IdealDRAMBandwidthPerState * (*v).PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelDataOnly / 100.0);
 	} else {
-		v->ReturnBW = dml_min(
-				IdealFabricAndSDPPortBandwidthPerState * v->PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
-				IdealDRAMBandwidthPerState * v->PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelMixedWithVMData / 100.0);
+		(*v).ReturnBW = dml_min(
+				IdealFabricAndSDPPortBandwidthPerState * (*v).PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0,
+				IdealDRAMBandwidthPerState * (*v).PercentOfIdealDRAMBWReceivedAfterUrgLatencyPixelMixedWithVMData / 100.0);
 	}
 	}
 	/* End DAL custom code */
 
 	// DISPCLK and DPPCLK Calculation
 	//
-	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		if (v->WritebackEnable[k]) {
-			v->WritebackDISPCLK = dml_max(
-					v->WritebackDISPCLK,
+	for (k = 0; k < (*v).NumberOfActivePlanes; ++k) {
+		if ((*v).WritebackEnable[k]) {
+			(*v).WritebackDISPCLK = dml_max(
+					(*v).WritebackDISPCLK,
 					dml314_CalculateWriteBackDISPCLK(
-							v->WritebackPixelFormat[k],
-							v->PixelClock[k],
-							v->WritebackHRatio[k],
-							v->WritebackVRatio[k],
-							v->WritebackHTaps[k],
-							v->WritebackVTaps[k],
-							v->WritebackSourceWidth[k],
-							(long)v->WritebackDestinationWidth[k],
-							v->HTotal[k],
-							(unsigned int)v->WritebackLineBufferSize));
+							(*v).WritebackPixelFormat[k],
+							(*v).PixelClock[k],
+							(*v).WritebackHRatio[k],
+							(*v).WritebackVRatio[k],
+							(*v).WritebackHTaps[k],
+							(*v).WritebackVTaps[k],
+							(*v).WritebackSourceWidth[k],
+							(*(long)v).WritebackDestinationWidth[k],
+							(*v).HTotal[k],
+							(*(core::ffi::c_uint)v).WritebackLineBufferSize));
 		}
 	}
 
-	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		if (v->HRatio[k] > 1) {
-			v->PSCL_THROUGHPUT_LUMA[k] = dml_min(
-					v->MaxDCHUBToPSCLThroughput,
-					v->MaxPSCLToLBThroughput * v->HRatio[k] / dml_ceil(v->htaps[k] / 6.0, 1));
+	for (k = 0; k < (*v).NumberOfActivePlanes; ++k) {
+		if ((*v).HRatio[k] > 1) {
+			(*v).PSCL_THROUGHPUT_LUMA[k] = dml_min(
+					(*v).MaxDCHUBToPSCLThroughput,
+					(*v).MaxPSCLToLBThroughput * (*v).HRatio[k] / dml_ceil((*v).htaps[k] / 6.0, 1));
 		} else {
-			v->PSCL_THROUGHPUT_LUMA[k] = dml_min(v->MaxDCHUBToPSCLThroughput, v->MaxPSCLToLBThroughput);
+			(*v).PSCL_THROUGHPUT_LUMA[k] = dml_min((*v).MaxDCHUBToPSCLThroughput, (*v).MaxPSCLToLBThroughput);
 		}
 
-		v->DPPCLKUsingSingleDPPLuma = v->PixelClock[k]
+		(*v).DPPCLKUsingSingleDPPLuma = (*v).PixelClock[k]
 				* dml_max(
-						v->vtaps[k] / 6.0 * dml_min(1.0, v->HRatio[k]),
-						dml_max(v->HRatio[k] * v->VRatio[k] / v->PSCL_THROUGHPUT_LUMA[k], 1.0));
+						(*v).vtaps[k] / 6.0 * dml_min(1.0, (*v).HRatio[k]),
+						dml_max((*v).HRatio[k] * (*v).VRatio[k] / (*v).PSCL_THROUGHPUT_LUMA[k], 1.0));
 
-		if ((v->htaps[k] > 6 || v->vtaps[k] > 6) && v->DPPCLKUsingSingleDPPLuma < 2 * v->PixelClock[k]) {
-			v->DPPCLKUsingSingleDPPLuma = 2 * v->PixelClock[k];
+		if (((*v).htaps[k] > 6 || (*v).vtaps[k] > 6) && (*v).DPPCLKUsingSingleDPPLuma < 2 * (*v).PixelClock[k]) {
+			(*v).DPPCLKUsingSingleDPPLuma = 2 * (*v).PixelClock[k];
 		}
 
-		if ((v->SourcePixelFormat[k] != dm_420_8 && v->SourcePixelFormat[k] != dm_420_10 && v->SourcePixelFormat[k] != dm_420_12
-				&& v->SourcePixelFormat[k] != dm_rgbe_alpha)) {
-			v->PSCL_THROUGHPUT_CHROMA[k] = 0.0;
-			v->DPPCLKUsingSingleDPP[k] = v->DPPCLKUsingSingleDPPLuma;
+		if (((*v).SourcePixelFormat[k] != dm_420_8 && (*v).SourcePixelFormat[k] != dm_420_10 && (*v).SourcePixelFormat[k] != dm_420_12
+				&& (*v).SourcePixelFormat[k] != dm_rgbe_alpha)) {
+			(*v).PSCL_THROUGHPUT_CHROMA[k] = 0.0;
+			(*v).DPPCLKUsingSingleDPP[k] = (*v).DPPCLKUsingSingleDPPLuma;
 		} else {
-			if (v->HRatioChroma[k] > 1) {
-				v->PSCL_THROUGHPUT_CHROMA[k] = dml_min(
-						v->MaxDCHUBToPSCLThroughput,
-						v->MaxPSCLToLBThroughput * v->HRatioChroma[k] / dml_ceil(v->HTAPsChroma[k] / 6.0, 1.0));
+			if ((*v).HRatioChroma[k] > 1) {
+				(*v).PSCL_THROUGHPUT_CHROMA[k] = dml_min(
+						(*v).MaxDCHUBToPSCLThroughput,
+						(*v).MaxPSCLToLBThroughput * (*v).HRatioChroma[k] / dml_ceil((*v).HTAPsChroma[k] / 6.0, 1.0));
 			} else {
-				v->PSCL_THROUGHPUT_CHROMA[k] = dml_min(v->MaxDCHUBToPSCLThroughput, v->MaxPSCLToLBThroughput);
+				(*v).PSCL_THROUGHPUT_CHROMA[k] = dml_min((*v).MaxDCHUBToPSCLThroughput, (*v).MaxPSCLToLBThroughput);
 			}
-			v->DPPCLKUsingSingleDPPChroma = v->PixelClock[k]
+			(*v).DPPCLKUsingSingleDPPChroma = (*v).PixelClock[k]
 					* dml_max3(
-							v->VTAPsChroma[k] / 6.0 * dml_min(1.0, v->HRatioChroma[k]),
-							v->HRatioChroma[k] * v->VRatioChroma[k] / v->PSCL_THROUGHPUT_CHROMA[k],
+							(*v).VTAPsChroma[k] / 6.0 * dml_min(1.0, (*v).HRatioChroma[k]),
+							(*v).HRatioChroma[k] * (*v).VRatioChroma[k] / (*v).PSCL_THROUGHPUT_CHROMA[k],
 							1.0);
 
-			if ((v->HTAPsChroma[k] > 6 || v->VTAPsChroma[k] > 6) && v->DPPCLKUsingSingleDPPChroma < 2 * v->PixelClock[k]) {
-				v->DPPCLKUsingSingleDPPChroma = 2 * v->PixelClock[k];
+			if (((*v).HTAPsChroma[k] > 6 || (*v).VTAPsChroma[k] > 6) && (*v).DPPCLKUsingSingleDPPChroma < 2 * (*v).PixelClock[k]) {
+				(*v).DPPCLKUsingSingleDPPChroma = 2 * (*v).PixelClock[k];
 			}
 
-			v->DPPCLKUsingSingleDPP[k] = dml_max(v->DPPCLKUsingSingleDPPLuma, v->DPPCLKUsingSingleDPPChroma);
+			(*v).DPPCLKUsingSingleDPP[k] = dml_max((*v).DPPCLKUsingSingleDPPLuma, (*v).DPPCLKUsingSingleDPPChroma);
 		}
 	}
 
-	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		if (v->BlendingAndTiming[k] != k)
+	for (k = 0; k < (*v).NumberOfActivePlanes; ++k) {
+		if ((*v).BlendingAndTiming[k] != k)
 			continue;
-		if (v->ODMCombineEnabled[k] == dm_odm_combine_mode_4to1) {
-			v->DISPCLKWithRamping = dml_max(
-					v->DISPCLKWithRamping,
-					v->PixelClock[k] / 4 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100)
-							* (1 + v->DISPCLKRampingMargin / 100));
-			v->DISPCLKWithoutRamping = dml_max(
-					v->DISPCLKWithoutRamping,
-					v->PixelClock[k] / 4 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100));
-		} else if (v->ODMCombineEnabled[k] == dm_odm_combine_mode_2to1) {
-			v->DISPCLKWithRamping = dml_max(
-					v->DISPCLKWithRamping,
-					v->PixelClock[k] / 2 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100)
-							* (1 + v->DISPCLKRampingMargin / 100));
-			v->DISPCLKWithoutRamping = dml_max(
-					v->DISPCLKWithoutRamping,
-					v->PixelClock[k] / 2 * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100));
+		if ((*v).ODMCombineEnabled[k] == dm_odm_combine_mode_4to1) {
+			(*v).DISPCLKWithRamping = dml_max(
+					(*v).DISPCLKWithRamping,
+					(*v).PixelClock[k] / 4 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100)
+							* (1 + (*v).DISPCLKRampingMargin / 100));
+			(*v).DISPCLKWithoutRamping = dml_max(
+					(*v).DISPCLKWithoutRamping,
+					(*v).PixelClock[k] / 4 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100));
+		} else if ((*v).ODMCombineEnabled[k] == dm_odm_combine_mode_2to1) {
+			(*v).DISPCLKWithRamping = dml_max(
+					(*v).DISPCLKWithRamping,
+					(*v).PixelClock[k] / 2 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100)
+							* (1 + (*v).DISPCLKRampingMargin / 100));
+			(*v).DISPCLKWithoutRamping = dml_max(
+					(*v).DISPCLKWithoutRamping,
+					(*v).PixelClock[k] / 2 * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100));
 		} else {
-			v->DISPCLKWithRamping = dml_max(
-					v->DISPCLKWithRamping,
-					v->PixelClock[k] * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100) * (1 + v->DISPCLKRampingMargin / 100));
-			v->DISPCLKWithoutRamping = dml_max(
-					v->DISPCLKWithoutRamping,
-					v->PixelClock[k] * (1 + v->DISPCLKDPPCLKDSCCLKDownSpreading / 100));
+			(*v).DISPCLKWithRamping = dml_max(
+					(*v).DISPCLKWithRamping,
+					(*v).PixelClock[k] * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100) * (1 + (*v).DISPCLKRampingMargin / 100));
+			(*v).DISPCLKWithoutRamping = dml_max(
+					(*v).DISPCLKWithoutRamping,
+					(*v).PixelClock[k] * (1 + (*v).DISPCLKDPPCLKDSCCLKDownSpreading / 100));
 		}
 	}
 
-	v->DISPCLKWithRamping = dml_max(v->DISPCLKWithRamping, v->WritebackDISPCLK);
-	v->DISPCLKWithoutRamping = dml_max(v->DISPCLKWithoutRamping, v->WritebackDISPCLK);
+	(*v).DISPCLKWithRamping = dml_max((*v).DISPCLKWithRamping, (*v).WritebackDISPCLK);
+	(*v).DISPCLKWithoutRamping = dml_max((*v).DISPCLKWithoutRamping, (*v).WritebackDISPCLK);
 
-	ASSERT(v->DISPCLKDPPCLKVCOSpeed != 0);
-	v->DISPCLKWithRampingRoundedToDFSGranularity = RoundToDFSGranularityUp(v->DISPCLKWithRamping, v->DISPCLKDPPCLKVCOSpeed);
-	v->DISPCLKWithoutRampingRoundedToDFSGranularity = RoundToDFSGranularityUp(v->DISPCLKWithoutRamping, v->DISPCLKDPPCLKVCOSpeed);
+	ASSERT((*v).DISPCLKDPPCLKVCOSpeed != 0);
+	(*v).DISPCLKWithRampingRoundedToDFSGranularity = RoundToDFSGranularityUp((*v).DISPCLKWithRamping, (*v).DISPCLKDPPCLKVCOSpeed);
+	(*v).DISPCLKWithoutRampingRoundedToDFSGranularity = RoundToDFSGranularityUp((*v).DISPCLKWithoutRamping, (*v).DISPCLKDPPCLKVCOSpeed);
 	v->MaxDispclkRoundedToDFSGranularity = RoundToDFSGranularityDown(
 			v->soc.clock_limits[v->soc.num_states - 1].dispclk_mhz,
 			v->DISPCLKDPPCLKVCOSpeed);
@@ -2323,7 +2323,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 				v->DSCDelay[k] = dscceComputeDelay(
 						v->DSCInputBitPerComponent[k],
 						BPP,
-						(unsigned int)dml_ceil((double) v->HActive[k] / v->NumberOfDSCSlices[k], 1),
+						(core::ffi::c_uint)dml_ceil((double) v->HActive[k] / v->NumberOfDSCSlices[k], 1),
 						v->NumberOfDSCSlices[k],
 						v->OutputFormat[k],
 						v->Output[k]) + dscComputeDelay(v->OutputFormat[k], v->Output[k]);
@@ -2332,8 +2332,8 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 						* (dscceComputeDelay(
 								v->DSCInputBitPerComponent[k],
 								BPP,
-								(unsigned int)dml_ceil((double) v->HActive[k] / v->NumberOfDSCSlices[k], 1),
-								(unsigned int)(v->NumberOfDSCSlices[k] / 2.0),
+								(core::ffi::c_uint)dml_ceil((double) v->HActive[k] / v->NumberOfDSCSlices[k], 1),
+								(core::ffi::c_uint)(v->NumberOfDSCSlices[k] / 2.0),
 								v->OutputFormat[k],
 								v->Output[k]) + dscComputeDelay(v->OutputFormat[k], v->Output[k]));
 			} else {
@@ -2341,13 +2341,13 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 						* (dscceComputeDelay(
 								v->DSCInputBitPerComponent[k],
 								BPP,
-								(unsigned int)dml_ceil((double) v->HActive[k] / v->NumberOfDSCSlices[k], 1),
-								(unsigned int)(v->NumberOfDSCSlices[k] / 4.0),
+								(core::ffi::c_uint)dml_ceil((double) v->HActive[k] / v->NumberOfDSCSlices[k], 1),
+								(core::ffi::c_uint)(v->NumberOfDSCSlices[k] / 4.0),
 								v->OutputFormat[k],
 								v->Output[k]) + dscComputeDelay(v->OutputFormat[k], v->Output[k]));
 			}
-			v->DSCDelay[k] = (unsigned int)(v->DSCDelay[k] + (v->HTotal[k] - v->HActive[k]) * dml_ceil((double) v->DSCDelay[k] / v->HActive[k], 1));
-			v->DSCDelay[k] = (unsigned int)(v->DSCDelay[k] * v->PixelClock[k] / v->PixelClockBackEnd[k]);
+			v->DSCDelay[k] = (core::ffi::c_uint)(v->DSCDelay[k] + (v->HTotal[k] - v->HActive[k]) * dml_ceil((double) v->DSCDelay[k] / v->HActive[k], 1));
+			v->DSCDelay[k] = (core::ffi::c_uint)(v->DSCDelay[k] * v->PixelClock[k] / v->PixelClockBackEnd[k]);
 		} else {
 			v->DSCDelay[k] = 0;
 		}
@@ -2360,12 +2360,12 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 
 	// Prefetch
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-		unsigned int PDEAndMetaPTEBytesFrameY;
-		unsigned int PixelPTEBytesPerRowY;
-		unsigned int MetaRowByteY;
-		unsigned int MetaRowByteC;
-		unsigned int PDEAndMetaPTEBytesFrameC;
-		unsigned int PixelPTEBytesPerRowC;
+		core::ffi::c_uint PDEAndMetaPTEBytesFrameY;
+		core::ffi::c_uint PixelPTEBytesPerRowY;
+		core::ffi::c_uint MetaRowByteY;
+		core::ffi::c_uint MetaRowByteC;
+		core::ffi::c_uint PDEAndMetaPTEBytesFrameC;
+		core::ffi::c_uint PixelPTEBytesPerRowC;
 		bool PTEBufferSizeNotExceededY;
 		bool PTEBufferSizeNotExceededC;
 
@@ -2388,13 +2388,13 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 					v->SurfaceTiling[k],
 					v->BytePerPixelC[k],
 					v->SourceScan[k],
-					(unsigned int)v->SwathWidthC[k],
+					(core::ffi::c_uint)v->SwathWidthC[k],
 					v->ViewportHeightChroma[k],
 					v->GPUVMEnable,
 					v->HostVMEnable,
 					v->HostVMMaxNonCachedPageTableLevels,
-					(unsigned int)v->GPUVMMinPageSize,
-					(unsigned int)v->HostVMMinPageSize,
+					(core::ffi::c_uint)v->GPUVMMinPageSize,
+					(core::ffi::c_uint)v->HostVMMinPageSize,
 					v->PTEBufferSizeInRequestsForChroma,
 					v->PitchC[k],
 					v->DCCMetaPitchC[k],
@@ -2445,13 +2445,13 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 				v->SurfaceTiling[k],
 				v->BytePerPixelY[k],
 				v->SourceScan[k],
-				(unsigned int)v->SwathWidthY[k],
+				(core::ffi::c_uint)v->SwathWidthY[k],
 				v->ViewportHeight[k],
 				v->GPUVMEnable,
 				v->HostVMEnable,
 				v->HostVMMaxNonCachedPageTableLevels,
-				(unsigned int)v->GPUVMMinPageSize,
-				(unsigned int)v->HostVMMinPageSize,
+				(core::ffi::c_uint)v->GPUVMMinPageSize,
+				(core::ffi::c_uint)v->HostVMMinPageSize,
 				v->PTEBufferSizeInRequestsForLuma,
 				v->PitchY[k],
 				v->DCCMetaPitchY[k],
@@ -2627,7 +2627,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 
 	v->MaximumMaxVStartupLines = 0;
 	for (k = 0; k < v->NumberOfActivePlanes; ++k)
-		v->MaximumMaxVStartupLines = (unsigned int)dml_max(v->MaximumMaxVStartupLines, v->MaxVStartupLines[k]);
+		v->MaximumMaxVStartupLines = (core::ffi::c_uint)dml_max(v->MaximumMaxVStartupLines, v->MaxVStartupLines[k]);
 
 	// VBA_DELTA
 	// We don't really care to iterate between the various prefetch modes
@@ -2694,10 +2694,10 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 					v->DPPCLKDelaySCLLBOnly,
 					v->DPPCLKDelayCNVCCursor,
 					v->DISPCLKDelaySubtotal,
-					(unsigned int) (v->SwathWidthY[k] / v->HRatio[k]),
+					(core::ffi::c_uint) (v->SwathWidthY[k] / v->HRatio[k]),
 					v->OutputFormat[k],
 					v->MaxInterDCNTileRepeaters,
-					(unsigned int)dml_min(v->VStartupLines, v->MaxVStartupLines[k]),
+					(core::ffi::c_uint)dml_min(v->VStartupLines, v->MaxVStartupLines[k]),
 					v->MaxVStartupLines[k],
 					v->GPUVMMaxPageTableLevels,
 					v->GPUVMEnable,
@@ -2711,15 +2711,15 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 					v->UrgentLatency,
 					v->UrgentExtraLatency,
 					v->TCalc,
-					(unsigned int)v->PDEAndMetaPTEBytesFrame[k],
-					(unsigned int)v->MetaRowByte[k],
-					(unsigned int)v->PixelPTEBytesPerRow[k],
+					(core::ffi::c_uint)v->PDEAndMetaPTEBytesFrame[k],
+					(core::ffi::c_uint)v->MetaRowByte[k],
+					(core::ffi::c_uint)v->PixelPTEBytesPerRow[k],
 					v->PrefetchSourceLinesY[k],
-					(unsigned int)v->SwathWidthY[k],
+					(core::ffi::c_uint)v->SwathWidthY[k],
 					v->VInitPreFillY[k],
 					v->MaxNumSwathY[k],
 					v->PrefetchSourceLinesC[k],
-					(unsigned int)v->SwathWidthC[k],
+					(core::ffi::c_uint)v->SwathWidthC[k],
 					v->VInitPreFillC[k],
 					v->MaxNumSwathC[k],
 					v->swath_width_luma_ub[k],
@@ -2750,7 +2750,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 #ifdef __DML_VBA_DEBUG__
 			dml_print("DML::%s: k=%0d Prefetch cal result=%0d\n", __func__, k, v->ErrorResult[k]);
 #endif
-			v->VStartup[k] = (unsigned int)dml_min(v->VStartupLines, v->MaxVStartupLines[k]);
+			v->VStartup[k] = (core::ffi::c_uint)dml_min(v->VStartupLines, v->MaxVStartupLines[k]);
 		}
 
 		v->NoEnoughUrgentLatencyHiding = false;
@@ -2904,7 +2904,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 
 			v->TotImmediateFlipBytes = 0;
 			for (k = 0; k < v->NumberOfActivePlanes; ++k) {
-				v->TotImmediateFlipBytes = (unsigned int)(v->TotImmediateFlipBytes
+				v->TotImmediateFlipBytes = (core::ffi::c_uint)(v->TotImmediateFlipBytes
 						+ v->DPPPerPlane[k] * (v->PDEAndMetaPTEBytesFrame[k] + v->MetaRowByte[k] + v->PixelPTEBytesPerRow[k]));
 			}
 			for (k = 0; k < v->NumberOfActivePlanes; ++k) {
@@ -2948,7 +2948,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			v->ImmediateFlipSupported = true;
 			if (v->total_dcn_read_bw_with_flip > v->ReturnBW) {
 #ifdef __DML_VBA_DEBUG__
-				dml_print("DML::%s: total_dcn_read_bw_with_flip %f (bw w/ flip too high!)\n", __func__, v->total_dcn_read_bw_with_flip);
+				dml_print("DML::%s: total_dcn_read_bw_with_flip %f (bw w/ flip too high!())\n", __func__, v->total_dcn_read_bw_with_flip);
 #endif
 				v->ImmediateFlipSupported = false;
 				v->total_dcn_read_bw_with_flip = MaxTotalRDBandwidth;
@@ -3218,11 +3218,11 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		isInterlaceTiming = (v->Interlace[k] && !v->ProgressiveToInterlaceUnitInOPP);
 		v->VStartup[k] = (isInterlaceTiming ? (2 * v->MaxVStartupLines[k]) : v->MaxVStartupLines[k]);
 		if (v->Interlace[k] && !v->ProgressiveToInterlaceUnitInOPP) {
-			v->MIN_DST_Y_NEXT_START[k] = (unsigned int)dml_floor((v->VTotal[k] - v->VFrontPorch[k] + v->VTotal[k] - v->VActive[k] - v->VStartup[k]) / 2.0, 1.0);
+			v->MIN_DST_Y_NEXT_START[k] = (core::ffi::c_uint)dml_floor((v->VTotal[k] - v->VFrontPorch[k] + v->VTotal[k] - v->VActive[k] - v->VStartup[k]) / 2.0, 1.0);
 		} else {
 			v->MIN_DST_Y_NEXT_START[k] = v->VTotal[k] - v->VFrontPorch[k] + v->VTotal[k] - v->VActive[k] - v->VStartup[k];
 		}
-		v->MIN_DST_Y_NEXT_START[k] += (unsigned int)(dml_floor(4.0 * v->TSetup[k] / ((double)v->HTotal[k] / v->PixelClock[k]), 1.0) / 4.0);
+		v->MIN_DST_Y_NEXT_START[k] += (core::ffi::c_uint)(dml_floor(4.0 * v->TSetup[k] / ((double)v->HTotal[k] / v->PixelClock[k]), 1.0) / 4.0);
 		if (((v->VUpdateOffsetPix[k] + v->VUpdateWidthPix[k] + v->VReadyOffsetPix[k]) / v->HTotal[k])
 				<= (isInterlaceTiming ?
 						dml_floor((v->VTotal[k] - v->VActive[k] - v->VFrontPorch[k] - v->VStartup[k]) / 2.0, 1.0) :
@@ -3330,28 +3330,28 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			&v->StutterPeriod);
 }
 
-static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
+static void DisplayPipeConfiguration(display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	// Display Pipe Configuration
 	double BytePerPixDETY[DC__NUM_DPP__MAX];
 	double BytePerPixDETC[DC__NUM_DPP__MAX];
-	unsigned int BytePerPixY[DC__NUM_DPP__MAX];
-	unsigned int BytePerPixC[DC__NUM_DPP__MAX];
-	unsigned int Read256BytesBlockHeightY[DC__NUM_DPP__MAX];
-	unsigned int Read256BytesBlockHeightC[DC__NUM_DPP__MAX];
-	unsigned int Read256BytesBlockWidthY[DC__NUM_DPP__MAX];
-	unsigned int Read256BytesBlockWidthC[DC__NUM_DPP__MAX];
+	core::ffi::c_uint BytePerPixY[DC__NUM_DPP__MAX];
+	core::ffi::c_uint BytePerPixC[DC__NUM_DPP__MAX];
+	core::ffi::c_uint Read256BytesBlockHeightY[DC__NUM_DPP__MAX];
+	core::ffi::c_uint Read256BytesBlockHeightC[DC__NUM_DPP__MAX];
+	core::ffi::c_uint Read256BytesBlockWidthY[DC__NUM_DPP__MAX];
+	core::ffi::c_uint Read256BytesBlockWidthC[DC__NUM_DPP__MAX];
 	double dummy1[DC__NUM_DPP__MAX];
 	double dummy2[DC__NUM_DPP__MAX];
 	double dummy3[DC__NUM_DPP__MAX];
 	double dummy4[DC__NUM_DPP__MAX];
-	unsigned int dummy5[DC__NUM_DPP__MAX];
-	unsigned int dummy6[DC__NUM_DPP__MAX];
+	core::ffi::c_uint dummy5[DC__NUM_DPP__MAX];
+	core::ffi::c_uint dummy6[DC__NUM_DPP__MAX];
 	bool dummy7[DC__NUM_DPP__MAX];
 	bool dummysinglestring;
 
-	unsigned int k;
+	core::ffi::c_uint k;
 
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 
@@ -3410,16 +3410,16 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 }
 
 static bool CalculateBytePerPixelAnd256BBlockSizes(
-		enum source_format_class SourcePixelFormat,
-		enum dm_swizzle_mode SurfaceTiling,
-		unsigned int *BytePerPixelY,
-		unsigned int *BytePerPixelC,
+		source_format_class SourcePixelFormat,
+		dm_swizzle_mode SurfaceTiling,
+		core::ffi::c_uint *BytePerPixelY,
+		core::ffi::c_uint *BytePerPixelC,
 		double *BytePerPixelDETY,
 		double *BytePerPixelDETC,
-		unsigned int *BlockHeight256BytesY,
-		unsigned int *BlockHeight256BytesC,
-		unsigned int *BlockWidth256BytesY,
-		unsigned int *BlockWidth256BytesC)
+		core::ffi::c_uint *BlockHeight256BytesY,
+		core::ffi::c_uint *BlockHeight256BytesC,
+		core::ffi::c_uint *BlockWidth256BytesY,
+		core::ffi::c_uint *BlockWidth256BytesC)
 {
 	if (SourcePixelFormat == dm_444_64) {
 		*BytePerPixelDETY = 8;
@@ -3497,7 +3497,7 @@ static bool CalculateBytePerPixelAnd256BBlockSizes(
 	return true;
 }
 
-static double CalculateTWait(unsigned int PrefetchMode, double DRAMClockChangeLatency, double UrgentLatency, double SREnterPlusExitTime)
+static double CalculateTWait(core::ffi::c_uint PrefetchMode, double DRAMClockChangeLatency, double UrgentLatency, double SREnterPlusExitTime)
 {
 	if (PrefetchMode == 0) {
 		return dml_max(DRAMClockChangeLatency + UrgentLatency, dml_max(SREnterPlusExitTime, UrgentLatency));
@@ -3509,16 +3509,16 @@ static double CalculateTWait(unsigned int PrefetchMode, double DRAMClockChangeLa
 }
 
 double dml314_CalculateWriteBackDISPCLK(
-		enum source_format_class WritebackPixelFormat,
+		source_format_class WritebackPixelFormat,
 		double PixelClock,
 		double WritebackHRatio,
 		double WritebackVRatio,
-		unsigned int WritebackHTaps,
-		unsigned int WritebackVTaps,
+		core::ffi::c_uint WritebackHTaps,
+		core::ffi::c_uint WritebackVTaps,
 		long WritebackSourceWidth,
 		long WritebackDestinationWidth,
-		unsigned int HTotal,
-		unsigned int WritebackLineBufferSize)
+		core::ffi::c_uint HTotal,
+		core::ffi::c_uint WritebackLineBufferSize)
 {
 	(void)WritebackPixelFormat;
 	(void)WritebackVRatio;
@@ -3531,14 +3531,14 @@ double dml314_CalculateWriteBackDISPCLK(
 }
 
 static double CalculateWriteBackDelay(
-		enum source_format_class WritebackPixelFormat,
+		source_format_class WritebackPixelFormat,
 		double WritebackHRatio,
 		double WritebackVRatio,
-		unsigned int WritebackVTaps,
+		core::ffi::c_uint WritebackVTaps,
 		int WritebackDestinationWidth,
 		int WritebackDestinationHeight,
 		int WritebackSourceHeight,
-		unsigned int HTotal)
+		core::ffi::c_uint HTotal)
 {
 	(void)WritebackPixelFormat;
 	(void)WritebackHRatio;
@@ -3574,7 +3574,7 @@ static void CalculateVupdateAndDynamicMetadataParameters(
 		double *Tdmbf,
 		double *Tdmec,
 		double *Tdmsks,
-		unsigned int *VUpdateOffsetPix,
+		core::ffi::c_uint *VUpdateOffsetPix,
 		double *VUpdateWidthPix,
 		double *VReadyOffsetPix)
 {
@@ -3583,7 +3583,7 @@ static void CalculateVupdateAndDynamicMetadataParameters(
 	TotalRepeaterDelayTime = MaxInterDCNTileRepeaters * (2 / DPPCLK + 3 / DISPCLK);
 	*VUpdateWidthPix = dml_ceil((14.0 / DCFClkDeepSleep + 12.0 / DPPCLK + TotalRepeaterDelayTime) * PixelClock, 1.0);
 	*VReadyOffsetPix = dml_ceil(dml_max(150.0 / DPPCLK, TotalRepeaterDelayTime + 20.0 / DCFClkDeepSleep + 10.0 / DPPCLK) * PixelClock, 1.0);
-	*VUpdateOffsetPix = (unsigned int)dml_ceil(HTotal / 4.0, 1);
+	*VUpdateOffsetPix = (core::ffi::c_uint)dml_ceil(HTotal / 4.0, 1);
 	*TSetup = (*VUpdateOffsetPix + *VUpdateWidthPix + *VReadyOffsetPix) / PixelClock;
 	*Tdmbf = DynamicMetadataTransmittedBytes / 4.0 / DISPCLK;
 	*Tdmec = HTotal / PixelClock;
@@ -3604,19 +3604,19 @@ static void CalculateVupdateAndDynamicMetadataParameters(
 
 static void CalculateRowBandwidth(
 		bool GPUVMEnable,
-		enum source_format_class SourcePixelFormat,
+		source_format_class SourcePixelFormat,
 		double VRatio,
 		double VRatioChroma,
 		bool DCCEnable,
 		double LineTime,
-		unsigned int MetaRowByteLuma,
-		unsigned int MetaRowByteChroma,
-		unsigned int meta_row_height_luma,
-		unsigned int meta_row_height_chroma,
-		unsigned int PixelPTEBytesPerRowLuma,
-		unsigned int PixelPTEBytesPerRowChroma,
-		unsigned int dpte_row_height_luma,
-		unsigned int dpte_row_height_chroma,
+		core::ffi::c_uint MetaRowByteLuma,
+		core::ffi::c_uint MetaRowByteChroma,
+		meta_row_height_luma: core::ffi::c_uint,
+		meta_row_height_chroma: core::ffi::c_uint,
+		core::ffi::c_uint PixelPTEBytesPerRowLuma,
+		core::ffi::c_uint PixelPTEBytesPerRowChroma,
+		dpte_row_height_luma: core::ffi::c_uint,
+		dpte_row_height_chroma: core::ffi::c_uint,
 		double *meta_row_bw,
 		double *dpte_row_bw)
 {
@@ -3639,8 +3639,8 @@ static void CalculateRowBandwidth(
 }
 
 static void CalculateFlipSchedule(
-		struct display_mode_lib *mode_lib,
-		unsigned int k,
+		display_mode_lib *mode_lib,
+		k: core::ffi::c_uint,
 		double HostVMInefficiencyFactor,
 		double UrgentExtraLatency,
 		double UrgentLatency,
@@ -3650,7 +3650,7 @@ static void CalculateFlipSchedule(
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	double min_row_time = 0.0;
-	unsigned int HostVMDynamicLevelsTrips;
+	core::ffi::c_uint HostVMDynamicLevelsTrips;
 	double TimeForFetchingMetaPTEImmediateFlip;
 	double TimeForFetchingRowInVBlankImmediateFlip;
 	double ImmediateFlipBW = 1.0;
@@ -3745,13 +3745,13 @@ static double TruncToValidBPP(
 		double PixelClock,
 		double DesiredBPP,
 		bool DSCEnable,
-		enum output_encoder_class Output,
-		enum output_format_class Format,
-		unsigned int DSCInputBitPerComponent,
+		output_encoder_class Output,
+		output_format_class Format,
+		core::ffi::c_uint DSCInputBitPerComponent,
 		int DSCSlices,
 		int AudioRate,
 		int AudioLayout,
-		enum odm_combine_mode ODMCombine)
+		odm_combine_mode ODMCombine)
 {
 	double MaxLinkBPP;
 	int MinDSCBPP;
@@ -3864,11 +3864,11 @@ static double TruncToValidBPP(
 }
 
 static noinline void CalculatePrefetchSchedulePerPlane(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		double HostVMInefficiencyFactor,
 		int i,
-		unsigned int j,
-		unsigned int k)
+		j: core::ffi::c_uint,
+		k: core::ffi::c_uint)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	Pipe myPipe;
@@ -3902,17 +3902,17 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 		mode_lib,
 		HostVMInefficiencyFactor,
 		&myPipe,
-		(unsigned int)v->DSCDelayPerState[i][k],
+		(core::ffi::c_uint)v->DSCDelayPerState[i][k],
 		v->DPPCLKDelaySubtotal + v->DPPCLKDelayCNVCFormater,
 		v->DPPCLKDelaySCL,
 		v->DPPCLKDelaySCLLBOnly,
 		v->DPPCLKDelayCNVCCursor,
 		v->DISPCLKDelaySubtotal,
-		(unsigned int)(v->SwathWidthYThisState[k] / v->HRatio[k]),
+		(core::ffi::c_uint)(v->SwathWidthYThisState[k] / v->HRatio[k]),
 		v->OutputFormat[k],
 		v->MaxInterDCNTileRepeaters,
-		(unsigned int)dml_min(v->MaxVStartup, v->MaximumVStartup[i][j][k]),
-		(unsigned int)v->MaximumVStartup[i][j][k],
+		(core::ffi::c_uint)dml_min(v->MaxVStartup, v->MaximumVStartup[i][j][k]),
+		(core::ffi::c_uint)v->MaximumVStartup[i][j][k],
 		v->GPUVMMaxPageTableLevels,
 		v->GPUVMEnable,
 		v->HostVMEnable,
@@ -3925,15 +3925,15 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 		v->UrgLatency[i],
 		v->ExtraLatency,
 		v->TimeCalc,
-		(unsigned int)v->PDEAndMetaPTEBytesPerFrame[i][j][k],
-		(unsigned int)v->MetaRowBytes[i][j][k],
-		(unsigned int)v->DPTEBytesPerRow[i][j][k],
+		(core::ffi::c_uint)v->PDEAndMetaPTEBytesPerFrame[i][j][k],
+		(core::ffi::c_uint)v->MetaRowBytes[i][j][k],
+		(core::ffi::c_uint)v->DPTEBytesPerRow[i][j][k],
 		v->PrefetchLinesY[i][j][k],
-		(unsigned int)v->SwathWidthYThisState[k],
+		(core::ffi::c_uint)v->SwathWidthYThisState[k],
 		v->PrefillY[k],
 		v->MaxNumSwY[k],
 		v->PrefetchLinesC[i][j][k],
-		(unsigned int)v->SwathWidthCThisState[k],
+		(core::ffi::c_uint)v->SwathWidthCThisState[k],
 		v->PrefillC[k],
 		v->MaxNumSwC[k],
 		v->swath_width_luma_ub_this_state[k],
@@ -3962,15 +3962,15 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 		&v->VReadyOffsetPix[k]);
 }
 
-void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
+void dml314_ModeSupportAndSystemConfigurationFull(display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 
 	int j;
-	unsigned int i;
-	unsigned int k, m;
+	core::ffi::c_uint i;
+	k: core::ffi::c_uint, m;
 	int ReorderingBytes;
-	unsigned int MinPrefetchMode = 0, MaxPrefetchMode = 2;
+	core::ffi::c_uint MinPrefetchMode = 0, MaxPrefetchMode = 2;
 	bool NoChroma = true;
 	bool EnoughWritebackUnits = true;
 	bool P2IWith420 = false;
@@ -4121,7 +4121,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 							v->WritebackSourceWidth[k],
 							(long)v->WritebackDestinationWidth[k],
 							v->HTotal[k],
-							(unsigned int)v->WritebackLineBufferSize));
+							(core::ffi::c_uint)v->WritebackLineBufferSize));
 		}
 	}
 	for (k = 0; k < v->NumberOfActivePlanes; k++) {
@@ -4357,7 +4357,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 					&& !UnboundedRequest(v->UseUnboundedRequesting, v->TotalNumberOfActiveDPP[i][j], NoChroma, v->Output[0])) {
 				while (!(v->TotalNumberOfActiveDPP[i][j] >= v->MaxNumDPP || v->TotalNumberOfSingleDPPPlanes[i][j] == 0)) {
 					double BWOfNonSplitPlaneOfMaximumBandwidth;
-					unsigned int NumberOfNonSplitPlaneOfMaximumBandwidth;
+					core::ffi::c_uint NumberOfNonSplitPlaneOfMaximumBandwidth;
 
 					BWOfNonSplitPlaneOfMaximumBandwidth = 0;
 					NumberOfNonSplitPlaneOfMaximumBandwidth = 0;
@@ -4444,7 +4444,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		if (v->BlendingAndTiming[k] == k) {
 			if (v->PixelClockBackEnd[k] > 3200) {
-				v->NumberOfDSCSlices[k] = (unsigned int)dml_ceil(v->PixelClockBackEnd[k] / 400.0, 4.0);
+				v->NumberOfDSCSlices[k] = (core::ffi::c_uint)dml_ceil(v->PixelClockBackEnd[k] / 400.0, 4.0);
 			} else if (v->PixelClockBackEnd[k] > 1360) {
 				v->NumberOfDSCSlices[k] = 8;
 			} else if (v->PixelClockBackEnd[k] > 680) {
@@ -4916,7 +4916,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 					v->DSCDelayPerState[i][k] = dscceComputeDelay(
 							v->DSCInputBitPerComponent[k],
 							v->BPP,
-							(unsigned int)dml_ceil(1.0 * v->HActive[k] / v->NumberOfDSCSlices[k], 1.0),
+							(core::ffi::c_uint)dml_ceil(1.0 * v->HActive[k] / v->NumberOfDSCSlices[k], 1.0),
 							v->NumberOfDSCSlices[k],
 							v->OutputFormat[k],
 							v->Output[k]) + dscComputeDelay(v->OutputFormat[k], v->Output[k]);
@@ -4925,7 +4925,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 							* (dscceComputeDelay(
 									v->DSCInputBitPerComponent[k],
 									v->BPP,
-									(unsigned int)dml_ceil(1.0 * v->HActive[k] / v->NumberOfDSCSlices[k], 1.0),
+									(core::ffi::c_uint)dml_ceil(1.0 * v->HActive[k] / v->NumberOfDSCSlices[k], 1.0),
 									v->NumberOfDSCSlices[k] / 2,
 									v->OutputFormat[k],
 									v->Output[k]) + dscComputeDelay(v->OutputFormat[k], v->Output[k]));
@@ -4934,7 +4934,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 							* (dscceComputeDelay(
 									v->DSCInputBitPerComponent[k],
 									v->BPP,
-									(unsigned int)dml_ceil(1.0 * v->HActive[k] / v->NumberOfDSCSlices[k], 1.0),
+									(core::ffi::c_uint)dml_ceil(1.0 * v->HActive[k] / v->NumberOfDSCSlices[k], 1.0),
 									v->NumberOfDSCSlices[k] / 4,
 									v->OutputFormat[k],
 									v->Output[k]) + dscComputeDelay(v->OutputFormat[k], v->Output[k]));
@@ -5028,8 +5028,8 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 			for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 				v->swath_width_luma_ub_all_states[i][j][k] = v->swath_width_luma_ub_this_state[k];
 				v->swath_width_chroma_ub_all_states[i][j][k] = v->swath_width_chroma_ub_this_state[k];
-				v->SwathWidthYAllStates[i][j][k] = (unsigned int)v->SwathWidthYThisState[k];
-				v->SwathWidthCAllStates[i][j][k] = (unsigned int)v->SwathWidthCThisState[k];
+				v->SwathWidthYAllStates[i][j][k] = (core::ffi::c_uint)v->SwathWidthYThisState[k];
+				v->SwathWidthCAllStates[i][j][k] = (core::ffi::c_uint)v->SwathWidthCThisState[k];
 				v->SwathHeightYAllStates[i][j][k] = v->SwathHeightYThisState[k];
 				v->SwathHeightCAllStates[i][j][k] = v->SwathHeightCThisState[k];
 				v->DETBufferSizeYAllStates[i][j][k] = v->DETBufferSizeYThisState[k];
@@ -5054,8 +5054,8 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 				v->SwathWidthCThisState[k] = v->SwathWidthCAllStates[i][j][k];
 				v->SwathHeightYThisState[k] = v->SwathHeightYAllStates[i][j][k];
 				v->SwathHeightCThisState[k] = v->SwathHeightCAllStates[i][j][k];
-				v->DETBufferSizeYThisState[k] = (unsigned int)v->DETBufferSizeYAllStates[i][j][k];
-				v->DETBufferSizeCThisState[k] = (unsigned int)v->DETBufferSizeCAllStates[i][j][k];
+				v->DETBufferSizeYThisState[k] = (core::ffi::c_uint)v->DETBufferSizeYAllStates[i][j][k];
+				v->DETBufferSizeCThisState[k] = (core::ffi::c_uint)v->DETBufferSizeCAllStates[i][j][k];
 			}
 
 			v->TotalNumberOfDCCActiveDPP[i][j] = 0;
@@ -5088,13 +5088,13 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 							v->SurfaceTiling[k],
 							v->BytePerPixelC[k],
 							v->SourceScan[k],
-							(unsigned int)v->SwathWidthCThisState[k],
+							(core::ffi::c_uint)v->SwathWidthCThisState[k],
 							v->ViewportHeightChroma[k],
 							v->GPUVMEnable,
 							v->HostVMEnable,
 							v->HostVMMaxNonCachedPageTableLevels,
-							(unsigned int)v->GPUVMMinPageSize,
-							(unsigned int)v->HostVMMinPageSize,
+							(core::ffi::c_uint)v->GPUVMMinPageSize,
+							(core::ffi::c_uint)v->HostVMMinPageSize,
 							v->PTEBufferSizeInRequestsForChroma,
 							v->PitchC[k],
 							0,
@@ -5144,13 +5144,13 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 						v->SurfaceTiling[k],
 						v->BytePerPixelY[k],
 						v->SourceScan[k],
-						(unsigned int)v->SwathWidthYThisState[k],
+						(core::ffi::c_uint)v->SwathWidthYThisState[k],
 						v->ViewportHeight[k],
 						v->GPUVMEnable,
 						v->HostVMEnable,
 						v->HostVMMaxNonCachedPageTableLevels,
-						(unsigned int)v->GPUVMMinPageSize,
-						(unsigned int)v->HostVMMinPageSize,
+						(core::ffi::c_uint)v->GPUVMMinPageSize,
+						(core::ffi::c_uint)v->HostVMMinPageSize,
 						v->PTEBufferSizeInRequestsForLuma,
 						v->PitchY[k],
 						v->DCCMetaPitchY[k],
@@ -5422,9 +5422,9 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 		for (j = 0; j <= 1; ++j) {
 			double VMDataOnlyReturnBWPerState;
 			double HostVMInefficiencyFactor = 1;
-			unsigned int NextPrefetchModeState = MinPrefetchMode;
+			core::ffi::c_uint NextPrefetchModeState = MinPrefetchMode;
 			bool UnboundedRequestEnabledThisState = false;
-			unsigned int CompressedBufferSizeInkByteThisState = 0;
+			core::ffi::c_uint CompressedBufferSizeInkByteThisState = 0;
 			double dummy;
 
 			v->TimeCalc = 24 / v->ProjectedDCFCLKDeepSleep[i][j];
@@ -5443,8 +5443,8 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 				v->SwathWidthCThisState[k] = v->SwathWidthCAllStates[i][j][k];
 				v->SwathHeightYThisState[k] = v->SwathHeightYAllStates[i][j][k];
 				v->SwathHeightCThisState[k] = v->SwathHeightCAllStates[i][j][k];
-				v->DETBufferSizeYThisState[k] = (unsigned int)v->DETBufferSizeYAllStates[i][j][k];
-				v->DETBufferSizeCThisState[k] = (unsigned int)v->DETBufferSizeCAllStates[i][j][k];
+				v->DETBufferSizeYThisState[k] = (core::ffi::c_uint)v->DETBufferSizeYAllStates[i][j][k];
+				v->DETBufferSizeCThisState[k] = (core::ffi::c_uint)v->DETBufferSizeCAllStates[i][j][k];
 			}
 
 			VMDataOnlyReturnBWPerState = dml_min(
@@ -5593,7 +5593,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 					}
 					v->TotImmediateFlipBytes = 0;
 					for (k = 0; k < v->NumberOfActivePlanes; k++) {
-						v->TotImmediateFlipBytes = (unsigned int)(v->TotImmediateFlipBytes
+						v->TotImmediateFlipBytes = (core::ffi::c_uint)(v->TotImmediateFlipBytes
 								+ v->NoOfDPP[i][j][k] * (v->PDEAndMetaPTEBytesPerFrame[i][j][k] + v->MetaRowBytes[i][j][k]
 								+ v->DPTEBytesPerRow[i][j][k]));
 					}
@@ -5848,7 +5848,7 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 	}
 
 	{
-		unsigned int MaximumMPCCombine = 0;
+		core::ffi::c_uint MaximumMPCCombine = 0;
 		for (int idx = (int)v->soc.num_states; idx >= 0; idx--) {
 			if (idx == (int)v->soc.num_states || v->ModeSupport[idx][0] == true
 					|| v->ModeSupport[idx][1] == true) {
@@ -5876,26 +5876,26 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 }
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
-		struct display_mode_lib *mode_lib,
-		unsigned int PrefetchMode,
+		display_mode_lib *mode_lib,
+		core::ffi::c_uint PrefetchMode,
 		double DCFCLK,
 		double ReturnBW,
 		double UrgentLatency,
 		double ExtraLatency,
 		double SOCCLK,
 		double DCFCLKDeepSleep,
-		unsigned int DETBufferSizeY[],
-		unsigned int DETBufferSizeC[],
-		unsigned int SwathHeightY[],
-		unsigned int SwathHeightC[],
+		core::ffi::c_uint DETBufferSizeY[],
+		core::ffi::c_uint DETBufferSizeC[],
+		core::ffi::c_uint SwathHeightY[],
+		core::ffi::c_uint SwathHeightC[],
 		double SwathWidthY[],
 		double SwathWidthC[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint DPPPerPlane[],
 		double BytePerPixelDETY[],
 		double BytePerPixelDETC[],
 		bool UnboundedRequestEnabled,
-		unsigned int CompressedBufferSizeInkByte,
-		enum clock_change_support *DRAMClockChangeSupport,
+		core::ffi::c_uint CompressedBufferSizeInkByte,
+		clock_change_support *DRAMClockChangeSupport,
 		double *StutterExitWatermark,
 		double *StutterEnterPlusExitWatermark,
 		double *Z8StutterExitWatermark,
@@ -5909,8 +5909,8 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 	double EffectiveLBLatencyHidingC;
 	double LinesInDETY[DC__NUM_DPP__MAX];
 	double LinesInDETC;
-	unsigned int LinesInDETYRoundedDownToSwath[DC__NUM_DPP__MAX];
-	unsigned int LinesInDETCRoundedDownToSwath;
+	core::ffi::c_uint LinesInDETYRoundedDownToSwath[DC__NUM_DPP__MAX];
+	core::ffi::c_uint LinesInDETCRoundedDownToSwath;
 	double FullDETBufferingTimeY;
 	double FullDETBufferingTimeC;
 	double ActiveDRAMClockChangeLatencyMarginY;
@@ -5920,7 +5920,7 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 	double SecondMinActiveDRAMClockChangeMarginOneDisplayInVBLank;
 	double WritebackDRAMClockChangeLatencyHiding;
 	double TotalPixelBW = 0.0;
-	unsigned int k, j;
+	k: core::ffi::c_uint, j;
 
 	v->UrgentWatermark = UrgentLatency + ExtraLatency;
 
@@ -5965,11 +5965,11 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 	for (k = 0; k < v->NumberOfActivePlanes; ++k) {
 		double EffectiveDETBufferSizeY = DETBufferSizeY[k];
 
-		v->LBLatencyHidingSourceLinesY = (unsigned int)(dml_min(
+		v->LBLatencyHidingSourceLinesY = (core::ffi::c_uint)(dml_min(
 				(double) v->MaxLineBufferLines,
 				dml_floor(v->LineBufferSize / v->LBBitPerPixel[k] / (SwathWidthY[k] / dml_max(v->HRatio[k], 1.0)), 1)) - (v->vtaps[k] - 1));
 
-		v->LBLatencyHidingSourceLinesC = (unsigned int)(dml_min(
+		v->LBLatencyHidingSourceLinesC = (core::ffi::c_uint)(dml_min(
 				(double) v->MaxLineBufferLines,
 				dml_floor(v->LineBufferSize / v->LBBitPerPixel[k] / (SwathWidthC[k] / dml_max(v->HRatioChroma[k], 1.0)), 1)) - (v->VTAPsChroma[k] - 1));
 
@@ -5983,11 +5983,11 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		}
 
 		LinesInDETY[k] = (double) EffectiveDETBufferSizeY / BytePerPixelDETY[k] / SwathWidthY[k];
-		LinesInDETYRoundedDownToSwath[k] = (unsigned int)dml_floor(LinesInDETY[k], SwathHeightY[k]);
+		LinesInDETYRoundedDownToSwath[k] = (core::ffi::c_uint)dml_floor(LinesInDETY[k], SwathHeightY[k]);
 		FullDETBufferingTimeY = LinesInDETYRoundedDownToSwath[k] * (v->HTotal[k] / v->PixelClock[k]) / v->VRatio[k];
 		if (BytePerPixelDETC[k] > 0) {
 			LinesInDETC = v->DETBufferSizeC[k] / BytePerPixelDETC[k] / SwathWidthC[k];
-			LinesInDETCRoundedDownToSwath = (unsigned int)dml_floor(LinesInDETC, SwathHeightC[k]);
+			LinesInDETCRoundedDownToSwath = (core::ffi::c_uint)dml_floor(LinesInDETC, SwathHeightC[k]);
 			FullDETBufferingTimeC = LinesInDETCRoundedDownToSwath * (v->HTotal[k] / v->PixelClock[k]) / v->VRatioChroma[k];
 		} else {
 			LinesInDETC = 0;
@@ -6084,15 +6084,15 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 }
 
 static void CalculateDCFCLKDeepSleep(
-		struct display_mode_lib *mode_lib,
-		unsigned int NumberOfActivePlanes,
-		unsigned int BytePerPixelY[],
-		unsigned int BytePerPixelC[],
+		display_mode_lib *mode_lib,
+		core::ffi::c_uint NumberOfActivePlanes,
+		core::ffi::c_uint BytePerPixelY[],
+		core::ffi::c_uint BytePerPixelC[],
 		double VRatio[],
 		double VRatioChroma[],
 		double SwathWidthY[],
 		double SwathWidthC[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint DPPPerPlane[],
 		double HRatio[],
 		double HRatioChroma[],
 		double PixelClock[],
@@ -6108,7 +6108,7 @@ static void CalculateDCFCLKDeepSleep(
 	double DisplayPipeLineDeliveryTimeLuma;
 	double DisplayPipeLineDeliveryTimeChroma;
 	double ReadBandwidth = 0.0;
-	unsigned int k;
+	core::ffi::c_uint k;
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 
@@ -6151,13 +6151,13 @@ static void CalculateDCFCLKDeepSleep(
 static void CalculateUrgentBurstFactor(
 		int swath_width_luma_ub,
 		int swath_width_chroma_ub,
-		unsigned int SwathHeightY,
-		unsigned int SwathHeightC,
+		core::ffi::c_uint SwathHeightY,
+		core::ffi::c_uint SwathHeightC,
 		double LineTime,
 		double UrgentLatency,
 		double CursorBufferSize,
-		unsigned int CursorWidth,
-		unsigned int CursorBPP,
+		core::ffi::c_uint CursorWidth,
+		core::ffi::c_uint CursorBPP,
 		double VRatio,
 		double VRatioC,
 		double BytePerPixelInDETY,
@@ -6172,7 +6172,7 @@ static void CalculateUrgentBurstFactor(
 	(void)VRatioC;
 	double LinesInDETLuma;
 	double LinesInDETChroma;
-	unsigned int LinesInCursorBuffer;
+	core::ffi::c_uint LinesInCursorBuffer;
 	double CursorBufferSizeInTime;
 	double DETBufferSizeInTimeLuma;
 	double DETBufferSizeInTimeChroma;
@@ -6180,7 +6180,7 @@ static void CalculateUrgentBurstFactor(
 	*NotEnoughUrgentLatencyHiding = 0;
 
 	if (CursorWidth > 0) {
-		LinesInCursorBuffer = 1 << (unsigned int) dml_floor(dml_log2(CursorBufferSize * 1024.0 / (CursorWidth * CursorBPP / 8.0)), 1.0);
+		LinesInCursorBuffer = 1 << (core::ffi::c_uint) dml_floor(dml_log2(CursorBufferSize * 1024.0 / (CursorWidth * CursorBPP / 8.0)), 1.0);
 		if (VRatio > 0) {
 			CursorBufferSizeInTime = LinesInCursorBuffer * LineTime / VRatio;
 			if (CursorBufferSizeInTime - UrgentLatency <= 0) {
@@ -6224,29 +6224,29 @@ static void CalculateUrgentBurstFactor(
 }
 
 static void CalculatePixelDeliveryTimes(
-		unsigned int NumberOfActivePlanes,
+		core::ffi::c_uint NumberOfActivePlanes,
 		double VRatio[],
 		double VRatioChroma[],
 		double VRatioPrefetchY[],
 		double VRatioPrefetchC[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[],
+		core::ffi::c_uint DPPPerPlane[],
 		double HRatio[],
 		double HRatioChroma[],
 		double PixelClock[],
 		double PSCL_THROUGHPUT[],
 		double PSCL_THROUGHPUT_CHROMA[],
 		double DPPCLK[],
-		unsigned int BytePerPixelC[],
-		enum scan_direction_class SourceScan[],
-		unsigned int NumberOfCursors[],
-		unsigned int CursorWidth[][DC__NUM_CURSOR__MAX],
-		unsigned int CursorBPP[][DC__NUM_CURSOR__MAX],
-		unsigned int BlockWidth256BytesY[],
-		unsigned int BlockHeight256BytesY[],
-		unsigned int BlockWidth256BytesC[],
-		unsigned int BlockHeight256BytesC[],
+		core::ffi::c_uint BytePerPixelC[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint NumberOfCursors[],
+		core::ffi::c_uint CursorWidth[][DC__NUM_CURSOR__MAX],
+		core::ffi::c_uint CursorBPP[][DC__NUM_CURSOR__MAX],
+		core::ffi::c_uint BlockWidth256BytesY[],
+		core::ffi::c_uint BlockHeight256BytesY[],
+		core::ffi::c_uint BlockWidth256BytesC[],
+		core::ffi::c_uint BlockHeight256BytesC[],
 		double DisplayPipeLineDeliveryTimeLuma[],
 		double DisplayPipeLineDeliveryTimeChroma[],
 		double DisplayPipeLineDeliveryTimeLumaPrefetch[],
@@ -6259,7 +6259,7 @@ static void CalculatePixelDeliveryTimes(
 		double CursorRequestDeliveryTimePrefetch[])
 {
 	double req_per_swath_ub;
-	unsigned int k;
+	core::ffi::c_uint k;
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 		if (VRatio[k] <= 1) {
@@ -6359,39 +6359,39 @@ static void CalculatePixelDeliveryTimes(
 }
 
 static void CalculateMetaAndPTETimes(
-		unsigned int NumberOfActivePlanes,
+		core::ffi::c_uint NumberOfActivePlanes,
 		bool GPUVMEnable,
 		int MetaChunkSize,
 		int MinMetaChunkSizeBytes,
-		unsigned int HTotal[],
+		core::ffi::c_uint HTotal[],
 		double VRatio[],
 		double VRatioChroma[],
 		double DestinationLinesToRequestRowInVBlank[],
 		double DestinationLinesToRequestRowInImmediateFlip[],
 		bool DCCEnable[],
 		double PixelClock[],
-		unsigned int BytePerPixelY[],
-		unsigned int BytePerPixelC[],
-		enum scan_direction_class SourceScan[],
-		unsigned int dpte_row_height[],
-		unsigned int dpte_row_height_chroma[],
-		unsigned int meta_row_width[],
-		unsigned int meta_row_width_chroma[],
-		unsigned int meta_row_height[],
-		unsigned int meta_row_height_chroma[],
-		unsigned int meta_req_width[],
-		unsigned int meta_req_width_chroma[],
-		unsigned int meta_req_height[],
-		unsigned int meta_req_height_chroma[],
-		unsigned int dpte_group_bytes[],
-		unsigned int PTERequestSizeY[],
-		unsigned int PTERequestSizeC[],
-		unsigned int PixelPTEReqWidthY[],
-		unsigned int PixelPTEReqHeightY[],
-		unsigned int PixelPTEReqWidthC[],
-		unsigned int PixelPTEReqHeightC[],
-		unsigned int dpte_row_width_luma_ub[],
-		unsigned int dpte_row_width_chroma_ub[],
+		core::ffi::c_uint BytePerPixelY[],
+		core::ffi::c_uint BytePerPixelC[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint dpte_row_height[],
+		core::ffi::c_uint dpte_row_height_chroma[],
+		core::ffi::c_uint meta_row_width[],
+		core::ffi::c_uint meta_row_width_chroma[],
+		core::ffi::c_uint meta_row_height[],
+		core::ffi::c_uint meta_row_height_chroma[],
+		core::ffi::c_uint meta_req_width[],
+		core::ffi::c_uint meta_req_width_chroma[],
+		core::ffi::c_uint meta_req_height[],
+		core::ffi::c_uint meta_req_height_chroma[],
+		core::ffi::c_uint dpte_group_bytes[],
+		core::ffi::c_uint PTERequestSizeY[],
+		core::ffi::c_uint PTERequestSizeC[],
+		core::ffi::c_uint PixelPTEReqWidthY[],
+		core::ffi::c_uint PixelPTEReqHeightY[],
+		core::ffi::c_uint PixelPTEReqWidthC[],
+		core::ffi::c_uint PixelPTEReqHeightC[],
+		core::ffi::c_uint dpte_row_width_luma_ub[],
+		core::ffi::c_uint dpte_row_width_chroma_ub[],
 		double DST_Y_PER_PTE_ROW_NOM_L[],
 		double DST_Y_PER_PTE_ROW_NOM_C[],
 		double DST_Y_PER_META_ROW_NOM_L[],
@@ -6409,23 +6409,23 @@ static void CalculateMetaAndPTETimes(
 		double time_per_pte_group_vblank_chroma[],
 		double time_per_pte_group_flip_chroma[])
 {
-	unsigned int meta_chunk_width;
-	unsigned int min_meta_chunk_width;
-	unsigned int meta_chunk_per_row_int;
-	unsigned int meta_row_remainder;
-	unsigned int meta_chunk_threshold;
-	unsigned int meta_chunks_per_row_ub;
-	unsigned int meta_chunk_width_chroma;
-	unsigned int min_meta_chunk_width_chroma;
-	unsigned int meta_chunk_per_row_int_chroma;
-	unsigned int meta_row_remainder_chroma;
-	unsigned int meta_chunk_threshold_chroma;
-	unsigned int meta_chunks_per_row_ub_chroma;
-	unsigned int dpte_group_width_luma;
-	unsigned int dpte_groups_per_row_luma_ub;
-	unsigned int dpte_group_width_chroma;
-	unsigned int dpte_groups_per_row_chroma_ub;
-	unsigned int k;
+	core::ffi::c_uint meta_chunk_width;
+	core::ffi::c_uint min_meta_chunk_width;
+	core::ffi::c_uint meta_chunk_per_row_int;
+	core::ffi::c_uint meta_row_remainder;
+	core::ffi::c_uint meta_chunk_threshold;
+	core::ffi::c_uint meta_chunks_per_row_ub;
+	core::ffi::c_uint meta_chunk_width_chroma;
+	core::ffi::c_uint min_meta_chunk_width_chroma;
+	core::ffi::c_uint meta_chunk_per_row_int_chroma;
+	core::ffi::c_uint meta_row_remainder_chroma;
+	core::ffi::c_uint meta_chunk_threshold_chroma;
+	core::ffi::c_uint meta_chunks_per_row_ub_chroma;
+	core::ffi::c_uint dpte_group_width_luma;
+	core::ffi::c_uint dpte_groups_per_row_luma_ub;
+	core::ffi::c_uint dpte_group_width_chroma;
+	core::ffi::c_uint dpte_groups_per_row_chroma_ub;
+	core::ffi::c_uint k;
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 		DST_Y_PER_PTE_ROW_NOM_L[k] = dpte_row_height[k] / VRatio[k];
@@ -6468,7 +6468,7 @@ static void CalculateMetaAndPTETimes(
 			} else {
 				meta_chunk_width_chroma = MetaChunkSize * 1024 * 256 / BytePerPixelC[k] / meta_row_height_chroma[k];
 				min_meta_chunk_width_chroma = MinMetaChunkSizeBytes * 256 / BytePerPixelC[k] / meta_row_height_chroma[k];
-				meta_chunk_per_row_int_chroma = (unsigned int)((double) meta_row_width_chroma[k] / meta_chunk_width_chroma);
+				meta_chunk_per_row_int_chroma = (core::ffi::c_uint)((double) meta_row_width_chroma[k] / meta_chunk_width_chroma);
 				meta_row_remainder_chroma = meta_row_width_chroma[k] % meta_chunk_width_chroma;
 				if (SourceScan[k] != dm_vert) {
 					meta_chunk_threshold_chroma = 2 * min_meta_chunk_width_chroma - meta_req_width_chroma[k];
@@ -6501,7 +6501,7 @@ static void CalculateMetaAndPTETimes(
 			} else {
 				dpte_group_width_luma = dpte_group_bytes[k] / PTERequestSizeY[k] * PixelPTEReqHeightY[k];
 			}
-			dpte_groups_per_row_luma_ub = (unsigned int)dml_ceil(1.0 * dpte_row_width_luma_ub[k] / dpte_group_width_luma, 1);
+			dpte_groups_per_row_luma_ub = (core::ffi::c_uint)dml_ceil(1.0 * dpte_row_width_luma_ub[k] / dpte_group_width_luma, 1);
 			time_per_pte_group_nom_luma[k] = DST_Y_PER_PTE_ROW_NOM_L[k] * HTotal[k] / PixelClock[k] / dpte_groups_per_row_luma_ub;
 			time_per_pte_group_vblank_luma[k] = DestinationLinesToRequestRowInVBlank[k] * HTotal[k] / PixelClock[k] / dpte_groups_per_row_luma_ub;
 			time_per_pte_group_flip_luma[k] = DestinationLinesToRequestRowInImmediateFlip[k] * HTotal[k] / PixelClock[k] / dpte_groups_per_row_luma_ub;
@@ -6515,7 +6515,7 @@ static void CalculateMetaAndPTETimes(
 				} else {
 					dpte_group_width_chroma = dpte_group_bytes[k] / PTERequestSizeC[k] * PixelPTEReqHeightC[k];
 				}
-				dpte_groups_per_row_chroma_ub = (unsigned int)dml_ceil(1.0 * dpte_row_width_chroma_ub[k] / dpte_group_width_chroma, 1);
+				dpte_groups_per_row_chroma_ub = (core::ffi::c_uint)dml_ceil(1.0 * dpte_row_width_chroma_ub[k] / dpte_group_width_chroma, 1);
 				time_per_pte_group_nom_chroma[k] = DST_Y_PER_PTE_ROW_NOM_C[k] * HTotal[k] / PixelClock[k] / dpte_groups_per_row_chroma_ub;
 				time_per_pte_group_vblank_chroma[k] = DestinationLinesToRequestRowInVBlank[k] * HTotal[k] / PixelClock[k] / dpte_groups_per_row_chroma_ub;
 				time_per_pte_group_flip_chroma[k] = DestinationLinesToRequestRowInImmediateFlip[k] * HTotal[k] / PixelClock[k] / dpte_groups_per_row_chroma_ub;
@@ -6532,22 +6532,22 @@ static void CalculateMetaAndPTETimes(
 }
 
 static void CalculateVMGroupAndRequestTimes(
-		unsigned int NumberOfActivePlanes,
+		core::ffi::c_uint NumberOfActivePlanes,
 		bool GPUVMEnable,
-		unsigned int GPUVMMaxPageTableLevels,
-		unsigned int HTotal[],
-		unsigned int BytePerPixelC[],
+		core::ffi::c_uint GPUVMMaxPageTableLevels,
+		core::ffi::c_uint HTotal[],
+		core::ffi::c_uint BytePerPixelC[],
 		double DestinationLinesToRequestVMInVBlank[],
 		double DestinationLinesToRequestVMInImmediateFlip[],
 		bool DCCEnable[],
 		double PixelClock[],
-		unsigned int dpte_row_width_luma_ub[],
-		unsigned int dpte_row_width_chroma_ub[],
-		unsigned int vm_group_bytes[],
-		unsigned int dpde0_bytes_per_frame_ub_l[],
-		unsigned int dpde0_bytes_per_frame_ub_c[],
-		unsigned int meta_pte_bytes_per_frame_ub_l[],
-		unsigned int meta_pte_bytes_per_frame_ub_c[],
+		core::ffi::c_uint dpte_row_width_luma_ub[],
+		core::ffi::c_uint dpte_row_width_chroma_ub[],
+		core::ffi::c_uint vm_group_bytes[],
+		core::ffi::c_uint dpde0_bytes_per_frame_ub_l[],
+		core::ffi::c_uint dpde0_bytes_per_frame_ub_c[],
+		core::ffi::c_uint meta_pte_bytes_per_frame_ub_l[],
+		core::ffi::c_uint meta_pte_bytes_per_frame_ub_c[],
 		double TimePerVMGroupVBlank[],
 		double TimePerVMGroupFlip[],
 		double TimePerVMRequestVBlank[],
@@ -6557,7 +6557,7 @@ static void CalculateVMGroupAndRequestTimes(
 	(void)dpte_row_width_chroma_ub;
 	int num_group_per_lower_vm_stage;
 	int num_req_per_lower_vm_stage;
-	unsigned int k;
+	core::ffi::c_uint k;
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 		if (GPUVMEnable == true && (DCCEnable[k] == true || GPUVMMaxPageTableLevels > 1)) {
@@ -6634,7 +6634,7 @@ static void CalculateVMGroupAndRequestTimes(
 }
 
 static void CalculateStutterEfficiency(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		int CompressedBufferSizeInkByte,
 		bool UnboundedRequestEnabled,
 		int ConfigReturnBufferSizeInKByte,
@@ -6655,29 +6655,29 @@ static void CalculateStutterEfficiency(
 		bool ProgressiveToInterlaceUnitInOPP,
 		bool Interlace[],
 		double MinTTUVBlank[],
-		unsigned int DPPPerPlane[],
-		unsigned int DETBufferSizeY[],
-		unsigned int BytePerPixelY[],
+		core::ffi::c_uint DPPPerPlane[],
+		core::ffi::c_uint DETBufferSizeY[],
+		core::ffi::c_uint BytePerPixelY[],
 		double BytePerPixelDETY[],
 		double SwathWidthY[],
-		unsigned int SwathHeightY[],
-		unsigned int SwathHeightC[],
+		core::ffi::c_uint SwathHeightY[],
+		core::ffi::c_uint SwathHeightC[],
 		double NetDCCRateLuma[],
 		double NetDCCRateChroma[],
 		double DCCFractionOfZeroSizeRequestsLuma[],
 		double DCCFractionOfZeroSizeRequestsChroma[],
-		unsigned int HTotal[],
-		unsigned int VTotal[],
+		core::ffi::c_uint HTotal[],
+		core::ffi::c_uint VTotal[],
 		double PixelClock[],
 		double VRatio[],
-		enum scan_direction_class SourceScan[],
-		unsigned int BlockHeight256BytesY[],
-		unsigned int BlockWidth256BytesY[],
-		unsigned int BlockHeight256BytesC[],
-		unsigned int BlockWidth256BytesC[],
-		unsigned int DCCYMaxUncompressedBlock[],
-		unsigned int DCCCMaxUncompressedBlock[],
-		unsigned int VActive[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint BlockHeight256BytesY[],
+		core::ffi::c_uint BlockWidth256BytesY[],
+		core::ffi::c_uint BlockHeight256BytesC[],
+		core::ffi::c_uint BlockWidth256BytesC[],
+		core::ffi::c_uint DCCYMaxUncompressedBlock[],
+		core::ffi::c_uint DCCCMaxUncompressedBlock[],
+		core::ffi::c_uint VActive[],
 		bool DCCEnable[],
 		bool WritebackEnable[],
 		double ReadBandwidthPlaneLuma[],
@@ -6955,54 +6955,54 @@ static void CalculateStutterEfficiency(
 static void CalculateSwathAndDETConfiguration(
 		bool ForceSingleDPP,
 		int NumberOfActivePlanes,
-		unsigned int DETBufferSizeInKByte,
+		core::ffi::c_uint DETBufferSizeInKByte,
 		double MaximumSwathWidthLuma[],
 		double MaximumSwathWidthChroma[],
-		enum scan_direction_class SourceScan[],
-		enum source_format_class SourcePixelFormat[],
-		enum dm_swizzle_mode SurfaceTiling[],
-		unsigned int ViewportWidth[],
-		unsigned int ViewportHeight[],
-		unsigned int SurfaceWidthY[],
-		unsigned int SurfaceWidthC[],
-		unsigned int SurfaceHeightY[],
-		unsigned int SurfaceHeightC[],
-		unsigned int Read256BytesBlockHeightY[],
-		unsigned int Read256BytesBlockHeightC[],
-		unsigned int Read256BytesBlockWidthY[],
-		unsigned int Read256BytesBlockWidthC[],
-		enum odm_combine_mode ODMCombineEnabled[],
-		unsigned int BlendingAndTiming[],
-		unsigned int BytePerPixY[],
-		unsigned int BytePerPixC[],
+		scan_direction_class SourceScan[],
+		source_format_class SourcePixelFormat[],
+		dm_swizzle_mode SurfaceTiling[],
+		core::ffi::c_uint ViewportWidth[],
+		core::ffi::c_uint ViewportHeight[],
+		core::ffi::c_uint SurfaceWidthY[],
+		core::ffi::c_uint SurfaceWidthC[],
+		core::ffi::c_uint SurfaceHeightY[],
+		core::ffi::c_uint SurfaceHeightC[],
+		core::ffi::c_uint Read256BytesBlockHeightY[],
+		core::ffi::c_uint Read256BytesBlockHeightC[],
+		core::ffi::c_uint Read256BytesBlockWidthY[],
+		core::ffi::c_uint Read256BytesBlockWidthC[],
+		odm_combine_mode ODMCombineEnabled[],
+		core::ffi::c_uint BlendingAndTiming[],
+		core::ffi::c_uint BytePerPixY[],
+		core::ffi::c_uint BytePerPixC[],
 		double BytePerPixDETY[],
 		double BytePerPixDETC[],
-		unsigned int HActive[],
+		core::ffi::c_uint HActive[],
 		double HRatio[],
 		double HRatioChroma[],
-		unsigned int DPPPerPlane[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[],
+		core::ffi::c_uint DPPPerPlane[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[],
 		double SwathWidth[],
 		double SwathWidthChroma[],
-		unsigned int SwathHeightY[],
-		unsigned int SwathHeightC[],
-		unsigned int DETBufferSizeY[],
-		unsigned int DETBufferSizeC[],
+		core::ffi::c_uint SwathHeightY[],
+		core::ffi::c_uint SwathHeightC[],
+		core::ffi::c_uint DETBufferSizeY[],
+		core::ffi::c_uint DETBufferSizeC[],
 		bool ViewportSizeSupportPerPlane[],
 		bool *ViewportSizeSupport)
 {
 	(void)HRatioChroma;
-	unsigned int MaximumSwathHeightY[DC__NUM_DPP__MAX];
-	unsigned int MaximumSwathHeightC[DC__NUM_DPP__MAX];
+	core::ffi::c_uint MaximumSwathHeightY[DC__NUM_DPP__MAX];
+	core::ffi::c_uint MaximumSwathHeightC[DC__NUM_DPP__MAX];
 	int MinimumSwathHeightY;
 	int MinimumSwathHeightC;
-	unsigned int RoundedUpMaxSwathSizeBytesY;
-	unsigned int RoundedUpMaxSwathSizeBytesC;
-	unsigned int RoundedUpMinSwathSizeBytesY;
-	unsigned int RoundedUpMinSwathSizeBytesC;
-	unsigned int RoundedUpSwathSizeBytesY;
-	unsigned int RoundedUpSwathSizeBytesC;
+	core::ffi::c_uint RoundedUpMaxSwathSizeBytesY;
+	core::ffi::c_uint RoundedUpMaxSwathSizeBytesC;
+	core::ffi::c_uint RoundedUpMinSwathSizeBytesY;
+	core::ffi::c_uint RoundedUpMinSwathSizeBytesC;
+	core::ffi::c_uint RoundedUpSwathSizeBytesY;
+	core::ffi::c_uint RoundedUpSwathSizeBytesC;
 	double SwathWidthSingleDPP[DC__NUM_DPP__MAX];
 	double SwathWidthSingleDPPChroma[DC__NUM_DPP__MAX];
 	int k;
@@ -7112,14 +7112,14 @@ static void CalculateSwathAndDETConfiguration(
 		double actDETBufferSizeInKByte = dml_ceil(DETBufferSizeInKByte, 64);
 
 		if (SwathHeightC[k] == 0) {
-			DETBufferSizeY[k] = (unsigned int)(actDETBufferSizeInKByte * 1024);
+			DETBufferSizeY[k] = (core::ffi::c_uint)(actDETBufferSizeInKByte * 1024);
 			DETBufferSizeC[k] = 0;
 		} else if (RoundedUpSwathSizeBytesY <= 1.5 * RoundedUpSwathSizeBytesC) {
-			DETBufferSizeY[k] = (unsigned int)(actDETBufferSizeInKByte * 1024 / 2);
-			DETBufferSizeC[k] = (unsigned int)(actDETBufferSizeInKByte * 1024 / 2);
+			DETBufferSizeY[k] = (core::ffi::c_uint)(actDETBufferSizeInKByte * 1024 / 2);
+			DETBufferSizeC[k] = (core::ffi::c_uint)(actDETBufferSizeInKByte * 1024 / 2);
 		} else {
-			DETBufferSizeY[k] = (unsigned int)dml_floor(actDETBufferSizeInKByte * 1024 * 2 / 3, 1024);
-			DETBufferSizeC[k] = (unsigned int)(actDETBufferSizeInKByte * 1024 / 3);
+			DETBufferSizeY[k] = (core::ffi::c_uint)dml_floor(actDETBufferSizeInKByte * 1024 * 2 / 3, 1024);
+			DETBufferSizeC[k] = (core::ffi::c_uint)(actDETBufferSizeInKByte * 1024 / 3);
 		}
 
 		if (RoundedUpMinSwathSizeBytesY + RoundedUpMinSwathSizeBytesC > actDETBufferSizeInKByte * 1024 / 2 || SwathWidth[k] > MaximumSwathWidthLuma[k]
@@ -7136,33 +7136,33 @@ static void CalculateSwathAndDETConfiguration(
 static void CalculateSwathWidth(
 		bool ForceSingleDPP,
 		int NumberOfActivePlanes,
-		enum source_format_class SourcePixelFormat[],
-		enum scan_direction_class SourceScan[],
-		unsigned int ViewportWidth[],
-		unsigned int ViewportHeight[],
-		unsigned int SurfaceWidthY[],
-		unsigned int SurfaceWidthC[],
-		unsigned int SurfaceHeightY[],
-		unsigned int SurfaceHeightC[],
-		enum odm_combine_mode ODMCombineEnabled[],
-		unsigned int BytePerPixY[],
-		unsigned int BytePerPixC[],
-		unsigned int Read256BytesBlockHeightY[],
-		unsigned int Read256BytesBlockHeightC[],
-		unsigned int Read256BytesBlockWidthY[],
-		unsigned int Read256BytesBlockWidthC[],
-		unsigned int BlendingAndTiming[],
-		unsigned int HActive[],
+		source_format_class SourcePixelFormat[],
+		scan_direction_class SourceScan[],
+		core::ffi::c_uint ViewportWidth[],
+		core::ffi::c_uint ViewportHeight[],
+		core::ffi::c_uint SurfaceWidthY[],
+		core::ffi::c_uint SurfaceWidthC[],
+		core::ffi::c_uint SurfaceHeightY[],
+		core::ffi::c_uint SurfaceHeightC[],
+		odm_combine_mode ODMCombineEnabled[],
+		core::ffi::c_uint BytePerPixY[],
+		core::ffi::c_uint BytePerPixC[],
+		core::ffi::c_uint Read256BytesBlockHeightY[],
+		core::ffi::c_uint Read256BytesBlockHeightC[],
+		core::ffi::c_uint Read256BytesBlockWidthY[],
+		core::ffi::c_uint Read256BytesBlockWidthC[],
+		core::ffi::c_uint BlendingAndTiming[],
+		core::ffi::c_uint HActive[],
 		double HRatio[],
-		unsigned int DPPPerPlane[],
+		core::ffi::c_uint DPPPerPlane[],
 		double SwathWidthSingleDPPY[],
 		double SwathWidthSingleDPPC[],
 		double SwathWidthY[],
 		double SwathWidthC[],
-		unsigned int MaximumSwathHeightY[],
-		unsigned int MaximumSwathHeightC[],
-		unsigned int swath_width_luma_ub[],
-		unsigned int swath_width_chroma_ub[])
+		core::ffi::c_uint MaximumSwathHeightY[],
+		core::ffi::c_uint MaximumSwathHeightC[],
+		core::ffi::c_uint swath_width_luma_ub[],
+		core::ffi::c_uint swath_width_chroma_ub[])
 {
 	(void)BytePerPixY;
 	enum odm_combine_mode MainPlaneODMCombine;
@@ -7268,8 +7268,8 @@ static double CalculateExtraLatency(
 		bool GPUVMEnable,
 		bool HostVMEnable,
 		int NumberOfActivePlanes,
-		unsigned int NumberOfDPP[],
-		unsigned int dpte_group_bytes[],
+		core::ffi::c_uint NumberOfDPP[],
+		core::ffi::c_uint dpte_group_bytes[],
 		double HostVMInefficiencyFactor,
 		double HostVMMinPageSize,
 		int HostVMMaxNonCachedPageTableLevels)
@@ -7314,8 +7314,8 @@ static double CalculateExtraLatencyBytes(
 		bool GPUVMEnable,
 		bool HostVMEnable,
 		int NumberOfActivePlanes,
-		unsigned int NumberOfDPP[],
-		unsigned int dpte_group_bytes[],
+		core::ffi::c_uint NumberOfDPP[],
+		core::ffi::c_uint dpte_group_bytes[],
 		double HostVMInefficiencyFactor,
 		double HostVMMinPageSize,
 		int HostVMMaxNonCachedPageTableLevels)
@@ -7363,7 +7363,7 @@ static double CalculateUrgentLatency(
 static double RequiredDTBCLK(
 		bool DSCEnable,
 		double PixelClock,
-		enum output_format_class OutputFormat,
+		output_format_class OutputFormat,
 		double OutputBPP,
 		int DSCSlices,
 		int HTotal,
@@ -7384,13 +7384,13 @@ static double RequiredDTBCLK(
 }
 
 static noinline_for_stack void UseMinimumDCFCLK(
-		struct display_mode_lib *mode_lib,
+		display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
 		int ReorderingBytes)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
-	unsigned int dummy1, j;
-	unsigned int i, k;
+	dummy1: core::ffi::c_uint, j;
+	i: core::ffi::c_uint, k;
 	double NormalEfficiency,  dummy2, dummy3;
 	double TotalMaxPrefetchFlipDPTERowBandwidth[DC__VOLTAGE_STATES][2];
 
@@ -7408,7 +7408,7 @@ static noinline_for_stack void UseMinimumDCFCLK(
 			double ExtraLatencyBytes;
 			double ExtraLatencyCycles;
 			double DCFCLKRequiredForPeakBandwidth;
-			unsigned int NoOfDPPState[DC__NUM_DPP__MAX];
+			core::ffi::c_uint NoOfDPPState[DC__NUM_DPP__MAX];
 			double MinimumTvmPlus2Tr0;
 
 			TotalMaxPrefetchFlipDPTERowBandwidth[i][j] = 0;
@@ -7547,16 +7547,16 @@ static noinline_for_stack void UseMinimumDCFCLK(
 }
 
 static void CalculateUnboundedRequestAndCompressedBufferSize(
-		unsigned int DETBufferSizeInKByte,
+		core::ffi::c_uint DETBufferSizeInKByte,
 		int ConfigReturnBufferSizeInKByte,
-		enum unbounded_requesting_policy UseUnboundedRequestingFinal,
+		unbounded_requesting_policy UseUnboundedRequestingFinal,
 		int TotalActiveDPP,
 		bool NoChromaPlanes,
 		int MaxNumDPP,
 		int CompressedBufferSegmentSizeInkByteFinal,
-		enum output_encoder_class *Output,
+		output_encoder_class *Output,
 		bool *UnboundedRequestEnabled,
-		unsigned int *CompressedBufferSizeInkByte)
+		core::ffi::c_uint *CompressedBufferSizeInkByte)
 {
 	double actDETBufferSizeInKByte = dml_ceil(DETBufferSizeInKByte, 64);
 
@@ -7578,7 +7578,7 @@ static void CalculateUnboundedRequestAndCompressedBufferSize(
 #endif
 }
 
-static bool UnboundedRequest(enum unbounded_requesting_policy UseUnboundedRequestingFinal, int TotalNumberOfActiveDPP, bool NoChroma, enum output_encoder_class Output)
+static bool UnboundedRequest(unbounded_requesting_policy UseUnboundedRequestingFinal, int TotalNumberOfActiveDPP, bool NoChroma, output_encoder_class Output)
 {
 	bool ret_val = false;
 
@@ -7588,30 +7588,30 @@ static bool UnboundedRequest(enum unbounded_requesting_policy UseUnboundedReques
 	return ret_val;
 }
 
-static unsigned int CalculateMaxVStartup(
-		unsigned int VTotal,
-		unsigned int VActive,
-		unsigned int VBlankNom,
-		unsigned int HTotal,
+static core::ffi::c_uint CalculateMaxVStartup(
+		core::ffi::c_uint VTotal,
+		core::ffi::c_uint VActive,
+		core::ffi::c_uint VBlankNom,
+		core::ffi::c_uint HTotal,
 		double PixelClock,
 		bool ProgressiveTointerlaceUnitinOPP,
 		bool Interlace,
-		unsigned int VBlankNomDefaultUS,
+		core::ffi::c_uint VBlankNomDefaultUS,
 		double WritebackDelayTime)
 {
-	unsigned int MaxVStartup = 0;
-	unsigned int vblank_size = 0;
+	core::ffi::c_uint MaxVStartup = 0;
+	core::ffi::c_uint vblank_size = 0;
 	double line_time_us = HTotal / PixelClock;
-	unsigned int vblank_actual = VTotal - VActive;
-	unsigned int vblank_nom_default_in_line = (unsigned int)dml_floor(VBlankNomDefaultUS / line_time_us, 1.0);
-	unsigned int vblank_nom_input = VBlankNom; //dml_min(VBlankNom, vblank_nom_default_in_line);
-	unsigned int vblank_avail = vblank_nom_input == 0 ? vblank_nom_default_in_line : vblank_nom_input;
+	core::ffi::c_uint vblank_actual = VTotal - VActive;
+	core::ffi::c_uint vblank_nom_default_in_line = (core::ffi::c_uint)dml_floor(VBlankNomDefaultUS / line_time_us, 1.0);
+	core::ffi::c_uint vblank_nom_input = VBlankNom; //dml_min(VBlankNom, vblank_nom_default_in_line);
+	core::ffi::c_uint vblank_avail = vblank_nom_input == 0 ? vblank_nom_default_in_line : vblank_nom_input;
 
-	vblank_size = (unsigned int) dml_min(vblank_actual, vblank_avail);
+	vblank_size = (core::ffi::c_uint) dml_min(vblank_actual, vblank_avail);
 	if (Interlace && !ProgressiveTointerlaceUnitinOPP)
-		MaxVStartup = (unsigned int)dml_floor(vblank_size / 2.0, 1.0);
+		MaxVStartup = (core::ffi::c_uint)dml_floor(vblank_size / 2.0, 1.0);
 	else
-		MaxVStartup = (unsigned int)(vblank_size - dml_max(1.0, dml_ceil(WritebackDelayTime / line_time_us, 1.0)));
+		MaxVStartup = (core::ffi::c_uint)(vblank_size - dml_max(1.0, dml_ceil(WritebackDelayTime / line_time_us, 1.0)));
 	if (MaxVStartup > 1023)
 		MaxVStartup = 1023;
 	return MaxVStartup;

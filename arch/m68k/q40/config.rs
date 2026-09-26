@@ -46,7 +46,7 @@ pub struct rtc_time {
 #[repr(C)] pub struct rtc_pll_info { pub pll_ctrl: c_int, pub pll_value: c_int,
     pub pll_max: c_int, pub pll_min: c_int, pub pll_posmult: c_int,
     pub pll_negmult: c_int, pub pll_clock: c_int }
-#[repr(C)] pub struct console { pub name: *const c_char, pub write: Option<unsafe extern "C" fn(*mut console, *const c_char, c_uint), pub flags: c_uint, pub index: c_int }
+use kernel::bindings::console;
 #[repr(C)] pub struct bi_record { _private: [u8; 0] }
 #[repr(C)] pub struct resource { _private: [u8; 0] }
 

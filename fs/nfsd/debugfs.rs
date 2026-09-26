@@ -28,14 +28,14 @@ extern "C" {
         data: *mut c_void,
         fops: *const file_operations,
     ) -> *mut dentry;
-    #[cfg(feature = "CONFIG_NFSD_V4")]
+    #[cfg(CONFIG_NFSD_V4)]
     fn debugfs_create_bool(
         name: *const u8,
         mode: u32,
         parent: *mut dentry,
         value: *mut bool,
     ) -> *mut dentry;
-    #[cfg(feature = "CONFIG_NFSD_V4")]
+    #[cfg(CONFIG_NFSD_V4)]
     static mut nfsd_delegts_enabled: bool;
 }
 
@@ -135,7 +135,7 @@ pub unsafe fn nfsd_debugfs_init() {
         &nfsd_io_cache_write_fops,
     );
 
-    #[cfg(feature = "CONFIG_NFSD_V4")]
+    #[cfg(CONFIG_NFSD_V4)]
     debugfs_create_bool(
         b"delegated_timestamps\0".as_ptr(),
         0o644,

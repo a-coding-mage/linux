@@ -7,7 +7,7 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // referenced here rather than reimplemented.
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe fn apply_relocate(
     sechdrs: *mut Elf32_Shdr,
     _strtab: *const ::core::ffi::c_char,
@@ -49,7 +49,7 @@ pub unsafe fn apply_relocate(
     0
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe fn apply_relocate_add(
     sechdrs: *mut Elf32_Shdr,
     _strtab: *const ::core::ffi::c_char,
@@ -91,7 +91,7 @@ pub unsafe fn apply_relocate_add(
     0
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 pub unsafe fn module_finalize(
     _hdr: *const Elf_Ehdr,
     _sechdrs: *const Elf_Shdr,
@@ -106,7 +106,7 @@ pub unsafe fn module_fixup(
     start: *mut m68k_fixup_info,
     end: *mut m68k_fixup_info,
 ) {
-    #[cfg(feature = "CONFIG_MMU")]
+    #[cfg(CONFIG_MMU)]
     {
         let mut fixup = start;
         while fixup < end {

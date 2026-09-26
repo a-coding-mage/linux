@@ -49,11 +49,8 @@ extern "C" {
 
 const KERN_INFO: &[u8] = b"<6>\0";
 
-enum {
-    UNUSED = 0,
-    /* board specific interrupt sources */
-    SMC91C111,
-}
+pub const UNUSED: i32 = 0;
+pub const SMC91C111: i32 = UNUSED + 1;
 
 static mut FPGA_VECTORS: [IntcVect; 1] = [IntcVect {
     irq: SMC91C111,

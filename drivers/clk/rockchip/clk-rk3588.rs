@@ -128,8 +128,8 @@ const RK3588_GICCLK_DSU_DIV_SHIFT: u32 = 5;
 
 macro_rules! RK3588_CORE_B0_SEL(_apllcore)						\
 {										\
-	.reg = RK3588_BIGCORE0_CLKSEL_CON(0),					\
-	.val = HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B0_SEL_CLEAN_MASK,	\
+	reg: RK3588_BIGCORE0_CLKSEL_CON(0),					\
+	val: HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B0_SEL_CLEAN_MASK,	\
 			RK3588_CLK_CORE_B0_SEL_CLEAN_SHIFT) |			\
 		HIWORD_UPDATE(0, RK3588_CLK_CORE_B0_GPLL_DIV_MASK,		\
 			RK3588_CLK_CORE_B0_GPLL_DIV_SHIFT),			\
@@ -137,15 +137,15 @@ macro_rules! RK3588_CORE_B0_SEL(_apllcore)						\
 
 macro_rules! RK3588_CORE_B1_SEL(_apllcore)						\
 {										\
-	.reg = RK3588_BIGCORE0_CLKSEL_CON(1),					\
-	.val = HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B1_SEL_CLEAN_MASK,	\
+	reg: RK3588_BIGCORE0_CLKSEL_CON(1),					\
+	val: HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B1_SEL_CLEAN_MASK,	\
 			RK3588_CLK_CORE_B1_SEL_CLEAN_SHIFT),			\
 }
 
 macro_rules! RK3588_CORE_B2_SEL(_apllcore)						\
 {										\
-	.reg = RK3588_BIGCORE1_CLKSEL_CON(0),					\
-	.val = HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B0_SEL_CLEAN_MASK,	\
+	reg: RK3588_BIGCORE1_CLKSEL_CON(0),					\
+	val: HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B0_SEL_CLEAN_MASK,	\
 			RK3588_CLK_CORE_B0_SEL_CLEAN_SHIFT) |			\
 		HIWORD_UPDATE(0, RK3588_CLK_CORE_B0_GPLL_DIV_MASK,		\
 			RK3588_CLK_CORE_B0_GPLL_DIV_SHIFT),			\
@@ -153,15 +153,15 @@ macro_rules! RK3588_CORE_B2_SEL(_apllcore)						\
 
 macro_rules! RK3588_CORE_B3_SEL(_apllcore)						\
 {										\
-	.reg = RK3588_BIGCORE1_CLKSEL_CON(1),					\
-	.val = HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B1_SEL_CLEAN_MASK,	\
+	reg: RK3588_BIGCORE1_CLKSEL_CON(1),					\
+	val: HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_B1_SEL_CLEAN_MASK,	\
 			RK3588_CLK_CORE_B1_SEL_CLEAN_SHIFT),			\
 }
 
 macro_rules! RK3588_CORE_L_SEL0(_offs, _apllcore)					\
 {										\
-	.reg = RK3588_DSU_CLKSEL_CON(6 + _offs),				\
-	.val = HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_L_SEL_CLEAN_MASK,	\
+	reg: RK3588_DSU_CLKSEL_CON(6 + _offs),				\
+	val: HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_L_SEL_CLEAN_MASK,	\
 			RK3588_CLK_CORE_L0_SEL_CLEAN_SHIFT) |			\
 		HIWORD_UPDATE(_apllcore, RK3588_CLK_CORE_L_SEL_CLEAN_MASK,	\
 			RK3588_CLK_CORE_L1_SEL_CLEAN_SHIFT),			\
@@ -169,8 +169,8 @@ macro_rules! RK3588_CORE_L_SEL0(_offs, _apllcore)					\
 
 macro_rules! RK3588_CORE_L_SEL1(_seldsu, _divdsu)				\
 {									\
-	.reg = RK3588_DSU_CLKSEL_CON(0),				\
-	.val = HIWORD_UPDATE(_seldsu, RK3588_CLK_DSU_DF_SRC_MASK,	\
+	reg: RK3588_DSU_CLKSEL_CON(0),				\
+	val: HIWORD_UPDATE(_seldsu, RK3588_CLK_DSU_DF_SRC_MASK,	\
 			RK3588_CLK_DSU_DF_SRC_SHIFT) |			\
 		HIWORD_UPDATE(_divdsu - 1, RK3588_CLK_DSU_DF_DIV_MASK,	\
 			RK3588_CLK_DSU_DF_DIV_SHIFT),			\
@@ -178,8 +178,8 @@ macro_rules! RK3588_CORE_L_SEL1(_seldsu, _divdsu)				\
 
 macro_rules! RK3588_CORE_L_SEL2(_aclkm, _aclkmp, _aclks)			\
 {									\
-	.reg = RK3588_DSU_CLKSEL_CON(1),				\
-	.val = HIWORD_UPDATE(_aclkm - 1, RK3588_ACLKM_DSU_DIV_MASK,	\
+	reg: RK3588_DSU_CLKSEL_CON(1),				\
+	val: HIWORD_UPDATE(_aclkm - 1, RK3588_ACLKM_DSU_DIV_MASK,	\
 			RK3588_ACLKM_DSU_DIV_SHIFT) |			\
 		HIWORD_UPDATE(_aclkmp - 1, RK3588_ACLKMP_DSU_DIV_MASK,	\
 			RK3588_ACLKMP_DSU_DIV_SHIFT) |			\
@@ -189,15 +189,15 @@ macro_rules! RK3588_CORE_L_SEL2(_aclkm, _aclkmp, _aclks)			\
 
 macro_rules! RK3588_CORE_L_SEL3(_periph)					\
 {									\
-	.reg = RK3588_DSU_CLKSEL_CON(2),				\
-	.val = HIWORD_UPDATE(_periph - 1, RK3588_PERIPH_DSU_DIV_MASK,	\
+	reg: RK3588_DSU_CLKSEL_CON(2),				\
+	val: HIWORD_UPDATE(_periph - 1, RK3588_PERIPH_DSU_DIV_MASK,	\
 			RK3588_PERIPH_DSU_DIV_SHIFT),			\
 }
 
 macro_rules! RK3588_CORE_L_SEL4(_gicclk, _atclk)				\
 {									\
-	.reg = RK3588_DSU_CLKSEL_CON(3),				\
-	.val = HIWORD_UPDATE(_gicclk - 1, RK3588_GICCLK_DSU_DIV_MASK,	\
+	reg: RK3588_DSU_CLKSEL_CON(3),				\
+	val: HIWORD_UPDATE(_gicclk - 1, RK3588_GICCLK_DSU_DIV_MASK,	\
 			RK3588_GICCLK_DSU_DIV_SHIFT) |			\
 		HIWORD_UPDATE(_atclk - 1, RK3588_ATCLK_DSU_DIV_MASK,	\
 			RK3588_ATCLK_DSU_DIV_SHIFT),			\
@@ -205,12 +205,12 @@ macro_rules! RK3588_CORE_L_SEL4(_gicclk, _atclk)				\
 
 macro_rules! RK3588_CPUB01CLK_RATE(_prate, _apllcore)		\
 {								\
-	.prate = _prate##U,					\
-	.pre_muxs = {						\
+	prate: _prate##U,					\
+	pre_muxs: {						\
 		RK3588_CORE_B0_SEL(0),				\
 		RK3588_CORE_B1_SEL(0),				\
 	},							\
-	.post_muxs = {						\
+	post_muxs: {						\
 		RK3588_CORE_B0_SEL(_apllcore),			\
 		RK3588_CORE_B1_SEL(_apllcore),			\
 	},							\
@@ -218,12 +218,12 @@ macro_rules! RK3588_CPUB01CLK_RATE(_prate, _apllcore)		\
 
 macro_rules! RK3588_CPUB23CLK_RATE(_prate, _apllcore)		\
 {								\
-	.prate = _prate##U,					\
-	.pre_muxs = {						\
+	prate: _prate##U,					\
+	pre_muxs: {						\
 		RK3588_CORE_B2_SEL(0),				\
 		RK3588_CORE_B3_SEL(0),				\
 	},							\
-	.post_muxs = {						\
+	post_muxs: {						\
 		RK3588_CORE_B2_SEL(_apllcore),			\
 		RK3588_CORE_B3_SEL(_apllcore),			\
 	},							\
@@ -231,8 +231,8 @@ macro_rules! RK3588_CPUB23CLK_RATE(_prate, _apllcore)		\
 
 macro_rules! RK3588_CPULCLK_RATE(_prate, _apllcore, _seldsu, _divdsu) \
 {								\
-	.prate = _prate##U,					\
-	.pre_muxs = {						\
+	prate: _prate##U,					\
+	pre_muxs: {						\
 		RK3588_CORE_L_SEL0(0, 0),			\
 		RK3588_CORE_L_SEL0(1, 0),			\
 		RK3588_CORE_L_SEL1(3, 2),			\
@@ -240,7 +240,7 @@ macro_rules! RK3588_CPULCLK_RATE(_prate, _apllcore, _seldsu, _divdsu) \
 		RK3588_CORE_L_SEL3(4),				\
 		RK3588_CORE_L_SEL4(4, 4),			\
 	},							\
-	.post_muxs = {						\
+	post_muxs: {						\
 		RK3588_CORE_L_SEL0(0, _apllcore),		\
 		RK3588_CORE_L_SEL0(1, _apllcore),		\
 		RK3588_CORE_L_SEL1(_seldsu, _divdsu),		\
@@ -299,11 +299,11 @@ static rockchip_cpuclk_reg_data rk3588_cpub0clk_data = {
 	.core_reg[1] = RK3588_BIGCORE0_CLKSEL_CON(1),
 	.div_core_shift[1] = 0,
 	.div_core_mask[1] = 0x1f,
-	.num_cores = 2,
-	.mux_core_alt = 1,
-	.mux_core_main = 2,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x3,
+	num_cores: 2,
+	mux_core_alt: 1,
+	mux_core_main: 2,
+	mux_core_shift: 6,
+	mux_core_mask: 0x3,
 };
 
 static mut rockchip_cpuclk_rate_table rk3588_cpub1clk_rates[]  = {
@@ -356,11 +356,11 @@ static rockchip_cpuclk_reg_data rk3588_cpub1clk_data = {
 	.core_reg[1] = RK3588_BIGCORE1_CLKSEL_CON(1),
 	.div_core_shift[1] = 0,
 	.div_core_mask[1] = 0x1f,
-	.num_cores = 2,
-	.mux_core_alt = 1,
-	.mux_core_main = 2,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x3,
+	num_cores: 2,
+	mux_core_alt: 1,
+	mux_core_main: 2,
+	mux_core_shift: 6,
+	mux_core_mask: 0x3,
 };
 
 static mut rockchip_cpuclk_rate_table rk3588_cpulclk_rates[]  = {
@@ -416,12 +416,12 @@ static rockchip_cpuclk_reg_data rk3588_cpulclk_data = {
 	.core_reg[3] = RK3588_DSU_CLKSEL_CON(7),
 	.div_core_shift[3] = 7,
 	.div_core_mask[3] = 0x1f,
-	.num_cores = 4,
-	.mux_core_reg = RK3588_DSU_CLKSEL_CON(5),
-	.mux_core_alt = 1,
-	.mux_core_main = 2,
-	.mux_core_shift = 14,
-	.mux_core_mask = 0x3,
+	num_cores: 4,
+	mux_core_reg: RK3588_DSU_CLKSEL_CON(5),
+	mux_core_alt: 1,
+	mux_core_main: 2,
+	mux_core_shift: 14,
+	mux_core_mask: 0x3,
 };
 
 static mux_pll_p: PNAME(mux_pll_p)[PNAME(mux_pll_p)str]			= { "xin24m", "xin32k" };
@@ -2446,11 +2446,11 @@ static mut rockchip_clk_branch rk3588_clk_branches[] = {
 	GATE_LINK(PCLK_VO1GRF, "pclk_vo1grf", "pclk_vo1_root", HCLK_VO1, CLK_IGNORE_UNUSED, RK3588_CLKGATE_CON(59), 12, GFLAGS),
 };
 
-static void  rk3588_clk_early_init(struct device_node *np)
+static void  rk3588_clk_early_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
 	struct regmap *sys_grf;
-	unsigned long clk_nr_clks, max_clk_id1, max_clk_id2;
+	clk_nr_clks: core::ffi::c_ulong, max_clk_id1, max_clk_id2;
 	void __iomem *reg_base;
 
 	max_clk_id1 = rockchip_clk_find_max_clk_id(rk3588_clk_branches,
@@ -2502,18 +2502,18 @@ static void  rk3588_clk_early_init(struct device_node *np)
 }
 CLK_OF_DECLARE_DRIVER(rk3588_cru, "rockchip,rk3588-cru", rk3588_clk_early_init);
 
-static int clk_rk3588_probe(struct platform_device *pdev)
+static int clk_rk3588_probe(platform_device *pdev)
 {
 	struct rockchip_clk_provider *ctx = early_ctx;
-	struct device *dev = &pdev->dev;
-	struct device_node *np = dev->of_node;
+	struct device *dev = (*&pdev).dev;
+	struct device_node *np = (*dev).of_node;
 
 	rockchip_clk_register_late_branches(dev, ctx, rk3588_clk_branches,
 					    ARRAY_SIZE(rk3588_clk_branches));
 
 	rockchip_clk_finalize(ctx);
 
-	rk3588_rst_init(np, ctx->reg_base);
+	rk3588_rst_init(np, (*ctx).reg_base);
 	rockchip_register_restart_notifier(ctx, RK3588_GLB_SRST_FST, NULL);
 
 	/*
@@ -2528,17 +2528,17 @@ static int clk_rk3588_probe(struct platform_device *pdev)
 
 static of_device_id clk_rk3588_match_table[] = {
 	{
-		.compatible = "rockchip,rk3588-cru",
+		compatible: "rockchip,rk3588-cru",
 	},
 	{ }
 };
 
 static mut platform_driver clk_rk3588_driver = {
-	.probe		= clk_rk3588_probe,
-	.driver		= {
-		.name	= "clk-rk3588",
-		.of_match_table = clk_rk3588_match_table,
-		.suppress_bind_attrs = true,
+	probe: clk_rk3588_probe,
+	driver: {
+		name: "clk-rk3588",
+		of_match_table: clk_rk3588_match_table,
+		suppress_bind_attrs: true,
 	},
 };
 

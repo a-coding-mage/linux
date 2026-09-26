@@ -22,9 +22,9 @@ extern "C" {
     fn platform_ops_begin(x:c_int)->c_int; fn platform_ops_end(); fn platform_ops_pre_snapshot()->c_int;
     fn platform_ops_finish(); fn platform_ops_pre_restore()->c_int; fn platform_ops_restore_cleanup(); fn platform_ops_leave();
     fn platform_ops_recover(); fn platform_ops_prepare()->c_int; fn platform_ops_enter();
-    fn pm_suspend_clear_flags(); fn pm_wakeup_pending()->bool; fn pm_notifier_call_chain_robust(c_int,c_int)->c_int;
-    fn pm_notifier_call_chain(c_int); fn pm_prepare_console(); fn pm_restore_console(); fn console_suspend_all(); fn console_resume_all();
-    fn pm_restrict_gfp_mask(); fn pm_restore_gfp_mask(); fn filesystems_freeze(bool); fn filesystems_thaw();
+    fn pm_suspend_clear_flags(); fn pm_wakeup_pending()->bool; fn pm_notifier_call_chain_robust(_: c_int,_: c_int)->c_int;
+    fn pm_notifier_call_chain(_: c_int); fn pm_prepare_console(); fn pm_restore_console(); fn console_suspend_all(); fn console_resume_all();
+    fn pm_restrict_gfp_mask(); fn pm_restore_gfp_mask(); fn filesystems_freeze(_: bool); fn filesystems_thaw();
     fn lock_device_hotplug(); fn unlock_device_hotplug(); fn cpuidle_pause(); fn touch_softlockup_watchdog();
     fn suspend_disable_secondary_cpus()->c_int; fn suspend_devices_and_enter(x:c_int)->c_int;
     fn kernel_restart(p:*const c_char); fn kernel_can_power_off()->bool; fn kernel_power_off(); fn kernel_halt(); fn cpu_relax();

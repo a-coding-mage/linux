@@ -89,12 +89,12 @@ unsafe fn tusb6010_platform_retime(is_refclk: u32) -> i32 {
     let sysclk_ps = if is_refclk != 0 { refclk_psec as u32 } else { TUSB6010_OSCCLK_60 };
     let mut status = tusb_set_async_mode(sysclk_ps);
     if status < 0 {
-        printk(KERN_ERR "tusb6010 async retime error %d\n", status);
+        printk(c"\x013tusb6010 async retime error %d\n".as_ptr(), status);
         return status;
     }
     status = tusb_set_sync_mode(sysclk_ps);
     if status < 0 {
-        printk(KERN_ERR "tusb6010 sync retime error %d\n", status);
+        printk(c"\x013tusb6010 sync retime error %d\n".as_ptr(), status);
     }
     status
 }

@@ -85,12 +85,12 @@ pub unsafe fn icmp_send(skb_in: *mut sk_buff, type_: i32, code: i32, info: __be3
 }
 
 // The CONFIG_NF_NAT condition is preserved from the source build configuration.
-#[cfg(feature = "CONFIG_NF_NAT")]
+#[cfg(CONFIG_NF_NAT)]
 extern "C" {
     pub fn icmp_ndo_send(skb_in: *mut sk_buff, type_: i32, code: i32, info: __be32);
 }
 
-#[cfg(not(feature = "CONFIG_NF_NAT"))]
+#[cfg(not(CONFIG_NF_NAT))]
 #[inline]
 pub unsafe fn icmp_ndo_send(skb_in: *mut sk_buff, type_: i32, code: i32, info: __be32) {
     let mut parm: inet_skb_parm = core::mem::zeroed();

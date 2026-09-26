@@ -34,19 +34,19 @@ pub type MmContextIdT = [::core::ffi::c_ulong; NR_CPUS];
 
 #[repr(C)]
 pub struct MmContextT {
-    #[cfg(feature = "CONFIG_MMU")]
+    #[cfg(CONFIG_MMU)]
     pub id: MmContextIdT,
-    #[cfg(feature = "CONFIG_MMU")]
+    #[cfg(CONFIG_MMU)]
     pub vdso: *mut core::ffi::c_void,
-    #[cfg(not(feature = "CONFIG_MMU"))]
+    #[cfg(not(CONFIG_MMU))]
     pub end_brk: ::core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_BINFMT_ELF_FDPIC")]
+    #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
     pub exec_fdpic_loadmap: ::core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_BINFMT_ELF_FDPIC")]
+    #[cfg(CONFIG_BINFMT_ELF_FDPIC)]
     pub interp_fdpic_loadmap: ::core::ffi::c_ulong,
 }
 
-#[cfg(feature = "CONFIG_PMB")]
+#[cfg(CONFIG_PMB)]
 extern "C" {
     pub fn __in_29bit_mode() -> bool;
     pub fn pmb_init();
@@ -65,7 +65,7 @@ extern "C" {
     pub fn pmb_unmap(addr: *mut core::ffi::c_void) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PMB"))]
+#[cfg(not(CONFIG_PMB))]
 pub unsafe fn pmb_bolt_mapping(
     _virt: ::core::ffi::c_ulong,
     _phys: phys_addr_t,
@@ -75,7 +75,7 @@ pub unsafe fn pmb_bolt_mapping(
     -22
 }
 
-#[cfg(not(feature = "CONFIG_PMB"))]
+#[cfg(not(CONFIG_PMB))]
 pub unsafe fn pmb_remap_caller(
     _phys: phys_addr_t,
     _size: ::core::ffi::c_ulong,
@@ -85,18 +85,18 @@ pub unsafe fn pmb_remap_caller(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_PMB"))]
+#[cfg(not(CONFIG_PMB))]
 pub unsafe fn pmb_unmap(_addr: *mut core::ffi::c_void) -> i32 {
     -22
 }
 
-#[cfg(not(feature = "CONFIG_PMB"))]
+#[cfg(not(CONFIG_PMB))]
 pub unsafe fn pmb_init<T>(_addr: T) {}
 
-#[cfg(all(not(feature = "CONFIG_PMB"), feature = "CONFIG_29BIT"))]
+#[cfg(all(not(CONFIG_PMB), CONFIG_29BIT))]
 pub const fn __in_29bit_mode() -> i32 { 1 }
 
-#[cfg(all(not(feature = "CONFIG_PMB"), not(feature = "CONFIG_29BIT")))]
+#[cfg(all(not(CONFIG_PMB), not(CONFIG_29BIT)))]
 pub const fn __in_29bit_mode() -> i32 { 0 }
 
 pub unsafe fn pmb_remap(

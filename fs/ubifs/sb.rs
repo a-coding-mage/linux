@@ -35,6 +35,7 @@ unsafe fn create_default_filesystem(c: *mut ubifs_info) -> i32 {
     let mut sup_flags = 0;
     let min_leb_cnt = UBIFS_MIN_LEB_CNT;
     let mut hash = [0u8; UBIFS_HASH_ARR_SZ as usize];
+    'out: {
     let mut hash_lpt = [0u8; UBIFS_HASH_ARR_SZ as usize];
     (*c).key_len = UBIFS_SK_LEN;
     if (*c).leb_cnt < 0x7fffffff / DEFAULT_JNL_PERCENT { jnl_lebs = (*c).leb_cnt * DEFAULT_JNL_PERCENT / 100; }
@@ -62,11 +63,11 @@ unsafe fn create_default_filesystem(c: *mut ubifs_info) -> i32 {
     let idx = kzalloc(ALIGN(idx_node_size, (*c).min_io_size), GFP_KERNEL) as *mut ubifs_idx_node;
     let ino = kzalloc(ALIGN(UBIFS_INO_NODE_SZ, (*c).min_io_size), GFP_KERNEL) as *mut ubifs_ino_node;
     let cs = kzalloc(ALIGN(UBIFS_CS_NODE_SZ, (*c).min_io_size), GFP_KERNEL) as *mut ubifs_cs_node;
-    if sup.is_null() || mst.is_null() || idx.is_null() || ino.is_null() || cs.is_null() { err = -ENOMEM; goto out; }
+    if sup.is_null() || mst.is_null() || idx.is_null() || ino.is_null() || cs.is_null() { err = -ENOMEM; break 'out; }
     let mut tmp64 = (max_buds as i64) * (*c).leb_size as i64;
     if big_lpt != 0 { sup_flags |= UBIFS_FLG_BIGLPT; }
     if ubifs_default_version > 4 { sup_flags |= UBIFS_FLG_DOUBLE_HASH; }
-    if ubifs_authenticated(c) != 0 { sup_flags |= UBIFS_FLG_AUTHENTICATION; (*sup).hash_algo = cpu_to_le16((*c).auth_hash_algo); err = ubifs_hmac_wkm(c, (*sup).hmac_wkm.as_mut_ptr()); if err != 0 { goto out; } }
+    if ubifs_authenticated(c) != 0 { sup_flags |= UBIFS_FLG_AUTHENTICATION; (*sup).hash_algo = cpu_to_le16((*c).auth_hash_algo); err = ubifs_hmac_wkm(c, (*sup).hmac_wkm.as_mut_ptr()); if err != 0 { break 'out; } }
     else { (*sup).hash_algo = cpu_to_le16(0xffff); }
     (*sup).ch.node_type=UBIFS_SB_NODE; (*sup).key_hash=UBIFS_KEY_HASH_R5; (*sup).flags=cpu_to_le32(sup_flags); (*sup).min_io_size=cpu_to_le32((*c).min_io_size); (*sup).leb_size=cpu_to_le32((*c).leb_size); (*sup).leb_cnt=cpu_to_le32((*c).leb_cnt); (*sup).max_leb_cnt=cpu_to_le32((*c).max_leb_cnt); (*sup).max_bud_bytes=cpu_to_le64(tmp64 as u64); (*sup).log_lebs=cpu_to_le32(log_lebs); (*sup).lpt_lebs=cpu_to_le32(lpt_lebs); (*sup).orph_lebs=cpu_to_le32(orph_lebs); (*sup).jhead_cnt=cpu_to_le32(DEFAULT_JHEADS_CNT); (*sup).fanout=cpu_to_le32(DEFAULT_FANOUT); (*sup).lsave_cnt=cpu_to_le32((*c).lsave_cnt); (*sup).fmt_version=cpu_to_le32(ubifs_default_version); (*sup).time_gran=cpu_to_le32(DEFAULT_TIME_GRAN);
     (*sup).default_compr=cpu_to_le16(if (*c).mount_opts.override_compr { (*c).mount_opts.compr_type } else { get_default_compressor(c) } as u16);
@@ -80,8 +81,9 @@ unsafe fn create_default_filesystem(c: *mut ubifs_info) -> i32 {
     (*c).key_fmt=UBIFS_SIMPLE_KEY_FMT; (*c).key_hash=key_r5_hash; (*idx).ch.node_type=UBIFS_IDX_NODE; (*idx).child_cnt=cpu_to_le16(1); let mut key=core::mem::zeroed(); ino_key_init(c,&mut key,UBIFS_ROOT_INO); let br=ubifs_idx_branch(c,idx,0); key_write_idx(c,&key,&mut (*br).key); (*br).lnum=cpu_to_le32((main_first+DEFAULT_DATA_LEB) as u32); (*br).len=cpu_to_le32(UBIFS_INO_NODE_SZ as u32);
     ino_key_init_flash(c,&mut (*ino).key,UBIFS_ROOT_INO); (*ino).ch.node_type=UBIFS_INO_NODE; (*ino).creat_sqnum=cpu_to_le64({(*c).max_sqnum+=1;(*c).max_sqnum}); (*ino).nlink=cpu_to_le32(2); let mut ts=core::mem::zeroed(); ktime_get_coarse_real_ts64(&mut ts); let t=cpu_to_le64(ts.tv_sec as u64); (*ino).atime_sec=t;(*ino).ctime_sec=t;(*ino).mtime_sec=t;(*ino).mode=cpu_to_le32((S_IFDIR|S_IRUGO|S_IWUSR|S_IXUGO) as u32);(*ino).size=cpu_to_le64(UBIFS_INO_NODE_SZ as u64);(*ino).flags=cpu_to_le32(UBIFS_COMPR_FL);
     (*cs).ch.node_type=UBIFS_CS_NODE;
-    err=ubifs_write_node_hmac(c,sup,UBIFS_SB_NODE_SZ,0,0,offset_of!(ubifs_sb_node,hmac)); if err!=0 {goto out;} err=ubifs_write_node(c,ino,UBIFS_INO_NODE_SZ,main_first+DEFAULT_DATA_LEB,0); if err!=0 {goto out;} ubifs_node_calc_hash(c,ino,hash.as_mut_ptr()); ubifs_copy_hash(c,hash.as_ptr(),ubifs_branch_hash(c,br)); err=ubifs_write_node(c,idx,idx_node_size,main_first+DEFAULT_IDX_LEB,0); if err!=0 {goto out;} ubifs_node_calc_hash(c,idx,hash.as_mut_ptr()); ubifs_copy_hash(c,hash.as_ptr(),(*mst).hash_root_idx.as_mut_ptr()); err=ubifs_write_node_hmac(c,mst,UBIFS_MST_NODE_SZ,UBIFS_MST_LNUM,0,offset_of!(ubifs_mst_node,hmac)); if err!=0 {goto out;} err=ubifs_write_node_hmac(c,mst,UBIFS_MST_NODE_SZ,UBIFS_MST_LNUM+1,0,offset_of!(ubifs_mst_node,hmac)); if err!=0 {goto out;} err=ubifs_write_node(c,cs,UBIFS_CS_NODE_SZ,UBIFS_LOG_LNUM,0);
-out: kfree(sup as *mut _); kfree(mst as *mut _); kfree(idx as *mut _); kfree(ino as *mut _); kfree(cs as *mut _); err
+    err=ubifs_write_node_hmac(c,sup,UBIFS_SB_NODE_SZ,0,0,offset_of!(ubifs_sb_node,hmac)); if err!=0 {break 'out;} err=ubifs_write_node(c,ino,UBIFS_INO_NODE_SZ,main_first+DEFAULT_DATA_LEB,0); if err!=0 {break 'out;} ubifs_node_calc_hash(c,ino,hash.as_mut_ptr()); ubifs_copy_hash(c,hash.as_ptr(),ubifs_branch_hash(c,br)); err=ubifs_write_node(c,idx,idx_node_size,main_first+DEFAULT_IDX_LEB,0); if err!=0 {break 'out;} ubifs_node_calc_hash(c,idx,hash.as_mut_ptr()); ubifs_copy_hash(c,hash.as_ptr(),(*mst).hash_root_idx.as_mut_ptr()); err=ubifs_write_node_hmac(c,mst,UBIFS_MST_NODE_SZ,UBIFS_MST_LNUM,0,offset_of!(ubifs_mst_node,hmac)); if err!=0 {break 'out;} err=ubifs_write_node_hmac(c,mst,UBIFS_MST_NODE_SZ,UBIFS_MST_LNUM+1,0,offset_of!(ubifs_mst_node,hmac)); if err!=0 {break 'out;} err=ubifs_write_node(c,cs,UBIFS_CS_NODE_SZ,UBIFS_LOG_LNUM,0);
+    }
+    kfree(sup as *mut _); kfree(mst as *mut _); kfree(idx as *mut _); kfree(ino as *mut _); kfree(cs as *mut _); err
 }
 
 // The remaining routines retain the original UBIFS validation, authentication,

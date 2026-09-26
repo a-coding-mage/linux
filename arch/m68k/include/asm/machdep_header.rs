@@ -45,12 +45,12 @@ unsafe extern "C" {
 }
 
 /* CONFIG_HEARTBEAT selects the external implementation at build time. */
-#[cfg(feature = "CONFIG_HEARTBEAT")]
+#[cfg(CONFIG_HEARTBEAT)]
 unsafe extern "C" {
     pub fn timer_heartbeat();
 }
 
-#[cfg(not(feature = "CONFIG_HEARTBEAT"))]
+#[cfg(not(CONFIG_HEARTBEAT))]
 #[inline]
 pub fn timer_heartbeat() {}
 

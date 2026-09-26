@@ -40,7 +40,7 @@ pub unsafe fn __update_tlb(
     pteval = pte.pte_low;
 
     /* Set PTEA register */
-    #[cfg(feature = "CONFIG_X2TLB")]
+    #[cfg(CONFIG_X2TLB)]
     /*
      * For the extended mode TLB this is trivial, only the ESZ and EPR bits
      * need to be written out to PTEA, with the remainder of the protection
@@ -53,7 +53,7 @@ pub unsafe fn __update_tlb(
 
     /* Set PTEL register */
     pteval &= _PAGE_FLAGS_HARDWARE_MASK; /* drop software flags */
-    #[cfg(feature = "CONFIG_CACHE_WRITETHROUGH")]
+    #[cfg(CONFIG_CACHE_WRITETHROUGH)]
     {
         pteval |= _PAGE_WT;
     }

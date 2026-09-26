@@ -7,11 +7,11 @@
  * SECTION_SIZE_BITS      2^N: how big each section will be
  * MAX_PHYSMEM_BITS      2^N: how much memory we can have in that space
  */
-#[cfg(feature = "CONFIG_SPARSEMEM")]
+#[cfg(CONFIG_SPARSEMEM)]
 pub const SECTION_SIZE_BITS: u32 = 24;
 
 /* CONFIG_MEMORY_HOTPLUG */
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 unsafe extern "C" {
     pub fn remove_section_mapping(start: ::core::ffi::c_ulong,
                                   end: ::core::ffi::c_ulong)
@@ -21,13 +21,13 @@ unsafe extern "C" {
 
 /* C macro: #define memory_add_physaddr_to_nid memory_add_physaddr_to_nid */
 
-#[cfg(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA))]
 unsafe extern "C" {
     pub fn hot_add_scn_to_nid(scn_addr: ::core::ffi::c_ulong)
         -> ::core::ffi::c_int;
 }
 
-#[cfg(all(feature = "CONFIG_MEMORY_HOTPLUG", not(feature = "CONFIG_NUMA")))]
+#[cfg(all(CONFIG_MEMORY_HOTPLUG, not(CONFIG_NUMA)))]
 #[inline]
 pub fn hot_add_scn_to_nid(_scn_addr: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
     0

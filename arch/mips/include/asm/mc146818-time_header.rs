@@ -9,7 +9,7 @@
 // Dependencies supplied by the corresponding Linux RTC and time modules:
 // `rtc_time`, `time64_t`, `mc146818_get_time`, `rtc_tm_to_time64`, and `pr_err`.
 
-#[cfg(feature = "CONFIG_RTC_MC146818_LIB")]
+#[cfg(CONFIG_RTC_MC146818_LIB)]
 #[inline]
 pub unsafe fn mc146818_get_cmos_time() -> time64_t {
     let mut tm: rtc_time = core::mem::zeroed();

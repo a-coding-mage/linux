@@ -60,7 +60,7 @@ unsafe fn vboxsf_dir_emit(dir: *mut file, ctx: *mut dir_context) -> bool {
     let sf_d = (*dir).private_data as *mut vboxsf_dir_info;
     let mut cur: i64 = 0;
     let mut b: *mut vboxsf_dir_buf;
-    list_for_each_entry!(b, &mut (*sf_d).info_list, head) {
+    list_for_each_entry!(b, &mut (*sf_d).info_list, head, {
         'try_next_entry: loop {
             if (*ctx).pos >= cur + (*b).entries { cur += (*b).entries; break; }
             let mut info = (*b).buf as *mut shfl_dirinfo;
@@ -73,7 +73,7 @@ unsafe fn vboxsf_dir_emit(dir: *mut file, ctx: *mut dir_context) -> bool {
             let end = (*info).name.string.utf8.as_mut_ptr().add((*info).name.size as usize);
             if WARN_ON(end > (*b).buf.add((*b).used as usize)) { return false; }
             let d_type = vboxsf_get_d_type((*info).info.attr.mode);
-            if ( (*ctx).pos + 1) as ino_t != ((*ctx).pos + 1) as u64 { vbg_err(c"vboxsf: fake ino overflow, truncating dir\0".as_ptr()); return false; }
+            if ( (*ctx).pos + 1) as ino_t != ((*ctx).pos + 1) as u64 { vbg_err(c"vboxsf: fake ino overflow, truncating dir".as_ptr()); return false; }
             let fake_ino = ((*ctx).pos + 1) as ino_t;
             if !(*sbi).nls.is_null() {
                 let mut d_name = [0i8; NAME_MAX as usize];
@@ -83,7 +83,7 @@ unsafe fn vboxsf_dir_emit(dir: *mut file, ctx: *mut dir_context) -> bool {
             }
             return dir_emit(ctx, (*info).name.string.utf8.as_mut_ptr(), (*info).name.length, fake_ino, d_type);
         }
-    }
+    });
     false
 }
 

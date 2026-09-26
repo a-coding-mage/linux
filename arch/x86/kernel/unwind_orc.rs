@@ -4,10 +4,10 @@
 // ORC_HEADER;
 
 extern "C" {
-    static mut __start_orc_unwind_ip: *mut i32;
-    static mut __stop_orc_unwind_ip: *mut i32;
-    static mut __start_orc_unwind: *mut orc_entry;
-    static mut __stop_orc_unwind: *mut orc_entry;
+    static __start_orc_unwind_ip: [i32; 0];
+    static __stop_orc_unwind_ip: [i32; 0];
+    static __start_orc_unwind: [orc_entry; 0];
+    static __stop_orc_unwind: [orc_entry; 0];
 }
 
 static mut orc_init: bool = false;
@@ -63,16 +63,16 @@ unsafe fn __orc_find(ip_table: *mut i32, u_table: *mut orc_entry, num_entries: u
     u_table.add(found.offset_from(ip_table) as usize)
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn orc_module_find(ip: usize) -> *mut orc_entry {
     let mod_: *mut module = __module_address(ip);
     if mod_.is_null() || (*mod_).arch.orc_unwind.is_null() || (*mod_).arch.orc_unwind_ip.is_null() { return core::ptr::null_mut(); }
     __orc_find((*mod_).arch.orc_unwind_ip, (*mod_).arch.orc_unwind, (*mod_).arch.num_orcs, ip)
 }
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 unsafe fn orc_module_find(_ip: usize) -> *mut orc_entry { core::ptr::null_mut() }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 unsafe fn orc_ftrace_find(ip: usize) -> *mut orc_entry {
     let ops = ftrace_ops_trampoline(ip);
     if ops.is_null() { return core::ptr::null_mut(); }
@@ -81,13 +81,13 @@ unsafe fn orc_ftrace_find(ip: usize) -> *mut orc_entry {
     if ip == tramp_addr { return core::ptr::null_mut(); }
     orc_find(tramp_addr)
 }
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 unsafe fn orc_ftrace_find(_ip: usize) -> *mut orc_entry { core::ptr::null_mut() }
 
 static mut orc_fp_entry: orc_entry = orc_entry { type_: ORC_TYPE_CALL, sp_reg: ORC_REG_BP, sp_offset: 16, bp_reg: ORC_REG_PREV_SP, bp_offset: -16, ..orc_entry::zeroed() };
 
 unsafe fn orc_bpf_find(ip: usize) -> *mut orc_entry {
-    #[cfg(feature = "CONFIG_BPF_JIT")]
+    #[cfg(CONFIG_BPF_JIT)]
     if bpf_has_frame_pointer(ip) { return &raw mut orc_fp_entry; }
     core::ptr::null_mut()
 }
@@ -101,10 +101,10 @@ unsafe fn orc_find(ip: usize) -> *mut orc_entry {
         let idx = (ip - LOOKUP_START_IP) / LOOKUP_BLOCK_SIZE;
         if idx >= (lookup_num_blocks - 1) as usize { orc_warn!("WARNING: bad lookup idx"); return core::ptr::null_mut(); }
         let start = orc_lookup[idx]; let stop = orc_lookup[idx + 1] + 1;
-        if __start_orc_unwind.add(start) >= __stop_orc_unwind || __start_orc_unwind.add(stop) > __stop_orc_unwind { orc_warn!("WARNING: bad lookup value"); return core::ptr::null_mut(); }
-        return __orc_find(__start_orc_unwind_ip.add(start), __start_orc_unwind.add(start), (stop - start) as u32, ip);
+        if __start_orc_unwind.as_ptr().cast_mut().add(start) >= __stop_orc_unwind.as_ptr().cast_mut() || __start_orc_unwind.as_ptr().cast_mut().add(stop) > __stop_orc_unwind.as_ptr().cast_mut() { orc_warn!("WARNING: bad lookup value"); return core::ptr::null_mut(); }
+        return __orc_find(__start_orc_unwind_ip.as_ptr().cast_mut().add(start), __start_orc_unwind.as_ptr().cast_mut().add(start), (stop - start) as u32, ip);
     }
-    if is_kernel_inittext(ip) { return __orc_find(__start_orc_unwind_ip, __start_orc_unwind, __stop_orc_unwind_ip.offset_from(__start_orc_unwind_ip) as u32, ip); }
+    if is_kernel_inittext(ip) { return __orc_find(__start_orc_unwind_ip.as_ptr().cast_mut(), __start_orc_unwind.as_ptr().cast_mut(), __stop_orc_unwind_ip.as_ptr().cast_mut().offset_from(__start_orc_unwind_ip.as_ptr().cast_mut()) as u32, ip); }
     orc = orc_module_find(ip); if !orc.is_null() { return orc; }
     orc = orc_bpf_find(ip); if !orc.is_null() { return orc; }
     orc_ftrace_find(ip)

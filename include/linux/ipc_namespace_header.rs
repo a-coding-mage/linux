@@ -13,7 +13,7 @@ pub struct ipc_ids {
     pub ipcs_idr: idr,
     pub max_idx: ::core::ffi::c_int,
     pub last_idx: ::core::ffi::c_int, /* For wrap around detection */
-    #[cfg(feature = "CONFIG_CHECKPOINT_RESTORE")]
+    #[cfg(CONFIG_CHECKPOINT_RESTORE)]
     pub next_id: ::core::ffi::c_int,
     pub key_ht: rhashtable,
 }
@@ -62,15 +62,15 @@ extern "C" {
     pub static mut mq_lock: spinlock_t;
 }
 
-#[cfg(feature = "CONFIG_SYSVIPC")]
+#[cfg(CONFIG_SYSVIPC)]
 extern "C" {
     pub fn shm_destroy_orphaned(ns: *mut ipc_namespace);
 }
-#[cfg(not(feature = "CONFIG_SYSVIPC"))]
+#[cfg(not(CONFIG_SYSVIPC))]
 #[inline]
 pub unsafe fn shm_destroy_orphaned(_ns: *mut ipc_namespace) {}
 
-#[cfg(feature = "CONFIG_POSIX_MQUEUE")]
+#[cfg(CONFIG_POSIX_MQUEUE)]
 extern "C" {
     pub fn mq_init_ns(ns: *mut ipc_namespace) -> ::core::ffi::c_int;
 }
@@ -85,73 +85,73 @@ pub const DFLT_MSGSIZE: u32 = 8192;
 pub const DFLT_MSGSIZEMAX: ::core::ffi::c_int = 8192;
 pub const HARD_MSGSIZEMAX: ::core::ffi::c_int = 16 * 1024 * 1024;
 
-#[cfg(not(feature = "CONFIG_POSIX_MQUEUE"))]
+#[cfg(not(CONFIG_POSIX_MQUEUE))]
 #[inline]
 pub unsafe fn mq_init_ns(_ns: *mut ipc_namespace) -> ::core::ffi::c_int { 0 }
 
-#[cfg(feature = "CONFIG_IPC_NS")]
+#[cfg(CONFIG_IPC_NS)]
 #[inline]
 pub unsafe fn to_ipc_ns(ns: *mut ns_common) -> *mut ipc_namespace {
     container_of!(ns, ipc_namespace, ns)
 }
 
-#[cfg(feature = "CONFIG_IPC_NS")]
+#[cfg(CONFIG_IPC_NS)]
 extern "C" {
     pub fn copy_ipcs(flags: u64, user_ns: *mut user_namespace, ns: *mut ipc_namespace) -> *mut ipc_namespace;
     pub fn put_ipc_ns(ns: *mut ipc_namespace);
 }
 
-#[cfg(feature = "CONFIG_IPC_NS")]
+#[cfg(CONFIG_IPC_NS)]
 #[inline]
 pub unsafe fn get_ipc_ns(ns: *mut ipc_namespace) -> *mut ipc_namespace {
     if !ns.is_null() { ns_ref_inc(ns); }
     ns
 }
 
-#[cfg(feature = "CONFIG_IPC_NS")]
+#[cfg(CONFIG_IPC_NS)]
 #[inline]
 pub unsafe fn get_ipc_ns_not_zero(ns: *mut ipc_namespace) -> *mut ipc_namespace {
     if !ns.is_null() && ns_ref_get(ns) { return ns; }
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_IPC_NS"))]
+#[cfg(not(CONFIG_IPC_NS))]
 #[inline]
 pub unsafe fn copy_ipcs(flags: u64, _user_ns: *mut user_namespace, ns: *mut ipc_namespace) -> *mut ipc_namespace {
     if flags & CLONE_NEWIPC != 0 { return ERR_PTR(-EINVAL); }
     ns
 }
-#[cfg(not(feature = "CONFIG_IPC_NS"))]
+#[cfg(not(CONFIG_IPC_NS))]
 #[inline]
 pub unsafe fn get_ipc_ns(ns: *mut ipc_namespace) -> *mut ipc_namespace { ns }
-#[cfg(not(feature = "CONFIG_IPC_NS"))]
+#[cfg(not(CONFIG_IPC_NS))]
 #[inline]
 pub unsafe fn get_ipc_ns_not_zero(ns: *mut ipc_namespace) -> *mut ipc_namespace { ns }
-#[cfg(not(feature = "CONFIG_IPC_NS"))]
+#[cfg(not(CONFIG_IPC_NS))]
 #[inline]
 pub unsafe fn put_ipc_ns(_ns: *mut ipc_namespace) {}
 
-#[cfg(feature = "CONFIG_POSIX_MQUEUE_SYSCTL")]
+#[cfg(CONFIG_POSIX_MQUEUE_SYSCTL)]
 extern "C" {
     pub fn retire_mq_sysctls(ns: *mut ipc_namespace);
     pub fn setup_mq_sysctls(ns: *mut ipc_namespace) -> bool;
 }
-#[cfg(not(feature = "CONFIG_POSIX_MQUEUE_SYSCTL"))]
+#[cfg(not(CONFIG_POSIX_MQUEUE_SYSCTL))]
 #[inline]
 pub unsafe fn retire_mq_sysctls(_ns: *mut ipc_namespace) {}
-#[cfg(not(feature = "CONFIG_POSIX_MQUEUE_SYSCTL"))]
+#[cfg(not(CONFIG_POSIX_MQUEUE_SYSCTL))]
 #[inline]
 pub unsafe fn setup_mq_sysctls(_ns: *mut ipc_namespace) -> bool { true }
 
-#[cfg(feature = "CONFIG_SYSVIPC_SYSCTL")]
+#[cfg(CONFIG_SYSVIPC_SYSCTL)]
 extern "C" {
     pub fn setup_ipc_sysctls(ns: *mut ipc_namespace) -> bool;
     pub fn retire_ipc_sysctls(ns: *mut ipc_namespace);
 }
-#[cfg(not(feature = "CONFIG_SYSVIPC_SYSCTL"))]
+#[cfg(not(CONFIG_SYSVIPC_SYSCTL))]
 #[inline]
 pub unsafe fn retire_ipc_sysctls(_ns: *mut ipc_namespace) {}
-#[cfg(not(feature = "CONFIG_SYSVIPC_SYSCTL"))]
+#[cfg(not(CONFIG_SYSVIPC_SYSCTL))]
 #[inline]
 pub unsafe fn setup_ipc_sysctls(_ns: *mut ipc_namespace) -> bool { true }
 

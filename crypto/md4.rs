@@ -99,9 +99,9 @@ pub unsafe extern "C" fn md4_update(desc: *mut shash_desc, mut data: *const u8, 
     (*mctx).byte_count = (*mctx).byte_count.wrapping_add(len as u64);
     let offset = 64 - avail;
     if avail > len as usize {
-        core::ptr::copy_nonoverlapping(data, (*mctx).block.as_mut_ptr() as *mut u8 .add(offset), len as usize); return 0;
+        core::ptr::copy_nonoverlapping(data, ((*mctx).block.as_mut_ptr() as *mut u8).add(offset), len as usize); return 0;
     }
-    core::ptr::copy_nonoverlapping(data, (*mctx).block.as_mut_ptr() as *mut u8 .add(offset), avail);
+    core::ptr::copy_nonoverlapping(data, ((*mctx).block.as_mut_ptr() as *mut u8).add(offset), avail);
     md4_transform_helper(mctx); data = data.add(avail); len -= avail as u32;
     while len >= 64 { core::ptr::copy_nonoverlapping(data, (*mctx).block.as_mut_ptr() as *mut u8, 64); md4_transform_helper(mctx); data=data.add(64); len-=64; }
     core::ptr::copy_nonoverlapping(data, (*mctx).block.as_mut_ptr() as *mut u8, len as usize); 0

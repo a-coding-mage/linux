@@ -102,9 +102,9 @@ static const ni_board_struct ni_boards[] = [
     },
 ];
 
-static const ni_irqpin: [i32; 16] = [-1, -1, -1, 0, 1, 2, -1, 3, -1, -1, 4, 5, 6, -1, -1, 7];
+static ni_irqpin: [i32; 16] = [-1, -1, -1, 0, 1, 2, -1, 3, -1, -1, 4, 5, 6, -1, -1, 7];
 
-static const device_ids: [pnp_device_id; 6] = [
+static device_ids: [pnp_device_id; 6] = [
     pnp_device_id { id: "NIC1900" },
     pnp_device_id { id: "NIC2400" },
     pnp_device_id { id: "NIC2500" },

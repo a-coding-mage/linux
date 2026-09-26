@@ -16,7 +16,7 @@ pub struct McfgEntry {
     pub bus_end: u8,
 }
 
-#[cfg(feature = "CONFIG_PCI_QUIRKS")]
+#[cfg(CONFIG_PCI_QUIRKS)]
 #[repr(C)]
 pub struct McfgFixup {
     pub oem_id: [libc::c_char; ACPI_OEM_ID_SIZE + 1],
@@ -28,18 +28,18 @@ pub struct McfgFixup {
     pub cfgres: Resource,
 }
 
-#[cfg(feature = "CONFIG_PCI_QUIRKS")]
+#[cfg(CONFIG_PCI_QUIRKS)]
 static mut MCFG_OEM_ID: [libc::c_char; ACPI_OEM_ID_SIZE] = [0; ACPI_OEM_ID_SIZE];
-#[cfg(feature = "CONFIG_PCI_QUIRKS")]
+#[cfg(CONFIG_PCI_QUIRKS)]
 static mut MCFG_OEM_TABLE_ID: [libc::c_char; ACPI_OEM_TABLE_ID_SIZE] = [0; ACPI_OEM_TABLE_ID_SIZE];
-#[cfg(feature = "CONFIG_PCI_QUIRKS")]
+#[cfg(CONFIG_PCI_QUIRKS)]
 static mut MCFG_OEM_REVISION: u32 = 0;
 
 extern "C" {
     static mut pci_mcfg_list: ListHead;
 }
 
-#[cfg(feature = "CONFIG_PCI_QUIRKS")]
+#[cfg(CONFIG_PCI_QUIRKS)]
 unsafe fn pci_mcfg_quirk_matches(f: *mut McfgFixup, segment: u16, bus_range: *mut Resource) -> i32 {
     if libc::memcmp((*f).oem_id.as_ptr(), MCFG_OEM_ID.as_ptr(), ACPI_OEM_ID_SIZE) == 0
         && libc::memcmp((*f).oem_table_id.as_ptr(), MCFG_OEM_TABLE_ID.as_ptr(), ACPI_OEM_TABLE_ID_SIZE) == 0
@@ -54,7 +54,7 @@ unsafe fn pci_mcfg_apply_quirks(
     cfgres: *mut Resource,
     ecam_ops: *mut *const PciEcamOps,
 ) {
-    #[cfg(feature = "CONFIG_PCI_QUIRKS")]
+    #[cfg(CONFIG_PCI_QUIRKS)]
     {
         let segment = (*root).segment;
         let bus_range = &mut (*root).secondary as *mut Resource;
@@ -73,7 +73,7 @@ unsafe fn pci_mcfg_apply_quirks(
     }
 }
 
-#[cfg(feature = "CONFIG_PCI_QUIRKS")]
+#[cfg(CONFIG_PCI_QUIRKS)]
 static mut MCFG_QUIRKS: [McfgFixup; 0] = [];
 
 #[no_mangle]
@@ -120,7 +120,7 @@ unsafe extern "C" fn pci_mcfg_parse(header: *mut AcpiTableHeader) -> i32 {
         (*e).bus_end = (*m).end_bus_number;
         list_add(&mut (*e).list, &mut pci_mcfg_list);
     }
-    #[cfg(feature = "CONFIG_PCI_QUIRKS")]
+    #[cfg(CONFIG_PCI_QUIRKS)]
     {
         libc::memcpy(MCFG_OEM_ID.as_mut_ptr(), (*header).oem_id.as_ptr(), ACPI_OEM_ID_SIZE);
         libc::memcpy(MCFG_OEM_TABLE_ID.as_mut_ptr(), (*header).oem_table_id.as_ptr(), ACPI_OEM_TABLE_ID_SIZE);

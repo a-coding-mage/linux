@@ -302,17 +302,17 @@ static const u32 x2[256 as usize] = {
 	0x03030300, 0xa2a2a200, 0xacacac00, 0x60606000
 };
 
-pub unsafe fn rotl32(u32 v, u32 r)
+pub unsafe fn rotl32(v: u32, r: u32)
 {
 	return ((v << r) | (v >> (32 - r)));
 }
 
-pub unsafe fn rotr32(u32 v, u32 r)
+pub unsafe fn rotr32(v: u32, r: u32)
 {
 	return ((v >> r) | (v << (32 - r)));
 }
 
-pub unsafe fn bswap32(u32 v)
+pub unsafe fn bswap32(v: u32)
 {
 	return ((v << 24) ^
 		(v >> 24) ^
@@ -320,17 +320,17 @@ pub unsafe fn bswap32(u32 v)
 		((v & 0x00ff0000) >> 8));
 }
 
-pub unsafe fn get_u8(u32 x, u32 y)
+pub unsafe fn get_u8(x: u32, y: u32)
 {
 	return ((x >> ((3 - y) * 8)) as usize);
 }
 
-pub unsafe fn make_u32(u8 v0, u8 v1, u8 v2, u8 v3)
+pub unsafe fn make_u32(v0: u8, v1: u8, v2: u8, v3: u8)
 {
 	return ((u32)v0 << 24) | ((u32)v1 << 16) | ((u32)v2 <<  8) | ((u32)v3);
 }
 
-pub unsafe fn aria_m(u32 t0)
+pub unsafe fn aria_m(t0: u32)
 {
 	return rotr32(t0, 8) ^ rotr32(t0 ^ rotr32(t0, 8), 16);
 }
@@ -427,7 +427,7 @@ pub unsafe fn aria_subst_diff_even(u32 *t0, u32 *t1, u32 *t2, u32 *t3)
 }
 
 /* Q, R Macro expanded ARIA GSRK */
-pub unsafe fn aria_gsrk(u32 *rk, u32 *x, u32 *y, u32 n)
+pub unsafe fn aria_gsrk(u32 *rk, u32 *x, u32 *y, n: u32)
 {
 	int q = 4 - (n / 32);
 	int r = n % 32;
@@ -446,10 +446,10 @@ pub unsafe fn aria_gsrk(u32 *rk, u32 *x, u32 *y, u32 n)
 		((y[(q + 2) % 4]) << (32 - r));
 }
 
-extern "C" { pub fn aria_encrypt(*mut core::ffi::c_void ctx, *mut u8 out, *const u8 in);
-pub fn aria_decrypt(void *ctx, u8 *out, const u8 *in);
+extern "C" { pub fn aria_encrypt(_: *mut core::ffi::c_void ctx, _: *mut u8 out, _: *const u8 in);
+pub fn aria_decrypt(_: void *ctx, _: u8 *out, _: const u8 *in);
 pub fn aria_set_key(*mut crypto_tfm tfm, *const u8 in_key,
-		 u32 key_len);
+		 key_len: u32);
 
 
 

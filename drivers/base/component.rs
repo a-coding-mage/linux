@@ -20,14 +20,14 @@ static mut AGGREGATE_DEVICES: list_head = list_head { next: core::ptr::null_mut(
 extern "C" { static mut component_mutex: c_void; }
 
 extern "C" {
-    fn device_match_of_node(*mut device, *mut c_void) -> i32;
-    fn device_match_name(*mut device, *mut c_void) -> i32;
-    fn of_node_put(*mut c_void);
-    fn dev_name(*mut device) -> *const i8;
-    fn devres_open_group(*mut device, *mut c_void, u32) -> *mut c_void;
-    fn devres_close_group(*mut device, *mut c_void);
-    fn devres_release_group(*mut device, *mut c_void);
-    fn devres_remove_group(*mut device, *mut c_void);
+    fn device_match_of_node(_: *mut device, _: *mut c_void) -> i32;
+    fn device_match_name(_: *mut device, _: *mut c_void) -> i32;
+    fn of_node_put(_: *mut c_void);
+    fn dev_name(_: *mut device) -> *const i8;
+    fn devres_open_group(_: *mut device, _: *mut c_void, _: u32) -> *mut c_void;
+    fn devres_close_group(_: *mut device, _: *mut c_void);
+    fn devres_release_group(_: *mut device, _: *mut c_void);
+    fn devres_remove_group(_: *mut device, _: *mut c_void);
 }
 
 /* Kernel list, mutex, devres, allocation, logging, and errno helpers are supplied by dependencies. */

@@ -29,22 +29,22 @@ pub type c_ulong = usize;
 #[repr(C)] struct clk_prcmu_clkout { hw: clk_hw, clkout_id: u8, source: u8, divider: u8 }
 
 extern "C" {
-    fn db8500_prcmu_request_clock(u8, bool) -> i32;
-    fn prcmu_clock_rate(u8) -> c_ulong;
-    fn prcmu_round_clock_rate(u8, c_ulong) -> c_ulong;
-    fn prcmu_set_clock_rate(u8, c_ulong) -> i32;
-    fn prcmu_qos_add_requirement(i32, *mut c_char, i32) -> i32;
-    fn prcmu_qos_remove_requirement(i32, *mut c_char);
-    fn db8500_prcmu_request_ape_opp_100_voltage(bool) -> i32;
-    fn prcmu_config_clkout(u8, u8, u8) -> i32;
-    fn clk_hw_get_name(*mut clk_hw) -> *const c_char;
-    fn clk_hw_is_prepared(*mut clk_hw) -> bool;
-    fn clk_hw_determine_rate_no_reparent(*mut clk_hw, *mut clk_rate_request) -> i32;
-    fn clk_hw_register(*mut c_void, *mut clk_hw) -> i32;
+    fn db8500_prcmu_request_clock(_: u8, _: bool) -> i32;
+    fn prcmu_clock_rate(_: u8) -> c_ulong;
+    fn prcmu_round_clock_rate(_: u8, _: c_ulong) -> c_ulong;
+    fn prcmu_set_clock_rate(_: u8, _: c_ulong) -> i32;
+    fn prcmu_qos_add_requirement(_: i32, _: *mut c_char, _: i32) -> i32;
+    fn prcmu_qos_remove_requirement(_: i32, _: *mut c_char);
+    fn db8500_prcmu_request_ape_opp_100_voltage(_: bool) -> i32;
+    fn prcmu_config_clkout(_: u8, _: u8, _: u8) -> i32;
+    fn clk_hw_get_name(_: *mut clk_hw) -> *const c_char;
+    fn clk_hw_is_prepared(_: *mut clk_hw) -> bool;
+    fn clk_hw_determine_rate_no_reparent(_: *mut clk_hw, _: *mut clk_rate_request) -> i32;
+    fn clk_hw_register(_: *mut c_void, _: *mut clk_hw) -> i32;
     fn pr_err(fmt: *const c_char, ...);
-    fn strcmp(*const c_char, *const c_char) -> i32;
+    fn strcmp(_: *const c_char, _: *const c_char) -> i32;
     fn kzalloc(size: usize) -> *mut c_void;
-    fn kfree(*mut c_void);
+    fn kfree(_: *mut c_void);
 }
 
 const PRCMU_QOS_APE_OPP: i32 = 0;

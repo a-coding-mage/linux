@@ -51,14 +51,14 @@ unsafe fn fscache_queue_cookie(cookie: *mut fscache_cookie, where_: fscache_cook
 
 unsafe fn fscache_init_access_gate(cookie: *mut fscache_cookie) {
     let n = atomic_read(&(*cookie).n_accesses);
-    trace_fscache_access((*cookie).debug_id, refcount_read(&(*cookie).ref), n, fscache_access_cache_pin);
+    trace_fscache_access((*cookie).debug_id, refcount_read(&(*cookie).r#ref), n, fscache_access_cache_pin);
     set_bit(FSCACHE_COOKIE_NO_ACCESS_WAKE, &mut (*cookie).flags);
 }
 
 #[no_mangle] pub unsafe extern "C" fn fscache_end_cookie_access(cookie: *mut fscache_cookie, why: fscache_access_trace) {
     smp_mb__before_atomic();
     let n = atomic_dec_return(&mut (*cookie).n_accesses);
-    trace_fscache_access((*cookie).debug_id, refcount_read(&(*cookie).ref), n, why);
+    trace_fscache_access((*cookie).debug_id, refcount_read(&(*cookie).r#ref), n, why);
     if n == 0 && !test_bit(FSCACHE_COOKIE_NO_ACCESS_WAKE, &(*cookie).flags) {
         fscache_queue_cookie(cookie, fscache_cookie_get_end_access);
     }
@@ -67,7 +67,7 @@ unsafe fn fscache_init_access_gate(cookie: *mut fscache_cookie) {
 unsafe fn __fscache_begin_cookie_access(cookie: *mut fscache_cookie, why: fscache_access_trace) {
     let n = atomic_inc_return(&mut (*cookie).n_accesses);
     smp_mb__after_atomic();
-    trace_fscache_access((*cookie).debug_id, refcount_read(&(*cookie).ref), n, why);
+    trace_fscache_access((*cookie).debug_id, refcount_read(&(*cookie).r#ref), n, why);
 }
 #[no_mangle] pub unsafe extern "C" fn fscache_begin_cookie_access(cookie: *mut fscache_cookie, why: fscache_access_trace) -> bool {
     if !test_bit(FSCACHE_COOKIE_IS_CACHING, &(*cookie).flags) { return false; }
@@ -84,12 +84,12 @@ unsafe fn fscache_set_cookie_state(cookie: *mut fscache_cookie, state: fscache_c
 
 #[no_mangle] pub unsafe extern "C" fn fscache_cookie_lookup_negative(cookie: *mut fscache_cookie) { set_bit(FSCACHE_COOKIE_NO_DATA_TO_READ,&mut (*cookie).flags); fscache_set_cookie_state(cookie,FSCACHE_COOKIE_STATE_CREATING); }
 #[no_mangle] pub unsafe extern "C" fn fscache_resume_after_invalidation(cookie: *mut fscache_cookie) { fscache_set_cookie_state(cookie,FSCACHE_COOKIE_STATE_ACTIVE); }
-#[no_mangle] pub unsafe extern "C" fn fscache_caching_failed(cookie: *mut fscache_cookie) { clear_bit(FSCACHE_COOKIE_IS_CACHING,&mut (*cookie).flags); fscache_set_cookie_state(cookie,FSCACHE_COOKIE_STATE_FAILED); trace_fscache_cookie((*cookie).debug_id,refcount_read(&(*cookie).ref),fscache_cookie_failed); }
+#[no_mangle] pub unsafe extern "C" fn fscache_caching_failed(cookie: *mut fscache_cookie) { clear_bit(FSCACHE_COOKIE_IS_CACHING,&mut (*cookie).flags); fscache_set_cookie_state(cookie,FSCACHE_COOKIE_STATE_FAILED); trace_fscache_cookie((*cookie).debug_id,refcount_read(&(*cookie).r#ref),fscache_cookie_failed); }
 
 // The remainder of the implementation retains the C state-machine structure.
 #[no_mangle] pub unsafe extern "C" fn fscache_withdraw_cookie(cookie:*mut fscache_cookie) { set_bit(FSCACHE_COOKIE_DO_WITHDRAW,&mut (*cookie).flags); fscache_drop_withdraw_cookie(cookie); }
-#[no_mangle] pub unsafe extern "C" fn fscache_put_cookie(cookie:*mut fscache_cookie, where_:fscache_cookie_trace) { let v=(*cookie).volume; let mut r=0; if __refcount_dec_and_test(&mut (*cookie).ref,&mut r) { fscache_free_cookie(cookie); fscache_put_volume(v,fscache_volume_put_cookie); } else { trace_fscache_cookie((*cookie).debug_id,r-1,where_); } }
-#[no_mangle] pub unsafe extern "C" fn fscache_get_cookie(cookie:*mut fscache_cookie, where_:fscache_cookie_trace)->*mut fscache_cookie { let mut r=0; __refcount_inc(&mut (*cookie).ref,&mut r); trace_fscache_cookie((*cookie).debug_id,r+1,where_); cookie }
+#[no_mangle] pub unsafe extern "C" fn fscache_put_cookie(cookie:*mut fscache_cookie, where_:fscache_cookie_trace) { let v=(*cookie).volume; let mut r=0; if __refcount_dec_and_test(&mut (*cookie).r#ref,&mut r) { fscache_free_cookie(cookie); fscache_put_volume(v,fscache_volume_put_cookie); } else { trace_fscache_cookie((*cookie).debug_id,r-1,where_); } }
+#[no_mangle] pub unsafe extern "C" fn fscache_get_cookie(cookie:*mut fscache_cookie, where_:fscache_cookie_trace)->*mut fscache_cookie { let mut r=0; __refcount_inc(&mut (*cookie).r#ref,&mut r); trace_fscache_cookie((*cookie).debug_id,r+1,where_); cookie }
 
 unsafe fn fscache_cookie_state_machine(cookie: *mut fscache_cookie) {
     // State transitions, locking, wakeups and backend calls are kept in the

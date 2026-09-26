@@ -98,7 +98,7 @@ pub unsafe extern "C" fn kunit_attach_mm() -> ::core::ffi::c_int {
 
     /* arch_pick_mmap_layout() is only sane with MMU systems. */
     // CONFIG_MMU is a build-time configuration condition.
-    if !cfg!(feature = "CONFIG_MMU") {
+    if !cfg!(CONFIG_MMU) {
         return -EINVAL;
     }
 

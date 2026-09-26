@@ -73,6 +73,8 @@ unsafe fn exynos_clkout_match_parent_dev(dev: *mut Device, mux_mask: *mut u32) -
 
 unsafe fn exynos_clkout_probe(pdev: *mut PlatformDevice) -> i32 {
     let mut parent_names: [*const u8; EXYNOS_CLKOUT_PARENTS] = [core::ptr::null(); EXYNOS_CLKOUT_PARENTS];
+    'clks_put: {
+    'err_unmap: {
     let mut parents: [*mut Clk; EXYNOS_CLKOUT_PARENTS] = [core::ptr::null_mut(); EXYNOS_CLKOUT_PARENTS];
     let mut mux_mask = 0u32;
 
@@ -101,7 +103,7 @@ unsafe fn exynos_clkout_probe(pdev: *mut PlatformDevice) -> i32 {
     if parent_count == 0 { return -22; }
 
     (*clkout).reg = of_iomap((*clkout).np, 0);
-    if (*clkout).reg.is_null() { ret = -19; goto clks_put; }
+    if (*clkout).reg.is_null() { ret = -19; break 'clks_put; }
 
     (*clkout).gate.reg = (*clkout).reg.add(EXYNOS_PMU_DEBUG_REG);
     (*clkout).gate.bit_idx = EXYNOS_CLKOUT_DISABLE_SHIFT;
@@ -113,14 +115,15 @@ unsafe fn exynos_clkout_probe(pdev: *mut PlatformDevice) -> i32 {
     (*clkout).mux.lock = &mut (*clkout).slock;
     (*clkout).data.num = EXYNOS_CLKOUT_NR_CLKS;
     (*clkout).data.hws[0] = clk_hw_register_composite(core::ptr::null_mut(), b"clkout\0".as_ptr(), parent_names.as_ptr(), parent_count, &mut (*clkout).mux.hw, &CLK_MUX_OPS, core::ptr::null_mut(), core::ptr::null_mut(), &mut (*clkout).gate.hw, &CLK_GATE_OPS, CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT);
-    if is_err((*clkout).data.hws[0]) { ret = ptr_err((*clkout).data.hws[0]); goto err_unmap; }
+    if is_err((*clkout).data.hws[0]) { ret = ptr_err((*clkout).data.hws[0]); break 'err_unmap; }
     ret = of_clk_add_hw_provider((*clkout).np, of_clk_hw_onecell_get, &mut (*clkout).data);
-    if ret != 0 { clk_hw_unregister((*clkout).data.hws[0]); goto err_unmap; }
+    if ret != 0 { clk_hw_unregister((*clkout).data.hws[0]); break 'err_unmap; }
     return 0;
-
-err_unmap:
+    }
+    
     iounmap((*clkout).reg);
-clks_put:
+    }
+    
     for parent in parents { if !is_err(parent as *const core::ffi::c_void) { clk_put(parent); } }
     dev_err(&mut (*pdev).dev, b"failed to register clkout clock\0".as_ptr());
     ret
@@ -161,7 +164,6 @@ static mut EXYNOS_CLKOUT_DRIVER: PlatformDriver = PlatformDriver {
 
 // External kernel types, constants, operations, and functions are supplied by dependencies.
 extern "C" {
-    type ClkGate; type ClkMux; type Spinlock; type DeviceNode; type Device; type PlatformDevice; type Clk; type ClkHwOnecellData; type OfDeviceId; type PlatformDriver; type Driver;
     static GFP_KERNEL: u32; static CLK_MUX_OPS: ClkOps; static CLK_GATE_OPS: ClkOps;
     static CLK_GATE_SET_TO_DISABLE: u32; static CLK_SET_RATE_PARENT: u32; static CLK_SET_RATE_NO_REPARENT: u32;
     fn devm_kzalloc(dev: *mut Device, size: usize, flags: u32) -> *mut core::ffi::c_void;
@@ -173,6 +175,7 @@ extern "C" {
     fn of_clk_add_hw_provider(np: *mut DeviceNode, get: unsafe extern "C" fn(), data: *mut ClkHwOnecellData) -> i32; fn of_clk_hw_onecell_get(); fn clk_hw_unregister(hw: *mut ClkHw); fn iounmap(reg: *mut u8); fn clk_put(clk: *mut Clk);
     fn platform_get_drvdata(p: *mut PlatformDevice) -> *mut core::ffi::c_void; fn of_clk_del_provider(np: *mut DeviceNode); fn dev_get_drvdata(d: *mut Device) -> *mut core::ffi::c_void; fn readl(reg: *mut u8) -> u32; fn writel(value: u32, reg: *mut u8);
 }
+type ClkGate; type ClkMux; type Spinlock; type DeviceNode; type Device; type PlatformDevice; type Clk; type ClkHwOnecellData; type OfDeviceId; type PlatformDriver; type Driver;
 
 #[repr(C)] struct ClkHw { _private: [u8; 0] }
 #[repr(C)] struct ClkOps { _private: [u8; 0] }

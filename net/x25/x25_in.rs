@@ -78,6 +78,7 @@ unsafe fn x25_state1_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int)
     let mut dest_addr = x25_address::default();
     let mut len: c_int;
     let x25 = x25_sk(sk);
+    'out_clear: {
 
     match frametype {
         X25_CALL_ACCEPTED => {
@@ -89,14 +90,14 @@ unsafe fn x25_state1_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int)
             (*x25).vl = 0;
             (*x25).state = X25_STATE_3;
             (*sk).sk_state = TCP_ESTABLISHED;
-            if !pskb_may_pull(skb, X25_STD_MIN_LEN) { goto out_clear; }
+            if !pskb_may_pull(skb, X25_STD_MIN_LEN) { break 'out_clear; }
             skb_pull(skb, X25_STD_MIN_LEN);
             len = x25_parse_address_block(skb, &mut source_addr, &mut dest_addr);
-            if len > 0 { skb_pull(skb, len as usize); } else if len < 0 { goto out_clear; }
+            if len > 0 { skb_pull(skb, len as usize); } else if len < 0 { break 'out_clear; }
             len = x25_parse_facilities(skb, &mut (*x25).facilities, &mut (*x25).dte_facilities, &mut (*x25).vc_facil_mask);
-            if len > 0 { skb_pull(skb, len as usize); } else if len < 0 { goto out_clear; }
+            if len > 0 { skb_pull(skb, len as usize); } else if len < 0 { break 'out_clear; }
             if (*skb).len > 0 {
-                if (*skb).len > X25_MAX_CUD_LEN { goto out_clear; }
+                if (*skb).len > X25_MAX_CUD_LEN { break 'out_clear; }
                 skb_copy_bits(skb, 0, (*x25).calluserdata.cuddata.as_mut_ptr().cast(), (*skb).len);
                 (*x25).calluserdata.cudlength = (*skb).len;
             }
@@ -109,14 +110,15 @@ unsafe fn x25_state1_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int)
             x25_disconnect(sk, EISCONN, 0x01, 0x48);
         }
         X25_CLEAR_REQUEST => {
-            if !pskb_may_pull(skb, X25_STD_MIN_LEN + 2) { goto out_clear; }
+            if !pskb_may_pull(skb, X25_STD_MIN_LEN + 2) { break 'out_clear; }
             x25_write_internal(sk, X25_CLEAR_CONFIRMATION);
             x25_disconnect(sk, ECONNREFUSED, (*skb).data[3] as c_int, (*skb).data[4] as c_int);
         }
         _ => {}
     }
     return 0;
-out_clear:
+    }
+    
     x25_write_internal(sk, X25_CLEAR_REQUEST);
     (*x25).state = X25_STATE_2;
     x25_start_t23timer(sk);
@@ -124,9 +126,10 @@ out_clear:
 }
 
 unsafe fn x25_state2_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int) -> c_int {
+    'out_clear: {
     match frametype {
         X25_CLEAR_REQUEST => {
-            if !pskb_may_pull(skb, X25_STD_MIN_LEN + 2) { goto out_clear; }
+            if !pskb_may_pull(skb, X25_STD_MIN_LEN + 2) { break 'out_clear; }
             x25_write_internal(sk, X25_CLEAR_CONFIRMATION);
             x25_disconnect(sk, 0, (*skb).data[3] as c_int, (*skb).data[4] as c_int);
         }
@@ -134,7 +137,8 @@ unsafe fn x25_state2_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int)
         _ => {}
     }
     return 0;
-out_clear:
+    }
+    
     x25_write_internal(sk, X25_CLEAR_REQUEST);
     x25_start_t23timer(sk);
     0
@@ -143,10 +147,11 @@ out_clear:
 unsafe fn x25_state3_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int, ns: c_int, nr: c_int, _q: c_int, _d: c_int, m: c_int) -> c_int {
     let mut queued = 0;
     let x25 = x25_sk(sk);
+    'out_clear: {
     let modulus = if (*(*x25).neighbour).extended { X25_EMODULUS } else { X25_SMODULUS };
     match frametype {
         X25_RESET_REQUEST => { x25_write_internal(sk, X25_RESET_CONFIRMATION); x25_stop_timer(sk); (*x25).condition=0; (*x25).vs=0; (*x25).vr=0; (*x25).va=0; (*x25).vl=0; x25_requeue_frames(sk); }
-        X25_CLEAR_REQUEST => { if !pskb_may_pull(skb, X25_STD_MIN_LEN + 2) { goto out_clear; } x25_write_internal(sk, X25_CLEAR_CONFIRMATION); x25_disconnect(sk, 0, (*skb).data[3] as c_int, (*skb).data[4] as c_int); }
+        X25_CLEAR_REQUEST => { if !pskb_may_pull(skb, X25_STD_MIN_LEN + 2) { break 'out_clear; } x25_write_internal(sk, X25_CLEAR_CONFIRMATION); x25_disconnect(sk, 0, (*skb).data[3] as c_int, (*skb).data[4] as c_int); }
         X25_RR | X25_RNR => {
             if !x25_validate_nr(sk, nr) { x25_clear_queues(sk); x25_write_internal(sk, X25_RESET_REQUEST); x25_start_t22timer(sk); (*x25).condition=0; (*x25).vs=0; (*x25).vr=0; (*x25).va=0; (*x25).vl=0; (*x25).state=X25_STATE_4; }
             else { x25_frames_acked(sk, nr); if frametype == X25_RNR { (*x25).condition |= X25_COND_PEER_RX_BUSY; } else { (*x25).condition &= !X25_COND_PEER_RX_BUSY; } }
@@ -176,20 +181,23 @@ unsafe fn x25_state3_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int,
         _ => pr_warn!("unknown {:02X} in state 3\n", frametype),
     }
     return queued;
-out_clear:
+    }
+    
     x25_write_internal(sk, X25_CLEAR_REQUEST); (*x25).state=X25_STATE_2; x25_start_t23timer(sk); 0
 }
 
 unsafe fn x25_state4_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int) -> c_int {
     let x25=x25_sk(sk);
+    'out_clear: {
     match frametype {
         X25_RESET_REQUEST => { x25_write_internal(sk, X25_RESET_CONFIRMATION); x25_stop_timer(sk); (*x25).condition=0; (*x25).va=0; (*x25).vr=0; (*x25).vs=0; (*x25).vl=0; (*x25).state=X25_STATE_3; x25_requeue_frames(sk); }
         X25_RESET_CONFIRMATION => { x25_stop_timer(sk); (*x25).condition=0; (*x25).va=0; (*x25).vr=0; (*x25).vs=0; (*x25).vl=0; (*x25).state=X25_STATE_3; x25_requeue_frames(sk); }
-        X25_CLEAR_REQUEST => { if !pskb_may_pull(skb, X25_STD_MIN_LEN+2) { goto out_clear; } x25_write_internal(sk, X25_CLEAR_CONFIRMATION); x25_disconnect(sk,0,(*skb).data[3] as c_int,(*skb).data[4] as c_int); }
+        X25_CLEAR_REQUEST => { if !pskb_may_pull(skb, X25_STD_MIN_LEN+2) { break 'out_clear; } x25_write_internal(sk, X25_CLEAR_CONFIRMATION); x25_disconnect(sk,0,(*skb).data[3] as c_int,(*skb).data[4] as c_int); }
         _ => {}
     }
     return 0;
-out_clear: x25_write_internal(sk,X25_CLEAR_REQUEST); (*x25).state=X25_STATE_2; x25_start_t23timer(sk); 0
+    }
+    x25_write_internal(sk,X25_CLEAR_REQUEST); (*x25).state=X25_STATE_2; x25_start_t23timer(sk); 0
 }
 
 unsafe fn x25_state5_machine(sk: *mut sock, skb: *mut sk_buff, frametype: c_int) -> c_int {

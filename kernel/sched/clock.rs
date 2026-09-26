@@ -52,7 +52,7 @@ pub struct work_struct {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[repr(C)]
 pub struct sched_clock_data {
     pub tick_raw: u64,
@@ -60,49 +60,49 @@ pub struct sched_clock_data {
     pub clock: u64,
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 static mut sched_clock_running: bool = false;
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 static mut __sched_clock_stable: bool = false;
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 static mut __sched_clock_stable_early: i32 = 1;
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub static mut __sched_clock_offset: u64 = 0;
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 static mut __gtod_offset: u64 = 0;
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 static mut sched_clock_data: sched_clock_data = sched_clock_data {
     tick_raw: 0,
     tick_gtod: 0,
     clock: 0,
 };
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn this_scd() -> *mut sched_clock_data {
     &raw mut sched_clock_data
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn cpu_sdc(_cpu: i32) -> *mut sched_clock_data {
     &raw mut sched_clock_data
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_stable() -> i32 {
     __sched_clock_stable as i32
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn __scd_stamp(scd: *mut sched_clock_data) {
     (*scd).tick_gtod = ktime_get_ns();
     (*scd).tick_raw = sched_clock();
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn __set_sched_clock_stable() {
     let scd = this_scd();
     local_irq_disable();
@@ -112,7 +112,7 @@ unsafe fn __set_sched_clock_stable() {
     tick_dep_clear(0);
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn __sched_clock_work(_work: *mut work_struct) {
     let scd: *mut sched_clock_data;
     preempt_disable();
@@ -124,28 +124,28 @@ unsafe fn __sched_clock_work(_work: *mut work_struct) {
     __sched_clock_stable = false;
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn __clear_sched_clock_stable() {
     if !sched_clock_stable() != 0 { return; }
     tick_dep_set(0);
     __sched_clock_work(core::ptr::null_mut());
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn clear_sched_clock_stable() {
     __sched_clock_stable_early = 0;
     __clear_sched_clock_stable();
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn __sched_clock_gtod_offset() {
     let scd = this_scd();
     __scd_stamp(scd);
     __gtod_offset = ((*scd).tick_raw + __sched_clock_offset).wrapping_sub((*scd).tick_gtod);
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_init() {
     local_irq_disable();
@@ -154,17 +154,17 @@ pub unsafe extern "C" fn sched_clock_init() {
     sched_clock_running = true;
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn wrap_min(x: u64, y: u64) -> u64 {
     if (x.wrapping_sub(y) as i64) < 0 { x } else { y }
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn wrap_max(x: u64, y: u64) -> u64 {
     if (x.wrapping_sub(y) as i64) > 0 { x } else { y }
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn sched_clock_local(scd: *mut sched_clock_data) -> u64 {
     loop {
         let now = sched_clock_noinstr();
@@ -184,7 +184,7 @@ unsafe fn sched_clock_local(scd: *mut sched_clock_data) -> u64 {
     }
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn local_clock_noinstr() -> u64 {
     if __sched_clock_stable { return sched_clock_noinstr() + __sched_clock_offset; }
@@ -200,7 +200,7 @@ pub unsafe extern "C" fn local_clock() -> u64 {
     now
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 unsafe fn sched_clock_remote(scd: *mut sched_clock_data) -> u64 {
     let my_scd = this_scd();
     sched_clock_local(my_scd);
@@ -216,7 +216,7 @@ unsafe fn sched_clock_remote(scd: *mut sched_clock_data) -> u64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_cpu(cpu: i32) -> u64 {
-    #[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+    #[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
     {
         if sched_clock_stable() != 0 { return sched_clock() + __sched_clock_offset; }
         if !sched_clock_running { return sched_clock(); }
@@ -226,11 +226,11 @@ pub unsafe extern "C" fn sched_clock_cpu(cpu: i32) -> u64 {
         preempt_enable_notrace();
         return clock;
     }
-    #[cfg(not(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK"))]
+    #[cfg(not(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK))]
     { let _ = cpu; sched_clock() }
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_tick() {
     if __sched_clock_stable || !sched_clock_running { return; }
@@ -239,7 +239,7 @@ pub unsafe extern "C" fn sched_clock_tick() {
     sched_clock_local(scd);
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_tick_stable() {
     if !__sched_clock_stable { return; }
@@ -248,11 +248,11 @@ pub unsafe extern "C" fn sched_clock_tick_stable() {
     local_irq_enable();
 }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_idle_sleep_event() { sched_clock_cpu(smp_processor_id()); }
 
-#[cfg(feature = "CONFIG_HAVE_UNSTABLE_SCHED_CLOCK")]
+#[cfg(CONFIG_HAVE_UNSTABLE_SCHED_CLOCK)]
 #[no_mangle]
 pub unsafe extern "C" fn sched_clock_idle_wakeup_event() {
     if __sched_clock_stable || timekeeping_suspended { return; }

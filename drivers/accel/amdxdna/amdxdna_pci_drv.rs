@@ -123,9 +123,9 @@ unsafe fn amdxdna_client_cleanup(client: *mut amdxdna_client) {
     amdxdna_hwctx_remove_all(client);
     xa_destroy(&mut (*client).hwctx_xa);
     cleanup_srcu_struct(&mut (*client).hwctx_srcu);
-    xa_for_each(&mut (*client).dev_heap_xa, &mut heap_id, &mut heap) {
+    xa_for_each!(&mut (*client).dev_heap_xa, &mut heap_id, &mut heap, {
         drm_gem_object_put(to_gobj(heap));
-    }
+    });
     xa_destroy(&mut (*client).dev_heap_xa);
     drm_mm_takedown(&mut (*client).dev_heap_mm);
     mutex_destroy(&mut (*client).mm_lock);

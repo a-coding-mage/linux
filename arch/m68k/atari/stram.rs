@@ -55,13 +55,7 @@ struct m68k_mem_info {
     addr: usize,
 }
 
-#[repr(C)]
-struct resource {
-    start: usize,
-    end: usize,
-    name: *const i8,
-    ..
-}
+use kernel::bindings::resource;
 
 // Build-time kernel macros/attributes are represented by their source intent.
 unsafe fn atari_stram_setup(arg: *mut i8) -> i32 {

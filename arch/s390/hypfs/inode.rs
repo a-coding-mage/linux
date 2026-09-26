@@ -154,7 +154,8 @@ unsafe fn hypfs_release(_inode: *mut inode, filp: *mut file) -> c_int {
     0
 }
 
-enum { Opt_uid, Opt_gid }
+pub const Opt_uid: i32 = 0;
+pub const Opt_gid: i32 = Opt_uid + 1;
 
 static hypfs_fs_parameters: [fs_parameter_spec; 3] = [
     fsparam_u32!("gid", Opt_gid),

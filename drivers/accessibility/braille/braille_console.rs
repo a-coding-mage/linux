@@ -138,7 +138,7 @@ unsafe extern "C" fn keyboard_notifier_call(
                 match (*param).value {
                     KEY_INSERT => { beep(440); console_show = 1; lastVC = -1; braille_write(console_buf.as_mut_ptr()); }
                     KEY_LEFT => { if vc_x > 0 { vc_x -= WIDTH as i32; if vc_x < 0 { vc_x = 0; } } else if vc_y >= 1 { beep(880); vc_y -= 1; vc_x = (*vc).vc_cols - WIDTH as i32; } else { beep(220); } }
-                    KEY_RIGHT => { if vc_x + WIDTH as i32 < (*vc).vc_cols { vc_x += WIDTH as i32; } else if vc_y + 1 < (*vc).vc_rows { beep(880); vc_y += 1; vc_x = 0; } else { beep(220); } }
+                    KEY_RIGHT => { if vc_x + (WIDTH as i32) < (*vc).vc_cols { vc_x += WIDTH as i32; } else if vc_y + 1 < (*vc).vc_rows { beep(880); vc_y += 1; vc_x = 0; } else { beep(220); } }
                     KEY_DOWN => { if vc_y + 1 < (*vc).vc_rows { vc_y += 1; } else { beep(220); } }
                     KEY_UP => { if vc_y >= 1 { vc_y -= 1; } else { beep(220); } }
                     KEY_HOME => vc_follow_cursor(vc),

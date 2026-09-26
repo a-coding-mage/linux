@@ -142,7 +142,7 @@ unsafe fn dw_hdma_v0_core_handle_int(dw_irq: *mut dw_edma_irq, dir: dw_edma_dir,
         ((*dw).rd_ch_cnt, (*dw).wr_ch_cnt, (*dw_irq).rd_mask)
     };
     let mut ret = IRQ_NONE;
-    for_each_set_bit!(pos, mask, total) {
+    for_each_set_bit!(pos, mask, total, {
         let chan = &mut (*dw).chan[(pos + off) as usize] as *mut dw_edma_chan;
         if unlikely(dw_edma_core_ch_ignore_irq(chan)) { continue; }
         let val = dw_hdma_v0_core_status_int(chan);
@@ -152,7 +152,7 @@ unsafe fn dw_hdma_v0_core_handle_int(dw_irq: *mut dw_edma_irq, dir: dw_edma_dir,
         if FIELD_GET(HDMA_V0_ABORT_INT_MASK, val) != 0 {
             dw_hdma_v0_core_clear_abort_int(chan); abort(chan); ret = IRQ_HANDLED;
         }
-    }
+    });
     ret
 }
 

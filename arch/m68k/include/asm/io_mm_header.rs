@@ -11,36 +11,36 @@ pub type u16 = core::primitive::u16;
 #[allow(non_camel_case_types)]
 pub type u32 = core::primitive::u32;
 
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 pub const q40_isa_io_base: usize = 0xff400000;
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 pub const q40_isa_mem_base: usize = 0xff800000;
 
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 macro_rules! Q40_ISA_IO_B { ($ioaddr:expr) => { q40_isa_io_base + 1 + 4 * (($ioaddr) as usize) }; }
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 macro_rules! Q40_ISA_IO_W { ($ioaddr:expr) => { q40_isa_io_base + 4 * (($ioaddr) as usize) }; }
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 macro_rules! Q40_ISA_MEM_B { ($madr:expr) => { q40_isa_mem_base + 1 + 4 * (($madr) as usize) }; }
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 macro_rules! Q40_ISA_MEM_W { ($madr:expr) => { q40_isa_mem_base + 4 * (($madr) as usize) }; }
 
-#[cfg(feature = "CONFIG_AMIGA_PCMCIA")]
+#[cfg(CONFIG_AMIGA_PCMCIA)]
 macro_rules! AG_ISA_IO_B { ($ioaddr:expr) => { GAYLE_IO + ($ioaddr) + ((($ioaddr) & 1) * GAYLE_ODD) }; }
-#[cfg(feature = "CONFIG_AMIGA_PCMCIA")]
+#[cfg(CONFIG_AMIGA_PCMCIA)]
 macro_rules! AG_ISA_IO_W { ($ioaddr:expr) => { GAYLE_IO + ($ioaddr) }; }
 
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub const enec_isa_read_base: usize = 0xfffa0000;
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub const enec_isa_write_base: usize = 0xfffb0000;
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 macro_rules! ENEC_ISA_IO_B { ($ioaddr:expr) => { enec_isa_read_base + (((($ioaddr) as usize) & 0x7f) << 9) }; }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 macro_rules! ENEC_ISA_IO_W { ($ioaddr:expr) => { enec_isa_read_base + (((($ioaddr) as usize) & 0x7f) << 9) }; }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 macro_rules! ENEC_ISA_MEM_B { ($madr:expr) => { enec_isa_read_base + (((($madr) as usize) & 0x7f) << 9) }; }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 macro_rules! ENEC_ISA_MEM_W { ($madr:expr) => { enec_isa_read_base + (((($madr) as usize) & 0x7f) << 9) }; }
 
 pub const ISA_TYPE_Q40: i32 = 1;
@@ -53,53 +53,53 @@ extern "C" {
     pub static mut isa_sex: i32;
 }
 
-#[cfg(feature = "CONFIG_Q40")]
+#[cfg(CONFIG_Q40)]
 const ISA_TYPE: i32 = ISA_TYPE_Q40;
-#[cfg(feature = "CONFIG_AMIGA_PCMCIA")]
+#[cfg(CONFIG_AMIGA_PCMCIA)]
 const ISA_TYPE: i32 = ISA_TYPE_AG;
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 const ISA_TYPE: i32 = ISA_TYPE_ENEC;
 
 #[inline]
 pub unsafe fn isa_itb(addr: usize) -> *mut u8 {
     match ISA_TYPE {
-        #[cfg(feature = "CONFIG_Q40")] ISA_TYPE_Q40 => Q40_ISA_IO_B!(addr) as *mut u8,
-        #[cfg(feature = "CONFIG_AMIGA_PCMCIA")] ISA_TYPE_AG => AG_ISA_IO_B!(addr) as *mut u8,
-        #[cfg(feature = "CONFIG_ATARI_ROM_ISA")] ISA_TYPE_ENEC => ENEC_ISA_IO_B!(addr) as *mut u8,
+        #[cfg(CONFIG_Q40)] ISA_TYPE_Q40 => Q40_ISA_IO_B!(addr) as *mut u8,
+        #[cfg(CONFIG_AMIGA_PCMCIA)] ISA_TYPE_AG => AG_ISA_IO_B!(addr) as *mut u8,
+        #[cfg(CONFIG_ATARI_ROM_ISA)] ISA_TYPE_ENEC => ENEC_ISA_IO_B!(addr) as *mut u8,
         _ => core::ptr::null_mut(),
     }
 }
 #[inline]
 pub unsafe fn isa_itw(addr: usize) -> *mut u16 {
     match ISA_TYPE {
-        #[cfg(feature = "CONFIG_Q40")] ISA_TYPE_Q40 => Q40_ISA_IO_W!(addr) as *mut u16,
-        #[cfg(feature = "CONFIG_AMIGA_PCMCIA")] ISA_TYPE_AG => AG_ISA_IO_W!(addr) as *mut u16,
-        #[cfg(feature = "CONFIG_ATARI_ROM_ISA")] ISA_TYPE_ENEC => ENEC_ISA_IO_W!(addr) as *mut u16,
+        #[cfg(CONFIG_Q40)] ISA_TYPE_Q40 => Q40_ISA_IO_W!(addr) as *mut u16,
+        #[cfg(CONFIG_AMIGA_PCMCIA)] ISA_TYPE_AG => AG_ISA_IO_W!(addr) as *mut u16,
+        #[cfg(CONFIG_ATARI_ROM_ISA)] ISA_TYPE_ENEC => ENEC_ISA_IO_W!(addr) as *mut u16,
         _ => core::ptr::null_mut(),
     }
 }
 #[inline]
 pub unsafe fn isa_itl(addr: usize) -> *mut u32 {
     match ISA_TYPE {
-        #[cfg(feature = "CONFIG_AMIGA_PCMCIA")] ISA_TYPE_AG => AG_ISA_IO_W!(addr) as *mut u32,
+        #[cfg(CONFIG_AMIGA_PCMCIA)] ISA_TYPE_AG => AG_ISA_IO_W!(addr) as *mut u32,
         _ => core::ptr::null_mut(),
     }
 }
 #[inline]
 pub unsafe fn isa_mtb(addr: usize) -> *mut u8 {
     match ISA_TYPE {
-        #[cfg(feature = "CONFIG_Q40")] ISA_TYPE_Q40 => Q40_ISA_MEM_B!(addr) as *mut u8,
-        #[cfg(feature = "CONFIG_AMIGA_PCMCIA")] ISA_TYPE_AG => addr as *mut u8,
-        #[cfg(feature = "CONFIG_ATARI_ROM_ISA")] ISA_TYPE_ENEC => ENEC_ISA_MEM_B!(addr) as *mut u8,
+        #[cfg(CONFIG_Q40)] ISA_TYPE_Q40 => Q40_ISA_MEM_B!(addr) as *mut u8,
+        #[cfg(CONFIG_AMIGA_PCMCIA)] ISA_TYPE_AG => addr as *mut u8,
+        #[cfg(CONFIG_ATARI_ROM_ISA)] ISA_TYPE_ENEC => ENEC_ISA_MEM_B!(addr) as *mut u8,
         _ => core::ptr::null_mut(),
     }
 }
 #[inline]
 pub unsafe fn isa_mtw(addr: usize) -> *mut u16 {
     match ISA_TYPE {
-        #[cfg(feature = "CONFIG_Q40")] ISA_TYPE_Q40 => Q40_ISA_MEM_W!(addr) as *mut u16,
-        #[cfg(feature = "CONFIG_AMIGA_PCMCIA")] ISA_TYPE_AG => addr as *mut u16,
-        #[cfg(feature = "CONFIG_ATARI_ROM_ISA")] ISA_TYPE_ENEC => ENEC_ISA_MEM_W!(addr) as *mut u16,
+        #[cfg(CONFIG_Q40)] ISA_TYPE_Q40 => Q40_ISA_MEM_W!(addr) as *mut u16,
+        #[cfg(CONFIG_AMIGA_PCMCIA)] ISA_TYPE_AG => addr as *mut u16,
+        #[cfg(CONFIG_ATARI_ROM_ISA)] ISA_TYPE_ENEC => ENEC_ISA_MEM_W!(addr) as *mut u16,
         _ => core::ptr::null_mut(),
     }
 }
@@ -107,7 +107,7 @@ pub unsafe fn isa_mtw(addr: usize) -> *mut u16 {
 #[inline]
 pub unsafe fn isa_delay() {
     match ISA_TYPE {
-        #[cfg(feature = "CONFIG_Q40")] ISA_TYPE_Q40 => isa_outb!(0, 0x80),
+        #[cfg(CONFIG_Q40)] ISA_TYPE_Q40 => isa_outb!(0, 0x80),
         _ => (),
     }
 }
@@ -146,9 +146,9 @@ macro_rules! writesb { ($port:expr, $buf:expr, $nr:expr) => { raw_outsb($port, $
 macro_rules! writesw { ($port:expr, $buf:expr, $nr:expr) => { raw_outsw($port, $buf as *const u16, $nr) }; }
 macro_rules! writesl { ($port:expr, $buf:expr, $nr:expr) => { raw_outsl($port, $buf as *const u32, $nr) }; }
 
-#[cfg(not(feature = "CONFIG_SUN3"))]
+#[cfg(not(CONFIG_SUN3))]
 pub const IO_SPACE_LIMIT: usize = 0xffff;
-#[cfg(feature = "CONFIG_SUN3")]
+#[cfg(CONFIG_SUN3)]
 pub const IO_SPACE_LIMIT: usize = 0x0fffffff;
 pub const __ARCH_HAS_NO_PAGE_ZERO_MAPPED: i32 = 1;
 

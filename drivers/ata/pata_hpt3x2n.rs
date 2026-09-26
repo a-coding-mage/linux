@@ -4,7 +4,8 @@
 const DRV_NAME: &[u8] = b"pata_hpt3x2n\0";
 const DRV_VERSION: &[u8] = b"0.3.19\0";
 
-enum { PCI66 = 1 << 1, USE_DPLL = 1 << 0 }
+pub const PCI66: i32 = 1 << 1;
+pub const USE_DPLL: i32 = 1 << 0;
 
 #[repr(C)]
 struct hpt_clock { xfer_speed: u8, timing: u32 }

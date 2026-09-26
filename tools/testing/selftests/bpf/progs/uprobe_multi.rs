@@ -121,7 +121,7 @@ unsafe fn uprobe_multi_check(ctx: *mut core::ffi::c_void, is_return: bool, is_sl
 
     macro_rules! SET {
         ($var:ident, $addr:expr, $cookie:expr) => {
-            if addr == unsafe { $addr } && (!unsafe { test_cookie } || cookie == $cookie) {
+            if $addr == unsafe { $addr } && (!unsafe { test_cookie } || $cookie == $cookie) {
                 unsafe {
                     $var = $var.wrapping_add(1);
                 }

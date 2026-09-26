@@ -101,22 +101,28 @@ unsafe fn clk_mt8192_apmixed_probe(pdev: *mut platform_device) -> i32 {
     let node = (*pdev).dev.of_node;
     let fhctl_node: *const u8 = b"mediatek,mt8192-fhctl\0".as_ptr();
     let mut r: i32;
+    'free_clk_data: {
+    'unregister_plls: {
+    'unregister_gates: {
 
     clk_data = mtk_alloc_clk_data(CLK_APMIXED_NR_CLK);
     if clk_data.is_null() { return -ENOMEM; }
     fhctl_parse_dt(fhctl_node, PLLFHS.as_mut_ptr(), ARRAY_SIZE!(PLLFHS));
     r = mtk_clk_register_pllfhs(&mut (*pdev).dev, PLLS.as_ptr(), ARRAY_SIZE!(PLLS), PLLFHS.as_mut_ptr(), ARRAY_SIZE!(PLLFHS), clk_data);
-    if r != 0 { goto!(free_clk_data); }
+    if r != 0 { break 'free_clk_data; }
     r = mtk_clk_register_gates(&mut (*pdev).dev, node, APMIXED_CLKS.as_ptr(), ARRAY_SIZE!(APMIXED_CLKS), clk_data);
-    if r != 0 { goto!(unregister_plls); }
+    if r != 0 { break 'unregister_plls; }
     r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
-    if r != 0 { goto!(unregister_gates); }
+    if r != 0 { break 'unregister_gates; }
     return r;
-unregister_gates:
+    }
+    
     mtk_clk_unregister_gates(APMIXED_CLKS.as_ptr(), ARRAY_SIZE!(APMIXED_CLKS), clk_data);
-unregister_plls:
+    }
+    
     mtk_clk_unregister_pllfhs(PLLS.as_ptr(), ARRAY_SIZE!(PLLS), PLLFHS.as_mut_ptr(), ARRAY_SIZE!(PLLFHS), clk_data);
-free_clk_data:
+    }
+    
     mtk_free_clk_data(clk_data); r
 }
 

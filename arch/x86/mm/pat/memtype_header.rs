@@ -54,7 +54,7 @@ pub unsafe fn cattr_name(pcm: enum_page_cache_mode) -> *const c_char {
 }
 
 // CONFIG_X86_PAT is a build-time condition preserved as a Rust cfg feature.
-#[cfg(feature = "CONFIG_X86_PAT")]
+#[cfg(CONFIG_X86_PAT)]
 extern "C" {
     pub fn memtype_check_insert(
         entry_new: *mut memtype,
@@ -65,7 +65,7 @@ extern "C" {
     pub fn memtype_copy_nth_element(entry_out: *mut memtype, pos: i64) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_X86_PAT"))]
+#[cfg(not(CONFIG_X86_PAT))]
 pub unsafe fn memtype_check_insert(
     _entry_new: *mut memtype,
     _new_type: *mut enum_page_cache_mode,
@@ -73,17 +73,17 @@ pub unsafe fn memtype_check_insert(
     0
 }
 
-#[cfg(not(feature = "CONFIG_X86_PAT"))]
+#[cfg(not(CONFIG_X86_PAT))]
 pub unsafe fn memtype_erase(_start: u64, _end: u64) -> *mut memtype {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_X86_PAT"))]
+#[cfg(not(CONFIG_X86_PAT))]
 pub unsafe fn memtype_lookup(_addr: u64) -> *mut memtype {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_X86_PAT"))]
+#[cfg(not(CONFIG_X86_PAT))]
 pub unsafe fn memtype_copy_nth_element(_out: *mut memtype, _pos: i64) -> i32 {
     0
 }

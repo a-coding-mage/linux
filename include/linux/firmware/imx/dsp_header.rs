@@ -45,7 +45,7 @@ pub unsafe fn imx_dsp_get_data(ipc: *mut imx_dsp_ipc) -> *mut core::ffi::c_void 
 }
 
 /* The following declarations are provided when CONFIG_IMX_DSP is enabled. */
-#[cfg(feature = "CONFIG_IMX_DSP")]
+#[cfg(CONFIG_IMX_DSP)]
 extern "C" {
     pub fn imx_dsp_ring_doorbell(
         dsp: *mut imx_dsp_ipc,
@@ -60,7 +60,7 @@ extern "C" {
 }
 
 /* CONFIG_IMX_DSP disabled: these are the header's inline fallback definitions. */
-#[cfg(not(feature = "CONFIG_IMX_DSP"))]
+#[cfg(not(CONFIG_IMX_DSP))]
 #[inline]
 pub unsafe fn imx_dsp_ring_doorbell(
     _ipc: *mut imx_dsp_ipc,
@@ -69,7 +69,7 @@ pub unsafe fn imx_dsp_ring_doorbell(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_IMX_DSP"))]
+#[cfg(not(CONFIG_IMX_DSP))]
 #[inline]
 pub unsafe fn imx_dsp_request_channel(
     _ipc: *mut imx_dsp_ipc,
@@ -78,7 +78,7 @@ pub unsafe fn imx_dsp_request_channel(
     ERR_PTR(-EOPNOTSUPP)
 }
 
-#[cfg(not(feature = "CONFIG_IMX_DSP"))]
+#[cfg(not(CONFIG_IMX_DSP))]
 #[inline]
 pub unsafe fn imx_dsp_free_channel(_ipc: *mut imx_dsp_ipc, _idx: core::ffi::c_int) {}
 

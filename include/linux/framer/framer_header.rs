@@ -70,7 +70,7 @@ pub struct framer {
 }
 
 /* CONFIG_GENERIC_FRAMER selects the external implementations below. */
-#[cfg(feature = "CONFIG_GENERIC_FRAMER")]
+#[cfg(CONFIG_GENERIC_FRAMER)]
 extern "C" {
     pub fn framer_pm_runtime_get(framer: *mut framer) -> c_int;
     pub fn framer_pm_runtime_get_sync(framer: *mut framer) -> c_int;
@@ -92,62 +92,62 @@ extern "C" {
 }
 
 /* Fallback inline definitions when CONFIG_GENERIC_FRAMER is disabled. */
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 const ENOSYS: c_int = 38;
 
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_pm_runtime_get(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_pm_runtime_get_sync(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_pm_runtime_put(_: *mut framer) {}
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_pm_runtime_put_sync(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_init(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_exit(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_power_on(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_power_off(_: *mut framer) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_get_status(_: *mut framer, _: *mut framer_status) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_get_config(_: *mut framer, _: *mut framer_config) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_set_config(_: *mut framer, _: *const framer_config) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_notifier_register(_: *mut framer, _: *mut notifier_block) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_notifier_unregister(_: *mut framer, _: *mut notifier_block) -> c_int { -ENOSYS }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_get(_: *mut device, _: *const c_char) -> *mut framer {
     core::ptr::invalid_mut::<framer>(-ENOSYS as usize)
 }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn framer_put(_: *mut device, _: *mut framer) {}
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn devm_framer_get(_: *mut device, _: *const c_char) -> *mut framer {
     core::ptr::invalid_mut::<framer>(-ENOSYS as usize)
 }
-#[cfg(not(feature = "CONFIG_GENERIC_FRAMER"))]
+#[cfg(not(CONFIG_GENERIC_FRAMER))]
 #[inline]
 pub unsafe fn devm_framer_optional_get(_: *mut device, _: *const c_char) -> *mut framer {
     core::ptr::null_mut()

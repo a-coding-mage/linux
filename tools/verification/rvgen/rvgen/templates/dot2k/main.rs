@@ -40,8 +40,7 @@ unsafe extern "C" {
     fn da_monitor_reset_all();
     fn rv_register_monitor(
         monitor: *mut rv_monitor,
-        parent: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        parent: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
     fn rv_unregister_monitor(monitor: *mut rv_monitor);
     fn %%MONITOR_CLASS%%_monitor_init() -> ::core::ffi::c_int;
     fn %%MONITOR_CLASS%%_monitor_destroy();

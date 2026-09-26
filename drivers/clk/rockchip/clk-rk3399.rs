@@ -297,22 +297,22 @@ static rk3399_cpuclkl_data: rockchip_cpuclk_reg_data = {
 	.core_reg[0] = RK3399_CLKSEL_CON(0),
 	.div_core_shift[0] = 0,
 	.div_core_mask[0] = 0x1f,
-	.num_cores = 1,
-	.mux_core_alt = 3,
-	.mux_core_main = 0,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x3,
+	num_cores: 1,
+	mux_core_alt: 3,
+	mux_core_main: 0,
+	mux_core_shift: 6,
+	mux_core_mask: 0x3,
 };
 
 static rk3399_cpuclkb_data: rockchip_cpuclk_reg_data = {
 	.core_reg[0] = RK3399_CLKSEL_CON(2),
 	.div_core_shift[0] = 0,
 	.div_core_mask[0] = 0x1f,
-	.num_cores = 1,
-	.mux_core_alt = 3,
-	.mux_core_main = 1,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x3,
+	num_cores: 1,
+	mux_core_alt: 3,
+	mux_core_main: 1,
+	mux_core_shift: 6,
+	mux_core_mask: 0x3,
 };
 
 const RK3399_DIV_ACLKM_MASK: u32 = 0x1f;
@@ -323,39 +323,39 @@ const RK3399_DIV_PCLK_DBG_MASK: u32 = 0x1f;
 const RK3399_DIV_PCLK_DBG_SHIFT: u32 = 8;
 
 // C macro: RK3399_CLKSEL0(_offs, _aclkm)					\
-	{								\
-		.reg = RK3399_CLKSEL_CON(0 + _offs),			\
-		.val = HIWORD_UPDATE(_aclkm, RK3399_DIV_ACLKM_MASK,	\
-				RK3399_DIV_ACLKM_SHIFT),		\
-	}
+// 	{								\
+// 		reg: RK3399_CLKSEL_CON(0 + _offs),			\
+// 		val: HIWORD_UPDATE(_aclkm, RK3399_DIV_ACLKM_MASK,	\
+// 				RK3399_DIV_ACLKM_SHIFT),		\
+// 	}
 // C macro: RK3399_CLKSEL1(_offs, _atclk, _pdbg)				\
-	{								\
-		.reg = RK3399_CLKSEL_CON(1 + _offs),			\
-		.val = HIWORD_UPDATE(_atclk, RK3399_DIV_ATCLK_MASK,	\
-				RK3399_DIV_ATCLK_SHIFT) |		\
-		       HIWORD_UPDATE(_pdbg, RK3399_DIV_PCLK_DBG_MASK,	\
-				RK3399_DIV_PCLK_DBG_SHIFT),		\
-	}
+// 	{								\
+// 		reg: RK3399_CLKSEL_CON(1 + _offs),			\
+// 		val: HIWORD_UPDATE(_atclk, RK3399_DIV_ATCLK_MASK,	\
+// 				RK3399_DIV_ATCLK_SHIFT) |		\
+// 		       HIWORD_UPDATE(_pdbg, RK3399_DIV_PCLK_DBG_MASK,	\
+// 				RK3399_DIV_PCLK_DBG_SHIFT),		\
+// 	}
 
 /* cluster_l: aclkm in clksel0, rest in clksel1 */
 // C macro: RK3399_CPUCLKL_RATE(_prate, _aclkm, _atclk, _pdbg)		\
-	{								\
-		.prate = _prate##U,					\
-		.divs = {						\
-			RK3399_CLKSEL0(0, _aclkm),			\
-			RK3399_CLKSEL1(0, _atclk, _pdbg),		\
-		},							\
-	}
+// 	{								\
+// 		prate: _prate##U,					\
+// 		divs: {						\
+// 			RK3399_CLKSEL0(0, _aclkm),			\
+// 			RK3399_CLKSEL1(0, _atclk, _pdbg),		\
+// 		},							\
+// 	}
 
 /* cluster_b: aclkm in clksel2, rest in clksel3 */
 // C macro: RK3399_CPUCLKB_RATE(_prate, _aclkm, _atclk, _pdbg)		\
-	{								\
-		.prate = _prate##U,					\
-		.divs = {						\
-			RK3399_CLKSEL0(2, _aclkm),			\
-			RK3399_CLKSEL1(2, _atclk, _pdbg),		\
-		},							\
-	}
+// 	{								\
+// 		prate: _prate##U,					\
+// 		divs: {						\
+// 			RK3399_CLKSEL0(2, _aclkm),			\
+// 			RK3399_CLKSEL1(2, _atclk, _pdbg),		\
+// 		},							\
+// 	}
 
 static mut rk3399_cpuclkl_rates: [rockchip_cpuclk_rate_table; 0] = {
 	RK3399_CPUCLKL_RATE(1800000000, 1, 8, 8),
@@ -1534,7 +1534,7 @@ static rk3399_pmucru_critical_clocks: [&str; 0] = {
 unsafe fn rk3399_clk_init(np: *mut device_node)
 {
 	struct rockchip_clk_provider *ctx;
-	unsigned long clk_nr_clks;
+	core::ffi::c_ulong clk_nr_clks;
 	let mut reg_base: *mut core::ffi::c_void;
 
 	reg_base = of_iomap(np, 0);
@@ -1583,7 +1583,7 @@ CLK_OF_DECLARE(rk3399_cru, "rockchip,rk3399-cru", rk3399_clk_init);
 unsafe fn rk3399_pmu_clk_init(np: *mut device_node)
 {
 	struct rockchip_clk_provider *ctx;
-	unsigned long clkpmu_nr_clks;
+	core::ffi::c_ulong clkpmu_nr_clks;
 	let mut reg_base: *mut core::ffi::c_void;
 
 	reg_base = of_iomap(np, 0);
@@ -1622,41 +1622,41 @@ struct clk_rk3399_inits {
 };
 
 static clk_rk3399_pmucru_init: clk_rk3399_inits = {
-	.inits = rk3399_pmu_clk_init,
+	inits: rk3399_pmu_clk_init,
 };
 
 static clk_rk3399_cru_init: clk_rk3399_inits = {
-	.inits = rk3399_clk_init,
+	inits: rk3399_clk_init,
 };
 
 static const struct of_device_id clk_rk3399_match_table[] = {
 	{
-		.compatible = "rockchip,rk3399-cru",
-		.data = &clk_rk3399_cru_init,
+		compatible: "rockchip,rk3399-cru",
+		data: &clk_rk3399_cru_init,
 	},  {
-		.compatible = "rockchip,rk3399-pmucru",
-		.data = &clk_rk3399_pmucru_init,
+		compatible: "rockchip,rk3399-pmucru",
+		data: &clk_rk3399_pmucru_init,
 	},
 	{ }
 };
 
 unsafe fn clk_rk3399_probe(pdev: *mut platform_device) -> i32
 {
-	struct device_node *np = pdev->dev.of_node;
+	struct device_node *np = (*pdev).dev.of_node;
 	const struct clk_rk3399_inits *init_data;
 
-	init_data = device_get_match_data(&pdev->dev);
-	if (init_data->inits)
-		init_data->inits(np);
+	init_data = device_get_match_data((*&pdev).dev);
+	if ((*init_data).inits)
+		(*init_data).inits(np);
 
 	return 0;
 }
 
 static mut clk_rk3399_driver: platform_driver = {
-	.driver		= {
-		.name	= "clk-rk3399",
-		.of_match_table = clk_rk3399_match_table,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "clk-rk3399",
+		of_match_table: clk_rk3399_match_table,
+		suppress_bind_attrs: true,
 	},
 };
 builtin_platform_driver_probe(clk_rk3399_driver, clk_rk3399_probe);

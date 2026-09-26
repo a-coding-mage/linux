@@ -11,9 +11,9 @@ static mut xfsstats: xstats = xstats { /* external layout supplied elsewhere */ 
 unsafe fn counter_val(stats: *mut xfsstats_percpu, idx: i32) -> i32 {
     let mut val: i32 = 0;
     let mut cpu: i32;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         val += *((per_cpu_ptr(stats, cpu) as *mut u32).add(idx as usize)) as i32;
-    }
+    });
     val
 }
 
@@ -79,13 +79,13 @@ unsafe fn xfs_stats_format(stats: *mut xfsstats_percpu, buf: *mut c_char) -> i32
         i += 1;
     }
 
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         xs_xstrat_bytes += (*per_cpu_ptr(stats, i)).s.xs_xstrat_bytes as u64;
         xs_write_bytes += (*per_cpu_ptr(stats, i)).s.xs_write_bytes as u64;
         xs_read_bytes += (*per_cpu_ptr(stats, i)).s.xs_read_bytes as u64;
         xs_defer_relog += (*per_cpu_ptr(stats, i)).s.xs_defer_relog as u64;
         xs_gc_bytes += (*per_cpu_ptr(stats, i)).s.xs_gc_bytes as u64;
-    }
+    });
 
     len += scnprintf(buf.add(len as usize), PATH_MAX - len, c"xpc %llu %llu %llu\n".as_ptr(), xs_xstrat_bytes, xs_write_bytes, xs_read_bytes);
     len += scnprintf(buf.add(len as usize), PATH_MAX - len, c"defer_relog %llu\n".as_ptr(), xs_defer_relog);
@@ -99,7 +99,7 @@ unsafe fn xfs_stats_clearall(stats: *mut xfsstats_percpu) {
     let mut xs_inodes_meta: u32;
     let mut c: i32;
     xfs_notice!(core::ptr::null_mut(), "Clearing xfsstats");
-    for_each_possible_cpu!(c) {
+    for_each_possible_cpu!(c, {
         preempt_disable();
         // Save the active / meta inode counters, as they are stateful.
         xs_inodes_active = (*per_cpu_ptr(stats, c)).s.xs_inodes_active;
@@ -108,23 +108,23 @@ unsafe fn xfs_stats_clearall(stats: *mut xfsstats_percpu) {
         (*per_cpu_ptr(stats, c)).s.xs_inodes_active = xs_inodes_active;
         (*per_cpu_ptr(stats, c)).s.xs_inodes_meta = xs_inodes_meta;
         preempt_enable();
-    }
+    });
 }
 
 // The following legacy procfs interfaces are present only when CONFIG_PROC_FS
 // and, where indicated, CONFIG_XFS_QUOTA are enabled in the C build.
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 const XFSSTAT_START_XQMSTAT: i32 = xfsstats_offset!(xs_qm_dqreclaims);
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 const XFSSTAT_END_XQMSTAT: i32 = xfsstats_offset!(xs_qm_dquot);
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 unsafe fn xqm_proc_show(m: *mut seq_file, _v: *mut c_void) -> i32 {
-    seq_printf!(m, c"%d\t%d\t%d\t%u\t%s\n", 0, counter_val((*core::ptr::addr_of_mut!(xfsstats)).xs_stats, XFSSTAT_END_XQMSTAT), 0, counter_val((*core::ptr::addr_of_mut!(xfsstats)).xs_stats, XFSSTAT_END_XQMSTAT + 1), if cfg!(feature = "CONFIG_XFS_RT") { c"rtquota" } else { c"quota" });
+    seq_printf!(m, c"%d\t%d\t%d\t%u\t%s\n", 0, counter_val((*core::ptr::addr_of_mut!(xfsstats)).xs_stats, XFSSTAT_END_XQMSTAT), 0, counter_val((*core::ptr::addr_of_mut!(xfsstats)).xs_stats, XFSSTAT_END_XQMSTAT + 1), if cfg!(CONFIG_XFS_RT) { c"rtquota" } else { c"quota" });
     0
 }
 
-#[cfg(feature = "CONFIG_XFS_QUOTA")]
+#[cfg(CONFIG_XFS_QUOTA)]
 unsafe fn xqmstat_proc_show(m: *mut seq_file, _v: *mut c_void) -> i32 {
     let mut j = XFSSTAT_START_XQMSTAT;
     seq_puts!(m, c"qm");
@@ -136,18 +136,18 @@ unsafe fn xqmstat_proc_show(m: *mut seq_file, _v: *mut c_void) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn xfs_init_procfs() -> i32 {
     if proc_mkdir(c"fs/xfs".as_ptr(), core::ptr::null_mut()).is_null() { return -ENOMEM; }
     if proc_symlink(c"fs/xfs/stat".as_ptr(), core::ptr::null_mut(), c"/sys/fs/xfs/stats/stats".as_ptr()).is_null() { remove_proc_subtree(c"fs/xfs".as_ptr(), core::ptr::null_mut()); return -ENOMEM; }
-    #[cfg(feature = "CONFIG_XFS_QUOTA")]
+    #[cfg(CONFIG_XFS_QUOTA)]
     {
         if proc_create_single(c"fs/xfs/xqmstat".as_ptr(), 0, core::ptr::null_mut(), xqmstat_proc_show).is_null() || proc_create_single(c"fs/xfs/xqm".as_ptr(), 0, core::ptr::null_mut(), xqm_proc_show).is_null() { remove_proc_subtree(c"fs/xfs".as_ptr(), core::ptr::null_mut()); return -ENOMEM; }
     }
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn xfs_cleanup_procfs() { remove_proc_subtree(c"fs/xfs".as_ptr(), core::ptr::null_mut()); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

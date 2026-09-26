@@ -11,7 +11,6 @@
  ************************************/
 
 // #ifndef ASIC_REG_PMMU_HBW_STLB_MASKS_H_
-#define ASIC_REG_PMMU_HBW_STLB_MASKS_H_
 
 /*
  *****************************************

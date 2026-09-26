@@ -108,34 +108,34 @@ extern "C" {
 }
 
 /* Conditional declarations follow the corresponding C build-time options. */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn ipmi_si_pci_init();
     pub fn ipmi_si_pci_shutdown();
 }
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 pub unsafe fn ipmi_si_pci_init() {}
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 pub unsafe fn ipmi_si_pci_shutdown() {}
 
-#[cfg(feature = "CONFIG_IPMI_LS2K")]
+#[cfg(CONFIG_IPMI_LS2K)]
 extern "C" {
     pub fn ipmi_si_ls2k_init();
     pub fn ipmi_si_ls2k_shutdown();
 }
-#[cfg(not(feature = "CONFIG_IPMI_LS2K"))]
+#[cfg(not(CONFIG_IPMI_LS2K))]
 pub unsafe fn ipmi_si_ls2k_init() {}
-#[cfg(not(feature = "CONFIG_IPMI_LS2K"))]
+#[cfg(not(CONFIG_IPMI_LS2K))]
 pub unsafe fn ipmi_si_ls2k_shutdown() {}
 
-#[cfg(feature = "CONFIG_PARISC")]
+#[cfg(CONFIG_PARISC)]
 extern "C" {
     pub fn ipmi_si_parisc_init();
     pub fn ipmi_si_parisc_shutdown();
 }
-#[cfg(not(feature = "CONFIG_PARISC"))]
+#[cfg(not(CONFIG_PARISC))]
 pub unsafe fn ipmi_si_parisc_init() {}
-#[cfg(not(feature = "CONFIG_PARISC"))]
+#[cfg(not(CONFIG_PARISC))]
 pub unsafe fn ipmi_si_parisc_shutdown() {}
 
 extern "C" {

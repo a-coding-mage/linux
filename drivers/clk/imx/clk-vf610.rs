@@ -29,7 +29,7 @@ extern "C" { fn is_err<T>(p: *mut T) -> bool; }
  * include/dt-bindings/clock/vf610-clock.h
  * It shall be the value of the last defined clock +1
  */
-#define VF610_CLK_END 196
+pub const VF610_CLK_END: u32 = 196;
 
 #define CCM_CCR			(ccm_base + 0x00)
 #define CCM_CSR			(ccm_base + 0x04)
@@ -149,7 +149,7 @@ static clks_init_on[]  = {
 };
 
 static struct clk * __init vf610_get_fixed_clock(
-				struct device_node *ccm_node, const char *name)
+				device_node *ccm_node, const char *name)
 {
 	struct clk *clk = of_clk_get_by_name(ccm_node, name);
 
@@ -192,15 +192,15 @@ unsafe fn vf610_clk_resume(void *data)
 }
 
 static const struct syscore_ops vf610_clk_syscore_ops = {
-	.suspend = vf610_clk_suspend,
-	.resume = vf610_clk_resume,
+	suspend: vf610_clk_suspend,
+	resume: vf610_clk_resume,
 };
 
 static vf610_clk_syscore = {
-	.ops = &vf610_clk_syscore_ops,
+	ops: &vf610_clk_syscore_ops,
 };
 
-unsafe fn vf610_clocks_init(struct device_node *ccm_node)
+unsafe fn vf610_clocks_init(device_node *ccm_node)
 {
 	struct device_node *np;
 	int i;

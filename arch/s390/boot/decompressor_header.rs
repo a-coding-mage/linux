@@ -2,7 +2,7 @@
 
 // C conditional: these declarations are omitted when CONFIG_KERNEL_UNCOMPRESSED
 // is defined.
-#[cfg(not(feature = "CONFIG_KERNEL_UNCOMPRESSED"))]
+#[cfg(not(CONFIG_KERNEL_UNCOMPRESSED))]
 extern "C" {
     pub fn mem_safe_offset() -> core::ffi::c_ulong;
     pub fn deploy_kernel(output: *mut core::ffi::c_void);

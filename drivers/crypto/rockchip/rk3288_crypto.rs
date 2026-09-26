@@ -119,9 +119,9 @@ static mut rk_cipher_algs: [*mut rk_crypto_tmp; 9] = [
 unsafe fn rk_crypto_debugfs_show(seq: *mut seq_file, _v: *mut c_void) -> i32 {
     let mut dd: *mut rk_crypto_info;
     spin_lock(&mut rocklist.lock);
-    list_for_each_entry!(dd, &mut rocklist.dev_list, list) {
+    list_for_each_entry!(dd, &mut rocklist.dev_list, list, {
         seq_printf!(seq, "%s %s requests: %lu\n", dev_driver_string((*dd).dev), dev_name((*dd).dev), (*dd).nreq);
-    }
+    });
     spin_unlock(&mut rocklist.lock);
     for i in 0..ARRAY_SIZE!(rk_cipher_algs) {
         if (*rk_cipher_algs[i]).dev.is_null() { continue; }

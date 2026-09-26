@@ -5,19 +5,19 @@
 
 #[inline]
 pub fn txx9_dma_have_SMPCHN() -> bool {
-    cfg!(feature = "CONFIG_MACH_TX49XX")
+    cfg!(CONFIG_MACH_TX49XX)
 }
 
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 pub const TXX9_DMA_USE_SIMPLE_CHAIN: bool = true;
 
-#[cfg(all(feature = "__LITTLE_ENDIAN", feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(all(feature = "__LITTLE_ENDIAN", CONFIG_MACH_TX49XX))]
 pub const CCR_LE: u32 = TXX9_DMA_CCR_LE;
-#[cfg(all(feature = "__LITTLE_ENDIAN", feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(all(feature = "__LITTLE_ENDIAN", CONFIG_MACH_TX49XX))]
 pub const MCR_LE: u32 = 0;
-#[cfg(all(feature = "__LITTLE_ENDIAN", not(feature = "CONFIG_MACH_TX49XX")))]
+#[cfg(all(feature = "__LITTLE_ENDIAN", not(CONFIG_MACH_TX49XX)))]
 pub const CCR_LE: u32 = 0;
-#[cfg(all(feature = "__LITTLE_ENDIAN", not(feature = "CONFIG_MACH_TX49XX")))]
+#[cfg(all(feature = "__LITTLE_ENDIAN", not(CONFIG_MACH_TX49XX)))]
 pub const MCR_LE: u32 = TXX9_DMA_MCR_LE;
 #[cfg(not(feature = "__LITTLE_ENDIAN"))]
 pub const CCR_LE: u32 = 0;
@@ -126,13 +126,13 @@ pub struct txx9dmac_dev {
 #[inline] pub unsafe fn __is_dmac64(ddev: *const txx9dmac_dev) -> bool { (*ddev).have_64bit_regs }
 #[inline] pub unsafe fn is_dmac64(dc: *const txx9dmac_chan) -> bool { __is_dmac64((*dc).ddev) }
 
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 #[repr(C)] pub struct txx9dmac_hwdesc { pub CHAR: u64, pub SAR: u64, pub DAR: u64, pub CNTR: u32, pub __pad_CNTR: u32 }
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 pub type txx9dmac_hwdesc = txx9dmac_cregs;
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 pub type txx9dmac_hwdesc32 = txx9dmac_cregs32;
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 pub type txx9dmac_hwdesc32 = txx9dmac_cregs32;
 
 #[repr(C)] pub union txx9dmac_desc_hw { pub hwdesc: txx9dmac_hwdesc, pub hwdesc32: txx9dmac_hwdesc32 }
@@ -141,29 +141,29 @@ pub type txx9dmac_hwdesc32 = txx9dmac_cregs32;
     pub txd: dma_async_tx_descriptor, pub len: usize,
 }
 
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 #[inline] pub unsafe fn txx9dmac_chan_INTENT(dc: *const txx9dmac_chan) -> bool { ((*dc).ccr & TXX9_DMA_CCR_INTENT) != 0 }
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 #[inline] pub unsafe fn txx9dmac_chan_set_INTENT(dc: *mut txx9dmac_chan) { (*dc).ccr |= TXX9_DMA_CCR_INTENT; }
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 #[inline] pub unsafe fn txx9dmac_desc_set_INTENT(_ddev: *mut txx9dmac_dev, _desc: *mut txx9dmac_desc) {}
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 #[inline] pub unsafe fn txx9dmac_chan_set_SMPCHN(dc: *mut txx9dmac_chan) { (*dc).ccr |= TXX9_DMA_CCR_SMPCHN; }
-#[cfg(feature = "CONFIG_MACH_TX49XX")]
+#[cfg(CONFIG_MACH_TX49XX)]
 #[inline] pub unsafe fn txx9dmac_desc_set_nosimple(_ddev: *mut txx9dmac_dev, _desc: *mut txx9dmac_desc, _sair: u32, _dair: u32, _ccr: u32) {}
 
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 #[inline] pub unsafe fn txx9dmac_chan_INTENT(_dc: *const txx9dmac_chan) -> bool { true }
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 #[inline] pub unsafe fn txx9dmac_chan_set_INTENT(_dc: *mut txx9dmac_chan) {}
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 #[inline] pub unsafe fn txx9dmac_desc_set_INTENT(ddev: *mut txx9dmac_dev, desc: *mut txx9dmac_desc) {
     if __is_dmac64(ddev) { (*desc).first.hwdesc.CCR |= TXX9_DMA_CCR_INTENT; }
     else { (*desc).first.hwdesc32.CCR |= TXX9_DMA_CCR_INTENT; }
 }
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 #[inline] pub unsafe fn txx9dmac_chan_set_SMPCHN(_dc: *mut txx9dmac_chan) {}
-#[cfg(not(feature = "CONFIG_MACH_TX49XX"))]
+#[cfg(not(CONFIG_MACH_TX49XX))]
 #[inline] pub unsafe fn txx9dmac_desc_set_nosimple(ddev: *mut txx9dmac_dev, desc: *mut txx9dmac_desc, sai: u32, dai: u32, ccr: u32) {
     if __is_dmac64(ddev) { (*desc).first.hwdesc.SAIR = sai; (*desc).first.hwdesc.DAIR = dai; (*desc).first.hwdesc.CCR = ccr; }
     else { (*desc).first.hwdesc32.SAIR = sai; (*desc).first.hwdesc32.DAIR = dai; (*desc).first.hwdesc32.CCR = ccr; }

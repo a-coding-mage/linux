@@ -4,27 +4,27 @@
 // Translated from the Linux kernel implementation.  Kernel-provided symbols
 // and configuration-dependent helpers are declared here as external items.
 
-#[cfg(feature = "CONFIG_X86_MCE")]
+#[cfg(CONFIG_X86_MCE)]
 static COPY_MC_FRAGILE_KEY: core::sync::atomic::AtomicBool =
     core::sync::atomic::AtomicBool::new(false);
 
-#[cfg(feature = "CONFIG_X86_MCE")]
+#[cfg(CONFIG_X86_MCE)]
 extern "C" {
     fn copy_mc_fragile(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, len: usize) -> usize;
 }
 
-#[cfg(feature = "CONFIG_X86_MCE")]
+#[cfg(CONFIG_X86_MCE)]
 pub unsafe extern "C" fn enable_copy_mc_fragile() {
     COPY_MC_FRAGILE_KEY.store(true, core::sync::atomic::Ordering::Relaxed);
 }
 
-#[cfg(feature = "CONFIG_X86_MCE")]
+#[cfg(CONFIG_X86_MCE)]
 #[inline]
 unsafe fn copy_mc_fragile_enabled() -> bool {
     COPY_MC_FRAGILE_KEY.load(core::sync::atomic::Ordering::Relaxed)
 }
 
-#[cfg(feature = "CONFIG_X86_MCE")]
+#[cfg(CONFIG_X86_MCE)]
 #[no_mangle]
 pub unsafe extern "C" fn copy_mc_fragile_handle_tail(
     mut to: *mut core::ffi::c_char,
@@ -47,10 +47,10 @@ pub unsafe extern "C" fn copy_mc_fragile_handle_tail(
     len as usize
 }
 
-#[cfg(not(feature = "CONFIG_X86_MCE"))]
+#[cfg(not(CONFIG_X86_MCE))]
 pub unsafe extern "C" fn enable_copy_mc_fragile() {}
 
-#[cfg(not(feature = "CONFIG_X86_MCE"))]
+#[cfg(not(CONFIG_X86_MCE))]
 #[inline]
 unsafe fn copy_mc_fragile_enabled() -> bool {
     false
@@ -89,7 +89,7 @@ pub unsafe extern "C" fn copy_mc_to_kernel(
 
     if copy_mc_fragile_enabled() {
         instrument_memcpy_before(dst, src, len as usize);
-        #[cfg(feature = "CONFIG_X86_MCE")]
+        #[cfg(CONFIG_X86_MCE)]
         {
             ret = copy_mc_fragile(dst, src, len as usize);
             instrument_memcpy_after(dst, src, len as usize, ret);
@@ -117,7 +117,7 @@ pub unsafe extern "C" fn copy_mc_to_user(
     if copy_mc_fragile_enabled() {
         instrument_copy_to_user(dst, src, len as usize);
         __uaccess_begin();
-        #[cfg(feature = "CONFIG_X86_MCE")]
+        #[cfg(CONFIG_X86_MCE)]
         {
             ret = copy_mc_fragile(dst, src, len as usize);
             __uaccess_end();

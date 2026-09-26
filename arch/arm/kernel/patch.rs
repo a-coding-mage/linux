@@ -9,7 +9,7 @@ pub struct patch {
     pub insn: u32,
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 extern "C" {
     static mut patch_lock: core::ffi::c_void;
     fn core_kernel_text(addr: u32) -> bool;
@@ -23,13 +23,13 @@ extern "C" {
     fn raw_spin_unlock_irqrestore(lock: *mut core::ffi::c_void, flags: usize);
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[repr(C)]
 pub struct page {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn patch_map(
     addr: *mut core::ffi::c_void,
     fixmap: i32,
@@ -39,9 +39,9 @@ unsafe fn patch_map(
     let module = !core_kernel_text(uintaddr);
     let page: *mut page;
 
-    if module && cfg!(feature = "CONFIG_STRICT_MODULE_RWX") {
+    if module && cfg!(CONFIG_STRICT_MODULE_RWX) {
         page = vmalloc_to_page(addr);
-    } else if !module && cfg!(feature = "CONFIG_STRICT_KERNEL_RWX") {
+    } else if !module && cfg!(CONFIG_STRICT_KERNEL_RWX) {
         page = virt_to_page(addr);
     } else {
         return addr;
@@ -52,11 +52,11 @@ unsafe fn patch_map(
     }
 
     set_fixmap(fixmap, page_to_phys(page));
-    (__fix_to_virt(fixmap) + (uintaddr as usize & !((4096usize) - 1))) as *mut u8
+    ((__fix_to_virt(fixmap) + (uintaddr as usize & !((4096usize) - 1))) as *mut u8)
         .wrapping_add(uintaddr as usize & ((4096usize) - 1)) as *mut core::ffi::c_void
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe fn patch_unmap(fixmap: i32, flags: *mut usize) {
     clear_fixmap(fixmap);
     if !flags.is_null() {
@@ -64,7 +64,7 @@ unsafe fn patch_unmap(fixmap: i32, flags: *mut usize) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 unsafe fn patch_map(
     addr: *mut core::ffi::c_void,
     _fixmap: i32,
@@ -73,7 +73,7 @@ unsafe fn patch_map(
     addr
 }
 
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 unsafe fn patch_unmap(_fixmap: i32, _flags: *mut usize) {}
 
 extern "C" {
@@ -103,7 +103,7 @@ pub unsafe extern "C" fn __patch_text_real(
     mut insn: u32,
     remap: bool,
 ) {
-    let thumb2 = cfg!(feature = "CONFIG_THUMB2_KERNEL");
+    let thumb2 = cfg!(CONFIG_THUMB2_KERNEL);
     let uintaddr = addr as usize as u32;
     let mut twopage = false;
     let mut flags: usize = 0;

@@ -50,22 +50,22 @@ pub unsafe fn fd_request_irq() -> i32 {
 pub unsafe fn fd_free_irq() { free_irq(FLOPPY_IRQ, core::ptr::null_mut()); }
 
 /* The following declarations are used when CONFIG_PCI is enabled. */
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn fd_dma_setup(addr: *mut i8, size: usize, mode: i32, io: usize) -> i32 {
     alpha_fd_dma_setup(addr, size, mode, io)
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut ALPHA_FD_PREV_SIZE: usize = 0;
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut ALPHA_FD_BUS_ADDR: usize = 0;
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut ALPHA_FD_PREV_ADDR: *mut i8 = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut ALPHA_FD_PREV_DIR: i32 = 0;
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 #[inline]
 pub unsafe fn alpha_fd_dma_setup(addr: *mut i8, size: usize, mode: i32, io: usize) -> i32 {
     let dir = if mode != DMA_MODE_READ { DMA_FROM_DEVICE } else { DMA_TO_DEVICE };

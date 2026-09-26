@@ -388,7 +388,7 @@ unsafe fn check_sample_flags(evsel: *mut evsel, expr: *mut perf_bpf_filter_expr)
     let mut info: *const perf_sample_info;
 
     if (*expr).term as c_int >= PBF_TERM_SAMPLE_START as c_int
-        && (*expr).term as c_int <= PBF_TERM_SAMPLE_END as c_int
+        && ((*expr).term as c_int) <= PBF_TERM_SAMPLE_END as c_int
         && (((*evsel).core.attr.sample_type
             & (1_u64 << ((*expr).term as c_int - PBF_TERM_SAMPLE_START as c_int))) != 0)
     {

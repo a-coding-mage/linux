@@ -6,7 +6,7 @@
 
 // Equivalent of CONFIG_SOFTIRQ_ON_OWN_STACK.  The original declaration is
 // present only when this build-time configuration option is enabled.
-#[cfg(feature = "CONFIG_SOFTIRQ_ON_OWN_STACK")]
+#[cfg(CONFIG_SOFTIRQ_ON_OWN_STACK)]
 #[inline(always)]
 pub unsafe fn do_softirq_own_stack() {
     call_on_stack(0, (*get_lowcore()).async_stack, __do_softirq);

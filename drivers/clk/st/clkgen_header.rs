@@ -37,7 +37,7 @@ pub unsafe fn clkgen_write(
 ) {
     writel(
         (readl((base as *mut u8).add((*field).offset as usize) as *mut ::core::ffi::c_void)
-            & !((*field).mask as ::core::ffi::c_ulong << (*field).shift))
+            & !(((*field).mask as ::core::ffi::c_ulong) << (*field).shift))
             | (val << (*field).shift),
         (base as *mut u8).add((*field).offset as usize) as *mut ::core::ffi::c_void,
     );

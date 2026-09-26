@@ -18,7 +18,7 @@
 // Dependency equivalent of: #include <uapi/linux/cn_proc.h>
 
 // Equivalent of the CONFIG_PROC_EVENTS conditional.
-#[cfg(feature = "CONFIG_PROC_EVENTS")]
+#[cfg(CONFIG_PROC_EVENTS)]
 extern "C" {
     pub fn proc_fork_connector(task: *mut task_struct);
     pub fn proc_exec_connector(task: *mut task_struct);
@@ -30,35 +30,35 @@ extern "C" {
     pub fn proc_exit_connector(task: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_fork_connector(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_exec_connector(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_id_connector(_task: *mut task_struct, _which_id: i32) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_sid_connector(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_comm_connector(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_ptrace_connector(_task: *mut task_struct, _ptrace_id: i32) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_coredump_connector(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_PROC_EVENTS"))]
+#[cfg(not(CONFIG_PROC_EVENTS))]
 #[inline]
 pub unsafe fn proc_exit_connector(_task: *mut task_struct) {}
 

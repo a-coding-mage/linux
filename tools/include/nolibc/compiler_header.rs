@@ -39,9 +39,9 @@ macro_rules! __nolibc_aligned {
 macro_rules! __nolibc_aligned_as {
     ($type:ty) => {
         /*
-         * C used __attribute__((aligned(__alignof__(type)))).
+         * C used __attribute__((aligned(__alignof__($type)))).
          * Rust repr(align(N)) requires a literal power-of-two alignment, so the
-         * type-dependent attribute form cannot be emitted file-locally.
+         * $type-dependent attribute form cannot be emitted file-locally.
          */
     };
 }

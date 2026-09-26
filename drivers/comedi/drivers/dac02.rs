@@ -46,7 +46,7 @@
  *                  1      In on pin 16    18 (2-quadrant)
  *                         In on pin 16    17 (4-quadrant)
  */
-static const das02_ao_ranges: comedi_lrange = comedi_lrange {
+static das02_ao_ranges: comedi_lrange = comedi_lrange {
     length: 6,
     range: [
         UNI_RANGE(5),
@@ -114,7 +114,7 @@ unsafe fn dac02_attach(dev: *mut comedi_device, it: *mut comedi_devconfig) -> c_
 
     /* Analog Output subdevice */
     s = (*dev).subdevices.add(0);
-    (*s).type = COMEDI_SUBD_AO;
+    (*s).r#type = COMEDI_SUBD_AO;
     (*s).subdev_flags = SDF_WRITABLE;
     (*s).n_chan = 2;
     (*s).maxdata = 0x0fff;

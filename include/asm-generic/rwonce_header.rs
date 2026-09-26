@@ -29,7 +29,7 @@
  */
 #[macro_export]
 macro_rules! compiletime_assert_rwonce_type {
-    ($t:ty) => { /* compiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long)) */ };
+    ($t:ty) => { /* compiletime_assert(__native_word($t) || sizeof($t) == sizeof(long long)) */ };
 }
 
 /* Use __READ_ONCE if atomicity is not required; this may result in tears. */
@@ -75,7 +75,7 @@ pub unsafe fn __read_once_word_nocheck(addr: *const core::ffi::c_void) -> usize 
 #[macro_export]
 macro_rules! READ_ONCE_NOCHECK {
     ($x:expr) => {{
-        /* compiletime_assert(sizeof(x) == sizeof(unsigned long)) */
+        /* compiletime_assert(sizeof($x) == sizeof(unsigned long)) */
         unsafe { __read_once_word_nocheck(($x) as *const _ as *const core::ffi::c_void) }
     }};
 }

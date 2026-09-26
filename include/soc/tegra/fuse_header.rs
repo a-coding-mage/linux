@@ -67,7 +67,7 @@ pub struct tegra_sku_info {
     pub platform: tegra_platform,
 }
 
-#[cfg(feature = "CONFIG_ARCH_TEGRA")]
+#[cfg(CONFIG_ARCH_TEGRA)]
 extern "C" {
     pub static mut tegra_sku_info: tegra_sku_info;
     pub fn tegra_read_straps() -> u32;
@@ -80,7 +80,7 @@ extern "C" {
     pub fn tegra194_miscreg_mask_serror() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub static mut tegra_sku_info: tegra_sku_info = tegra_sku_info {
     sku_id: 0, cpu_process_id: 0, cpu_speedo_id: 0, cpu_speedo_value: 0,
     cpu_iddq_value: 0, soc_process_id: 0, soc_speedo_id: 0, soc_speedo_value: 0,
@@ -89,21 +89,21 @@ pub static mut tegra_sku_info: tegra_sku_info = tegra_sku_info {
     platform: tegra_platform::TEGRA_PLATFORM_SILICON,
 };
 
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_read_straps() -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_read_ram_code() -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_fuse_readl(_offset: usize, _value: *mut u32) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_read_chipid() -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_get_chip_id() -> u8 { 0 }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_get_platform() -> u8 { 0 }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra_is_silicon() -> bool { false }
-#[cfg(not(feature = "CONFIG_ARCH_TEGRA"))]
+#[cfg(not(CONFIG_ARCH_TEGRA))]
 pub unsafe fn tegra194_miscreg_mask_serror() -> i32 { 0 }
 
 #[repr(C)]

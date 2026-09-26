@@ -98,19 +98,19 @@ pub const IB_SERVICE_ID_AGN_MASK: u64 = 0xFF00000000000000u64.to_be(); pub const
 #[repr(C)] pub struct ib_cm_sidr_rep_param { pub qp_num:u32, pub qkey:u32, pub status:ib_cm_sidr_status, pub info:*const core::ffi::c_void, pub info_length:u8, pub private_data:*const core::ffi::c_void, pub private_data_len:u8, pub ece:rdma_ucm_ece }
 
 extern "C" {
-    pub fn ib_cm_listen(*mut ib_cm_id, __be64) -> i32;
-    pub fn ib_cm_insert_listen(*mut ib_device, ib_cm_handler, __be64) -> *mut ib_cm_id;
-    pub fn ib_send_cm_req(*mut ib_cm_id, *mut ib_cm_req_param) -> i32;
-    pub fn ib_send_cm_rep(*mut ib_cm_id, *mut ib_cm_rep_param) -> i32;
-    pub fn ib_send_cm_rtu(*mut ib_cm_id, *const core::ffi::c_void, u8) -> i32;
-    pub fn ib_send_cm_dreq(*mut ib_cm_id, *const core::ffi::c_void, u8) -> i32;
-    pub fn ib_send_cm_drep(*mut ib_cm_id, *const core::ffi::c_void, u8) -> i32;
-    pub fn ib_cm_notify(*mut ib_cm_id, ib_event_type) -> i32;
-    pub fn ib_send_cm_rej(*mut ib_cm_id, ib_cm_rej_reason, *mut core::ffi::c_void, u8, *const core::ffi::c_void, u8) -> i32;
-    pub fn ib_prepare_cm_mra(*mut ib_cm_id) -> i32;
-    pub fn ib_cm_init_qp_attr(*mut ib_cm_id, *mut ib_qp_attr, *mut i32) -> i32;
-    pub fn ib_send_cm_sidr_req(*mut ib_cm_id, *mut ib_cm_sidr_req_param) -> i32;
-    pub fn ib_send_cm_sidr_rep(*mut ib_cm_id, *mut ib_cm_sidr_rep_param) -> i32;
+    pub fn ib_cm_listen(_: *mut ib_cm_id, _: __be64) -> i32;
+    pub fn ib_cm_insert_listen(_: *mut ib_device, _: ib_cm_handler, _: __be64) -> *mut ib_cm_id;
+    pub fn ib_send_cm_req(_: *mut ib_cm_id, _: *mut ib_cm_req_param) -> i32;
+    pub fn ib_send_cm_rep(_: *mut ib_cm_id, _: *mut ib_cm_rep_param) -> i32;
+    pub fn ib_send_cm_rtu(_: *mut ib_cm_id, _: *const core::ffi::c_void, _: u8) -> i32;
+    pub fn ib_send_cm_dreq(_: *mut ib_cm_id, _: *const core::ffi::c_void, _: u8) -> i32;
+    pub fn ib_send_cm_drep(_: *mut ib_cm_id, _: *const core::ffi::c_void, _: u8) -> i32;
+    pub fn ib_cm_notify(_: *mut ib_cm_id, _: ib_event_type) -> i32;
+    pub fn ib_send_cm_rej(_: *mut ib_cm_id, _: ib_cm_rej_reason, _: *mut core::ffi::c_void, _: u8, _: *const core::ffi::c_void, _: u8) -> i32;
+    pub fn ib_prepare_cm_mra(_: *mut ib_cm_id) -> i32;
+    pub fn ib_cm_init_qp_attr(_: *mut ib_cm_id, _: *mut ib_qp_attr, _: *mut i32) -> i32;
+    pub fn ib_send_cm_sidr_req(_: *mut ib_cm_id, _: *mut ib_cm_sidr_req_param) -> i32;
+    pub fn ib_send_cm_sidr_rep(_: *mut ib_cm_id, _: *mut ib_cm_sidr_rep_param) -> i32;
     pub fn ibcm_reject_msg(reason: i32) -> *const core::ffi::c_char;
 }
 

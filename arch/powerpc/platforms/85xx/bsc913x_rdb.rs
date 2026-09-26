@@ -94,12 +94,12 @@ pub struct MachineDesc {
 
 #[no_mangle]
 pub static bsc9131_rdb: MachineDesc = MachineDesc {
-    .name: b"BSC9131 RDB\0".as_ptr() as *const i8,
-    .compatible: b"fsl,bsc9131rdb\0".as_ptr() as *const i8,
-    .setup_arch: bsc913x_rdb_setup_arch,
-    .init_irq: bsc913x_rdb_pic_init,
-    .get_irq: mpic_get_irq,
-    .progress: udbg_progress,
+    name: b"BSC9131 RDB\0".as_ptr() as *const i8,
+    compatible: b"fsl,bsc9131rdb\0".as_ptr() as *const i8,
+    setup_arch: bsc913x_rdb_setup_arch,
+    init_irq: bsc913x_rdb_pic_init,
+    get_irq: mpic_get_irq,
+    progress: udbg_progress,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

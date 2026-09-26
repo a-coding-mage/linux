@@ -164,7 +164,7 @@ pub unsafe fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *
 
     if WARN_ON_ONCE(!efi_enabled(EFI_MEMMAP)) { return core::ptr::null_mut(); }
 
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         let end = (*md).phys_addr + ((*md).num_pages << EFI_PAGE_SHIFT);
         if phys < (*md).phys_addr || phys >= end { continue; }
         if phys + size > end {
@@ -173,7 +173,7 @@ pub unsafe fn acpi_os_ioremap(phys: acpi_physical_address, size: acpi_size) -> *
         }
         region = md;
         break;
-    }
+    });
 
     if !region.is_null() {
         match (*region).type_ {

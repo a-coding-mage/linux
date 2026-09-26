@@ -5,14 +5,14 @@
 #[no_mangle]
 pub unsafe extern "C" fn arch_do_signal_or_restart(_regs: *mut pt_regs) {}
 
-#[cfg(feature = "CONFIG_HAVE_GENERIC_TIF_BITS")]
+#[cfg(CONFIG_HAVE_GENERIC_TIF_BITS)]
 const EXIT_TO_USER_MODE_WORK_LOOP: c_ulong = EXIT_TO_USER_MODE_WORK & !(_TIF_RSEQ);
-#[cfg(not(feature = "CONFIG_HAVE_GENERIC_TIF_BITS"))]
+#[cfg(not(CONFIG_HAVE_GENERIC_TIF_BITS))]
 const EXIT_TO_USER_MODE_WORK_LOOP: c_ulong = EXIT_TO_USER_MODE_WORK;
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 const TIF_SLICE_EXT_SCHED: c_ulong = _TIF_NEED_RESCHED_LAZY;
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 const TIF_SLICE_EXT_SCHED: c_ulong = _TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY;
 const TIF_SLICE_EXT_DENY: c_ulong = EXIT_TO_USER_MODE_WORK & !TIF_SLICE_EXT_SCHED;
 
@@ -103,7 +103,7 @@ pub unsafe extern "C" fn raw_irqentry_exit_cond_resched() {
     if preempt_count() == 0 {
         /* Sanity check RCU and thread stack */
         rcu_irq_exit_check_preempt();
-        if cfg!(feature = "CONFIG_DEBUG_ENTRY") {
+        if cfg!(CONFIG_DEBUG_ENTRY) {
             WARN_ON_ONCE(!on_thread_stack());
         }
         if need_resched() && arch_irqentry_exit_need_resched() {
@@ -112,14 +112,14 @@ pub unsafe extern "C" fn raw_irqentry_exit_cond_resched() {
     }
 }
 
-#[cfg(feature = "CONFIG_PREEMPT_DYNAMIC")]
-#[cfg(feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_CALL")]
+#[cfg(CONFIG_PREEMPT_DYNAMIC)]
+#[cfg(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)]
 DEFINE_STATIC_CALL!(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
 
-#[cfg(all(feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))]
+#[cfg(all(CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))]
 static mut sk_dynamic_irqentry_exit_cond_resched: StaticKey = StaticKey;
 
-#[cfg(all(feature = "CONFIG_PREEMPT_DYNAMIC", feature = "CONFIG_HAVE_PREEMPT_DYNAMIC_KEY"))]
+#[cfg(all(CONFIG_PREEMPT_DYNAMIC, CONFIG_HAVE_PREEMPT_DYNAMIC_KEY))]
 unsafe extern "C" fn dynamic_irqentry_exit_cond_resched() {
     if !static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched) {
         return;

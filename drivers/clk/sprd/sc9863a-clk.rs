@@ -57,7 +57,7 @@ static struct sprd_clk_common *sc9863a_pmu_gate_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_pmu_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MPLL0_GATE]	= &mpll0_gate.common.hw,
 		[CLK_DPLL0_GATE]	= &dpll0_gate.common.hw,
 		[CLK_LPLL_GATE]		= &lpll_gate.common.hw,
@@ -67,13 +67,13 @@ static struct clk_hw_onecell_data sc9863a_pmu_gate_hws = {
 		[CLK_MPLL2_GATE]	= &mpll2_gate.common.hw,
 		[CLK_ISPPLL_GATE]	= &isppll_gate.common.hw,
 	},
-	.num	= CLK_PMU_APB_NUM,
+	num: CLK_PMU_APB_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_pmu_gate_desc = {
-	.clk_clks	= sc9863a_pmu_gate_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_pmu_gate_clks),
-	.hw_clks        = &sc9863a_pmu_gate_hws,
+	clk_clks: sc9863a_pmu_gate_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_pmu_gate_clks),
+	hw_clks: &sc9863a_pmu_gate_hws,
 };
 
 static const u64 itable[5] = {4, 1000000000, 1200000000,
@@ -161,7 +161,7 @@ static struct sprd_clk_common *sc9863a_pll_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_pll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_TWPLL]		= &twpll.common.hw,
 		[CLK_TWPLL_768M]	= &twpll_768m.hw,
 		[CLK_TWPLL_384M]	= &twpll_384m.hw,
@@ -190,13 +190,13 @@ static struct clk_hw_onecell_data sc9863a_pll_hws = {
 		[CLK_ISPPLL_468M]	= &isppll_468m.hw,
 
 	},
-	.num	= CLK_ANLG_PHY_G1_NUM,
+	num: CLK_ANLG_PHY_G1_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_pll_desc = {
-	.clk_clks	= sc9863a_pll_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_pll_clks),
-	.hw_clks        = &sc9863a_pll_hws,
+	clk_clks: sc9863a_pll_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_pll_clks),
+	hw_clks: &sc9863a_pll_hws,
 };
 
 static const u64 itable_mpll[6] = {5, 1000000000, 1200000000, 1400000000,
@@ -217,20 +217,20 @@ static struct sprd_clk_common *sc9863a_mpll_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_mpll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MPLL0]		= &mpll0.common.hw,
 		[CLK_MPLL1]		= &mpll1.common.hw,
 		[CLK_MPLL2]		= &mpll2.common.hw,
 		[CLK_MPLL2_675M]	= &mpll2_675m.hw,
 
 	},
-	.num	= CLK_ANLG_PHY_G4_NUM,
+	num: CLK_ANLG_PHY_G4_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_mpll_desc = {
-	.clk_clks	= sc9863a_mpll_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_mpll_clks),
-	.hw_clks        = &sc9863a_mpll_hws,
+	clk_clks: sc9863a_mpll_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_mpll_clks),
+	hw_clks: &sc9863a_mpll_hws,
 };
 
 static SPRD_SC_GATE_CLK_FW_NAME(audio_gate,	"audio-gate",	"ext-26m",
@@ -251,7 +251,7 @@ static struct sprd_clk_common *sc9863a_rpll_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_rpll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_AUDIO_GATE]	= &audio_gate.common.hw,
 		[CLK_RPLL]		= &rpll.common.hw,
 		[CLK_RPLL_390M]		= &rpll_390m.hw,
@@ -259,13 +259,13 @@ static struct clk_hw_onecell_data sc9863a_rpll_hws = {
 		[CLK_RPLL_195M]		= &rpll_195m.hw,
 		[CLK_RPLL_26M]		= &rpll_26m.hw,
 	},
-	.num	= CLK_ANLG_PHY_G5_NUM,
+	num: CLK_ANLG_PHY_G5_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_rpll_desc = {
-	.clk_clks	= sc9863a_rpll_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_rpll_clks),
-	.hw_clks        = &sc9863a_rpll_hws,
+	clk_clks: sc9863a_rpll_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_rpll_clks),
+	hw_clks: &sc9863a_rpll_hws,
 };
 
 static const u64 itable_dpll[5] = {4, 1211000000, 1320000000, 1570000000,
@@ -289,7 +289,7 @@ static struct sprd_clk_common *sc9863a_dpll_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_dpll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_DPLL0]		= &dpll0.common.hw,
 		[CLK_DPLL1]		= &dpll1.common.hw,
 		[CLK_DPLL0_933M]	= &dpll0_933m.hw,
@@ -300,13 +300,13 @@ static struct clk_hw_onecell_data sc9863a_dpll_hws = {
 		[CLK_DPLL0_50M]		= &dpll1_50m.hw,
 
 	},
-	.num	= CLK_ANLG_PHY_G7_NUM,
+	num: CLK_ANLG_PHY_G7_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_dpll_desc = {
-	.clk_clks	= sc9863a_dpll_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_dpll_clks),
-	.hw_clks        = &sc9863a_dpll_hws,
+	clk_clks: sc9863a_dpll_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_dpll_clks),
+	hw_clks: &sc9863a_dpll_hws,
 };
 
 static CLK_FIXED_FACTOR_FW_NAME(clk_6m5, "clk-6m5", "ext-26m", 4, 1, 0);
@@ -774,7 +774,7 @@ static struct sprd_clk_common *sc9863a_aon_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_aon_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_13M]		= &clk_13m.hw,
 		[CLK_6M5]		= &clk_6m5.hw,
 		[CLK_4M3]		= &clk_4m3.hw,
@@ -846,13 +846,13 @@ static struct clk_hw_onecell_data sc9863a_aon_clk_hws = {
 		[CLK_GIC]		= &gic_clk.common.hw,
 		[CLK_PERIPH]		= &periph_clk.common.hw,
 	},
-	.num	= CLK_AON_CLK_NUM,
+	num: CLK_AON_CLK_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_aon_clk_desc = {
-	.clk_clks	= sc9863a_aon_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_aon_clks),
-	.hw_clks	= &sc9863a_aon_clk_hws,
+	clk_clks: sc9863a_aon_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_aon_clks),
+	hw_clks: &sc9863a_aon_clk_hws,
 };
 
 static const struct clk_parent_data ap_apb_parents[] = {
@@ -1014,7 +1014,7 @@ static struct sprd_clk_common *sc9863a_ap_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_ap_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_AP_APB]	= &ap_apb.common.hw,
 		[CLK_AP_CE]	= &ap_ce.common.hw,
 		[CLK_NANDC_ECC]	= &nandc_ecc.common.hw,
@@ -1046,13 +1046,13 @@ static struct clk_hw_onecell_data sc9863a_ap_clk_hws = {
 		[CLK_SIM0]	= &sim0.common.hw,
 		[CLK_SIM0_32K]	= &sim0_32k.common.hw,
 	},
-	.num	= CLK_AP_CLK_NUM,
+	num: CLK_AP_CLK_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_ap_clk_desc = {
-	.clk_clks	= sc9863a_ap_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_ap_clks),
-	.hw_clks	= &sc9863a_ap_clk_hws,
+	clk_clks: sc9863a_ap_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_ap_clks),
+	hw_clks: &sc9863a_ap_clk_hws,
 };
 
 static SPRD_SC_GATE_CLK_HW(otg_eb, "otg-eb", &ap_axi.common.hw, 0x0, 0x1000,
@@ -1106,7 +1106,7 @@ static struct sprd_clk_common *sc9863a_apahb_gate_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_apahb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_OTG_EB]		= &otg_eb.common.hw,
 		[CLK_DMA_EB]		= &dma_eb.common.hw,
 		[CLK_CE_EB]		= &ce_eb.common.hw,
@@ -1123,13 +1123,13 @@ static struct clk_hw_onecell_data sc9863a_apahb_gate_hws = {
 		[CLK_DMA_EB2]		= &dma_eb2.common.hw,
 		[CLK_CE_EB2]		= &ce_eb2.common.hw,
 	},
-	.num	= CLK_AP_AHB_GATE_NUM,
+	num: CLK_AP_AHB_GATE_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_apahb_gate_desc = {
-	.clk_clks	= sc9863a_apahb_gate_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_apahb_gate_clks),
-	.hw_clks	= &sc9863a_apahb_gate_hws,
+	clk_clks: sc9863a_apahb_gate_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_apahb_gate_clks),
+	hw_clks: &sc9863a_apahb_gate_hws,
 };
 
 /* aon gate clocks */
@@ -1432,7 +1432,7 @@ static struct sprd_clk_common *sc9863a_aonapb_gate_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_aonapb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_GPIO_EB]		= &gpio_eb.common.hw,
 		[CLK_PWM0_EB]		= &pwm0_eb.common.hw,
 		[CLK_PWM1_EB]		= &pwm1_eb.common.hw,
@@ -1532,13 +1532,13 @@ static struct clk_hw_onecell_data sc9863a_aonapb_gate_hws = {
 		[CLK_SERDES_EB]		= &serdes_eb.common.hw,
 		[CLK_AON_AP_EMC_EB]	= &aon_ap_emc_eb.common.hw,
 	},
-	.num	= CLK_AON_APB_GATE_NUM,
+	num: CLK_AON_APB_GATE_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_aonapb_gate_desc = {
-	.clk_clks	= sc9863a_aonapb_gate_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_aonapb_gate_clks),
-	.hw_clks	= &sc9863a_aonapb_gate_hws,
+	clk_clks: sc9863a_aonapb_gate_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_aonapb_gate_clks),
+	hw_clks: &sc9863a_aonapb_gate_hws,
 };
 
 /* mm gate clocks */
@@ -1593,7 +1593,7 @@ static struct sprd_clk_common *sc9863a_mm_gate_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_mm_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MAHB_CKG_EB]	= &mahb_ckg_eb.common.hw,
 		[CLK_MDCAM_EB]		= &mdcam_eb.common.hw,
 		[CLK_MISP_EB]		= &misp_eb.common.hw,
@@ -1610,13 +1610,13 @@ static struct clk_hw_onecell_data sc9863a_mm_gate_hws = {
 		[CLK_SENSOR2_EB]	= &sensor2_eb.common.hw,
 		[CLK_MCPHY_CFG_EB]	= &mcphy_cfg_eb.common.hw,
 	},
-	.num	= CLK_MM_GATE_NUM,
+	num: CLK_MM_GATE_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_mm_gate_desc = {
-	.clk_clks	= sc9863a_mm_gate_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_mm_gate_clks),
-	.hw_clks	= &sc9863a_mm_gate_hws,
+	clk_clks: sc9863a_mm_gate_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_mm_gate_clks),
+	hw_clks: &sc9863a_mm_gate_hws,
 };
 
 /* camera sensor clocks */
@@ -1635,18 +1635,18 @@ static struct sprd_clk_common *sc9863a_mm_clk_clks[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_mm_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MIPI_CSI]		= &mipi_csi_clk.common.hw,
 		[CLK_MIPI_CSI_S]	= &mipi_csi_s_clk.common.hw,
 		[CLK_MIPI_CSI_M]	= &mipi_csi_m_clk.common.hw,
 	},
-	.num	= CLK_MM_CLK_NUM,
+	num: CLK_MM_CLK_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_mm_clk_desc = {
-	.clk_clks	= sc9863a_mm_clk_clks,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_mm_clk_clks),
-	.hw_clks	= &sc9863a_mm_clk_hws,
+	clk_clks: sc9863a_mm_clk_clks,
+	num_clk_clks: ARRAY_SIZE(sc9863a_mm_clk_clks),
+	hw_clks: &sc9863a_mm_clk_hws,
 };
 
 static SPRD_SC_GATE_CLK_FW_NAME(sim0_eb,	"sim0-eb",	"ext-26m", 0x0,
@@ -1719,7 +1719,7 @@ static struct sprd_clk_common *sc9863a_apapb_gate[] = {
 };
 
 static struct clk_hw_onecell_data sc9863a_apapb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_SIM0_EB]		= &sim0_eb.common.hw,
 		[CLK_IIS0_EB]		= &iis0_eb.common.hw,
 		[CLK_IIS1_EB]		= &iis1_eb.common.hw,
@@ -1742,50 +1742,50 @@ static struct clk_hw_onecell_data sc9863a_apapb_gate_hws = {
 		[CLK_I2C5_EB]		= &i2c5_eb.common.hw,
 		[CLK_I2C6_EB]		= &i2c6_eb.common.hw,
 	},
-	.num	= CLK_AP_APB_GATE_NUM,
+	num: CLK_AP_APB_GATE_NUM,
 };
 
 static const struct sprd_clk_desc sc9863a_apapb_gate_desc = {
-	.clk_clks	= sc9863a_apapb_gate,
-	.num_clk_clks	= ARRAY_SIZE(sc9863a_apapb_gate),
-	.hw_clks	= &sc9863a_apapb_gate_hws,
+	clk_clks: sc9863a_apapb_gate,
+	num_clk_clks: ARRAY_SIZE(sc9863a_apapb_gate),
+	hw_clks: &sc9863a_apapb_gate_hws,
 };
 
 static const struct of_device_id sprd_sc9863a_clk_ids[] = {
 	{ .compatible = "sprd,sc9863a-ap-clk",	/* 0x21500000 */
-	  .data = &sc9863a_ap_clk_desc },
+	  data: &sc9863a_ap_clk_desc },
 	{ .compatible = "sprd,sc9863a-pmu-gate",	/* 0x402b0000 */
-	  .data = &sc9863a_pmu_gate_desc },
+	  data: &sc9863a_pmu_gate_desc },
 	{ .compatible = "sprd,sc9863a-pll",	/* 0x40353000 */
-	  .data = &sc9863a_pll_desc },
+	  data: &sc9863a_pll_desc },
 	{ .compatible = "sprd,sc9863a-mpll",	/* 0x40359000 */
-	  .data = &sc9863a_mpll_desc },
+	  data: &sc9863a_mpll_desc },
 	{ .compatible = "sprd,sc9863a-rpll",	/* 0x4035c000 */
-	  .data = &sc9863a_rpll_desc },
+	  data: &sc9863a_rpll_desc },
 	{ .compatible = "sprd,sc9863a-dpll",	/* 0x40363000 */
-	  .data = &sc9863a_dpll_desc },
+	  data: &sc9863a_dpll_desc },
 	{ .compatible = "sprd,sc9863a-aon-clk",	/* 0x402d0000 */
-	  .data = &sc9863a_aon_clk_desc },
+	  data: &sc9863a_aon_clk_desc },
 	{ .compatible = "sprd,sc9863a-apahb-gate",	/* 0x20e00000 */
-	  .data = &sc9863a_apahb_gate_desc },
+	  data: &sc9863a_apahb_gate_desc },
 	{ .compatible = "sprd,sc9863a-aonapb-gate",	/* 0x402e0000 */
-	  .data = &sc9863a_aonapb_gate_desc },
+	  data: &sc9863a_aonapb_gate_desc },
 	{ .compatible = "sprd,sc9863a-mm-gate",	/* 0x60800000 */
-	  .data = &sc9863a_mm_gate_desc },
+	  data: &sc9863a_mm_gate_desc },
 	{ .compatible = "sprd,sc9863a-mm-clk",	/* 0x60900000 */
-	  .data = &sc9863a_mm_clk_desc },
+	  data: &sc9863a_mm_clk_desc },
 	{ .compatible = "sprd,sc9863a-apapb-gate",	/* 0x71300000 */
-	  .data = &sc9863a_apapb_gate_desc },
+	  data: &sc9863a_apapb_gate_desc },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, sprd_sc9863a_clk_ids);
 
-static int sc9863a_clk_probe(struct platform_device *pdev)
+static int sc9863a_clk_probe(platform_device *pdev)
 {
 	const struct sprd_clk_desc *desc;
 	int ret;
 
-	desc = device_get_match_data(&pdev->dev);
+	desc = device_get_match_data((*&pdev).dev);
 	if (!desc)
 		return -ENODEV;
 
@@ -1793,14 +1793,14 @@ static int sc9863a_clk_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	return sprd_clk_probe(&pdev->dev, desc->hw_clks);
+	return sprd_clk_probe((*&pdev).dev, (*desc).hw_clks);
 }
 
 static struct platform_driver sc9863a_clk_driver = {
-	.probe	= sc9863a_clk_probe,
-	.driver	= {
-		.name	= "sc9863a-clk",
-		.of_match_table	= sprd_sc9863a_clk_ids,
+	probe: sc9863a_clk_probe,
+	driver: {
+		name: "sc9863a-clk",
+		of_match_table: sprd_sc9863a_clk_ids,
 	},
 };
 module_platform_driver(sc9863a_clk_driver);

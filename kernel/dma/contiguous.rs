@@ -14,9 +14,9 @@
 
 // C dependencies supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_CMA_SIZE_MBYTES")]
+#[cfg(CONFIG_CMA_SIZE_MBYTES)]
 const CMA_SIZE_MBYTES: usize = CONFIG_CMA_SIZE_MBYTES;
-#[cfg(not(feature = "CONFIG_CMA_SIZE_MBYTES"))]
+#[cfg(not(CONFIG_CMA_SIZE_MBYTES))]
 const CMA_SIZE_MBYTES: usize = 0;
 
 static mut DMA_CONTIGUOUS_AREAS: [*mut cma; MAX_CMA_AREAS] = [core::ptr::null_mut(); MAX_CMA_AREAS];
@@ -57,16 +57,16 @@ pub unsafe extern "C" fn dev_get_cma_area(dev: *mut device) -> *mut cma {
     if !dev.is_null() && !(*dev).cma_area.is_null() { (*dev).cma_area } else { DMA_CONTIGUOUS_DEFAULT_AREA }
 }
 
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 static mut DMA_CONTIGUOUS_NUMA_AREA: [*mut cma; MAX_NUMNODES] = [core::ptr::null_mut(); MAX_NUMNODES];
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 static mut NUMA_CMA_SIZE: [phys_addr_t; MAX_NUMNODES] = [0; MAX_NUMNODES];
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 static mut PERNUMA_SIZE_BYTES: phys_addr_t = 0;
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 static mut NUMA_CMA_CONFIGURED: bool = false;
 
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 unsafe extern "C" fn early_numa_cma(mut p: *mut c_char) -> c_int {
     let mut s = p; let mut nid: c_int; let mut count: c_int = 0; let mut node: c_ulong;
     while *s != 0 {
@@ -81,20 +81,20 @@ unsafe extern "C" fn early_numa_cma(mut p: *mut c_char) -> c_int {
     NUMA_CMA_CONFIGURED = true; 0
 }
 
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 unsafe extern "C" fn early_cma_pernuma(mut p: *mut c_char) -> c_int {
     PERNUMA_SIZE_BYTES = memparse(p, &mut p); NUMA_CMA_CONFIGURED = true; 0
 }
 
-#[cfg(feature = "CONFIG_CMA_SIZE_PERCENTAGE")]
+#[cfg(CONFIG_CMA_SIZE_PERCENTAGE)]
 unsafe fn cma_early_percent_memory() -> phys_addr_t {
     let total_pages: c_ulong = PHYS_PFN(memblock_phys_mem_size());
     (total_pages * CONFIG_CMA_SIZE_PERCENTAGE as c_ulong / 100) << PAGE_SHIFT
 }
-#[cfg(not(feature = "CONFIG_CMA_SIZE_PERCENTAGE"))]
+#[cfg(not(CONFIG_CMA_SIZE_PERCENTAGE))]
 unsafe fn cma_early_percent_memory() -> phys_addr_t { 0 }
 
-#[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+#[cfg(CONFIG_DMA_NUMA_CMA)]
 unsafe fn dma_numa_cma_reserve() {
     if IS_ENABLED(CONFIG_CMA_SIZE_PERNUMA) && !NUMA_CMA_CONFIGURED && !DMA_CONTIGUOUS_DEFAULT_AREA.is_null() && nr_online_nodes > 1 {
         PERNUMA_SIZE_BYTES = cma_get_size(DMA_CONTIGUOUS_DEFAULT_AREA);
@@ -108,7 +108,7 @@ unsafe fn dma_numa_cma_reserve() {
         if ret != 0 { pr_warn!("%s: reservation failed: err %d, node %d\n", __func__, ret, nid); }
     });
 }
-#[cfg(not(feature = "CONFIG_DMA_NUMA_CMA"))]
+#[cfg(not(CONFIG_DMA_NUMA_CMA))]
 unsafe fn dma_numa_cma_reserve() {}
 
 #[no_mangle]
@@ -118,10 +118,10 @@ pub unsafe extern "C" fn dma_contiguous_reserve(limit: phys_addr_t) {
         selected_size = SIZE_CMDLINE; selected_base = BASE_CMDLINE; selected_limit = if LIMIT_CMDLINE != 0 { LIMIT_CMDLINE } else { limit };
         if BASE_CMDLINE + SIZE_CMDLINE == LIMIT_CMDLINE { fixed = true; }
     } else {
-        #[cfg(feature = "CONFIG_CMA_SIZE_SEL_MBYTES")] { selected_size = SIZE_BYTES; }
-        #[cfg(feature = "CONFIG_CMA_SIZE_SEL_PERCENTAGE")] { selected_size = cma_early_percent_memory(); }
-        #[cfg(feature = "CONFIG_CMA_SIZE_SEL_MIN")] { selected_size = core::cmp::min(SIZE_BYTES, cma_early_percent_memory()); }
-        #[cfg(feature = "CONFIG_CMA_SIZE_SEL_MAX")] { selected_size = core::cmp::max(SIZE_BYTES, cma_early_percent_memory()); }
+        #[cfg(CONFIG_CMA_SIZE_SEL_MBYTES)] { selected_size = SIZE_BYTES; }
+        #[cfg(CONFIG_CMA_SIZE_SEL_PERCENTAGE)] { selected_size = cma_early_percent_memory(); }
+        #[cfg(CONFIG_CMA_SIZE_SEL_MIN)] { selected_size = core::cmp::min(SIZE_BYTES, cma_early_percent_memory()); }
+        #[cfg(CONFIG_CMA_SIZE_SEL_MAX)] { selected_size = core::cmp::max(SIZE_BYTES, cma_early_percent_memory()); }
     }
     if selected_size != 0 && DMA_CONTIGUOUS_DEFAULT_AREA.is_null() {
         let ret = dma_contiguous_reserve_area(selected_size, selected_base, selected_limit, &mut DMA_CONTIGUOUS_DEFAULT_AREA, fixed);
@@ -162,7 +162,7 @@ pub unsafe extern "C" fn dma_alloc_contiguous(dev: *mut device, size: usize, gfp
     if !gfpflags_allow_blocking(gfp) { return core::ptr::null_mut(); }
     if !dev.is_null() && !(*dev).cma_area.is_null() { return cma_alloc_aligned((*dev).cma_area, size, gfp); }
     if size <= PAGE_SIZE { return core::ptr::null_mut(); }
-    #[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+    #[cfg(CONFIG_DMA_NUMA_CMA)]
     { let nid = dev_to_node(dev); if nid != NUMA_NO_NODE && (gfp & (GFP_DMA | GFP_DMA32)) == 0 { let c = DMA_CONTIGUOUS_NUMA_AREA[nid as usize]; if !c.is_null() { let p = cma_alloc_aligned(c, size, gfp); if !p.is_null() { return p; } } } }
     if DMA_CONTIGUOUS_DEFAULT_AREA.is_null() { return core::ptr::null_mut(); }
     cma_alloc_aligned(DMA_CONTIGUOUS_DEFAULT_AREA, size, gfp)
@@ -172,14 +172,14 @@ pub unsafe extern "C" fn dma_alloc_contiguous(dev: *mut device, size: usize, gfp
 pub unsafe extern "C" fn dma_free_contiguous(dev: *mut device, page: *mut page, size: usize) {
     let count = PAGE_ALIGN(size) >> PAGE_SHIFT;
     if !dev.is_null() && !(*dev).cma_area.is_null() { if cma_release((*dev).cma_area, page, count) { return; } }
-    #[cfg(feature = "CONFIG_DMA_NUMA_CMA")]
+    #[cfg(CONFIG_DMA_NUMA_CMA)]
     if cma_release(DMA_CONTIGUOUS_NUMA_AREA[page_to_nid(page) as usize], page, count) { return; }
     if cma_release(DMA_CONTIGUOUS_DEFAULT_AREA, page, count) { return; }
     __free_pages(page, get_order(size));
 }
 
 // Device-tree reserved-memory CMA support is retained under its original build-time gate.
-#[cfg(feature = "CONFIG_OF_RESERVED_MEM")]
+#[cfg(CONFIG_OF_RESERVED_MEM)]
 mod reserved_mem_cma {
     use super::*;
     unsafe extern "C" fn rmem_cma_device_init(rmem: *mut reserved_mem, dev: *mut device) -> c_int { (*dev).cma_area = (*rmem).priv_; 0 }

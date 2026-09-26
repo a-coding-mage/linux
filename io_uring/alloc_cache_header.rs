@@ -54,7 +54,7 @@ pub unsafe fn io_alloc_cache_get(cache: *mut io_alloc_cache) -> *mut c_void {
         let entry = *cache_ref.entries.add(cache_ref.nr_cached);
 
         /* CONFIG_KASAN: clear the initial bytes after unpoisoning, when enabled. */
-        #[cfg(feature = "CONFIG_KASAN")]
+        #[cfg(CONFIG_KASAN)]
         {
             kasan_mempool_unpoison_object(entry, cache_ref.elem_size);
             if cache_ref.init_clear != 0 {

@@ -19,7 +19,7 @@ unsafe extern "C" {
 }
 
 // `CONFIG_KFENCE` is a build-time configuration condition supplied externally.
-#[cfg(feature = "CONFIG_KFENCE")]
+#[cfg(CONFIG_KFENCE)]
 #[inline(always)]
 pub unsafe fn arch_kfence_init_pool() -> bool {
     let pool_pages: usize = (KFENCE_POOL_SIZE >> PAGE_SHIFT) as usize;
@@ -28,7 +28,7 @@ pub unsafe fn arch_kfence_init_pool() -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_KFENCE"))]
+#[cfg(not(CONFIG_KFENCE))]
 #[inline(always)]
 pub unsafe fn arch_kfence_init_pool() -> bool {
     true

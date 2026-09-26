@@ -35,42 +35,42 @@ extern "C" {
 
 #[inline]
 unsafe fn breakout_errctl(val: u32) {
-    if val & CP0_ERRCTL_RECOVERABLE != 0 { printk(c" recoverable\0".as_ptr()); }
-    if val & CP0_ERRCTL_DCACHE != 0 { printk(c" dcache\0".as_ptr()); }
-    if val & CP0_ERRCTL_ICACHE != 0 { printk(c" icache\0".as_ptr()); }
-    if val & CP0_ERRCTL_MULTIBUS != 0 { printk(c" multiple-buserr\0".as_ptr()); }
-    printk(c"\n\0".as_ptr());
+    if val & CP0_ERRCTL_RECOVERABLE != 0 { printk(c" recoverable".as_ptr()); }
+    if val & CP0_ERRCTL_DCACHE != 0 { printk(c" dcache".as_ptr()); }
+    if val & CP0_ERRCTL_ICACHE != 0 { printk(c" icache".as_ptr()); }
+    if val & CP0_ERRCTL_MULTIBUS != 0 { printk(c" multiple-buserr".as_ptr()); }
+    printk(c"\n".as_ptr());
 }
 
 #[inline]
 unsafe fn breakout_cerri(val: u32) {
-    if val & CP0_CERRI_TAG_PARITY != 0 { printk(c" tag-parity\0".as_ptr()); }
-    if val & CP0_CERRI_DATA_PARITY != 0 { printk(c" data-parity\0".as_ptr()); }
-    if val & CP0_CERRI_EXTERNAL != 0 { printk(c" external\0".as_ptr()); }
-    printk(c"\n\0".as_ptr());
+    if val & CP0_CERRI_TAG_PARITY != 0 { printk(c" tag-parity".as_ptr()); }
+    if val & CP0_CERRI_DATA_PARITY != 0 { printk(c" data-parity".as_ptr()); }
+    if val & CP0_CERRI_EXTERNAL != 0 { printk(c" external".as_ptr()); }
+    printk(c"\n".as_ptr());
 }
 
 #[inline]
 unsafe fn breakout_cerrd(val: u32) {
     match val & (CP0_CERRD_LOAD|CP0_CERRD_STORE|CP0_CERRD_FILLWB|CP0_CERRD_COHERENCY|CP0_CERRD_DUPTAG) {
-        CP0_CERRD_LOAD => printk(c" load,\0".as_ptr()),
-        CP0_CERRD_STORE => printk(c" store,\0".as_ptr()),
-        CP0_CERRD_FILLWB => printk(c" fill/wb,\0".as_ptr()),
-        CP0_CERRD_COHERENCY => printk(c" coherency,\0".as_ptr()),
-        CP0_CERRD_DUPTAG => printk(c" duptags,\0".as_ptr()),
-        _ => printk(c" NO CAUSE,\0".as_ptr()),
+        CP0_CERRD_LOAD => printk(c" load,".as_ptr()),
+        CP0_CERRD_STORE => printk(c" store,".as_ptr()),
+        CP0_CERRD_FILLWB => printk(c" fill/wb,".as_ptr()),
+        CP0_CERRD_COHERENCY => printk(c" coherency,".as_ptr()),
+        CP0_CERRD_DUPTAG => printk(c" duptags,".as_ptr()),
+        _ => printk(c" NO CAUSE,".as_ptr()),
     }
     if val & (CP0_CERRD_TAG_STATE|CP0_CERRD_TAG_ADDRESS|CP0_CERRD_DATA_SBE|CP0_CERRD_DATA_DBE|CP0_CERRD_EXTERNAL) == 0 {
-        printk(c" NO TYPE\0".as_ptr());
+        printk(c" NO TYPE".as_ptr());
     } else {
-        if val & CP0_CERRD_MULTIPLE != 0 { printk(c" multi-err\0".as_ptr()); }
-        if val & CP0_CERRD_TAG_STATE != 0 { printk(c" tag-state\0".as_ptr()); }
-        if val & CP0_CERRD_TAG_ADDRESS != 0 { printk(c" tag-address\0".as_ptr()); }
-        if val & CP0_CERRD_DATA_SBE != 0 { printk(c" data-SBE\0".as_ptr()); }
-        if val & CP0_CERRD_DATA_DBE != 0 { printk(c" data-DBE\0".as_ptr()); }
-        if val & CP0_CERRD_EXTERNAL != 0 { printk(c" external\0".as_ptr()); }
+        if val & CP0_CERRD_MULTIPLE != 0 { printk(c" multi-err".as_ptr()); }
+        if val & CP0_CERRD_TAG_STATE != 0 { printk(c" tag-state".as_ptr()); }
+        if val & CP0_CERRD_TAG_ADDRESS != 0 { printk(c" tag-address".as_ptr()); }
+        if val & CP0_CERRD_DATA_SBE != 0 { printk(c" data-SBE".as_ptr()); }
+        if val & CP0_CERRD_DATA_DBE != 0 { printk(c" data-DBE".as_ptr()); }
+        if val & CP0_CERRD_EXTERNAL != 0 { printk(c" external".as_ptr()); }
     }
-    printk(c"\n\0".as_ptr());
+    printk(c"\n".as_ptr());
 }
 
 static PARITY: [u8; 256] = [
@@ -98,13 +98,13 @@ fn dc_ecc(dword: u64) -> u8 { let mut p=0; for i in (0..8).rev() { let t=dword&M
 #[repr(C)]
 struct DcState { val: u8, name: *const core::ffi::c_char }
 static DC_STATES: [DcState; 7] = [
-    DcState { val: 0x00, name: c"INVALID\0".as_ptr() },
-    DcState { val: 0x0f, name: c"COH-SHD\0".as_ptr() },
-    DcState { val: 0x13, name: c"NCO-E-C\0".as_ptr() },
-    DcState { val: 0x19, name: c"NCO-E-D\0".as_ptr() },
-    DcState { val: 0x16, name: c"COH-E-C\0".as_ptr() },
-    DcState { val: 0x1c, name: c"COH-E-D\0".as_ptr() },
-    DcState { val: 0xff, name: c"*ERROR*\0".as_ptr() },
+    DcState { val: 0x00, name: c"INVALID".as_ptr() },
+    DcState { val: 0x0f, name: c"COH-SHD".as_ptr() },
+    DcState { val: 0x13, name: c"NCO-E-C".as_ptr() },
+    DcState { val: 0x19, name: c"NCO-E-D".as_ptr() },
+    DcState { val: 0x16, name: c"COH-E-C".as_ptr() },
+    DcState { val: 0x1c, name: c"COH-E-D".as_ptr() },
+    DcState { val: 0xff, name: c"*ERROR*".as_ptr() },
 ];
 fn dc_tag_valid(s: u8) -> bool { matches!(s, 0 | 0xf | 0x13 | 0x19 | 0x16 | 0x1c) }
 unsafe fn dc_state_str(state: u8) -> *const core::ffi::c_char {
@@ -121,8 +121,8 @@ unsafe fn extract_dc(_addr: u16, _data: i32) -> u32 { 0 }
 // MIPS translation supplies the architecture-specific implementation.
 #[no_mangle]
 pub unsafe extern "C" fn sb1_cache_error() {
-    printk(c"Cache error exception on CPU %x:\n\0".as_ptr(), (read_c0_prid() >> 25) & 7);
-    panic(c"unhandled cache error\0".as_ptr());
+    printk(c"Cache error exception on CPU %x:\n".as_ptr(), (read_c0_prid() >> 25) & 7);
+    panic(c"unhandled cache error".as_ptr());
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

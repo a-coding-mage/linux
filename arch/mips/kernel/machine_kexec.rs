@@ -67,12 +67,12 @@ pub struct atomic_t { pub counter: c_int }
 
 static mut reboot_code_buffer: c_ulong = 0;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 static mut relocated_kexec_smp_wait: Option<unsafe extern "C" fn(*mut c_void)> = None;
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[no_mangle]
 pub static mut kexec_ready_to_reboot: atomic_t = atomic_t { counter: 0 };
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[no_mangle]
 pub static mut _crash_smp_send_stop: Option<unsafe extern "C" fn()> = None;
 
@@ -95,7 +95,7 @@ unsafe fn kexec_image_info(kimage: *const kimage) {
     }
 }
 
-#[cfg(feature = "CONFIG_UHI_BOOT")]
+#[cfg(CONFIG_UHI_BOOT)]
 unsafe extern "C" fn uhi_machine_kexec_prepare(kimage: *mut kimage) -> c_int {
     let mut i = 0;
     while i < (*kimage).nr_segments as usize {
@@ -111,10 +111,10 @@ unsafe extern "C" fn uhi_machine_kexec_prepare(kimage: *mut kimage) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_UHI_BOOT")]
+#[cfg(CONFIG_UHI_BOOT)]
 #[no_mangle]
 pub static mut _machine_kexec_prepare: Option<unsafe extern "C" fn(*mut kimage) -> c_int> = Some(uhi_machine_kexec_prepare);
-#[cfg(not(feature = "CONFIG_UHI_BOOT"))]
+#[cfg(not(CONFIG_UHI_BOOT))]
 #[no_mangle]
 pub static mut _machine_kexec_prepare: Option<unsafe extern "C" fn(*mut kimage) -> c_int> = None;
 
@@ -128,7 +128,7 @@ const IND_DESTINATION: c_ulong = 8;
 
 #[no_mangle]
 pub unsafe extern "C" fn machine_kexec_prepare(kimage: *mut kimage) -> c_int {
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     if !kexec_nonboot_cpu_func() { return -22; }
     kexec_image_info(kimage);
     if let Some(f) = _machine_kexec_prepare { return f(kimage); }
@@ -138,7 +138,7 @@ pub unsafe extern "C" fn machine_kexec_prepare(kimage: *mut kimage) -> c_int {
 #[no_mangle]
 pub unsafe extern "C" fn machine_kexec_cleanup(_kimage: *mut kimage) {}
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" fn kexec_shutdown_secondary(_param: *mut c_void) {
     let cpu = smp_processor_id();
     if !cpu_online(cpu) { return; }
@@ -151,7 +151,7 @@ unsafe extern "C" fn kexec_shutdown_secondary(_param: *mut c_void) {
 #[no_mangle]
 pub unsafe extern "C" fn machine_shutdown() {
     if let Some(f) = _machine_kexec_shutdown { f(); }
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         smp_call_function(kexec_shutdown_secondary, core::ptr::null_mut(), 0);
         while num_online_cpus() > 1 { cpu_relax(); mdelay(1); }
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn machine_crash_shutdown(regs: *mut pt_regs) {
     if let Some(f) = _machine_crash_shutdown { f(regs); } else { default_machine_crash_shutdown(regs); }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[no_mangle]
 pub unsafe extern "C" fn kexec_nonboot_cpu_jump() {
     local_flush_icache_range(relocated_kexec_smp_wait as c_ulong, reboot_code_buffer.wrapping_add(relocate_new_kernel_size));
@@ -174,7 +174,7 @@ pub unsafe extern "C" fn kexec_nonboot_cpu_jump() {
 pub unsafe extern "C" fn kexec_reboot() -> ! {
     set_cpu_online(smp_processor_id(), true);
     smp_mb__after_atomic();
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     if smp_processor_id() > 0 { kexec_nonboot_cpu(); }
     local_flush_icache_range(reboot_code_buffer, reboot_code_buffer.wrapping_add(relocate_new_kernel_size));
     let do_kexec: unsafe extern "C" fn() -> ! = core::mem::transmute(reboot_code_buffer as *const c_void);
@@ -199,7 +199,7 @@ pub unsafe extern "C" fn machine_kexec(image: *mut kimage) {
     printk(b"Will call new kernel at %08lx\n\0".as_ptr(), (*image).start);
     printk(b"Bye ...\n\0".as_ptr());
     __flush_cache_all();
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     { relocated_kexec_smp_wait = Some(core::mem::transmute(reboot_code_buffer.wrapping_add((kexec_smp_wait as c_ulong).wrapping_sub(&relocate_new_kernel as *const u8 as c_ulong)))); smp_wmb(); atomic_set(&mut kexec_ready_to_reboot, 1); }
     kexec_reboot();
 }

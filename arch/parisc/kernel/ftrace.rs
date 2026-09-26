@@ -139,9 +139,9 @@ unsafe extern "C" fn kprobe_ftrace_handler(_ip: libc::c_ulong, _parent_ip: libc:
         fn kprobes_inc_nmissed_count(p: *mut kprobe);
         fn get_kprobe_ctlblk() -> *mut kprobe_ctlblk;
         static mut current_kprobe: *mut kprobe;
-        const KPROBE_HIT_ACTIVE: libc::c_int;
-        const KPROBE_HIT_SSDONE: libc::c_int;
     }
+const KPROBE_HIT_ACTIVE: libc::c_int;
+const KPROBE_HIT_SSDONE: libc::c_int;
     if kprobe_ftrace_disabled { return; }
     let bit = ftrace_test_recursion_trylock(_ip, _parent_ip);
     if bit < 0 { return; }

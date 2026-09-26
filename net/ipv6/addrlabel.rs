@@ -46,9 +46,9 @@ unsafe fn __ip6addrlbl_match(p: *const Ip6addrlblEntry, addr: *const in6_addr, a
 
 unsafe fn __ipv6_addr_label(net: *mut net, addr: *const in6_addr, type_: i32, ifindex: i32) -> *mut Ip6addrlblEntry {
     let mut p: *mut Ip6addrlblEntry;
-    hlist_for_each_entry_rcu!(p, (*net).ipv6.ip6addrlbl_table.head, list) {
+    hlist_for_each_entry_rcu!(p, (*net).ipv6.ip6addrlbl_table.head, list, {
         if __ip6addrlbl_match(p, addr, type_, ifindex) { return p; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -84,7 +84,7 @@ unsafe fn __ip6addrlbl_add(net: *mut net, newp: *mut Ip6addrlblEntry, replace: i
     let mut p: *mut Ip6addrlblEntry = core::ptr::null_mut();
     let mut n: *mut hlist_node = core::ptr::null_mut();
     let mut ret = 0;
-    hlist_for_each_entry_safe!(p, n, (*net).ipv6.ip6addrlbl_table.head, list) {
+    hlist_for_each_entry_safe!(p, n, (*net).ipv6.ip6addrlbl_table.head, list, {
         if (*p).prefixlen == (*newp).prefixlen && (*p).ifindex == (*newp).ifindex && ipv6_addr_equal(&(*p).prefix, &(*newp).prefix) {
             if replace == 0 { ret = -EEXIST; break; }
             hlist_replace_rcu!(&mut (*p).list, &mut (*newp).list); kfree_rcu!(p, rcu); break;
@@ -92,7 +92,7 @@ unsafe fn __ip6addrlbl_add(net: *mut net, newp: *mut Ip6addrlblEntry, replace: i
             hlist_add_before_rcu!(&mut (*newp).list, &mut (*p).list); break;
         }
         last = p;
-    }
+    });
     if !last.is_null() { hlist_add_behind_rcu!(&mut (*newp).list, &mut (*last).list); }
     else if last.is_null() { hlist_add_head_rcu!(&mut (*newp).list, &mut (*net).ipv6.ip6addrlbl_table.head); }
     if ret == 0 { WRITE_ONCE!((*net).ipv6.ip6addrlbl_table.seq, (*net).ipv6.ip6addrlbl_table.seq + 1); }
@@ -113,11 +113,11 @@ unsafe fn __ip6addrlbl_del(net: *mut net, prefix: *const in6_addr, prefixlen: i3
     let mut p: *mut Ip6addrlblEntry = core::ptr::null_mut();
     let mut n: *mut hlist_node = core::ptr::null_mut();
     let mut ret = -ESRCH;
-    hlist_for_each_entry_safe!(p, n, (*net).ipv6.ip6addrlbl_table.head, list) {
+    hlist_for_each_entry_safe!(p, n, (*net).ipv6.ip6addrlbl_table.head, list, {
         if (*p).prefixlen == prefixlen && (*p).ifindex == ifindex && ipv6_addr_equal(&(*p).prefix, prefix) {
             hlist_del_rcu!(&mut (*p).list); kfree_rcu!(p, rcu); ret = 0; break;
         }
-    }
+    });
     ret
 }
 
@@ -142,7 +142,7 @@ unsafe fn ip6addrlbl_net_init(net: *mut net) -> i32 {
 unsafe fn ip6addrlbl_net_exit(net: *mut net) {
     spin_lock!(&mut (*net).ipv6.ip6addrlbl_table.lock);
     let mut p: *mut Ip6addrlblEntry = core::ptr::null_mut(); let mut n: *mut hlist_node = core::ptr::null_mut();
-    hlist_for_each_entry_safe!(p, n, (*net).ipv6.ip6addrlbl_table.head, list) { hlist_del_rcu!(&mut (*p).list); kfree_rcu!(p, rcu); }
+    hlist_for_each_entry_safe!(p, n, (*net).ipv6.ip6addrlbl_table.head, list, { hlist_del_rcu!(&mut (*p).list); kfree_rcu!(p, rcu); });
     spin_unlock!(&mut (*net).ipv6.ip6addrlbl_table.lock);
 }
 

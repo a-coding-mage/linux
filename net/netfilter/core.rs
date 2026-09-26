@@ -7,7 +7,7 @@
  */
 // Dependencies are supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_JUMP_LABEL")]
+#[cfg(CONFIG_JUMP_LABEL)]
 static mut NF_HOOKS_NEEDED: [[static_key; NF_MAX_HOOKS]; NFPROTO_NUMPROTO] = [[static_key::default(); NF_MAX_HOOKS]; NFPROTO_NUMPROTO];
 
 static mut NF_HOOK_MUTEX: mutex = mutex::new();
@@ -126,23 +126,23 @@ pub unsafe fn nf_hook_slow_list(head: *mut list_head, state: *mut nf_hook_state,
 #[no_mangle] pub static mut nf_defrag_v4_hook: *const nf_defrag_hook = core::ptr::null();
 #[no_mangle] pub static mut nf_defrag_v6_hook: *const nf_defrag_hook = core::ptr::null();
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK")]
+#[cfg(CONFIG_NF_CONNTRACK)]
 #[no_mangle] pub static mut nf_ctnetlink_has_listener: u8 = 0;
-#[cfg(feature = "CONFIG_NF_CONNTRACK")]
+#[cfg(CONFIG_NF_CONNTRACK)]
 #[no_mangle] pub static mut nf_nat_hook: *const nf_nat_hook = core::ptr::null();
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK")]
+#[cfg(CONFIG_NF_CONNTRACK)]
 pub unsafe fn nf_ct_attach(new: *mut sk_buff, skb: *const sk_buff) {
     if (*skb)._nfct != 0 { rcu_read_lock(); let h = rcu_dereference(nf_ct_hook); if !h.is_null() { ((*h).attach)(new, skb); } rcu_read_unlock(); }
 }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK")]
+#[cfg(CONFIG_NF_CONNTRACK)]
 pub unsafe fn nf_conntrack_destroy(nfct: *mut nf_conntrack) { rcu_read_lock(); let h=rcu_dereference(nf_ct_hook); if !h.is_null() { ((*h).destroy)(nfct); } rcu_read_unlock(); WARN_ON(h.is_null()); }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK")]
+#[cfg(CONFIG_NF_CONNTRACK)]
 pub unsafe fn nf_ct_set_closing(nfct: *mut nf_conntrack) { if nfct.is_null() { return; } rcu_read_lock(); let h=rcu_dereference(nf_ct_hook); if !h.is_null() { ((*h).set_closing)(nfct); } rcu_read_unlock(); }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK")]
+#[cfg(CONFIG_NF_CONNTRACK)]
 pub unsafe fn nf_ct_get_tuple_skb(dst: *mut nf_conntrack_tuple, skb: *const sk_buff) -> bool { rcu_read_lock(); let h=rcu_dereference(nf_ct_hook); let ret=if h.is_null(){false}else{((*h).get_tuple_skb)(dst,skb)}; rcu_read_unlock(); ret }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

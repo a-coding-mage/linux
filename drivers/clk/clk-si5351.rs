@@ -39,9 +39,9 @@ pub mod si5351_translation {
 struct si5351_driver_data;
 
 struct si5351_parameters {
-	unsigned long	p1;
-	unsigned long	p2;
-	unsigned long	p3;
+	core::ffi::c_ulong	p1;
+	core::ffi::c_ulong	p2;
+	core::ffi::c_ulong	p3;
 	int		valid;
 };
 
@@ -49,7 +49,7 @@ struct si5351_hw_data {
 	struct clk_hw			hw;
 	struct si5351_driver_data	*drvdata;
 	struct si5351_parameters	params;
-	unsigned char			num;
+	core::ffi::c_uchar			num;
 };
 
 struct si5351_driver_data {
@@ -86,7 +86,7 @@ static const char * const si5351_clkout_names[] = {
 /*
  * Si5351 i2c regmap
  */
-static inline u8 si5351_reg_read(struct si5351_driver_data *drvdata, u8 reg)
+u8 si5351_reg_read(si5351_driver_data *drvdata, reg: u8)
 {
 	u32 val;
 	int ret;
@@ -101,39 +101,39 @@ static inline u8 si5351_reg_read(struct si5351_driver_data *drvdata, u8 reg)
 	return (u8)val;
 }
 
-static inline int si5351_bulk_read(struct si5351_driver_data *drvdata,
-				   u8 reg, u8 count, u8 *buf)
+int si5351_bulk_read(si5351_driver_data *drvdata,
+				   reg: u8, count: u8, u8 *buf)
 {
 	return regmap_bulk_read(drvdata->regmap, reg, buf, count);
 }
 
-static inline int si5351_reg_write(struct si5351_driver_data *drvdata,
-				   u8 reg, u8 val)
+int si5351_reg_write(si5351_driver_data *drvdata,
+				   reg: u8, val: u8)
 {
 	return regmap_write(drvdata->regmap, reg, val);
 }
 
-static inline int si5351_bulk_write(struct si5351_driver_data *drvdata,
-				    u8 reg, u8 count, const u8 *buf)
+int si5351_bulk_write(si5351_driver_data *drvdata,
+				    reg: u8, count: u8, const u8 *buf)
 {
 	return regmap_raw_write(drvdata->regmap, reg, buf, count);
 }
 
-static inline int si5351_set_bits(struct si5351_driver_data *drvdata,
-				  u8 reg, u8 mask, u8 val)
+int si5351_set_bits(si5351_driver_data *drvdata,
+				  reg: u8, mask: u8, val: u8)
 {
 	return regmap_update_bits(drvdata->regmap, reg, mask, val);
 }
 
-static inline u8 si5351_msynth_params_address(int num)
+u8 si5351_msynth_params_address(int num)
 {
 	if (num > 5)
 		return SI5351_CLK6_PARAMETERS + (num - 6);
 	return SI5351_CLK0_PARAMETERS + (SI5351_PARAMETERS_LENGTH * num);
 }
 
-static void si5351_read_parameters(struct si5351_driver_data *drvdata,
-				   u8 reg, struct si5351_parameters *params)
+static void si5351_read_parameters(si5351_driver_data *drvdata,
+				   reg: u8, si5351_parameters *params)
 {
 	u8 buf[SI5351_PARAMETERS_LENGTH];
 
@@ -154,8 +154,8 @@ static void si5351_read_parameters(struct si5351_driver_data *drvdata,
 	params->valid = 1;
 }
 
-static void si5351_write_parameters(struct si5351_driver_data *drvdata,
-				    u8 reg, struct si5351_parameters *params)
+static void si5351_write_parameters(si5351_driver_data *drvdata,
+				    reg: u8, si5351_parameters *params)
 {
 	u8 buf[SI5351_PARAMETERS_LENGTH];
 
@@ -181,7 +181,7 @@ static void si5351_write_parameters(struct si5351_driver_data *drvdata,
 	}
 }
 
-static bool si5351_regmap_is_volatile(struct device *dev, unsigned int reg)
+static bool si5351_regmap_is_volatile(device *dev, reg: core::ffi::c_uint)
 {
 	switch (reg) {
 	case SI5351_DEVICE_STATUS:
@@ -192,7 +192,7 @@ static bool si5351_regmap_is_volatile(struct device *dev, unsigned int reg)
 	return false;
 }
 
-static bool si5351_regmap_is_writeable(struct device *dev, unsigned int reg)
+static bool si5351_regmap_is_writeable(device *dev, reg: core::ffi::c_uint)
 {
 	/* reserved registers */
 	if (reg >= 4 && reg <= 8)
@@ -210,55 +210,55 @@ static bool si5351_regmap_is_writeable(struct device *dev, unsigned int reg)
 }
 
 static const struct regmap_config si5351_regmap_config = {
-	.reg_bits = 8,
-	.val_bits = 8,
-	.cache_type = REGCACHE_MAPLE,
-	.max_register = 187,
-	.writeable_reg = si5351_regmap_is_writeable,
-	.volatile_reg = si5351_regmap_is_volatile,
+	reg_bits: 8,
+	val_bits: 8,
+	cache_type: REGCACHE_MAPLE,
+	max_register: 187,
+	writeable_reg: si5351_regmap_is_writeable,
+	volatile_reg: si5351_regmap_is_volatile,
 };
 
 /*
  * Si5351 xtal clock input
  */
-static int si5351_xtal_prepare(struct clk_hw *hw)
+static int si5351_xtal_prepare(clk_hw *hw)
 {
 	struct si5351_driver_data *drvdata =
-		container_of(hw, struct si5351_driver_data, xtal);
+		container_of(hw, si5351_driver_data, xtal);
 	si5351_set_bits(drvdata, SI5351_FANOUT_ENABLE,
 			SI5351_XTAL_ENABLE, SI5351_XTAL_ENABLE);
 	return 0;
 }
 
-static void si5351_xtal_unprepare(struct clk_hw *hw)
+static void si5351_xtal_unprepare(clk_hw *hw)
 {
 	struct si5351_driver_data *drvdata =
-		container_of(hw, struct si5351_driver_data, xtal);
+		container_of(hw, si5351_driver_data, xtal);
 	si5351_set_bits(drvdata, SI5351_FANOUT_ENABLE,
 			SI5351_XTAL_ENABLE, 0);
 }
 
 static const struct clk_ops si5351_xtal_ops = {
-	.prepare = si5351_xtal_prepare,
-	.unprepare = si5351_xtal_unprepare,
+	prepare: si5351_xtal_prepare,
+	unprepare: si5351_xtal_unprepare,
 };
 
 /*
  * Si5351 clkin clock input (Si5351C only)
  */
-static int si5351_clkin_prepare(struct clk_hw *hw)
+static int si5351_clkin_prepare(clk_hw *hw)
 {
 	struct si5351_driver_data *drvdata =
-		container_of(hw, struct si5351_driver_data, clkin);
+		container_of(hw, si5351_driver_data, clkin);
 	si5351_set_bits(drvdata, SI5351_FANOUT_ENABLE,
 			SI5351_CLKIN_ENABLE, SI5351_CLKIN_ENABLE);
 	return 0;
 }
 
-static void si5351_clkin_unprepare(struct clk_hw *hw)
+static void si5351_clkin_unprepare(clk_hw *hw)
 {
 	struct si5351_driver_data *drvdata =
-		container_of(hw, struct si5351_driver_data, clkin);
+		container_of(hw, si5351_driver_data, clkin);
 	si5351_set_bits(drvdata, SI5351_FANOUT_ENABLE,
 			SI5351_CLKIN_ENABLE, 0);
 }
@@ -268,13 +268,13 @@ static void si5351_clkin_unprepare(struct clk_hw *hw)
  * The input frequency range of the PLL is 10Mhz to 40MHz.
  * If CLKIN is >40MHz, the input divider must be used.
  */
-static unsigned long si5351_clkin_recalc_rate(struct clk_hw *hw,
-					      unsigned long parent_rate)
+static core::ffi::c_ulong si5351_clkin_recalc_rate(clk_hw *hw,
+					      parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_driver_data *drvdata =
-		container_of(hw, struct si5351_driver_data, clkin);
-	unsigned long rate;
-	unsigned char idiv;
+		container_of(hw, si5351_driver_data, clkin);
+	core::ffi::c_ulong rate;
+	core::ffi::c_uchar idiv;
 
 	rate = parent_rate;
 	if (parent_rate > 160000000) {
@@ -300,46 +300,46 @@ static unsigned long si5351_clkin_recalc_rate(struct clk_hw *hw,
 }
 
 static const struct clk_ops si5351_clkin_ops = {
-	.prepare = si5351_clkin_prepare,
-	.unprepare = si5351_clkin_unprepare,
-	.recalc_rate = si5351_clkin_recalc_rate,
+	prepare: si5351_clkin_prepare,
+	unprepare: si5351_clkin_unprepare,
+	recalc_rate: si5351_clkin_recalc_rate,
 };
 
 /*
  * Si5351 vxco clock input (Si5351B only)
  */
 
-static int si5351_vxco_prepare(struct clk_hw *hw)
+static int si5351_vxco_prepare(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 
 	dev_warn(&hwdata->drvdata->client->dev, "VXCO currently unsupported\n");
 
 	return 0;
 }
 
-static void si5351_vxco_unprepare(struct clk_hw *hw)
+static void si5351_vxco_unprepare(clk_hw *hw)
 {
 }
 
-static unsigned long si5351_vxco_recalc_rate(struct clk_hw *hw,
-					     unsigned long parent_rate)
+static core::ffi::c_ulong si5351_vxco_recalc_rate(clk_hw *hw,
+					     parent_rate: core::ffi::c_ulong)
 {
 	return 0;
 }
 
-static int si5351_vxco_set_rate(struct clk_hw *hw, unsigned long rate,
-				unsigned long parent)
+static int si5351_vxco_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
+				parent: core::ffi::c_ulong)
 {
 	return 0;
 }
 
 static const struct clk_ops si5351_vxco_ops = {
-	.prepare = si5351_vxco_prepare,
-	.unprepare = si5351_vxco_unprepare,
-	.recalc_rate = si5351_vxco_recalc_rate,
-	.set_rate = si5351_vxco_set_rate,
+	prepare: si5351_vxco_prepare,
+	unprepare: si5351_vxco_unprepare,
+	recalc_rate: si5351_vxco_recalc_rate,
+	set_rate: si5351_vxco_set_rate,
 };
 
 /*
@@ -368,8 +368,8 @@ static const struct clk_ops si5351_vxco_ops = {
  *         = (MSNx_P1*MSNx_P3 + MSNx_P2 + 512*MSNx_P3)/(128*MSNx_P3)
  *
  */
-static int _si5351_pll_reparent(struct si5351_driver_data *drvdata,
-				int num, enum si5351_pll_src parent)
+static int _si5351_pll_reparent(si5351_driver_data *drvdata,
+				int num, si5351_pll_src parent)
 {
 	u8 mask = (num == 0) ? SI5351_PLLA_SOURCE : SI5351_PLLB_SOURCE;
 
@@ -388,10 +388,10 @@ static int _si5351_pll_reparent(struct si5351_driver_data *drvdata,
 	return 0;
 }
 
-static unsigned char si5351_pll_get_parent(struct clk_hw *hw)
+static core::ffi::c_uchar si5351_pll_get_parent(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	u8 mask = (hwdata->num == 0) ? SI5351_PLLA_SOURCE : SI5351_PLLB_SOURCE;
 	u8 val;
 
@@ -400,10 +400,10 @@ static unsigned char si5351_pll_get_parent(struct clk_hw *hw)
 	return (val & mask) ? 1 : 0;
 }
 
-static int si5351_pll_set_parent(struct clk_hw *hw, u8 index)
+static int si5351_pll_set_parent(clk_hw *hw, index: u8)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 
 	if (hwdata->drvdata->variant != SI5351_VARIANT_C &&
 	    index > 0)
@@ -417,14 +417,14 @@ static int si5351_pll_set_parent(struct clk_hw *hw, u8 index)
 			     SI5351_PLL_SRC_CLKIN);
 }
 
-static unsigned long si5351_pll_recalc_rate(struct clk_hw *hw,
-					    unsigned long parent_rate)
+static core::ffi::c_ulong si5351_pll_recalc_rate(clk_hw *hw,
+					    parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	u8 reg = (hwdata->num == 0) ? SI5351_PLLA_PARAMETERS :
 		SI5351_PLLB_PARAMETERS;
-	unsigned long long rate;
+	core::ffi::c_ulonglong rate;
 
 	if (!hwdata->params.valid)
 		si5351_read_parameters(hwdata->drvdata, reg, &hwdata->params);
@@ -443,19 +443,19 @@ static unsigned long si5351_pll_recalc_rate(struct clk_hw *hw,
 		"%s - %s: p1 = %lu, p2 = %lu, p3 = %lu, parent_rate = %lu, rate = %lu\n",
 		__func__, clk_hw_get_name(hw),
 		hwdata->params.p1, hwdata->params.p2, hwdata->params.p3,
-		parent_rate, (unsigned long)rate);
+		parent_rate, (core::ffi::c_ulong)rate);
 
-	return (unsigned long)rate;
+	return (core::ffi::c_ulong)rate;
 }
 
-static int si5351_pll_determine_rate(struct clk_hw *hw,
-				     struct clk_rate_request *req)
+static int si5351_pll_determine_rate(clk_hw *hw,
+				     clk_rate_request *req)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
-	unsigned long rate = req->rate;
-	unsigned long rfrac, denom, a, b, c;
-	unsigned long long lltmp;
+		container_of(hw, si5351_hw_data, hw);
+	core::ffi::c_ulong rate = req->rate;
+	rfrac: core::ffi::c_ulong, denom, a, b, c;
+	core::ffi::c_ulonglong lltmp;
 
 	if (rate < SI5351_PLL_VCO_MIN)
 		rate = SI5351_PLL_VCO_MIN;
@@ -475,7 +475,7 @@ static int si5351_pll_determine_rate(struct clk_hw *hw,
 	lltmp = rate % (req->best_parent_rate);
 	lltmp *= denom;
 	do_div(lltmp, req->best_parent_rate);
-	rfrac = (unsigned long)lltmp;
+	rfrac = (core::ffi::c_ulong)lltmp;
 
 	b = 0;
 	c = 1;
@@ -495,7 +495,7 @@ static int si5351_pll_determine_rate(struct clk_hw *hw,
 	lltmp *= b;
 	do_div(lltmp, c);
 
-	rate  = (unsigned long)lltmp;
+	rate  = (core::ffi::c_ulong)lltmp;
 	rate += req->best_parent_rate * a;
 
 	dev_dbg(&hwdata->drvdata->client->dev,
@@ -507,11 +507,11 @@ static int si5351_pll_determine_rate(struct clk_hw *hw,
 	return 0;
 }
 
-static int si5351_pll_set_rate(struct clk_hw *hw, unsigned long rate,
-			       unsigned long parent_rate)
+static int si5351_pll_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
+			       parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	struct si5351_platform_data *pdata =
 		hwdata->drvdata->client->dev.platform_data;
 	u8 reg = (hwdata->num == 0) ? SI5351_PLLA_PARAMETERS :
@@ -541,11 +541,11 @@ static int si5351_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 }
 
 static const struct clk_ops si5351_pll_ops = {
-	.set_parent = si5351_pll_set_parent,
-	.get_parent = si5351_pll_get_parent,
-	.recalc_rate = si5351_pll_recalc_rate,
-	.determine_rate = si5351_pll_determine_rate,
-	.set_rate = si5351_pll_set_rate,
+	set_parent: si5351_pll_set_parent,
+	get_parent: si5351_pll_get_parent,
+	recalc_rate: si5351_pll_recalc_rate,
+	determine_rate: si5351_pll_determine_rate,
+	set_rate: si5351_pll_set_rate,
 };
 
 /*
@@ -571,8 +571,8 @@ static const struct clk_ops si5351_pll_ops = {
  *
  * MSx_P1 = 0, MSx_P2 = 0, MSx_P3 = 1, MSx_INT = 1, MSx_DIVBY4 = 11b
  */
-static int _si5351_msynth_reparent(struct si5351_driver_data *drvdata,
-				   int num, enum si5351_multisynth_src parent)
+static int _si5351_msynth_reparent(si5351_driver_data *drvdata,
+				   int num, si5351_multisynth_src parent)
 {
 	if (parent == SI5351_MULTISYNTH_SRC_DEFAULT)
 		return 0;
@@ -586,10 +586,10 @@ static int _si5351_msynth_reparent(struct si5351_driver_data *drvdata,
 	return 0;
 }
 
-static unsigned char si5351_msynth_get_parent(struct clk_hw *hw)
+static core::ffi::c_uchar si5351_msynth_get_parent(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	u8 val;
 
 	val = si5351_reg_read(hwdata->drvdata, SI5351_CLK0_CTRL + hwdata->num);
@@ -597,24 +597,24 @@ static unsigned char si5351_msynth_get_parent(struct clk_hw *hw)
 	return (val & SI5351_CLK_PLL_SELECT) ? 1 : 0;
 }
 
-static int si5351_msynth_set_parent(struct clk_hw *hw, u8 index)
+static int si5351_msynth_set_parent(clk_hw *hw, index: u8)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 
 	return _si5351_msynth_reparent(hwdata->drvdata, hwdata->num,
 			       (index == 0) ? SI5351_MULTISYNTH_SRC_VCO0 :
 			       SI5351_MULTISYNTH_SRC_VCO1);
 }
 
-static unsigned long si5351_msynth_recalc_rate(struct clk_hw *hw,
-					       unsigned long parent_rate)
+static core::ffi::c_ulong si5351_msynth_recalc_rate(clk_hw *hw,
+					       parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	u8 reg = si5351_msynth_params_address(hwdata->num);
-	unsigned long long rate;
-	unsigned long m;
+	core::ffi::c_ulonglong rate;
+	core::ffi::c_ulong m;
 
 	if (!hwdata->params.valid)
 		si5351_read_parameters(hwdata->drvdata, reg, &hwdata->params);
@@ -646,19 +646,19 @@ static unsigned long si5351_msynth_recalc_rate(struct clk_hw *hw,
 		"%s - %s: p1 = %lu, p2 = %lu, p3 = %lu, m = %lu, parent_rate = %lu, rate = %lu\n",
 		__func__, clk_hw_get_name(hw),
 		hwdata->params.p1, hwdata->params.p2, hwdata->params.p3,
-		m, parent_rate, (unsigned long)rate);
+		m, parent_rate, (core::ffi::c_ulong)rate);
 
-	return (unsigned long)rate;
+	return (core::ffi::c_ulong)rate;
 }
 
-static int si5351_msynth_determine_rate(struct clk_hw *hw,
-					struct clk_rate_request *req)
+static int si5351_msynth_determine_rate(clk_hw *hw,
+					clk_rate_request *req)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
-	unsigned long rate = req->rate;
-	unsigned long long lltmp;
-	unsigned long a, b, c;
+		container_of(hw, si5351_hw_data, hw);
+	core::ffi::c_ulong rate = req->rate;
+	core::ffi::c_ulonglong lltmp;
+	a: core::ffi::c_ulong, b, c;
 	int divby4;
 
 	/* multisync6-7 can only handle frequencies < 150MHz */
@@ -684,7 +684,7 @@ static int si5351_msynth_determine_rate(struct clk_hw *hw,
 		if (divby4 == 0) {
 			lltmp = SI5351_PLL_VCO_MAX;
 			do_div(lltmp, rate);
-			a = (unsigned long)lltmp;
+			a = (core::ffi::c_ulong)lltmp;
 		} else
 			a = 4;
 
@@ -703,7 +703,7 @@ static int si5351_msynth_determine_rate(struct clk_hw *hw,
 		b = 0;
 		c = 1;
 	} else {
-		unsigned long rfrac, denom;
+		rfrac: core::ffi::c_ulong, denom;
 
 		/* disable divby4 */
 		if (divby4) {
@@ -723,7 +723,7 @@ static int si5351_msynth_determine_rate(struct clk_hw *hw,
 		lltmp = req->best_parent_rate % rate;
 		lltmp *= denom;
 		do_div(lltmp, rate);
-		rfrac = (unsigned long)lltmp;
+		rfrac = (core::ffi::c_ulong)lltmp;
 
 		b = 0;
 		c = 1;
@@ -737,7 +737,7 @@ static int si5351_msynth_determine_rate(struct clk_hw *hw,
 	lltmp  = req->best_parent_rate;
 	lltmp *= c;
 	do_div(lltmp, a * c + b);
-	rate  = (unsigned long)lltmp;
+	rate  = (core::ffi::c_ulong)lltmp;
 
 	/* calculate parameters */
 	if (divby4) {
@@ -766,11 +766,11 @@ static int si5351_msynth_determine_rate(struct clk_hw *hw,
 	return 0;
 }
 
-static int si5351_msynth_set_rate(struct clk_hw *hw, unsigned long rate,
-				  unsigned long parent_rate)
+static int si5351_msynth_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
+				  parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	u8 reg = si5351_msynth_params_address(hwdata->num);
 	int divby4 = 0;
 
@@ -800,18 +800,18 @@ static int si5351_msynth_set_rate(struct clk_hw *hw, unsigned long rate,
 }
 
 static const struct clk_ops si5351_msynth_ops = {
-	.set_parent = si5351_msynth_set_parent,
-	.get_parent = si5351_msynth_get_parent,
-	.recalc_rate = si5351_msynth_recalc_rate,
-	.determine_rate = si5351_msynth_determine_rate,
-	.set_rate = si5351_msynth_set_rate,
+	set_parent: si5351_msynth_set_parent,
+	get_parent: si5351_msynth_get_parent,
+	recalc_rate: si5351_msynth_recalc_rate,
+	determine_rate: si5351_msynth_determine_rate,
+	set_rate: si5351_msynth_set_rate,
 };
 
 /*
  * Si5351 clkout divider
  */
-static int _si5351_clkout_reparent(struct si5351_driver_data *drvdata,
-				   int num, enum si5351_clkout_src parent)
+static int _si5351_clkout_reparent(si5351_driver_data *drvdata,
+				   int num, si5351_clkout_src parent)
 {
 	u8 val;
 
@@ -848,8 +848,8 @@ static int _si5351_clkout_reparent(struct si5351_driver_data *drvdata,
 }
 
 static int _si5351_clkout_set_drive_strength(
-	struct si5351_driver_data *drvdata, int num,
-	enum si5351_drive_strength drive)
+	si5351_driver_data *drvdata, int num,
+	si5351_drive_strength drive)
 {
 	u8 mask;
 
@@ -879,8 +879,8 @@ static int _si5351_clkout_set_drive_strength(
 }
 
 static int _si5351_clkout_set_disable_state(
-	struct si5351_driver_data *drvdata, int num,
-	enum si5351_disable_state state)
+	si5351_driver_data *drvdata, int num,
+	si5351_disable_state state)
 {
 	u8 reg = (num < 4) ? SI5351_CLK3_0_DISABLE_STATE :
 		SI5351_CLK7_4_DISABLE_STATE;
@@ -913,12 +913,12 @@ static int _si5351_clkout_set_disable_state(
 	return 0;
 }
 
-static void _si5351_clkout_reset_pll(struct si5351_driver_data *drvdata, int num)
+static void _si5351_clkout_reset_pll(si5351_driver_data *drvdata, int num)
 {
 	u8 val = si5351_reg_read(drvdata, SI5351_CLK0_CTRL + num);
 	u8 mask = val & SI5351_CLK_PLL_SELECT ? SI5351_PLL_RESET_B :
 						       SI5351_PLL_RESET_A;
-	unsigned int v;
+	core::ffi::c_uint v;
 	int err;
 
 	switch (val & SI5351_CLK_INPUT_MASK) {
@@ -939,10 +939,10 @@ static void _si5351_clkout_reset_pll(struct si5351_driver_data *drvdata, int num
 		(val & SI5351_CLK_PLL_SELECT) ? 1 : 0);
 }
 
-static int si5351_clkout_prepare(struct clk_hw *hw)
+static int si5351_clkout_prepare(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	struct si5351_platform_data *pdata =
 		hwdata->drvdata->client->dev.platform_data;
 
@@ -961,10 +961,10 @@ static int si5351_clkout_prepare(struct clk_hw *hw)
 	return 0;
 }
 
-static void si5351_clkout_unprepare(struct clk_hw *hw)
+static void si5351_clkout_unprepare(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 
 	si5351_set_bits(hwdata->drvdata, SI5351_CLK0_CTRL + hwdata->num,
 			SI5351_CLK_POWERDOWN, SI5351_CLK_POWERDOWN);
@@ -972,12 +972,12 @@ static void si5351_clkout_unprepare(struct clk_hw *hw)
 			(1 << hwdata->num), (1 << hwdata->num));
 }
 
-static u8 si5351_clkout_get_parent(struct clk_hw *hw)
+static u8 si5351_clkout_get_parent(clk_hw *hw)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	int index = 0;
-	unsigned char val;
+	core::ffi::c_uchar val;
 
 	val = si5351_reg_read(hwdata->drvdata, SI5351_CLK0_CTRL + hwdata->num);
 	switch (val & SI5351_CLK_INPUT_MASK) {
@@ -998,10 +998,10 @@ static u8 si5351_clkout_get_parent(struct clk_hw *hw)
 	return index;
 }
 
-static int si5351_clkout_set_parent(struct clk_hw *hw, u8 index)
+static int si5351_clkout_set_parent(clk_hw *hw, index: u8)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
+		container_of(hw, si5351_hw_data, hw);
 	enum si5351_clkout_src parent = SI5351_CLKOUT_SRC_DEFAULT;
 
 	switch (index) {
@@ -1022,13 +1022,13 @@ static int si5351_clkout_set_parent(struct clk_hw *hw, u8 index)
 	return _si5351_clkout_reparent(hwdata->drvdata, hwdata->num, parent);
 }
 
-static unsigned long si5351_clkout_recalc_rate(struct clk_hw *hw,
-					       unsigned long parent_rate)
+static core::ffi::c_ulong si5351_clkout_recalc_rate(clk_hw *hw,
+					       parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
-	unsigned char reg;
-	unsigned char rdiv;
+		container_of(hw, si5351_hw_data, hw);
+	core::ffi::c_uchar reg;
+	core::ffi::c_uchar rdiv;
 
 	if (hwdata->num <= 5)
 		reg = si5351_msynth_params_address(hwdata->num) + 2;
@@ -1046,13 +1046,13 @@ static unsigned long si5351_clkout_recalc_rate(struct clk_hw *hw,
 	return parent_rate >> rdiv;
 }
 
-static int si5351_clkout_determine_rate(struct clk_hw *hw,
-					struct clk_rate_request *req)
+static int si5351_clkout_determine_rate(clk_hw *hw,
+					clk_rate_request *req)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
-	unsigned long rate = req->rate;
-	unsigned char rdiv;
+		container_of(hw, si5351_hw_data, hw);
+	core::ffi::c_ulong rate = req->rate;
+	core::ffi::c_uchar rdiv;
 
 	/* clkout6/7 can only handle output frequencies < 150MHz */
 	if (hwdata->num >= 6 && rate > SI5351_CLKOUT67_MAX_FREQ)
@@ -1075,7 +1075,7 @@ static int si5351_clkout_determine_rate(struct clk_hw *hw,
 		}
 		req->best_parent_rate = rate;
 	} else {
-		unsigned long new_rate, new_err, err;
+		new_rate: core::ffi::c_ulong, new_err, err;
 
 		/* round to closed rdiv */
 		rdiv = SI5351_OUTPUT_CLK_DIV_1;
@@ -1101,13 +1101,13 @@ static int si5351_clkout_determine_rate(struct clk_hw *hw,
 	return 0;
 }
 
-static int si5351_clkout_set_rate(struct clk_hw *hw, unsigned long rate,
-				  unsigned long parent_rate)
+static int si5351_clkout_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
+				  parent_rate: core::ffi::c_ulong)
 {
 	struct si5351_hw_data *hwdata =
-		container_of(hw, struct si5351_hw_data, hw);
-	unsigned long new_rate, new_err, err;
-	unsigned char rdiv;
+		container_of(hw, si5351_hw_data, hw);
+	new_rate: core::ffi::c_ulong, new_err, err;
+	core::ffi::c_uchar rdiv;
 
 	/* round to closed rdiv */
 	rdiv = SI5351_OUTPUT_CLK_DIV_1;
@@ -1153,13 +1153,13 @@ static int si5351_clkout_set_rate(struct clk_hw *hw, unsigned long rate,
 }
 
 static const struct clk_ops si5351_clkout_ops = {
-	.prepare = si5351_clkout_prepare,
-	.unprepare = si5351_clkout_unprepare,
-	.set_parent = si5351_clkout_set_parent,
-	.get_parent = si5351_clkout_get_parent,
-	.recalc_rate = si5351_clkout_recalc_rate,
-	.determine_rate = si5351_clkout_determine_rate,
-	.set_rate = si5351_clkout_set_rate,
+	prepare: si5351_clkout_prepare,
+	unprepare: si5351_clkout_unprepare,
+	set_parent: si5351_clkout_set_parent,
+	get_parent: si5351_clkout_get_parent,
+	recalc_rate: si5351_clkout_recalc_rate,
+	determine_rate: si5351_clkout_determine_rate,
+	set_rate: si5351_clkout_set_rate,
 };
 
 /*
@@ -1169,15 +1169,15 @@ static const struct clk_ops si5351_clkout_ops = {
 static const struct of_device_id si5351_dt_ids[] = {
 	{ .compatible = "silabs,si5351a", .data = (void *)SI5351_VARIANT_A, },
 	{ .compatible = "silabs,si5351a-msop",
-					 .data = (void *)SI5351_VARIANT_A3, },
+					 data: (void *)SI5351_VARIANT_A3, },
 	{ .compatible = "silabs,si5351b", .data = (void *)SI5351_VARIANT_B, },
 	{ .compatible = "silabs,si5351c", .data = (void *)SI5351_VARIANT_C, },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, si5351_dt_ids);
 
-static int si5351_dt_parse(struct i2c_client *client,
-			   enum si5351_variant variant)
+static int si5351_dt_parse(i2c_client *client,
+			   si5351_variant variant)
 {
 	struct device_node *child, *np = client->dev.of_node;
 	struct si5351_platform_data *pdata;
@@ -1279,7 +1279,7 @@ static int si5351_dt_parse(struct i2c_client *client,
 	}
 
 	/* per clkout properties */
-	for_each_child_of_node(np, child) {
+	for_each_child_of_node!(np, child, {
 		if (of_property_read_u32(child, "reg", &num)) {
 			dev_err(&client->dev, "missing reg property of %pOFn\n",
 				child);
@@ -1395,7 +1395,7 @@ static int si5351_dt_parse(struct i2c_client *client,
 
 		pdata->clkout[num].pll_reset =
 			of_property_read_bool(child, "silabs,pll-reset");
-	}
+	});
 	client->dev.platform_data = pdata;
 
 	return 0;
@@ -1405,10 +1405,10 @@ put_child:
 }
 
 static struct clk_hw *
-si53351_of_clk_get(struct of_phandle_args *clkspec, void *data)
+si53351_of_clk_get(of_phandle_args *clkspec, void *data)
 {
 	struct si5351_driver_data *drvdata = data;
-	unsigned int idx = clkspec->args[0];
+	core::ffi::c_uint idx = clkspec->args[0];
 
 	if (idx >= drvdata->num_clkout) {
 		pr_err("%s: invalid index %u\n", __func__, idx);
@@ -1418,13 +1418,13 @@ si53351_of_clk_get(struct of_phandle_args *clkspec, void *data)
 	return &drvdata->clkout[idx].hw;
 }
 #else
-static int si5351_dt_parse(struct i2c_client *client, enum si5351_variant variant)
+static int si5351_dt_parse(i2c_client *client, si5351_variant variant)
 {
 	return 0;
 }
 
 static struct clk_hw *
-si53351_of_clk_get(struct of_phandle_args *clkspec, void *data)
+si53351_of_clk_get(of_phandle_args *clkspec, void *data)
 {
 	return NULL;
 }
@@ -1439,17 +1439,17 @@ static const struct i2c_device_id si5351_i2c_ids[] = {
 };
 MODULE_DEVICE_TABLE(i2c, si5351_i2c_ids);
 
-static int si5351_i2c_probe(struct i2c_client *client)
+static int si5351_i2c_probe(i2c_client *client)
 {
 	enum si5351_variant variant;
 	struct si5351_platform_data *pdata;
 	struct si5351_driver_data *drvdata;
 	struct clk_init_data init;
 	const char *parent_names[4];
-	u8 num_parents, num_clocks;
+	num_parents: u8, num_clocks;
 	int ret, n;
 
-	variant = (enum si5351_variant)(uintptr_t)i2c_get_match_data(client);
+	variant = (si5351_variant)(uintptr_t)i2c_get_match_data(client);
 	ret = si5351_dt_parse(client, variant);
 	if (ret)
 		return ret;
@@ -1715,12 +1715,12 @@ static int si5351_i2c_probe(struct i2c_client *client)
 }
 
 static struct i2c_driver si5351_driver = {
-	.driver = {
-		.name = "si5351",
-		.of_match_table = of_match_ptr(si5351_dt_ids),
+	driver: {
+		name: "si5351",
+		of_match_table: of_match_ptr(si5351_dt_ids),
 	},
-	.probe = si5351_i2c_probe,
-	.id_table = si5351_i2c_ids,
+	probe: si5351_i2c_probe,
+	id_table: si5351_i2c_ids,
 };
 module_i2c_driver(si5351_driver);
 

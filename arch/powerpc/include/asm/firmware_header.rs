@@ -55,7 +55,7 @@ pub const FW_FEATURE_WATCHDOG: u64 = 0x0000080000000000;
 pub const FW_FEATURE_PLPKS: u64 = 0x0000100000000000;
 
 // CONFIG_PPC64 selects the following pseries/POWERNV/PS3/native feature sets.
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_PSERIES_POSSIBLE: u64 =
     FW_FEATURE_PFT | FW_FEATURE_TCE | FW_FEATURE_SPRG0 | FW_FEATURE_DABR |
     FW_FEATURE_COPY | FW_FEATURE_ASR | FW_FEATURE_DEBUG | FW_FEATURE_TERM |
@@ -70,33 +70,33 @@ pub const FW_FEATURE_PSERIES_POSSIBLE: u64 =
     FW_FEATURE_ULTRAVISOR | FW_FEATURE_RPT_INVALIDATE | FW_FEATURE_FORM2_AFFINITY |
     FW_FEATURE_ENERGY_SCALE_INFO | FW_FEATURE_WATCHDOG | FW_FEATURE_PLPKS;
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_PSERIES_ALWAYS: u64 = 0;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_POWERNV_POSSIBLE: u64 = FW_FEATURE_OPAL | FW_FEATURE_ULTRAVISOR;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_POWERNV_ALWAYS: u64 = 0;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_PS3_POSSIBLE: u64 = FW_FEATURE_LPAR | FW_FEATURE_PS3_LV1;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_PS3_ALWAYS: u64 = FW_FEATURE_LPAR | FW_FEATURE_PS3_LV1;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_NATIVE_POSSIBLE: u64 = 0;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_NATIVE_ALWAYS: u64 = 0;
 
 // The CONFIG_PPC_* branches below mirror the C preprocessor conditions.
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_POSSIBLE: u64 =
     FW_FEATURE_PSERIES_POSSIBLE | FW_FEATURE_POWERNV_POSSIBLE |
     FW_FEATURE_PS3_POSSIBLE | FW_FEATURE_NATIVE_ALWAYS;
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 pub const FW_FEATURE_ALWAYS: u64 =
     FW_FEATURE_PSERIES_ALWAYS & FW_FEATURE_POWERNV_ALWAYS &
     FW_FEATURE_PS3_ALWAYS & FW_FEATURE_NATIVE_ALWAYS & FW_FEATURE_POSSIBLE;
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 pub const FW_FEATURE_POSSIBLE: u64 = 0;
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 pub const FW_FEATURE_ALWAYS: u64 = 0;
 
 /* This is used to identify firmware features which are available
@@ -118,12 +118,12 @@ pub unsafe fn firmware_has_feature(feature: u64) -> bool {
         || (FW_FEATURE_POSSIBLE & powerpc_firmware_features as u64 & feature) != 0
 }
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 extern "C" {
     pub fn pseries_probe_fw_features();
 }
 
-#[cfg(not(feature = "CONFIG_PPC_PSERIES"))]
+#[cfg(not(CONFIG_PPC_PSERIES))]
 #[inline]
 pub fn pseries_probe_fw_features() {}
 

@@ -7,12 +7,12 @@
 // The declarations below are present only when CONFIG_XFS_ONLINE_REPAIR is
 // enabled in the C build.
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 extern "C" {
     pub fn xrep_orphanage_create(sc: *mut xfs_scrub) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 #[inline]
 pub unsafe fn xrep_orphanage_try_create(sc: *mut xfs_scrub) -> ::core::ffi::c_int {
     let mut error: ::core::ffi::c_int;
@@ -33,21 +33,20 @@ pub unsafe fn xrep_orphanage_try_create(sc: *mut xfs_scrub) -> ::core::ffi::c_in
     }
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 extern "C" {
     pub fn xrep_orphanage_iolock_two(sc: *mut xfs_scrub) -> ::core::ffi::c_int;
 
     pub fn xrep_orphanage_ilock(sc: *mut xfs_scrub, ilock_flags: ::core::ffi::c_uint);
     pub fn xrep_orphanage_ilock_nowait(
         sc: *mut xfs_scrub,
-        ilock_flags: ::core::ffi::c_uint,
-    ) -> bool;
+        ilock_flags: ::core::ffi::c_uint) -> bool;
     pub fn xrep_orphanage_iunlock(sc: *mut xfs_scrub, ilock_flags: ::core::ffi::c_uint);
 
     pub fn xrep_orphanage_rele(sc: *mut xfs_scrub);
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 #[repr(C)]
 pub struct xrep_adoption {
     pub sc: *mut xfs_scrub,
@@ -71,29 +70,27 @@ pub struct xrep_adoption {
     pub bump_child_nlink: bool,
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 extern "C" {
     pub fn xrep_orphanage_can_adopt(sc: *mut xfs_scrub) -> bool;
 
     pub fn xrep_adoption_trans_alloc(
         sc: *mut xfs_scrub,
-        adopt: *mut xrep_adoption,
-    ) -> ::core::ffi::c_int;
+        adopt: *mut xrep_adoption) -> ::core::ffi::c_int;
     pub fn xrep_adoption_compute_name(
         adopt: *mut xrep_adoption,
-        xname: *mut xfs_name,
-    ) -> ::core::ffi::c_int;
+        xname: *mut xfs_name) -> ::core::ffi::c_int;
     pub fn xrep_adoption_move(adopt: *mut xrep_adoption) -> ::core::ffi::c_int;
     pub fn xrep_adoption_trans_roll(adopt: *mut xrep_adoption) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_REPAIR"))]
+#[cfg(not(CONFIG_XFS_ONLINE_REPAIR))]
 #[repr(C)]
 pub struct xrep_adoption {
     _empty: [u8; 0],
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_REPAIR"))]
+#[cfg(not(CONFIG_XFS_ONLINE_REPAIR))]
 #[inline]
 pub fn xrep_orphanage_rele(_sc: *mut xfs_scrub) {}
 

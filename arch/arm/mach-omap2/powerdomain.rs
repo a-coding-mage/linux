@@ -22,6 +22,7 @@ unsafe fn _pwrdm_lookup(name: *const core::ffi::c_char) -> *mut powerdomain {
 static mut pwrdm_list: list_head = LIST_HEAD_INIT!(pwrdm_list);
 
 unsafe fn _pwrdm_register(p: *mut powerdomain) -> i32 {
+    'skip_voltdm: {
     if p.is_null() || (*p).name.is_null() { return -EINVAL; }
     if cpu_is_omap44xx() && (*p).prcm_partition == OMAP4430_INVALID_PRCM_PARTITION {
         pr_err!("powerdomain: {}: missing OMAP4 PRCM partition ID\n", cstr!((*p).name));
@@ -30,14 +31,15 @@ unsafe fn _pwrdm_register(p: *mut powerdomain) -> i32 {
     if !_pwrdm_lookup((*p).name).is_null() { return -EEXIST; }
     if !ARCH_PWRDM.is_null() {
         if let Some(f) = (*ARCH_PWRDM).pwrdm_has_voltdm {
-            if !f() { goto!(skip_voltdm); }
+            if !f() { break 'skip_voltdm; }
         }
     }
     let v = voltdm_lookup((*p).voltdm.name);
     if v.is_null() { pr_err!("powerdomain: voltagedomain does not exist\n"); return -EINVAL; }
     (*p).voltdm.ptr = v;
     INIT_LIST_HEAD!(&mut (*p).voltdm_node);
-    skip_voltdm:
+    }
+    
     spin_lock_init!(&mut (*p)._lock);
     list_add!(&mut (*p).node, &mut pwrdm_list);
     for x in (*p).state_counter.iter_mut() { *x = 0; }
@@ -88,9 +90,9 @@ pub unsafe fn pwrdm_read_prev_pwrst(p:*mut powerdomain)->i32{if p.is_null(){retu
 pub unsafe fn pwrdm_set_logic_retst(p:*mut powerdomain,s:u8)->i32{if p.is_null()||(*p).pwrsts_logic_ret&(1<<s)==0{return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).pwrdm_set_logic_retst{return f(p,s)}}-EINVAL}
 pub unsafe fn pwrdm_set_mem_onst(p:*mut powerdomain,b:u8,s:u8)->i32{if p.is_null(){return -EINVAL}if (*p).banks<=b{return -EEXIST}if (*p).pwrsts_mem_on[b as usize]&(1<<s)==0{return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).pwrdm_set_mem_onst{return f(p,b,s)}}-EINVAL}
 pub unsafe fn pwrdm_set_mem_retst(p:*mut powerdomain,b:u8,s:u8)->i32{if p.is_null(){return -EINVAL}if (*p).banks<=b{return -EEXIST}if (*p).pwrsts_mem_ret[b as usize]&(1<<s)==0{return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).pwrdm_set_mem_retst{return f(p,b,s)}}-EINVAL}
-macro_rules! read1 {($n:ident,$f:ident)=>{pub unsafe fn $n(p:*mut powerdomain)->i32{if p.is_null(){return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).$f{return f(p)}}-EINVAL}}}
+macro_rules! read1 {($n:ident,$f:ident) => {pub unsafe fn $(*$n(p:*mut powerdomain)).i32{if p.is_null(){return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some($f)=(*ARCH_PWRDM).$f{return $f(p)}}-EINVAL}}}
 read1!(pwrdm_read_logic_pwrst,pwrdm_read_logic_pwrst); read1!(pwrdm_read_prev_logic_pwrst,pwrdm_read_prev_logic_pwrst); read1!(pwrdm_read_logic_retst,pwrdm_read_logic_retst);
-macro_rules! read2 {($n:ident,$f:ident)=>{pub unsafe fn $n(p:*mut powerdomain,mut b:u8)->i32{if p.is_null()||(*p).banks<=b{return -EINVAL}if (*p).flags&PWRDM_HAS_MPU_QUIRK!=0{b=1}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).$f{return f(p,b)}}-EINVAL}}}
+macro_rules! read2 {($n:ident,$f:ident) => {pub unsafe fn $(*$n(p:*mut powerdomain,mut b:u8)).i32{if p.is_null()||(*p).banks<=b{return -EINVAL}if (*p).flags&PWRDM_HAS_MPU_QUIRK!=0{b=1}if !ARCH_PWRDM.is_null(){if let Some($f)=(*ARCH_PWRDM).$f{return $f(p,b)}}-EINVAL}}}
 read2!(pwrdm_read_mem_pwrst,pwrdm_read_mem_pwrst);read2!(pwrdm_read_prev_mem_pwrst,pwrdm_read_prev_mem_pwrst);read2!(pwrdm_read_mem_retst,pwrdm_read_mem_retst);
 pub unsafe fn pwrdm_clear_all_prev_pwrst(p:*mut powerdomain)->i32{if p.is_null(){return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).pwrdm_clear_all_prev_pwrst{return f(p)}}-EINVAL}
 pub unsafe fn pwrdm_enable_hdwr_sar(p:*mut powerdomain)->i32{if p.is_null()||(*p).flags&PWRDM_HAS_HDWR_SAR==0{return -EINVAL}if !ARCH_PWRDM.is_null(){if let Some(f)=(*ARCH_PWRDM).pwrdm_enable_hdwr_sar{return f(p)}}-EINVAL}

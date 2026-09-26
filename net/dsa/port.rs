@@ -33,16 +33,16 @@ unsafe fn dsa_port_notify(dp: *const dsa_port, event: usize, value: *mut core::f
 /* External helpers mirror the declarations and macros supplied by the C
  * headers; no dependency implementations are invented here. */
 extern "C" {
-    fn dsa_port_to_bridge_port(*const dsa_port) -> *mut net_device;
-    fn dsa_port_bridge_dev_get(*const dsa_port) -> *mut net_device;
-    fn dsa_port_to_conduit(*const dsa_port) -> *mut net_device;
-    fn dsa_port_is_user(*const dsa_port) -> bool;
-    fn dsa_port_is_vlan_filtering(*const dsa_port) -> bool;
-    fn dsa_port_set_state_external(*mut dsa_port,u8,bool)->i32;
-    fn dsa_port_vlan_filtering_external(*mut dsa_port,bool,*mut netlink_ext_ack)->i32;
-    fn dsa_port_bridge_flags_external(*mut dsa_port,usize,*mut netlink_ext_ack)->i32;
-    fn dsa_port_ageing_time_external(*mut dsa_port,usize)->i32;
-    fn dsa_port_host_fdb_external(*mut dsa_port,*const u8,u16,bool)->i32;
+    fn dsa_port_to_bridge_port(_: *const dsa_port) -> *mut net_device;
+    fn dsa_port_bridge_dev_get(_: *const dsa_port) -> *mut net_device;
+    fn dsa_port_to_conduit(_: *const dsa_port) -> *mut net_device;
+    fn dsa_port_is_user(_: *const dsa_port) -> bool;
+    fn dsa_port_is_vlan_filtering(_: *const dsa_port) -> bool;
+    fn dsa_port_set_state_external(_: *mut dsa_port,_: u8,_: bool)->i32;
+    fn dsa_port_vlan_filtering_external(_: *mut dsa_port,_: bool,_: *mut netlink_ext_ack)->i32;
+    fn dsa_port_bridge_flags_external(_: *mut dsa_port,_: usize,_: *mut netlink_ext_ack)->i32;
+    fn dsa_port_ageing_time_external(_: *mut dsa_port,_: usize)->i32;
+    fn dsa_port_host_fdb_external(_: *mut dsa_port,_: *const u8,_: u16,_: bool)->i32;
 }
 
 pub unsafe extern "C" fn dsa_port_set_state(dp: *mut dsa_port, state: u8, do_fast_age: bool) -> i32 { dsa_port_set_state_external(dp,state,do_fast_age) }

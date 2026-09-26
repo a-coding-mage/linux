@@ -19,9 +19,9 @@ macro_rules! addr_in_module {
 #[macro_export]
 macro_rules! imx_io_p2v_module {
     ($addr:expr, $base:expr, $size:expr, $base_virt:expr) => {{
-        let addr = $addr;
-        if (addr as usize).wrapping_sub($base as usize) < $size as usize {
-            (addr as usize).wrapping_sub($base as usize) + $base_virt as usize
+        let $addr = $addr;
+        if ($addr as usize).wrapping_sub($base as usize) < $size as usize {
+            ($addr as usize).wrapping_sub($base as usize) + $base_virt as usize
         } else {
             0
         }
@@ -38,12 +38,12 @@ macro_rules! imx_io_p2v_module {
 #[macro_export]
 macro_rules! imx_io_p2v {
     ($x:expr) => {{
-        let x = $x as usize;
-        ((x & 0x8000_0000usize) >> 7)
+        let $x = $x as usize;
+        (($x & 0x8000_0000usize) >> 7)
             | (0xf400_0000usize
-                + ((x & 0x5000_0000usize) >> 6)
-                + ((x & 0x0b00_0000usize) >> 4)
-                + (x & 0x000f_ffffusize))
+                + (($x & 0x5000_0000usize) >> 6)
+                + (($x & 0x0b00_0000usize) >> 4)
+                + ($x & 0x000f_ffffusize))
     }};
 }
 

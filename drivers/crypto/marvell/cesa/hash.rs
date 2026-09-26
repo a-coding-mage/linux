@@ -45,9 +45,9 @@ extern "C" {
     fn mv_cesa_req_get_type(r:*mut mv_cesa_req)->c_int;
     fn mv_cesa_dma_cleanup(r:*mut mv_cesa_req); fn mv_cesa_dma_prepare(r:*mut mv_cesa_req,e:*mut mv_cesa_engine); fn mv_cesa_dma_step(r:*mut mv_cesa_req); fn mv_cesa_dma_process(r:*mut mv_cesa_req,s:u32)->c_int;
     fn mv_cesa_ahash_dma_cleanup(r:*mut ahash_request); fn mv_cesa_ahash_dma_last_cleanup(r:*mut ahash_request);
-    fn mv_cesa_update_op_cfg(*mut mv_cesa_op_ctx,u32,u32); fn mv_cesa_set_op_cfg(*mut mv_cesa_op_ctx,u32); fn mv_cesa_set_mac_op_total_len(*mut mv_cesa_op_ctx,u64); fn mv_cesa_set_mac_op_frag_len(*mut mv_cesa_op_ctx,usize);
-    fn mv_cesa_adjust_op(*mut mv_cesa_engine,*mut mv_cesa_op_ctx); fn mv_cesa_set_int_mask(*mut mv_cesa_engine,u32); fn mv_cesa_get_op_cfg(*mut mv_cesa_op_ctx)->u32;
-    fn mv_cesa_select_engine(usize)->*mut mv_cesa_engine; fn mv_cesa_queue_req(*mut crypto_async_request,*mut mv_cesa_req)->c_int; fn mv_cesa_req_needs_cleanup(*mut crypto_async_request,c_int)->bool;
+    fn mv_cesa_update_op_cfg(_: *mut mv_cesa_op_ctx,_: u32,_: u32); fn mv_cesa_set_op_cfg(_: *mut mv_cesa_op_ctx,_: u32); fn mv_cesa_set_mac_op_total_len(_: *mut mv_cesa_op_ctx,_: u64); fn mv_cesa_set_mac_op_frag_len(_: *mut mv_cesa_op_ctx,_: usize);
+    fn mv_cesa_adjust_op(_: *mut mv_cesa_engine,_: *mut mv_cesa_op_ctx); fn mv_cesa_set_int_mask(_: *mut mv_cesa_engine,_: u32); fn mv_cesa_get_op_cfg(_: *mut mv_cesa_op_ctx)->u32;
+    fn mv_cesa_select_engine(_: usize)->*mut mv_cesa_engine; fn mv_cesa_queue_req(_: *mut crypto_async_request,_: *mut mv_cesa_req)->c_int; fn mv_cesa_req_needs_cleanup(_: *mut crypto_async_request,_: c_int)->bool;
 }
 
 unsafe fn creq(r:*mut ahash_request)->*mut mv_cesa_ahash_req { ahash_request_ctx(r) }

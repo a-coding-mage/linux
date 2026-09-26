@@ -11,15 +11,15 @@ pub const VMALLOC_END: usize = PKMAP_BASE - (PAGE_SIZE * 2);
 // CONFIG_HAVE_TCM
 // CONFIG_HAVE_DTCM selects whether the instruction and data TCM page counts
 // are combined. These configuration symbols are supplied by the build.
-#[cfg(feature = "CONFIG_HAVE_TCM")]
-#[cfg(feature = "CONFIG_HAVE_DTCM")]
+#[cfg(CONFIG_HAVE_TCM)]
+#[cfg(CONFIG_HAVE_DTCM)]
 pub const TCM_NR_PAGES: usize = CONFIG_ITCM_NR_PAGES + CONFIG_DTCM_NR_PAGES;
 
-#[cfg(feature = "CONFIG_HAVE_TCM")]
-#[cfg(not(feature = "CONFIG_HAVE_DTCM"))]
+#[cfg(CONFIG_HAVE_TCM)]
+#[cfg(not(CONFIG_HAVE_DTCM))]
 pub const TCM_NR_PAGES: usize = CONFIG_ITCM_NR_PAGES;
 
-#[cfg(feature = "CONFIG_HAVE_TCM")]
+#[cfg(CONFIG_HAVE_TCM)]
 pub const FIXADDR_TCM: usize = FIXADDR_TOP - (TCM_NR_PAGES * PAGE_SIZE);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

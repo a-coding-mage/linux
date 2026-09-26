@@ -2313,7 +2313,7 @@ unsafe extern "C" fn alsa_card_loopback_init() -> c_int {
             continue;
         }
         device = platform_device_register_simple(SND_LOOPBACK_DRIVER, i, null_mut(), 0);
-        if device as isize as isize < 0 {
+        if (device as isize as isize) < 0 {
             i += 1;
             continue;
         }

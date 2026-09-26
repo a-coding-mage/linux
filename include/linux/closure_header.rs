@@ -30,11 +30,11 @@ pub const CLOSURE_GUARD_MASK: u32 =
 pub const CLOSURE_REMAINING_MASK: u32 = CLOSURE_BITS_START - 1;
 pub const CLOSURE_REMAINING_INITIALIZER: u32 = 1 | CLOSURE_RUNNING;
 
-#[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+#[cfg(CONFIG_DEBUG_CLOSURES)]
 pub const CLOSURE_MAGIC_DEAD: u32 = 0xc054dead;
-#[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+#[cfg(CONFIG_DEBUG_CLOSURES)]
 pub const CLOSURE_MAGIC_ALIVE: u32 = 0xc054a11e;
-#[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+#[cfg(CONFIG_DEBUG_CLOSURES)]
 pub const CLOSURE_MAGIC_STACK: u32 = 0xc05451cc;
 
 #[repr(C)]
@@ -57,13 +57,13 @@ pub struct closure {
     pub parent: *mut closure,
     pub remaining: atomic_t,
     pub closure_get_happened: bool,
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     pub magic: u32,
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     pub all: list_head,
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     pub ip: usize,
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     pub waiting_on: usize,
 }
 
@@ -84,14 +84,14 @@ pub unsafe fn closure_nr_remaining(cl: *mut closure) -> u32 {
 
 #[inline]
 pub unsafe fn closure_sync(cl: *mut closure) {
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     { BUG_ON(closure_nr_remaining(cl) != 1 && !(*cl).closure_get_happened); }
     if (*cl).closure_get_happened { __closure_sync(cl); }
 }
 
 #[inline]
 pub unsafe fn closure_sync_timeout(cl: *mut closure, timeout: c_ulong) -> i32 {
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     { BUG_ON(closure_nr_remaining(cl) != 1 && !(*cl).closure_get_happened); }
     if (*cl).closure_get_happened { __closure_sync_timeout(cl, timeout) } else { 0 }
 }
@@ -101,17 +101,17 @@ pub unsafe fn closure_sync_timeout(cl: *mut closure, timeout: c_ulong) -> i32 {
 
 #[inline]
 pub unsafe fn closure_set_ip(cl: *mut closure) {
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     { (*cl).ip = _THIS_IP_ as usize; }
 }
 #[inline]
 pub unsafe fn closure_set_ret_ip(cl: *mut closure) {
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     { (*cl).ip = _RET_IP_ as usize; }
 }
 #[inline]
 pub unsafe fn closure_set_waiting(cl: *mut closure, f: c_ulong) {
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")]
+    #[cfg(CONFIG_DEBUG_CLOSURES)]
     { (*cl).waiting_on = f as usize; }
 }
 #[inline] pub unsafe fn closure_set_stopped(cl: *mut closure) {
@@ -176,12 +176,12 @@ macro_rules! closure_type { ($name:ident, $ty:ty, $member:ident) => {
 #[inline] pub unsafe fn closure_init_stack(cl: *mut closure) {
     core::ptr::write_bytes(cl as *mut u8, 0, core::mem::size_of::<closure>());
     atomic_set(&mut (*cl).remaining, CLOSURE_REMAINING_INITIALIZER as i32);
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")] { (*cl).magic = CLOSURE_MAGIC_STACK; }
+    #[cfg(CONFIG_DEBUG_CLOSURES)] { (*cl).magic = CLOSURE_MAGIC_STACK; }
 }
 #[inline] pub unsafe fn closure_init_stack_release(cl: *mut closure) {
     core::ptr::write_bytes(cl as *mut u8, 0, core::mem::size_of::<closure>());
     atomic_set_release(&mut (*cl).remaining, CLOSURE_REMAINING_INITIALIZER as i32);
-    #[cfg(feature = "CONFIG_DEBUG_CLOSURES")] { (*cl).magic = CLOSURE_MAGIC_STACK; }
+    #[cfg(CONFIG_DEBUG_CLOSURES)] { (*cl).magic = CLOSURE_MAGIC_STACK; }
 }
 
 #[inline] pub unsafe fn closure_queue(cl: *mut closure) {

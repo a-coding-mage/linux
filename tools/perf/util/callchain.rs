@@ -415,7 +415,7 @@ macro_rules! cstr {
 
 macro_rules! container_of {
     ($ptr:expr, $type:ty, $field:ident) => {{
-        let base = ptr::null::<$type>();
+        let base = $ptr::null::<$type>();
         let offset = unsafe { &(*base).$field as *const _ as usize };
         ($ptr as *mut u8).wrapping_sub(offset) as *mut $type
     }};

@@ -39,26 +39,26 @@ unsafe extern "C" fn identify_ramdisk_image(
 
     *decompressor = decompress_method(buf, size as usize, &mut compress_name);
     if !compress_name.is_null() {
-        printk!(KERN_NOTICE "RAMDISK: %s image found at block %d\n", compress_name, start_block);
+        printk!(c"\x015RAMDISK: %s image found at block %d\n".as_ptr(), compress_name, start_block);
         if (*decompressor).is_none() {
-            printk!(KERN_EMERG "RAMDISK: %s decompressor not configured!\n", compress_name);
+            printk!(c"\x010RAMDISK: %s decompressor not configured!\n".as_ptr(), compress_name);
         }
         nblocks = 0;
         goto_done!(buf, nblocks);
     }
 
     if (*romfsb).word0 == ROMSB_WORD0 && (*romfsb).word1 == ROMSB_WORD1 {
-        printk!(KERN_NOTICE "RAMDISK: romfs filesystem found at block %d\n", start_block);
+        printk!(c"\x015RAMDISK: romfs filesystem found at block %d\n".as_ptr(), start_block);
         nblocks = ((ntohl((*romfsb).size) + BLOCK_SIZE - 1) >> BLOCK_SIZE_BITS) as i32;
         goto_done!(buf, nblocks);
     }
     if (*cramfsb).magic == CRAMFS_MAGIC {
-        printk!(KERN_NOTICE "RAMDISK: cramfs filesystem found at block %d\n", start_block);
+        printk!(c"\x015RAMDISK: cramfs filesystem found at block %d\n".as_ptr(), start_block);
         nblocks = (((*cramfsb).size + BLOCK_SIZE - 1) >> BLOCK_SIZE_BITS) as i32;
         goto_done!(buf, nblocks);
     }
     if le32_to_cpu((*squashfsb).s_magic) == SQUASHFS_MAGIC {
-        printk!(KERN_NOTICE "RAMDISK: squashfs filesystem found at block %d\n", start_block);
+        printk!(c"\x015RAMDISK: squashfs filesystem found at block %d\n".as_ptr(), start_block);
         nblocks = ((le64_to_cpu((*squashfsb).bytes_used) + BLOCK_SIZE - 1) >> BLOCK_SIZE_BITS) as i32;
         goto_done!(buf, nblocks);
     }
@@ -66,7 +66,7 @@ unsafe extern "C" fn identify_ramdisk_image(
     pos = (start_block as loff_t) * BLOCK_SIZE + 0x200;
     kernel_read(file_, buf as *mut core::ffi::c_void, size as usize, &mut pos);
     if (*cramfsb).magic == CRAMFS_MAGIC {
-        printk!(KERN_NOTICE "RAMDISK: cramfs filesystem found at block %d\n", start_block);
+        printk!(c"\x015RAMDISK: cramfs filesystem found at block %d\n".as_ptr(), start_block);
         nblocks = (((*cramfsb).size + BLOCK_SIZE - 1) >> BLOCK_SIZE_BITS) as i32;
         goto_done!(buf, nblocks);
     }
@@ -74,17 +74,17 @@ unsafe extern "C" fn identify_ramdisk_image(
     pos = ((start_block + 1) as loff_t) * BLOCK_SIZE;
     kernel_read(file_, buf as *mut core::ffi::c_void, size as usize, &mut pos);
     if (*minixsb).s_magic == MINIX_SUPER_MAGIC || (*minixsb).s_magic == MINIX_SUPER_MAGIC2 {
-        printk!(KERN_NOTICE "RAMDISK: Minix filesystem found at block %d\n", start_block);
+        printk!(c"\x015RAMDISK: Minix filesystem found at block %d\n".as_ptr(), start_block);
         nblocks = ((*minixsb).s_nzones << (*minixsb).s_log_zone_size) as i32;
         goto_done!(buf, nblocks);
     }
     n = ext2_image_size(buf);
     if n != 0 {
-        printk!(KERN_NOTICE "RAMDISK: ext2 filesystem found at block %d\n", start_block);
+        printk!(c"\x015RAMDISK: ext2 filesystem found at block %d\n".as_ptr(), start_block);
         nblocks = n as i32;
         goto_done!(buf, nblocks);
     }
-    printk!(KERN_NOTICE "RAMDISK: Couldn't find valid RAM disk image starting at %d.\n", start_block);
+    printk!(c"\x015RAMDISK: Couldn't find valid RAM disk image starting at %d.\n".as_ptr(), start_block);
     kfree(buf as *mut core::ffi::c_void);
     nblocks
 }
@@ -112,9 +112,9 @@ pub unsafe extern "C" fn rd_load_image() -> i32 {
     let rd_blocks = nr_blocks(OUT_FILE);
     if nblocks as c_ulong > rd_blocks { printk!("RAMDISK: image too big! (%dKiB/%ldKiB)\n", nblocks, rd_blocks); fput(IN_FILE); fput(OUT_FILE); goto_out!(res, buf); }
     let devblocks = nblocks as c_ulong;
-    if devblocks == 0 { printk!(KERN_ERR "RAMDISK: could not determine device size\n"); fput(IN_FILE); fput(OUT_FILE); goto_out!(res, buf); }
+    if devblocks == 0 { printk!(c"\x013RAMDISK: could not determine device size\n".as_ptr()); fput(IN_FILE); fput(OUT_FILE); goto_out!(res, buf); }
     buf = kmalloc(BLOCK_SIZE as usize, GFP_KERNEL) as *mut i8;
-    if buf.is_null() { printk!(KERN_ERR "RAMDISK: could not allocate buffer\n"); fput(IN_FILE); fput(OUT_FILE); goto_out!(res, buf); }
+    if buf.is_null() { printk!(c"\x013RAMDISK: could not allocate buffer\n".as_ptr()); fput(IN_FILE); fput(OUT_FILE); goto_out!(res, buf); }
     let nr_disks = ((nblocks as c_ulong - 1) / devblocks) + 1;
     pr_notice!("RAMDISK: Loading %dKiB [%ld disk%s] into ram disk... ", nblocks, nr_disks, str_plural(nr_disks));
     for i in 0..nblocks { if i != 0 && (i as c_ulong) % devblocks == 0 { pr_cont!("done disk #1.\n"); rotate = 0; fput(IN_FILE); break; } kernel_read(IN_FILE, buf as *mut _, BLOCK_SIZE as usize, &mut IN_POS); kernel_write(OUT_FILE, buf as *mut _, BLOCK_SIZE as usize, &mut OUT_POS); if !IS_ENABLED!(CONFIG_S390) && i % 16 == 0 { pr_cont!("%c\b", rotator[(rotate & 3) as usize]); rotate += 1; } }
@@ -126,9 +126,9 @@ pub unsafe extern "C" fn rd_load_image() -> i32 {
 static mut exit_code: i32 = 0;
 static mut decompress_error: i32 = 0;
 
-unsafe extern "C" fn compr_fill(buf: *mut core::ffi::c_void, len: c_ulong) -> c_long { let r = kernel_read(IN_FILE, buf, len as usize, &mut IN_POS); if r < 0 { printk!(KERN_ERR "RAMDISK: error while reading compressed data"); } else if r == 0 { printk!(KERN_ERR "RAMDISK: EOF while reading compressed data"); } r as c_long }
-unsafe extern "C" fn compr_flush(window: *mut core::ffi::c_void, outcnt: c_ulong) -> c_long { let written = kernel_write(OUT_FILE, window, outcnt as usize, &mut OUT_POS); if written != outcnt as isize { if decompress_error == 0 { printk!(KERN_ERR "RAMDISK: incomplete write (%ld != %ld)\n", written, outcnt); } decompress_error = 1; return -1; } outcnt as c_long }
-unsafe extern "C" fn error(x: *mut i8) { printk!(KERN_ERR "%s\n", x); exit_code = 1; decompress_error = 1; }
+unsafe extern "C" fn compr_fill(buf: *mut core::ffi::c_void, len: c_ulong) -> c_long { let r = kernel_read(IN_FILE, buf, len as usize, &mut IN_POS); if r < 0 { printk!(c"\x013RAMDISK: error while reading compressed data".as_ptr()); } else if r == 0 { printk!(c"\x013RAMDISK: EOF while reading compressed data".as_ptr()); } r as c_long }
+unsafe extern "C" fn compr_flush(window: *mut core::ffi::c_void, outcnt: c_ulong) -> c_long { let written = kernel_write(OUT_FILE, window, outcnt as usize, &mut OUT_POS); if written != outcnt as isize { if decompress_error == 0 { printk!(c"\x013RAMDISK: incomplete write (%ld != %ld)\n".as_ptr(), written, outcnt); } decompress_error = 1; return -1; } outcnt as c_long }
+unsafe extern "C" fn error(x: *mut i8) { printk!(c"\x013%s\n".as_ptr(), x); exit_code = 1; decompress_error = 1; }
 unsafe fn crd_load(deco: decompress_fn) -> i32 { if deco.is_none() { pr_emerg!("Invalid ramdisk decompression routine.  Select appropriate config option.\n"); panic!("Could not decompress initial ramdisk image."); } let mut result = deco.unwrap()(core::ptr::null_mut(), 0, compr_fill, compr_flush, None, None, error); if decompress_error != 0 { result = 1; } result }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

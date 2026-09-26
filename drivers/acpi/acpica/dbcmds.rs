@@ -6,11 +6,11 @@ use core::{ffi::c_void, ptr, slice};
 static mut ACPI_DB_TRACE_METHOD_NAME: *mut i8 = ptr::null_mut();
 
 unsafe extern "C" {
-    fn strtoul(*const i8, *mut *mut i8, i32) -> usize;
-    fn strlen(*const i8) -> usize;
-    fn strcmp(*const i8, *const i8) -> i32;
-    fn strstr(*const i8, *const i8) -> *mut i8;
-    fn memcpy(*mut c_void, *const c_void, usize) -> *mut c_void;
+    fn strtoul(_: *const i8, _: *mut *mut i8, _: i32) -> usize;
+    fn strlen(_: *const i8) -> usize;
+    fn strcmp(_: *const i8, _: *const i8) -> i32;
+    fn strstr(_: *const i8, _: *const i8) -> *mut i8;
+    fn memcpy(_: *mut c_void, _: *const c_void, _: usize) -> *mut c_void;
 }
 
 // ACPICA types, constants, globals, and functions referenced below are external dependencies.
@@ -71,7 +71,7 @@ pub unsafe fn acpi_db_display_table_info(_table_arg: *mut i8) {
 
 pub unsafe fn acpi_db_unload_acpi_table(object_name: *mut i8) { let n=acpi_db_convert_to_node(object_name); if n.is_null(){return;} let s=acpi_unload_parent_table(n as acpi_handle); if ACPI_SUCCESS(s)!=0 { acpi_os_printf(b"Parent of [%s] (%p) unloaded and uninstalled\n\0".as_ptr() as *const i8,object_name,n); } else { acpi_os_printf(b"%s, while unloading parent table of [%s]\n\0".as_ptr() as *const i8,acpi_format_exception(s),object_name); } }
 
-pub unsafe fn acpi_db_send_notify(name:*mut i8,value:u32){let n=acpi_db_convert_to_node(name);if n.is_null(){return;}if acpi_ev_is_notify_object(n)!=0{if ACPI_FAILURE(acpi_ev_queue_notify_request(n,value))!=0{acpi_os_printf(b"Could not queue notify\n\0".as_ptr()as*const i8);}}else{acpi_os_printf(b"Named object [%4.4s] Type %s, must be Device/Thermal/Processor type\n\0".as_ptr()as*const i8,acpi_ut_get_node_name(n),acpi_ut_get_type_name((*n).type));}}
+pub unsafe fn acpi_db_send_notify(name:*mut i8,value:u32){let n=acpi_db_convert_to_node(name);if n.is_null(){return;}if acpi_ev_is_notify_object(n)!=0{if ACPI_FAILURE(acpi_ev_queue_notify_request(n,value))!=0{acpi_os_printf(b"Could not queue notify\n\0".as_ptr()as*const i8);}}else{acpi_os_printf(b"Named object [%4.4s] Type %s, must be Device/Thermal/Processor type\n\0".as_ptr()as*const i8,acpi_ut_get_node_name(n),acpi_ut_get_type_name((*n).r#type));}}
 
 pub unsafe fn acpi_db_display_interfaces(action:*mut i8,name:*mut i8){if action.is_null(){let mut p=acpi_gbl_supported_interfaces;acpi_os_acquire_mutex(acpi_gbl_osi_mutex,ACPI_WAIT_FOREVER);while !p.is_null(){if (*p).flags&ACPI_OSI_INVALID==0{acpi_os_printf(b"%s\n\0".as_ptr()as*const i8,(*p).name);}p=(*p).next;}acpi_os_release_mutex(acpi_gbl_osi_mutex);return;}if name.is_null(){acpi_os_printf(b"Missing Interface Name argument\n\0".as_ptr()as*const i8);return;}acpi_ut_strupr(action);let install=strstr(b"INSTALL\0".as_ptr()as*const i8,action);let remove=strstr(b"REMOVE\0".as_ptr()as*const i8,action);let s=if !install.is_null(){acpi_install_interface(name)}else if !remove.is_null(){acpi_remove_interface(name)}else{acpi_os_printf(b"Invalid action argument: %s\n\0".as_ptr()as*const i8,action);return;};if ACPI_FAILURE(s)!=0{acpi_os_printf(b"%s, while modifying \"%s\"\n\0".as_ptr()as*const i8,acpi_format_exception(s),name);}}
 
@@ -83,6 +83,6 @@ pub unsafe fn acpi_db_generate_interrupt(arg:*mut i8){let mut p=acpi_gbl_ged_han
 pub unsafe fn acpi_db_trace(enable:*mut i8,method:*mut i8,once:*mut i8){let(mut level,mut layer,mut flags)=(0,0,0);acpi_ut_strupr(enable);if !once.is_null(){acpi_ut_strupr(once);}if !method.is_null(){if !ACPI_DB_TRACE_METHOD_NAME.is_null(){ACPI_FREE(ACPI_DB_TRACE_METHOD_NAME as *mut c_void);}ACPI_DB_TRACE_METHOD_NAME=ACPI_ALLOCATE(strlen(method)+1)as*mut i8;if ACPI_DB_TRACE_METHOD_NAME.is_null(){return;}memcpy(ACPI_DB_TRACE_METHOD_NAME as*mut c_void,method,strlen(method)+1);}if strcmp(enable,b"ENABLE\0".as_ptr()as*const i8)==0{level=acpi_gbl_db_console_debug_level;layer=acpi_dbg_layer;flags=ACPI_TRACE_ENABLED;}else if strcmp(enable,b"METHOD\0".as_ptr()as*const i8)==0||strcmp(enable,b"OPCODE\0".as_ptr()as*const i8)==0{level=ACPI_LV_TRACE_POINT;layer=ACPI_EXECUTER;flags=ACPI_TRACE_ENABLED;if strcmp(enable,b"OPCODE\0".as_ptr()as*const i8)==0{flags|=ACPI_TRACE_OPCODE;}if !once.is_null()&&strcmp(once,b"ONCE\0".as_ptr()as*const i8)==0{flags|=ACPI_TRACE_ONESHOT;}}acpi_debug_trace(ACPI_DB_TRACE_METHOD_NAME,level,layer,flags);}
 
 // The remaining resource/template diagnostic routines retain their C ABI and are supplied by the ACPICA translation unit.
-extern "C" { pub fn acpi_db_display_template(*mut i8); pub fn acpi_db_display_resources(*mut i8); }
+extern "C" { pub fn acpi_db_display_template(_: *mut i8); pub fn acpi_db_display_resources(_: *mut i8); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

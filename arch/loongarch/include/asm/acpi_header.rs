@@ -8,7 +8,7 @@
 // Dependencies supplied by the corresponding assembly and ACPI components:
 // <asm/smp.h>, <asm/suspend.h>
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 extern "C" {
     pub static mut acpi_strict: ::core::ffi::c_int;
     pub static mut acpi_disabled: ::core::ffi::c_int;
@@ -22,7 +22,7 @@ extern "C" {
     ) -> *mut ::core::ffi::c_void;
 }
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 #[inline]
 pub unsafe fn disable_acpi() {
     acpi_disabled = 1;
@@ -30,16 +30,16 @@ pub unsafe fn disable_acpi() {
     acpi_noirq = 1;
 }
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 #[inline]
 pub fn acpi_has_cpu_in_madt() -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 pub const MAX_CORE_PIC: usize = 2048;
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 extern "C" {
     pub static mut acpi_wakeup_device_list: list_head;
     pub static mut acpi_core_pic: [acpi_madt_core_pic; MAX_CORE_PIC];
@@ -59,7 +59,7 @@ extern "C" {
 
 #[inline]
 pub unsafe fn acpi_get_wakeup_address() -> usize {
-    #[cfg(feature = "CONFIG_SUSPEND")]
+    #[cfg(CONFIG_SUSPEND)]
     {
         return loongarch_wakeup_start as usize;
     }

@@ -43,7 +43,7 @@ extern "C" {
 }
 
 /* CONFIG_PM_SLEEP controls whether these C macros are available. */
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 macro_rules! tegra_cpu_lp1_mask {
     () => {
         IO_ADDRESS(
@@ -55,7 +55,7 @@ macro_rules! tegra_cpu_lp1_mask {
     };
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 macro_rules! tegra_cpu_lp2_mask {
     () => {
         IO_ADDRESS(

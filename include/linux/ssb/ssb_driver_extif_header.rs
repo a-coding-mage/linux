@@ -126,19 +126,19 @@ pub const SSB_EXTIF_WATCHDOG_MAX_TIMER_MS: u32 =
     SSB_EXTIF_WATCHDOG_MAX_TIMER / (SSB_EXTIF_WATCHDOG_CLK / 1000);
 
 /* CONFIG_SSB_DRIVER_EXTIF selects the enabled declarations in the C build. */
-#[cfg(feature = "CONFIG_SSB_DRIVER_EXTIF")]
+#[cfg(CONFIG_SSB_DRIVER_EXTIF)]
 #[repr(C)]
 pub struct ssb_extif {
     pub dev: *mut ssb_device,
     pub gpio_lock: spinlock_t,
 }
 
-#[cfg(feature = "CONFIG_SSB_DRIVER_EXTIF")]
+#[cfg(CONFIG_SSB_DRIVER_EXTIF)]
 pub unsafe fn ssb_extif_available(extif: *mut ssb_extif) -> bool {
     !(*extif).dev.is_null()
 }
 
-#[cfg(feature = "CONFIG_SSB_DRIVER_EXTIF")]
+#[cfg(CONFIG_SSB_DRIVER_EXTIF)]
 extern "C" {
     pub fn ssb_extif_get_clockcontrol(extif: *mut ssb_extif, plltype: *mut u32, n: *mut u32, m: *mut u32);
     pub fn ssb_extif_timing_init(extif: *mut ssb_extif, ns: libc::c_ulong);
@@ -150,43 +150,43 @@ extern "C" {
     pub fn ssb_extif_gpio_intmask(extif: *mut ssb_extif, mask: u32, value: u32) -> u32;
 }
 
-#[cfg(all(feature = "CONFIG_SSB_DRIVER_EXTIF", feature = "CONFIG_SSB_SERIAL"))]
+#[cfg(all(CONFIG_SSB_DRIVER_EXTIF, CONFIG_SSB_SERIAL))]
 extern "C" {
     pub fn ssb_extif_serial_init(extif: *mut ssb_extif, ports: *mut ssb_serial_port) -> libc::c_int;
 }
 
 /* External types supplied by other translated headers. */
-#[cfg(feature = "CONFIG_SSB_DRIVER_EXTIF")]
+#[cfg(CONFIG_SSB_DRIVER_EXTIF)]
 extern "C" {
     type ssb_device;
     type spinlock_t;
 }
-#[cfg(all(feature = "CONFIG_SSB_DRIVER_EXTIF", feature = "CONFIG_SSB_SERIAL"))]
+#[cfg(all(CONFIG_SSB_DRIVER_EXTIF, CONFIG_SSB_SERIAL))]
 extern "C" { type ssb_serial_port; }
 
 /* Disabled-driver inline stubs, corresponding to the #else branch. */
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 #[repr(C)]
 pub struct ssb_extif {}
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_available(_extif: *mut ssb_extif) -> bool { false }
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub fn ssb_extif_get_clockcontrol(_extif: *mut ssb_extif, _plltype: *mut u32, _n: *mut u32, _m: *mut u32) {}
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub fn ssb_extif_timing_init(_extif: *mut ssb_extif, _ns: libc::c_ulong) {}
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_watchdog_timer_set(_extif: *mut ssb_extif, _ticks: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_gpio_in(_extif: *mut ssb_extif, _mask: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_gpio_out(_extif: *mut ssb_extif, _mask: u32, _value: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_gpio_outen(_extif: *mut ssb_extif, _mask: u32, _value: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_gpio_polarity(_extif: *mut ssb_extif, _mask: u32, _value: u32) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_SSB_DRIVER_EXTIF"))]
+#[cfg(not(CONFIG_SSB_DRIVER_EXTIF))]
 pub const fn ssb_extif_gpio_intmask(_extif: *mut ssb_extif, _mask: u32, _value: u32) -> u32 { 0 }
-#[cfg(all(not(feature = "CONFIG_SSB_DRIVER_EXTIF"), feature = "CONFIG_SSB_SERIAL"))]
+#[cfg(all(not(CONFIG_SSB_DRIVER_EXTIF), CONFIG_SSB_SERIAL))]
 pub const fn ssb_extif_serial_init(_extif: *mut ssb_extif, _ports: *mut ssb_serial_port) -> libc::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

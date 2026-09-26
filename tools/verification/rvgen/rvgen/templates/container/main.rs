@@ -21,8 +21,7 @@ pub struct rv_monitor {
 extern "C" {
     pub fn rv_register_monitor(
         monitor: *mut rv_monitor,
-        parent: *mut ::core::ffi::c_void,
-    ) -> ::core::ffi::c_int;
+        parent: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
     pub fn rv_unregister_monitor(monitor: *mut rv_monitor);
 }
 

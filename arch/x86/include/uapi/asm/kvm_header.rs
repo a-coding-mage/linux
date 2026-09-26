@@ -114,7 +114,7 @@ pub const KVM_SEV_SNP_ID_BLOCK_SIZE:usize=96; pub const KVM_SEV_SNP_ID_AUTH_SIZE
 pub const KVM_X2APIC_API_USE_32BIT_IDS:u64=1; pub const KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK:u64=2; pub const KVM_X2APIC_ENABLE_SUPPRESS_EOI_BROADCAST:u64=4; pub const KVM_X2APIC_DISABLE_SUPPRESS_EOI_BROADCAST:u64=8;
 #[repr(C)] #[derive(Copy,Clone)] pub struct kvm_hyperv_eventfd { pub conn_id:u32,pub fd:i32,pub flags:u32,pub padding:[u32;3] }
 pub const KVM_HYPERV_CONN_ID_MASK:u32=0x00ffffff; pub const KVM_HYPERV_EVENTFD_DEASSIGN:u32=1;
-#[inline] pub const fn kvm_pmu_encode_masked_entry(event_select:u64,mask:u64,match_:u64,exclude:u64)->u64 { (event_select&0xff)|((event_select&0xf00)<<24)|((mask&0xff)<<56)|((match_&0xff)<<8)|((exclude!=0) as u64<<55) }
+#[inline] pub const fn kvm_pmu_encode_masked_entry(event_select:u64,mask:u64,match_:u64,exclude:u64)->u64 { (event_select&0xff)|((event_select&0xf00)<<24)|((mask&0xff)<<56)|((match_&0xff)<<8)|(((exclude!=0) as u64)<<55) }
 pub const KVM_PMU_MASKED_ENTRY_EVENT_SELECT:u64=((1u64<<8)-1)|(((1u64<<4)-1)<<32); pub const KVM_PMU_MASKED_ENTRY_UMASK_MASK:u64=0xffu64<<56; pub const KVM_PMU_MASKED_ENTRY_UMASK_MATCH:u64=0xffu64<<8; pub const KVM_PMU_MASKED_ENTRY_EXCLUDE:u64=1u64<<55;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -73,7 +73,7 @@ static snd_lx6464es_ids: [pci_device_id; 5] = [
 /* MODULE_DEVICE_TABLE(pci, snd_lx6464es_ids); */
 
 /* PGO pour USERo dans le registre pci_0x06/loc_0xEC */
-const CHIPSC_RESET_XILINX: c_long = 1_i64 as c_long << 16;
+const CHIPSC_RESET_XILINX: c_long = (1_i64 as c_long) << 16;
 
 /* alsa callbacks */
 static lx_caps: snd_pcm_hardware = snd_pcm_hardware {

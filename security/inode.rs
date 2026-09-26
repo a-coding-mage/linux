@@ -29,19 +29,6 @@ use core::ptr;
 // External Linux kernel types and functions
 extern "C" {
     // Types
-    pub struct vfsmount;
-    pub struct dentry;
-    pub struct inode;
-    pub struct super_block;
-    pub struct fs_context;
-    pub struct file_operations;
-    pub struct inode_operations;
-    pub struct file;
-    pub struct file_system_type;
-    pub struct super_operations;
-    pub struct fs_context_operations;
-    pub struct tree_descr;
-    pub struct spinlock_t;
 
     // Functions
     fn kfree_const(ptr: *const c_void);
@@ -50,8 +37,7 @@ extern "C" {
     fn simple_fill_super(
         sb: *mut super_block,
         magic: u32,
-        files: *const tree_descr,
-    ) -> i32;
+        files: *const tree_descr) -> i32;
     fn get_tree_single(
         fc: *mut fs_context,
         fill_super: extern "C" fn(*mut super_block, *mut fs_context) -> i32,
@@ -59,8 +45,7 @@ extern "C" {
     fn simple_pin_fs(
         type_: *mut file_system_type,
         mount: *mut *mut vfsmount,
-        count: *mut i32,
-    ) -> i32;
+        count: *mut i32) -> i32;
     fn simple_release_fs(mount: *mut *mut vfsmount, count: *mut i32);
     fn new_inode(sb: *mut super_block) -> *mut inode;
     fn d_inode(dentry: *const dentry) -> *mut inode;
@@ -73,8 +58,7 @@ extern "C" {
     fn simple_done_creating(dentry: *mut dentry);
     fn simple_recursive_removal(
         dentry: *mut dentry,
-        callback: extern "C" fn(*mut dentry),
-    );
+        callback: extern "C" fn(*mut dentry));
     fn kstrdup_const(s: *const i8, gfp_flags: u32) -> *const i8;
     fn kmalloc(size: usize, flags: u32) -> *mut c_void;
     fn kfree(ptr: *mut c_void);
@@ -84,8 +68,7 @@ extern "C" {
         n: usize,
         ppos: *mut i64,
         from: *const i8,
-        available: usize,
-    ) -> isize;
+        available: usize) -> isize;
     fn sysfs_create_mount_point(kobj: *mut c_void, name: *const i8) -> i32;
     fn sysfs_remove_mount_point(kobj: *mut c_void, name: *const i8);
     fn register_filesystem(type_: *mut file_system_type) -> i32;
@@ -98,6 +81,19 @@ extern "C" {
     pub static lsm_active_cnt: i32;
     pub static lsm_idlist: *const *const c_void;
 }
+pub struct vfsmount;
+pub struct dentry;
+pub struct inode;
+pub struct super_block;
+pub struct fs_context;
+pub struct file_operations;
+pub struct inode_operations;
+pub struct file;
+pub struct file_system_type;
+pub struct super_operations;
+pub struct fs_context_operations;
+pub struct tree_descr;
+pub struct spinlock_t;
 
 // External constants and macros
 pub const SECURITYFS_MAGIC: u32 = 0x73636673;
@@ -480,7 +476,7 @@ pub unsafe extern "C" fn securityfs_remove(dentry: *mut dentry) {
 // EXPORT_SYMBOL_GPL(securityfs_remove);
 
 // CONFIG_SECURITY conditional section
-#[cfg(feature = "CONFIG_SECURITY")]
+#[cfg(CONFIG_SECURITY)]
 pub mod lsm_security {
     use super::*;
 
@@ -567,7 +563,7 @@ pub unsafe extern "C" fn securityfs_init() -> i32 {
         return retval;
     }
 
-    #[cfg(feature = "CONFIG_SECURITY")]
+    #[cfg(CONFIG_SECURITY)]
     {
         lsm_security::lsm_dentry = securityfs_create_file(
             b"lsm\0".as_ptr() as *const i8,

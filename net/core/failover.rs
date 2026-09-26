@@ -17,14 +17,14 @@ unsafe fn failover_get_bymac(mac: *mut u8, ops: *mut *mut failover_ops) -> *mut 
     let mut failover: *mut failover;
 
     spin_lock(&raw mut failover_lock);
-    list_for_each_entry(failover, &raw mut failover_list, list) {
+    list_for_each_entry!(failover, &raw mut failover_list, list, {
         failover_dev = rtnl_dereference((*failover).failover_dev);
         if ether_addr_equal((*failover_dev).perm_addr.as_ptr(), mac) {
             *ops = rtnl_dereference((*failover).ops);
             spin_unlock(&raw mut failover_lock);
             return failover_dev;
         }
-    }
+    });
     spin_unlock(&raw mut failover_lock);
     core::ptr::null_mut()
 }
@@ -146,14 +146,14 @@ unsafe fn failover_existing_slave_register(failover_dev: *mut net_device) {
     let net = dev_net(failover_dev);
     let mut dev: *mut net_device;
     rtnl_lock();
-    for_each_netdev(net, dev) {
+    for_each_netdev!(net, dev, {
         if netif_is_failover(dev) { continue; }
         if ether_addr_equal((*failover_dev).perm_addr.as_ptr(), (*dev).perm_addr.as_ptr()) {
             netdev_lock_ops(dev);
             failover_slave_register(dev);
             netdev_unlock_ops(dev);
         }
-    }
+    });
     rtnl_unlock();
 }
 

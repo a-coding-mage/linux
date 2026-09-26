@@ -69,35 +69,35 @@ extern "C" {
 
 #[cfg(CONFIG_HAS_DMA)]
 extern "C" {
-    pub fn dma_map_page_attrs(*mut device, *mut page, usize, usize, dma_data_direction, usize) -> dma_addr_t;
-    pub fn dma_unmap_page_attrs(*mut device, dma_addr_t, usize, dma_data_direction, usize);
-    pub fn dma_map_phys(*mut device, phys_addr_t, usize, dma_data_direction, usize) -> dma_addr_t;
-    pub fn dma_unmap_phys(*mut device, dma_addr_t, usize, dma_data_direction, usize);
-    pub fn dma_map_sg_attrs(*mut device, *mut scatterlist, i32, dma_data_direction, usize) -> u32;
-    pub fn dma_unmap_sg_attrs(*mut device, *mut scatterlist, i32, dma_data_direction, usize);
-    pub fn dma_map_sgtable(*mut device, *mut sg_table, dma_data_direction, usize) -> i32;
-    pub fn dma_map_resource(*mut device, phys_addr_t, usize, dma_data_direction, usize) -> dma_addr_t;
-    pub fn dma_unmap_resource(*mut device, dma_addr_t, usize, dma_data_direction, usize);
-    pub fn dma_alloc_attrs(*mut device, usize, *mut dma_addr_t, gfp_t, usize) -> *mut core::ffi::c_void;
-    pub fn dma_free_attrs(*mut device, usize, *mut core::ffi::c_void, dma_addr_t, usize);
-    pub fn dmam_alloc_attrs(*mut device, usize, *mut dma_addr_t, gfp_t, usize) -> *mut core::ffi::c_void;
-    pub fn dmam_free_coherent(*mut device, usize, *mut core::ffi::c_void, dma_addr_t);
-    pub fn dma_get_sgtable_attrs(*mut device, *mut sg_table, *mut core::ffi::c_void, dma_addr_t, usize, usize) -> i32;
-    pub fn dma_mmap_attrs(*mut device, *mut vm_area_struct, *mut core::ffi::c_void, dma_addr_t, usize, usize) -> i32;
-    pub fn dma_can_mmap(*mut device) -> bool;
-    pub fn dma_pci_p2pdma_supported(*mut device) -> bool;
-    pub fn dma_set_mask(*mut device, u64) -> i32;
-    pub fn dma_set_coherent_mask(*mut device, u64) -> i32;
-    pub fn dma_get_required_mask(*mut device) -> u64;
-    pub fn dma_addressing_limited(*mut device) -> bool;
-    pub fn dma_max_mapping_size(*mut device) -> usize;
-    pub fn dma_opt_mapping_size(*mut device) -> usize;
-    pub fn dma_get_merge_boundary(*mut device) -> usize;
-    pub fn dma_alloc_noncontiguous(*mut device, usize, dma_data_direction, gfp_t, usize) -> *mut sg_table;
-    pub fn dma_free_noncontiguous(*mut device, usize, *mut sg_table, dma_data_direction);
-    pub fn dma_vmap_noncontiguous(*mut device, usize, *mut sg_table) -> *mut core::ffi::c_void;
-    pub fn dma_vunmap_noncontiguous(*mut device, *mut core::ffi::c_void);
-    pub fn dma_mmap_noncontiguous(*mut device, *mut vm_area_struct, usize, *mut sg_table) -> i32;
+    pub fn dma_map_page_attrs(_: *mut device, _: *mut page, _: usize, _: usize, _: dma_data_direction, _: usize) -> dma_addr_t;
+    pub fn dma_unmap_page_attrs(_: *mut device, _: dma_addr_t, _: usize, _: dma_data_direction, _: usize);
+    pub fn dma_map_phys(_: *mut device, _: phys_addr_t, _: usize, _: dma_data_direction, _: usize) -> dma_addr_t;
+    pub fn dma_unmap_phys(_: *mut device, _: dma_addr_t, _: usize, _: dma_data_direction, _: usize);
+    pub fn dma_map_sg_attrs(_: *mut device, _: *mut scatterlist, _: i32, _: dma_data_direction, _: usize) -> u32;
+    pub fn dma_unmap_sg_attrs(_: *mut device, _: *mut scatterlist, _: i32, _: dma_data_direction, _: usize);
+    pub fn dma_map_sgtable(_: *mut device, _: *mut sg_table, _: dma_data_direction, _: usize) -> i32;
+    pub fn dma_map_resource(_: *mut device, _: phys_addr_t, _: usize, _: dma_data_direction, _: usize) -> dma_addr_t;
+    pub fn dma_unmap_resource(_: *mut device, _: dma_addr_t, _: usize, _: dma_data_direction, _: usize);
+    pub fn dma_alloc_attrs(_: *mut device, _: usize, _: *mut dma_addr_t, _: gfp_t, _: usize) -> *mut core::ffi::c_void;
+    pub fn dma_free_attrs(_: *mut device, _: usize, _: *mut core::ffi::c_void, _: dma_addr_t, _: usize);
+    pub fn dmam_alloc_attrs(_: *mut device, _: usize, _: *mut dma_addr_t, _: gfp_t, _: usize) -> *mut core::ffi::c_void;
+    pub fn dmam_free_coherent(_: *mut device, _: usize, _: *mut core::ffi::c_void, _: dma_addr_t);
+    pub fn dma_get_sgtable_attrs(_: *mut device, _: *mut sg_table, _: *mut core::ffi::c_void, _: dma_addr_t, _: usize, _: usize) -> i32;
+    pub fn dma_mmap_attrs(_: *mut device, _: *mut vm_area_struct, _: *mut core::ffi::c_void, _: dma_addr_t, _: usize, _: usize) -> i32;
+    pub fn dma_can_mmap(_: *mut device) -> bool;
+    pub fn dma_pci_p2pdma_supported(_: *mut device) -> bool;
+    pub fn dma_set_mask(_: *mut device, _: u64) -> i32;
+    pub fn dma_set_coherent_mask(_: *mut device, _: u64) -> i32;
+    pub fn dma_get_required_mask(_: *mut device) -> u64;
+    pub fn dma_addressing_limited(_: *mut device) -> bool;
+    pub fn dma_max_mapping_size(_: *mut device) -> usize;
+    pub fn dma_opt_mapping_size(_: *mut device) -> usize;
+    pub fn dma_get_merge_boundary(_: *mut device) -> usize;
+    pub fn dma_alloc_noncontiguous(_: *mut device, _: usize, _: dma_data_direction, _: gfp_t, _: usize) -> *mut sg_table;
+    pub fn dma_free_noncontiguous(_: *mut device, _: usize, _: *mut sg_table, _: dma_data_direction);
+    pub fn dma_vmap_noncontiguous(_: *mut device, _: usize, _: *mut sg_table) -> *mut core::ffi::c_void;
+    pub fn dma_vunmap_noncontiguous(_: *mut device, _: *mut core::ffi::c_void);
+    pub fn dma_mmap_noncontiguous(_: *mut device, _: *mut vm_area_struct, _: usize, _: *mut sg_table) -> i32;
 }
 
 #[inline]
@@ -109,20 +109,20 @@ pub unsafe fn dma_mapping_error(dev: *mut device, addr: dma_addr_t) -> i32 {
 
 #[cfg(CONFIG_IOMMU_DMA)]
 extern "C" {
-    pub fn dma_iova_try_alloc(*mut device, *mut dma_iova_state, phys_addr_t, usize) -> bool;
-    pub fn dma_iova_free(*mut device, *mut dma_iova_state);
-    pub fn dma_iova_destroy(*mut device, *mut dma_iova_state, usize, dma_data_direction, usize);
-    pub fn dma_iova_sync(*mut device, *mut dma_iova_state, usize, usize) -> i32;
-    pub fn dma_iova_link(*mut device, *mut dma_iova_state, phys_addr_t, usize, usize, dma_data_direction, usize) -> i32;
-    pub fn dma_iova_unlink(*mut device, *mut dma_iova_state, usize, usize, dma_data_direction, usize);
+    pub fn dma_iova_try_alloc(_: *mut device, _: *mut dma_iova_state, _: phys_addr_t, _: usize) -> bool;
+    pub fn dma_iova_free(_: *mut device, _: *mut dma_iova_state);
+    pub fn dma_iova_destroy(_: *mut device, _: *mut dma_iova_state, _: usize, _: dma_data_direction, _: usize);
+    pub fn dma_iova_sync(_: *mut device, _: *mut dma_iova_state, _: usize, _: usize) -> i32;
+    pub fn dma_iova_link(_: *mut device, _: *mut dma_iova_state, _: phys_addr_t, _: usize, _: usize, _: dma_data_direction, _: usize) -> i32;
+    pub fn dma_iova_unlink(_: *mut device, _: *mut dma_iova_state, _: usize, _: usize, _: dma_data_direction, _: usize);
 }
 #[inline] pub unsafe fn dma_use_iova(s: *mut dma_iova_state) -> bool { (*s).__size != 0 }
 
 extern "C" {
-    pub fn dma_alloc_pages(*mut device, usize, *mut dma_addr_t, dma_data_direction, gfp_t) -> *mut page;
-    pub fn dma_free_pages(*mut device, usize, *mut page, dma_addr_t, dma_data_direction);
-    pub fn dma_mmap_pages(*mut device, *mut vm_area_struct, usize, *mut page) -> i32;
-    pub fn dma_coherent_ok(*mut device, phys_addr_t, usize) -> bool;
+    pub fn dma_alloc_pages(_: *mut device, _: usize, _: *mut dma_addr_t, _: dma_data_direction, _: gfp_t) -> *mut page;
+    pub fn dma_free_pages(_: *mut device, _: usize, _: *mut page, _: dma_addr_t, _: dma_data_direction);
+    pub fn dma_mmap_pages(_: *mut device, _: *mut vm_area_struct, _: usize, _: *mut page) -> i32;
+    pub fn dma_coherent_ok(_: *mut device, _: phys_addr_t, _: usize) -> bool;
 }
 
 #[inline]
@@ -145,8 +145,8 @@ pub unsafe fn dma_alloc_noncoherent(dev: *mut device, size: usize, handle: *mut 
 
 /* External kernel declarations referenced by this header. */
 extern "C" {
-    pub fn dma_sync_single_for_cpu(*mut device,dma_addr_t,usize,dma_data_direction);
-    pub fn dma_sync_single_for_device(*mut device,dma_addr_t,usize,dma_data_direction);
+    pub fn dma_sync_single_for_cpu(_: *mut device,_: dma_addr_t,_: usize,_: dma_data_direction);
+    pub fn dma_sync_single_for_device(_: *mut device,_: dma_addr_t,_: usize,_: dma_data_direction);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

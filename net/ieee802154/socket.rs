@@ -22,14 +22,14 @@ unsafe fn ieee802154_get_dev(net: *mut net, addr: *const ieee802154_addr) -> *mu
                 (*addr).short_addr == cpu_to_le16(IEEE802154_ADDR_UNDEF) ||
                 (*addr).short_addr == cpu_to_le16(IEEE802154_ADDR_BROADCAST) { return dev; }
             rtnl_lock();
-            for_each_netdev!(net, tmp) {
-                if (*tmp).type != ARPHRD_IEEE802154 { continue; }
+            for_each_netdev!(net, tmp, {
+                if (*tmp).r#type != ARPHRD_IEEE802154 { continue; }
                 pan_id = (*(*tmp).ieee802154_ptr).pan_id;
                 short_addr = (*(*tmp).ieee802154_ptr).short_addr;
                 if pan_id == (*addr).pan_id && short_addr == (*addr).short_addr {
                     dev = tmp; dev_hold(dev); break;
                 }
-            }
+            });
             rtnl_unlock();
         }
         _ => pr_warn!("Unsupported ieee802154 address type: {}\n", (*addr).mode),
@@ -82,7 +82,7 @@ unsafe fn dgram_disconnect(sk: *mut sock, _flags: c_int) -> c_int { let r=dgram_
 unsafe fn dgram_ioctl(sk: *mut sock, cmd: c_int, karg: *mut c_int) -> c_int {
     match cmd { SIOCOUTQ => { *karg=sk_wmem_alloc_get(sk); 0 }, SIOCINQ => { *karg=0; spin_lock_bh(&(*sk).sk_receive_queue.lock); let skb=skb_peek(&(*sk).sk_receive_queue); if !skb.is_null(){*karg=(*skb).len-ieee802154_hdr_length(skb)} spin_unlock_bh(&(*sk).sk_receive_queue.lock); 0 }, _ => -ENOIOCTLCMD }
 }
-unsafe fn dgram_bind(sk: *mut sock, uaddr: *mut sockaddr_unsized, len: c_int) -> c_int { let a=uaddr as *mut sockaddr_ieee802154; let r=dgram_sk(sk); let mut h=core::mem::zeroed(); lock_sock(sk); (*r).bound=0; let mut e=ieee802154_sockaddr_check_size(a,len); if e>=0 && (*a).family==AF_IEEE802154 { ieee802154_addr_from_sa(&mut h,&(*a).addr); let d=ieee802154_get_dev(sock_net(sk),&h); if d.is_null(){e=-ENODEV}else if (*d).type!=ARPHRD_IEEE802154{e=-ENODEV}else{(*r).src_addr=h;(*r).bound=1;e=0} if !d.is_null(){dev_put(d)} } else if e>=0 {e=-EINVAL} release_sock(sk); e }
+unsafe fn dgram_bind(sk: *mut sock, uaddr: *mut sockaddr_unsized, len: c_int) -> c_int { let a=uaddr as *mut sockaddr_ieee802154; let r=dgram_sk(sk); let mut h=core::mem::zeroed(); lock_sock(sk); (*r).bound=0; let mut e=ieee802154_sockaddr_check_size(a,len); if e>=0 && (*a).family==AF_IEEE802154 { ieee802154_addr_from_sa(&mut h,&(*a).addr); let d=ieee802154_get_dev(sock_net(sk),&h); if d.is_null(){e=-ENODEV}else if (*d).r#type!=ARPHRD_IEEE802154{e=-ENODEV}else{(*r).src_addr=h;(*r).bound=1;e=0} if !d.is_null(){dev_put(d)} } else if e>=0 {e=-EINVAL} release_sock(sk); e }
 unsafe fn dgram_connect(sk:*mut sock,uaddr:*mut sockaddr_unsized,len:c_int)->c_int{let a=uaddr as *mut sockaddr_ieee802154;let r=dgram_sk(sk);let mut e=ieee802154_sockaddr_check_size(a,len);if e<0{return e}if (*a).family!=AF_IEEE802154{return -EINVAL}lock_sock(sk);if (*r).bound==0{e=-ENETUNREACH}else{ieee802154_addr_from_sa(&mut (*r).dst_addr,&(*a).addr);(*r).connected=1}release_sock(sk);e}
 
 unsafe fn raw_rcv_skb(sk:*mut sock,mut skb:*mut sk_buff)->c_int{skb=skb_share_check(skb,GFP_ATOMIC);if skb.is_null(){return NET_RX_DROP}if sock_queue_rcv_skb(sk,skb)<0{kfree_skb(skb);return NET_RX_DROP}NET_RX_SUCCESS}

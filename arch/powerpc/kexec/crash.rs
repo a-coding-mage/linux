@@ -29,7 +29,7 @@ unsafe fn handle_fault(_regs: *mut pt_regs) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn crash_ipi_callback(regs: *mut pt_regs) {
     static mut CPUS_STATE_SAVED: cpumask_t = CPU_MASK_NONE;
     let cpu = smp_processor_id();
@@ -45,11 +45,11 @@ pub unsafe extern "C" fn crash_ipi_callback(regs: *mut pt_regs) {
     kexec_smp_wait();
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn crash_kexec_prepare_cpus() {
     let mut ncpus: c_uint = num_online_cpus() - 1;
     let mut tries: i32 = 0;
-    printk(KERN_EMERG, c"Sending IPI to other CPUs\0".as_ptr());
+    printk(KERN_EMERG, c"Sending IPI to other CPUs".as_ptr());
     if crash_wake_offline != 0 { ncpus = num_present_cpus() - 1; }
     if IS_VIA_SYSTEM_RESET != 0 { mdelay(PRIMARY_TIMEOUT); }
     else { crash_send_ipi(crash_ipi_callback); }
@@ -57,14 +57,14 @@ unsafe fn crash_kexec_prepare_cpus() {
     'again: loop {
         let mut msecs = IPI_TIMEOUT;
         while atomic_read(&raw mut cpus_in_crash) < ncpus && { msecs -= 1; msecs > 0 } { mdelay(1); }
-        if atomic_read(&raw mut cpus_in_crash) >= ncpus { printk(KERN_EMERG, c"IPI complete\0".as_ptr()); return; }
-        printk(KERN_EMERG, c"ERROR: cpu(s) not responding\0".as_ptr());
+        if atomic_read(&raw mut cpus_in_crash) >= ncpus { printk(KERN_EMERG, c"IPI complete".as_ptr()); return; }
+        printk(KERN_EMERG, c"ERROR: cpu(s) not responding".as_ptr());
         if panic_timeout > 0 || tries > 0 { return; }
         let old_handler = __debugger;
         __debugger = Some(handle_fault);
         crash_shutdown_cpu = smp_processor_id();
         if setjmp(crash_shutdown_buf.as_mut_ptr()) == 0 {
-            printk(KERN_EMERG, c"Activate system reset (dumprestart) to stop other cpu(s)\0".as_ptr());
+            printk(KERN_EMERG, c"Activate system reset (dumprestart) to stop other cpu(s)".as_ptr());
             atomic_set(&raw mut cpus_in_crash, 0); smp_mb();
             while atomic_read(&raw mut cpus_in_crash) < ncpus { cpu_relax(); }
         }
@@ -73,7 +73,7 @@ unsafe fn crash_kexec_prepare_cpus() {
     }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn crash_kexec_secondary(regs: *mut pt_regs) {
     let mut flags = 0; let mut msecs = SECONDARY_TIMEOUT;
     local_irq_save(&mut flags);
@@ -85,12 +85,12 @@ pub unsafe extern "C" fn crash_kexec_secondary(regs: *mut pt_regs) {
     crash_ipi_callback(regs);
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe fn crash_kexec_prepare_cpus() { smp_release_cpus(); }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe extern "C" fn crash_kexec_secondary(_regs: *mut pt_regs) {}
 
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_PPC64"))]
+#[cfg(all(CONFIG_SMP, CONFIG_PPC64))]
 unsafe fn crash_kexec_wait_realmode(cpu: i32) {
     let mut msecs = REAL_MODE_TIMEOUT;
     for i in 0..nr_cpu_ids {
@@ -103,7 +103,7 @@ unsafe fn crash_kexec_wait_realmode(cpu: i32) {
     }
     mb();
 }
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_PPC64")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_PPC64)))]
 unsafe fn crash_kexec_wait_realmode(_cpu: i32) {}
 
 pub unsafe extern "C" fn crash_kexec_prepare() {
@@ -136,21 +136,21 @@ pub unsafe extern "C" fn default_machine_crash_shutdown(regs: *mut pt_regs) {
     if let Some(f) = ppc_md.kexec_cpu_down { f(1, 0); }
 }
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 pub unsafe extern "C" fn sync_backup_region_phdr(image: *mut kimage, ehdr: *mut Elf64_Ehdr, phdr_to_kimage: bool) {
     let mut phdr = (ehdr.add(1)) as *mut Elf64_Phdr;
     for _ in 0..(*ehdr).e_phnum {
         if (*phdr).p_paddr == BACKUP_SRC_START {
             if phdr_to_kimage { (*image).arch.backup_start = (*phdr).p_offset; }
             else { (*phdr).p_offset = (*image).arch.backup_start; }
-            kexec_dprintk(c"Backup region offset updated\n\0".as_ptr(), (*image).arch.backup_start);
+            kexec_dprintk(c"Backup region offset updated\n".as_ptr(), (*image).arch.backup_start);
             return;
         }
         phdr = phdr.add(1);
     }
 }
 
-#[cfg(feature = "CONFIG_CRASH_HOTPLUG")]
+#[cfg(CONFIG_CRASH_HOTPLUG)]
 pub unsafe extern "C" fn machine_kexec_post_load(image: *mut kimage) -> i32 {
     if (*image).type_ != KEXEC_TYPE_CRASH || (*image).file_mode { return 0; }
     for i in 0..(*image).nr_segments {
@@ -160,7 +160,7 @@ pub unsafe extern "C" fn machine_kexec_post_load(image: *mut kimage) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_CRASH_HOTPLUG")]
+#[cfg(CONFIG_CRASH_HOTPLUG)]
 unsafe fn get_fdt_index(image: *mut kimage) -> i32 {
     for i in 0..(*image).nr_segments {
         let ptr = __va((*image).segment[i].mem);
@@ -169,20 +169,20 @@ unsafe fn get_fdt_index(image: *mut kimage) -> i32 {
     -1
 }
 
-#[cfg(feature = "CONFIG_CRASH_HOTPLUG")]
+#[cfg(CONFIG_CRASH_HOTPLUG)]
 unsafe fn update_crash_fdt(image: *mut kimage) {
-    let index = get_fdt_index(image); if index < 0 { pr_err(c"Unable to locate FDT segment.\0".as_ptr()); return; }
+    let index = get_fdt_index(image); if index < 0 { pr_err(c"Unable to locate FDT segment.".as_ptr()); return; }
     let fdt = __va((*image).segment[index as usize].mem); xchg(&raw mut kexec_crash_image, core::ptr::null_mut());
-    if update_cpus_node(fdt) != 0 { pr_err(c"Failed to update crash FDT\0".as_ptr()); }
+    if update_cpus_node(fdt) != 0 { pr_err(c"Failed to update crash FDT".as_ptr()); }
     xchg(&raw mut kexec_crash_image, image);
 }
 
-#[cfg(feature = "CONFIG_CRASH_HOTPLUG")]
+#[cfg(CONFIG_CRASH_HOTPLUG)]
 unsafe fn update_crash_elfcorehdr(image: *mut kimage, mn: *mut memory_notify) {
     let segment = &mut (*image).segment[(*image).elfcorehdr_index];
     let mut cmem: *mut crash_mem = core::ptr::null_mut();
     let mut elfbuf: *mut c_void = core::ptr::null_mut(); let mut elfsz = 0usize;
-    if get_crash_memory_ranges(&mut cmem) != 0 { pr_err(c"Failed to get crash mem range\0".as_ptr()); return; }
+    if get_crash_memory_ranges(&mut cmem) != 0 { pr_err(c"Failed to get crash mem range".as_ptr()); return; }
     if (*image).hp_action == KEXEC_CRASH_HP_REMOVE_MEMORY {
         let base = PFN_PHYS((*mn).start_pfn); let end = base + (*mn).nr_pages * PAGE_SIZE - 1;
         if arch_crash_exclude_mem_range(&mut cmem, base, end) != 0 { kvfree(cmem as *mut c_void); return; }
@@ -194,13 +194,13 @@ unsafe fn update_crash_elfcorehdr(image: *mut kimage, mn: *mut memory_notify) {
     kvfree(cmem as *mut c_void); kvfree(elfbuf);
 }
 
-#[cfg(feature = "CONFIG_CRASH_HOTPLUG")]
+#[cfg(CONFIG_CRASH_HOTPLUG)]
 pub unsafe extern "C" fn arch_crash_hotplug_support(image: *mut kimage, kexec_flags: c_ulong) -> i32 {
     if (*image).file_mode { return 1; }
     (kexec_flags & KEXEC_CRASH_HOTPLUG_SUPPORT) as i32
 }
 
-#[cfg(feature = "CONFIG_CRASH_HOTPLUG")]
+#[cfg(CONFIG_CRASH_HOTPLUG)]
 pub unsafe extern "C" fn arch_crash_handle_hotplug_event(image: *mut kimage, arg: *mut c_void) {
     match (*image).hp_action {
         KEXEC_CRASH_HP_REMOVE_CPU => return,
@@ -208,7 +208,7 @@ pub unsafe extern "C" fn arch_crash_handle_hotplug_event(image: *mut kimage, arg
         KEXEC_CRASH_HP_REMOVE_MEMORY | KEXEC_CRASH_HP_ADD_MEMORY => {
             update_crash_elfcorehdr(image, arg as *mut memory_notify); return;
         }
-        _ => pr_warn_once(c"Unknown hotplug action\n\0".as_ptr()),
+        _ => pr_warn_once(c"Unknown hotplug action\n".as_ptr()),
     }
 }
 

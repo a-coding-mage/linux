@@ -114,9 +114,9 @@ unsafe fn sdma_v7_1_set_ring_funcs(crate::structs::amdgpu_device *adev);
 unsafe fn sdma_v7_1_set_buffer_funcs(crate::structs::amdgpu_device *adev);
 unsafe fn sdma_v7_1_set_irq_funcs(crate::structs::amdgpu_device *adev);
 unsafe fn sdma_v7_1_inst_start(crate::structs::amdgpu_device *adev,
-				u32 inst_mask);
+				inst_mask: u32);
 
-static u32 sdma_v7_1_get_reg_offset(crate::structs::amdgpu_device *adev, u32 instance, u32 internal_offset)
+static u32 sdma_v7_1_get_reg_offset(crate::structs::amdgpu_device *adev, instance: u32, internal_offset: u32)
 {
 	u32 base;
 	u32 dev_inst = GET_INST(SDMA0, instance);
@@ -137,7 +137,7 @@ static u32 sdma_v7_1_get_reg_offset(crate::structs::amdgpu_device *adev, u32 ins
 }
 
 unsafe fn sdma_v7_1_ring_init_cond_exec(crate::structs::amdgpu_ring *ring,
-					      u64 addr)
+					      addr: u64)
 {
 	unsigned ret;
 
@@ -237,7 +237,7 @@ unsafe fn sdma_v7_1_ring_set_wptr(crate::structs::amdgpu_ring *ring)
 	}
 }
 
-unsafe fn sdma_v7_1_ring_insert_nop(crate::structs::amdgpu_ring *ring, u32 count)
+unsafe fn sdma_v7_1_ring_insert_nop(crate::structs::amdgpu_ring *ring, count: u32)
 {
 	crate::structs::amdgpu_sdma_instance *sdma = amdgpu_sdma_get_instance_from_ring(ring);
 	int i;
@@ -263,7 +263,7 @@ unsafe fn sdma_v7_1_ring_insert_nop(crate::structs::amdgpu_ring *ring, u32 count
 unsafe fn sdma_v7_1_ring_emit_ib(crate::structs::amdgpu_ring *ring,
 				   crate::structs::amdgpu_job *job,
 				   crate::structs::amdgpu_ib *ib,
-				   u32 flags)
+				   flags: u32)
 {
 	unsigned vmid = AMDGPU_JOB_GET_VMID(job);
 	u64 csa_mc_addr = amdgpu_sdma_get_csa_mc_addr(ring, vmid);
@@ -325,7 +325,7 @@ unsafe fn sdma_v7_1_ring_emit_mem_sync(crate::structs::amdgpu_ring *ring)
  * the fence seq number and DMA trap packet to generate
  * an interrupt if needed.
  */
-unsafe fn sdma_v7_1_ring_emit_fence(crate::structs::amdgpu_ring *ring, u64 addr, u64 seq,
+unsafe fn sdma_v7_1_ring_emit_fence(crate::structs::amdgpu_ring *ring, addr: u64, seq: u64,
 				      unsigned flags)
 {
 	bool write64bit = flags & AMDGPU_FENCE_FLAG_64BIT;
@@ -366,19 +366,19 @@ unsafe fn sdma_v7_1_ring_emit_fence(crate::structs::amdgpu_ring *ring, u64 addr,
  * Stop the gfx async dma ring buffers.
  */
 unsafe fn sdma_v7_1_inst_gfx_stop(crate::structs::amdgpu_device *adev,
-				    u32 inst_mask)
+				    inst_mask: u32)
 {
-	u32 rb_cntl, ib_cntl;
+	rb_cntl: u32, ib_cntl;
 	int i;
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		rb_cntl = RREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_QUEUE0_RB_CNTL));
 		rb_cntl = REG_SET_FIELD(rb_cntl, SDMA0_SDMA_QUEUE0_RB_CNTL, RB_ENABLE, 0);
 		WREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_QUEUE0_RB_CNTL), rb_cntl);
 		ib_cntl = RREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_QUEUE0_IB_CNTL));
 		ib_cntl = REG_SET_FIELD(ib_cntl, SDMA0_SDMA_QUEUE0_IB_CNTL, IB_ENABLE, 0);
 		WREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_QUEUE0_IB_CNTL), ib_cntl);
-	}
+	});
 }
 
 /**
@@ -390,7 +390,7 @@ unsafe fn sdma_v7_1_inst_gfx_stop(crate::structs::amdgpu_device *adev,
  * Stop the compute async dma queues.
  */
 unsafe fn sdma_v7_1_inst_rlc_stop(crate::structs::amdgpu_device *adev,
-				    u32 inst_mask)
+				    inst_mask: u32)
 {
 	/* XXX todo */
 }
@@ -405,14 +405,14 @@ unsafe fn sdma_v7_1_inst_rlc_stop(crate::structs::amdgpu_device *adev,
  * Halt or unhalt the async dma engines context switch.
  */
 unsafe fn sdma_v7_1_inst_ctx_switch_enable(crate::structs::amdgpu_device *adev,
-					     bool enable, u32 inst_mask)
+					     enable: bool, inst_mask: u32)
 {
 	int i;
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		WREG32_SOC15_IP(GC,
 			sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_UTCL1_TIMEOUT), 0x80);
-	}
+	});
 }
 
 /**
@@ -425,7 +425,7 @@ unsafe fn sdma_v7_1_inst_ctx_switch_enable(crate::structs::amdgpu_device *adev,
  * Halt or unhalt the async dma engines.
  */
 unsafe fn sdma_v7_1_inst_enable(crate::structs::amdgpu_device *adev,
-				  bool enable, u32 inst_mask)
+				  enable: bool, inst_mask: u32)
 {
 	u32 mcu_cntl;
 	int i;
@@ -438,11 +438,11 @@ unsafe fn sdma_v7_1_inst_enable(crate::structs::amdgpu_device *adev,
 	if (amdgpu_sriov_vf(adev))
 		return;
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		mcu_cntl = RREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_MCU_CNTL));
 		mcu_cntl = REG_SET_FIELD(mcu_cntl, SDMA0_SDMA_MCU_CNTL, HALT, enable ? 0 : 1);
 		WREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_MCU_CNTL), mcu_cntl);
-	}
+	});
 }
 
 /**
@@ -455,10 +455,10 @@ unsafe fn sdma_v7_1_inst_enable(crate::structs::amdgpu_device *adev,
  * Set up the gfx DMA ring buffers and enable them. On restart, we will restore wptr and rptr.
  * Return 0 for success.
  */
-unsafe fn sdma_v7_1_gfx_resume_instance(crate::structs::amdgpu_device *adev, int i, bool restore)
+unsafe fn sdma_v7_1_gfx_resume_instance(crate::structs::amdgpu_device *adev, int i, restore: bool)
 {
 	crate::structs::amdgpu_ring *ring;
-	u32 rb_cntl, ib_cntl;
+	rb_cntl: u32, ib_cntl;
 	u32 rb_bufsz;
 	u32 doorbell;
 	u32 doorbell_offset;
@@ -615,15 +615,15 @@ unsafe fn sdma_v7_1_gfx_resume_instance(crate::structs::amdgpu_device *adev, int
  * Returns 0 for success, error for failure.
  */
 unsafe fn sdma_v7_1_inst_gfx_resume(crate::structs::amdgpu_device *adev,
-				     u32 inst_mask)
+				     inst_mask: u32)
 {
 	int i, r;
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		r = sdma_v7_1_gfx_resume_instance(adev, i, false);
 		if (r)
 			return r;
-	}
+	});
 
 	return 0;
 
@@ -639,21 +639,21 @@ unsafe fn sdma_v7_1_inst_gfx_resume(crate::structs::amdgpu_device *adev,
  * Returns 0 for success, error for failure.
  */
 unsafe fn sdma_v7_1_inst_rlc_resume(crate::structs::amdgpu_device *adev,
-				     u32 inst_mask)
+				     inst_mask: u32)
 {
 	return 0;
 }
 
 unsafe fn sdma_v7_1_inst_free_ucode_buffer(crate::structs::amdgpu_device *adev,
-					     u32 inst_mask)
+					     inst_mask: u32)
 {
 	int i;
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		amdgpu_bo_free_kernel(&adev.sdma.instance[i].sdma_fw_obj,
 				      &adev.sdma.instance[i].sdma_fw_gpu_addr,
 				      (*mut core::ffi::c_void*)&adev.sdma.instance[i].sdma_fw_ptr);
-	}
+	});
 }
 
 /**
@@ -666,12 +666,12 @@ unsafe fn sdma_v7_1_inst_free_ucode_buffer(crate::structs::amdgpu_device *adev,
  * Returns 0 for success, -EINVAL if the ucode is not available.
  */
 unsafe fn sdma_v7_1_inst_load_microcode(crate::structs::amdgpu_device *adev,
-					 u32 inst_mask)
+					 inst_mask: u32)
 {
 	const sdma_firmware_header_v3_0 *hdr;
 	*const u32fw_data;
 	u32 fw_size;
-	u32 tmp, sdma_status, ic_op_cntl;
+	tmp: u32, sdma_status, ic_op_cntl;
 	int i, r, j;
 
 	/* halt the MEs */
@@ -688,7 +688,7 @@ unsafe fn sdma_v7_1_inst_load_microcode(crate::structs::amdgpu_device *adev,
 			le32_to_cpu(hdr.ucode_offset_bytes));
 	fw_size = le32_to_cpu(hdr.ucode_size_bytes);
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		r = amdgpu_bo_create_reserved(adev, fw_size,
 					      PAGE_SIZE,
 					      AMDGPU_GEM_DOMAIN_VRAM,
@@ -734,7 +734,7 @@ unsafe fn sdma_v7_1_inst_load_microcode(crate::structs::amdgpu_device *adev,
 			dev_err(adev.dev, "failed to init sdma ucode\n");
 			return -EINVAL;
 		}
-	}
+	});
 
 	return 0;
 }
@@ -749,7 +749,7 @@ unsafe fn sdma_v7_1_soft_reset(crate::structs::amdgpu_ip_block *ip_block)
 	inst_mask = GENMASK(NUM_XCC(adev.sdma.sdma_mask) - 1, 0);
 	sdma_v7_1_inst_gfx_stop(adev, inst_mask);
 
-	for_each_inst(i, inst_mask) {
+	for_each_inst!(i, inst_mask, {
 		//tmp = RREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_FREEZE));
 		//tmp |= SDMA0_SDMA_FREEZE__FREEZE_MASK;
 		//WREG32_SOC15_IP(GC, sdma_v7_1_get_reg_offset(adev, i, regSDMA0_SDMA_FREEZE), tmp);
@@ -772,13 +772,13 @@ unsafe fn sdma_v7_1_soft_reset(crate::structs::amdgpu_ip_block *ip_block)
 		tmp = RREG32_SOC15(GC, 0, regGRBM_SOFT_RESET);
 
 		udelay(100);
-	}
+	});
 
 	return sdma_v7_1_inst_start(adev, inst_mask);
 }
 
 unsafe fn sdma_v7_1_reset_queue(crate::structs::amdgpu_ring *ring,
-				 unsigned int vmid,
+				 vmid: core::ffi::c_uint,
 				 crate::structs::amdgpu_fence *timedout_fence)
 {
 	crate::structs::amdgpu_device *adev = ring.adev;
@@ -812,7 +812,7 @@ unsafe fn sdma_v7_1_reset_queue(crate::structs::amdgpu_ring *ring,
  * Returns 0 for success, error for failure.
  */
 unsafe fn sdma_v7_1_inst_start(crate::structs::amdgpu_device *adev,
-				u32 inst_mask)
+				inst_mask: u32)
 {
 	int r = 0;
 
@@ -850,7 +850,7 @@ unsafe fn sdma_v7_1_inst_start(crate::structs::amdgpu_device *adev,
 	return r;
 }
 
-unsafe fn sdma_v7_1_mqd_init(crate::structs::amdgpu_device *adev, *mut core::ffi::c_voidmqd,
+unsafe fn sdma_v7_1_mqd_init(crate::structs::amdgpu_device *adev, mqd: *mut core::ffi::c_void,
 			      crate::structs::amdgpu_mqd_prop *prop)
 {
 	crate::structs::v12_sdma_mqd *m = mqd;
@@ -970,6 +970,8 @@ unsafe fn sdma_v7_1_ring_test_ring(crate::structs::amdgpu_ring *ring)
  */
 unsafe fn sdma_v7_1_ring_test_ib(crate::structs::amdgpu_ring *ring, long timeout)
 {
+	'err0: {
+	'err1: {
 	crate::structs::amdgpu_device *adev = ring.adev;
 	crate::structs::amdgpu_ib ib;
 	crate::structs::dma_fence *f = core::ptr::null_mut();
@@ -993,7 +995,7 @@ unsafe fn sdma_v7_1_ring_test_ib(crate::structs::amdgpu_ring *ring, long timeout
 	r = amdgpu_ib_get(adev, core::ptr::null_mut(), 256, AMDGPU_IB_POOL_DIRECT, &ib);
 	if (r) {
 		DRM_ERROR("amdgpu: failed to get ib (%ld).\n", r);
-		goto err0;
+		break 'err0;
 	}
 
 	ib.ptr[0] = SDMA_PKT_COPY_LINEAR_HEADER_OP(SDMA_OP_WRITE) |
@@ -1009,16 +1011,16 @@ unsafe fn sdma_v7_1_ring_test_ib(crate::structs::amdgpu_ring *ring, long timeout
 
 	r = amdgpu_ib_schedule(ring, 1, &ib, core::ptr::null_mut(), &f);
 	if (r)
-		goto err1;
+		break 'err1;
 
 	r = dma_fence_wait_timeout(f, false, timeout);
 	if (r == 0) {
 		DRM_ERROR("amdgpu: IB test timed out\n");
 		r = -ETIMEDOUT;
-		goto err1;
+		break 'err1;
 	} else if (r < 0) {
 		DRM_ERROR("amdgpu: fence wait failed (%ld).\n", r);
-		goto err1;
+		break 'err1;
 	}
 
 	tmp = le32_to_cpu(adev.wb.wb[index]);
@@ -1027,11 +1029,12 @@ unsafe fn sdma_v7_1_ring_test_ib(crate::structs::amdgpu_ring *ring, long timeout
 		r = 0;
 	else
 		r = -EINVAL;
-
-err1:
+	}
+	
 	amdgpu_ib_free(&ib, core::ptr::null_mut());
 	dma_fence_put(f);
-err0:
+	}
+	
 	amdgpu_wb_free(adev, index);
 	return r;
 }
@@ -1048,7 +1051,7 @@ err0:
  * Update PTEs by copying them from the GART using sDMA.
  */
 unsafe fn sdma_v7_1_vm_copy_pte(crate::structs::amdgpu_ib *ib,
-				  u64 pe, u64 src,
+				  pe: u64, src: u64,
 				  unsigned count)
 {
 	unsigned bytes = count * 8;
@@ -1076,9 +1079,9 @@ unsafe fn sdma_v7_1_vm_copy_pte(crate::structs::amdgpu_ib *ib,
  *
  * Update PTEs by writing them manually using sDMA.
  */
-unsafe fn sdma_v7_1_vm_write_pte(crate::structs::amdgpu_ib *ib, u64 pe,
-				   u64 value, unsigned count,
-				   u32 incr)
+unsafe fn sdma_v7_1_vm_write_pte(crate::structs::amdgpu_ib *ib, pe: u64,
+				   value: u64, unsigned count,
+				   incr: u32)
 {
 	unsigned ndw = count * 2;
 
@@ -1107,9 +1110,9 @@ unsafe fn sdma_v7_1_vm_write_pte(crate::structs::amdgpu_ib *ib, u64 pe,
  * Update the page tables using sDMA.
  */
 unsafe fn sdma_v7_1_vm_set_pte_pde(crate::structs::amdgpu_ib *ib,
-				     u64 pe,
-				     u64 addr, unsigned count,
-				     u32 incr, u64 flags)
+				     pe: u64,
+				     addr: u64, unsigned count,
+				     incr: u32, flags: u64)
 {
 	/* for physically contiguous pages (vram) */
 	u32 header = SDMA_PKT_COPY_LINEAR_HEADER_OP(SDMA_OP_PTEPDE);
@@ -1202,13 +1205,13 @@ unsafe fn sdma_v7_1_ring_emit_pipeline_sync(crate::structs::amdgpu_ring *ring)
  * using sDMA.
  */
 unsafe fn sdma_v7_1_ring_emit_vm_flush(crate::structs::amdgpu_ring *ring,
-					 unsigned vmid, u64 pd_addr)
+					 unsigned vmid, pd_addr: u64)
 {
 	amdgpu_gmc_emit_flush_gpu_tlb(ring, vmid, pd_addr);
 }
 
 unsafe fn sdma_v7_1_ring_emit_wreg(crate::structs::amdgpu_ring *ring,
-				     u32 reg, u32 val)
+				     reg: u32, val: u32)
 {
 	/* SRBM WRITE command will not support on sdma v7.
 	 * Use Register WRITE command instead, which OPCODE is same as SRBM WRITE
@@ -1218,8 +1221,8 @@ unsafe fn sdma_v7_1_ring_emit_wreg(crate::structs::amdgpu_ring *ring,
 	amdgpu_ring_write(ring, val);
 }
 
-unsafe fn sdma_v7_1_ring_emit_reg_wait(crate::structs::amdgpu_ring *ring, u32 reg,
-					 u32 val, u32 mask)
+unsafe fn sdma_v7_1_ring_emit_reg_wait(crate::structs::amdgpu_ring *ring, reg: u32,
+					 val: u32, mask: u32)
 {
 	amdgpu_ring_write(ring, SDMA_PKT_COPY_LINEAR_HEADER_OP(SDMA_OP_POLL_REGMEM) |
 			  SDMA_PKT_POLL_REGMEM_HEADER_FUNC(3)); /* equal */
@@ -1232,8 +1235,8 @@ unsafe fn sdma_v7_1_ring_emit_reg_wait(crate::structs::amdgpu_ring *ring, u32 re
 }
 
 unsafe fn sdma_v7_1_ring_emit_reg_write_reg_wait(crate::structs::amdgpu_ring *ring,
-						   u32 reg0, u32 reg1,
-						   u32 ref, u32 mask)
+						   reg0: u32, reg1: u32,
+						   r#ref: u32, mask: u32)
 {
 	amdgpu_ring_emit_wreg(ring, reg0, ref);
 	/* wait for a cycle to reset vm_inv_eng*_ack */
@@ -1242,10 +1245,10 @@ unsafe fn sdma_v7_1_ring_emit_reg_write_reg_wait(crate::structs::amdgpu_ring *ri
 }
 
 const amdgpu_vm_pte_funcs sdma_v7_1_vm_pte_funcs = {
-	.copy_pte_num_dw = 8,
-	.copy_pte = sdma_v7_1_vm_copy_pte,
-	.write_pte = sdma_v7_1_vm_write_pte,
-	.set_pte_pde = sdma_v7_1_vm_set_pte_pde,
+	copy_pte_num_dw: 8,
+	copy_pte: sdma_v7_1_vm_copy_pte,
+	write_pte: sdma_v7_1_vm_write_pte,
+	set_pte_pde: sdma_v7_1_vm_set_pte_pde,
 };
 
 unsafe fn sdma_v7_1_early_init(crate::structs::amdgpu_ip_block *ip_block)
@@ -1421,8 +1424,7 @@ unsafe fn sdma_v7_1_is_idle(crate::structs::amdgpu_ip_block *ip_block)
 	return true;
 }
 
-unsafe fn sdma_v7_1_wait_for_idle(crate::structs::amdgpu_ip_block *ip_block)
-{
+unsafe fn sdma_v7_1_wait_for_idle(crate::structs::amdgpu_ip_block *ip_block) {
 	unsigned i, j;
 	u32 sdma[AMDGPU_MAX_SDMA_INSTANCES];
 	crate::structs::amdgpu_device *adev = ip_block.adev;
@@ -1617,57 +1619,56 @@ unsafe fn sdma_v7_1_dump_ip_state(crate::structs::amdgpu_ip_block *ip_block)
 }
 
 const amd_ip_funcs sdma_v7_1_ip_funcs = {
-	.name = "sdma_v7_1",
-	.early_init = sdma_v7_1_early_init,
-	.late_init = core::ptr::null_mut(),
-	.sw_init = sdma_v7_1_sw_init,
-	.sw_fini = sdma_v7_1_sw_fini,
-	.hw_init = sdma_v7_1_hw_init,
-	.hw_fini = sdma_v7_1_hw_fini,
-	.suspend = sdma_v7_1_suspend,
-	.resume = sdma_v7_1_resume,
-	.is_idle = sdma_v7_1_is_idle,
-	.wait_for_idle = sdma_v7_1_wait_for_idle,
-	.soft_reset = sdma_v7_1_soft_reset,
-	.set_clockgating_state = sdma_v7_1_set_clockgating_state,
-	.set_powergating_state = sdma_v7_1_set_powergating_state,
-	.get_clockgating_state = sdma_v7_1_get_clockgating_state,
-	.dump_ip_state = sdma_v7_1_dump_ip_state,
-	.print_ip_state = sdma_v7_1_print_ip_state,
+	name: "sdma_v7_1",
+	early_init: sdma_v7_1_early_init,
+	late_init: core::ptr::null_mut(),
+	sw_init: sdma_v7_1_sw_init,
+	sw_fini: sdma_v7_1_sw_fini,
+	hw_init: sdma_v7_1_hw_init,
+	hw_fini: sdma_v7_1_hw_fini,
+	suspend: sdma_v7_1_suspend,
+	resume: sdma_v7_1_resume,
+	is_idle: sdma_v7_1_is_idle,
+	wait_for_idle: sdma_v7_1_wait_for_idle,
+	soft_reset: sdma_v7_1_soft_reset,
+	set_clockgating_state: sdma_v7_1_set_clockgating_state,
+	set_powergating_state: sdma_v7_1_set_powergating_state,
+	get_clockgating_state: sdma_v7_1_get_clockgating_state,
+	dump_ip_state: sdma_v7_1_dump_ip_state,
+	print_ip_state: sdma_v7_1_print_ip_state,
 };
 
 const amdgpu_ring_funcs sdma_v7_1_ring_funcs = {
-	.type = AMDGPU_RING_TYPE_SDMA,
-	.align_mask = 0xf,
-	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
-	.support_64bit_ptrs = true,
-	.secure_submission_supported = true,
-	.get_rptr = sdma_v7_1_ring_get_rptr,
-	.get_wptr = sdma_v7_1_ring_get_wptr,
-	.set_wptr = sdma_v7_1_ring_set_wptr,
-	.emit_frame_size =
-		5 + /* sdma_v7_1_ring_init_cond_exec */
+	type: AMDGPU_RING_TYPE_SDMA,
+	align_mask: 0xf,
+	nop: SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
+	support_64bit_ptrs: true,
+	secure_submission_supported: true,
+	get_rptr: sdma_v7_1_ring_get_rptr,
+	get_wptr: sdma_v7_1_ring_get_wptr,
+	set_wptr: sdma_v7_1_ring_set_wptr,
+	emit_frame_size: 		5 + /* sdma_v7_1_ring_init_cond_exec */
 		6 + /* sdma_v7_1_ring_emit_pipeline_sync */
 		/* sdma_v7_1_ring_emit_vm_flush */
 		SOC15_FLUSH_GPU_TLB_NUM_WREG * 3 +
 		SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 6 +
 		10 + 10 + 10, /* sdma_v7_1_ring_emit_fence x3 for user fence, vm fence */
-	.emit_ib_size = 5 + 7 + 6, /* sdma_v7_1_ring_emit_ib */
-	.emit_ib = sdma_v7_1_ring_emit_ib,
-	.emit_mem_sync = sdma_v7_1_ring_emit_mem_sync,
-	.emit_fence = sdma_v7_1_ring_emit_fence,
-	.emit_pipeline_sync = sdma_v7_1_ring_emit_pipeline_sync,
-	.emit_vm_flush = sdma_v7_1_ring_emit_vm_flush,
-	.test_ring = sdma_v7_1_ring_test_ring,
-	.test_ib = sdma_v7_1_ring_test_ib,
-	.insert_nop = sdma_v7_1_ring_insert_nop,
-	.pad_ib = sdma_v7_1_ring_pad_ib,
-	.emit_wreg = sdma_v7_1_ring_emit_wreg,
-	.emit_reg_wait = sdma_v7_1_ring_emit_reg_wait,
-	.emit_reg_write_reg_wait = sdma_v7_1_ring_emit_reg_write_reg_wait,
-	.init_cond_exec = sdma_v7_1_ring_init_cond_exec,
-	.preempt_ib = sdma_v7_1_ring_preempt_ib,
-	.reset = sdma_v7_1_reset_queue,
+	emit_ib_size: 5 + 7 + 6, /* sdma_v7_1_ring_emit_ib */
+	emit_ib: sdma_v7_1_ring_emit_ib,
+	emit_mem_sync: sdma_v7_1_ring_emit_mem_sync,
+	emit_fence: sdma_v7_1_ring_emit_fence,
+	emit_pipeline_sync: sdma_v7_1_ring_emit_pipeline_sync,
+	emit_vm_flush: sdma_v7_1_ring_emit_vm_flush,
+	test_ring: sdma_v7_1_ring_test_ring,
+	test_ib: sdma_v7_1_ring_test_ib,
+	insert_nop: sdma_v7_1_ring_insert_nop,
+	pad_ib: sdma_v7_1_ring_pad_ib,
+	emit_wreg: sdma_v7_1_ring_emit_wreg,
+	emit_reg_wait: sdma_v7_1_ring_emit_reg_wait,
+	emit_reg_write_reg_wait: sdma_v7_1_ring_emit_reg_write_reg_wait,
+	init_cond_exec: sdma_v7_1_ring_init_cond_exec,
+	preempt_ib: sdma_v7_1_ring_preempt_ib,
+	reset: sdma_v7_1_reset_queue,
 };
 
 unsafe fn sdma_v7_1_set_ring_funcs(crate::structs::amdgpu_device *adev)
@@ -1686,12 +1687,12 @@ unsafe fn sdma_v7_1_set_ring_funcs(crate::structs::amdgpu_device *adev)
 }
 
 const amdgpu_irq_src_funcs sdma_v7_1_trap_irq_funcs = {
-	.set = sdma_v7_1_set_trap_irq_state,
-	.process = sdma_v7_1_process_trap_irq,
+	set: sdma_v7_1_set_trap_irq_state,
+	process: sdma_v7_1_process_trap_irq,
 };
 
 const amdgpu_irq_src_funcs sdma_v7_1_illegal_inst_irq_funcs = {
-	.process = sdma_v7_1_process_illegal_inst_irq,
+	process: sdma_v7_1_process_illegal_inst_irq,
 };
 
 unsafe fn sdma_v7_1_set_irq_funcs(crate::structs::amdgpu_device *adev)
@@ -1716,10 +1717,10 @@ unsafe fn sdma_v7_1_set_irq_funcs(crate::structs::amdgpu_device *adev)
  * registered as the asic copy callback.
  */
 unsafe fn sdma_v7_1_emit_copy_buffer(crate::structs::amdgpu_ib *ib,
-				       u64 src_offset,
-				       u64 dst_offset,
-				       u32 byte_count,
-				       u32 copy_flags)
+				       src_offset: u64,
+				       dst_offset: u64,
+				       byte_count: u32,
+				       copy_flags: u32)
 {
 	ib.ptr[ib.length_dw++] = SDMA_PKT_COPY_LINEAR_HEADER_OP(SDMA_OP_COPY) |
 		SDMA_PKT_COPY_LINEAR_HEADER_SUB_OP(SDMA_SUBOP_COPY_LINEAR) |
@@ -1744,9 +1745,9 @@ unsafe fn sdma_v7_1_emit_copy_buffer(crate::structs::amdgpu_ib *ib,
  * Fill GPU buffers using the DMA engine.
  */
 unsafe fn sdma_v7_1_emit_fill_buffer(crate::structs::amdgpu_ib *ib,
-				       u32 src_data,
-				       u64 dst_offset,
-				       u32 byte_count)
+				       src_data: u32,
+				       dst_offset: u64,
+				       byte_count: u32)
 {
 	ib.ptr[ib.length_dw++] = SDMA_PKT_CONSTANT_FILL_HEADER_OP(SDMA_OP_CONST_FILL);
 	ib.ptr[ib.length_dw++] = lower_32_bits(dst_offset);
@@ -1756,12 +1757,12 @@ unsafe fn sdma_v7_1_emit_fill_buffer(crate::structs::amdgpu_ib *ib,
 }
 
 const amdgpu_buffer_funcs sdma_v7_1_buffer_funcs = {
-	.copy_max_bytes = 1 << 30,
-	.copy_num_dw = 8,
-	.emit_copy_buffer = sdma_v7_1_emit_copy_buffer,
-	.fill_max_bytes = 1 << 30,
-	.fill_num_dw = 5,
-	.emit_fill_buffer = sdma_v7_1_emit_fill_buffer,
+	copy_max_bytes: 1 << 30,
+	copy_num_dw: 8,
+	emit_copy_buffer: sdma_v7_1_emit_copy_buffer,
+	fill_max_bytes: 1 << 30,
+	fill_num_dw: 5,
+	emit_fill_buffer: sdma_v7_1_emit_fill_buffer,
 };
 
 unsafe fn sdma_v7_1_set_buffer_funcs(crate::structs::amdgpu_device *adev)
@@ -1770,14 +1771,14 @@ unsafe fn sdma_v7_1_set_buffer_funcs(crate::structs::amdgpu_device *adev)
 }
 
 const amdgpu_ip_block_version sdma_v7_1_ip_block = {
-	.type = AMD_IP_BLOCK_TYPE_SDMA,
-	.major = 7,
-	.minor = 1,
-	.rev = 0,
-	.funcs = &sdma_v7_1_ip_funcs,
+	type: AMD_IP_BLOCK_TYPE_SDMA,
+	major: 7,
+	minor: 1,
+	rev: 0,
+	funcs: &sdma_v7_1_ip_funcs,
 };
 
-unsafe fn sdma_v7_1_xcp_resume(*mut core::ffi::c_voidhandle, u32 inst_mask)
+unsafe fn sdma_v7_1_xcp_resume(handle: *mut core::ffi::c_void, inst_mask: u32)
 {
 	crate::structs::amdgpu_device *adev = (crate::structs::amdgpu_device *)handle;
 	int r;
@@ -1787,7 +1788,7 @@ unsafe fn sdma_v7_1_xcp_resume(*mut core::ffi::c_voidhandle, u32 inst_mask)
 	return r;
 }
 
-unsafe fn sdma_v7_1_xcp_suspend(*mut core::ffi::c_voidhandle, u32 inst_mask)
+unsafe fn sdma_v7_1_xcp_suspend(handle: *mut core::ffi::c_void, inst_mask: u32)
 {
 	crate::structs::amdgpu_device *adev = (crate::structs::amdgpu_device *)handle;
 
@@ -1798,8 +1799,8 @@ unsafe fn sdma_v7_1_xcp_suspend(*mut core::ffi::c_voidhandle, u32 inst_mask)
 }
 
 crate::structs::amdgpu_xcp_ip_funcs sdma_v7_1_xcp_funcs = {
-	.suspend = &sdma_v7_1_xcp_suspend,
-	.resume = &sdma_v7_1_xcp_resume
+	suspend: &sdma_v7_1_xcp_suspend,
+	resume: &sdma_v7_1_xcp_resume
 };
 
 

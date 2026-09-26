@@ -70,19 +70,19 @@ unsafe extern "C" fn tegra_dt_init() {
 
 unsafe extern "C" fn tegra_dt_init_late() {
     // IS_ENABLED(CONFIG_ARCH_TEGRA_2x_SOC) is a build-time configuration condition.
-    if cfg!(feature = "CONFIG_ARCH_TEGRA_2x_SOC")
+    if cfg!(CONFIG_ARCH_TEGRA_2x_SOC)
         && of_machine_is_compatible(b"nvidia,tegra20\0".as_ptr() as *const c_char)
     {
         platform_device_register_simple(b"tegra20-cpufreq\0".as_ptr() as *const c_char, -1, core::ptr::null(), 0);
     }
 
     // IS_ENABLED(CONFIG_ARM_TEGRA_CPUIDLE) is a build-time configuration condition.
-    if cfg!(feature = "CONFIG_ARM_TEGRA_CPUIDLE") && !psci_smp_available() {
+    if cfg!(CONFIG_ARM_TEGRA_CPUIDLE) && !psci_smp_available() {
         platform_device_register_simple(b"tegra-cpuidle\0".as_ptr() as *const c_char, -1, core::ptr::null(), 0);
     }
 
     // IS_ENABLED(CONFIG_ARCH_TEGRA_3x_SOC) is a build-time configuration condition.
-    if cfg!(feature = "CONFIG_ARCH_TEGRA_3x_SOC")
+    if cfg!(CONFIG_ARCH_TEGRA_3x_SOC)
         && of_machine_is_compatible(b"nvidia,tegra30\0".as_ptr() as *const c_char)
     {
         platform_device_register_simple(b"tegra20-cpufreq\0".as_ptr() as *const c_char, -1, core::ptr::null(), 0);

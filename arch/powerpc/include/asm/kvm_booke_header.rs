@@ -79,7 +79,7 @@ pub unsafe fn kvmppc_get_fpr(vcpu: *mut kvm_vcpu, i: i32) -> u64 {
 
 // Preserved from #ifdef CONFIG_BOOKE; the surrounding build selects whether
 // this declaration is enabled.
-#[cfg(feature = "CONFIG_BOOKE")]
+#[cfg(CONFIG_BOOKE)]
 pub unsafe fn kvmppc_get_fault_dar(vcpu: *mut kvm_vcpu) -> usize {
     (*vcpu).arch.fault_dear
 }
@@ -87,11 +87,11 @@ pub unsafe fn kvmppc_get_fault_dar(vcpu: *mut kvm_vcpu) -> usize {
 pub unsafe fn kvmppc_supports_magic_page(_vcpu: *mut kvm_vcpu) -> bool {
     /* Magic page is only supported on e500v2 */
     // CONFIG_KVM_E500V2 is a build-time condition from the original header.
-    #[cfg(feature = "CONFIG_KVM_E500V2")]
+    #[cfg(CONFIG_KVM_E500V2)]
     {
         true
     }
-    #[cfg(not(feature = "CONFIG_KVM_E500V2"))]
+    #[cfg(not(CONFIG_KVM_E500V2))]
     {
         false
     }

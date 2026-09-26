@@ -44,7 +44,7 @@ pub unsafe fn ifs_status_assign(
 }
 
 /// Trace event equivalent of:
-/// `TRACE_EVENT(ifs_sbaf, TP_PROTO(int batch, union ifs_sbaf activate,
+/// `TRACE_EVENT(ifs_sbaf, TP_PROTO(int batch, ifs_sbaf activate,
 /// union ifs_sbaf_status status), ...)`
 ///
 /// `ifs_sbaf` and `ifs_sbaf_status` are external C union types supplied by the

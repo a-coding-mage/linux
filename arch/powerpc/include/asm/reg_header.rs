@@ -343,28 +343,28 @@ pub const SPRN_DSISR: u64 = 0x012	/* Data Storage Interrupt Status Register */;
  * trigger a SIGBUS or SIGSEGV:
  */
 // #define   DSISR_BAD_FAULT_32S	(DSISR_BAD_DIRECT_ST	| \
-				 DSISR_BADACCESS	| \
-				 DSISR_BAD_EXT_CTRL)
+// 				 DSISR_BADACCESS	| \
+// 				 DSISR_BAD_EXT_CTRL)
 // #define	  DSISR_BAD_FAULT_64S	(DSISR_BAD_FAULT_32S	| \
-				 DSISR_ATTR_CONFLICT	| \
-				 DSISR_UNSUPP_MMU	| \
-				 DSISR_PRTABLE_FAULT	| \
-				 DSISR_ICSWX_NO_CT	| \
-				 DSISR_BAD_COPYPASTE	| \
-				 DSISR_BAD_AMO		| \
-				 DSISR_BAD_CI_LDST)
+// 				 DSISR_ATTR_CONFLICT	| \
+// 				 DSISR_UNSUPP_MMU	| \
+// 				 DSISR_PRTABLE_FAULT	| \
+// 				 DSISR_ICSWX_NO_CT	| \
+// 				 DSISR_BAD_COPYPASTE	| \
+// 				 DSISR_BAD_AMO		| \
+// 				 DSISR_BAD_CI_LDST)
 /*
  * These bits are equivalent in SRR1 and DSISR for 0x400
  * instruction access interrupts on Book3S
  */
 // #define   DSISR_SRR1_MATCH_32S	(DSISR_NOHPTE		| \
-				 DSISR_NOEXEC_OR_G	| \
-				 DSISR_PROTFAULT)
+// 				 DSISR_NOEXEC_OR_G	| \
+// 				 DSISR_PROTFAULT)
 // #define   DSISR_SRR1_MATCH_64S	(DSISR_SRR1_MATCH_32S	| \
-				 DSISR_KEYFAULT		| \
-				 DSISR_UNSUPP_MMU	| \
-				 DSISR_SET_RC		| \
-				 DSISR_PRTABLE_FAULT)
+// 				 DSISR_KEYFAULT		| \
+// 				 DSISR_UNSUPP_MMU	| \
+// 				 DSISR_SET_RC		| \
+// 				 DSISR_PRTABLE_FAULT)
 
 pub const SPRN_TBRL: u64 = 0x10C	/* Time Base Read Lower Register (user, R/O) */;
 pub const SPRN_TBRU: u64 = 0x10D	/* Time Base Read Upper Register (user, R/O) */;
@@ -1099,7 +1099,7 @@ pub const MMCR0_PMC2_LOADMISSTIME: u64 = 0x5;
  * 64-bit embedded
  *	- SPRG0 generic exception scratch
  *	- SPRG2 TLB exception stack
- *	- SPRG3 critical exception scratch (user visible, sorry!)
+ *	- SPRG3 critical exception scratch (user visible, sorry!())
  *	- SPRG4 unused (user visible)
  *	- SPRG6 TLB miss scratch (user visible, sorry !)
  *	- SPRG7 CPU and NUMA node for VDSO getcpu (user visible)
@@ -1151,32 +1151,32 @@ pub const SPRN_SPRG_VDSO_READ: u64 = SPRN_USPRG3;
 pub const SPRN_SPRG_VDSO_WRITE: u64 = SPRN_SPRG3;
 
 // #define GET_PACA(rX)					\
-	BEGIN_FTR_SECTION_NESTED(66);			\
-	mfspr	rX,SPRN_SPRG_PACA;			\
-	FTR_SECTION_ELSE_NESTED(66);			\
-	mfspr	rX,SPRN_SPRG_HPACA;			\
-	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
+// 	BEGIN_FTR_SECTION_NESTED(66);			\
+// 	mfspr	rX,SPRN_SPRG_PACA;			\
+// 	FTR_SECTION_ELSE_NESTED(66);			\
+// 	mfspr	rX,SPRN_SPRG_HPACA;			\
+// 	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
 
 // #define SET_PACA(rX)					\
-	BEGIN_FTR_SECTION_NESTED(66);			\
-	mtspr	SPRN_SPRG_PACA,rX;			\
-	FTR_SECTION_ELSE_NESTED(66);			\
-	mtspr	SPRN_SPRG_HPACA,rX;			\
-	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
+// 	BEGIN_FTR_SECTION_NESTED(66);			\
+// 	mtspr	SPRN_SPRG_PACA,rX;			\
+// 	FTR_SECTION_ELSE_NESTED(66);			\
+// 	mtspr	SPRN_SPRG_HPACA,rX;			\
+// 	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
 
 // #define GET_SCRATCH0(rX)				\
-	BEGIN_FTR_SECTION_NESTED(66);			\
-	mfspr	rX,SPRN_SPRG_SCRATCH0;			\
-	FTR_SECTION_ELSE_NESTED(66);			\
-	mfspr	rX,SPRN_SPRG_HSCRATCH0;			\
-	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
+// 	BEGIN_FTR_SECTION_NESTED(66);			\
+// 	mfspr	rX,SPRN_SPRG_SCRATCH0;			\
+// 	FTR_SECTION_ELSE_NESTED(66);			\
+// 	mfspr	rX,SPRN_SPRG_HSCRATCH0;			\
+// 	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
 
 // #define SET_SCRATCH0(rX)				\
-	BEGIN_FTR_SECTION_NESTED(66);			\
-	mtspr	SPRN_SPRG_SCRATCH0,rX;			\
-	FTR_SECTION_ELSE_NESTED(66);			\
-	mtspr	SPRN_SPRG_HSCRATCH0,rX;			\
-	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
+// 	BEGIN_FTR_SECTION_NESTED(66);			\
+// 	mtspr	SPRN_SPRG_SCRATCH0,rX;			\
+// 	FTR_SECTION_ELSE_NESTED(66);			\
+// 	mtspr	SPRN_SPRG_HSCRATCH0,rX;			\
+// 	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_HVMODE, 66)
 
 // #else /* CONFIG_PPC_BOOK3S_64 */
 // #define GET_SCRATCH0(rX)	mfspr	rX,SPRN_SPRG_SCRATCH0
@@ -1242,7 +1242,7 @@ pub const SPRN_SPRG_SCRATCH2: u64 = SPRN_SPRG2;
  */
 // #ifdef CONFIG_PPC64
 // #define MTFSF_L(REG) \
-	.long (0xfc00058e | ((0xff) << 17) | ((REG) << 11) | (1 << 25))
+// 	.long (0xfc00058e | ((0xff) << 17) | ((REG) << 11) | (1 << 25))
 // #else
 // #define MTFSF_L(REG)	mtfsf	0xff, (REG)
 // #endif
@@ -1390,17 +1390,17 @@ pub const PVR_ARCH_INVALID: u64 = 0xffffffff;
 // #endif
 
 // #define mfmsr()		({unsigned long rval; \
-			asm volatile("mfmsr %0" : "=r" (rval) : \
-						: "memory"); rval;})
+// 			asm volatile("mfmsr %0" : "=r" (rval) : \
+// 						: "memory"); rval;})
 // #ifdef CONFIG_PPC_BOOK3S_64
 // #define __mtmsrd(v, l)	asm volatile("mtmsrd %0," __stringify(l) \
-				     : : "r" (v) : "memory")
+// 				     : : "r" (v) : "memory")
 // #define mtmsr(v)	__mtmsrd((v), 0)
 pub const __MTMSR: u64 = "mtmsrd";
 // #else
 // #define mtmsr(v)	asm volatile("mtmsr %0" : \
-				     : "r" ((unsigned long)(v)) \
-				     : "memory")
+// 				     : "r" ((core::ffi::c_ulong)(v)) \
+// 				     : "memory")
 // #define __mtmsrd(v, l)	BUILD_BUG()
 pub const __MTMSR: u64 = "mtmsr";
 // #endif
@@ -1412,11 +1412,11 @@ pub const __MTMSR: u64 = "mtmsr";
 }
 
 // #define mfspr(rn)	({unsigned long rval; \
-			asm volatile("mfspr %0," __stringify(rn) \
-				: "=r" (rval)); rval;})
+// 			asm volatile("mfspr %0," __stringify(rn) \
+// 				: "=r" (rval)); rval;})
 // #define mtspr(rn, v)	asm volatile("mtspr " __stringify(rn) ",%0" : \
-				     : "r" ((unsigned long)(v)) \
-				     : "memory")
+// 				     : "r" ((core::ffi::c_ulong)(v)) \
+// 				     : "memory")
 // #define wrtspr(rn)	asm volatile("mtspr " __stringify(rn) ",2" : : : "memory")
 // #define wrtspr_sync(rn)	asm volatile("mtspr " __stringify(rn) ",2; sync" : : : "memory")
 
@@ -1461,14 +1461,14 @@ pub const __MTMSR: u64 = "mtmsr";
 
 // extern unsigned long current_stack_frame(void);
 
-register unsigned long current_stack_pointer asm("r1");
+register core::ffi::c_ulong current_stack_pointer asm("r1");
 
 // extern unsigned long scom970_read(unsigned int address);
 // extern void scom970_write(unsigned int address, unsigned long value);
 
 // struct pt_regs;
 
-// extern void ppc_save_regs(struct pt_regs *regs);
+// extern void ppc_save_regs(pt_regs *regs);
 // #endif /* __ASSEMBLER__ */
 // #endif /* __KERNEL__ */
 // #endif /* _ASM_POWERPC_REG_H */
@@ -1737,12 +1737,12 @@ register unsigned long current_stack_pointer asm("r1");
  * #define PVR_CFG(pvr)	(((pvr) >>  8) & 0xF)	/* Configuration field */
  * #define PVR_MAJ(pvr)	(((pvr) >>  4) & 0xF)	/* Major revision field */
  * #define PVR_MIN(pvr)	(((pvr) >>  0) & 0xF)	/* Minor revision field */
- * #define mfmsr()		({unsigned long rval; \
+ * #define mfmsr()		({core::ffi::c_ulong rval; \
  * #define __mtmsrd(v, l)	asm volatile("mtmsrd %0," __stringify(l) \
  * #define mtmsr(v)	__mtmsrd((v), 0)
  * #define mtmsr(v)	asm volatile("mtmsr %0" : \
  * #define __mtmsrd(v, l)	BUILD_BUG()
- * #define mfspr(rn)	({unsigned long rval; \
+ * #define mfspr(rn)	({core::ffi::c_ulong rval; \
  * #define mtspr(rn, v)	asm volatile("mtspr " __stringify(rn) ",%0" : \
  * #define wrtspr(rn)	asm volatile("mtspr " __stringify(rn) ",2" : : : "memory")
  * #define wrtspr_sync(rn)	asm volatile("mtspr " __stringify(rn) ",2; sync" : : : "memory")

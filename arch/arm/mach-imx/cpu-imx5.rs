@@ -88,7 +88,7 @@ pub unsafe extern "C" fn mx51_revision() -> i32 {
 }
 
 // CONFIG_NEON conditional from the original source.
-#[cfg(feature = "CONFIG_NEON")]
+#[cfg(CONFIG_NEON)]
 /*
  * All versions of the silicon before Rev. 3 have broken NEON implementations.
  * Dependent on link order - so the assumption is that vfp_init is called
@@ -144,7 +144,7 @@ pub unsafe extern "C" fn imx5_pmu_init() {
     let mut gpc: u32;
 
     // IS_ENABLED(CONFIG_ARM_PMU) is resolved by the build configuration.
-    if !cfg!(feature = "CONFIG_ARM_PMU") {
+    if !cfg!(CONFIG_ARM_PMU) {
         return;
     }
 

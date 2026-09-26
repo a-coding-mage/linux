@@ -79,7 +79,7 @@ pub unsafe fn HUF_readCTable(ct:*mut HUF_CElt,maxp:*mut u32,src:*const u8,size:u
 
 pub unsafe fn HUF_getNbBitsFromCTable(ct:*const HUF_CElt,s:u32)->u32{if s>HUF_readCTableHeader(ct).maxSymbolValue as u32{0}else{nb(*ct.add(s as usize+1)) as u32}}
 pub unsafe fn HUF_estimateCompressedSize(ct:*const HUF_CElt,count:*const u32,max:u32)->usize{let mut b=0;for s in 0..=max as usize{b+=nb(*ct.add(s+1))*(*count.add(s) as usize)}b>>3}
-pub unsafe fn HUF_validateCTable(ct:*const HUF_CElt,count:*const u32,max:u32)->i32{let h=HUF_readCTableHeader(ct);if h.maxSymbolValue as u32<max{return 0}for s in 0..=max as usize{if *count.add(s)!=0&&nb(*ct.add(s+1))==0{return 0}}1}
+pub unsafe fn HUF_validateCTable(ct:*const HUF_CElt,count:*const u32,max:u32)->i32{let h=HUF_readCTableHeader(ct);if (h.maxSymbolValue as u32)<max{return 0}for s in 0..=max as usize{if *count.add(s)!=0&&nb(*ct.add(s+1))==0{return 0}}1}
 pub fn HUF_compressBound(size:usize)->usize{size+size/128+8}
 
 // The remaining tree, bitstream, and public compression routines preserve the

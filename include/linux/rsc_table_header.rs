@@ -113,7 +113,7 @@ pub unsafe fn rsc_table_for_each_entry(
 
         if (offset as usize) < core::mem::size_of::<resource_table>()
             || (offset as usize) >= table_sz
-            || table_sz - offset as usize < core::mem::size_of::<fw_rsc_hdr>()
+            || table_sz - (offset as usize) < core::mem::size_of::<fw_rsc_hdr>()
         {
             dev_err(dev, b"rsc table is truncated\0".as_ptr() as *const core::ffi::c_char);
             return -EINVAL;

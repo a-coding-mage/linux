@@ -37,9 +37,10 @@ pub unsafe fn affs_free_block(sb: *mut super_block, block: u32) {
     let mut bh: *mut buffer_head;
     let (blk, bmap, bit, mask, tmp): (u32, u32, u32, u32, u32);
     let data: *mut u32;
+    'err_range: {
 
     pr_debug!("%s(%u)\n", "affs_free_block", block);
-    if block > (*sbi).s_partition_size { goto!(err_range); }
+    if block > (*sbi).s_partition_size { break 'err_range; }
     let blk = block.wrapping_sub((*sbi).s_reserved);
     let bmap = blk / (*sbi).s_bmap_bits;
     let bit = blk % (*sbi).s_bmap_bits;
@@ -49,14 +50,14 @@ pub unsafe fn affs_free_block(sb: *mut super_block, block: u32) {
     if (*sbi).s_last_bmap != bmap {
         affs_brelse(bh);
         bh = affs_bread(sb, (*bm).bm_key);
-        if bh.is_null() { goto!(err_bh_read); }
+        if bh.is_null() { goto err_bh_read; }
         (*sbi).s_bmap_bh = bh;
         (*sbi).s_last_bmap = bmap;
     }
     let mask = 1u32 << (bit & 31);
     let data = ((*bh).b_data as *mut u8).add((bit / 32 * 4 + 4) as usize) as *mut u32;
     let tmp = u32::from_be((*data));
-    if tmp & mask != 0 { goto!(err_free); }
+    if tmp & mask != 0 { goto err_free; }
     *data = (tmp | mask).to_be();
     let tmp = u32::from_be(*((*bh).b_data as *mut u32));
     *((*bh).b_data as *mut u32) = tmp.wrapping_sub(mask).to_be();
@@ -69,7 +70,8 @@ err_bh_read:
     affs_error(sb, "affs_free_block", "Cannot read bitmap block %u", (*bm).bm_key);
     (*sbi).s_bmap_bh = core::ptr::null_mut(); (*sbi).s_last_bmap = !0;
     mutex_unlock(&mut (*sbi).s_bmlock); return;
-err_range:
+    }
+    
     affs_error(sb, "affs_free_block", "Block %u outside partition", block);
 }
 

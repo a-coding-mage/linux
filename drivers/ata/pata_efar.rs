@@ -75,7 +75,7 @@ unsafe fn efar_set_piomode(ap: *mut ata_port, adev: *mut ata_device) {
         master_data |= (control as u16) << 4;
         pci_read_config_byte(dev, 0x44, &mut slave_data);
         slave_data &= if (*ap).port_no != 0 { 0x0F } else { 0xF0 };
-        slave_data |= (((TIMINGS[pio as usize][0] << 2) | TIMINGS[pio as usize][1]) as u16 << shift) as u8;
+        slave_data |= ((((TIMINGS[pio as usize][0] << 2) | TIMINGS[pio as usize][1]) as u16) << shift) as u8;
         pci_write_config_byte(dev, 0x44, slave_data);
     }
     master_data |= 0x4000;

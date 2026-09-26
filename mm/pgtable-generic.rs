@@ -241,9 +241,9 @@ unsafe fn kernel_pgtable_work_func(work: *mut work_struct) {
     iommu_sva_invalidate_kva_range(PAGE_OFFSET, TLB_FLUSH_ALL);
     let mut pt: *mut ptdesc = core::ptr::null_mut();
     let mut next: *mut ptdesc = core::ptr::null_mut();
-    list_for_each_entry_safe(&mut pt, &mut next, &mut page_list, pt_list) {
+    list_for_each_entry_safe!(&mut pt, &mut next, &mut page_list, pt_list, {
         __pagetable_free(pt);
-    }
+    });
 }
 
 #[cfg(CONFIG_ASYNC_KERNEL_PGTABLE_FREE)]

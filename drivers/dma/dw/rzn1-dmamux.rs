@@ -65,27 +65,33 @@ unsafe fn rzn1_dmamux_route_allocate(dma_spec: *mut of_phandle_args, ofdma: *mut
     let mut map: *mut rzn1_dmamux_map;
     let (mut dmac_idx, mut chan, mut val): (u32, u32, u32);
     let mut ret: i32;
+    'put_device: {
+    'free_map: {
+    'put_dma_spec_np: {
 
-    if (*dma_spec).args_count != RNZ1_DMAMUX_NCELLS as u32 { ret = -22; goto put_device; }
+    if (*dma_spec).args_count != RNZ1_DMAMUX_NCELLS as u32 { ret = -22; break 'put_device; }
     map = kzalloc(core::mem::size_of::<rzn1_dmamux_map>(), 0) as *mut rzn1_dmamux_map;
-    if map.is_null() { ret = -12; goto put_device; }
+    if map.is_null() { ret = -12; break 'put_device; }
     chan = (*dma_spec).args[0]; (*map).req_idx = (*dma_spec).args[4]; val = (*dma_spec).args[5]; (*dma_spec).args_count -= 2;
-    if chan >= RZN1_DMAMUX_LINES_PER_CTLR as u32 { dev_err(&mut (*pdev).dev, b"Invalid DMA request line: %u\0".as_ptr() as _, chan); ret = -22; goto free_map; }
-    if (*map).req_idx >= RZN1_DMAMUX_MAX_LINES as u32 || ((*map).req_idx as usize % RZN1_DMAMUX_LINES_PER_CTLR) as u32 != chan { dev_err(&mut (*pdev).dev, b"Invalid MUX request line: %u\0".as_ptr() as _, (*map).req_idx); ret = -22; goto free_map; }
+    if chan >= RZN1_DMAMUX_LINES_PER_CTLR as u32 { dev_err(&mut (*pdev).dev, b"Invalid DMA request line: %u\0".as_ptr() as _, chan); ret = -22; break 'free_map; }
+    if (*map).req_idx >= RZN1_DMAMUX_MAX_LINES as u32 || ((*map).req_idx as usize % RZN1_DMAMUX_LINES_PER_CTLR) as u32 != chan { dev_err(&mut (*pdev).dev, b"Invalid MUX request line: %u\0".as_ptr() as _, (*map).req_idx); ret = -22; break 'free_map; }
     dmac_idx = if (*map).req_idx >= RZN1_DMAMUX_LINES_PER_CTLR as u32 { 1 } else { 0 };
     (*dma_spec).np = of_parse_phandle((*ofdma).of_node, b"dma-masters\0".as_ptr() as _, dmac_idx);
-    if (*dma_spec).np.is_null() { dev_err(&mut (*pdev).dev, b"Can't get DMA master\n\0".as_ptr() as _); ret = -22; goto free_map; }
+    if (*dma_spec).np.is_null() { dev_err(&mut (*pdev).dev, b"Can't get DMA master\n\0".as_ptr() as _); ret = -22; break 'free_map; }
     dev_dbg(&mut (*pdev).dev, b"Mapping DMAMUX request %u to DMAC%u request %u\n\0".as_ptr() as _, (*map).req_idx, dmac_idx, chan);
-    if test_and_set_bit((*map).req_idx, (*dmamux).used_chans.as_mut_ptr()) { ret = -16; goto put_dma_spec_np; }
+    if test_and_set_bit((*map).req_idx, (*dmamux).used_chans.as_mut_ptr()) { ret = -16; break 'put_dma_spec_np; }
     let mask = 1u32.wrapping_shl((*map).req_idx); ret = r9a06g032_sysctrl_set_dmamux(mask, if val != 0 { mask } else { 0 });
-    if ret != 0 { clear_bit((*map).req_idx, (*dmamux).used_chans.as_mut_ptr()); goto put_dma_spec_np; }
+    if ret != 0 { clear_bit((*map).req_idx, (*dmamux).used_chans.as_mut_ptr()); break 'put_dma_spec_np; }
     put_device(&mut (*pdev).dev); return map as _;
-put_dma_spec_np: of_node_put((*dma_spec).np);
-free_map: kfree(map as _);
-put_device: put_device(&mut (*pdev).dev); core::ptr::null_mut()
+    }
+    of_node_put((*dma_spec).np);
+    }
+    kfree(map as _);
+    }
+    put_device(&mut (*pdev).dev); core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 static RZN1_DMAC_MATCH: [of_device_id; 2] = [of_device_id, of_device_id];
 
 unsafe extern "C" fn rzn1_dmamux_probe(pdev: *mut platform_device) -> i32 {

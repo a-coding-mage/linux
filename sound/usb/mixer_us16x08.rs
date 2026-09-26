@@ -10,7 +10,7 @@
 // Requires: usbaudio.h, mixer.h, helper.h, mixer_us16x08.h
 
 /* USB control message templates */
-static const ROUTE_MSG: &[u8] = &[
+static ROUTE_MSG: &[u8] = &[
 	0x61,
 	0x02,
 	0x03, /* input from master (0x02) or input from computer bus (0x03) */
@@ -33,15 +33,15 @@ static const ROUTE_MSG: &[u8] = &[
 	0x00
 ];
 
-static const MIX_INIT_MSG1: &[u8] = &[
+static MIX_INIT_MSG1: &[u8] = &[
 	0x71, 0x01, 0x00, 0x00
 ];
 
-static const MIX_INIT_MSG2: &[u8] = &[
+static MIX_INIT_MSG2: &[u8] = &[
 	0x62, 0x02, 0x00, 0x61, 0x02, 0x04, 0xb1, 0x01, 0x00, 0x00
 ];
 
-static const MIX_MSG_IN: &[u8] = &[
+static MIX_MSG_IN: &[u8] = &[
 	/* default message head, equal to all mixers */
 	0x61, 0x02, 0x04, 0x62, 0x02, 0x01,
 	0x81, /* 0x06: Controller ID */
@@ -51,7 +51,7 @@ static const MIX_MSG_IN: &[u8] = &[
 	0x00
 ];
 
-static const MIX_MSG_OUT: &[u8] = &[
+static MIX_MSG_OUT: &[u8] = &[
 	/* default message head, equal to all mixers */
 	0x61, 0x02, 0x02, 0x62, 0x02, 0x01,
 	0x81, /* 0x06: Controller ID */
@@ -61,7 +61,7 @@ static const MIX_MSG_OUT: &[u8] = &[
 	0x00
 ];
 
-static const BYPASS_MSG_OUT: &[u8] = &[
+static BYPASS_MSG_OUT: &[u8] = &[
 	0x45,
 	0x02,
 	0x01, /* on/off flag */
@@ -69,7 +69,7 @@ static const BYPASS_MSG_OUT: &[u8] = &[
 	0x00
 ];
 
-static const BUS_MSG_OUT: &[u8] = &[
+static BUS_MSG_OUT: &[u8] = &[
 	0x44,
 	0x02,
 	0x01, /* on/off flag */
@@ -77,7 +77,7 @@ static const BUS_MSG_OUT: &[u8] = &[
 	0x00
 ];
 
-static const COMP_MSG: &[u8] = &[
+static COMP_MSG: &[u8] = &[
 	/* default message head, equal to all mixers */
 	0x61, 0x02, 0x04, 0x62, 0x02, 0x01,
 	0x91,
@@ -105,7 +105,7 @@ static const COMP_MSG: &[u8] = &[
 	0x00
 ];
 
-static const EQS_MSQ: &[u8] = &[
+static EQS_MSQ: &[u8] = &[
 	/* default message head, equal to all mixers */
 	0x61, 0x02, 0x04, 0x62, 0x02, 0x01,
 	0x51, /*                0x06: Controller ID  */
@@ -128,13 +128,13 @@ static const EQS_MSQ: &[u8] = &[
 ];
 
 /* compressor ratio map */
-static const RATIO_MAP: &[u8] = &[
+static RATIO_MAP: &[u8] = &[
 	0x0a, 0x0b, 0x0d, 0x0f, 0x11, 0x14, 0x19, 0x1e,
 	0x23, 0x28, 0x32, 0x3c, 0x50, 0xa0, 0xff
 ];
 
 /* route enumeration names */
-static const ROUTE_NAMES: &[&str] = &[
+static ROUTE_NAMES: &[&str] = &[
 	"Master Left", "Master Right", "Output 1", "Output 2", "Output 3",
 	"Output 4", "Output 5", "Output 6", "Output 7", "Output 8",
 ];
@@ -172,7 +172,7 @@ extern "C" {
 	fn strscpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char, size: usize) -> isize;
 }
 
-static unsafe fn snd_us16x08_recv_urb(chip: *mut snd_usb_audio,
+unsafe fn snd_us16x08_recv_urb(chip: *mut snd_usb_audio,
 	buf: *mut u8, size: i32) -> i32
 {
 	// guard(mutex)(&chip->mutex);
@@ -187,7 +187,7 @@ static unsafe fn snd_us16x08_recv_urb(chip: *mut snd_usb_audio,
 /* wrapper function to send prepared URB buffer to usb device. Return an error
  * code if something went wrong
  */
-static unsafe fn snd_us16x08_send_urb(chip: *mut snd_usb_audio, buf: *mut i8, size: i32) -> i32
+unsafe fn snd_us16x08_send_urb(chip: *mut snd_usb_audio, buf: *mut i8, size: i32) -> i32
 {
 	return snd_usb_ctl_msg(chip as *mut core::ffi::c_void, usb_sndctrlpipe(chip as *mut core::ffi::c_void, 0),
 			0, /* SND_US16X08_URB_REQUEST */
@@ -195,13 +195,13 @@ static unsafe fn snd_us16x08_send_urb(chip: *mut snd_usb_audio, buf: *mut i8, si
 			0, 0, buf as *mut core::ffi::c_void, size);
 }
 
-static unsafe fn snd_us16x08_route_info(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_route_info(kcontrol: *mut snd_kcontrol,
 	uinfo: *mut snd_ctl_elem_info) -> i32
 {
 	return snd_ctl_enum_info(uinfo, 1, 10, ROUTE_NAMES.as_ptr() as *const *const core::ffi::c_char);
 }
 
-static unsafe fn snd_us16x08_route_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_route_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -213,7 +213,7 @@ static unsafe fn snd_us16x08_route_get(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_route_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_route_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -263,7 +263,7 @@ static unsafe fn snd_us16x08_route_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_master_info(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_master_info(kcontrol: *mut snd_kcontrol,
 	uinfo: *mut snd_ctl_elem_info) -> i32
 {
 	// uinfo->count = 1;
@@ -274,7 +274,7 @@ static unsafe fn snd_us16x08_master_info(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_master_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_master_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -285,7 +285,7 @@ static unsafe fn snd_us16x08_master_get(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_master_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_master_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -324,7 +324,7 @@ static unsafe fn snd_us16x08_master_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_bus_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_bus_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -370,7 +370,7 @@ static unsafe fn snd_us16x08_bus_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_bus_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_bus_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -392,7 +392,7 @@ static unsafe fn snd_us16x08_bus_get(kcontrol: *mut snd_kcontrol,
 }
 
 /* gets a current mixer value from common store */
-static unsafe fn snd_us16x08_channel_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_channel_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -403,7 +403,7 @@ static unsafe fn snd_us16x08_channel_get(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_channel_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_channel_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -441,7 +441,7 @@ static unsafe fn snd_us16x08_channel_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_mix_info(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_mix_info(kcontrol: *mut snd_kcontrol,
 	uinfo: *mut snd_ctl_elem_info) -> i32
 {
 	// uinfo->count = 1;
@@ -452,7 +452,7 @@ static unsafe fn snd_us16x08_mix_info(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_comp_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_comp_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -465,7 +465,7 @@ static unsafe fn snd_us16x08_comp_get(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_comp_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_comp_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -552,7 +552,7 @@ static unsafe fn snd_us16x08_comp_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_eqswitch_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_eqswitch_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let mut val: i32;
@@ -568,7 +568,7 @@ static unsafe fn snd_us16x08_eqswitch_get(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_eqswitch_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_eqswitch_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -616,7 +616,7 @@ static unsafe fn snd_us16x08_eqswitch_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_eq_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_eq_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let mut val: i32;
@@ -633,7 +633,7 @@ static unsafe fn snd_us16x08_eq_get(kcontrol: *mut snd_kcontrol,
 	return 0;
 }
 
-static unsafe fn snd_us16x08_eq_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_eq_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -682,7 +682,7 @@ static unsafe fn snd_us16x08_eq_put(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_meter_info(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_meter_info(kcontrol: *mut snd_kcontrol,
 	uinfo: *mut snd_ctl_elem_info) -> i32
 {
 	// uinfo->count = 34;
@@ -694,7 +694,7 @@ static unsafe fn snd_us16x08_meter_info(kcontrol: *mut snd_kcontrol,
 }
 
 /* calculate compressor index for reduction level request */
-static unsafe fn snd_get_meter_comp_index(store: *mut snd_us16x08_meter_store) -> i32
+unsafe fn snd_get_meter_comp_index(store: *mut snd_us16x08_meter_store) -> i32
 {
 	let mut ret: i32;
 
@@ -729,7 +729,7 @@ static unsafe fn snd_get_meter_comp_index(store: *mut snd_us16x08_meter_store) -
 }
 
 /* retrieve the meter level values from URB message */
-static unsafe fn get_meter_levels_from_urb(s: i32,
+unsafe fn get_meter_levels_from_urb(s: i32,
 	store: *mut snd_us16x08_meter_store,
 	meter_urb: *const u8)
 {
@@ -770,7 +770,7 @@ static unsafe fn get_meter_levels_from_urb(s: i32,
  * A mixer can interrupt this round-trip by selecting one ore two (stereo-link)
  * specific channels.
  */
-static unsafe fn snd_us16x08_meter_get(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_meter_get(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let mut i: i32;
@@ -841,7 +841,7 @@ static unsafe fn snd_us16x08_meter_get(kcontrol: *mut snd_kcontrol,
 	return 1;
 }
 
-static unsafe fn snd_us16x08_meter_put(kcontrol: *mut snd_kcontrol,
+unsafe fn snd_us16x08_meter_put(kcontrol: *mut snd_kcontrol,
 	ucontrol: *mut snd_ctl_elem_value) -> i32
 {
 	let elem = snd_kcontrol_chip(kcontrol);
@@ -885,7 +885,7 @@ static unsafe fn snd_us16x08_meter_put(kcontrol: *mut snd_kcontrol,
 /* control store preparation */
 
 /* setup compressor store and assign default value */
-static unsafe fn snd_us16x08_create_comp_store() -> *mut snd_us16x08_comp_store
+unsafe fn snd_us16x08_create_comp_store() -> *mut snd_us16x08_comp_store
 {
 	let mut i: i32;
 	let tmp: *mut snd_us16x08_comp_store;
@@ -910,7 +910,7 @@ static unsafe fn snd_us16x08_create_comp_store() -> *mut snd_us16x08_comp_store
 }
 
 /* setup EQ store and assign default values */
-static unsafe fn snd_us16x08_create_eq_store() -> *mut snd_us16x08_eq_store
+unsafe fn snd_us16x08_create_eq_store() -> *mut snd_us16x08_eq_store
 {
 	let mut i: i32;
 	let mut b_idx: i32;
@@ -953,7 +953,7 @@ static unsafe fn snd_us16x08_create_eq_store() -> *mut snd_us16x08_eq_store
 	return tmp;
 }
 
-static unsafe fn snd_us16x08_create_meter_store() -> *mut snd_us16x08_meter_store
+unsafe fn snd_us16x08_create_meter_store() -> *mut snd_us16x08_meter_store
 {
 	let tmp: *mut snd_us16x08_meter_store;
 
@@ -967,7 +967,7 @@ static unsafe fn snd_us16x08_create_meter_store() -> *mut snd_us16x08_meter_stor
 }
 
 /* release elem->private_free as well; called only once for each *_store */
-static unsafe fn elem_private_free(kctl: *mut snd_kcontrol)
+unsafe fn elem_private_free(kctl: *mut snd_kcontrol)
 {
 	let elem = (*kctl).private_data as *mut usb_mixer_elem_info;
 
@@ -978,7 +978,7 @@ static unsafe fn elem_private_free(kctl: *mut snd_kcontrol)
 	(*kctl).private_data = core::ptr::null_mut();
 }
 
-static unsafe fn add_new_ctl(mixer: *mut usb_mixer_interface,
+unsafe fn add_new_ctl(mixer: *mut usb_mixer_interface,
 	ncontrol: *const snd_kcontrol_new,
 	index: i32, val_type: i32, channels: i32,
 	name: *const core::ffi::c_char, opt: *mut core::ffi::c_void,

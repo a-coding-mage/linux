@@ -87,7 +87,7 @@ pub const EDAC_DEBUG: &str = "DEBUG";
 
 extern "C" {
     pub static edac_mem_types: *const *const std::os::raw::c_char;
-    #[cfg(feature = "CONFIG_EDAC_DEBUG")]
+    #[cfg(CONFIG_EDAC_DEBUG)]
     pub static mut edac_debug_level: std::os::raw::c_int;
 }
 
@@ -95,7 +95,7 @@ extern "C" {
 #[macro_export]
 macro_rules! edac_dbg {
     ($level:expr, $fmt:expr $(, $arg:expr)*) => {{
-        #[cfg(feature = "CONFIG_EDAC_DEBUG")]
+        #[cfg(CONFIG_EDAC_DEBUG)]
         {
             if $level <= unsafe { edac_debug_level } {
                 edac_printk!(KERN_DEBUG, EDAC_DEBUG, concat!("%s: ", $fmt), module_path!() $(, $arg)*);
@@ -107,7 +107,7 @@ macro_rules! edac_dbg {
 // PCI_VEND_DEV expands to the corresponding PCI_DEVICE vendor/device IDs.
 #[macro_export]
 macro_rules! PCI_VEND_DEV {
-    ($vend:ident, $dev:ident) => { PCI_DEVICE!(PCI_VENDOR_ID_$vend, PCI_DEVICE_ID_$vend ## _ ## $dev) };
+    ($vend:tt, $dev:ident) => { PCI_DEVICE!(PCI_VENDOR_ID_$vend, PCI_DEVICE_ID_::kernel::macros::paste!([<$vend _>]) ## $dev) };
 }
 
 #[macro_export]

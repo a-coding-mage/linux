@@ -55,15 +55,15 @@ pub const DLM_CLOSING: c_int = 7;
 #[repr(C)] pub struct dlm_rawmsg_data { pub node: *mut midcomms_node, pub buf: *mut c_void }
 
 extern "C" {
-    fn dlm_lowcomms_addr(c_int, *mut sockaddr_storage) -> c_int;
-    fn dlm_lowcomms_new_msg(c_int, c_int, *mut *mut c_char, Option<unsafe extern "C" fn(*mut c_void)>, *mut c_void) -> *mut dlm_msg;
-    fn dlm_lowcomms_commit_msg(*mut dlm_msg); fn dlm_lowcomms_put_msg(*mut dlm_msg);
-    fn dlm_lowcomms_resend_msg(*mut dlm_msg) -> c_int; fn dlm_lowcomms_close(c_int) -> c_int;
+    fn dlm_lowcomms_addr(_: c_int, _: *mut sockaddr_storage) -> c_int;
+    fn dlm_lowcomms_new_msg(_: c_int, _: c_int, _: *mut *mut c_char, _: Option<unsafe extern "C" fn(*mut c_void)>, _: *mut c_void) -> *mut dlm_msg;
+    fn dlm_lowcomms_commit_msg(_: *mut dlm_msg); fn dlm_lowcomms_put_msg(_: *mut dlm_msg);
+    fn dlm_lowcomms_resend_msg(_: *mut dlm_msg) -> c_int; fn dlm_lowcomms_close(_: c_int) -> c_int;
     fn dlm_lowcomms_start() -> c_int; fn dlm_lowcomms_stop(); fn dlm_lowcomms_init(); fn dlm_lowcomms_exit(); fn dlm_lowcomms_shutdown();
-    fn dlm_our_nodeid() -> c_int; fn dlm_receive_buffer(*const dlm_packet, c_int);
-    fn dlm_allocate_mhandle() -> *mut dlm_mhandle; fn dlm_free_mhandle(*mut dlm_mhandle);
-    fn dlm_create_debug_comms_file(c_int, *mut midcomms_node) -> *mut c_void; fn dlm_delete_debug_comms_file(*mut c_void);
-    fn nodeid_hash(c_int) -> usize; fn memcpy(*mut c_void, *const c_void, usize) -> *mut c_void;
+    fn dlm_our_nodeid() -> c_int; fn dlm_receive_buffer(_: *const dlm_packet, _: c_int);
+    fn dlm_allocate_mhandle() -> *mut dlm_mhandle; fn dlm_free_mhandle(_: *mut dlm_mhandle);
+    fn dlm_create_debug_comms_file(_: c_int, _: *mut midcomms_node) -> *mut c_void; fn dlm_delete_debug_comms_file(_: *mut c_void);
+    fn nodeid_hash(_: c_int) -> usize; fn memcpy(_: *mut c_void, _: *const c_void, _: usize) -> *mut c_void;
 }
 
 static mut node_hash: *mut hlist_head = ptr::null_mut();

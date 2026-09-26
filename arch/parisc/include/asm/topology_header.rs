@@ -2,17 +2,17 @@
 // The original header conditionally includes Linux topology dependencies when
 // CONFIG_GENERIC_ARCH_TOPOLOGY is enabled.
 
-#[cfg(not(feature = "CONFIG_GENERIC_ARCH_TOPOLOGY"))]
+#[cfg(not(CONFIG_GENERIC_ARCH_TOPOLOGY))]
 #[inline]
 pub fn init_cpu_topology() {}
 
-#[cfg(not(feature = "CONFIG_GENERIC_ARCH_TOPOLOGY"))]
+#[cfg(not(CONFIG_GENERIC_ARCH_TOPOLOGY))]
 #[inline]
 pub fn store_cpu_topology(cpuid: core::ffi::c_uint) {
     let _ = cpuid;
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_ARCH_TOPOLOGY"))]
+#[cfg(not(CONFIG_GENERIC_ARCH_TOPOLOGY))]
 #[inline]
 pub fn reset_cpu_topology() {}
 

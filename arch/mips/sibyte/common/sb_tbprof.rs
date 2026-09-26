@@ -67,12 +67,12 @@ unsafe fn arm_tb() {
     scdperfcnt = __raw_readq(IOADDR(A_SCD_PERF_CNT_CFG));
 
     // The selected register addresses and masks depend on the build-time SiByte variant.
-    #[cfg(feature = "CONFIG_SIBYTE_BCM1x80")]
+    #[cfg(CONFIG_SIBYTE_BCM1x80)]
     {
         __raw_writeq((scdperfcnt & !M_SPC_CFG_SRC1) | V_SPC_CFG_SRC1(1), IOADDR(A_BCM1480_SCD_PERF_CNT_CFG0));
         __raw_writeq(M_SPC_CFG_ENABLE | M_SPC_CFG_CLEAR | V_SPC_CFG_SRC1(1), IOADDR(A_BCM1480_SCD_PERF_CNT_CFG1));
     }
-    #[cfg(not(feature = "CONFIG_SIBYTE_BCM1x80"))]
+    #[cfg(not(CONFIG_SIBYTE_BCM1x80))]
     {
         __raw_writeq((scdperfcnt & !M_SPC_CFG_SRC1) | M_SPC_CFG_ENABLE | M_SPC_CFG_CLEAR | V_SPC_CFG_SRC1(1), IOADDR(A_SCD_PERF_CNT_CFG));
     }

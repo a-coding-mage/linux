@@ -3,14 +3,14 @@
 // Dependency supplied by <asm/proc-fns.h>.
 // The CONFIG_ARM64_PSEUDO_NMI branch is preserved below.
 
-#[cfg(feature = "CONFIG_ARM64_PSEUDO_NMI")]
+#[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 #[repr(C)]
 pub struct arm_cpuidle_irq_context {
     pub pmr: ::core::ffi::c_ulong,
     pub daif_bits: ::core::ffi::c_ulong,
 }
 
-#[cfg(feature = "CONFIG_ARM64_PSEUDO_NMI")]
+#[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 extern "C" {
     fn system_uses_irq_prio_masking() -> bool;
     fn read_sysreg_daif() -> ::core::ffi::c_ulong;
@@ -19,7 +19,7 @@ extern "C" {
     fn gic_write_pmr(value: ::core::ffi::c_ulong);
 }
 
-#[cfg(feature = "CONFIG_ARM64_PSEUDO_NMI")]
+#[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 pub unsafe fn arm_cpuidle_save_irq_context(
     context: *mut arm_cpuidle_irq_context,
 ) {
@@ -32,7 +32,7 @@ pub unsafe fn arm_cpuidle_save_irq_context(
     }
 }
 
-#[cfg(feature = "CONFIG_ARM64_PSEUDO_NMI")]
+#[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 pub unsafe fn arm_cpuidle_restore_irq_context(
     context: *mut arm_cpuidle_irq_context,
 ) {
@@ -43,17 +43,17 @@ pub unsafe fn arm_cpuidle_restore_irq_context(
     }
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_PSEUDO_NMI"))]
+#[cfg(not(CONFIG_ARM64_PSEUDO_NMI))]
 #[repr(C)]
 pub struct arm_cpuidle_irq_context {}
 
-#[cfg(not(feature = "CONFIG_ARM64_PSEUDO_NMI"))]
+#[cfg(not(CONFIG_ARM64_PSEUDO_NMI))]
 #[inline]
 pub unsafe fn arm_cpuidle_save_irq_context<T>(context: *mut T) {
     let _ = context;
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_PSEUDO_NMI"))]
+#[cfg(not(CONFIG_ARM64_PSEUDO_NMI))]
 #[inline]
 pub unsafe fn arm_cpuidle_restore_irq_context<T>(context: *mut T) {
     let _ = context;

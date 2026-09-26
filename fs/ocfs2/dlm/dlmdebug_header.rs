@@ -28,7 +28,7 @@ extern "C" {
     pub fn dlm_print_one_mle(mle: *mut dlm_master_list_entry);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)]
 pub struct debug_lockres {
     pub dl_len: i32,
@@ -37,7 +37,7 @@ pub struct debug_lockres {
     pub dl_res: *mut dlm_lock_resource,
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn dlm_debug_init(dlm: *mut dlm_ctxt);
     pub fn dlm_create_debugfs_subroot(dlm: *mut dlm_ctxt);
@@ -47,23 +47,23 @@ extern "C" {
 }
 
 // CONFIG_DEBUG_FS disabled: the C header provides empty static inline stubs.
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn dlm_debug_init(_dlm: *mut dlm_ctxt) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn dlm_create_debugfs_subroot(_dlm: *mut dlm_ctxt) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn dlm_destroy_debugfs_subroot(_dlm: *mut dlm_ctxt) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn dlm_create_debugfs_root() {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn dlm_destroy_debugfs_root() {}
 

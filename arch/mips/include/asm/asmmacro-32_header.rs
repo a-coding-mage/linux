@@ -84,7 +84,7 @@ macro_rules! cpu_save_nonscratch {
                 "LONG_S s4, THREAD_REG20({thread})", "LONG_S s5, THREAD_REG21({thread})",
                 "LONG_S s6, THREAD_REG22({thread})", "LONG_S s7, THREAD_REG23({thread})",
                 "LONG_S sp, THREAD_REG29({thread})", "LONG_S fp, THREAD_REG30({thread})",
-                thread = const stringify!($thread), options(nostack)
+                $thread = const stringify!($thread), options(nostack)
             );
         }
     };
@@ -102,7 +102,7 @@ macro_rules! cpu_restore_nonscratch {
                 "LONG_L s6, THREAD_REG22({thread})", "LONG_L s7, THREAD_REG23({thread})",
                 "LONG_L sp, THREAD_REG29({thread})", "LONG_L fp, THREAD_REG30({thread})",
                 "LONG_L ra, THREAD_REG31({thread})",
-                thread = const stringify!($thread), options(nostack)
+                $thread = const stringify!($thread), options(nostack)
             );
         }
     };

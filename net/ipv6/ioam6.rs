@@ -78,7 +78,7 @@ pub unsafe fn ioam6_fill_trace_data(skb: *mut sk_buff, ns: *mut ioam6_namespace,
     let sc = rcu_dereference((&mut (*ns).schema) as *mut _ as *mut *mut c_void).cast::<ioam6_schema>();
     let mut sclen = if (*trace).type_ & (1 << 22) != 0 { 1 } else { 0 };
     if !sc.is_null() && sclen != 0 { sclen += (*sc).len / 4; }
-    if (*trace).remlen == 0 || (*trace).remlen as u32 < (*trace).nodelen as u32 + sclen { (*trace).overflow = 1; return; }
+    if (*trace).remlen == 0 || ((*trace).remlen as u32) < (*trace).nodelen as u32 + sclen { (*trace).overflow = 1; return; }
     __ioam6_fill_trace_data(skb, ns, trace, sc, sclen, is_input); (*trace).remlen -= (*trace).nodelen + sclen as u8;
 }
 

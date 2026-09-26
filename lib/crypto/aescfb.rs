@@ -98,7 +98,7 @@ pub unsafe fn aescfb_decrypt(
 
 // CONFIG_CRYPTO_SELFTESTS conditionally includes the following test code.
 
-#[cfg(feature = "CONFIG_CRYPTO_SELFTESTS")]
+#[cfg(CONFIG_CRYPTO_SELFTESTS)]
 #[repr(C)]
 struct AescfbTv {
     ptext: [u8; 64],
@@ -109,7 +109,7 @@ struct AescfbTv {
     len: i32,
 }
 
-#[cfg(feature = "CONFIG_CRYPTO_SELFTESTS")]
+#[cfg(CONFIG_CRYPTO_SELFTESTS)]
 static AESCfb_TV: &[AescfbTv] = &[
     AescfbTv {
         key: [0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,0xab,0xf7,0x15,0x88,0x09,0xcf,0x4f,0x3c,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],

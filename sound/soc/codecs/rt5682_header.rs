@@ -1299,13 +1299,13 @@ unsafe extern "C" {
 
     pub fn rt5682_register_dai_clks(rt5682: *mut rt5682_priv) -> core::ffi::c_int;
 
-pub const RT5682_REG_NUM: u32 = 318;
     pub static rt5682_reg: [reg_default; RT5682_REG_NUM as usize];
 
     pub static rt5682_aif1_dai_ops: snd_soc_dai_ops;
     pub static rt5682_aif2_dai_ops: snd_soc_dai_ops;
     pub static rt5682_soc_component_dev: snd_soc_component_driver;
 }
+pub const RT5682_REG_NUM: u32 = 318;
 
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

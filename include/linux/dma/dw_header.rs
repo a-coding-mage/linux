@@ -46,7 +46,7 @@ pub struct dw_dma_chip {
 }
 
 /* Export to the platform drivers. */
-#[cfg(feature = "CONFIG_DW_DMAC_CORE")]
+#[cfg(CONFIG_DW_DMAC_CORE)]
 extern "C" {
     pub fn dw_dma_probe(chip: *mut dw_dma_chip) -> core::ffi::c_int;
     pub fn dw_dma_remove(chip: *mut dw_dma_chip) -> core::ffi::c_int;
@@ -56,25 +56,25 @@ extern "C" {
 
 /* CONFIG_DW_DMAC_CORE is disabled: ENODEV is supplied by the kernel
  * environment, as in the original header. */
-#[cfg(not(feature = "CONFIG_DW_DMAC_CORE"))]
+#[cfg(not(CONFIG_DW_DMAC_CORE))]
 #[inline]
 pub unsafe fn dw_dma_probe(_chip: *mut dw_dma_chip) -> core::ffi::c_int {
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_DW_DMAC_CORE"))]
+#[cfg(not(CONFIG_DW_DMAC_CORE))]
 #[inline]
 pub unsafe fn dw_dma_remove(_chip: *mut dw_dma_chip) -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DW_DMAC_CORE"))]
+#[cfg(not(CONFIG_DW_DMAC_CORE))]
 #[inline]
 pub unsafe fn idma32_dma_probe(_chip: *mut dw_dma_chip) -> core::ffi::c_int {
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_DW_DMAC_CORE"))]
+#[cfg(not(CONFIG_DW_DMAC_CORE))]
 #[inline]
 pub unsafe fn idma32_dma_remove(_chip: *mut dw_dma_chip) -> core::ffi::c_int {
     0

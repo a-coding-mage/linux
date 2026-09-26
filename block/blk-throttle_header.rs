@@ -60,7 +60,7 @@ pub struct throtl_grp {
     pub stat_ios: blkg_rwstat,
 }
 
-pub extern "C" {
+extern "C" {
     pub static mut blkcg_policy_throtl: blkcg_policy;
 }
 
@@ -78,32 +78,32 @@ pub unsafe fn blkg_to_tg(blkg: *mut blkcg_gq) -> *mut throtl_grp {
     pd_to_tg(blkg_to_pd(blkg, &raw mut blkcg_policy_throtl))
 }
 
-#[cfg(not(feature = "CONFIG_BLK_DEV_THROTTLING"))]
+#[cfg(not(CONFIG_BLK_DEV_THROTTLING))]
 #[inline]
 pub unsafe fn blk_throtl_exit(_disk: *mut gendisk) {}
 
-#[cfg(not(feature = "CONFIG_BLK_DEV_THROTTLING"))]
+#[cfg(not(CONFIG_BLK_DEV_THROTTLING))]
 #[inline]
 pub unsafe fn blk_throtl_bio(_bio: *mut bio) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_BLK_DEV_THROTTLING"))]
+#[cfg(not(CONFIG_BLK_DEV_THROTTLING))]
 #[inline]
 pub unsafe fn blk_throtl_cancel_bios(_disk: *mut gendisk) {}
 
-#[cfg(feature = "CONFIG_BLK_DEV_THROTTLING")]
+#[cfg(CONFIG_BLK_DEV_THROTTLING)]
 extern "C" {
     pub fn blk_throtl_exit(disk: *mut gendisk);
     pub fn __blk_throtl_bio(bio: *mut bio) -> bool;
     pub fn blk_throtl_cancel_bios(disk: *mut gendisk);
 }
 
-#[cfg(feature = "CONFIG_BLK_DEV_THROTTLING")]
+#[cfg(CONFIG_BLK_DEV_THROTTLING)]
 #[inline]
 pub unsafe fn blk_throtl_activated(q: *mut request_queue) -> bool {
     !(*q).td.is_null() && blkcg_policy_enabled(q, &raw mut blkcg_policy_throtl)
 }
 
-#[cfg(feature = "CONFIG_BLK_DEV_THROTTLING")]
+#[cfg(CONFIG_BLK_DEV_THROTTLING)]
 #[inline]
 pub unsafe fn blk_should_throtl(bio: *mut bio) -> bool {
     let tg = blkg_to_tg((*bio).bi_blkg);
@@ -124,7 +124,7 @@ pub unsafe fn blk_should_throtl(bio: *mut bio) -> bool {
     false
 }
 
-#[cfg(feature = "CONFIG_BLK_DEV_THROTTLING")]
+#[cfg(CONFIG_BLK_DEV_THROTTLING)]
 #[inline]
 pub unsafe fn blk_throtl_bio(bio: *mut bio) -> bool {
     if !blk_should_throtl(bio) { return false; }

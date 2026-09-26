@@ -30,35 +30,35 @@ const SEMWL_SHIFT: u32 = 16;
 const RIF_CID0: u32 = 0;
 const RIF_CID1: u32 = 1;
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISUP_ENTRIES: usize = 128;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RIMU_ENTRIES: usize = 16;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISAL_SUBREGIONS: usize = 2;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RIMC_ATTR0: usize = 0xC10;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RIMC_CIDSEL: u32 = 1 << 2;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RIMC_MCID_MASK: u32 = 7 << 4;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RIMC_MSEC: u32 = 1 << 8;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RIMC_MPRIV: u32 = 1 << 9;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SRCID_MASK: u32 = 7 << 4;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SRPRIV: u32 = 1 << 9;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SRSEC: u32 = 1 << 8;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SRRLOCK: u32 = 1 << 1;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SREN: u32 = 1;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SRLENGTH_MASK: u32 = 0xfff << 16;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 const RIFSC_RISC_SRSTART_MASK: u32 = 0x7ff;
 
 #[repr(C)] pub struct stm32_firewall_controller { pub dev: *mut c_void, pub mmio: *mut u8, pub name: *const c_char, pub r#type: u32, pub max_entries: u32, pub grant_access: Option<unsafe extern "C" fn(*mut stm32_firewall_controller,u32)->c_int>, pub release_access: Option<unsafe extern "C" fn(*mut stm32_firewall_controller,u32)> }
@@ -81,15 +81,15 @@ extern "C" {
 const ERR_ENOMEM: c_int = -12; const ERR_EACCES: c_int = -13; const ERR_EINVAL: c_int = -22;
 const fn field_get(mask:u32,v:u32)->u32 { (v & mask) >> mask.trailing_zeros() }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] struct rifsc_rimu_debug_data { m_name:[c_char;11], m_cid:u8, cidsel:bool, m_sec:bool, m_priv:bool }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] struct rifsc_risup_debug_data { dev_name:[c_char;15], dev_cid:u8, dev_sem_cids:u8, dev_id:u8, dev_cid_filt_en:bool, dev_sem_en:bool, dev_priv:bool, dev_sec:bool }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] struct rifsc_subreg_debug_data { sr_sec:bool, sr_priv:bool, sr_cid:u8, sr_rlock:bool, sr_enable:bool, sr_start:u16, sr_length:u16 }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] struct stm32_rifsc_resources_names { device_names:*const *const c_char, initiator_names:*const *const c_char }
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)] struct rifsc_dbg_private { res_names:*const stm32_rifsc_resources_names, mmio:*mut u8, nb_risup:u32, nb_rimu:u32, nb_risal:u32 }
 
 unsafe fn stm32_rifsc_is_semaphore_available(addr:*const u8)->bool { readl(addr) & SEMCR_MUTEX == 0 }

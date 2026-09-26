@@ -17,7 +17,7 @@ extern "C" {
 // #define do_csum do_csum
 
 // The IPv6 checksum declaration is present when CONFIG_32BIT is not enabled.
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 extern "C" {
     pub fn csum_ipv6_magic(
         saddr: *const in6_addr,
@@ -59,7 +59,7 @@ pub unsafe fn ip_fast_csum(iph: *const core::ffi::c_void, ihl: u32) -> __sum16 {
         let word = *words.add(pos as usize);
         csum = csum.wrapping_add(word as u64);
         // IS_ENABLED(CONFIG_32BIT)
-        #[cfg(feature = "CONFIG_32BIT")]
+        #[cfg(CONFIG_32BIT)]
         {
             csum = csum.wrapping_add((csum < word as u64) as u64);
         }
@@ -73,8 +73,8 @@ pub unsafe fn ip_fast_csum(iph: *const core::ffi::c_void, ihl: u32) -> __sum16 {
     // worth checking if supported without Alternatives.
     // The following C inline-assembly fast path is architecture/toolchain
     // conditional and is intentionally represented by its equivalent fold.
-    if cfg!(feature = "CONFIG_RISCV_ISA_ZBB")
-        && cfg!(feature = "CONFIG_TOOLCHAIN_HAS_ZBB")
+    if cfg!(CONFIG_RISCV_ISA_ZBB)
+        && cfg!(CONFIG_TOOLCHAIN_HAS_ZBB)
         && unsafe { riscv_has_extension_likely(RISCV_ISA_EXT_ZBB) }
     {
         // C asm computes the same folded checksum using ZBB instructions.
@@ -82,7 +82,7 @@ pub unsafe fn ip_fast_csum(iph: *const core::ffi::c_void, ihl: u32) -> __sum16 {
     }
 
     // #ifndef CONFIG_32BIT
-    #[cfg(not(feature = "CONFIG_32BIT"))]
+    #[cfg(not(CONFIG_32BIT))]
     {
         csum = csum.wrapping_add(unsafe { ror64(csum, 32) });
         csum >>= 32;

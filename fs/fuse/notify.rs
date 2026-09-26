@@ -25,7 +25,7 @@ unsafe fn fuse_notify_inval_inode(fc: *mut fuse_conn, size: u32, cs: *mut fuse_c
 
 unsafe fn fuse_notify_inval_entry(fc: *mut fuse_conn, size: u32, cs: *mut fuse_copy_state) -> i32 {
     let mut outarg: fuse_notify_inval_entry_out = core::mem::zeroed();
-    if size as usize < core::mem::size_of::<fuse_notify_inval_entry_out>() { return -EINVAL; }
+    if (size as usize) < core::mem::size_of::<fuse_notify_inval_entry_out>() { return -EINVAL; }
     let mut err = fuse_copy_one(cs, &mut outarg as *mut _ as *mut _, core::mem::size_of::<fuse_notify_inval_entry_out>());
     if err != 0 { return err; }
     if outarg.namelen > (*fc).name_max { return -ENAMETOOLONG; }
@@ -40,7 +40,7 @@ unsafe fn fuse_notify_inval_entry(fc: *mut fuse_conn, size: u32, cs: *mut fuse_c
 
 unsafe fn fuse_notify_delete(fc: *mut fuse_conn, size: u32, cs: *mut fuse_copy_state) -> i32 {
     let mut outarg: fuse_notify_delete_out = core::mem::zeroed();
-    if size as usize < core::mem::size_of::<fuse_notify_delete_out>() { return -EINVAL; }
+    if (size as usize) < core::mem::size_of::<fuse_notify_delete_out>() { return -EINVAL; }
     let mut err = fuse_copy_one(cs, &mut outarg as *mut _ as *mut _, core::mem::size_of::<fuse_notify_delete_out>());
     if err != 0 { return err; }
     if outarg.namelen > (*fc).name_max { return -ENAMETOOLONG; }
@@ -59,7 +59,7 @@ unsafe fn fuse_retrieve_end(args: *mut fuse_args, _error: i32) { let ra = contai
 
 unsafe fn fuse_notify_store(fc: *mut fuse_conn, size: u32, cs: *mut fuse_copy_state) -> i32 {
     let mut outarg: fuse_notify_store_out = core::mem::zeroed();
-    if size as usize < core::mem::size_of::<fuse_notify_store_out>() { return -EINVAL; }
+    if (size as usize) < core::mem::size_of::<fuse_notify_store_out>() { return -EINVAL; }
     let mut err = fuse_copy_one(cs, &mut outarg as *mut _ as *mut _, core::mem::size_of::<fuse_notify_store_out>()); if err != 0 { return err; }
     if size as usize - core::mem::size_of::<fuse_notify_store_out>() != outarg.size as usize || outarg.offset >= MAX_LFS_FILESIZE { return -EINVAL; }
     let nodeid = outarg.nodeid; let mut pos = outarg.offset; let mut num = core::cmp::min(outarg.size, MAX_LFS_FILESIZE - pos);
@@ -92,7 +92,7 @@ unsafe fn fuse_notify_inc_epoch(fc: *mut fuse_conn) -> i32 { atomic_inc(&mut (*f
 unsafe fn fuse_notify_prune(fc: *mut fuse_conn, size: u32, cs: *mut fuse_copy_state) -> i32 {
     let batch: u32 = 512; let nodeids = kmalloc((core::mem::size_of::<u64>() as u32 * batch) as usize, GFP_KERNEL) as *mut u64;
     if nodeids.is_null() { return -ENOMEM; }
-    let mut outarg: fuse_notify_prune_out = core::mem::zeroed(); if size as usize < core::mem::size_of::<fuse_notify_prune_out>() { return -EINVAL; }
+    let mut outarg: fuse_notify_prune_out = core::mem::zeroed(); if (size as usize) < core::mem::size_of::<fuse_notify_prune_out>() { return -EINVAL; }
     let mut err = fuse_copy_one(cs, &mut outarg as *mut _ as *mut _, core::mem::size_of::<fuse_notify_prune_out>()); if err != 0 { return err; }
     if size as usize - core::mem::size_of::<fuse_notify_prune_out>() != (outarg.count as usize * core::mem::size_of::<u64>()) { return -EINVAL; }
     while outarg.count != 0 { let num = core::cmp::min(batch, outarg.count); err = fuse_copy_one(cs, nodeids as *mut _, (num as usize) * core::mem::size_of::<u64>()); if err != 0 { return err; } down_read(&mut (*fc).killsb); for i in 0..num { fuse_try_prune_one_inode(fc, *nodeids.add(i as usize)); } up_read(&mut (*fc).killsb); outarg.count -= num; }

@@ -16,12 +16,12 @@ struct wm8998_priv {
 	fll: [arizona_fll; 2],
 }
 
-unsafe extern "C" fn wm8998_asrc_ev(struct snd_soc_dapm_widget *w,
-			  struct snd_kcontrol *kcontrol,
+unsafe extern "C" fn wm8998_asrc_ev(snd_soc_dapm_widget *w,
+			  snd_kcontrol *kcontrol,
 			  int event)
 {
-	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
-	unsigned int val;
+	struct snd_soc_component *component = snd_soc_dapm_to_component((*w).dapm);
+	core::ffi::c_uint val;
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -36,14 +36,14 @@ unsafe extern "C" fn wm8998_asrc_ev(struct snd_soc_dapm_widget *w,
 			val = snd_soc_component_read(component,
 					   ARIZONA_SAMPLE_RATE_1 + val);
 			if (val >= 0x11) {
-				dev_warn(component->dev,
+				dev_warn((*component).dev,
 					 "Unsupported ASRC rate1 (%s)\n",
 					 arizona_sample_rate_val_to_name(val));
 				return -EINVAL;
 			}
 			break;
 		default:
-			dev_err(component->dev,
+			dev_err((*component).dev,
 				"Illegal ASRC rate1 selector (0x%x)\n",
 				val);
 			return -EINVAL;
@@ -60,14 +60,14 @@ unsafe extern "C" fn wm8998_asrc_ev(struct snd_soc_dapm_widget *w,
 			val = snd_soc_component_read(component,
 					   ARIZONA_ASYNC_SAMPLE_RATE_1 + val);
 			if (val >= 0x11) {
-				dev_warn(component->dev,
+				dev_warn((*component).dev,
 					 "Unsupported ASRC rate2 (%s)\n",
 					 arizona_sample_rate_val_to_name(val));
 				return -EINVAL;
 			}
 			break;
 		default:
-			dev_err(component->dev,
+			dev_err((*component).dev,
 				"Illegal ASRC rate2 selector (0x%x)\n",
 				val);
 			return -EINVAL;
@@ -80,23 +80,23 @@ unsafe extern "C" fn wm8998_asrc_ev(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-unsafe extern "C" fn wm8998_inmux_put(struct snd_kcontrol *kcontrol,
-			    struct snd_ctl_elem_value *ucontrol)
+unsafe extern "C" fn wm8998_inmux_put(snd_kcontrol *kcontrol,
+			    snd_ctl_elem_value *ucontrol)
 {
 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 	struct wm8998_priv *wm8998 = snd_soc_component_get_drvdata(component);
-	struct arizona *arizona = wm8998->core.arizona;
-	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
-	unsigned int mode_reg, mode_index;
-	unsigned int mux, inmode, src_val, mode_val;
+	struct arizona *arizona = (*wm8998).core.arizona;
+	struct soc_enum *e = (*(soc_enum *)kcontrol).private_value;
+	mode_reg: core::ffi::c_uint, mode_index;
+	mux: core::ffi::c_uint, inmode, src_val, mode_val;
 	int change, ret;
 
-	mux = ucontrol->value.enumerated.item[0];
+	mux = (*ucontrol).value.enumerated.item[0];
 	if (mux > 1)
 		return -EINVAL;
 
-	switch (e->reg) {
+	switch ((*e).reg) {
 	case ARIZONA_ADC_DIGITAL_VOLUME_2L:
 		mode_reg = ARIZONA_IN2L_CONTROL;
 		mode_index = 1 + (2 * mux);
@@ -107,7 +107,7 @@ unsafe extern "C" fn wm8998_inmux_put(struct snd_kcontrol *kcontrol,
 		break;
 	}
 
-	inmode = arizona->pdata.inmode[mode_index];
+	inmode = (*arizona).pdata.inmode[mode_index];
 	if (inmode & ARIZONA_INMODE_DMIC)
 		mode_val = 1 << ARIZONA_IN1_MODE_SHIFT;
 	else
@@ -120,16 +120,16 @@ unsafe extern "C" fn wm8998_inmux_put(struct snd_kcontrol *kcontrol,
 	snd_soc_component_update_bits(component, mode_reg,
 				      ARIZONA_IN1_MODE_MASK, mode_val);
 
-	change = snd_soc_component_update_bits(component, e->reg,
+	change = snd_soc_component_update_bits(component, (*e).reg,
 					       ARIZONA_IN1L_SRC_MASK |
 					       ARIZONA_IN1L_SRC_SE_MASK,
 					       src_val);
 
 	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol,
-					    ucontrol->value.enumerated.item[0],
+					    (*ucontrol).value.enumerated.item[0],
 					    e, NULL);
 	if (ret < 0) {
-		dev_err(arizona->dev, "Failed to update demux power state: %d\n", ret);
+		dev_err((*arizona).dev, "Failed to update demux power state: %d\n", ret);
 		return ret;
 	}
 
@@ -460,7 +460,7 @@ static const char * const wm8998_aec_loopback_texts[] = {
 	"SPKOUTL", "SPKOUTR", "SPKDATL", "SPKDATR",
 };
 
-static const unsigned int wm8998_aec_loopback_values[] = {
+static core::ffi::c_uint wm8998_aec_loopback_values[] = {
 	0, 1, 2, 3, 4, 6, 7, 8, 9,
 };
 
@@ -1131,141 +1131,141 @@ const WM8998_FORMATS: u64 = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |
 
 static struct snd_soc_dai_driver wm8998_dai[] = {
 	{
-		.name = "wm8998-aif1",
-		.id = 1,
-		.base = ARIZONA_AIF1_BCLK_CTRL,
-		.playback = {
-			.stream_name = "AIF1 Playback",
-			.channels_min = 1,
-			.channels_max = 6,
-			.rates = WM8998_RATES,
-			.formats = WM8998_FORMATS,
+		name: "wm8998-aif1",
+		id: 1,
+		base: ARIZONA_AIF1_BCLK_CTRL,
+		playback: {
+			stream_name: "AIF1 Playback",
+			channels_min: 1,
+			channels_max: 6,
+			rates: WM8998_RATES,
+			formats: WM8998_FORMATS,
 		},
-		.capture = {
-			 .stream_name = "AIF1 Capture",
-			 .channels_min = 1,
-			 .channels_max = 6,
-			 .rates = WM8998_RATES,
-			 .formats = WM8998_FORMATS,
+		capture: {
+			 stream_name: "AIF1 Capture",
+			 channels_min: 1,
+			 channels_max: 6,
+			 rates: WM8998_RATES,
+			 formats: WM8998_FORMATS,
 		 },
-		.ops = &arizona_dai_ops,
-		.symmetric_rate = 1,
-		.symmetric_sample_bits = 1,
+		ops: &arizona_dai_ops,
+		symmetric_rate: 1,
+		symmetric_sample_bits: 1,
 	},
 	{
-		.name = "wm8998-aif2",
-		.id = 2,
-		.base = ARIZONA_AIF2_BCLK_CTRL,
-		.playback = {
-			.stream_name = "AIF2 Playback",
-			.channels_min = 1,
-			.channels_max = 6,
-			.rates = WM8998_RATES,
-			.formats = WM8998_FORMATS,
+		name: "wm8998-aif2",
+		id: 2,
+		base: ARIZONA_AIF2_BCLK_CTRL,
+		playback: {
+			stream_name: "AIF2 Playback",
+			channels_min: 1,
+			channels_max: 6,
+			rates: WM8998_RATES,
+			formats: WM8998_FORMATS,
 		},
-		.capture = {
-			 .stream_name = "AIF2 Capture",
-			 .channels_min = 1,
-			 .channels_max = 6,
-			 .rates = WM8998_RATES,
-			 .formats = WM8998_FORMATS,
+		capture: {
+			 stream_name: "AIF2 Capture",
+			 channels_min: 1,
+			 channels_max: 6,
+			 rates: WM8998_RATES,
+			 formats: WM8998_FORMATS,
 		 },
-		.ops = &arizona_dai_ops,
-		.symmetric_rate = 1,
-		.symmetric_sample_bits = 1,
+		ops: &arizona_dai_ops,
+		symmetric_rate: 1,
+		symmetric_sample_bits: 1,
 	},
 	{
-		.name = "wm8998-aif3",
-		.id = 3,
-		.base = ARIZONA_AIF3_BCLK_CTRL,
-		.playback = {
-			.stream_name = "AIF3 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = WM8998_RATES,
-			.formats = WM8998_FORMATS,
+		name: "wm8998-aif3",
+		id: 3,
+		base: ARIZONA_AIF3_BCLK_CTRL,
+		playback: {
+			stream_name: "AIF3 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: WM8998_RATES,
+			formats: WM8998_FORMATS,
 		},
-		.capture = {
-			 .stream_name = "AIF3 Capture",
-			 .channels_min = 1,
-			 .channels_max = 2,
-			 .rates = WM8998_RATES,
-			 .formats = WM8998_FORMATS,
+		capture: {
+			 stream_name: "AIF3 Capture",
+			 channels_min: 1,
+			 channels_max: 2,
+			 rates: WM8998_RATES,
+			 formats: WM8998_FORMATS,
 		 },
-		.ops = &arizona_dai_ops,
-		.symmetric_rate = 1,
-		.symmetric_sample_bits = 1,
+		ops: &arizona_dai_ops,
+		symmetric_rate: 1,
+		symmetric_sample_bits: 1,
 	},
 	{
-		.name = "wm8998-slim1",
-		.id = 4,
-		.playback = {
-			.stream_name = "Slim1 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = WM8998_RATES,
-			.formats = WM8998_FORMATS,
+		name: "wm8998-slim1",
+		id: 4,
+		playback: {
+			stream_name: "Slim1 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: WM8998_RATES,
+			formats: WM8998_FORMATS,
 		},
-		.capture = {
-			 .stream_name = "Slim1 Capture",
-			 .channels_min = 1,
-			 .channels_max = 4,
-			 .rates = WM8998_RATES,
-			 .formats = WM8998_FORMATS,
+		capture: {
+			 stream_name: "Slim1 Capture",
+			 channels_min: 1,
+			 channels_max: 4,
+			 rates: WM8998_RATES,
+			 formats: WM8998_FORMATS,
 		 },
-		.ops = &arizona_simple_dai_ops,
+		ops: &arizona_simple_dai_ops,
 	},
 	{
-		.name = "wm8998-slim2",
-		.id = 5,
-		.playback = {
-			.stream_name = "Slim2 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = WM8998_RATES,
-			.formats = WM8998_FORMATS,
+		name: "wm8998-slim2",
+		id: 5,
+		playback: {
+			stream_name: "Slim2 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: WM8998_RATES,
+			formats: WM8998_FORMATS,
 		},
-		.capture = {
-			 .stream_name = "Slim2 Capture",
-			 .channels_min = 1,
-			 .channels_max = 2,
-			 .rates = WM8998_RATES,
-			 .formats = WM8998_FORMATS,
+		capture: {
+			 stream_name: "Slim2 Capture",
+			 channels_min: 1,
+			 channels_max: 2,
+			 rates: WM8998_RATES,
+			 formats: WM8998_FORMATS,
 		 },
-		.ops = &arizona_simple_dai_ops,
+		ops: &arizona_simple_dai_ops,
 	},
 };
 
-unsafe extern "C" fn wm8998_set_fll(struct snd_soc_component *component, int fll_id,
-			  int source, unsigned int Fref, unsigned int Fout)
+unsafe extern "C" fn wm8998_set_fll(snd_soc_component *component, int fll_id,
+			  int source, core::ffi::c_uint Fref, core::ffi::c_uint Fout)
 {
 	struct wm8998_priv *wm8998 = snd_soc_component_get_drvdata(component);
 
 	switch (fll_id) {
 	case WM8998_FLL1:
-		return arizona_set_fll(&wm8998->fll[0], source, Fref, Fout);
+		return arizona_set_fll((*&wm8998).fll[0], source, Fref, Fout);
 	case WM8998_FLL2:
-		return arizona_set_fll(&wm8998->fll[1], source, Fref, Fout);
+		return arizona_set_fll((*&wm8998).fll[1], source, Fref, Fout);
 	case WM8998_FLL1_REFCLK:
-		return arizona_set_fll_refclk(&wm8998->fll[0], source, Fref,
+		return arizona_set_fll_refclk((*&wm8998).fll[0], source, Fref,
 					      Fout);
 	case WM8998_FLL2_REFCLK:
-		return arizona_set_fll_refclk(&wm8998->fll[1], source, Fref,
+		return arizona_set_fll_refclk((*&wm8998).fll[1], source, Fref,
 					      Fout);
 	default:
 		return -EINVAL;
 	}
 }
 
-unsafe extern "C" fn wm8998_component_probe(struct snd_soc_component *component)
+unsafe extern "C" fn wm8998_component_probe(snd_soc_component *component)
 {
 	struct wm8998_priv *priv = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
-	struct arizona *arizona = priv->core.arizona;
+	struct arizona *arizona = (*priv).core.arizona;
 	int ret;
 
-	arizona->dapm = dapm;
-	snd_soc_component_init_regmap(component, arizona->regmap);
+	(*arizona).dapm = dapm;
+	snd_soc_component_init_regmap(component, (*arizona).regmap);
 
 	ret = arizona_init_spk(component);
 	if (ret < 0)
@@ -1278,16 +1278,16 @@ unsafe extern "C" fn wm8998_component_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-unsafe extern "C" fn wm8998_component_remove(struct snd_soc_component *component)
+unsafe extern "C" fn wm8998_component_remove(snd_soc_component *component)
 {
 	struct wm8998_priv *priv = snd_soc_component_get_drvdata(component);
 
-	priv->core.arizona->dapm = NULL;
+	(*(*priv).core.arizona).dapm = NULL;
 }
 
 const WM8998_DIG_VU: u32 = 0x0200;
 
-static unsigned int wm8998_digital_vu[] = {
+static core::ffi::c_uint wm8998_digital_vu[] = {
 	ARIZONA_DAC_DIGITAL_VOLUME_1L,
 	ARIZONA_DAC_DIGITAL_VOLUME_1R,
 	ARIZONA_DAC_DIGITAL_VOLUME_2L,
@@ -1300,114 +1300,117 @@ static unsigned int wm8998_digital_vu[] = {
 };
 
 static const struct snd_soc_component_driver soc_component_dev_wm8998 = {
-	.probe			= wm8998_component_probe,
-	.remove			= wm8998_component_remove,
-	.set_sysclk		= arizona_set_sysclk,
-	.set_pll		= wm8998_set_fll,
-	.set_jack		= arizona_jack_set_jack,
-	.controls		= wm8998_snd_controls,
-	.num_controls		= ARRAY_SIZE(wm8998_snd_controls),
-	.dapm_widgets		= wm8998_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(wm8998_dapm_widgets),
-	.dapm_routes		= wm8998_dapm_routes,
-	.num_dapm_routes	= ARRAY_SIZE(wm8998_dapm_routes),
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
+	probe: wm8998_component_probe,
+	remove: wm8998_component_remove,
+	set_sysclk: arizona_set_sysclk,
+	set_pll: wm8998_set_fll,
+	set_jack: arizona_jack_set_jack,
+	controls: wm8998_snd_controls,
+	num_controls: ARRAY_SIZE(wm8998_snd_controls),
+	dapm_widgets: wm8998_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(wm8998_dapm_widgets),
+	dapm_routes: wm8998_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(wm8998_dapm_routes),
+	use_pmdown_time: 1,
+	endianness: 1,
 };
 
-unsafe extern "C" fn wm8998_probe(struct platform_device *pdev)
+unsafe extern "C" fn wm8998_probe(platform_device *pdev)
 {
-	struct arizona *arizona = dev_get_drvdata(pdev->dev.parent);
+	'err_pm_disable: {
+	'err_spk_irqs: {
+	struct arizona *arizona = dev_get_drvdata((*pdev).dev.parent);
 	struct wm8998_priv *wm8998;
 	int i, ret;
 
-	wm8998 = devm_kzalloc(&pdev->dev, sizeof(struct wm8998_priv),
+	wm8998 = devm_kzalloc((*&pdev).dev, sizeof(wm8998_priv),
 			      GFP_KERNEL);
 	if (!wm8998)
 		return -ENOMEM;
 	platform_set_drvdata(pdev, wm8998);
 
 	if (IS_ENABLED(CONFIG_OF)) {
-		if (!dev_get_platdata(arizona->dev)) {
+		if (!dev_get_platdata((*arizona).dev)) {
 			ret = arizona_of_get_audio_pdata(arizona);
 			if (ret < 0)
 				return ret;
 		}
 	}
 
-	wm8998->core.arizona = arizona;
-	wm8998->core.num_inputs = 3;	/* IN1L, IN1R, IN2 */
+	(*wm8998).core.arizona = arizona;
+	(*wm8998).core.num_inputs = 3;	/* IN1L, IN1R, IN2 */
 
 	/* This may return -EPROBE_DEFER, so do this early on */
-	ret = arizona_jack_codec_dev_probe(&wm8998->core, &pdev->dev);
+	ret = arizona_jack_codec_dev_probe((*&wm8998).core, (*&pdev).dev);
 	if (ret)
 		return ret;
 
-	for (i = 0; i < ARRAY_SIZE(wm8998->fll); i++)
-		wm8998->fll[i].vco_mult = 1;
+	for (i = 0; i < ARRAY_SIZE((*wm8998).fll); i++)
+		(*wm8998).fll[i].vco_mult = 1;
 
 	arizona_init_fll(arizona, 1, ARIZONA_FLL1_CONTROL_1 - 1,
 			 ARIZONA_IRQ_FLL1_LOCK, ARIZONA_IRQ_FLL1_CLOCK_OK,
-			 &wm8998->fll[0]);
+			 (*&wm8998).fll[0]);
 	arizona_init_fll(arizona, 2, ARIZONA_FLL2_CONTROL_1 - 1,
 			 ARIZONA_IRQ_FLL2_LOCK, ARIZONA_IRQ_FLL2_CLOCK_OK,
-			 &wm8998->fll[1]);
+			 (*&wm8998).fll[1]);
 
 	for (i = 0; i < ARRAY_SIZE(wm8998_dai); i++)
-		arizona_init_dai(&wm8998->core, i);
+		arizona_init_dai((*&wm8998).core, i);
 
 	/* Latch volume update bits */
 	for (i = 0; i < ARRAY_SIZE(wm8998_digital_vu); i++)
-		regmap_update_bits(arizona->regmap, wm8998_digital_vu[i],
+		regmap_update_bits((*arizona).regmap, wm8998_digital_vu[i],
 				   WM8998_DIG_VU, WM8998_DIG_VU);
 
-	pm_runtime_enable(&pdev->dev);
-	pm_runtime_idle(&pdev->dev);
+	pm_runtime_enable((*&pdev).dev);
+	pm_runtime_idle((*&pdev).dev);
 
 	arizona_init_common(arizona);
 
 	ret = arizona_init_spk_irqs(arizona);
 	if (ret < 0)
-		goto err_pm_disable;
+		break 'err_pm_disable;
 
-	ret = devm_snd_soc_register_component(&pdev->dev,
+	ret = devm_snd_soc_register_component((*&pdev).dev,
 					      &soc_component_dev_wm8998,
 					      wm8998_dai,
 					      ARRAY_SIZE(wm8998_dai));
 	if (ret < 0) {
-		dev_err(&pdev->dev, "Failed to register component: %d\n", ret);
-		goto err_spk_irqs;
+		dev_err((*&pdev).dev, "Failed to register component: %d\n", ret);
+		break 'err_spk_irqs;
 	}
 
 	return ret;
-
-err_spk_irqs:
+	}
+	
 	arizona_free_spk_irqs(arizona);
-err_pm_disable:
-	pm_runtime_disable(&pdev->dev);
-	arizona_jack_codec_dev_remove(&wm8998->core);
+	}
+	
+	pm_runtime_disable((*&pdev).dev);
+	arizona_jack_codec_dev_remove((*&wm8998).core);
 
 	return ret;
 }
 
-unsafe extern "C" fn wm8998_remove(struct platform_device *pdev)
+unsafe extern "C" fn wm8998_remove(platform_device *pdev)
 {
 	struct wm8998_priv *wm8998 = platform_get_drvdata(pdev);
-	struct arizona *arizona = wm8998->core.arizona;
+	struct arizona *arizona = (*wm8998).core.arizona;
 
-	pm_runtime_disable(&pdev->dev);
+	pm_runtime_disable((*&pdev).dev);
 
 	arizona_free_spk_irqs(arizona);
 
-	arizona_jack_codec_dev_remove(&wm8998->core);
+	arizona_jack_codec_dev_remove((*&wm8998).core);
 }
 
 static struct platform_driver wm8998_codec_driver = {
-	.driver = {
-		.name = "wm8998-codec",
+	driver: {
+		name: "wm8998-codec",
 	},
-	.probe = wm8998_probe,
-	.remove = wm8998_remove,
+	probe: wm8998_probe,
+	remove: wm8998_remove,
 };
 
 module_platform_driver!(wm8998_codec_driver);

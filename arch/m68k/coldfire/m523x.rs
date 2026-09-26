@@ -50,7 +50,7 @@ static mut m523x_clk_lookup: [crate::clk_lookup; 12] = [
 
 unsafe fn m523x_qspi_init() {
     // IS_ENABLED(CONFIG_SPI_COLDFIRE_QSPI)
-    #[cfg(feature = "CONFIG_SPI_COLDFIRE_QSPI")]
+    #[cfg(CONFIG_SPI_COLDFIRE_QSPI)]
     {
         let mut par: u16;
 
@@ -67,7 +67,7 @@ unsafe fn m523x_qspi_init() {
 
 unsafe fn m523x_i2c_init() {
     // IS_ENABLED(CONFIG_I2C_IMX)
-    #[cfg(feature = "CONFIG_I2C_IMX")]
+    #[cfg(CONFIG_I2C_IMX)]
     {
         let mut par: u8;
 

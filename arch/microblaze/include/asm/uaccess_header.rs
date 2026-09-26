@@ -67,9 +67,9 @@ macro_rules! __get_user_asm {
                 ".section __ex_table,\"a\"",
                 ".word 1b,3b;",
                 ".previous;",
-                err = lateout(reg) __gu_err,
-                val = lateout(reg) $val,
-                ptr = in(reg) $ptr,
+                $err = lateout(reg) __gu_err,
+                $val = lateout(reg) $val,
+                $ptr = in(reg) $ptr,
                 fault = const -(14i32),
                 options(nostack),
             );
@@ -122,8 +122,8 @@ macro_rules! __put_user_asm {
                 "2:", ".section .fixup,\"ax\"", "3: brid 2b;",
                 "addik {err}, r0, {fault};", ".previous;",
                 ".section __ex_table,\"a\"", ".word 1b,3b;", ".previous;",
-                err = lateout(reg) __pu_err, val = in(reg) $val,
-                ptr = in(reg) $ptr, fault = const -(14i32), options(nostack),
+                $err = lateout(reg) __pu_err, $val = in(reg) $val,
+                $ptr = in(reg) $ptr, fault = const -(14i32), options(nostack),
             );
         }
         $err = __pu_err;
@@ -143,8 +143,8 @@ macro_rules! __put_user_asm_8 {
                 ".section .fixup,\"ax\"", "4: brid 3b;",
                 "addik {err}, r0, {fault};", ".previous;",
                 ".section __ex_table,\"a\"", ".word 1b,4b,2b,4b;", ".previous;",
-                err = lateout(reg) __pu_err, val = in(reg) &$val,
-                ptr = in(reg) $ptr, fault = const -(14i32), options(nostack),
+                $err = lateout(reg) __pu_err, $val = in(reg) &$val,
+                $ptr = in(reg) $ptr, fault = const -(14i32), options(nostack),
             );
         }
         $err = __pu_err;

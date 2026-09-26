@@ -67,6 +67,6 @@ pub const GFS2_QUOTA_DEFAULT:u32=0; pub const GFS2_QUOTA_OFF:u32=0; pub const GF
 #[inline] pub unsafe fn glock_sbd(gl:*const gfs2_glock)->*mut gfs2_sbd { (*gl).gl_name.ln_sbd }
 #[inline] pub unsafe fn gfs2_aspace(sdp:*mut gfs2_sbd)->*mut address_space { (*sdp).sd_inode as *mut address_space }
 #[inline] pub unsafe fn gfs2_glstats_inc(gl:*mut gfs2_glock, which:usize) { (*gl).gl_stats.stats[which] = (*gl).gl_stats.stats[which].wrapping_add(1); }
-pub unsafe extern "C" { pub fn gfs2_glock2rgrp(gl:*mut gfs2_glock)->*mut gfs2_rgrpd; }
+unsafe extern "C" { pub fn gfs2_glock2rgrp(gl:*mut gfs2_glock)->*mut gfs2_rgrpd; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

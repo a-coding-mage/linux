@@ -83,15 +83,15 @@ static mut record_boot: *mut BootPerformanceRecord = core::ptr::null_mut();
 
 // FPDT_ATTR generates the sysfs show function and read-only attribute.
 macro_rules! FPDT_ATTR {
-    ($phase:ident, $name:ident) => {
-        unsafe extern "C" fn $name##_show(
+    ($phase:ident, $name:tt) => {
+        unsafe extern "C" fn ::kernel::macros::paste!([<$name _show>])(
             _kobj: *mut Kobject,
             _attr: *mut KobjAttribute,
             buf: *mut core::ffi::c_char,
         ) -> isize {
             sprintf_u64(buf, (*$crate::record_$phase).$name)
         }
-        static mut $name##_attr: KobjAttribute = __ATTR!($name##_ns, 0o444, $name##_show, None);
+        static mut ::kernel::macros::paste!([<$name _attr>]): KobjAttribute = __ATTR!(::kernel::macros::paste!([<$name _ns>]), 0o444, ::kernel::macros::paste!([<$name _show>]), None);
     };
 }
 

@@ -73,7 +73,7 @@ pub unsafe fn scatterwalk_clamp(
      * using SIMD.  It's also needed for when skcipher_walk uses a bounce
      * page due to the data not being aligned to the algorithm's alignmask.
      */
-    if cfg!(feature = "CONFIG_HIGHMEM") {
+    if cfg!(CONFIG_HIGHMEM) {
         limit = PAGE_SIZE - offset_in_page((*walk).offset);
     } else {
         limit = PAGE_SIZE;
@@ -108,7 +108,7 @@ pub unsafe fn scatterwalk_map(walk: *mut scatter_walk) {
     let mut offset = (*walk).offset;
     let addr: *mut core::ffi::c_void;
 
-    if cfg!(feature = "CONFIG_HIGHMEM") {
+    if cfg!(CONFIG_HIGHMEM) {
         let page = base_page.add((offset >> PAGE_SHIFT) as usize);
         offset = offset_in_page(offset);
         addr = (kmap_local_page(page) as *mut u8).add(offset as usize) as *mut core::ffi::c_void;
@@ -140,7 +140,7 @@ pub unsafe fn scatterwalk_next(walk: *mut scatter_walk, total: libc::c_uint) -> 
 
 #[inline]
 pub unsafe fn scatterwalk_unmap(walk: *mut scatter_walk) {
-    if cfg!(feature = "CONFIG_HIGHMEM") {
+    if cfg!(CONFIG_HIGHMEM) {
         kunmap_local((*walk).__addr);
     }
 }

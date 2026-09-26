@@ -29,10 +29,10 @@ unsafe fn erofs_fileio_ki_complete(iocb: *mut kiocb, mut ret: c_long) {
         ret = -EIO;
     }
     if (*rq).bio.bi_end_io.is_none() {
-        bio_for_each_folio_all!(fi, &mut (*rq).bio) {
+        bio_for_each_folio_all!(fi, &mut (*rq).bio, {
             DBG_BUGON!(folio_test_uptodate(fi.folio));
             erofs_onlinefolio_end(fi.folio, ret < 0, false);
-        }
+        });
     } else if ret < 0 && (*rq).bio.bi_status == 0 {
         (*rq).bio.bi_status = errno_to_blk_status(ret);
     }

@@ -23,11 +23,11 @@ pub unsafe fn __nf_conntrack_helper_find(name: *const c_char, l3num: u16, proton
     if nf_ct_helper_hash.is_null() { return core::ptr::null_mut(); }
     let i = helper_hash(name, protonum);
     let mut h: *mut nf_conntrack_helper = core::ptr::null_mut();
-    hlist_for_each_entry_rcu!(h, nf_ct_helper_hash.add(i as usize), hnode) {
+    hlist_for_each_entry_rcu!(h, nf_ct_helper_hash.add(i as usize), hnode, {
         if strcmp((*h).name.as_ptr(), name) != 0 { continue; }
         if (*h).nfproto != NFPROTO_UNSPEC && (*h).nfproto != l3num { continue; }
         if (*h).l4proto == protonum { return h; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -49,7 +49,7 @@ pub unsafe fn nf_conntrack_helper_put(helper: *mut nf_conntrack_helper) { module
 unsafe fn nf_conntrack_nat_helper_find(mod_name: *const c_char) -> *mut nf_conntrack_nat_helper {
     let mut cur: *mut nf_conntrack_nat_helper = core::ptr::null_mut();
     let mut found = false;
-    list_for_each_entry_rcu!(cur, &mut nf_ct_nat_helpers, list) { if strcmp((*cur).mod_name.as_ptr(), mod_name) == 0 { found = true; break; } }
+    list_for_each_entry_rcu!(cur, &mut nf_ct_nat_helpers, list, { if strcmp((*cur).mod_name.as_ptr(), mod_name) == 0 { found = true; break; } });
     if found { cur } else { core::ptr::null_mut() }
 }
 
@@ -83,13 +83,13 @@ pub unsafe fn nf_ct_helper_expectfn_register(n: *mut nf_ct_helper_expectfn) { sp
 pub unsafe fn nf_ct_helper_expectfn_unregister(n: *mut nf_ct_helper_expectfn) { spin_lock_bh(&mut nf_conntrack_expect_lock); list_del_rcu!(&mut (*n).head); spin_unlock_bh(&mut nf_conntrack_expect_lock); }
 unsafe fn expect_iter_expectfn(exp: *mut nf_conntrack_expect, data: *mut c_void) -> bool { (*exp).expectfn == (*(data as *const nf_ct_helper_expectfn)).expectfn }
 pub unsafe fn nf_ct_helper_expectfn_destroy(n: *const nf_ct_helper_expectfn) { nf_ct_expect_iterate_destroy(expect_iter_expectfn, n as *mut c_void); }
-pub unsafe fn nf_ct_helper_expectfn_find_by_name(name: *const c_char) -> *mut nf_ct_helper_expectfn { let mut cur = core::ptr::null_mut(); list_for_each_entry_rcu!(cur, &mut nf_ct_helper_expectfn_list, head) { if strcmp((*cur).name.as_ptr(), name) == 0 { return cur; } } core::ptr::null_mut() }
-pub unsafe fn nf_ct_helper_expectfn_find_by_symbol(symbol: *const c_void) -> *mut nf_ct_helper_expectfn { let mut cur = core::ptr::null_mut(); list_for_each_entry_rcu!(cur, &mut nf_ct_helper_expectfn_list, head) { if (*cur).expectfn == symbol { return cur; } } core::ptr::null_mut() }
+pub unsafe fn nf_ct_helper_expectfn_find_by_name(name: *const c_char) -> *mut nf_ct_helper_expectfn { let mut cur = core::ptr::null_mut(); list_for_each_entry_rcu!(cur, &mut nf_ct_helper_expectfn_list, head, { if strcmp((*cur).name.as_ptr(), name) == 0 { return cur; } }); core::ptr::null_mut() }
+pub unsafe fn nf_ct_helper_expectfn_find_by_symbol(symbol: *const c_void) -> *mut nf_ct_helper_expectfn { let mut cur = core::ptr::null_mut(); list_for_each_entry_rcu!(cur, &mut nf_ct_helper_expectfn_list, head, { if (*cur).expectfn == symbol { return cur; } }); core::ptr::null_mut() }
 
 pub unsafe fn nf_ct_helper_log(skb: *mut sk_buff, ct: *const nf_conn, fmt: *const c_char, mut args: ...) { let mut helper_name = cstr!("(null)"); let help = nfct_help(ct); if !help.is_null() { let helper = rcu_dereference!((*help).helper); if !helper.is_null() { helper_name = (*helper).name.as_ptr(); } } nf_log_packet(nf_ct_net(ct), nf_ct_l3num(ct), 0, skb, core::ptr::null_mut(), core::ptr::null_mut(), core::ptr::null_mut(), cstr!("helper %s dropping packet: %pV "), helper_name, &mut args); }
 
 // Registration and initialization routines retain the kernel API and ordering.
-pub unsafe fn __nf_conntrack_helper_register(me: *mut nf_conntrack_helper) -> c_int { BUG_ON!((*me).expect_class_max >= NF_CT_MAX_EXPECT_CLASSES); BUG_ON!(strlen((*me).name.as_ptr()) > NF_CT_HELPER_NAME_LEN - 1); if nf_ct_helper_hash.is_null() { return -ENOENT; } let mut i = 0; while i <= (*me).expect_class_max { if (*me).expect_policy[i].max_expected == 0 { (*me).expect_policy[i].max_expected = NF_CT_EXPECT_MAX_CNT; } if (*me).expect_policy[i].max_expected > NF_CT_EXPECT_MAX_CNT { return -EINVAL; } i += 1; } let h = helper_hash((*me).name.as_ptr(), (*me).l4proto); mutex_lock(&mut NF_CT_HELPER_MUTEX); let mut cur = core::ptr::null_mut(); hlist_for_each_entry! (cur, nf_ct_helper_hash.add(h as usize), hnode) { if strcmp((*cur).name.as_ptr(), (*me).name.as_ptr()) == 0 && ((*cur).nfproto == NFPROTO_UNSPEC || (*cur).nfproto == (*me).nfproto) && (*cur).l4proto == (*me).l4proto { mutex_unlock(&mut NF_CT_HELPER_MUTEX); return -EBUSY; } } refcount_set(&mut (*me).ct_refcnt, 1); hlist_add_head_rcu!(&mut (*me).hnode, nf_ct_helper_hash.add(h as usize)); nf_ct_helper_count += 1; mutex_unlock(&mut NF_CT_HELPER_MUTEX); 0 }
+pub unsafe fn __nf_conntrack_helper_register(me: *mut nf_conntrack_helper) -> c_int { BUG_ON!((*me).expect_class_max >= NF_CT_MAX_EXPECT_CLASSES); BUG_ON!(strlen((*me).name.as_ptr()) > NF_CT_HELPER_NAME_LEN - 1); if nf_ct_helper_hash.is_null() { return -ENOENT; } let mut i = 0; while i <= (*me).expect_class_max { if (*me).expect_policy[i].max_expected == 0 { (*me).expect_policy[i].max_expected = NF_CT_EXPECT_MAX_CNT; } if (*me).expect_policy[i].max_expected > NF_CT_EXPECT_MAX_CNT { return -EINVAL; } i += 1; } let h = helper_hash((*me).name.as_ptr(), (*me).l4proto); mutex_lock(&mut NF_CT_HELPER_MUTEX); let mut cur = core::ptr::null_mut(); hlist_for_each_entry! (cur, nf_ct_helper_hash.add(h as usize), hnode, { if strcmp((*cur).name.as_ptr(), (*me).name.as_ptr()) == 0 && ((*cur).nfproto == NFPROTO_UNSPEC || (*cur).nfproto == (*me).nfproto) && (*cur).l4proto == (*me).l4proto { mutex_unlock(&mut NF_CT_HELPER_MUTEX); return -EBUSY; } }); refcount_set(&mut (*me).ct_refcnt, 1); hlist_add_head_rcu!(&mut (*me).hnode, nf_ct_helper_hash.add(h as usize)); nf_ct_helper_count += 1; mutex_unlock(&mut NF_CT_HELPER_MUTEX); 0 }
 
 pub unsafe fn nf_conntrack_helper_release(me: *mut nf_conntrack_helper) { nf_ct_expect_iterate_destroy(expect_iter_me, me as *mut c_void); if refcount_dec_and_test(&mut (*me).ct_refcnt) { kfree_rcu!(me, rcu); } }
 unsafe fn expect_iter_me(exp: *mut nf_conntrack_expect, data: *mut c_void) -> bool { let me = data as *mut nf_conntrack_helper; let this = rcu_dereference_protected!((*exp).helper, lockdep_is_held(&nf_conntrack_expect_lock)); if this == me { return true; } rcu_dereference_protected!((*exp).assign_helper, lockdep_is_held(&nf_conntrack_expect_lock)) == me }

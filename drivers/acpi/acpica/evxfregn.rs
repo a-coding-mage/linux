@@ -8,7 +8,7 @@
 
 // C dependencies: acpi/acpi.h, accommon.h, acnamesp.h, acevents.h
 
-static unsafe fn acpi_install_address_space_handler_internal(
+unsafe fn acpi_install_address_space_handler_internal(
     device: acpi_handle,
     space_id: acpi_adr_space_type,
     handler: acpi_adr_space_handler,

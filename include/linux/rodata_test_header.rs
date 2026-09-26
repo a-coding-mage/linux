@@ -7,12 +7,12 @@
  */
 
 /* Corresponds to the C build-time condition CONFIG_DEBUG_RODATA_TEST. */
-#[cfg(feature = "CONFIG_DEBUG_RODATA_TEST")]
+#[cfg(CONFIG_DEBUG_RODATA_TEST)]
 extern "C" {
     pub fn rodata_test();
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_RODATA_TEST"))]
+#[cfg(not(CONFIG_DEBUG_RODATA_TEST))]
 #[inline]
 pub fn rodata_test() {}
 

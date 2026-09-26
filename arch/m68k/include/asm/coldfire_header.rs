@@ -19,10 +19,10 @@
  * The C CONFIG_CLOCK_FREQ build-time symbol is represented by the
  * corresponding Rust configuration feature and external constant.
  */
-#[cfg(feature = "CONFIG_CLOCK_FREQ")]
+#[cfg(CONFIG_CLOCK_FREQ)]
 pub const MCF_CLK: usize = CONFIG_CLOCK_FREQ;
 
-#[cfg(not(feature = "CONFIG_CLOCK_FREQ"))]
+#[cfg(not(CONFIG_CLOCK_FREQ))]
 compile_error!("Don't know what your ColdFire CPU clock frequency is??");
 
 /*
@@ -41,10 +41,10 @@ compile_error!("Don't know what your ColdFire CPU clock frequency is??");
  * represented by the corresponding Rust configuration features and
  * external constants.
  */
-#[cfg(feature = "CONFIG_MBAR")]
+#[cfg(CONFIG_MBAR)]
 pub const MCF_MBAR: usize = CONFIG_MBAR;
 
-#[cfg(feature = "CONFIG_IPSBAR")]
+#[cfg(CONFIG_IPSBAR)]
 pub const MCF_IPSBAR: usize = CONFIG_IPSBAR;
 
 

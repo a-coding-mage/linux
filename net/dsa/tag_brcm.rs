@@ -43,7 +43,7 @@ const BRCM_EG_TC_SHIFT: u32 = 5;
 const BRCM_EG_TC_MASK: u8 = 0x7;
 const BRCM_EG_PID_MASK: u8 = 0x1f;
 
-#[cfg(any(feature = "CONFIG_NET_DSA_TAG_BRCM", feature = "CONFIG_NET_DSA_TAG_BRCM_PREPEND"))]
+#[cfg(any(CONFIG_NET_DSA_TAG_BRCM, CONFIG_NET_DSA_TAG_BRCM_PREPEND))]
 unsafe fn brcm_tag_xmit_ll(mut skb: *mut sk_buff, dev: *mut net_device, offset: usize) -> *mut sk_buff {
     let dp = dsa_user_to_port(dev);
     let queue: u16 = skb_get_queue_mapping(skb);
@@ -63,7 +63,7 @@ unsafe fn brcm_tag_xmit_ll(mut skb: *mut sk_buff, dev: *mut net_device, offset: 
     skb
 }
 
-#[cfg(any(feature = "CONFIG_NET_DSA_TAG_BRCM", feature = "CONFIG_NET_DSA_TAG_BRCM_PREPEND"))]
+#[cfg(any(CONFIG_NET_DSA_TAG_BRCM, CONFIG_NET_DSA_TAG_BRCM_PREPEND))]
 unsafe fn brcm_tag_rcv_ll(skb: *mut sk_buff, dev: *mut net_device, offset: usize) -> *mut sk_buff {
     let source_port: i32;
     let brcm_tag: *mut u8;
@@ -79,10 +79,10 @@ unsafe fn brcm_tag_rcv_ll(skb: *mut sk_buff, dev: *mut net_device, offset: usize
     skb
 }
 
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM)]
 unsafe fn brcm_tag_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff { brcm_tag_xmit_ll(skb, dev, 2 * ETH_ALEN) }
 
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM)]
 unsafe fn brcm_tag_rcv(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     let nskb = brcm_tag_rcv_ll(skb, dev, 2);
     if nskb.is_null() { return nskb; }
@@ -92,10 +92,10 @@ unsafe fn brcm_tag_rcv(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff 
 
 // The following driver registrations preserve the C driver's interfaces;
 // their concrete kernel types and registration macros are external.
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM)]
 static brcm_netdev_ops: dsa_device_ops = dsa_device_ops { name: BRCM_NAME, proto: DSA_TAG_PROTO_BRCM, xmit: brcm_tag_xmit, rcv: brcm_tag_rcv, needed_headroom: BRCM_TAG_LEN };
 
-#[cfg(any(feature = "CONFIG_NET_DSA_TAG_BRCM_LEGACY", feature = "CONFIG_NET_DSA_TAG_BRCM_LEGACY_FCS"))]
+#[cfg(any(CONFIG_NET_DSA_TAG_BRCM_LEGACY, CONFIG_NET_DSA_TAG_BRCM_LEGACY_FCS))]
 unsafe fn brcm_leg_tag_rcv(mut skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     let mut len = BRCM_LEG_TAG_LEN;
     if unlikely(pskb_may_pull(skb, BRCM_LEG_TAG_LEN + VLAN_HLEN) == 0) { kfree_skb(skb); return core::ptr::null_mut(); }
@@ -111,7 +111,7 @@ unsafe fn brcm_leg_tag_rcv(mut skb: *mut sk_buff, dev: *mut net_device) -> *mut 
     skb
 }
 
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM_LEGACY")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM_LEGACY)]
 unsafe fn brcm_leg_tag_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     let dp = dsa_user_to_port(dev);
     if skb_put_padto(skb, ETH_ZLEN + BRCM_LEG_TAG_LEN) != 0 { return core::ptr::null_mut(); }
@@ -121,7 +121,7 @@ unsafe fn brcm_leg_tag_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_
     *tag.add(3) = 0; *tag.add(4) = 0; *tag.add(5) = ((*dp).index as u8) & BRCM_LEG_PORT_ID; skb
 }
 
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM_LEGACY_FCS")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM_LEGACY_FCS)]
 unsafe fn brcm_leg_fcs_tag_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff {
     let dp = dsa_user_to_port(dev);
     if skb_put_padto(skb, ETH_ZLEN + BRCM_LEG_TAG_LEN) != 0 { return core::ptr::null_mut(); }
@@ -137,9 +137,9 @@ unsafe fn brcm_leg_fcs_tag_xmit(skb: *mut sk_buff, dev: *mut net_device) -> *mut
     skb_put_data(skb, &fcs_val as *const __le32 as *const core::ffi::c_void, ETH_FCS_LEN); skb
 }
 
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM_PREPEND")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM_PREPEND)]
 unsafe fn brcm_tag_xmit_prepend(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff { brcm_tag_xmit_ll(skb, dev, 0) }
-#[cfg(feature = "CONFIG_NET_DSA_TAG_BRCM_PREPEND")]
+#[cfg(CONFIG_NET_DSA_TAG_BRCM_PREPEND)]
 unsafe fn brcm_tag_rcv_prepend(skb: *mut sk_buff, dev: *mut net_device) -> *mut sk_buff { brcm_tag_rcv_ll(skb, dev, ETH_HLEN) }
 
 // CONFIG_NET_DSA_TAG_BRCM_LEGACY_FCS transmit and all DSA_TAG_DRIVER,

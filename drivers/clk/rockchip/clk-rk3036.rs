@@ -80,15 +80,15 @@ const RK3036_DIV_PCLK_SHIFT: u32 = 12;
 
 #define RK3036_CLKSEL1(_core_periph_div)					\
 	{									\
-		.reg = RK2928_CLKSEL_CON(1),					\
-		.val = HIWORD_UPDATE(_core_periph_div, RK3036_DIV_PERI_MASK,	\
+		reg: RK2928_CLKSEL_CON(1),					\
+		val: HIWORD_UPDATE(_core_periph_div, RK3036_DIV_PERI_MASK,	\
 				RK3036_DIV_PERI_SHIFT)				\
 	}
 
 #define RK3036_CPUCLK_RATE(_prate, _core_periph_div)			\
 	{								\
-		.prate = _prate,					\
-		.divs = {						\
+		prate: _prate,					\
+		divs: {						\
 			RK3036_CLKSEL1(_core_periph_div),		\
 		},							\
 	}
@@ -103,11 +103,11 @@ static rk3036_cpuclk_data: rockchip_cpuclk_reg_data = {
 	.core_reg[0] = RK2928_CLKSEL_CON(0),
 	.div_core_shift[0] = 0,
 	.div_core_mask[0] = 0x1f,
-	.num_cores = 1,
-	.mux_core_alt = 1,
-	.mux_core_main = 0,
-	.mux_core_shift = 7,
-	.mux_core_mask = 0x1,
+	num_cores: 1,
+	mux_core_alt: 1,
+	mux_core_main: 0,
+	mux_core_shift: 7,
+	mux_core_mask: 0x1,
 };
 
 PNAME(mux_pll_p)		= { "xin24m", "xin24m" };

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 // The CONFIG_SOC_AR5312 build condition is represented as a Cargo feature.
-#[cfg(feature = "CONFIG_SOC_AR5312")]
+#[cfg(CONFIG_SOC_AR5312)]
 extern "C" {
     pub fn ar5312_arch_init_irq();
     pub fn ar5312_init_devices();
@@ -10,23 +10,23 @@ extern "C" {
     pub fn ar5312_arch_init();
 }
 
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 #[inline]
 pub fn ar5312_arch_init_irq() {}
 
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 #[inline]
 pub fn ar5312_init_devices() {}
 
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 #[inline]
 pub fn ar5312_plat_time_init() {}
 
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 #[inline]
 pub fn ar5312_plat_mem_setup() {}
 
-#[cfg(not(feature = "CONFIG_SOC_AR5312"))]
+#[cfg(not(CONFIG_SOC_AR5312))]
 #[inline]
 pub fn ar5312_arch_init() {}
 

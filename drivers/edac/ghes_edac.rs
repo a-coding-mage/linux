@@ -35,9 +35,9 @@ struct MemdevDmiEntry {
 
 unsafe fn find_dimm_by_handle(mci: *mut MemCtlInfo, handle: u16) -> *mut DimmInfo {
     let mut dimm: *mut DimmInfo = core::ptr::null_mut();
-    mci_for_each_dimm!(mci, dimm) {
+    mci_for_each_dimm!(mci, dimm, {
         if (*dimm).smbios_handle == handle { return dimm; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -139,7 +139,7 @@ unsafe extern "C" fn ghes_edac_register(dev: *mut Device) -> i32 {
     (*mci).mod_name = c"ghes_edac.c".as_ptr(); (*mci).ctl_name = c"ghes_edac".as_ptr(); (*mci).dev_name = c"ghes".as_ptr();
     if !fake {
         let mut i = 0;
-        mci_for_each_dimm!(mci, dst) { let src = GHES_HW.dimms.add(i); (*dst).idx = (*src).idx; (*dst).smbios_handle = (*src).smbios_handle; (*dst).nr_pages = (*src).nr_pages; (*dst).mtype = (*src).mtype; (*dst).edac_mode = (*src).edac_mode; (*dst).dtype = (*src).dtype; (*dst).grain = (*src).grain; if strlen!((*src).label.as_ptr()) != 0 { memcpy!((*dst).label.as_mut_ptr(), (*src).label.as_ptr(), (*src).label.len()); } i += 1; }
+        mci_for_each_dimm!(mci, dst, { let src = GHES_HW.dimms.add(i); (*dst).idx = (*src).idx; (*dst).smbios_handle = (*src).smbios_handle; (*dst).nr_pages = (*src).nr_pages; (*dst).mtype = (*src).mtype; (*dst).edac_mode = (*src).edac_mode; (*dst).dtype = (*src).dtype; (*dst).grain = (*src).grain; if strlen!((*src).label.as_ptr()) != 0 { memcpy!((*dst).label.as_mut_ptr(), (*src).label.as_ptr(), (*src).label.len()); } i += 1; });
     } else {
         let dimm = edac_get_dimm(mci, 0, 0, 0); (*dimm).nr_pages = 1; (*dimm).grain = 128; (*dimm).mtype = MEM_UNKNOWN; (*dimm).dtype = DEV_UNKNOWN; (*dimm).edac_mode = EDAC_SECDED;
     }

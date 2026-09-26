@@ -35,16 +35,16 @@ pub const _FP_KEEPNANFRACP: i32 = 1;
  * choose X. For _Qp_* and _Q_* this prefers X, while CPU instruction
  * emulation prefers Y (SPAMv9 B.2.2). */
 macro_rules! _FP_CHOOSENAN {
-    ($fs:ident, $wc:ident, $r:ident, $x:ident, $y:ident, $op:ident) => {{
+    ($fs:ident, $wc:ident, $r:tt, $x:tt, $y:tt, $op:ident) => {{
         if (_FP_FRAC_HIGH_RAW_$fs!($y) & _FP_QNANBIT_$fs! != 0)
             && (_FP_FRAC_HIGH_RAW_$fs!($x) & _FP_QNANBIT_$fs! == 0) {
-            $r##_s = $x##_s;
+            ::kernel::macros::paste!([<$r _s>]) = ::kernel::macros::paste!([<$x _s>]);
             _FP_FRAC_COPY_$wc!($r, $x);
         } else {
-            $r##_s = $y##_s;
+            ::kernel::macros::paste!([<$r _s>]) = ::kernel::macros::paste!([<$y _s>]);
             _FP_FRAC_COPY_$wc!($r, $y);
         }
-        $r##_c = FP_CLS_NAN;
+        ::kernel::macros::paste!([<$r _c>]) = FP_CLS_NAN;
     }};
 }
 

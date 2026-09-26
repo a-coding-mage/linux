@@ -39,7 +39,7 @@ pub unsafe fn smp_store_cpu_info(id: c_int) {
     mid = cpu_get_hwmid(cpu_node);
 
     if mid < 0 {
-        printk(KERN_NOTICE "No MID found for CPU%d at node 0x%08x\0", id, cpu_node);
+        printk(c"\x015No MID found for CPU%d at node 0x%08x\x00".as_ptr(), id, cpu_node);
         mid = 0;
     }
     cpu_data(id).mid = mid;
@@ -50,10 +50,10 @@ pub unsafe fn smp_cpus_done(_max_cpus: c_uint) {
     let mut cpu: c_int;
     let mut num: c_int = 0;
 
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         num += 1;
         bogosum += cpu_data(cpu).udelay_val;
-    }
+    });
 
     printk!("Total of %d processors activated (%lu.%02lu BogoMIPS).\n\0",
         num, bogosum / (500000 / HZ), (bogosum / (5000 / HZ)) % 100);
@@ -87,9 +87,9 @@ pub unsafe fn arch_send_call_function_single_ipi(cpu: c_int) {
 
 pub unsafe fn arch_send_call_function_ipi_mask(mask: *const cpumask) {
     let mut cpu: c_int;
-    for_each_cpu!(cpu, mask) {
+    for_each_cpu!(cpu, mask, {
         (*SPARC32_IPI_OPS).mask_one(cpu);
-    }
+    });
 }
 
 pub unsafe fn smp_resched_interrupt() {
@@ -228,19 +228,19 @@ pub unsafe fn smp_callin() { sparc_start_secondary(core::ptr::null_mut()); }
 
 pub unsafe fn smp_bogo(m: *mut seq_file) {
     let mut i: c_int;
-    for_each_online_cpu!(i) {
+    for_each_online_cpu!(i, {
         seq_printf!(m, "Cpu%dBogo\t: %lu.%02lu\n\0", i,
             cpu_data(i).udelay_val / (500000 / HZ),
             (cpu_data(i).udelay_val / (5000 / HZ)) % 100);
-    }
+    });
 }
 
 pub unsafe fn smp_info(m: *mut seq_file) {
     let mut i: c_int;
     seq_printf!(m, "State:\n\0");
-    for_each_online_cpu!(i) {
+    for_each_online_cpu!(i, {
         seq_printf!(m, "CPU%d\t\t: online\n\0", i);
-    }
+    });
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

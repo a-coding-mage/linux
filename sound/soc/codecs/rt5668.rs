@@ -403,7 +403,7 @@ static const struct reg_default rt5668_reg[] = {
 	{0x03f3, 0x0800},
 };
 
-static bool rt5668_volatile_register(struct device *dev, unsigned int reg)
+static bool rt5668_volatile_register(device *dev, reg: core::ffi::c_uint)
 {
 	switch (reg) {
 	case RT5668_RESET:
@@ -431,7 +431,7 @@ static bool rt5668_volatile_register(struct device *dev, unsigned int reg)
 	}
 }
 
-static bool rt5668_readable_register(struct device *dev, unsigned int reg)
+static bool rt5668_readable_register(device *dev, reg: core::ffi::c_uint)
 {
 	switch (reg) {
 	case RT5668_RESET:
@@ -812,13 +812,13 @@ static const struct snd_kcontrol_new rt5668_if1_45_adc_swap_mux =
 static const struct snd_kcontrol_new rt5668_if1_67_adc_swap_mux =
 	SOC_DAPM_ENUM("IF1 67 ADC Swap Mux", rt5668_if1_67_adc_enum);
 
-static void rt5668_reset(struct regmap *regmap)
+static void rt5668_reset(regmap *regmap)
 {
 	regmap_write(regmap, RT5668_RESET, 0);
 	regmap_write(regmap, RT5668_I2C_MODE, 1);
 }
 
-static int rt5668_button_detect(struct snd_soc_component *component)
+static int rt5668_button_detect(snd_soc_component *component)
 {
 	int btn_type, val;
 
@@ -830,8 +830,8 @@ static int rt5668_button_detect(struct snd_soc_component *component)
 	return btn_type;
 }
 
-static void rt5668_enable_push_button_irq(struct snd_soc_component *component,
-		bool enable)
+static void rt5668_enable_push_button_irq(snd_soc_component *component,
+		enable: bool)
 {
 	if (enable) {
 		snd_soc_component_update_bits(component, RT5668_SAR_IL_CMD_1,
@@ -867,12 +867,12 @@ static void rt5668_enable_push_button_irq(struct snd_soc_component *component,
  *
  * Returns detect status.
  */
-static int rt5668_headset_detect(struct snd_soc_component *component,
+static int rt5668_headset_detect(snd_soc_component *component,
 		int jack_insert)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
-	unsigned int val, count;
+	val: core::ffi::c_uint, count;
 
 	if (jack_insert) {
 		snd_soc_dapm_force_enable_pin(dapm, "CBJ Power");
@@ -893,11 +893,11 @@ static int rt5668_headset_detect(struct snd_soc_component *component,
 		switch (val) {
 		case 0x1:
 		case 0x2:
-			rt5668->jack_type = SND_JACK_HEADSET;
+			(*rt5668).jack_type = SND_JACK_HEADSET;
 			rt5668_enable_push_button_irq(component, true);
 			break;
 		default:
-			rt5668->jack_type = SND_JACK_HEADPHONE;
+			(*rt5668).jack_type = SND_JACK_HEADPHONE;
 		}
 
 	} else {
@@ -907,11 +907,11 @@ static int rt5668_headset_detect(struct snd_soc_component *component,
 		snd_soc_dapm_disable_pin(dapm, "CBJ Power");
 		snd_soc_dapm_sync(dapm);
 
-		rt5668->jack_type = 0;
+		(*rt5668).jack_type = 0;
 	}
 
-	dev_dbg(component->dev, "jack_type = %d\n", rt5668->jack_type);
-	return rt5668->jack_type;
+	dev_dbg((*component).dev, "jack_type = %d\n", (*rt5668).jack_type);
+	return (*rt5668).jack_type;
 }
 
 static irqreturn_t rt5668_irq(int irq, void *data)
@@ -919,36 +919,36 @@ static irqreturn_t rt5668_irq(int irq, void *data)
 	struct rt5668_priv *rt5668 = data;
 
 	mod_delayed_work(system_power_efficient_wq,
-			&rt5668->jack_detect_work, msecs_to_jiffies(250));
+			(*&rt5668).jack_detect_work, msecs_to_jiffies(250));
 
 	return IRQ_HANDLED;
 }
 
-static void rt5668_jd_check_handler(struct work_struct *work)
+static void rt5668_jd_check_handler(work_struct *work)
 {
-	struct rt5668_priv *rt5668 = container_of(work, struct rt5668_priv,
+	struct rt5668_priv *rt5668 = container_of(work, rt5668_priv,
 		jd_check_work.work);
 
-	if (snd_soc_component_read(rt5668->component, RT5668_AJD1_CTRL)
+	if (snd_soc_component_read((*rt5668).component, RT5668_AJD1_CTRL)
 		& RT5668_JDH_RS_MASK) {
 		/* jack out */
-		rt5668->jack_type = rt5668_headset_detect(rt5668->component, 0);
+		(*rt5668).jack_type = rt5668_headset_detect((*rt5668).component, 0);
 
-		snd_soc_jack_report(rt5668->hs_jack, rt5668->jack_type,
+		snd_soc_jack_report((*rt5668).hs_jack, (*rt5668).jack_type,
 				SND_JACK_HEADSET |
 				SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 				SND_JACK_BTN_2 | SND_JACK_BTN_3);
 	} else {
-		schedule_delayed_work(&rt5668->jd_check_work, 500);
+		schedule_delayed_work((*&rt5668).jd_check_work, 500);
 	}
 }
 
-static int rt5668_set_jack_detect(struct snd_soc_component *component,
-	struct snd_soc_jack *hs_jack, void *data)
+static int rt5668_set_jack_detect(snd_soc_component *component,
+	snd_soc_jack *hs_jack, void *data)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
-	switch (rt5668->pdata.jd_src) {
+	switch ((*rt5668).pdata.jd_src) {
 	case RT5668_JD1:
 		snd_soc_component_update_bits(component, RT5668_CBJ_CTRL_2,
 			RT5668_EXT_JD_SRC, RT5668_EXT_JD_SRC_MANUAL);
@@ -957,67 +957,67 @@ static int rt5668_set_jack_detect(struct snd_soc_component *component,
 			RT5668_CBJ_IN_BUF_EN, RT5668_CBJ_IN_BUF_EN);
 		snd_soc_component_update_bits(component, RT5668_SAR_IL_CMD_1,
 			RT5668_SAR_POW_MASK, RT5668_SAR_POW_EN);
-		regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_GPIO_CTRL_1,
 			RT5668_GP1_PIN_MASK, RT5668_GP1_PIN_IRQ);
-		regmap_update_bits(rt5668->regmap, RT5668_RC_CLK_CTRL,
+		regmap_update_bits((*rt5668).regmap, RT5668_RC_CLK_CTRL,
 				RT5668_POW_IRQ | RT5668_POW_JDH |
 				RT5668_POW_ANA, RT5668_POW_IRQ |
 				RT5668_POW_JDH | RT5668_POW_ANA);
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_ANLG_2,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_ANLG_2,
 			RT5668_PWR_JDH | RT5668_PWR_JDL,
 			RT5668_PWR_JDH | RT5668_PWR_JDL);
-		regmap_update_bits(rt5668->regmap, RT5668_IRQ_CTRL_2,
+		regmap_update_bits((*rt5668).regmap, RT5668_IRQ_CTRL_2,
 			RT5668_JD1_EN_MASK | RT5668_JD1_POL_MASK,
 			RT5668_JD1_EN | RT5668_JD1_POL_NOR);
 		mod_delayed_work(system_power_efficient_wq,
-			   &rt5668->jack_detect_work, msecs_to_jiffies(250));
+			   (*&rt5668).jack_detect_work, msecs_to_jiffies(250));
 		break;
 
 	case RT5668_JD_NULL:
-		regmap_update_bits(rt5668->regmap, RT5668_IRQ_CTRL_2,
+		regmap_update_bits((*rt5668).regmap, RT5668_IRQ_CTRL_2,
 			RT5668_JD1_EN_MASK, RT5668_JD1_DIS);
-		regmap_update_bits(rt5668->regmap, RT5668_RC_CLK_CTRL,
+		regmap_update_bits((*rt5668).regmap, RT5668_RC_CLK_CTRL,
 				RT5668_POW_JDH | RT5668_POW_JDL, 0);
 		break;
 
 	default:
-		dev_warn(component->dev, "Wrong JD source\n");
+		dev_warn((*component).dev, "Wrong JD source\n");
 		break;
 	}
 
-	rt5668->hs_jack = hs_jack;
+	(*rt5668).hs_jack = hs_jack;
 
 	return 0;
 }
 
-static void rt5668_jack_detect_handler(struct work_struct *work)
+static void rt5668_jack_detect_handler(work_struct *work)
 {
 	struct rt5668_priv *rt5668 =
-		container_of(work, struct rt5668_priv, jack_detect_work.work);
+		container_of(work, rt5668_priv, jack_detect_work.work);
 	int val, btn_type;
 
-	if (!rt5668->component ||
-	    !snd_soc_card_is_instantiated(rt5668->component->card)) {
+	if ((*!rt5668).component ||
+	    !snd_soc_card_is_instantiated((*(*rt5668).component).card)) {
 		/* card not yet ready, try later */
 		mod_delayed_work(system_power_efficient_wq,
-				 &rt5668->jack_detect_work, msecs_to_jiffies(15));
+				 (*&rt5668).jack_detect_work, msecs_to_jiffies(15));
 		return;
 	}
 
-	guard(mutex)(&rt5668->calibrate_mutex);
+	guard(mutex)((*&rt5668).calibrate_mutex);
 
-	val = snd_soc_component_read(rt5668->component, RT5668_AJD1_CTRL)
+	val = snd_soc_component_read((*rt5668).component, RT5668_AJD1_CTRL)
 		& RT5668_JDH_RS_MASK;
 	if (!val) {
 		/* jack in */
-		if (rt5668->jack_type == 0) {
+		if ((*rt5668).jack_type == 0) {
 			/* jack was out, report jack type */
-			rt5668->jack_type =
-				rt5668_headset_detect(rt5668->component, 1);
+			(*rt5668).jack_type =
+				rt5668_headset_detect((*rt5668).component, 1);
 		} else {
 			/* jack is already in, report button event */
-			rt5668->jack_type = SND_JACK_HEADSET;
-			btn_type = rt5668_button_detect(rt5668->component);
+			(*rt5668).jack_type = SND_JACK_HEADSET;
+			btn_type = rt5668_button_detect((*rt5668).component);
 			/**
 			 * rt5668 can report three kinds of button behavior,
 			 * one click, double click and hold. However,
@@ -1029,28 +1029,28 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 			case 0x8000:
 			case 0x4000:
 			case 0x2000:
-				rt5668->jack_type |= SND_JACK_BTN_0;
+				(*rt5668).jack_type |= SND_JACK_BTN_0;
 				break;
 			case 0x1000:
 			case 0x0800:
 			case 0x0400:
-				rt5668->jack_type |= SND_JACK_BTN_1;
+				(*rt5668).jack_type |= SND_JACK_BTN_1;
 				break;
 			case 0x0200:
 			case 0x0100:
 			case 0x0080:
-				rt5668->jack_type |= SND_JACK_BTN_2;
+				(*rt5668).jack_type |= SND_JACK_BTN_2;
 				break;
 			case 0x0040:
 			case 0x0020:
 			case 0x0010:
-				rt5668->jack_type |= SND_JACK_BTN_3;
+				(*rt5668).jack_type |= SND_JACK_BTN_3;
 				break;
 			case 0x0000: /* unpressed */
 				break;
 			default:
 				btn_type = 0;
-				dev_err(rt5668->component->dev,
+				dev_err((*(*rt5668).component).dev,
 					"Unexpected button code 0x%04x\n",
 					btn_type);
 				break;
@@ -1058,19 +1058,19 @@ static void rt5668_jack_detect_handler(struct work_struct *work)
 		}
 	} else {
 		/* jack out */
-		rt5668->jack_type = rt5668_headset_detect(rt5668->component, 0);
+		(*rt5668).jack_type = rt5668_headset_detect((*rt5668).component, 0);
 	}
 
-	snd_soc_jack_report(rt5668->hs_jack, rt5668->jack_type,
+	snd_soc_jack_report((*rt5668).hs_jack, (*rt5668).jack_type,
 			SND_JACK_HEADSET |
 			    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 			    SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
-	if (rt5668->jack_type & (SND_JACK_BTN_0 | SND_JACK_BTN_1 |
+	if ((*rt5668).jack_type & (SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 		SND_JACK_BTN_2 | SND_JACK_BTN_3))
-		schedule_delayed_work(&rt5668->jd_check_work, 0);
+		schedule_delayed_work((*&rt5668).jd_check_work, 0);
 	else
-		cancel_delayed_work_sync(&rt5668->jd_check_work);
+		cancel_delayed_work_sync((*&rt5668).jd_check_work);
 }
 
 static const struct snd_kcontrol_new rt5668_snd_controls[] = {
@@ -1099,31 +1099,31 @@ static const struct snd_kcontrol_new rt5668_snd_controls[] = {
 };
 
 
-static int rt5668_div_sel(struct rt5668_priv *rt5668,
+static int rt5668_div_sel(rt5668_priv *rt5668,
 			  int target, const int div[], int size)
 {
 	int i;
 
-	if (rt5668->sysclk < target) {
+	if ((*rt5668).sysclk < target) {
 		pr_err("sysclk rate %d is too low\n",
-			rt5668->sysclk);
+			(*rt5668).sysclk);
 		return 0;
 	}
 
 	for (i = 0; i < size - 1; i++) {
 		pr_info("div[%d]=%d\n", i, div[i]);
-		if (target * div[i] == rt5668->sysclk)
+		if (target * div[i] == (*rt5668).sysclk)
 			return i;
-		if (target * div[i + 1] > rt5668->sysclk) {
+		if (target * div[i + 1] > (*rt5668).sysclk) {
 			pr_err("can't find div for sysclk %d\n",
-				rt5668->sysclk);
+				(*rt5668).sysclk);
 			return i;
 		}
 	}
 
-	if (target * div[i] < rt5668->sysclk)
+	if (target * div[i] < (*rt5668).sysclk)
 		pr_err("sysclk rate %d is too high\n",
-			rt5668->sysclk);
+			(*rt5668).sysclk);
 
 	return size - 1;
 
@@ -1139,11 +1139,11 @@ static int rt5668_div_sel(struct rt5668_priv *rt5668,
  * Choose dmic clock between 1MHz and 3MHz.
  * It is better for clock to approximate 3MHz.
  */
-static int set_dmic_clk(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int set_dmic_clk(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
 	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
+		snd_soc_dapm_to_component((*w).dapm);
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 	int idx;
 	static const int div[] = {2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128};
@@ -1156,26 +1156,26 @@ static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int set_filter_clk(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int set_filter_clk(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
 	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
+		snd_soc_dapm_to_component((*w).dapm);
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 	int ref, val, reg, idx;
 	static const int div[] = {1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48};
 
 	val = snd_soc_component_read(component, RT5668_GPIO_CTRL_1) &
 		RT5668_GP4_PIN_MASK;
-	if (w->shift == RT5668_PWR_ADC_S1F_BIT &&
+	if ((*w).shift == RT5668_PWR_ADC_S1F_BIT &&
 		val == RT5668_GP4_PIN_ADCDAT2)
-		ref = 256 * rt5668->lrck[RT5668_AIF2];
+		ref = 256 * (*rt5668).lrck[RT5668_AIF2];
 	else
-		ref = 256 * rt5668->lrck[RT5668_AIF1];
+		ref = 256 * (*rt5668).lrck[RT5668_AIF1];
 
 	idx = rt5668_div_sel(rt5668, ref, div, ARRAY_SIZE(div));
 
-	if (w->shift == RT5668_PWR_ADC_S1F_BIT)
+	if ((*w).shift == RT5668_PWR_ADC_S1F_BIT)
 		reg = RT5668_PLL_TRACK_3;
 	else
 		reg = RT5668_PLL_TRACK_2;
@@ -1186,12 +1186,12 @@ static int set_filter_clk(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int is_sys_clk_from_pll1(struct snd_soc_dapm_widget *w,
-			 struct snd_soc_dapm_widget *sink)
+static int is_sys_clk_from_pll1(snd_soc_dapm_widget *w,
+			 snd_soc_dapm_widget *sink)
 {
-	unsigned int val;
+	core::ffi::c_uint val;
 	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
+		snd_soc_dapm_to_component((*w).dapm);
 
 	val = snd_soc_component_read(component, RT5668_GLB_CLK);
 	val &= RT5668_SCLK_SRC_MASK;
@@ -1201,14 +1201,14 @@ static int is_sys_clk_from_pll1(struct snd_soc_dapm_widget *w,
 		return 0;
 }
 
-static int is_using_asrc(struct snd_soc_dapm_widget *w,
-			 struct snd_soc_dapm_widget *sink)
+static int is_using_asrc(snd_soc_dapm_widget *w,
+			 snd_soc_dapm_widget *sink)
 {
-	unsigned int reg, shift, val;
+	reg: core::ffi::c_uint, shift, val;
 	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
+		snd_soc_dapm_to_component((*w).dapm);
 
-	switch (w->shift) {
+	switch ((*w).shift) {
 	case RT5668_ADC_STO1_ASRC_SFT:
 		reg = RT5668_PLL_TRACK_3;
 		shift = RT5668_FILTER_CLK_SEL_SFT;
@@ -1342,7 +1342,7 @@ static const struct snd_kcontrol_new rt5668_sto1_adc2r_mux =
 	SOC_DAPM_ENUM("Stereo1 ADC2R Source", rt5668_sto1_adc2r_enum);
 
 /* MX-79 [6:4] I2S1 ADC data location */
-static const unsigned int rt5668_if1_adc_slot_values[] = {
+static core::ffi::c_uint rt5668_if1_adc_slot_values[] = {
 	0,
 	2,
 	4,
@@ -1388,11 +1388,11 @@ static const struct snd_kcontrol_new hpor_switch =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT5668_HP_CTRL_1,
 					RT5668_R_MUTE_SFT, 1, 1);
 
-static int rt5668_hp_event(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5668_hp_event(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
 	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
+		snd_soc_dapm_to_component((*w).dapm);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -1421,8 +1421,8 @@ static int rt5668_hp_event(struct snd_soc_dapm_widget *w,
 
 }
 
-static int set_dmic_power(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int set_dmic_power(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
@@ -1437,15 +1437,15 @@ static int set_dmic_power(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static int rt5655_set_verf(struct snd_soc_dapm_widget *w,
-	struct snd_kcontrol *kcontrol, int event)
+static int rt5655_set_verf(snd_soc_dapm_widget *w,
+	snd_kcontrol *kcontrol, int event)
 {
 	struct snd_soc_component *component =
-		snd_soc_dapm_to_component(w->dapm);
+		snd_soc_dapm_to_component((*w).dapm);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		switch (w->shift) {
+		switch ((*w).shift) {
 		case RT5668_PWR_VREF1_BIT:
 			snd_soc_component_update_bits(component,
 				RT5668_PWR_ANLG_1, RT5668_PWR_FV1, 0);
@@ -1463,7 +1463,7 @@ static int rt5655_set_verf(struct snd_soc_dapm_widget *w,
 
 	case SND_SOC_DAPM_POST_PMU:
 		usleep_range(15000, 20000);
-		switch (w->shift) {
+		switch ((*w).shift) {
 		case RT5668_PWR_VREF1_BIT:
 			snd_soc_component_update_bits(component,
 				RT5668_PWR_ANLG_1, RT5668_PWR_FV1,
@@ -1488,7 +1488,7 @@ static int rt5655_set_verf(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-static const unsigned int rt5668_adcdat_pin_values[] = {
+static core::ffi::c_uint rt5668_adcdat_pin_values[] = {
 	1,
 	3,
 };
@@ -1836,11 +1836,11 @@ static const struct snd_soc_dapm_route rt5668_dapm_routes[] = {
 	{"HPOR", NULL, "HPOR Playback"},
 };
 
-static int rt5668_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
-			unsigned int rx_mask, int slots, int slot_width)
+static int rt5668_set_tdm_slot(snd_soc_dai *dai, tx_mask: core::ffi::c_uint,
+			rx_mask: core::ffi::c_uint, int slots, int slot_width)
 {
-	struct snd_soc_component *component = dai->component;
-	unsigned int val = 0;
+	struct snd_soc_component *component = (*dai).component;
+	core::ffi::c_uint val = 0;
 
 	switch (slots) {
 	case 4:
@@ -1888,26 +1888,26 @@ static int rt5668_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 }
 
 
-static int rt5668_hw_params(struct snd_pcm_substream *substream,
-	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
+static int rt5668_hw_params(snd_pcm_substream *substream,
+	snd_pcm_hw_params *params, snd_soc_dai *dai)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
-	unsigned int len_1 = 0, len_2 = 0;
+	core::ffi::c_uint len_1 = 0, len_2 = 0;
 	int pre_div, frame_size;
 
-	rt5668->lrck[dai->id] = params_rate(params);
-	pre_div = rl6231_get_clk_info(rt5668->sysclk, rt5668->lrck[dai->id]);
+	(*rt5668).lrck[(*dai).id] = params_rate(params);
+	pre_div = rl6231_get_clk_info((*rt5668).sysclk, (*rt5668).lrck[(*dai).id]);
 
 	frame_size = snd_soc_params_to_frame_size(params);
 	if (frame_size < 0) {
-		dev_err(component->dev, "Unsupported frame size: %d\n",
+		dev_err((*component).dev, "Unsupported frame size: %d\n",
 			frame_size);
 		return -EINVAL;
 	}
 
-	dev_dbg(dai->dev, "lrck is %dHz and pre_div is %d for iis %d\n",
-				rt5668->lrck[dai->id], pre_div, dai->id);
+	dev_dbg((*dai).dev, "lrck is %dHz and pre_div is %d for iis %d\n",
+				(*rt5668).lrck[(*dai).id], pre_div, (*dai).id);
 
 	switch (params_width(params)) {
 	case 16:
@@ -1932,11 +1932,11 @@ static int rt5668_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	switch (dai->id) {
+	switch ((*dai).id) {
 	case RT5668_AIF1:
 		snd_soc_component_update_bits(component, RT5668_I2S1_SDP,
 			RT5668_I2S1_DL_MASK, len_1);
-		if (rt5668->master[RT5668_AIF1]) {
+		if ((*rt5668).master[RT5668_AIF1]) {
 			snd_soc_component_update_bits(component,
 				RT5668_ADDA_CLK_1, RT5668_I2S_M_DIV_MASK,
 				pre_div << RT5668_I2S_M_DIV_SFT);
@@ -1953,7 +1953,7 @@ static int rt5668_hw_params(struct snd_pcm_substream *substream,
 	case RT5668_AIF2:
 		snd_soc_component_update_bits(component, RT5668_I2S2_SDP,
 			RT5668_I2S2_DL_MASK, len_2);
-		if (rt5668->master[RT5668_AIF2]) {
+		if ((*rt5668).master[RT5668_AIF2]) {
 			snd_soc_component_update_bits(component,
 				RT5668_I2S_M_CLK_CTRL_1, RT5668_I2S2_M_PD_MASK,
 				pre_div << RT5668_I2S2_M_PD_SFT);
@@ -1968,25 +1968,25 @@ static int rt5668_hw_params(struct snd_pcm_substream *substream,
 				RT5668_I2S2_MONO_DIS);
 		break;
 	default:
-		dev_err(component->dev, "Invalid dai->id: %d\n", dai->id);
+		dev_err((*component).dev, "Invalid dai->id: %d\n", (*dai).id);
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-static int rt5668_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+static int rt5668_set_dai_fmt(snd_soc_dai *dai, fmt: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
-	unsigned int reg_val = 0, tdm_ctrl = 0;
+	core::ffi::c_uint reg_val = 0, tdm_ctrl = 0;
 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
-		rt5668->master[dai->id] = 1;
+		(*rt5668).master[(*dai).id] = 1;
 		break;
 	case SND_SOC_DAIFMT_CBC_CFC:
-		rt5668->master[dai->id] = 0;
+		(*rt5668).master[(*dai).id] = 0;
 		break;
 	default:
 		return -EINVAL;
@@ -2000,13 +2000,13 @@ static int rt5668_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		tdm_ctrl |= RT5668_TDM_S_BP_INV;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-		if (dai->id == RT5668_AIF1)
+		if ((*dai).id == RT5668_AIF1)
 			tdm_ctrl |= RT5668_TDM_S_LP_INV | RT5668_TDM_M_BP_INV;
 		else
 			return -EINVAL;
 		break;
 	case SND_SOC_DAIFMT_IB_IF:
-		if (dai->id == RT5668_AIF1)
+		if ((*dai).id == RT5668_AIF1)
 			tdm_ctrl |= RT5668_TDM_S_BP_INV | RT5668_TDM_S_LP_INV |
 				    RT5668_TDM_M_BP_INV | RT5668_TDM_M_LP_INV;
 		else
@@ -2035,7 +2035,7 @@ static int rt5668_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	switch (dai->id) {
+	switch ((*dai).id) {
 	case RT5668_AIF1:
 		snd_soc_component_update_bits(component, RT5668_I2S1_SDP,
 			RT5668_I2S_DF_MASK, reg_val);
@@ -2043,29 +2043,29 @@ static int rt5668_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 			RT5668_TDM_MS_MASK | RT5668_TDM_S_BP_MASK |
 			RT5668_TDM_DF_MASK | RT5668_TDM_M_BP_MASK |
 			RT5668_TDM_M_LP_MASK | RT5668_TDM_S_LP_MASK,
-			tdm_ctrl | rt5668->master[dai->id]);
+			tdm_ctrl | (*rt5668).master[(*dai).id]);
 		break;
 	case RT5668_AIF2:
-		if (rt5668->master[dai->id] == 0)
+		if ((*rt5668).master[(*dai).id] == 0)
 			reg_val |= RT5668_I2S2_MS_S;
 		snd_soc_component_update_bits(component, RT5668_I2S2_SDP,
 			RT5668_I2S2_MS_MASK | RT5668_I2S_BP_MASK |
 			RT5668_I2S_DF_MASK, reg_val);
 		break;
 	default:
-		dev_err(component->dev, "Invalid dai->id: %d\n", dai->id);
+		dev_err((*component).dev, "Invalid dai->id: %d\n", (*dai).id);
 		return -EINVAL;
 	}
 	return 0;
 }
 
-static int rt5668_set_component_sysclk(struct snd_soc_component *component,
-		int clk_id, int source, unsigned int freq, int dir)
+static int rt5668_set_component_sysclk(snd_soc_component *component,
+		int clk_id, int source, freq: core::ffi::c_uint, int dir)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
-	unsigned int reg_val = 0, src = 0;
+	core::ffi::c_uint reg_val = 0, src = 0;
 
-	if (freq == rt5668->sysclk && clk_id == rt5668->sysclk_src)
+	if (freq == (*rt5668).sysclk && clk_id == (*rt5668).sysclk_src)
 		return 0;
 
 	switch (clk_id) {
@@ -2086,44 +2086,44 @@ static int rt5668_set_component_sysclk(struct snd_soc_component *component,
 		src = RT5668_CLK_SRC_RCCLK;
 		break;
 	default:
-		dev_err(component->dev, "Invalid clock id (%d)\n", clk_id);
+		dev_err((*component).dev, "Invalid clock id (%d)\n", clk_id);
 		return -EINVAL;
 	}
 	snd_soc_component_update_bits(component, RT5668_GLB_CLK,
 		RT5668_SCLK_SRC_MASK, reg_val);
 
-	if (rt5668->master[RT5668_AIF2]) {
+	if ((*rt5668).master[RT5668_AIF2]) {
 		snd_soc_component_update_bits(component,
 			RT5668_I2S_M_CLK_CTRL_1, RT5668_I2S2_SRC_MASK,
 			src << RT5668_I2S2_SRC_SFT);
 	}
 
-	rt5668->sysclk = freq;
-	rt5668->sysclk_src = clk_id;
+	(*rt5668).sysclk = freq;
+	(*rt5668).sysclk_src = clk_id;
 
-	dev_dbg(component->dev, "Sysclk is %dHz and clock id is %d\n",
+	dev_dbg((*component).dev, "Sysclk is %dHz and clock id is %d\n",
 		freq, clk_id);
 
 	return 0;
 }
 
-static int rt5668_set_component_pll(struct snd_soc_component *component,
-		int pll_id, int source, unsigned int freq_in,
-		unsigned int freq_out)
+static int rt5668_set_component_pll(snd_soc_component *component,
+		int pll_id, int source, freq_in: core::ffi::c_uint,
+		freq_out: core::ffi::c_uint)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 	struct rl6231_pll_code pll_code;
 	int ret;
 
-	if (source == rt5668->pll_src && freq_in == rt5668->pll_in &&
-	    freq_out == rt5668->pll_out)
+	if (source == (*rt5668).pll_src && freq_in == (*rt5668).pll_in &&
+	    freq_out == (*rt5668).pll_out)
 		return 0;
 
 	if (!freq_in || !freq_out) {
-		dev_dbg(component->dev, "PLL disabled\n");
+		dev_dbg((*component).dev, "PLL disabled\n");
 
-		rt5668->pll_in = 0;
-		rt5668->pll_out = 0;
+		(*rt5668).pll_in = 0;
+		(*rt5668).pll_out = 0;
 		snd_soc_component_update_bits(component, RT5668_GLB_CLK,
 			RT5668_SCLK_SRC_MASK, RT5668_SCLK_SRC_MCLK);
 		return 0;
@@ -2139,17 +2139,17 @@ static int rt5668_set_component_pll(struct snd_soc_component *component,
 				RT5668_PLL1_SRC_MASK, RT5668_PLL1_SRC_BCLK1);
 		break;
 	default:
-		dev_err(component->dev, "Unknown PLL Source %d\n", source);
+		dev_err((*component).dev, "Unknown PLL Source %d\n", source);
 		return -EINVAL;
 	}
 
 	ret = rl6231_pll_calc(freq_in, freq_out, &pll_code);
 	if (ret < 0) {
-		dev_err(component->dev, "Unsupported input clock %d\n", freq_in);
+		dev_err((*component).dev, "Unsupported input clock %d\n", freq_in);
 		return ret;
 	}
 
-	dev_dbg(component->dev, "bypass=%d m=%d n=%d k=%d\n",
+	dev_dbg((*component).dev, "bypass=%d m=%d n=%d k=%d\n",
 		pll_code.m_bp, (pll_code.m_bp ? 0 : pll_code.m_code),
 		pll_code.n_code, pll_code.k_code);
 
@@ -2159,19 +2159,19 @@ static int rt5668_set_component_pll(struct snd_soc_component *component,
 		((pll_code.m_bp ? 0 : pll_code.m_code) << RT5668_PLL_M_SFT) |
 		(pll_code.m_bp << RT5668_PLL_M_BP_SFT));
 
-	rt5668->pll_in = freq_in;
-	rt5668->pll_out = freq_out;
-	rt5668->pll_src = source;
+	(*rt5668).pll_in = freq_in;
+	(*rt5668).pll_out = freq_out;
+	(*rt5668).pll_src = source;
 
 	return 0;
 }
 
-static int rt5668_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio)
+static int rt5668_set_bclk_ratio(snd_soc_dai *dai, ratio: core::ffi::c_uint)
 {
-	struct snd_soc_component *component = dai->component;
+	struct snd_soc_component *component = (*dai).component;
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
-	rt5668->bclk[dai->id] = ratio;
+	(*rt5668).bclk[(*dai).id] = ratio;
 
 	switch (ratio) {
 	case 64:
@@ -2185,38 +2185,38 @@ static int rt5668_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio)
 			RT5668_I2S2_BCLK_MS2_32);
 		break;
 	default:
-		dev_err(dai->dev, "Invalid bclk ratio %d\n", ratio);
+		dev_err((*dai).dev, "Invalid bclk ratio %d\n", ratio);
 		return -EINVAL;
 	}
 
 	return 0;
 }
 
-static int rt5668_set_bias_level(struct snd_soc_component *component,
-			enum snd_soc_bias_level level)
+static int rt5668_set_bias_level(snd_soc_component *component,
+			snd_soc_bias_level level)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_ANLG_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_ANLG_1,
 			RT5668_PWR_MB | RT5668_PWR_BG,
 			RT5668_PWR_MB | RT5668_PWR_BG);
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_DIG_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_DIG_1,
 			RT5668_DIG_GATE_CTRL | RT5668_PWR_LDO,
 			RT5668_DIG_GATE_CTRL | RT5668_PWR_LDO);
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_ANLG_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_ANLG_1,
 			RT5668_PWR_MB, RT5668_PWR_MB);
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_DIG_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_DIG_1,
 			RT5668_DIG_GATE_CTRL, RT5668_DIG_GATE_CTRL);
 		break;
 	case SND_SOC_BIAS_OFF:
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_DIG_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_DIG_1,
 			RT5668_DIG_GATE_CTRL | RT5668_PWR_LDO, 0);
-		regmap_update_bits(rt5668->regmap, RT5668_PWR_ANLG_1,
+		regmap_update_bits((*rt5668).regmap, RT5668_PWR_ANLG_1,
 			RT5668_PWR_MB | RT5668_PWR_BG, 0);
 		break;
 
@@ -2227,38 +2227,38 @@ static int rt5668_set_bias_level(struct snd_soc_component *component,
 	return 0;
 }
 
-static int rt5668_probe(struct snd_soc_component *component)
+static int rt5668_probe(snd_soc_component *component)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
-	rt5668->component = component;
+	(*rt5668).component = component;
 
 	return 0;
 }
 
-static void rt5668_remove(struct snd_soc_component *component)
+static void rt5668_remove(snd_soc_component *component)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
-	rt5668_reset(rt5668->regmap);
+	rt5668_reset((*rt5668).regmap);
 }
 
 // conditional compilation intent preserved: #ifdef CONFIG_PM
-static int rt5668_suspend(struct snd_soc_component *component)
+static int rt5668_suspend(snd_soc_component *component)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
-	regcache_cache_only(rt5668->regmap, true);
-	regcache_mark_dirty(rt5668->regmap);
+	regcache_cache_only((*rt5668).regmap, true);
+	regcache_mark_dirty((*rt5668).regmap);
 	return 0;
 }
 
-static int rt5668_resume(struct snd_soc_component *component)
+static int rt5668_resume(snd_soc_component *component)
 {
 	struct rt5668_priv *rt5668 = snd_soc_component_get_drvdata(component);
 
-	regcache_cache_only(rt5668->regmap, false);
-	regcache_sync(rt5668->regmap);
+	regcache_cache_only((*rt5668).regmap, false);
+	regcache_sync((*rt5668).regmap);
 
 	return 0;
 }
@@ -2272,81 +2272,81 @@ const RT5668_STEREO_RATES: u32 = SNDRV_PCM_RATE_8000_192000;
 		SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S8)
 
 static const struct snd_soc_dai_ops rt5668_aif1_dai_ops = {
-	.hw_params = rt5668_hw_params,
-	.set_fmt = rt5668_set_dai_fmt,
-	.set_tdm_slot = rt5668_set_tdm_slot,
+	hw_params: rt5668_hw_params,
+	set_fmt: rt5668_set_dai_fmt,
+	set_tdm_slot: rt5668_set_tdm_slot,
 };
 
 static const struct snd_soc_dai_ops rt5668_aif2_dai_ops = {
-	.hw_params = rt5668_hw_params,
-	.set_fmt = rt5668_set_dai_fmt,
-	.set_bclk_ratio = rt5668_set_bclk_ratio,
+	hw_params: rt5668_hw_params,
+	set_fmt: rt5668_set_dai_fmt,
+	set_bclk_ratio: rt5668_set_bclk_ratio,
 };
 
 static struct snd_soc_dai_driver rt5668_dai[] = {
 	{
-		.name = "rt5668-aif1",
-		.id = RT5668_AIF1,
-		.playback = {
-			.stream_name = "AIF1 Playback",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5668_STEREO_RATES,
-			.formats = RT5668_FORMATS,
+		name: "rt5668-aif1",
+		id: RT5668_AIF1,
+		playback: {
+			stream_name: "AIF1 Playback",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5668_STEREO_RATES,
+			formats: RT5668_FORMATS,
 		},
-		.capture = {
-			.stream_name = "AIF1 Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5668_STEREO_RATES,
-			.formats = RT5668_FORMATS,
+		capture: {
+			stream_name: "AIF1 Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5668_STEREO_RATES,
+			formats: RT5668_FORMATS,
 		},
-		.ops = &rt5668_aif1_dai_ops,
+		ops: &rt5668_aif1_dai_ops,
 	},
 	{
-		.name = "rt5668-aif2",
-		.id = RT5668_AIF2,
-		.capture = {
-			.stream_name = "AIF2 Capture",
-			.channels_min = 1,
-			.channels_max = 2,
-			.rates = RT5668_STEREO_RATES,
-			.formats = RT5668_FORMATS,
+		name: "rt5668-aif2",
+		id: RT5668_AIF2,
+		capture: {
+			stream_name: "AIF2 Capture",
+			channels_min: 1,
+			channels_max: 2,
+			rates: RT5668_STEREO_RATES,
+			formats: RT5668_FORMATS,
 		},
-		.ops = &rt5668_aif2_dai_ops,
+		ops: &rt5668_aif2_dai_ops,
 	},
 };
 
 static const struct snd_soc_component_driver soc_component_dev_rt5668 = {
-	.probe = rt5668_probe,
-	.remove = rt5668_remove,
-	.suspend = rt5668_suspend,
-	.resume = rt5668_resume,
-	.set_bias_level = rt5668_set_bias_level,
-	.controls = rt5668_snd_controls,
-	.num_controls = ARRAY_SIZE(rt5668_snd_controls),
-	.dapm_widgets = rt5668_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(rt5668_dapm_widgets),
-	.dapm_routes = rt5668_dapm_routes,
-	.num_dapm_routes = ARRAY_SIZE(rt5668_dapm_routes),
-	.set_sysclk = rt5668_set_component_sysclk,
-	.set_pll = rt5668_set_component_pll,
-	.set_jack = rt5668_set_jack_detect,
-	.use_pmdown_time	= 1,
-	.endianness		= 1,
+	probe: rt5668_probe,
+	remove: rt5668_remove,
+	suspend: rt5668_suspend,
+	resume: rt5668_resume,
+	set_bias_level: rt5668_set_bias_level,
+	controls: rt5668_snd_controls,
+	num_controls: ARRAY_SIZE(rt5668_snd_controls),
+	dapm_widgets: rt5668_dapm_widgets,
+	num_dapm_widgets: ARRAY_SIZE(rt5668_dapm_widgets),
+	dapm_routes: rt5668_dapm_routes,
+	num_dapm_routes: ARRAY_SIZE(rt5668_dapm_routes),
+	set_sysclk: rt5668_set_component_sysclk,
+	set_pll: rt5668_set_component_pll,
+	set_jack: rt5668_set_jack_detect,
+	use_pmdown_time: 1,
+	endianness: 1,
 };
 
 static const struct regmap_config rt5668_regmap = {
-	.reg_bits = 16,
-	.val_bits = 16,
-	.max_register = RT5668_I2C_MODE,
-	.volatile_reg = rt5668_volatile_register,
-	.readable_reg = rt5668_readable_register,
-	.cache_type = REGCACHE_MAPLE,
-	.reg_defaults = rt5668_reg,
-	.num_reg_defaults = ARRAY_SIZE(rt5668_reg),
-	.use_single_read = true,
-	.use_single_write = true,
+	reg_bits: 16,
+	val_bits: 16,
+	max_register: RT5668_I2C_MODE,
+	volatile_reg: rt5668_volatile_register,
+	readable_reg: rt5668_readable_register,
+	cache_type: REGCACHE_MAPLE,
+	reg_defaults: rt5668_reg,
+	num_reg_defaults: ARRAY_SIZE(rt5668_reg),
+	use_single_read: true,
+	use_single_write: true,
 };
 
 static const struct i2c_device_id rt5668_i2c_id[] = {
@@ -2355,55 +2355,55 @@ static const struct i2c_device_id rt5668_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, rt5668_i2c_id);
 
-static int rt5668_parse_dt(struct rt5668_priv *rt5668, struct device *dev)
+static int rt5668_parse_dt(rt5668_priv *rt5668, device *dev)
 {
 
-	of_property_read_u32(dev->of_node, "realtek,dmic1-data-pin",
-		&rt5668->pdata.dmic1_data_pin);
-	of_property_read_u32(dev->of_node, "realtek,dmic1-clk-pin",
-		&rt5668->pdata.dmic1_clk_pin);
-	of_property_read_u32(dev->of_node, "realtek,jd-src",
-		&rt5668->pdata.jd_src);
+	of_property_read_u32((*dev).of_node, "realtek,dmic1-data-pin",
+		(*&rt5668).pdata.dmic1_data_pin);
+	of_property_read_u32((*dev).of_node, "realtek,dmic1-clk-pin",
+		(*&rt5668).pdata.dmic1_clk_pin);
+	of_property_read_u32((*dev).of_node, "realtek,jd-src",
+		(*&rt5668).pdata.jd_src);
 
 	return 0;
 }
 
-static void rt5668_calibrate(struct rt5668_priv *rt5668)
+static void rt5668_calibrate(rt5668_priv *rt5668)
 {
 	int value, count;
 
-	guard(mutex)(&rt5668->calibrate_mutex);
+	guard(mutex)((*&rt5668).calibrate_mutex);
 
-	rt5668_reset(rt5668->regmap);
-	regmap_write(rt5668->regmap, RT5668_PWR_ANLG_1, 0xa2bf);
+	rt5668_reset((*rt5668).regmap);
+	regmap_write((*rt5668).regmap, RT5668_PWR_ANLG_1, 0xa2bf);
 	usleep_range(15000, 20000);
-	regmap_write(rt5668->regmap, RT5668_PWR_ANLG_1, 0xf2bf);
-	regmap_write(rt5668->regmap, RT5668_MICBIAS_2, 0x0380);
-	regmap_write(rt5668->regmap, RT5668_PWR_DIG_1, 0x8001);
-	regmap_write(rt5668->regmap, RT5668_TEST_MODE_CTRL_1, 0x0000);
-	regmap_write(rt5668->regmap, RT5668_STO1_DAC_MIXER, 0x2080);
-	regmap_write(rt5668->regmap, RT5668_STO1_ADC_MIXER, 0x4040);
-	regmap_write(rt5668->regmap, RT5668_DEPOP_1, 0x0069);
-	regmap_write(rt5668->regmap, RT5668_CHOP_DAC, 0x3000);
-	regmap_write(rt5668->regmap, RT5668_HP_CTRL_2, 0x6000);
-	regmap_write(rt5668->regmap, RT5668_HP_CHARGE_PUMP_1, 0x0f26);
-	regmap_write(rt5668->regmap, RT5668_CALIB_ADC_CTRL, 0x7f05);
-	regmap_write(rt5668->regmap, RT5668_STO1_ADC_MIXER, 0x686c);
-	regmap_write(rt5668->regmap, RT5668_CAL_REC, 0x0d0d);
-	regmap_write(rt5668->regmap, RT5668_HP_CALIB_CTRL_9, 0x000f);
-	regmap_write(rt5668->regmap, RT5668_PWR_DIG_1, 0x8d01);
-	regmap_write(rt5668->regmap, RT5668_HP_CALIB_CTRL_2, 0x0321);
-	regmap_write(rt5668->regmap, RT5668_HP_LOGIC_CTRL_2, 0x0004);
-	regmap_write(rt5668->regmap, RT5668_HP_CALIB_CTRL_1, 0x7c00);
-	regmap_write(rt5668->regmap, RT5668_HP_CALIB_CTRL_3, 0x06a1);
-	regmap_write(rt5668->regmap, RT5668_A_DAC1_MUX, 0x0311);
-	regmap_write(rt5668->regmap, RT5668_RESET_HPF_CTRL, 0x0000);
-	regmap_write(rt5668->regmap, RT5668_ADC_STO1_HP_CTRL_1, 0x3320);
+	regmap_write((*rt5668).regmap, RT5668_PWR_ANLG_1, 0xf2bf);
+	regmap_write((*rt5668).regmap, RT5668_MICBIAS_2, 0x0380);
+	regmap_write((*rt5668).regmap, RT5668_PWR_DIG_1, 0x8001);
+	regmap_write((*rt5668).regmap, RT5668_TEST_MODE_CTRL_1, 0x0000);
+	regmap_write((*rt5668).regmap, RT5668_STO1_DAC_MIXER, 0x2080);
+	regmap_write((*rt5668).regmap, RT5668_STO1_ADC_MIXER, 0x4040);
+	regmap_write((*rt5668).regmap, RT5668_DEPOP_1, 0x0069);
+	regmap_write((*rt5668).regmap, RT5668_CHOP_DAC, 0x3000);
+	regmap_write((*rt5668).regmap, RT5668_HP_CTRL_2, 0x6000);
+	regmap_write((*rt5668).regmap, RT5668_HP_CHARGE_PUMP_1, 0x0f26);
+	regmap_write((*rt5668).regmap, RT5668_CALIB_ADC_CTRL, 0x7f05);
+	regmap_write((*rt5668).regmap, RT5668_STO1_ADC_MIXER, 0x686c);
+	regmap_write((*rt5668).regmap, RT5668_CAL_REC, 0x0d0d);
+	regmap_write((*rt5668).regmap, RT5668_HP_CALIB_CTRL_9, 0x000f);
+	regmap_write((*rt5668).regmap, RT5668_PWR_DIG_1, 0x8d01);
+	regmap_write((*rt5668).regmap, RT5668_HP_CALIB_CTRL_2, 0x0321);
+	regmap_write((*rt5668).regmap, RT5668_HP_LOGIC_CTRL_2, 0x0004);
+	regmap_write((*rt5668).regmap, RT5668_HP_CALIB_CTRL_1, 0x7c00);
+	regmap_write((*rt5668).regmap, RT5668_HP_CALIB_CTRL_3, 0x06a1);
+	regmap_write((*rt5668).regmap, RT5668_A_DAC1_MUX, 0x0311);
+	regmap_write((*rt5668).regmap, RT5668_RESET_HPF_CTRL, 0x0000);
+	regmap_write((*rt5668).regmap, RT5668_ADC_STO1_HP_CTRL_1, 0x3320);
 
-	regmap_write(rt5668->regmap, RT5668_HP_CALIB_CTRL_1, 0xfc00);
+	regmap_write((*rt5668).regmap, RT5668_HP_CALIB_CTRL_1, 0xfc00);
 
 	for (count = 0; count < 60; count++) {
-		regmap_read(rt5668->regmap, RT5668_HP_CALIB_STA_1, &value);
+		regmap_read((*rt5668).regmap, RT5668_HP_CALIB_STA_1, &value);
 		if (!(value & 0x8000))
 			break;
 
@@ -2414,18 +2414,18 @@ static void rt5668_calibrate(struct rt5668_priv *rt5668)
 		pr_err("HP Calibration Failure\n");
 
 	/* restore settings */
-	regmap_write(rt5668->regmap, RT5668_STO1_ADC_MIXER, 0xc0c4);
-	regmap_write(rt5668->regmap, RT5668_PWR_DIG_1, 0x0000);
+	regmap_write((*rt5668).regmap, RT5668_STO1_ADC_MIXER, 0xc0c4);
+	regmap_write((*rt5668).regmap, RT5668_PWR_DIG_1, 0x0000);
 }
 
-static int rt5668_i2c_probe(struct i2c_client *i2c)
+static int rt5668_i2c_probe(i2c_client *i2c)
 {
-	struct rt5668_platform_data *pdata = dev_get_platdata(&i2c->dev);
+	struct rt5668_platform_data *pdata = dev_get_platdata((*&i2c).dev);
 	struct rt5668_priv *rt5668;
 	int i, ret;
-	unsigned int val;
+	core::ffi::c_uint val;
 
-	rt5668 = devm_kzalloc(&i2c->dev, sizeof(struct rt5668_priv),
+	rt5668 = devm_kzalloc((*&i2c).dev, sizeof(rt5668_priv),
 		GFP_KERNEL);
 
 	if (rt5668 == NULL)
@@ -2434,75 +2434,75 @@ static int rt5668_i2c_probe(struct i2c_client *i2c)
 	i2c_set_clientdata(i2c, rt5668);
 
 	if (pdata)
-		rt5668->pdata = *pdata;
+		(*rt5668).pdata = *pdata;
 	else
-		rt5668_parse_dt(rt5668, &i2c->dev);
+		rt5668_parse_dt(rt5668, (*&i2c).dev);
 
-	rt5668->regmap = devm_regmap_init_i2c(i2c, &rt5668_regmap);
-	if (IS_ERR(rt5668->regmap)) {
-		ret = PTR_ERR(rt5668->regmap);
-		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
+	(*rt5668).regmap = devm_regmap_init_i2c(i2c, &rt5668_regmap);
+	if (IS_ERR((*rt5668).regmap)) {
+		ret = PTR_ERR((*rt5668).regmap);
+		dev_err((*&i2c).dev, "Failed to allocate register map: %d\n",
 			ret);
 		return ret;
 	}
 
-	for (i = 0; i < ARRAY_SIZE(rt5668->supplies); i++)
-		rt5668->supplies[i].supply = rt5668_supply_names[i];
+	for (i = 0; i < ARRAY_SIZE((*rt5668).supplies); i++)
+		(*rt5668).supplies[i].supply = rt5668_supply_names[i];
 
-	ret = devm_regulator_bulk_get(&i2c->dev, ARRAY_SIZE(rt5668->supplies),
-				      rt5668->supplies);
+	ret = devm_regulator_bulk_get((*&i2c).dev, ARRAY_SIZE((*rt5668).supplies),
+				      (*rt5668).supplies);
 	if (ret != 0) {
-		dev_err(&i2c->dev, "Failed to request supplies: %d\n", ret);
+		dev_err((*&i2c).dev, "Failed to request supplies: %d\n", ret);
 		return ret;
 	}
 
-	ret = regulator_bulk_enable(ARRAY_SIZE(rt5668->supplies),
-				    rt5668->supplies);
+	ret = regulator_bulk_enable(ARRAY_SIZE((*rt5668).supplies),
+				    (*rt5668).supplies);
 	if (ret != 0) {
-		dev_err(&i2c->dev, "Failed to enable supplies: %d\n", ret);
+		dev_err((*&i2c).dev, "Failed to enable supplies: %d\n", ret);
 		return ret;
 	}
 
-	rt5668->ldo1_en = devm_gpiod_get_optional(&i2c->dev,
+	(*rt5668).ldo1_en = devm_gpiod_get_optional((*&i2c).dev,
 						  "realtek,ldo1-en",
 						  GPIOD_OUT_HIGH);
-	if (IS_ERR(rt5668->ldo1_en)) {
-		dev_err(&i2c->dev, "Fail gpio request ldo1_en\n");
-		return PTR_ERR(rt5668->ldo1_en);
+	if (IS_ERR((*rt5668).ldo1_en)) {
+		dev_err((*&i2c).dev, "Fail gpio request ldo1_en\n");
+		return PTR_ERR((*rt5668).ldo1_en);
 	}
 
 	/* Sleep for 300 ms minimum */
 	usleep_range(300000, 350000);
 
-	regmap_write(rt5668->regmap, RT5668_I2C_MODE, 0x1);
+	regmap_write((*rt5668).regmap, RT5668_I2C_MODE, 0x1);
 	usleep_range(10000, 15000);
 
-	regmap_read(rt5668->regmap, RT5668_DEVICE_ID, &val);
+	regmap_read((*rt5668).regmap, RT5668_DEVICE_ID, &val);
 	if (val != DEVICE_ID) {
 		pr_err("Device with ID register %x is not rt5668\n", val);
 		return -ENODEV;
 	}
 
-	rt5668_reset(rt5668->regmap);
+	rt5668_reset((*rt5668).regmap);
 
 	rt5668_calibrate(rt5668);
 
-	regmap_write(rt5668->regmap, RT5668_DEPOP_1, 0x0000);
+	regmap_write((*rt5668).regmap, RT5668_DEPOP_1, 0x0000);
 
 	/* DMIC pin*/
-	if (rt5668->pdata.dmic1_data_pin != RT5668_DMIC1_NULL) {
-		switch (rt5668->pdata.dmic1_data_pin) {
+	if ((*rt5668).pdata.dmic1_data_pin != RT5668_DMIC1_NULL) {
+		switch ((*rt5668).pdata.dmic1_data_pin) {
 		case RT5668_DMIC1_DATA_GPIO2: /* share with LRCK2 */
-			regmap_update_bits(rt5668->regmap, RT5668_DMIC_CTRL_1,
+			regmap_update_bits((*rt5668).regmap, RT5668_DMIC_CTRL_1,
 				RT5668_DMIC_1_DP_MASK, RT5668_DMIC_1_DP_GPIO2);
-			regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
+			regmap_update_bits((*rt5668).regmap, RT5668_GPIO_CTRL_1,
 				RT5668_GP2_PIN_MASK, RT5668_GP2_PIN_DMIC_SDA);
 			break;
 
 		case RT5668_DMIC1_DATA_GPIO5: /* share with DACDAT1 */
-			regmap_update_bits(rt5668->regmap, RT5668_DMIC_CTRL_1,
+			regmap_update_bits((*rt5668).regmap, RT5668_DMIC_CTRL_1,
 				RT5668_DMIC_1_DP_MASK, RT5668_DMIC_1_DP_GPIO5);
-			regmap_update_bits(rt5668->regmap, RT5668_GPIO_CTRL_1,
+			regmap_update_bits((*rt5668).regmap, RT5668_GPIO_CTRL_1,
 				RT5668_GP5_PIN_MASK, RT5668_GP5_PIN_DMIC_SDA);
 			break;
 
@@ -2557,7 +2557,7 @@ static int rt5668_i2c_probe(struct i2c_client *i2c)
 			rt5668_dai, ARRAY_SIZE(rt5668_dai));
 }
 
-static void rt5668_i2c_shutdown(struct i2c_client *client)
+static void rt5668_i2c_shutdown(i2c_client *client)
 {
 	struct rt5668_priv *rt5668 = i2c_get_clientdata(client);
 
@@ -2581,14 +2581,14 @@ MODULE_DEVICE_TABLE(acpi, rt5668_acpi_match);
 // conditional compilation intent preserved: #endif
 
 static struct i2c_driver rt5668_i2c_driver = {
-	.driver = {
-		.name = "rt5668b",
-		.of_match_table = of_match_ptr(rt5668_of_match),
-		.acpi_match_table = ACPI_PTR(rt5668_acpi_match),
+	driver: {
+		name: "rt5668b",
+		of_match_table: of_match_ptr(rt5668_of_match),
+		acpi_match_table: ACPI_PTR(rt5668_acpi_match),
 	},
-	.probe = rt5668_i2c_probe,
-	.shutdown = rt5668_i2c_shutdown,
-	.id_table = rt5668_i2c_id,
+	probe: rt5668_i2c_probe,
+	shutdown: rt5668_i2c_shutdown,
+	id_table: rt5668_i2c_id,
 };
 module_i2c_driver(rt5668_i2c_driver);
 

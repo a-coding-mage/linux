@@ -58,7 +58,7 @@ pub unsafe fn syscall_trace_enter(
         }
 
         /* ptrace might have changed work flags. */
-        work = READ_ONCE(current_thread_info()->syscall_work);
+        work = READ_ONCE((*current_thread_info()).syscall_work);
     }
 
     /* Do seccomp after ptrace, to catch any tracer changes. */
@@ -84,7 +84,7 @@ pub unsafe fn syscall_enter_from_user_mode_work(
     regs: *mut pt_regs,
     syscall: *mut c_long,
 ) -> bool {
-    let work: c_ulong = READ_ONCE(current_thread_info()->syscall_work);
+    let work: c_ulong = READ_ONCE((*current_thread_info()).syscall_work);
 
     if work & SYSCALL_WORK_ENTER == 0 {
         return true;
@@ -157,7 +157,7 @@ pub unsafe fn syscall_exit_work(regs: *mut pt_regs, work: c_ulong) {
 }
 
 pub unsafe fn syscall_exit_to_user_mode_work(regs: *mut pt_regs) {
-    let work: c_ulong = READ_ONCE(current_thread_info()->syscall_work);
+    let work: c_ulong = READ_ONCE((*current_thread_info()).syscall_work);
     let nr: c_ulong = syscall_get_nr(current, regs);
 
     CT_WARN_ON(ct_state() != CT_STATE_KERNEL);

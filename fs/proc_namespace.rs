@@ -31,10 +31,10 @@ unsafe fn mounts_poll(file: *mut file, wait: *mut poll_table) -> __poll_t {
 
 unsafe fn show_sb_opts(m: *mut seq_file, sb: *mut super_block) -> c_int {
     let fs_opts = [
-        proc_fs_opts { flag: SB_SYNCHRONOUS, str_: c",sync\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: SB_DIRSYNC, str_: c",dirsync\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: SB_MANDLOCK, str_: c",mand\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: SB_LAZYTIME, str_: c",lazytime\0".as_ptr() as *const c_char },
+        proc_fs_opts { flag: SB_SYNCHRONOUS, str_: c",sync".as_ptr() as *const c_char },
+        proc_fs_opts { flag: SB_DIRSYNC, str_: c",dirsync".as_ptr() as *const c_char },
+        proc_fs_opts { flag: SB_MANDLOCK, str_: c",mand".as_ptr() as *const c_char },
+        proc_fs_opts { flag: SB_LAZYTIME, str_: c",lazytime".as_ptr() as *const c_char },
         proc_fs_opts { flag: 0, str_: core::ptr::null() },
     ];
     let mut fs_infop = fs_opts.as_ptr();
@@ -49,13 +49,13 @@ unsafe fn show_sb_opts(m: *mut seq_file, sb: *mut super_block) -> c_int {
 
 unsafe fn show_vfsmnt_opts(m: *mut seq_file, mnt: *mut vfsmount) {
     let mnt_opts = [
-        proc_fs_opts { flag: MNT_NOSUID, str_: c",nosuid\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: MNT_NODEV, str_: c",nodev\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: MNT_NOEXEC, str_: c",noexec\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: MNT_NOATIME, str_: c",noatime\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: MNT_NODIRATIME, str_: c",nodiratime\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: MNT_RELATIME, str_: c",relatime\0".as_ptr() as *const c_char },
-        proc_fs_opts { flag: MNT_NOSYMFOLLOW, str_: c",nosymfollow\0".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_NOSUID, str_: c",nosuid".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_NODEV, str_: c",nodev".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_NOEXEC, str_: c",noexec".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_NOATIME, str_: c",noatime".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_NODIRATIME, str_: c",nodiratime".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_RELATIME, str_: c",relatime".as_ptr() as *const c_char },
+        proc_fs_opts { flag: MNT_NOSYMFOLLOW, str_: c",nosymfollow".as_ptr() as *const c_char },
         proc_fs_opts { flag: 0, str_: core::ptr::null() },
     ];
     let mut fs_infop = mnt_opts.as_ptr();
@@ -66,13 +66,13 @@ unsafe fn show_vfsmnt_opts(m: *mut seq_file, mnt: *mut vfsmount) {
         fs_infop = fs_infop.add(1);
     }
     if is_idmapped_mnt(mnt) {
-        seq_puts(m, c",idmapped\0".as_ptr() as *const c_char);
+        seq_puts(m, c",idmapped".as_ptr() as *const c_char);
     }
 }
 
 #[inline]
 unsafe fn mangle(m: *mut seq_file, s: *const c_char) {
-    seq_escape(m, s, c" \t\n\\#\0".as_ptr() as *const c_char);
+    seq_escape(m, s, c" \t\n\\#".as_ptr() as *const c_char);
 }
 
 unsafe fn show_type(m: *mut seq_file, sb: *mut super_block) {
@@ -94,16 +94,16 @@ unsafe fn show_vfsmnt(m: *mut seq_file, mnt: *mut vfsmount) -> c_int {
         if err != 0 { return err; }
     } else { mangle(m, (*r).mnt_devname); }
     seq_putc(m, b' ' as c_int);
-    err = seq_path_root(m, &mnt_path, &(*p).root, c" \t\n\\\0".as_ptr() as *const c_char);
+    err = seq_path_root(m, &mnt_path, &(*p).root, c" \t\n\\".as_ptr() as *const c_char);
     if err != 0 { return err; }
     seq_putc(m, b' ' as c_int);
     show_type(m, sb);
-    seq_puts(m, if __mnt_is_readonly(mnt) { c" ro\0".as_ptr() } else { c" rw\0" });
+    seq_puts(m, if __mnt_is_readonly(mnt) { c" ro".as_ptr() } else { c" rw" });
     err = show_sb_opts(m, sb);
     if err != 0 { return err; }
     show_vfsmnt_opts(m, mnt);
     if let Some(show_options) = (*(*sb).s_op).show_options { err = show_options(m, mnt_path.dentry); }
-    seq_puts(m, c" 0 0\n\0".as_ptr());
+    seq_puts(m, c" 0 0\n".as_ptr());
     err
 }
 
@@ -112,25 +112,25 @@ unsafe fn show_mountinfo(m: *mut seq_file, mnt: *mut vfsmount) -> c_int {
     let r = real_mount(mnt);
     let sb = (*mnt).mnt_sb;
     let mnt_path = path { dentry: (*mnt).mnt_root, mnt };
-    seq_printf(m, c"%i %i %u:%u \0".as_ptr(), (*r).mnt_id, (*(*r).mnt_parent).mnt_id, MAJOR((*sb).s_dev), MINOR((*sb).s_dev));
+    seq_printf(m, c"%i %i %u:%u ".as_ptr(), (*r).mnt_id, (*(*r).mnt_parent).mnt_id, MAJOR((*sb).s_dev), MINOR((*sb).s_dev));
     let mut err = show_path(m, (*mnt).mnt_root);
     if err != 0 { return err; }
     seq_putc(m, b' ' as c_int);
-    err = seq_path_root(m, &mnt_path, &(*p).root, c" \t\n\\\0".as_ptr());
+    err = seq_path_root(m, &mnt_path, &(*p).root, c" \t\n\\".as_ptr());
     if err != 0 { return err; }
-    seq_puts(m, if (*mnt).mnt_flags & MNT_READONLY != 0 { c" ro\0".as_ptr() } else { c" rw\0".as_ptr() });
+    seq_puts(m, if (*mnt).mnt_flags & MNT_READONLY != 0 { c" ro".as_ptr() } else { c" rw".as_ptr() });
     show_vfsmnt_opts(m, mnt);
-    if IS_MNT_SHARED(r) { seq_printf(m, c" shared:%i\0".as_ptr(), (*r).mnt_group_id); }
+    if IS_MNT_SHARED(r) { seq_printf(m, c" shared:%i".as_ptr(), (*r).mnt_group_id); }
     if IS_MNT_SLAVE(r) {
         let master = (*(*r).mnt_master).mnt_group_id;
         let dom = get_dominating_id(r, &(*p).root);
-        seq_printf(m, c" master:%i\0".as_ptr(), master);
-        if dom != 0 && dom != master { seq_printf(m, c" propagate_from:%i\0".as_ptr(), dom); }
+        seq_printf(m, c" master:%i".as_ptr(), master);
+        if dom != 0 && dom != master { seq_printf(m, c" propagate_from:%i".as_ptr(), dom); }
     }
-    if IS_MNT_UNBINDABLE(r) { seq_puts(m, c" unbindable\0".as_ptr()); }
-    seq_puts(m, c" - \0".as_ptr()); show_type(m, sb); seq_putc(m, b' ' as c_int);
+    if IS_MNT_UNBINDABLE(r) { seq_puts(m, c" unbindable".as_ptr()); }
+    seq_puts(m, c" - ".as_ptr()); show_type(m, sb); seq_putc(m, b' ' as c_int);
     if let Some(show_devname) = (*(*sb).s_op).show_devname { err = show_devname(m, (*mnt).mnt_root); if err != 0 { return err; } } else { mangle(m, (*r).mnt_devname); }
-    seq_puts(m, if sb_rdonly(sb) { c" ro\0".as_ptr() } else { c" rw\0".as_ptr() });
+    seq_puts(m, if sb_rdonly(sb) { c" ro".as_ptr() } else { c" rw".as_ptr() });
     err = show_sb_opts(m, sb); if err != 0 { return err; }
     if let Some(show_options) = (*(*sb).s_op).show_options { err = show_options(m, (*mnt).mnt_root); }
     seq_putc(m, b'\n' as c_int); err
@@ -139,11 +139,11 @@ unsafe fn show_mountinfo(m: *mut seq_file, mnt: *mut vfsmount) -> c_int {
 unsafe fn show_vfsstat(m: *mut seq_file, mnt: *mut vfsmount) -> c_int {
     let p = (*m).private as *mut proc_mounts; let r = real_mount(mnt);
     let mnt_path = path { dentry: (*mnt).mnt_root, mnt }; let sb = (*mnt_path.dentry).d_sb;
-    seq_puts(m, c"device \0".as_ptr());
+    seq_puts(m, c"device ".as_ptr());
     let mut err = if let Some(f) = (*(*sb).s_op).show_devname { f(m, mnt_path.dentry) } else { mangle(m, (*r).mnt_devname); 0 };
     if err != 0 { return err; }
-    seq_puts(m, c" mounted on \0".as_ptr()); err = seq_path_root(m, &mnt_path, &(*p).root, c" \t\n\\\0".as_ptr()); if err != 0 { return err; }
-    seq_putc(m, b' ' as c_int); seq_puts(m, c"with fstype \0".as_ptr()); show_type(m, sb);
+    seq_puts(m, c" mounted on ".as_ptr()); err = seq_path_root(m, &mnt_path, &(*p).root, c" \t\n\\".as_ptr()); if err != 0 { return err; }
+    seq_putc(m, b' ' as c_int); seq_puts(m, c"with fstype ".as_ptr()); show_type(m, sb);
     if let Some(f) = (*(*sb).s_op).show_stats { seq_putc(m, b' ' as c_int); err = f(m, mnt_path.dentry); }
     seq_putc(m, b'\n' as c_int); err
 }

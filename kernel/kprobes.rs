@@ -72,7 +72,7 @@ static DEFINE_MUTEX(kprobe_mutex);
 static DEFINE_PER_CPU(kprobe *, kprobe_instance);
 
 kprobe_opcode_t * __weak kprobe_lookup_name(const char *name,
-					unsigned int __unused)
+					__unused: core::ffi::c_uint)
 {
 	return ((kprobe_opcode_t *)(kallsyms_lookup_name(name)));
 }
@@ -101,7 +101,7 @@ kprobe_insn_page {
 
 static int slots_per_page(kprobe_insn_cache *c)
 {
-	return PAGE_SIZE/(c->insn_size * sizeof(kprobe_opcode_t));
+	return PAGE_SIZE/((*c).insn_size * sizeof(kprobe_opcode_t));
 }
 
 enum kprobe_slot_state {
@@ -127,13 +127,13 @@ static void free_insn_page(void *page)
 }
 
 kprobe_insn_cache kprobe_insn_slots = {
-	.mutex = __MUTEX_INITIALIZER(kprobe_insn_slots.mutex),
-	.alloc = alloc_insn_page,
-	.free = free_insn_page,
-	.sym = KPROBE_INSN_PAGE_SYM,
-	.pages = LIST_HEAD_INIT(kprobe_insn_slots.pages),
-	.insn_size = MAX_INSN_SIZE,
-	.nr_garbage = 0,
+	mutex: __MUTEX_INITIALIZER(kprobe_insn_slots.mutex),
+	alloc: alloc_insn_page,
+	free: free_insn_page,
+	sym: KPROBE_INSN_PAGE_SYM,
+	pages: LIST_HEAD_INIT(kprobe_insn_slots.pages),
+	insn_size: MAX_INSN_SIZE,
+	nr_garbage: 0,
 };
 static int collect_garbage_slots(kprobe_insn_cache *c);
 
@@ -150,59 +150,59 @@ kprobe_opcode_t *__get_insn_slot(kprobe_insn_cache *c)
 	kprobe_insn_page *kip;
 
 	/* Since the slot array is not protected by rcu, we need a mutex */
-	guard(mutex)(&c->mutex);
+	guard(mutex)((*&c).mutex);
 	do {
 		guard(rcu)();
-		list_for_each_entry_rcu(kip, &c->pages, list) {
-			if (kip->nused < slots_per_page(c)) {
+		list_for_each_entry_rcu!(kip, (*&c).pages, list, {
+			if ((*kip).nused < slots_per_page(c)) {
 				int i;
 
 				for (i = 0; i < slots_per_page(c); i++) {
-					if (kip->slot_used[i] == SLOT_CLEAN) {
-						kip->slot_used[i] = SLOT_USED;
-						kip->nused++;
-						return kip->insns + (i * c->insn_size);
+					if ((*kip).slot_used[i] == SLOT_CLEAN) {
+						(*kip).slot_used[i] = SLOT_USED;
+						(*kip).nused++;
+						return (*kip).insns + (i * (*c).insn_size);
 					}
 				}
 				/* kip->nused is broken. Fix it. */
-				kip->nused = slots_per_page(c);
+				(*kip).nused = slots_per_page(c);
 				WARN_ON(1);
 			}
-		}
+		});
 	/* If there are any garbage slots, collect it and try again. */
-	} while (c->nr_garbage && collect_garbage_slots(c) == 0);
+	} while ((*c).nr_garbage && collect_garbage_slots(c) == 0);
 
 	/* All out of space.  Need to allocate a new page. */
 	kip = kmalloc_flex(*kip, slot_used, slots_per_page(c));
 	if (!kip)
 		return core::ptr::null_mut();
 
-	kip->insns = c->alloc();
-	if (!kip->insns) {
+	(*kip).insns = (*c).alloc();
+	if ((*!kip).insns) {
 		kfree(kip);
 		return core::ptr::null_mut();
 	}
-	INIT_LIST_HEAD(&kip->list);
-	memset(kip->slot_used, SLOT_CLEAN, slots_per_page(c));
-	kip->slot_used[0] = SLOT_USED;
-	kip->nused = 1;
-	kip->ngarbage = 0;
-	kip->cache = c;
-	list_add_rcu(&kip->list, &c->pages);
+	INIT_LIST_HEAD((*&kip).list);
+	memset((*kip).slot_used, SLOT_CLEAN, slots_per_page(c));
+	(*kip).slot_used[0] = SLOT_USED;
+	(*kip).nused = 1;
+	(*kip).ngarbage = 0;
+	(*kip).cache = c;
+	list_add_rcu((*&kip).list, (*&c).pages);
 
 	/* Record the perf ksymbol register event after adding the page */
-	perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_OOL, (unsigned long)kip->insns,
-			   PAGE_SIZE, false, c->sym);
+	perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_OOL, (*(core::ffi::c_ulong)kip).insns,
+			   PAGE_SIZE, false, (*c).sym);
 
-	return kip->insns;
+	return (*kip).insns;
 }
 
 /* Return true if all garbages are collected, otherwise false. */
 static bool collect_one_slot(kprobe_insn_page *kip, int idx)
 {
-	kip->slot_used[idx] = SLOT_CLEAN;
-	kip->nused--;
-	if (kip->nused != 0)
+	(*kip).slot_used[idx] = SLOT_CLEAN;
+	(*kip).nused--;
+	if ((*kip).nused != 0)
 		return false;
 
 	/*
@@ -211,17 +211,17 @@ static bool collect_one_slot(kprobe_insn_page *kip, int idx)
 	 * so as not to have to set it up again the
 	 * next time somebody inserts a probe.
 	 */
-	if (!list_is_singular(&kip->list)) {
+	if (!list_is_singular((*&kip).list)) {
 		/*
 		 * Record perf ksymbol unregister event before removing
 		 * the page.
 		 */
 		perf_event_ksymbol(PERF_RECORD_KSYMBOL_TYPE_OOL,
-				   (unsigned long)kip->insns, PAGE_SIZE, true,
-				   kip->cache->sym);
-		list_del_rcu(&kip->list);
+				   (*(core::ffi::c_ulong)kip).insns, PAGE_SIZE, true,
+				   (*(*kip).cache).sym);
+		list_del_rcu((*&kip).list);
 		synchronize_rcu();
-		kip->cache->free(kip->insns);
+		(*(*kip).cache).free((*kip).insns);
 		kfree(kip);
 	}
 	return true;
@@ -234,18 +234,18 @@ static int collect_garbage_slots(kprobe_insn_cache *c)
 	/* Ensure no-one is interrupted on the garbages */
 	synchronize_rcu();
 
-	list_for_each_entry_safe(kip, next, &c->pages, list) {
+	list_for_each_entry_safe!(kip, next, (*&c).pages, list, {
 		int i;
 
-		if (kip->ngarbage == 0)
+		if ((*kip).ngarbage == 0)
 			continue;
-		kip->ngarbage = 0;	/* we will collect all garbages */
+		(*kip).ngarbage = 0;	/* we will collect all garbages */
 		for (i = 0; i < slots_per_page(c); i++) {
-			if (kip->slot_used[i] == SLOT_DIRTY && collect_one_slot(kip, i))
+			if ((*kip).slot_used[i] == SLOT_DIRTY && collect_one_slot(kip, i))
 				break;
 		}
-	}
-	c->nr_garbage = 0;
+	});
+	(*c).nr_garbage = 0;
 	return 0;
 }
 
@@ -256,14 +256,14 @@ static long __find_insn_page(kprobe_insn_cache *c,
 	long idx;
 
 	guard(rcu)();
-	list_for_each_entry_rcu(kip, &c->pages, list) {
-		idx = ((long)slot - (long)kip->insns) /
-			(c->insn_size * sizeof(kprobe_opcode_t));
+	list_for_each_entry_rcu!(kip, (*&c).pages, list, {
+		idx = ((long)slot - (*(long)kip).insns) /
+			((*c).insn_size * sizeof(kprobe_opcode_t));
 		if (idx >= 0 && idx < slots_per_page(c)) {
 			*pkip = kip;
 			return idx;
 		}
-	}
+	});
 	/* Could not find this slot. */
 	WARN_ON(1);
 	*pkip = core::ptr::null_mut();
@@ -276,16 +276,16 @@ void __free_insn_slot(kprobe_insn_cache *c,
 	kprobe_insn_page *kip = core::ptr::null_mut();
 	long idx;
 
-	guard(mutex)(&c->mutex);
+	guard(mutex)((*&c).mutex);
 	idx = __find_insn_page(c, slot, &kip);
 	/* Mark and sweep: this may sleep */
 	if (kip) {
 		/* Check double free */
-		WARN_ON(kip->slot_used[idx] != SLOT_USED);
+		WARN_ON((*kip).slot_used[idx] != SLOT_USED);
 		if (dirty) {
-			kip->slot_used[idx] = SLOT_DIRTY;
-			kip->ngarbage++;
-			if (++c->nr_garbage > slots_per_page(c))
+			(*kip).slot_used[idx] = SLOT_DIRTY;
+			(*kip).ngarbage++;
+			if (++(*c).nr_garbage > slots_per_page(c))
 				collect_garbage_slots(c);
 		} else {
 			collect_one_slot(kip, idx);
@@ -298,40 +298,40 @@ void __free_insn_slot(kprobe_insn_cache *c,
  * This will be used for checking whether the address on a stack
  * is on a text area or not.
  */
-bool __is_insn_slot_addr(kprobe_insn_cache *c, unsigned long addr)
+bool __is_insn_slot_addr(kprobe_insn_cache *c, addr: core::ffi::c_ulong)
 {
 	kprobe_insn_page *kip;
 	bool ret = false;
 
 	rcu_read_lock();
-	list_for_each_entry_rcu(kip, &c->pages, list) {
-		if (addr >= (unsigned long)kip->insns &&
-		    addr < (unsigned long)kip->insns + PAGE_SIZE) {
+	list_for_each_entry_rcu!(kip, (*&c).pages, list, {
+		if (addr >= (*(core::ffi::c_ulong)kip).insns &&
+		    addr < (*(core::ffi::c_ulong)kip).insns + PAGE_SIZE) {
 			ret = true;
 			break;
 		}
-	}
+	});
 	rcu_read_unlock();
 
 	return ret;
 }
 
-int kprobe_cache_get_kallsym(kprobe_insn_cache *c, unsigned int *symnum,
-			     unsigned long *value, char *type, char *sym)
+int kprobe_cache_get_kallsym(kprobe_insn_cache *c, core::ffi::c_uint *symnum,
+			     core::ffi::c_ulong *value, char *type, char *sym)
 {
 	kprobe_insn_page *kip;
 	int ret = -ERANGE;
 
 	rcu_read_lock();
-	list_for_each_entry_rcu(kip, &c->pages, list) {
+	list_for_each_entry_rcu!(kip, (*&c).pages, list, {
 		if ((*symnum)--)
 			continue;
-		strscpy(sym, c->sym, KSYM_NAME_LEN);
+		strscpy(sym, (*c).sym, KSYM_NAME_LEN);
 		*type = 't';
-		*value = (unsigned long)kip->insns;
+		*value = (*(core::ffi::c_ulong)kip).insns;
 		ret = 0;
 		break;
-	}
+	});
 	rcu_read_unlock();
 
 	return ret;
@@ -350,13 +350,13 @@ void __weak free_optinsn_page(void *page)
 
 /* For optimized_kprobe buffer */
 kprobe_insn_cache kprobe_optinsn_slots = {
-	.mutex = __MUTEX_INITIALIZER(kprobe_optinsn_slots.mutex),
-	.alloc = alloc_optinsn_page,
-	.free = free_optinsn_page,
-	.sym = KPROBE_OPTINSN_PAGE_SYM,
-	.pages = LIST_HEAD_INIT(kprobe_optinsn_slots.pages),
+	mutex: __MUTEX_INITIALIZER(kprobe_optinsn_slots.mutex),
+	alloc: alloc_optinsn_page,
+	free: free_optinsn_page,
+	sym: KPROBE_OPTINSN_PAGE_SYM,
+	pages: LIST_HEAD_INIT(kprobe_optinsn_slots.pages),
 	/* .insn_size is initialized later */
-	.nr_garbage = 0,
+	nr_garbage: 0,
 };
 // #endif /* CONFIG_OPTPROBES */
 // #endif /* __ARCH_WANT_KPROBES_INSN_SLOT */
@@ -386,11 +386,11 @@ kprobe *get_kprobe(void *addr)
 	kprobe *p;
 
 	head = &kprobe_table[hash_ptr(addr, KPROBE_HASH_BITS)];
-	hlist_for_each_entry_rcu(p, head, hlist,
-				 lockdep_is_held(&kprobe_mutex)) {
-		if (p->addr == addr)
+	hlist_for_each_entry_rcu!(p, head, hlist,
+				 lockdep_is_held(&kprobe_mutex), {
+		if ((*p).addr == addr)
 			return p;
-	}
+	});
 
 	return core::ptr::null_mut();
 }
@@ -402,7 +402,7 @@ static int aggr_pre_handler(kprobe *p, pt_regs *regs);
 #[inline]
 static bool kprobe_aggrprobe(kprobe *p)
 {
-	return p->pre_handler == aggr_pre_handler;
+	return (*p).pre_handler == aggr_pre_handler;
 }
 
 /* Return true if 'p' is unused */
@@ -410,15 +410,15 @@ static bool kprobe_aggrprobe(kprobe *p)
 static bool kprobe_unused(kprobe *p)
 {
 	return kprobe_aggrprobe(p) && kprobe_disabled(p) &&
-	       list_empty(&p->list);
+	       list_empty((*&p).list);
 }
 
 /* Keep all fields in the kprobe consistent. */
 #[inline]
 static void copy_kprobe(kprobe *ap, kprobe *p)
 {
-	memcpy(&p->opcode, &ap->opcode, sizeof(kprobe_opcode_t));
-	memcpy(&p->ainsn, &ap->ainsn, sizeof(arch_specific_insn));
+	memcpy((*&p).opcode, (*&ap).opcode, sizeof(kprobe_opcode_t));
+	memcpy((*&p).ainsn, (*&ap).ainsn, sizeof(arch_specific_insn));
 }
 
 // #ifdef CONFIG_OPTPROBES
@@ -433,13 +433,13 @@ void opt_pre_handler(kprobe *p, pt_regs *regs)
 {
 	kprobe *kp;
 
-	list_for_each_entry_rcu(kp, &p->list, list) {
-		if (kp->pre_handler && likely(!kprobe_disabled(kp))) {
+	list_for_each_entry_rcu!(kp, (*&p).list, list, {
+		if ((*kp).pre_handler && likely(!kprobe_disabled(kp))) {
 			set_kprobe_instance(kp);
-			kp->pre_handler(kp, regs);
+			(*kp).pre_handler(kp, regs);
 		}
 		reset_kprobe_instance();
-	}
+	});
 }
 NOKPROBE_SYMBOL(opt_pre_handler);
 
@@ -462,7 +462,7 @@ static int kprobe_optready(kprobe *p)
 
 	if (kprobe_aggrprobe(p)) {
 		op = container_of(p, optimized_kprobe, kp);
-		return arch_prepared_optinsn(&op->optinsn);
+		return arch_prepared_optinsn((*&op).optinsn);
 	}
 
 	return 0;
@@ -479,7 +479,7 @@ bool kprobe_disarmed(kprobe *p)
 
 	op = container_of(p, optimized_kprobe, kp);
 
-	return kprobe_disabled(p) && list_empty(&op->list);
+	return kprobe_disabled(p) && list_empty((*&op).list);
 }
 
 /* Return true if the probe is queued on (un)optimizing lists */
@@ -489,7 +489,7 @@ static bool kprobe_queued(kprobe *p)
 
 	if (kprobe_aggrprobe(p)) {
 		op = container_of(p, optimized_kprobe, kp);
-		if (!list_empty(&op->list))
+		if (!list_empty((*&op).list))
 			return true;
 	}
 	return false;
@@ -527,11 +527,9 @@ static void optimize_kprobe(kprobe *p);
 static task_struct *kprobe_optimizer_task;
 static wait_queue_head_t kprobe_optimizer_wait;
 static atomic_t optimizer_state;
-enum {
-	OPTIMIZER_ST_IDLE = 0,
-	OPTIMIZER_ST_KICKED = 1,
-	OPTIMIZER_ST_FLUSHING = 2,
-};
+pub const OPTIMIZER_ST_IDLE: i32 = 0;
+pub const OPTIMIZER_ST_KICKED: i32 = 1;
+pub const OPTIMIZER_ST_FLUSHING: i32 = 2;
 
 static DECLARE_COMPLETION(optimizer_completion);
 
@@ -580,22 +578,22 @@ static void do_unoptimize_kprobes(void)
 		arch_unoptimize_kprobes(&unoptimizing_list, &freeing_list);
 
 	/* Loop on 'freeing_list' for disarming and removing from kprobe hash list */
-	list_for_each_entry_safe(op, tmp, &freeing_list, list) {
+	list_for_each_entry_safe!(op, tmp, &freeing_list, list, {
 		/* Switching from detour code to origin */
-		op->kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
+		(*op).kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
 		/* Disarm probes if marked disabled and not gone */
-		if (kprobe_disabled(&op->kp) && !kprobe_gone(&op->kp))
-			arch_disarm_kprobe(&op->kp);
-		if (kprobe_unused(&op->kp)) {
+		if (kprobe_disabled((*&op).kp) && !kprobe_gone((*&op).kp))
+			arch_disarm_kprobe((*&op).kp);
+		if (kprobe_unused((*&op).kp)) {
 			/*
 			 * Remove unused probes from hash list. After waiting
 			 * for synchronization, these probes are reclaimed.
 			 * (reclaiming is done by do_free_cleaned_kprobes().)
 			 */
-			hlist_del_rcu(&op->kp.hlist);
+			hlist_del_rcu((*&op).kp.hlist);
 		} else
-			list_del_init(&op->list);
-	}
+			list_del_init((*&op).list);
+	});
 }
 
 /* Reclaim all kprobes on the 'freeing_list' */
@@ -603,9 +601,9 @@ static void do_free_cleaned_kprobes(void)
 {
 	optimized_kprobe *op, *tmp;
 
-	list_for_each_entry_safe(op, tmp, &freeing_list, list) {
-		list_del_init(&op->list);
-		if (WARN_ON_ONCE(!kprobe_unused(&op->kp))) {
+	list_for_each_entry_safe!(op, tmp, &freeing_list, list, {
+		list_del_init((*&op).list);
+		if (WARN_ON_ONCE(!kprobe_unused((*&op).kp))) {
 			/*
 			 * This must not happen, but if there is a kprobe
 			 * still in use, keep it on kprobes hash list.
@@ -619,12 +617,12 @@ static void do_free_cleaned_kprobes(void)
 		 * reverted we can safely retry the optimization of that sibling.
 		 */
 
-		kprobe *_p = get_optimized_kprobe(op->kp.addr);
+		kprobe *_p = get_optimized_kprobe((*op).kp.addr);
 		if (unlikely(_p))
 			optimize_kprobe(_p);
 
-		free_aggr_kprobe(&op->kp);
-	}
+		free_aggr_kprobe((*&op).kp);
+	});
 }
 
 static void kick_kprobe_optimizer(void);
@@ -710,8 +708,7 @@ static void kick_kprobe_optimizer(void)
 		wake_up(&kprobe_optimizer_wait);
 }
 
-static void wait_for_kprobe_optimizer_locked(void)
-{
+static void wait_for_kprobe_optimizer_locked!(void, {
 	lockdep_assert_held(&kprobe_mutex);
 
 	while (!list_empty(&optimizing_list) || !list_empty(&unoptimizing_list)) {
@@ -728,24 +725,23 @@ static void wait_for_kprobe_optimizer_locked(void)
 		wait_for_completion(&optimizer_completion);
 		mutex_lock(&kprobe_mutex);
 	}
-}
+});
 
 /* Wait for completing optimization and unoptimization */
-void wait_for_kprobe_optimizer(void)
-{
+void wait_for_kprobe_optimizer!(void, {
 	guard(mutex)(&kprobe_mutex);
 
 	wait_for_kprobe_optimizer_locked();
-}
+});
 
 bool optprobe_queued_unopt(optimized_kprobe *op)
 {
 	optimized_kprobe *_op;
 
-	list_for_each_entry(_op, &unoptimizing_list, list) {
+	list_for_each_entry!(_op, &unoptimizing_list, list, {
 		if (op == _op)
 			return true;
-	}
+	});
 
 	return false;
 }
@@ -761,7 +757,7 @@ static void optimize_kprobe(kprobe *p)
 		return;
 
 	/* kprobes with 'post_handler' can not be optimized */
-	if (p->post_handler)
+	if ((*p).post_handler)
 		return;
 
 	op = container_of(p, optimized_kprobe, kp);
@@ -771,23 +767,23 @@ static void optimize_kprobe(kprobe *p)
 		return;
 
 	/* Check if it is already optimized. */
-	if (op->kp.flags & KPROBE_FLAG_OPTIMIZED) {
+	if ((*op).kp.flags & KPROBE_FLAG_OPTIMIZED) {
 		if (optprobe_queued_unopt(op)) {
 			/* This is under unoptimizing. Just dequeue the probe */
-			list_del_init(&op->list);
+			list_del_init((*&op).list);
 		}
 		return;
 	}
-	op->kp.flags |= KPROBE_FLAG_OPTIMIZED;
+	(*op).kp.flags |= KPROBE_FLAG_OPTIMIZED;
 
 	/*
 	 * On the 'unoptimizing_list' and 'optimizing_list',
 	 * 'op' must have OPTIMIZED flag
 	 */
-	if (WARN_ON_ONCE(!list_empty(&op->list)))
+	if (WARN_ON_ONCE(!list_empty((*&op).list)))
 		return;
 
-	list_add(&op->list, &optimizing_list);
+	list_add((*&op).list, &optimizing_list);
 	kick_kprobe_optimizer();
 }
 
@@ -796,11 +792,11 @@ static void force_unoptimize_kprobe(optimized_kprobe *op)
 {
 	lockdep_assert_cpus_held();
 	arch_unoptimize_kprobe(op);
-	op->kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
+	(*op).kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
 }
 
 /* Unoptimize a kprobe if p is optimized */
-static void unoptimize_kprobe(kprobe *p, bool force)
+static void unoptimize_kprobe(kprobe *p, force: bool)
 {
 	optimized_kprobe *op;
 
@@ -811,7 +807,7 @@ static void unoptimize_kprobe(kprobe *p, bool force)
 	if (!kprobe_optimized(p))
 		return;
 
-	if (!list_empty(&op->list)) {
+	if (!list_empty((*&op).list)) {
 		if (optprobe_queued_unopt(op)) {
 			/* Queued in unoptimizing queue */
 			if (force) {
@@ -820,12 +816,12 @@ static void unoptimize_kprobe(kprobe *p, bool force)
 				 * in the freeing list for release afterwards.
 				 */
 				force_unoptimize_kprobe(op);
-				list_move(&op->list, &freeing_list);
+				list_move((*&op).list, &freeing_list);
 			}
 		} else {
 			/* Dequeue from the optimizing queue */
-			list_del_init(&op->list);
-			op->kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
+			list_del_init((*&op).list);
+			(*op).kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
 		}
 		return;
 	}
@@ -835,7 +831,7 @@ static void unoptimize_kprobe(kprobe *p, bool force)
 		/* Forcibly update the code: this is a special case */
 		force_unoptimize_kprobe(op);
 	} else {
-		list_add(&op->list, &unoptimizing_list);
+		list_add((*&op).list, &unoptimizing_list);
 		kick_kprobe_optimizer();
 	}
 }
@@ -850,9 +846,9 @@ static int reuse_unused_kprobe(kprobe *ap)
 	 * there is still a relative jump) and disabled.
 	 */
 	op = container_of(ap, optimized_kprobe, kp);
-	WARN_ON_ONCE(list_empty(&op->list));
+	WARN_ON_ONCE(list_empty((*&op).list));
 	/* Enable the probe again */
-	ap->flags &= ~KPROBE_FLAG_DISABLED;
+	(*ap).flags &= ~KPROBE_FLAG_DISABLED;
 	/* Optimize it again. (remove from 'op->list') */
 	if (!kprobe_optready(ap))
 		return -EINVAL;
@@ -867,10 +863,10 @@ static void kill_optimized_kprobe(kprobe *p)
 	optimized_kprobe *op;
 
 	op = container_of(p, optimized_kprobe, kp);
-	if (!list_empty(&op->list))
+	if (!list_empty((*&op).list))
 		/* Dequeue from the (un)optimization queue */
-		list_del_init(&op->list);
-	op->kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
+		list_del_init((*&op).list);
+	(*op).kp.flags &= ~KPROBE_FLAG_OPTIMIZED;
 
 	if (kprobe_unused(p)) {
 		/*
@@ -879,7 +875,7 @@ static void kill_optimized_kprobe(kprobe *p)
 		 * the kprobe hash list and free it.
 		 */
 		if (optprobe_queued_unopt(op))
-			list_move(&op->list, &freeing_list);
+			list_move((*&op).list, &freeing_list);
 	}
 
 	/* Don't touch the code, because it is already freed. */
@@ -912,11 +908,11 @@ static kprobe *alloc_aggr_kprobe(kprobe *p)
 	if (!op)
 		return core::ptr::null_mut();
 
-	INIT_LIST_HEAD(&op->list);
-	op->kp.addr = p->addr;
+	INIT_LIST_HEAD((*&op).list);
+	(*op).kp.addr = (*p).addr;
 	__prepare_optimized_kprobe(op, p);
 
-	return &op->kp;
+	return (*&op).kp;
 }
 
 static void init_aggr_kprobe(kprobe *ap, kprobe *p);
@@ -944,7 +940,7 @@ static void try_to_optimize_kprobe(kprobe *p)
 		return;
 
 	op = container_of(ap, optimized_kprobe, kp);
-	if (!arch_prepared_optinsn(&op->optinsn)) {
+	if (!arch_prepared_optinsn((*&op).optinsn)) {
 		/* If failed to setup optimizing, fallback to kprobe. */
 		arch_remove_optimized_kprobe(op);
 		kfree(op);
@@ -959,7 +955,7 @@ static void optimize_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	guard(mutex)(&kprobe_mutex);
 	/* If optimization is already allowed, just return. */
@@ -983,7 +979,7 @@ static void unoptimize_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	guard(mutex)(&kprobe_mutex);
 	/* If optimization is already prohibited, just return. */
@@ -994,10 +990,10 @@ static void unoptimize_all_kprobes(void)
 	kprobes_allow_optimization = false;
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
-		hlist_for_each_entry(p, head, hlist) {
+		hlist_for_each_entry!(p, head, hlist, {
 			if (!kprobe_disabled(p))
 				unoptimize_kprobe(p, false);
-		}
+		});
 	}
 	cpus_read_unlock();
 	/* Wait for unoptimizing completion. */
@@ -1027,13 +1023,13 @@ static int proc_kprobes_optimization_handler(const ctl_table *table,
 
 static const ctl_table kprobe_sysctls[] = {
 	{
-		.procname	= "kprobes-optimization",
-		.data		= &sysctl_kprobes_optimization,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_kprobes_optimization_handler,
-		.extra1		= SYSCTL_ZERO,
-		.extra2		= SYSCTL_ONE,
+		procname: "kprobes-optimization",
+		data: &sysctl_kprobes_optimization,
+		maxlen: sizeof(int),
+		mode: 0o644,
+		proc_handler: proc_kprobes_optimization_handler,
+		extra1: SYSCTL_ZERO,
+		extra2: SYSCTL_ONE,
 	},
 };
 
@@ -1051,7 +1047,7 @@ static void __arm_kprobe(kprobe *p)
 	lockdep_assert_held(&text_mutex);
 
 	/* Find the overlapping optimized kprobes. */
-	_p = get_optimized_kprobe(p->addr);
+	_p = get_optimized_kprobe((*p).addr);
 	if (unlikely(_p))
 		/* Fallback to unoptimized kprobe */
 		unoptimize_kprobe(_p, true);
@@ -1061,7 +1057,7 @@ static void __arm_kprobe(kprobe *p)
 }
 
 /* Remove the breakpoint of a probe. */
-static void __disarm_kprobe(kprobe *p, bool reopt)
+static void __disarm_kprobe(kprobe *p, reopt: bool)
 {
 	kprobe *_p;
 
@@ -1073,7 +1069,7 @@ static void __disarm_kprobe(kprobe *p, bool reopt)
 	if (!kprobe_queued(p)) {
 		arch_disarm_kprobe(p);
 		/* If another kprobe was blocked, re-optimize it. */
-		_p = get_optimized_kprobe(p->addr);
+		_p = get_optimized_kprobe((*p).addr);
 		if (unlikely(_p) && reopt)
 			optimize_kprobe(_p);
 	}
@@ -1103,7 +1099,7 @@ static void __init init_optprobe(void)
 // #define __disarm_kprobe(p, o)			arch_disarm_kprobe(p)
 // #define kprobe_disarmed(p)			kprobe_disabled(p)
 // #define wait_for_kprobe_optimizer_locked()			\
-	lockdep_assert_held(&kprobe_mutex)
+// 	lockdep_assert_held(&kprobe_mutex)
 
 static int reuse_unused_kprobe(kprobe *ap)
 {
@@ -1131,13 +1127,13 @@ static kprobe *alloc_aggr_kprobe(kprobe *p)
 
 // #ifdef CONFIG_KPROBES_ON_FTRACE
 static ftrace_ops kprobe_ftrace_ops __read_mostly = {
-	.func = kprobe_ftrace_handler,
-	.flags = FTRACE_OPS_FL_SAVE_REGS,
+	func: kprobe_ftrace_handler,
+	flags: FTRACE_OPS_FL_SAVE_REGS,
 };
 
 static ftrace_ops kprobe_ipmodify_ops __read_mostly = {
-	.func = kprobe_ftrace_handler,
-	.flags = FTRACE_OPS_FL_SAVE_REGS | FTRACE_OPS_FL_IPMODIFY,
+	func: kprobe_ftrace_handler,
+	flags: FTRACE_OPS_FL_SAVE_REGS | FTRACE_OPS_FL_IPMODIFY,
 };
 
 static int kprobe_ipmodify_enabled;
@@ -1151,7 +1147,7 @@ static int __arm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 
 	lockdep_assert_held(&kprobe_mutex);
 
-	ret = ftrace_set_filter_ip(ops, (unsigned long)p->addr, 0, 0);
+	ret = ftrace_set_filter_ip(ops, (*(core::ffi::c_ulong)p).addr, 0, 0);
 	if (ret < 0)
 		return ret;
 
@@ -1162,7 +1158,7 @@ static int __arm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 			 * At this point, sinec ops is not registered, we should be sefe from
 			 * registering empty filter.
 			 */
-			ftrace_set_filter_ip(ops, (unsigned long)p->addr, 1, 0);
+			ftrace_set_filter_ip(ops, (*(core::ffi::c_ulong)p).addr, 1, 0);
 			return ret;
 		}
 	}
@@ -1173,7 +1169,7 @@ static int __arm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 
 static int arm_kprobe_ftrace(kprobe *p)
 {
-	bool ipmodify = (p->post_handler != core::ptr::null_mut());
+	bool ipmodify = ((*p).post_handler != core::ptr::null_mut());
 
 	return __arm_kprobe_ftrace(p,
 		ipmodify ? &kprobe_ipmodify_ops : &kprobe_ftrace_ops,
@@ -1199,15 +1195,15 @@ static int __disarm_kprobe_ftrace(kprobe *p, ftrace_ops *ops,
 
 	(*cnt)--;
 
-	ret = ftrace_set_filter_ip(ops, (unsigned long)p->addr, 1, 0);
+	ret = ftrace_set_filter_ip(ops, (*(core::ffi::c_ulong)p).addr, 1, 0);
 	WARN_ONCE(ret < 0, "Failed to disarm kprobe-ftrace at %pS (error %d)\n",
-		  p->addr, ret);
+		  (*p).addr, ret);
 	return ret;
 }
 
 static int disarm_kprobe_ftrace(kprobe *p)
 {
-	bool ipmodify = (p->post_handler != core::ptr::null_mut());
+	bool ipmodify = ((*p).post_handler != core::ptr::null_mut());
 
 	return __disarm_kprobe_ftrace(p,
 		ipmodify ? &kprobe_ipmodify_ops : &kprobe_ftrace_ops,
@@ -1252,7 +1248,7 @@ static int arm_kprobe(kprobe *kp)
 	return 0;
 }
 
-static int disarm_kprobe(kprobe *kp, bool reopt)
+static int disarm_kprobe(kprobe *kp, reopt: bool)
 {
 	if (unlikely(kprobe_ftrace(kp)))
 		return disarm_kprobe_ftrace(kp);
@@ -1271,30 +1267,30 @@ static int aggr_pre_handler(kprobe *p, pt_regs *regs)
 {
 	kprobe *kp;
 
-	list_for_each_entry_rcu(kp, &p->list, list) {
-		if (kp->pre_handler && likely(!kprobe_disabled(kp))) {
+	list_for_each_entry_rcu!(kp, (*&p).list, list, {
+		if ((*kp).pre_handler && likely(!kprobe_disabled(kp))) {
 			set_kprobe_instance(kp);
-			if (kp->pre_handler(kp, regs))
+			if ((*kp).pre_handler(kp, regs))
 				return 1;
 		}
 		reset_kprobe_instance();
-	}
+	});
 	return 0;
 }
 NOKPROBE_SYMBOL(aggr_pre_handler);
 
 static void aggr_post_handler(kprobe *p, pt_regs *regs,
-			      unsigned long flags)
+			      flags: core::ffi::c_ulong)
 {
 	kprobe *kp;
 
-	list_for_each_entry_rcu(kp, &p->list, list) {
-		if (kp->post_handler && likely(!kprobe_disabled(kp))) {
+	list_for_each_entry_rcu!(kp, (*&p).list, list, {
+		if ((*kp).post_handler && likely(!kprobe_disabled(kp))) {
 			set_kprobe_instance(kp);
-			kp->post_handler(kp, regs, flags);
+			(*kp).post_handler(kp, regs, flags);
 			reset_kprobe_instance();
 		}
-	}
+	});
 }
 NOKPROBE_SYMBOL(aggr_post_handler);
 
@@ -1304,16 +1300,16 @@ void kprobes_inc_nmissed_count(kprobe *p)
 	kprobe *kp;
 
 	if (!kprobe_aggrprobe(p)) {
-		p->nmissed++;
+		(*p).nmissed++;
 	} else {
-		list_for_each_entry_rcu(kp, &p->list, list)
-			kp->nmissed++;
+		list_for_each_entry_rcu(kp, (*&p).list, list)
+			(*kp).nmissed++;
 	}
 }
 NOKPROBE_SYMBOL(kprobes_inc_nmissed_count);
 
 static kprobe kprobe_busy = {
-	.addr = (void *) get_kprobe,
+	addr: (void *) get_kprobe,
 };
 
 void kprobe_busy_begin(void)
@@ -1323,7 +1319,7 @@ void kprobe_busy_begin(void)
 	preempt_disable();
 	__this_cpu_write(current_kprobe, &kprobe_busy);
 	kcb = get_kprobe_ctlblk();
-	kcb->kprobe_status = KPROBE_HIT_ACTIVE;
+	(*kcb).kprobe_status = KPROBE_HIT_ACTIVE;
 }
 
 void kprobe_busy_end(void)
@@ -1335,12 +1331,12 @@ void kprobe_busy_end(void)
 /* Add the new probe to 'ap->list'. */
 static int add_new_kprobe(kprobe *ap, kprobe *p)
 {
-	if (p->post_handler)
+	if ((*p).post_handler)
 		unoptimize_kprobe(ap, true);	/* Fall back to normal kprobe */
 
-	list_add_rcu(&p->list, &ap->list);
-	if (p->post_handler && !ap->post_handler)
-		ap->post_handler = aggr_post_handler;
+	list_add_rcu((*&p).list, (*&ap).list);
+	if ((*p).post_handler && (*!ap).post_handler)
+		(*ap).post_handler = aggr_post_handler;
 
 	return 0;
 }
@@ -1354,18 +1350,18 @@ static void init_aggr_kprobe(kprobe *ap, kprobe *p)
 	/* Copy the insn slot of 'p' to 'ap'. */
 	copy_kprobe(p, ap);
 	flush_insn_slot(ap);
-	ap->addr = p->addr;
-	ap->flags = p->flags & ~KPROBE_FLAG_OPTIMIZED;
-	ap->pre_handler = aggr_pre_handler;
+	(*ap).addr = (*p).addr;
+	(*ap).flags = (*p).flags & ~KPROBE_FLAG_OPTIMIZED;
+	(*ap).pre_handler = aggr_pre_handler;
 	/* We don't care the kprobe which has gone. */
-	if (p->post_handler && !kprobe_gone(p))
-		ap->post_handler = aggr_post_handler;
+	if ((*p).post_handler && !kprobe_gone(p))
+		(*ap).post_handler = aggr_post_handler;
 
-	INIT_LIST_HEAD(&ap->list);
-	INIT_HLIST_NODE(&ap->hlist);
+	INIT_LIST_HEAD((*&ap).list);
+	INIT_HLIST_NODE((*&ap).hlist);
 
-	list_add_rcu(&p->list, &ap->list);
-	hlist_replace_rcu(&p->hlist, &ap->hlist);
+	list_add_rcu((*&p).list, (*&ap).list);
+	hlist_replace_rcu((*&p).hlist, (*&ap).hlist);
 }
 
 /*
@@ -1417,7 +1413,7 @@ static int register_aggr_kprobe(kprobe *orig_p, kprobe *p)
 			 * Clear gone flag to prevent allocating new slot again, and
 			 * set disabled flag because it is not armed yet.
 			 */
-			ap->flags = (ap->flags & ~KPROBE_FLAG_GONE)
+			(*ap).flags = ((*ap).flags & ~KPROBE_FLAG_GONE)
 					| KPROBE_FLAG_DISABLED;
 		}
 
@@ -1427,13 +1423,13 @@ static int register_aggr_kprobe(kprobe *orig_p, kprobe *p)
 	}
 
 	if (ret == 0 && kprobe_disabled(ap) && !kprobe_disabled(p)) {
-		ap->flags &= ~KPROBE_FLAG_DISABLED;
+		(*ap).flags &= ~KPROBE_FLAG_DISABLED;
 		if (!kprobes_all_disarmed) {
 			/* Arm the breakpoint again. */
 			ret = arm_kprobe(ap);
 			if (ret) {
-				ap->flags |= KPROBE_FLAG_DISABLED;
-				list_del_rcu(&p->list);
+				(*ap).flags |= KPROBE_FLAG_DISABLED;
+				list_del_rcu((*&p).list);
 				synchronize_rcu();
 			}
 		}
@@ -1441,14 +1437,14 @@ static int register_aggr_kprobe(kprobe *orig_p, kprobe *p)
 	return ret;
 }
 
-bool __weak arch_within_kprobe_blacklist(unsigned long addr)
+bool __weak arch_within_kprobe_blacklist(addr: core::ffi::c_ulong)
 {
 	/* The '__kprobes' functions and entry code must not be probed. */
-	return addr >= (unsigned long)__kprobes_text_start &&
-	       addr < (unsigned long)__kprobes_text_end;
+	return addr >= (core::ffi::c_ulong)__kprobes_text_start &&
+	       addr < (core::ffi::c_ulong)__kprobes_text_end;
 }
 
-static bool __within_kprobe_blacklist(unsigned long addr)
+static bool __within_kprobe_blacklist(addr: core::ffi::c_ulong)
 {
 	kprobe_blacklist_entry *ent;
 
@@ -1458,14 +1454,14 @@ static bool __within_kprobe_blacklist(unsigned long addr)
 	 * If 'kprobe_blacklist' is defined, check the address and
 	 * reject any probe registration in the prohibited area.
 	 */
-	list_for_each_entry(ent, &kprobe_blacklist, list) {
-		if (addr >= ent->start_addr && addr < ent->end_addr)
+	list_for_each_entry!(ent, &kprobe_blacklist, list, {
+		if (addr >= (*ent).start_addr && addr < (*ent).end_addr)
 			return true;
-	}
+	});
 	return false;
 }
 
-bool within_kprobe_blacklist(unsigned long addr)
+bool within_kprobe_blacklist(addr: core::ffi::c_ulong)
 {
 	char symname[KSYM_NAME_LEN], *p;
 
@@ -1478,7 +1474,7 @@ bool within_kprobe_blacklist(unsigned long addr)
 		if (!p)
 			return false;
 		*p = '\0';
-		addr = (unsigned long)kprobe_lookup_name(symname, 0);
+		addr = (core::ffi::c_ulong)kprobe_lookup_name(symname, 0);
 		if (addr)
 			return __within_kprobe_blacklist(addr);
 	}
@@ -1499,8 +1495,8 @@ bool within_kprobe_blacklist(unsigned long addr)
  * Specifically, for things like IBT/BTI, skip the resp. ENDBR/BTI.C
  * instruction at +0.
  */
-kprobe_opcode_t *__weak arch_adjust_kprobe_addr(unsigned long addr,
-						unsigned long offset,
+kprobe_opcode_t *__weak arch_adjust_kprobe_addr(addr: core::ffi::c_ulong,
+						offset: core::ffi::c_ulong,
 						bool *on_func_entry)
 {
 	*on_func_entry = !offset;
@@ -1515,7 +1511,7 @@ kprobe_opcode_t *__weak arch_adjust_kprobe_addr(unsigned long addr,
  */
 static kprobe_opcode_t *
 _kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
-	     unsigned long offset, bool *on_func_entry)
+	     offset: core::ffi::c_ulong, bool *on_func_entry)
 {
 	if ((symbol_name && addr) || (!symbol_name && !addr))
 		return ERR_PTR(-EINVAL);
@@ -1538,7 +1534,7 @@ _kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
 	 * @addr' + @offset' where @addr' is the symbol start address.
 	 */
 	addr = (void *)addr + offset;
-	if (!kallsyms_lookup_size_offset((unsigned long)addr, core::ptr::null_mut(), &offset))
+	if (!kallsyms_lookup_size_offset((core::ffi::c_ulong)addr, core::ptr::null_mut(), &offset))
 		return ERR_PTR(-ENOENT);
 	addr = (void *)addr - offset;
 
@@ -1547,7 +1543,7 @@ _kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
 	 * magical function entry details while telling us if this was indeed
 	 * at the start of the function.
 	 */
-	addr = arch_adjust_kprobe_addr((unsigned long)addr, offset, on_func_entry);
+	addr = arch_adjust_kprobe_addr((core::ffi::c_ulong)addr, offset, on_func_entry);
 	if (!addr)
 		return ERR_PTR(-EINVAL);
 
@@ -1558,7 +1554,7 @@ static kprobe_opcode_t *kprobe_addr(kprobe *p)
 {
 	bool on_func_entry;
 
-	return _kprobe_addr(p->addr, p->symbol_name, p->offset, &on_func_entry);
+	return _kprobe_addr((*p).addr, (*p).symbol_name, (*p).offset, &on_func_entry);
 }
 
 /*
@@ -1571,14 +1567,14 @@ static kprobe *__get_valid_kprobe(kprobe *p)
 
 	lockdep_assert_held(&kprobe_mutex);
 
-	ap = get_kprobe(p->addr);
+	ap = get_kprobe((*p).addr);
 	if (unlikely(!ap))
 		return core::ptr::null_mut();
 
 	if (p == ap)
 		return ap;
 
-	list_for_each_entry(list_p, &ap->list, list)
+	list_for_each_entry(list_p, (*&ap).list, list)
 		if (list_p == p)
 		/* kprobe p is a valid probe */
 			return ap;
@@ -1603,11 +1599,11 @@ static int warn_kprobe_rereg(kprobe *p)
 
 static int check_ftrace_location(kprobe *p)
 {
-	unsigned long addr = (unsigned long)p->addr;
+	core::ffi::c_ulong addr = (*(core::ffi::c_ulong)p).addr;
 
 	if (ftrace_location(addr) == addr) {
 // #ifdef CONFIG_KPROBES_ON_FTRACE
-		p->flags |= KPROBE_FLAG_FTRACE;
+		(*p).flags |= KPROBE_FLAG_FTRACE;
 // #else
 		return -EINVAL;
 // #endif
@@ -1615,7 +1611,7 @@ static int check_ftrace_location(kprobe *p)
 	return 0;
 }
 
-static bool is_cfi_preamble_symbol(unsigned long addr)
+static bool is_cfi_preamble_symbol(addr: core::ffi::c_ulong)
 {
 	char symbuf[KSYM_NAME_LEN];
 
@@ -1639,9 +1635,9 @@ static int check_kprobe_address_safe(kprobe *p,
 
 	/* Ensure the address is in a text area, and find a module if exists. */
 	*probed_mod = core::ptr::null_mut();
-	if (!core_kernel_text((unsigned long) p->addr)) {
+	if (!core_kernel_text((core::ffi::c_ulong) (*p).addr)) {
 		guard(rcu)();
-		*probed_mod = __module_text_address((unsigned long) p->addr);
+		*probed_mod = __module_text_address((core::ffi::c_ulong) (*p).addr);
 		if (!(*probed_mod))
 			return -EINVAL;
 
@@ -1653,12 +1649,12 @@ static int check_kprobe_address_safe(kprobe *p,
 			return -ENOENT;
 	}
 	/* Ensure it is not in reserved area. */
-	if (in_gate_area_no_mm((unsigned long) p->addr) ||
-	    within_kprobe_blacklist((unsigned long) p->addr) ||
-	    jump_label_text_reserved(p->addr, p->addr) ||
-	    static_call_text_reserved(p->addr, p->addr) ||
-	    find_bug((unsigned long)p->addr) ||
-	    is_cfi_preamble_symbol((unsigned long)p->addr)) {
+	if (in_gate_area_no_mm((core::ffi::c_ulong) (*p).addr) ||
+	    within_kprobe_blacklist((core::ffi::c_ulong) (*p).addr) ||
+	    jump_label_text_reserved((*p).addr, (*p).addr) ||
+	    static_call_text_reserved((*p).addr, (*p).addr) ||
+	    find_bug((*(core::ffi::c_ulong)p).addr) ||
+	    is_cfi_preamble_symbol((*(core::ffi::c_ulong)p).addr)) {
 		module_put(*probed_mod);
 		return -EINVAL;
 	}
@@ -1669,7 +1665,7 @@ static int check_kprobe_address_safe(kprobe *p,
 		 * If the module freed '.init.text', we couldn't insert
 		 * kprobes in there.
 		 */
-		if (within_module_init((unsigned long)p->addr, *probed_mod) &&
+		if (within_module_init((*(core::ffi::c_ulong)p).addr, *probed_mod) &&
 		    !module_is_coming(*probed_mod)) {
 			module_put(*probed_mod);
 			return -ENOENT;
@@ -1686,7 +1682,7 @@ static int __register_kprobe(kprobe *p)
 
 	guard(mutex)(&kprobe_mutex);
 
-	old_p = get_kprobe(p->addr);
+	old_p = get_kprobe((*p).addr);
 	if (old_p)
 		/* Since this may unoptimize 'old_p', locking 'text_mutex'. */
 		return register_aggr_kprobe(old_p, p);
@@ -1699,14 +1695,14 @@ static int __register_kprobe(kprobe *p)
 			return ret;
 	}
 
-	INIT_HLIST_NODE(&p->hlist);
-	hlist_add_head_rcu(&p->hlist,
-		       &kprobe_table[hash_ptr(p->addr, KPROBE_HASH_BITS)]);
+	INIT_HLIST_NODE((*&p).hlist);
+	hlist_add_head_rcu((*&p).hlist,
+		       &kprobe_table[hash_ptr((*p).addr, KPROBE_HASH_BITS)]);
 
 	if (!kprobes_all_disarmed && !kprobe_disabled(p)) {
 		ret = arm_kprobe(p);
 		if (ret) {
-			hlist_del_rcu(&p->hlist);
+			hlist_del_rcu((*&p).hlist);
 			synchronize_rcu();
 		}
 	}
@@ -1724,21 +1720,21 @@ int register_kprobe(kprobe *p)
 	bool on_func_entry;
 
 	/* Canonicalize probe address from symbol */
-	addr = _kprobe_addr(p->addr, p->symbol_name, p->offset, &on_func_entry);
+	addr = _kprobe_addr((*p).addr, (*p).symbol_name, (*p).offset, &on_func_entry);
 	if (IS_ERR(addr))
 		return PTR_ERR(addr);
-	p->addr = addr;
+	(*p).addr = addr;
 
 	ret = warn_kprobe_rereg(p);
 	if (ret)
 		return ret;
 
 	/* User can pass only KPROBE_FLAG_DISABLED to register_kprobe */
-	p->flags &= KPROBE_FLAG_DISABLED;
+	(*p).flags &= KPROBE_FLAG_DISABLED;
 	if (on_func_entry)
-		p->flags |= KPROBE_FLAG_ON_FUNC_ENTRY;
-	p->nmissed = 0;
-	INIT_LIST_HEAD(&p->list);
+		(*p).flags |= KPROBE_FLAG_ON_FUNC_ENTRY;
+	(*p).nmissed = 0;
+	INIT_LIST_HEAD((*&p).list);
 
 	ret = check_kprobe_address_safe(p, &probed_mod);
 	if (ret)
@@ -1760,7 +1756,7 @@ static bool aggr_kprobe_disabled(kprobe *ap)
 
 	lockdep_assert_held(&kprobe_mutex);
 
-	list_for_each_entry(kp, &ap->list, list)
+	list_for_each_entry(kp, (*&ap).list, list)
 		if (!kprobe_disabled(kp))
 			/*
 			 * Since there is an active probe on the list,
@@ -1788,7 +1784,7 @@ static kprobe *__disable_kprobe(kprobe *p)
 
 	/* Disable probe if it is a child probe */
 	if (p != orig_p)
-		p->flags |= KPROBE_FLAG_DISABLED;
+		(*p).flags |= KPROBE_FLAG_DISABLED;
 
 	/* Try to disarm and disable this/parent probe */
 	if (p == orig_p || aggr_kprobe_disabled(orig_p)) {
@@ -1801,11 +1797,11 @@ static kprobe *__disable_kprobe(kprobe *p)
 		if (!kprobes_all_disarmed && !kprobe_disabled(orig_p)) {
 			ret = disarm_kprobe(orig_p, true);
 			if (ret) {
-				p->flags &= ~KPROBE_FLAG_DISABLED;
+				(*p).flags &= ~KPROBE_FLAG_DISABLED;
 				return ERR_PTR(ret);
 			}
 		}
-		orig_p->flags |= KPROBE_FLAG_DISABLED;
+		(*orig_p).flags |= KPROBE_FLAG_DISABLED;
 	}
 
 	return orig_p;
@@ -1831,30 +1827,30 @@ static int __unregister_kprobe_top(kprobe *p)
 	 * kprobe is already disarmed, just remove from the hash list.
 	 */
 	if (ap == p ||
-		(list_is_singular(&ap->list) && kprobe_disarmed(ap))) {
+		(list_is_singular((*&ap).list) && kprobe_disarmed(ap))) {
 		/*
 		 * !disarmed could be happen if the probe is under delayed
 		 * unoptimizing.
 		 */
-		hlist_del_rcu(&ap->hlist);
+		hlist_del_rcu((*&ap).hlist);
 		return 0;
 	}
 
 	/* If disabling probe has special handlers, update aggrprobe */
-	if (p->post_handler && !kprobe_gone(p)) {
-		list_for_each_entry(list_p, &ap->list, list) {
-			if ((list_p != p) && (list_p->post_handler))
+	if ((*p).post_handler && !kprobe_gone(p)) {
+		list_for_each_entry!(list_p, (*&ap).list, list, {
+			if ((list_p != p) && ((*list_p).post_handler))
 				break;
-		}
+		});
 		/* No other probe has post_handler */
-		if (list_entry_is_head(list_p, &ap->list, list)) {
+		if (list_entry_is_head(list_p, (*&ap).list, list)) {
 			/*
 			 * For the kprobe-on-ftrace case, we keep the
 			 * post_handler setting to identify this aggrprobe
 			 * armed with kprobe_ipmodify_ops.
 			 */
 			if (!kprobe_ftrace(ap))
-				ap->post_handler = core::ptr::null_mut();
+				(*ap).post_handler = core::ptr::null_mut();
 		}
 	}
 
@@ -1862,7 +1858,7 @@ static int __unregister_kprobe_top(kprobe *p)
 	 * Remove from the aggrprobe: this path will do nothing in
 	 * __unregister_kprobe_bottom().
 	 */
-	list_del_rcu(&p->list);
+	list_del_rcu((*&p).list);
 	if (!kprobe_disabled(ap) && !kprobes_all_disarmed)
 		/*
 		 * Try to optimize this probe again, because post
@@ -1877,13 +1873,13 @@ static void __unregister_kprobe_bottom(kprobe *p)
 {
 	kprobe *ap;
 
-	if (list_empty(&p->list))
+	if (list_empty((*&p).list))
 		/* This is an independent kprobe */
 		arch_remove_kprobe(p);
-	else if (list_is_singular(&p->list)) {
+	else if (list_is_singular((*&p).list)) {
 		/* This is the last child of an aggrprobe */
-		ap = list_entry(p->list.next, kprobe, list);
-		list_del(&p->list);
+		ap = list_entry((*p).list.next, kprobe, list);
+		list_del((*&p).list);
 		free_aggr_kprobe(ap);
 	}
 	/* Otherwise, do nothing. */
@@ -1922,25 +1918,25 @@ void unregister_kprobes(kprobe **kps, int num)
 	scoped_guard(mutex, &kprobe_mutex) {
 		for (i = 0; i < num; i++)
 			if (__unregister_kprobe_top(kps[i]) < 0)
-				kps[i]->addr = core::ptr::null_mut();
+				(*kps[i]).addr = core::ptr::null_mut();
 	}
 	synchronize_rcu();
 	for (i = 0; i < num; i++)
-		if (kps[i]->addr)
+		if ((*kps[i]).addr)
 			__unregister_kprobe_bottom(kps[i]);
 }
 EXPORT_SYMBOL_GPL(unregister_kprobes);
 
 int __weak kprobe_exceptions_notify(notifier_block *self,
-					unsigned long val, void *data)
+					val: core::ffi::c_ulong, void *data)
 {
 	return NOTIFY_DONE;
 }
 NOKPROBE_SYMBOL(kprobe_exceptions_notify);
 
 static notifier_block kprobe_exceptions_nb = {
-	.notifier_call = kprobe_exceptions_notify,
-	.priority = 0x7fffffff /* we need to be notified first */
+	notifier_call: kprobe_exceptions_notify,
+	priority: 0x7fffffff /* we need to be notified first */
 };
 
 // #ifdef CONFIG_KRETPROBES
@@ -1952,7 +1948,7 @@ static int kretprobe_init_inst(void *nod, void *context)
 {
 	kretprobe_instance *ri = nod;
 
-	ri->rph = context;
+	(*ri).rph = context;
 	return 0;
 }
 static int kretprobe_fini_pool(objpool_head *head, void *context)
@@ -1964,9 +1960,9 @@ static int kretprobe_fini_pool(objpool_head *head, void *context)
 static void free_rp_inst_rcu(rcu_head *head)
 {
 	kretprobe_instance *ri = container_of(head, kretprobe_instance, rcu);
-	kretprobe_holder *rph = ri->rph;
+	kretprobe_holder *rph = (*ri).rph;
 
-	objpool_drop(ri, &rph->pool);
+	objpool_drop(ri, (*&rph).pool);
 }
 NOKPROBE_SYMBOL(free_rp_inst_rcu);
 
@@ -1975,7 +1971,7 @@ static void recycle_rp_inst(kretprobe_instance *ri)
 	kretprobe *rp = get_kretprobe(ri);
 
 	if (likely(rp))
-		objpool_push(ri, &rp->rph->pool);
+		objpool_push(ri, (*(*&rp).rph).pool);
 	else
 		call_rcu(&ri->rcu, free_rp_inst_rcu);
 }
@@ -2060,7 +2056,7 @@ NOKPROBE_SYMBOL(__kretprobe_find_ret_addr);
  * kretprobe return addresses on the @tsk. The '*@cur' should be core::ptr::null_mut() at the
  * first call, but '@cur' itself must NOT core::ptr::null_mut().
  */
-unsigned long kretprobe_find_ret_addr(task_struct *tsk, void *fp,
+core::ffi::c_ulong kretprobe_find_ret_addr(task_struct *tsk, void *fp,
 				      llist_node **cur)
 {
 	kretprobe_instance *ri;
@@ -2076,7 +2072,7 @@ unsigned long kretprobe_find_ret_addr(task_struct *tsk, void *fp,
 		ri = container_of(*cur, kretprobe_instance, llist);
 	} while (ri->fp != fp);
 
-	return (unsigned long)ret;
+	return (core::ffi::c_ulong)ret;
 }
 NOKPROBE_SYMBOL(kretprobe_find_ret_addr);
 
@@ -2089,7 +2085,7 @@ void __weak arch_kretprobe_fixup_return(pt_regs *regs,
 	 */
 }
 
-unsigned long __kretprobe_trampoline_handler(pt_regs *regs,
+core::ffi::c_ulong __kretprobe_trampoline_handler(pt_regs *regs,
 					     void *frame_pointer)
 {
 	kretprobe_instance *ri = core::ptr::null_mut();
@@ -2109,7 +2105,7 @@ unsigned long __kretprobe_trampoline_handler(pt_regs *regs,
 	 * user handler calls stack_trace_save_regs() with this 'regs',
 	 * the stack trace will start from the instruction pointer.
 	 */
-	instruction_pointer_set(regs, (unsigned long)correct_ret_addr);
+	instruction_pointer_set(regs, (core::ffi::c_ulong)correct_ret_addr);
 
 	/* Run the user handler of the nodes. */
 	first = current->kretprobe_instances.first;
@@ -2149,7 +2145,7 @@ unsigned long __kretprobe_trampoline_handler(pt_regs *regs,
 		recycle_rp_inst(ri);
 	}
 
-	return (unsigned long)correct_ret_addr;
+	return (core::ffi::c_ulong)correct_ret_addr;
 }
 NOKPROBE_SYMBOL(__kretprobe_trampoline_handler)
 
@@ -2210,7 +2206,7 @@ static int pre_handler_kretprobe(kprobe *p, pt_regs *regs)
 NOKPROBE_SYMBOL(pre_handler_kretprobe);
 
 static void kretprobe_rethook_handler(rethook_node *rh, void *data,
-				      unsigned long ret_addr,
+				      ret_addr: core::ffi::c_ulong,
 				      pt_regs *regs)
 {
 	kretprobe *rp = (kretprobe *)data;
@@ -2247,7 +2243,7 @@ NOKPROBE_SYMBOL(kretprobe_rethook_handler);
  * Caller must pass @addr or @sym (either one must be core::ptr::null_mut()), or this
  * returns -EINVAL.
  */
-int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset)
+int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, offset: core::ffi::c_ulong)
 {
 	bool on_func_entry;
 	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset, &on_func_entry);
@@ -2294,7 +2290,7 @@ int register_kretprobe(kretprobe *rp)
 
 	/* Pre-allocate memory for max kretprobe instances */
 	if (rp->maxactive <= 0)
-		rp->maxactive = max_t(unsigned int, 10, 2*num_possible_cpus());
+		rp->maxactive = max_t(core::ffi::c_uint, 10, 2*num_possible_cpus());
 
 // #ifdef CONFIG_KRETPROBE_ON_RETHOOK
 	rp->rh = rethook_alloc((void *)rp, kretprobe_rethook_handler,
@@ -2506,10 +2502,10 @@ void dump_kprobe(kprobe *kp)
 }
 NOKPROBE_SYMBOL(dump_kprobe);
 
-int kprobe_add_ksym_blacklist(unsigned long entry)
+int kprobe_add_ksym_blacklist(entry: core::ffi::c_ulong)
 {
 	kprobe_blacklist_entry *ent;
-	unsigned long offset = 0, size = 0;
+	core::ffi::c_ulong offset = 0, size = 0;
 
 	if (!kernel_text_address(entry) ||
 	    !kallsyms_lookup_size_offset(entry, &size, &offset))
@@ -2527,9 +2523,9 @@ int kprobe_add_ksym_blacklist(unsigned long entry)
 }
 
 /* Add all symbols in given area into kprobe blacklist */
-int kprobe_add_area_blacklist(unsigned long start, unsigned long end)
+int kprobe_add_area_blacklist(start: core::ffi::c_ulong, end: core::ffi::c_ulong)
 {
-	unsigned long entry;
+	core::ffi::c_ulong entry;
 	int ret = 0;
 
 	for (entry = start; entry < end; entry += ret) {
@@ -2542,13 +2538,13 @@ int kprobe_add_area_blacklist(unsigned long start, unsigned long end)
 	return 0;
 }
 
-int __weak arch_kprobe_get_kallsym(unsigned int *symnum, unsigned long *value,
+int __weak arch_kprobe_get_kallsym(core::ffi::c_uint *symnum, core::ffi::c_ulong *value,
 				   char *type, char *sym)
 {
 	return -ERANGE;
 }
 
-int kprobe_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
+int kprobe_get_kallsym(symnum: core::ffi::c_uint, core::ffi::c_ulong *value, char *type,
 		       char *sym)
 {
 // #ifdef __ARCH_WANT_KPROBES_INSN_SLOT
@@ -2577,15 +2573,15 @@ int __init __weak arch_populate_kprobe_blacklist(void)
  * since a kprobe need not necessarily be at the beginning
  * of a function.
  */
-static int __init populate_kprobe_blacklist(unsigned long *start,
-					     unsigned long *end)
+static int __init populate_kprobe_blacklist(core::ffi::c_ulong *start,
+					     core::ffi::c_ulong *end)
 {
-	unsigned long entry;
-	unsigned long *iter;
+	core::ffi::c_ulong entry;
+	core::ffi::c_ulong *iter;
 	int ret;
 
 	for (iter = start; iter < end; iter++) {
-		entry = (unsigned long)dereference_symbol_descriptor((void *)*iter);
+		entry = (core::ffi::c_ulong)dereference_symbol_descriptor((void *)*iter);
 		ret = kprobe_add_ksym_blacklist(entry);
 		if (ret == -EINVAL)
 			continue;
@@ -2594,40 +2590,40 @@ static int __init populate_kprobe_blacklist(unsigned long *start,
 	}
 
 	/* Symbols in '__kprobes_text' are blacklisted */
-	ret = kprobe_add_area_blacklist((unsigned long)__kprobes_text_start,
-					(unsigned long)__kprobes_text_end);
+	ret = kprobe_add_area_blacklist((core::ffi::c_ulong)__kprobes_text_start,
+					(core::ffi::c_ulong)__kprobes_text_end);
 	if (ret)
 		return ret;
 
 	/* Symbols in 'noinstr' section are blacklisted */
-	ret = kprobe_add_area_blacklist((unsigned long)__noinstr_text_start,
-					(unsigned long)__noinstr_text_end);
+	ret = kprobe_add_area_blacklist((core::ffi::c_ulong)__noinstr_text_start,
+					(core::ffi::c_ulong)__noinstr_text_end);
 
 	return ret ? : arch_populate_kprobe_blacklist();
 }
 
 // #ifdef CONFIG_MODULES
 /* Remove all symbols in given area from kprobe blacklist */
-static void kprobe_remove_area_blacklist(unsigned long start, unsigned long end)
+static void kprobe_remove_area_blacklist(start: core::ffi::c_ulong, end: core::ffi::c_ulong)
 {
 	kprobe_blacklist_entry *ent, *n;
 
-	list_for_each_entry_safe(ent, n, &kprobe_blacklist, list) {
+	list_for_each_entry_safe!(ent, n, &kprobe_blacklist, list, {
 		if (ent->start_addr < start || ent->start_addr >= end)
 			continue;
 		list_del(&ent->list);
 		kfree(ent);
-	}
+	});
 }
 
-static void kprobe_remove_ksym_blacklist(unsigned long entry)
+static void kprobe_remove_ksym_blacklist(entry: core::ffi::c_ulong)
 {
 	kprobe_remove_area_blacklist(entry, entry + 1);
 }
 
 static void add_module_kprobe_blacklist(module *mod)
 {
-	unsigned long start, end;
+	start: core::ffi::c_ulong, end;
 	int i;
 
 	if (mod->kprobe_blacklist) {
@@ -2635,13 +2631,13 @@ static void add_module_kprobe_blacklist(module *mod)
 			kprobe_add_ksym_blacklist(mod->kprobe_blacklist[i]);
 	}
 
-	start = (unsigned long)mod->kprobes_text_start;
+	start = (core::ffi::c_ulong)mod->kprobes_text_start;
 	if (start) {
 		end = start + mod->kprobes_text_size;
 		kprobe_add_area_blacklist(start, end);
 	}
 
-	start = (unsigned long)mod->noinstr_text_start;
+	start = (core::ffi::c_ulong)mod->noinstr_text_start;
 	if (start) {
 		end = start + mod->noinstr_text_size;
 		kprobe_add_area_blacklist(start, end);
@@ -2650,7 +2646,7 @@ static void add_module_kprobe_blacklist(module *mod)
 
 static void remove_module_kprobe_blacklist(module *mod)
 {
-	unsigned long start, end;
+	start: core::ffi::c_ulong, end;
 	int i;
 
 	if (mod->kprobe_blacklist) {
@@ -2658,13 +2654,13 @@ static void remove_module_kprobe_blacklist(module *mod)
 			kprobe_remove_ksym_blacklist(mod->kprobe_blacklist[i]);
 	}
 
-	start = (unsigned long)mod->kprobes_text_start;
+	start = (core::ffi::c_ulong)mod->kprobes_text_start;
 	if (start) {
 		end = start + mod->kprobes_text_size;
 		kprobe_remove_area_blacklist(start, end);
 	}
 
-	start = (unsigned long)mod->noinstr_text_start;
+	start = (core::ffi::c_ulong)mod->noinstr_text_start;
 	if (start) {
 		end = start + mod->noinstr_text_size;
 		kprobe_remove_area_blacklist(start, end);
@@ -2673,12 +2669,12 @@ static void remove_module_kprobe_blacklist(module *mod)
 
 /* Module notifier call back, checking kprobes on the module */
 static int kprobes_module_callback(notifier_block *nb,
-				   unsigned long val, void *data)
+				   val: core::ffi::c_ulong, void *data)
 {
 	module *mod = data;
 	hlist_head *head;
 	kprobe *p;
-	unsigned int i;
+	core::ffi::c_uint i;
 	int checkcore = (val == MODULE_STATE_GOING);
 
 	guard(mutex)(&kprobe_mutex);
@@ -2698,9 +2694,9 @@ static int kprobes_module_callback(notifier_block *nb,
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
 		hlist_for_each_entry(p, head, hlist)
-			if (within_module_init((unsigned long)p->addr, mod) ||
+			if (within_module_init((core::ffi::c_ulong)p->addr, mod) ||
 			    (checkcore &&
-			     within_module_core((unsigned long)p->addr, mod))) {
+			     within_module_core((core::ffi::c_ulong)p->addr, mod))) {
 				/*
 				 * The vaddr this probe is installed will soon
 				 * be vfreed buy not synced to disk. Hence,
@@ -2721,8 +2717,8 @@ static int kprobes_module_callback(notifier_block *nb,
 }
 
 static notifier_block kprobe_module_nb = {
-	.notifier_call = kprobes_module_callback,
-	.priority = 0
+	notifier_call: kprobes_module_callback,
+	priority: 0
 };
 
 static int kprobe_register_module_notifier(void)
@@ -2749,10 +2745,10 @@ void kprobe_free_init_mem(void)
 	/* Kill all kprobes on initmem because the target code has been freed. */
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
-		hlist_for_each_entry(p, head, hlist) {
+		hlist_for_each_entry!(p, head, hlist, {
 			if (start <= (void *)p->addr && (void *)p->addr < end)
 				kill_kprobe(p);
-		}
+		});
 	}
 }
 
@@ -2869,30 +2865,30 @@ static int show_kprobe_addr(seq_file *pi, void *v)
 	hlist_head *head;
 	kprobe *p, *kp;
 	const char *sym;
-	unsigned int i = *(loff_t *) v;
-	unsigned long offset = 0;
+	core::ffi::c_uint i = *(loff_t *) v;
+	core::ffi::c_ulong offset = 0;
 	char *modname, namebuf[KSYM_NAME_LEN];
 
 	head = &kprobe_table[i];
 	preempt_disable();
-	hlist_for_each_entry_rcu(p, head, hlist) {
-		sym = kallsyms_lookup((unsigned long)p->addr, core::ptr::null_mut(),
+	hlist_for_each_entry_rcu!(p, head, hlist, {
+		sym = kallsyms_lookup((core::ffi::c_ulong)p->addr, core::ptr::null_mut(),
 					&offset, &modname, namebuf);
 		if (kprobe_aggrprobe(p)) {
 			list_for_each_entry_rcu(kp, &p->list, list)
 				report_probe(pi, kp, sym, offset, modname, p);
 		} else
 			report_probe(pi, p, sym, offset, modname, core::ptr::null_mut());
-	}
+	});
 	preempt_enable();
 	return 0;
 }
 
 static const seq_operations kprobes_sops = {
-	.start = kprobe_seq_start,
-	.next  = kprobe_seq_next,
-	.stop  = kprobe_seq_stop,
-	.show  = show_kprobe_addr
+	start: kprobe_seq_start,
+	next: kprobe_seq_next,
+	stop: kprobe_seq_stop,
+	show: show_kprobe_addr
 };
 
 DEFINE_SEQ_ATTRIBUTE(kprobes);
@@ -2933,10 +2929,10 @@ static void kprobe_blacklist_seq_stop(seq_file *f, void *v)
 }
 
 static const seq_operations kprobe_blacklist_sops = {
-	.start = kprobe_blacklist_seq_start,
-	.next  = kprobe_blacklist_seq_next,
-	.stop  = kprobe_blacklist_seq_stop,
-	.show  = kprobe_blacklist_seq_show,
+	start: kprobe_blacklist_seq_start,
+	next: kprobe_blacklist_seq_next,
+	stop: kprobe_blacklist_seq_stop,
+	show: kprobe_blacklist_seq_show,
 };
 DEFINE_SEQ_ATTRIBUTE(kprobe_blacklist);
 
@@ -2944,7 +2940,7 @@ static int arm_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	unsigned int i, total = 0, errors = 0;
+	i: core::ffi::c_uint, total = 0, errors = 0;
 	int err, ret = 0;
 
 	guard(mutex)(&kprobe_mutex);
@@ -2963,7 +2959,7 @@ static int arm_all_kprobes(void)
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
 		/* Arm all kprobes on a best-effort basis */
-		hlist_for_each_entry(p, head, hlist) {
+		hlist_for_each_entry!(p, head, hlist, {
 			if (!kprobe_disabled(p)) {
 				err = arm_kprobe(p);
 				if (err)  {
@@ -2972,7 +2968,7 @@ static int arm_all_kprobes(void)
 				}
 				total++;
 			}
-		}
+		});
 	}
 
 	if (errors)
@@ -2988,7 +2984,7 @@ static int disarm_all_kprobes(void)
 {
 	hlist_head *head;
 	kprobe *p;
-	unsigned int i, total = 0, errors = 0;
+	i: core::ffi::c_uint, total = 0, errors = 0;
 	int err, ret = 0;
 
 	guard(mutex)(&kprobe_mutex);
@@ -3002,7 +2998,7 @@ static int disarm_all_kprobes(void)
 	for (i = 0; i < KPROBE_TABLE_SIZE; i++) {
 		head = &kprobe_table[i];
 		/* Disarm all kprobes on a best-effort basis */
-		hlist_for_each_entry(p, head, hlist) {
+		hlist_for_each_entry!(p, head, hlist, {
 			if (!arch_trampoline_kprobe(p) && !kprobe_disabled(p)) {
 				err = disarm_kprobe(p, false);
 				if (err) {
@@ -3011,7 +3007,7 @@ static int disarm_all_kprobes(void)
 				}
 				total++;
 			}
-		}
+		});
 	}
 
 	if (errors)
@@ -3062,9 +3058,9 @@ static ssize_t write_enabled_file_bool(file *file,
 }
 
 static const file_operations fops_kp = {
-	.read =         read_enabled_file_bool,
-	.write =        write_enabled_file_bool,
-	.llseek =	default_llseek,
+	read: read_enabled_file_bool,
+	write: write_enabled_file_bool,
+	llseek: default_llseek,
 };
 
 static int __init debugfs_kprobe_init(void)
@@ -3073,11 +3069,11 @@ static int __init debugfs_kprobe_init(void)
 
 	dir = debugfs_create_dir("kprobes", core::ptr::null_mut());
 
-	debugfs_create_file("list", 0400, dir, core::ptr::null_mut(), &kprobes_fops);
+	debugfs_create_file("list", 0o400, dir, core::ptr::null_mut(), &kprobes_fops);
 
-	debugfs_create_file("enabled", 0600, dir, core::ptr::null_mut(), &fops_kp);
+	debugfs_create_file("enabled", 0o600, dir, core::ptr::null_mut(), &fops_kp);
 
-	debugfs_create_file("blacklist", 0400, dir, core::ptr::null_mut(),
+	debugfs_create_file("blacklist", 0o400, dir, core::ptr::null_mut(),
 			    &kprobe_blacklist_fops);
 
 	return 0;

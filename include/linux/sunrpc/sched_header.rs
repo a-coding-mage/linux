@@ -234,31 +234,31 @@ extern "C" {
     pub fn rpc_task_gfp_mask() -> gfp_t;
 }
 
-#[cfg(any(feature = "CONFIG_SUNRPC_DEBUG", feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(any(CONFIG_SUNRPC_DEBUG, CONFIG_TRACEPOINTS))]
 #[inline]
 pub unsafe fn rpc_qname(q: *const rpc_wait_queue) -> *const c_char {
     if !q.is_null() && !(*q).name.is_null() { (*q).name } else { b"unknown\0".as_ptr() as *const c_char }
 }
 
-#[cfg(any(feature = "CONFIG_SUNRPC_DEBUG", feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(any(CONFIG_SUNRPC_DEBUG, CONFIG_TRACEPOINTS))]
 #[inline]
 pub unsafe fn rpc_assign_waitqueue_name(q: *mut rpc_wait_queue, name: *const c_char) { (*q).name = name; }
 
-#[cfg(not(any(feature = "CONFIG_SUNRPC_DEBUG", feature = "CONFIG_TRACEPOINTS")))]
+#[cfg(not(any(CONFIG_SUNRPC_DEBUG, CONFIG_TRACEPOINTS)))]
 #[inline]
 pub unsafe fn rpc_assign_waitqueue_name(_q: *mut rpc_wait_queue, _name: *const c_char) {}
 
-#[cfg(feature = "CONFIG_SUNRPC_SWAP")]
+#[cfg(CONFIG_SUNRPC_SWAP)]
 extern "C" {
     pub fn rpc_clnt_swap_activate(clnt: *mut rpc_clnt) -> c_int;
     pub fn rpc_clnt_swap_deactivate(clnt: *mut rpc_clnt);
 }
 
-#[cfg(not(feature = "CONFIG_SUNRPC_SWAP"))]
+#[cfg(not(CONFIG_SUNRPC_SWAP))]
 #[inline]
 pub unsafe fn rpc_clnt_swap_activate(_clnt: *mut rpc_clnt) -> c_int { -22 }
 
-#[cfg(not(feature = "CONFIG_SUNRPC_SWAP"))]
+#[cfg(not(CONFIG_SUNRPC_SWAP))]
 #[inline]
 pub unsafe fn rpc_clnt_swap_deactivate(_clnt: *mut rpc_clnt) {}
 

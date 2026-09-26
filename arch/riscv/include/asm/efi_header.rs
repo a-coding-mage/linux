@@ -8,12 +8,12 @@
 
 // CONFIG_EFI controls whether the firmware initialization function is
 // provided by the build.
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     pub fn efi_init();
 }
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[inline(always)]
 pub fn efi_init() {}
 

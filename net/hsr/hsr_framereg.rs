@@ -16,9 +16,9 @@ pub unsafe fn hsr_addr_is_self(hsr: *mut hsr_priv, addr: *mut u8) -> bool {
 
 unsafe fn find_node_by_addr_A(db: *mut list_head, addr: *const u8) -> *mut hsr_node {
     let mut node: *mut hsr_node = core::ptr::null_mut();
-    list_for_each_entry_rcu!(node, db, mac_list) {
+    list_for_each_entry_rcu!(node, db, mac_list, {
         if ether_addr_equal((*node).macaddress_A.as_ptr(), addr) { return node; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -38,7 +38,7 @@ unsafe fn hsr_free_node_rcu(rn: *mut rcu_head) { hsr_free_node(container_of!(rn,
 unsafe fn hsr_lock_seq_out_pair(a: *mut hsr_node, b: *mut hsr_node) { if a == b { spin_lock_bh(&mut (*a).seq_out_lock); } else if (a as usize) < (b as usize) { spin_lock_bh(&mut (*a).seq_out_lock); spin_lock_nested(&mut (*b).seq_out_lock, SINGLE_DEPTH_NESTING); } else { spin_lock_bh(&mut (*b).seq_out_lock); spin_lock_nested(&mut (*a).seq_out_lock, SINGLE_DEPTH_NESTING); } }
 unsafe fn hsr_unlock_seq_out_pair(a: *mut hsr_node, b: *mut hsr_node) { if a == b { spin_unlock(&mut (*a).seq_out_lock); } else if (a as usize) < (b as usize) { spin_unlock(&mut (*b).seq_out_lock); spin_unlock_bh(&mut (*a).seq_out_lock); } else { spin_unlock(&mut (*a).seq_out_lock); spin_unlock_bh(&mut (*b).seq_out_lock); } }
 
-pub unsafe fn hsr_del_nodes(db: *mut list_head) { let mut n = core::ptr::null_mut(); let mut tmp = core::ptr::null_mut(); list_for_each_entry_safe!(n, tmp, db, mac_list) { list_del_rcu(&mut (*n).mac_list); call_rcu(&mut (*n).rcu_head, hsr_free_node_rcu); } }
+pub unsafe fn hsr_del_nodes(db: *mut list_head) { let mut n = core::ptr::null_mut(); let mut tmp = core::ptr::null_mut(); list_for_each_entry_safe!(n, tmp, db, mac_list, { list_del_rcu(&mut (*n).mac_list); call_rcu(&mut (*n).rcu_head, hsr_free_node_rcu); }); }
 pub unsafe fn prp_handle_san_frame(_san: bool, port: hsr_port_type, node: *mut hsr_node) { if port == HSR_PT_SLAVE_A { (*node).san_a = true; } else if port == HSR_PT_SLAVE_B { (*node).san_b = true; } }
 
 unsafe fn hsr_add_node(hsr: *mut hsr_priv, db: *mut list_head, addr: *const u8, san: bool, rx: hsr_port_type) -> *mut hsr_node {
@@ -48,7 +48,7 @@ unsafe fn hsr_add_node(hsr: *mut hsr_priv, db: *mut list_head, addr: *const u8, 
     let sz = hsr_seq_block_size(n); (*n).block_buf = kcalloc(HSR_MAX_SEQ_BLOCKS, sz, GFP_ATOMIC); if (*n).block_buf.is_null() { kfree(n); return core::ptr::null_mut(); }
     xa_init(&mut (*n).seq_blocks); let now = jiffies; for i in 0..HSR_PT_PORTS { (*n).time_in[i] = now; }
     if san && !(*hsr).proto_ops.handle_san_frame.is_none() { ((*hsr).proto_ops.handle_san_frame.unwrap())(san, rx, n); }
-    spin_lock_bh(&mut (*hsr).list_lock); let mut old = core::ptr::null_mut(); list_for_each_entry_rcu!(old, db, mac_list) { if ether_addr_equal((*old).macaddress_A.as_ptr(), addr) || ether_addr_equal((*old).macaddress_B.as_ptr(), addr) { spin_unlock_bh(&mut (*hsr).list_lock); kfree((*n).block_buf); kfree(n); return old; } }
+    spin_lock_bh(&mut (*hsr).list_lock); let mut old = core::ptr::null_mut(); list_for_each_entry_rcu!(old, db, mac_list, { if ether_addr_equal((*old).macaddress_A.as_ptr(), addr) || ether_addr_equal((*old).macaddress_B.as_ptr(), addr) { spin_unlock_bh(&mut (*hsr).list_lock); kfree((*n).block_buf); kfree(n); return old; } });
     list_add_tail_rcu(&mut (*n).mac_list, db); spin_unlock_bh(&mut (*hsr).list_lock); n
 }
 
@@ -72,14 +72,14 @@ pub unsafe fn prp_register_frame_out(port: *mut hsr_port, frame: *mut hsr_frame_
 pub unsafe fn hsr_get_node(port: *mut hsr_port, db: *mut list_head, skb: *mut sk_buff, is_sup: bool, rx: hsr_port_type) -> *mut hsr_node {
     if !skb_mac_header_was_set(skb) { return core::ptr::null_mut(); }
     let eth=skb_mac_header(skb) as *mut ethhdr; let hsr=(*port).hsr; let mut n=core::ptr::null_mut();
-    list_for_each_entry_rcu!(n,db,mac_list) { if ether_addr_equal((*n).macaddress_A.as_ptr(),(*eth).h_source.as_ptr()) || ether_addr_equal((*n).macaddress_B.as_ptr(),(*eth).h_source.as_ptr()) { if !(*hsr).proto_ops.update_san_info.is_none() { ((*hsr).proto_ops.update_san_info.unwrap())(n,is_sup); } return n; } }
+    list_for_each_entry_rcu!(n,db,mac_list, { if ether_addr_equal((*n).macaddress_A.as_ptr(),(*eth).h_source.as_ptr()) || ether_addr_equal((*n).macaddress_B.as_ptr(),(*eth).h_source.as_ptr()) { if !(*hsr).proto_ops.update_san_info.is_none() { ((*hsr).proto_ops.update_san_info.unwrap())(n,is_sup); } return n; } });
     let mut san=false; if (*eth).h_proto != htons(ETH_P_PRP) && (*eth).h_proto != htons(ETH_P_HSR) { san=skb_get_PRP_rct(skb).is_null() && rx!=HSR_PT_MASTER; } else if (*hsr).prot_version != PRP_V1 || (*eth).h_proto != htons(ETH_P_PRP) || !is_sup { if (*skb).mac_len < core::mem::size_of::<hsr_ethhdr>() { return core::ptr::null_mut(); } }
     hsr_add_node(hsr,db,(*eth).h_source.as_ptr(),san,rx)
 }
 
 pub unsafe fn hsr_addr_subst_dest(src: *mut hsr_node, skb: *mut sk_buff, port: *mut hsr_port) { let _=src; if !skb_mac_header_was_set(skb) { return; } let eth=eth_hdr(skb); if !is_unicast_ether_addr(eth.h_dest.as_ptr()) { return; } let mut n=find_node_by_addr_A(&mut (*(*port).hsr).node_db,eth.h_dest.as_ptr()); if n.is_null() && (*(*port).hsr).redbox { n=find_node_by_addr_A(&mut (*(*port).hsr).proxy_node_db,eth.h_dest.as_ptr()); } if n.is_null() || (*port).type_!=(*n).addr_B_port { return; } if is_valid_ether_addr((*n).macaddress_B.as_ptr()) { ether_addr_copy(eth.h_dest.as_mut_ptr(),(*n).macaddress_B.as_ptr()); } }
 
-pub unsafe fn hsr_get_next_node(hsr: *mut hsr_priv, pos: *mut core::ffi::c_void, addr: *mut u8) -> *mut core::ffi::c_void { let mut n=pos as *mut hsr_node; if pos.is_null() { n=list_first_or_null_rcu(&mut (*hsr).node_db); } else { list_for_each_entry_continue_rcu!(n,&mut (*hsr).node_db,mac_list) { ether_addr_copy(addr,(*n).macaddress_A.as_ptr()); return n as *mut _; } return core::ptr::null_mut(); } if !n.is_null() { ether_addr_copy(addr,(*n).macaddress_A.as_ptr()); } n as *mut _ }
+pub unsafe fn hsr_get_next_node(hsr: *mut hsr_priv, pos: *mut core::ffi::c_void, addr: *mut u8) -> *mut core::ffi::c_void { let mut n=pos as *mut hsr_node; if pos.is_null() { n=list_first_or_null_rcu(&mut (*hsr).node_db); } else { list_for_each_entry_continue_rcu!(n,&mut (*hsr).node_db,mac_list, { ether_addr_copy(addr,(*n).macaddress_A.as_ptr()); return n as *mut _; }); return core::ptr::null_mut(); } if !n.is_null() { ether_addr_copy(addr,(*n).macaddress_A.as_ptr()); } n as *mut _ }
 
 unsafe fn fill_last_seq_nrs(n:*mut hsr_node, a:*mut u16,b:*mut u16) { spin_lock_bh(&mut (*n).seq_out_lock); let off=((*n).next_block-1)&(HSR_MAX_SEQ_BLOCKS-1); let bl=(*n).block_buf.add(off as usize*hsr_seq_block_size(n)); let x=find_last_bit((*bl).seq_nrs[HSR_PT_SLAVE_B-1].as_ptr(),HSR_SEQ_BLOCK_SIZE); if x<HSR_SEQ_BLOCK_SIZE {*a=(((*bl).block_idx as u16)<<HSR_SEQ_BLOCK_SHIFT)|x as u16;} let y=find_last_bit((*bl).seq_nrs[HSR_PT_SLAVE_A-1].as_ptr(),HSR_SEQ_BLOCK_SIZE); if y<HSR_SEQ_BLOCK_SIZE {*b=(((*bl).block_idx as u16)<<HSR_SEQ_BLOCK_SHIFT)|y as u16;} spin_unlock_bh(&mut (*n).seq_out_lock); }
 

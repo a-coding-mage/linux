@@ -10,18 +10,18 @@ pub const KVM_PROFILING: ::core::ffi::c_int = 4;
 pub enum proc_dir_entry {}
 pub enum notifier_block {}
 
-#[cfg(all(feature = "CONFIG_PROFILING", feature = "CONFIG_PROC_FS"))]
+#[cfg(all(CONFIG_PROFILING, CONFIG_PROC_FS))]
 unsafe extern "C" {
     pub fn create_proc_profile() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(all(feature = "CONFIG_PROFILING", feature = "CONFIG_PROC_FS")))]
+#[cfg(not(all(CONFIG_PROFILING, CONFIG_PROC_FS)))]
 #[inline]
 pub unsafe fn create_proc_profile() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_PROFILING")]
+#[cfg(CONFIG_PROFILING)]
 unsafe extern "C" {
     pub static mut prof_on: ::core::ffi::c_int;
 
@@ -41,7 +41,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_PROFILING")]
+#[cfg(CONFIG_PROFILING)]
 #[inline]
 pub unsafe fn profile_hit(type_: ::core::ffi::c_int, ip: *mut ::core::ffi::c_void) {
     /*
@@ -52,20 +52,20 @@ pub unsafe fn profile_hit(type_: ::core::ffi::c_int, ip: *mut ::core::ffi::c_voi
     }
 }
 
-#[cfg(not(feature = "CONFIG_PROFILING"))]
+#[cfg(not(CONFIG_PROFILING))]
 pub const prof_on: ::core::ffi::c_int = 0;
 
-#[cfg(not(feature = "CONFIG_PROFILING"))]
+#[cfg(not(CONFIG_PROFILING))]
 #[inline]
 pub unsafe fn profile_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PROFILING"))]
+#[cfg(not(CONFIG_PROFILING))]
 #[inline]
 pub unsafe fn profile_tick(_type_: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_PROFILING"))]
+#[cfg(not(CONFIG_PROFILING))]
 #[inline]
 pub unsafe fn profile_hits(
     _type_: ::core::ffi::c_int,
@@ -74,7 +74,7 @@ pub unsafe fn profile_hits(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_PROFILING"))]
+#[cfg(not(CONFIG_PROFILING))]
 #[inline]
 pub unsafe fn profile_hit(_type_: ::core::ffi::c_int, _ip: *mut ::core::ffi::c_void) {}
 

@@ -80,24 +80,24 @@ pub const TRACE_RECORD_CMDLINE: u32 = 1; pub const TRACE_RECORD_TGID: u32 = 2;
 pub const TRACE_EVENT_FL_CAP_ANY: i32 = 1; pub const TRACE_EVENT_FL_NO_SET_FILTER: i32 = 2; pub const TRACE_EVENT_FL_IGNORE_ENABLE: i32 = 4; pub const TRACE_EVENT_FL_TRACEPOINT: i32 = 8; pub const TRACE_EVENT_FL_DYNAMIC: i32 = 16; pub const TRACE_EVENT_FL_KPROBE: i32 = 32; pub const TRACE_EVENT_FL_UPROBE: i32 = 64; pub const TRACE_EVENT_FL_EPROBE: i32 = 128; pub const TRACE_EVENT_FL_FPROBE: i32 = 256; pub const TRACE_EVENT_FL_CUSTOM: i32 = 512; pub const TRACE_EVENT_FL_TEST_STR: i32 = 1024; pub const TRACE_EVENT_FL_UKPROBE: i32 = TRACE_EVENT_FL_KPROBE | TRACE_EVENT_FL_UPROBE;
 
 extern "C" {
-    pub fn trace_print_flags_seq(*mut trace_seq,*const i8,usize,*const trace_print_flags,usize)->*const i8;
-    pub fn trace_print_symbols_seq(*mut trace_seq,usize,*const trace_print_flags,usize)->*const i8;
-    pub fn trace_print_bitmask_seq(*mut trace_iterator,*mut core::ffi::c_void,u32)->*const i8;
-    pub fn trace_print_hex_seq(*mut trace_seq,*const u8,i32,bool)->*const i8;
-    pub fn trace_print_array_seq(*mut trace_seq,*const core::ffi::c_void,i32,usize)->*const i8;
-    pub fn trace_raw_output_prep(*mut trace_iterator,*mut trace_event)->i32;
-    pub fn trace_event_printf(*mut trace_iterator,*const i8,...);
-    pub fn register_trace_event(*mut trace_event)->i32; pub fn unregister_trace_event(*mut trace_event)->i32;
-    pub fn trace_handle_return(*mut trace_seq)->print_line_t;
-    pub fn tracing_gen_ctx_irq_test(u32)->u32; pub fn trace_event_buffer_reserve(*mut trace_event_buffer,*mut trace_event_file,usize)->*mut core::ffi::c_void; pub fn trace_event_buffer_commit(*mut trace_event_buffer);
-    pub fn tracing_record_taskinfo(*mut task_struct,i32); pub fn tracing_record_cmdline(*mut task_struct); pub fn tracing_record_tgid(*mut task_struct);
-    pub fn trace_event_reg(*mut trace_event_call,trace_reg,*mut core::ffi::c_void)->i32;
-    pub fn dynevent_create(*mut dynevent_cmd)->i32; pub fn synth_event_delete(*const i8)->i32; pub fn synth_event_create(*const i8,*mut synth_field_desc,u32,*mut module)->i32;
-    pub fn synth_event_trace(*mut trace_event_file,u32,...)->i32; pub fn synth_event_trace_array(*mut trace_event_file,*mut u64,u32)->i32;
-    pub fn kprobe_event_delete(*const i8)->i32;
-    pub fn filter_match_preds(*mut event_filter,*mut core::ffi::c_void)->i32;
-    pub fn trace_event_raw_init(*mut trace_event_call)->i32; pub fn trace_add_event_call(*mut trace_event_call)->i32; pub fn trace_remove_event_call(*mut trace_event_call)->i32; pub fn trace_event_get_offsets(*mut trace_event_call)->i32;
-    pub fn ftrace_set_clr_event(*mut trace_array,*mut i8,i32)->i32; pub fn trace_set_clr_event(*const i8,*const i8,i32)->i32;
+    pub fn trace_print_flags_seq(_: *mut trace_seq,_: *const i8,_: usize,_: *const trace_print_flags,_: usize)->*const i8;
+    pub fn trace_print_symbols_seq(_: *mut trace_seq,_: usize,_: *const trace_print_flags,_: usize)->*const i8;
+    pub fn trace_print_bitmask_seq(_: *mut trace_iterator,_: *mut core::ffi::c_void,_: u32)->*const i8;
+    pub fn trace_print_hex_seq(_: *mut trace_seq,_: *const u8,_: i32,_: bool)->*const i8;
+    pub fn trace_print_array_seq(_: *mut trace_seq,_: *const core::ffi::c_void,_: i32,_: usize)->*const i8;
+    pub fn trace_raw_output_prep(_: *mut trace_iterator,_: *mut trace_event)->i32;
+    pub fn trace_event_printf(_: *mut trace_iterator,_: *const i8,...);
+    pub fn register_trace_event(_: *mut trace_event)->i32; pub fn unregister_trace_event(_: *mut trace_event)->i32;
+    pub fn trace_handle_return(_: *mut trace_seq)->print_line_t;
+    pub fn tracing_gen_ctx_irq_test(_: u32)->u32; pub fn trace_event_buffer_reserve(_: *mut trace_event_buffer,_: *mut trace_event_file,_: usize)->*mut core::ffi::c_void; pub fn trace_event_buffer_commit(_: *mut trace_event_buffer);
+    pub fn tracing_record_taskinfo(_: *mut task_struct,_: i32); pub fn tracing_record_cmdline(_: *mut task_struct); pub fn tracing_record_tgid(_: *mut task_struct);
+    pub fn trace_event_reg(_: *mut trace_event_call,_: trace_reg,_: *mut core::ffi::c_void)->i32;
+    pub fn dynevent_create(_: *mut dynevent_cmd)->i32; pub fn synth_event_delete(_: *const i8)->i32; pub fn synth_event_create(_: *const i8,_: *mut synth_field_desc,_: u32,_: *mut module)->i32;
+    pub fn synth_event_trace(_: *mut trace_event_file,_: u32,...)->i32; pub fn synth_event_trace_array(_: *mut trace_event_file,_: *mut u64,_: u32)->i32;
+    pub fn kprobe_event_delete(_: *const i8)->i32;
+    pub fn filter_match_preds(_: *mut event_filter,_: *mut core::ffi::c_void)->i32;
+    pub fn trace_event_raw_init(_: *mut trace_event_call)->i32; pub fn trace_add_event_call(_: *mut trace_event_call)->i32; pub fn trace_remove_event_call(_: *mut trace_event_call)->i32; pub fn trace_event_get_offsets(_: *mut trace_event_call)->i32;
+    pub fn ftrace_set_clr_event(_: *mut trace_array,_: *mut i8,_: i32)->i32; pub fn trace_set_clr_event(_: *const i8,_: *const i8,_: i32)->i32;
 }
 
 // The remaining declarations are configuration- and macro-generated kernel APIs.

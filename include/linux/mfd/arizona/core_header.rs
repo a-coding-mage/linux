@@ -148,7 +148,7 @@ extern "C" {
     pub fn arizona_request_irq(arizona: *mut arizona, irq: i32, name: *mut c_char, handler: irq_handler_t, data: *mut c_void) -> i32;
     pub fn arizona_free_irq(arizona: *mut arizona, irq: i32, data: *mut c_void);
     pub fn arizona_set_irq_wake(arizona: *mut arizona, irq: i32, on: i32) -> i32;
-    #[cfg(feature = "CONFIG_MFD_WM5102")]
+    #[cfg(CONFIG_MFD_WM5102)]
     pub fn wm5102_patch(arizona: *mut arizona) -> i32;
     pub fn wm5110_patch(arizona: *mut arizona) -> i32;
     pub fn cs47l24_patch(arizona: *mut arizona) -> i32;
@@ -156,7 +156,7 @@ extern "C" {
     pub fn wm8998_patch(arizona: *mut arizona) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_MFD_WM5102"))]
+#[cfg(not(CONFIG_MFD_WM5102))]
 #[inline]
 pub unsafe fn wm5102_patch(_arizona: *mut arizona) -> i32 {
     0

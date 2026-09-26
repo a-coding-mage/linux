@@ -26,55 +26,47 @@ extern "C" {
         mm: *mut mm_struct,
         addr: ::core::ffi::c_ulong,
         ptep: *mut pte_t,
-        sz: ::core::ffi::c_ulong,
-    );
+        sz: ::core::ffi::c_ulong);
 
     pub fn set_huge_pte_at(
         mm: *mut mm_struct,
         addr: ::core::ffi::c_ulong,
         ptep: *mut pte_t,
         pte: pte_t,
-        sz: ::core::ffi::c_ulong,
-    );
+        sz: ::core::ffi::c_ulong);
 
     pub fn huge_ptep_get_and_clear(
         mm: *mut mm_struct,
         addr: ::core::ffi::c_ulong,
         ptep: *mut pte_t,
-        sz: ::core::ffi::c_ulong,
-    ) -> pte_t;
+        sz: ::core::ffi::c_ulong) -> pte_t;
 
     pub fn huge_ptep_clear_flush(
         vma: *mut vm_area_struct,
         addr: ::core::ffi::c_ulong,
-        ptep: *mut pte_t,
-    ) -> pte_t;
+        ptep: *mut pte_t) -> pte_t;
 
     pub fn huge_ptep_set_wrprotect(
         mm: *mut mm_struct,
         addr: ::core::ffi::c_ulong,
-        ptep: *mut pte_t,
-    );
+        ptep: *mut pte_t);
 
     pub fn huge_ptep_set_access_flags(
         vma: *mut vm_area_struct,
         addr: ::core::ffi::c_ulong,
         ptep: *mut pte_t,
         pte: pte_t,
-        dirty: ::core::ffi::c_int,
-    ) -> ::core::ffi::c_int;
+        dirty: ::core::ffi::c_int) -> ::core::ffi::c_int;
 
     pub fn huge_ptep_get(
         mm: *mut mm_struct,
         addr: ::core::ffi::c_ulong,
-        ptep: *mut pte_t,
-    ) -> pte_t;
+        ptep: *mut pte_t) -> pte_t;
 
     pub fn arch_make_huge_pte(
         entry: pte_t,
         shift: ::core::ffi::c_uint,
-        flags: vm_flags_t,
-    ) -> pte_t;
+        flags: vm_flags_t) -> pte_t;
 }
 
 #[cfg(CONFIG_RISCV_ISA_SVNAPOT)]

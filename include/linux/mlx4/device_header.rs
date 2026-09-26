@@ -23,7 +23,7 @@ pub const MLX4_MAX_NUM_PF:usize=16; pub const MLX4_MAX_NUM_VF:usize=126; pub con
 pub const MLX4_STEERING_MODE_A0:i32=0; pub const MLX4_STEERING_MODE_B0:i32=1; pub const MLX4_STEERING_MODE_DEVICE_MANAGED:i32=2;
 pub const MLX4_STEERING_DMFS_A0_DEFAULT:i32=0; pub const MLX4_STEERING_DMFS_A0_DYNAMIC:i32=1; pub const MLX4_STEERING_DMFS_A0_STATIC:i32=2; pub const MLX4_STEERING_DMFS_A0_DISABLE:i32=3; pub const MLX4_STEERING_DMFS_A0_NOT_SUPPORTED:i32=4;
 pub const MLX4_TUNNEL_OFFLOAD_MODE_NONE:i32=0; pub const MLX4_TUNNEL_OFFLOAD_MODE_VXLAN:i32=1;
-pub const MLX4_MAX_SGE_RD:usize=(512-16-16)/16; pub const MLX4_NUM_QP_REGION:usize=6; pub const MLX4_DB_PER_PAGE:usize=PAGE_SIZE/4;
+pub const MLX4_MAX_SGE_RD:usize=(512-16-16)/16; pub const MLX4_NUM_QP_REGION:usize=5; pub const MLX4_DB_PER_PAGE:usize=PAGE_SIZE/4;
 
 #[repr(C)] #[derive(Copy,Clone)] pub struct mlx4_rate_limit_caps { pub num_rates:u16,pub min_unit:u8,pub min_val:u16,pub max_unit:u8,pub max_val:u16 }
 #[repr(C)] pub struct mlx4_spec_qps { pub qp0_qkey:u32,pub qp0_proxy:u32,pub qp0_tunnel:u32,pub qp1_proxy:u32,pub qp1_tunnel:u32 }

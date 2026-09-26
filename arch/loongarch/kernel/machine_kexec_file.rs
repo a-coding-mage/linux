@@ -145,6 +145,7 @@ pub unsafe fn load_other_segments(
     let orig_segments = (*image).nr_segments;
     let mut modified_cmdline: *mut libc::c_char = core::ptr::null_mut();
     let mut kbuf: KexecBuf = core::mem::zeroed();
+    'out_err: {
 
     kbuf.image = image;
     /* Don't allocate anything below the kernel */
@@ -167,7 +168,7 @@ pub unsafe fn load_other_segments(
         ret = crash_prepare_headers(true, &mut headers, &mut headers_sz, core::ptr::null_mut());
         if ret < 0 {
             pr_err!(b"Preparing elf core header failed\n\0");
-            goto_out_err!(out_err);
+            break 'out_err;
         }
 
         kbuf.buffer = headers;
@@ -181,7 +182,7 @@ pub unsafe fn load_other_segments(
         ret = kexec_add_buffer(&mut kbuf);
         if ret < 0 {
             vfree(headers);
-            goto_out_err!(out_err);
+            break 'out_err;
         }
         (*image).elf_headers = headers;
         (*image).elf_load_addr = kbuf.mem;
@@ -208,7 +209,7 @@ pub unsafe fn load_other_segments(
 
         ret = kexec_add_buffer(&mut kbuf);
         if ret < 0 {
-            goto_out_err!(out_err);
+            break 'out_err;
         }
         initrd_load_addr = kbuf.mem;
 
@@ -222,7 +223,7 @@ pub unsafe fn load_other_segments(
     if cmdline_len + cmdline_tmplen > COMMAND_LINE_SIZE {
         pr_err!(b"Appending command line exceeds COMMAND_LINE_SIZE\n\0");
         ret = -EINVAL;
-        goto_out_err!(out_err);
+        break 'out_err;
     }
 
     core::ptr::copy_nonoverlapping(
@@ -235,7 +236,8 @@ pub unsafe fn load_other_segments(
     return 0;
 
     // C goto target: restore the original segment count and free the command line.
-    out_err: {
+    }
+    {
         (*image).nr_segments = orig_segments;
         kfree(modified_cmdline);
         ret

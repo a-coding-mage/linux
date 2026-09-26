@@ -16,7 +16,7 @@
 
 macro_rules! BASE_INNER { ($seg:ident) => { DCE_BASE__INST0_SEG$seg }; }
 macro_rules! BASE { ($seg:ident) => { BASE_INNER!($seg) }; }
-macro_rules! REG { ($name:ident) => { BASE!(mm$name##_BASE_IDX) + mm$name }; }
+macro_rules! REG { ($name:tt) => { BASE!(mm::kernel::macros::paste!([<$name _BASE_IDX>])) + mm$name }; }
 
 unsafe fn offset_to_id(offset: u32, mask: u32, id: *mut gpio_id, en: *mut u32) -> bool {
     match offset {

@@ -25,7 +25,7 @@ pub struct XzDec {
 
 unsafe fn fill_temp(s: *mut XzDec, b: *mut xz_buf) -> bool {
     let n = core::cmp::min((*b).in_size - (*b).in_pos, (*s).temp.size - (*s).temp.pos);
-    core::ptr::copy_nonoverlapping((*b).in.add((*b).in_pos), (*s).temp.buf.as_mut_ptr().add((*s).temp.pos), n);
+    core::ptr::copy_nonoverlapping((*b).r#in.add((*b).in_pos), (*s).temp.buf.as_mut_ptr().add((*s).temp.pos), n);
     (*b).in_pos += n; (*s).temp.pos += n;
     if (*s).temp.pos == (*s).temp.size { (*s).temp.pos = 0; true } else { false }
 }
@@ -58,10 +58,10 @@ unsafe fn dec_block(s: *mut XzDec, b: *mut xz_buf) -> xz_ret {
     } ret
 }
 
-unsafe fn index_update(s: *mut XzDec, b: *const xz_buf) { let n = (*b).in_pos - (*s).in_start; (*s).index.size += n as vli_type; (*s).crc32 = xz_crc32((*b).in.add((*s).in_start), n, (*s).crc32); }
+unsafe fn index_update(s: *mut XzDec, b: *const xz_buf) { let n = (*b).in_pos - (*s).in_start; (*s).index.size += n as vli_type; (*s).crc32 = xz_crc32((*b).r#in.add((*s).in_start), n, (*s).crc32); }
 
 unsafe fn crc32_validate(s: *mut XzDec, b: *mut xz_buf) -> xz_ret {
-    while (*s).pos < 32 { if (*b).in_pos == (*b).in_size { return XZ_OK; } if (((*s).crc32 >> (*s).pos) & 0xff) as u8 != *(*b).in.add((*b).in_pos) { return XZ_DATA_ERROR; } (*b).in_pos += 1; (*s).pos += 8; }
+    while (*s).pos < 32 { if (*b).in_pos == (*b).in_size { return XZ_OK; } if (((*s).crc32 >> (*s).pos) & 0xff) as u8 != *(*b).r#in.add((*b).in_pos) { return XZ_DATA_ERROR; } (*b).in_pos += 1; (*s).pos += 8; }
     (*s).crc32 = 0; (*s).pos = 0; XZ_STREAM_END
 }
 

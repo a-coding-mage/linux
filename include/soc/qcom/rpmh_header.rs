@@ -6,7 +6,7 @@
 // C dependencies: <soc/qcom/tcs.h>, <linux/platform_device.h>
 // The CONFIG_QCOM_RPMH build condition is preserved below with Rust cfgs.
 
-#[cfg(feature = "CONFIG_QCOM_RPMH")]
+#[cfg(CONFIG_QCOM_RPMH)]
 extern "C" {
     pub fn rpmh_read(dev: *const device, cmd: *mut tcs_cmd) -> i32;
 
@@ -34,13 +34,13 @@ extern "C" {
     pub fn rpmh_invalidate(dev: *const device);
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPMH"))]
+#[cfg(not(CONFIG_QCOM_RPMH))]
 #[inline]
 pub unsafe fn rpmh_read(_dev: *const device, _cmd: *mut tcs_cmd) -> i32 {
     -19 // -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPMH"))]
+#[cfg(not(CONFIG_QCOM_RPMH))]
 #[inline]
 pub unsafe fn rpmh_write(
     _dev: *const device,
@@ -51,7 +51,7 @@ pub unsafe fn rpmh_write(
     -19 // -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPMH"))]
+#[cfg(not(CONFIG_QCOM_RPMH))]
 #[inline]
 pub unsafe fn rpmh_write_async(
     _dev: *const device,
@@ -62,7 +62,7 @@ pub unsafe fn rpmh_write_async(
     -19 // -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPMH"))]
+#[cfg(not(CONFIG_QCOM_RPMH))]
 #[inline]
 pub unsafe fn rpmh_write_batch(
     _dev: *const device,
@@ -73,7 +73,7 @@ pub unsafe fn rpmh_write_batch(
     -19 // -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPMH"))]
+#[cfg(not(CONFIG_QCOM_RPMH))]
 #[inline]
 pub unsafe fn rpmh_invalidate(_dev: *const device) {}
 

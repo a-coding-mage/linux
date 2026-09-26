@@ -24,10 +24,10 @@ pub const fn pcibios_assign_all_busses() -> i32 {
 pub const ARCH_GENERIC_PCI_MMAP_RESOURCE: bool = true;
 
 /* CONFIG_PCI_DOMAINS condition preserved from the C header. */
-#[cfg(feature = "CONFIG_PCI_DOMAINS")]
+#[cfg(CONFIG_PCI_DOMAINS)]
 pub struct pci_bus;
 
-#[cfg(feature = "CONFIG_PCI_DOMAINS")]
+#[cfg(CONFIG_PCI_DOMAINS)]
 #[inline(always)]
 pub fn pci_proc_domain(_bus: *mut pci_bus) -> i32 {
     /* always show the domain in /proc */

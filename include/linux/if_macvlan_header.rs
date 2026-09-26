@@ -29,7 +29,7 @@ pub struct macvlan_dev {
     pub flags: u16,
     pub macaddr_count: core::ffi::c_uint,
     pub bc_queue_len_req: u32,
-    #[cfg(feature = "CONFIG_NET_POLL_CONTROLLER")]
+    #[cfg(CONFIG_NET_POLL_CONTROLLER)]
     pub netpoll: *mut netpoll,
 }
 
@@ -65,13 +65,13 @@ unsafe extern "C" {
     pub fn macvlan_link_register(ops: *mut rtnl_link_ops) -> core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_MACVLAN")]
+#[cfg(CONFIG_MACVLAN)]
 pub unsafe fn macvlan_dev_real_dev(dev: *const net_device) -> *mut net_device {
     let macvlan: *mut macvlan_dev = netdev_priv(dev);
     (*macvlan).lowerdev
 }
 
-#[cfg(not(feature = "CONFIG_MACVLAN"))]
+#[cfg(not(CONFIG_MACVLAN))]
 pub unsafe fn macvlan_dev_real_dev(_dev: *const net_device) -> *mut net_device {
     BUG();
     core::ptr::null_mut()

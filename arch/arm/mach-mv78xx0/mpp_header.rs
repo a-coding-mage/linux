@@ -7,8 +7,8 @@
 
 #[inline]
 pub const fn MPP(num: u32, sel: u32, input: u32, output: u32, a0: u32) -> u32 {
-    (num & 0xff) | ((sel & 0xf) << 8) | ((input != 0) as u32 << 12)
-        | ((output != 0) as u32 << 13) | ((a0 != 0) as u32 << 14)
+    (num & 0xff) | ((sel & 0xf) << 8) | (((input != 0) as u32) << 12)
+        | (((output != 0) as u32) << 13) | (((a0 != 0) as u32) << 14)
 }
 
 mpp_consts! {

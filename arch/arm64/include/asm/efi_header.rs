@@ -4,17 +4,17 @@
 // asm/io.h, asm/memory.h, asm/mmu_context.h, asm/neon.h, asm/ptrace.h,
 // and asm/tlbflush.h.
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 extern "C" {
     pub fn efi_init();
     pub fn efi_runtime_fixup_exception(regs: *mut pt_regs, msg: *const ::core::ffi::c_char) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[inline]
 pub fn efi_init() {}
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[inline]
 pub unsafe fn efi_runtime_fixup_exception(
     _regs: *mut pt_regs,

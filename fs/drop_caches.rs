@@ -15,7 +15,7 @@ unsafe fn drop_pagecache_sb(sb: *mut super_block, _unused: *mut c_void) {
     let mut toput_inode: *mut inode = core::ptr::null_mut();
 
     spin_lock(&mut (*sb).s_inode_list_lock);
-    list_for_each_entry!(inode, (*sb).s_inodes, i_sb_list) {
+    list_for_each_entry!(inode, (*sb).s_inodes, i_sb_list, {
         spin_lock(&mut (*inode).i_lock);
         /*
          * We must skip inodes in unusual state. We may also skip
@@ -38,7 +38,7 @@ unsafe fn drop_pagecache_sb(sb: *mut super_block, _unused: *mut c_void) {
 
         cond_resched();
         spin_lock(&mut (*sb).s_inode_list_lock);
-    }
+    });
     spin_unlock(&mut (*sb).s_inode_list_lock);
     iput(toput_inode);
 }

@@ -119,7 +119,7 @@ struct cstate_t {
     id: c_uint,
     range: c_uint,
     get_count_percent: Option<unsafe extern "C" fn(c_uint, *mut c_double, c_uint) -> c_int>,
-    get_count: Option<unsafe extern "C" fn(c_uint, *mut c_ulonglong, c_uint) -> c_int>,
+    get_count: Option<unsafe extern "C" fn(c_uint, long: *mut c_ulong, c_uint) -> c_int>,
 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]

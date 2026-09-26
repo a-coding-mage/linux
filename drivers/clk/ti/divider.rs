@@ -159,14 +159,14 @@ unsafe fn ti_clk_divider_set_rate(hw: *mut clk_hw, rate: c_ulong, parent_rate: c
         if div < (*divider).min as u32 { div = (*divider).min as u32; }
         let value = _get_val(divider, div as u8);
         let mut val = (*ti_clk_ll_ops).clk_readl(&mut (*divider).reg);
-        val &= !((*divider).mask as u32 << (*divider).shift); val |= value << (*divider).shift;
+        val &= !(((*divider).mask as u32) << (*divider).shift); val |= value << (*divider).shift;
         (*ti_clk_ll_ops).clk_writel(val, &mut (*divider).reg);
         ti_clk_latch(&mut (*divider).reg, (*divider).latch); 0
     }
 }
 
 unsafe fn clk_divider_save_context(hw: *mut clk_hw) -> c_int { unsafe { let d=to_clk_omap_divider(hw); (*d).context=((*ti_clk_ll_ops).clk_readl(&mut (*d).reg)>>(*d).shift)&(*d).mask as u32; 0 } }
-unsafe fn clk_divider_restore_context(hw: *mut clk_hw) { unsafe { let d=to_clk_omap_divider(hw); let mut v=(*ti_clk_ll_ops).clk_readl(&mut (*d).reg); v &= !((*d).mask as u32<<(*d).shift); v |= (*d).context<<(*d).shift; (*ti_clk_ll_ops).clk_writel(v,&mut (*d).reg); } }
+unsafe fn clk_divider_restore_context(hw: *mut clk_hw) { unsafe { let d=to_clk_omap_divider(hw); let mut v=(*ti_clk_ll_ops).clk_readl(&mut (*d).reg); v &= !(((*d).mask as u32)<<(*d).shift); v |= (*d).context<<(*d).shift; (*ti_clk_ll_ops).clk_writel(v,&mut (*d).reg); } }
 
 pub static ti_clk_divider_ops: clk_ops = clk_ops { recalc_rate: Some(ti_clk_divider_recalc_rate), determine_rate: Some(ti_clk_divider_determine_rate), set_rate: Some(ti_clk_divider_set_rate), save_context: Some(clk_divider_save_context), restore_context: Some(clk_divider_restore_context) };
 

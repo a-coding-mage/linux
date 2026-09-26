@@ -4,7 +4,7 @@
 // sssw_kunit.h are intentionally left external to this translation.
 
 // Equivalent of: #if IS_REACHABLE(CONFIG_RV_MON_SSSW)
-#[cfg(feature = "CONFIG_RV_MON_SSSW")]
+#[cfg(CONFIG_RV_MON_SSSW)]
 unsafe fn rv_test_sssw(test: *mut kunit) {
     let target: *mut task_struct = rv_kunit_alloc_mock_task(test);
     let other: *mut task_struct = rv_kunit_alloc_mock_task(test);
@@ -45,7 +45,7 @@ unsafe fn rv_test_sssw(test: *mut kunit) {
 
 // Equivalent of: #else
 // #define rv_test_sssw rv_test_stub
-#[cfg(not(feature = "CONFIG_RV_MON_SSSW"))]
+#[cfg(not(CONFIG_RV_MON_SSSW))]
 use rv_test_stub as rv_test_sssw;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

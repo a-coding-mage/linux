@@ -3,7 +3,7 @@
 
 /* CONFIG_CRYPTO_FIPS is represented here by the corresponding Rust feature. */
 
-#[cfg(feature = "CONFIG_CRYPTO_FIPS")]
+#[cfg(CONFIG_CRYPTO_FIPS)]
 #[repr(C)]
 pub enum cc_fips_status {
     CC_FIPS_SYNC_MODULE_OK = 0x0,
@@ -13,7 +13,7 @@ pub enum cc_fips_status {
     CC_FIPS_SYNC_STATUS_RESERVE32B = i32::MAX,
 }
 
-#[cfg(feature = "CONFIG_CRYPTO_FIPS")]
+#[cfg(CONFIG_CRYPTO_FIPS)]
 extern "C" {
     pub fn cc_fips_init(p_drvdata: *mut cc_drvdata) -> ::std::os::raw::c_int;
     pub fn cc_fips_fini(drvdata: *mut cc_drvdata);
@@ -22,25 +22,25 @@ extern "C" {
     pub fn cc_tee_handle_fips_error(p_drvdata: *mut cc_drvdata);
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 #[inline]
 pub unsafe fn cc_fips_init(_p_drvdata: *mut cc_drvdata) -> ::std::os::raw::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 #[inline]
 pub unsafe fn cc_fips_fini(_drvdata: *mut cc_drvdata) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 #[inline]
 pub unsafe fn cc_set_ree_fips_status(_drvdata: *mut cc_drvdata, _ok: bool) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 #[inline]
 pub unsafe fn fips_handler(_drvdata: *mut cc_drvdata) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS))]
 #[inline]
 pub unsafe fn cc_tee_handle_fips_error(_p_drvdata: *mut cc_drvdata) {}
 

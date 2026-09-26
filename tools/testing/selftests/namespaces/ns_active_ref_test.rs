@@ -933,7 +933,7 @@ unsafe fn ns_multiple_children_same_parent() {
     let mut pipefd = [0 as c_int; 2];
     let pid: pid_t;
     let mut status: c_int = 0;
-    let (mut p_id, mut c1_id, mut c2_id) = (0_u64, 0_u64, 0_u64);
+    let (mut p_id, mut c1_id, mut c2_id) = (0u64, 0u64, 0u64);
     let mut p_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut c1_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut c2_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
@@ -1000,7 +1000,7 @@ unsafe fn three_namespace_type_test(
     let mut pipefd = [0 as c_int; 2];
     let pid: pid_t;
     let mut status: c_int = 0;
-    let (mut u_id, mut n_id, mut ut_id) = (0_u64, 0_u64, 0_u64);
+    let (mut u_id, mut n_id, mut ut_id) = (0u64, 0u64, 0u64);
     let mut u_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut n_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut ut_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
@@ -1079,7 +1079,7 @@ unsafe fn ns_deep_hierarchy_propagation() {
     let mut pipefd = [0 as c_int; 2];
     let pid: pid_t;
     let mut status: c_int = 0;
-    let (mut ua_id, mut ub_id, mut net_id) = (0_u64, 0_u64, 0_u64);
+    let (mut ua_id, mut ub_id, mut net_id) = (0u64, 0u64, 0u64);
     let mut ua_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut ub_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut net_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
@@ -1146,7 +1146,7 @@ unsafe fn ns_parent_multiple_children_refcount() {
     let mut syncpipe = [0 as c_int; 2];
     let pid: pid_t;
     let mut status: c_int = 0;
-    let (mut p_id, mut n1_id, mut n2_id) = (0_u64, 0_u64, 0_u64);
+    let (mut p_id, mut n1_id, mut n2_id) = (0u64, 0u64, 0u64);
     let mut p_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut n1_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut n2_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
@@ -1226,7 +1226,7 @@ unsafe fn ns_userns_child_propagation() {
     let mut pipefd = [0 as c_int; 2];
     let pid: pid_t;
     let mut status: c_int = 0;
-    let (mut ua_id, mut ub_id) = (0_u64, 0_u64);
+    let (mut ua_id, mut ub_id) = (0u64, 0u64);
     let mut ua_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut ub_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     ASSERT_EQ!(pipe(pipefd.as_mut_ptr()), 0);
@@ -1429,7 +1429,7 @@ unsafe fn thread_subprocess_ns_inactive_after_all_exit() {
     let mut sv = [0 as c_int; 2];
     let pid: pid_t;
     let mut status: c_int = 0;
-    let (mut user_id, mut net_id) = (0_u64, 0_u64);
+    let (mut user_id, mut net_id) = (0u64, 0u64);
     let mut user_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut net_buf = [0 as c_char; size_of::<file_handle>() + MAX_HANDLE_SZ];
     let mut sync_byte: c_char = 0;

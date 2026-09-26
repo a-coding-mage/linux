@@ -72,14 +72,14 @@ macro_rules! copy_page {
     ($a0:ident, $a1:ident) => {
         core::arch::global_asm!(
             "lui a2, 0x1\n\
-             add a2, a2, a0\n\
-             1: REG_L t0, 0(a1)\n\
-             REG_L t1, SZREG(a1)\n\
-             REG_S t0, 0(a0)\n\
-             REG_S t1, SZREG(a0)\n\
-             addi a0, a0, 2 * SZREG\n\
-             addi a1, a1, 2 * SZREG\n\
-             bne a2, a0, 1b"
+             add a2, a2, $a0\n\
+             1: REG_L t0, 0($a1)\n\
+             REG_L t1, SZREG($a1)\n\
+             REG_S t0, 0($a0)\n\
+             REG_S t1, SZREG($a0)\n\
+             addi $a0, $a0, 2 * SZREG\n\
+             addi $a1, $a1, 2 * SZREG\n\
+             bne a2, $a0, 1b"
         );
     };
 }

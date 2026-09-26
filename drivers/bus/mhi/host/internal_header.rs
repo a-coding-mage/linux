@@ -6,7 +6,7 @@ use core::ffi::c_void;
 pub const MHI_SOC_RESET_REQ_OFFSET: u32 = 0xb0;
 pub const MHI_SOC_RESET_REQ: u32 = 1 << 0;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mhi_bus_type: bus_type;
 }
 
@@ -16,13 +16,13 @@ pub struct mhi_ctxt { pub er_ctxt: *mut mhi_event_ctxt, pub chan_ctxt: *mut mhi_
 
 #[repr(C)] #[derive(Copy, Clone)] pub enum mhi_fw_load_type { MHI_FW_LOAD_BHI, MHI_FW_LOAD_BHIE, MHI_FW_LOAD_FBC, MHI_FW_LOAD_MAX }
 #[repr(C)] #[derive(Copy, Clone)] pub enum mhi_ch_state_type { MHI_CH_STATE_TYPE_RESET, MHI_CH_STATE_TYPE_STOP, MHI_CH_STATE_TYPE_START, MHI_CH_STATE_TYPE_MAX }
-pub unsafe extern "C" { pub static mhi_ch_state_type_str: [*const core::ffi::c_char; 3]; }
+unsafe extern "C" { pub static mhi_ch_state_type_str: [*const core::ffi::c_char; 3]; }
 pub const MHI_CH_STATE_TYPE_LIST: &str = "RESET STOP START";
 pub unsafe fn to_ch_state_type_str(state: usize) -> *const core::ffi::c_char { if state >= mhi_ch_state_type::MHI_CH_STATE_TYPE_MAX as usize { c"INVALID_STATE".as_ptr() } else { mhi_ch_state_type_str[state] } }
 
 pub const MHI_INVALID_BRSTMODE: fn(mhi_db_brst_mode) -> bool = |mode| mode != MHI_DB_BRST_DISABLE && mode != MHI_DB_BRST_ENABLE;
 pub const MHI_EE_LIST: &str = "PBL SBL AMSS RDDM WFW PTHRU EDL FP DISABLE_TRANSITION NOT_SUPPORTED";
-pub unsafe extern "C" { pub static mhi_ee_str: [*const core::ffi::c_char; MHI_EE_MAX as usize]; }
+unsafe extern "C" { pub static mhi_ee_str: [*const core::ffi::c_char; MHI_EE_MAX as usize]; }
 pub unsafe fn to_mhi_exec_str(ee: usize) -> *const core::ffi::c_char { if ee >= MHI_EE_MAX as usize { c"INVALID_EE".as_ptr() } else { mhi_ee_str[ee] } }
 pub const fn mhi_in_pbl(ee: mhi_ee_type) -> bool { matches!(ee, MHI_EE_PBL | MHI_EE_PTHRU | MHI_EE_EDL) }
 pub const fn mhi_power_up_capable(ee: mhi_ee_type) -> bool { mhi_in_pbl(ee) || matches!(ee, MHI_EE_AMSS) }
@@ -31,7 +31,7 @@ pub const fn mhi_in_mission_mode(ee: mhi_ee_type) -> bool { matches!(ee, MHI_EE_
 
 #[repr(C)] #[derive(Copy, Clone)] pub enum dev_st_transition { DEV_ST_TRANSITION_PBL, DEV_ST_TRANSITION_READY, DEV_ST_TRANSITION_SBL, DEV_ST_TRANSITION_MISSION_MODE, DEV_ST_TRANSITION_FP, DEV_ST_TRANSITION_SYS_ERR, DEV_ST_TRANSITION_DISABLE, DEV_ST_TRANSITION_DISABLE_DESTROY_DEVICE, DEV_ST_TRANSITION_MAX }
 pub const DEV_ST_TRANSITION_LIST: &str = "PBL READY SBL MISSION_MODE FP SYS_ERR DISABLE DISABLE_DESTROY_DEVICE";
-pub unsafe extern "C" { pub static dev_state_tran_str: [*const core::ffi::c_char; DEV_ST_TRANSITION_MAX as usize]; }
+unsafe extern "C" { pub static dev_state_tran_str: [*const core::ffi::c_char; DEV_ST_TRANSITION_MAX as usize]; }
 pub unsafe fn to_dev_state_trans_str(state: usize) -> *const core::ffi::c_char { if state >= DEV_ST_TRANSITION_MAX as usize { c"INVALID_STATE".as_ptr() } else { dev_state_tran_str[state] } }
 
 #[repr(C)] #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)] pub enum mhi_pm_state { MHI_PM_STATE_DISABLE, MHI_PM_STATE_POR, MHI_PM_STATE_M0, MHI_PM_STATE_M2, MHI_PM_STATE_M3_ENTER, MHI_PM_STATE_M3, MHI_PM_STATE_M3_EXIT, MHI_PM_STATE_FW_DL_ERR, MHI_PM_STATE_SYS_ERR_DETECT, MHI_PM_STATE_SYS_ERR_PROCESS, MHI_PM_STATE_SYS_ERR_FAIL, MHI_PM_STATE_SHUTDOWN_PROCESS, MHI_PM_STATE_LD_ERR_FATAL_DETECT, MHI_PM_STATE_MAX }

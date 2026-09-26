@@ -6,22 +6,22 @@ static mut DEBUG_PCI: i32 = 0;
 
 unsafe fn pcibios_bus_report_status(bus: *mut pci_bus, status_mask: u32, warn: i32) {
     let mut dev: *mut pci_dev;
-    list_for_each_entry!(dev, (*bus).devices, bus_list) {
+    list_for_each_entry!(dev, (*bus).devices, bus_list, {
         let mut status: u16 = 0;
         if (*(*dev).bus).number == 0 && (*dev).devfn == 0 { continue; }
         pci_read_config_word(dev, PCI_STATUS, &mut status);
         if status == 0xffff || (status as u32 & status_mask) == 0 { continue; }
         pci_write_config_word(dev, PCI_STATUS, status & status_mask as u16);
         if warn != 0 { printk!("(%s: %04X) ", pci_name(dev), status); }
-    }
-    list_for_each_entry!(dev, (*bus).devices, bus_list) {
+    });
+    list_for_each_entry!(dev, (*bus).devices, bus_list, {
         if !(*dev).subordinate.is_null() { pcibios_bus_report_status((*dev).subordinate, status_mask, warn); }
-    }
+    });
 }
 
 pub unsafe fn pcibios_report_status(status_mask: u32, warn: i32) {
     let mut bus: *mut pci_bus;
-    list_for_each_entry!(bus, pci_root_buses, node) { pcibios_bus_report_status(bus, status_mask, warn); }
+    list_for_each_entry!(bus, pci_root_buses, node, { pcibios_bus_report_status(bus, status_mask, warn); });
 }
 
 unsafe fn pci_fixup_83c553(dev: *mut pci_dev) {
@@ -51,7 +51,7 @@ unsafe fn pci_fixup_dec21285(dev: *mut pci_dev) {
         (*dev).class &= 0xff;
         (*dev).class |= PCI_CLASS_BRIDGE_HOST << 8;
         let mut r: *mut resource;
-        pci_dev_for_each_resource!(dev, r) { (*r).start = 0; (*r).end = 0; (*r).flags = 0; }
+        pci_dev_for_each_resource!(dev, r, { (*r).start = 0; (*r).end = 0; (*r).flags = 0; });
     }
 }
 // DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_DEC, PCI_DEVICE_ID_DEC_21285, pci_fixup_dec21285);
@@ -59,9 +59,9 @@ unsafe fn pci_fixup_dec21285(dev: *mut pci_dev) {
 unsafe fn pci_fixup_ide_bases(dev: *mut pci_dev) {
     if ((*dev).class >> 8) != PCI_CLASS_STORAGE_IDE { return; }
     let mut r: *mut resource;
-    pci_dev_for_each_resource!(dev, r) {
+    pci_dev_for_each_resource!(dev, r, {
         if ((*r).start & !0x80) == 0x374 { (*r).start |= 2; (*r).end = (*r).start; }
-    }
+    });
 }
 // DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, pci_fixup_ide_bases);
 
@@ -89,7 +89,7 @@ unsafe fn pci_fixup_cy82c693(dev: *mut pci_dev) {
 pub unsafe fn pcibios_fixup_bus(bus: *mut pci_bus) {
     let mut features: u16 = PCI_COMMAND_SERR | PCI_COMMAND_PARITY | PCI_COMMAND_FAST_BACK;
     let mut dev: *mut pci_dev;
-    list_for_each_entry!(dev, (*bus).devices, bus_list) {
+    list_for_each_entry!(dev, (*bus).devices, bus_list, {
         let mut status = 0u16; pci_read_config_word(dev, PCI_STATUS, &mut status);
         if status & PCI_STATUS_FAST_BACK == 0 { features &= !PCI_COMMAND_FAST_BACK; }
         if pdev_bad_for_parity(dev) { features &= !(PCI_COMMAND_SERR | PCI_COMMAND_PARITY); }
@@ -98,8 +98,8 @@ pub unsafe fn pcibios_fixup_bus(bus: *mut pci_bus) {
             PCI_CLASS_BRIDGE_CARDBUS => { pci_read_config_word(dev, PCI_CB_BRIDGE_CONTROL, &mut status); status |= PCI_CB_BRIDGE_CTL_PARITY|PCI_CB_BRIDGE_CTL_MASTER_ABORT; pci_write_config_word(dev, PCI_CB_BRIDGE_CONTROL, status); }
             _ => {}
         }
-    }
-    list_for_each_entry!(dev, (*bus).devices, bus_list) { let mut cmd=0u16; pci_read_config_word(dev, PCI_COMMAND, &mut cmd); cmd |= features; pci_write_config_word(dev, PCI_COMMAND, cmd); pci_write_config_byte(dev, PCI_CACHE_LINE_SIZE, L1_CACHE_BYTES >> 2); }
+    });
+    list_for_each_entry!(dev, (*bus).devices, bus_list, { let mut cmd=0u16; pci_read_config_word(dev, PCI_COMMAND, &mut cmd); cmd |= features; pci_write_config_word(dev, PCI_COMMAND, cmd); pci_write_config_byte(dev, PCI_CACHE_LINE_SIZE, L1_CACHE_BYTES >> 2); });
     if !(*bus).self_.is_null() && (*(*bus).self_).hdr_type == PCI_HEADER_TYPE_BRIDGE { if features & PCI_COMMAND_FAST_BACK != 0 { (*bus).bridge_ctl |= PCI_BRIDGE_CTL_FAST_BACK; } if features & PCI_COMMAND_PARITY != 0 { (*bus).bridge_ctl |= PCI_BRIDGE_CTL_PARITY; } }
     pr_info!("PCI: bus%d: Fast back to back transfers %s\n", (*bus).number, str_enabled_disabled(features & PCI_COMMAND_FAST_BACK));
 }
@@ -113,15 +113,15 @@ unsafe fn pcibios_init_hw(parent:*mut device, hw:*mut hw_pci, head:*mut list_hea
     }
 }
 
-pub unsafe fn pci_common_init_dev(parent:*mut device, hw:*mut hw_pci) { let mut head=list_head::default(); pci_add_flags(PCI_REASSIGN_ALL_BUS); if !(*hw).preinit.is_none(){((*hw).preinit.unwrap())();} pcibios_init_hw(parent,hw,&mut head); if !(*hw).postinit.is_none(){((*hw).postinit.unwrap())();} let mut sys:*mut pci_sys_data; list_for_each_entry!(sys,head,node){let bus=(*sys).bus;if pci_has_flag(PCI_PROBE_ONLY){pci_bus_claim_resources(bus);}else{pci_bus_size_bridges(bus);pci_bus_assign_resources(bus);let mut child:*mut pci_bus;list_for_each_entry!(child,(*bus).children,node){pcie_bus_configure_settings(child);}}pci_bus_add_devices(bus);} }
+pub unsafe fn pci_common_init_dev(parent:*mut device, hw:*mut hw_pci) { let mut head=list_head::default(); pci_add_flags(PCI_REASSIGN_ALL_BUS); if !(*hw).preinit.is_none(){((*hw).preinit.unwrap())();} pcibios_init_hw(parent,hw,&mut head); if !(*hw).postinit.is_none(){((*hw).postinit.unwrap())();} let mut sys:*mut pci_sys_data; list_for_each_entry!(sys,head,node, {let bus=(*sys).bus;if pci_has_flag(PCI_PROBE_ONLY){pci_bus_claim_resources(bus);}else{pci_bus_size_bridges(bus);pci_bus_assign_resources(bus);let mut child:*mut pci_bus;list_for_each_entry!(child,(*bus).children,node, {pcie_bus_configure_settings(child);});}pci_bus_add_devices(bus);}); }
 
-#[cfg(not(feature="CONFIG_PCI_HOST_ITE8152"))]
+#[cfg(not(CONFIG_PCI_HOST_ITE8152))]
 pub unsafe fn pcibios_set_master(_dev:*mut pci_dev) {}
 
 pub unsafe fn pcibios_align_resource(data:*mut core::ffi::c_void,res:*const resource,empty_res:*const resource,size:u64,align:u64)->u64 { let dev=data as *mut pci_dev; let mut start=(*res).start; if (*res).flags&IORESOURCE_IO!=0 && start&0x300!=0 {start=(start+0x3ff)&!0x3ff;} let bridge=pci_find_host_bridge((*dev).bus); if !(*bridge).align_resource.is_none(){return ((*bridge).align_resource.unwrap())(dev,res,start,size,align);} if (*res).flags&IORESOURCE_MEM!=0{return pci_align_resource(dev,res,empty_res,size,align);} start }
 
 // Remaining declarations retain the C implementation's external kernel interactions.
-pub unsafe fn pcibios_init_resource(busnr:i32, sys:*mut pci_sys_data) -> i32 { if list_empty!((*sys).resources) { pci_add_resource_offset!((*sys).resources, iomem_resource, (*sys).mem_offset); } let mut window:*mut resource_entry; resource_list_for_each_entry!(window, (*sys).resources) { if resource_type((*window).res)==IORESOURCE_IO { return 0; } } (*sys).io_res.start = if busnr * SZ_64K != 0 { busnr as u64 * SZ_64K } else { pcibios_min_io }; (*sys).io_res.end=(busnr as u64+1)*SZ_64K-1; (*sys).io_res.flags=IORESOURCE_IO; (*sys).io_res.name=(*sys).io_res_name; sprintf!((*sys).io_res_name,"PCI%d I/O",busnr); let ret=request_resource(&ioport_resource,&mut (*sys).io_res); if ret != 0 { pr_err!("PCI: unable to allocate I/O port region (%d)\n",ret); return ret; } pci_add_resource_offset!((*sys).resources,(*sys).io_res,(*sys).io_offset); 0 }
+pub unsafe fn pcibios_init_resource(busnr:i32, sys:*mut pci_sys_data) -> i32 { if list_empty!((*sys).resources) { pci_add_resource_offset!((*sys).resources, iomem_resource, (*sys).mem_offset); } let mut window:*mut resource_entry; resource_list_for_each_entry!(window, (*sys).resources, { if resource_type((*window).res)==IORESOURCE_IO { return 0; } }); (*sys).io_res.start = if busnr * SZ_64K != 0 { busnr as u64 * SZ_64K } else { pcibios_min_io }; (*sys).io_res.end=(busnr as u64+1)*SZ_64K-1; (*sys).io_res.flags=IORESOURCE_IO; (*sys).io_res.name=(*sys).io_res_name; sprintf!((*sys).io_res_name,"PCI%d I/O",busnr); let ret=request_resource(&ioport_resource,&mut (*sys).io_res); if ret != 0 { pr_err!("PCI: unable to allocate I/O port region (%d)\n",ret); return ret; } pci_add_resource_offset!((*sys).resources,(*sys).io_res,(*sys).io_offset); 0 }
 
 pub unsafe fn pcibios_setup(str_: *mut i8) -> *mut i8 { if strcmp!(str_,"debug") == 0 { DEBUG_PCI=1; return core::ptr::null_mut(); } str_ }
 pub unsafe fn pci_map_io_early(pfn: u64) { let mut d=map_desc { virtual_:PCI_IO_VIRT_BASE, type_:MT_DEVICE, length:SZ_64K, pfn }; iotable_init(&mut d,1); }

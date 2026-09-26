@@ -16,7 +16,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
  * the integration pass, where the kernel-provided structures, constants, list
  * primitives, allocation routines, and fwnode operations are available.
  */
-+// // SPDX-License-Identifier: GPL-2.0-only
+// // SPDX-License-Identifier: GPL-2.0-only
 // /*
 //  * ACPI device specific properties support.
 //  *
@@ -357,7 +357,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	return true;
 // }
 // 
-// static void acpi_init_of_compatible(struct acpi_device *adev)
+// static void acpi_init_of_compatible(acpi_device *adev)
 // {
 // 	const union acpi_object *of_compatible;
 // 	int ret;
@@ -396,7 +396,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // }
 // 
 // struct acpi_device_properties *
-// acpi_data_add_props(struct acpi_device_data *data, const guid_t *guid,
+// acpi_data_add_props(acpi_device_data *data, const guid_t *guid,
 // 		    union acpi_object *properties)
 // {
 // 	struct acpi_device_properties *props;
@@ -416,7 +416,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // {
 // }
 // 
-// static void acpi_untie_nondev_subnodes(struct acpi_device_data *data)
+// static void acpi_untie_nondev_subnodes(acpi_device_data *data)
 // {
 // 	struct acpi_data_node *dn;
 // 
@@ -430,7 +430,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	}
 // }
 // 
-// static bool acpi_tie_nondev_subnodes(struct acpi_device_data *data)
+// static bool acpi_tie_nondev_subnodes(acpi_device_data *data)
 // {
 // 	struct acpi_data_node *dn;
 // 
@@ -600,7 +600,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	return !list_empty(&data->properties);
 // }
 // 
-// void acpi_init_properties(struct acpi_device *adev)
+// void acpi_init_properties(acpi_device *adev)
 // {
 // 	struct acpi_buffer buf = { ACPI_ALLOCATE_BUFFER };
 // 	struct acpi_hardware_id *hwid;
@@ -655,7 +655,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 		acpi_extract_apple_properties(adev);
 // }
 // 
-// static void acpi_free_device_properties(struct list_head *list)
+// static void acpi_free_device_properties(list_head *list)
 // {
 // 	struct acpi_device_properties *props, *tmp;
 // 
@@ -671,7 +671,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	}
 // }
 // 
-// static void acpi_destroy_nondev_subnodes(struct list_head *list)
+// static void acpi_destroy_nondev_subnodes(list_head *list)
 // {
 // 	struct acpi_data_node *dn, *next;
 // 
@@ -688,7 +688,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	}
 // }
 // 
-// void acpi_free_properties(struct acpi_device *adev)
+// void acpi_free_properties(acpi_device *adev)
 // {
 // 	acpi_untie_nondev_subnodes(&adev->data);
 // 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
@@ -862,7 +862,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	return NULL;
 // }
 // 
-// static unsigned int acpi_fwnode_get_args_count(struct fwnode_handle *fwnode,
+// static unsigned int acpi_fwnode_get_args_count(fwnode_handle *fwnode,
 // 					       const char *nargs_prop)
 // {
 // 	const struct acpi_device_data *data;
@@ -880,7 +880,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 	return obj->integer.value;
 // }
 // 
-// static int acpi_get_ref_args(struct fwnode_reference_args *args,
+// static int acpi_get_ref_args(fwnode_reference_args *args,
 // 			     struct fwnode_handle *ref_fwnode,
 // 			     const char *nargs_prop,
 // 			     const union acpi_object **element,
@@ -1331,7 +1331,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 				   propname, proptype, val, nval);
 // }
 // 
-// static int stop_on_next(struct acpi_device *adev, void *data)
+// static int stop_on_next(acpi_device *adev, void *data)
 // {
 // 	struct acpi_device **ret_p = data;
 // 
@@ -1398,9 +1398,9 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // 			if (next == head)
 // 				return NULL;
 // 
-// 			dn = list_entry(next, struct acpi_data_node, sibling);
+// 			dn = list_entry(next, acpi_data_node, sibling);
 // 		} else {
-// 			dn = list_first_entry(head, struct acpi_data_node, sibling);
+// 			dn = list_first_entry(head, acpi_data_node, sibling);
 // 		}
 // 		return &dn->fwnode;
 // 	}
@@ -1458,7 +1458,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 //  * Return true if the node is an ACPI graph node. Called on either ports
 //  * or endpoints.
 //  */
-// static bool is_acpi_graph_node(struct fwnode_handle *fwnode,
+// static bool is_acpi_graph_node(fwnode_handle *fwnode,
 // 			       const char *str)
 // {
 // 	unsigned int len = strlen(str);
@@ -1484,7 +1484,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 //  * the next endpoint is returned.
 //  */
 // static struct fwnode_handle *acpi_graph_get_next_endpoint(
-// 	const struct fwnode_handle *fwnode, struct fwnode_handle *prev)
+// 	const struct fwnode_handle *fwnode, fwnode_handle *prev)
 // {
 // 	struct fwnode_handle *port = NULL;
 // 	struct fwnode_handle *endpoint;
@@ -1719,7 +1719,7 @@ pub const ACPI_PROPERTY_C_SOURCE: &str = include_str!("property.c");
 // }
 // 
 // static struct fwnode_handle *
-// acpi_fwnode_get_parent(struct fwnode_handle *fwnode)
+// acpi_fwnode_get_parent(fwnode_handle *fwnode)
 // {
 // 	return acpi_node_get_parent(fwnode);
 // }

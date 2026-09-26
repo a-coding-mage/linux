@@ -365,7 +365,7 @@ unsafe fn mfd_assert_write(fd: c_int) {
      */
     if hugetlbfs_test == 0 {
         /* verify write() succeeds */
-        let l = libc::write(fd, c"\0\0\0\0".as_ptr() as *const c_void, 4);
+        let l = libc::write(fd, c"\0\0\0".as_ptr() as *const c_void, 4);
         if l != 4 {
             libc::printf(c"write() failed: %m\n".as_ptr());
             libc::abort();

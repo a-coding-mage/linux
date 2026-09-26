@@ -10,7 +10,7 @@
  * original header; retain both configurations here as declarative assembler
  * macro definitions.
  */
-#[cfg(feature = "CONFIG_ARM64_SW_TTBR0_PAN")]
+#[cfg(CONFIG_ARM64_SW_TTBR0_PAN)]
 macro_rules! __uaccess_ttbr0_disable {
     ($tmp1:ident) => {
         // mrs $tmp1, ttbr1_el1                 // swapper_pg_dir
@@ -23,7 +23,7 @@ macro_rules! __uaccess_ttbr0_disable {
     };
 }
 
-#[cfg(feature = "CONFIG_ARM64_SW_TTBR0_PAN")]
+#[cfg(CONFIG_ARM64_SW_TTBR0_PAN)]
 macro_rules! __uaccess_ttbr0_enable {
     ($tmp1:ident, $tmp2:ident) => {
         // get_current_task $tmp1
@@ -37,7 +37,7 @@ macro_rules! __uaccess_ttbr0_enable {
     };
 }
 
-#[cfg(feature = "CONFIG_ARM64_SW_TTBR0_PAN")]
+#[cfg(CONFIG_ARM64_SW_TTBR0_PAN)]
 macro_rules! uaccess_ttbr0_disable {
     ($tmp1:ident, $tmp2:ident) => {
         // alternative_if_not ARM64_HAS_PAN
@@ -48,7 +48,7 @@ macro_rules! uaccess_ttbr0_disable {
     };
 }
 
-#[cfg(feature = "CONFIG_ARM64_SW_TTBR0_PAN")]
+#[cfg(CONFIG_ARM64_SW_TTBR0_PAN)]
 macro_rules! uaccess_ttbr0_enable {
     ($tmp1:ident, $tmp2:ident, $tmp3:ident) => {
         // alternative_if_not ARM64_HAS_PAN
@@ -59,12 +59,12 @@ macro_rules! uaccess_ttbr0_enable {
     };
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_SW_TTBR0_PAN"))]
+#[cfg(not(CONFIG_ARM64_SW_TTBR0_PAN))]
 macro_rules! uaccess_ttbr0_disable {
     ($tmp1:ident, $tmp2:ident) => {};
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_SW_TTBR0_PAN"))]
+#[cfg(not(CONFIG_ARM64_SW_TTBR0_PAN))]
 macro_rules! uaccess_ttbr0_enable {
     ($tmp1:ident, $tmp2:ident, $tmp3:ident) => {};
 }

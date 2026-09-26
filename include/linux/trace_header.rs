@@ -73,20 +73,20 @@ extern "C" {
 }
 
 /* The following declarations correspond to the !CONFIG_TRACING branch. */
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn register_ftrace_export_disabled(_export: *mut trace_export) -> libc::c_int {
     -libc::EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn unregister_ftrace_export_disabled(_export: *mut trace_export) -> libc::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn trace_printk_init_buffers_disabled() {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn trace_array_printk_disabled(
     _tr: *mut trace_array,
     _ip: libc::c_ulong,
@@ -96,15 +96,15 @@ pub unsafe fn trace_array_printk_disabled(
     0
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn trace_array_init_printk_disabled(_tr: *mut trace_array) -> libc::c_int {
     -libc::EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn trace_array_put_disabled(_tr: *mut trace_array) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn trace_array_get_by_name_disabled(
     _name: *const libc::c_char,
     _systems: *const libc::c_char,
@@ -112,7 +112,7 @@ pub unsafe fn trace_array_get_by_name_disabled(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 pub unsafe fn trace_array_destroy_disabled(_tr: *mut trace_array) -> libc::c_int {
     0
 }

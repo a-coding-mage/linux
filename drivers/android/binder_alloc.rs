@@ -38,9 +38,9 @@ extern "C" {
 #[repr(C)] pub struct mutex;
 
 extern "C" {
- fn rb_first(_: *const rb_root)->*mut rb_node; fn rb_next(_: *mut rb_node)->*mut rb_node; fn rb_erase(_: *mut rb_node,*mut rb_root); fn rb_insert_color(_: *mut rb_node,*mut rb_root); fn rb_link_node(_: *mut rb_node,*mut rb_node,*mut *mut rb_node);
+ fn rb_first(_: *const rb_root)->*mut rb_node; fn rb_next(_: *mut rb_node)->*mut rb_node; fn rb_erase(_: *mut rb_node,_: *mut rb_root); fn rb_insert_color(_: *mut rb_node,_: *mut rb_root); fn rb_link_node(_: *mut rb_node,_: *mut rb_node,_: *mut *mut rb_node);
  fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex); fn mutex_init(_: *mut mutex); fn kzalloc(_: usize, _: usize)->*mut c_void; fn kfree(_: *mut c_void); fn kvfree(_: *mut c_void); fn current_tgid()->i32;
- fn binder_alloc_mmap_handler(a:*mut binder_alloc,v:*mut vm_area_struct)->i32; fn list_add(_: *mut list_head,*mut list_head); fn list_del(_: *mut list_head); fn list_empty(_: *const list_head)->bool; fn list_lru_init(_: *mut list_lru)->i32; fn list_lru_destroy(_: *mut list_lru); fn shrinker_free(_:*mut shrinker); fn shrinker_register(_:*mut shrinker);
+ fn binder_alloc_mmap_handler(a:*mut binder_alloc,v:*mut vm_area_struct)->i32; fn list_add(_: *mut list_head,_: *mut list_head); fn list_del(_: *mut list_head); fn list_empty(_: *const list_head)->bool; fn list_lru_init(_: *mut list_lru)->i32; fn list_lru_destroy(_: *mut list_lru); fn shrinker_free(_:*mut shrinker); fn shrinker_register(_:*mut shrinker);
 }
 
 #[inline] unsafe fn rb_entry<T>(n:*mut rb_node, off:usize)->*mut T { (n as *mut u8).sub(off) as *mut T }

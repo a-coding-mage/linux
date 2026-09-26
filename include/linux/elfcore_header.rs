@@ -98,7 +98,7 @@ unsafe extern "C" {
     pub fn elf_core_copy_task_fpregs(t: *mut task_struct, fpu: *mut elf_fpregset_t) -> ::core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS")]
+#[cfg(CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS)]
 unsafe extern "C" {
     pub fn elf_core_extra_phdrs(cprm: *mut coredump_params) -> Elf_Half;
     pub fn elf_core_write_extra_phdrs(cprm: *mut coredump_params, offset: loff_t) -> ::core::ffi::c_int;
@@ -106,16 +106,16 @@ unsafe extern "C" {
     pub fn elf_core_extra_data_size(cprm: *mut coredump_params) -> usize;
 }
 
-#[cfg(not(feature = "CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS"))]
+#[cfg(not(CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS))]
 pub unsafe fn elf_core_extra_phdrs(_cprm: *mut coredump_params) -> Elf_Half { 0 }
 
-#[cfg(not(feature = "CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS"))]
+#[cfg(not(CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS))]
 pub unsafe fn elf_core_write_extra_phdrs(_cprm: *mut coredump_params, _offset: loff_t) -> ::core::ffi::c_int { 1 }
 
-#[cfg(not(feature = "CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS"))]
+#[cfg(not(CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS))]
 pub unsafe fn elf_core_write_extra_data(_cprm: *mut coredump_params) -> ::core::ffi::c_int { 1 }
 
-#[cfg(not(feature = "CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS"))]
+#[cfg(not(CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS))]
 pub unsafe fn elf_core_extra_data_size(_cprm: *mut coredump_params) -> usize { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

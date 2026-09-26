@@ -455,7 +455,7 @@ macro_rules! __usdt_sema_implicit {
                 ".size {sema}, 2",
                 ".popsection",
                 ".endif",
-                sema = sym $sema,
+                $sema = sym $sema,
                 options(att_syntax)
             );
         }

@@ -39,10 +39,10 @@ pub type iw_handler = unsafe extern "C" fn(*mut net_device, *mut iw_request_info
 
 // External entry points used by this compatibility layer.
 extern "C" {
-    fn cfg80211_wext_siwmlme(*mut net_device, *mut iw_request_info, *mut iwreq_data, *mut c_char) -> c_int;
-    fn cfg80211_wext_siwscan(*mut net_device, *mut iw_request_info, *mut iwreq_data, *mut c_char) -> c_int;
-    fn cfg80211_wext_giwscan(*mut net_device, *mut iw_request_info, *mut iwreq_data, *mut c_char) -> c_int;
-    fn cfg80211_wext_siwgenie(*mut net_device, *mut iw_request_info, *mut iwreq_data, *mut c_char) -> c_int;
+    fn cfg80211_wext_siwmlme(_: *mut net_device, _: *mut iw_request_info, _: *mut iwreq_data, _: *mut c_char) -> c_int;
+    fn cfg80211_wext_siwscan(_: *mut net_device, _: *mut iw_request_info, _: *mut iwreq_data, _: *mut c_char) -> c_int;
+    fn cfg80211_wext_giwscan(_: *mut net_device, _: *mut iw_request_info, _: *mut iwreq_data, _: *mut c_char) -> c_int;
+    fn cfg80211_wext_siwgenie(_: *mut net_device, _: *mut iw_request_info, _: *mut iwreq_data, _: *mut c_char) -> c_int;
 }
 
 // Direct translations of the public entry points.  The detailed kernel data
@@ -72,14 +72,14 @@ pub unsafe extern "C" fn cfg80211_wext_freq(_freq: *mut iw_freq) -> c_int { -95 
 // Remaining operations retain the C ABI and are resolved by the kernel
 // implementation when the translated unit is linked.
 extern "C" {
-    pub fn cfg80211_wext_siwrts(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_giwrts(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_siwfrag(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_giwfrag(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_siwtxpower(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_giwtxpower(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_siwpower(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
-    pub fn cfg80211_wext_giwpower(*mut net_device,*mut iw_request_info,*mut iwreq_data,*mut c_char)->c_int;
+    pub fn cfg80211_wext_siwrts(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_giwrts(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_siwfrag(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_giwfrag(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_siwtxpower(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_giwtxpower(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_siwpower(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
+    pub fn cfg80211_wext_giwpower(_: *mut net_device,_: *mut iw_request_info,_: *mut iwreq_data,_: *mut c_char)->c_int;
 }
 
 #[no_mangle]

@@ -15,20 +15,20 @@
 
 // Dependencies supplied by the surrounding kernel/Rust translation.
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 static mut TA_IF_LOAD_DEBUGFS_WRITE: Option<unsafe extern "C" fn(*mut file, *const core::ffi::c_char, usize, *mut loff_t) -> ssize_t> = None;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 static mut TA_IF_UNLOAD_DEBUGFS_WRITE: Option<unsafe extern "C" fn(*mut file, *const core::ffi::c_char, usize, *mut loff_t) -> ssize_t> = None;
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 static mut TA_IF_INVOKE_DEBUGFS_WRITE: Option<unsafe extern "C" fn(*mut file, *const core::ffi::c_char, usize, *mut loff_t) -> ssize_t> = None;
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn get_bin_version(bin: *const u8) -> u32 {
     let hdr = bin as *const common_firmware_header;
     (*hdr).ucode_version
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn prep_ta_mem_context(mem_context: *mut ta_mem_context, shared_buf: *mut u8, shared_buf_len: u32) -> i32 {
     if (*mem_context).shared_mem_size < shared_buf_len { return -EINVAL; }
     memset((*mem_context).shared_buf as *mut core::ffi::c_void, 0, (*mem_context).shared_mem_size as usize);
@@ -36,19 +36,19 @@ unsafe fn prep_ta_mem_context(mem_context: *mut ta_mem_context, shared_buf: *mut
     0
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn is_ta_type_valid(ta_type: ta_type_id) -> bool {
     match ta_type { TA_TYPE_RAS => true, _ => false }
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 static ras_ta_funcs: ta_funcs = ta_funcs {
     fn_ta_initialize: Some(psp_ras_initialize),
     fn_ta_invoke: Some(psp_ras_invoke),
     fn_ta_terminate: Some(psp_ras_terminate),
 };
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe fn set_ta_context_funcs(psp: *mut psp_context, ta_type: ta_type_id, pcontext: *mut *mut ta_context) {
     match ta_type {
         TA_TYPE_RAS => {
@@ -67,11 +67,13 @@ unsafe fn set_ta_context_funcs(psp: *mut psp_context, ta_type: ta_type_id, pcont
  * kernel interface and are preserved by the routines below.
  */
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn ta_if_load_debugfs_write(fp: *mut file, buf: *const core::ffi::c_char, _len: usize, _off: *mut loff_t) -> ssize_t {
     let mut ta_type = 0u32; let mut ta_bin_len = 0u32; let mut ta_bin: *mut u8 = core::ptr::null_mut(); let mut copy_pos = 0u32; let mut ret = 0i32;
     let adev = file_inode(fp).as_ref().unwrap().i_private as *mut amdgpu_device;
     let psp = &mut (*adev).psp as *mut psp_context; let mut context: *mut ta_context = core::ptr::null_mut();
+    'err_free_bin: {
+    'err_free_ta_shared_buf: {
     if buf.is_null() { return -EINVAL as ssize_t; }
     ret = copy_from_user(&mut ta_type as *mut _ as *mut core::ffi::c_void, buf.add(copy_pos as usize) as *const _, 4);
     if ret != 0 || !is_ta_type_valid(ta_type as ta_type_id) { return -EFAULT as ssize_t; }
@@ -83,22 +85,24 @@ unsafe extern "C" fn ta_if_load_debugfs_write(fp: *mut file, buf: *const core::f
     ta_bin = memdup_user(buf.add(copy_pos as usize), ta_bin_len as usize);
     if IS_ERR(ta_bin) { return PTR_ERR(ta_bin) as ssize_t; }
     set_ta_context_funcs(psp, ta_type as ta_type_id, &mut context);
-    if (*psp).ta_funcs.is_null() || (*(*psp).ta_funcs).fn_ta_terminate.is_none() { ret = -EOPNOTSUPP; goto err_free_bin; }
-    if (*context).mem_context.shared_buf.is_null() { ret = psp_ta_init_shared_buf(psp, &mut (*context).mem_context); if ret != 0 { ret = -ENOMEM; goto err_free_bin; } }
+    if (*psp).ta_funcs.is_null() || (*(*psp).ta_funcs).fn_ta_terminate.is_none() { ret = -EOPNOTSUPP; break 'err_free_bin; }
+    if (*context).mem_context.shared_buf.is_null() { ret = psp_ta_init_shared_buf(psp, &mut (*context).mem_context); if ret != 0 { ret = -ENOMEM; break 'err_free_bin; } }
     ret = psp_fn_ta_terminate(psp);
-    if ret != 0 || (*context).resp_status != 0 { if ret == 0 { ret = -EINVAL; } goto err_free_ta_shared_buf; }
+    if ret != 0 || (*context).resp_status != 0 { if ret == 0 { ret = -EINVAL; } break 'err_free_ta_shared_buf; }
     (*context).ta_type = ta_type as ta_type_id; (*context).bin_desc.fw_version = get_bin_version(ta_bin); (*context).bin_desc.size_bytes = ta_bin_len; (*context).bin_desc.start_addr = ta_bin;
-    if (*(*psp).ta_funcs).fn_ta_initialize.is_none() { ret = -EOPNOTSUPP; goto err_free_ta_shared_buf; }
+    if (*(*psp).ta_funcs).fn_ta_initialize.is_none() { ret = -EOPNOTSUPP; break 'err_free_ta_shared_buf; }
     ret = psp_fn_ta_initialize(psp);
-    if ret != 0 || (*context).resp_status != 0 { if ret == 0 { ret = -EINVAL; } goto err_free_ta_shared_buf; }
+    if ret != 0 || (*context).resp_status != 0 { if ret == 0 { ret = -EINVAL; } break 'err_free_ta_shared_buf; }
     if copy_to_user(buf as *mut _, &(*context).session_id as *const _ as *const _, 4) != 0 { ret = -EFAULT; }
-err_free_ta_shared_buf:
+    }
+    
     if ret != 0 && !(*context).mem_context.shared_buf.is_null() { psp_ta_free_shared_buf(&mut (*context).mem_context); }
-err_free_bin:
+    }
+    
     kfree(ta_bin as *mut core::ffi::c_void); ret as ssize_t
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn ta_if_unload_debugfs_write(fp: *mut file, buf: *const core::ffi::c_char, _len: usize, _off: *mut loff_t) -> ssize_t {
     let mut ta_type=0u32; let mut ta_id=0u32; let adev=file_inode(fp).as_ref().unwrap().i_private as *mut amdgpu_device; let psp=&mut (*adev).psp as *mut psp_context; let mut context=core::ptr::null_mut();
     if buf.is_null() { return -EINVAL as ssize_t; }
@@ -110,7 +114,7 @@ unsafe extern "C" fn ta_if_unload_debugfs_write(fp: *mut file, buf: *const core:
     if !(*context).mem_context.shared_buf.is_null() { psp_ta_free_shared_buf(&mut (*context).mem_context); } ret as ssize_t
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" fn ta_if_invoke_debugfs_write(fp: *mut file, buf: *const core::ffi::c_char, _len: usize, _off: *mut loff_t) -> ssize_t {
     let mut vals=[0u32;4]; let mut shared_buf=core::ptr::null_mut(); let adev=file_inode(fp).as_ref().unwrap().i_private as *mut amdgpu_device; let psp=&mut (*adev).psp as *mut psp_context; let mut context=core::ptr::null_mut();
     if buf.is_null() { return -EINVAL as ssize_t; } for i in 0..4 { if copy_from_user(&mut vals[i] as *mut _ as *mut _, buf.add(i*4), 4)!=0 { return -EFAULT as ssize_t; } }
@@ -121,7 +125,7 @@ unsafe extern "C" fn ta_if_invoke_debugfs_write(fp: *mut file, buf: *const core:
 }
 
 pub unsafe extern "C" fn amdgpu_ta_if_debugfs_init(adev: *mut amdgpu_device) {
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     { let minor=adev_to_drm(adev).as_ref().unwrap().primary; let dir=debugfs_create_dir(b"ta_if\0".as_ptr() as *const _, minor.as_ref().unwrap().debugfs_root); debugfs_create_file(b"ta_load\0".as_ptr() as *const _, 0o200, dir, adev as *mut _, &ta_load_debugfs_fops); debugfs_create_file(b"ta_unload\0".as_ptr() as *const _, 0o200, dir, adev as *mut _, &ta_unload_debugfs_fops); debugfs_create_file(b"ta_invoke\0".as_ptr() as *const _, 0o200, dir, adev as *mut _, &ta_invoke_debugfs_fops); }
 }
 

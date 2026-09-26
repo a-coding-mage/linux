@@ -10,7 +10,7 @@ pub const OMAP1_MMC1_BASE: u32 = 0xfffb7800;
 pub const OMAP1_MMC2_BASE: u32 = 0xfffb7c00; // omap16xx only
 
 // Equivalent to the source build-time condition IS_ENABLED(CONFIG_MMC_OMAP).
-#[cfg(feature = "CONFIG_MMC_OMAP")]
+#[cfg(CONFIG_MMC_OMAP)]
 extern "C" {
     pub fn omap1_init_mmc(
         mmc_data: *mut *mut omap_mmc_platform_data,
@@ -18,7 +18,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_MMC_OMAP"))]
+#[cfg(not(CONFIG_MMC_OMAP))]
 #[inline]
 pub unsafe fn omap1_init_mmc(
     _mmc_data: *mut *mut omap_mmc_platform_data,

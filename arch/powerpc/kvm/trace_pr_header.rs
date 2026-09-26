@@ -4,7 +4,7 @@
 // represented as C-layout event payloads; tracepoint registration and printk
 // formatting are supplied by the surrounding tracing implementation.
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[repr(C)]
 pub struct KvmBook3s64MmuMap {
     pub flag_w: u8,

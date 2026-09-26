@@ -112,7 +112,7 @@ macro_rules! stub_start {
 }
 
 #[inline(always)]
-pub unsafe fn stub_seccomp_restore_state(arch: *mut struct stub_data_arch) {
+pub unsafe fn stub_seccomp_restore_state(arch: *mut stub_data_arch) {
     for i in 0..((*arch).tls.len()) {
         if (*arch).sync & (1 << i) != 0 {
             stub_syscall1(__NR_set_thread_area as isize, &mut (*arch).tls[i] as *mut _ as isize);

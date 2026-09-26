@@ -11,10 +11,10 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 
 /*
 // // SPDX-License-Identifier: GPL-2.0
-// /*
+// / *
 //  * Copyright (c) 2024 Rockchip Electronics Co., Ltd.
 //  * Author: Elaine Zhang <zhangqing@rock-chips.com>
-//  * /
+//  */
 // 
 // #include <linux/clk.h>
 // #include <linux/clk-provider.h>
@@ -37,7 +37,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // };
 // 
 // static struct rockchip_pll_rate_table rv1126b_pll_rates[] = {
-// 	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac * /
+// 	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
 // 	RK3036_PLL_RATE(1200000000, 1, 100, 2, 1, 1, 0),
 // 	RK3036_PLL_RATE(1188000000, 1, 99, 2, 1, 1, 0),
 // 	RK3036_PLL_RATE(1179648000, 1, 49, 1, 1, 0, 2550137),
@@ -198,7 +198,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	FACTOR(0, "clk_rcosc_div3", "clk_rcosc", 0, 1, 3),
 // 	FACTOR(0, "clk_rcosc_div4", "clk_rcosc", 0, 1, 4),
 // 
-// 	/*       Clock Definition       * /
+// 	/*       Clock Definition       */
 // 	COMPOSITE_NODIV(CLK_AISP_PLL_SRC, "clk_aisp_pll_src", mux_gpll_aupll_cpll_p, 0,
 // 			RV1126B_CLKSEL_CON(62), 4, 2, MFLAGS,
 // 			RV1126B_CLKGATE_CON(5), 4, GFLAGS),
@@ -528,11 +528,11 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 			RV1126B_CLKSEL_CON(70), 10, 4, DFLAGS,
 // 			RV1126B_CLKGATE_CON(15), 11, GFLAGS),
 // 
-// 	/* pd _npu * /
+// 	/* pd _npu */
 // 	MUX(ACLK_RKNN, "aclk_rknn", aclk_npu_root_p, CLK_SET_RATE_PARENT,
 // 			RV1126B_NPUCLKSEL_CON(0), 1, 1, MFLAGS),
 // 
-// 	/* pd_vepu * /
+// 	/* pd_vepu */
 // 	GATE(PCLK_GPIO3, "pclk_gpio3", "pclk_vepu_root", 0,
 // 			RV1126B_VEPUCLKGATE_CON(0), 7, GFLAGS),
 // 	GATE(DBCLK_GPIO3, "dbclk_gpio3", "xin24m", 0,
@@ -553,7 +553,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 			RV1126B_VEPUCLKSEL_CON(0), 1, 1, MFLAGS,
 // 			RV1126B_VEPUCLKGATE_CON(1), 3, GFLAGS),
 // 
-// 	/* pd_vcp * /
+// 	/* pd_vcp */
 // 	GATE(HCLK_FEC, "hclk_fec", "hclk_vcp_root", 0,
 // 			RV1126B_VCPCLKGATE_CON(1), 0, GFLAGS),
 // 	GATE(ACLK_FEC, "aclk_fec", "aclk_vcp_root", 0,
@@ -573,7 +573,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 			RV1126B_VCPCLKSEL_CON(0), 15, 1, MFLAGS,
 // 			RV1126B_VCPCLKGATE_CON(0), 13, GFLAGS),
 // 
-// 	/* pd_vi * /
+// 	/* pd_vi */
 // 	MUX(CLK_CORE_ISP_ROOT, "clk_core_isp_root", clk_core_isp_root_p, CLK_SET_RATE_PARENT,
 // 			RV1126B_VICLKSEL_CON(0), 1, 1, MFLAGS),
 // 	GATE(PCLK_DSMC, "pclk_dsmc", "pclk_vi_root", 0,
@@ -682,7 +682,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 			RV1126B_VICLKSEL_CON(1), 1, 1, MFLAGS,
 // 			RV1126B_VICLKGATE_CON(0), 12, GFLAGS),
 // 
-// 	/* pd_vdo * /
+// 	/* pd_vdo */
 // 	GATE(ACLK_RKVDEC, "aclk_rkvdec", "aclk_rkvdec_root", 0,
 // 			RV1126B_VDOCLKGATE_CON(0), 7, GFLAGS),
 // 	GATE(HCLK_RKVDEC, "hclk_rkvdec", "hclk_vdo_root", 0,
@@ -716,7 +716,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	GATE(PCLK_DSIPHY, "pclk_dsiphy", "pclk_vdo_root", 0,
 // 			RV1126B_VDOCLKGATE_CON(1), 13, GFLAGS),
 // 
-// 	/* pd_ddr * /
+// 	/* pd_ddr */
 // 	GATE(PCLK_DDRC, "pclk_ddrc", "pclk_ddr_root", CLK_IS_CRITICAL,
 // 			RV1126B_DDRCLKGATE_CON(0), 2, GFLAGS),
 // 	GATE(PCLK_DDRMON, "pclk_ddrmon", "pclk_ddr_root", CLK_IS_CRITICAL,
@@ -730,7 +730,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	GATE(PCLK_DMA2DDR, "pclk_dma2ddr", "pclk_ddr_root", CLK_IS_CRITICAL,
 // 			RV1126B_DDRCLKGATE_CON(0), 9, GFLAGS),
 // 
-// 	/* pd_pmu* /
+// 	/* pd_pmu*/
 // 	COMPOSITE_NODIV(CLK_RCOSC_SRC, "clk_rcosc_src", clk_rcosc_src_p, 0,
 // 			RV1126B_PMUCLKSEL_CON(1), 0, 3, MFLAGS,
 // 			RV1126B_PMUCLKGATE_CON(0), 0, GFLAGS),
@@ -807,7 +807,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	GATE(PCLK_LPMCU_MAILBOX, "pclk_lpmcu_mailbox", "busclk_pmu_root", 0,
 // 			RV1126B_PMUCLKGATE_CON(3), 4, GFLAGS),
 // 
-// 	/* pd_pmu1 * /
+// 	/* pd_pmu1 */
 // 	GATE(PCLK_SPI2AHB, "pclk_spi2ahb", "busclk_pmu_root", 0,
 // 			RV1126B_PMU1CLKGATE_CON(0), 0, GFLAGS),
 // 	GATE(HCLK_SPI2AHB, "hclk_spi2ahb", "busclk_pmu_root", 0,
@@ -831,7 +831,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 			RV1126B_PMU1CLKGATE_CON(0), 9, GFLAGS),
 // 	FACTOR(MCLK_AUDIO_ADC_DIV4_PMU, "mclk_audio_adc_div4_pmu", "mclk_audio_adc_pmu", 0, 1, 4),
 // 
-// 	/* pd_bus * /
+// 	/* pd_bus */
 // 	GATE(ACLK_GIC400, "aclk_gic400", "hclk_bus_root", CLK_IS_CRITICAL,
 // 			RV1126B_BUSCLKGATE_CON(0), 8, GFLAGS),
 // 	GATE(PCLK_WDT_NS, "pclk_wdt_ns", "pclk_bus_root", 0,
@@ -996,7 +996,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	GATE(CLK_PKA_NSRKCE, "clk_pka_nsrkce", "clk_pka_rkce_src", 0,
 // 			RV1126B_BUSCLKGATE_CON(2), 13, GFLAGS),
 // 
-// 	/* pd_peri * /
+// 	/* pd_peri */
 // 	DIV(PCLK_RTC_ROOT, "pclk_rtc_root", "pclk_peri_root", 0,
 // 			RV1126B_PERICLKSEL_CON(0), 0, 2, DFLAGS),
 // 	GATE(PCLK_GPIO1, "pclk_gpio1", "pclk_peri_root", 0,
@@ -1038,7 +1038,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	MUX(ARMCLK, "armclk", mux_armclk_p, CLK_IS_CRITICAL | CLK_SET_RATE_PARENT,
 // 			RV1126B_CORECLKSEL_CON(0), 1, 1, MFLAGS);
 // 
-// static void __init rv1126b_clk_init(struct device_node *np)
+// static void __init rv1126b_clk_init(device_node *np)
 // {
 // 	struct rockchip_clk_provider *ctx;
 // 	void __iomem *reg_base;
@@ -1077,7 +1077,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 
 // 	rockchip_clk_of_add_provider(np, ctx);
 // 
-// 	/* pvtpll src init * /
+// 	/* pvtpll src init */
 // 	writel_relaxed(PVTPLL_SRC_SEL_PVTPLL, reg_base + RV1126B_CORECLKSEL_CON(0));
 // 	writel_relaxed(PVTPLL_SRC_SEL_PVTPLL, reg_base + RV1126B_NPUCLKSEL_CON(0));
 // 	writel_relaxed(PVTPLL_SRC_SEL_PVTPLL, reg_base + RV1126B_VICLKSEL_CON(0));
@@ -1088,7 +1088,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // CLK_OF_DECLARE(rv1126b_cru, "rockchip,rv1126b-cru", rv1126b_clk_init);
 // 
 // struct clk_rv1126b_inits {
-// 	void (*inits)(struct device_node *np);
+// 	void (*inits)(device_node *np);
 // };
 // 
 // static const struct clk_rv1126b_inits clk_rv1126b_init = {
@@ -1103,7 +1103,7 @@ pub enum rv1126b_plls { gpll, cpll, aupll, dpll }
 // 	{ }
 // };
 // 
-// static int clk_rv1126b_probe(struct platform_device *pdev)
+// static int clk_rv1126b_probe(platform_device *pdev)
 // {
 // 	const struct clk_rv1126b_inits *init_data;
 // 	struct device *dev = &pdev->dev;

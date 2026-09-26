@@ -85,12 +85,12 @@ unsafe extern "C" {
     pub static mut mips_revision_sconid: i32;
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe extern "C" {
     pub fn mips_pcibios_init();
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[macro_export]
 macro_rules! mips_pcibios_init {
     () => {{}};

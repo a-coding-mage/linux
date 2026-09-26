@@ -100,12 +100,12 @@ pub unsafe fn driver_find_next_device(drv: *const device_driver, start: *mut dev
     driver_find_device(drv, start, core::ptr::null(), device_match_any)
 }
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 #[inline]
 pub unsafe fn driver_find_device_by_acpi_dev(drv: *const device_driver, adev: *const acpi_device) -> *mut device {
     driver_find_device(drv, core::ptr::null_mut(), adev.cast(), device_match_acpi_dev)
 }
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 #[inline]
 pub unsafe fn driver_find_device_by_acpi_dev(drv: *const device_driver, adev: *const ::std::ffi::c_void) -> *mut device {
     let _ = (drv, adev);

@@ -129,15 +129,15 @@ pub unsafe fn nvdimm_ctl(nvdimm: *mut nvdimm, cmd: u32, buf: *mut core::ffi::c_v
     ((*desc).ndctl.unwrap())(desc, nvdimm, cmd, buf, len, rc)
 }
 
-#[cfg(feature = "CONFIG_ARCH_HAS_PMEM_API")]
+#[cfg(CONFIG_ARCH_HAS_PMEM_API)]
 pub const ARCH_MEMREMAP_PMEM: c_ulong = MEMREMAP_WB;
-#[cfg(feature = "CONFIG_ARCH_HAS_PMEM_API")]
+#[cfg(CONFIG_ARCH_HAS_PMEM_API)]
 extern "C" { pub fn arch_wb_cache_pmem(_: *mut core::ffi::c_void, _: usize); pub fn arch_invalidate_pmem(_: *mut core::ffi::c_void, _: usize); }
-#[cfg(not(feature = "CONFIG_ARCH_HAS_PMEM_API"))]
+#[cfg(not(CONFIG_ARCH_HAS_PMEM_API))]
 pub const ARCH_MEMREMAP_PMEM: c_ulong = MEMREMAP_WT;
-#[cfg(not(feature = "CONFIG_ARCH_HAS_PMEM_API"))]
+#[cfg(not(CONFIG_ARCH_HAS_PMEM_API))]
 pub unsafe fn arch_wb_cache_pmem(_: *mut core::ffi::c_void, _: usize) {}
-#[cfg(not(feature = "CONFIG_ARCH_HAS_PMEM_API"))]
+#[cfg(not(CONFIG_ARCH_HAS_PMEM_API))]
 pub unsafe fn arch_invalidate_pmem(_: *mut core::ffi::c_void, _: usize) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

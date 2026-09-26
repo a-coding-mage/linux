@@ -31,7 +31,7 @@ pub const IDMAP_ROOT_LEVEL: usize = 4 - IDMAP_LEVELS;
 
 /* A relocatable kernel may require an additional page table at each level. */
 // __is_defined(CONFIG_RELOCATABLE), represented as a build configuration.
-pub const EXTRA_PAGE: usize = if cfg!(feature = "CONFIG_RELOCATABLE") { 1 } else { 0 };
+pub const EXTRA_PAGE: usize = if cfg!(CONFIG_RELOCATABLE) { 1 } else { 0 };
 
 pub const fn span_nr_entries(vstart: usize, vend: usize, shift: usize) -> usize {
     ((vend - 1) >> shift) - (vstart >> shift) + 1

@@ -9,20 +9,20 @@ pub struct ccp_device;
 pub struct ccp_cmd;
 
 // CONFIG_CRYPTO_DEV_SP_CCP controls whether these functions are externally provided.
-#[cfg(feature = "CONFIG_CRYPTO_DEV_SP_CCP")]
+#[cfg(CONFIG_CRYPTO_DEV_SP_CCP)]
 extern "C" {
     pub fn ccp_present() -> ::core::ffi::c_int;
     pub fn ccp_version() -> u32;
     pub fn ccp_enqueue_cmd(cmd: *mut ccp_cmd) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 #[inline]
 pub unsafe fn ccp_present() -> ::core::ffi::c_int { -19 }
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 #[inline]
 pub unsafe fn ccp_version() -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 #[inline]
 pub unsafe fn ccp_enqueue_cmd(_cmd: *mut ccp_cmd) -> ::core::ffi::c_int { -19 }
 

@@ -31,7 +31,7 @@ pub struct nand_ecc_sw_bch_conf {
 }
 
 // CONFIG_MTD_NAND_ECC_SW_BCH is a build-time configuration condition from C.
-#[cfg(feature = "CONFIG_MTD_NAND_ECC_SW_BCH")]
+#[cfg(CONFIG_MTD_NAND_ECC_SW_BCH)]
 unsafe extern "C" {
     pub fn nand_ecc_sw_bch_calculate(
         nand: *mut nand_device,
@@ -49,7 +49,7 @@ unsafe extern "C" {
     pub fn nand_ecc_sw_bch_get_engine() -> *mut nand_ecc_engine;
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_BCH"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_BCH))]
 pub unsafe fn nand_ecc_sw_bch_calculate(
     _nand: *mut nand_device,
     _buf: *const core::ffi::c_uchar,
@@ -58,7 +58,7 @@ pub unsafe fn nand_ecc_sw_bch_calculate(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_BCH"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_BCH))]
 pub unsafe fn nand_ecc_sw_bch_correct(
     _nand: *mut nand_device,
     _buf: *mut core::ffi::c_uchar,
@@ -68,12 +68,12 @@ pub unsafe fn nand_ecc_sw_bch_correct(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_BCH"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_BCH))]
 pub unsafe fn nand_ecc_sw_bch_init_ctx(_nand: *mut nand_device) -> core::ffi::c_int {
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_BCH"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_BCH))]
 pub unsafe fn nand_ecc_sw_bch_cleanup_ctx(_nand: *mut nand_device) {}
 
 

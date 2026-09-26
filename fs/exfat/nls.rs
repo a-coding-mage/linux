@@ -402,7 +402,7 @@ static u16 bad_uni_chars[] = {
 	0
 ];
 
-unsafe fn exfat_convert_char_to_ucs2(struct nls_table *nls,
+unsafe fn exfat_convert_char_to_ucs2(nls_table *nls,
 		const u8 *ch, int ch_len, u16 *ucs2,
 		int *lossy)
 {
@@ -415,7 +415,7 @@ unsafe fn exfat_convert_char_to_ucs2(struct nls_table *nls,
 		return 1;
 	}
 
-	len = nls->char2uni(ch, ch_len, ucs2);
+	len = (*nls).char2uni(ch, ch_len, ucs2);
 	if (len < 0) {
 		/* conversion failed */
 		if (lossy != core::ptr::null_mut())
@@ -426,8 +426,8 @@ unsafe fn exfat_convert_char_to_ucs2(struct nls_table *nls,
 	return len;
 }
 
-unsafe fn exfat_convert_ucs2_to_char(struct nls_table *nls,
-		u16 ucs2, u8 *ch, int *lossy)
+unsafe fn exfat_convert_ucs2_to_char(nls_table *nls,
+		ucs2: u16, u8 *ch, int *lossy)
 {
 	int len;
 
@@ -438,7 +438,7 @@ unsafe fn exfat_convert_ucs2_to_char(struct nls_table *nls,
 		return 1;
 	}
 
-	len = nls->uni2char(ucs2, ch, MAX_CHARSET_SIZE);
+	len = (*nls).uni2char(ucs2, ch, MAX_CHARSET_SIZE);
 	if (len < 0) {
 		/* conversion failed */
 		if (lossy != core::ptr::null_mut())
@@ -449,14 +449,14 @@ unsafe fn exfat_convert_ucs2_to_char(struct nls_table *nls,
 	return len;
 }
 
-u16 exfat_toupper(struct super_block *sb, u16 a)
+u16 exfat_toupper(super_block *sb, a: u16)
 {
 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
 
-	return sbi->vol_utbl[a] ? sbi->vol_utbl[a] : a;
+	return (*sbi).vol_utbl[a] ? (*sbi).vol_utbl[a] : a;
 }
 
-static u16 *exfat_wstrchr(u16 *str, u16 wchar)
+static u16 *exfat_wstrchr(u16 *str, wchar: u16)
 {
 	while (*str) {
 		if (*(str++) == wchar)
@@ -465,8 +465,8 @@ static u16 *exfat_wstrchr(u16 *str, u16 wchar)
 	return core::ptr::null_mut();
 }
 
-pub unsafe fn exfat_uniname_ncmp(struct super_block *sb, u16 *a,
-		u16 *b, u32 len)
+pub unsafe fn exfat_uniname_ncmp(super_block *sb, u16 *a,
+		u16 *b, len: u32)
 {
 	int i;
 
@@ -476,12 +476,12 @@ pub unsafe fn exfat_uniname_ncmp(struct super_block *sb, u16 *a,
 	return 0;
 }
 
-unsafe fn exfat_utf16_to_utf8(struct super_block *sb,
-		struct exfat_uni_name *p_uniname, u8 *p_cstring,
+unsafe fn exfat_utf16_to_utf8(super_block *sb,
+		exfat_uni_name *p_uniname, u8 *p_cstring,
 		int buflen)
 {
 	int len;
-	const u16 *uniname = p_uniname->name;
+	const u16 *uniname = (*p_uniname).name;
 
 	/* always len >= 0 */
 	len = utf16s_to_utf8s(uniname, MAX_NAME_LENGTH, UTF16_HOST_ENDIAN,
@@ -490,13 +490,13 @@ unsafe fn exfat_utf16_to_utf8(struct super_block *sb,
 	return len;
 }
 
-unsafe fn exfat_utf8_to_utf16(struct super_block *sb,
+unsafe fn exfat_utf8_to_utf16(super_block *sb,
 		const u8 *p_cstring, const int len,
-		struct exfat_uni_name *p_uniname, int *p_lossy)
+		exfat_uni_name *p_uniname, int *p_lossy)
 {
 	int i, unilen, lossy = NLS_NAME_NO_LOSSY;
 	u16 upname[MAX_NAME_LENGTH + 1];
-	u16 *uniname = p_uniname->name;
+	u16 *uniname = (*p_uniname).name;
 
 	WARN_ON(!len);
 
@@ -524,8 +524,8 @@ unsafe fn exfat_utf8_to_utf16(struct super_block *sb,
 	}
 
 	*uniname = '\0';
-	p_uniname->name_len = unilen;
-	p_uniname->name_hash = exfat_calc_chksum16(upname, unilen << 1, 0,
+	(*p_uniname).name_len = unilen;
+	(*p_uniname).name_hash = exfat_calc_chksum16(upname, unilen << 1, 0,
 			CS_DEFAULT);
 
 	if (p_lossy)
@@ -534,17 +534,17 @@ unsafe fn exfat_utf8_to_utf16(struct super_block *sb,
 }
 
 // C macro SURROGATE_MASK: 0xfffff800
-#define SURROGATE_PAIR	0x0000d800
-#define SURROGATE_LOW	0x00000400
+pub const SURROGATE_PAIR: u32 = 0x0000d800;
+pub const SURROGATE_LOW: u32 = 0x00000400;
 
-unsafe fn __exfat_utf16_to_nls(struct super_block *sb,
-		struct exfat_uni_name *p_uniname, u8 *p_cstring,
+unsafe fn __exfat_utf16_to_nls(super_block *sb,
+		exfat_uni_name *p_uniname, u8 *p_cstring,
 		int buflen)
 {
 	int i, j, len, out_len = 0;
 	u8 buf[MAX_CHARSET_SIZE];
-	const u16 *uniname = p_uniname->name;
-	struct nls_table *nls = EXFAT_SB(sb)->nls_io;
+	const u16 *uniname = (*p_uniname).name;
+	struct nls_table *nls = (*EXFAT_SB(sb)).nls_io;
 
 	i = 0;
 	while (i < MAX_NAME_LENGTH && out_len < (buflen - 1)) {
@@ -592,14 +592,14 @@ unsafe fn __exfat_utf16_to_nls(struct super_block *sb,
 	return out_len;
 }
 
-unsafe fn exfat_nls_to_ucs2(struct super_block *sb,
+unsafe fn exfat_nls_to_ucs2(super_block *sb,
 		const u8 *p_cstring, const int len,
-		struct exfat_uni_name *p_uniname, int *p_lossy)
+		exfat_uni_name *p_uniname, int *p_lossy)
 {
 	int i = 0, unilen = 0, lossy = NLS_NAME_NO_LOSSY;
 	u16 upname[MAX_NAME_LENGTH + 1];
-	u16 *uniname = p_uniname->name;
-	struct nls_table *nls = EXFAT_SB(sb)->nls_io;
+	u16 *uniname = (*p_uniname).name;
+	struct nls_table *nls = (*EXFAT_SB(sb)).nls_io;
 
 	WARN_ON(!len);
 
@@ -617,8 +617,8 @@ unsafe fn exfat_nls_to_ucs2(struct super_block *sb,
 	}
 
 	*uniname = '\0';
-	p_uniname->name_len = unilen;
-	p_uniname->name_hash = exfat_calc_chksum16(upname, unilen << 1, 0,
+	(*p_uniname).name_len = unilen;
+	(*p_uniname).name_hash = exfat_calc_chksum16(upname, unilen << 1, 0,
 			CS_DEFAULT);
 
 	if (p_lossy)
@@ -626,31 +626,31 @@ unsafe fn exfat_nls_to_ucs2(struct super_block *sb,
 	return unilen;
 }
 
-pub unsafe fn exfat_utf16_to_nls(struct super_block *sb, struct exfat_uni_name *uniname,
+pub unsafe fn exfat_utf16_to_nls(super_block *sb, exfat_uni_name *uniname,
 		u8 *p_cstring, int buflen)
 {
-	if (EXFAT_SB(sb)->options.utf8)
+	if ((*EXFAT_SB(sb)).options.utf8)
 		return exfat_utf16_to_utf8(sb, uniname, p_cstring,
 				buflen);
 	return __exfat_utf16_to_nls(sb, uniname, p_cstring, buflen);
 }
 
-pub unsafe fn exfat_nls_to_utf16(struct super_block *sb, const u8 *p_cstring,
-		const int len, struct exfat_uni_name *uniname, int *p_lossy)
+pub unsafe fn exfat_nls_to_utf16(super_block *sb, const u8 *p_cstring,
+		const int len, exfat_uni_name *uniname, int *p_lossy)
 {
-	if (EXFAT_SB(sb)->options.utf8)
+	if ((*EXFAT_SB(sb)).options.utf8)
 		return exfat_utf8_to_utf16(sb, p_cstring, len,
 				uniname, p_lossy);
 	return exfat_nls_to_ucs2(sb, p_cstring, len, uniname, p_lossy);
 }
 
-unsafe fn exfat_load_upcase_table(struct super_block *sb,
-		sector_t sector, u64 num_sectors,
-		u32 utbl_checksum)
+unsafe fn exfat_load_upcase_table(super_block *sb,
+		sector_t sector, num_sectors: u64,
+		utbl_checksum: u32)
 {
 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
-	u32 sect_size = sb->s_blocksize;
-	u32 i, index = 0;
+	u32 sect_size = (*sb).s_blocksize;
+	i: u32, index = 0;
 	u32 chksum = 0;
 	u8 skip = false;
 	u16 *upcase_table;
@@ -659,7 +659,7 @@ unsafe fn exfat_load_upcase_table(struct super_block *sb,
 	if (!upcase_table)
 		return -(ENOMEM as i32);
 
-	sbi->vol_utbl = upcase_table;
+	(*sbi).vol_utbl = upcase_table;
 	num_sectors += sector;
 
 	while (sector < num_sectors) {
@@ -673,7 +673,7 @@ unsafe fn exfat_load_upcase_table(struct super_block *sb,
 		}
 		sector++;
 		for (i = 0; i < sect_size && index <= 0xFFFF; i += 2) {
-			u16 uni = get_unaligned_le16(bh->b_data + i);
+			u16 uni = get_unaligned_le16((*bh).b_data + i);
 
 			if (skip) {
 				index += uni;
@@ -687,7 +687,7 @@ unsafe fn exfat_load_upcase_table(struct super_block *sb,
 				index++;
 			}
 		}
-		chksum = exfat_calc_chksum32(bh->b_data, i, chksum, CS_DEFAULT);
+		chksum = exfat_calc_chksum32((*bh).b_data, i, chksum, CS_DEFAULT);
 		brelse(bh);
 	}
 
@@ -699,7 +699,7 @@ unsafe fn exfat_load_upcase_table(struct super_block *sb,
 	return -(EINVAL as i32);
 }
 
-unsafe fn exfat_load_default_upcase_table(struct super_block *sb)
+unsafe fn exfat_load_default_upcase_table(super_block *sb)
 {
 	int i;
 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
@@ -711,7 +711,7 @@ unsafe fn exfat_load_default_upcase_table(struct super_block *sb)
 	if (!upcase_table)
 		return -(ENOMEM as i32);
 
-	sbi->vol_utbl = upcase_table;
+	(*sbi).vol_utbl = upcase_table;
 
 	for (i = 0; index <= 0xFFFF && i < EXFAT_NUM_UPCASE; i++) {
 		uni = uni_def_upcase[i];
@@ -735,23 +735,24 @@ unsafe fn exfat_load_default_upcase_table(struct super_block *sb)
 	return -(EIO as i32);
 }
 
-pub unsafe fn exfat_create_upcase_table(struct super_block *sb)
+pub unsafe fn exfat_create_upcase_table(super_block *sb)
 {
+	'load_default: {
 	int i, ret;
-	u32 tbl_clu, type;
+	tbl_clu: u32, type;
 	sector_t sector;
-	u64 tbl_size, num_sectors;
-	u8 blksize_bits = sb->s_blocksize_bits;
+	tbl_size: u64, num_sectors;
+	u8 blksize_bits = (*sb).s_blocksize_bits;
 	struct exfat_chain clu;
 	struct exfat_dentry *ep;
 	struct exfat_sb_info *sbi = EXFAT_SB(sb);
 	struct buffer_head *bh;
 
-	clu.dir = sbi->root_dir;
+	clu.dir = (*sbi).root_dir;
 	clu.flags = ALLOC_FAT_CHAIN;
 
 	while (clu.dir != EXFAT_EOF_CLUSTER) {
-		for (i = 0; i < sbi->dentries_per_clu; i++) {
+		for (i = 0; i < (*sbi).dentries_per_clu; i++) {
 			ep = exfat_get_dentry(sb, &clu, i, &bh);
 			if (!ep)
 				return -(EIO as i32);
@@ -767,13 +768,13 @@ pub unsafe fn exfat_create_upcase_table(struct super_block *sb)
 				continue;
 			}
 
-			tbl_clu  = le32_to_cpu(ep->dentry.upcase.start_clu);
-			tbl_size = le64_to_cpu(ep->dentry.upcase.size);
+			tbl_clu  = le32_to_cpu((*ep).dentry.upcase.start_clu);
+			tbl_size = le64_to_cpu((*ep).dentry.upcase.size);
 			if (tbl_size) {
 				sector = exfat_cluster_to_sector(sbi, tbl_clu);
 				num_sectors = ((tbl_size - 1) >> blksize_bits) + 1;
 				ret = exfat_load_upcase_table(sb, sector, num_sectors,
-					le32_to_cpu(ep->dentry.upcase.checksum));
+					le32_to_cpu((*ep).dentry.upcase.checksum));
 			} else {
 				exfat_fs_error(sb,
 					       "bad upcase table size (0 bytes). Please run fsck");
@@ -784,7 +785,7 @@ pub unsafe fn exfat_create_upcase_table(struct super_block *sb)
 			if (ret && ret != -EIO) {
 				/* free memory from exfat_load_upcase_table call */
 				exfat_free_upcase_table(sbi);
-				goto load_default;
+				break 'load_default;
 			}
 
 			/* load successfully */
@@ -796,16 +797,16 @@ pub unsafe fn exfat_create_upcase_table(struct super_block *sb)
 	}
 
 	exfat_fs_error(sb, "no upcase table entry. Please run fsck");
-
-load_default:
+	}
+	
 	/* load default upcase table */
 	return exfat_load_default_upcase_table(sb);
 }
 
-pub unsafe fn exfat_free_upcase_table(struct exfat_sb_info *sbi)
+pub unsafe fn exfat_free_upcase_table(exfat_sb_info *sbi)
 {
-	kvfree(sbi->vol_utbl);
-	sbi->vol_utbl = core::ptr::null_mut();
+	kvfree((*sbi).vol_utbl);
+	(*sbi).vol_utbl = core::ptr::null_mut();
 }
 
 

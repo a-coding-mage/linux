@@ -18,7 +18,7 @@
  *
  * CONFIG_CPU_LOONGSON64 is represented here as a build-time cfg feature.
  */
-#[cfg(feature = "CONFIG_CPU_LOONGSON64")]
+#[cfg(CONFIG_CPU_LOONGSON64)]
 #[macro_export]
 macro_rules! cpu_relax {
     () => {
@@ -26,7 +26,7 @@ macro_rules! cpu_relax {
     };
 }
 
-#[cfg(not(feature = "CONFIG_CPU_LOONGSON64"))]
+#[cfg(not(CONFIG_CPU_LOONGSON64))]
 #[macro_export]
 macro_rules! cpu_relax {
     () => {

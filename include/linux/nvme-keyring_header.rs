@@ -13,7 +13,7 @@ pub struct key {
 pub type key_serial_t = i32;
 
 /* CONFIG_NVME_KEYRING-enabled declarations. */
-#[cfg(feature = "CONFIG_NVME_KEYRING")]
+#[cfg(CONFIG_NVME_KEYRING)]
 extern "C" {
     pub fn nvme_tls_psk_refresh(
         keyring: *mut key,
@@ -37,7 +37,7 @@ extern "C" {
 }
 
 /* !CONFIG_NVME_KEYRING: static inline fallback declarations. */
-#[cfg(not(feature = "CONFIG_NVME_KEYRING"))]
+#[cfg(not(CONFIG_NVME_KEYRING))]
 #[inline]
 pub unsafe fn nvme_tls_psk_refresh(
     _keyring: *mut key,
@@ -52,7 +52,7 @@ pub unsafe fn nvme_tls_psk_refresh(
     (-524isize) as *mut key
 }
 
-#[cfg(not(feature = "CONFIG_NVME_KEYRING"))]
+#[cfg(not(CONFIG_NVME_KEYRING))]
 #[inline]
 pub unsafe fn nvme_tls_psk_default(
     _keyring: *mut key,
@@ -62,13 +62,13 @@ pub unsafe fn nvme_tls_psk_default(
     0
 }
 
-#[cfg(not(feature = "CONFIG_NVME_KEYRING"))]
+#[cfg(not(CONFIG_NVME_KEYRING))]
 #[inline]
 pub unsafe fn nvme_keyring_id() -> key_serial_t {
     0
 }
 
-#[cfg(not(feature = "CONFIG_NVME_KEYRING"))]
+#[cfg(not(CONFIG_NVME_KEYRING))]
 #[inline]
 pub unsafe fn nvme_tls_key_lookup(_key_id: key_serial_t) -> *mut key {
     /* ERR_PTR(-ENOTSUPP) */

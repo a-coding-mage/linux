@@ -127,7 +127,7 @@ pub unsafe fn ip_set_get_ip4_port(skb: *const sk_buff, src: bool,
 // EXPORT_SYMBOL_GPL(ip_set_get_ip4_port);
 
 // Preserved from the source: this block is enabled when CONFIG_IP6_NF_IPTABLES is enabled.
-#[cfg(feature = "CONFIG_IP6_NF_IPTABLES")]
+#[cfg(CONFIG_IP6_NF_IPTABLES)]
 pub unsafe fn ip_set_get_ip6_port(skb: *const sk_buff, src: bool,
                                   port: *mut __be16, proto: *mut u8) -> bool {
     let mut nexthdr = (*ipv6_hdr(skb)).nexthdr;

@@ -185,7 +185,7 @@ pub unsafe fn s390_pci_mmio_read(mmio_addr: usize, user_buffer: *mut core::ffi::
     args.vma = vma; args.address = mmio_addr; ret = follow_pfnmap_start(&mut args);
     if ret != 0 { fixup_user_fault(current_mm(), mmio_addr, 0, core::ptr::null_mut()); ret = follow_pfnmap_start(&mut args); if ret != 0 { goto_out_unlock_mmap!(buf, local_buf, ret); } }
     let io_addr = ((args.pfn << PAGE_SHIFT) | (mmio_addr & !PAGE_MASK)) as *mut core::ffi::c_void;
-    if io_addr as usize < ZPCI_IOMAP_ADDR_BASE { ret = -EFAULT as isize; } else { ret = zpci_memcpy_fromio(buf, io_addr, length); }
+    if (io_addr as usize) < ZPCI_IOMAP_ADDR_BASE { ret = -EFAULT as isize; } else { ret = zpci_memcpy_fromio(buf, io_addr, length); }
     follow_pfnmap_end(&mut args); mmap_read_unlock(current_mm());
     if ret == 0 && copy_to_user(user_buffer, buf, length) != 0 { ret = -EFAULT as isize; }
     if buf != local_buf.as_mut_ptr().cast() { kfree(buf); } ret

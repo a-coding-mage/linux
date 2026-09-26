@@ -18,15 +18,15 @@ pub struct uprobe_consumer {
     pub id: u64,
 }
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 #[repr(C)]
 pub enum uprobe_task_state { UTASK_RUNNING, UTASK_SSTEP, UTASK_SSTEP_ACK, UTASK_SSTEP_TRAPPED }
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 #[repr(C)]
 pub enum hprobe_state { HPROBE_LEASED, HPROBE_STABLE, HPROBE_GONE, HPROBE_CONSUMED }
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 #[repr(C)]
 pub struct hprobe {
     pub state: hprobe_state,
@@ -34,7 +34,7 @@ pub struct hprobe {
     pub uprobe: *mut uprobe,
 }
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 #[repr(C)]
 pub union uprobe_task_arch {
     pub xol: uprobe_task_xol,
@@ -43,7 +43,7 @@ pub union uprobe_task_arch {
 #[repr(C)] pub struct uprobe_task_xol { pub autask: arch_uprobe_task, pub vaddr: c_ulong }
 #[repr(C)] pub struct uprobe_task_dup { pub dup_xol_work: callback_head, pub dup_xol_addr: c_ulong }
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 #[repr(C)]
 pub struct uprobe_task {
     pub state: uprobe_task_state,
@@ -73,64 +73,64 @@ pub enum rp_check { RP_CHECK_CALL, RP_CHECK_CHAIN_CALL, RP_CHECK_RET }
 
 pub type uprobe_write_verify_t = unsafe extern "C" fn(*mut page, c_ulong, *mut uprobe_opcode_t, i32, *mut c_void) -> i32;
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 extern "C" {
     pub fn uprobes_init();
-    pub fn set_swbp(*mut arch_uprobe, *mut vm_area_struct, c_ulong) -> i32;
-    pub fn set_orig_insn(*mut arch_uprobe, *mut vm_area_struct, c_ulong) -> i32;
-    pub fn is_swbp_insn(*mut uprobe_opcode_t) -> bool;
-    pub fn is_trap_insn(*mut uprobe_opcode_t) -> bool;
-    pub fn uprobe_get_swbp_addr(*mut pt_regs) -> c_ulong;
-    pub fn uprobe_get_trap_addr(*mut pt_regs) -> c_ulong;
-    pub fn uprobe_write_opcode(*mut arch_uprobe, *mut vm_area_struct, c_ulong, uprobe_opcode_t, bool) -> i32;
-    pub fn uprobe_write(*mut arch_uprobe, *mut vm_area_struct, c_ulong, *mut uprobe_opcode_t, i32, Option<uprobe_write_verify_t>, bool, bool, *mut c_void) -> i32;
-    pub fn uprobe_register(*mut inode, loff_t, loff_t, *mut uprobe_consumer) -> *mut uprobe;
-    pub fn uprobe_apply(*mut uprobe, *mut uprobe_consumer, bool) -> i32;
-    pub fn uprobe_unregister_nosync(*mut uprobe, *mut uprobe_consumer);
+    pub fn set_swbp(_: *mut arch_uprobe, _: *mut vm_area_struct, _: c_ulong) -> i32;
+    pub fn set_orig_insn(_: *mut arch_uprobe, _: *mut vm_area_struct, _: c_ulong) -> i32;
+    pub fn is_swbp_insn(_: *mut uprobe_opcode_t) -> bool;
+    pub fn is_trap_insn(_: *mut uprobe_opcode_t) -> bool;
+    pub fn uprobe_get_swbp_addr(_: *mut pt_regs) -> c_ulong;
+    pub fn uprobe_get_trap_addr(_: *mut pt_regs) -> c_ulong;
+    pub fn uprobe_write_opcode(_: *mut arch_uprobe, _: *mut vm_area_struct, _: c_ulong, _: uprobe_opcode_t, _: bool) -> i32;
+    pub fn uprobe_write(_: *mut arch_uprobe, _: *mut vm_area_struct, _: c_ulong, _: *mut uprobe_opcode_t, _: i32, _: Option<uprobe_write_verify_t>, _: bool, _: bool, _: *mut c_void) -> i32;
+    pub fn uprobe_register(_: *mut inode, _: loff_t, _: loff_t, _: *mut uprobe_consumer) -> *mut uprobe;
+    pub fn uprobe_apply(_: *mut uprobe, _: *mut uprobe_consumer, _: bool) -> i32;
+    pub fn uprobe_unregister_nosync(_: *mut uprobe, _: *mut uprobe_consumer);
     pub fn uprobe_unregister_sync();
-    pub fn uprobe_mmap(*mut vm_area_struct) -> i32;
-    pub fn uprobe_munmap(*mut vm_area_struct, c_ulong, c_ulong);
+    pub fn uprobe_mmap(_: *mut vm_area_struct) -> i32;
+    pub fn uprobe_munmap(_: *mut vm_area_struct, _: c_ulong, _: c_ulong);
     pub fn uprobe_start_dup_mmap(); pub fn uprobe_end_dup_mmap();
-    pub fn uprobe_dup_mmap(*mut mm_struct, *mut mm_struct);
-    pub fn uprobe_free_utask(*mut task_struct); pub fn uprobe_copy_process(*mut task_struct, u64);
-    pub fn uprobe_post_sstep_notifier(*mut pt_regs) -> i32; pub fn uprobe_pre_sstep_notifier(*mut pt_regs) -> i32;
-    pub fn uprobe_notify_resume(*mut pt_regs); pub fn uprobe_deny_signal() -> bool;
-    pub fn arch_uprobe_skip_sstep(*mut arch_uprobe, *mut pt_regs) -> bool;
-    pub fn uprobe_clear_state(*mut mm_struct); pub fn arch_uprobe_analyze_insn(*mut arch_uprobe, *mut mm_struct, c_ulong) -> i32;
-    pub fn arch_uprobe_pre_xol(*mut arch_uprobe, *mut pt_regs) -> i32; pub fn arch_uprobe_post_xol(*mut arch_uprobe, *mut pt_regs) -> i32;
-    pub fn arch_uprobe_xol_was_trapped(*mut task_struct) -> bool;
-    pub fn arch_uprobe_exception_notify(*mut notifier_block, c_ulong, *mut c_void) -> i32;
-    pub fn arch_uprobe_abort_xol(*mut arch_uprobe, *mut pt_regs);
-    pub fn arch_uretprobe_hijack_return_addr(c_ulong, *mut pt_regs) -> c_ulong;
-    pub fn arch_uretprobe_is_alive(*mut return_instance, rp_check, *mut pt_regs) -> bool;
-    pub fn arch_uprobe_ignore(*mut arch_uprobe, *mut pt_regs) -> bool;
-    pub fn arch_uprobe_copy_ixol(*mut page, c_ulong, *mut c_void, c_ulong);
-    pub fn uprobe_handle_trampoline(*mut pt_regs); pub fn arch_uretprobe_trampoline(*mut c_ulong) -> *mut c_void;
-    pub fn uprobe_get_trampoline_vaddr() -> c_ulong; pub fn uprobe_copy_from_page(*mut page, c_ulong, *mut c_void, i32);
-    pub fn handle_syscall_uprobe(*mut pt_regs, c_ulong); pub fn arch_uprobe_optimize(*mut arch_uprobe, c_ulong);
+    pub fn uprobe_dup_mmap(_: *mut mm_struct, _: *mut mm_struct);
+    pub fn uprobe_free_utask(_: *mut task_struct); pub fn uprobe_copy_process(_: *mut task_struct, _: u64);
+    pub fn uprobe_post_sstep_notifier(_: *mut pt_regs) -> i32; pub fn uprobe_pre_sstep_notifier(_: *mut pt_regs) -> i32;
+    pub fn uprobe_notify_resume(_: *mut pt_regs); pub fn uprobe_deny_signal() -> bool;
+    pub fn arch_uprobe_skip_sstep(_: *mut arch_uprobe, _: *mut pt_regs) -> bool;
+    pub fn uprobe_clear_state(_: *mut mm_struct); pub fn arch_uprobe_analyze_insn(_: *mut arch_uprobe, _: *mut mm_struct, _: c_ulong) -> i32;
+    pub fn arch_uprobe_pre_xol(_: *mut arch_uprobe, _: *mut pt_regs) -> i32; pub fn arch_uprobe_post_xol(_: *mut arch_uprobe, _: *mut pt_regs) -> i32;
+    pub fn arch_uprobe_xol_was_trapped(_: *mut task_struct) -> bool;
+    pub fn arch_uprobe_exception_notify(_: *mut notifier_block, _: c_ulong, _: *mut c_void) -> i32;
+    pub fn arch_uprobe_abort_xol(_: *mut arch_uprobe, _: *mut pt_regs);
+    pub fn arch_uretprobe_hijack_return_addr(_: c_ulong, _: *mut pt_regs) -> c_ulong;
+    pub fn arch_uretprobe_is_alive(_: *mut return_instance, _: rp_check, _: *mut pt_regs) -> bool;
+    pub fn arch_uprobe_ignore(_: *mut arch_uprobe, _: *mut pt_regs) -> bool;
+    pub fn arch_uprobe_copy_ixol(_: *mut page, _: c_ulong, _: *mut c_void, _: c_ulong);
+    pub fn uprobe_handle_trampoline(_: *mut pt_regs); pub fn arch_uretprobe_trampoline(_: *mut c_ulong) -> *mut c_void;
+    pub fn uprobe_get_trampoline_vaddr() -> c_ulong; pub fn uprobe_copy_from_page(_: *mut page, _: c_ulong, _: *mut c_void, _: i32);
+    pub fn handle_syscall_uprobe(_: *mut pt_regs, _: c_ulong); pub fn arch_uprobe_optimize(_: *mut arch_uprobe, _: c_ulong);
     pub fn arch_uprobe_get_xol_area() -> c_ulong;
 }
 
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 pub unsafe fn uprobes_init() {}
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 pub unsafe fn uprobe_get_trap_addr(regs: *mut pt_regs) -> c_ulong { instruction_pointer(regs) }
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 pub unsafe fn uprobe_register(_: *mut inode, _: loff_t, _: loff_t, _: *mut uprobe_consumer) -> *mut uprobe { (-38isize) as *mut uprobe }
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 pub unsafe fn uprobe_apply(_: *mut uprobe, _: *mut uprobe_consumer, _: bool) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_unregister_nosync(_: *mut uprobe, _: *mut uprobe_consumer) {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_unregister_sync() {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_mmap(_: *mut vm_area_struct) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_munmap(_: *mut vm_area_struct, _: c_ulong, _: c_ulong) {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_start_dup_mmap() {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_end_dup_mmap() {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_dup_mmap(_: *mut mm_struct, _: *mut mm_struct) {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_notify_resume(_: *mut pt_regs) {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_deny_signal() -> bool { false }
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_free_utask(_: *mut task_struct) {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_copy_process(_: *mut task_struct, _: u64) {}
-#[cfg(not(feature = "CONFIG_UPROBES"))] pub unsafe fn uprobe_clear_state(_: *mut mm_struct) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_unregister_nosync(_: *mut uprobe, _: *mut uprobe_consumer) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_unregister_sync() {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_mmap(_: *mut vm_area_struct) -> i32 { 0 }
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_munmap(_: *mut vm_area_struct, _: c_ulong, _: c_ulong) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_start_dup_mmap() {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_end_dup_mmap() {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_dup_mmap(_: *mut mm_struct, _: *mut mm_struct) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_notify_resume(_: *mut pt_regs) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_deny_signal() -> bool { false }
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_free_utask(_: *mut task_struct) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_copy_process(_: *mut task_struct, _: u64) {}
+#[cfg(not(CONFIG_UPROBES))] pub unsafe fn uprobe_clear_state(_: *mut mm_struct) {}
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

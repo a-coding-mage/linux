@@ -19,7 +19,7 @@ pub struct fw_priv {
 }
 
 // CONFIG_FW_LOADER_USER_HELPER
-#[cfg(feature = "CONFIG_FW_LOADER_USER_HELPER")]
+#[cfg(CONFIG_FW_LOADER_USER_HELPER)]
 extern "C" {
     pub fn firmware_fallback_sysfs(
         fw: *mut firmware,
@@ -35,7 +35,7 @@ extern "C" {
 }
 
 // !CONFIG_FW_LOADER_USER_HELPER
-#[cfg(not(feature = "CONFIG_FW_LOADER_USER_HELPER"))]
+#[cfg(not(CONFIG_FW_LOADER_USER_HELPER))]
 pub unsafe fn firmware_fallback_sysfs(
     _fw: *mut firmware,
     _name: *const c_char,
@@ -47,23 +47,23 @@ pub unsafe fn firmware_fallback_sysfs(
     ret
 }
 
-#[cfg(not(feature = "CONFIG_FW_LOADER_USER_HELPER"))]
+#[cfg(not(CONFIG_FW_LOADER_USER_HELPER))]
 pub unsafe fn kill_pending_fw_fallback_reqs(_kill_all: bool) {}
 
-#[cfg(not(feature = "CONFIG_FW_LOADER_USER_HELPER"))]
+#[cfg(not(CONFIG_FW_LOADER_USER_HELPER))]
 pub unsafe fn fw_fallback_set_cache_timeout() {}
 
-#[cfg(not(feature = "CONFIG_FW_LOADER_USER_HELPER"))]
+#[cfg(not(CONFIG_FW_LOADER_USER_HELPER))]
 pub unsafe fn fw_fallback_set_default_timeout() {}
 
 // CONFIG_EFI_EMBEDDED_FIRMWARE
-#[cfg(feature = "CONFIG_EFI_EMBEDDED_FIRMWARE")]
+#[cfg(CONFIG_EFI_EMBEDDED_FIRMWARE)]
 extern "C" {
     pub fn firmware_fallback_platform(fw_priv: *mut fw_priv) -> i32;
 }
 
 // !CONFIG_EFI_EMBEDDED_FIRMWARE
-#[cfg(not(feature = "CONFIG_EFI_EMBEDDED_FIRMWARE"))]
+#[cfg(not(CONFIG_EFI_EMBEDDED_FIRMWARE))]
 pub unsafe fn firmware_fallback_platform(_fw_priv: *mut fw_priv) -> i32 {
     // -ENOENT; errno constant supplied by the surrounding kernel translation.
     -ENOENT

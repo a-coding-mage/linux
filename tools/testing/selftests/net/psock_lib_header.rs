@@ -67,7 +67,7 @@ pub unsafe fn pair_udp_setfilter(fd: libc::c_int) {
             code: 0x80,
             jt: 0,
             jf: 0,
-            k: 0000000000,
+            k: 0,
         },
         libc::sock_filter {
             code: 0x35,
@@ -103,7 +103,7 @@ pub unsafe fn pair_udp_setfilter(fd: libc::c_int) {
             code: 0x06,
             jt: 0,
             jf: 0,
-            k: 0000000000,
+            k: 0,
         },
     ];
     let mut bpf_prog: libc::sock_fprog = core::mem::zeroed();

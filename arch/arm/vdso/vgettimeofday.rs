@@ -54,7 +54,7 @@ extern "C" {
 }
 
 // CONFIG_COMPAT_32BIT_TIME is a build-time configuration condition.
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 pub unsafe fn __vdso_clock_gettime(
     clock: clockid_t,
     ts: *mut old_timespec32,
@@ -62,7 +62,7 @@ pub unsafe fn __vdso_clock_gettime(
     __cvdso_clock_gettime32(clock, ts)
 }
 
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 pub unsafe fn __vdso_clock_getres(
     clock_id: clockid_t,
     res: *mut old_timespec32,
@@ -70,7 +70,7 @@ pub unsafe fn __vdso_clock_getres(
     __cvdso_clock_getres_time32(clock_id, res)
 }
 
-#[cfg(feature = "CONFIG_COMPAT_32BIT_TIME")]
+#[cfg(CONFIG_COMPAT_32BIT_TIME)]
 pub unsafe fn __vdso_gettimeofday(
     tv: *mut __kernel_old_timeval,
     tz: *mut timezone,

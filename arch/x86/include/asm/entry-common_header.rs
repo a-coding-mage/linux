@@ -7,7 +7,7 @@
 /* Check that the stack and regs on entry from user mode are sane. */
 #[inline(always)]
 pub unsafe fn arch_enter_from_user_mode(regs: *mut pt_regs) {
-    if cfg!(feature = "CONFIG_DEBUG_ENTRY") {
+    if cfg!(CONFIG_DEBUG_ENTRY) {
         /*
          * Make sure that the entry code gave us a sensible EFLAGS
          * register.  Native because we want to check the actual CPU
@@ -70,7 +70,7 @@ pub unsafe fn arch_exit_to_user_mode_prepare(
     fred_update_rsp0();
 
     // CONFIG_COMPAT conditional preserved from the source header.
-    #[cfg(feature = "CONFIG_COMPAT")]
+    #[cfg(CONFIG_COMPAT)]
     {
         /*
          * Compat syscalls set TS_COMPAT.  Make sure we clear it before

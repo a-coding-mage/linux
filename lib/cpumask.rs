@@ -3,13 +3,13 @@
 // by the surrounding translation unit.
 
 /* These are not inline because of header tangles. */
-#[cfg(feature = "CONFIG_CPUMASK_OFFSTACK")]
+#[cfg(CONFIG_CPUMASK_OFFSTACK)]
 /// Allocate a struct cpumask on a given node.
 pub unsafe fn alloc_cpumask_var_node(mask: *mut cpumask_var_t, flags: gfp_t, node: i32) -> bool {
     unsafe {
         *mask = kmalloc_node(cpumask_size(), flags, node);
 
-        #[cfg(feature = "CONFIG_DEBUG_PER_CPU_MAPS")]
+        #[cfg(CONFIG_DEBUG_PER_CPU_MAPS)]
         if (*mask).is_null() {
             printk(KERN_ERR, "=> alloc_cpumask_var: failed!\n");
             dump_stack();
@@ -19,21 +19,21 @@ pub unsafe fn alloc_cpumask_var_node(mask: *mut cpumask_var_t, flags: gfp_t, nod
     }
 }
 
-#[cfg(feature = "CONFIG_CPUMASK_OFFSTACK")]
+#[cfg(CONFIG_CPUMASK_OFFSTACK)]
 pub unsafe fn alloc_bootmem_cpumask_var(mask: *mut cpumask_var_t) {
     unsafe {
         *mask = memblock_alloc_or_panic(cpumask_size(), SMP_CACHE_BYTES);
     }
 }
 
-#[cfg(feature = "CONFIG_CPUMASK_OFFSTACK")]
+#[cfg(CONFIG_CPUMASK_OFFSTACK)]
 pub unsafe fn free_cpumask_var(mask: cpumask_var_t) {
     unsafe {
         kfree(mask);
     }
 }
 
-#[cfg(feature = "CONFIG_CPUMASK_OFFSTACK")]
+#[cfg(CONFIG_CPUMASK_OFFSTACK)]
 pub unsafe fn free_bootmem_cpumask_var(mask: cpumask_var_t) {
     unsafe {
         memblock_free(mask, cpumask_size());

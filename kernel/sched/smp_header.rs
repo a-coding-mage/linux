@@ -16,13 +16,13 @@ extern "C" {
 }
 
 /* CONFIG_SMP build-time condition. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn flush_smp_call_function_queue();
 }
 
 /* CONFIG_SMP build-time condition: the non-SMP inline function is empty. */
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn flush_smp_call_function_queue() {}
 

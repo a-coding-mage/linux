@@ -7,13 +7,13 @@
 // Dependencies supplied by the surrounding kernel translation:
 // "kvm_onhyperv.h", "svm/hyperv.h"
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 extern "C" {
     // __init void svm_hv_hardware_setup(void);
     pub fn svm_hv_hardware_setup();
 }
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 #[inline]
 pub unsafe fn svm_hv_is_enlightened_tlb_enabled(vcpu: *mut kvm_vcpu) -> bool {
     let hve: *mut hv_vmcb_enlightenments = &mut (*(*to_svm(vcpu)).vmcb)
@@ -24,7 +24,7 @@ pub unsafe fn svm_hv_is_enlightened_tlb_enabled(vcpu: *mut kvm_vcpu) -> bool {
         && ((*hve).hv_enlightenments_control.enlightened_npt_tlb != 0)
 }
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 #[inline]
 pub unsafe fn svm_hv_init_vmcb(vmcb: *mut vmcb) {
     let hve: *mut hv_vmcb_enlightenments = &mut (*vmcb).control.hv_enlightenments;
@@ -43,7 +43,7 @@ pub unsafe fn svm_hv_init_vmcb(vmcb: *mut vmcb) {
     }
 }
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 #[inline]
 pub unsafe fn svm_hv_vmcb_dirty_nested_enlightenments(vcpu: *mut kvm_vcpu) {
     let vmcb: *mut vmcb = (*to_svm(vcpu)).vmcb;
@@ -54,7 +54,7 @@ pub unsafe fn svm_hv_vmcb_dirty_nested_enlightenments(vcpu: *mut kvm_vcpu) {
     }
 }
 
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 #[inline]
 pub unsafe fn svm_hv_update_vp_id(vmcb: *mut vmcb, vcpu: *mut kvm_vcpu) {
     let hve: *mut hv_vmcb_enlightenments = &mut (*vmcb).control.hv_enlightenments;
@@ -66,25 +66,25 @@ pub unsafe fn svm_hv_update_vp_id(vmcb: *mut vmcb, vcpu: *mut kvm_vcpu) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn svm_hv_is_enlightened_tlb_enabled(_vcpu: *mut kvm_vcpu) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn svm_hv_init_vmcb(_vmcb: *mut vmcb) {}
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn svm_hv_hardware_setup() {}
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn svm_hv_vmcb_dirty_nested_enlightenments(_vcpu: *mut kvm_vcpu) {}
 
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub unsafe fn svm_hv_update_vp_id(_vmcb: *mut vmcb, _vcpu: *mut kvm_vcpu) {}
 

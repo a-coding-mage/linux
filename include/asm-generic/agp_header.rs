@@ -7,13 +7,13 @@ extern "C" {
 
 macro_rules! map_page_into_agp {
     ($page:expr) => {{
-        // The C macro is an empty statement and does not evaluate `page`.
+        // The C macro is an empty statement and does not evaluate `$page`.
     }};
 }
 
 macro_rules! unmap_page_from_agp {
     ($page:expr) => {{
-        // The C macro is an empty statement and does not evaluate `page`.
+        // The C macro is an empty statement and does not evaluate `$page`.
     }};
 }
 

@@ -73,9 +73,9 @@ pub struct snd_hwdep {
     pub name: [c_char; 80],
     pub iface: c_int,
 
-    #[cfg(feature = "CONFIG_SND_OSSEMUL")]
+    #[cfg(CONFIG_SND_OSSEMUL)]
     pub oss_type: c_int,
-    #[cfg(feature = "CONFIG_SND_OSSEMUL")]
+    #[cfg(CONFIG_SND_OSSEMUL)]
     pub ossreg: c_int,
 
     pub ops: snd_hwdep_ops,

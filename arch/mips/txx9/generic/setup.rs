@@ -23,14 +23,14 @@ extern "C" {
     static mut fw_arg0: usize; static mut fw_arg1: usize; static mut fw_arg2: usize;
     static mut arcs_cmdline: [c_char; 512]; static mut cpu_wait: Option<unsafe extern "C" fn()>;
     static mut cpu_has_counter: bool; static mut txx9_pcibios_setup: Option<unsafe extern "C" fn()>;
-    fn request_resource(*mut resource,*mut resource)->c_int; fn platform_device_register_simple(*const c_char,c_int,*mut resource,usize)->*mut platform_device;
-    fn ioremap(usize,usize)->*mut c_void; fn iounmap(*mut c_void); fn platform_device_alloc(*const c_char,c_int)->*mut platform_device;
-    fn platform_device_add_data(*mut platform_device,*const c_void,usize)->c_int; fn platform_device_add(*mut platform_device)->c_int; fn platform_device_put(*mut platform_device);
-    fn platform_device_add_resources(*mut platform_device,*mut resource,usize)->c_int; fn prom_getenv(*const c_char)->*const c_char;
-    fn read_c0_config()->u32; fn write_c0_config(u32); fn read_c0_status()->u32; fn read_c0_cause()->u32; fn clear_c0_status(u32); fn write_c0_compare(u32);
-    fn local_irq_disable(); fn do_IRQ(c_int); fn spurious_interrupt(); fn early_serial_txx9_setup(*mut c_void);
-    fn clk_hw_register_fixed_rate(*mut c_void,*const c_char,*const c_char,u32,u32)->*mut c_void; fn clk_hw_register_fixed_factor(*mut c_void,*const c_char,*const c_char,u32,u32,u32)->*mut c_void; fn clk_hw_register_clkdev(*mut c_void,*const c_char,*const c_char)->c_int;
-    fn subsys_system_register(*const bus_type,*mut c_void)->c_int; fn device_register(*mut device)->c_int; fn device_unregister(*mut device); fn put_device(*mut device); fn sysfs_create_bin_file(*mut kobject,*mut bin_attribute)->c_int;
+    fn request_resource(_: *mut resource,_: *mut resource)->c_int; fn platform_device_register_simple(_: *const c_char,_: c_int,_: *mut resource,_: usize)->*mut platform_device;
+    fn ioremap(_: usize,_: usize)->*mut c_void; fn iounmap(_: *mut c_void); fn platform_device_alloc(_: *const c_char,_: c_int)->*mut platform_device;
+    fn platform_device_add_data(_: *mut platform_device,_: *const c_void,_: usize)->c_int; fn platform_device_add(_: *mut platform_device)->c_int; fn platform_device_put(_: *mut platform_device);
+    fn platform_device_add_resources(_: *mut platform_device,_: *mut resource,_: usize)->c_int; fn prom_getenv(_: *const c_char)->*const c_char;
+    fn read_c0_config()->u32; fn write_c0_config(_: u32); fn read_c0_status()->u32; fn read_c0_cause()->u32; fn clear_c0_status(_: u32); fn write_c0_compare(_: u32);
+    fn local_irq_disable(); fn do_IRQ(_: c_int); fn spurious_interrupt(); fn early_serial_txx9_setup(_: *mut c_void);
+    fn clk_hw_register_fixed_rate(_: *mut c_void,_: *const c_char,_: *const c_char,_: u32,_: u32)->*mut c_void; fn clk_hw_register_fixed_factor(_: *mut c_void,_: *const c_char,_: *const c_char,_: u32,_: u32,_: u32)->*mut c_void; fn clk_hw_register_clkdev(_: *mut c_void,_: *const c_char,_: *const c_char)->c_int;
+    fn subsys_system_register(_: *const bus_type,_: *mut c_void)->c_int; fn device_register(_: *mut device)->c_int; fn device_unregister(_: *mut device); fn put_device(_: *mut device); fn sysfs_create_bin_file(_: *mut kobject,_: *mut bin_attribute)->c_int;
 }
 
 pub static mut txx9_ce_res: [resource; 8] = [resource { start:0,end:0,name:core::ptr::null_mut(),flags:0 }; 8];

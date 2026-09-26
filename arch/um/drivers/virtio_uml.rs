@@ -36,14 +36,14 @@ const MAX_SUPPORTED_QUEUE_SIZE: usize = 256;
 #[repr(C)] pub struct virtio_uml_vq_info { pub kick_fd: i32, pub call_fd: i32, pub name: [i8; 32], pub suspended: bool }
 
 extern "C" {
-    fn os_sendmsg_fds(i32,*const u8,u32,*const i32,u32)->i32; fn os_read_file(i32,*mut u8,i32)->i32; fn os_write_file(i32,*const u8,usize)->i32;
-    fn os_close_file(i32); fn os_connect_socket(*const i8)->i32; fn os_pipe(*mut i32,bool,bool)->i32; fn os_eventfd(u32,u32)->i32;
-    fn time_travel_wait_readable(i32); fn time_travel_propagate_time(); fn time_travel_add_irq_event(*mut time_travel_event);
-    fn um_request_irq_tt(i32,i32,u32,Option<unsafe extern "C" fn(i32,*mut core::ffi::c_void)->i32>,u32,*const i8,*mut core::ffi::c_void,Option<unsafe extern "C" fn(i32,i32,*mut core::ffi::c_void,*mut time_travel_event)>)->i32;
-    fn um_request_irq(i32,i32,u32,Option<unsafe extern "C" fn(i32,*mut core::ffi::c_void)->i32>,u32,*const i8,*mut core::ffi::c_void)->i32; fn um_free_irq(i32,*mut core::ffi::c_void);
-    fn vring_interrupt(i32,*mut virtqueue)->i32; fn virtio_config_changed(*mut virtio_device); fn virtio_break_device(*mut virtio_device);
-    fn vring_del_virtqueue(*mut virtqueue); fn vring_transport_features(*mut virtio_device); fn register_virtio_device(*mut virtio_device)->i32; fn unregister_virtio_device(*mut virtio_device);
-    fn virtqueue_get_vring_size(*mut virtqueue)->i32; fn virtqueue_get_desc_addr(*mut virtqueue)->u64; fn virtqueue_get_used_addr(*mut virtqueue)->u64; fn virtqueue_get_avail_addr(*mut virtqueue)->u64;
+    fn os_sendmsg_fds(_: i32,_: *const u8,_: u32,_: *const i32,_: u32)->i32; fn os_read_file(_: i32,_: *mut u8,_: i32)->i32; fn os_write_file(_: i32,_: *const u8,_: usize)->i32;
+    fn os_close_file(_: i32); fn os_connect_socket(_: *const i8)->i32; fn os_pipe(_: *mut i32,_: bool,_: bool)->i32; fn os_eventfd(_: u32,_: u32)->i32;
+    fn time_travel_wait_readable(_: i32); fn time_travel_propagate_time(); fn time_travel_add_irq_event(_: *mut time_travel_event);
+    fn um_request_irq_tt(_: i32,_: i32,_: u32,_: Option<unsafe extern "C" fn(i32,*mut core::ffi::c_void)->i32>,u32,*const i8,*mut core::ffi::c_void,Option<unsafe extern "C" fn(i32,i32,*mut core::ffi::c_void,*mut time_travel_event)>)->i32;
+    fn um_request_irq(_: i32,_: i32,_: u32,_: Option<unsafe extern "C" fn(i32,*mut core::ffi::c_void)->i32>,u32,*const i8,*mut core::ffi::c_void)->i32; fn um_free_irq(_: i32,_: *mut core::ffi::c_void);
+    fn vring_interrupt(_: i32,_: *mut virtqueue)->i32; fn virtio_config_changed(_: *mut virtio_device); fn virtio_break_device(_: *mut virtio_device);
+    fn vring_del_virtqueue(_: *mut virtqueue); fn vring_transport_features(_: *mut virtio_device); fn register_virtio_device(_: *mut virtio_device)->i32; fn unregister_virtio_device(_: *mut virtio_device);
+    fn virtqueue_get_vring_size(_: *mut virtqueue)->i32; fn virtqueue_get_desc_addr(_: *mut virtqueue)->u64; fn virtqueue_get_used_addr(_: *mut virtqueue)->u64; fn virtqueue_get_avail_addr(_: *mut virtqueue)->u64;
 }
 
 unsafe fn to_virtio_uml_device(v: *mut virtio_device) -> *mut virtio_uml_device { v as *mut virtio_uml_device }

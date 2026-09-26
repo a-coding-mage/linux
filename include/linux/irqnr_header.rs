@@ -36,8 +36,8 @@ macro_rules! for_each_irq_desc_reverse {
     ($irq:ident, $desc:ident, $body:block) => {{
         $irq = unsafe { $crate::irq_get_nr_irqs() }.wrapping_sub(1);
         $desc = unsafe { $crate::irq_to_desc($irq) };
-        // The original C loop uses an unsigned irq and therefore its
-        // `irq >= 0` condition is always true, preserving unsigned wraparound.
+        // The original C loop uses an unsigned $irq and therefore its
+        // `$irq >= 0` condition is always true, preserving unsigned wraparound.
         while $irq >= 0 {
             if !$desc.is_null() $body
             $irq = $irq.wrapping_sub(1);

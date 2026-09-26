@@ -142,8 +142,8 @@ pub unsafe fn scmi_transport_supplier_put(th: *const scmi_transport_handle, supp
     let sup = container_of!(th, scmi_transport_supplier, th);
     guard_mutex!(&mut (*sup).mtx);
     match PTR_ERR_OR_ZERO((*sup).available) {
-        -EPROBE_DEFER | -EBUSY => { (*sup).available = supplier; 0 }
-        0 => { if supplier != (*sup).available { -EINVAL } else { (*sup).available = ERR_PTR(-EPROBE_DEFER); 0 } }
+        case if case == -EPROBE_DEFER || case == -EBUSY => { (*sup).available = supplier; 0 }
+        case if case == 0 => { if supplier != (*sup).available { -EINVAL } else { (*sup).available = ERR_PTR(-EPROBE_DEFER); 0 } }
         _ => -EINVAL,
     }
 }

@@ -9,7 +9,7 @@
 use core::ffi::{c_char, c_int, c_uint, c_void};
 
 // Build-time configuration is supplied by the kernel build.
-#[cfg(not(feature = "CONFIG_IP_VS_TAB_BITS"))]
+#[cfg(not(CONFIG_IP_VS_TAB_BITS))]
 const CONFIG_IP_VS_TAB_BITS: i32 = 12;
 const IP_VS_ADDRSTRLEN: usize = 8 + 1;
 
@@ -100,12 +100,12 @@ pub unsafe extern "C" fn ip_vs_conn_init() -> c_int { ip_vs_conn_init_impl() }
 pub unsafe extern "C" fn ip_vs_conn_cleanup() { ip_vs_conn_cleanup_impl(); }
 
 extern "C" {
-    fn ip_vs_rht_desired_size(*mut netns_ipvs, *mut ip_vs_rht, c_int) -> c_int;
-    fn ip_vs_rht_alloc(c_int, c_int, c_int) -> *mut ip_vs_rht;
-    fn ip_vs_rht_set_thresholds(*mut ip_vs_rht, c_int, c_int, c_int, i32);
-    fn ip_vs_conn_fill_cport_impl(*mut ip_vs_conn, u16);
-    fn ip_vs_conn_expire_now_impl(*mut ip_vs_conn);
-    fn ip_vs_conn_net_init_impl(*mut netns_ipvs) -> c_int;
+    fn ip_vs_rht_desired_size(_: *mut netns_ipvs, _: *mut ip_vs_rht, _: c_int) -> c_int;
+    fn ip_vs_rht_alloc(_: c_int, _: c_int, _: c_int) -> *mut ip_vs_rht;
+    fn ip_vs_rht_set_thresholds(_: *mut ip_vs_rht, _: c_int, _: c_int, _: c_int, _: i32);
+    fn ip_vs_conn_fill_cport_impl(_: *mut ip_vs_conn, _: u16);
+    fn ip_vs_conn_expire_now_impl(_: *mut ip_vs_conn);
+    fn ip_vs_conn_net_init_impl(_: *mut netns_ipvs) -> c_int;
     fn ip_vs_conn_init_impl() -> c_int;
     fn ip_vs_conn_cleanup_impl();
 }

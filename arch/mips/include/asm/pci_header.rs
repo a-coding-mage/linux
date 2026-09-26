@@ -12,7 +12,7 @@
 
 // The following declarations are kernel-only in the C source (__KERNEL__).
 
-#[cfg(feature = "CONFIG_PCI_DRIVERS_LEGACY")]
+#[cfg(CONFIG_PCI_DRIVERS_LEGACY)]
 #[repr(C)]
 pub struct pci_controller {
     pub list: list_head,
@@ -26,16 +26,16 @@ pub struct pci_controller {
     pub io_offset: c_ulong,
     pub io_map_base: c_ulong,
 
-    #[cfg(not(feature = "CONFIG_PCI_DOMAINS_GENERIC"))]
+    #[cfg(not(CONFIG_PCI_DOMAINS_GENERIC))]
     pub index: c_uint,
-    #[cfg(not(feature = "CONFIG_PCI_DOMAINS_GENERIC"))]
+    #[cfg(not(CONFIG_PCI_DOMAINS_GENERIC))]
     pub need_domain_info: c_uint,
 
     pub get_busno: Option<unsafe extern "C" fn() -> c_int>,
     pub set_busno: Option<unsafe extern "C" fn(busno: c_int)>,
 }
 
-#[cfg(feature = "CONFIG_PCI_DRIVERS_LEGACY")]
+#[cfg(CONFIG_PCI_DRIVERS_LEGACY)]
 extern "C" {
     pub fn register_pci_controller(hose: *mut pci_controller);
     pub fn pcibios_map_irq(dev: *const pci_dev, slot: u8, pin: u8) -> c_int;
@@ -44,16 +44,16 @@ extern "C" {
         Option<unsafe extern "C" fn(str_: *mut c_char) -> *mut c_char>;
 }
 
-#[cfg(all(feature = "CONFIG_PCI_DRIVERS_LEGACY", feature = "CONFIG_OF"))]
+#[cfg(all(CONFIG_PCI_DRIVERS_LEGACY, CONFIG_OF))]
 extern "C" {
     pub fn pci_load_of_ranges(hose: *mut pci_controller, node: *mut device_node);
 }
 
-#[cfg(all(feature = "CONFIG_PCI_DRIVERS_LEGACY", not(feature = "CONFIG_OF")))]
+#[cfg(all(CONFIG_PCI_DRIVERS_LEGACY, not(CONFIG_OF)))]
 #[inline]
 pub unsafe fn pci_load_of_ranges(_hose: *mut pci_controller, _node: *mut device_node) {}
 
-#[cfg(all(feature = "CONFIG_PCI_DRIVERS_LEGACY", feature = "CONFIG_PCI_DOMAINS_GENERIC"))]
+#[cfg(all(CONFIG_PCI_DRIVERS_LEGACY, CONFIG_PCI_DOMAINS_GENERIC))]
 #[inline]
 pub unsafe fn set_pci_need_domain_info(
     _hose: *mut pci_controller,
@@ -63,9 +63,9 @@ pub unsafe fn set_pci_need_domain_info(
 }
 
 #[cfg(all(
-    feature = "CONFIG_PCI_DRIVERS_LEGACY",
-    not(feature = "CONFIG_PCI_DOMAINS_GENERIC"),
-    feature = "CONFIG_PCI_DOMAINS"
+    CONFIG_PCI_DRIVERS_LEGACY,
+    not(CONFIG_PCI_DOMAINS_GENERIC),
+    CONFIG_PCI_DOMAINS
 ))]
 #[inline]
 pub unsafe fn set_pci_need_domain_info(hose: *mut pci_controller, need_domain_info: c_int) {
@@ -89,13 +89,13 @@ pub const PCIBIOS_MIN_CARDBUS_IO: c_ulong = 0x4000;
 
 // Dynamic DMA mapping stuff. MIPS has everything mapped statically.
 
-#[cfg(feature = "CONFIG_PCI_DOMAINS_GENERIC")]
+#[cfg(CONFIG_PCI_DOMAINS_GENERIC)]
 #[inline]
 pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> c_int {
     pci_domain_nr(bus)
 }
 
-#[cfg(feature = "CONFIG_PCI_DOMAINS")]
+#[cfg(CONFIG_PCI_DOMAINS)]
 #[inline]
 pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> c_int {
     let hose = (*bus).sysdata as *mut pci_controller;

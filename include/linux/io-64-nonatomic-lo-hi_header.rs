@@ -86,31 +86,31 @@ pub unsafe fn iowrite64be_lo_hi(val: u64, addr: *mut core::ffi::c_void) {
 
 // C preprocessor aliases, represented as Rust invocation macros. The cfg branch
 // stands for CONFIG_GENERIC_IOMAP && CONFIG_64BIT.
-#[cfg(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT"))]
+#[cfg(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT))]
 #[macro_export]
 macro_rules! ioread64 { ($addr:expr) => { __ioread64_lo_hi($addr) }; }
-#[cfg(not(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT")))]
+#[cfg(not(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT)))]
 #[macro_export]
 macro_rules! ioread64 { ($addr:expr) => { $crate::ioread64_lo_hi($addr) }; }
 
-#[cfg(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT"))]
+#[cfg(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT))]
 #[macro_export]
 macro_rules! iowrite64 { ($val:expr, $addr:expr) => { __iowrite64_lo_hi($val, $addr) }; }
-#[cfg(not(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT")))]
+#[cfg(not(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT)))]
 #[macro_export]
 macro_rules! iowrite64 { ($val:expr, $addr:expr) => { $crate::iowrite64_lo_hi($val, $addr) }; }
 
-#[cfg(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT"))]
+#[cfg(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT))]
 #[macro_export]
 macro_rules! ioread64be { ($addr:expr) => { __ioread64be_lo_hi($addr) }; }
-#[cfg(not(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT")))]
+#[cfg(not(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT)))]
 #[macro_export]
 macro_rules! ioread64be { ($addr:expr) => { $crate::ioread64be_lo_hi($addr) }; }
 
-#[cfg(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT"))]
+#[cfg(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT))]
 #[macro_export]
 macro_rules! iowrite64be { ($val:expr, $addr:expr) => { __iowrite64be_lo_hi($val, $addr) }; }
-#[cfg(not(all(feature = "CONFIG_GENERIC_IOMAP", feature = "CONFIG_64BIT")))]
+#[cfg(not(all(CONFIG_GENERIC_IOMAP, CONFIG_64BIT)))]
 #[macro_export]
 macro_rules! iowrite64be { ($val:expr, $addr:expr) => { $crate::iowrite64be_lo_hi($val, $addr) }; }
 

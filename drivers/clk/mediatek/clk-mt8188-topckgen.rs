@@ -336,7 +336,7 @@ static dsp7_parents: &[&str] = &[
 	"univpll_d3"
 ];
 
-/*
+/ *
 // MFG can be also parented to "univpll_d6" and "univpll_d7":
 // these have been removed from the parents list to let us
 // achieve GPU DVFS without any special clock handlers.
@@ -472,7 +472,7 @@ static sspm_parents: &[&str] = &[
 	"mainpll_d4_d2"
 ];
 
-/*
+/ *
 // Both DP/eDP can be parented to TVDPLL1 and TVDPLL2, but we force using
 // TVDPLL1 on eDP and TVDPLL2 on DP to avoid changing the "other" PLL rate
 // in dual output case, which would lead to corruption of functionality loss.
@@ -944,7 +944,7 @@ static mfg_fast_ref_parents: &[&str] = &[
 ];
 
 static top_mtk_muxes: &[mtk_mux] = &[
-	/*
+	/ *
 	 * CLK_CFG_0
 	 * axi_sel and bus_aximem_sel are bus clocks, should not be closed by Linux.
 	 * spm_sel and scp_sel are main clocks in always-on co-processor.
@@ -1184,22 +1184,22 @@ static top_adj_divs: &[mtk_composite] = &[
 	div_gate!(CLK_TOP_APLL12_CK_DIV9, "apll12_div9", "top_dptx", 0x0320, 9, 0x0338, 8, 8),
 ];
 static const struct mtk_gate_regs top0_cg_regs = {
-	.set_ofs = 0x238,
-	.clr_ofs = 0x238,
-	.sta_ofs = 0x238,
+	set_ofs: 0x238,
+	clr_ofs: 0x238,
+	sta_ofs: 0x238,
 ];
 
 static const struct mtk_gate_regs top1_cg_regs = {
-	.set_ofs = 0x250,
-	.clr_ofs = 0x250,
-	.sta_ofs = 0x250,
+	set_ofs: 0x250,
+	clr_ofs: 0x250,
+	sta_ofs: 0x250,
 ];
 
 // #define gate_top0!(_id, _name, _parent, _shift)			\
-	gate_mtk!(_id, _name, _parent, &top0_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
+// 	gate_mtk!(_id, _name, _parent, &top0_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
 
 // #define gate_top1!(_id, _name, _parent, _shift)			\
-	gate_mtk!(_id, _name, _parent, &top1_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
+// 	gate_mtk!(_id, _name, _parent, &top1_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
 
 static top_clks: &[mtk_gate] = &[
 	/* TOP0 */
@@ -1241,8 +1241,8 @@ static let mut clk_mt8188_reg_mfg_mux_notifier: i32(*mut dev: device, *mut clk: 
 	if (!mfg_mux_nb)
 		return -12;
 
-	mfg_mux_nb->ops = &clk_mux_ops;
-	mfg_mux_nb->bypass_index = 0; /* Bypass to TOP_MFG_CORE_TMP */
+	(*mfg_mux_nb).ops = &clk_mux_ops;
+	(*mfg_mux_nb).bypass_index = 0; /* Bypass to TOP_MFG_CORE_TMP */
 
 	return devm_mtk_clk_mux_notifier_register(dev, clk, mfg_mux_nb);
 }
@@ -1250,7 +1250,7 @@ static let mut clk_mt8188_reg_mfg_mux_notifier: i32(*mut dev: device, *mut clk: 
 static let mut clk_mt8188_topck_probe: i32(*mut pdev: platform_device)
 {
 	*mut top_clk_data: clk_hw_onecell_data;
-	*mut node: device_node = pdev->dev.of_node;
+	*mut node: device_node = (*pdev).dev.of_node;
 	*mut hw: clk_hw;
 	let mut r: i32;
 	*mut u8 base;
@@ -1274,33 +1274,33 @@ static let mut clk_mt8188_topck_probe: i32(*mut pdev: platform_device)
 	if (r)
 		goto unregister_fixed_clks;
 
-	r = mtk_clk_register_muxes(&pdev->dev, top_mtk_muxes,
+	r = mtk_clk_register_muxes((*&pdev).dev, top_mtk_muxes,
 				   ARRAY_SIZE(top_mtk_muxes), node,
 				   &mt8188_clk_lock, top_clk_data);
 	if (r)
 		goto unregister_factors;
 
-	hw = devm_clk_hw_register_mux(&pdev->dev, "mfg_ck_fast_ref", mfg_fast_ref_parents,
+	hw = devm_clk_hw_register_mux((*&pdev).dev, "mfg_ck_fast_ref", mfg_fast_ref_parents,
 				      ARRAY_SIZE(mfg_fast_ref_parents), CLK_SET_RATE_PARENT,
 				      (base + 0x250), 8, 1, 0, &mt8188_clk_lock);
 	if (IS_ERR(hw)) {
 		r = PTR_ERR(hw);
 		goto unregister_muxes;
 	}
-	top_clk_data->hws[CLK_TOP_MFG_CK_FAST_REF] = hw;
+	(*top_clk_data).hws[CLK_TOP_MFG_CK_FAST_REF] = hw;
 
-	r = clk_mt8188_reg_mfg_mux_notifier(&pdev->dev,
-					    top_clk_data->hws[CLK_TOP_MFG_CK_FAST_REF]->clk);
+	r = clk_mt8188_reg_mfg_mux_notifier((*&pdev).dev,
+					    (*(*top_clk_data).hws[CLK_TOP_MFG_CK_FAST_REF]).clk);
 	if (r)
 		goto unregister_muxes;
 
-	r = mtk_clk_register_composites(&pdev->dev, top_adj_divs,
+	r = mtk_clk_register_composites((*&pdev).dev, top_adj_divs,
 					ARRAY_SIZE(top_adj_divs), base,
 					&mt8188_clk_lock, top_clk_data);
 	if (r)
 		goto unregister_muxes;
 
-	r = mtk_clk_register_gates(&pdev->dev, node, top_clks,
+	r = mtk_clk_register_gates((*&pdev).dev, node, top_clks,
 				   ARRAY_SIZE(top_clks), top_clk_data);
 	if (r)
 		goto unregister_composite_divs;
@@ -1331,7 +1331,7 @@ free_top_data:
 static void clk_mt8188_topck_remove(*mut pdev: platform_device)
 {
 	*mut top_clk_data: clk_hw_onecell_data = platform_get_drvdata(pdev);
-	*mut node: device_node = pdev->dev.of_node;
+	*mut node: device_node = (*pdev).dev.of_node;
 
 	of_clk_del_provider(node);
 	mtk_clk_unregister_gates(top_clks, ARRAY_SIZE(top_clks), top_clk_data);

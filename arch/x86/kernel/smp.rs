@@ -76,9 +76,9 @@ unsafe fn native_stop_other_cpus(wait: ::core::ffi::c_int) {
 
             pr_emerg!(c"Shutting down cpus with NMI");
 
-            for_each_cpu!(cpu, &cpus_stop_mask) {
+            for_each_cpu!(cpu, &cpus_stop_mask, {
                 __apic_send_IPI(cpu, NMI_VECTOR);
-            }
+            });
         }
 
         timeout = USEC_PER_MSEC * 10;

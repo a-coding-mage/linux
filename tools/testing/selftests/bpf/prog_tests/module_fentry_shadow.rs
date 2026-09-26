@@ -83,14 +83,12 @@ unsafe extern "C" {
         license: *const c_char,
         insns: *const bpf_insn,
         insn_cnt: usize,
-        opts: *mut bpf_prog_load_opts,
-    ) -> c_int;
+        opts: *mut bpf_prog_load_opts) -> c_int;
     fn bpf_link_create(
         prog_fd: c_int,
         target_fd: c_int,
         attach_type: c_int,
-        opts: *const c_void,
-    ) -> c_int;
+        opts: *const c_void) -> c_int;
     fn bpf_prog_test_run_opts(prog_fd: c_int, opts: *const c_void) -> c_int;
     fn btf__free(btf: *mut btf);
     fn close(fd: c_int) -> c_int;

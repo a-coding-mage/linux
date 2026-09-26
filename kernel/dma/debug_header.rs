@@ -6,7 +6,7 @@
  */
 
 // CONFIG_DMA_API_DEBUG selects the externally implemented debug hooks.
-#[cfg(feature = "CONFIG_DMA_API_DEBUG")]
+#[cfg(CONFIG_DMA_API_DEBUG)]
 extern "C" {
     pub fn debug_dma_map_phys(
         dev: *mut device,
@@ -103,7 +103,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_map_phys(
     _dev: *mut device,
     _phys: phys_addr_t,
@@ -114,7 +114,7 @@ pub unsafe fn debug_dma_map_phys(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_unmap_phys(
     _dev: *mut device,
     _addr: dma_addr_t,
@@ -124,7 +124,7 @@ pub unsafe fn debug_dma_unmap_phys(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_map_sg(
     _dev: *mut device,
     _sg: *mut scatterlist,
@@ -135,7 +135,7 @@ pub unsafe fn debug_dma_map_sg(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_unmap_sg(
     _dev: *mut device,
     _sglist: *mut scatterlist,
@@ -145,7 +145,7 @@ pub unsafe fn debug_dma_unmap_sg(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_alloc_coherent(
     _dev: *mut device,
     _size: usize,
@@ -155,7 +155,7 @@ pub unsafe fn debug_dma_alloc_coherent(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_free_coherent(
     _dev: *mut device,
     _size: usize,
@@ -165,7 +165,7 @@ pub unsafe fn debug_dma_free_coherent(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_sync_single_for_cpu(
     _dev: *mut device,
     _dma_handle: dma_addr_t,
@@ -174,7 +174,7 @@ pub unsafe fn debug_dma_sync_single_for_cpu(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_sync_single_for_device(
     _dev: *mut device,
     _dma_handle: dma_addr_t,
@@ -183,7 +183,7 @@ pub unsafe fn debug_dma_sync_single_for_device(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_sync_sg_for_cpu(
     _dev: *mut device,
     _sg: *mut scatterlist,
@@ -192,7 +192,7 @@ pub unsafe fn debug_dma_sync_sg_for_cpu(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_sync_sg_for_device(
     _dev: *mut device,
     _sg: *mut scatterlist,
@@ -201,7 +201,7 @@ pub unsafe fn debug_dma_sync_sg_for_device(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_alloc_pages(
     _dev: *mut device,
     _page: *mut page,
@@ -211,7 +211,7 @@ pub unsafe fn debug_dma_alloc_pages(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_DMA_API_DEBUG"))]
+#[cfg(not(CONFIG_DMA_API_DEBUG))]
 pub unsafe fn debug_dma_free_pages(
     _dev: *mut device,
     _page: *mut page,

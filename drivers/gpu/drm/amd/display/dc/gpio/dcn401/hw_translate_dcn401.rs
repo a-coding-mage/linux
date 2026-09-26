@@ -15,7 +15,7 @@ macro_rules! BASE {
     ($seg:ident) => { BASE_INNER!($seg) };
 }
 macro_rules! REG {
-    ($reg_name:ident) => { BASE!(reg_$reg_name##_BASE_IDX) + reg_$reg_name };
+    ($reg_name:tt) => { BASE!(reg_::kernel::macros::paste!([<$reg_name _BASE_IDX>])) + reg_$reg_name };
 }
 
 static GPIO_OFFSETS: [struct_gpio_id_offset_entry; 15] = [

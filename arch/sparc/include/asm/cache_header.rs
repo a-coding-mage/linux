@@ -11,10 +11,10 @@ pub const L1_CACHE_SHIFT: u32 = 5;
 pub const L1_CACHE_BYTES: u32 = 32;
 
 /* CONFIG_SPARC32 selects the 32-bit build-time cache-line shift. */
-#[cfg(feature = "CONFIG_SPARC32")]
+#[cfg(CONFIG_SPARC32)]
 pub const SMP_CACHE_BYTES_SHIFT: u32 = 5;
 
-#[cfg(not(feature = "CONFIG_SPARC32"))]
+#[cfg(not(CONFIG_SPARC32))]
 pub const SMP_CACHE_BYTES_SHIFT: u32 = 6;
 
 pub const SMP_CACHE_BYTES: u32 = 1u32 << SMP_CACHE_BYTES_SHIFT;

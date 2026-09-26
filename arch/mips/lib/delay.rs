@@ -22,7 +22,7 @@ extern "C" {
     pub static HZ: ::core::ffi::c_ulong;
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_PLAT_DELAY"))]
+#[cfg(not(CONFIG_HAVE_PLAT_DELAY))]
 #[no_mangle]
 pub unsafe extern "C" fn __delay(mut loops: ::core::ffi::c_ulong) {
     while loops != 0 {
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn __delay(mut loops: ::core::ffi::c_ulong) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_PLAT_DELAY"))]
+#[cfg(not(CONFIG_HAVE_PLAT_DELAY))]
 #[no_mangle]
 pub unsafe extern "C" fn __udelay(us: ::core::ffi::c_ulong) {
     let lpj: ::core::ffi::c_uint = raw_current_cpu_data.udelay_val;
@@ -44,7 +44,7 @@ pub unsafe extern "C" fn __udelay(us: ::core::ffi::c_ulong) {
     );
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_PLAT_DELAY"))]
+#[cfg(not(CONFIG_HAVE_PLAT_DELAY))]
 #[no_mangle]
 pub unsafe extern "C" fn __ndelay(ns: ::core::ffi::c_ulong) {
     let lpj: ::core::ffi::c_uint = raw_current_cpu_data.udelay_val;

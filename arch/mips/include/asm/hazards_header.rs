@@ -11,28 +11,28 @@
 // Translation of the MIPS hazard header.  The original CONFIG_* conditions
 // are represented by the corresponding Rust cfg feature names.
 
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const ___SSNOP: &str = "sll $0, $0, 1";
 pub const ___EHB: &str = "sll $0, $0, 3";
 
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __MTC0_TLBW_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __MTC0_TLBR_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __TLBW_USE_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __TLB_READ_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __TLB_PROBE_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __IRQ_ENABLE_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __IRQ_DISABLE_HAZARD: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __BACK_TO_BACK_C0_HAZARD: &str = ___EHB;
 
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 #[inline(always)]
 pub unsafe fn instruction_hazard() {
     core::arch::asm!(
@@ -42,36 +42,36 @@ pub unsafe fn instruction_hazard() {
     );
 }
 
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __MTC0_TLBW_HAZARD: &str = "nop; nop";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __MTC0_TLBR_HAZARD: &str = "nop; nop";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __TLBW_USE_HAZARD: &str = "nop; nop; nop";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __TLB_READ_HAZARD: &str = "nop; nop; nop";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __TLB_PROBE_HAZARD: &str = "nop; nop; nop";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __IRQ_ENABLE_HAZARD: &str = "sll $0, $0, 1; sll $0, $0, 1; sll $0, $0, 1";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __IRQ_DISABLE_HAZARD: &str = "nop; nop; nop";
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 pub const __BACK_TO_BACK_C0_HAZARD: &str = "sll $0, $0, 1; sll $0, $0, 1; sll $0, $0, 1";
 
-#[cfg(not(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6")))]
+#[cfg(not(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6)))]
 #[inline(always)]
 pub unsafe fn instruction_hazard() {}
 
-#[cfg(feature = "CONFIG_CPU_SB1")]
+#[cfg(CONFIG_CPU_SB1)]
 pub const __ENABLE_FPU_HAZARD: &str = ".set push; .set mips64; .set noreorder; sll $0, $0, 1; bnezl $0, .+4; sll $0, $0, 1; .set pop";
-#[cfg(not(feature = "CONFIG_CPU_SB1"))]
+#[cfg(not(CONFIG_CPU_SB1))]
 pub const __ENABLE_FPU_HAZARD: &str = "nop; nop; nop; nop";
-#[cfg(any(feature = "CONFIG_CPU_MIPSR2", feature = "CONFIG_CPU_MIPSR5", feature = "CONFIG_CPU_MIPSR6"))]
+#[cfg(any(CONFIG_CPU_MIPSR2, CONFIG_CPU_MIPSR5, CONFIG_CPU_MIPSR6))]
 pub const __ENABLE_FPU_HAZARD_R2: &str = ___EHB;
-#[cfg(any(feature = "CONFIG_CPU_SB1"))]
+#[cfg(any(CONFIG_CPU_SB1))]
 pub const __DISABLE_FPU_HAZARD: &str = "";
-#[cfg(not(feature = "CONFIG_CPU_SB1"))]
+#[cfg(not(CONFIG_CPU_SB1))]
 pub const __DISABLE_FPU_HAZARD: &str = ___EHB;
 
 #[macro_export]

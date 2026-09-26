@@ -21,8 +21,6 @@ struct RefScaleOps {
 }
 
 extern "C" {
-    type task_struct; type wait_queue_head_t; type srcu_struct; type srcu_ctr;
-    type kmem_cache; type rw_semaphore; type spinlock_t; type seqlock_t; type atomic_t;
     static mut scale_type: *mut u8; static mut verbose: i32; static mut verbose_batched: i32;
     static mut guest_os_delay: i64; static mut holdoff: i32; static mut lookup_instances: i64;
     static mut loops: i32; static mut nreaders: i32; static mut nruns: i32;
@@ -34,6 +32,8 @@ extern "C" {
     static mut n_cooleddown: atomic_t; static mut exp_idx: i32;
     static mut refcnt: atomic_t; static mut test_acqrel: u64; static mut stopopts: u64;
 }
+type task_struct; type wait_queue_head_t; type srcu_struct; type srcu_ctr;
+type kmem_cache; type rw_semaphore; type spinlock_t; type seqlock_t; type atomic_t;
 
 unsafe fn un_delay(udl: i32, ndl: i32) { if udl != 0 { udelay(udl); } if ndl != 0 { ndelay(ndl); } }
 
@@ -77,7 +77,7 @@ unsafe extern "C" fn ref_rwsem_delay_section(n:i32,u:i32,d:i32){let mut i=n;whil
 // Remaining kernel declarations and operation tables retain the source-level interfaces.
 extern "C" { static mut srcu_ctlp:*mut srcu_struct; static mut srcu_refctl_scale:srcu_struct; static mut srcu_fast_refctl_scale:srcu_struct; static mut srcu_fast_updown_refctl_scale:srcu_struct; static mut test_rwlock:rwlock_t; static mut test_rwsem:rw_semaphore; }
 type rwlock_t=spinlock_t;
-extern "C" { fn udelay(i32); fn ndelay(i32); fn rcu_read_lock(); fn rcu_read_unlock(); fn srcu_read_lock(*mut srcu_struct)->i32; fn srcu_read_unlock(*mut srcu_struct,i32); fn srcu_read_lock_fast(*mut srcu_struct)->*mut srcu_ctr; fn srcu_read_unlock_fast(*mut srcu_struct,*mut srcu_ctr); fn srcu_read_lock_fast_updown(*mut srcu_struct)->*mut srcu_ctr; fn srcu_read_unlock_fast_updown(*mut srcu_struct,*mut srcu_ctr); fn rcu_read_lock_trace(); fn rcu_read_unlock_trace(); fn atomic_inc(*mut atomic_t); fn atomic_dec(*mut atomic_t); fn this_cpu_inc(*mut u64); fn this_cpu_dec(*mut u64); fn this_cpu_ptr(*mut u64)->*mut u64; fn write_once(*mut u64,u64); fn read_once(*mut u64)->u64; fn rwlock_init(*mut rwlock_t); fn read_lock(*mut rwlock_t); fn read_unlock(*mut rwlock_t); fn init_rwsem(*mut rw_semaphore); fn down_read(*mut rw_semaphore); fn up_read(*mut rw_semaphore); fn preempt_disable(); fn preempt_enable(); fn local_bh_disable(); fn local_bh_enable(); fn local_irq_save(*mut u64); fn local_irq_restore(u64); }
+extern "C" { fn udelay(_: i32); fn ndelay(_: i32); fn rcu_read_lock(); fn rcu_read_unlock(); fn srcu_read_lock(_: *mut srcu_struct)->i32; fn srcu_read_unlock(_: *mut srcu_struct,_: i32); fn srcu_read_lock_fast(_: *mut srcu_struct)->*mut srcu_ctr; fn srcu_read_unlock_fast(_: *mut srcu_struct,_: *mut srcu_ctr); fn srcu_read_lock_fast_updown(_: *mut srcu_struct)->*mut srcu_ctr; fn srcu_read_unlock_fast_updown(_: *mut srcu_struct,_: *mut srcu_ctr); fn rcu_read_lock_trace(); fn rcu_read_unlock_trace(); fn atomic_inc(_: *mut atomic_t); fn atomic_dec(_: *mut atomic_t); fn this_cpu_inc(_: *mut u64); fn this_cpu_dec(_: *mut u64); fn this_cpu_ptr(_: *mut u64)->*mut u64; fn write_once(_: *mut u64,_: u64); fn read_once(_: *mut u64)->u64; fn rwlock_init(_: *mut rwlock_t); fn read_lock(_: *mut rwlock_t); fn read_unlock(_: *mut rwlock_t); fn init_rwsem(_: *mut rw_semaphore); fn down_read(_: *mut rw_semaphore); fn up_read(_: *mut rw_semaphore); fn preempt_disable(); fn preempt_enable(); fn local_bh_disable(); fn local_bh_enable(); fn local_irq_save(_: *mut u64); fn local_irq_restore(_: u64); }
 
 // The source continues with the typesafe SLAB_BY_RCU implementation, reader kthreads,
 // experiment orchestration, module initialization, and cleanup. Their declarations are
@@ -85,7 +85,7 @@ extern "C" { fn udelay(i32); fn ndelay(i32); fn rcu_read_lock(); fn rcu_read_unl
 #[repr(C)] struct RefscaleTypesafe { rts_refctr: atomic_t, rts_lock: spinlock_t, rts_seqlock: seqlock_t, a:u32, b:u32 }
 unsafe fn typesafe_ref_acquire(rtsp:*mut RefscaleTypesafe,_:*mut u32)->bool{atomic_inc_not_zero(&mut (*rtsp).rts_refctr)}
 unsafe fn typesafe_ref_release(rtsp:*mut RefscaleTypesafe,_:u32)->bool{if atomic_dec_return(&mut (*rtsp).rts_refctr)==0{(*rtsp).a=(*rtsp).a.wrapping_add(1);kmem_cache_free(typesafe_kmem_cachep,rtsp as *mut _);}true}
-extern "C" { static mut typesafe_kmem_cachep:*mut kmem_cache; fn atomic_inc_not_zero(*mut atomic_t)->bool; fn atomic_dec_return(*mut atomic_t)->i32; fn kmem_cache_free(*mut kmem_cache,*mut core::ffi::c_void); }
+extern "C" { static mut typesafe_kmem_cachep:*mut kmem_cache; fn atomic_inc_not_zero(_: *mut atomic_t)->bool; fn atomic_dec_return(_: *mut atomic_t)->i32; fn kmem_cache_free(_: *mut kmem_cache,_: *mut core::ffi::c_void); }
 
 unsafe fn ref_scale_one_reader(){if readdelay<=0{((*cur_ops).readsection.unwrap())(loops)}else{((*cur_ops).delaysection.unwrap())(loops,readdelay/1000,readdelay%1000)}}
 unsafe fn rcu_scale_warm_cool(){let jdone=jiffies.wrapping_add(if guest_os_delay>0{guest_os_delay as u64*HZ}else{u64::MAX});loop{ref_scale_one_reader();cond_resched();if !time_before(jiffies,jdone){break}}}
@@ -97,6 +97,6 @@ unsafe fn ref_scale_print_module_parms(_ops:*const RefScaleOps,_tag:*const u8){}
 unsafe extern "C" fn ref_scale_cleanup(){if torture_cleanup_begin(){return} if !reader_tasks.is_null(){kfree(reader_tasks as *mut _);reader_tasks=core::ptr::null_mut();} torture_stop_kthread(b"main_task\0".as_ptr(),main_task);torture_cleanup_end();}
 unsafe extern "C" fn ref_scale_init()->i32{if !torture_init_begin(scale_type,verbose){return -16} torture_init_end();0}
 
-extern "C" { static HZ:u64; fn cond_resched(); fn time_before(u64,u64)->bool; fn torture_kthread_stopping(*const u8); fn torture_cleanup_begin()->bool; fn torture_cleanup_end(); fn torture_stop_kthread(*const u8,*mut task_struct); fn torture_init_begin(*mut u8,i32)->bool; fn torture_init_end(); fn kfree(*mut core::ffi::c_void); }
+extern "C" { static HZ:u64; fn cond_resched(); fn time_before(_: u64,_: u64)->bool; fn torture_kthread_stopping(_: *const u8); fn torture_cleanup_begin()->bool; fn torture_cleanup_end(); fn torture_stop_kthread(_: *const u8,_: *mut task_struct); fn torture_init_begin(_: *mut u8,_: i32)->bool; fn torture_init_end(); fn kfree(_: *mut core::ffi::c_void); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

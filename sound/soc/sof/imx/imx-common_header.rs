@@ -35,8 +35,8 @@ macro_rules! get_chip_pdata {
  */
 #[macro_export]
 macro_rules! IMX_SOF_DEV_DESC {
-    ($mach_name:ident, $of_machs:expr, $mach_chip_info:expr, $mach_ops:expr, $mach_ops_init:expr) => {
-        static mut sof_of_$mach_name##_desc: sof_dev_desc = sof_dev_desc {
+    ($mach_name:tt, $of_machs:expr, $mach_chip_info:expr, $mach_ops:expr, $mach_ops_init:expr) => {
+        static mut sof_of_::kernel::macros::paste!([<$mach_name _desc>]): sof_dev_desc = sof_dev_desc {
             of_machines: $of_machs,
             chip_info: $mach_chip_info,
             ipc_supported_mask: BIT(SOF_IPC_TYPE_3),
@@ -65,8 +65,8 @@ macro_rules! IMX_SOF_DEV_DESC {
 // to be used alongside IMX_SOF_DEV_DESC()
 #[macro_export]
 macro_rules! IMX_SOF_DEV_DESC_NAME {
-    ($mach_name:ident) => {
-        sof_of_$mach_name##_desc
+    ($mach_name:tt) => {
+        sof_of_::kernel::macros::paste!([<$mach_name _desc>])
     };
 }
 

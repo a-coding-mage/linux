@@ -49,10 +49,10 @@ pub unsafe fn alloc_cpu_rmap(size: u32, flags: gfp_t) -> *mut cpu_rmap {
      * CPUs that are not present/online, since we definitely want
      * any newly-hotplugged CPUs to have some object assigned.
      */
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         (*rmap).near[cpu as usize].index = (cpu % size) as u16;
         (*rmap).near[cpu as usize].dist = CPU_RMAP_DIST_INF;
-    }
+    });
 
     (*rmap).size = size;
     rmap
@@ -88,7 +88,7 @@ unsafe fn cpu_rmap_copy_neigh(
 ) -> bool {
     let mut neigh: i32;
 
-    for_each_cpu!(neigh, mask) {
+    for_each_cpu!(neigh, mask, {
         if (*rmap).near[cpu as usize].dist > dist
             && (*rmap).near[neigh as usize].dist <= dist
         {
@@ -96,7 +96,7 @@ unsafe fn cpu_rmap_copy_neigh(
             (*rmap).near[cpu as usize].dist = dist;
             return true;
         }
-    }
+    });
     false
 }
 
@@ -107,7 +107,7 @@ unsafe fn debug_print_rmap(rmap: *const cpu_rmap, prefix: *const core::ffi::c_ch
 
     pr_info!("cpu_rmap %p, %s:\n", rmap, prefix);
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         index = (*rmap).near[cpu as usize].index as u32;
         pr_info!(
             "cpu %d -> obj %u (distance %u)\n",
@@ -115,7 +115,7 @@ unsafe fn debug_print_rmap(rmap: *const cpu_rmap, prefix: *const core::ffi::c_ch
             index,
             (*rmap).near[cpu as usize].dist
         );
-    }
+    });
 }
 
 #[cfg(not(feature = "DEBUG"))]
@@ -168,19 +168,19 @@ pub unsafe fn cpu_rmap_update(
     /* Invalidate distance for all CPUs for which this used to be
      * the nearest object.  Mark those CPUs for update.
      */
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         if (*rmap).near[cpu as usize].index == index {
             (*rmap).near[cpu as usize].dist = CPU_RMAP_DIST_INF;
             cpumask_set_cpu(cpu, update_mask);
         }
-    }
+    });
 
     debug_print_rmap(rmap, c"after invalidating old distances");
 
     /* Set distance to 0 for all CPUs in the new affinity mask.
      * Mark all CPUs within their NUMA nodes for update.
      */
-    for_each_cpu!(cpu, affinity) {
+    for_each_cpu!(cpu, affinity, {
         (*rmap).near[cpu as usize].index = index;
         (*rmap).near[cpu as usize].dist = 0;
         cpumask_or(
@@ -188,12 +188,12 @@ pub unsafe fn cpu_rmap_update(
             update_mask,
             cpumask_of_node(cpu_to_node(cpu)),
         );
-    }
+    });
 
     debug_print_rmap(rmap, c"after updating neighbours");
 
     /* Update distances based on topology */
-    for_each_cpu!(cpu, update_mask) {
+    for_each_cpu!(cpu, update_mask, {
         if cpu_rmap_copy_neigh(rmap, cpu, topology_sibling_cpumask(cpu), 1) {
             continue;
         }
@@ -206,7 +206,7 @@ pub unsafe fn cpu_rmap_update(
         /* We could continue into NUMA node distances, but for now
          * we give up.
          */
-    }
+    });
 
     debug_print_rmap(rmap, c"after copying neighbours");
 

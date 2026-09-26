@@ -5,14 +5,14 @@
  * translation unit.
  */
 
-#[cfg(feature = "CONFIG_CFG80211_DEBUGFS")]
+#[cfg(CONFIG_CFG80211_DEBUGFS)]
 extern "C" {
     pub fn cfg80211_debugfs_rdev_add(
         rdev: *mut cfg80211_registered_device,
     );
 }
 
-#[cfg(not(feature = "CONFIG_CFG80211_DEBUGFS"))]
+#[cfg(not(CONFIG_CFG80211_DEBUGFS))]
 #[inline]
 pub unsafe fn cfg80211_debugfs_rdev_add(_rdev: *mut cfg80211_registered_device) {}
 

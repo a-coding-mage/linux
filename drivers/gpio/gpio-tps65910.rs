@@ -56,7 +56,7 @@ unsafe fn tps65910_gpio_input(gc: *mut gpio_chip, offset: u32) -> i32 {
     regmap_clear_bits((*tps65910).regmap, TPS65910_GPIO0 + offset, GPIO_CFG_MASK)
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe fn tps65910_parse_dt_for_gpio(dev: *mut device, tps65910: *mut tps65910,
                                      chip_ngpio: i32) -> *mut tps65910_board {
     let tps65910_board = (*tps65910).of_plat_data as *mut tps65910_board;
@@ -77,7 +77,7 @@ unsafe fn tps65910_parse_dt_for_gpio(dev: *mut device, tps65910: *mut tps65910,
     tps65910_board
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 unsafe fn tps65910_parse_dt_for_gpio(_dev: *mut device, _tps65910: *mut tps65910,
                                      _chip_ngpio: i32) -> *mut tps65910_board { core::ptr::null_mut() }
 

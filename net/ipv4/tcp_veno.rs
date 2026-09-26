@@ -137,6 +137,7 @@ unsafe fn tcp_veno_cong_avoid(sk: *mut sock, ack: u32, mut acked: u32) {
 	} else {
 		let mut target_cwnd: u64;
 		let rtt: u32;
+		'done: {
 
 		/* We have enough rtt samples, so, using the Veno
 		 * algorithm, we determine the state of the network.
@@ -153,7 +154,7 @@ unsafe fn tcp_veno_cong_avoid(sk: *mut sock, ack: u32, mut acked: u32) {
 			/* Slow start. */
 			acked = tcp_slow_start(tp, acked);
 			if acked == 0 {
-				goto done;
+				break 'done;
 			}
 		}
 
@@ -179,7 +180,8 @@ unsafe fn tcp_veno_cong_avoid(sk: *mut sock, ack: u32, mut acked: u32) {
 				(*tp).snd_cwnd_cnt += acked;
 			}
 		}
-done:
+		}
+		
 		if tcp_snd_cwnd(tp) < 2 {
 			tcp_snd_cwnd_set(tp, 2);
 		} else if tcp_snd_cwnd(tp) > (*tp).snd_cwnd_clamp {
@@ -206,16 +208,16 @@ unsafe fn tcp_veno_ssthresh(sk: *mut sock) -> u32 {
 }
 
 static mut tcp_veno: tcp_congestion_ops = tcp_congestion_ops {
-	.init = Some(tcp_veno_init),
-	.ssthresh = Some(tcp_veno_ssthresh),
-	.undo_cwnd = Some(tcp_reno_undo_cwnd),
-	.cong_avoid = Some(tcp_veno_cong_avoid),
-	.pkts_acked = Some(tcp_veno_pkts_acked),
-	.set_state = Some(tcp_veno_state),
-	.cwnd_event = Some(tcp_veno_cwnd_event),
-	.cwnd_event_tx_start = Some(tcp_veno_cwnd_event_tx_start),
-	.owner = THIS_MODULE,
-	.name = "veno",
+	init: Some(tcp_veno_init),
+	ssthresh: Some(tcp_veno_ssthresh),
+	undo_cwnd: Some(tcp_reno_undo_cwnd),
+	cong_avoid: Some(tcp_veno_cong_avoid),
+	pkts_acked: Some(tcp_veno_pkts_acked),
+	set_state: Some(tcp_veno_state),
+	cwnd_event: Some(tcp_veno_cwnd_event),
+	cwnd_event_tx_start: Some(tcp_veno_cwnd_event_tx_start),
+	owner: THIS_MODULE,
+	name: "veno",
 };
 
 unsafe fn tcp_veno_register() -> i32 {

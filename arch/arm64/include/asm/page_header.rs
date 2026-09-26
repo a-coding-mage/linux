@@ -74,7 +74,7 @@ pub unsafe fn copy_user_page(
 }
 
 // Build-time condition preserved from CONFIG_ARM64_MTE.
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 #[macro_export]
 macro_rules! VMA_DATA_DEFAULT_FLAGS {
     () => {
@@ -82,7 +82,7 @@ macro_rules! VMA_DATA_DEFAULT_FLAGS {
     };
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 #[macro_export]
 macro_rules! VMA_DATA_DEFAULT_FLAGS {
     () => {

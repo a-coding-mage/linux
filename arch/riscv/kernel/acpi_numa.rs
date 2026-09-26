@@ -151,7 +151,7 @@ pub unsafe fn acpi_numa_rintc_affinity_init(pa: *mut acpi_srat_rintc_affinity) {
         return;
     }
 
-    if (*pa).header.length as usize < core::mem::size_of::<acpi_srat_rintc_affinity>() {
+    if ((*pa).header.length as usize) < core::mem::size_of::<acpi_srat_rintc_affinity>() {
         pr_err(
             b"SRAT: Invalid SRAT header length: %d\n\0".as_ptr() as *const _,
             (*pa).header.length,

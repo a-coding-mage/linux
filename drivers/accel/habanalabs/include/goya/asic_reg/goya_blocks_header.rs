@@ -10,7 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#define GOYA_BLOCKS_H_
 
 pub const mmPCI_NRTR_BASE: u64 = 0x7FFC000000u64;
 pub const PCI_NRTR_MAX_OFFSET: u64 = 0x608;

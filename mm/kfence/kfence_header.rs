@@ -9,7 +9,7 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // referenced here rather than reimplemented.
 
-pub extern "C" {
+extern "C" {
     pub static mut kfence_enabled: bool;
     pub static mut kfence_freelist_lock: raw_spinlock_t;
     pub static mut kfence_metadata: *mut kfence_metadata;
@@ -133,7 +133,7 @@ pub enum kfence_fault {
     KFENCE_FAULT_PANIC,
 }
 
-pub extern "C" {
+extern "C" {
     pub fn kfence_report_error(
         address: usize,
         is_write: bool,

@@ -22,7 +22,7 @@
  * Authors: AMD
  */
 
-// C dependency: container_of(apg, struct dcn31_apg, base)
+// C dependency: container_of(apg, dcn31_apg, base)
 macro_rules! DCN31_APG_FROM_APG {
     ($apg:expr) => { container_of!($apg, dcn31_apg, base) };
 }
@@ -126,8 +126,7 @@ extern "C" {
         inst: u32,
         apg_regs: *const dcn31_apg_registers,
         apg_shift: *const dcn31_apg_shift,
-        apg_mask: *const dcn31_apg_mask,
-    );
+        apg_mask: *const dcn31_apg_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

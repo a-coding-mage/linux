@@ -27,7 +27,7 @@ macro_rules! _CRC32 {
 
 macro_rules! CRC32 {
     ($crc:expr, $value:expr, $size:ident) => {
-        _CRC32!($crc, $value, $size, crc)
+        _CRC32!($crc, $value, $size, $crc)
     };
 }
 

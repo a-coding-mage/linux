@@ -150,7 +150,7 @@ pub unsafe fn net_test_get_skb(
     skb
 }
 
-static unsafe fn net_test_loopback_validate(
+unsafe fn net_test_loopback_validate(
     mut skb: *mut sk_buff,
     _ndev: *mut net_device,
     pt: *mut packet_type,
@@ -196,7 +196,7 @@ static unsafe fn net_test_loopback_validate(
     0
 }
 
-static unsafe fn __net_test_loopback(ndev: *mut net_device, attr: *mut net_packet_attrs) -> i32 {
+unsafe fn __net_test_loopback(ndev: *mut net_device, attr: *mut net_packet_attrs) -> i32 {
     let tpriv: *mut net_test_priv = kzalloc_obj();
     let mut skb: *mut sk_buff = core::ptr::null_mut();
     let mut ret = 0;
@@ -225,13 +225,13 @@ static unsafe fn __net_test_loopback(ndev: *mut net_device, attr: *mut net_packe
     ret
 }
 
-static unsafe fn net_test_netif_carrier(ndev: *mut net_device) -> i32 { if netif_carrier_ok(ndev) { 0 } else { -ENOLINK } }
-static unsafe fn net_test_phy_phydev(ndev: *mut net_device) -> i32 { if !(*ndev).phydev.is_null() { 0 } else { -EOPNOTSUPP } }
-static unsafe fn net_test_phy_loopback_enable(ndev: *mut net_device) -> i32 { if (*ndev).phydev.is_null() { -EOPNOTSUPP } else { phy_loopback((*ndev).phydev, true, 0) } }
-static unsafe fn net_test_phy_loopback_disable(ndev: *mut net_device) -> i32 { if (*ndev).phydev.is_null() { -EOPNOTSUPP } else { phy_loopback((*ndev).phydev, false, 0) } }
-static unsafe fn net_test_phy_loopback_udp(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); __net_test_loopback(ndev, &mut attr) }
-static unsafe fn net_test_phy_loopback_udp_mtu(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); attr.max_size = (*ndev).mtu; __net_test_loopback(ndev, &mut attr) }
-static unsafe fn net_test_phy_loopback_tcp(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); attr.tcp = true; __net_test_loopback(ndev, &mut attr) }
+unsafe fn net_test_netif_carrier(ndev: *mut net_device) -> i32 { if netif_carrier_ok(ndev) { 0 } else { -ENOLINK } }
+unsafe fn net_test_phy_phydev(ndev: *mut net_device) -> i32 { if !(*ndev).phydev.is_null() { 0 } else { -EOPNOTSUPP } }
+unsafe fn net_test_phy_loopback_enable(ndev: *mut net_device) -> i32 { if (*ndev).phydev.is_null() { -EOPNOTSUPP } else { phy_loopback((*ndev).phydev, true, 0) } }
+unsafe fn net_test_phy_loopback_disable(ndev: *mut net_device) -> i32 { if (*ndev).phydev.is_null() { -EOPNOTSUPP } else { phy_loopback((*ndev).phydev, false, 0) } }
+unsafe fn net_test_phy_loopback_udp(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); __net_test_loopback(ndev, &mut attr) }
+unsafe fn net_test_phy_loopback_udp_mtu(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); attr.max_size = (*ndev).mtu; __net_test_loopback(ndev, &mut attr) }
+unsafe fn net_test_phy_loopback_tcp(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); attr.tcp = true; __net_test_loopback(ndev, &mut attr) }
 
 /**
  * net_test_phy_loopback_tcp_bad_csum - PHY loopback test with a deliberately
@@ -259,7 +259,7 @@ static unsafe fn net_test_phy_loopback_tcp(ndev: *mut net_device) -> i32 { let m
  *
  * Return: 0 on success or a negative error code on failure.
  */
-static unsafe fn net_test_phy_loopback_tcp_bad_csum(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); attr.tcp = true; attr.bad_csum = true; __net_test_loopback(ndev, &mut attr) }
+unsafe fn net_test_phy_loopback_tcp_bad_csum(ndev: *mut net_device) -> i32 { let mut attr = core::mem::zeroed::<net_packet_attrs>(); attr.dst = (*ndev).dev_addr.as_mut_ptr(); attr.tcp = true; attr.bad_csum = true; __net_test_loopback(ndev, &mut attr) }
 
 struct net_test { name: &'static str, fn_: unsafe fn(*mut net_device) -> i32 }
 static NET_SELFTESTS: &[net_test] = &[

@@ -108,7 +108,7 @@ unsafe fn check_syscallno_in_delay_branch(regs: *mut pt_regs) {
 
 unsafe fn syscall_restart(regs: *mut pt_regs, ka: *mut k_sigaction) { if (*regs).orig_r28 != 0 { return; } (*regs).orig_r28 = 1; match (*regs).gr[28] { -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => (*regs).gr[28] = -EINTR, -ERESTARTSYS if ((*ka).sa.sa_flags & SA_RESTART) == 0 => (*regs).gr[28] = -EINTR, -ERESTARTSYS | -ERESTARTNOINTR => check_syscallno_in_delay_branch(regs), _ => {} } }
 
-unsafe fn insert_restart_trampoline(regs: *mut pt_regs) { if (*regs).orig_r28 != 0 { return; } (*regs).orig_r28 = 1; match (*regs).gr[28] { -ERESTART_RESTARTBLOCK => { (*regs).gr[31] = VDSO32_SYMBOL(current, restart_syscall); }, -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => check_syscallno_in_delay_branch(regs), _ => {} } }
+unsafe fn insert_restart_trampoline(regs: *mut pt_regs) { if (*regs).orig_r28 != 0 { return; } (*regs).orig_r28 = 1; match (*regs).gr[28] { case if case == -ERESTART_RESTARTBLOCK => { (*regs).gr[31] = VDSO32_SYMBOL(current, restart_syscall); }, case if case == -ERESTARTNOHAND || case == -ERESTARTSYS || case == -ERESTARTNOINTR => check_syscallno_in_delay_branch(regs), _ => {} } }
 
 unsafe fn do_signal(regs: *mut pt_regs, in_syscall: ::core::ffi::c_long) { let mut ksig: ksignal = core::mem::zeroed(); let restart = in_syscall != 0; if get_signal(&mut ksig) { if restart { syscall_restart(regs, &mut ksig.ka); } handle_signal(&mut ksig, regs, in_syscall); } else { if restart { insert_restart_trampoline(regs); } restore_saved_sigmask(); } }
 

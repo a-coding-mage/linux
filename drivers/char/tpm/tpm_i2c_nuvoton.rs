@@ -142,7 +142,7 @@ unsafe fn i2c_nuvoton_recv(chip: *mut tpm_chip, buf: *mut u8, count: usize) -> i
         if expected > count || expected < size as usize { size = -EIO; continue; }
         let rc = i2c_nuvoton_recv_data(client, chip, buf.add(size as usize), expected - size as usize);
         size += rc;
-        if rc < 0 || size as usize < expected { size = -EIO; continue; }
+        if rc < 0 || (size as usize) < expected { size = -EIO; continue; }
         if i2c_nuvoton_wait_for_stat(chip, TPM_STS_VALID | TPM_STS_DATA_AVAIL, TPM_STS_VALID, (*chip).timeout_c, core::ptr::null_mut()) != 0 { size = -ETIMEDOUT; continue; }
         break;
     }

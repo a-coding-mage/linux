@@ -117,16 +117,16 @@ ethtool_cmd {
 	u32	reserved[2];
 };
 
-static inline void ethtool_cmd_speed_set(ethtool_cmd *ep,
-					 u32 speed)
+void ethtool_cmd_speed_set(ethtool_cmd *ep,
+					 speed: u32)
 {
-	ep->speed = (u16)(speed & 0xFFFF);
-	ep->speed_hi = (u16)(speed >> 16);
+	(*ep).speed = (u16)(speed & 0xFFFF);
+	(*ep).speed_hi = (u16)(speed >> 16);
 }
 
-static inline u32 ethtool_cmd_speed(const ethtool_cmd *ep)
+u32 ethtool_cmd_speed(const ethtool_cmd *ep)
 {
-	return(ep->speed_hi << 16) | ep->speed;
+	return((*ep).speed_hi << 16) | (*ep).speed;
 }
 
 /* Device supports clause 22 register access to PHY or peripherals
@@ -1421,12 +1421,12 @@ ethtool_rx_flow_spec {
 pub const ETHTOOL_RX_FLOW_SPEC_RING: _ = 0x00000000FFFFFFFFu64;
 pub const ETHTOOL_RX_FLOW_SPEC_RING_VF: _ = 0x000000FF00000000u64;
 pub const ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF: _ = 32;
-static inline u64 ethtool_get_flow_spec_ring(u64 ring_cookie)
+u64 ethtool_get_flow_spec_ring(ring_cookie: u64)
 {
 	return ETHTOOL_RX_FLOW_SPEC_RING & ring_cookie;
 }
 
-static inline u64 ethtool_get_flow_spec_ring_vf(u64 ring_cookie)
+u64 ethtool_get_flow_spec_ring_vf(ring_cookie: u64)
 {
 	return(ETHTOOL_RX_FLOW_SPEC_RING_VF & ring_cookie) >>
 				ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF;
@@ -2202,7 +2202,7 @@ pub const SPEED_800000: _ = 800000;
 pub const SPEED_1600000: _ = 1600000;
 pub const SPEED_UNKNOWN: _ = -1;
 
-static inline int ethtool_validate_speed(u32 speed)
+int ethtool_validate_speed(speed: u32)
 {
 	return speed <= __KERNEL_INT_MAX || speed == (u32)SPEED_UNKNOWN;
 }
@@ -2212,7 +2212,7 @@ pub const DUPLEX_HALF: _ = 0x00;
 pub const DUPLEX_FULL: _ = 0x01;
 pub const DUPLEX_UNKNOWN: _ = 0xffu8;
 
-static inline int ethtool_validate_duplex(u8 duplex)
+int ethtool_validate_duplex(duplex: u8)
 {
 	switch(duplex) {
 	case DUPLEX_HALF:

@@ -201,18 +201,18 @@ pub unsafe fn um_set_signals_trace_local(enable: c_int) -> c_int { um_set_signal
 
 /* IS_ENABLED(CONFIG_UML_TIME_TRAVEL_SUPPORT) conditional declarations and
  * definitions are retained below; the configuration is supplied by the build. */
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 static mut signals_blocked: c_int = 0;
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 static mut signals_blocked_pending: c_int = 0;
 
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 pub unsafe fn mark_sigio_pending() { SIGNALS_PENDING |= SIGIO_MASK; }
 
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 pub unsafe fn block_signals_hard() { signals_blocked += 1; barrier(); }
 
-#[cfg(feature = "CONFIG_UML_TIME_TRAVEL_SUPPORT")]
+#[cfg(CONFIG_UML_TIME_TRAVEL_SUPPORT)]
 pub unsafe fn unblock_signals_hard() {
     static mut unblocking: bool = false;
     if signals_blocked == 0 { panic(b"unblocking signals while not blocked\0".as_ptr()); }

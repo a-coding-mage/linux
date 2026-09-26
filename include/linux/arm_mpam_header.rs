@@ -49,7 +49,7 @@ pub const MPAM_CLASS_ID_DEFAULT: u8 = 255;
 
 // Under CONFIG_ACPI_MPAM this is an external function; otherwise the inline
 // implementation returns -EINVAL.
-#[cfg(feature = "CONFIG_ACPI_MPAM")]
+#[cfg(CONFIG_ACPI_MPAM)]
 unsafe extern "C" {
     pub fn acpi_mpam_parse_resources(
         msc: *mut mpam_msc,
@@ -58,7 +58,7 @@ unsafe extern "C" {
     pub fn acpi_mpam_count_msc() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_MPAM"))]
+#[cfg(not(CONFIG_ACPI_MPAM))]
 #[inline]
 pub unsafe fn acpi_mpam_parse_resources(
     _msc: *mut mpam_msc,
@@ -67,7 +67,7 @@ pub unsafe fn acpi_mpam_parse_resources(
     -22
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_MPAM"))]
+#[cfg(not(CONFIG_ACPI_MPAM))]
 #[inline]
 pub fn acpi_mpam_count_msc() -> i32 {
     -22
@@ -75,7 +75,7 @@ pub fn acpi_mpam_count_msc() -> i32 {
 
 // Under CONFIG_ARM64_MPAM_DRIVER this is an external function; otherwise the
 // inline implementation returns -EINVAL.
-#[cfg(feature = "CONFIG_ARM64_MPAM_DRIVER")]
+#[cfg(CONFIG_ARM64_MPAM_DRIVER)]
 unsafe extern "C" {
     pub fn mpam_ris_create(
         msc: *mut mpam_msc,
@@ -86,7 +86,7 @@ unsafe extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MPAM_DRIVER"))]
+#[cfg(not(CONFIG_ARM64_MPAM_DRIVER))]
 #[inline]
 pub unsafe fn mpam_ris_create(
     _msc: *mut mpam_msc,

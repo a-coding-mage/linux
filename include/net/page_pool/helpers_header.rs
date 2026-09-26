@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Rust translation of net/page_pool/helpers.h. */
 
-#[cfg(feature = "CONFIG_PAGE_POOL_STATS")]
+#[cfg(CONFIG_PAGE_POOL_STATS)]
 extern "C" {
     pub fn page_pool_ethtool_stats_get_count() -> i32;
     pub fn page_pool_ethtool_stats_get_strings(data: *mut u8) -> *mut u8;
@@ -9,13 +9,13 @@ extern "C" {
     pub fn page_pool_get_stats(pool: *const page_pool, stats: *mut page_pool_stats);
 }
 
-#[cfg(not(feature = "CONFIG_PAGE_POOL_STATS"))]
+#[cfg(not(CONFIG_PAGE_POOL_STATS))]
 #[inline]
 pub fn page_pool_ethtool_stats_get_count() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_PAGE_POOL_STATS"))]
+#[cfg(not(CONFIG_PAGE_POOL_STATS))]
 #[inline]
 pub fn page_pool_ethtool_stats_get_strings(data: *mut u8) -> *mut u8 { data }
-#[cfg(not(feature = "CONFIG_PAGE_POOL_STATS"))]
+#[cfg(not(CONFIG_PAGE_POOL_STATS))]
 #[inline]
 pub fn page_pool_ethtool_stats_get(data: *mut u64, _stats: *const core::ffi::c_void) -> *mut u64 { data }
 
@@ -108,7 +108,7 @@ pub unsafe fn page_pool_unref_and_test(netmem: netmem_ref) -> bool { page_pool_u
 
 #[inline]
 pub unsafe fn page_pool_put_netmem(pool: *mut page_pool, netmem: netmem_ref, dma_sync_size: u32, allow_direct: bool) {
-    #[cfg(feature = "CONFIG_PAGE_POOL")]
+    #[cfg(CONFIG_PAGE_POOL)]
     {
         if !page_pool_unref_and_test(netmem) { return; }
         page_pool_put_unrefed_netmem(pool, netmem, dma_sync_size, allow_direct);

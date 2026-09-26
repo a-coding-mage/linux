@@ -12,9 +12,9 @@ pub struct btrfs_ioctl_send_args;
 
 pub const BTRFS_SEND_STREAM_MAGIC: &[u8] = b"btrfs-stream\0";
 /* Conditional support for the upcoming protocol version. */
-#[cfg(feature = "CONFIG_BTRFS_EXPERIMENTAL")]
+#[cfg(CONFIG_BTRFS_EXPERIMENTAL)]
 pub const BTRFS_SEND_STREAM_VERSION: u32 = 3;
-#[cfg(not(feature = "CONFIG_BTRFS_EXPERIMENTAL"))]
+#[cfg(not(CONFIG_BTRFS_EXPERIMENTAL))]
 pub const BTRFS_SEND_STREAM_VERSION: u32 = 2;
 
 /*

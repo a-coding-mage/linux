@@ -54,13 +54,13 @@ extern "C" {
 
     // CONFIG_SUSPEND selects the external implementation in the original
     // build; otherwise the header supplies the inline zero-return stub.
-    #[cfg(feature = "CONFIG_SUSPEND")]
+    #[cfg(CONFIG_SUSPEND)]
     pub fn davinci_pm_init() -> c_int;
 
     pub fn pdata_quirks_init();
 }
 
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 #[inline]
 pub fn davinci_pm_init() -> c_int {
     0

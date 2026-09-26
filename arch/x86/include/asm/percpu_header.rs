@@ -68,9 +68,9 @@ macro_rules! this_cpu_add_4 { ($p:expr,$v:expr) => { percpu_add_op!(4,volatile,$
 macro_rules! this_cpu_add_8 { ($p:expr,$v:expr) => { percpu_add_op!(8,volatile,$p,$v) }; }
 
 // Early per-CPU declarations retain the original external kernel symbols.
-macro_rules! early_per_cpu_ptr { ($name:ident) => { $name##_early_ptr }; }
-macro_rules! early_per_cpu_map { ($name:ident, $idx:expr) => { $name##_early_map[$idx] }; }
-macro_rules! early_per_cpu { ($name:ident, $cpu:expr) => { $name##_early_map[$cpu] }; }
+macro_rules! early_per_cpu_ptr { ($name:tt) => { ::kernel::macros::paste!([<$name _early_ptr>]) }; }
+macro_rules! early_per_cpu_map { ($name:tt, $idx:expr) => { ::kernel::macros::paste!([<$name _early_map>])[$idx] }; }
+macro_rules! early_per_cpu { ($name:tt, $cpu:expr) => { ::kernel::macros::paste!([<$name _early_map>])[$cpu] }; }
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -76,15 +76,15 @@ unsafe fn jh7110_voutcrg_probe(pdev: *mut platform_device) -> c_int {
     ret = jh7110_vout_top_rst_init(priv_); if ret != 0 { goto err_exit; }
     for idx in 0..JH7110_VOUTCLK_END { let max = jh7110_voutclk_data[idx as usize].max; let mut parents: [clk_parent_data; 4] = core::mem::zeroed(); let init = clk_init_data { name: jh7110_voutclk_data[idx as usize].name, ops: starfive_jh71x0_clk_ops(max), parent_data: parents.as_mut_ptr(), num_parents: ((max & JH71X0_CLK_MUX_MASK) >> JH71X0_CLK_MUX_SHIFT) + 1, flags: jh7110_voutclk_data[idx as usize].flags }; let clk = &mut (*priv_).reg[idx as usize]; clk.hw.init = &init; clk.idx = idx; clk.max_div = max & JH71X0_CLK_DIV_MASK; ret = devm_clk_hw_register(&mut (*pdev).dev, &mut clk.hw); if ret != 0 { goto err_exit; } }
     ret = devm_of_clk_add_hw_provider(&mut (*pdev).dev, jh71x0_clk_get, priv_); if ret != 0 { goto err_exit; }
-    ret = jh7110_reset_controller_register(priv_, c"rst-vo\0".as_ptr(), 4); if ret != 0 { goto err_exit; } return 0;
+    ret = jh7110_reset_controller_register(priv_, c"rst-vo".as_ptr(), 4); if ret != 0 { goto err_exit; } return 0;
 err_exit: pm_runtime_put_sync((*priv_).dev); pm_runtime_disable((*priv_).dev); ret
 }
 
 unsafe fn jh7110_voutcrg_remove(pdev: *mut platform_device) { pm_runtime_put_sync(&mut (*pdev).dev); pm_runtime_disable(&mut (*pdev).dev); }
 
-static jh7110_voutcrg_match: [of_device_id; 2] = [of_device_id { compatible: c"starfive,jh7110-voutcrg\0".as_ptr() }, of_device_id { compatible: core::ptr::null() }];
+static jh7110_voutcrg_match: [of_device_id; 2] = [of_device_id { compatible: c"starfive,jh7110-voutcrg".as_ptr() }, of_device_id { compatible: core::ptr::null() }];
 
-static mut jh7110_voutcrg_driver: platform_driver = platform_driver { probe: Some(jh7110_voutcrg_probe), remove: Some(jh7110_voutcrg_remove), driver: device_driver { name: c"clk-starfive-jh7110-vout\0".as_ptr(), of_match_table: jh7110_voutcrg_match.as_ptr(), pm: pm_ptr!(&jh7110_voutcrg_pm_ops) } };
+static mut jh7110_voutcrg_driver: platform_driver = platform_driver { probe: Some(jh7110_voutcrg_probe), remove: Some(jh7110_voutcrg_remove), driver: device_driver { name: c"clk-starfive-jh7110-vout".as_ptr(), of_match_table: jh7110_voutcrg_match.as_ptr(), pm: pm_ptr!(&jh7110_voutcrg_pm_ops) } };
 
 module_platform_driver!(jh7110_voutcrg_driver);
 MODULE_AUTHOR!("Xingyu Wu <xingyu.wu@starfivetech.com>");

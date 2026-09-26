@@ -3,7 +3,7 @@
 // The original declarations are conditional on CONFIG_NET_RX_BUSY_POLL.
 // This feature name preserves that build-time condition for Rust consumers.
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 extern "C" {
     pub fn io_napi_init(ctx: *mut io_ring_ctx);
     pub fn io_napi_free(ctx: *mut io_ring_ctx);
@@ -21,13 +21,13 @@ extern "C" {
     pub fn io_napi_sqpoll_busy_poll(ctx: *mut io_ring_ctx) -> i32;
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 #[inline]
 pub unsafe fn io_napi(ctx: *mut io_ring_ctx) -> bool {
     !list_empty(core::ptr::addr_of_mut!((*ctx).napi_list))
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 #[inline]
 pub unsafe fn io_napi_busy_loop(ctx: *mut io_ring_ctx, iowq: *mut io_wait_queue) {
     if !io_napi(ctx) {
@@ -42,7 +42,7 @@ pub unsafe fn io_napi_busy_loop(ctx: *mut io_ring_ctx, iowq: *mut io_wait_queue)
  *
  * Add the napi id of the socket to the napi busy poll list and hash table.
  */
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 #[inline]
 pub unsafe fn io_napi_add(req: *mut io_kiocb) {
     let ctx: *mut io_ring_ctx = (*req).ctx;
@@ -59,15 +59,15 @@ pub unsafe fn io_napi_add(req: *mut io_kiocb) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_napi_init(_ctx: *mut io_ring_ctx) {}
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_napi_free(_ctx: *mut io_ring_ctx) {}
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_register_napi(
     _ctx: *mut io_ring_ctx,
@@ -76,7 +76,7 @@ pub unsafe fn io_register_napi(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_unregister_napi(
     _ctx: *mut io_ring_ctx,
@@ -85,17 +85,17 @@ pub unsafe fn io_unregister_napi(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_napi(_ctx: *mut io_ring_ctx) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_napi_add(_req: *mut io_kiocb) {}
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_napi_busy_loop(
     _ctx: *mut io_ring_ctx,
@@ -103,7 +103,7 @@ pub unsafe fn io_napi_busy_loop(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn io_napi_sqpoll_busy_poll(_ctx: *mut io_ring_ctx) -> i32 {
     0

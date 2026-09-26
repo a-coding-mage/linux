@@ -80,7 +80,7 @@ pub struct disasm_state {
 
 #[inline]
 pub fn sign_extend(mut value: i32, bits: i32) -> i32 {
-    if IS_BIT(value, bits - 1) != 0 { value |= 0xffffffffu32 as i32 << bits; }
+    if IS_BIT(value, bits - 1) != 0 { value |= (0xffffffffu32 as i32) << bits; }
     value
 }
 

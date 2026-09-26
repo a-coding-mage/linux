@@ -97,7 +97,7 @@ pub unsafe fn netlbl_af4list_audit_addr(
     /* CONFIG_AUDIT-disabled inline implementation. */
 }
 
-#[cfg(feature = "CONFIG_AUDIT")]
+#[cfg(CONFIG_AUDIT)]
 extern "C" {
     pub fn netlbl_af4list_audit_addr_external(
         audit_buf: *mut audit_buffer,

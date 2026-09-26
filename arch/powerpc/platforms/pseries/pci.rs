@@ -8,10 +8,10 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 const MAX_VFS_FOR_MAP_PE: usize = 256;
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 #[repr(C)]
 struct pe_map_bar_entry {
     bar: u64,       // __be64: Input: Virtual Function BAR
@@ -20,7 +20,7 @@ struct pe_map_bar_entry {
     reserved: u32,  // Reserved Space
 }
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe fn pseries_send_map_pe(
     pdev: *mut pci_dev,
     num_vfs: u16,
@@ -56,7 +56,7 @@ unsafe fn pseries_send_map_pe(
     rc
 }
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe fn pseries_set_pe_num(pdev: *mut pci_dev, vf_index: u16, pe_num: u16) {
     let pdn = pci_get_pdn(pdev);
     (*pdn).pe_num_map[vf_index as usize] = be16_to_cpu(pe_num);
@@ -67,7 +67,7 @@ unsafe fn pseries_set_pe_num(pdev: *mut pci_dev, vf_index: u16, pe_num: u16) {
         (*pdn).pe_num_map[vf_index as usize]);
 }
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe fn pseries_associate_pes(pdev: *mut pci_dev, num_vfs: u16) -> i32 {
     let pdn;
     let mut i: i32;
@@ -111,7 +111,7 @@ unsafe fn pseries_associate_pes(pdev: *mut pci_dev, num_vfs: u16) -> i32 {
     rc
 }
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe fn pseries_pci_sriov_enable(pdev: *mut pci_dev, num_vfs: u16) -> i32 {
     let pdn;
     let mut rc: i32;
@@ -141,14 +141,14 @@ unsafe fn pseries_pci_sriov_enable(pdev: *mut pci_dev, num_vfs: u16) -> i32 {
     rc
 }
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe fn pseries_pcibios_sriov_enable(pdev: *mut pci_dev, num_vfs: u16) -> i32 {
     // Allocate PCI data
     add_sriov_vf_pdns(pdev);
     pseries_pci_sriov_enable(pdev, num_vfs)
 }
 
-#[cfg(feature = "CONFIG_PCI_IOV")]
+#[cfg(CONFIG_PCI_IOV)]
 unsafe fn pseries_pcibios_sriov_disable(pdev: *mut pci_dev) -> i32 {
     let pdn = pci_get_pdn(pdev);
     // Releasing pe_num_map
@@ -172,7 +172,7 @@ unsafe fn pSeries_request_regions() {
 pub unsafe fn pSeries_final_fixup() {
     pSeries_request_regions();
     eeh_show_enabled();
-    #[cfg(feature = "CONFIG_PCI_IOV")]
+    #[cfg(CONFIG_PCI_IOV)]
     {
         ppc_md.pcibios_sriov_enable = Some(pseries_pcibios_sriov_enable);
         ppc_md.pcibios_sriov_disable = Some(pseries_pcibios_sriov_disable);

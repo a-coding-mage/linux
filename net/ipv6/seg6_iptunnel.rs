@@ -76,7 +76,7 @@ extern "C" {
 const SEG6_IPTUN_MODE_INLINE:i32=0; const SEG6_IPTUN_MODE_ENCAP:i32=1; const SEG6_IPTUN_MODE_L2ENCAP:i32=2; const SEG6_IPTUN_MODE_ENCAP_RED:i32=3; const SEG6_IPTUN_MODE_L2ENCAP_RED:i32=4;
 const SEG6_IPTUNNEL_SRH:i32=1; const SEG6_IPTUNNEL_SRC:i32=2; const SEG6_IPTUNNEL_TABLE:i32=3; const SEG6_IPTUNNEL_MAX:i32=3;
 
-#[inline] unsafe fn seg6_lwt_lwtunnel(l:*mut lwtunnel_state)->*mut seg6_lwt{l->data as *mut seg6_lwt}
+#[inline] unsafe fn seg6_lwt_lwtunnel(l:*mut lwtunnel_state)->*mut seg6_lwt{(*l).data as *mut seg6_lwt}
 #[inline] unsafe fn seg6_encap_lwtunnel(l:*mut lwtunnel_state)->*mut seg6_iptunnel_encap{(*seg6_lwt_lwtunnel(l)).tuninfo.as_mut_ptr()}
 unsafe fn seg6_lwt_headroom(t:*mut seg6_iptunnel_encap)->usize{let h=match (*t).mode{SEG6_IPTUN_MODE_ENCAP|SEG6_IPTUN_MODE_ENCAP_RED=>40,_=>0};if (*t).mode==SEG6_IPTUN_MODE_L2ENCAP||(*t).mode==SEG6_IPTUN_MODE_L2ENCAP_RED{0}else{(((*(*t).srh).hdrlen as usize+1)<<3)+h}}
 

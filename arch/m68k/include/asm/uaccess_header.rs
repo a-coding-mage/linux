@@ -27,13 +27,13 @@ pub mod mmu {
     /* Single-value transfers select their operation from the pointed-to size. */
     #[macro_export]
     macro_rules! __put_user { ($x:expr, $ptr:expr) => {{
-        /* __chk_user_ptr($ptr); switch sizeof(*(ptr)) { 1,2,4,8 } */
+        /* __chk_user_ptr($ptr); switch sizeof(*($ptr)) { 1,2,4,8 } */
         let _ = (&$x, &$ptr); 0i32
     }} }
     #[macro_export] macro_rules! put_user { ($x:expr, $ptr:expr) => { $crate::__put_user!($x, $ptr) } }
     #[macro_export]
     macro_rules! __get_user { ($x:expr, $ptr:expr) => {{
-        /* __chk_user_ptr($ptr); switch sizeof(*(ptr)) { 1,2,4,8 } */
+        /* __chk_user_ptr($ptr); switch sizeof(*($ptr)) { 1,2,4,8 } */
         let _ = (&$x, &$ptr); 0i32
     }} }
     #[macro_export] macro_rules! get_user { ($x:expr, $ptr:expr) => { $crate::__get_user!($x, $ptr) } }

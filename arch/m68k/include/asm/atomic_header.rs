@@ -19,12 +19,12 @@ pub unsafe fn arch_atomic_set(v: *mut atomic_t, i: i32) {
 
 // The original ASM_DI constraint is "d" for ColdFire and "di" otherwise.
 
-#[cfg(feature = "CONFIG_RMW_INSNS")]
+#[cfg(CONFIG_RMW_INSNS)]
 #[inline(always)]
 pub unsafe fn arch_atomic_add(i: i32, v: *mut atomic_t) {
     core::arch::asm!("addl {i}, [{v}]", i = in(reg) i, v = in(reg) v, options(nostack));
 }
-#[cfg(not(feature = "CONFIG_RMW_INSNS"))]
+#[cfg(not(CONFIG_RMW_INSNS))]
 #[inline(always)]
 pub unsafe fn arch_atomic_add(i: i32, v: *mut atomic_t) {
     let mut flags: usize;
@@ -33,12 +33,12 @@ pub unsafe fn arch_atomic_add(i: i32, v: *mut atomic_t) {
     local_irq_restore(flags);
 }
 
-#[cfg(feature = "CONFIG_RMW_INSNS")]
+#[cfg(CONFIG_RMW_INSNS)]
 #[inline(always)]
 pub unsafe fn arch_atomic_sub(i: i32, v: *mut atomic_t) {
     core::arch::asm!("subl {i}, [{v}]", i = in(reg) i, v = in(reg) v, options(nostack));
 }
-#[cfg(not(feature = "CONFIG_RMW_INSNS"))]
+#[cfg(not(CONFIG_RMW_INSNS))]
 #[inline(always)]
 pub unsafe fn arch_atomic_sub(i: i32, v: *mut atomic_t) {
     let mut flags: usize;
@@ -47,7 +47,7 @@ pub unsafe fn arch_atomic_sub(i: i32, v: *mut atomic_t) {
     local_irq_restore(flags);
 }
 
-#[cfg(feature = "CONFIG_RMW_INSNS")]
+#[cfg(CONFIG_RMW_INSNS)]
 #[inline(always)]
 pub unsafe fn arch_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut t: i32;
@@ -57,12 +57,12 @@ pub unsafe fn arch_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
         i = in(reg) i, v = in(reg) v, options(nostack));
     t
 }
-#[cfg(feature = "CONFIG_RMW_INSNS")]
+#[cfg(CONFIG_RMW_INSNS)]
 #[inline(always)]
 pub unsafe fn arch_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 {
     let old = arch_atomic_read(v); let value = old.wrapping_sub(i); arch_atomic_set(v, value); value
 }
-#[cfg(not(feature = "CONFIG_RMW_INSNS"))]
+#[cfg(not(CONFIG_RMW_INSNS))]
 #[inline(always)]
 pub unsafe fn arch_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut flags: usize; local_irq_save(&mut flags);
@@ -70,14 +70,14 @@ pub unsafe fn arch_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     local_irq_restore(flags); t
 }
 
-#[cfg(feature = "CONFIG_RMW_INSNS")]
+#[cfg(CONFIG_RMW_INSNS)]
 #[inline(always)]
 pub unsafe fn arch_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut flags: usize; local_irq_save(&mut flags);
     let t = (*v).counter.wrapping_sub(i); (*v).counter = t;
     local_irq_restore(flags); t
 }
-#[cfg(not(feature = "CONFIG_RMW_INSNS"))]
+#[cfg(not(CONFIG_RMW_INSNS))]
 #[inline(always)]
 pub unsafe fn arch_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 { arch_atomic_sub_return_fallback(i, v) }
 
@@ -110,13 +110,13 @@ pub unsafe fn arch_atomic_fetch_sub(i: i32, v: *mut atomic_t) -> i32 {
 #[inline(always)] pub unsafe fn arch_atomic_dec_and_test_lt(v: *mut atomic_t) -> i32 { arch_atomic_dec(v); ((*v).counter < 0) as i32 }
 #[inline(always)] pub unsafe fn arch_atomic_inc_and_test(v: *mut atomic_t) -> i32 { arch_atomic_add(1, v); ((*v).counter == 0) as i32 }
 
-#[cfg(not(feature = "CONFIG_RMW_INSNS"))]
+#[cfg(not(CONFIG_RMW_INSNS))]
 #[inline(always)]
 pub unsafe fn arch_atomic_cmpxchg(v: *mut atomic_t, old: i32, new: i32) -> i32 {
     let mut flags: usize; local_irq_save(&mut flags); let prev = arch_atomic_read(v);
     if prev == old { arch_atomic_set(v, new); } local_irq_restore(flags); prev
 }
-#[cfg(not(feature = "CONFIG_RMW_INSNS"))]
+#[cfg(not(CONFIG_RMW_INSNS))]
 #[inline(always)]
 pub unsafe fn arch_atomic_xchg(v: *mut atomic_t, new: i32) -> i32 {
     let mut flags: usize; local_irq_save(&mut flags); let prev = arch_atomic_read(v);

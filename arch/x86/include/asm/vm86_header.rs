@@ -40,7 +40,7 @@ pub struct vm86 {
     pub vm86plus: vm86plus_info_struct,
 }
 
-#[cfg(feature = "CONFIG_VM86")]
+#[cfg(CONFIG_VM86)]
 extern "C" {
     pub fn handle_vm86_fault(regs: *mut kernel_vm86_regs, error_code: c_long);
     pub fn handle_vm86_trap(
@@ -57,18 +57,18 @@ pub struct task_struct {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_VM86")]
+#[cfg(CONFIG_VM86)]
 pub const FIRST_VM86_IRQ: c_int = 3;
-#[cfg(feature = "CONFIG_VM86")]
+#[cfg(CONFIG_VM86)]
 pub const LAST_VM86_IRQ: c_int = 15;
 
-#[cfg(feature = "CONFIG_VM86")]
+#[cfg(CONFIG_VM86)]
 #[inline]
 pub const unsafe fn invalid_vm86_irq(irq: c_int) -> c_int {
     (irq < FIRST_VM86_IRQ || irq > LAST_VM86_IRQ) as c_int
 }
 
-#[cfg(not(feature = "CONFIG_VM86"))]
+#[cfg(not(CONFIG_VM86))]
 #[inline]
 pub unsafe fn handle_vm86_trap(
     _a: *mut kernel_vm86_regs,
@@ -78,11 +78,11 @@ pub unsafe fn handle_vm86_trap(
     0
 }
 
-#[cfg(not(feature = "CONFIG_VM86"))]
+#[cfg(not(CONFIG_VM86))]
 #[inline]
 pub unsafe fn save_v86_state(_a: *mut kernel_vm86_regs, _b: c_int) {}
 
-#[cfg(not(feature = "CONFIG_VM86"))]
+#[cfg(not(CONFIG_VM86))]
 #[inline]
 pub unsafe fn handle_vm86_fault(_a: *mut kernel_vm86_regs, _b: c_long) {}
 
@@ -101,7 +101,7 @@ macro_rules! free_vm86 {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_VM86"))]
+#[cfg(not(CONFIG_VM86))]
 #[macro_export]
 macro_rules! free_vm86 {
     ($task:expr) => {{

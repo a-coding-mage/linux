@@ -22,7 +22,7 @@ pub struct epoll_event {
 pub type __poll_t = u32;
 pub type __u64 = u64;
 
-#[cfg(feature = "CONFIG_KCMP")]
+#[cfg(CONFIG_KCMP)]
 extern "C" {
     pub fn get_epoll_tfile_raw_ptr(
         file: *mut file,
@@ -31,7 +31,7 @@ extern "C" {
     ) -> *mut file;
 }
 
-#[cfg(feature = "CONFIG_EPOLL")]
+#[cfg(CONFIG_EPOLL)]
 extern "C" {
     pub fn eventpoll_release_file(file: *mut file);
     pub fn epoll_sendevents(
@@ -62,7 +62,7 @@ pub struct epoll_key {
     pub fd: core::ffi::c_int,
 }
 
-#[cfg(feature = "CONFIG_EPOLL")]
+#[cfg(CONFIG_EPOLL)]
 pub unsafe fn eventpoll_release(file: *mut file) {
     /* The f_ep fast-path check depends on the complete kernel `struct file`,
      * supplied by the including translation unit. */
@@ -73,10 +73,10 @@ pub unsafe fn eventpoll_release(file: *mut file) {
     eventpoll_release_file(file);
 }
 
-#[cfg(not(feature = "CONFIG_EPOLL"))]
+#[cfg(not(CONFIG_EPOLL))]
 pub unsafe fn eventpoll_release(_file: *mut file) {}
 
-#[cfg(feature = "CONFIG_EPOLL")]
+#[cfg(CONFIG_EPOLL)]
 #[inline]
 pub const fn ep_op_has_event(op: core::ffi::c_int) -> bool {
     op != EPOLL_CTL_DEL
@@ -85,7 +85,7 @@ pub const fn ep_op_has_event(op: core::ffi::c_int) -> bool {
 /* Supplied by uapi/linux/eventpoll.h. */
 pub const EPOLL_CTL_DEL: core::ffi::c_int = 2;
 
-#[cfg(all(target_arch = "arm", feature = "CONFIG_OABI_COMPAT"))]
+#[cfg(all(target_arch = "arm", CONFIG_OABI_COMPAT))]
 extern "C" {
     pub fn epoll_put_uevent(
         revents: __poll_t,
@@ -94,7 +94,7 @@ extern "C" {
     ) -> *mut epoll_event;
 }
 
-#[cfg(not(all(target_arch = "arm", feature = "CONFIG_OABI_COMPAT")))]
+#[cfg(not(all(target_arch = "arm", CONFIG_OABI_COMPAT)))]
 #[inline]
 pub unsafe fn epoll_put_uevent(
     revents: __poll_t,

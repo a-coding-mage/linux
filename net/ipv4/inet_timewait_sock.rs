@@ -204,7 +204,7 @@ restart:
             }
             if check_net(sock_net(sk)) {
                 sock_gen_put(sk);
-                goto!(restart);
+                goto restart;
             }
             rcu_read_unlock();
             local_bh_disable();
@@ -215,10 +215,10 @@ restart:
                 inet_csk_reqsk_queue_drop_and_put((*req).rsk_listener, req);
             }
             local_bh_enable();
-            goto!(restart_rcu);
+            goto restart_rcu;
         });
         if get_nulls_value(node) != slot {
-            goto!(restart);
+            goto restart;
         }
         rcu_read_unlock();
         slot += 1;

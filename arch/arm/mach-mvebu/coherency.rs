@@ -168,7 +168,7 @@ unsafe extern "C" fn coherency_late_init() -> i32 {
 
 // postcore_initcall(coherency_late_init);
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe extern "C" fn coherency_pci_init() -> i32 {
     if coherency_available() { bus_register_notifier(core::ptr::null_mut(), &mut mvebu_hwcc_pci_nb); }
     0

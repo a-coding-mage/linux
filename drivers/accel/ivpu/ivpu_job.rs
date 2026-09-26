@@ -103,10 +103,10 @@ unsafe fn ivpu_job_to_jsm_priority(priority: u8) -> u8 { if priority == DRM_IVPU
 
 pub unsafe fn ivpu_cmdq_release_all_locked(file_priv: *mut ivpu_file_priv) {
     let mut id = 0; let mut cmdq: *mut ivpu_cmdq = core::ptr::null_mut();
-    xa_for_each(&(*file_priv).cmdq_xa, &mut id, &mut cmdq) { ivpu_cmdq_destroy(file_priv, cmdq); }
+    xa_for_each!(&(*file_priv).cmdq_xa, &mut id, &mut cmdq, { ivpu_cmdq_destroy(file_priv, cmdq); });
 }
 
-pub unsafe fn ivpu_cmdq_reset_all_contexts(vdev: *mut ivpu_device) { mutex_lock(&mut (*vdev).context_list_lock); let mut id=0; let mut fp=core::ptr::null_mut(); xa_for_each(&(*vdev).context_xa,&mut id,&mut fp){ ivpu_cmdq_reset(fp); } mutex_unlock(&mut (*vdev).context_list_lock); }
+pub unsafe fn ivpu_cmdq_reset_all_contexts(vdev: *mut ivpu_device) { mutex_lock(&mut (*vdev).context_list_lock); let mut id=0; let mut fp=core::ptr::null_mut(); xa_for_each!(&(*vdev).context_xa,&mut id,&mut fp, { ivpu_cmdq_reset(fp); }); mutex_unlock(&mut (*vdev).context_list_lock); }
 
 // Job submission, fence, abort, ioctl, IPC callback, and recovery routines
 // retain the same signatures, ordering, error returns, and side effects as

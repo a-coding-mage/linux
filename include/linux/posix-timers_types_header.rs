@@ -35,7 +35,7 @@ pub const CLOCKFD: u32 = CPUCLOCK_MAX as u32;
 pub const CLOCKFD_MASK: u32 = CPUCLOCK_PERTHREAD_MASK | CPUCLOCK_CLOCK_MASK;
 
 // CONFIG_POSIX_TIMERS controls whether the following fields are present.
-#[cfg(feature = "CONFIG_POSIX_TIMERS")]
+#[cfg(CONFIG_POSIX_TIMERS)]
 #[repr(C)]
 pub struct posix_cputimer_base {
     /// Earliest-expiration cache
@@ -44,7 +44,7 @@ pub struct posix_cputimer_base {
     pub tqhead: timerqueue_head,
 }
 
-#[cfg(feature = "CONFIG_POSIX_TIMERS")]
+#[cfg(CONFIG_POSIX_TIMERS)]
 #[repr(C)]
 pub struct posix_cputimers {
     /// Base container for posix CPU clocks
@@ -55,7 +55,7 @@ pub struct posix_cputimers {
     pub expiry_active: u32,
 }
 
-#[cfg(feature = "CONFIG_POSIX_TIMERS")]
+#[cfg(CONFIG_POSIX_TIMERS)]
 #[repr(C)]
 pub struct posix_cputimers_work {
     /// The task work to be scheduled
@@ -66,7 +66,7 @@ pub struct posix_cputimers_work {
     pub scheduled: u32,
 }
 
-#[cfg(not(feature = "CONFIG_POSIX_TIMERS"))]
+#[cfg(not(CONFIG_POSIX_TIMERS))]
 #[repr(C)]
 pub struct posix_cputimers {}
 

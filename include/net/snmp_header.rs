@@ -114,9 +114,9 @@ macro_rules! DECLARE_SNMP_STAT { ($type:ty, $name:ident) => { unsafe extern "C" 
 #[macro_export] macro_rules! SNMP_ADD_STATS { ($m:expr, $f:expr, $a:expr) => { this_cpu_add!($m.mibs[$f], $a); }; }
 
 #[macro_export]
-macro_rules! SNMP_UPD_PO_STATS { ($m:expr, $basefield:ident, $addend:expr) => {{ this_cpu_inc!($m.mibs[$basefield##PKTS]); this_cpu_add!($m.mibs[$basefield##OCTETS], $addend); }}; }
+macro_rules! SNMP_UPD_PO_STATS { ($m:expr, $basefield:tt, $addend:expr) => {{ this_cpu_inc!($m.mibs[::kernel::macros::paste!([<$basefield PKTS>])]); this_cpu_add!($m.mibs[::kernel::macros::paste!([<$basefield OCTETS>])], $addend); }}; }
 #[macro_export]
-macro_rules! __SNMP_UPD_PO_STATS { ($m:expr, $basefield:ident, $addend:expr) => {{ __this_cpu_inc!($m.mibs[$basefield##PKTS]); __this_cpu_add!($m.mibs[$basefield##OCTETS], $addend); }}; }
+macro_rules! __SNMP_UPD_PO_STATS { ($m:expr, $basefield:tt, $addend:expr) => {{ __this_cpu_inc!($m.mibs[::kernel::macros::paste!([<$basefield PKTS>])]); __this_cpu_add!($m.mibs[::kernel::macros::paste!([<$basefield OCTETS>])], $addend); }}; }
 
 /* On 32-bit systems the u64 statistics update is serialized by syncp. */
 #[macro_export] macro_rules! __SNMP_INC_STATS64 { ($m:expr, $f:expr) => { SNMP_ADD_STATS64!($m, $f, 1); }; }

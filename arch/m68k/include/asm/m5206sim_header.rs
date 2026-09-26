@@ -31,9 +31,9 @@ pub const MCFSIM_ICR11: _ = MCF_MBAR + 0x1e;
 pub const MCFSIM_ICR12: _ = MCF_MBAR + 0x1f;
 pub const MCFSIM_ICR13: _ = MCF_MBAR + 0x20;
 /* C: #ifdef CONFIG_M5206e */
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_ICR14: _ = MCF_MBAR + 0x21;
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_ICR15: _ = MCF_MBAR + 0x22;
 
 pub const MCFSIM_IMR: _ = MCF_MBAR + 0x36;
@@ -77,9 +77,9 @@ pub const MCFSIM_CSMR7: _ = MCF_MBAR + 0xbc;
 pub const MCFSIM_CSCR7: _ = MCF_MBAR + 0xc2;
 pub const MCFSIM_DMCR: _ = MCF_MBAR + 0xc6;
 
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_PAR: _ = MCF_MBAR + 0xca;
-#[cfg(not(feature = "CONFIG_M5206e"))]
+#[cfg(not(CONFIG_M5206e))]
 pub const MCFSIM_PAR: _ = MCF_MBAR + 0xcb;
 
 pub const MCFTIMER_BASE1: _ = MCF_MBAR + 0x100;
@@ -89,13 +89,13 @@ pub const MCFSIM_PADAT: _ = MCF_MBAR + 0x1c9;
 pub const MCFDMA_BASE0: _ = MCF_MBAR + 0x200;
 pub const MCFDMA_BASE1: _ = MCF_MBAR + 0x240;
 
-#[cfg(feature = "CONFIG_NETtel")]
+#[cfg(CONFIG_NETtel)]
 pub const MCFUART_BASE0: _ = MCF_MBAR + 0x180;
-#[cfg(feature = "CONFIG_NETtel")]
+#[cfg(CONFIG_NETtel)]
 pub const MCFUART_BASE1: _ = MCF_MBAR + 0x140;
-#[cfg(not(feature = "CONFIG_NETtel"))]
+#[cfg(not(CONFIG_NETtel))]
 pub const MCFUART_BASE0: _ = MCF_MBAR + 0x140;
-#[cfg(not(feature = "CONFIG_NETtel"))]
+#[cfg(not(CONFIG_NETtel))]
 pub const MCFUART_BASE1: _ = MCF_MBAR + 0x180;
 
 /* Define system peripheral IRQ usage. */
@@ -111,9 +111,9 @@ pub const MCFGPIO_IRQ_VECBASE: i32 = -1;
 pub const MCFGPIO_IRQ_MAX: i32 = -1;
 
 /* Some symbol defines for the Parallel Port Pin Assignment Register. */
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_PAR_DREQ0: i32 = 0x100; /* Set to select DREQ0 input; clear to select T0 input. */
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_PAR_DREQ1: i32 = 0x200; /* Select DREQ1 input; clear to select T0 output. */
 
 /* Some symbol defines for the Interrupt Control Register. */
@@ -123,9 +123,9 @@ pub const MCFSIM_TIMER2ICR: _ = MCFSIM_ICR10;
 pub const MCFSIM_I2CICR: _ = MCFSIM_ICR11;
 pub const MCFSIM_UART1ICR: _ = MCFSIM_ICR12;
 pub const MCFSIM_UART2ICR: _ = MCFSIM_ICR13;
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_DMA1ICR: _ = MCFSIM_ICR14;
-#[cfg(feature = "CONFIG_M5206e")]
+#[cfg(CONFIG_M5206e)]
 pub const MCFSIM_DMA2ICR: _ = MCFSIM_ICR15;
 
 /* I2C Controller */

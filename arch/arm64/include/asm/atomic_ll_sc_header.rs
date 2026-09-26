@@ -30,9 +30,9 @@ macro_rules! ATOMIC_OP {
 
 macro_rules! ATOMIC_OP_RETURN {
     ($name:ident, $mb:literal, $acq:literal, $rel:literal, $cl:literal,
-     $op:ident, $asm_op:tt, $constraint:tt) => {
+     $op:tt, $asm_op:tt, $constraint:tt) => {
         #[inline(always)]
-        pub unsafe fn __ll_sc_atomic_$op##_return$name(i: i32, v: *mut atomic_t) -> i32 {
+        pub unsafe fn __ll_sc_atomic_::kernel::macros::paste!([<$op _return>])$name(i: i32, v: *mut atomic_t) -> i32 {
             let result: i32;
             core::arch::asm!(
                 concat!("// atomic_", stringify!($op), "_return", stringify!($name), "\n",
@@ -98,10 +98,10 @@ pub unsafe fn __ll_sc_atomic64_dec_if_positive(v: *mut atomic64_t) -> s64 {
 }
 
 macro_rules! __CMPXCHG_CASE {
-    ($w:tt, $sfx:tt, $name:ident, $sz:literal, $mb:literal, $acq:literal, $rel:literal, $cl:literal, $constraint:tt) => {
+    ($w:tt, $sfx:tt, $name:ident, $sz:tt, $mb:literal, $acq:literal, $rel:literal, $cl:literal, $constraint:tt) => {
         #[inline(always)]
-        pub unsafe fn __ll_sc__cmpxchg_case_$name$sz(ptr: *mut u8, old: usize, new: u##$sz) -> u##$sz {
-            let oldval: u##$sz;
+        pub unsafe fn __ll_sc__cmpxchg_case_$name$sz(ptr: *mut u8, old: usize, new: ::kernel::macros::paste!([<u $sz>])) -> ::kernel::macros::paste!([<u $sz>]) {
+            let oldval: ::kernel::macros::paste!([<u $sz>]);
             core::arch::asm!("prfm pstl1strm, [{p}]\n1: ldxr {o}, [{p}]\neor {t}, {o}, {old}\ncbnz {t}, 2f\nstxr w2, {new}, [{p}]\ncbnz w2, 1b\n2:", p = in(reg) ptr, o = lateout(reg) oldval, old = in(reg) old, new = in(reg) new, out("w2") _, options(nostack));
             oldval
         }

@@ -40,13 +40,13 @@ pub struct syscore {
     pub ops: *const syscore_ops,
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" fn pxa3xx_mfp_suspend(_data: *mut c_void) -> i32 {
     mfp_config_lpm();
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe extern "C" fn pxa3xx_mfp_resume(_data: *mut c_void) {
     mfp_config_run();
 
@@ -58,29 +58,29 @@ unsafe extern "C" fn pxa3xx_mfp_resume(_data: *mut c_void) {
     ASCR &= !(ASCR_RDH | ASCR_D1S | ASCR_D2S | ASCR_D3S);
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const pxa3xx_mfp_suspend: Option<unsafe extern "C" fn(*mut c_void) -> i32> = None;
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const pxa3xx_mfp_resume: Option<unsafe extern "C" fn(*mut c_void)> = None;
 
 static pxa3xx_mfp_syscore_ops: syscore_ops = syscore_ops {
     suspend: {
-        #[cfg(feature = "CONFIG_PM")]
+        #[cfg(CONFIG_PM)]
         {
             Some(pxa3xx_mfp_suspend)
         }
-        #[cfg(not(feature = "CONFIG_PM"))]
+        #[cfg(not(CONFIG_PM))]
         {
             pxa3xx_mfp_suspend
         }
     },
     resume: {
-        #[cfg(feature = "CONFIG_PM")]
+        #[cfg(CONFIG_PM)]
         {
             Some(pxa3xx_mfp_resume)
         }
-        #[cfg(not(feature = "CONFIG_PM"))]
+        #[cfg(not(CONFIG_PM))]
         {
             pxa3xx_mfp_resume
         }

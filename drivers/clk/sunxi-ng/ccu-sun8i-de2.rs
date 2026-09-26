@@ -5,25 +5,25 @@
 
 // Kernel and local CCU dependencies supplied externally.
 
-static SUNXI_CCU_GATE!(bus_mixer0_clk, "bus-mixer0", "bus-de", 0x04, BIT!(0), 0);
-static SUNXI_CCU_GATE!(bus_mixer1_clk, "bus-mixer1", "bus-de", 0x04, BIT!(1), 0);
-static SUNXI_CCU_GATE!(bus_wb_clk, "bus-wb", "bus-de", 0x04, BIT!(2), 0);
-static SUNXI_CCU_GATE!(bus_rot_clk, "bus-rot", "bus-de", 0x04, BIT!(3), 0);
+SUNXI_CCU_GATE!(bus_mixer0_clk, "bus-mixer0", "bus-de", 0x04, BIT!(0), 0);
+SUNXI_CCU_GATE!(bus_mixer1_clk, "bus-mixer1", "bus-de", 0x04, BIT!(1), 0);
+SUNXI_CCU_GATE!(bus_wb_clk, "bus-wb", "bus-de", 0x04, BIT!(2), 0);
+SUNXI_CCU_GATE!(bus_rot_clk, "bus-rot", "bus-de", 0x04, BIT!(3), 0);
 
-static SUNXI_CCU_GATE!(mixer0_clk, "mixer0", "mixer0-div", 0x00, BIT!(0), CLK_SET_RATE_PARENT);
-static SUNXI_CCU_GATE!(mixer1_clk, "mixer1", "mixer1-div", 0x00, BIT!(1), CLK_SET_RATE_PARENT);
-static SUNXI_CCU_GATE!(wb_clk, "wb", "wb-div", 0x00, BIT!(2), CLK_SET_RATE_PARENT);
-static SUNXI_CCU_GATE!(rot_clk, "rot", "rot-div", 0x00, BIT!(3), CLK_SET_RATE_PARENT);
+SUNXI_CCU_GATE!(mixer0_clk, "mixer0", "mixer0-div", 0x00, BIT!(0), CLK_SET_RATE_PARENT);
+SUNXI_CCU_GATE!(mixer1_clk, "mixer1", "mixer1-div", 0x00, BIT!(1), CLK_SET_RATE_PARENT);
+SUNXI_CCU_GATE!(wb_clk, "wb", "wb-div", 0x00, BIT!(2), CLK_SET_RATE_PARENT);
+SUNXI_CCU_GATE!(rot_clk, "rot", "rot-div", 0x00, BIT!(3), CLK_SET_RATE_PARENT);
 
-static SUNXI_CCU_M!(mixer0_div_clk, "mixer0-div", "de", 0x0c, 0, 4, CLK_SET_RATE_PARENT);
-static SUNXI_CCU_M!(mixer1_div_clk, "mixer1-div", "de", 0x0c, 4, 4, CLK_SET_RATE_PARENT);
-static SUNXI_CCU_M!(wb_div_clk, "wb-div", "de", 0x0c, 8, 4, CLK_SET_RATE_PARENT);
-static SUNXI_CCU_M!(rot_div_clk, "rot-div", "de", 0x0c, 0x0c, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(mixer0_div_clk, "mixer0-div", "de", 0x0c, 0, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(mixer1_div_clk, "mixer1-div", "de", 0x0c, 4, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(wb_div_clk, "wb-div", "de", 0x0c, 8, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(rot_div_clk, "rot-div", "de", 0x0c, 0x0c, 4, CLK_SET_RATE_PARENT);
 
-static SUNXI_CCU_M!(mixer0_div_a83_clk, "mixer0-div", "pll-de", 0x0c, 0, 4, CLK_SET_RATE_PARENT);
-static SUNXI_CCU_M!(mixer1_div_a83_clk, "mixer1-div", "pll-de", 0x0c, 4, 4, CLK_SET_RATE_PARENT);
-static SUNXI_CCU_M!(wb_div_a83_clk, "wb-div", "pll-de", 0x0c, 8, 4, CLK_SET_RATE_PARENT);
-static SUNXI_CCU_M!(rot_div_a83_clk, "rot-div", "pll-de", 0x0c, 0x0c, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(mixer0_div_a83_clk, "mixer0-div", "pll-de", 0x0c, 0, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(mixer1_div_a83_clk, "mixer1-div", "pll-de", 0x0c, 4, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(wb_div_a83_clk, "wb-div", "pll-de", 0x0c, 8, 4, CLK_SET_RATE_PARENT);
+SUNXI_CCU_M!(rot_div_a83_clk, "rot-div", "pll-de", 0x0c, 0x0c, 4, CLK_SET_RATE_PARENT);
 
 static sun8i_de2_ccu_clks: [&'static ccu_common; 16] = [
     &mixer0_clk.common, &mixer1_clk.common, &wb_clk.common, &rot_clk.common,

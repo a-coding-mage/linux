@@ -92,7 +92,7 @@ pub unsafe fn clock_getres32_fallback(
 #[inline]
 pub fn arm_vdso_hres_capable() -> bool {
     // Equivalent build-time condition for CONFIG_ARM_ARCH_TIMER.
-    cfg!(feature = "CONFIG_ARM_ARCH_TIMER")
+    cfg!(CONFIG_ARM_ARCH_TIMER)
 }
 
 pub use arm_vdso_hres_capable as __arch_vdso_hres_capable;
@@ -104,7 +104,7 @@ pub unsafe fn __arch_get_hw_counter(
 ) -> u64 {
     let _ = vd;
     // CONFIG_ARM_ARCH_TIMER conditionally includes the hardware-counter path.
-    #[cfg(feature = "CONFIG_ARM_ARCH_TIMER")]
+    #[cfg(CONFIG_ARM_ARCH_TIMER)]
     {
         if clock_mode == VDSO_CLOCKMODE_NONE {
             return 0;
@@ -114,7 +114,7 @@ pub unsafe fn __arch_get_hw_counter(
         return read_sysreg(CNTVCT);
     }
 
-    #[cfg(not(feature = "CONFIG_ARM_ARCH_TIMER"))]
+    #[cfg(not(CONFIG_ARM_ARCH_TIMER))]
     {
         let _ = clock_mode;
         0

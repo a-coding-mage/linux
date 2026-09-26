@@ -501,16 +501,16 @@ pub const WSA883X_VERSION_1_1: c_long = 1;
 
 pub const WSA883X_MAX_SWR_PORTS: c_long = 4;
 // translated macro: #define WSA883X_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
-			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
-			SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000 |\
-			SNDRV_PCM_RATE_384000)
+// 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
+// 			SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000 |\
+// 			SNDRV_PCM_RATE_384000)
 /* Fractional Rates */
 // translated macro: #define WSA883X_FRAC_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
-				SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_352800)
+// 				SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_352800)
 
 // translated macro: #define WSA883X_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
-		SNDRV_PCM_FMTBIT_S24_LE |\
-		SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S32_LE)
+// 		SNDRV_PCM_FMTBIT_S24_LE |\
+// 		SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 /* Two-point trimming for temperature calibration */
 pub const WSA883X_T1_TEMP: c_long = -10;
@@ -1161,7 +1161,7 @@ unsafe extern "C" fn wsa883x_init(wsa883x: *mut wsa883x_priv) . c_int
 }
 
 unsafe extern "C" fn wsa883x_update_status(let slave: *mut sdw_slave,
-				 enum sdw_slave_status status)
+				 sdw_slave_status status)
 {
 	let wsa883x: *mut wsa883x_priv = dev_get_drvdata(&slave.dev);
 
@@ -1176,7 +1176,7 @@ unsafe extern "C" fn wsa883x_update_status(let slave: *mut sdw_slave,
 
 unsafe extern "C" fn wsa883x_port_prep(let slave: *mut sdw_slave,
 			     let prepare_ch: *mut sdw_prepare_ch,
-			     enum sdw_port_prep_ops state)
+			     sdw_port_prep_ops state)
 {
 	let wsa883x: *mut wsa883x_priv = dev_get_drvdata(&slave.dev);
 
@@ -1229,7 +1229,7 @@ unsafe extern "C" fn wsa883x_get_swr_port(let kcontrol: *mut snd_kcontrol,
 {
 	let comp: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
 	let data: *mut wsa883x_priv = snd_soc_component_get_drvdata(comp);
-	let mixer: *mut soc_mixer_control = (struct soc_mixer_control *)kcontrol.private_value;
+	let mixer: *mut soc_mixer_control = (soc_mixer_control *)kcontrol.private_value;
 	int portidx = mixer.reg;
 
 	ucontrol.value.integer.value[0] = data.port_enable[portidx];
@@ -1242,7 +1242,7 @@ unsafe extern "C" fn wsa883x_set_swr_port(let kcontrol: *mut snd_kcontrol,
 {
 	let comp: *mut snd_soc_component = snd_kcontrol_chip(kcontrol);
 	let data: *mut wsa883x_priv = snd_soc_component_get_drvdata(comp);
-	let mixer: *mut soc_mixer_control = (struct soc_mixer_control *)kcontrol.private_value;
+	let mixer: *mut soc_mixer_control = (soc_mixer_control *)kcontrol.private_value;
 	int portidx = mixer.reg;
 
 	if ucontrol.value.integer.value[0] {
@@ -1492,6 +1492,7 @@ unsafe extern "C" fn wsa883x_get_temp(let wsa883x: *mut wsa883x_priv, long *temp
 {
 	let mut d1_msb = 0, d1_lsb = 0, d2_msb = 0, d2_lsb = 0: c_uint;
 	let mut dmeas_msb = 0, dmeas_lsb = 0: c_uint;
+	'out: {
 	int d1, d2, dmeas;
 	unsigned let mut mask: c_int;
 	int ret, range;
@@ -1553,7 +1554,7 @@ unsafe extern "C" fn wsa883x_get_temp(let wsa883x: *mut wsa883x_priv, long *temp
 	if d1 == d2 {
 		/* Incorrect data in OTP? */
 		ret = -EINVAL;
-		goto out;
+		break 'out;
 	}
 
 	val = WSA883X_T1_TEMP + (((dmeas - d1) * (WSA883X_T2_TEMP - WSA883X_T1_TEMP)) / (d2 - d1));
@@ -1565,14 +1566,15 @@ unsafe extern "C" fn wsa883x_get_temp(let wsa883x: *mut wsa883x_priv, long *temp
 	} else {
 		ret = -EAGAIN;
 	}
-out:
+	}
+	
 	pm_runtime_put_autosuspend(wsa883x.dev);
 
     return ret;
 }
 
 unsafe extern "C" fn wsa883x_hwmon_is_visible(const void *data,
-					enum hwmon_sensor_types type, u32 attr,
+					hwmon_sensor_types type, attr: u32,
 					int channel)
 {
 	if type != hwmon_temp
@@ -1589,8 +1591,8 @@ unsafe extern "C" fn wsa883x_hwmon_is_visible(const void *data,
 }
 
 unsafe extern "C" fn wsa883x_hwmon_read(let dev: *mut device,
-			      enum hwmon_sensor_types type,
-			      u32 attr, int channel, long *temp)
+			      hwmon_sensor_types type,
+			      attr: u32, int channel, long *temp)
 {
 	let mut ret: c_int;
 
@@ -1612,13 +1614,13 @@ static const let const: *mut hwmon_channel_info wsa883x_hwmon_info[] = {
 }
 
 static const struct hwmon_ops wsa883x_hwmon_ops = {
-	.is_visible	= wsa883x_hwmon_is_visible,
-	.read		= wsa883x_hwmon_read,
+	is_visible: wsa883x_hwmon_is_visible,
+	read: wsa883x_hwmon_read,
 }
 
 static const struct hwmon_chip_info wsa883x_hwmon_chip_info = {
-	.ops	= &wsa883x_hwmon_ops,
-	.info	= wsa883x_hwmon_info,
+	ops: &wsa883x_hwmon_ops,
+	info: wsa883x_hwmon_info,
 }
 
 unsafe extern "C" fn wsa883x_reset_assert(data: *mut c_void)
@@ -1664,6 +1666,7 @@ unsafe extern "C" fn wsa883x_probe(let pdev: *mut sdw_slave,
 	let wsa883x: *mut wsa883x_priv;
 	let dev: *mut device = &pdev.dev;
 	let mut ret: c_int;
+	'err: {
 
 	wsa883x = devm_kzalloc(dev, sizeof(*wsa883x), GFP_KERNEL);
 	if !wsa883x
@@ -1680,7 +1683,7 @@ unsafe extern "C" fn wsa883x_probe(let pdev: *mut sdw_slave,
 
 	ret = wsa883x_get_reset(dev, wsa883x);
 	if ret
-		goto err;
+		break 'err;
 
 	dev_set_drvdata(dev, wsa883x);
 	wsa883x.slave = pdev;
@@ -1713,7 +1716,7 @@ unsafe extern "C" fn wsa883x_probe(let pdev: *mut sdw_slave,
 	if IS_ERR(wsa883x.regmap) {
 		ret = dev_err_probe(dev, PTR_ERR(wsa883x.regmap),
 				    "regmap_init failed\n");
-		goto err;
+		break 'err;
 	}
 
 	if IS_REACHABLE(CONFIG_HWMON) {
@@ -1738,7 +1741,8 @@ unsafe extern "C" fn wsa883x_probe(let pdev: *mut sdw_slave,
 					      &wsa883x_component_drv,
 					       wsa883x_dais,
 					       ARRAY_SIZE(wsa883x_dais));
-err:
+	}
+	
 	if ret
 		regulator_disable(wsa883x.vdd);
 

@@ -39,7 +39,7 @@ pub unsafe fn wiphy_to_rdev(wiphy: *mut wiphy) -> *mut cfg80211_registered_devic
 
 pub unsafe fn cfg80211_rdev_free_wowlan(rdev: *mut cfg80211_registered_device) {
     /* CONFIG_PM-controlled body; dependent kernel allocation and socket APIs are external. */
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     { if (*rdev).wiphy.wowlan_config.is_null() { return; } /* translated cleanup is supplied externally */ }
 }
 

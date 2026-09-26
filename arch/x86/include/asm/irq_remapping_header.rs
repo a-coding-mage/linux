@@ -47,7 +47,7 @@ pub struct IntelIommuPiData {
 }
 
 /* CONFIG_IRQ_REMAP */
-#[cfg(feature = "CONFIG_IRQ_REMAP")]
+#[cfg(CONFIG_IRQ_REMAP)]
 extern "C" {
     pub static mut irq_2_ir_lock: raw_spinlock_t;
 
@@ -63,41 +63,41 @@ extern "C" {
     pub static mut enable_posted_msi: bool;
 }
 
-#[cfg(feature = "CONFIG_IRQ_REMAP")]
+#[cfg(CONFIG_IRQ_REMAP)]
 pub unsafe fn arch_get_ir_parent_domain() -> *mut irq_domain {
     x86_vector_domain
 }
 
-#[cfg(feature = "CONFIG_IRQ_REMAP")]
+#[cfg(CONFIG_IRQ_REMAP)]
 pub unsafe fn posted_msi_enabled() -> bool {
-    cfg!(feature = "CONFIG_X86_POSTED_MSI")
+    cfg!(CONFIG_X86_POSTED_MSI)
         && enable_posted_msi
         && irq_remapping_cap(IrqRemapCap::IRQ_POSTING_CAP)
 }
 
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remapping_cap(_cap: IrqRemapCap) -> bool { false }
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn set_irq_remapping_broken() {}
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remapping_prepare() -> core::ffi::c_int { -ENODEV }
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remapping_enable() -> core::ffi::c_int { -ENODEV }
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remapping_disable() {}
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remapping_reenable(_eim: core::ffi::c_int) -> core::ffi::c_int { -ENODEV }
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn irq_remap_enable_fault_handling() -> core::ffi::c_int { -ENODEV }
-#[cfg(not(feature = "CONFIG_IRQ_REMAP"))]
+#[cfg(not(CONFIG_IRQ_REMAP))]
 pub unsafe fn panic_if_irq_remap(_msg: *const c_char) {}
 
 /* CONFIG_X86_POSTED_MSI */
-#[cfg(feature = "CONFIG_X86_POSTED_MSI")]
+#[cfg(CONFIG_X86_POSTED_MSI)]
 extern "C" {
     pub fn intel_ack_posted_msi_irq(irqd: *mut irq_data);
 }
-#[cfg(not(feature = "CONFIG_X86_POSTED_MSI"))]
+#[cfg(not(CONFIG_X86_POSTED_MSI))]
 pub const intel_ack_posted_msi_irq: Option<unsafe extern "C" fn(*mut irq_data)> = None;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -22,10 +22,10 @@ pub const susp_fen_MASK: u32 = 1;
 // expansion is retained here as Rust macros, using the union's field setters.
 #[macro_export]
 macro_rules! NS {
-    ($t:ident, $s:expr) => {{
+    ($t:tt, $s:expr) => {{
         let mut mask = drbd_state { i: 0 };
         let mut val = drbd_state { i: 0 };
-        mask.set_$t($t##_MASK);
+        mask.set_$t(::kernel::macros::paste!([<$t _MASK>]));
         val.set_$t($s);
         (mask, val)
     }};

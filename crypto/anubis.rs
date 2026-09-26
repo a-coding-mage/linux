@@ -656,18 +656,18 @@ unsafe fn anubis_decrypt(tfm: *mut crypto_tfm, dst: *mut u8, src: *const u8)
 }
 
 static crypto_alg anubis_alg = {
-	.cra_name		=	"anubis",
-	.cra_driver_name	=	"anubis-generic",
-	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
-	.cra_blocksize		=	ANUBIS_BLOCK_SIZE,
-	.cra_ctxsize		=	sizeof (struct anubis_ctx),
-	.cra_module		=	THIS_MODULE,
-	.cra_u			=	{ .cipher = {
-	.cia_min_keysize	=	ANUBIS_MIN_KEY_SIZE,
-	.cia_max_keysize	=	ANUBIS_MAX_KEY_SIZE,
-	.cia_setkey		= 	anubis_setkey,
-	.cia_encrypt		=	anubis_encrypt,
-	.cia_decrypt		=	anubis_decrypt } }
+	cra_name: "anubis",
+	cra_driver_name: "anubis-generic",
+	cra_flags: CRYPTO_ALG_TYPE_CIPHER,
+	cra_blocksize: ANUBIS_BLOCK_SIZE,
+	cra_ctxsize: sizeof (anubis_ctx),
+	cra_module: THIS_MODULE,
+	cra_u: { .cipher = {
+	cia_min_keysize: ANUBIS_MIN_KEY_SIZE,
+	cia_max_keysize: ANUBIS_MAX_KEY_SIZE,
+	cia_setkey: anubis_setkey,
+	cia_encrypt: anubis_encrypt,
+	cia_decrypt: anubis_decrypt } }
 };
 
 static int __init anubis_mod_init(void)

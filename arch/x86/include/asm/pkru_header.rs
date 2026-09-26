@@ -8,22 +8,22 @@ pub const PKRU_WD_BIT: u32 = 0x2u32;
 pub const PKRU_BITS_PER_PKEY: u32 = 2;
 
 // CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS selects which declaration/value is used.
-#[cfg(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS")]
+#[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
 extern "C" {
     pub static mut init_pkru_value: u32;
 }
 
-#[cfg(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS")]
+#[cfg(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)]
 #[inline(always)]
 pub unsafe fn pkru_get_init_value() -> u32 {
     // READ_ONCE(init_pkru_value)
     core::ptr::read_volatile(core::ptr::addr_of!(init_pkru_value))
 }
 
-#[cfg(not(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS"))]
+#[cfg(not(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS))]
 pub const init_pkru_value: u32 = 0;
 
-#[cfg(not(feature = "CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS"))]
+#[cfg(not(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS))]
 #[inline(always)]
 pub const fn pkru_get_init_value() -> u32 {
     0

@@ -66,7 +66,7 @@ pub unsafe fn acpi_hw_validate_register(
     let access_width = acpi_hw_get_access_bit_width(*address, reg, max_bit_width);
     let bit_width = ((*reg).bit_offset as u32 + (*reg).bit_width as u32 + access_width as u32 - 1)
         / access_width as u32 * access_width as u32;
-    if max_bit_width as u32 < bit_width {
+    if (max_bit_width as u32) < bit_width {
         return AE_SUPPORT;
     }
     AE_OK

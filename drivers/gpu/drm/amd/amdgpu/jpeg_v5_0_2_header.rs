@@ -21,7 +21,7 @@
  *
  */
 
-pub extern "C" {
+extern "C" {
     pub static jpeg_v5_0_2_ip_block: amdgpu_ip_block_version;
 }
 

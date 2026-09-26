@@ -67,7 +67,7 @@ unsafe fn flush_context() {
     /* Reserve an MMID for kmap/wired entries */
     __set_bit(MMID_KERNEL_WIRED, MMID_MAP);
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         mmid = xchg_relaxed(&mut cpu_data[cpu as usize].asid_cache, 0);
 
         /*
@@ -82,7 +82,7 @@ unsafe fn flush_context() {
 
         __set_bit(mmid & cpu_asid_mask(&cpu_data[cpu as usize]), MMID_MAP);
         per_cpu(RESERVED_MMIDS, cpu) = mmid;
-    }
+    });
 
     /*
      * Queue a TLB invalidation for each CPU to perform on next
@@ -104,12 +104,12 @@ unsafe fn check_update_reserved_mmid(mmid: u64, newmmid: u64) -> bool {
      * so could result in us missing the reserved MMID in a future
      * generation.
      */
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         if per_cpu(RESERVED_MMIDS, cpu) == mmid {
             hit = true;
             per_cpu(RESERVED_MMIDS, cpu) = newmmid;
         }
-    }
+    });
 
     hit
 }

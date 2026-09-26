@@ -109,12 +109,12 @@ extern "C" {
     pub fn luo_flb_serialize();
 }
 
-#[cfg(feature = "CONFIG_LIVEUPDATE_TEST")]
+#[cfg(CONFIG_LIVEUPDATE_TEST)]
 extern "C" {
     pub fn liveupdate_test_register(fh: *mut crate::liveupdate_file_handler);
 }
 
-#[cfg(not(feature = "CONFIG_LIVEUPDATE_TEST"))]
+#[cfg(not(CONFIG_LIVEUPDATE_TEST))]
 pub unsafe fn liveupdate_test_register(_fh: *mut crate::liveupdate_file_handler) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -29,12 +29,10 @@ const COEFF_RAM_MAX_ADDR: usize = 0xcd as usize;
 const COEFF_RAM_COEFF_COUNT: usize = (COEFF_RAM_MAX_ADDR + 1) as usize;
 const COEFF_RAM_SIZE: usize = (COEFF_SIZE * COEFF_RAM_COEFF_COUNT) as usize;
 
-enum {
-	TSCS454_DAI1_ID,
-	TSCS454_DAI2_ID,
-	TSCS454_DAI3_ID,
-	TSCS454_DAI_COUNT,
-};
+pub const TSCS454_DAI1_ID: i32 = 0;
+pub const TSCS454_DAI2_ID: i32 = TSCS454_DAI1_ID + 1;
+pub const TSCS454_DAI3_ID: i32 = TSCS454_DAI2_ID + 1;
+pub const TSCS454_DAI_COUNT: i32 = TSCS454_DAI3_ID + 1;
 
 #[repr(C)]
 struct pll {
@@ -43,7 +41,7 @@ struct pll {
 	struct mutex lock;
 };
 
-unsafe fn void pll_init(*mut pll pll, c_int id)
+unsafe fn void pll_init(*mut pll pll, id: c_int)
 {
 	pllid: id;
 	mutex_init(&pll.lock);
@@ -61,7 +59,7 @@ struct aif {
 	*mut pll pll;
 };
 
-unsafe fn void aif_init(*mut aif aif, c_uint id)
+unsafe fn void aif_init(*mut aif aif, id: c_uint)
 {
 	aifid: id;
 }
@@ -98,7 +96,7 @@ struct aifs_status {
 };
 
 unsafe fn void set_aif_status_active(*mut aifs_status status,
-		c_int aif_id, bool playback)
+		aif_id: c_int, playback: bool)
 {
 	u8 mask = 0x01 << (aif_id * 2 + !playback);
 
@@ -106,7 +104,7 @@ unsafe fn void set_aif_status_active(*mut aifs_status status,
 }
 
 unsafe fn void set_aif_status_inactive(*mut aifs_status status,
-		c_int aif_id, bool playback)
+		aif_id: c_int, playback: bool)
 {
 	u8 mask = ~(0x01 << (aif_id * 2 + !playback));
 
@@ -118,7 +116,7 @@ unsafe fn aifs_active(*mut aifs_status status)
 	return status.streams;
 }
 
-unsafe fn aif_active(*mut aifs_status status, c_int aif_id)
+unsafe fn aif_active(*mut aifs_status status, aif_id: c_int)
 {
 	return (0x03 << aif_id * 2) & status.streams;
 }
@@ -159,7 +157,7 @@ static const struct reg_sequence tscs454_patch[] = {
 	{ VIRT_ADDR(0x0A, 0x13), 1 << 3 },
 };
 
-unsafe fn tscs454_volatile(*mut device dev, c_uint reg)
+unsafe fn tscs454_volatile(*mut device dev, reg: c_uint)
 {
 	switch (reg) {
 	case R_PLLSTAT:
@@ -184,7 +182,7 @@ unsafe fn tscs454_volatile(*mut device dev, c_uint reg)
 	}
 }
 
-unsafe fn tscs454_writable(*mut device dev, c_uint reg)
+unsafe fn tscs454_writable(*mut device dev, reg: c_uint)
 {
 	switch (reg) {
 	case R_SPKCRRDL:
@@ -204,7 +202,7 @@ unsafe fn tscs454_writable(*mut device dev, c_uint reg)
 	}
 }
 
-unsafe fn tscs454_readable(*mut device dev, c_uint reg)
+unsafe fn tscs454_readable(*mut device dev, reg: c_uint)
 {
 	switch (reg) {
 	case R_SPKCRWDL:
@@ -224,7 +222,7 @@ unsafe fn tscs454_readable(*mut device dev, c_uint reg)
 	}
 }
 
-unsafe fn tscs454_precious(*mut device dev, c_uint reg)
+unsafe fn tscs454_precious(*mut device dev, reg: c_uint)
 {
 	switch (reg) {
 	case R_SPKCRWDL:
@@ -343,8 +341,8 @@ unsafe fn coeff_ram_get(*mut snd_kcontrol kcontrol,
 
 const DACCRSTAT_MAX_TRYS: usize = 10 as usize;
 unsafe fn write_coeff_ram(*mut snd_soc_component component, *mut u8 coeff_ram,
-		c_uint r_stat, c_uint r_addr, c_uint r_wr,
-		c_uint coeff_addr, c_uint coeff_cnt)
+		r_stat: c_uint, r_addr: c_uint, r_wr: c_uint,
+		coeff_addr: c_uint, coeff_cnt: c_uint)
 {
 	*mut tscs454 tscs454 = snd_soc_component_get_drvdata(component);
 	c_uint val;
@@ -591,7 +589,7 @@ static const struct pll_ctl pll_ctls[] = {
 		0x63, 0x05, 0x05, 0x98, 0x04),
 };
 
-unsafe fn const *mut pll_ctl get_pll_ctl(c_ulong freq_in)
+unsafe fn const *mut pll_ctl get_pll_ctl(freq_in: c_ulong)
 {
 	c_int i;
 	struct pll_ctl const *pll_ctl = ptr::null_mut();
@@ -605,12 +603,10 @@ unsafe fn const *mut pll_ctl get_pll_ctl(c_ulong freq_in)
 	return pll_ctl;
 }
 
-enum {
-	PLL_INPUT_XTAL = 0,
-	PLL_INPUT_MCLK1,
-	PLL_INPUT_MCLK2,
-	PLL_INPUT_BCLK,
-};
+pub const PLL_INPUT_XTAL: i32 = 0;
+pub const PLL_INPUT_MCLK1: i32 = PLL_INPUT_XTAL + 1;
+pub const PLL_INPUT_MCLK2: i32 = PLL_INPUT_MCLK1 + 1;
+pub const PLL_INPUT_BCLK: i32 = PLL_INPUT_MCLK2 + 1;
 
 unsafe fn set_sysclk(*mut snd_soc_component component)
 {
@@ -741,7 +737,7 @@ unsafe fn pll_power_event(*mut snd_soc_dapm_widget w,
 }
 
 unsafe fn c_int aif_set_provider(*mut snd_soc_component component,
-		c_uint aif_id, bool provider)
+		aif_id: c_uint, provider: bool)
 {
 	c_uint reg;
 	c_uint mask;
@@ -776,7 +772,6 @@ unsafe fn c_int aif_set_provider(*mut snd_soc_component component,
 	return 0;
 }
 
-static inline
 c_int aif_prepare(*mut snd_soc_component component, *mut aif aif)
 {
 	c_int ret;
@@ -1506,7 +1501,7 @@ static struct snd_kcontrol_new const ch_4_5_mux_dapm_enum =
 {	iface: SNDRV_CTL_ELEM_IFACE_MIXER, name: xname, \
 	info: bytes_info_ext, \
 	get: coeff_ram_get, put: coeff_ram_put, \
-	private_value: (c_ulong)&(struct coeff_ram_ctl) { \
+	private_value: (c_ulong)&(coeff_ram_ctl) { \
 		addr: xaddr, \
 		bytes_ext: {max: xcount, }, \
 	} \
@@ -2613,7 +2608,7 @@ static struct snd_soc_dapm_route const tscs454_intercon[] = {
 
 /* This is used when BCLK is sourcing the PLLs */
 unsafe fn tscs454_set_sysclk(*mut snd_soc_dai dai,
-		c_int clk_id, c_uint freq, c_int dir)
+		clk_id: c_int, freq: c_uint, dir: c_int)
 {
 	*mut snd_soc_component component = dai.component;
 	*mut tscs454 tscs454 = snd_soc_component_get_drvdata(component);
@@ -2633,7 +2628,7 @@ unsafe fn tscs454_set_sysclk(*mut snd_soc_dai dai,
 }
 
 unsafe fn tscs454_set_bclk_ratio(*mut snd_soc_dai dai,
-		c_uint ratio)
+		ratio: c_uint)
 {
 	c_uint mask;
 	c_int ret;
@@ -2712,7 +2707,7 @@ unsafe fn c_int set_aif_provider_from_fmt(*mut snd_soc_component component,
 }
 
 unsafe fn c_int set_aif_tdm_delay(*mut snd_soc_component component,
-		c_uint dai_id, bool delay)
+		dai_id: c_uint, delay: bool)
 {
 	c_uint reg;
 	c_int ret;
@@ -2745,7 +2740,7 @@ unsafe fn c_int set_aif_tdm_delay(*mut snd_soc_component component,
 }
 
 unsafe fn c_int set_aif_format_from_fmt(*mut snd_soc_component component,
-		c_uint dai_id, c_uint fmt)
+		dai_id: c_uint, fmt: c_uint)
 {
 	c_uint reg;
 	c_uint val;
@@ -2809,7 +2804,7 @@ unsafe fn c_int set_aif_format_from_fmt(*mut snd_soc_component component,
 
 unsafe fn c_int
 set_aif_clock_format_from_fmt(*mut snd_soc_component component,
-		c_uint dai_id, c_uint fmt)
+		dai_id: c_uint, fmt: c_uint)
 {
 	c_uint reg;
 	c_uint val;
@@ -2863,7 +2858,7 @@ set_aif_clock_format_from_fmt(*mut snd_soc_component component,
 	return 0;
 }
 
-unsafe fn tscs454_set_dai_fmt(*mut snd_soc_dai dai, c_uint fmt)
+unsafe fn tscs454_set_dai_fmt(*mut snd_soc_dai dai, fmt: c_uint)
 {
 	*mut snd_soc_component component = dai.component;
 	*mut tscs454 tscs454 = snd_soc_component_get_drvdata(component);
@@ -2886,8 +2881,8 @@ unsafe fn tscs454_set_dai_fmt(*mut snd_soc_dai dai, c_uint fmt)
 }
 
 unsafe fn tscs454_dai1_set_tdm_slot(*mut snd_soc_dai dai,
-		c_uint tx_mask, c_uint rx_mask, c_int slots,
-		c_int slot_width)
+		tx_mask: c_uint, rx_mask: c_uint, slots: c_int,
+		slot_width: c_int)
 {
 	*mut snd_soc_component component = dai.component;
 	c_uint val;
@@ -2943,8 +2938,8 @@ unsafe fn tscs454_dai1_set_tdm_slot(*mut snd_soc_dai dai,
 }
 
 unsafe fn tscs454_dai23_set_tdm_slot(*mut snd_soc_dai dai,
-		c_uint tx_mask, c_uint rx_mask, c_int slots,
-		c_int slot_width)
+		tx_mask: c_uint, rx_mask: c_uint, slots: c_int,
+		slot_width: c_int)
 {
 	*mut snd_soc_component component = dai.component;
 	c_uint reg;
@@ -3012,8 +3007,8 @@ unsafe fn tscs454_dai23_set_tdm_slot(*mut snd_soc_dai dai,
 }
 
 unsafe fn set_aif_fs(*mut snd_soc_component component,
-		c_uint id,
-		c_uint rate)
+		id: c_uint,
+		rate: c_uint)
 {
 	c_uint reg;
 	c_uint br;
@@ -3096,7 +3091,7 @@ unsafe fn set_aif_fs(*mut snd_soc_component component,
 
 unsafe fn set_aif_sample_format(*mut snd_soc_component component,
 		snd_pcm_format_t format,
-		c_int aif_id)
+		aif_id: c_int)
 {
 	c_uint reg;
 	c_uint width;
@@ -3238,23 +3233,23 @@ unsafe fn tscs454_prepare(*mut snd_pcm_substream substream,
 }
 
 static struct snd_soc_dai_ops const tscs454_dai1_ops = {
-	.set_sysclk	= tscs454_set_sysclk,
+	set_sysclk: tscs454_set_sysclk,
 	set_bclk_ratio: tscs454_set_bclk_ratio,
-	.set_fmt	= tscs454_set_dai_fmt,
-	.set_tdm_slot	= tscs454_dai1_set_tdm_slot,
-	.hw_params	= tscs454_hw_params,
-	.hw_free	= tscs454_hw_free,
-	.prepare	= tscs454_prepare,
+	set_fmt: tscs454_set_dai_fmt,
+	set_tdm_slot: tscs454_dai1_set_tdm_slot,
+	hw_params: tscs454_hw_params,
+	hw_free: tscs454_hw_free,
+	prepare: tscs454_prepare,
 };
 
 static struct snd_soc_dai_ops const tscs454_dai23_ops = {
-	.set_sysclk	= tscs454_set_sysclk,
+	set_sysclk: tscs454_set_sysclk,
 	set_bclk_ratio: tscs454_set_bclk_ratio,
-	.set_fmt	= tscs454_set_dai_fmt,
-	.set_tdm_slot	= tscs454_dai23_set_tdm_slot,
-	.hw_params	= tscs454_hw_params,
-	.hw_free	= tscs454_hw_free,
-	.prepare	= tscs454_prepare,
+	set_fmt: tscs454_set_dai_fmt,
+	set_tdm_slot: tscs454_dai23_set_tdm_slot,
+	hw_params: tscs454_hw_params,
+	hw_free: tscs454_hw_free,
+	prepare: tscs454_prepare,
 };
 
 unsafe fn tscs454_probe(*mut snd_soc_component component)

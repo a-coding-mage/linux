@@ -35,7 +35,7 @@ pub struct imx_sc_rpc_msg {
     pub func: u8,
 }
 
-#[cfg(feature = "CONFIG_IMX_SCU")]
+#[cfg(CONFIG_IMX_SCU)]
 extern "C" {
     /*
      * This is an function to send an RPC message over an IPC channel.
@@ -64,7 +64,7 @@ extern "C" {
     pub fn imx_scu_get_handle(ipc: *mut *mut imx_sc_ipc) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub unsafe fn imx_scu_call_rpc(
     _ipc: *mut imx_sc_ipc,
@@ -75,7 +75,7 @@ pub unsafe fn imx_scu_call_rpc(
     -524
 }
 
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub unsafe fn imx_scu_get_handle(_ipc: *mut *mut imx_sc_ipc) -> i32 {
     // C dependency: ENOTSUPP (Linux errno value).

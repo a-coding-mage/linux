@@ -81,7 +81,7 @@ nfs_events!(
 );
 
 // CONFIG_NFS_LOCALIO guarded declarations in the source header.
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 nfs_events!(nfs_local_dio_read, nfs_local_dio_write, nfs_local_dio_misaligned);
 
 

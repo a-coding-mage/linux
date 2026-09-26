@@ -106,14 +106,14 @@ unsafe fn check_unaligned_access_speed_all_cpus() {
     let cpu_count = num_possible_cpus();
     let bufs = kzalloc_objs::<*mut page>(cpu_count);
     if bufs.is_null() { pr_warn("Allocation failure, not measuring misaligned performance\n"); return; }
-    for_each_cpu!(cpu, cpu_online_mask) {
+    for_each_cpu!(cpu, cpu_online_mask, {
         *bufs.add(cpu) = alloc_pages(GFP_KERNEL, get_order(MISALIGNED_BUFFER_SIZE));
         if (*bufs.add(cpu)).is_null() { pr_warn("Allocation failure, not measuring misaligned performance\n"); break; }
-    }
+    });
     on_each_cpu(_check_unaligned_access, bufs, 1);
-    for_each_cpu!(cpu, cpu_online_mask) {
+    for_each_cpu!(cpu, cpu_online_mask, {
         if !(*bufs.add(cpu)).is_null() { __free_pages(*bufs.add(cpu), get_order(MISALIGNED_BUFFER_SIZE)); }
-    }
+    });
     kfree(bufs);
 }
 
@@ -124,9 +124,9 @@ static mut FAST_UNALIGNED_ACCESS_SPEED_KEY: bool = false;
 
 unsafe fn modify_unaligned_access_branches(mask: *const cpumask_t) {
     let mut fast = true;
-    for_each_cpu!(cpu, mask) {
+    for_each_cpu!(cpu, mask, {
         if per_cpu(MISALIGNED_ACCESS_SPEED, cpu) != RISCV_HWPROBE_MISALIGNED_SCALAR_FAST { fast = false; break; }
-    }
+    });
     if fast { static_branch_enable_cpuslocked(&mut FAST_UNALIGNED_ACCESS_SPEED_KEY); }
     else { static_branch_disable_cpuslocked(&mut FAST_UNALIGNED_ACCESS_SPEED_KEY); }
 }

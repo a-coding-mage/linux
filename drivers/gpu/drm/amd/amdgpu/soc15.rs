@@ -97,8 +97,8 @@ static vega_video_codecs_encode_array: &[amdgpu_video_codec_info] =
 
 static vega_video_codecs_encode: amdgpu_video_codecs =
 {
-	.codec_count = ARRAY_SIZE(vega_video_codecs_encode_array),
-	.codec_array = vega_video_codecs_encode_array,
+	codec_count: ARRAY_SIZE(vega_video_codecs_encode_array),
+	codec_array: vega_video_codecs_encode_array,
 };
 
 /* Vega */
@@ -113,8 +113,8 @@ static vega_video_codecs_decode_array: &[amdgpu_video_codec_info] =
 
 static vega_video_codecs_decode: amdgpu_video_codecs =
 {
-	.codec_count = ARRAY_SIZE(vega_video_codecs_decode_array),
-	.codec_array = vega_video_codecs_decode_array,
+	codec_count: ARRAY_SIZE(vega_video_codecs_decode_array),
+	codec_array: vega_video_codecs_decode_array,
 };
 
 /* Raven */
@@ -131,8 +131,8 @@ static rv_video_codecs_decode_array: &[amdgpu_video_codec_info] =
 
 static rv_video_codecs_decode: amdgpu_video_codecs =
 {
-	.codec_count = ARRAY_SIZE(rv_video_codecs_decode_array),
-	.codec_array = rv_video_codecs_decode_array,
+	codec_count: ARRAY_SIZE(rv_video_codecs_decode_array),
+	codec_array: rv_video_codecs_decode_array,
 };
 
 /* Renoir, Arcturus */
@@ -149,8 +149,8 @@ static rn_video_codecs_decode_array: &[amdgpu_video_codec_info] =
 
 static rn_video_codecs_decode: amdgpu_video_codecs =
 {
-	.codec_count = ARRAY_SIZE(rn_video_codecs_decode_array),
-	.codec_array = rn_video_codecs_decode_array,
+	codec_count: ARRAY_SIZE(rn_video_codecs_decode_array),
+	codec_array: rn_video_codecs_decode_array,
 };
 
 static vcn_4_0_3_video_codecs_decode_array: &[amdgpu_video_codec_info] = {
@@ -162,18 +162,18 @@ static vcn_4_0_3_video_codecs_decode_array: &[amdgpu_video_codec_info] = {
 };
 
 static vcn_4_0_3_video_codecs_decode: amdgpu_video_codecs = {
-	.codec_count = ARRAY_SIZE(vcn_4_0_3_video_codecs_decode_array),
-	.codec_array = vcn_4_0_3_video_codecs_decode_array,
+	codec_count: ARRAY_SIZE(vcn_4_0_3_video_codecs_decode_array),
+	codec_array: vcn_4_0_3_video_codecs_decode_array,
 };
 
 static vcn_4_0_3_video_codecs_encode: amdgpu_video_codecs = {
-	.codec_count = 0,
-	.codec_array = core::ptr::null(),
+	codec_count: 0,
+	codec_array: core::ptr::null(),
 };
 
 static vcn_5_0_1_video_codecs_encode_vcn0: amdgpu_video_codecs = {
-	.codec_count = 0,
-	.codec_array = core::ptr::null(),
+	codec_count: 0,
+	codec_array: core::ptr::null(),
 };
 
 static vcn_5_0_1_video_codecs_decode_array_vcn0: &[amdgpu_video_codec_info] = {
@@ -185,11 +185,11 @@ static vcn_5_0_1_video_codecs_decode_array_vcn0: &[amdgpu_video_codec_info] = {
 };
 
 static vcn_5_0_1_video_codecs_decode_vcn0: amdgpu_video_codecs = {
-	.codec_count = ARRAY_SIZE(vcn_5_0_1_video_codecs_decode_array_vcn0),
-	.codec_array = vcn_5_0_1_video_codecs_decode_array_vcn0,
+	codec_count: ARRAY_SIZE(vcn_5_0_1_video_codecs_decode_array_vcn0),
+	codec_array: vcn_5_0_1_video_codecs_decode_array_vcn0,
 };
 
-static unsafe fn soc15_query_video_codecs(amdgpu_device: *mut adev, bool encode,
+unsafe fn soc15_query_video_codecs(amdgpu_device: *mut adev, encode: bool,
 				    const amdgpu_video_codecs **codecs) -> int
 {
 	if (amdgpu_ip_version(adev, VCE_HWIP, 0)) {
@@ -239,9 +239,9 @@ static unsafe fn soc15_query_video_codecs(amdgpu_device: *mut adev, bool encode,
 	}
 }
 
-static unsafe fn soc15_uvd_ctx_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
+unsafe fn soc15_uvd_ctx_rreg(amdgpu_device: *mut adev, reg: u32) -> u32
 {
-	usize flags, address, data;
+	flags: usize, address, data;
     let mut r: u32;
 
 	address = SOC15_REG_OFFSET(UVD, 0, mmUVD_CTX_INDEX);
@@ -254,9 +254,9 @@ static unsafe fn soc15_uvd_ctx_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
 	return r;
 }
 
-static unsafe fn soc15_uvd_ctx_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> void
+unsafe fn soc15_uvd_ctx_wreg(amdgpu_device: *mut adev, reg: u32, v: u32) -> void
 {
-	usize flags, address, data;
+	flags: usize, address, data;
 
 	address = SOC15_REG_OFFSET(UVD, 0, mmUVD_CTX_INDEX);
 	data = SOC15_REG_OFFSET(UVD, 0, mmUVD_CTX_DATA);
@@ -267,9 +267,9 @@ static unsafe fn soc15_uvd_ctx_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) ->
 	spin_unlock_irqrestore(&adev.reg.uvd_ctx.lock, flags);
 }
 
-static unsafe fn soc15_didt_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
+unsafe fn soc15_didt_rreg(amdgpu_device: *mut adev, reg: u32) -> u32
 {
-	usize flags, address, data;
+	flags: usize, address, data;
     let mut r: u32;
 
 	address = SOC15_REG_OFFSET(GC, 0, mmDIDT_IND_INDEX);
@@ -282,9 +282,9 @@ static unsafe fn soc15_didt_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
 	return r;
 }
 
-static unsafe fn soc15_didt_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> void
+unsafe fn soc15_didt_wreg(amdgpu_device: *mut adev, reg: u32, v: u32) -> void
 {
-	usize flags, address, data;
+	flags: usize, address, data;
 
 	address = SOC15_REG_OFFSET(GC, 0, mmDIDT_IND_INDEX);
 	data = SOC15_REG_OFFSET(GC, 0, mmDIDT_IND_DATA);
@@ -295,7 +295,7 @@ static unsafe fn soc15_didt_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> vo
 	spin_unlock_irqrestore(&adev.reg.didt.lock, flags);
 }
 
-static unsafe fn soc15_gc_cac_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
+unsafe fn soc15_gc_cac_rreg(amdgpu_device: *mut adev, reg: u32) -> u32
 {
     let mut flags: usize;
     let mut r: u32;
@@ -307,7 +307,7 @@ static unsafe fn soc15_gc_cac_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
 	return r;
 }
 
-static unsafe fn soc15_gc_cac_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> void
+unsafe fn soc15_gc_cac_wreg(amdgpu_device: *mut adev, reg: u32, v: u32) -> void
 {
     let mut flags: usize;
 
@@ -317,7 +317,7 @@ static unsafe fn soc15_gc_cac_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> 
 	spin_unlock_irqrestore(&adev.reg.gc_cac.lock, flags);
 }
 
-static unsafe fn soc15_se_cac_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
+unsafe fn soc15_se_cac_rreg(amdgpu_device: *mut adev, reg: u32) -> u32
 {
     let mut flags: usize;
     let mut r: u32;
@@ -329,7 +329,7 @@ static unsafe fn soc15_se_cac_rreg(amdgpu_device: *mut adev, u32 reg) -> u32
 	return r;
 }
 
-static unsafe fn soc15_se_cac_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> void
+unsafe fn soc15_se_cac_wreg(amdgpu_device: *mut adev, reg: u32, v: u32) -> void
 {
     let mut flags: usize;
 
@@ -339,12 +339,12 @@ static unsafe fn soc15_se_cac_wreg(amdgpu_device: *mut adev, u32 reg, u32 v) -> 
 	spin_unlock_irqrestore(&adev.reg.se_cac.lock, flags);
 }
 
-static unsafe fn soc15_get_config_memsize(amdgpu_device: *mut adev) -> u32
+unsafe fn soc15_get_config_memsize(amdgpu_device: *mut adev) -> u32
 {
 	return adev.nbio.funcs.get_memsize(adev);
 }
 
-static unsafe fn soc15_get_xclk(amdgpu_device: *mut adev) -> u32
+unsafe fn soc15_get_xclk(amdgpu_device: *mut adev) -> u32
 {
 	u32 reference_clock = adev.clock.spll.reference_freq;
 
@@ -363,7 +363,7 @@ static unsafe fn soc15_get_xclk(amdgpu_device: *mut adev) -> u32
 
 
 unsafe fn soc15_grbm_select(amdgpu_device: *mut adev,
-		     u32 me, u32 pipe, u32 queue, u32 vmid, int xcc_id) -> void
+		     me: u32, pipe: u32, queue: u32, vmid: u32, int xcc_id) -> void
 {
 	u32 grbm_gfx_cntl = 0;
 	grbm_gfx_cntl = REG_SET_FIELD(grbm_gfx_cntl, GRBM_GFX_CNTL, PIPEID, pipe);
@@ -374,7 +374,7 @@ unsafe fn soc15_grbm_select(amdgpu_device: *mut adev,
 	WREG32_SOC15_RLC_SHADOW(GC, xcc_id, mmGRBM_GFX_CNTL, grbm_gfx_cntl);
 }
 
-static unsafe fn soc15_read_disabled_bios(amdgpu_device: *mut adev) -> bool
+unsafe fn soc15_read_disabled_bios(amdgpu_device: *mut adev) -> bool
 {
 	/* todo */
 	return false;
@@ -403,9 +403,9 @@ static struct soc15_allowed_register_entry soc15_allowed_read_registers[] = {
 	{ SOC15_REG_ENTRY(GC, 0, mmDB_DEBUG2)},
 };
 
-static unsafe fn soc15_get_register_value(amdgpu_device: *mut adev,
-					 bool indexed, u32 se_num,
-					 u32 sh_num, u32 reg_offset) -> u32
+unsafe fn soc15_get_register_value(amdgpu_device: *mut adev,
+					 indexed: bool, se_num: u32,
+					 sh_num: u32, reg_offset: u32) -> u32
 {
 	if (indexed) {
 		unsafe fn amdgpu_read_indexed_register(adev, se_num, sh_num, reg_offset) -> return;
@@ -418,8 +418,8 @@ static unsafe fn soc15_get_register_value(amdgpu_device: *mut adev,
 	}
 }
 
-static unsafe fn soc15_read_register(amdgpu_device: *mut adev, u32 se_num,
-			    u32 sh_num, u32 reg_offset, u32 *value) -> int
+unsafe fn soc15_read_register(amdgpu_device: *mut adev, se_num: u32,
+			    sh_num: u32, reg_offset: u32, u32 *value) -> int
 {
     let mut i: u32;
 	struct soc15_allowed_register_entry  *en;
@@ -458,7 +458,7 @@ unsafe fn soc15_program_register_sequence(amdgpu_device: *mut adev,
 					     const u32 array_size) -> void
 {
 	const soc15_reg_golden *entry;
-	u32 tmp, reg;
+	tmp: u32, reg;
     let mut i: int;
 
 	for (i = 0; i < array_size; ++i) {
@@ -488,7 +488,7 @@ unsafe fn soc15_program_register_sequence(amdgpu_device: *mut adev,
 
 }
 
-static unsafe fn soc15_asic_baco_reset(amdgpu_device: *mut adev) -> int
+unsafe fn soc15_asic_baco_reset(amdgpu_device: *mut adev) -> int
 {
 	amdgpu_ras *mut ras = amdgpu_ras_get_context(adev);
 	int ret = 0;
@@ -587,7 +587,7 @@ soc15_asic_reset_method(amdgpu_device *mut adev)
 		return AMD_RESET_METHOD_MODE1;
 }
 
-static unsafe fn soc15_need_reset_on_resume(amdgpu_device: *mut adev) -> bool
+unsafe fn soc15_need_reset_on_resume(amdgpu_device: *mut adev) -> bool
 {
 	/* Will reset for the following suspend abort cases.
 	 * 1) S3 suspend aborted in the normal S3 suspend
@@ -599,8 +599,9 @@ static unsafe fn soc15_need_reset_on_resume(amdgpu_device: *mut adev) -> bool
 		return false;
 }
 
-static unsafe fn soc15_asic_reset(amdgpu_device: *mut adev) -> int
+unsafe fn soc15_asic_reset(amdgpu_device: *mut adev) -> int
 {
+	'asic_reset: {
 	/* original raven doesn't have full asic reset */
 	/* On the latest Raven, the GPU reset can be performed
 	 * successfully. So now, temporarily enable it for the
@@ -610,13 +611,13 @@ static unsafe fn soc15_asic_reset(amdgpu_device: *mut adev) -> int
 	if ((adev.apu_flags & AMD_APU_IS_PICASSO ||
 			!(adev.apu_flags & AMD_APU_IS_RAVEN)) &&
 			soc15_need_reset_on_resume(adev))
-		goto asic_reset;
+		break 'asic_reset;
 
 	if ((adev.apu_flags & AMD_APU_IS_RAVEN) ||
 			(adev.apu_flags & AMD_APU_IS_RAVEN2))
 		return 0;
-
-asic_reset:
+	}
+	
 	switch (soc15_asic_reset_method(adev)) {
 	case AMD_RESET_METHOD_PCI:
 		dev_info(adev.dev, "PCI reset\n");
@@ -636,7 +637,7 @@ asic_reset:
 	}
 }
 
-static unsafe fn soc15_supports_baco(amdgpu_device: *mut adev) -> int
+unsafe fn soc15_supports_baco(amdgpu_device: *mut adev) -> int
 {
 	switch (amdgpu_ip_version(adev, MP1_HWIP, 0)) {
 	unsafe fn IP_VERSION(9, 0, 0) -> case:
@@ -655,12 +656,12 @@ static unsafe fn soc15_supports_baco(amdgpu_device: *mut adev) -> int
 }
 
 /*static unsafe fn soc15_set_uvd_clock(amdgpu_device: *mut adev, u32 clock,
-			u32 cntl_reg, u32 status_reg) -> int
+			cntl_reg: u32, status_reg: u32) -> int
 {
 	return 0;
 }*/
 
-static unsafe fn soc15_set_uvd_clocks(amdgpu_device: *mut adev, u32 vclk, u32 dclk) -> int
+unsafe fn soc15_set_uvd_clocks(amdgpu_device: *mut adev, vclk: u32, dclk: u32) -> int
 {
 	/*int r;
 
@@ -673,7 +674,7 @@ static unsafe fn soc15_set_uvd_clocks(amdgpu_device: *mut adev, u32 vclk, u32 dc
 	return 0;
 }
 
-static unsafe fn soc15_set_vce_clocks(amdgpu_device: *mut adev, u32 evclk, u32 ecclk) -> int
+unsafe fn soc15_set_vce_clocks(amdgpu_device: *mut adev, evclk: u32, ecclk: u32) -> int
 {
 	/* todo */
 
@@ -682,14 +683,14 @@ static unsafe fn soc15_set_vce_clocks(amdgpu_device: *mut adev, u32 evclk, u32 e
 
 const vega10_common_ip_block: amdgpu_ip_block_version =
 {
-	.type = AMD_IP_BLOCK_TYPE_COMMON,
-	.major = 2,
-	.minor = 0,
-	.rev = 0,
-	.funcs = &soc15_common_ip_funcs,
+	type: AMD_IP_BLOCK_TYPE_COMMON,
+	major: 2,
+	minor: 0,
+	rev: 0,
+	funcs: &soc15_common_ip_funcs,
 };
 
-static unsafe fn soc15_reg_base_init(amdgpu_device: *mut adev) -> void
+unsafe fn soc15_reg_base_init(amdgpu_device: *mut adev) -> void
 {
 	/* Set IP register base before any HW register access */
 	switch (adev.asic_type) {
@@ -723,11 +724,11 @@ unsafe fn soc15_set_virt_ops(amdgpu_device: *mut adev) -> void
 	soc15_reg_base_init(adev);
 }
 
-static unsafe fn soc15_get_pcie_usage(amdgpu_device: *mut adev, u64 *count0,
+unsafe fn soc15_get_pcie_usage(amdgpu_device: *mut adev, u64 *count0,
 				 u64 *count1) -> void
 {
 	u32 perfctr = 0;
-	u64 cnt0_of, cnt1_of;
+	cnt0_of: u64, cnt1_of;
     let mut tmp: int;
 
 	/* This reports 0 on APUs, so return to avoid writing/reading registers
@@ -770,11 +771,11 @@ static unsafe fn soc15_get_pcie_usage(amdgpu_device: *mut adev, u64 *count0,
 	*count1 = RREG32_PCIE(smnPCIE_PERF_COUNT1_TXCLK) | (cnt1_of << 32);
 }
 
-static unsafe fn vega20_get_pcie_usage(amdgpu_device: *mut adev, u64 *count0,
+unsafe fn vega20_get_pcie_usage(amdgpu_device: *mut adev, u64 *count0,
 				 u64 *count1) -> void
 {
 	u32 perfctr = 0;
-	u64 cnt0_of, cnt1_of;
+	cnt0_of: u64, cnt1_of;
     let mut tmp: int;
 
 	/* This reports 0 on APUs, so return to avoid writing/reading registers
@@ -819,7 +820,7 @@ static unsafe fn vega20_get_pcie_usage(amdgpu_device: *mut adev, u64 *count0,
 	*count1 = RREG32_PCIE(smnPCIE_PERF_COUNT1_TXCLK3) | (cnt1_of << 32);
 }
 
-static unsafe fn soc15_need_reset_on_init(amdgpu_device: *mut adev) -> bool
+unsafe fn soc15_need_reset_on_init(amdgpu_device: *mut adev) -> bool
 {
     let mut sol_reg: u32;
 
@@ -846,9 +847,9 @@ static unsafe fn soc15_need_reset_on_init(amdgpu_device: *mut adev) -> bool
 	return false;
 }
 
-static unsafe fn soc15_get_pcie_replay_count(amdgpu_device: *mut adev) -> u64
+unsafe fn soc15_get_pcie_replay_count(amdgpu_device: *mut adev) -> u64
 {
-	u64 nak_r, nak_g;
+	nak_r: u64, nak_g;
 
 	/* Get the number of NAKs received and generated */
 	nak_r = RREG32_PCIE(smnPCIE_RX_NUM_NAK);
@@ -858,71 +859,71 @@ static unsafe fn soc15_get_pcie_replay_count(amdgpu_device: *mut adev) -> u64
 	return (nak_r + nak_g);
 }
 
-static unsafe fn soc15_pre_asic_init(amdgpu_device: *mut adev) -> void
+unsafe fn soc15_pre_asic_init(amdgpu_device: *mut adev) -> void
 {
 	gmc_v9_0_restore_registers(adev);
 }
 
 static soc15_asic_funcs: amdgpu_asic_funcs =
 {
-	.read_disabled_bios = &soc15_read_disabled_bios,
-	.read_bios_from_rom = &amdgpu_soc15_read_bios_from_rom,
-	.read_register = &soc15_read_register,
-	.reset = &soc15_asic_reset,
-	.reset_method = &soc15_asic_reset_method,
-	.get_xclk = &soc15_get_xclk,
-	.set_uvd_clocks = &soc15_set_uvd_clocks,
-	.set_vce_clocks = &soc15_set_vce_clocks,
-	.get_config_memsize = &soc15_get_config_memsize,
-	.init_doorbell_index = &vega10_doorbell_index_init,
-	.get_pcie_usage = &soc15_get_pcie_usage,
-	.need_reset_on_init = &soc15_need_reset_on_init,
-	.get_pcie_replay_count = &soc15_get_pcie_replay_count,
-	.supports_baco = &soc15_supports_baco,
-	.pre_asic_init = &soc15_pre_asic_init,
-	.query_video_codecs = &soc15_query_video_codecs,
+	read_disabled_bios: &soc15_read_disabled_bios,
+	read_bios_from_rom: &amdgpu_soc15_read_bios_from_rom,
+	read_register: &soc15_read_register,
+	reset: &soc15_asic_reset,
+	reset_method: &soc15_asic_reset_method,
+	get_xclk: &soc15_get_xclk,
+	set_uvd_clocks: &soc15_set_uvd_clocks,
+	set_vce_clocks: &soc15_set_vce_clocks,
+	get_config_memsize: &soc15_get_config_memsize,
+	init_doorbell_index: &vega10_doorbell_index_init,
+	get_pcie_usage: &soc15_get_pcie_usage,
+	need_reset_on_init: &soc15_need_reset_on_init,
+	get_pcie_replay_count: &soc15_get_pcie_replay_count,
+	supports_baco: &soc15_supports_baco,
+	pre_asic_init: &soc15_pre_asic_init,
+	query_video_codecs: &soc15_query_video_codecs,
 };
 
 static vega20_asic_funcs: amdgpu_asic_funcs =
 {
-	.read_disabled_bios = &soc15_read_disabled_bios,
-	.read_bios_from_rom = &amdgpu_soc15_read_bios_from_rom,
-	.read_register = &soc15_read_register,
-	.reset = &soc15_asic_reset,
-	.reset_method = &soc15_asic_reset_method,
-	.get_xclk = &soc15_get_xclk,
-	.set_uvd_clocks = &soc15_set_uvd_clocks,
-	.set_vce_clocks = &soc15_set_vce_clocks,
-	.get_config_memsize = &soc15_get_config_memsize,
-	.init_doorbell_index = &vega20_doorbell_index_init,
-	.get_pcie_usage = &vega20_get_pcie_usage,
-	.need_reset_on_init = &soc15_need_reset_on_init,
-	.get_pcie_replay_count = &soc15_get_pcie_replay_count,
-	.supports_baco = &soc15_supports_baco,
-	.pre_asic_init = &soc15_pre_asic_init,
-	.query_video_codecs = &soc15_query_video_codecs,
+	read_disabled_bios: &soc15_read_disabled_bios,
+	read_bios_from_rom: &amdgpu_soc15_read_bios_from_rom,
+	read_register: &soc15_read_register,
+	reset: &soc15_asic_reset,
+	reset_method: &soc15_asic_reset_method,
+	get_xclk: &soc15_get_xclk,
+	set_uvd_clocks: &soc15_set_uvd_clocks,
+	set_vce_clocks: &soc15_set_vce_clocks,
+	get_config_memsize: &soc15_get_config_memsize,
+	init_doorbell_index: &vega20_doorbell_index_init,
+	get_pcie_usage: &vega20_get_pcie_usage,
+	need_reset_on_init: &soc15_need_reset_on_init,
+	get_pcie_replay_count: &soc15_get_pcie_replay_count,
+	supports_baco: &soc15_supports_baco,
+	pre_asic_init: &soc15_pre_asic_init,
+	query_video_codecs: &soc15_query_video_codecs,
 };
 
 static aqua_vanjaram_asic_funcs: amdgpu_asic_funcs =
 {
-	.read_disabled_bios = &soc15_read_disabled_bios,
-	.read_bios_from_rom = &amdgpu_soc15_read_bios_from_rom,
-	.read_register = &soc15_read_register,
-	.reset = &soc15_asic_reset,
-	.reset_method = &soc15_asic_reset_method,
-	.get_xclk = &soc15_get_xclk,
-	.set_uvd_clocks = &soc15_set_uvd_clocks,
-	.set_vce_clocks = &soc15_set_vce_clocks,
-	.get_config_memsize = &soc15_get_config_memsize,
-	.init_doorbell_index = &aqua_vanjaram_doorbell_index_init,
-	.need_reset_on_init = &soc15_need_reset_on_init,
-	.get_pcie_replay_count = &amdgpu_nbio_get_pcie_replay_count,
-	.supports_baco = &soc15_supports_baco,
-	.query_video_codecs = &soc15_query_video_codecs,
-	.get_reg_state = &aqua_vanjaram_get_reg_state,
+	read_disabled_bios: &soc15_read_disabled_bios,
+	read_bios_from_rom: &amdgpu_soc15_read_bios_from_rom,
+	read_register: &soc15_read_register,
+	reset: &soc15_asic_reset,
+	reset_method: &soc15_asic_reset_method,
+	get_xclk: &soc15_get_xclk,
+	set_uvd_clocks: &soc15_set_uvd_clocks,
+	set_vce_clocks: &soc15_set_vce_clocks,
+	get_config_memsize: &soc15_get_config_memsize,
+	init_doorbell_index: &aqua_vanjaram_doorbell_index_init,
+	need_reset_on_init: &soc15_need_reset_on_init,
+	get_pcie_replay_count: &amdgpu_nbio_get_pcie_replay_count,
+	supports_baco: &soc15_supports_baco,
+	query_video_codecs: &soc15_query_video_codecs,
+	get_reg_state: &aqua_vanjaram_get_reg_state,
 };
 
-static unsafe fn soc15_common_early_init(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_early_init(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1193,7 +1194,7 @@ static unsafe fn soc15_common_early_init(amdgpu_ip_block: *mut ip_block) -> int
 	return 0;
 }
 
-static unsafe fn soc15_common_late_init(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_late_init(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1208,7 +1209,7 @@ static unsafe fn soc15_common_late_init(amdgpu_ip_block: *mut ip_block) -> int
 	return 0;
 }
 
-static unsafe fn soc15_common_sw_init(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_sw_init(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1222,7 +1223,7 @@ static unsafe fn soc15_common_sw_init(amdgpu_ip_block: *mut ip_block) -> int
 	return 0;
 }
 
-static unsafe fn soc15_common_sw_fini(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_sw_fini(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1232,7 +1233,7 @@ static unsafe fn soc15_common_sw_fini(amdgpu_ip_block: *mut ip_block) -> int
 	return 0;
 }
 
-static unsafe fn soc15_sdma_doorbell_range_init(amdgpu_device: *mut adev) -> void
+unsafe fn soc15_sdma_doorbell_range_init(amdgpu_device: *mut adev) -> void
 {
     let mut i: int;
 
@@ -1246,7 +1247,7 @@ static unsafe fn soc15_sdma_doorbell_range_init(amdgpu_device: *mut adev) -> voi
 	}
 }
 
-static unsafe fn soc15_common_hw_init(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_hw_init(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1275,7 +1276,7 @@ static unsafe fn soc15_common_hw_init(amdgpu_ip_block: *mut ip_block) -> int
 	return 0;
 }
 
-static unsafe fn soc15_common_hw_fini(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_hw_fini(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1309,12 +1310,12 @@ static unsafe fn soc15_common_hw_fini(amdgpu_ip_block: *mut ip_block) -> int
 	return 0;
 }
 
-static unsafe fn soc15_common_suspend(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_suspend(amdgpu_ip_block: *mut ip_block) -> int
 {
 	unsafe fn soc15_common_hw_fini(ip_block) -> return;
 }
 
-static unsafe fn soc15_common_resume(amdgpu_ip_block: *mut ip_block) -> int
+unsafe fn soc15_common_resume(amdgpu_ip_block: *mut ip_block) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1325,14 +1326,14 @@ static unsafe fn soc15_common_resume(amdgpu_ip_block: *mut ip_block) -> int
 	unsafe fn soc15_common_hw_init(ip_block) -> return;
 }
 
-static unsafe fn soc15_common_is_idle(amdgpu_ip_block: *mut ip_block) -> bool
+unsafe fn soc15_common_is_idle(amdgpu_ip_block: *mut ip_block) -> bool
 {
 	return true;
 }
 
-static unsafe fn soc15_update_drm_clock_gating(amdgpu_device: *mut adev, bool enable) -> void
+unsafe fn soc15_update_drm_clock_gating(amdgpu_device: *mut adev, enable: bool) -> void
 {
-	u32 def, data;
+	def: u32, data;
 
 	def = data = RREG32(SOC15_REG_OFFSET(MP0, 0, mmMP0_MISC_CGTT_CTRL0));
 
@@ -1359,9 +1360,9 @@ static unsafe fn soc15_update_drm_clock_gating(amdgpu_device: *mut adev, bool en
 		WREG32(SOC15_REG_OFFSET(MP0, 0, mmMP0_MISC_CGTT_CTRL0), data);
 }
 
-static unsafe fn soc15_update_drm_light_sleep(amdgpu_device: *mut adev, bool enable) -> void
+unsafe fn soc15_update_drm_light_sleep(amdgpu_device: *mut adev, enable: bool) -> void
 {
-	u32 def, data;
+	def: u32, data;
 
 	def = data = RREG32(SOC15_REG_OFFSET(MP0, 0, mmMP0_MISC_LIGHT_SLEEP_CTRL));
 
@@ -1374,8 +1375,8 @@ static unsafe fn soc15_update_drm_light_sleep(amdgpu_device: *mut adev, bool ena
 		WREG32(SOC15_REG_OFFSET(MP0, 0, mmMP0_MISC_LIGHT_SLEEP_CTRL), data);
 }
 
-static unsafe fn soc15_common_set_clockgating_state(amdgpu_ip_block: *mut ip_block,
-					    enum amd_clockgating_state state) -> int
+unsafe fn soc15_common_set_clockgating_state(amdgpu_ip_block: *mut ip_block,
+					    amd_clockgating_state state) -> int
 {
 	amdgpu_device *mut adev = ip_block.adev;
 
@@ -1426,7 +1427,7 @@ static unsafe fn soc15_common_set_clockgating_state(amdgpu_ip_block: *mut ip_blo
 	return 0;
 }
 
-static unsafe fn soc15_common_get_clockgating_state(amdgpu_ip_block: *mut ip_block, u64 *flags) -> void
+unsafe fn soc15_common_get_clockgating_state(amdgpu_ip_block: *mut ip_block, u64 *flags) -> void
 {
 	amdgpu_device *mut adev = ip_block.adev;
     let mut data: int;
@@ -1464,27 +1465,27 @@ static unsafe fn soc15_common_get_clockgating_state(amdgpu_ip_block: *mut ip_blo
 		adev.df.funcs.get_clockgating_state(adev, flags);
 }
 
-static unsafe fn soc15_common_set_powergating_state(amdgpu_ip_block: *mut ip_block,
-					    enum amd_powergating_state state) -> int
+unsafe fn soc15_common_set_powergating_state(amdgpu_ip_block: *mut ip_block,
+					    amd_powergating_state state) -> int
 {
 	/* todo */
 	return 0;
 }
 
 static soc15_common_ip_funcs: amd_ip_funcs = {
-	.name = "soc15_common",
-	.early_init = soc15_common_early_init,
-	.late_init = soc15_common_late_init,
-	.sw_init = soc15_common_sw_init,
-	.sw_fini = soc15_common_sw_fini,
-	.hw_init = soc15_common_hw_init,
-	.hw_fini = soc15_common_hw_fini,
-	.suspend = soc15_common_suspend,
-	.resume = soc15_common_resume,
-	.is_idle = soc15_common_is_idle,
-	.set_clockgating_state = soc15_common_set_clockgating_state,
-	.set_powergating_state = soc15_common_set_powergating_state,
-	.get_clockgating_state= soc15_common_get_clockgating_state,
+	name: "soc15_common",
+	early_init: soc15_common_early_init,
+	late_init: soc15_common_late_init,
+	sw_init: soc15_common_sw_init,
+	sw_fini: soc15_common_sw_fini,
+	hw_init: soc15_common_hw_init,
+	hw_fini: soc15_common_hw_fini,
+	suspend: soc15_common_suspend,
+	resume: soc15_common_resume,
+	is_idle: soc15_common_is_idle,
+	set_clockgating_state: soc15_common_set_clockgating_state,
+	set_powergating_state: soc15_common_set_powergating_state,
+	get_clockgating_state: soc15_common_get_clockgating_state,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

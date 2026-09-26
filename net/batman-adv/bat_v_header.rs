@@ -8,7 +8,7 @@
 /* Dependency: "main.h" */
 
 /* CONFIG_BATMAN_ADV_BATMAN_V */
-#[cfg(feature = "CONFIG_BATMAN_ADV_BATMAN_V")]
+#[cfg(CONFIG_BATMAN_ADV_BATMAN_V)]
 extern "C" {
     pub fn batadv_v_init() -> ::core::ffi::c_int;
     pub fn batadv_v_deinit();
@@ -18,27 +18,27 @@ extern "C" {
 }
 
 /* CONFIG_BATMAN_ADV_BATMAN_V disabled: static inline fallback definitions. */
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BATMAN_V"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BATMAN_V))]
 #[inline]
 pub fn batadv_v_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BATMAN_V"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BATMAN_V))]
 #[inline]
 pub fn batadv_v_deinit() {}
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BATMAN_V"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BATMAN_V))]
 #[inline]
 pub fn batadv_v_hardif_init(_hardif: *mut batadv_hard_iface) {}
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BATMAN_V"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BATMAN_V))]
 #[inline]
 pub fn batadv_v_mesh_init(_bat_priv: *mut batadv_priv) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_BATMAN_V"))]
+#[cfg(not(CONFIG_BATMAN_ADV_BATMAN_V))]
 #[inline]
 pub fn batadv_v_mesh_free(_bat_priv: *mut batadv_priv) {}
 

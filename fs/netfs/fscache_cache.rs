@@ -42,22 +42,24 @@ pub unsafe fn fscache_lookup_cache(name: *const c_char, is_cache: bool) -> *mut 
     let mut candidate: *mut fscache_cache;
     let mut cache: *mut fscache_cache;
     let mut unnamed: *mut fscache_cache = core::ptr::null_mut();
+    'got_cache_w: {
+    'got_cache_r: {
 
     down_read(&FSCACHE_ADDREMOVE_SEM);
     list_for_each_entry!(cache, FSCACHE_CACHES, cache_link, {
         if !(*cache).name.is_null() && !name.is_null()
             && strcmp((*cache).name, name) == 0
             && fscache_get_cache_maybe(cache, fscache_cache_trace::GetAcquire)
-        { goto!(got_cache_r); }
+        { break 'got_cache_r; }
         if (*cache).name.is_null() && name.is_null()
             && fscache_get_cache_maybe(cache, fscache_cache_trace::GetAcquire)
-        { goto!(got_cache_r); }
+        { break 'got_cache_r; }
     });
     if name.is_null() {
         list_for_each_entry!(cache, FSCACHE_CACHES, cache_link, {
             if !(*cache).name.is_null()
                 && fscache_get_cache_maybe(cache, fscache_cache_trace::GetAcquire)
-            { goto!(got_cache_r); }
+            { break 'got_cache_r; }
         });
     }
     up_read(&FSCACHE_ADDREMOVE_SEM);
@@ -68,32 +70,34 @@ pub unsafe fn fscache_lookup_cache(name: *const c_char, is_cache: bool) -> *mut 
         if !(*cache).name.is_null() && !name.is_null()
             && strcmp((*cache).name, name) == 0
             && fscache_get_cache_maybe(cache, fscache_cache_trace::GetAcquire)
-        { goto!(got_cache_w); }
+        { break 'got_cache_w; }
         if (*cache).name.is_null() {
             unnamed = cache;
             if name.is_null()
                 && fscache_get_cache_maybe(cache, fscache_cache_trace::GetAcquire)
-            { goto!(got_cache_w); }
+            { break 'got_cache_w; }
         }
     });
     if !unnamed.is_null() && is_cache
         && fscache_get_cache_maybe(unnamed, fscache_cache_trace::GetAcquire)
-    { cache = unnamed; (*cache).name = (*candidate).name; (*candidate).name = core::ptr::null_mut(); goto!(got_cache_w); }
+    { cache = unnamed; (*cache).name = (*candidate).name; (*candidate).name = core::ptr::null_mut(); break 'got_cache_w; }
     if name.is_null() {
         list_for_each_entry!(cache, FSCACHE_CACHES, cache_link, {
             if !(*cache).name.is_null()
                 && fscache_get_cache_maybe(cache, fscache_cache_trace::GetAcquire)
-            { goto!(got_cache_w); }
+            { break 'got_cache_w; }
         });
     }
     list_add_tail(&mut (*candidate).cache_link, &mut FSCACHE_CACHES);
     trace_fscache_cache((*candidate).debug_id, refcount_read(&(*candidate).ref_), fscache_cache_trace::NewAcquire);
     up_write(&FSCACHE_ADDREMOVE_SEM);
     return candidate;
-got_cache_r:
+    }
+    
     up_read(&FSCACHE_ADDREMOVE_SEM);
     return cache;
-got_cache_w:
+    }
+    
     up_write(&FSCACHE_ADDREMOVE_SEM);
     kfree((*candidate).name);
     kfree(candidate);

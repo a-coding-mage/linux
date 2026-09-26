@@ -149,9 +149,9 @@ pub struct s1d13xxxfb_par {
     pub prod_id: u8,
     pub revision: u8,
     pub pseudo_palette: [core::ffi::c_uint; 16],
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub regs_save: *mut core::ffi::c_void,
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub disp_save: *mut core::ffi::c_void,
 }
 
@@ -160,9 +160,9 @@ pub struct s1d13xxxfb_pdata {
     pub initregs: *const s1d13xxxfb_regval,
     pub initregssize: core::ffi::c_uint,
     pub platform_init_video: Option<unsafe extern "C" fn()>,
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub platform_suspend_video: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub platform_resume_video: Option<unsafe extern "C" fn() -> core::ffi::c_int>,
 }
 

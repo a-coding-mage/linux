@@ -28,7 +28,7 @@ pub const fn cphysaddr(a: u64) -> u64 { a & 0x1fffffff }
 #[inline]
 pub const fn xphysaddr(a: u64) -> u64 { a & 0x0000ffffffffffff }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 mod config_64bit {
     /*
      * Memory segments (64bit kernel mode addresses)
@@ -51,7 +51,7 @@ mod config_64bit {
     #[inline] pub const fn ckseg3addr(a: u64) -> u64 { super::cphysaddr(a) | CKSEG3 }
 }
 
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 mod config_32bit {
     /* Map an address to a certain kernel segment. */
     #[inline] pub const fn ckseg0addr(a: u64) -> u64 { super::cphysaddr(a) | KSEG0 }

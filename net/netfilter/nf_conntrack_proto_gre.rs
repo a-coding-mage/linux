@@ -25,8 +25,8 @@
 
 // Linux kernel dependencies are supplied by the surrounding translation unit.
 
-static const GRE_CT_MAX: usize = 2;
-static const gre_timeouts: [u32; GRE_CT_MAX] = [30 * HZ, 180 * HZ];
+static GRE_CT_MAX: usize = 2;
+static gre_timeouts: [u32; GRE_CT_MAX] = [30 * HZ, 180 * HZ];
 
 // used when expectation is added
 static mut keymap_lock: DEFINE_SPINLOCK = DEFINE_SPINLOCK_INIT;

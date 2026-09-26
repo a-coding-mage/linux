@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 // C source condition: CONFIG_SH_STANDARD_BIOS
-#[cfg(feature = "CONFIG_SH_STANDARD_BIOS")]
+#[cfg(CONFIG_SH_STANDARD_BIOS)]
 mod standard_bios {
     /*
      * Copyright (C) 2000 Greg Banks, Mitch Davis
@@ -23,11 +23,11 @@ mod standard_bios {
 
 // When CONFIG_SH_STANDARD_BIOS is not enabled, these C inline functions are
 // empty no-op definitions.
-#[cfg(not(feature = "CONFIG_SH_STANDARD_BIOS"))]
+#[cfg(not(CONFIG_SH_STANDARD_BIOS))]
 #[inline]
 pub fn sh_bios_vbr_init() {}
 
-#[cfg(not(feature = "CONFIG_SH_STANDARD_BIOS"))]
+#[cfg(not(CONFIG_SH_STANDARD_BIOS))]
 #[inline]
 pub fn sh_bios_vbr_reload() {}
 

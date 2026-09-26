@@ -32,38 +32,38 @@ pub const NF_RECURSION_LIMIT: ::core::ffi::c_int = 2;
 // When CONFIG_PREEMPT_RT is not enabled, recursion is stored in per-CPU
 // softnet_data.xmit.nf_dup_skb_recursion. The referenced kernel object and
 // unlikely() helper are supplied externally.
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 #[inline]
 pub unsafe fn nf_dev_xmit_recursion() -> bool {
     unlikely(softnet_data.xmit.nf_dup_skb_recursion > NF_RECURSION_LIMIT)
 }
 
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 #[inline]
 pub unsafe fn nf_dev_xmit_recursion_inc() {
     softnet_data.xmit.nf_dup_skb_recursion += 1;
 }
 
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 #[inline]
 pub unsafe fn nf_dev_xmit_recursion_dec() {
     softnet_data.xmit.nf_dup_skb_recursion -= 1;
 }
 
 // With CONFIG_PREEMPT_RT, recursion is stored in current->net_xmit.
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 #[inline]
 pub unsafe fn nf_dev_xmit_recursion() -> bool {
     unlikely(current.net_xmit.nf_dup_skb_recursion > NF_RECURSION_LIMIT)
 }
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 #[inline]
 pub unsafe fn nf_dev_xmit_recursion_inc() {
     current.net_xmit.nf_dup_skb_recursion += 1;
 }
 
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 #[inline]
 pub unsafe fn nf_dev_xmit_recursion_dec() {
     current.net_xmit.nf_dup_skb_recursion -= 1;

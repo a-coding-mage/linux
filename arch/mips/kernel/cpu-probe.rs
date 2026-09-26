@@ -19,7 +19,7 @@ static mut mmid_disabled_quirk;
 
 unsafe fn usize cpu_get_msa_id(void)
 {
-	usize status, msa_id;
+	status: usize, msa_id;
 
 	status = read_c0_status();
 	__enable_fpu(FPU_64BIT);
@@ -64,11 +64,11 @@ u32 {
 	FTLB_SET_PROB	= 1 << 1,
 };
 
-static mut set_ftlb_enable(*mut cpuinfo_mipsc, u32 flags);
+static mut set_ftlb_enable(*mut cpuinfo_mipsc, flags: u32);
 
 static mut __init ftlb_disable(*const u8s)
 {
-	u32 config4, mmuextdef;
+	config4: u32, mmuextdef;
 
 	/*
 	 * If the core hasn't done any FTLB configuration, there is nothing
@@ -124,7 +124,7 @@ __setup("noftlb", ftlb_disable);
 unsafe fn void cpu_set_mt_per_tc_perf(*mut cpuinfo_mipsc)
 {
 	if (read_c0_config7() & MTI_CONF7_PTC)
-		c->options |= MIPS_CPU_MT_PER_TC_PERF_COUNTERS;
+		(*c).options |= MIPS_CPU_MT_PER_TC_PERF_COUNTERS;
 }
 
 unsafe fn void check_errata(void)
@@ -138,7 +138,7 @@ unsafe fn void check_errata(void)
 		 * This code only handles VPE0, any SMP/RTOS code
 		 * making use of VPE1 will be responsible for that VPE.
 		 */
-		if ((c->processor_id & PRID_REV_MASK) <= PRID_REV_34K_V1_0_2)
+		if (((*c).processor_id & PRID_REV_MASK) <= PRID_REV_34K_V1_0_2)
 			write_c0_config7(read_c0_config7() | MIPS_CONF7_RPS);
 		break;
 	default:
@@ -159,7 +159,7 @@ void __init check_bugs32(void)
 unsafe fn int cpu_has_confreg(void)
 {
 // #ifdef CONFIG_CPU_R3000
-	usize size1, size2;
+	size1: usize, size2;
 	usize cfg = read_c0_conf();
 
 	size1 = r3k_cache_size(ST0_ISC);
@@ -194,61 +194,61 @@ unsafe fn void cpu_probe_vmbits(*mut cpuinfo_mipsc)
 		back_to_back_c0_hazard();
 		vmbits = fls64(read_c0_entryhi_64() & 0x3fffffffffffe000ULL);
 	}
-	c->vmbits = vmbits;
+	(*c).vmbits = vmbits;
 }
 
-static void set_isa(*mut cpuinfo_mipsc, u32 isa)
+static void set_isa(*mut cpuinfo_mipsc, isa: u32)
 {
 	switch (isa) {
 	case MIPS_CPU_ISA_M64R5:
-		c->isa_level |= MIPS_CPU_ISA_M32R5 | MIPS_CPU_ISA_M64R5;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R5 | MIPS_CPU_ISA_M64R5;
 		set_elf_base_platform("mips64r5");
 		fallthrough;
 	case MIPS_CPU_ISA_M64R2:
-		c->isa_level |= MIPS_CPU_ISA_M32R2 | MIPS_CPU_ISA_M64R2;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R2 | MIPS_CPU_ISA_M64R2;
 		set_elf_base_platform("mips64r2");
 		fallthrough;
 	case MIPS_CPU_ISA_M64R1:
-		c->isa_level |= MIPS_CPU_ISA_M32R1 | MIPS_CPU_ISA_M64R1;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R1 | MIPS_CPU_ISA_M64R1;
 		set_elf_base_platform("mips64");
 		fallthrough;
 	case MIPS_CPU_ISA_V:
-		c->isa_level |= MIPS_CPU_ISA_V;
+		(*c).isa_level |= MIPS_CPU_ISA_V;
 		set_elf_base_platform("mips5");
 		fallthrough;
 	case MIPS_CPU_ISA_IV:
-		c->isa_level |= MIPS_CPU_ISA_IV;
+		(*c).isa_level |= MIPS_CPU_ISA_IV;
 		set_elf_base_platform("mips4");
 		fallthrough;
 	case MIPS_CPU_ISA_III:
-		c->isa_level |= MIPS_CPU_ISA_II | MIPS_CPU_ISA_III;
+		(*c).isa_level |= MIPS_CPU_ISA_II | MIPS_CPU_ISA_III;
 		set_elf_base_platform("mips3");
 		break;
 
 	/* R6 incompatible with everything else */
 	case MIPS_CPU_ISA_M64R6:
-		c->isa_level |= MIPS_CPU_ISA_M32R6 | MIPS_CPU_ISA_M64R6;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R6 | MIPS_CPU_ISA_M64R6;
 		set_elf_base_platform("mips64r6");
 		fallthrough;
 	case MIPS_CPU_ISA_M32R6:
-		c->isa_level |= MIPS_CPU_ISA_M32R6;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R6;
 		set_elf_base_platform("mips32r6");
 		/* Break here so we don't add incompatible ISAs */
 		break;
 	case MIPS_CPU_ISA_M32R5:
-		c->isa_level |= MIPS_CPU_ISA_M32R5;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R5;
 		set_elf_base_platform("mips32r5");
 		fallthrough;
 	case MIPS_CPU_ISA_M32R2:
-		c->isa_level |= MIPS_CPU_ISA_M32R2;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R2;
 		set_elf_base_platform("mips32r2");
 		fallthrough;
 	case MIPS_CPU_ISA_M32R1:
-		c->isa_level |= MIPS_CPU_ISA_M32R1;
+		(*c).isa_level |= MIPS_CPU_ISA_M32R1;
 		set_elf_base_platform("mips32");
 		fallthrough;
 	case MIPS_CPU_ISA_II:
-		c->isa_level |= MIPS_CPU_ISA_II;
+		(*c).isa_level |= MIPS_CPU_ISA_II;
 		set_elf_base_platform("mips2");
 		break;
 	}
@@ -260,7 +260,7 @@ static mut unknown_isa[] = KERN_ERR \
 static mut calculate_ftlb_probability(*mut cpuinfo_mipsc)
 {
 
-	u32 probability = c->tlbsize / c->tlbsizevtlb;
+	u32 probability = (*c).tlbsize / (*c).tlbsizevtlb;
 
 	/*
 	 * 0 = All TLBWR instructions go to FTLB
@@ -283,12 +283,12 @@ static mut calculate_ftlb_probability(*mut cpuinfo_mipsc)
 		return 3;
 }
 
-static mut set_ftlb_enable(*mut cpuinfo_mipsc, u32 flags)
+static mut set_ftlb_enable(*mut cpuinfo_mipsc, flags: u32)
 {
 	u32 config;
 
 	/* It's implementation dependent how the FTLB can be enabled */
-	switch (c->cputype) {
+	switch ((*c).cputype) {
 	case CPU_PROAPTIV:
 	case CPU_P5600:
 	case CPU_P6600:
@@ -337,7 +337,7 @@ static mut set_ftlb_enable(*mut cpuinfo_mipsc, u32 flags)
 
 static mut mm_config(*mut cpuinfo_mipsc)
 {
-	u32 config0, update, mm;
+	config0: u32, update, mm;
 
 	config0 = read_c0_config();
 	mm = config0 & MIPS_CONF_MM;
@@ -349,13 +349,13 @@ static mut mm_config(*mut cpuinfo_mipsc)
 	 * write-through caching unsupported. In this case just ignore the
 	 * CP0.Config.MM bit field value.
 	 */
-	switch (c->cputype) {
+	switch ((*c).cputype) {
 	case CPU_24K:
 	case CPU_34K:
 	case CPU_74K:
 	case CPU_P5600:
 	case CPU_P6600:
-		c->options |= MIPS_CPU_MM_FULL;
+		(*c).options |= MIPS_CPU_MM_FULL;
 		update = MIPS_CONF_MM_FULL;
 		break;
 	case CPU_1004K:
@@ -373,9 +373,9 @@ static mut mm_config(*mut cpuinfo_mipsc)
 		config0 = (config0 & ~MIPS_CONF_MM) | update;
 		write_c0_config(config0);
 	} else if (mm == MIPS_CONF_MM_SYSAD) {
-		c->options |= MIPS_CPU_MM_SYSAD;
+		(*c).options |= MIPS_CPU_MM_SYSAD;
 	} else if (mm == MIPS_CONF_MM_FULL) {
-		c->options |= MIPS_CPU_MM_FULL;
+		(*c).options |= MIPS_CPU_MM_FULL;
 	}
 
 	return 0;
@@ -383,6 +383,7 @@ static mut mm_config(*mut cpuinfo_mipsc)
 
 unsafe fn u32 decode_config0(*mut cpuinfo_mipsc)
 {
+	'unknown: {
 	u32 config0;
 	int isa, mt;
 
@@ -393,9 +394,9 @@ unsafe fn u32 decode_config0(*mut cpuinfo_mipsc)
 	 */
 	mt = config0 & MIPS_CONF_MT;
 	if (mt == MIPS_CONF_MT_TLB)
-		c->options |= MIPS_CPU_TLB;
+		(*c).options |= MIPS_CPU_TLB;
 	else if (mt == MIPS_CONF_MT_FTLB)
-		c->options |= MIPS_CPU_TLB | MIPS_CPU_FTLB;
+		(*c).options |= MIPS_CPU_TLB | MIPS_CPU_FTLB;
 
 	isa = (config0 & MIPS_CONF_AT) >> 13;
 	switch (isa) {
@@ -411,7 +412,7 @@ unsafe fn u32 decode_config0(*mut cpuinfo_mipsc)
 			set_isa(c, MIPS_CPU_ISA_M32R6);
 			break;
 		default:
-			goto unknown;
+			break 'unknown;
 		}
 		break;
 	case 2:
@@ -426,16 +427,16 @@ unsafe fn u32 decode_config0(*mut cpuinfo_mipsc)
 			set_isa(c, MIPS_CPU_ISA_M64R6);
 			break;
 		default:
-			goto unknown;
+			break 'unknown;
 		}
 		break;
 	default:
-		goto unknown;
+		break 'unknown;
 	}
 
 	return config0 & MIPS_CONF_M;
-
-unknown:
+	}
+	
 	panic(unknown_isa, config0);
 }
 
@@ -446,23 +447,23 @@ unsafe fn u32 decode_config1(*mut cpuinfo_mipsc)
 	config1 = read_c0_config1();
 
 	if (config1 & MIPS_CONF1_MD)
-		c->ases |= MIPS_ASE_MDMX;
+		(*c).ases |= MIPS_ASE_MDMX;
 	if (config1 & MIPS_CONF1_PC)
-		c->options |= MIPS_CPU_PERF;
+		(*c).options |= MIPS_CPU_PERF;
 	if (config1 & MIPS_CONF1_WR)
-		c->options |= MIPS_CPU_WATCH;
+		(*c).options |= MIPS_CPU_WATCH;
 	if (config1 & MIPS_CONF1_CA)
-		c->ases |= MIPS_ASE_MIPS16;
+		(*c).ases |= MIPS_ASE_MIPS16;
 	if (config1 & MIPS_CONF1_EP)
-		c->options |= MIPS_CPU_EJTAG;
+		(*c).options |= MIPS_CPU_EJTAG;
 	if (config1 & MIPS_CONF1_FP) {
-		c->options |= MIPS_CPU_FPU;
-		c->options |= MIPS_CPU_32FPR;
+		(*c).options |= MIPS_CPU_FPU;
+		(*c).options |= MIPS_CPU_32FPR;
 	}
 	if (cpu_has_tlb) {
-		c->tlbsize = ((config1 & MIPS_CONF1_TLBS) >> 25) + 1;
-		c->tlbsizevtlb = c->tlbsize;
-		c->tlbsizeftlbsets = 0;
+		(*c).tlbsize = ((config1 & MIPS_CONF1_TLBS) >> 25) + 1;
+		(*c).tlbsizevtlb = (*c).tlbsize;
+		(*c).tlbsizeftlbsets = 0;
 	}
 
 	return config1 & MIPS_CONF_M;
@@ -475,7 +476,7 @@ unsafe fn u32 decode_config2(*mut cpuinfo_mipsc)
 	config2 = read_c0_config2();
 
 	if (config2 & MIPS_CONF2_SL)
-		c->scache.flags &= ~MIPS_CACHE_NOT_PRESENT;
+		(*c).scache.flags &= ~MIPS_CACHE_NOT_PRESENT;
 
 	return config2 & MIPS_CONF_M;
 }
@@ -487,50 +488,50 @@ unsafe fn u32 decode_config3(*mut cpuinfo_mipsc)
 	config3 = read_c0_config3();
 
 	if (config3 & MIPS_CONF3_SM) {
-		c->ases |= MIPS_ASE_SMARTMIPS;
-		c->options |= MIPS_CPU_RIXI | MIPS_CPU_CTXTC;
+		(*c).ases |= MIPS_ASE_SMARTMIPS;
+		(*c).options |= MIPS_CPU_RIXI | MIPS_CPU_CTXTC;
 	}
 	if (config3 & MIPS_CONF3_RXI)
-		c->options |= MIPS_CPU_RIXI;
+		(*c).options |= MIPS_CPU_RIXI;
 	if (config3 & MIPS_CONF3_CTXTC)
-		c->options |= MIPS_CPU_CTXTC;
+		(*c).options |= MIPS_CPU_CTXTC;
 	if (config3 & MIPS_CONF3_DSP)
-		c->ases |= MIPS_ASE_DSP;
+		(*c).ases |= MIPS_ASE_DSP;
 	if (config3 & MIPS_CONF3_DSP2P) {
-		c->ases |= MIPS_ASE_DSP2P;
+		(*c).ases |= MIPS_ASE_DSP2P;
 		if (cpu_has_mips_r6)
-			c->ases |= MIPS_ASE_DSP3;
+			(*c).ases |= MIPS_ASE_DSP3;
 	}
 	if (config3 & MIPS_CONF3_VINT)
-		c->options |= MIPS_CPU_VINT;
+		(*c).options |= MIPS_CPU_VINT;
 	if (config3 & MIPS_CONF3_VEIC)
-		c->options |= MIPS_CPU_VEIC;
+		(*c).options |= MIPS_CPU_VEIC;
 	if (config3 & MIPS_CONF3_LPA)
-		c->options |= MIPS_CPU_LPA;
+		(*c).options |= MIPS_CPU_LPA;
 	if (config3 & MIPS_CONF3_MT)
-		c->ases |= MIPS_ASE_MIPSMT;
+		(*c).ases |= MIPS_ASE_MIPSMT;
 	if (config3 & MIPS_CONF3_ULRI)
-		c->options |= MIPS_CPU_ULRI;
+		(*c).options |= MIPS_CPU_ULRI;
 	if (config3 & MIPS_CONF3_ISA)
-		c->options |= MIPS_CPU_MICROMIPS;
+		(*c).options |= MIPS_CPU_MICROMIPS;
 	if (config3 & MIPS_CONF3_VZ)
-		c->ases |= MIPS_ASE_VZ;
+		(*c).ases |= MIPS_ASE_VZ;
 	if (config3 & MIPS_CONF3_SC)
-		c->options |= MIPS_CPU_SEGMENTS;
+		(*c).options |= MIPS_CPU_SEGMENTS;
 	if (config3 & MIPS_CONF3_BI)
-		c->options |= MIPS_CPU_BADINSTR;
+		(*c).options |= MIPS_CPU_BADINSTR;
 	if (config3 & MIPS_CONF3_BP)
-		c->options |= MIPS_CPU_BADINSTRP;
+		(*c).options |= MIPS_CPU_BADINSTRP;
 	if (config3 & MIPS_CONF3_MSA)
-		c->ases |= MIPS_ASE_MSA;
+		(*c).ases |= MIPS_ASE_MSA;
 	if (config3 & MIPS_CONF3_PW) {
-		c->htw_seq = 0;
-		c->options |= MIPS_CPU_HTW;
+		(*c).htw_seq = 0;
+		(*c).options |= MIPS_CPU_HTW;
 	}
 	if (config3 & MIPS_CONF3_CDMM)
-		c->options |= MIPS_CPU_CDMM;
+		(*c).options |= MIPS_CPU_CDMM;
 	if (config3 & MIPS_CONF3_SP)
-		c->options |= MIPS_CPU_SP;
+		(*c).options |= MIPS_CPU_SP;
 
 	return config3 & MIPS_CONF_M;
 }
@@ -547,7 +548,7 @@ unsafe fn u32 decode_config4(*mut cpuinfo_mipsc)
 
 	if (cpu_has_tlb) {
 		if (((config4 & MIPS_CONF4_IE) >> 29) == 2)
-			c->options |= MIPS_CPU_TLBINV;
+			(*c).options |= MIPS_CPU_TLBINV;
 
 		/*
 		 * R6 has dropped the MMUExtDef field from config4.
@@ -563,14 +564,14 @@ unsafe fn u32 decode_config4(*mut cpuinfo_mipsc)
 
 		switch (mmuextdef) {
 		case MIPS_CONF4_MMUEXTDEF_MMUSIZEEXT:
-			c->tlbsize += (config4 & MIPS_CONF4_MMUSIZEEXT) * 0x40;
-			c->tlbsizevtlb = c->tlbsize;
+			(*c).tlbsize += (config4 & MIPS_CONF4_MMUSIZEEXT) * 0x40;
+			(*c).tlbsizevtlb = (*c).tlbsize;
 			break;
 		case MIPS_CONF4_MMUEXTDEF_VTLBSIZEEXT:
-			c->tlbsizevtlb +=
+			(*c).tlbsizevtlb +=
 				((config4 & MIPS_CONF4_VTLBSIZEEXT) >>
 				  MIPS_CONF4_VTLBSIZEEXT_SHIFT) * 0x40;
-			c->tlbsize = c->tlbsizevtlb;
+			(*c).tlbsize = (*c).tlbsizevtlb;
 			ftlb_page = MIPS_CONF4_VFTLBPAGESIZE;
 			fallthrough;
 		case MIPS_CONF4_MMUEXTDEF_FTLBSIZEEXT:
@@ -590,18 +591,18 @@ unsafe fn u32 decode_config4(*mut cpuinfo_mipsc)
 				mips_ftlb_disabled = 1;
 				break;
 			}
-			c->tlbsizeftlbsets = 1 <<
+			(*c).tlbsizeftlbsets = 1 <<
 				((config4 & MIPS_CONF4_FTLBSETS) >>
 				 MIPS_CONF4_FTLBSETS_SHIFT);
-			c->tlbsizeftlbways = ((config4 & MIPS_CONF4_FTLBWAYS) >>
+			(*c).tlbsizeftlbways = ((config4 & MIPS_CONF4_FTLBWAYS) >>
 					      MIPS_CONF4_FTLBWAYS_SHIFT) + 2;
-			c->tlbsize += c->tlbsizeftlbways * c->tlbsizeftlbsets;
+			(*c).tlbsize += (*c).tlbsizeftlbways * (*c).tlbsizeftlbsets;
 			mips_has_ftlb_configured = 1;
 			break;
 		}
 	}
 
-	c->kscratch_mask = (config4 & MIPS_CONF4_KSCREXIST)
+	(*c).kscratch_mask = (config4 & MIPS_CONF4_KSCREXIST)
 				>> MIPS_CONF4_KSCREXIST_SHIFT;
 
 	asid_mask = MIPS_ENTRYHI_ASID;
@@ -621,7 +622,7 @@ unsafe fn u32 decode_config4(*mut cpuinfo_mipsc)
 
 unsafe fn u32 decode_config5(*mut cpuinfo_mipsc)
 {
-	u32 config5, max_mmid_width;
+	config5: u32, max_mmid_width;
 	usize asid_mask;
 
 	config5 = read_c0_config5();
@@ -637,17 +638,17 @@ unsafe fn u32 decode_config5(*mut cpuinfo_mipsc)
 	write_c0_config5(config5);
 
 	if (config5 & MIPS_CONF5_EVA)
-		c->options |= MIPS_CPU_EVA;
+		(*c).options |= MIPS_CPU_EVA;
 	if (config5 & MIPS_CONF5_MRP)
-		c->options |= MIPS_CPU_MAAR;
+		(*c).options |= MIPS_CPU_MAAR;
 	if (config5 & MIPS_CONF5_LLB)
-		c->options |= MIPS_CPU_RW_LLB;
+		(*c).options |= MIPS_CPU_RW_LLB;
 	if (config5 & MIPS_CONF5_MVH)
-		c->options |= MIPS_CPU_MVH;
+		(*c).options |= MIPS_CPU_MVH;
 	if (cpu_has_mips_r6 && (config5 & MIPS_CONF5_VP))
-		c->options |= MIPS_CPU_VP;
+		(*c).options |= MIPS_CPU_VP;
 	if (config5 & MIPS_CONF5_CA2)
-		c->ases |= MIPS_ASE_MIPS16E2;
+		(*c).ases |= MIPS_ASE_MIPS16E2;
 
 	if (config5 & MIPS_CONF5_CRCP)
 		elf_hwcap |= HWCAP_MIPS_CRC32;
@@ -659,7 +660,7 @@ unsafe fn u32 decode_config5(*mut cpuinfo_mipsc)
 		/* Check whether we successfully enabled MMID support */
 		config5 = read_c0_config5();
 		if (config5 & MIPS_CONF5_MI)
-			c->options |= MIPS_CPU_MMID;
+			(*c).options |= MIPS_CPU_MMID;
 
 		/*
 		 * Warn if we've hardcoded cpu_has_mmid to a value unsuitable
@@ -703,10 +704,10 @@ static void decode_configs(*mut cpuinfo_mipsc)
 	int ok;
 
 	/* MIPS32 or MIPS64 compliant CPU.  */
-	c->options = MIPS_CPU_4KEX | MIPS_CPU_4K_CACHE | MIPS_CPU_COUNTER |
+	(*c).options = MIPS_CPU_4KEX | MIPS_CPU_4K_CACHE | MIPS_CPU_COUNTER |
 		     MIPS_CPU_DIVEC | MIPS_CPU_LLSC | MIPS_CPU_MCHECK;
 
-	c->scache.flags = MIPS_CACHE_NOT_PRESENT;
+	(*c).scache.flags = MIPS_CACHE_NOT_PRESENT;
 
 	/* Enable FTLB if present and not disabled */
 	set_ftlb_enable(c, mips_ftlb_disabled ? 0 : FTLB_EN);
@@ -734,7 +735,7 @@ static void decode_configs(*mut cpuinfo_mipsc)
 					 : (s32)read_c0_ebase();
 		if (ebase & MIPS_EBASE_WG) {
 			/* WG bit already set, we can avoid the clumsy probe */
-			c->options |= MIPS_CPU_EBASE_WG;
+			(*c).options |= MIPS_CPU_EBASE_WG;
 		} else {
 			/* Its UNDEFINED to change EBase while BEV=0 */
 			status = read_c0_status();
@@ -753,7 +754,7 @@ static void decode_configs(*mut cpuinfo_mipsc)
 			/* Restore BEV */
 			write_c0_status(status);
 			if (read_c0_ebase() & MIPS_EBASE_WG) {
-				c->options |= MIPS_CPU_EBASE_WG;
+				(*c).options |= MIPS_CPU_EBASE_WG;
 				write_c0_ebase(ebase);
 			}
 		}
@@ -781,28 +782,28 @@ static void decode_configs(*mut cpuinfo_mipsc)
  * Finally write back the original value.
  */
 // #define probe_gc0_config(name, maxconf, bits)				\
-do {									\
-	u32 tmp;						\
-	tmp = read_gc0_##name();					\
-	write_gc0_##name(tmp | (bits));					\
-	back_to_back_c0_hazard();					\
-	maxconf = read_gc0_##name();					\
-	write_gc0_##name(tmp);						\
-} while (0)
+// do {									\
+// 	u32 tmp;						\
+// 	tmp = read_gc0_##name();					\
+// 	write_gc0_##name(tmp | (bits));					\
+// 	back_to_back_c0_hazard();					\
+// 	maxconf = read_gc0_##name();					\
+// 	write_gc0_##name(tmp);						\
+// } while (0)
 
 /*
  * Probe for dynamic guest capabilities by changing certain config bits and
  * reading back to see if they change. Finally write back the original value.
  */
 // #define probe_gc0_config_dyn(name, maxconf, dynconf, bits)		\
-do {									\
-	maxconf = read_gc0_##name();					\
-	write_gc0_##name(maxconf ^ (bits));				\
-	back_to_back_c0_hazard();					\
-	dynconf = maxconf ^ read_gc0_##name();				\
-	write_gc0_##name(maxconf);					\
-	maxconf |= dynconf;						\
-} while (0)
+// do {									\
+// 	maxconf = read_gc0_##name();					\
+// 	write_gc0_##name(maxconf ^ (bits));				\
+// 	back_to_back_c0_hazard();					\
+// 	dynconf = maxconf ^ read_gc0_##name();				\
+// 	write_gc0_##name(maxconf);					\
+// 	maxconf |= dynconf;						\
+// } while (0)
 
 unsafe fn u32 decode_guest_config0(*mut cpuinfo_mipsc)
 {
@@ -811,35 +812,35 @@ unsafe fn u32 decode_guest_config0(*mut cpuinfo_mipsc)
 	probe_gc0_config(config, config0, MIPS_CONF_M);
 
 	if (config0 & MIPS_CONF_M)
-		c->guest.conf |= BIT(1);
+		(*c).guest.conf |= BIT(1);
 	return config0 & MIPS_CONF_M;
 }
 
 unsafe fn u32 decode_guest_config1(*mut cpuinfo_mipsc)
 {
-	u32 config1, config1_dyn;
+	config1: u32, config1_dyn;
 
 	probe_gc0_config_dyn(config1, config1, config1_dyn,
 			     MIPS_CONF_M | MIPS_CONF1_PC | MIPS_CONF1_WR |
 			     MIPS_CONF1_FP);
 
 	if (config1 & MIPS_CONF1_FP)
-		c->guest.options |= MIPS_CPU_FPU;
+		(*c).guest.options |= MIPS_CPU_FPU;
 	if (config1_dyn & MIPS_CONF1_FP)
-		c->guest.options_dyn |= MIPS_CPU_FPU;
+		(*c).guest.options_dyn |= MIPS_CPU_FPU;
 
 	if (config1 & MIPS_CONF1_WR)
-		c->guest.options |= MIPS_CPU_WATCH;
+		(*c).guest.options |= MIPS_CPU_WATCH;
 	if (config1_dyn & MIPS_CONF1_WR)
-		c->guest.options_dyn |= MIPS_CPU_WATCH;
+		(*c).guest.options_dyn |= MIPS_CPU_WATCH;
 
 	if (config1 & MIPS_CONF1_PC)
-		c->guest.options |= MIPS_CPU_PERF;
+		(*c).guest.options |= MIPS_CPU_PERF;
 	if (config1_dyn & MIPS_CONF1_PC)
-		c->guest.options_dyn |= MIPS_CPU_PERF;
+		(*c).guest.options_dyn |= MIPS_CPU_PERF;
 
 	if (config1 & MIPS_CONF_M)
-		c->guest.conf |= BIT(2);
+		(*c).guest.conf |= BIT(2);
 	return config1 & MIPS_CONF_M;
 }
 
@@ -850,44 +851,44 @@ unsafe fn u32 decode_guest_config2(*mut cpuinfo_mipsc)
 	probe_gc0_config(config2, config2, MIPS_CONF_M);
 
 	if (config2 & MIPS_CONF_M)
-		c->guest.conf |= BIT(3);
+		(*c).guest.conf |= BIT(3);
 	return config2 & MIPS_CONF_M;
 }
 
 unsafe fn u32 decode_guest_config3(*mut cpuinfo_mipsc)
 {
-	u32 config3, config3_dyn;
+	config3: u32, config3_dyn;
 
 	probe_gc0_config_dyn(config3, config3, config3_dyn,
 			     MIPS_CONF_M | MIPS_CONF3_MSA | MIPS_CONF3_ULRI |
 			     MIPS_CONF3_CTXTC);
 
 	if (config3 & MIPS_CONF3_CTXTC)
-		c->guest.options |= MIPS_CPU_CTXTC;
+		(*c).guest.options |= MIPS_CPU_CTXTC;
 	if (config3_dyn & MIPS_CONF3_CTXTC)
-		c->guest.options_dyn |= MIPS_CPU_CTXTC;
+		(*c).guest.options_dyn |= MIPS_CPU_CTXTC;
 
 	if (config3 & MIPS_CONF3_PW)
-		c->guest.options |= MIPS_CPU_HTW;
+		(*c).guest.options |= MIPS_CPU_HTW;
 
 	if (config3 & MIPS_CONF3_ULRI)
-		c->guest.options |= MIPS_CPU_ULRI;
+		(*c).guest.options |= MIPS_CPU_ULRI;
 
 	if (config3 & MIPS_CONF3_SC)
-		c->guest.options |= MIPS_CPU_SEGMENTS;
+		(*c).guest.options |= MIPS_CPU_SEGMENTS;
 
 	if (config3 & MIPS_CONF3_BI)
-		c->guest.options |= MIPS_CPU_BADINSTR;
+		(*c).guest.options |= MIPS_CPU_BADINSTR;
 	if (config3 & MIPS_CONF3_BP)
-		c->guest.options |= MIPS_CPU_BADINSTRP;
+		(*c).guest.options |= MIPS_CPU_BADINSTRP;
 
 	if (config3 & MIPS_CONF3_MSA)
-		c->guest.ases |= MIPS_ASE_MSA;
+		(*c).guest.ases |= MIPS_ASE_MSA;
 	if (config3_dyn & MIPS_CONF3_MSA)
-		c->guest.ases_dyn |= MIPS_ASE_MSA;
+		(*c).guest.ases_dyn |= MIPS_ASE_MSA;
 
 	if (config3 & MIPS_CONF_M)
-		c->guest.conf |= BIT(4);
+		(*c).guest.conf |= BIT(4);
 	return config3 & MIPS_CONF_M;
 }
 
@@ -898,34 +899,34 @@ unsafe fn u32 decode_guest_config4(*mut cpuinfo_mipsc)
 	probe_gc0_config(config4, config4,
 			 MIPS_CONF_M | MIPS_CONF4_KSCREXIST);
 
-	c->guest.kscratch_mask = (config4 & MIPS_CONF4_KSCREXIST)
+	(*c).guest.kscratch_mask = (config4 & MIPS_CONF4_KSCREXIST)
 				>> MIPS_CONF4_KSCREXIST_SHIFT;
 
 	if (config4 & MIPS_CONF_M)
-		c->guest.conf |= BIT(5);
+		(*c).guest.conf |= BIT(5);
 	return config4 & MIPS_CONF_M;
 }
 
 unsafe fn u32 decode_guest_config5(*mut cpuinfo_mipsc)
 {
-	u32 config5, config5_dyn;
+	config5: u32, config5_dyn;
 
 	probe_gc0_config_dyn(config5, config5, config5_dyn,
 			 MIPS_CONF_M | MIPS_CONF5_MVH | MIPS_CONF5_MRP);
 
 	if (config5 & MIPS_CONF5_MRP)
-		c->guest.options |= MIPS_CPU_MAAR;
+		(*c).guest.options |= MIPS_CPU_MAAR;
 	if (config5_dyn & MIPS_CONF5_MRP)
-		c->guest.options_dyn |= MIPS_CPU_MAAR;
+		(*c).guest.options_dyn |= MIPS_CPU_MAAR;
 
 	if (config5 & MIPS_CONF5_LLB)
-		c->guest.options |= MIPS_CPU_RW_LLB;
+		(*c).guest.options |= MIPS_CPU_RW_LLB;
 
 	if (config5 & MIPS_CONF5_MVH)
-		c->guest.options |= MIPS_CPU_MVH;
+		(*c).guest.options |= MIPS_CPU_MVH;
 
 	if (config5 & MIPS_CONF_M)
-		c->guest.conf |= BIT(6);
+		(*c).guest.conf |= BIT(6);
 	return config5 & MIPS_CONF_M;
 }
 
@@ -948,18 +949,18 @@ unsafe fn void decode_guest_configs(*mut cpuinfo_mipsc)
 
 unsafe fn void cpu_probe_guestctl0(*mut cpuinfo_mipsc)
 {
-	u32 guestctl0, temp;
+	guestctl0: u32, temp;
 
 	guestctl0 = read_c0_guestctl0();
 
 	if (guestctl0 & MIPS_GCTL0_G0E)
-		c->options |= MIPS_CPU_GUESTCTL0EXT;
+		(*c).options |= MIPS_CPU_GUESTCTL0EXT;
 	if (guestctl0 & MIPS_GCTL0_G1)
-		c->options |= MIPS_CPU_GUESTCTL1;
+		(*c).options |= MIPS_CPU_GUESTCTL1;
 	if (guestctl0 & MIPS_GCTL0_G2)
-		c->options |= MIPS_CPU_GUESTCTL2;
+		(*c).options |= MIPS_CPU_GUESTCTL2;
 	if (!(guestctl0 & MIPS_GCTL0_RAD)) {
-		c->options |= MIPS_CPU_GUESTID;
+		(*c).options |= MIPS_CPU_GUESTID;
 
 		/*
 		 * Probe for Direct Root to Guest (DRG). Set GuestCtl1.RID = 0
@@ -975,7 +976,7 @@ unsafe fn void cpu_probe_guestctl0(*mut cpuinfo_mipsc)
 
 		if (temp & MIPS_GCTL0_DRG) {
 			write_c0_guestctl0(guestctl0);
-			c->options |= MIPS_CPU_DRG;
+			(*c).options |= MIPS_CPU_DRG;
 		}
 	}
 }
@@ -986,7 +987,7 @@ unsafe fn void cpu_probe_guestctl1(*mut cpuinfo_mipsc)
 		/* determine the number of bits of GuestID available */
 		write_c0_guestctl1(MIPS_GCTL1_ID);
 		back_to_back_c0_hazard();
-		c->guestid_mask = (read_c0_guestctl1() & MIPS_GCTL1_ID)
+		(*c).guestid_mask = (read_c0_guestctl1() & MIPS_GCTL1_ID)
 						>> MIPS_GCTL1_ID_SHIFT;
 		write_c0_guestctl1(0);
 	}
@@ -997,7 +998,7 @@ unsafe fn void cpu_probe_gtoffset(*mut cpuinfo_mipsc)
 	/* determine the number of bits of GTOffset available */
 	write_c0_gtoffset(0xffffffff);
 	back_to_back_c0_hazard();
-	c->gtoffset_mask = read_c0_gtoffset();
+	(*c).gtoffset_mask = read_c0_gtoffset();
 	write_c0_gtoffset(0);
 }
 
@@ -1013,49 +1014,49 @@ unsafe fn void cpu_probe_vz(*mut cpuinfo_mipsc)
 }
 
 // #define R4K_OPTS (MIPS_CPU_TLB | MIPS_CPU_4KEX | MIPS_CPU_4K_CACHE \
-		| MIPS_CPU_COUNTER)
+// 		| MIPS_CPU_COUNTER)
 
-unsafe fn void cpu_probe_legacy(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_legacy(*mut cpuinfo_mipsc, cpu: u32)
 {
-	switch (c->processor_id & PRID_IMP_MASK) {
+	switch ((*c).processor_id & PRID_IMP_MASK) {
 	case PRID_IMP_R2000:
-		c->cputype = CPU_R2000;
+		(*c).cputype = CPU_R2000;
 		__cpu_name[cpu] = "R2000";
-		c->fpu_msk31 |= FPU_CSR_CONDX | FPU_CSR_FS;
-		c->options = MIPS_CPU_TLB | MIPS_CPU_3K_CACHE |
+		(*c).fpu_msk31 |= FPU_CSR_CONDX | FPU_CSR_FS;
+		(*c).options = MIPS_CPU_TLB | MIPS_CPU_3K_CACHE |
 			     MIPS_CPU_NOFPUEX;
 		if (__cpu_has_fpu())
-			c->options |= MIPS_CPU_FPU;
-		c->tlbsize = 64;
+			(*c).options |= MIPS_CPU_FPU;
+		(*c).tlbsize = 64;
 		break;
 	case PRID_IMP_R3000:
-		if ((c->processor_id & PRID_REV_MASK) == PRID_REV_R3000A) {
+		if (((*c).processor_id & PRID_REV_MASK) == PRID_REV_R3000A) {
 			if (cpu_has_confreg()) {
-				c->cputype = CPU_R3081E;
+				(*c).cputype = CPU_R3081E;
 				__cpu_name[cpu] = "R3081";
 			} else {
-				c->cputype = CPU_R3000A;
+				(*c).cputype = CPU_R3000A;
 				__cpu_name[cpu] = "R3000A";
 			}
 		} else {
-			c->cputype = CPU_R3000;
+			(*c).cputype = CPU_R3000;
 			__cpu_name[cpu] = "R3000";
 		}
-		c->fpu_msk31 |= FPU_CSR_CONDX | FPU_CSR_FS;
-		c->options = MIPS_CPU_TLB | MIPS_CPU_3K_CACHE |
+		(*c).fpu_msk31 |= FPU_CSR_CONDX | FPU_CSR_FS;
+		(*c).options = MIPS_CPU_TLB | MIPS_CPU_3K_CACHE |
 			     MIPS_CPU_NOFPUEX;
 		if (__cpu_has_fpu())
-			c->options |= MIPS_CPU_FPU;
-		c->tlbsize = 64;
+			(*c).options |= MIPS_CPU_FPU;
+		(*c).tlbsize = 64;
 		break;
 	case PRID_IMP_R4000:
 		if (read_c0_config() & CONF_SC) {
-			if ((c->processor_id & PRID_REV_MASK) >=
+			if (((*c).processor_id & PRID_REV_MASK) >=
 			    PRID_REV_R4400) {
-				c->cputype = CPU_R4400PC;
+				(*c).cputype = CPU_R4400PC;
 				__cpu_name[cpu] = "R4400PC";
 			} else {
-				c->cputype = CPU_R4000PC;
+				(*c).cputype = CPU_R4000PC;
 				__cpu_name[cpu] = "R4000PC";
 			}
 		} else {
@@ -1079,40 +1080,40 @@ unsafe fn void cpu_probe_legacy(*mut cpuinfo_mipsc, u32 cpu)
 				mc = 0;
 				break;
 			}
-			if ((c->processor_id & PRID_REV_MASK) >=
+			if (((*c).processor_id & PRID_REV_MASK) >=
 			    PRID_REV_R4400) {
-				c->cputype = mc ? CPU_R4400MC : CPU_R4400SC;
+				(*c).cputype = mc ? CPU_R4400MC : CPU_R4400SC;
 				__cpu_name[cpu] = mc ? "R4400MC" : "R4400SC";
 			} else {
-				c->cputype = mc ? CPU_R4000MC : CPU_R4000SC;
+				(*c).cputype = mc ? CPU_R4000MC : CPU_R4000SC;
 				__cpu_name[cpu] = mc ? "R4000MC" : "R4000SC";
 			}
 		}
 
 		set_isa(c, MIPS_CPU_ISA_III);
-		c->fpu_msk31 |= FPU_CSR_CONDX;
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).fpu_msk31 |= FPU_CSR_CONDX;
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_WATCH | MIPS_CPU_VCE |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).tlbsize = 48;
 		break;
 	case PRID_IMP_R4300:
-		c->cputype = CPU_R4300;
+		(*c).cputype = CPU_R4300;
 		__cpu_name[cpu] = "R4300";
 		set_isa(c, MIPS_CPU_ISA_III);
-		c->fpu_msk31 |= FPU_CSR_CONDX;
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).fpu_msk31 |= FPU_CSR_CONDX;
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 32;
+		(*c).tlbsize = 32;
 		break;
 	case PRID_IMP_R4600:
-		c->cputype = CPU_R4600;
+		(*c).cputype = CPU_R4600;
 		__cpu_name[cpu] = "R4600";
 		set_isa(c, MIPS_CPU_ISA_III);
-		c->fpu_msk31 |= FPU_CSR_CONDX;
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).fpu_msk31 |= FPU_CSR_CONDX;
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).tlbsize = 48;
 		break;
 // #if 0
 	case PRID_IMP_R4650:
@@ -1122,62 +1123,62 @@ unsafe fn void cpu_probe_legacy(*mut cpuinfo_mipsc, u32 cpu)
 		 * for documentation.  Commented out because it shares
 		 * its c0_prid id number with the TX3900.
 		 */
-		c->cputype = CPU_R4650;
+		(*c).cputype = CPU_R4650;
 		__cpu_name[cpu] = "R4650";
 		set_isa(c, MIPS_CPU_ISA_III);
-		c->fpu_msk31 |= FPU_CSR_CONDX;
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).fpu_msk31 |= FPU_CSR_CONDX;
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_LLSC;
+		(*c).tlbsize = 48;
 		break;
 // #endif
 	case PRID_IMP_R4700:
-		c->cputype = CPU_R4700;
+		(*c).cputype = CPU_R4700;
 		__cpu_name[cpu] = "R4700";
 		set_isa(c, MIPS_CPU_ISA_III);
-		c->fpu_msk31 |= FPU_CSR_CONDX;
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).fpu_msk31 |= FPU_CSR_CONDX;
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).tlbsize = 48;
 		break;
 	case PRID_IMP_TX49:
-		c->cputype = CPU_TX49XX;
+		(*c).cputype = CPU_TX49XX;
 		__cpu_name[cpu] = "R49XX";
 		set_isa(c, MIPS_CPU_ISA_III);
-		c->fpu_msk31 |= FPU_CSR_CONDX;
-		c->options = R4K_OPTS | MIPS_CPU_LLSC;
-		if (!(c->processor_id & 0x08))
-			c->options |= MIPS_CPU_FPU | MIPS_CPU_32FPR;
-		c->tlbsize = 48;
+		(*c).fpu_msk31 |= FPU_CSR_CONDX;
+		(*c).options = R4K_OPTS | MIPS_CPU_LLSC;
+		if (!((*c).processor_id & 0x08))
+			(*c).options |= MIPS_CPU_FPU | MIPS_CPU_32FPR;
+		(*c).tlbsize = 48;
 		break;
 	case PRID_IMP_R5000:
-		c->cputype = CPU_R5000;
+		(*c).cputype = CPU_R5000;
 		__cpu_name[cpu] = "R5000";
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).tlbsize = 48;
 		break;
 	case PRID_IMP_R5500:
-		c->cputype = CPU_R5500;
+		(*c).cputype = CPU_R5500;
 		__cpu_name[cpu] = "R5500";
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_WATCH | MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).tlbsize = 48;
 		break;
 	case PRID_IMP_NEVADA:
-		c->cputype = CPU_NEVADA;
+		(*c).cputype = CPU_NEVADA;
 		__cpu_name[cpu] = "Nevada";
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_DIVEC | MIPS_CPU_LLSC;
-		c->tlbsize = 48;
+		(*c).tlbsize = 48;
 		break;
 	case PRID_IMP_RM7000:
-		c->cputype = CPU_RM7000;
+		(*c).cputype = CPU_RM7000;
 		__cpu_name[cpu] = "RM7000";
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
+		(*c).options = R4K_OPTS | MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_LLSC;
 		/*
 		 * Undocumented RM7000:	 Bit 29 in the info register of
@@ -1187,93 +1188,93 @@ unsafe fn void cpu_probe_legacy(*mut cpuinfo_mipsc, u32 cpu)
 		 * 29	   1 =>	   64 entry JTLB
 		 *	   0 =>	   48 entry JTLB
 		 */
-		c->tlbsize = (read_c0_info() & (1 << 29)) ? 64 : 48;
+		(*c).tlbsize = (read_c0_info() & (1 << 29)) ? 64 : 48;
 		break;
 	case PRID_IMP_R10000:
-		c->cputype = CPU_R10000;
+		(*c).cputype = CPU_R10000;
 		__cpu_name[cpu] = "R10000";
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = MIPS_CPU_TLB | MIPS_CPU_4K_CACHE | MIPS_CPU_4KEX |
+		(*c).options = MIPS_CPU_TLB | MIPS_CPU_4K_CACHE | MIPS_CPU_4KEX |
 			     MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_COUNTER | MIPS_CPU_WATCH |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 64;
+		(*c).tlbsize = 64;
 		break;
 	case PRID_IMP_R12000:
-		c->cputype = CPU_R12000;
+		(*c).cputype = CPU_R12000;
 		__cpu_name[cpu] = "R12000";
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = MIPS_CPU_TLB | MIPS_CPU_4K_CACHE | MIPS_CPU_4KEX |
+		(*c).options = MIPS_CPU_TLB | MIPS_CPU_4K_CACHE | MIPS_CPU_4KEX |
 			     MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_COUNTER | MIPS_CPU_WATCH |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 64;
+		(*c).tlbsize = 64;
 		write_c0_r10k_diag(read_c0_r10k_diag() | R10K_DIAG_E_GHIST);
 		break;
 	case PRID_IMP_R14000:
-		if (((c->processor_id >> 4) & 0x0f) > 2) {
-			c->cputype = CPU_R16000;
+		if ((((*c).processor_id >> 4) & 0x0f) > 2) {
+			(*c).cputype = CPU_R16000;
 			__cpu_name[cpu] = "R16000";
 		} else {
-			c->cputype = CPU_R14000;
+			(*c).cputype = CPU_R14000;
 			__cpu_name[cpu] = "R14000";
 		}
 		set_isa(c, MIPS_CPU_ISA_IV);
-		c->options = MIPS_CPU_TLB | MIPS_CPU_4K_CACHE | MIPS_CPU_4KEX |
+		(*c).options = MIPS_CPU_TLB | MIPS_CPU_4K_CACHE | MIPS_CPU_4KEX |
 			     MIPS_CPU_FPU | MIPS_CPU_32FPR |
 			     MIPS_CPU_COUNTER | MIPS_CPU_WATCH |
 			     MIPS_CPU_LLSC;
-		c->tlbsize = 64;
+		(*c).tlbsize = 64;
 		write_c0_r10k_diag(read_c0_r10k_diag() | R10K_DIAG_E_GHIST);
 		break;
 	case PRID_IMP_LOONGSON_64C:  /* Loongson-2/3 */
-		switch (c->processor_id & PRID_REV_MASK) {
+		switch ((*c).processor_id & PRID_REV_MASK) {
 		case PRID_REV_LOONGSON2E:
-			c->cputype = CPU_LOONGSON2EF;
+			(*c).cputype = CPU_LOONGSON2EF;
 			__cpu_name[cpu] = "ICT Loongson-2";
 			set_elf_platform(cpu, "loongson2e");
 			set_isa(c, MIPS_CPU_ISA_III);
-			c->fpu_msk31 |= FPU_CSR_CONDX;
+			(*c).fpu_msk31 |= FPU_CSR_CONDX;
 			break;
 		case PRID_REV_LOONGSON2F:
-			c->cputype = CPU_LOONGSON2EF;
+			(*c).cputype = CPU_LOONGSON2EF;
 			__cpu_name[cpu] = "ICT Loongson-2";
 			set_elf_platform(cpu, "loongson2f");
 			set_isa(c, MIPS_CPU_ISA_III);
-			c->fpu_msk31 |= FPU_CSR_CONDX;
+			(*c).fpu_msk31 |= FPU_CSR_CONDX;
 			break;
 		case PRID_REV_LOONGSON3A_R1:
-			c->cputype = CPU_LOONGSON64;
+			(*c).cputype = CPU_LOONGSON64;
 			__cpu_name[cpu] = "ICT Loongson-3";
 			set_elf_platform(cpu, "loongson3a");
 			set_isa(c, MIPS_CPU_ISA_M64R1);
-			c->ases |= (MIPS_ASE_LOONGSON_MMI | MIPS_ASE_LOONGSON_CAM |
+			(*c).ases |= (MIPS_ASE_LOONGSON_MMI | MIPS_ASE_LOONGSON_CAM |
 				MIPS_ASE_LOONGSON_EXT);
 			break;
 		case PRID_REV_LOONGSON3B_R1:
 		case PRID_REV_LOONGSON3B_R2:
-			c->cputype = CPU_LOONGSON64;
+			(*c).cputype = CPU_LOONGSON64;
 			__cpu_name[cpu] = "ICT Loongson-3";
 			set_elf_platform(cpu, "loongson3b");
 			set_isa(c, MIPS_CPU_ISA_M64R1);
-			c->ases |= (MIPS_ASE_LOONGSON_MMI | MIPS_ASE_LOONGSON_CAM |
+			(*c).ases |= (MIPS_ASE_LOONGSON_MMI | MIPS_ASE_LOONGSON_CAM |
 				MIPS_ASE_LOONGSON_EXT);
 			break;
 		}
 
-		c->options = R4K_OPTS |
+		(*c).options = R4K_OPTS |
 			     MIPS_CPU_FPU | MIPS_CPU_LLSC |
 			     MIPS_CPU_32FPR;
-		c->tlbsize = 64;
+		(*c).tlbsize = 64;
 		set_cpu_asid_mask(c, MIPS_ENTRYHI_ASID);
-		c->writecombine = _CACHE_UNCACHED_ACCELERATED;
+		(*c).writecombine = _CACHE_UNCACHED_ACCELERATED;
 		break;
 	case PRID_IMP_LOONGSON_32:
 		decode_configs(c);
 
-		c->cputype = CPU_LOONGSON32;
+		(*c).cputype = CPU_LOONGSON32;
 
-		switch (c->processor_id & PRID_REV_MASK) {
+		switch ((*c).processor_id & PRID_REV_MASK) {
 		case PRID_REV_LOONGSON1:
 			__cpu_name[cpu] = "ICT Loongson-1";
 			break;
@@ -1283,12 +1284,12 @@ unsafe fn void cpu_probe_legacy(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_mips(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_mips(*mut cpuinfo_mipsc, cpu: u32)
 {
-	c->writecombine = _CACHE_UNCACHED_ACCELERATED;
-	switch (c->processor_id & PRID_IMP_MASK) {
+	(*c).writecombine = _CACHE_UNCACHED_ACCELERATED;
+	switch ((*c).processor_id & PRID_IMP_MASK) {
 	case PRID_IMP_QEMU_GENERIC:
-		c->writecombine = _CACHE_UNCACHED;
+		(*c).writecombine = _CACHE_UNCACHED;
 		c->cputype = CPU_QEMU_GENERIC;
 		__cpu_name[cpu] = "MIPS GENERIC QEMU";
 		break;
@@ -1450,7 +1451,7 @@ unsafe fn void cpu_probe_mips(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_alchemy(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_alchemy(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 	switch (c->processor_id & PRID_IMP_MASK) {
@@ -1490,7 +1491,7 @@ unsafe fn void cpu_probe_alchemy(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_sibyte(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_sibyte(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 
@@ -1510,7 +1511,7 @@ unsafe fn void cpu_probe_sibyte(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_sandcraft(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_sandcraft(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 	switch (c->processor_id & PRID_IMP_MASK) {
@@ -1523,7 +1524,7 @@ unsafe fn void cpu_probe_sandcraft(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_nxp(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_nxp(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 	switch (c->processor_id & PRID_IMP_MASK) {
@@ -1535,7 +1536,7 @@ unsafe fn void cpu_probe_nxp(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_broadcom(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_broadcom(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 	switch (c->processor_id & PRID_IMP_MASK) {
@@ -1584,25 +1585,27 @@ unsafe fn void cpu_probe_broadcom(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 
-unsafe fn void cpu_probe_cavium(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_cavium(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 	/* Octeon has different cache interface */
 	c->options &= ~MIPS_CPU_4K_CACHE;
 	switch (c->processor_id & PRID_IMP_MASK) {
+	'platform: {
 	case PRID_IMP_CAVIUM_CN38XX:
 	case PRID_IMP_CAVIUM_CN31XX:
 	case PRID_IMP_CAVIUM_CN30XX:
 		c->cputype = CPU_CAVIUM_OCTEON;
 		__cpu_name[cpu] = "Cavium Octeon";
-		goto platform;
+		break 'platform;
 	case PRID_IMP_CAVIUM_CN58XX:
 	case PRID_IMP_CAVIUM_CN56XX:
 	case PRID_IMP_CAVIUM_CN50XX:
 	case PRID_IMP_CAVIUM_CN52XX:
 		c->cputype = CPU_CAVIUM_OCTEON_PLUS;
 		__cpu_name[cpu] = "Cavium Octeon+";
-platform:
+	}
+	
 		set_elf_platform(cpu, "octeon");
 		break;
 	case PRID_IMP_CAVIUM_CN61XX:
@@ -1623,7 +1626,7 @@ platform:
 		set_elf_platform(cpu, "octeon3");
 		break;
 	default:
-		printk(KERN_INFO "Unknown Octeon chip!\n");
+		printk(c"\x016Unknown Octeon chip!\n".as_ptr());
 		c->cputype = CPU_UNKNOWN;
 		break;
 	}
@@ -1655,7 +1658,7 @@ unsafe fn void decode_cpucfg(*mut cpuinfo_mipsc)
 		c->ases |= MIPS_ASE_LOONGSON_CAM;
 }
 
-unsafe fn void cpu_probe_loongson(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_loongson(*mut cpuinfo_mipsc, cpu: u32)
 {
 	c->cputype = CPU_LOONGSON64;
 
@@ -1722,10 +1725,10 @@ unsafe fn void cpu_probe_loongson(*mut cpuinfo_mipsc, u32 cpu)
 	}
 }
 // #else
-unsafe fn void cpu_probe_loongson(*mut cpuinfo_mipsc, u32 cpu) { }
+unsafe fn void cpu_probe_loongson(*mut cpuinfo_mipsc, cpu: u32) { }
 // #endif
 
-unsafe fn void cpu_probe_ingenic(*mut cpuinfo_mipsc, u32 cpu)
+unsafe fn void cpu_probe_ingenic(*mut cpuinfo_mipsc, cpu: u32)
 {
 	decode_configs(c);
 
@@ -1991,12 +1994,12 @@ void cpu_report(void)
 	pr_info("CPU%d revision is: %08x (%s)\n",
 		smp_processor_id(), c->processor_id, cpu_name_string());
 	if (c->options & MIPS_CPU_FPU)
-		printk(KERN_INFO "FPU revision is: %08x\n", c->fpu_id);
+		printk(c"\x016FPU revision is: %08x\n".as_ptr(), c->fpu_id);
 	if (cpu_has_msa)
 		pr_info("MSA revision is: %08x\n", c->msa_id);
 }
 
-void cpu_set_cluster(*mut cpuinfo_mipscpuinfo, u32 cluster)
+void cpu_set_cluster(*mut cpuinfo_mipscpuinfo, cluster: u32)
 {
 	/* Ensure the core number fits in the field */
 	WARN_ON(cluster > (MIPS_GLOBALNUMBER_CLUSTER >>
@@ -2006,7 +2009,7 @@ void cpu_set_cluster(*mut cpuinfo_mipscpuinfo, u32 cluster)
 	cpuinfo->globalnumber |= cluster << MIPS_GLOBALNUMBER_CLUSTER_SHF;
 }
 
-void cpu_set_core(*mut cpuinfo_mipscpuinfo, u32 core)
+void cpu_set_core(*mut cpuinfo_mipscpuinfo, core: u32)
 {
 	/* Ensure the core number fits in the field */
 	WARN_ON(core > (MIPS_GLOBALNUMBER_CORE >> MIPS_GLOBALNUMBER_CORE_SHF));
@@ -2015,7 +2018,7 @@ void cpu_set_core(*mut cpuinfo_mipscpuinfo, u32 core)
 	cpuinfo->globalnumber |= core << MIPS_GLOBALNUMBER_CORE_SHF;
 }
 
-void cpu_set_vpe_id(*mut cpuinfo_mipscpuinfo, u32 vpe)
+void cpu_set_vpe_id(*mut cpuinfo_mipscpuinfo, vpe: u32)
 {
 	/* Ensure the VP(E) ID fits in the field */
 	WARN_ON(vpe > (MIPS_GLOBALNUMBER_VP >> MIPS_GLOBALNUMBER_VP_SHF));

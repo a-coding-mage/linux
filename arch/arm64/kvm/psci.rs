@@ -64,7 +64,7 @@ unsafe fn kvm_psci_vcpu_affinity_info(vcpu: *mut kvm_vcpu) -> c_ulong {
         return PSCI_RET_INVALID_PARAMS;
     }
     let target_affinity = target_affinity & target_affinity_mask;
-    kvm_for_each_vcpu(i, tmp, kvm) {
+    kvm_for_each_vcpu!(i, tmp, kvm, {
         mpidr = kvm_vcpu_get_mpidr_aff(tmp);
         if (mpidr & target_affinity_mask) == target_affinity {
             matching_cpus += 1;
@@ -72,18 +72,18 @@ unsafe fn kvm_psci_vcpu_affinity_info(vcpu: *mut kvm_vcpu) -> c_ulong {
                 return PSCI_0_2_AFFINITY_LEVEL_ON;
             }
         }
-    }
+    });
     if matching_cpus == 0 { PSCI_RET_INVALID_PARAMS } else { PSCI_0_2_AFFINITY_LEVEL_OFF }
 }
 
 unsafe fn kvm_prepare_system_event(vcpu: *mut kvm_vcpu, type_: u32, flags: u64) {
     let mut i: c_ulong = 0;
     let mut tmp: *mut kvm_vcpu = core::ptr::null_mut();
-    kvm_for_each_vcpu(i, tmp, (*vcpu).kvm) {
+    kvm_for_each_vcpu!(i, tmp, (*vcpu).kvm, {
         spin_lock(&mut (*(*tmp).arch).mp_state_lock);
         WRITE_ONCE((*(*(*tmp).arch).mp_state).mp_state, KVM_MP_STATE_STOPPED);
         spin_unlock(&mut (*(*tmp).arch).mp_state_lock);
-    }
+    });
     kvm_make_all_cpus_request((*vcpu).kvm, KVM_REQ_SLEEP);
     memset(&mut (*(*vcpu).run).system_event, 0, core::mem::size_of_val(&(*(*vcpu).run).system_event));
     (*(*vcpu).run).system_event.type_ = type_;

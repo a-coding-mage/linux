@@ -22,12 +22,12 @@ pub const fn merge_64(high: u32, low: u32) -> u64 {
 }
 
 // CONFIG_ARCH_HAS_SYSCALL_WRAPPER selects the signature of sys_ni_syscall.
-#[cfg(not(feature = "CONFIG_ARCH_HAS_SYSCALL_WRAPPER"))]
+#[cfg(not(CONFIG_ARCH_HAS_SYSCALL_WRAPPER))]
 extern "C" {
     pub fn sys_ni_syscall() -> c_long;
 }
 
-#[cfg(feature = "CONFIG_ARCH_HAS_SYSCALL_WRAPPER")]
+#[cfg(CONFIG_ARCH_HAS_SYSCALL_WRAPPER)]
 extern "C" {
     pub fn sys_ni_syscall(regs: *const pt_regs) -> c_long;
 }

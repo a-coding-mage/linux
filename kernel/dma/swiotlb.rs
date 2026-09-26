@@ -29,8 +29,8 @@ extern "C" {
     static mut swiotlb_force_disable: bool;
 }
 
-static inline fn io_tlb_offset(val: c_ulong) -> c_ulong { val & (IO_TLB_SEGSIZE - 1) }
-static inline fn nr_slots(val: u64) -> c_ulong { DIV_ROUND_UP(val, IO_TLB_SIZE) }
+inline fn io_tlb_offset(val: c_ulong) -> c_ulong { val & (IO_TLB_SEGSIZE - 1) }
+inline fn nr_slots(val: u64) -> c_ulong { DIV_ROUND_UP(val, IO_TLB_SIZE) }
 
 unsafe fn round_up_default_nslabs() -> bool {
     if default_nareas == 0 { return false; }
@@ -78,7 +78,7 @@ pub unsafe extern "C" fn swiotlb_print_info() {
 #[no_mangle]
 pub unsafe extern "C" fn swiotlb_dev_init(dev: *mut device) {
     (*dev).dma_io_tlb_mem = &mut io_tlb_default_mem;
-    #[cfg(feature = "CONFIG_SWIOTLB_DYNAMIC")]
+    #[cfg(CONFIG_SWIOTLB_DYNAMIC)]
     { INIT_LIST_HEAD(&mut (*dev).dma_io_tlb_pools); spin_lock_init(&mut (*dev).dma_io_tlb_lock); (*dev).dma_uses_io_tlb = false; }
 }
 

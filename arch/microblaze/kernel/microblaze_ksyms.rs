@@ -7,7 +7,7 @@
 // Kernel and architecture headers supplied by the surrounding build provide
 // the declarations corresponding to the symbols exported below.
 
-#[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+#[cfg(CONFIG_FUNCTION_TRACER)]
 extern "C" {
     pub fn _mcount();
 }
@@ -18,7 +18,7 @@ extern "C" {
  */
 // EXPORT_SYMBOL(__copy_tofrom_user);
 
-#[cfg(feature = "CONFIG_OPT_LIB_ASM")]
+#[cfg(CONFIG_OPT_LIB_ASM)]
 extern "C" {
     pub fn memcpy();
     pub fn memmove();
@@ -53,7 +53,7 @@ extern "C" {
 }
 // EXPORT_SYMBOL(__umodsi3);
 
-#[cfg(feature = "CONFIG_MB_MANAGER")]
+#[cfg(CONFIG_MB_MANAGER)]
 extern "C" {
     pub fn xmb_manager_register(
         phys_baseaddr: usize,

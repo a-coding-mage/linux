@@ -6,7 +6,7 @@
 
 extern "C" {
     pub static mut pa_tlb_flush_lock: spinlock_t;
-    #[cfg(all(feature = "CONFIG_64BIT", feature = "CONFIG_SMP"))]
+    #[cfg(all(CONFIG_64BIT, CONFIG_SMP))]
     pub static mut pa_serialize_tlb_flushes: ::core::ffi::c_int;
     pub fn __update_cache(pte: pte_t);
     pub fn paging_init();

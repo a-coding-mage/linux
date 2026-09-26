@@ -87,23 +87,23 @@ unsafe extern "C" fn filldir64(ctx: *mut dir_context, name: *const c_char, namle
 pub unsafe extern "C" fn getdents(_fd: c_uint, _dirent: *mut linux_dirent, _count: c_uint) -> c_int { -ENOTDIR }
 pub unsafe extern "C" fn getdents64(_fd: c_uint, _dirent: *mut linux_dirent64, _count: c_uint) -> c_int { -ENOTDIR }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct compat_old_linux_dirent { pub d_ino: compat_ulong_t, pub d_offset: compat_ulong_t, pub d_namlen: c_ushort, pub d_name: [c_char; 0] }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct compat_linux_dirent { pub d_ino: compat_ulong_t, pub d_off: compat_ulong_t, pub d_reclen: c_ushort, pub d_name: [c_char; 0] }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct compat_readdir_callback { pub ctx: dir_context, pub dirent: *mut compat_old_linux_dirent, pub result: c_int }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct compat_getdents_callback { pub ctx: dir_context, pub current_dir: *mut compat_linux_dirent, pub prev_reclen: c_int, pub error: c_int }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe extern "C" fn compat_fillonedir(ctx: *mut dir_context, name: *const c_char, namlen: c_int, offset: loff_t, ino: u64, _d_type: c_uint) -> bool {
     let b = ctx as *mut compat_readdir_callback; if (*b).result != 0 { return false; } (*b).result = verify_dirent_name(name, namlen); if (*b).result != 0 { return false; }
     let d = (*b).dirent; (*d).d_ino = ino as compat_ulong_t; (*d).d_offset = offset as compat_ulong_t; (*d).d_namlen = namlen as c_ushort; copy_name((*d).d_name.as_mut_ptr(), name, namlen as usize); (*b).result += 1; true
 }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe extern "C" fn compat_old_readdir(_fd: c_uint, _dirent: *mut compat_old_linux_dirent, _count: c_uint) -> c_int { -ENOTDIR }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe extern "C" fn compat_getdents(_fd: c_uint, _dirent: *mut compat_linux_dirent, _count: c_uint) -> c_int { -ENOTDIR }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

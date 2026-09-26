@@ -22,7 +22,7 @@ pub unsafe extern "C" fn setup_replication_mask() {
 
     // CONFIG_REPLICATE_KTEXT: kernel-text replication build condition.
     // CONFIG_MAPPED_KERNEL is required by the original source.
-    #[cfg(feature = "CONFIG_REPLICATE_KTEXT")]
+    #[cfg(CONFIG_REPLICATE_KTEXT)]
     {
         for nasid in for_each_online_node() {
             if nasid == 0 {
@@ -110,7 +110,7 @@ pub unsafe extern "C" fn node_getfirstfree(nasid: nasid_t) -> c_ulong {
     let offset: c_ulong;
 
     // CONFIG_MAPPED_KERNEL condition from the original source.
-    #[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+    #[cfg(CONFIG_MAPPED_KERNEL)]
     {
         loadbase = loadbase.wrapping_add(16777216);
     }

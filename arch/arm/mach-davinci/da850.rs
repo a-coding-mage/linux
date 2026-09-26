@@ -9,7 +9,7 @@ pub const DA850_TIMER64P3_BASE: usize = 0x01f0d000;
 pub const DA850_REF_FREQ: u32 = 24000000;
 
 /* The build-time CONFIG_DAVINCI_MUX condition is preserved here. */
-#[cfg(feature = "CONFIG_DAVINCI_MUX")]
+#[cfg(CONFIG_DAVINCI_MUX)]
 static DA850_PINS: &[MuxConfig] = &[
     mux_cfg!(DA850, NUART0_CTS, 3, 24, 15, 2, false),
     mux_cfg!(DA850, NUART0_RTS, 3, 28, 15, 2, false),

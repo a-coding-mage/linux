@@ -22,7 +22,7 @@ unsafe extern "C" fn ublk_fault_inject_tgt_init(
     dev: *mut ublk_dev,
 ) -> ::std::os::raw::c_int {
     let info: *const ublksrv_ctrl_dev_info = unsafe { &(*dev).dev_info };
-    let dev_size: ::std::os::raw::c_ulong = 250 as ::std::os::raw::c_ulong << 30;
+    let dev_size: ::std::os::raw::c_ulong = (250 as ::std::os::raw::c_ulong) << 30;
     let mut opts: *mut fi_opts = ::std::ptr::null_mut();
 
     if unsafe { (*ctx).auto_zc_fallback } {

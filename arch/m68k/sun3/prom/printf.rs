@@ -15,13 +15,13 @@ use core::ffi::{c_char, c_int, c_void};
 unsafe extern "C" {
     pub fn vsnprintf(buf: *mut c_char, size: usize, fmt: *const c_char, args: *mut c_void) -> c_int;
     pub fn prom_putchar(ch: c_char);
-    #[cfg(feature = "CONFIG_KGDB")]
+    #[cfg(CONFIG_KGDB)]
     pub fn pr_info(fmt: *const c_char, ...);
-    #[cfg(feature = "CONFIG_KGDB")]
+    #[cfg(CONFIG_KGDB)]
     pub fn putpacket(buf: *mut c_char, error: c_int);
 }
 
-#[cfg(feature = "CONFIG_KGDB")]
+#[cfg(CONFIG_KGDB)]
 unsafe extern "C" {
     pub static mut kgdb_initialized: c_int;
 }
@@ -34,7 +34,7 @@ pub unsafe extern "C" fn prom_printf(fmt: *mut c_char, mut args: ...) {
 
     // va_start(args, fmt);
 
-    #[cfg(feature = "CONFIG_KGDB")]
+    #[cfg(CONFIG_KGDB)]
     {
         ppbuf[0] = b'O' as c_char;
         vsnprintf(
@@ -45,7 +45,7 @@ pub unsafe extern "C" fn prom_printf(fmt: *mut c_char, mut args: ...) {
         );
     }
 
-    #[cfg(not(feature = "CONFIG_KGDB"))]
+    #[cfg(not(CONFIG_KGDB))]
     {
         vsnprintf(
             ppbuf.as_mut_ptr(),
@@ -57,7 +57,7 @@ pub unsafe extern "C" fn prom_printf(fmt: *mut c_char, mut args: ...) {
 
     bptr = ppbuf.as_mut_ptr();
 
-    #[cfg(feature = "CONFIG_KGDB")]
+    #[cfg(CONFIG_KGDB)]
     {
         if kgdb_initialized != 0 {
             pr_info(b"kgdb_initialized = %d\n\0".as_ptr() as *const c_char, kgdb_initialized);
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn prom_printf(fmt: *mut c_char, mut args: ...) {
         }
     }
 
-    #[cfg(not(feature = "CONFIG_KGDB"))]
+    #[cfg(not(CONFIG_KGDB))]
     while {
         ch = *bptr;
         bptr = bptr.add(1);

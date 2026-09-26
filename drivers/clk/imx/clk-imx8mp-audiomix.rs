@@ -100,12 +100,12 @@ struct ClkImx8mpAudiomixPriv {
 #[repr(C)] struct Device;
 #[repr(C)] struct PlatformDevice { dev: Device }
 
-#[cfg(feature = "CONFIG_RESET_CONTROLLER")]
+#[cfg(CONFIG_RESET_CONTROLLER)]
 unsafe fn clk_imx8mp_audiomix_reset_controller_register(_dev: *mut Device, _priv: *mut ClkImx8mpAudiomixPriv) -> i32 {
     // The auxiliary reset device is created by the kernel implementation.
     0
 }
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 unsafe fn clk_imx8mp_audiomix_reset_controller_register(_dev: *mut Device, _priv: *mut ClkImx8mpAudiomixPriv) -> i32 { 0 }
 
 unsafe fn clk_imx8mp_audiomix_save_restore(dev: *mut Device, save: bool) {

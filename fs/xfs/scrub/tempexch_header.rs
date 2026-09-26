@@ -5,13 +5,13 @@
  */
 
 // Conditional on CONFIG_XFS_ONLINE_REPAIR in the original C header.
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 #[repr(C)]
 pub struct xrep_tempexch {
     pub req: xfs_exchmaps_req,
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 extern "C" {
     pub fn xrep_tempexch_trans_reserve(
         sc: *mut xfs_scrub,

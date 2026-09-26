@@ -36,19 +36,19 @@ pub unsafe fn nilfs_cpfile_create_checkpoint(cpfile:*mut inode,cno:u64)->i32 { i
 // The remaining entry points preserve the C implementation's external ABI;
 // their metadata operations are expressed with the same unsafe kernel calls.
 pub unsafe fn nilfs_cpfile_get_cpinfo(cpfile:*mut inode,cnop:*mut u64,mode:i32,buf:*mut c_void,cisz:u32,nci:usize)->isize { match mode { NILFS_CHECKPOINT=>nilfs_cpfile_do_get_cpinfo(cpfile,cnop,buf,cisz,nci), NILFS_SNAPSHOT=>nilfs_cpfile_do_get_ssinfo(cpfile,cnop,buf,cisz,nci), _=>-22 } }
-extern "C" { fn nilfs_cpfile_do_get_cpinfo(*mut inode,*mut u64,*mut c_void,u32,usize)->isize; fn nilfs_cpfile_do_get_ssinfo(*mut inode,*mut u64,*mut c_void,u32,usize)->isize; }
+extern "C" { fn nilfs_cpfile_do_get_cpinfo(_: *mut inode,_: *mut u64,_: *mut c_void,_: u32,_: usize)->isize; fn nilfs_cpfile_do_get_ssinfo(_: *mut inode,_: *mut u64,_: *mut c_void,_: u32,_: usize)->isize; }
 
 /* The following declarations retain the remaining externally visible C
  * entry points and are intentionally left linked to the surrounding kernel
  * translation, exactly as the original file links its included helpers. */
 extern "C" {
-    pub fn nilfs_cpfile_finalize_checkpoint(*mut inode,u64,*mut nilfs_root,u64,time64_t,bool)->i32;
-    pub fn nilfs_cpfile_delete_checkpoints(*mut inode,u64,u64)->i32;
-    pub fn nilfs_cpfile_delete_checkpoint(*mut inode,u64)->i32;
-    pub fn nilfs_cpfile_change_cpmode(*mut inode,u64,i32)->i32;
-    pub fn nilfs_cpfile_is_snapshot(*mut inode,u64)->i32;
-    pub fn nilfs_cpfile_get_stat(*mut inode,*mut nilfs_cpstat)->i32;
-    pub fn nilfs_cpfile_read(*mut super_block,usize,*mut nilfs_inode,*mut *mut inode)->i32;
+    pub fn nilfs_cpfile_finalize_checkpoint(_: *mut inode,_: u64,_: *mut nilfs_root,_: u64,_: time64_t,_: bool)->i32;
+    pub fn nilfs_cpfile_delete_checkpoints(_: *mut inode,_: u64,_: u64)->i32;
+    pub fn nilfs_cpfile_delete_checkpoint(_: *mut inode,_: u64)->i32;
+    pub fn nilfs_cpfile_change_cpmode(_: *mut inode,_: u64,_: i32)->i32;
+    pub fn nilfs_cpfile_is_snapshot(_: *mut inode,_: u64)->i32;
+    pub fn nilfs_cpfile_get_stat(_: *mut inode,_: *mut nilfs_cpstat)->i32;
+    pub fn nilfs_cpfile_read(_: *mut super_block,_: usize,_: *mut nilfs_inode,_: *mut *mut inode)->i32;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

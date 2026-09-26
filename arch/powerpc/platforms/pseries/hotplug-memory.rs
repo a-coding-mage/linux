@@ -16,22 +16,22 @@ use core::ffi::c_void;
 #[repr(C)] pub struct drc_ic { pub count: u32, pub index: u32 }
 
 extern "C" {
-    fn kfree(*mut c_void); fn kzalloc(usize, u32) -> *mut c_void; fn kstrdup(*const i8, u32) -> *mut i8;
-    fn memcpy(*mut c_void, *const c_void, usize) -> *mut c_void; fn memcmp(*const c_void,*const c_void,usize)->i32;
-    fn of_property_set_flag(*mut property, u32); fn of_update_property(*mut device_node,*mut property)->i32;
-    fn of_find_node_by_path(*const i8)->*mut device_node; fn of_node_put(*mut device_node);
-    fn of_get_property(*mut device_node,*const i8,*mut i32)->*const u32; fn of_find_property(*mut device_node,*const i8,*mut i32)->*mut property;
-    fn dlpar_configure_connector(u32,*mut device_node)->*mut device_node; fn dlpar_free_cc_nodes(*mut device_node);
-    fn update_numa_distance(*mut device_node); fn be32_to_cpu(u32)->u32; fn cpu_to_be32(u32)->u32;
-    fn memory_block_get(usize)->*mut memory_block; fn memory_block_put(*mut memory_block); fn phys_to_block_id(u64)->usize;
-    fn dev_offline(*mut device)->i32; fn device_online(*mut device)->i32; fn device_offline(*mut device)->i32;
-    fn memory_block_size_bytes()->usize; fn __add_memory(i32,u64,usize,u32)->i32; fn __remove_memory(u64,usize);
-    fn memblock_add(u64,u64)->i32; fn memblock_remove(u64,u64)->i32; fn pfn_valid(usize)->bool;
+    fn kfree(_: *mut c_void); fn kzalloc(_: usize, _: u32) -> *mut c_void; fn kstrdup(_: *const i8, _: u32) -> *mut i8;
+    fn memcpy(_: *mut c_void, _: *const c_void, _: usize) -> *mut c_void; fn memcmp(_: *const c_void,_: *const c_void,_: usize)->i32;
+    fn of_property_set_flag(_: *mut property, _: u32); fn of_update_property(_: *mut device_node,_: *mut property)->i32;
+    fn of_find_node_by_path(_: *const i8)->*mut device_node; fn of_node_put(_: *mut device_node);
+    fn of_get_property(_: *mut device_node,_: *const i8,_: *mut i32)->*const u32; fn of_find_property(_: *mut device_node,_: *const i8,_: *mut i32)->*mut property;
+    fn dlpar_configure_connector(_: u32,_: *mut device_node)->*mut device_node; fn dlpar_free_cc_nodes(_: *mut device_node);
+    fn update_numa_distance(_: *mut device_node); fn be32_to_cpu(_: u32)->u32; fn cpu_to_be32(_: u32)->u32;
+    fn memory_block_get(_: usize)->*mut memory_block; fn memory_block_put(_: *mut memory_block); fn phys_to_block_id(_: u64)->usize;
+    fn dev_offline(_: *mut device)->i32; fn device_online(_: *mut device)->i32; fn device_offline(_: *mut device)->i32;
+    fn memory_block_size_bytes()->usize; fn __add_memory(_: i32,_: u64,_: usize,_: u32)->i32; fn __remove_memory(_: u64,_: usize);
+    fn memblock_add(_: u64,_: u64)->i32; fn memblock_remove(_: u64,_: u64)->i32; fn pfn_valid(_: usize)->bool;
     fn lock_device_hotplug(); fn unlock_device_hotplug(); fn drmem_update_dt()->i32;
-    fn dlpar_release_drc(u32); fn dlpar_acquire_drc(u32)->i32; fn dlpar_unisolate_drc(u32);
-    fn invalidate_lmb_associativity_index(*mut drmem_lmb); fn drmem_mark_lmb_reserved(*mut drmem_lmb);
-    fn drmem_remove_lmb_reservation(*mut drmem_lmb); fn drmem_lmb_reserved(*mut drmem_lmb)->bool;
-    fn of_drconf_to_nid_single(*mut drmem_lmb)->i32; fn node_possible(i32)->bool; static mut first_online_node:i32;
+    fn dlpar_release_drc(_: u32); fn dlpar_acquire_drc(_: u32)->i32; fn dlpar_unisolate_drc(_: u32);
+    fn invalidate_lmb_associativity_index(_: *mut drmem_lmb); fn drmem_mark_lmb_reserved(_: *mut drmem_lmb);
+    fn drmem_remove_lmb_reservation(_: *mut drmem_lmb); fn drmem_lmb_reserved(_: *mut drmem_lmb)->bool;
+    fn of_drconf_to_nid_single(_: *mut drmem_lmb)->i32; fn node_possible(_: i32)->bool; static mut first_online_node:i32;
 }
 
 unsafe fn dlpar_free_property(p:*mut property){ if !p.is_null(){kfree((*p).name as *mut c_void);kfree((*p).value);kfree(p as *mut c_void);} }

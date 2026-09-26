@@ -11,13 +11,13 @@
  */
 
 /* CONFIG_PPC_PERF_CTRS selects the declarations from asm/perf_event_server.h. */
-#[cfg(not(feature = "CONFIG_PPC_PERF_CTRS"))]
+#[cfg(not(CONFIG_PPC_PERF_CTRS))]
 #[inline]
 pub fn is_sier_available() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_PPC_PERF_CTRS"))]
+#[cfg(not(CONFIG_PPC_PERF_CTRS))]
 #[inline]
 pub fn get_pmcs_ext_regs(_idx: i32) -> libc::c_ulong {
     0
@@ -26,7 +26,7 @@ pub fn get_pmcs_ext_regs(_idx: i32) -> libc::c_ulong {
 /* CONFIG_FSL_EMB_PERF_EVENT selects declarations from asm/perf_event_fsl_emb.h. */
 
 /* CONFIG_PERF_EVENTS selects the perf event support declarations below. */
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 macro_rules! perf_arch_bpf_user_pt_regs {
     ($regs:expr) => {
         &mut $regs.user_regs
@@ -37,7 +37,7 @@ macro_rules! perf_arch_bpf_user_pt_regs {
  * Overload regs->result to specify whether we should use the MSR (result
  * is zero) or the SIAR (result is non zero).
  */
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 macro_rules! perf_arch_fetch_caller_regs {
     ($regs:expr, $ip:expr) => {{
         $regs.result = 0;
@@ -50,19 +50,19 @@ macro_rules! perf_arch_fetch_caller_regs {
 }
 
 /* To support perf_regs sier update */
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 unsafe extern "C" {
     pub fn is_sier_available() -> bool;
     pub fn get_pmcs_ext_regs(idx: i32) -> libc::c_ulong;
 }
 
 /* To define perf extended regs mask value */
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 unsafe extern "C" {
     pub static mut PERF_REG_EXTENDED_MASK: u64;
 }
 
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 pub const PERF_REG_EXTENDED_MASK: u64 = unsafe { PERF_REG_EXTENDED_MASK };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

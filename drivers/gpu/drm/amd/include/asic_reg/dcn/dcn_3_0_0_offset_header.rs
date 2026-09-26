@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Translated from dcn_3_0_0_offset.h.
 // SPDX-License-Identifier: MIT
-pub const _dcn_3_0_0_OFFSET_HEADER: u32 = ;
 
 
 

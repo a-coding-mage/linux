@@ -12,7 +12,7 @@
 
 // Linux kernel dependencies supplied by other translation units.
 
-static unsafe fn mctp_neigh_add(
+unsafe fn mctp_neigh_add(
     mdev: *mut mctp_dev,
     eid: mctp_eid_t,
     source: mctp_neigh_source,

@@ -17,7 +17,7 @@ pub type GetGsiFromSbdfT = unsafe extern "C" fn(sbdf: u32) -> i32;
 
 // The following items correspond to CONFIG_XEN_DOM0.  The cfg feature is
 // the Rust build-time equivalent of that C preprocessor condition.
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 extern "C" {
     pub fn xen_acpi_notify_hypervisor_sleep(
         sleep_state: u8,
@@ -36,7 +36,7 @@ extern "C" {
     pub static mut acpi_suspend_lowlevel: Option<unsafe extern "C" fn() -> i32>;
 }
 
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 #[inline]
 pub unsafe extern "C" fn xen_acpi_suspend_lowlevel() -> i32 {
     /*
@@ -48,7 +48,7 @@ pub unsafe extern "C" fn xen_acpi_suspend_lowlevel() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 #[inline]
 pub unsafe extern "C" fn xen_acpi_sleep_register() {
     if xen_initial_domain() {
@@ -63,7 +63,7 @@ pub unsafe extern "C" fn xen_acpi_sleep_register() {
     }
 }
 
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 extern "C" {
     pub fn xen_pvh_setup_gsi(gsi: i32, trigger: i32, polarity: i32) -> i32;
     pub fn xen_acpi_get_gsi_info(
@@ -77,14 +77,14 @@ extern "C" {
 }
 
 // External type corresponding to struct pci_dev, supplied by another file.
-#[cfg(feature = "CONFIG_XEN_DOM0")]
+#[cfg(CONFIG_XEN_DOM0)]
 pub enum pci_dev {}
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe extern "C" fn xen_acpi_sleep_register() {}
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe extern "C" fn xen_pvh_setup_gsi(
     _gsi: i32,
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn xen_pvh_setup_gsi(
     -1
 }
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe extern "C" fn xen_acpi_get_gsi_info(
     _dev: *mut pci_dev,
@@ -105,17 +105,17 @@ pub unsafe extern "C" fn xen_acpi_get_gsi_info(
     -1
 }
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe extern "C" fn xen_acpi_register_get_gsi_func(_func: GetGsiFromSbdfT) {}
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 #[inline]
 pub unsafe extern "C" fn xen_acpi_get_gsi_from_sbdf(_sbdf: u32) -> i32 {
     -1
 }
 
-#[cfg(not(feature = "CONFIG_XEN_DOM0"))]
+#[cfg(not(CONFIG_XEN_DOM0))]
 pub enum pci_dev {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

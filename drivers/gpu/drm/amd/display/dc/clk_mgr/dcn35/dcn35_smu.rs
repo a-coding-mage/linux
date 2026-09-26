@@ -84,7 +84,7 @@ unsafe fn dcn35_smu_wait_for_response(clk_mgr: *mut clk_mgr_internal, delay_us: 
         if res_val != VBIOSSMC_Status_BUSY { break; }
         if delay_us >= 1000 { msleep(delay_us / 1000); }
         else if delay_us > 0 { udelay(delay_us); }
-        if (*clk_mgr).base.ctx->dc->debug.disable_timeout { max_retries = max_retries.wrapping_add(1); }
+        if (*(*(*clk_mgr).base.ctx).dc).debug.disable_timeout { max_retries = max_retries.wrapping_add(1); }
         if max_retries == 0 { break; }
         max_retries = max_retries.wrapping_sub(1);
     }
@@ -119,7 +119,7 @@ pub unsafe fn dcn35_smu_set_dppclk(m: *mut clk_mgr_internal, requested: c_int) -
 
 // The remaining declarations and structure definitions are supplied by dcn35_smu.h.
 // Function bodies below retain the original driver-visible behavior.
-pub unsafe fn dcn35_smu_set_display_idle_optimization(m: *mut clk_mgr_internal, idle_info: u32) { if !(*m).base.ctx->dc->debug.pstate_enabled || !(*m).smu_present { return; } dcn35_smu_send_msg_with_param(m, VBIOSSMC_MSG_SetDisplayIdleOptimizations, idle_info); }
+pub unsafe fn dcn35_smu_set_display_idle_optimization(m: *mut clk_mgr_internal, idle_info: u32) { if (*(*!(*m).base.ctx).dc).debug.pstate_enabled || !(*m).smu_present { return; } dcn35_smu_send_msg_with_param(m, VBIOSSMC_MSG_SetDisplayIdleOptimizations, idle_info); }
 pub unsafe fn dcn35_smu_enable_phy_refclk_pwrdwn(m: *mut clk_mgr_internal, enable: bool) { if !(*m).smu_present { return; } let data = if enable { (1u32 << 0) | (1u32 << 1) } else { 0 }; dcn35_smu_send_msg_with_param(m, VBIOSSMC_MSG_SetDisplayIdleOptimizations, data); }
 pub unsafe fn dcn35_smu_enable_pme_wa(m: *mut clk_mgr_internal) { if (*m).smu_present { dcn35_smu_send_msg_with_param(m, VBIOSSMC_MSG_UpdatePmeRestore, 0); } }
 pub unsafe fn dcn35_smu_set_dram_addr_high(m: *mut clk_mgr_internal, v: u32) { if (*m).smu_present { dcn35_smu_send_msg_with_param(m, VBIOSSMC_MSG_SetVbiosDramAddrHigh, v); } }

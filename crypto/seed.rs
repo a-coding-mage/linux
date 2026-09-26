@@ -16,8 +16,8 @@
 // #include <linux/unaligned.h>
 
 const SEED_NUM_KCONSTANTS: usize = 16;
-#define SEED_KEY_SIZE		16
-#define SEED_BLOCK_SIZE		16
+pub const SEED_KEY_SIZE: u32 = 16;
+pub const SEED_BLOCK_SIZE: u32 = 16;
 const SEED_KEYSCHED_LEN: usize = 32;
 
 /*
@@ -331,7 +331,7 @@ unsafe fn seed_set_key(tfm: *mut crypto_tfm, in_key: *const u8, key_len: u32) . 
 {
 	struct seed_ctx *ctx = crypto_tfm_ctx(tfm);
 	let mut keyout = (*ctx).keysched.as_mut_ptr();
-	u32 i, t0, t1, x1, x2, x3, x4;
+	i: u32, t0, t1, x1, x2, x3, x4;
 
 	x1 = get_unaligned_be32(&in_key[0]);
 	x2 = get_unaligned_be32(&in_key[4]);
@@ -366,7 +366,7 @@ unsafe fn seed_set_key(tfm: *mut crypto_tfm, in_key: *const u8, key_len: u32) . 
 unsafe fn seed_encrypt(tfm: *mut crypto_tfm, out: *mut u8, input: *const u8)
 {
 	let ctx: *const seed_ctx = crypto_tfm_ctx(tfm);
-	u32 x1, x2, x3, x4, t0, t1;
+	x1: u32, x2, x3, x4, t0, t1;
 	let ks: *const u32 = (*ctx).keysched.as_ptr();
 
 	x1 = get_unaligned_be32(input.add(0));
@@ -402,7 +402,7 @@ unsafe fn seed_encrypt(tfm: *mut crypto_tfm, out: *mut u8, input: *const u8)
 unsafe fn seed_decrypt(tfm: *mut crypto_tfm, out: *mut u8, input: *const u8)
 {
 	let ctx: *const seed_ctx = crypto_tfm_ctx(tfm);
-	u32 x1, x2, x3, x4, t0, t1;
+	x1: u32, x2, x3, x4, t0, t1;
 	let ks: *const u32 = (*ctx).keysched.as_ptr();
 
 	x1 = get_unaligned_be32(input.add(0));
@@ -435,20 +435,20 @@ unsafe fn seed_decrypt(tfm: *mut crypto_tfm, out: *mut u8, input: *const u8)
 
 
 static mut seed_alg: crypto_alg = {
-	.cra_name		=	"seed",
-	.cra_driver_name	=	"seed-generic",
-	.cra_priority		=	100,
-	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
-	.cra_blocksize		=	SEED_BLOCK_SIZE,
-	.cra_ctxsize		=	sizeof(struct seed_ctx),
-	.cra_module		=	THIS_MODULE,
-	.cra_u			=	{
-		.cipher = {
-			.cia_min_keysize	=	SEED_KEY_SIZE,
-			.cia_max_keysize	=	SEED_KEY_SIZE,
-			.cia_setkey		=	seed_set_key,
-			.cia_encrypt		=	seed_encrypt,
-			.cia_decrypt		=	seed_decrypt
+	cra_name: "seed",
+	cra_driver_name: "seed-generic",
+	cra_priority: 100,
+	cra_flags: CRYPTO_ALG_TYPE_CIPHER,
+	cra_blocksize: SEED_BLOCK_SIZE,
+	cra_ctxsize: sizeof(seed_ctx),
+	cra_module: THIS_MODULE,
+	cra_u: {
+		cipher: {
+			cia_min_keysize: SEED_KEY_SIZE,
+			cia_max_keysize: SEED_KEY_SIZE,
+			cia_setkey: seed_set_key,
+			cia_encrypt: seed_encrypt,
+			cia_decrypt: seed_decrypt
 		}
 	}
 };

@@ -40,7 +40,7 @@ extern "C" {
     pub fn dma_resv_set_deadline(obj: *mut dma_resv, usage: dma_resv_usage, deadline: ktime_t);
     pub fn dma_resv_test_signaled(obj: *mut dma_resv, usage: dma_resv_usage) -> bool;
     pub fn dma_resv_describe(obj: *mut dma_resv, seq: *mut seq_file);
-    #[cfg(feature = "CONFIG_DEBUG_MUTEXES")]
+    #[cfg(CONFIG_DEBUG_MUTEXES)]
     pub fn dma_resv_reset_max_fences(obj: *mut dma_resv);
 }
 
@@ -135,7 +135,7 @@ macro_rules! dma_resv_for_each_fence {
 #[inline] pub unsafe fn dma_resv_is_locked(obj: *mut dma_resv) -> bool { ww_mutex_is_locked(&mut (*obj).lock) }
 #[inline] pub unsafe fn dma_resv_locking_ctx(obj: *mut dma_resv) -> *mut ww_acquire_ctx { core::ptr::read_volatile(&(*obj).lock.ctx) }
 #[inline] pub unsafe fn dma_resv_unlock(obj: *mut dma_resv) {
-    #[cfg(feature = "CONFIG_DEBUG_MUTEXES")]
+    #[cfg(CONFIG_DEBUG_MUTEXES)]
     dma_resv_reset_max_fences(obj);
     ww_mutex_unlock(&mut (*obj).lock);
 }

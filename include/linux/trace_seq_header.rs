@@ -47,7 +47,7 @@ pub unsafe fn trace_seq_pop(s: *mut trace_seq) -> i32 {
 }
 
 /* Currently only defined when tracing is enabled. */
-#[cfg(feature = "CONFIG_TRACING")]
+#[cfg(CONFIG_TRACING)]
 extern "C" {
     pub fn trace_seq_printf(s: *mut trace_seq, fmt: *const core::ffi::c_char, ...);
     pub fn trace_seq_vprintf(s: *mut trace_seq, fmt: *const core::ffi::c_char, args: va_list);
@@ -74,51 +74,51 @@ extern "C" {
     pub fn trace_seq_acquire(s: *mut trace_seq, len: u32) -> *mut core::ffi::c_char;
 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_printf(_s: *mut trace_seq, _fmt: *const core::ffi::c_char, ...) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_bprintf(_s: *mut trace_seq, _fmt: *const core::ffi::c_char, _binary: *const u32) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_bitmask(_s: *mut trace_seq, _maskp: *const libc::c_ulong, _nmaskbits: i32) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_bitmask_list(_s: *mut trace_seq, _maskp: *const libc::c_ulong, _nmaskbits: i32) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_print_seq(_m: *mut seq_file, _s: *mut trace_seq) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_to_user(_s: *mut trace_seq, _ubuf: *mut core::ffi::c_char, _cnt: i32) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_puts(_s: *mut trace_seq, _str_: *const core::ffi::c_char) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_putc(_s: *mut trace_seq, _c: u8) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_putmem(_s: *mut trace_seq, _mem: *const core::ffi::c_void, _len: u32) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_putmem_hex(_s: *mut trace_seq, _mem: *const core::ffi::c_void, _len: u32) {}
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_path(_s: *mut trace_seq, _path: *const path) -> i32 { 0 }
 
-#[cfg(not(feature = "CONFIG_TRACING"))]
+#[cfg(not(CONFIG_TRACING))]
 #[inline]
 pub unsafe fn trace_seq_acquire(_s: *mut trace_seq, _len: u32) -> *mut core::ffi::c_char { core::ptr::null_mut() }
 

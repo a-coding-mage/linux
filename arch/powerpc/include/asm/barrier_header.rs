@@ -97,14 +97,14 @@ macro_rules! __smp_load_acquire {
 /* CONFIG_PPC_BOOK3S_64 selects nop; CONFIG_PPC_E500 selects nop; nop. */
 
 /* CONFIG_PPC_BARRIER_NOSPEC selects the following instruction barrier. */
-#[cfg(feature = "CONFIG_PPC_BARRIER_NOSPEC")]
+#[cfg(CONFIG_PPC_BARRIER_NOSPEC)]
 #[inline(always)]
 pub unsafe fn barrier_nospec() {
     // NOSPEC_BARRIER_FIXUP_SECTION; NOSPEC_BARRIER_SLOT
     core::arch::asm!("nop", options(nostack, preserves_flags));
 }
 
-#[cfg(not(feature = "CONFIG_PPC_BARRIER_NOSPEC"))]
+#[cfg(not(CONFIG_PPC_BARRIER_NOSPEC))]
 #[inline(always)]
 pub fn barrier_nospec() {}
 

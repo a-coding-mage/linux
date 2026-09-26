@@ -66,7 +66,7 @@ unsafe fn r8a7779_smp_prepare_cpus(max_cpus: u32) {
     iounmap(base);
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn r8a7779_platform_cpu_kill(mut cpu: u32) -> i32 {
     let mut ret = -EIO;
 
@@ -78,7 +78,7 @@ unsafe fn r8a7779_platform_cpu_kill(mut cpu: u32) -> i32 {
     if ret != 0 { ret } else { 1 }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn r8a7779_cpu_kill(cpu: u32) -> i32 {
     if shmobile_smp_scu_cpu_kill(cpu) != 0 {
         return r8a7779_platform_cpu_kill(cpu);
@@ -91,9 +91,9 @@ unsafe fn r8a7779_cpu_kill(cpu: u32) -> i32 {
 pub struct smp_operations {
     pub smp_prepare_cpus: Option<unsafe fn(u32)>,
     pub smp_boot_secondary: Option<unsafe fn(u32, *mut task_struct) -> i32>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe fn(u32) -> i32>,
 }
 
@@ -102,9 +102,9 @@ pub struct smp_operations {
 pub static r8a7779_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(r8a7779_smp_prepare_cpus),
     smp_boot_secondary: Some(r8a7779_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(shmobile_smp_scu_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(r8a7779_cpu_kill),
 };
 

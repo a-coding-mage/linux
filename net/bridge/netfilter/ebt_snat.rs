@@ -13,7 +13,7 @@
 // linux/netfilter.h, linux/netfilter/x_tables.h,
 // linux/netfilter_bridge/ebtables.h, linux/netfilter_bridge/ebt_nat.h
 
-static unsafe fn ebt_snat_tg(
+unsafe fn ebt_snat_tg(
     skb: *mut sk_buff,
     par: *const xt_action_param,
 ) -> c_uint {
@@ -64,7 +64,7 @@ static unsafe fn ebt_snat_tg(
     unsafe { (*info).target | !EBT_VERDICT_BITS }
 }
 
-static unsafe fn ebt_snat_tg_check(par: *const xt_tgchk_param) -> c_int {
+unsafe fn ebt_snat_tg_check(par: *const xt_tgchk_param) -> c_int {
     let info: *const ebt_nat_info = unsafe { (*par).targinfo as *const ebt_nat_info };
     let mut tmp: c_int;
 

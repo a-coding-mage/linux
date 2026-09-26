@@ -21,24 +21,24 @@ extern "C" {
 // are static storage; otherwise the C macro leaves them as automatic locals.
 
 pub unsafe fn prom_putchar(c: core::ffi::c_char) {
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     static mut CNT: ULONG = unsafe { core::mem::zeroed() };
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     static mut IT: CHAR = unsafe { core::mem::zeroed() };
 
-    #[cfg(not(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32")))]
+    #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     let mut cnt: ULONG = unsafe { core::mem::zeroed() };
-    #[cfg(not(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32")))]
+    #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     let mut it: CHAR = unsafe { core::mem::zeroed() };
 
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     {
         IT = c as CHAR;
         bc_disable();
         ArcWrite(1, &mut IT, 1, &mut CNT);
         bc_enable();
     }
-    #[cfg(not(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32")))]
+    #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     {
         it = c as CHAR;
         bc_disable();
@@ -48,24 +48,24 @@ pub unsafe fn prom_putchar(c: core::ffi::c_char) {
 }
 
 pub unsafe fn prom_getchar() -> core::ffi::c_char {
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     static mut CNT: ULONG = unsafe { core::mem::zeroed() };
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     static mut C: CHAR = unsafe { core::mem::zeroed() };
 
-    #[cfg(not(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32")))]
+    #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     let mut cnt: ULONG = unsafe { core::mem::zeroed() };
-    #[cfg(not(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32")))]
+    #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     let mut c: CHAR = unsafe { core::mem::zeroed() };
 
-    #[cfg(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32"))]
+    #[cfg(all(target_pointer_width = "64", CONFIG_FW_ARC32))]
     {
         bc_disable();
         ArcRead(0, &mut C, 1, &mut CNT);
         bc_enable();
         C as core::ffi::c_char
     }
-    #[cfg(not(all(target_pointer_width = "64", feature = "CONFIG_FW_ARC32")))]
+    #[cfg(not(all(target_pointer_width = "64", CONFIG_FW_ARC32)))]
     {
         bc_disable();
         ArcRead(0, &mut c, 1, &mut cnt);

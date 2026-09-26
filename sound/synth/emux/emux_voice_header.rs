@@ -174,17 +174,17 @@ extern "C" {
 }
 
 // emux_proc.c
-#[cfg(feature = "CONFIG_SND_PROC_FS")]
+#[cfg(CONFIG_SND_PROC_FS)]
 extern "C" {
     pub fn snd_emux_proc_init(emu: *mut snd_emux, card: *mut snd_card, device: i32);
     pub fn snd_emux_proc_free(emu: *mut snd_emux);
 }
 
-#[cfg(not(feature = "CONFIG_SND_PROC_FS"))]
+#[cfg(not(CONFIG_SND_PROC_FS))]
 #[inline]
 pub fn snd_emux_proc_init(_emu: *mut snd_emux, _card: *mut snd_card, _device: i32) {}
 
-#[cfg(not(feature = "CONFIG_SND_PROC_FS"))]
+#[cfg(not(CONFIG_SND_PROC_FS))]
 #[inline]
 pub fn snd_emux_proc_free(_emu: *mut snd_emux) {}
 

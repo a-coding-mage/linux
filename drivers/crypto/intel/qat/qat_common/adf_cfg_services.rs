@@ -97,7 +97,7 @@ unsafe fn adf_service_mask_to_string(mask: usize, buf: *mut core::ffi::c_char, l
         return -ENOSPC;
     }
 
-    for_each_set_bit!(&mask, SVC_COUNT, bit) {
+    for_each_set_bit!(&mask, SVC_COUNT, bit, {
         if offset != 0 {
             offset += scnprintf(
                 buf.add(offset as usize),
@@ -113,7 +113,7 @@ unsafe fn adf_service_mask_to_string(mask: usize, buf: *mut core::ffi::c_char, l
                 ADF_CFG_SERVICES[bit as usize],
             );
         }
-    }
+    });
 
     0
 }

@@ -83,11 +83,11 @@ pub enum nand_op_instr_type { NAND_OP_CMD_INSTR,NAND_OP_ADDR_INSTR,NAND_OP_DATA_
 #[repr(C)] pub struct nand_ecc_info { pub strength_ds:u16,pub step_ds:u16 }
 
 extern "C" {
-    pub fn nand_subop_get_addr_start_off(*const nand_subop,u32)->u32; pub fn nand_subop_get_num_addr_cyc(*const nand_subop,u32)->u32; pub fn nand_subop_get_data_start_off(*const nand_subop,u32)->u32; pub fn nand_subop_get_data_len(*const nand_subop,u32)->u32;
-    pub fn nand_op_parser_exec_op(*mut nand_chip,*const nand_op_parser,*const nand_operation,bool)->i32;
-    pub fn nand_create_bbt(*mut nand_chip)->i32; pub fn nand_scan_with_ids(*mut nand_chip,u32,*mut nand_flash_dev)->i32; pub fn nand_cleanup(*mut nand_chip); pub fn nand_reset(*mut nand_chip,i32)->i32;
-    pub fn rawnand_sw_hamming_init(*mut nand_chip)->i32; pub fn rawnand_sw_hamming_calculate(*mut nand_chip,*const u8,*mut u8)->i32; pub fn rawnand_sw_hamming_correct(*mut nand_chip,*mut u8,*mut u8,*mut u8)->i32; pub fn rawnand_sw_hamming_cleanup(*mut nand_chip);
-    pub fn nand_read_page_raw(*mut nand_chip,*mut u8,i32,i32)->i32; pub fn nand_write_page_raw(*mut nand_chip,*const u8,i32,i32)->i32; pub fn nand_wait_ready(*mut nand_chip); pub fn nand_select_target(*mut nand_chip,u32); pub fn nand_deselect_target(*mut nand_chip);
+    pub fn nand_subop_get_addr_start_off(_: *const nand_subop,_: u32)->u32; pub fn nand_subop_get_num_addr_cyc(_: *const nand_subop,_: u32)->u32; pub fn nand_subop_get_data_start_off(_: *const nand_subop,_: u32)->u32; pub fn nand_subop_get_data_len(_: *const nand_subop,_: u32)->u32;
+    pub fn nand_op_parser_exec_op(_: *mut nand_chip,_: *const nand_op_parser,_: *const nand_operation,_: bool)->i32;
+    pub fn nand_create_bbt(_: *mut nand_chip)->i32; pub fn nand_scan_with_ids(_: *mut nand_chip,_: u32,_: *mut nand_flash_dev)->i32; pub fn nand_cleanup(_: *mut nand_chip); pub fn nand_reset(_: *mut nand_chip,_: i32)->i32;
+    pub fn rawnand_sw_hamming_init(_: *mut nand_chip)->i32; pub fn rawnand_sw_hamming_calculate(_: *mut nand_chip,_: *const u8,_: *mut u8)->i32; pub fn rawnand_sw_hamming_correct(_: *mut nand_chip,_: *mut u8,_: *mut u8,_: *mut u8)->i32; pub fn rawnand_sw_hamming_cleanup(_: *mut nand_chip);
+    pub fn nand_read_page_raw(_: *mut nand_chip,_: *mut u8,_: i32,_: i32)->i32; pub fn nand_write_page_raw(_: *mut nand_chip,_: *const u8,_: i32,_: i32)->i32; pub fn nand_wait_ready(_: *mut nand_chip); pub fn nand_select_target(_: *mut nand_chip,_: u32); pub fn nand_deselect_target(_: *mut nand_chip);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

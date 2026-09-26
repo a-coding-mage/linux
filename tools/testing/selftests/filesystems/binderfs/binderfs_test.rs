@@ -488,8 +488,8 @@ unsafe extern "C" fn binder_version_thread(data: *mut ::core::ffi::c_void) -> *m
  * 211b64e4b5b6 ("binderfs: use refcount for binder control devices too")
  */
 TEST!(binderfs_stress, {
-    let mut fds = [0_i32; 1000];
-    let mut syncfds = [0_i32; 2];
+    let mut fds = [0i32; 1000];
+    let mut syncfds = [0i32; 2];
     let mut pid: pid_t;
     let mut fd: i32;
     let mut ret: i32;
@@ -675,7 +675,7 @@ TEST!(binderfs_test_privileged, {
 
 TEST!(binderfs_test_unprivileged, {
     let mut ret: i32;
-    let mut syncfds = [0_i32; 2];
+    let mut syncfds = [0i32; 2];
     let mut pid: pid_t;
 
     unsafe {

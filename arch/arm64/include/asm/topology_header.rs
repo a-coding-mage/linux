@@ -2,26 +2,26 @@
 
 // Translation of <linux/cpumask.h> dependencies.
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[repr(C)]
 pub struct pci_bus {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn pcibus_to_node(bus: *mut pci_bus) -> i32;
     pub static cpu_all_mask: *const cpumask_t;
     pub fn cpumask_of_node(node: i32) -> *const cpumask_t;
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[repr(C)]
 pub struct cpumask_t {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn cpumask_of_pcibus(bus: *mut pci_bus) -> *const cpumask_t {
     if pcibus_to_node(bus) == -1 {

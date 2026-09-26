@@ -21,7 +21,7 @@ pub const PHYS_OFFSET_OFFSET: usize = CONFIG_DRAM_BASE & (SSEG_SIZE - 1);
 
 // The following declarations are omitted by the C header for assembler users.
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut high_memory: *mut core::ffi::c_void;
     pub static mut mem_map: *mut page;
     pub static mut va_pa_offset: usize;

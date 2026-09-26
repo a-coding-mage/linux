@@ -4,7 +4,7 @@
 pub const PA_NORFLASH_ADDR: u32 = 0x0000_0000;
 pub const PA_NORFLASH_SIZE: u32 = 0x0400_0000;
 
-#[cfg(feature = "CONFIG_SH_R7780MP")]
+#[cfg(CONFIG_SH_R7780MP)]
 pub mod r7780mp {
     pub const PA_BCR: u32 = 0xa400_0000;
     pub const PA_SDPOW: i32 = -1;
@@ -69,7 +69,7 @@ pub mod r7780mp {
     pub const IVDR_CK_ON: u32 = 8;
 }
 
-#[cfg(feature = "CONFIG_SH_R7780RP")]
+#[cfg(CONFIG_SH_R7780RP)]
 pub mod r7780rp {
     pub const PA_POFF: i32 = -1;
     pub const PA_BCR: u32 = 0xa500_0000;
@@ -123,7 +123,7 @@ pub mod r7780rp {
     pub const IVDR_CK_ON: u32 = 8;
 }
 
-#[cfg(feature = "CONFIG_SH_R7785RP")]
+#[cfg(CONFIG_SH_R7785RP)]
 pub mod r7785rp {
     pub const PA_BCR: u32 = 0xa400_0000;
     pub const PA_SDPOW: i32 = -1;
@@ -195,12 +195,12 @@ extern "C" {
     pub fn highlander_plat_irq_setup() -> *mut u8;
 }
 
-#[cfg(feature = "CONFIG_SH_R7785RP")]
+#[cfg(CONFIG_SH_R7785RP)]
 extern "C" {
     pub fn highlander_plat_pinmux_setup();
 }
 
-#[cfg(not(feature = "CONFIG_SH_R7785RP"))]
+#[cfg(not(CONFIG_SH_R7785RP))]
 #[inline]
 pub fn highlander_plat_pinmux_setup() {}
 

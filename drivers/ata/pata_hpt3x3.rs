@@ -36,7 +36,7 @@ unsafe fn hpt3x3_set_piomode(ap: *mut ata_port, adev: *mut ata_device) {
     pci_write_config_dword(pdev, 0x48, r2);
 }
 
-#[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+#[cfg(CONFIG_PATA_HPT3X3_DMA)]
 unsafe fn hpt3x3_set_dmamode(ap: *mut ata_port, adev: *mut ata_device) {
     let pdev = to_pci_dev((*(*ap).host).dev);
     let mut r1: u32 = 0;
@@ -61,7 +61,7 @@ unsafe fn hpt3x3_set_dmamode(ap: *mut ata_port, adev: *mut ata_device) {
     pci_write_config_dword(pdev, 0x48, r2);
 }
 
-#[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+#[cfg(CONFIG_PATA_HPT3X3_DMA)]
 unsafe fn hpt3x3_freeze(ap: *mut ata_port) {
     let mmio = (*ap).ioaddr.bmdma_addr;
     iowrite8(ioread8(mmio.add(ATA_DMA_CMD as usize)) & !ATA_DMA_START,
@@ -70,7 +70,7 @@ unsafe fn hpt3x3_freeze(ap: *mut ata_port) {
     ata_sff_freeze(ap);
 }
 
-#[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+#[cfg(CONFIG_PATA_HPT3X3_DMA)]
 unsafe fn hpt3x3_bmdma_setup(qc: *mut ata_queued_cmd) {
     let ap = (*qc).ap;
     let mut r = ioread8((*ap).ioaddr.bmdma_addr.add(ATA_DMA_STATUS as usize));
@@ -79,7 +79,7 @@ unsafe fn hpt3x3_bmdma_setup(qc: *mut ata_queued_cmd) {
     ata_bmdma_setup(qc);
 }
 
-#[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+#[cfg(CONFIG_PATA_HPT3X3_DMA)]
 unsafe fn hpt3x3_atapi_dma(_qc: *mut ata_queued_cmd) -> i32 { 1 }
 
 static mut hpt3x3_sht: scsi_host_template = ATA_BMDMA_SHT!(DRV_NAME);
@@ -88,13 +88,13 @@ static mut hpt3x3_port_ops: ata_port_operations = ata_port_operations {
     inherits: &ata_bmdma_port_ops,
     cable_detect: Some(ata_cable_40wire),
     set_piomode: Some(hpt3x3_set_piomode),
-    #[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+    #[cfg(CONFIG_PATA_HPT3X3_DMA)]
     set_dmamode: Some(hpt3x3_set_dmamode),
-    #[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+    #[cfg(CONFIG_PATA_HPT3X3_DMA)]
     bmdma_setup: Some(hpt3x3_bmdma_setup),
-    #[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+    #[cfg(CONFIG_PATA_HPT3X3_DMA)]
     check_atapi_dma: Some(hpt3x3_atapi_dma),
-    #[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+    #[cfg(CONFIG_PATA_HPT3X3_DMA)]
     freeze: Some(hpt3x3_freeze),
 };
 
@@ -113,9 +113,9 @@ unsafe fn hpt3x3_init_one(pdev: *mut pci_dev, _id: *const pci_device_id) -> i32 
     static mut info: ata_port_info = ata_port_info {
         flags: ATA_FLAG_SLAVE_POSS,
         pio_mask: ATA_PIO4,
-        #[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+        #[cfg(CONFIG_PATA_HPT3X3_DMA)]
         mwdma_mask: ATA_MWDMA2,
-        #[cfg(feature = "CONFIG_PATA_HPT3X3_DMA")]
+        #[cfg(CONFIG_PATA_HPT3X3_DMA)]
         udma_mask: ATA_UDMA2,
         port_ops: &hpt3x3_port_ops,
     };
@@ -156,7 +156,7 @@ unsafe fn hpt3x3_init_one(pdev: *mut pci_dev, _id: *const pci_device_id) -> i32 
     ata_host_activate(host, (*pdev).irq, ata_bmdma_interrupt, IRQF_SHARED, &hpt3x3_sht)
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe fn hpt3x3_reinit_one(dev: *mut pci_dev) -> i32 {
     let host = pci_get_drvdata(dev);
     let rc = ata_pci_device_do_resume(dev);
@@ -176,9 +176,9 @@ static mut hpt3x3_pci_driver: pci_driver = pci_driver {
     id_table: &hpt3x3,
     probe: Some(hpt3x3_init_one),
     remove: Some(ata_pci_remove_one),
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     suspend: Some(ata_pci_device_suspend),
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     resume: Some(hpt3x3_reinit_one),
 };
 

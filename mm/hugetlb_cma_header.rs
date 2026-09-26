@@ -3,7 +3,7 @@
 // Dependency: linux/hugetlb.h supplies `folio`, `gfp_t`, `nodemask_t`, and
 // `hstate`. The CONFIG_CMA condition is represented by the CONFIG_CMA feature.
 
-#[cfg(feature = "CONFIG_CMA")]
+#[cfg(CONFIG_CMA)]
 extern "C" {
     pub fn hugetlb_cma_free_frozen_folio(folio: *mut folio);
     pub fn hugetlb_cma_alloc_frozen_folio(
@@ -23,11 +23,11 @@ extern "C" {
     pub fn hugetlb_early_cma(h: *mut hstate) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_free_frozen_folio(_folio: *mut folio) {}
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_alloc_frozen_folio(
     _order: core::ffi::c_int,
@@ -38,7 +38,7 @@ pub unsafe fn hugetlb_cma_alloc_frozen_folio(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_alloc_bootmem(
     _h: *mut hstate,
@@ -48,23 +48,23 @@ pub unsafe fn hugetlb_cma_alloc_bootmem(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_exclusive_alloc() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_total_size() -> core::ffi::c_ulong {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_cma_validate_params() {}
 
-#[cfg(not(feature = "CONFIG_CMA"))]
+#[cfg(not(CONFIG_CMA))]
 #[inline]
 pub unsafe fn hugetlb_early_cma(_h: *mut hstate) -> bool {
     false

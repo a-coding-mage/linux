@@ -13,41 +13,10 @@
 
 extern "C" {
 
-pub struct seq_file;
 
-#[repr(C)]
-pub struct ctnl_timeout {
-	pub nlattr_to_obj: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, net: *mut net, data: *mut libc::c_void) -> i32>,
-	pub obj_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, data: *const libc::c_void) -> i32>,
-	pub obj_size: u16,
-	pub nlattr_max: u16,
-	pub nla_policy: *const nla_policy,
-}
 
-#[repr(C)]
-pub struct nf_conntrack_l4proto {
-	/* L4 Protocol number. */
-	pub l4proto: u8,
-	/* Resolve clashes on insertion races. */
-	pub allow_clash: bool,
-	/* protoinfo nlattr size, closes a hole */
-	pub nlattr_size: u16,
-	/* called by gc worker if table is full */
-	pub can_early_drop: Option<unsafe extern "C" fn(ct: *const nf_conn) -> bool>,
-	/* convert protoinfo to nfnetlink attributes */
-	pub to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, nla: *mut nlattr, ct: *mut nf_conn, destroy: bool) -> i32>,
-	/* convert nfnetlink attributes to protoinfo */
-	pub from_nlattr: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, ct: *mut nf_conn) -> i32>,
-	pub tuple_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, t: *const nf_conntrack_tuple) -> i32>,
-	/* Calculate tuple nlattr size */
-	pub nlattr_tuple_size: Option<unsafe extern "C" fn() -> libc::c_uint>,
-	pub nlattr_to_tuple: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, t: *mut nf_conntrack_tuple, flags: u32) -> i32>,
-	pub nla_policy: *const nla_policy,
 
-	pub ctnl_timeout: ctnl_timeout,
-	/* CONFIG_NF_CONNTRACK_PROCFS */
-	pub print_conntrack: Option<unsafe extern "C" fn(s: *mut seq_file, ct: *mut nf_conn)>,
-}
+
 
 pub fn icmp_pkt_to_tuple(skb: *const sk_buff, dataoff: libc::c_uint, net: *mut net, tuple: *mut nf_conntrack_tuple) -> bool;
 pub fn icmpv6_pkt_to_tuple(skb: *const sk_buff, dataoff: libc::c_uint, net: *mut net, tuple: *mut nf_conntrack_tuple) -> bool;
@@ -106,5 +75,38 @@ pub unsafe fn nf_sctp_pernet(net: *mut net) -> *mut nf_sctp_net { &mut (*net).ct
 pub unsafe fn nf_gre_pernet(net: *mut net) -> *mut nf_gre_net { &mut (*net).ct.nf_ct_proto.gre }
 
 }
+#[repr(C)]
+pub struct nf_conntrack_l4proto {
+	/* L4 Protocol number. */
+	pub l4proto: u8,
+	/* Resolve clashes on insertion races. */
+	pub allow_clash: bool,
+	/* protoinfo nlattr size, closes a hole */
+	pub nlattr_size: u16,
+	/* called by gc worker if table is full */
+	pub can_early_drop: Option<unsafe extern "C" fn(ct: *const nf_conn) -> bool>,
+	/* convert protoinfo to nfnetlink attributes */
+	pub to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, nla: *mut nlattr, ct: *mut nf_conn, destroy: bool) -> i32>,
+	/* convert nfnetlink attributes to protoinfo */
+	pub from_nlattr: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, ct: *mut nf_conn) -> i32>,
+	pub tuple_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, t: *const nf_conntrack_tuple) -> i32>,
+	/* Calculate tuple nlattr size */
+	pub nlattr_tuple_size: Option<unsafe extern "C" fn() -> libc::c_uint>,
+	pub nlattr_to_tuple: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, t: *mut nf_conntrack_tuple, flags: u32) -> i32>,
+	pub nla_policy: *const nla_policy,
+
+	pub ctnl_timeout: ctnl_timeout,
+	/* CONFIG_NF_CONNTRACK_PROCFS */
+	pub print_conntrack: Option<unsafe extern "C" fn(s: *mut seq_file, ct: *mut nf_conn)>,
+}
+#[repr(C)]
+pub struct ctnl_timeout {
+	pub nlattr_to_obj: Option<unsafe extern "C" fn(tb: *mut *mut nlattr, net: *mut net, data: *mut libc::c_void) -> i32>,
+	pub obj_to_nlattr: Option<unsafe extern "C" fn(skb: *mut sk_buff, data: *const libc::c_void) -> i32>,
+	pub obj_size: u16,
+	pub nlattr_max: u16,
+	pub nla_policy: *const nla_policy,
+}
+pub struct seq_file;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

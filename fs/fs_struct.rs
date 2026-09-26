@@ -37,7 +37,7 @@ unsafe fn replace_path(p: *mut path, old: *const path, new: *const path) -> i32 
 pub unsafe fn chroot_fs_refs(old_root: *const path, new_root: *const path) {
     let mut count = 0;
     read_lock(&mut tasklist_lock);
-    for_each_process_thread!(g, p) {
+    for_each_process_thread!(g, p, {
         if ((*p).flags & (PF_KTHREAD | PF_EXITING | PF_DUMPCORE)) != 0 {
             continue;
         }
@@ -56,7 +56,7 @@ pub unsafe fn chroot_fs_refs(old_root: *const path, new_root: *const path) {
             write_sequnlock(&mut (*fs).seq);
         }
         task_unlock(p);
-    }
+    });
     read_unlock(&mut tasklist_lock);
     while count > 0 {
         path_put(old_root);

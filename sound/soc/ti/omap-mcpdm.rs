@@ -529,7 +529,7 @@ pub static OMAP_MCPDM_DAI_OPS: SndSocDaiOps = SndSocDaiOps {
     remove_order: 0,
 };
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn omap_mcpdm_suspend(component: *mut c_void) -> i32 {
     extern "C" {
         fn snd_soc_component_get_drvdata(component: *mut c_void) -> *mut c_void;
@@ -554,7 +554,7 @@ pub unsafe fn omap_mcpdm_suspend(component: *mut c_void) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 pub unsafe fn omap_mcpdm_resume(component: *mut c_void) -> i32 {
     extern "C" {
         fn snd_soc_component_get_drvdata(component: *mut c_void) -> *mut c_void;
@@ -579,12 +579,12 @@ pub unsafe fn omap_mcpdm_resume(component: *mut c_void) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub unsafe fn omap_mcpdm_suspend(_component: *mut c_void) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 pub unsafe fn omap_mcpdm_resume(_component: *mut c_void) -> i32 {
     0
 }

@@ -16,9 +16,9 @@
 // dependency: <linux/random.h>
 // dependency: <linux/regmap.h>
 
-// KUNIT_DEFINE_ACTION_WRAPPER(_put_device_wrapper, put_device, struct device *);
-// KUNIT_DEFINE_ACTION_WRAPPER(_cs_dsp_stop_wrapper, cs_dsp_stop, struct cs_dsp *);
-// KUNIT_DEFINE_ACTION_WRAPPER(_cs_dsp_remove_wrapper, cs_dsp_remove, struct cs_dsp *);
+// KUNIT_DEFINE_ACTION_WRAPPER(_put_device_wrapper, put_device, device *);
+// KUNIT_DEFINE_ACTION_WRAPPER(_cs_dsp_stop_wrapper, cs_dsp_stop, cs_dsp *);
+// KUNIT_DEFINE_ACTION_WRAPPER(_cs_dsp_remove_wrapper, cs_dsp_remove, cs_dsp *);
 
 struct cs_dsp_test_local {
 	struct cs_dsp_mock_xm_header *xm_header;
@@ -29,64 +29,64 @@ struct cs_dsp_test_local {
 struct cs_dsp_ctl_rw_test_param {
 	int mem_type;
 	int alg_id;
-	unsigned int offs_words;
-	unsigned int len_bytes;
+	core::ffi::c_uint offs_words;
+	core::ffi::c_uint len_bytes;
 	u16 ctl_type;
 	u16 flags;
 };
 
 static const struct cs_dsp_mock_alg_def cs_dsp_ctl_rw_test_algs[] = {
 	{
-		.id = 0xfafa,
-		.ver = 0x100000,
-		.xm_base_words = 60,
-		.xm_size_words = 1000,
-		.ym_base_words = 0,
-		.ym_size_words = 1000,
-		.zm_base_words = 0,
-		.zm_size_words = 1000,
+		id: 0xfafa,
+		ver: 0x100000,
+		xm_base_words: 60,
+		xm_size_words: 1000,
+		ym_base_words: 0,
+		ym_size_words: 1000,
+		zm_base_words: 0,
+		zm_size_words: 1000,
 	},
 	{
-		.id = 0xb,
-		.ver = 0x100001,
-		.xm_base_words = 1060,
-		.xm_size_words = 1000,
-		.ym_base_words = 1000,
-		.ym_size_words = 1000,
-		.zm_base_words = 1000,
-		.zm_size_words = 1000,
+		id: 0xb,
+		ver: 0x100001,
+		xm_base_words: 1060,
+		xm_size_words: 1000,
+		ym_base_words: 1000,
+		ym_size_words: 1000,
+		zm_base_words: 1000,
+		zm_size_words: 1000,
 	},
 	{
-		.id = 0x9f1234,
-		.ver = 0x100500,
-		.xm_base_words = 2060,
-		.xm_size_words = 32,
-		.ym_base_words = 2000,
-		.ym_size_words = 32,
-		.zm_base_words = 2000,
-		.zm_size_words = 32,
+		id: 0x9f1234,
+		ver: 0x100500,
+		xm_base_words: 2060,
+		xm_size_words: 32,
+		ym_base_words: 2000,
+		ym_size_words: 32,
+		zm_base_words: 2000,
+		zm_size_words: 32,
 	},
 	{
-		.id = 0xff00ff,
-		.ver = 0x300113,
-		.xm_base_words = 2100,
-		.xm_size_words = 32,
-		.ym_base_words = 2032,
-		.ym_size_words = 32,
-		.zm_base_words = 2032,
-		.zm_size_words = 32,
+		id: 0xff00ff,
+		ver: 0x300113,
+		xm_base_words: 2100,
+		xm_size_words: 32,
+		ym_base_words: 2032,
+		ym_size_words: 32,
+		zm_base_words: 2032,
+		zm_size_words: 32,
 	},
 };
 
 static const struct cs_dsp_mock_coeff_def mock_coeff_template = {
-	.shortname = "Dummy Coeff",
-	.type = WMFW_CTL_TYPE_BYTES,
-	.mem_type = WMFW_ADSP2_YM,
-	.flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
-	.length_bytes = 4,
+	shortname: "Dummy Coeff",
+	type: WMFW_CTL_TYPE_BYTES,
+	mem_type: WMFW_ADSP2_YM,
+	flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	length_bytes: 4,
 };
 
-static int _find_alg_entry(struct kunit *test, unsigned int alg_id)
+static int _find_alg_entry(kunit *test, alg_id: core::ffi::c_uint)
 {
 	int i;
 
@@ -100,7 +100,7 @@ static int _find_alg_entry(struct kunit *test, unsigned int alg_id)
 	return i;
 }
 
-static int _get_alg_mem_base_words(struct kunit *test, int alg_index, int mem_type)
+static int _get_alg_mem_base_words(kunit *test, int alg_index, int mem_type)
 {
 	switch (mem_type) {
 	case WMFW_ADSP2_XM:
@@ -115,20 +115,20 @@ static int _get_alg_mem_base_words(struct kunit *test, int alg_index, int mem_ty
 	}
 }
 
-static struct cs_dsp_mock_wmfw_builder *_create_dummy_wmfw(struct kunit *test)
+static struct cs_dsp_mock_wmfw_builder *_create_dummy_wmfw(kunit *test)
 {
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
 	struct cs_dsp_mock_wmfw_builder *builder;
 
-	builder = cs_dsp_mock_wmfw_init(priv, local->wmfw_version);
+	builder = cs_dsp_mock_wmfw_init(priv, (*local).wmfw_version);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, builder);
 
 	/* Init an XM header */
 	cs_dsp_mock_wmfw_add_data_block(builder,
 					WMFW_ADSP2_XM, 0,
-					local->xm_header->blob_data,
-					local->xm_header->blob_size_bytes);
+					(*(*local).xm_header).blob_data,
+					(*(*local).xm_header).blob_size_bytes);
 
 	return builder;
 }
@@ -137,49 +137,49 @@ static struct cs_dsp_mock_wmfw_builder *_create_dummy_wmfw(struct kunit *test)
  * Write to a control while the firmware is running.
  * This should write to the underlying registers.
  */
-static void cs_dsp_ctl_write_running(struct kunit *test)
+static void cs_dsp_ctl_write_running(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback;
 
-	reg_vals = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
-	readback = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create some initial register content */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	memset(reg_vals, 0, param->len_bytes);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	memset(reg_vals, 0, (*param).len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -191,16 +191,16 @@ static void cs_dsp_ctl_write_running(struct kunit *test)
 	 * and cs_dsp_coeff_lock_and_write_ctrl() should return 1 to indicate
 	 * that the control content changed.
 	 */
-	get_random_bytes(reg_vals, param->len_bytes);
+	get_random_bytes(reg_vals, (*param).len_bytes);
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			1);
-	KUNIT_ASSERT_EQ(test, regmap_raw_read(dsp->regmap, reg, readback, param->len_bytes), 0);
-	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, param->len_bytes);
+	KUNIT_ASSERT_EQ(test, regmap_raw_read((*dsp).regmap, reg, readback, (*param).len_bytes), 0);
+	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, (*param).len_bytes);
 
 	/* Drop expected writes and the regmap cache should be clean */
 	cs_dsp_mock_xm_header_drop_from_regmap_cache(priv);
-	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
+	cs_dsp_mock_regmap_drop_bytes(priv, reg, (*param).len_bytes);
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 }
 
@@ -208,49 +208,49 @@ static void cs_dsp_ctl_write_running(struct kunit *test)
  * Read from a volatile control while the firmware is running.
  * This should return the current state of the underlying registers.
  */
-static void cs_dsp_ctl_read_volatile_running(struct kunit *test)
+static void cs_dsp_ctl_read_volatile_running(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback;
 
-	reg_vals = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
-	readback = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create some initial register content */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	memset(reg_vals, 0, param->len_bytes);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	memset(reg_vals, 0, (*param).len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -259,69 +259,69 @@ static void cs_dsp_ctl_read_volatile_running(struct kunit *test)
 
 	/* Read the control, it should return the current register content */
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, (*param).len_bytes),
 			0);
-	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, param->len_bytes);
+	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, (*param).len_bytes);
 
 	/*
 	 * Change the register content and read the control, it should return
 	 * the new register content
 	 */
-	get_random_bytes(reg_vals, param->len_bytes);
-	KUNIT_ASSERT_EQ(test, regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes), 0);
+	get_random_bytes(reg_vals, (*param).len_bytes);
+	KUNIT_ASSERT_EQ(test, regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes), 0);
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, (*param).len_bytes),
 			0);
-	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, param->len_bytes);
+	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, (*param).len_bytes);
 }
 
 /*
  * Read from a volatile control before the firmware is started.
  * This should return an error.
  */
-static void cs_dsp_ctl_read_volatile_not_started(struct kunit *test)
+static void cs_dsp_ctl_read_volatile_not_started(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
 
-	reg_vals = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
 	/* Create some initial register content */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
 	/* Read the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			0);
 }
 
@@ -329,42 +329,42 @@ static void cs_dsp_ctl_read_volatile_not_started(struct kunit *test)
  * Read from a volatile control after the firmware has stopped.
  * This should return an error.
  */
-static void cs_dsp_ctl_read_volatile_stopped(struct kunit *test)
+static void cs_dsp_ctl_read_volatile_stopped(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
 
-	reg_vals = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
 	/* Create some initial register content */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
 	/* Start and stop the firmware */
@@ -372,10 +372,10 @@ static void cs_dsp_ctl_read_volatile_stopped(struct kunit *test)
 	cs_dsp_stop(dsp);
 
 	/* Read the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			0);
 }
 
@@ -383,42 +383,42 @@ static void cs_dsp_ctl_read_volatile_stopped(struct kunit *test)
  * Read from a volatile control after the DSP has been powered down.
  * This should return an error.
  */
-static void cs_dsp_ctl_read_volatile_stopped_powered_down(struct kunit *test)
+static void cs_dsp_ctl_read_volatile_stopped_powered_down(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
 
-	reg_vals = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
 	/* Create some initial register content */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
 	/* Start and stop the firmware then power down */
@@ -427,10 +427,10 @@ static void cs_dsp_ctl_read_volatile_stopped_powered_down(struct kunit *test)
 	cs_dsp_power_down(dsp);
 
 	/* Read the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			0);
 }
 
@@ -439,44 +439,44 @@ static void cs_dsp_ctl_read_volatile_stopped_powered_down(struct kunit *test)
  * loaded into the DSP.
  * Should return an error.
  */
-static void cs_dsp_ctl_read_volatile_not_current_loaded_fw(struct kunit *test)
+static void cs_dsp_ctl_read_volatile_not_current_loaded_fw(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	struct cs_dsp_mock_wmfw_builder *builder2 = _create_dummy_wmfw(test);
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
 
-	reg_vals = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
 	/* Create some DSP data to be read into the control cache */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Power-up DSP */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
 	/* Power-down DSP then power-up with a different firmware */
@@ -485,10 +485,10 @@ static void cs_dsp_ctl_read_volatile_not_current_loaded_fw(struct kunit *test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw2", NULL, NULL, "mbc.vss"), 0);
 
 	/* Read the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			0);
 }
 
@@ -497,44 +497,44 @@ static void cs_dsp_ctl_read_volatile_not_current_loaded_fw(struct kunit *test)
  * running.
  * Should return an error.
  */
-static void cs_dsp_ctl_read_volatile_not_current_running_fw(struct kunit *test)
+static void cs_dsp_ctl_read_volatile_not_current_running_fw(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	struct cs_dsp_mock_wmfw_builder *builder2 = _create_dummy_wmfw(test);
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
 
-	reg_vals = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
 	/* Create some DSP data to be read into the control cache */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Power-up DSP */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
 	/* Power-down DSP then power-up with a different firmware */
@@ -547,10 +547,10 @@ static void cs_dsp_ctl_read_volatile_not_current_running_fw(struct kunit *test)
 	KUNIT_ASSERT_EQ(test, kunit_add_action_or_reset(test, _cs_dsp_stop_wrapper, dsp), 0);
 
 	/* Read the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			0);
 }
 
@@ -558,53 +558,53 @@ static void cs_dsp_ctl_read_volatile_not_current_running_fw(struct kunit *test)
  * Write to a volatile control before the firmware is started.
  * This should return an error.
  */
-static void cs_dsp_ctl_write_volatile_not_started(struct kunit *test)
+static void cs_dsp_ctl_write_volatile_not_started(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
-	struct cs_dsp_test *priv = test->priv;
-	struct cs_dsp_test_local *local = priv->local;
-	struct cs_dsp *dsp = priv->dsp;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
+	struct cs_dsp_test *priv = (*test).priv;
+	struct cs_dsp_test_local *local = (*priv).local;
+	struct cs_dsp *dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	int alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
 
-	reg_vals = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
 	/* Create some initial register content */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags | WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags | WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_rw_test_algs[alg_idx].id,
 					      "dummyalg", NULL);
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
 	/* Drop expected writes and the regmap cache should be clean */
 	cs_dsp_mock_xm_header_drop_from_regmap_cache(priv);
-	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
+	cs_dsp_mock_regmap_drop_bytes(priv, reg, (*param).len_bytes);
 
 	/* Write the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
-			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, param->len_bytes),
+			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, (*param).len_bytes),
 			0);
 
 	/* Should not have been any writes to registers */
@@ -615,15 +615,15 @@ static void cs_dsp_ctl_write_volatile_not_started(struct kunit *test)
  * Write to a volatile control after the firmware has stopped.
  * This should return an error.
  */
-static void cs_dsp_ctl_write_volatile_stopped(struct kunit *test)
+static void cs_dsp_ctl_write_volatile_stopped(kunit *test)
 {
-	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
+	const struct cs_dsp_ctl_rw_test_param *param = (*test).param_value;
 	struct cs_dsp_test *priv = test->priv;
 	struct cs_dsp_test_local *local = priv->local;
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -662,7 +662,7 @@ static void cs_dsp_ctl_write_volatile_stopped(struct kunit *test)
 	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
 
 	/* Write the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
 			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, param->len_bytes),
@@ -676,7 +676,7 @@ static void cs_dsp_ctl_write_volatile_stopped(struct kunit *test)
  * Write to a volatile control after the DSP has been powered down.
  * This should return an error.
  */
-static void cs_dsp_ctl_write_volatile_stopped_powered_down(struct kunit *test)
+static void cs_dsp_ctl_write_volatile_stopped_powered_down(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -684,7 +684,7 @@ static void cs_dsp_ctl_write_volatile_stopped_powered_down(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -724,7 +724,7 @@ static void cs_dsp_ctl_write_volatile_stopped_powered_down(struct kunit *test)
 	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
 
 	/* Write the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
 			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, param->len_bytes),
@@ -739,7 +739,7 @@ static void cs_dsp_ctl_write_volatile_stopped_powered_down(struct kunit *test)
  * loaded into the DSP.
  * Should return an error.
  */
-static void cs_dsp_ctl_write_volatile_not_current_loaded_fw(struct kunit *test)
+static void cs_dsp_ctl_write_volatile_not_current_loaded_fw(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -748,7 +748,7 @@ static void cs_dsp_ctl_write_volatile_not_current_loaded_fw(struct kunit *test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	struct cs_dsp_mock_wmfw_builder *builder2 = _create_dummy_wmfw(test);
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -789,7 +789,7 @@ static void cs_dsp_ctl_write_volatile_not_current_loaded_fw(struct kunit *test)
 	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
 
 	/* Write the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
 			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, param->len_bytes),
@@ -804,7 +804,7 @@ static void cs_dsp_ctl_write_volatile_not_current_loaded_fw(struct kunit *test)
  * running.
  * Should return an error.
  */
-static void cs_dsp_ctl_write_volatile_not_current_running_fw(struct kunit *test)
+static void cs_dsp_ctl_write_volatile_not_current_running_fw(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -813,7 +813,7 @@ static void cs_dsp_ctl_write_volatile_not_current_running_fw(struct kunit *test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	struct cs_dsp_mock_wmfw_builder *builder2 = _create_dummy_wmfw(test);
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -858,7 +858,7 @@ static void cs_dsp_ctl_write_volatile_not_current_running_fw(struct kunit *test)
 	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
 
 	/* Write the control, it should return an error */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_LT(test,
 			cs_dsp_coeff_lock_and_write_ctrl(ctl, 0, reg_vals, param->len_bytes),
@@ -872,7 +872,7 @@ static void cs_dsp_ctl_write_volatile_not_current_running_fw(struct kunit *test)
  * Read from an offset into the control data. Should return only the
  * portion of data from the offset position.
  */
-static void cs_dsp_ctl_read_with_seek(struct kunit *test)
+static void cs_dsp_ctl_read_with_seek(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -880,11 +880,11 @@ static void cs_dsp_ctl_read_with_seek(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback;
-	unsigned int seek_words;
+	core::ffi::c_uint seek_words;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -915,7 +915,7 @@ static void cs_dsp_ctl_read_with_seek(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -923,7 +923,7 @@ static void cs_dsp_ctl_read_with_seek(struct kunit *test)
 	KUNIT_ASSERT_EQ(test, kunit_add_action_or_reset(test, _cs_dsp_stop_wrapper, dsp), 0);
 
 	for (seek_words = 1; seek_words < (def.length_bytes / sizeof(u32)); seek_words++) {
-		unsigned int len_bytes = def.length_bytes - (seek_words * sizeof(u32));
+		core::ffi::c_uint len_bytes = def.length_bytes - (seek_words * sizeof(u32));
 
 		KUNIT_EXPECT_EQ(test,
 				cs_dsp_coeff_lock_and_read_ctrl(ctl, seek_words,
@@ -939,7 +939,7 @@ static void cs_dsp_ctl_read_with_seek(struct kunit *test)
  * Same as cs_dsp_ctl_read_with_seek() except the control is cached
  * and the firmware is not running.
  */
-static void cs_dsp_ctl_read_cache_with_seek(struct kunit *test)
+static void cs_dsp_ctl_read_cache_with_seek(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -947,11 +947,11 @@ static void cs_dsp_ctl_read_cache_with_seek(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback;
-	unsigned int seek_words;
+	core::ffi::c_uint seek_words;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -982,7 +982,7 @@ static void cs_dsp_ctl_read_cache_with_seek(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start and stop the firmware so the read will come from the cache */
@@ -990,7 +990,7 @@ static void cs_dsp_ctl_read_cache_with_seek(struct kunit *test)
 	cs_dsp_stop(dsp);
 
 	for (seek_words = 1; seek_words < (def.length_bytes / sizeof(u32)); seek_words++) {
-		unsigned int len_bytes = def.length_bytes - (seek_words * sizeof(u32));
+		core::ffi::c_uint len_bytes = def.length_bytes - (seek_words * sizeof(u32));
 
 		KUNIT_EXPECT_EQ(test,
 				cs_dsp_coeff_lock_and_read_ctrl(ctl, seek_words,
@@ -1004,7 +1004,7 @@ static void cs_dsp_ctl_read_cache_with_seek(struct kunit *test)
  * Read less than the full length of data from a control. Should return
  * only the requested number of bytes.
  */
-static void cs_dsp_ctl_read_truncated(struct kunit *test)
+static void cs_dsp_ctl_read_truncated(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1012,11 +1012,11 @@ static void cs_dsp_ctl_read_truncated(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback;
-	unsigned int len_bytes;
+	core::ffi::c_uint len_bytes;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1047,7 +1047,7 @@ static void cs_dsp_ctl_read_truncated(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1074,7 +1074,7 @@ static void cs_dsp_ctl_read_truncated(struct kunit *test)
  * Same as cs_dsp_ctl_read_truncated() except the control is cached
  * and the firmware is not running.
  */
-static void cs_dsp_ctl_read_cache_truncated(struct kunit *test)
+static void cs_dsp_ctl_read_cache_truncated(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1082,11 +1082,11 @@ static void cs_dsp_ctl_read_cache_truncated(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback;
-	unsigned int len_bytes;
+	core::ffi::c_uint len_bytes;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1117,7 +1117,7 @@ static void cs_dsp_ctl_read_cache_truncated(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start and stop the firmware so the read will come from the cache */
@@ -1142,7 +1142,7 @@ static void cs_dsp_ctl_read_cache_truncated(struct kunit *test)
  * Write to an offset into the control data. Should only change the
  * portion of data from the offset position.
  */
-static void cs_dsp_ctl_write_with_seek(struct kunit *test)
+static void cs_dsp_ctl_write_with_seek(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1150,11 +1150,11 @@ static void cs_dsp_ctl_write_with_seek(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback, *new_data;
-	unsigned int seek_words;
+	core::ffi::c_uint seek_words;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1188,7 +1188,7 @@ static void cs_dsp_ctl_write_with_seek(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1196,7 +1196,7 @@ static void cs_dsp_ctl_write_with_seek(struct kunit *test)
 	KUNIT_ASSERT_EQ(test, kunit_add_action_or_reset(test, _cs_dsp_stop_wrapper, dsp), 0);
 
 	for (seek_words = 1; seek_words < (def.length_bytes / sizeof(u32)); seek_words++) {
-		unsigned int len_bytes = def.length_bytes - (seek_words * sizeof(u32));
+		core::ffi::c_uint len_bytes = def.length_bytes - (seek_words * sizeof(u32));
 
 		/* Reset the register values to the test data */
 		regmap_raw_write(dsp->regmap, reg, reg_vals, def.length_bytes);
@@ -1220,7 +1220,7 @@ static void cs_dsp_ctl_write_with_seek(struct kunit *test)
  * Same as cs_dsp_ctl_write_with_seek() except the control is cached
  * and the firmware is not running.
  */
-static void cs_dsp_ctl_write_cache_with_seek(struct kunit *test)
+static void cs_dsp_ctl_write_cache_with_seek(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1228,11 +1228,11 @@ static void cs_dsp_ctl_write_cache_with_seek(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback, *new_data;
-	unsigned int seek_words;
+	core::ffi::c_uint seek_words;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1266,7 +1266,7 @@ static void cs_dsp_ctl_write_cache_with_seek(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start and stop the firmware so the read will come from the cache */
@@ -1274,7 +1274,7 @@ static void cs_dsp_ctl_write_cache_with_seek(struct kunit *test)
 	cs_dsp_stop(dsp);
 
 	for (seek_words = 1; seek_words < (def.length_bytes / sizeof(u32)); seek_words++) {
-		unsigned int len_bytes = def.length_bytes - (seek_words * sizeof(u32));
+		core::ffi::c_uint len_bytes = def.length_bytes - (seek_words * sizeof(u32));
 
 		/* Reset the cache to the test data */
 		KUNIT_EXPECT_GE(test,
@@ -1303,7 +1303,7 @@ static void cs_dsp_ctl_write_cache_with_seek(struct kunit *test)
  * Write less than the full length of data to a control. Should only
  * change the requested number of bytes.
  */
-static void cs_dsp_ctl_write_truncated(struct kunit *test)
+static void cs_dsp_ctl_write_truncated(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1311,11 +1311,11 @@ static void cs_dsp_ctl_write_truncated(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback, *new_data;
-	unsigned int len_bytes;
+	core::ffi::c_uint len_bytes;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1349,7 +1349,7 @@ static void cs_dsp_ctl_write_truncated(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1383,7 +1383,7 @@ static void cs_dsp_ctl_write_truncated(struct kunit *test)
  * Same as cs_dsp_ctl_write_truncated() except the control is cached
  * and the firmware is not running.
  */
-static void cs_dsp_ctl_write_cache_truncated(struct kunit *test)
+static void cs_dsp_ctl_write_cache_truncated(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1391,11 +1391,11 @@ static void cs_dsp_ctl_write_cache_truncated(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals, *readback, *new_data;
-	unsigned int len_bytes;
+	core::ffi::c_uint len_bytes;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1429,7 +1429,7 @@ static void cs_dsp_ctl_write_cache_truncated(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start and stop the firmware so the read will come from the cache */
@@ -1466,7 +1466,7 @@ static void cs_dsp_ctl_write_cache_truncated(struct kunit *test)
  * Read from an offset that is beyond the end of the control data.
  * Should return an error.
  */
-static void cs_dsp_ctl_read_with_seek_oob(struct kunit *test)
+static void cs_dsp_ctl_read_with_seek_oob(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1474,11 +1474,11 @@ static void cs_dsp_ctl_read_with_seek_oob(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
-	unsigned int seek_words;
+	core::ffi::c_uint seek_words;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1505,7 +1505,7 @@ static void cs_dsp_ctl_read_with_seek_oob(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1534,7 +1534,7 @@ static void cs_dsp_ctl_read_with_seek_oob(struct kunit *test)
  * Read more data than the length of the control data.
  * Should return an error.
  */
-static void cs_dsp_ctl_read_with_length_overflow(struct kunit *test)
+static void cs_dsp_ctl_read_with_length_overflow(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1542,7 +1542,7 @@ static void cs_dsp_ctl_read_with_length_overflow(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -1572,7 +1572,7 @@ static void cs_dsp_ctl_read_with_length_overflow(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1599,7 +1599,7 @@ static void cs_dsp_ctl_read_with_length_overflow(struct kunit *test)
  * Read with a seek and length that ends beyond the end of control data.
  * Should return an error.
  */
-static void cs_dsp_ctl_read_with_seek_and_length_oob(struct kunit *test)
+static void cs_dsp_ctl_read_with_seek_and_length_oob(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1607,7 +1607,7 @@ static void cs_dsp_ctl_read_with_seek_and_length_oob(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -1637,7 +1637,7 @@ static void cs_dsp_ctl_read_with_seek_and_length_oob(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1668,7 +1668,7 @@ static void cs_dsp_ctl_read_with_seek_and_length_oob(struct kunit *test)
  * Write to an offset that is beyond the end of the control data.
  * Should return an error without touching any registers.
  */
-static void cs_dsp_ctl_write_with_seek_oob(struct kunit *test)
+static void cs_dsp_ctl_write_with_seek_oob(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1676,11 +1676,11 @@ static void cs_dsp_ctl_write_with_seek_oob(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
-	unsigned int seek_words;
+	core::ffi::c_uint seek_words;
 
 	def.flags = param->flags;
 	def.mem_type = param->mem_type;
@@ -1707,7 +1707,7 @@ static void cs_dsp_ctl_write_with_seek_oob(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1745,7 +1745,7 @@ static void cs_dsp_ctl_write_with_seek_oob(struct kunit *test)
  * Write more data than the length of the control data.
  * Should return an error.
  */
-static void cs_dsp_ctl_write_with_length_overflow(struct kunit *test)
+static void cs_dsp_ctl_write_with_length_overflow(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1753,7 +1753,7 @@ static void cs_dsp_ctl_write_with_length_overflow(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -1783,7 +1783,7 @@ static void cs_dsp_ctl_write_with_length_overflow(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1819,7 +1819,7 @@ static void cs_dsp_ctl_write_with_length_overflow(struct kunit *test)
  * Write with a seek and length that ends beyond the end of control data.
  * Should return an error.
  */
-static void cs_dsp_ctl_write_with_seek_and_length_oob(struct kunit *test)
+static void cs_dsp_ctl_write_with_seek_and_length_oob(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1827,7 +1827,7 @@ static void cs_dsp_ctl_write_with_seek_and_length_oob(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -1857,7 +1857,7 @@ static void cs_dsp_ctl_write_with_seek_and_length_oob(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1898,7 +1898,7 @@ static void cs_dsp_ctl_write_with_seek_and_length_oob(struct kunit *test)
  * always be read. Write-only only indicates that it is not useful to
  * populate the cache from the DSP memory.
  */
-static void cs_dsp_ctl_read_from_writeonly(struct kunit *test)
+static void cs_dsp_ctl_read_from_writeonly(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1935,7 +1935,7 @@ static void cs_dsp_ctl_read_from_writeonly(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1972,7 +1972,7 @@ static void cs_dsp_ctl_read_from_writeonly(struct kunit *test)
  * Write to a read-only control.
  * This should return an error without writing registers.
  */
-static void cs_dsp_ctl_write_to_readonly(struct kunit *test)
+static void cs_dsp_ctl_write_to_readonly(kunit *test)
 {
 	const struct cs_dsp_ctl_rw_test_param *param = test->param_value;
 	struct cs_dsp_test *priv = test->priv;
@@ -1980,7 +1980,7 @@ static void cs_dsp_ctl_write_to_readonly(struct kunit *test)
 	struct cs_dsp *dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	int alg_idx = _find_alg_entry(test, param->alg_id);
-	unsigned int reg, alg_base_words;
+	reg: core::ffi::c_uint, alg_base_words;
 	struct cs_dsp_coeff_ctl *ctl;
 	struct firmware *wmfw;
 	u32 *reg_vals;
@@ -2014,7 +2014,7 @@ static void cs_dsp_ctl_write_to_readonly(struct kunit *test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", NULL, NULL, "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -2046,7 +2046,7 @@ static void cs_dsp_ctl_write_to_readonly(struct kunit *test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 }
 
-static int cs_dsp_ctl_rw_test_common_init(struct kunit *test, struct cs_dsp *dsp,
+static int cs_dsp_ctl_rw_test_common_init(kunit *test, cs_dsp *dsp,
 					  int wmfw_version)
 {
 	struct cs_dsp_test *priv;
@@ -2058,7 +2058,7 @@ static int cs_dsp_ctl_rw_test_common_init(struct kunit *test, struct cs_dsp *dsp
 	if (!priv)
 		return -ENOMEM;
 
-	local = kunit_kzalloc(test, sizeof(struct cs_dsp_test_local), GFP_KERNEL);
+	local = kunit_kzalloc(test, sizeof(cs_dsp_test_local), GFP_KERNEL);
 	if (!local)
 		return -ENOMEM;
 
@@ -2123,7 +2123,7 @@ static int cs_dsp_ctl_rw_test_common_init(struct kunit *test, struct cs_dsp *dsp
 	return kunit_add_action_or_reset(priv->test, _cs_dsp_remove_wrapper, dsp);
 }
 
-static int cs_dsp_ctl_rw_test_halo_init(struct kunit *test)
+static int cs_dsp_ctl_rw_test_halo_init(kunit *test)
 {
 	struct cs_dsp *dsp;
 
@@ -2142,7 +2142,7 @@ static int cs_dsp_ctl_rw_test_halo_init(struct kunit *test)
 	return cs_dsp_ctl_rw_test_common_init(test, dsp, 3);
 }
 
-static int cs_dsp_ctl_rw_test_adsp2_32bit_init(struct kunit *test, int wmfw_ver)
+static int cs_dsp_ctl_rw_test_adsp2_32bit_init(kunit *test, int wmfw_ver)
 {
 	struct cs_dsp *dsp;
 
@@ -2161,17 +2161,17 @@ static int cs_dsp_ctl_rw_test_adsp2_32bit_init(struct kunit *test, int wmfw_ver)
 	return cs_dsp_ctl_rw_test_common_init(test, dsp, wmfw_ver);
 }
 
-static int cs_dsp_ctl_rw_test_adsp2_32bit_wmfw1_init(struct kunit *test)
+static int cs_dsp_ctl_rw_test_adsp2_32bit_wmfw1_init(kunit *test)
 {
 	return cs_dsp_ctl_rw_test_adsp2_32bit_init(test, 1);
 }
 
-static int cs_dsp_ctl_rw_test_adsp2_32bit_wmfw2_init(struct kunit *test)
+static int cs_dsp_ctl_rw_test_adsp2_32bit_wmfw2_init(kunit *test)
 {
 	return cs_dsp_ctl_rw_test_adsp2_32bit_init(test, 2);
 }
 
-static int cs_dsp_ctl_rw_test_adsp2_16bit_init(struct kunit *test, int wmfw_ver)
+static int cs_dsp_ctl_rw_test_adsp2_16bit_init(kunit *test, int wmfw_ver)
 {
 	struct cs_dsp *dsp;
 
@@ -2190,12 +2190,12 @@ static int cs_dsp_ctl_rw_test_adsp2_16bit_init(struct kunit *test, int wmfw_ver)
 	return cs_dsp_ctl_rw_test_common_init(test, dsp, wmfw_ver);
 }
 
-static int cs_dsp_ctl_rw_test_adsp2_16bit_wmfw1_init(struct kunit *test)
+static int cs_dsp_ctl_rw_test_adsp2_16bit_wmfw1_init(kunit *test)
 {
 	return cs_dsp_ctl_rw_test_adsp2_16bit_init(test, 1);
 }
 
-static int cs_dsp_ctl_rw_test_adsp2_16bit_wmfw2_init(struct kunit *test)
+static int cs_dsp_ctl_rw_test_adsp2_16bit_wmfw2_init(kunit *test)
 {
 	return cs_dsp_ctl_rw_test_adsp2_16bit_init(test, 2);
 }
@@ -2266,31 +2266,31 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_varying_alg_cases[] = {
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_readable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0
+	  flags: 0
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
 		   WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
@@ -2304,16 +2304,16 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_readable_flags_cases[] = {
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_readonly_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 };
 // KUNIT_ARRAY_PARAM(all_pop_readonly_flags,
@@ -2326,19 +2326,19 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_readonly_flags_cases[] = {
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_nonvol_readable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0
+	  flags: 0
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 // KUNIT_ARRAY_PARAM(all_pop_nonvol_readable_flags,
@@ -2351,31 +2351,31 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_nonvol_readable_flags_cases
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_writeable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0
+	  flags: 0
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
 		   WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
@@ -2389,16 +2389,16 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_writeable_flags_cases[] = {
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_writeonly_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 // KUNIT_ARRAY_PARAM(all_pop_writeonly_flags,
@@ -2411,19 +2411,19 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_writeonly_flags_cases[] = {
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_nonvol_writeable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0
+	  flags: 0
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 // KUNIT_ARRAY_PARAM(all_pop_nonvol_writeable_flags,
@@ -2432,23 +2432,23 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_nonvol_writeable_flags_case
 
 /*
  * All parameters populated, with all combinations of flags for a
- * volatile readable control.
+ *mut readable control.
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_volatile_readable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0 /* flags == 0 is volatile while firmware is running */
+	  flags: 0 /* flags == 0 is volatile while firmware is running */
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
 		   WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
@@ -2458,23 +2458,23 @@ static const struct cs_dsp_ctl_rw_test_param all_pop_volatile_readable_flags_cas
 
 /*
  * All parameters populated, with all combinations of flags for a
- * volatile readable control.
+ *mut readable control.
  */
 static const struct cs_dsp_ctl_rw_test_param all_pop_volatile_writeable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0 /* flags == 0 is volatile while firmware is running */
+	  flags: 0 /* flags == 0 is volatile while firmware is running */
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
+	  flags: WMFW_CTL_FLAG_VOLATILE | WMFW_CTL_FLAG_SYS |
 		   WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
@@ -2633,37 +2633,37 @@ static struct kunit_case cs_dsp_ctl_rw_test_cases_halo[] = {
 };
 
 static struct kunit_suite cs_dsp_ctl_rw_test_halo = {
-	.name = "cs_dsp_ctl_rw_wmfwV3_halo",
-	.init = cs_dsp_ctl_rw_test_halo_init,
-	.test_cases = cs_dsp_ctl_rw_test_cases_halo,
+	name: "cs_dsp_ctl_rw_wmfwV3_halo",
+	init: cs_dsp_ctl_rw_test_halo_init,
+	test_cases: cs_dsp_ctl_rw_test_cases_halo,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 static struct kunit_suite cs_dsp_ctl_rw_test_adsp2_32bit_wmfw1 = {
-	.name = "cs_dsp_ctl_rw_wmfwV1_adsp2_32bit",
-	.init = cs_dsp_ctl_rw_test_adsp2_32bit_wmfw1_init,
-	.test_cases = cs_dsp_ctl_rw_test_cases_adsp,
+	name: "cs_dsp_ctl_rw_wmfwV1_adsp2_32bit",
+	init: cs_dsp_ctl_rw_test_adsp2_32bit_wmfw1_init,
+	test_cases: cs_dsp_ctl_rw_test_cases_adsp,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 static struct kunit_suite cs_dsp_ctl_rw_test_adsp2_32bit_wmfw2 = {
-	.name = "cs_dsp_ctl_rw_wmfwV2_adsp2_32bit",
-	.init = cs_dsp_ctl_rw_test_adsp2_32bit_wmfw2_init,
-	.test_cases = cs_dsp_ctl_rw_test_cases_adsp,
+	name: "cs_dsp_ctl_rw_wmfwV2_adsp2_32bit",
+	init: cs_dsp_ctl_rw_test_adsp2_32bit_wmfw2_init,
+	test_cases: cs_dsp_ctl_rw_test_cases_adsp,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 static struct kunit_suite cs_dsp_ctl_rw_test_adsp2_16bit_wmfw1 = {
-	.name = "cs_dsp_ctl_rw_wmfwV1_adsp2_16bit",
-	.init = cs_dsp_ctl_rw_test_adsp2_16bit_wmfw1_init,
-	.test_cases = cs_dsp_ctl_rw_test_cases_adsp,
+	name: "cs_dsp_ctl_rw_wmfwV1_adsp2_16bit",
+	init: cs_dsp_ctl_rw_test_adsp2_16bit_wmfw1_init,
+	test_cases: cs_dsp_ctl_rw_test_cases_adsp,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 static struct kunit_suite cs_dsp_ctl_rw_test_adsp2_16bit_wmfw2 = {
-	.name = "cs_dsp_ctl_rw_wmfwV2_adsp2_16bit",
-	.init = cs_dsp_ctl_rw_test_adsp2_16bit_wmfw2_init,
-	.test_cases = cs_dsp_ctl_rw_test_cases_adsp,
+	name: "cs_dsp_ctl_rw_wmfwV2_adsp2_16bit",
+	init: cs_dsp_ctl_rw_test_adsp2_16bit_wmfw2_init,
+	test_cases: cs_dsp_ctl_rw_test_cases_adsp,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 

@@ -111,7 +111,7 @@ pub struct device_node;
 
 // CONFIG_RISCV_ISA_V: RISCV_V_SET_CONTROL(arg) calls the setter and
 // RISCV_V_GET_CONTROL() calls the getter.
-#[cfg(feature = "CONFIG_RISCV_ISA_V")]
+#[cfg(CONFIG_RISCV_ISA_V)]
 extern "C" {
     pub fn riscv_v_vstate_ctrl_set_current(arg: ::core::ffi::c_ulong) -> isize;
     pub fn riscv_v_vstate_ctrl_get_current() -> isize;
@@ -122,7 +122,7 @@ extern "C" {
 
 // CONFIG_RISCV_ISA_SUPM: SET_TAGGED_ADDR_CTRL(arg) calls set_tagged_addr_ctrl(current, arg),
 // and GET_TAGGED_ADDR_CTRL() calls get_tagged_addr_ctrl(current).
-#[cfg(feature = "CONFIG_RISCV_ISA_SUPM")]
+#[cfg(CONFIG_RISCV_ISA_SUPM)]
 extern "C" {
     pub fn set_tagged_addr_ctrl(task: *mut task_struct, arg: ::core::ffi::c_ulong) -> isize;
     pub fn get_tagged_addr_ctrl(task: *mut task_struct) -> isize;

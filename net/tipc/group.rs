@@ -119,7 +119,7 @@ pub unsafe fn tipc_group_delete(net: *mut net, grp: *mut tipc_group) {
 
 unsafe fn tipc_group_find_member(grp: *mut tipc_group, node: u32, port: u32) -> *mut tipc_member {
     let mut n = (*grp).members.rb_node; let key = ((node as u64) << 32) | port as u64;
-    while !n.is_null() { let m = container_of!(n, tipc_member, tree_node); let nkey = ((*m).node as u64 << 32) | (*m).port as u64; if key < nkey { n = (*n).rb_left; } else if key > nkey { n = (*n).rb_right; } else { return m; } } core::ptr::null_mut()
+    while !n.is_null() { let m = container_of!(n, tipc_member, tree_node); let nkey = (((*m).node as u64) << 32) | (*m).port as u64; if key < nkey { n = (*n).rb_left; } else if key > nkey { n = (*n).rb_right; } else { return m; } } core::ptr::null_mut()
 }
 unsafe fn tipc_group_find_dest(grp: *mut tipc_group, node: u32, port: u32) -> *mut tipc_member { let m = tipc_group_find_member(grp,node,port); if tipc_group_is_receiver(m) { m } else { core::ptr::null_mut() } }
 
@@ -128,8 +128,8 @@ unsafe fn tipc_group_find_node(grp: *mut tipc_group, node: u32) -> *mut tipc_mem
 }
 
 unsafe fn tipc_group_add_to_tree(grp: *mut tipc_group, m: *mut tipc_member) -> i32 {
-    let key = ((*m).node as u64 << 32) | (*m).port as u64; let mut n = &mut (*grp).members.rb_node; let mut parent = core::ptr::null_mut();
-    while !(*n).is_null() { let tmp = container_of!(*n, tipc_member, tree_node); parent = *n; let nkey = ((*tmp).node as u64 << 32) | (*tmp).port as u64; if key < nkey { n = &mut (**n).rb_left; } else if key > nkey { n = &mut (**n).rb_right; } else { return -EEXIST; } }
+    let key = (((*m).node as u64) << 32) | (*m).port as u64; let mut n = &mut (*grp).members.rb_node; let mut parent = core::ptr::null_mut();
+    while !(*n).is_null() { let tmp = container_of!(*n, tipc_member, tree_node); parent = *n; let nkey = (((*tmp).node as u64) << 32) | (*tmp).port as u64; if key < nkey { n = &mut (**n).rb_left; } else if key > nkey { n = &mut (**n).rb_right; } else { return -EEXIST; } }
     rb_link_node(&mut (*m).tree_node, parent, n); rb_insert_color(&mut (*m).tree_node, &mut (*grp).members); 0
 }
 

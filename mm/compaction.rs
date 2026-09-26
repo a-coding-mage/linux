@@ -5,7 +5,7 @@
 
 #![allow(non_camel_case_types, non_snake_case, dead_code, unused_variables)]
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 pub const HPAGE_FRAG_CHECK_INTERVAL_MSEC: usize = 500;
 
 #[inline]
@@ -13,13 +13,13 @@ pub const fn is_via_compact_memory(order: i32) -> bool {
     order == -1
 }
 
-#[cfg(not(feature = "CONFIG_COMPACTION"))]
+#[cfg(not(CONFIG_COMPACTION))]
 #[inline]
 pub const fn is_via_compact_memory_disabled(_order: i32) -> bool {
     false
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 pub const COMPACT_MAX_DEFER_SHIFT: u32 = 6;
 
 // The remaining implementation is supplied by the surrounding kernel

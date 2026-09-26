@@ -36,8 +36,8 @@ macro_rules! AUD_COMMON_REG_LIST { ($id:expr) => { (
     SR!(DCCG_AUDIO_DTO1_PHASE)
 ) } }
 
-macro_rules! SF { ($reg_name:ident, $field_name:ident, $post_fix:ident) => {
-    $reg_name ## __ ## $field_name ## $post_fix
+macro_rules! SF { ($reg_name:tt, $field_name:tt, $post_fix:tt) => {
+    ::kernel::macros::paste!([<$reg_name __>]) ## ::kernel::macros::paste!([<$field_name $post_fix>])
 } }
 
 // CONFIG_DRM_AMD_DC_SI controls whether the DCE6.0 list is available.

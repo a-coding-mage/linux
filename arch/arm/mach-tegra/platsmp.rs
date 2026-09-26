@@ -28,9 +28,9 @@ pub struct smp_operations {
     pub smp_prepare_cpus: Option<unsafe extern "C" fn(u32)>,
     pub smp_secondary_init: Option<unsafe extern "C" fn(u32)>,
     pub smp_boot_secondary: Option<unsafe extern "C" fn(u32, *mut task_struct) -> i32>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe extern "C" fn(u32) -> i32>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe extern "C" fn(u32)>,
 }
 
@@ -56,9 +56,9 @@ extern "C" {
     fn scu_a9_get_base() -> usize;
     fn io_address(address: usize) -> *mut c_void;
     fn scu_enable(base: *mut c_void);
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     fn tegra_cpu_kill(cpu: u32) -> i32;
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     fn tegra_cpu_die(cpu: u32);
 }
 
@@ -132,10 +132,10 @@ unsafe fn tegra114_boot_secondary(mut cpu: u32, _idle: *mut task_struct) -> i32 
 
 unsafe fn tegra_boot_secondary(cpu: u32, idle: *mut task_struct) -> i32 {
     // Build-time CONFIG_ARCH_TEGRA_* conditions are represented by feature flags.
-    if cfg!(feature = "CONFIG_ARCH_TEGRA_2x_SOC") && tegra_get_chip_id() == TEGRA20 { return tegra20_boot_secondary(cpu, idle); }
-    if cfg!(feature = "CONFIG_ARCH_TEGRA_3x_SOC") && tegra_get_chip_id() == TEGRA30 { return tegra30_boot_secondary(cpu, idle); }
-    if cfg!(feature = "CONFIG_ARCH_TEGRA_114_SOC") && tegra_get_chip_id() == TEGRA114 { return tegra114_boot_secondary(cpu, idle); }
-    if cfg!(feature = "CONFIG_ARCH_TEGRA_124_SOC") && tegra_get_chip_id() == TEGRA124 { return tegra114_boot_secondary(cpu, idle); }
+    if cfg!(CONFIG_ARCH_TEGRA_2x_SOC) && tegra_get_chip_id() == TEGRA20 { return tegra20_boot_secondary(cpu, idle); }
+    if cfg!(CONFIG_ARCH_TEGRA_3x_SOC) && tegra_get_chip_id() == TEGRA30 { return tegra30_boot_secondary(cpu, idle); }
+    if cfg!(CONFIG_ARCH_TEGRA_114_SOC) && tegra_get_chip_id() == TEGRA114 { return tegra114_boot_secondary(cpu, idle); }
+    if cfg!(CONFIG_ARCH_TEGRA_124_SOC) && tegra_get_chip_id() == TEGRA124 { return tegra114_boot_secondary(cpu, idle); }
     -22 // -EINVAL
 }
 
@@ -152,9 +152,9 @@ pub static tegra_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(tegra_smp_prepare_cpus),
     smp_secondary_init: Some(tegra_secondary_init),
     smp_boot_secondary: Some(tegra_boot_secondary),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(tegra_cpu_kill),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(tegra_cpu_die),
 };
 

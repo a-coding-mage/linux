@@ -60,12 +60,12 @@ static mut num_max_busy_us:c_int = 0;
 static mut unload_when_empty:bool = true;
 
 extern "C" {
-    fn ipmi_alloc_smi_msg()->*mut ipmi_smi_msg; fn ipmi_free_smi_msg(*mut ipmi_smi_msg);
-    fn ipmi_smi_msg_received(*mut ipmi_smi,*mut ipmi_smi_msg); fn ipmi_smi_watchdog_pretimeout(*mut ipmi_smi);
-    fn ipmi_register_smi(*const c_void,*mut smi_info,*mut c_void,u8)->c_int; fn ipmi_unregister_smi(*mut ipmi_smi);
-    fn ipmi_demangle_device_id(u8,u8,*mut u8,usize,*mut ipmi_device_id)->c_int;
-    fn ipmi_addr_src_to_str(c_int)->*const c_char; fn ipmi_version_major(*const ipmi_device_id)->u8;
-    fn ipmi_version_minor(*const ipmi_device_id)->u8;
+    fn ipmi_alloc_smi_msg()->*mut ipmi_smi_msg; fn ipmi_free_smi_msg(_: *mut ipmi_smi_msg);
+    fn ipmi_smi_msg_received(_: *mut ipmi_smi,_: *mut ipmi_smi_msg); fn ipmi_smi_watchdog_pretimeout(_: *mut ipmi_smi);
+    fn ipmi_register_smi(_: *const c_void,_: *mut smi_info,_: *mut c_void,_: u8)->c_int; fn ipmi_unregister_smi(_: *mut ipmi_smi);
+    fn ipmi_demangle_device_id(_: u8,_: u8,_: *mut u8,_: usize,_: *mut ipmi_device_id)->c_int;
+    fn ipmi_addr_src_to_str(_: c_int)->*const c_char; fn ipmi_version_major(_: *const ipmi_device_id)->u8;
+    fn ipmi_version_minor(_: *const ipmi_device_id)->u8;
 }
 
 #[inline] unsafe fn deliver_recv_msg(s:&mut smi_info,m:*mut ipmi_smi_msg){ ipmi_smi_msg_received(s.intf,m); }

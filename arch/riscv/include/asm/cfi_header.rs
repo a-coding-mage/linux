@@ -11,12 +11,12 @@
 #[repr(C)]
 pub struct pt_regs;
 
-#[cfg(feature = "CONFIG_CFI")]
+#[cfg(CONFIG_CFI)]
 extern "C" {
     pub fn handle_cfi_failure(regs: *mut pt_regs) -> bug_trap_type;
 }
 
-#[cfg(not(feature = "CONFIG_CFI"))]
+#[cfg(not(CONFIG_CFI))]
 #[inline]
 pub unsafe fn handle_cfi_failure(_regs: *mut pt_regs) -> bug_trap_type {
     BUG_TRAP_TYPE_NONE

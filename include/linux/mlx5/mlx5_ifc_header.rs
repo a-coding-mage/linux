@@ -109,8 +109,7 @@ pub const MLX5_OBJ_TYPE_FT_ALIAS: u64 = 0xff15;
 pub const MLX5_GENERAL_OBJ_TYPES_CAP_SW_ICM: u64 = (1u64 << MLX5_OBJ_TYPE_SW_ICM);
 pub const MLX5_GENERAL_OBJ_TYPES_CAP_GENEVE_TLV_OPT: u64 = (1u64 << 11);
 pub const MLX5_GENERAL_OBJ_TYPES_CAP_VIRTIO_NET_Q: u64 = (1u64 << 13);
-pub const MLX5_GENERAL_OBJ_TYPES_CAP_HEADER_MODIFY_ARGUMENT: u64 = ;
-pub const (1ULL << MLX5_OBJ_TYPE_HEADER_MODIFY_ARGUMENT): u64 = 0; // implicit C enumerator
+pub const MLX5_GENERAL_OBJ_TYPES_CAP_HEADER_MODIFY_ARGUMENT: u64 = 1 << MLX5_OBJ_TYPE_HEADER_MODIFY_ARGUMENT;
 pub const MLX5_GENERAL_OBJ_TYPES_CAP_MACSEC_OFFLOAD: u64 = (1u64 << 39);
 
 
@@ -320,7 +319,7 @@ pub const MLX5_CMD_OP_SYNC_CRYPTO: u64 = 0xb12;
 pub const MLX5_CMD_OP_ALLOW_OTHER_VHCA_ACCESS: u64 = 0xb16;
 pub const MLX5_CMD_OP_GENERATE_WQE: u64 = 0xb17;
 pub const MLX5_CMD_OPCODE_QUERY_VUID: u64 = 0xb22;
-pub const MLX5_CMD_OP_MAX: u64 = 0; // implicit C enumerator
+pub const MLX5_CMD_OP_MAX: u64 = 2851; // implicit C enumerator
 
 
 /* Valid range for general commands that don't work over an object */
@@ -601,8 +600,8 @@ pub struct mlx5_ifc_fte_match_set_lyr_2_4_bits {
     pub ttl_hoplimit: [u8; 0x8],
     pub udp_sport: [u8; 0x10],
     pub udp_dport: [u8; 0x10],
-    // TODO: untranslated declaration: union mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits src_ipv4_src_ipv6;
-    // TODO: untranslated declaration: union mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits dst_ipv4_dst_ipv6;
+    // TODO: untranslated declaration: mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits src_ipv4_src_ipv6;
+    // TODO: untranslated declaration: mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits dst_ipv4_dst_ipv6;
 }
 
 
@@ -642,7 +641,7 @@ pub struct mlx5_ifc_fte_match_set_misc_bits {
     pub inner_second_svlan_tag: [u8; 0x1],
     pub reserved_at_64: [u8; 0xc],
     pub gre_protocol: [u8; 0x10],
-    // TODO: untranslated declaration: union mlx5_ifc_gre_key_bits gre_key;
+    // TODO: untranslated declaration: mlx5_ifc_gre_key_bits gre_key;
     pub vxlan_vni: [u8; 0x18],
     pub bth_opcode: [u8; 0x8],
     pub geneve_vni: [u8; 0x18],
@@ -3021,7 +3020,7 @@ pub struct mlx5_ifc_wqe_associated_page_fault_event_bits {
 #[repr(C)]
 pub struct mlx5_ifc_qp_events_bits {
     pub reserved_at_0: [u8; 0xa0],
-    pub type: [u8; 0x8],
+    pub r#type: [u8; 0x8],
     pub reserved_at_a8: [u8; 0x18],
     pub reserved_at_c0: [u8; 0x8],
     pub qpn_rqn_sqn: [u8; 0x18],
@@ -3387,7 +3386,7 @@ pub struct mlx5_ifc_execute_aso_bits {
     pub valid: [u8; 0x1],
     pub reserved_at_1: [u8; 0x7],
     pub aso_object_id: [u8; 0x18],
-    // TODO: untranslated declaration: union mlx5_ifc_exe_aso_ctrl exe_aso_ctrl;
+    // TODO: untranslated declaration: mlx5_ifc_exe_aso_ctrl exe_aso_ctrl;
 }
 
 
@@ -3414,7 +3413,7 @@ pub struct mlx5_ifc_flow_context_bits {
     pub match_value: mlx5_ifc_fte_match_param_bits,
     pub execute_aso: [mlx5_ifc_execute_aso_bits; 4],
     pub reserved_at_1300: [u8; 0x500],
-    // TODO: untranslated declaration: union mlx5_ifc_dest_format_flow_counter_list_auto_bits destination[];
+    // TODO: untranslated declaration: mlx5_ifc_dest_format_flow_counter_list_auto_bits destination[];
 }
 
 
@@ -3713,7 +3712,7 @@ pub union mlx5_ifc_element_attributes_bits {
 pub struct mlx5_ifc_scheduling_context_bits {
     pub element_type: [u8; 0x8],
     pub reserved_at_8: [u8; 0x18],
-    // TODO: untranslated declaration: union mlx5_ifc_element_attributes_bits element_attributes;
+    // TODO: untranslated declaration: mlx5_ifc_element_attributes_bits element_attributes;
     pub parent_element_id: [u8; 0x20],
     pub reserved_at_60: [u8; 0x40],
     pub bw_share: [u8; 0x20],
@@ -3735,8 +3734,8 @@ pub struct mlx5_ifc_rqtc_bits {
     pub rqt_actual_size: [u8; 0x10],
     pub reserved_at_e0: [u8; 0x6a0],
     // TODO: untranslated declaration: union {
-    // TODO: untranslated declaration: DECLARE_FLEX_ARRAY(struct mlx5_ifc_rq_num_bits, rq_num);
-    // TODO: untranslated declaration: DECLARE_FLEX_ARRAY(struct mlx5_ifc_rq_vhca_bits, rq_vhca);
+    // TODO: untranslated declaration: DECLARE_FLEX_ARRAY(mlx5_ifc_rq_num_bits, rq_num);
+    // TODO: untranslated declaration: DECLARE_FLEX_ARRAY(mlx5_ifc_rq_vhca_bits, rq_vhca);
 }
 
 };
@@ -4139,7 +4138,7 @@ pub const MLX5_CQC_ST_FIRED: u64 = 0xa;
 // C enum mlx5_cq_period_mode
 pub const MLX5_CQ_PERIOD_MODE_START_FROM_EQE: u64 = 0x0;
 pub const MLX5_CQ_PERIOD_MODE_START_FROM_CQE: u64 = 0x1;
-pub const MLX5_CQ_PERIOD_NUM_MODES: u64 = 0; // implicit C enumerator
+pub const MLX5_CQ_PERIOD_NUM_MODES: u64 = 2; // implicit C enumerator
 
 
 #[repr(C)]
@@ -4558,7 +4557,7 @@ pub struct mlx5_ifc_set_hca_cap_in_bits {
     pub reserved_at_44: [u8; 0xc],
     pub function_id: [u8; 0x10],
     pub reserved_at_60: [u8; 0x20],
-    // TODO: untranslated declaration: union mlx5_ifc_hca_cap_union_bits capability;
+    // TODO: untranslated declaration: mlx5_ifc_hca_cap_union_bits capability;
 }
 
 
@@ -4835,7 +4834,7 @@ pub const MLX5_QUERY_MONITOR_Q_COUNTER_RX_OUT_OF_BUFFER: u64 = 0x4;
 #[repr(C)]
 pub struct mlx5_ifc_monitor_counter_output_bits {
     pub reserved_at_0: [u8; 0x4],
-    pub type: [u8; 0x4],
+    pub r#type: [u8; 0x4],
     pub reserved_at_8: [u8; 0x8],
     pub counter: [u8; 0x10],
     pub counter_group_id: [u8; 0x20],
@@ -4845,7 +4844,7 @@ pub struct mlx5_ifc_monitor_counter_output_bits {
 // #define MLX5_CMD_SET_MONITOR_NUM_PPCNT_COUNTER_SET1 (6)
 // #define MLX5_CMD_SET_MONITOR_NUM_Q_COUNTERS_SET1    (1)
 // #define MLX5_CMD_SET_MONITOR_NUM_COUNTER (MLX5_CMD_SET_MONITOR_NUM_PPCNT_COUNTER_SET1 +\
-					  MLX5_CMD_SET_MONITOR_NUM_Q_COUNTERS_SET1)
+// 					  MLX5_CMD_SET_MONITOR_NUM_Q_COUNTERS_SET1)
 
 #[repr(C)]
 pub struct mlx5_ifc_set_monitor_counter_in_bits {
@@ -5234,7 +5233,7 @@ pub struct mlx5_ifc_query_qp_out_bits {
     pub ece: [u8; 0x20],
     pub qpc: mlx5_ifc_qpc_bits,
     pub reserved_at_800: [u8; 0x80],
-    // TODO: untranslated declaration: union mlx5_ifc_qp_pas_or_qpc_ext_and_pas_bits qp_pas_or_qpc_ext_and_pas;
+    // TODO: untranslated declaration: mlx5_ifc_qp_pas_or_qpc_ext_and_pas_bits qp_pas_or_qpc_ext_and_pas;
 }
 
 
@@ -5592,7 +5591,7 @@ pub struct mlx5_ifc_query_hca_cap_out_bits {
     pub reserved_at_8: [u8; 0x18],
     pub syndrome: [u8; 0x20],
     pub reserved_at_40: [u8; 0x40],
-    // TODO: untranslated declaration: union mlx5_ifc_hca_cap_union_bits capability;
+    // TODO: untranslated declaration: mlx5_ifc_hca_cap_union_bits capability;
 }
 
 
@@ -6489,7 +6488,7 @@ pub struct mlx5_ifc_alloc_modify_header_context_in_bits {
     pub table_type: [u8; 0x8],
     pub reserved_at_68: [u8; 0x10],
     pub num_of_actions: [u8; 0x8],
-    // TODO: untranslated declaration: union mlx5_ifc_set_add_copy_action_in_auto_bits actions[];
+    // TODO: untranslated declaration: mlx5_ifc_set_add_copy_action_in_auto_bits actions[];
 }
 
 
@@ -6638,7 +6637,7 @@ pub struct mlx5_ifc_query_cong_params_out_bits {
     pub reserved_at_8: [u8; 0x18],
     pub syndrome: [u8; 0x20],
     pub reserved_at_40: [u8; 0x40],
-    // TODO: untranslated declaration: union mlx5_ifc_cong_control_roce_ecn_auto_bits congestion_parameters;
+    // TODO: untranslated declaration: mlx5_ifc_cong_control_roce_ecn_auto_bits congestion_parameters;
 }
 
 
@@ -6709,7 +6708,7 @@ pub struct mlx5_ifc_query_delegated_vhca_out_bits {
     pub reserved_at_60: [u8; 0x10],
     pub functions_count: [u8; 0x10],
     pub reserved_at_80: [u8; 0x80],
-    // TODO: untranslated declaration: struct mlx5_ifc_delegated_function_vhca_rid_info_bits
+    // TODO: untranslated declaration: mlx5_ifc_delegated_function_vhca_rid_info_bits
     // TODO: untranslated declaration: delegated_function_vhca_rid_info[];
 }
 
@@ -6832,7 +6831,7 @@ pub struct mlx5_ifc_page_fault_resume_in_bits {
     pub reserved_at_10: [u8; 0x10],
     pub reserved_at_20: [u8; 0x10],
     pub op_mod: [u8; 0x10],
-    // TODO: untranslated declaration: union mlx5_ifc_page_fault_resume_in_page_fault_info_auto_bits
+    // TODO: untranslated declaration: mlx5_ifc_page_fault_resume_in_page_fault_info_auto_bits
     // TODO: untranslated declaration: page_fault_info;
 }
 
@@ -7197,7 +7196,7 @@ pub struct mlx5_ifc_modify_cq_in_bits {
     pub op_mod: [u8; 0x10],
     pub reserved_at_40: [u8; 0x8],
     pub cqn: [u8; 0x18],
-    // TODO: untranslated declaration: union mlx5_ifc_modify_field_select_resize_field_select_auto_bits modify_field_select_resize_field_select;
+    // TODO: untranslated declaration: mlx5_ifc_modify_field_select_resize_field_select_auto_bits modify_field_select_resize_field_select;
     pub cq_context: mlx5_ifc_cqc_bits,
     pub reserved_at_280: [u8; 0x60],
     pub cq_umem_valid: [u8; 0x1],
@@ -7248,9 +7247,9 @@ pub struct mlx5_ifc_modify_cong_params_in_bits {
     pub op_mod: [u8; 0x10],
     pub reserved_at_40: [u8; 0x1c],
     pub cong_protocol: [u8; 0x4],
-    // TODO: untranslated declaration: union mlx5_ifc_field_select_802_1_r_roce_auto_bits field_select;
+    // TODO: untranslated declaration: mlx5_ifc_field_select_802_1_r_roce_auto_bits field_select;
     pub reserved_at_80: [u8; 0x80],
-    // TODO: untranslated declaration: union mlx5_ifc_cong_control_roce_ecn_auto_bits congestion_parameters;
+    // TODO: untranslated declaration: mlx5_ifc_cong_control_roce_ecn_auto_bits congestion_parameters;
 }
 
 
@@ -9278,7 +9277,7 @@ pub struct mlx5_ifc_ppcnt_reg_bits {
     pub plane_ind: [u8; 0x4],
     pub reserved_at_38: [u8; 0x3],
     pub prio_tc: [u8; 0x5],
-    // TODO: untranslated declaration: union mlx5_ifc_eth_cntrs_grp_data_layout_auto_bits counter_set;
+    // TODO: untranslated declaration: mlx5_ifc_eth_cntrs_grp_data_layout_auto_bits counter_set;
 }
 
 
@@ -9327,7 +9326,7 @@ pub struct mlx5_ifc_mpcnt_reg_bits {
     pub grp: [u8; 0x6],
     pub clr: [u8; 0x1],
     pub reserved_at_21: [u8; 0x1f],
-    // TODO: untranslated declaration: union mlx5_ifc_pcie_cntrs_grp_data_layout_auto_bits counter_set;
+    // TODO: untranslated declaration: mlx5_ifc_pcie_cntrs_grp_data_layout_auto_bits counter_set;
 }
 
 
@@ -10012,7 +10011,7 @@ pub struct mlx5_ifc_eqe_bits {
     pub reserved_at_10: [u8; 0x8],
     pub event_sub_type: [u8; 0x8],
     pub reserved_at_20: [u8; 0xe0],
-    // TODO: untranslated declaration: union mlx5_ifc_event_auto_bits event_data;
+    // TODO: untranslated declaration: mlx5_ifc_event_auto_bits event_data;
     pub reserved_at_1e0: [u8; 0x10],
     pub signature: [u8; 0x8],
     pub reserved_at_1f8: [u8; 0x7],
@@ -10026,7 +10025,7 @@ pub const MLX5_CMD_QUEUE_ENTRY_TYPE_PCIE_CMD_IF_TRANSPORT: u64 = 0x7;
 
 #[repr(C)]
 pub struct mlx5_ifc_cmd_queue_entry_bits {
-    pub type: [u8; 0x8],
+    pub r#type: [u8; 0x8],
     pub reserved_at_8: [u8; 0x18],
     pub input_length: [u8; 0x20],
     pub input_mailbox_pointer_63_32: [u8; 0x20],
@@ -10338,7 +10337,7 @@ pub struct mlx5_ifc_mcqi_reg_bits {
     pub offset: [u8; 0x20],
     pub reserved_at_a0: [u8; 0x10],
     pub data_size: [u8; 0x10],
-    // TODO: untranslated declaration: union mlx5_ifc_mcqi_reg_data_bits data[];
+    // TODO: untranslated declaration: mlx5_ifc_mcqi_reg_data_bits data[];
 }
 
 
@@ -10447,7 +10446,7 @@ pub const MLX5_PDDR_REG_TRBLSH_GROUP_OPCODE_MONITOR: u64 = 0x0;
 pub struct mlx5_ifc_pddr_troubleshooting_page_bits {
     pub reserved_at_0: [u8; 0x10],
     pub group_opcode: [u8; 0x10],
-    // TODO: untranslated declaration: union mlx5_ifc_pddr_troubleshooting_page_status_opcode_auto_bits status_opcode;
+    // TODO: untranslated declaration: mlx5_ifc_pddr_troubleshooting_page_status_opcode_auto_bits status_opcode;
     pub reserved_at_40: [u8; 0x20],
     // TODO: untranslated declaration: u8         status_message[59][0x20];
 }
@@ -10472,7 +10471,7 @@ pub struct mlx5_ifc_pddr_reg_bits {
     pub reserved_at_12: [u8; 0xe],
     pub reserved_at_20: [u8; 0x18],
     pub page_select: [u8; 0x8],
-    // TODO: untranslated declaration: union mlx5_ifc_pddr_reg_page_data_auto_bits page_data;
+    // TODO: untranslated declaration: mlx5_ifc_pddr_reg_page_data_auto_bits page_data;
 }
 
 
@@ -11460,7 +11459,7 @@ pub struct mlx5_ifc_query_esw_functions_out_bits {
     pub reserved_at_68: [u8; 0x18],
     // TODO: untranslated declaration: union {
     pub reserved_at_80: [u8; 0x380],
-    // TODO: untranslated declaration: DECLARE_FLEX_ARRAY(union mlx5_ifc_net_function_params_bits,
+    // TODO: untranslated declaration: DECLARE_FLEX_ARRAY(mlx5_ifc_net_function_params_bits,
     // TODO: untranslated declaration: net_function_params);
 }
 
@@ -11559,21 +11558,15 @@ pub const MLX5_GENERAL_OBJECT_TYPES_FLOW_TABLE_ALIAS: u64 = 0xff15;
 
 
 // C enum
-pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY: u64 = ;
-pub const BIT_ULL(MLX5_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY): u64 = 0; // implicit C enumerator
-pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC: u64 = ;
-pub const BIT_ULL(MLX5_GENERAL_OBJECT_TYPES_IPSEC): u64 = 0; // implicit C enumerator
-pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER: u64 = ;
-pub const BIT_ULL(MLX5_GENERAL_OBJECT_TYPES_SAMPLER): u64 = 0; // implicit C enumerator
-pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_FLOW_METER_ASO: u64 = ;
-pub const BIT_ULL(MLX5_GENERAL_OBJECT_TYPES_FLOW_METER_ASO): u64 = 0; // implicit C enumerator
+pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY: u64 = 1 << (MLX5_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY);
+pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC: u64 = 1 << (MLX5_GENERAL_OBJECT_TYPES_IPSEC);
+pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER: u64 = 1 << (MLX5_GENERAL_OBJECT_TYPES_SAMPLER);
+pub const MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_FLOW_METER_ASO: u64 = 1 << (MLX5_GENERAL_OBJECT_TYPES_FLOW_METER_ASO);
 
 
 // C enum
-pub const MLX5_HCA_CAP_2_GENERAL_OBJECT_TYPES_RDMA_CTRL: u64 = ;
-pub const BIT_ULL(MLX5_GENERAL_OBJECT_TYPES_RDMA_CTRL - 0x40): u64 = 0; // implicit C enumerator
-pub const MLX5_HCA_CAP_2_GENERAL_OBJECT_TYPES_PCIE_CONG_EVENT: u64 = ;
-pub const BIT_ULL(MLX5_GENERAL_OBJECT_TYPES_PCIE_CONG_EVENT - 0x40): u64 = 0; // implicit C enumerator
+pub const MLX5_HCA_CAP_2_GENERAL_OBJECT_TYPES_RDMA_CTRL: u64 = 1 << (MLX5_GENERAL_OBJECT_TYPES_RDMA_CTRL - 0x40);
+pub const MLX5_HCA_CAP_2_GENERAL_OBJECT_TYPES_PCIE_CONG_EVENT: u64 = 1 << (MLX5_GENERAL_OBJECT_TYPES_PCIE_CONG_EVENT - 0x40);
 
 
 // C enum

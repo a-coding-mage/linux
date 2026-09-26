@@ -31,9 +31,9 @@ static mut hb_probes: [amd_hostbridge; 5] = [
 
 unsafe fn find_pci_root_info(node: i32, link: i32) -> *mut pci_root_info {
     let mut info: *mut pci_root_info;
-    list_for_each_entry!(info, pci_root_infos, list) {
+    list_for_each_entry!(info, pci_root_infos, list, {
         if (*info).node == node && (*info).link == link { return info; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -141,13 +141,13 @@ unsafe fn early_root_info_init() -> i32 {
     if val & (1u64 << 21) != 0 { address = MSR_K8_TOP_MEM2; rdmsrq(address, &mut val); end = val & 0xffffff800000; subtract_range(range.as_mut_ptr(), RANGE_NUM, 1u64 << 32, end); }
     info = find_pci_root_info(def_node, def_link);
     if !info.is_null() { for j in 0..RANGE_NUM { if range[j].end != 0 { update_res(info, cap_resource(range[j].start), cap_resource(range[j].end - 1), IORESOURCE_MEM, 1); } } }
-    list_for_each_entry!(info, pci_root_infos, list) {
+    list_for_each_entry!(info, pci_root_infos, list, {
         let busnum = (*info).busn.start;
         let mut root_res: *mut pci_root_res;
-        list_for_each_entry!(root_res, (*info).resources, list) {
+        list_for_each_entry!(root_res, (*info).resources, list, {
             let _ = (busnum, (*root_res).res);
-        }
-    }
+        });
+    });
     0
 }
 

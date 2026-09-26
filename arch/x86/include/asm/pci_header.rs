@@ -6,13 +6,13 @@
 pub struct pci_sysdata {
     pub domain: ::core::ffi::c_int, /* PCI domain */
     pub node: ::core::ffi::c_int,   /* NUMA node */
-    #[cfg(feature = "CONFIG_ACPI")]
+    #[cfg(CONFIG_ACPI)]
     pub companion: *mut acpi_device, /* ACPI companion device */
-    #[cfg(feature = "CONFIG_X86_64")]
+    #[cfg(CONFIG_X86_64)]
     pub iommu: *mut ::core::ffi::c_void, /* IOMMU private data */
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub fwnode: *mut ::core::ffi::c_void, /* IRQ domain for MSI assignment */
-    #[cfg(feature = "CONFIG_VMD")]
+    #[cfg(CONFIG_VMD)]
     pub vmd_dev: *mut pci_dev, /* VMD Device if in Intel VMD domain */
 }
 
@@ -27,48 +27,48 @@ pub unsafe fn to_pci_sysdata(bus: *const pci_bus) -> *mut pci_sysdata {
     (*bus).sysdata
 }
 
-#[cfg(feature = "CONFIG_PCI")]
-#[cfg(feature = "CONFIG_PCI_DOMAINS")]
+#[cfg(CONFIG_PCI)]
+#[cfg(CONFIG_PCI_DOMAINS)]
 #[inline]
 pub unsafe fn pci_domain_nr(bus: *mut pci_bus) -> ::core::ffi::c_int {
     (*to_pci_sysdata(bus)).domain
 }
 
-#[cfg(feature = "CONFIG_PCI")]
-#[cfg(feature = "CONFIG_PCI_DOMAINS")]
+#[cfg(CONFIG_PCI)]
+#[cfg(CONFIG_PCI_DOMAINS)]
 #[inline]
 pub unsafe fn pci_proc_domain(bus: *mut pci_bus) -> ::core::ffi::c_int {
     pci_domain_nr(bus)
 }
 
-#[cfg(feature = "CONFIG_PCI")]
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI)]
+#[cfg(CONFIG_PCI_MSI)]
 #[inline]
 pub unsafe fn _pci_root_bus_fwnode(bus: *mut pci_bus) -> *mut ::core::ffi::c_void {
     (*to_pci_sysdata(bus)).fwnode
 }
 
-#[cfg(feature = "CONFIG_PCI")]
-#[cfg(feature = "CONFIG_VMD")]
+#[cfg(CONFIG_PCI)]
+#[cfg(CONFIG_VMD)]
 #[inline]
 pub unsafe fn is_vmd(bus: *mut pci_bus) -> bool {
     (*to_pci_sysdata(bus)).vmd_dev != ::core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_PCI")]
-#[cfg(not(feature = "CONFIG_VMD"))]
+#[cfg(CONFIG_PCI)]
+#[cfg(not(CONFIG_VMD))]
 #[inline]
 pub fn is_vmd(_bus: *mut pci_bus) -> bool {
     false
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn pcibios_assign_all_busses() -> ::core::ffi::c_uint;
     pub fn pci_legacy_init() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn pcibios_assign_all_busses() -> ::core::ffi::c_uint { 0 }
 
@@ -99,20 +99,20 @@ extern "C" {
 #[inline]
 pub unsafe fn arch_can_pci_mmap_wc() -> bool { pat_enabled() }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" { pub fn early_quirks(); }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn early_quirks() {}
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn __pcibus_to_node(bus: *const pci_bus) -> ::core::ffi::c_int {
     (*to_pci_sysdata(bus)).node
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn cpumask_of_pcibus(bus: *const pci_bus) -> *const cpumask {
     let node = __pcibus_to_node(bus);

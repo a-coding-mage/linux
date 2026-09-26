@@ -113,7 +113,7 @@ macro_rules! encode_cbtype_imm { ($x:expr) => { (rv_x!($x, 1, 2) << 3) | (rv_x!(
 macro_rules! encode_cjtype_imm { ($x:expr) => { (rv_x!($x, 1, 3) << 3) | (rv_x!($x, 4, 1) << 11) | (rv_x!($x, 5, 1) << 2) | (rv_x!($x, 6, 1) << 7) | (rv_x!($x, 7, 1) << 6) | (rv_x!($x, 8, 2) << 9) | (rv_x!($x, 10, 1) << 8) | (rv_x!($x, 11, 1) << 12) }; }
 macro_rules! encode_ujtype_imm { ($x:expr) => { encode_utype_imm!(riscv_const_high_part!($x)) | (encode_itype_imm!(riscv_const_low_part!($x)) << 32) }; }
 macro_rules! encode_uitype_imm { ($x:expr) => { encode_utype_imm!($x) | (encode_itype_imm!($x) << 32) }; }
-macro_rules! clean_imm { ($ty:ident, $x:expr) => { (!encode_##$ty##_imm(u64::MAX)) & $x }; }
+macro_rules! clean_imm { ($ty:tt, $x:expr) => { (!::kernel::macros::paste!([<encode_ $ty>])##_imm(u64::MAX)) & $x }; }
 
 pub unsafe fn arch_kexec_apply_relocations_add(
     pi: *mut PurgatoryInfo,

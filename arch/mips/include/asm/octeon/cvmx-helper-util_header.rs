@@ -33,8 +33,7 @@
 extern "C" {
     /** Convert an interface mode into a human readable string. */
     pub fn cvmx_helper_interface_mode_to_string(
-        mode: cvmx_helper_interface_mode,
-    ) -> *const ::core::ffi::c_char;
+        mode: cvmx_helper_interface_mode) -> *const ::core::ffi::c_char;
     pub fn cvmx_helper_setup_red(pass_thresh: i32, drop_thresh: i32) -> i32;
     pub fn cvmx_helper_get_version() -> *const ::core::ffi::c_char;
     pub fn __cvmx_helper_setup_gmx(interface: i32, num_ports: i32) -> i32;

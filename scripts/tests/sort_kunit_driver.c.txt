@@ -1,0 +1,84 @@
+/* Disposable transport for complete unchanged original and translated suites. */
+#include "fixture.h"
+extern int printf(const char *, ...);
+extern void exit(int) __attribute__((noreturn));
+extern void *calloc(size_t, size_t);
+extern unsigned long strtoul(const char *, char **, int);
+extern struct kunit_suite *__suites_start[], *__suites_end[];
+static struct kunit *active;
+static unsigned mode, allocations, sorts, comparisons;
+static int *array;
+static cmp_func_t comparison;
+static int equal(const char *a, const char *b) {
+    if (!a || !b) return a == b;
+    while (*a && *a == *b) { ++a; ++b; }
+    return *a == *b;
+}
+static void done(unsigned aborted) {
+    if (!active->last_seen.file || active->last_seen.line <= 0) exit(89);
+    printf("END %u %u %u %u\n", aborted, allocations, sorts, comparisons);
+    exit(0);
+}
+void __kunit_abort(struct kunit *test) {
+    if (test != active) exit(90);
+    done(1); __builtin_unreachable();
+}
+void kunit_binary_assert_format(const struct kunit_assert *a,
+    const struct va_format *v, struct string_stream *s) { (void)a; (void)v; (void)s; }
+void kunit_ptr_not_err_assert_format(const struct kunit_assert *a,
+    const struct va_format *v, struct string_stream *s) { (void)a; (void)v; (void)s; }
+void __kunit_do_failed_assertion(struct kunit *test, const struct kunit_loc *loc,
+    enum kunit_assert_type type, const struct kunit_assert *a,
+    assert_format_t format, const char *fmt, ...) {
+    if (test != active || !loc->file || loc->line <= 0 ||
+        test->last_seen.line != loc->line || test->last_seen.file != loc->file) exit(91);
+    if (format == kunit_ptr_not_err_assert_format) {
+        const struct kunit_ptr_not_err_assert *p = (const void *)a;
+        printf("ALLOC_FAIL %u %s %ld %s\n", type, p->text, (long)p->value, fmt ? fmt : "NULL");
+    } else if (format == kunit_binary_assert_format) {
+        const struct kunit_binary_assert *b = (const void *)a;
+        printf("FAIL %u [%s] %s [%s] %lld %lld %s\n", type,
+            b->text->left_text, b->text->operation, b->text->right_text,
+            b->left_value, b->right_value, fmt ? fmt : "NULL");
+    } else exit(92);
+}
+void *kunit_kmalloc_array(struct kunit *test, size_t n, size_t size, unsigned flags) {
+    if (test != active || allocations++) exit(93);
+    printf("ALLOC %lu %lu %u\n", (unsigned long)n, (unsigned long)size, flags);
+    if (mode == 1) return NULL;
+    if (mode == 2) return (void *)-12L;
+    if (n != 1000 || size != sizeof(int) || flags != GFP_KERNEL) exit(94);
+    return array = calloc(n, size);
+}
+static int trace_cmp(const void *a, const void *b) {
+    int result = comparison(a, b);
+    ++comparisons;
+    printf("CMP %ld %ld %d\n", (long)((const int *)a-array), (long)((const int *)b-array), result);
+    return result;
+}
+extern void provider_sort(void *, size_t, size_t, cmp_func_t, swap_func_t);
+void sort(void *base, size_t n, size_t size, cmp_func_t cmp, swap_func_t exchange) {
+    ++sorts;
+    if (base != array || n != (sorts == 1 ? 1000U : 999U) || size != sizeof(int) || exchange) exit(95);
+    printf("SORT %u %lu\n", sorts, (unsigned long)n);
+    for (size_t i = 0; i < n; ++i) printf("IN %lu %d\n", (unsigned long)i, array[i]);
+    comparison = cmp;
+    provider_sort(base, n, size, trace_cmp, exchange);
+    for (size_t i = 0; i < n; ++i) printf("OUT %lu %d\n", (unsigned long)i, array[i]);
+    if ((mode == 3 && sorts == 1) || (mode == 4 && sorts == 2)) array[0] = 10000;
+    if ((mode == 5 && sorts == 1) || (mode == 6 && sorts == 2)) array[n-1] = -10000;
+}
+void cond_resched(void) { exit(96); }
+int main(int argc, char **argv) {
+    if (argc != 2) return 97;
+    mode = strtoul(argv[1], NULL, 0);
+    if (__suites_end-__suites_start != 1) return 98;
+    struct kunit_suite *suite = __suites_start[0];
+    struct kunit_case *c = suite->test_cases;
+    if (!equal(suite->name, "lib_sort") || !equal(c->name, "test_sort") ||
+        !equal(c->module_name, "test_sort") || suite->attr.speed != KUNIT_SPEED_UNSET ||
+        c->attr.speed != KUNIT_SPEED_UNSET || c[1].run_case || c[1].name ||
+        suite->suite_init || suite->suite_exit || suite->init || suite->exit ||
+        c->generate_params || c->param_init || c->param_exit) return 99;
+    struct kunit test = {}; active = &test; c->run_case(&test); done(0);
+}

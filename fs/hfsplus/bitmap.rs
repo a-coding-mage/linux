@@ -32,6 +32,8 @@ pub unsafe fn hfsplus_block_allocate(
     let mut n: u32;
     let mut val: __be32;
     let mut i: i32;
+    'out: {
+    'found: {
 
     len = *max;
     if len == 0 {
@@ -44,7 +46,7 @@ pub unsafe fn hfsplus_block_allocate(
     page = read_mapping_page(mapping, (offset / PAGE_CACHE_BITS) as _, core::ptr::null_mut());
     if IS_ERR(page) {
         start = size;
-        goto_out!(out);
+        break 'out;
     }
     pptr = kmap_local_page(page);
     curr = pptr.add(((offset & (PAGE_CACHE_BITS - 1)) / 32) as usize);
@@ -62,7 +64,7 @@ pub unsafe fn hfsplus_block_allocate(
         mask = (1u32 << 31) >> i;
         while i < 32 {
             if (n & mask) == 0 {
-                goto_found!(found);
+                break 'found;
             }
             mask >>= 1;
             i += 1;
@@ -79,7 +81,7 @@ pub unsafe fn hfsplus_block_allocate(
                 for i0 in 0..32 {
                     i = i0;
                     if (n & mask) == 0 {
-                        goto_found!(found);
+                        break 'found;
                     }
                     mask >>= 1;
                 }
@@ -96,7 +98,7 @@ pub unsafe fn hfsplus_block_allocate(
         page = read_mapping_page(mapping, (offset / PAGE_CACHE_BITS) as _, core::ptr::null_mut());
         if IS_ERR(page) {
             start = size;
-            goto_out!(out);
+            break 'out;
         }
         curr = kmap_local_page(page);
         pptr = curr;
@@ -106,13 +108,13 @@ pub unsafe fn hfsplus_block_allocate(
             end = pptr.add((((size + 31) & (PAGE_CACHE_BITS - 1)) / 32) as usize);
         }
     }
-    goto_out!(out);
-
-    found: {
+    break 'out;
+    }
+    {
         start = offset + curr.offset_from(pptr) as u32 * 32 + i as u32;
         if start >= size {
             hfs_dbg!("bitmap full\n");
-            goto_out!(out);
+            break 'out;
         }
         len = core::cmp::min(size - start, len);
         loop {
@@ -140,7 +142,7 @@ pub unsafe fn hfsplus_block_allocate(
                 kunmap_local(pptr as *mut _);
                 offset += PAGE_CACHE_BITS;
                 page = read_mapping_page(mapping, (offset / PAGE_CACHE_BITS) as _, core::ptr::null_mut());
-                if IS_ERR(page) { start = size; goto_out!(out); }
+                if IS_ERR(page) { start = size; break 'out; }
                 pptr = kmap_local_page(page);
                 curr = pptr;
                 end = pptr.add((PAGE_CACHE_BITS / 32) as usize);
@@ -160,8 +162,8 @@ pub unsafe fn hfsplus_block_allocate(
         hfsplus_mark_mdb_dirty(sb);
         hfs_dbg!("start {}, max {}\n", start, *max);
     }
-
-    out: {
+    }
+    {
         mutex_unlock(&mut (*sbi).alloc_mutex);
         return start as i32;
     }
@@ -176,7 +178,7 @@ pub unsafe fn hfsplus_block_free(sb: *mut super_block, mut offset: u32, mut coun
     let mapping = (*(*sbi).alloc_file).i_mapping;
     let mut pnr = offset / PAGE_CACHE_BITS;
     let mut page = read_mapping_page(mapping, pnr as _, core::ptr::null_mut());
-    if IS_ERR(page) { goto_kaboom!(kaboom); }
+    if IS_ERR(page) { goto kaboom; }
     let mut pptr = kmap_local_page(page);
     let mut curr = pptr.add(((offset & (PAGE_CACHE_BITS - 1)) / 32) as usize);
     let mut end = pptr.add((PAGE_CACHE_BITS / 32) as usize);
@@ -189,7 +191,7 @@ pub unsafe fn hfsplus_block_free(sb: *mut super_block, mut offset: u32, mut coun
             mask |= 0xffffffffu32 >> (i + count);
             *curr &= cpu_to_be32(mask);
             curr = curr.add(1);
-            goto_out_free!(out);
+            goto out;
         }
         *curr &= cpu_to_be32(mask);
         curr = curr.add(1);
@@ -205,7 +207,7 @@ pub unsafe fn hfsplus_block_free(sb: *mut super_block, mut offset: u32, mut coun
         if count == 0 { break; }
         set_page_dirty(page); kunmap_local(pptr as *mut _);
         pnr += 1; page = read_mapping_page(mapping, pnr as _, core::ptr::null_mut());
-        if IS_ERR(page) { goto_kaboom!(kaboom); }
+        if IS_ERR(page) { goto kaboom; }
         pptr = kmap_local_page(page); curr = pptr; end = pptr.add((PAGE_CACHE_BITS / 32) as usize);
     }
     if count != 0 { *curr &= cpu_to_be32(0xffffffffu32 >> count); }

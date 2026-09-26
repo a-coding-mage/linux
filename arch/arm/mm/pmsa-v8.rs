@@ -87,7 +87,7 @@ pub unsafe fn pmsav8_adjust_lowmem_bounds() {
     let mut first = true;
     let mut i: u64 = 0;
 
-    for_each_mem_range!(i, &mut reg_start, &mut reg_end) {
+    for_each_mem_range!(i, &mut reg_start, &mut reg_end, {
         if first {
             let phys_offset: phys_addr_t = PHYS_OFFSET;
 
@@ -107,7 +107,7 @@ pub unsafe fn pmsav8_adjust_lowmem_bounds() {
             memblock_remove(reg_start, 0u64.wrapping_sub(reg_start));
             break;
         }
-    }
+    });
 }
 
 unsafe fn __mpu_max_regions() -> c_int {

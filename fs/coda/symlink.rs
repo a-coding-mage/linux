@@ -25,7 +25,7 @@ unsafe fn coda_symlink_filler(file: *mut file, folio: *mut folio) -> i32 {
 }
 
 pub static coda_symlink_aops: address_space_operations = address_space_operations {
-    .read_folio: Some(coda_symlink_filler),
+    read_folio: Some(coda_symlink_filler),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

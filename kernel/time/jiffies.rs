@@ -137,7 +137,7 @@ pub unsafe extern "C" fn register_refined_jiffies(cycles_per_second: c_long) {
 }
 
 // The CONFIG_SYSCTL branch is retained as a feature conditional.
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 mod sysctl {
     use super::*;
 
@@ -155,34 +155,34 @@ mod sysctl {
     unsafe extern "C" fn sysctl_k2u_int_conv_ms(n: *mut bool, u: *mut c_ulong, k: *const c_int) -> c_int { proc_int_k2u_conv_kop(u, k, n, sysctl_jiffies_to_msecs) }
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 unsafe extern "C" fn do_proc_int_conv_jiffies(_n: *mut bool, _u: *mut c_ulong, _k: *mut c_int, _d: c_int, _t: *const ctl_table) -> c_int { -38 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn do_proc_int_conv_jiffies(n: *mut bool, u: *mut c_ulong, k: *mut c_int, d: c_int, t: *const ctl_table) -> c_int {
     proc_int_conv(n, u, k, d, t, false, sysctl::sysctl_u2k_int_conv_hz, sysctl::sysctl_k2u_int_conv_hz)
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn do_proc_int_conv_userhz_jiffies(n: *mut bool, u: *mut c_ulong, k: *mut c_int, d: c_int, t: *const ctl_table) -> c_int {
     proc_int_conv(n, u, k, d, t, false, sysctl::sysctl_u2k_int_conv_userhz, sysctl::sysctl_k2u_int_conv_userhz)
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn do_proc_int_conv_ms_jiffies(n: *mut bool, u: *mut c_ulong, k: *mut c_int, d: c_int, t: *const ctl_table) -> c_int {
     proc_int_conv(n, u, k, d, t, false, sysctl::sysctl_u2k_int_conv_ms, sysctl::sysctl_k2u_int_conv_ms)
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn do_proc_ulong_conv_ms_jiffies(_n: *mut bool, u: *mut c_ulong, k: *mut c_ulong, d: c_int, t: *const ctl_table) -> c_int {
     proc_ulong_conv(u, k, d, t, false, sysctl::sysctl_u2k_ulong_conv_ms, sysctl::sysctl_k2u_ulong_conv_ms)
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 unsafe extern "C" fn do_proc_int_conv_userhz_jiffies(_n: *mut bool, _u: *mut c_ulong, _k: *mut c_int, _d: c_int, _t: *const ctl_table) -> c_int { -38 }
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 unsafe extern "C" fn do_proc_int_conv_ms_jiffies(_n: *mut bool, _u: *mut c_ulong, _k: *mut c_int, _d: c_int, _t: *const ctl_table) -> c_int { -38 }
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 unsafe extern "C" fn do_proc_ulong_conv_ms_jiffies(_n: *mut bool, _u: *mut c_ulong, _k: *mut c_ulong, _d: c_int, _t: *const ctl_table) -> c_int { -38 }
 
 #[no_mangle]

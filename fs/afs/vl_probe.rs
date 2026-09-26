@@ -53,16 +53,16 @@ pub unsafe fn afs_vlserver_probe_result(call: *mut afs_call) {
 	spin_lock(&mut (*server).probe_lock);
 
 	match ret {
-		0 => {
+		case if case == 0 => {
 			(*server).probe.error = 0;
 		}
-		-ECONNABORTED => {
+		case if case == -ECONNABORTED => {
 			if ((*server).probe.flags & AFS_VLSERVER_PROBE_RESPONDED) == 0 {
 				(*server).probe.abort_code = (*call).abort_code;
 				(*server).probe.error = ret;
 			}
 		}
-		-ENOMEM | -ENONET | -EKEYEXPIRED | -EKEYREVOKED | -EKEYREJECTED => {
+		case if case == -ENOMEM || case == -ENONET || case == -EKEYEXPIRED || case == -EKEYREVOKED || case == -EKEYREJECTED => {
 			(*server).probe.flags |= AFS_VLSERVER_PROBE_LOCAL_FAILURE;
 			if (*server).probe.error == 0 {
 				(*server).probe.error = ret;

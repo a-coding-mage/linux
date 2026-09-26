@@ -120,20 +120,20 @@ unsafe fn csky_mptimer_init(np: *mut device_node) -> i32 {
         return -EINVAL;
     }
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         to = per_cpu_ptr(&raw mut CSKY_TO, cpu as u32);
         ret = timer_of_init(np, to);
         if ret != 0 {
-            for_each_possible_cpu!(cpu_rollback) {
+            for_each_possible_cpu!(cpu_rollback, {
                 if cpu_rollback == cpu {
                     break;
                 }
                 to = per_cpu_ptr(&raw mut CSKY_TO, cpu_rollback as u32);
                 timer_of_cleanup(to);
-            }
+            });
             return -EINVAL;
         }
-    }
+    });
 
     clocksource_register_hz(&raw mut CSKY_CLOCKSOURCE, timer_of_rate(to));
     sched_clock_register(Some(sched_clock_read), 32, timer_of_rate(to));

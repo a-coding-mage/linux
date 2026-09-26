@@ -8,7 +8,7 @@
 
 #[repr(C)]
 pub struct dev_archdata {
-    #[cfg(feature = "CONFIG_ARM_DMA_USE_IOMMU")]
+    #[cfg(CONFIG_ARM_DMA_USE_IOMMU)]
     pub mapping: *mut dma_iommu_mapping,
 
     // C declaration: unsigned int dma_ops_setup:1;
@@ -19,11 +19,11 @@ pub struct omap_device;
 
 #[repr(C)]
 pub struct pdev_archdata {
-    #[cfg(feature = "CONFIG_ARCH_OMAP")]
+    #[cfg(CONFIG_ARCH_OMAP)]
     pub od: *mut omap_device,
 }
 
-#[cfg(feature = "CONFIG_ARM_DMA_USE_IOMMU")]
+#[cfg(CONFIG_ARM_DMA_USE_IOMMU)]
 #[macro_export]
 macro_rules! to_dma_iommu_mapping {
     ($dev:expr) => {{
@@ -31,7 +31,7 @@ macro_rules! to_dma_iommu_mapping {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_ARM_DMA_USE_IOMMU"))]
+#[cfg(not(CONFIG_ARM_DMA_USE_IOMMU))]
 #[macro_export]
 macro_rules! to_dma_iommu_mapping {
     ($dev:expr) => {

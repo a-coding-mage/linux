@@ -11,7 +11,7 @@
  * The CONFIG_SMP conditional is represented by the `CONFIG_SMP` cfg feature.
  */
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn generic_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut c = (*v).counter;
@@ -24,7 +24,7 @@ pub unsafe fn generic_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     c.wrapping_add(i)
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn generic_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut c = (*v).counter;
@@ -37,7 +37,7 @@ pub unsafe fn generic_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 {
     c.wrapping_sub(i)
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn generic_atomic_fetch_add(i: i32, v: *mut atomic_t) -> i32 {
     let mut c = (*v).counter;
@@ -50,7 +50,7 @@ pub unsafe fn generic_atomic_fetch_add(i: i32, v: *mut atomic_t) -> i32 {
     c
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn generic_atomic_fetch_sub(i: i32, v: *mut atomic_t) -> i32 {
     let mut c = (*v).counter;
@@ -65,7 +65,7 @@ pub unsafe fn generic_atomic_fetch_sub(i: i32, v: *mut atomic_t) -> i32 {
 
 macro_rules! generic_atomic_fetch_bit_op {
     ($name:ident, $op:tt) => {
-        #[cfg(feature = "CONFIG_SMP")]
+        #[cfg(CONFIG_SMP)]
         #[inline]
         pub unsafe fn $name(i: i32, v: *mut atomic_t) -> i32 {
             let mut c = (*v).counter;
@@ -85,7 +85,7 @@ generic_atomic_fetch_bit_op!(generic_atomic_fetch_xor, ^);
 
 macro_rules! generic_atomic_op {
     ($name:ident, $op:tt) => {
-        #[cfg(feature = "CONFIG_SMP")]
+        #[cfg(CONFIG_SMP)]
         #[inline]
         pub unsafe fn $name(i: i32, v: *mut atomic_t) {
             let mut c = (*v).counter;
@@ -104,7 +104,7 @@ generic_atomic_op!(generic_atomic_and, &);
 generic_atomic_op!(generic_atomic_or, |);
 generic_atomic_op!(generic_atomic_xor, ^);
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn generic_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut flags = 0;
@@ -115,7 +115,7 @@ pub unsafe fn generic_atomic_add_return(i: i32, v: *mut atomic_t) -> i32 {
     ret
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn generic_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 {
     let mut flags = 0;
@@ -126,7 +126,7 @@ pub unsafe fn generic_atomic_sub_return(i: i32, v: *mut atomic_t) -> i32 {
     ret
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn generic_atomic_fetch_add(i: i32, v: *mut atomic_t) -> i32 {
     let mut flags = 0;
@@ -137,7 +137,7 @@ pub unsafe fn generic_atomic_fetch_add(i: i32, v: *mut atomic_t) -> i32 {
     ret
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn generic_atomic_fetch_sub(i: i32, v: *mut atomic_t) -> i32 {
     let mut flags = 0;
@@ -150,7 +150,7 @@ pub unsafe fn generic_atomic_fetch_sub(i: i32, v: *mut atomic_t) -> i32 {
 
 macro_rules! generic_atomic_fetch_irq_op {
     ($name:ident, $op:tt) => {
-        #[cfg(not(feature = "CONFIG_SMP"))]
+        #[cfg(not(CONFIG_SMP))]
         #[inline]
         pub unsafe fn $name(i: i32, v: *mut atomic_t) -> i32 {
             let mut flags = 0;
@@ -168,7 +168,7 @@ generic_atomic_fetch_irq_op!(generic_atomic_fetch_xor, ^);
 
 macro_rules! generic_atomic_irq_op {
     ($name:ident, $op:tt) => {
-        #[cfg(not(feature = "CONFIG_SMP"))]
+        #[cfg(not(CONFIG_SMP))]
         #[inline]
         pub unsafe fn $name(i: i32, v: *mut atomic_t) {
             let mut flags = 0;

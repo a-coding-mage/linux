@@ -68,7 +68,7 @@ pub unsafe fn rate_control_free_sta(sta: *mut sta_info) {
     ((*(*ref_).ops).free_sta)((*ref_).priv_, ista, priv_sta);
 }
 
-#[cfg(feature = "CONFIG_MAC80211_DEBUGFS")]
+#[cfg(CONFIG_MAC80211_DEBUGFS)]
 pub unsafe fn rate_control_add_sta_debugfs(sta: *mut sta_info) {
     let ref_: *mut rate_control_ref = (*sta).rate_ctrl;
     if !ref_.is_null()
@@ -83,10 +83,10 @@ pub unsafe fn rate_control_add_sta_debugfs(sta: *mut sta_info) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_MAC80211_DEBUGFS"))]
+#[cfg(not(CONFIG_MAC80211_DEBUGFS))]
 pub unsafe fn rate_control_add_sta_debugfs(_sta: *mut sta_info) {}
 
-#[cfg(feature = "CONFIG_MAC80211_DEBUGFS")]
+#[cfg(CONFIG_MAC80211_DEBUGFS)]
 pub unsafe fn rate_control_add_debugfs(local: *mut ieee80211_local) {
     let debugfsdir: *mut dentry;
 
@@ -117,21 +117,21 @@ pub unsafe fn rate_control_add_debugfs(local: *mut ieee80211_local) {
     );
 }
 
-#[cfg(not(feature = "CONFIG_MAC80211_DEBUGFS"))]
+#[cfg(not(CONFIG_MAC80211_DEBUGFS))]
 pub unsafe fn rate_control_add_debugfs(_local: *mut ieee80211_local) {}
 
-#[cfg(feature = "CONFIG_MAC80211_RC_MINSTREL")]
+#[cfg(CONFIG_MAC80211_RC_MINSTREL)]
 extern "C" {
     pub fn rc80211_minstrel_init() -> core::ffi::c_int;
     pub fn rc80211_minstrel_exit();
 }
 
-#[cfg(not(feature = "CONFIG_MAC80211_RC_MINSTREL"))]
+#[cfg(not(CONFIG_MAC80211_RC_MINSTREL))]
 pub unsafe fn rc80211_minstrel_init() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_MAC80211_RC_MINSTREL"))]
+#[cfg(not(CONFIG_MAC80211_RC_MINSTREL))]
 pub unsafe fn rc80211_minstrel_exit() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

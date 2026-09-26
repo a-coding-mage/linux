@@ -11,19 +11,19 @@
  * even in compilation units that selectively disable KASAN, but must use KASAN
  * to validate access to an address.   Never use these in header files!
  */
-#[cfg(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS"))]
+#[cfg(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS))]
 unsafe extern "C" {
     pub fn __kasan_check_read(p: *const core::ffi::c_void, size: u32) -> bool;
     pub fn __kasan_check_write(p: *const core::ffi::c_void, size: u32) -> bool;
 }
 
-#[cfg(not(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS")))]
+#[cfg(not(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS)))]
 #[inline]
 pub unsafe fn __kasan_check_read(_p: *const core::ffi::c_void, _size: u32) -> bool {
     true
 }
 
-#[cfg(not(any(feature = "CONFIG_KASAN_GENERIC", feature = "CONFIG_KASAN_SW_TAGS")))]
+#[cfg(not(any(CONFIG_KASAN_GENERIC, CONFIG_KASAN_SW_TAGS)))]
 #[inline]
 pub unsafe fn __kasan_check_write(_p: *const core::ffi::c_void, _size: u32) -> bool {
     true

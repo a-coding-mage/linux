@@ -106,25 +106,25 @@ macro_rules! media_device_usb_init { ($mdev:expr, $udev:expr, $name:expr) => { $
 #[macro_export] macro_rules! media_device_for_each_link { ($link:expr, $mdev:expr) => { list_for_each_entry!($link, &mut (*$mdev).links, graph_obj.list) }; }
 
 /* The CONFIG_MEDIA_CONTROLLER disabled branch provides no-op inline stubs. */
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_init_disabled(_: *mut media_device) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_register_disabled(_: *mut media_device) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_unregister_disabled(_: *mut media_device) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_cleanup_disabled(_: *mut media_device) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_register_entity_disabled(_: *mut media_device, _: *mut media_entity) -> c_int { 0 }
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_unregister_entity_disabled(_: *mut media_entity) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_register_entity_notify_disabled(_: *mut media_device, _: *mut media_entity_notify) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_unregister_entity_notify_disabled(_: *mut media_device, _: *mut media_entity_notify) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_pci_init_disabled(_: *mut media_device, _: *mut pci_dev, _: *mut c_char) {}
-#[cfg(not(feature = "CONFIG_MEDIA_CONTROLLER"))]
+#[cfg(not(CONFIG_MEDIA_CONTROLLER))]
 pub unsafe fn media_device_usb_init_disabled(_: *mut media_device, _: *mut usb_device, _: *mut c_char, _: *mut c_char) {}
 
 extern "C" {

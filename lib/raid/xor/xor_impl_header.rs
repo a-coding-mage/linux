@@ -13,7 +13,7 @@ pub struct xor_block_template {
 #[macro_export]
 macro_rules! __DO_XOR_BLOCKS {
     ($name:ident, $handle1:ident, $handle2:ident, $handle3:ident, $handle4:ident) => {
-        /* Pass the complete generated function name (xor_gen_<name>) here;
+        /* Pass the complete generated function $name (xor_gen_<$name>) here;
          * Rust macro_rules! has no stable identifier concatenation facility. */
         pub unsafe extern "C" fn $name(
             dest: *mut core::ffi::c_void,

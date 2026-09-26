@@ -107,7 +107,7 @@ pub struct isst_platform_ops {
     pub get_get_trls:
         Option<unsafe extern "C" fn(*mut isst_id, c_int, *mut isst_pkg_ctdp_level_info) -> c_int>,
     pub get_trl_bucket_info:
-        Option<unsafe extern "C" fn(*mut isst_id, c_int, *mut c_ulonglong) -> c_int>,
+        Option<unsafe extern "C" fn(*mut isst_id, c_int, long: *mut c_ulong) -> c_int>,
     pub set_tdp_level: Option<unsafe extern "C" fn(*mut isst_id, c_int) -> c_int>,
     pub get_pbf_info: Option<unsafe extern "C" fn(*mut isst_id, c_int, *mut isst_pbf_info) -> c_int>,
     pub set_pbf_fact_status: Option<unsafe extern "C" fn(*mut isst_id, c_int, c_int) -> c_int>,

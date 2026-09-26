@@ -15,7 +15,7 @@ pub struct thread_info {
     pub cpu: i32,
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn setup_smp();
 
@@ -32,13 +32,13 @@ extern "C" {
     pub fn current_thread_info() -> *mut thread_info;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn raw_smp_processor_id() -> i32 {
     (*current_thread_info()).cpu
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn __cpu_die(_cpu: u32) {}
 

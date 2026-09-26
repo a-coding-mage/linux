@@ -26,7 +26,7 @@ pub unsafe fn memcpy(mut to: *mut c_void, mut from: *const c_void, mut n: usize)
     }
 
     // CONFIG_M68000: when enabled, an odd source address is copied bytewise.
-    #[cfg(feature = "CONFIG_M68000")]
+    #[cfg(CONFIG_M68000)]
     {
         if (from as isize) & 1 != 0 {
             let mut cto = to as *mut u8;

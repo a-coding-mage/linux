@@ -119,7 +119,7 @@ unsafe fn shutdown_client(clnt: *mut rpc_clnt) { (*clnt).cl_shutdown = 1; rpc_ca
 unsafe fn shutdown_nfs_client(clp: *mut nfs_client) {
     let mut server: *mut nfs_server;
     rcu_read_lock();
-    list_for_each_entry_rcu!(server, &mut (*clp).cl_superblocks, client_link) { if (*server).flags & NFS_MOUNT_SHUTDOWN == 0 { rcu_read_unlock(); return; } }
+    list_for_each_entry_rcu!(server, &mut (*clp).cl_superblocks, client_link, { if (*server).flags & NFS_MOUNT_SHUTDOWN == 0 { rcu_read_unlock(); return; } });
     rcu_read_unlock(); nfs_mark_client_ready(clp, -EIO); shutdown_client((*clp).cl_rpcclient);
 }
 
@@ -132,16 +132,16 @@ unsafe fn shutdown_store(kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *c
 static mut nfs_sysfs_attr_shutdown: kobj_attribute = __ATTR_RW!(shutdown);
 
 // CONFIG_NFS_V4 conditional implementation is preserved below.
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 unsafe fn implid_domain_show(kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t { let server = container_of!(kobj, nfs_server, kobj); let impl_id = (*(*server).nfs_client).cl_implid; if impl_id.is_null() || strlen((*impl_id).domain) == 0 { return 0; } sysfs_emit(buf, b"%s\n\0".as_ptr() as *const c_char, (*impl_id).domain) }
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 static mut nfs_sysfs_attr_implid_domain: kobj_attribute = __ATTR_RO!(implid_domain);
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 unsafe fn implid_name_show(kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t { let server = container_of!(kobj, nfs_server, kobj); let impl_id = (*(*server).nfs_client).cl_implid; if impl_id.is_null() || strlen((*impl_id).name) == 0 { return 0; } sysfs_emit(buf, b"%s\n\0".as_ptr() as *const c_char, (*impl_id).name) }
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 static mut nfs_sysfs_attr_implid_name: kobj_attribute = __ATTR_RO!(implid_name);
 
-#[cfg(feature = "CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 unsafe fn nfs_sysfs_add_nfsv41_server(server: *mut nfs_server) {
     if (*(*server).nfs_client).cl_implid.is_null() { return; }
     let mut ret = sysfs_create_file_ns(&mut (*server).kobj, &mut nfs_sysfs_attr_implid_domain.attr, nfs_netns_server_namespace(&(*server).kobj));
@@ -149,16 +149,16 @@ unsafe fn nfs_sysfs_add_nfsv41_server(server: *mut nfs_server) {
     ret = sysfs_create_file_ns(&mut (*server).kobj, &mut nfs_sysfs_attr_implid_name.attr, nfs_netns_server_namespace(&(*server).kobj));
     if ret < 0 { pr_warn!(b"NFS: sysfs_create_file_ns for server-%d failed (%d)\n", (*server).s_sysfs_id, ret); }
 }
-#[cfg(not(feature = "CONFIG_NFS_V4"))]
+#[cfg(not(CONFIG_NFS_V4))]
 unsafe fn nfs_sysfs_add_nfsv41_server(_server: *mut nfs_server) {}
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 unsafe fn localio_show(kobj: *mut kobject, _attr: *mut kobj_attribute, buf: *mut c_char) -> ssize_t { let server = container_of!(kobj, nfs_server, kobj); sysfs_emit(buf, b"%d\n\0".as_ptr() as *const c_char, nfs_server_is_local((*server).nfs_client)) }
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 static mut nfs_sysfs_attr_localio: kobj_attribute = __ATTR_RO!(localio);
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 unsafe fn nfs_sysfs_add_nfs_localio_server(server: *mut nfs_server) { let ret = sysfs_create_file_ns(&mut (*server).kobj, &mut nfs_sysfs_attr_localio.attr, nfs_netns_server_namespace(&(*server).kobj)); if ret < 0 { pr_warn!(b"NFS: sysfs_create_file_ns for server-%d failed (%d)\n", (*server).s_sysfs_id, ret); } }
-#[cfg(not(feature = "CONFIG_NFS_LOCALIO"))]
+#[cfg(not(CONFIG_NFS_LOCALIO))]
 unsafe fn nfs_sysfs_add_nfs_localio_server(_server: *mut nfs_server) {}
 
 const RPC_CLIENT_NAME_SIZE: usize = 64;

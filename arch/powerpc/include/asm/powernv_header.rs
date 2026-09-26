@@ -4,7 +4,7 @@
  */
 
 /* CONFIG_PPC_POWERNV selects the declaration versus no-op inline definitions. */
-#[cfg(feature = "CONFIG_PPC_POWERNV")]
+#[cfg(CONFIG_PPC_POWERNV)]
 unsafe extern "C" {
     pub fn powernv_set_nmmu_ptcr(ptcr: ::core::ffi::c_ulong);
 
@@ -13,11 +13,11 @@ unsafe extern "C" {
     pub fn pnv_tm_init();
 }
 
-#[cfg(not(feature = "CONFIG_PPC_POWERNV"))]
+#[cfg(not(CONFIG_PPC_POWERNV))]
 #[inline]
 pub fn powernv_set_nmmu_ptcr(_ptcr: ::core::ffi::c_ulong) {}
 
-#[cfg(not(feature = "CONFIG_PPC_POWERNV"))]
+#[cfg(not(CONFIG_PPC_POWERNV))]
 #[inline]
 pub fn pnv_tm_init() {}
 

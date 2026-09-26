@@ -98,11 +98,11 @@ pub struct cs_dsp {
     pub ctl_list: list_head,
     pub pwr_lock: mutex,
     pub lock_regions: u32,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub debugfs_root: *mut dentry,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub wmfw_file_name: *const core::ffi::c_char,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub bin_file_name: *const core::ffi::c_char,
 }
 

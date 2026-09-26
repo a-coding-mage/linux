@@ -14,20 +14,20 @@
 // C dependencies: asm/processor.h (cpu_relax) and asm/barrier.h (barrier).
 // The containing spinlock header must provide `arch_spinlock_t`.
 
-#[cfg(feature = "CONFIG_DEBUG_SPINLOCK")]
+#[cfg(CONFIG_DEBUG_SPINLOCK)]
 #[inline]
 pub unsafe fn arch_spin_is_locked(lock: *const arch_spinlock_t) -> bool {
     (*lock).slock == 0
 }
 
-#[cfg(feature = "CONFIG_DEBUG_SPINLOCK")]
+#[cfg(CONFIG_DEBUG_SPINLOCK)]
 #[inline]
 pub unsafe fn arch_spin_lock(lock: *mut arch_spinlock_t) {
     (*lock).slock = 0;
     barrier();
 }
 
-#[cfg(feature = "CONFIG_DEBUG_SPINLOCK")]
+#[cfg(CONFIG_DEBUG_SPINLOCK)]
 #[inline]
 pub unsafe fn arch_spin_trylock(lock: *mut arch_spinlock_t) -> bool {
     let oldval: i8 = (*lock).slock;
@@ -38,35 +38,35 @@ pub unsafe fn arch_spin_trylock(lock: *mut arch_spinlock_t) -> bool {
     oldval > 0
 }
 
-#[cfg(feature = "CONFIG_DEBUG_SPINLOCK")]
+#[cfg(CONFIG_DEBUG_SPINLOCK)]
 #[inline]
 pub unsafe fn arch_spin_unlock(lock: *mut arch_spinlock_t) {
     barrier();
     (*lock).slock = 1;
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_SPINLOCK"))]
+#[cfg(not(CONFIG_DEBUG_SPINLOCK))]
 #[inline]
 pub unsafe fn arch_spin_is_locked(lock: *const arch_spinlock_t) -> i32 {
     let _ = lock;
     0
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_SPINLOCK"))]
+#[cfg(not(CONFIG_DEBUG_SPINLOCK))]
 #[inline]
 pub unsafe fn arch_spin_lock(lock: *mut arch_spinlock_t) {
     barrier();
     let _ = lock;
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_SPINLOCK"))]
+#[cfg(not(CONFIG_DEBUG_SPINLOCK))]
 #[inline]
 pub unsafe fn arch_spin_unlock(lock: *mut arch_spinlock_t) {
     barrier();
     let _ = lock;
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_SPINLOCK"))]
+#[cfg(not(CONFIG_DEBUG_SPINLOCK))]
 #[inline]
 pub unsafe fn arch_spin_trylock(lock: *mut arch_spinlock_t) -> i32 {
     barrier();

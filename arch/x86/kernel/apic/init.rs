@@ -106,7 +106,7 @@ pub unsafe fn apic_install_driver(driver: *mut apic) {
 
     apic = driver;
 
-    if cfg!(feature = "CONFIG_X86_X2APIC") && (*apic).x2apic_set_max_apicid.is_some() {
+    if cfg!(CONFIG_X86_X2APIC) && (*apic).x2apic_set_max_apicid.is_some() {
         (*apic).max_apic_id = x2apic_max_apicid;
     }
 

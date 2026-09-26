@@ -6,7 +6,7 @@
  */
 
 // CONFIG_PM build-time condition preserved from the source header.
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 extern "C" {
     pub fn at91rm9200_pm_init();
     pub fn at91sam9_pm_init();
@@ -17,31 +17,31 @@ extern "C" {
     pub fn sama7_pm_init();
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn at91rm9200_pm_init() {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn at91sam9_pm_init() {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn sam9x60_pm_init() {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn sam9x7_pm_init() {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn sama5_pm_init() {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn sama5d2_pm_init() {}
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 pub fn sama7_pm_init() {}
 

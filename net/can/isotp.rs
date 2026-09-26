@@ -117,7 +117,7 @@ SOURCE: isotp.c
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
- * /
+ */
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -156,13 +156,13 @@ MODULE_ALIAS("can-proto-6");
  * We would need some good concept to handle this between user space and
  * kernel space. For now set the static buffer to something about 8 kbyte
  * to be able to test this new functionality.
- * /
+ */
 #define DEFAULT_MAX_PDU_SIZE 8300
 
-/* maximum PDU size before ISO 15765-2:2016 extension was 4095 * /
+/* maximum PDU size before ISO 15765-2:2016 extension was 4095 */
 #define MAX_12BIT_PDU_SIZE 4095
 
-/* limit the isotp pdu size from the optional module parameter to 1MByte * /
+/* limit the isotp pdu size from the optional module parameter to 1MByte */
 #define MAX_PDU_SIZE (1025 * 1024U)
 
 static unsigned int max_pdu_size __read_mostly = DEFAULT_MAX_PDU_SIZE;
@@ -170,34 +170,34 @@ module_param(max_pdu_size, uint, 0444);
 MODULE_PARM_DESC(max_pdu_size, "maximum isotp pdu size (default "
 		 __stringify(DEFAULT_MAX_PDU_SIZE) ")");
 
-/* N_PCI type values in bits 7-4 of N_PCI bytes * /
-#define N_PCI_SF 0x00	/* single frame * /
-#define N_PCI_FF 0x10	/* first frame * /
-#define N_PCI_CF 0x20	/* consecutive frame * /
-#define N_PCI_FC 0x30	/* flow control * /
+/* N_PCI type values in bits 7-4 of N_PCI bytes */
+#define N_PCI_SF 0x00	/* single frame */
+#define N_PCI_FF 0x10	/* first frame */
+#define N_PCI_CF 0x20	/* consecutive frame */
+#define N_PCI_FC 0x30	/* flow control */
 
-#define N_PCI_SZ 1	/* size of the PCI byte #1 * /
-#define SF_PCI_SZ4 1	/* size of SingleFrame PCI including 4 bit SF_DL * /
-#define SF_PCI_SZ8 2	/* size of SingleFrame PCI including 8 bit SF_DL * /
-#define FF_PCI_SZ12 2	/* size of FirstFrame PCI including 12 bit FF_DL * /
-#define FF_PCI_SZ32 6	/* size of FirstFrame PCI including 32 bit FF_DL * /
-#define FC_CONTENT_SZ 3	/* flow control content size in byte (FS/BS/STmin) * /
+#define N_PCI_SZ 1	/* size of the PCI byte #1 */
+#define SF_PCI_SZ4 1	/* size of SingleFrame PCI including 4 bit SF_DL */
+#define SF_PCI_SZ8 2	/* size of SingleFrame PCI including 8 bit SF_DL */
+#define FF_PCI_SZ12 2	/* size of FirstFrame PCI including 12 bit FF_DL */
+#define FF_PCI_SZ32 6	/* size of FirstFrame PCI including 32 bit FF_DL */
+#define FC_CONTENT_SZ 3	/* flow control content size in byte (FS/BS/STmin) */
 
 #define ISOTP_CHECK_PADDING (CAN_ISOTP_CHK_PAD_LEN | CAN_ISOTP_CHK_PAD_DATA)
 #define ISOTP_ALL_BC_FLAGS (CAN_ISOTP_SF_BROADCAST | CAN_ISOTP_CF_BROADCAST)
 
-/* Flow Status given in FC frame * /
-#define ISOTP_FC_CTS 0		/* clear to send * /
-#define ISOTP_FC_WT 1		/* wait * /
-#define ISOTP_FC_OVFLW 2	/* overflow * /
+/* Flow Status given in FC frame */
+#define ISOTP_FC_CTS 0		/* clear to send */
+#define ISOTP_FC_WT 1		/* wait */
+#define ISOTP_FC_OVFLW 2	/* overflow */
 
-#define ISOTP_FC_TIMEOUT 1	/* 1 sec * /
-#define ISOTP_ECHO_TIMEOUT 2	/* 2 secs * /
+#define ISOTP_FC_TIMEOUT 1	/* 1 sec */
+#define ISOTP_ECHO_TIMEOUT 2	/* 2 secs */
 
 /* so->tx_result[so->tx_gen % ISOTP_TX_RESULT_SLOTS] holds the packed value
  * (err << ISOTP_TX_RESULT_GEN_BITS | gen) for each tx generation slot, so it
  * can be handled with a single READ_ONCE()/WRITE_ONCE() access.
- * /
+ */
 #define ISOTP_TX_RESULT_SLOTS 4
 #define ISOTP_TX_RESULT_GEN_BITS 24
 #define ISOTP_TX_RESULT_GEN_MASK ((1U << ISOTP_TX_RESULT_GEN_BITS) - 1)
@@ -241,51 +241,51 @@ struct isotp_sock {
 	u32 frame_txtime;
 	u32 force_tx_stmin;
 	u32 force_rx_stmin;
-	u32 cfecho; /* consecutive frame echo tag * /
-	u32 tx_gen; /* transfer generation, increased per new tx transfer * /
-	u32 tx_result[ISOTP_TX_RESULT_SLOTS]; /* per-generation result slots * /
+	u32 cfecho; /* consecutive frame echo tag */
+	u32 tx_gen; /* transfer generation, increased per new tx transfer */
+	u32 tx_result[ISOTP_TX_RESULT_SLOTS]; /* per-generation result slots */
 	struct tpcon rx, tx;
 	struct list_head notifier;
 	wait_queue_head_t wait;
-	spinlock_t rx_lock; /* protect single thread state machine * /
+	spinlock_t rx_lock; /* protect single thread state machine */
 };
 
 static LIST_HEAD(isotp_notifier_list);
 static DEFINE_SPINLOCK(isotp_notifier_lock);
 static struct isotp_sock *isotp_busy_notifier;
 
-/* increase (24 bit) tx generation value * /
+/* increase (24 bit) tx generation value */
 static u32 isotp_inc_tx_gen(u32 gen)
 {
 	return (gen + 1) & ISOTP_TX_RESULT_GEN_MASK;
 }
 
-/* store 8 bit error and 24 bit tx generation values in packed u32 element * /
+/* store 8 bit error and 24 bit tx generation values in packed u32 element */
 static u32 isotp_pack_tx_result(u32 gen, int err)
 {
 	return gen | ((u32)err << ISOTP_TX_RESULT_GEN_BITS);
 }
 
-/* get the 24 bit tx generation value from the tx result * /
+/* get the 24 bit tx generation value from the tx result */
 static u32 isotp_get_tx_gen(u32 gen_err)
 {
 	return gen_err & ISOTP_TX_RESULT_GEN_MASK;
 }
 
-/* get the 8 bit error value from the tx result * /
+/* get the 8 bit error value from the tx result */
 static u32 isotp_get_tx_err(u32 gen_err)
 {
 	return (gen_err >> ISOTP_TX_RESULT_GEN_BITS) & ISOTP_TX_RESULT_ERR_MASK;
 }
 
-/* store transfer result in per-generation%4 so->tx_result[] slot * /
+/* store transfer result in per-generation%4 so->tx_result[] slot */
 static void isotp_set_tx_result(struct isotp_sock *so, u32 gen, int err)
 {
 	WRITE_ONCE(so->tx_result[gen % ISOTP_TX_RESULT_SLOTS],
 		   isotp_pack_tx_result(gen, err));
 }
 
-/* fetch the result recorded for 'gen', as a (negative) errno (0 for success) * /
+/* fetch the result recorded for 'gen', as a (negative) errno (0 for success) */
 static int isotp_get_tx_result(struct isotp_sock *so, u32 gen)
 {
 	u32 result = READ_ONCE(so->tx_result[gen % ISOTP_TX_RESULT_SLOTS]);
@@ -293,7 +293,7 @@ static int isotp_get_tx_result(struct isotp_sock *so, u32 gen)
 	if (isotp_get_tx_gen(result) != gen) {
 		pr_notice_once("can-isotp: tx_result[] slot reused before read\n");
 
-		/* report failure rather than risk a false success * /
+		/* report failure rather than risk a false success */
 		return -ECOMM;
 	}
 
@@ -303,10 +303,10 @@ static int isotp_get_tx_result(struct isotp_sock *so, u32 gen)
 /* true if done, shut down or superseded ('gen' is no longer the active
  * transfer). Reads tx.state first (acquire) so tx_gen/tx_result reads
  * below see at least what that state write published (common sequence).
- * /
+ */
 static bool isotp_tx_gen_done(struct isotp_sock *so, u32 gen)
 {
-	/* read tx.state first for the common sequence * /
+	/* read tx.state first for the common sequence */
 	u32 state = smp_load_acquire(&so->tx.state);
 
 	return state == ISOTP_IDLE || state == ISOTP_SHUTDOWN ||
@@ -325,7 +325,7 @@ static u32 isotp_bc_flags(struct isotp_sock *so)
 
 static bool isotp_register_rxid(struct isotp_sock *so)
 {
-	/* no broadcast modes => register rx_id for FC frame reception * /
+	/* no broadcast modes => register rx_id for FC frame reception */
 	return (isotp_bc_flags(so) == 0);
 }
 
@@ -336,14 +336,14 @@ static enum hrtimer_restart isotp_rx_timer_handler(struct hrtimer *hrtimer)
 	struct sock *sk = &so->sk;
 
 	if (READ_ONCE(so->rx.state) == ISOTP_WAIT_DATA) {
-		/* we did not get new data frames in time * /
+		/* we did not get new data frames in time */
 
-		/* report 'connection timed out' * /
+		/* report 'connection timed out' */
 		sk->sk_err = ETIMEDOUT;
 		if (!sock_flag(sk, SOCK_DEAD))
 			sk_error_report(sk);
 
-		/* reset rx state * /
+		/* reset rx state */
 		WRITE_ONCE(so->rx.state, ISOTP_IDLE);
 	}
 
@@ -381,7 +381,7 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
 	ncf = (struct canfd_frame *)nskb->data;
 	skb_put_zero(nskb, so->ll.mtu);
 
-	/* create & send flow control reply * /
+	/* create & send flow control reply */
 	ncf->can_id = so->txid;
 
 	if (so->opt.flags & CAN_ISOTP_TX_PADDING) {
@@ -407,13 +407,13 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
 
 	dev_put(dev);
 
-	/* reset blocksize counter * /
+	/* reset blocksize counter */
 	so->rx.bs = 0;
 
-	/* reset last CF frame rx timestamp for rx stmin enforcement * /
+	/* reset last CF frame rx timestamp for rx stmin enforcement */
 	so->lastrxcf_tstamp = ktime_set(0, 0);
 
-	/* start rx timeout watchdog * /
+	/* start rx timeout watchdog */
 	hrtimer_start(&so->rxtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
 		      HRTIMER_MODE_REL_SOFT);
 	return 0;
@@ -438,14 +438,14 @@ static void isotp_rcv_skb(struct sk_buff *skb, struct sock *sk)
 static u8 padlen(u8 datalen)
 {
 	static const u8 plen[] = {
-		8, 8, 8, 8, 8, 8, 8, 8, 8,	/* 0 - 8 * /
-		12, 12, 12, 12,			/* 9 - 12 * /
-		16, 16, 16, 16,			/* 13 - 16 * /
-		20, 20, 20, 20,			/* 17 - 20 * /
-		24, 24, 24, 24,			/* 21 - 24 * /
-		32, 32, 32, 32, 32, 32, 32, 32,	/* 25 - 32 * /
-		48, 48, 48, 48, 48, 48, 48, 48,	/* 33 - 40 * /
-		48, 48, 48, 48, 48, 48, 48, 48	/* 41 - 48 * /
+		8, 8, 8, 8, 8, 8, 8, 8, 8,	/* 0 - 8 */
+		12, 12, 12, 12,			/* 9 - 12 */
+		16, 16, 16, 16,			/* 13 - 16 */
+		20, 20, 20, 20,			/* 17 - 20 */
+		24, 24, 24, 24,			/* 21 - 24 */
+		32, 32, 32, 32, 32, 32, 32, 32,	/* 25 - 32 */
+		48, 48, 48, 48, 48, 48, 48, 48,	/* 33 - 40 */
+		48, 48, 48, 48, 48, 48, 48, 48	/* 41 - 48 */
 	};
 
 	if (datalen > 48)
@@ -454,14 +454,14 @@ static u8 padlen(u8 datalen)
 	return plen[datalen];
 }
 
-/* check for length optimization and return 1/true when the check fails * /
+/* check for length optimization and return 1/true when the check fails */
 static int check_optimized(struct canfd_frame *cf, int start_index)
 {
 	/* for CAN_DL <= 8 the start_index is equal to the CAN_DL as the
 	 * padding would start at this point. E.g. if the padding would
 	 * start at cf.data[7] cf->len has to be 7 to be optimal.
 	 * Note: The data[] index starts with zero.
-	 * /
+	 */
 	if (cf->len <= CAN_MAX_DLEN)
 		return (cf->len != start_index);
 
@@ -470,31 +470,31 @@ static int check_optimized(struct canfd_frame *cf, int start_index)
 	 * The correct check would be (padlen(cf->len) != padlen(start_index)).
 	 * But as cf->len can only take discrete values from 12, .., 64 at this
 	 * point the padlen(cf->len) is always equal to cf->len.
-	 * /
+	 */
 	return (cf->len != padlen(start_index));
 }
 
-/* check padding and return 1/true when the check fails * /
+/* check padding and return 1/true when the check fails */
 static int check_pad(struct isotp_sock *so, struct canfd_frame *cf,
 		     int start_index, u8 content)
 {
 	int i;
 
-	/* no RX_PADDING value => check length of optimized frame length * /
+	/* no RX_PADDING value => check length of optimized frame length */
 	if (!(so->opt.flags & CAN_ISOTP_RX_PADDING)) {
 		if (so->opt.flags & CAN_ISOTP_CHK_PAD_LEN)
 			return check_optimized(cf, start_index);
 
-		/* no valid test against empty value => ignore frame * /
+		/* no valid test against empty value => ignore frame */
 		return 1;
 	}
 
-	/* check datalength of correctly padded CAN frame * /
+	/* check datalength of correctly padded CAN frame */
 	if ((so->opt.flags & CAN_ISOTP_CHK_PAD_LEN) &&
 	    cf->len != padlen(cf->len))
 		return 1;
 
-	/* check padding content * /
+	/* check padding content */
 	if (so->opt.flags & CAN_ISOTP_CHK_PAD_DATA) {
 		for (i = start_index; i < cf->len; i++)
 			if (cf->data[i] != content)
@@ -508,7 +508,7 @@ static void isotp_send_cframe(struct isotp_sock *so);
 static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
 {
 	struct sock *sk = &so->sk;
-	int tx_err = EBADMSG; /* default for unknown FC status * /
+	int tx_err = EBADMSG; /* default for unknown FC status */
 
 	if (READ_ONCE(so->tx.state) != ISOTP_WAIT_FC &&
 	    READ_ONCE(so->tx.state) != ISOTP_WAIT_FIRST_FC)
@@ -518,7 +518,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
 
 	/* isotp_tx_timeout() may have given up on this job while
 	 * hrtimer_cancel() above waited for it to finish => recheck
-	 * /
+	 */
 	if (READ_ONCE(so->tx.state) != ISOTP_WAIT_FC &&
 	    READ_ONCE(so->tx.state) != ISOTP_WAIT_FIRST_FC)
 		return 1;
@@ -526,33 +526,33 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
 	if ((cf->len < ae + FC_CONTENT_SZ) ||
 	    ((so->opt.flags & ISOTP_CHECK_PADDING) &&
 	     check_pad(so, cf, ae + FC_CONTENT_SZ, so->opt.rxpad_content))) {
-		/* malformed PDU - report 'not a data message' * /
+		/* malformed PDU - report 'not a data message' */
 		sk->sk_err = EBADMSG;
 		if (!sock_flag(sk, SOCK_DEAD))
 			sk_error_report(sk);
 
 		isotp_set_tx_result(so, so->tx_gen, EBADMSG);
-		/* set to IDLE after publishing tx_result * /
+		/* set to IDLE after publishing tx_result */
 		smp_store_release(&so->tx.state, ISOTP_IDLE);
 		wake_up_interruptible(&so->wait);
 		return 1;
 	}
 
-	/* get static/dynamic communication params from first/every FC frame * /
+	/* get static/dynamic communication params from first/every FC frame */
 	if (READ_ONCE(so->tx.state) == ISOTP_WAIT_FIRST_FC ||
 	    so->opt.flags & CAN_ISOTP_DYN_FC_PARMS) {
 		so->txfc.bs = cf->data[ae + 1];
 		so->txfc.stmin = cf->data[ae + 2];
 
-		/* fix wrong STmin values according spec * /
+		/* fix wrong STmin values according spec */
 		if (so->txfc.stmin > 0x7F &&
 		    (so->txfc.stmin < 0xF1 || so->txfc.stmin > 0xF9))
 			so->txfc.stmin = 0x7F;
 
 		so->tx_gap = ktime_set(0, 0);
-		/* add transmission time for CAN frame N_As * /
+		/* add transmission time for CAN frame N_As */
 		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
-		/* add waiting time for consecutive frames N_Cs * /
+		/* add waiting time for consecutive frames N_Cs */
 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
 			so->tx_gap = ktime_add_ns(so->tx_gap,
 						  so->force_tx_stmin);
@@ -570,32 +570,32 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
 	case ISOTP_FC_CTS:
 		so->tx.bs = 0;
 		WRITE_ONCE(so->tx.state, ISOTP_SENDING);
-		/* send CF frame and enable echo timeout handling * /
+		/* send CF frame and enable echo timeout handling */
 		hrtimer_start(&so->echotimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
 			      HRTIMER_MODE_REL_SOFT);
 		isotp_send_cframe(so);
 		break;
 
 	case ISOTP_FC_WT:
-		/* start timer to wait for next FC frame * /
+		/* start timer to wait for next FC frame */
 		hrtimer_start(&so->txtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
 			      HRTIMER_MODE_REL_SOFT);
 		break;
 
 	case ISOTP_FC_OVFLW:
-		/* overflow on receiver side - report 'message too long' * /
+		/* overflow on receiver side - report 'message too long' */
 		tx_err = EMSGSIZE;
 		fallthrough;
 
 	default:
-		/* reserved/unknown flow status (tx_err defaults to EBADMSG) * /
+		/* reserved/unknown flow status (tx_err defaults to EBADMSG) */
 
 		sk->sk_err = tx_err;
 		if (!sock_flag(sk, SOCK_DEAD))
 			sk_error_report(sk);
 
 		isotp_set_tx_result(so, so->tx_gen, tx_err);
-		/* set to IDLE after publishing tx_result * /
+		/* set to IDLE after publishing tx_result */
 		smp_store_release(&so->tx.state, ISOTP_IDLE);
 		wake_up_interruptible(&so->wait);
 	}
@@ -616,7 +616,7 @@ static int isotp_rcv_sf(struct sock *sk, struct canfd_frame *cf, int pcilen,
 
 	if ((so->opt.flags & ISOTP_CHECK_PADDING) &&
 	    check_pad(so, cf, pcilen + len, so->opt.rxpad_content)) {
-		/* malformed PDU - report 'not a data message' * /
+		/* malformed PDU - report 'not a data message' */
 		sk->sk_err = EBADMSG;
 		if (!sock_flag(sk, SOCK_DEAD))
 			sk_error_report(sk);
@@ -645,22 +645,22 @@ static int isotp_rcv_ff(struct sock *sk, struct canfd_frame *cf, int ae)
 	hrtimer_cancel(&so->rxtimer);
 	WRITE_ONCE(so->rx.state, ISOTP_IDLE);
 
-	/* get the used sender LL_DL from the (first) CAN frame data length * /
+	/* get the used sender LL_DL from the (first) CAN frame data length */
 	so->rx.ll_dl = padlen(cf->len);
 
-	/* the first frame has to use the entire frame up to LL_DL length * /
+	/* the first frame has to use the entire frame up to LL_DL length */
 	if (cf->len != so->rx.ll_dl)
 		return 1;
 
-	/* get the FF_DL * /
+	/* get the FF_DL */
 	so->rx.len = (cf->data[ae] & 0x0F) << 8;
 	so->rx.len += cf->data[ae + 1];
 
-	/* Check for FF_DL escape sequence supporting 32 bit PDU length * /
+	/* Check for FF_DL escape sequence supporting 32 bit PDU length */
 	if (so->rx.len) {
 		ff_pci_sz = FF_PCI_SZ12;
 	} else {
-		/* FF_DL = 0 => get real length from next 4 bytes * /
+		/* FF_DL = 0 => get real length from next 4 bytes */
 		so->rx.len = cf->data[ae + 2] << 24;
 		so->rx.len += cf->data[ae + 3] << 16;
 		so->rx.len += cf->data[ae + 4] << 8;
@@ -668,13 +668,13 @@ static int isotp_rcv_ff(struct sock *sk, struct canfd_frame *cf, int ae)
 		ff_pci_sz = FF_PCI_SZ32;
 	}
 
-	/* take care of a potential SF_DL ESC offset for TX_DL > 8 * /
+	/* take care of a potential SF_DL ESC offset for TX_DL > 8 */
 	off = (so->rx.ll_dl > CAN_MAX_DLEN) ? 1 : 0;
 
 	if (so->rx.len + ae + off + ff_pci_sz < so->rx.ll_dl)
 		return 1;
 
-	/* PDU size > default => try max_pdu_size * /
+	/* PDU size > default => try max_pdu_size */
 	if (so->rx.len > so->rx.buflen && so->rx.buflen < max_pdu_size) {
 		u8 *newbuf = kmalloc(max_pdu_size, GFP_ATOMIC);
 
@@ -685,25 +685,25 @@ static int isotp_rcv_ff(struct sock *sk, struct canfd_frame *cf, int ae)
 	}
 
 	if (so->rx.len > so->rx.buflen) {
-		/* send FC frame with overflow status * /
+		/* send FC frame with overflow status */
 		isotp_send_fc(sk, ae, ISOTP_FC_OVFLW);
 		return 1;
 	}
 
-	/* copy the first received data bytes * /
+	/* copy the first received data bytes */
 	so->rx.idx = 0;
 	for (i = ae + ff_pci_sz; i < so->rx.ll_dl; i++)
 		so->rx.buf[so->rx.idx++] = cf->data[i];
 
-	/* initial setup for this pdu reception * /
+	/* initial setup for this pdu reception */
 	so->rx.sn = 1;
 	WRITE_ONCE(so->rx.state, ISOTP_WAIT_DATA);
 
-	/* no creation of flow control frames * /
+	/* no creation of flow control frames */
 	if (so->opt.flags & CAN_ISOTP_LISTEN_MODE)
 		return 0;
 
-	/* send our first FC frame * /
+	/* send our first FC frame */
 	isotp_send_fc(sk, ae, ISOTP_FC_CTS);
 	return 0;
 }
@@ -718,7 +718,7 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
 	if (READ_ONCE(so->rx.state) != ISOTP_WAIT_DATA)
 		return 0;
 
-	/* drop if timestamp gap is less than force_rx_stmin nano secs * /
+	/* drop if timestamp gap is less than force_rx_stmin nano secs */
 	if (so->opt.flags & CAN_ISOTP_FORCE_RXSTMIN) {
 		if (ktime_to_ns(ktime_sub(skb->tstamp, so->lastrxcf_tstamp)) <
 		    so->force_rx_stmin)
@@ -731,28 +731,28 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
 
 	/* isotp_rx_timer_handler() may have raced us for so->rx.state
 	 * while hrtimer_cancel() above waited for it to finish => recheck
-	 * /
+	 */
 	if (READ_ONCE(so->rx.state) != ISOTP_WAIT_DATA)
 		return 1;
 
-	/* CFs are never longer than the FF * /
+	/* CFs are never longer than the FF */
 	if (cf->len > so->rx.ll_dl)
 		return 1;
 
-	/* CFs have usually the LL_DL length * /
+	/* CFs have usually the LL_DL length */
 	if (cf->len < so->rx.ll_dl) {
-		/* this is only allowed for the last CF * /
+		/* this is only allowed for the last CF */
 		if (so->rx.len - so->rx.idx > so->rx.ll_dl - ae - N_PCI_SZ)
 			return 1;
 	}
 
 	if ((cf->data[ae] & 0x0F) != so->rx.sn) {
-		/* wrong sn detected - report 'illegal byte sequence' * /
+		/* wrong sn detected - report 'illegal byte sequence' */
 		sk->sk_err = EILSEQ;
 		if (!sock_flag(sk, SOCK_DEAD))
 			sk_error_report(sk);
 
-		/* reset rx state * /
+		/* reset rx state */
 		WRITE_ONCE(so->rx.state, ISOTP_IDLE);
 		return 1;
 	}
@@ -766,12 +766,12 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
 	}
 
 	if (so->rx.idx >= so->rx.len) {
-		/* we are done * /
+		/* we are done */
 		WRITE_ONCE(so->rx.state, ISOTP_IDLE);
 
 		if ((so->opt.flags & ISOTP_CHECK_PADDING) &&
 		    check_pad(so, cf, i + 1, so->opt.rxpad_content)) {
-			/* malformed PDU - report 'not a data message' * /
+			/* malformed PDU - report 'not a data message' */
 			sk->sk_err = EBADMSG;
 			if (!sock_flag(sk, SOCK_DEAD))
 				sk_error_report(sk);
@@ -791,19 +791,19 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
 		return 0;
 	}
 
-	/* perform blocksize handling, if enabled * /
+	/* perform blocksize handling, if enabled */
 	if (!so->rxfc.bs || ++so->rx.bs < so->rxfc.bs) {
-		/* start rx timeout watchdog * /
+		/* start rx timeout watchdog */
 		hrtimer_start(&so->rxtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
 			      HRTIMER_MODE_REL_SOFT);
 		return 0;
 	}
 
-	/* no creation of flow control frames * /
+	/* no creation of flow control frames */
 	if (so->opt.flags & CAN_ISOTP_LISTEN_MODE)
 		return 0;
 
-	/* we reached the specified blocksize so->rxfc.bs * /
+	/* we reached the specified blocksize so->rxfc.bs */
 	isotp_send_fc(sk, ae, ISOTP_FC_CTS);
 	return 0;
 }
@@ -818,13 +818,13 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
 
 	/* Strictly receive only frames with the configured MTU size
 	 * => clear separation of CAN2.0 / CAN FD transport channels
-	 * /
+	 */
 	if (skb->len != so->ll.mtu)
 		return;
 
 	cf = (struct canfd_frame *)skb->data;
 
-	/* if enabled: check reception of my configured extended address * /
+	/* if enabled: check reception of my configured extended address */
 	if (ae && cf->data[0] != so->opt.rx_ext_address)
 		return;
 
@@ -833,11 +833,11 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
 	/* Make sure the state changes and data structures stay consistent at
 	 * CAN frame reception time. This locking is not needed in real world
 	 * use cases but the inconsistency can be triggered with syzkaller.
-	 * /
+	 */
 	spin_lock(&so->rx_lock);
 
 	if (so->opt.flags & CAN_ISOTP_HALF_DUPLEX) {
-		/* check rx/tx path half duplex expectations * /
+		/* check rx/tx path half duplex expectations */
 		if ((READ_ONCE(so->tx.state) != ISOTP_IDLE &&
 		     n_pci_type != N_PCI_FC) ||
 		    (READ_ONCE(so->rx.state) != ISOTP_IDLE &&
@@ -847,7 +847,7 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
 
 	switch (n_pci_type) {
 	case N_PCI_FC:
-		/* tx path: flow control frame containing the FC parameters * /
+		/* tx path: flow control frame containing the FC parameters */
 		isotp_rcv_fc(so, cf, ae);
 		break;
 
@@ -857,9 +857,9 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
 		 * As we do not have a rx.ll_dl configuration, we can only test
 		 * if the CAN frames payload length matches the LL_DL == 8
 		 * requirements - no matter if it's CAN 2.0 or CAN FD
-		 * /
+		 */
 
-		/* get the SF_DL from the N_PCI byte * /
+		/* get the SF_DL from the N_PCI byte */
 		sf_dl = cf->data[ae] & 0x0F;
 
 		if (cf->len <= CAN_MAX_DLEN) {
@@ -873,7 +873,7 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
 				 * (SF_PCI_SZ8) to point to the message content behind
 				 * the extended SF PCI info and get the real SF_DL
 				 * length value from the formerly first data byte.
-				 * /
+				 */
 				if (sf_dl == 0)
 					isotp_rcv_sf(sk, cf, SF_PCI_SZ8 + ae, skb,
 						     cf->data[SF_PCI_SZ4 + ae]);
@@ -882,12 +882,12 @@ static void isotp_rcv(struct sk_buff *skb, void *data)
 		break;
 
 	case N_PCI_FF:
-		/* rx path: first frame * /
+		/* rx path: first frame */
 		isotp_rcv_ff(sk, cf, ae);
 		break;
 
 	case N_PCI_CF:
-		/* rx path: consecutive frame * /
+		/* rx path: consecutive frame */
 		isotp_rcv_cf(sk, cf, ae, skb);
 		break;
 	}
@@ -909,11 +909,11 @@ static void isotp_fill_dataframe(struct canfd_frame *cf, struct isotp_sock *so,
 
 	if (num < space) {
 		if (so->opt.flags & CAN_ISOTP_TX_PADDING) {
-			/* user requested padding * /
+			/* user requested padding */
 			cf->len = padlen(cf->len);
 			memset(cf->data, so->opt.txpad_content, cf->len);
 		} else if (cf->len > CAN_MAX_DLEN) {
-			/* mandatory padding for CAN FD frames * /
+			/* mandatory padding for CAN FD frames */
 			cf->len = padlen(cf->len);
 			memset(cf->data, CAN_ISOTP_DEFAULT_PAD_CONTENT,
 			       cf->len);
@@ -957,16 +957,16 @@ static void isotp_send_cframe(struct isotp_sock *so)
 
 	csx->can_iif = dev->ifindex;
 
-	/* set uid in tx skb to identify CF echo frames * /
+	/* set uid in tx skb to identify CF echo frames */
 	can_set_skb_uid(skb);
 
 	cf = (struct canfd_frame *)skb->data;
 	skb_put_zero(skb, so->ll.mtu);
 
-	/* create consecutive frame * /
+	/* create consecutive frame */
 	isotp_fill_dataframe(cf, so, ae, 0);
 
-	/* place consecutive frame N_PCI in appropriate index * /
+	/* place consecutive frame N_PCI in appropriate index */
 	cf->data[ae] = N_PCI_CF | so->tx.sn++;
 	so->tx.sn %= 16;
 	so->tx.bs++;
@@ -978,15 +978,15 @@ static void isotp_send_cframe(struct isotp_sock *so)
 
 	/* zero'ed by init/isotp_rcv_echo(); reached lock-free via
 	 * isotp_txfr_timer_handler() too, so use READ_ONCE()/WRITE_ONCE()
-	 * /
+	 */
 	old_cfecho = READ_ONCE(so->cfecho);
 	if (old_cfecho)
 		pr_notice_once("can-isotp: cfecho is %08X != 0\n", old_cfecho);
 
-	/* set consecutive frame echo tag * /
+	/* set consecutive frame echo tag */
 	WRITE_ONCE(so->cfecho, skb->hash);
 
-	/* send frame with local echo enabled * /
+	/* send frame with local echo enabled */
 	can_send_ret = can_send(skb, 1);
 	if (can_send_ret) {
 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
@@ -1008,9 +1008,9 @@ static void isotp_create_fframe(struct canfd_frame *cf, struct isotp_sock *so,
 	if (ae)
 		cf->data[0] = so->opt.ext_address;
 
-	/* create N_PCI bytes with 12/32 bit FF_DL data length * /
+	/* create N_PCI bytes with 12/32 bit FF_DL data length */
 	if (so->tx.len > MAX_12BIT_PDU_SIZE) {
-		/* use 32 bit FF_DL notation * /
+		/* use 32 bit FF_DL notation */
 		cf->data[ae] = N_PCI_FF;
 		cf->data[ae + 1] = 0;
 		cf->data[ae + 2] = (u8)(so->tx.len >> 24) & 0xFFU;
@@ -1019,13 +1019,13 @@ static void isotp_create_fframe(struct canfd_frame *cf, struct isotp_sock *so,
 		cf->data[ae + 5] = (u8)so->tx.len & 0xFFU;
 		ff_pci_sz = FF_PCI_SZ32;
 	} else {
-		/* use 12 bit FF_DL notation * /
+		/* use 12 bit FF_DL notation */
 		cf->data[ae] = (u8)(so->tx.len >> 8) | N_PCI_FF;
 		cf->data[ae + 1] = (u8)so->tx.len & 0xFFU;
 		ff_pci_sz = FF_PCI_SZ12;
 	}
 
-	/* add first data bytes depending on ae * /
+	/* add first data bytes depending on ae */
 	for (i = ae + ff_pci_sz; i < so->tx.ll_dl; i++)
 		cf->data[i] = so->tx.buf[so->tx.idx++];
 
@@ -1037,60 +1037,60 @@ static void isotp_rcv_echo(struct sk_buff *skb, void *data)
 	struct sock *sk = (struct sock *)data;
 	struct isotp_sock *so = isotp_sk(sk);
 
-	/* only handle my own local echo CF/SF skb's (no FF!) * /
+	/* only handle my own local echo CF/SF skb's (no FF!) */
 	if (skb->sk != sk)
 		return;
 
 	/* unlike isotp_rcv_fc()/isotp_rcv_cf(), not already under so->rx_lock
 	 * (no isotp_rcv() caller here), so take it ourselves
-	 * /
+	 */
 	spin_lock(&so->rx_lock);
 
-	/* so->cfecho may since belong to a new transfer; recheck under lock * /
+	/* so->cfecho may since belong to a new transfer; recheck under lock */
 	if (READ_ONCE(so->cfecho) != skb->hash)
 		goto out_unlock;
 
-	/* cancel local echo timeout * /
+	/* cancel local echo timeout */
 	hrtimer_cancel(&so->echotimer);
 
-	/* local echo skb with consecutive frame has been consumed * /
+	/* local echo skb with consecutive frame has been consumed */
 	WRITE_ONCE(so->cfecho, 0);
 
 	/* claiming a transfer also takes so->rx_lock, so a plain recheck
 	 * is enough: so->tx.state can't have flipped to ISOTP_SENDING for
 	 * a new claim while we're still in here
-	 * /
+	 */
 	if (READ_ONCE(so->tx.state) != ISOTP_SENDING)
 		goto out_unlock;
 
 	if (so->tx.idx >= so->tx.len) {
-		/* we are done * /
+		/* we are done */
 
 		isotp_set_tx_result(so, so->tx_gen, 0);
-		/* set to IDLE after publishing tx_result * /
+		/* set to IDLE after publishing tx_result */
 		smp_store_release(&so->tx.state, ISOTP_IDLE);
 		wake_up_interruptible(&so->wait);
 		goto out_unlock;
 	}
 
 	if (so->txfc.bs && so->tx.bs >= so->txfc.bs) {
-		/* stop and wait for FC with timeout * /
+		/* stop and wait for FC with timeout */
 		WRITE_ONCE(so->tx.state, ISOTP_WAIT_FC);
 		hrtimer_start(&so->txtimer, ktime_set(ISOTP_FC_TIMEOUT, 0),
 			      HRTIMER_MODE_REL_SOFT);
 		goto out_unlock;
 	}
 
-	/* no gap between data frames needed => use burst mode * /
+	/* no gap between data frames needed => use burst mode */
 	if (!so->tx_gap) {
-		/* enable echo timeout handling * /
+		/* enable echo timeout handling */
 		hrtimer_start(&so->echotimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
 			      HRTIMER_MODE_REL_SOFT);
 		isotp_send_cframe(so);
 		goto out_unlock;
 	}
 
-	/* start timer to send next consecutive frame with correct delay * /
+	/* start timer to send next consecutive frame with correct delay */
 	hrtimer_start(&so->txfrtimer, so->tx_gap, HRTIMER_MODE_REL_SOFT);
 
 out_unlock:
@@ -1104,25 +1104,25 @@ out_unlock:
  *
  * tx.state is acquired before tx_gen. Common sequence in isotp_tx_gen_done().
  * cmpxchg() only orders itself, not the two preceding loads.
- * /
+ */
 static enum hrtimer_restart isotp_tx_timeout(struct isotp_sock *so)
 {
 	struct sock *sk = &so->sk;
-	/* read tx.state first for the common sequence * /
+	/* read tx.state first for the common sequence */
 	u32 old_state = smp_load_acquire(&so->tx.state);
 	u32 gen = READ_ONCE(so->tx_gen);
 
-	/* don't handle timeouts in IDLE or SHUTDOWN state * /
+	/* don't handle timeouts in IDLE or SHUTDOWN state */
 	if (old_state == ISOTP_IDLE || old_state == ISOTP_SHUTDOWN)
 		return HRTIMER_NORESTART;
 
-	/* only claim the timeout if the state is still unchanged * /
+	/* only claim the timeout if the state is still unchanged */
 	if (cmpxchg(&so->tx.state, old_state, ISOTP_IDLE) != old_state)
 		return HRTIMER_NORESTART;
 
-	/* detected timeout: report 'communication error on send' * /
+	/* detected timeout: report 'communication error on send' */
 
-	/* a stale read of this slot by a waiter still falls back to ECOMM * /
+	/* a stale read of this slot by a waiter still falls back to ECOMM */
 	isotp_set_tx_result(so, gen, ECOMM);
 
 	sk->sk_err = ECOMM;
@@ -1134,7 +1134,7 @@ static enum hrtimer_restart isotp_tx_timeout(struct isotp_sock *so)
 	return HRTIMER_NORESTART;
 }
 
-/* so->txtimer: fires when a Flow Control frame does not arrive in time * /
+/* so->txtimer: fires when a Flow Control frame does not arrive in time */
 static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
 {
 	struct isotp_sock *so = container_of(hrtimer, struct isotp_sock,
@@ -1143,7 +1143,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
 	return isotp_tx_timeout(so);
 }
 
-/* so->echotimer: fires when a sent CF/SF's local echo does not arrive * /
+/* so->echotimer: fires when a sent CF/SF's local echo does not arrive */
 static enum hrtimer_restart isotp_echo_timer_handler(struct hrtimer *hrtimer)
 {
 	struct isotp_sock *so = container_of(hrtimer, struct isotp_sock,
@@ -1157,11 +1157,11 @@ static enum hrtimer_restart isotp_txfr_timer_handler(struct hrtimer *hrtimer)
 	struct isotp_sock *so = container_of(hrtimer, struct isotp_sock,
 					     txfrtimer);
 
-	/* start echo timeout handling and cover below protocol error * /
+	/* start echo timeout handling and cover below protocol error */
 	hrtimer_start(&so->echotimer, ktime_set(ISOTP_ECHO_TIMEOUT, 0),
 		      HRTIMER_MODE_REL_SOFT);
 
-	/* cfecho should be consumed by isotp_rcv_echo() here * /
+	/* cfecho should be consumed by isotp_rcv_echo() here */
 	if (READ_ONCE(so->tx.state) == ISOTP_SENDING && !READ_ONCE(so->cfecho))
 		isotp_send_cframe(so);
 
@@ -1192,21 +1192,21 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	/* claim the socket under so->rx_lock: this serializes the claim
 	 * with the RX path and with sendmsg()'s own error paths below, so
 	 * none of them can ever see a transfer mid-claim
-	 * /
+	 */
 	for (;;) {
 		spin_lock_bh(&so->rx_lock);
 		if (READ_ONCE(so->tx.state) == ISOTP_IDLE)
 			break;
 		spin_unlock_bh(&so->rx_lock);
 
-		/* we do not support multiple buffers - for now * /
+		/* we do not support multiple buffers - for now */
 		if (msg->msg_flags & MSG_DONTWAIT)
 			return -EAGAIN;
 
 		if (READ_ONCE(so->tx.state) == ISOTP_SHUTDOWN)
 			return -EADDRNOTAVAIL;
 
-		/* wait for complete transmission of current pdu * /
+		/* wait for complete transmission of current pdu */
 		err = wait_event_interruptible(so->wait,
 					       READ_ONCE(so->tx.state) == ISOTP_IDLE ||
 					       READ_ONCE(so->tx.state) == ISOTP_SHUTDOWN);
@@ -1214,29 +1214,29 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 			return err;
 	}
 
-	/* txfrtimer's callback re-arms echotimer lock-free: drain it first * /
+	/* txfrtimer's callback re-arms echotimer lock-free: drain it first */
 	hrtimer_cancel(&so->txfrtimer);
 	hrtimer_cancel(&so->txtimer);
 	hrtimer_cancel(&so->echotimer);
 
-	/* new transfer: increment so->tx_gen and set tx.state after barrier * /
+	/* new transfer: increment so->tx_gen and set tx.state after barrier */
 	my_gen = isotp_inc_tx_gen(READ_ONCE(so->tx_gen));
-	isotp_set_tx_result(so, my_gen, ECOMM); /* prevent stale slot matching * /
+	isotp_set_tx_result(so, my_gen, ECOMM); /* prevent stale slot matching */
 	WRITE_ONCE(so->tx_gen, my_gen);
-	smp_wmb(); /* see smp_load_acquire() in isotp_tx_[timeout|gen_done] * /
+	smp_wmb(); /* see smp_load_acquire() in isotp_tx_[timeout|gen_done] */
 	WRITE_ONCE(so->tx.state, ISOTP_SENDING);
 	WRITE_ONCE(so->cfecho, 0);
 	spin_unlock_bh(&so->rx_lock);
 
 	/* so->bound is only checked once above - a wakeup may have
 	 * unbound/rebound the socket meanwhile => recheck
-	 * /
+	 */
 	if (!so->bound) {
 		err = -EADDRNOTAVAIL;
 		goto err_out_drop;
 	}
 
-	/* PDU size > default => try max_pdu_size * /
+	/* PDU size > default => try max_pdu_size */
 	if (size > so->tx.buflen && so->tx.buflen < max_pdu_size) {
 		u8 *newbuf = kmalloc(max_pdu_size, GFP_KERNEL);
 
@@ -1251,10 +1251,10 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 		goto err_out_drop;
 	}
 
-	/* take care of a potential SF_DL ESC offset for TX_DL > 8 * /
+	/* take care of a potential SF_DL ESC offset for TX_DL > 8 */
 	off = (so->tx.ll_dl > CAN_MAX_DLEN) ? 1 : 0;
 
-	/* does the given data fit into a single frame for SF_BROADCAST? * /
+	/* does the given data fit into a single frame for SF_BROADCAST? */
 	if ((isotp_bc_flags(so) == CAN_ISOTP_SF_BROADCAST) &&
 	    (size > so->tx.ll_dl - SF_PCI_SZ4 - ae - off)) {
 		err = -EINVAL;
@@ -1288,7 +1288,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 
 	csx->can_iif = dev->ifindex;
 
-	/* set uid in tx skb to identify CF echo frames * /
+	/* set uid in tx skb to identify CF echo frames */
 	can_set_skb_uid(skb);
 
 	so->tx.len = size;
@@ -1297,12 +1297,12 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	cf = (struct canfd_frame *)skb->data;
 	skb_put_zero(skb, so->ll.mtu);
 
-	/* cfecho should have been zero'ed by init / former isotp_rcv_echo() * /
+	/* cfecho should have been zero'ed by init / former isotp_rcv_echo() */
 	old_cfecho = READ_ONCE(so->cfecho);
 	if (old_cfecho)
 		pr_notice_once("can-isotp: uninit cfecho %08X\n", old_cfecho);
 
-	/* check for single frame transmission depending on TX_DL * /
+	/* check for single frame transmission depending on TX_DL */
 	if (size <= so->tx.ll_dl - SF_PCI_SZ4 - ae - off) {
 		/* The message size generally fits into a SingleFrame - good.
 		 *
@@ -1312,49 +1312,49 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 		 * into a 8 byte CAN frame, we can omit the offset.
 		 * This prevents a protocol caused length extension from
 		 * CAN_DL = 8 to CAN_DL = 12 due to the SF_SL ESC handling.
-		 * /
+		 */
 		if (size <= CAN_MAX_DLEN - SF_PCI_SZ4 - ae)
 			off = 0;
 
 		isotp_fill_dataframe(cf, so, ae, off);
 
-		/* place single frame N_PCI w/o length in appropriate index * /
+		/* place single frame N_PCI w/o length in appropriate index */
 		cf->data[ae] = N_PCI_SF;
 
-		/* place SF_DL size value depending on the SF_DL ESC offset * /
+		/* place SF_DL size value depending on the SF_DL ESC offset */
 		if (off)
 			cf->data[SF_PCI_SZ4 + ae] = size;
 		else
 			cf->data[ae] |= size;
 
-		/* set CF echo tag for isotp_rcv_echo() (SF-mode) * /
+		/* set CF echo tag for isotp_rcv_echo() (SF-mode) */
 		WRITE_ONCE(so->cfecho, skb->hash);
 	} else {
-		/* send first frame * /
+		/* send first frame */
 
 		isotp_create_fframe(cf, so, ae);
 
 		if (isotp_bc_flags(so) == CAN_ISOTP_CF_BROADCAST) {
-			/* set timer for FC-less operation (STmin = 0) * /
+			/* set timer for FC-less operation (STmin = 0) */
 			if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
 				so->tx_gap = ktime_set(0, so->force_tx_stmin);
 			else
 				so->tx_gap = ktime_set(0, so->frame_txtime);
 
-			/* disable wait for FCs due to activated block size * /
+			/* disable wait for FCs due to activated block size */
 			so->txfc.bs = 0;
 
-			/* set CF echo tag for isotp_rcv_echo() (CF-mode) * /
+			/* set CF echo tag for isotp_rcv_echo() (CF-mode) */
 			WRITE_ONCE(so->cfecho, skb->hash);
 		} else {
-			/* standard flow control check * /
+			/* standard flow control check */
 			new_state = ISOTP_WAIT_FIRST_FC;
 
-			/* start timeout for FC * /
+			/* start timeout for FC */
 			hrtimer_sec = ISOTP_FC_TIMEOUT;
 			tx_hrt = &so->txtimer;
 
-			/* no CF echo tag for isotp_rcv_echo() (FF-mode) * /
+			/* no CF echo tag for isotp_rcv_echo() (FF-mode) */
 			WRITE_ONCE(so->cfecho, 0);
 		}
 	}
@@ -1363,20 +1363,20 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	if (READ_ONCE(so->tx.state) == ISOTP_SHUTDOWN) {
 		/* isotp_release() has since taken over and already drained
 		 * our timers - don't send into a socket that's going away
-		 * /
+		 */
 		spin_unlock_bh(&so->rx_lock);
 		kfree_skb(skb);
 		dev_put(dev);
 		wake_up_interruptible(&so->wait);
 		return -EADDRNOTAVAIL;
 	}
-	/* WAIT_FIRST_FC for standard FF, else stays ISOTP_SENDING * /
+	/* WAIT_FIRST_FC for standard FF, else stays ISOTP_SENDING */
 	WRITE_ONCE(so->tx.state, new_state);
 	hrtimer_start(tx_hrt, ktime_set(hrtimer_sec, 0),
 		      HRTIMER_MODE_REL_SOFT);
 	spin_unlock_bh(&so->rx_lock);
 
-	/* send the first or only CAN frame * /
+	/* send the first or only CAN frame */
 	cf->flags = so->ll.tx_flags;
 
 	skb->dev = dev;
@@ -1391,14 +1391,14 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 
 		/* new transfer already claimed by a concurrent completion,
 		 * timeout or sendmsg() while we were stuck in can_send()?
-		 * /
+		 */
 		if (READ_ONCE(so->tx_gen) != my_gen) {
-			/* don't touch timers and state of the new transfer * /
+			/* don't touch timers and state of the new transfer */
 			spin_unlock_bh(&so->rx_lock);
 			return err;
 		}
 
-		/* no transmission -> no timeout monitoring * /
+		/* no transmission -> no timeout monitoring */
 		hrtimer_cancel(tx_hrt);
 		goto err_out_drop_locked;
 	}
@@ -1409,13 +1409,13 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 		 * - complete transmission of current PDU
 		 * - shutdown state change in isotp_release()
 		 * isotp_tx_gen_done() uses common tx.state/tx_gen read sequence
-		 * /
+		 */
 		err = wait_event_interruptible(so->wait,
 					       isotp_tx_gen_done(so, my_gen));
 		if (err)
 			goto err_event_drop;
 
-		/* still our claim, but isotp_release() force-shut it down * /
+		/* still our claim, but isotp_release() force-shut it down */
 		if (smp_load_acquire(&so->tx.state) == ISOTP_SHUTDOWN &&
 		    READ_ONCE(so->tx_gen) == my_gen) {
 			err = -EADDRNOTAVAIL;
@@ -1424,10 +1424,10 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 
 		/* own completion, or tx_gen moved on - either way this is
 		 * what isotp_get_tx_result() recorded for my_gen
-		 * /
+		 */
 		err = isotp_get_tx_result(so, my_gen);
 
-		/* drain to avoid stale error for a later poll()/SO_ERROR * /
+		/* drain to avoid stale error for a later poll()/SO_ERROR */
 		sock_error(sk);
 
 		return err ? err : size;
@@ -1436,16 +1436,16 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 	return size;
 
 err_out_drop:
-	/* claimed but nothing sent yet - no timer to cancel * /
+	/* claimed but nothing sent yet - no timer to cancel */
 	spin_lock_bh(&so->rx_lock);
 	goto err_out_drop_locked;
 err_event_drop:
-	/* interrupted or shut down while waiting on our own transfer * /
+	/* interrupted or shut down while waiting on our own transfer */
 	spin_lock_bh(&so->rx_lock);
 
-	/* new transfer already started by concurrent sendmsg()? * /
+	/* new transfer already started by concurrent sendmsg()? */
 	if (READ_ONCE(so->tx_gen) != my_gen) {
-		/* don't touch timers and states of the new transfer * /
+		/* don't touch timers and states of the new transfer */
 		spin_unlock_bh(&so->rx_lock);
 		return err;
 	}
@@ -1454,10 +1454,10 @@ err_event_drop:
 	hrtimer_cancel(&so->txtimer);
 	hrtimer_cancel(&so->echotimer);
 err_out_drop_locked:
-	/* release the claim; so->rx_lock still held from above * /
+	/* release the claim; so->rx_lock still held from above */
 	WRITE_ONCE(so->cfecho, 0);
 
-	/* only claim to IDLE if isotp_release() has not taken over * /
+	/* only claim to IDLE if isotp_release() has not taken over */
 	if (READ_ONCE(so->tx.state) != ISOTP_SHUTDOWN)
 		WRITE_ONCE(so->tx.state, ISOTP_IDLE);
 	spin_unlock_bh(&so->rx_lock);
@@ -1501,7 +1501,7 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		memcpy(msg->msg_name, skb->cb, msg->msg_namelen);
 	}
 
-	/* set length of return value * /
+	/* set length of return value */
 	ret = (flags & MSG_TRUNC) ? skb->len : size;
 
 out_err:
@@ -1524,7 +1524,7 @@ static int isotp_release(struct socket *sock)
 
 	/* best-effort: wait for a running pdu to finish, but don't block on
 	 * it forever - give up after the first signal
-	 * /
+	 */
 	while (READ_ONCE(so->tx.state) != ISOTP_IDLE &&
 	       wait_event_interruptible(so->wait,
 					READ_ONCE(so->tx.state) == ISOTP_IDLE) == 0)
@@ -1533,13 +1533,13 @@ static int isotp_release(struct socket *sock)
 	/* claim the socket under so->rx_lock like sendmsg() does, so its
 	 * claim can't race the forced ISOTP_SHUTDOWN below; force it
 	 * unconditionally, even when a signal cut the wait above short
-	 * /
+	 */
 	spin_lock_bh(&so->rx_lock);
 	WRITE_ONCE(so->tx.state, ISOTP_SHUTDOWN);
 	spin_unlock_bh(&so->rx_lock);
 	WRITE_ONCE(so->rx.state, ISOTP_IDLE);
 
-	/* forced SHUTDOWN may have skipped IDLE (gave up on a signal) * /
+	/* forced SHUTDOWN may have skipped IDLE (gave up on a signal) */
 	wake_up_interruptible(&so->wait);
 
 	spin_lock(&isotp_notifier_lock);
@@ -1556,7 +1556,7 @@ static int isotp_release(struct socket *sock)
 
 	/* remove current filters & unregister
 	 * tracked reference so->dev is taken at bind() time with rtnl_lock
-	 * /
+	 */
 	if (so->bound && so->dev) {
 		if (isotp_register_rxid(so))
 			can_rx_unregister(net, so->dev, so->rxid,
@@ -1580,7 +1580,7 @@ static int isotp_release(struct socket *sock)
 	 * filters and cleared so->bound in isotp_notify() without waiting
 	 * for in-flight isotp_rcv() callers to finish, so this call must not
 	 * be skipped just because so->bound is already 0 here.
-	 * /
+	 */
 	synchronize_rcu();
 
 	hrtimer_cancel(&so->txfrtimer);
@@ -1617,24 +1617,24 @@ static int isotp_bind(struct socket *sock, struct sockaddr_unsized *uaddr, int l
 	if (addr->can_family != AF_CAN)
 		return -EINVAL;
 
-	/* sanitize tx CAN identifier * /
+	/* sanitize tx CAN identifier */
 	if (tx_id & CAN_EFF_FLAG)
 		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
 	else
 		tx_id &= CAN_SFF_MASK;
 
-	/* give feedback on wrong CAN-ID value * /
+	/* give feedback on wrong CAN-ID value */
 	if (tx_id != addr->can_addr.tp.tx_id)
 		return -EINVAL;
 
-	/* sanitize rx CAN identifier (if needed) * /
+	/* sanitize rx CAN identifier (if needed) */
 	if (isotp_register_rxid(so)) {
 		if (rx_id & CAN_EFF_FLAG)
 			rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
 		else
 			rx_id &= CAN_SFF_MASK;
 
-		/* give feedback on wrong CAN-ID value * /
+		/* give feedback on wrong CAN-ID value */
 		if (rx_id != addr->can_addr.tp.rx_id)
 			return -EINVAL;
 	}
@@ -1655,14 +1655,14 @@ static int isotp_bind(struct socket *sock, struct sockaddr_unsized *uaddr, int l
 	 * and RX watchdog timers bound how long this takes. Checked together
 	 * with so->bound in the same lock_sock() section above, so there is
 	 * no window in which a concurrent isotp_notify() could be missed.
-	 * /
+	 */
 	if (READ_ONCE(so->tx.state) != ISOTP_IDLE ||
 	    READ_ONCE(so->rx.state) != ISOTP_IDLE) {
 		err = -EAGAIN;
 		goto out;
 	}
 
-	/* ensure different CAN IDs when the rx_id is to be registered * /
+	/* ensure different CAN IDs when the rx_id is to be registered */
 	if (isotp_register_rxid(so) && rx_id == tx_id) {
 		err = -EADDRNOTAVAIL;
 		goto out;
@@ -1690,14 +1690,14 @@ static int isotp_bind(struct socket *sock, struct sockaddr_unsized *uaddr, int l
 		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
 				isotp_rcv, sk, "isotp", sk);
 
-	/* no consecutive frame echo skb in flight * /
+	/* no consecutive frame echo skb in flight */
 	WRITE_ONCE(so->cfecho, 0);
 
-	/* register for echo skb's * /
+	/* register for echo skb's */
 	can_rx_register(net, dev, tx_id, SINGLE_MASK(tx_id),
 			isotp_rcv_echo, sk, "isotpe", sk);
 
-	/* switch to new settings * /
+	/* switch to new settings */
 	so->ifindex = ifindex;
 	so->rxid = rx_id;
 	so->txid = tx_id;
@@ -1706,12 +1706,12 @@ static int isotp_bind(struct socket *sock, struct sockaddr_unsized *uaddr, int l
 	/* bind() ok -> hold a reference for so->dev so that isotp_release()
 	 * can safely reach the device later, even if a concurrent
 	 * NETDEV_UNREGISTER has already unlisted it by ifindex.
-	 * /
+	 */
 	so->dev = dev;
 	netdev_hold(so->dev, &so->dev_tracker, GFP_KERNEL);
 
 out_put_dev:
-	/* remove potential reference from dev_get_by_index() * /
+	/* remove potential reference from dev_get_by_index() */
 	dev_put(dev);
 out:
 	release_sock(sk);
@@ -1762,20 +1762,20 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
 		if (copy_from_sockptr(&so->opt, optval, optlen))
 			return -EFAULT;
 
-		/* no separate rx_ext_address is given => use ext_address * /
+		/* no separate rx_ext_address is given => use ext_address */
 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
 			so->opt.rx_ext_address = so->opt.ext_address;
 
-		/* these broadcast flags are not allowed together * /
+		/* these broadcast flags are not allowed together */
 		if (isotp_bc_flags(so) == ISOTP_ALL_BC_FLAGS) {
-			/* CAN_ISOTP_SF_BROADCAST is prioritized * /
+			/* CAN_ISOTP_SF_BROADCAST is prioritized */
 			so->opt.flags &= ~CAN_ISOTP_CF_BROADCAST;
 
-			/* give user feedback on wrong config attempt * /
+			/* give user feedback on wrong config attempt */
 			ret = -EINVAL;
 		}
 
-		/* check for frame_txtime changes (0 => no changes) * /
+		/* check for frame_txtime changes (0 => no changes) */
 		if (so->opt.frame_txtime) {
 			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
 				so->frame_txtime = 0;
@@ -1815,7 +1815,7 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
 			if (copy_from_sockptr(&ll, optval, optlen))
 				return -EFAULT;
 
-			/* check for correct ISO 11898-1 DLC data length * /
+			/* check for correct ISO 11898-1 DLC data length */
 			if (ll.tx_dl != padlen(ll.tx_dl))
 				return -EINVAL;
 
@@ -1828,7 +1828,7 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
 
 			memcpy(&so->ll, &ll, sizeof(ll));
 
-			/* set ll_dl for tx path to similar place as for rx * /
+			/* set ll_dl for tx path to similar place as for rx */
 			so->tx.ll_dl = ll.tx_dl;
 		} else {
 			return -EINVAL;
@@ -1924,7 +1924,7 @@ static void isotp_notify(struct isotp_sock *so, unsigned long msg,
 	switch (msg) {
 	case NETDEV_UNREGISTER:
 		lock_sock(sk);
-		/* remove current filters & unregister * /
+		/* remove current filters & unregister */
 		if (so->bound) {
 			if (isotp_register_rxid(so))
 				can_rx_unregister(dev_net(dev), dev, so->rxid,
@@ -1964,7 +1964,7 @@ static int isotp_notifier(struct notifier_block *nb, unsigned long msg,
 		return NOTIFY_DONE;
 	if (msg != NETDEV_UNREGISTER && msg != NETDEV_DOWN)
 		return NOTIFY_DONE;
-	if (unlikely(isotp_busy_notifier)) /* Check for reentrant bug. * /
+	if (unlikely(isotp_busy_notifier)) /* Check for reentrant bug. */
 		return NOTIFY_DONE;
 
 	spin_lock(&isotp_notifier_lock);
@@ -1982,10 +1982,10 @@ static void isotp_sock_destruct(struct sock *sk)
 {
 	struct isotp_sock *so = isotp_sk(sk);
 
-	/* do the standard CAN sock destruct work * /
+	/* do the standard CAN sock destruct work */
 	can_sock_destruct(sk);
 
-	/* free potential extended PDU buffers * /
+	/* free potential extended PDU buffers */
 	if (so->rx.buf != so->rx.sbuf)
 		kfree(so->rx.buf);
 
@@ -2015,7 +2015,7 @@ static int isotp_init(struct sock *sk)
 	so->ll.tx_dl = CAN_ISOTP_DEFAULT_LL_TX_DL;
 	so->ll.tx_flags = CAN_ISOTP_DEFAULT_LL_TX_FLAGS;
 
-	/* set ll_dl for tx path to similar place as for rx * /
+	/* set ll_dl for tx path to similar place as for rx */
 	so->tx.ll_dl = so->ll.tx_dl;
 
 	so->rx.state = ISOTP_IDLE;
@@ -2042,7 +2042,7 @@ static int isotp_init(struct sock *sk)
 	list_add_tail(&so->notifier, &isotp_notifier_list);
 	spin_unlock(&isotp_notifier_lock);
 
-	/* re-assign default can_sock_destruct() reference * /
+	/* re-assign default can_sock_destruct() reference */
 	sk->sk_destruct = isotp_sock_destruct;
 
 	return 0;
@@ -2056,7 +2056,7 @@ static __poll_t isotp_poll(struct file *file, struct socket *sock, poll_table *w
 	__poll_t mask = datagram_poll(file, sock, wait);
 	poll_wait(file, &so->wait, wait);
 
-	/* Check for false positives due to TX state * /
+	/* Check for false positives due to TX state */
 	if ((mask & EPOLLWRNORM) && (READ_ONCE(so->tx.state) != ISOTP_IDLE))
 		mask &= ~(EPOLLOUT | EPOLLWRNORM);
 
@@ -2066,7 +2066,7 @@ static __poll_t isotp_poll(struct file *file, struct socket *sock, poll_table *w
 static int isotp_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
 				  unsigned long arg)
 {
-	/* no ioctls for socket layer -> hand it down to NIC layer * /
+	/* no ioctls for socket layer -> hand it down to NIC layer */
 	return -ENOIOCTLCMD;
 }
 

@@ -105,10 +105,10 @@ unsafe fn loongarch_ipi_readl(vcpu: *mut kvm_vcpu, addr: gpa_t, len: i32, val: *
     if addr & (len as u64 - 1) != 0 { *(val as *mut u64) = 0; return 0; }
     let offset = addr - IOCSR_IPI_BASE;
     match offset {
-        IOCSR_IPI_STATUS => { spin_lock(&mut (*vcpu).arch.ipi_state.lock); res = (*vcpu).arch.ipi_state.status as u64; spin_unlock(&mut (*vcpu).arch.ipi_state.lock); }
-        IOCSR_IPI_EN => { spin_lock(&mut (*vcpu).arch.ipi_state.lock); res = (*vcpu).arch.ipi_state.en; spin_unlock(&mut (*vcpu).arch.ipi_state.lock); }
-        IOCSR_IPI_SET | IOCSR_IPI_CLEAR => {}
-        IOCSR_IPI_BUF_20..=IOCSR_IPI_BUF_38 + 7 => res = read_mailbox(vcpu, offset as i32, len),
+        case if case == IOCSR_IPI_STATUS => { spin_lock(&mut (*vcpu).arch.ipi_state.lock); res = (*vcpu).arch.ipi_state.status as u64; spin_unlock(&mut (*vcpu).arch.ipi_state.lock); }
+        case if case == IOCSR_IPI_EN => { spin_lock(&mut (*vcpu).arch.ipi_state.lock); res = (*vcpu).arch.ipi_state.en; spin_unlock(&mut (*vcpu).arch.ipi_state.lock); }
+        case if case == IOCSR_IPI_SET || case == IOCSR_IPI_CLEAR => {}
+        case if (IOCSR_IPI_BUF_20..=IOCSR_IPI_BUF_38 + 7).contains(&case) => res = read_mailbox(vcpu, offset as i32, len),
         _ => kvm_pr_unimpl("%s: unknown addr: %llx\n", "loongarch_ipi_readl", addr),
     }
     *(val as *mut u64) = res; 0
@@ -119,14 +119,14 @@ unsafe fn loongarch_ipi_writel(vcpu: *mut kvm_vcpu, addr: gpa_t, len: i32, val: 
     if addr & (len as u64 - 1) != 0 { return 0; }
     let offset = addr - IOCSR_IPI_BASE;
     match offset {
-        IOCSR_IPI_STATUS => {},
-        IOCSR_IPI_EN => { spin_lock(&mut (*vcpu).arch.ipi_state.lock); (*vcpu).arch.ipi_state.en = data; spin_unlock(&mut (*vcpu).arch.ipi_state.lock); }
-        IOCSR_IPI_SET => ipi_set(vcpu, data as u32),
-        IOCSR_IPI_CLEAR => ipi_clear(vcpu, data),
-        IOCSR_IPI_BUF_20..=IOCSR_IPI_BUF_38 + 7 => { if offset + len as u64 <= IOCSR_IPI_BUF_38 + 8 { write_mailbox(vcpu, offset as i32, data, len); } },
-        IOCSR_IPI_SEND => ipi_send((*vcpu).kvm, data),
-        IOCSR_MAIL_SEND => { mail_send((*vcpu).kvm, data); },
-        IOCSR_ANY_SEND => { any_send((*vcpu).kvm, data); },
+        case if case == IOCSR_IPI_STATUS => {},
+        case if case == IOCSR_IPI_EN => { spin_lock(&mut (*vcpu).arch.ipi_state.lock); (*vcpu).arch.ipi_state.en = data; spin_unlock(&mut (*vcpu).arch.ipi_state.lock); }
+        case if case == IOCSR_IPI_SET => ipi_set(vcpu, data as u32),
+        case if case == IOCSR_IPI_CLEAR => ipi_clear(vcpu, data),
+        case if (IOCSR_IPI_BUF_20..=IOCSR_IPI_BUF_38 + 7).contains(&case) => { if offset + (len as u64) <= IOCSR_IPI_BUF_38 + 8 { write_mailbox(vcpu, offset as i32, data, len); } },
+        case if case == IOCSR_IPI_SEND => ipi_send((*vcpu).kvm, data),
+        case if case == IOCSR_MAIL_SEND => { mail_send((*vcpu).kvm, data); },
+        case if case == IOCSR_ANY_SEND => { any_send((*vcpu).kvm, data); },
         _ => kvm_pr_unimpl("%s: unknown addr: %llx\n", "loongarch_ipi_writel", addr),
     } 0
 }

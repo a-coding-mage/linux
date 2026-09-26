@@ -26,7 +26,7 @@ unsafe extern "C" {
     pub fn apply_alternatives_all();
     pub fn alternative_is_applied(cpucap: u16) -> bool;
 
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     pub fn apply_alternatives_module(start: *mut core::ffi::c_void, length: usize) -> i32;
 
     pub fn alt_cb_patch_nops(
@@ -37,7 +37,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline]
 pub unsafe fn apply_alternatives_module(
     _start: *mut core::ffi::c_void,

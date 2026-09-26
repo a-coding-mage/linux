@@ -12,13 +12,13 @@
 /* Translation of the C header guard: _SMC_SYSCTL_H. */
 
 /* CONFIG_SYSCTL is a build-time configuration condition from the C source. */
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 extern "C" {
     pub fn smc_sysctl_net_init(net: *mut crate::net) -> i32;
     pub fn smc_sysctl_net_exit(net: *mut crate::net);
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 pub unsafe fn smc_sysctl_net_init(net: *mut crate::net) -> i32 {
     (*net).smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
     (*net).smc.sysctl_max_links_per_lgr = SMC_LINKS_PER_LGR_MAX_PREFER;
@@ -28,7 +28,7 @@ pub unsafe fn smc_sysctl_net_init(net: *mut crate::net) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 pub unsafe fn smc_sysctl_net_exit(_net: *mut crate::net) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

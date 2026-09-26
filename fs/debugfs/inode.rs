@@ -6,7 +6,7 @@ const DEBUGFS_DEFAULT_MODE: umode_t = 0o700;
 static mut debugfs_mount: *mut vfsmount = core::ptr::null_mut();
 static mut debugfs_mount_count: i32 = 0;
 static mut debugfs_registered: bool = false;
-static mut debugfs_enabled: bool = cfg!(feature = "CONFIG_DEBUG_FS_ALLOW_ALL");
+static mut debugfs_enabled: bool = cfg!(CONFIG_DEBUG_FS_ALLOW_ALL);
 
 unsafe fn debugfs_setattr(idmap: *mut mnt_idmap, dentry: *mut dentry, ia: *mut iattr) -> i32 {
     if (*ia).ia_valid & (ATTR_MODE | ATTR_UID | ATTR_GID) != 0 {

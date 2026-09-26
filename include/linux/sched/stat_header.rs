@@ -13,7 +13,7 @@
 
 use core::ffi::c_ulong;
 
-pub const CONFIG_SCHED_INFO: bool = cfg!(feature = "CONFIG_SCHED_INFO");
+pub const CONFIG_SCHED_INFO: bool = cfg!(CONFIG_SCHED_INFO);
 
 unsafe extern "C" {
     pub static mut total_forks: c_ulong;
@@ -34,7 +34,7 @@ pub fn sched_info_on() -> bool {
     CONFIG_SCHED_INFO
 }
 
-#[cfg(feature = "CONFIG_SCHEDSTATS")]
+#[cfg(CONFIG_SCHEDSTATS)]
 unsafe extern "C" {
     pub fn force_schedstat_enabled();
 }

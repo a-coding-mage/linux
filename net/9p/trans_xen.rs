@@ -54,13 +54,13 @@ unsafe fn p9_xen_create(client: *mut p9_client, fc: *mut fs_context) -> i32 {
     if addr.is_null() { return -EINVAL; }
     read_lock(&raw mut xen_9pfs_lock);
     let mut priv_: *mut xen_9pfs_front_priv;
-    list_for_each_entry!(priv_, &raw mut xen_9pfs_devs, list) {
+    list_for_each_entry!(priv_, &raw mut xen_9pfs_devs, list, {
         if strcmp((*priv_).tag, addr) == 0 {
             (*priv_).client = client;
             read_unlock(&raw mut xen_9pfs_lock);
             return 0;
         }
-    }
+    });
     read_unlock(&raw mut xen_9pfs_lock);
     -EINVAL
 }
@@ -68,13 +68,13 @@ unsafe fn p9_xen_create(client: *mut p9_client, fc: *mut fs_context) -> i32 {
 unsafe fn p9_xen_close(client: *mut p9_client) {
     read_lock(&raw mut xen_9pfs_lock);
     let mut priv_: *mut xen_9pfs_front_priv;
-    list_for_each_entry!(priv_, &raw mut xen_9pfs_devs, list) {
+    list_for_each_entry!(priv_, &raw mut xen_9pfs_devs, list, {
         if (*priv_).client == client {
             (*priv_).client = core::ptr::null_mut();
             read_unlock(&raw mut xen_9pfs_lock);
             return;
         }
-    }
+    });
     read_unlock(&raw mut xen_9pfs_lock);
 }
 
@@ -90,9 +90,9 @@ unsafe fn p9_xen_request(client: *mut p9_client, p9_req: *mut p9_req_t) -> i32 {
     let mut priv_: *mut xen_9pfs_front_priv = core::ptr::null_mut();
     let size = (*p9_req).tc.size;
     read_lock(&raw mut xen_9pfs_lock);
-    list_for_each_entry!(priv_, &raw mut xen_9pfs_devs, list) {
+    list_for_each_entry!(priv_, &raw mut xen_9pfs_devs, list, {
         if (*priv_).client == client { break; }
-    }
+    });
     read_unlock(&raw mut xen_9pfs_lock);
     if priv_.is_null() { return -EINVAL; }
     let num = ((*p9_req).tc.tag as usize) % XEN_9PFS_NUM_RINGS;

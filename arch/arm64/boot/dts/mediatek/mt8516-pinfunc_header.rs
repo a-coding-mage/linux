@@ -2,7 +2,6 @@
 /*
  * Copyright (C) 2019 MediaTek Inc.
  */
-#define __DTS_MT8516_PINFUNC_H
 
 
 pub const MT8516_PIN_0_EINT0__FUNC_GPIO0: u32 = MTK_PIN_NO(0) | 0;

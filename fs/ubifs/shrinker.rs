@@ -111,7 +111,7 @@ unsafe fn kick_a_thread() -> i32 {
     let mut c: *mut ubifs_info;
     spin_lock(&mut UBIFS_INFOS_LOCK);
     for i in 0..2 {
-        list_for_each_entry!(c, &mut UBIFS_INFOS, infos_list) {
+        list_for_each_entry!(c, &mut UBIFS_INFOS, infos_list, {
             let dirty_zn_cnt: i64;
             if !mutex_trylock(&mut (*c).umount_mutex) {
                 spin_unlock(&mut UBIFS_INFOS_LOCK);
@@ -135,7 +135,7 @@ unsafe fn kick_a_thread() -> i32 {
                 return -1;
             }
             mutex_unlock(&mut (*c).umount_mutex);
-        }
+        });
     }
     spin_unlock(&mut UBIFS_INFOS_LOCK);
     0

@@ -42,7 +42,7 @@ unsafe fn loongson_pcibios_config_access(
 
     if busnum == 0 {
         // Board-specific part: only CS5536 accesses below PCI_MSR_CTRL.
-        #[cfg(feature = "CONFIG_CS5536")]
+        #[cfg(CONFIG_CS5536)]
         {
             if (PCI_IDSEL_CS5536 == device as u32) && (reg < PCI_MSR_CTRL as i32) {
                 match access_type {
@@ -164,10 +164,10 @@ pub static mut loongson_pci_ops: pci_ops = pci_ops {
     write: Some(loongson_pcibios_write),
 };
 
-#[cfg(feature = "CONFIG_CS5536")]
+#[cfg(CONFIG_CS5536)]
 pub static mut msr_lock: raw_spinlock_t = DEFINE_RAW_SPINLOCK();
 
-#[cfg(feature = "CONFIG_CS5536")]
+#[cfg(CONFIG_CS5536)]
 pub unsafe fn _rdmsr(msr: u32, hi: *mut u32, lo: *mut u32) {
     let mut bus = pci_bus { number: PCI_BUS_CS5536 };
     let devfn: u32 = pci_devfn(PCI_IDSEL_CS5536, 0);
@@ -180,7 +180,7 @@ pub unsafe fn _rdmsr(msr: u32, hi: *mut u32, lo: *mut u32) {
     raw_spin_unlock_irqrestore(&mut msr_lock, flags);
 }
 
-#[cfg(feature = "CONFIG_CS5536")]
+#[cfg(CONFIG_CS5536)]
 pub unsafe fn _wrmsr(msr: u32, hi: u32, lo: u32) {
     let mut bus = pci_bus { number: PCI_BUS_CS5536 };
     let devfn: u32 = pci_devfn(PCI_IDSEL_CS5536, 0);

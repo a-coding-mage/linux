@@ -102,7 +102,7 @@ pub unsafe fn exportfs_bdev_supports_out_of_band_id(
 }
 
 // CONFIG_EXPORTFS_BLOCK_OPS controls which implementation is selected at build time.
-#[cfg(feature = "CONFIG_EXPORTFS_BLOCK_OPS")]
+#[cfg(CONFIG_EXPORTFS_BLOCK_OPS)]
 #[inline]
 pub unsafe fn exportfs_layouts_supported(
     sb: *mut super_block,
@@ -119,7 +119,7 @@ pub unsafe fn exportfs_layouts_supported(
     ((*bops).layouts_supported.unwrap())(sb)
 }
 
-#[cfg(not(feature = "CONFIG_EXPORTFS_BLOCK_OPS"))]
+#[cfg(not(CONFIG_EXPORTFS_BLOCK_OPS))]
 #[inline]
 pub unsafe fn exportfs_layouts_supported(
     _sb: *mut super_block,

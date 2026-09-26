@@ -53,9 +53,9 @@ unsafe fn tcm_mapping_init() {
     }
 
     // CONFIG_HAVE_DTCM selects CONFIG_ITCM_NR_PAGES; otherwise TCM_NR_PAGES.
-    #[cfg(feature = "CONFIG_HAVE_DTCM")]
+    #[cfg(CONFIG_HAVE_DTCM)]
     let nr_pages = CONFIG_ITCM_NR_PAGES;
-    #[cfg(not(feature = "CONFIG_HAVE_DTCM"))]
+    #[cfg(not(CONFIG_HAVE_DTCM))]
     let nr_pages = TCM_NR_PAGES;
 
     i = 0;
@@ -68,7 +68,7 @@ unsafe fn tcm_mapping_init() {
         i += 1;
     }
 
-    #[cfg(feature = "CONFIG_HAVE_DTCM")]
+    #[cfg(CONFIG_HAVE_DTCM)]
     {
         if pfn_valid(PFN_DOWN(CONFIG_DTCM_RAM_BASE)) {
             panic(c"TCM init error".as_ptr());
@@ -95,7 +95,7 @@ unsafe fn tcm_mapping_init() {
         pr_info(c"%s: __dtcm_start va:0x%08lx size:%d\n".as_ptr(), c"tcm_mapping_init".as_ptr(), &__dtcm_start as *const _ as usize, &__tcm_end as *const _ as usize - &__dtcm_start as *const _ as usize);
     }
 
-    #[cfg(not(feature = "CONFIG_HAVE_DTCM"))]
+    #[cfg(not(CONFIG_HAVE_DTCM))]
     {
         memcpy(__fix_to_virt(FIX_TCM) as *mut _, &__tcm_start as *const _ as *const _,
             &__tcm_end as *const _ as usize - &__tcm_start as *const _ as usize);
@@ -119,16 +119,16 @@ pub unsafe extern "C" fn tcm_free(addr: *mut core::ffi::c_void, len: usize) {
 
 unsafe fn tcm_setup_pool() -> i32 {
     // The two pool layouts are selected by CONFIG_HAVE_DTCM.
-    #[cfg(feature = "CONFIG_HAVE_DTCM")]
+    #[cfg(CONFIG_HAVE_DTCM)]
     let pool_size = (CONFIG_DTCM_NR_PAGES * PAGE_SIZE) as u32
         - (&__tcm_end as *const _ as u32 - &__dtcm_start as *const _ as u32);
-    #[cfg(not(feature = "CONFIG_HAVE_DTCM"))]
+    #[cfg(not(CONFIG_HAVE_DTCM))]
     let pool_size = (TCM_NR_PAGES * PAGE_SIZE) as u32
         - (&__tcm_end as *const _ as u32 - &__tcm_start as *const _ as u32);
-    #[cfg(feature = "CONFIG_HAVE_DTCM")]
+    #[cfg(CONFIG_HAVE_DTCM)]
     let tcm_pool_start = __fix_to_virt(FIX_TCM - CONFIG_ITCM_NR_PAGES) as u32
         + (&__tcm_end as *const _ as u32 - &__dtcm_start as *const _ as u32);
-    #[cfg(not(feature = "CONFIG_HAVE_DTCM"))]
+    #[cfg(not(CONFIG_HAVE_DTCM))]
     let tcm_pool_start = __fix_to_virt(FIX_TCM) as u32
         + (&__tcm_end as *const _ as u32 - &__tcm_start as *const _ as u32);
     tcm_pool = gen_pool_create(2, -1);

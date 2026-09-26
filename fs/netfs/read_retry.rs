@@ -139,7 +139,7 @@ unsafe fn netfs_retry_read_subrequests(rreq: *mut netfs_io_request) {
             (*subreq).start = start; (*subreq).len = len;
             (*subreq).stream_nr = stream.stream_nr; (*subreq).retry_count = 1;
             trace_netfs_sreq_ref((*rreq).debug_id, (*subreq).debug_index,
-                refcount_read(&(*subreq).ref), netfs_sreq_trace_new);
+                refcount_read(&(*subreq).r#ref), netfs_sreq_trace_new);
             spin_lock(&mut (*rreq).lock); list_add(&mut (*subreq).rreq_link, &mut (*to).rreq_link); spin_unlock(&mut (*rreq).lock);
             to = subreq; trace_netfs_sreq(subreq, netfs_sreq_trace_retry);
             stream.sreq_max_len = umin(len, (*rreq).rsize); stream.sreq_max_segs = 0;

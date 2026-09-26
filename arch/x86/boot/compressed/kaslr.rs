@@ -224,7 +224,7 @@ unsafe fn find_random_virt_addr(minimum: c_ulong, image_size: c_ulong) -> c_ulon
 unsafe fn __process_mem_region(entry: *mut mem_vector, minimum: c_ulong, image_size: c_ulong) {
     let mut region = mem_vector { start: core::cmp::max((*entry).start, minimum as u64), size: 0 };
     let region_end = core::cmp::min((*entry).start + (*entry).size, MEM_LIMIT);
-    while SLOT_AREA_INDEX as usize < MAX_SLOT_AREA {
+    while (SLOT_AREA_INDEX as usize) < MAX_SLOT_AREA {
         region.start = ALIGN(region.start, CONFIG_PHYSICAL_ALIGN);
         if region.start > region_end { return; }
         region.size = region_end - region.start;

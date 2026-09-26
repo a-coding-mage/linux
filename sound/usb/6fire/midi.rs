@@ -153,8 +153,8 @@ unsafe extern "C" fn usb6fire_midi_in_received(
     length: i32,
 ) {
     // guard(spinlock_irqsave)(&rt->in_lock);
-    if !(*rt).in.is_null() {
-        snd_rawmidi_receive((*rt).in, data, length as usize);
+    if !(*rt).r#in.is_null() {
+        snd_rawmidi_receive((*rt).r#in, data, length as usize);
     }
 }
 
@@ -244,9 +244,9 @@ unsafe extern "C" fn usb6fire_midi_in_trigger(
 
     // guard(spinlock_irqsave)(&rt->in_lock);
     if up != 0 {
-        (*rt).in = alsa_sub;
+        (*rt).r#in = alsa_sub;
     } else {
-        (*rt).in = core::ptr::null_mut();
+        (*rt).r#in = core::ptr::null_mut();
     }
 }
 

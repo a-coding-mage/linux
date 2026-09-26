@@ -55,7 +55,7 @@ macro_rules! switch_to {
                 ".globl switch_to_pc\n\t",
                 "switch_to_pc:\n\t",
                 next_thread = in(reg) task_thread_info($next),
-                last = lateout(reg) $last,
+                $last = lateout(reg) $last,
                 ti_wstate = const TI_WSTATE,
                 ti_ksp = const TI_KSP,
                 ti_new_child = const TI_NEW_CHILD,

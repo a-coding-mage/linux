@@ -29,20 +29,20 @@ pub struct saved_msrs {
     pub array: *mut saved_msr,
 }
 
-#[cfg(feature = "CONFIG_TRACEPOINTS")]
+#[cfg(CONFIG_TRACEPOINTS)]
 extern "C" {
     pub fn do_trace_write_msr(msr: u32, val: u64, failed: i32);
     pub fn do_trace_read_msr(msr: u32, val: u64, failed: i32);
     pub fn do_trace_rdpmc(msr: u32, val: u64, failed: i32);
 }
 
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline]
 pub unsafe fn do_trace_write_msr(_msr: u32, _val: u64, _failed: i32) {}
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline]
 pub unsafe fn do_trace_read_msr(_msr: u32, _val: u64, _failed: i32) {}
-#[cfg(not(feature = "CONFIG_TRACEPOINTS"))]
+#[cfg(not(CONFIG_TRACEPOINTS))]
 #[inline]
 pub unsafe fn do_trace_rdpmc(_msr: u32, _val: u64, _failed: i32) {}
 
@@ -149,7 +149,7 @@ extern "C" {
     pub fn wrmsr_on_cpus(mask: *const cpumask, msr_no: u32, msrs: *mut msr);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn rdmsrq_on_cpu(cpu: u32, msr_no: u32, q: *mut u64) -> i32;
     pub fn wrmsrq_on_cpu(cpu: u32, msr_no: u32, q: u64) -> i32;
@@ -159,22 +159,22 @@ extern "C" {
     pub fn wrmsr_safe_regs_on_cpu(cpu: u32, regs: *mut u32) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn rdmsrq_on_cpu(_cpu: u32, msr_no: u32, q: *mut u64) -> i32 { rdmsrq_safe(msr_no, q) }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn wrmsrq_on_cpu(_cpu: u32, msr_no: u32, q: u64) -> i32 { wrmsrq_safe(msr_no, q); 0 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn rdmsrq_safe_on_cpu(_cpu: u32, msr_no: u32, q: *mut u64) -> i32 { rdmsrq_safe(msr_no, q) }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn wrmsrq_safe_on_cpu(_cpu: u32, msr_no: u32, q: u64) -> i32 { wrmsrq_safe(msr_no, q) }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn rdmsr_safe_regs_on_cpu(_cpu: u32, regs: *mut u32) -> i32 { rdmsr_safe_regs(regs) }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub unsafe fn wrmsr_safe_regs_on_cpu(_cpu: u32, regs: *mut u32) -> i32 { wrmsr_safe_regs(regs) }
 

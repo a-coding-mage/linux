@@ -7,12 +7,12 @@ unsafe extern "C" {
     pub static mut scu_base_addr: *mut core::ffi::c_void;
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" {
     pub fn highbank_pm_init();
 }
 
-#[cfg(not(feature = "CONFIG_PM_SLEEP"))]
+#[cfg(not(CONFIG_PM_SLEEP))]
 #[inline]
 pub unsafe fn highbank_pm_init() {}
 

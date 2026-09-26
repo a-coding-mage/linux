@@ -119,28 +119,28 @@ pub unsafe fn evmcs_load(phys_addr: u64) {
 
 // #else /* !IS_ENABLED(CONFIG_HYPERV) */
 // Configuration-disabled fallbacks.
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn kvm_is_using_evmcs() -> bool { false }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn evmcs_write64(_field: c_ulong, _value: u64) {}
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn evmcs_write32(_field: c_ulong, _value: u32) {}
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn evmcs_write16(_field: c_ulong, _value: u16) {}
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn evmcs_read64(_field: c_ulong) -> u64 { 0 }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn evmcs_read32(_field: c_ulong) -> u32 { 0 }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline(always)]
 pub fn evmcs_read16(_field: c_ulong) -> u16 { 0 }
-#[cfg(not(feature = "CONFIG_HYPERV"))]
+#[cfg(not(CONFIG_HYPERV))]
 #[inline]
 pub fn evmcs_load(_phys_addr: u64) {}
 // #endif /* IS_ENABLED(CONFIG_HYPERV) */

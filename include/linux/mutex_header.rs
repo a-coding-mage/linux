@@ -57,14 +57,35 @@ macro_rules! mutex_init {
 
 #[macro_export]
 macro_rules! mutex_init_with_key {
-    ($mutex:expr, $key:expr) => { unsafe { __mutex_init($mutex, stringify!($mutex).as_ptr() as *const i8, $key) } };
+    ($mutex:expr, $key:expr) => {
+        unsafe { __mutex_init($mutex, concat!(stringify!($mutex), "\0").as_ptr().cast(), $key) }
+    };
 }
 
 /* !CONFIG_PREEMPT_RT: regular mutex implementation. */
 #[cfg(not(CONFIG_PREEMPT_RT))]
 #[macro_export]
 macro_rules! __MUTEX_INITIALIZER {
-    ($lockname:ident) => { mutex { owner: 0, wait_lock: 0, first_waiter: core::ptr::null_mut() } };
+    ($($lockname:tt)+) => {
+        mutex {
+            owner: ATOMIC_LONG_INIT!(0),
+            wait_lock: __RAW_SPIN_LOCK_UNLOCKED!($($lockname)+ . wait_lock),
+            #[cfg(CONFIG_MUTEX_SPIN_ON_OWNER)]
+            // SAFETY: OSQ_UNLOCKED_VAL is 0; C leaves the spinner queue zeroed.
+            osq: unsafe { ::core::mem::zeroed() },
+            first_waiter: ::core::ptr::null_mut(),
+            #[cfg(CONFIG_DEBUG_MUTEXES)]
+            // SAFETY: only the address of the mutex is taken.
+            magic: unsafe { &raw mut $($lockname)+ }.cast(),
+            #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
+            dep_map: lockdep_map {
+                name: concat!(stringify!($($lockname)+), "\0").as_ptr().cast(),
+                wait_type_inner: LD_WAIT_SLEEP as _,
+                // SAFETY: the remaining lockdep fields are zero-initialized in C.
+                ..unsafe { ::core::mem::zeroed() }
+            },
+        }
+    };
 }
 #[cfg(not(CONFIG_PREEMPT_RT))]
 #[macro_export]

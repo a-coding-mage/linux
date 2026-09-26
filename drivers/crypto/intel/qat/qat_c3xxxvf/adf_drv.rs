@@ -59,6 +59,10 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
     let mut bar_nr: c_uint;
     let mut bar_mask: c_ulong;
     let mut ret: c_int;
+    'out_err: {
+    'out_err_disable: {
+    'out_err_free_reg: {
+    'out_err_dev_stop: {
 
     match (*ent).device {
         PCI_DEVICE_ID_INTEL_QAT_C3XXX_VF => {}
@@ -91,7 +95,7 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
                            dev_to_node(&mut (*pdev).dev)) as *mut adf_hw_device_data;
     if hw_data.is_null() {
         ret = -ENOMEM;
-        goto out_err;
+        break 'out_err;
     }
     (*accel_dev).hw_device = hw_data;
     adf_init_hw_data_c3xxxiov((*accel_dev).hw_device);
@@ -103,30 +107,30 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
 
     // Create device configuration table
     ret = adf_cfg_dev_add(accel_dev);
-    if ret != 0 { goto out_err; }
+    if ret != 0 { break 'out_err; }
 
     // enable PCI device
     if pci_enable_device(pdev) != 0 {
         ret = -EFAULT;
-        goto out_err;
+        break 'out_err;
     }
 
     // set dma identifier
     ret = dma_set_mask_and_coherent(&mut (*pdev).dev, DMA_BIT_MASK(48));
     if ret != 0 {
         dev_err(&mut (*pdev).dev, "No usable DMA configuration\n");
-        goto out_err_disable;
+        break 'out_err_disable;
     }
 
     if pci_request_regions(pdev, ADF_C3XXXVF_DEVICE_NAME) != 0 {
         ret = -EFAULT;
-        goto out_err_disable;
+        break 'out_err_disable;
     }
 
     // Find and map all the device's BARS
     i = 0;
     bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
-    for_each_set_bit!(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2) {
+    for_each_set_bit!(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2, {
         let bar: *mut adf_bar = &mut (*accel_pci_dev).pci_bars[i as usize];
         i += 1;
         (*bar).base_addr = pci_resource_start(pdev, bar_nr);
@@ -136,25 +140,28 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
         if (*bar).virt_addr.is_null() {
             pci_err(pdev, "Failed to map BAR %d\n", bar_nr);
             ret = -EFAULT;
-            goto out_err_free_reg;
+            break 'out_err_free_reg;
         }
-    }
+    });
     // Completion for VF2PF request/response message exchange
     init_completion(&mut (*accel_dev).vf.msg_received);
 
     adf_dbgfs_init(accel_dev);
 
     ret = adf_dev_up(accel_dev, false);
-    if ret != 0 { goto out_err_dev_stop; }
+    if ret != 0 { break 'out_err_dev_stop; }
     return ret;
-
-out_err_dev_stop:
+    }
+    
     adf_dev_down(accel_dev);
-out_err_free_reg:
+    }
+    
     pci_release_regions((*accel_pci_dev).pci_dev);
-out_err_disable:
+    }
+    
     pci_disable_device((*accel_pci_dev).pci_dev);
-out_err:
+    }
+    
     adf_cleanup_accel(accel_dev);
     kfree(accel_dev as *mut c_void);
     return ret;

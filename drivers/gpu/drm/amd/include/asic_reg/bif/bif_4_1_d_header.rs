@@ -21,7 +21,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef BIF_4_1_D_H
 
 pub const mmMM_INDEX: u32 = 0x0;
 pub const mmMM_INDEX_HI: u32 = 0x6;
@@ -917,7 +916,5 @@ pub const mmBIF_PIF_TXCLK_SWITCH_TIMER: u32 = 0x1481;
 pub const mmBIF_BACO_MSIC: u32 = 0x1480;
 pub const mmBIF_RESET_CNTL: u32 = 0x1486;
 pub const mmBIF_RFE_CNTL_MISC: u32 = 0x148c;
-
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

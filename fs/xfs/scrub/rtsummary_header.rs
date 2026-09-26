@@ -8,7 +8,7 @@
 
 #[repr(C)]
 pub struct xchk_rtsummary {
-    #[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+    #[cfg(CONFIG_XFS_ONLINE_REPAIR)]
     pub tempexch: xrep_tempexch,
     pub args: xfs_rtalloc_args,
 
@@ -34,7 +34,7 @@ extern "C" {
 ) -> i32;
 }
 
-#[cfg(feature = "CONFIG_XFS_ONLINE_REPAIR")]
+#[cfg(CONFIG_XFS_ONLINE_REPAIR)]
 extern "C" {
     pub fn xrep_setup_rtsummary(
         sc: *mut xfs_scrub,
@@ -42,7 +42,7 @@ extern "C" {
 ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_ONLINE_REPAIR"))]
+#[cfg(not(CONFIG_XFS_ONLINE_REPAIR))]
 #[inline]
 pub unsafe fn xrep_setup_rtsummary(
     _sc: *mut xfs_scrub,

@@ -24,13 +24,13 @@ unsafe fn rx164_update_irq_hw(mask: ::core::ffi::c_ulong) {
 
 #[inline]
 unsafe fn rx164_enable_irq(d: *mut irq_data) {
-    CACHED_IRQ_MASK |= 1 as ::core::ffi::c_ulong
+    CACHED_IRQ_MASK |= (1 as ::core::ffi::c_ulong)
         << ((*d).irq.wrapping_sub(16) as ::core::ffi::c_ulong);
     rx164_update_irq_hw(CACHED_IRQ_MASK);
 }
 
 unsafe fn rx164_disable_irq(d: *mut irq_data) {
-    CACHED_IRQ_MASK &= !(1 as ::core::ffi::c_ulong
+    CACHED_IRQ_MASK &= !((1 as ::core::ffi::c_ulong)
         << ((*d).irq.wrapping_sub(16) as ::core::ffi::c_ulong));
     rx164_update_irq_hw(CACHED_IRQ_MASK);
 }

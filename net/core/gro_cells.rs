@@ -77,7 +77,7 @@ pub unsafe fn gro_cells_init(gcells: *mut gro_cells, dev: *mut net_device) -> c_
         return -ENOMEM;
     }
 
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let cell = per_cpu_ptr((*gcells).cells, i);
 
         __skb_queue_head_init(&mut (*cell).napi_skbs);
@@ -87,7 +87,7 @@ pub unsafe fn gro_cells_init(gcells: *mut gro_cells, dev: *mut net_device) -> c_
 
         netif_napi_add(dev, &mut (*cell).napi, gro_cell_poll);
         napi_enable(&mut (*cell).napi);
-    }
+    });
     0
 }
 
@@ -110,13 +110,13 @@ pub unsafe fn gro_cells_destroy(gcells: *mut gro_cells) {
     if (*gcells).cells.is_null() {
         return;
     }
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let cell = per_cpu_ptr((*gcells).cells, i);
 
         napi_disable(&mut (*cell).napi);
         __netif_napi_del(&mut (*cell).napi);
         __skb_queue_purge(&mut (*cell).napi_skbs);
-    }
+    });
     /* We need to observe an rcu grace period before freeing ->cells,
      * because netpoll could access dev->napi_list under rcu protection.
      * Try hard using call_rcu() instead of synchronize_rcu(),

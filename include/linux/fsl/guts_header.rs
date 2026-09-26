@@ -38,18 +38,18 @@ extern "Rust" { pub type LynxLaneMode; }
 
 pub const fn mpc85xx_pmuxcr_qe(x: u32) -> u32 { 0x8000u32 >> x }
 
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_DMACR_DEV_SSI: u32 = 0;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_DMACR_DEV_IR: u32 = 1;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub unsafe fn guts_set_dmacr(guts: *mut CcsrGuts, co: u32, ch: u32, device: u32) {
     let shift = 16 + (8 * (1 - co) + 2 * (3 - ch));
     let p = core::ptr::addr_of_mut!((*guts).dmacr);
     let old = u32::from_be(core::ptr::read_volatile(p));
     core::ptr::write_volatile(p, (old & !(3 << shift) | (device << shift)).to_be());
 }
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub unsafe fn guts_set_pmuxcr_dma(guts: *mut CcsrGuts, co: u32, ch: u32, value: u32) {
     if ch == 0 || ch == 3 {
         let shift = 2 * (co + 1) - (ch & 1) - 1;
@@ -58,59 +58,59 @@ pub unsafe fn guts_set_pmuxcr_dma(guts: *mut CcsrGuts, co: u32, ch: u32, value: 
         core::ptr::write_volatile(p, (old & !(1 << shift) | (value << shift)).to_be());
     }
 }
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_LDPSEL: u32 = 0x00010000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI1_MASK: u32 = 0x0000C000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI1_LA: u32 = 0;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI1_HI: u32 = 0x00004000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI1_SSI: u32 = 0x00008000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI2_MASK: u32 = 0x00003000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI2_LA: u32 = 0;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI2_HI: u32 = 0x00001000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_SSI2_SSI: u32 = 0x00002000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_LA_22_25_LA: u32 = 0;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_LA_22_25_HI: u32 = 0x400;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_DBGDRV: u32 = 0x200;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_DMA2_0: u32 = 8;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_DMA2_3: u32 = 4;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_DMA1_0: u32 = 2;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_PMUXCR_DMA1_3: u32 = 1;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_PXCKEN: u32 = 0x80000000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_SSICKEN: u32 = 0x20000000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_PXCKINV: u32 = 0x10000000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_PXCKDLY_SHIFT: u32 = 25;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_PXCKDLY_MASK: u32 = 0x06000000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const fn CCSR_GUTS_CLKDVDR_PXCKDLY(x: u32) -> u32 { (x & 3) << 25 }
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_PXCLK_SHIFT: u32 = 16;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_PXCLK_MASK: u32 = 0x001F0000;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const fn CCSR_GUTS_CLKDVDR_PXCLK(x: u32) -> u32 { (x & 31) << 16 }
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const CCSR_GUTS_CLKDVDR_SSICLK_MASK: u32 = 0xff;
-#[cfg(feature = "CONFIG_PPC_86xx")]
+#[cfg(CONFIG_PPC_86xx)]
 pub const fn CCSR_GUTS_CLKDVDR_SSICLK(x: u32) -> u32 { x & 0xff }
 
 #[repr(C, packed)]

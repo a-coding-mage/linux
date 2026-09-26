@@ -128,7 +128,7 @@ unsafe fn memtrace_init_regions_runtime(size: u64) -> i32 {
         return -EINVAL;
     }
 
-    for_each_online_node!(nid) {
+    for_each_online_node!(nid, {
         m = memtrace_alloc_node(nid, size);
         if m == 0 {
             pr_err!("Failed to allocate trace memory on node %d\n", nid);
@@ -140,7 +140,7 @@ unsafe fn memtrace_init_regions_runtime(size: u64) -> i32 {
         ent.size = size;
         ent.nid = nid;
         memtrace_array_nr += 1;
-    }
+    });
     0
 }
 

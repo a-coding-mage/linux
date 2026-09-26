@@ -46,12 +46,12 @@ extern "C" { pub fn nf_flow_snat_port(flow:*const flow_offload,skb:*mut sk_buff,
 extern "C" { pub fn down_write(s:*mut rw_semaphore); pub fn up_write(s:*mut rw_semaphore); pub fn flow_block_cb_lookup(b:*mut flow_block,cb:*mut c_void,p:*mut c_void)->*mut flow_block_cb; pub fn flow_block_cb_alloc(cb:*mut c_void,p:*mut c_void,ident:*mut c_void,data:*mut c_void)->*mut flow_block_cb; pub fn flow_block_cb_free(cb:*mut flow_block_cb); pub fn list_add_tail(n:*mut list_head,h:*mut list_head); pub fn list_del(n:*mut list_head); pub fn warn_on(c:bool)->bool; }
 #[inline] pub unsafe fn nf_flow_table_offload_add_cb(ft:*mut nf_flowtable, cb:*mut c_void, priv_:*mut c_void)->i32 { let b=&mut (*ft).flow_block; down_write(&mut (*ft).flow_block_lock); let old=flow_block_cb_lookup(b,cb,priv_); if !old.is_null(){up_write(&mut (*ft).flow_block_lock);return -17;} let x=flow_block_cb_alloc(cb,priv_,priv_,core::ptr::null_mut()); if x.is_null(){up_write(&mut (*ft).flow_block_lock);return -12;} list_add_tail(&mut (*x).list,&mut (*b).cb_list); up_write(&mut (*ft).flow_block_lock); if let Some(get)=(*ft).r#type.as_ref().and_then(|t|t.get){get(ft)} 0 }
 #[inline] pub unsafe fn nf_flow_table_offload_del_cb(ft:*mut nf_flowtable,cb:*mut c_void,priv_:*mut c_void){ let b=&mut (*ft).flow_block; down_write(&mut (*ft).flow_block_lock); let x=flow_block_cb_lookup(b,cb,priv_); if !x.is_null(){list_del(&mut (*x).list);flow_block_cb_free(x);}else{warn_on(true);}up_write(&mut (*ft).flow_block_lock);if let Some(put)=(*ft).r#type.as_ref().and_then(|t|t.put){put(ft)} }
-#[cfg(any(feature="CONFIG_NF_FLOW_TABLE_PROCFS"))] extern "C" { pub fn nf_flow_table_init_proc(net:*mut net)->i32; pub fn nf_flow_table_fini_proc(net:*mut net); }
-#[cfg(any(feature="CONFIG_DEBUG_INFO_BTF",feature="CONFIG_DEBUG_INFO_BTF_MODULES"))] extern "C" { pub fn nf_flow_register_bpf()->i32; }
-#[cfg(not(any(feature="CONFIG_DEBUG_INFO_BTF",feature="CONFIG_DEBUG_INFO_BTF_MODULES")))] #[inline] pub unsafe fn nf_flow_register_bpf()->i32 { 0 }
+#[cfg(any(CONFIG_NF_FLOW_TABLE_PROCFS))] extern "C" { pub fn nf_flow_table_init_proc(net:*mut net)->i32; pub fn nf_flow_table_fini_proc(net:*mut net); }
+#[cfg(any(CONFIG_DEBUG_INFO_BTF,CONFIG_DEBUG_INFO_BTF_MODULES))] extern "C" { pub fn nf_flow_register_bpf()->i32; }
+#[cfg(not(any(CONFIG_DEBUG_INFO_BTF,CONFIG_DEBUG_INFO_BTF_MODULES)))] #[inline] pub unsafe fn nf_flow_register_bpf()->i32 { 0 }
 #[inline] pub unsafe fn __nf_flow_pppoe_proto(skb:*const sk_buff)->__be16 { let p=*((skb_mac_header(skb).add(ETH_HLEN as usize + core::mem::size_of::<pppoe_hdr>())) as *const __be16); if p==htons(PPP_IP) { htons(ETH_P_IP) } else if p==htons(PPP_IPV6) { htons(ETH_P_IPV6) } else { 0 } }
 #[inline] pub unsafe fn nf_flow_pppoe_proto(skb:*mut sk_buff, inner:*mut __be16)->bool { if !pskb_may_pull(skb, (ETH_HLEN+PPPOE_SES_HLEN) as u32) { return false; } *inner=__nf_flow_pppoe_proto(skb); true }
-#[cfg(not(any(feature="CONFIG_NF_FLOW_TABLE_PROCFS")))] #[inline] pub unsafe fn nf_flow_table_init_proc(_: *mut net)->i32 { 0 }
-#[cfg(not(any(feature="CONFIG_NF_FLOW_TABLE_PROCFS")))] #[inline] pub unsafe fn nf_flow_table_fini_proc(_: *mut net) {}
+#[cfg(not(any(CONFIG_NF_FLOW_TABLE_PROCFS)))] #[inline] pub unsafe fn nf_flow_table_init_proc(_: *mut net)->i32 { 0 }
+#[cfg(not(any(CONFIG_NF_FLOW_TABLE_PROCFS)))] #[inline] pub unsafe fn nf_flow_table_fini_proc(_: *mut net) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

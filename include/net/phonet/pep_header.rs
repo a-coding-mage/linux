@@ -39,7 +39,7 @@ pub unsafe fn pep_sk(sk: *mut sock) -> *mut pep_sock {
     sk as *mut pep_sock
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static phonet_stream_ops: proto_ops;
 }
 

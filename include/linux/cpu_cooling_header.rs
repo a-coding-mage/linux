@@ -27,7 +27,7 @@ pub struct cpuidle_driver {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_CPU_FREQ_THERMAL")]
+#[cfg(CONFIG_CPU_FREQ_THERMAL)]
 extern "C" {
     /// cpufreq_cooling_register - function to create cpufreq cooling device.
     /// @policy: cpufreq policy.
@@ -46,7 +46,7 @@ extern "C" {
     ) -> *mut thermal_cooling_device;
 }
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ_THERMAL"))]
+#[cfg(not(CONFIG_CPU_FREQ_THERMAL))]
 #[inline]
 pub unsafe fn cpufreq_cooling_register(
     _policy: *mut cpufreq_policy,
@@ -55,11 +55,11 @@ pub unsafe fn cpufreq_cooling_register(
     (-38isize) as *mut thermal_cooling_device
 }
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ_THERMAL"))]
+#[cfg(not(CONFIG_CPU_FREQ_THERMAL))]
 #[inline]
 pub unsafe fn cpufreq_cooling_unregister(_cdev: *mut thermal_cooling_device) {}
 
-#[cfg(not(feature = "CONFIG_CPU_FREQ_THERMAL"))]
+#[cfg(not(CONFIG_CPU_FREQ_THERMAL))]
 #[inline]
 pub unsafe fn of_cpufreq_cooling_register(
     _policy: *mut cpufreq_policy,
@@ -67,12 +67,12 @@ pub unsafe fn of_cpufreq_cooling_register(
     core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_CPU_IDLE_THERMAL")]
+#[cfg(CONFIG_CPU_IDLE_THERMAL)]
 extern "C" {
     pub fn cpuidle_cooling_register(drv: *mut cpuidle_driver);
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE_THERMAL"))]
+#[cfg(not(CONFIG_CPU_IDLE_THERMAL))]
 #[inline]
 pub unsafe fn cpuidle_cooling_register(_drv: *mut cpuidle_driver) {}
 

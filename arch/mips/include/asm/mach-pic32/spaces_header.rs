@@ -5,7 +5,7 @@
  */
 
 // C: #ifdef CONFIG_PIC32MZDA
-#[cfg(feature = "CONFIG_PIC32MZDA")]
+#[cfg(CONFIG_PIC32MZDA)]
 pub const PHYS_OFFSET: u32 = 0x08000000u32;
 
 // C dependency: <asm/mach-generic/spaces.h>

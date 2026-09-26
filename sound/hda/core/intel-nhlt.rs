@@ -22,8 +22,7 @@ unsafe extern "C" {
     fn acpi_get_table(
         signature: *const c_char,
         instance: u32,
-        out_table: *mut *mut acpi_table_header,
-    ) -> acpi_status;
+        out_table: *mut *mut acpi_table_header) -> acpi_status;
     fn acpi_put_table(table: *mut acpi_table_header);
     fn dev_warn(dev: *mut device, fmt: *const c_char, ...);
     fn dev_dbg(dev: *mut device, fmt: *const c_char, ...);

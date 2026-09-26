@@ -10,13 +10,13 @@ pub const PTE_SPECIAL: pteval_t = (1 as pteval_t) << 56;
 pub const PTE_PRESENT_INVALID: pteval_t = PTE_NG;
 pub const PTE_PRESENT_VALID_KERNEL: pteval_t = PTE_VALID | PTE_MAYBE_NG;
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")]
+#[cfg(CONFIG_HAVE_ARCH_USERFAULTFD_WP)]
 pub const PTE_UFFD: pteval_t = (1 as pteval_t) << 58;
-#[cfg(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP")]
+#[cfg(CONFIG_HAVE_ARCH_USERFAULTFD_WP)]
 pub const PTE_SWP_UFFD: pteval_t = (1 as pteval_t) << 3;
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP"))]
+#[cfg(not(CONFIG_HAVE_ARCH_USERFAULTFD_WP))]
 pub const PTE_UFFD: pteval_t = 0 as pteval_t;
-#[cfg(not(feature = "CONFIG_HAVE_ARCH_USERFAULTFD_WP"))]
+#[cfg(not(CONFIG_HAVE_ARCH_USERFAULTFD_WP))]
 pub const PTE_SWP_UFFD: pteval_t = 0 as pteval_t;
 
 pub const _PROT_DEFAULT: pteval_t = PTE_TYPE_PAGE | PTE_AF | PTE_SHARED;
@@ -54,19 +54,19 @@ pub unsafe fn PTE_MAYBE_NG() -> pteval_t { if arm64_use_ng_mappings { PTE_NG } e
 #[inline]
 pub unsafe fn PMD_MAYBE_NG() -> pteval_t { if arm64_use_ng_mappings { PMD_SECT_NG } else { 0 } }
 
-#[cfg(not(feature = "CONFIG_ARM64_LPA2"))]
+#[cfg(not(CONFIG_ARM64_LPA2))]
 pub const PHYS_MASK_SHIFT: usize = CONFIG_ARM64_PA_BITS;
-#[cfg(not(feature = "CONFIG_ARM64_LPA2"))]
+#[cfg(not(CONFIG_ARM64_LPA2))]
 pub const PTE_MAYBE_SHARED: pteval_t = PTE_SHARED;
-#[cfg(not(feature = "CONFIG_ARM64_LPA2"))]
+#[cfg(not(CONFIG_ARM64_LPA2))]
 pub const PMD_MAYBE_SHARED: pteval_t = PMD_SECT_S;
-#[cfg(feature = "CONFIG_ARM64_LPA2")]
+#[cfg(CONFIG_ARM64_LPA2)]
 pub unsafe fn lpa2_is_enabled() -> bool { read_tcr() & TCR_EL1_DS != 0 }
-#[cfg(feature = "CONFIG_ARM64_LPA2")]
+#[cfg(CONFIG_ARM64_LPA2)]
 pub unsafe fn PTE_MAYBE_SHARED() -> pteval_t { if lpa2_is_enabled() { 0 } else { PTE_SHARED } }
-#[cfg(feature = "CONFIG_ARM64_LPA2")]
+#[cfg(CONFIG_ARM64_LPA2)]
 pub unsafe fn PMD_MAYBE_SHARED() -> pteval_t { if lpa2_is_enabled() { 0 } else { PMD_SECT_S } }
-#[cfg(feature = "CONFIG_ARM64_LPA2")]
+#[cfg(CONFIG_ARM64_LPA2)]
 pub unsafe fn PHYS_MASK_SHIFT() -> usize { if lpa2_is_enabled() { CONFIG_ARM64_PA_BITS } else { 48 } }
 
 pub const PHYS_MASK: usize = (1usize << PHYS_MASK_SHIFT) - 1;

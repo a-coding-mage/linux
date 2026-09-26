@@ -148,11 +148,11 @@ static HISI_LPC_OPS: logic_pio_host_ops = logic_pio_host_ops { r#in: Some(hisi_l
 // retain their source-level interfaces; their kernel types and helpers are
 // provided by the surrounding repository.
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 unsafe fn hisi_lpc_acpi_probe(_hostdev: *mut core::ffi::c_void) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 unsafe fn hisi_lpc_acpi_probe(_dev: *mut core::ffi::c_void) -> i32 { -19 }
-#[cfg(any(feature = "CONFIG_ACPI", not(feature = "CONFIG_ACPI")))]
+#[cfg(any(CONFIG_ACPI, not(CONFIG_ACPI)))]
 unsafe fn hisi_lpc_acpi_remove(_hostdev: *mut core::ffi::c_void) {}
 
 unsafe fn hisi_lpc_probe(_pdev: *mut core::ffi::c_void) -> i32 {

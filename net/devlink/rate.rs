@@ -68,6 +68,6 @@ pub unsafe fn devl_rate_leaf_create(p:*mut devlink_port,priv_:*mut c_void,parent
 pub unsafe fn devl_rate_leaf_destroy(p:*mut devlink_port){let r=(*p).devlink_rate;if r.is_null(){return;}let d=(*p).devlink;devl_assert_locked(d);let rd=devl_rate_lock(d);devlink_rate_notify(r,DEVLINK_CMD_RATE_DEL);if !(*r).parent.is_null(){refcount_dec(&mut (*(*r).parent).refcnt);}list_del(&mut (*r).list);(*p).devlink_rate=core::ptr::null_mut();devl_rate_unlock(d,rd);kfree(r as *mut c_void)}
 
 // External declarations and structure layouts are provided by the translated header.
-extern "C" { fn strcmp(*const c_char,*const c_char)->c_int; fn strlen(*const c_char)->usize; fn strspn(*const c_char,*const c_char)->usize; }
+extern "C" { fn strcmp(_: *const c_char,_: *const c_char)->c_int; fn strlen(_: *const c_char)->usize; fn strspn(_: *const c_char,_: *const c_char)->usize; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

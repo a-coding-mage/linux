@@ -58,7 +58,7 @@ static mut imx8dxl_clk_scu_rsrc_table: [u32; 48] = [
 	IMX_SC_R_A35,
 ];
 
-const imx_clk_scu_rsrc_imx8dxl: struct imx_clk_scu_rsrc_table = struct imx_clk_scu_rsrc_table {
+const imx_clk_scu_rsrc_imx8dxl: imx_clk_scu_rsrc_table = imx_clk_scu_rsrc_table {
 	rsrc: imx8dxl_clk_scu_rsrc_table.as_ptr(),
 	num: imx8dxl_clk_scu_rsrc_table.len(),
 };

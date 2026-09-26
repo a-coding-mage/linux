@@ -108,9 +108,9 @@ static IMX8QM_CLK_SCU_RSRC_TABLE: [u32; 103] = [
 	IMX_SC_R_VPU,
 ];
 
-const IMX_CLK_SCU_RSRC_IMX8QM: struct imx_clk_scu_rsrc_table = struct imx_clk_scu_rsrc_table {
-	.rsrc: IMX8QM_CLK_SCU_RSRC_TABLE.as_ptr(),
-	.num: IMX8QM_CLK_SCU_RSRC_TABLE.len(),
+const IMX_CLK_SCU_RSRC_IMX8QM: imx_clk_scu_rsrc_table = imx_clk_scu_rsrc_table {
+	rsrc: IMX8QM_CLK_SCU_RSRC_TABLE.as_ptr(),
+	num: IMX8QM_CLK_SCU_RSRC_TABLE.len(),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -33,7 +33,7 @@ unsafe fn amigaone_add_bridge(dev: *mut device_node) -> c_int {
         return -ENODEV;
     }
 
-    bus_range = of_get_property(dev, c"bus-range\0".as_ptr(), &mut len);
+    bus_range = of_get_property(dev, c"bus-range".as_ptr(), &mut len);
     if bus_range.is_null() || len < 2 * core::mem::size_of::<c_int>() as c_int {
         printk(KERN_WARNING, c"Can't get bus-range for %pOF, assume bus 0\n".as_ptr(), dev);
     }
@@ -66,9 +66,9 @@ unsafe fn amigaone_discover_phbs() {
     let mut phb: c_int = -ENODEV;
 
     /* Lookup PCI host bridges. */
-    for_each_compatible_node!(np, c"pci\0", c"mai-logic,articia-s\0") {
+    for_each_compatible_node!(np, c"pci", c"mai-logic,articia-s", {
         phb = amigaone_add_bridge(np);
-    }
+    });
 
     BUG_ON(phb != 0);
 }
@@ -80,13 +80,13 @@ unsafe fn amigaone_init_IRQ() {
     let mut int_ack: c_ulong = 0;
 
     /* Search for ISA interrupt controller. */
-    pic = of_find_compatible_node(core::ptr::null_mut(), c"interrupt-controller\0".as_ptr(), c"pnpPNP,000\0".as_ptr());
+    pic = of_find_compatible_node(core::ptr::null_mut(), c"interrupt-controller".as_ptr(), c"pnpPNP,000".as_ptr());
     BUG_ON(pic.is_null());
 
     /* Look for interrupt acknowledge address in the PCI root node. */
-    np = of_find_compatible_node(core::ptr::null_mut(), c"pci\0".as_ptr(), c"mai-logic,articia-s\0".as_ptr());
+    np = of_find_compatible_node(core::ptr::null_mut(), c"pci".as_ptr(), c"mai-logic,articia-s".as_ptr());
     if !np.is_null() {
-        prop = of_get_property(np, c"8259-interrupt-acknowledge\0".as_ptr(), core::ptr::null_mut());
+        prop = of_get_property(np, c"8259-interrupt-acknowledge".as_ptr(), core::ptr::null_mut());
         if !prop.is_null() {
             int_ack = *prop;
         }
@@ -103,10 +103,10 @@ unsafe fn amigaone_init_IRQ() {
 }
 
 unsafe fn request_isa_regions() -> c_int {
-    request_region(0x00, 0x20, c"dma1\0".as_ptr());
-    request_region(0x40, 0x20, c"timer\0".as_ptr());
-    request_region(0x80, 0x10, c"dma page reg\0".as_ptr());
-    request_region(0xc0, 0x20, c"dma2\0".as_ptr());
+    request_region(0x00, 0x20, c"dma1".as_ptr());
+    request_region(0x40, 0x20, c"timer".as_ptr());
+    request_region(0x80, 0x10, c"dma page reg".as_ptr());
+    request_region(0xc0, 0x20, c"dma2".as_ptr());
 
     0
 }
@@ -144,15 +144,15 @@ unsafe fn amigaone_probe() -> c_int {
 }
 
 define_machine!(amigaone {
-    .name = c"AmigaOne\0".as_ptr(),
-    .compatible = c"eyetech,amigaone\0".as_ptr(),
-    .probe = Some(amigaone_probe),
-    .setup_arch = Some(amigaone_setup_arch),
-    .discover_phbs = Some(amigaone_discover_phbs),
-    .show_cpuinfo = Some(amigaone_show_cpuinfo),
-    .init_IRQ = Some(amigaone_init_IRQ),
-    .restart = Some(amigaone_restart),
-    .progress = Some(udbg_progress),
+    name: c"AmigaOne".as_ptr(),
+    compatible: c"eyetech,amigaone".as_ptr(),
+    probe: Some(amigaone_probe),
+    setup_arch: Some(amigaone_setup_arch),
+    discover_phbs: Some(amigaone_discover_phbs),
+    show_cpuinfo: Some(amigaone_show_cpuinfo),
+    init_IRQ: Some(amigaone_init_IRQ),
+    restart: Some(amigaone_restart),
+    progress: Some(udbg_progress),
 });
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

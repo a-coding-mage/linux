@@ -43,12 +43,12 @@ pub struct secvar_operations {
 }
 
 // CONFIG_PPC_SECURE_BOOT controls which declaration is active in the C build.
-#[cfg(feature = "CONFIG_PPC_SECURE_BOOT")]
+#[cfg(CONFIG_PPC_SECURE_BOOT)]
 extern "C" {
     pub fn set_secvar_ops(ops: *const secvar_operations) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PPC_SECURE_BOOT"))]
+#[cfg(not(CONFIG_PPC_SECURE_BOOT))]
 #[inline]
 pub unsafe fn set_secvar_ops(_ops: *const secvar_operations) -> i32 {
     0

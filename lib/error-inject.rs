@@ -158,14 +158,14 @@ unsafe fn populate_kernel_ei_list() {
         &mut __stop_error_injection_whitelist, core::ptr::null_mut());
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn module_load_ei_list(mod_: *mut module) {
     if (*mod_).num_ei_funcs == 0 { return; }
     populate_error_injection_list((*mod_).ei_funcs,
         (*mod_).ei_funcs.add((*mod_).num_ei_funcs), mod_ as *mut c_void);
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn module_unload_ei_list(mod_: *mut module) {
     if (*mod_).num_ei_funcs == 0 { return; }
     mutex_lock(&mut ei_mutex);
@@ -179,7 +179,7 @@ unsafe fn module_unload_ei_list(mod_: *mut module) {
     mutex_unlock(&mut ei_mutex);
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe extern "C" fn ei_module_callback(_: *mut notifier_block, val: usize, data: *mut c_void) -> c_int {
     let mod_ = data as *mut module;
     if val == MODULE_STATE_COMING { module_load_ei_list(mod_); }
@@ -187,12 +187,12 @@ unsafe extern "C" fn ei_module_callback(_: *mut notifier_block, val: usize, data
     NOTIFY_DONE
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 static mut ei_module_nb: notifier_block = notifier_block { notifier_call: Some(ei_module_callback), priority: 0 };
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe fn module_ei_init() -> c_int { register_module_notifier(&mut ei_module_nb) }
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 unsafe fn module_ei_init() -> c_int { 0 }
 
 unsafe fn ei_seq_start(_: *mut seq_file, pos: *mut i64) -> *mut c_void { mutex_lock(&mut ei_mutex); seq_list_start(&mut error_injection_list, *pos) }

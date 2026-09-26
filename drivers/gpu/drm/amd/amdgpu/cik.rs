@@ -79,59 +79,59 @@
 static amdgpu_video_codec_info cik_video_codecs_encode_array[] =
 {
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 0,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 0,
 	},
 };
 
 static amdgpu_video_codecs cik_video_codecs_encode =
 {
-	.codec_count = (cik_video_codecs_encode_array.len()),
-	.codec_array = cik_video_codecs_encode_array,
+	codec_count: (cik_video_codecs_encode_array.len()),
+	codec_array: cik_video_codecs_encode_array,
 };
 
 static amdgpu_video_codec_info cik_video_codecs_decode_array[] =
 {
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 3,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG2,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 3,
 	},
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 5,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 5,
 	},
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 41,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 41,
 	},
 	{
-		.codec_type = AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_VC1,
-		.max_width = 2048,
-		.max_height = 1152,
-		.max_pixels_per_frame = 2048 * 1152,
-		.max_level = 4,
+		codec_type: AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_VC1,
+		max_width: 2048,
+		max_height: 1152,
+		max_pixels_per_frame: 2048 * 1152,
+		max_level: 4,
 	},
 };
 
 static amdgpu_video_codecs cik_video_codecs_decode =
 {
-	.codec_count = (cik_video_codecs_decode_array.len()),
-	.codec_array = cik_video_codecs_decode_array,
+	codec_count: (cik_video_codecs_decode_array.len()),
+	codec_array: cik_video_codecs_decode_array,
 };
 
-static int cik_query_video_codecs(struct amdgpu_device *adev, bool encode,
+static int cik_query_video_codecs(amdgpu_device *adev, encode: bool,
 				  const amdgpu_video_codecs **codecs)
 {
 	switch (adev.asic_type) {
@@ -153,7 +153,7 @@ static int cik_query_video_codecs(struct amdgpu_device *adev, bool encode,
 /*
  * Indirect registers accessor
  */
-static u32 cik_pcie_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 cik_pcie_rreg(amdgpu_device *adev, reg: u32)
 {
 	usize flags;
 	u32 r;
@@ -166,7 +166,7 @@ static u32 cik_pcie_rreg(struct amdgpu_device *adev, u32 reg)
 	return r;
 }
 
-static void cik_pcie_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void cik_pcie_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
 	usize flags;
 
@@ -178,7 +178,7 @@ static void cik_pcie_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
 	spin_unlock_irqrestore(&adev.reg.pcie.lock, flags);
 }
 
-static u32 cik_smc_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 cik_smc_rreg(amdgpu_device *adev, reg: u32)
 {
 	usize flags;
 	u32 r;
@@ -190,7 +190,7 @@ static u32 cik_smc_rreg(struct amdgpu_device *adev, u32 reg)
 	return r;
 }
 
-static void cik_smc_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void cik_smc_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
 	usize flags;
 
@@ -200,7 +200,7 @@ static void cik_smc_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
 	spin_unlock_irqrestore(&adev.reg.smc.lock, flags);
 }
 
-static u32 cik_uvd_ctx_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 cik_uvd_ctx_rreg(amdgpu_device *adev, reg: u32)
 {
 	usize flags;
 	u32 r;
@@ -212,7 +212,7 @@ static u32 cik_uvd_ctx_rreg(struct amdgpu_device *adev, u32 reg)
 	return r;
 }
 
-static void cik_uvd_ctx_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void cik_uvd_ctx_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
 	usize flags;
 
@@ -222,7 +222,7 @@ static void cik_uvd_ctx_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
 	spin_unlock_irqrestore(&adev.reg.uvd_ctx.lock, flags);
 }
 
-static u32 cik_didt_rreg(struct amdgpu_device *adev, u32 reg)
+static u32 cik_didt_rreg(amdgpu_device *adev, reg: u32)
 {
 	usize flags;
 	u32 r;
@@ -234,7 +234,7 @@ static u32 cik_didt_rreg(struct amdgpu_device *adev, u32 reg)
 	return r;
 }
 
-static void cik_didt_wreg(struct amdgpu_device *adev, u32 reg, u32 v)
+static void cik_didt_wreg(amdgpu_device *adev, reg: u32, v: u32)
 {
 	usize flags;
 
@@ -828,7 +828,7 @@ static const u32 godavari_golden_registers[] =
 	0xc24d, 0xffffffff, 0x00000000
 };
 
-static void cik_init_golden_registers(struct amdgpu_device *adev)
+static void cik_init_golden_registers(amdgpu_device *adev)
 {
 	/* Some of the registers might be dependent on GRBM_GFX_INDEX */
 	mutex_lock(&adev.grbm_idx_mutex);
@@ -918,7 +918,7 @@ static void cik_init_golden_registers(struct amdgpu_device *adev)
  * Returns the reference clock used by the gfx engine
  * (CIK).
  */
-static u32 cik_get_xclk(struct amdgpu_device *adev)
+static u32 cik_get_xclk(amdgpu_device *adev)
 {
 	u32 reference_clock = adev.clock.spll.reference_freq;
 
@@ -945,8 +945,8 @@ static u32 cik_get_xclk(struct amdgpu_device *adev)
  * registers are instanced per VMID, others are instanced per
  * me/pipe/queue combination.
  */
-void cik_srbm_select(struct amdgpu_device *adev,
-		     u32 me, u32 pipe, u32 queue, u32 vmid)
+void cik_srbm_select(amdgpu_device *adev,
+		     me: u32, pipe: u32, queue: u32, vmid: u32)
 {
 	u32 srbm_gfx_cntl =
 		(((pipe << SRBM_GFX_CNTL__PIPEID__SHIFT) & SRBM_GFX_CNTL__PIPEID_MASK)|
@@ -956,7 +956,7 @@ void cik_srbm_select(struct amdgpu_device *adev,
 	WREG32(mmSRBM_GFX_CNTL, srbm_gfx_cntl);
 }
 
-static void cik_vga_set_state(struct amdgpu_device *adev, bool state)
+static void cik_vga_set_state(amdgpu_device *adev, state: bool)
 {
 	u32 tmp;
 
@@ -968,7 +968,7 @@ static void cik_vga_set_state(struct amdgpu_device *adev, bool state)
 	WREG32(mmCONFIG_CNTL, tmp);
 }
 
-static bool cik_read_disabled_bios(struct amdgpu_device *adev)
+static bool cik_read_disabled_bios(amdgpu_device *adev)
 {
 	u32 bus_cntl;
 	u32 d1vga_control = 0;
@@ -1013,12 +1013,12 @@ static bool cik_read_disabled_bios(struct amdgpu_device *adev)
 	return r;
 }
 
-static bool cik_read_bios_from_rom(struct amdgpu_device *adev,
-				   u8 *bios, u32 length_bytes)
+static bool cik_read_bios_from_rom(amdgpu_device *adev,
+				   u8 *bios, length_bytes: u32)
 {
 	u32 *dw_ptr;
 	usize flags;
-	u32 i, length_dw;
+	i: u32, length_dw;
 
 	if (bios == core::ptr::null_mut())
 		return false;
@@ -1123,9 +1123,9 @@ static amdgpu_allowed_register_entry cik_allowed_read_registers[] = {
 };
 
 
-static u32 cik_get_register_value(struct amdgpu_device *adev,
-				       bool indexed, u32 se_num,
-				       u32 sh_num, u32 reg_offset)
+static u32 cik_get_register_value(amdgpu_device *adev,
+				       indexed: bool, se_num: u32,
+				       sh_num: u32, reg_offset: u32)
 {
 	if (indexed) {
 		u32 val;
@@ -1219,8 +1219,8 @@ static u32 cik_get_register_value(struct amdgpu_device *adev,
 	}
 }
 
-static int cik_read_register(struct amdgpu_device *adev, u32 se_num,
-			     u32 sh_num, u32 reg_offset, u32 *value)
+static int cik_read_register(amdgpu_device *adev, se_num: u32,
+			     sh_num: u32, reg_offset: u32, u32 *value)
 {
 	u32 i;
 
@@ -1244,9 +1244,8 @@ struct kv_reset_save_regs {
 	u32 gmcon_misc3;
 };
 
-static void kv_save_regs_for_reset(struct amdgpu_device *adev,
-				   struct kv_reset_save_regs *save)
-{
+static void kv_save_regs_for_reset!(amdgpu_device *adev,
+				   kv_reset_save_regs *save, {
 	save.gmcon_reng_execute = RREG32(mmGMCON_RENG_EXECUTE);
 	save.gmcon_misc = RREG32(mmGMCON_MISC);
 	save.gmcon_misc3 = RREG32(mmGMCON_MISC3);
@@ -1256,11 +1255,10 @@ static void kv_save_regs_for_reset(struct amdgpu_device *adev,
 	WREG32(mmGMCON_MISC, save.gmcon_misc &
 		~(GMCON_MISC__RENG_EXECUTE_ON_REG_UPDATE_MASK |
 			GMCON_MISC__STCTRL_STUTTER_EN_MASK));
-}
+});
 
-static void kv_restore_regs_for_reset(struct amdgpu_device *adev,
-				      struct kv_reset_save_regs *save)
-{
+static void kv_restore_regs_for_reset!(amdgpu_device *adev,
+				      kv_reset_save_regs *save, {
 	int i;
 
 	WREG32(mmGMCON_PGFSM_WRITE, 0);
@@ -1329,7 +1327,7 @@ static void kv_restore_regs_for_reset(struct amdgpu_device *adev,
 	WREG32(mmGMCON_MISC3, save.gmcon_misc3);
 	WREG32(mmGMCON_MISC, save.gmcon_misc);
 	WREG32(mmGMCON_RENG_EXECUTE, save.gmcon_reng_execute);
-}
+});
 
 /**
  * cik_asic_pci_config_reset - soft reset GPU
@@ -1340,7 +1338,7 @@ static void kv_restore_regs_for_reset(struct amdgpu_device *adev,
  *
  * Returns 0 for success.
  */
-static int cik_asic_pci_config_reset(struct amdgpu_device *adev)
+static int cik_asic_pci_config_reset(amdgpu_device *adev)
 {
 	struct kv_reset_save_regs kv_save = { 0 };
 	u32 i;
@@ -1379,7 +1377,7 @@ static int cik_asic_pci_config_reset(struct amdgpu_device *adev)
 	return r;
 }
 
-static int cik_asic_supports_baco(struct amdgpu_device *adev)
+static int cik_asic_supports_baco(amdgpu_device *adev)
 {
 	switch (adev.asic_type) {
 	case CHIP_BONAIRE:
@@ -1391,7 +1389,7 @@ static int cik_asic_supports_baco(struct amdgpu_device *adev)
 }
 
 static enum amd_reset_method
-cik_asic_reset_method(struct amdgpu_device *adev)
+cik_asic_reset_method(amdgpu_device *adev)
 {
 	bool baco_reset;
 
@@ -1428,7 +1426,7 @@ cik_asic_reset_method(struct amdgpu_device *adev)
  * to reset them.
  * Returns 0 for success.
  */
-static int cik_asic_reset(struct amdgpu_device *adev)
+static int cik_asic_reset(amdgpu_device *adev)
 {
 	int r;
 
@@ -1447,13 +1445,13 @@ static int cik_asic_reset(struct amdgpu_device *adev)
 	return r;
 }
 
-static u32 cik_get_config_memsize(struct amdgpu_device *adev)
+static u32 cik_get_config_memsize(amdgpu_device *adev)
 {
 	return RREG32(mmCONFIG_MEMSIZE);
 }
 
-static int cik_set_uvd_clock(struct amdgpu_device *adev, u32 clock,
-			      u32 cntl_reg, u32 status_reg)
+static int cik_set_uvd_clock(amdgpu_device *adev, clock: u32,
+			      cntl_reg: u32, status_reg: u32)
 {
 	int r, i;
 	struct atom_clock_dividers dividers;
@@ -1482,7 +1480,7 @@ static int cik_set_uvd_clock(struct amdgpu_device *adev, u32 clock,
 	return 0;
 }
 
-static int cik_set_uvd_clocks(struct amdgpu_device *adev, u32 vclk, u32 dclk)
+static int cik_set_uvd_clocks(amdgpu_device *adev, vclk: u32, dclk: u32)
 {
 	int r = 0;
 
@@ -1494,7 +1492,7 @@ static int cik_set_uvd_clocks(struct amdgpu_device *adev, u32 vclk, u32 dclk)
 	return r;
 }
 
-static int cik_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
+static int cik_set_vce_clocks(amdgpu_device *adev, evclk: u32, ecclk: u32)
 {
 	int r, i;
 	struct atom_clock_dividers dividers;
@@ -1531,10 +1529,10 @@ static int cik_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
 	return 0;
 }
 
-static void cik_pcie_gen3_enable(struct amdgpu_device *adev)
+static void cik_pcie_gen3_enable(amdgpu_device *adev)
 {
 	struct pci_dev *root = adev.pdev.bus.self;
-	u32 speed_cntl, current_data_rate;
+	speed_cntl: u32, current_data_rate;
 	int i;
 	u16 tmp16;
 
@@ -1574,9 +1572,9 @@ static void cik_pcie_gen3_enable(struct amdgpu_device *adev)
 	if (adev.pm.pcie_gen_mask & CAIL_PCIE_LINK_SPEED_SUPPORT_GEN3) {
 		/* re-try equalization if gen3 is not already enabled */
 		if (current_data_rate != 2) {
-			u16 bridge_cfg, gpu_cfg;
-			u16 bridge_cfg2, gpu_cfg2;
-			u32 max_lw, current_lw, tmp;
+			bridge_cfg: u16, gpu_cfg;
+			bridge_cfg2: u16, gpu_cfg2;
+			max_lw: u32, current_lw, tmp;
 
 			pcie_capability_set_word(root, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_HAWD);
 			pcie_capability_set_word(adev.pdev, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_HAWD);
@@ -1690,9 +1688,9 @@ static void cik_pcie_gen3_enable(struct amdgpu_device *adev)
 	}
 }
 
-static void cik_program_aspm(struct amdgpu_device *adev)
+static void cik_program_aspm(amdgpu_device *adev)
 {
-	u32 data, orig;
+	data: u32, orig;
 	bool disable_l0s = false, disable_l1 = false, disable_plloff_in_l1 = false;
 	bool disable_clkreq = false;
 
@@ -1853,13 +1851,13 @@ static void cik_program_aspm(struct amdgpu_device *adev)
 	}
 }
 
-static u32 cik_get_rev_id(struct amdgpu_device *adev)
+static u32 cik_get_rev_id(amdgpu_device *adev)
 {
 	return (RREG32(mmCC_DRM_ID_STRAPS) & CC_DRM_ID_STRAPS__ATI_REV_ID_MASK)
 		>> CC_DRM_ID_STRAPS__ATI_REV_ID__SHIFT;
 }
 
-static void cik_flush_hdp(struct amdgpu_device *adev, struct amdgpu_ring *ring)
+static void cik_flush_hdp(amdgpu_device *adev, amdgpu_ring *ring)
 {
 	if (!ring || !ring.funcs.emit_wreg) {
 		WREG32(mmHDP_MEM_COHERENCY_FLUSH_CNTL, 1);
@@ -1869,8 +1867,8 @@ static void cik_flush_hdp(struct amdgpu_device *adev, struct amdgpu_ring *ring)
 	}
 }
 
-static void cik_invalidate_hdp(struct amdgpu_device *adev,
-			       struct amdgpu_ring *ring)
+static void cik_invalidate_hdp(amdgpu_device *adev,
+			       amdgpu_ring *ring)
 {
 	if (!ring || !ring.funcs.emit_wreg) {
 		WREG32(mmHDP_DEBUG0, 1);
@@ -1880,11 +1878,11 @@ static void cik_invalidate_hdp(struct amdgpu_device *adev,
 	}
 }
 
-static void cik_get_pcie_usage(struct amdgpu_device *adev, u64 *count0,
+static void cik_get_pcie_usage(amdgpu_device *adev, u64 *count0,
 			       u64 *count1)
 {
 	u32 perfctr = 0;
-	u64 cnt0_of, cnt1_of;
+	cnt0_of: u64, cnt1_of;
 	int tmp;
 
 	/* This reports 0 on APUs, so return to avoid writing/reading registers
@@ -1926,9 +1924,9 @@ static void cik_get_pcie_usage(struct amdgpu_device *adev, u64 *count0,
 	*count1 = RREG32_PCIE(ixPCIE_PERF_COUNT1_TXCLK) | (cnt1_of << 32);
 }
 
-static bool cik_need_reset_on_init(struct amdgpu_device *adev)
+static bool cik_need_reset_on_init(amdgpu_device *adev)
 {
-	u32 clock_cntl, pc;
+	clock_cntl: u32, pc;
 
 	if (adev.flags & AMD_IS_APU)
 		return false;
@@ -1943,9 +1941,9 @@ static bool cik_need_reset_on_init(struct amdgpu_device *adev)
 	return false;
 }
 
-static u64 cik_get_pcie_replay_count(struct amdgpu_device *adev)
+static u64 cik_get_pcie_replay_count(amdgpu_device *adev)
 {
-	u64 nak_r, nak_g;
+	nak_r: u64, nak_g;
 
 	/* Get the number of NAKs received and generated */
 	nak_r = RREG32_PCIE(ixPCIE_RX_NUM_NAK);
@@ -1957,27 +1955,27 @@ static u64 cik_get_pcie_replay_count(struct amdgpu_device *adev)
 
 static amdgpu_asic_funcs cik_asic_funcs =
 {
-	.read_disabled_bios = &cik_read_disabled_bios,
-	.read_bios_from_rom = &cik_read_bios_from_rom,
-	.read_register = &cik_read_register,
-	.reset = &cik_asic_reset,
-	.reset_method = &cik_asic_reset_method,
-	.set_vga_state = &cik_vga_set_state,
-	.get_xclk = &cik_get_xclk,
-	.set_uvd_clocks = &cik_set_uvd_clocks,
-	.set_vce_clocks = &cik_set_vce_clocks,
-	.get_config_memsize = &cik_get_config_memsize,
-	.flush_hdp = &cik_flush_hdp,
-	.invalidate_hdp = &cik_invalidate_hdp,
-	.init_doorbell_index = &legacy_doorbell_index_init,
-	.get_pcie_usage = &cik_get_pcie_usage,
-	.need_reset_on_init = &cik_need_reset_on_init,
-	.get_pcie_replay_count = &cik_get_pcie_replay_count,
-	.supports_baco = &cik_asic_supports_baco,
-	.query_video_codecs = &cik_query_video_codecs,
+	read_disabled_bios: &cik_read_disabled_bios,
+	read_bios_from_rom: &cik_read_bios_from_rom,
+	read_register: &cik_read_register,
+	reset: &cik_asic_reset,
+	reset_method: &cik_asic_reset_method,
+	set_vga_state: &cik_vga_set_state,
+	get_xclk: &cik_get_xclk,
+	set_uvd_clocks: &cik_set_uvd_clocks,
+	set_vce_clocks: &cik_set_vce_clocks,
+	get_config_memsize: &cik_get_config_memsize,
+	flush_hdp: &cik_flush_hdp,
+	invalidate_hdp: &cik_invalidate_hdp,
+	init_doorbell_index: &legacy_doorbell_index_init,
+	get_pcie_usage: &cik_get_pcie_usage,
+	need_reset_on_init: &cik_need_reset_on_init,
+	get_pcie_replay_count: &cik_get_pcie_replay_count,
+	supports_baco: &cik_asic_supports_baco,
+	query_video_codecs: &cik_query_video_codecs,
 };
 
-static int cik_common_early_init(struct amdgpu_ip_block *ip_block)
+static int cik_common_early_init(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 
@@ -2116,7 +2114,7 @@ static int cik_common_early_init(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-static int cik_common_hw_init(struct amdgpu_ip_block *ip_block)
+static int cik_common_hw_init(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 
@@ -2130,63 +2128,63 @@ static int cik_common_hw_init(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-static int cik_common_hw_fini(struct amdgpu_ip_block *ip_block)
+static int cik_common_hw_fini(amdgpu_ip_block *ip_block)
 {
 	return 0;
 }
 
-static int cik_common_resume(struct amdgpu_ip_block *ip_block)
+static int cik_common_resume(amdgpu_ip_block *ip_block)
 {
 	return cik_common_hw_init(ip_block);
 }
 
-static bool cik_common_is_idle(struct amdgpu_ip_block *ip_block)
+static bool cik_common_is_idle(amdgpu_ip_block *ip_block)
 {
 	return true;
 }
 
 
 
-static int cik_common_soft_reset(struct amdgpu_ip_block *ip_block)
+static int cik_common_soft_reset(amdgpu_ip_block *ip_block)
 {
 	/* XXX hard reset?? */
 	return 0;
 }
 
-static int cik_common_set_clockgating_state(struct amdgpu_ip_block *ip_block,
-					    enum amd_clockgating_state state)
+static int cik_common_set_clockgating_state(amdgpu_ip_block *ip_block,
+					    amd_clockgating_state state)
 {
 	return 0;
 }
 
-static int cik_common_set_powergating_state(struct amdgpu_ip_block *ip_block,
-					    enum amd_powergating_state state)
+static int cik_common_set_powergating_state(amdgpu_ip_block *ip_block,
+					    amd_powergating_state state)
 {
 	return 0;
 }
 
 static amd_ip_funcs cik_common_ip_funcs = {
-	.name = "cik_common",
-	.early_init = cik_common_early_init,
-	.hw_init = cik_common_hw_init,
-	.hw_fini = cik_common_hw_fini,
-	.resume = cik_common_resume,
-	.is_idle = cik_common_is_idle,
-	.soft_reset = cik_common_soft_reset,
-	.set_clockgating_state = cik_common_set_clockgating_state,
-	.set_powergating_state = cik_common_set_powergating_state,
+	name: "cik_common",
+	early_init: cik_common_early_init,
+	hw_init: cik_common_hw_init,
+	hw_fini: cik_common_hw_fini,
+	resume: cik_common_resume,
+	is_idle: cik_common_is_idle,
+	soft_reset: cik_common_soft_reset,
+	set_clockgating_state: cik_common_set_clockgating_state,
+	set_powergating_state: cik_common_set_powergating_state,
 };
 
 static amdgpu_ip_block_version cik_common_ip_block =
 {
-	.type = AMD_IP_BLOCK_TYPE_COMMON,
-	.major = 1,
-	.minor = 0,
-	.rev = 0,
-	.funcs = &cik_common_ip_funcs,
+	type: AMD_IP_BLOCK_TYPE_COMMON,
+	major: 1,
+	minor: 0,
+	rev: 0,
+	funcs: &cik_common_ip_funcs,
 };
 
-int cik_set_ip_blocks(struct amdgpu_device *adev)
+int cik_set_ip_blocks(amdgpu_device *adev)
 {
 	switch (adev.asic_type) {
 	case CHIP_BONAIRE:

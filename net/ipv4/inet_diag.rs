@@ -37,10 +37,10 @@ extern "C" {
     fn inet_sk_diag_fill(sk:*mut sock, icsk:*mut inet_connection_sock, skb:*mut sk_buff, cb:*mut netlink_callback, req:*const inet_diag_req_v2, flags:u16, admin:bool)->i32;
     fn inet_sk(sk:*mut sock)->*mut inet_sock;
     fn nla_data(a:*const nlattr)->*mut core::ffi::c_void; fn nla_len(a:*const nlattr)->i32; fn nla_type(a:*const nlattr)->i32;
-    fn nla_put_u8(*mut sk_buff,i32,u8)->i32; fn nla_put_u32(*mut sk_buff,i32,u32)->i32; fn nla_put(*mut sk_buff,i32,usize,*const core::ffi::c_void)->i32;
-    fn nlmsg_put(*mut sk_buff,u32,u32,u16,usize,u16)->*mut nlmsghdr; fn nlmsg_data(*mut nlmsghdr)->*mut core::ffi::c_void; fn nlmsg_end(*mut sk_buff,*mut nlmsghdr); fn nlmsg_cancel(*mut sk_buff,*mut nlmsghdr);
-    fn sock_diag_save_cookie(*mut sock,*mut [u32;2]); fn inet_diag_get_protocol(*const inet_diag_req_v2,*const inet_diag_dump_data)->i32;
-    fn htons(u16)->u16; fn ntohs(u16)->u16; fn htonl(u32)->u32;
+    fn nla_put_u8(_: *mut sk_buff,_: i32,_: u8)->i32; fn nla_put_u32(_: *mut sk_buff,_: i32,_: u32)->i32; fn nla_put(_: *mut sk_buff,_: i32,_: usize,_: *const core::ffi::c_void)->i32;
+    fn nlmsg_put(_: *mut sk_buff,_: u32,_: u32,_: u16,_: usize,_: u16)->*mut nlmsghdr; fn nlmsg_data(_: *mut nlmsghdr)->*mut core::ffi::c_void; fn nlmsg_end(_: *mut sk_buff,_: *mut nlmsghdr); fn nlmsg_cancel(_: *mut sk_buff,_: *mut nlmsghdr);
+    fn sock_diag_save_cookie(_: *mut sock,_: *mut [u32;2]); fn inet_diag_get_protocol(_: *const inet_diag_req_v2,_: *const inet_diag_dump_data)->i32;
+    fn htons(_: u16)->u16; fn ntohs(_: u16)->u16; fn htonl(_: u32)->u32;
 }
 
 pub unsafe extern "C" fn inet_diag_msg_common_fill(r:*mut inet_diag_msg, sk:*mut sock) {
@@ -62,6 +62,6 @@ pub unsafe extern "C" fn inet_diag_bc_sk(cb:*const inet_diag_dump_data, _sk:*mut
 
 // The remaining kernel netlink dispatch and lifecycle declarations retain the
 // source interfaces; their implementations are supplied by the kernel layer.
-extern "C" { fn sock_diag_register(*const core::ffi::c_void)->i32; fn sock_diag_unregister(*const core::ffi::c_void); }
+extern "C" { fn sock_diag_register(_: *const core::ffi::c_void)->i32; fn sock_diag_unregister(_: *const core::ffi::c_void); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

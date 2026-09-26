@@ -16,7 +16,7 @@
 /* External declarations and register constants are supplied by the surrounding
  * translated dependency set. */
 
-static const GPIO_OFFSETS: &[gpio_id_offset_entry] = &[
+static GPIO_OFFSETS: &[gpio_id_offset_entry] = &[
     GPIO_MASK_ENTRY!(DC_GPIO_GENERIC_A, DC_GPIO_GENERIC_A__DC_GPIO_GENERICA_A_MASK,
         GPIO_ID_GENERIC, GPIO_GENERIC_A),
     GPIO_MASK_ENTRY!(DC_GPIO_GENERIC_A, DC_GPIO_GENERIC_A__DC_GPIO_GENERICB_A_MASK,

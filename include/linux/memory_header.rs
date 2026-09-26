@@ -54,7 +54,7 @@ pub struct memory_block {
     pub group: *mut memory_group,
     pub group_next: list_head,
     // Present only when CONFIG_MEMORY_FAILURE && CONFIG_MEMORY_HOTPLUG.
-    #[cfg(all(feature = "CONFIG_MEMORY_FAILURE", feature = "CONFIG_MEMORY_HOTPLUG"))]
+    #[cfg(all(CONFIG_MEMORY_FAILURE, CONFIG_MEMORY_HOTPLUG))]
     pub nr_hwpoison: atomic_long_t,
 }
 
@@ -92,29 +92,29 @@ pub const CPUSET_CALLBACK_PRI: ::core::ffi::c_int = 10;
 pub const MEMTIER_HOTPLUG_PRI: ::core::ffi::c_int = 100;
 pub const KSM_CALLBACK_PRI: ::core::ffi::c_int = 100;
 
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn memory_dev_init() {}
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn register_memory_notifier(_nb: *mut notifier_block) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn unregister_memory_notifier(_nb: *mut notifier_block) {}
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn memory_notify(_state: memory_block_state, _v: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn hotplug_memory_notifier(_fn: notifier_fn_t, _pri: ::core::ffi::c_int) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn memory_block_advise_max_size(_size: ::core::ffi::c_ulong) -> ::core::ffi::c_int { -ENODEV }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTPLUG"))]
+#[cfg(not(CONFIG_MEMORY_HOTPLUG))]
 #[inline]
 pub fn memory_block_advised_max_size() -> ::core::ffi::c_ulong { 0 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 extern "C" {
     pub fn register_memory_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
     pub fn unregister_memory_notifier(nb: *mut notifier_block);
@@ -135,24 +135,24 @@ extern "C" {
     pub fn memory_block_advised_max_size() -> ::core::ffi::c_ulong;
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub type walk_memory_blocks_func_t = unsafe extern "C" fn(*mut memory_block, *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub type walk_memory_groups_func_t = unsafe extern "C" fn(*mut memory_group, *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
 
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[inline]
 pub unsafe fn memory_block_id(section_nr: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { section_nr / sections_per_block as ::core::ffi::c_ulong }
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[inline]
 pub unsafe fn pfn_to_block_id(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { memory_block_id(pfn_to_section_nr(pfn)) }
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 #[inline]
 pub unsafe fn phys_to_block_id(phys: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong { pfn_to_block_id(PFN_DOWN(phys)) }
 
 // The C hotplug_memory_notifier macro declares a static notifier block using fn##_mem_nb,
 // then registers it; this token-pasting declaration is preserved as conditional intent.
-#[cfg(all(feature = "CONFIG_MEMORY_HOTPLUG", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_MEMORY_HOTPLUG, CONFIG_NUMA))]
 extern "C" { pub fn memory_block_add_nid_early(mem: *mut memory_block, nid: ::core::ffi::c_int); }
 
 extern "C" { pub static mut text_mutex: mutex; }

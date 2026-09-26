@@ -30,25 +30,27 @@ static mut active_stack: *mut ocfs2_stack_plugin = core::ptr::null_mut();
 unsafe fn ocfs2_stack_lookup(name: *const c_char) -> *mut ocfs2_stack_plugin {
     assert_spin_locked(&mut ocfs2_stack_lock);
     let mut p: *mut ocfs2_stack_plugin;
-    list_for_each_entry!(p, &mut ocfs2_stack_list, sp_list) {
+    list_for_each_entry!(p, &mut ocfs2_stack_list, sp_list, {
         if strcmp((*p).sp_name, name) == 0 { return p; }
-    }
+    });
     core::ptr::null_mut()
 }
 
 unsafe fn ocfs2_stack_driver_request(stack_name: *const c_char, plugin_name: *const c_char) -> c_int {
     let rc: c_int;
+    'out: {
     spin_lock(&mut ocfs2_stack_lock);
-    if strcmp(stack_name, cluster_stack_name.as_ptr()) != 0 { rc = -EBUSY; goto!(out); }
+    if strcmp(stack_name, cluster_stack_name.as_ptr()) != 0 { rc = -EBUSY; break 'out; }
     if !active_stack.is_null() {
         if strcmp((*active_stack).sp_name, plugin_name) == 0 { rc = 0; } else { rc = -EBUSY; }
-        goto!(out);
+        break 'out;
     }
     let p = ocfs2_stack_lookup(plugin_name);
-    if p.is_null() || try_module_get((*p).sp_owner) == 0 { rc = -ENOENT; goto!(out); }
+    if p.is_null() || try_module_get((*p).sp_owner) == 0 { rc = -ENOENT; break 'out; }
     active_stack = p;
     rc = 0;
-out:
+    }
+    
     if rc == 0 { (*active_stack).sp_count += 1; }
     spin_unlock(&mut ocfs2_stack_lock);
     rc
@@ -99,7 +101,7 @@ pub unsafe extern "C" fn ocfs2_stack_glue_set_max_proto_version(max_proto: *mut 
     spin_lock(&mut ocfs2_stack_lock);
     if memcmp(max_proto as *const _, &locking_max_version as *const _, core::mem::size_of::<ocfs2_protocol_version>()) != 0 {
         BUG_ON(locking_max_version.pv_major != 0); locking_max_version = *max_proto;
-        let mut p: *mut ocfs2_stack_plugin; list_for_each_entry!(p, &mut ocfs2_stack_list, sp_list) { (*p).sp_max_proto = locking_max_version; }
+        let mut p: *mut ocfs2_stack_plugin; list_for_each_entry!(p, &mut ocfs2_stack_list, sp_list, { (*p).sp_max_proto = locking_max_version; });
     }
     spin_unlock(&mut ocfs2_stack_lock);
 }

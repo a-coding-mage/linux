@@ -15,7 +15,7 @@ pub struct pt_regs {
 }
 
 /* CONFIG_FA_DUMP */
-#[cfg(feature = "CONFIG_FA_DUMP")]
+#[cfg(CONFIG_FA_DUMP)]
 extern "C" {
     pub static mut crashing_cpu: c_int;
 
@@ -29,38 +29,38 @@ extern "C" {
     pub fn fadump_append_bootargs();
 }
 
-#[cfg(not(feature = "CONFIG_FA_DUMP"))]
+#[cfg(not(CONFIG_FA_DUMP))]
 #[inline]
 pub fn is_fadump_active() -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_FA_DUMP"))]
+#[cfg(not(CONFIG_FA_DUMP))]
 #[inline]
 pub fn should_fadump_crash() -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_FA_DUMP"))]
+#[cfg(not(CONFIG_FA_DUMP))]
 #[inline]
 pub fn crash_fadump(_regs: *mut pt_regs, _string: *const c_char) {}
 
-#[cfg(not(feature = "CONFIG_FA_DUMP"))]
+#[cfg(not(CONFIG_FA_DUMP))]
 #[inline]
 pub fn fadump_cleanup() {}
 
-#[cfg(not(feature = "CONFIG_FA_DUMP"))]
+#[cfg(not(CONFIG_FA_DUMP))]
 #[inline]
 pub fn fadump_setup_param_area() {}
 
-#[cfg(not(feature = "CONFIG_FA_DUMP"))]
+#[cfg(not(CONFIG_FA_DUMP))]
 #[inline]
 pub fn fadump_append_bootargs() {}
 
 /* CONFIG_FA_DUMP || CONFIG_PRESERVE_FA_DUMP */
 #[cfg(any(
-    feature = "CONFIG_FA_DUMP",
-    feature = "CONFIG_PRESERVE_FA_DUMP"
+    CONFIG_FA_DUMP,
+    CONFIG_PRESERVE_FA_DUMP
 ))]
 extern "C" {
     pub fn early_init_dt_scan_fw_dump(
@@ -73,12 +73,12 @@ extern "C" {
 }
 
 /* CONFIG_FA_DUMP && CONFIG_CMA */
-#[cfg(all(feature = "CONFIG_FA_DUMP", feature = "CONFIG_CMA"))]
+#[cfg(all(CONFIG_FA_DUMP, CONFIG_CMA))]
 extern "C" {
     pub fn fadump_cma_init();
 }
 
-#[cfg(not(all(feature = "CONFIG_FA_DUMP", feature = "CONFIG_CMA")))]
+#[cfg(not(all(CONFIG_FA_DUMP, CONFIG_CMA)))]
 #[inline]
 pub fn fadump_cma_init() {}
 

@@ -12,20 +12,20 @@ static mut pll_cpu_clk: ccu_nkmp = ccu_nkmp {
 };
 
 // The audio PLL's variable divider is unused; these declarations preserve its fixed-factor topology.
-static SUNXI_CCU_NM_WITH_GATE_LOCK!(pll_audio_base_clk, "pll-audio-base", "osc24M", 0x008, 8, 7, 0, 5, BIT(31), BIT(28), CLK_SET_RATE_UNGATE);
-static SUNXI_CCU_NM_WITH_FRAC_GATE_LOCK!(pll_video_clk, "pll-video", "osc24M", 0x010, 8, 7, 0, 4, BIT(24), BIT(25), 270000000, 297000000, BIT(31), BIT(28), CLK_SET_RATE_UNGATE);
-static SUNXI_CCU_NM_WITH_FRAC_GATE_LOCK!(pll_ve_clk, "pll-ve", "osc24M", 0x018, 8, 7, 0, 4, BIT(24), BIT(25), 270000000, 297000000, BIT(31), BIT(28), CLK_SET_RATE_UNGATE);
-static SUNXI_CCU_NKM_WITH_GATE_LOCK!(pll_ddr0_clk, "pll-ddr", "osc24M", 0x020, 8, 5, 4, 2, 0, 2, BIT(31), BIT(28), CLK_IS_CRITICAL);
+SUNXI_CCU_NM_WITH_GATE_LOCK!(pll_audio_base_clk, "pll-audio-base", "osc24M", 0x008, 8, 7, 0, 5, BIT(31), BIT(28), CLK_SET_RATE_UNGATE);
+SUNXI_CCU_NM_WITH_FRAC_GATE_LOCK!(pll_video_clk, "pll-video", "osc24M", 0x010, 8, 7, 0, 4, BIT(24), BIT(25), 270000000, 297000000, BIT(31), BIT(28), CLK_SET_RATE_UNGATE);
+SUNXI_CCU_NM_WITH_FRAC_GATE_LOCK!(pll_ve_clk, "pll-ve", "osc24M", 0x018, 8, 7, 0, 4, BIT(24), BIT(25), 270000000, 297000000, BIT(31), BIT(28), CLK_SET_RATE_UNGATE);
+SUNXI_CCU_NKM_WITH_GATE_LOCK!(pll_ddr0_clk, "pll-ddr", "osc24M", 0x020, 8, 5, 4, 2, 0, 2, BIT(31), BIT(28), CLK_IS_CRITICAL);
 
 static mut pll_periph_clk: ccu_nk = ccu_nk { enable: BIT(31), lock: BIT(28), k: _SUNXI_CCU_MULT(4, 2), n: _SUNXI_CCU_MULT(8, 5), common: ccu_common { reg: 0x028, hw: CLK_HW_INIT!("pll-periph", "osc24M", &ccu_nk_ops, 0) } };
 
 static cpu_parents: [&str; 4] = ["osc32k", "osc24M", "pll-cpu", "pll-cpu"];
-static SUNXI_CCU_MUX!(cpu_clk, "cpu", cpu_parents, 0x050, 16, 2, CLK_IS_CRITICAL | CLK_SET_RATE_PARENT);
+SUNXI_CCU_MUX!(cpu_clk, "cpu", cpu_parents, 0x050, 16, 2, CLK_IS_CRITICAL | CLK_SET_RATE_PARENT);
 static ahb_parents: [&str; 4] = ["osc32k", "osc24M", "cpu", "pll-periph"];
 static ahb_predivs: [ccu_mux_var_prediv; 1] = [ccu_mux_var_prediv { index: 3, shift: 6, width: 2 }];
 static mut ahb_clk: ccu_div = ccu_div { div: _SUNXI_CCU_DIV_FLAGS(4, 2, CLK_DIVIDER_POWER_OF_TWO), mux: ccu_mux { shift: 12, width: 2, var_predivs: ahb_predivs, n_var_predivs: ARRAY_SIZE!(ahb_predivs) }, common: ccu_common { reg: 0x054, features: CCU_FEATURE_VARIABLE_PREDIV, hw: CLK_HW_INIT_PARENTS!("ahb", ahb_parents, &ccu_div_ops, 0) } };
 static apb_div_table: [clk_div_table; 5] = [clk_div_table { val: 0, div: 2 }, clk_div_table { val: 1, div: 2 }, clk_div_table { val: 2, div: 4 }, clk_div_table { val: 3, div: 8 }, clk_div_table { val: 0, div: 0 }];
-static SUNXI_CCU_DIV_TABLE!(apb_clk, "apb", "ahb", 0x054, 8, 2, apb_div_table, 0);
+SUNXI_CCU_DIV_TABLE!(apb_clk, "apb", "ahb", 0x054, 8, 2, apb_div_table, 0);
 
 SUNXI_CCU_GATE!(bus_dma_clk, "bus-dma", "ahb", 0x060, BIT(6), 0);
 SUNXI_CCU_GATE!(bus_mmc0_clk, "bus-mmc0", "ahb", 0x060, BIT(8), 0);

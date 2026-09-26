@@ -30,8 +30,7 @@ extern "C" {
         argv: *const *mut c_char,
         optstring: *const c_char,
         longopts: *const option,
-        longindex: *mut c_int,
-    ) -> c_int;
+        longindex: *mut c_int) -> c_int;
 
     fn cpuidle_state_count(cpu: u32) -> u32;
     fn cpuidle_state_name(cpu: u32, idlestate: u32) -> *mut c_char;

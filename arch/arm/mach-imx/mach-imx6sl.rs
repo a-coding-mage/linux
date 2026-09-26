@@ -72,13 +72,13 @@ unsafe fn imx6sl_fec_init() {
 
 unsafe fn imx6sl_init_late() {
     /* imx6sl reuses imx6q cpufreq driver */
-    if cfg!(feature = "CONFIG_ARM_IMX6Q_CPUFREQ") {
+    if cfg!(CONFIG_ARM_IMX6Q_CPUFREQ) {
         platform_device_register_simple(b"imx6q-cpufreq\0".as_ptr() as *const _, -1, core::ptr::null(), 0);
     }
 
-    if cfg!(feature = "CONFIG_SOC_IMX6SL") && cpu_is_imx6sl() {
+    if cfg!(CONFIG_SOC_IMX6SL) && cpu_is_imx6sl() {
         imx6sl_cpuidle_init();
-    } else if cfg!(feature = "CONFIG_SOC_IMX6SLL") {
+    } else if cfg!(CONFIG_SOC_IMX6SLL) {
         imx6sx_cpuidle_init();
     }
 }

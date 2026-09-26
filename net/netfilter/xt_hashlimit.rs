@@ -48,7 +48,7 @@ const HASHLIMIT_MAX_SIZE:u32=1048576;
 const CREDITS_PER_JIFFY:u64=1; const CREDITS_PER_JIFFY_v1:u32=1; const CREDITS_PER_JIFFY_BYTES:u32=1;
 
 #[inline] unsafe fn hashlimit_pernet(net:*mut net)->*mut hashlimit_net { net_generic(net,hashlimit_net_id) }
-unsafe extern "C" { fn net_generic(*mut net,c_uint)->*mut hashlimit_net; }
+unsafe extern "C" { fn net_generic(_: *mut net,_: c_uint)->*mut hashlimit_net; }
 
 unsafe fn cfg_copy(to:*mut hashlimit_cfg3, from:*const core::ffi::c_void, revision:c_int)->c_int {
     if revision==3 { core::ptr::copy_nonoverlapping(from as *const u8,to as *mut u8,core::mem::size_of::<hashlimit_cfg3>()); return 0; }

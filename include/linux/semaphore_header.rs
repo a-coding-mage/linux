@@ -64,7 +64,7 @@ pub unsafe fn sema_init(sem: *mut semaphore, val: core::ffi::c_int) {
     );
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn down(sem: *mut semaphore);
     pub fn down_interruptible(sem: *mut semaphore) -> core::ffi::c_int;
     pub fn down_killable(sem: *mut semaphore) -> core::ffi::c_int;

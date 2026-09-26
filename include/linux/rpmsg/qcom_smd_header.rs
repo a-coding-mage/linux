@@ -20,7 +20,7 @@ pub struct qcom_smd_edge {
 
 // Equivalent of IS_ENABLED(CONFIG_RPMSG_QCOM_SMD). The build configuration
 // selects either the external declarations or the disabled inline stubs.
-#[cfg(feature = "CONFIG_RPMSG_QCOM_SMD")]
+#[cfg(CONFIG_RPMSG_QCOM_SMD)]
 extern "C" {
     pub fn qcom_smd_register_edge(
         parent: *mut device,
@@ -30,7 +30,7 @@ extern "C" {
     pub fn qcom_smd_unregister_edge(edge: *mut qcom_smd_edge);
 }
 
-#[cfg(not(feature = "CONFIG_RPMSG_QCOM_SMD"))]
+#[cfg(not(CONFIG_RPMSG_QCOM_SMD))]
 #[inline]
 pub unsafe fn qcom_smd_register_edge(
     _parent: *mut device,
@@ -39,7 +39,7 @@ pub unsafe fn qcom_smd_register_edge(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_RPMSG_QCOM_SMD"))]
+#[cfg(not(CONFIG_RPMSG_QCOM_SMD))]
 #[inline]
 pub unsafe fn qcom_smd_unregister_edge(_edge: *mut qcom_smd_edge) {}
 

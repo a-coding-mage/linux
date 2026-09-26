@@ -61,15 +61,15 @@ static mut leon3_gptimer_idx: usize = 0;
 static mut leon3_gptimer_ackmask: u32 = 0;
 
 extern "C" {
-    fn sparc_leon3_cpuid() -> i32; fn generic_handle_irq(u32); fn leon_build_device_irq(u32, irq_flow_handler_t, *const u8, i32) -> u32;
-    fn irq_link(u32); fn irq_unlink(u32); fn irq_alloc(u32,u32)->u32; fn irq_to_desc(u32)->*mut irq_desc;
-    fn handle_bad_irq(*mut irq_desc); fn handle_simple_irq(*mut irq_desc); fn handle_percpu_irq(*mut irq_desc);
-    fn irq_set_chip_and_handler_name(u32,*mut irq_chip,irq_flow_handler_t,*const u8); fn irq_set_chip_data(u32,*mut c_void); fn irq_get_chip_data(u32)->*mut c_void;
-    fn irq_data_get_affinity_mask(*mut irq_data)->*const cpumask; fn spin_lock_irqsave(*mut usize,*mut usize); fn spin_unlock_irqrestore(*mut usize,usize);
-    fn cpumask_first_and(*const cpumask,*const cpumask)->u32; fn cpumask_subset(*const cpumask,*const cpumask)->bool;
-    fn of_find_node_by_path(*const u8)->*mut device_node; fn of_find_node_by_name(*mut device_node,*const u8)->*mut device_node; fn of_find_property(*mut device_node,*const u8,*mut i32)->*mut property;
-    fn request_irq(u32,*const c_void,u32,*const u8,*mut c_void)->i32; fn timer_interrupt(i32,*mut c_void); fn irq_enter(); fn irq_exit(); fn smp_processor_id()->i32;
-    fn local_irq_save(*mut usize); fn local_irq_restore(usize); fn prom_halt(); fn printk(*const u8,...); fn pr_warn(*const u8,...); fn pr_err(*const u8,...); fn BUG()->!;
+    fn sparc_leon3_cpuid() -> i32; fn generic_handle_irq(_: u32); fn leon_build_device_irq(_: u32, _: irq_flow_handler_t, _: *const u8, _: i32) -> u32;
+    fn irq_link(_: u32); fn irq_unlink(_: u32); fn irq_alloc(_: u32,_: u32)->u32; fn irq_to_desc(_: u32)->*mut irq_desc;
+    fn handle_bad_irq(_: *mut irq_desc); fn handle_simple_irq(_: *mut irq_desc); fn handle_percpu_irq(_: *mut irq_desc);
+    fn irq_set_chip_and_handler_name(_: u32,_: *mut irq_chip,_: irq_flow_handler_t,_: *const u8); fn irq_set_chip_data(_: u32,_: *mut c_void); fn irq_get_chip_data(_: u32)->*mut c_void;
+    fn irq_data_get_affinity_mask(_: *mut irq_data)->*const cpumask; fn spin_lock_irqsave(_: *mut usize,_: *mut usize); fn spin_unlock_irqrestore(_: *mut usize,_: usize);
+    fn cpumask_first_and(_: *const cpumask,_: *const cpumask)->u32; fn cpumask_subset(_: *const cpumask,_: *const cpumask)->bool;
+    fn of_find_node_by_path(_: *const u8)->*mut device_node; fn of_find_node_by_name(_: *mut device_node,_: *const u8)->*mut device_node; fn of_find_property(_: *mut device_node,_: *const u8,_: *mut i32)->*mut property;
+    fn request_irq(_: u32,_: *const c_void,_: u32,_: *const u8,_: *mut c_void)->i32; fn timer_interrupt(_: i32,_: *mut c_void); fn irq_enter(); fn irq_exit(); fn smp_processor_id()->i32;
+    fn local_irq_save(_: *mut usize); fn local_irq_restore(_: usize); fn prom_halt(); fn printk(_: *const u8,...); fn pr_warn(_: *const u8,...); fn pr_err(_: *const u8,...); fn BUG()->!;
 }
 
 #[inline] unsafe fn leon_eirq_get(cpu: i32) -> u32 { ((*leon3_irqctrl_regs).intid[cpu as usize]) & 0x1f }

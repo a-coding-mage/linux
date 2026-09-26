@@ -22,13 +22,13 @@ pub const MCFUART_UISR: u32 = 0x14;
 pub const MCFUART_UIMR: u32 = 0x14;
 pub const MCFUART_UBG1: u32 = 0x18;
 pub const MCFUART_UBG2: u32 = 0x1c;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_UTF: u32 = 0x28;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_URF: u32 = 0x2c;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_UFPD: u32 = 0x30;
-#[cfg(any(feature = "CONFIG_M5206", feature = "CONFIG_M5206e", feature = "CONFIG_M5249", feature = "CONFIG_M525x", feature = "CONFIG_M5307", feature = "CONFIG_M5407"))]
+#[cfg(any(CONFIG_M5206, CONFIG_M5206e, CONFIG_M5249, CONFIG_M525x, CONFIG_M5307, CONFIG_M5407))]
 pub const MCFUART_UIVR: u32 = 0x30;
 pub const MCFUART_UIPR: u32 = 0x34;
 pub const MCFUART_UOP1: u32 = 0x38;
@@ -100,24 +100,24 @@ pub const MCFUART_UIR_DELTABREAK: u32 = 0x04;
 pub const MCFUART_UIR_RXREADY: u32 = 0x02;
 pub const MCFUART_UIR_TXREADY: u32 = 0x01;
 
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_UTF_TXB: u32 = 0x1f;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_UTF_FULL: u32 = 0x20;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_UTF_TXS: u32 = 0xc0;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_URF_RXB: u32 = 0x1f;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_URF_FULL: u32 = 0x20;
-#[cfg(feature = "CONFIG_M5272")]
+#[cfg(CONFIG_M5272)]
 pub const MCFUART_URF_RXS: u32 = 0xc0;
 
-#[cfg(feature = "CONFIG_M54xx")]
+#[cfg(CONFIG_M54xx)]
 pub const MCFUART_TXFIFOSIZE: u32 = 512;
-#[cfg(all(not(feature = "CONFIG_M54xx"), feature = "CONFIG_M5272"))]
+#[cfg(all(not(CONFIG_M54xx), CONFIG_M5272))]
 pub const MCFUART_TXFIFOSIZE: u32 = 25;
-#[cfg(all(not(feature = "CONFIG_M54xx"), not(feature = "CONFIG_M5272")))]
+#[cfg(all(not(CONFIG_M54xx), not(CONFIG_M5272)))]
 pub const MCFUART_TXFIFOSIZE: u32 = 1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

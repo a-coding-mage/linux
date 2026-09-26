@@ -36,12 +36,12 @@ pub struct netlink_diag_ring {
 
 /* NETLINK_DIAG_NONE, standard nl API requires this attribute! */
 pub const NETLINK_DIAG_NONE: i32 = 0;
-pub const NETLINK_DIAG_MEMINFO: i32 = 1;
-pub const NETLINK_DIAG_GROUPS: i32 = 2;
-pub const NETLINK_DIAG_RX_RING: i32 = 3;
-pub const NETLINK_DIAG_TX_RING: i32 = 4;
-pub const NETLINK_DIAG_FLAGS: i32 = 5;
-pub const __NETLINK_DIAG_MAX: i32 = 6;
+pub const NETLINK_DIAG_MEMINFO: i32 = 0;
+pub const NETLINK_DIAG_GROUPS: i32 = 1;
+pub const NETLINK_DIAG_RX_RING: i32 = 2;
+pub const NETLINK_DIAG_TX_RING: i32 = 3;
+pub const NETLINK_DIAG_FLAGS: i32 = 4;
+pub const __NETLINK_DIAG_MAX: i32 = 5;
 
 pub const NETLINK_DIAG_MAX: i32 = __NETLINK_DIAG_MAX - 1;
 

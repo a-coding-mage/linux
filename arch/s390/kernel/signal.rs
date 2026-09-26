@@ -212,16 +212,16 @@ pub unsafe fn arch_do_signal_or_restart(regs: *mut pt_regs) {
     if get_signal(&mut ksig) {
         if (*current).thread.system_call != 0 {
             (*regs).int_code = (*current).thread.system_call;
-            match (*regs).gprs[2] as isize {
-                -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => (*regs).gprs[2] = -EINTR as usize,
-                -ERESTARTSYS => if (*ksig).ka.sa.sa_flags & SA_RESTART == 0 { (*regs).gprs[2] = -EINTR as usize; } else { (*regs).gprs[2] = (*regs).orig_gpr2; (*regs).psw.addr = __rewind_psw((*regs).psw, (*regs).int_code >> 16); },
-                -ERESTARTNOINTR => { (*regs).gprs[2] = (*regs).orig_gpr2; (*regs).psw.addr = __rewind_psw((*regs).psw, (*regs).int_code >> 16); }, _ => {}
+            match -((*regs).gprs[2] as isize) {
+                ERESTART_RESTARTBLOCK | ERESTARTNOHAND => (*regs).gprs[2] = -EINTR as usize,
+                ERESTARTSYS => if (*ksig).ka.sa.sa_flags & SA_RESTART == 0 { (*regs).gprs[2] = -EINTR as usize; } else { (*regs).gprs[2] = (*regs).orig_gpr2; (*regs).psw.addr = __rewind_psw((*regs).psw, (*regs).int_code >> 16); },
+                ERESTARTNOINTR => { (*regs).gprs[2] = (*regs).orig_gpr2; (*regs).psw.addr = __rewind_psw((*regs).psw, (*regs).int_code >> 16); }, _ => {}
             }
         }
         clear_pt_regs_flag(regs, PIF_SYSCALL); rseq_signal_deliver(&mut ksig, regs); handle_signal(&mut ksig, oldset, regs); return;
     }
     clear_pt_regs_flag(regs, PIF_SYSCALL);
-    if (*current).thread.system_call != 0 { (*regs).int_code = (*current).thread.system_call; match (*regs).gprs[2] as isize { -ERESTART_RESTARTBLOCK => { (*regs).gprs[2] = (*regs).orig_gpr2; (*current).restart_block.arch_data = (*regs).psw.addr; (*regs).psw.addr = VDSO_SYMBOL(current, restart_syscall); }, -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => { (*regs).gprs[2] = (*regs).orig_gpr2; (*regs).psw.addr = __rewind_psw((*regs).psw, (*regs).int_code >> 16); }, _ => {} } }
+    if (*current).thread.system_call != 0 { (*regs).int_code = (*current).thread.system_call; match -((*regs).gprs[2] as isize) { ERESTART_RESTARTBLOCK => { (*regs).gprs[2] = (*regs).orig_gpr2; (*current).restart_block.arch_data = (*regs).psw.addr; (*regs).psw.addr = VDSO_SYMBOL(current, restart_syscall); }, ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => { (*regs).gprs[2] = (*regs).orig_gpr2; (*regs).psw.addr = __rewind_psw((*regs).psw, (*regs).int_code >> 16); }, _ => {} } }
     restore_saved_sigmask();
 }
 

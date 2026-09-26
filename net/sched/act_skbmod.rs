@@ -19,13 +19,15 @@ unsafe fn tcf_skbmod_act(
     let mut max_edit_len: i32;
     let mut err: i32;
     let flags: u64;
+    'drop: {
+    'out: {
 
     tcf_lastuse_update(&mut (*d).tcf_tm);
     bstats_update(this_cpu_ptr((*d).common.cpu_bstats), skb);
 
     p = rcu_dereference_bh((*d).skbmod_p);
     if unlikely((*p).action == TC_ACT_SHOT) {
-        goto_drop!(drop);
+        break 'drop;
     }
 
     flags = (*p).flags;
@@ -45,19 +47,19 @@ unsafe fn tcf_skbmod_act(
             x if x == cpu_to_be16(ETH_P_IPV6) => {
                 max_edit_len = core::mem::size_of::<ipv6hdr>() as i32;
             }
-            _ => goto_out!(out),
+            _ => break 'out,
         }
         max_edit_len += skb_network_offset(skb);
     } else {
         if (*skb).dev.is_null() || (*(*skb).dev).type_ != ARPHRD_ETHER {
-            goto_out!(out);
+            break 'out;
         }
         max_edit_len = ETH_HLEN as i32;
     }
 
     err = skb_ensure_writable(skb, max_edit_len);
     if unlikely(err != 0) {
-        goto_drop!(drop);
+        break 'drop;
     }
 
     if flags & SKBMOD_F_DMAC as u64 != 0 {
@@ -81,11 +83,11 @@ unsafe fn tcf_skbmod_act(
     if flags & SKBMOD_F_ECN as u64 != 0 {
         INET_ECN_set_ce(skb);
     }
-
-out:
+    }
+    
     return (*p).action;
-
-drop:
+    }
+    
     qstats_cpu_overlimit_inc((*d).common.cpu_qstats);
     return TC_ACT_SHOT;
 }
@@ -99,6 +101,8 @@ unsafe fn tcf_skbmod_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     let ovr = flags & TCA_ACT_FLAGS_REPLACE != 0;
     let bind = flags & TCA_ACT_FLAGS_BIND != 0;
     let mut tb: [*mut nlattr; TCA_SKBMOD_MAX + 1] = [core::ptr::null_mut(); TCA_SKBMOD_MAX + 1];
+    'release_idr: {
+    'put_chain: {
     let mut lflags: u32 = 0;
     let mut index: u32;
     let mut goto_ch: *mut tcf_chain = core::ptr::null_mut();
@@ -126,9 +130,9 @@ unsafe fn tcf_skbmod_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     if exists && bind { return ACT_P_BOUND; }
     if lflags == 0 { if exists { tcf_idr_release(*a, bind); } else { tcf_idr_cleanup(tn, index); } return -EINVAL; }
     if !exists { ret = tcf_idr_create(tn, index, est, a, &ACT_SKBMOD_OPS, bind, true, flags); if ret != 0 { tcf_idr_cleanup(tn, index); return ret; } ret = ACT_P_CREATED; } else if !ovr { tcf_idr_release(*a, bind); return -EEXIST; }
-    err = tcf_action_check_ctrlact((*parm).action, tp, &mut goto_ch, extack); if err < 0 { goto release_idr; }
+    err = tcf_action_check_ctrlact((*parm).action, tp, &mut goto_ch, extack); if err < 0 { break 'release_idr; }
     let d: *mut tcf_skbmod = to_skbmod(*a);
-    let p: *mut tcf_skbmod_params = kzalloc_obj(); if p.is_null() { err = -ENOMEM; goto put_chain; }
+    let p: *mut tcf_skbmod_params = kzalloc_obj(); if p.is_null() { err = -ENOMEM; break 'put_chain; }
     (*p).flags = lflags; (*p).action = (*parm).action;
     if ovr { spin_lock_bh(&mut (*d).tcf_lock); }
     goto_ch = tcf_action_set_ctrlact(*a, (*parm).action, goto_ch);
@@ -141,9 +145,11 @@ unsafe fn tcf_skbmod_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     if !p_old.is_null() { kfree_rcu(p_old, rcu); }
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
     return ret;
-put_chain:
+    }
+    
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
-release_idr:
+    }
+    
     tcf_idr_release(*a, bind); err
 }
 
@@ -158,20 +164,22 @@ unsafe fn tcf_skbmod_dump(skb: *mut sk_buff, a: *mut tc_action, bind: i32, ref_:
     let b = skb_tail_pointer(skb);
     let mut opt: tc_skbmod = core::mem::zeroed();
     let mut t: tcf_t = core::mem::zeroed();
+    'nla_put_failure: {
     opt.index = (*d).tcf_index;
     opt.refcnt = refcount_read(&(*d).tcf_refcnt) - ref_;
     opt.bindcnt = atomic_read(&(*d).tcf_bindcnt) - bind;
     rcu_read_lock();
     let p = rcu_dereference((*d).skbmod_p);
     opt.action = (*p).action; opt.flags = (*p).flags;
-    if nla_put(skb, TCA_SKBMOD_PARMS, core::mem::size_of::<tc_skbmod>() as i32, &opt as *const _ as *const core::ffi::c_void) != 0 { goto nla_put_failure; }
-    if (*p).flags & SKBMOD_F_DMAC != 0 && nla_put(skb, TCA_SKBMOD_DMAC, ETH_ALEN as i32, (*p).eth_dst.as_ptr() as *const _) != 0 { goto nla_put_failure; }
-    if (*p).flags & SKBMOD_F_SMAC != 0 && nla_put(skb, TCA_SKBMOD_SMAC, ETH_ALEN as i32, (*p).eth_src.as_ptr() as *const _) != 0 { goto nla_put_failure; }
-    if (*p).flags & SKBMOD_F_ETYPE != 0 && nla_put_u16(skb, TCA_SKBMOD_ETYPE, ntohs((*p).eth_type)) != 0 { goto nla_put_failure; }
+    if nla_put(skb, TCA_SKBMOD_PARMS, core::mem::size_of::<tc_skbmod>() as i32, &opt as *const _ as *const core::ffi::c_void) != 0 { break 'nla_put_failure; }
+    if (*p).flags & SKBMOD_F_DMAC != 0 && nla_put(skb, TCA_SKBMOD_DMAC, ETH_ALEN as i32, (*p).eth_dst.as_ptr() as *const _) != 0 { break 'nla_put_failure; }
+    if (*p).flags & SKBMOD_F_SMAC != 0 && nla_put(skb, TCA_SKBMOD_SMAC, ETH_ALEN as i32, (*p).eth_src.as_ptr() as *const _) != 0 { break 'nla_put_failure; }
+    if (*p).flags & SKBMOD_F_ETYPE != 0 && nla_put_u16(skb, TCA_SKBMOD_ETYPE, ntohs((*p).eth_type)) != 0 { break 'nla_put_failure; }
     tcf_tm_dump(&mut t, &(*d).tcf_tm);
-    if nla_put_64bit(skb, TCA_SKBMOD_TM, core::mem::size_of::<tcf_t>() as i32, &t, TCA_SKBMOD_PAD) != 0 { goto nla_put_failure; }
+    if nla_put_64bit(skb, TCA_SKBMOD_TM, core::mem::size_of::<tcf_t>() as i32, &t, TCA_SKBMOD_PAD) != 0 { break 'nla_put_failure; }
     rcu_read_unlock(); return (*skb).len;
-nla_put_failure:
+    }
+    
     rcu_read_unlock(); nlmsg_trim(skb, b); -1
 }
 

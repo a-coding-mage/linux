@@ -102,13 +102,13 @@ pub unsafe fn ip_vs_est_kthread_stop(kd:*mut ip_vs_est_kt_data) { if !(*kd).task
 
 // Direct translations of the allocator/enqueue and calculation-phase helpers;
 // their kernel primitives and structure layouts are external dependencies.
-extern "C" { fn ip_vs_est_add_kthread(*mut netns_ipvs)->i32; }
+extern "C" { fn ip_vs_est_add_kthread(_: *mut netns_ipvs)->i32; }
 
 pub unsafe fn ip_vs_estimator_net_init(ipvs:*mut netns_ipvs)->i32 { INIT_HLIST_HEAD!((*ipvs).est_temp_list); (*ipvs).est_kt_arr=core::ptr::null_mut(); (*ipvs).est_max_threads=0; (*ipvs).est_calc_phase=0; (*ipvs).est_chain_max=0; (*ipvs).est_kt_count=0; (*ipvs).est_add_ktid=0; atomic_set!((*ipvs).est_genid,0); atomic_set!((*ipvs).est_genid_done,0); __mutex_init!((*ipvs).est_mutex,"ipvs.est_mutex",&raw mut __IPVS_EST_KEY); 0 }
 
 pub unsafe fn ip_vs_estimator_net_cleanup(ipvs:*mut netns_ipvs) { for i in 0..(*ipvs).est_kt_count { ip_vs_est_kthread_destroy((*ipvs).est_kt_arr.add(i)); } kfree!((*ipvs).est_kt_arr); mutex_destroy!((*ipvs).est_mutex); }
 
 // Full declarations whose definitions are supplied by the translated IPVS units.
-extern "C" { fn ip_vs_est_calc_phase(*mut netns_ipvs); fn ip_vs_est_drain_temp_list(*mut netns_ipvs); fn ip_vs_est_stopped_recalc(*mut netns_ipvs); fn ip_vs_est_kthread_destroy(*mut ip_vs_est_kt_data); }
+extern "C" { fn ip_vs_est_calc_phase(_: *mut netns_ipvs); fn ip_vs_est_drain_temp_list(_: *mut netns_ipvs); fn ip_vs_est_stopped_recalc(_: *mut netns_ipvs); fn ip_vs_est_kthread_destroy(_: *mut ip_vs_est_kt_data); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

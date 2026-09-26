@@ -76,19 +76,19 @@ pub unsafe fn kexec_unlock() {
 }
 
 // CONFIG_KEXEC_FILE is a build-time condition from the original header.
-#[cfg(feature = "CONFIG_KEXEC_FILE")]
+#[cfg(CONFIG_KEXEC_FILE)]
 extern "C" {
     pub fn kimage_file_post_load_cleanup(image: *mut kimage);
     pub static mut kexec_purgatory: [core::ffi::c_char; 0];
     pub static mut kexec_purgatory_size: usize;
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_FILE"))]
+#[cfg(not(CONFIG_KEXEC_FILE))]
 #[inline]
 pub unsafe fn kimage_file_post_load_cleanup(_image: *mut kimage) {}
 
 // CONFIG_KEXEC_HANDOVER is a build-time condition from the original header.
-#[cfg(feature = "CONFIG_KEXEC_HANDOVER")]
+#[cfg(CONFIG_KEXEC_HANDOVER)]
 extern "C" {
     pub fn kho_locate_mem_hole(
         kbuf: *mut kexec_buf,
@@ -97,7 +97,7 @@ extern "C" {
     pub fn kho_fill_kimage(image: *mut kimage) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 #[inline]
 pub unsafe fn kho_locate_mem_hole(
     _kbuf: *mut kexec_buf,
@@ -106,7 +106,7 @@ pub unsafe fn kho_locate_mem_hole(
     1
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 #[inline]
 pub unsafe fn kho_fill_kimage(_image: *mut kimage) -> c_int {
     0

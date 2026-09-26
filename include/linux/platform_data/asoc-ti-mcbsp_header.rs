@@ -13,8 +13,8 @@
 /* Platform specific configuration */
 #[repr(C)]
 pub struct omap_mcbsp_ops {
-    pub request: Option<unsafe extern "C" fn(unsigned int)>,
-    pub free: Option<unsafe extern "C" fn(unsigned int)>,
+    pub request: Option<unsafe extern "C" fn(core::ffi::c_uint)>,
+    pub free: Option<unsafe extern "C" fn(core::ffi::c_uint)>,
 }
 
 #[repr(C)]

@@ -51,21 +51,17 @@ struct acpi_genl_event {
 }
 
 #[cfg(CONFIG_NET)]
-enum {
-    ACPI_GENL_ATTR_UNSPEC,
-    ACPI_GENL_ATTR_EVENT,
-    __ACPI_GENL_ATTR_MAX,
-}
+pub const ACPI_GENL_ATTR_UNSPEC: i32 = 0;
+pub const ACPI_GENL_ATTR_EVENT: i32 = ACPI_GENL_ATTR_UNSPEC + 1;
+pub const __ACPI_GENL_ATTR_MAX: i32 = ACPI_GENL_ATTR_EVENT + 1;
 
 #[cfg(CONFIG_NET)]
 const ACPI_GENL_ATTR_MAX: i32 = __ACPI_GENL_ATTR_MAX - 1;
 
 #[cfg(CONFIG_NET)]
-enum {
-    ACPI_GENL_CMD_UNSPEC,
-    ACPI_GENL_CMD_EVENT,
-    __ACPI_GENL_CMD_MAX,
-}
+pub const ACPI_GENL_CMD_UNSPEC: i32 = 0;
+pub const ACPI_GENL_CMD_EVENT: i32 = ACPI_GENL_CMD_UNSPEC + 1;
+pub const __ACPI_GENL_CMD_MAX: i32 = ACPI_GENL_CMD_EVENT + 1;
 
 #[cfg(CONFIG_NET)]
 const ACPI_GENL_CMD_MAX: i32 = __ACPI_GENL_CMD_MAX - 1;

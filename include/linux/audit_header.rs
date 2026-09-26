@@ -65,7 +65,7 @@ pub const AUDIT_OFF: c_int = 0; pub const AUDIT_ON: c_int = 1; pub const AUDIT_L
 pub const AUDIT_INODE_PARENT: u32 = 1; pub const AUDIT_INODE_HIDDEN: u32 = 2;
 pub const AUDIT_INODE_NOEVAL: u32 = 4;
 
-#[cfg(feature = "CONFIG_AUDITSYSCALL")]
+#[cfg(CONFIG_AUDITSYSCALL)]
 extern "C" {
     pub fn audit_alloc(task: *mut task_struct) -> c_int; pub fn __audit_free(task: *mut task_struct);
     pub fn __audit_uring_entry(op: u8); pub fn __audit_uring_exit(success: c_int, code: c_long);

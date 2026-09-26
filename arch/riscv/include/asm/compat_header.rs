@@ -9,7 +9,7 @@ pub const COMPAT_UTS_MACHINE: &[u8] = b"riscv32\0\0";
 
 pub unsafe fn is_compat_task() -> i32 {
     // Preserves the build-time CONFIG_COMPAT condition from IS_ENABLED(CONFIG_COMPAT).
-    if !cfg!(feature = "CONFIG_COMPAT") {
+    if !cfg!(CONFIG_COMPAT) {
         return 0;
     }
 
@@ -18,7 +18,7 @@ pub unsafe fn is_compat_task() -> i32 {
 
 pub unsafe fn is_compat_thread(thread: *mut thread_info) -> i32 {
     // Preserves the build-time CONFIG_COMPAT condition from IS_ENABLED(CONFIG_COMPAT).
-    if !cfg!(feature = "CONFIG_COMPAT") {
+    if !cfg!(CONFIG_COMPAT) {
         return 0;
     }
 

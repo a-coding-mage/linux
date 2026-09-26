@@ -433,7 +433,7 @@ unsafe extern "C" fn wm8961_hw_params(
 
     reg = snd_soc_component_read(component, WM8961_CLOCKING_4) as u16;
     reg &= !(WM8961_CLK_SYS_RATE_MASK as u16);
-    reg |= (wm8961_clk_sys_ratio[i].val as u32 << WM8961_CLK_SYS_RATE_SHIFT) as u16;
+    reg |= ((wm8961_clk_sys_ratio[i].val as u32) << WM8961_CLK_SYS_RATE_SHIFT) as u16;
     snd_soc_component_write(component, WM8961_CLOCKING_4, reg as core::ffi::c_uint);
 
     reg = snd_soc_component_read(component, WM8961_AUDIO_INTERFACE_0) as u16;

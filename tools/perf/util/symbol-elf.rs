@@ -1878,7 +1878,7 @@ unsafe fn populate_sdt_note(elf: *mut *mut Elf, data: *const c_char, len: size_t
     (*tmp).name = strdup(name);
     if (*tmp).name.is_null() { zfree(&mut (*tmp).provider); free(tmp as *mut c_void); return -ENOMEM; }
     let args0 = memchr(name as *const c_void, 0, data.add(len) as usize - name as usize) as *const c_char;
-    if args0.is_null() || data.add(len) as usize - args0 as usize < 2 || *args0.add(1) == b':' as c_char || *args0.add(1) == 0 {
+    if args0.is_null() || data.add(len) as usize - (args0 as usize) < 2 || *args0.add(1) == b':' as c_char || *args0.add(1) == 0 {
         (*tmp).args = ptr::null_mut();
     } else {
         (*tmp).args = strdup(args0.add(1));

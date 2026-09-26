@@ -115,7 +115,7 @@ pub unsafe fn timer_pending(timer: *const timer_list) -> i32 {
     (!hlist_unhashed_lockless!((*timer).entry)).into()
 }
 
-pub const TIMER_NEXT_MAX_DELTA: c_ulong = (1 as c_ulong << 30) - 1;
+pub const TIMER_NEXT_MAX_DELTA: c_ulong = ((1 as c_ulong) << 30) - 1;
 
 #[cfg(CONFIG_HOTPLUG_CPU)]
 extern "C" {

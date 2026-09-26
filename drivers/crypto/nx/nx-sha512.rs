@@ -62,6 +62,7 @@ unsafe fn nx_sha512_update(desc: *mut shash_desc, mut data: *const u8, len: u32)
     let mut rc: i32 = 0;
     let mut data_len: i32;
     let mut max_sg_len: u32;
+    'out: {
 
     spin_lock_irqsave(&mut (*nx_ctx).lock, &mut irq_flags);
 
@@ -82,7 +83,7 @@ unsafe fn nx_sha512_update(desc: *mut shash_desc, mut data: *const u8, len: u32)
 
     if data_len != SHA512_DIGEST_SIZE as i32 {
         rc = -EINVAL;
-        goto_out!(out);
+        break 'out;
     }
 
     loop {
@@ -99,10 +100,10 @@ unsafe fn nx_sha512_update(desc: *mut shash_desc, mut data: *const u8, len: u32)
 
         if (*nx_ctx).op.inlen == 0 || (*nx_ctx).op.outlen == 0 {
             rc = -EINVAL;
-            goto_out!(out);
+            break 'out;
         }
         rc = nx_hcall_sync(nx_ctx, &mut (*nx_ctx).op, 0);
-        if rc != 0 { goto_out!(out); }
+        if rc != 0 { break 'out; }
         atomic_inc(&mut (*(*nx_ctx).stats).sha512_ops);
         total -= to_process;
         data = data.add(to_process as usize);
@@ -113,7 +114,8 @@ unsafe fn nx_sha512_update(desc: *mut shash_desc, mut data: *const u8, len: u32)
     rc = leftover as i32;
     memcpy((*sctx).state.as_mut_ptr() as *mut u8,
            (*csbcpb).cpb.sha512.message_digest.as_ptr() as *const u8, SHA512_DIGEST_SIZE);
-out:
+    }
+    
     spin_unlock_irqrestore(&mut (*nx_ctx).lock, irq_flags);
     rc
 }
@@ -130,6 +132,7 @@ unsafe fn nx_sha512_finup(desc: *mut shash_desc, src: *const u8, nbytes: u32,
     let count1 = (*sctx).count[1];
     let mut max_sg_len = core::cmp::min((*nx_ctx).ap.sglen as u64,
         nx_driver.of.max_sg_len as u64 / core::mem::size_of::<nx_sg>() as u64) as u32;
+    'out: {
     max_sg_len = core::cmp::min(max_sg_len as u64,
         (*nx_ctx).ap.databytelen as u64 / NX_PAGE_SIZE as u64) as u32;
 
@@ -143,18 +146,19 @@ unsafe fn nx_sha512_finup(desc: *mut shash_desc, src: *const u8, nbytes: u32,
 
     len = nbytes as i32;
     let in_sg = nx_build_sg_list((*nx_ctx).in_sg, src as *mut u8, &mut len, max_sg_len);
-    if len != nbytes as i32 { rc = -EINVAL; goto_out!(out); }
+    if len != nbytes as i32 { rc = -EINVAL; break 'out; }
     len = SHA512_DIGEST_SIZE as i32;
     let out_sg = nx_build_sg_list((*nx_ctx).out_sg, out, &mut len, max_sg_len);
     (*nx_ctx).op.inlen = ((*nx_ctx).in_sg as usize - in_sg as usize) as u64 * core::mem::size_of::<nx_sg>() as u64;
     (*nx_ctx).op.outlen = ((*nx_ctx).out_sg as usize - out_sg as usize) as u64 * core::mem::size_of::<nx_sg>() as u64;
-    if (*nx_ctx).op.outlen == 0 { rc = -EINVAL; goto_out!(out); }
+    if (*nx_ctx).op.outlen == 0 { rc = -EINVAL; break 'out; }
     rc = nx_hcall_sync(nx_ctx, &mut (*nx_ctx).op, 0);
-    if rc != 0 { goto_out!(out); }
+    if rc != 0 { break 'out; }
     atomic_inc(&mut (*(*nx_ctx).stats).sha512_ops);
     atomic64_add(count0, &mut (*(*nx_ctx).stats).sha512_bytes);
     memcpy(out, (*csbcpb).cpb.sha512.message_digest.as_ptr() as *const u8, SHA512_DIGEST_SIZE);
-out:
+    }
+    
     spin_unlock_irqrestore(&mut (*nx_ctx).lock, irq_flags);
     rc
 }

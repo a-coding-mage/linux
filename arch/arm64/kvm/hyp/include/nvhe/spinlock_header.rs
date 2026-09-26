@@ -107,7 +107,7 @@ pub unsafe fn hyp_spin_is_locked(lock: *mut hyp_spinlock_t) -> bool {
     fields.owner != fields.next
 }
 
-#[cfg(feature = "CONFIG_NVHE_EL2_DEBUG")]
+#[cfg(CONFIG_NVHE_EL2_DEBUG)]
 #[inline]
 pub unsafe fn hyp_assert_lock_held(lock: *mut hyp_spinlock_t) {
     // static_branch_likely(&kvm_protected_mode_initialized) gates BUG_ON.
@@ -117,7 +117,7 @@ pub unsafe fn hyp_assert_lock_held(lock: *mut hyp_spinlock_t) {
     panic!("BUG_ON(!hyp_spin_is_locked(lock))");
 }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_DEBUG"))]
+#[cfg(not(CONFIG_NVHE_EL2_DEBUG))]
 #[inline]
 pub unsafe fn hyp_assert_lock_held(_lock: *mut hyp_spinlock_t) {}
 

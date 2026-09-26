@@ -46,7 +46,7 @@ enum clk_ids {
 
 // The following initializer is kept in source form because DEF_* are
 // declarations/macros supplied by the CPG support headers.
-static const r8a7796_core_clks: &[cpg_core_clk] = &[
+static r8a7796_core_clks: &[cpg_core_clk] = &[
     DEF_INPUT!("extal", CLK_EXTAL), DEF_INPUT!("extalr", CLK_EXTALR),
     DEF_BASE!(".main", CLK_MAIN, CLK_TYPE_GEN3_MAIN, CLK_EXTAL),
     DEF_BASE!(".pll0", CLK_PLL0, CLK_TYPE_GEN3_PLL0, CLK_MAIN),

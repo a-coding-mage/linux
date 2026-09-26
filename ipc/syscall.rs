@@ -27,7 +27,7 @@ pub unsafe fn ksys_ipc(
             if cfg!(target_pointer_width = "64") {
                 ksys_semtimedop(first, ptr as *mut sembuf, second, fifth as *const kernel_timespec)
             // IS_ENABLED(CONFIG_COMPAT_32BIT_TIME)
-            } else if cfg!(feature = "CONFIG_COMPAT_32BIT_TIME") {
+            } else if cfg!(CONFIG_COMPAT_32BIT_TIME) {
                 compat_ksys_semtimedop(first, ptr, second, fifth as *const old_timespec32)
             } else {
                 -ENOSYS
@@ -113,7 +113,7 @@ pub unsafe fn compat_ksys_ipc(
         SEMOP => ksys_semtimedop(first, compat_ptr(ptr), second as usize, core::ptr::null()),
         SEMTIMEDOP => {
             // !IS_ENABLED(CONFIG_COMPAT_32BIT_TIME)
-            if !cfg!(feature = "CONFIG_COMPAT_32BIT_TIME") {
+            if !cfg!(CONFIG_COMPAT_32BIT_TIME) {
                 return -ENOSYS;
             }
             compat_ksys_semtimedop(first, compat_ptr(ptr), second as usize, compat_ptr(fifth))

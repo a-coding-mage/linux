@@ -15,12 +15,28 @@
  */
 
 
-pub const fn BYTE_REF(addr: u32) -> u32 { (*((volatile unsigned char*)addr)) }
-pub const fn WORD_REF(addr: u32) -> u32 { (*((volatile unsigned short*)addr)) }
-pub const fn LONG_REF(addr: u32) -> u32 { (*((volatile unsigned long*)addr)) }
+// The C accessors are volatile lvalues at fixed addresses; here they yield the
+// register pointer, to be accessed with `read_volatile`/`write_volatile`.
+pub const fn BYTE_REF(addr: usize) -> *mut core::ffi::c_uchar {
+    addr as *mut core::ffi::c_uchar
+}
+pub const fn WORD_REF(addr: usize) -> *mut core::ffi::c_ushort {
+    addr as *mut core::ffi::c_ushort
+}
+pub const fn LONG_REF(addr: usize) -> *mut core::ffi::c_ulong {
+    addr as *mut core::ffi::c_ulong
+}
 
-pub const fn PUT_FIELD(field: u32, val: u32) -> u32 { (((val) << field##_SHIFT) & field##_MASK) }
-pub const fn GET_FIELD(reg: u32, field: u32) -> u32 { (((reg) & field##_MASK) >> field##_SHIFT) }
+macro_rules! PUT_FIELD {
+    ($field:ident, $val:expr) => {
+        ::kernel::macros::paste!((($val) << [<$field _SHIFT>]) & [<$field _MASK>])
+    };
+}
+macro_rules! GET_FIELD {
+    ($reg:expr, $field:ident) => {
+        ::kernel::macros::paste!((($reg) & [<$field _MASK>]) >> [<$field _SHIFT>])
+    };
+}
 
 /********** 
  *

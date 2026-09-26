@@ -3,48 +3,48 @@
 
 /* Kernel-only header; included dependencies and configuration symbols are supplied externally. */
 
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_ENABLED: i32 = 0x01;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_FORCE_DISABLED: i32 = 0x02;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PROBE_MODE_DEV: i32 = 0x04;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PROBE_MODE_DEVTREE: i32 = 0x08;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_ENABLE_IO_FOR_LOG: i32 = 0x20;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_EARLY_DUMP_LOG: i32 = 0x40;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_RST_HOLD_TIME: i32 = 250;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_RST_SETTLE_TIME: i32 = 1800;
 
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_INVALID: i32 = 1 << 0;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_PHB: i32 = 1 << 1;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_DEVICE: i32 = 1 << 2;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_BUS: i32 = 1 << 3;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_VF: i32 = 1 << 4;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_ISOLATED: i32 = 1 << 0;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_RECOVERING: i32 = 1 << 1;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_CFG_BLOCKED: i32 = 1 << 2;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_RESET: i32 = 1 << 3;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_KEEP: i32 = 1 << 8;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_CFG_RESTRICTED: i32 = 1 << 9;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_REMOVED: i32 = 1 << 10;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_PE_PRI_BUS: i32 = 1 << 11;
 
 #[repr(C)]
@@ -64,13 +64,13 @@ pub struct eeh_pe {
     pub child_list: list_head,
     pub child: list_head,
     pub edevs: list_head,
-    #[cfg(feature = "CONFIG_STACKTRACE")]
+    #[cfg(CONFIG_STACKTRACE)]
     pub stack_trace: [c_ulong; 64],
-    #[cfg(feature = "CONFIG_STACKTRACE")]
+    #[cfg(CONFIG_STACKTRACE)]
     pub trace_entries: i32,
 }
 
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 #[inline]
 pub unsafe fn eeh_pe_passed(pe: *mut eeh_pe) -> bool {
     !pe.is_null() && atomic_read(&(*pe).pass_dev_cnt) != 0
@@ -106,17 +106,17 @@ pub struct eeh_dev {
     pub vf_index: i32,
 }
 
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_NEXT_ERR_NONE: i32 = 0;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_NEXT_ERR_INF: i32 = 1;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_NEXT_ERR_FROZEN_PE: i32 = 2;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_NEXT_ERR_FENCED_PHB: i32 = 3;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_NEXT_ERR_DEAD_PHB: i32 = 4;
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 pub const EEH_NEXT_ERR_DEAD_IOC: i32 = 5;
 
 pub const EEH_OPT_DISABLE: i32 = 0;
@@ -162,17 +162,17 @@ extern "C" {
     pub static mut confirm_error_lock: raw_spinlock_t;
 }
 
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 #[inline] pub unsafe fn eeh_add_flag(flag: i32) { eeh_subsystem_flags |= flag; }
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 #[inline] pub unsafe fn eeh_clear_flag(flag: i32) { eeh_subsystem_flags &= !flag; }
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 #[inline] pub unsafe fn eeh_has_flag(flag: i32) -> bool { (eeh_subsystem_flags & flag) != 0 }
 #[inline] pub unsafe fn eeh_enabled() -> bool {
-    #[cfg(feature = "CONFIG_EEH")] { eeh_has_flag(EEH_ENABLED) && !eeh_has_flag(EEH_FORCE_DISABLED) }
-    #[cfg(not(feature = "CONFIG_EEH"))] { false }
+    #[cfg(CONFIG_EEH)] { eeh_has_flag(EEH_ENABLED) && !eeh_has_flag(EEH_FORCE_DISABLED) }
+    #[cfg(not(CONFIG_EEH))] { false }
 }
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_EEH)]
 #[inline] pub unsafe fn eeh_state_active(state: i32) -> bool {
     (state & (EEH_STATE_MMIO_ACTIVE | EEH_STATE_DMA_ACTIVE)) == (EEH_STATE_MMIO_ACTIVE | EEH_STATE_DMA_ACTIVE)
 }
@@ -224,22 +224,22 @@ extern "C" {
 pub unsafe fn EEH_POSSIBLE_ERROR<T: PartialEq + From<u8>>(val: T, typ: T) -> bool { val == typ && eeh_enabled() }
 pub const fn EEH_IO_ERROR_VALUE(size: usize) -> u32 { !0u32 >> ((4 - size) * 8) }
 
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_check_failure(_token: *const c_void) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_phb_pe_create(_phb: *mut pci_controller) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_show_enabled() {}
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_addr_cache_init() {}
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_probe_device(_dev: *mut pci_dev) {}
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_remove_device(_dev: *mut pci_dev) {}
-#[cfg(not(feature = "CONFIG_EEH"))]
+#[cfg(not(CONFIG_EEH))]
 #[inline] pub unsafe fn eeh_dev_check_failure(_dev: *mut eeh_dev) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 extern "C" {
     fn in_8(addr: *const c_void) -> u8;
     fn in_le16(addr: *const c_void) -> u16;
@@ -249,23 +249,23 @@ extern "C" {
     fn in_be32(addr: *const c_void) -> u32;
     fn in_be64(addr: *const c_void) -> u64;
 }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readb(addr: *const c_void) -> u8 { let v = in_8(addr); if v == u8::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readw(addr: *const c_void) -> u16 { let v = in_le16(addr); if v == u16::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readl(addr: *const c_void) -> u32 { let v = in_le32(addr); if v == u32::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readq(addr: *const c_void) -> u64 { let v = in_le64(addr); if v == u64::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readw_be(addr: *const c_void) -> u16 { let v = in_be16(addr); if v == u16::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readl_be(addr: *const c_void) -> u32 { let v = in_be32(addr); if v == u32::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline] pub unsafe fn eeh_readq_be(addr: *const c_void) -> u64 { let v = in_be64(addr); if v == u64::MAX && eeh_enabled() { eeh_check_failure(addr); } v }
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
-#[cfg(feature = "CONFIG_EEH")]
+#[cfg(CONFIG_PPC_PSERIES)]
+#[cfg(CONFIG_EEH)]
 extern "C" { pub fn pseries_eeh_init_edev_recursive(pdn: *mut pci_dn); }
 
 /* CONFIG_PPC64 MMIO wrappers and CONFIG_STACKTRACE fields retain their source conditions. */

@@ -772,9 +772,9 @@ pub struct sof_ipc_ops {
 #[macro_export]
 macro_rules! sof_ipc_get_ops {
     ($sdev:expr, $ops_name:ident) => {{
-        let sdev = $sdev;
-        if !(*sdev).ipc.is_null() && !(*(*sdev).ipc).ops.is_null() {
-            (*(*(*sdev).ipc).ops).$ops_name
+        let $sdev = $sdev;
+        if !(*$sdev).ipc.is_null() && !(*(*$sdev).ipc).ops.is_null() {
+            (*(*(*$sdev).ipc).ops).$ops_name
         } else {
             None
         }

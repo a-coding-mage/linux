@@ -40,13 +40,13 @@
 #undef MIPS_R_A7
 
 /* Stack is 8-byte aligned in o32 ABI */
-#define MIPS_STACK_ALIGNMENT 8
+pub const MIPS_STACK_ALIGNMENT: u32 = 8;
 
 /*
  * The top 16 bytes of a stack frame is reserved for the callee in O32 ABI.
  * This corresponds to stack space for register arguments a0-a3.
  */
-#define JIT_RESERVED_STACK 16
+pub const JIT_RESERVED_STACK: u32 = 16;
 
 /* Temporary 64-bit register used by JIT */
 #define JIT_REG_TMP MAX_BPF_JIT_REG
@@ -57,9 +57,9 @@
  * R0-to-v0 assignment (4 bytes) if big endian.
  */
 #ifdef __BIG_ENDIAN
-#define JIT_TCALL_SKIP 12
+pub const JIT_TCALL_SKIP: u32 = 12;
 #else
-#define JIT_TCALL_SKIP 8
+pub const JIT_TCALL_SKIP: u32 = 8;
 #endif
 
 /* CPU registers holding the callee return value */
@@ -152,7 +152,7 @@ static const u8 bpf2mips32[][2] = {
 };
 
 /* Get low CPU register for a 64-bit eBPF register mapping */
-static inline u8 lo(const u8 reg[])
+u8 lo(const u8 reg[])
 {
 #ifdef __BIG_ENDIAN
 	return reg[0];
@@ -162,7 +162,7 @@ static inline u8 lo(const u8 reg[])
 }
 
 /* Get high CPU register for a 64-bit eBPF register mapping */
-static inline u8 hi(const u8 reg[])
+u8 hi(const u8 reg[])
 {
 #ifdef __BIG_ENDIAN
 	return reg[1];
@@ -175,14 +175,14 @@ static inline u8 hi(const u8 reg[])
  * Mark a 64-bit CPU register pair as clobbered, it needs to be
  * saved/restored by the program if callee-saved.
  */
-static void clobber_reg64(struct jit_context *ctx, const u8 reg[])
+static void clobber_reg64(jit_context *ctx, const u8 reg[])
 {
 	clobber_reg(ctx, reg[0]);
 	clobber_reg(ctx, reg[1]);
 }
 
 /* dst = imm (sign-extended) */
-static void emit_mov_se_i64(struct jit_context *ctx, const u8 dst[], s32 imm)
+static void emit_mov_se_i64(jit_context *ctx, const u8 dst[], s32 imm)
 {
 	emit_mov_i(ctx, lo(dst), imm);
 	if (imm < 0)
@@ -193,24 +193,24 @@ static void emit_mov_se_i64(struct jit_context *ctx, const u8 dst[], s32 imm)
 }
 
 /* Zero extension, if verifier does not do it for us  */
-static void emit_zext_ver(struct jit_context *ctx, const u8 dst[])
+static void emit_zext_ver(jit_context *ctx, const u8 dst[])
 {
-	if (!ctx->program->aux->verifier_zext) {
+	if ((*(*(*!ctx).program).aux).verifier_zext) {
 		emit(ctx, move, hi(dst), MIPS_R_ZERO);
 		clobber_reg(ctx, hi(dst));
 	}
 }
 
 /* Load delay slot, if ISA mandates it */
-static void emit_load_delay(struct jit_context *ctx)
+static void emit_load_delay(jit_context *ctx)
 {
 	if (!cpu_has_mips_2_3_4_5_r)
 		emit(ctx, nop);
 }
 
 /* ALU immediate operation (64-bit) */
-static void emit_alu_i64(struct jit_context *ctx,
-			 const u8 dst[], s32 imm, u8 op)
+static void emit_alu_i64(jit_context *ctx,
+			 const u8 dst[], s32 imm, op: u8)
 {
 	u8 src = MIPS_R_T6;
 
@@ -275,8 +275,8 @@ static void emit_alu_i64(struct jit_context *ctx,
 }
 
 /* ALU register operation (64-bit) */
-static void emit_alu_r64(struct jit_context *ctx,
-			 const u8 dst[], const u8 src[], u8 op)
+static void emit_alu_r64(jit_context *ctx,
+			 const u8 dst[], const u8 src[], op: u8)
 {
 	switch (BPF_OP(op)) {
 	/* dst = dst + src */
@@ -318,7 +318,7 @@ static void emit_alu_r64(struct jit_context *ctx,
 }
 
 /* ALU invert (64-bit) */
-static void emit_neg_i64(struct jit_context *ctx, const u8 dst[])
+static void emit_neg_i64(jit_context *ctx, const u8 dst[])
 {
 	emit(ctx, sltu, MIPS_R_T9, MIPS_R_ZERO, lo(dst));
 	emit(ctx, subu, lo(dst), MIPS_R_ZERO, lo(dst));
@@ -329,8 +329,8 @@ static void emit_neg_i64(struct jit_context *ctx, const u8 dst[])
 }
 
 /* ALU shift immediate (64-bit) */
-static void emit_shift_i64(struct jit_context *ctx,
-			   const u8 dst[], u32 imm, u8 op)
+static void emit_shift_i64(jit_context *ctx,
+			   const u8 dst[], imm: u32, op: u8)
 {
 	switch (BPF_OP(op)) {
 	/* dst = dst << imm */
@@ -374,8 +374,8 @@ static void emit_shift_i64(struct jit_context *ctx,
 }
 
 /* ALU shift register (64-bit) */
-static void emit_shift_r64(struct jit_context *ctx,
-			   const u8 dst[], u8 src, u8 op)
+static void emit_shift_r64(jit_context *ctx,
+			   const u8 dst[], src: u8, op: u8)
 {
 	u8 t1 = MIPS_R_T8;
 	u8 t2 = MIPS_R_T9;
@@ -431,7 +431,7 @@ static void emit_shift_r64(struct jit_context *ctx,
 }
 
 /* ALU mul immediate (64x32-bit) */
-static void emit_mul_i64(struct jit_context *ctx, const u8 dst[], s32 imm)
+static void emit_mul_i64(jit_context *ctx, const u8 dst[], s32 imm)
 {
 	u8 src = MIPS_R_T6;
 	u8 tmp = MIPS_R_T9;
@@ -482,7 +482,7 @@ static void emit_mul_i64(struct jit_context *ctx, const u8 dst[], s32 imm)
 }
 
 /* ALU mul register (64x64-bit) */
-static void emit_mul_r64(struct jit_context *ctx,
+static void emit_mul_r64(jit_context *ctx,
 			 const u8 dst[], const u8 src[])
 {
 	u8 acc = MIPS_R_T8;
@@ -524,7 +524,7 @@ static void emit_mul_r64(struct jit_context *ctx,
 }
 
 /* Helper function for 64-bit modulo */
-static u64 jit_mod64(u64 a, u64 b)
+static u64 jit_mod64(a: u64, b: u64)
 {
 	u64 rem;
 
@@ -533,8 +533,8 @@ static u64 jit_mod64(u64 a, u64 b)
 }
 
 /* ALU div/mod register (64-bit) */
-static void emit_divmod_r64(struct jit_context *ctx,
-			    const u8 dst[], const u8 src[], u8 op)
+static void emit_divmod_r64(jit_context *ctx,
+			    const u8 dst[], const u8 src[], op: u8)
 {
 	const u8 *r0 = bpf2mips32[BPF_REG_0]; /* Mapped to v0-v1 */
 	const u8 *r1 = bpf2mips32[BPF_REG_1]; /* Mapped to a0-a1 */
@@ -543,7 +543,7 @@ static void emit_divmod_r64(struct jit_context *ctx,
 	u32 addr = 0;
 
 	/* Push caller-saved registers on stack */
-	push_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	push_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		  0, JIT_RESERVED_STACK);
 
 	/* Put 64-bit arguments 1 and 2 in registers a0-a3 */
@@ -574,7 +574,7 @@ static void emit_divmod_r64(struct jit_context *ctx,
 
 	/* Restore caller-saved registers, excluding the computed result */
 	exclude = BIT(lo(dst)) | BIT(hi(dst));
-	pop_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	pop_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		 exclude, JIT_RESERVED_STACK);
 	emit_load_delay(ctx);
 
@@ -585,7 +585,7 @@ static void emit_divmod_r64(struct jit_context *ctx,
 }
 
 /* Swap bytes in a register word */
-static void emit_swap8_r(struct jit_context *ctx, u8 dst, u8 src, u8 mask)
+static void emit_swap8_r(jit_context *ctx, dst: u8, src: u8, mask: u8)
 {
 	u8 tmp = MIPS_R_T9;
 
@@ -597,7 +597,7 @@ static void emit_swap8_r(struct jit_context *ctx, u8 dst, u8 src, u8 mask)
 }
 
 /* Swap half words in a register word */
-static void emit_swap16_r(struct jit_context *ctx, u8 dst, u8 src)
+static void emit_swap16_r(jit_context *ctx, dst: u8, src: u8)
 {
 	u8 tmp = MIPS_R_T9;
 
@@ -607,7 +607,7 @@ static void emit_swap16_r(struct jit_context *ctx, u8 dst, u8 src)
 }
 
 /* Swap bytes and truncate a register double word, word or half word */
-static void emit_bswap_r64(struct jit_context *ctx, const u8 dst[], u32 width)
+static void emit_bswap_r64(jit_context *ctx, const u8 dst[], width: u32)
 {
 	u8 tmp = MIPS_R_T8;
 
@@ -642,7 +642,7 @@ static void emit_bswap_r64(struct jit_context *ctx, const u8 dst[], u32 width)
 }
 
 /* Truncate a register double word, word or half word */
-static void emit_trunc_r64(struct jit_context *ctx, const u8 dst[], u32 width)
+static void emit_trunc_r64(jit_context *ctx, const u8 dst[], width: u32)
 {
 	switch (width) {
 	case 64:
@@ -662,8 +662,8 @@ static void emit_trunc_r64(struct jit_context *ctx, const u8 dst[], u32 width)
 }
 
 /* Load operation: dst = *(size*)(src + off) */
-static void emit_ldx(struct jit_context *ctx,
-		     const u8 dst[], u8 src, s16 off, u8 size)
+static void emit_ldx(jit_context *ctx,
+		     const u8 dst[], src: u8, s16 off, size: u8)
 {
 	switch (size) {
 	/* Load a byte */
@@ -697,8 +697,8 @@ static void emit_ldx(struct jit_context *ctx,
 }
 
 /* Store operation: *(size *)(dst + off) = src */
-static void emit_stx(struct jit_context *ctx,
-		     const u8 dst, const u8 src[], s16 off, u8 size)
+static void emit_stx(jit_context *ctx,
+		     const u8 dst, const u8 src[], s16 off, size: u8)
 {
 	switch (size) {
 	/* Store a byte */
@@ -722,14 +722,14 @@ static void emit_stx(struct jit_context *ctx,
 }
 
 /* Atomic read-modify-write (32-bit, non-ll/sc fallback) */
-static void emit_atomic_r32(struct jit_context *ctx,
-			    u8 dst, u8 src, s16 off, u8 code)
+static void emit_atomic_r32(jit_context *ctx,
+			    dst: u8, src: u8, s16 off, code: u8)
 {
 	u32 exclude = 0;
 	u32 addr = 0;
 
 	/* Push caller-saved registers on stack */
-	push_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	push_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		  0, JIT_RESERVED_STACK);
 	/*
 	 * Argument 1: dst+off if xchg, otherwise src, passed in register a0
@@ -792,7 +792,7 @@ static void emit_atomic_r32(struct jit_context *ctx,
 	}
 
 	/* Restore caller-saved registers, except any fetched value */
-	pop_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	pop_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		 exclude, JIT_RESERVED_STACK);
 	emit_load_delay(ctx);
 	clobber_reg(ctx, MIPS_R_RA);
@@ -805,8 +805,8 @@ static s64 jit_xchg64(s64 a, atomic64_t *v)
 }
 
 /* Atomic read-modify-write (64-bit) */
-static void emit_atomic_r64(struct jit_context *ctx,
-			    u8 dst, const u8 src[], s16 off, u8 code)
+static void emit_atomic_r64(jit_context *ctx,
+			    dst: u8, const u8 src[], s16 off, code: u8)
 {
 	const u8 *r0 = bpf2mips32[BPF_REG_0]; /* Mapped to v0-v1 */
 	const u8 *r1 = bpf2mips32[BPF_REG_1]; /* Mapped to a0-a1 */
@@ -814,7 +814,7 @@ static void emit_atomic_r64(struct jit_context *ctx,
 	u32 addr = 0;
 
 	/* Push caller-saved registers on stack */
-	push_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	push_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		  0, JIT_RESERVED_STACK);
 	/*
 	 * Argument 1: 64-bit src, passed in registers a0-a1
@@ -874,19 +874,19 @@ static void emit_atomic_r64(struct jit_context *ctx,
 	}
 
 	/* Restore caller-saved registers, except any fetched value */
-	pop_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	pop_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		 exclude, JIT_RESERVED_STACK);
 	emit_load_delay(ctx);
 	clobber_reg(ctx, MIPS_R_RA);
 }
 
 /* Atomic compare-and-exchange (32-bit, non-ll/sc fallback) */
-static void emit_cmpxchg_r32(struct jit_context *ctx, u8 dst, u8 src, s16 off)
+static void emit_cmpxchg_r32(jit_context *ctx, dst: u8, src: u8, s16 off)
 {
 	const u8 *r0 = bpf2mips32[BPF_REG_0];
 
 	/* Push caller-saved registers on stack */
-	push_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	push_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		  JIT_RETURN_REGS, JIT_RESERVED_STACK + 2 * sizeof(u32));
 	/*
 	 * Argument 1: 32-bit dst+off, passed in register a0
@@ -908,7 +908,7 @@ static void emit_cmpxchg_r32(struct jit_context *ctx, u8 dst, u8 src, s16 off)
 	emit(ctx, move, lo(r0), MIPS_R_V0);
 #endif
 	/* Restore caller-saved registers, except the return value */
-	pop_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	pop_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		 JIT_RETURN_REGS, JIT_RESERVED_STACK + 2 * sizeof(u32));
 	emit_load_delay(ctx);
 	clobber_reg(ctx, MIPS_R_V0);
@@ -917,14 +917,14 @@ static void emit_cmpxchg_r32(struct jit_context *ctx, u8 dst, u8 src, s16 off)
 }
 
 /* Atomic compare-and-exchange (64-bit) */
-static void emit_cmpxchg_r64(struct jit_context *ctx,
-			     u8 dst, const u8 src[], s16 off)
+static void emit_cmpxchg_r64(jit_context *ctx,
+			     dst: u8, const u8 src[], s16 off)
 {
 	const u8 *r0 = bpf2mips32[BPF_REG_0];
 	const u8 *r2 = bpf2mips32[BPF_REG_2];
 
 	/* Push caller-saved registers on stack */
-	push_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	push_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		  JIT_RETURN_REGS, JIT_RESERVED_STACK + 2 * sizeof(u32));
 	/*
 	 * Argument 1: 32-bit dst+off, passed in register a0 (a1 unused)
@@ -943,7 +943,7 @@ static void emit_cmpxchg_r64(struct jit_context *ctx,
 	emit(ctx, nop); /* Delay slot */
 
 	/* Restore caller-saved registers, except the return value */
-	pop_regs(ctx, ctx->clobbered & JIT_CALLER_REGS,
+	pop_regs(ctx, (*ctx).clobbered & JIT_CALLER_REGS,
 		 JIT_RETURN_REGS, JIT_RESERVED_STACK + 2 * sizeof(u32));
 	emit_load_delay(ctx);
 	clobber_reg(ctx, MIPS_R_V0);
@@ -955,7 +955,7 @@ static void emit_cmpxchg_r64(struct jit_context *ctx,
  * Conditional movz or an emulated equivalent.
  * Note that the rs register may be modified.
  */
-static void emit_movz_r(struct jit_context *ctx, u8 rd, u8 rs, u8 rt)
+static void emit_movz_r(jit_context *ctx, rd: u8, rs: u8, rt: u8)
 {
 	if (cpu_has_mips_2) {
 		emit(ctx, movz, rd, rs, rt);           /* rd = rt ? rd : rs  */
@@ -978,7 +978,7 @@ static void emit_movz_r(struct jit_context *ctx, u8 rd, u8 rs, u8 rt)
  * Conditional movn or an emulated equivalent.
  * Note that the rs register may be modified.
  */
-static void emit_movn_r(struct jit_context *ctx, u8 rd, u8 rs, u8 rt)
+static void emit_movn_r(jit_context *ctx, rd: u8, rs: u8, rt: u8)
 {
 	if (cpu_has_mips_2) {
 		emit(ctx, movn, rd, rs, rt);           /* rd = rt ? rs : rd  */
@@ -998,7 +998,7 @@ static void emit_movn_r(struct jit_context *ctx, u8 rd, u8 rs, u8 rt)
 }
 
 /* Emulation of 64-bit sltiu rd, rs, imm, where imm may be S32_MAX + 1 */
-static void emit_sltiu_r64(struct jit_context *ctx, u8 rd,
+static void emit_sltiu_r64(jit_context *ctx, rd: u8,
 			   const u8 rs[], s64 imm)
 {
 	u8 tmp = MIPS_R_T9;
@@ -1020,7 +1020,7 @@ static void emit_sltiu_r64(struct jit_context *ctx, u8 rd,
 }
 
 /* Emulation of 64-bit sltu rd, rs, rt */
-static void emit_sltu_r64(struct jit_context *ctx, u8 rd,
+static void emit_sltu_r64(jit_context *ctx, rd: u8,
 			  const u8 rs[], const u8 rt[])
 {
 	u8 tmp = MIPS_R_T9;
@@ -1033,7 +1033,7 @@ static void emit_sltu_r64(struct jit_context *ctx, u8 rd,
 }
 
 /* Emulation of 64-bit slti rd, rs, imm, where imm may be S32_MAX + 1 */
-static void emit_slti_r64(struct jit_context *ctx, u8 rd,
+static void emit_slti_r64(jit_context *ctx, rd: u8,
 			  const u8 rs[], s64 imm)
 {
 	u8 t1 = MIPS_R_T8;
@@ -1075,7 +1075,7 @@ static void emit_slti_r64(struct jit_context *ctx, u8 rd,
 }
 
 /* Emulation of 64-bit(slt rd, rs, rt) */
-static void emit_slt_r64(struct jit_context *ctx, u8 rd,
+static void emit_slt_r64(jit_context *ctx, rd: u8,
 			 const u8 rs[], const u8 rt[])
 {
 	u8 t1 = MIPS_R_T7;
@@ -1100,8 +1100,8 @@ static void emit_slt_r64(struct jit_context *ctx, u8 rd,
 }
 
 /* Jump immediate (64-bit) */
-static void emit_jmp_i64(struct jit_context *ctx,
-			 const u8 dst[], s32 imm, s32 off, u8 op)
+static void emit_jmp_i64(jit_context *ctx,
+			 const u8 dst[], s32 imm, s32 off, op: u8)
 {
 	u8 tmp = MIPS_R_T6;
 
@@ -1193,8 +1193,8 @@ static void emit_jmp_i64(struct jit_context *ctx,
 }
 
 /* Jump register (64-bit) */
-static void emit_jmp_r64(struct jit_context *ctx,
-			 const u8 dst[], const u8 src[], s32 off, u8 op)
+static void emit_jmp_r64(jit_context *ctx,
+			 const u8 dst[], const u8 src[], s32 off, op: u8)
 {
 	u8 t1 = MIPS_R_T6;
 	u8 t2 = MIPS_R_T7;
@@ -1271,13 +1271,13 @@ static void emit_jmp_r64(struct jit_context *ctx,
 }
 
 /* Function call */
-static int emit_call(struct jit_context *ctx, const struct bpf_insn *insn)
+static int emit_call(jit_context *ctx, const struct bpf_insn *insn)
 {
 	bool fixed;
 	u64 addr;
 
 	/* Decode the call address */
-	if (bpf_jit_get_func_addr(ctx->program, insn, false,
+	if (bpf_jit_get_func_addr((*ctx).program, insn, false,
 				  &addr, &fixed) < 0)
 		return -1;
 	if (!fixed)
@@ -1298,7 +1298,7 @@ static int emit_call(struct jit_context *ctx, const struct bpf_insn *insn)
 }
 
 /* Function tail call */
-static int emit_tail_call(struct jit_context *ctx)
+static int emit_tail_call(jit_context *ctx)
 {
 	u8 ary = lo(bpf2mips32[BPF_REG_2]);
 	u8 ind = lo(bpf2mips32[BPF_REG_3]);
@@ -1315,7 +1315,7 @@ static int emit_tail_call(struct jit_context *ctx)
 	 */
 
 	/* if (ind >= ary->map.max_entries) goto out */
-	off = offsetof(struct bpf_array, map.max_entries);
+	off = offsetof(bpf_array, map.max_entries);
 	if (off > 0x7fff)
 		return -1;
 	emit(ctx, lw, t1, off, ary);             /* t1 = ary->map.max_entries*/
@@ -1324,14 +1324,14 @@ static int emit_tail_call(struct jit_context *ctx)
 	emit(ctx, beqz, t1, get_offset(ctx, 1)); /* PC += off(1) if t1 == 0  */
 						 /* (next insn delay slot)   */
 	/* if (TCC-- <= 0) goto out */
-	emit(ctx, lw, t2, ctx->stack_size, MIPS_R_SP);  /* t2 = *(SP + size) */
+	emit(ctx, lw, t2, (*ctx).stack_size, MIPS_R_SP);  /* t2 = *(SP + size) */
 	emit_load_delay(ctx);                     /* Load delay slot         */
 	emit(ctx, blez, t2, get_offset(ctx, 1));  /* PC += off(1) if t2 <= 0 */
 	emit(ctx, addiu, t2, t2, -1);             /* t2-- (delay slot)       */
-	emit(ctx, sw, t2, ctx->stack_size, MIPS_R_SP);  /* *(SP + size) = t2 */
+	emit(ctx, sw, t2, (*ctx).stack_size, MIPS_R_SP);  /* *(SP + size) = t2 */
 
 	/* prog = ary->ptrs[ind] */
-	off = offsetof(struct bpf_array, ptrs);
+	off = offsetof(bpf_array, ptrs);
 	if (off > 0x7fff)
 		return -1;
 	emit(ctx, sll, t1, ind, 2);               /* t1 = ind << 2           */
@@ -1344,7 +1344,7 @@ static int emit_tail_call(struct jit_context *ctx)
 	emit(ctx, nop);                           /* Delay slot              */
 
 	/* func = prog->bpf_func + 8 (prologue skip offset) */
-	off = offsetof(struct bpf_prog, bpf_func);
+	off = offsetof(bpf_prog, bpf_func);
 	if (off > 0x7fff)
 		return -1;
 	emit(ctx, lw, t1, off, t2);                /* t1 = *(t2 + off)       */
@@ -1381,7 +1381,7 @@ static int emit_tail_call(struct jit_context *ctx)
  */
 
 /* Build program prologue to set up the stack and registers */
-void build_prologue(struct jit_context *ctx)
+void build_prologue(jit_context *ctx)
 {
 	const u8 *r1 = bpf2mips32[BPF_REG_1];
 	const u8 *fp = bpf2mips32[BPF_REG_FP];
@@ -1418,15 +1418,15 @@ void build_prologue(struct jit_context *ctx)
 	emit(ctx, move, hi(r1), MIPS_R_ZERO);
 
 	/* If the eBPF frame pointer was accessed it must be saved */
-	if (ctx->accessed & BIT(BPF_REG_FP))
+	if ((*ctx).accessed & BIT(BPF_REG_FP))
 		clobber_reg64(ctx, fp);
 
 	/* Compute the stack space needed for callee-saved registers */
-	saved = hweight32(ctx->clobbered & JIT_CALLEE_REGS) * sizeof(u32);
+	saved = hweight32((*ctx).clobbered & JIT_CALLEE_REGS) * sizeof(u32);
 	saved = ALIGN(saved, MIPS_STACK_ALIGNMENT);
 
 	/* Stack space used by eBPF program local data */
-	locals = ALIGN(ctx->program->aux->stack_depth, MIPS_STACK_ALIGNMENT);
+	locals = ALIGN((*(*(*ctx).program).aux).stack_depth, MIPS_STACK_ALIGNMENT);
 
 	/*
 	 * If we are emitting function calls, reserve extra stack space for
@@ -1434,29 +1434,29 @@ void build_prologue(struct jit_context *ctx)
 	 * The required space is computed automatically during resource
 	 * usage discovery (pass 1).
 	 */
-	reserved = ctx->stack_used;
+	reserved = (*ctx).stack_used;
 
 	/* Allocate the stack frame */
 	stack = ALIGN(saved + locals + reserved, MIPS_STACK_ALIGNMENT);
 	emit(ctx, addiu, MIPS_R_SP, MIPS_R_SP, -stack);
 
 	/* Store callee-saved registers on stack */
-	push_regs(ctx, ctx->clobbered & JIT_CALLEE_REGS, 0, stack - saved);
+	push_regs(ctx, (*ctx).clobbered & JIT_CALLEE_REGS, 0, stack - saved);
 
 	/* Initialize the eBPF frame pointer if accessed */
-	if (ctx->accessed & BIT(BPF_REG_FP))
+	if ((*ctx).accessed & BIT(BPF_REG_FP))
 		emit(ctx, addiu, lo(fp), MIPS_R_SP, stack - saved);
 
-	ctx->saved_size = saved;
-	ctx->stack_size = stack;
+	(*ctx).saved_size = saved;
+	(*ctx).stack_size = stack;
 }
 
 /* Build the program epilogue to restore the stack and registers */
-void build_epilogue(struct jit_context *ctx, int dest_reg)
+void build_epilogue(jit_context *ctx, int dest_reg)
 {
 	/* Restore callee-saved registers from stack */
-	pop_regs(ctx, ctx->clobbered & JIT_CALLEE_REGS, 0,
-		 ctx->stack_size - ctx->saved_size);
+	pop_regs(ctx, (*ctx).clobbered & JIT_CALLEE_REGS, 0,
+		 (*ctx).stack_size - (*ctx).saved_size);
 	/*
 	 * A 32-bit return value is always passed in MIPS register v0,
 	 * but on big-endian targets the low part of R0 is mapped to v1.
@@ -1467,23 +1467,26 @@ void build_epilogue(struct jit_context *ctx, int dest_reg)
 
 	/* Jump to the return address and adjust the stack pointer */
 	emit(ctx, jr, dest_reg);
-	emit(ctx, addiu, MIPS_R_SP, MIPS_R_SP, ctx->stack_size);
+	emit(ctx, addiu, MIPS_R_SP, MIPS_R_SP, (*ctx).stack_size);
 }
 
 /* Build one eBPF instruction */
-int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
+int build_insn(const struct bpf_insn *insn, jit_context *ctx)
 {
-	const u8 *dst = bpf2mips32[insn->dst_reg];
-	const u8 *src = bpf2mips32[insn->src_reg];
+	const u8 *dst = bpf2mips32[(*insn).dst_reg];
+	const u8 *src = bpf2mips32[(*insn).src_reg];
 	const u8 *res = bpf2mips32[BPF_REG_0];
 	const u8 *tmp = bpf2mips32[JIT_REG_TMP];
-	u8 code = insn->code;
-	s16 off = insn->off;
-	s32 imm = insn->imm;
+	u8 code = (*insn).code;
+	s16 off = (*insn).off;
+	s32 imm = (*insn).imm;
 	s32 val, rel;
-	u8 alu, jmp;
+	alu: u8, jmp;
 
 	switch (code) {
+	'toofar: {
+	'notyet: {
+	'invalid: {
 	/* ALU operations */
 	/* dst = imm */
 	case BPF_ALU | BPF_MOV | BPF_K:
@@ -1726,7 +1729,7 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 			/* Result zero-extension inserted by verifier */
 			break;
 		default:
-			goto notyet;
+			break 'notyet;
 		}
 		break;
 	/* Atomics (64-bit) */
@@ -1747,7 +1750,7 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 			emit_cmpxchg_r64(ctx, lo(dst), src, off);
 			break;
 		default:
-			goto notyet;
+			break 'notyet;
 		}
 		break;
 	/* PC += off if dst == src */
@@ -1777,7 +1780,7 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 		setup_jmp_r(ctx, dst == src, BPF_OP(code), off, &jmp, &rel);
 		emit_jmp_r(ctx, lo(dst), lo(src), rel, jmp);
 		if (finish_jmp(ctx, jmp, off) < 0)
-			goto toofar;
+			break 'toofar;
 		break;
 	/* PC += off if dst == imm */
 	/* PC += off if dst != imm */
@@ -1812,7 +1815,7 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 			emit_jmp_r(ctx, lo(dst), MIPS_R_T6, rel, jmp);
 		}
 		if (finish_jmp(ctx, jmp, off) < 0)
-			goto toofar;
+			break 'toofar;
 		break;
 	/* PC += off if dst == src */
 	/* PC += off if dst != src */
@@ -1841,7 +1844,7 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 		setup_jmp_r(ctx, dst == src, BPF_OP(code), off, &jmp, &rel);
 		emit_jmp_r64(ctx, dst, src, rel, jmp);
 		if (finish_jmp(ctx, jmp, off) < 0)
-			goto toofar;
+			break 'toofar;
 		break;
 	/* PC += off if dst == imm */
 	/* PC += off if dst != imm */
@@ -1870,24 +1873,24 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 		setup_jmp_i(ctx, imm, 64, BPF_OP(code), off, &jmp, &rel);
 		emit_jmp_i64(ctx, dst, imm, rel, jmp);
 		if (finish_jmp(ctx, jmp, off) < 0)
-			goto toofar;
+			break 'toofar;
 		break;
 	/* PC += off */
 	case BPF_JMP | BPF_JA:
 		if (off == 0)
 			break;
 		if (emit_ja(ctx, off) < 0)
-			goto toofar;
+			break 'toofar;
 		break;
 	/* Tail call */
 	case BPF_JMP | BPF_TAIL_CALL:
 		if (emit_tail_call(ctx) < 0)
-			goto invalid;
+			break 'invalid;
 		break;
 	/* Function call */
 	case BPF_JMP | BPF_CALL:
 		if (emit_call(ctx, insn) < 0)
-			goto invalid;
+			break 'invalid;
 		break;
 	/* Function return */
 	case BPF_JMP | BPF_EXIT:
@@ -1895,22 +1898,25 @@ int build_insn(const struct bpf_insn *insn, struct jit_context *ctx)
 		 * Optimization: when last instruction is EXIT
 		 * simply continue to epilogue.
 		 */
-		if (ctx->bpf_index == ctx->program->len - 1)
+		if ((*ctx).bpf_index == (*(*ctx).program).len - 1)
 			break;
 		if (emit_exit(ctx) < 0)
-			goto toofar;
+			break 'toofar;
 		break;
 
 	default:
-invalid:
+	}
+	
 		pr_err_once("unknown opcode %02x\n", code);
 		return -EINVAL;
-notyet:
+	}
+	
 		pr_info_once("*** NOT YET: opcode %02x ***\n", code);
 		return -EFAULT;
-toofar:
+	}
+	
 		pr_info_once("*** TOO FAR: jump at %u opcode %02x ***\n",
-			     ctx->bpf_index, code);
+			     (*ctx).bpf_index, code);
 		return -E2BIG;
 	}
 	return 0;

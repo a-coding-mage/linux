@@ -292,15 +292,15 @@ static sb8: [u32; 256] = [
 	(((s1[I >> 24] + s2[(I>>16)&0xff]) ^ s3[(I>>8)&0xff]) - s4[I&0xff]))
 
 
-fn __cast5_encrypt(struct cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
+fn __cast5_encrypt(cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
  {
-	u32 l, r, t;
+	l: u32, r, t;
 	u32 I;			/* used by the Fx macros */
 	u32 *Km;
 	u8 *Kr;
 
-	Km = c->Km;
-	Kr = c->Kr;
+	Km = (*c).Km;
+	Kr = (*c).Kr;
 
 	/* (L0,R0) <-- (m1...m64).  (Split the plaintext into left and
 	 * right 32-bit halves L0 = m1...m32 and R0 = m33...m64.)
@@ -328,7 +328,7 @@ fn __cast5_encrypt(struct cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
 	t = l; l = r; r = t ^ F1(r, Km[9], Kr[9]);
 	t = l; l = r; r = t ^ F2(r, Km[10], Kr[10]);
 	t = l; l = r; r = t ^ F3(r, Km[11], Kr[11]);
-	if (!(c->rr))  {
+	if (!((*c).rr))  {
 		t = l; l = r; r = t ^ F1(r, Km[12], Kr[12]);
 		t = l; l = r; r = t ^ F2(r, Km[13], Kr[13]);
 		t = l; l = r; r = t ^ F3(r, Km[14], Kr[14]);
@@ -342,25 +342,25 @@ fn __cast5_encrypt(struct cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
 }
 EXPORT_SYMBOL_GPL(__cast5_encrypt);
 
-fn cast5_encrypt(struct crypto_tfm *tfm, u8 *outbuf, const u8 *inbuf)
+fn cast5_encrypt(crypto_tfm *tfm, u8 *outbuf, const u8 *inbuf)
  {
 	__cast5_encrypt(crypto_tfm_ctx(tfm), outbuf, inbuf);
 }
 
-fn __cast5_decrypt(struct cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
+fn __cast5_decrypt(cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
  {
-	u32 l, r, t;
+	l: u32, r, t;
 	u32 I;
 	u32 *Km;
 	u8 *Kr;
 
-	Km = c->Km;
-	Kr = c->Kr;
+	Km = (*c).Km;
+	Kr = (*c).Kr;
 
 	l = get_unaligned_be32(inbuf);
 	r = get_unaligned_be32(inbuf + 4);
 
-	if (!(c->rr))  {
+	if (!((*c).rr))  {
 		t = l; l = r; r = t ^ F1(r, Km[15], Kr[15]);
 		t = l; l = r; r = t ^ F3(r, Km[14], Kr[14]);
 		t = l; l = r; r = t ^ F2(r, Km[13], Kr[13]);
@@ -384,7 +384,7 @@ fn __cast5_decrypt(struct cast5_ctx *c, u8 *outbuf, const u8 *inbuf)
 }
 EXPORT_SYMBOL_GPL(__cast5_decrypt);
 
-fn cast5_decrypt(struct crypto_tfm *tfm, u8 *outbuf, const u8 *inbuf)
+fn cast5_decrypt(crypto_tfm *tfm, u8 *outbuf, const u8 *inbuf)
  {
 	__cast5_decrypt(crypto_tfm_ctx(tfm), outbuf, inbuf);
 }
@@ -464,7 +464,7 @@ fn key_schedule(u32 *x, u32 *z, u32 *k)
 }
 
 
-i32 cast5_setkey(struct crypto_tfm *tfm, const u8 *key, usize key_len)
+i32 cast5_setkey(crypto_tfm *tfm, const u8 *key, key_len: usize)
  {
 	struct cast5_ctx *c = crypto_tfm_ctx(tfm);
 	i32 i;
@@ -473,7 +473,7 @@ i32 cast5_setkey(struct crypto_tfm *tfm, const u8 *key, usize key_len)
 	u32 k[16];
 	__be32 p_key[4];
 
-	c->rr = key_len <= 10 ? 1 : 0;
+	(*c).rr = key_len <= 10 ? 1 : 0;
 
 	memset(p_key, 0, 16);
 	memcpy(p_key, key, key_len);
@@ -486,29 +486,29 @@ i32 cast5_setkey(struct crypto_tfm *tfm, const u8 *key, usize key_len)
 
 	key_schedule(x, z, k);
 	for (i = 0; i < 16; i++)
-		c->Km[i] = k[i];
+		(*c).Km[i] = k[i];
 	key_schedule(x, z, k);
 	for (i = 0; i < 16; i++)
-		c->Kr[i] = k[i] & 0x1f;
+		(*c).Kr[i] = k[i] & 0x1f;
 	return 0;
 }
 EXPORT_SYMBOL_GPL(cast5_setkey);
 
 static mut alg: CryptoAlg =  {
-	.cra_name		= "cast5",
-	.cra_driver_name	= "cast5-generic",
-	.cra_priority		= 100,
-	.cra_flags		= CRYPTO_ALG_TYPE_CIPHER,
-	.cra_blocksize		= CAST5_BLOCK_SIZE,
-	.cra_ctxsize		= sizeof(struct cast5_ctx),
-	.cra_module		= THIS_MODULE,
-	.cra_u			=  {
-		.cipher =  {
-			.cia_min_keysize = CAST5_MIN_KEY_SIZE,
-			.cia_max_keysize = CAST5_MAX_KEY_SIZE,
-			.cia_setkey  = cast5_setkey,
-			.cia_encrypt = cast5_encrypt,
-			.cia_decrypt = cast5_decrypt
+	cra_name: "cast5",
+	cra_driver_name: "cast5-generic",
+	cra_priority: 100,
+	cra_flags: CRYPTO_ALG_TYPE_CIPHER,
+	cra_blocksize: CAST5_BLOCK_SIZE,
+	cra_ctxsize: sizeof(cast5_ctx),
+	cra_module: THIS_MODULE,
+	cra_u: {
+		cipher: {
+			cia_min_keysize: CAST5_MIN_KEY_SIZE,
+			cia_max_keysize: CAST5_MAX_KEY_SIZE,
+			cia_setkey: cast5_setkey,
+			cia_encrypt: cast5_encrypt,
+			cia_decrypt: cast5_decrypt
 		}
 	}
 ];

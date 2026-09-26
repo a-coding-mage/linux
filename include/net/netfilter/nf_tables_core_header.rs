@@ -20,7 +20,7 @@ extern "C" {
     pub static mut nft_inner_type: nft_expr_type;
 
     /* CONFIG_NETWORK_SECMARK */
-    #[cfg(feature = "CONFIG_NETWORK_SECMARK")]
+    #[cfg(CONFIG_NETWORK_SECMARK)]
     pub static mut nft_secmark_obj_type: nft_object_type;
     pub static mut nft_counter_obj_type: nft_object_type;
 
@@ -102,15 +102,15 @@ extern "C" {
     pub static nft_set_pipapo_avx2_type: nft_set_type;
 
     /* CONFIG_MITIGATION_RETPOLINE */
-    #[cfg(feature = "CONFIG_MITIGATION_RETPOLINE")]
+    #[cfg(CONFIG_MITIGATION_RETPOLINE)]
     pub fn nft_rhash_lookup(net: *const net, set: *const nft_set, key: *const u32) -> *const nft_set_ext;
-    #[cfg(feature = "CONFIG_MITIGATION_RETPOLINE")]
+    #[cfg(CONFIG_MITIGATION_RETPOLINE)]
     pub fn nft_rbtree_lookup(net: *const net, set: *const nft_set, key: *const u32) -> *const nft_set_ext;
-    #[cfg(feature = "CONFIG_MITIGATION_RETPOLINE")]
+    #[cfg(CONFIG_MITIGATION_RETPOLINE)]
     pub fn nft_bitmap_lookup(net: *const net, set: *const nft_set, key: *const u32) -> *const nft_set_ext;
-    #[cfg(feature = "CONFIG_MITIGATION_RETPOLINE")]
+    #[cfg(CONFIG_MITIGATION_RETPOLINE)]
     pub fn nft_hash_lookup_fast(net: *const net, set: *const nft_set, key: *const u32) -> *const nft_set_ext;
-    #[cfg(feature = "CONFIG_MITIGATION_RETPOLINE")]
+    #[cfg(CONFIG_MITIGATION_RETPOLINE)]
     pub fn nft_hash_lookup(net: *const net, set: *const nft_set, key: *const u32) -> *const nft_set_ext;
 
     pub fn nft_set_do_lookup(net: *const net, set: *const nft_set, key: *const u32) -> *const nft_set_ext;

@@ -112,15 +112,15 @@ static mut xen_pv_apic: apic = apic {
     get_apic_id: Some(xen_get_apic_id),
     calc_dest_apicid: Some(apic_flat_calc_apicid),
 
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     send_IPI_mask: Some(xen_send_IPI_mask),
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     send_IPI_mask_allbutself: Some(xen_send_IPI_mask_allbutself),
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     send_IPI_allbutself: Some(xen_send_IPI_allbutself),
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     send_IPI_all: Some(xen_send_IPI_all),
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     send_IPI_self: Some(xen_send_IPI_self),
     read: Some(xen_apic_read),
     write: Some(xen_apic_write),

@@ -1384,7 +1384,7 @@ unsafe fn receive_with_tstamp_framing(
     let align = get_align(runtime);
     if snd_BUG_ON(((*runtime).hw_ptr & 0x1f) != 0) != 0 { return -EINVAL; }
     while src_count > align {
-        if ((*runtime).buffer_size - (*runtime).avail) as c_int < frame_size {
+        if (((*runtime).buffer_size - (*runtime).avail) as c_int) < frame_size {
             (*runtime).xruns += src_count as size_t;
             break;
         }
@@ -1699,7 +1699,7 @@ unsafe fn snd_rawmidi_kernel_write1(substream: *mut snd_rawmidi_substream, userb
     if snd_BUG_ON((*runtime).buffer.is_null()) != 0 { return -EINVAL as c_long; }
     let mut result: c_long = 0;
     spin_lock_irqsave(&mut (*substream).lock, &mut flags);
-    if (*substream).append != 0 && (*runtime).avail as c_long < count {
+    if (*substream).append != 0 && ((*runtime).avail as c_long) < count {
         spin_unlock_irqrestore(&mut (*substream).lock, flags);
         return -EAGAIN as c_long;
     }

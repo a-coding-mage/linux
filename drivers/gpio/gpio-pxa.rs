@@ -22,10 +22,10 @@ pub struct pxa_gpio_bank {
     pub irq_mask: usize,
     pub irq_edge_rise: usize,
     pub irq_edge_fall: usize,
-    #[cfg(feature = "CONFIG_PM")] pub saved_gplr: u32,
-    #[cfg(feature = "CONFIG_PM")] pub saved_gpdr: u32,
-    #[cfg(feature = "CONFIG_PM")] pub saved_grer: u32,
-    #[cfg(feature = "CONFIG_PM")] pub saved_gfer: u32,
+    #[cfg(CONFIG_PM)] pub saved_gplr: u32,
+    #[cfg(CONFIG_PM)] pub saved_gpdr: u32,
+    #[cfg(CONFIG_PM)] pub saved_grer: u32,
+    #[cfg(CONFIG_PM)] pub saved_gfer: u32,
 }
 
 #[repr(C)] pub struct gpio_chip { pub base: i32 }

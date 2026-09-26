@@ -1021,10 +1021,10 @@ static mut rockchip_clk_branch rk3562_clk_branches[] = {
 			RK3562_CLKGATE_CON(13), 9, GFLAGS),
 };
 
-static void __init rk3562_clk_init(struct device_node *np)
+static void __init rk3562_clk_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
-	unsigned long clk_nr_clks;
+	core::ffi::c_ulong clk_nr_clks;
 	void __iomem *reg_base;
 
 	clk_nr_clks = rockchip_clk_find_max_clk_id(rk3562_clk_branches,
@@ -1060,42 +1060,42 @@ static void __init rk3562_clk_init(struct device_node *np)
 // CLK_OF_DECLARE registration preserved from C source.
 
 struct clk_rk3562_inits {
-	void (*inits)(struct device_node *np);
+	void (*inits)(device_node *np);
 };
 
 static clk_rk3562_inits clk_rk3562_cru_init = {
-	.inits = rk3562_clk_init,
+	inits: rk3562_clk_init,
 };
 
 static of_device_id clk_rk3562_match_table[] = {
 	{
-		.compatible = "rockchip,rk3562-cru",
-		.data = &clk_rk3562_cru_init,
+		compatible: "rockchip,rk3562-cru",
+		data: &clk_rk3562_cru_init,
 	},
 	{ }
 };
 
-static int clk_rk3562_probe(struct platform_device *pdev)
+static int clk_rk3562_probe(platform_device *pdev)
 {
 	const struct clk_rk3562_inits *init_data;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 
 	init_data = device_get_match_data(dev);
 	if (!init_data)
 		return -EINVAL;
 
-	if (init_data->inits)
-		init_data->inits(dev->of_node);
+	if ((*init_data).inits)
+		(*init_data).inits((*dev).of_node);
 
 	return 0;
 }
 
 static mut platform_driver clk_rk3562_driver = {
-	.probe		= clk_rk3562_probe,
-	.driver		= {
-		.name	= "clk-rk3562",
-		.of_match_table = clk_rk3562_match_table,
-		.suppress_bind_attrs = true,
+	probe: clk_rk3562_probe,
+	driver: {
+		name: "clk-rk3562",
+		of_match_table: clk_rk3562_match_table,
+		suppress_bind_attrs: true,
 	},
 };
 // builtin_platform_driver_probe registration preserved from C source.

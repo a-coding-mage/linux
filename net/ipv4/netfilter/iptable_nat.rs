@@ -29,28 +29,28 @@ static nf_nat_ipv4_ops: [nf_hook_ops; 4] = [
         pf: NFPROTO_IPV4,
         hooknum: NF_INET_PRE_ROUTING,
         priority: NF_IP_PRI_NAT_DST,
-        priv: core::ptr::null_mut(),
+        r#priv: core::ptr::null_mut(),
     },
     nf_hook_ops {
         hook: Some(ipt_do_table),
         pf: NFPROTO_IPV4,
         hooknum: NF_INET_POST_ROUTING,
         priority: NF_IP_PRI_NAT_SRC,
-        priv: core::ptr::null_mut(),
+        r#priv: core::ptr::null_mut(),
     },
     nf_hook_ops {
         hook: Some(ipt_do_table),
         pf: NFPROTO_IPV4,
         hooknum: NF_INET_LOCAL_OUT,
         priority: NF_IP_PRI_NAT_DST,
-        priv: core::ptr::null_mut(),
+        r#priv: core::ptr::null_mut(),
     },
     nf_hook_ops {
         hook: Some(ipt_do_table),
         pf: NFPROTO_IPV4,
         hooknum: NF_INET_LOCAL_IN,
         priority: NF_IP_PRI_NAT_SRC,
-        priv: core::ptr::null_mut(),
+        r#priv: core::ptr::null_mut(),
     },
 ];
 

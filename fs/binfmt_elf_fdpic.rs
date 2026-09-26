@@ -70,7 +70,7 @@ pub unsafe fn exit_elf_fdpic_binfmt() {}
 
 // The remaining core-dump helpers preserve the C ABI and are supplied by the
 // kernel integration when CONFIG_ELF_CORE is enabled.
-#[cfg(feature="CONFIG_ELF_CORE")]
+#[cfg(CONFIG_ELF_CORE)]
 pub unsafe extern "C" fn elf_fdpic_core_dump(_cprm:*mut CoredumpParams)->c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

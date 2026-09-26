@@ -59,11 +59,11 @@ unsafe fn udp_sock_create4_error(err: i32, sock: *mut socket, sockp: *mut *mut s
 
 unsafe fn sk_saddr_any(sk: *mut sock) -> bool {
     // CONFIG_IPV6 conditional preserved from the C source.
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     {
         ipv6_addr_any(&(*sk).sk_v6_rcv_saddr)
     }
-    #[cfg(not(feature = "CONFIG_IPV6"))]
+    #[cfg(not(CONFIG_IPV6))]
     {
         (*sk).sk_rcv_saddr == 0
     }
@@ -191,7 +191,7 @@ pub unsafe fn udp_tunnel_dst_lookup(
     let mut fl4: flowi4 = core::mem::zeroed();
 
     // CONFIG_DST_CACHE conditional preserved from the C source.
-    #[cfg(feature = "CONFIG_DST_CACHE")]
+    #[cfg(CONFIG_DST_CACHE)]
     if !dst_cache.is_null() {
         rt = dst_cache_get_ip4(dst_cache, saddr);
         if !rt.is_null() { return rt; }
@@ -217,7 +217,7 @@ pub unsafe fn udp_tunnel_dst_lookup(
         ip_rt_put(rt);
         return ERR_PTR(-ELOOP);
     }
-    #[cfg(feature = "CONFIG_DST_CACHE")]
+    #[cfg(CONFIG_DST_CACHE)]
     if !dst_cache.is_null() {
         dst_cache_set_ip4(dst_cache, &mut (*rt).dst, fl4.saddr);
     }

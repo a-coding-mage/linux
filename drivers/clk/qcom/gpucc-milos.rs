@@ -7,11 +7,15 @@
 // Linux clock-provider, module, platform-device, regmap, and Qualcomm clock
 // bindings are supplied by external dependencies.
 
-enum { DT_BI_TCXO, DT_GPLL0_OUT_MAIN, DT_GPLL0_OUT_MAIN_DIV }
-enum {
-    P_BI_TCXO, P_GPLL0_OUT_MAIN, P_GPLL0_OUT_MAIN_DIV,
-    P_GPU_CC_PLL0_OUT_EVEN, P_GPU_CC_PLL0_OUT_MAIN, P_GPU_CC_PLL0_OUT_ODD,
-}
+pub const DT_BI_TCXO: i32 = 0;
+pub const DT_GPLL0_OUT_MAIN: i32 = DT_BI_TCXO + 1;
+pub const DT_GPLL0_OUT_MAIN_DIV: i32 = DT_GPLL0_OUT_MAIN + 1;
+pub const P_BI_TCXO: i32 = 0;
+pub const P_GPLL0_OUT_MAIN: i32 = P_BI_TCXO + 1;
+pub const P_GPLL0_OUT_MAIN_DIV: i32 = P_GPLL0_OUT_MAIN + 1;
+pub const P_GPU_CC_PLL0_OUT_EVEN: i32 = P_GPLL0_OUT_MAIN_DIV + 1;
+pub const P_GPU_CC_PLL0_OUT_MAIN: i32 = P_GPU_CC_PLL0_OUT_EVEN + 1;
+pub const P_GPU_CC_PLL0_OUT_ODD: i32 = P_GPU_CC_PLL0_OUT_MAIN + 1;
 
 static lucid_ole_vco: [pll_vco; 1] = [pll_vco { min_freq: 249600000, max_freq: 2300000000, val: 0 }];
 

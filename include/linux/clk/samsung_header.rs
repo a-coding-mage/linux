@@ -10,7 +10,7 @@ pub struct device_node {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_S3C64XX_COMMON_CLK")]
+#[cfg(CONFIG_S3C64XX_COMMON_CLK)]
 unsafe extern "C" {
     pub fn s3c64xx_clk_init(
         np: *mut device_node,
@@ -21,7 +21,7 @@ unsafe extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_S3C64XX_COMMON_CLK"))]
+#[cfg(not(CONFIG_S3C64XX_COMMON_CLK))]
 #[inline]
 pub unsafe fn s3c64xx_clk_init(
     _np: *mut device_node,

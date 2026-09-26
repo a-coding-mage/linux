@@ -40,7 +40,7 @@ const NPE_OP_CCM_GEN_MIC:u8=0xcc; const NPE_OP_HASH_GEN_ICV:u8=0x50; const NPE_O
 const MOD_ECB:u32=0; const MOD_CTR:u32=0x1000; const MOD_CBC_ENC:u32=0x2000; const MOD_CBC_DEC:u32=0x3000; const MOD_CCM_ENC:u32=0x4000; const MOD_CCM_DEC:u32=0x5000;
 const KEYLEN_128:u32=4; const KEYLEN_192:u32=6; const KEYLEN_256:u32=8; const CIPH_DECR:u32=0; const CIPH_ENCR:u32=0x400;
 const MOD_DES:u32=0; const MOD_TDEA2:u32=0x100; const MOD_3DES:u32=0x200; const MOD_AES:u32=0x800;
-const MOD_AES128:u32=0x804; const MOD_AES192:u32=0x90a; const MOD_AES256:u32=0xa08;
+const MOD_AES128:u32=0x804; const MOD_AES192:u32=0x906; const MOD_AES256:u32=0xa08;
 const MAX_IVLEN:usize=16; const NPE_QLEN:usize=16; const NPE_QLEN_TOTAL:usize=64;
 const CTL_FLAG_UNUSED:u32=0; const CTL_FLAG_USED:u32=0x1000; const CTL_FLAG_PERFORM_ABLK:u32=1; const CTL_FLAG_GEN_ICV:u32=2; const CTL_FLAG_GEN_REVAES:u32=4; const CTL_FLAG_PERFORM_AEAD:u32=8; const CTL_FLAG_MASK:u32=0xf;
 const HMAC_PAD_BLOCKLEN:usize=64; const MD5_DIGEST_SIZE:usize=16;

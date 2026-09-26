@@ -20,7 +20,7 @@ pub struct regmap {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_MFD_ALTERA_SYSMGR")]
+#[cfg(CONFIG_MFD_ALTERA_SYSMGR)]
 extern "C" {
     pub fn altr_sysmgr_regmap_lookup_by_phandle(
         np: *mut device_node,
@@ -28,7 +28,7 @@ extern "C" {
     ) -> *mut regmap;
 }
 
-#[cfg(not(feature = "CONFIG_MFD_ALTERA_SYSMGR"))]
+#[cfg(not(CONFIG_MFD_ALTERA_SYSMGR))]
 #[inline]
 pub unsafe fn altr_sysmgr_regmap_lookup_by_phandle(
     _np: *mut device_node,

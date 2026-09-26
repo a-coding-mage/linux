@@ -52,9 +52,9 @@ pub unsafe fn show_opcodes(regs: *mut pt_regs, loglvl: *const i8) {
     let mut opcodes = [0u8; OPCODE_BUFSIZE];
     let prologue = (*regs).ip.wrapping_sub(PROLOGUE_SIZE);
     match copy_code(regs, opcodes.as_mut_ptr(), prologue, core::mem::size_of_val(&opcodes) as u32) {
-        0 => printk(b"%sCode: 42ph <%02x> 21ph\n\0".as_ptr() as *const i8, loglvl,
+        case if case == 0 => printk(b"%sCode: 42ph <%02x> 21ph\n\0".as_ptr() as *const i8, loglvl,
                     opcodes.as_ptr(), opcodes[PROLOGUE_SIZE], opcodes.as_ptr().add(PROLOGUE_SIZE + 1)),
-        -EPERM => (),
+        case if case == -EPERM => (),
         _ => printk(b"%sCode: Unable to access opcode bytes at 0x%lx.\n\0".as_ptr() as *const i8, loglvl, prologue),
     }
 }

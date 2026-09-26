@@ -129,8 +129,8 @@ macro_rules! _MCDI_PTR { ($buf:expr, $offset:expr) => {
 }; }
 
 #[macro_export]
-macro_rules! MCDI_PTR { ($buf:expr, $field:ident) => {
-    _MCDI_PTR!($buf, MC_CMD_$field##_OFST)
+macro_rules! MCDI_PTR { ($buf:expr, $field:tt) => {
+    _MCDI_PTR!($buf, MC_CMD_::kernel::macros::paste!([<$field _OFST>]))
 }; }
 
 #[macro_export]
@@ -139,8 +139,8 @@ macro_rules! _MCDI_CHECK_ALIGN { ($ofst:expr, $align:expr) => {
 }; }
 
 #[macro_export]
-macro_rules! _MCDI_DWORD { ($buf:expr, $field:ident) => {
-    ($buf).wrapping_add((_MCDI_CHECK_ALIGN!(MC_CMD_$field##_OFST, 4) >> 2))
+macro_rules! _MCDI_DWORD { ($buf:expr, $field:tt) => {
+    ($buf).wrapping_add((_MCDI_CHECK_ALIGN!(MC_CMD_::kernel::macros::paste!([<$field _OFST>]), 4) >> 2))
 }; }
 
 #[macro_export]

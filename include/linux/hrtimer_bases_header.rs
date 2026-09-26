@@ -59,17 +59,17 @@ pub struct hrtimer_cpu_base {
     pub softirq_activated: bool,
     /// CPU is online from an hrtimers point of view
     pub online: bool,
-    #[cfg(feature = "CONFIG_HIGH_RES_TIMERS")]
+    #[cfg(CONFIG_HIGH_RES_TIMERS)]
     pub nr_events: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_HIGH_RES_TIMERS")]
+    #[cfg(CONFIG_HIGH_RES_TIMERS)]
     pub nr_retries: core::ffi::c_ushort,
-    #[cfg(feature = "CONFIG_HIGH_RES_TIMERS")]
+    #[cfg(CONFIG_HIGH_RES_TIMERS)]
     pub nr_hangs: core::ffi::c_ushort,
-    #[cfg(feature = "CONFIG_HIGH_RES_TIMERS")]
+    #[cfg(CONFIG_HIGH_RES_TIMERS)]
     pub max_hang_time: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_PREEMPT_RT")]
+    #[cfg(CONFIG_PREEMPT_RT)]
     pub softirq_expiry_lock: spinlock_t,
-    #[cfg(feature = "CONFIG_PREEMPT_RT")]
+    #[cfg(CONFIG_PREEMPT_RT)]
     pub timer_waiters: atomic_t,
     /// Absolute time of the next event, required for remote hrtimer enqueue.
     /// It is the total first expiry time (hard and soft hrtimer are taken into account).

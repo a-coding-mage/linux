@@ -23,7 +23,7 @@ pub unsafe fn netdev_need_ops_lock(dev: *const net_device) -> bool {
     let mut ret = unsafe { (*dev).request_ops_lock || !(*dev).queue_mgmt_ops.is_null() };
 
     // CONFIG_NET_SHAPER is a build-time configuration condition.
-    #[cfg(feature = "CONFIG_NET_SHAPER")]
+    #[cfg(CONFIG_NET_SHAPER)]
     {
         ret |= unsafe { !(*(*dev).netdev_ops).net_shaper_ops.is_null() };
     }

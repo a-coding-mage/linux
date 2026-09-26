@@ -58,7 +58,7 @@ struct clk_si5341_synth {
 	u8 index;
 };
 // C macro: to_clk_si5341_synth(_hw) \
-	container_of(_hw, struct clk_si5341_synth, hw)
+// 	container_of(_hw, clk_si5341_synth, hw)
 
 /* The output stages can be connected to any synth (full mux) */
 struct clk_si5341_output {
@@ -68,7 +68,7 @@ struct clk_si5341_output {
 	u8 index;
 };
 // C macro: to_clk_si5341_output(_hw) \
-	container_of(_hw, struct clk_si5341_output, hw)
+// 	container_of(_hw, clk_si5341_output, hw)
 
 struct clk_si5341 {
 	struct clk_hw hw;
@@ -87,7 +87,7 @@ struct clk_si5341 {
 	bool xaxb_ext_clk;
 	bool iovdd_33;
 };
-// C macro: to_clk_si5341(_hw)	container_of(_hw, struct clk_si5341, hw)
+// C macro: to_clk_si5341(_hw)	container_of(_hw, clk_si5341, hw)
 
 struct clk_si5341_output_config {
 	u8 out_format_drv_bits;
@@ -139,12 +139,12 @@ struct clk_si5341_output_config {
 
 /* Output configuration */
 // C macro: SI5341_OUT_CONFIG(output)	\
-			((output)->data->reg_output_offset[(output)->index])
+// 			((*(*(output)).data).reg_output_offset[(*(output)).index])
 // C macro: SI5341_OUT_FORMAT(output)	(SI5341_OUT_CONFIG(output) + 1)
 // C macro: SI5341_OUT_CM(output)		(SI5341_OUT_CONFIG(output) + 2)
 // C macro: SI5341_OUT_MUX_SEL(output)	(SI5341_OUT_CONFIG(output) + 3)
 // C macro: SI5341_OUT_R_REG(output)	\
-			((output)->data->reg_rdiv_offset[(output)->index])
+// 			((*(*(output)).data).reg_rdiv_offset[(*(output)).index])
 
 // C macro: SI5341_OUT_MUX_VDD_SEL_MASK 0x38
 
@@ -366,7 +366,7 @@ static const struct si5341_reg_default si5341_reg_defaults[] = {
 };
 
 /* Read and interpret a 44-bit followed by a 32-bit value in the regmap */
-static int si5341_decode_44_32(struct regmap *regmap, unsigned int reg,
+static int si5341_decode_44_32(regmap *regmap, reg: core::ffi::c_uint,
 	u64 *val1, u32 *val2)
 {
 	int err;
@@ -383,8 +383,8 @@ static int si5341_decode_44_32(struct regmap *regmap, unsigned int reg,
 	return 0;
 }
 
-static int si5341_encode_44_32(struct regmap *regmap, unsigned int reg,
-	u64 n_num, u32 n_den)
+static int si5341_encode_44_32(regmap *regmap, reg: core::ffi::c_uint,
+	n_num: u64, n_den: u32)
 {
 	u8 r[10];
 
@@ -406,18 +406,18 @@ static int si5341_encode_44_32(struct regmap *regmap, unsigned int reg,
 }
 
 /* VCO, we assume it runs at a constant frequency */
-static unsigned long si5341_clk_recalc_rate(struct clk_hw *hw,
-		unsigned long parent_rate)
+static core::ffi::c_ulong si5341_clk_recalc_rate(clk_hw *hw,
+		parent_rate: core::ffi::c_ulong)
 {
 	struct clk_si5341 *data = to_clk_si5341(hw);
 	int err;
 	u64 res;
 	u64 m_num;
 	u32 m_den;
-	unsigned int shift;
+	core::ffi::c_uint shift;
 
 	/* Assume that PDIV is not being used, just read the PLL setting */
-	err = si5341_decode_44_32(data->regmap, SI5341_PLL_M_NUM,
+	err = si5341_decode_44_32((*data).regmap, SI5341_PLL_M_NUM,
 				&m_num, &m_den);
 	if (err < 0)
 		return 0;
@@ -441,27 +441,27 @@ static unsigned long si5341_clk_recalc_rate(struct clk_hw *hw,
 	do_div(res, (m_den >> shift));
 
 	/* We cannot return the actual frequency in 32 bit, store it locally */
-	data->freq_vco = res;
+	(*data).freq_vco = res;
 
 	/* Report kHz since the value is out of range */
 	do_div(res, 1000);
 
-	return (unsigned long)res;
+	return (core::ffi::c_ulong)res;
 }
 
-static int si5341_clk_get_selected_input(struct clk_si5341 *data)
+static int si5341_clk_get_selected_input(clk_si5341 *data)
 {
 	int err;
 	u32 val;
 
-	err = regmap_read(data->regmap, SI5341_IN_SEL, &val);
+	err = regmap_read((*data).regmap, SI5341_IN_SEL, &val);
 	if (err < 0)
 		return err;
 
 	return (val & SI5341_IN_SEL_MASK) >> SI5341_IN_SEL_SHIFT;
 }
 
-static u8 si5341_clk_get_parent(struct clk_hw *hw)
+static u8 si5341_clk_get_parent(clk_hw *hw)
 {
 	struct clk_si5341 *data = to_clk_si5341(hw);
 	int res = si5341_clk_get_selected_input(data);
@@ -472,7 +472,7 @@ static u8 si5341_clk_get_parent(struct clk_hw *hw)
 	return res;
 }
 
-static int si5341_clk_reparent(struct clk_si5341 *data, u8 index)
+static int si5341_clk_reparent(clk_si5341 *data, index: u8)
 {
 	int err;
 	u8 val;
@@ -481,27 +481,27 @@ static int si5341_clk_reparent(struct clk_si5341 *data, u8 index)
 	/* Enable register-based input selection */
 	val |= SI5341_IN_SEL_REGCTRL;
 
-	err = regmap_update_bits(data->regmap,
+	err = regmap_update_bits((*data).regmap,
 		SI5341_IN_SEL, SI5341_IN_SEL_REGCTRL | SI5341_IN_SEL_MASK, val);
 	if (err < 0)
 		return err;
 
 	if (index < 3) {
 		/* Enable input buffer for selected input */
-		err = regmap_update_bits(data->regmap,
+		err = regmap_update_bits((*data).regmap,
 				SI5341_IN_EN, 0x07, BIT(index));
 		if (err < 0)
 			return err;
 
 		/* Enables the input to phase detector */
-		err = regmap_update_bits(data->regmap, SI5341_INX_TO_PFD_EN,
+		err = regmap_update_bits((*data).regmap, SI5341_INX_TO_PFD_EN,
 				0x7 << SI5341_INX_TO_PFD_SHIFT,
 				BIT(index + SI5341_INX_TO_PFD_SHIFT));
 		if (err < 0)
 			return err;
 
 		/* Power down XTAL oscillator and buffer */
-		err = regmap_update_bits(data->regmap, SI5341_XAXB_CFG,
+		err = regmap_update_bits((*data).regmap, SI5341_XAXB_CFG,
 				SI5341_XAXB_CFG_PDNB, 0);
 		if (err < 0)
 			return err;
@@ -511,34 +511,34 @@ static int si5341_clk_reparent(struct clk_si5341 *data, u8 index)
 		 * datasheet of these registers, but the clockbuilder software
 		 * programs a "1" when the input is being used.
 		 */
-		err = regmap_write(data->regmap, SI5341_IN_PDIV(index), 1);
+		err = regmap_write((*data).regmap, SI5341_IN_PDIV(index), 1);
 		if (err < 0)
 			return err;
 
-		err = regmap_write(data->regmap, SI5341_IN_PSET(index), 1);
+		err = regmap_write((*data).regmap, SI5341_IN_PSET(index), 1);
 		if (err < 0)
 			return err;
 
 		/* Set update PDIV bit */
-		err = regmap_write(data->regmap, SI5341_PX_UPD, BIT(index));
+		err = regmap_write((*data).regmap, SI5341_PX_UPD, BIT(index));
 		if (err < 0)
 			return err;
 	} else {
 		/* Disable all input buffers */
-		err = regmap_update_bits(data->regmap, SI5341_IN_EN, 0x07, 0);
+		err = regmap_update_bits((*data).regmap, SI5341_IN_EN, 0x07, 0);
 		if (err < 0)
 			return err;
 
 		/* Disable input to phase detector */
-		err = regmap_update_bits(data->regmap, SI5341_INX_TO_PFD_EN,
+		err = regmap_update_bits((*data).regmap, SI5341_INX_TO_PFD_EN,
 				0x7 << SI5341_INX_TO_PFD_SHIFT, 0);
 		if (err < 0)
 			return err;
 
 		/* Power up XTAL oscillator and buffer, select clock mode */
-		err = regmap_update_bits(data->regmap, SI5341_XAXB_CFG,
+		err = regmap_update_bits((*data).regmap, SI5341_XAXB_CFG,
 				SI5341_XAXB_CFG_PDNB | SI5341_XAXB_CFG_EXTCLK_EN,
-				SI5341_XAXB_CFG_PDNB | (data->xaxb_ext_clk ?
+				SI5341_XAXB_CFG_PDNB | ((*data).xaxb_ext_clk ?
 					SI5341_XAXB_CFG_EXTCLK_EN : 0));
 		if (err < 0)
 			return err;
@@ -547,7 +547,7 @@ static int si5341_clk_reparent(struct clk_si5341 *data, u8 index)
 	return 0;
 }
 
-static int si5341_clk_set_parent(struct clk_hw *hw, u8 index)
+static int si5341_clk_set_parent(clk_hw *hw, index: u8)
 {
 	struct clk_si5341 *data = to_clk_si5341(hw);
 
@@ -555,23 +555,23 @@ static int si5341_clk_set_parent(struct clk_hw *hw, u8 index)
 }
 
 static const struct clk_ops si5341_clk_ops = {
-	.determine_rate = clk_hw_determine_rate_no_reparent,
-	.set_parent = si5341_clk_set_parent,
-	.get_parent = si5341_clk_get_parent,
-	.recalc_rate = si5341_clk_recalc_rate,
+	determine_rate: clk_hw_determine_rate_no_reparent,
+	set_parent: si5341_clk_set_parent,
+	get_parent: si5341_clk_get_parent,
+	recalc_rate: si5341_clk_recalc_rate,
 };
 
 /* Synthesizers, there are 5 synthesizers that connect to any of the outputs */
 
 /* The synthesizer is on if all power and enable bits are set */
-static int si5341_synth_clk_is_on(struct clk_hw *hw)
+static int si5341_synth_clk_is_on(clk_hw *hw)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	int err;
 	u32 val;
-	u8 index = synth->index;
+	u8 index = (*synth).index;
 
-	err = regmap_read(synth->data->regmap,
+	err = regmap_read((*(*synth).data).regmap,
 			SI5341_SYNTH_N_CLK_TO_OUTX_EN, &val);
 	if (err < 0)
 		return 0;
@@ -579,7 +579,7 @@ static int si5341_synth_clk_is_on(struct clk_hw *hw)
 	if (!(val & BIT(index)))
 		return 0;
 
-	err = regmap_read(synth->data->regmap, SI5341_SYNTH_N_PDNB, &val);
+	err = regmap_read((*(*synth).data).regmap, SI5341_SYNTH_N_PDNB, &val);
 	if (err < 0)
 		return 0;
 
@@ -587,57 +587,57 @@ static int si5341_synth_clk_is_on(struct clk_hw *hw)
 		return 0;
 
 	/* This bit must be 0 for the synthesizer to receive clock input */
-	err = regmap_read(synth->data->regmap, SI5341_SYNTH_N_CLK_DIS, &val);
+	err = regmap_read((*(*synth).data).regmap, SI5341_SYNTH_N_CLK_DIS, &val);
 	if (err < 0)
 		return 0;
 
 	return !(val & BIT(index));
 }
 
-static void si5341_synth_clk_unprepare(struct clk_hw *hw)
+static void si5341_synth_clk_unprepare(clk_hw *hw)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
-	u8 index = synth->index; /* In range 0..5 */
+	u8 index = (*synth).index; /* In range 0..5 */
 	u8 mask = BIT(index);
 
 	/* Disable output */
-	regmap_update_bits(synth->data->regmap,
+	regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_CLK_TO_OUTX_EN, mask, 0);
 	/* Power down */
-	regmap_update_bits(synth->data->regmap,
+	regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_PDNB, mask, 0);
 	/* Disable clock input to synth (set to 1 to disable) */
-	regmap_update_bits(synth->data->regmap,
+	regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_CLK_DIS, mask, mask);
 }
 
-static int si5341_synth_clk_prepare(struct clk_hw *hw)
+static int si5341_synth_clk_prepare(clk_hw *hw)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	int err;
-	u8 index = synth->index;
+	u8 index = (*synth).index;
 	u8 mask = BIT(index);
 
 	/* Power up */
-	err = regmap_update_bits(synth->data->regmap,
+	err = regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_PDNB, mask, mask);
 	if (err < 0)
 		return err;
 
 	/* Enable clock input to synth (set bit to 0 to enable) */
-	err = regmap_update_bits(synth->data->regmap,
+	err = regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_CLK_DIS, mask, 0);
 	if (err < 0)
 		return err;
 
 	/* Enable output */
-	return regmap_update_bits(synth->data->regmap,
+	return regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_CLK_TO_OUTX_EN, mask, mask);
 }
 
 /* Synth clock frequency: Fvco * n_den / n_den, with Fvco in 13500-14256 MHz */
-static unsigned long si5341_synth_clk_recalc_rate(struct clk_hw *hw,
-		unsigned long parent_rate)
+static core::ffi::c_ulong si5341_synth_clk_recalc_rate(clk_hw *hw,
+		parent_rate: core::ffi::c_ulong)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	u64 f;
@@ -645,8 +645,8 @@ static unsigned long si5341_synth_clk_recalc_rate(struct clk_hw *hw,
 	u32 n_den;
 	int err;
 
-	err = si5341_decode_44_32(synth->data->regmap,
-			SI5341_SYNTH_N_NUM(synth->index), &n_num, &n_den);
+	err = si5341_decode_44_32((*(*synth).data).regmap,
+			SI5341_SYNTH_N_NUM((*synth).index), &n_num, &n_den);
 	if (err < 0)
 		return err;
 	/* Check for bogus/uninitialized settings */
@@ -657,7 +657,7 @@ static unsigned long si5341_synth_clk_recalc_rate(struct clk_hw *hw,
 	 * n_num and n_den are shifted left as much as possible, so to prevent
 	 * overflow in 64-bit math, we shift n_den 4 bits to the right
 	 */
-	f = synth->data->freq_vco;
+	f = (*(*synth).data).freq_vco;
 	f *= n_den >> 4;
 
 	/* Now we need to do 64-bit division: f/n_num */
@@ -667,25 +667,25 @@ static unsigned long si5341_synth_clk_recalc_rate(struct clk_hw *hw,
 	return f;
 }
 
-static int si5341_synth_clk_determine_rate(struct clk_hw *hw,
-					   struct clk_rate_request *req)
+static int si5341_synth_clk_determine_rate(clk_hw *hw,
+					   clk_rate_request *req)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	u64 f;
 
 	/* The synthesizer accuracy is such that anything in range will work */
-	f = synth->data->freq_vco;
+	f = (*(*synth).data).freq_vco;
 	do_div(f, SI5341_SYNTH_N_MAX);
-	if (req->rate < f) {
-		req->rate = f;
+	if ((*req).rate < f) {
+		(*req).rate = f;
 
 		return 0;
 	}
 
-	f = synth->data->freq_vco;
+	f = (*(*synth).data).freq_vco;
 	do_div(f, SI5341_SYNTH_N_MIN);
-	if (req->rate > f) {
-		req->rate = f;
+	if ((*req).rate > f) {
+		(*req).rate = f;
 
 		return 0;
 	}
@@ -693,27 +693,27 @@ static int si5341_synth_clk_determine_rate(struct clk_hw *hw,
 	return 0;
 }
 
-static int si5341_synth_program(struct clk_si5341_synth *synth,
-	u64 n_num, u32 n_den, bool is_integer)
+static int si5341_synth_program(clk_si5341_synth *synth,
+	n_num: u64, n_den: u32, is_integer: bool)
 {
 	int err;
-	u8 index = synth->index;
+	u8 index = (*synth).index;
 
-	err = si5341_encode_44_32(synth->data->regmap,
+	err = si5341_encode_44_32((*(*synth).data).regmap,
 			SI5341_SYNTH_N_NUM(index), n_num, n_den);
 
-	err = regmap_update_bits(synth->data->regmap,
+	err = regmap_update_bits((*(*synth).data).regmap,
 		SI5341_SYNTH_N_PIBYP, BIT(index), is_integer ? BIT(index) : 0);
 	if (err < 0)
 		return err;
 
-	return regmap_write(synth->data->regmap,
+	return regmap_write((*(*synth).data).regmap,
 		SI5341_SYNTH_N_UPD(index), 0x01);
 }
 
 
-static int si5341_synth_clk_set_rate(struct clk_hw *hw, unsigned long rate,
-		unsigned long parent_rate)
+static int si5341_synth_clk_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
+		parent_rate: core::ffi::c_ulong)
 {
 	struct clk_si5341_synth *synth = to_clk_si5341_synth(hw);
 	u64 n_num;
@@ -722,7 +722,7 @@ static int si5341_synth_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	u32 g;
 	bool is_integer;
 
-	n_num = synth->data->freq_vco;
+	n_num = (*(*synth).data).freq_vco;
 
 	/* see if there's an integer solution */
 	r = do_div(n_num, rate);
@@ -738,30 +738,30 @@ static int si5341_synth_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 		n_num += r / g;
 	}
 
-	dev_dbg(&synth->data->i2c_client->dev,
+	dev_dbg((*(*(*&synth).data).i2c_client).dev,
 			"%s(%u): n=0x%llx d=0x%x %s\n", __func__,
-				synth->index, n_num, n_den,
+				(*synth).index, n_num, n_den,
 				is_integer ? "int" : "frac");
 
 	return si5341_synth_program(synth, n_num, n_den, is_integer);
 }
 
 static const struct clk_ops si5341_synth_clk_ops = {
-	.is_prepared = si5341_synth_clk_is_on,
-	.prepare = si5341_synth_clk_prepare,
-	.unprepare = si5341_synth_clk_unprepare,
-	.recalc_rate = si5341_synth_clk_recalc_rate,
-	.determine_rate = si5341_synth_clk_determine_rate,
-	.set_rate = si5341_synth_clk_set_rate,
+	is_prepared: si5341_synth_clk_is_on,
+	prepare: si5341_synth_clk_prepare,
+	unprepare: si5341_synth_clk_unprepare,
+	recalc_rate: si5341_synth_clk_recalc_rate,
+	determine_rate: si5341_synth_clk_determine_rate,
+	set_rate: si5341_synth_clk_set_rate,
 };
 
-static int si5341_output_clk_is_on(struct clk_hw *hw)
+static int si5341_output_clk_is_on(clk_hw *hw)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	int err;
 	u32 val;
 
-	err = regmap_read(output->data->regmap,
+	err = regmap_read((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output), &val);
 	if (err < 0)
 		return err;
@@ -771,37 +771,37 @@ static int si5341_output_clk_is_on(struct clk_hw *hw)
 }
 
 /* Disables and then powers down the output */
-static void si5341_output_clk_unprepare(struct clk_hw *hw)
+static void si5341_output_clk_unprepare(clk_hw *hw)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 
-	regmap_update_bits(output->data->regmap,
+	regmap_update_bits((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output),
 			SI5341_OUT_CFG_OE, 0);
-	regmap_update_bits(output->data->regmap,
+	regmap_update_bits((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output),
 			SI5341_OUT_CFG_PDN, SI5341_OUT_CFG_PDN);
 }
 
 /* Powers up and then enables the output */
-static int si5341_output_clk_prepare(struct clk_hw *hw)
+static int si5341_output_clk_prepare(clk_hw *hw)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	int err;
 
-	err = regmap_update_bits(output->data->regmap,
+	err = regmap_update_bits((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output),
 			SI5341_OUT_CFG_PDN, 0);
 	if (err < 0)
 		return err;
 
-	return regmap_update_bits(output->data->regmap,
+	return regmap_update_bits((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output),
 			SI5341_OUT_CFG_OE, SI5341_OUT_CFG_OE);
 }
 
-static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
-		unsigned long parent_rate)
+static core::ffi::c_ulong si5341_output_clk_recalc_rate(clk_hw *hw,
+		parent_rate: core::ffi::c_ulong)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	int err;
@@ -809,7 +809,7 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
 	u32 r_divider;
 	u8 r[3];
 
-	err = regmap_read(output->data->regmap,
+	err = regmap_read((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output), &val);
 	if (err < 0)
 		return err;
@@ -818,7 +818,7 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
 	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
 		return parent_rate / 2;
 
-	err = regmap_bulk_read(output->data->regmap,
+	err = regmap_bulk_read((*(*output).data).regmap,
 			SI5341_OUT_R_REG(output), r, 3);
 	if (err < 0)
 		return err;
@@ -838,16 +838,16 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
 	return parent_rate / r_divider;
 }
 
-static int si5341_output_clk_determine_rate(struct clk_hw *hw,
-					    struct clk_rate_request *req)
+static int si5341_output_clk_determine_rate(clk_hw *hw,
+					    clk_rate_request *req)
 {
-	unsigned long rate = req->rate;
-	unsigned long r;
+	core::ffi::c_ulong rate = (*req).rate;
+	core::ffi::c_ulong r;
 
 	if (!rate)
 		return 0;
 
-	r = req->best_parent_rate >> 1;
+	r = (*req).best_parent_rate >> 1;
 
 	/* If rate is an even divisor, no changes to parent required */
 	if (r && !(r % rate))
@@ -861,19 +861,19 @@ static int si5341_output_clk_determine_rate(struct clk_hw *hw,
 			/* Take a parent frequency near 400 MHz */
 			r = (400000000u / rate) & ~1;
 		}
-		req->best_parent_rate = r * rate;
+		(*req).best_parent_rate = r * rate;
 	} else {
 		/* We cannot change our parent's rate, report what we can do */
 		r /= rate;
-		rate = req->best_parent_rate / (r << 1);
+		rate = (*req).best_parent_rate / (r << 1);
 	}
 
-	req->rate = rate;
+	(*req).rate = rate;
 	return 0;
 }
 
-static int si5341_output_clk_set_rate(struct clk_hw *hw, unsigned long rate,
-		unsigned long parent_rate)
+static int si5341_output_clk_set_rate(clk_hw *hw, rate: core::ffi::c_ulong,
+		parent_rate: core::ffi::c_ulong)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	u32 r_div;
@@ -894,7 +894,7 @@ static int si5341_output_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 		--r_div;
 
 	/* For a value of "2", we set the "OUT0_RDIV_FORCE2" bit */
-	err = regmap_update_bits(output->data->regmap,
+	err = regmap_update_bits((*(*output).data).regmap,
 			SI5341_OUT_CONFIG(output),
 			SI5341_OUT_CFG_RDIV_FORCE2,
 			(r_div == 0) ? SI5341_OUT_CFG_RDIV_FORCE2 : 0);
@@ -905,45 +905,45 @@ static int si5341_output_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	r[0] = r_div ? (r_div & 0xff) : 1;
 	r[1] = (r_div >> 8) & 0xff;
 	r[2] = (r_div >> 16) & 0xff;
-	return regmap_bulk_write(output->data->regmap,
+	return regmap_bulk_write((*(*output).data).regmap,
 			SI5341_OUT_R_REG(output), r, 3);
 }
 
-static int si5341_output_reparent(struct clk_si5341_output *output, u8 index)
+static int si5341_output_reparent(clk_si5341_output *output, index: u8)
 {
-	return regmap_update_bits(output->data->regmap,
+	return regmap_update_bits((*(*output).data).regmap,
 		SI5341_OUT_MUX_SEL(output), 0x07, index);
 }
 
-static int si5341_output_set_parent(struct clk_hw *hw, u8 index)
+static int si5341_output_set_parent(clk_hw *hw, index: u8)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 
-	if (index >= output->data->num_synth)
+	if (index >= (*(*output).data).num_synth)
 		return -EINVAL;
 
 	return si5341_output_reparent(output, index);
 }
 
-static u8 si5341_output_get_parent(struct clk_hw *hw)
+static u8 si5341_output_get_parent(clk_hw *hw)
 {
 	struct clk_si5341_output *output = to_clk_si5341_output(hw);
 	u32 val;
 
-	regmap_read(output->data->regmap, SI5341_OUT_MUX_SEL(output), &val);
+	regmap_read((*(*output).data).regmap, SI5341_OUT_MUX_SEL(output), &val);
 
 	return val & 0x7;
 }
 
 static const struct clk_ops si5341_output_clk_ops = {
-	.is_prepared = si5341_output_clk_is_on,
-	.prepare = si5341_output_clk_prepare,
-	.unprepare = si5341_output_clk_unprepare,
-	.recalc_rate = si5341_output_clk_recalc_rate,
-	.determine_rate = si5341_output_clk_determine_rate,
-	.set_rate = si5341_output_clk_set_rate,
-	.set_parent = si5341_output_set_parent,
-	.get_parent = si5341_output_get_parent,
+	is_prepared: si5341_output_clk_is_on,
+	prepare: si5341_output_clk_prepare,
+	unprepare: si5341_output_clk_unprepare,
+	recalc_rate: si5341_output_clk_recalc_rate,
+	determine_rate: si5341_output_clk_determine_rate,
+	set_rate: si5341_output_clk_set_rate,
+	set_parent: si5341_output_set_parent,
+	get_parent: si5341_output_get_parent,
 };
 
 /*
@@ -952,13 +952,13 @@ static const struct clk_ops si5341_output_clk_ops = {
  * if that's the case, or if we need to reset and program everything from
  * scratch. Returns negative error, or true/false.
  */
-static int si5341_is_programmed_already(struct clk_si5341 *data)
+static int si5341_is_programmed_already(clk_si5341 *data)
 {
 	int err;
 	u8 r[4];
 
 	/* Read the PLL divider value, it must have a non-zero value */
-	err = regmap_bulk_read(data->regmap, SI5341_PLL_M_DEN,
+	err = regmap_bulk_read((*data).regmap, SI5341_PLL_M_DEN,
 			r, ARRAY_SIZE(r));
 	if (err < 0)
 		return err;
@@ -967,136 +967,136 @@ static int si5341_is_programmed_already(struct clk_si5341 *data)
 }
 
 static struct clk_hw *
-of_clk_si5341_get(struct of_phandle_args *clkspec, void *_data)
+of_clk_si5341_get(of_phandle_args *clkspec, void *_data)
 {
 	struct clk_si5341 *data = _data;
-	unsigned int idx = clkspec->args[1];
-	unsigned int group = clkspec->args[0];
+	core::ffi::c_uint idx = (*clkspec).args[1];
+	core::ffi::c_uint group = (*clkspec).args[0];
 
 	switch (group) {
 	case 0:
-		if (idx >= data->num_outputs) {
-			dev_err(&data->i2c_client->dev,
+		if (idx >= (*data).num_outputs) {
+			dev_err((*(*&data).i2c_client).dev,
 				"invalid output index %u\n", idx);
 			return ERR_PTR(-EINVAL);
 		}
-		return &data->clk[idx].hw;
+		return (*&data).clk[idx].hw;
 	case 1:
-		if (idx >= data->num_synth) {
-			dev_err(&data->i2c_client->dev,
+		if (idx >= (*data).num_synth) {
+			dev_err((*(*&data).i2c_client).dev,
 				"invalid synthesizer index %u\n", idx);
 			return ERR_PTR(-EINVAL);
 		}
-		return &data->synth[idx].hw;
+		return (*&data).synth[idx].hw;
 	case 2:
 		if (idx > 0) {
-			dev_err(&data->i2c_client->dev,
+			dev_err((*(*&data).i2c_client).dev,
 				"invalid PLL index %u\n", idx);
 			return ERR_PTR(-EINVAL);
 		}
-		return &data->hw;
+		return (*&data).hw;
 	default:
-		dev_err(&data->i2c_client->dev, "invalid group %u\n", group);
+		dev_err((*(*&data).i2c_client).dev, "invalid group %u\n", group);
 		return ERR_PTR(-EINVAL);
 	}
 }
 
-static int si5341_probe_chip_id(struct clk_si5341 *data)
+static int si5341_probe_chip_id(clk_si5341 *data)
 {
 	int err;
 	u8 reg[4];
 	u16 model;
 
-	err = regmap_bulk_read(data->regmap, SI5341_PN_BASE, reg,
+	err = regmap_bulk_read((*data).regmap, SI5341_PN_BASE, reg,
 				ARRAY_SIZE(reg));
 	if (err < 0) {
-		dev_err(&data->i2c_client->dev, "Failed to read chip ID\n");
+		dev_err((*(*&data).i2c_client).dev, "Failed to read chip ID\n");
 		return err;
 	}
 
 	model = get_unaligned_le16(reg);
 
-	dev_info(&data->i2c_client->dev, "Chip: %x Grade: %u Rev: %u\n",
+	dev_info((*(*&data).i2c_client).dev, "Chip: %x Grade: %u Rev: %u\n",
 		 model, reg[2], reg[3]);
 
 	switch (model) {
 	case 0x5340:
-		data->num_outputs = SI5340_MAX_NUM_OUTPUTS;
-		data->num_synth = SI5340_NUM_SYNTH;
-		data->reg_output_offset = si5340_reg_output_offset;
-		data->reg_rdiv_offset = si5340_reg_rdiv_offset;
+		(*data).num_outputs = SI5340_MAX_NUM_OUTPUTS;
+		(*data).num_synth = SI5340_NUM_SYNTH;
+		(*data).reg_output_offset = si5340_reg_output_offset;
+		(*data).reg_rdiv_offset = si5340_reg_rdiv_offset;
 		break;
 	case 0x5341:
-		data->num_outputs = SI5341_MAX_NUM_OUTPUTS;
-		data->num_synth = SI5341_NUM_SYNTH;
-		data->reg_output_offset = si5341_reg_output_offset;
-		data->reg_rdiv_offset = si5341_reg_rdiv_offset;
+		(*data).num_outputs = SI5341_MAX_NUM_OUTPUTS;
+		(*data).num_synth = SI5341_NUM_SYNTH;
+		(*data).reg_output_offset = si5341_reg_output_offset;
+		(*data).reg_rdiv_offset = si5341_reg_rdiv_offset;
 		break;
 	case 0x5342:
-		data->num_outputs = SI5342_MAX_NUM_OUTPUTS;
-		data->num_synth = SI5342_NUM_SYNTH;
-		data->reg_output_offset = si5340_reg_output_offset;
-		data->reg_rdiv_offset = si5340_reg_rdiv_offset;
+		(*data).num_outputs = SI5342_MAX_NUM_OUTPUTS;
+		(*data).num_synth = SI5342_NUM_SYNTH;
+		(*data).reg_output_offset = si5340_reg_output_offset;
+		(*data).reg_rdiv_offset = si5340_reg_rdiv_offset;
 		break;
 	case 0x5344:
-		data->num_outputs = SI5344_MAX_NUM_OUTPUTS;
-		data->num_synth = SI5344_NUM_SYNTH;
-		data->reg_output_offset = si5340_reg_output_offset;
-		data->reg_rdiv_offset = si5340_reg_rdiv_offset;
+		(*data).num_outputs = SI5344_MAX_NUM_OUTPUTS;
+		(*data).num_synth = SI5344_NUM_SYNTH;
+		(*data).reg_output_offset = si5340_reg_output_offset;
+		(*data).reg_rdiv_offset = si5340_reg_rdiv_offset;
 		break;
 	case 0x5345:
-		data->num_outputs = SI5345_MAX_NUM_OUTPUTS;
-		data->num_synth = SI5345_NUM_SYNTH;
-		data->reg_output_offset = si5341_reg_output_offset;
-		data->reg_rdiv_offset = si5341_reg_rdiv_offset;
+		(*data).num_outputs = SI5345_MAX_NUM_OUTPUTS;
+		(*data).num_synth = SI5345_NUM_SYNTH;
+		(*data).reg_output_offset = si5341_reg_output_offset;
+		(*data).reg_rdiv_offset = si5341_reg_rdiv_offset;
 		break;
 	default:
-		dev_err(&data->i2c_client->dev, "Model '%x' not supported\n",
+		dev_err((*(*&data).i2c_client).dev, "Model '%x' not supported\n",
 			model);
 		return -EINVAL;
 	}
 
-	data->chip_id = model;
+	(*data).chip_id = model;
 
 	return 0;
 }
 
 /* Read active settings into the regmap cache for later reference */
-static int si5341_read_settings(struct clk_si5341 *data)
+static int si5341_read_settings(clk_si5341 *data)
 {
 	int err;
 	u8 i;
 	u8 r[10];
 
-	err = regmap_bulk_read(data->regmap, SI5341_PLL_M_NUM, r, 10);
+	err = regmap_bulk_read((*data).regmap, SI5341_PLL_M_NUM, r, 10);
 	if (err < 0)
 		return err;
 
-	err = regmap_bulk_read(data->regmap,
+	err = regmap_bulk_read((*data).regmap,
 				SI5341_SYNTH_N_CLK_TO_OUTX_EN, r, 3);
 	if (err < 0)
 		return err;
 
-	err = regmap_bulk_read(data->regmap,
+	err = regmap_bulk_read((*data).regmap,
 				SI5341_SYNTH_N_CLK_DIS, r, 1);
 	if (err < 0)
 		return err;
 
-	for (i = 0; i < data->num_synth; ++i) {
-		err = regmap_bulk_read(data->regmap,
+	for (i = 0; i < (*data).num_synth; ++i) {
+		err = regmap_bulk_read((*data).regmap,
 					SI5341_SYNTH_N_NUM(i), r, 10);
 		if (err < 0)
 			return err;
 	}
 
-	for (i = 0; i < data->num_outputs; ++i) {
-		err = regmap_bulk_read(data->regmap,
-					data->reg_output_offset[i], r, 4);
+	for (i = 0; i < (*data).num_outputs; ++i) {
+		err = regmap_bulk_read((*data).regmap,
+					(*data).reg_output_offset[i], r, 4);
 		if (err < 0)
 			return err;
 
-		err = regmap_bulk_read(data->regmap,
-					data->reg_rdiv_offset[i], r, 3);
+		err = regmap_bulk_read((*data).regmap,
+					(*data).reg_rdiv_offset[i], r, 3);
 		if (err < 0)
 			return err;
 	}
@@ -1104,17 +1104,17 @@ static int si5341_read_settings(struct clk_si5341 *data)
 	return 0;
 }
 
-static int si5341_write_multiple(struct clk_si5341 *data,
-	const struct si5341_reg_default *values, unsigned int num_values)
+static int si5341_write_multiple(clk_si5341 *data,
+	const struct si5341_reg_default *values, num_values: core::ffi::c_uint)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	int res;
 
 	for (i = 0; i < num_values; ++i) {
-		res = regmap_write(data->regmap,
+		res = regmap_write((*data).regmap,
 			values[i].address, values[i].value);
 		if (res < 0) {
-			dev_err(&data->i2c_client->dev,
+			dev_err((*(*&data).i2c_client).dev,
 				"Failed to write %#x:%#x\n",
 				values[i].address, values[i].value);
 			return res;
@@ -1137,23 +1137,23 @@ static const struct si5341_reg_default si5345_preamble[] = {
 	{ 0x0540, 0x01 },
 };
 
-static int si5341_send_preamble(struct clk_si5341 *data)
+static int si5341_send_preamble(clk_si5341 *data)
 {
 	int res;
 	u32 revision;
 
 	/* For revision 2 and up, the values are slightly different */
-	res = regmap_read(data->regmap, SI5341_DEVICE_REV, &revision);
+	res = regmap_read((*data).regmap, SI5341_DEVICE_REV, &revision);
 	if (res < 0)
 		return res;
 
 	/* Write "preamble" as specified by datasheet */
-	res = regmap_write(data->regmap, 0xB24, revision < 2 ? 0xD8 : 0xC0);
+	res = regmap_write((*data).regmap, 0xB24, revision < 2 ? 0xD8 : 0xC0);
 	if (res < 0)
 		return res;
 
 	/* The si5342..si5345 require a different preamble */
-	if (data->chip_id > 0x5341)
+	if ((*data).chip_id > 0x5341)
 		res = si5341_write_multiple(data,
 			si5345_preamble, ARRAY_SIZE(si5345_preamble));
 	else
@@ -1169,38 +1169,38 @@ static int si5341_send_preamble(struct clk_si5341 *data)
 }
 
 /* Perform a soft reset and write post-amble */
-static int si5341_finalize_defaults(struct clk_si5341 *data)
+static int si5341_finalize_defaults(clk_si5341 *data)
 {
 	int res;
 	u32 revision;
 
-	res = regmap_write(data->regmap, SI5341_IO_VDD_SEL,
-			   data->iovdd_33 ? 1 : 0);
+	res = regmap_write((*data).regmap, SI5341_IO_VDD_SEL,
+			   (*data).iovdd_33 ? 1 : 0);
 	if (res < 0)
 		return res;
 
-	res = regmap_read(data->regmap, SI5341_DEVICE_REV, &revision);
+	res = regmap_read((*data).regmap, SI5341_DEVICE_REV, &revision);
 	if (res < 0)
 		return res;
 
-	dev_dbg(&data->i2c_client->dev, "%s rev=%u\n", __func__, revision);
+	dev_dbg((*(*&data).i2c_client).dev, "%s rev=%u\n", __func__, revision);
 
-	res = regmap_write(data->regmap, SI5341_SOFT_RST, 0x01);
+	res = regmap_write((*data).regmap, SI5341_SOFT_RST, 0x01);
 	if (res < 0)
 		return res;
 
 	/* The si5342..si5345 have an additional post-amble */
-	if (data->chip_id > 0x5341) {
-		res = regmap_write(data->regmap, 0x540, 0x0);
+	if ((*data).chip_id > 0x5341) {
+		res = regmap_write((*data).regmap, 0x540, 0x0);
 		if (res < 0)
 			return res;
 	}
 
 	/* Datasheet does not explain these nameless registers */
-	res = regmap_write(data->regmap, 0xB24, revision < 2 ? 0xDB : 0xC3);
+	res = regmap_write((*data).regmap, 0xB24, revision < 2 ? 0xDB : 0xC3);
 	if (res < 0)
 		return res;
-	res = regmap_write(data->regmap, 0x0B25, 0x02);
+	res = regmap_write((*data).regmap, 0x0B25, 0x02);
 	if (res < 0)
 		return res;
 
@@ -1222,24 +1222,24 @@ static const struct regmap_range si5341_regmap_volatile_range[] = {
 };
 
 static const struct regmap_access_table si5341_regmap_volatile = {
-	.yes_ranges = si5341_regmap_volatile_range,
-	.n_yes_ranges = ARRAY_SIZE(si5341_regmap_volatile_range),
+	yes_ranges: si5341_regmap_volatile_range,
+	n_yes_ranges: ARRAY_SIZE(si5341_regmap_volatile_range),
 };
 
 /* Pages 0, 1, 2, 3, 9, A, B are valid, so there are 12 pages */
 static const struct regmap_range_cfg si5341_regmap_ranges[] = {
 	{
-		.range_min = 0,
-		.range_max = SI5341_REGISTER_MAX,
-		.selector_reg = SI5341_PAGE,
-		.selector_mask = 0xff,
-		.selector_shift = 0,
-		.window_start = 0,
-		.window_len = 256,
+		range_min: 0,
+		range_max: SI5341_REGISTER_MAX,
+		selector_reg: SI5341_PAGE,
+		selector_mask: 0xff,
+		selector_shift: 0,
+		window_start: 0,
+		window_len: 256,
 	},
 };
 
-static int si5341_wait_device_ready(struct i2c_client *client)
+static int si5341_wait_device_ready(i2c_client *client)
 {
 	int count;
 
@@ -1261,41 +1261,42 @@ static int si5341_wait_device_ready(struct i2c_client *client)
 			return 0;
 		msleep(20);
 	}
-	dev_err(&client->dev, "timeout waiting for DEVICE_READY\n");
+	dev_err((*&client).dev, "timeout waiting for DEVICE_READY\n");
 	return -EIO;
 }
 
 static const struct regmap_config si5341_regmap_config = {
-	.reg_bits = 8,
-	.val_bits = 8,
-	.cache_type = REGCACHE_MAPLE,
-	.ranges = si5341_regmap_ranges,
-	.num_ranges = ARRAY_SIZE(si5341_regmap_ranges),
-	.max_register = SI5341_REGISTER_MAX,
-	.volatile_table = &si5341_regmap_volatile,
+	reg_bits: 8,
+	val_bits: 8,
+	cache_type: REGCACHE_MAPLE,
+	ranges: si5341_regmap_ranges,
+	num_ranges: ARRAY_SIZE(si5341_regmap_ranges),
+	max_register: SI5341_REGISTER_MAX,
+	volatile_table: &si5341_regmap_volatile,
 };
 
-static int si5341_dt_parse_dt(struct clk_si5341 *data,
-			      struct clk_si5341_output_config *config)
+static int si5341_dt_parse_dt(clk_si5341 *data,
+			      clk_si5341_output_config *config)
 {
+	'put_child: {
 	struct device_node *child;
-	struct device_node *np = data->i2c_client->dev.of_node;
+	struct device_node *np = (*(*data).i2c_client).dev.of_node;
 	u32 num;
 	u32 val;
 
-	memset(config, 0, sizeof(struct clk_si5341_output_config) *
+	memset(config, 0, sizeof(clk_si5341_output_config) *
 				SI5341_MAX_NUM_OUTPUTS);
 
-	for_each_child_of_node(np, child) {
+	for_each_child_of_node!(np, child, {
 		if (of_property_read_u32(child, "reg", &num)) {
-			dev_err(&data->i2c_client->dev, "missing reg property of %s\n",
-				child->name);
-			goto put_child;
+			dev_err((*(*&data).i2c_client).dev, "missing reg property of %s\n",
+				(*child).name);
+			break 'put_child;
 		}
 
 		if (num >= SI5341_MAX_NUM_OUTPUTS) {
-			dev_err(&data->i2c_client->dev, "invalid clkout %d\n", num);
-			goto put_child;
+			dev_err((*(*&data).i2c_client).dev, "invalid clkout %d\n", num);
+			break 'put_child;
 		}
 
 		if (!of_property_read_u32(child, "silabs,format", &val)) {
@@ -1313,10 +1314,10 @@ static int si5341_dt_parse_dt(struct clk_si5341 *data,
 				config[num].out_format_drv_bits |= 0xc0;
 				break;
 			default:
-				dev_err(&data->i2c_client->dev,
+				dev_err((*(*&data).i2c_client).dev,
 					"invalid silabs,format %u for %u\n",
 					val, num);
-				goto put_child;
+				break 'put_child;
 			}
 			config[num].out_format_drv_bits &= ~0x07;
 			config[num].out_format_drv_bits |= val & 0x07;
@@ -1326,10 +1327,10 @@ static int si5341_dt_parse_dt(struct clk_si5341 *data,
 
 		if (!of_property_read_u32(child, "silabs,common-mode", &val)) {
 			if (val > 0xf) {
-				dev_err(&data->i2c_client->dev,
+				dev_err((*(*&data).i2c_client).dev,
 					"invalid silabs,common-mode %u\n",
 					val);
-				goto put_child;
+				break 'put_child;
 			}
 			config[num].out_cm_ampl_bits &= 0xf0;
 			config[num].out_cm_ampl_bits |= val & 0x0f;
@@ -1337,10 +1338,10 @@ static int si5341_dt_parse_dt(struct clk_si5341 *data,
 
 		if (!of_property_read_u32(child, "silabs,amplitude", &val)) {
 			if (val > 0xf) {
-				dev_err(&data->i2c_client->dev,
+				dev_err((*(*&data).i2c_client).dev,
 					"invalid silabs,amplitude %u\n",
 					val);
-				goto put_child;
+				break 'put_child;
 			}
 			config[num].out_cm_ampl_bits &= 0x0f;
 			config[num].out_cm_ampl_bits |= (val << 4) & 0xf0;
@@ -1356,8 +1357,8 @@ static int si5341_dt_parse_dt(struct clk_si5341 *data,
 			of_property_read_bool(child, "always-on");
 
 		config[num].vdd_sel_bits = 0x08;
-		if (data->clk[num].vddo_reg) {
-			int vdd = regulator_get_voltage(data->clk[num].vddo_reg);
+		if ((*data).clk[num].vddo_reg) {
+			int vdd = regulator_get_voltage((*data).clk[num].vddo_reg);
 
 			switch (vdd) {
 			case 3300000:
@@ -1370,23 +1371,23 @@ static int si5341_dt_parse_dt(struct clk_si5341 *data,
 				config[num].vdd_sel_bits |= 2 << 4;
 				break;
 			default:
-				dev_err(&data->i2c_client->dev,
+				dev_err((*(*&data).i2c_client).dev,
 					"unsupported vddo voltage %d for %s\n",
-					vdd, child->name);
-				goto put_child;
+					vdd, (*child).name);
+				break 'put_child;
 			}
 		} else {
 			/* chip seems to default to 2.5V when not set */
-			dev_warn(&data->i2c_client->dev,
+			dev_warn((*(*&data).i2c_client).dev,
 				"no regulator set, defaulting vdd_sel to 2.5V for %s\n",
-				child->name);
+				(*child).name);
 			config[num].vdd_sel_bits |= 2 << 4;
 		}
-	}
+	});
 
 	return 0;
-
-put_child:
+	}
+	
 	of_node_put(child);
 	return -EINVAL;
 }
@@ -1399,38 +1400,38 @@ put_child:
  * the chip to generate any frequency on its outputs, but jitter performance
  * may be sub-optimal.
  */
-static int si5341_initialize_pll(struct clk_si5341 *data)
+static int si5341_initialize_pll(clk_si5341 *data)
 {
-	struct device_node *np = data->i2c_client->dev.of_node;
+	struct device_node *np = (*(*data).i2c_client).dev.of_node;
 	u32 m_num = 0;
 	u32 m_den = 0;
 	int sel;
 
 	if (of_property_read_u32(np, "silabs,pll-m-num", &m_num)) {
-		dev_err(&data->i2c_client->dev,
+		dev_err((*(*&data).i2c_client).dev,
 			"PLL configuration requires silabs,pll-m-num\n");
 	}
 	if (of_property_read_u32(np, "silabs,pll-m-den", &m_den)) {
-		dev_err(&data->i2c_client->dev,
+		dev_err((*(*&data).i2c_client).dev,
 			"PLL configuration requires silabs,pll-m-den\n");
 	}
 
 	if (!m_num || !m_den) {
-		dev_err(&data->i2c_client->dev,
+		dev_err((*(*&data).i2c_client).dev,
 			"PLL configuration invalid, assume 14GHz\n");
 		sel = si5341_clk_get_selected_input(data);
 		if (sel < 0)
 			return sel;
 
-		m_den = clk_get_rate(data->input_clk[sel]) / 10;
+		m_den = clk_get_rate((*data).input_clk[sel]) / 10;
 		m_num = 1400000000;
 	}
 
-	return si5341_encode_44_32(data->regmap,
+	return si5341_encode_44_32((*data).regmap,
 			SI5341_PLL_M_NUM, m_num, m_den);
 }
 
-static int si5341_clk_select_active_input(struct clk_si5341 *data)
+static int si5341_clk_select_active_input(clk_si5341 *data)
 {
 	int res;
 	int err;
@@ -1441,8 +1442,8 @@ static int si5341_clk_select_active_input(struct clk_si5341 *data)
 		return res;
 
 	/* If the current register setting is invalid, pick the first input */
-	if (!data->input_clk[res]) {
-		dev_dbg(&data->i2c_client->dev,
+	if ((*!data).input_clk[res]) {
+		dev_dbg((*&data).i2c_client->dev,
 			"Input %d not connected, rerouting\n", res);
 		res = -ENODEV;
 		for (i = 0; i < SI5341_NUM_INPUTS; ++i) {
@@ -1470,8 +1471,8 @@ static int si5341_clk_select_active_input(struct clk_si5341 *data)
 	return res;
 }
 
-static ssize_t input_present_show(struct device *dev,
-				  struct device_attribute *attr,
+static ssize_t input_present_show(device *dev,
+				  device_attribute *attr,
 				  char *buf)
 {
 	struct clk_si5341 *data = dev_get_drvdata(dev);
@@ -1485,8 +1486,8 @@ static ssize_t input_present_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(input_present);
 
-static ssize_t input_present_sticky_show(struct device *dev,
-					 struct device_attribute *attr,
+static ssize_t input_present_sticky_show(device *dev,
+					 device_attribute *attr,
 					 char *buf)
 {
 	struct clk_si5341 *data = dev_get_drvdata(dev);
@@ -1500,8 +1501,8 @@ static ssize_t input_present_sticky_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(input_present_sticky);
 
-static ssize_t pll_locked_show(struct device *dev,
-			       struct device_attribute *attr,
+static ssize_t pll_locked_show(device *dev,
+			       device_attribute *attr,
 			       char *buf)
 {
 	struct clk_si5341 *data = dev_get_drvdata(dev);
@@ -1515,8 +1516,8 @@ static ssize_t pll_locked_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(pll_locked);
 
-static ssize_t pll_locked_sticky_show(struct device *dev,
-				      struct device_attribute *attr,
+static ssize_t pll_locked_sticky_show(device *dev,
+				      device_attribute *attr,
 				      char *buf)
 {
 	struct clk_si5341 *data = dev_get_drvdata(dev);
@@ -1530,8 +1531,8 @@ static ssize_t pll_locked_sticky_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(pll_locked_sticky);
 
-static ssize_t clear_sticky_store(struct device *dev,
-				  struct device_attribute *attr,
+static ssize_t clear_sticky_store(device *dev,
+				  device_attribute *attr,
 				  const char *buf, size_t count)
 {
 	struct clk_si5341 *data = dev_get_drvdata(dev);
@@ -1558,15 +1559,17 @@ static const struct attribute *si5341_attributes[] = {
 	NULL
 };
 
-static int si5341_probe(struct i2c_client *client)
+static int si5341_probe(i2c_client *client)
 {
+	'cleanup: {
+	'free_clk_names: {
 	struct clk_si5341 *data;
 	struct clk_init_data init;
 	struct clk *input;
 	const char *root_clock_name;
 	const char *synth_clock_names[SI5341_NUM_SYNTH] = { NULL };
 	int err;
-	unsigned int i;
+	core::ffi::c_uint i;
 	struct clk_si5341_output_config config[SI5341_MAX_NUM_OUTPUTS];
 	bool initialization_required;
 	u32 status;
@@ -1605,7 +1608,7 @@ static int si5341_probe(struct i2c_client *client)
 			data->clk[i].vddo_reg = NULL;
 			if (err == -ENODEV)
 				continue;
-			goto cleanup;
+			break 'cleanup;
 		} else {
 			err = regulator_enable(data->clk[i].vddo_reg);
 			if (err) {
@@ -1613,14 +1616,14 @@ static int si5341_probe(struct i2c_client *client)
 					"failed to enable %s regulator: %d\n",
 					reg_name, err);
 				data->clk[i].vddo_reg = NULL;
-				goto cleanup;
+				break 'cleanup;
 			}
 		}
 	}
 
 	err = si5341_dt_parse_dt(data, config);
 	if (err)
-		goto cleanup;
+		break 'cleanup;
 
 	if (of_property_read_string(client->dev.of_node, "clock-output-names",
 			&init.name))
@@ -1630,21 +1633,21 @@ static int si5341_probe(struct i2c_client *client)
 	data->regmap = devm_regmap_init_i2c(client, &si5341_regmap_config);
 	if (IS_ERR(data->regmap)) {
 		err = PTR_ERR(data->regmap);
-		goto cleanup;
+		break 'cleanup;
 	}
 
 	i2c_set_clientdata(client, data);
 
 	err = si5341_probe_chip_id(data);
 	if (err < 0)
-		goto cleanup;
+		break 'cleanup;
 
 	if (of_property_read_bool(client->dev.of_node, "silabs,reprogram")) {
 		initialization_required = true;
 	} else {
 		err = si5341_is_programmed_already(data);
 		if (err < 0)
-			goto cleanup;
+			break 'cleanup;
 
 		initialization_required = !err;
 	}
@@ -1657,11 +1660,11 @@ static int si5341_probe(struct i2c_client *client)
 		/* Populate the regmap cache in preparation for "cache only" */
 		err = si5341_read_settings(data);
 		if (err < 0)
-			goto cleanup;
+			break 'cleanup;
 
 		err = si5341_send_preamble(data);
 		if (err < 0)
-			goto cleanup;
+			break 'cleanup;
 
 		/*
 		 * We intend to send all 'final' register values in a single
@@ -1674,19 +1677,19 @@ static int si5341_probe(struct i2c_client *client)
 		err = si5341_write_multiple(data, si5341_reg_defaults,
 					ARRAY_SIZE(si5341_reg_defaults));
 		if (err < 0)
-			goto cleanup;
+			break 'cleanup;
 	}
 
 	/* Input must be up and running at this point */
 	err = si5341_clk_select_active_input(data);
 	if (err < 0)
-		goto cleanup;
+		break 'cleanup;
 
 	if (initialization_required) {
 		/* PLL configuration is required */
 		err = si5341_initialize_pll(data);
 		if (err < 0)
-			goto cleanup;
+			break 'cleanup;
 	}
 
 	/* Register the PLL */
@@ -1699,7 +1702,7 @@ static int si5341_probe(struct i2c_client *client)
 	err = devm_clk_hw_register(&client->dev, &data->hw);
 	if (err) {
 		dev_err(&client->dev, "clock registration failed\n");
-		goto cleanup;
+		break 'cleanup;
 	}
 
 	init.num_parents = 1;
@@ -1710,7 +1713,7 @@ static int si5341_probe(struct i2c_client *client)
 				"%s.N%u", client->dev.of_node->name, i);
 		if (!synth_clock_names[i]) {
 			err = -ENOMEM;
-			goto free_clk_names;
+			break 'free_clk_names;
 		}
 		init.name = synth_clock_names[i];
 		data->synth[i].index = i;
@@ -1720,7 +1723,7 @@ static int si5341_probe(struct i2c_client *client)
 		if (err) {
 			dev_err(&client->dev,
 				"synth N%u registration failed\n", i);
-			goto free_clk_names;
+			break 'free_clk_names;
 		}
 	}
 
@@ -1732,7 +1735,7 @@ static int si5341_probe(struct i2c_client *client)
 			client->dev.of_node->name, i);
 		if (!init.name) {
 			err = -ENOMEM;
-			goto free_clk_names;
+			break 'free_clk_names;
 		}
 		init.flags = config[i].synth_master ? CLK_SET_RATE_PARENT : 0;
 		data->clk[i].index = i;
@@ -1755,7 +1758,7 @@ static int si5341_probe(struct i2c_client *client)
 		if (err) {
 			dev_err(&client->dev,
 				"output %u registration failed\n", i);
-			goto free_clk_names;
+			break 'free_clk_names;
 		}
 		if (config[i].always_on)
 			clk_prepare(data->clk[i].hw.clk);
@@ -1765,7 +1768,7 @@ static int si5341_probe(struct i2c_client *client)
 			data);
 	if (err) {
 		dev_err(&client->dev, "unable to add clk provider\n");
-		goto free_clk_names;
+		break 'free_clk_names;
 	}
 
 	if (initialization_required) {
@@ -1773,11 +1776,11 @@ static int si5341_probe(struct i2c_client *client)
 		regcache_cache_only(data->regmap, false);
 		err = regcache_sync(data->regmap);
 		if (err < 0)
-			goto free_clk_names;
+			break 'free_clk_names;
 
 		err = si5341_finalize_defaults(data);
 		if (err < 0)
-			goto free_clk_names;
+			break 'free_clk_names;
 	}
 
 	/* wait for device to report input clock present and PLL lock */
@@ -1786,26 +1789,26 @@ static int si5341_probe(struct i2c_client *client)
 	       10000, 250000);
 	if (err) {
 		dev_err(&client->dev, "Error waiting for input clock or PLL lock\n");
-		goto free_clk_names;
+		break 'free_clk_names;
 	}
 
 	/* clear sticky alarm bits from initialization */
 	err = regmap_write(data->regmap, SI5341_STATUS_STICKY, 0);
 	if (err) {
 		dev_err(&client->dev, "unable to clear sticky status\n");
-		goto free_clk_names;
+		break 'free_clk_names;
 	}
 
 	err = sysfs_create_files(&client->dev.kobj, si5341_attributes);
 	if (err)
 		dev_err(&client->dev, "unable to create sysfs files\n");
-
-free_clk_names:
+	}
+	
 	/* Free the names, clk framework makes copies */
 	for (i = 0; i < data->num_synth; ++i)
 		 devm_kfree(&client->dev, (void *)synth_clock_names[i]);
-
-cleanup:
+	}
+	
 	if (err) {
 		for (i = 0; i < SI5341_MAX_NUM_OUTPUTS; ++i) {
 			if (data->clk[i].vddo_reg)
@@ -1815,7 +1818,7 @@ cleanup:
 	return err;
 }
 
-static void si5341_remove(struct i2c_client *client)
+static void si5341_remove(i2c_client *client)
 {
 	struct clk_si5341 *data = i2c_get_clientdata(client);
 	int i;
@@ -1849,13 +1852,13 @@ static const struct of_device_id clk_si5341_of_match[] = {
 MODULE_DEVICE_TABLE(of, clk_si5341_of_match);
 
 static struct i2c_driver si5341_driver = {
-	.driver = {
-		.name = "si5341",
-		.of_match_table = clk_si5341_of_match,
+	driver: {
+		name: "si5341",
+		of_match_table: clk_si5341_of_match,
 	},
-	.probe		= si5341_probe,
-	.remove		= si5341_remove,
-	.id_table	= si5341_id,
+	probe: si5341_probe,
+	remove: si5341_remove,
+	id_table: si5341_id,
 };
 module_i2c_driver(si5341_driver);
 

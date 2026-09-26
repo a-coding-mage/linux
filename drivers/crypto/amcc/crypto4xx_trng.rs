@@ -54,6 +54,7 @@ unsafe fn ppc4xx_trng_probe(core_dev: *mut crypto4xx_core_device) {
     let mut trng: *mut device_node = core::ptr::null_mut();
     let mut rng: *mut hwrng = core::ptr::null_mut();
     let err: i32;
+    'err_out: {
 
     /* Find the TRNG device node and map it */
     trng = of_find_matching_node(core::ptr::null_mut(), ppc4xx_trng_match.as_ptr());
@@ -65,12 +66,12 @@ unsafe fn ppc4xx_trng_probe(core_dev: *mut crypto4xx_core_device) {
     (*dev).trng_base = of_iomap(trng, 0);
     of_node_put(trng);
     if (*dev).trng_base.is_null() {
-        goto err_out;
+        break 'err_out;
     }
 
     rng = kzalloc_obj::<hwrng>();
     if rng.is_null() {
-        goto err_out;
+        break 'err_out;
     }
 
     (*rng).name = KBUILD_MODNAME;
@@ -84,11 +85,11 @@ unsafe fn ppc4xx_trng_probe(core_dev: *mut crypto4xx_core_device) {
     if err != 0 {
         ppc4xx_trng_enable(dev, false);
         dev_err((*core_dev).device, "failed to register hwrng (%d).\n", err);
-        goto err_out;
+        break 'err_out;
     }
     return;
-
-err_out:
+    }
+    
     iounmap((*dev).trng_base);
     kfree(rng);
     (*dev).trng_base = core::ptr::null_mut();

@@ -16,7 +16,7 @@ fn xdr_len_object(x: usize) -> usize { 4 + xdr_round_up(x) }
 
 /* Respond to an RxGK challenge, adding appdata. */
 unsafe fn afs_respond_to_challenge(challenge: *mut sk_buff) -> i32 {
-    #[cfg(feature = "CONFIG_RXGK")]
+    #[cfg(CONFIG_RXGK)]
     let mut appdata: krb5_buffer = core::mem::zeroed();
     let mut peer: *mut rxrpc_peer = core::ptr::null_mut();
     let mut peer_data: c_ulong = 0;
@@ -32,11 +32,11 @@ unsafe fn afs_respond_to_challenge(challenge: *mut sk_buff) -> i32 {
         }
     }
     match security_index {
-        #[cfg(feature = "CONFIG_RXKAD")]
+        #[cfg(CONFIG_RXKAD)]
         RXRPC_SECURITY_RXKAD => rxkad_kernel_respond_to_challenge(challenge),
-        #[cfg(feature = "CONFIG_RXGK")]
+        #[cfg(CONFIG_RXGK)]
         RXRPC_SECURITY_RXGK => rxgk_kernel_respond_to_challenge(challenge, &mut appdata),
-        #[cfg(feature = "CONFIG_RXGK")]
+        #[cfg(CONFIG_RXGK)]
         RXRPC_SECURITY_YFS_RXGK => {
             match service_id {
                 FS_SERVICE | YFS_FS_SERVICE => {
@@ -67,7 +67,7 @@ pub unsafe fn afs_process_oob_queue(work: *mut work_struct) {
     }
 }
 
-#[cfg(feature = "CONFIG_RXGK")]
+#[cfg(CONFIG_RXGK)]
 pub unsafe fn afs_create_token_key(net: *mut afs_net, socket: *mut socket) -> i32 {
     let mut krb5: *const krb5_enctype = core::ptr::null();
     let ring = keyring_alloc(c"kafs", GLOBAL_ROOT_UID, GLOBAL_ROOT_GID, current_cred(), KEY_POS_SEARCH | KEY_POS_WRITE | KEY_USR_VIEW | KEY_USR_READ | KEY_USR_SEARCH, KEY_ALLOC_NOT_IN_QUOTA, core::ptr::null_mut(), core::ptr::null_mut());
@@ -90,7 +90,7 @@ pub unsafe fn afs_create_token_key(net: *mut afs_net, socket: *mut socket) -> i3
 }
 
 // The remaining RXGK token construction follows the C XDR layout literally.
-#[cfg(feature = "CONFIG_RXGK")]
+#[cfg(CONFIG_RXGK)]
 unsafe fn afs_create_yfs_cm_token(challenge: *mut sk_buff, server: *mut afs_server) -> i32 {
     let net = (*(*server).cell).net;
     let key = (*net).fs_cm_token_key;

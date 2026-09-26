@@ -13,12 +13,12 @@ pub struct NetlinkExtAck;
 pub struct PhyDevice;
 
 // This condition corresponds to CONFIG_PHYLIB.
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 extern "C" {
     pub static phylib_stubs: *const PhylibStubs;
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 #[repr(C)]
 pub struct PhylibStubs {
     pub hwtstamp_get: Option<unsafe extern "C" fn(
@@ -41,7 +41,7 @@ pub struct PhylibStubs {
     )>,
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 #[inline]
 pub unsafe fn phy_hwtstamp_get(
     phydev: *mut PhyDevice,
@@ -56,7 +56,7 @@ pub unsafe fn phy_hwtstamp_get(
     ((*phylib_stubs).hwtstamp_get.unwrap())(phydev, config)
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 #[inline]
 pub unsafe fn phy_hwtstamp_set(
     phydev: *mut PhyDevice,
@@ -72,7 +72,7 @@ pub unsafe fn phy_hwtstamp_set(
     ((*phylib_stubs).hwtstamp_set.unwrap())(phydev, config, extack)
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 #[inline]
 pub unsafe fn phy_ethtool_get_phy_stats(
     phydev: *mut PhyDevice,
@@ -86,7 +86,7 @@ pub unsafe fn phy_ethtool_get_phy_stats(
     ((*phylib_stubs).get_phy_stats.unwrap())(phydev, phy_stats, phydev_stats);
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 #[inline]
 pub unsafe fn phy_ethtool_get_link_ext_stats(
     phydev: *mut PhyDevice,
@@ -99,7 +99,7 @@ pub unsafe fn phy_ethtool_get_link_ext_stats(
     ((*phylib_stubs).get_link_ext_stats.unwrap())(phydev, link_stats);
 }
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_hwtstamp_get(
     _phydev: *mut PhyDevice,
@@ -108,7 +108,7 @@ pub unsafe fn phy_hwtstamp_get(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_hwtstamp_set(
     _phydev: *mut PhyDevice,
@@ -118,7 +118,7 @@ pub unsafe fn phy_hwtstamp_set(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_ethtool_get_phy_stats(
     _phydev: *mut PhyDevice,
@@ -127,7 +127,7 @@ pub unsafe fn phy_ethtool_get_phy_stats(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_ethtool_get_link_ext_stats(
     _phydev: *mut PhyDevice,

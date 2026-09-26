@@ -170,10 +170,10 @@ pub unsafe fn xen_pin_vcpu(cpu: c_int) {
     let ret = HYPERVISOR_sched_op(SCHEDOP_pin_override, &mut pin_override);
     if cpu < 0 { return; }
     match ret {
-        -ENOSYS => { pr_warn!("Unable to pin on physical cpu {}. In case of problems consider vcpu pinning.\n", cpu); disable_pinning = true; }
-        -EPERM => { WARN!(1, "Trying to pin vcpu without having privilege to do so\n"); disable_pinning = true; }
-        -EINVAL | -EBUSY => pr_warn!("Physical cpu {} not available for pinning. Check Xen cpu configuration.\n", cpu),
-        0 => (),
+        case if case == -ENOSYS => { pr_warn!("Unable to pin on physical cpu {}. In case of problems consider vcpu pinning.\n", cpu); disable_pinning = true; }
+        case if case == -EPERM => { WARN!(1, "Trying to pin vcpu without having privilege to do so\n"); disable_pinning = true; }
+        case if case == -EINVAL || case == -EBUSY => pr_warn!("Physical cpu {} not available for pinning. Check Xen cpu configuration.\n", cpu),
+        case if case == 0 => (),
         _ => { WARN!(1, "rc {} while trying to pin vcpu\n", ret); disable_pinning = true; }
     }
 }

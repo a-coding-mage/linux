@@ -121,8 +121,8 @@ unsafe fn socket_mt6_v1_v2_v3(skb: *const sk_buff, par: *mut xt_action_param) ->
 
 unsafe fn socket_mt_enable_defrag(net: *mut net, family: i32) -> i32 {
     match family {
-        NFPROTO_IPV4 => nf_defrag_ipv4_enable(net),
-        #[cfg(CONFIG_IP6_NF_IPTABLES)]
+        case if case == NFPROTO_IPV4 => nf_defrag_ipv4_enable(net),
+        case if case == #[cfg(CONFIG_IP6_NF_IPTABLES)]
         NFPROTO_IPV6 => nf_defrag_ipv6_enable(net),
         _ => {
             WARN_ONCE!(true, "Unknown family %d\n", family);
@@ -162,8 +162,7 @@ unsafe fn socket_mt_destroy(par: *const xt_mtdtor_param) {
     if (*par).family == NFPROTO_IPV4 {
         nf_defrag_ipv4_disable((*par).net);
     }
-    #[cfg(CONFIG_IP6_NF_IPTABLES)]
-    else if (*par).family == NFPROTO_IPV6 {
+    else if cfg!(CONFIG_IP6_NF_IPTABLES) && ((*par).family == NFPROTO_IPV6) {
         nf_defrag_ipv6_disable((*par).net);
     }
 }

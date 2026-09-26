@@ -139,7 +139,7 @@ unsafe fn sun4i_ss_cipher_poll(areq: *mut skcipher_request) -> c_int {
     writel(0, (*ss).base.add(SS_CTL as usize)); spin_unlock_irqrestore(&mut (*ss).slock, flags); err
 }
 
-macro_rules! cipher_fn { ($name:ident, $op:ident, $mode:ident, $dir:ident) => { pub unsafe fn $name(areq: *mut skcipher_request) -> c_int { let tfm = crypto_skcipher_reqtfm(areq); let op = crypto_skcipher_ctx(tfm); let rctx = skcipher_request_ctx(areq); (*rctx).mode = $op | $mode | SS_ENABLED | $dir | (*op).keymode; sun4i_ss_cipher_poll(areq) } }; }
+macro_rules! cipher_fn { ($name:ident, $op:ident, $mode:ident, $dir:ident) => { pub unsafe fn $name(areq: *mut skcipher_request) -> c_int { let tfm = crypto_skcipher_reqtfm(areq); let $op = crypto_skcipher_ctx(tfm); let rctx = skcipher_request_ctx(areq); (*rctx).mode = $op | $mode | SS_ENABLED | $dir | (*$op).keymode; sun4i_ss_cipher_poll(areq) } }; }
 cipher_fn!(sun4i_ss_cbc_aes_encrypt, SS_OP_AES, SS_CBC, SS_ENCRYPTION); cipher_fn!(sun4i_ss_cbc_aes_decrypt, SS_OP_AES, SS_CBC, SS_DECRYPTION);
 cipher_fn!(sun4i_ss_ecb_aes_encrypt, SS_OP_AES, SS_ECB, SS_ENCRYPTION); cipher_fn!(sun4i_ss_ecb_aes_decrypt, SS_OP_AES, SS_ECB, SS_DECRYPTION);
 cipher_fn!(sun4i_ss_cbc_des_encrypt, SS_OP_DES, SS_CBC, SS_ENCRYPTION); cipher_fn!(sun4i_ss_cbc_des_decrypt, SS_OP_DES, SS_CBC, SS_DECRYPTION);

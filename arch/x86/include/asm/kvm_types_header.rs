@@ -2,18 +2,18 @@
 
 // Build-time module conditions from the C header.  The exact IS_MODULE and
 // CONFIG_* configuration system is supplied by the surrounding build.
-#[cfg(all(feature = "CONFIG_KVM_AMD", feature = "CONFIG_KVM_INTEL"))]
+#[cfg(all(CONFIG_KVM_AMD, CONFIG_KVM_INTEL))]
 pub const KVM_SUB_MODULES: &str = "kvm-amd,kvm-intel";
 
 #[cfg(all(
-    feature = "CONFIG_KVM_AMD",
-    not(feature = "CONFIG_KVM_INTEL")
+    CONFIG_KVM_AMD,
+    not(CONFIG_KVM_INTEL)
 ))]
 pub const KVM_SUB_MODULES: &str = "kvm-amd";
 
 #[cfg(all(
-    not(feature = "CONFIG_KVM_AMD"),
-    feature = "CONFIG_KVM_INTEL"
+    not(CONFIG_KVM_AMD),
+    CONFIG_KVM_INTEL
 ))]
 pub const KVM_SUB_MODULES: &str = "kvm-intel";
 

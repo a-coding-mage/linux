@@ -10,13 +10,13 @@
 
 /* The original declaration is excluded when compiling assembly. */
 
-#[cfg(feature = "CONFIG_ARC_CURR_IN_REG")]
+#[cfg(CONFIG_ARC_CURR_IN_REG)]
 extern "C" {
     /* C: register struct task_struct *curr_arc asm("gp"); */
     pub static mut curr_arc: *mut task_struct;
 }
 
-#[cfg(feature = "CONFIG_ARC_CURR_IN_REG")]
+#[cfg(CONFIG_ARC_CURR_IN_REG)]
 #[macro_export]
 macro_rules! current {
     () => {

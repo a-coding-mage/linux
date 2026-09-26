@@ -28,17 +28,17 @@ extern "C" {
     fn real_mount(x: *mut c_void) -> *mut c_void; fn file_inode(x: *mut file) -> *mut inode;
     fn show_fd_locks(m: *mut seq_file, f: *mut file, files: *mut files_struct); fn seq_has_overflowed(m: *mut seq_file) -> bool;
     fn single_open(f: *mut file, show: unsafe extern "C" fn(*mut seq_file,*mut c_void)->c_int, i: *mut inode)->c_int;
-    fn seq_read(); fn seq_lseek(); fn single_release(); fn generic_permission(*const mnt_idmap,*mut inode,c_int)->c_int;
-    fn ptrace_may_access(*mut task_struct, c_uint)->bool; fn proc_nochmod_setattr();
-    fn fget_task(*mut task_struct,c_uint)->*mut file; fn task_dump_owner(*mut task_struct,c_int,*mut u32,*mut u32);
-    fn security_task_to_inode(*mut task_struct,*mut inode); fn d_inode(*mut dentry)->*mut inode; fn proc_fd(*mut inode)->c_uint;
-    fn pid_delete_dentry(); fn path_get(*mut path); fn proc_pid_make_inode(*mut c_void,*mut task_struct,u32)->*mut inode;
-    fn proc_splice_unmountable(*mut inode,*mut dentry,*const dentry_operations)->*mut dentry; fn name_to_int(*const qstr)->c_uint;
-    fn fget_task_next(*mut task_struct,*mut c_uint)->*mut file; fn dir_emit_dots(*mut file,*mut dir_context)->bool;
-    fn proc_fill_cache(*mut file,*mut dir_context,*const i8,c_uint,instantiate_t,*mut task_struct,*const fd_data)->bool;
-    fn cond_resched(); fn files_fdtable(*mut files_struct)->*mut fdtable; fn bitmap_weight(*mut c_ulong,c_uint)->i64;
-    fn generic_read_dir(); fn generic_file_llseek(); fn pid_task(*mut c_void,c_uint)->*mut task_struct;
-    fn same_thread_group(*mut task_struct,*mut task_struct)->bool; fn generic_fillattr(*const mnt_idmap,c_uint,*mut inode,*mut kstat);
+    fn seq_read(); fn seq_lseek(); fn single_release(); fn generic_permission(_: *const mnt_idmap,_: *mut inode,_: c_int)->c_int;
+    fn ptrace_may_access(_: *mut task_struct, _: c_uint)->bool; fn proc_nochmod_setattr();
+    fn fget_task(_: *mut task_struct,_: c_uint)->*mut file; fn task_dump_owner(_: *mut task_struct,_: c_int,_: *mut u32,_: *mut u32);
+    fn security_task_to_inode(_: *mut task_struct,_: *mut inode); fn d_inode(_: *mut dentry)->*mut inode; fn proc_fd(_: *mut inode)->c_uint;
+    fn pid_delete_dentry(); fn path_get(_: *mut path); fn proc_pid_make_inode(_: *mut c_void,_: *mut task_struct,_: u32)->*mut inode;
+    fn proc_splice_unmountable(_: *mut inode,_: *mut dentry,_: *const dentry_operations)->*mut dentry; fn name_to_int(_: *const qstr)->c_uint;
+    fn fget_task_next(_: *mut task_struct,_: *mut c_uint)->*mut file; fn dir_emit_dots(_: *mut file,_: *mut dir_context)->bool;
+    fn proc_fill_cache(_: *mut file,_: *mut dir_context,_: *const i8,_: c_uint,_: instantiate_t,_: *mut task_struct,_: *const fd_data)->bool;
+    fn cond_resched(); fn files_fdtable(_: *mut files_struct)->*mut fdtable; fn bitmap_weight(_: *mut c_ulong,_: c_uint)->i64;
+    fn generic_read_dir(); fn generic_file_llseek(); fn pid_task(_: *mut c_void,_: c_uint)->*mut task_struct;
+    fn same_thread_group(_: *mut task_struct,_: *mut task_struct)->bool; fn generic_fillattr(_: *const mnt_idmap,_: c_uint,_: *mut inode,_: *mut kstat);
 }
 type c_ulong = usize;
 #[repr(C)] struct fdtable { open_fds:*mut c_ulong, max_fds:c_uint }

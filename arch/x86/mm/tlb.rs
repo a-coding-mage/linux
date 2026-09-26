@@ -92,10 +92,10 @@ unsafe fn allocate_global_asid() -> u16 {
 unsafe fn mm_active_cpus_exceeds(mm: *mut mm_struct, threshold: i32) -> bool {
     let mut count = 0;
     if cpumask_weight(mm_cpumask(mm)) <= threshold { return false; }
-    for_each_cpu!(cpu, mm_cpumask(mm)) {
+    for_each_cpu!(cpu, mm_cpumask(mm), {
         if per_cpu(cpu_tlbstate.loaded_mm, cpu) != mm || per_cpu(cpu_tlbstate_shared.is_lazy, cpu) { continue; }
         count += 1; if count > threshold { return true; }
-    }
+    });
     false
 }
 
@@ -112,20 +112,20 @@ unsafe fn mm_needs_global_asid(mm: *mut mm_struct, asid: u16) -> bool {
 }
 
 unsafe fn consider_global_asid(mm: *mut mm_struct) {
-    if !cpu_feature_enabled(X86_FEATURE_INVLPGB) || (current->pid & 0x1f) != (jiffies & 0x1f) { return; }
+    if !cpu_feature_enabled(X86_FEATURE_INVLPGB) || ((*current).pid & 0x1f) != (jiffies & 0x1f) { return; }
     if mm_active_cpus_exceeds(mm, 3) { use_global_asid(mm); }
 }
 
 unsafe fn finish_asid_transition(info: *mut flush_tlb_info) {
     let mm = (*info).mm; let bc_asid = mm_global_asid(mm);
     if !mm_in_asid_transition(mm) { return; }
-    for_each_cpu!(cpu, mm_cpumask(mm)) {
+    for_each_cpu!(cpu, mm_cpumask(mm), {
         while READ_ONCE(per_cpu(cpu_tlbstate.loaded_mm, cpu)) == LOADED_MM_SWITCHING { cpu_relax(); }
         if READ_ONCE(per_cpu(cpu_tlbstate.loaded_mm, cpu)) != mm { continue; }
         if READ_ONCE(per_cpu(cpu_tlbstate.loaded_mm_asid, cpu)) != bc_asid {
             flush_tlb_multi(mm_cpumask((*info).mm), info); return;
         }
-    }
+    });
     mm_clear_asid_transition(mm);
 }
 
@@ -169,7 +169,7 @@ pub unsafe fn switch_mm_irqs_off(_unused: *mut mm_struct, next: *mut mm_struct, 
     cond_mitigation(tsk); this_cpu_write(cpu_tlbstate.loaded_mm,LOADED_MM_SWITCHING); if next!=&mut init_mm && !cpumask_test_cpu(cpu,mm_cpumask(next)) { cpumask_set_cpu(cpu,mm_cpumask(next)); } else { smp_mb(); } let gen=atomic64_read(&(*next).context.tlb_gen); let ns=choose_new_asid(next,gen); reload_tlb(next,prev,ns,gen,cpu);
 }
 
-unsafe fn reload_tlb(next:*mut mm_struct, prev:*mut mm_struct, ns:NewAsid, gen:u64, _cpu:unsigned) { let lam=mm_lam_cr3_mask(next); if ns.need_flush { this_cpu_write(cpu_tlbstate.ctxs[ns.asid].ctx_id,(*next).context.ctx_id); this_cpu_write(cpu_tlbstate.ctxs[ns.asid].tlb_gen,gen); load_new_mm_cr3((*next).pgd,ns.asid,lam,true); trace_tlb_flush(TLB_FLUSH_ON_TASK_SWITCH,TLB_FLUSH_ALL); } else { load_new_mm_cr3((*next).pgd,ns.asid,lam,false); trace_tlb_flush(TLB_FLUSH_ON_TASK_SWITCH,0); } barrier(); this_cpu_write(cpu_tlbstate.loaded_mm,next); this_cpu_write(cpu_tlbstate.loaded_mm_asid,ns.asid); cpu_tlbstate_update_lam(lam,mm_untag_mask(next)); if next!=prev { cr4_update_pce_mm(next); switch_ldt(prev,next); } }
+unsafe fn reload_tlb(next:*mut mm_struct, prev:*mut mm_struct, ns:NewAsid, r#gen:u64, _cpu:unsigned) { let lam=mm_lam_cr3_mask(next); if ns.need_flush { this_cpu_write(cpu_tlbstate.ctxs[ns.asid].ctx_id,(*next).context.ctx_id); this_cpu_write(cpu_tlbstate.ctxs[ns.asid].tlb_gen,gen); load_new_mm_cr3((*next).pgd,ns.asid,lam,true); trace_tlb_flush(TLB_FLUSH_ON_TASK_SWITCH,TLB_FLUSH_ALL); } else { load_new_mm_cr3((*next).pgd,ns.asid,lam,false); trace_tlb_flush(TLB_FLUSH_ON_TASK_SWITCH,0); } barrier(); this_cpu_write(cpu_tlbstate.loaded_mm,next); this_cpu_write(cpu_tlbstate.loaded_mm_asid,ns.asid); cpu_tlbstate_update_lam(lam,mm_untag_mask(next)); if next!=prev { cr4_update_pce_mm(next); switch_ldt(prev,next); } }
 
 #[cfg(CONFIG_PERF_EVENTS)] unsafe fn cr4_update_pce_mm(mm:*mut mm_struct) { if static_branch_unlikely(&rdpmc_always_available_key) || (!static_branch_unlikely(&rdpmc_never_available_key) && atomic_read(&(*mm).context.perf_rdpmc_allowed)!=0) { perf_clear_dirty_counters(); cr4_set_bits_irqsoff(X86_CR4_PCE); } else { cr4_clear_bits_irqsoff(X86_CR4_PCE); } }
 #[cfg(CONFIG_PERF_EVENTS)] pub unsafe fn cr4_update_pce(_ignored:*mut core::ffi::c_void) { cr4_update_pce_mm(this_cpu_read(cpu_tlbstate.loaded_mm)); }

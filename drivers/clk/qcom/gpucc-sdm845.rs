@@ -10,12 +10,10 @@ const CX_GMU_CBCR_SLEEP_SHIFT: u32 = 4;
 const CX_GMU_CBCR_WAKE_MASK: u32 = 0xf;
 const CX_GMU_CBCR_WAKE_SHIFT: u32 = 8;
 
-enum {
-    P_BI_TCXO,
-    P_GPLL0_OUT_MAIN,
-    P_GPLL0_OUT_MAIN_DIV,
-    P_GPU_CC_PLL1_OUT_MAIN,
-}
+pub const P_BI_TCXO: i32 = 0;
+pub const P_GPLL0_OUT_MAIN: i32 = P_BI_TCXO + 1;
+pub const P_GPLL0_OUT_MAIN_DIV: i32 = P_GPLL0_OUT_MAIN + 1;
+pub const P_GPU_CC_PLL1_OUT_MAIN: i32 = P_GPLL0_OUT_MAIN_DIV + 1;
 
 static gpu_cc_pll1_config: AlphaPllConfig = AlphaPllConfig {
     l: 0x1a,

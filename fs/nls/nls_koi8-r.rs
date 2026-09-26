@@ -295,11 +295,11 @@ unsafe fn char2uni(rawstring: *const u8, boundlen: i32, uni: *mut u32) -> i32
 }
 
 static struct nls_table table = [
-	.charset	= "koi8-r",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "koi8-r",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 ];
 
 static int __init init_nls_koi8_r(void)

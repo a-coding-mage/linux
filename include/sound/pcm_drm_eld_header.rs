@@ -107,7 +107,7 @@ extern "C" {
     pub fn snd_show_eld(dev: *mut device, e: *mut snd_parsed_hdmi_eld);
 
     /* Preserved from the source's CONFIG_SND_PROC_FS conditional. */
-    #[cfg(feature = "CONFIG_SND_PROC_FS")]
+    #[cfg(CONFIG_SND_PROC_FS)]
     pub fn snd_print_eld_info(eld: *mut snd_parsed_hdmi_eld, buffer: *mut snd_info_buffer);
 }
 

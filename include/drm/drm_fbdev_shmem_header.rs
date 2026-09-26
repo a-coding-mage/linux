@@ -16,7 +16,7 @@ pub struct drm_fb_helper_surface_size {
 
 // CONFIG_DRM_FBDEV_EMULATION is a build-time C configuration condition.
 // When enabled, this declares the external fbdev probe function.
-#[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+#[cfg(CONFIG_DRM_FBDEV_EMULATION)]
 extern "C" {
     pub fn drm_fbdev_shmem_driver_fbdev_probe(
         fb_helper: *mut drm_fb_helper,

@@ -1400,6 +1400,5 @@ pub enum ENUM_NUM_SIMD_PER_CU {
 	NUM_SIMD_PER_CU                                  = 0x4,
 }
 
-#endif /* OSS_2_4_ENUM_H */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

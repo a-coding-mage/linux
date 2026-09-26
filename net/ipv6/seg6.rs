@@ -67,12 +67,12 @@ static mut SEG6_GENL_FAMILY: genl_family = genl_family_zero();
 
 static mut SEG6_GENL_POLICY: [nla_policy; SEG6_ATTR_MAX as usize + 1] = [nla_policy_zero(); SEG6_ATTR_MAX as usize + 1];
 
-#[cfg(feature = "CONFIG_IPV6_SEG6_HMAC")]
+#[cfg(CONFIG_IPV6_SEG6_HMAC)]
 unsafe fn seg6_genl_sethmac(skb: *mut sk_buff, info: *mut genl_info) -> i32 { seg6_genl_sethmac_impl(skb, info) }
-#[cfg(not(feature = "CONFIG_IPV6_SEG6_HMAC"))]
+#[cfg(not(CONFIG_IPV6_SEG6_HMAC))]
 unsafe fn seg6_genl_sethmac(_skb: *mut sk_buff, _info: *mut genl_info) -> i32 { -ENOTSUPP }
 
-#[cfg(feature = "CONFIG_IPV6_SEG6_HMAC")]
+#[cfg(CONFIG_IPV6_SEG6_HMAC)]
 unsafe fn seg6_genl_sethmac_impl(skb: *mut sk_buff, info: *mut genl_info) -> i32 {
     let net = genl_info_net(info);
     let sdata = seg6_pernet(net);

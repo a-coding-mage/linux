@@ -43,33 +43,33 @@ pub const ACR_CM_IMPRE: u32 = 0x0000_0060; // Cache inhibited, imprecise
 pub const ACR_WPROTECT: u32 = 0x0000_0004; // Write protect region
 
 /* Cache arrangement depends on the corresponding build configuration. */
-#[cfg(feature = "CONFIG_M5307")]
+#[cfg(CONFIG_M5307)]
 pub const CACHE_SIZE: u32 = 0x2000; // 8k of unified cache
-#[cfg(feature = "CONFIG_M5307")]
+#[cfg(CONFIG_M5307)]
 pub const ICACHE_SIZE: u32 = CACHE_SIZE;
-#[cfg(feature = "CONFIG_M5307")]
+#[cfg(CONFIG_M5307)]
 pub const DCACHE_SIZE: u32 = CACHE_SIZE;
 
-#[cfg(feature = "CONFIG_M53xx")]
+#[cfg(CONFIG_M53xx)]
 pub const CACHE_SIZE: u32 = 0x4000; // 16k of unified cache
-#[cfg(feature = "CONFIG_M53xx")]
+#[cfg(CONFIG_M53xx)]
 pub const ICACHE_SIZE: u32 = CACHE_SIZE;
-#[cfg(feature = "CONFIG_M53xx")]
+#[cfg(CONFIG_M53xx)]
 pub const DCACHE_SIZE: u32 = CACHE_SIZE;
 
 pub const CACHE_LINE_SIZE: u32 = 16; // 16 byte line size
 pub const CACHE_WAYS: u32 = 4; // 4 ways - set associative
 
 /* Cache controller settings selected by the build configuration. */
-#[cfg(feature = "CONFIG_CACHE_COPYBACK")]
+#[cfg(CONFIG_CACHE_COPYBACK)]
 pub const CACHE_TYPE: u32 = ACR_CM_CB;
 /* CONFIG_CACHE_COPYBACK also defines the C marker CACHE_PUSH. */
-#[cfg(not(feature = "CONFIG_CACHE_COPYBACK"))]
+#[cfg(not(CONFIG_CACHE_COPYBACK))]
 pub const CACHE_TYPE: u32 = ACR_CM_WT;
 
-#[cfg(feature = "CONFIG_COLDFIRE_SW_A7")]
+#[cfg(CONFIG_COLDFIRE_SW_A7)]
 pub const CACHE_MODE: u32 = CACR_EC + CACR_ESB + CACR_DCM_PRE;
-#[cfg(not(feature = "CONFIG_COLDFIRE_SW_A7"))]
+#[cfg(not(CONFIG_COLDFIRE_SW_A7))]
 pub const CACHE_MODE: u32 = CACR_EC + CACR_ESB + CACR_DCM_PRE + CACR_EUSP;
 
 pub const CACHE_INIT: u32 = CACHE_MODE + CACR_CINVA - CACR_EC;

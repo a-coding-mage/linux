@@ -15,18 +15,18 @@ pub const fn numa_valid_node(nid: i32) -> bool {
 // CONFIG_NUMA_KEEP_MEMINFO selects an empty annotation; otherwise __initdata
 // is used by the original kernel build.
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub static mut node_data: [*mut pglist_data; 0];
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 #[inline]
 pub unsafe fn NODE_DATA(nid: usize) -> *mut pglist_data {
     node_data.as_ptr().add(nid).read()
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 extern "C" {
     pub fn alloc_node_data(nid: i32);
     pub fn alloc_offline_node_data(nid: i32);
@@ -44,25 +44,25 @@ extern "C" {
     pub fn numa_fill_memblks(start: u64, end: u64) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub const fn numa_nearest_node(_node: i32, _state: u32) -> i32 {
     NUMA_NO_NODE
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub const fn nearest_node_nodemask(_node: i32, _mask: *mut nodemask_t) -> i32 {
     NUMA_NO_NODE
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub const fn memory_add_physaddr_to_nid(_start: u64) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 #[inline]
 pub const fn phys_to_target_node(_start: u64) -> i32 {
     0
@@ -74,7 +74,7 @@ pub fn numa_map_to_online_node(node: i32) -> i32 {
     numa_nearest_node(node, N_ONLINE)
 }
 
-#[cfg(feature = "CONFIG_HAVE_ARCH_NODE_DEV_GROUP")]
+#[cfg(CONFIG_HAVE_ARCH_NODE_DEV_GROUP)]
 extern "C" {
     pub static arch_node_dev_group: attribute_group;
 }

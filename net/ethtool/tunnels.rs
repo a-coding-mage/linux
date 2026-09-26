@@ -143,7 +143,7 @@ pub unsafe fn ethnl_tunnel_info_dumpit(skb: *mut sk_buff, cb: *mut netlink_callb
     let net = sock_net((*skb).sk); let mut dev: *mut net_device = core::ptr::null_mut();
     let mut ret = 0; let mut ehdr: *mut c_void;
     rtnl_lock();
-    for_each_netdev_dump(net, dev, (*ctx).ifindex) {
+    for_each_netdev_dump!(net, dev, (*ctx).ifindex, {
         ehdr = ethnl_dump_put(skb, cb, ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY);
         if ehdr.is_null() { ret = -EMSGSIZE; break; }
         ret = ethnl_fill_reply_header(skb, dev, ETHTOOL_A_TUNNEL_INFO_HEADER);
@@ -151,7 +151,7 @@ pub unsafe fn ethnl_tunnel_info_dumpit(skb: *mut sk_buff, cb: *mut netlink_callb
         (*ctx).req_info.dev = dev; ret = ethnl_tunnel_info_fill_reply(&(*ctx).req_info, skb); (*ctx).req_info.dev = core::ptr::null_mut();
         if ret < 0 { genlmsg_cancel(skb, ehdr); if ret == -EOPNOTSUPP { continue; } break; }
         genlmsg_end(skb, ehdr);
-    }
+    });
     rtnl_unlock();
     if ret == -EMSGSIZE && (*skb).len != 0 { return (*skb).len as c_int; }
     ret

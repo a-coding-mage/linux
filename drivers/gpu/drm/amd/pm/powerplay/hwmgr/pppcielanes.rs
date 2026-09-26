@@ -29,7 +29,7 @@
  */
 
 /* For converting from number of lanes to lane bits.  */
-static const PP_R600_ENCODE_LANES: [u8; 17] = [
+static PP_R600_ENCODE_LANES: [u8; 17] = [
     0,          /*  0 Not Supported  */
     1,          /*  1 Lane  */
     2,          /*  2 Lanes  */
@@ -49,7 +49,7 @@ static const PP_R600_ENCODE_LANES: [u8; 17] = [
     6           /* 16 Lanes  */
 ];
 
-static const PP_R600_DECODED_LANES: [u8; 8] = [16, 1, 2, 4, 8, 12, 16, 0];
+static PP_R600_DECODED_LANES: [u8; 8] = [16, 1, 2, 4, 8, 12, 16, 0];
 
 pub extern "C" fn encode_pcie_lane_width(num_lanes: u32) -> u8 {
     unsafe { *PP_R600_ENCODE_LANES.as_ptr().add(num_lanes as usize) }

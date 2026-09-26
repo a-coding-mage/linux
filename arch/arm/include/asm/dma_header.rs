@@ -5,20 +5,20 @@
  * When CONFIG_ZONE_DMA is disabled, this is 0xffffffffUL.  The
  * CONFIG_ZONE_DMA alternative is retained below as its source-level intent.
  */
-#[cfg(not(feature = "CONFIG_ZONE_DMA"))]
+#[cfg(not(CONFIG_ZONE_DMA))]
 pub const MAX_DMA_ADDRESS: usize = 0xffff_ffff;
 
-#[cfg(feature = "CONFIG_ZONE_DMA")]
+#[cfg(CONFIG_ZONE_DMA)]
 extern "C" {
     pub static mut arm_dma_zone_size: phys_addr_t;
 }
 
-#[cfg(feature = "CONFIG_ZONE_DMA")]
+#[cfg(CONFIG_ZONE_DMA)]
 extern "C" {
     pub static mut arm_dma_limit: phys_addr_t;
 }
 
-#[cfg(feature = "CONFIG_ZONE_DMA")]
+#[cfg(CONFIG_ZONE_DMA)]
 pub const ARCH_LOW_ADDRESS_LIMIT: *mut phys_addr_t = unsafe {
     &raw mut arm_dma_limit
 };
@@ -31,18 +31,18 @@ pub const ARCH_LOW_ADDRESS_LIMIT: *mut phys_addr_t = unsafe {
  * phys_addr_t are supplied by the surrounding architecture.
  */
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 pub const DMA_MODE_MASK: u32 = 0xcc;
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 pub const DMA_MODE_READ: u32 = 0x44;
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 pub const DMA_MODE_WRITE: u32 = 0x48;
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 pub const DMA_MODE_CASCADE: u32 = 0xc0;
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 pub const DMA_AUTOINIT: u32 = 0x10;
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 extern "C" {
     pub static mut dma_spin_lock: raw_spinlock_t;
 
@@ -64,7 +64,7 @@ extern "C" {
     pub fn isa_bus_to_virt(addr: c_ulong) -> *mut c_void;
 }
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 #[inline]
 pub unsafe fn claim_dma_lock() -> c_ulong {
     let mut flags: c_ulong = 0;
@@ -72,25 +72,25 @@ pub unsafe fn claim_dma_lock() -> c_ulong {
     flags
 }
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 #[inline]
 pub unsafe fn release_dma_lock(flags: c_ulong) {
     raw_spin_unlock_irqrestore(&raw mut dma_spin_lock, flags);
 }
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 #[inline]
 pub unsafe fn clear_dma_ff(_chan: c_uint) {
     /* The C macro intentionally expands to nothing. */
 }
 
-#[cfg(feature = "CONFIG_ISA_DMA_API")]
+#[cfg(CONFIG_ISA_DMA_API)]
 #[inline]
 pub unsafe fn set_dma_addr(chan: c_uint, addr: c_ulong) {
     __set_dma_addr(chan, isa_bus_to_virt(addr));
 }
 
-#[cfg(all(feature = "CONFIG_ISA_DMA_API", not(feature = "NO_DMA")))]
+#[cfg(all(CONFIG_ISA_DMA_API, not(feature = "NO_DMA")))]
 pub const NO_DMA: c_uint = 255;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

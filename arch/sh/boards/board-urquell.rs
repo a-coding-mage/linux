@@ -182,7 +182,7 @@ unsafe fn urquell_clk_init() -> i32 {
 
 /* Initialize the board */
 unsafe fn urquell_setup(cmdline_p: *mut *mut u8) {
-    printk(KERN_INFO "Renesas Technology Corp. Urquell support.\n");
+    printk(c"\x016Renesas Technology Corp. Urquell support.\n".as_ptr());
 
     pm_power_off = Some(urquell_power_off);
 

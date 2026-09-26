@@ -31,7 +31,7 @@ pub enum pt_capabilities {
 }
 
 /* C condition: defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_INTEL) */
-#[cfg(all(feature = "CONFIG_PERF_EVENTS", feature = "CONFIG_CPU_SUP_INTEL"))]
+#[cfg(all(CONFIG_PERF_EVENTS, CONFIG_CPU_SUP_INTEL))]
 extern "C" {
     pub fn cpu_emergency_stop_pt();
     pub fn intel_pt_validate_hw_cap(cap: pt_capabilities) -> u32;
@@ -40,23 +40,23 @@ extern "C" {
 }
 
 /* Fallback definitions when CONFIG_PERF_EVENTS or CONFIG_CPU_SUP_INTEL is not enabled. */
-#[cfg(not(all(feature = "CONFIG_PERF_EVENTS", feature = "CONFIG_CPU_SUP_INTEL")))]
+#[cfg(not(all(CONFIG_PERF_EVENTS, CONFIG_CPU_SUP_INTEL)))]
 #[inline]
 pub fn cpu_emergency_stop_pt() {}
 
-#[cfg(not(all(feature = "CONFIG_PERF_EVENTS", feature = "CONFIG_CPU_SUP_INTEL")))]
+#[cfg(not(all(CONFIG_PERF_EVENTS, CONFIG_CPU_SUP_INTEL)))]
 #[inline]
 pub fn intel_pt_validate_hw_cap(_cap: pt_capabilities) -> u32 {
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_PERF_EVENTS", feature = "CONFIG_CPU_SUP_INTEL")))]
+#[cfg(not(all(CONFIG_PERF_EVENTS, CONFIG_CPU_SUP_INTEL)))]
 #[inline]
 pub fn intel_pt_validate_cap(_caps: *mut u32, _capability: pt_capabilities) -> u32 {
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_PERF_EVENTS", feature = "CONFIG_CPU_SUP_INTEL")))]
+#[cfg(not(all(CONFIG_PERF_EVENTS, CONFIG_CPU_SUP_INTEL)))]
 #[inline]
 pub fn is_intel_pt_event(_event: *mut perf_event) -> i32 {
     0

@@ -61,16 +61,19 @@ unsafe fn v9fs_get_tree(fc: *mut fs_context) -> c_int {
     let mut v9ses: *mut v9fs_session_info = core::ptr::null_mut();
     let mut fid: *mut p9_fid;
     let mut retval: c_int = 0;
+    'release_sb: {
+    'free_session: {
+    'clunk_fid: {
     p9_debug(P9_DEBUG_VFS, b"\n\0".as_ptr());
     v9ses = kzalloc_obj::<v9fs_session_info>();
     if v9ses.is_null() { return -ENOMEM; }
     fid = v9fs_session_init(v9ses, fc);
-    if IS_ERR(fid) { retval = PTR_ERR(fid); goto free_session; }
+    if IS_ERR(fid) { retval = PTR_ERR(fid); break 'free_session; }
     (*fc).s_fs_info = v9ses as *mut core::ffi::c_void;
     sb = sget_fc(fc, None, set_anon_super_fc);
-    if IS_ERR(sb) { retval = PTR_ERR(sb); goto clunk_fid; }
+    if IS_ERR(sb) { retval = PTR_ERR(sb); break 'clunk_fid; }
     retval = v9fs_fill_super(sb);
-    if retval != 0 { goto release_sb; }
+    if retval != 0 { break 'release_sb; }
     if (*v9ses).cache & (CACHE_META | CACHE_LOOSE) != 0 {
         set_default_d_op(sb, &v9fs_cached_dentry_operations);
     } else {
@@ -78,21 +81,24 @@ unsafe fn v9fs_get_tree(fc: *mut fs_context) -> c_int {
         (*sb).s_d_flags |= DCACHE_DONTCACHE;
     }
     inode = v9fs_get_new_inode_from_fid(v9ses, fid, sb);
-    if IS_ERR(inode) { retval = PTR_ERR(inode); goto release_sb; }
+    if IS_ERR(inode) { retval = PTR_ERR(inode); break 'release_sb; }
     root = d_make_root(inode);
-    if root.is_null() { retval = -ENOMEM; goto release_sb; }
+    if root.is_null() { retval = -ENOMEM; break 'release_sb; }
     (*sb).s_root = root;
     retval = v9fs_get_acl(inode, fid);
-    if retval != 0 { goto release_sb; }
+    if retval != 0 { break 'release_sb; }
     v9fs_fid_add(root, &mut fid);
     p9_debug(P9_DEBUG_VFS, b" simple set mount, return 0\n\0".as_ptr());
     (*fc).root = dget((*sb).s_root);
     return 0;
-clunk_fid:
+    }
+    
     p9_fid_put(fid); v9fs_session_close(v9ses);
-free_session:
+    }
+    
     kfree(v9ses as *mut core::ffi::c_void); return retval;
-release_sb:
+    }
+    
     p9_fid_put(fid); deactivate_locked_super(sb); retval
 }
 

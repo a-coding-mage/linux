@@ -46,7 +46,7 @@ static const amd_pm_funcs kv_dpm_funcs;
 
 fn kv_dpm_set_irq_funcs(amdgpu_device *adev);
 fn kv_enable_nb_dpm(amdgpu_device *adev,
-			    bool enable);
+			    enable: bool);
 fn kv_init_graphics_levels(amdgpu_device *adev);
 fn kv_calculate_ds_divider(amdgpu_device *adev);
 fn kv_calculate_nbps_level_settings(amdgpu_device *adev);
@@ -54,7 +54,7 @@ fn kv_calculate_dpm_settings(amdgpu_device *adev);
 fn kv_enable_new_levels(amdgpu_device *adev);
 fn kv_program_nbps_index_settings(amdgpu_device *adev,
 					   amdgpu_ps *new_rps);
-fn kv_set_enabled_level(amdgpu_device *adev, u32 level);
+fn kv_set_enabled_level(amdgpu_device *adev, level: u32);
 fn kv_set_enabled_levels(amdgpu_device *adev);
 fn kv_force_dpm_highest(amdgpu_device *adev);
 fn kv_force_dpm_lowest(amdgpu_device *adev);
@@ -65,57 +65,57 @@ fn kv_set_thermal_temperature_range(amdgpu_device *adev,
 					    int min_temp, int max_temp);
 fn kv_init_fps_limits(amdgpu_device *adev);
 
-fn kv_dpm_powergate_samu(amdgpu_device *adev, bool gate);
-fn kv_dpm_powergate_acp(amdgpu_device *adev, bool gate);
+fn kv_dpm_powergate_samu(amdgpu_device *adev, gate: bool);
+fn kv_dpm_powergate_acp(amdgpu_device *adev, gate: bool);
 
 
 fn kv_convert_vid2_to_vid7(amdgpu_device *adev,
 				   sumo_vid_mapping_table *vid_mapping_table,
-				   u32 vid_2bit)
+				   vid_2bit: u32)
 {
 	amdgpu_clock_voltage_dependency_table *vddc_sclk_table =
-		&adev->pm.dpm.dyn_state.vddc_dependency_on_sclk;
+		(*&adev).pm.dpm.dyn_state.vddc_dependency_on_sclk;
 	u32 i;
 
-	if (vddc_sclk_table && vddc_sclk_table->count) {
-		if (vid_2bit < vddc_sclk_table->count)
-			return vddc_sclk_table->entries[vid_2bit].v;
+	if (vddc_sclk_table && (*vddc_sclk_table).count) {
+		if (vid_2bit < (*vddc_sclk_table).count)
+			return (*vddc_sclk_table).entries[vid_2bit].v;
 		else
-			return vddc_sclk_table->entries[vddc_sclk_table->count - 1].v;
+			return (*vddc_sclk_table).entries[(*vddc_sclk_table).count - 1].v;
 	} else {
-		for (i = 0; i < vid_mapping_table->num_entries; i += 1) {
-			if (vid_mapping_table->entries[i].vid_2bit == vid_2bit)
-				return vid_mapping_table->entries[i].vid_7bit;
+		for (i = 0; i < (*vid_mapping_table).num_entries; i += 1) {
+			if ((*vid_mapping_table).entries[i].vid_2bit == vid_2bit)
+				return (*vid_mapping_table).entries[i].vid_7bit;
 		}
-		return vid_mapping_table->entries[vid_mapping_table->num_entries - 1].vid_7bit;
+		return (*vid_mapping_table).entries[(*vid_mapping_table).num_entries - 1].vid_7bit;
 	}
 }
 
 fn kv_convert_vid7_to_vid2(amdgpu_device *adev,
 				   sumo_vid_mapping_table *vid_mapping_table,
-				   u32 vid_7bit)
+				   vid_7bit: u32)
 {
 	amdgpu_clock_voltage_dependency_table *vddc_sclk_table =
-		&adev->pm.dpm.dyn_state.vddc_dependency_on_sclk;
+		(*&adev).pm.dpm.dyn_state.vddc_dependency_on_sclk;
 	u32 i;
 
-	if (vddc_sclk_table && vddc_sclk_table->count) {
-		for (i = 0; i < vddc_sclk_table->count; i += 1) {
-			if (vddc_sclk_table->entries[i].v == vid_7bit)
+	if (vddc_sclk_table && (*vddc_sclk_table).count) {
+		for (i = 0; i < (*vddc_sclk_table).count; i += 1) {
+			if ((*vddc_sclk_table).entries[i].v == vid_7bit)
 				return i;
 		}
-		return vddc_sclk_table->count - 1;
+		return (*vddc_sclk_table).count - 1;
 	} else {
-		for (i = 0; i < vid_mapping_table->num_entries; i += 1) {
-			if (vid_mapping_table->entries[i].vid_7bit == vid_7bit)
-				return vid_mapping_table->entries[i].vid_2bit;
+		for (i = 0; i < (*vid_mapping_table).num_entries; i += 1) {
+			if ((*vid_mapping_table).entries[i].vid_7bit == vid_7bit)
+				return (*vid_mapping_table).entries[i].vid_2bit;
 		}
 
-		return vid_mapping_table->entries[vid_mapping_table->num_entries - 1].vid_2bit;
+		return (*vid_mapping_table).entries[(*vid_mapping_table).num_entries - 1].vid_2bit;
 	}
 }
 
-fn sumo_take_smu_control(amdgpu_device *adev, bool enable)
+fn sumo_take_smu_control(amdgpu_device *adev, enable: bool)
 {
 /* This bit selects who handles display phy powergating.
  * Clear the bit to let atom handle it.
@@ -144,42 +144,42 @@ fn sumo_construct_sclk_voltage_mapping_table(amdgpu_device *adev,
 
 	for (i = 0; i < SUMO_MAX_HARDWARE_POWERLEVELS; i += 1) {
 		if (table[i].ulSupportedSCLK > prev_sclk) {
-			sclk_voltage_mapping_table->entries[n].sclk_frequency =
+			(*sclk_voltage_mapping_table).entries[n].sclk_frequency =
 				table[i].ulSupportedSCLK;
-			sclk_voltage_mapping_table->entries[n].vid_2bit =
+			(*sclk_voltage_mapping_table).entries[n].vid_2bit =
 				table[i].usVoltageIndex;
 			prev_sclk = table[i].ulSupportedSCLK;
 			n += 1;
 		}
 	}
 
-	sclk_voltage_mapping_table->num_max_dpm_entries = n;
+	(*sclk_voltage_mapping_table).num_max_dpm_entries = n;
 }
 
 fn sumo_construct_vid_mapping_table(amdgpu_device *adev,
 					     sumo_vid_mapping_table *vid_mapping_table,
 					     ATOM_AVAILABLE_SCLK_LIST *table)
 {
-	u32 i, j;
+	i: u32, j;
 
 	for (i = 0; i < SUMO_MAX_HARDWARE_POWERLEVELS; i += 1) {
 		if (table[i].ulSupportedSCLK != 0) {
 			if (table[i].usVoltageIndex >= SUMO_MAX_NUMBER_VOLTAGES)
 				continue;
-			vid_mapping_table->entries[table[i].usVoltageIndex].vid_7bit =
+			(*vid_mapping_table).entries[table[i].usVoltageIndex].vid_7bit =
 				table[i].usVoltageID;
-			vid_mapping_table->entries[table[i].usVoltageIndex].vid_2bit =
+			(*vid_mapping_table).entries[table[i].usVoltageIndex].vid_2bit =
 				table[i].usVoltageIndex;
 		}
 	}
 
 	for (i = 0; i < SUMO_MAX_NUMBER_VOLTAGES; i += 1) {
-		if (vid_mapping_table->entries[i].vid_7bit == 0) {
+		if ((*vid_mapping_table).entries[i].vid_7bit == 0) {
 			for (j = i + 1; j < SUMO_MAX_NUMBER_VOLTAGES; j += 1) {
-				if (vid_mapping_table->entries[j].vid_7bit != 0) {
-					vid_mapping_table->entries[i] =
-						vid_mapping_table->entries[j];
-					vid_mapping_table->entries[j].vid_7bit = 0;
+				if ((*vid_mapping_table).entries[j].vid_7bit != 0) {
+					(*vid_mapping_table).entries[i] =
+						(*vid_mapping_table).entries[j];
+					(*vid_mapping_table).entries[j].vid_7bit = 0;
 					break;
 				}
 			}
@@ -189,7 +189,7 @@ fn sumo_construct_vid_mapping_table(amdgpu_device *adev,
 		}
 	}
 
-	vid_mapping_table->num_entries = i;
+	(*vid_mapping_table).num_entries = i;
 }
 
 #if 0
@@ -359,14 +359,14 @@ static const kv_pt_config_reg didt_config_kv[] = {
 
 static kv_ps *kv_get_ps(amdgpu_ps *rps)
 {
-	kv_ps *ps = rps->ps_priv;
+	kv_ps *ps = (*rps).ps_priv;
 
 	return ps;
 }
 
 static kv_power_info *kv_get_pi(amdgpu_device *adev)
 {
-	kv_power_info *pi = adev->pm.dpm.priv;
+	kv_power_info *pi = (*adev).pm.dpm.r#priv;
 
 	return pi;
 }
@@ -376,21 +376,21 @@ fn kv_program_local_cac_table(amdgpu_device *adev,
 				       const kv_lcac_config_values *local_cac_table,
 				       const kv_lcac_config_reg *local_cac_reg)
 {
-	u32 i, count, data;
+	i: u32, count, data;
 	const kv_lcac_config_values *values = local_cac_table;
 
-	while (values->block_id != 0xffffffff) {
-		count = values->signal_id;
+	while ((*values).block_id != 0xffffffff) {
+		count = (*values).signal_id;
 		for (i = 0; i < count; i += 1) {
-			data = ((values->block_id << local_cac_reg->block_shift) &
-				local_cac_reg->block_mask);
-			data |= ((i << local_cac_reg->signal_shift) &
-				 local_cac_reg->signal_mask);
-			data |= ((values->t << local_cac_reg->t_shift) &
-				 local_cac_reg->t_mask);
-			data |= ((1 << local_cac_reg->enable_shift) &
-				 local_cac_reg->enable_mask);
-			WREG32_SMC(local_cac_reg->cntl, data);
+			data = (((*values).block_id << (*local_cac_reg).block_shift) &
+				(*local_cac_reg).block_mask);
+			data |= ((i << (*local_cac_reg).signal_shift) &
+				 (*local_cac_reg).signal_mask);
+			data |= (((*values).t << (*local_cac_reg).t_shift) &
+				 (*local_cac_reg).t_mask);
+			data |= ((1 << (*local_cac_reg).enable_shift) &
+				 (*local_cac_reg).enable_mask);
+			WREG32_SMC((*local_cac_reg).cntl, data);
 		}
 		values += 1;
 	}
@@ -407,36 +407,36 @@ fn kv_program_pt_config_registers(amdgpu_device *adev,
 	if (config_regs == core::ptr::null_mut())
 		return -EINVAL;
 
-	while (config_regs->offset != 0xFFFFFFFF) {
-		if (config_regs->type == KV_CONFIGREG_CACHE) {
-			cache |= ((config_regs->value << config_regs->shift) & config_regs->mask);
+	while ((*config_regs).offset != 0xFFFFFFFF) {
+		if ((*config_regs).type == KV_CONFIGREG_CACHE) {
+			cache |= (((*config_regs).value << (*config_regs).shift) & (*config_regs).mask);
 		} else {
-			switch (config_regs->type) {
+			switch ((*config_regs).type) {
 			case KV_CONFIGREG_SMC_IND:
-				data = RREG32_SMC(config_regs->offset);
+				data = RREG32_SMC((*config_regs).offset);
 				break;
 			case KV_CONFIGREG_DIDT_IND:
-				data = RREG32_DIDT(config_regs->offset);
+				data = RREG32_DIDT((*config_regs).offset);
 				break;
 			default:
-				data = RREG32(config_regs->offset);
+				data = RREG32((*config_regs).offset);
 				break;
 			}
 
-			data &= ~config_regs->mask;
-			data |= ((config_regs->value << config_regs->shift) & config_regs->mask);
+			data &= ~(*config_regs).mask;
+			data |= (((*config_regs).value << (*config_regs).shift) & (*config_regs).mask);
 			data |= cache;
 			cache = 0;
 
-			switch (config_regs->type) {
+			switch ((*config_regs).type) {
 			case KV_CONFIGREG_SMC_IND:
-				WREG32_SMC(config_regs->offset, data);
+				WREG32_SMC((*config_regs).offset, data);
 				break;
 			case KV_CONFIGREG_DIDT_IND:
-				WREG32_DIDT(config_regs->offset, data);
+				WREG32_DIDT((*config_regs).offset, data);
 				break;
 			default:
-				WREG32(config_regs->offset, data);
+				WREG32((*config_regs).offset, data);
 				break;
 			}
 		}
@@ -446,12 +446,12 @@ fn kv_program_pt_config_registers(amdgpu_device *adev,
 	return 0;
 }
 
-fn kv_do_enable_didt(amdgpu_device *adev, bool enable)
+fn kv_do_enable_didt(amdgpu_device *adev, enable: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	u32 data;
 
-	if (pi->caps_sq_ramping) {
+	if ((*pi).caps_sq_ramping) {
 		data = RREG32_DIDT(ixDIDT_SQ_CTRL0);
 		if (enable)
 			data |= DIDT_SQ_CTRL0__DIDT_CTRL_EN_MASK;
@@ -460,7 +460,7 @@ fn kv_do_enable_didt(amdgpu_device *adev, bool enable)
 		WREG32_DIDT(ixDIDT_SQ_CTRL0, data);
 	}
 
-	if (pi->caps_db_ramping) {
+	if ((*pi).caps_db_ramping) {
 		data = RREG32_DIDT(ixDIDT_DB_CTRL0);
 		if (enable)
 			data |= DIDT_DB_CTRL0__DIDT_CTRL_EN_MASK;
@@ -469,7 +469,7 @@ fn kv_do_enable_didt(amdgpu_device *adev, bool enable)
 		WREG32_DIDT(ixDIDT_DB_CTRL0, data);
 	}
 
-	if (pi->caps_td_ramping) {
+	if ((*pi).caps_td_ramping) {
 		data = RREG32_DIDT(ixDIDT_TD_CTRL0);
 		if (enable)
 			data |= DIDT_TD_CTRL0__DIDT_CTRL_EN_MASK;
@@ -478,7 +478,7 @@ fn kv_do_enable_didt(amdgpu_device *adev, bool enable)
 		WREG32_DIDT(ixDIDT_TD_CTRL0, data);
 	}
 
-	if (pi->caps_tcp_ramping) {
+	if ((*pi).caps_tcp_ramping) {
 		data = RREG32_DIDT(ixDIDT_TCP_CTRL0);
 		if (enable)
 			data |= DIDT_TCP_CTRL0__DIDT_CTRL_EN_MASK;
@@ -488,15 +488,15 @@ fn kv_do_enable_didt(amdgpu_device *adev, bool enable)
 	}
 }
 
-fn kv_enable_didt(amdgpu_device *adev, bool enable)
+fn kv_enable_didt(amdgpu_device *adev, enable: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	int ret;
 
-	if (pi->caps_sq_ramping ||
-	    pi->caps_db_ramping ||
-	    pi->caps_td_ramping ||
-	    pi->caps_tcp_ramping) {
+	if ((*pi).caps_sq_ramping ||
+	    (*pi).caps_db_ramping ||
+	    (*pi).caps_td_ramping ||
+	    (*pi).caps_tcp_ramping) {
 		amdgpu_gfx_rlc_enter_safe_mode(adev, 0);
 
 		if (enable) {
@@ -520,7 +520,7 @@ fn kv_initialize_hardware_cac_manager(amdgpu_device *adev)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
-	if (pi->caps_cac) {
+	if ((*pi).caps_cac) {
 		WREG32_SMC(ixLCAC_SX0_OVR_SEL, 0);
 		WREG32_SMC(ixLCAC_SX0_OVR_VAL, 0);
 		kv_program_local_cac_table(adev, sx_local_cac_cfg_kv, sx0_cac_config_reg);
@@ -548,21 +548,21 @@ fn kv_initialize_hardware_cac_manager(amdgpu_device *adev)
 }
 #endif
 
-fn kv_enable_smc_cac(amdgpu_device *adev, bool enable)
+fn kv_enable_smc_cac(amdgpu_device *adev, enable: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	int ret = 0;
 
-	if (pi->caps_cac) {
+	if ((*pi).caps_cac) {
 		if (enable) {
 			ret = amdgpu_kv_notify_message_to_smu(adev, PPSMC_MSG_EnableCac);
 			if (ret)
-				pi->cac_enabled = false;
+				(*pi).cac_enabled = false;
 			else
-				pi->cac_enabled = true;
-		} else if (pi->cac_enabled) {
+				(*pi).cac_enabled = true;
+		} else if ((*pi).cac_enabled) {
 			amdgpu_kv_notify_message_to_smu(adev, PPSMC_MSG_DisableCac);
-			pi->cac_enabled = false;
+			(*pi).cac_enabled = false;
 		}
 	}
 
@@ -577,17 +577,17 @@ fn kv_process_firmware_header(amdgpu_device *adev)
 
 	ret = amdgpu_kv_read_smc_sram_dword(adev, SMU7_FIRMWARE_HEADER_LOCATION +
 				     offsetof(SMU7_Firmware_Header, DpmTable),
-				     &tmp, pi->sram_end);
+				     &tmp, (*pi).sram_end);
 
 	if (ret == 0)
-		pi->dpm_table_start = tmp;
+		(*pi).dpm_table_start = tmp;
 
 	ret = amdgpu_kv_read_smc_sram_dword(adev, SMU7_FIRMWARE_HEADER_LOCATION +
 				     offsetof(SMU7_Firmware_Header, SoftRegisters),
-				     &tmp, pi->sram_end);
+				     &tmp, (*pi).sram_end);
 
 	if (ret == 0)
-		pi->soft_regs_start = tmp;
+		(*pi).soft_regs_start = tmp;
 
 	return ret;
 }
@@ -597,13 +597,13 @@ fn kv_enable_dpm_voltage_scaling(amdgpu_device *adev)
 	kv_power_info *pi = kv_get_pi(adev);
 	int ret;
 
-	pi->graphics_voltage_change_enable = 1;
+	(*pi).graphics_voltage_change_enable = 1;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, GraphicsVoltageChangeEnable),
-				   &pi->graphics_voltage_change_enable,
-				   sizeof(u8), pi->sram_end);
+				   (*&pi).graphics_voltage_change_enable,
+				   sizeof(u8), (*pi).sram_end);
 
 	return ret;
 }
@@ -613,13 +613,13 @@ fn kv_set_dpm_interval(amdgpu_device *adev)
 	kv_power_info *pi = kv_get_pi(adev);
 	int ret;
 
-	pi->graphics_interval = 1;
+	(*pi).graphics_interval = 1;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, GraphicsInterval),
-				   &pi->graphics_interval,
-				   sizeof(u8), pi->sram_end);
+				   (*&pi).graphics_interval,
+				   sizeof(u8), (*pi).sram_end);
 
 	return ret;
 }
@@ -630,10 +630,10 @@ fn kv_set_dpm_boot_state(amdgpu_device *adev)
 	int ret;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, GraphicsBootLevel),
-				   &pi->graphics_boot_level,
-				   sizeof(u8), pi->sram_end);
+				   (*&pi).graphics_boot_level,
+				   sizeof(u8), (*pi).sram_end);
 
 	return ret;
 }
@@ -649,7 +649,7 @@ fn kv_clear_vc(amdgpu_device *adev)
 }
 
 fn kv_set_divider_value(amdgpu_device *adev,
-				u32 index, u32 sclk)
+				index: u32, sclk: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	atom_clock_dividers dividers;
@@ -660,56 +660,56 @@ fn kv_set_divider_value(amdgpu_device *adev,
 	if (ret)
 		return ret;
 
-	pi->graphics_level[index].SclkDid = (u8)dividers.post_div;
-	pi->graphics_level[index].SclkFrequency = cpu_to_be32(sclk);
+	(*pi).graphics_level[index].SclkDid = (u8)dividers.post_div;
+	(*pi).graphics_level[index].SclkFrequency = cpu_to_be32(sclk);
 
 	return 0;
 }
 
 static u16 kv_convert_8bit_index_to_voltage(amdgpu_device *adev,
-					    u16 voltage)
+					    voltage: u16)
 {
 	return 6200 - (voltage * 25);
 }
 
 static u16 kv_convert_2bit_index_to_voltage(amdgpu_device *adev,
-					    u32 vid_2bit)
+					    vid_2bit: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	u32 vid_8bit = kv_convert_vid2_to_vid7(adev,
-					       &pi->sys_info.vid_mapping_table,
+					       (*&pi).sys_info.vid_mapping_table,
 					       vid_2bit);
 
 	return kv_convert_8bit_index_to_voltage(adev, (u16)vid_8bit);
 }
 
 
-fn kv_set_vid(amdgpu_device *adev, u32 index, u32 vid)
+fn kv_set_vid(amdgpu_device *adev, index: u32, vid: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
-	pi->graphics_level[index].VoltageDownH = (u8)pi->voltage_drop_t;
-	pi->graphics_level[index].MinVddNb =
+	(*pi).graphics_level[index].VoltageDownH = (*(u8)pi).voltage_drop_t;
+	(*pi).graphics_level[index].MinVddNb =
 		cpu_to_be32(kv_convert_2bit_index_to_voltage(adev, vid));
 
 	return 0;
 }
 
-fn kv_set_at(amdgpu_device *adev, u32 index, u32 at)
+fn kv_set_at(amdgpu_device *adev, index: u32, at: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
-	pi->graphics_level[index].AT = cpu_to_be16((u16)at);
+	(*pi).graphics_level[index].AT = cpu_to_be16((u16)at);
 
 	return 0;
 }
 
 fn kv_dpm_power_level_enable(amdgpu_device *adev,
-				      u32 index, bool enable)
+				      index: u32, enable: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
-	pi->graphics_level[index].EnabledForActivity = enable ? 1 : 0;
+	(*pi).graphics_level[index].EnabledForActivity = enable ? 1 : 0;
 }
 
 fn kv_start_dpm(amdgpu_device *adev)
@@ -748,7 +748,7 @@ fn kv_reset_am(amdgpu_device *adev)
 	WREG32_SMC(ixSCLK_PWRMGT_CNTL, sclk_pwrmgt_cntl);
 }
 
-fn kv_freeze_sclk_dpm(amdgpu_device *adev, bool freeze)
+fn kv_freeze_sclk_dpm(amdgpu_device *adev, freeze: bool)
 {
 	return amdgpu_kv_notify_message_to_smu(adev, freeze ?
 					PPSMC_MSG_SCLKDPM_FreezeLevel : PPSMC_MSG_SCLKDPM_UnfreezeLevel);
@@ -761,7 +761,7 @@ fn kv_force_lowest_valid(amdgpu_device *adev)
 
 fn kv_unforce_levels(amdgpu_device *adev)
 {
-	if (adev->asic_type == CHIP_KABINI || adev->asic_type == CHIP_MULLINS)
+	if ((*adev).asic_type == CHIP_KABINI || (*adev).asic_type == CHIP_MULLINS)
 		return amdgpu_kv_notify_message_to_smu(adev, PPSMC_MSG_NoForcedLevel);
 	else
 		return kv_set_enabled_levels(adev);
@@ -773,14 +773,14 @@ fn kv_update_sclk_t(amdgpu_device *adev)
 	u32 low_sclk_interrupt_t = 0;
 	int ret = 0;
 
-	if (pi->caps_sclk_throttle_low_notification) {
-		low_sclk_interrupt_t = cpu_to_be32(pi->low_sclk_interrupt_t);
+	if ((*pi).caps_sclk_throttle_low_notification) {
+		low_sclk_interrupt_t = cpu_to_be32((*pi).low_sclk_interrupt_t);
 
 		ret = amdgpu_kv_copy_bytes_to_smc(adev,
-					   pi->dpm_table_start +
+					   (*pi).dpm_table_start +
 					   offsetof(SMU7_Fusion_DpmTable, LowSclkInterruptT),
 					   (u8 *)&low_sclk_interrupt_t,
-					   sizeof(u32), pi->sram_end);
+					   sizeof(u32), (*pi).sram_end);
 	}
 	return ret;
 }
@@ -790,29 +790,29 @@ fn kv_program_bootup_state(amdgpu_device *adev)
 	kv_power_info *pi = kv_get_pi(adev);
 	u32 i;
 	amdgpu_clock_voltage_dependency_table *table =
-		&adev->pm.dpm.dyn_state.vddc_dependency_on_sclk;
+		(*&adev).pm.dpm.dyn_state.vddc_dependency_on_sclk;
 
-	if (table && table->count) {
-		for (i = pi->graphics_dpm_level_count - 1; i > 0; i -= 1) {
-			if (table->entries[i].clk == pi->boot_pl.sclk)
+	if (table && (*table).count) {
+		for (i = (*pi).graphics_dpm_level_count - 1; i > 0; i -= 1) {
+			if ((*table).entries[i].clk == (*pi).boot_pl.sclk)
 				break;
 		}
 
-		pi->graphics_boot_level = (u8)i;
+		(*pi).graphics_boot_level = (u8)i;
 		kv_dpm_power_level_enable(adev, i, true);
 	} else {
 		sumo_sclk_voltage_mapping_table *table =
-			&pi->sys_info.sclk_voltage_mapping_table;
+			(*&pi).sys_info.sclk_voltage_mapping_table;
 
-		if (table->num_max_dpm_entries == 0)
+		if ((*table).num_max_dpm_entries == 0)
 			return -EINVAL;
 
-		for (i = pi->graphics_dpm_level_count - 1; i > 0; i -= 1) {
-			if (table->entries[i].sclk_frequency == pi->boot_pl.sclk)
+		for (i = (*pi).graphics_dpm_level_count - 1; i > 0; i -= 1) {
+			if ((*table).entries[i].sclk_frequency == (*pi).boot_pl.sclk)
 				break;
 		}
 
-		pi->graphics_boot_level = (u8)i;
+		(*pi).graphics_boot_level = (u8)i;
 		kv_dpm_power_level_enable(adev, i, true);
 	}
 	return 0;
@@ -823,13 +823,13 @@ fn kv_enable_auto_thermal_throttling(amdgpu_device *adev)
 	kv_power_info *pi = kv_get_pi(adev);
 	int ret;
 
-	pi->graphics_therm_throttle_enable = 1;
+	(*pi).graphics_therm_throttle_enable = 1;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, GraphicsThermThrottleEnable),
-				   &pi->graphics_therm_throttle_enable,
-				   sizeof(u8), pi->sram_end);
+				   (*&pi).graphics_therm_throttle_enable,
+				   sizeof(u8), (*pi).sram_end);
 
 	return ret;
 }
@@ -840,35 +840,35 @@ fn kv_upload_dpm_settings(amdgpu_device *adev)
 	int ret;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, GraphicsLevel),
-				   (u8 *)&pi->graphics_level,
+				   (u8 *)&(*pi).graphics_level,
 				   sizeof(SMU7_Fusion_GraphicsLevel) * SMU7_MAX_LEVELS_GRAPHICS,
-				   pi->sram_end);
+				   (*pi).sram_end);
 
 	if (ret)
 		return ret;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, GraphicsDpmLevelCount),
-				   &pi->graphics_dpm_level_count,
-				   sizeof(u8), pi->sram_end);
+				   (*&pi).graphics_dpm_level_count,
+				   sizeof(u8), (*pi).sram_end);
 
 	return ret;
 }
 
-fn kv_get_clock_difference(u32 a, u32 b)
+fn kv_get_clock_difference(a: u32, b: u32)
 {
 	return (a >= b) ? a - b : b - a;
 }
 
-fn kv_get_clk_bypass(amdgpu_device *adev, u32 clk)
+fn kv_get_clk_bypass(amdgpu_device *adev, clk: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	u32 value;
 
-	if (pi->caps_enable_dfs_bypass) {
+	if ((*pi).caps_enable_dfs_bypass) {
 		if (kv_get_clock_difference(clk, 40000) < 200)
 			value = 3;
 		else if (kv_get_clock_difference(clk, 30000) < 200)
@@ -892,68 +892,68 @@ fn kv_populate_uvd_table(amdgpu_device *adev)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	amdgpu_uvd_clock_voltage_dependency_table *table =
-		&adev->pm.dpm.dyn_state.uvd_clock_voltage_dependency_table;
+		(*&adev).pm.dpm.dyn_state.uvd_clock_voltage_dependency_table;
 	atom_clock_dividers dividers;
 	int ret;
 	u32 i;
 
-	if (table == core::ptr::null_mut() || table->count == 0)
+	if (table == core::ptr::null_mut() || (*table).count == 0)
 		return 0;
 
-	pi->uvd_level_count = 0;
-	for (i = 0; i < table->count; i += 1) {
-		if (pi->high_voltage_t &&
-		    (pi->high_voltage_t < table->entries[i].v))
+	(*pi).uvd_level_count = 0;
+	for (i = 0; i < (*table).count; i += 1) {
+		if ((*pi).high_voltage_t &&
+		    ((*pi).high_voltage_t < (*table).entries[i].v))
 			break;
 
-		pi->uvd_level[i].VclkFrequency = cpu_to_be32(table->entries[i].vclk);
-		pi->uvd_level[i].DclkFrequency = cpu_to_be32(table->entries[i].dclk);
-		pi->uvd_level[i].MinVddNb = cpu_to_be16(table->entries[i].v);
+		(*pi).uvd_level[i].VclkFrequency = cpu_to_be32((*table).entries[i].vclk);
+		(*pi).uvd_level[i].DclkFrequency = cpu_to_be32((*table).entries[i].dclk);
+		(*pi).uvd_level[i].MinVddNb = cpu_to_be16((*table).entries[i].v);
 
-		pi->uvd_level[i].VClkBypassCntl =
-			(u8)kv_get_clk_bypass(adev, table->entries[i].vclk);
-		pi->uvd_level[i].DClkBypassCntl =
-			(u8)kv_get_clk_bypass(adev, table->entries[i].dclk);
-
-		ret = amdgpu_atombios_get_clock_dividers(adev, COMPUTE_ENGINE_PLL_PARAM,
-							 table->entries[i].vclk, false, &dividers);
-		if (ret)
-			return ret;
-		pi->uvd_level[i].VclkDivider = (u8)dividers.post_div;
+		(*pi).uvd_level[i].VClkBypassCntl =
+			(u8)kv_get_clk_bypass(adev, (*table).entries[i].vclk);
+		(*pi).uvd_level[i].DClkBypassCntl =
+			(u8)kv_get_clk_bypass(adev, (*table).entries[i].dclk);
 
 		ret = amdgpu_atombios_get_clock_dividers(adev, COMPUTE_ENGINE_PLL_PARAM,
-							 table->entries[i].dclk, false, &dividers);
+							 (*table).entries[i].vclk, false, &dividers);
 		if (ret)
 			return ret;
-		pi->uvd_level[i].DclkDivider = (u8)dividers.post_div;
+		(*pi).uvd_level[i].VclkDivider = (u8)dividers.post_div;
 
-		pi->uvd_level_count += 1;
+		ret = amdgpu_atombios_get_clock_dividers(adev, COMPUTE_ENGINE_PLL_PARAM,
+							 (*table).entries[i].dclk, false, &dividers);
+		if (ret)
+			return ret;
+		(*pi).uvd_level[i].DclkDivider = (u8)dividers.post_div;
+
+		(*pi).uvd_level_count += 1;
 	}
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, UvdLevelCount),
-				   (u8 *)&pi->uvd_level_count,
-				   sizeof(u8), pi->sram_end);
+				   (u8 *)&(*pi).uvd_level_count,
+				   sizeof(u8), (*pi).sram_end);
 	if (ret)
 		return ret;
 
-	pi->uvd_interval = 1;
+	(*pi).uvd_interval = 1;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, UVDInterval),
-				   &pi->uvd_interval,
-				   sizeof(u8), pi->sram_end);
+				   (*&pi).uvd_interval,
+				   sizeof(u8), (*pi).sram_end);
 	if (ret)
 		return ret;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, UvdLevel),
-				   (u8 *)&pi->uvd_level,
+				   (u8 *)&(*pi).uvd_level,
 				   sizeof(SMU7_Fusion_UvdLevel) * SMU7_MAX_LEVELS_UVD,
-				   pi->sram_end);
+				   (*pi).sram_end);
 
 	return ret;
 
@@ -965,59 +965,59 @@ fn kv_populate_vce_table(amdgpu_device *adev)
 	int ret;
 	u32 i;
 	amdgpu_vce_clock_voltage_dependency_table *table =
-		&adev->pm.dpm.dyn_state.vce_clock_voltage_dependency_table;
+		(*&adev).pm.dpm.dyn_state.vce_clock_voltage_dependency_table;
 	atom_clock_dividers dividers;
 
-	if (table == core::ptr::null_mut() || table->count == 0)
+	if (table == core::ptr::null_mut() || (*table).count == 0)
 		return 0;
 
-	pi->vce_level_count = 0;
-	for (i = 0; i < table->count; i += 1) {
-		if (pi->high_voltage_t &&
-		    pi->high_voltage_t < table->entries[i].v)
+	(*pi).vce_level_count = 0;
+	for (i = 0; i < (*table).count; i += 1) {
+		if ((*pi).high_voltage_t &&
+		    (*pi).high_voltage_t < (*table).entries[i].v)
 			break;
 
-		pi->vce_level[i].Frequency = cpu_to_be32(table->entries[i].evclk);
-		pi->vce_level[i].MinVoltage = cpu_to_be16(table->entries[i].v);
+		(*pi).vce_level[i].Frequency = cpu_to_be32((*table).entries[i].evclk);
+		(*pi).vce_level[i].MinVoltage = cpu_to_be16((*table).entries[i].v);
 
-		pi->vce_level[i].ClkBypassCntl =
-			(u8)kv_get_clk_bypass(adev, table->entries[i].evclk);
+		(*pi).vce_level[i].ClkBypassCntl =
+			(u8)kv_get_clk_bypass(adev, (*table).entries[i].evclk);
 
 		ret = amdgpu_atombios_get_clock_dividers(adev, COMPUTE_ENGINE_PLL_PARAM,
-							 table->entries[i].evclk, false, &dividers);
+							 (*table).entries[i].evclk, false, &dividers);
 		if (ret)
 			return ret;
-		pi->vce_level[i].Divider = (u8)dividers.post_div;
+		(*pi).vce_level[i].Divider = (u8)dividers.post_div;
 
-		pi->vce_level_count += 1;
+		(*pi).vce_level_count += 1;
 	}
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, VceLevelCount),
-				   (u8 *)&pi->vce_level_count,
+				   (u8 *)&(*pi).vce_level_count,
 				   sizeof(u8),
-				   pi->sram_end);
+				   (*pi).sram_end);
 	if (ret)
 		return ret;
 
-	pi->vce_interval = 1;
+	(*pi).vce_interval = 1;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, VCEInterval),
-				   (u8 *)&pi->vce_interval,
+				   (u8 *)&(*pi).vce_interval,
 				   sizeof(u8),
-				   pi->sram_end);
+				   (*pi).sram_end);
 	if (ret)
 		return ret;
 
 	ret = amdgpu_kv_copy_bytes_to_smc(adev,
-				   pi->dpm_table_start +
+				   (*pi).dpm_table_start +
 				   offsetof(SMU7_Fusion_DpmTable, VceLevel),
-				   (u8 *)&pi->vce_level,
+				   (u8 *)&(*pi).vce_level,
 				   sizeof(SMU7_Fusion_ExtClkLevel) * SMU7_MAX_LEVELS_VCE,
-				   pi->sram_end);
+				   (*pi).sram_end);
 
 	return ret;
 }
@@ -1026,24 +1026,24 @@ fn kv_populate_samu_table(amdgpu_device *adev)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	amdgpu_clock_voltage_dependency_table *table =
-		&adev->pm.dpm.dyn_state.samu_clock_voltage_dependency_table;
+		(*&adev).pm.dpm.dyn_state.samu_clock_voltage_dependency_table;
 	atom_clock_dividers dividers;
 	int ret;
 	u32 i;
 
-	if (table == core::ptr::null_mut() || table->count == 0)
+	if (table == core::ptr::null_mut() || (*table).count == 0)
 		return 0;
 
-	pi->samu_level_count = 0;
-	for (i = 0; i < table->count; i += 1) {
-		if (pi->high_voltage_t &&
-		    pi->high_voltage_t < table->entries[i].v)
+	(*pi).samu_level_count = 0;
+	for (i = 0; i < (*table).count; i += 1) {
+		if ((*pi).high_voltage_t &&
+		    (*pi).high_voltage_t < (*table).entries[i].v)
 			break;
 
-		pi->samu_level[i].Frequency = cpu_to_be32(table->entries[i].clk);
-		pi->samu_level[i].MinVoltage = cpu_to_be16(table->entries[i].v);
+		(*pi).samu_level[i].Frequency = cpu_to_be32((*table).entries[i].clk);
+		(*pi).samu_level[i].MinVoltage = cpu_to_be16((*table).entries[i].v);
 
-		pi->samu_level[i].ClkBypassCntl =
+		(*pi).samu_level[i].ClkBypassCntl =
 			(u8)kv_get_clk_bypass(adev, table->entries[i].clk);
 
 		ret = amdgpu_atombios_get_clock_dividers(adev, COMPUTE_ENGINE_PLL_PARAM,
@@ -1196,7 +1196,7 @@ fn kv_calculate_dfs_bypass_settings(amdgpu_device *adev)
 	}
 }
 
-fn kv_enable_ulv(amdgpu_device *adev, bool enable)
+fn kv_enable_ulv(amdgpu_device *adev, enable: bool)
 {
 	return amdgpu_kv_notify_message_to_smu(adev, enable ?
 					PPSMC_MSG_EnableULV : PPSMC_MSG_DisableULV);
@@ -1407,7 +1407,7 @@ fn kv_dpm_disable(amdgpu_device *adev)
 
 #if 0
 fn kv_write_smc_soft_register(amdgpu_device *adev,
-				      u16 reg_offset, u32 value)
+				      reg_offset: u16, value: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
@@ -1416,7 +1416,7 @@ fn kv_write_smc_soft_register(amdgpu_device *adev,
 }
 
 fn kv_read_smc_soft_register(amdgpu_device *adev,
-				     u16 reg_offset, u32 *value)
+				     reg_offset: u16, u32 *value)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
@@ -1472,31 +1472,31 @@ fn kv_init_powergate_state(amdgpu_device *adev)
 
 }
 
-fn kv_enable_uvd_dpm(amdgpu_device *adev, bool enable)
+fn kv_enable_uvd_dpm(amdgpu_device *adev, enable: bool)
 {
 	return amdgpu_kv_notify_message_to_smu(adev, enable ?
 					PPSMC_MSG_UVDDPM_Enable : PPSMC_MSG_UVDDPM_Disable);
 }
 
-fn kv_enable_vce_dpm(amdgpu_device *adev, bool enable)
+fn kv_enable_vce_dpm(amdgpu_device *adev, enable: bool)
 {
 	return amdgpu_kv_notify_message_to_smu(adev, enable ?
 					PPSMC_MSG_VCEDPM_Enable : PPSMC_MSG_VCEDPM_Disable);
 }
 
-fn kv_enable_samu_dpm(amdgpu_device *adev, bool enable)
+fn kv_enable_samu_dpm(amdgpu_device *adev, enable: bool)
 {
 	return amdgpu_kv_notify_message_to_smu(adev, enable ?
 					PPSMC_MSG_SAMUDPM_Enable : PPSMC_MSG_SAMUDPM_Disable);
 }
 
-fn kv_enable_acp_dpm(amdgpu_device *adev, bool enable)
+fn kv_enable_acp_dpm(amdgpu_device *adev, enable: bool)
 {
 	return amdgpu_kv_notify_message_to_smu(adev, enable ?
 					PPSMC_MSG_ACPDPM_Enable : PPSMC_MSG_ACPDPM_Disable);
 }
 
-fn kv_update_uvd_dpm(amdgpu_device *adev, bool gate)
+fn kv_update_uvd_dpm(amdgpu_device *adev, gate: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	amdgpu_uvd_clock_voltage_dependency_table *table =
@@ -1532,7 +1532,7 @@ fn kv_update_uvd_dpm(amdgpu_device *adev, bool gate)
 	return kv_enable_uvd_dpm(adev, !gate);
 }
 
-static u8 kv_get_vce_boot_level(amdgpu_device *adev, u32 evclk)
+static u8 kv_get_vce_boot_level(amdgpu_device *adev, evclk: u32)
 {
 	u8 i;
 	amdgpu_vce_clock_voltage_dependency_table *table =
@@ -1582,7 +1582,7 @@ fn kv_update_vce_dpm(amdgpu_device *adev,
 	return 0;
 }
 
-fn kv_update_samu_dpm(amdgpu_device *adev, bool gate)
+fn kv_update_samu_dpm(amdgpu_device *adev, gate: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	amdgpu_clock_voltage_dependency_table *table =
@@ -1634,7 +1634,7 @@ fn kv_update_acp_boot_level(amdgpu_device *adev)
 	}
 }
 
-fn kv_update_acp_dpm(amdgpu_device *adev, bool gate)
+fn kv_update_acp_dpm(amdgpu_device *adev, gate: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	amdgpu_clock_voltage_dependency_table *table =
@@ -1665,7 +1665,7 @@ fn kv_update_acp_dpm(amdgpu_device *adev, bool gate)
 	return kv_enable_acp_dpm(adev, !gate);
 }
 
-fn kv_dpm_powergate_uvd(core::ffi::c_void *handle, bool gate)
+fn kv_dpm_powergate_uvd(core::ffi::c_void *handle, gate: bool)
 {
 	amdgpu_device *adev = (amdgpu_device *)handle;
 	kv_power_info *pi = kv_get_pi(adev);
@@ -1692,7 +1692,7 @@ fn kv_dpm_powergate_uvd(core::ffi::c_void *handle, bool gate)
 	}
 }
 
-fn kv_dpm_powergate_vce(core::ffi::c_void *handle, bool gate)
+fn kv_dpm_powergate_vce(core::ffi::c_void *handle, gate: bool)
 {
 	amdgpu_device *adev = (amdgpu_device *)handle;
 	kv_power_info *pi = kv_get_pi(adev);
@@ -1717,7 +1717,7 @@ fn kv_dpm_powergate_vce(core::ffi::c_void *handle, bool gate)
 }
 
 
-fn kv_dpm_powergate_samu(amdgpu_device *adev, bool gate)
+fn kv_dpm_powergate_samu(amdgpu_device *adev, gate: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
@@ -1737,7 +1737,7 @@ fn kv_dpm_powergate_samu(amdgpu_device *adev, bool gate)
 	}
 }
 
-fn kv_dpm_powergate_acp(amdgpu_device *adev, bool gate)
+fn kv_dpm_powergate_acp(amdgpu_device *adev, gate: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 
@@ -1846,7 +1846,7 @@ fn kv_update_dfs_bypass_settings(amdgpu_device *adev,
 }
 
 fn kv_enable_nb_dpm(amdgpu_device *adev,
-			    bool enable)
+			    enable: bool)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	int ret = 0;
@@ -2099,7 +2099,7 @@ fn kv_construct_boot_state(amdgpu_device *adev)
 fn kv_force_dpm_highest(amdgpu_device *adev)
 {
 	int ret;
-	u32 enable_mask, i;
+	enable_mask: u32, i;
 
 	ret = amdgpu_kv_dpm_get_enable_mask(adev, &enable_mask);
 	if (ret)
@@ -2119,7 +2119,7 @@ fn kv_force_dpm_highest(amdgpu_device *adev)
 fn kv_force_dpm_lowest(amdgpu_device *adev)
 {
 	int ret;
-	u32 enable_mask, i;
+	enable_mask: u32, i;
 
 	ret = amdgpu_kv_dpm_get_enable_mask(adev, &enable_mask);
 	if (ret)
@@ -2137,7 +2137,7 @@ fn kv_force_dpm_lowest(amdgpu_device *adev)
 }
 
 static u8 kv_get_sleep_divider_id_from_clock(amdgpu_device *adev,
-					     u32 sclk, u32 min_sclk_in_sr)
+					     sclk: u32, min_sclk_in_sr: u32)
 {
 	kv_power_info *pi = kv_get_pi(adev);
 	u32 i;
@@ -2200,7 +2200,7 @@ fn kv_apply_state_adjust_rules(amdgpu_device *adev,
 	kv_ps *ps = kv_get_ps(new_rps);
 	kv_power_info *pi = kv_get_pi(adev);
 	u32 min_sclk = 10000; /* ??? */
-	u32 sclk, mclk = 0;
+	sclk: u32, mclk = 0;
 	int i, limit;
 	bool force_high;
 	amdgpu_clock_voltage_dependency_table *table =
@@ -2310,8 +2310,7 @@ fn kv_apply_state_adjust_rules(amdgpu_device *adev,
 }
 
 fn kv_dpm_power_level_enabled_for_throttle(amdgpu_device *adev,
-						    u32 index, bool enable)
-{
+						    index: u32, enable: bool) {
 	kv_power_info *pi = kv_get_pi(adev);
 
 	pi->graphics_level[index].EnabledForThrottle = enable ? 1 : 0;
@@ -2463,7 +2462,7 @@ fn kv_enable_new_levels(amdgpu_device *adev)
 	}
 }
 
-fn kv_set_enabled_level(amdgpu_device *adev, u32 level)
+fn kv_set_enabled_level(amdgpu_device *adev, level: u32)
 {
 	u32 new_mask = (1 << level);
 
@@ -2475,7 +2474,7 @@ fn kv_set_enabled_level(amdgpu_device *adev, u32 level)
 fn kv_set_enabled_levels(amdgpu_device *adev)
 {
 	kv_power_info *pi = kv_get_pi(adev);
-	u32 i, new_mask = 0;
+	i: u32, new_mask = 0;
 
 	for (i = pi->lowest_valid; i <= pi->highest_valid; i += 1)
 		new_mask |= (1 << i);
@@ -2553,7 +2552,7 @@ fn kv_parse_sys_info_table(amdgpu_device *adev)
 	amdgpu_mode_info *mode_info = &adev->mode_info;
 	int index = GetIndexIntoMasterTable(DATA, IntegratedSystemInfo);
 	igp_info *igp_info;
-	u8 frev, crev;
+	frev: u8, crev;
 	u16 data_offset;
 	int i;
 
@@ -2644,7 +2643,7 @@ fn kv_patch_boot_state(amdgpu_device *adev,
 fn kv_parse_pplib_non_clock_info(amdgpu_device *adev,
 					  amdgpu_ps *rps,
 					  _ATOM_PPLIB_NONCLOCK_INFO *non_clock_info,
-					  u8 table_rev)
+					  table_rev: u8)
 {
 	kv_ps *ps = kv_get_ps(rps);
 
@@ -2703,7 +2702,7 @@ fn kv_parse_power_table(amdgpu_device *adev)
 	power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
 	u16 data_offset;
-	u8 frev, crev;
+	frev: u8, crev;
 	u8 *power_state_offset;
 	kv_ps *ps;
 
@@ -2785,7 +2784,7 @@ fn kv_dpm_init(amdgpu_device *adev)
 	pi = kzalloc_obj(kv_power_info);
 	if (pi == core::ptr::null_mut())
 		return -ENOMEM;
-	adev->pm.dpm.priv = pi;
+	adev->pm.dpm.r#priv = pi;
 
 	ret = amdgpu_get_platform_caps(adev);
 	if (ret)
@@ -2858,7 +2857,7 @@ fn kv_dpm_debugfs_print_current_performance_level(core::ffi::c_void *handle,
 		(RREG32_SMC(ixTARGET_AND_CURRENT_PROFILE_INDEX) &
 		TARGET_AND_CURRENT_PROFILE_INDEX__CURR_SCLK_INDEX_MASK) >>
 		TARGET_AND_CURRENT_PROFILE_INDEX__CURR_SCLK_INDEX__SHIFT;
-	u32 sclk, tmp;
+	sclk: u32, tmp;
 	u16 vddc;
 
 	if (current_index >= SMU__NUM_SCLK_DPM_STATE) {
@@ -2905,7 +2904,7 @@ fn kv_dpm_fini(amdgpu_device *adev)
 		kfree(adev->pm.dpm.ps[i].ps_priv);
 	}
 	kfree(adev->pm.dpm.ps);
-	kfree(adev->pm.dpm.priv);
+	kfree(adev->pm.dpm.r#priv);
 	amdgpu_free_extended_power_table(adev);
 }
 
@@ -2914,7 +2913,7 @@ fn kv_dpm_display_configuration_changed(core::ffi::c_void *handle)
 
 }
 
-fn kv_dpm_get_sclk(core::ffi::c_void *handle, bool low)
+fn kv_dpm_get_sclk(core::ffi::c_void *handle, low: bool)
 {
 	amdgpu_device *adev = (amdgpu_device *)handle;
 	kv_power_info *pi = kv_get_pi(adev);
@@ -2926,7 +2925,7 @@ fn kv_dpm_get_sclk(core::ffi::c_void *handle, bool low)
 		return requested_state->levels[requested_state->num_levels - 1].sclk;
 }
 
-fn kv_dpm_get_mclk(core::ffi::c_void *handle, bool low)
+fn kv_dpm_get_mclk(core::ffi::c_void *handle, low: bool)
 {
 	amdgpu_device *adev = (amdgpu_device *)handle;
 	kv_power_info *pi = kv_get_pi(adev);
@@ -2980,6 +2979,7 @@ fn kv_dpm_late_init(amdgpu_ip_block *ip_block)
 
 fn kv_dpm_sw_init(amdgpu_ip_block *ip_block)
 {
+	'dpm_failed: {
 	int ret;
 	amdgpu_device *adev = ip_block->adev;
 	ret = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 230,
@@ -3008,15 +3008,15 @@ fn kv_dpm_sw_init(amdgpu_ip_block *ip_block)
 	INIT_WORK(&adev->pm.dpm.thermal.work, amdgpu_dpm_thermal_work_handler);
 	ret = kv_dpm_init(adev);
 	if (ret)
-		goto dpm_failed;
+		break 'dpm_failed;
 	adev->pm.dpm.current_ps = adev->pm.dpm.requested_ps = adev->pm.dpm.boot_ps;
 	if (amdgpu_dpm == 1)
 		amdgpu_pm_print_power_states(adev);
 	drm_info(adev_to_drm(adev), "dpm initialized\n");
 
 	return 0;
-
-dpm_failed:
+	}
+	
 	kv_dpm_fini(adev);
 	drm_err(adev_to_drm(adev), "dpm initialization failed: %d\n", ret);
 	return ret;
@@ -3201,7 +3201,7 @@ fn kv_dpm_set_powergating_state(amdgpu_ip_block *ip_block,
 	return 0;
 }
 
-static inline bool kv_are_power_levels_equal(const kv_pl *kv_cpl1,
+bool kv_are_power_levels_equal(const kv_pl *kv_cpl1,
 						const kv_pl *kv_cpl2)
 {
 	return ((kv_cpl1->sclk == kv_cpl2->sclk) &&
@@ -3289,7 +3289,7 @@ fn kv_dpm_read_sensor(core::ffi::c_void *handle, int idx,
 
 fn kv_set_powergating_by_smu(core::ffi::c_void *handle,
 				uint32_t block_type,
-				bool gate,
+				gate: bool,
 				int inst)
 {
 	switch (block_type) {
@@ -3306,49 +3306,49 @@ fn kv_set_powergating_by_smu(core::ffi::c_void *handle,
 }
 
 static const amd_ip_funcs kv_dpm_ip_funcs = {
-	.name = "kv_dpm",
-	.early_init = kv_dpm_early_init,
-	.late_init = kv_dpm_late_init,
-	.sw_init = kv_dpm_sw_init,
-	.sw_fini = kv_dpm_sw_fini,
-	.hw_init = kv_dpm_hw_init,
-	.hw_fini = kv_dpm_hw_fini,
-	.suspend = kv_dpm_suspend,
-	.resume = kv_dpm_resume,
-	.is_idle = kv_dpm_is_idle,
-	.set_clockgating_state = kv_dpm_set_clockgating_state,
-	.set_powergating_state = kv_dpm_set_powergating_state,
+	name: "kv_dpm",
+	early_init: kv_dpm_early_init,
+	late_init: kv_dpm_late_init,
+	sw_init: kv_dpm_sw_init,
+	sw_fini: kv_dpm_sw_fini,
+	hw_init: kv_dpm_hw_init,
+	hw_fini: kv_dpm_hw_fini,
+	suspend: kv_dpm_suspend,
+	resume: kv_dpm_resume,
+	is_idle: kv_dpm_is_idle,
+	set_clockgating_state: kv_dpm_set_clockgating_state,
+	set_powergating_state: kv_dpm_set_powergating_state,
 };
 
 const amdgpu_ip_block_version kv_smu_ip_block = {
-	.type = AMD_IP_BLOCK_TYPE_SMC,
-	.major = 1,
-	.minor = 0,
-	.rev = 0,
-	.funcs = &kv_dpm_ip_funcs,
+	type: AMD_IP_BLOCK_TYPE_SMC,
+	major: 1,
+	minor: 0,
+	rev: 0,
+	funcs: &kv_dpm_ip_funcs,
 };
 
 static const amd_pm_funcs kv_dpm_funcs = {
-	.pre_set_power_state = &kv_dpm_pre_set_power_state,
-	.set_power_state = &kv_dpm_set_power_state,
-	.post_set_power_state = &kv_dpm_post_set_power_state,
-	.display_configuration_changed = &kv_dpm_display_configuration_changed,
-	.get_sclk = &kv_dpm_get_sclk,
-	.get_mclk = &kv_dpm_get_mclk,
-	.print_power_state = &kv_dpm_print_power_state,
-	.debugfs_print_current_performance_level = &kv_dpm_debugfs_print_current_performance_level,
-	.force_performance_level = &kv_dpm_force_performance_level,
-	.set_powergating_by_smu = kv_set_powergating_by_smu,
-	.notify_ac_dc = &kv_dpm_enable_bapm,
-	.get_vce_clock_state = amdgpu_get_vce_clock_state,
-	.check_state_equal = kv_check_state_equal,
-	.read_sensor = &kv_dpm_read_sensor,
-	.pm_compute_clocks = amdgpu_legacy_dpm_compute_clocks,
+	pre_set_power_state: &kv_dpm_pre_set_power_state,
+	set_power_state: &kv_dpm_set_power_state,
+	post_set_power_state: &kv_dpm_post_set_power_state,
+	display_configuration_changed: &kv_dpm_display_configuration_changed,
+	get_sclk: &kv_dpm_get_sclk,
+	get_mclk: &kv_dpm_get_mclk,
+	print_power_state: &kv_dpm_print_power_state,
+	debugfs_print_current_performance_level: &kv_dpm_debugfs_print_current_performance_level,
+	force_performance_level: &kv_dpm_force_performance_level,
+	set_powergating_by_smu: kv_set_powergating_by_smu,
+	notify_ac_dc: &kv_dpm_enable_bapm,
+	get_vce_clock_state: amdgpu_get_vce_clock_state,
+	check_state_equal: kv_check_state_equal,
+	read_sensor: &kv_dpm_read_sensor,
+	pm_compute_clocks: amdgpu_legacy_dpm_compute_clocks,
 };
 
 static const amdgpu_irq_src_funcs kv_dpm_irq_funcs = {
-	.set = kv_dpm_set_interrupt_state,
-	.process = kv_dpm_process_interrupt,
+	set: kv_dpm_set_interrupt_state,
+	process: kv_dpm_process_interrupt,
 };
 
 fn kv_dpm_set_irq_funcs(amdgpu_device *adev)

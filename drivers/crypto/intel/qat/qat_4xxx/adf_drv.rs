@@ -31,6 +31,8 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
     let mut bar_mask: c_ulong;
     let bar: *mut adf_bar;
     let mut ret: c_int;
+    'out_err: {
+    'out_err_dev_stop: {
 
     if num_possible_nodes() > 1 && dev_to_node(&mut (*pdev).dev) < 0 {
         /*
@@ -67,7 +69,7 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
         as *mut adf_hw_device_data;
     if hw_data.is_null() {
         ret = -ENOMEM;
-        goto out_err;
+        break 'out_err;
     }
 
     (*accel_dev).hw_device = hw_data;
@@ -84,31 +86,31 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
     if (*hw_data).accel_mask == 0 || (*hw_data).ae_mask == 0 || ((!(*hw_data).ae_mask) & 0x01) != 0 {
         dev_err(&mut (*pdev).dev, "No acceleration units found.\n");
         ret = -EFAULT;
-        goto out_err;
+        break 'out_err;
     }
 
     /* Create device configuration table */
     ret = adf_cfg_dev_add(accel_dev);
-    if ret != 0 { goto out_err; }
+    if ret != 0 { break 'out_err; }
 
     /* Enable PCI device */
     ret = pcim_enable_device(pdev);
     if ret != 0 {
         pci_err(pdev, "Can't enable PCI device.\n");
-        goto out_err;
+        break 'out_err;
     }
 
     /* Set DMA identifier */
     ret = dma_set_mask_and_coherent(&mut (*pdev).dev, DMA_BIT_MASK(64));
     if ret != 0 {
         dev_err(&mut (*pdev).dev, "No usable DMA configuration.\n");
-        goto out_err;
+        break 'out_err;
     }
 
     ret = adf_gen4_cfg_dev_init(accel_dev);
     if ret != 0 {
         dev_err(&mut (*pdev).dev, "Failed to initialize configuration.\n");
-        goto out_err;
+        break 'out_err;
     }
 
     /* Get accelerator capabilities mask */
@@ -116,7 +118,7 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
     if (*hw_data).accel_capabilities_mask == 0 {
         dev_err(&mut (*pdev).dev, "Failed to get capabilities mask.\n");
         ret = -EINVAL;
-        goto out_err;
+        break 'out_err;
     }
 
     /* Find and map all the device's BARS */
@@ -125,7 +127,7 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
     ret = pcim_request_all_regions(pdev, pci_name(pdev));
     if ret != 0 {
         pci_err(pdev, "Failed to request PCI regions.\n");
-        goto out_err;
+        break 'out_err;
     }
 
     i = 0;
@@ -138,30 +140,31 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> c_int {
         if (*bar).virt_addr.is_null() {
             pci_err(pdev, "Failed to ioremap PCI region.\n");
             ret = -ENOMEM;
-            goto out_err;
+            break 'out_err;
         }
     }
 
     if pci_save_state(pdev) != 0 {
         pci_err(pdev, "Failed to save pci state.\n");
         ret = -ENOMEM;
-        goto out_err;
+        break 'out_err;
     }
 
     (*accel_dev).ras_errors.enabled = true;
     adf_dbgfs_init(accel_dev);
 
     ret = adf_dev_up(accel_dev, true);
-    if ret != 0 { goto out_err_dev_stop; }
+    if ret != 0 { break 'out_err_dev_stop; }
 
     ret = adf_sysfs_init(accel_dev);
-    if ret != 0 { goto out_err_dev_stop; }
+    if ret != 0 { break 'out_err_dev_stop; }
 
     return ret;
-
-out_err_dev_stop:
+    }
+    
     adf_dev_down(accel_dev);
-out_err:
+    }
+    
     adf_cleanup_accel(accel_dev);
     return ret;
 }

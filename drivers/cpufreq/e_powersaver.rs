@@ -16,7 +16,7 @@ const EPS_BRAND_C7D: u8 = 4;
 #[repr(C)]
 struct EpsCpuData {
     fsb: u32,
-    #[cfg(feature = "CONFIG_ACPI_PROCESSOR")]
+    #[cfg(CONFIG_ACPI_PROCESSOR)]
     bios_limit: u32,
     // Flexible array member: allocated immediately after this structure.
     freq_table: [CpufreqFrequencyTable; 0],
@@ -29,13 +29,13 @@ static mut FREQ_FAILSAFE_OFF: i32 = 0;
 static mut VOLTAGE_FAILSAFE_OFF: i32 = 0;
 static mut SET_MAX_VOLTAGE: i32 = 0;
 
-#[cfg(feature = "CONFIG_ACPI_PROCESSOR")]
+#[cfg(CONFIG_ACPI_PROCESSOR)]
 static mut IGNORE_ACPI_LIMIT: i32 = 0;
 
-#[cfg(feature = "CONFIG_ACPI_PROCESSOR")]
+#[cfg(CONFIG_ACPI_PROCESSOR)]
 static mut EPS_ACPI_CPU_PERF: *mut AcpiProcessorPerformance = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_ACPI_PROCESSOR")]
+#[cfg(CONFIG_ACPI_PROCESSOR)]
 unsafe fn eps_acpi_init() -> i32 {
     EPS_ACPI_CPU_PERF = kzalloc_obj::<AcpiProcessorPerformance>();
     if EPS_ACPI_CPU_PERF.is_null() {
@@ -57,7 +57,7 @@ unsafe fn eps_acpi_init() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_ACPI_PROCESSOR")]
+#[cfg(CONFIG_ACPI_PROCESSOR)]
 unsafe fn eps_acpi_exit(_policy: *mut CpufreqPolicy) -> i32 {
     if !EPS_ACPI_CPU_PERF.is_null() {
         acpi_processor_unregister_performance(0);

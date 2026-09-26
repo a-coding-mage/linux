@@ -609,8 +609,6 @@ pub const CPM_PIN_OPENDRAIN: u32 = 8;
  * memory map.  See immap_cpm2.h for details.
  */
 #ifdef __KERNEL__
-#ifndef __CPM2__
-#define __CPM2__
 
 #include <asm/immap_cpm2.h>
 #include <asm/cpm.h>
@@ -627,46 +625,46 @@ pub const CPM_PIN_OPENDRAIN: u32 = 8;
 
 /* Device sub-block and page codes.
 */
-#define CPM_CR_SCC1_SBLOCK	(0x04)
-#define CPM_CR_SCC2_SBLOCK	(0x05)
-#define CPM_CR_SCC3_SBLOCK	(0x06)
-#define CPM_CR_SCC4_SBLOCK	(0x07)
-#define CPM_CR_SMC1_SBLOCK	(0x08)
-#define CPM_CR_SMC2_SBLOCK	(0x09)
-#define CPM_CR_SPI_SBLOCK	(0x0a)
-#define CPM_CR_I2C_SBLOCK	(0x0b)
-#define CPM_CR_TIMER_SBLOCK	(0x0f)
-#define CPM_CR_RAND_SBLOCK	(0x0e)
-#define CPM_CR_FCC1_SBLOCK	(0x10)
-#define CPM_CR_FCC2_SBLOCK	(0x11)
-#define CPM_CR_FCC3_SBLOCK	(0x12)
-#define CPM_CR_IDMA1_SBLOCK	(0x14)
-#define CPM_CR_IDMA2_SBLOCK	(0x15)
-#define CPM_CR_IDMA3_SBLOCK	(0x16)
-#define CPM_CR_IDMA4_SBLOCK	(0x17)
-#define CPM_CR_MCC1_SBLOCK	(0x1c)
+pub const CPM_CR_SCC1_SBLOCK: u32 = 0x04;
+pub const CPM_CR_SCC2_SBLOCK: u32 = 0x05;
+pub const CPM_CR_SCC3_SBLOCK: u32 = 0x06;
+pub const CPM_CR_SCC4_SBLOCK: u32 = 0x07;
+pub const CPM_CR_SMC1_SBLOCK: u32 = 0x08;
+pub const CPM_CR_SMC2_SBLOCK: u32 = 0x09;
+pub const CPM_CR_SPI_SBLOCK: u32 = 0x0a;
+pub const CPM_CR_I2C_SBLOCK: u32 = 0x0b;
+pub const CPM_CR_TIMER_SBLOCK: u32 = 0x0f;
+pub const CPM_CR_RAND_SBLOCK: u32 = 0x0e;
+pub const CPM_CR_FCC1_SBLOCK: u32 = 0x10;
+pub const CPM_CR_FCC2_SBLOCK: u32 = 0x11;
+pub const CPM_CR_FCC3_SBLOCK: u32 = 0x12;
+pub const CPM_CR_IDMA1_SBLOCK: u32 = 0x14;
+pub const CPM_CR_IDMA2_SBLOCK: u32 = 0x15;
+pub const CPM_CR_IDMA3_SBLOCK: u32 = 0x16;
+pub const CPM_CR_IDMA4_SBLOCK: u32 = 0x17;
+pub const CPM_CR_MCC1_SBLOCK: u32 = 0x1c;
 
 #define CPM_CR_FCC_SBLOCK(x)	(x + 0x10)
 
-#define CPM_CR_SCC1_PAGE	(0x00)
-#define CPM_CR_SCC2_PAGE	(0x01)
-#define CPM_CR_SCC3_PAGE	(0x02)
-#define CPM_CR_SCC4_PAGE	(0x03)
-#define CPM_CR_SMC1_PAGE	(0x07)
-#define CPM_CR_SMC2_PAGE	(0x08)
-#define CPM_CR_SPI_PAGE		(0x09)
-#define CPM_CR_I2C_PAGE		(0x0a)
-#define CPM_CR_TIMER_PAGE	(0x0a)
-#define CPM_CR_RAND_PAGE	(0x0a)
-#define CPM_CR_FCC1_PAGE	(0x04)
-#define CPM_CR_FCC2_PAGE	(0x05)
-#define CPM_CR_FCC3_PAGE	(0x06)
-#define CPM_CR_IDMA1_PAGE	(0x07)
-#define CPM_CR_IDMA2_PAGE	(0x08)
-#define CPM_CR_IDMA3_PAGE	(0x09)
-#define CPM_CR_IDMA4_PAGE	(0x0a)
-#define CPM_CR_MCC1_PAGE	(0x07)
-#define CPM_CR_MCC2_PAGE	(0x08)
+pub const CPM_CR_SCC1_PAGE: u32 = 0x00;
+pub const CPM_CR_SCC2_PAGE: u32 = 0x01;
+pub const CPM_CR_SCC3_PAGE: u32 = 0x02;
+pub const CPM_CR_SCC4_PAGE: u32 = 0x03;
+pub const CPM_CR_SMC1_PAGE: u32 = 0x07;
+pub const CPM_CR_SMC2_PAGE: u32 = 0x08;
+pub const CPM_CR_SPI_PAGE: u32 = 0x09;
+pub const CPM_CR_I2C_PAGE: u32 = 0x0a;
+pub const CPM_CR_TIMER_PAGE: u32 = 0x0a;
+pub const CPM_CR_RAND_PAGE: u32 = 0x0a;
+pub const CPM_CR_FCC1_PAGE: u32 = 0x04;
+pub const CPM_CR_FCC2_PAGE: u32 = 0x05;
+pub const CPM_CR_FCC3_PAGE: u32 = 0x06;
+pub const CPM_CR_IDMA1_PAGE: u32 = 0x07;
+pub const CPM_CR_IDMA2_PAGE: u32 = 0x08;
+pub const CPM_CR_IDMA3_PAGE: u32 = 0x09;
+pub const CPM_CR_IDMA4_PAGE: u32 = 0x0a;
+pub const CPM_CR_MCC1_PAGE: u32 = 0x07;
+pub const CPM_CR_MCC2_PAGE: u32 = 0x08;
 
 #define CPM_CR_FCC_PAGE(x)	(x + 0x04)
 
@@ -681,7 +679,7 @@ pub const CPM_PIN_OPENDRAIN: u32 = 8;
  * done early in kernel initialization to get physically contiguous
  * pages.
  */
-#define NUM_CPM_HOST_PAGES	2
+pub const NUM_CPM_HOST_PAGES: u32 = 2;
 
 /* Export the base address of the communication processor registers
  * and dual port ram.
@@ -709,7 +707,7 @@ extern void __cpm2_setbrg(uint brg, uint rate, uint clk, int div16, int src);
 /* This function is used by UARTS, or anything else that uses a 16x
  * oversampled clock.
  */
-static inline void cpm_setbrg(uint brg, uint rate)
+void cpm_setbrg(uint brg, uint rate)
 {
 	__cpm2_setbrg(brg, rate, CPM2_BRG_UART_CLK, 0, CPM_BRG_EXTC_INT);
 }
@@ -717,7 +715,7 @@ static inline void cpm_setbrg(uint brg, uint rate)
 /* This function is used to set high speed synchronous baud rate
  * clocks.
  */
-static inline void cpm2_fastbrg(uint brg, uint rate, int div16)
+void cpm2_fastbrg(uint brg, uint rate, int div16)
 {
 	__cpm2_setbrg(brg, rate, CPM2_BRG_INT_CLK, div16, CPM_BRG_EXTC_INT);
 }
@@ -755,8 +753,8 @@ static inline void cpm2_fastbrg(uint brg, uint rate, int div16)
  * The parameter ram space for the SMCs is fifty-some bytes, and
  * they are required to start on a 64 byte boundary.
  */
-#define PROFF_SMC1	(0)
-#define PROFF_SMC2	(64)
+pub const PROFF_SMC1: u32 = 0;
+pub const PROFF_SMC2: u32 = 64;
 
 
 /* Define enough so I can at least use the serial port as a UART.
@@ -805,12 +803,12 @@ typedef struct smc_uart {
 
 /* SMC Event and Mask register.
 */
-#define SMCM_BRKE       ((unsigned char)0x40)   /* When in UART Mode */
-#define SMCM_BRK        ((unsigned char)0x10)   /* When in UART Mode */
-#define SMCM_TXE	((unsigned char)0x10)
-#define SMCM_BSY	((unsigned char)0x04)
-#define SMCM_TX		((unsigned char)0x02)
-#define SMCM_RX		((unsigned char)0x01)
+#define SMCM_BRKE       ((core::ffi::c_uchar)0x40)   /* When in UART Mode */
+#define SMCM_BRK        ((core::ffi::c_uchar)0x10)   /* When in UART Mode */
+#define SMCM_TXE	((core::ffi::c_uchar)0x10)
+#define SMCM_BSY	((core::ffi::c_uchar)0x04)
+#define SMCM_TX		((core::ffi::c_uchar)0x02)
+#define SMCM_RX		((core::ffi::c_uchar)0x01)
 
 /* SCCs.
 */
@@ -898,10 +896,10 @@ typedef struct smc_uart {
 
 /* SCC Event and Mask register.
 */
-#define SCCM_TXE	((unsigned char)0x10)
-#define SCCM_BSY	((unsigned char)0x04)
-#define SCCM_TX		((unsigned char)0x02)
-#define SCCM_RX		((unsigned char)0x01)
+#define SCCM_TXE	((core::ffi::c_uchar)0x10)
+#define SCCM_BSY	((core::ffi::c_uchar)0x04)
+#define SCCM_TX		((core::ffi::c_uchar)0x02)
+#define SCCM_RX		((core::ffi::c_uchar)0x01)
 
 typedef struct scc_param {
 	ushort	scc_rbase;	/* Rx Buffer descriptor base address */
@@ -1326,10 +1324,10 @@ typedef struct im_idma {
 
 /* IDMA event register bit fields
 */
-#define IDMA_EVENT_SC	((unsigned char)0x08)	/* stop completed */
-#define IDMA_EVENT_OB	((unsigned char)0x04)	/* out of buffers */
-#define IDMA_EVENT_EDN	((unsigned char)0x02)	/* external DONE asserted */
-#define IDMA_EVENT_BC	((unsigned char)0x01)	/* buffer descriptor complete */
+#define IDMA_EVENT_SC	((core::ffi::c_uchar)0x08)	/* stop completed */
+#define IDMA_EVENT_OB	((core::ffi::c_uchar)0x04)	/* out of buffers */
+#define IDMA_EVENT_EDN	((core::ffi::c_uchar)0x02)	/* external DONE asserted */
+#define IDMA_EVENT_BC	((core::ffi::c_uchar)0x01)	/* buffer descriptor complete */
 
 /* RISC Controller Configuration Register (RCCR) bit fields
 */
@@ -1375,209 +1373,209 @@ typedef struct im_idma {
 /*-----------------------------------------------------------------------
  * CMXFCR - CMX FCC Clock Route Register
  */
-#define CMXFCR_FC1         0x40000000   /* FCC1 connection              */
-#define CMXFCR_RF1CS_MSK   0x38000000   /* Receive FCC1 Clock Source Mask */
-#define CMXFCR_TF1CS_MSK   0x07000000   /* Transmit FCC1 Clock Source Mask */
-#define CMXFCR_FC2         0x00400000   /* FCC2 connection              */
-#define CMXFCR_RF2CS_MSK   0x00380000   /* Receive FCC2 Clock Source Mask */
-#define CMXFCR_TF2CS_MSK   0x00070000   /* Transmit FCC2 Clock Source Mask */
-#define CMXFCR_FC3         0x00004000   /* FCC3 connection              */
-#define CMXFCR_RF3CS_MSK   0x00003800   /* Receive FCC3 Clock Source Mask */
-#define CMXFCR_TF3CS_MSK   0x00000700   /* Transmit FCC3 Clock Source Mask */
+pub const CMXFCR_FC1: u32 = 0x40000000;  /* FCC1 connection              */
+pub const CMXFCR_RF1CS_MSK: u32 = 0x38000000;  /* Receive FCC1 Clock Source Mask */
+pub const CMXFCR_TF1CS_MSK: u32 = 0x07000000;  /* Transmit FCC1 Clock Source Mask */
+pub const CMXFCR_FC2: u32 = 0x00400000;  /* FCC2 connection              */
+pub const CMXFCR_RF2CS_MSK: u32 = 0x00380000;  /* Receive FCC2 Clock Source Mask */
+pub const CMXFCR_TF2CS_MSK: u32 = 0x00070000;  /* Transmit FCC2 Clock Source Mask */
+pub const CMXFCR_FC3: u32 = 0x00004000;  /* FCC3 connection              */
+pub const CMXFCR_RF3CS_MSK: u32 = 0x00003800;  /* Receive FCC3 Clock Source Mask */
+pub const CMXFCR_TF3CS_MSK: u32 = 0x00000700;  /* Transmit FCC3 Clock Source Mask */
 
-#define CMXFCR_RF1CS_BRG5  0x00000000   /* Receive FCC1 Clock Source is BRG5 */
-#define CMXFCR_RF1CS_BRG6  0x08000000   /* Receive FCC1 Clock Source is BRG6 */
-#define CMXFCR_RF1CS_BRG7  0x10000000   /* Receive FCC1 Clock Source is BRG7 */
-#define CMXFCR_RF1CS_BRG8  0x18000000   /* Receive FCC1 Clock Source is BRG8 */
-#define CMXFCR_RF1CS_CLK9  0x20000000   /* Receive FCC1 Clock Source is CLK9 */
-#define CMXFCR_RF1CS_CLK10 0x28000000   /* Receive FCC1 Clock Source is CLK10 */
-#define CMXFCR_RF1CS_CLK11 0x30000000   /* Receive FCC1 Clock Source is CLK11 */
-#define CMXFCR_RF1CS_CLK12 0x38000000   /* Receive FCC1 Clock Source is CLK12 */
+pub const CMXFCR_RF1CS_BRG5: u32 = 0x00000000;  /* Receive FCC1 Clock Source is BRG5 */
+pub const CMXFCR_RF1CS_BRG6: u32 = 0x08000000;  /* Receive FCC1 Clock Source is BRG6 */
+pub const CMXFCR_RF1CS_BRG7: u32 = 0x10000000;  /* Receive FCC1 Clock Source is BRG7 */
+pub const CMXFCR_RF1CS_BRG8: u32 = 0x18000000;  /* Receive FCC1 Clock Source is BRG8 */
+pub const CMXFCR_RF1CS_CLK9: u32 = 0x20000000;  /* Receive FCC1 Clock Source is CLK9 */
+pub const CMXFCR_RF1CS_CLK10: u32 = 0x28000000;  /* Receive FCC1 Clock Source is CLK10 */
+pub const CMXFCR_RF1CS_CLK11: u32 = 0x30000000;  /* Receive FCC1 Clock Source is CLK11 */
+pub const CMXFCR_RF1CS_CLK12: u32 = 0x38000000;  /* Receive FCC1 Clock Source is CLK12 */
 
-#define CMXFCR_TF1CS_BRG5  0x00000000   /* Transmit FCC1 Clock Source is BRG5 */
-#define CMXFCR_TF1CS_BRG6  0x01000000   /* Transmit FCC1 Clock Source is BRG6 */
-#define CMXFCR_TF1CS_BRG7  0x02000000   /* Transmit FCC1 Clock Source is BRG7 */
-#define CMXFCR_TF1CS_BRG8  0x03000000   /* Transmit FCC1 Clock Source is BRG8 */
-#define CMXFCR_TF1CS_CLK9  0x04000000   /* Transmit FCC1 Clock Source is CLK9 */
-#define CMXFCR_TF1CS_CLK10 0x05000000   /* Transmit FCC1 Clock Source is CLK10 */
-#define CMXFCR_TF1CS_CLK11 0x06000000   /* Transmit FCC1 Clock Source is CLK11 */
-#define CMXFCR_TF1CS_CLK12 0x07000000   /* Transmit FCC1 Clock Source is CLK12 */
+pub const CMXFCR_TF1CS_BRG5: u32 = 0x00000000;  /* Transmit FCC1 Clock Source is BRG5 */
+pub const CMXFCR_TF1CS_BRG6: u32 = 0x01000000;  /* Transmit FCC1 Clock Source is BRG6 */
+pub const CMXFCR_TF1CS_BRG7: u32 = 0x02000000;  /* Transmit FCC1 Clock Source is BRG7 */
+pub const CMXFCR_TF1CS_BRG8: u32 = 0x03000000;  /* Transmit FCC1 Clock Source is BRG8 */
+pub const CMXFCR_TF1CS_CLK9: u32 = 0x04000000;  /* Transmit FCC1 Clock Source is CLK9 */
+pub const CMXFCR_TF1CS_CLK10: u32 = 0x05000000;  /* Transmit FCC1 Clock Source is CLK10 */
+pub const CMXFCR_TF1CS_CLK11: u32 = 0x06000000;  /* Transmit FCC1 Clock Source is CLK11 */
+pub const CMXFCR_TF1CS_CLK12: u32 = 0x07000000;  /* Transmit FCC1 Clock Source is CLK12 */
 
-#define CMXFCR_RF2CS_BRG5  0x00000000   /* Receive FCC2 Clock Source is BRG5 */
-#define CMXFCR_RF2CS_BRG6  0x00080000   /* Receive FCC2 Clock Source is BRG6 */
-#define CMXFCR_RF2CS_BRG7  0x00100000   /* Receive FCC2 Clock Source is BRG7 */
-#define CMXFCR_RF2CS_BRG8  0x00180000   /* Receive FCC2 Clock Source is BRG8 */
-#define CMXFCR_RF2CS_CLK13 0x00200000   /* Receive FCC2 Clock Source is CLK13 */
-#define CMXFCR_RF2CS_CLK14 0x00280000   /* Receive FCC2 Clock Source is CLK14 */
-#define CMXFCR_RF2CS_CLK15 0x00300000   /* Receive FCC2 Clock Source is CLK15 */
-#define CMXFCR_RF2CS_CLK16 0x00380000   /* Receive FCC2 Clock Source is CLK16 */
+pub const CMXFCR_RF2CS_BRG5: u32 = 0x00000000;  /* Receive FCC2 Clock Source is BRG5 */
+pub const CMXFCR_RF2CS_BRG6: u32 = 0x00080000;  /* Receive FCC2 Clock Source is BRG6 */
+pub const CMXFCR_RF2CS_BRG7: u32 = 0x00100000;  /* Receive FCC2 Clock Source is BRG7 */
+pub const CMXFCR_RF2CS_BRG8: u32 = 0x00180000;  /* Receive FCC2 Clock Source is BRG8 */
+pub const CMXFCR_RF2CS_CLK13: u32 = 0x00200000;  /* Receive FCC2 Clock Source is CLK13 */
+pub const CMXFCR_RF2CS_CLK14: u32 = 0x00280000;  /* Receive FCC2 Clock Source is CLK14 */
+pub const CMXFCR_RF2CS_CLK15: u32 = 0x00300000;  /* Receive FCC2 Clock Source is CLK15 */
+pub const CMXFCR_RF2CS_CLK16: u32 = 0x00380000;  /* Receive FCC2 Clock Source is CLK16 */
 
-#define CMXFCR_TF2CS_BRG5  0x00000000   /* Transmit FCC2 Clock Source is BRG5 */
-#define CMXFCR_TF2CS_BRG6  0x00010000   /* Transmit FCC2 Clock Source is BRG6 */
-#define CMXFCR_TF2CS_BRG7  0x00020000   /* Transmit FCC2 Clock Source is BRG7 */
-#define CMXFCR_TF2CS_BRG8  0x00030000   /* Transmit FCC2 Clock Source is BRG8 */
-#define CMXFCR_TF2CS_CLK13 0x00040000   /* Transmit FCC2 Clock Source is CLK13 */
-#define CMXFCR_TF2CS_CLK14 0x00050000   /* Transmit FCC2 Clock Source is CLK14 */
-#define CMXFCR_TF2CS_CLK15 0x00060000   /* Transmit FCC2 Clock Source is CLK15 */
-#define CMXFCR_TF2CS_CLK16 0x00070000   /* Transmit FCC2 Clock Source is CLK16 */
+pub const CMXFCR_TF2CS_BRG5: u32 = 0x00000000;  /* Transmit FCC2 Clock Source is BRG5 */
+pub const CMXFCR_TF2CS_BRG6: u32 = 0x00010000;  /* Transmit FCC2 Clock Source is BRG6 */
+pub const CMXFCR_TF2CS_BRG7: u32 = 0x00020000;  /* Transmit FCC2 Clock Source is BRG7 */
+pub const CMXFCR_TF2CS_BRG8: u32 = 0x00030000;  /* Transmit FCC2 Clock Source is BRG8 */
+pub const CMXFCR_TF2CS_CLK13: u32 = 0x00040000;  /* Transmit FCC2 Clock Source is CLK13 */
+pub const CMXFCR_TF2CS_CLK14: u32 = 0x00050000;  /* Transmit FCC2 Clock Source is CLK14 */
+pub const CMXFCR_TF2CS_CLK15: u32 = 0x00060000;  /* Transmit FCC2 Clock Source is CLK15 */
+pub const CMXFCR_TF2CS_CLK16: u32 = 0x00070000;  /* Transmit FCC2 Clock Source is CLK16 */
 
-#define CMXFCR_RF3CS_BRG5  0x00000000   /* Receive FCC3 Clock Source is BRG5 */
-#define CMXFCR_RF3CS_BRG6  0x00000800   /* Receive FCC3 Clock Source is BRG6 */
-#define CMXFCR_RF3CS_BRG7  0x00001000   /* Receive FCC3 Clock Source is BRG7 */
-#define CMXFCR_RF3CS_BRG8  0x00001800   /* Receive FCC3 Clock Source is BRG8 */
-#define CMXFCR_RF3CS_CLK13 0x00002000   /* Receive FCC3 Clock Source is CLK13 */
-#define CMXFCR_RF3CS_CLK14 0x00002800   /* Receive FCC3 Clock Source is CLK14 */
-#define CMXFCR_RF3CS_CLK15 0x00003000   /* Receive FCC3 Clock Source is CLK15 */
-#define CMXFCR_RF3CS_CLK16 0x00003800   /* Receive FCC3 Clock Source is CLK16 */
+pub const CMXFCR_RF3CS_BRG5: u32 = 0x00000000;  /* Receive FCC3 Clock Source is BRG5 */
+pub const CMXFCR_RF3CS_BRG6: u32 = 0x00000800;  /* Receive FCC3 Clock Source is BRG6 */
+pub const CMXFCR_RF3CS_BRG7: u32 = 0x00001000;  /* Receive FCC3 Clock Source is BRG7 */
+pub const CMXFCR_RF3CS_BRG8: u32 = 0x00001800;  /* Receive FCC3 Clock Source is BRG8 */
+pub const CMXFCR_RF3CS_CLK13: u32 = 0x00002000;  /* Receive FCC3 Clock Source is CLK13 */
+pub const CMXFCR_RF3CS_CLK14: u32 = 0x00002800;  /* Receive FCC3 Clock Source is CLK14 */
+pub const CMXFCR_RF3CS_CLK15: u32 = 0x00003000;  /* Receive FCC3 Clock Source is CLK15 */
+pub const CMXFCR_RF3CS_CLK16: u32 = 0x00003800;  /* Receive FCC3 Clock Source is CLK16 */
 
-#define CMXFCR_TF3CS_BRG5  0x00000000   /* Transmit FCC3 Clock Source is BRG5 */
-#define CMXFCR_TF3CS_BRG6  0x00000100   /* Transmit FCC3 Clock Source is BRG6 */
-#define CMXFCR_TF3CS_BRG7  0x00000200   /* Transmit FCC3 Clock Source is BRG7 */
-#define CMXFCR_TF3CS_BRG8  0x00000300   /* Transmit FCC3 Clock Source is BRG8 */
-#define CMXFCR_TF3CS_CLK13 0x00000400   /* Transmit FCC3 Clock Source is CLK13 */
-#define CMXFCR_TF3CS_CLK14 0x00000500   /* Transmit FCC3 Clock Source is CLK14 */
-#define CMXFCR_TF3CS_CLK15 0x00000600   /* Transmit FCC3 Clock Source is CLK15 */
-#define CMXFCR_TF3CS_CLK16 0x00000700   /* Transmit FCC3 Clock Source is CLK16 */
+pub const CMXFCR_TF3CS_BRG5: u32 = 0x00000000;  /* Transmit FCC3 Clock Source is BRG5 */
+pub const CMXFCR_TF3CS_BRG6: u32 = 0x00000100;  /* Transmit FCC3 Clock Source is BRG6 */
+pub const CMXFCR_TF3CS_BRG7: u32 = 0x00000200;  /* Transmit FCC3 Clock Source is BRG7 */
+pub const CMXFCR_TF3CS_BRG8: u32 = 0x00000300;  /* Transmit FCC3 Clock Source is BRG8 */
+pub const CMXFCR_TF3CS_CLK13: u32 = 0x00000400;  /* Transmit FCC3 Clock Source is CLK13 */
+pub const CMXFCR_TF3CS_CLK14: u32 = 0x00000500;  /* Transmit FCC3 Clock Source is CLK14 */
+pub const CMXFCR_TF3CS_CLK15: u32 = 0x00000600;  /* Transmit FCC3 Clock Source is CLK15 */
+pub const CMXFCR_TF3CS_CLK16: u32 = 0x00000700;  /* Transmit FCC3 Clock Source is CLK16 */
 
 /*-----------------------------------------------------------------------
  * CMXSCR - CMX SCC Clock Route Register
  */
-#define CMXSCR_GR1         0x80000000   /* Grant Support of SCC1        */
-#define CMXSCR_SC1         0x40000000   /* SCC1 connection              */
-#define CMXSCR_RS1CS_MSK   0x38000000   /* Receive SCC1 Clock Source Mask */
-#define CMXSCR_TS1CS_MSK   0x07000000   /* Transmit SCC1 Clock Source Mask */
-#define CMXSCR_GR2         0x00800000   /* Grant Support of SCC2        */
-#define CMXSCR_SC2         0x00400000   /* SCC2 connection              */
-#define CMXSCR_RS2CS_MSK   0x00380000   /* Receive SCC2 Clock Source Mask */
-#define CMXSCR_TS2CS_MSK   0x00070000   /* Transmit SCC2 Clock Source Mask */
-#define CMXSCR_GR3         0x00008000   /* Grant Support of SCC3        */
-#define CMXSCR_SC3         0x00004000   /* SCC3 connection              */
-#define CMXSCR_RS3CS_MSK   0x00003800   /* Receive SCC3 Clock Source Mask */
-#define CMXSCR_TS3CS_MSK   0x00000700   /* Transmit SCC3 Clock Source Mask */
-#define CMXSCR_GR4         0x00000080   /* Grant Support of SCC4        */
-#define CMXSCR_SC4         0x00000040   /* SCC4 connection              */
-#define CMXSCR_RS4CS_MSK   0x00000038   /* Receive SCC4 Clock Source Mask */
-#define CMXSCR_TS4CS_MSK   0x00000007   /* Transmit SCC4 Clock Source Mask */
+pub const CMXSCR_GR1: u32 = 0x80000000;  /* Grant Support of SCC1        */
+pub const CMXSCR_SC1: u32 = 0x40000000;  /* SCC1 connection              */
+pub const CMXSCR_RS1CS_MSK: u32 = 0x38000000;  /* Receive SCC1 Clock Source Mask */
+pub const CMXSCR_TS1CS_MSK: u32 = 0x07000000;  /* Transmit SCC1 Clock Source Mask */
+pub const CMXSCR_GR2: u32 = 0x00800000;  /* Grant Support of SCC2        */
+pub const CMXSCR_SC2: u32 = 0x00400000;  /* SCC2 connection              */
+pub const CMXSCR_RS2CS_MSK: u32 = 0x00380000;  /* Receive SCC2 Clock Source Mask */
+pub const CMXSCR_TS2CS_MSK: u32 = 0x00070000;  /* Transmit SCC2 Clock Source Mask */
+pub const CMXSCR_GR3: u32 = 0x00008000;  /* Grant Support of SCC3        */
+pub const CMXSCR_SC3: u32 = 0x00004000;  /* SCC3 connection              */
+pub const CMXSCR_RS3CS_MSK: u32 = 0x00003800;  /* Receive SCC3 Clock Source Mask */
+pub const CMXSCR_TS3CS_MSK: u32 = 0x00000700;  /* Transmit SCC3 Clock Source Mask */
+pub const CMXSCR_GR4: u32 = 0x00000080;  /* Grant Support of SCC4        */
+pub const CMXSCR_SC4: u32 = 0x00000040;  /* SCC4 connection              */
+pub const CMXSCR_RS4CS_MSK: u32 = 0x00000038;  /* Receive SCC4 Clock Source Mask */
+pub const CMXSCR_TS4CS_MSK: u32 = 0x00000007;  /* Transmit SCC4 Clock Source Mask */
 
-#define CMXSCR_RS1CS_BRG1  0x00000000   /* SCC1 Rx Clock Source is BRG1 */
-#define CMXSCR_RS1CS_BRG2  0x08000000   /* SCC1 Rx Clock Source is BRG2 */
-#define CMXSCR_RS1CS_BRG3  0x10000000   /* SCC1 Rx Clock Source is BRG3 */
-#define CMXSCR_RS1CS_BRG4  0x18000000   /* SCC1 Rx Clock Source is BRG4 */
-#define CMXSCR_RS1CS_CLK11 0x20000000   /* SCC1 Rx Clock Source is CLK11 */
-#define CMXSCR_RS1CS_CLK12 0x28000000   /* SCC1 Rx Clock Source is CLK12 */
-#define CMXSCR_RS1CS_CLK3  0x30000000   /* SCC1 Rx Clock Source is CLK3 */
-#define CMXSCR_RS1CS_CLK4  0x38000000   /* SCC1 Rx Clock Source is CLK4 */
+pub const CMXSCR_RS1CS_BRG1: u32 = 0x00000000;  /* SCC1 Rx Clock Source is BRG1 */
+pub const CMXSCR_RS1CS_BRG2: u32 = 0x08000000;  /* SCC1 Rx Clock Source is BRG2 */
+pub const CMXSCR_RS1CS_BRG3: u32 = 0x10000000;  /* SCC1 Rx Clock Source is BRG3 */
+pub const CMXSCR_RS1CS_BRG4: u32 = 0x18000000;  /* SCC1 Rx Clock Source is BRG4 */
+pub const CMXSCR_RS1CS_CLK11: u32 = 0x20000000;  /* SCC1 Rx Clock Source is CLK11 */
+pub const CMXSCR_RS1CS_CLK12: u32 = 0x28000000;  /* SCC1 Rx Clock Source is CLK12 */
+pub const CMXSCR_RS1CS_CLK3: u32 = 0x30000000;  /* SCC1 Rx Clock Source is CLK3 */
+pub const CMXSCR_RS1CS_CLK4: u32 = 0x38000000;  /* SCC1 Rx Clock Source is CLK4 */
 
-#define CMXSCR_TS1CS_BRG1  0x00000000   /* SCC1 Tx Clock Source is BRG1 */
-#define CMXSCR_TS1CS_BRG2  0x01000000   /* SCC1 Tx Clock Source is BRG2 */
-#define CMXSCR_TS1CS_BRG3  0x02000000   /* SCC1 Tx Clock Source is BRG3 */
-#define CMXSCR_TS1CS_BRG4  0x03000000   /* SCC1 Tx Clock Source is BRG4 */
-#define CMXSCR_TS1CS_CLK11 0x04000000   /* SCC1 Tx Clock Source is CLK11 */
-#define CMXSCR_TS1CS_CLK12 0x05000000   /* SCC1 Tx Clock Source is CLK12 */
-#define CMXSCR_TS1CS_CLK3  0x06000000   /* SCC1 Tx Clock Source is CLK3 */
-#define CMXSCR_TS1CS_CLK4  0x07000000   /* SCC1 Tx Clock Source is CLK4 */
+pub const CMXSCR_TS1CS_BRG1: u32 = 0x00000000;  /* SCC1 Tx Clock Source is BRG1 */
+pub const CMXSCR_TS1CS_BRG2: u32 = 0x01000000;  /* SCC1 Tx Clock Source is BRG2 */
+pub const CMXSCR_TS1CS_BRG3: u32 = 0x02000000;  /* SCC1 Tx Clock Source is BRG3 */
+pub const CMXSCR_TS1CS_BRG4: u32 = 0x03000000;  /* SCC1 Tx Clock Source is BRG4 */
+pub const CMXSCR_TS1CS_CLK11: u32 = 0x04000000;  /* SCC1 Tx Clock Source is CLK11 */
+pub const CMXSCR_TS1CS_CLK12: u32 = 0x05000000;  /* SCC1 Tx Clock Source is CLK12 */
+pub const CMXSCR_TS1CS_CLK3: u32 = 0x06000000;  /* SCC1 Tx Clock Source is CLK3 */
+pub const CMXSCR_TS1CS_CLK4: u32 = 0x07000000;  /* SCC1 Tx Clock Source is CLK4 */
 
-#define CMXSCR_RS2CS_BRG1  0x00000000   /* SCC2 Rx Clock Source is BRG1 */
-#define CMXSCR_RS2CS_BRG2  0x00080000   /* SCC2 Rx Clock Source is BRG2 */
-#define CMXSCR_RS2CS_BRG3  0x00100000   /* SCC2 Rx Clock Source is BRG3 */
-#define CMXSCR_RS2CS_BRG4  0x00180000   /* SCC2 Rx Clock Source is BRG4 */
-#define CMXSCR_RS2CS_CLK11 0x00200000   /* SCC2 Rx Clock Source is CLK11 */
-#define CMXSCR_RS2CS_CLK12 0x00280000   /* SCC2 Rx Clock Source is CLK12 */
-#define CMXSCR_RS2CS_CLK3  0x00300000   /* SCC2 Rx Clock Source is CLK3 */
-#define CMXSCR_RS2CS_CLK4  0x00380000   /* SCC2 Rx Clock Source is CLK4 */
+pub const CMXSCR_RS2CS_BRG1: u32 = 0x00000000;  /* SCC2 Rx Clock Source is BRG1 */
+pub const CMXSCR_RS2CS_BRG2: u32 = 0x00080000;  /* SCC2 Rx Clock Source is BRG2 */
+pub const CMXSCR_RS2CS_BRG3: u32 = 0x00100000;  /* SCC2 Rx Clock Source is BRG3 */
+pub const CMXSCR_RS2CS_BRG4: u32 = 0x00180000;  /* SCC2 Rx Clock Source is BRG4 */
+pub const CMXSCR_RS2CS_CLK11: u32 = 0x00200000;  /* SCC2 Rx Clock Source is CLK11 */
+pub const CMXSCR_RS2CS_CLK12: u32 = 0x00280000;  /* SCC2 Rx Clock Source is CLK12 */
+pub const CMXSCR_RS2CS_CLK3: u32 = 0x00300000;  /* SCC2 Rx Clock Source is CLK3 */
+pub const CMXSCR_RS2CS_CLK4: u32 = 0x00380000;  /* SCC2 Rx Clock Source is CLK4 */
 
-#define CMXSCR_TS2CS_BRG1  0x00000000   /* SCC2 Tx Clock Source is BRG1 */
-#define CMXSCR_TS2CS_BRG2  0x00010000   /* SCC2 Tx Clock Source is BRG2 */
-#define CMXSCR_TS2CS_BRG3  0x00020000   /* SCC2 Tx Clock Source is BRG3 */
-#define CMXSCR_TS2CS_BRG4  0x00030000   /* SCC2 Tx Clock Source is BRG4 */
-#define CMXSCR_TS2CS_CLK11 0x00040000   /* SCC2 Tx Clock Source is CLK11 */
-#define CMXSCR_TS2CS_CLK12 0x00050000   /* SCC2 Tx Clock Source is CLK12 */
-#define CMXSCR_TS2CS_CLK3  0x00060000   /* SCC2 Tx Clock Source is CLK3 */
-#define CMXSCR_TS2CS_CLK4  0x00070000   /* SCC2 Tx Clock Source is CLK4 */
+pub const CMXSCR_TS2CS_BRG1: u32 = 0x00000000;  /* SCC2 Tx Clock Source is BRG1 */
+pub const CMXSCR_TS2CS_BRG2: u32 = 0x00010000;  /* SCC2 Tx Clock Source is BRG2 */
+pub const CMXSCR_TS2CS_BRG3: u32 = 0x00020000;  /* SCC2 Tx Clock Source is BRG3 */
+pub const CMXSCR_TS2CS_BRG4: u32 = 0x00030000;  /* SCC2 Tx Clock Source is BRG4 */
+pub const CMXSCR_TS2CS_CLK11: u32 = 0x00040000;  /* SCC2 Tx Clock Source is CLK11 */
+pub const CMXSCR_TS2CS_CLK12: u32 = 0x00050000;  /* SCC2 Tx Clock Source is CLK12 */
+pub const CMXSCR_TS2CS_CLK3: u32 = 0x00060000;  /* SCC2 Tx Clock Source is CLK3 */
+pub const CMXSCR_TS2CS_CLK4: u32 = 0x00070000;  /* SCC2 Tx Clock Source is CLK4 */
 
-#define CMXSCR_RS3CS_BRG1  0x00000000   /* SCC3 Rx Clock Source is BRG1 */
-#define CMXSCR_RS3CS_BRG2  0x00000800   /* SCC3 Rx Clock Source is BRG2 */
-#define CMXSCR_RS3CS_BRG3  0x00001000   /* SCC3 Rx Clock Source is BRG3 */
-#define CMXSCR_RS3CS_BRG4  0x00001800   /* SCC3 Rx Clock Source is BRG4 */
-#define CMXSCR_RS3CS_CLK5  0x00002000   /* SCC3 Rx Clock Source is CLK5 */
-#define CMXSCR_RS3CS_CLK6  0x00002800   /* SCC3 Rx Clock Source is CLK6 */
-#define CMXSCR_RS3CS_CLK7  0x00003000   /* SCC3 Rx Clock Source is CLK7 */
-#define CMXSCR_RS3CS_CLK8  0x00003800   /* SCC3 Rx Clock Source is CLK8 */
+pub const CMXSCR_RS3CS_BRG1: u32 = 0x00000000;  /* SCC3 Rx Clock Source is BRG1 */
+pub const CMXSCR_RS3CS_BRG2: u32 = 0x00000800;  /* SCC3 Rx Clock Source is BRG2 */
+pub const CMXSCR_RS3CS_BRG3: u32 = 0x00001000;  /* SCC3 Rx Clock Source is BRG3 */
+pub const CMXSCR_RS3CS_BRG4: u32 = 0x00001800;  /* SCC3 Rx Clock Source is BRG4 */
+pub const CMXSCR_RS3CS_CLK5: u32 = 0x00002000;  /* SCC3 Rx Clock Source is CLK5 */
+pub const CMXSCR_RS3CS_CLK6: u32 = 0x00002800;  /* SCC3 Rx Clock Source is CLK6 */
+pub const CMXSCR_RS3CS_CLK7: u32 = 0x00003000;  /* SCC3 Rx Clock Source is CLK7 */
+pub const CMXSCR_RS3CS_CLK8: u32 = 0x00003800;  /* SCC3 Rx Clock Source is CLK8 */
 
-#define CMXSCR_TS3CS_BRG1  0x00000000   /* SCC3 Tx Clock Source is BRG1 */
-#define CMXSCR_TS3CS_BRG2  0x00000100   /* SCC3 Tx Clock Source is BRG2 */
-#define CMXSCR_TS3CS_BRG3  0x00000200   /* SCC3 Tx Clock Source is BRG3 */
-#define CMXSCR_TS3CS_BRG4  0x00000300   /* SCC3 Tx Clock Source is BRG4 */
-#define CMXSCR_TS3CS_CLK5  0x00000400   /* SCC3 Tx Clock Source is CLK5 */
-#define CMXSCR_TS3CS_CLK6  0x00000500   /* SCC3 Tx Clock Source is CLK6 */
-#define CMXSCR_TS3CS_CLK7  0x00000600   /* SCC3 Tx Clock Source is CLK7 */
-#define CMXSCR_TS3CS_CLK8  0x00000700   /* SCC3 Tx Clock Source is CLK8 */
+pub const CMXSCR_TS3CS_BRG1: u32 = 0x00000000;  /* SCC3 Tx Clock Source is BRG1 */
+pub const CMXSCR_TS3CS_BRG2: u32 = 0x00000100;  /* SCC3 Tx Clock Source is BRG2 */
+pub const CMXSCR_TS3CS_BRG3: u32 = 0x00000200;  /* SCC3 Tx Clock Source is BRG3 */
+pub const CMXSCR_TS3CS_BRG4: u32 = 0x00000300;  /* SCC3 Tx Clock Source is BRG4 */
+pub const CMXSCR_TS3CS_CLK5: u32 = 0x00000400;  /* SCC3 Tx Clock Source is CLK5 */
+pub const CMXSCR_TS3CS_CLK6: u32 = 0x00000500;  /* SCC3 Tx Clock Source is CLK6 */
+pub const CMXSCR_TS3CS_CLK7: u32 = 0x00000600;  /* SCC3 Tx Clock Source is CLK7 */
+pub const CMXSCR_TS3CS_CLK8: u32 = 0x00000700;  /* SCC3 Tx Clock Source is CLK8 */
 
-#define CMXSCR_RS4CS_BRG1  0x00000000   /* SCC4 Rx Clock Source is BRG1 */
-#define CMXSCR_RS4CS_BRG2  0x00000008   /* SCC4 Rx Clock Source is BRG2 */
-#define CMXSCR_RS4CS_BRG3  0x00000010   /* SCC4 Rx Clock Source is BRG3 */
-#define CMXSCR_RS4CS_BRG4  0x00000018   /* SCC4 Rx Clock Source is BRG4 */
-#define CMXSCR_RS4CS_CLK5  0x00000020   /* SCC4 Rx Clock Source is CLK5 */
-#define CMXSCR_RS4CS_CLK6  0x00000028   /* SCC4 Rx Clock Source is CLK6 */
-#define CMXSCR_RS4CS_CLK7  0x00000030   /* SCC4 Rx Clock Source is CLK7 */
-#define CMXSCR_RS4CS_CLK8  0x00000038   /* SCC4 Rx Clock Source is CLK8 */
+pub const CMXSCR_RS4CS_BRG1: u32 = 0x00000000;  /* SCC4 Rx Clock Source is BRG1 */
+pub const CMXSCR_RS4CS_BRG2: u32 = 0x00000008;  /* SCC4 Rx Clock Source is BRG2 */
+pub const CMXSCR_RS4CS_BRG3: u32 = 0x00000010;  /* SCC4 Rx Clock Source is BRG3 */
+pub const CMXSCR_RS4CS_BRG4: u32 = 0x00000018;  /* SCC4 Rx Clock Source is BRG4 */
+pub const CMXSCR_RS4CS_CLK5: u32 = 0x00000020;  /* SCC4 Rx Clock Source is CLK5 */
+pub const CMXSCR_RS4CS_CLK6: u32 = 0x00000028;  /* SCC4 Rx Clock Source is CLK6 */
+pub const CMXSCR_RS4CS_CLK7: u32 = 0x00000030;  /* SCC4 Rx Clock Source is CLK7 */
+pub const CMXSCR_RS4CS_CLK8: u32 = 0x00000038;  /* SCC4 Rx Clock Source is CLK8 */
 
-#define CMXSCR_TS4CS_BRG1  0x00000000   /* SCC4 Tx Clock Source is BRG1 */
-#define CMXSCR_TS4CS_BRG2  0x00000001   /* SCC4 Tx Clock Source is BRG2 */
-#define CMXSCR_TS4CS_BRG3  0x00000002   /* SCC4 Tx Clock Source is BRG3 */
-#define CMXSCR_TS4CS_BRG4  0x00000003   /* SCC4 Tx Clock Source is BRG4 */
-#define CMXSCR_TS4CS_CLK5  0x00000004   /* SCC4 Tx Clock Source is CLK5 */
-#define CMXSCR_TS4CS_CLK6  0x00000005   /* SCC4 Tx Clock Source is CLK6 */
-#define CMXSCR_TS4CS_CLK7  0x00000006   /* SCC4 Tx Clock Source is CLK7 */
-#define CMXSCR_TS4CS_CLK8  0x00000007   /* SCC4 Tx Clock Source is CLK8 */
+pub const CMXSCR_TS4CS_BRG1: u32 = 0x00000000;  /* SCC4 Tx Clock Source is BRG1 */
+pub const CMXSCR_TS4CS_BRG2: u32 = 0x00000001;  /* SCC4 Tx Clock Source is BRG2 */
+pub const CMXSCR_TS4CS_BRG3: u32 = 0x00000002;  /* SCC4 Tx Clock Source is BRG3 */
+pub const CMXSCR_TS4CS_BRG4: u32 = 0x00000003;  /* SCC4 Tx Clock Source is BRG4 */
+pub const CMXSCR_TS4CS_CLK5: u32 = 0x00000004;  /* SCC4 Tx Clock Source is CLK5 */
+pub const CMXSCR_TS4CS_CLK6: u32 = 0x00000005;  /* SCC4 Tx Clock Source is CLK6 */
+pub const CMXSCR_TS4CS_CLK7: u32 = 0x00000006;  /* SCC4 Tx Clock Source is CLK7 */
+pub const CMXSCR_TS4CS_CLK8: u32 = 0x00000007;  /* SCC4 Tx Clock Source is CLK8 */
 
 /*-----------------------------------------------------------------------
  * SIUMCR - SIU Module Configuration Register				 4-31
  */
-#define SIUMCR_BBD	0x80000000	/* Bus Busy Disable		*/
-#define SIUMCR_ESE	0x40000000	/* External Snoop Enable	*/
-#define SIUMCR_PBSE	0x20000000	/* Parity Byte Select Enable	*/
-#define SIUMCR_CDIS	0x10000000	/* Core Disable			*/
-#define SIUMCR_DPPC00	0x00000000	/* Data Parity Pins Configuration*/
-#define SIUMCR_DPPC01	0x04000000	/* - " -			*/
-#define SIUMCR_DPPC10	0x08000000	/* - " -			*/
-#define SIUMCR_DPPC11	0x0c000000	/* - " -			*/
-#define SIUMCR_L2CPC00	0x00000000	/* L2 Cache Pins Configuration	*/
-#define SIUMCR_L2CPC01	0x01000000	/* - " -			*/
-#define SIUMCR_L2CPC10	0x02000000	/* - " -			*/
-#define SIUMCR_L2CPC11	0x03000000	/* - " -			*/
-#define SIUMCR_LBPC00	0x00000000	/* Local Bus Pins Configuration	*/
-#define SIUMCR_LBPC01	0x00400000	/* - " -			*/
-#define SIUMCR_LBPC10	0x00800000	/* - " -			*/
-#define SIUMCR_LBPC11	0x00c00000	/* - " -			*/
-#define SIUMCR_APPC00	0x00000000	/* Address Parity Pins Configuration*/
-#define SIUMCR_APPC01	0x00100000	/* - " -			*/
-#define SIUMCR_APPC10	0x00200000	/* - " -			*/
-#define SIUMCR_APPC11	0x00300000	/* - " -			*/
-#define SIUMCR_CS10PC00	0x00000000	/* CS10 Pin Configuration	*/
-#define SIUMCR_CS10PC01	0x00040000	/* - " -			*/
-#define SIUMCR_CS10PC10	0x00080000	/* - " -			*/
-#define SIUMCR_CS10PC11	0x000c0000	/* - " -			*/
-#define SIUMCR_BCTLC00	0x00000000	/* Buffer Control Configuration	*/
-#define SIUMCR_BCTLC01	0x00010000	/* - " -			*/
-#define SIUMCR_BCTLC10	0x00020000	/* - " -			*/
-#define SIUMCR_BCTLC11	0x00030000	/* - " -			*/
-#define SIUMCR_MMR00	0x00000000	/* Mask Masters Requests	*/
-#define SIUMCR_MMR01	0x00004000	/* - " -			*/
-#define SIUMCR_MMR10	0x00008000	/* - " -			*/
-#define SIUMCR_MMR11	0x0000c000	/* - " -			*/
-#define SIUMCR_LPBSE	0x00002000	/* LocalBus Parity Byte Select Enable*/
+pub const SIUMCR_BBD: u32 = 0x80000000;  /* Bus Busy Disable		*/
+pub const SIUMCR_ESE: u32 = 0x40000000;  /* External Snoop Enable	*/
+pub const SIUMCR_PBSE: u32 = 0x20000000;  /* Parity Byte Select Enable	*/
+pub const SIUMCR_CDIS: u32 = 0x10000000;  /* Core Disable			*/
+pub const SIUMCR_DPPC00: u32 = 0x00000000;  /* Data Parity Pins Configuration*/
+pub const SIUMCR_DPPC01: u32 = 0x04000000;  /* - " -			*/
+pub const SIUMCR_DPPC10: u32 = 0x08000000;  /* - " -			*/
+pub const SIUMCR_DPPC11: u32 = 0x0c000000;  /* - " -			*/
+pub const SIUMCR_L2CPC00: u32 = 0x00000000;  /* L2 Cache Pins Configuration	*/
+pub const SIUMCR_L2CPC01: u32 = 0x01000000;  /* - " -			*/
+pub const SIUMCR_L2CPC10: u32 = 0x02000000;  /* - " -			*/
+pub const SIUMCR_L2CPC11: u32 = 0x03000000;  /* - " -			*/
+pub const SIUMCR_LBPC00: u32 = 0x00000000;  /* Local Bus Pins Configuration	*/
+pub const SIUMCR_LBPC01: u32 = 0x00400000;  /* - " -			*/
+pub const SIUMCR_LBPC10: u32 = 0x00800000;  /* - " -			*/
+pub const SIUMCR_LBPC11: u32 = 0x00c00000;  /* - " -			*/
+pub const SIUMCR_APPC00: u32 = 0x00000000;  /* Address Parity Pins Configuration*/
+pub const SIUMCR_APPC01: u32 = 0x00100000;  /* - " -			*/
+pub const SIUMCR_APPC10: u32 = 0x00200000;  /* - " -			*/
+pub const SIUMCR_APPC11: u32 = 0x00300000;  /* - " -			*/
+pub const SIUMCR_CS10PC00: u32 = 0x00000000;  /* CS10 Pin Configuration	*/
+pub const SIUMCR_CS10PC01: u32 = 0x00040000;  /* - " -			*/
+pub const SIUMCR_CS10PC10: u32 = 0x00080000;  /* - " -			*/
+pub const SIUMCR_CS10PC11: u32 = 0x000c0000;  /* - " -			*/
+pub const SIUMCR_BCTLC00: u32 = 0x00000000;  /* Buffer Control Configuration	*/
+pub const SIUMCR_BCTLC01: u32 = 0x00010000;  /* - " -			*/
+pub const SIUMCR_BCTLC10: u32 = 0x00020000;  /* - " -			*/
+pub const SIUMCR_BCTLC11: u32 = 0x00030000;  /* - " -			*/
+pub const SIUMCR_MMR00: u32 = 0x00000000;  /* Mask Masters Requests	*/
+pub const SIUMCR_MMR01: u32 = 0x00004000;  /* - " -			*/
+pub const SIUMCR_MMR10: u32 = 0x00008000;  /* - " -			*/
+pub const SIUMCR_MMR11: u32 = 0x0000c000;  /* - " -			*/
+pub const SIUMCR_LPBSE: u32 = 0x00002000;  /* LocalBus Parity Byte Select Enable*/
 
 /*-----------------------------------------------------------------------
  * SCCR - System Clock Control Register					 9-8
 */
-#define SCCR_PCI_MODE	0x00000100	/* PCI Mode	*/
-#define SCCR_PCI_MODCK	0x00000080	/* Value of PCI_MODCK pin	*/
-#define SCCR_PCIDF_MSK	0x00000078	/* PCI division factor	*/
-#define SCCR_PCIDF_SHIFT 3
+pub const SCCR_PCI_MODE: u32 = 0x00000100;  /* PCI Mode	*/
+pub const SCCR_PCI_MODCK: u32 = 0x00000080;  /* Value of PCI_MODCK pin	*/
+pub const SCCR_PCIDF_MSK: u32 = 0x00000078;  /* PCI division factor	*/
+pub const SCCR_PCIDF_SHIFT: u32 = 3;
 
 #ifndef CPM_IMMR_OFFSET
-#define CPM_IMMR_OFFSET	0x101a8
+pub const CPM_IMMR_OFFSET: u32 = 0x101a8;
 #endif
 
 #define FCC_PSMR_RMII	((uint)0x00020000)	/* Use RMII interface */
@@ -1619,57 +1617,57 @@ typedef struct im_idma {
 /* I/O Pin assignment for FCC1.  I don't yet know the best way to do this,
  * but there is little variation among the choices.
  */
-#define PA1_COL		0x00000001U
-#define PA1_CRS		0x00000002U
-#define PA1_TXER	0x00000004U
-#define PA1_TXEN	0x00000008U
-#define PA1_RXDV	0x00000010U
-#define PA1_RXER	0x00000020U
-#define PA1_TXDAT	0x00003c00U
-#define PA1_RXDAT	0x0003c000U
-#define PA1_PSORA0	(PA1_RXDAT | PA1_TXDAT)
+pub const PA1_COL: u32 = 0x00000001;
+pub const PA1_CRS: u32 = 0x00000002;
+pub const PA1_TXER: u32 = 0x00000004;
+pub const PA1_TXEN: u32 = 0x00000008;
+pub const PA1_RXDV: u32 = 0x00000010;
+pub const PA1_RXER: u32 = 0x00000020;
+pub const PA1_TXDAT: u32 = 0x00003c00;
+pub const PA1_RXDAT: u32 = 0x0003c000;
+pub const PA1_PSORA0: u32 = PA1_RXDAT | PA1_TXDAT;
 #define PA1_PSORA1	(PA1_COL | PA1_CRS | PA1_TXER | PA1_TXEN | \
 		PA1_RXDV | PA1_RXER)
-#define PA1_DIRA0	(PA1_RXDAT | PA1_CRS | PA1_COL | PA1_RXER | PA1_RXDV)
-#define PA1_DIRA1	(PA1_TXDAT | PA1_TXEN | PA1_TXER)
+pub const PA1_DIRA0: u32 = PA1_RXDAT | PA1_CRS | PA1_COL | PA1_RXER | PA1_RXDV;
+pub const PA1_DIRA1: u32 = PA1_TXDAT | PA1_TXEN | PA1_TXER;
 
 
 /* I/O Pin assignment for FCC2.  I don't yet know the best way to do this,
  * but there is little variation among the choices.
  */
-#define PB2_TXER	0x00000001U
-#define PB2_RXDV	0x00000002U
-#define PB2_TXEN	0x00000004U
-#define PB2_RXER	0x00000008U
-#define PB2_COL		0x00000010U
-#define PB2_CRS		0x00000020U
-#define PB2_TXDAT	0x000003c0U
-#define PB2_RXDAT	0x00003c00U
+pub const PB2_TXER: u32 = 0x00000001;
+pub const PB2_RXDV: u32 = 0x00000002;
+pub const PB2_TXEN: u32 = 0x00000004;
+pub const PB2_RXER: u32 = 0x00000008;
+pub const PB2_COL: u32 = 0x00000010;
+pub const PB2_CRS: u32 = 0x00000020;
+pub const PB2_TXDAT: u32 = 0x000003c0;
+pub const PB2_RXDAT: u32 = 0x00003c00;
 #define PB2_PSORB0	(PB2_RXDAT | PB2_TXDAT | PB2_CRS | PB2_COL | \
 		PB2_RXER | PB2_RXDV | PB2_TXER)
-#define PB2_PSORB1	(PB2_TXEN)
-#define PB2_DIRB0	(PB2_RXDAT | PB2_CRS | PB2_COL | PB2_RXER | PB2_RXDV)
-#define PB2_DIRB1	(PB2_TXDAT | PB2_TXEN | PB2_TXER)
+pub const PB2_PSORB1: u32 = PB2_TXEN;
+pub const PB2_DIRB0: u32 = PB2_RXDAT | PB2_CRS | PB2_COL | PB2_RXER | PB2_RXDV;
+pub const PB2_DIRB1: u32 = PB2_TXDAT | PB2_TXEN | PB2_TXER;
 
 
 /* I/O Pin assignment for FCC3.  I don't yet know the best way to do this,
  * but there is little variation among the choices.
  */
-#define PB3_RXDV	0x00004000U
-#define PB3_RXER	0x00008000U
-#define PB3_TXER	0x00010000U
-#define PB3_TXEN	0x00020000U
-#define PB3_COL		0x00040000U
-#define PB3_CRS		0x00080000U
-#define PB3_TXDAT	0x0f000000U
-#define PC3_TXDAT	0x00000010U
-#define PB3_RXDAT	0x00f00000U
+pub const PB3_RXDV: u32 = 0x00004000;
+pub const PB3_RXER: u32 = 0x00008000;
+pub const PB3_TXER: u32 = 0x00010000;
+pub const PB3_TXEN: u32 = 0x00020000;
+pub const PB3_COL: u32 = 0x00040000;
+pub const PB3_CRS: u32 = 0x00080000;
+pub const PB3_TXDAT: u32 = 0x0f000000;
+pub const PC3_TXDAT: u32 = 0x00000010;
+pub const PB3_RXDAT: u32 = 0x00f00000;
 #define PB3_PSORB0	(PB3_RXDAT | PB3_TXDAT | PB3_CRS | PB3_COL | \
 		PB3_RXER | PB3_RXDV | PB3_TXER | PB3_TXEN)
-#define PB3_PSORB1	0
-#define PB3_DIRB0	(PB3_RXDAT | PB3_CRS | PB3_COL | PB3_RXER | PB3_RXDV)
-#define PB3_DIRB1	(PB3_TXDAT | PB3_TXEN | PB3_TXER)
-#define PC3_DIRC1	(PC3_TXDAT)
+pub const PB3_PSORB1: u32 = 0;
+pub const PB3_DIRB0: u32 = PB3_RXDAT | PB3_CRS | PB3_COL | PB3_RXER | PB3_RXDV;
+pub const PB3_DIRB1: u32 = PB3_TXDAT | PB3_TXEN | PB3_TXER;
+pub const PC3_DIRC1: u32 = PC3_TXDAT;
 
 /* Handy macro to specify mem for FCCs*/
 #define FCC_MEM_OFFSET(x) (CPM_FCC_SPECIAL_BASE + (x*128))
@@ -1678,7 +1676,7 @@ typedef struct im_idma {
 #define FCC3_MEM_OFFSET FCC_MEM_OFFSET(2)
 
 /* Pipeline Maximum Depth */
-#define MPC82XX_BCR_PLDP 0x00800000
+pub const MPC82XX_BCR_PLDP: u32 = 0x00800000;
 
 /* Clocks and GRG's */
 
@@ -1733,20 +1731,19 @@ enum cpm_clk {
 	CPM_CLK_DUMMY
 };
 
-int __init cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode);
-int __init cpm2_smc_clk_setup(enum cpm_clk_target target, int clock);
+int __init cpm2_clk_setup(cpm_clk_target target, int clock, int mode);
+int __init cpm2_smc_clk_setup(cpm_clk_target target, int clock);
 
-#define CPM_PIN_INPUT     0
-#define CPM_PIN_OUTPUT    1
-#define CPM_PIN_PRIMARY   0
-#define CPM_PIN_SECONDARY 2
-#define CPM_PIN_GPIO      4
-#define CPM_PIN_OPENDRAIN 8
+pub const CPM_PIN_INPUT: u32 = 0;
+pub const CPM_PIN_OUTPUT: u32 = 1;
+pub const CPM_PIN_PRIMARY: u32 = 0;
+pub const CPM_PIN_SECONDARY: u32 = 2;
+pub const CPM_PIN_GPIO: u32 = 4;
+pub const CPM_PIN_OPENDRAIN: u32 = 8;
 
 void __init cpm2_set_pin(int port, int pin, int flags);
 
 #endif /* __CPM2__ */
-#endif /* __KERNEL__ */
 */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

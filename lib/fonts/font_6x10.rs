@@ -3082,13 +3082,13 @@ static fontdata_6x10: font_data = font_data {
 ] };
 
 const font_desc font_6x10: font_desc = font_desc {
-	.idx	: FONT6x10_IDX,
-	.name	: "6x10",
-	.width	: 6,
-	.height	: 10,
-	.charcount : 256,
-	.data	: fontdata_6x10.data,
-	.pref	: 0,
+	idx: FONT6x10_IDX,
+	name: "6x10",
+	width: 6,
+	height: 10,
+	charcount: 256,
+	data: fontdata_6x10.data,
+	pref: 0,
 };
 
 

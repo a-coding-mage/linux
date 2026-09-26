@@ -76,7 +76,7 @@ macro_rules! PTR_IF {
 #[macro_export]
 macro_rules! u64_to_user_ptr {
     ($x:expr) => {{
-        // The original invokes the external C `typecheck(u64, x)` macro.
+        // The original invokes the external C `typecheck(u64, $x)` macro.
         let __x: u64 = $x;
         __x as usize as *mut core::ffi::c_void
     }};

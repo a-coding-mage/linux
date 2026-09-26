@@ -40,7 +40,7 @@ macro_rules! nvram_read_val { ($name:ident, $ty:ty, $parse:ident) => {
 unsafe fn $name(prefix: *const c_char, postfix: *const c_char, name: *const c_char,
                 val: *mut $ty, allset: $ty, fallback: bool) {
     let mut buf = [0i8; 100];
-    if get_nvram_var(prefix, postfix, name, buf.as_mut_ptr(), 100, fallback) < 0 { return; }
+    if get_nvram_var(prefix, postfix, $name, buf.as_mut_ptr(), 100, fallback) < 0 { return; }
     let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(buf.as_ptr() as *const u8, strlen(buf.as_ptr())));
     if let Ok(v) = s.trim().parse::<$ty>() { if allset != 0 as $ty && v == allset { return; } *val = v; }
 }}

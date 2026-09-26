@@ -4,10 +4,10 @@
 //
 // The C build-time CONFIG_DEBUG_KMAP_LOCAL condition is represented here by
 // the corresponding Cargo feature.
-#[cfg(feature = "CONFIG_DEBUG_KMAP_LOCAL")]
+#[cfg(CONFIG_DEBUG_KMAP_LOCAL)]
 pub const KM_MAX_IDX: usize = 33;
 
-#[cfg(not(feature = "CONFIG_DEBUG_KMAP_LOCAL"))]
+#[cfg(not(CONFIG_DEBUG_KMAP_LOCAL))]
 pub const KM_MAX_IDX: usize = 16;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

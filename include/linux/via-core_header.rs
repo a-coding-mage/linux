@@ -89,9 +89,9 @@ pub struct viafb_dev {
     pub fbmem: *mut c_void,
     // Preserved build-time condition: CONFIG_VIDEO_VIA_CAMERA or
     // CONFIG_VIDEO_VIA_CAMERA_MODULE.
-    #[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+    #[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
     pub camera_fbmem_offset: isize,
-    #[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+    #[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
     pub camera_fbmem_size: isize,
     pub engine_start: usize,
     pub engine_len: usize,
@@ -139,7 +139,7 @@ pub const VDE_I_ENABLE: u32 = 0x80000000;
 
 // Preserved build-time condition: CONFIG_VIDEO_VIA_CAMERA or
 // CONFIG_VIDEO_VIA_CAMERA_MODULE.
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 extern "C" {
     pub fn viafb_request_dma() -> i32;
     pub fn viafb_release_dma();
@@ -149,43 +149,43 @@ extern "C" {
 #[repr(C)]
 pub struct scatterlist;
 
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_MR0: u32 = 0xe00;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_MR_CHAIN: u32 = 0x01;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_MR_TDIE: u32 = 0x02;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_CSR0: u32 = 0xe04;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_C_ENABLE: u32 = 0x01;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_C_START: u32 = 0x02;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_C_ABORT: u32 = 0x04;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_C_DONE: u32 = 0x08;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_MARL0: u32 = 0xe20;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_MARH0: u32 = 0xe24;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_DAR0: u32 = 0xe28;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_DQWCR0: u32 = 0xe2c;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_TMR0: u32 = 0xe30;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_DPRL0: u32 = 0xe34;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_DPR_IN: u32 = 0x08;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_DPRH0: u32 = 0xe38;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VDMA_PMR0: u32 = 0xe00 + 0x134;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VGA_WIDTH: u32 = 640;
-#[cfg(any(feature = "CONFIG_VIDEO_VIA_CAMERA", feature = "CONFIG_VIDEO_VIA_CAMERA_MODULE"))]
+#[cfg(any(CONFIG_VIDEO_VIA_CAMERA, CONFIG_VIDEO_VIA_CAMERA_MODULE))]
 pub const VGA_HEIGHT: u32 = 480;
 
 pub const VIAStatus: u16 = 0x3DA;

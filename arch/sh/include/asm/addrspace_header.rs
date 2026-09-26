@@ -29,28 +29,28 @@ macro_rules! PXSEG {
 // Under CONFIG_29BIT, map an address to a certain privileged segment.
 // P1SEG, P2SEG, P3SEG, and P4SEG are supplied by the CPU address-space
 // definitions.
-#[cfg(feature = "CONFIG_29BIT")]
+#[cfg(CONFIG_29BIT)]
 #[macro_export]
 macro_rules! P1SEGADDR {
     ($a:expr) => {
         (($a as usize & 0x1fffffffusize) | P1SEG)
     };
 }
-#[cfg(feature = "CONFIG_29BIT")]
+#[cfg(CONFIG_29BIT)]
 #[macro_export]
 macro_rules! P2SEGADDR {
     ($a:expr) => {
         (($a as usize & 0x1fffffffusize) | P2SEG)
     };
 }
-#[cfg(feature = "CONFIG_29BIT")]
+#[cfg(CONFIG_29BIT)]
 #[macro_export]
 macro_rules! P3SEGADDR {
     ($a:expr) => {
         (($a as usize & 0x1fffffffusize) | P3SEG)
     };
 }
-#[cfg(feature = "CONFIG_29BIT")]
+#[cfg(CONFIG_29BIT)]
 #[macro_export]
 macro_rules! P4SEGADDR {
     ($a:expr) => {
@@ -59,7 +59,7 @@ macro_rules! P4SEGADDR {
 }
 
 // These will never work in 32-bit, don't even bother.
-#[cfg(not(feature = "CONFIG_29BIT"))]
+#[cfg(not(CONFIG_29BIT))]
 #[macro_export]
 macro_rules! P1SEGADDR {
     ($a:expr) => {{
@@ -68,7 +68,7 @@ macro_rules! P1SEGADDR {
         core::ptr::null_mut()
     }};
 }
-#[cfg(not(feature = "CONFIG_29BIT"))]
+#[cfg(not(CONFIG_29BIT))]
 #[macro_export]
 macro_rules! P2SEGADDR {
     ($a:expr) => {{
@@ -77,7 +77,7 @@ macro_rules! P2SEGADDR {
         core::ptr::null_mut()
     }};
 }
-#[cfg(not(feature = "CONFIG_29BIT"))]
+#[cfg(not(CONFIG_29BIT))]
 #[macro_export]
 macro_rules! P3SEGADDR {
     ($a:expr) => {{
@@ -86,7 +86,7 @@ macro_rules! P3SEGADDR {
         core::ptr::null_mut()
     }};
 }
-#[cfg(not(feature = "CONFIG_29BIT"))]
+#[cfg(not(CONFIG_29BIT))]
 #[macro_export]
 macro_rules! P4SEGADDR {
     ($a:expr) => {{
@@ -105,10 +105,10 @@ macro_rules! IS_29BIT {
 }
 
 // P3_ADDR_MAX depends on the C build-time definition CONFIG_SH_STORE_QUEUES.
-#[cfg(feature = "CONFIG_SH_STORE_QUEUES")]
+#[cfg(CONFIG_SH_STORE_QUEUES)]
 pub const P3_ADDR_MAX: usize = P4SEG_STORE_QUE + 0x04000000usize;
 
-#[cfg(not(feature = "CONFIG_SH_STORE_QUEUES"))]
+#[cfg(not(CONFIG_SH_STORE_QUEUES))]
 pub const P3_ADDR_MAX: usize = P4SEG;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

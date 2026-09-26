@@ -57,12 +57,11 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 					  (REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN, MSS_MBI)) | \
 					  (REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN, MSS_MBI_CMX)))
 
- fn wait_for_ip_bar(struct ivpu_device *vdev)
-{
+ fn wait_for_ip_bar(ivpu_device *vdev) {
 	return REGV_POLL_FLD(VPU_37XX_HOST_SS_CPR_RST_CLR, AON, 0, 100);
 }
 
- fn host_ss_rst_clr(struct ivpu_device *vdev)
+ fn host_ss_rst_clr(ivpu_device *vdev)
 {
 	fn val = 0;
 
@@ -73,7 +72,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	REGV_WR32(VPU_37XX_HOST_SS_CPR_RST_CLR, val);
 }
 
- fn host_ss_noc_qreqn_check_37xx(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qreqn_check_37xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_NOC_QREQN);
 
@@ -83,7 +82,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn host_ss_noc_qreqn_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qreqn_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_NOC_QREQN);
 
@@ -93,7 +92,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn host_ss_noc_qreqn_check(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qreqn_check(ivpu_device *vdev, fn exp_val)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return host_ss_noc_qreqn_check_37xx(vdev, exp_val);
@@ -101,7 +100,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 		return host_ss_noc_qreqn_check_40xx(vdev, exp_val);
 }
 
- fn host_ss_noc_qacceptn_check_37xx(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qacceptn_check_37xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_NOC_QACCEPTN);
 
@@ -111,7 +110,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn host_ss_noc_qacceptn_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qacceptn_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_NOC_QACCEPTN);
 
@@ -121,7 +120,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn host_ss_noc_qacceptn_check(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qacceptn_check(ivpu_device *vdev, fn exp_val)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return host_ss_noc_qacceptn_check_37xx(vdev, exp_val);
@@ -129,7 +128,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 		return host_ss_noc_qacceptn_check_40xx(vdev, exp_val);
 }
 
- fn host_ss_noc_qdeny_check_37xx(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qdeny_check_37xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_NOC_QDENY);
 
@@ -139,7 +138,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn host_ss_noc_qdeny_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qdeny_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_NOC_QDENY);
 
@@ -149,7 +148,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn host_ss_noc_qdeny_check(struct ivpu_device *vdev, fn exp_val)
+ fn host_ss_noc_qdeny_check(ivpu_device *vdev, fn exp_val)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return host_ss_noc_qdeny_check_37xx(vdev, exp_val);
@@ -157,7 +156,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 		return host_ss_noc_qdeny_check_40xx(vdev, exp_val);
 }
 
- fn top_noc_qrenqn_check_37xx(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qrenqn_check_37xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_37XX_TOP_NOC_QREQN);
 
@@ -168,7 +167,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn top_noc_qrenqn_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qrenqn_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_TOP_NOC_QREQN);
 
@@ -179,7 +178,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 	return 0;
 }
 
- fn top_noc_qreqn_check(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qreqn_check(ivpu_device *vdev, fn exp_val)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return top_noc_qrenqn_check_37xx(vdev, exp_val);
@@ -187,7 +186,7 @@ const ITF_FIREWALL_VIOLATION_MASK_40XX ((REG_FLD(VPU_40XX_HOST_SS_FW_SOC_IRQ_EN,
 		return top_noc_qrenqn_check_40xx(vdev, exp_val);
 }
 
-fn ivpu_hw_ip_host_ss_configure(struct ivpu_device *vdev)
+fn ivpu_hw_ip_host_ss_configure(ivpu_device *vdev)
 {
 	fn ret;
 
@@ -219,7 +218,7 @@ fn ivpu_hw_ip_host_ss_configure(struct ivpu_device *vdev)
 	return ret;
 }
 
- fn idle_gen_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn idle_gen_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_AON_VPU_IDLE_GEN);
 
@@ -231,7 +230,7 @@ fn ivpu_hw_ip_host_ss_configure(struct ivpu_device *vdev)
 	REGV_WR32(VPU_37XX_HOST_SS_AON_VPU_IDLE_GEN, val);
 }
 
- fn idle_gen_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn idle_gen_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_AON_IDLE_GEN);
 
@@ -243,7 +242,7 @@ fn ivpu_hw_ip_host_ss_configure(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_HOST_SS_AON_IDLE_GEN, val);
 }
 
-fn ivpu_hw_ip_idle_gen_enable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_idle_gen_enable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		idle_gen_drive_37xx(vdev, true);
@@ -251,7 +250,7 @@ fn ivpu_hw_ip_idle_gen_enable(struct ivpu_device *vdev)
 		idle_gen_drive_40xx(vdev, true);
 }
 
-fn ivpu_hw_ip_idle_gen_disable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_idle_gen_disable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		idle_gen_drive_37xx(vdev, false);
@@ -260,7 +259,7 @@ fn ivpu_hw_ip_idle_gen_disable(struct ivpu_device *vdev)
 }
 
  void
-pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2, fn status)
+pwr_island_delay_set_50xx(ivpu_device *vdev, fn post, fn post1, fn post2, fn status)
 {
 	fn val;
 
@@ -275,7 +274,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_50XX_HOST_SS_AON_PWR_ISLAND_STATUS_DLY, val);
 }
 
- fn pwr_island_trickle_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_trickle_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_AON_PWR_ISLAND_TRICKLE_EN0);
 
@@ -287,7 +286,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_HOST_SS_AON_PWR_ISLAND_TRICKLE_EN0, val);
 }
 
- fn pwr_island_trickle_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_trickle_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_AON_PWR_ISLAND_TRICKLE_EN0);
 
@@ -299,7 +298,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_HOST_SS_AON_PWR_ISLAND_TRICKLE_EN0, val);
 }
 
- fn pwr_island_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_AON_PWR_ISLAND_EN0);
 
@@ -311,7 +310,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_HOST_SS_AON_PWR_ISLAND_EN0, val);
 }
 
- fn pwr_island_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_AON_PWR_ISLAND_EN0);
 
@@ -323,7 +322,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_HOST_SS_AON_PWR_ISLAND_EN0, val);
 }
 
- fn pwr_island_enable(struct ivpu_device *vdev)
+ fn pwr_island_enable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX) {
 		pwr_island_trickle_drive_37xx(vdev, true);
@@ -336,8 +335,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	}
 }
 
- fn wait_for_pwr_island_status(struct ivpu_device *vdev, fn exp_val)
-{
+ fn wait_for_pwr_island_status(ivpu_device *vdev, fn exp_val) {
 	if (IVPU_WA(punit_disabled))
 		return 0;
 
@@ -349,7 +347,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 				     PWR_ISLAND_STATUS_TIMEOUT_US);
 }
 
- fn pwr_island_isolation_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_isolation_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_AON_PWR_ISO_EN0);
 
@@ -361,7 +359,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_HOST_SS_AON_PWR_ISO_EN0, val);
 }
 
- fn pwr_island_isolation_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_isolation_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_AON_PWR_ISO_EN0);
 
@@ -373,7 +371,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_HOST_SS_AON_PWR_ISO_EN0, val);
 }
 
- fn pwr_island_isolation_drive(struct ivpu_device *vdev, fn enable)
+ fn pwr_island_isolation_drive(ivpu_device *vdev, fn enable)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		pwr_island_isolation_drive_37xx(vdev, enable);
@@ -381,12 +379,12 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 		pwr_island_isolation_drive_40xx(vdev, enable);
 }
 
- fn pwr_island_isolation_disable(struct ivpu_device *vdev)
+ fn pwr_island_isolation_disable(ivpu_device *vdev)
 {
 	pwr_island_isolation_drive(vdev, false);
 }
 
- fn host_ss_clk_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn host_ss_clk_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_CPR_CLK_SET);
 
@@ -403,7 +401,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_HOST_SS_CPR_CLK_SET, val);
 }
 
- fn host_ss_clk_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn host_ss_clk_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_CPR_CLK_EN);
 
@@ -420,7 +418,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_HOST_SS_CPR_CLK_EN, val);
 }
 
- fn host_ss_clk_drive(struct ivpu_device *vdev, fn enable)
+ fn host_ss_clk_drive(ivpu_device *vdev, fn enable)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		host_ss_clk_drive_37xx(vdev, enable);
@@ -428,12 +426,12 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 		host_ss_clk_drive_40xx(vdev, enable);
 }
 
- fn host_ss_clk_enable(struct ivpu_device *vdev)
+ fn host_ss_clk_enable(ivpu_device *vdev)
 {
 	host_ss_clk_drive(vdev, true);
 }
 
- fn host_ss_rst_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn host_ss_rst_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_CPR_RST_SET);
 
@@ -450,7 +448,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_HOST_SS_CPR_RST_SET, val);
 }
 
- fn host_ss_rst_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn host_ss_rst_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_CPR_RST_EN);
 
@@ -467,7 +465,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_HOST_SS_CPR_RST_EN, val);
 }
 
- fn host_ss_rst_drive(struct ivpu_device *vdev, fn enable)
+ fn host_ss_rst_drive(ivpu_device *vdev, fn enable)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		host_ss_rst_drive_37xx(vdev, enable);
@@ -475,12 +473,12 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 		host_ss_rst_drive_40xx(vdev, enable);
 }
 
- fn host_ss_rst_enable(struct ivpu_device *vdev)
+ fn host_ss_rst_enable(ivpu_device *vdev)
 {
 	host_ss_rst_drive(vdev, true);
 }
 
- fn host_ss_noc_qreqn_top_socmmio_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn host_ss_noc_qreqn_top_socmmio_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_NOC_QREQN);
 
@@ -491,7 +489,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_HOST_SS_NOC_QREQN, val);
 }
 
- fn host_ss_noc_qreqn_top_socmmio_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn host_ss_noc_qreqn_top_socmmio_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_SS_NOC_QREQN);
 
@@ -502,7 +500,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_HOST_SS_NOC_QREQN, val);
 }
 
- fn host_ss_noc_qreqn_top_socmmio_drive(struct ivpu_device *vdev, fn enable)
+ fn host_ss_noc_qreqn_top_socmmio_drive(ivpu_device *vdev, fn enable)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		host_ss_noc_qreqn_top_socmmio_drive_37xx(vdev, enable);
@@ -510,7 +508,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 		host_ss_noc_qreqn_top_socmmio_drive_40xx(vdev, enable);
 }
 
- fn host_ss_axi_drive(struct ivpu_device *vdev, fn enable)
+ fn host_ss_axi_drive(ivpu_device *vdev, fn enable)
 {
 	fn ret;
 
@@ -529,7 +527,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	return ret;
 }
 
- fn top_noc_qreqn_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn top_noc_qreqn_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_TOP_NOC_QREQN);
 
@@ -544,7 +542,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_40XX_TOP_NOC_QREQN, val);
 }
 
- fn top_noc_qreqn_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn top_noc_qreqn_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_TOP_NOC_QREQN);
 
@@ -559,7 +557,7 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 	REGV_WR32(VPU_37XX_TOP_NOC_QREQN, val);
 }
 
- fn top_noc_qreqn_drive(struct ivpu_device *vdev, fn enable)
+ fn top_noc_qreqn_drive(ivpu_device *vdev, fn enable)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		top_noc_qreqn_drive_37xx(vdev, enable);
@@ -567,12 +565,12 @@ pwr_island_delay_set_50xx(struct ivpu_device *vdev, fn post, fn post1, fn post2,
 		top_noc_qreqn_drive_40xx(vdev, enable);
 }
 
-fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_host_ss_axi_enable(ivpu_device *vdev)
 {
 	return host_ss_axi_drive(vdev, true);
 }
 
- fn top_noc_qacceptn_check_37xx(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qacceptn_check_37xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_37XX_TOP_NOC_QACCEPTN);
 
@@ -583,7 +581,7 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn top_noc_qacceptn_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qacceptn_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_TOP_NOC_QACCEPTN);
 
@@ -594,7 +592,7 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn top_noc_qacceptn_check(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qacceptn_check(ivpu_device *vdev, fn exp_val)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return top_noc_qacceptn_check_37xx(vdev, exp_val);
@@ -602,7 +600,7 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 		return top_noc_qacceptn_check_40xx(vdev, exp_val);
 }
 
- fn top_noc_qdeny_check_37xx(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qdeny_check_37xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_37XX_TOP_NOC_QDENY);
 
@@ -613,7 +611,7 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn top_noc_qdeny_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qdeny_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_TOP_NOC_QDENY);
 
@@ -624,7 +622,7 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn top_noc_qdeny_check(struct ivpu_device *vdev, fn exp_val)
+ fn top_noc_qdeny_check(ivpu_device *vdev, fn exp_val)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return top_noc_qdeny_check_37xx(vdev, exp_val);
@@ -632,7 +630,7 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 		return top_noc_qdeny_check_40xx(vdev, exp_val);
 }
 
- fn top_noc_drive(struct ivpu_device *vdev, fn enable)
+ fn top_noc_drive(ivpu_device *vdev, fn enable)
 {
 	fn ret;
 
@@ -651,12 +649,12 @@ fn ivpu_hw_ip_host_ss_axi_enable(struct ivpu_device *vdev)
 	return ret;
 }
 
-fn ivpu_hw_ip_top_noc_enable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_top_noc_enable(ivpu_device *vdev)
 {
 	return top_noc_drive(vdev, true);
 }
 
- fn dpu_active_drive_37xx(struct ivpu_device *vdev, fn enable)
+ fn dpu_active_drive_37xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_SS_AON_DPU_ACTIVE);
 
@@ -668,9 +666,9 @@ fn ivpu_hw_ip_top_noc_enable(struct ivpu_device *vdev)
 	REGV_WR32(VPU_37XX_HOST_SS_AON_DPU_ACTIVE, val);
 }
 
- fn pwr_island_delay_set(struct ivpu_device *vdev)
+ fn pwr_island_delay_set(ivpu_device *vdev)
 {
-	fn high = vdev->hw->pll.profiling_freq == PLL_PROFILING_FREQ_HIGH;
+	fn high = (*(*vdev).hw).pll.profiling_freq == PLL_PROFILING_FREQ_HIGH;
 	fn post, post1, post2, status;
 
 	if (ivpu_hw_ip_gen(vdev) < IVPU_HW_IP_50XX)
@@ -701,7 +699,7 @@ fn ivpu_hw_ip_top_noc_enable(struct ivpu_device *vdev)
 	pwr_island_delay_set_50xx(vdev, post, post1, post2, status);
 }
 
-fn ivpu_hw_ip_pwr_domain_enable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_pwr_domain_enable(ivpu_device *vdev)
 {
 	fn ret;
 
@@ -730,7 +728,7 @@ fn ivpu_hw_ip_pwr_domain_enable(struct ivpu_device *vdev)
 	return ret;
 }
 
-fn ivpu_hw_ip_read_perf_timer_counter(struct ivpu_device *vdev)
+fn ivpu_hw_ip_read_perf_timer_counter(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return REGV_RD64(VPU_37XX_CPU_SS_TIM_PERF_FREE_CNT);
@@ -738,7 +736,7 @@ fn ivpu_hw_ip_read_perf_timer_counter(struct ivpu_device *vdev)
 		return REGV_RD64(VPU_40XX_CPU_SS_TIM_PERF_EXT_FREE_CNT);
 }
 
- fn ivpu_hw_ip_snoop_disable_37xx(struct ivpu_device *vdev)
+ fn ivpu_hw_ip_snoop_disable_37xx(ivpu_device *vdev)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_IF_TCU_PTW_OVERRIDES);
 
@@ -753,7 +751,7 @@ fn ivpu_hw_ip_read_perf_timer_counter(struct ivpu_device *vdev)
 	REGV_WR32(VPU_37XX_HOST_IF_TCU_PTW_OVERRIDES, val);
 }
 
- fn ivpu_hw_ip_snoop_disable_40xx(struct ivpu_device *vdev)
+ fn ivpu_hw_ip_snoop_disable_40xx(ivpu_device *vdev)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_IF_TCU_PTW_OVERRIDES);
 
@@ -768,7 +766,7 @@ fn ivpu_hw_ip_read_perf_timer_counter(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_HOST_IF_TCU_PTW_OVERRIDES, val);
 }
 
-fn ivpu_hw_ip_snoop_disable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_snoop_disable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return ivpu_hw_ip_snoop_disable_37xx(vdev);
@@ -776,7 +774,7 @@ fn ivpu_hw_ip_snoop_disable(struct ivpu_device *vdev)
 		return ivpu_hw_ip_snoop_disable_40xx(vdev);
 }
 
- fn ivpu_hw_ip_tbu_mmu_enable_37xx(struct ivpu_device *vdev)
+ fn ivpu_hw_ip_tbu_mmu_enable_37xx(ivpu_device *vdev)
 {
 	fn val = REGV_RD32(VPU_37XX_HOST_IF_TBU_MMUSSIDV);
 
@@ -788,7 +786,7 @@ fn ivpu_hw_ip_snoop_disable(struct ivpu_device *vdev)
 	REGV_WR32(VPU_37XX_HOST_IF_TBU_MMUSSIDV, val);
 }
 
- fn ivpu_hw_ip_tbu_mmu_enable_40xx(struct ivpu_device *vdev)
+ fn ivpu_hw_ip_tbu_mmu_enable_40xx(ivpu_device *vdev)
 {
 	fn val = REGV_RD32(VPU_40XX_HOST_IF_TBU_MMUSSIDV);
 
@@ -802,7 +800,7 @@ fn ivpu_hw_ip_snoop_disable(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_HOST_IF_TBU_MMUSSIDV, val);
 }
 
-fn ivpu_hw_ip_tbu_mmu_enable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_tbu_mmu_enable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return ivpu_hw_ip_tbu_mmu_enable_37xx(vdev);
@@ -811,15 +809,15 @@ fn ivpu_hw_ip_tbu_mmu_enable(struct ivpu_device *vdev)
 }
 
 #[inline]
-fn get_entry_point_addr(struct ivpu_device *vdev)
+fn get_entry_point_addr(ivpu_device *vdev)
 {
 	if (ivpu_fw_is_warm_boot(vdev))
-		return vdev->fw->warm_boot_entry_point;
+		return (*(*vdev).fw).warm_boot_entry_point;
 	else
-		return vdev->fw->cold_boot_entry_point;
+		return (*(*vdev).fw).cold_boot_entry_point;
 }
 
- fn soc_cpu_boot_37xx(struct ivpu_device *vdev)
+ fn soc_cpu_boot_37xx(ivpu_device *vdev)
 {
 	fn val;
 
@@ -844,7 +842,7 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn cpu_noc_qacceptn_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn cpu_noc_qacceptn_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_CPU_SS_CPR_NOC_QACCEPTN);
 
@@ -854,7 +852,7 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn cpu_noc_qdeny_check_40xx(struct ivpu_device *vdev, fn exp_val)
+ fn cpu_noc_qdeny_check_40xx(ivpu_device *vdev, fn exp_val)
 {
 	fn val = REGV_RD32(VPU_40XX_CPU_SS_CPR_NOC_QDENY);
 
@@ -864,7 +862,7 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn cpu_noc_top_mmio_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn cpu_noc_top_mmio_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn val = REGV_RD32(VPU_40XX_CPU_SS_CPR_NOC_QREQN);
 
@@ -875,7 +873,7 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_CPU_SS_CPR_NOC_QREQN, val);
 }
 
- fn soc_cpu_drive_40xx(struct ivpu_device *vdev, fn enable)
+ fn soc_cpu_drive_40xx(ivpu_device *vdev, fn enable)
 {
 	fn ret;
 
@@ -894,7 +892,7 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	return ret;
 }
 
- fn soc_cpu_set_entry_point_40xx(struct ivpu_device *vdev, fn entry_point)
+ fn soc_cpu_set_entry_point_40xx(ivpu_device *vdev, fn entry_point)
 {
 	fn val64;
 	fn val;
@@ -908,7 +906,7 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_HOST_SS_VERIFICATION_ADDRESS_LO, val);
 }
 
- fn soc_cpu_boot_40xx(struct ivpu_device *vdev)
+ fn soc_cpu_boot_40xx(ivpu_device *vdev)
 {
 	fn ret;
 
@@ -923,14 +921,14 @@ fn get_entry_point_addr(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn soc_cpu_boot_60xx(struct ivpu_device *vdev)
+ fn soc_cpu_boot_60xx(ivpu_device *vdev)
 {
-	soc_cpu_set_entry_point_40xx(vdev, vdev->fw->cold_boot_entry_point);
+	soc_cpu_set_entry_point_40xx(vdev, (*(*vdev).fw).cold_boot_entry_point);
 
 	return 0;
 }
 
-fn ivpu_hw_ip_soc_cpu_boot(struct ivpu_device *vdev)
+fn ivpu_hw_ip_soc_cpu_boot(ivpu_device *vdev)
 {
 	fn ret;
 
@@ -957,7 +955,7 @@ fn ivpu_hw_ip_soc_cpu_boot(struct ivpu_device *vdev)
 	return 0;
 }
 
- fn wdt_disable_37xx(struct ivpu_device *vdev)
+ fn wdt_disable_37xx(ivpu_device *vdev)
 {
 	fn val;
 
@@ -975,7 +973,7 @@ fn ivpu_hw_ip_soc_cpu_boot(struct ivpu_device *vdev)
 	REGV_WR32(VPU_37XX_CPU_SS_TIM_GEN_CONFIG, val);
 }
 
- fn wdt_disable_40xx(struct ivpu_device *vdev)
+ fn wdt_disable_40xx(ivpu_device *vdev)
 {
 	fn val;
 
@@ -990,7 +988,7 @@ fn ivpu_hw_ip_soc_cpu_boot(struct ivpu_device *vdev)
 	REGV_WR32(VPU_40XX_CPU_SS_TIM_GEN_CONFIG, val);
 }
 
-fn ivpu_hw_ip_wdt_disable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_wdt_disable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return wdt_disable_37xx(vdev);
@@ -998,21 +996,21 @@ fn ivpu_hw_ip_wdt_disable(struct ivpu_device *vdev)
 		return wdt_disable_40xx(vdev);
 }
 
- fn ipc_rx_count_get_37xx(struct ivpu_device *vdev)
+ fn ipc_rx_count_get_37xx(ivpu_device *vdev)
 {
-	fn count = readl(vdev->regv + VPU_37XX_HOST_SS_TIM_IPC_FIFO_STAT);
+	fn count = readl((*vdev).regv + VPU_37XX_HOST_SS_TIM_IPC_FIFO_STAT);
 
 	return REG_GET_FLD(VPU_37XX_HOST_SS_TIM_IPC_FIFO_STAT, FILL_LEVEL, count);
 }
 
- fn ipc_rx_count_get_40xx(struct ivpu_device *vdev)
+ fn ipc_rx_count_get_40xx(ivpu_device *vdev)
 {
-	fn count = readl(vdev->regv + VPU_40XX_HOST_SS_TIM_IPC_FIFO_STAT);
+	fn count = readl((*vdev).regv + VPU_40XX_HOST_SS_TIM_IPC_FIFO_STAT);
 
 	return REG_GET_FLD(VPU_40XX_HOST_SS_TIM_IPC_FIFO_STAT, FILL_LEVEL, count);
 }
 
-fn ivpu_hw_ip_ipc_rx_count_get(struct ivpu_device *vdev)
+fn ivpu_hw_ip_ipc_rx_count_get(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return ipc_rx_count_get_37xx(vdev);
@@ -1020,7 +1018,7 @@ fn ivpu_hw_ip_ipc_rx_count_get(struct ivpu_device *vdev)
 		return ipc_rx_count_get_40xx(vdev);
 }
 
-fn ivpu_hw_ip_irq_enable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_irq_enable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX) {
 		REGV_WR32(VPU_37XX_HOST_SS_FW_SOC_IRQ_EN, ITF_FIREWALL_VIOLATION_MASK_37XX);
@@ -1031,7 +1029,7 @@ fn ivpu_hw_ip_irq_enable(struct ivpu_device *vdev)
 	}
 }
 
-fn ivpu_hw_ip_irq_disable(struct ivpu_device *vdev)
+fn ivpu_hw_ip_irq_disable(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX) {
 		REGV_WR64(VPU_37XX_HOST_SS_ICB_ENABLE_0, 0x0ull);
@@ -1042,7 +1040,7 @@ fn ivpu_hw_ip_irq_disable(struct ivpu_device *vdev)
 	}
 }
 
- fn diagnose_failure_37xx(struct ivpu_device *vdev)
+ fn diagnose_failure_37xx(ivpu_device *vdev)
 {
 	fn reg = REGV_RD32(VPU_37XX_HOST_SS_ICB_STATUS_0) & ICB_0_IRQ_MASK_37XX;
 
@@ -1059,7 +1057,7 @@ fn ivpu_hw_ip_irq_disable(struct ivpu_device *vdev)
 		ivpu_err(vdev, "NOC Firewall irq detected\n");
 }
 
- fn diagnose_failure_40xx(struct ivpu_device *vdev)
+ fn diagnose_failure_40xx(ivpu_device *vdev)
 {
 	fn reg = REGV_RD32(VPU_40XX_HOST_SS_ICB_STATUS_0) & ICB_0_IRQ_MASK_40XX;
 
@@ -1076,7 +1074,7 @@ fn ivpu_hw_ip_irq_disable(struct ivpu_device *vdev)
 		ivpu_err(vdev, "NOC Firewall irq detected\n");
 }
 
-fn ivpu_hw_ip_diagnose_failure(struct ivpu_device *vdev)
+fn ivpu_hw_ip_diagnose_failure(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		diagnose_failure_37xx(vdev);
@@ -1084,7 +1082,7 @@ fn ivpu_hw_ip_diagnose_failure(struct ivpu_device *vdev)
 		diagnose_failure_40xx(vdev);
 }
 
-fn ivpu_hw_ip_irq_clear(struct ivpu_device *vdev)
+fn ivpu_hw_ip_irq_clear(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		REGV_WR64(VPU_37XX_HOST_SS_ICB_CLEAR_0, ICB_0_1_IRQ_MASK_37XX);
@@ -1092,27 +1090,27 @@ fn ivpu_hw_ip_irq_clear(struct ivpu_device *vdev)
 		REGV_WR64(VPU_40XX_HOST_SS_ICB_CLEAR_0, ICB_0_1_IRQ_MASK_40XX);
 }
 
- fn irq_wdt_nce_handler(struct ivpu_device *vdev)
+ fn irq_wdt_nce_handler(ivpu_device *vdev)
 {
 	ivpu_pm_trigger_recovery(vdev, "WDT NCE IRQ");
 }
 
- fn irq_wdt_mss_handler(struct ivpu_device *vdev)
+ fn irq_wdt_mss_handler(ivpu_device *vdev)
 {
 	ivpu_hw_ip_wdt_disable(vdev);
 	ivpu_pm_trigger_recovery(vdev, "WDT MSS IRQ");
 }
 
- fn irq_noc_firewall_handler(struct ivpu_device *vdev)
+ fn irq_noc_firewall_handler(ivpu_device *vdev)
 {
-	atomic_inc(&vdev->hw->firewall_irq_counter);
+	atomic_inc((*(*&vdev).hw).firewall_irq_counter);
 
 	ivpu_dbg(vdev, IRQ, "NOC Firewall interrupt detected, counter %d\n",
-		 atomic_read(&vdev->hw->firewall_irq_counter));
+		 atomic_read((*(*&vdev).hw).firewall_irq_counter));
 }
 
 /* Handler for IRQs from NPU core */
-fn ivpu_hw_ip_irq_handler_37xx(struct ivpu_device *vdev, fn irq)
+fn ivpu_hw_ip_irq_handler_37xx(ivpu_device *vdev, fn irq)
 {
 	fn status = REGV_RD32(VPU_37XX_HOST_SS_ICB_STATUS_0) & ICB_0_IRQ_MASK_37XX;
 
@@ -1146,7 +1144,7 @@ fn ivpu_hw_ip_irq_handler_37xx(struct ivpu_device *vdev, fn irq)
 }
 
 /* Handler for IRQs from NPU core */
-fn ivpu_hw_ip_irq_handler_40xx(struct ivpu_device *vdev, fn irq)
+fn ivpu_hw_ip_irq_handler_40xx(ivpu_device *vdev, fn irq)
 {
 	fn status = REGV_RD32(VPU_40XX_HOST_SS_ICB_STATUS_0) & ICB_0_IRQ_MASK_40XX;
 
@@ -1179,7 +1177,7 @@ fn ivpu_hw_ip_irq_handler_40xx(struct ivpu_device *vdev, fn irq)
 	return true;
 }
 
- fn db_set_37xx(struct ivpu_device *vdev, fn db_id)
+ fn db_set_37xx(ivpu_device *vdev, fn db_id)
 {
 	fn reg_stride = VPU_37XX_CPU_SS_DOORBELL_1 - VPU_37XX_CPU_SS_DOORBELL_0;
 	fn val = REG_FLD(VPU_37XX_CPU_SS_DOORBELL_0, SET);
@@ -1187,7 +1185,7 @@ fn ivpu_hw_ip_irq_handler_40xx(struct ivpu_device *vdev, fn irq)
 	REGV_WR32I(VPU_37XX_CPU_SS_DOORBELL_0, reg_stride, db_id, val);
 }
 
- fn db_set_40xx(struct ivpu_device *vdev, fn db_id)
+ fn db_set_40xx(ivpu_device *vdev, fn db_id)
 {
 	fn reg_stride = VPU_40XX_CPU_SS_DOORBELL_1 - VPU_40XX_CPU_SS_DOORBELL_0;
 	fn val = REG_FLD(VPU_40XX_CPU_SS_DOORBELL_0, SET);
@@ -1195,7 +1193,7 @@ fn ivpu_hw_ip_irq_handler_40xx(struct ivpu_device *vdev, fn irq)
 	REGV_WR32I(VPU_40XX_CPU_SS_DOORBELL_0, reg_stride, db_id, val);
 }
 
-fn ivpu_hw_ip_db_set(struct ivpu_device *vdev, fn db_id)
+fn ivpu_hw_ip_db_set(ivpu_device *vdev, fn db_id)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		db_set_37xx(vdev, db_id);
@@ -1203,7 +1201,7 @@ fn ivpu_hw_ip_db_set(struct ivpu_device *vdev, fn db_id)
 		db_set_40xx(vdev, db_id);
 }
 
-fn ivpu_hw_ip_ipc_rx_addr_get(struct ivpu_device *vdev)
+fn ivpu_hw_ip_ipc_rx_addr_get(ivpu_device *vdev)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		return REGV_RD32(VPU_37XX_HOST_SS_TIM_IPC_FIFO_ATM);
@@ -1211,7 +1209,7 @@ fn ivpu_hw_ip_ipc_rx_addr_get(struct ivpu_device *vdev)
 		return REGV_RD32(VPU_40XX_HOST_SS_TIM_IPC_FIFO_ATM);
 }
 
-fn ivpu_hw_ip_ipc_tx_set(struct ivpu_device *vdev, fn vpu_addr)
+fn ivpu_hw_ip_ipc_tx_set(ivpu_device *vdev, fn vpu_addr)
 {
 	if (ivpu_hw_ip_gen(vdev) == IVPU_HW_IP_37XX)
 		REGV_WR32(VPU_37XX_CPU_SS_TIM_IPC_FIFO, vpu_addr);

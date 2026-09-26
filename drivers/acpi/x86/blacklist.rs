@@ -21,7 +21,7 @@ pub struct acpi_platform_list {
     pub data: i32,
 }
 
-#[cfg(feature = "CONFIG_DMI")]
+#[cfg(CONFIG_DMI)]
 #[repr(C)]
 pub struct dmi_system_id {
     pub callback: Option<unsafe extern "C" fn(*const dmi_system_id) -> i32>,
@@ -29,7 +29,7 @@ pub struct dmi_system_id {
     pub matches: [dmi_strmatch; 2],
 }
 
-#[cfg(feature = "CONFIG_DMI")]
+#[cfg(CONFIG_DMI)]
 #[repr(C)]
 pub struct dmi_strmatch {
     pub slot: i32,
@@ -40,11 +40,11 @@ unsafe extern "C" {
     fn acpi_match_platform_list(list: *const acpi_platform_list) -> i32;
     fn early_acpi_osi_init() -> i32;
     fn pr_err(fmt: *const core::ffi::c_char, ...);
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     fn pr_notice(fmt: *const core::ffi::c_char, ...);
-    #[cfg(feature = "CONFIG_DMI")]
+    #[cfg(CONFIG_DMI)]
     fn dmi_check_system(list: *const dmi_system_id) -> i32;
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     fn acpi_rev_override_setup(arg: *const core::ffi::c_char);
 }
 
@@ -74,35 +74,35 @@ pub unsafe extern "C" fn acpi_blacklisted() -> i32 {
     }
 
     let _ = early_acpi_osi_init();
-    #[cfg(feature = "CONFIG_DMI")]
+    #[cfg(CONFIG_DMI)]
     dmi_check_system(acpi_rev_dmi_table.as_ptr());
     blacklisted
 }
 
-#[cfg(feature = "CONFIG_DMI")]
-#[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+#[cfg(CONFIG_DMI)]
+#[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
 unsafe extern "C" fn dmi_enable_rev_override(d: *const dmi_system_id) -> i32 {
     pr_notice(b"DMI detected: %s (force ACPI _REV to 5)\n\0".as_ptr() as _, (*d).ident);
     acpi_rev_override_setup(core::ptr::null());
     0
 }
 
-#[cfg(feature = "CONFIG_DMI")]
+#[cfg(CONFIG_DMI)]
 const DMI_SYS_VENDOR: i32 = 1;
-#[cfg(feature = "CONFIG_DMI")]
+#[cfg(CONFIG_DMI)]
 const DMI_PRODUCT_NAME: i32 = 2;
 
-#[cfg(feature = "CONFIG_DMI")]
+#[cfg(CONFIG_DMI)]
 static acpi_rev_dmi_table: [dmi_system_id; 6] = [
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     dmi_system_id { callback: Some(dmi_enable_rev_override), ident: b"DELL XPS 13 (2015)\0".as_ptr() as _, matches: [dmi_strmatch { slot: DMI_SYS_VENDOR, substr: b"Dell Inc.\0".as_ptr() as _ }, dmi_strmatch { slot: DMI_PRODUCT_NAME, substr: b"XPS 13 9343\0".as_ptr() as _ }] },
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     dmi_system_id { callback: Some(dmi_enable_rev_override), ident: b"DELL Precision 5520\0".as_ptr() as _, matches: [dmi_strmatch { slot: DMI_SYS_VENDOR, substr: b"Dell Inc.\0".as_ptr() as _ }, dmi_strmatch { slot: DMI_PRODUCT_NAME, substr: b"Precision 5520\0".as_ptr() as _ }] },
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     dmi_system_id { callback: Some(dmi_enable_rev_override), ident: b"DELL Precision 3520\0".as_ptr() as _, matches: [dmi_strmatch { slot: DMI_SYS_VENDOR, substr: b"Dell Inc.\0".as_ptr() as _ }, dmi_strmatch { slot: DMI_PRODUCT_NAME, substr: b"Precision 3520\0".as_ptr() as _ }] },
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     dmi_system_id { callback: Some(dmi_enable_rev_override), ident: b"DELL Latitude 3350\0".as_ptr() as _, matches: [dmi_strmatch { slot: DMI_SYS_VENDOR, substr: b"Dell Inc.\0".as_ptr() as _ }, dmi_strmatch { slot: DMI_PRODUCT_NAME, substr: b"Latitude 3350\0".as_ptr() as _ }] },
-    #[cfg(feature = "CONFIG_ACPI_REV_OVERRIDE_POSSIBLE")]
+    #[cfg(CONFIG_ACPI_REV_OVERRIDE_POSSIBLE)]
     dmi_system_id { callback: Some(dmi_enable_rev_override), ident: b"DELL Inspiron 7537\0".as_ptr() as _, matches: [dmi_strmatch { slot: DMI_SYS_VENDOR, substr: b"Dell Inc.\0".as_ptr() as _ }, dmi_strmatch { slot: DMI_PRODUCT_NAME, substr: b"Inspiron 7537\0".as_ptr() as _ }] },
     dmi_system_id { callback: None, ident: core::ptr::null(), matches: [dmi_strmatch { slot: 0, substr: core::ptr::null() }, dmi_strmatch { slot: 0, substr: core::ptr::null() }] },
 ];

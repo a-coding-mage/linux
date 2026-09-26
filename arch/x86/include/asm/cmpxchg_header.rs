@@ -59,10 +59,10 @@ macro_rules! __raw_cmpxchg {
         let __new = $new;
         unsafe {
             match $size {
-                1 => core::arch::asm!(concat!($lock, "cmpxchgb {new}, [{ptr}]") , ptr = in(reg) $ptr, new = in(reg_byte) __new, inout("rax") __ret, options(nostack)),
-                2 => core::arch::asm!(concat!($lock, "cmpxchgw {new}, [{ptr}]") , ptr = in(reg) $ptr, new = in(reg) __new, inout("rax") __ret, options(nostack)),
-                4 => core::arch::asm!(concat!($lock, "cmpxchgl {new}, [{ptr}]") , ptr = in(reg) $ptr, new = in(reg) __new, inout("rax") __ret, options(nostack)),
-                8 => core::arch::asm!(concat!($lock, "cmpxchgq {new}, [{ptr}]") , ptr = in(reg) $ptr, new = in(reg) __new, inout("rax") __ret, options(nostack)),
+                1 => core::arch::asm!(concat!($lock, "cmpxchgb {new}, [{ptr}]") , $ptr = in(reg) $ptr, $new = in(reg_byte) __new, inout("rax") __ret, options(nostack)),
+                2 => core::arch::asm!(concat!($lock, "cmpxchgw {new}, [{ptr}]") , $ptr = in(reg) $ptr, $new = in(reg) __new, inout("rax") __ret, options(nostack)),
+                4 => core::arch::asm!(concat!($lock, "cmpxchgl {new}, [{ptr}]") , $ptr = in(reg) $ptr, $new = in(reg) __new, inout("rax") __ret, options(nostack)),
+                8 => core::arch::asm!(concat!($lock, "cmpxchgq {new}, [{ptr}]") , $ptr = in(reg) $ptr, $new = in(reg) __new, inout("rax") __ret, options(nostack)),
                 _ => $crate::__cmpxchg_wrong_size(),
             }
         }

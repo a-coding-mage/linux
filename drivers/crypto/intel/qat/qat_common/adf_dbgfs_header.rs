@@ -9,7 +9,7 @@ pub struct adf_accel_dev {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn adf_dbgfs_init(accel_dev: *mut adf_accel_dev);
     pub fn adf_dbgfs_add(accel_dev: *mut adf_accel_dev);
@@ -17,19 +17,19 @@ extern "C" {
     pub fn adf_dbgfs_exit(accel_dev: *mut adf_accel_dev);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub fn adf_dbgfs_init(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub fn adf_dbgfs_add(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub fn adf_dbgfs_rm(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub fn adf_dbgfs_exit(_accel_dev: *mut adf_accel_dev) {}
 

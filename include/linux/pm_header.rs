@@ -41,21 +41,21 @@ extern "C" {
     pub static mut pm_power_off: Option<unsafe extern "C" fn()>;
 }
 
-#[cfg(feature = "CONFIG_VT_CONSOLE_SLEEP")]
+#[cfg(CONFIG_VT_CONSOLE_SLEEP)]
 extern "C" {
     pub fn pm_vt_switch_required(dev: *mut device, required: bool) -> i32;
     pub fn pm_vt_switch_unregister(dev: *mut device);
 }
-#[cfg(not(feature = "CONFIG_VT_CONSOLE_SLEEP"))]
+#[cfg(not(CONFIG_VT_CONSOLE_SLEEP))]
 #[inline]
 pub unsafe fn pm_vt_switch_required(_dev: *mut device, _required: bool) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_VT_CONSOLE_SLEEP"))]
+#[cfg(not(CONFIG_VT_CONSOLE_SLEEP))]
 #[inline]
 pub unsafe fn pm_vt_switch_unregister(_dev: *mut device) {}
 
-#[cfg(feature = "CONFIG_CXL_SUSPEND")]
+#[cfg(CONFIG_CXL_SUSPEND)]
 extern "C" { pub fn cxl_mem_active() -> bool; }
-#[cfg(not(feature = "CONFIG_CXL_SUSPEND"))]
+#[cfg(not(CONFIG_CXL_SUSPEND))]
 #[inline]
 pub fn cxl_mem_active() -> bool { false }
 
@@ -156,10 +156,10 @@ pub enum rpm_request { RPM_REQ_NONE = 0, RPM_REQ_IDLE, RPM_REQ_SUSPEND, RPM_REQ_
 pub struct pm_subsys_data {
     pub lock: spinlock_t,
     pub refcount: u32,
-    #[cfg(feature = "CONFIG_PM_CLK")] pub clock_op_might_sleep: u32,
-    #[cfg(feature = "CONFIG_PM_CLK")] pub clock_mutex: mutex,
-    #[cfg(feature = "CONFIG_PM_CLK")] pub clock_list: list_head,
-    #[cfg(feature = "CONFIG_PM_GENERIC_DOMAINS")] pub domain_data: *mut pm_domain_data,
+    #[cfg(CONFIG_PM_CLK)] pub clock_op_might_sleep: u32,
+    #[cfg(CONFIG_PM_CLK)] pub clock_mutex: mutex,
+    #[cfg(CONFIG_PM_CLK)] pub clock_list: list_head,
+    #[cfg(CONFIG_PM_GENERIC_DOMAINS)] pub domain_data: *mut pm_domain_data,
 }
 
 pub const DPM_FLAG_NO_DIRECT_COMPLETE: u32 = 1 << 0;
@@ -174,48 +174,48 @@ pub struct dev_pm_info {
     pub is_suspended: bool, pub is_noirq_suspended: bool, pub is_late_suspended: bool,
     pub no_pm: bool, pub early_init: bool, pub direct_complete: bool,
     pub driver_flags: u32, pub lock: spinlock_t,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub entry: list_head,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub completion: completion,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub wakeup: *mut wakeup_source,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub work_in_progress: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub wakeup_path: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub syscore: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub no_pm_callbacks: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub smart_suspend: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub must_resume: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub may_skip_resume: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub out_band_wakeup: bool,
-    #[cfg(feature = "CONFIG_PM_SLEEP")] pub strict_midlayer: bool,
-    #[cfg(not(feature = "CONFIG_PM_SLEEP"))] pub should_wakeup: bool,
-    #[cfg(feature = "CONFIG_PM")] pub suspend_timer: hrtimer,
-    #[cfg(feature = "CONFIG_PM")] pub timer_expires: u64,
-    #[cfg(feature = "CONFIG_PM")] pub work: work_struct,
-    #[cfg(feature = "CONFIG_PM")] pub wait_queue: wait_queue_head_t,
-    #[cfg(feature = "CONFIG_PM")] pub wakeirq: *mut wake_irq,
-    #[cfg(feature = "CONFIG_PM")] pub usage_count: atomic_t,
-    #[cfg(feature = "CONFIG_PM")] pub child_count: atomic_t,
-    #[cfg(feature = "CONFIG_PM")] pub disable_depth: u32,
-    #[cfg(feature = "CONFIG_PM")] pub idle_notification: bool,
-    #[cfg(feature = "CONFIG_PM")] pub request_pending: bool,
-    #[cfg(feature = "CONFIG_PM")] pub deferred_resume: bool,
-    #[cfg(feature = "CONFIG_PM")] pub needs_force_resume: bool,
-    #[cfg(feature = "CONFIG_PM")] pub runtime_auto: bool,
-    #[cfg(feature = "CONFIG_PM")] pub ignore_children: bool,
-    #[cfg(feature = "CONFIG_PM")] pub no_callbacks: bool,
-    #[cfg(feature = "CONFIG_PM")] pub irq_safe: bool,
-    #[cfg(feature = "CONFIG_PM")] pub use_autosuspend: bool,
-    #[cfg(feature = "CONFIG_PM")] pub timer_autosuspends: bool,
-    #[cfg(feature = "CONFIG_PM")] pub memalloc_noio: bool,
-    #[cfg(feature = "CONFIG_PM")] pub links_count: u32,
-    #[cfg(feature = "CONFIG_PM")] pub request: rpm_request,
-    #[cfg(feature = "CONFIG_PM")] pub runtime_status: rpm_status,
-    #[cfg(feature = "CONFIG_PM")] pub last_status: rpm_status,
-    #[cfg(feature = "CONFIG_PM")] pub runtime_error: i32,
-    #[cfg(feature = "CONFIG_PM")] pub autosuspend_delay: i32,
-    #[cfg(feature = "CONFIG_PM")] pub last_busy: u64,
-    #[cfg(feature = "CONFIG_PM")] pub active_time: u64,
-    #[cfg(feature = "CONFIG_PM")] pub suspended_time: u64,
-    #[cfg(feature = "CONFIG_PM")] pub accounting_timestamp: u64,
+    #[cfg(CONFIG_PM_SLEEP)] pub entry: list_head,
+    #[cfg(CONFIG_PM_SLEEP)] pub completion: completion,
+    #[cfg(CONFIG_PM_SLEEP)] pub wakeup: *mut wakeup_source,
+    #[cfg(CONFIG_PM_SLEEP)] pub work_in_progress: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub wakeup_path: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub syscore: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub no_pm_callbacks: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub smart_suspend: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub must_resume: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub may_skip_resume: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub out_band_wakeup: bool,
+    #[cfg(CONFIG_PM_SLEEP)] pub strict_midlayer: bool,
+    #[cfg(not(CONFIG_PM_SLEEP))] pub should_wakeup: bool,
+    #[cfg(CONFIG_PM)] pub suspend_timer: hrtimer,
+    #[cfg(CONFIG_PM)] pub timer_expires: u64,
+    #[cfg(CONFIG_PM)] pub work: work_struct,
+    #[cfg(CONFIG_PM)] pub wait_queue: wait_queue_head_t,
+    #[cfg(CONFIG_PM)] pub wakeirq: *mut wake_irq,
+    #[cfg(CONFIG_PM)] pub usage_count: atomic_t,
+    #[cfg(CONFIG_PM)] pub child_count: atomic_t,
+    #[cfg(CONFIG_PM)] pub disable_depth: u32,
+    #[cfg(CONFIG_PM)] pub idle_notification: bool,
+    #[cfg(CONFIG_PM)] pub request_pending: bool,
+    #[cfg(CONFIG_PM)] pub deferred_resume: bool,
+    #[cfg(CONFIG_PM)] pub needs_force_resume: bool,
+    #[cfg(CONFIG_PM)] pub runtime_auto: bool,
+    #[cfg(CONFIG_PM)] pub ignore_children: bool,
+    #[cfg(CONFIG_PM)] pub no_callbacks: bool,
+    #[cfg(CONFIG_PM)] pub irq_safe: bool,
+    #[cfg(CONFIG_PM)] pub use_autosuspend: bool,
+    #[cfg(CONFIG_PM)] pub timer_autosuspends: bool,
+    #[cfg(CONFIG_PM)] pub memalloc_noio: bool,
+    #[cfg(CONFIG_PM)] pub links_count: u32,
+    #[cfg(CONFIG_PM)] pub request: rpm_request,
+    #[cfg(CONFIG_PM)] pub runtime_status: rpm_status,
+    #[cfg(CONFIG_PM)] pub last_status: rpm_status,
+    #[cfg(CONFIG_PM)] pub runtime_error: i32,
+    #[cfg(CONFIG_PM)] pub autosuspend_delay: i32,
+    #[cfg(CONFIG_PM)] pub last_busy: u64,
+    #[cfg(CONFIG_PM)] pub active_time: u64,
+    #[cfg(CONFIG_PM)] pub suspended_time: u64,
+    #[cfg(CONFIG_PM)] pub accounting_timestamp: u64,
     pub subsys_data: *mut pm_subsys_data,
     pub set_latency_tolerance: Option<unsafe extern "C" fn(*mut device, i32)>,
     pub qos: *mut dev_pm_qos,

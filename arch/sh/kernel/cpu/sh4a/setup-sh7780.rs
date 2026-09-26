@@ -70,7 +70,7 @@ static sh7780_dmae1_channels: [sh_dmae_channel; 6] = [
     sh_dmae_channel { offset: 0x20, ..Default::default() }, sh_dmae_channel { offset: 0x30, ..Default::default() },
     sh_dmae_channel { offset: 0x50, ..Default::default() }, sh_dmae_channel { offset: 0x60, ..Default::default() },
 ];
-static ts_shift: &[unsigned int] = &TS_SHIFT;
+static ts_shift: &[core::ffi::c_uint] = &TS_SHIFT;
 static mut dma0_platform_data: sh_dmae_pdata = sh_dmae_pdata {
     channel: sh7780_dmae0_channels.as_ptr(), channel_num: sh7780_dmae0_channels.len(),
     ts_low_shift: CHCR_TS_LOW_SHIFT, ts_low_mask: CHCR_TS_LOW_MASK,

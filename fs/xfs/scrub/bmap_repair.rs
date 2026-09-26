@@ -141,17 +141,17 @@ unsafe fn xrep_bmap_scan_ag(rb: *mut xrep_bmap, pag: *mut xfs_perag) -> i32 {
     xchk_ag_free(sc, &mut (*sc).sa); error
 }
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 unsafe fn xrep_bmap_scan_rtgroup(rb: *mut xrep_bmap, rtg: *mut xfs_rtgroup) -> i32 {
     let sc = (*rb).sc; if !xfs_has_rtrmapbt((*sc).mp) { return 0; }
     let mut error = xrep_rtgroup_init(sc, rtg, &mut (*sc).sr, XFS_RTGLOCK_RMAP | XFS_RTGLOCK_REFCOUNT | XFS_RTGLOCK_BITMAP_SHARED);
     if error == 0 { error = xfs_rmap_query_all((*sc).sr.rmap_cur, Some(xrep_bmap_walk_rtrmap), rb as *mut _); }
     xchk_rtgroup_btcur_free(&mut (*sc).sr); xchk_rtgroup_free(sc, &mut (*sc).sr); error
 }
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 unsafe fn xrep_bmap_scan_rtgroup(_rb: *mut xrep_bmap, _rtg: *mut xfs_rtgroup) -> i32 { -EFSCORRUPTED }
 
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 unsafe extern "C" fn xrep_bmap_walk_rtrmap(cur: *mut xfs_btree_cur, rec: *const xfs_rmap_irec, priv_: *mut core::ffi::c_void) -> i32 {
     let rb = priv_ as *mut xrep_bmap; let mut error = 0;
     if xchk_should_terminate((*rb).sc, &mut error) { return error; }
@@ -165,7 +165,7 @@ unsafe extern "C" fn xrep_bmap_walk_rtrmap(cur: *mut xfs_btree_cur, rec: *const 
 }
 
 /* The remaining declarations retain the source-level repair pipeline. */
-unsafe fn xrep_bmap_find_delalloc(rb: *mut xrep_bmap) -> i32 { let ip = (*(*rb).sc).ip; if (*rb).whichfork == XFS_ATTR_FORK || (*ip).i_delayed_blks == 0 { return 0; } let ifp = xfs_ifork_ptr(ip, (*rb).whichfork); let mut icur = xfs_iext_cursor::default(); let mut irec = xfs_bmbt_irec::default(); let mut rbe = xfs_bmbt_rec::default(); let mut error = 0; for_each_xfs_iext(ifp, &mut icur, &mut irec) { if !isnullstartblock(irec.br_startblock) { continue; } xfs_bmbt_disk_set_all(&mut rbe, &irec); trace_xrep_bmap_found(ip, (*rb).whichfork, &irec); if xchk_should_terminate((*rb).sc, &mut error) { return error; } error = xfarray_append((*rb).bmap_records, &rbe); if error != 0 { return error; } } 0 }
+unsafe fn xrep_bmap_find_delalloc(rb: *mut xrep_bmap) -> i32 { let ip = (*(*rb).sc).ip; if (*rb).whichfork == XFS_ATTR_FORK || (*ip).i_delayed_blks == 0 { return 0; } let ifp = xfs_ifork_ptr(ip, (*rb).whichfork); let mut icur = xfs_iext_cursor::default(); let mut irec = xfs_bmbt_irec::default(); let mut rbe = xfs_bmbt_rec::default(); let mut error = 0; for_each_xfs_iext!(ifp, &mut icur, &mut irec, { if !isnullstartblock(irec.br_startblock) { continue; } xfs_bmbt_disk_set_all(&mut rbe, &irec); trace_xrep_bmap_found(ip, (*rb).whichfork, &irec); if xchk_should_terminate((*rb).sc, &mut error) { return error; } error = xfarray_append((*rb).bmap_records, &rbe); if error != 0 { return error; } }); 0 }
 
 unsafe fn xrep_bmap_find_mappings(rb: *mut xrep_bmap) -> i32 { let sc = (*rb).sc; let mut rtg = core::ptr::null_mut(); if !xfs_is_metadir_inode((*sc).ip) { while { rtg = xfs_rtgroup_next((*sc).mp, rtg); !rtg.is_null() } { let e = xrep_bmap_scan_rtgroup(rb, rtg); if e != 0 { xfs_rtgroup_rele(rtg); return e; } } } let mut pag = core::ptr::null_mut(); while { pag = xfs_perag_next((*sc).mp, pag); !pag.is_null() } { let e = xrep_bmap_scan_ag(rb, pag); if e != 0 { xfs_perag_rele(pag); return e; } } xrep_bmap_find_delalloc(rb) }
 

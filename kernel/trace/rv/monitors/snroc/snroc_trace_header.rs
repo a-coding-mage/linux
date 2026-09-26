@@ -5,7 +5,7 @@
  */
 
 /* CONFIG_RV_MON_SNROC */
-#[cfg(feature = "CONFIG_RV_MON_SNROC")]
+#[cfg(CONFIG_RV_MON_SNROC)]
 extern "C" {
     /* DEFINE_EVENT(event_da_monitor_id, event_snroc,
      *              TP_PROTO(int id, char *state, char *event, char *next_state,

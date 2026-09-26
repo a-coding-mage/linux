@@ -71,9 +71,9 @@ pub struct ovs_net {
     pub dps: list_head,
     pub dp_notify_work: work_struct,
     pub masks_rebalance: delayed_work,
-    #[cfg(feature = "CONFIG_NETFILTER_CONNCOUNT")]
+    #[cfg(CONFIG_NETFILTER_CONNCOUNT)]
     pub ct_limit_info: *mut ovs_ct_limit_info,
-    #[cfg(feature = "CONFIG_NETFILTER_CONNCOUNT")]
+    #[cfg(CONFIG_NETFILTER_CONNCOUNT)]
     pub ct_limit_exit_data: *mut ovs_ct_limit_info,
     pub xt_label: bool,
 }
@@ -142,14 +142,14 @@ extern "C" {
     pub static mut ovs_net_id: c_uint;
     pub fn ovs_lock();
     pub fn ovs_unlock();
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     pub fn lockdep_ovsl_is_held() -> i32;
     pub fn ovs_lookup_vport(dp: *const datapath, port_no: u16) -> *mut vport;
     pub fn dev_get_by_index_rcu(net: *mut net, dp_ifindex: i32) -> *mut net_device;
     pub fn ovs_internal_dev_get_vport(dev: *mut net_device) -> *mut vport;
 }
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline]
 pub fn lockdep_ovsl_is_held() -> i32 { 1 }
 

@@ -8,7 +8,7 @@
 
 // Linux and s390 dependencies supplied by other translation units.
 
-static fn virt_timer_expire();
+fn virt_timer_expire();
 
 static mut virt_timer_list: list_head = LIST_HEAD_INIT();
 static mut virt_timer_lock: spinlock_t = __SPIN_LOCK_UNLOCKED();
@@ -20,7 +20,7 @@ static mut mt_scaling_mult: u64 = 1;
 static mut mt_scaling_div: u64 = 1;
 static mut mt_scaling_jiffies: u64 = 0;
 
-static unsafe fn set_vtimer(expires: u64) {
+unsafe fn set_vtimer(expires: u64) {
     let lc = get_lowcore();
     let timer: u64;
     // Store current cpu timer value and set new value immediately afterwards.
@@ -29,7 +29,7 @@ static unsafe fn set_vtimer(expires: u64) {
     (*lc).last_update_timer = expires;
 }
 
-static unsafe fn virt_timer_forward(mut elapsed: u64) -> i32 {
+unsafe fn virt_timer_forward(mut elapsed: u64) -> i32 {
     lockdep_assert_irqs_disabled();
     if list_empty(&virt_timer_list) { return 0; }
     elapsed = atomic64_add_return(elapsed, &mut virt_timer_elapsed) as u64;
@@ -58,13 +58,13 @@ unsafe fn update_mt_scaling() {
     __this_cpu_write(&mut mt_scaling_jiffies, jiffies_64);
 }
 
-static unsafe fn update_tsk_timer(tsk_vtime: *mut u64, new: u64) -> u64 {
+unsafe fn update_tsk_timer(tsk_vtime: *mut u64, new: u64) -> u64 {
     let delta = new.wrapping_sub(*tsk_vtime);
     *tsk_vtime = new;
     delta
 }
 
-static unsafe fn scale_vtime(vtime: u64) -> u64 {
+unsafe fn scale_vtime(vtime: u64) -> u64 {
     let mult = __this_cpu_read(&mt_scaling_mult);
     let div = __this_cpu_read(&mt_scaling_div);
     if smp_cpu_mtid != 0 { vtime.wrapping_mul(mult) / div } else { vtime }
@@ -75,11 +75,11 @@ unsafe fn account_system_index_scaled(p: *mut task_struct, cputime: u64, index: 
     account_system_index_time(p, cputime_to_nsecs(cputime), index);
 }
 
-static unsafe fn vtime_reset_last_update(lc: *mut lowcore) {
+unsafe fn vtime_reset_last_update(lc: *mut lowcore) {
     asm!("stpt {timer}\n stckf {clock}", timer = out(reg) (*lc).last_update_timer, clock = out(reg) (*lc).last_update_clock);
 }
 
-static unsafe fn do_account_vtime(tsk: *mut task_struct) -> i32 {
+unsafe fn do_account_vtime(tsk: *mut task_struct) -> i32 {
     let lc = get_lowcore();
     let clock = (*lc).last_update_clock;
     let timer = (*lc).last_update_timer;
@@ -126,7 +126,7 @@ pub unsafe fn vtime_flush(tsk: *mut task_struct) {
     (*lc).avg_steal_timer = avg_steal / 2;
 }
 
-static unsafe fn vtime_delta() -> u64 {
+unsafe fn vtime_delta() -> u64 {
     let lc = get_lowcore();
     let timer = (*lc).last_update_timer;
     (*lc).last_update_timer = get_cpu_timer();
@@ -142,14 +142,14 @@ pub unsafe fn vtime_account_kernel(tsk: *mut task_struct) {
 pub unsafe fn vtime_account_softirq(_tsk: *mut task_struct) { (*get_lowcore()).softirq_timer += vtime_delta(); }
 pub unsafe fn vtime_account_hardirq(_tsk: *mut task_struct) { (*get_lowcore()).hardirq_timer += vtime_delta(); }
 
-static unsafe fn list_add_sorted(timer: *mut vtimer_list, head: *mut list_head) {
+unsafe fn list_add_sorted(timer: *mut vtimer_list, head: *mut list_head) {
     list_for_each_entry!(tmp, head, entry, vtimer_list, {
         if (*tmp).expires > (*timer).expires { list_add_tail(&mut (*timer).entry, &mut (*tmp).entry); return; }
     });
     list_add_tail(&mut (*timer).entry, head);
 }
 
-static unsafe fn virt_timer_expire() {
+unsafe fn virt_timer_expire() {
     let mut timer: *mut vtimer_list;
     let mut tmp: *mut vtimer_list;
     let mut cb_list = LIST_HEAD_INIT();
@@ -168,18 +168,18 @@ static unsafe fn virt_timer_expire() {
 }
 
 pub unsafe fn init_virt_timer(timer: *mut vtimer_list) { (*timer).function = None; INIT_LIST_HEAD(&mut (*timer).entry); }
-static unsafe fn vtimer_pending(timer: *mut vtimer_list) -> bool { !list_empty(&(*timer).entry) }
+unsafe fn vtimer_pending(timer: *mut vtimer_list) -> bool { !list_empty(&(*timer).entry) }
 
-static unsafe fn internal_add_vtimer(timer: *mut vtimer_list) {
+unsafe fn internal_add_vtimer(timer: *mut vtimer_list) {
     if list_empty(&virt_timer_list) { atomic64_set(&mut virt_timer_current, (*timer).expires as i64); atomic64_set(&mut virt_timer_elapsed, 0); list_add(&mut (*timer).entry, &mut virt_timer_list); }
-    else { (*timer).expires += atomic64_read(&virt_timer_elapsed) as u64; if (*timer).expires as i64 < atomic64_read(&virt_timer_current) { atomic64_set(&mut virt_timer_current, (*timer).expires as i64); } list_add_sorted(timer, &mut virt_timer_list); }
+    else { (*timer).expires += atomic64_read(&virt_timer_elapsed) as u64; if ((*timer).expires as i64) < atomic64_read(&virt_timer_current) { atomic64_set(&mut virt_timer_current, (*timer).expires as i64); } list_add_sorted(timer, &mut virt_timer_list); }
 }
 
-static unsafe fn __add_vtimer(timer: *mut vtimer_list, periodic: i32) { (*timer).interval = if periodic != 0 { (*timer).expires } else { 0 }; let mut flags = 0; spin_lock_irqsave(&mut virt_timer_lock, &mut flags); internal_add_vtimer(timer); spin_unlock_irqrestore(&mut virt_timer_lock, flags); }
+unsafe fn __add_vtimer(timer: *mut vtimer_list, periodic: i32) { (*timer).interval = if periodic != 0 { (*timer).expires } else { 0 }; let mut flags = 0; spin_lock_irqsave(&mut virt_timer_lock, &mut flags); internal_add_vtimer(timer); spin_unlock_irqrestore(&mut virt_timer_lock, flags); }
 pub unsafe fn add_virt_timer(timer: *mut vtimer_list) { __add_vtimer(timer, 0); }
 pub unsafe fn add_virt_timer_periodic(timer: *mut vtimer_list) { __add_vtimer(timer, 1); }
 
-static unsafe fn __mod_vtimer(timer: *mut vtimer_list, expires: u64, periodic: i32) -> i32 { BUG_ON!((*timer).function.is_none()); if (*timer).expires == expires && vtimer_pending(timer) { return 1; } let mut flags = 0; spin_lock_irqsave(&mut virt_timer_lock, &mut flags); let rc = vtimer_pending(timer) as i32; if rc != 0 { list_del_init(&mut (*timer).entry); } (*timer).interval = if periodic != 0 { expires } else { 0 }; (*timer).expires = expires; internal_add_vtimer(timer); spin_unlock_irqrestore(&mut virt_timer_lock, flags); rc }
+unsafe fn __mod_vtimer(timer: *mut vtimer_list, expires: u64, periodic: i32) -> i32 { BUG_ON!((*timer).function.is_none()); if (*timer).expires == expires && vtimer_pending(timer) { return 1; } let mut flags = 0; spin_lock_irqsave(&mut virt_timer_lock, &mut flags); let rc = vtimer_pending(timer) as i32; if rc != 0 { list_del_init(&mut (*timer).entry); } (*timer).interval = if periodic != 0 { expires } else { 0 }; (*timer).expires = expires; internal_add_vtimer(timer); spin_unlock_irqrestore(&mut virt_timer_lock, flags); rc }
 pub unsafe fn mod_virt_timer(timer: *mut vtimer_list, expires: u64) -> i32 { __mod_vtimer(timer, expires, 0) }
 pub unsafe fn mod_virt_timer_periodic(timer: *mut vtimer_list, expires: u64) -> i32 { __mod_vtimer(timer, expires, 1) }
 pub unsafe fn del_virt_timer(timer: *mut vtimer_list) -> i32 { if !vtimer_pending(timer) { return 0; } let mut flags = 0; spin_lock_irqsave(&mut virt_timer_lock, &mut flags); list_del_init(&mut (*timer).entry); spin_unlock_irqrestore(&mut virt_timer_lock, flags); 1 }

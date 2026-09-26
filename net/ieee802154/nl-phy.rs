@@ -181,7 +181,7 @@ pub unsafe fn ieee802154_del_iface(skb: *mut sk_buff, info: *mut genl_info) -> i
     let name = nla_data((*info).attrs[IEEE802154_ATTR_DEV_NAME]) as *const i8;
     if *(name.add(nla_len((*info).attrs[IEEE802154_ATTR_DEV_NAME]) - 1) as *const u8) != 0 { return -EINVAL; }
     let dev = dev_get_by_name(genl_info_net(info), name); if dev.is_null() { return -ENODEV; }
-    if (*dev).type != ARPHRD_IEEE802154 { dev_put(dev); return -ENODEV; }
+    if (*dev).r#type != ARPHRD_IEEE802154 { dev_put(dev); return -ENODEV; }
     let phy = (*(*dev).ieee802154_ptr).wpan_phy; BUG_ON(phy.is_null()); get_device(&mut (*phy).dev);
     if !(*info).attrs[IEEE802154_ATTR_PHY_NAME].is_null() { let p = nla_data((*info).attrs[IEEE802154_ATTR_PHY_NAME]) as *const i8; if *(p.add(nla_len((*info).attrs[IEEE802154_ATTR_PHY_NAME]) - 1) as *const u8) != 0 { wpan_phy_put(phy); dev_put(dev); return -EINVAL; } let p2 = wpan_phy_find(p); if p2.is_null() || p2 != phy { if !p2.is_null() { wpan_phy_put(p2); } wpan_phy_put(phy); dev_put(dev); return -EINVAL; } }
     let msg = ieee802154_nl_new_reply(info, 0, IEEE802154_DEL_IFACE); if msg.is_null() { wpan_phy_put(phy); dev_put(dev); return -ENOBUFS; }

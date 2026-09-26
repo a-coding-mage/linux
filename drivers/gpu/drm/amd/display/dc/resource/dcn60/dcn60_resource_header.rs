@@ -6,7 +6,7 @@
 
 macro_rules! TO_DCN60_RES_POOL {
     ($pool:tt) => {
-	container_of(pool, struct dcn60_resource_pool, base)
+	container_of($pool, dcn60_resource_pool, base)
     };
 }
 

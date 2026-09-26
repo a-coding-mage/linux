@@ -21,14 +21,14 @@ pub struct Qspinlock {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_QUEUED_SPINLOCKS")]
+#[cfg(CONFIG_QUEUED_SPINLOCKS)]
 pub type RqspinlockT = Qspinlock;
-#[cfg(not(feature = "CONFIG_QUEUED_SPINLOCKS"))]
+#[cfg(not(CONFIG_QUEUED_SPINLOCKS))]
 pub type RqspinlockT = Rqspinlock;
 
 extern "C" {
     pub fn resilient_tas_spin_lock(lock: *mut RqspinlockT) -> i32;
-    #[cfg(feature = "CONFIG_QUEUED_SPINLOCKS")]
+    #[cfg(CONFIG_QUEUED_SPINLOCKS)]
     pub fn resilient_queued_spin_lock_slowpath(lock: *mut RqspinlockT, val: u32) -> i32;
 }
 
@@ -80,7 +80,7 @@ pub unsafe fn release_held_lock_entry() {
     this_cpu_dec(core::ptr::addr_of_mut!(rqspinlock_held_locks.cnt));
 }
 
-#[cfg(feature = "CONFIG_QUEUED_SPINLOCKS")]
+#[cfg(CONFIG_QUEUED_SPINLOCKS)]
 #[inline(always)]
 pub unsafe fn res_spin_lock(lock: *mut RqspinlockT) -> i32 {
     let mut val: i32 = 0;
@@ -90,7 +90,7 @@ pub unsafe fn res_spin_lock(lock: *mut RqspinlockT) -> i32 {
     else { resilient_queued_spin_lock_slowpath(lock, val as u32) }
 }
 
-#[cfg(not(feature = "CONFIG_QUEUED_SPINLOCKS"))]
+#[cfg(not(CONFIG_QUEUED_SPINLOCKS))]
 #[inline(always)]
 pub unsafe fn res_spin_lock(lock: *mut RqspinlockT) -> i32 {
     grab_held_lock_entry(lock.cast());
@@ -111,12 +111,12 @@ pub unsafe fn res_spin_unlock(lock: *mut RqspinlockT) {
     this_cpu_dec(core::ptr::addr_of_mut!(rqspinlock_held_locks.cnt));
 }
 
-#[cfg(feature = "CONFIG_QUEUED_SPINLOCKS")]
+#[cfg(CONFIG_QUEUED_SPINLOCKS)]
 pub unsafe fn raw_res_spin_lock_init(lock: *mut RqspinlockT) {
     *lock = core::mem::zeroed(); // __ARCH_SPIN_LOCK_UNLOCKED
 }
 
-#[cfg(not(feature = "CONFIG_QUEUED_SPINLOCKS"))]
+#[cfg(not(CONFIG_QUEUED_SPINLOCKS))]
 pub unsafe fn raw_res_spin_lock_init(lock: *mut RqspinlockT) {
     *lock = core::mem::zeroed();
 }

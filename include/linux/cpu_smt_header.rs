@@ -11,7 +11,7 @@ pub enum cpuhp_smt_control {
 }
 
 // Corresponds to: #if defined(CONFIG_SMP) && defined(CONFIG_HOTPLUG_SMT)
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT"))]
+#[cfg(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT))]
 extern "C" {
     pub static mut cpu_smt_control: cpuhp_smt_control;
     pub static mut cpu_smt_num_threads: core::ffi::c_uint;
@@ -26,33 +26,33 @@ extern "C" {
 }
 
 // Fallback declarations corresponding to the !CONFIG_SMP || !CONFIG_HOTPLUG_SMT branch.
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub const cpu_smt_control: cpuhp_smt_control = cpuhp_smt_control::CPU_SMT_NOT_IMPLEMENTED;
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub const cpu_smt_num_threads: core::ffi::c_uint = 1;
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub fn cpu_smt_disable(_force: bool) {}
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub fn cpu_smt_set_num_threads(
     _num_threads: core::ffi::c_uint,
     _max_threads: core::ffi::c_uint,
 ) {
 }
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub fn cpu_smt_possible() -> bool {
     false
 }
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub fn cpuhp_smt_enable() -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_SMT")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HOTPLUG_SMT)))]
 pub fn cpuhp_smt_disable(_ctrlval: cpuhp_smt_control) -> core::ffi::c_int {
     0
 }

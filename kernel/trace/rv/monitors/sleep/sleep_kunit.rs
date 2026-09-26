@@ -2,7 +2,7 @@
 // C dependencies supplied by the surrounding kernel/RV implementation are intentionally omitted.
 
 // This block is reachable only when CONFIG_RV_MON_SLEEP is enabled and reachable.
-#[cfg(any(feature = "CONFIG_RV_MON_SLEEP", rv_mon_sleep))]
+#[cfg(any(CONFIG_RV_MON_SLEEP, rv_mon_sleep))]
 unsafe fn rv_test_sleep(test: *mut Kunit) {
     let target: *mut TaskStruct = rv_kunit_alloc_mock_task(test);
     let other: *mut TaskStruct = rv_kunit_alloc_mock_task(test);
@@ -50,7 +50,7 @@ unsafe fn rv_test_sleep(test: *mut Kunit) {
 }
 
 // When CONFIG_RV_MON_SLEEP is not reachable, the C macro aliases this test to rv_test_stub.
-#[cfg(not(any(feature = "CONFIG_RV_MON_SLEEP", rv_mon_sleep)))]
+#[cfg(not(any(CONFIG_RV_MON_SLEEP, rv_mon_sleep)))]
 unsafe fn rv_test_sleep(test: *mut Kunit) {
     rv_test_stub(test);
 }

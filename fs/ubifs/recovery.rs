@@ -16,28 +16,28 @@ unsafe fn first_non_ff(buf: *mut core::ffi::c_void, len: i32) -> i32 {
 /* The following declarations correspond to the structures and helpers from
  * ubifs.h and the Linux kernel headers. */
 extern "C" {
-    fn vmalloc(usize) -> *mut core::ffi::c_void; fn vfree(*mut core::ffi::c_void);
-    fn kmalloc(usize, u32) -> *mut core::ffi::c_void; fn kfree(*mut core::ffi::c_void);
-    fn ubifs_leb_read(*const ubifs_info,i32,*mut core::ffi::c_void,i32,i32,i32)->i32;
-    fn ubifs_leb_change(*mut ubifs_info,i32,*mut core::ffi::c_void,i32)->i32;
-    fn ubifs_leb_unmap(*mut ubifs_info,i32)->i32;
-    fn ubifs_scan_a_node(*const ubifs_info,*mut core::ffi::c_void,i32,i32,i32,i32)->i32;
-    fn ubifs_start_scan(*mut ubifs_info,i32,i32,*mut core::ffi::c_void)->*mut ubifs_scan_leb;
-    fn ubifs_scan(*mut ubifs_info,i32,i32,*mut core::ffi::c_void,i32)->*mut ubifs_scan_leb;
-    fn ubifs_end_scan(*mut ubifs_info,*mut ubifs_scan_leb,i32,i32);
-    fn ubifs_scan_destroy(*mut ubifs_scan_leb); fn ubifs_add_snod(*mut ubifs_info,*mut ubifs_scan_leb,*mut core::ffi::c_void,i32)->i32;
-    fn ubifs_scanned_corruption(*mut ubifs_info,i32,i32,*mut core::ffi::c_void);
-    fn ubifs_check_node(*const ubifs_info,*mut core::ffi::c_void,i32,i32,i32,i32,i32)->i32;
-    fn ubifs_prepare_node_hmac(*mut ubifs_info,*mut ubifs_mst_node,usize,usize,i32)->i32;
-    fn ubifs_compare_master_node(*const ubifs_info,*mut ubifs_mst_node,*mut ubifs_mst_node)->i32;
-    fn ubifs_dump_node(*mut ubifs_info,*mut ubifs_mst_node,i32); fn ubifs_crc_node(*mut core::ffi::c_void,i32);
-    fn ubifs_find_free_leb_for_idx(*mut ubifs_info)->i32; fn ubifs_change_one_lp(*mut ubifs_info,i32,i32,i32,i32,i32,i32)->i32;
-    fn ubifs_run_commit(*mut ubifs_info)->i32; fn ubifs_find_dirty_leb(*mut ubifs_info,*mut ubifs_lprops,i32,i32)->i32;
-    fn ubifs_garbage_collect_leb(*mut ubifs_info,*mut ubifs_lprops)->i32; fn ubifs_wbuf_sync_nolock(*mut ubifs_wbuf)->i32;
-    fn ubifs_tnc_locate(*mut ubifs_info,*mut ubifs_key,*mut ubifs_ino_node,*mut i32,*mut i32)->i32;
-    fn ubifs_tnc_lookup(*mut ubifs_info,*mut ubifs_key,*mut core::ffi::c_void)->i32; fn ubifs_tnc_remove_ino(*mut ubifs_info,u64)->i32;
-    fn ubifs_iget(*mut core::ffi::c_void,u64)->*mut inode; fn ubifs_jnl_write_inode(*mut ubifs_info,*mut inode)->i32;
-    fn iput(*mut inode); fn ubifs_pad(*const ubifs_info,*mut core::ffi::c_void,i32);
+    fn vmalloc(_: usize) -> *mut core::ffi::c_void; fn vfree(_: *mut core::ffi::c_void);
+    fn kmalloc(_: usize, _: u32) -> *mut core::ffi::c_void; fn kfree(_: *mut core::ffi::c_void);
+    fn ubifs_leb_read(_: *const ubifs_info,_: i32,_: *mut core::ffi::c_void,_: i32,_: i32,_: i32)->i32;
+    fn ubifs_leb_change(_: *mut ubifs_info,_: i32,_: *mut core::ffi::c_void,_: i32)->i32;
+    fn ubifs_leb_unmap(_: *mut ubifs_info,_: i32)->i32;
+    fn ubifs_scan_a_node(_: *const ubifs_info,_: *mut core::ffi::c_void,_: i32,_: i32,_: i32,_: i32)->i32;
+    fn ubifs_start_scan(_: *mut ubifs_info,_: i32,_: i32,_: *mut core::ffi::c_void)->*mut ubifs_scan_leb;
+    fn ubifs_scan(_: *mut ubifs_info,_: i32,_: i32,_: *mut core::ffi::c_void,_: i32)->*mut ubifs_scan_leb;
+    fn ubifs_end_scan(_: *mut ubifs_info,_: *mut ubifs_scan_leb,_: i32,_: i32);
+    fn ubifs_scan_destroy(_: *mut ubifs_scan_leb); fn ubifs_add_snod(_: *mut ubifs_info,_: *mut ubifs_scan_leb,_: *mut core::ffi::c_void,_: i32)->i32;
+    fn ubifs_scanned_corruption(_: *mut ubifs_info,_: i32,_: i32,_: *mut core::ffi::c_void);
+    fn ubifs_check_node(_: *const ubifs_info,_: *mut core::ffi::c_void,_: i32,_: i32,_: i32,_: i32,_: i32)->i32;
+    fn ubifs_prepare_node_hmac(_: *mut ubifs_info,_: *mut ubifs_mst_node,_: usize,_: usize,_: i32)->i32;
+    fn ubifs_compare_master_node(_: *const ubifs_info,_: *mut ubifs_mst_node,_: *mut ubifs_mst_node)->i32;
+    fn ubifs_dump_node(_: *mut ubifs_info,_: *mut ubifs_mst_node,_: i32); fn ubifs_crc_node(_: *mut core::ffi::c_void,_: i32);
+    fn ubifs_find_free_leb_for_idx(_: *mut ubifs_info)->i32; fn ubifs_change_one_lp(_: *mut ubifs_info,_: i32,_: i32,_: i32,_: i32,_: i32,_: i32)->i32;
+    fn ubifs_run_commit(_: *mut ubifs_info)->i32; fn ubifs_find_dirty_leb(_: *mut ubifs_info,_: *mut ubifs_lprops,_: i32,_: i32)->i32;
+    fn ubifs_garbage_collect_leb(_: *mut ubifs_info,_: *mut ubifs_lprops)->i32; fn ubifs_wbuf_sync_nolock(_: *mut ubifs_wbuf)->i32;
+    fn ubifs_tnc_locate(_: *mut ubifs_info,_: *mut ubifs_key,_: *mut ubifs_ino_node,_: *mut i32,_: *mut i32)->i32;
+    fn ubifs_tnc_lookup(_: *mut ubifs_info,_: *mut ubifs_key,_: *mut core::ffi::c_void)->i32; fn ubifs_tnc_remove_ino(_: *mut ubifs_info,_: u64)->i32;
+    fn ubifs_iget(_: *mut core::ffi::c_void,_: u64)->*mut inode; fn ubifs_jnl_write_inode(_: *mut ubifs_info,_: *mut inode)->i32;
+    fn iput(_: *mut inode); fn ubifs_pad(_: *const ubifs_info,_: *mut core::ffi::c_void,_: i32);
 }
 
 #[repr(C)] pub struct ubifs_info { pub mst_node_alsz:i32,pub leb_size:i32,pub max_write_size:i32,pub min_io_size:i32,pub mst_node:*mut ubifs_mst_node,pub rcvrd_mst_node:*mut ubifs_mst_node,pub ro_mount:i32,pub remounting_rw:i32,pub max_sqnum:u64,pub cmt_no:u64,pub cs_sqnum:u64,pub gc_lnum:i32,pub ihead_lnum:i32,pub ihead_offs:i32,pub nhead_lnum:i32,pub nhead_offs:i32,pub sbuf:*mut core::ffi::c_void,pub size_tree:rb_root,pub unclean_leb_list:list_head,pub jheads:*mut ubifs_jhead }
@@ -54,7 +54,7 @@ extern "C" {
 #[repr(C)] pub struct list_head { pub next:*mut list_head,pub prev:*mut list_head } #[repr(C)] pub struct rb_node { pub rb_left:*mut rb_node,pub rb_right:*mut rb_node } #[repr(C)] pub struct rb_root { pub rb_node:*mut rb_node }
 
 /* Constants are provided by ubifs.h in the target tree. */
-extern "C" { fn ubifs_msg(*mut ubifs_info,*const i8,...); fn ubifs_err(*mut ubifs_info,*const i8,...); fn ubifs_warn(*mut ubifs_info,*const i8,...); }
+extern "C" { fn ubifs_msg(_: *mut ubifs_info,_: *const i8,...); fn ubifs_err(_: *mut ubifs_info,_: *const i8,...); fn ubifs_warn(_: *mut ubifs_info,_: *const i8,...); }
 
 unsafe fn is_last_write(c:*const ubifs_info, buf:*mut core::ffi::c_void, offs:i32)->i32 { let e=((offs+1+c_ref(c).max_write_size-1)/c_ref(c).max_write_size)*c_ref(c).max_write_size; is_empty((buf as *mut u8).add((e-offs) as usize) as _,c_ref(c).leb_size-e) }
 unsafe fn c_ref<'a>(c:*const ubifs_info)->&'a ubifs_info { &*c }

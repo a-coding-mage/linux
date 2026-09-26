@@ -9,7 +9,7 @@
 
 // Dependency supplied by the surrounding kernel translation: `gfp_t`.
 
-#[cfg(feature = "CONFIG_KMSAN")]
+#[cfg(CONFIG_KMSAN)]
 unsafe extern "C" {
     /**
      * kmsan_poison_memory() - Mark the memory range as uninitialized.
@@ -74,19 +74,19 @@ unsafe extern "C" {
     pub fn kmsan_memmove(to: *mut core::ffi::c_void, from: *const core::ffi::c_void, to_copy: usize);
 }
 
-#[cfg(not(feature = "CONFIG_KMSAN"))]
+#[cfg(not(CONFIG_KMSAN))]
 #[inline]
 pub fn kmsan_poison_memory(_address: *const core::ffi::c_void, _size: usize, _flags: gfp_t) {}
 
-#[cfg(not(feature = "CONFIG_KMSAN"))]
+#[cfg(not(CONFIG_KMSAN))]
 #[inline]
 pub fn kmsan_unpoison_memory(_address: *const core::ffi::c_void, _size: usize) {}
 
-#[cfg(not(feature = "CONFIG_KMSAN"))]
+#[cfg(not(CONFIG_KMSAN))]
 #[inline]
 pub fn kmsan_check_memory(_address: *const core::ffi::c_void, _size: usize) {}
 
-#[cfg(not(feature = "CONFIG_KMSAN"))]
+#[cfg(not(CONFIG_KMSAN))]
 #[inline]
 pub fn kmsan_copy_to_user(
     _to: *mut core::ffi::c_void,
@@ -96,7 +96,7 @@ pub fn kmsan_copy_to_user(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_KMSAN"))]
+#[cfg(not(CONFIG_KMSAN))]
 #[inline]
 pub fn kmsan_memmove(
     _to: *mut core::ffi::c_void,

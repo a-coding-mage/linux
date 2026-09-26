@@ -56,7 +56,7 @@ static GEN23_PARENTS: [*const c_char; 2] = [c("pll1_clk"), c("pll2_clk")];
 static DDR_PARENTS: [*const c_char; 4] = [c("ahb_clk"), c("ahbmult2_clk"), c("none"), c("pll2_clk")];
 
 // Configuration-specific helpers retain the source build conditions.
-#[cfg(feature = "CONFIG_MACH_SPEAR300")]
+#[cfg(CONFIG_MACH_SPEAR300)]
 unsafe fn spear300_clk_init() {
     let mut clk = clk_register_fixed_factor(core::ptr::null_mut(), c("clcd_clk"), c("ras_pll3_clk"), 0, 1, 1); clk_register_clkdev(clk, c(""), c("60000000.clcd"));
     clk = clk_register_fixed_factor(core::ptr::null_mut(), c("fsmc_clk"), c("ras_ahb_clk"), 0, 1, 1); clk_register_clkdev(clk, c(""), c("94000000.flash"));
@@ -64,7 +64,7 @@ unsafe fn spear300_clk_init() {
     clk = clk_register_fixed_factor(core::ptr::null_mut(), c("gpio1_clk"), c("ras_apb_clk"), 0, 1, 1); clk_register_clkdev(clk, c(""), c("a9000000.gpio"));
     clk = clk_register_fixed_factor(core::ptr::null_mut(), c("kbd_clk"), c("ras_apb_clk"), 0, 1, 1); clk_register_clkdev(clk, c(""), c("a0000000.kbd"));
 }
-#[cfg(not(feature = "CONFIG_MACH_SPEAR300"))] unsafe fn spear300_clk_init() {}
+#[cfg(not(CONFIG_MACH_SPEAR300))] unsafe fn spear300_clk_init() {}
 
 // The following implementation is a literal low-level translation. Null C
 // strings are represented by null pointers at call sites where applicable.

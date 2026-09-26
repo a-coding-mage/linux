@@ -90,12 +90,12 @@ unsafe fn xway_stp_hw_init(chip: *mut xway_stp) {
     xway_stp_w32((*chip).virt, 0, XWAY_STP_CON1);
     xway_stp_w32_mask((*chip).virt, XWAY_STP_EDGE_MASK, (*chip).edge, XWAY_STP_CON0);
     xway_stp_w32_mask((*chip).virt, XWAY_STP_GROUP_MASK, (*chip).groups as u32, XWAY_STP_CON1);
-    xway_stp_w32_mask((*chip).virt, XWAY_STP_ADSL_MASK << XWAY_STP_ADSL_SHIFT, (*chip).dsl as u32 << XWAY_STP_ADSL_SHIFT, XWAY_STP_CON0);
-    xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY1_SHIFT, (*chip).phy1 as u32 << XWAY_STP_PHY1_SHIFT, XWAY_STP_CON0);
-    xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY2_SHIFT, (*chip).phy2 as u32 << XWAY_STP_PHY2_SHIFT, XWAY_STP_CON1);
-    if of_machine_is_compatible("lantiq,grx390") || of_machine_is_compatible("lantiq,ar10") { xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY3_SHIFT, (*chip).phy3 as u32 << XWAY_STP_PHY3_SHIFT, XWAY_STP_CON1); }
-    if of_machine_is_compatible("lantiq,grx390") { xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY4_SHIFT, (*chip).phy4 as u32 << XWAY_STP_PHY4_SHIFT, XWAY_STP_CON1); }
-    (*chip).reserved = (((*chip).phy4 as u16 << 11) | ((*chip).phy3 as u16 << 8) | ((*chip).phy2 as u16 << 5) | ((*chip).phy1 as u16 << 2) | (*chip).dsl as u16) as u8;
+    xway_stp_w32_mask((*chip).virt, XWAY_STP_ADSL_MASK << XWAY_STP_ADSL_SHIFT, ((*chip).dsl as u32) << XWAY_STP_ADSL_SHIFT, XWAY_STP_CON0);
+    xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY1_SHIFT, ((*chip).phy1 as u32) << XWAY_STP_PHY1_SHIFT, XWAY_STP_CON0);
+    xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY2_SHIFT, ((*chip).phy2 as u32) << XWAY_STP_PHY2_SHIFT, XWAY_STP_CON1);
+    if of_machine_is_compatible("lantiq,grx390") || of_machine_is_compatible("lantiq,ar10") { xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY3_SHIFT, ((*chip).phy3 as u32) << XWAY_STP_PHY3_SHIFT, XWAY_STP_CON1); }
+    if of_machine_is_compatible("lantiq,grx390") { xway_stp_w32_mask((*chip).virt, XWAY_STP_PHY_MASK << XWAY_STP_PHY4_SHIFT, ((*chip).phy4 as u32) << XWAY_STP_PHY4_SHIFT, XWAY_STP_CON1); }
+    (*chip).reserved = ((((*chip).phy4 as u16) << 11) | (((*chip).phy3 as u16) << 8) | (((*chip).phy2 as u16) << 5) | (((*chip).phy1 as u16) << 2) | (*chip).dsl as u16) as u8;
     if (*chip).reserved != 0 {
         xway_stp_w32_mask((*chip).virt, XWAY_STP_UPD_MASK, XWAY_STP_UPD_FPI, XWAY_STP_CON1);
         xway_stp_w32_mask((*chip).virt, XWAY_STP_SPEED_MASK, XWAY_STP_10HZ, XWAY_STP_CON1);

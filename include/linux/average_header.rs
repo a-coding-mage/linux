@@ -41,8 +41,8 @@ macro_rules! declare_ewma {
             #[inline]
             pub unsafe fn add(e: *mut Ewma, val: usize) {
                 let internal = core::ptr::read_volatile(&(*e).internal);
-                let weight_rcp = ($weight_rcp as usize).ilog2() as usize;
-                let precision = $precision as usize;
+                let $weight_rcp = ($weight_rcp as usize).ilog2() as usize;
+                let $precision = $precision as usize;
 
                 const _: () = assert!($precision <= 30);
                 const _: () = assert!($weight_rcp != 0 && ($weight_rcp & ($weight_rcp - 1)) == 0);
@@ -50,11 +50,11 @@ macro_rules! declare_ewma {
                 core::ptr::write_volatile(
                     &mut (*e).internal,
                     if internal != 0 {
-                        (((internal << weight_rcp).wrapping_sub(internal))
-                            .wrapping_add(val << precision))
-                            >> weight_rcp
+                        (((internal << $weight_rcp).wrapping_sub(internal))
+                            .wrapping_add(val << $precision))
+                            >> $weight_rcp
                     } else {
-                        val << precision
+                        val << $precision
                     },
                 );
             }

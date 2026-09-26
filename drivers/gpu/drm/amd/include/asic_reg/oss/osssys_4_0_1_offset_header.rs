@@ -14,7 +14,6 @@
 // addressBlock: osssys_osssysdec
 // base address: 0x4280
 
-#define _osssys_4_0_1_OFFSET_HEADER
 pub const mmIH_VMID_0_LUT: u32 = 0x0000;
 pub const mmIH_VMID_0_LUT_BASE_IDX: u32 = 0;
 pub const mmIH_VMID_1_LUT: u32 = 0x0001;

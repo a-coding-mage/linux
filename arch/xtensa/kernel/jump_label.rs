@@ -91,7 +91,7 @@ unsafe extern "C" fn patch_text_stop_machine(data: *mut c_void) -> i32 {
 
 unsafe fn patch_text(addr: usize, data: *const c_void, sz: usize) {
     // CONFIG_SMP is a build-time condition in the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         let mut patch = patch {
             cpu_count: atomic_t { counter: 0 },
@@ -105,7 +105,7 @@ unsafe fn patch_text(addr: usize, data: *const c_void, sz: usize) {
             core::ptr::null(),
         );
     }
-    #[cfg(not(feature = "CONFIG_SMP"))]
+    #[cfg(not(CONFIG_SMP))]
     {
         let mut flags: usize = 0;
 

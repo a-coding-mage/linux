@@ -87,16 +87,16 @@ extern "C" {
 #[repr(C)]
 struct Mpic { paddr: c_ulong, irqhost: *mut c_void }
 
-#[cfg(feature = "CONFIG_PPC_PASEMI_NEMO")]
+#[cfg(CONFIG_PPC_PASEMI_NEMO)]
 unsafe extern "C" fn pas_shutdown() {
     let pld_map = ioremap(0xf5000000, 4096);
     loop { out_8((pld_map as *mut u8).add(7), 0x01); }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 static mut timebase: c_ulong = 0;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" fn pas_give_timebase() {
     let mut flags = 0;
     local_irq_save(&mut flags);
@@ -109,7 +109,7 @@ unsafe extern "C" fn pas_give_timebase() {
     local_irq_restore(flags);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" fn pas_take_timebase() {
     while timebase == 0 { smp_rmb(); }
     set_tb((timebase >> 32) as u32, timebase as u32);

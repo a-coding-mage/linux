@@ -99,7 +99,7 @@ unsafe fn do_mq_timedreceive(mqdes: mqd_t, p: *mut c_char, len: usize, prio: *mu
 unsafe fn do_mq_notify(mqdes: mqd_t, notification: *const sigevent) -> c_int { let _ = (mqdes, notification); 0 }
 unsafe fn do_mq_getsetattr(mqdes: c_int, new: *mut mq_attr, old: *mut mq_attr) -> c_int { let _ = (mqdes, new, old); 0 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)] pub struct compat_mq_attr { pub mq_flags: i32, pub mq_maxmsg: i32, pub mq_msgsize: i32, pub mq_curmsgs: i32, pub reserved: [i32; 4] }
 
 #[repr(C)] pub struct inode_operations { pub lookup: Option<unsafe extern "C" fn()>, pub create: Option<unsafe extern "C" fn()>, pub unlink: Option<unsafe extern "C" fn()> }

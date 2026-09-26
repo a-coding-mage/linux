@@ -36,11 +36,11 @@ extern "C" {
 type c_ulong = usize;
 
 unsafe fn nsec_high(mut nsec: u64) -> i64 {
-    if nsec as i64 < 0 { nsec = nsec.wrapping_neg(); -(nsec / 1_000_000) as i64 }
+    if (nsec as i64) < 0 { nsec = nsec.wrapping_neg(); -(nsec / 1_000_000) as i64 }
     else { (nsec / 1_000_000) as i64 }
 }
 unsafe fn nsec_low(mut nsec: u64) -> usize {
-    if nsec as i64 < 0 { nsec = nsec.wrapping_neg(); }
+    if (nsec as i64) < 0 { nsec = nsec.wrapping_neg(); }
     (nsec % 1_000_000) as usize
 }
 

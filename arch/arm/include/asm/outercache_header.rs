@@ -22,7 +22,7 @@ pub struct outer_cache_fns {
     pub flush_all: Option<unsafe extern "C" fn()>,
     pub disable: Option<unsafe extern "C" fn()>,
     // Preserves the CONFIG_OUTER_CACHE_SYNC conditional declaration.
-    #[cfg(feature = "CONFIG_OUTER_CACHE_SYNC")]
+    #[cfg(CONFIG_OUTER_CACHE_SYNC)]
     pub sync: Option<unsafe extern "C" fn()>,
     pub resume: Option<unsafe extern "C" fn()>,
 
@@ -36,40 +36,40 @@ extern "C" {
 }
 
 // The following items are enabled when CONFIG_OUTER_CACHE is defined.
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 pub unsafe fn outer_inv_range(start: phys_addr_t, end: phys_addr_t) {
     if let Some(f) = outer_cache.inv_range {
         f(start as libc::c_ulong, end as libc::c_ulong);
     }
 }
 
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 pub unsafe fn outer_clean_range(start: phys_addr_t, end: phys_addr_t) {
     if let Some(f) = outer_cache.clean_range {
         f(start as libc::c_ulong, end as libc::c_ulong);
     }
 }
 
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 pub unsafe fn outer_flush_range(start: phys_addr_t, end: phys_addr_t) {
     if let Some(f) = outer_cache.flush_range {
         f(start as libc::c_ulong, end as libc::c_ulong);
     }
 }
 
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 pub unsafe fn outer_flush_all() {
     if let Some(f) = outer_cache.flush_all {
         f();
     }
 }
 
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 extern "C" {
     pub fn outer_disable();
 }
 
-#[cfg(feature = "CONFIG_OUTER_CACHE")]
+#[cfg(CONFIG_OUTER_CACHE)]
 pub unsafe fn outer_resume() {
     if let Some(f) = outer_cache.resume {
         f();
@@ -77,17 +77,17 @@ pub unsafe fn outer_resume() {
 }
 
 // Empty definitions preserve the no-outer-cache configuration.
-#[cfg(not(feature = "CONFIG_OUTER_CACHE"))]
+#[cfg(not(CONFIG_OUTER_CACHE))]
 pub unsafe fn outer_inv_range(_start: phys_addr_t, _end: phys_addr_t) {}
-#[cfg(not(feature = "CONFIG_OUTER_CACHE"))]
+#[cfg(not(CONFIG_OUTER_CACHE))]
 pub unsafe fn outer_clean_range(_start: phys_addr_t, _end: phys_addr_t) {}
-#[cfg(not(feature = "CONFIG_OUTER_CACHE"))]
+#[cfg(not(CONFIG_OUTER_CACHE))]
 pub unsafe fn outer_flush_range(_start: phys_addr_t, _end: phys_addr_t) {}
-#[cfg(not(feature = "CONFIG_OUTER_CACHE"))]
+#[cfg(not(CONFIG_OUTER_CACHE))]
 pub unsafe fn outer_flush_all() {}
-#[cfg(not(feature = "CONFIG_OUTER_CACHE"))]
+#[cfg(not(CONFIG_OUTER_CACHE))]
 pub unsafe fn outer_disable() {}
-#[cfg(not(feature = "CONFIG_OUTER_CACHE"))]
+#[cfg(not(CONFIG_OUTER_CACHE))]
 pub unsafe fn outer_resume() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

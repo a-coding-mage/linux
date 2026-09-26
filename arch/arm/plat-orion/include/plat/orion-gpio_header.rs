@@ -15,7 +15,7 @@ pub enum gpio_desc {}
 /*
  * Orion-specific GPIO API extensions.
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn orion_gpio_set_unused(pin: core::ffi::c_uint);
     pub fn orion_gpio_set_blink(pin: core::ffi::c_uint, blink: core::ffi::c_int);
     pub fn orion_gpio_led_blink_set(

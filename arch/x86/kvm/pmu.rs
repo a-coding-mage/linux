@@ -30,18 +30,18 @@ extern "C" {
 #[repr(C)] pub struct perf_sample_data; #[repr(C)] pub struct pt_regs; #[repr(C)] pub struct msr_data { pub index:u32, pub data:u64, pub host_initiated:bool }
 
 extern "C" {
-    fn kvm_get_running_vcpu()->*mut kvm_vcpu; fn kvm_make_request(u32,*mut kvm_vcpu); fn kvm_make_all_cpus_request(*mut kvm,u32);
-    fn vcpu_to_pmu(*mut kvm_vcpu)->*mut kvm_pmu; fn pmc_to_pmu(*mut kvm_pmc)->*mut kvm_pmu; fn pmu_to_vcpu(*mut kvm_pmu)->*mut kvm_vcpu;
-    fn kvm_vcpu_has_mediated_pmu(*mut kvm_vcpu)->bool; fn pmc_bitmask(*mut kvm_pmc)->u64; fn pmc_read_counter(*mut kvm_pmc)->u64;
-    fn pmc_is_gp(*mut kvm_pmc)->bool; fn pmc_is_fixed(*mut kvm_pmc)->bool; fn pmc_is_locally_enabled(*mut kvm_pmc)->bool; fn pmc_is_globally_enabled(*mut kvm_pmc)->bool;
-    fn kvm_pmu_has_perf_global_ctrl(*mut kvm_pmu)->bool; fn kvm_pmu_request_counter_reprogram(*mut kvm_pmc); fn kvm_pmu_request_counters_reprogram(*mut kvm_pmu,u64);
-    fn kvm_pmu_call_reset(*mut kvm_vcpu); fn kvm_pmu_call_refresh(*mut kvm_vcpu); fn kvm_pmu_call_init(*mut kvm_vcpu); fn kvm_pmu_call_cleanup(*mut kvm_vcpu);
-    fn kvm_pmu_call_get_msr(*mut kvm_vcpu,*mut msr_data)->i32; fn kvm_pmu_call_set_msr(*mut kvm_vcpu,*mut msr_data)->i32;
-    fn kvm_pmu_call_msr_idx_to_pmc(*mut kvm_vcpu,u32)->*mut kvm_pmc; fn kvm_pmu_call_rdpmc_ecx_to_pmc(*mut kvm_vcpu,u32,*mut u64)->*mut kvm_pmc;
-    fn kvm_pmu_call_deliver_pmi(*mut kvm_vcpu); fn kvm_pmu_call_write_global_ctrl(u64);
-    fn kvm_valid_perf_global_ctrl(*mut kvm_pmu,u64)->bool; fn kvm_pmu_cleanup(*mut kvm_vcpu); fn kvm_pmu_reset_external(*mut kvm_vcpu);
-    fn kvm_x86_get_cpl(*mut kvm_vcpu)->u32; fn lapic_in_kernel(*mut kvm_vcpu)->bool; fn kvm_apic_local_deliver(*mut c_void,u32);
-    fn perf_get_x86_pmu_capability(*mut x86_pmu_capability); fn perf_get_hw_event_config(u32)->u64; fn ktime_get_boottime_ns()->u64; fn rdtsc()->u64;
+    fn kvm_get_running_vcpu()->*mut kvm_vcpu; fn kvm_make_request(_: u32,_: *mut kvm_vcpu); fn kvm_make_all_cpus_request(_: *mut kvm,_: u32);
+    fn vcpu_to_pmu(_: *mut kvm_vcpu)->*mut kvm_pmu; fn pmc_to_pmu(_: *mut kvm_pmc)->*mut kvm_pmu; fn pmu_to_vcpu(_: *mut kvm_pmu)->*mut kvm_vcpu;
+    fn kvm_vcpu_has_mediated_pmu(_: *mut kvm_vcpu)->bool; fn pmc_bitmask(_: *mut kvm_pmc)->u64; fn pmc_read_counter(_: *mut kvm_pmc)->u64;
+    fn pmc_is_gp(_: *mut kvm_pmc)->bool; fn pmc_is_fixed(_: *mut kvm_pmc)->bool; fn pmc_is_locally_enabled(_: *mut kvm_pmc)->bool; fn pmc_is_globally_enabled(_: *mut kvm_pmc)->bool;
+    fn kvm_pmu_has_perf_global_ctrl(_: *mut kvm_pmu)->bool; fn kvm_pmu_request_counter_reprogram(_: *mut kvm_pmc); fn kvm_pmu_request_counters_reprogram(_: *mut kvm_pmu,_: u64);
+    fn kvm_pmu_call_reset(_: *mut kvm_vcpu); fn kvm_pmu_call_refresh(_: *mut kvm_vcpu); fn kvm_pmu_call_init(_: *mut kvm_vcpu); fn kvm_pmu_call_cleanup(_: *mut kvm_vcpu);
+    fn kvm_pmu_call_get_msr(_: *mut kvm_vcpu,_: *mut msr_data)->i32; fn kvm_pmu_call_set_msr(_: *mut kvm_vcpu,_: *mut msr_data)->i32;
+    fn kvm_pmu_call_msr_idx_to_pmc(_: *mut kvm_vcpu,_: u32)->*mut kvm_pmc; fn kvm_pmu_call_rdpmc_ecx_to_pmc(_: *mut kvm_vcpu,_: u32,_: *mut u64)->*mut kvm_pmc;
+    fn kvm_pmu_call_deliver_pmi(_: *mut kvm_vcpu); fn kvm_pmu_call_write_global_ctrl(_: u64);
+    fn kvm_valid_perf_global_ctrl(_: *mut kvm_pmu,_: u64)->bool; fn kvm_pmu_cleanup(_: *mut kvm_vcpu); fn kvm_pmu_reset_external(_: *mut kvm_vcpu);
+    fn kvm_x86_get_cpl(_: *mut kvm_vcpu)->u32; fn lapic_in_kernel(_: *mut kvm_vcpu)->bool; fn kvm_apic_local_deliver(_: *mut c_void,_: u32);
+    fn perf_get_x86_pmu_capability(_: *mut x86_pmu_capability); fn perf_get_hw_event_config(_: u32)->u64; fn ktime_get_boottime_ns()->u64; fn rdtsc()->u64;
 }
 
 pub const KVM_PMU_EVENT_FILTER_MAX_EVENTS:usize=300;

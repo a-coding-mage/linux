@@ -205,7 +205,7 @@ unsafe fn snd_trident_codec_write(ac97: *mut snd_ac97, reg: c_ushort, wdata: c_u
     outl(data, TRID_REG(trident, address));
 }
 
-static unsafe fn snd_trident_enable_eso(trident: *mut snd_trident) {
+unsafe fn snd_trident_enable_eso(trident: *mut snd_trident) {
     let mut val: c_uint;
 
     val = inl(TRID_REG(trident, T4D_LFO_GC_CIR));
@@ -217,7 +217,7 @@ static unsafe fn snd_trident_enable_eso(trident: *mut snd_trident) {
     outl(val, TRID_REG(trident, T4D_LFO_GC_CIR));
 }
 
-static unsafe fn snd_trident_disable_eso(trident: *mut snd_trident) {
+unsafe fn snd_trident_disable_eso(trident: *mut snd_trident) {
     let mut tmp: c_uint;
 
     tmp = inl(TRID_REG(trident, T4D_LFO_GC_CIR));
@@ -242,7 +242,7 @@ pub unsafe extern "C" fn snd_trident_stop_voice(trident: *mut snd_trident, voice
     outl(mask, TRID_REG(trident, reg));
 }
 
-static unsafe fn snd_trident_allocate_pcm_channel(trident: *mut snd_trident) -> c_int {
+unsafe fn snd_trident_allocate_pcm_channel(trident: *mut snd_trident) -> c_int {
     let mut idx: c_int;
 
     if (*trident).ChanPCMcnt >= (*trident).ChanPCM {
@@ -260,7 +260,7 @@ static unsafe fn snd_trident_allocate_pcm_channel(trident: *mut snd_trident) -> 
     -1
 }
 
-static unsafe fn snd_trident_free_pcm_channel(trident: *mut snd_trident, mut channel: c_int) {
+unsafe fn snd_trident_free_pcm_channel(trident: *mut snd_trident, mut channel: c_int) {
     if channel < 32 || channel > 63 {
         return;
     }
@@ -271,7 +271,7 @@ static unsafe fn snd_trident_free_pcm_channel(trident: *mut snd_trident, mut cha
     }
 }
 
-static unsafe fn snd_trident_allocate_synth_channel(trident: *mut snd_trident) -> c_int {
+unsafe fn snd_trident_allocate_synth_channel(trident: *mut snd_trident) -> c_int {
     let mut idx: c_int = 31;
 
     while idx >= 0 {
@@ -285,7 +285,7 @@ static unsafe fn snd_trident_allocate_synth_channel(trident: *mut snd_trident) -
     -1
 }
 
-static unsafe fn snd_trident_free_synth_channel(trident: *mut snd_trident, mut channel: c_int) {
+unsafe fn snd_trident_free_synth_channel(trident: *mut snd_trident, mut channel: c_int) {
     if channel < 0 || channel > 31 {
         return;
     }
@@ -353,7 +353,7 @@ pub unsafe extern "C" fn snd_trident_write_voice_regs(
     outl(regs[4], TRID_REG(trident, CH_START + 16));
 }
 
-static unsafe fn snd_trident_write_cso_reg(
+unsafe fn snd_trident_write_cso_reg(
     trident: *mut snd_trident,
     voice: *mut snd_trident_voice,
     CSO: c_uint,
@@ -367,7 +367,7 @@ static unsafe fn snd_trident_write_cso_reg(
     }
 }
 
-static unsafe fn snd_trident_write_eso_reg(
+unsafe fn snd_trident_write_eso_reg(
     trident: *mut snd_trident,
     voice: *mut snd_trident_voice,
     ESO: c_uint,
@@ -384,7 +384,7 @@ static unsafe fn snd_trident_write_eso_reg(
     }
 }
 
-static unsafe fn snd_trident_write_vol_reg(
+unsafe fn snd_trident_write_vol_reg(
     trident: *mut snd_trident,
     voice: *mut snd_trident_voice,
     Vol: c_uint,
@@ -402,7 +402,7 @@ static unsafe fn snd_trident_write_vol_reg(
     }
 }
 
-static unsafe fn snd_trident_write_pan_reg(
+unsafe fn snd_trident_write_pan_reg(
     trident: *mut snd_trident,
     voice: *mut snd_trident_voice,
     Pan: c_uint,
@@ -415,7 +415,7 @@ static unsafe fn snd_trident_write_pan_reg(
     );
 }
 
-static unsafe fn snd_trident_write_rvol_reg(
+unsafe fn snd_trident_write_rvol_reg(
     trident: *mut snd_trident,
     voice: *mut snd_trident_voice,
     RVol: c_uint,
@@ -435,7 +435,7 @@ static unsafe fn snd_trident_write_rvol_reg(
     );
 }
 
-static unsafe fn snd_trident_write_cvol_reg(
+unsafe fn snd_trident_write_cvol_reg(
     trident: *mut snd_trident,
     voice: *mut snd_trident_voice,
     CVol: c_uint,
@@ -455,7 +455,7 @@ static unsafe fn snd_trident_write_cvol_reg(
     );
 }
 
-static fn snd_trident_convert_rate(rate: c_uint) -> c_uint {
+fn snd_trident_convert_rate(rate: c_uint) -> c_uint {
     if rate == 44100 {
         0xeb3
     } else if rate == 8000 {
@@ -467,7 +467,7 @@ static fn snd_trident_convert_rate(rate: c_uint) -> c_uint {
     }
 }
 
-static fn snd_trident_convert_adc_rate(rate: c_uint) -> c_uint {
+fn snd_trident_convert_adc_rate(rate: c_uint) -> c_uint {
     if rate == 44100 {
         0x116a
     } else if rate == 8000 {
@@ -479,7 +479,7 @@ static fn snd_trident_convert_adc_rate(rate: c_uint) -> c_uint {
     }
 }
 
-static fn snd_trident_spurious_threshold(rate: c_uint, period_size: c_uint) -> c_uint {
+fn snd_trident_spurious_threshold(rate: c_uint, period_size: c_uint) -> c_uint {
     let mut res: c_uint = (rate * period_size) / 48000;
     if res < 64 {
         res /= 2;
@@ -489,7 +489,7 @@ static fn snd_trident_spurious_threshold(rate: c_uint, period_size: c_uint) -> c
     res
 }
 
-static unsafe fn snd_trident_control_mode(substream: *mut snd_pcm_substream) -> c_uint {
+unsafe fn snd_trident_control_mode(substream: *mut snd_pcm_substream) -> c_uint {
     let mut CTRL: c_uint;
     let runtime: *mut snd_pcm_runtime = (*substream).runtime;
 
@@ -662,14 +662,14 @@ include_translated_c_items! {
     static int snd_trident_mixer(struct snd_trident *trident, int pcm_spdif_device);
 
     /* IS_REACHABLE(CONFIG_GAMEPORT) conditional preserved from C source. */
-    static unsigned char snd_trident_gameport_read(struct gameport *gameport);
+    static core::ffi::c_uchar snd_trident_gameport_read(struct gameport *gameport);
     static void snd_trident_gameport_trigger(struct gameport *gameport);
     static int snd_trident_gameport_cooked_read(struct gameport *gameport, int *axes, int *buttons);
     static int snd_trident_gameport_open(struct gameport *gameport, int mode);
     int snd_trident_create_gameport(struct snd_trident *chip);
-    static inline void snd_trident_free_gameport(struct snd_trident *chip);
+    void snd_trident_free_gameport(struct snd_trident *chip);
 
-    static inline void do_delay(struct snd_trident *chip);
+    void do_delay(struct snd_trident *chip);
     static int snd_trident_sis_reset(struct snd_trident *trident);
     static void snd_trident_proc_read(struct snd_info_entry *entry,
                                       struct snd_info_buffer *buffer);
@@ -690,7 +690,7 @@ include_translated_c_items! {
                                                       int type, int client, int port);
     void snd_trident_free_voice(struct snd_trident *trident, struct snd_trident_voice *voice);
     static void snd_trident_clear_voices(struct snd_trident *trident,
-                                         unsigned short v_min, unsigned short v_max);
+                                         v_min: core::ffi::c_ushort, v_max: core::ffi::c_ushort);
     /* CONFIG_PM_SLEEP conditional preserved from C source. */
     static int snd_trident_suspend(struct device *dev);
     static int snd_trident_resume(struct device *dev);

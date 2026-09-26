@@ -364,11 +364,11 @@ unsafe fn char2uni(rawstring: *const u8, boundlen: i32, uni: *mut u16) -> i32
 }
 
 static mut table: nls_table = {
-	.charset	= "cp437",
-	.uni2char = Some(uni2char),
-	.char2uni = Some(char2uni),
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "cp437",
+	uni2char: Some(uni2char),
+	char2uni: Some(char2uni),
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 };
 
 unsafe fn init_nls_cp437() -> i32

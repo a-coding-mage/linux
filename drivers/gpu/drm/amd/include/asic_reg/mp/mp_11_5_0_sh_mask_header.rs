@@ -19,7 +19,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#define _mp_11_5_0_SH_MASK_HEADER
 
 
 // addressBlock: mp_SmuMp0_SmnDec

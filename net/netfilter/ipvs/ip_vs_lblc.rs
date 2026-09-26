@@ -74,9 +74,9 @@ unsafe fn ip_vs_lblc_hash(tbl: *mut IpVsLblcTable, en: *mut IpVsLblcEntry) {
 unsafe fn ip_vs_lblc_get(af: i32, tbl: *mut IpVsLblcTable, addr: *const nf_inet_addr) -> *mut IpVsLblcEntry {
     let hash = ip_vs_lblc_hashkey(af, addr) as usize;
     let mut en: *mut IpVsLblcEntry = core::ptr::null_mut();
-    hlist_for_each_entry_rcu!(en, &mut (*tbl).bucket[hash], list) {
+    hlist_for_each_entry_rcu!(en, &mut (*tbl).bucket[hash], list, {
         if ip_vs_addr_equal(af, &(*en).addr, addr) { return en; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -104,10 +104,10 @@ unsafe fn ip_vs_lblc_flush(svc: *mut ip_vs_service) {
     for i in 0..IP_VS_LBLC_TAB_SIZE {
         let mut en: *mut IpVsLblcEntry = core::ptr::null_mut();
         let mut next: *mut hlist_node = core::ptr::null_mut();
-        hlist_for_each_entry_safe!(en, next, &mut (*tbl).bucket[i], list) {
+        hlist_for_each_entry_safe!(en, next, &mut (*tbl).bucket[i], list, {
             ip_vs_lblc_del(en);
             atomic_dec(&mut (*tbl).entries);
-        }
+        });
     }
 }
 
@@ -125,10 +125,10 @@ unsafe fn ip_vs_lblc_full_check(svc: *mut ip_vs_service) {
         let _guard = spin_lock(&mut (*svc).sched_lock);
         let mut en: *mut IpVsLblcEntry = core::ptr::null_mut();
         let mut next: *mut hlist_node = core::ptr::null_mut();
-        hlist_for_each_entry_safe!(en, next, &mut (*tbl).bucket[j], list) {
+        hlist_for_each_entry_safe!(en, next, &mut (*tbl).bucket[j], list, {
             if time_before(now, (*en).lastuse.wrapping_add(sysctl_lblc_expiration(svc))) { continue; }
             ip_vs_lblc_del(en); atomic_dec(&mut (*tbl).entries);
-        }
+        });
     }
     (*tbl).rover = j as i32;
 }
@@ -148,10 +148,10 @@ unsafe extern "C" fn ip_vs_lblc_check_expire(t: *mut timer_list) {
             j = (j + 1) & IP_VS_LBLC_TAB_MASK;
             let _guard = spin_lock(&mut (*svc).sched_lock);
             let mut en: *mut IpVsLblcEntry = core::ptr::null_mut(); let mut next = core::ptr::null_mut();
-            hlist_for_each_entry_safe!(en, next, &mut (*tbl).bucket[j], list) {
+            hlist_for_each_entry_safe!(en, next, &mut (*tbl).bucket[j], list, {
                 if time_before(now, (*en).lastuse.wrapping_add(ENTRY_TIMEOUT)) { continue; }
                 ip_vs_lblc_del(en); atomic_dec(&mut (*tbl).entries); goal -= 1;
-            }
+            });
             if goal <= 0 { break; }
         }
         (*tbl).rover = j as i32;
@@ -181,24 +181,24 @@ unsafe extern "C" fn ip_vs_lblc_done_svc(svc: *mut ip_vs_service) {
 
 unsafe fn __ip_vs_lblc_schedule(svc: *mut ip_vs_service) -> *mut ip_vs_dest {
     let mut least: *mut ip_vs_dest = core::ptr::null_mut(); let mut loh: i32 = 0;
-    list_for_each_entry_rcu!(dest, &(*svc).destinations, n_list) {
+    list_for_each_entry_rcu!(dest, &(*svc).destinations, n_list, {
         if (*dest).flags & IP_VS_DEST_F_OVERLOAD != 0 { continue; }
         if atomic_read(&(*dest).weight) > 0 { least = dest; loh = ip_vs_dest_conn_overhead(dest); break; }
-    }
+    });
     if least.is_null() { return core::ptr::null_mut(); }
-    list_for_each_entry_continue_rcu!(dest, &(*svc).destinations, n_list) {
+    list_for_each_entry_continue_rcu!(dest, &(*svc).destinations, n_list, {
         if (*dest).flags & IP_VS_DEST_F_OVERLOAD != 0 { continue; }
         let doh = ip_vs_dest_conn_overhead(dest);
         if (loh as i64) * atomic_read(&(*dest).weight) as i64 > (doh as i64) * atomic_read(&(*least).weight) as i64 { least = dest; loh = doh; }
-    }
+    });
     least
 }
 
 unsafe fn is_overloaded(dest: *mut ip_vs_dest, svc: *mut ip_vs_service) -> i32 {
     if atomic_read(&(*dest).activeconns) > atomic_read(&(*dest).weight) {
-        list_for_each_entry_rcu!(d, &(*svc).destinations, n_list) {
+        list_for_each_entry_rcu!(d, &(*svc).destinations, n_list, {
             if atomic_read(&(*d).activeconns) * 2 < atomic_read(&(*d).weight) { return 1; }
-        }
+        });
     }
     0
 }

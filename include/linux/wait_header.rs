@@ -48,20 +48,20 @@ extern "C" {
         name: *const ::core::ffi::c_char,
         key: *mut lock_class_key,
     );
-    pub fn add_wait_queue(*mut wait_queue_head, *mut wait_queue_entry);
-    pub fn add_wait_queue_exclusive(*mut wait_queue_head, *mut wait_queue_entry);
-    pub fn add_wait_queue_priority(*mut wait_queue_head, *mut wait_queue_entry);
-    pub fn add_wait_queue_priority_exclusive(*mut wait_queue_head, *mut wait_queue_entry) -> ::core::ffi::c_int;
-    pub fn remove_wait_queue(*mut wait_queue_head, *mut wait_queue_entry);
-    pub fn __wake_up(*mut wait_queue_head, ::core::ffi::c_uint, ::core::ffi::c_int, *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
-    pub fn __wake_up_on_current_cpu(*mut wait_queue_head, ::core::ffi::c_uint, *mut ::core::ffi::c_void);
-    pub fn __wake_up_locked_key(*mut wait_queue_head, ::core::ffi::c_uint, *mut ::core::ffi::c_void);
-    pub fn __wake_up_sync_key(*mut wait_queue_head, ::core::ffi::c_uint, *mut ::core::ffi::c_void);
-    pub fn __wake_up_locked_sync_key(*mut wait_queue_head, ::core::ffi::c_uint, *mut ::core::ffi::c_void);
-    pub fn __wake_up_locked(*mut wait_queue_head, ::core::ffi::c_uint, ::core::ffi::c_int);
-    pub fn __wake_up_sync(*mut wait_queue_head, ::core::ffi::c_uint);
-    pub fn __wake_up_pollfree(*mut wait_queue_head);
-    pub fn init_wait_entry(*mut wait_queue_entry, ::core::ffi::c_int);
+    pub fn add_wait_queue(_: *mut wait_queue_head, _: *mut wait_queue_entry);
+    pub fn add_wait_queue_exclusive(_: *mut wait_queue_head, _: *mut wait_queue_entry);
+    pub fn add_wait_queue_priority(_: *mut wait_queue_head, _: *mut wait_queue_entry);
+    pub fn add_wait_queue_priority_exclusive(_: *mut wait_queue_head, _: *mut wait_queue_entry) -> ::core::ffi::c_int;
+    pub fn remove_wait_queue(_: *mut wait_queue_head, _: *mut wait_queue_entry);
+    pub fn __wake_up(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: ::core::ffi::c_int, _: *mut ::core::ffi::c_void) -> ::core::ffi::c_int;
+    pub fn __wake_up_on_current_cpu(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
+    pub fn __wake_up_locked_key(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
+    pub fn __wake_up_sync_key(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
+    pub fn __wake_up_locked_sync_key(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: *mut ::core::ffi::c_void);
+    pub fn __wake_up_locked(_: *mut wait_queue_head, _: ::core::ffi::c_uint, _: ::core::ffi::c_int);
+    pub fn __wake_up_sync(_: *mut wait_queue_head, _: ::core::ffi::c_uint);
+    pub fn __wake_up_pollfree(_: *mut wait_queue_head);
+    pub fn init_wait_entry(_: *mut wait_queue_entry, _: ::core::ffi::c_int);
 }
 
 #[inline]

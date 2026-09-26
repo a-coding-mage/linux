@@ -259,7 +259,7 @@ pub unsafe fn kasan_init() {
         kasan_mem_to_shadow((-1isize) as *mut _) + 1,
     );
 
-    for_each_mem_range(&mut i, &mut pa_start, &mut pa_end) {
+    for_each_mem_range!(&mut i, &mut pa_start, &mut pa_end, {
         let start = __va(pa_start);
         let mut end = __va(pa_end);
 
@@ -273,7 +273,7 @@ pub unsafe fn kasan_init() {
             end = __va(arm_lowmem_limit);
         }
         create_mapping(start, end);
-    }
+    });
 
     /*
      * 1. The module global variables are in MODULES_VADDR ~ MODULES_END,

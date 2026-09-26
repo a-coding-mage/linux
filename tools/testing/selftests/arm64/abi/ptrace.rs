@@ -93,8 +93,8 @@ unsafe fn have_sme() -> bool {
 }
 
 unsafe fn test_tpidr(child: pid_t) {
-    let mut read_val = [0_u64; MAX_TPIDRS];
-    let mut write_val = [0_u64; MAX_TPIDRS];
+    let mut read_val = [0u64; MAX_TPIDRS];
+    let mut write_val = [0u64; MAX_TPIDRS];
     let mut read_iov = libc::iovec {
         iov_base: ptr::null_mut(),
         iov_len: 0,

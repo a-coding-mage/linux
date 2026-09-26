@@ -56,14 +56,14 @@ unsafe fn sctp_sched_prio_get_head(
     let mut p: *mut sctp_stream_priorities;
     let mut i: i32;
 
-    list_for_each_entry!(p, &mut (*stream).prio_list, prio_sched) {
+    list_for_each_entry!(p, &mut (*stream).prio_list, prio_sched, {
         if (*p).prio == prio {
             return sctp_sched_prio_head_get(p);
         }
         if (*p).prio > prio {
             break;
         }
-    }
+    });
 
     i = 0;
     while i < (*stream).outcnt {
@@ -120,12 +120,12 @@ unsafe fn sctp_sched_prio_sched(stream: *mut sctp_stream, soute: *mut sctp_strea
     list_add(&mut (*soute).prio_list, &mut (*prio_head).active);
     (*prio_head).next = soute;
     let mut prio: *mut sctp_stream_priorities;
-    list_for_each_entry!(prio, &mut (*stream).prio_list, prio_sched) {
+    list_for_each_entry!(prio, &mut (*stream).prio_list, prio_sched, {
         if (*prio).prio > (*prio_head).prio {
             list_add(&mut (*prio_head).prio_sched, (*prio).prio_sched.prev);
             return;
         }
-    }
+    });
     list_add_tail(&mut (*prio_head).prio_sched, &mut (*stream).prio_list);
 }
 
@@ -196,11 +196,11 @@ unsafe fn sctp_sched_prio_dequeue_done(q: *mut sctp_outq, ch: *mut sctp_chunk) {
 unsafe fn sctp_sched_prio_sched_all(stream: *mut sctp_stream) {
     let asoc = container_of!(stream, sctp_association, stream);
     let mut ch: *mut sctp_chunk;
-    list_for_each_entry!(ch, &mut (*asoc).outqueue.out_chunk_list, list) {
+    list_for_each_entry!(ch, &mut (*asoc).outqueue.out_chunk_list, list, {
         let sid = sctp_chunk_stream_no(ch);
         let sout = SCTP_SO(stream, sid);
         if !(*sout).ext.is_null() { sctp_sched_prio_sched(stream, (*sout).ext); }
-    }
+    });
 }
 
 unsafe fn sctp_sched_prio_unsched_all(stream: *mut sctp_stream) {
@@ -208,11 +208,11 @@ unsafe fn sctp_sched_prio_unsched_all(stream: *mut sctp_stream) {
     let mut tmp: *mut sctp_stream_priorities;
     let mut soute: *mut sctp_stream_out_ext;
     let mut souttmp: *mut sctp_stream_out_ext;
-    list_for_each_entry_safe!(p, tmp, &mut (*stream).prio_list, prio_sched) {
-        list_for_each_entry_safe!(soute, souttmp, &mut (*p).active, prio_list) {
+    list_for_each_entry_safe!(p, tmp, &mut (*stream).prio_list, prio_sched, {
+        list_for_each_entry_safe!(soute, souttmp, &mut (*p).active, prio_list, {
             sctp_sched_prio_unsched(soute);
-        }
-    }
+        });
+    });
 }
 
 static mut SCTP_SCHED_PRIO: sctp_sched_ops = sctp_sched_ops {

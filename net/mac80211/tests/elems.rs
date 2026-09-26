@@ -72,7 +72,7 @@ unsafe fn mle_defrag(test: *mut kunit) {
     skb_put_u8(skb, WLAN_EID_EXT_EHT_MULTI_LINK);
     put_unaligned_le16(IEEE80211_ML_CONTROL_TYPE_BASIC, skb_put(skb, 2));
     skb_put_u8(skb, 7);
-    skb_put_data(skb, c"\0\0\0\0\0\0".as_ptr() as *const _, ETH_ALEN);
+    skb_put_data(skb, c"\0\0\0\0\0".as_ptr() as *const _, ETH_ALEN);
     skb_put_u8(skb, IEEE80211_MLE_SUBELEM_PER_STA_PROFILE);
     let len_prof = skb_put(skb, 1);
     put_unaligned_le16(IEEE80211_MLE_STA_CONTROL_COMPLETE_PROFILE | parse_params.link_id, skb_put(skb, 2));

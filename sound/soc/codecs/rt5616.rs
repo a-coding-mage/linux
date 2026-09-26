@@ -797,7 +797,7 @@ unsafe extern "C" fn rt5616_set_bias_level(component: *mut snd_soc_component, le
     0
 }
 
-unsafe fn IS_ERR<T>(ptr: *mut T) -> bool { ptr as isize > -4096isize && ptr as isize < 0 }
+unsafe fn IS_ERR<T>(ptr: *mut T) -> bool { ptr as isize > -4096isize && (ptr as isize) < 0 }
 unsafe fn PTR_ERR<T>(ptr: *mut T) -> c_int { ptr as isize as c_int }
 
 unsafe extern "C" fn rt5616_probe(component: *mut snd_soc_component) -> c_int {

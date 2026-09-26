@@ -7,7 +7,7 @@
 
 // Dependency intent from C: <linux/sched.h>
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn arch_align_stack(sp: ::core::ffi::c_ulong) -> ::core::ffi::c_ulong;
 }
 

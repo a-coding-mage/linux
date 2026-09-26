@@ -116,10 +116,10 @@ unsafe fn hpfs_lookup(dir: *mut inode, dentry: *mut dentry, flags: u32) -> *mut 
         result = iget_locked((*dir).i_sb, ino);
         if result.is_null() { hpfs_error((*dir).i_sb, "hpfs_lookup: can't get inode\0".as_ptr() as *const i8); result = ERR_PTR(-ENOMEM); }
         else {
-            if inode_state_read_once(result) & I_NEW != 0 { hpfs_init_inode(result); if (*de).directory || (le32_to_cpu((*de).ea_size) != 0 && (*hpfs_sb((*dir).i_sb)).sb_eas) { hpfs_read_inode(result); } else { (*result).i_mode |= S_IFREG; (*result).i_mode &= !0111; (*result).i_op = &hpfs_file_iops; (*result).i_fop = &hpfs_file_ops; set_nlink(result, 1); } unlock_new_inode(result); }
+            if inode_state_read_once(result) & I_NEW != 0 { hpfs_init_inode(result); if (*de).directory || (le32_to_cpu((*de).ea_size) != 0 && (*hpfs_sb((*dir).i_sb)).sb_eas) { hpfs_read_inode(result); } else { (*result).i_mode |= S_IFREG; (*result).i_mode &= !0o111; (*result).i_op = &hpfs_file_iops; (*result).i_fop = &hpfs_file_ops; set_nlink(result, 1); } unlock_new_inode(result); }
             if !(*de).directory { (*hpfs_i(result)).i_parent_dir = (*dir).i_ino; }
             if (*de).has_acl || (*de).has_xtd_perm { if !sb_rdonly((*dir).i_sb) { hpfs_error((*result).i_sb, "ACLs or XPERM found. This is probably HPFS386. This driver doesn't support it now. Send me some info on these structures\0".as_ptr() as *const i8); iput(result); result = ERR_PTR(-EINVAL); } }
-            if inode_get_ctime_sec(result) == 0 { inode_set_ctime(result, local_to_gmt((*dir).i_sb, le32_to_cpu((*de).creation_date)), 0); inode_set_mtime(result, local_to_gmt((*dir).i_sb, le32_to_cpu((*de).write_date)), 0); inode_set_atime(result, local_to_gmt((*dir).i_sb, le32_to_cpu((*de).read_date)), 0); (*hpfs_i(result)).i_ea_size = le32_to_cpu((*de).ea_size); if !(*hpfs_i(result)).i_ea_mode && (*de).read_only { (*result).i_mode &= !0222; } }
+            if inode_get_ctime_sec(result) == 0 { inode_set_ctime(result, local_to_gmt((*dir).i_sb, le32_to_cpu((*de).creation_date)), 0); inode_set_mtime(result, local_to_gmt((*dir).i_sb, le32_to_cpu((*de).write_date)), 0); inode_set_atime(result, local_to_gmt((*dir).i_sb, le32_to_cpu((*de).read_date)), 0); (*hpfs_i(result)).i_ea_size = le32_to_cpu((*de).ea_size); if !(*hpfs_i(result)).i_ea_mode && (*de).read_only { (*result).i_mode &= !0o222; } }
         }
         hpfs_brelse4(&mut qbh);
     }

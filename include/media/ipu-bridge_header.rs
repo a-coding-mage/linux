@@ -175,20 +175,20 @@ pub struct ipu_bridge {
 
 // External types and ACPI_ID_LEN are supplied by the corresponding kernel headers.
 
-#[cfg(feature = "CONFIG_IPU_BRIDGE")]
+#[cfg(CONFIG_IPU_BRIDGE)]
 unsafe extern "C" {
     pub fn ipu_bridge_init(dev: *mut device, parse_sensor_fwnode: ipu_parse_sensor_fwnode_t) -> ::core::ffi::c_int;
     pub fn ipu_bridge_parse_ssdb(adev: *mut acpi_device, sensor: *mut ipu_sensor) -> ::core::ffi::c_int;
     pub fn ipu_bridge_instantiate_vcm(sensor: *mut device) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_IPU_BRIDGE"))]
+#[cfg(not(CONFIG_IPU_BRIDGE))]
 #[macro_export]
 macro_rules! ipu_bridge_init {
     ($dev:expr, $parse_sensor_fwnode:expr) => { 0 };
 }
 
-#[cfg(not(feature = "CONFIG_IPU_BRIDGE"))]
+#[cfg(not(CONFIG_IPU_BRIDGE))]
 #[inline]
 pub unsafe fn ipu_bridge_instantiate_vcm(_s: *mut device) -> ::core::ffi::c_int { 0 }
 

@@ -160,7 +160,7 @@ unsafe extern "C" fn jfs_xattr_set_os2(h:*const xattr_handler,m:*mut core::ffi::
 #[no_mangle] pub static mut jfs_security_xattr_handler: xattr_handler = xattr_handler { prefix: core::ptr::null(), get: Some(jfs_xattr_get), set: Some(jfs_xattr_set) };
 #[no_mangle] pub static mut jfs_trusted_xattr_handler: xattr_handler = xattr_handler { prefix: core::ptr::null(), get: Some(jfs_xattr_get), set: Some(jfs_xattr_set) };
 
-#[cfg(feature = "CONFIG_JFS_SECURITY")]
+#[cfg(CONFIG_JFS_SECURITY)]
 pub unsafe fn jfs_init_security(tid: tid_t, inode: *mut inode, _dir: *mut inode, _qstr: *const core::ffi::c_void) -> i32 {
     let _ = tid; let _ = inode; -EOPNOTSUPP
 }

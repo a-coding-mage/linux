@@ -50,7 +50,7 @@ macro_rules! GEN_UNARY_RMWcc {
 macro_rules! GEN_BINARY_RMWcc_6 {
     ($op:expr, $var:expr, $cc:tt, $vcon:expr, $val:expr, $arg0:expr) => {
         __GEN_RMWcc!(concat!($op, " %[val], ", $arg0), $var, $cc,
-            __CLOBBERS_MEM!(), [val] $vcon ($val))
+            __CLOBBERS_MEM!(), [$val] $vcon ($val))
     };
 }
 

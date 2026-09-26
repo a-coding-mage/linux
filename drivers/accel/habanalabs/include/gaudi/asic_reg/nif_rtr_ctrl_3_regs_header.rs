@@ -20,8 +20,6 @@
  ************************************/
  ************************************/
 
-#ifndef ASIC_REG_NIF_RTR_CTRL_3_REGS_H_
-#define ASIC_REG_NIF_RTR_CTRL_3_REGS_H_
 
 /*
 /*
@@ -1345,6 +1343,5 @@ pub const mmNIF_RTR_CTRL_3_NL_HBM_PC_SEL_2: u32 = 0x3B6CB8;
 pub const mmNIF_RTR_CTRL_3_NL_HBM_PC_SEL_3: u32 = 0x3B6CBC; 
 pub const mmNIF_RTR_CTRL_3_NL_HBM_PC_SEL_3: u32 = 0x3B6CBC; 
 
-#endif /* ASIC_REG_NIF_RTR_CTRL_3_REGS_H_ */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -6,7 +6,7 @@
 pub unsafe fn xen_setup_dma_ops(dev: *mut device) {
     // CONFIG_XEN is a build-time condition in the C source.  Enable the
     // contained code when the corresponding Rust configuration is present.
-    #[cfg(feature = "CONFIG_XEN")]
+    #[cfg(CONFIG_XEN)]
     {
         if xen_swiotlb_detect() != 0 {
             (*dev).dma_ops = &xen_swiotlb_dma_ops;

@@ -11,7 +11,7 @@ extern "C" {
 static mut crashing_cpu: i32 = -1;
 static mut cpus_in_crash: cpumask_t = CPU_MASK_NONE;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" {
     fn smp_processor_id() -> i32;
     fn get_irq_regs() -> *mut pt_regs;
@@ -33,13 +33,13 @@ unsafe extern "C" {
     fn pr_emerg(fmt: *const u8, ...);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[allow(non_snake_case)]
 unsafe extern "C" {
     static mut kexec_ready_to_reboot: atomic_t;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" fn crash_shutdown_secondary(passed_regs: *mut c_void) {
     let mut regs = passed_regs as *mut pt_regs;
     let cpu = smp_processor_id();
@@ -80,7 +80,7 @@ unsafe extern "C" fn crash_shutdown_secondary(passed_regs: *mut c_void) {
     /* NOTREACHED */
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn crash_kexec_prepare_cpus() {
     static mut cpus_stopped: i32 = 0;
     let mut msecs: u32;
@@ -112,7 +112,7 @@ unsafe fn crash_kexec_prepare_cpus() {
     cpus_stopped = 1;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[no_mangle]
 pub unsafe extern "C" fn crash_smp_send_stop() {
     if let Some(func) = _crash_smp_send_stop {
@@ -122,7 +122,7 @@ pub unsafe extern "C" fn crash_smp_send_stop() {
     crash_kexec_prepare_cpus();
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe fn crash_kexec_prepare_cpus() {}
 
 #[no_mangle]

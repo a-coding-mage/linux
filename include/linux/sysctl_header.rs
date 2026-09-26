@@ -54,21 +54,21 @@ extern "C" {
 pub type proc_handler = unsafe extern "C" fn(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
 
 extern "C" {
-    pub fn proc_dostring(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_dobool(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_dointvec(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_dointvec_minmax(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_douintvec(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_douintvec_minmax(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_dou8vec_minmax(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_doulongvec_minmax(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_do_large_bitmap(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_do_static_key(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t) -> i32;
-    pub fn proc_dointvec_conv(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t,
+    pub fn proc_dostring(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_dobool(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_dointvec(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_dointvec_minmax(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_douintvec(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_douintvec_minmax(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_dou8vec_minmax(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_doulongvec_minmax(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_do_large_bitmap(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_do_static_key(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t) -> i32;
+    pub fn proc_dointvec_conv(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t,
         conv: Option<unsafe extern "C" fn(*mut bool, *mut ulong, *mut i32, i32, *const ctl_table) -> i32>) -> i32;
-    pub fn proc_douintvec_conv(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t,
+    pub fn proc_douintvec_conv(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t,
         conv: Option<unsafe extern "C" fn(*mut bool, *mut ulong, *mut uint, i32, *const ctl_table) -> i32>) -> i32;
-    pub fn proc_doulongvec_conv(*const ctl_table, i32, *mut c_void, *mut size_t, *mut loff_t,
+    pub fn proc_doulongvec_conv(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut size_t, _: *mut loff_t,
         conv: Option<unsafe extern "C" fn(*mut bool, *mut ulong, *mut ulong, i32, *const ctl_table) -> i32>) -> i32;
 }
 
@@ -120,17 +120,17 @@ pub union ctl_table_header_union {
 
 /* CONFIG_SYSCTL declarations; when disabled, the C inline stubs return NULL/false or do nothing. */
 extern "C" {
-    pub fn proc_sys_poll_notify(*mut ctl_table_poll);
-    pub fn setup_sysctl_set(*mut ctl_table_set, *mut ctl_table_root, Option<unsafe extern "C" fn(*mut ctl_table_set) -> i32>);
-    pub fn retire_sysctl_set(*mut ctl_table_set);
-    pub fn __register_sysctl_table(*mut ctl_table_set, *const c_char, *const ctl_table, size_t) -> *mut ctl_table_header;
-    pub fn register_sysctl_sz(*const c_char, *const ctl_table, size_t) -> *mut ctl_table_header;
-    pub fn unregister_sysctl_table(*mut ctl_table_header);
+    pub fn proc_sys_poll_notify(_: *mut ctl_table_poll);
+    pub fn setup_sysctl_set(_: *mut ctl_table_set, _: *mut ctl_table_root, _: Option<unsafe extern "C" fn(*mut ctl_table_set) -> i32>);
+    pub fn retire_sysctl_set(_: *mut ctl_table_set);
+    pub fn __register_sysctl_table(_: *mut ctl_table_set, _: *const c_char, _: *const ctl_table, _: size_t) -> *mut ctl_table_header;
+    pub fn register_sysctl_sz(_: *const c_char, _: *const ctl_table, _: size_t) -> *mut ctl_table_header;
+    pub fn unregister_sysctl_table(_: *mut ctl_table_header);
     pub fn sysctl_init_bases() -> i32;
-    pub fn __register_sysctl_init(*const c_char, *const ctl_table, *const c_char, size_t);
-    pub fn register_sysctl_mount_point(*const c_char) -> *mut ctl_table_header;
+    pub fn __register_sysctl_init(_: *const c_char, _: *const ctl_table, _: *const c_char, _: size_t);
+    pub fn register_sysctl_mount_point(_: *const c_char) -> *mut ctl_table_header;
     pub fn do_sysctl_args();
-    pub fn sysctl_is_alias(*mut c_char) -> bool;
+    pub fn sysctl_is_alias(_: *mut c_char) -> bool;
     pub static mut unaligned_enabled: i32;
     pub static mut no_unaligned_warning: i32;
 }

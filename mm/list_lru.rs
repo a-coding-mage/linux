@@ -22,46 +22,46 @@ unsafe fn unlock_list_lru(l: *mut list_lru_one, irq_off: bool, irq_flags: *mut c
     else { spin_unlock(&mut (*l).lock); }
 }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 static mut memcg_list_lrus: list_head = LIST_HEAD_INIT(memcg_list_lrus);
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 static mut list_lrus_mutex: mutex = DEFINE_MUTEX_INIT();
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 #[inline] unsafe fn list_lru_memcg_aware(lru: *mut list_lru) -> bool { (*lru).memcg_aware }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 #[inline] unsafe fn list_lru_memcg_aware(_lru: *mut list_lru) -> bool { false }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn list_lru_register(lru: *mut list_lru) {
     if !list_lru_memcg_aware(lru) { return; }
     mutex_lock(&mut list_lrus_mutex); list_add(&mut (*lru).list, &mut memcg_list_lrus); mutex_unlock(&mut list_lrus_mutex);
 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn list_lru_register(_lru: *mut list_lru) {}
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn list_lru_unregister(lru: *mut list_lru) {
     if !list_lru_memcg_aware(lru) { return; }
     mutex_lock(&mut list_lrus_mutex); list_del(&mut (*lru).list); mutex_unlock(&mut list_lrus_mutex);
 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn list_lru_unregister(_lru: *mut list_lru) {}
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn lru_shrinker_id(lru: *mut list_lru) -> c_int { (*lru).shrinker_id }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn lru_shrinker_id(_lru: *mut list_lru) -> c_int { -1 }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn list_lru_from_memcg_idx(lru: *mut list_lru, nid: c_int, idx: c_int) -> *mut list_lru_one {
     if list_lru_memcg_aware(lru) && idx >= 0 { let mlru = xa_load(&mut (*lru).xa, idx as _); if !mlru.is_null() { return &mut (*mlru).node[nid as usize]; } return core::ptr::null_mut(); }
     &mut (*(*lru).node.add(nid as usize)).lru
 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn list_lru_from_memcg_idx(lru: *mut list_lru, nid: c_int, _idx: c_int) -> *mut list_lru_one { &mut (*(*lru).node.add(nid as usize)).lru }
 
-#[cfg(feature = "CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn lock_list_lru_of_memcg(lru: *mut list_lru, nid: c_int, memcg: *mut *mut mem_cgroup, irq: bool, flags: *mut c_ulong, skip_empty: bool) -> *mut list_lru_one {
     rcu_read_lock();
     loop {
@@ -71,7 +71,7 @@ unsafe fn lock_list_lru_of_memcg(lru: *mut list_lru, nid: c_int, memcg: *mut *mu
         VM_WARN_ON(!css_is_dying(&(*(*memcg)).css)); *memcg = parent_mem_cgroup(*memcg);
     }
 }
-#[cfg(not(feature = "CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn lock_list_lru_of_memcg(lru: *mut list_lru, nid: c_int, _memcg: *mut *mut mem_cgroup, irq: bool, flags: *mut c_ulong, _skip_empty: bool) -> *mut list_lru_one {
     let l = &mut (*(*lru).node.add(nid as usize)).lru; lock_list_lru(l, irq, flags); l
 }
@@ -111,25 +111,25 @@ extern "C" { fn __list_lru_walk_one(lru:*mut list_lru,nid:c_int,memcg:*mut mem_c
 
 pub unsafe fn list_lru_walk_node(lru:*mut list_lru,nid:c_int,isolate:list_lru_walk_cb,arg:*mut c_void,nr:*mut c_ulong)->c_ulong {
     let mut isolated=list_lru_walk_one(lru,nid,core::ptr::null_mut(),isolate,arg,nr);
-    #[cfg(feature="CONFIG_MEMCG")]
+    #[cfg(CONFIG_MEMCG)]
     if *nr > 0 && list_lru_memcg_aware(lru) { /* xa_for_each and memcg lifetime handling are external kernel primitives. */ }
     isolated
 }
 
 unsafe fn init_one_lru(_lru:*mut list_lru,l:*mut list_lru_one) { INIT_LIST_HEAD(&mut (*l).list); spin_lock_init(&mut (*l).lock); (*l).nr_items=0; }
 
-#[cfg(feature="CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn memcg_init_list_lru(lru:*mut list_lru, aware:bool) { if aware { xa_init_flags(&mut (*lru).xa, XA_FLAGS_LOCK_IRQ); } (*lru).memcg_aware=aware; }
-#[cfg(not(feature="CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn memcg_init_list_lru(_lru:*mut list_lru,_aware:bool) {}
 
-#[cfg(feature="CONFIG_MEMCG")]
+#[cfg(CONFIG_MEMCG)]
 unsafe fn memcg_destroy_list_lru(lru:*mut list_lru) { if !list_lru_memcg_aware(lru){return;} /* xarray destruction is supplied by the kernel. */ }
-#[cfg(not(feature="CONFIG_MEMCG"))]
+#[cfg(not(CONFIG_MEMCG))]
 unsafe fn memcg_destroy_list_lru(_lru:*mut list_lru) {}
 
 pub unsafe fn __list_lru_init(lru:*mut list_lru, mut memcg_aware:bool, shrinker:*mut shrinker)->c_int {
-    #[cfg(feature="CONFIG_MEMCG")]
+    #[cfg(CONFIG_MEMCG)]
     { (*lru).shrinker_id=if shrinker.is_null(){-1}else{(*shrinker).id}; if mem_cgroup_kmem_disabled(){memcg_aware=false;} }
     (*lru).node=kzalloc_objs(core::mem::size_of::<list_lru_node>(),nr_node_ids());
     if (*lru).node.is_null(){return -ENOMEM;}
@@ -140,7 +140,7 @@ pub unsafe fn __list_lru_init(lru:*mut list_lru, mut memcg_aware:bool, shrinker:
 pub unsafe fn list_lru_destroy(lru:*mut list_lru) {
     if (*lru).node.is_null(){return;}
     list_lru_unregister(lru); memcg_destroy_list_lru(lru); kfree((*lru).node); (*lru).node=core::ptr::null_mut();
-    #[cfg(feature="CONFIG_MEMCG")] { (*lru).shrinker_id=-1; }
+    #[cfg(CONFIG_MEMCG)] { (*lru).shrinker_id=-1; }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

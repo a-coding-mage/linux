@@ -3,9 +3,9 @@
 // Dependencies supplied by the surrounding kernel translation:
 // linux/list.h, linux/bit_spinlock.h
 
-#[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK"))]
+#[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
 pub const LIST_BL_LOCKMASK: usize = 1;
-#[cfg(not(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK")))]
+#[cfg(not(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK)))]
 pub const LIST_BL_LOCKMASK: usize = 0;
 
 #[repr(C)]

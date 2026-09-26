@@ -7835,7 +7835,7 @@ static u8 charset2upper[256] = {
 };
 
 static i32 uni2char(const u16 uni,
-		    u8 *out, i32 boundlen)
+		    u8 *out, boundlen: i32)
 {
 	const u8 *uni2charset;
 	u8 cl = uni&0xFF;
@@ -7874,10 +7874,10 @@ static i32 uni2char(const u16 uni,
 		return -EINVAL;
 }
 
-static i32 char2uni(const u8 *rawstring, i32 boundlen,
+static i32 char2uni(const u8 *rawstring, boundlen: i32,
 		    u16 *uni)
 {
-	u8 ch, cl;
+	ch: u8, cl;
 	const u16 *charset2uni;
 
 	if (boundlen <= 0)
@@ -7908,12 +7908,12 @@ static i32 char2uni(const u8 *rawstring, i32 boundlen,
 }
 
 static struct nls_table table = {
-	.charset	= "cp932",
-	.alias		= "sjis",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "cp932",
+	alias: "sjis",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 };
 
 static i32 __init init_nls_cp932(void)

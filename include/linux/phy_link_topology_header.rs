@@ -58,7 +58,7 @@ pub unsafe fn phy_link_topo_empty(dev: *mut net_device) -> bool {
     (*dev).link_topo.is_null()
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 extern "C" {
     pub fn phy_link_topo_add_phy(
         dev: *mut net_device,
@@ -74,7 +74,7 @@ extern "C" {
     fn xa_load(array: *const xarray, index: u32) -> *mut core::ffi::c_void;
 }
 
-#[cfg(feature = "CONFIG_PHYLIB")]
+#[cfg(CONFIG_PHYLIB)]
 #[inline]
 pub unsafe fn phy_link_topo_get_phy(
     dev: *mut net_device,
@@ -95,7 +95,7 @@ pub unsafe fn phy_link_topo_get_phy(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_link_topo_add_phy(
     _dev: *mut net_device,
@@ -106,11 +106,11 @@ pub unsafe fn phy_link_topo_add_phy(
     0
 }
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_link_topo_del_phy(_dev: *mut net_device, _phy: *mut phy_device) {}
 
-#[cfg(not(feature = "CONFIG_PHYLIB"))]
+#[cfg(not(CONFIG_PHYLIB))]
 #[inline]
 pub unsafe fn phy_link_topo_get_phy(
     _dev: *mut net_device,

@@ -16,15 +16,15 @@ fn addr_to_l2_cache_cfg(addr: u64) -> u64 { addr >> 31 }
 static mut ivpu_firmware: *mut core::ffi::c_char = core::ptr::null_mut();
 
 #[repr(C)]
-struct FwName { gen: i32, name: &'static str }
+struct FwName { r#gen: i32, name: &'static str }
 static fw_names: &[FwName] = &[
-    FwName { gen: IVPU_HW_IP_37XX, name: "intel/vpu/vpu_37xx_v1.bin" },
-    FwName { gen: IVPU_HW_IP_37XX, name: "intel/vpu/vpu_37xx_v0.0.bin" },
-    FwName { gen: IVPU_HW_IP_40XX, name: "intel/vpu/vpu_40xx_v1.bin" },
-    FwName { gen: IVPU_HW_IP_40XX, name: "intel/vpu/vpu_40xx_v0.0.bin" },
-    FwName { gen: IVPU_HW_IP_50XX, name: "intel/vpu/vpu_50xx_v1.bin" },
-    FwName { gen: IVPU_HW_IP_50XX, name: "intel/vpu/vpu_50xx_v0.0.bin" },
-    FwName { gen: IVPU_HW_IP_60XX, name: "intel/vpu/vpu_60xx_v1.bin" },
+    FwName { r#gen: IVPU_HW_IP_37XX, name: "intel/vpu/vpu_37xx_v1.bin" },
+    FwName { r#gen: IVPU_HW_IP_37XX, name: "intel/vpu/vpu_37xx_v0.0.bin" },
+    FwName { r#gen: IVPU_HW_IP_40XX, name: "intel/vpu/vpu_40xx_v1.bin" },
+    FwName { r#gen: IVPU_HW_IP_40XX, name: "intel/vpu/vpu_40xx_v0.0.bin" },
+    FwName { r#gen: IVPU_HW_IP_50XX, name: "intel/vpu/vpu_50xx_v1.bin" },
+    FwName { r#gen: IVPU_HW_IP_50XX, name: "intel/vpu/vpu_50xx_v0.0.bin" },
+    FwName { r#gen: IVPU_HW_IP_60XX, name: "intel/vpu/vpu_60xx_v1.bin" },
 ];
 
 unsafe fn ivpu_fw_request(vdev: *mut ivpu_device) -> i32 {
@@ -35,7 +35,7 @@ unsafe fn ivpu_fw_request(vdev: *mut ivpu_device) -> i32 {
         return ret;
     }
     for entry in fw_names {
-        if entry.gen != ivpu_hw_ip_gen(vdev) { continue; }
+        if entry.r#gen != ivpu_hw_ip_gen(vdev) { continue; }
         ret = firmware_request_nowarn(&mut (*(*vdev).fw).file, entry.name.as_ptr() as _, (*vdev).drm.dev);
         if ret == 0 { (*(*vdev).fw).name = entry.name.as_ptr() as _; return 0; }
     }

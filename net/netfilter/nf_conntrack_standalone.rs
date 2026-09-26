@@ -84,17 +84,17 @@ unsafe fn ct_seq_next(seq: *mut seq_file, _v: *mut core::ffi::c_void, pos: *mut 
 }
 unsafe fn ct_seq_stop(_s: *mut seq_file, _v: *mut core::ffi::c_void) { rcu_read_unlock(); }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK_SECMARK")]
+#[cfg(CONFIG_NF_CONNTRACK_SECMARK)]
 unsafe fn ct_show_secctx(_s: *mut seq_file, _ct: *const nf_conn) {}
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_SECMARK"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_SECMARK))]
 unsafe fn ct_show_secctx(_s: *mut seq_file, _ct: *const nf_conn) {}
-#[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+#[cfg(CONFIG_NF_CONNTRACK_ZONES)]
 unsafe fn ct_show_zone(_s: *mut seq_file, _ct: *const nf_conn, _dir: i32) {}
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_ZONES"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_ZONES))]
 unsafe fn ct_show_zone(_s: *mut seq_file, _ct: *const nf_conn, _dir: i32) {}
-#[cfg(feature = "CONFIG_NF_CONNTRACK_TIMESTAMP")]
+#[cfg(CONFIG_NF_CONNTRACK_TIMESTAMP)]
 unsafe fn ct_show_delta_time(_s: *mut seq_file, _ct: *const nf_conn) {}
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_TIMESTAMP"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_TIMESTAMP))]
 unsafe fn ct_show_delta_time(_s: *mut seq_file, _ct: *const nf_conn) {}
 
 unsafe fn l3proto_name(proto: u16) -> *const i8 { match proto { 2 => b"ipv4\0".as_ptr() as _, 10 => b"ipv6\0".as_ptr() as _, _ => b"unknown\0".as_ptr() as _ } }

@@ -60,7 +60,7 @@ pub struct k_sigaction {
     pub ka_restorer: __sigrestore_t,
 }
 
-#[cfg(feature = "CONFIG_OLD_SIGACTION")]
+#[cfg(CONFIG_OLD_SIGACTION)]
 #[repr(C)]
 pub struct old_sigaction {
     pub sa_handler: __sighandler_t,

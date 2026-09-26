@@ -70,7 +70,7 @@ static mut amd64_aperture_sizes: [aper_size_info_32; 7] = [
 unsafe fn amd64_fetch_size() -> i32 {
     let dev = (*node_to_amd_nb(0)).misc;
     if dev.is_null() { return 0; }
-    let mut temp = 0_u32;
+    let mut temp = 0u32;
     pci_read_config_dword(dev, AMD64_GARTAPERTURECTL, &mut temp);
     temp &= 0xe;
     for i in 0..(*(*agp_bridge).driver).num_aperture_sizes {
@@ -85,7 +85,7 @@ unsafe fn amd64_fetch_size() -> i32 {
 }
 
 unsafe fn amd64_configure(hammer: *mut pci_dev, gatt_table: u64) -> u64 {
-    let mut tmp = 0_u32;
+    let mut tmp = 0u32;
     pci_read_config_dword(hammer, AMD64_GARTAPERTUREBASE, &mut tmp);
     let aperturebase = (tmp as u64) << 25;
     let aper_base = aperturebase & PCI_BASE_ADDRESS_MEM_MASK as u64;
@@ -116,8 +116,8 @@ unsafe fn agp_aperture_valid(aper: u64, size: u32) -> i32 {
 }
 
 unsafe fn fix_northbridge(nb: *mut pci_dev, agp: *mut pci_dev, cap: u16) -> i32 {
-    let mut nb_order=0_u32; let mut nb_base=0_u32; pci_read_config_dword(nb, AMD64_GARTAPERTURECTL, &mut nb_order); nb_order=(nb_order>>1)&7; pci_read_config_dword(nb, AMD64_GARTAPERTUREBASE, &mut nb_base); let nb_aper=(nb_base as u64)<<25;
-    let mut apsize=0_u16; pci_read_config_word(agp, cap+0x14, &mut apsize);
+    let mut nb_order=0u32; let mut nb_base=0u32; pci_read_config_dword(nb, AMD64_GARTAPERTURECTL, &mut nb_order); nb_order=(nb_order>>1)&7; pci_read_config_dword(nb, AMD64_GARTAPERTUREBASE, &mut nb_base); let nb_aper=(nb_base as u64)<<25;
+    let mut apsize=0u16; pci_read_config_word(agp, cap+0x14, &mut apsize);
     if apsize==0xffff { return if agp_aperture_valid(nb_aper,(32*1024*1024)<<nb_order)==1 {0} else {-1}; }
     apsize &= 0xfff; if apsize&0xff != 0 { apsize |= 0xf00; }
     let mut order = 7 - hweight16(apsize) as i32; let aper = pci_bus_address(agp, AGP_APERTURE_BAR);

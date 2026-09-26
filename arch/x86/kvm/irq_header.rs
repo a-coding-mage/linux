@@ -10,10 +10,10 @@
 // C dependencies: linux/mm_types.h, linux/hrtimer.h, linux/kvm_host.h,
 // linux/spinlock.h, kvm/iodev.h, and lapic.h.
 
-#[cfg(feature = "CONFIG_KVM_IOAPIC")]
+#[cfg(CONFIG_KVM_IOAPIC)]
 pub const PIC_NUM_PINS: usize = 16;
 
-#[cfg(feature = "CONFIG_KVM_IOAPIC")]
+#[cfg(CONFIG_KVM_IOAPIC)]
 #[inline]
 pub const fn SELECT_PIC(irq: i32) -> i32 {
     if irq < 8 { KVM_IRQCHIP_PIC_MASTER } else { KVM_IRQCHIP_PIC_SLAVE }
@@ -22,7 +22,7 @@ pub const fn SELECT_PIC(irq: i32) -> i32 {
 pub enum kvm {}
 pub enum kvm_vcpu {}
 
-#[cfg(feature = "CONFIG_KVM_IOAPIC")]
+#[cfg(CONFIG_KVM_IOAPIC)]
 #[repr(C)]
 pub struct kvm_kpic_state {
     pub last_irr: u8,
@@ -45,7 +45,7 @@ pub struct kvm_kpic_state {
     pub pics_state: *mut kvm_pic,
 }
 
-#[cfg(feature = "CONFIG_KVM_IOAPIC")]
+#[cfg(CONFIG_KVM_IOAPIC)]
 #[repr(C)]
 pub struct kvm_pic {
     pub lock: spinlock_t,
@@ -60,7 +60,7 @@ pub struct kvm_pic {
     pub irq_states: [::core::ffi::c_ulong; PIC_NUM_PINS],
 }
 
-#[cfg(feature = "CONFIG_KVM_IOAPIC")]
+#[cfg(CONFIG_KVM_IOAPIC)]
 extern "C" {
     pub fn kvm_pic_init(kvm: *mut kvm) -> i32;
     pub fn kvm_pic_destroy(kvm: *mut kvm);
@@ -76,13 +76,13 @@ extern "C" {
 #[inline]
 pub unsafe fn irqchip_full(kvm: *mut kvm) -> i32 {
     // Matches smp_wmb() when setting irqchip_mode.
-    #[cfg(feature = "CONFIG_KVM_IOAPIC")]
+    #[cfg(CONFIG_KVM_IOAPIC)]
     {
         let mode = (*kvm).arch.irqchip_mode;
         smp_rmb();
         return (mode == KVM_IRQCHIP_KERNEL) as i32;
     }
-    #[cfg(not(feature = "CONFIG_KVM_IOAPIC"))]
+    #[cfg(not(CONFIG_KVM_IOAPIC))]
     { let _ = kvm; 0 }
 }
 

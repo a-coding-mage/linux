@@ -42,6 +42,7 @@ unsafe extern "C" fn klp_ftrace_handler(
     let mut func: *mut klp_func;
     let mut patch_state: i32;
     let mut bit: i32;
+    'unlock: {
 
     ops = container_of!(fops, klp_ops, fops);
 
@@ -64,7 +65,7 @@ unsafe extern "C" fn klp_ftrace_handler(
      * synchronize_rcu() before the func_stack removal.
      */
     if (WARN_ON_ONCE!(func.is_null())) {
-        goto!(unlock);
+        break 'unlock;
     }
 
     /*
@@ -105,7 +106,7 @@ unsafe extern "C" fn klp_ftrace_handler(
                 &raw mut (*func).stack_node,
                 &raw mut (*ops).func_stack,
             ) {
-                goto!(unlock);
+                break 'unlock;
             }
         }
     }
@@ -115,12 +116,12 @@ unsafe extern "C" fn klp_ftrace_handler(
      * Do nothing! Setting pc would cause an infinite loop.
      */
     if (*func).nop {
-        goto!(unlock);
+        break 'unlock;
     }
 
     ftrace_regs_set_instruction_pointer(fregs, (*func).new_func as usize);
-
-unlock:
+    }
+    
     ftrace_test_recursion_unlock(bit);
 }
 
@@ -163,6 +164,7 @@ unsafe fn klp_unpatch_func(func: *mut klp_func) {
 unsafe fn klp_patch_func(func: *mut klp_func) -> i32 {
     let mut ops: *mut klp_ops;
     let ret: i32;
+    'err: {
 
     if WARN_ON!((*func).old_func.is_null()) {
         return -EINVAL;
@@ -207,7 +209,7 @@ unsafe fn klp_patch_func(func: *mut klp_func) -> i32 {
                 (*func).old_name,
                 ret,
             );
-            goto!(err);
+            break 'err;
         }
 
         ret = register_ftrace_function(&raw mut (*ops).fops);
@@ -218,7 +220,7 @@ unsafe fn klp_patch_func(func: *mut klp_func) -> i32 {
                 ret,
             );
             ftrace_set_filter_ip(&raw mut (*ops).fops, ftrace_loc, 1, 0);
-            goto!(err);
+            break 'err;
         }
     } else {
         list_add_rcu!(&raw mut (*func).stack_node, &raw mut (*ops).func_stack);
@@ -227,8 +229,8 @@ unsafe fn klp_patch_func(func: *mut klp_func) -> i32 {
     (*func).patched = true;
 
     return 0;
-
-err:
+    }
+    
     list_del_rcu!(&raw mut (*func).stack_node);
     list_del!(&raw mut (*ops).node);
     kfree(ops);

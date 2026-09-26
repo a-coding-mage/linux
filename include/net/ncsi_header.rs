@@ -35,7 +35,7 @@ pub struct net_device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_NET_NCSI")]
+#[cfg(CONFIG_NET_NCSI)]
 unsafe extern "C" {
     pub fn ncsi_vlan_rx_add_vid(dev: *mut net_device, proto: __be16, vid: u16) -> i32;
     pub fn ncsi_vlan_rx_kill_vid(dev: *mut net_device, proto: __be16, vid: u16) -> i32;
@@ -49,17 +49,17 @@ unsafe extern "C" {
 }
 
 /* !CONFIG_NET_NCSI: errno values are supplied by the kernel environment. */
-#[cfg(not(feature = "CONFIG_NET_NCSI"))]
+#[cfg(not(CONFIG_NET_NCSI))]
 pub unsafe fn ncsi_vlan_rx_add_vid(_dev: *mut net_device, _proto: __be16, _vid: u16) -> i32 {
     -EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_NET_NCSI"))]
+#[cfg(not(CONFIG_NET_NCSI))]
 pub unsafe fn ncsi_vlan_rx_kill_vid(_dev: *mut net_device, _proto: __be16, _vid: u16) -> i32 {
     -EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_NET_NCSI"))]
+#[cfg(not(CONFIG_NET_NCSI))]
 pub unsafe fn ncsi_register_dev(
     _dev: *mut net_device,
     _notifier: Option<unsafe extern "C" fn(nd: *mut ncsi_dev)>,
@@ -67,15 +67,15 @@ pub unsafe fn ncsi_register_dev(
     ::core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_NET_NCSI"))]
+#[cfg(not(CONFIG_NET_NCSI))]
 pub unsafe fn ncsi_start_dev(_nd: *mut ncsi_dev) -> i32 {
     -ENOTTY
 }
 
-#[cfg(not(feature = "CONFIG_NET_NCSI"))]
+#[cfg(not(CONFIG_NET_NCSI))]
 pub unsafe fn ncsi_stop_dev(_nd: *mut ncsi_dev) {}
 
-#[cfg(not(feature = "CONFIG_NET_NCSI"))]
+#[cfg(not(CONFIG_NET_NCSI))]
 pub unsafe fn ncsi_unregister_dev(_nd: *mut ncsi_dev) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

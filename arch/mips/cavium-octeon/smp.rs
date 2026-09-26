@@ -17,10 +17,10 @@ pub static mut OCTEON_PROCESSOR_BOOT: c_ulong = 0xff;
 pub static mut OCTEON_PROCESSOR_SP: c_ulong = 0;
 pub static mut OCTEON_PROCESSOR_GP: c_ulong = 0;
 
-#[cfg(feature = "CONFIG_RELOCATABLE")]
+#[cfg(CONFIG_RELOCATABLE)]
 pub static mut octeon_processor_relocated_kernel_entry: c_ulong = 0;
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub static mut octeon_bootloader_entry_addr: u64 = 0;
 
 extern "C" {
@@ -68,7 +68,7 @@ unsafe fn octeon_send_ipi_mask(mask: *const cpumask, action: u32) {
 }
 
 unsafe fn octeon_smp_hotplug_setup() {
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     {
         if !setup_max_cpus { return; }
         let labi = PHYS_TO_XKSEG_CACHED(LABI_ADDR_IN_BOOTLOADER) as *mut linux_app_boot_info;
@@ -111,10 +111,10 @@ unsafe fn octeon_prepare_cpus(_max_cpus: u32) {
 
 unsafe fn octeon_smp_finish() { octeon_user_io_init(); write_c0_compare(read_c0_count() + mips_hpt_frequency / HZ); local_irq_enable(); }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn octeon_cpu_disable() -> i32 { let cpu = smp_processor_id(); if octeon_bootloader_entry_addr == 0 { return -ENOTSUPP; } set_cpu_online(cpu, false); calculate_cpu_foreign_map(); octeon_fixup_irqs(); __flush_cache_all(); local_flush_tlb_all(); 0 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn octeon_cpu_die(cpu: u32) {
     let coreid = cpu_logical_map(cpu as i32);
     while per_cpu_cpu_state(cpu) != CPU_DEAD { cpu_relax(); }
@@ -132,17 +132,17 @@ unsafe fn octeon_cpu_die(cpu: u32) {
     let _ = new_mask;
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 pub unsafe fn play_dead() -> ! {
     let cpu = cpu_number_map(cvmx_get_core_num()); idle_task_exit(); cpuhp_ap_report_dead();
     octeon_processor_boot = 0xff; set_per_cpu_cpu_state(cpu as u32, CPU_DEAD); mb();
     loop { core::hint::spin_loop(); }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn start_after_reset() { kernel_entry(0, 0, 0); }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn octeon_update_boot_vector(cpu: u32) -> i32 {
     let coreid = cpu_logical_map(cpu as i32);
     let block_desc = cvmx_bootmem_find_named_block(LINUX_APP_BOOT_BLOCK_NAME);

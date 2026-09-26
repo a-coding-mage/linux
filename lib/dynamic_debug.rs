@@ -21,11 +21,11 @@ extern "C" {
     static mut __start___dyndbg:[_ddebug;0]; static mut __stop___dyndbg:[_ddebug;0];
     static mut __start___dyndbg_classes:[ddebug_class_map;0]; static mut __stop___dyndbg_classes:[ddebug_class_map;0];
     static mut verbose:c_int; static mut ddebug_tables:list_head;
-    fn strlen(*const c_char)->usize; fn strcmp(*const c_char,*const c_char)->c_int;
-    fn strstr(*const c_char,*const c_char)->*mut c_char; fn strchr(*const c_char,c_int)->*mut c_char;
-    fn pr_info(*const c_char,...); fn pr_err(*const c_char,...); fn pr_warn(*const c_char,...);
-    fn mutex_lock(*mut c_void); fn mutex_unlock(*mut c_void); fn kfree(*mut c_void);
-    fn ddebug_exec_queries(*mut c_char,*const c_char)->c_int;
+    fn strlen(_: *const c_char)->usize; fn strcmp(_: *const c_char,_: *const c_char)->c_int;
+    fn strstr(_: *const c_char,_: *const c_char)->*mut c_char; fn strchr(_: *const c_char,_: c_int)->*mut c_char;
+    fn pr_info(_: *const c_char,...); fn pr_err(_: *const c_char,...); fn pr_warn(_: *const c_char,...);
+    fn mutex_lock(_: *mut c_void); fn mutex_unlock(_: *mut c_void); fn kfree(_: *mut c_void);
+    fn ddebug_exec_queries(_: *mut c_char,_: *const c_char)->c_int;
 }
 
 const _DPRINTK_FLAGS_PRINT:c_uint=1; const _DPRINTK_FLAGS_INCL_MODNAME:c_uint=2;

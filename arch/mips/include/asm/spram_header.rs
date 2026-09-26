@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* CONFIG_MIPS_SPRAM is a build-time C configuration condition. */
-#[cfg(feature = "CONFIG_MIPS_SPRAM")]
+#[cfg(CONFIG_MIPS_SPRAM)]
 extern "C" {
     pub fn spram_config();
 }
 
-#[cfg(not(feature = "CONFIG_MIPS_SPRAM"))]
+#[cfg(not(CONFIG_MIPS_SPRAM))]
 #[inline]
 pub fn spram_config() {}
 

@@ -8,7 +8,7 @@
  * file-local Rust definition to translate here.
  */
 
-#[cfg(feature = "CONFIG_RV_MON_WWNR")]
+#[cfg(CONFIG_RV_MON_WWNR)]
 mod wwnr_trace_events {
     use core::ffi::{c_char, c_int};
 

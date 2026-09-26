@@ -69,7 +69,7 @@ macro_rules! ALT_SVPBMT {
 }
 
 // CONFIG_ERRATA_THEAD_MAE controls whether the PMA alternative exists.
-#[cfg(feature = "CONFIG_ERRATA_THEAD_MAE")]
+#[cfg(CONFIG_ERRATA_THEAD_MAE)]
 macro_rules! ALT_THEAD_PMA {
     ($val:expr) => {{
         // The original performs the T-Head PMA test and update using t3.
@@ -84,14 +84,14 @@ macro_rules! ALT_THEAD_PMA {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_ERRATA_THEAD_MAE"))]
+#[cfg(not(CONFIG_ERRATA_THEAD_MAE))]
 macro_rules! ALT_THEAD_PMA {
     ($val:expr) => {{ let _ = &$val; }};
 }
 
 macro_rules! ALT_CMO_OP {
-    ($op:ident, $start:expr, $size:expr, $cachesize:expr) => {{
-        // The original emits CBO_##op in an ALTERNATIVE loop when ZICBOM is enabled.
+    ($op:tt, $start:expr, $size:expr, $cachesize:expr) => {{
+        // The original emits ::kernel::macros::paste!([<CBO_ $op>]) in an ALTERNATIVE loop when ZICBOM is enabled.
         let _ = ($op, $start, $size, $cachesize);
     }};
 }

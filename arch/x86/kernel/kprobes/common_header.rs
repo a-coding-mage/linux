@@ -75,22 +75,21 @@ extern "C" {
         dest: *mut u8,
         src: *mut u8,
         real: *mut u8,
-        insn: *mut insn,
-    ) -> c_int;
+        insn: *mut insn) -> c_int;
     pub fn synthesize_reljump(dest: *mut core::ffi::c_void, from: *mut core::ffi::c_void, to: *mut core::ffi::c_void);
     pub fn synthesize_relcall(dest: *mut core::ffi::c_void, from: *mut core::ffi::c_void, to: *mut core::ffi::c_void);
 }
 
-#[cfg(feature = "CONFIG_OPTPROBES")]
+#[cfg(CONFIG_OPTPROBES)]
 extern "C" {
     pub fn setup_detour_execution(p: *mut kprobe, regs: *mut pt_regs, reenter: c_int) -> c_int;
     pub fn __recover_optprobed_insn(buf: *mut kprobe_opcode_t, addr: c_ulong) -> c_ulong;
 }
 
-#[cfg(not(feature = "CONFIG_OPTPROBES"))]
+#[cfg(not(CONFIG_OPTPROBES))]
 pub unsafe fn setup_detour_execution(_p: *mut kprobe, _regs: *mut pt_regs, _reenter: c_int) -> c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_OPTPROBES"))]
+#[cfg(not(CONFIG_OPTPROBES))]
 pub unsafe fn __recover_optprobed_insn(_buf: *mut kprobe_opcode_t, addr: c_ulong) -> c_ulong { addr }
 
 // Types and aliases below are supplied by the surrounding translation unit.

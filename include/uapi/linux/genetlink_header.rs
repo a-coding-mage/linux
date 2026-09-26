@@ -8,7 +8,7 @@ pub const GENL_MIN_ID: u16 = NLMSG_MIN_TYPE;
 pub const GENL_MAX_ID: u16 = 1023;
 
 #[repr(C)]
-#[derive Copy, Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
 pub struct genlmsghdr {
     pub cmd: u8,
     pub version: u8,

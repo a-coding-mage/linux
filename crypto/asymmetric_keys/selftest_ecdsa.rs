@@ -76,8 +76,7 @@ extern "C" {
         data: *const u8,
         data_len: usize,
         sig: *const u8,
-        sig_len: usize,
-    );
+        sig_len: usize);
 }
 
 pub unsafe fn fips_signature_selftest_ecdsa() {

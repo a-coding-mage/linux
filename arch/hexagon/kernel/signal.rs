@@ -112,13 +112,13 @@ unsafe fn setup_rt_frame(ksig: *mut Ksignal, set: *mut Sigset, regs: *mut PtRegs
 unsafe fn handle_signal(ksig: *mut Ksignal, regs: *mut PtRegs) {
     let mut ret;
     if (*regs).syscall_nr >= 0 {
-        match (*regs).r00 {
-            -ERESTART_RESTARTBLOCK | -ERESTARTNOHAND => (*regs).r00 = -EINTR,
-            -ERESTARTSYS => {
+        match -((*regs).r00) {
+            ERESTART_RESTARTBLOCK | ERESTARTNOHAND => (*regs).r00 = -EINTR,
+            ERESTARTSYS => {
                 if (*ksig).ka.sa.sa_flags & SA_RESTART == 0 { (*regs).r00 = -EINTR; }
                 else { (*regs).r06 = (*regs).syscall_nr; pt_set_elr(regs, pt_elr(regs).wrapping_sub(4)); (*regs).r00 = (*regs).restart_r0; }
             }
-            -ERESTARTNOINTR => { (*regs).r06 = (*regs).syscall_nr; pt_set_elr(regs, pt_elr(regs).wrapping_sub(4)); (*regs).r00 = (*regs).restart_r0; }
+            ERESTARTNOINTR => { (*regs).r06 = (*regs).syscall_nr; pt_set_elr(regs, pt_elr(regs).wrapping_sub(4)); (*regs).r00 = (*regs).restart_r0; }
             _ => {}
         }
     }
@@ -132,9 +132,9 @@ pub unsafe fn do_signal(regs: *mut PtRegs) {
     if !user_mode(regs) { return; }
     if get_signal(&mut ksig) { handle_signal(&mut ksig, regs); return; }
     if (*regs).syscall_nr >= 0 {
-        match (*regs).r00 {
-            -ERESTARTNOHAND | -ERESTARTSYS | -ERESTARTNOINTR => (*regs).r06 = (*regs).syscall_nr,
-            -ERESTART_RESTARTBLOCK => (*regs).r06 = __NR_restart_syscall,
+        match -((*regs).r00) {
+            ERESTARTNOHAND | ERESTARTSYS | ERESTARTNOINTR => (*regs).r06 = (*regs).syscall_nr,
+            ERESTART_RESTARTBLOCK => (*regs).r06 = __NR_restart_syscall,
             _ => { restore_saved_sigmask(); return; }
         }
         pt_set_elr(regs, pt_elr(regs).wrapping_sub(4));

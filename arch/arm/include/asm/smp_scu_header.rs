@@ -33,7 +33,7 @@ pub unsafe fn scu_a9_get_base() -> libc::c_ulong {
 pub type Iomem = *mut core::ffi::c_void;
 
 /* CONFIG_HAVE_ARM_SCU selects these external declarations in the C header. */
-#[cfg(feature = "CONFIG_HAVE_ARM_SCU")]
+#[cfg(CONFIG_HAVE_ARM_SCU)]
 extern "C" {
     pub fn scu_get_core_count(scu_base: Iomem) -> u32;
     pub fn scu_power_mode(scu_base: Iomem, mode: u32) -> i32;
@@ -42,37 +42,37 @@ extern "C" {
 }
 
 /* Fallbacks when CONFIG_HAVE_ARM_SCU is not enabled. -EINVAL comes from linux/errno.h. */
-#[cfg(not(feature = "CONFIG_HAVE_ARM_SCU"))]
+#[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_get_core_count(_scu_base: Iomem) -> u32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_ARM_SCU"))]
+#[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_power_mode(_scu_base: Iomem, _mode: u32) -> i32 {
     -(libc::EINVAL as i32)
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_ARM_SCU"))]
+#[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_cpu_power_enable(_scu_base: Iomem, _mode: u32) -> i32 {
     -(libc::EINVAL as i32)
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_ARM_SCU"))]
+#[cfg(not(CONFIG_HAVE_ARM_SCU))]
 #[inline]
 pub fn scu_get_cpu_power_mode(_scu_base: Iomem, _logical_cpu: u32) -> i32 {
     -(libc::EINVAL as i32)
 }
 
 /* CONFIG_SMP && CONFIG_HAVE_ARM_SCU selects the external declaration in C. */
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_HAVE_ARM_SCU"))]
+#[cfg(all(CONFIG_SMP, CONFIG_HAVE_ARM_SCU))]
 extern "C" {
     pub fn scu_enable(scu_base: Iomem);
 }
 
-#[cfg(not(all(feature = "CONFIG_SMP", feature = "CONFIG_HAVE_ARM_SCU")))]
+#[cfg(not(all(CONFIG_SMP, CONFIG_HAVE_ARM_SCU)))]
 #[inline]
 pub fn scu_enable(_scu_base: Iomem) {}
 

@@ -90,7 +90,7 @@ extern "C" {
 
 /* The following declarations are conditional on
  * IS_REACHABLE(CONFIG_ASYMMETRIC_KEY_TYPE) in the original header. */
-#[cfg(feature = "CONFIG_ASYMMETRIC_KEY_TYPE")]
+#[cfg(CONFIG_ASYMMETRIC_KEY_TYPE)]
 extern "C" {
     pub fn restrict_link_by_ca(
         dest_keyring: *mut key,
@@ -107,7 +107,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ASYMMETRIC_KEY_TYPE"))]
+#[cfg(not(CONFIG_ASYMMETRIC_KEY_TYPE))]
 pub unsafe fn restrict_link_by_ca(
     _dest_keyring: *mut key,
     _type_: *const key_type,
@@ -117,7 +117,7 @@ pub unsafe fn restrict_link_by_ca(
     0
 }
 
-#[cfg(not(feature = "CONFIG_ASYMMETRIC_KEY_TYPE"))]
+#[cfg(not(CONFIG_ASYMMETRIC_KEY_TYPE))]
 pub unsafe fn restrict_link_by_digsig(
     _dest_keyring: *mut key,
     _type_: *const key_type,
@@ -140,7 +140,7 @@ extern "C" {
 }
 
 /* Conditional on IS_REACHABLE(CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE) in C. */
-#[cfg(feature = "CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE")]
+#[cfg(CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE)]
 extern "C" {
     pub fn public_key_verify_signature(
         pkey: *const public_key,
@@ -148,7 +148,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE"))]
+#[cfg(not(CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE))]
 pub unsafe fn public_key_verify_signature(
     _pkey: *const public_key,
     _sig: *const public_key_signature,

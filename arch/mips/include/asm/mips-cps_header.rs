@@ -28,13 +28,13 @@ macro_rules! cps_accessor_a {
 macro_rules! cps_accessor_r {
     ($unit:ident, 32, $name:ident) => {
         #[inline]
-        pub unsafe fn read_$unit\_$name() -> u32 {
+        pub unsafe fn read_$unit\_$(*name()).u32 {
             __raw_readl(addr_$unit\_$name())
         }
     };
     ($unit:ident, 64, $name:ident) => {
         #[inline]
-        pub unsafe fn read_$unit\_$name() -> u64 {
+        pub unsafe fn read_$unit\_$(*name()).u64 {
             if mips_cm_is64 { __raw_readq(addr_$unit\_$name()) }
             else {
                 let mut val64 = __raw_readl(addr_$unit\_$name().add(4)) as u64;

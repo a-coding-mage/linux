@@ -11,6 +11,8 @@ unsafe fn nfs4_file_open(inode: *mut inode, filp: *mut file) -> c_int {
     let mut openflags = (*filp).f_flags;
     let mut attr: iattr = core::mem::zeroed();
     let mut err: c_int;
+    'out_drop: {
+    'out: {
 
     dprintk!("NFS: open file(%pd2)\n", dentry);
     err = nfs_check_flags(openflags);
@@ -20,7 +22,7 @@ unsafe fn nfs4_file_open(inode: *mut inode, filp: *mut file) -> c_int {
     dir = d_inode(parent);
     ctx = alloc_nfs_open_context(file_dentry(filp), flags_to_mode(openflags), filp);
     err = PTR_ERR(ctx);
-    if IS_ERR(ctx) { goto out; }
+    if IS_ERR(ctx) { break 'out; }
     attr.ia_valid = ATTR_OPEN;
     if (openflags & O_TRUNC) != 0 {
         attr.ia_valid |= ATTR_SIZE;
@@ -30,9 +32,9 @@ unsafe fn nfs4_file_open(inode: *mut inode, filp: *mut file) -> c_int {
     inode = (*NFS_PROTO(dir)).open_context(dir, ctx, openflags, &mut attr, core::ptr::null_mut());
     if IS_ERR(inode) {
         err = PTR_ERR(inode);
-        match err { -ENOENT | -ESTALE | -EISDIR | -ENOTDIR | -ELOOP => goto out_drop, _ => goto out_put_ctx }
+        match err { case if case == -ENOENT || case == -ESTALE || case == -EISDIR || case == -ENOTDIR || case == -ELOOP => goto out_drop, _ => goto out_put_ctx }
     }
-    if inode != d_inode(dentry) { goto out_drop; }
+    if inode != d_inode(dentry) { break 'out_drop; }
     nfs_file_set_open_context(filp, ctx);
     nfs_fscache_open_file(inode, filp);
     err = 0;
@@ -40,10 +42,12 @@ unsafe fn nfs4_file_open(inode: *mut inode, filp: *mut file) -> c_int {
     if test_bit(NFS_CONTEXT_O_DIRECT, &(*ctx).flags) != 0 { (*filp).f_flags |= O_DIRECT; }
 out_put_ctx:
     put_nfs_open_context(ctx);
-out:
+    }
+    
     dput(parent);
     return err;
-out_drop:
+    }
+    
     d_drop(dentry);
     err = -EOPENSTALE;
     goto out_put_ctx;
@@ -116,15 +120,17 @@ unsafe fn nfs4_setlease(file: *mut file, arg: c_int, lease: *mut *mut file_lease
 #[cfg(CONFIG_NFS_V4_2)]
 unsafe fn nfs42_remap_file_range(src_file: *mut file, src_off: loff_t, dst_file: *mut file, dst_off: loff_t, count: loff_t, remap_flags: c_uint) -> loff_t {
     let dst_inode = file_inode(dst_file); let src_inode = file_inode(src_file); let bs = (*NFS_SERVER(dst_inode)).clone_blksize; let mut ret = -EINVAL;
+    'out_unlock: {
     if remap_flags & REMAP_FILE_DEDUP != 0 { return -EOPNOTSUPP as loff_t; }
     if remap_flags & !REMAP_FILE_ADVISORY != 0 { return -EINVAL as loff_t; }
     if IS_SWAPFILE(dst_inode) || IS_SWAPFILE(src_inode) { return -ETXTBSY as loff_t; }
     if bs != 0 { if !IS_ALIGNED(src_off, bs) || !IS_ALIGNED(dst_off, bs) { return ret as loff_t; } if !IS_ALIGNED(count, bs) && i_size_read(src_inode) != src_off + count { return ret as loff_t; } }
-    lock_two_nondirectories(src_inode, dst_inode); nfs_file_block_o_direct(NFS_I(src_inode)); ret = nfs_sync_inode(src_inode); if ret != 0 { goto out_unlock; }
-    nfs_file_block_o_direct(NFS_I(dst_inode)); ret = nfs_sync_inode(dst_inode); if ret != 0 { goto out_unlock; }
+    lock_two_nondirectories(src_inode, dst_inode); nfs_file_block_o_direct(NFS_I(src_inode)); ret = nfs_sync_inode(src_inode); if ret != 0 { break 'out_unlock; }
+    nfs_file_block_o_direct(NFS_I(dst_inode)); ret = nfs_sync_inode(dst_inode); if ret != 0 { break 'out_unlock; }
     ret = nfs42_proc_clone(src_file, dst_file, src_off, dst_off, count);
     if ret == 0 { truncate_inode_pages_range(&mut (*dst_inode).i_data, dst_off, dst_off + count - 1); }
-out_unlock: unlock_two_nondirectories(src_inode, dst_inode); if ret < 0 { ret as loff_t } else { count }
+    }
+    unlock_two_nondirectories(src_inode, dst_inode); if ret < 0 { ret as loff_t } else { count }
 }
 
 #[cfg(CONFIG_NFS_V4_2)]

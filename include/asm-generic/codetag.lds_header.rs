@@ -3,12 +3,12 @@
 // Rust translation of the linker-script header.  The original declarations
 // are linker-script fragments; they are retained as string-producing macros.
 
-#[cfg(feature = "CONFIG_MEM_ALLOC_PROFILING")]
+#[cfg(CONFIG_MEM_ALLOC_PROFILING)]
 macro_rules! IF_MEM_ALLOC_PROFILING {
     ($($items:tt)*) => { $($items)* };
 }
 
-#[cfg(not(feature = "CONFIG_MEM_ALLOC_PROFILING"))]
+#[cfg(not(CONFIG_MEM_ALLOC_PROFILING))]
 macro_rules! IF_MEM_ALLOC_PROFILING {
     ($($items:tt)*) => {};
 }

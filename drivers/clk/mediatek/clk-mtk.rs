@@ -36,17 +36,17 @@ pub const CLK_GATE_SET_TO_DISABLE: u32 = 1;
 
 extern "C" {
     static clk_mux_ops: clk_ops; static clk_gate_ops: clk_ops; static clk_divider_ops: clk_ops;
-    fn devm_kzalloc(*mut device, usize, u32) -> *mut c_void; fn kzalloc_flex(_: usize) -> *mut c_void; fn kfree(*mut c_void);
-    fn clk_hw_register_fixed_rate(*mut device,*const i8,*const i8,u32,u64)->*mut clk_hw; fn clk_hw_unregister_fixed_rate(*mut clk_hw);
-    fn clk_hw_register_fixed_factor(*mut device,*const i8,*const i8,u32,u32,u32)->*mut clk_hw; fn clk_hw_unregister_fixed_factor(*mut clk_hw);
-    fn clk_hw_register_composite(*mut device,*const i8,*const *const i8,i32,*mut clk_hw,*const clk_ops,*mut clk_hw,*const clk_ops,*mut clk_hw,*const clk_ops,u32)->*mut clk_hw; fn clk_hw_unregister_composite(*mut clk_hw);
-    fn clk_hw_register_divider(*mut device,*const i8,*const i8,u32,*mut c_void,u8,u8,u32,*mut spinlock_t)->*mut clk_hw; fn clk_hw_unregister_divider(*mut clk_hw);
-    fn devm_platform_ioremap_resource(*mut platform_device,i32)->*mut c_void; fn of_iomap(*mut device_node,i32)->*mut c_void; fn iounmap(*mut c_void);
-    fn device_get_match_data(*mut device)->*const mtk_clk_desc; fn platform_get_device_id(*mut platform_device)->*const platform_device_id; fn pm_runtime_resume_and_get(*mut device)->c_int; fn pm_runtime_put(*mut device); fn devm_pm_runtime_enable(*mut device)->c_int;
-    fn platform_set_drvdata(*mut platform_device,*mut clk_hw_onecell_data); fn platform_get_drvdata(*mut platform_device)->*mut clk_hw_onecell_data;
-    fn of_clk_add_hw_provider(*mut device_node,*const c_void,*mut clk_hw_onecell_data)->c_int; fn of_clk_del_provider(*mut device_node); fn of_clk_hw_onecell_get()->c_int;
-    fn mtk_clk_register_muxes(*mut device,*const c_void,u32,*mut device_node,*mut spinlock_t,*mut clk_hw_onecell_data)->c_int; fn mtk_clk_unregister_muxes(*const c_void,u32,*mut clk_hw_onecell_data); fn mtk_clk_register_gates(*mut device,*mut device_node,*const c_void,u32,*mut clk_hw_onecell_data)->c_int; fn mtk_clk_unregister_gates(*const c_void,u32,*mut clk_hw_onecell_data); fn mtk_register_reset_controller_with_dev(*mut device,*const c_void)->c_int;
-    fn of_parse_phandle(*mut device_node,*const i8,i32)->*mut device_node; fn device_node_to_regmap(*mut device_node)->*mut regmap; fn of_node_put(*mut device_node);
+    fn devm_kzalloc(_: *mut device, _: usize, _: u32) -> *mut c_void; fn kzalloc_flex(_: usize) -> *mut c_void; fn kfree(_: *mut c_void);
+    fn clk_hw_register_fixed_rate(_: *mut device,_: *const i8,_: *const i8,_: u32,_: u64)->*mut clk_hw; fn clk_hw_unregister_fixed_rate(_: *mut clk_hw);
+    fn clk_hw_register_fixed_factor(_: *mut device,_: *const i8,_: *const i8,_: u32,_: u32,_: u32)->*mut clk_hw; fn clk_hw_unregister_fixed_factor(_: *mut clk_hw);
+    fn clk_hw_register_composite(_: *mut device,_: *const i8,_: *const *const i8,_: i32,_: *mut clk_hw,_: *const clk_ops,_: *mut clk_hw,_: *const clk_ops,_: *mut clk_hw,_: *const clk_ops,_: u32)->*mut clk_hw; fn clk_hw_unregister_composite(_: *mut clk_hw);
+    fn clk_hw_register_divider(_: *mut device,_: *const i8,_: *const i8,_: u32,_: *mut c_void,_: u8,_: u8,_: u32,_: *mut spinlock_t)->*mut clk_hw; fn clk_hw_unregister_divider(_: *mut clk_hw);
+    fn devm_platform_ioremap_resource(_: *mut platform_device,_: i32)->*mut c_void; fn of_iomap(_: *mut device_node,_: i32)->*mut c_void; fn iounmap(_: *mut c_void);
+    fn device_get_match_data(_: *mut device)->*const mtk_clk_desc; fn platform_get_device_id(_: *mut platform_device)->*const platform_device_id; fn pm_runtime_resume_and_get(_: *mut device)->c_int; fn pm_runtime_put(_: *mut device); fn devm_pm_runtime_enable(_: *mut device)->c_int;
+    fn platform_set_drvdata(_: *mut platform_device,_: *mut clk_hw_onecell_data); fn platform_get_drvdata(_: *mut platform_device)->*mut clk_hw_onecell_data;
+    fn of_clk_add_hw_provider(_: *mut device_node,_: *const c_void,_: *mut clk_hw_onecell_data)->c_int; fn of_clk_del_provider(_: *mut device_node); fn of_clk_hw_onecell_get()->c_int;
+    fn mtk_clk_register_muxes(_: *mut device,_: *const c_void,_: u32,_: *mut device_node,_: *mut spinlock_t,_: *mut clk_hw_onecell_data)->c_int; fn mtk_clk_unregister_muxes(_: *const c_void,_: u32,_: *mut clk_hw_onecell_data); fn mtk_clk_register_gates(_: *mut device,_: *mut device_node,_: *const c_void,_: u32,_: *mut clk_hw_onecell_data)->c_int; fn mtk_clk_unregister_gates(_: *const c_void,_: u32,_: *mut clk_hw_onecell_data); fn mtk_register_reset_controller_with_dev(_: *mut device,_: *const c_void)->c_int;
+    fn of_parse_phandle(_: *mut device_node,_: *const i8,_: i32)->*mut device_node; fn device_node_to_regmap(_: *mut device_node)->*mut regmap; fn of_node_put(_: *mut device_node);
 }
 
 pub static cg_regs_dummy: mtk_gate_regs = mtk_gate_regs { set_ofs: 0, clr_ofs: 0, sta_ofs: 0 };

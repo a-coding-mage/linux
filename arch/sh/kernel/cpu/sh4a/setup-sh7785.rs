@@ -51,7 +51,7 @@ static sh7785_dmae1_channels: [sh_dmae_channel; 6] = [
     sh_dmae_channel { offset: 0 }, sh_dmae_channel { offset: 0x10 }, sh_dmae_channel { offset: 0x20 },
     sh_dmae_channel { offset: 0x30 }, sh_dmae_channel { offset: 0x50 }, sh_dmae_channel { offset: 0x60 },
 ];
-static ts_shift: [unsigned int; ARRAY_SIZE(TS_SHIFT)] = TS_SHIFT;
+static ts_shift: [core::ffi::c_uint; ARRAY_SIZE(TS_SHIFT)] = TS_SHIFT;
 static mut dma0_platform_data: sh_dmae_pdata = dma_pdata(&sh7785_dmae0_channels, ts_shift);
 static mut dma1_platform_data: sh_dmae_pdata = dma_pdata(&sh7785_dmae1_channels, ts_shift);
 
@@ -80,7 +80,81 @@ static mut sh7785_early_devices: [*mut platform_device; 8] = [
 ];
 unsafe fn plat_early_device_setup() { sh_early_platform_add_devices(sh7785_early_devices.as_mut_ptr(), ARRAY_SIZE(sh7785_early_devices)); }
 
-enum { UNUSED = 0, IRL0_LLLL, IRL0_LLLH, IRL0_LLHL, IRL0_LLHH, IRL0_LHLL, IRL0_LHLH, IRL0_LHHL, IRL0_LHHH, IRL0_HLLL, IRL0_HLLH, IRL0_HLHL, IRL0_HLHH, IRL0_HHLL, IRL0_HHLH, IRL0_HHHL, IRL4_LLLL, IRL4_LLLH, IRL4_LLHL, IRL4_LLHH, IRL4_LHLL, IRL4_LHLH, IRL4_LHHL, IRL4_LHHH, IRL4_HLLL, IRL4_HLLH, IRL4_HLHL, IRL4_HLHH, IRL4_HHLL, IRL4_HHLH, IRL4_HHHL, IRQ0, IRQ1, IRQ2, IRQ3, IRQ4, IRQ5, IRQ6, IRQ7, WDT, TMU0, TMU1, TMU2, TMU2_TICPI, HUDI, DMAC0, SCIF0, SCIF1, DMAC1, HSPI, SCIF2, SCIF3, SCIF4, SCIF5, PCISERR, PCIINTA, PCIINTB, PCIINTC, PCIINTD, PCIC5, SIOF, MMCIF, DU, GDTA, TMU3, TMU4, TMU5, SSI0, SSI1, HAC0, HAC1, FLCTL, GPIO, TMU012, TMU345 }
+pub const UNUSED: i32 = 0;
+pub const IRL0_LLLL: i32 = UNUSED + 1;
+pub const IRL0_LLLH: i32 = IRL0_LLLL + 1;
+pub const IRL0_LLHL: i32 = IRL0_LLLH + 1;
+pub const IRL0_LLHH: i32 = IRL0_LLHL + 1;
+pub const IRL0_LHLL: i32 = IRL0_LLHH + 1;
+pub const IRL0_LHLH: i32 = IRL0_LHLL + 1;
+pub const IRL0_LHHL: i32 = IRL0_LHLH + 1;
+pub const IRL0_LHHH: i32 = IRL0_LHHL + 1;
+pub const IRL0_HLLL: i32 = IRL0_LHHH + 1;
+pub const IRL0_HLLH: i32 = IRL0_HLLL + 1;
+pub const IRL0_HLHL: i32 = IRL0_HLLH + 1;
+pub const IRL0_HLHH: i32 = IRL0_HLHL + 1;
+pub const IRL0_HHLL: i32 = IRL0_HLHH + 1;
+pub const IRL0_HHLH: i32 = IRL0_HHLL + 1;
+pub const IRL0_HHHL: i32 = IRL0_HHLH + 1;
+pub const IRL4_LLLL: i32 = IRL0_HHHL + 1;
+pub const IRL4_LLLH: i32 = IRL4_LLLL + 1;
+pub const IRL4_LLHL: i32 = IRL4_LLLH + 1;
+pub const IRL4_LLHH: i32 = IRL4_LLHL + 1;
+pub const IRL4_LHLL: i32 = IRL4_LLHH + 1;
+pub const IRL4_LHLH: i32 = IRL4_LHLL + 1;
+pub const IRL4_LHHL: i32 = IRL4_LHLH + 1;
+pub const IRL4_LHHH: i32 = IRL4_LHHL + 1;
+pub const IRL4_HLLL: i32 = IRL4_LHHH + 1;
+pub const IRL4_HLLH: i32 = IRL4_HLLL + 1;
+pub const IRL4_HLHL: i32 = IRL4_HLLH + 1;
+pub const IRL4_HLHH: i32 = IRL4_HLHL + 1;
+pub const IRL4_HHLL: i32 = IRL4_HLHH + 1;
+pub const IRL4_HHLH: i32 = IRL4_HHLL + 1;
+pub const IRL4_HHHL: i32 = IRL4_HHLH + 1;
+pub const IRQ0: i32 = IRL4_HHHL + 1;
+pub const IRQ1: i32 = IRQ0 + 1;
+pub const IRQ2: i32 = IRQ1 + 1;
+pub const IRQ3: i32 = IRQ2 + 1;
+pub const IRQ4: i32 = IRQ3 + 1;
+pub const IRQ5: i32 = IRQ4 + 1;
+pub const IRQ6: i32 = IRQ5 + 1;
+pub const IRQ7: i32 = IRQ6 + 1;
+pub const WDT: i32 = IRQ7 + 1;
+pub const TMU0: i32 = WDT + 1;
+pub const TMU1: i32 = TMU0 + 1;
+pub const TMU2: i32 = TMU1 + 1;
+pub const TMU2_TICPI: i32 = TMU2 + 1;
+pub const HUDI: i32 = TMU2_TICPI + 1;
+pub const DMAC0: i32 = HUDI + 1;
+pub const SCIF0: i32 = DMAC0 + 1;
+pub const SCIF1: i32 = SCIF0 + 1;
+pub const DMAC1: i32 = SCIF1 + 1;
+pub const HSPI: i32 = DMAC1 + 1;
+pub const SCIF2: i32 = HSPI + 1;
+pub const SCIF3: i32 = SCIF2 + 1;
+pub const SCIF4: i32 = SCIF3 + 1;
+pub const SCIF5: i32 = SCIF4 + 1;
+pub const PCISERR: i32 = SCIF5 + 1;
+pub const PCIINTA: i32 = PCISERR + 1;
+pub const PCIINTB: i32 = PCIINTA + 1;
+pub const PCIINTC: i32 = PCIINTB + 1;
+pub const PCIINTD: i32 = PCIINTC + 1;
+pub const PCIC5: i32 = PCIINTD + 1;
+pub const SIOF: i32 = PCIC5 + 1;
+pub const MMCIF: i32 = SIOF + 1;
+pub const DU: i32 = MMCIF + 1;
+pub const GDTA: i32 = DU + 1;
+pub const TMU3: i32 = GDTA + 1;
+pub const TMU4: i32 = TMU3 + 1;
+pub const TMU5: i32 = TMU4 + 1;
+pub const SSI0: i32 = TMU5 + 1;
+pub const SSI1: i32 = SSI0 + 1;
+pub const HAC0: i32 = SSI1 + 1;
+pub const HAC1: i32 = HAC0 + 1;
+pub const FLCTL: i32 = HAC1 + 1;
+pub const GPIO: i32 = FLCTL + 1;
+pub const TMU012: i32 = GPIO + 1;
+pub const TMU345: i32 = TMU012 + 1;
 
 static mut vectors: [intc_vect; 73] = [
     intc_vect!(WDT,0x560), intc_vect!(TMU0,0x580), intc_vect!(TMU1,0x5a0), intc_vect!(TMU2,0x5c0), intc_vect!(TMU2_TICPI,0x5e0), intc_vect!(HUDI,0x600),

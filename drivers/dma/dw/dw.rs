@@ -52,7 +52,7 @@ unsafe fn dw_dma_bytes2block(
 
     if (bytes >> width) > (*dwc).block_size {
         block = (*dwc).block_size;
-        *len = (*dwc).block_size as usize << width;
+        *len = ((*dwc).block_size as usize) << width;
     } else {
         block = (bytes >> width) as u32;
         *len = bytes;

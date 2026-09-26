@@ -43,11 +43,11 @@ static mut ALCHEMY_CLK_ALIASES: [ClkAliasTable; 14] = [
 extern "C" {
     fn alchemy_rdsys(reg: usize)->u64; fn alchemy_wrsys(v:u64,reg:usize); fn alchemy_rdsmem(reg:usize)->u64;
     fn alchemy_get_cputype()->i32; fn au1xxx_cpu_has_pll_wo()->bool;
-    fn clk_register(_: *mut u8, _: *mut ClkHw)->*mut Clk; fn clk_register_fixed_rate(_: *mut u8,*const u8,*const u8,u32,u64)->*mut Clk;
-    fn clk_register_fixed_factor(_: *mut u8,*const u8,*const u8,u32,u32,u32)->*mut Clk; fn clk_register_clkdev(*mut Clk,*const u8,*const u8);
-    fn clk_hw_get_parent_by_index(*mut ClkHw,u32)->*mut ClkHw; fn clk_hw_is_prepared(*mut ClkHw)->bool; fn clk_hw_get_rate(*mut ClkHw)->u64; fn clk_hw_round_rate(*mut ClkHw,u64)->u64;
-    fn spin_lock_irqsave(*mut Spinlock,*mut usize); fn spin_unlock_irqrestore(*mut Spinlock,usize); fn spin_lock_init(*mut Spinlock);
-    fn clk_add_alias(*mut u8,*const u8,*mut u8,*const u8); fn pr_err(*const u8); fn pr_info(*const u8);
+    fn clk_register(_: *mut u8, _: *mut ClkHw)->*mut Clk; fn clk_register_fixed_rate(_: *mut u8,_: *const u8,_: *const u8,_: u32,_: u64)->*mut Clk;
+    fn clk_register_fixed_factor(_: *mut u8,_: *const u8,_: *const u8,_: u32,_: u32,_: u32)->*mut Clk; fn clk_register_clkdev(_: *mut Clk,_: *const u8,_: *const u8);
+    fn clk_hw_get_parent_by_index(_: *mut ClkHw,_: u32)->*mut ClkHw; fn clk_hw_is_prepared(_: *mut ClkHw)->bool; fn clk_hw_get_rate(_: *mut ClkHw)->u64; fn clk_hw_round_rate(_: *mut ClkHw,_: u64)->u64;
+    fn spin_lock_irqsave(_: *mut Spinlock,_: *mut usize); fn spin_unlock_irqrestore(_: *mut Spinlock,_: usize); fn spin_lock_init(_: *mut Spinlock);
+    fn clk_add_alias(_: *mut u8,_: *const u8,_: *mut u8,_: *const u8); fn pr_err(_: *const u8); fn pr_info(_: *const u8);
 }
 
 unsafe fn alchemy_calc_div(rate:u64, prate:u64, scale:i64, maxdiv:i64, rv:*mut u64)->i64 { let mut d1=(prate/rate) as i64; if prate/(d1 as u64)>rate {d1+=1;} if scale==2 && d1&1!=0 {d1+=1;} let mut d2=d1/scale-1; if d2>maxdiv {d2=maxdiv;} if !rv.is_null(){*rv=d2 as u64;} (d2+1)*scale }

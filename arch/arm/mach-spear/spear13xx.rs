@@ -97,7 +97,7 @@ static mut spear13xx_io_desc: [map_desc; 4] = [
 
 pub unsafe fn spear13xx_l2x0_init() {
     // IS_ENABLED(CONFIG_CACHE_L2X0) is a build-time kernel configuration condition.
-    if !cfg!(feature = "CONFIG_CACHE_L2X0") {
+    if !cfg!(CONFIG_CACHE_L2X0) {
         return;
     }
 

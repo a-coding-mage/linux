@@ -72,37 +72,37 @@ pub struct amdgpu_mes {
 #[repr(C)] pub struct amdgpu_mqd { pub mqd_size:core::ffi::c_uint, pub init_mqd:Option<unsafe extern "C" fn(*mut amdgpu_device,*mut core::ffi::c_void,*mut amdgpu_mqd_prop)->i32> }
 pub const AMDGPU_UPDATE_FLAG_DBG_WA_ENABLE:u32=1; pub const AMDGPU_UPDATE_FLAG_DBG_WA_DISABLE:u32=2; pub const AMDGPU_UPDATE_FLAG_IS_GWS:u32=4;
 pub const fn amdgpu_mqd_size_align(size:usize)->usize { AMDGPU_GPU_PAGE_ALIGN(size+32) }
-extern "C" { fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex); fn memalloc_noreclaim_save()->u32; fn memalloc_noreclaim_restore(u32); }
+extern "C" { fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex); fn memalloc_noreclaim_save()->u32; fn memalloc_noreclaim_restore(_: u32); }
 #[inline] pub unsafe fn amdgpu_mes_lock(mes:*mut amdgpu_mes) { mutex_lock(core::ptr::addr_of_mut!((*mes).mutex_hidden)); (*mes).saved_flags=memalloc_noreclaim_save(); }
 #[inline] pub unsafe fn amdgpu_mes_unlock(mes:*mut amdgpu_mes) { memalloc_noreclaim_restore((*mes).saved_flags); mutex_unlock(core::ptr::addr_of_mut!((*mes).mutex_hidden)); }
 
-extern "C" { pub fn amdgpu_mes_init_microcode(*mut amdgpu_device,i32)->i32; pub fn amdgpu_mes_validate_fw_version(*mut amdgpu_device); pub fn amdgpu_mes_init(*mut amdgpu_device)->i32; pub fn amdgpu_mes_fini(*mut amdgpu_device); pub fn amdgpu_mes_suspend(*mut amdgpu_device,u32)->i32; pub fn amdgpu_mes_resume(*mut amdgpu_device,u32)->i32; }
+extern "C" { pub fn amdgpu_mes_init_microcode(_: *mut amdgpu_device,_: i32)->i32; pub fn amdgpu_mes_validate_fw_version(_: *mut amdgpu_device); pub fn amdgpu_mes_init(_: *mut amdgpu_device)->i32; pub fn amdgpu_mes_fini(_: *mut amdgpu_device); pub fn amdgpu_mes_suspend(_: *mut amdgpu_device,_: u32)->i32; pub fn amdgpu_mes_resume(_: *mut amdgpu_device,_: u32)->i32; }
 extern "C" {
-    pub fn amdgpu_mes_map_legacy_queue(*mut amdgpu_device,*mut amdgpu_ring,u32)->i32;
-    pub fn amdgpu_mes_unmap_legacy_queue(*mut amdgpu_device,*mut amdgpu_ring,amdgpu_unmap_queues_action,u64,u64,u32)->i32;
-    pub fn amdgpu_mes_reset_legacy_queue(*mut amdgpu_device,*mut amdgpu_ring,core::ffi::c_uint,bool,u32)->i32;
-    pub fn amdgpu_mes_reset_queue_mmio(*mut amdgpu_device,i32,core::ffi::c_uint,core::ffi::c_uint,core::ffi::c_uint,core::ffi::c_uint,u32)->i32;
-    pub fn amdgpu_mes_reset_user_queue(*mut amdgpu_device,i32,core::ffi::c_uint,u32)->i32;
-    pub fn amdgpu_mes_get_hung_queue_db_array_size(*mut amdgpu_device)->i32;
-    pub fn amdgpu_mes_detect_and_reset_hung_queues(*mut amdgpu_device,i32,bool,*mut core::ffi::c_uint,*mut u32,u32)->i32;
-    pub fn amdgpu_mes_rreg(*mut amdgpu_device,u32,u32)->u32;
-    pub fn amdgpu_mes_wreg(*mut amdgpu_device,u32,u32,u32)->i32;
-    pub fn amdgpu_mes_reg_write_reg_wait(*mut amdgpu_device,u32,u32,u32,u32,u32)->i32;
-    pub fn amdgpu_mes_hdp_flush(*mut amdgpu_device)->i32;
-    pub fn amdgpu_mes_set_shader_debugger(*mut amdgpu_device,u64,u32,*const u32,u32,bool,u32)->i32;
-    pub fn amdgpu_mes_flush_shader_debugger(*mut amdgpu_device,u64,u32)->i32;
-    pub fn amdgpu_mes_get_aggregated_doorbell_index(*mut amdgpu_device,amdgpu_mes_priority_level)->u32;
-    pub fn amdgpu_mes_doorbell_process_slice(*mut amdgpu_device)->i32;
-    pub fn amdgpu_mes_suspend_resume_all_supported(*mut amdgpu_device)->bool;
-    pub fn amdgpu_mes_queue_reset_by_mes_supported(*mut amdgpu_device)->bool;
-    pub fn amdgpu_mes_update_enforce_isolation(*mut amdgpu_device)->i32;
-    pub fn amdgpu_mes_rs64mem_init(*mut amdgpu_mes)->i32;
-    pub fn amdgpu_mes_rs64mem_fini(*mut amdgpu_mes);
-    pub fn amdgpu_mes_rs64mem_setup_bitmaps(*mut amdgpu_mes)->i32;
-    pub fn amdgpu_mes_alloc_proc_ctx_index(*mut amdgpu_mes,*mut u32)->i32;
-    pub fn amdgpu_mes_free_proc_ctx_index(*mut amdgpu_mes,u32);
-    pub fn amdgpu_mes_alloc_gang_ctx_index(*mut amdgpu_mes,*mut u32)->i32;
-    pub fn amdgpu_mes_free_gang_ctx_index(*mut amdgpu_mes,u32);
+    pub fn amdgpu_mes_map_legacy_queue(_: *mut amdgpu_device,_: *mut amdgpu_ring,_: u32)->i32;
+    pub fn amdgpu_mes_unmap_legacy_queue(_: *mut amdgpu_device,_: *mut amdgpu_ring,_: amdgpu_unmap_queues_action,_: u64,_: u64,_: u32)->i32;
+    pub fn amdgpu_mes_reset_legacy_queue(_: *mut amdgpu_device,_: *mut amdgpu_ring,_: core::ffi::c_uint,_: bool,_: u32)->i32;
+    pub fn amdgpu_mes_reset_queue_mmio(_: *mut amdgpu_device,_: i32,_: core::ffi::c_uint,_: core::ffi::c_uint,_: core::ffi::c_uint,_: core::ffi::c_uint,_: u32)->i32;
+    pub fn amdgpu_mes_reset_user_queue(_: *mut amdgpu_device,_: i32,_: core::ffi::c_uint,_: u32)->i32;
+    pub fn amdgpu_mes_get_hung_queue_db_array_size(_: *mut amdgpu_device)->i32;
+    pub fn amdgpu_mes_detect_and_reset_hung_queues(_: *mut amdgpu_device,_: i32,_: bool,_: *mut core::ffi::c_uint,_: *mut u32,_: u32)->i32;
+    pub fn amdgpu_mes_rreg(_: *mut amdgpu_device,_: u32,_: u32)->u32;
+    pub fn amdgpu_mes_wreg(_: *mut amdgpu_device,_: u32,_: u32,_: u32)->i32;
+    pub fn amdgpu_mes_reg_write_reg_wait(_: *mut amdgpu_device,_: u32,_: u32,_: u32,_: u32,_: u32)->i32;
+    pub fn amdgpu_mes_hdp_flush(_: *mut amdgpu_device)->i32;
+    pub fn amdgpu_mes_set_shader_debugger(_: *mut amdgpu_device,_: u64,_: u32,_: *const u32,_: u32,_: bool,_: u32)->i32;
+    pub fn amdgpu_mes_flush_shader_debugger(_: *mut amdgpu_device,_: u64,_: u32)->i32;
+    pub fn amdgpu_mes_get_aggregated_doorbell_index(_: *mut amdgpu_device,_: amdgpu_mes_priority_level)->u32;
+    pub fn amdgpu_mes_doorbell_process_slice(_: *mut amdgpu_device)->i32;
+    pub fn amdgpu_mes_suspend_resume_all_supported(_: *mut amdgpu_device)->bool;
+    pub fn amdgpu_mes_queue_reset_by_mes_supported(_: *mut amdgpu_device)->bool;
+    pub fn amdgpu_mes_update_enforce_isolation(_: *mut amdgpu_device)->i32;
+    pub fn amdgpu_mes_rs64mem_init(_: *mut amdgpu_mes)->i32;
+    pub fn amdgpu_mes_rs64mem_fini(_: *mut amdgpu_mes);
+    pub fn amdgpu_mes_rs64mem_setup_bitmaps(_: *mut amdgpu_mes)->i32;
+    pub fn amdgpu_mes_alloc_proc_ctx_index(_: *mut amdgpu_mes,_: *mut u32)->i32;
+    pub fn amdgpu_mes_free_proc_ctx_index(_: *mut amdgpu_mes,_: u32);
+    pub fn amdgpu_mes_alloc_gang_ctx_index(_: *mut amdgpu_mes,_: *mut u32)->i32;
+    pub fn amdgpu_mes_free_gang_ctx_index(_: *mut amdgpu_mes,_: u32);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

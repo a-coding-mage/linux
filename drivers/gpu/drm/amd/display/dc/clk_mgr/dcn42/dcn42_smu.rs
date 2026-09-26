@@ -61,7 +61,7 @@ unsafe fn dcn42_smu_wait_for_response(clk_mgr: *mut clk_mgr_internal, delay_us: 
         if res_val != DALSMC_RESULT_CMD_REJECTED_BUSY { break; }
         if delay_us >= 1000 { msleep!(delay_us / 1000); }
         else if delay_us > 0 { udelay!(delay_us); }
-        if (*clk_mgr).base.ctx->dc->debug.disable_timeout { max_retries += 1; }
+        if (*(*(*clk_mgr).base.ctx).dc).debug.disable_timeout { max_retries += 1; }
         if max_retries == 0 { break; }
         max_retries -= 1;
     }
@@ -118,7 +118,7 @@ pub unsafe fn dcn42_smu_set_dppclk(clk_mgr: *mut clk_mgr_internal, requested: i3
 }
 
 pub unsafe fn dcn42_smu_set_display_idle_optimization(clk_mgr: *mut clk_mgr_internal, idle_info: u32) {
-    if !(*clk_mgr).base.ctx->dc->debug.pstate_enabled || !(*clk_mgr).smu_present { return; }
+    if (*(*!(*clk_mgr).base.ctx).dc).debug.pstate_enabled || !(*clk_mgr).smu_present { return; }
     dcn42_smu_send_msg_with_param(clk_mgr, DALSMC_MSG_SET_DISPLAY_IDLE_OPTIMIZATIONS, idle_info);
     smu_print!("%s: SMC_MSG_SetDisplayIdleOptimizations idle_info  = %x\n", __func__, idle_info);
 }

@@ -137,7 +137,7 @@ pub unsafe fn pci_restore_srm_config() {
 pub unsafe fn pcibios_fixup_bus(bus: *mut pci_bus) {
     let dev = (*bus).self_;
     if pci_has_flag(PCI_PROBE_ONLY) && !dev.is_null() && (*dev).class >> 8 == PCI_CLASS_BRIDGE_PCI { pci_read_bridge_bases(bus); }
-    list_for_each_entry!(dev, &(*bus).devices, bus_list) { pdev_save_srm_config(dev); }
+    list_for_each_entry!(dev, &(*bus).devices, bus_list, { pdev_save_srm_config(dev); });
 }
 
 pub unsafe fn pcibios_set_master(dev: *mut pci_dev) {
@@ -150,22 +150,22 @@ pub unsafe fn pcibios_set_master(dev: *mut pci_dev) {
 pub unsafe fn pcibios_claim_one_bus(b: *mut pci_bus) {
     let mut dev: *mut pci_dev = core::ptr::null_mut();
     let mut child_bus: *mut pci_bus = core::ptr::null_mut();
-    list_for_each_entry!(dev, &(*b).devices, bus_list) {
+    list_for_each_entry!(dev, &(*b).devices, bus_list, {
         let mut r: *mut resource = core::ptr::null_mut(); let mut i: i32 = 0;
-        pci_dev_for_each_resource!(dev, r, i) {
+        pci_dev_for_each_resource!(dev, r, i, {
             if !(*r).parent.is_null() || (*r).start == 0 || (*r).flags == 0 { continue; }
             if pci_has_flag(PCI_PROBE_ONLY) || (*r).flags & IORESOURCE_PCI_FIXED != 0 {
                 if pci_claim_resource(dev, i) == 0 { continue; }
                 pci_claim_bridge_resource(dev, i);
             }
-        }
-    }
-    list_for_each_entry!(child_bus, &(*b).children, node) { pcibios_claim_one_bus(child_bus); }
+        });
+    });
+    list_for_each_entry!(child_bus, &(*b).children, node, { pcibios_claim_one_bus(child_bus); });
 }
 
 unsafe fn pcibios_claim_console_setup() {
     let mut b: *mut pci_bus = core::ptr::null_mut();
-    list_for_each_entry!(b, &pci_root_buses, node) { pcibios_claim_one_bus(b); }
+    list_for_each_entry!(b, &pci_root_buses, node, { pcibios_claim_one_bus(b); });
 }
 
 pub unsafe fn common_init_pci() {

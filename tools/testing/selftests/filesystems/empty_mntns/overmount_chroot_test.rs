@@ -177,7 +177,7 @@ fn overmount_chroot() {
     if pid == 0 {
         unsafe {
             let nr_mounts: SsizeT;
-            let mut mnt_ids = [0_u64; NR_OVERMOUNTS + 1];
+            let mut mnt_ids = [0u64; NR_OVERMOUNTS + 1];
             let root_id_before: u64;
             let root_id_after: u64;
             let sm: *mut statmount;

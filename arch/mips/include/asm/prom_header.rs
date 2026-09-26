@@ -8,19 +8,19 @@
 // CONFIG_USE_OF: the declarations below are present when device-tree support
 // is enabled; otherwise `device_tree_init` is an empty inline function.
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 extern "C" {
     pub fn device_tree_init();
 }
 
-#[cfg(not(feature = "CONFIG_USE_OF"))]
+#[cfg(not(CONFIG_USE_OF))]
 #[inline]
 pub fn device_tree_init() {}
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 pub struct boot_param_header;
 
-#[cfg(feature = "CONFIG_USE_OF")]
+#[cfg(CONFIG_USE_OF)]
 extern "C" {
     pub fn __dt_setup_arch(bph: *mut core::ffi::c_void);
     pub fn __dt_register_buses(

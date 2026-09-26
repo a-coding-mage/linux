@@ -624,13 +624,13 @@ pub struct dml2_core_internal_mode_support {
     pub num_mcaches_l: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_l: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_per_channel_l: [u32; DML2_MAX_PLANES];
-	unsigned int mcache_offsets_l: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
+	core::ffi::c_uint mcache_offsets_l: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
     pub mcache_shift_granularity_l: [u32; DML2_MAX_PLANES];
 
     pub num_mcaches_c: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_c: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_per_channel_c: [u32; DML2_MAX_PLANES];
-	unsigned int mcache_offsets_c: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
+	core::ffi::c_uint mcache_offsets_c: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
     pub mcache_shift_granularity_c: [u32; DML2_MAX_PLANES];
 
     pub mall_comb_mcache_l: [bool; DML2_MAX_PLANES];
@@ -649,8 +649,8 @@ pub struct dml2_core_internal_mode_support {
     pub dpte_row_bytes_per_row_l: [u32; DML2_MAX_PLANES];
     pub dpte_row_bytes_per_row_c: [u32; DML2_MAX_PLANES];
 
-	unsigned int pstate_bytes_required_l: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
-	unsigned int pstate_bytes_required_c: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
+	core::ffi::c_uint pstate_bytes_required_l: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
+	core::ffi::c_uint pstate_bytes_required_c: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
     pub cursor_bytes_per_chunk: [u32; DML2_MAX_PLANES];
     pub cursor_bytes_per_line: [u32; DML2_MAX_PLANES];
 
@@ -1091,13 +1091,13 @@ pub struct dml2_core_internal_mode_program {
     pub num_mcaches_l: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_l: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_per_channel_l: [u32; DML2_MAX_PLANES];
-	unsigned int mcache_offsets_l: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
+	core::ffi::c_uint mcache_offsets_l: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
     pub mcache_shift_granularity_l: [u32; DML2_MAX_PLANES];
 
     pub num_mcaches_c: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_c: [u32; DML2_MAX_PLANES];
     pub mcache_row_bytes_per_channel_c: [u32; DML2_MAX_PLANES];
-	unsigned int mcache_offsets_c: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
+	core::ffi::c_uint mcache_offsets_c: [DML2_MAX_PLANES]: [DML2_MAX_MCACHES + 1];
     pub mcache_shift_granularity_c: [u32; DML2_MAX_PLANES];
 
     pub mall_comb_mcache_l: [bool; DML2_MAX_PLANES];
@@ -1144,7 +1144,7 @@ pub struct dml2_core_calcs_mode_support_locals {
 
     pub dummy_boolean: [bool; 3];
     pub dummy_integer: [u32; 3];
-	unsigned int dummy_integer_array: [36]: [DML2_MAX_PLANES];
+	core::ffi::c_uint dummy_integer_array: [36]: [DML2_MAX_PLANES];
 	dml2_odm_mode dummy_odm_mode: [DML2_MAX_PLANES];
 	bool dummy_boolean_array: [2]: [DML2_MAX_PLANES];
     pub dummy_single: [f64; 3];
@@ -1226,8 +1226,8 @@ pub struct dml2_core_calcs_mode_support_locals {
     pub cursor_bytes: [u32; DML2_MAX_PLANES];
     pub stream_visited: [bool; DML2_MAX_PLANES];
 
-	unsigned int pstate_bytes_required_l: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
-	unsigned int pstate_bytes_required_c: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
+	core::ffi::c_uint pstate_bytes_required_l: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
+	core::ffi::c_uint pstate_bytes_required_c: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
 
     pub prefetch_sw_bytes: [f64; DML2_MAX_PLANES];
     pub Tpre_rounded: [f64; DML2_MAX_PLANES];
@@ -1255,10 +1255,10 @@ pub struct dml2_core_calcs_mode_programming_locals {
 	double dummy_bw: [dml2_core_internal_soc_state_max]: [dml2_core_internal_bw_max];
 	double surface_dummy_bw: [dml2_core_internal_soc_state_max]: [dml2_core_internal_bw_max]: [DML2_MAX_PLANES];
 	double surface_dummy_bw0: [dml2_core_internal_soc_state_max]: [dml2_core_internal_bw_max]: [DML2_MAX_PLANES];
-	unsigned int dummy_integer_array: [4]: [DML2_MAX_PLANES];
+	core::ffi::c_uint dummy_integer_array: [4]: [DML2_MAX_PLANES];
 	dml2_output_encoder_class dummy_output_encoder_array: [DML2_MAX_PLANES];
 	double dummy_single_array: [2]: [DML2_MAX_PLANES];
-	unsigned int dummy_long_array: [8]: [DML2_MAX_PLANES];
+	core::ffi::c_uint dummy_long_array: [8]: [DML2_MAX_PLANES];
 	bool dummy_boolean_array: [2]: [DML2_MAX_PLANES];
     pub dummy_boolean: [bool; 2];
     pub dummy_single: [f64; 2];
@@ -1319,8 +1319,8 @@ pub struct dml2_core_calcs_mode_programming_locals {
     pub Tr0_trips_flip_rounded: [f64; DML2_MAX_PLANES];
     pub per_pipe_flip_bytes: [u32; DML2_MAX_PLANES];
 
-	unsigned int pstate_bytes_required_l: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
-	unsigned int pstate_bytes_required_c: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
+	core::ffi::c_uint pstate_bytes_required_l: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
+	core::ffi::c_uint pstate_bytes_required_c: [dml2_pstate_type_count]: [DML2_MAX_PLANES];
 
     pub prefetch_sw_bytes: [f64; DML2_MAX_PLANES];
     pub Tpre_rounded: [f64; DML2_MAX_PLANES];
@@ -1402,12 +1402,12 @@ pub struct dml2_core_calcs_CalculateVMRowAndSwath_params {
     pub display_cfg: *const dml2_display_cfg;
     pub NumberOfActiveSurfaces: u32;
     pub myPipe: *mut dml2_core_internal_DmlPipe;
-	unsigned int *SurfaceSizeInMALL;
+	core::ffi::c_uint *SurfaceSizeInMALL;
     pub PTEBufferSizeInRequestsLuma: u32;
     pub PTEBufferSizeInRequestsChroma: u32;
     pub MALLAllocatedForDCN: u32;
-	unsigned int *SwathWidthY;
-	unsigned int *SwathWidthC;
+	core::ffi::c_uint *SwathWidthY;
+	core::ffi::c_uint *SwathWidthC;
     pub HostVMMinPageSize: u32;
     pub DCCMetaBufferSizeBytes: u32;
     pub mrq_present: bool;
@@ -1417,63 +1417,63 @@ pub struct dml2_core_calcs_CalculateVMRowAndSwath_params {
     pub PTEBufferSizeNotExceeded: *mut bool;
     pub DCCMetaBufferSizeNotExceeded: *mut bool;
 
-	unsigned int *dpte_row_width_luma_ub;
-	unsigned int *dpte_row_width_chroma_ub;
-	unsigned int *dpte_row_height_luma;
-	unsigned int *dpte_row_height_chroma;
-	unsigned int *dpte_row_height_linear_luma; // VBA_DELTA
-	unsigned int *dpte_row_height_linear_chroma; // VBA_DELTA
+	core::ffi::c_uint *dpte_row_width_luma_ub;
+	core::ffi::c_uint *dpte_row_width_chroma_ub;
+	core::ffi::c_uint *dpte_row_height_luma;
+	core::ffi::c_uint *dpte_row_height_chroma;
+	core::ffi::c_uint *dpte_row_height_linear_luma; // VBA_DELTA
+	core::ffi::c_uint *dpte_row_height_linear_chroma; // VBA_DELTA
 
-	unsigned int *vm_group_bytes;
-	unsigned int *dpte_group_bytes;
-	unsigned int *PixelPTEReqWidthY;
-	unsigned int *PixelPTEReqHeightY;
-	unsigned int *PTERequestSizeY;
-	unsigned int *vmpg_width_y;
-	unsigned int *vmpg_height_y;
+	core::ffi::c_uint *vm_group_bytes;
+	core::ffi::c_uint *dpte_group_bytes;
+	core::ffi::c_uint *PixelPTEReqWidthY;
+	core::ffi::c_uint *PixelPTEReqHeightY;
+	core::ffi::c_uint *PTERequestSizeY;
+	core::ffi::c_uint *vmpg_width_y;
+	core::ffi::c_uint *vmpg_height_y;
 
-	unsigned int *PixelPTEReqWidthC;
-	unsigned int *PixelPTEReqHeightC;
-	unsigned int *PTERequestSizeC;
-	unsigned int *vmpg_width_c;
-	unsigned int *vmpg_height_c;
+	core::ffi::c_uint *PixelPTEReqWidthC;
+	core::ffi::c_uint *PixelPTEReqHeightC;
+	core::ffi::c_uint *PTERequestSizeC;
+	core::ffi::c_uint *vmpg_width_c;
+	core::ffi::c_uint *vmpg_height_c;
 
-	unsigned int *dpde0_bytes_per_frame_ub_l;
-	unsigned int *dpde0_bytes_per_frame_ub_c;
+	core::ffi::c_uint *dpde0_bytes_per_frame_ub_l;
+	core::ffi::c_uint *dpde0_bytes_per_frame_ub_c;
 
-	unsigned int *PrefetchSourceLinesY;
-	unsigned int *PrefetchSourceLinesC;
-	unsigned int *VInitPreFillY;
-	unsigned int *VInitPreFillC;
-	unsigned int *MaxNumSwathY;
-	unsigned int *MaxNumSwathC;
+	core::ffi::c_uint *PrefetchSourceLinesY;
+	core::ffi::c_uint *PrefetchSourceLinesC;
+	core::ffi::c_uint *VInitPreFillY;
+	core::ffi::c_uint *VInitPreFillC;
+	core::ffi::c_uint *MaxNumSwathY;
+	core::ffi::c_uint *MaxNumSwathC;
     pub dpte_row_bw: *mut double;
-	unsigned int *PixelPTEBytesPerRow;
-	unsigned int *dpte_row_bytes_per_row_l;
-	unsigned int *dpte_row_bytes_per_row_c;
-	unsigned int *vm_bytes;
+	core::ffi::c_uint *PixelPTEBytesPerRow;
+	core::ffi::c_uint *dpte_row_bytes_per_row_l;
+	core::ffi::c_uint *dpte_row_bytes_per_row_c;
+	core::ffi::c_uint *vm_bytes;
     pub use_one_row_for_frame: *mut bool;
     pub use_one_row_for_frame_flip: *mut bool;
     pub is_using_mall_for_ss: *mut bool;
     pub PTE_BUFFER_MODE: *mut bool;
-	unsigned int *BIGK_FRAGMENT_SIZE;
+	core::ffi::c_uint *BIGK_FRAGMENT_SIZE;
 
 	// MRQ
-	unsigned int *meta_req_width_luma;
-	unsigned int *meta_req_height_luma;
-	unsigned int *meta_row_width_luma;
-	unsigned int *meta_row_height_luma;
-	unsigned int *meta_pte_bytes_per_frame_ub_l;
+	core::ffi::c_uint *meta_req_width_luma;
+	core::ffi::c_uint *meta_req_height_luma;
+	core::ffi::c_uint *meta_row_width_luma;
+	core::ffi::c_uint *meta_row_height_luma;
+	core::ffi::c_uint *meta_pte_bytes_per_frame_ub_l;
 
-	unsigned int *meta_req_width_chroma;
-	unsigned int *meta_req_height_chroma;
-	unsigned int *meta_row_width_chroma;
-	unsigned int *meta_row_height_chroma;
-	unsigned int *meta_pte_bytes_per_frame_ub_c;
+	core::ffi::c_uint *meta_req_width_chroma;
+	core::ffi::c_uint *meta_req_height_chroma;
+	core::ffi::c_uint *meta_row_width_chroma;
+	core::ffi::c_uint *meta_row_height_chroma;
+	core::ffi::c_uint *meta_pte_bytes_per_frame_ub_c;
     pub meta_row_bw: *mut double;
-	unsigned int *meta_row_bytes;
-	unsigned int *meta_row_bytes_per_row_ub_l;
-	unsigned int *meta_row_bytes_per_row_ub_c;
+	core::ffi::c_uint *meta_row_bytes;
+	core::ffi::c_uint *meta_row_bytes_per_row_ub_l;
+	core::ffi::c_uint *meta_row_bytes_per_row_ub_c;
 }
 
 #: [repr(C)]
@@ -1539,16 +1539,16 @@ pub struct dml2_core_shared_calculate_det_buffer_size_params {
     pub CompressedBufferSegmentSizeInkByte: u32;
     pub ReadBandwidthLuma: *mut double;
     pub ReadBandwidthChroma: *mut double;
-	unsigned int *full_swath_bytes_l;
-	unsigned int *full_swath_bytes_c;
-	unsigned int *swath_time_value_us;
-	unsigned int *DPPPerSurface;
+	core::ffi::c_uint *full_swath_bytes_l;
+	core::ffi::c_uint *full_swath_bytes_c;
+	core::ffi::c_uint *swath_time_value_us;
+	core::ffi::c_uint *DPPPerSurface;
     pub TryToAllocateForWriteLatency: bool;
     pub bestEffortMinActiveLatencyHidingUs: u32;
 
 	// Output
-	unsigned int *DETBufferSizeInKByte;
-	unsigned int *CompressedBufferSizeInkByte;
+	core::ffi::c_uint *DETBufferSizeInKByte;
+	core::ffi::c_uint *CompressedBufferSizeInkByte;
 }
 
 #: [repr(C)]
@@ -1578,27 +1578,27 @@ pub struct dml2_core_shared_calculate_vm_and_row_bytes_params {
     pub mrq_present: bool;
 
 	// Output
-	unsigned int *PixelPTEBytesPerRow; // for bandwidth calculation
-	unsigned int *PixelPTEBytesPerRowStorage; // for PTE buffer size check
-	unsigned int *dpte_row_width_ub;
-	unsigned int *dpte_row_height;
-	unsigned int *dpte_row_height_linear;
-	unsigned int *PixelPTEBytesPerRow_one_row_per_frame;
-	unsigned int *dpte_row_width_ub_one_row_per_frame;
-	unsigned int *dpte_row_height_one_row_per_frame;
-	unsigned int *vmpg_width;
-	unsigned int *vmpg_height;
-	unsigned int *PixelPTEReqWidth;
-	unsigned int *PixelPTEReqHeight;
-	unsigned int *PTERequestSize;
-	unsigned int *dpde0_bytes_per_frame_ub;
+	core::ffi::c_uint *PixelPTEBytesPerRow; // for bandwidth calculation
+	core::ffi::c_uint *PixelPTEBytesPerRowStorage; // for PTE buffer size check
+	core::ffi::c_uint *dpte_row_width_ub;
+	core::ffi::c_uint *dpte_row_height;
+	core::ffi::c_uint *dpte_row_height_linear;
+	core::ffi::c_uint *PixelPTEBytesPerRow_one_row_per_frame;
+	core::ffi::c_uint *dpte_row_width_ub_one_row_per_frame;
+	core::ffi::c_uint *dpte_row_height_one_row_per_frame;
+	core::ffi::c_uint *vmpg_width;
+	core::ffi::c_uint *vmpg_height;
+	core::ffi::c_uint *PixelPTEReqWidth;
+	core::ffi::c_uint *PixelPTEReqHeight;
+	core::ffi::c_uint *PTERequestSize;
+	core::ffi::c_uint *dpde0_bytes_per_frame_ub;
 
-	unsigned int *meta_row_bytes;
-	unsigned int *MetaRequestWidth;
-	unsigned int *MetaRequestHeight;
-	unsigned int *meta_row_width;
-	unsigned int *meta_row_height;
-	unsigned int *meta_pte_bytes_per_frame_ub;
+	core::ffi::c_uint *meta_row_bytes;
+	core::ffi::c_uint *MetaRequestWidth;
+	core::ffi::c_uint *MetaRequestHeight;
+	core::ffi::c_uint *meta_row_width;
+	core::ffi::c_uint *meta_row_height;
+	core::ffi::c_uint *meta_pte_bytes_per_frame_ub;
 }
 
 #: [repr(C)]
@@ -1634,7 +1634,7 @@ pub struct dml2_core_shared_CalculateDETBufferSize_locals {
     pub TotalPixelRate: u32;
     pub DETBudgetPerStream: [u32; DML2_MAX_PLANES];
     pub RemainingDETBudgetPerStream: [u32; DML2_MAX_PLANES];
-	unsigned int IdealDETBudget, DeltaDETBudget;
+	core::ffi::c_uint IdealDETBudget, DeltaDETBudget;
     pub ResidualDETAfterRounding: u32;
 }
 
@@ -1769,31 +1769,31 @@ pub struct dml2_core_shared_CalculateMetaAndPTETimes_params {
     pub use_one_row_for_frame: *mut bool;
     pub dst_y_per_row_vblank: *mut double;
     pub dst_y_per_row_flip: *mut double;
-	unsigned int *BytePerPixelY;
-	unsigned int *BytePerPixelC;
-	unsigned int *dpte_row_height;
-	unsigned int *dpte_row_height_chroma;
-	unsigned int *dpte_group_bytes;
-	unsigned int *PTERequestSizeY;
-	unsigned int *PTERequestSizeC;
-	unsigned int *PixelPTEReqWidthY;
-	unsigned int *PixelPTEReqHeightY;
-	unsigned int *PixelPTEReqWidthC;
-	unsigned int *PixelPTEReqHeightC;
-	unsigned int *dpte_row_width_luma_ub;
-	unsigned int *dpte_row_width_chroma_ub;
-	unsigned int *tdlut_groups_per_2row_ub;
+	core::ffi::c_uint *BytePerPixelY;
+	core::ffi::c_uint *BytePerPixelC;
+	core::ffi::c_uint *dpte_row_height;
+	core::ffi::c_uint *dpte_row_height_chroma;
+	core::ffi::c_uint *dpte_group_bytes;
+	core::ffi::c_uint *PTERequestSizeY;
+	core::ffi::c_uint *PTERequestSizeC;
+	core::ffi::c_uint *PixelPTEReqWidthY;
+	core::ffi::c_uint *PixelPTEReqHeightY;
+	core::ffi::c_uint *PixelPTEReqWidthC;
+	core::ffi::c_uint *PixelPTEReqHeightC;
+	core::ffi::c_uint *dpte_row_width_luma_ub;
+	core::ffi::c_uint *dpte_row_width_chroma_ub;
+	core::ffi::c_uint *tdlut_groups_per_2row_ub;
     pub mrq_present: bool;
     pub MetaChunkSize: u32;
     pub MinMetaChunkSizeBytes: u32;
-	unsigned int *meta_row_width;
-	unsigned int *meta_row_width_chroma;
-	unsigned int *meta_row_height;
-	unsigned int *meta_row_height_chroma;
-	unsigned int *meta_req_width;
-	unsigned int *meta_req_width_chroma;
-	unsigned int *meta_req_height;
-	unsigned int *meta_req_height_chroma;
+	core::ffi::c_uint *meta_row_width;
+	core::ffi::c_uint *meta_row_width_chroma;
+	core::ffi::c_uint *meta_row_height;
+	core::ffi::c_uint *meta_row_height_chroma;
+	core::ffi::c_uint *meta_req_width;
+	core::ffi::c_uint *meta_req_width_chroma;
+	core::ffi::c_uint *meta_req_height;
+	core::ffi::c_uint *meta_req_height_chroma;
 
 	// Output
     pub time_per_tdlut_group: *mut double;
@@ -1848,8 +1848,8 @@ pub struct dml2_core_calcs_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_p
     pub UnboundedRequestEnabled: bool;
     pub CompressedBufferSizeInkByte: u32;
     pub max_outstanding_when_urgent_expected: bool;
-	const unsigned int max_outstanding_requests;
-	const unsigned int max_request_size_bytes;
+	const core::ffi::c_uint max_outstanding_requests;
+	const core::ffi::c_uint max_request_size_bytes;
     pub meta_row_height_l: *const u32;
     pub meta_row_height_c: *const u32;
     pub uclk_pstate_switch_modes: *const dml2_pstate_method;
@@ -1860,7 +1860,7 @@ pub struct dml2_core_calcs_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_p
     pub global_dram_clock_change_support_required: *mut bool;
     pub global_dram_clock_change_supported: *mut bool;
     pub MaxActiveDRAMClockChangeLatencySupported: *mut double;
-	unsigned int *SubViewportLinesNeededInMALL;
+	core::ffi::c_uint *SubViewportLinesNeededInMALL;
 	dml2_pstate_change_support *FCLKChangeSupport;
     pub global_fclk_change_supported: *mut bool;
     pub MaxActiveFCLKChangeLatencySupported: *mut double;
@@ -1889,44 +1889,44 @@ pub struct dml2_core_calcs_CalculateSwathAndDETConfiguration_params {
     pub ReadBandwidthChroma: *mut double;
     pub MaximumSwathWidthLuma: *mut double;
     pub MaximumSwathWidthChroma: *mut double;
-	unsigned int *Read256BytesBlockHeightY;
-	unsigned int *Read256BytesBlockHeightC;
-	unsigned int *Read256BytesBlockWidthY;
-	unsigned int *Read256BytesBlockWidthC;
+	core::ffi::c_uint *Read256BytesBlockHeightY;
+	core::ffi::c_uint *Read256BytesBlockHeightC;
+	core::ffi::c_uint *Read256BytesBlockWidthY;
+	core::ffi::c_uint *Read256BytesBlockWidthC;
     pub surf_linear128_l: *mut bool;
     pub surf_linear128_c: *mut bool;
 	dml2_odm_mode *ODMMode;
-	unsigned int *BytePerPixY;
-	unsigned int *BytePerPixC;
+	core::ffi::c_uint *BytePerPixY;
+	core::ffi::c_uint *BytePerPixC;
     pub BytePerPixDETY: *mut double;
     pub BytePerPixDETC: *mut double;
-	unsigned int *DPPPerSurface;
+	core::ffi::c_uint *DPPPerSurface;
     pub mrq_present: bool;
-	unsigned int dummy: [2]: [DML2_MAX_PLANES];
+	core::ffi::c_uint dummy: [2]: [DML2_MAX_PLANES];
     pub swath_width_luma_ub_single_dpp: [u32; DML2_MAX_PLANES];
     pub swath_width_chroma_ub_single_dpp: [u32; DML2_MAX_PLANES];
 
 	// output
-	unsigned int *req_per_swath_ub_l;
-	unsigned int *req_per_swath_ub_c;
-	unsigned int *swath_width_luma_ub;
-	unsigned int *swath_width_chroma_ub;
-	unsigned int *SwathWidth;
-	unsigned int *SwathWidthChroma;
-	unsigned int *SwathHeightY;
-	unsigned int *SwathHeightC;
-	unsigned int *request_size_bytes_luma;
-	unsigned int *request_size_bytes_chroma;
-	unsigned int *DETBufferSizeInKByte;
-	unsigned int *DETBufferSizeY;
-	unsigned int *DETBufferSizeC;
-	unsigned int *full_swath_bytes_l;
-	unsigned int *full_swath_bytes_c;
-	unsigned int *full_swath_bytes_single_dpp_l;
-	unsigned int *full_swath_bytes_single_dpp_c;
+	core::ffi::c_uint *req_per_swath_ub_l;
+	core::ffi::c_uint *req_per_swath_ub_c;
+	core::ffi::c_uint *swath_width_luma_ub;
+	core::ffi::c_uint *swath_width_chroma_ub;
+	core::ffi::c_uint *SwathWidth;
+	core::ffi::c_uint *SwathWidthChroma;
+	core::ffi::c_uint *SwathHeightY;
+	core::ffi::c_uint *SwathHeightC;
+	core::ffi::c_uint *request_size_bytes_luma;
+	core::ffi::c_uint *request_size_bytes_chroma;
+	core::ffi::c_uint *DETBufferSizeInKByte;
+	core::ffi::c_uint *DETBufferSizeY;
+	core::ffi::c_uint *DETBufferSizeC;
+	core::ffi::c_uint *full_swath_bytes_l;
+	core::ffi::c_uint *full_swath_bytes_c;
+	core::ffi::c_uint *full_swath_bytes_single_dpp_l;
+	core::ffi::c_uint *full_swath_bytes_single_dpp_c;
     pub UnboundedRequestEnabled: *mut bool;
-	unsigned int *compbuf_reserved_space_64b;
-	unsigned int *CompressedBufferSizeInkByte;
+	core::ffi::c_uint *compbuf_reserved_space_64b;
+	core::ffi::c_uint *CompressedBufferSizeInkByte;
     pub ViewportSizeSupportPerSurface: *mut bool;
     pub ViewportSizeSupport: *mut bool;
     pub hw_debug5: *mut bool;
@@ -1990,19 +1990,19 @@ pub struct dml2_core_calcs_CalculateStutterEfficiency_params {
     pub Z8StutterEnterPlusExitWatermark: f64;
     pub ProgressiveToInterlaceUnitInOPP: bool;
     pub MinTTUVBlank: *mut double;
-	unsigned int *DPPPerSurface;
-	unsigned int *DETBufferSizeY;
-	unsigned int *BytePerPixelY;
+	core::ffi::c_uint *DPPPerSurface;
+	core::ffi::c_uint *DETBufferSizeY;
+	core::ffi::c_uint *BytePerPixelY;
     pub BytePerPixelDETY: *mut double;
-	unsigned int *SwathWidthY;
-	unsigned int *SwathHeightY;
-	unsigned int *SwathHeightC;
-	unsigned int *BlockHeight256BytesY;
-	unsigned int *BlockWidth256BytesY;
-	unsigned int *BlockHeight256BytesC;
-	unsigned int *BlockWidth256BytesC;
-	unsigned int *DCCYMaxUncompressedBlock;
-	unsigned int *DCCCMaxUncompressedBlock;
+	core::ffi::c_uint *SwathWidthY;
+	core::ffi::c_uint *SwathHeightY;
+	core::ffi::c_uint *SwathHeightC;
+	core::ffi::c_uint *BlockHeight256BytesY;
+	core::ffi::c_uint *BlockWidth256BytesY;
+	core::ffi::c_uint *BlockHeight256BytesC;
+	core::ffi::c_uint *BlockWidth256BytesC;
+	core::ffi::c_uint *DCCYMaxUncompressedBlock;
+	core::ffi::c_uint *DCCCMaxUncompressedBlock;
     pub ReadBandwidthSurfaceLuma: *mut double;
     pub ReadBandwidthSurfaceChroma: *mut double;
     pub meta_row_bw: *mut double;
@@ -2014,11 +2014,11 @@ pub struct dml2_core_calcs_CalculateStutterEfficiency_params {
     pub StutterEfficiency: *mut double;
     pub LowPowerStutterEfficiencyNotIncludingVBlank: *mut double;
     pub LowPowerStutterEfficiency: *mut double;
-	unsigned int *NumberOfStutterBurstsPerFrame;
-	unsigned int *LowPowerNumberOfStutterBurstsPerFrame;
+	core::ffi::c_uint *NumberOfStutterBurstsPerFrame;
+	core::ffi::c_uint *LowPowerNumberOfStutterBurstsPerFrame;
     pub Z8StutterEfficiencyNotIncludingVBlank: *mut double;
     pub Z8StutterEfficiency: *mut double;
-	unsigned int *Z8NumberOfStutterBurstsPerFrame;
+	core::ffi::c_uint *Z8NumberOfStutterBurstsPerFrame;
     pub StutterPeriod: *mut double;
     pub DCHUBBUB_ARB_CSTATE_MAX_CAP_MODE: *mut bool;
 }
@@ -2082,8 +2082,8 @@ pub struct dml2_core_calcs_CalculatePrefetchSchedule_params {
     pub vactive_sw_bw_c: f64; // per surface bw
 
 	// output
-	unsigned int *DSTXAfterScaler;
-	unsigned int *DSTYAfterScaler;
+	core::ffi::c_uint *DSTXAfterScaler;
+	core::ffi::c_uint *DSTYAfterScaler;
     pub dst_y_prefetch: *mut double;
     pub dst_y_per_vm_vblank: *mut double;
     pub dst_y_per_row_vblank: *mut double;
@@ -2107,9 +2107,9 @@ pub struct dml2_core_calcs_CalculatePrefetchSchedule_params {
     pub Tr0_trips_flip: *mut double;
     pub Tvm_trips_flip_rounded: *mut double;
     pub Tr0_trips_flip_rounded: *mut double;
-	unsigned int *VUpdateOffsetPix;
-	unsigned int *VUpdateWidthPix;
-	unsigned int *VReadyOffsetPix;
+	core::ffi::c_uint *VUpdateOffsetPix;
+	core::ffi::c_uint *VUpdateWidthPix;
+	core::ffi::c_uint *VReadyOffsetPix;
     pub prefetch_cursor_bw: *mut double;
     pub prefetch_sw_bytes: *mut double;
     pub prefetch_swath_time_us: *mut double;
@@ -2123,14 +2123,14 @@ pub struct dml2_core_calcs_CheckGlobalPrefetchAdmissibility_params {
     pub compressed_buffer_size_kbytes: u32;
     pub chunk_bytes_l: u32; // same for all planes
     pub chunk_bytes_c: u32;
-	unsigned int *detile_buffer_size_bytes_l;
-	unsigned int *detile_buffer_size_bytes_c;
-	unsigned int *full_swath_bytes_l;
-	unsigned int *full_swath_bytes_c;
-	unsigned int *lb_source_lines_l;
-	unsigned int *lb_source_lines_c;
-	unsigned int *swath_height_l;
-	unsigned int *swath_height_c;
+	core::ffi::c_uint *detile_buffer_size_bytes_l;
+	core::ffi::c_uint *detile_buffer_size_bytes_c;
+	core::ffi::c_uint *full_swath_bytes_l;
+	core::ffi::c_uint *full_swath_bytes_c;
+	core::ffi::c_uint *lb_source_lines_l;
+	core::ffi::c_uint *lb_source_lines_c;
+	core::ffi::c_uint *swath_height_l;
+	core::ffi::c_uint *swath_height_c;
     pub prefetch_sw_bytes: *mut double;
     pub Tpre_rounded: *mut double;
     pub Tpre_oto: *mut double;
@@ -2184,16 +2184,16 @@ pub struct dml2_core_calcs_calculate_mcache_row_bytes_params {
     pub bytes_per_pixel: u32;
 
 	// output
-	unsigned int *num_mcaches;
-	unsigned int *mcache_row_bytes;
-	unsigned int *mcache_row_bytes_per_channel;
-	unsigned int *meta_row_width_ub;
+	core::ffi::c_uint *num_mcaches;
+	core::ffi::c_uint *mcache_row_bytes;
+	core::ffi::c_uint *mcache_row_bytes_per_channel;
+	core::ffi::c_uint *meta_row_width_ub;
     pub dcc_dram_bw_nom_overhead_factor: *mut double;
     pub dcc_dram_bw_pref_overhead_factor: *mut double;
-	unsigned int *mvmpg_width;
-	unsigned int *mvmpg_height;
-	unsigned int *full_vp_access_width_mvmpg_aligned;
-	unsigned int *mvmpg_per_mcache_lb;
+	core::ffi::c_uint *mvmpg_width;
+	core::ffi::c_uint *mvmpg_height;
+	core::ffi::c_uint *full_vp_access_width_mvmpg_aligned;
+	core::ffi::c_uint *mvmpg_per_mcache_lb;
 }
 
 #: [repr(C)]
@@ -2266,19 +2266,19 @@ pub struct dml2_core_calcs_calculate_mcache_setting_params {
     pub bytes_per_pixel_c: u32;
 
 	// output
-	unsigned int *num_mcaches_l;
-	unsigned int *mcache_row_bytes_l;
-	unsigned int *mcache_row_bytes_per_channel_l;
-	unsigned int *mcache_offsets_l;
-	unsigned int *mcache_shift_granularity_l;
+	core::ffi::c_uint *num_mcaches_l;
+	core::ffi::c_uint *mcache_row_bytes_l;
+	core::ffi::c_uint *mcache_row_bytes_per_channel_l;
+	core::ffi::c_uint *mcache_offsets_l;
+	core::ffi::c_uint *mcache_shift_granularity_l;
     pub dcc_dram_bw_nom_overhead_factor_l: *mut double;
     pub dcc_dram_bw_pref_overhead_factor_l: *mut double;
 
-	unsigned int *num_mcaches_c;
-	unsigned int *mcache_row_bytes_c;
-	unsigned int *mcache_row_bytes_per_channel_c;
-	unsigned int *mcache_offsets_c;
-	unsigned int *mcache_shift_granularity_c;
+	core::ffi::c_uint *num_mcaches_c;
+	core::ffi::c_uint *mcache_row_bytes_c;
+	core::ffi::c_uint *mcache_row_bytes_per_channel_c;
+	core::ffi::c_uint *mcache_offsets_c;
+	core::ffi::c_uint *mcache_shift_granularity_c;
     pub dcc_dram_bw_nom_overhead_factor_c: *mut double;
     pub dcc_dram_bw_pref_overhead_factor_c: *mut double;
 
@@ -2292,27 +2292,27 @@ pub struct dml2_core_calcs_calculate_mcache_setting_params {
 pub struct dml2_core_calcs_calculate_alternate_lead_lines {
 	/* input params */
     pub display_cfg: *const dml2_display_cfg;
-	unsigned int *VStartup;
+	core::ffi::c_uint *VStartup;
     pub VActiveLatencyHidingUs: *mut double;
 
 	/* output params */
-	unsigned int *min_lead_dst_lines;
+	core::ffi::c_uint *min_lead_dst_lines;
 }
 
 #: [repr(C)]
 pub struct dml2_core_calcs_calculate_alternate_svp_lines {
 	/* input params */
     pub display_cfg: *const dml2_display_cfg;
-	unsigned int *SwathHeightY;
-	unsigned int *SwathHeightC;
-	unsigned int *DETBufferSizeY;
+	core::ffi::c_uint *SwathHeightY;
+	core::ffi::c_uint *SwathHeightC;
+	core::ffi::c_uint *DETBufferSizeY;
     pub BytePerPixelInDETC: *mut double;
     pub dram_blackout_us: f64;
 
 	/* output params */
-	unsigned int *svp0_dst_lines;
-	unsigned int *svp1_dst_lines;
-	unsigned int *svp_req_limit;
+	core::ffi::c_uint *svp0_dst_lines;
+	core::ffi::c_uint *svp1_dst_lines;
+	core::ffi::c_uint *svp_req_limit;
 }
 
 #: [repr(C)]
@@ -2320,58 +2320,58 @@ pub struct dml2_core_calcs_calculate_alternate_params {
 	/* input params */
     pub display_cfg: *const dml2_display_cfg;
     pub dst_y_prefetch: *mut double;
-	unsigned int *SwathHeightY;
-	unsigned int *SwathHeightC;
-	unsigned int *SwathWidthY;
-	unsigned int *SwathWidthC;
-	unsigned int *DETBufferSizeY;
-	unsigned int *DETBufferSizeC;
-	unsigned int *BytePerPixelY;
-	unsigned int *BytePerPixelC;
+	core::ffi::c_uint *SwathHeightY;
+	core::ffi::c_uint *SwathHeightC;
+	core::ffi::c_uint *SwathWidthY;
+	core::ffi::c_uint *SwathWidthC;
+	core::ffi::c_uint *DETBufferSizeY;
+	core::ffi::c_uint *DETBufferSizeC;
+	core::ffi::c_uint *BytePerPixelY;
+	core::ffi::c_uint *BytePerPixelC;
     pub BytePerPixelInDETY: *mut double;
     pub BytePerPixelInDETC: *mut double;
-	unsigned int *Read256BlockWidthY;
-	unsigned int *Read256BlockHeightY;
-	unsigned int *Read256BlockWidthC;
-	unsigned int *Read256BlockHeightC;
-	unsigned int *MacroTileWidthY;
-	unsigned int *MacroTileWidthC;
-	unsigned int *VInitPrefillY;
-	unsigned int *VInitPrefillC;
+	core::ffi::c_uint *Read256BlockWidthY;
+	core::ffi::c_uint *Read256BlockHeightY;
+	core::ffi::c_uint *Read256BlockWidthC;
+	core::ffi::c_uint *Read256BlockHeightC;
+	core::ffi::c_uint *MacroTileWidthY;
+	core::ffi::c_uint *MacroTileWidthC;
+	core::ffi::c_uint *VInitPrefillY;
+	core::ffi::c_uint *VInitPrefillC;
     pub VRatioPrefetchY: *mut double;
     pub VRatioPrefetchC: *mut double;
-	unsigned int *NoOfDPP;
+	core::ffi::c_uint *NoOfDPP;
     pub max_num_dpp: u32;
     pub dram_blackout_us: f64;
     pub VActiveLatencyHidingUs: *mut double;
-	unsigned int *svp0_dst_lines;
-	unsigned int *svp1_dst_lines;
-	unsigned int *svp_req_limit;
+	core::ffi::c_uint *svp0_dst_lines;
+	core::ffi::c_uint *svp1_dst_lines;
+	core::ffi::c_uint *svp_req_limit;
     pub dcn_non_urgent_bandwidth_kbps: f64;
     pub alt_chan_fw_delay_us: u32;
     pub dst_y_per_vm_vblank: *mut double;
     pub dst_y_per_row_vblank: *mut double;
-	unsigned int *DSTYAfterScaler;
+	core::ffi::c_uint *DSTYAfterScaler;
 	dml2_odm_mode *ODMMode;
 
 	/* output params */
-	unsigned int *svp0_max_bytes;
-	unsigned int *svp1_max_bytes;
-	unsigned int *svp0_max_bytes_per_dpp;
-	unsigned int *svp0_max_bytes_per_dpp_c;
-	unsigned int *svp1_max_bytes_per_dpp;
-	unsigned int *svp1_max_bytes_per_dpp_c;
-	unsigned int *nom_req_limit_alt;
-	unsigned int *min_lead_dst_lines;
-	unsigned int *total_swaths;
-	unsigned int *total_swaths_c;
-	unsigned int *prefetch_swaths;
-	unsigned int *prefetch_swaths_c;
+	core::ffi::c_uint *svp0_max_bytes;
+	core::ffi::c_uint *svp1_max_bytes;
+	core::ffi::c_uint *svp0_max_bytes_per_dpp;
+	core::ffi::c_uint *svp0_max_bytes_per_dpp_c;
+	core::ffi::c_uint *svp1_max_bytes_per_dpp;
+	core::ffi::c_uint *svp1_max_bytes_per_dpp_c;
+	core::ffi::c_uint *nom_req_limit_alt;
+	core::ffi::c_uint *min_lead_dst_lines;
+	core::ffi::c_uint *total_swaths;
+	core::ffi::c_uint *total_swaths_c;
+	core::ffi::c_uint *prefetch_swaths;
+	core::ffi::c_uint *prefetch_swaths_c;
     pub prefetch_hdl_delta: *mut double;
     pub recout_hdl_delta: *mut double;
     pub prefetch_hdl_delta_c: *mut double;
     pub recout_hdl_delta_c: *mut double;
-	unsigned int *max_prefetch_in_lines;
+	core::ffi::c_uint *max_prefetch_in_lines;
     pub lsdma_bw_req_for_alt_kbps: *mut double;
 }
 #: [repr(C)]
@@ -2388,13 +2388,13 @@ pub struct dml2_core_calcs_calculate_tdlut_setting_params {
     pub tdlut_mpc_width_flag: bool;
 
 	// output param
-	unsigned int *tdlut_pte_bytes_per_frame;
-	unsigned int *tdlut_bytes_per_frame;
-	unsigned int *tdlut_groups_per_2row_ub;
+	core::ffi::c_uint *tdlut_pte_bytes_per_frame;
+	core::ffi::c_uint *tdlut_bytes_per_frame;
+	core::ffi::c_uint *tdlut_groups_per_2row_ub;
     pub tdlut_opt_time: *mut double;
     pub tdlut_drain_time: *mut double;
-	unsigned int *tdlut_bytes_to_deliver;
-	unsigned int *tdlut_bytes_per_group;
+	core::ffi::c_uint *tdlut_bytes_to_deliver;
+	core::ffi::c_uint *tdlut_bytes_per_group;
 }
 
 #: [repr(C)]
@@ -2411,7 +2411,7 @@ pub struct dml2_core_calcs_calculate_peak_bandwidth_required_params {
     pub display_cfg: *const dml2_display_cfg;
     pub inc_flip_bw: bool;
     pub num_active_planes: u32;
-	unsigned int *num_of_dpp;
+	core::ffi::c_uint *num_of_dpp;
     pub dcc_dram_bw_nom_overhead_factor_p0: *mut double;
     pub dcc_dram_bw_nom_overhead_factor_p1: *mut double;
     pub dcc_dram_bw_pref_overhead_factor_p0: *mut double;
@@ -2445,26 +2445,26 @@ pub struct dml2_core_calcs_calculate_bytes_to_fetch_required_to_hide_latency_par
     pub display_cfg: *const dml2_display_cfg;
     pub mrq_present: bool;
     pub num_active_planes: u32;
-	unsigned int *num_of_dpp;
-	unsigned int *meta_row_height_l;
-	unsigned int *meta_row_height_c;
-	unsigned int *meta_row_bytes_per_row_ub_l;
-	unsigned int *meta_row_bytes_per_row_ub_c;
-	unsigned int *dpte_row_height_l;
-	unsigned int *dpte_row_height_c;
-	unsigned int *dpte_bytes_per_row_l;
-	unsigned int *dpte_bytes_per_row_c;
-	unsigned int *byte_per_pix_l;
-	unsigned int *byte_per_pix_c;
-	unsigned int *swath_width_l;
-	unsigned int *swath_width_c;
-	unsigned int *swath_height_l;
-	unsigned int *swath_height_c;
+	core::ffi::c_uint *num_of_dpp;
+	core::ffi::c_uint *meta_row_height_l;
+	core::ffi::c_uint *meta_row_height_c;
+	core::ffi::c_uint *meta_row_bytes_per_row_ub_l;
+	core::ffi::c_uint *meta_row_bytes_per_row_ub_c;
+	core::ffi::c_uint *dpte_row_height_l;
+	core::ffi::c_uint *dpte_row_height_c;
+	core::ffi::c_uint *dpte_bytes_per_row_l;
+	core::ffi::c_uint *dpte_bytes_per_row_c;
+	core::ffi::c_uint *byte_per_pix_l;
+	core::ffi::c_uint *byte_per_pix_c;
+	core::ffi::c_uint *swath_width_l;
+	core::ffi::c_uint *swath_width_c;
+	core::ffi::c_uint *swath_height_l;
+	core::ffi::c_uint *swath_height_c;
     pub latency_to_hide_us: [f64; DML2_MAX_PLANES];
 
 	/* outputs */
-	unsigned int *bytes_required_l;
-	unsigned int *bytes_required_c;
+	core::ffi::c_uint *bytes_required_l;
+	core::ffi::c_uint *bytes_required_c;
 }
 
 // A list of overridable function pointers in the core

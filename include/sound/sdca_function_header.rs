@@ -21,35 +21,35 @@ pub device {}
 pub struct sdca_entity;
 pub struct sdca_function_desc;
 
-#define SDCA_NO_INTERRUPT -1
+pub const SDCA_NO_INTERRUPT: i32 = - 1;
 
 /*
  * The addressing space for SDCA relies on 7 bits for Entities, so a
  * maximum of 128 Entities per function can be represented.
  */
-#define SDCA_MAX_ENTITY_COUNT 128
+pub const SDCA_MAX_ENTITY_COUNT: u32 = 128;
 
 /*
  * The Cluster IDs are 16-bit, so a maximum of 65535 Clusters per
  * function can be represented, however limit this to a slightly
  * more reasonable value. Can be expanded if needed.
  */
-#define SDCA_MAX_CLUSTER_COUNT 256
+pub const SDCA_MAX_CLUSTER_COUNT: u32 = 256;
 
 /*
  * Sanity check on number of channels per Cluster, can be expanded if needed.
  */
-#define SDCA_MAX_CHANNEL_COUNT 32
+pub const SDCA_MAX_CHANNEL_COUNT: u32 = 32;
 
 /*
  * Sanity check on number of PDE delays, can be expanded if needed.
  */
-#define SDCA_MAX_DELAY_COUNT 256
+pub const SDCA_MAX_DELAY_COUNT: u32 = 256;
 
 /*
  * Sanity check on size of affected controls data, can be expanded if needed.
  */
-#define SDCA_MAX_AFFECTED_COUNT 2048
+pub const SDCA_MAX_AFFECTED_COUNT: u32 = 2048;
 
 /**
  * sdca_function_type - SDCA Function Type codes
@@ -87,17 +87,17 @@ sdca_function_type {
 };
 
 /* Human-readable names used for kernel logs and Function device registration/bind */
-#define	SDCA_FUNCTION_TYPE_SMART_AMP_NAME		"SmartAmp"
-#define	SDCA_FUNCTION_TYPE_SIMPLE_AMP_NAME		"SimpleAmp"
-#define	SDCA_FUNCTION_TYPE_SMART_MIC_NAME		"SmartMic"
-#define	SDCA_FUNCTION_TYPE_SIMPLE_MIC_NAME		"SimpleMic"
-#define	SDCA_FUNCTION_TYPE_SPEAKER_MIC_NAME		"SpeakerMic"
-#define	SDCA_FUNCTION_TYPE_UAJ_NAME			"UAJ"
-#define	SDCA_FUNCTION_TYPE_RJ_NAME			"RJ"
-#define	SDCA_FUNCTION_TYPE_SIMPLE_NAME			"SimpleJack"
-#define	SDCA_FUNCTION_TYPE_HID_NAME			"HID"
-#define	SDCA_FUNCTION_TYPE_COMPANION_AMP_NAME		"CompanionAmp"
-#define	SDCA_FUNCTION_TYPE_IMP_DEF_NAME			"ImplementationDefined"
+pub const SDCA_FUNCTION_TYPE_SMART_AMP_NAME: &core::ffi::CStr = c"SmartAmp";
+pub const SDCA_FUNCTION_TYPE_SIMPLE_AMP_NAME: &core::ffi::CStr = c"SimpleAmp";
+pub const SDCA_FUNCTION_TYPE_SMART_MIC_NAME: &core::ffi::CStr = c"SmartMic";
+pub const SDCA_FUNCTION_TYPE_SIMPLE_MIC_NAME: &core::ffi::CStr = c"SimpleMic";
+pub const SDCA_FUNCTION_TYPE_SPEAKER_MIC_NAME: &core::ffi::CStr = c"SpeakerMic";
+pub const SDCA_FUNCTION_TYPE_UAJ_NAME: &core::ffi::CStr = c"UAJ";
+pub const SDCA_FUNCTION_TYPE_RJ_NAME: &core::ffi::CStr = c"RJ";
+pub const SDCA_FUNCTION_TYPE_SIMPLE_NAME: &core::ffi::CStr = c"SimpleJack";
+pub const SDCA_FUNCTION_TYPE_HID_NAME: &core::ffi::CStr = c"HID";
+pub const SDCA_FUNCTION_TYPE_COMPANION_AMP_NAME: &core::ffi::CStr = c"CompanionAmp";
+pub const SDCA_FUNCTION_TYPE_IMP_DEF_NAME: &core::ffi::CStr = c"ImplementationDefined";
 
 /**
  * struct sdca_init_write - a single initialization write
@@ -597,136 +597,136 @@ sdca_entity0_controls {
 	SDCA_CTL_ENTITY_0_RESET_FUNCTION_NOW		= BIT(0),
 };
 
-#define SDCA_CTL_MIC_BIAS_NAME				"Mic Bias"
-#define SDCA_CTL_USAGE_NAME				"Usage"
-#define SDCA_CTL_LATENCY_NAME				"Latency"
-#define SDCA_CTL_CLUSTERINDEX_NAME			"Cluster Index"
-#define SDCA_CTL_DATAPORT_SELECTOR_NAME			"Dataport Selector"
-#define SDCA_CTL_MATCHING_GUID_NAME			"Matching GUID"
-#define SDCA_CTL_KEEP_ALIVE_NAME			"Keep Alive"
-#define SDCA_CTL_NDAI_STREAM_NAME			"NDAI Stream"
-#define SDCA_CTL_NDAI_CATEGORY_NAME			"NDAI Category"
-#define SDCA_CTL_NDAI_CODINGTYPE_NAME			"NDAI Coding Type"
-#define SDCA_CTL_NDAI_PACKETTYPE_NAME			"NDAI Packet Type"
-#define SDCA_CTL_MIXER_NAME				"Mixer"
-#define SDCA_CTL_SELECTOR_NAME				"Selector"
-#define SDCA_CTL_MUTE_NAME				"Channel"
-#define SDCA_CTL_CHANNEL_VOLUME_NAME			"Channel Volume"
-#define SDCA_CTL_AGC_NAME				"AGC"
-#define SDCA_CTL_BASS_BOOST_NAME			"Bass Boost"
-#define SDCA_CTL_LOUDNESS_NAME				"Loudness"
-#define SDCA_CTL_GAIN_NAME				"Gain"
-#define SDCA_CTL_BYPASS_NAME				"Bypass"
-#define SDCA_CTL_XU_ID_NAME				"XU ID"
-#define SDCA_CTL_XU_VERSION_NAME			"XU Version"
-#define SDCA_CTL_FDL_CURRENTOWNER_NAME			"FDL Current Owner"
-#define SDCA_CTL_FDL_MESSAGEOFFSET_NAME			"FDL Message Offset"
-#define SDCA_CTL_FDL_MESSAGELENGTH_NAME			"FDL Message Length"
-#define SDCA_CTL_FDL_STATUS_NAME			"FDL Status"
-#define SDCA_CTL_FDL_SET_INDEX_NAME			"FDL Set Index"
-#define SDCA_CTL_FDL_HOST_REQUEST_NAME			"FDL Host Request"
-#define SDCA_CTL_CLOCK_VALID_NAME			"Clock Valid"
-#define SDCA_CTL_SAMPLERATEINDEX_NAME			"Sample Rate Index"
-#define SDCA_CTL_CLOCK_SELECT_NAME			"Clock Select"
-#define SDCA_CTL_REQUESTED_PS_NAME			"Requested PS"
-#define SDCA_CTL_ACTUAL_PS_NAME				"Actual PS"
-#define SDCA_CTL_SELECTED_MODE_NAME			"Selected Mode"
-#define SDCA_CTL_DETECTED_MODE_NAME			"Detected Mode"
-#define SDCA_CTL_PRIVATE_NAME				"Private"
-#define SDCA_CTL_PRIVACY_POLICY_NAME			"Privacy Policy"
-#define SDCA_CTL_PRIVACY_LOCKSTATE_NAME			"Privacy Lockstate"
-#define SDCA_CTL_PRIVACY_OWNER_NAME			"Privacy Owner"
-#define SDCA_CTL_AUTHTX_CURRENTOWNER_NAME		"AuthTX Current Owner"
-#define SDCA_CTL_AUTHTX_MESSAGEOFFSET_NAME		"AuthTX Message Offset"
-#define SDCA_CTL_AUTHTX_MESSAGELENGTH_NAME		"AuthTX Message Length"
-#define SDCA_CTL_AUTHRX_CURRENTOWNER_NAME		"AuthRX Current Owner"
-#define SDCA_CTL_AUTHRX_MESSAGEOFFSET_NAME		"AuthRX Message Offset"
-#define SDCA_CTL_AUTHRX_MESSAGELENGTH_NAME		"AuthRX Message Length"
-#define SDCA_CTL_ACOUSTIC_ENERGY_LEVEL_MONITOR_NAME	"Acoustic Energy Level Monitor"
-#define SDCA_CTL_ULTRASOUND_LOOP_GAIN_NAME		"Ultrasound Loop Gain"
-#define SDCA_CTL_OPAQUESET_0_NAME			"Opaqueset 0"
-#define SDCA_CTL_OPAQUESET_1_NAME			"Opaqueset 1"
-#define SDCA_CTL_OPAQUESET_2_NAME			"Opaqueset 2"
-#define SDCA_CTL_OPAQUESET_3_NAME			"Opaqueset 3"
-#define SDCA_CTL_OPAQUESET_4_NAME			"Opaqueset 4"
-#define SDCA_CTL_OPAQUESET_5_NAME			"Opaqueset 5"
-#define SDCA_CTL_OPAQUESET_6_NAME			"Opaqueset 6"
-#define SDCA_CTL_OPAQUESET_7_NAME			"Opaqueset 7"
-#define SDCA_CTL_OPAQUESET_8_NAME			"Opaqueset 8"
-#define SDCA_CTL_OPAQUESET_9_NAME			"Opaqueset 9"
-#define SDCA_CTL_OPAQUESET_10_NAME			"Opaqueset 10"
-#define SDCA_CTL_OPAQUESET_11_NAME			"Opaqueset 11"
-#define SDCA_CTL_OPAQUESET_12_NAME			"Opaqueset 12"
-#define SDCA_CTL_OPAQUESET_13_NAME			"Opaqueset 13"
-#define SDCA_CTL_OPAQUESET_14_NAME			"Opaqueset 14"
-#define SDCA_CTL_OPAQUESET_15_NAME			"Opaqueset 15"
-#define SDCA_CTL_OPAQUESET_16_NAME			"Opaqueset 16"
-#define SDCA_CTL_OPAQUESET_17_NAME			"Opaqueset 17"
-#define SDCA_CTL_OPAQUESET_18_NAME			"Opaqueset 18"
-#define SDCA_CTL_OPAQUESET_19_NAME			"Opaqueset 19"
-#define SDCA_CTL_OPAQUESET_20_NAME			"Opaqueset 20"
-#define SDCA_CTL_OPAQUESET_21_NAME			"Opaqueset 21"
-#define SDCA_CTL_OPAQUESET_22_NAME			"Opaqueset 22"
-#define SDCA_CTL_OPAQUESET_23_NAME			"Opaqueset 23"
-#define SDCA_CTL_ALGORITHM_READY_NAME			"Algorithm Ready"
-#define SDCA_CTL_ALGORITHM_ENABLE_NAME			"Algorithm Enable"
-#define SDCA_CTL_ALGORITHM_PREPARE_NAME			"Algorithm Prepare"
-#define SDCA_CTL_CENTER_FREQUENCY_INDEX_NAME		"Center Frequency Index"
-#define SDCA_CTL_ULTRASOUND_LEVEL_NAME			"Ultrasound Level"
-#define SDCA_CTL_AE_NUMBER_NAME				"AE Number"
-#define SDCA_CTL_AE_CURRENTOWNER_NAME			"AE Current Owner"
-#define SDCA_CTL_AE_MESSAGEOFFSET_NAME			"AE Message Offset"
-#define SDCA_CTL_AE_MESSAGELENGTH_NAME			"AE Message Length"
-#define SDCA_CTL_TRIGGER_ENABLE_NAME			"Trigger Enable"
-#define SDCA_CTL_TRIGGER_STATUS_NAME			"Trigger Status"
-#define SDCA_CTL_HIST_BUFFER_MODE_NAME			"Hist Buffer Mode"
-#define SDCA_CTL_HIST_BUFFER_PREAMBLE_NAME		"Hist Buffer Preamble"
-#define SDCA_CTL_HIST_ERROR_NAME			"Hist Error"
-#define SDCA_CTL_TRIGGER_EXTENSION_NAME			"Trigger Extension"
-#define SDCA_CTL_TRIGGER_READY_NAME			"Trigger Ready"
-#define SDCA_CTL_HIST_CURRENTOWNER_NAME			"Hist Current Owner"
-#define SDCA_CTL_HIST_MESSAGEOFFSET_NAME		"Hist Message Offset"
-#define SDCA_CTL_HIST_MESSAGELENGTH_NAME		"Hist Message Length"
-#define SDCA_CTL_DTODTX_CURRENTOWNER_NAME		"DTODTX Current Owner"
-#define SDCA_CTL_DTODTX_MESSAGEOFFSET_NAME		"DTODTX Message Offset"
-#define SDCA_CTL_DTODTX_MESSAGELENGTH_NAME		"DTODTX Message Length"
-#define SDCA_CTL_DTODRX_CURRENTOWNER_NAME		"DTODRX Current Owner"
-#define SDCA_CTL_DTODRX_MESSAGEOFFSET_NAME		"DTODRX Message Offset"
-#define SDCA_CTL_DTODRX_MESSAGELENGTH_NAME		"DTODRX Message Length"
-#define SDCA_CTL_PROTECTION_MODE_NAME			"Protection Mode"
-#define SDCA_CTL_PROTECTION_STATUS_NAME			"Protection Status"
-#define SDCA_CTL_OPAQUESETREQ_INDEX_NAME		"Opaqueset Req Index"
-#define SDCA_CTL_DTODTX_CURRENTOWNER_NAME		"DTODTX Current Owner"
-#define SDCA_CTL_DTODTX_MESSAGEOFFSET_NAME		"DTODTX Message Offset"
-#define SDCA_CTL_DTODTX_MESSAGELENGTH_NAME		"DTODTX Message Length"
-#define SDCA_CTL_DTODRX_CURRENTOWNER_NAME		"DTODRX Current Owner"
-#define SDCA_CTL_DTODRX_MESSAGEOFFSET_NAME		"DTODRX Message Offset"
-#define SDCA_CTL_DTODRX_MESSAGELENGTH_NAME		"DTODRX Message Length"
-#define SDCA_CTL_POSTURENUMBER_NAME			"Posture Number"
-#define SDCA_CTL_POSTUREEXTENSION_NAME			"Posture Extension"
-#define SDCA_CTL_HORIZONTALBALANCE_NAME			"Horizontal Balance"
-#define SDCA_CTL_VERTICALBALANCE_NAME			"Vertical Balance"
-#define SDCA_CTL_TONE_DIVIDER_NAME			"Tone Divider"
-#define SDCA_CTL_HIDTX_CURRENTOWNER_NAME		"HIDTX Current Owner"
-#define SDCA_CTL_HIDTX_MESSAGEOFFSET_NAME		"HIDTX Message Offset"
-#define SDCA_CTL_HIDTX_MESSAGELENGTH_NAME		"HIDTX Message Length"
-#define SDCA_CTL_HIDRX_CURRENTOWNER_NAME		"HIDRX Current Owner"
-#define SDCA_CTL_HIDRX_MESSAGEOFFSET_NAME		"HIDRX Message Offset"
-#define SDCA_CTL_HIDRX_MESSAGELENGTH_NAME		"HIDRX Message Length"
-#define SDCA_CTL_COMMIT_GROUP_MASK_NAME			"Commit Group Mask"
-#define SDCA_CTL_FUNCTION_SDCA_VERSION_NAME		"Function SDCA Version"
-#define SDCA_CTL_FUNCTION_TYPE_NAME			"Function Type"
-#define SDCA_CTL_FUNCTION_MANUFACTURER_ID_NAME		"Function Manufacturer ID"
-#define SDCA_CTL_FUNCTION_ID_NAME			"Function ID"
-#define SDCA_CTL_FUNCTION_VERSION_NAME			"Function Version"
-#define SDCA_CTL_FUNCTION_EXTENSION_ID_NAME		"Function Extension ID"
-#define SDCA_CTL_FUNCTION_EXTENSION_VERSION_NAME	"Function Extension Version"
-#define SDCA_CTL_FUNCTION_STATUS_NAME			"Function Status"
-#define SDCA_CTL_FUNCTION_ACTION_NAME			"Function Action"
-#define SDCA_CTL_DEVICE_MANUFACTURER_ID_NAME		"Device Manufacturer ID"
-#define SDCA_CTL_DEVICE_PART_ID_NAME			"Device Part ID"
-#define SDCA_CTL_DEVICE_VERSION_NAME			"Device Version"
-#define SDCA_CTL_DEVICE_SDCA_VERSION_NAME		"Device SDCA Version"
+pub const SDCA_CTL_MIC_BIAS_NAME: &core::ffi::CStr = c"Mic Bias";
+pub const SDCA_CTL_USAGE_NAME: &core::ffi::CStr = c"Usage";
+pub const SDCA_CTL_LATENCY_NAME: &core::ffi::CStr = c"Latency";
+pub const SDCA_CTL_CLUSTERINDEX_NAME: &core::ffi::CStr = c"Cluster Index";
+pub const SDCA_CTL_DATAPORT_SELECTOR_NAME: &core::ffi::CStr = c"Dataport Selector";
+pub const SDCA_CTL_MATCHING_GUID_NAME: &core::ffi::CStr = c"Matching GUID";
+pub const SDCA_CTL_KEEP_ALIVE_NAME: &core::ffi::CStr = c"Keep Alive";
+pub const SDCA_CTL_NDAI_STREAM_NAME: &core::ffi::CStr = c"NDAI Stream";
+pub const SDCA_CTL_NDAI_CATEGORY_NAME: &core::ffi::CStr = c"NDAI Category";
+pub const SDCA_CTL_NDAI_CODINGTYPE_NAME: &core::ffi::CStr = c"NDAI Coding Type";
+pub const SDCA_CTL_NDAI_PACKETTYPE_NAME: &core::ffi::CStr = c"NDAI Packet Type";
+pub const SDCA_CTL_MIXER_NAME: &core::ffi::CStr = c"Mixer";
+pub const SDCA_CTL_SELECTOR_NAME: &core::ffi::CStr = c"Selector";
+pub const SDCA_CTL_MUTE_NAME: &core::ffi::CStr = c"Channel";
+pub const SDCA_CTL_CHANNEL_VOLUME_NAME: &core::ffi::CStr = c"Channel Volume";
+pub const SDCA_CTL_AGC_NAME: &core::ffi::CStr = c"AGC";
+pub const SDCA_CTL_BASS_BOOST_NAME: &core::ffi::CStr = c"Bass Boost";
+pub const SDCA_CTL_LOUDNESS_NAME: &core::ffi::CStr = c"Loudness";
+pub const SDCA_CTL_GAIN_NAME: &core::ffi::CStr = c"Gain";
+pub const SDCA_CTL_BYPASS_NAME: &core::ffi::CStr = c"Bypass";
+pub const SDCA_CTL_XU_ID_NAME: &core::ffi::CStr = c"XU ID";
+pub const SDCA_CTL_XU_VERSION_NAME: &core::ffi::CStr = c"XU Version";
+pub const SDCA_CTL_FDL_CURRENTOWNER_NAME: &core::ffi::CStr = c"FDL Current Owner";
+pub const SDCA_CTL_FDL_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"FDL Message Offset";
+pub const SDCA_CTL_FDL_MESSAGELENGTH_NAME: &core::ffi::CStr = c"FDL Message Length";
+pub const SDCA_CTL_FDL_STATUS_NAME: &core::ffi::CStr = c"FDL Status";
+pub const SDCA_CTL_FDL_SET_INDEX_NAME: &core::ffi::CStr = c"FDL Set Index";
+pub const SDCA_CTL_FDL_HOST_REQUEST_NAME: &core::ffi::CStr = c"FDL Host Request";
+pub const SDCA_CTL_CLOCK_VALID_NAME: &core::ffi::CStr = c"Clock Valid";
+pub const SDCA_CTL_SAMPLERATEINDEX_NAME: &core::ffi::CStr = c"Sample Rate Index";
+pub const SDCA_CTL_CLOCK_SELECT_NAME: &core::ffi::CStr = c"Clock Select";
+pub const SDCA_CTL_REQUESTED_PS_NAME: &core::ffi::CStr = c"Requested PS";
+pub const SDCA_CTL_ACTUAL_PS_NAME: &core::ffi::CStr = c"Actual PS";
+pub const SDCA_CTL_SELECTED_MODE_NAME: &core::ffi::CStr = c"Selected Mode";
+pub const SDCA_CTL_DETECTED_MODE_NAME: &core::ffi::CStr = c"Detected Mode";
+pub const SDCA_CTL_PRIVATE_NAME: &core::ffi::CStr = c"Private";
+pub const SDCA_CTL_PRIVACY_POLICY_NAME: &core::ffi::CStr = c"Privacy Policy";
+pub const SDCA_CTL_PRIVACY_LOCKSTATE_NAME: &core::ffi::CStr = c"Privacy Lockstate";
+pub const SDCA_CTL_PRIVACY_OWNER_NAME: &core::ffi::CStr = c"Privacy Owner";
+pub const SDCA_CTL_AUTHTX_CURRENTOWNER_NAME: &core::ffi::CStr = c"AuthTX Current Owner";
+pub const SDCA_CTL_AUTHTX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"AuthTX Message Offset";
+pub const SDCA_CTL_AUTHTX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"AuthTX Message Length";
+pub const SDCA_CTL_AUTHRX_CURRENTOWNER_NAME: &core::ffi::CStr = c"AuthRX Current Owner";
+pub const SDCA_CTL_AUTHRX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"AuthRX Message Offset";
+pub const SDCA_CTL_AUTHRX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"AuthRX Message Length";
+pub const SDCA_CTL_ACOUSTIC_ENERGY_LEVEL_MONITOR_NAME: &core::ffi::CStr = c"Acoustic Energy Level Monitor";
+pub const SDCA_CTL_ULTRASOUND_LOOP_GAIN_NAME: &core::ffi::CStr = c"Ultrasound Loop Gain";
+pub const SDCA_CTL_OPAQUESET_0_NAME: &core::ffi::CStr = c"Opaqueset 0";
+pub const SDCA_CTL_OPAQUESET_1_NAME: &core::ffi::CStr = c"Opaqueset 1";
+pub const SDCA_CTL_OPAQUESET_2_NAME: &core::ffi::CStr = c"Opaqueset 2";
+pub const SDCA_CTL_OPAQUESET_3_NAME: &core::ffi::CStr = c"Opaqueset 3";
+pub const SDCA_CTL_OPAQUESET_4_NAME: &core::ffi::CStr = c"Opaqueset 4";
+pub const SDCA_CTL_OPAQUESET_5_NAME: &core::ffi::CStr = c"Opaqueset 5";
+pub const SDCA_CTL_OPAQUESET_6_NAME: &core::ffi::CStr = c"Opaqueset 6";
+pub const SDCA_CTL_OPAQUESET_7_NAME: &core::ffi::CStr = c"Opaqueset 7";
+pub const SDCA_CTL_OPAQUESET_8_NAME: &core::ffi::CStr = c"Opaqueset 8";
+pub const SDCA_CTL_OPAQUESET_9_NAME: &core::ffi::CStr = c"Opaqueset 9";
+pub const SDCA_CTL_OPAQUESET_10_NAME: &core::ffi::CStr = c"Opaqueset 10";
+pub const SDCA_CTL_OPAQUESET_11_NAME: &core::ffi::CStr = c"Opaqueset 11";
+pub const SDCA_CTL_OPAQUESET_12_NAME: &core::ffi::CStr = c"Opaqueset 12";
+pub const SDCA_CTL_OPAQUESET_13_NAME: &core::ffi::CStr = c"Opaqueset 13";
+pub const SDCA_CTL_OPAQUESET_14_NAME: &core::ffi::CStr = c"Opaqueset 14";
+pub const SDCA_CTL_OPAQUESET_15_NAME: &core::ffi::CStr = c"Opaqueset 15";
+pub const SDCA_CTL_OPAQUESET_16_NAME: &core::ffi::CStr = c"Opaqueset 16";
+pub const SDCA_CTL_OPAQUESET_17_NAME: &core::ffi::CStr = c"Opaqueset 17";
+pub const SDCA_CTL_OPAQUESET_18_NAME: &core::ffi::CStr = c"Opaqueset 18";
+pub const SDCA_CTL_OPAQUESET_19_NAME: &core::ffi::CStr = c"Opaqueset 19";
+pub const SDCA_CTL_OPAQUESET_20_NAME: &core::ffi::CStr = c"Opaqueset 20";
+pub const SDCA_CTL_OPAQUESET_21_NAME: &core::ffi::CStr = c"Opaqueset 21";
+pub const SDCA_CTL_OPAQUESET_22_NAME: &core::ffi::CStr = c"Opaqueset 22";
+pub const SDCA_CTL_OPAQUESET_23_NAME: &core::ffi::CStr = c"Opaqueset 23";
+pub const SDCA_CTL_ALGORITHM_READY_NAME: &core::ffi::CStr = c"Algorithm Ready";
+pub const SDCA_CTL_ALGORITHM_ENABLE_NAME: &core::ffi::CStr = c"Algorithm Enable";
+pub const SDCA_CTL_ALGORITHM_PREPARE_NAME: &core::ffi::CStr = c"Algorithm Prepare";
+pub const SDCA_CTL_CENTER_FREQUENCY_INDEX_NAME: &core::ffi::CStr = c"Center Frequency Index";
+pub const SDCA_CTL_ULTRASOUND_LEVEL_NAME: &core::ffi::CStr = c"Ultrasound Level";
+pub const SDCA_CTL_AE_NUMBER_NAME: &core::ffi::CStr = c"AE Number";
+pub const SDCA_CTL_AE_CURRENTOWNER_NAME: &core::ffi::CStr = c"AE Current Owner";
+pub const SDCA_CTL_AE_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"AE Message Offset";
+pub const SDCA_CTL_AE_MESSAGELENGTH_NAME: &core::ffi::CStr = c"AE Message Length";
+pub const SDCA_CTL_TRIGGER_ENABLE_NAME: &core::ffi::CStr = c"Trigger Enable";
+pub const SDCA_CTL_TRIGGER_STATUS_NAME: &core::ffi::CStr = c"Trigger Status";
+pub const SDCA_CTL_HIST_BUFFER_MODE_NAME: &core::ffi::CStr = c"Hist Buffer Mode";
+pub const SDCA_CTL_HIST_BUFFER_PREAMBLE_NAME: &core::ffi::CStr = c"Hist Buffer Preamble";
+pub const SDCA_CTL_HIST_ERROR_NAME: &core::ffi::CStr = c"Hist Error";
+pub const SDCA_CTL_TRIGGER_EXTENSION_NAME: &core::ffi::CStr = c"Trigger Extension";
+pub const SDCA_CTL_TRIGGER_READY_NAME: &core::ffi::CStr = c"Trigger Ready";
+pub const SDCA_CTL_HIST_CURRENTOWNER_NAME: &core::ffi::CStr = c"Hist Current Owner";
+pub const SDCA_CTL_HIST_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"Hist Message Offset";
+pub const SDCA_CTL_HIST_MESSAGELENGTH_NAME: &core::ffi::CStr = c"Hist Message Length";
+pub const SDCA_CTL_DTODTX_CURRENTOWNER_NAME: &core::ffi::CStr = c"DTODTX Current Owner";
+pub const SDCA_CTL_DTODTX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"DTODTX Message Offset";
+pub const SDCA_CTL_DTODTX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"DTODTX Message Length";
+pub const SDCA_CTL_DTODRX_CURRENTOWNER_NAME: &core::ffi::CStr = c"DTODRX Current Owner";
+pub const SDCA_CTL_DTODRX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"DTODRX Message Offset";
+pub const SDCA_CTL_DTODRX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"DTODRX Message Length";
+pub const SDCA_CTL_PROTECTION_MODE_NAME: &core::ffi::CStr = c"Protection Mode";
+pub const SDCA_CTL_PROTECTION_STATUS_NAME: &core::ffi::CStr = c"Protection Status";
+pub const SDCA_CTL_OPAQUESETREQ_INDEX_NAME: &core::ffi::CStr = c"Opaqueset Req Index";
+pub const SDCA_CTL_DTODTX_CURRENTOWNER_NAME: &core::ffi::CStr = c"DTODTX Current Owner";
+pub const SDCA_CTL_DTODTX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"DTODTX Message Offset";
+pub const SDCA_CTL_DTODTX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"DTODTX Message Length";
+pub const SDCA_CTL_DTODRX_CURRENTOWNER_NAME: &core::ffi::CStr = c"DTODRX Current Owner";
+pub const SDCA_CTL_DTODRX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"DTODRX Message Offset";
+pub const SDCA_CTL_DTODRX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"DTODRX Message Length";
+pub const SDCA_CTL_POSTURENUMBER_NAME: &core::ffi::CStr = c"Posture Number";
+pub const SDCA_CTL_POSTUREEXTENSION_NAME: &core::ffi::CStr = c"Posture Extension";
+pub const SDCA_CTL_HORIZONTALBALANCE_NAME: &core::ffi::CStr = c"Horizontal Balance";
+pub const SDCA_CTL_VERTICALBALANCE_NAME: &core::ffi::CStr = c"Vertical Balance";
+pub const SDCA_CTL_TONE_DIVIDER_NAME: &core::ffi::CStr = c"Tone Divider";
+pub const SDCA_CTL_HIDTX_CURRENTOWNER_NAME: &core::ffi::CStr = c"HIDTX Current Owner";
+pub const SDCA_CTL_HIDTX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"HIDTX Message Offset";
+pub const SDCA_CTL_HIDTX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"HIDTX Message Length";
+pub const SDCA_CTL_HIDRX_CURRENTOWNER_NAME: &core::ffi::CStr = c"HIDRX Current Owner";
+pub const SDCA_CTL_HIDRX_MESSAGEOFFSET_NAME: &core::ffi::CStr = c"HIDRX Message Offset";
+pub const SDCA_CTL_HIDRX_MESSAGELENGTH_NAME: &core::ffi::CStr = c"HIDRX Message Length";
+pub const SDCA_CTL_COMMIT_GROUP_MASK_NAME: &core::ffi::CStr = c"Commit Group Mask";
+pub const SDCA_CTL_FUNCTION_SDCA_VERSION_NAME: &core::ffi::CStr = c"Function SDCA Version";
+pub const SDCA_CTL_FUNCTION_TYPE_NAME: &core::ffi::CStr = c"Function Type";
+pub const SDCA_CTL_FUNCTION_MANUFACTURER_ID_NAME: &core::ffi::CStr = c"Function Manufacturer ID";
+pub const SDCA_CTL_FUNCTION_ID_NAME: &core::ffi::CStr = c"Function ID";
+pub const SDCA_CTL_FUNCTION_VERSION_NAME: &core::ffi::CStr = c"Function Version";
+pub const SDCA_CTL_FUNCTION_EXTENSION_ID_NAME: &core::ffi::CStr = c"Function Extension ID";
+pub const SDCA_CTL_FUNCTION_EXTENSION_VERSION_NAME: &core::ffi::CStr = c"Function Extension Version";
+pub const SDCA_CTL_FUNCTION_STATUS_NAME: &core::ffi::CStr = c"Function Status";
+pub const SDCA_CTL_FUNCTION_ACTION_NAME: &core::ffi::CStr = c"Function Action";
+pub const SDCA_CTL_DEVICE_MANUFACTURER_ID_NAME: &core::ffi::CStr = c"Device Manufacturer ID";
+pub const SDCA_CTL_DEVICE_PART_ID_NAME: &core::ffi::CStr = c"Device Part ID";
+pub const SDCA_CTL_DEVICE_VERSION_NAME: &core::ffi::CStr = c"Device Version";
+pub const SDCA_CTL_DEVICE_SDCA_VERSION_NAME: &core::ffi::CStr = c"Device SDCA Version";
 
 /**
  * sdca_control_datatype - SDCA Control Data Types
@@ -903,24 +903,24 @@ sdca_terminal_type {
 	SDCA_TERM_TYPE_PRIVACY_INDICATORS		= 0x747,
 };
 
-#define SDCA_TERM_TYPE_LINEIN_STEREO_NAME		"LineIn Stereo"
-#define SDCA_TERM_TYPE_LINEIN_FRONT_LR_NAME		"LineIn Front-LR"
-#define SDCA_TERM_TYPE_LINEIN_CENTER_LFE_NAME		"LineIn Center-LFE"
-#define SDCA_TERM_TYPE_LINEIN_SURROUND_LR_NAME		"LineIn Surround-LR"
-#define SDCA_TERM_TYPE_LINEIN_REAR_LR_NAME		"LineIn Rear-LR"
-#define SDCA_TERM_TYPE_LINEOUT_STEREO_NAME		"LineOut Stereo"
-#define SDCA_TERM_TYPE_LINEOUT_FRONT_LR_NAME		"LineOut Front-LR"
-#define SDCA_TERM_TYPE_LINEOUT_CENTER_LFE_NAME		"LineOut Center-LFE"
-#define SDCA_TERM_TYPE_LINEOUT_SURROUND_LR_NAME		"LineOut Surround-LR"
-#define SDCA_TERM_TYPE_LINEOUT_REAR_LR_NAME		"LineOut Rear-LR"
-#define SDCA_TERM_TYPE_MIC_JACK_NAME			"Microphone"
-#define SDCA_TERM_TYPE_STEREO_JACK_NAME			"Speaker Stereo"
-#define SDCA_TERM_TYPE_FRONT_LR_JACK_NAME		"Speaker Front-LR"
-#define SDCA_TERM_TYPE_CENTER_LFE_JACK_NAME		"Speaker Center-LFE"
-#define SDCA_TERM_TYPE_SURROUND_LR_JACK_NAME		"Speaker Surround-LR"
-#define SDCA_TERM_TYPE_REAR_LR_JACK_NAME		"Speaker Rear-LR"
-#define SDCA_TERM_TYPE_HEADPHONE_JACK_NAME		"Headphone"
-#define SDCA_TERM_TYPE_HEADSET_JACK_NAME		"Headset"
+pub const SDCA_TERM_TYPE_LINEIN_STEREO_NAME: &core::ffi::CStr = c"LineIn Stereo";
+pub const SDCA_TERM_TYPE_LINEIN_FRONT_LR_NAME: &core::ffi::CStr = c"LineIn Front-LR";
+pub const SDCA_TERM_TYPE_LINEIN_CENTER_LFE_NAME: &core::ffi::CStr = c"LineIn Center-LFE";
+pub const SDCA_TERM_TYPE_LINEIN_SURROUND_LR_NAME: &core::ffi::CStr = c"LineIn Surround-LR";
+pub const SDCA_TERM_TYPE_LINEIN_REAR_LR_NAME: &core::ffi::CStr = c"LineIn Rear-LR";
+pub const SDCA_TERM_TYPE_LINEOUT_STEREO_NAME: &core::ffi::CStr = c"LineOut Stereo";
+pub const SDCA_TERM_TYPE_LINEOUT_FRONT_LR_NAME: &core::ffi::CStr = c"LineOut Front-LR";
+pub const SDCA_TERM_TYPE_LINEOUT_CENTER_LFE_NAME: &core::ffi::CStr = c"LineOut Center-LFE";
+pub const SDCA_TERM_TYPE_LINEOUT_SURROUND_LR_NAME: &core::ffi::CStr = c"LineOut Surround-LR";
+pub const SDCA_TERM_TYPE_LINEOUT_REAR_LR_NAME: &core::ffi::CStr = c"LineOut Rear-LR";
+pub const SDCA_TERM_TYPE_MIC_JACK_NAME: &core::ffi::CStr = c"Microphone";
+pub const SDCA_TERM_TYPE_STEREO_JACK_NAME: &core::ffi::CStr = c"Speaker Stereo";
+pub const SDCA_TERM_TYPE_FRONT_LR_JACK_NAME: &core::ffi::CStr = c"Speaker Front-LR";
+pub const SDCA_TERM_TYPE_CENTER_LFE_JACK_NAME: &core::ffi::CStr = c"Speaker Center-LFE";
+pub const SDCA_TERM_TYPE_SURROUND_LR_JACK_NAME: &core::ffi::CStr = c"Speaker Surround-LR";
+pub const SDCA_TERM_TYPE_REAR_LR_JACK_NAME: &core::ffi::CStr = c"Speaker Rear-LR";
+pub const SDCA_TERM_TYPE_HEADPHONE_JACK_NAME: &core::ffi::CStr = c"Headphone";
+pub const SDCA_TERM_TYPE_HEADSET_JACK_NAME: &core::ffi::CStr = c"Headset";
 
 /**
  * sdca_connector_type - SDCA Connector Types
@@ -1448,14 +1448,14 @@ struct sdca_function_data {
 };
 
 #[inline]
-pub unsafe fn u32 sdca_range(struct sdca_control_range *range,
-			     u32 col, u32 row)
+pub unsafe fn u32 sdca_range(sdca_control_range *range,
+			     col: u32, row: u32)
 {
 	return (*range).data[(row * (*range).cols) + col];
 }
 
 #[inline]
-pub unsafe fn u32 sdca_range_search(struct sdca_control_range *range,
+pub unsafe fn u32 sdca_range_search(sdca_control_range *range,
 				    int search_col, int value, int result_col)
 {
 		for (i = 0; i < (*range).rows; i++) {
@@ -1466,24 +1466,24 @@ pub unsafe fn u32 sdca_range_search(struct sdca_control_range *range,
 	return 0;
 }
 
-int sdca_parse_function(struct device *dev, struct sdca_function_data *function);
+int sdca_parse_function(device *dev, sdca_function_data *function);
 
 const char *sdca_find_terminal_name(sdca_terminal_type type);
 
-struct sdca_control *sdca_selector_find_control(struct device *dev,
-						struct sdca_entity *entity,
+struct sdca_control *sdca_selector_find_control(device *dev,
+						sdca_entity *entity,
 						const int sel);
-struct sdca_control_range *sdca_control_find_range(struct device *dev,
-						   struct sdca_entity *entity,
-						   struct sdca_control *control,
+struct sdca_control_range *sdca_control_find_range(device *dev,
+						   sdca_entity *entity,
+						   sdca_control *control,
 						   int cols, int rows);
-struct sdca_control_range *sdca_selector_find_range(struct device *dev,
-						    struct sdca_entity *entity,
+struct sdca_control_range *sdca_selector_find_range(device *dev,
+						    sdca_entity *entity,
 						    int sel, int cols, int rows);
-struct sdca_cluster *sdca_id_find_cluster(struct device *dev,
-					  struct sdca_function_data *function,
+struct sdca_cluster *sdca_id_find_cluster(device *dev,
+					  sdca_function_data *function,
 					  const int id);
-struct sdca_entity *sdca_find_entity_by_label(struct sdca_function_data *function,
+struct sdca_entity *sdca_find_entity_by_label(sdca_function_data *function,
 						     const char *entity_label);
 
 

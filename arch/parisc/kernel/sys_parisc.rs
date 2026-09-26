@@ -17,18 +17,18 @@ unsafe fn color_align(addr: usize, filp_pgoff: usize, pgoff: usize) -> usize {
     base.wrapping_add(off)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 const STACK_SIZE_DEFAULT: usize = if USER_WIDE_MODE {
     1usize << 30
 } else {
     CONFIG_STACK_MAX_DEFAULT_SIZE_MB * 1024 * 1024
 };
 
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 const STACK_SIZE_DEFAULT: usize = 1usize << 30;
 
 pub unsafe fn calc_max_stack_size(mut stack_max: usize) -> usize {
-    #[cfg(feature = "CONFIG_COMPAT")]
+    #[cfg(CONFIG_COMPAT)]
     {
         if !USER_WIDE_MODE && stack_max == COMPAT_RLIM_INFINITY {
             stack_max = STACK_SIZE_DEFAULT;

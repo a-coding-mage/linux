@@ -70,23 +70,23 @@ pub struct KvmBooke206RefReleaseEntry {
     pub flags: u32,
 }
 
-#[cfg(feature = "CONFIG_SPE_POSSIBLE")]
+#[cfg(CONFIG_SPE_POSSIBLE)]
 pub const KVM_TRACE_SYMBOL_IRQPRIO_SPE: &[TraceSymbol] = &[
     TraceSymbol { value: BOOKE_IRQPRIO_SPE_UNAVAIL, name: "SPE_UNAVAIL" },
     TraceSymbol { value: BOOKE_IRQPRIO_SPE_FP_DATA, name: "SPE_FP_DATA" },
     TraceSymbol { value: BOOKE_IRQPRIO_SPE_FP_ROUND, name: "SPE_FP_ROUND" },
 ];
 
-#[cfg(not(feature = "CONFIG_SPE_POSSIBLE"))]
+#[cfg(not(CONFIG_SPE_POSSIBLE))]
 pub const KVM_TRACE_SYMBOL_IRQPRIO_SPE: &[TraceSymbol] = &[];
 
-#[cfg(feature = "CONFIG_PPC_E500MC")]
+#[cfg(CONFIG_PPC_E500MC)]
 pub const KVM_TRACE_SYMBOL_IRQPRIO_E500MC: &[TraceSymbol] = &[
     TraceSymbol { value: BOOKE_IRQPRIO_ALTIVEC_UNAVAIL, name: "ALTIVEC_UNAVAIL" },
     TraceSymbol { value: BOOKE_IRQPRIO_ALTIVEC_ASSIST, name: "ALTIVEC_ASSIST" },
 ];
 
-#[cfg(not(feature = "CONFIG_PPC_E500MC"))]
+#[cfg(not(CONFIG_PPC_E500MC))]
 pub const KVM_TRACE_SYMBOL_IRQPRIO_E500MC: &[TraceSymbol] = &[];
 
 /* BOOKE_IRQPRIO_* constants are provided by the PowerPC KVM dependencies. */

@@ -4,7 +4,7 @@
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
  */
 
-static unsafe fn sparc64_msiq_interrupt(irq: i32, cookie: *mut core::ffi::c_void) -> irqreturn_t {
+unsafe fn sparc64_msiq_interrupt(irq: i32, cookie: *mut core::ffi::c_void) -> irqreturn_t {
     let msiq_cookie = cookie as *mut sparc64_msiq_cookie;
     let pbm = (*msiq_cookie).pbm;
     let msiqid = (*msiq_cookie).msiqid;
@@ -42,7 +42,7 @@ static unsafe fn sparc64_msiq_interrupt(irq: i32, cookie: *mut core::ffi::c_void
     IRQ_HANDLED
 }
 
-static unsafe fn pick_msiq(pbm: *mut pci_pbm_info) -> u32 {
+unsafe fn pick_msiq(pbm: *mut pci_pbm_info) -> u32 {
     static mut ROTOR_LOCK: spinlock_t = DEFINE_SPINLOCK!();
     let mut flags: c_ulong = 0;
     spin_lock_irqsave(&mut ROTOR_LOCK, &mut flags);
@@ -55,7 +55,7 @@ static unsafe fn pick_msiq(pbm: *mut pci_pbm_info) -> u32 {
     ret
 }
 
-static unsafe fn alloc_msi(pbm: *mut pci_pbm_info) -> i32 {
+unsafe fn alloc_msi(pbm: *mut pci_pbm_info) -> i32 {
     for i in 0..(*pbm).msi_num {
         if test_and_set_bit(i as usize, (*pbm).msi_bitmap) == 0 {
             return (i + (*pbm).msi_first) as i32;
@@ -64,7 +64,7 @@ static unsafe fn alloc_msi(pbm: *mut pci_pbm_info) -> i32 {
     -ENOENT
 }
 
-static unsafe fn free_msi(pbm: *mut pci_pbm_info, mut msi_num: i32) {
+unsafe fn free_msi(pbm: *mut pci_pbm_info, mut msi_num: i32) {
     msi_num -= (*pbm).msi_first as i32;
     clear_bit(msi_num as usize, (*pbm).msi_bitmap);
 }
@@ -78,7 +78,7 @@ static mut msi_irq: irq_chip = irq_chip {
     ..unsafe { core::mem::zeroed() }
 };
 
-static unsafe fn sparc64_setup_msi_irq(irq_p: *mut u32, pdev: *mut pci_dev, entry: *mut msi_desc) -> i32 {
+unsafe fn sparc64_setup_msi_irq(irq_p: *mut u32, pdev: *mut pci_dev, entry: *mut msi_desc) -> i32 {
     let pbm = (*(*pdev).dev.archdata.host_controller);
     let ops = (*pbm).msi_ops;
     let mut msg: msi_msg = core::mem::zeroed();
@@ -107,7 +107,7 @@ static unsafe fn sparc64_setup_msi_irq(irq_p: *mut u32, pdev: *mut pci_dev, entr
     0
 }
 
-static unsafe fn sparc64_teardown_msi_irq(irq: u32, pdev: *mut pci_dev) {
+unsafe fn sparc64_teardown_msi_irq(irq: u32, pdev: *mut pci_dev) {
     let pbm = (*(*pdev).dev.archdata.host_controller);
     let ops = (*pbm).msi_ops;
     let mut i = 0;
@@ -120,7 +120,7 @@ static unsafe fn sparc64_teardown_msi_irq(irq: u32, pdev: *mut pci_dev) {
     free_msi(pbm, msi_num as i32); irq_set_chip(irq, core::ptr::null_mut()); irq_free(irq);
 }
 
-static unsafe fn msi_bitmap_alloc(pbm: *mut pci_pbm_info) -> i32 {
+unsafe fn msi_bitmap_alloc(pbm: *mut pci_pbm_info) -> i32 {
     let bits_per_ulong = core::mem::size_of::<c_ulong>() * 8;
     let mut size = ((*pbm).msi_num as usize + bits_per_ulong - 1) & !(bits_per_ulong - 1);
     size /= 8;
@@ -130,9 +130,9 @@ static unsafe fn msi_bitmap_alloc(pbm: *mut pci_pbm_info) -> i32 {
     0
 }
 
-static unsafe fn msi_bitmap_free(pbm: *mut pci_pbm_info) { kfree((*pbm).msi_bitmap); (*pbm).msi_bitmap = core::ptr::null_mut(); }
+unsafe fn msi_bitmap_free(pbm: *mut pci_pbm_info) { kfree((*pbm).msi_bitmap); (*pbm).msi_bitmap = core::ptr::null_mut(); }
 
-static unsafe fn msi_table_alloc(pbm: *mut pci_pbm_info) -> i32 {
+unsafe fn msi_table_alloc(pbm: *mut pci_pbm_info) -> i32 {
     let size = (*pbm).msiq_num as usize * core::mem::size_of::<sparc64_msiq_cookie>();
     (*pbm).msiq_irq_cookies = kzalloc(size, GFP_KERNEL);
     if (*pbm).msiq_irq_cookies.is_null() { return -ENOMEM; }
@@ -143,9 +143,9 @@ static unsafe fn msi_table_alloc(pbm: *mut pci_pbm_info) -> i32 {
     0
 }
 
-static unsafe fn msi_table_free(pbm: *mut pci_pbm_info) { kfree((*pbm).msiq_irq_cookies); (*pbm).msiq_irq_cookies = core::ptr::null_mut(); kfree((*pbm).msi_irq_table); (*pbm).msi_irq_table = core::ptr::null_mut(); }
+unsafe fn msi_table_free(pbm: *mut pci_pbm_info) { kfree((*pbm).msiq_irq_cookies); (*pbm).msiq_irq_cookies = core::ptr::null_mut(); kfree((*pbm).msi_irq_table); (*pbm).msi_irq_table = core::ptr::null_mut(); }
 
-static unsafe fn bringup_one_msi_queue(pbm: *mut pci_pbm_info, ops: *const sparc64_msiq_ops, msiqid: c_ulong, devino: c_ulong) -> i32 {
+unsafe fn bringup_one_msi_queue(pbm: *mut pci_pbm_info, ops: *const sparc64_msiq_ops, msiqid: c_ulong, devino: c_ulong) -> i32 {
     let irq = ((*ops).msiq_build_irq)(pbm, msiqid, devino);
     if irq < 0 { return irq; }
     if (*pbm).numa_node != -1 { irq_set_affinity(irq, cpumask_of_node((*pbm).numa_node)); }
@@ -153,7 +153,7 @@ static unsafe fn bringup_one_msi_queue(pbm: *mut pci_pbm_info, ops: *const sparc
     if err != 0 { return err; } 0
 }
 
-static unsafe fn sparc64_bringup_msi_queues(pbm: *mut pci_pbm_info, ops: *const sparc64_msiq_ops) -> i32 {
+unsafe fn sparc64_bringup_msi_queues(pbm: *mut pci_pbm_info, ops: *const sparc64_msiq_ops) -> i32 {
     for i in 0..(*pbm).msiq_num { let err = bringup_one_msi_queue(pbm, ops, i as c_ulong + (*pbm).msiq_first as c_ulong, i as c_ulong + (*pbm).msiq_first_devino as c_ulong); if err != 0 { return err; } }
     0
 }

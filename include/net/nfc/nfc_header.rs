@@ -151,31 +151,31 @@ pub unsafe extern "C" fn nfc_device_name(dev: *const nfc_dev) -> *const core::ff
 
 extern "C" {
     pub static nfc_class: class;
-    pub fn nfc_allocate_device(*const nfc_ops, u32, i32, i32) -> *mut nfc_dev;
-    pub fn nfc_register_device(*mut nfc_dev) -> i32;
-    pub fn nfc_unregister_rfkill(*mut nfc_dev);
-    pub fn nfc_remove_device(*mut nfc_dev);
-    pub fn nfc_unregister_device(*mut nfc_dev);
-    pub fn nfc_alloc_send_skb(*mut nfc_dev, *mut sock, u32, u32, *mut u32) -> *mut sk_buff;
-    pub fn nfc_alloc_recv_skb(u32, gfp_t) -> *mut sk_buff;
-    pub fn nfc_set_remote_general_bytes(*mut nfc_dev, *const u8, u8) -> i32;
-    pub fn nfc_get_local_general_bytes(*mut nfc_dev, *mut usize) -> *mut u8;
-    pub fn nfc_fw_download_done(*mut nfc_dev, *const core::ffi::c_char, u32) -> i32;
-    pub fn nfc_targets_found(*mut nfc_dev, *mut nfc_target, i32) -> i32;
-    pub fn nfc_target_lost(*mut nfc_dev, u32) -> i32;
-    pub fn nfc_dep_link_is_up(*mut nfc_dev, u32, u8, u8) -> i32;
-    pub fn nfc_tm_activated(*mut nfc_dev, u32, u8, *const u8, usize) -> i32;
-    pub fn nfc_tm_deactivated(*mut nfc_dev) -> i32;
-    pub fn nfc_tm_data_received(*mut nfc_dev, *mut sk_buff) -> i32;
-    pub fn nfc_driver_failure(*mut nfc_dev, i32);
-    pub fn nfc_se_transaction(*mut nfc_dev, u8, *mut nfc_evt_transaction) -> i32;
-    pub fn nfc_se_connectivity(*mut nfc_dev, u8) -> i32;
-    pub fn nfc_add_se(*mut nfc_dev, u32, u16) -> i32;
-    pub fn nfc_remove_se(*mut nfc_dev, u32) -> i32;
-    pub fn nfc_find_se(*mut nfc_dev, u32) -> *mut nfc_se;
-    pub fn nfc_send_to_raw_sock(*mut nfc_dev, *mut sk_buff, u8, u8);
-    pub fn __nfc_alloc_vendor_cmd_reply_skb(*mut nfc_dev, enum_nfc_attrs, u32, u32, i32) -> *mut sk_buff;
-    pub fn nfc_vendor_cmd_reply(*mut sk_buff) -> i32;
+    pub fn nfc_allocate_device(_: *const nfc_ops, _: u32, _: i32, _: i32) -> *mut nfc_dev;
+    pub fn nfc_register_device(_: *mut nfc_dev) -> i32;
+    pub fn nfc_unregister_rfkill(_: *mut nfc_dev);
+    pub fn nfc_remove_device(_: *mut nfc_dev);
+    pub fn nfc_unregister_device(_: *mut nfc_dev);
+    pub fn nfc_alloc_send_skb(_: *mut nfc_dev, _: *mut sock, _: u32, _: u32, _: *mut u32) -> *mut sk_buff;
+    pub fn nfc_alloc_recv_skb(_: u32, _: gfp_t) -> *mut sk_buff;
+    pub fn nfc_set_remote_general_bytes(_: *mut nfc_dev, _: *const u8, _: u8) -> i32;
+    pub fn nfc_get_local_general_bytes(_: *mut nfc_dev, _: *mut usize) -> *mut u8;
+    pub fn nfc_fw_download_done(_: *mut nfc_dev, _: *const core::ffi::c_char, _: u32) -> i32;
+    pub fn nfc_targets_found(_: *mut nfc_dev, _: *mut nfc_target, _: i32) -> i32;
+    pub fn nfc_target_lost(_: *mut nfc_dev, _: u32) -> i32;
+    pub fn nfc_dep_link_is_up(_: *mut nfc_dev, _: u32, _: u8, _: u8) -> i32;
+    pub fn nfc_tm_activated(_: *mut nfc_dev, _: u32, _: u8, _: *const u8, _: usize) -> i32;
+    pub fn nfc_tm_deactivated(_: *mut nfc_dev) -> i32;
+    pub fn nfc_tm_data_received(_: *mut nfc_dev, _: *mut sk_buff) -> i32;
+    pub fn nfc_driver_failure(_: *mut nfc_dev, _: i32);
+    pub fn nfc_se_transaction(_: *mut nfc_dev, _: u8, _: *mut nfc_evt_transaction) -> i32;
+    pub fn nfc_se_connectivity(_: *mut nfc_dev, _: u8) -> i32;
+    pub fn nfc_add_se(_: *mut nfc_dev, _: u32, _: u16) -> i32;
+    pub fn nfc_remove_se(_: *mut nfc_dev, _: u32) -> i32;
+    pub fn nfc_find_se(_: *mut nfc_dev, _: u32) -> *mut nfc_se;
+    pub fn nfc_send_to_raw_sock(_: *mut nfc_dev, _: *mut sk_buff, _: u8, _: u8);
+    pub fn __nfc_alloc_vendor_cmd_reply_skb(_: *mut nfc_dev, _: enum_nfc_attrs, _: u32, _: u32, _: i32) -> *mut sk_buff;
+    pub fn nfc_vendor_cmd_reply(_: *mut sk_buff) -> i32;
 }
 
 pub unsafe fn nfc_set_vendor_cmds(dev: *mut nfc_dev, cmds: *const nfc_vendor_cmd, n_cmds: i32) -> i32 {

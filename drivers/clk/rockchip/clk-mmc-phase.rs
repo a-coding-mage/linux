@@ -198,6 +198,8 @@ unsafe fn rockchip_clk_register_mmc(
     let mmc_clock = kmalloc_obj!(RockchipMmcClock);
     let clk: *mut clk;
     let ret: i32;
+    'err_register: {
+    'err_notifier: {
 
     if mmc_clock.is_null() {
         return ERR_PTR!(-ENOMEM);
@@ -218,19 +220,20 @@ unsafe fn rockchip_clk_register_mmc(
     clk = clk_register(core::ptr::null_mut(), &mut (*mmc_clock).hw);
     if IS_ERR!(clk) {
         ret = PTR_ERR!(clk);
-        goto!(err_register);
+        break 'err_register;
     }
 
     (*mmc_clock).clk_rate_change_nb.notifier_call = Some(rockchip_mmc_clk_rate_notify);
     ret = clk_notifier_register(clk, &mut (*mmc_clock).clk_rate_change_nb);
     if ret != 0 {
-        goto!(err_notifier);
+        break 'err_notifier;
     }
     return clk;
-
-err_notifier:
+    }
+    
     clk_unregister(clk);
-err_register:
+    }
+    
     kfree(mmc_clock);
     ERR_PTR!(ret)
 }

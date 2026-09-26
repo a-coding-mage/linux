@@ -40,8 +40,8 @@ unsafe fn dce120_timing_generator_validate_timing(_tg:*mut timing_generator, tim
 unsafe extern "C" fn dce120_tg_validate_timing(tg:*mut timing_generator,t:*const dc_crtc_timing)->bool { dce120_timing_generator_validate_timing(tg,t,0) }
 unsafe extern "C" fn dce120_timing_generator_get_vblank_counter(tg:*mut timing_generator)->u32 { let t=&mut *(tg as *mut dce110_timing_generator); get_reg_field_value(dm_read_reg_soc15((*tg).ctx,0,t.offsets.crtc),0,0) }
 unsafe extern "C" fn dce120_timing_generator_get_crtc_position(tg:*mut timing_generator,p:*mut crtc_position){ let t=&mut *(tg as *mut dce110_timing_generator); let v=dm_read_reg_soc15((*tg).ctx,0,t.offsets.crtc); (*p).horizontal_count=get_reg_field_value(v,0,0); (*p).vertical_count=get_reg_field_value(v,0,0); (*p).nominal_vcount=get_reg_field_value(dm_read_reg_soc15((*tg).ctx,0,t.offsets.crtc),0,0); }
-unsafe extern "C" fn dce120_timing_generator_wait_for_vblank(tg:*mut timing_generator){ while dce120_timing_generator_is_in_vertical_blank(tg){} while !dce120_timing_generator_is_in_vertical_blank(tg){} }
-unsafe extern "C" fn dce120_timing_generator_wait_for_vactive(tg:*mut timing_generator){ while dce120_timing_generator_is_in_vertical_blank(tg){} }
+unsafe extern "C" fn dce120_timing_generator_wait_for_vblank(tg:*mut timing_generator) { while dce120_timing_generator_is_in_vertical_blank(tg){} while !dce120_timing_generator_is_in_vertical_blank(tg){} }
+unsafe extern "C" fn dce120_timing_generator_wait_for_vactive(tg:*mut timing_generator) { while dce120_timing_generator_is_in_vertical_blank(tg){} }
 
 /* The remaining implementation retains the C entry points and ordering; all
  * register constants and helper operations are resolved by the parent unit. */

@@ -31,7 +31,7 @@ pub unsafe fn fscrypt_policy_v2_du_bits(policy: *const fscrypt_policy_v2, inode:
 pub unsafe fn fscrypt_policy_du_bits(policy: *const fscrypt_policy, inode: *const inode) -> i32 { match (*policy).version { FSCRYPT_POLICY_V1 => (*inode).i_blkbits, FSCRYPT_POLICY_V2 => fscrypt_policy_v2_du_bits(&(*policy).v2, inode), _ => { BUG(); 0 } } }
 
 #[repr(C, packed)] pub struct fscrypt_symlink_data { pub len: __le16, pub encrypted_path: [c_char; 0] }
-#[repr(C)] pub struct fscrypt_prepared_key { pub tfm: *mut crypto_sync_skcipher, #[cfg(feature = "CONFIG_FS_ENCRYPTION_INLINE_CRYPT")] pub blk_key: *mut blk_crypto_key }
+#[repr(C)] pub struct fscrypt_prepared_key { pub tfm: *mut crypto_sync_skcipher, #[cfg(CONFIG_FS_ENCRYPTION_INLINE_CRYPT)] pub blk_key: *mut blk_crypto_key }
 #[repr(C)] pub struct fscrypt_mode_key { pub key: fscrypt_prepared_key, pub link: list_head, pub hkdf_context: u8, pub mode_num: u8, pub data_unit_bits: u8 }
 #[repr(C)] pub struct fscrypt_inode_info { pub ci_enc_key: fscrypt_prepared_key, pub ci_owns_key: u8, pub ci_dirhash_key_initialized: u8, pub ci_data_unit_bits: u8, pub ci_hashed_ino: u32, pub ci_mode: *mut fscrypt_mode, pub ci_inode: *mut inode, pub ci_master_key: *mut fscrypt_master_key, pub ci_master_key_link: list_head, pub ci_direct_key: *mut fscrypt_direct_key, pub ci_dirhash_key: siphash_key_t, pub ci_policy: fscrypt_policy, pub ci_nonce: [u8; FSCRYPT_FILE_NONCE_SIZE] }
 pub type fscrypt_direction_t = u32; pub const FS_DECRYPT: u32 = 0; pub const FS_ENCRYPT: u32 = 1;

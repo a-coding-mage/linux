@@ -73,7 +73,7 @@ unsafe fn tick_limited_update_jiffies64(ts: *mut tick_sched, now: ktime_t) -> bo
 const MAX_STALLED_JIFFIES: u32 = 5;
 unsafe fn tick_sched_do_timer(ts: *mut tick_sched, now: ktime_t) {
     let cpu = smp_processor_id(); let mut tick_cpu = READ_ONCE(&raw const tick_do_timer_cpu);
-    if cfg!(feature="CONFIG_NO_HZ_COMMON") && tick_cpu == TICK_DO_TIMER_NONE { WRITE_ONCE(&raw mut tick_do_timer_cpu, cpu); tick_cpu = cpu; }
+    if cfg!(CONFIG_NO_HZ_COMMON) && tick_cpu == TICK_DO_TIMER_NONE { WRITE_ONCE(&raw mut tick_do_timer_cpu, cpu); tick_cpu = cpu; }
     if tick_cpu == cpu { tick_do_update_jiffies64(now); }
     if (*ts).last_tick_jiffies != jiffies { (*ts).stalled_jiffies=0; (*ts).last_tick_jiffies=READ_ONCE(&raw const jiffies); }
     else { (*ts).stalled_jiffies += 1; if (*ts).stalled_jiffies >= MAX_STALLED_JIFFIES && tick_limited_update_jiffies64(ts, now) { (*ts).stalled_jiffies=0; (*ts).last_tick_jiffies=READ_ONCE(&raw const jiffies); } }
@@ -81,7 +81,7 @@ unsafe fn tick_sched_do_timer(ts: *mut tick_sched, now: ktime_t) {
 }
 
 unsafe fn tick_sched_handle(ts: *mut tick_sched, regs: *mut pt_regs) {
-    if cfg!(feature="CONFIG_NO_HZ_COMMON") && tick_sched_flag_test(ts, TS_FLAG_STOPPED) { touch_softlockup_watchdog_sched(); (*ts).next_tick=0; }
+    if cfg!(CONFIG_NO_HZ_COMMON) && tick_sched_flag_test(ts, TS_FLAG_STOPPED) { touch_softlockup_watchdog_sched(); (*ts).next_tick=0; }
     update_process_times(user_mode(regs)); profile_tick(CPU_PROFILING);
 }
 

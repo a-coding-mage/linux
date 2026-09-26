@@ -13,19 +13,14 @@
 const DRV_NAME: &str = "sata_uli";
 const DRV_VERSION: &str = "1.3";
 
-enum {
-    uli_5289 = 0,
-    uli_5287 = 1,
-    uli_5281 = 2,
-
-    uli_max_ports = 4,
-
-    /* PCI configuration registers */
-    ULI5287_BASE = 0x90, /* sata0 phy SCR registers */
-    ULI5287_OFFS = 0x10, /* offset from sata0->sata1 phy regs */
-    ULI5281_BASE = 0x60, /* sata0 phy SCR  registers */
-    ULI5281_OFFS = 0x60, /* offset from sata0->sata1 phy regs */
-}
+pub const uli_5289: i32 = 0;
+pub const uli_5287: i32 = 1;
+pub const uli_5281: i32 = 2;
+pub const uli_max_ports: i32 = 4;
+pub const ULI5287_BASE: i32 = 0x90;
+pub const ULI5287_OFFS: i32 = 0x10;
+pub const ULI5281_BASE: i32 = 0x60;
+pub const ULI5281_OFFS: i32 = 0x60;
 
 #[repr(C)]
 struct uli_priv {

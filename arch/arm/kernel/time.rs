@@ -12,10 +12,10 @@
 // C dependencies supplied by the surrounding kernel translation unit.
 
 #[cfg(any(
-    feature = "CONFIG_RTC_DRV_CMOS",
-    feature = "CONFIG_RTC_DRV_CMOS_MODULE",
-    feature = "CONFIG_NVRAM",
-    feature = "CONFIG_NVRAM_MODULE"
+    CONFIG_RTC_DRV_CMOS,
+    CONFIG_RTC_DRV_CMOS_MODULE,
+    CONFIG_NVRAM,
+    CONFIG_NVRAM_MODULE
 ))]
 #[no_mangle]
 pub static mut rtc_lock: Spinlock = Spinlock { _opaque: 0 };
@@ -49,7 +49,7 @@ extern "C" {
     fn unwind_frame(frame: *mut Stackframe) -> i32;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[no_mangle]
 pub unsafe extern "C" fn profile_pc(regs: *mut PtRegs) -> u32 {
     let mut frame = Stackframe { pc: 0 };
@@ -124,7 +124,7 @@ pub unsafe extern "C" fn time_init() {
     if let Some(init_time) = (*machine_desc).init_time {
         init_time();
     } else {
-        #[cfg(feature = "CONFIG_COMMON_CLK")]
+        #[cfg(CONFIG_COMMON_CLK)]
         {
             of_clk_init(core::ptr::null());
         }

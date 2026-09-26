@@ -22,7 +22,7 @@ pub struct asid_info {
 
 #[inline]
 pub const unsafe fn NUM_ASIDS(info: *const asid_info) -> ::core::ffi::c_ulong {
-    1 as ::core::ffi::c_ulong << (*info).bits
+    (1 as ::core::ffi::c_ulong) << (*info).bits
 }
 
 #[inline]

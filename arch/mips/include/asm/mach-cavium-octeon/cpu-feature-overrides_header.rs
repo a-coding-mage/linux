@@ -31,9 +31,9 @@ pub const CPU_HAS_LLSC: i32 = 1;
  * We Disable LL/SC on non SMP systems as it is faster to disable
  * interrupts for atomic access than a LL/SC.
  */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const KERNEL_USES_LLSC: i32 = 1;
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const KERNEL_USES_LLSC: i32 = 0;
 
 pub const CPU_HAS_VTAG_ICACHE: i32 = 1;

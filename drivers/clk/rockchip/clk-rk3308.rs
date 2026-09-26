@@ -80,8 +80,8 @@ const RK3308_DIV_PCLK_DBG_SHIFT: u32 = 8;
 
 #define RK3308_CLKSEL0(_aclk_core, _pclk_dbg)				\
 {									\
-	.reg = RK3308_CLKSEL_CON(0),					\
-	.val = HIWORD_UPDATE(_aclk_core, RK3308_DIV_ACLKM_MASK,		\
+	reg: RK3308_CLKSEL_CON(0),					\
+	val: HIWORD_UPDATE(_aclk_core, RK3308_DIV_ACLKM_MASK,		\
 			     RK3308_DIV_ACLKM_SHIFT) |			\
 	       HIWORD_UPDATE(_pclk_dbg, RK3308_DIV_PCLK_DBG_MASK,	\
 			     RK3308_DIV_PCLK_DBG_SHIFT),		\
@@ -89,8 +89,8 @@ const RK3308_DIV_PCLK_DBG_SHIFT: u32 = 8;
 
 #define RK3308_CPUCLK_RATE(_prate, _aclk_core, _pclk_dbg)		\
 {									\
-	.prate = _prate,						\
-	.divs = {							\
+	prate: _prate,						\
+	divs: {							\
 		RK3308_CLKSEL0(_aclk_core, _pclk_dbg),			\
 	},								\
 }
@@ -119,11 +119,11 @@ static rk3308_cpuclk_data: rockchip_cpuclk_reg_data = {
 	.core_reg[0] = RK3308_CLKSEL_CON(0),
 	.div_core_shift[0] = 0,
 	.div_core_mask[0] = 0xf,
-	.num_cores = 1,
-	.mux_core_alt = 1,
-	.mux_core_main = 0,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x3,
+	num_cores: 1,
+	mux_core_alt: 1,
+	mux_core_main: 0,
+	mux_core_shift: 6,
+	mux_core_mask: 0x3,
 };
 
 static mux_pll_p: &[&str] = &[ "xin24m" ];
@@ -921,10 +921,10 @@ static const char *const rk3308_critical_clocks[] __initconst = {
 	"clk_ddrphy4x",
 };
 
-static void __init rk3308_clk_init(struct device_node *np)
+static void __init rk3308_clk_init(device_node *np)
 {
 	struct rockchip_clk_provider *ctx;
-	unsigned long clk_nr_clks;
+	core::ffi::c_ulong clk_nr_clks;
 	void __iomem *reg_base;
 
 	reg_base = of_iomap(np, 0);

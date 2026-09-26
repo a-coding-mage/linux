@@ -113,9 +113,9 @@ pub unsafe extern "C" fn rds_send_worker(work: *mut work_struct) {
     let cp = container_of(work, core::mem::offset_of!(rds_conn_path, cp_send_w.work));
     if rds_conn_path_state(cp) == RDS_CONN_UP {
         clear_bit(RDS_LL_SEND_FULL, &mut (*cp).cp_flags);
-        match rds_send_xmit(cp) {
-            -EAGAIN => { rds_stats_inc(s_send_immediate_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_send_w, 0); }
-            -ENOMEM => { rds_stats_inc(s_send_delayed_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_send_w, 2); }
+        match -(rds_send_xmit(cp)) {
+            EAGAIN => { rds_stats_inc(s_send_immediate_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_send_w, 0); }
+            ENOMEM => { rds_stats_inc(s_send_delayed_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_send_w, 2); }
             _ => {}
         }
         cond_resched();
@@ -126,9 +126,9 @@ pub unsafe extern "C" fn rds_send_worker(work: *mut work_struct) {
 pub unsafe extern "C" fn rds_recv_worker(work: *mut work_struct) {
     let cp = container_of(work, core::mem::offset_of!(rds_conn_path, cp_recv_w.work));
     if rds_conn_path_state(cp) == RDS_CONN_UP {
-        match ((*cp).cp_conn).c_trans.recv_path(cp) {
-            -EAGAIN => { rds_stats_inc(s_recv_immediate_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_recv_w, 0); }
-            -ENOMEM => { rds_stats_inc(s_recv_delayed_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_recv_w, 2); }
+        match -(((*cp).cp_conn).c_trans.recv_path(cp)) {
+            EAGAIN => { rds_stats_inc(s_recv_immediate_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_recv_w, 0); }
+            ENOMEM => { rds_stats_inc(s_recv_delayed_retry); queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_recv_w, 2); }
             _ => {}
         }
     }

@@ -99,7 +99,7 @@ pub unsafe fn udf_get_extendedattr(inode: *mut inode, typ: u32, subtype: u8) -> 
         if (*eahd).descTag.tagIdent != cpu_to_le16(TAG_IDENT_EAHD)
             || le32_to_cpu((*eahd).descTag.tagLocation) != (*iinfo).i_location.logicalBlockNum { return core::ptr::null_mut(); }
         let mut offset = if typ < 2048 { core::mem::size_of::<extendedAttrHeaderDesc>() as u32 } else if typ < 65536 { le32_to_cpu((*eahd).impAttrLocation) } else { le32_to_cpu((*eahd).appAttrLocation) };
-        while offset + core::mem::size_of::<genericFormat>() as u32 < (*iinfo).i_lenEAttr {
+        while offset + core::mem::size_of::<genericFormat>(() as u32) < (*iinfo).i_lenEAttr {
             let gaf = ea.add(offset as usize) as *mut genericFormat;
             let attr_length = le32_to_cpu((*gaf).attrLength);
             if attr_length < core::mem::size_of::<genericFormat>() as u32 || attr_length > (*iinfo).i_lenEAttr - offset { break; }

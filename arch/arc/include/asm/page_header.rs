@@ -6,14 +6,14 @@
 // Dependency: <uapi/asm/page.h>
 
 /* CONFIG_ARC_HAS_PAE40 selects the 40-bit physical-memory layout. */
-#[cfg(feature = "CONFIG_ARC_HAS_PAE40")]
+#[cfg(CONFIG_ARC_HAS_PAE40)]
 pub const MAX_POSSIBLE_PHYSMEM_BITS: u32 = 40;
-#[cfg(feature = "CONFIG_ARC_HAS_PAE40")]
+#[cfg(CONFIG_ARC_HAS_PAE40)]
 pub const PAGE_MASK_PHYS: u64 = 0xff00000000u64 | PAGE_MASK as u64;
 
-#[cfg(not(feature = "CONFIG_ARC_HAS_PAE40"))]
+#[cfg(not(CONFIG_ARC_HAS_PAE40))]
 pub const MAX_POSSIBLE_PHYSMEM_BITS: u32 = 32;
-#[cfg(not(feature = "CONFIG_ARC_HAS_PAE40"))]
+#[cfg(not(CONFIG_ARC_HAS_PAE40))]
 pub const PAGE_MASK_PHYS: u64 = PAGE_MASK as u64;
 
 #[repr(C)]
@@ -64,38 +64,38 @@ pub const fn pgd_val(x: pgd_t) -> usize { x.pgd }
 #[inline]
 pub const fn __pgd(x: usize) -> pgd_t { pgd_t { pgd: x } }
 
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct pud_t {
     pub pud: usize,
 }
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 #[inline]
 pub const fn pud_val(x: pud_t) -> usize { x.pud }
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_3")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_3)]
 #[inline]
 pub const fn __pud(x: usize) -> pud_t { pud_t { pud: x } }
 
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct pmd_t {
     pub pmd: usize,
 }
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 #[inline]
 pub const fn pmd_val(x: pmd_t) -> usize { x.pmd }
-#[cfg(feature = "CONFIG_PGTABLE_LEVELS_GT_2")]
+#[cfg(CONFIG_PGTABLE_LEVELS_GT_2)]
 #[inline]
 pub const fn __pmd(x: usize) -> pmd_t { pmd_t { pmd: x } }
 
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct pte_t {
-    #[cfg(feature = "CONFIG_ARC_HAS_PAE40")]
+    #[cfg(CONFIG_ARC_HAS_PAE40)]
     pub pte: u64,
-    #[cfg(not(feature = "CONFIG_ARC_HAS_PAE40"))]
+    #[cfg(not(CONFIG_ARC_HAS_PAE40))]
     pub pte: usize,
 }
 
@@ -119,17 +119,17 @@ pub const fn pte_pgprot(x: pte_t) -> pgprot_t { __pgprot(pte_val(x)) }
 
 pub type pgtable_t = *mut page;
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 pub static mut arch_pfn_offset: usize = 0;
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 pub const ARCH_PFN_OFFSET: usize = unsafe { arch_pfn_offset };
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 unsafe extern "C" {
     pub fn pfn_valid(pfn: usize) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_HIGHMEM"))]
+#[cfg(not(CONFIG_HIGHMEM))]
 pub const ARCH_PFN_OFFSET: usize = virt_to_pfn(CONFIG_LINUX_RAM_BASE as *const core::ffi::c_void);
 
 #[inline]
@@ -142,7 +142,7 @@ pub fn virt_to_pfn(kaddr: *const core::ffi::c_void) -> usize {
     __pa(kaddr as usize) >> PAGE_SHIFT
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn pfn_to_page(pfn: usize) -> *mut page;
 }
 

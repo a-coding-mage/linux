@@ -97,12 +97,12 @@ pub unsafe fn xstateregs_set(target: *mut task_struct, regset: *const user_regse
 }
 
 // CONFIG_X86_USER_SHADOW_STACK conditionally supplies the following routines.
-#[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")]
+#[cfg(CONFIG_X86_USER_SHADOW_STACK)]
 pub unsafe fn ssp_active(target: *mut task_struct, regset: *const user_regset) -> c_int {
     if (*target).thread.features & ARCH_SHSTK_SHSTK != 0 { (*regset).n } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")]
+#[cfg(CONFIG_X86_USER_SHADOW_STACK)]
 pub unsafe fn ssp_get(target: *mut task_struct, regset: *const user_regset, mut to: membuf) -> c_int {
     let fpu = x86_task_fpu(target);
     if !cpu_feature_enabled(X86_FEATURE_USER_SHSTK) || ssp_active(target, regset) == 0 { return -ENODEV; }
@@ -112,7 +112,7 @@ pub unsafe fn ssp_get(target: *mut task_struct, regset: *const user_regset, mut 
     membuf_write(&mut to, &(*cetregs).user_ssp as *const _ as *const c_void, core::mem::size_of::<c_ulong>())
 }
 
-#[cfg(feature = "CONFIG_X86_USER_SHADOW_STACK")]
+#[cfg(CONFIG_X86_USER_SHADOW_STACK)]
 pub unsafe fn ssp_set(target: *mut task_struct, regset: *const user_regset, mut pos: c_uint, mut count: c_uint,
                       kbuf: *const c_void, ubuf: *const c_void) -> c_int {
     let fpu = x86_task_fpu(target);
@@ -131,7 +131,7 @@ pub unsafe fn ssp_set(target: *mut task_struct, regset: *const user_regset, mut 
 }
 
 // CONFIG_X86_32 || CONFIG_IA32_EMULATION conditionally supplies the legacy conversions below.
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 unsafe fn twd_i387_to_fxsr(twd: u16) -> u16 {
     let mut tmp = (!twd as u32);
     tmp = (tmp | (tmp >> 1)) & 0x5555;
@@ -141,7 +141,7 @@ unsafe fn twd_i387_to_fxsr(twd: u16) -> u16 {
     tmp as u16
 }
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 unsafe fn twd_fxsr_to_i387(fxsave: *mut fxregs_state) -> u32 {
     let mut twd = (*fxsave).twd as c_ulong;
     let tos = ((*fxsave).swd >> 11) & 7;
@@ -158,7 +158,7 @@ unsafe fn twd_fxsr_to_i387(fxsave: *mut fxregs_state) -> u32 {
 }
 
 // The remaining legacy conversion and get/set routines retain the C ABI and field-level behavior.
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 unsafe fn __convert_from_fxsr(env: *mut user_i387_ia32_struct, tsk: *mut task_struct, fx: *mut fxregs_state) {
     (*env).cwd = (*fx).cwd | 0xffff0000;
     (*env).swd = (*fx).swd | 0xffff0000;
@@ -173,20 +173,20 @@ unsafe fn __convert_from_fxsr(env: *mut user_i387_ia32_struct, tsk: *mut task_st
     for i in 0..8 { memcpy((*env).st_space.as_mut_ptr().add(i) as *mut c_void, (*fx).st_space.as_ptr().add(i) as *const c_void, core::mem::size_of::<_fpreg>()); }
 }
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 pub unsafe fn convert_from_fxsr(env: *mut user_i387_ia32_struct, tsk: *mut task_struct) {
     let fx = &mut (*x86_task_fpu(tsk)).fpstate.regs.fxsave;
     __convert_from_fxsr(env, tsk, fx);
 }
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 pub unsafe fn convert_to_fxsr(fxsave: *mut fxregs_state, env: *const user_i387_ia32_struct) {
     (*fxsave).cwd = (*env).cwd; (*fxsave).swd = (*env).swd; (*fxsave).twd = twd_i387_to_fxsr((*env).twd); (*fxsave).fop = ((*env).fcs >> 16) as u16;
     #[cfg(target_arch = "x86_64")] { (*fxsave).rip = (*env).fip; (*fxsave).rdp = (*env).foo; }
     for i in 0..8 { memcpy((*fxsave).st_space.as_mut_ptr().add(i) as *mut c_void, (*env).st_space.as_ptr().add(i) as *const c_void, core::mem::size_of::<_fpreg>()); }
 }
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 pub unsafe fn fpregs_get(target: *mut task_struct, regset: *const user_regset, mut to: membuf) -> c_int {
     let fpu = x86_task_fpu(target);
     let mut env: user_i387_ia32_struct = core::mem::zeroed();
@@ -206,7 +206,7 @@ pub unsafe fn fpregs_get(target: *mut task_struct, regset: *const user_regset, m
     membuf_write(&mut to, &env as *const _ as *const c_void, core::mem::size_of::<user_i387_ia32_struct>())
 }
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 pub unsafe fn fpregs_set(target: *mut task_struct, regset: *const user_regset,
                          mut pos: c_uint, mut count: c_uint, kbuf: *const c_void,
                          ubuf: *const c_void) -> c_int {

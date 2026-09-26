@@ -60,11 +60,11 @@ extern "C" {
     fn gcov_info_next(info: *mut gcov_info) -> *mut gcov_info;
     fn gcov_event(event: i32, info: *mut gcov_info);
 
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     fn gcov_info_within_module(info: *mut gcov_info, module: *mut module) -> bool;
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     fn gcov_info_unlink(previous: *mut gcov_info, info: *mut gcov_info);
-    #[cfg(feature = "CONFIG_MODULES")]
+    #[cfg(CONFIG_MODULES)]
     fn register_module_notifier(nb: *mut notifier_block) -> i32;
 }
 
@@ -142,7 +142,7 @@ pub unsafe extern "C" fn store_gcov_u64(buffer: *mut c_void, off: usize, v: u64)
 
 // #ifdef CONFIG_MODULES
 // Update list and generate events when modules are unloaded.
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe extern "C" fn gcov_module_notifier(
     _nb: *mut notifier_block,
     event: usize,
@@ -177,12 +177,12 @@ unsafe extern "C" fn gcov_module_notifier(
     NOTIFY_OK
 }
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 static mut gcov_nb: notifier_block = notifier_block {
     notifier_call: Some(gcov_module_notifier),
 };
 
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe extern "C" fn gcov_init() -> i32 {
     register_module_notifier(&raw mut gcov_nb)
 }

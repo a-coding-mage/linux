@@ -8,7 +8,7 @@ pub enum implver_enum {
     IMPLVER_EV6,
 }
 
-#[cfg(feature = "CONFIG_ALPHA_GENERIC")]
+#[cfg(CONFIG_ALPHA_GENERIC)]
 #[inline]
 pub unsafe fn implver() -> implver_enum {
     let mut __implver: u64;
@@ -17,16 +17,16 @@ pub unsafe fn implver() -> implver_enum {
 }
 
 /* Try to eliminate some dead code.  */
-#[cfg(all(not(feature = "CONFIG_ALPHA_GENERIC"), feature = "CONFIG_ALPHA_EV56"))]
+#[cfg(all(not(CONFIG_ALPHA_GENERIC), CONFIG_ALPHA_EV56))]
 #[inline]
 pub const fn implver() -> implver_enum {
     implver_enum::IMPLVER_EV5
 }
 
 #[cfg(all(
-    not(feature = "CONFIG_ALPHA_GENERIC"),
-    not(feature = "CONFIG_ALPHA_EV56"),
-    feature = "CONFIG_ALPHA_EV6"
+    not(CONFIG_ALPHA_GENERIC),
+    not(CONFIG_ALPHA_EV56),
+    CONFIG_ALPHA_EV6
 ))]
 #[inline]
 pub const fn implver() -> implver_enum {

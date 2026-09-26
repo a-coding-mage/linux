@@ -178,6 +178,7 @@ pub unsafe extern "C" fn playback_urb_complete(urb: *mut Urb) {
     let frames_to_copy: SndPcmUframes;
     let mut ret: i32;
     let mut i: i32;
+    'out: {
 
     if (*urb).status != 0 {
         if (*urb).status != -libc::ENOENT
@@ -191,15 +192,15 @@ pub unsafe extern "C" fn playback_urb_complete(urb: *mut Urb) {
                 (*urb).status,
             );
         }
-        goto out;
+        break 'out;
     }
     if tascam.is_null() || atomic_read(&(*tascam).playback_active) == 0 {
-        goto out;
+        break 'out;
     }
 
     substream = (*tascam).playback_substream;
     if substream.is_null() || (*substream).runtime.is_null() {
-        goto out;
+        break 'out;
     }
     runtime = (*substream).runtime;
 
@@ -280,7 +281,8 @@ pub unsafe extern "C" fn playback_urb_complete(urb: *mut Urb) {
         usb_put_urb(urb);
         atomic_dec(&(*tascam).active_urbs);
     }
-    out: {
+    }
+    {
         usb_put_urb(urb);
     }
 }
@@ -298,6 +300,7 @@ pub unsafe extern "C" fn feedback_urb_complete(urb: *mut Urb) {
     let new_in_idx: u32;
     let mut playback_period_elapsed: bool = false;
     let mut capture_period_elapsed: bool = false;
+    'out: {
 
     if (*urb).status != 0 {
         if (*urb).status != -libc::ENOENT
@@ -312,15 +315,15 @@ pub unsafe extern "C" fn feedback_urb_complete(urb: *mut Urb) {
             );
             atomic_dec(&(*tascam).active_urbs);
         }
-        goto out;
+        break 'out;
     }
     if tascam.is_null() || atomic_read(&(*tascam).playback_active) == 0 {
-        goto out;
+        break 'out;
     }
 
     playback_ss = (*tascam).playback_substream;
     if playback_ss.is_null() || (*playback_ss).runtime.is_null() {
-        goto out;
+        break 'out;
     }
     playback_rt = (*playback_ss).runtime;
 
@@ -425,7 +428,7 @@ pub unsafe extern "C" fn feedback_urb_complete(urb: *mut Urb) {
                 if is_ahead && was_behind {
                     dev_dbg(
                         (*(*tascam).card).dev,
-                        "Sync Acquired! (in: %u, out: %u)\n",
+                        "Sync Acquired! (r#in: %u, out: %u)\n",
                         new_in_idx,
                         out_idx,
                     );
@@ -484,7 +487,8 @@ pub unsafe extern "C" fn feedback_urb_complete(urb: *mut Urb) {
         usb_unanchor_urb(urb);
         usb_put_urb(urb);
     }
-    out: {
+    }
+    {
         usb_put_urb(urb);
     }
 }

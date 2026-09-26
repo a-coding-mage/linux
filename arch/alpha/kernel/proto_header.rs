@@ -137,7 +137,7 @@ pub unsafe fn __alpha_remap_area_pages(address: u64, phys_addr: u64, size: u64, 
 pub const irongate_pci_tbi: *mut core::ffi::c_void = core::ptr::null_mut();
 pub const polaris_pci_tbi: *mut core::ffi::c_void = core::ptr::null_mut();
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[repr(C, align(8))]
 pub struct mcheck_info {
     pub expected: u8,
@@ -145,24 +145,24 @@ pub struct mcheck_info {
     pub extra: u8,
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 extern "C" {
     pub static mut __mcheck_info: mcheck_info;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 // mcheck_expected(cpu), mcheck_taken(cpu), and mcheck_extra(cpu) refer to
 // cpu_data[cpu].mcheck_expected, cpu_data[cpu].mcheck_taken, and
 // cpu_data[cpu].mcheck_extra in the kernel build.
 pub type mcheck_cpu_macros = ();
 
-#[cfg(not(feature = "CONFIG_ALPHA_GENERIC"))]
-#[cfg(not(feature = "CONFIG_ALPHA_SRM"))]
+#[cfg(not(CONFIG_ALPHA_GENERIC))]
+#[cfg(not(CONFIG_ALPHA_SRM))]
 #[inline]
 pub fn register_srm_console_noop() {}
 
-#[cfg(not(feature = "CONFIG_ALPHA_GENERIC"))]
-#[cfg(not(feature = "CONFIG_ALPHA_SRM"))]
+#[cfg(not(CONFIG_ALPHA_GENERIC))]
+#[cfg(not(CONFIG_ALPHA_SRM))]
 #[inline]
 pub fn unregister_srm_console_noop() {}
 

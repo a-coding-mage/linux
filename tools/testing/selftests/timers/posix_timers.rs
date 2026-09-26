@@ -79,12 +79,12 @@ macro_rules! fatal_error {
             Some(v) => CString::new(v).unwrap(),
             None => CString::new("").unwrap(),
         };
-        let what = CString::new($what).unwrap();
+        let $what = CString::new($what).unwrap();
         unsafe {
             __fatal_error(
                 test.as_ptr(),
                 if $name.is_none() { std::ptr::null() } else { name_c.as_ptr() },
-                what.as_ptr(),
+                $what.as_ptr(),
             )
         }
     }};

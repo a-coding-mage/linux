@@ -232,18 +232,18 @@ pub unsafe extern "C" fn audit_net_cb(ab: *mut audit_buffer, va: *mut c_char) {
         );
     }
     if !(*sock_type_names).is_null()
-        && !(*sock_type_names.add((*ad).net.type as usize)).is_null()
+        && !(*sock_type_names.add((*ad).net.r#type as usize)).is_null()
     {
         audit_log_format(
             ab,
             b" sock_type=\"%s\"\0" as *const u8 as *const c_char,
-            *sock_type_names.add((*ad).net.type as usize),
+            *sock_type_names.add((*ad).net.r#type as usize),
         );
     } else {
         audit_log_format(
             ab,
             b" sock_type=\"unknown(%d)\"\0" as *const u8 as *const c_char,
-            (*ad).net.type,
+            (*ad).net.r#type,
         );
     }
     audit_log_format(
@@ -399,7 +399,7 @@ pub unsafe fn aa_profile_af_perm(
     let mut p: *mut aa_perms = std::ptr::null_mut();
     let mut state: aa_state_t;
 
-    assert!(family as usize < 32);
+    assert!((family as usize) < 32);
     assert!(type_ >= 0 && type_ < 256);
     assert!(!profile.is_null());
 

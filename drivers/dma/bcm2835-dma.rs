@@ -50,16 +50,16 @@ unsafe fn bcm2835_dma_desc_free(vd: *mut virt_dma_desc) { bcm2835_dma_free_cb_ch
 unsafe fn bcm2835_dma_create_cb_set_length(chan: *mut bcm2835_chan, cb: *mut bcm2835_dma_cb, len: usize, period_len: usize, total_len: *mut usize, finalextrainfo: u32) {
     (*cb).length = core::cmp::min(len as u32, bcm2835_dma_max_frame_length(chan) as u32);
     if period_len == 0 { return; }
-    if *total_len + (*cb).length as usize < period_len { *total_len += (*cb).length as usize; return; }
+    if *total_len + ((*cb).length as usize) < period_len { *total_len += (*cb).length as usize; return; }
     (*cb).length = (period_len - *total_len) as u32; *total_len = 0; (*cb).info |= finalextrainfo;
 }
 
 unsafe fn bcm2835_dma_fill_cb_chain_with_sg(chan: *mut dma_chan, direction: dma_transfer_direction, mut cb: *mut bcm2835_cb_entry, sgl: *mut scatterlist, sg_len: u32) {
     let max_len = bcm2835_dma_max_frame_length(to_bcm2835_dma_chan(chan));
-    for_each_sg!(sgl, sgent, sg_len, i) {
+    for_each_sg!(sgl, sgent, sg_len, i, {
         let mut addr = sg_dma_address(sgent); let mut len = sg_dma_len(sgent) as usize;
         while len > 0 { if direction == DMA_DEV_TO_MEM { (*(*cb).cb).dst = addr as u32; } else { (*(*cb).cb).src = addr as u32; } (*(*cb).cb).length = core::cmp::min(len, max_len) as u32; let n = (*(*cb).cb).length as usize; addr += n as u64; len -= n; cb = cb.add(1); }
-    }
+    });
 }
 
 unsafe fn bcm2835_dma_abort(c: *mut bcm2835_chan) {

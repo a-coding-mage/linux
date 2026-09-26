@@ -10,7 +10,7 @@
 
 // Dependencies are supplied by the surrounding kernel translation unit.
 
-static DEFINE_MUTEX!(pid_caches_mutex);
+DEFINE_MUTEX!(pid_caches_mutex);
 static mut pid_ns_cachep: *mut kmem_cache = core::ptr::null_mut();
 /* Write once array, filled from the beginning. */
 static mut pid_cache: [*mut kmem_cache; MAX_PID_NS_LEVEL as usize] =

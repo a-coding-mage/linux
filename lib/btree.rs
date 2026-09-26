@@ -24,9 +24,8 @@ extern "C" {
     fn mempool_create(
         min_nr: u32,
         alloc_fn: unsafe extern "C" fn(gfp_t, *mut core::ffi::c_void) -> *mut core::ffi::c_void,
-        free_fn: unsafe extern "C" fn(*mut core::ffi::c_void, *mut core::ffi::c_void),
-        pool_data: *mut core::ffi::c_void,
-    ) -> *mut mempool_t;
+        free_fn: unsafe extern "C" fn(*mut core::ffi::c_void, _: *mut core::ffi::c_void),
+        pool_data: *mut core::ffi::c_void,) -> *mut mempool_t;
     fn mempool_destroy(pool: *mut mempool_t);
     fn kmem_cache_create(name: *const i8, size: usize, align: usize, flags: u32, ctor: *mut core::ffi::c_void) -> *mut kmem_cache;
     fn kmem_cache_destroy(cache: *mut kmem_cache);

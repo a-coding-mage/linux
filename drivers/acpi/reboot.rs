@@ -9,7 +9,7 @@ use crate::{
     ACPI_FADT_RESET_REGISTER,
 };
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn acpi_pci_reboot(rr: *mut AcpiGenericAddress, reset_value: u8) {
     let mut devfn: u32;
     let bus0: *mut PciBus;
@@ -27,7 +27,7 @@ unsafe fn acpi_pci_reboot(rr: *mut AcpiGenericAddress, reset_value: u8) {
     pci_bus_write_config_byte(bus0, devfn, ((*rr).address & 0xffff) as u32, reset_value);
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 unsafe fn acpi_pci_reboot(_rr: *mut AcpiGenericAddress, _reset_value: u8) {
     pr_warn_once("PCI configuration space access is not supported\n");
 }

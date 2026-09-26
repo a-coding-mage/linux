@@ -42,17 +42,17 @@ struct Max732xChip {
     dir_output: u32,
     lock: Mutex,
     reg_out: [u8; 2],
-    #[cfg(feature = "CONFIG_GPIO_MAX732X_IRQ")]
+    #[cfg(CONFIG_GPIO_MAX732X_IRQ)]
     irq_lock: Mutex,
-    #[cfg(feature = "CONFIG_GPIO_MAX732X_IRQ")]
+    #[cfg(CONFIG_GPIO_MAX732X_IRQ)]
     irq_mask: u8,
-    #[cfg(feature = "CONFIG_GPIO_MAX732X_IRQ")]
+    #[cfg(CONFIG_GPIO_MAX732X_IRQ)]
     irq_mask_cur: u8,
-    #[cfg(feature = "CONFIG_GPIO_MAX732X_IRQ")]
+    #[cfg(CONFIG_GPIO_MAX732X_IRQ)]
     irq_trig_raise: u8,
-    #[cfg(feature = "CONFIG_GPIO_MAX732X_IRQ")]
+    #[cfg(CONFIG_GPIO_MAX732X_IRQ)]
     irq_trig_fall: u8,
-    #[cfg(feature = "CONFIG_GPIO_MAX732X_IRQ")]
+    #[cfg(CONFIG_GPIO_MAX732X_IRQ)]
     irq_features: u8,
 }
 

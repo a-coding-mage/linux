@@ -1,5 +1,4 @@
-sed: can't read ./imx7ulp-pinfunc.h: No such file or directory
-+/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2016 Freescale Semiconductor, Inc.
  * Copyright 2017 NXP

@@ -80,14 +80,14 @@ unsafe extern "C" fn fips_enable(str_: *mut c_char) -> c_int {
 
 // FIPS_MODULE_NAME is CONFIG_CRYPTO_FIPS_NAME.  When
 // CONFIG_CRYPTO_FIPS_CUSTOM_VERSION is unset, FIPS_MODULE_VERSION is UTS_RELEASE.
-#[cfg(feature = "CONFIG_CRYPTO_FIPS_NAME")]
+#[cfg(CONFIG_CRYPTO_FIPS_NAME)]
 const FIPS_MODULE_NAME: &[u8] = env!("CONFIG_CRYPTO_FIPS_NAME").as_bytes();
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS_NAME"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS_NAME))]
 const FIPS_MODULE_NAME: &[u8] = b"";
 
-#[cfg(feature = "CONFIG_CRYPTO_FIPS_CUSTOM_VERSION")]
+#[cfg(CONFIG_CRYPTO_FIPS_CUSTOM_VERSION)]
 const FIPS_MODULE_VERSION: &[u8] = env!("CONFIG_CRYPTO_FIPS_VERSION").as_bytes();
-#[cfg(not(feature = "CONFIG_CRYPTO_FIPS_CUSTOM_VERSION"))]
+#[cfg(not(CONFIG_CRYPTO_FIPS_CUSTOM_VERSION))]
 const FIPS_MODULE_VERSION: &[u8] = env!("CARGO_PKG_VERSION").as_bytes();
 
 static mut fips_name: [u8; 1] = [0];

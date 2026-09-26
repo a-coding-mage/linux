@@ -4,15 +4,15 @@
 // types, constants, macros, and functions in the surrounding kernel build.
 
 static mut edac_dev_idx: i32 = 0;
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut edac_pci_idx: i32 = 0;
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut orig_pci_err_cap_dr: u32 = 0;
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 static mut orig_pci_err_en: u32 = 0;
 static mut orig_l2_err_disable: u32 = 0;
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn mpc85xx_pci_check(pci: *mut edac_pci_ctl_info) {
     let pdata = (*pci).pvt_info as *mut mpc85xx_pci_pdata;
     let err_detect = in_be32((*pdata).pci_vbase.add(MPC85XX_PCI_ERR_DR as usize));
@@ -32,7 +32,7 @@ unsafe fn mpc85xx_pci_check(pci: *mut edac_pci_ctl_info) {
     if (err_detect & !PCI_EDE_MULTI_ERR) & !PCI_EDE_PERR_MASK != 0 { edac_pci_handle_npe(pci, (*pci).ctl_name); }
 }
 
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 unsafe fn mpc85xx_pcie_check(pci: *mut edac_pci_ctl_info) {
     let pdata = (*pci).pvt_info as *mut mpc85xx_pci_pdata;
     let err_detect = in_be32((*pdata).pci_vbase.add(MPC85XX_PCI_ERR_DR as usize));

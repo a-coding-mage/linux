@@ -21,14 +21,14 @@ unsafe extern "C" {
 }
 
 /* CONFIG_X86_32 selects the 32-bit limits; CONFIG_X86_64 selects the 64-bit limits. */
-#[cfg(any(target_arch = "x86", feature = "CONFIG_X86_32"))]
+#[cfg(any(target_arch = "x86", CONFIG_X86_32))]
 pub const CRASH_ADDR_LOW_MAX: usize = SZ_512M;
-#[cfg(any(target_arch = "x86", feature = "CONFIG_X86_32"))]
+#[cfg(any(target_arch = "x86", CONFIG_X86_32))]
 pub const CRASH_ADDR_HIGH_MAX: usize = SZ_512M;
 
-#[cfg(any(target_arch = "x86_64", feature = "CONFIG_X86_64"))]
+#[cfg(any(target_arch = "x86_64", CONFIG_X86_64))]
 pub const CRASH_ADDR_LOW_MAX: usize = SZ_4G;
-#[cfg(any(target_arch = "x86_64", feature = "CONFIG_X86_64"))]
+#[cfg(any(target_arch = "x86_64", CONFIG_X86_64))]
 pub const CRASH_ADDR_HIGH_MAX: usize = SZ_64T;
 
 pub const DEFAULT_CRASH_KERNEL_LOW_SIZE: usize = crash_low_size_default();
@@ -36,13 +36,13 @@ pub const DEFAULT_CRASH_KERNEL_LOW_SIZE: usize = crash_low_size_default();
 #[inline]
 pub unsafe fn crash_low_size_default() -> usize {
     // CONFIG_X86_64 provides the calculated default; other architectures return zero.
-    #[cfg(any(target_arch = "x86_64", feature = "CONFIG_X86_64"))]
+    #[cfg(any(target_arch = "x86_64", CONFIG_X86_64))]
     {
         let swiotlb_size = unsafe { swiotlb_size_or_default() };
         core::cmp::max(swiotlb_size.wrapping_add(8usize << 20), 256usize << 20)
     }
 
-    #[cfg(not(any(target_arch = "x86_64", feature = "CONFIG_X86_64")))]
+    #[cfg(not(any(target_arch = "x86_64", CONFIG_X86_64)))]
     {
         0
     }

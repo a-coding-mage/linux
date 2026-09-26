@@ -7,7 +7,7 @@
  */
 
 // The declarations below are present when CONFIG_SMP is enabled.
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! raw_smp_processor_id {
     () => {
@@ -15,7 +15,7 @@ macro_rules! raw_smp_processor_id {
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[macro_export]
 macro_rules! cpu_logical_map {
     ($cpu:expr) => {
@@ -23,13 +23,13 @@ macro_rules! cpu_logical_map {
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[repr(C)]
 pub struct start_info {
     pub stack: core::ffi::c_ulong,
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub static mut start_info: start_info;
 
@@ -43,13 +43,13 @@ extern "C" {
     pub fn show_ipi_list(p: *mut seq_file, prec: core::ffi::c_int);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub enum cpumask {}
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub enum seq_file {}
 
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(all(CONFIG_SMP, CONFIG_HOTPLUG_CPU))]
 extern "C" {
     pub fn __cpu_die(cpu: core::ffi::c_uint);
     pub fn __cpu_disable() -> core::ffi::c_int;

@@ -58,7 +58,7 @@ pub const BAM_FIFO_SIZE: usize = 32 * 1024 - 8;
 pub const P_IRQ: u32 = 0x7fffffff; pub const BAM_IRQ: u32 = 1 << 31;
 pub const P_SW_OFSTS_MASK: u32 = 0xffff; pub const P_DEFAULT_IRQS_EN: u32 = (1<<0)|(1<<4)|(1<<5);
 pub const BAM_SW_RST: u32 = 1; pub const BAM_EN: u32 = 1 << 1; pub const DEFAULT_CNT_THRSHLD: u32 = 4;
-pub const BAM_CNFG_BITS_DEFAULT: u32 = 0x0fffffff;
+pub const BAM_CNFG_BITS_DEFAULT: u32 = 0xffff004;
 
 #[repr(C)] pub struct bam_chan {
     pub vc: virt_dma_chan, pub bdev: *mut bam_device, pub id: u32, pub slave: dma_slave_config,

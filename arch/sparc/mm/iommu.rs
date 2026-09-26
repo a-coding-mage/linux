@@ -88,11 +88,11 @@ unsafe fn sbus_iommu_init(op: *mut platform_device) {
 }
 
 unsafe fn iommu_init() -> i32 {
-    for_each_node_by_name!(dp, "iommu") {
+    for_each_node_by_name!(dp, "iommu", {
         let op = of_find_device_by_node(dp);
         sbus_iommu_init(op);
         of_propagate_archdata(op);
-    }
+    });
     0
 }
 

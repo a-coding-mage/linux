@@ -106,9 +106,9 @@ unsafe fn remove_sysfs_fw_map_entry(entry: *mut firmware_map_entry) { kobject_pu
 unsafe fn firmware_map_find_entry_in_list(start: u64, end: u64, type_: *const core::ffi::c_char,
                                           list: *mut list_head) -> *mut firmware_map_entry {
     let mut entry: *mut firmware_map_entry = core::ptr::null_mut();
-    list_for_each_entry!(entry, list, list) {
+    list_for_each_entry!(entry, list, list, {
         if (*entry).start == start && (*entry).end == end && strcmp((*entry).type_, type_) == 0 { return entry; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -160,7 +160,7 @@ unsafe fn memmap_attr_show(kobj: *mut kobject, attr: *mut attribute, buf: *mut c
 
 unsafe fn firmware_memmap_init() -> i32 {
     let mut entry: *mut firmware_map_entry = core::ptr::null_mut();
-    list_for_each_entry!(entry, &raw mut map_entries, list) { add_sysfs_fw_map_entry(entry); }
+    list_for_each_entry!(entry, &raw mut map_entries, list, { add_sysfs_fw_map_entry(entry); });
     0
 }
 /* late_initcall(firmware_memmap_init); */

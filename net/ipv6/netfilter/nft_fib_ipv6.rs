@@ -85,10 +85,10 @@ unsafe fn __nft_fib6_eval_type(
 
     route_err = nft_fib6_lookup(nft_net(pkt), &mut fl6, &mut res, lookup_flags);
     if route_err != 0 {
-        return match route_err {
-            -EINVAL => RTN_BLACKHOLE,
-            -EACCES => RTN_PROHIBIT,
-            -EAGAIN => RTN_THROW,
+        return match -(route_err) {
+            EINVAL => RTN_BLACKHOLE,
+            EACCES => RTN_PROHIBIT,
+            EAGAIN => RTN_THROW,
             _ => RTN_UNREACHABLE,
         };
     }

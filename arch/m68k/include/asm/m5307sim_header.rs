@@ -44,70 +44,70 @@ pub const MCFSIM_CSAR1: _ = MCF_MBAR + 0x8c;
 pub const MCFSIM_CSMR1: _ = MCF_MBAR + 0x90;
 pub const MCFSIM_CSCR1: _ = MCF_MBAR + 0x96;
 
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSBAR: _ = MCF_MBAR + 0x98;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSBAMR: _ = MCF_MBAR + 0x9c;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSMR2: _ = MCF_MBAR + 0x9e;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSCR2: _ = MCF_MBAR + 0xa2;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSMR3: _ = MCF_MBAR + 0xaa;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSCR3: _ = MCF_MBAR + 0xae;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSMR4: _ = MCF_MBAR + 0xb6;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSCR4: _ = MCF_MBAR + 0xba;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSMR5: _ = MCF_MBAR + 0xc2;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSCR5: _ = MCF_MBAR + 0xc6;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSMR6: _ = MCF_MBAR + 0xce;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSCR6: _ = MCF_MBAR + 0xd2;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSMR7: _ = MCF_MBAR + 0xda;
-#[cfg(feature = "CONFIG_OLDMASK")]
+#[cfg(CONFIG_OLDMASK)]
 pub const MCFSIM_CSCR7: _ = MCF_MBAR + 0xde;
 
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSAR2: _ = MCF_MBAR + 0x98;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSMR2: _ = MCF_MBAR + 0x9c;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSCR2: _ = MCF_MBAR + 0xa2;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSAR3: _ = MCF_MBAR + 0xa4;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSMR3: _ = MCF_MBAR + 0xa8;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSCR3: _ = MCF_MBAR + 0xae;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSAR4: _ = MCF_MBAR + 0xb0;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSMR4: _ = MCF_MBAR + 0xb4;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSCR4: _ = MCF_MBAR + 0xba;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSAR5: _ = MCF_MBAR + 0xbc;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSMR5: _ = MCF_MBAR + 0xc0;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSCR5: _ = MCF_MBAR + 0xc6;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSAR6: _ = MCF_MBAR + 0xc8;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSMR6: _ = MCF_MBAR + 0xcc;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSCR6: _ = MCF_MBAR + 0xd2;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSAR7: _ = MCF_MBAR + 0xd4;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSMR7: _ = MCF_MBAR + 0xd8;
-#[cfg(not(feature = "CONFIG_OLDMASK"))]
+#[cfg(not(CONFIG_OLDMASK))]
 pub const MCFSIM_CSCR7: _ = MCF_MBAR + 0xde;
 
 pub const MCFSIM_DCR: _ = MCF_MBAR + 0x100;
@@ -125,13 +125,13 @@ pub const MCFDMA_BASE2: _ = MCF_MBAR + 0x380;
 pub const MCFDMA_BASE3: _ = MCF_MBAR + 0x3C0;
 
 // CONFIG_NETtel and CONFIG_SECUREEDGEMP3 are build-time conditions.
-#[cfg(any(feature = "CONFIG_NETtel", feature = "CONFIG_SECUREEDGEMP3"))]
+#[cfg(any(CONFIG_NETtel, CONFIG_SECUREEDGEMP3))]
 pub const MCFUART_BASE0: _ = MCF_MBAR + 0x200;
-#[cfg(any(feature = "CONFIG_NETtel", feature = "CONFIG_SECUREEDGEMP3"))]
+#[cfg(any(CONFIG_NETtel, CONFIG_SECUREEDGEMP3))]
 pub const MCFUART_BASE1: _ = MCF_MBAR + 0x1c0;
-#[cfg(not(any(feature = "CONFIG_NETtel", feature = "CONFIG_SECUREEDGEMP3")))]
+#[cfg(not(any(CONFIG_NETtel, CONFIG_SECUREEDGEMP3)))]
 pub const MCFUART_BASE0: _ = MCF_MBAR + 0x1c0;
-#[cfg(not(any(feature = "CONFIG_NETtel", feature = "CONFIG_SECUREEDGEMP3")))]
+#[cfg(not(any(CONFIG_NETtel, CONFIG_SECUREEDGEMP3)))]
 pub const MCFUART_BASE1: _ = MCF_MBAR + 0x200;
 
 pub const MCFGPIO_PIN_MAX: i32 = 16;

@@ -119,7 +119,7 @@ unsafe extern "C" fn cpu_psci_cpu_kill(cpu: u32) -> i32 {
             return 0;
         }
         usleep_range(100, 1000);
-        if !jiffies.wrapping_sub(end) as i64 < 0 {
+        if (!jiffies.wrapping_sub(end) as i64) < 0 {
             break;
         }
     }

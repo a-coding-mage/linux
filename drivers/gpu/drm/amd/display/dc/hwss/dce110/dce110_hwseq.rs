@@ -36,18 +36,18 @@ const HPD_CHECK_INTERVAL: u32 = 10;
 const OLED_POST_T7_DELAY: u32 = 100;
 const OLED_PRE_T11_DELAY: u32 = 150;
 const CTX: u32 = \;
-	hws->ctx
+	(*hws).ctx
 const DC_LOGGER: u32 = \;
-	dc_ctx->logger
+	(*dc_ctx).logger
 #define DC_LOGGER_INIT(ctx) \
 	struct dc_context *dc_ctx = ctx
 
 #define REG(reg)\
-	hws->regs->reg
+	(*(*hws).regs).reg
 
 #undef FN
 #define FN(reg_name, field_name) \
-	hws->shifts->field_name, hws->masks->field_name
+	(*(*hws).shifts).field_name, (*(*hws).masks).field_name
 
 #[repr(C)]
 struct dce110_hw_seq_reg_offsets {
@@ -56,16 +56,16 @@ struct dce110_hw_seq_reg_offsets {
 
 const struct dce110_hw_seq_reg_offsets reg_offsets[] = {
 {
-	.crtc = (mmCRTC0_CRTC_GSL_CONTROL - mmCRTC_GSL_CONTROL),
+	crtc: (mmCRTC0_CRTC_GSL_CONTROL - mmCRTC_GSL_CONTROL),
 },
 {
-	.crtc = (mmCRTC1_CRTC_GSL_CONTROL - mmCRTC_GSL_CONTROL),
+	crtc: (mmCRTC1_CRTC_GSL_CONTROL - mmCRTC_GSL_CONTROL),
 },
 {
-	.crtc = (mmCRTC2_CRTC_GSL_CONTROL - mmCRTC_GSL_CONTROL),
+	crtc: (mmCRTC2_CRTC_GSL_CONTROL - mmCRTC_GSL_CONTROL),
 },
 {
-	.crtc = (mmCRTCV_GSL_CONTROL - mmCRTC_GSL_CONTROL),
+	crtc: (mmCRTCV_GSL_CONTROL - mmCRTC_GSL_CONTROL),
 }
 };
 
@@ -81,7 +81,7 @@ const SAFE_NBP_MARK: u32 = 0x7FFF;
  * Private definitions
  ******************************************************************************/
 /***************************PIPE_CONTROL***********************************/
-unsafe fn dce110_init_pte(struct dc_context *ctx)
+unsafe fn dce110_init_pte(dc_context *ctx)
 {
 	u32 addr;
 	u32 value = 0;
@@ -150,8 +150,8 @@ unsafe fn dce110_init_pte(struct dc_context *ctx)
 /**************************************************************************/
 
 unsafe fn enable_display_pipe_clock_gating(
-	struct dc_context *ctx,
-	bool clock_gating)
+	dc_context *ctx,
+	clock_gating: bool)
 {
 	(void)ctx;
 	(void)clock_gating;
@@ -159,15 +159,15 @@ unsafe fn enable_display_pipe_clock_gating(
 }
 
 unsafe fn dce110_enable_display_power_gating(
-	struct dc *dc,
-	u8 controller_id,
-	struct dc_bios *dcb,
-	enum pipe_gating_control power_gating)
+	dc *dc,
+	controller_id: u8,
+	dc_bios *dcb,
+	pipe_gating_control power_gating)
 {
 	enum bp_result bp_result = BP_RESULT_OK;
 	enum bp_pipe_control_action cntl;
-	struct dc_context *ctx = dc->ctx;
-	unsigned int underlay_idx = dc->res_pool->underlay_pipe_index;
+	struct dc_context *ctx = (*dc).ctx;
+	core::ffi::c_uint underlay_idx = (*(*dc).res_pool).underlay_pipe_index;
 
 	if (power_gating == PIPE_GATING_CONTROL_INIT)
 		cntl = ASIC_PIPE_INIT;
@@ -181,7 +181,7 @@ unsafe fn dce110_enable_display_power_gating(
 
 	if (power_gating != PIPE_GATING_CONTROL_INIT || controller_id == 0) {
 
-		bp_result = dcb->funcs->enable_disp_power_gating(
+		bp_result = (*(*dcb).funcs).enable_disp_power_gating(
 						dcb, controller_id + 1, cntl);
 
 		/* Revert MASTER_UPDATE_MODE to 0 because bios sets it 2
@@ -206,27 +206,27 @@ unsafe fn dce110_enable_display_power_gating(
 		return false;
 }
 
-unsafe fn dce110_prescale_params(struct ipp_prescale_params *prescale_params,
+unsafe fn dce110_prescale_params(ipp_prescale_params *prescale_params,
 		const struct dc_plane_state *plane_state)
 {
-	prescale_params->mode = IPP_PRESCALE_MODE_FIXED_UNSIGNED;
+	(*prescale_params).mode = IPP_PRESCALE_MODE_FIXED_UNSIGNED;
 
-	switch (plane_state->format) {
+	switch ((*plane_state).format) {
 	case SURFACE_PIXEL_FORMAT_GRPH_RGB565:
-		prescale_params->scale = 0x2082;
+		(*prescale_params).scale = 0x2082;
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB8888:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR8888:
-		prescale_params->scale = 0x2020;
+		(*prescale_params).scale = 0x2020;
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB2101010:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010:
-		prescale_params->scale = 0x2008;
+		(*prescale_params).scale = 0x2008;
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616F:
-		prescale_params->scale = 0x2000;
+		(*prescale_params).scale = 0x2000;
 		break;
 	default:
 		ASSERT(false);
@@ -235,11 +235,11 @@ unsafe fn dce110_prescale_params(struct ipp_prescale_params *prescale_params,
 }
 
 unsafe fn
-dce110_set_input_transfer_func(struct dc *dc, struct pipe_ctx *pipe_ctx,
+dce110_set_input_transfer_func(dc *dc, pipe_ctx *pipe_ctx,
 			       const struct dc_plane_state *plane_state)
 {
 	(void)dc;
-	struct input_pixel_processor *ipp = pipe_ctx->plane_res.ipp;
+	struct input_pixel_processor *ipp = (*pipe_ctx).plane_res.ipp;
 	const struct dc_transfer_func *tf = std::ptr::null_mut();
 	struct ipp_prescale_params prescale_params = { 0 };
 	bool result = true;
@@ -247,33 +247,33 @@ dce110_set_input_transfer_func(struct dc *dc, struct pipe_ctx *pipe_ctx,
 	if (ipp == std::ptr::null_mut())
 		return false;
 
-	tf = &plane_state->in_transfer_func;
+	tf = (*&plane_state).in_transfer_func;
 
 	dce110_prescale_params(&prescale_params, plane_state);
-	ipp->funcs->ipp_program_prescale(ipp, &prescale_params);
+	(*(*ipp).funcs).ipp_program_prescale(ipp, &prescale_params);
 
-	if (!plane_state->gamma_correction.is_identity &&
-			dce_use_lut(plane_state->format))
-		ipp->funcs->ipp_program_input_lut(ipp, &plane_state->gamma_correction);
+	if ((*!plane_state).gamma_correction.is_identity &&
+			dce_use_lut((*plane_state).format))
+		(*(*ipp).funcs).ipp_program_input_lut(ipp, (*&plane_state).gamma_correction);
 
-	if (tf->type == TF_TYPE_PREDEFINED) {
-		switch (tf->tf) {
+	if ((*tf).type == TF_TYPE_PREDEFINED) {
+		switch ((*tf).tf) {
 		case TRANSFER_FUNCTION_SRGB:
-			ipp->funcs->ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_HW_sRGB);
+			(*(*ipp).funcs).ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_HW_sRGB);
 			break;
 		case TRANSFER_FUNCTION_BT709:
-			ipp->funcs->ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_HW_xvYCC);
+			(*(*ipp).funcs).ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_HW_xvYCC);
 			break;
 		case TRANSFER_FUNCTION_LINEAR:
-			ipp->funcs->ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_BYPASS);
+			(*(*ipp).funcs).ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_BYPASS);
 			break;
 		case TRANSFER_FUNCTION_PQ:
 		default:
 			result = false;
 			break;
 		}
-	} else if (tf->type == TF_TYPE_BYPASS) {
-		ipp->funcs->ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_BYPASS);
+	} else if ((*tf).type == TF_TYPE_BYPASS) {
+		(*(*ipp).funcs).ipp_set_degamma(ipp, IPP_DEGAMMA_MODE_BYPASS);
 	} else {
 		/*TF_TYPE_DISTRIBUTED_POINTS - Not supported in DCE 11*/
 		result = false;
@@ -282,9 +282,9 @@ dce110_set_input_transfer_func(struct dc *dc, struct pipe_ctx *pipe_ctx,
 	return result;
 }
 
-unsafe fn convert_to_custom_float(struct pwl_result_data *rgb_resulted,
-				    struct curve_points *arr_points,
-				    u32 hw_points_num)
+unsafe fn convert_to_custom_float(pwl_result_data *rgb_resulted,
+				    curve_points *arr_points,
+				    hw_points_num: u32)
 {
 	struct custom_float_format fmt;
 
@@ -339,38 +339,38 @@ unsafe fn convert_to_custom_float(struct pwl_result_data *rgb_resulted,
 	fmt.sign = true;
 
 	while (i != hw_points_num) {
-		if (!convert_to_custom_float_format(rgb->red, &fmt,
-						    &rgb->red_reg)) {
+		if (!convert_to_custom_float_format((*rgb).red, &fmt,
+						    (*&rgb).red_reg)) {
 			BREAK_TO_DEBUGGER();
 			return false;
 		}
 
-		if (!convert_to_custom_float_format(rgb->green, &fmt,
-						    &rgb->green_reg)) {
+		if (!convert_to_custom_float_format((*rgb).green, &fmt,
+						    (*&rgb).green_reg)) {
 			BREAK_TO_DEBUGGER();
 			return false;
 		}
 
-		if (!convert_to_custom_float_format(rgb->blue, &fmt,
-						    &rgb->blue_reg)) {
+		if (!convert_to_custom_float_format((*rgb).blue, &fmt,
+						    (*&rgb).blue_reg)) {
 			BREAK_TO_DEBUGGER();
 			return false;
 		}
 
-		if (!convert_to_custom_float_format(rgb->delta_red, &fmt,
-						    &rgb->delta_red_reg)) {
+		if (!convert_to_custom_float_format((*rgb).delta_red, &fmt,
+						    (*&rgb).delta_red_reg)) {
 			BREAK_TO_DEBUGGER();
 			return false;
 		}
 
-		if (!convert_to_custom_float_format(rgb->delta_green, &fmt,
-						    &rgb->delta_green_reg)) {
+		if (!convert_to_custom_float_format((*rgb).delta_green, &fmt,
+						    (*&rgb).delta_green_reg)) {
 			BREAK_TO_DEBUGGER();
 			return false;
 		}
 
-		if (!convert_to_custom_float_format(rgb->delta_blue, &fmt,
-						    &rgb->delta_blue_reg)) {
+		if (!convert_to_custom_float_format((*rgb).delta_blue, &fmt,
+						    (*&rgb).delta_blue_reg)) {
 			BREAK_TO_DEBUGGER();
 			return false;
 		}
@@ -387,7 +387,7 @@ const NUMBER_SW_SEGMENTS: u32 = 16;
 
 unsafe fn
 dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
-				      struct pwl_params *regamma_params)
+				      pwl_params *regamma_params)
 {
 	struct curve_points *arr_points;
 	struct pwl_result_data *rgb_resulted;
@@ -399,19 +399,19 @@ dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
 	struct fixed31_32 y1_min;
 	struct fixed31_32 y3_max;
 
-	i32 region_start, region_end;
-	u32 i, j, k, seg_distr[NUMBER_REGIONS], increment, start_index, hw_points;
+	region_start: i32, region_end;
+	i: u32, j, k, seg_distr[NUMBER_REGIONS], increment, start_index, hw_points;
 
-	if (output_tf == std::ptr::null_mut() || regamma_params == std::ptr::null_mut() || output_tf->type == TF_TYPE_BYPASS)
+	if (output_tf == std::ptr::null_mut() || regamma_params == std::ptr::null_mut() || (*output_tf).type == TF_TYPE_BYPASS)
 		return false;
 
-	arr_points = regamma_params->arr_points;
-	rgb_resulted = regamma_params->rgb_resulted;
+	arr_points = (*regamma_params).arr_points;
+	rgb_resulted = (*regamma_params).rgb_resulted;
 	hw_points = 0;
 
-	memset(regamma_params, 0, sizeof(struct pwl_params));
+	memset(regamma_params, 0, sizeof(pwl_params));
 
-	if (output_tf->tf == TRANSFER_FUNCTION_PQ) {
+	if ((*output_tf).tf == TRANSFER_FUNCTION_PQ) {
 		/* 16 segments
 		 * segments are from 2^-11 to 2^5
 		 */
@@ -463,18 +463,18 @@ dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
 				i += increment) {
 			if (j == hw_points - 1)
 				break;
-			rgb_resulted[j].red = output_tf->tf_pts.red[i];
-			rgb_resulted[j].green = output_tf->tf_pts.green[i];
-			rgb_resulted[j].blue = output_tf->tf_pts.blue[i];
+			rgb_resulted[j].red = (*output_tf).tf_pts.red[i];
+			rgb_resulted[j].green = (*output_tf).tf_pts.green[i];
+			rgb_resulted[j].blue = (*output_tf).tf_pts.blue[i];
 			j++;
 		}
 	}
 
 	/* last point */
 	start_index = (region_end + MAX_LOW_POINT) * NUMBER_SW_SEGMENTS;
-	rgb_resulted[hw_points - 1].red = output_tf->tf_pts.red[start_index];
-	rgb_resulted[hw_points - 1].green = output_tf->tf_pts.green[start_index];
-	rgb_resulted[hw_points - 1].blue = output_tf->tf_pts.blue[start_index];
+	rgb_resulted[hw_points - 1].red = (*output_tf).tf_pts.red[start_index];
+	rgb_resulted[hw_points - 1].green = (*output_tf).tf_pts.green[start_index];
+	rgb_resulted[hw_points - 1].blue = (*output_tf).tf_pts.blue[start_index];
 
 	arr_points[0].x = dc_fixpt_pow(dc_fixpt_from_int(2),
 					     dc_fixpt_from_int(region_start));
@@ -504,7 +504,7 @@ dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
 
 	arr_points[1].slope = dc_fixpt_zero;
 
-	if (output_tf->tf == TRANSFER_FUNCTION_PQ) {
+	if ((*output_tf).tf == TRANSFER_FUNCTION_PQ) {
 		/* for PQ, we want to have a straight line from last HW X point,
 		 * and the slope to be such that we hit 1.0 at 10000 nits.
 		 */
@@ -515,20 +515,20 @@ dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
 				dc_fixpt_sub(end_value, arr_points[1].x));
 	}
 
-	regamma_params->hw_points_num = hw_points;
+	(*regamma_params).hw_points_num = hw_points;
 
 	k = 0;
 	for (i = 1; i < 16; i++) {
 		if (seg_distr[k] != -1) {
-			regamma_params->arr_curve_points[k].segments_num = seg_distr[k];
-			regamma_params->arr_curve_points[i].offset =
-					regamma_params->arr_curve_points[k].offset + (1 << seg_distr[k]);
+			(*regamma_params).arr_curve_points[k].segments_num = seg_distr[k];
+			(*regamma_params).arr_curve_points[i].offset =
+					(*regamma_params).arr_curve_points[k].offset + (1 << seg_distr[k]);
 		}
 		k++;
 	}
 
 	if (seg_distr[k] != -1)
-		regamma_params->arr_curve_points[k].segments_num = seg_distr[k];
+		(*regamma_params).arr_curve_points[k].segments_num = seg_distr[k];
 
 	rgb = rgb_resulted;
 	rgb_plus_1 = rgb_resulted + 1;
@@ -536,16 +536,16 @@ dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
 	i = 1;
 
 	while (i != hw_points + 1) {
-		if (dc_fixpt_lt(rgb_plus_1->red, rgb->red))
-			rgb_plus_1->red = rgb->red;
-		if (dc_fixpt_lt(rgb_plus_1->green, rgb->green))
-			rgb_plus_1->green = rgb->green;
-		if (dc_fixpt_lt(rgb_plus_1->blue, rgb->blue))
-			rgb_plus_1->blue = rgb->blue;
+		if (dc_fixpt_lt((*rgb_plus_1).red, (*rgb).red))
+			(*rgb_plus_1).red = (*rgb).red;
+		if (dc_fixpt_lt((*rgb_plus_1).green, (*rgb).green))
+			(*rgb_plus_1).green = (*rgb).green;
+		if (dc_fixpt_lt((*rgb_plus_1).blue, (*rgb).blue))
+			(*rgb_plus_1).blue = (*rgb).blue;
 
-		rgb->delta_red = dc_fixpt_sub(rgb_plus_1->red, rgb->red);
-		rgb->delta_green = dc_fixpt_sub(rgb_plus_1->green, rgb->green);
-		rgb->delta_blue = dc_fixpt_sub(rgb_plus_1->blue, rgb->blue);
+		(*rgb).delta_red = dc_fixpt_sub((*rgb_plus_1).red, (*rgb).red);
+		(*rgb).delta_green = dc_fixpt_sub((*rgb_plus_1).green, (*rgb).green);
+		(*rgb).delta_blue = dc_fixpt_sub((*rgb_plus_1).blue, (*rgb).blue);
 
 		++rgb_plus_1;
 		++rgb;
@@ -558,137 +558,137 @@ dce110_translate_regamma_to_hw_format(const struct dc_transfer_func *output_tf,
 }
 
 unsafe fn
-dce110_set_output_transfer_func(struct set_output_transfer_func_params *params)
+dce110_set_output_transfer_func(set_output_transfer_func_params *params)
 {
-	struct transform *xfm = params->xfm;
-	const struct dc_stream_state *stream = params->stream;
+	struct transform *xfm = (*params).xfm;
+	const struct dc_stream_state *stream = (*params).stream;
 
-	xfm->funcs->opp_power_on_regamma_lut(xfm, true);
-	xfm->regamma_params.hw_points_num = GAMMA_HW_POINTS_NUM;
+	(*(*xfm).funcs).opp_power_on_regamma_lut(xfm, true);
+	(*xfm).regamma_params.hw_points_num = GAMMA_HW_POINTS_NUM;
 
-	if (stream->out_transfer_func.type == TF_TYPE_PREDEFINED &&
-	    stream->out_transfer_func.tf == TRANSFER_FUNCTION_SRGB) {
-		xfm->funcs->opp_set_regamma_mode(xfm, OPP_REGAMMA_SRGB);
-	} else if (dce110_translate_regamma_to_hw_format(&stream->out_transfer_func,
-							 &xfm->regamma_params)) {
-		xfm->funcs->opp_program_regamma_pwl(xfm, &xfm->regamma_params);
-		xfm->funcs->opp_set_regamma_mode(xfm, OPP_REGAMMA_USER);
+	if ((*stream).out_transfer_func.r#type == TF_TYPE_PREDEFINED &&
+	    (*stream).out_transfer_func.tf == TRANSFER_FUNCTION_SRGB) {
+		(*(*xfm).funcs).opp_set_regamma_mode(xfm, OPP_REGAMMA_SRGB);
+	} else if (dce110_translate_regamma_to_hw_format((*&stream).out_transfer_func,
+							 (*&xfm).regamma_params)) {
+		(*(*xfm).funcs).opp_program_regamma_pwl(xfm, (*&xfm).regamma_params);
+		(*(*xfm).funcs).opp_set_regamma_mode(xfm, OPP_REGAMMA_USER);
 	} else {
-		xfm->funcs->opp_set_regamma_mode(xfm, OPP_REGAMMA_BYPASS);
+		(*(*xfm).funcs).opp_set_regamma_mode(xfm, OPP_REGAMMA_BYPASS);
 	}
 
-	xfm->funcs->opp_power_on_regamma_lut(xfm, false);
+	(*(*xfm).funcs).opp_power_on_regamma_lut(xfm, false);
 
 	return true;
 }
 
-unsafe fn dce110_update_info_frame(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_update_info_frame(pipe_ctx *pipe_ctx)
 {
 	bool is_hdmi_tmds;
 	bool is_dp;
 
-	ASSERT(pipe_ctx->stream);
+	ASSERT((*pipe_ctx).stream);
 
-	if (pipe_ctx->stream_res.stream_enc == std::ptr::null_mut())
+	if ((*pipe_ctx).stream_res.stream_enc == std::ptr::null_mut())
 		return;  /* this is not root pipe */
 
-	is_hdmi_tmds = dc_is_hdmi_tmds_signal(pipe_ctx->stream->signal);
-	is_dp = dc_is_dp_signal(pipe_ctx->stream->signal);
+	is_hdmi_tmds = dc_is_hdmi_tmds_signal((*(*pipe_ctx).stream).signal);
+	is_dp = dc_is_dp_signal((*(*pipe_ctx).stream).signal);
 
 	if (!is_hdmi_tmds && !is_dp)
 		return;
 
 	if (is_hdmi_tmds)
-		pipe_ctx->stream_res.stream_enc->funcs->update_hdmi_info_packets(
-			pipe_ctx->stream_res.stream_enc,
-			&pipe_ctx->stream_res.encoder_info_frame);
+		(*(*(*pipe_ctx).stream_res.stream_enc).funcs).update_hdmi_info_packets(
+			(*pipe_ctx).stream_res.stream_enc,
+			(*&pipe_ctx).stream_res.encoder_info_frame);
 	else {
-		if (pipe_ctx->stream_res.stream_enc->funcs->update_dp_info_packets_sdp_line_num)
-			pipe_ctx->stream_res.stream_enc->funcs->update_dp_info_packets_sdp_line_num(
-				pipe_ctx->stream_res.stream_enc,
-				&pipe_ctx->stream_res.encoder_info_frame);
+		if ((*(*(*pipe_ctx).stream_res.stream_enc).funcs).update_dp_info_packets_sdp_line_num)
+			(*(*(*pipe_ctx).stream_res.stream_enc).funcs).update_dp_info_packets_sdp_line_num(
+				(*pipe_ctx).stream_res.stream_enc,
+				(*&pipe_ctx).stream_res.encoder_info_frame);
 
-		pipe_ctx->stream_res.stream_enc->funcs->update_dp_info_packets(
-			pipe_ctx->stream_res.stream_enc,
-			&pipe_ctx->stream_res.encoder_info_frame);
+		(*(*(*pipe_ctx).stream_res.stream_enc).funcs).update_dp_info_packets(
+			(*pipe_ctx).stream_res.stream_enc,
+			(*&pipe_ctx).stream_res.encoder_info_frame);
 	}
 }
 
 unsafe fn
-dce110_external_encoder_control(enum bp_external_encoder_control_action action,
-				struct dc_link *link,
-				struct dc_crtc_timing *timing)
+dce110_external_encoder_control(bp_external_encoder_control_action action,
+				dc_link *link,
+				dc_crtc_timing *timing)
 {
-	struct dc *dc = link->ctx->dc;
-	struct dc_bios *bios = link->ctx->dc_bios;
-	const struct dc_link_settings *link_settings = &link->cur_link_settings;
+	struct dc *dc = (*(*link).ctx).dc;
+	struct dc_bios *bios = (*(*link).ctx).dc_bios;
+	const struct dc_link_settings *link_settings = (*&link).cur_link_settings;
 	enum bp_result bp_result = BP_RESULT_OK;
 	struct bp_external_encoder_control ext_cntl = {
-		.action = action,
-		.connector_obj_id = link->link_enc->connector,
-		.encoder_id = link->ext_enc_id,
-		.lanes_number = link_settings->lane_count,
-		.link_rate = link_settings->link_rate,
+		action: action,
+		connector_obj_id: (*(*link).link_enc).connector,
+		encoder_id: (*link).ext_enc_id,
+		lanes_number: (*link_settings).lane_count,
+		link_rate: (*link_settings).link_rate,
 
 		/* Use signal type of the real link encoder, ie. DP */
-		.signal = link->connector_signal,
+		signal: (*link).connector_signal,
 
 		/* We don't know the timing yet when executing the SETUP action,
 		 * so use a reasonably high default value. It seems that ENABLE
 		 * can change the actual pixel clock but doesn't work with higher
 		 * pixel clocks than what SETUP was called with.
 		 */
-		.pixel_clock = timing ? timing->pix_clk_100hz / 10 : 300000,
-		.color_depth = timing ? timing->display_color_depth : COLOR_DEPTH_888,
+		pixel_clock: timing ? (*timing).pix_clk_100hz / 10 : 300000,
+		color_depth: timing ? (*timing).display_color_depth : COLOR_DEPTH_888,
 	};
-	DC_LOGGER_INIT(dc->ctx);
+	DC_LOGGER_INIT((*dc).ctx);
 
-	bp_result = bios->funcs->external_encoder_control(bios, &ext_cntl);
+	bp_result = (*(*bios).funcs).external_encoder_control(bios, &ext_cntl);
 
 	if (bp_result != BP_RESULT_OK)
 		DC_LOG_ERROR("Failed to execute external encoder action: 0x%x\n", action);
 }
 
 unsafe fn
-dce110_prepare_ddc(struct dc_link *link)
+dce110_prepare_ddc(dc_link *link)
 {
-	if (link->ext_enc_id.id)
+	if ((*link).ext_enc_id.id)
 		dce110_external_encoder_control(EXTERNAL_ENCODER_CONTROL_DDC_SETUP, link, std::ptr::null_mut());
 }
 
 unsafe fn
-dce110_dac_load_detect(struct dc_link *link)
+dce110_dac_load_detect(dc_link *link)
 {
-	struct dc_bios *bios = link->ctx->dc_bios;
-	struct link_encoder *link_enc = link->link_enc;
+	struct dc_bios *bios = (*(*link).ctx).dc_bios;
+	struct link_encoder *link_enc = (*link).link_enc;
 	enum bp_result bp_result;
 
-	bp_result = bios->funcs->dac_load_detection(
-			bios, link_enc->analog_engine, link->ext_enc_id);
+	bp_result = (*(*bios).funcs).dac_load_detection(
+			bios, (*link_enc).analog_engine, (*link).ext_enc_id);
 	return bp_result == BP_RESULT_OK;
 }
 
-unsafe fn dce110_enable_stream(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_enable_stream(pipe_ctx *pipe_ctx)
 {
 	enum dc_lane_count lane_count =
-		pipe_ctx->stream->link->cur_link_settings.lane_count;
-	struct dc_crtc_timing *timing = &pipe_ctx->stream->timing;
-	struct dc_link *link = pipe_ctx->stream->link;
-	const struct dc *dc = link->dc;
-	const struct link_hwss *link_hwss = get_link_hwss(link, &pipe_ctx->link_res);
+		(*(*(*pipe_ctx).stream).link).cur_link_settings.lane_count;
+	struct dc_crtc_timing *timing = (*(*&pipe_ctx).stream).timing;
+	struct dc_link *link = (*(*pipe_ctx).stream).link;
+	const struct dc *dc = (*link).dc;
+	const struct link_hwss *link_hwss = get_link_hwss(link, (*&pipe_ctx).link_res);
 	u32 active_total_with_borders;
 	u32 early_control = 0;
-	struct timing_generator *tg = pipe_ctx->stream_res.tg;
+	struct timing_generator *tg = (*pipe_ctx).stream_res.tg;
 
-	link_hwss->setup_stream_encoder(pipe_ctx);
+	(*link_hwss).setup_stream_encoder(pipe_ctx);
 
-	dc->hwss.update_info_frame(pipe_ctx);
+	(*dc).hwss.update_info_frame(pipe_ctx);
 
 	/* enable early control to avoid corruption on DP monitor*/
 	active_total_with_borders =
-			timing->h_addressable
-				+ timing->h_border_left
-				+ timing->h_border_right;
+			(*timing).h_addressable
+				+ (*timing).h_border_left
+				+ (*timing).h_border_right;
 
 	if (lane_count != 0)
 		early_control = active_total_with_borders % lane_count;
@@ -696,19 +696,19 @@ unsafe fn dce110_enable_stream(struct pipe_ctx *pipe_ctx)
 	if (early_control == 0)
 		early_control = lane_count;
 
-	tg->funcs->set_early_control(tg, early_control);
+	(*(*tg).funcs).set_early_control(tg, early_control);
 
-	if (link->ext_enc_id.id)
+	if ((*link).ext_enc_id.id)
 		dce110_external_encoder_control(EXTERNAL_ENCODER_CONTROL_ENABLE, link, timing);
 }
 
 static enum bp_result link_transmitter_control(
-		struct dc_bios *bios,
-	struct bp_transmitter_control *cntl)
+		dc_bios *bios,
+	bp_transmitter_control *cntl)
 {
 	enum bp_result result;
 
-	result = bios->funcs->transmitter_control(bios, cntl);
+	result = (*(*bios).funcs).transmitter_control(bios, cntl);
 
 	return result;
 }
@@ -718,16 +718,15 @@ static enum bp_result link_transmitter_control(
  * eDP only.
  */
 unsafe fn dce110_edp_wait_for_hpd_ready(
-		struct dc_link *link,
-		bool power_up)
-{
-	struct graphics_object_id connector = link->link_enc->connector;
+		dc_link *link,
+		power_up: bool) {
+	struct graphics_object_id connector = (*(*link).link_enc).connector;
 	bool edp_hpd_high = false;
 	u32 time_elapsed = 0;
 	u32 timeout = power_up ?
 		PANEL_POWER_UP_TIMEOUT : PANEL_POWER_DOWN_TIMEOUT;
 
-	DC_LOGGER_INIT(link->ctx);
+	DC_LOGGER_INIT((*link).ctx);
 
 	if (dal_graphics_object_id_get_connector_id(connector)
 			!= CONNECTOR_ID_EDP) {
@@ -747,8 +746,8 @@ unsafe fn dce110_edp_wait_for_hpd_ready(
 	 * we need to wait until SENSE bit is high/low.
 	 */
 
-	if (link->panel_config.pps.extra_t3_ms > 0) {
-		int extra_t3_in_ms = link->panel_config.pps.extra_t3_ms;
+	if ((*link).panel_config.pps.extra_t3_ms > 0) {
+		int extra_t3_in_ms = (*link).panel_config.pps.extra_t3_ms;
 
 		msleep(extra_t3_in_ms);
 	}
@@ -756,7 +755,7 @@ unsafe fn dce110_edp_wait_for_hpd_ready(
 	/* wait until timeout or panel detected */
 
 	do {
-		if (!(link->dc->link_srv->get_hpd_state(link) ^ power_up)) {
+		if (!((*(*(*link).dc).link_srv).get_hpd_state(link) ^ power_up)) {
 			edp_hpd_high = true;
 			break;
 		}
@@ -772,44 +771,44 @@ unsafe fn dce110_edp_wait_for_hpd_ready(
 }
 
 unsafe fn dce110_edp_power_control(
-		struct dc_link *link,
-		bool power_up)
+		dc_link *link,
+		power_up: bool)
 {
-	struct dc_context *ctx = link->ctx;
+	struct dc_context *ctx = (*link).ctx;
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result bp_result;
 	u8 pwrseq_instance;
 
 	DC_LOGGER_INIT(ctx);
 
-	if (dal_graphics_object_id_get_connector_id(link->link_enc->connector)
+	if (dal_graphics_object_id_get_connector_id((*(*link).link_enc).connector)
 			!= CONNECTOR_ID_EDP) {
 		BREAK_TO_DEBUGGER();
 		return;
 	}
 
-	if (!link->panel_cntl)
+	if ((*!link).panel_cntl)
 		return;
 	if (power_up !=
-		link->panel_cntl->funcs->is_panel_powered_on(link->panel_cntl)) {
+		(*(*(*link).panel_cntl).funcs).is_panel_powered_on((*link).panel_cntl)) {
 
-		unsigned long long current_ts = dm_get_timestamp(ctx);
-		unsigned long long time_since_edp_poweroff_ms =
+		core::ffi::c_ulonglong current_ts = dm_get_timestamp(ctx);
+		core::ffi::c_ulonglong time_since_edp_poweroff_ms =
 				div64_u64(dm_get_elapse_time_in_ns(
 						ctx,
 						current_ts,
-						ctx->dc->link_srv->dp_trace_get_edp_poweroff_timestamp(link)), 1000000);
-		unsigned long long time_since_edp_poweron_ms =
+						(*(*(*ctx).dc).link_srv).dp_trace_get_edp_poweroff_timestamp(link)), 1000000);
+		core::ffi::c_ulonglong time_since_edp_poweron_ms =
 				div64_u64(dm_get_elapse_time_in_ns(
 						ctx,
 						current_ts,
-						ctx->dc->link_srv->dp_trace_get_edp_poweron_timestamp(link)), 1000000);
+						(*(*(*ctx).dc).link_srv).dp_trace_get_edp_poweron_timestamp(link)), 1000000);
 		DC_LOG_HW_RESUME_S3(
 				"%s: transition: power_up=%d current_ts=%llu edp_poweroff=%llu edp_poweron=%llu time_since_edp_poweroff_ms=%llu time_since_edp_poweron_ms=%llu",
 				__func__,
 				power_up,
 				current_ts,
-				ctx->dc->link_srv->dp_trace_get_edp_poweroff_timestamp(link),
+				(*(*ctx).dc).link_srv->dp_trace_get_edp_poweroff_timestamp(link),
 				ctx->dc->link_srv->dp_trace_get_edp_poweron_timestamp(link),
 				time_since_edp_poweroff_ms,
 				time_since_edp_poweron_ms);
@@ -817,7 +816,7 @@ unsafe fn dce110_edp_power_control(
 		/* Send VBIOS command to prompt eDP panel power */
 		if (power_up) {
 			/* edp requires a min of 500ms from LCDVDD off to on */
-			unsigned long long remaining_min_edp_poweroff_time_ms = 500;
+			core::ffi::c_ulonglong remaining_min_edp_poweroff_time_ms = 500;
 
 			/* add time defined by a patch, if any (usually patch extra_t12_ms is 0) */
 			if (link->local_sink != std::ptr::null_mut())
@@ -837,7 +836,7 @@ unsafe fn dce110_edp_power_control(
 				DC_LOG_HW_RESUME_S3(
 						"%s: remaining_min_edp_poweroff_time_ms=%llu: begin wait.\n",
 						__func__, remaining_min_edp_poweroff_time_ms);
-				msleep((unsigned int)remaining_min_edp_poweroff_time_ms);
+				msleep((core::ffi::c_uint)remaining_min_edp_poweroff_time_ms);
 				DC_LOG_HW_RESUME_S3(
 						"%s: remaining_min_edp_poweroff_time_ms=%llu: end wait.\n",
 						__func__, remaining_min_edp_poweroff_time_ms);
@@ -905,7 +904,7 @@ unsafe fn dce110_edp_power_control(
 }
 
 unsafe fn dce110_edp_wait_for_T12(
-		struct dc_link *link)
+		dc_link *link)
 {
 	struct dc_context *ctx = link->ctx;
 
@@ -920,9 +919,9 @@ unsafe fn dce110_edp_wait_for_T12(
 
 	if (!link->panel_cntl->funcs->is_panel_powered_on(link->panel_cntl) &&
 			ctx->dc->link_srv->dp_trace_get_edp_poweroff_timestamp(link) != 0) {
-		unsigned int t12_duration = 500; // Default T12 as per spec
-		unsigned long long current_ts = dm_get_timestamp(ctx);
-		unsigned long long time_since_edp_poweroff_ms =
+		core::ffi::c_uint t12_duration = 500; // Default T12 as per spec
+		core::ffi::c_ulonglong current_ts = dm_get_timestamp(ctx);
+		core::ffi::c_ulonglong time_since_edp_poweroff_ms =
 				div64_u64(dm_get_elapse_time_in_ns(
 						ctx,
 						current_ts,
@@ -931,7 +930,7 @@ unsafe fn dce110_edp_wait_for_T12(
 		t12_duration += link->panel_config.pps.extra_t12_ms; // Add extra T12
 
 		if (time_since_edp_poweroff_ms < t12_duration)
-			msleep((unsigned int)(t12_duration - time_since_edp_poweroff_ms));
+			msleep((core::ffi::c_uint)(t12_duration - time_since_edp_poweroff_ms));
 	}
 }
 /*todo: cloned in stream enc, fix*/
@@ -940,14 +939,14 @@ unsafe fn dce110_edp_wait_for_T12(
  * eDP only. Control the backlight of the eDP panel
  */
 unsafe fn dce110_edp_backlight_control(
-		struct dc_link *link,
-		bool enable)
+		dc_link *link,
+		enable: bool)
 {
 	struct dc_context *ctx = link->ctx;
 	struct bp_transmitter_control cntl = { 0 };
 	u8 pwrseq_instance = 0;
-	unsigned int pre_T11_delay = (link->dpcd_sink_ext_caps.bits.oled ? OLED_PRE_T11_DELAY : 0);
-	unsigned int post_T7_delay = (link->dpcd_sink_ext_caps.bits.oled ? OLED_POST_T7_DELAY : 0);
+	core::ffi::c_uint pre_T11_delay = (link->dpcd_sink_ext_caps.bits.oled ? OLED_PRE_T11_DELAY : 0);
+	core::ffi::c_uint post_T7_delay = (link->dpcd_sink_ext_caps.bits.oled ? OLED_POST_T7_DELAY : 0);
 
 	DC_LOGGER_INIT(ctx);
 
@@ -1071,12 +1070,12 @@ unsafe fn dce110_edp_backlight_control(
 	}
 }
 
-unsafe fn dce110_enable_audio_stream(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_enable_audio_stream(pipe_ctx *pipe_ctx)
 {
 	/* notify audio driver for audio modes of monitor */
 	struct dc *dc;
 	struct clk_mgr *clk_mgr;
-	unsigned int i, num_audio = 1;
+	i: core::ffi::c_uint, num_audio = 1;
 	const struct link_hwss *link_hwss;
 
 	if (!pipe_ctx->stream)
@@ -1112,7 +1111,7 @@ unsafe fn dce110_enable_audio_stream(struct pipe_ctx *pipe_ctx)
 	}
 }
 
-unsafe fn dce110_disable_audio_stream(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_disable_audio_stream(pipe_ctx *pipe_ctx)
 {
 	struct dc *dc;
 	struct clk_mgr *clk_mgr;
@@ -1148,7 +1147,7 @@ unsafe fn dce110_disable_audio_stream(struct pipe_ctx *pipe_ctx)
 	}
 }
 
-unsafe fn dce110_disable_stream(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_disable_stream(pipe_ctx *pipe_ctx)
 {
 	struct dc_stream_state *stream = pipe_ctx->stream;
 	struct dc_link *link = stream->link;
@@ -1207,8 +1206,8 @@ unsafe fn dce110_disable_stream(struct pipe_ctx *pipe_ctx)
 		dce110_external_encoder_control(EXTERNAL_ENCODER_CONTROL_DISABLE, link, std::ptr::null_mut());
 }
 
-unsafe fn dce110_unblank_stream(struct pipe_ctx *pipe_ctx,
-		struct dc_link_settings *link_settings)
+unsafe fn dce110_unblank_stream(pipe_ctx *pipe_ctx,
+		dc_link_settings *link_settings)
 {
 	struct encoder_unblank_param params = { { 0 } };
 	struct dc_stream_state *stream = pipe_ctx->stream;
@@ -1227,7 +1226,7 @@ unsafe fn dce110_unblank_stream(struct pipe_ctx *pipe_ctx,
 	}
 }
 
-unsafe fn dce110_blank_stream(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_blank_stream(pipe_ctx *pipe_ctx)
 {
 	struct dc_stream_state *stream = pipe_ctx->stream;
 	struct dc_link *link = stream->link;
@@ -1287,7 +1286,7 @@ unsafe fn dce110_blank_stream(struct pipe_ctx *pipe_ctx)
 }
 
 
-unsafe fn dce110_set_avmute(struct pipe_ctx *pipe_ctx, bool enable)
+unsafe fn dce110_set_avmute(pipe_ctx *pipe_ctx, enable: bool)
 {
 	if (pipe_ctx == std::ptr::null_mut() || pipe_ctx->stream_res.stream_enc == std::ptr::null_mut())
 		return;
@@ -1315,7 +1314,7 @@ unsafe fn dce110_set_avmute(struct pipe_ctx *pipe_ctx, bool enable)
 	}
 }
 
-enum audio_dto_source translate_to_dto_source(enum controller_id crtc_id)
+enum audio_dto_source translate_to_dto_source(controller_id crtc_id)
 {
 	switch (crtc_id) {
 	case CONTROLLER_ID_D0:
@@ -1337,7 +1336,7 @@ enum audio_dto_source translate_to_dto_source(enum controller_id crtc_id)
 
 unsafe fn populate_audio_dp_link_info(
 	const struct pipe_ctx *pipe_ctx,
-	struct audio_dp_link_info *dp_link_info)
+	audio_dp_link_info *dp_link_info)
 {
 	const struct dc_stream_state *stream = pipe_ctx->stream;
 	const struct dc_link *link = stream->link;
@@ -1428,9 +1427,9 @@ unsafe fn populate_audio_dp_link_info(
 }
 
 unsafe fn build_audio_output(
-	struct dc_state *state,
+	dc_state *state,
 	const struct pipe_ctx *pipe_ctx,
-	struct audio_output *audio_output)
+	audio_output *audio_output)
 {
 	const struct dc_stream_state *stream = pipe_ctx->stream;
 	audio_output->engine_id = pipe_ctx->stream_res.stream_enc->id;
@@ -1582,9 +1581,9 @@ unsafe fn program_scaler(const struct dc *dc,
 }
 
 static enum dc_status dce110_enable_stream_timing(
-		struct pipe_ctx *pipe_ctx,
-		struct dc_state *context,
-		struct dc *dc)
+		pipe_ctx *pipe_ctx,
+		dc_state *context,
+		dc *dc)
 {
 	(void)context;
 	struct dc_stream_state *stream = pipe_ctx->stream;
@@ -1648,14 +1647,14 @@ static enum dc_status dce110_enable_stream_timing(
 }
 
 enum dc_status dce110_apply_single_controller_ctx_to_hw(
-		struct pipe_ctx *pipe_ctx,
-		struct dc_state *context,
-		struct dc *dc)
+		pipe_ctx *pipe_ctx,
+		dc_state *context,
+		dc *dc)
 {
 	struct dc_stream_state *stream = pipe_ctx->stream;
 	struct dc_link *link = stream->link;
 	struct drr_params params = {0};
-	unsigned int event_triggers = 0;
+	core::ffi::c_uint event_triggers = 0;
 	struct pipe_ctx *odm_pipe = pipe_ctx->next_odm_pipe;
 	struct dce_hwseq *hws = dc->hwseq;
 	const struct link_hwss *link_hwss = get_link_hwss(
@@ -1799,7 +1798,7 @@ enum dc_status dce110_apply_single_controller_ctx_to_hw(
 
 /******************************************************************************/
 
-unsafe fn power_down_encoders(struct dc *dc)
+unsafe fn power_down_encoders(dc *dc)
 {
 	int i;
 
@@ -1828,9 +1827,9 @@ unsafe fn power_down_encoders(struct dc *dc)
 	}
 }
 
-unsafe fn power_down_controllers(struct dc *dc)
+unsafe fn power_down_controllers(dc *dc)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	for (i = 0; i < dc->res_pool->timing_generator_count; i++) {
 		dc->res_pool->timing_generators[i]->funcs->disable_crtc(
@@ -1838,9 +1837,9 @@ unsafe fn power_down_controllers(struct dc *dc)
 	}
 }
 
-unsafe fn power_down_clock_sources(struct dc *dc)
+unsafe fn power_down_clock_sources(dc *dc)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	if (dc->res_pool->dp_clock_source->funcs->cs_power_down(
 		dc->res_pool->dp_clock_source) == false)
@@ -1853,7 +1852,7 @@ unsafe fn power_down_clock_sources(struct dc *dc)
 	}
 }
 
-unsafe fn power_down_all_hw_blocks(struct dc *dc)
+unsafe fn power_down_all_hw_blocks(dc *dc)
 {
 	power_down_encoders(dc);
 
@@ -1866,7 +1865,7 @@ unsafe fn power_down_all_hw_blocks(struct dc *dc)
 }
 
 unsafe fn disable_vga_and_power_gate_all_controllers(
-		struct dc *dc)
+		dc *dc)
 {
 	u8 i;
 	struct timing_generator *tg;
@@ -1894,8 +1893,8 @@ unsafe fn disable_vga_and_power_gate_all_controllers(
 }
 
 
-unsafe fn get_edp_streams(struct dc_state *context,
-		struct dc_stream_state **edp_streams,
+unsafe fn get_edp_streams(dc_state *context,
+		dc_stream_state **edp_streams,
 		int *edp_stream_num)
 {
 	u8 i;
@@ -1911,8 +1910,8 @@ unsafe fn get_edp_streams(struct dc_state *context,
 }
 
 unsafe fn get_edp_links_with_sink(
-		struct dc *dc,
-		struct dc_link **edp_links_with_sink,
+		dc *dc,
+		dc_link **edp_links_with_sink,
 		int *edp_with_sink_num)
 {
 	int i;
@@ -1929,20 +1928,20 @@ unsafe fn get_edp_links_with_sink(
 	}
 }
 
-unsafe fn clean_up_dsc_blocks(struct dc *dc)
+unsafe fn clean_up_dsc_blocks(dc *dc)
 {
 	struct display_stream_compressor *dsc = std::ptr::null_mut();
 	struct timing_generator *tg = std::ptr::null_mut();
 	struct stream_encoder *se = std::ptr::null_mut();
 	struct dccg *dccg = dc->res_pool->dccg;
 	struct pg_cntl *pg_cntl = dc->res_pool->pg_cntl;
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	if (!dc->caps.is_apu ||
 		dc->ctx->dce_version < DCN_VERSION_3_15)
 		return;
 	/*VBIOS supports dsc starts from dcn315*/
-	for (i = 0; i < (unsigned int)dc->res_pool->res_cap->num_dsc; i++) {
+	for (i = 0; i < (core::ffi::c_uint)dc->res_pool->res_cap->num_dsc; i++) {
 		struct dcn_dsc_state s  = {0};
 
 		dsc = dc->res_pool->dscs[i];
@@ -1975,8 +1974,8 @@ unsafe fn clean_up_dsc_blocks(struct dc *dc)
 }
 
 unsafe fn dc_hwss_enable_otg_pwa(
-		struct dc *dc,
-		struct pipe_ctx *pipe_ctx)
+		dc *dc,
+		pipe_ctx *pipe_ctx)
 {
 	struct timing_generator *tg = std::ptr::null_mut();
 
@@ -2010,7 +2009,7 @@ unsafe fn dc_hwss_enable_otg_pwa(
  *  3. Enable power gating for controller
  *  4. Set acc_mode_change bit (VBIOS will clear this bit when going to FSDOS)
  */
-unsafe fn dce110_enable_accelerated_mode(struct dc *dc, struct dc_state *context)
+unsafe fn dce110_enable_accelerated_mode(dc *dc, dc_state *context)
 {
 	struct dc_link *edp_links_with_sink[MAX_NUM_EDP];
 	struct dc_link *edp_links[MAX_NUM_EDP];
@@ -2020,7 +2019,7 @@ unsafe fn dce110_enable_accelerated_mode(struct dc *dc, struct dc_state *context
 	struct pipe_ctx *pipe_ctx = std::ptr::null_mut();
 	struct dce_hwseq *hws = dc->hwseq;
 	int edp_with_sink_num;
-	unsigned int j, edp_num;
+	j: core::ffi::c_uint, edp_num;
 	int edp_stream_num;
 	int i;
 	bool can_apply_edp_fast_boot = false;
@@ -2140,7 +2139,7 @@ unsafe fn dce110_enable_accelerated_mode(struct dc *dc, struct dc_state *context
 }
 
 static u32 compute_pstate_blackout_duration(
-	struct bw_fixed blackout_duration,
+	bw_fixed blackout_duration,
 	const struct dc_stream_state *stream)
 {
 	u32 total_dest_line_time_ns;
@@ -2160,10 +2159,10 @@ static u32 compute_pstate_blackout_duration(
 
 unsafe fn dce110_set_displaymarks(
 	const struct dc *dc,
-	struct dc_state *context)
+	dc_state *context)
 {
-	u8 i, num_pipes;
-	unsigned int underlay_idx = dc->res_pool->underlay_pipe_index;
+	i: u8, num_pipes;
+	core::ffi::c_uint underlay_idx = dc->res_pool->underlay_pipe_index;
 
 	for (i = 0, num_pipes = 0; i < MAX_PIPES; i++) {
 		struct pipe_ctx *pipe_ctx = &context->res_ctx.pipe_ctx[i];
@@ -2195,7 +2194,7 @@ unsafe fn dce110_set_displaymarks(
 }
 
 unsafe fn dce110_set_safe_displaymarks(
-		struct resource_context *res_ctx,
+		resource_context *res_ctx,
 		const struct resource_pool *pool)
 {
 	int i;
@@ -2233,15 +2232,15 @@ unsafe fn dce110_set_safe_displaymarks(
  * Public functions
  ******************************************************************************/
 
-unsafe fn set_drr(struct pipe_ctx **pipe_ctx,
-		int num_pipes, struct dc_crtc_timing_adjust adjust)
+unsafe fn set_drr(pipe_ctx **pipe_ctx,
+		int num_pipes, dc_crtc_timing_adjust adjust)
 {
 	int i = 0;
 	struct drr_params params = {0};
 	// DRR should set trigger event to monitor surface update event
-	unsigned int event_triggers = 0x80;
+	core::ffi::c_uint event_triggers = 0x80;
 	// Note DRR trigger events are generated regardless of whether num frames met.
-	unsigned int num_frames = 2;
+	core::ffi::c_uint num_frames = 2;
 
 	params.vertical_total_max = adjust.v_total_max;
 	params.vertical_total_min = adjust.v_total_min;
@@ -2267,9 +2266,9 @@ unsafe fn set_drr(struct pipe_ctx **pipe_ctx,
 	}
 }
 
-unsafe fn get_position(struct pipe_ctx **pipe_ctx,
+unsafe fn get_position(pipe_ctx **pipe_ctx,
 		int num_pipes,
-		struct crtc_position *position)
+		crtc_position *position)
 {
 	int i = 0;
 
@@ -2279,11 +2278,11 @@ unsafe fn get_position(struct pipe_ctx **pipe_ctx,
 		pipe_ctx[i]->stream_res.tg->funcs->get_position(pipe_ctx[i]->stream_res.tg, position);
 }
 
-unsafe fn set_static_screen_control(struct pipe_ctx **pipe_ctx,
+unsafe fn set_static_screen_control(pipe_ctx **pipe_ctx,
 		int num_pipes, const struct dc_static_screen_params *params)
 {
 	int i;
-	unsigned int triggers = 0;
+	core::ffi::c_uint triggers = 0;
 
 	if (params->triggers.overlay_update)
 		triggers |= 0x100;
@@ -2310,14 +2309,14 @@ unsafe fn set_static_screen_control(struct pipe_ctx **pipe_ctx,
 /*
  *  Check if FBC can be enabled
  */
-unsafe fn should_enable_fbc(struct dc *dc,
-		struct dc_state *context,
+unsafe fn should_enable_fbc(dc *dc,
+		dc_state *context,
 		u32 *pipe_idx)
 {
 	u32 i;
 	struct pipe_ctx *pipe_ctx = std::ptr::null_mut();
 	struct resource_context *res_ctx = &context->res_ctx;
-	unsigned int underlay_idx = dc->res_pool->underlay_pipe_index;
+	core::ffi::c_uint underlay_idx = dc->res_pool->underlay_pipe_index;
 
 
 	ASSERT(dc->fbc_compressor);
@@ -2376,8 +2375,8 @@ unsafe fn should_enable_fbc(struct dc *dc,
  *  Enable FBC
  */
 unsafe fn enable_fbc(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	u32 pipe_idx = 0;
 
@@ -2400,8 +2399,8 @@ unsafe fn enable_fbc(
 }
 
 unsafe fn dce110_reset_hw_ctx_wrap(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	int i;
 
@@ -2472,10 +2471,10 @@ unsafe fn dce110_reset_hw_ctx_wrap(
 }
 
 unsafe fn dce110_setup_audio_dto(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	/* program audio wall clock. use HDMI as clock source if HDMI
 	 * audio active. Otherwise, use DP as clock source
@@ -2602,13 +2601,13 @@ unsafe fn dce110_setup_audio_dto(
 }
 
 enum dc_status dce110_apply_ctx_to_hw(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 	struct dc_bios *dcb = dc->ctx->dc_bios;
 	enum dc_status status;
-	unsigned int i;
+	core::ffi::c_uint i;
 	bool was_hpo_acquired = resource_is_hpo_acquired(dc->current_state);
 	bool is_hpo_acquired = resource_is_hpo_acquired(context);
 
@@ -2713,7 +2712,7 @@ enum dc_status dce110_apply_ctx_to_hw(
 /*******************************************************************************
  * Front End programming
  ******************************************************************************/
-unsafe fn set_default_colors(struct pipe_ctx *pipe_ctx)
+unsafe fn set_default_colors(pipe_ctx *pipe_ctx)
 {
 	struct default_adjustment default_adjust = { 0 };
 
@@ -2755,7 +2754,7 @@ unsafe fn set_default_colors(struct pipe_ctx *pipe_ctx)
  *
  ******************************************************************************/
 unsafe fn program_surface_visibility(const struct dc *dc,
-		struct pipe_ctx *pipe_ctx)
+		pipe_ctx *pipe_ctx)
 {
 	enum blnd_mode blender_mode = BLND_MODE_CURRENT_PIPE;
 	bool blank_target = false;
@@ -2782,7 +2781,7 @@ unsafe fn program_surface_visibility(const struct dc *dc,
 
 }
 
-unsafe fn program_gamut_remap(struct program_gamut_remap_params *params)
+unsafe fn program_gamut_remap(program_gamut_remap_params *params)
 {
 	struct transform *xfm = params->xfm;
 	const struct dc_stream_state *stream = params->stream;
@@ -2804,7 +2803,7 @@ unsafe fn program_gamut_remap(struct program_gamut_remap_params *params)
 	xfm->funcs->transform_set_gamut_remap(xfm, &adjust);
 }
 unsafe fn update_plane_addr(const struct dc *dc,
-		struct pipe_ctx *pipe_ctx)
+		pipe_ctx *pipe_ctx)
 {
 	(void)dc;
 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
@@ -2820,7 +2819,7 @@ unsafe fn update_plane_addr(const struct dc *dc,
 	plane_state->status.requested_address = plane_state->address;
 }
 
-unsafe fn dce110_update_pending_status(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_update_pending_status(pipe_ctx *pipe_ctx)
 {
 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
 
@@ -2835,23 +2834,22 @@ unsafe fn dce110_update_pending_status(struct pipe_ctx *pipe_ctx)
 		pipe_ctx->plane_res.mi->current_address = pipe_ctx->plane_res.mi->request_address;
 
 	plane_state->status.current_address = pipe_ctx->plane_res.mi->current_address;
-	if (pipe_ctx->plane_res.mi->current_address.type == PLN_ADDR_TYPE_GRPH_STEREO &&
+	if (pipe_ctx->plane_res.mi->current_address.r#type == PLN_ADDR_TYPE_GRPH_STEREO &&
 			pipe_ctx->stream_res.tg->funcs->is_stereo_left_eye) {
 		plane_state->status.is_right_eye =\
 				!pipe_ctx->stream_res.tg->funcs->is_stereo_left_eye(pipe_ctx->stream_res.tg);
 	}
 }
 
-unsafe fn dce110_power_down(struct dc *dc)
+unsafe fn dce110_power_down(dc *dc)
 {
 	power_down_all_hw_blocks(dc);
 	disable_vga_and_power_gate_all_controllers(dc);
 }
 
 unsafe fn wait_for_reset_trigger_to_occur(
-	struct dc_context *dc_ctx,
-	struct timing_generator *tg)
-{
+	dc_context *dc_ctx,
+	timing_generator *tg) {
 	bool rc = false;
 
 	/* To avoid endless loop we wait at most
@@ -2887,11 +2885,11 @@ unsafe fn wait_for_reset_trigger_to_occur(
 
 /* Enable timing synchronization for a group of Timing Generators. */
 unsafe fn dce110_enable_timing_synchronization(
-		struct dc *dc,
-		struct dc_state *state,
+		dc *dc,
+		dc_state *state,
 		int group_index,
 		int group_size,
-		struct pipe_ctx *grouped_pipes[])
+		pipe_ctx *grouped_pipes[])
 {
 	(void)state;
 	(void)group_index;
@@ -2936,9 +2934,9 @@ unsafe fn dce110_enable_timing_synchronization(
 }
 
 unsafe fn dce110_enable_per_frame_crtc_position_reset(
-		struct dc *dc,
+		dc *dc,
 		int group_size,
-		struct pipe_ctx *grouped_pipes[])
+		pipe_ctx *grouped_pipes[])
 {
 	struct dcp_gsl_params gsl_params = { 0 };
 	int i;
@@ -2968,16 +2966,16 @@ unsafe fn dce110_enable_per_frame_crtc_position_reset(
 
 }
 
-unsafe fn dce110_init_pipes(struct dc *dc, struct dc_state *context)
+unsafe fn dce110_init_pipes(dc *dc, dc_state *context)
 {
 	(void)context;
 	(void)dc;
 	// Do nothing
 }
 
-unsafe fn dce110_init_hw(struct dc *dc)
+unsafe fn dce110_init_hw(dc *dc)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	struct dc_bios *bp;
 	struct transform *xfm;
 	struct abm *abm;
@@ -3055,8 +3053,8 @@ unsafe fn dce110_init_hw(struct dc *dc)
 
 
 unsafe fn dce110_prepare_bandwidth(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	struct clk_mgr *dccg = dc->clk_mgr;
 
@@ -3069,8 +3067,8 @@ unsafe fn dce110_prepare_bandwidth(
 }
 
 unsafe fn dce110_optimize_bandwidth(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	struct clk_mgr *dccg = dc->clk_mgr;
 
@@ -3084,13 +3082,12 @@ unsafe fn dce110_optimize_bandwidth(
 }
 
 unsafe fn dce110_program_front_end_for_pipe(
-		struct dc *dc, struct pipe_ctx *pipe_ctx)
-{
+		dc *dc, pipe_ctx *pipe_ctx) {
 	struct mem_input *mi = pipe_ctx->plane_res.mi;
 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
 	struct xfm_grph_csc_adjustment adjust;
 	struct out_csc_color_matrix tbl_entry;
-	unsigned int i;
+	core::ffi::c_uint i;
 	struct dce_hwseq *hws = dc->hwseq;
 
 	memset(&tbl_entry, 0, sizeof(tbl_entry));
@@ -3194,12 +3191,11 @@ unsafe fn dce110_program_front_end_for_pipe(
 }
 
 unsafe fn dce110_apply_ctx_for_surface(
-		struct dc *dc,
+		dc *dc,
 		const struct dc_stream_state *stream,
 		int num_planes,
-		struct dc_state *context)
-{
-	unsigned int i;
+		dc_state *context) {
+	core::ffi::c_uint i;
 
 	if (num_planes == 0)
 		return;
@@ -3234,14 +3230,14 @@ unsafe fn dce110_apply_ctx_for_surface(
 }
 
 unsafe fn dce110_post_unlock_program_front_end(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	(void)dc;
 	(void)context;
 }
 
-unsafe fn dce110_power_down_fe(struct dc *dc, struct dc_state *state, struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_power_down_fe(dc *dc, dc_state *state, pipe_ctx *pipe_ctx)
 {
 	(void)state;
 	struct dce_hwseq *hws = dc->hwseq;
@@ -3260,19 +3256,18 @@ unsafe fn dce110_power_down_fe(struct dc *dc, struct dc_state *state, struct pip
 }
 
 unsafe fn dce110_wait_for_mpcc_disconnect(
-		struct dc *dc,
-		struct resource_pool *res_pool,
-		struct pipe_ctx *pipe_ctx)
-{
+		dc *dc,
+		resource_pool *res_pool,
+		pipe_ctx *pipe_ctx) {
 	(void)dc;
 	(void)res_pool;
 	(void)pipe_ctx;
 	/* do nothing*/
 }
 
-unsafe fn program_output_csc(struct dc *dc,
-		struct pipe_ctx *pipe_ctx,
-		enum dc_color_space colorspace,
+unsafe fn program_output_csc(dc *dc,
+		pipe_ctx *pipe_ctx,
+		dc_color_space colorspace,
 		u16 *matrix,
 		int opp_id)
 {
@@ -3296,19 +3291,19 @@ unsafe fn program_output_csc(struct dc *dc,
 	}
 }
 
-unsafe fn dce110_set_cursor_position(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_set_cursor_position(pipe_ctx *pipe_ctx)
 {
 	struct dc_cursor_position pos_cpy = pipe_ctx->stream->cursor_position;
 	struct input_pixel_processor *ipp = pipe_ctx->plane_res.ipp;
 	struct mem_input *mi = pipe_ctx->plane_res.mi;
 	struct dc_cursor_mi_param param = {
-		.pixel_clk_khz = pipe_ctx->stream->timing.pix_clk_100hz / 10,
-		.ref_clk_khz = pipe_ctx->stream->ctx->dc->res_pool->ref_clocks.xtalin_clock_inKhz,
-		.viewport = pipe_ctx->plane_res.scl_data.viewport,
-		.h_scale_ratio = pipe_ctx->plane_res.scl_data.ratios.horz,
-		.v_scale_ratio = pipe_ctx->plane_res.scl_data.ratios.vert,
-		.rotation = pipe_ctx->plane_state->rotation,
-		.mirror = pipe_ctx->plane_state->horizontal_mirror
+		pixel_clk_khz: pipe_ctx->stream->timing.pix_clk_100hz / 10,
+		ref_clk_khz: pipe_ctx->stream->ctx->dc->res_pool->ref_clocks.xtalin_clock_inKhz,
+		viewport: pipe_ctx->plane_res.scl_data.viewport,
+		h_scale_ratio: pipe_ctx->plane_res.scl_data.ratios.horz,
+		v_scale_ratio: pipe_ctx->plane_res.scl_data.ratios.vert,
+		rotation: pipe_ctx->plane_state->rotation,
+		mirror: pipe_ctx->plane_state->horizontal_mirror
 	};
 
 	/**
@@ -3328,7 +3323,7 @@ unsafe fn dce110_set_cursor_position(struct pipe_ctx *pipe_ctx)
 		pos_cpy.y += pipe_ctx->plane_state->src_rect.y;
 	}
 
-	if (pipe_ctx->plane_state->address.type
+	if (pipe_ctx->plane_state->address.r#type
 			== PLN_ADDR_TYPE_VIDEO_PROGRESSIVE)
 		pos_cpy.enable = false;
 
@@ -3341,7 +3336,7 @@ unsafe fn dce110_set_cursor_position(struct pipe_ctx *pipe_ctx)
 		mi->funcs->set_cursor_position(mi, &pos_cpy, &param);
 }
 
-unsafe fn dce110_set_cursor_attribute(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_set_cursor_attribute(pipe_ctx *pipe_ctx)
 {
 	struct dc_cursor_attributes *attributes = &pipe_ctx->stream->cursor_attributes;
 
@@ -3361,8 +3356,8 @@ unsafe fn dce110_set_cursor_attribute(struct pipe_ctx *pipe_ctx)
 				pipe_ctx->plane_res.xfm, attributes);
 }
 
-bool dce110_set_backlight_level(struct pipe_ctx *pipe_ctx,
-	struct set_backlight_level_params *backlight_level_params)
+bool dce110_set_backlight_level(pipe_ctx *pipe_ctx,
+	set_backlight_level_params *backlight_level_params)
 {
 	u32 backlight_pwm_u16_16 = backlight_level_params->backlight_pwm_u16_16;
 	u32 frame_ramp = backlight_level_params->frame_ramp;
@@ -3396,7 +3391,7 @@ bool dce110_set_backlight_level(struct pipe_ctx *pipe_ctx,
 	return true;
 }
 
-unsafe fn dce110_set_abm_immediate_disable(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_set_abm_immediate_disable(pipe_ctx *pipe_ctx)
 {
 	struct abm *abm = pipe_ctx->stream_res.abm;
 	struct panel_cntl *panel_cntl = pipe_ctx->stream->link->panel_cntl;
@@ -3409,7 +3404,7 @@ unsafe fn dce110_set_abm_immediate_disable(struct pipe_ctx *pipe_ctx)
 		panel_cntl->funcs->store_backlight_level(panel_cntl);
 }
 
-unsafe fn dce110_set_pipe(struct pipe_ctx *pipe_ctx)
+unsafe fn dce110_set_pipe(pipe_ctx *pipe_ctx)
 {
 	struct abm *abm = pipe_ctx->stream_res.abm;
 	struct panel_cntl *panel_cntl = pipe_ctx->stream->link->panel_cntl;
@@ -3419,10 +3414,10 @@ unsafe fn dce110_set_pipe(struct pipe_ctx *pipe_ctx)
 		abm->funcs->set_pipe(abm, otg_inst, panel_cntl->inst);
 }
 
-unsafe fn dce110_enable_lvds_link_output(struct dc_link *link,
+unsafe fn dce110_enable_lvds_link_output(dc_link *link,
 		const struct link_resource *link_res,
-		enum clock_source_id clock_source,
-		u32 pixel_clock)
+		clock_source_id clock_source,
+		pixel_clock: u32)
 {
 	(void)link_res;
 	link->link_enc->funcs->enable_lvds_output(
@@ -3432,12 +3427,12 @@ unsafe fn dce110_enable_lvds_link_output(struct dc_link *link,
 	link->phy_state.symclk_state = SYMCLK_ON_TX_ON;
 }
 
-unsafe fn dce110_enable_tmds_link_output(struct dc_link *link,
+unsafe fn dce110_enable_tmds_link_output(dc_link *link,
 		const struct link_resource *link_res,
-		enum signal_type signal,
-		enum clock_source_id clock_source,
-		enum dc_color_depth color_depth,
-		u32 pixel_clock)
+		signal_type signal,
+		clock_source_id clock_source,
+		dc_color_depth color_depth,
+		pixel_clock: u32)
 {
 	(void)link_res;
 	link->link_enc->funcs->enable_tmds_output(
@@ -3461,8 +3456,8 @@ unsafe fn dce110_enable_tmds_link_output(struct dc_link *link,
 }
 
 unsafe fn dce110_enable_analog_link_output(
-		struct dc_link *link,
-		u32 pix_clk_100hz)
+		dc_link *link,
+		pix_clk_100hz: u32)
 {
 	link->link_enc->funcs->enable_analog_output(
 			link->link_enc,
@@ -3470,10 +3465,10 @@ unsafe fn dce110_enable_analog_link_output(
 }
 
 unsafe fn dce110_enable_dp_link_output(
-		struct dc_link *link,
+		dc_link *link,
 		const struct link_resource *link_res,
-		enum signal_type signal,
-		enum clock_source_id clock_source,
+		signal_type signal,
+		clock_source_id clock_source,
 		const struct dc_link_settings *link_settings)
 {
 	struct dc  *dc = link->ctx->dc;
@@ -3483,7 +3478,7 @@ unsafe fn dce110_enable_dp_link_output(
 	struct clock_source *dp_cs =
 			link->dc->res_pool->dp_clock_source;
 	const struct link_hwss *link_hwss = get_link_hwss(link, link_res);
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	/*
 	 * Add the logic to extract BOTH power up and power down sequences
@@ -3541,9 +3536,9 @@ unsafe fn dce110_enable_dp_link_output(
 	dc->link_srv->dp_trace_source_sequence(link, DPCD_SOURCE_SEQ_AFTER_ENABLE_LINK_PHY);
 }
 
-unsafe fn dce110_disable_link_output(struct dc_link *link,
+unsafe fn dce110_disable_link_output(dc_link *link,
 		const struct link_resource *link_res,
-		enum signal_type signal)
+		signal_type signal)
 {
 	struct dc *dc = link->ctx->dc;
 	const struct link_hwss *link_hwss = get_link_hwss(link, link_res);
@@ -3569,69 +3564,69 @@ unsafe fn dce110_disable_link_output(struct dc_link *link,
 }
 
 const struct hw_sequencer_funcs dce110_funcs = {
-	.program_gamut_remap = program_gamut_remap,
-	.program_output_csc = program_output_csc,
-	.init_hw = dce110_init_hw,
-	.apply_ctx_to_hw = dce110_apply_ctx_to_hw,
-	.apply_ctx_for_surface = dce110_apply_ctx_for_surface,
-	.post_unlock_program_front_end = dce110_post_unlock_program_front_end,
-	.update_plane_addr = update_plane_addr,
-	.update_pending_status = dce110_update_pending_status,
-	.clear_surface_dcc_and_tiling = dce100_reset_surface_dcc_and_tiling,
-	.enable_accelerated_mode = dce110_enable_accelerated_mode,
-	.enable_timing_synchronization = dce110_enable_timing_synchronization,
-	.enable_per_frame_crtc_position_reset = dce110_enable_per_frame_crtc_position_reset,
-	.update_info_frame = dce110_update_info_frame,
-	.enable_stream = dce110_enable_stream,
-	.disable_stream = dce110_disable_stream,
-	.unblank_stream = dce110_unblank_stream,
-	.blank_stream = dce110_blank_stream,
-	.enable_audio_stream = dce110_enable_audio_stream,
-	.disable_audio_stream = dce110_disable_audio_stream,
-	.disable_plane = dce110_power_down_fe,
-	.pipe_control_lock = dce_pipe_control_lock,
-	.interdependent_update_lock = std::ptr::null_mut(),
-	.cursor_lock = dce_pipe_control_lock,
-	.prepare_bandwidth = dce110_prepare_bandwidth,
-	.optimize_bandwidth = dce110_optimize_bandwidth,
-	.set_drr = set_drr,
-	.get_position = get_position,
-	.set_static_screen_control = set_static_screen_control,
-	.setup_stereo = std::ptr::null_mut(),
-	.set_avmute = dce110_set_avmute,
-	.wait_for_mpcc_disconnect = dce110_wait_for_mpcc_disconnect,
-	.edp_backlight_control = dce110_edp_backlight_control,
-	.edp_power_control = dce110_edp_power_control,
-	.edp_wait_for_hpd_ready = dce110_edp_wait_for_hpd_ready,
-	.set_cursor_position = dce110_set_cursor_position,
-	.set_cursor_attribute = dce110_set_cursor_attribute,
-	.set_backlight_level = dce110_set_backlight_level,
-	.set_abm_immediate_disable = dce110_set_abm_immediate_disable,
-	.set_pipe = dce110_set_pipe,
-	.enable_lvds_link_output = dce110_enable_lvds_link_output,
-	.enable_tmds_link_output = dce110_enable_tmds_link_output,
-	.enable_dp_link_output = dce110_enable_dp_link_output,
-	.enable_analog_link_output = dce110_enable_analog_link_output,
-	.disable_link_output = dce110_disable_link_output,
-	.dac_load_detect = dce110_dac_load_detect,
-	.prepare_ddc = dce110_prepare_ddc,
+	program_gamut_remap: program_gamut_remap,
+	program_output_csc: program_output_csc,
+	init_hw: dce110_init_hw,
+	apply_ctx_to_hw: dce110_apply_ctx_to_hw,
+	apply_ctx_for_surface: dce110_apply_ctx_for_surface,
+	post_unlock_program_front_end: dce110_post_unlock_program_front_end,
+	update_plane_addr: update_plane_addr,
+	update_pending_status: dce110_update_pending_status,
+	clear_surface_dcc_and_tiling: dce100_reset_surface_dcc_and_tiling,
+	enable_accelerated_mode: dce110_enable_accelerated_mode,
+	enable_timing_synchronization: dce110_enable_timing_synchronization,
+	enable_per_frame_crtc_position_reset: dce110_enable_per_frame_crtc_position_reset,
+	update_info_frame: dce110_update_info_frame,
+	enable_stream: dce110_enable_stream,
+	disable_stream: dce110_disable_stream,
+	unblank_stream: dce110_unblank_stream,
+	blank_stream: dce110_blank_stream,
+	enable_audio_stream: dce110_enable_audio_stream,
+	disable_audio_stream: dce110_disable_audio_stream,
+	disable_plane: dce110_power_down_fe,
+	pipe_control_lock: dce_pipe_control_lock,
+	interdependent_update_lock: std::ptr::null_mut(),
+	cursor_lock: dce_pipe_control_lock,
+	prepare_bandwidth: dce110_prepare_bandwidth,
+	optimize_bandwidth: dce110_optimize_bandwidth,
+	set_drr: set_drr,
+	get_position: get_position,
+	set_static_screen_control: set_static_screen_control,
+	setup_stereo: std::ptr::null_mut(),
+	set_avmute: dce110_set_avmute,
+	wait_for_mpcc_disconnect: dce110_wait_for_mpcc_disconnect,
+	edp_backlight_control: dce110_edp_backlight_control,
+	edp_power_control: dce110_edp_power_control,
+	edp_wait_for_hpd_ready: dce110_edp_wait_for_hpd_ready,
+	set_cursor_position: dce110_set_cursor_position,
+	set_cursor_attribute: dce110_set_cursor_attribute,
+	set_backlight_level: dce110_set_backlight_level,
+	set_abm_immediate_disable: dce110_set_abm_immediate_disable,
+	set_pipe: dce110_set_pipe,
+	enable_lvds_link_output: dce110_enable_lvds_link_output,
+	enable_tmds_link_output: dce110_enable_tmds_link_output,
+	enable_dp_link_output: dce110_enable_dp_link_output,
+	enable_analog_link_output: dce110_enable_analog_link_output,
+	disable_link_output: dce110_disable_link_output,
+	dac_load_detect: dce110_dac_load_detect,
+	prepare_ddc: dce110_prepare_ddc,
 };
 
 const struct hwseq_private_funcs dce110_private_funcs = {
-	.init_pipes = dce110_init_pipes,
-	.set_input_transfer_func = dce110_set_input_transfer_func,
-	.set_output_transfer_func = dce110_set_output_transfer_func,
-	.power_down = dce110_power_down,
-	.enable_display_pipe_clock_gating = enable_display_pipe_clock_gating,
-	.enable_display_power_gating = dce110_enable_display_power_gating,
-	.reset_hw_ctx_wrap = dce110_reset_hw_ctx_wrap,
-	.enable_stream_timing = dce110_enable_stream_timing,
-	.disable_stream_gating = std::ptr::null_mut(),
-	.enable_stream_gating = std::ptr::null_mut(),
-	.edp_backlight_control = dce110_edp_backlight_control,
+	init_pipes: dce110_init_pipes,
+	set_input_transfer_func: dce110_set_input_transfer_func,
+	set_output_transfer_func: dce110_set_output_transfer_func,
+	power_down: dce110_power_down,
+	enable_display_pipe_clock_gating: enable_display_pipe_clock_gating,
+	enable_display_power_gating: dce110_enable_display_power_gating,
+	reset_hw_ctx_wrap: dce110_reset_hw_ctx_wrap,
+	enable_stream_timing: dce110_enable_stream_timing,
+	disable_stream_gating: std::ptr::null_mut(),
+	enable_stream_gating: std::ptr::null_mut(),
+	edp_backlight_control: dce110_edp_backlight_control,
 };
 
-unsafe fn dce110_hw_sequencer_construct(struct dc *dc)
+unsafe fn dce110_hw_sequencer_construct(dc *dc)
 {
 	dc->hwss = dce110_funcs;
 	dc->hwseq->funcs = dce110_private_funcs;

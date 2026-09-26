@@ -67,7 +67,7 @@ pub struct parport_pc_via_data {
 #[inline]
 pub unsafe fn parport_pc_write_data(p: *mut parport, d: u8) {
     #[cfg(feature = "DEBUG_PARPORT")]
-    printk(KERN_DEBUG "parport_pc_write_data(%p,0x%02x)\n", p, d);
+    printk(c"\x017parport_pc_write_data(%p,0x%02x)\n".as_ptr(), p, d);
     outb(d, data(p));
 }
 
@@ -75,7 +75,7 @@ pub unsafe fn parport_pc_write_data(p: *mut parport, d: u8) {
 pub unsafe fn parport_pc_read_data(p: *mut parport) -> u8 {
     let val = inb(data(p));
     #[cfg(feature = "DEBUG_PARPORT")]
-    printk(KERN_DEBUG "parport_pc_read_data(%p) = 0x%02x\n", p, val);
+    printk(c"\x017parport_pc_read_data(%p) = 0x%02x\n".as_ptr(), p, val);
     val
 }
 
@@ -89,7 +89,7 @@ pub unsafe fn dump_parport_state(str_: *mut libc::c_char, p: *mut parport) {
     static ECR_MODES: [&[u8]; 8] = [b"SPP", b"PS2", b"PPFIFO", b"ECP", b"xXx", b"yYy", b"TST", b"CFG"];
     let priv_ = (*(*p).physport).private_data as *const parport_pc_private;
 
-    printk(KERN_DEBUG "*** parport state (%s): ecr=[%s", str_, ECR_MODES[((ecr & 0xe0) >> 5) as usize].as_ptr());
+    printk(c"\x017*** parport state (%s): ecr=[%s".as_ptr(), str_, ECR_MODES[((ecr & 0xe0) >> 5) as usize].as_ptr());
     if ecr & 0x10 != 0 { printk(",nErrIntrEn"); }
     if ecr & 0x08 != 0 { printk(",dmaEn"); }
     if ecr & 0x04 != 0 { printk(",serviceIntr"); }
@@ -135,7 +135,7 @@ pub unsafe fn parport_pc_data_forward(p: *mut parport) { __parport_pc_frob_contr
 #[inline]
 pub unsafe fn parport_pc_write_control(p: *mut parport, d: u8) {
     let wm = PARPORT_CONTROL_STROBE | PARPORT_CONTROL_AUTOFD | PARPORT_CONTROL_INIT | PARPORT_CONTROL_SELECT;
-    if d & 0x20 != 0 { printk(KERN_DEBUG "%s (%s): use data_reverse for this!\n", (*p).name, (*p).cad.name); parport_pc_data_reverse(p); }
+    if d & 0x20 != 0 { printk(c"\x017%s (%s): use data_reverse for this!\n".as_ptr(), (*p).name, (*p).cad.name); parport_pc_data_reverse(p); }
     __parport_pc_frob_control(p, wm, d & wm);
 }
 

@@ -16,7 +16,7 @@ pub const BITS_PER_XA_VALUE: usize = usize::BITS as usize - 1;
 #[inline] pub unsafe fn xa_is_internal(e: *const c_void) -> bool { e as usize & 3 == 2 }
 pub const XA_ZERO_ENTRY_VALUE: usize = (257usize << 2) | 2;
 #[inline] pub unsafe fn xa_is_zero(e: *const c_void) -> bool { e as usize == XA_ZERO_ENTRY_VALUE }
-#[inline] pub unsafe fn xa_is_err(e: *const c_void) -> bool { xa_is_internal(e) && (e as usize) >= ((-(4095isize)) as usize << 2 | 2) }
+#[inline] pub unsafe fn xa_is_err(e: *const c_void) -> bool { xa_is_internal(e) && (e as usize) >= (((-(4095isize)) as usize) << 2 | 2) }
 #[inline] pub unsafe fn xa_err(e: *mut c_void) -> i32 { if xa_is_err(e) { ((e as isize) >> 2) as i32 } else { 0 } }
 
 #[repr(C)] #[derive(Copy, Clone)] pub struct xa_limit { pub max: u32, pub min: u32 }

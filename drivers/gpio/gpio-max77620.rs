@@ -39,12 +39,12 @@ unsafe fn max77620_gpio_irqhandler(irq: int, data: *mut c_void) -> irqreturn_t {
 
     pending = value as unsigned_long;
 
-    for_each_set_bit!(offset, &mut pending, MAX77620_GPIO_NR) {
+    for_each_set_bit!(offset, &mut pending, MAX77620_GPIO_NR, {
         let virq: unsigned_int;
 
         virq = irq_find_mapping((*gpio).gpio_chip.irq.domain, offset);
         handle_nested_irq(virq);
-    }
+    });
 
     IRQ_HANDLED
 }

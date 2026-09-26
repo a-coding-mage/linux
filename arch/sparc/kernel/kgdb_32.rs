@@ -98,11 +98,11 @@ pub unsafe fn kgdb_arch_handle_exception(e_vector: ::core::ffi::c_int, signo: ::
     let mut addr: ::core::ffi::c_ulong = 0;
     let mut ptr: *mut ::core::ffi::c_char;
     match *remcom_in_buffer {
-        b'c' as ::core::ffi::c_char => {
+        case if case == b'c' as ::core::ffi::c_char => {
             ptr = remcom_in_buffer.add(1);
             if kgdb_hex2long(&mut ptr, &mut addr) { (*linux_regs).pc = addr; (*linux_regs).npc = addr.wrapping_add(4); }
         }
-        b'D' as ::core::ffi::c_char | b'k' as ::core::ffi::c_char => {}
+        case if case == b'D' as ::core::ffi::c_char || case == b'k' as ::core::ffi::c_char => {}
         _ => return -1,
     }
     if (*linux_regs).pc == arch_kgdb_breakpoint as usize as ::core::ffi::c_ulong { (*linux_regs).pc = (*linux_regs).npc; (*linux_regs).npc = (*linux_regs).npc.wrapping_add(4); }

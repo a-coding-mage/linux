@@ -54,7 +54,7 @@ where
 macro_rules! cmpxchg {
     ($p:expr, $old:expr, $new:expr) => {{
         /*
-         * C uses __sync_val_compare_and_swap((p), old, new). This preserves the
+         * C uses __sync_val_compare_and_swap(($p), $old, $new). This preserves the
          * source-level atomic compare-exchange intent; the intrinsic is an
          * external/compiler dependency for the eventual BPF Rust environment.
          */

@@ -10,7 +10,7 @@
 // C header dependencies are supplied by the surrounding kernel translation.
 
 #[allow(non_camel_case_types, non_snake_case, dead_code)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     static mut pm_power_off: Option<unsafe extern "C" fn()>;
     static machine_power_off: unsafe extern "C" fn();
     fn wtint(value: i32);

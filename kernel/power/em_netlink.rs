@@ -54,12 +54,12 @@ unsafe fn __em_nl_get_pd(pd: *mut em_perf_domain, data: *mut core::ffi::c_void) 
     }
 
     cpumask = to_cpumask((*pd).cpus);
-    for_each_cpu!(cpu, cpumask) {
+    for_each_cpu!(cpu, cpumask, {
         if nla_put_u64_64bit(msg, DEV_ENERGYMODEL_A_PERF_DOMAIN_CPUS, cpu as u64,
                              DEV_ENERGYMODEL_A_PERF_DOMAIN_PAD) != 0 {
             return -EMSGSIZE;
         }
-    }
+    });
     0
 }
 

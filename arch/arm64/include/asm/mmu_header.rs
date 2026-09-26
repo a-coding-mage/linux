@@ -14,7 +14,7 @@ pub const USER_ASID_FLAG: u64 = 1u64 << USER_ASID_BIT;
 pub struct mm_context_t {
     pub id: atomic64_t,
     // CONFIG_COMPAT
-    #[cfg(feature = "CONFIG_COMPAT")]
+    #[cfg(CONFIG_COMPAT)]
     pub sigpage: *mut core::ffi::c_void,
     pub pinned: refcount_t,
     pub vdso: *mut core::ffi::c_void,
@@ -83,7 +83,7 @@ extern "C" {
  */
 pub unsafe fn kaslr_requires_kpti() -> bool {
     /* Build-time CONFIG_ARM64_E0PD condition from the C header. */
-    #[cfg(feature = "CONFIG_ARM64_E0PD")]
+    #[cfg(CONFIG_ARM64_E0PD)]
     {
         /*
          * E0PD does a similar job to KPTI so can be used instead
@@ -99,12 +99,12 @@ pub unsafe fn kaslr_requires_kpti() -> bool {
     true
 }
 
-#[cfg(feature = "CONFIG_UNMAP_KERNEL_AT_EL0")]
+#[cfg(CONFIG_UNMAP_KERNEL_AT_EL0)]
 extern "C" {
     pub fn kpti_install_ng_mappings();
 }
 
-#[cfg(not(feature = "CONFIG_UNMAP_KERNEL_AT_EL0"))]
+#[cfg(not(CONFIG_UNMAP_KERNEL_AT_EL0))]
 pub unsafe fn kpti_install_ng_mappings() {}
 
 extern "C" {

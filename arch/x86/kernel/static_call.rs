@@ -3,7 +3,7 @@
 use core::ffi::c_void;
 
 /* Declared locally to avoid pulling asm/paravirt-spinlock.h header. */
-#[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
+#[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
 #[repr(C)]
 pub struct qspinlock;
 
@@ -25,11 +25,11 @@ static retinsn: [u8; 5] = [RET_INSN_OPCODE as u8, 0xcc, 0xcc, 0xcc, 0xcc];
 /* ud1 (%edx),%rdi -- see __WARN_trap() / decode_bug(). */
 static warninsn: [u8; 5] = [0x67, 0x48, 0x0f, 0xb9, 0x3a];
 
-#[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
+#[cfg(CONFIG_64BIT)]
 static unlockinsn: [u8; 5] = [0x3e, 0x3e, 0xc6, 0x07, 0x00];
-#[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
+#[cfg(not(CONFIG_64BIT))]
 static unlockinsn: [u8; 5] = [0x3e, 0x3e, 0xc6, 0x00, 0x00];
 
 unsafe fn __is_Jcc(insn: *mut u8) -> u8 {
@@ -45,7 +45,7 @@ extern "C" {
     fn __static_call_return();
     fn __static_call_return0();
     fn __WARN_trap();
-    #[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
+    #[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
     fn __raw_callee_save___native_queued_spin_unlock(lock: *mut qspinlock);
 }
 
@@ -66,7 +66,7 @@ unsafe fn __static_call_transform(insn: *mut c_void, mut typ: insn_type,
             code = text_gen_insn(CALL_INSN_OPCODE, insn, func);
             if func == &__static_call_return0 as *const _ as *mut c_void { emulate = code; code = xor5rax.as_ptr() as *const c_void; }
             if func == &__WARN_trap as *const _ as *mut c_void { emulate = code; code = warninsn.as_ptr() as *const c_void; }
-            #[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
+            #[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
             if func == __raw_callee_save___native_queued_spin_unlock as *const _ as *mut c_void { emulate = code; code = unlockinsn.as_ptr() as *const c_void; }
         }
         insn_type::NOP => { code = x86_nops[5].as_ptr() as *const c_void; }
@@ -88,7 +88,7 @@ unsafe fn __static_call_validate(insn: *mut u8, tail: bool, tramp: bool) {
     if tramp && libc_memcmp(insn.add(5), tramp_ud.as_ptr(), 3) != 0 { pr_err("trampoline signature fail"); BUG(); }
     if tail { if opcode == JMP32_INSN_OPCODE || opcode == RET_INSN_OPCODE || __is_Jcc(insn) != 0 { return; } }
     else if opcode == CALL_INSN_OPCODE || libc_memcmp(insn, x86_nops[5].as_ptr(), 5) == 0 || libc_memcmp(insn, xor5rax.as_ptr(), 5) == 0 || libc_memcmp(insn, warninsn.as_ptr(), 5) == 0 { return; }
-    #[cfg(feature = "CONFIG_PARAVIRT_SPINLOCKS")]
+    #[cfg(CONFIG_PARAVIRT_SPINLOCKS)]
     if libc_memcmp(insn, unlockinsn.as_ptr(), 5) == 0 { return; }
     pr_err("unexpected static_call insn opcode 0x%x at %pS\n", opcode, insn); BUG();
 }
@@ -108,7 +108,7 @@ pub unsafe fn __static_call_update_early(tramp: *mut c_void, func: *mut c_void) 
     __text_gen_insn(tramp, JMP32_INSN_OPCODE, tramp, func, JMP32_INSN_SIZE); sync_core();
 }
 
-#[cfg(feature = "CONFIG_MITIGATION_RETHUNK")]
+#[cfg(CONFIG_MITIGATION_RETHUNK)]
 pub unsafe fn __static_call_fixup(tramp: *mut c_void, op: u8, dest: *mut c_void) -> bool {
     let addr = tramp as usize;
     if ((addr >> PAGE_SHIFT) != ((addr + 7) >> PAGE_SHIFT)) && !kernel_text_address((addr + 7) as *mut c_void) { return false; }

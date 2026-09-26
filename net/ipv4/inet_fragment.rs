@@ -85,11 +85,11 @@ unsafe fn fqdir_free_fn(_work: *mut work_struct) {
     rcu_barrier();
     let mut fqdir: *mut fqdir = core::ptr::null_mut();
     let mut tmp: *mut fqdir = core::ptr::null_mut();
-    llist_for_each_entry_safe(fqdir, tmp, kill_list, free_list) {
+    llist_for_each_entry_safe!(fqdir, tmp, kill_list, free_list, {
         let f = (*fqdir).f;
         if refcount_dec_and_test(&mut (*f).refcnt) { complete(&mut (*f).completion); }
         kfree(fqdir as *mut c_void);
-    }
+    });
 }
 
 static mut fqdir_free_work: delayed_work = DECLARE_DELAYED_WORK!(fqdir_free_fn);

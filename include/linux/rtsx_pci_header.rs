@@ -12,7 +12,6 @@
  */
 
 // #ifndef __RTSX_PCI_H
-#define __RTSX_PCI_H
 
 // #include <linux/sched.h>
 // #include <linux/pci.h>
@@ -70,7 +69,7 @@ pub const DELINK_INT: u32 = GPIO0_INT;
 // C macro: #define CARD_INT		(XD_INT | MS_INT | SD_INT)
 // C macro: #define NEED_COMPLETE_INT	(DATA_DONE_INT | TRANS_OK_INT | TRANS_FAIL_INT)
 // C macro: #define RTSX_INT		(CMD_DONE_INT | NEED_COMPLETE_INT | \
-					CARD_INT | GPIO0_INT | OC_INT)
+// 					CARD_INT | GPIO0_INT | OC_INT)
 // C macro: #define CARD_EXIST		(XD_EXIST | MS_EXIST | SD_EXIST)
 
 pub const RTSX_BIER: u32 = 0x18;
@@ -94,17 +93,17 @@ pub const RTSX_DUM_REG: u32 = 0x1C;
  * macros for easy use
  */
 #define rtsx_pci_writel(pcr, reg, value) \
-	iowrite32(value, (pcr)->remap_addr + reg)
+	iowrite32(value, (*(pcr)).remap_addr + reg)
 #define rtsx_pci_readl(pcr, reg) \
-	ioread32((pcr)->remap_addr + reg)
+	ioread32((*(pcr)).remap_addr + reg)
 #define rtsx_pci_writew(pcr, reg, value) \
-	iowrite16(value, (pcr)->remap_addr + reg)
+	iowrite16(value, (*(pcr)).remap_addr + reg)
 #define rtsx_pci_readw(pcr, reg) \
-	ioread16((pcr)->remap_addr + reg)
+	ioread16((*(pcr)).remap_addr + reg)
 #define rtsx_pci_writeb(pcr, reg, value) \
-	iowrite8(value, (pcr)->remap_addr + reg)
+	iowrite8(value, (*(pcr)).remap_addr + reg)
 #define rtsx_pci_readb(pcr, reg) \
-	ioread8((pcr)->remap_addr + reg)
+	ioread8((*(pcr)).remap_addr + reg)
 
 pub const STATE_TRANS_NONE: u32 = 0;
 pub const STATE_TRANS_CMD: u32 = 1;
@@ -386,9 +385,9 @@ pub const CARD_DRIVE_SEL: u32 = 0xFD53;
 // C macro: #define   XD_DRIVE_8mA			(0x01 << 2)
 pub const GPIO_DRIVE_8mA: u32 = 0x01;
 // C macro: #define RTS5209_CARD_DRIVE_DEFAULT	(MS_DRIVE_8mA | MMC_DRIVE_8mA |\
-					XD_DRIVE_8mA | GPIO_DRIVE_8mA)
+// 					XD_DRIVE_8mA | GPIO_DRIVE_8mA)
 // C macro: #define RTL8411_CARD_DRIVE_DEFAULT	(MS_DRIVE_8mA | MMC_DRIVE_8mA |\
-					XD_DRIVE_8mA)
+// 					XD_DRIVE_8mA)
 // C macro: #define RTSX_CARD_DRIVE_DEFAULT		(MS_DRIVE_8mA | GPIO_DRIVE_8mA)
 
 pub const CARD_STOP: u32 = 0xFD54;
@@ -1081,7 +1080,7 @@ pub const PCR_SETTING_REG4: u32 = 0x818;
 pub const PCR_SETTING_REG5: u32 = 0x81C;
 
 
-#define rtsx_pci_init_cmd(pcr)		((pcr)->ci = 0)
+#define rtsx_pci_init_cmd(pcr)		((*(pcr)).ci = 0)
 
 pub const RTS5227_DEVICE_ID: u32 = 0x5227;
 pub const RTS_MAX_TIMES_FREQ_REDUCTION: u32 = 8;
@@ -1093,32 +1092,32 @@ struct pcr_handle {
 };
 
 struct pcr_ops {
-	int (*write_phy)(struct rtsx_pcr *pcr, u8 addr, u16 val);
-	int (*read_phy)(struct rtsx_pcr *pcr, u8 addr, u16 *val);
-	int		(*extra_init_hw)(struct rtsx_pcr *pcr);
-	int		(*optimize_phy)(struct rtsx_pcr *pcr);
-	int		(*turn_on_led)(struct rtsx_pcr *pcr);
-	int		(*turn_off_led)(struct rtsx_pcr *pcr);
-	int		(*enable_auto_blink)(struct rtsx_pcr *pcr);
-	int		(*disable_auto_blink)(struct rtsx_pcr *pcr);
-	int		(*card_power_on)(struct rtsx_pcr *pcr, int card);
-	int		(*card_power_off)(struct rtsx_pcr *pcr, int card);
-	int		(*switch_output_voltage)(struct rtsx_pcr *pcr,
-						u8 voltage);
-	unsigned int	(*cd_deglitch)(struct rtsx_pcr *pcr);
+	int (*write_phy)(rtsx_pcr *pcr, addr: u8, val: u16);
+	int (*read_phy)(rtsx_pcr *pcr, addr: u8, u16 *val);
+	int		(*extra_init_hw)(rtsx_pcr *pcr);
+	int		(*optimize_phy)(rtsx_pcr *pcr);
+	int		(*turn_on_led)(rtsx_pcr *pcr);
+	int		(*turn_off_led)(rtsx_pcr *pcr);
+	int		(*enable_auto_blink)(rtsx_pcr *pcr);
+	int		(*disable_auto_blink)(rtsx_pcr *pcr);
+	int		(*card_power_on)(rtsx_pcr *pcr, int card);
+	int		(*card_power_off)(rtsx_pcr *pcr, int card);
+	int		(*switch_output_voltage)(rtsx_pcr *pcr,
+						voltage: u8);
+	core::ffi::c_uint	(*cd_deglitch)(rtsx_pcr *pcr);
 	int		(*conv_clk_and_div_n)(int clk, int dir);
-	void		(*fetch_vendor_settings)(struct rtsx_pcr *pcr);
-	void		(*force_power_down)(struct rtsx_pcr *pcr, u8 pm_state, bool runtime);
-	void		(*stop_cmd)(struct rtsx_pcr *pcr);
+	void		(*fetch_vendor_settings)(rtsx_pcr *pcr);
+	void		(*force_power_down)(rtsx_pcr *pcr, pm_state: u8, runtime: bool);
+	void		(*stop_cmd)(rtsx_pcr *pcr);
 
-	void (*set_aspm)(struct rtsx_pcr *pcr, bool enable);
-	void (*set_l1off_cfg_sub_d0)(struct rtsx_pcr *pcr, int active);
-	void (*enable_ocp)(struct rtsx_pcr *pcr);
-	void (*disable_ocp)(struct rtsx_pcr *pcr);
-	void (*init_ocp)(struct rtsx_pcr *pcr);
-	void (*process_ocp)(struct rtsx_pcr *pcr);
-	int (*get_ocpstat)(struct rtsx_pcr *pcr, u8 *val);
-	void (*clear_ocpstat)(struct rtsx_pcr *pcr);
+	void (*set_aspm)(rtsx_pcr *pcr, enable: bool);
+	void (*set_l1off_cfg_sub_d0)(rtsx_pcr *pcr, int active);
+	void (*enable_ocp)(rtsx_pcr *pcr);
+	void (*disable_ocp)(rtsx_pcr *pcr);
+	void (*init_ocp)(rtsx_pcr *pcr);
+	void (*process_ocp)(rtsx_pcr *pcr);
+	int (*get_ocpstat)(rtsx_pcr *pcr, u8 *val);
+	void (*clear_ocpstat)(rtsx_pcr *pcr);
 };
 
 enum PDEV_STAT  {PDEV_STAT_IDLE, PDEV_STAT_RUN};
@@ -1179,20 +1178,20 @@ struct rtsx_hw_param {
 };
 
 #define rtsx_set_dev_flag(cr, flag) \
-	((cr)->option.dev_flags |= (flag))
+	((*(cr)).option.dev_flags |= (flag))
 #define rtsx_clear_dev_flag(cr, flag) \
-	((cr)->option.dev_flags &= ~(flag))
+	((*(cr)).option.dev_flags &= ~(flag))
 #define rtsx_check_dev_flag(cr, flag) \
-	((cr)->option.dev_flags & (flag))
+	((*(cr)).option.dev_flags & (flag))
 
 struct rtsx_pcr {
 	struct pci_dev			*pci;
-	unsigned int			id;
+	core::ffi::c_uint			id;
 	struct rtsx_cr_option	option;
 	struct rtsx_hw_param hw_param;
 
 	/* pci resources */
-	unsigned long			addr;
+	core::ffi::c_ulong			addr;
 	void __iomem			*remap_addr;
 	int				irq;
 
@@ -1211,9 +1210,9 @@ struct rtsx_pcr {
 	u32				bier;
 	char				trans_result;
 
-	unsigned int			card_inserted;
-	unsigned int			card_removed;
-	unsigned int			card_exist;
+	core::ffi::c_uint			card_inserted;
+	core::ffi::c_uint			card_removed;
+	core::ffi::c_uint			card_exist;
 
 	struct delayed_work		carddet_work;
 
@@ -1222,7 +1221,7 @@ struct rtsx_pcr {
 	struct completion		*done;
 	struct completion		*finish_me;
 
-	unsigned int			cur_clock;
+	core::ffi::c_uint			cur_clock;
 	bool				remove_pci;
 	bool				msi_en;
 
@@ -1286,63 +1285,63 @@ pub const PID_5261: u32 = 0x5261;
 pub const PID_5228: u32 = 0x5228;
 pub const PID_5264: u32 = 0x5264;
 
-#define CHK_PCI_PID(pcr, pid)		((pcr)->pci->device == (pid))
-#define PCI_VID(pcr)			((pcr)->pci->vendor)
-#define PCI_PID(pcr)			((pcr)->pci->device)
+#define CHK_PCI_PID(pcr, pid)		((*(*(pcr)).pci).device == (pid))
+#define PCI_VID(pcr)			((*(*(pcr)).pci).vendor)
+#define PCI_PID(pcr)			((*(*(pcr)).pci).device)
 #define is_version(pcr, pid, ver)				\
-	(CHK_PCI_PID(pcr, pid) && (pcr)->ic_version == (ver))
+	(CHK_PCI_PID(pcr, pid) && (*(pcr)).ic_version == (ver))
 #define is_version_higher_than(pcr, pid, ver)			\
-	(CHK_PCI_PID(pcr, pid) && (pcr)->ic_version > (ver))
+	(CHK_PCI_PID(pcr, pid) && (*(pcr)).ic_version > (ver))
 #define pcr_dbg(pcr, fmt, arg...)				\
-	dev_dbg(&(pcr)->pci->dev, fmt, ##arg)
+	dev_dbg((*(*&(pcr)).pci).dev, fmt, ##arg)
 
 #define SDR104_PHASE(val)		((val) & 0xFF)
 #define SDR50_PHASE(val)		(((val) >> 8) & 0xFF)
 #define DDR50_PHASE(val)		(((val) >> 16) & 0xFF)
-#define SDR104_TX_PHASE(pcr)		SDR104_PHASE((pcr)->tx_initial_phase)
-#define SDR50_TX_PHASE(pcr)		SDR50_PHASE((pcr)->tx_initial_phase)
-#define DDR50_TX_PHASE(pcr)		DDR50_PHASE((pcr)->tx_initial_phase)
-#define SDR104_RX_PHASE(pcr)		SDR104_PHASE((pcr)->rx_initial_phase)
-#define SDR50_RX_PHASE(pcr)		SDR50_PHASE((pcr)->rx_initial_phase)
-#define DDR50_RX_PHASE(pcr)		DDR50_PHASE((pcr)->rx_initial_phase)
+#define SDR104_TX_PHASE(pcr)		SDR104_PHASE((*(pcr)).tx_initial_phase)
+#define SDR50_TX_PHASE(pcr)		SDR50_PHASE((*(pcr)).tx_initial_phase)
+#define DDR50_TX_PHASE(pcr)		DDR50_PHASE((*(pcr)).tx_initial_phase)
+#define SDR104_RX_PHASE(pcr)		SDR104_PHASE((*(pcr)).rx_initial_phase)
+#define SDR50_RX_PHASE(pcr)		SDR50_PHASE((*(pcr)).rx_initial_phase)
+#define DDR50_RX_PHASE(pcr)		DDR50_PHASE((*(pcr)).rx_initial_phase)
 #define SET_CLOCK_PHASE(sdr104, sdr50, ddr50)	\
 				(((ddr50) << 16) | ((sdr50) << 8) | (sdr104))
 
-void rtsx_pci_start_run(struct rtsx_pcr *pcr);
-int rtsx_pci_write_register(struct rtsx_pcr *pcr, u16 addr, u8 mask, u8 data);
-int rtsx_pci_read_register(struct rtsx_pcr *pcr, u16 addr, u8 *data);
-int rtsx_pci_write_phy_register(struct rtsx_pcr *pcr, u8 addr, u16 val);
-int rtsx_pci_read_phy_register(struct rtsx_pcr *pcr, u8 addr, u16 *val);
-void rtsx_pci_stop_cmd(struct rtsx_pcr *pcr);
-void rtsx_pci_add_cmd(struct rtsx_pcr *pcr,
-		u8 cmd_type, u16 reg_addr, u8 mask, u8 data);
-void rtsx_pci_send_cmd_no_wait(struct rtsx_pcr *pcr);
-int rtsx_pci_send_cmd(struct rtsx_pcr *pcr, int timeout);
-int rtsx_pci_dma_map_sg(struct rtsx_pcr *pcr, struct scatterlist *sglist,
-		int num_sg, bool read);
-void rtsx_pci_dma_unmap_sg(struct rtsx_pcr *pcr, struct scatterlist *sglist,
-		int num_sg, bool read);
-int rtsx_pci_dma_transfer(struct rtsx_pcr *pcr, struct scatterlist *sglist,
-		int count, bool read, int timeout);
-int rtsx_pci_read_ppbuf(struct rtsx_pcr *pcr, u8 *buf, int buf_len);
-int rtsx_pci_write_ppbuf(struct rtsx_pcr *pcr, u8 *buf, int buf_len);
-int rtsx_pci_card_pull_ctl_enable(struct rtsx_pcr *pcr, int card);
-int rtsx_pci_card_pull_ctl_disable(struct rtsx_pcr *pcr, int card);
-int rtsx_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
-		u8 ssc_depth, bool initial_mode, bool double_clk, bool vpclk);
-int rtsx_pci_card_power_on(struct rtsx_pcr *pcr, int card);
-int rtsx_pci_card_power_off(struct rtsx_pcr *pcr, int card);
-int rtsx_pci_card_exclusive_check(struct rtsx_pcr *pcr, int card);
-int rtsx_pci_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage);
-unsigned int rtsx_pci_card_exist(struct rtsx_pcr *pcr);
-void rtsx_pci_complete_unfinished_transfer(struct rtsx_pcr *pcr);
+void rtsx_pci_start_run(rtsx_pcr *pcr);
+int rtsx_pci_write_register(rtsx_pcr *pcr, addr: u16, mask: u8, data: u8);
+int rtsx_pci_read_register(rtsx_pcr *pcr, addr: u16, u8 *data);
+int rtsx_pci_write_phy_register(rtsx_pcr *pcr, addr: u8, val: u16);
+int rtsx_pci_read_phy_register(rtsx_pcr *pcr, addr: u8, u16 *val);
+void rtsx_pci_stop_cmd(rtsx_pcr *pcr);
+void rtsx_pci_add_cmd(rtsx_pcr *pcr,
+		cmd_type: u8, reg_addr: u16, mask: u8, data: u8);
+void rtsx_pci_send_cmd_no_wait(rtsx_pcr *pcr);
+int rtsx_pci_send_cmd(rtsx_pcr *pcr, int timeout);
+int rtsx_pci_dma_map_sg(rtsx_pcr *pcr, scatterlist *sglist,
+		int num_sg, read: bool);
+void rtsx_pci_dma_unmap_sg(rtsx_pcr *pcr, scatterlist *sglist,
+		int num_sg, read: bool);
+int rtsx_pci_dma_transfer(rtsx_pcr *pcr, scatterlist *sglist,
+		int count, read: bool, int timeout);
+int rtsx_pci_read_ppbuf(rtsx_pcr *pcr, u8 *buf, int buf_len);
+int rtsx_pci_write_ppbuf(rtsx_pcr *pcr, u8 *buf, int buf_len);
+int rtsx_pci_card_pull_ctl_enable(rtsx_pcr *pcr, int card);
+int rtsx_pci_card_pull_ctl_disable(rtsx_pcr *pcr, int card);
+int rtsx_pci_switch_clock(rtsx_pcr *pcr, card_clock: core::ffi::c_uint,
+		ssc_depth: u8, initial_mode: bool, double_clk: bool, vpclk: bool);
+int rtsx_pci_card_power_on(rtsx_pcr *pcr, int card);
+int rtsx_pci_card_power_off(rtsx_pcr *pcr, int card);
+int rtsx_pci_card_exclusive_check(rtsx_pcr *pcr, int card);
+int rtsx_pci_switch_output_voltage(rtsx_pcr *pcr, voltage: u8);
+core::ffi::c_uint rtsx_pci_card_exist(rtsx_pcr *pcr);
+void rtsx_pci_complete_unfinished_transfer(rtsx_pcr *pcr);
 
-static inline u8 *rtsx_pci_get_cmd_data(struct rtsx_pcr *pcr)
+u8 *rtsx_pci_get_cmd_data(rtsx_pcr *pcr)
 {
-	return (u8 *)(pcr->host_cmds_ptr);
+	return (u8 *)((*pcr).host_cmds_ptr);
 }
 
-static inline void rtsx_pci_write_be32(struct rtsx_pcr *pcr, u16 reg, u32 val)
+void rtsx_pci_write_be32(rtsx_pcr *pcr, reg: u16, val: u32)
 {
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, reg,     0xFF, val >> 24);
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, reg + 1, 0xFF, val >> 16);
@@ -1350,8 +1349,8 @@ static inline void rtsx_pci_write_be32(struct rtsx_pcr *pcr, u16 reg, u32 val)
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, reg + 3, 0xFF, val);
 }
 
-static inline int rtsx_pci_update_phy(struct rtsx_pcr *pcr, u8 addr,
-	u16 mask, u16 append)
+int rtsx_pci_update_phy(rtsx_pcr *pcr, addr: u8,
+	mask: u16, append: u16)
 {
 	int err;
 	u16 val;

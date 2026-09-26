@@ -14,7 +14,7 @@ pub struct drm_fb_helper_surface_size {
 }
 
 // Preserves the build-time CONFIG_DRM_FBDEV_EMULATION condition from the C header.
-#[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+#[cfg(CONFIG_DRM_FBDEV_EMULATION)]
 unsafe extern "C" {
     pub fn drm_fbdev_ttm_driver_fbdev_probe(
         fb_helper: *mut drm_fb_helper,
@@ -24,7 +24,7 @@ unsafe extern "C" {
 
 // C macro equivalent when CONFIG_DRM_FBDEV_EMULATION is enabled:
 // .fbdev_probe = drm_fbdev_ttm_driver_fbdev_probe
-#[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+#[cfg(CONFIG_DRM_FBDEV_EMULATION)]
 #[macro_export]
 macro_rules! DRM_FBDEV_TTM_DRIVER_OPS {
     () => {
@@ -34,7 +34,7 @@ macro_rules! DRM_FBDEV_TTM_DRIVER_OPS {
 
 // C macro equivalent when CONFIG_DRM_FBDEV_EMULATION is disabled:
 // .fbdev_probe = NULL
-#[cfg(not(feature = "CONFIG_DRM_FBDEV_EMULATION"))]
+#[cfg(not(CONFIG_DRM_FBDEV_EMULATION))]
 #[macro_export]
 macro_rules! DRM_FBDEV_TTM_DRIVER_OPS {
     () => {

@@ -28,8 +28,8 @@ pub const XEN_UNPLUG_NEVER: i32 = 1 << 17;
 pub fn xen_must_unplug_nics() -> i32 {
     // The C condition depends on CONFIG_XEN_NETDEV_FRONTEND(_MODULE) and CONFIG_X86.
     #[cfg(all(
-        feature = "CONFIG_X86",
-        any(feature = "CONFIG_XEN_NETDEV_FRONTEND", feature = "CONFIG_XEN_NETDEV_FRONTEND_MODULE")
+        CONFIG_X86,
+        any(CONFIG_XEN_NETDEV_FRONTEND, CONFIG_XEN_NETDEV_FRONTEND_MODULE)
     ))]
     {
         return 1;
@@ -41,8 +41,8 @@ pub fn xen_must_unplug_nics() -> i32 {
 pub fn xen_must_unplug_disks() -> i32 {
     // The C condition depends on CONFIG_XEN_BLKDEV_FRONTEND(_MODULE) and CONFIG_X86.
     #[cfg(all(
-        feature = "CONFIG_X86",
-        any(feature = "CONFIG_XEN_BLKDEV_FRONTEND", feature = "CONFIG_XEN_BLKDEV_FRONTEND_MODULE")
+        CONFIG_X86,
+        any(CONFIG_XEN_BLKDEV_FRONTEND, CONFIG_XEN_BLKDEV_FRONTEND_MODULE)
     ))]
     {
         return 1;
@@ -50,7 +50,7 @@ pub fn xen_must_unplug_disks() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_X86")]
+#[cfg(CONFIG_X86)]
 unsafe extern "C" {
     pub fn xen_has_pv_devices() -> bool;
     pub fn xen_has_pv_disk_devices() -> bool;
@@ -58,25 +58,25 @@ unsafe extern "C" {
     pub fn xen_has_pv_and_legacy_disk_devices() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub fn xen_has_pv_devices() -> bool {
-    cfg!(feature = "CONFIG_XEN")
+    cfg!(CONFIG_XEN)
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub fn xen_has_pv_disk_devices() -> bool {
-    cfg!(feature = "CONFIG_XEN")
+    cfg!(CONFIG_XEN)
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub fn xen_has_pv_nic_devices() -> bool {
-    cfg!(feature = "CONFIG_XEN")
+    cfg!(CONFIG_XEN)
 }
 
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline]
 pub fn xen_has_pv_and_legacy_disk_devices() -> bool {
     false

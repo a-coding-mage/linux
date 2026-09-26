@@ -46,7 +46,7 @@ extern "C" {
     pub static mut persistent_clock_is_local: ::core::ffi::c_int;
     pub fn read_persistent_clock64(ts: *mut timespec64);
     pub fn read_persistent_wall_and_boot_offset(wall_clock: *mut timespec64, boot_offset: *mut timespec64);
-    #[cfg(feature = "CONFIG_GENERIC_CMOS_UPDATE")]
+    #[cfg(CONFIG_GENERIC_CMOS_UPDATE)]
     pub fn update_persistent_clock64(now: timespec64) -> ::core::ffi::c_int;
 }
 
@@ -89,14 +89,14 @@ pub unsafe fn ktime_get_clocktai_ts64(ts: *mut timespec64) { *ts = ktime_to_time
 pub unsafe fn ktime_get_coarse_clocktai_ts64(ts: *mut timespec64) { *ts = ktime_to_timespec64(ktime_get_coarse_clocktai()); }
 pub unsafe fn ktime_get_clocktai_seconds() -> time64_t { ktime_divns(ktime_get_coarse_clocktai(), NSEC_PER_SEC) }
 
-#[cfg(feature = "CONFIG_POSIX_AUX_CLOCKS")]
+#[cfg(CONFIG_POSIX_AUX_CLOCKS)]
 extern "C" {
     pub fn ktime_get_aux(id: clockid_t, kt: *mut ktime_t) -> bool;
     pub fn ktime_get_aux_ts64(id: clockid_t, kt: *mut timespec64) -> bool;
 }
-#[cfg(not(feature = "CONFIG_POSIX_AUX_CLOCKS"))]
+#[cfg(not(CONFIG_POSIX_AUX_CLOCKS))]
 pub unsafe fn ktime_get_aux(_id: clockid_t, _kt: *mut ktime_t) -> bool { false }
-#[cfg(not(feature = "CONFIG_POSIX_AUX_CLOCKS"))]
+#[cfg(not(CONFIG_POSIX_AUX_CLOCKS))]
 pub unsafe fn ktime_get_aux_ts64(_id: clockid_t, _kt: *mut timespec64) -> bool { false }
 
 #[repr(C)]

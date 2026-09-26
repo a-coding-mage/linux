@@ -93,7 +93,7 @@ pub unsafe extern "C" fn osf_getpriority(which:c_int,who:c_int)->c_int { let p=s
 pub unsafe extern "C" fn getxuid()->c_long { current_pt_regs().r20=sys_geteuid() as u64;sys_getuid() as c_long }
 pub unsafe extern "C" fn getxgid()->c_long { current_pt_regs().r20=sys_getegid() as u64;sys_getgid() as c_long }
 pub unsafe extern "C" fn getxpid()->c_long { current_pt_regs().r20=sys_getppid() as u64;sys_getpid() as c_long }
-pub unsafe extern "C" fn alpha_pipe()->c_long { let mut fd=[0;c_int;2];let mut r=do_pipe_flags(fd.as_mut_ptr(),0);if r==0{current_pt_regs().r20=fd[1] as u64;r=fd[0]}r as c_long }
+pub unsafe extern "C" fn alpha_pipe()->c_long { let mut fd=[0 as c_int; 2];let mut r=do_pipe_flags(fd.as_mut_ptr(),0);if r==0{current_pt_regs().r20=fd[1] as u64;r=fd[0]}r as c_long }
 pub unsafe extern "C" fn sethae(v:c_ulong)->c_long { current_pt_regs().hae=v;0 }
 
 // The syscall wrappers below preserve the original entry points and delegate to kernel helpers.

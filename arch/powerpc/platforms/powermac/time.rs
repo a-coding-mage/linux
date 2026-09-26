@@ -40,7 +40,7 @@ const T1_INT: u8 = 0x40;
 pub unsafe fn pmac_time_init() -> i32 {
     let mut delta: i32 = 0;
     // Preserved build-time condition: CONFIG_NVRAM && CONFIG_PPC32.
-    #[cfg(all(feature = "CONFIG_NVRAM", feature = "CONFIG_PPC32"))]
+    #[cfg(all(CONFIG_NVRAM, CONFIG_PPC32))]
     {
         let dst: i32;
         delta = (pmac_xpram_read(PMAC_XPRAM_MACHINE_LOC + 0x9) as i32) << 16;
@@ -55,7 +55,7 @@ pub unsafe fn pmac_time_init() -> i32 {
     delta
 }
 
-#[cfg(feature = "CONFIG_PMAC_SMU")]
+#[cfg(CONFIG_PMAC_SMU)]
 unsafe fn smu_get_time() -> time64_t {
     let mut tm: rtc_time = core::mem::zeroed();
     if smu_get_rtc_time(&mut tm, 1) != 0 { return 0; }
@@ -66,11 +66,11 @@ unsafe fn smu_get_time() -> time64_t {
 pub unsafe fn pmac_get_boot_time() -> time64_t {
     /* Get the time from the RTC, used only at boot time */
     match sys_ctrler {
-        #[cfg(feature = "CONFIG_ADB_CUDA")]
+        #[cfg(CONFIG_ADB_CUDA)]
         SYS_CTRLER_CUDA => cuda_get_time(),
-        #[cfg(feature = "CONFIG_ADB_PMU")]
+        #[cfg(CONFIG_ADB_PMU)]
         SYS_CTRLER_PMU => pmu_get_time(),
-        #[cfg(feature = "CONFIG_PMAC_SMU")]
+        #[cfg(CONFIG_PMAC_SMU)]
         SYS_CTRLER_SMU => smu_get_time(),
         _ => 0,
     }
@@ -78,11 +78,11 @@ pub unsafe fn pmac_get_boot_time() -> time64_t {
 
 pub unsafe fn pmac_get_rtc_time(tm: *mut rtc_time) {
     match sys_ctrler {
-        #[cfg(feature = "CONFIG_ADB_CUDA")]
+        #[cfg(CONFIG_ADB_CUDA)]
         SYS_CTRLER_CUDA => rtc_time64_to_tm(cuda_get_time(), tm),
-        #[cfg(feature = "CONFIG_ADB_PMU")]
+        #[cfg(CONFIG_ADB_PMU)]
         SYS_CTRLER_PMU => rtc_time64_to_tm(pmu_get_time(), tm),
-        #[cfg(feature = "CONFIG_PMAC_SMU")]
+        #[cfg(CONFIG_PMAC_SMU)]
         SYS_CTRLER_SMU => { smu_get_rtc_time(tm, 1); },
         _ => {}
     }
@@ -90,18 +90,18 @@ pub unsafe fn pmac_get_rtc_time(tm: *mut rtc_time) {
 
 pub unsafe fn pmac_set_rtc_time(tm: *mut rtc_time) -> i32 {
     match sys_ctrler {
-        #[cfg(feature = "CONFIG_ADB_CUDA")]
+        #[cfg(CONFIG_ADB_CUDA)]
         SYS_CTRLER_CUDA => cuda_set_rtc_time(tm),
-        #[cfg(feature = "CONFIG_ADB_PMU")]
+        #[cfg(CONFIG_ADB_PMU)]
         SYS_CTRLER_PMU => pmu_set_rtc_time(tm),
-        #[cfg(feature = "CONFIG_PMAC_SMU")]
+        #[cfg(CONFIG_PMAC_SMU)]
         SYS_CTRLER_SMU => smu_set_rtc_time(tm, 1),
         _ => -ENODEV,
     }
 }
 
 // Preserved build-time condition: CONFIG_PPC32.
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn via_calibrate_decr() -> i32 {
     let mut vias: *mut device_node;
     let mut via: *mut u8;
@@ -137,7 +137,7 @@ unsafe fn via_calibrate_decr() -> i32 {
 
 pub unsafe fn pmac_calibrate_decr() {
     generic_calibrate_decr();
-    #[cfg(feature = "CONFIG_PPC32")]
+    #[cfg(CONFIG_PPC32)]
     {
         if !of_machine_is_compatible("MacRISC2\0".as_ptr() as *const _) &&
            !of_machine_is_compatible("MacRISC3\0".as_ptr() as *const _) &&

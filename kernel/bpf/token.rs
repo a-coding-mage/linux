@@ -27,8 +27,7 @@ extern "C" {
         mnt: *mut vfsmount,
         name: *const core::ffi::c_char,
         flags: i32,
-        fops: *const file_operations,
-    ) -> *mut file;
+        fops: *const file_operations) -> *mut file;
     fn fd_empty(f: *const fd) -> bool;
     fn fd_file(f: *const fd) -> *mut file;
     fn fd_prepare_file(f: fd_prepare) -> *mut file;

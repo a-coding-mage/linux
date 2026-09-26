@@ -44,7 +44,7 @@ pub enum imx_misc_func {
 /* Control Functions */
 
 // CONFIG_IMX_SCU is a build-time C configuration condition.
-#[cfg(feature = "CONFIG_IMX_SCU")]
+#[cfg(CONFIG_IMX_SCU)]
 extern "C" {
     pub fn imx_sc_misc_set_control(
         ipc: *mut imx_sc_ipc,
@@ -69,7 +69,7 @@ extern "C" {
 }
 
 // When CONFIG_IMX_SCU is disabled, the C header provides ENOTSUPP stubs.
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub unsafe fn imx_sc_misc_set_control(
     _ipc: *mut imx_sc_ipc,
@@ -80,7 +80,7 @@ pub unsafe fn imx_sc_misc_set_control(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub unsafe fn imx_sc_misc_get_control(
     _ipc: *mut imx_sc_ipc,
@@ -91,7 +91,7 @@ pub unsafe fn imx_sc_misc_get_control(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_IMX_SCU"))]
+#[cfg(not(CONFIG_IMX_SCU))]
 #[inline]
 pub unsafe fn imx_sc_pm_cpu_start(
     _ipc: *mut imx_sc_ipc,

@@ -13,7 +13,7 @@ pub struct list_head {
 }
 
 // Equivalent build-time condition for IS_ENABLED(CONFIG_USB_ONBOARD_DEV).
-#[cfg(feature = "CONFIG_USB_ONBOARD_DEV")]
+#[cfg(CONFIG_USB_ONBOARD_DEV)]
 extern "C" {
     pub fn onboard_dev_create_pdevs(
         parent_dev: *mut usb_device,
@@ -22,7 +22,7 @@ extern "C" {
     pub fn onboard_dev_destroy_pdevs(pdev_list: *mut list_head);
 }
 
-#[cfg(not(feature = "CONFIG_USB_ONBOARD_DEV"))]
+#[cfg(not(CONFIG_USB_ONBOARD_DEV))]
 #[inline]
 pub unsafe fn onboard_dev_create_pdevs(
     _parent_dev: *mut usb_device,
@@ -30,7 +30,7 @@ pub unsafe fn onboard_dev_create_pdevs(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_USB_ONBOARD_DEV"))]
+#[cfg(not(CONFIG_USB_ONBOARD_DEV))]
 #[inline]
 pub unsafe fn onboard_dev_destroy_pdevs(_pdev_list: *mut list_head) {}
 

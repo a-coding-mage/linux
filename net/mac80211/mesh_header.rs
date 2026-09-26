@@ -200,52 +200,52 @@ extern "C" {
     pub fn mesh_path_refresh(sdata: *mut ieee80211_sub_if_data, mpath: *mut mesh_path, addr: *const u8);
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 pub unsafe fn mesh_plink_inc_estab_count(sdata: *mut ieee80211_sub_if_data) -> u64 {
     atomic_inc(&mut (*sdata).u.mesh.estab_plinks);
     mesh_accept_plinks_update(sdata) | BSS_CHANGED_BEACON
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 pub unsafe fn mesh_plink_dec_estab_count(sdata: *mut ieee80211_sub_if_data) -> u64 {
     atomic_dec(&mut (*sdata).u.mesh.estab_plinks);
     mesh_accept_plinks_update(sdata) | BSS_CHANGED_BEACON
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 pub unsafe fn mesh_plink_free_count(sdata: *mut ieee80211_sub_if_data) -> c_int {
     (*sdata).u.mesh.mshcfg.dot11MeshMaxPeerLinks as c_int - atomic_read(&(*sdata).u.mesh.estab_plinks)
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 pub unsafe fn mesh_plink_availables(sdata: *mut ieee80211_sub_if_data) -> bool {
     core::cmp::min(mesh_plink_free_count(sdata) as c_long, MESH_MAX_PLINKS as c_long - (*sdata).local.as_ref().unwrap().num_sta as c_long) > 0
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 pub unsafe fn mesh_path_activate(mpath: *mut mesh_path) {
     (*mpath).flags = ((*mpath).flags as u32 | MESH_PATH_ACTIVE as u32 | MESH_PATH_RESOLVED as u32) as mesh_path_flags;
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 pub unsafe fn mesh_path_sel_is_hwmp(sdata: *mut ieee80211_sub_if_data) -> bool {
     (*sdata).u.mesh.mesh_pp_id == IEEE80211_PATH_PROTOCOL_HWMP
 }
 
-#[cfg(feature = "CONFIG_MAC80211_MESH")]
+#[cfg(CONFIG_MAC80211_MESH)]
 extern "C" {
     pub fn mesh_path_flush_by_iface(sdata: *mut ieee80211_sub_if_data);
     pub fn mesh_sync_adjust_tsf(sdata: *mut ieee80211_sub_if_data);
     pub fn ieee80211s_stop();
 }
 
-#[cfg(not(feature = "CONFIG_MAC80211_MESH"))]
+#[cfg(not(CONFIG_MAC80211_MESH))]
 pub unsafe fn mesh_path_sel_is_hwmp(_sdata: *mut ieee80211_sub_if_data) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_MAC80211_MESH"))]
+#[cfg(not(CONFIG_MAC80211_MESH))]
 pub unsafe fn mesh_path_flush_by_iface(_sdata: *mut ieee80211_sub_if_data) {}
 
-#[cfg(not(feature = "CONFIG_MAC80211_MESH"))]
+#[cfg(not(CONFIG_MAC80211_MESH))]
 pub unsafe fn ieee80211s_stop() {}
 }
 

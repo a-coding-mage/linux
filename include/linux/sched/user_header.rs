@@ -6,7 +6,7 @@
 #[repr(C)]
 pub struct user_struct {
 	pub __count: refcount_t, /* reference count */
-	#[cfg(feature = "CONFIG_EPOLL")]
+	#[cfg(CONFIG_EPOLL)]
 	pub epoll_watches: percpu_counter, /* The number of file descriptors currently watched */
 	pub unix_inflight: ::core::ffi::c_ulong, /* How many files in flight in unix sockets */
 	pub pipe_bufs: atomic_long_t, /* how many pages are allocated in pipe buffers */
@@ -18,15 +18,15 @@ pub struct user_struct {
 	/* CONFIG_PERF_EVENTS || CONFIG_BPF_SYSCALL || CONFIG_NET ||
 	 * CONFIG_IO_URING || CONFIG_VFIO_PCI_ZDEV_KVM || IS_ENABLED(CONFIG_IOMMUFD) */
 	#[cfg(any(
-		feature = "CONFIG_PERF_EVENTS",
-		feature = "CONFIG_BPF_SYSCALL",
-		feature = "CONFIG_NET",
-		feature = "CONFIG_IO_URING",
-		feature = "CONFIG_VFIO_PCI_ZDEV_KVM",
-		feature = "CONFIG_IOMMUFD"
+		CONFIG_PERF_EVENTS,
+		CONFIG_BPF_SYSCALL,
+		CONFIG_NET,
+		CONFIG_IO_URING,
+		CONFIG_VFIO_PCI_ZDEV_KVM,
+		CONFIG_IOMMUFD
 	))]
 	pub locked_vm: atomic_long_t,
-	#[cfg(feature = "CONFIG_WATCH_QUEUE")]
+	#[cfg(CONFIG_WATCH_QUEUE)]
 	pub nr_watches: atomic_t, /* The number of watches this user currently has */
 
 	/* Miscellaneous per-user rate limit */

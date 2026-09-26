@@ -60,7 +60,7 @@ pub unsafe fn huge_pte_alloc(
     if sz >= PMD_SIZE {
         /* On 8xx, all hugepages are handled as contiguous PTEs */
         // CONFIG_PPC_8xx conditional: retained as the source conditional.
-        if cfg!(feature = "CONFIG_PPC_8xx") {
+        if cfg!(CONFIG_PPC_8xx) {
             let mut i: usize = 0;
             while i < (sz / PMD_SIZE) as usize {
                 if !pte_alloc_huge(mm, pmd.add(i), addr) {
@@ -119,7 +119,7 @@ pub unsafe fn arch_alloc_bootmem_huge_page(
     nid: c_int,
 ) -> *mut core::ffi::c_void {
     // CONFIG_PPC_BOOK3S_64 conditional.
-    if cfg!(feature = "CONFIG_PPC_BOOK3S_64")
+    if cfg!(CONFIG_PPC_BOOK3S_64)
         && firmware_has_feature(FW_FEATURE_LPAR)
         && !radix_enabled()
     {
@@ -167,7 +167,7 @@ unsafe fn hugetlbpage_init() -> c_int {
         return 0;
     }
 
-    if cfg!(feature = "CONFIG_PPC_BOOK3S_64")
+    if cfg!(CONFIG_PPC_BOOK3S_64)
         && !radix_enabled()
         && !mmu_has_feature(MMU_FTR_16M_PAGE)
     {

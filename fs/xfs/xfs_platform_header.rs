@@ -14,13 +14,13 @@ pub type xfs_daddr_t = i64;
 pub type xfs_dev_t = u32;
 pub type xfs_nlink_t = u32;
 
-#[cfg(feature = "CONFIG_XFS_DEBUG")]
+#[cfg(CONFIG_XFS_DEBUG)]
 pub const DEBUG: i32 = 1;
-#[cfg(feature = "CONFIG_XFS_DEBUG_EXPENSIVE")]
+#[cfg(CONFIG_XFS_DEBUG_EXPENSIVE)]
 pub const DEBUG_EXPENSIVE: i32 = 1;
-#[cfg(feature = "CONFIG_XFS_ASSERT_FATAL")]
+#[cfg(CONFIG_XFS_ASSERT_FATAL)]
 pub const XFS_ASSERT_FATAL: i32 = 1;
-#[cfg(feature = "CONFIG_XFS_WARN")]
+#[cfg(CONFIG_XFS_WARN)]
 pub const XFS_WARN: i32 = 1;
 
 #[cfg(target_endian = "big")]
@@ -75,7 +75,7 @@ pub const BLKDEV_IOSIZE: usize = 1usize << BLKDEV_IOSHIFT;
 pub const ENOATTR: i32 = ENODATA;
 pub const EWRONGFS: i32 = EINVAL;
 
-pub const PTR_FMT: &str = if cfg!(feature = "CONFIG_XFS_DEBUG") { "%px" } else { "%p" };
+pub const PTR_FMT: &str = if cfg!(CONFIG_XFS_DEBUG) { "%px" } else { "%p" };
 
 #[macro_export]
 macro_rules! xfs_panic_mask { () => { xfs_params.panic_mask.val }; }

@@ -9,7 +9,6 @@
  * Device Tree binding constants for Exynos7870 clock controller.
  */
 
-#define _DT_BINDINGS_CLOCK_EXYNOS7870_H
 
 /* CMU_MIF */
 pub const CLK_DOUT_MIF_APB: u32 = 1;

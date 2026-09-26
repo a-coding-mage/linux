@@ -13,19 +13,19 @@ pub struct kvm_dirty_ring {
 
 // If CONFIG_HAVE_KVM_DIRTY_RING is not defined, kvm_dirty_ring.o should not
 // be included as well, so define these nop functions for the arch.
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_dirty_ring_get_rsvd_entries(_kvm: *mut kvm) -> u32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_use_dirty_bitmap(_kvm: *mut kvm) -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_dirty_ring_alloc(
     _kvm: *mut kvm,
@@ -36,7 +36,7 @@ pub unsafe fn kvm_dirty_ring_alloc(
     0
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_dirty_ring_reset(
     _kvm: *mut kvm,
@@ -46,11 +46,11 @@ pub unsafe fn kvm_dirty_ring_reset(
     -ENOENT
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_dirty_ring_push(_vcpu: *mut kvm_vcpu, _slot: u32, _offset: u64) {}
 
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_dirty_ring_get_page(
     _ring: *mut kvm_dirty_ring,
@@ -59,11 +59,11 @@ pub unsafe fn kvm_dirty_ring_get_page(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_KVM_DIRTY_RING"))]
+#[cfg(not(CONFIG_HAVE_KVM_DIRTY_RING))]
 #[inline]
 pub unsafe fn kvm_dirty_ring_free(_ring: *mut kvm_dirty_ring) {}
 
-#[cfg(feature = "CONFIG_HAVE_KVM_DIRTY_RING")]
+#[cfg(CONFIG_HAVE_KVM_DIRTY_RING)]
 extern "C" {
     pub fn kvm_cpu_dirty_log_size(kvm: *mut kvm) -> core::ffi::c_int;
     pub fn kvm_use_dirty_bitmap(kvm: *mut kvm) -> bool;

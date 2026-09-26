@@ -3,7 +3,7 @@
 #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, dead_code, unused_macros, unused_variables)]
 
 macro_rules! c_const { ($($tt:tt)*) => { 0 }; }
-macro_rules! null_mut { () => { ::core::ptr::null_mut() }; }
+macro_rules! null_mut { () => { ::core::ptr::null_mut!() }; }
 macro_rules! c_translation { ($($tt:tt)*) => {}; }
 
 c_translation! {

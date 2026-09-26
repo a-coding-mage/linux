@@ -87,11 +87,11 @@ extern "C" {
     pub fn adf_gen4_enable_pm(accel_dev: *mut adf_accel_dev) -> i32;
     pub fn adf_gen4_handle_pm_interrupt(accel_dev: *mut adf_accel_dev) -> bool;
 
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub fn adf_gen4_init_dev_pm_data(accel_dev: *mut adf_accel_dev);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub unsafe fn adf_gen4_init_dev_pm_data(_accel_dev: *mut adf_accel_dev) {}
 

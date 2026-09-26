@@ -659,19 +659,19 @@ pub struct kvm_guest_debug_arch {
 /* for KVM_SYNC_PFAULT and KVM_REG_S390_PFTOKEN */
 pub const KVM_S390_PFAULT_TOKEN_INVALID: __u64 = 0xffffffffffffffffu64;
 
-pub const KVM_SYNC_PREFIX: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 0;
-pub const KVM_SYNC_GPRS: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 1;
-pub const KVM_SYNC_ACRS: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 2;
-pub const KVM_SYNC_CRS: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 3;
-pub const KVM_SYNC_ARCH0: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 4;
-pub const KVM_SYNC_PFAULT: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 5;
-pub const KVM_SYNC_VRS: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 6;
-pub const KVM_SYNC_RICCB: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 7;
-pub const KVM_SYNC_FPRS: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 8;
-pub const KVM_SYNC_GSCB: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 9;
-pub const KVM_SYNC_BPBC: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 10;
-pub const KVM_SYNC_ETOKEN: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 11;
-pub const KVM_SYNC_DIAG318: ::core::ffi::c_ulong = 1usize as ::core::ffi::c_ulong << 12;
+pub const KVM_SYNC_PREFIX: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 0;
+pub const KVM_SYNC_GPRS: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 1;
+pub const KVM_SYNC_ACRS: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 2;
+pub const KVM_SYNC_CRS: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 3;
+pub const KVM_SYNC_ARCH0: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 4;
+pub const KVM_SYNC_PFAULT: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 5;
+pub const KVM_SYNC_VRS: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 6;
+pub const KVM_SYNC_RICCB: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 7;
+pub const KVM_SYNC_FPRS: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 8;
+pub const KVM_SYNC_GSCB: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 9;
+pub const KVM_SYNC_BPBC: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 10;
+pub const KVM_SYNC_ETOKEN: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 11;
+pub const KVM_SYNC_DIAG318: ::core::ffi::c_ulong = (1usize as ::core::ffi::c_ulong) << 12;
 
 pub const KVM_SYNC_S390_VALID_FIELDS: ::core::ffi::c_ulong = KVM_SYNC_PREFIX
     | KVM_SYNC_GPRS

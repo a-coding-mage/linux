@@ -799,8 +799,8 @@ unsafe fn sof_ipc3_control_load_bytes(sdev: *mut snd_sof_dev, scontrol: *mut snd
     (*cdata).cmd = SOF_CTRL_CMD_BINARY;
     (*cdata).index = (*scontrol).index;
     if (*scontrol).priv_size > 0 {
-        copy_nonoverlapping((*scontrol).priv as *const u8, (*cdata).data as *mut u8, (*scontrol).priv_size);
-        kfree((*scontrol).priv); (*scontrol).priv = null_mut();
+        copy_nonoverlapping((*scontrol).r#priv as *const u8, (*cdata).data as *mut u8, (*scontrol).priv_size);
+        kfree((*scontrol).r#priv); (*scontrol).r#priv = null_mut();
         if (*(*cdata).data).magic != SOF_ABI_MAGIC { kfree((*scontrol).ipc_control_data); (*scontrol).ipc_control_data = null_mut(); return -EINVAL; }
         if SOF_ABI_VERSION_INCOMPATIBLE(SOF_ABI_VERSION, (*(*cdata).data).abi) { kfree((*scontrol).ipc_control_data); (*scontrol).ipc_control_data = null_mut(); return -EINVAL; }
         if (*(*cdata).data).size as usize + size_of::<sof_abi_hdr>() != (*scontrol).priv_size { kfree((*scontrol).ipc_control_data); (*scontrol).ipc_control_data = null_mut(); return -EINVAL; }

@@ -37,6 +37,7 @@ unsafe fn of_dma_router_xlate(
     let ofdma_target: *mut OfDma;
     let mut dma_spec_target: OfPhandleArgs = core::ptr::read(dma_spec);
     let route_data: *mut core::ffi::c_void;
+    'err: {
 
     // translate the request for the real DMA controller
     route_data = ((*ofdma).of_dma_route_allocate)(&mut dma_spec_target, ofdma);
@@ -51,7 +52,7 @@ unsafe fn of_dma_router_xlate(
             route_data,
         );
         chan = ERR_PTR!(-EPROBE_DEFER);
-        goto!(err);
+        break 'err;
     }
 
     chan = ((*ofdma_target).of_dma_xlate)(&mut dma_spec_target, ofdma_target);
@@ -82,7 +83,8 @@ unsafe fn of_dma_router_xlate(
     return chan;
 
     // C label target; retained as a local control-flow marker for translation.
-    err: {
+    }
+    {
         of_node_put(dma_spec_target.np);
         return chan;
     }

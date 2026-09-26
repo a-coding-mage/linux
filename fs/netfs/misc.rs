@@ -112,6 +112,7 @@ pub unsafe fn netfs_invalidate_folio(folio: *mut folio, offset: usize, length: u
     let inode = folio_inode(folio);
     let ctx = netfs_inode(inode);
     let flen = folio_size(folio);
+    'erase_completely: {
     _enter("{%lx},%zx,%zx", (*folio).index, offset, length);
     if offset == 0 && length == flen {
         let (mut i_size, mut remote_i_size, mut zero_point) = (0, 0, 0);
@@ -128,12 +129,12 @@ pub unsafe fn netfs_invalidate_folio(folio: *mut folio, offset: usize, length: u
     folio_wait_private_2(folio);
     if !folio_test_private(folio) { return; }
     finfo = netfs_folio_info(folio);
-    if offset == 0 && length >= flen { goto erase_completely; }
+    if offset == 0 && length >= flen { break 'erase_completely; }
     if !finfo.is_null() {
         let fstart = (*finfo).dirty_offset; let fend = fstart + (*finfo).dirty_len; let iend = offset + length;
         if offset >= fend || iend <= fstart { return; }
         if offset <= fstart {
-            if iend >= fend { goto erase_completely; }
+            if iend >= fend { break 'erase_completely; }
             (*finfo).dirty_len = fend - iend; (*finfo).dirty_offset = iend;
             trace_netfs_folio(folio, netfs_folio_trace_invalidate_front); return;
         }
@@ -141,7 +142,8 @@ pub unsafe fn netfs_invalidate_folio(folio: *mut folio, offset: usize, length: u
         trace_netfs_folio(folio, netfs_folio_trace_invalidate_middle);
     }
     return;
-erase_completely:
+    }
+    
     netfs_put_group(netfs_folio_group(folio)); folio_detach_private(folio); folio_clear_uptodate(folio);
     folio_cancel_dirty(folio); kfree(finfo as *mut core::ffi::c_void);
     trace_netfs_folio(folio, netfs_folio_trace_invalidate_all);

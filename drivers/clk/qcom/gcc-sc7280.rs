@@ -3,7 +3,7 @@
  /*
   * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
   * Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.
-  * /
+  */
  
  #include <linux/clk-provider.h>
  #include <linux/kernel.h>
@@ -3464,17 +3464,17 @@
  	if (IS_ERR(regmap))
  		return PTR_ERR(regmap);
  
- 	/* Keep some clocks always-on * /
- 	qcom_branch_set_clk_en(regmap, 0x26004);/* GCC_CAMERA_AHB_CLK * /
- 	qcom_branch_set_clk_en(regmap, 0x26028);/* GCC_CAMERA_XO_CLK * /
- 	qcom_branch_set_clk_en(regmap, 0x27004);/* GCC_DISP_AHB_CLK * /
- 	qcom_branch_set_clk_en(regmap, 0x2701c);/* GCC_DISP_XO_CLK * /
- 	qcom_branch_set_clk_en(regmap, 0x28004);/* GCC_VIDEO_AHB_CLK * /
- 	qcom_branch_set_clk_en(regmap, 0x28014);/* GCC_VIDEO_XO_CLK * /
- 	qcom_branch_set_clk_en(regmap, 0x71004);/* GCC_GPU_CFG_AHB_CLK * /
+ 	/* Keep some clocks always-on */
+ 	qcom_branch_set_clk_en(regmap, 0x26004);/* GCC_CAMERA_AHB_CLK */
+ 	qcom_branch_set_clk_en(regmap, 0x26028);/* GCC_CAMERA_XO_CLK */
+ 	qcom_branch_set_clk_en(regmap, 0x27004);/* GCC_DISP_AHB_CLK */
+ 	qcom_branch_set_clk_en(regmap, 0x2701c);/* GCC_DISP_XO_CLK */
+ 	qcom_branch_set_clk_en(regmap, 0x28004);/* GCC_VIDEO_AHB_CLK */
+ 	qcom_branch_set_clk_en(regmap, 0x28014);/* GCC_VIDEO_XO_CLK */
+ 	qcom_branch_set_clk_en(regmap, 0x71004);/* GCC_GPU_CFG_AHB_CLK */
  	regmap_update_bits(regmap, 0x7100C, BIT(13), BIT(13));
  
- 	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks * /
+ 	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks */
  	qcom_branch_set_force_mem_core(regmap, gcc_ufs_phy_ice_core_clk, true);
  
  	ret = qcom_cc_register_rcg_dfs(regmap, gcc_dfs_clocks,

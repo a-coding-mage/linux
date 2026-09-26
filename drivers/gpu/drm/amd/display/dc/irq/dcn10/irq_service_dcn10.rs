@@ -78,7 +78,7 @@ static mut dummy_irq_info_funcs: irq_source_info_funcs = irq_source_info_funcs {
 // The following macro definitions preserve the C register-entry initializers.
 macro_rules! base_inner { ($seg:ident) => { DCE_BASE__INST0_SEG$seg }; }
 macro_rules! base { ($seg:ident) => { base_inner!($seg) }; }
-macro_rules! sri { ($reg:ident, $block:ident, $id:literal) => { base!(0) + mm$block$id_$reg##_BASE_IDX + mm$block$id_$reg }; }
+macro_rules! sri { ($reg:tt, $block:ident, $id:literal) => { base!(0) + mm$block$id_::kernel::macros::paste!([<$reg _BASE_IDX>]) + mm$block$id_$reg }; }
 macro_rules! dummy_irq_entry { () => { irq_source_info { funcs: Some(unsafe { &mut dummy_irq_info_funcs }), ..Default::default() } }; }
 
 static irq_source_info_dcn10: [irq_source_info; DAL_IRQ_SOURCES_NUMBER] = [

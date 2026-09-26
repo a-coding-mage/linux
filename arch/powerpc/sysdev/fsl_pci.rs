@@ -27,13 +27,13 @@ use core::ffi::c_void;
 extern "C" {
     static mut fsl_pcie_bus_fixup: i32; static mut is_mpc83xx_pci: i32; static mut pci64_dma_offset: u64;
     static mut fsl_pci_primary: *mut device_node;
-    fn pci_is_pcie(*mut pci_dev)->bool; fn pci_read_config_byte(*mut pci_dev,u32,*mut u8)->i32;
-    fn pci_bus_to_host(*mut pci_bus)->*mut pci_controller; fn indirect_read_config(*mut pci_bus,u32,i32,i32,*mut u32)->i32;
-    fn __indirect_read_config(*mut pci_controller,u8,u8,u32,u32,*mut u32); fn early_read_config_dword(*mut pci_controller,u8,u8,u32,*mut u32);
-    fn in_be32(*const u32)->u32; fn out_be32(*mut u32,u32); fn in_le32(*const u32)->u32; fn out_le32(*mut u8,u32);
-    fn of_find_node_by_type(*mut device_node,*const i8)->*mut device_node; fn of_property_read_bool(*mut device_node,*const i8)->bool; fn of_node_put(*mut device_node);
-    fn of_device_is_compatible(*mut device_node,*const i8)->bool; fn resource_size(*const resource)->u64; fn memblock_end_of_DRAM()->u64;
-    fn early_find_capability(*mut pci_controller,u8,u8,u8)->i32; fn mfspr(u32)->u64; fn get_rt(u32)->usize; fn get_ra(u32)->usize; fn get_rb(u32)->usize; fn get_d(u32)->u32; fn get_op(u32)->u32; fn get_xop(u32)->u32;
+    fn pci_is_pcie(_: *mut pci_dev)->bool; fn pci_read_config_byte(_: *mut pci_dev,_: u32,_: *mut u8)->i32;
+    fn pci_bus_to_host(_: *mut pci_bus)->*mut pci_controller; fn indirect_read_config(_: *mut pci_bus,_: u32,_: i32,_: i32,_: *mut u32)->i32;
+    fn __indirect_read_config(_: *mut pci_controller,_: u8,_: u8,_: u32,_: u32,_: *mut u32); fn early_read_config_dword(_: *mut pci_controller,_: u8,_: u8,_: u32,_: *mut u32);
+    fn in_be32(_: *const u32)->u32; fn out_be32(_: *mut u32,_: u32); fn in_le32(_: *const u32)->u32; fn out_le32(_: *mut u8,_: u32);
+    fn of_find_node_by_type(_: *mut device_node,_: *const i8)->*mut device_node; fn of_property_read_bool(_: *mut device_node,_: *const i8)->bool; fn of_node_put(_: *mut device_node);
+    fn of_device_is_compatible(_: *mut device_node,_: *const i8)->bool; fn resource_size(_: *const resource)->u64; fn memblock_end_of_DRAM()->u64;
+    fn early_find_capability(_: *mut pci_controller,_: u8,_: u8,_: u8)->i32; fn mfspr(_: u32)->u64; fn get_rt(_: u32)->usize; fn get_ra(_: u32)->usize; fn get_rb(_: u32)->usize; fn get_d(_: u32)->u32; fn get_op(_: u32)->u32; fn get_xop(_: u32)->u32;
 }
 
 unsafe fn quirk_fsl_pcie_early(dev:*mut pci_dev) {

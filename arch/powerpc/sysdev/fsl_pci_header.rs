@@ -106,21 +106,21 @@ extern "C" {
 
 // CONFIG_PCI selects the external implementation; otherwise the C header
 // supplied an empty inline function.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 extern "C" {
     pub fn fsl_pci_assign_primary();
 }
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline]
 pub fn fsl_pci_assign_primary() {}
 
 // CONFIG_FSL_PCI selects the external implementation; otherwise the C header
 // supplied an inline function returning zero.
-#[cfg(feature = "CONFIG_FSL_PCI")]
+#[cfg(CONFIG_FSL_PCI)]
 extern "C" {
     pub fn fsl_pci_mcheck_exception(regs: *mut pt_regs) -> i32;
 }
-#[cfg(not(feature = "CONFIG_FSL_PCI"))]
+#[cfg(not(CONFIG_FSL_PCI))]
 #[inline]
 pub fn fsl_pci_mcheck_exception(_regs: *mut pt_regs) -> i32 { 0 }
 

@@ -10,9 +10,9 @@ pub const CACHE_FLUSH_IS_SAFE: usize = 1;
 pub const BUFMAX: usize = 2048;
 // As per KGDB documentation, BUFMAX must be larger than NUMREGBYTES.
 
-#[cfg(feature = "CONFIG_RISCV_ISA_C")]
+#[cfg(CONFIG_RISCV_ISA_C)]
 pub const BREAK_INSTR_SIZE: usize = 2;
-#[cfg(not(feature = "CONFIG_RISCV_ISA_C"))]
+#[cfg(not(CONFIG_RISCV_ISA_C))]
 pub const BREAK_INSTR_SIZE: usize = 4;
 
 pub unsafe extern "C" fn arch_kgdb_breakpoint();

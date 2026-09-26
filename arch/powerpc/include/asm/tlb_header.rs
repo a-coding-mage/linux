@@ -23,7 +23,7 @@ pub type __tlb_remove_tlb_entry_fn = unsafe fn(
     address: ::core::ffi::c_ulong,
 );
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn tlb_flush(tlb: *mut mmu_gather);
 }
 

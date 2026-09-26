@@ -9,7 +9,7 @@ use core::ffi::c_void;
 extern "C" {
     fn seq_puts(f: *mut seq_file, s: *const core::ffi::c_char);
     fn chrdev_show(f: *mut seq_file, i: i32);
-    #[cfg(feature = "CONFIG_BLOCK")]
+    #[cfg(CONFIG_BLOCK)]
     fn blkdev_show(f: *mut seq_file, i: i32);
     fn proc_create_seq(
         name: *const core::ffi::c_char,
@@ -57,7 +57,7 @@ unsafe extern "C" fn devinfo_show(f: *mut seq_file, v: *mut c_void) -> i32 {
         chrdev_show(f, i);
     }
     // CONFIG_BLOCK is a build-time condition from the C source.
-    #[cfg(feature = "CONFIG_BLOCK")]
+    #[cfg(CONFIG_BLOCK)]
     {
         if i >= CHRDEV_MAJOR_MAX {
             i -= CHRDEV_MAJOR_MAX;

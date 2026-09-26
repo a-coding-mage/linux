@@ -79,7 +79,7 @@ unsafe fn dax_kmem_init_resources(dev_dax: *mut dev_dax, data: *mut dax_kmem_dat
     mapped
 }
 
-#[cfg(feature = "CONFIG_MEMORY_HOTREMOVE")]
+#[cfg(CONFIG_MEMORY_HOTREMOVE)]
 unsafe fn dax_kmem_do_hotremove(dev_dax: *mut dev_dax, data: *mut dax_kmem_data) -> i32 {
     let dev = &mut (*dev_dax).dev;
     let ranges = kmalloc_objs::<range>((*dev_dax).nr_range as usize);
@@ -92,7 +92,7 @@ unsafe fn dax_kmem_do_hotremove(dev_dax: *mut dev_dax, data: *mut dax_kmem_data)
     for i in 0..(*dev_dax).nr_range { if !(*data).res[i as usize].is_null() { remove_resource((*data).res[i as usize]); kfree((*data).res[i as usize]); (*data).res[i as usize] = core::ptr::null_mut(); } }
     0
 }
-#[cfg(not(feature = "CONFIG_MEMORY_HOTREMOVE"))]
+#[cfg(not(CONFIG_MEMORY_HOTREMOVE))]
 unsafe fn dax_kmem_do_hotremove(_: *mut dev_dax, _: *mut dax_kmem_data) -> i32 { -EBUSY }
 
 unsafe fn dax_kmem_cleanup_resources(dev_dax: *mut dev_dax, data: *mut dax_kmem_data) {
@@ -131,7 +131,7 @@ unsafe fn dev_dax_kmem_remove(dev_dax: *mut dev_dax) { let dev = &mut (*dev_dax)
 // The declarations below intentionally use the kernel-provided types and helpers.
 unsafe fn dax_kmem_parse_state(buf: *const c_char) -> i32 { if sysfs_streq(buf, c_str!("unplugged")) { DAX_KMEM_UNPLUGGED } else { let t = mhp_online_type_from_str(buf); if t == MMOP_OFFLINE { -EINVAL } else { t } } }
 
-static DEVICE_ATTR_RW!(state);
+DEVICE_ATTR_RW!(state);
 static mut dev_dax_kmem_driver: dax_device_driver = dax_device_driver { probe: Some(dev_dax_kmem_probe), remove: Some(dev_dax_kmem_remove), type_: DAXDRV_KMEM_TYPE, drv: driver { dev_groups: dev_dax_kmem_groups } };
 
 unsafe fn dax_kmem_init() -> i32 { kmem_name = kstrdup_const(c_str!("System RAM (kmem)"), GFP_KERNEL); if kmem_name.is_null() { return -ENOMEM; } let rc = dax_driver_register(&mut dev_dax_kmem_driver); if rc != 0 { kmem_put_memory_types(); kfree_const(kmem_name); } rc }

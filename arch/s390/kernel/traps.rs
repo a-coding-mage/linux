@@ -8,7 +8,7 @@ pub struct pgm_stat {
     pub count: [u32; 128],
 }
 
-// static DEFINE_PER_CPU_SHARED_ALIGNED(struct pgm_stat, pgm_stat);
+// static DEFINE_PER_CPU_SHARED_ALIGNED(pgm_stat, pgm_stat);
 extern "C" {
     static mut pgm_stat: pgm_stat;
 }
@@ -24,7 +24,7 @@ unsafe fn get_trap_ip(regs: *mut pt_regs) -> *mut core::ffi::c_void {
     (address - (((*regs).int_code >> 16) as usize)) as *mut core::ffi::c_void
 }
 
-#[cfg(feature = "CONFIG_GENERIC_BUG")]
+#[cfg(CONFIG_GENERIC_BUG)]
 pub unsafe fn is_valid_bugaddr(_addr: usize) -> i32 { 1 }
 
 pub unsafe fn do_report_trap(regs: *mut pt_regs, si_signo: i32, si_code: i32, str_: *mut u8) {
@@ -125,7 +125,7 @@ unsafe fn space_switch_exception(regs: *mut pt_regs) {
     do_trap(regs, SIGILL, ILL_PRVOPC, b"space switch event\0".as_ptr() as *mut u8);
 }
 
-#[cfg(all(feature = "CONFIG_BUG", feature = "CONFIG_CC_HAS_ASM_IMMEDIATE_STRINGS"))]
+#[cfg(all(CONFIG_BUG, CONFIG_CC_HAS_ASM_IMMEDIATE_STRINGS))]
 pub unsafe fn __warn_args(args: *mut arch_va_list, regs: *mut pt_regs) -> *mut arch_va_list {
     let stack_frame = (*regs).gprs[15] as *mut stack_frame;
     (*args).__overflow_arg_area = stack_frame.add(1) as *mut core::ffi::c_void;
@@ -162,11 +162,12 @@ pub unsafe fn trap_init() {
     local_ctl_load(0, &mut cr0); local_irq_restore(flags); local_mcck_enable(); test_monitor_call();
 }
 
-// Forward declaration in C: static void (*pgm_check_table[128])(struct pt_regs *regs);
+// Forward declaration in C: static void (*pgm_check_table[128])(pt_regs *regs);
 static mut pgm_check_table: [Option<unsafe fn(*mut pt_regs)>; 128] = [None; 128];
 
 pub unsafe fn __do_pgm_check(regs: *mut pt_regs, flags: usize) {
     let lc = get_lowcore(); let mut percpu_needs_fixup; let state; let stat; let trapnr; let mut teid = teid { val: 0 };
+    'out: {
     teid.val = (*lc).trans_exc_code; (*regs).int_code = (*lc).pgm_int_code; (*regs).int_parm_long = teid.val; (*regs).monitor_code = (*lc).monitor_code;
     trapnr = (*regs).int_code & PGM_INT_CODE_MASK; stat = this_cpu_ptr(&mut pgm_stat); (*stat).count[trapnr as usize] += 1;
     if flags & PGM_FLAG_GUEST_FAULT != 0 { (*current).thread.gmap_teid.val = (*regs).int_parm_long; (*current).thread.gmap_int_code = (*regs).int_code & 0xffff; return; }
@@ -175,11 +176,12 @@ pub unsafe fn __do_pgm_check(regs: *mut pt_regs, flags: usize) {
     if (*lc).pgm_code & 0x0200 != 0 { (*current).thread.trap_tdb = (*lc).pgm_tdb; }
     if (*lc).pgm_code & PGM_INT_CODE_PER != 0 {
         if user_mode(regs) { let ev = &mut (*current).thread.per_event; set_thread_flag(TIF_PER_TRAP); ev.address = (*lc).per_address; ev.cause = (*lc).per_code_combined; ev.paid = (*lc).per_access_id; }
-        else { __arch_local_irq_ssm((*regs).psw.mask & !PSW_MASK_PER); do_per_trap(regs); goto_out!(out); }
+        else { __arch_local_irq_ssm((*regs).psw.mask & !PSW_MASK_PER); do_per_trap(regs); break 'out; }
     }
     if !irqs_disabled_flags((*regs).psw.mask) { trace_hardirqs_on(); } __arch_local_irq_ssm((*regs).psw.mask & !PSW_MASK_PER);
     if trapnr != 0 { if let Some(f) = pgm_check_table[trapnr as usize] { f(regs); } }
-    out: { local_irq_disable(); percpu_needs_fixup = percpu_code_check(regs); irqentry_exit(regs, state); percpu_exit(regs, percpu_needs_fixup); }
+    }
+    { local_irq_disable(); percpu_needs_fixup = percpu_code_check(regs); irqentry_exit(regs, state); percpu_exit(regs, percpu_needs_fixup); }
 }
 
 // Debugfs/statistics declarations and initcall are retained as external kernel integration points.

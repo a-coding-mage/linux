@@ -14,12 +14,12 @@ extern "C" {
     pub fn mips_cpc_default_phys_base() -> usize;
 }
 
-#[cfg(feature = "CONFIG_MIPS_CPC")]
+#[cfg(CONFIG_MIPS_CPC)]
 extern "C" {
     pub fn mips_cpc_probe() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_MIPS_CPC"))]
+#[cfg(not(CONFIG_MIPS_CPC))]
 #[inline]
 pub fn mips_cpc_probe() -> i32 {
     // ENODEV
@@ -28,11 +28,11 @@ pub fn mips_cpc_probe() -> i32 {
 
 #[inline]
 pub unsafe fn mips_cpc_present() -> bool {
-    #[cfg(feature = "CONFIG_MIPS_CPC")]
+    #[cfg(CONFIG_MIPS_CPC)]
     {
         mips_cpc_base != core::ptr::null_mut()
     }
-    #[cfg(not(feature = "CONFIG_MIPS_CPC"))]
+    #[cfg(not(CONFIG_MIPS_CPC))]
     {
         false
     }
@@ -114,17 +114,17 @@ pub const CPC_Cx_STAT_CONF_PWRDN_IMPL: u32 = 1 << 16;
 pub const CPC_Cx_STAT_CONF_EJTAG_PROBE: u32 = 1 << 15;
 pub const CPC_Cx_OTHER_CORENUM: u32 = ((1 << 8) - 1) << 16;
 
-#[cfg(feature = "CONFIG_MIPS_CPC")]
+#[cfg(CONFIG_MIPS_CPC)]
 extern "C" {
     pub fn mips_cpc_lock_other(core: u32);
     pub fn mips_cpc_unlock_other();
 }
 
-#[cfg(not(feature = "CONFIG_MIPS_CPC"))]
+#[cfg(not(CONFIG_MIPS_CPC))]
 #[inline]
 pub fn mips_cpc_lock_other(_core: u32) {}
 
-#[cfg(not(feature = "CONFIG_MIPS_CPC"))]
+#[cfg(not(CONFIG_MIPS_CPC))]
 #[inline]
 pub fn mips_cpc_unlock_other() {}
 

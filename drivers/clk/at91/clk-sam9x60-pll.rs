@@ -30,7 +30,7 @@ unsafe fn sam9x60_frac_pll_set(core: *mut Sam9x60PllCore) -> i32 {
     spin_lock_irqsave((*core).lock, &mut flags); regmap_write_bits(regmap, AT91_PMC_PLL_UPDT, AT91_PMC_PLL_UPDT_ID_MSK, (*core).id as u32); regmap_read(regmap, AT91_PMC_PLL_CTRL1, &mut val);
     let cmul=(val & (*(*core).layout).mul_mask)>>(*(*core).layout).mul_shift; let cfrac=(val & (*(*core).layout).frac_mask)>>(*(*core).layout).frac_shift;
     if sam9x60_frac_pll_ready(regmap, (*core).id) && cmul==frac.mul as u32 && cfrac==frac.frac { spin_unlock_irqrestore((*core).lock, flags); return 0; }
-    val=(*(*core).characteristics).acr; regmap_write(regmap, AT91_PMC_PLL_ACR,val); regmap_write(regmap, AT91_PMC_PLL_CTRL1,(frac.mul as u32<<(*(*core).layout).mul_shift)|(frac.frac<<(*(*core).layout).frac_shift));
+    val=(*(*core).characteristics).acr; regmap_write(regmap, AT91_PMC_PLL_ACR,val); regmap_write(regmap, AT91_PMC_PLL_CTRL1,((frac.mul as u32)<<(*(*core).layout).mul_shift)|(frac.frac<<(*(*core).layout).frac_shift));
     if (*(*core).characteristics).upll { val|=AT91_PMC_PLL_ACR_UTMIBG; regmap_write(regmap,AT91_PMC_PLL_ACR,val); udelay(10); val|=AT91_PMC_PLL_ACR_UTMIVR; regmap_write(regmap,AT91_PMC_PLL_ACR,val); udelay(10); }
     regmap_write_bits(regmap,AT91_PMC_PLL_UPDT,AT91_PMC_PLL_UPDT_UPDATE|AT91_PMC_PLL_UPDT_ID_MSK,AT91_PMC_PLL_UPDT_UPDATE|(*core).id as u32);
     regmap_update_bits(regmap,AT91_PMC_PLL_CTRL0,AT91_PMC_PLL_CTRL0_ENLOCK|AT91_PMC_PLL_CTRL0_ENPLL,AT91_PMC_PLL_CTRL0_ENLOCK|AT91_PMC_PLL_CTRL0_ENPLL);
@@ -44,8 +44,8 @@ unsafe fn sam9x60_frac_pll_is_prepared(hw:*mut ClkHw)->i32 { let c=&*(hw as *mut
 // The remaining clock-framework callbacks and registration routines retain the C implementation's
 // interfaces and ordering; external kernel types and operations are supplied by the surrounding port.
 extern "C" {
-    fn regmap_read(*mut Regmap,u32,*mut u32); fn regmap_write(*mut Regmap,u32,u32); fn regmap_write_bits(*mut Regmap,u32,u32,u32); fn regmap_update_bits(*mut Regmap,u32,u32,u32);
-    fn spin_lock_irqsave(*mut Spinlock,*mut usize); fn spin_unlock_irqrestore(*mut Spinlock,usize); fn udelay(u32); fn cpu_relax();
+    fn regmap_read(_: *mut Regmap,_: u32,_: *mut u32); fn regmap_write(_: *mut Regmap,_: u32,_: u32); fn regmap_write_bits(_: *mut Regmap,_: u32,_: u32,_: u32); fn regmap_update_bits(_: *mut Regmap,_: u32,_: u32,_: u32);
+    fn spin_lock_irqsave(_: *mut Spinlock,_: *mut usize); fn spin_unlock_irqrestore(_: *mut Spinlock,_: usize); fn udelay(_: u32); fn cpu_relax();
 }
 
 // Direct Rust declarations for the remaining source-level callbacks. Their bodies use

@@ -68,50 +68,312 @@ pub unsafe fn user_access_save() -> usize { smap_save() }
 #[inline(always)]
 pub unsafe fn user_access_restore(value: usize) { smap_restore(value); }
 
-/* The following C expression macros are retained as Rust macros so callers
- * keep the same names, evaluation order, labels, and externally supplied
- * architecture helpers. Inline assembly is intentionally delegated to those
- * helpers because its register constraints are target/build dependent. */
+/*
+ * Integer types moved across the user boundary by a single access; this is
+ * the Rust form of the C `switch (sizeof(*(ptr)))` dispatch and `__inttype()`.
+ */
+pub trait UserInt: Copy {
+    const SIZE: usize;
+    fn into_bits(self) -> u64;
+    fn from_bits(bits: u64) -> Self;
+}
 
-#[macro_export]
-macro_rules! get_user { ($x:expr, $ptr:expr) => {{ unsafe { might_fault(); } $crate::do_get_user_call!(get_user, $x, $ptr) }}; }
-#[macro_export]
-macro_rules! __get_user { ($x:expr, $ptr:expr) => { $crate::do_get_user_call!(get_user_nocheck, $x, $ptr) }; }
-#[macro_export]
-macro_rules! put_user { ($x:expr, $ptr:expr) => {{ unsafe { might_fault(); } $crate::do_put_user_call!(put_user, $x, $ptr) }}; }
-#[macro_export]
-macro_rules! __put_user { ($x:expr, $ptr:expr) => { $crate::do_put_user_call!(put_user_nocheck, $x, $ptr) }; }
+macro_rules! impl_user_int {
+    ($($t:ty),*) => {$(
+        impl UserInt for $t {
+            const SIZE: usize = core::mem::size_of::<$t>();
+            #[inline(always)]
+            fn into_bits(self) -> u64 {
+                self as u64
+            }
+            #[inline(always)]
+            fn from_bits(bits: u64) -> Self {
+                bits as $t
+            }
+        }
+    )*};
+}
+impl_user_int!(u8, u16, u32, u64, i8, i16, i32, i64, usize, isize);
 
+/*
+ * Strange magic calling convention: pointer in %rax, value returned in %rdx,
+ * error in %eax (see arch/x86/lib/getuser.S).
+ */
+#[cfg(CONFIG_X86_64)]
+macro_rules! call_get_user {
+    ($sym:ident, $ptr:expr) => {{
+        let ret: u64;
+        let val: u64;
+        // SAFETY: the out-of-line helper range-checks the pointer and
+        // handles faults through its own exception table entries.
+        unsafe {
+            core::arch::asm!(
+                "call {f}",
+                f = sym $sym,
+                inlateout("rax") $ptr as u64 => ret,
+                lateout("rdx") val,
+                options(att_syntax),
+            );
+        }
+        (ret as core::ffi::c_int, val)
+    }};
+}
+
+/// `do_get_user_call()`: returns the helper's error and the loaded value.
+#[cfg(CONFIG_X86_64)]
+#[inline(always)]
+pub unsafe fn __do_get_user_call<T: UserInt>(ptr: *const T, check: bool) -> (core::ffi::c_int, T) {
+    let (ret, val) = match (T::SIZE, check) {
+        (1, true) => call_get_user!(__get_user_1, ptr),
+        (2, true) => call_get_user!(__get_user_2, ptr),
+        (4, true) => call_get_user!(__get_user_4, ptr),
+        (8, true) => call_get_user!(__get_user_8, ptr),
+        (1, false) => call_get_user!(__get_user_nocheck_1, ptr),
+        (2, false) => call_get_user!(__get_user_nocheck_2, ptr),
+        (4, false) => call_get_user!(__get_user_nocheck_4, ptr),
+        (8, false) => call_get_user!(__get_user_nocheck_8, ptr),
+        _ => (__get_user_bad(), 0),
+    };
+    (ret, T::from_bits(val))
+}
+
+/*
+ * Pointer in %rcx, value in %rax, error returned in %ecx; the helper
+ * clobbers %rbx (see arch/x86/lib/putuser.S), which Rust cannot name as an
+ * operand, so it is preserved around the call.
+ */
+#[cfg(CONFIG_X86_64)]
+macro_rules! call_put_user {
+    ($sym:ident, $ptr:expr, $val:expr) => {{
+        let ret: u64;
+        // SAFETY: the out-of-line helper range-checks the pointer and
+        // handles faults through its own exception table entries.
+        unsafe {
+            core::arch::asm!(
+                "mov %rbx, {saved}",
+                "call {f}",
+                "mov {saved}, %rbx",
+                f = sym $sym,
+                saved = out(reg) _,
+                inlateout("rcx") $ptr as u64 => ret,
+                in("rax") $val,
+                options(att_syntax),
+            );
+        }
+        ret as core::ffi::c_int
+    }};
+}
+
+/// `do_put_user_call()`: returns the helper's error.
+#[cfg(CONFIG_X86_64)]
+#[inline(always)]
+pub unsafe fn __do_put_user_call<T: UserInt>(x: T, ptr: *mut T, check: bool) -> core::ffi::c_int {
+    let val = x.into_bits();
+    match (T::SIZE, check) {
+        (1, true) => call_put_user!(__put_user_1, ptr, val),
+        (2, true) => call_put_user!(__put_user_2, ptr, val),
+        (4, true) => call_put_user!(__put_user_4, ptr, val),
+        (8, true) => call_put_user!(__put_user_8, ptr, val),
+        (1, false) => call_put_user!(__put_user_nocheck_1, ptr, val),
+        (2, false) => call_put_user!(__put_user_nocheck_2, ptr, val),
+        (4, false) => call_put_user!(__put_user_nocheck_4, ptr, val),
+        (8, false) => call_put_user!(__put_user_nocheck_8, ptr, val),
+        _ => {
+            __put_user_bad();
+            0
+        }
+    }
+}
+
+/*
+ * get_user - Get a simple variable from user space.
+ * Returns zero on success, or -EFAULT on error; on error @x is set to zero.
+ */
 #[macro_export]
-macro_rules! do_get_user_call {
-    ($fn:ident, $x:expr, $ptr:expr) => {{
-        let __ret_gu: i32 = unsafe { $crate::paste_get_user!($fn, $ptr) };
-        let _ = (&mut $x, __ret_gu);
+macro_rules! get_user {
+    ($x:expr, $ptr:expr) => {{
+        might_fault();
+        let (__ret_gu, __val_gu) = __do_get_user_call($ptr, true);
+        $x = __val_gu;
         __ret_gu
     }};
 }
 #[macro_export]
-macro_rules! do_put_user_call {
-    ($fn:ident, $x:expr, $ptr:expr) => {{
-        let __x = $x;
-        let __ptr = $ptr;
-        let _ = (__x, __ptr);
-        unsafe { $crate::paste_put_user!($fn, __ptr) }
+macro_rules! __get_user {
+    ($x:expr, $ptr:expr) => {{
+        let (__ret_gu, __val_gu) = __do_get_user_call($ptr, false);
+        $x = __val_gu;
+        __ret_gu
+    }};
+}
+/*
+ * put_user - Write a simple value into user space.
+ * Returns zero on success, or -EFAULT on error.
+ */
+#[macro_export]
+macro_rules! put_user {
+    ($x:expr, $ptr:expr) => {{
+        might_fault();
+        __do_put_user_call($x, $ptr, true)
+    }};
+}
+#[macro_export]
+macro_rules! __put_user {
+    ($x:expr, $ptr:expr) => {
+        __do_put_user_call($x, $ptr, false)
+    };
+}
+
+/*
+ * Exception-table entry types (asm/extable_fixup_types.h) used by the
+ * inline user accessors below.
+ */
+pub const __UACCESS_EX_TYPE_UACCESS: u32 = 3;
+/// `EX_TYPE_EFAULT_REG | EX_FLAG_CLEAR_AX` with %rdx (register 2) as the
+/// error register: on fault %rdx = -EFAULT and %rax = 0.
+pub const __UACCESS_EX_EFAULT_RDX_CLEAR_AX: u32 =
+    17 | ((-14i32 as u32) << 16) | (1 << 12) | (2 << 8);
+
+/*
+ * `__get_user_size()` without asm-goto outputs: a faulting load leaves
+ * -EFAULT in the error register and a zeroed value.
+ */
+#[cfg(CONFIG_X86_64)]
+#[inline(always)]
+pub unsafe fn __get_user_size<T: UserInt>(ptr: *const T) -> Result<T, core::ffi::c_int> {
+    let err: u64;
+    let val: u64;
+    macro_rules! load {
+        ($insn:literal, $dst:literal) => {
+            core::arch::asm!(
+                concat!("1: ", $insn, " ({p}), ", $dst),
+                "2:",
+                ".pushsection __ex_table, \"aM\", @progbits, 12",
+                ".balign 4",
+                ".long 1b - .",
+                ".long 2b - .",
+                ".long {ty}",
+                ".popsection",
+                p = in(reg) ptr,
+                ty = const __UACCESS_EX_EFAULT_RDX_CLEAR_AX,
+                inout("rdx") 0u64 => err,
+                out("rax") val,
+                options(att_syntax, nostack, readonly),
+            )
+        };
+    }
+    match T::SIZE {
+        1 => load!("movzbl", "%eax"),
+        2 => load!("movzwl", "%eax"),
+        4 => load!("movl", "%eax"),
+        8 => load!("movq", "%rax"),
+        _ => return Err(__get_user_bad()),
+    }
+    if err != 0 {
+        Err(err as core::ffi::c_int)
+    } else {
+        Ok(T::from_bits(val))
+    }
+}
+
+/// `__put_user_size()`/`__put_user_goto()`: one `mov` with an
+/// `EX_TYPE_UACCESS` fixup that branches to the fault path.
+#[cfg(CONFIG_X86_64)]
+#[inline(always)]
+pub unsafe fn __put_user_size<T: UserInt>(x: T, ptr: *mut T) -> Result<(), ()> {
+    let v = x.into_bits();
+    macro_rules! store {
+        ($insn:literal, $reg:literal) => {
+            core::arch::asm!(
+                concat!("1: ", $insn, " {v", $reg, "}, ({p})"),
+                ".pushsection __ex_table, \"aM\", @progbits, 12",
+                ".balign 4",
+                ".long 1b - .",
+                ".long {fault} - .",
+                ".long {ty}",
+                ".popsection",
+                v = in(reg) v,
+                p = in(reg) ptr,
+                ty = const __UACCESS_EX_TYPE_UACCESS,
+                fault = label { return Err(()); },
+                options(att_syntax, nostack),
+            )
+        };
+    }
+    match T::SIZE {
+        1 => store!("movb", ":l"),
+        2 => store!("movw", ":x"),
+        4 => store!("movl", ":e"),
+        8 => store!("movq", ""),
+        _ => __put_user_bad(),
+    }
+    Ok(())
+}
+
+/*
+ * The unsafe_{get,put}_user() accessors require user_access_begin(); on a
+ * fault they break out to @label, as the C versions `goto` it.
+ */
+#[macro_export]
+macro_rules! arch_unsafe_get_user {
+    ($x:expr, $ptr:expr, $label:lifetime) => {
+        match __get_user_size($ptr) {
+            Ok(__gu_val) => $x = __gu_val,
+            Err(_) => break $label,
+        }
+    };
+}
+#[macro_export]
+macro_rules! arch_unsafe_put_user {
+    ($x:expr, $ptr:expr, $label:lifetime) => {
+        if __put_user_size($x, $ptr).is_err() {
+            break $label;
+        }
+    };
+}
+#[macro_export]
+macro_rules! unsafe_get_user {
+    ($x:expr, $ptr:expr, $label:lifetime) => {
+        arch_unsafe_get_user!($x, $ptr, $label)
+    };
+}
+#[macro_export]
+macro_rules! unsafe_put_user {
+    ($x:expr, $ptr:expr, $label:lifetime) => {
+        arch_unsafe_put_user!($x, $ptr, $label)
+    };
+}
+
+#[macro_export]
+macro_rules! unsafe_copy_loop {
+    ($dst:ident, $src:ident, $len:ident, $ty:ty, $label:lifetime) => {
+        while $len >= core::mem::size_of::<$ty>() {
+            unsafe_put_user!(
+                core::ptr::read_unaligned($src as *const $ty),
+                $dst as *mut $ty,
+                $label
+            );
+            $dst = $dst.wrapping_add(core::mem::size_of::<$ty>());
+            $src = $src.wrapping_add(core::mem::size_of::<$ty>());
+            $len -= core::mem::size_of::<$ty>();
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! unsafe_copy_to_user {
+    ($dst:expr, $src:expr, $len:expr, $label:lifetime) => {{
+        let mut __ucu_dst: *mut u8 = ($dst).cast();
+        let mut __ucu_src: *const u8 = ($src).cast();
+        let mut __ucu_len: usize = $len;
+        unsafe_copy_loop!(__ucu_dst, __ucu_src, __ucu_len, u64, $label);
+        unsafe_copy_loop!(__ucu_dst, __ucu_src, __ucu_len, u32, $label);
+        unsafe_copy_loop!(__ucu_dst, __ucu_src, __ucu_len, u16, $label);
+        unsafe_copy_loop!(__ucu_dst, __ucu_src, __ucu_len, u8, $label);
     }};
 }
 
-/* File-local semantic equivalents for the remaining macro interfaces. */
-#[macro_export]
-macro_rules! __put_user_size { ($x:expr, $ptr:expr, $size:expr, $label:lifetime) => {{ let _ = ($x, $ptr, $size); }}; }
-#[macro_export]
-macro_rules! arch_unsafe_put_user { ($x:expr, $ptr:expr, $label:lifetime) => { $crate::__put_user_size!($x, $ptr, core::mem::size_of_val(&$x), $label) }; }
-#[macro_export]
-macro_rules! unsafe_copy_loop { ($dst:expr, $src:expr, $len:expr, $ty:ty, $label:lifetime) => { while $len >= core::mem::size_of::<$ty>() { $dst += core::mem::size_of::<$ty>(); $src += core::mem::size_of::<$ty>(); $len -= core::mem::size_of::<$ty>(); } }; }
-#[macro_export]
-macro_rules! unsafe_copy_to_user { ($dst:expr, $src:expr, $len:expr, $label:lifetime) => {{ let mut __d=$dst; let mut __s=$src; let mut __l=$len; $crate::unsafe_copy_loop!(__d,__s,__l,u64,$label); $crate::unsafe_copy_loop!(__d,__s,__l,u32,$label); $crate::unsafe_copy_loop!(__d,__s,__l,u16,$label); $crate::unsafe_copy_loop!(__d,__s,__l,u8,$label); }}; }
-
-/* Required by the source's architecture-specific assembly call sites. */
-#[macro_export] macro_rules! paste_get_user { ($fn:ident, $ptr:expr) => { $crate::__get_user_bad() }; }
-#[macro_export] macro_rules! paste_put_user { ($fn:ident, $ptr:expr) => { 0i32 }; }
+// CONFIG_X86_32: the 32-bit forms (u64 in %edx:%eax, `__get_user_8` returning
+// %ecx:%edx) are not translated yet; only CONFIG_X86_64 accessors exist here.
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

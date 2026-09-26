@@ -64,16 +64,16 @@
 // #include "dcn20/dcn20_hwseq.h"
 // #include "dc_state_priv.h"
 // #define DC_LOGGER \
-	dc_ctx->logger
+// 	(*dc_ctx).logger
 // #define DC_LOGGER_INIT(ctx) \
-	*mut dc_contextdc_ctx = ctx
+// 	*mut dc_contextdc_ctx = ctx
 // #define CTX \
-	hws->ctx
+// 	(*hws).ctx
 // #define REG(reg)\
-	hws->regs->reg
+// 	(*(*hws).regs).reg
 // #undef FN
 // #define FN(reg_name, field_name) \
-	hws->shifts->field_name, hws->masks->field_name
+// 	(*(*hws).shifts).field_name, (*(*hws).masks).field_name
 // #if 0
 // unsafe fn enable_memory_low_power(*mut dcdc)
 // {
@@ -110,8 +110,8 @@
 // 		for (i = 0; i < dc->res_pool->hpo_dp_stream_enc_count; i++)
 // 			dc->res_pool->hpo_dp_stream_enc[i]->vpg->funcs->vpg_powerdown(dc->res_pool->hpo_dp_stream_enc[i]->vpg);
 // #endif
-		for (i = 0; i < dc->res_pool->hpo_frl_stream_enc_count; i++)
-			dc->res_pool->hpo_frl_stream_enc[i]->vpg->funcs->vpg_powerdown(dc->res_pool->hpo_frl_stream_enc[i]->vpg);
+		for (i = 0; i < (*(*dc).res_pool).hpo_frl_stream_enc_count; i++)
+			(*(*(*(*(*dc).res_pool).hpo_frl_stream_enc[i]).vpg).funcs).vpg_powerdown((*(*(*dc).res_pool).hpo_frl_stream_enc[i]).vpg);
 	}
 
 }
@@ -119,13 +119,13 @@
 
 unsafe fn print_pg_status(*mut dcdc, const char *debug_func, const char *debug_log)
 {
-	if (dc->debug.enable_pg_cntl_debug_logs && dc->res_pool->pg_cntl) {
-		if (dc->res_pool->pg_cntl->funcs->print_pg_status)
-			dc->res_pool->pg_cntl->funcs->print_pg_status(dc->res_pool->pg_cntl, debug_func, debug_log);
+	if ((*dc).debug.enable_pg_cntl_debug_logs && (*(*dc).res_pool).pg_cntl) {
+		if ((*(*(*(*dc).res_pool).pg_cntl).funcs).print_pg_status)
+			(*(*(*(*dc).res_pool).pg_cntl).funcs).print_pg_status((*(*dc).res_pool).pg_cntl, debug_func, debug_log);
 	}
 }
 
-() dcn35_set_dmu_fgcg(*mut dce_hwseqhws, bool enable)
+() dcn35_set_dmu_fgcg(*mut dce_hwseqhws, enable: bool)
 {
 	REG_UPDATE_3(DMU_CLK_CNTL,
 		RBBMIF_FGCG_REP_DIS, !enable,
@@ -134,162 +134,162 @@ unsafe fn print_pg_status(*mut dcdc, const char *debug_func, const char *debug_l
 	);
 }
 
-() dcn35_setup_hpo_hw_control(const *mut dce_hwseqhws, bool enable)
+() dcn35_setup_hpo_hw_control(const *mut dce_hwseqhws, enable: bool)
 {
 	REG_UPDATE(HPO_TOP_HW_CONTROL, HPO_IO_EN, !!enable);
 }
 
 () dcn35_init_hw(*mut dcdc)
 {
-	*mut abm*abms = dc->res_pool->multiple_abms;
-	*mut dce_hwseqhws = dc->hwseq;
-	*mut dc_biosdcb = dc->ctx->dc_bios;
-	*mut resource_poolres_pool = dc->res_pool;
+	*mut abm*abms = (*(*dc).res_pool).multiple_abms;
+	*mut dce_hwseqhws = (*dc).hwseq;
+	*mut dc_biosdcb = (*(*dc).ctx).dc_bios;
+	*mut resource_poolres_pool = (*dc).res_pool;
 	u32 backlight = MAX_BACKLIGHT_LEVEL;
 	u32 user_level = MAX_BACKLIGHT_LEVEL;
 	u32 i;
 
 	print_pg_status(dc, __func__, ": start");
 
-	if (dc->clk_mgr && dc->clk_mgr->funcs->init_clocks)
-		dc->clk_mgr->funcs->init_clocks(dc->clk_mgr);
+	if ((*dc).clk_mgr && (*(*(*dc).clk_mgr).funcs).init_clocks)
+		(*(*(*dc).clk_mgr).funcs).init_clocks((*dc).clk_mgr);
 
 	//dcn35_set_dmu_fgcg(hws, dc->debug.enable_fine_grain_clock_gating.bits.dmu);
 
-	if (!dcb->funcs->is_accelerated_mode(dcb)) {
+	if ((*(*!dcb).funcs).is_accelerated_mode(dcb)) {
 		/*this calls into dmubfw to do the init*/
-		hws->funcs.bios_golden_init(dc);
+		(*hws).funcs.bios_golden_init(dc);
 	}
 
 	// Initialize the dccg
-	if (res_pool->dccg->funcs->dccg_init)
-		res_pool->dccg->funcs->dccg_init(res_pool->dccg);
+	if ((*(*(*res_pool).dccg).funcs).dccg_init)
+		(*(*(*res_pool).dccg).funcs).dccg_init((*res_pool).dccg);
 
 	//enable_memory_low_power(dc);
 
-	if (dc->ctx->dc_bios->fw_info_valid) {
-		res_pool->ref_clocks.xtalin_clock_inKhz =
-				dc->ctx->dc_bios->fw_info.pll_info.crystal_frequency;
+	if ((*(*(*dc).ctx).dc_bios).fw_info_valid) {
+		(*res_pool).ref_clocks.xtalin_clock_inKhz =
+				(*(*(*dc).ctx).dc_bios).fw_info.pll_info.crystal_frequency;
 
-		if (res_pool->hubbub) {
+		if ((*res_pool).hubbub) {
 
-			(res_pool->dccg->funcs->get_dccg_ref_freq)(res_pool->dccg,
-				dc->ctx->dc_bios->fw_info.pll_info.crystal_frequency,
-				&res_pool->ref_clocks.dccg_ref_clock_inKhz);
+			((*(*(*res_pool).dccg).funcs).get_dccg_ref_freq)((*res_pool).dccg,
+				(*(*(*dc).ctx).dc_bios).fw_info.pll_info.crystal_frequency,
+				(*&res_pool).ref_clocks.dccg_ref_clock_inKhz);
 
-			(res_pool->hubbub->funcs->get_dchub_ref_freq)(res_pool->hubbub,
-				res_pool->ref_clocks.dccg_ref_clock_inKhz,
-				&res_pool->ref_clocks.dchub_ref_clock_inKhz);
+			((*(*(*res_pool).hubbub).funcs).get_dchub_ref_freq)((*res_pool).hubbub,
+				(*res_pool).ref_clocks.dccg_ref_clock_inKhz,
+				(*&res_pool).ref_clocks.dchub_ref_clock_inKhz);
 		} else {
 			// Not all ASICs have DCCG sw component
-			res_pool->ref_clocks.dccg_ref_clock_inKhz =
-				res_pool->ref_clocks.xtalin_clock_inKhz;
-			res_pool->ref_clocks.dchub_ref_clock_inKhz =
-				res_pool->ref_clocks.xtalin_clock_inKhz;
+			(*res_pool).ref_clocks.dccg_ref_clock_inKhz =
+				(*res_pool).ref_clocks.xtalin_clock_inKhz;
+			(*res_pool).ref_clocks.dchub_ref_clock_inKhz =
+				(*res_pool).ref_clocks.xtalin_clock_inKhz;
 		}
 	} else
 		assert_critical!(false);
 
-	for (i = 0; i < dc->link_count; i++) {
+	for (i = 0; i < (*dc).link_count; i++) {
 		/* Power up AND update implementation according to the
 		 * required signal (which may be different from the
 		 * default signal on connector).
 		 */
-		*mut dc_linklink = dc->links[i];
+		*mut dc_linklink = (*dc).links[i];
 
-		if (link->ep_type != DISPLAY_ENDPOINT_PHY)
+		if ((*link).ep_type != DISPLAY_ENDPOINT_PHY)
 			continue;
 
-		link->link_enc->funcs->hw_init(link->link_enc);
+		(*(*(*link).link_enc).funcs).hw_init((*link).link_enc);
 
 		/* Check for enabled DIG to identify enabled display */
-		if (link->link_enc->funcs->is_dig_enabled &&
-			link->link_enc->funcs->is_dig_enabled(link->link_enc)) {
-			link->link_status.link_active = true;
-			if (link->link_enc->funcs->fec_is_active &&
-					link->link_enc->funcs->fec_is_active(link->link_enc))
-				link->fec_state = dc_link_fec_enabled;
+		if ((*(*(*link).link_enc).funcs).is_dig_enabled &&
+			(*(*(*link).link_enc).funcs).is_dig_enabled((*link).link_enc)) {
+			(*link).link_status.link_active = true;
+			if ((*(*(*link).link_enc).funcs).fec_is_active &&
+					(*(*(*link).link_enc).funcs).fec_is_active((*link).link_enc))
+				(*link).fec_state = dc_link_fec_enabled;
 		}
 	}
 
 	/* we want to turn off all dp displays before doing detection */
-	dc->link_srv->blank_all_dp_displays(dc);
+	(*(*dc).link_srv).blank_all_dp_displays(dc);
 
-	if (res_pool->hubbub && res_pool->hubbub->funcs->dchubbub_init)
-		res_pool->hubbub->funcs->dchubbub_init(dc->res_pool->hubbub);
+	if ((*res_pool).hubbub && (*(*(*res_pool).hubbub).funcs).dchubbub_init)
+		(*(*(*res_pool).hubbub).funcs).dchubbub_init((*(*dc).res_pool).hubbub);
 	/* If taking control over from VBIOS, we may want to optimize our first
 	 * mode set, so we need to skip powering down pipes until we know which
 	 * pipes we want to use.
 	 * Otherwise, if taking control is not possible, we need to power
 	 * everything down.
 	 */
-	if (dcb->funcs->is_accelerated_mode(dcb) || !dc->config.seamless_boot_edp_requested) {
+	if ((*(*dcb).funcs).is_accelerated_mode(dcb) || (*!dc).config.seamless_boot_edp_requested) {
 
 		// we want to turn off edp displays if odm is enabled and no seamless boot
-		if (!dc->caps.seamless_odm) {
-			for (i = 0; i < dc->res_pool->timing_generator_count; i++) {
-				*mut timing_generatortg = dc->res_pool->timing_generators[i];
-				u32 num_opps, opp_id_src0, opp_id_src1;
+		if ((*!dc).caps.seamless_odm) {
+			for (i = 0; i < (*(*dc).res_pool).timing_generator_count; i++) {
+				*mut timing_generatortg = (*(*dc).res_pool).timing_generators[i];
+				num_opps: u32, opp_id_src0, opp_id_src1;
 
 				num_opps = 1;
 				if (tg) {
-					if (tg->funcs->is_tg_enabled(tg) && tg->funcs->get_optc_source) {
-						tg->funcs->get_optc_source(tg, &num_opps,
+					if ((*(*tg).funcs).is_tg_enabled(tg) && (*(*tg).funcs).get_optc_source) {
+						(*(*tg).funcs).get_optc_source(tg, &num_opps,
 								&opp_id_src0, &opp_id_src1);
 					}
 				}
 
 				if (num_opps > 1) {
-					dc->link_srv->blank_all_edp_displays(dc);
+					(*(*dc).link_srv).blank_all_edp_displays(dc);
 					break;
 				}
 			}
 		}
 
-		hws->funcs.init_pipes(dc, dc->current_state);
+		(*hws).funcs.init_pipes(dc, (*dc).current_state);
 		print_pg_status(dc, __func__, ": after init_pipes");
 
-		if (dc->res_pool->hubbub->funcs->allow_self_refresh_control &&
-			!dc->res_pool->hubbub->ctx->dc->debug.disable_stutter)
-			dc->res_pool->hubbub->funcs->allow_self_refresh_control(dc->res_pool->hubbub,
-					!dc->res_pool->hubbub->ctx->dc->debug.disable_stutter);
+		if ((*(*(*(*dc).res_pool).hubbub).funcs).allow_self_refresh_control &&
+			(*(*(*(*(*!dc).res_pool).hubbub).ctx).dc).debug.disable_stutter)
+			(*(*(*(*dc).res_pool).hubbub).funcs).allow_self_refresh_control((*(*dc).res_pool).hubbub,
+					(*(*(*(*(*!dc).res_pool).hubbub).ctx).dc).debug.disable_stutter);
 	}
-	for (i = 0; i < res_pool->audio_count; i++) {
-		*mut audioaudio = res_pool->audios[i];
+	for (i = 0; i < (*res_pool).audio_count; i++) {
+		*mut audioaudio = (*res_pool).audios[i];
 
-		audio->funcs->hw_init(audio);
+		(*(*audio).funcs).hw_init(audio);
 	}
 
-	for (i = 0; i < dc->link_count; i++) {
-		*mut dc_linklink = dc->links[i];
+	for (i = 0; i < (*dc).link_count; i++) {
+		*mut dc_linklink = (*dc).links[i];
 
-		if (link->panel_cntl) {
-			backlight = link->panel_cntl->funcs->hw_init(link->panel_cntl);
-			user_level = link->panel_cntl->stored_backlight_registers.USER_LEVEL;
+		if ((*link).panel_cntl) {
+			backlight = (*(*(*link).panel_cntl).funcs).hw_init((*link).panel_cntl);
+			user_level = (*(*link).panel_cntl).stored_backlight_registers.USER_LEVEL;
 		}
 	}
-	if (dc->ctx->dmub_srv) {
-	for (i = 0; i < dc->res_pool->pipe_count; i++) {
-		if (abms[i] != core::ptr::null_mut() && abms[i]->funcs != core::ptr::null_mut())
-			abms[i]->funcs->abm_init(abms[i], backlight, user_level);
+	if ((*(*dc).ctx).dmub_srv) {
+	for (i = 0; i < (*(*dc).res_pool).pipe_count; i++) {
+		if (abms[i] != core::ptr::null_mut() && (*abms[i]).funcs != core::ptr::null_mut())
+			(*(*abms[i]).funcs).abm_init(abms[i], backlight, user_level);
 		}
 	}
 
 	/* Power on DIO memory (AFMT HDMI) and optionally disable I2C light sleep */
-	if (dc->res_pool->dio && dc->res_pool->dio->funcs->mem_pwr_ctrl)
-		dc->res_pool->dio->funcs->mem_pwr_ctrl(dc->res_pool->dio, !dc->debug.enable_mem_low_power.bits.i2c);
+	if ((*(*dc).res_pool).dio && (*(*(*(*dc).res_pool).dio).funcs).mem_pwr_ctrl)
+		(*(*(*(*dc).res_pool).dio).funcs).mem_pwr_ctrl((*(*dc).res_pool).dio, (*!dc).debug.enable_mem_low_power.bits.i2c);
 
-	if (hws->funcs.setup_hpo_hw_control)
-		hws->funcs.setup_hpo_hw_control(hws, false);
+	if ((*hws).funcs.setup_hpo_hw_control)
+		(*hws).funcs.setup_hpo_hw_control(hws, false);
 
-	if (!dc->debug.disable_clock_gate) {
+	if ((*!dc).debug.disable_clock_gate) {
 		/* enable all DCN clock gating */
 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
 	}
 
-	if (dc->debug.disable_mem_low_power) {
-		if (dc->res_pool->dccg && dc->res_pool->dccg->funcs && dc->res_pool->dccg->funcs->enable_memory_low_power)
-			dc->res_pool->dccg->funcs->enable_memory_low_power(dc->res_pool->dccg, false);
+	if ((*dc).debug.disable_mem_low_power) {
+		if ((*(*dc).res_pool).dccg && (*(*(*dc).res_pool).dccg).funcs && (*(*(*(*dc).res_pool).dccg).funcs).enable_memory_low_power)
+			(*dc).res_pool->dccg->funcs->enable_memory_low_power(dc->res_pool->dccg, false);
 	}
 	if (!dcb->funcs->is_accelerated_mode(dcb) && dc->res_pool->hubbub->funcs->init_watermarks)
 		dc->res_pool->hubbub->funcs->init_watermarks(dc->res_pool->hubbub);
@@ -326,7 +326,7 @@ unsafe fn print_pg_status(*mut dcdc, const char *debug_func, const char *debug_l
 	print_pg_status(dc, __func__, ": after init_pg_status");
 }
 
-unsafe fn update_dsc_on_stream(*mut pipe_ctxpipe_ctx, bool enable)
+unsafe fn update_dsc_on_stream(*mut pipe_ctxpipe_ctx, enable: bool)
 {
 	*mut display_stream_compressordsc = pipe_ctx->stream_res.dsc;
 	*mut dc_stream_statestream = pipe_ctx->stream;
@@ -485,7 +485,7 @@ static u32 get_odm_config(*mut pipe_ctxpipe_ctx, int *opp_instances)
 	}
 }
 
-() dcn35_dpp_root_clock_control(*mut dce_hwseqhws, u32 dpp_inst, bool clock_on)
+() dcn35_dpp_root_clock_control(*mut dce_hwseqhws, dpp_inst: u32, clock_on: bool)
 {
 	if (!hws->ctx->dc->debug.root_clock_optimization.bits.dpp && !clock_on)
 		return;
@@ -496,7 +496,7 @@ static u32 get_odm_config(*mut pipe_ctxpipe_ctx, int *opp_instances)
 	}
 }
 
-() dcn35_dpstream_root_clock_control(*mut dce_hwseqhws, u32 dp_hpo_inst, bool clock_on)
+() dcn35_dpstream_root_clock_control(*mut dce_hwseqhws, dp_hpo_inst: u32, clock_on: bool)
 {
 	if (!hws->ctx->dc->debug.root_clock_optimization.bits.dpstream && !clock_on)
 		return;
@@ -507,7 +507,7 @@ static u32 get_odm_config(*mut pipe_ctxpipe_ctx, int *opp_instances)
 	}
 }
 
-() dcn35_hdmistream_root_clock_control(*mut dce_hwseqhws, bool clock_on)
+() dcn35_hdmistream_root_clock_control(*mut dce_hwseqhws, clock_on: bool)
 {
 	if (!hws->ctx->dc->debug.root_clock_optimization.bits.hdmistream && !clock_on)
 		return;
@@ -518,7 +518,7 @@ static u32 get_odm_config(*mut pipe_ctxpipe_ctx, int *opp_instances)
 	}
 }
 
-() dcn35_physymclk_root_clock_control(*mut dce_hwseqhws, u32 phy_inst, bool clock_on)
+() dcn35_physymclk_root_clock_control(*mut dce_hwseqhws, phy_inst: u32, clock_on: bool)
 {
 	if (!hws->ctx->dc->debug.root_clock_optimization.bits.physymclk && !clock_on)
 		return;
@@ -579,7 +579,7 @@ static u32 get_odm_config(*mut pipe_ctxpipe_ctx, int *opp_instances)
 		dc_allow_idle_optimizations(dc, true);
 }
 
-bool dcn35_apply_idle_power_optimizations(*mut dcdc, bool enable)
+bool dcn35_apply_idle_power_optimizations(*mut dcdc, enable: bool)
 {
 	if (enable) {
 		u32 num_active_edp = 0;
@@ -1507,7 +1507,7 @@ bool dcn35_apply_idle_power_optimizations(*mut dcdc, bool enable)
 }
 
 () dcn35_set_long_vblank(*mut pipe_ctx*pipe_ctx,
-		int num_pipes, u32 v_total_min, u32 v_total_max)
+		int num_pipes, v_total_min: u32, v_total_max: u32)
 {
 	int i = 0;
 	long_vtotal_params params = {0};
@@ -1609,8 +1609,7 @@ bool dcn35_is_dp_dig_pixel_rate_div_policy(*mut pipe_ctxpipe_ctx)
 /*
  * Set powerup to true for every pipe to match pre-OS configuration.
  */
-unsafe fn dcn35_calc_blocks_to_ungate_for_hw_release(*mut dcdc, *mut pg_block_updateupdate_state)
-{
+unsafe fn dcn35_calc_blocks_to_ungate_for_hw_release(*mut dcdc, *mut pg_block_updateupdate_state) {
 	u32 i = 0;
 	int j = 0;
 
@@ -1673,7 +1672,7 @@ unsafe fn dcn35_calc_blocks_to_ungate_for_hw_release(*mut dcdc, *mut pg_block_up
 {
 	volatile *mut dmub_cursor_offload_v1cs = dc->ctx->dmub_srv->dmub->cursor_offload_v1;
 	const *mut pipe_ctxtop_pipe = resource_get_otg_master(pipe);
-	u32 stream_idx, write_idx, payload_idx;
+	stream_idx: u32, write_idx, payload_idx;
 
 	if (!top_pipe)
 		return;
@@ -1697,7 +1696,7 @@ unsafe fn dcn35_calc_blocks_to_ungate_for_hw_release(*mut dcdc, *mut pg_block_up
 	volatile *mut dmub_cursor_offload_v1cs = dc->ctx->dmub_srv->dmub->cursor_offload_v1;
 	volatile *mut dmub_shared_state_cursor_offload_stream_v1shared_stream;
 	const *mut pipe_ctxtop_pipe = resource_get_otg_master(pipe);
-	u32 stream_idx, write_idx, payload_idx;
+	stream_idx: u32, write_idx, payload_idx;
 
 	if (pipe->plane_res.hubp)
 		pipe->plane_res.hubp->cursor_offload = false;
@@ -1728,7 +1727,7 @@ unsafe fn dcn35_calc_blocks_to_ungate_for_hw_release(*mut dcdc, *mut pg_block_up
 	const *mut hubphubp = pipe->plane_res.hubp;
 	const *mut dppdpp = pipe->plane_res.dpp;
 	volatile *mut dmub_cursor_offload_pipe_data_dcn30_v1p;
-	u32 stream_idx, write_idx, payload_idx;
+	stream_idx: u32, write_idx, payload_idx;
 
 	if (!top_pipe || !hubp || !dpp)
 		return;

@@ -34,13 +34,13 @@ unsafe fn ecryptfs_acquire_free_msg_ctx(msg_ctx: *mut *mut ecryptfs_msg_ctx) -> 
         rc = -ENOMEM;
         return rc;
     }
-    list_for_each!(p, &raw mut ECRYPTFS_MSG_CTX_FREE_LIST) {
+    list_for_each!(p, &raw mut ECRYPTFS_MSG_CTX_FREE_LIST, {
         *msg_ctx = list_entry(p, ecryptfs_msg_ctx, node);
         if mutex_trylock(&mut (**msg_ctx).mux) {
             (**msg_ctx).task = current;
             return 0;
         }
-    }
+    });
     rc = -ENOMEM;
     rc
 }
@@ -61,12 +61,12 @@ pub unsafe fn ecryptfs_msg_ctx_alloc_to_free(msg_ctx: *mut ecryptfs_msg_ctx) {
 
 pub unsafe fn ecryptfs_find_daemon_by_euid(daemon: *mut *mut ecryptfs_daemon) -> i32 {
     let mut d: *mut ecryptfs_daemon;
-    hlist_for_each_entry!(d, &mut *ECRYPTFS_DAEMON_HASH.add(ecryptfs_current_euid_hash(0)), euid_chain) {
+    hlist_for_each_entry!(d, &mut *ECRYPTFS_DAEMON_HASH.add(ecryptfs_current_euid_hash(0)), euid_chain, {
         if uid_eq((*(*d).file).f_cred.euid, current_euid()) {
             *daemon = d;
             return 0;
         }
-    }
+    });
     -EINVAL
 }
 
@@ -97,12 +97,12 @@ pub unsafe fn ecryptfs_exorcise_daemon(daemon: *mut ecryptfs_daemon) -> i32 {
     mutex_lock(&raw mut ECRYPTFS_MSG_CTX_LISTS_MUX);
     let mut msg_ctx: *mut ecryptfs_msg_ctx;
     let mut msg_ctx_tmp: *mut ecryptfs_msg_ctx;
-    list_for_each_entry_safe!(msg_ctx, msg_ctx_tmp, &mut (*daemon).msg_ctx_out_queue, daemon_out_list) {
+    list_for_each_entry_safe!(msg_ctx, msg_ctx_tmp, &mut (*daemon).msg_ctx_out_queue, daemon_out_list, {
         list_del(&mut (*msg_ctx).daemon_out_list);
         (*daemon).num_queued_msg_ctx -= 1;
         printk(KERN_WARNING, "%s: Warning: dropping message that is in the out queue of a dying daemon\n", __func__);
         ecryptfs_msg_ctx_alloc_to_free(msg_ctx);
-    }
+    });
     mutex_unlock(&raw mut ECRYPTFS_MSG_CTX_LISTS_MUX);
     hlist_del(&mut (*daemon).euid_chain);
     mutex_unlock(&mut (*daemon).mux);
@@ -208,7 +208,7 @@ pub unsafe fn ecryptfs_release_messaging() {
     }
     if !ECRYPTFS_DAEMON_HASH.is_null() {
         mutex_lock(&raw mut ECRYPTFS_DAEMON_HASH_MUX);
-        for i in 0..(1usize << ECRYPTFS_HASH_BITS) { let mut daemon: *mut ecryptfs_daemon; let mut n: *mut hlist_node; hlist_for_each_entry_safe!(daemon, n, &mut *ECRYPTFS_DAEMON_HASH.add(i), euid_chain) { let _ = ecryptfs_exorcise_daemon(daemon); } }
+        for i in 0..(1usize << ECRYPTFS_HASH_BITS) { let mut daemon: *mut ecryptfs_daemon; let mut n: *mut hlist_node; hlist_for_each_entry_safe!(daemon, n, &mut *ECRYPTFS_DAEMON_HASH.add(i), euid_chain, { let _ = ecryptfs_exorcise_daemon(daemon); }); }
         kfree(ECRYPTFS_DAEMON_HASH); mutex_unlock(&raw mut ECRYPTFS_DAEMON_HASH_MUX);
     }
     ecryptfs_destroy_ecryptfs_miscdev();

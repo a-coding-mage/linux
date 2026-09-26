@@ -154,6 +154,9 @@ unsafe extern "C" fn pt_core_irq_handler(_irq: i32, data: *mut c_void) -> irqret
 
 pub unsafe fn pt_core_init(pt: *mut pt_device) -> i32 {
     let mut dma_pool_name: [u8; MAX_DMAPOOL_NAME_LEN] = [0; MAX_DMAPOOL_NAME_LEN];
+    'e_destroy_pool: {
+    'e_free_dma: {
+    'e_free_irq: {
     let cmd_q: *mut pt_cmd_queue = &mut (*pt).cmd_q;
     let mut dma_addr_lo: u32;
     let mut dma_addr_hi: u32;
@@ -181,7 +184,7 @@ pub unsafe fn pt_core_init(pt: *mut pt_device) -> i32 {
     if (*cmd_q).qbase.is_null() {
         dev_err(dev, "unable to allocate command queue\n");
         ret = -ENOMEM;
-        goto e_destroy_pool;
+        break 'e_destroy_pool;
     }
     (*cmd_q).qidx = 0;
     (*cmd_q).reg_control = (*pt).io_regs + CMD_Q_STATUS_INCR;
@@ -194,7 +197,7 @@ pub unsafe fn pt_core_init(pt: *mut pt_device) -> i32 {
     ret = request_irq((*pt).pt_irq, pt_core_irq_handler, 0, dev_name((*pt).dev), pt);
     if ret != 0 {
         dev_err(dev, "unable to allocate an IRQ\n");
-        goto e_free_dma;
+        break 'e_free_dma;
     }
 
     (*cmd_q).qcontrol &= !CMD_Q_SIZE;
@@ -208,15 +211,17 @@ pub unsafe fn pt_core_init(pt: *mut pt_device) -> i32 {
     iowrite32((*cmd_q).qcontrol, (*cmd_q).reg_control);
     pt_core_enable_queue_interrupts(pt);
     ret = pt_dmaengine_register(pt);
-    if ret != 0 { goto e_free_irq; }
+    if ret != 0 { break 'e_free_irq; }
     ptdma_debugfs_setup(pt);
     return 0;
-
-e_free_irq:
+    }
+    
     free_irq((*pt).pt_irq, pt);
-e_free_dma:
+    }
+    
     dma_free_coherent(dev, (*cmd_q).qsize, (*cmd_q).qbase, (*cmd_q).qbase_dma);
-e_destroy_pool:
+    }
+    
     dma_pool_destroy((*pt).cmd_q.dma_pool);
     ret
 }

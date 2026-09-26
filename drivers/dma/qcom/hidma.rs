@@ -84,7 +84,7 @@ unsafe fn hidma_free_chan_resources(ch:*mut dma_chan){let m=to_hidma_chan(ch);le
 unsafe fn hidma_pause(ch:*mut dma_chan)->i32{let m=to_hidma_chan(ch);let d=to_hidma_dev((*m).chan.device);if !(*m).paused{pm_runtime_get_sync((*d).ddev.dev);hidma_ll_disable((*d).lldev);(*m).paused=true;pm_runtime_mark_last_busy((*d).ddev.dev);pm_runtime_put_autosuspend((*d).ddev.dev);}0}
 unsafe fn hidma_resume(ch:*mut dma_chan)->i32{let m=to_hidma_chan(ch);let d=to_hidma_dev((*m).chan.device);if (*m).paused{pm_runtime_get_sync((*d).ddev.dev);let r=hidma_ll_enable((*d).lldev);if r==0{(*m).paused=false;}pm_runtime_mark_last_busy((*d).ddev.dev);pm_runtime_put_autosuspend((*d).ddev.dev);return r;}0}
 
-#[cfg(feature="CONFIG_GENERIC_MSI_IRQ")] unsafe fn hidma_chirq_handler_msi(i:i32,arg:*mut core::ffi::c_void)->irqreturn_t{let p=arg as *mut *mut hidma_lldev;let d=to_hidma_dev_from_lldev(p);hidma_ll_inthandler_msi(i,*p,1<<((i-(*d).msi_virqbase) as u32))}
+#[cfg(CONFIG_GENERIC_MSI_IRQ)] unsafe fn hidma_chirq_handler_msi(i:i32,arg:*mut core::ffi::c_void)->irqreturn_t{let p=arg as *mut *mut hidma_lldev;let d=to_hidma_dev_from_lldev(p);hidma_ll_inthandler_msi(i,*p,1<<((i-(*d).msi_virqbase) as u32))}
 unsafe fn hidma_chirq_handler(i:i32,arg:*mut core::ffi::c_void)->irqreturn_t{hidma_ll_inthandler(i,arg as *mut hidma_lldev)}
 
 unsafe fn hidma_shutdown(p:*mut platform_device){let d=platform_get_drvdata(p);pm_runtime_get_sync((*d).ddev.dev);hidma_ll_disable((*d).lldev);pm_runtime_mark_last_busy((*d).ddev.dev);pm_runtime_put_autosuspend((*d).ddev.dev);}

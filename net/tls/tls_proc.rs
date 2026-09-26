@@ -5,7 +5,7 @@
 // implementation are intentionally left as external symbols.
 
 // CONFIG_PROC_FS
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 static TLS_MIB_LIST: [SnmpMib; 17] = [
     SnmpMibItem("TlsCurrTxSw", LINUX_MIB_TLSCURRTXSW),
     SnmpMibItem("TlsCurrRxSw", LINUX_MIB_TLSCURRRXSW),
@@ -26,7 +26,7 @@ static TLS_MIB_LIST: [SnmpMib; 17] = [
     SnmpMibItem("TlsRxRekeyReceived", LINUX_MIB_TLSRXREKEYRECEIVED),
 ];
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn tls_statistics_seq_show(seq: *mut SeqFile, _v: *mut core::ffi::c_void) -> i32 {
     let mut buf: [c_ulong; TLS_MIB_LIST.len()] = [0; TLS_MIB_LIST.len()];
     let cnt: i32 = TLS_MIB_LIST.len() as i32;
@@ -59,7 +59,7 @@ unsafe fn tls_statistics_seq_show(seq: *mut SeqFile, _v: *mut core::ffi::c_void)
 
 pub unsafe fn tls_proc_init(net: *mut Net) -> i32 {
     // CONFIG_PROC_FS
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     {
         if proc_create_net_single(
             "tls_stat",

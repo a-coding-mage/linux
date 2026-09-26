@@ -40,13 +40,13 @@ unsafe fn stack_maxrandom_size(task_size: ::core::ffi::c_ulong) -> ::core::ffi::
     max
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 const mmap32_rnd_bits: ::core::ffi::c_uint = mmap_rnd_compat_bits;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 const mmap64_rnd_bits: ::core::ffi::c_uint = mmap_rnd_bits;
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 const mmap32_rnd_bits: ::core::ffi::c_uint = mmap_rnd_bits;
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 const mmap64_rnd_bits: ::core::ffi::c_uint = mmap_rnd_bits;
 
 const SIZE_128M: ::core::ffi::c_ulong = 128 * 1024 * 1024;
@@ -57,7 +57,7 @@ unsafe fn mmap_is_legacy() -> ::core::ffi::c_int {
 
 unsafe fn arch_rnd(rndbits: ::core::ffi::c_uint) -> ::core::ffi::c_ulong {
     if (*current).flags & PF_RANDOMIZE == 0 { return 0; }
-    (get_random_long() & ((1 as ::core::ffi::c_ulong << rndbits) - 1)) << PAGE_SHIFT
+    (get_random_long() & (((1 as ::core::ffi::c_ulong) << rndbits) - 1)) << PAGE_SHIFT
 }
 
 #[no_mangle]
@@ -92,7 +92,7 @@ pub unsafe extern "C" fn arch_pick_mmap_layout(mm: *mut MmStruct, rlim_stack: *c
     else { mm_flags_set(MMF_TOPDOWN, mm); }
     arch_pick_mmap_base(&mut (*mm).mmap_base, &mut (*mm).mmap_legacy_base,
                         arch_rnd(mmap64_rnd_bits), task_size_64bit(0), rlim_stack);
-    #[cfg(feature = "CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES")]
+    #[cfg(CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES)]
     arch_pick_mmap_base(&mut (*mm).mmap_compat_base, &mut (*mm).mmap_compat_legacy_base,
                         arch_rnd(mmap32_rnd_bits), task_size_32bit(), rlim_stack);
 }
@@ -100,7 +100,7 @@ pub unsafe extern "C" fn arch_pick_mmap_layout(mm: *mut MmStruct, rlim_stack: *c
 #[no_mangle]
 pub unsafe extern "C" fn get_mmap_base(is_legacy: ::core::ffi::c_int) -> ::core::ffi::c_ulong {
     let mm = (*current).mm;
-    #[cfg(feature = "CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES")]
+    #[cfg(CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES)]
     if in_32bit_syscall() {
         return if is_legacy != 0 { (*mm).mmap_compat_legacy_base } else { (*mm).mmap_compat_base };
     }

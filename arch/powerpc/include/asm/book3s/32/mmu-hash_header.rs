@@ -106,7 +106,7 @@ pub struct mm_context_t {
 
 /* CONFIG_PPC_KUEP: INIT_MM_CONTEXT(mm) initializes context.sr0 to SR_NX. */
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn update_bats();
     pub static mut patch__hash_page_A0: i32;
     pub static mut patch__hash_page_A1: i32;

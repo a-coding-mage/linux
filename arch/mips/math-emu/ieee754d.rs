@@ -20,7 +20,7 @@ extern "C" {
     fn printk(fmt: *const core::ffi::c_char, ...) -> core::ffi::c_int;
 }
 
-pub unsafe fn ieee754dp_dump(mut m: *mut core::ffi::c_char, mut x: union ieee754dp) -> union ieee754dp {
+pub unsafe fn ieee754dp_dump(mut m: *mut core::ffi::c_char, mut x: ieee754dp) -> ieee754dp {
     let mut i: i32;
 
     printk(b"%s\0".as_ptr() as *const core::ffi::c_char, m);
@@ -56,7 +56,7 @@ pub unsafe fn ieee754dp_dump(mut m: *mut core::ffi::c_char, mut x: union ieee754
     x
 }
 
-pub unsafe fn ieee754sp_dump(mut m: *mut core::ffi::c_char, mut x: union ieee754sp) -> union ieee754sp {
+pub unsafe fn ieee754sp_dump(mut m: *mut core::ffi::c_char, mut x: ieee754sp) -> ieee754sp {
     let mut i: i32;
 
     printk(b"%s=\0".as_ptr() as *const core::ffi::c_char, m);

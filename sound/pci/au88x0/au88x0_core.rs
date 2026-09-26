@@ -1174,16 +1174,16 @@ unsafe fn vortex_route(vortex: *mut vortex_t, en: c_int, channel: c_uchar, sourc
     let mut route: ADBRamLink = (((source as c_int) & ADB_MASK) << ADB_SHIFT) | ((dest as c_int) & ADB_MASK);
     if en != 0 {
         vortex_adb_addroutes(vortex, channel, &mut route, 1);
-        if source as c_int < OFFSET_SRCOUT + NR_SRC && source as c_int >= OFFSET_SRCOUT {
+        if (source as c_int) < OFFSET_SRCOUT + NR_SRC && source as c_int >= OFFSET_SRCOUT {
             vortex_src_addWTD(vortex, (source as c_int - OFFSET_SRCOUT) as c_uchar, channel);
-        } else if source as c_int < OFFSET_MIXOUT + NR_MIXOUT && source as c_int >= OFFSET_MIXOUT {
+        } else if (source as c_int) < OFFSET_MIXOUT + NR_MIXOUT && source as c_int >= OFFSET_MIXOUT {
             vortex_mixer_addWTD(vortex, (source as c_int - OFFSET_MIXOUT) as c_uchar, channel);
         }
     } else {
         vortex_adb_delroutes(vortex, channel, route, route);
-        if source as c_int < OFFSET_SRCOUT + NR_SRC && source as c_int >= OFFSET_SRCOUT {
+        if (source as c_int) < OFFSET_SRCOUT + NR_SRC && source as c_int >= OFFSET_SRCOUT {
             vortex_src_delWTD(vortex, (source as c_int - OFFSET_SRCOUT) as c_uchar, channel);
-        } else if source as c_int < OFFSET_MIXOUT + NR_MIXOUT && source as c_int >= OFFSET_MIXOUT {
+        } else if (source as c_int) < OFFSET_MIXOUT + NR_MIXOUT && source as c_int >= OFFSET_MIXOUT {
             vortex_mixer_delWTD(vortex, (source as c_int - OFFSET_MIXOUT) as c_uchar, channel);
         }
     }
@@ -1198,19 +1198,19 @@ unsafe fn vortex_routeLRT(vortex: *mut vortex_t, en: c_int, ch: c_uchar, source0
     }
     if en != 0 {
         vortex_adb_addroutes(vortex, ch, route.as_mut_ptr(), 2);
-        if source0 as c_int < OFFSET_SRCOUT + NR_SRC && source0 as c_int >= OFFSET_SRCOUT {
+        if (source0 as c_int) < OFFSET_SRCOUT + NR_SRC && source0 as c_int >= OFFSET_SRCOUT {
             vortex_src_addWTD(vortex, (source0 as c_int - OFFSET_SRCOUT) as c_uchar, ch);
             vortex_src_addWTD(vortex, (source1 as c_int - OFFSET_SRCOUT) as c_uchar, ch);
-        } else if source0 as c_int < OFFSET_MIXOUT + NR_MIXOUT && source0 as c_int >= OFFSET_MIXOUT {
+        } else if (source0 as c_int) < OFFSET_MIXOUT + NR_MIXOUT && source0 as c_int >= OFFSET_MIXOUT {
             vortex_mixer_addWTD(vortex, (source0 as c_int - OFFSET_MIXOUT) as c_uchar, ch);
             vortex_mixer_addWTD(vortex, (source1 as c_int - OFFSET_MIXOUT) as c_uchar, ch);
         }
     } else {
         vortex_adb_delroutes(vortex, ch, route[0], route[1]);
-        if source0 as c_int < OFFSET_SRCOUT + NR_SRC && source0 as c_int >= OFFSET_SRCOUT {
+        if (source0 as c_int) < OFFSET_SRCOUT + NR_SRC && source0 as c_int >= OFFSET_SRCOUT {
             vortex_src_delWTD(vortex, (source0 as c_int - OFFSET_SRCOUT) as c_uchar, ch);
             vortex_src_delWTD(vortex, (source1 as c_int - OFFSET_SRCOUT) as c_uchar, ch);
-        } else if source0 as c_int < OFFSET_MIXOUT + NR_MIXOUT && source0 as c_int >= OFFSET_MIXOUT {
+        } else if (source0 as c_int) < OFFSET_MIXOUT + NR_MIXOUT && source0 as c_int >= OFFSET_MIXOUT {
             vortex_mixer_delWTD(vortex, (source0 as c_int - OFFSET_MIXOUT) as c_uchar, ch);
             vortex_mixer_delWTD(vortex, (source1 as c_int - OFFSET_MIXOUT) as c_uchar, ch);
         }

@@ -2078,7 +2078,7 @@ pub static mut onyx_images: [[u32; PCXU_IMAGE_SIZE / core::mem::size_of::<u32>()
    0xffffffff,   0xffffffff
    }
 };
-#define PCXW_IMAGE_SIZE 576
+pub const PCXW_IMAGE_SIZE: u32 = 576;
 
 static uint32_t cuda_images[][PCXW_IMAGE_SIZE/sizeof(uint32_t)] __ro_after_init = {
 /*

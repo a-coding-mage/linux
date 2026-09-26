@@ -11,34 +11,34 @@
 
 #[repr(C)]
 pub struct task_io_accounting {
-    #[cfg(feature = "CONFIG_TASK_XACCT")]
+    #[cfg(CONFIG_TASK_XACCT)]
     /* bytes read */
     pub rchar: u64,
-    #[cfg(feature = "CONFIG_TASK_XACCT")]
+    #[cfg(CONFIG_TASK_XACCT)]
     /*  bytes written */
     pub wchar: u64,
-    #[cfg(feature = "CONFIG_TASK_XACCT")]
+    #[cfg(CONFIG_TASK_XACCT)]
     /* # of read syscalls */
     pub syscr: u64,
-    #[cfg(feature = "CONFIG_TASK_XACCT")]
+    #[cfg(CONFIG_TASK_XACCT)]
     /* # of write syscalls */
     pub syscw: u64,
 
-    #[cfg(feature = "CONFIG_TASK_IO_ACCOUNTING")]
+    #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
     /*
      * The number of bytes which this task has caused to be read from
      * storage.
      */
     pub read_bytes: u64,
 
-    #[cfg(feature = "CONFIG_TASK_IO_ACCOUNTING")]
+    #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
     /*
      * The number of bytes which this task has caused, or shall cause to be
      * written to disk.
      */
     pub write_bytes: u64,
 
-    #[cfg(feature = "CONFIG_TASK_IO_ACCOUNTING")]
+    #[cfg(CONFIG_TASK_IO_ACCOUNTING)]
     /*
      * A task can cause "negative" IO too.  If this task truncates some
      * dirty pagecache, some IO which another task has been accounted for

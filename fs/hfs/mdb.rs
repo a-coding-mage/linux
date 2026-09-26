@@ -10,7 +10,7 @@
 
 // External kernel, HFS, and B-tree declarations are supplied by other files.
 
-static unsafe fn hfs_get_last_session(
+unsafe fn hfs_get_last_session(
     sb: *mut super_block,
     start: *mut sector_t,
     size: *mut sector_t,
@@ -62,12 +62,12 @@ pub unsafe fn is_hfs_cnid_counts_valid(sb: *mut super_block) -> bool {
     !corrupted
 }
 
-static unsafe fn hfs_sect_offset(sb: *mut super_block, sec: sector_t) -> c_uint {
+unsafe fn hfs_sect_offset(sb: *mut super_block, sec: sector_t) -> c_uint {
     let start = (sec as loff_t) << HFS_SECTOR_SIZE_BITS;
     (start & ((*sb).s_blocksize - 1) as loff_t) as c_uint
 }
 
-static unsafe fn hfs_mdb_publish(sbi: *mut hfs_sb_info) {
+unsafe fn hfs_mdb_publish(sbi: *mut hfs_sb_info) {
     lock_buffer((*sbi).mdb_bh);
     memcpy(
         (*(*sbi).mdb_bh).b_data.add((*sbi).mdb_offset as usize),
@@ -78,7 +78,7 @@ static unsafe fn hfs_mdb_publish(sbi: *mut hfs_sb_info) {
     unlock_buffer((*sbi).mdb_bh);
 }
 
-static unsafe fn hfs_alt_mdb_publish(sbi: *mut hfs_sb_info) {
+unsafe fn hfs_alt_mdb_publish(sbi: *mut hfs_sb_info) {
     lock_buffer((*sbi).alt_mdb_bh);
     memcpy(
         (*(*sbi).alt_mdb_bh).b_data.add((*sbi).alt_mdb_offset as usize),

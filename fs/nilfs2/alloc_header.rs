@@ -21,7 +21,7 @@
  */
 #[inline]
 pub unsafe fn nilfs_palloc_entries_per_group(inode: *const inode) -> c_ulong {
-	1 as c_ulong << ((*inode).i_blkbits + 3 /* log2(8 = CHAR_BITS) */)
+	(1 as c_ulong) << ((*inode).i_blkbits + 3 /* log2(8 = CHAR_BITS) */)
 }
 
 extern "C" {

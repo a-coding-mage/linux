@@ -206,7 +206,7 @@ pub unsafe fn mmu_mark_initmem_nx() -> c_int {
 }
 
 // #ifdef CONFIG_STRICT_KERNEL_RWX
-#[cfg(feature = "CONFIG_STRICT_KERNEL_RWX")]
+#[cfg(CONFIG_STRICT_KERNEL_RWX)]
 pub unsafe fn mmu_mark_rodata_ro() -> c_int {
     let sinittext = __pa(_sinittext);
     let err = mmu_mapin_ram_chunk(0, sinittext, PAGE_KERNEL_ROX, false);

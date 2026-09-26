@@ -94,7 +94,7 @@ unsafe extern "C" fn p1023_rdb_setup_arch() {
              * the i2c controller switches to select RTC chip in the kernel.
              */
             // CONFIG_RTC_CLASS controls this build-time block in the original.
-            #[cfg(feature = "CONFIG_RTC_CLASS")]
+            #[cfg(CONFIG_RTC_CLASS)]
             {
                 /* Enable RTC chip on the segment #2 of i2c */
                 clrbits8(BCSR_REGS.add(15), BCSR15_I2C_BUS0_SEG_CLR);

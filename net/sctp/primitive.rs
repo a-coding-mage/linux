@@ -27,7 +27,7 @@
 
 macro_rules! declare_primitive {
     ($function:ident, $primitive:ident) => {
-        /* This is called in the code as sctp_primitive_ ## name. */
+        /* This is called in the code as ::kernel::macros::paste!([<sctp_primitive_ name>]). */
         pub unsafe fn $function(
             net: *mut net,
             asoc: *mut sctp_association,

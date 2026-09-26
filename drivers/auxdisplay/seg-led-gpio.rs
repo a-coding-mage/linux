@@ -137,7 +137,7 @@ unsafe extern "C" fn seg_led_probe(pdev: *mut platform_device) -> i32 {
 
     static SEGMENT: &[u8] = b"segment\0";
     (*priv_).segment_gpios = devm_gpiod_get_array(dev, SEGMENT.as_ptr() as *const i8, GPIOD_OUT_LOW);
-    if (*priv_).segment_gpios as isize < 0 {
+    if ((*priv_).segment_gpios as isize) < 0 {
         return ptr_err((*priv_).segment_gpios);
     }
 

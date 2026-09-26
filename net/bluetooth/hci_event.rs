@@ -26,7 +26,7 @@
 /* Handle HCI Event packets */
 
 *mut core::ffi::c_voidhci_ev_skb_pull(*mut hci_devhdev, *mut sk_buffskb,
-			     u8 ev, size_t len)
+			     ev: u8, size_t len)
 {
 	*mut core::ffi::c_voiddata;
 
@@ -38,7 +38,7 @@
 }
 
 *mut core::ffi::c_voidhci_cc_skb_pull(*mut hci_devhdev, *mut sk_buffskb,
-			     u16 op, size_t len)
+			     op: u16, size_t len)
 {
 	*mut core::ffi::c_voiddata;
 
@@ -50,7 +50,7 @@
 }
 
 *mut core::ffi::c_voidhci_le_ev_skb_pull(*mut hci_devhdev, *mut sk_buffskb,
-				u8 ev, size_t len)
+				ev: u8, size_t len)
 {
 	*mut core::ffi::c_voiddata;
 
@@ -62,10 +62,10 @@
 }
 
 void hci_store_wake_reason(*mut hci_devhdev,
-				  const bdaddr_t *bdaddr, u8 addr_type)
+				  const bdaddr_t *bdaddr, addr_type: u8)
 	__must_hold(&hdev.lock);
 
-u8 hci_cc_inquiry_cancel(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_inquiry_cancel(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -103,7 +103,7 @@ u8 hci_cc_inquiry_cancel(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_periodic_inq(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_periodic_inq(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			      *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -118,7 +118,7 @@ u8 hci_cc_periodic_inq(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_exit_periodic_inq(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_exit_periodic_inq(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -133,7 +133,7 @@ u8 hci_cc_exit_periodic_inq(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_remote_name_req_cancel(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_remote_name_req_cancel(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_remote_name_req_cancelrp = data;
@@ -143,7 +143,7 @@ u8 hci_cc_remote_name_req_cancel(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_role_discovery(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_role_discovery(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
 	*mut hci_rp_role_discoveryrp = data;
@@ -165,7 +165,7 @@ u8 hci_cc_role_discovery(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_link_policy(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_rp_read_link_policyrp = data;
@@ -187,7 +187,7 @@ u8 hci_cc_read_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_link_policy(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_rp_write_link_policyrp = data;
@@ -214,7 +214,7 @@ u8 hci_cc_write_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_def_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_def_link_policy(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_rp_read_def_link_policyrp = data;
@@ -229,7 +229,7 @@ u8 hci_cc_read_def_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_def_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_def_link_policy(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -249,7 +249,7 @@ u8 hci_cc_write_def_link_policy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_reset(*mut hci_devhdev, *mut core::ffi::c_voiddata, *mut sk_buffskb)
+u8 hci_cc_reset(*mut hci_devhdev, data: *mut core::ffi::c_void, *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
 
@@ -289,7 +289,7 @@ u8 hci_cc_reset(*mut hci_devhdev, *mut core::ffi::c_voiddata, *mut sk_buffskb)
 	return rp.status;
 }
 
-u8 hci_cc_read_stored_link_key(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_stored_link_key(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_rp_read_stored_link_keyrp = data;
@@ -309,7 +309,7 @@ u8 hci_cc_read_stored_link_key(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_delete_stored_link_key(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_delete_stored_link_key(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_delete_stored_link_keyrp = data;
@@ -330,7 +330,7 @@ u8 hci_cc_delete_stored_link_key(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_local_name(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_local_name(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -354,7 +354,7 @@ u8 hci_cc_write_local_name(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_local_name(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_name(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				 *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_namerp = data;
@@ -371,7 +371,7 @@ u8 hci_cc_read_local_name(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_auth_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_auth_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -402,7 +402,7 @@ u8 hci_cc_write_auth_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_encrypt_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_encrypt_mode(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -428,9 +428,10 @@ u8 hci_cc_write_encrypt_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_scan_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
+	'done: {
 	*mut hci_ev_statusrp = data;
 	u8 param;
 	*mut core::ffi::c_voidsent;
@@ -447,7 +448,7 @@ u8 hci_cc_write_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	if rp.status {
 		hdev.discov_timeout = 0;
-		goto done;
+		break 'done;
 	}
 
 	if param & SCAN_INQUIRY
@@ -459,14 +460,14 @@ u8 hci_cc_write_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		set_bit(HCI_PSCAN, &hdev.flags);
 	else
 		clear_bit(HCI_PSCAN, &hdev.flags);
-
-done:
+	}
+	
 	hci_dev_unlock(hdev);
 
 	return rp.status;
 }
 
-u8 hci_cc_set_event_filter(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_set_event_filter(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -492,7 +493,7 @@ u8 hci_cc_set_event_filter(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_class_of_dev(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_class_of_dev(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_rp_read_class_of_devrp = data;
@@ -513,7 +514,7 @@ u8 hci_cc_read_class_of_dev(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_class_of_dev(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_class_of_dev(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -538,7 +539,7 @@ u8 hci_cc_write_class_of_dev(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_voice_setting(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_voice_setting(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_rp_read_voice_settingrp = data;
@@ -564,7 +565,7 @@ u8 hci_cc_read_voice_setting(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_voice_setting(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_voice_setting(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -595,7 +596,7 @@ u8 hci_cc_write_voice_setting(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_num_supported_iac(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_num_supported_iac(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_read_num_supported_iacrp = data;
@@ -612,7 +613,7 @@ u8 hci_cc_read_num_supported_iac(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_ssp_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_ssp_mode(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -645,7 +646,7 @@ u8 hci_cc_write_ssp_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_sc_support(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_sc_support(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -678,7 +679,7 @@ u8 hci_cc_write_sc_support(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_local_version(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_version(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_versionrp = data;
@@ -700,9 +701,10 @@ u8 hci_cc_read_local_version(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_enc_key_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_enc_key_size(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
+	'done: {
 	*mut hci_rp_read_enc_key_sizerp = data;
 	*mut hci_connconn;
 	u16 handle;
@@ -717,7 +719,7 @@ u8 hci_cc_read_enc_key_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	conn = hci_conn_hash_lookup_handle(hdev, handle);
 	if !conn {
 		status = 0xFF;
-		goto done;
+		break 'done;
 	}
 
 	/* While unexpected, the read_enc_key_size command may fail. The most
@@ -759,14 +761,14 @@ u8 hci_cc_read_enc_key_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	}
 
 	hci_encrypt_cfm(conn, status);
-
-done:
+	}
+	
 	hci_dev_unlock(hdev);
 
 	return status;
 }
 
-u8 hci_cc_read_local_commands(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_commands(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_commandsrp = data;
@@ -783,7 +785,7 @@ u8 hci_cc_read_local_commands(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_auth_payload_timeout(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_auth_payload_timeout(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					   *mut sk_buffskb)
 {
 	*mut hci_rp_read_auth_payload_torp = data;
@@ -805,9 +807,10 @@ u8 hci_cc_read_auth_payload_timeout(*mut hci_devhdev, *mut core::ffi::c_voiddata
 	return rp.status;
 }
 
-u8 hci_cc_write_auth_payload_timeout(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_auth_payload_timeout(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_rp_write_auth_payload_torp = data;
 	*mut hci_connconn;
 	*mut core::ffi::c_voidsent;
@@ -823,19 +826,19 @@ u8 hci_cc_write_auth_payload_timeout(*mut hci_devhdev, *mut core::ffi::c_voiddat
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(rp.handle));
 	if !conn {
 		rp.status = 0xff;
-		goto unlock;
+		break 'unlock;
 	}
 
 	if !rp.status
 		conn.auth_payload_timeout = get_unaligned_le16(sent + 2);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 
 	return rp.status;
 }
 
-u8 hci_cc_read_local_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_features(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_featuresrp = data;
@@ -887,7 +890,7 @@ u8 hci_cc_read_local_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_local_ext_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_ext_features(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_ext_featuresrp = data;
@@ -911,7 +914,7 @@ u8 hci_cc_read_local_ext_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_buffer_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_buffer_size(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_rp_read_buffer_sizerp = data;
@@ -946,7 +949,7 @@ u8 hci_cc_read_buffer_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_bd_addr(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_bd_addr(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			      *mut sk_buffskb)
 {
 	*mut hci_rp_read_bd_addrrp = data;
@@ -965,7 +968,7 @@ u8 hci_cc_read_bd_addr(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_local_pairing_opts(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_pairing_opts(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_pairing_optsrp = data;
@@ -984,7 +987,7 @@ u8 hci_cc_read_local_pairing_opts(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_page_scan_activity(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_page_scan_activity(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_rp_read_page_scan_activityrp = data;
@@ -1002,7 +1005,7 @@ u8 hci_cc_read_page_scan_activity(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_page_scan_activity(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_page_scan_activity(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					  *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1023,7 +1026,7 @@ u8 hci_cc_write_page_scan_activity(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_page_scan_type(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_page_scan_type(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_rp_read_page_scan_typerp = data;
@@ -1034,12 +1037,12 @@ u8 hci_cc_read_page_scan_type(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		return rp.status;
 
 	if (test_bit(HCI_INIT, &hdev.flags))
-		hdev.page_scan_type = rp.type;
+		hdev.page_scan_type = rp.r#type;
 
 	return rp.status;
 }
 
-u8 hci_cc_write_page_scan_type(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_page_scan_type(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1057,9 +1060,10 @@ u8 hci_cc_write_page_scan_type(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_clock(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_clock(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_rp_read_clockrp = data;
 	*mut hci_cp_read_clockcp;
 	*mut hci_connconn;
@@ -1073,11 +1077,11 @@ u8 hci_cc_read_clock(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	cp = hci_sent_cmd_data(hdev, HCI_OP_READ_CLOCK);
 	if !cp
-		goto unlock;
+		break 'unlock;
 
 	if cp.which == 0x00 {
 		hdev.clock = le32_to_cpu(rp.clock);
-		goto unlock;
+		break 'unlock;
 	}
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(rp.handle));
@@ -1085,13 +1089,13 @@ u8 hci_cc_read_clock(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		conn.clock = le32_to_cpu(rp.clock);
 		conn.clock_accuracy = le16_to_cpu(rp.accuracy);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 	return rp.status;
 }
 
-u8 hci_cc_read_inq_rsp_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_inq_rsp_tx_power(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_rp_read_inq_rsp_tx_powerrp = data;
@@ -1106,7 +1110,7 @@ u8 hci_cc_read_inq_rsp_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_def_err_data_reporting(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_def_err_data_reporting(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					     *mut sk_buffskb)
 {
 	*mut hci_rp_read_def_err_data_reportingrp = data;
@@ -1121,7 +1125,7 @@ u8 hci_cc_read_def_err_data_reporting(*mut hci_devhdev, *mut core::ffi::c_voidda
 	return rp.status;
 }
 
-u8 hci_cc_write_def_err_data_reporting(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_def_err_data_reporting(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					      *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1141,9 +1145,10 @@ u8 hci_cc_write_def_err_data_reporting(*mut hci_devhdev, *mut core::ffi::c_voidd
 	return rp.status;
 }
 
-u8 hci_cc_pin_code_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_pin_code_reply(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_rp_pin_code_replyrp = data;
 	*mut hci_cp_pin_code_replycp;
 	*mut hci_connconn;
@@ -1156,22 +1161,22 @@ u8 hci_cc_pin_code_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		mgmt_pin_code_reply_complete(hdev, &rp.bdaddr, rp.status);
 
 	if rp.status
-		goto unlock;
+		break 'unlock;
 
 	cp = hci_sent_cmd_data(hdev, HCI_OP_PIN_CODE_REPLY);
 	if !cp
-		goto unlock;
+		break 'unlock;
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &cp.bdaddr);
 	if conn
 		conn.pin_length = cp.pin_len;
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 	return rp.status;
 }
 
-u8 hci_cc_pin_code_neg_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_pin_code_neg_reply(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_rp_pin_code_neg_replyrp = data;
@@ -1189,7 +1194,7 @@ u8 hci_cc_pin_code_neg_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_buffer_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_buffer_size(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_buffer_sizerp = data;
@@ -1212,7 +1217,7 @@ u8 hci_cc_le_read_buffer_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_local_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_local_features(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_le_read_local_featuresrp = data;
@@ -1227,7 +1232,7 @@ u8 hci_cc_le_read_local_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_conn_interval(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_conn_interval(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_conn_intervalrp = data;
@@ -1248,11 +1253,13 @@ u8 hci_cc_le_read_conn_interval(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	/* Store the smallest minimum supported connection interval reported by
 	 * the controller so the default rate parameters can be clamped to it.
 	 */
-	for i = 0; i < rp.num_grps; i++ {
+	i = 0;
+	while i < rp.num_grps {
 		u16 min = le16_to_cpu(rp.grps[i].min);
 
 		if !min_interval || min < min_interval
 			min_interval = min;
+	    i++;
 	}
 
 	hdev.le_min_rate_interval = min_interval;
@@ -1260,7 +1267,7 @@ u8 hci_cc_le_read_conn_interval(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_adv_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_adv_tx_power(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_adv_tx_powerrp = data;
@@ -1275,7 +1282,7 @@ u8 hci_cc_le_read_adv_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_user_confirm_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_user_confirm_reply(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_rp_user_confirm_replyrp = data;
@@ -1293,7 +1300,7 @@ u8 hci_cc_user_confirm_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_user_confirm_neg_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_user_confirm_neg_reply(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_user_confirm_replyrp = data;
@@ -1311,7 +1318,7 @@ u8 hci_cc_user_confirm_neg_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_user_passkey_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_user_passkey_reply(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_rp_user_confirm_replyrp = data;
@@ -1329,7 +1336,7 @@ u8 hci_cc_user_passkey_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_user_passkey_neg_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_user_passkey_neg_reply(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_user_confirm_replyrp = data;
@@ -1347,7 +1354,7 @@ u8 hci_cc_user_passkey_neg_reply(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_local_oob_data(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_oob_data(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_oob_datarp = data;
@@ -1357,7 +1364,7 @@ u8 hci_cc_read_local_oob_data(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_local_oob_ext_data(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_local_oob_ext_data(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_rp_read_local_oob_ext_datarp = data;
@@ -1367,7 +1374,7 @@ u8 hci_cc_read_local_oob_ext_data(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_random_addr(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_random_addr(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1397,7 +1404,7 @@ u8 hci_cc_le_set_random_addr(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_default_phy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_default_phy(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1422,7 +1429,7 @@ u8 hci_cc_le_set_default_phy(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_adv_set_random_addr(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_adv_set_random_addr(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1460,7 +1467,7 @@ u8 hci_cc_le_set_adv_set_random_addr(*mut hci_devhdev, *mut core::ffi::c_voiddat
 	return rp.status;
 }
 
-u8 hci_cc_le_remove_adv_set(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_remove_adv_set(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1488,7 +1495,7 @@ u8 hci_cc_le_remove_adv_set(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_clear_adv_sets(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_clear_adv_sets(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1505,21 +1512,21 @@ u8 hci_cc_le_clear_adv_sets(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	hci_dev_lock(hdev);
 
-	list_for_each_entry_safe(adv, n, &hdev.adv_instances, list) {
+	list_for_each_entry_safe!(adv, n, &hdev.adv_instances, list, {
 		u8 instance = adv.instance;
 
 		err = hci_remove_adv_instance(hdev, instance);
 		if !err
 			mgmt_advertising_removed(hci_skb_sk(hdev.sent_cmd),
 						 hdev, instance);
-	}
+	});
 
 	hci_dev_unlock(hdev);
 
 	return rp.status;
 }
 
-u8 hci_cc_le_read_transmit_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_transmit_power(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_le_read_transmit_powerrp = data;
@@ -1535,7 +1542,7 @@ u8 hci_cc_le_read_transmit_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_privacy_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_privacy_mode(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1562,7 +1569,7 @@ u8 hci_cc_le_set_privacy_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_adv_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1601,9 +1608,10 @@ u8 hci_cc_le_set_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_ext_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_ext_adv_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_cp_le_set_ext_adv_enablecp;
 	*mut hci_cp_ext_adv_setset;
 	*mut adv_infoadv = core::ptr::null_mut(), *n;
@@ -1650,11 +1658,11 @@ u8 hci_cc_le_set_ext_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			/* If just one instance was disabled check if there are
 			 * any other instance enabled before clearing HCI_LE_ADV
 			 */
-			list_for_each_entry_safe(adv, n, &hdev.adv_instances,
-						 list) {
+			list_for_each_entry_safe!(adv, n, &hdev.adv_instances,
+						 list, {
 				if adv.enabled
-					goto unlock;
-			}
+					break 'unlock;
+			});
 		} else {
 			/* All instances shall be considered disabled */
 			list_for_each_entry_safe(adv, n, &hdev.adv_instances,
@@ -1664,13 +1672,13 @@ u8 hci_cc_le_set_ext_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		hci_dev_clear_flag(hdev, HCI_LE_ADV);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 	return rp.status;
 }
 
-u8 hci_cc_le_set_scan_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_scan_param(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_cp_le_set_scan_paramcp;
@@ -1687,14 +1695,14 @@ u8 hci_cc_le_set_scan_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	hci_dev_lock(hdev);
 
-	hdev.le_scan_type = cp.type;
+	hdev.le_scan_type = cp.r#type;
 
 	hci_dev_unlock(hdev);
 
 	return rp.status;
 }
 
-u8 hci_cc_le_set_ext_scan_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_ext_scan_param(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_cp_le_set_ext_scan_paramscp;
@@ -1714,7 +1722,7 @@ u8 hci_cc_le_set_ext_scan_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	hci_dev_lock(hdev);
 
-	hdev.le_scan_type = phy_param.type;
+	hdev.le_scan_type = phy_param.r#type;
 
 	hci_dev_unlock(hdev);
 
@@ -1737,8 +1745,8 @@ void clear_pending_adv_report(*mut hci_devhdev)
 }
 
 void store_pending_adv_report(*mut hci_devhdev, bdaddr_t *bdaddr,
-				     u8 bdaddr_type, s8 rssi, u32 flags,
-				     u8 *data, u8 len)
+				     bdaddr_type: u8, s8 rssi, flags: u32,
+				     u8 *data, len: u8)
 {
 	*mut discovery_stated = &hdev.discovery;
 
@@ -1753,7 +1761,7 @@ void store_pending_adv_report(*mut hci_devhdev, bdaddr_t *bdaddr,
 	d.last_adv_data_len = len;
 }
 
-void le_set_scan_enable_complete(*mut hci_devhdev, u8 enable)
+void le_set_scan_enable_complete(*mut hci_devhdev, enable: u8)
 {
 	hci_dev_lock(hdev);
 
@@ -1788,7 +1796,7 @@ void le_set_scan_enable_complete(*mut hci_devhdev, u8 enable)
 
 		hci_dev_clear_flag(hdev, HCI_LE_SCAN);
 
-		if (hdev.discovery.type == DISCOV_TYPE_INTERLEAVED &&
+		if (hdev.discovery.r#type == DISCOV_TYPE_INTERLEAVED &&
 		    hci_test_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY) &&
 		    !test_bit(HCI_INQUIRY, &hdev.flags) &&
 		    hdev.discovery.state == DISCOVERY_FINDING) {
@@ -1816,7 +1824,7 @@ void le_set_scan_enable_complete(*mut hci_devhdev, u8 enable)
 	hci_dev_unlock(hdev);
 }
 
-u8 hci_cc_le_set_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_scan_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_cp_le_set_scan_enablecp;
@@ -1836,7 +1844,7 @@ u8 hci_cc_le_set_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_ext_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_ext_scan_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_cp_le_set_ext_scan_enablecp;
@@ -1856,7 +1864,7 @@ u8 hci_cc_le_set_ext_scan_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_num_adv_sets(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_num_adv_sets(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_num_supported_adv_setsrp = data;
@@ -1872,7 +1880,7 @@ u8 hci_cc_le_read_num_adv_sets(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_accept_list_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_accept_list_size(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					  *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_accept_list_sizerp = data;
@@ -1887,7 +1895,7 @@ u8 hci_cc_le_read_accept_list_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_clear_accept_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_clear_accept_list(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -1904,7 +1912,7 @@ u8 hci_cc_le_clear_accept_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_add_to_accept_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_add_to_accept_list(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_cp_le_add_to_accept_listsent;
@@ -1927,7 +1935,7 @@ u8 hci_cc_le_add_to_accept_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_del_from_accept_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_del_from_accept_list(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_cp_le_del_from_accept_listsent;
@@ -1950,7 +1958,7 @@ u8 hci_cc_le_del_from_accept_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_supported_states(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_supported_states(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					  *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_supported_statesrp = data;
@@ -1965,7 +1973,7 @@ u8 hci_cc_le_read_supported_states(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_def_data_len(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_def_data_len(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_def_data_lenrp = data;
@@ -1981,7 +1989,7 @@ u8 hci_cc_le_read_def_data_len(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_write_def_data_len(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_write_def_data_len(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_cp_le_write_def_data_lensent;
@@ -2002,7 +2010,7 @@ u8 hci_cc_le_write_def_data_len(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_add_to_resolv_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_add_to_resolv_list(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
 	*mut hci_cp_le_add_to_resolv_listsent;
@@ -2026,7 +2034,7 @@ u8 hci_cc_le_add_to_resolv_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_del_from_resolv_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_del_from_resolv_list(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_cp_le_del_from_resolv_listsent;
@@ -2049,7 +2057,7 @@ u8 hci_cc_le_del_from_resolv_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_clear_resolv_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_clear_resolv_list(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -2066,7 +2074,7 @@ u8 hci_cc_le_clear_resolv_list(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_read_resolv_list_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_resolv_list_size(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					  *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_resolv_list_sizerp = data;
@@ -2081,7 +2089,7 @@ u8 hci_cc_le_read_resolv_list_size(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_addr_resolution_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_addr_resolution_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					       *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -2108,7 +2116,7 @@ u8 hci_cc_le_set_addr_resolution_enable(*mut hci_devhdev, *mut core::ffi::c_void
 	return rp.status;
 }
 
-u8 hci_cc_le_read_max_data_len(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_max_data_len(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_max_data_lenrp = data;
@@ -2126,7 +2134,7 @@ u8 hci_cc_le_read_max_data_len(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_write_le_host_supported(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_le_host_supported(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_cp_write_le_host_supportedsent;
@@ -2162,7 +2170,7 @@ u8 hci_cc_write_le_host_supported(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_set_adv_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_set_adv_param(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			       *mut sk_buffskb)
 {
 	*mut hci_cp_le_set_adv_paramcp;
@@ -2184,7 +2192,7 @@ u8 hci_cc_set_adv_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_rssi(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_rssi(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			   *mut sk_buffskb)
 {
 	*mut hci_rp_read_rssirp = data;
@@ -2206,9 +2214,10 @@ u8 hci_cc_read_rssi(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_read_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_read_tx_power(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			       *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_cp_read_tx_powersent;
 	*mut hci_rp_read_tx_powerrp = data;
 	*mut hci_connconn;
@@ -2226,9 +2235,9 @@ u8 hci_cc_read_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(rp.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
-	switch (sent.type) {
+	switch (sent.r#type) {
 	case 0x00:
 		conn.tx_power = rp.tx_power;
 		break;
@@ -2236,13 +2245,13 @@ u8 hci_cc_read_tx_power(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		conn.max_tx_power = rp.tx_power;
 		break;
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 	return rp.status;
 }
 
-u8 hci_cc_write_ssp_debug_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_write_ssp_debug_mode(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -2260,7 +2269,7 @@ u8 hci_cc_write_ssp_debug_mode(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-void hci_cs_inquiry(*mut hci_devhdev, u8 status)
+void hci_cs_inquiry(*mut hci_devhdev, status: u8)
 {
 	bt_dev_dbg(hdev, "status 0x%2.2x", status);
 
@@ -2271,7 +2280,7 @@ void hci_cs_inquiry(*mut hci_devhdev, u8 status)
 		set_bit(HCI_INQUIRY, &hdev.flags);
 }
 
-void hci_cs_create_conn(*mut hci_devhdev, u8 status)
+void hci_cs_create_conn(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_create_conncp;
 	*mut hci_connconn;
@@ -2306,7 +2315,7 @@ void hci_cs_create_conn(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_add_sco(*mut hci_devhdev, u8 status)
+void hci_cs_add_sco(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_add_scocp;
 	*mut hci_connacl;
@@ -2331,9 +2340,9 @@ void hci_cs_add_sco(*mut hci_devhdev, u8 status)
 	acl = hci_conn_hash_lookup_handle(hdev, handle);
 	if acl {
 		link = list_first_entry_or_null(&acl.link_list,
-						struct hci_link, list);
+						hci_link, list);
 		if link && link.conn {
-			link.conn->state = BT_CLOSED;
+			(*link.conn).state = BT_CLOSED;
 
 			hci_connect_cfm(link.conn, status);
 			hci_conn_del(link.conn);
@@ -2343,7 +2352,7 @@ void hci_cs_add_sco(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_auth_requested(*mut hci_devhdev, u8 status)
+void hci_cs_auth_requested(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_auth_requestedcp;
 	*mut hci_connconn;
@@ -2370,7 +2379,7 @@ void hci_cs_auth_requested(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_set_conn_encrypt(*mut hci_devhdev, u8 status)
+void hci_cs_set_conn_encrypt(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_set_conn_encryptcp;
 	*mut hci_connconn;
@@ -2461,8 +2470,9 @@ bool hci_resolve_next_name(*mut hci_devhdev)
 }
 
 void hci_check_pending_name(*mut hci_devhdev, *mut hci_connconn,
-				   bdaddr_t *bdaddr, u8 *name, u8 name_len)
+				   bdaddr_t *bdaddr, u8 *name, name_len: u8)
 {
+	'discov_complete: {
 	*mut discovery_statediscov = &hdev.discovery;
 	*mut inquiry_entrye;
 
@@ -2478,7 +2488,7 @@ void hci_check_pending_name(*mut hci_devhdev, *mut hci_connconn,
 		return;
 
 	if discov.state == DISCOVERY_STOPPING
-		goto discov_complete;
+		break 'discov_complete;
 
 	if discov.state != DISCOVERY_RESOLVING
 		return;
@@ -2499,13 +2509,14 @@ void hci_check_pending_name(*mut hci_devhdev, *mut hci_connconn,
 
 	if (hci_resolve_next_name(hdev))
 		return;
-
-discov_complete:
+	}
+	
 	hci_discovery_set_state(hdev, DISCOVERY_STOPPED);
 }
 
-void hci_cs_remote_name_req(*mut hci_devhdev, u8 status)
+void hci_cs_remote_name_req(*mut hci_devhdev, status: u8)
 {
+	'unlock: {
 	*mut hci_cp_remote_name_reqcp;
 	*mut hci_connconn;
 
@@ -2528,10 +2539,10 @@ void hci_cs_remote_name_req(*mut hci_devhdev, u8 status)
 		hci_check_pending_name(hdev, conn, &cp.bdaddr, core::ptr::null_mut(), 0);
 
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if (!hci_outgoing_auth_needed(hdev, conn))
-		goto unlock;
+		break 'unlock;
 
 	if (!test_and_set_bit(HCI_CONN_AUTH_PEND, &conn.flags)) {
 		struct hci_cp_auth_requested auth_cp;
@@ -2542,12 +2553,12 @@ void hci_cs_remote_name_req(*mut hci_devhdev, u8 status)
 		hci_send_cmd(hdev, HCI_OP_AUTH_REQUESTED,
 			     core::mem::size_of::<auth_cp>(), &auth_cp);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_read_remote_features(*mut hci_devhdev, u8 status)
+void hci_cs_read_remote_features(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_read_remote_featurescp;
 	*mut hci_connconn;
@@ -2574,7 +2585,7 @@ void hci_cs_read_remote_features(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_read_remote_ext_features(*mut hci_devhdev, u8 status)
+void hci_cs_read_remote_ext_features(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_read_remote_ext_featurescp;
 	*mut hci_connconn;
@@ -2601,8 +2612,8 @@ void hci_cs_read_remote_ext_features(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_setup_sync_conn_status(*mut hci_devhdev, u16 handle,
-				       u8 status)
+void hci_setup_sync_conn_status(*mut hci_devhdev, handle: u16,
+				       status: u8)
 {
 	*mut hci_connacl;
 	*mut hci_linklink;
@@ -2614,9 +2625,9 @@ void hci_setup_sync_conn_status(*mut hci_devhdev, u16 handle,
 	acl = hci_conn_hash_lookup_handle(hdev, handle);
 	if acl {
 		link = list_first_entry_or_null(&acl.link_list,
-						struct hci_link, list);
+						hci_link, list);
 		if link && link.conn {
-			link.conn->state = BT_CLOSED;
+			(*link.conn).state = BT_CLOSED;
 
 			hci_connect_cfm(link.conn, status);
 			hci_conn_del(link.conn);
@@ -2626,7 +2637,7 @@ void hci_setup_sync_conn_status(*mut hci_devhdev, u16 handle,
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_setup_sync_conn(*mut hci_devhdev, u8 status)
+void hci_cs_setup_sync_conn(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_setup_sync_conncp;
 
@@ -2642,7 +2653,7 @@ void hci_cs_setup_sync_conn(*mut hci_devhdev, u8 status)
 	hci_setup_sync_conn_status(hdev, __le16_to_cpu(cp.handle), status);
 }
 
-void hci_cs_enhanced_setup_sync_conn(*mut hci_devhdev, u8 status)
+void hci_cs_enhanced_setup_sync_conn(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_enhanced_setup_sync_conncp;
 
@@ -2658,7 +2669,7 @@ void hci_cs_enhanced_setup_sync_conn(*mut hci_devhdev, u8 status)
 	hci_setup_sync_conn_status(hdev, __le16_to_cpu(cp.handle), status);
 }
 
-void hci_cs_sniff_mode(*mut hci_devhdev, u8 status)
+void hci_cs_sniff_mode(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_sniff_modecp;
 	*mut hci_connconn;
@@ -2685,7 +2696,7 @@ void hci_cs_sniff_mode(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_exit_sniff_mode(*mut hci_devhdev, u8 status)
+void hci_cs_exit_sniff_mode(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_exit_sniff_modecp;
 	*mut hci_connconn;
@@ -2712,8 +2723,10 @@ void hci_cs_exit_sniff_mode(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_disconnect(*mut hci_devhdev, u8 status)
+void hci_cs_disconnect(*mut hci_devhdev, status: u8)
 {
+	'unlock: {
+	'done: {
 	*mut hci_cp_disconnectcp;
 	*mut hci_conn_paramsparams;
 	*mut hci_connconn;
@@ -2735,13 +2748,13 @@ void hci_cs_disconnect(*mut hci_devhdev, u8 status)
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(cp.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if status && status != HCI_ERROR_UNKNOWN_CONN_ID {
-		mgmt_disconnect_failed(hdev, &conn.dst, conn.type,
+		mgmt_disconnect_failed(hdev, &conn.dst, conn.r#type,
 				       conn.dst_type, status);
 
-		if conn.type == LE_LINK && conn.role == HCI_ROLE_SLAVE {
+		if conn.r#type == LE_LINK && conn.role == HCI_ROLE_SLAVE {
 			hdev.cur_adv_instance = conn.adv_instance;
 			hci_enable_advertising(hdev);
 		}
@@ -2749,7 +2762,7 @@ void hci_cs_disconnect(*mut hci_devhdev, u8 status)
 		/* Inform sockets conn is gone before we delete it */
 		hci_disconn_cfm(conn, HCI_ERROR_UNSPECIFIED);
 
-		goto done;
+		break 'done;
 	}
 
 	/* During suspend, mark connection as closed immediately
@@ -2760,7 +2773,7 @@ void hci_cs_disconnect(*mut hci_devhdev, u8 status)
 
 	mgmt_conn = test_and_clear_bit(HCI_CONN_MGMT_CONNECTED, &conn.flags);
 
-	if conn.type == ACL_LINK {
+	if conn.r#type == ACL_LINK {
 		if (test_and_clear_bit(HCI_CONN_FLUSH_KEY, &conn.flags))
 			hci_remove_link_key(hdev, &conn.dst);
 	}
@@ -2784,23 +2797,24 @@ void hci_cs_disconnect(*mut hci_devhdev, u8 status)
 		}
 	}
 
-	mgmt_device_disconnected(hdev, &conn.dst, conn.type, conn.dst_type,
+	mgmt_device_disconnected(hdev, &conn.dst, conn.r#type, conn.dst_type,
 				 hci_to_mgmt_reason(cp.reason), mgmt_conn);
 
 	hci_disconn_cfm(conn, cp.reason);
-
-done:
+	}
+	
 	/* If the disconnection failed for any reason, the upper layer
 	 * does not retry to disconnect in current implementation.
 	 * Hence, we need to do some basic cleanup here and re-enable
 	 * advertising if necessary.
 	 */
 	hci_conn_del(conn);
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-u8 ev_bdaddr_type(*mut hci_devhdev, u8 type, bool *resolved)
+u8 ev_bdaddr_type(*mut hci_devhdev, r#type: u8, bool *resolved)
 {
 	/* When using controller based address resolution, then the new
 	 * address types 0x02 and 0x03 are used. These types need to be
@@ -2823,8 +2837,8 @@ u8 ev_bdaddr_type(*mut hci_devhdev, u8 type, bool *resolved)
 }
 
 void cs_le_create_conn(*mut hci_devhdev, bdaddr_t *peer_addr,
-			      u8 peer_addr_type, u8 own_address_type,
-			      u8 filter_policy)
+			      peer_addr_type: u8, own_address_type: u8,
+			      filter_policy: u8)
 {
 	*mut hci_connconn;
 
@@ -2849,7 +2863,7 @@ void cs_le_create_conn(*mut hci_devhdev, bdaddr_t *peer_addr,
 	bacpy(&conn.resp_addr, peer_addr);
 }
 
-void hci_cs_le_create_conn(*mut hci_devhdev, u8 status)
+void hci_cs_le_create_conn(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_le_create_conncp;
 
@@ -2874,7 +2888,7 @@ void hci_cs_le_create_conn(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_le_ext_create_conn(*mut hci_devhdev, u8 status)
+void hci_cs_le_ext_create_conn(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_le_ext_create_conncp;
 
@@ -2899,7 +2913,7 @@ void hci_cs_le_ext_create_conn(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_le_set_phy(*mut hci_devhdev, u8 status)
+void hci_cs_le_set_phy(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_le_set_phycp;
 	*mut hci_connconn;
@@ -2924,7 +2938,7 @@ void hci_cs_le_set_phy(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_le_read_remote_features(*mut hci_devhdev, u8 status)
+void hci_cs_le_read_remote_features(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_le_read_remote_featurescp;
 	*mut hci_connconn;
@@ -2947,8 +2961,9 @@ void hci_cs_le_read_remote_features(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_le_start_enc(*mut hci_devhdev, u8 status)
+void hci_cs_le_start_enc(*mut hci_devhdev, status: u8)
 {
+	'unlock: {
 	*mut hci_cp_le_start_enccp;
 	*mut hci_connconn;
 
@@ -2961,23 +2976,23 @@ void hci_cs_le_start_enc(*mut hci_devhdev, u8 status)
 
 	cp = hci_sent_cmd_data(hdev, HCI_OP_LE_START_ENC);
 	if !cp
-		goto unlock;
+		break 'unlock;
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(cp.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if conn.state != BT_CONNECTED
-		goto unlock;
+		break 'unlock;
 
 	hci_disconnect(conn, HCI_ERROR_AUTH_FAILURE);
 	hci_conn_drop(conn);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_cs_switch_role(*mut hci_devhdev, u8 status)
+void hci_cs_switch_role(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_switch_rolecp;
 	*mut hci_connconn;
@@ -3000,9 +3015,10 @@ void hci_cs_switch_role(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-void hci_inquiry_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_inquiry_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_statusev = data;
 	*mut discovery_statediscov = &hdev.discovery;
 	*mut inquiry_entrye;
@@ -3021,7 +3037,7 @@ void hci_inquiry_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_lock(hdev);
 
 	if discov.state != DISCOVERY_FINDING
-		goto unlock;
+		break 'unlock;
 
 	if (list_empty(&discov.resolve)) {
 		/* When BR/EDR inquiry is active and no LE scanning is in
@@ -3034,7 +3050,7 @@ void hci_inquiry_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		if (!hci_dev_test_flag(hdev, HCI_LE_SCAN) ||
 		    !hci_test_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY))
 			hci_discovery_set_state(hdev, DISCOVERY_STOPPED);
-		goto unlock;
+		break 'unlock;
 	}
 
 	e = hci_inquiry_cache_lookup_resolve(hdev, BDADDR_ANY, NAME_NEEDED);
@@ -3054,12 +3070,12 @@ void hci_inquiry_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		    !hci_test_quirk(hdev, HCI_QUIRK_SIMULTANEOUS_DISCOVERY))
 			hci_discovery_set_state(hdev, DISCOVERY_STOPPED);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_inquiry_result_evt(*mut hci_devhdev, *mut core::ffi::c_voidedata,
+void hci_inquiry_result_evt(*mut hci_devhdev, edata: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_inquiry_resultev = edata;
@@ -3080,7 +3096,8 @@ void hci_inquiry_result_evt(*mut hci_devhdev, *mut core::ffi::c_voidedata,
 
 	hci_dev_lock(hdev);
 
-	for i = 0; i < ev.num; i++ {
+	i = 0;
+	while i < ev.num {
 		*mut inquiry_infoinfo = &ev.info[i];
 		u32 flags;
 
@@ -3098,6 +3115,7 @@ void hci_inquiry_result_evt(*mut hci_devhdev, *mut core::ffi::c_voidedata,
 		mgmt_device_found(hdev, &info.bdaddr, ACL_LINK, 0x00,
 				  info.dev_class, HCI_RSSI_INVALID,
 				  flags, core::ptr::null_mut(), 0, core::ptr::null_mut(), 0, 0);
+	    i++;
 	}
 
 	hci_dev_unlock(hdev);
@@ -3131,9 +3149,11 @@ int hci_read_enc_key_size(*mut hci_devhdev, *mut hci_connconn)
 	return hci_send_cmd(hdev, HCI_OP_READ_ENC_KEY_SIZE, core::mem::size_of::<cp>(), &cp);
 }
 
-void hci_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_conn_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
+	'unlock: {
+	'done: {
 	*mut hci_ev_conn_completeev = data;
 	*mut hci_connconn;
 	u8 status = ev.status;
@@ -3159,7 +3179,7 @@ void hci_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		 * just unlock as there is nothing to cleanup.
 		 */
 		if ev.status
-			goto unlock;
+			break 'unlock;
 
 		/* Connection may not exist if auto-connected. Check the bredr
 		 * allowlist to see if this device is allowed to auto connect.
@@ -3179,18 +3199,18 @@ void hci_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 						  HCI_ROLE_SLAVE);
 			if (IS_ERR(conn)) {
 				bt_dev_err(hdev, "connection err: %ld", PTR_ERR(conn));
-				goto unlock;
+				break 'unlock;
 			}
 		} else {
 			if ev.link_type != SCO_LINK
-				goto unlock;
+				break 'unlock;
 
 			conn = hci_conn_hash_lookup_ba(hdev, ESCO_LINK,
 						       &ev.bdaddr);
 			if !conn
-				goto unlock;
+				break 'unlock;
 
-			conn.type = SCO_LINK;
+			conn.r#type = SCO_LINK;
 		}
 	}
 
@@ -3202,15 +3222,15 @@ void hci_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	 */
 	if (!HCI_CONN_HANDLE_UNSET(conn.handle)) {
 		bt_dev_err(hdev, "Ignoring HCI_Connection_Complete for existing connection");
-		goto unlock;
+		break 'unlock;
 	}
 
 	if !status {
 		status = hci_conn_set_handle(conn, __le16_to_cpu(ev.handle));
 		if status
-			goto done;
+			break 'done;
 
-		if conn.type == ACL_LINK {
+		if conn.r#type == ACL_LINK {
 			conn.state = BT_CONFIG;
 			hci_conn_hold(conn);
 
@@ -3245,7 +3265,7 @@ void hci_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		}
 
 		/* Get remote features */
-		if conn.type == ACL_LINK {
+		if conn.r#type == ACL_LINK {
 			struct hci_cp_read_remote_features cp;
 			cp.handle = ev.handle;
 			hci_send_cmd(hdev, HCI_OP_READ_REMOTE_FEATURES,
@@ -3264,10 +3284,10 @@ void hci_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		}
 	}
 
-	if conn.type == ACL_LINK
+	if conn.r#type == ACL_LINK
 		hci_sco_setup(conn, ev.status);
-
-done:
+	}
+	
 	if status {
 		hci_conn_failed(conn, status);
 	} else if ev.link_type == SCO_LINK {
@@ -3280,8 +3300,8 @@ done:
 
 		hci_connect_cfm(conn, status);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
@@ -3294,9 +3314,10 @@ void hci_reject_conn(*mut hci_devhdev, bdaddr_t *bdaddr)
 	hci_send_cmd(hdev, HCI_OP_REJECT_CONN_REQ, core::mem::size_of::<cp>(), &cp);
 }
 
-void hci_conn_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_conn_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				 *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_conn_requestev = data;
 	int mask = hdev.link_mode;
 	*mut inquiry_entryie;
@@ -3332,7 +3353,7 @@ void hci_conn_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	if (hci_bdaddr_list_lookup(&hdev.reject_list, &ev.bdaddr,
 				   BDADDR_BREDR)) {
 		hci_reject_conn(hdev, &ev.bdaddr);
-		goto unlock;
+		break 'unlock;
 	}
 
 	/* Require HCI_CONNECTABLE or an accept list entry to accept the
@@ -3344,7 +3365,7 @@ void hci_conn_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	    !hci_bdaddr_list_lookup_with_flags(&hdev.accept_list, &ev.bdaddr,
 					       BDADDR_BREDR)) {
 		hci_reject_conn(hdev, &ev.bdaddr);
-		goto unlock;
+		break 'unlock;
 	}
 
 	/* Connection accepted */
@@ -3360,7 +3381,7 @@ void hci_conn_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 					  HCI_ROLE_SLAVE);
 		if (IS_ERR(conn)) {
 			bt_dev_err(hdev, "connection err: %ld", PTR_ERR(conn));
-			goto unlock;
+			break 'unlock;
 		}
 	}
 
@@ -3398,14 +3419,15 @@ void hci_conn_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		conn.state = BT_CONNECT2;
 		hci_connect_cfm(conn, 0);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_disconn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_disconn_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_disconn_completeev = data;
 	u8 reason;
 	*mut hci_conn_paramsparams;
@@ -3418,12 +3440,12 @@ void hci_disconn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if ev.status {
-		mgmt_disconnect_failed(hdev, &conn.dst, conn.type,
+		mgmt_disconnect_failed(hdev, &conn.dst, conn.r#type,
 				       conn.dst_type, ev.status);
-		goto unlock;
+		break 'unlock;
 	}
 
 	conn.state = BT_CLOSED;
@@ -3435,10 +3457,10 @@ void hci_disconn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	else
 		reason = hci_to_mgmt_reason(ev.reason);
 
-	mgmt_device_disconnected(hdev, &conn.dst, conn.type, conn.dst_type,
+	mgmt_device_disconnected(hdev, &conn.dst, conn.r#type, conn.dst_type,
 				reason, mgmt_connected);
 
-	if conn.type == ACL_LINK {
+	if conn.r#type == ACL_LINK {
 		if (test_and_clear_bit(HCI_CONN_FLUSH_KEY, &conn.flags))
 			hci_remove_link_key(hdev, &conn.dst);
 
@@ -3448,7 +3470,7 @@ void hci_disconn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	/* Re-enable passive scanning if disconnected device is marked
 	 * as auto-connectable.
 	 */
-	if conn.type == LE_LINK {
+	if conn.r#type == LE_LINK {
 		params = hci_conn_params_lookup(hdev, &conn.dst,
 						conn.dst_type);
 		if params {
@@ -3484,20 +3506,21 @@ void hci_disconn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	 * or until a connection is created or until the Advertising
 	 * is timed out due to Directed Advertising."
 	 */
-	if conn.type == LE_LINK && conn.role == HCI_ROLE_SLAVE {
+	if conn.r#type == LE_LINK && conn.role == HCI_ROLE_SLAVE {
 		hdev.cur_adv_instance = conn.adv_instance;
 		hci_enable_advertising(hdev);
 	}
 
 	hci_conn_del(conn);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_auth_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_auth_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_auth_completeev = data;
 	*mut hci_connconn;
 
@@ -3507,7 +3530,7 @@ void hci_auth_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if !ev.status {
 		clear_bit(HCI_CONN_AUTH_FAILURE, &conn.flags);
@@ -3554,14 +3577,16 @@ void hci_auth_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			hci_encrypt_cfm(conn, ev.status);
 		}
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_remote_name_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_remote_name_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
+	'unlock: {
+	'check_auth: {
 	*mut hci_ev_remote_nameev = data;
 	*mut hci_connconn;
 
@@ -3572,20 +3597,20 @@ void hci_remote_name_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 
 	if (!hci_dev_test_flag(hdev, HCI_MGMT))
-		goto check_auth;
+		break 'check_auth;
 
 	if ev.status == 0
 		hci_check_pending_name(hdev, conn, &ev.bdaddr, ev.name,
 				       strnlen(ev.name, HCI_MAX_NAME_LENGTH));
 	else
 		hci_check_pending_name(hdev, conn, &ev.bdaddr, core::ptr::null_mut(), 0);
-
-check_auth:
+	}
+	
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if (!hci_outgoing_auth_needed(hdev, conn))
-		goto unlock;
+		break 'unlock;
 
 	if (!test_and_set_bit(HCI_CONN_AUTH_PEND, &conn.flags)) {
 		struct hci_cp_auth_requested cp;
@@ -3595,14 +3620,16 @@ check_auth:
 		cp.handle = __cpu_to_le16(conn.handle);
 		hci_send_cmd(hdev, HCI_OP_AUTH_REQUESTED, core::mem::size_of::<cp>(), &cp);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_encrypt_change_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
+	'unlock: {
+	'notify: {
 	*mut hci_ev_encrypt_changeev = data;
 	*mut hci_connconn;
 
@@ -3612,7 +3639,7 @@ void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if !ev.status {
 		if ev.encrypt {
@@ -3625,8 +3652,8 @@ void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			if conn.key_type == HCI_LK_AUTH_COMBINATION_P256
 				set_bit(HCI_CONN_FIPS, &conn.flags);
 
-			if ((conn.type == ACL_LINK && ev.encrypt == 0x02) ||
-			    conn.type == LE_LINK)
+			if ((conn.r#type == ACL_LINK && ev.encrypt == 0x02) ||
+			    conn.r#type == LE_LINK)
 				set_bit(HCI_CONN_AES_CCM, &conn.flags);
 		} else {
 			clear_bit(HCI_CONN_ENCRYPT, &conn.flags);
@@ -3637,7 +3664,7 @@ void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	/* We should disregard the current RPA and generate a new one
 	 * whenever the encryption procedure fails.
 	 */
-	if ev.status && conn.type == LE_LINK {
+	if ev.status && conn.r#type == LE_LINK {
 		hci_dev_set_flag(hdev, HCI_RPA_EXPIRED);
 		hci_adv_instances_set_rpa_expired(hdev, true);
 	}
@@ -3658,22 +3685,22 @@ void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		hci_encrypt_cfm(conn, ev.status);
 		hci_disconnect(conn, HCI_ERROR_AUTH_FAILURE);
 		hci_conn_drop(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	/* Try reading the encryption key size for encrypted ACL links */
-	if !ev.status && ev.encrypt && conn.type == ACL_LINK {
+	if !ev.status && ev.encrypt && conn.r#type == ACL_LINK {
 		if (hci_read_enc_key_size(hdev, conn))
-			goto notify;
+			break 'notify;
 
-		goto unlock;
+		break 'unlock;
 	}
 
 	/* We skip the WRITE_AUTH_PAYLOAD_TIMEOUT for ATS2851 based controllers
 	 * to avoid unexpected SMP command errors when pairing.
 	 */
 	if (hci_test_quirk(hdev, HCI_QUIRK_BROKEN_WRITE_AUTH_PAYLOAD_TIMEOUT))
-		goto notify;
+		break 'notify;
 
 	/* Set the default Authenticated Payload Timeout after
 	 * an LE Link is established. As per Core Spec v5.0, Vol 2, Part B
@@ -3684,8 +3711,8 @@ void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	 */
 	if (test_bit(HCI_CONN_ENCRYPT, &conn.flags) &&
 	    test_bit(HCI_CONN_AES_CCM, &conn.flags) &&
-	    ((conn.type == ACL_LINK && lmp_ping_capable(hdev)) ||
-	     (conn.type == LE_LINK && (hdev.le_features[0] & HCI_LE_PING)))) {
+	    ((conn.r#type == ACL_LINK && lmp_ping_capable(hdev)) ||
+	     (conn.r#type == LE_LINK && (hdev.le_features[0] & HCI_LE_PING)))) {
 		struct hci_cp_write_auth_payload_to cp;
 
 		cp.handle = cpu_to_le16(conn.handle);
@@ -3694,15 +3721,15 @@ void hci_encrypt_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 				 core::mem::size_of::<cp>(), &cp))
 			bt_dev_err(hdev, "write auth payload timeout failed");
 	}
-
-notify:
+	}
+	
 	hci_encrypt_cfm(conn, ev.status);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_change_link_key_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_change_link_key_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					     *mut sk_buffskb)
 {
 	*mut hci_ev_change_link_key_completeev = data;
@@ -3725,9 +3752,10 @@ void hci_change_link_key_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voidda
 	hci_dev_unlock(hdev);
 }
 
-void hci_remote_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_remote_features_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_remote_featuresev = data;
 	*mut hci_connconn;
 
@@ -3737,13 +3765,13 @@ void hci_remote_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if !ev.status
 		memcpy(conn.features[0], ev.features, 8);
 
 	if conn.state != BT_CONFIG
-		goto unlock;
+		break 'unlock;
 
 	if (!ev.status && lmp_ext_feat_capable(hdev) &&
 	    lmp_ext_feat_capable(conn)) {
@@ -3752,7 +3780,7 @@ void hci_remote_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		cp.page = 0x01;
 		hci_send_cmd(hdev, HCI_OP_READ_REMOTE_EXT_FEATURES,
 			     core::mem::size_of::<cp>(), &cp);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if !ev.status {
@@ -3770,12 +3798,12 @@ void hci_remote_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		hci_connect_cfm(conn, ev.status);
 		hci_conn_drop(conn);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-inline void handle_cmd_cnt_and_timer(*mut hci_devhdev, u8 ncmd)
+inline void handle_cmd_cnt_and_timer(*mut hci_devhdev, ncmd: u8)
 {
 	cancel_delayed_work(&hdev.cmd_timer);
 
@@ -3793,7 +3821,7 @@ inline void handle_cmd_cnt_and_timer(*mut hci_devhdev, u8 ncmd)
 	rcu_read_unlock();
 }
 
-u8 hci_cc_le_read_buffer_size_v2(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_buffer_size_v2(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_rp_le_read_buffer_size_v2rp = data;
@@ -3820,25 +3848,26 @@ u8 hci_cc_le_read_buffer_size_v2(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-void hci_unbound_cis_failed(*mut hci_devhdev, u8 cig, u8 status)
+void hci_unbound_cis_failed(*mut hci_devhdev, cig: u8, status: u8)
 {
 	*mut hci_connconn, *tmp;
 
 	lockdep_assert_held(&hdev.lock);
 
-	list_for_each_entry_safe(conn, tmp, &hdev.conn_hash.list, list) {
-		if conn.type != CIS_LINK ||
+	list_for_each_entry_safe!(conn, tmp, &hdev.conn_hash.list, list, {
+		if conn.r#type != CIS_LINK ||
 		    conn.state == BT_OPEN || conn.iso_qos.ucast.cig != cig
 			continue;
 
 		if (HCI_CONN_HANDLE_UNSET(conn.handle))
 			hci_conn_failed(conn, status);
-	}
+	});
 }
 
-u8 hci_cc_le_set_cig_params(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_cig_params(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_rp_le_set_cig_paramsrp = data;
 	*mut hci_cp_le_set_cig_paramscp;
 	*mut hci_connconn;
@@ -3868,7 +3897,7 @@ u8 hci_cc_le_set_cig_params(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	if status {
 		/* Keep current configuration, fail only the unbound CIS */
 		hci_unbound_cis_failed(hdev, rp.cig_id, status);
-		goto unlock;
+		break 'unlock;
 	}
 
 	/* BLUETOOTH CORE SPECIFICATION Version 5.3 | Vol 4, Part E page 2553
@@ -3893,8 +3922,8 @@ u8 hci_cc_le_set_cig_params(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		if conn.state == BT_CONNECT
 			pending = true;
 	}
-
-unlock:
+	}
+	
 	if pending
 		hci_le_create_cis_pending(hdev);
 
@@ -3903,9 +3932,10 @@ unlock:
 	return rp.status;
 }
 
-u8 hci_cc_le_setup_iso_path(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_setup_iso_path(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_rp_le_setup_iso_pathrp = data;
 	*mut hci_cp_le_setup_iso_pathcp;
 	*mut hci_connconn;
@@ -3920,19 +3950,19 @@ u8 hci_cc_le_setup_iso_path(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(cp.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if rp.status {
 		hci_connect_cfm(conn, rp.status);
 		hci_conn_del(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	switch (cp.direction) {
 	/* Input (Host to Controller) */
 	case 0x00:
 		/* Only confirm connection if output only */
-		if conn.iso_qos.ucast.out.sdu && !conn.iso_qos.ucast.in.sdu
+		if conn.iso_qos.ucast.out.sdu && !conn.iso_qos.ucast.r#in.sdu
 			hci_connect_cfm(conn, rp.status);
 		break;
 	/* Output (Controller to Host) */
@@ -3948,13 +3978,13 @@ u8 hci_cc_le_setup_iso_path(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		break;
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 	return rp.status;
 }
 
-u8 hci_cc_le_read_all_local_features(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_read_all_local_features(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
 	*mut hci_rp_le_read_all_local_featuresrp = data;
@@ -3969,12 +3999,12 @@ u8 hci_cc_le_read_all_local_features(*mut hci_devhdev, *mut core::ffi::c_voiddat
 	return rp.status;
 }
 
-void hci_cs_le_create_big(*mut hci_devhdev, u8 status)
+void hci_cs_le_create_big(*mut hci_devhdev, status: u8)
 {
 	bt_dev_dbg(hdev, "status 0x%2.2x", status);
 }
 
-void hci_cs_le_read_all_remote_features(*mut hci_devhdev, u8 status)
+void hci_cs_le_read_all_remote_features(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_le_read_remote_featurescp;
 	*mut hci_connconn;
@@ -3997,7 +4027,7 @@ void hci_cs_le_read_all_remote_features(*mut hci_devhdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
-u8 hci_cc_set_per_adv_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_set_per_adv_param(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_statusrp = data;
@@ -4016,9 +4046,10 @@ u8 hci_cc_set_per_adv_param(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	return rp.status;
 }
 
-u8 hci_cc_le_set_per_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+u8 hci_cc_le_set_per_adv_enable(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_statusrp = data;
 	*mut hci_cp_le_set_per_adv_enablecp;
 	*mut adv_infoadv = core::ptr::null_mut(), *n;
@@ -4051,19 +4082,19 @@ u8 hci_cc_le_set_per_adv_enable(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		 * The current periodic adv instance will be marked as
 		 * disabled once extended advertising is also disabled.
 		 */
-		list_for_each_entry_safe(adv, n, &hdev.adv_instances,
-					 list) {
+		list_for_each_entry_safe!(adv, n, &hdev.adv_instances,
+					 list, {
 			if adv.periodic && adv.enabled
 				per_adv_cnt++;
-		}
+		});
 
 		if per_adv_cnt > 1
-			goto unlock;
+			break 'unlock;
 
 		hci_dev_clear_flag(hdev, HCI_LE_PER_ADV);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 
 	return rp.status;
@@ -4071,21 +4102,21 @@ unlock:
 
 #define HCI_CC_VL(_op, _func, _min, _max) \
 { \
-	.op = _op, \
-	.func = _func, \
-	.min_len = _min, \
-	.max_len = _max, \
+	op: _op, \
+	func: _func, \
+	min_len: _min, \
+	max_len: _max, \
 }
 
 #define HCI_CC(_op, _func, _len) \
 	HCI_CC_VL(_op, _func, _len, _len)
 
 #define HCI_CC_STATUS(_op, _func) \
-	HCI_CC(_op, _func, core::mem::size_of::<struct hci_ev_status>())
+	HCI_CC(_op, _func, core::mem::size_of::<hci_ev_status>())
 
 const struct hci_cc {
 	u16  op;
-	u8 (*func)(*mut hci_devhdev, *mut core::ffi::c_voiddata, *mut sk_buffskb);
+	u8 (*func)(*mut hci_devhdev, data: *mut core::ffi::c_void, *mut sk_buffskb);
 	u16  min_len;
 	u16  max_len;
 } hci_cc_table[] = {
@@ -4093,116 +4124,116 @@ const struct hci_cc {
 	HCI_CC_STATUS(HCI_OP_PERIODIC_INQ, hci_cc_periodic_inq),
 	HCI_CC_STATUS(HCI_OP_EXIT_PERIODIC_INQ, hci_cc_exit_periodic_inq),
 	HCI_CC(HCI_OP_REMOTE_NAME_REQ_CANCEL, hci_cc_remote_name_req_cancel,
-	       core::mem::size_of::<struct hci_rp_remote_name_req_cancel>()),
+	       core::mem::size_of::<hci_rp_remote_name_req_cancel>()),
 	HCI_CC(HCI_OP_ROLE_DISCOVERY, hci_cc_role_discovery,
-	       core::mem::size_of::<struct hci_rp_role_discovery>()),
+	       core::mem::size_of::<hci_rp_role_discovery>()),
 	HCI_CC(HCI_OP_READ_LINK_POLICY, hci_cc_read_link_policy,
-	       core::mem::size_of::<struct hci_rp_read_link_policy>()),
+	       core::mem::size_of::<hci_rp_read_link_policy>()),
 	HCI_CC(HCI_OP_WRITE_LINK_POLICY, hci_cc_write_link_policy,
-	       core::mem::size_of::<struct hci_rp_write_link_policy>()),
+	       core::mem::size_of::<hci_rp_write_link_policy>()),
 	HCI_CC(HCI_OP_READ_DEF_LINK_POLICY, hci_cc_read_def_link_policy,
-	       core::mem::size_of::<struct hci_rp_read_def_link_policy>()),
+	       core::mem::size_of::<hci_rp_read_def_link_policy>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_DEF_LINK_POLICY,
 		      hci_cc_write_def_link_policy),
 	HCI_CC_STATUS(HCI_OP_RESET, hci_cc_reset),
 	HCI_CC(HCI_OP_READ_STORED_LINK_KEY, hci_cc_read_stored_link_key,
-	       core::mem::size_of::<struct hci_rp_read_stored_link_key>()),
+	       core::mem::size_of::<hci_rp_read_stored_link_key>()),
 	HCI_CC(HCI_OP_DELETE_STORED_LINK_KEY, hci_cc_delete_stored_link_key,
-	       core::mem::size_of::<struct hci_rp_delete_stored_link_key>()),
+	       core::mem::size_of::<hci_rp_delete_stored_link_key>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_LOCAL_NAME, hci_cc_write_local_name),
 	HCI_CC(HCI_OP_READ_LOCAL_NAME, hci_cc_read_local_name,
-	       core::mem::size_of::<struct hci_rp_read_local_name>()),
+	       core::mem::size_of::<hci_rp_read_local_name>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_AUTH_ENABLE, hci_cc_write_auth_enable),
 	HCI_CC_STATUS(HCI_OP_WRITE_ENCRYPT_MODE, hci_cc_write_encrypt_mode),
 	HCI_CC_STATUS(HCI_OP_WRITE_SCAN_ENABLE, hci_cc_write_scan_enable),
 	HCI_CC_STATUS(HCI_OP_SET_EVENT_FLT, hci_cc_set_event_filter),
 	HCI_CC(HCI_OP_READ_CLASS_OF_DEV, hci_cc_read_class_of_dev,
-	       core::mem::size_of::<struct hci_rp_read_class_of_dev>()),
+	       core::mem::size_of::<hci_rp_read_class_of_dev>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_CLASS_OF_DEV, hci_cc_write_class_of_dev),
 	HCI_CC(HCI_OP_READ_VOICE_SETTING, hci_cc_read_voice_setting,
-	       core::mem::size_of::<struct hci_rp_read_voice_setting>()),
+	       core::mem::size_of::<hci_rp_read_voice_setting>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_VOICE_SETTING, hci_cc_write_voice_setting),
 	HCI_CC(HCI_OP_READ_NUM_SUPPORTED_IAC, hci_cc_read_num_supported_iac,
-	       core::mem::size_of::<struct hci_rp_read_num_supported_iac>()),
+	       core::mem::size_of::<hci_rp_read_num_supported_iac>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_SSP_MODE, hci_cc_write_ssp_mode),
 	HCI_CC_STATUS(HCI_OP_WRITE_SC_SUPPORT, hci_cc_write_sc_support),
 	HCI_CC(HCI_OP_READ_AUTH_PAYLOAD_TO, hci_cc_read_auth_payload_timeout,
-	       core::mem::size_of::<struct hci_rp_read_auth_payload_to>()),
+	       core::mem::size_of::<hci_rp_read_auth_payload_to>()),
 	HCI_CC(HCI_OP_WRITE_AUTH_PAYLOAD_TO, hci_cc_write_auth_payload_timeout,
-	       core::mem::size_of::<struct hci_rp_write_auth_payload_to>()),
+	       core::mem::size_of::<hci_rp_write_auth_payload_to>()),
 	HCI_CC(HCI_OP_READ_LOCAL_VERSION, hci_cc_read_local_version,
-	       core::mem::size_of::<struct hci_rp_read_local_version>()),
+	       core::mem::size_of::<hci_rp_read_local_version>()),
 	HCI_CC(HCI_OP_READ_LOCAL_COMMANDS, hci_cc_read_local_commands,
-	       core::mem::size_of::<struct hci_rp_read_local_commands>()),
+	       core::mem::size_of::<hci_rp_read_local_commands>()),
 	HCI_CC(HCI_OP_READ_LOCAL_FEATURES, hci_cc_read_local_features,
-	       core::mem::size_of::<struct hci_rp_read_local_features>()),
+	       core::mem::size_of::<hci_rp_read_local_features>()),
 	HCI_CC(HCI_OP_READ_LOCAL_EXT_FEATURES, hci_cc_read_local_ext_features,
-	       core::mem::size_of::<struct hci_rp_read_local_ext_features>()),
+	       core::mem::size_of::<hci_rp_read_local_ext_features>()),
 	HCI_CC(HCI_OP_READ_BUFFER_SIZE, hci_cc_read_buffer_size,
-	       core::mem::size_of::<struct hci_rp_read_buffer_size>()),
+	       core::mem::size_of::<hci_rp_read_buffer_size>()),
 	HCI_CC(HCI_OP_READ_BD_ADDR, hci_cc_read_bd_addr,
-	       core::mem::size_of::<struct hci_rp_read_bd_addr>()),
+	       core::mem::size_of::<hci_rp_read_bd_addr>()),
 	HCI_CC(HCI_OP_READ_LOCAL_PAIRING_OPTS, hci_cc_read_local_pairing_opts,
-	       core::mem::size_of::<struct hci_rp_read_local_pairing_opts>()),
+	       core::mem::size_of::<hci_rp_read_local_pairing_opts>()),
 	HCI_CC(HCI_OP_READ_PAGE_SCAN_ACTIVITY, hci_cc_read_page_scan_activity,
-	       core::mem::size_of::<struct hci_rp_read_page_scan_activity>()),
+	       core::mem::size_of::<hci_rp_read_page_scan_activity>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_PAGE_SCAN_ACTIVITY,
 		      hci_cc_write_page_scan_activity),
 	HCI_CC(HCI_OP_READ_PAGE_SCAN_TYPE, hci_cc_read_page_scan_type,
-	       core::mem::size_of::<struct hci_rp_read_page_scan_type>()),
+	       core::mem::size_of::<hci_rp_read_page_scan_type>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_PAGE_SCAN_TYPE, hci_cc_write_page_scan_type),
 	HCI_CC(HCI_OP_READ_CLOCK, hci_cc_read_clock,
-	       core::mem::size_of::<struct hci_rp_read_clock>()),
+	       core::mem::size_of::<hci_rp_read_clock>()),
 	HCI_CC(HCI_OP_READ_ENC_KEY_SIZE, hci_cc_read_enc_key_size,
-	       core::mem::size_of::<struct hci_rp_read_enc_key_size>()),
+	       core::mem::size_of::<hci_rp_read_enc_key_size>()),
 	HCI_CC(HCI_OP_READ_INQ_RSP_TX_POWER, hci_cc_read_inq_rsp_tx_power,
-	       core::mem::size_of::<struct hci_rp_read_inq_rsp_tx_power>()),
+	       core::mem::size_of::<hci_rp_read_inq_rsp_tx_power>()),
 	HCI_CC(HCI_OP_READ_DEF_ERR_DATA_REPORTING,
 	       hci_cc_read_def_err_data_reporting,
-	       core::mem::size_of::<struct hci_rp_read_def_err_data_reporting>()),
+	       core::mem::size_of::<hci_rp_read_def_err_data_reporting>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_DEF_ERR_DATA_REPORTING,
 		      hci_cc_write_def_err_data_reporting),
 	HCI_CC(HCI_OP_PIN_CODE_REPLY, hci_cc_pin_code_reply,
-	       core::mem::size_of::<struct hci_rp_pin_code_reply>()),
+	       core::mem::size_of::<hci_rp_pin_code_reply>()),
 	HCI_CC(HCI_OP_PIN_CODE_NEG_REPLY, hci_cc_pin_code_neg_reply,
-	       core::mem::size_of::<struct hci_rp_pin_code_neg_reply>()),
+	       core::mem::size_of::<hci_rp_pin_code_neg_reply>()),
 	HCI_CC(HCI_OP_READ_LOCAL_OOB_DATA, hci_cc_read_local_oob_data,
-	       core::mem::size_of::<struct hci_rp_read_local_oob_data>()),
+	       core::mem::size_of::<hci_rp_read_local_oob_data>()),
 	HCI_CC(HCI_OP_READ_LOCAL_OOB_EXT_DATA, hci_cc_read_local_oob_ext_data,
-	       core::mem::size_of::<struct hci_rp_read_local_oob_ext_data>()),
+	       core::mem::size_of::<hci_rp_read_local_oob_ext_data>()),
 	HCI_CC(HCI_OP_LE_READ_BUFFER_SIZE, hci_cc_le_read_buffer_size,
-	       core::mem::size_of::<struct hci_rp_le_read_buffer_size>()),
+	       core::mem::size_of::<hci_rp_le_read_buffer_size>()),
 	HCI_CC(HCI_OP_LE_READ_LOCAL_FEATURES, hci_cc_le_read_local_features,
-	       core::mem::size_of::<struct hci_rp_le_read_local_features>()),
+	       core::mem::size_of::<hci_rp_le_read_local_features>()),
 	HCI_CC_VL(HCI_OP_LE_READ_CONN_INTERVAL, hci_cc_le_read_conn_interval,
-		  core::mem::size_of::<struct hci_rp_le_read_conn_interval>(),
+		  core::mem::size_of::<hci_rp_le_read_conn_interval>(),
 		  HCI_MAX_EVENT_SIZE),
 	HCI_CC(HCI_OP_LE_READ_ADV_TX_POWER, hci_cc_le_read_adv_tx_power,
-	       core::mem::size_of::<struct hci_rp_le_read_adv_tx_power>()),
+	       core::mem::size_of::<hci_rp_le_read_adv_tx_power>()),
 	HCI_CC(HCI_OP_USER_CONFIRM_REPLY, hci_cc_user_confirm_reply,
-	       core::mem::size_of::<struct hci_rp_user_confirm_reply>()),
+	       core::mem::size_of::<hci_rp_user_confirm_reply>()),
 	HCI_CC(HCI_OP_USER_CONFIRM_NEG_REPLY, hci_cc_user_confirm_neg_reply,
-	       core::mem::size_of::<struct hci_rp_user_confirm_reply>()),
+	       core::mem::size_of::<hci_rp_user_confirm_reply>()),
 	HCI_CC(HCI_OP_USER_PASSKEY_REPLY, hci_cc_user_passkey_reply,
-	       core::mem::size_of::<struct hci_rp_user_confirm_reply>()),
+	       core::mem::size_of::<hci_rp_user_confirm_reply>()),
 	HCI_CC(HCI_OP_USER_PASSKEY_NEG_REPLY, hci_cc_user_passkey_neg_reply,
-	       core::mem::size_of::<struct hci_rp_user_confirm_reply>()),
+	       core::mem::size_of::<hci_rp_user_confirm_reply>()),
 	HCI_CC_STATUS(HCI_OP_LE_SET_RANDOM_ADDR, hci_cc_le_set_random_addr),
 	HCI_CC_STATUS(HCI_OP_LE_SET_ADV_ENABLE, hci_cc_le_set_adv_enable),
 	HCI_CC_STATUS(HCI_OP_LE_SET_SCAN_PARAM, hci_cc_le_set_scan_param),
 	HCI_CC_STATUS(HCI_OP_LE_SET_SCAN_ENABLE, hci_cc_le_set_scan_enable),
 	HCI_CC(HCI_OP_LE_READ_ACCEPT_LIST_SIZE,
 	       hci_cc_le_read_accept_list_size,
-	       core::mem::size_of::<struct hci_rp_le_read_accept_list_size>()),
+	       core::mem::size_of::<hci_rp_le_read_accept_list_size>()),
 	HCI_CC_STATUS(HCI_OP_LE_CLEAR_ACCEPT_LIST, hci_cc_le_clear_accept_list),
 	HCI_CC_STATUS(HCI_OP_LE_ADD_TO_ACCEPT_LIST,
 		      hci_cc_le_add_to_accept_list),
 	HCI_CC_STATUS(HCI_OP_LE_DEL_FROM_ACCEPT_LIST,
 		      hci_cc_le_del_from_accept_list),
 	HCI_CC(HCI_OP_LE_READ_SUPPORTED_STATES, hci_cc_le_read_supported_states,
-	       core::mem::size_of::<struct hci_rp_le_read_supported_states>()),
+	       core::mem::size_of::<hci_rp_le_read_supported_states>()),
 	HCI_CC(HCI_OP_LE_READ_DEF_DATA_LEN, hci_cc_le_read_def_data_len,
-	       core::mem::size_of::<struct hci_rp_le_read_def_data_len>()),
+	       core::mem::size_of::<hci_rp_le_read_def_data_len>()),
 	HCI_CC_STATUS(HCI_OP_LE_WRITE_DEF_DATA_LEN,
 		      hci_cc_le_write_def_data_len),
 	HCI_CC_STATUS(HCI_OP_LE_ADD_TO_RESOLV_LIST,
@@ -4212,18 +4243,18 @@ const struct hci_cc {
 	HCI_CC_STATUS(HCI_OP_LE_CLEAR_RESOLV_LIST,
 		      hci_cc_le_clear_resolv_list),
 	HCI_CC(HCI_OP_LE_READ_RESOLV_LIST_SIZE, hci_cc_le_read_resolv_list_size,
-	       core::mem::size_of::<struct hci_rp_le_read_resolv_list_size>()),
+	       core::mem::size_of::<hci_rp_le_read_resolv_list_size>()),
 	HCI_CC_STATUS(HCI_OP_LE_SET_ADDR_RESOLV_ENABLE,
 		      hci_cc_le_set_addr_resolution_enable),
 	HCI_CC(HCI_OP_LE_READ_MAX_DATA_LEN, hci_cc_le_read_max_data_len,
-	       core::mem::size_of::<struct hci_rp_le_read_max_data_len>()),
+	       core::mem::size_of::<hci_rp_le_read_max_data_len>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_LE_HOST_SUPPORTED,
 		      hci_cc_write_le_host_supported),
 	HCI_CC_STATUS(HCI_OP_LE_SET_ADV_PARAM, hci_cc_set_adv_param),
 	HCI_CC(HCI_OP_READ_RSSI, hci_cc_read_rssi,
-	       core::mem::size_of::<struct hci_rp_read_rssi>()),
+	       core::mem::size_of::<hci_rp_read_rssi>()),
 	HCI_CC(HCI_OP_READ_TX_POWER, hci_cc_read_tx_power,
-	       core::mem::size_of::<struct hci_rp_read_tx_power>()),
+	       core::mem::size_of::<hci_rp_read_tx_power>()),
 	HCI_CC_STATUS(HCI_OP_WRITE_SSP_DEBUG_MODE, hci_cc_write_ssp_debug_mode),
 	HCI_CC_STATUS(HCI_OP_LE_SET_EXT_SCAN_PARAMS,
 		      hci_cc_le_set_ext_scan_param),
@@ -4232,7 +4263,7 @@ const struct hci_cc {
 	HCI_CC_STATUS(HCI_OP_LE_SET_DEFAULT_PHY, hci_cc_le_set_default_phy),
 	HCI_CC(HCI_OP_LE_READ_NUM_SUPPORTED_ADV_SETS,
 	       hci_cc_le_read_num_adv_sets,
-	       core::mem::size_of::<struct hci_rp_le_read_num_supported_adv_sets>()),
+	       core::mem::size_of::<hci_rp_le_read_num_supported_adv_sets>()),
 	HCI_CC_STATUS(HCI_OP_LE_SET_EXT_ADV_ENABLE,
 		      hci_cc_le_set_ext_adv_enable),
 	HCI_CC_STATUS(HCI_OP_LE_SET_ADV_SET_RAND_ADDR,
@@ -4243,17 +4274,17 @@ const struct hci_cc {
 	HCI_CC_STATUS(HCI_OP_LE_SET_PER_ADV_ENABLE,
 		      hci_cc_le_set_per_adv_enable),
 	HCI_CC(HCI_OP_LE_READ_TRANSMIT_POWER, hci_cc_le_read_transmit_power,
-	       core::mem::size_of::<struct hci_rp_le_read_transmit_power>()),
+	       core::mem::size_of::<hci_rp_le_read_transmit_power>()),
 	HCI_CC_STATUS(HCI_OP_LE_SET_PRIVACY_MODE, hci_cc_le_set_privacy_mode),
 	HCI_CC(HCI_OP_LE_READ_BUFFER_SIZE_V2, hci_cc_le_read_buffer_size_v2,
-	       core::mem::size_of::<struct hci_rp_le_read_buffer_size_v2>()),
+	       core::mem::size_of::<hci_rp_le_read_buffer_size_v2>()),
 	HCI_CC_VL(HCI_OP_LE_SET_CIG_PARAMS, hci_cc_le_set_cig_params,
-		  core::mem::size_of::<struct hci_rp_le_set_cig_params>(), HCI_MAX_EVENT_SIZE),
+		  core::mem::size_of::<hci_rp_le_set_cig_params>(), HCI_MAX_EVENT_SIZE),
 	HCI_CC(HCI_OP_LE_SETUP_ISO_PATH, hci_cc_le_setup_iso_path,
-	       core::mem::size_of::<struct hci_rp_le_setup_iso_path>()),
+	       core::mem::size_of::<hci_rp_le_setup_iso_path>()),
 	HCI_CC(HCI_OP_LE_READ_ALL_LOCAL_FEATURES,
 	       hci_cc_le_read_all_local_features,
-	       core::mem::size_of::<struct hci_rp_le_read_all_local_features>()),
+	       core::mem::size_of::<hci_rp_le_read_all_local_features>()),
 };
 
 u8 hci_cc_func(*mut hci_devhdev, const *mut hci_cccc,
@@ -4282,7 +4313,7 @@ u8 hci_cc_func(*mut hci_devhdev, const *mut hci_cccc,
 	return cc.func(hdev, data, skb);
 }
 
-void hci_cmd_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_cmd_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				 *mut sk_buffskb, u16 *opcode, u8 *status,
 				 hci_req_complete_t *req_complete,
 				 hci_req_complete_skb_t *req_complete_skb)
@@ -4334,7 +4365,7 @@ void hci_cmd_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		queue_work(hdev.workqueue, &hdev.cmd_work);
 }
 
-void hci_cs_le_create_cis(*mut hci_devhdev, u8 status)
+void hci_cs_le_create_cis(*mut hci_devhdev, status: u8)
 {
 	*mut hci_cp_le_create_ciscp;
 	bool pending = false;
@@ -4352,7 +4383,8 @@ void hci_cs_le_create_cis(*mut hci_devhdev, u8 status)
 	hci_dev_lock(hdev);
 
 	/* Remove connection if command failed */
-	for i = 0; i < cp.num_cis; i++ {
+	i = 0;
+	while i < cp.num_cis {
 		*mut hci_connconn;
 		u16 handle;
 
@@ -4367,6 +4399,7 @@ void hci_cs_le_create_cis(*mut hci_devhdev, u8 status)
 			hci_connect_cfm(conn, status);
 			hci_conn_del(conn);
 		}
+	    i++;
 	}
 	cp.num_cis = 0;
 
@@ -4378,13 +4411,13 @@ void hci_cs_le_create_cis(*mut hci_devhdev, u8 status)
 
 #define HCI_CS(_op, _func) \
 { \
-	.op = _op, \
-	.func = _func, \
+	op: _op, \
+	func: _func, \
 }
 
 const struct hci_cs {
 	u16  op;
-	void (*func)(*mut hci_devhdev, u8 status);
+	void (*func)(*mut hci_devhdev, status: u8);
 } hci_cs_table[] = {
 	HCI_CS(HCI_OP_INQUIRY, hci_cs_inquiry),
 	HCI_CS(HCI_OP_CREATE_CONN, hci_cs_create_conn),
@@ -4413,7 +4446,7 @@ const struct hci_cs {
 	       hci_cs_le_read_all_remote_features),
 };
 
-void hci_cmd_status_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_cmd_status_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			       *mut sk_buffskb, u16 *opcode, u8 *status,
 			       hci_req_complete_t *req_complete,
 			       hci_req_complete_skb_t *req_complete_skb)
@@ -4455,7 +4488,7 @@ void hci_cmd_status_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		queue_work(hdev.workqueue, &hdev.cmd_work);
 }
 
-void hci_hardware_error_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_hardware_error_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_hardware_errorev = data;
@@ -4467,7 +4500,7 @@ void hci_hardware_error_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	queue_work(hdev.req_workqueue, &hdev.error_reset);
 }
 
-void hci_role_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_role_change_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
 	*mut hci_ev_role_changeev = data;
@@ -4490,7 +4523,7 @@ void hci_role_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_num_comp_pkts_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_num_comp_pkts_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_ev_num_comp_pktsev = data;
@@ -4507,8 +4540,8 @@ void hci_num_comp_pkts_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	for i = 0; i < ev.num; i++ {
 		*mut hci_comp_pkts_infoinfo = &ev.handles[i];
 		*mut hci_connconn;
-		u16  handle, count;
-		unsigned int i;
+		handle: u16, count;
+		core::ffi::c_uint i;
 
 		handle = __le16_to_cpu(info.handle);
 		count  = __le16_to_cpu(info.count);
@@ -4529,10 +4562,8 @@ void hci_num_comp_pkts_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			conn.sent = 0;
 		}
 
-		for i = 0; i < count; ++i
-			hci_conn_tx_dequeue(conn);
-
-		switch (conn.type) {
+		i = 0;
+		while i < count {
 		case ACL_LINK:
 			hdev.acl_cnt += count;
 			if hdev.acl_cnt > hdev.acl_pkts
@@ -4569,8 +4600,12 @@ void hci_num_comp_pkts_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		default:
 			bt_dev_err(hdev, "unknown type %d conn %p",
-				   conn.type, conn);
+				   conn.r#type, conn);
 			break;
+		    ++i
+			hci_conn_tx_dequeue(conn);
+
+		switch (conn.r#type);
 		}
 	}
 
@@ -4579,7 +4614,7 @@ void hci_num_comp_pkts_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_mode_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_mode_change_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				*mut sk_buffskb)
 {
 	*mut hci_ev_mode_changeev = data;
@@ -4608,9 +4643,10 @@ void hci_mode_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_pin_code_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_pin_code_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_pin_code_reqev = data;
 	*mut hci_connconn;
 
@@ -4620,7 +4656,7 @@ void hci_pin_code_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if conn.state == BT_CONNECTED {
 		hci_conn_hold(conn);
@@ -4642,12 +4678,12 @@ void hci_pin_code_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		mgmt_pin_code_request(hdev, &ev.bdaddr, secure);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void conn_set_key(*mut hci_connconn, u8 key_type, u8 pin_len)
+void conn_set_key(*mut hci_connconn, key_type: u8, pin_len: u8)
 {
 	if key_type == HCI_LK_CHANGED_COMBINATION
 		return;
@@ -4679,9 +4715,10 @@ void conn_set_key(*mut hci_connconn, u8 key_type, u8 pin_len)
 	}
 }
 
-void hci_link_key_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_link_key_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
+	'not_found: {
 	*mut hci_ev_link_key_reqev = data;
 	struct hci_cp_link_key_reply cp;
 	*mut hci_connconn;
@@ -4697,30 +4734,30 @@ void hci_link_key_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	key = hci_find_link_key(hdev, &ev.bdaddr);
 	if !key {
 		bt_dev_dbg(hdev, "link key not found for %pMR", &ev.bdaddr);
-		goto not_found;
+		break 'not_found;
 	}
 
-	bt_dev_dbg(hdev, "found key type %u for %pMR", key.type, &ev.bdaddr);
+	bt_dev_dbg(hdev, "found key type %u for %pMR", key.r#type, &ev.bdaddr);
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if conn {
 		clear_bit(HCI_CONN_NEW_LINK_KEY, &conn.flags);
 
-		if ((key.type == HCI_LK_UNAUTH_COMBINATION_P192 ||
-		     key.type == HCI_LK_UNAUTH_COMBINATION_P256) &&
+		if ((key.r#type == HCI_LK_UNAUTH_COMBINATION_P192 ||
+		     key.r#type == HCI_LK_UNAUTH_COMBINATION_P256) &&
 		    conn.auth_type != 0xff && (conn.auth_type & 0x01)) {
 			bt_dev_dbg(hdev, "ignoring unauthenticated key");
-			goto not_found;
+			break 'not_found;
 		}
 
-		if (key.type == HCI_LK_COMBINATION && key.pin_len < 16 &&
+		if (key.r#type == HCI_LK_COMBINATION && key.pin_len < 16 &&
 		    (conn.pending_sec_level == BT_SECURITY_HIGH ||
 		     conn.pending_sec_level == BT_SECURITY_FIPS)) {
 			bt_dev_dbg(hdev, "ignoring key unauthenticated for high security");
-			goto not_found;
+			break 'not_found;
 		}
 
-		conn_set_key(conn, key.type, key.pin_len);
+		conn_set_key(conn, key.r#type, key.pin_len);
 	}
 
 	bacpy(&cp.bdaddr, &ev.bdaddr);
@@ -4731,15 +4768,16 @@ void hci_link_key_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 
 	return;
-
-not_found:
+	}
+	
 	hci_send_cmd(hdev, HCI_OP_LINK_KEY_NEG_REPLY, 6, &ev.bdaddr);
 	hci_dev_unlock(hdev);
 }
 
-void hci_link_key_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_link_key_notify_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_link_key_notifyev = data;
 	*mut hci_connconn;
 	*mut link_keykey;
@@ -4752,7 +4790,7 @@ void hci_link_key_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	/* Ignore core::ptr::null_mut() link key against CVE-2020-26555 */
 	if (!crypto_memneq(ev.link_key, ZERO_KEY, HCI_LINK_KEY_SIZE)) {
@@ -4760,7 +4798,7 @@ void hci_link_key_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			   &ev.bdaddr);
 		hci_disconnect(conn, HCI_ERROR_AUTH_FAILURE);
 		hci_conn_drop(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	hci_conn_hold(conn);
@@ -4771,18 +4809,18 @@ void hci_link_key_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	conn_set_key(conn, ev.key_type, conn.pin_length);
 
 	if (!hci_dev_test_flag(hdev, HCI_MGMT))
-		goto unlock;
+		break 'unlock;
 
 	key = hci_add_link_key(hdev, conn, &ev.bdaddr, ev.link_key,
 			        ev.key_type, pin_len, &persistent);
 	if !key
-		goto unlock;
+		break 'unlock;
 
 	/* Update connection information since adding the key will have
 	 * fixed up the type in the case of changed combination keys.
 	 */
 	if ev.key_type == HCI_LK_CHANGED_COMBINATION
-		conn_set_key(conn, key.type, key.pin_len);
+		conn_set_key(conn, key.r#type, key.pin_len);
 
 	mgmt_new_link_key(hdev, key, persistent);
 
@@ -4791,23 +4829,23 @@ void hci_link_key_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	 * list (we've still notified user space about it but with
 	 * store_hint being 0).
 	 */
-	if (key.type == HCI_LK_DEBUG_COMBINATION &&
+	if (key.r#type == HCI_LK_DEBUG_COMBINATION &&
 	    !hci_dev_test_flag(hdev, HCI_KEEP_DEBUG_KEYS)) {
 		list_del_rcu(&key.list);
 		kfree_rcu(key, rcu);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if persistent
 		clear_bit(HCI_CONN_FLUSH_KEY, &conn.flags);
 	else
 		set_bit(HCI_CONN_FLUSH_KEY, &conn.flags);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_clock_offset_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_clock_offset_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				 *mut sk_buffskb)
 {
 	*mut hci_ev_clock_offsetev = data;
@@ -4831,7 +4869,7 @@ void hci_clock_offset_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_pkt_type_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_pkt_type_change_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_ev_pkt_type_changeev = data;
@@ -4848,7 +4886,7 @@ void hci_pkt_type_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_pscan_rep_mode_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_pscan_rep_mode_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
 	*mut hci_ev_pscan_rep_modeev = data;
@@ -4867,9 +4905,10 @@ void hci_pscan_rep_mode_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, *mut core::ffi::c_voidedata,
+void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, edata: *mut core::ffi::c_void,
 					     *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_inquiry_result_rssiev = edata;
 	struct inquiry_data data;
 	int i;
@@ -4885,10 +4924,11 @@ void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, *mut core::ffi::c_voided
 	hci_dev_lock(hdev);
 
 	if (skb.len == array_size(ev.num,
-				   core::mem::size_of::<struct inquiry_info_rssi_pscan>())) {
+				   core::mem::size_of::<inquiry_info_rssi_pscan>())) {
 		*mut inquiry_info_rssi_pscaninfo;
 
-		for i = 0; i < ev.num; i++ {
+		i = 0;
+		while i < ev.num {
 			u32 flags;
 
 			info = hci_ev_skb_pull(hdev, skb,
@@ -4897,7 +4937,7 @@ void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, *mut core::ffi::c_voided
 			if !info {
 				bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
 					   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
-				goto unlock;
+				break 'unlock;
 			}
 
 			bacpy(&data.bdaddr, &info.bdaddr);
@@ -4914,12 +4954,14 @@ void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, *mut core::ffi::c_voided
 			mgmt_device_found(hdev, &info.bdaddr, ACL_LINK, 0x00,
 					  info.dev_class, info.rssi,
 					  flags, core::ptr::null_mut(), 0, core::ptr::null_mut(), 0, 0);
+		    i++;
 		}
 	} else if (skb.len == array_size(ev.num,
-					  core::mem::size_of::<struct inquiry_info_rssi>())) {
+					  core::mem::size_of::<inquiry_info_rssi>())) {
 		*mut inquiry_info_rssiinfo;
 
-		for i = 0; i < ev.num; i++ {
+		i = 0;
+		while i < ev.num {
 			u32 flags;
 
 			info = hci_ev_skb_pull(hdev, skb,
@@ -4928,7 +4970,7 @@ void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, *mut core::ffi::c_voided
 			if !info {
 				bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
 					   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
-				goto unlock;
+				break 'unlock;
 			}
 
 			bacpy(&data.bdaddr, &info.bdaddr);
@@ -4945,18 +4987,21 @@ void hci_inquiry_result_with_rssi_evt(*mut hci_devhdev, *mut core::ffi::c_voided
 			mgmt_device_found(hdev, &info.bdaddr, ACL_LINK, 0x00,
 					  info.dev_class, info.rssi,
 					  flags, core::ptr::null_mut(), 0, core::ptr::null_mut(), 0, 0);
+		    i++;
 		}
 	} else {
 		bt_dev_err(hdev, "Malformed HCI Event: 0x%2.2x",
 			   HCI_EV_INQUIRY_RESULT_WITH_RSSI);
 	}
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_remote_ext_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_remote_ext_features_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_remote_ext_featuresev = data;
 	*mut hci_connconn;
 
@@ -4966,7 +5011,7 @@ void hci_remote_ext_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if ev.page < HCI_MAX_PAGES
 		memcpy(conn.features[ev.page], ev.features, 8);
@@ -4997,7 +5042,7 @@ void hci_remote_ext_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	}
 
 	if conn.state != BT_CONFIG
-		goto unlock;
+		break 'unlock;
 
 	if (!ev.status && !test_bit(HCI_CONN_MGMT_CONNECTED, &conn.flags)) {
 		struct hci_cp_remote_name_req cp;
@@ -5014,14 +5059,15 @@ void hci_remote_ext_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		hci_connect_cfm(conn, ev.status);
 		hci_conn_drop(conn);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_sync_conn_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_sync_conn_completeev = data;
 	*mut hci_connconn;
 	u8 status = ev.status;
@@ -5047,7 +5093,7 @@ void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	conn = hci_conn_hash_lookup_ba(hdev, ev.link_type, &ev.bdaddr);
 	if !conn {
 		if ev.link_type == ESCO_LINK
-			goto unlock;
+			break 'unlock;
 
 		/* When the link type in the event indicates SCO connection
 		 * and lookup of the connection object fails, then check
@@ -5060,7 +5106,7 @@ void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		 */
 		conn = hci_conn_hash_lookup_ba(hdev, ESCO_LINK, &ev.bdaddr);
 		if !conn
-			goto unlock;
+			break 'unlock;
 	}
 
 	/* The HCI_Synchronous_Connection_Complete event is only sent once per connection.
@@ -5071,7 +5117,7 @@ void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	 */
 	if (!HCI_CONN_HANDLE_UNSET(conn.handle)) {
 		bt_dev_err(hdev, "Ignoring HCI_Sync_Conn_Complete event for existing connection");
-		goto unlock;
+		break 'unlock;
 	}
 
 	switch (status) {
@@ -5083,7 +5129,7 @@ void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		}
 
 		conn.state  = BT_CONNECTED;
-		conn.type   = ev.link_type;
+		conn.r#type   = ev.link_type;
 
 		hci_debugfs_create_conn(conn);
 		hci_conn_add_sysfs(conn);
@@ -5100,8 +5146,8 @@ void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		if conn.out {
 			conn.pkt_type = (hdev.esco_type & SCO_ESCO_MASK) |
 					(hdev.esco_type & EDR_ESCO_MASK);
-			if (hci_setup_sync(conn, conn.parent->handle))
-				goto unlock;
+			if (hci_setup_sync(conn, (*conn.parent).handle))
+				break 'unlock;
 		}
 		fallthrough;
 
@@ -5128,8 +5174,8 @@ void hci_sync_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_connect_cfm(conn, status);
 	if status
 		hci_conn_del(conn);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
@@ -5150,7 +5196,7 @@ inline size_t eir_get_length(u8 *eir, size_t eir_len)
 	return eir_len;
 }
 
-void hci_extended_inquiry_result_evt(*mut hci_devhdev, *mut core::ffi::c_voidedata,
+void hci_extended_inquiry_result_evt(*mut hci_devhdev, edata: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
 	*mut hci_ev_ext_inquiry_resultev = edata;
@@ -5172,7 +5218,8 @@ void hci_extended_inquiry_result_evt(*mut hci_devhdev, *mut core::ffi::c_voideda
 
 	hci_dev_lock(hdev);
 
-	for i = 0; i < ev.num; i++ {
+	i = 0;
+	while i < ev.num {
 		*mut extended_inquiry_infoinfo = &ev.info[i];
 		u32 flags;
 		bool name_known;
@@ -5200,14 +5247,16 @@ void hci_extended_inquiry_result_evt(*mut hci_devhdev, *mut core::ffi::c_voideda
 		mgmt_device_found(hdev, &info.bdaddr, ACL_LINK, 0x00,
 				  info.dev_class, info.rssi,
 				  flags, info.data, eir_len, core::ptr::null_mut(), 0, 0);
+	    i++;
 	}
 
 	hci_dev_unlock(hdev);
 }
 
-void hci_key_refresh_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_key_refresh_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_key_refresh_completeev = data;
 	*mut hci_connconn;
 
@@ -5218,13 +5267,13 @@ void hci_key_refresh_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	/* For BR/EDR the necessary steps are taken through the
 	 * auth_complete event.
 	 */
-	if conn.type != LE_LINK
-		goto unlock;
+	if conn.r#type != LE_LINK
+		break 'unlock;
 
 	if !ev.status
 		conn.sec_level = conn.pending_sec_level;
@@ -5234,7 +5283,7 @@ void hci_key_refresh_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	if ev.status && conn.state == BT_CONNECTED {
 		hci_disconnect(conn, HCI_ERROR_AUTH_FAILURE);
 		hci_conn_drop(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if conn.state == BT_CONFIG {
@@ -5250,8 +5299,8 @@ void hci_key_refresh_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		conn.disc_timeout = HCI_DISCONN_TIMEOUT;
 		hci_conn_drop(conn);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
@@ -5315,9 +5364,10 @@ u8 bredr_oob_data_present(*mut hci_connconn)
 	return 0x01;
 }
 
-void hci_io_capa_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_io_capa_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_io_capa_requestev = data;
 	*mut hci_connconn;
 
@@ -5327,7 +5377,7 @@ void hci_io_capa_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if (!conn || !hci_dev_test_flag(hdev, HCI_SSP_ENABLED))
-		goto unlock;
+		break 'unlock;
 
 	/* Assume remote supports SSP since it has triggered this event */
 	set_bit(HCI_CONN_SSP_ENABLED, &conn.flags);
@@ -5335,7 +5385,7 @@ void hci_io_capa_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_conn_hold(conn);
 
 	if (!hci_dev_test_flag(hdev, HCI_MGMT))
-		goto unlock;
+		break 'unlock;
 
 	/* Allow pairing if we're pairable, the initiators of the
 	 * pairing or if the remote is not requesting bonding.
@@ -5383,14 +5433,15 @@ void hci_io_capa_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		hci_send_cmd(hdev, HCI_OP_IO_CAPABILITY_NEG_REPLY,
 			     core::mem::size_of::<cp>(), &cp);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_io_capa_reply_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_io_capa_reply_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_io_capa_replyev = data;
 	*mut hci_connconn;
 
@@ -5400,18 +5451,20 @@ void hci_io_capa_reply_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	conn.remote_cap = ev.capability;
 	conn.remote_auth = ev.authentication;
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_user_confirm_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_user_confirm_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
+	'unlock: {
+	'confirm: {
 	*mut hci_ev_user_confirm_reqev = data;
 	int loc_mitm, rem_mitm, confirm_hint = 0;
 	*mut hci_connconn;
@@ -5421,11 +5474,11 @@ void hci_user_confirm_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_lock(hdev);
 
 	if (!hci_dev_test_flag(hdev, HCI_MGMT))
-		goto unlock;
+		break 'unlock;
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	loc_mitm = (conn.auth_type & 0x01);
 	rem_mitm = (conn.remote_auth & 0x01);
@@ -5440,7 +5493,7 @@ void hci_user_confirm_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		bt_dev_dbg(hdev, "Rejecting request: remote device can't provide MITM");
 		hci_send_cmd(hdev, HCI_OP_USER_CONFIRM_NEG_REPLY,
 			     core::mem::size_of::<ev.bdaddr>(), &ev.bdaddr);
-		goto unlock;
+		break 'unlock;
 	}
 
 	/* If no side requires MITM protection; use JUST_CFM method */
@@ -5455,7 +5508,7 @@ void hci_user_confirm_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		    conn.io_capability != HCI_IO_NO_INPUT_OUTPUT) {
 			bt_dev_dbg(hdev, "Confirming auto-accept as acceptor");
 			confirm_hint = 1;
-			goto confirm;
+			break 'confirm;
 		}
 
 		/* If there already exists link key in local host, leave the
@@ -5465,7 +5518,7 @@ void hci_user_confirm_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		if (hci_find_link_key(hdev, &ev.bdaddr)) {
 			bt_dev_dbg(hdev, "Local host already has link key");
 			confirm_hint = 1;
-			goto confirm;
+			break 'confirm;
 		}
 
 		BT_DBG("Auto-accept of user confirmation with %ums delay",
@@ -5473,25 +5526,25 @@ void hci_user_confirm_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		if hdev.auto_accept_delay > 0 {
 			int delay = msecs_to_jiffies(hdev.auto_accept_delay);
-			queue_delayed_work(conn.hdev->workqueue,
+			queue_delayed_work((*conn.hdev).workqueue,
 					   &conn.auto_accept_work, delay);
-			goto unlock;
+			break 'unlock;
 		}
 
 		hci_send_cmd(hdev, HCI_OP_USER_CONFIRM_REPLY,
 			     core::mem::size_of::<ev.bdaddr>(), &ev.bdaddr);
-		goto unlock;
+		break 'unlock;
 	}
-
-confirm:
+	}
+	
 	mgmt_user_confirm_request(hdev, &ev.bdaddr, ACL_LINK, 0,
 				  le32_to_cpu(ev.passkey), confirm_hint);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_user_passkey_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_user_passkey_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_ev_user_passkey_reqev = data;
@@ -5502,9 +5555,10 @@ void hci_user_passkey_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		mgmt_user_passkey_request(hdev, &ev.bdaddr, ACL_LINK, 0);
 }
 
-void hci_user_passkey_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_user_passkey_notify_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_user_passkey_notifyev = data;
 	*mut hci_connconn;
 
@@ -5514,23 +5568,24 @@ void hci_user_passkey_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	conn.passkey_notify = __le32_to_cpu(ev.passkey);
 	conn.passkey_entered = 0;
 
 	if (hci_dev_test_flag(hdev, HCI_MGMT))
-		mgmt_user_passkey_notify(hdev, &conn.dst, conn.type,
+		mgmt_user_passkey_notify(hdev, &conn.dst, conn.r#type,
 					 conn.dst_type, conn.passkey_notify,
 					 conn.passkey_entered);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_keypress_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_keypress_notify_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_keypress_notifyev = data;
 	*mut hci_connconn;
 
@@ -5540,12 +5595,12 @@ void hci_keypress_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if !conn
-		goto unlock;
+		break 'unlock;
 
-	switch (ev.type) {
+	switch (ev.r#type) {
 	case HCI_KEYPRESS_STARTED:
 		conn.passkey_entered = 0;
-		goto unlock;
+		break 'unlock;
 
 	case HCI_KEYPRESS_ENTERED:
 		conn.passkey_entered++;
@@ -5560,21 +5615,22 @@ void hci_keypress_notify_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		break;
 
 	case HCI_KEYPRESS_COMPLETED:
-		goto unlock;
+		break 'unlock;
 	}
 
 	if (hci_dev_test_flag(hdev, HCI_MGMT))
-		mgmt_user_passkey_notify(hdev, &conn.dst, conn.type,
+		mgmt_user_passkey_notify(hdev, &conn.dst, conn.r#type,
 					 conn.dst_type, conn.passkey_notify,
 					 conn.passkey_entered);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_simple_pair_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_simple_pair_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_simple_pair_completeev = data;
 	*mut hci_connconn;
 
@@ -5584,7 +5640,7 @@ void hci_simple_pair_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &ev.bdaddr);
 	if (!conn || !hci_conn_ssp_enabled(conn))
-		goto unlock;
+		break 'unlock;
 
 	/* Reset the authentication requirement to unknown */
 	conn.remote_auth = 0xff;
@@ -5598,12 +5654,12 @@ void hci_simple_pair_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		mgmt_auth_failed(conn, ev.status);
 
 	hci_conn_drop(conn);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_remote_host_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_remote_host_features_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_ev_remote_host_featuresev = data;
@@ -5625,9 +5681,10 @@ void hci_remote_host_features_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_remote_oob_data_request_evt(*mut hci_devhdev, *mut core::ffi::c_voidedata,
+void hci_remote_oob_data_request_evt(*mut hci_devhdev, edata: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_remote_oob_data_requestev = edata;
 	*mut oob_datadata;
 
@@ -5636,7 +5693,7 @@ void hci_remote_oob_data_request_evt(*mut hci_devhdev, *mut core::ffi::c_voideda
 	hci_dev_lock(hdev);
 
 	if (!hci_dev_test_flag(hdev, HCI_MGMT))
-		goto unlock;
+		break 'unlock;
 
 	data = hci_find_remote_oob_data(hdev, &ev.bdaddr, BDADDR_BREDR);
 	if !data {
@@ -5645,7 +5702,7 @@ void hci_remote_oob_data_request_evt(*mut hci_devhdev, *mut core::ffi::c_voideda
 		bacpy(&cp.bdaddr, &ev.bdaddr);
 		hci_send_cmd(hdev, HCI_OP_REMOTE_OOB_DATA_NEG_REPLY,
 			     core::mem::size_of::<cp>(), &cp);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if (bredr_sc_enabled(hdev)) {
@@ -5674,13 +5731,13 @@ void hci_remote_oob_data_request_evt(*mut hci_devhdev, *mut core::ffi::c_voideda
 		hci_send_cmd(hdev, HCI_OP_REMOTE_OOB_DATA_REPLY,
 			     core::mem::size_of::<cp>(), &cp);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
 void le_conn_update_addr(*mut hci_connconn, bdaddr_t *bdaddr,
-				u8 bdaddr_type, bdaddr_t *local_rpa)
+				bdaddr_type: u8, bdaddr_t *local_rpa)
 {
 	if conn.out {
 		conn.dst_type = bdaddr_type;
@@ -5695,28 +5752,28 @@ void le_conn_update_addr(*mut hci_connconn, bdaddr_t *bdaddr,
 			bacpy(&conn.init_addr, local_rpa);
 		} else if (hci_dev_test_flag(conn.hdev, HCI_PRIVACY)) {
 			conn.init_addr_type = ADDR_LE_DEV_RANDOM;
-			bacpy(&conn.init_addr, &conn.hdev->rpa);
+			bacpy(&conn.init_addr, (*&conn.hdev).rpa);
 		} else {
 			hci_copy_identity_address(conn.hdev, &conn.init_addr,
 						  &conn.init_addr_type);
 		}
 	} else {
-		conn.resp_addr_type = conn.hdev->adv_addr_type;
+		conn.resp_addr_type = (*conn.hdev).adv_addr_type;
 		/* Check if the controller has set a Local RPA then it must be
 		 * used instead or hdev.rpa.
 		 */
 		if (local_rpa && bacmp(local_rpa, BDADDR_ANY)) {
 			conn.resp_addr_type = ADDR_LE_DEV_RANDOM;
 			bacpy(&conn.resp_addr, local_rpa);
-		} else if conn.hdev->adv_addr_type == ADDR_LE_DEV_RANDOM {
+		} else if (*conn.hdev).adv_addr_type == ADDR_LE_DEV_RANDOM {
 			/* In case of ext adv, resp_addr will be updated in
 			 * Adv Terminated event.
 			 */
 			if (!ext_adv_capable(conn.hdev))
 				bacpy(&conn.resp_addr,
-				      &conn.hdev->random_addr);
+				      (*&conn.hdev).random_addr);
 		} else {
-			bacpy(&conn.resp_addr, &conn.hdev->bdaddr);
+			bacpy(&conn.resp_addr, (*&conn.hdev).bdaddr);
 		}
 
 		conn.init_addr_type = bdaddr_type;
@@ -5727,17 +5784,18 @@ void le_conn_update_addr(*mut hci_connconn, bdaddr_t *bdaddr,
 		 * to check if the parameters are in range and if not
 		 * trigger the connection update procedure.
 		 */
-		conn.le_conn_min_interval = conn.hdev->le_conn_min_interval;
-		conn.le_conn_max_interval = conn.hdev->le_conn_max_interval;
+		conn.le_conn_min_interval = (*conn.hdev).le_conn_min_interval;
+		conn.le_conn_max_interval = (*conn.hdev).le_conn_max_interval;
 	}
 }
 
-void le_conn_complete_evt(*mut hci_devhdev, u8 status,
-				 bdaddr_t *bdaddr, u8 bdaddr_type,
-				 bdaddr_t *local_rpa, u8 role, u16 handle,
-				 u16 interval, u16 latency,
-				 u16 supervision_timeout)
+void le_conn_complete_evt(*mut hci_devhdev, status: u8,
+				 bdaddr_t *bdaddr, bdaddr_type: u8,
+				 bdaddr_t *local_rpa, role: u8, handle: u16,
+				 interval: u16, latency: u16,
+				 supervision_timeout: u16)
 {
+	'unlock: {
 	*mut hci_conn_paramsparams;
 	*mut hci_connconn;
 	*mut smp_irkirk;
@@ -5769,13 +5827,13 @@ void le_conn_complete_evt(*mut hci_devhdev, u8 status,
 		 * just unlock as there is nothing to cleanup.
 		 */
 		if status
-			goto unlock;
+			break 'unlock;
 
 		conn = hci_conn_add_unset(hdev, LE_LINK, bdaddr, bdaddr_type,
 					  role);
 		if (IS_ERR(conn)) {
 			bt_dev_err(hdev, "connection err: %ld", PTR_ERR(conn));
-			goto unlock;
+			break 'unlock;
 		}
 
 		/* If we didn't have a hci_conn object previously
@@ -5810,7 +5868,7 @@ void le_conn_complete_evt(*mut hci_devhdev, u8 status,
 	 */
 	if (!HCI_CONN_HANDLE_UNSET(conn.handle)) {
 		bt_dev_err(hdev, "Ignoring HCI_Connection_Complete for existing connection");
-		goto unlock;
+		break 'unlock;
 	}
 
 	le_conn_update_addr(conn, bdaddr, bdaddr_type, local_rpa);
@@ -5837,12 +5895,12 @@ void le_conn_complete_evt(*mut hci_devhdev, u8 status,
 	 * request completion callbacks used for connecting.
 	 */
 	if (status || hci_conn_set_handle(conn, handle))
-		goto unlock;
+		break 'unlock;
 
 	/* Drop the connection if it has been aborted */
 	if (test_bit(HCI_CONN_CANCEL, &conn.flags)) {
 		hci_conn_drop(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if conn.dst_type == ADDR_LE_DEV_PUBLIC
@@ -5853,7 +5911,7 @@ void le_conn_complete_evt(*mut hci_devhdev, u8 status,
 	/* Drop the connection if the device is blocked */
 	if (hci_bdaddr_list_lookup(&hdev.reject_list, &conn.dst, addr_type)) {
 		hci_conn_drop(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	mgmt_device_connected(hdev, conn, core::ptr::null_mut(), 0);
@@ -5902,13 +5960,13 @@ void le_conn_complete_evt(*mut hci_devhdev, u8 status,
 		if p && p.subrate_max
 			hci_le_conn_rate_request(hdev, conn);
 	}
-
-unlock:
+	}
+	
 	hci_update_passive_scan(hdev);
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_conn_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_ev_le_conn_completeev = data;
@@ -5922,7 +5980,7 @@ void hci_le_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			     le16_to_cpu(ev.supervision_timeout));
 }
 
-void hci_le_enh_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_enh_conn_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_ev_le_enh_conn_completeev = data;
@@ -5936,7 +5994,7 @@ void hci_le_enh_conn_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 			     le16_to_cpu(ev.supervision_timeout));
 }
 
-void hci_le_pa_sync_lost_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_pa_sync_lost_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
 	*mut hci_ev_le_pa_sync_lostev = data;
@@ -5959,9 +6017,10 @@ void hci_le_pa_sync_lost_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_ext_adv_term_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_ext_adv_term_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_evt_le_ext_adv_set_termev = data;
 	*mut hci_connconn;
 	*mut adv_infoadv, *n;
@@ -5986,20 +6045,20 @@ void hci_le_ext_adv_term_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	if ev.status {
 		if !adv
-			goto unlock;
+			break 'unlock;
 
 		/* Remove advertising as it has been terminated */
 		hci_remove_adv_instance(hdev, ev.handle);
 		mgmt_advertising_removed(core::ptr::null_mut(), hdev, ev.handle);
 
-		list_for_each_entry_safe(adv, n, &hdev.adv_instances, list) {
+		list_for_each_entry_safe!(adv, n, &hdev.adv_instances, list, {
 			if adv.enabled
-				goto unlock;
-		}
+				break 'unlock;
+		});
 
 		/* We are no longer advertising, clear HCI_LE_ADV */
 		hci_dev_clear_flag(hdev, HCI_LE_ADV);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if adv
@@ -6014,18 +6073,18 @@ void hci_le_ext_adv_term_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		if (hdev.adv_addr_type != ADDR_LE_DEV_RANDOM ||
 		    bacmp(&conn.resp_addr, BDADDR_ANY))
-			goto unlock;
+			break 'unlock;
 
 		if !ev.handle {
 			bacpy(&conn.resp_addr, &hdev.random_addr);
-			goto unlock;
+			break 'unlock;
 		}
 
 		if adv
 			bacpy(&conn.resp_addr, &adv.random_addr);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
@@ -6039,9 +6098,10 @@ int hci_le_pa_term_sync(*mut hci_devhdev, __le16 handle)
 	return hci_send_cmd(hdev, HCI_OP_LE_PA_TERM_SYNC, core::mem::size_of::<cp>(), &cp);
 }
 
-void hci_le_past_received_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_past_received_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_le_past_receivedev = data;
 	int mask = hdev.link_mode;
 	u8 flags = 0;
@@ -6059,7 +6119,7 @@ void hci_le_past_received_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		bt_dev_err(hdev,
 			   "Unable to find connection for dst %pMR sid 0x%2.2x",
 			   &ev.bdaddr, ev.sid);
-		goto unlock;
+		break 'unlock;
 	}
 
 	conn.sync_handle = le16_to_cpu(ev.sync_handle);
@@ -6069,18 +6129,18 @@ void hci_le_past_received_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 				      &flags);
 	if (!(mask & HCI_LM_ACCEPT)) {
 		hci_le_pa_term_sync(hdev, ev.sync_handle);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if (!(flags & HCI_PROTO_DEFER))
-		goto unlock;
+		break 'unlock;
 
 	/* Add connection to indicate PA sync event */
 	pa_sync = hci_conn_add_unset(hdev, PA_LINK, BDADDR_ANY, 0,
 				     HCI_ROLE_SLAVE);
 
 	if (IS_ERR(pa_sync))
-		goto unlock;
+		break 'unlock;
 
 	pa_sync.sync_handle = le16_to_cpu(ev.sync_handle);
 
@@ -6090,12 +6150,12 @@ void hci_le_past_received_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		/* Notify iso layer */
 		hci_connect_cfm(pa_sync, ev.status);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_conn_update_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_conn_update_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
 	*mut hci_ev_le_conn_update_completeev = data;
@@ -6121,8 +6181,8 @@ void hci_le_conn_update_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddat
 /* This function requires the caller holds hdev.lock */
 *mut hci_conncheck_pending_le_conn(*mut hci_devhdev,
 					      bdaddr_t *addr,
-					      u8 addr_type, bool addr_resolved,
-					      u8 adv_type, u8 phy, u8 sec_phy)
+					      addr_type: u8, addr_resolved: bool,
+					      adv_type: u8, phy: u8, sec_phy: u8)
 {
 	*mut hci_connconn;
 	*mut hci_conn_paramsparams;
@@ -6210,16 +6270,16 @@ void hci_le_conn_update_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddat
 	return core::ptr::null_mut();
 }
 
-void process_adv_report(*mut hci_devhdev, u8 type, bdaddr_t *bdaddr,
-			       u8 bdaddr_type, bdaddr_t *direct_addr,
-			       u8 direct_addr_type, u8 phy, u8 sec_phy, s8 rssi,
-			       u8 *data, u8 len, bool ext_adv, bool ctl_time,
-			       u64 instant)
+void process_adv_report(*mut hci_devhdev, r#type: u8, bdaddr_t *bdaddr,
+			       bdaddr_type: u8, bdaddr_t *direct_addr,
+			       direct_addr_type: u8, phy: u8, sec_phy: u8, s8 rssi,
+			       u8 *data, len: u8, ext_adv: bool, ctl_time: bool,
+			       instant: u64)
 {
 	*mut discovery_stated = &hdev.discovery;
 	*mut smp_irkirk;
 	*mut hci_connconn;
-	bool match, bdaddr_resolved;
+	match: bool, bdaddr_resolved;
 	u32 flags;
 	u8 *ptr;
 
@@ -6248,9 +6308,11 @@ void process_adv_report(*mut hci_devhdev, u8 type, bdaddr_t *bdaddr,
 	 * When data is core::ptr::null_mut(), len is 0 so there is no need for extra ptr
 	 * check as 'ptr < data + 0' is already false in such case.
 	 */
-	for ptr = data; ptr < data + len && *ptr; ptr += *ptr + 1 {
+	ptr = data;
+	while ptr < data + len && *ptr {
 		if ptr + 1 + *ptr > data + len
 			break;
+	    ptr += *ptr + 1;
 	}
 
 	/* Adjust for actual length. This handles the case when remote
@@ -6424,7 +6486,7 @@ void process_adv_report(*mut hci_devhdev, u8 type, bdaddr_t *bdaddr,
 	clear_pending_adv_report(hdev);
 }
 
-void hci_le_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_adv_report_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
 	*mut hci_ev_le_advertising_reportev = data;
@@ -6453,7 +6515,7 @@ void hci_le_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		if (info.length <= max_adv_len(hdev)) {
 			rssi = info.data[info.length];
-			process_adv_report(hdev, info.type, &info.bdaddr,
+			process_adv_report(hdev, info.r#type, &info.bdaddr,
 					   info.bdaddr_type, core::ptr::null_mut(), 0,
 					   HCI_ADV_PHY_1M, 0, rssi,
 					   info.data, info.length, false,
@@ -6466,8 +6528,9 @@ void hci_le_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-u8 ext_evt_type_to_legacy(*mut hci_devhdev, u16 evt_type)
+u8 ext_evt_type_to_legacy(*mut hci_devhdev, evt_type: u16)
 {
+	'invalid: {
 	u16 pdu_type = evt_type & ~LE_EXT_ADV_DATA_STATUS_MASK;
 
 	if !pdu_type
@@ -6488,7 +6551,7 @@ u8 ext_evt_type_to_legacy(*mut hci_devhdev, u16 evt_type)
 			return LE_ADV_SCAN_RSP;
 		}
 
-		goto invalid;
+		break 'invalid;
 	}
 
 	if evt_type & LE_EXT_ADV_CONN_IND {
@@ -6506,15 +6569,15 @@ u8 ext_evt_type_to_legacy(*mut hci_devhdev, u16 evt_type)
 
 	if evt_type & LE_EXT_ADV_DIRECT_IND
 		return LE_ADV_NONCONN_IND;
-
-invalid:
+	}
+	
 	bt_dev_err_ratelimited(hdev, "Unknown advertising packet type: 0x%02x",
 			       evt_type);
 
 	return LE_ADV_INVALID;
 }
 
-void hci_le_ext_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_ext_adv_report_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
 	*mut hci_ev_le_ext_adv_reportev = data;
@@ -6541,7 +6604,7 @@ void hci_le_ext_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 		hci_store_wake_reason(hdev, &info.bdaddr, info.bdaddr_type);
 
-		evt_type = __le16_to_cpu(info.type) & LE_EXT_ADV_EVT_TYPE_MASK;
+		evt_type = __le16_to_cpu(info.r#type) & LE_EXT_ADV_EVT_TYPE_MASK;
 		legacy_evt_type = ext_evt_type_to_legacy(hdev, evt_type);
 
 		if (hci_test_quirk(hdev,
@@ -6575,9 +6638,10 @@ void hci_le_ext_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_pa_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_pa_sync_established_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					   *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_le_pa_sync_establishedev = data;
 	int mask = hdev.link_mode;
 	u8 flags = 0;
@@ -6595,7 +6659,7 @@ void hci_le_pa_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata
 		bt_dev_err(hdev,
 			   "Unable to find connection for dst %pMR sid 0x%2.2x",
 			   &ev.bdaddr, ev.sid);
-		goto unlock;
+		break 'unlock;
 	}
 
 	clear_bit(HCI_CONN_CREATE_PA_SYNC, &conn.flags);
@@ -6607,18 +6671,18 @@ void hci_le_pa_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata
 				      &flags);
 	if (!(mask & HCI_LM_ACCEPT)) {
 		hci_le_pa_term_sync(hdev, ev.handle);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if (!(flags & HCI_PROTO_DEFER))
-		goto unlock;
+		break 'unlock;
 
 	/* Add connection to indicate PA sync event */
 	pa_sync = hci_conn_add_unset(hdev, PA_LINK, BDADDR_ANY, 0,
 				     HCI_ROLE_SLAVE);
 
 	if (IS_ERR(pa_sync))
-		goto unlock;
+		break 'unlock;
 
 	pa_sync.sync_handle = le16_to_cpu(ev.handle);
 
@@ -6628,14 +6692,15 @@ void hci_le_pa_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata
 		/* Notify iso layer */
 		hci_connect_cfm(pa_sync, ev.status);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_per_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_per_adv_report_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				      *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_le_per_adv_reportev = data;
 	int mask = hdev.link_mode;
 	u8 flags = 0;
@@ -6654,17 +6719,17 @@ void hci_le_per_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	mask |= hci_proto_connect_ind(hdev, BDADDR_ANY, PA_LINK, &flags);
 	if (!(mask & HCI_LM_ACCEPT))
-		goto unlock;
+		break 'unlock;
 
 	if (!(flags & HCI_PROTO_DEFER))
-		goto unlock;
+		break 'unlock;
 
 	pa_sync = hci_conn_hash_lookup_pa_sync_handle
 			(hdev,
 			le16_to_cpu(ev.sync_handle));
 
 	if !pa_sync
-		goto unlock;
+		break 'unlock;
 
 	if (ev.data_status == LE_PA_DATA_COMPLETE &&
 	    !test_and_set_bit(HCI_CONN_PA_SYNC, &pa_sync.flags)) {
@@ -6674,12 +6739,12 @@ void hci_le_per_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		/* Notify MGMT layer */
 		mgmt_device_connected(hdev, pa_sync, core::ptr::null_mut(), 0);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_remote_feat_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_remote_feat_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
 	*mut hci_ev_le_remote_feat_completeev = data;
@@ -6732,9 +6797,10 @@ void hci_le_remote_feat_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddat
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_ltk_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_ltk_request_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				   *mut sk_buffskb)
 {
+	'not_found: {
 	*mut hci_ev_le_ltk_reqev = data;
 	struct hci_cp_le_ltk_reply cp;
 	struct hci_cp_le_ltk_neg_reply neg;
@@ -6747,20 +6813,20 @@ void hci_le_ltk_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if (conn == core::ptr::null_mut())
-		goto not_found;
+		break 'not_found;
 
 	ltk = hci_find_ltk(hdev, &conn.dst, conn.dst_type, conn.role);
 	if !ltk
-		goto not_found;
+		break 'not_found;
 
 	if (smp_ltk_is_sc(ltk)) {
 		/* With SC both EDiv and Rand are set to zero */
 		if ev.ediv || ev.rand
-			goto not_found;
+			break 'not_found;
 	} else {
 		/* For non-SC keys check that EDiv and Rand match */
 		if ev.ediv != ltk.ediv || ev.rand != ltk.rand
-			goto not_found;
+			break 'not_found;
 	}
 
 	memcpy(cp.ltk, ltk.val, ltk.enc_size);
@@ -6779,7 +6845,7 @@ void hci_le_ltk_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	 * distribute the keys. Later, security can be re-established
 	 * using a distributed LTK.
 	 */
-	if ltk.type == SMP_STK {
+	if ltk.r#type == SMP_STK {
 		set_bit(HCI_CONN_STK_ENCRYPT, &conn.flags);
 		list_del_rcu(&ltk.list);
 		kfree_rcu(ltk, rcu);
@@ -6790,15 +6856,15 @@ void hci_le_ltk_request_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 
 	return;
-
-not_found:
+	}
+	
 	neg.handle = ev.handle;
 	hci_send_cmd(hdev, HCI_OP_LE_LTK_NEG_REPLY, core::mem::size_of::<neg>(), &neg);
 	hci_dev_unlock(hdev);
 }
 
-void send_conn_param_neg_reply(*mut hci_devhdev, u16 handle,
-				      u8 reason)
+void send_conn_param_neg_reply(*mut hci_devhdev, handle: u16,
+				      reason: u8)
 {
 	struct hci_cp_le_conn_param_req_neg_reply cp;
 
@@ -6809,13 +6875,14 @@ void send_conn_param_neg_reply(*mut hci_devhdev, u16 handle,
 		     &cp);
 }
 
-void hci_le_remote_conn_param_req_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_remote_conn_param_req_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					     *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_le_remote_conn_param_reqev = data;
 	struct hci_cp_le_conn_param_req_reply cp;
 	*mut hci_connhcon;
-	u16 handle, min, max, latency, timeout;
+	handle: u16, min, max, latency, timeout;
 
 	bt_dev_dbg(hdev, "handle 0x%4.4x", __le16_to_cpu(ev.handle));
 
@@ -6831,19 +6898,19 @@ void hci_le_remote_conn_param_req_evt(*mut hci_devhdev, *mut core::ffi::c_voidda
 	if !hcon || hcon.state != BT_CONNECTED {
 		send_conn_param_neg_reply(hdev, handle,
 					  HCI_ERROR_UNKNOWN_CONN_ID);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if max > hcon.le_conn_max_interval {
 		send_conn_param_neg_reply(hdev, handle,
 					  HCI_ERROR_INVALID_LL_PARAMS);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if (hci_check_conn_params(min, max, latency, timeout)) {
 		send_conn_param_neg_reply(hdev, handle,
 					  HCI_ERROR_INVALID_LL_PARAMS);
-		goto unlock;
+		break 'unlock;
 	}
 
 	if hcon.role == HCI_ROLE_MASTER {
@@ -6875,12 +6942,12 @@ void hci_le_remote_conn_param_req_evt(*mut hci_devhdev, *mut core::ffi::c_voidda
 	cp.max_ce_len = 0;
 
 	hci_send_cmd(hdev, HCI_OP_LE_CONN_PARAM_REQ_REPLY, core::mem::size_of::<cp>(), &cp);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_direct_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_direct_adv_report_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					 *mut sk_buffskb)
 {
 	*mut hci_ev_le_direct_adv_reportev = data;
@@ -6896,23 +6963,26 @@ void hci_le_direct_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	hci_dev_lock(hdev);
 
-	for i = 0; i < ev.num; i++ {
+	i = 0;
+	while i < ev.num {
 		*mut hci_ev_le_direct_adv_infoinfo = &ev.info[i];
 
 		hci_store_wake_reason(hdev, &info.bdaddr, info.bdaddr_type);
 
-		process_adv_report(hdev, info.type, &info.bdaddr,
+		process_adv_report(hdev, info.r#type, &info.bdaddr,
 				   info.bdaddr_type, &info.direct_addr,
 				   info.direct_addr_type, HCI_ADV_PHY_1M, 0,
 				   info.rssi, core::ptr::null_mut(), 0, false, false, instant);
+	    i++;
 	}
 
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_phy_update_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_phy_update_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				  *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_ev_le_phy_update_completeev = data;
 	*mut hci_connconn;
 
@@ -6925,17 +6995,17 @@ void hci_le_phy_update_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	conn.le_tx_phy = ev.tx_phy;
 	conn.le_rx_phy = ev.rx_phy;
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
 /* Convert LE PHY to QoS PHYs */
-u8 le_phy_qos(u8 phy)
+u8 le_phy_qos(phy: u8)
 {
 	switch (phy) {
 	case 0x01:
@@ -6949,15 +7019,16 @@ u8 le_phy_qos(u8 phy)
 	return 0;
 }
 
-void hci_le_cis_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_cis_established_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				       *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_evt_le_cis_establishedev = data;
 	*mut hci_connconn;
 	*mut bt_iso_qosqos;
 	bool pending = false;
 	u16 handle = __le16_to_cpu(ev.handle);
-	u32 c_sdu_interval, p_sdu_interval;
+	c_sdu_interval: u32, p_sdu_interval;
 
 	bt_dev_dbg(hdev, "status 0x%2.2x", ev.status);
 
@@ -6968,14 +7039,14 @@ void hci_le_cis_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		bt_dev_err(hdev,
 			   "Unable to find connection with handle 0x%4.4x",
 			   handle);
-		goto unlock;
+		break 'unlock;
 	}
 
-	if conn.type != CIS_LINK {
+	if conn.r#type != CIS_LINK {
 		bt_dev_err(hdev,
 			   "Invalid connection link type handle 0x%4.4x",
 			   handle);
-		goto unlock;
+		break 'unlock;
 	}
 
 	qos = &conn.iso_qos;
@@ -6999,34 +7070,34 @@ void hci_le_cis_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	switch (conn.role) {
 	case HCI_ROLE_SLAVE:
-		qos.ucast.in.interval = c_sdu_interval;
+		qos.ucast.r#in.interval = c_sdu_interval;
 		qos.ucast.out.interval = p_sdu_interval;
 		/* Convert Transport Latency (us) to Latency (msec) */
-		qos.ucast.in.latency =
+		qos.ucast.r#in.latency =
 			DIV_ROUND_CLOSEST(get_unaligned_le24(ev.c_latency),
 					  1000);
 		qos.ucast.out.latency =
 			DIV_ROUND_CLOSEST(get_unaligned_le24(ev.p_latency),
 					  1000);
-		qos.ucast.in.sdu = ev.c_bn ? le16_to_cpu(ev.c_mtu) : 0;
+		qos.ucast.r#in.sdu = ev.c_bn ? le16_to_cpu(ev.c_mtu) : 0;
 		qos.ucast.out.sdu = ev.p_bn ? le16_to_cpu(ev.p_mtu) : 0;
-		qos.ucast.in.phys = le_phy_qos(ev.c_phy);
+		qos.ucast.r#in.phys = le_phy_qos(ev.c_phy);
 		qos.ucast.out.phys = le_phy_qos(ev.p_phy);
 		break;
 	case HCI_ROLE_MASTER:
-		qos.ucast.in.interval = p_sdu_interval;
+		qos.ucast.r#in.interval = p_sdu_interval;
 		qos.ucast.out.interval = c_sdu_interval;
 		/* Convert Transport Latency (us) to Latency (msec) */
 		qos.ucast.out.latency =
 			DIV_ROUND_CLOSEST(get_unaligned_le24(ev.c_latency),
 					  1000);
-		qos.ucast.in.latency =
+		qos.ucast.r#in.latency =
 			DIV_ROUND_CLOSEST(get_unaligned_le24(ev.p_latency),
 					  1000);
 		qos.ucast.out.sdu = ev.c_bn ? le16_to_cpu(ev.c_mtu) : 0;
-		qos.ucast.in.sdu = ev.p_bn ? le16_to_cpu(ev.p_mtu) : 0;
+		qos.ucast.r#in.sdu = ev.p_bn ? le16_to_cpu(ev.p_mtu) : 0;
 		qos.ucast.out.phys = le_phy_qos(ev.c_phy);
-		qos.ucast.in.phys = le_phy_qos(ev.p_phy);
+		qos.ucast.r#in.phys = le_phy_qos(ev.p_phy);
 		break;
 	}
 
@@ -7035,14 +7106,14 @@ void hci_le_cis_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		hci_debugfs_create_conn(conn);
 		hci_conn_add_sysfs(conn);
 		hci_iso_setup_path(conn);
-		goto unlock;
+		break 'unlock;
 	}
 
 	conn.state = BT_CLOSED;
 	hci_connect_cfm(conn, ev.status);
 	hci_conn_del(conn);
-
-unlock:
+	}
+	
 	if pending
 		hci_le_create_cis_pending(hdev);
 
@@ -7068,11 +7139,12 @@ void hci_le_accept_cis(*mut hci_devhdev, __le16 handle)
 	hci_send_cmd(hdev, HCI_OP_LE_ACCEPT_CIS, core::mem::size_of::<cp>(), &cp);
 }
 
-void hci_le_cis_req_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_cis_req_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			       *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_evt_le_cis_reqev = data;
-	u16 acl_handle, cis_handle;
+	acl_handle: u16, cis_handle;
 	*mut hci_connacl, *cis;
 	int mask;
 	u8 flags = 0;
@@ -7087,12 +7159,12 @@ void hci_le_cis_req_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 	acl = hci_conn_hash_lookup_handle(hdev, acl_handle);
 	if !acl
-		goto unlock;
+		break 'unlock;
 
 	mask = hci_proto_connect_ind(hdev, &acl.dst, CIS_LINK, &flags);
 	if (!(mask & HCI_LM_ACCEPT)) {
 		hci_le_reject_cis(hdev, ev.cis_handle);
-		goto unlock;
+		break 'unlock;
 	}
 
 	cis = hci_conn_hash_lookup_handle(hdev, cis_handle);
@@ -7101,7 +7173,7 @@ void hci_le_cis_req_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 				   HCI_ROLE_SLAVE, cis_handle);
 		if (IS_ERR(cis)) {
 			hci_le_reject_cis(hdev, ev.cis_handle);
-			goto unlock;
+			break 'unlock;
 		}
 	}
 
@@ -7114,12 +7186,12 @@ void hci_le_cis_req_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		cis.state = BT_CONNECT2;
 		hci_connect_cfm(cis, 0);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-int hci_iso_term_big_sync(*mut hci_devhdev, *mut core::ffi::c_voiddata)
+int hci_iso_term_big_sync(*mut hci_devhdev, data: *mut core::ffi::c_void)
 {
 	u8 handle = PTR_UINT(data);
 
@@ -7127,7 +7199,7 @@ int hci_iso_term_big_sync(*mut hci_devhdev, *mut core::ffi::c_voiddata)
 					 HCI_ERROR_LOCAL_HOST_TERM);
 }
 
-void hci_le_create_big_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_create_big_complete_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					   *mut sk_buffskb)
 {
 	*mut hci_evt_le_create_big_completeev = data;
@@ -7198,9 +7270,10 @@ void hci_le_create_big_complete_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_big_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_big_sync_established_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					    *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_evt_le_big_sync_establishedev = data;
 	*mut hci_connbis, *conn;
 	int i;
@@ -7219,7 +7292,7 @@ void hci_le_big_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddat
 		bt_dev_err(hdev,
 			   "Unable to find connection for big 0x%2.2x",
 			   ev.handle);
-		goto unlock;
+		break 'unlock;
 	}
 
 	clear_bit(HCI_CONN_CREATE_BIG_SYNC, &conn.flags);
@@ -7251,10 +7324,10 @@ void hci_le_big_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddat
 		bis.iso_qos.bcast.big = ev.handle;
 		unsafe { core::ptr::write_bytes((&interval) as *mut _, 0, core::mem::size_of::<interval>()); }
 		memcpy(&interval, ev.latency, core::mem::size_of::<ev.latency>());
-		bis.iso_qos.bcast.in.interval = le32_to_cpu(interval);
+		bis.iso_qos.bcast.r#in.interval = le32_to_cpu(interval);
 		/* Convert ISO Interval (1.25 ms slots) to latency (ms) */
-		bis.iso_qos.bcast.in.latency = le16_to_cpu(ev.interval) * 125 / 100;
-		bis.iso_qos.bcast.in.sdu = le16_to_cpu(ev.max_pdu);
+		bis.iso_qos.bcast.r#in.latency = le16_to_cpu(ev.interval) * 125 / 100;
+		bis.iso_qos.bcast.r#in.sdu = le16_to_cpu(ev.max_pdu);
 
 		if !ev.status {
 			bis.state = BT_CONNECTED;
@@ -7279,12 +7352,12 @@ void hci_le_big_sync_established_evt(*mut hci_devhdev, *mut core::ffi::c_voiddat
 			set_bit(HCI_CONN_BIG_SYNC_FAILED, &bis.flags);
 			hci_connect_cfm(bis, ev.status);
 		}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_big_sync_lost_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_big_sync_lost_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				     *mut sk_buffskb)
 {
 	*mut hci_evt_le_big_sync_lostev = data;
@@ -7302,7 +7375,7 @@ void hci_le_big_sync_lost_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 		if !mgmt_conn {
 			mgmt_conn = test_and_clear_bit(HCI_CONN_MGMT_CONNECTED,
 						       &bis.flags);
-			mgmt_device_disconnected(hdev, &bis.dst, bis.type,
+			mgmt_device_disconnected(hdev, &bis.dst, bis.r#type,
 						 bis.dst_type, ev.reason,
 						 mgmt_conn);
 		}
@@ -7315,9 +7388,10 @@ void hci_le_big_sync_lost_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_big_info_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_big_info_adv_report_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					   *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_evt_le_big_info_adv_reportev = data;
 	int mask = hdev.link_mode;
 	u8 flags = 0;
@@ -7329,30 +7403,31 @@ void hci_le_big_info_adv_report_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata
 
 	mask |= hci_proto_connect_ind(hdev, BDADDR_ANY, BIS_LINK, &flags);
 	if (!(mask & HCI_LM_ACCEPT))
-		goto unlock;
+		break 'unlock;
 
 	if (!(flags & HCI_PROTO_DEFER))
-		goto unlock;
+		break 'unlock;
 
 	pa_sync = hci_conn_hash_lookup_pa_sync_handle
 			(hdev,
 			le16_to_cpu(ev.sync_handle));
 
 	if !pa_sync
-		goto unlock;
+		break 'unlock;
 
 	pa_sync.iso_qos.bcast.encryption = ev.encryption;
 
 	/* Notify iso layer */
 	hci_connect_cfm(pa_sync, 0);
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
 void hci_le_read_all_remote_features_evt(*mut hci_devhdev,
-						*mut core::ffi::c_voiddata, *mut sk_buffskb)
+						data: *mut core::ffi::c_void, *mut sk_buffskb)
 {
+	'unlock: {
 	*mut hci_evt_le_read_all_remote_features_completeev = data;
 	*mut hci_connconn;
 
@@ -7362,7 +7437,7 @@ void hci_le_read_all_remote_features_evt(*mut hci_devhdev,
 
 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(ev.handle));
 	if !conn
-		goto unlock;
+		break 'unlock;
 
 	if !ev.status {
 		memcpy(conn.le_features, ev.features, 248);
@@ -7401,12 +7476,12 @@ void hci_le_read_all_remote_features_evt(*mut hci_devhdev,
 		conn.state = BT_CONNECTED;
 		hci_connect_cfm(conn, status);
 	}
-
-unlock:
+	}
+	
 	hci_dev_unlock(hdev);
 }
 
-void hci_le_conn_rate_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_conn_rate_change_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 					*mut sk_buffskb)
 {
 	*mut hci_evt_le_conn_rate_changeev = data;
@@ -7438,16 +7513,16 @@ void hci_le_conn_rate_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 
 #define HCI_LE_EV_VL(_op, _func, _min_len, _max_len) \
 [_op] = { \
-	.func = _func, \
-	.min_len = _min_len, \
-	.max_len = _max_len, \
+	func: _func, \
+	min_len: _min_len, \
+	max_len: _max_len, \
 }
 
 #define HCI_LE_EV(_op, _func, _len) \
 	HCI_LE_EV_VL(_op, _func, _len, _len)
 
 #define HCI_LE_EV_STATUS(_op, _func) \
-	HCI_LE_EV(_op, _func, core::mem::size_of::<struct hci_ev_status>())
+	HCI_LE_EV(_op, _func, core::mem::size_of::<hci_ev_status>())
 
 /* Entries in this table shall have their position according to the subevent
  * opcode they handle so the use of the macros above is recommend since it does
@@ -7455,104 +7530,103 @@ void hci_le_conn_rate_change_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
  * way events without a callback function can be omitted.
  */
 const struct hci_le_ev {
-	void (*func)(*mut hci_devhdev, *mut core::ffi::c_voiddata, *mut sk_buffskb);
+	void (*func)(*mut hci_devhdev, data: *mut core::ffi::c_void, *mut sk_buffskb);
 	u16  min_len;
 	u16  max_len;
 } hci_le_ev_table[U8_MAX + 1] = {
 	/* [0x01 = HCI_EV_LE_CONN_COMPLETE] */
 	HCI_LE_EV(HCI_EV_LE_CONN_COMPLETE, hci_le_conn_complete_evt,
-		  core::mem::size_of::<struct hci_ev_le_conn_complete>()),
+		  core::mem::size_of::<hci_ev_le_conn_complete>()),
 	/* [0x02 = HCI_EV_LE_ADVERTISING_REPORT] */
 	HCI_LE_EV_VL(HCI_EV_LE_ADVERTISING_REPORT, hci_le_adv_report_evt,
-		     core::mem::size_of::<struct hci_ev_le_advertising_report>(),
+		     core::mem::size_of::<hci_ev_le_advertising_report>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x03 = HCI_EV_LE_CONN_UPDATE_COMPLETE] */
 	HCI_LE_EV(HCI_EV_LE_CONN_UPDATE_COMPLETE,
 		  hci_le_conn_update_complete_evt,
-		  core::mem::size_of::<struct hci_ev_le_conn_update_complete>()),
+		  core::mem::size_of::<hci_ev_le_conn_update_complete>()),
 	/* [0x04 = HCI_EV_LE_REMOTE_FEAT_COMPLETE] */
 	HCI_LE_EV(HCI_EV_LE_REMOTE_FEAT_COMPLETE,
 		  hci_le_remote_feat_complete_evt,
-		  core::mem::size_of::<struct hci_ev_le_remote_feat_complete>()),
+		  core::mem::size_of::<hci_ev_le_remote_feat_complete>()),
 	/* [0x05 = HCI_EV_LE_LTK_REQ] */
 	HCI_LE_EV(HCI_EV_LE_LTK_REQ, hci_le_ltk_request_evt,
-		  core::mem::size_of::<struct hci_ev_le_ltk_req>()),
+		  core::mem::size_of::<hci_ev_le_ltk_req>()),
 	/* [0x06 = HCI_EV_LE_REMOTE_CONN_PARAM_REQ] */
 	HCI_LE_EV(HCI_EV_LE_REMOTE_CONN_PARAM_REQ,
 		  hci_le_remote_conn_param_req_evt,
-		  core::mem::size_of::<struct hci_ev_le_remote_conn_param_req>()),
+		  core::mem::size_of::<hci_ev_le_remote_conn_param_req>()),
 	/* [0x0a = HCI_EV_LE_ENHANCED_CONN_COMPLETE] */
 	HCI_LE_EV(HCI_EV_LE_ENHANCED_CONN_COMPLETE,
 		  hci_le_enh_conn_complete_evt,
-		  core::mem::size_of::<struct hci_ev_le_enh_conn_complete>()),
+		  core::mem::size_of::<hci_ev_le_enh_conn_complete>()),
 	/* [0x0b = HCI_EV_LE_DIRECT_ADV_REPORT] */
 	HCI_LE_EV_VL(HCI_EV_LE_DIRECT_ADV_REPORT, hci_le_direct_adv_report_evt,
-		     core::mem::size_of::<struct hci_ev_le_direct_adv_report>(),
+		     core::mem::size_of::<hci_ev_le_direct_adv_report>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x0c = HCI_EV_LE_PHY_UPDATE_COMPLETE] */
 	HCI_LE_EV(HCI_EV_LE_PHY_UPDATE_COMPLETE, hci_le_phy_update_evt,
-		  core::mem::size_of::<struct hci_ev_le_phy_update_complete>()),
+		  core::mem::size_of::<hci_ev_le_phy_update_complete>()),
 	/* [0x0d = HCI_EV_LE_EXT_ADV_REPORT] */
 	HCI_LE_EV_VL(HCI_EV_LE_EXT_ADV_REPORT, hci_le_ext_adv_report_evt,
-		     core::mem::size_of::<struct hci_ev_le_ext_adv_report>(),
+		     core::mem::size_of::<hci_ev_le_ext_adv_report>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x0e = HCI_EV_LE_PA_SYNC_ESTABLISHED] */
 	HCI_LE_EV(HCI_EV_LE_PA_SYNC_ESTABLISHED,
 		  hci_le_pa_sync_established_evt,
-		  core::mem::size_of::<struct hci_ev_le_pa_sync_established>()),
+		  core::mem::size_of::<hci_ev_le_pa_sync_established>()),
 	/* [0x0f = HCI_EV_LE_PER_ADV_REPORT] */
 	HCI_LE_EV_VL(HCI_EV_LE_PER_ADV_REPORT,
 				 hci_le_per_adv_report_evt,
-				 core::mem::size_of::<struct hci_ev_le_per_adv_report>(),
+				 core::mem::size_of::<hci_ev_le_per_adv_report>(),
 				 HCI_MAX_EVENT_SIZE),
 	/* [0x10 = HCI_EV_LE_PA_SYNC_LOST] */
 	HCI_LE_EV(HCI_EV_LE_PA_SYNC_LOST, hci_le_pa_sync_lost_evt,
-		  core::mem::size_of::<struct hci_ev_le_pa_sync_lost>()),
+		  core::mem::size_of::<hci_ev_le_pa_sync_lost>()),
 	/* [0x12 = HCI_EV_LE_EXT_ADV_SET_TERM] */
 	HCI_LE_EV(HCI_EV_LE_EXT_ADV_SET_TERM, hci_le_ext_adv_term_evt,
-		  core::mem::size_of::<struct hci_evt_le_ext_adv_set_term>()),
+		  core::mem::size_of::<hci_evt_le_ext_adv_set_term>()),
 	/* [0x18 = HCI_EVT_LE_PAST_RECEIVED] */
 	HCI_LE_EV(HCI_EV_LE_PAST_RECEIVED,
 		  hci_le_past_received_evt,
-		  core::mem::size_of::<struct hci_ev_le_past_received>()),
+		  core::mem::size_of::<hci_ev_le_past_received>()),
 	/* [0x19 = HCI_EVT_LE_CIS_ESTABLISHED] */
 	HCI_LE_EV(HCI_EVT_LE_CIS_ESTABLISHED, hci_le_cis_established_evt,
-		  core::mem::size_of::<struct hci_evt_le_cis_established>()),
+		  core::mem::size_of::<hci_evt_le_cis_established>()),
 	/* [0x1a = HCI_EVT_LE_CIS_REQ] */
 	HCI_LE_EV(HCI_EVT_LE_CIS_REQ, hci_le_cis_req_evt,
-		  core::mem::size_of::<struct hci_evt_le_cis_req>()),
+		  core::mem::size_of::<hci_evt_le_cis_req>()),
 	/* [0x1b = HCI_EVT_LE_CREATE_BIG_COMPLETE] */
 	HCI_LE_EV_VL(HCI_EVT_LE_CREATE_BIG_COMPLETE,
 		     hci_le_create_big_complete_evt,
-		     core::mem::size_of::<struct hci_evt_le_create_big_complete>(),
+		     core::mem::size_of::<hci_evt_le_create_big_complete>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x1d = HCI_EV_LE_BIG_SYNC_ESTABLISHED] */
 	HCI_LE_EV_VL(HCI_EVT_LE_BIG_SYNC_ESTABLISHED,
 		     hci_le_big_sync_established_evt,
-		     core::mem::size_of::<struct hci_evt_le_big_sync_established>(),
+		     core::mem::size_of::<hci_evt_le_big_sync_established>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x1e = HCI_EVT_LE_BIG_SYNC_LOST] */
 	HCI_LE_EV_VL(HCI_EVT_LE_BIG_SYNC_LOST,
 		     hci_le_big_sync_lost_evt,
-		     core::mem::size_of::<struct hci_evt_le_big_sync_lost>(),
+		     core::mem::size_of::<hci_evt_le_big_sync_lost>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x22 = HCI_EVT_LE_BIG_INFO_ADV_REPORT] */
 	HCI_LE_EV_VL(HCI_EVT_LE_BIG_INFO_ADV_REPORT,
 		     hci_le_big_info_adv_report_evt,
-		     core::mem::size_of::<struct hci_evt_le_big_info_adv_report>(),
+		     core::mem::size_of::<hci_evt_le_big_info_adv_report>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x2b = HCI_EVT_LE_ALL_REMOTE_FEATURES_COMPLETE] */
 	HCI_LE_EV_VL(HCI_EVT_LE_ALL_REMOTE_FEATURES_COMPLETE,
 		     hci_le_read_all_remote_features_evt,
-		     core::mem::size_of::<struct
-			    hci_evt_le_read_all_remote_features_complete>(),
+		     core::mem::size_of::<hci_evt_le_read_all_remote_features_complete>(),
 		     HCI_MAX_EVENT_SIZE),
 	/* [0x37 = HCI_EVT_LE_CONN_RATE_CHANGE] */
 	HCI_LE_EV(HCI_EVT_LE_CONN_RATE_CHANGE, hci_le_conn_rate_change_evt,
-		  core::mem::size_of::<struct hci_evt_le_conn_rate_change>()),
+		  core::mem::size_of::<hci_evt_le_conn_rate_change>()),
 };
 
-void hci_le_meta_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+void hci_le_meta_evt(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			    *mut sk_buffskb, u16 *opcode, u8 *status,
 			    hci_req_complete_t *req_complete,
 			    hci_req_complete_skb_t *req_complete_skb)
@@ -7596,7 +7670,7 @@ void hci_le_meta_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata,
 	subev.func(hdev, data, skb);
 }
 
-void hci_vendor_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata, *mut sk_buffskb)
+void hci_vendor_evt(*mut hci_devhdev, data: *mut core::ffi::c_void, *mut sk_buffskb)
 {
 	if (hdev.handle_ev_vendor && hdev.handle_ev_vendor(hdev, skb))
 		return;
@@ -7604,8 +7678,8 @@ void hci_vendor_evt(*mut hci_devhdev, *mut core::ffi::c_voiddata, *mut sk_buffsk
 	msft_vendor_evt(hdev, data, skb);
 }
 
-bool hci_get_cmd_complete(*mut hci_devhdev, u16 opcode,
-				 u8 event, *mut sk_buffskb)
+bool hci_get_cmd_complete(*mut hci_devhdev, opcode: u16,
+				 event: u8, *mut sk_buffskb)
 {
 	*mut hci_ev_cmd_completeev;
 	*mut hci_event_hdrhdr;
@@ -7649,7 +7723,7 @@ bool hci_get_cmd_complete(*mut hci_devhdev, u16 opcode,
 }
 
 void hci_store_wake_reason(*mut hci_devhdev,
-				  const bdaddr_t *bdaddr, u8 addr_type)
+				  const bdaddr_t *bdaddr, addr_type: u8)
 	__must_hold(&hdev.lock)
 {
 	lockdep_assert_held(&hdev.lock);
@@ -7675,24 +7749,24 @@ void hci_store_wake_reason(*mut hci_devhdev,
 
 #define HCI_EV_VL(_op, _func, _min_len, _max_len) \
 [_op] = { \
-	.req = false, \
-	.func = _func, \
-	.min_len = _min_len, \
-	.max_len = _max_len, \
+	req: false, \
+	func: _func, \
+	min_len: _min_len, \
+	max_len: _max_len, \
 }
 
 #define HCI_EV(_op, _func, _len) \
 	HCI_EV_VL(_op, _func, _len, _len)
 
 #define HCI_EV_STATUS(_op, _func) \
-	HCI_EV(_op, _func, core::mem::size_of::<struct hci_ev_status>())
+	HCI_EV(_op, _func, core::mem::size_of::<hci_ev_status>())
 
 #define HCI_EV_REQ_VL(_op, _func, _min_len, _max_len) \
 [_op] = { \
-	.req = true, \
-	.func_req = _func, \
-	.min_len = _min_len, \
-	.max_len = _max_len, \
+	req: true, \
+	func_req: _func, \
+	min_len: _min_len, \
+	max_len: _max_len, \
 }
 
 #define HCI_EV_REQ(_op, _func, _len) \
@@ -7706,9 +7780,9 @@ void hci_store_wake_reason(*mut hci_devhdev,
 const struct hci_ev {
 	bool req;
 	union {
-		void (*func)(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+		void (*func)(*mut hci_devhdev, data: *mut core::ffi::c_void,
 			     *mut sk_buffskb);
-		void (*func_req)(*mut hci_devhdev, *mut core::ffi::c_voiddata,
+		void (*func_req)(*mut hci_devhdev, data: *mut core::ffi::c_void,
 				 *mut sk_buffskb, u16 *opcode, u8 *status,
 				 hci_req_complete_t *req_complete,
 				 hci_req_complete_skb_t *req_complete_skb);
@@ -7720,121 +7794,121 @@ const struct hci_ev {
 	HCI_EV_STATUS(HCI_EV_INQUIRY_COMPLETE, hci_inquiry_complete_evt),
 	/* [0x02 = HCI_EV_INQUIRY_RESULT] */
 	HCI_EV_VL(HCI_EV_INQUIRY_RESULT, hci_inquiry_result_evt,
-		  core::mem::size_of::<struct hci_ev_inquiry_result>(), HCI_MAX_EVENT_PLEN),
+		  core::mem::size_of::<hci_ev_inquiry_result>(), HCI_MAX_EVENT_PLEN),
 	/* [0x03 = HCI_EV_CONN_COMPLETE] */
 	HCI_EV(HCI_EV_CONN_COMPLETE, hci_conn_complete_evt,
-	       core::mem::size_of::<struct hci_ev_conn_complete>()),
+	       core::mem::size_of::<hci_ev_conn_complete>()),
 	/* [0x04 = HCI_EV_CONN_REQUEST] */
 	HCI_EV(HCI_EV_CONN_REQUEST, hci_conn_request_evt,
-	       core::mem::size_of::<struct hci_ev_conn_request>()),
+	       core::mem::size_of::<hci_ev_conn_request>()),
 	/* [0x05 = HCI_EV_DISCONN_COMPLETE] */
 	HCI_EV(HCI_EV_DISCONN_COMPLETE, hci_disconn_complete_evt,
-	       core::mem::size_of::<struct hci_ev_disconn_complete>()),
+	       core::mem::size_of::<hci_ev_disconn_complete>()),
 	/* [0x06 = HCI_EV_AUTH_COMPLETE] */
 	HCI_EV(HCI_EV_AUTH_COMPLETE, hci_auth_complete_evt,
-	       core::mem::size_of::<struct hci_ev_auth_complete>()),
+	       core::mem::size_of::<hci_ev_auth_complete>()),
 	/* [0x07 = HCI_EV_REMOTE_NAME] */
 	HCI_EV(HCI_EV_REMOTE_NAME, hci_remote_name_evt,
-	       core::mem::size_of::<struct hci_ev_remote_name>()),
+	       core::mem::size_of::<hci_ev_remote_name>()),
 	/* [0x08 = HCI_EV_ENCRYPT_CHANGE] */
 	HCI_EV(HCI_EV_ENCRYPT_CHANGE, hci_encrypt_change_evt,
-	       core::mem::size_of::<struct hci_ev_encrypt_change>()),
+	       core::mem::size_of::<hci_ev_encrypt_change>()),
 	/* [0x09 = HCI_EV_CHANGE_LINK_KEY_COMPLETE] */
 	HCI_EV(HCI_EV_CHANGE_LINK_KEY_COMPLETE,
 	       hci_change_link_key_complete_evt,
-	       core::mem::size_of::<struct hci_ev_change_link_key_complete>()),
+	       core::mem::size_of::<hci_ev_change_link_key_complete>()),
 	/* [0x0b = HCI_EV_REMOTE_FEATURES] */
 	HCI_EV(HCI_EV_REMOTE_FEATURES, hci_remote_features_evt,
-	       core::mem::size_of::<struct hci_ev_remote_features>()),
+	       core::mem::size_of::<hci_ev_remote_features>()),
 	/* [0x0e = HCI_EV_CMD_COMPLETE] */
 	HCI_EV_REQ_VL(HCI_EV_CMD_COMPLETE, hci_cmd_complete_evt,
-		      core::mem::size_of::<struct hci_ev_cmd_complete>(), HCI_MAX_EVENT_PLEN),
+		      core::mem::size_of::<hci_ev_cmd_complete>(), HCI_MAX_EVENT_PLEN),
 	/* [0x0f = HCI_EV_CMD_STATUS] */
 	HCI_EV_REQ(HCI_EV_CMD_STATUS, hci_cmd_status_evt,
-		   core::mem::size_of::<struct hci_ev_cmd_status>()),
+		   core::mem::size_of::<hci_ev_cmd_status>()),
 	/* [0x10 = HCI_EV_CMD_STATUS] */
 	HCI_EV(HCI_EV_HARDWARE_ERROR, hci_hardware_error_evt,
-	       core::mem::size_of::<struct hci_ev_hardware_error>()),
+	       core::mem::size_of::<hci_ev_hardware_error>()),
 	/* [0x12 = HCI_EV_ROLE_CHANGE] */
 	HCI_EV(HCI_EV_ROLE_CHANGE, hci_role_change_evt,
-	       core::mem::size_of::<struct hci_ev_role_change>()),
+	       core::mem::size_of::<hci_ev_role_change>()),
 	/* [0x13 = HCI_EV_NUM_COMP_PKTS] */
 	HCI_EV_VL(HCI_EV_NUM_COMP_PKTS, hci_num_comp_pkts_evt,
-		  core::mem::size_of::<struct hci_ev_num_comp_pkts>(), HCI_MAX_EVENT_PLEN),
+		  core::mem::size_of::<hci_ev_num_comp_pkts>(), HCI_MAX_EVENT_PLEN),
 	/* [0x14 = HCI_EV_MODE_CHANGE] */
 	HCI_EV(HCI_EV_MODE_CHANGE, hci_mode_change_evt,
-	       core::mem::size_of::<struct hci_ev_mode_change>()),
+	       core::mem::size_of::<hci_ev_mode_change>()),
 	/* [0x16 = HCI_EV_PIN_CODE_REQ] */
 	HCI_EV(HCI_EV_PIN_CODE_REQ, hci_pin_code_request_evt,
-	       core::mem::size_of::<struct hci_ev_pin_code_req>()),
+	       core::mem::size_of::<hci_ev_pin_code_req>()),
 	/* [0x17 = HCI_EV_LINK_KEY_REQ] */
 	HCI_EV(HCI_EV_LINK_KEY_REQ, hci_link_key_request_evt,
-	       core::mem::size_of::<struct hci_ev_link_key_req>()),
+	       core::mem::size_of::<hci_ev_link_key_req>()),
 	/* [0x18 = HCI_EV_LINK_KEY_NOTIFY] */
 	HCI_EV(HCI_EV_LINK_KEY_NOTIFY, hci_link_key_notify_evt,
-	       core::mem::size_of::<struct hci_ev_link_key_notify>()),
+	       core::mem::size_of::<hci_ev_link_key_notify>()),
 	/* [0x1c = HCI_EV_CLOCK_OFFSET] */
 	HCI_EV(HCI_EV_CLOCK_OFFSET, hci_clock_offset_evt,
-	       core::mem::size_of::<struct hci_ev_clock_offset>()),
+	       core::mem::size_of::<hci_ev_clock_offset>()),
 	/* [0x1d = HCI_EV_PKT_TYPE_CHANGE] */
 	HCI_EV(HCI_EV_PKT_TYPE_CHANGE, hci_pkt_type_change_evt,
-	       core::mem::size_of::<struct hci_ev_pkt_type_change>()),
+	       core::mem::size_of::<hci_ev_pkt_type_change>()),
 	/* [0x20 = HCI_EV_PSCAN_REP_MODE] */
 	HCI_EV(HCI_EV_PSCAN_REP_MODE, hci_pscan_rep_mode_evt,
-	       core::mem::size_of::<struct hci_ev_pscan_rep_mode>()),
+	       core::mem::size_of::<hci_ev_pscan_rep_mode>()),
 	/* [0x22 = HCI_EV_INQUIRY_RESULT_WITH_RSSI] */
 	HCI_EV_VL(HCI_EV_INQUIRY_RESULT_WITH_RSSI,
 		  hci_inquiry_result_with_rssi_evt,
-		  core::mem::size_of::<struct hci_ev_inquiry_result_rssi>(),
+		  core::mem::size_of::<hci_ev_inquiry_result_rssi>(),
 		  HCI_MAX_EVENT_PLEN),
 	/* [0x23 = HCI_EV_REMOTE_EXT_FEATURES] */
 	HCI_EV(HCI_EV_REMOTE_EXT_FEATURES, hci_remote_ext_features_evt,
-	       core::mem::size_of::<struct hci_ev_remote_ext_features>()),
+	       core::mem::size_of::<hci_ev_remote_ext_features>()),
 	/* [0x2c = HCI_EV_SYNC_CONN_COMPLETE] */
 	HCI_EV(HCI_EV_SYNC_CONN_COMPLETE, hci_sync_conn_complete_evt,
-	       core::mem::size_of::<struct hci_ev_sync_conn_complete>()),
+	       core::mem::size_of::<hci_ev_sync_conn_complete>()),
 	/* [0x2f = HCI_EV_EXTENDED_INQUIRY_RESULT] */
 	HCI_EV_VL(HCI_EV_EXTENDED_INQUIRY_RESULT,
 		  hci_extended_inquiry_result_evt,
-		  core::mem::size_of::<struct hci_ev_ext_inquiry_result>(), HCI_MAX_EVENT_PLEN),
+		  core::mem::size_of::<hci_ev_ext_inquiry_result>(), HCI_MAX_EVENT_PLEN),
 	/* [0x30 = HCI_EV_KEY_REFRESH_COMPLETE] */
 	HCI_EV(HCI_EV_KEY_REFRESH_COMPLETE, hci_key_refresh_complete_evt,
-	       core::mem::size_of::<struct hci_ev_key_refresh_complete>()),
+	       core::mem::size_of::<hci_ev_key_refresh_complete>()),
 	/* [0x31 = HCI_EV_IO_CAPA_REQUEST] */
 	HCI_EV(HCI_EV_IO_CAPA_REQUEST, hci_io_capa_request_evt,
-	       core::mem::size_of::<struct hci_ev_io_capa_request>()),
+	       core::mem::size_of::<hci_ev_io_capa_request>()),
 	/* [0x32 = HCI_EV_IO_CAPA_REPLY] */
 	HCI_EV(HCI_EV_IO_CAPA_REPLY, hci_io_capa_reply_evt,
-	       core::mem::size_of::<struct hci_ev_io_capa_reply>()),
+	       core::mem::size_of::<hci_ev_io_capa_reply>()),
 	/* [0x33 = HCI_EV_USER_CONFIRM_REQUEST] */
 	HCI_EV(HCI_EV_USER_CONFIRM_REQUEST, hci_user_confirm_request_evt,
-	       core::mem::size_of::<struct hci_ev_user_confirm_req>()),
+	       core::mem::size_of::<hci_ev_user_confirm_req>()),
 	/* [0x34 = HCI_EV_USER_PASSKEY_REQUEST] */
 	HCI_EV(HCI_EV_USER_PASSKEY_REQUEST, hci_user_passkey_request_evt,
-	       core::mem::size_of::<struct hci_ev_user_passkey_req>()),
+	       core::mem::size_of::<hci_ev_user_passkey_req>()),
 	/* [0x35 = HCI_EV_REMOTE_OOB_DATA_REQUEST] */
 	HCI_EV(HCI_EV_REMOTE_OOB_DATA_REQUEST, hci_remote_oob_data_request_evt,
-	       core::mem::size_of::<struct hci_ev_remote_oob_data_request>()),
+	       core::mem::size_of::<hci_ev_remote_oob_data_request>()),
 	/* [0x36 = HCI_EV_SIMPLE_PAIR_COMPLETE] */
 	HCI_EV(HCI_EV_SIMPLE_PAIR_COMPLETE, hci_simple_pair_complete_evt,
-	       core::mem::size_of::<struct hci_ev_simple_pair_complete>()),
+	       core::mem::size_of::<hci_ev_simple_pair_complete>()),
 	/* [0x3b = HCI_EV_USER_PASSKEY_NOTIFY] */
 	HCI_EV(HCI_EV_USER_PASSKEY_NOTIFY, hci_user_passkey_notify_evt,
-	       core::mem::size_of::<struct hci_ev_user_passkey_notify>()),
+	       core::mem::size_of::<hci_ev_user_passkey_notify>()),
 	/* [0x3c = HCI_EV_KEYPRESS_NOTIFY] */
 	HCI_EV(HCI_EV_KEYPRESS_NOTIFY, hci_keypress_notify_evt,
-	       core::mem::size_of::<struct hci_ev_keypress_notify>()),
+	       core::mem::size_of::<hci_ev_keypress_notify>()),
 	/* [0x3d = HCI_EV_REMOTE_HOST_FEATURES] */
 	HCI_EV(HCI_EV_REMOTE_HOST_FEATURES, hci_remote_host_features_evt,
-	       core::mem::size_of::<struct hci_ev_remote_host_features>()),
+	       core::mem::size_of::<hci_ev_remote_host_features>()),
 	/* [0x3e = HCI_EV_LE_META] */
 	HCI_EV_REQ_VL(HCI_EV_LE_META, hci_le_meta_evt,
-		      core::mem::size_of::<struct hci_ev_le_meta>(), HCI_MAX_EVENT_PLEN),
+		      core::mem::size_of::<hci_ev_le_meta>(), HCI_MAX_EVENT_PLEN),
 	/* [0xff = HCI_EV_VENDOR] */
 	HCI_EV_VL(HCI_EV_VENDOR, hci_vendor_evt, 0, HCI_MAX_EVENT_PLEN),
 };
 
-void hci_event_func(*mut hci_devhdev, u8 event, *mut sk_buffskb,
+void hci_event_func(*mut hci_devhdev, event: u8, *mut sk_buffskb,
 			   u16 *opcode, u8 *status,
 			   hci_req_complete_t *req_complete,
 			   hci_req_complete_skb_t *req_complete_skb)
@@ -7873,6 +7947,7 @@ void hci_event_func(*mut hci_devhdev, u8 event, *mut sk_buffskb,
 
 void hci_event_packet(*mut hci_devhdev, *mut sk_buffskb)
 {
+	'done: {
 	*mut hci_event_hdrhdr = (*mut core::ffi::c_void) skb.data;
 	hci_req_complete_t req_complete = core::ptr::null_mut();
 	hci_req_complete_skb_t req_complete_skb = core::ptr::null_mut();
@@ -7882,7 +7957,7 @@ void hci_event_packet(*mut hci_devhdev, *mut sk_buffskb)
 
 	if (skb.len < core::mem::size_of::<*hdr>()) {
 		bt_dev_err(hdev, "Malformed HCI Event");
-		goto done;
+		break 'done;
 	}
 
 	hci_dev_lock(hdev);
@@ -7894,7 +7969,7 @@ void hci_event_packet(*mut hci_devhdev, *mut sk_buffskb)
 	if !event {
 		bt_dev_warn(hdev, "Received unexpected HCI Event 0x%2.2x",
 			    event);
-		goto done;
+		break 'done;
 	}
 
 	/* Only match event if command OGF is not for LE */
@@ -7935,8 +8010,8 @@ void hci_event_packet(*mut hci_devhdev, *mut sk_buffskb)
 		}
 		req_complete_skb(hdev, status, opcode, orig_skb);
 	}
-
-done:
+	}
+	
 	kfree_skb(orig_skb);
 	kfree_skb(skb);
 	hdev.stat.evt_rx++;

@@ -16,7 +16,7 @@ pub const SAMSUNG_PWM_NUM: u32 = 5;
  * CONFIG_CLKSRC_SAMSUNG_PWM is a build-time C condition. Enable the
  * declaration only when the corresponding Rust configuration is selected.
  */
-#[cfg(feature = "CONFIG_CLKSRC_SAMSUNG_PWM")]
+#[cfg(CONFIG_CLKSRC_SAMSUNG_PWM)]
 extern "C" {
     pub static mut samsung_pwm_lock: raw_spinlock_t;
 }

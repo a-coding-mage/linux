@@ -158,7 +158,7 @@ pub unsafe fn sys_ustat(dev: u32, ubuf: *mut ustat) -> i32 {
 }
 
 // CONFIG_COMPAT: these definitions are present when the kernel compatibility ABI is enabled.
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn put_compat_statfs(ubuf: *mut compat_statfs, kbuf: *mut kstatfs) -> i32 {
     if core::mem::size_of_val(&(*ubuf).f_blocks) == 4 {
         if ((*kbuf).f_blocks | (*kbuf).f_bfree | (*kbuf).f_bavail | (*kbuf).f_bsize | (*kbuf).f_frsize) & 0xffffffff00000000 != 0 { return -EOVERFLOW; }
@@ -174,21 +174,21 @@ unsafe fn put_compat_statfs(ubuf: *mut compat_statfs, kbuf: *mut kstatfs) -> i32
     if copy_to_user(ubuf, &buf, core::mem::size_of::<compat_statfs>()) != 0 { -EFAULT } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn compat_sys_statfs(pathname: *const core::ffi::c_char, buf: *mut compat_statfs) -> i32 {
     let mut tmp = core::mem::MaybeUninit::<kstatfs>::uninit();
     let error = user_statfs(pathname, tmp.as_mut_ptr());
     if error == 0 { put_compat_statfs(buf, tmp.as_mut_ptr()) } else { error }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn compat_sys_fstatfs(fd: u32, buf: *mut compat_statfs) -> i32 {
     let mut tmp = core::mem::MaybeUninit::<kstatfs>::uninit();
     let error = fd_statfs(fd as i32, tmp.as_mut_ptr());
     if error == 0 { put_compat_statfs(buf, tmp.as_mut_ptr()) } else { error }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn put_compat_statfs64(ubuf: *mut compat_statfs64, kbuf: *mut kstatfs) -> i32 {
     if ((*kbuf).f_bsize | (*kbuf).f_frsize) & 0xffffffff00000000 != 0 { return -EOVERFLOW; }
     let mut buf = core::mem::MaybeUninit::<compat_statfs64>::zeroed().assume_init();
@@ -200,7 +200,7 @@ unsafe fn put_compat_statfs64(ubuf: *mut compat_statfs64, kbuf: *mut kstatfs) ->
     if copy_to_user(ubuf, &buf, core::mem::size_of::<compat_statfs64>()) != 0 { -EFAULT } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn kcompat_sys_statfs64(pathname: *const core::ffi::c_char, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
     if sz as usize != core::mem::size_of::<compat_statfs64>() { return -EINVAL; }
     let mut tmp = core::mem::MaybeUninit::<kstatfs>::uninit();
@@ -208,12 +208,12 @@ pub unsafe fn kcompat_sys_statfs64(pathname: *const core::ffi::c_char, sz: compa
     if error == 0 { put_compat_statfs64(buf, tmp.as_mut_ptr()) } else { error }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn compat_sys_statfs64(pathname: *const core::ffi::c_char, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
     kcompat_sys_statfs64(pathname, sz, buf)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn kcompat_sys_fstatfs64(fd: u32, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
     if sz as usize != core::mem::size_of::<compat_statfs64>() { return -EINVAL; }
     let mut tmp = core::mem::MaybeUninit::<kstatfs>::uninit();
@@ -221,12 +221,12 @@ pub unsafe fn kcompat_sys_fstatfs64(fd: u32, sz: compat_size_t, buf: *mut compat
     if error == 0 { put_compat_statfs64(buf, tmp.as_mut_ptr()) } else { error }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn compat_sys_fstatfs64(fd: u32, sz: compat_size_t, buf: *mut compat_statfs64) -> i32 {
     kcompat_sys_fstatfs64(fd, sz, buf)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn compat_sys_ustat(dev: u32, u: *mut compat_ustat) -> i32 {
     let mut sbuf = core::mem::MaybeUninit::<kstatfs>::uninit();
     let err = vfs_ustat(new_decode_dev(dev), sbuf.as_mut_ptr());

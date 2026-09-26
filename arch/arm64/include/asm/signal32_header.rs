@@ -4,7 +4,7 @@
  */
 
 /* CONFIG_COMPAT */
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_sigcontext {
     /* We always set these two fields to 0 */
@@ -32,7 +32,7 @@ pub struct compat_sigcontext {
     pub fault_address: compat_ulong_t,
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C, align(8))]
 pub struct compat_ucontext {
     pub uc_flags: compat_ulong_t,
@@ -44,21 +44,21 @@ pub struct compat_ucontext {
     pub uc_regspace: [compat_ulong_t; 128],
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_sigframe {
     pub uc: compat_ucontext,
     pub retcode: [compat_ulong_t; 2],
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_rt_sigframe {
     pub info: compat_siginfo,
     pub sig: compat_sigframe,
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe extern "C" {
     pub fn compat_setup_frame(
         usig: core::ffi::c_int,
@@ -75,7 +75,7 @@ unsafe extern "C" {
     pub fn compat_setup_restart_syscall(regs: *mut pt_regs);
 }
 
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 #[inline]
 pub unsafe fn compat_setup_frame(
     _usid: core::ffi::c_int,
@@ -86,7 +86,7 @@ pub unsafe fn compat_setup_frame(
     -ENOSYS
 }
 
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 #[inline]
 pub unsafe fn compat_setup_rt_frame(
     _usig: core::ffi::c_int,
@@ -97,7 +97,7 @@ pub unsafe fn compat_setup_rt_frame(
     -ENOSYS
 }
 
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 #[inline]
 pub unsafe fn compat_setup_restart_syscall(_regs: *mut pt_regs) {}
 

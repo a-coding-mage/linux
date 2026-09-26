@@ -13,9 +13,9 @@ extern "C" {
 /* We use the MSB for PREEMPT_NEED_RESCHED mostly because it is available. */
 pub const PREEMPT_NEED_RESCHED: usize = !(usize::MAX >> 1);
 
-#[cfg(feature = "CONFIG_HAS_SEPARATE_PREEMPT_RESCHED_BITS")]
+#[cfg(CONFIG_HAS_SEPARATE_PREEMPT_RESCHED_BITS)]
 const __PC_DEC: &str = "decq";
-#[cfg(not(feature = "CONFIG_HAS_SEPARATE_PREEMPT_RESCHED_BITS"))]
+#[cfg(not(CONFIG_HAS_SEPARATE_PREEMPT_RESCHED_BITS))]
 const __PC_DEC: &str = "decl";
 
 // The raw_cpu_* operations and per-CPU addressing are external kernel facilities.

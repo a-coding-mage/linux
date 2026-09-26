@@ -47,7 +47,7 @@ unsafe fn do_show_stack(mut task: *mut task_struct, mut fp: *mut usize,
         if task == current { core::arch::asm!("{0} = r30", out(reg) fp); }
         else { fp = (*((*task).thread.switch_sp as *mut hexagon_switch_stack)).fp as *mut usize; }
     }
-    if (fp as usize & 3) != 0 || fp as usize < 0x1000 {
+    if (fp as usize & 3) != 0 || (fp as usize) < 0x1000 {
         printk(b"%s-- Corrupt frame pointer %p\0".as_ptr() as *const i8, loglvl, fp); return;
     }
     if ip == 0 { ip = *fp.add(1); }
@@ -58,7 +58,7 @@ unsafe fn do_show_stack(mut task: *mut task_struct, mut fp: *mut usize,
     while i < kstack_depth_to_print {
         name = kallsyms_lookup(ip, &mut size, &mut offset, &mut modname, tmpstr.as_mut_ptr());
         printk(b"%s[%p] 0x%lx: %s + 0x%lx\0".as_ptr() as *const i8, loglvl, fp, ip, name, offset);
-        if fp as usize < low || high < fp as usize { printk(b" (FP out of bounds!)\0".as_ptr() as *const i8); }
+        if (fp as usize) < low || high < fp as usize { printk(b" (FP out of bounds!)\0".as_ptr() as *const i8); }
         if !modname.is_null() { printk(b" [%s] \0".as_ptr() as *const i8, modname); }
         printk(b"\n\0".as_ptr() as *const i8);
         newfp = *fp as *mut usize;

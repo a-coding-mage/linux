@@ -4,27 +4,27 @@
 /* Kernel types, constants, helpers, and external symbols are supplied by the surrounding
  * translation unit.  This file intentionally retains the pointer-oriented implementation. */
 
-#[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+#[cfg(CONFIG_NET_UDP_TUNNEL)]
 unsafe extern "C" {
     fn dummy_gro_rcv(sk: *mut sock, head: *mut list_head, skb: *mut sk_buff) -> *mut sk_buff;
 }
 
-#[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+#[cfg(CONFIG_NET_UDP_TUNNEL)]
 type udp_tunnel_gro_rcv_t = unsafe extern "C" fn(*mut sock, *mut list_head, *mut sk_buff) -> *mut sk_buff;
 
 #[repr(C)]
 struct udp_tunnel_type_entry { gro_receive: udp_tunnel_gro_rcv_t, count: refcount_t }
 
-#[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+#[cfg(CONFIG_NET_UDP_TUNNEL)]
 static mut udp_tunnel_gro_type_nr: u32 = 0;
 
-#[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+#[cfg(CONFIG_NET_UDP_TUNNEL)]
 unsafe fn dummy_gro_rcv_impl(_sk: *mut sock, _head: *mut list_head, skb: *mut sk_buff) -> *mut sk_buff {
     (*NAPI_GRO_CB(skb)).flush = 1;
     core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+#[cfg(CONFIG_NET_UDP_TUNNEL)]
 #[no_mangle]
 pub unsafe extern "C" fn udp_tunnel_update_gro_lookup(net: *mut net, sk: *mut sock, add: bool) {
     let is_ipv6 = (*sk).sk_family == AF_INET6;
@@ -40,7 +40,7 @@ pub unsafe extern "C" fn udp_tunnel_update_gro_lookup(net: *mut net, sk: *mut so
     spin_unlock(&raw mut udp_tunnel_gro_lock);
 }
 
-#[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+#[cfg(CONFIG_NET_UDP_TUNNEL)]
 #[no_mangle]
 pub unsafe extern "C" fn udp_tunnel_update_gro_rcv(sk: *mut sock, add: bool) {
     let up = udp_sk(sk);
@@ -68,7 +68,7 @@ pub unsafe extern "C" fn udp_tunnel_update_gro_rcv(sk: *mut sock, add: bool) {
 }
 
 unsafe fn udp_tunnel_gro_rcv(sk: *mut sock, head: *mut list_head, skb: *mut sk_buff) -> *mut sk_buff {
-    #[cfg(feature = "CONFIG_NET_UDP_TUNNEL")]
+    #[cfg(CONFIG_NET_UDP_TUNNEL)]
     { if static_branch_likely(&raw mut udp_tunnel_static_call) { if gro_recursion_inc_test(skb) { (*NAPI_GRO_CB(skb)).flush |= 1; return core::ptr::null_mut(); } return static_call!(udp_tunnel_gro_rcv)(sk, head, skb); } }
     call_gro_receive_sk((*udp_sk(sk)).gro_receive, sk, head, skb)
 }

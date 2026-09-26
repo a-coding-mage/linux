@@ -79,9 +79,9 @@ unsafe extern "C" fn armada_xp_smp_prepare_cpus(_max_cpus: u32) {
     if !boot_cpu_clk.is_null() { clk_prepare_enable(boot_cpu_clk); }
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn armada_xp_cpu_die(_cpu: u32) { armada_370_xp_pmsu_idle_enter(true); }
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn armada_xp_cpu_kill(_cpu: u32) -> i32 { 1 }
 
 #[repr(C)]
@@ -90,9 +90,9 @@ pub struct smp_operations {
     pub smp_prepare_cpus: Option<unsafe extern "C" fn(u32)>,
     pub smp_boot_secondary: Option<unsafe extern "C" fn(u32, *mut task_struct) -> i32>,
     pub smp_secondary_init: Option<unsafe extern "C" fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe extern "C" fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe extern "C" fn(u32) -> i32>,
 }
 
@@ -102,9 +102,9 @@ pub static armada_xp_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(armada_xp_smp_prepare_cpus),
     smp_boot_secondary: Some(armada_xp_boot_secondary),
     smp_secondary_init: Some(armada_xp_secondary_init),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(armada_xp_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(armada_xp_cpu_kill),
 };
 
@@ -145,13 +145,13 @@ static mv98dx3236_smp_ops: smp_operations = smp_operations {
     smp_prepare_cpus: Some(armada_xp_smp_prepare_cpus),
     smp_boot_secondary: Some(mv98dx3236_boot_secondary),
     smp_secondary_init: Some(armada_xp_secondary_init),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(armada_xp_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(armada_xp_cpu_kill),
 };
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 const _HOTPLUG_CPU_PRESENT: bool = true;
 
 // CPU_METHOD_OF_DECLARE(armada_xp_smp, "marvell,armada-xp-smp", &armada_xp_smp_ops);

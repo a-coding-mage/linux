@@ -18,7 +18,7 @@ macro_rules! is_insn32 {
     };
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn csky_probe_decode_insn(
         addr: *mut probe_opcode_t,
         asi: *mut arch_probe_insn,

@@ -11,7 +11,7 @@ static mut NAT_KEEPALIVE_SK_IPV4: PerCpu<sock_bh_locked> = PerCpu::new(sock_bh_l
     bh_lock: INIT_LOCAL_LOCK!(bh_lock),
 });
 // Preserved from: #if IS_ENABLED(CONFIG_IPV6)
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 static mut NAT_KEEPALIVE_SK_IPV6: PerCpu<sock_bh_locked> = PerCpu::new(sock_bh_locked {
     bh_lock: INIT_LOCAL_LOCK!(bh_lock),
 });
@@ -64,7 +64,7 @@ unsafe fn nat_keepalive_send_ipv4(mut skb: *mut sk_buff, ka: *mut nat_keepalive)
 }
 
 // Preserved from: #if IS_ENABLED(CONFIG_IPV6)
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 unsafe fn nat_keepalive_send_ipv6(mut skb: *mut sk_buff, ka: *mut nat_keepalive, uh: *mut udphdr) -> c_int {
     let net = (*ka).net;
     let dst: *mut dst_entry;
@@ -113,7 +113,7 @@ unsafe fn nat_keepalive_send(ka: *mut nat_keepalive) {
     (*skb).mark = (*ka).smark;
     match (*ka).family as c_int {
         AF_INET => { nat_keepalive_send_ipv4(skb, ka); }
-        #[cfg(feature = "CONFIG_IPV6")]
+        #[cfg(CONFIG_IPV6)]
         AF_INET6 => { nat_keepalive_send_ipv6(skb, ka, uh); }
         _ => { kfree_skb(skb); }
     }
@@ -233,7 +233,7 @@ pub unsafe extern "C" fn xfrm_nat_keepalive_init(family: c_ushort) -> c_int {
     let mut err = -EAFNOSUPPORT;
     match family as c_int {
         AF_INET => { err = nat_keepalive_sk_init(&mut NAT_KEEPALIVE_SK_IPV4, PF_INET as c_ushort); }
-        #[cfg(feature = "CONFIG_IPV6")]
+        #[cfg(CONFIG_IPV6)]
         AF_INET6 => { err = nat_keepalive_sk_init(&mut NAT_KEEPALIVE_SK_IPV6, PF_INET6 as c_ushort); }
         _ => {}
     }
@@ -245,7 +245,7 @@ pub unsafe extern "C" fn xfrm_nat_keepalive_init(family: c_ushort) -> c_int {
 pub unsafe extern "C" fn xfrm_nat_keepalive_fini(family: c_ushort) {
     match family as c_int {
         AF_INET => nat_keepalive_sk_fini(&mut NAT_KEEPALIVE_SK_IPV4),
-        #[cfg(feature = "CONFIG_IPV6")]
+        #[cfg(CONFIG_IPV6)]
         AF_INET6 => nat_keepalive_sk_fini(&mut NAT_KEEPALIVE_SK_IPV6),
         _ => {}
     }

@@ -15,7 +15,7 @@ unsafe extern "C" {
 pub unsafe extern "C" fn acpi_arch_init() {
     riscv_acpi_init_gsi_mapping();
     // Build-time CONFIG_ACPI_RIMT condition from IS_ENABLED(CONFIG_ACPI_RIMT).
-    if cfg!(feature = "CONFIG_ACPI_RIMT") {
+    if cfg!(CONFIG_ACPI_RIMT) {
         riscv_acpi_rimt_init();
     }
 }

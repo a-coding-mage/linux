@@ -95,8 +95,8 @@ macro_rules! irq_reg_entry {
     };
 }
 macro_rules! BASE { ($seg:expr) => { DCN_BASE_INST0_SEG2 }; }
-macro_rules! SRI { ($reg:ident, $block:ident, $id:expr) => { $reg##_BASE_IDX + $reg }; }
-macro_rules! SRI_DMUB { ($reg:ident) => { $reg##_BASE_IDX + $reg }; }
+macro_rules! SRI { ($reg:tt, $block:ident, $id:expr) => { ::kernel::macros::paste!([<$reg _BASE_IDX>]) + $reg }; }
+macro_rules! SRI_DMUB { ($reg:tt) => { ::kernel::macros::paste!([<$reg _BASE_IDX>]) + $reg }; }
 
 unsafe fn dcn314_irq_construct(irq_service: *mut irq_service, init_data: *mut irq_service_init_data) {
     dal_irq_service_construct(irq_service, init_data);

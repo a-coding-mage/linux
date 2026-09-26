@@ -17,15 +17,15 @@
  The 32-bit convention uses eax, edx, ecx for arguments and returns eax, edx.
 */
 
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 pub const PTI_USER_PGTABLE_BIT: usize = PAGE_SHIFT;
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 pub const PTI_USER_PGTABLE_MASK: usize = 1usize << PTI_USER_PGTABLE_BIT;
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 pub const PTI_USER_PCID_BIT: usize = X86_CR3_PTI_PCID_USER_BIT;
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 pub const PTI_USER_PCID_MASK: usize = 1usize << PTI_USER_PCID_BIT;
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 pub const PTI_USER_PGTABLE_AND_PCID_MASK: usize =
     PTI_USER_PCID_MASK | PTI_USER_PGTABLE_MASK;
 
@@ -44,19 +44,19 @@ macro_rules! POP_REGS {
     ($($args:tt)*) => { /* pop r15-r8, rax, rcx, rdx, rsi, and optionally rdi */ };
 }
 
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 macro_rules! SET_NOFLUSH_BIT { ($reg:ident) => { /* bts X86_CR3_PCID_NOFLUSH_BIT, $reg */ }; }
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 macro_rules! ADJUST_KERNEL_CR3 { ($reg:ident) => { /* ALTERNATIVE; andq !PTI_USER_PGTABLE_AND_PCID_MASK, $reg */ }; }
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 macro_rules! SWITCH_TO_KERNEL_CR3 { ($reg:ident) => { /* read CR3, adjust, write CR3 */ }; }
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 macro_rules! SWITCH_TO_USER_CR3_NOSTACK { ($reg:ident, $reg2:ident) => { /* switch CR3 to user tables */ }; }
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 macro_rules! SWITCH_TO_USER_CR3_STACK { ($reg:ident) => { /* save rax, switch CR3, restore rax */ }; }
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
-macro_rules! SAVE_AND_SWITCH_TO_KERNEL_CR3 { ($scratch:ident, $save:ident) => { /* save and switch kernel CR3 */ }; }
-#[cfg(feature = "CONFIG_MITIGATION_PAGE_TABLE_ISOLATION")]
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
+macro_rules! SAVE_AND_SWITCH_TO_KERNEL_CR3 { ($scratch:ident, $save:ident) => { /* $save and switch kernel CR3 */ }; }
+#[cfg(CONFIG_MITIGATION_PAGE_TABLE_ISOLATION)]
 macro_rules! PARANOID_RESTORE_CR3 { ($scratch:ident, $save:ident) => { /* restore saved CR3, flushing user ASID when required */ }; }
 
 macro_rules! IBRS_ENTER { ($($args:tt)*) => { /* read/write MSR_IA32_SPEC_CTRL as in the source */ }; }
@@ -67,11 +67,11 @@ macro_rules! STACKLEAK_ERASE_NOCLOBBER { () => { /* PUSH_AND_CLEAR_REGS; call st
 macro_rules! STACKLEAK_ERASE { () => { /* call stackleak_erase */ }; }
 macro_rules! SAVE_AND_SET_GSBASE { ($scratch:ident, $save:ident) => { /* rdgsbase, GET_PERCPU_BASE, wrgsbase */ }; }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! LOAD_CPU_AND_NODE_SEG_LIMIT { ($reg:ident) => { /* mov $__CPUNODE_SEG, $reg; lsl $reg, $reg */ }; }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! GET_PERCPU_BASE { ($reg:ident) => { /* LOAD_CPU_AND_NODE_SEG_LIMIT; mask VDSO_CPUNODE_MASK; load __per_cpu_offset */ }; }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! GET_PERCPU_BASE { ($reg:ident) => { /* movq pcpu_unit_offsets(%rip), $reg */ }; }
 
 #[cfg(target_arch = "x86_64")]

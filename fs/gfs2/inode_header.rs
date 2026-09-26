@@ -119,18 +119,18 @@ pub unsafe fn gfs2_check_internal_file_size(
 extern "C" {
     pub static gfs2_file_fops_nolock: file_operations;
     pub static gfs2_dir_fops_nolock: file_operations;
-    #[cfg(feature = "CONFIG_GFS2_FS_LOCKING_DLM")]
+    #[cfg(CONFIG_GFS2_FS_LOCKING_DLM)]
     pub static gfs2_file_fops: file_operations;
-    #[cfg(feature = "CONFIG_GFS2_FS_LOCKING_DLM")]
+    #[cfg(CONFIG_GFS2_FS_LOCKING_DLM)]
     pub static gfs2_dir_fops: file_operations;
 }
 
-#[cfg(feature = "CONFIG_GFS2_FS_LOCKING_DLM")]
+#[cfg(CONFIG_GFS2_FS_LOCKING_DLM)]
 pub unsafe fn gfs2_localflocks(sdp: *const gfs2_sbd) -> std::ffi::c_int {
     (*sdp).sd_args.ar_localflocks
 }
 
-#[cfg(not(feature = "CONFIG_GFS2_FS_LOCKING_DLM"))]
+#[cfg(not(CONFIG_GFS2_FS_LOCKING_DLM))]
 pub unsafe fn gfs2_localflocks(_sdp: *const gfs2_sbd) -> std::ffi::c_int {
     1
 }

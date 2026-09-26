@@ -8,7 +8,7 @@
 pub struct xfs_group;
 pub struct xfs_perag;
 
-#[cfg(feature = "CONFIG_XFS_DRAIN_INTENTS")]
+#[cfg(CONFIG_XFS_DRAIN_INTENTS)]
 /*
  * Passive drain mechanism.  This data structure tracks a count of some items
  * and contains a waitqueue for callers who would like to wake up when the
@@ -23,7 +23,7 @@ pub struct xfs_defer_drain {
     pub dr_waiters: wait_queue_head,
 }
 
-#[cfg(feature = "CONFIG_XFS_DRAIN_INTENTS")]
+#[cfg(CONFIG_XFS_DRAIN_INTENTS)]
 extern "C" {
     pub fn xfs_defer_drain_init(dr: *mut xfs_defer_drain);
     pub fn xfs_defer_drain_free(dr: *mut xfs_defer_drain);
@@ -78,21 +78,21 @@ extern "C" {
     pub fn xfs_group_intent_busy(xg: *mut xfs_group) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_XFS_DRAIN_INTENTS"))]
+#[cfg(not(CONFIG_XFS_DRAIN_INTENTS))]
 #[repr(C)]
 pub struct xfs_defer_drain {
     /* empty */
 }
 
-#[cfg(not(feature = "CONFIG_XFS_DRAIN_INTENTS"))]
+#[cfg(not(CONFIG_XFS_DRAIN_INTENTS))]
 #[inline]
 pub unsafe fn xfs_defer_drain_free(_dr: *mut xfs_defer_drain) {}
 
-#[cfg(not(feature = "CONFIG_XFS_DRAIN_INTENTS"))]
+#[cfg(not(CONFIG_XFS_DRAIN_INTENTS))]
 #[inline]
 pub unsafe fn xfs_defer_drain_init(_dr: *mut xfs_defer_drain) {}
 
-#[cfg(not(feature = "CONFIG_XFS_DRAIN_INTENTS"))]
+#[cfg(not(CONFIG_XFS_DRAIN_INTENTS))]
 #[inline]
 pub unsafe fn xfs_group_intent_get(
     mp: *mut xfs_mount,
@@ -102,7 +102,7 @@ pub unsafe fn xfs_group_intent_get(
     xfs_group_get_by_fsb(mp, fsbno, type_)
 }
 
-#[cfg(not(feature = "CONFIG_XFS_DRAIN_INTENTS"))]
+#[cfg(not(CONFIG_XFS_DRAIN_INTENTS))]
 #[inline]
 pub unsafe fn xfs_group_intent_put(xg: *mut xfs_group) {
     xfs_group_put(xg)

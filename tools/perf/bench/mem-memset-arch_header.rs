@@ -13,7 +13,7 @@
 macro_rules! MEMSET_FN {
     ($fn:ident, $init:expr, $fini:expr, $name:expr, $desc:expr) => {
         unsafe extern "C" {
-            pub fn $fn(arg1: *mut ::core::ffi::c_void, arg2: ::core::ffi::c_int, arg3: usize)
+            pub $fn $fn(arg1: *mut ::core::ffi::c_void, arg2: ::core::ffi::c_int, arg3: usize)
                 -> *mut ::core::ffi::c_void;
         }
     };

@@ -15,7 +15,7 @@
 
 // CONFIG_XZ_DEC_MICROLZMA is a build-time kernel configuration option.
 // Preserve the conditional exports when that configuration is enabled.
-#[cfg(feature = "CONFIG_XZ_DEC_MICROLZMA")]
+#[cfg(CONFIG_XZ_DEC_MICROLZMA)]
 mod microlzma_exports {
     // EXPORT_SYMBOL(xz_dec_microlzma_alloc);
     // EXPORT_SYMBOL(xz_dec_microlzma_reset);

@@ -91,10 +91,10 @@ pub unsafe fn sgx_get_epc_virt_addr(page: *mut sgx_epc_page) -> *mut c_void {
     (section.virt_addr as usize + index * PAGE_SIZE) as *mut c_void
 }
 
-#[cfg(feature = "CONFIG_X86_SGX_KVM")]
+#[cfg(CONFIG_X86_SGX_KVM)]
 pub unsafe fn sgx_vepc_init() -> i32;
 
-#[cfg(not(feature = "CONFIG_X86_SGX_KVM"))]
+#[cfg(not(CONFIG_X86_SGX_KVM))]
 #[inline]
 pub fn sgx_vepc_init() -> i32 {
     -ENODEV

@@ -139,7 +139,7 @@ unsafe extern "C" fn vfp_support_entry(regs:*mut pt_regs, trigger:u32)->c_int {
 }
 
 // Hook tables and vfp_init are represented with the same externally supplied kernel types/constants.
-static mut VFP_SUPPORT_HOOK: undef_hook = undef_hook { instr_mask:0x0c000e00, instr_val:0x0c000a00, cpsr_mask:0, cpsr_val:0, fn:Some(vfp_support_entry) };
+static mut VFP_SUPPORT_HOOK: undef_hook = undef_hook { instr_mask:0x0c000e00, instr_val:0x0c000a00, cpsr_mask:0, cpsr_val:0, r#fn:Some(vfp_support_entry) };
 #[cfg(CONFIG_KERNEL_MODE_NEON)] pub unsafe extern "C" fn kernel_neon_begin() { vfp_state_hold(); let cpu=__smp_processor_id(); let f=fmrx(FPEXC)|FPEXC_EN; fmxr(FPEXC,f); vfp_current_hw_state[cpu as usize]=core::ptr::null_mut(); }
 #[cfg(CONFIG_KERNEL_MODE_NEON)] pub unsafe extern "C" fn kernel_neon_end() { fmxr(FPEXC,fmrx(FPEXC)&!FPEXC_EN); vfp_state_release(); }
 

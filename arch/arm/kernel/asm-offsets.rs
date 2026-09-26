@@ -18,7 +18,7 @@
 
 pub fn main() -> i32 {
     DEFINE!("TSK_ACTIVE_MM", offset_of!(task_struct, active_mm));
-    #[cfg(feature = "CONFIG_STACKPROTECTOR")]
+    #[cfg(CONFIG_STACKPROTECTOR)]
     DEFINE!("TSK_STACK_CANARY", offset_of!(task_struct, stack_canary));
     BLANK!();
     DEFINE!("TI_FLAGS", offset_of!(thread_info, flags));
@@ -29,16 +29,16 @@ pub fn main() -> i32 {
     DEFINE!("TI_ABI_SYSCALL", offset_of!(thread_info, abi_syscall));
     DEFINE!("TI_TP_VALUE", offset_of!(thread_info, tp_value));
     DEFINE!("TI_FPSTATE", offset_of!(thread_info, fpstate));
-    #[cfg(feature = "CONFIG_VFP")]
+    #[cfg(CONFIG_VFP)]
     {
         DEFINE!("TI_VFPSTATE", offset_of!(thread_info, vfpstate));
-        #[cfg(feature = "CONFIG_SMP")]
+        #[cfg(CONFIG_SMP)]
         DEFINE!("VFP_CPU", offset_of!(vfp_state, hard.cpu));
     }
     DEFINE!("SOFTIRQ_DISABLE_OFFSET", SOFTIRQ_DISABLE_OFFSET);
-    #[cfg(feature = "CONFIG_ARM_THUMBEE")]
+    #[cfg(CONFIG_ARM_THUMBEE)]
     DEFINE!("TI_THUMBEE_STATE", offset_of!(thread_info, thumbee_state));
-    #[cfg(feature = "CONFIG_IWMMXT")]
+    #[cfg(CONFIG_IWMMXT)]
     DEFINE!("TI_IWMMXT_STATE", offset_of!(thread_info, fpstate.iwmmxt));
     BLANK!();
     DEFINE!("S_R0", offset_of!(pt_regs, ARM_r0));
@@ -67,7 +67,7 @@ pub fn main() -> i32 {
     DEFINE!("SIGFRAME_RC3_OFFSET", offset_of!(sigframe, retcode[3]));
     DEFINE!("RT_SIGFRAME_RC3_OFFSET", offset_of!(rt_sigframe, sig.retcode[3]));
     BLANK!();
-    #[cfg(feature = "CONFIG_CACHE_L2X0")]
+    #[cfg(CONFIG_CACHE_L2X0)]
     {
         DEFINE!("L2X0_R_PHY_BASE", offset_of!(l2x0_regs, phy_base));
         DEFINE!("L2X0_R_AUX_CTRL", offset_of!(l2x0_regs, aux_ctrl));
@@ -79,7 +79,7 @@ pub fn main() -> i32 {
         DEFINE!("L2X0_R_PWR_CTRL", offset_of!(l2x0_regs, pwr_ctrl));
         BLANK!();
     }
-    #[cfg(feature = "CONFIG_CPU_HAS_ASID")]
+    #[cfg(CONFIG_CPU_HAS_ASID)]
     {
         DEFINE!("MM_CONTEXT_ID", offset_of!(mm_struct, context.id.counter));
         BLANK!();
@@ -114,7 +114,7 @@ pub fn main() -> i32 {
     }
     #[cfg(feature = "MULTI_CACHE")]
     DEFINE!("CACHE_FLUSH_KERN_ALL", offset_of!(cpu_cache_fns, flush_kern_all));
-    #[cfg(feature = "CONFIG_ARM_CPU_SUSPEND")]
+    #[cfg(CONFIG_ARM_CPU_SUSPEND)]
     {
         DEFINE!("SLEEP_SAVE_SP_SZ", size_of::<sleep_save_sp>());
         DEFINE!("SLEEP_SAVE_SP_PHYS", offset_of!(sleep_save_sp, save_ptr_stash_phys));
@@ -130,7 +130,7 @@ pub fn main() -> i32 {
     DEFINE!("CACHE_WRITEBACK_ORDER", __CACHE_WRITEBACK_ORDER);
     DEFINE!("CACHE_WRITEBACK_GRANULE", __CACHE_WRITEBACK_GRANULE);
     BLANK!();
-    #[cfg(feature = "CONFIG_ARM_MPU")]
+    #[cfg(CONFIG_ARM_MPU)]
     {
         DEFINE!("MPU_RNG_INFO_RNGS", offset_of!(mpu_rgn_info, rgns));
         DEFINE!("MPU_RNG_INFO_USED", offset_of!(mpu_rgn_info, used));

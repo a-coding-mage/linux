@@ -27,12 +27,12 @@ pub unsafe fn ROMFS_I(inode: *mut crate::inode) -> *mut romfs_inode_info {
  * mmap-nommu.c
  */
 /* The CONFIG_MMU/CONFIG_ROMFS_ON_MTD conditional is supplied by the build. */
-#[cfg(all(not(feature = "CONFIG_MMU"), feature = "CONFIG_ROMFS_ON_MTD"))]
+#[cfg(all(not(CONFIG_MMU), CONFIG_ROMFS_ON_MTD))]
 unsafe extern "C" {
     pub static romfs_ro_fops: crate::file_operations;
 }
 
-#[cfg(any(feature = "CONFIG_MMU", not(feature = "CONFIG_ROMFS_ON_MTD")))]
+#[cfg(any(CONFIG_MMU, not(CONFIG_ROMFS_ON_MTD)))]
 pub use crate::generic_ro_fops as romfs_ro_fops;
 
 /*

@@ -121,8 +121,7 @@ extern "C" {
         inst: u32,
         vpg_regs: *const dcn31_vpg_registers,
         vpg_shift: *const dcn31_vpg_shift,
-        vpg_mask: *const dcn31_vpg_mask,
-    );
+        vpg_mask: *const dcn31_vpg_mask);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

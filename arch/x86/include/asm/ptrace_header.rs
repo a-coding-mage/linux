@@ -84,8 +84,8 @@ pub const MAX_REG_OFFSET: usize = core::mem::offset_of!(pt_regs, ss);
 #[inline] pub unsafe fn regs_get_kernel_stack_nth(r: *mut pt_regs, n: c_uint) -> c_ulong { let p=regs_get_kernel_stack_nth_addr(r,n); let mut v=0; if !p.is_null() && copy_from_kernel_nofault((&mut v as *mut _).cast(),p.cast(),core::mem::size_of_val(&v))==0 {v} else {0} }
 
 pub const fn arch_has_single_step() -> bool { true }
-#[cfg(feature="CONFIG_X86_DEBUGCTLMSR")] pub const fn arch_has_block_step() -> bool { true }
-#[cfg(not(feature="CONFIG_X86_DEBUGCTLMSR"))] pub unsafe fn arch_has_block_step() -> bool { boot_cpu_data.x86 >= 6 }
+#[cfg(CONFIG_X86_DEBUGCTLMSR)] pub const fn arch_has_block_step() -> bool { true }
+#[cfg(not(CONFIG_X86_DEBUGCTLMSR))] pub unsafe fn arch_has_block_step() -> bool { boot_cpu_data.x86 >= 6 }
 pub const ARCH_HAS_USER_SINGLE_STEP_REPORT: bool = true;
 #[inline] pub unsafe fn regs_get_kernel_argument(r: *mut pt_regs, n: c_uint) -> c_ulong {
     #[cfg(target_arch="x86")] let a = [core::mem::offset_of!(pt_regs,ax),core::mem::offset_of!(pt_regs,dx),core::mem::offset_of!(pt_regs,cx)];

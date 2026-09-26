@@ -34,6 +34,8 @@ unsafe fn dibs_lo_register_dmb(dibs: *mut dibs_dev, dmb: *mut dibs_dmb,
     let mut folio: *mut folio;
     let mut flags: c_ulong = 0;
     let mut rc: i32;
+    'err_bit: {
+    'err_node: {
 
     /* check space for new dmb */
     for_each_clear_bit!(sba_idx, (*ldev).sba_idx_mask, DIBS_LO_MAX_DMBS, {
@@ -42,25 +44,25 @@ unsafe fn dibs_lo_register_dmb(dibs: *mut dibs_dev, dmb: *mut dibs_dmb,
     if sba_idx == DIBS_LO_MAX_DMBS { return -ENOSPC; }
 
     dmb_node = kzalloc_obj!();
-    if dmb_node.is_null() { rc = -ENOMEM; goto err_bit; }
+    if dmb_node.is_null() { rc = -ENOMEM; break 'err_bit; }
     (*dmb_node).sba_idx = sba_idx;
     (*dmb_node).len = (*dmb).dmb_len;
 
     /* not critical; fail under memory pressure and fallback to TCP */
     folio = folio_alloc(GFP_KERNEL | __GFP_NOWARN | __GFP_NOMEMALLOC |
                         __GFP_NORETRY | __GFP_ZERO, get_order((*dmb_node).len));
-    if folio.is_null() { rc = -ENOMEM; goto err_node; }
+    if folio.is_null() { rc = -ENOMEM; break 'err_node; }
     (*dmb_node).cpu_addr = folio_address(folio);
     (*dmb_node).dma_addr = DIBS_DMA_ADDR_INVALID;
     refcount_set(&mut_ref!((*dmb_node).refcnt), 1);
 
-again:
+    'again: loop {
     /* add new dmb into hash table */
     get_random_bytes(&mut (*dmb_node).token, core::mem::size_of_val(&(*dmb_node).token));
     write_lock_bh(&mut (*ldev).dmb_ht_lock);
     hash_for_each_possible!((*ldev).dmb_ht, tmp_node, list, (*dmb_node).token, {
         if (*tmp_node).token == (*dmb_node).token {
-            write_unlock_bh(&mut (*ldev).dmb_ht_lock); goto again;
+            write_unlock_bh(&mut (*ldev).dmb_ht_lock); continue 'again;
         }
     });
     hash_add!((*ldev).dmb_ht, &mut (*dmb_node).list, (*dmb_node).token);
@@ -75,10 +77,13 @@ again:
     (*dibs).dmb_clientid_arr[sba_idx as usize] = (*client).id;
     spin_unlock_irqrestore(&mut (*dibs).lock, flags);
     return 0;
-
-err_node:
+        break;
+    }
+}
+    
     kfree(dmb_node);
-err_bit:
+    }
+    
     clear_bit(sba_idx, (*ldev).sba_idx_mask);
     rc
 }

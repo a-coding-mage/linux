@@ -201,9 +201,9 @@ unsafe fn addrtype_mt_checkentry_v1(par: *const xt_mtchk_param) -> i32 {
 }
 
 static mut addrtype_mt_reg: [xt_match; 3] = [
-    xt_match { name: *b"addrtype\0", family: NFPROTO_IPV4, revision: 0, match: Some(addrtype_mt_v0), check_hooks: None, checkentry: None, matchsize: core::mem::size_of::<xt_addrtype_info>(), me: THIS_MODULE },
-    xt_match { name: *b"addrtype\0", family: NFPROTO_IPV4, revision: 1, match: Some(addrtype_mt_v1), check_hooks: Some(addrtype_mt_check_hooks), checkentry: Some(addrtype_mt_checkentry_v1), matchsize: core::mem::size_of::<xt_addrtype_info_v1>(), me: THIS_MODULE },
-    xt_match { name: *b"addrtype\0", family: NFPROTO_IPV6, revision: 1, match: Some(addrtype_mt_v1), check_hooks: Some(addrtype_mt_check_hooks), checkentry: Some(addrtype_mt_checkentry_v1), matchsize: core::mem::size_of::<xt_addrtype_info_v1>(), me: THIS_MODULE },
+    xt_match { name: *b"addrtype\0", family: NFPROTO_IPV4, revision: 0, r#match: Some(addrtype_mt_v0), check_hooks: None, checkentry: None, matchsize: core::mem::size_of::<xt_addrtype_info>(), me: THIS_MODULE },
+    xt_match { name: *b"addrtype\0", family: NFPROTO_IPV4, revision: 1, r#match: Some(addrtype_mt_v1), check_hooks: Some(addrtype_mt_check_hooks), checkentry: Some(addrtype_mt_checkentry_v1), matchsize: core::mem::size_of::<xt_addrtype_info_v1>(), me: THIS_MODULE },
+    xt_match { name: *b"addrtype\0", family: NFPROTO_IPV6, revision: 1, r#match: Some(addrtype_mt_v1), check_hooks: Some(addrtype_mt_check_hooks), checkentry: Some(addrtype_mt_checkentry_v1), matchsize: core::mem::size_of::<xt_addrtype_info_v1>(), me: THIS_MODULE },
 ];
 
 unsafe fn addrtype_mt_init() -> i32 {

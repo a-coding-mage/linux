@@ -118,8 +118,8 @@ const RK3568_MUX_CLK_PVTPLL_SHIFT	15
 
 const RK3568_CLKSEL1(_sclk_core)					\
 {								\
-	.reg = RK3568_CLKSEL_CON(2),				\
-	.val = HIWORD_UPDATE(_sclk_core, RK3568_MUX_SCLK_CORE_NPLL_MASK, \
+	reg: RK3568_CLKSEL_CON(2),				\
+	val: HIWORD_UPDATE(_sclk_core, RK3568_MUX_SCLK_CORE_NPLL_MASK, \
 			RK3568_MUX_SCLK_CORE_NPLL_SHIFT) |		\
 	       HIWORD_UPDATE(_sclk_core, RK3568_MUX_SCLK_CORE_MASK, \
 			RK3568_MUX_SCLK_CORE_SHIFT) |		\
@@ -129,15 +129,15 @@ const RK3568_CLKSEL1(_sclk_core)					\
 
 const RK3568_CLKSEL2(_aclk_core)					\
 {								\
-	.reg = RK3568_CLKSEL_CON(5),				\
-	.val = HIWORD_UPDATE(_aclk_core, RK3568_DIV_ACLK_CORE_MASK, \
+	reg: RK3568_CLKSEL_CON(5),				\
+	val: HIWORD_UPDATE(_aclk_core, RK3568_DIV_ACLK_CORE_MASK, \
 			RK3568_DIV_ACLK_CORE_SHIFT),		\
 }
 
 const RK3568_CLKSEL3(_atclk_core, _gic_core)	\
 {								\
-	.reg = RK3568_CLKSEL_CON(3),				\
-	.val = HIWORD_UPDATE(_atclk_core, RK3568_DIV_ATCLK_CORE_MASK, \
+	reg: RK3568_CLKSEL_CON(3),				\
+	val: HIWORD_UPDATE(_atclk_core, RK3568_DIV_ATCLK_CORE_MASK, \
 			RK3568_DIV_ATCLK_CORE_SHIFT) |		\
 	       HIWORD_UPDATE(_gic_core, RK3568_DIV_GICCLK_CORE_MASK, \
 			RK3568_DIV_GICCLK_CORE_SHIFT),		\
@@ -145,8 +145,8 @@ const RK3568_CLKSEL3(_atclk_core, _gic_core)	\
 
 const RK3568_CLKSEL4(_pclk_core, _periph_core)	\
 {								\
-	.reg = RK3568_CLKSEL_CON(4),				\
-	.val = HIWORD_UPDATE(_pclk_core, RK3568_DIV_PCLK_CORE_MASK, \
+	reg: RK3568_CLKSEL_CON(4),				\
+	val: HIWORD_UPDATE(_pclk_core, RK3568_DIV_PCLK_CORE_MASK, \
 			RK3568_DIV_PCLK_CORE_SHIFT) |		\
 	       HIWORD_UPDATE(_periph_core, RK3568_DIV_PERIPHCLK_CORE_MASK, \
 			RK3568_DIV_PERIPHCLK_CORE_SHIFT),		\
@@ -154,8 +154,8 @@ const RK3568_CLKSEL4(_pclk_core, _periph_core)	\
 
 const RK3568_CPUCLK_RATE(_prate, _sclk, _acore, _atcore, _gicclk, _pclk, _periph) \
 {								\
-	.prate = _prate##U,					\
-	.divs = {						\
+	prate: _prate##U,					\
+	divs: {						\
 		RK3568_CLKSEL1(_sclk),				\
 		RK3568_CLKSEL2(_acore),				\
 		RK3568_CLKSEL3(_atcore, _gicclk),		\
@@ -209,11 +209,11 @@ static rockchip_cpuclk_reg_data rk3568_cpuclk_data = {
 	.core_reg[3] = RK3568_CLKSEL_CON(1),
 	.div_core_shift[3] = 8,
 	.div_core_mask[3] = 0x1f,
-	.num_cores = 4,
-	.mux_core_alt = 1,
-	.mux_core_main = 0,
-	.mux_core_shift = 6,
-	.mux_core_mask = 0x1,
+	num_cores: 4,
+	mux_core_alt: 1,
+	mux_core_main: 0,
+	mux_core_shift: 6,
+	mux_core_mask: 0x1,
 };
 
 PNAME(mux_pll_p)			= { "xin24m" };
@@ -1706,44 +1706,44 @@ clk_rk3568_inits {
 };
 
 static clk_rk3568_inits clk_rk3568_pmucru_init = {
-	.inits = rk3568_pmu_clk_init,
+	inits: rk3568_pmu_clk_init,
 };
 
 static clk_rk3568_inits clk_3568_cru_init = {
-	.inits = rk3568_clk_init,
+	inits: rk3568_clk_init,
 };
 
 static of_device_id clk_rk3568_match_table[] = {
 	{
-		.compatible = "rockchip,rk3568-cru",
-		.data = &clk_3568_cru_init,
+		compatible: "rockchip,rk3568-cru",
+		data: &clk_3568_cru_init,
 	},  {
-		.compatible = "rockchip,rk3568-pmucru",
-		.data = &clk_rk3568_pmucru_init,
+		compatible: "rockchip,rk3568-pmucru",
+		data: &clk_rk3568_pmucru_init,
 	},
 	{ }
 };
 
 fn clk_rk3568_probe(platform_device *pdev)
 {
-	device_node *np = pdev->dev.of_node;
+	device_node *np = (*pdev).dev.of_node;
 	const clk_rk3568_inits *init_data;
 
-	init_data = (clk_rk3568_inits *)of_device_get_match_data(&pdev->dev);
+	init_data = (clk_rk3568_inits *)of_device_get_match_data((*&pdev).dev);
 	if (!init_data)
 		return -EINVAL;
 
-	if (init_data->inits)
-		init_data->inits(np);
+	if ((*init_data).inits)
+		(*init_data).inits(np);
 
 	return 0;
 }
 
 static mut platform_driver clk_rk3568_driver = {
-	.driver		= {
-		.name	= "clk-rk3568",
-		.of_match_table = clk_rk3568_match_table,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "clk-rk3568",
+		of_match_table: clk_rk3568_match_table,
+		suppress_bind_attrs: true,
 	},
 };
 builtin_platform_driver_probe(clk_rk3568_driver, clk_rk3568_probe);

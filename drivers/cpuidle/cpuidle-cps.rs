@@ -96,10 +96,10 @@ struct CpuidleState {
 unsafe fn cps_cpuidle_unregister() {
     let mut cpu: i32;
     let mut device: *mut CpuidleDevice;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         device = &mut cpuidle_dev;
         cpuidle_unregister_device(device);
-    }
+    });
     cpuidle_unregister_driver(&mut cps_driver);
 }
 
@@ -129,12 +129,12 @@ unsafe fn cps_cpuidle_init() -> i32 {
 
     err = cpuidle_register_driver(&mut cps_driver);
     if err != 0 { return err; }
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         device = &mut cpuidle_dev;
         (*device).cpu = cpu;
         err = cpuidle_register_device(device);
         if err != 0 { cps_cpuidle_unregister(); return err; }
-    }
+    });
     0
 }
 

@@ -159,7 +159,7 @@ extern "C" {
 }
 
 // Preserves the C conditional: IS_ENABLED(CONFIG_EXT4_KUNIT_TESTS).
-#[cfg(feature = "CONFIG_EXT4_KUNIT_TESTS")]
+#[cfg(CONFIG_EXT4_KUNIT_TESTS)]
 extern "C" {
     pub fn ext4_ext_space_root_idx_test(inode: *mut inode, check: i32) -> i32;
     pub fn ext4_split_convert_extents_test(

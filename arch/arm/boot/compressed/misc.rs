@@ -24,7 +24,7 @@ pub static mut __machine_arch_type: c_uint = 0;
 // Declarations supplied by the included Linux and architecture headers.
 unsafe extern "C" {
     fn flush();
-    #[cfg(not(feature = "CONFIG_DEBUG_ICEDCC"))]
+    #[cfg(not(CONFIG_DEBUG_ICEDCC))]
     fn putc(ch: c_int);
     fn arch_error(x: *mut c_char);
     fn arch_decomp_setup();
@@ -36,16 +36,16 @@ unsafe extern "C" {
     ) -> c_int;
     static input_data: *const u8;
     static input_data_end: *const u8;
-    #[cfg(feature = "CONFIG_ARCH_EP93XX")]
+    #[cfg(CONFIG_ARCH_EP93XX)]
     fn ep93xx_decomp_setup();
 }
 
 // CONFIG_DEBUG_ICEDCC selects the debug-console implementation at build time.
-#[cfg(feature = "CONFIG_DEBUG_ICEDCC")]
+#[cfg(CONFIG_DEBUG_ICEDCC)]
 #[cfg(any(
-    feature = "CONFIG_CPU_V6",
-    feature = "CONFIG_CPU_V6K",
-    feature = "CONFIG_CPU_V7"
+    CONFIG_CPU_V6,
+    CONFIG_CPU_V6K,
+    CONFIG_CPU_V7
 ))]
 unsafe fn icedcc_putc(mut ch: c_int) {
     let mut status: c_int;
@@ -63,8 +63,8 @@ unsafe fn icedcc_putc(mut ch: c_int) {
     core::arch::asm!("mcr p14, 0, {ch}, c0, c5, 0", ch = in(reg) ch);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_ICEDCC")]
-#[cfg(feature = "CONFIG_CPU_XSCALE")]
+#[cfg(CONFIG_DEBUG_ICEDCC)]
+#[cfg(CONFIG_CPU_XSCALE)]
 unsafe fn icedcc_putc(mut ch: c_int) {
     let mut status: c_int;
     let mut i: c_int = 0x4000000;
@@ -77,10 +77,10 @@ unsafe fn icedcc_putc(mut ch: c_int) {
     core::arch::asm!("mcr p14, 0, {ch}, c8, c0, 0", ch = in(reg) ch);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_ICEDCC")]
+#[cfg(CONFIG_DEBUG_ICEDCC)]
 #[cfg(not(any(
-    feature = "CONFIG_CPU_V6", feature = "CONFIG_CPU_V6K", feature = "CONFIG_CPU_V7",
-    feature = "CONFIG_CPU_XSCALE"
+    CONFIG_CPU_V6, CONFIG_CPU_V6K, CONFIG_CPU_V7,
+    CONFIG_CPU_XSCALE
 )))]
 unsafe fn icedcc_putc(mut ch: c_int) {
     let mut status: c_int;
@@ -94,7 +94,7 @@ unsafe fn icedcc_putc(mut ch: c_int) {
     core::arch::asm!("mcr p14, 0, {ch}, c1, c0, 0", ch = in(reg) ch);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_ICEDCC")]
+#[cfg(CONFIG_DEBUG_ICEDCC)]
 unsafe fn putc(ch: c_int) { icedcc_putc(ch); }
 
 static mut output_data: *mut u8 = core::ptr::null_mut();
@@ -136,7 +136,7 @@ pub unsafe extern "C" fn decompress_kernel(
     free_mem_end_ptr = free_mem_ptr_end_p;
     __machine_arch_type = arch_id as c_uint;
 
-    #[cfg(feature = "CONFIG_ARCH_EP93XX")]
+    #[cfg(CONFIG_ARCH_EP93XX)]
     ep93xx_decomp_setup();
     arch_decomp_setup();
 

@@ -134,14 +134,14 @@ pub unsafe fn bpf_remove_dentry_xattr(dentry: *mut dentry, name: *const c_char) 
     inode_lock(inode); let ret = bpf_remove_dentry_xattr_locked(dentry, name); inode_unlock(inode); ret
 }
 
-#[cfg(feature = "CONFIG_CGROUPS")]
+#[cfg(CONFIG_CGROUPS)]
 pub unsafe fn bpf_cgroup_read_xattr(cgroup: *mut cgroup, name: *const c_char, value_p: *mut bpf_dynptr) -> c_int {
     if strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN) != 0 { return -1; }
     let ptr = value_p as *mut bpf_dynptr_kern; let len = __bpf_dynptr_size(ptr); let value = __bpf_dynptr_data_rw(ptr, len);
     if value.is_null() { return -22; } kernfs_xattr_get((*cgroup).kn, name, value, len)
 }
 
-#[cfg(feature = "CONFIG_NET")]
+#[cfg(CONFIG_NET)]
 pub unsafe fn bpf_sock_read_xattr(sock: *mut socket, name: *const c_char, value_p: *mut bpf_dynptr) -> c_int {
     if strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN) != 0 { return -1; }
     let ptr = value_p as *mut bpf_dynptr_kern; let len = __bpf_dynptr_size(ptr); let value = __bpf_dynptr_data_rw(ptr, len);

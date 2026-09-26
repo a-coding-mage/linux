@@ -31,7 +31,7 @@ unsafe fn eiger_enable_irq(d: *mut irq_data) {
     let irq: c_uint = (*d).irq;
     let index = (irq >= 64) as usize;
     let mask = {
-        CACHED_IRQ_MASK[index] &= !(1 as c_ulong << (irq & 63));
+        CACHED_IRQ_MASK[index] &= !((1 as c_ulong) << (irq & 63));
         CACHED_IRQ_MASK[index]
     };
     eiger_update_irq_hw(irq as c_ulong, mask);
@@ -41,7 +41,7 @@ unsafe fn eiger_disable_irq(d: *mut irq_data) {
     let irq: c_uint = (*d).irq;
     let index = (irq >= 64) as usize;
     let mask = {
-        CACHED_IRQ_MASK[index] |= 1 as c_ulong << (irq & 63);
+        CACHED_IRQ_MASK[index] |= (1 as c_ulong) << (irq & 63);
         CACHED_IRQ_MASK[index]
     };
     eiger_update_irq_hw(irq as c_ulong, mask);

@@ -74,7 +74,7 @@ const tlti_op: u32 = 4;
 const tltiu_op: u32 = 5;
 const tnei_op: u32 = 6;
 
-static unsafe fn insn_has_delay_slot(insn: mips_instruction) -> usize {
+unsafe fn insn_has_delay_slot(insn: mips_instruction) -> usize {
     __insn_has_delay_slot(insn) as usize
 }
 

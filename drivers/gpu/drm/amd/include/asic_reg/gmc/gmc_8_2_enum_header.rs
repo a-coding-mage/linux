@@ -1126,6 +1126,5 @@ pub enum MEM_PWR_SEL_CTRL2 {
 	DYNAMIC_LIGHT_SLEEP_EN                           = 0x1,
 }
 
-#endif /* GMC_8_2_ENUM_H */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

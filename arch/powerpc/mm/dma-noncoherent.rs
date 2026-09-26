@@ -84,7 +84,7 @@ unsafe fn __dma_sync(vaddr: *mut c_void, size: SizeT, direction: i32) {
  * Note: yes, it is possible and correct to have a buffer extend
  * beyond the first page.
  */
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 unsafe fn __dma_sync_page_highmem(
     page: *mut Page,
     offset: usize,
@@ -130,11 +130,11 @@ unsafe fn __dma_sync_page(paddr: PhysAddrT, size: SizeT, dir: i32) {
     let page = pfn_to_page(paddr >> PAGE_SHIFT);
     let offset = paddr & !PAGE_MASK;
 
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         __dma_sync_page_highmem(page, offset, size, dir);
     }
-    #[cfg(not(feature = "CONFIG_HIGHMEM"))]
+    #[cfg(not(CONFIG_HIGHMEM))]
     {
         let start = (page_address(page) as usize).wrapping_add(offset);
         __dma_sync(start as *mut c_void, size, dir);

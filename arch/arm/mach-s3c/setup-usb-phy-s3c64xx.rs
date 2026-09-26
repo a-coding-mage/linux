@@ -50,8 +50,8 @@ unsafe fn s3c_usb_otgphy_init(pdev: *mut platform_device) -> i32 {
     xusbxti = clk_get(pdev as *mut core::ffi::c_void, c"xusbxti".as_ptr());
     if !is_err(xusbxti as *const core::ffi::c_void) {
         match clk_get_rate(xusbxti) {
-            12 * MHZ as u64 => phyclk |= S3C_PHYCLK_CLKSEL_12M,
-            24 * MHZ as u64 => phyclk |= S3C_PHYCLK_CLKSEL_24M,
+            case if case == 12 * MHZ as u64 => phyclk |= S3C_PHYCLK_CLKSEL_12M,
+            case if case == 24 * MHZ as u64 => phyclk |= S3C_PHYCLK_CLKSEL_24M,
             _ => {
                 /* default reference clock */
             }

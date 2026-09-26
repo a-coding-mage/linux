@@ -125,7 +125,7 @@ unsafe fn ocfs2_slot_map_physical_size(osb: *mut ocfs2_super, inode: *mut inode,
 }
 
 unsafe fn __ocfs2_find_empty_slot(si: *mut ocfs2_slot_info, preferred: ::core::ffi::c_int) -> ::core::ffi::c_int {
-    if preferred >= 0 && preferred as u32 < (*si).si_num_slots && (*si).si_slots.add(preferred as usize).read().sl_valid == 0 { return preferred; }
+    if preferred >= 0 && (preferred as u32) < (*si).si_num_slots && (*si).si_slots.add(preferred as usize).read().sl_valid == 0 { return preferred; }
     for i in 0..(*si).si_num_slots { if (*si).si_slots.add(i as usize).read().sl_valid == 0 { return i as i32; } }
     -ENOSPC
 }

@@ -108,7 +108,7 @@ pub const PROM_MAP_IE: ::core::ffi::c_int = 0x0100;
 pub const PROM_MAP_DEFAULT: ::core::ffi::c_int = PROM_MAP_WRITE | PROM_MAP_READ | PROM_MAP_EXEC | PROM_MAP_CACHED;
 
 /* CONFIG_SMP conditional declarations are preserved here. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn prom_startcpu(cpunode: ::core::ffi::c_int, pc: ::core::ffi::c_ulong, arg: ::core::ffi::c_ulong);
     pub fn prom_startcpu_cpuid(cpuid: ::core::ffi::c_int, pc: ::core::ffi::c_ulong, arg: ::core::ffi::c_ulong);

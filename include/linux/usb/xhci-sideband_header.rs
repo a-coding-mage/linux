@@ -107,11 +107,11 @@ extern "C" {
 }
 
 // When CONFIG_USB_XHCI_SIDEBAND is disabled, the C header supplies these inline fallbacks.
-#[cfg(not(feature = "CONFIG_USB_XHCI_SIDEBAND"))]
+#[cfg(not(CONFIG_USB_XHCI_SIDEBAND))]
 #[inline]
 pub unsafe fn xhci_sideband_check_disabled(_hcd: *mut usb_hcd) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_USB_XHCI_SIDEBAND"))]
+#[cfg(not(CONFIG_USB_XHCI_SIDEBAND))]
 #[inline]
 pub unsafe fn xhci_sideband_notify_ep_ring_free_disabled(
     _sb: *mut xhci_sideband,

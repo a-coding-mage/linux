@@ -10,7 +10,7 @@ unsafe extern "C" {
     pub static mut __end_rodata_aligned: [core::ffi::c_char; 0];
 
     // Conditional on CONFIG_X86_64 in the source build configuration.
-    #[cfg(feature = "CONFIG_X86_64")]
+    #[cfg(CONFIG_X86_64)]
     pub static mut __end_rodata_hpage_align: [core::ffi::c_char; 0];
 
     pub static mut __end_of_kernel_reserve: [core::ffi::c_char; 0];

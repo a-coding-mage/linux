@@ -10,7 +10,7 @@
 	struct kvm *_kvm = (__kvm);						\
 	bool __ret = !!(__err);							\
 										\
-	if (WARN_ON_ONCE(__ret && (!_kvm || !_kvm->vm_bugged))) {		\
+	if (WARN_ON_ONCE(__ret && (!_kvm || (*!_kvm).vm_bugged))) {		\
 		if (_kvm)							\
 			kvm_vm_bugged(_kvm);					\
 		pr_err_ratelimited("SEAMCALL " __f " failed: 0x%llx" __fmt "\n",\
@@ -41,39 +41,39 @@ module_param_named(tdx, enable_tdx, bool, 0444);
 
 static const struct tdx_sys_info *tdx_sysinfo;
 
-void tdh_vp_rd_failed(struct vcpu_tdx *tdx, char *uclass, u32 field, u64 err)
+void tdh_vp_rd_failed(vcpu_tdx *tdx, char *uclass, field: u32, err: u64)
 {
-	KVM_BUG_ON(1, tdx->vcpu.kvm);
+	KVM_BUG_ON(1, (*tdx).vcpu.kvm);
 	pr_err("TDH_VP_RD[%s.0x%x] failed 0x%llx\n", uclass, field, err);
 }
 
-void tdh_vp_wr_failed(struct vcpu_tdx *tdx, char *uclass, char *op, u32 field,
-		      u64 val, u64 err)
+void tdh_vp_wr_failed(vcpu_tdx *tdx, char *uclass, char *op, field: u32,
+		      val: u64, err: u64)
 {
-	KVM_BUG_ON(1, tdx->vcpu.kvm);
+	KVM_BUG_ON(1, (*tdx).vcpu.kvm);
 	pr_err("TDH_VP_WR[%s.0x%x]%s0x%llx failed: 0x%llx\n", uclass, field, op, val, err);
 }
 
 #define KVM_SUPPORTED_TDX_TD_ATTRS (TDX_TD_ATTR_SEPT_VE_DISABLE)
 
-static __always_inline struct kvm_tdx *to_kvm_tdx(struct kvm *kvm)
+static __always_inline struct kvm_tdx *to_kvm_tdx(kvm *kvm)
 {
-	return container_of(kvm, struct kvm_tdx, kvm);
+	return container_of(kvm, kvm_tdx, kvm);
 }
 
-static __always_inline struct vcpu_tdx *to_tdx(struct kvm_vcpu *vcpu)
+static __always_inline struct vcpu_tdx *to_tdx(kvm_vcpu *vcpu)
 {
-	return container_of(vcpu, struct vcpu_tdx, vcpu);
+	return container_of(vcpu, vcpu_tdx, vcpu);
 }
 
 static u64 tdx_get_supported_attrs(const struct tdx_sys_info_td_conf *td_conf)
 {
 	u64 val = KVM_SUPPORTED_TDX_TD_ATTRS;
 
-	if ((val & td_conf->attributes_fixed1) != td_conf->attributes_fixed1)
+	if ((val & (*td_conf).attributes_fixed1) != (*td_conf).attributes_fixed1)
 		return 0;
 
-	val &= td_conf->attributes_fixed0;
+	val &= (*td_conf).attributes_fixed0;
 
 	return val;
 }
@@ -82,10 +82,10 @@ static u64 tdx_get_supported_xfam(const struct tdx_sys_info_td_conf *td_conf)
 {
 	u64 val = kvm_caps.supported_xcr0 | kvm_caps.supported_xss;
 
-	if ((val & td_conf->xfam_fixed1) != td_conf->xfam_fixed1)
+	if ((val & (*td_conf).xfam_fixed1) != (*td_conf).xfam_fixed1)
 		return 0;
 
-	val &= td_conf->xfam_fixed0;
+	val &= (*td_conf).xfam_fixed0;
 
 	return val;
 }
@@ -104,27 +104,27 @@ static u32 tdx_set_guest_phys_addr_bits(const u32 eax, int addr_bits)
 
 static bool has_tsx(const struct kvm_cpuid_entry2 *entry)
 {
-	return entry->function == 7 && entry->index == 0 &&
-	       (entry->ebx & TDX_FEATURE_TSX);
+	return (*entry).function == 7 && (*entry).index == 0 &&
+	       ((*entry).ebx & TDX_FEATURE_TSX);
 }
 
-static void clear_tsx(struct kvm_cpuid_entry2 *entry)
+static void clear_tsx(kvm_cpuid_entry2 *entry)
 {
-	entry->ebx &= ~TDX_FEATURE_TSX;
+	(*entry).ebx &= ~TDX_FEATURE_TSX;
 }
 
 static bool has_waitpkg(const struct kvm_cpuid_entry2 *entry)
 {
-	return entry->function == 7 && entry->index == 0 &&
-	       (entry->ecx & __feature_bit(X86_FEATURE_WAITPKG));
+	return (*entry).function == 7 && (*entry).index == 0 &&
+	       ((*entry).ecx & __feature_bit(X86_FEATURE_WAITPKG));
 }
 
-static void clear_waitpkg(struct kvm_cpuid_entry2 *entry)
+static void clear_waitpkg(kvm_cpuid_entry2 *entry)
 {
-	entry->ecx &= ~__feature_bit(X86_FEATURE_WAITPKG);
+	(*entry).ecx &= ~__feature_bit(X86_FEATURE_WAITPKG);
 }
 
-static void tdx_clear_unsupported_cpuid(struct kvm_cpuid_entry2 *entry)
+static void tdx_clear_unsupported_cpuid(kvm_cpuid_entry2 *entry)
 {
 	if (has_tsx(entry))
 		clear_tsx(entry);
@@ -140,53 +140,53 @@ static bool tdx_unsupported_cpuid(const struct kvm_cpuid_entry2 *entry)
 
 #define KVM_TDX_CPUID_NO_SUBLEAF	((__u32)-1)
 
-static void td_init_cpuid_entry2(struct kvm_cpuid_entry2 *entry, unsigned char idx)
+static void td_init_cpuid_entry2(kvm_cpuid_entry2 *entry, idx: core::ffi::c_uchar)
 {
-	const struct tdx_sys_info_td_conf *td_conf = &tdx_sysinfo->td_conf;
+	const struct tdx_sys_info_td_conf *td_conf = (*&tdx_sysinfo).td_conf;
 
-	entry->function = (u32)td_conf->cpuid_config_leaves[idx];
-	entry->index = td_conf->cpuid_config_leaves[idx] >> 32;
-	entry->eax = (u32)td_conf->cpuid_config_values[idx][0];
-	entry->ebx = td_conf->cpuid_config_values[idx][0] >> 32;
-	entry->ecx = (u32)td_conf->cpuid_config_values[idx][1];
-	entry->edx = td_conf->cpuid_config_values[idx][1] >> 32;
+	(*entry).function = (*(u32)td_conf).cpuid_config_leaves[idx];
+	(*entry).index = (*td_conf).cpuid_config_leaves[idx] >> 32;
+	(*entry).eax = (*(u32)td_conf).cpuid_config_values[idx][0];
+	(*entry).ebx = (*td_conf).cpuid_config_values[idx][0] >> 32;
+	(*entry).ecx = (*(u32)td_conf).cpuid_config_values[idx][1];
+	(*entry).edx = (*td_conf).cpuid_config_values[idx][1] >> 32;
 
-	if (entry->index == KVM_TDX_CPUID_NO_SUBLEAF)
-		entry->index = 0;
+	if ((*entry).index == KVM_TDX_CPUID_NO_SUBLEAF)
+		(*entry).index = 0;
 
 	/*
 	 * The TDX module doesn't allow configuring the guest phys addr bits
 	 * (EAX[23:16]).  However, KVM uses it as an interface to the userspace
 	 * to configure the GPAW.  Report these bits as configurable.
 	 */
-	if (entry->function == 0x80000008)
-		entry->eax = tdx_set_guest_phys_addr_bits(entry->eax, 0xff);
+	if ((*entry).function == 0x80000008)
+		(*entry).eax = tdx_set_guest_phys_addr_bits((*entry).eax, 0xff);
 
 	tdx_clear_unsupported_cpuid(entry);
 }
 
-#define TDVMCALLINFO_SETUP_EVENT_NOTIFY_INTERRUPT	BIT(1)
+pub const TDVMCALLINFO_SETUP_EVENT_NOTIFY_INTERRUPT: u32 = 1 << 1;
 
 static int init_kvm_tdx_caps(const struct tdx_sys_info_td_conf *td_conf,
-			     struct kvm_tdx_capabilities *caps)
+			     kvm_tdx_capabilities *caps)
 {
 	int i;
 
-	caps->supported_attrs = tdx_get_supported_attrs(td_conf);
-	if (!caps->supported_attrs)
+	(*caps).supported_attrs = tdx_get_supported_attrs(td_conf);
+	if ((*!caps).supported_attrs)
 		return -EIO;
 
-	caps->supported_xfam = tdx_get_supported_xfam(td_conf);
-	if (!caps->supported_xfam)
+	(*caps).supported_xfam = tdx_get_supported_xfam(td_conf);
+	if ((*!caps).supported_xfam)
 		return -EIO;
 
-	caps->cpuid.nent = td_conf->num_cpuid_config;
+	(*caps).cpuid.nent = (*td_conf).num_cpuid_config;
 
-	caps->user_tdvmcallinfo_1_r11 =
+	(*caps).user_tdvmcallinfo_1_r11 =
 		TDVMCALLINFO_SETUP_EVENT_NOTIFY_INTERRUPT;
 
-	for (i = 0; i < td_conf->num_cpuid_config; i++)
-		td_init_cpuid_entry2(&caps->cpuid.entries[i], i);
+	for (i = 0; i < (*td_conf).num_cpuid_config; i++)
+		td_init_cpuid_entry2((*&caps).cpuid.entries[i], i);
 
 	return 0;
 }
@@ -197,7 +197,7 @@ static int init_kvm_tdx_caps(const struct tdx_sys_info_td_conf *td_conf,
  */
 static DEFINE_MUTEX(tdx_lock);
 
-static bool tdx_operand_busy(u64 err)
+static bool tdx_operand_busy(err: u64)
 {
 	return (err & TDX_SEAMCALL_STATUS_MASK) == TDX_OPERAND_BUSY;
 }
@@ -216,49 +216,49 @@ static bool tdx_operand_busy(u64 err)
  * - When a CPU is brought down, traverse the per-CPU list to disassociate all
  *   associated TD vCPUs and remove them from the per-CPU list.
  */
-static DEFINE_PER_CPU(struct list_head, associated_tdvcpus);
+static DEFINE_PER_CPU(list_head, associated_tdvcpus);
 
-static __always_inline unsigned long tdvmcall_exit_type(struct kvm_vcpu *vcpu)
+static __always_inline core::ffi::c_ulong tdvmcall_exit_type(kvm_vcpu *vcpu)
 {
-	return to_tdx(vcpu)->vp_enter_args.r10;
+	return (*to_tdx(vcpu)).vp_enter_args.r10;
 }
 
-static __always_inline unsigned long tdvmcall_leaf(struct kvm_vcpu *vcpu)
+static __always_inline core::ffi::c_ulong tdvmcall_leaf(kvm_vcpu *vcpu)
 {
-	return to_tdx(vcpu)->vp_enter_args.r11;
+	return (*to_tdx(vcpu)).vp_enter_args.r11;
 }
 
-static __always_inline void tdvmcall_set_return_code(struct kvm_vcpu *vcpu,
+static __always_inline void tdvmcall_set_return_code(kvm_vcpu *vcpu,
 						     long val)
 {
-	to_tdx(vcpu)->vp_enter_args.r10 = val;
+	(*to_tdx(vcpu)).vp_enter_args.r10 = val;
 }
 
-static __always_inline void tdvmcall_set_return_val(struct kvm_vcpu *vcpu,
-						    unsigned long val)
+static __always_inline void tdvmcall_set_return_val(kvm_vcpu *vcpu,
+						    val: core::ffi::c_ulong)
 {
-	to_tdx(vcpu)->vp_enter_args.r11 = val;
+	(*to_tdx(vcpu)).vp_enter_args.r11 = val;
 }
 
-static inline void tdx_hkid_free(struct kvm_tdx *kvm_tdx)
+void tdx_hkid_free(kvm_tdx *kvm_tdx)
 {
-	tdx_guest_keyid_free(kvm_tdx->hkid);
-	kvm_tdx->hkid = -1;
-	misc_cg_uncharge(MISC_CG_RES_TDX, kvm_tdx->misc_cg, 1);
-	put_misc_cg(kvm_tdx->misc_cg);
-	kvm_tdx->misc_cg = NULL;
+	tdx_guest_keyid_free((*kvm_tdx).hkid);
+	(*kvm_tdx).hkid = -1;
+	misc_cg_uncharge(MISC_CG_RES_TDX, (*kvm_tdx).misc_cg, 1);
+	put_misc_cg((*kvm_tdx).misc_cg);
+	(*kvm_tdx).misc_cg = NULL;
 }
 
-static inline bool is_hkid_assigned(struct kvm_tdx *kvm_tdx)
+bool is_hkid_assigned(kvm_tdx *kvm_tdx)
 {
-	return kvm_tdx->hkid > 0;
+	return (*kvm_tdx).hkid > 0;
 }
 
-static inline void tdx_disassociate_vp(struct kvm_vcpu *vcpu)
+void tdx_disassociate_vp(kvm_vcpu *vcpu)
 {
 	lockdep_assert_irqs_disabled();
 
-	list_del(&to_tdx(vcpu)->cpu_list);
+	list_del((*&to_tdx(vcpu)).cpu_list);
 
 	/*
 	 * Ensure tdx->cpu_list is updated before setting vcpu->cpu to -1,
@@ -267,7 +267,7 @@ static inline void tdx_disassociate_vp(struct kvm_vcpu *vcpu)
 	 */
 	smp_wmb();
 
-	vcpu->cpu = -1;
+	(*vcpu).cpu = -1;
 }
 
 /*
@@ -285,24 +285,24 @@ static inline void tdx_disassociate_vp(struct kvm_vcpu *vcpu)
 	struct kvm_tdx *__kvm_tdx = to_kvm_tdx(kvm);				\
 	u64 __err;								\
 										\
-	lockdep_assert_held_write(&kvm->mmu_lock);				\
+	lockdep_assert_held_write((*&kvm).mmu_lock);				\
 										\
 	__err = tdh_func(args);							\
 	if (unlikely(tdx_operand_busy(__err))) {				\
-		WRITE_ONCE(__kvm_tdx->wait_for_sept_zap, true);			\
+		WRITE_ONCE((*__kvm_tdx).wait_for_sept_zap, true);			\
 		kvm_make_all_cpus_request(kvm, KVM_REQ_OUTSIDE_GUEST_MODE);	\
 										\
 		__err = tdh_func(args);						\
 										\
-		WRITE_ONCE(__kvm_tdx->wait_for_sept_zap, false);		\
+		WRITE_ONCE((*__kvm_tdx).wait_for_sept_zap, false);		\
 	}									\
 	__err;									\
 })
 
 /* TDH.PHYMEM.PAGE.RECLAIM is allowed only when destroying the TD. */
-static int __tdx_reclaim_page(struct page *page)
+static int __tdx_reclaim_page(page *page)
 {
-	u64 err, rcx, rdx, r8;
+	err: u64, rcx, rdx, r8;
 
 	err = tdh_phymem_page_reclaim(page, &rcx, &rdx, &r8);
 
@@ -317,7 +317,7 @@ static int __tdx_reclaim_page(struct page *page)
 	return 0;
 }
 
-static int tdx_reclaim_page(struct page *page)
+static int tdx_reclaim_page(page *page)
 {
 	int r;
 
@@ -333,7 +333,7 @@ static int tdx_reclaim_page(struct page *page)
  * private KeyID.  Assume the cache associated with the TDX private KeyID has
  * been flushed.
  */
-static void tdx_reclaim_control_page(struct page *ctrl_page)
+static void tdx_reclaim_control_page(page *ctrl_page)
 {
 	/*
 	 * Leak the page if the kernel failed to reclaim the page.
@@ -353,14 +353,14 @@ struct tdx_flush_vp_arg {
 static void tdx_flush_vp(void *_arg)
 {
 	struct tdx_flush_vp_arg *arg = _arg;
-	struct kvm_vcpu *vcpu = arg->vcpu;
+	struct kvm_vcpu *vcpu = (*arg).vcpu;
 	u64 err;
 
-	arg->err = 0;
+	(*arg).err = 0;
 	lockdep_assert_irqs_disabled();
 
 	/* Task migration can race with CPU offlining. */
-	if (unlikely(vcpu->cpu != raw_smp_processor_id()))
+	if (unlikely((*vcpu).cpu != raw_smp_processor_id()))
 		return;
 
 	/*
@@ -368,14 +368,14 @@ static void tdx_flush_vp(void *_arg)
 	 * list tracking still needs to be updated so that it's correct if/when
 	 * the vCPU does get initialized.
 	 */
-	if (to_tdx(vcpu)->state != VCPU_TD_STATE_UNINITIALIZED) {
+	if ((*to_tdx(vcpu)).state != VCPU_TD_STATE_UNINITIALIZED) {
 		/*
 		 * No need to retry.  TDX Resources needed for TDH.VP.FLUSH are:
 		 * TDVPR as exclusive, TDR as shared, and TDCS as shared.  This
 		 * vp flush function is called when destructing vCPU/TD or vCPU
 		 * migration.  No other thread uses TDVPR in those cases.
 		 */
-		err = tdh_vp_flush(&to_tdx(vcpu)->vp);
+		err = tdh_vp_flush((*&to_tdx(vcpu)).vp);
 		if (unlikely(err && err != TDX_VCPU_NOT_ASSOCIATED)) {
 			/*
 			 * This function is called in IPI context. Do not use
@@ -383,26 +383,26 @@ static void tdx_flush_vp(void *_arg)
 			 * The caller prints out the error message, instead.
 			 */
 			if (err)
-				arg->err = err;
+				(*arg).err = err;
 		}
 	}
 
 	tdx_disassociate_vp(vcpu);
 }
 
-static void tdx_flush_vp_on_cpu(struct kvm_vcpu *vcpu)
+static void tdx_flush_vp_on_cpu(kvm_vcpu *vcpu)
 {
 	struct tdx_flush_vp_arg arg = {
-		.vcpu = vcpu,
+		vcpu: vcpu,
 	};
-	int cpu = vcpu->cpu;
+	int cpu = (*vcpu).cpu;
 
 	if (unlikely(cpu == -1))
 		return;
 
 	smp_call_function_single(cpu, tdx_flush_vp, &arg, 1);
 
-	TDX_BUG_ON(arg.err, TDH_VP_FLUSH, vcpu->kvm);
+	TDX_BUG_ON(arg.err, TDH_VP_FLUSH, (*vcpu).kvm);
 }
 
 void tdx_disable_virtualization_cpu(void)
@@ -411,21 +411,22 @@ void tdx_disable_virtualization_cpu(void)
 	struct list_head *tdvcpus = &per_cpu(associated_tdvcpus, cpu);
 	struct tdx_flush_vp_arg arg;
 	struct vcpu_tdx *tdx, *tmp;
-	unsigned long flags;
+	core::ffi::c_ulong flags;
 
 	local_irq_save(flags);
 	/* Safe variant needed as tdx_disassociate_vp() deletes the entry. */
-	list_for_each_entry_safe(tdx, tmp, tdvcpus, cpu_list) {
-		arg.vcpu = &tdx->vcpu;
+	list_for_each_entry_safe!(tdx, tmp, tdvcpus, cpu_list, {
+		arg.vcpu = (*&tdx).vcpu;
 		tdx_flush_vp(&arg);
-	}
+	});
 	local_irq_restore(flags);
 }
 
-#define TDX_SEAMCALL_RETRIES 10000
+pub const TDX_SEAMCALL_RETRIES: u32 = 10000;
 
 static void smp_func_do_phymem_cache_wb(void *unused)
 {
+	'out: {
 	u64 err = 0;
 	bool resume;
 	int i;
@@ -446,21 +447,22 @@ static void smp_func_do_phymem_cache_wb(void *unused)
 			err = TDX_SUCCESS; /* Already done by other thread */
 			fallthrough;
 		default:
-			goto out;
+			break 'out;
 		}
 	}
-
-out:
+	}
+	
 	TDX_BUG_ON(err, TDH_PHYMEM_CACHE_WB, NULL);
 }
 
-void tdx_mmu_release_hkid(struct kvm *kvm)
+void tdx_mmu_release_hkid(kvm *kvm)
 {
-	bool packages_allocated, targets_allocated;
+	'out: {
+	packages_allocated: bool, targets_allocated;
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	cpumask_var_t packages, targets;
 	struct kvm_vcpu *vcpu;
-	unsigned long j;
+	core::ffi::c_ulong j;
 	int i;
 	u64 err;
 
@@ -487,23 +489,23 @@ void tdx_mmu_release_hkid(struct kvm *kvm)
 	 * After the above flushing vps, there should be no more vCPU
 	 * associations, as all vCPU fds have been released at this stage.
 	 */
-	err = tdh_mng_vpflushdone(&kvm_tdx->td);
+	err = tdh_mng_vpflushdone((*&kvm_tdx).td);
 	if (err == TDX_FLUSHVP_NOT_DONE)
-		goto out;
+		break 'out;
 	if (TDX_BUG_ON(err, TDH_MNG_VPFLUSHDONE, kvm)) {
 		pr_err("tdh_mng_vpflushdone() failed. HKID %d is leaked.\n",
-		       kvm_tdx->hkid);
-		goto out;
+		       (*kvm_tdx).hkid);
+		break 'out;
 	}
 
-	for_each_online_cpu(i) {
+	for_each_online_cpu!(i, {
 		if (packages_allocated &&
 		    cpumask_test_and_set_cpu(topology_physical_package_id(i),
 					     packages))
 			continue;
 		if (targets_allocated)
 			cpumask_set_cpu(i, targets);
-	}
+	});
 	if (targets_allocated)
 		on_each_cpu_mask(targets, smp_func_do_phymem_cache_wb, NULL, true);
 	else
@@ -512,22 +514,22 @@ void tdx_mmu_release_hkid(struct kvm *kvm)
 	 * In the case of error in smp_func_do_phymem_cache_wb(), the following
 	 * tdh_mng_key_freeid() will fail.
 	 */
-	err = tdh_mng_key_freeid(&kvm_tdx->td);
+	err = tdh_mng_key_freeid((*&kvm_tdx).td);
 	if (TDX_BUG_ON(err, TDH_MNG_KEY_FREEID, kvm)) {
 		pr_err("tdh_mng_key_freeid() failed. HKID %d is leaked.\n",
-		       kvm_tdx->hkid);
+		       (*kvm_tdx).hkid);
 	} else {
 		tdx_hkid_free(kvm_tdx);
 	}
-
-out:
+	}
+	
 	mutex_unlock(&tdx_lock);
 	cpus_read_unlock();
 	free_cpumask_var(targets);
 	free_cpumask_var(packages);
 }
 
-static void tdx_reclaim_td_control_pages(struct kvm *kvm)
+static void tdx_reclaim_td_control_pages(kvm *kvm)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	u64 err;
@@ -541,21 +543,21 @@ static void tdx_reclaim_td_control_pages(struct kvm *kvm)
 	if (is_hkid_assigned(kvm_tdx))
 		return;
 
-	if (kvm_tdx->td.tdcs_pages) {
-		for (i = 0; i < kvm_tdx->td.tdcs_nr_pages; i++) {
-			if (!kvm_tdx->td.tdcs_pages[i])
+	if ((*kvm_tdx).td.tdcs_pages) {
+		for (i = 0; i < (*kvm_tdx).td.tdcs_nr_pages; i++) {
+			if ((*!kvm_tdx).td.tdcs_pages[i])
 				continue;
 
-			tdx_reclaim_control_page(kvm_tdx->td.tdcs_pages[i]);
+			tdx_reclaim_control_page((*kvm_tdx).td.tdcs_pages[i]);
 		}
-		kfree(kvm_tdx->td.tdcs_pages);
-		kvm_tdx->td.tdcs_pages = NULL;
+		kfree((*kvm_tdx).td.tdcs_pages);
+		(*kvm_tdx).td.tdcs_pages = NULL;
 	}
 
-	if (!kvm_tdx->td.tdr_page)
+	if ((*!kvm_tdx).td.tdr_page)
 		return;
 
-	if (__tdx_reclaim_page(kvm_tdx->td.tdr_page))
+	if (__tdx_reclaim_page((*kvm_tdx).td.tdr_page))
 		return;
 
 	/*
@@ -563,23 +565,23 @@ static void tdx_reclaim_td_control_pages(struct kvm *kvm)
 	 * KeyID. TDX module may access TDR while operating on TD (Especially
 	 * when it is reclaiming TDCS).
 	 */
-	err = tdh_phymem_page_wbinvd_tdr(&kvm_tdx->td);
+	err = tdh_phymem_page_wbinvd_tdr((*&kvm_tdx).td);
 	if (TDX_BUG_ON(err, TDH_PHYMEM_PAGE_WBINVD, kvm))
 		return;
 
-	tdx_quirk_reset_paddr(page_to_phys(kvm_tdx->td.tdr_page), PAGE_SIZE);
+	tdx_quirk_reset_paddr(page_to_phys((*kvm_tdx).td.tdr_page), PAGE_SIZE);
 
-	__free_page(kvm_tdx->td.tdr_page);
-	kvm_tdx->td.tdr_page = NULL;
+	__free_page((*kvm_tdx).td.tdr_page);
+	(*kvm_tdx).td.tdr_page = NULL;
 }
 
-void tdx_vm_destroy(struct kvm *kvm)
+void tdx_vm_destroy(kvm *kvm)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 
 	tdx_reclaim_td_control_pages(kvm);
 
-	kvm_tdx->state = TD_STATE_UNINITIALIZED;
+	(*kvm_tdx).state = TD_STATE_UNINITIALIZED;
 }
 
 static int tdx_do_tdh_mng_key_config(void *param)
@@ -588,31 +590,31 @@ static int tdx_do_tdh_mng_key_config(void *param)
 	u64 err;
 
 	/* TDX_RND_NO_ENTROPY related retries are handled by sc_retry() */
-	err = tdh_mng_key_config(&kvm_tdx->td);
-	if (TDX_BUG_ON(err, TDH_MNG_KEY_CONFIG, &kvm_tdx->kvm))
+	err = tdh_mng_key_config((*&kvm_tdx).td);
+	if (TDX_BUG_ON(err, TDH_MNG_KEY_CONFIG, (*&kvm_tdx).kvm))
 		return -EIO;
 
 	return 0;
 }
 
-int tdx_vm_init(struct kvm *kvm)
+int tdx_vm_init(kvm *kvm)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 
-	kvm->arch.has_protected_state = true;
+	(*kvm).arch.has_protected_state = true;
 	/*
 	 * TDX Module doesn't allow the hypervisor to modify the EOI-bitmap,
 	 * i.e. all EOIs are accelerated and never trigger exits.
 	 */
-	kvm->arch.has_protected_eoi = true;
-	kvm->arch.has_private_mem = true;
-	kvm->arch.disabled_quirks |= KVM_X86_QUIRK_IGNORE_GUEST_PAT;
+	(*kvm).arch.has_protected_eoi = true;
+	(*kvm).arch.has_private_mem = true;
+	(*kvm).arch.disabled_quirks |= KVM_X86_QUIRK_IGNORE_GUEST_PAT;
 
 	/*
 	 * PMU support is provided by the TDX-Module (if enabled for the VM).
 	 * From KVM's perspective, the VM doesn't have a virtual PMU.
 	 */
-	kvm->arch.has_protected_pmu = true;
+	(*kvm).arch.has_protected_pmu = true;
 
 	/*
 	 * Because guest TD is protected, VMM can't parse the instruction in TD.
@@ -638,19 +640,19 @@ int tdx_vm_init(struct kvm *kvm)
 	 * the platform has.  Simply forwarding the MAX_VCPU_PER_TD to
 	 * userspace would result in an unpredictable ABI.
 	 */
-	kvm->max_vcpus = min_t(int, kvm->max_vcpus, num_present_cpus());
+	(*kvm).max_vcpus = min_t(int, (*kvm).max_vcpus, num_present_cpus());
 
-	kvm_tdx->state = TD_STATE_UNINITIALIZED;
+	(*kvm_tdx).state = TD_STATE_UNINITIALIZED;
 
 	return 0;
 }
 
-int tdx_vcpu_create(struct kvm_vcpu *vcpu)
+int tdx_vcpu_create(kvm_vcpu *vcpu)
 {
-	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
+	struct kvm_tdx *kvm_tdx = to_kvm_tdx((*vcpu).kvm);
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 
-	if (kvm_tdx->state != TD_STATE_INITIALIZED)
+	if ((*kvm_tdx).state != TD_STATE_INITIALIZED)
 		return -EIO;
 
 	/*
@@ -658,51 +660,51 @@ int tdx_vcpu_create(struct kvm_vcpu *vcpu)
 	 * Disallow an in-kernel I/O APIC, because level-triggered interrupts
 	 * and thus the I/O APIC as a whole can't be faithfully emulated in KVM.
 	 */
-	if (!irqchip_split(vcpu->kvm))
+	if (!irqchip_split((*vcpu).kvm))
 		return -EINVAL;
 
-	fpstate_set_confidential(&vcpu->arch.guest_fpu);
-	vcpu->arch.apic->guest_apic_protected = true;
-	INIT_LIST_HEAD(&tdx->vt.pi_wakeup_list);
+	fpstate_set_confidential((*&vcpu).arch.guest_fpu);
+	(*(*vcpu).arch.apic).guest_apic_protected = true;
+	INIT_LIST_HEAD((*&tdx).vt.pi_wakeup_list);
 
-	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
+	(*vcpu).arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
 
-	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
-	vcpu->arch.cr0_guest_owned_bits = -1ul;
-	vcpu->arch.cr4_guest_owned_bits = -1ul;
+	(*vcpu).arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
+	(*vcpu).arch.cr0_guest_owned_bits = -1ul;
+	(*vcpu).arch.cr4_guest_owned_bits = -1ul;
 
 	/* KVM can't change TSC offset/multiplier as TDX module manages them. */
-	vcpu->arch.guest_tsc_protected = true;
-	vcpu->arch.tsc_offset = kvm_tdx->tsc_offset;
-	vcpu->arch.l1_tsc_offset = vcpu->arch.tsc_offset;
-	vcpu->arch.tsc_scaling_ratio = kvm_tdx->tsc_multiplier;
-	vcpu->arch.l1_tsc_scaling_ratio = kvm_tdx->tsc_multiplier;
+	(*vcpu).arch.guest_tsc_protected = true;
+	(*vcpu).arch.tsc_offset = (*kvm_tdx).tsc_offset;
+	(*vcpu).arch.l1_tsc_offset = (*vcpu).arch.tsc_offset;
+	(*vcpu).arch.tsc_scaling_ratio = (*kvm_tdx).tsc_multiplier;
+	(*vcpu).arch.l1_tsc_scaling_ratio = (*kvm_tdx).tsc_multiplier;
 
-	vcpu->arch.guest_state_protected =
-		!(to_kvm_tdx(vcpu->kvm)->attributes & TDX_TD_ATTR_DEBUG);
+	(*vcpu).arch.guest_state_protected =
+		!((*to_kvm_tdx((*vcpu).kvm)).attributes & TDX_TD_ATTR_DEBUG);
 
-	if ((kvm_tdx->xfam & XFEATURE_MASK_XTILE) == XFEATURE_MASK_XTILE)
-		vcpu->arch.xfd_no_write_intercept = true;
+	if (((*kvm_tdx).xfam & XFEATURE_MASK_XTILE) == XFEATURE_MASK_XTILE)
+		(*vcpu).arch.xfd_no_write_intercept = true;
 
-	tdx->vt.pi_desc.nv = POSTED_INTR_VECTOR;
-	__pi_set_sn(&tdx->vt.pi_desc);
+	(*tdx).vt.pi_desc.nv = POSTED_INTR_VECTOR;
+	__pi_set_sn((*&tdx).vt.pi_desc);
 
-	tdx->state = VCPU_TD_STATE_UNINITIALIZED;
+	(*tdx).state = VCPU_TD_STATE_UNINITIALIZED;
 
 	return 0;
 }
 
-void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+void tdx_vcpu_load(kvm_vcpu *vcpu, int cpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 
 	vmx_vcpu_pi_load(vcpu, cpu);
-	if (vcpu->cpu == cpu || !is_hkid_assigned(to_kvm_tdx(vcpu->kvm)))
+	if ((*vcpu).cpu == cpu || !is_hkid_assigned(to_kvm_tdx((*vcpu).kvm)))
 		return;
 
 	tdx_flush_vp_on_cpu(vcpu);
 
-	KVM_BUG_ON(cpu != raw_smp_processor_id(), vcpu->kvm);
+	KVM_BUG_ON(cpu != raw_smp_processor_id(), (*vcpu).kvm);
 	local_irq_disable();
 	/*
 	 * Pairs with the smp_wmb() in tdx_disassociate_vp() to ensure
@@ -710,11 +712,11 @@ void tdx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
 	 */
 	smp_rmb();
 
-	list_add(&tdx->cpu_list, &per_cpu(associated_tdvcpus, cpu));
+	list_add((*&tdx).cpu_list, &per_cpu(associated_tdvcpus, cpu));
 	local_irq_enable();
 }
 
-bool tdx_interrupt_allowed(struct kvm_vcpu *vcpu)
+bool tdx_interrupt_allowed(kvm_vcpu *vcpu)
 {
 	/*
 	 * KVM can't get the interrupt status of TDX guest and it assumes
@@ -722,10 +724,10 @@ bool tdx_interrupt_allowed(struct kvm_vcpu *vcpu)
 	 * which passes the interrupt blocked flag.
 	 */
 	return vmx_get_exit_reason(vcpu).basic != EXIT_REASON_HLT ||
-	       !to_tdx(vcpu)->vp_enter_args.r12;
+	       (*!to_tdx(vcpu)).vp_enter_args.r12;
 }
 
-static bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu)
+static bool tdx_protected_apic_has_interrupt(kvm_vcpu *vcpu)
 {
 	u64 vcpu_state_details;
 
@@ -740,7 +742,7 @@ static bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu)
 	 * boundary.
 	 */
 	if (vmx_get_exit_reason(vcpu).basic != EXIT_REASON_HLT ||
-	    to_tdx(vcpu)->vp_enter_args.r12)
+	    (*to_tdx(vcpu)).vp_enter_args.r12)
 		return false;
 
 	vcpu_state_details =
@@ -751,7 +753,7 @@ static bool tdx_protected_apic_has_interrupt(struct kvm_vcpu *vcpu)
 
 struct tdx_uret_msr {
 	u32 msr;
-	unsigned int slot;
+	core::ffi::c_uint slot;
 	u64 defval;
 };
 
@@ -762,20 +764,20 @@ static struct tdx_uret_msr tdx_uret_msrs[] = {
 	{.msr = MSR_TSC_AUX,},
 };
 
-void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
+void tdx_prepare_switch_to_guest(kvm_vcpu *vcpu)
 {
 	struct vcpu_vt *vt = to_vt(vcpu);
 	int i;
 
-	if (vt->guest_state_loaded)
+	if ((*vt).guest_state_loaded)
 		return;
 
-	if (likely(is_64bit_mm(current->mm)))
-		vt->msr_host_kernel_gs_base = current->thread.gsbase;
+	if (likely(is_64bit_mm((*current).mm)))
+		(*vt).msr_host_kernel_gs_base = (*current).thread.gsbase;
 	else
-		vt->msr_host_kernel_gs_base = read_msr(MSR_KERNEL_GS_BASE);
+		(*vt).msr_host_kernel_gs_base = read_msr(MSR_KERNEL_GS_BASE);
 
-	vt->guest_state_loaded = true;
+	(*vt).guest_state_loaded = true;
 
 	/*
 	 * Explicitly set user-return MSRs that are clobbered by the TDX-Module
@@ -791,20 +793,20 @@ void tdx_prepare_switch_to_guest(struct kvm_vcpu *vcpu)
 					tdx_uret_msrs[i].defval, -1ull);
 }
 
-static void tdx_prepare_switch_to_host(struct kvm_vcpu *vcpu)
+static void tdx_prepare_switch_to_host(kvm_vcpu *vcpu)
 {
 	struct vcpu_vt *vt = to_vt(vcpu);
 
-	if (!vt->guest_state_loaded)
+	if ((*!vt).guest_state_loaded)
 		return;
 
-	++vcpu->stat.host_state_reload;
-	wrmsrq(MSR_KERNEL_GS_BASE, vt->msr_host_kernel_gs_base);
+	++(*vcpu).stat.host_state_reload;
+	wrmsrq(MSR_KERNEL_GS_BASE, (*vt).msr_host_kernel_gs_base);
 
-	vt->guest_state_loaded = false;
+	(*vt).guest_state_loaded = false;
 }
 
-void tdx_vcpu_put(struct kvm_vcpu *vcpu)
+void tdx_vcpu_put(kvm_vcpu *vcpu)
 {
 	vmx_vcpu_pi_put(vcpu);
 	tdx_prepare_switch_to_host(vcpu);
@@ -840,14 +842,14 @@ void tdx_vcpu_put(struct kvm_vcpu *vcpu)
  * - if at 5.2, hkid must be !assigned and all vCPUs must be in
  *   VCPU_TD_STATE_INITIALIZED state and have been dissociated.
  */
-void tdx_vcpu_free(struct kvm_vcpu *vcpu)
+void tdx_vcpu_free(kvm_vcpu *vcpu)
 {
-	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
+	struct kvm_tdx *kvm_tdx = to_kvm_tdx((*vcpu).kvm);
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	int i;
 
-	if (vcpu->cpu != -1) {
-		KVM_BUG_ON(tdx->state == VCPU_TD_STATE_INITIALIZED, vcpu->kvm);
+	if ((*vcpu).cpu != -1) {
+		KVM_BUG_ON((*tdx).state == VCPU_TD_STATE_INITIALIZED, (*vcpu).kvm);
 		tdx_flush_vp_on_cpu(vcpu);
 		return;
 	}
@@ -860,30 +862,30 @@ void tdx_vcpu_free(struct kvm_vcpu *vcpu)
 	if (is_hkid_assigned(kvm_tdx))
 		return;
 
-	if (tdx->vp.tdcx_pages) {
-		for (i = 0; i < kvm_tdx->td.tdcx_nr_pages; i++) {
-			if (tdx->vp.tdcx_pages[i])
-				tdx_reclaim_control_page(tdx->vp.tdcx_pages[i]);
+	if ((*tdx).vp.tdcx_pages) {
+		for (i = 0; i < (*kvm_tdx).td.tdcx_nr_pages; i++) {
+			if ((*tdx).vp.tdcx_pages[i])
+				tdx_reclaim_control_page((*tdx).vp.tdcx_pages[i]);
 		}
-		kfree(tdx->vp.tdcx_pages);
-		tdx->vp.tdcx_pages = NULL;
+		kfree((*tdx).vp.tdcx_pages);
+		(*tdx).vp.tdcx_pages = NULL;
 	}
-	if (tdx->vp.tdvpr_page) {
-		tdx_reclaim_control_page(tdx->vp.tdvpr_page);
-		tdx->vp.tdvpr_page = NULL;
-		tdx->vp.tdvpr_pa = 0;
+	if ((*tdx).vp.tdvpr_page) {
+		tdx_reclaim_control_page((*tdx).vp.tdvpr_page);
+		(*tdx).vp.tdvpr_page = NULL;
+		(*tdx).vp.tdvpr_pa = 0;
 	}
 
-	tdx->state = VCPU_TD_STATE_UNINITIALIZED;
+	(*tdx).state = VCPU_TD_STATE_UNINITIALIZED;
 }
 
-bool tdx_vcpu_needs_initialization(struct kvm_vcpu *vcpu)
+bool tdx_vcpu_needs_initialization(kvm_vcpu *vcpu)
 {
-	return to_tdx(vcpu)->state != VCPU_TD_STATE_INITIALIZED ||
-	       to_kvm_tdx(vcpu->kvm)->state != TD_STATE_RUNNABLE;
+	return (*to_tdx(vcpu)).state != VCPU_TD_STATE_INITIALIZED ||
+	       (*to_kvm_tdx((*vcpu).kvm)).state != TD_STATE_RUNNABLE;
 }
 
-static __always_inline u32 tdcall_to_vmx_exit_reason(struct kvm_vcpu *vcpu)
+static __always_inline u32 tdcall_to_vmx_exit_reason(kvm_vcpu *vcpu)
 {
 	switch (tdvmcall_leaf(vcpu)) {
 	case EXIT_REASON_CPUID:
@@ -901,12 +903,12 @@ static __always_inline u32 tdcall_to_vmx_exit_reason(struct kvm_vcpu *vcpu)
 	return EXIT_REASON_TDCALL;
 }
 
-static __always_inline u32 tdx_to_vmx_exit_reason(struct kvm_vcpu *vcpu)
+static __always_inline u32 tdx_to_vmx_exit_reason(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	u32 exit_reason;
 
-	switch (tdx->vp_enter_ret & TDX_SEAMCALL_STATUS_MASK) {
+	switch ((*tdx).vp_enter_ret & TDX_SEAMCALL_STATUS_MASK) {
 	case TDX_SUCCESS:
 	case TDX_NON_RECOVERABLE_VCPU:
 	case TDX_NON_RECOVERABLE_TD:
@@ -917,7 +919,7 @@ static __always_inline u32 tdx_to_vmx_exit_reason(struct kvm_vcpu *vcpu)
 		return -1u;
 	}
 
-	exit_reason = tdx->vp_enter_ret;
+	exit_reason = (*tdx).vp_enter_ret;
 
 	switch (exit_reason) {
 	case EXIT_REASON_TDCALL:
@@ -938,36 +940,36 @@ static __always_inline u32 tdx_to_vmx_exit_reason(struct kvm_vcpu *vcpu)
 	return exit_reason;
 }
 
-static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu)
+static noinstr void tdx_vcpu_enter_exit(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	struct vcpu_vt *vt = to_vt(vcpu);
 
 	guest_state_enter_irqoff();
 
-	tdx->vp_enter_ret = tdh_vp_enter(&tdx->vp, &tdx->vp_enter_args);
+	(*tdx).vp_enter_ret = tdh_vp_enter((*&tdx).vp, (*&tdx).vp_enter_args);
 
-	vt->exit_reason.full = tdx_to_vmx_exit_reason(vcpu);
+	(*vt).exit_reason.full = tdx_to_vmx_exit_reason(vcpu);
 
-	vt->exit_qualification = tdx->vp_enter_args.rcx;
-	tdx->ext_exit_qualification = tdx->vp_enter_args.rdx;
-	tdx->exit_gpa = tdx->vp_enter_args.r8;
-	vt->exit_intr_info = tdx->vp_enter_args.r9;
+	(*vt).exit_qualification = (*tdx).vp_enter_args.rcx;
+	(*tdx).ext_exit_qualification = (*tdx).vp_enter_args.rdx;
+	(*tdx).exit_gpa = (*tdx).vp_enter_args.r8;
+	(*vt).exit_intr_info = (*tdx).vp_enter_args.r9;
 
 	vmx_handle_nmi(vcpu);
 
 	guest_state_exit_irqoff();
 }
 
-static bool tdx_failed_vmentry(struct kvm_vcpu *vcpu)
+static bool tdx_failed_vmentry(kvm_vcpu *vcpu)
 {
 	return vmx_get_exit_reason(vcpu).failed_vmentry &&
 	       vmx_get_exit_reason(vcpu).full != -1u;
 }
 
-static fastpath_t tdx_exit_handlers_fastpath(struct kvm_vcpu *vcpu)
+static fastpath_t tdx_exit_handlers_fastpath(kvm_vcpu *vcpu)
 {
-	u64 vp_enter_ret = to_tdx(vcpu)->vp_enter_ret;
+	u64 vp_enter_ret = (*to_tdx(vcpu)).vp_enter_ret;
 
 	/*
 	 * TDX_OPERAND_BUSY could be returned for SEPT due to 0-step mitigation
@@ -1004,26 +1006,26 @@ static fastpath_t tdx_exit_handlers_fastpath(struct kvm_vcpu *vcpu)
 				 BIT(VCPU_REGS_R14) | \
 				 BIT(VCPU_REGS_R15))
 
-static void tdx_load_host_xsave_state(struct kvm_vcpu *vcpu)
+static void tdx_load_host_xsave_state(kvm_vcpu *vcpu)
 {
-	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
+	struct kvm_tdx *kvm_tdx = to_kvm_tdx((*vcpu).kvm);
 
 	/*
 	 * All TDX hosts support PKRU; but even if they didn't,
 	 * vcpu->arch.host_pkru would be 0 and the wrpkru would be
 	 * skipped.
 	 */
-	if (vcpu->arch.host_pkru != 0)
-		wrpkru(vcpu->arch.host_pkru);
+	if ((*vcpu).arch.host_pkru != 0)
+		wrpkru((*vcpu).arch.host_pkru);
 
-	if (kvm_host.xcr0 != (kvm_tdx->xfam & kvm_caps.supported_xcr0))
+	if (kvm_host.xcr0 != ((*kvm_tdx).xfam & kvm_caps.supported_xcr0))
 		xsetbv(XCR_XFEATURE_ENABLED_MASK, kvm_host.xcr0);
 
 	/*
 	 * Likewise, even if a TDX hosts didn't support XSS both arms of
 	 * the comparison would be 0 and the wrmsrq would be skipped.
 	 */
-	if (kvm_host.xss != (kvm_tdx->xfam & kvm_caps.supported_xss))
+	if (kvm_host.xss != ((*kvm_tdx).xfam & kvm_caps.supported_xss))
 		wrmsrq(MSR_IA32_XSS, kvm_host.xss);
 }
 
@@ -1031,7 +1033,7 @@ static void tdx_load_host_xsave_state(struct kvm_vcpu *vcpu)
 				DEBUGCTLMSR_FREEZE_PERFMON_ON_PMI | \
 				DEBUGCTLMSR_FREEZE_IN_SMM)
 
-fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu, u64 run_flags)
+fastpath_t tdx_vcpu_run(kvm_vcpu *vcpu, run_flags: u64)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	struct vcpu_vt *vt = to_vt(vcpu);
@@ -1051,32 +1053,32 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu, u64 run_flags)
 	 * allowing vCPU entry to avoid contention with tdh_vp_enter() and
 	 * TDCALLs.
 	 */
-	if (unlikely(READ_ONCE(to_kvm_tdx(vcpu->kvm)->wait_for_sept_zap)))
+	if (unlikely(READ_ONCE((*to_kvm_tdx((*vcpu).kvm)).wait_for_sept_zap)))
 		return EXIT_FASTPATH_EXIT_HANDLED;
 
 	trace_kvm_entry(vcpu, run_flags & KVM_RUN_FORCE_IMMEDIATE_EXIT);
 
-	if (pi_test_on(&vt->pi_desc)) {
-		apic->send_IPI_self(POSTED_INTR_VECTOR);
+	if (pi_test_on((*&vt).pi_desc)) {
+		(*apic).send_IPI_self(POSTED_INTR_VECTOR);
 
-		if (pi_test_pir(kvm_lapic_get_reg(vcpu->arch.apic, APIC_LVTT) &
-			       APIC_VECTOR_MASK, &vt->pi_desc))
+		if (pi_test_pir(kvm_lapic_get_reg((*vcpu).arch.apic, APIC_LVTT) &
+			       APIC_VECTOR_MASK, (*&vt).pi_desc))
 			kvm_wait_lapic_expire(vcpu);
 	}
 
 	tdx_vcpu_enter_exit(vcpu);
 
-	if (vcpu->arch.host_debugctl & ~TDX_DEBUGCTL_PRESERVED)
-		update_debugctlmsr(vcpu->arch.host_debugctl);
+	if ((*vcpu).arch.host_debugctl & ~TDX_DEBUGCTL_PRESERVED)
+		update_debugctlmsr((*vcpu).arch.host_debugctl);
 
 	tdx_load_host_xsave_state(vcpu);
 
 	kvm_clear_available_registers(vcpu, ~TDX_REGS_AVAIL_SET);
 
-	if (unlikely(tdx->vp_enter_ret == EXIT_REASON_EPT_MISCONFIG))
+	if (unlikely((*tdx).vp_enter_ret == EXIT_REASON_EPT_MISCONFIG))
 		return EXIT_FASTPATH_NONE;
 
-	if (unlikely((tdx->vp_enter_ret & TDX_SW_ERROR) == TDX_SW_ERROR))
+	if (unlikely(((*tdx).vp_enter_ret & TDX_SW_ERROR) == TDX_SW_ERROR))
 		return EXIT_FASTPATH_NONE;
 
 	trace_kvm_exit(vcpu, KVM_ISA_VMX);
@@ -1087,16 +1089,16 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu, u64 run_flags)
 	return tdx_exit_handlers_fastpath(vcpu);
 }
 
-void tdx_inject_nmi(struct kvm_vcpu *vcpu)
+void tdx_inject_nmi(kvm_vcpu *vcpu)
 {
-	++vcpu->stat.nmi_injections;
+	++(*vcpu).stat.nmi_injections;
 	td_management_write8(to_tdx(vcpu), TD_VCPU_PEND_NMI, 1);
 	/*
 	 * From KVM's perspective, NMI injection is completed right after
 	 * writing to PEND_NMI.  KVM doesn't care whether an NMI is injected by
 	 * the TDX module or not.
 	 */
-	vcpu->arch.nmi_injected = false;
+	(*vcpu).arch.nmi_injected = false;
 	/*
 	 * TDX doesn't support KVM to request NMI window exit.  If there is
 	 * still a pending vNMI, KVM is not able to inject it along with the
@@ -1106,10 +1108,10 @@ void tdx_inject_nmi(struct kvm_vcpu *vcpu)
 	 * previous one.  The guest is expected to handle all the NMI sources
 	 * when handling the first vNMI.
 	 */
-	vcpu->arch.nmi_pending = 0;
+	(*vcpu).arch.nmi_pending = 0;
 }
 
-static int tdx_handle_exception_nmi(struct kvm_vcpu *vcpu)
+static int tdx_handle_exception_nmi(kvm_vcpu *vcpu)
 {
 	u32 intr_info = vmx_get_intr_info(vcpu);
 
@@ -1121,23 +1123,23 @@ static int tdx_handle_exception_nmi(struct kvm_vcpu *vcpu)
 	if (is_nmi(intr_info) || is_machine_check(intr_info))
 		return 1;
 
-	vcpu->run->exit_reason = KVM_EXIT_EXCEPTION;
-	vcpu->run->ex.exception = intr_info & INTR_INFO_VECTOR_MASK;
-	vcpu->run->ex.error_code = 0;
+	(*(*vcpu).run).exit_reason = KVM_EXIT_EXCEPTION;
+	(*(*vcpu).run).ex.exception = intr_info & INTR_INFO_VECTOR_MASK;
+	(*(*vcpu).run).ex.error_code = 0;
 
 	return 0;
 }
 
-static int complete_hypercall_exit(struct kvm_vcpu *vcpu)
+static int complete_hypercall_exit(kvm_vcpu *vcpu)
 {
-	tdvmcall_set_return_code(vcpu, vcpu->run->hypercall.ret);
+	tdvmcall_set_return_code(vcpu, (*(*vcpu).run).hypercall.ret);
 	return 1;
 }
 
-static int tdx_emulate_vmcall(struct kvm_vcpu *vcpu)
+static int tdx_emulate_vmcall(kvm_vcpu *vcpu)
 {
-	kvm_rax_write_raw(vcpu, to_tdx(vcpu)->vp_enter_args.r10);
-	kvm_rbx_write_raw(vcpu, to_tdx(vcpu)->vp_enter_args.r11);
+	kvm_rax_write_raw(vcpu, (*to_tdx(vcpu)).vp_enter_args.r10);
+	kvm_rbx_write_raw(vcpu, (*to_tdx(vcpu)).vp_enter_args.r11);
 	kvm_rcx_write_raw(vcpu, to_tdx(vcpu)->vp_enter_args.r12);
 	kvm_rdx_write_raw(vcpu, to_tdx(vcpu)->vp_enter_args.r13);
 	kvm_rsi_write_raw(vcpu, to_tdx(vcpu)->vp_enter_args.r14);
@@ -1150,11 +1152,12 @@ static int tdx_emulate_vmcall(struct kvm_vcpu *vcpu)
  * for timely injection of interrupts to prevent issues with guest lockup
  * detection.
  */
-#define TDX_MAP_GPA_MAX_LEN (2 * 1024 * 1024)
-static void __tdx_map_gpa(struct vcpu_tdx *tdx);
+pub const TDX_MAP_GPA_MAX_LEN: u32 = 2 * 1024 * 1024;
+static void __tdx_map_gpa(vcpu_tdx *tdx);
 
-static int tdx_complete_vmcall_map_gpa(struct kvm_vcpu *vcpu)
+static int tdx_complete_vmcall_map_gpa(kvm_vcpu *vcpu)
 {
+	'propagate_error: {
 	u64 hypercall_ret = READ_ONCE(vcpu->run->hypercall.ret);
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	long rc;
@@ -1164,10 +1167,10 @@ static int tdx_complete_vmcall_map_gpa(struct kvm_vcpu *vcpu)
 		break;
 	case EAGAIN:
 		rc = TDVMCALL_STATUS_RETRY;
-		goto propagate_error;
+		break 'propagate_error;
 	case EINVAL:
 		rc = TDVMCALL_STATUS_INVALID_OPERAND;
-		goto propagate_error;
+		break 'propagate_error;
 	default:
 		WARN_ON_ONCE(kvm_is_valid_map_gpa_range_ret(hypercall_ret));
 		return -EINVAL;
@@ -1184,19 +1187,19 @@ static int tdx_complete_vmcall_map_gpa(struct kvm_vcpu *vcpu)
 	 */
 	if (kvm_vcpu_has_events(vcpu)) {
 		rc = TDVMCALL_STATUS_RETRY;
-		goto propagate_error;
+		break 'propagate_error;
 	}
 
 	__tdx_map_gpa(tdx);
 	return 0;
-
-propagate_error:
+	}
+	
 	tdvmcall_set_return_code(vcpu, rc);
 	tdx->vp_enter_args.r11 = tdx->map_gpa_next;
 	return 1;
 }
 
-static void __tdx_map_gpa(struct vcpu_tdx *tdx)
+static void __tdx_map_gpa(vcpu_tdx *tdx)
 {
 	u64 gpa = tdx->map_gpa_next;
 	u64 size = tdx->map_gpa_end - tdx->map_gpa_next;
@@ -1223,8 +1226,9 @@ static void __tdx_map_gpa(struct vcpu_tdx *tdx)
 	tdx->vcpu.arch.complete_userspace_io = tdx_complete_vmcall_map_gpa;
 }
 
-static int tdx_map_gpa(struct kvm_vcpu *vcpu)
+static int tdx_map_gpa(kvm_vcpu *vcpu)
 {
+	'error: {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	u64 gpa = tdx->vp_enter_args.r12;
 	u64 size = tdx->vp_enter_args.r13;
@@ -1240,7 +1244,7 @@ static int tdx_map_gpa(struct kvm_vcpu *vcpu)
 	 */
 	if (!user_exit_on_hypercall(vcpu->kvm, KVM_HC_MAP_GPA_RANGE)) {
 		ret = TDVMCALL_STATUS_SUBFUNC_UNSUPPORTED;
-		goto error;
+		break 'error;
 	}
 
 	if (gpa + size <= gpa || !kvm_vcpu_is_legal_gpa(vcpu, gpa) ||
@@ -1248,12 +1252,12 @@ static int tdx_map_gpa(struct kvm_vcpu *vcpu)
 	    (vt_is_tdx_private_gpa(vcpu->kvm, gpa) !=
 	     vt_is_tdx_private_gpa(vcpu->kvm, gpa + size - 1))) {
 		ret = TDVMCALL_STATUS_INVALID_OPERAND;
-		goto error;
+		break 'error;
 	}
 
 	if (!PAGE_ALIGNED(gpa) || !PAGE_ALIGNED(size)) {
 		ret = TDVMCALL_STATUS_ALIGN_ERROR;
-		goto error;
+		break 'error;
 	}
 
 	tdx->map_gpa_end = gpa + size;
@@ -1261,14 +1265,14 @@ static int tdx_map_gpa(struct kvm_vcpu *vcpu)
 
 	__tdx_map_gpa(tdx);
 	return 0;
-
-error:
+	}
+	
 	tdvmcall_set_return_code(vcpu, ret);
 	tdx->vp_enter_args.r11 = gpa;
 	return 1;
 }
 
-static int tdx_report_fatal_error(struct kvm_vcpu *vcpu)
+static int tdx_report_fatal_error(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	u64 *regs = vcpu->run->system_event.data;
@@ -1276,7 +1280,7 @@ static int tdx_report_fatal_error(struct kvm_vcpu *vcpu)
 	int index = VCPU_REGS_RAX;
 
 	vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
-	vcpu->run->system_event.type = KVM_SYSTEM_EVENT_TDX_FATAL;
+	vcpu->run->system_event.r#type = KVM_SYSTEM_EVENT_TDX_FATAL;
 	vcpu->run->system_event.ndata = 16;
 
 	/* Dump 16 general-purpose registers to userspace in ascending order. */
@@ -1294,9 +1298,9 @@ static int tdx_report_fatal_error(struct kvm_vcpu *vcpu)
 	return 0;
 }
 
-static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
+static int tdx_emulate_cpuid(kvm_vcpu *vcpu)
 {
-	u32 eax, ebx, ecx, edx;
+	eax: u32, ebx, ecx, edx;
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 
 	/* EAX and ECX for cpuid is stored in R12 and R13. */
@@ -1313,16 +1317,16 @@ static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
-static int tdx_complete_pio_out(struct kvm_vcpu *vcpu)
+static int tdx_complete_pio_out(kvm_vcpu *vcpu)
 {
 	vcpu->arch.pio.count = 0;
 	return 1;
 }
 
-static int tdx_complete_pio_in(struct kvm_vcpu *vcpu)
+static int tdx_complete_pio_in(kvm_vcpu *vcpu)
 {
 	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
-	unsigned long val = 0;
+	core::ffi::c_ulong val = 0;
 	int ret;
 
 	ret = ctxt->ops->pio_in_emulated(ctxt, vcpu->arch.pio.size,
@@ -1335,13 +1339,13 @@ static int tdx_complete_pio_in(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
-static int tdx_emulate_io(struct kvm_vcpu *vcpu)
+static int tdx_emulate_io(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	struct x86_emulate_ctxt *ctxt = vcpu->arch.emulate_ctxt;
-	unsigned long val = 0;
-	unsigned int port;
-	u64 size, write;
+	core::ffi::c_ulong val = 0;
+	core::ffi::c_uint port;
+	size: u64, write;
 	int ret;
 
 	++vcpu->stat.io_exits;
@@ -1371,9 +1375,9 @@ static int tdx_emulate_io(struct kvm_vcpu *vcpu)
 	return ret;
 }
 
-static int tdx_complete_mmio_read(struct kvm_vcpu *vcpu)
+static int tdx_complete_mmio_read(kvm_vcpu *vcpu)
 {
-	unsigned long val = 0;
+	core::ffi::c_ulong val = 0;
 	gpa_t gpa;
 	int size;
 
@@ -1386,8 +1390,8 @@ static int tdx_complete_mmio_read(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
-static inline int tdx_mmio_write(struct kvm_vcpu *vcpu, gpa_t gpa, int size,
-				 unsigned long val)
+int tdx_mmio_write(kvm_vcpu *vcpu, gpa_t gpa, int size,
+				 val: core::ffi::c_ulong)
 {
 	if (!kvm_io_bus_write(vcpu, KVM_FAST_MMIO_BUS, gpa, 0, NULL)) {
 		trace_kvm_fast_mmio(gpa);
@@ -1401,9 +1405,9 @@ static inline int tdx_mmio_write(struct kvm_vcpu *vcpu, gpa_t gpa, int size,
 	return 0;
 }
 
-static inline int tdx_mmio_read(struct kvm_vcpu *vcpu, gpa_t gpa, int size)
+int tdx_mmio_read(kvm_vcpu *vcpu, gpa_t gpa, int size)
 {
-	unsigned long val;
+	core::ffi::c_ulong val;
 
 	if (kvm_io_bus_read(vcpu, KVM_MMIO_BUS, gpa, size, &val))
 		return -EOPNOTSUPP;
@@ -1413,11 +1417,12 @@ static inline int tdx_mmio_read(struct kvm_vcpu *vcpu, gpa_t gpa, int size)
 	return 0;
 }
 
-static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
+static int tdx_emulate_mmio(kvm_vcpu *vcpu)
 {
+	'error: {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	int size, write, r;
-	unsigned long val;
+	core::ffi::c_ulong val;
 	gpa_t gpa;
 
 	size = tdx->vp_enter_args.r12;
@@ -1426,9 +1431,9 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
 	val = write ? tdx->vp_enter_args.r15 : 0;
 
 	if (size != 1 && size != 2 && size != 4 && size != 8)
-		goto error;
+		break 'error;
 	if (write != 0 && write != 1)
-		goto error;
+		break 'error;
 
 	/*
 	 * TDG.VP.VMCALL<MMIO> allows only shared GPA, it makes no sense to
@@ -1436,7 +1441,7 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
 	 */
 	if (vt_is_tdx_private_gpa(vcpu->kvm, gpa) ||
 	    vt_is_tdx_private_gpa(vcpu->kvm, gpa + size - 1))
-		goto error;
+		break 'error;
 
 	gpa = gpa & ~gfn_to_gpa(kvm_gfn_direct_bits(vcpu->kvm));
 
@@ -1460,13 +1465,13 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
 		trace_kvm_mmio(KVM_TRACE_MMIO_READ_UNSATISFIED, size, gpa, NULL);
 	}
 	return 0;
-
-error:
+	}
+	
 	tdvmcall_set_return_code(vcpu, TDVMCALL_STATUS_INVALID_OPERAND);
 	return 1;
 }
 
-static int tdx_complete_get_td_vm_call_info(struct kvm_vcpu *vcpu)
+static int tdx_complete_get_td_vm_call_info(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 
@@ -1485,7 +1490,7 @@ static int tdx_complete_get_td_vm_call_info(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
-static int tdx_get_td_vm_call_info(struct kvm_vcpu *vcpu)
+static int tdx_get_td_vm_call_info(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 
@@ -1515,13 +1520,13 @@ static int tdx_get_td_vm_call_info(struct kvm_vcpu *vcpu)
 	}
 }
 
-static int tdx_complete_simple(struct kvm_vcpu *vcpu)
+static int tdx_complete_simple(kvm_vcpu *vcpu)
 {
 	tdvmcall_set_return_code(vcpu, vcpu->run->tdx.unknown.ret);
 	return 1;
 }
 
-static int tdx_get_quote(struct kvm_vcpu *vcpu)
+static int tdx_get_quote(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	u64 gpa = tdx->vp_enter_args.r12;
@@ -1545,7 +1550,7 @@ static int tdx_get_quote(struct kvm_vcpu *vcpu)
 	return 0;
 }
 
-static int tdx_setup_event_notify_interrupt(struct kvm_vcpu *vcpu)
+static int tdx_setup_event_notify_interrupt(kvm_vcpu *vcpu)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	u64 vector = tdx->vp_enter_args.r12;
@@ -1566,7 +1571,7 @@ static int tdx_setup_event_notify_interrupt(struct kvm_vcpu *vcpu)
 	return 0;
 }
 
-static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+static int handle_tdvmcall(kvm_vcpu *vcpu)
 {
 	switch (tdvmcall_leaf(vcpu)) {
 	case TDVMCALL_MAP_GPA:
@@ -1587,7 +1592,7 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
-void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
+void tdx_load_mmu_pgd(kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
 {
 	u64 shared_bit = (pgd_level == 5) ? TDX_SHARED_BIT_PWL_5 :
 			  TDX_SHARED_BIT_PWL_4;
@@ -1598,11 +1603,11 @@ void tdx_load_mmu_pgd(struct kvm_vcpu *vcpu, hpa_t root_hpa, int pgd_level)
 	td_vmcs_write64(to_tdx(vcpu), SHARED_EPT_POINTER, root_hpa);
 }
 
-static int tdx_mem_page_add(struct kvm *kvm, gfn_t gfn, enum pg_level level,
+static int tdx_mem_page_add(kvm *kvm, gfn_t gfn, pg_level level,
 			    kvm_pfn_t pfn)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-	u64 err, entry, level_state;
+	err: u64, entry, level_state;
 	gpa_t gpa = gfn_to_gpa(gfn);
 
 	lockdep_assert_held(&kvm->slots_lock);
@@ -1622,12 +1627,12 @@ static int tdx_mem_page_add(struct kvm *kvm, gfn_t gfn, enum pg_level level,
 	return 0;
 }
 
-static int tdx_mem_page_aug(struct kvm *kvm, gfn_t gfn,
-			    enum pg_level level, kvm_pfn_t pfn)
+static int tdx_mem_page_aug(kvm *kvm, gfn_t gfn,
+			    pg_level level, kvm_pfn_t pfn)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	gpa_t gpa = gfn_to_gpa(gfn);
-	u64 entry, level_state;
+	entry: u64, level_state;
 	u64 err;
 
 	err = tdh_mem_page_aug(&kvm_tdx->td, gpa, level, pfn, &entry, &level_state);
@@ -1640,8 +1645,8 @@ static int tdx_mem_page_aug(struct kvm *kvm, gfn_t gfn,
 	return 0;
 }
 
-static struct page *tdx_spte_to_sept_pt(struct kvm *kvm, gfn_t gfn,
-					u64 new_spte, enum pg_level level)
+static struct page *tdx_spte_to_sept_pt(kvm *kvm, gfn_t gfn,
+					new_spte: u64, pg_level level)
 {
 	struct kvm_mmu_page *sp = spte_to_child_sp(new_spte);
 
@@ -1653,11 +1658,11 @@ static struct page *tdx_spte_to_sept_pt(struct kvm *kvm, gfn_t gfn,
 	return virt_to_page(sp->external_spt);
 }
 
-static int tdx_sept_map_nonleaf_spte(struct kvm *kvm, gfn_t gfn,
-				     enum pg_level level, u64 new_spte)
+static int tdx_sept_map_nonleaf_spte(kvm *kvm, gfn_t gfn,
+				     pg_level level, new_spte: u64)
 {
 	gpa_t gpa = gfn_to_gpa(gfn);
-	u64 err, entry, level_state;
+	err: u64, entry, level_state;
 	struct page *sept_pt;
 
 	sept_pt = tdx_spte_to_sept_pt(kvm, gfn, new_spte, level);
@@ -1675,8 +1680,8 @@ static int tdx_sept_map_nonleaf_spte(struct kvm *kvm, gfn_t gfn,
 	return 0;
 }
 
-static int tdx_sept_map_leaf_spte(struct kvm *kvm, gfn_t gfn, enum pg_level level,
-				  u64 new_spte)
+static int tdx_sept_map_leaf_spte(kvm *kvm, gfn_t gfn, pg_level level,
+				  new_spte: u64)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	kvm_pfn_t pfn = spte_to_pfn(new_spte);
@@ -1729,7 +1734,7 @@ static int tdx_sept_map_leaf_spte(struct kvm *kvm, gfn_t gfn, enum pg_level leve
  * occurs certainly after TD epoch increment and before the next
  * tdh_mem_track().
  */
-static void tdx_track(struct kvm *kvm)
+static void tdx_track(kvm *kvm)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	u64 err;
@@ -1751,13 +1756,13 @@ static void tdx_track(struct kvm *kvm)
 	kvm_make_all_cpus_request(kvm, KVM_REQ_OUTSIDE_GUEST_MODE);
 }
 
-static int tdx_sept_remove_leaf_spte(struct kvm *kvm, gfn_t gfn,
-				     enum pg_level level, u64 old_spte)
+static int tdx_sept_remove_leaf_spte(kvm *kvm, gfn_t gfn,
+				     pg_level level, old_spte: u64)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	kvm_pfn_t pfn = spte_to_pfn(old_spte);
 	gpa_t gpa = gfn_to_gpa(gfn);
-	u64 err, entry, level_state;
+	err: u64, entry, level_state;
 
 	lockdep_assert_held_write(&kvm->mmu_lock);
 
@@ -1819,8 +1824,8 @@ static int tdx_sept_remove_leaf_spte(struct kvm *kvm, gfn_t gfn,
  *   TRACK, REMOVE.
  * - Promotion/demotion is not yet supported.
  */
-static int tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn, u64 old_spte,
-				     u64 new_spte, enum pg_level level)
+static int tdx_sept_set_private_spte(kvm *kvm, gfn_t gfn, old_spte: u64,
+				     new_spte: u64, pg_level level)
 {
 	lockdep_assert_held(&kvm->mmu_lock);
 
@@ -1840,8 +1845,9 @@ static int tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn, u64 old_spte,
  * Handle changes for non-leaf SPTEs from present to non-present.
  * Must be under exclusive mmu_lock and cannot fail.
  */
-static void tdx_sept_free_private_spt(struct kvm *kvm, struct kvm_mmu_page *sp)
+static void tdx_sept_free_private_spt(kvm *kvm, kvm_mmu_page *sp)
 {
+	'out: {
 	/*
 	 * KVM doesn't (yet) zap page table pages in mirror page table while
 	 * TD is active, though guest pages mapped in mirror page table could be
@@ -1856,19 +1862,20 @@ static void tdx_sept_free_private_spt(struct kvm *kvm, struct kvm_mmu_page *sp)
 	 */
 	if (KVM_BUG_ON(is_hkid_assigned(to_kvm_tdx(kvm)), kvm) ||
 	    tdx_reclaim_page(virt_to_page(sp->external_spt)))
-		goto out;
+		break 'out;
 
 	/*
 	 * Immediately free the S-EPT page because RCU-time free is unnecessary
 	 * after TDH.PHYMEM.PAGE.RECLAIM ensures there are no outstanding
 	 * readers.
 	 */
-	free_page((unsigned long)sp->external_spt);
-out:
+	free_page((core::ffi::c_ulong)sp->external_spt);
+	}
+	
 	sp->external_spt = NULL;
 }
 
-void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
+void tdx_deliver_interrupt(kvm_lapic *apic, int delivery_mode,
 			   int trig_mode, int vector)
 {
 	struct kvm_vcpu *vcpu = apic->vcpu;
@@ -1880,7 +1887,7 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
 	trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode, trig_mode, vector);
 }
 
-static inline bool tdx_is_sept_violation_unexpected_pending(struct kvm_vcpu *vcpu)
+bool tdx_is_sept_violation_unexpected_pending(kvm_vcpu *vcpu)
 {
 	u64 eeq_type = to_tdx(vcpu)->ext_exit_qualification & TDX_EXT_EXIT_QUAL_TYPE_MASK;
 	u64 eq = vmx_get_exit_qual(vcpu);
@@ -1891,9 +1898,9 @@ static inline bool tdx_is_sept_violation_unexpected_pending(struct kvm_vcpu *vcp
 	return !(eq & EPT_VIOLATION_PROT_MASK);
 }
 
-static int tdx_handle_ept_violation(struct kvm_vcpu *vcpu)
+static int tdx_handle_ept_violation(kvm_vcpu *vcpu)
 {
-	unsigned long exit_qual;
+	core::ffi::c_ulong exit_qual;
 	gpa_t gpa = to_tdx(vcpu)->exit_gpa;
 	bool local_retry = false;
 	int ret;
@@ -1994,7 +2001,7 @@ static int tdx_handle_ept_violation(struct kvm_vcpu *vcpu)
 	return ret;
 }
 
-int tdx_complete_emulated_msr(struct kvm_vcpu *vcpu, int err)
+int tdx_complete_emulated_msr(kvm_vcpu *vcpu, int err)
 {
 	if (err) {
 		tdvmcall_set_return_code(vcpu, TDVMCALL_STATUS_INVALID_OPERAND);
@@ -2008,8 +2015,9 @@ int tdx_complete_emulated_msr(struct kvm_vcpu *vcpu, int err)
 }
 
 
-int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
+int tdx_handle_exit(kvm_vcpu *vcpu, fastpath_t fastpath)
 {
+	'unhandled_exit: {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	u64 vp_enter_ret = tdx->vp_enter_ret;
 	union vmx_exit_reason exit_reason = vmx_get_exit_reason(vcpu);
@@ -2028,7 +2036,7 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
 	 */
 	if (unlikely((vp_enter_ret & TDX_SW_ERROR) == TDX_SW_ERROR)) {
 		KVM_BUG_ON(!virt_rebooting, vcpu->kvm);
-		goto unhandled_exit;
+		break 'unhandled_exit;
 	}
 
 	if (unlikely(tdx_failed_vmentry(vcpu))) {
@@ -2047,7 +2055,7 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
 	if (unlikely(vp_enter_ret & (TDX_ERROR | TDX_NON_RECOVERABLE)) &&
 		exit_reason.basic != EXIT_REASON_TRIPLE_FAULT) {
 		kvm_pr_unimpl("TD vp_enter_ret 0x%llx\n", vp_enter_ret);
-		goto unhandled_exit;
+		break 'unhandled_exit;
 	}
 
 	WARN_ON_ONCE(exit_reason.basic != EXIT_REASON_TRIPLE_FAULT &&
@@ -2109,13 +2117,13 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
 	default:
 		break;
 	}
-
-unhandled_exit:
+	}
+	
 	kvm_prepare_unexpected_reason_exit(vcpu, vp_enter_ret);
 	return 0;
 }
 
-void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
+void tdx_get_exit_info(kvm_vcpu *vcpu, u32 *reason,
 		u64 *info1, u64 *info2, u32 *intr_info, u32 *error_code)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
@@ -2134,7 +2142,7 @@ void tdx_get_exit_info(struct kvm_vcpu *vcpu, u32 *reason,
 	*error_code = 0;
 }
 
-bool tdx_has_emulated_msr(u32 index)
+bool tdx_has_emulated_msr(index: u32)
 {
 	switch (index) {
 	case MSR_IA32_UCODE_REV:
@@ -2187,13 +2195,13 @@ bool tdx_has_emulated_msr(u32 index)
 	}
 }
 
-static bool tdx_is_read_only_msr(u32 index)
+static bool tdx_is_read_only_msr(index: u32)
 {
 	return  index == MSR_IA32_APICBASE || index == MSR_EFER ||
 		index == MSR_IA32_FEAT_CTL;
 }
 
-int tdx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
+int tdx_get_msr(kvm_vcpu *vcpu, msr_data *msr)
 {
 	switch (msr->index) {
 	case MSR_IA32_FEAT_CTL:
@@ -2218,7 +2226,7 @@ int tdx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
 	}
 }
 
-int tdx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
+int tdx_set_msr(kvm_vcpu *vcpu, msr_data *msr)
 {
 	switch (msr->index) {
 	case MSR_IA32_MCG_EXT_CTL:
@@ -2238,8 +2246,9 @@ int tdx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
 	}
 }
 
-static int tdx_get_capabilities(struct kvm_tdx_cmd *cmd)
+static int tdx_get_capabilities(kvm_tdx_cmd *cmd)
 {
+	'out: {
 	const struct tdx_sys_info_td_conf *td_conf = &tdx_sysinfo->td_conf;
 	struct kvm_tdx_capabilities __user *user_caps;
 	struct kvm_tdx_capabilities *caps = NULL;
@@ -2263,15 +2272,15 @@ static int tdx_get_capabilities(struct kvm_tdx_cmd *cmd)
 
 	ret = init_kvm_tdx_caps(td_conf, caps);
 	if (ret)
-		goto out;
+		break 'out;
 
 	if (copy_to_user(user_caps, caps, struct_size(caps, cpuid.entries,
 						      caps->cpuid.nent))) {
 		ret = -EFAULT;
-		goto out;
+		break 'out;
 	}
-
-out:
+	}
+	
 	/* kfree() accepts NULL. */
 	kfree(caps);
 	return ret;
@@ -2287,8 +2296,8 @@ out:
  * supported. Value 52 is only supported when the platform supports 5 level
  * EPT.
  */
-static int setup_tdparams_eptp_controls(struct kvm_cpuid2 *cpuid,
-					struct td_params *td_params)
+static int setup_tdparams_eptp_controls(kvm_cpuid2 *cpuid,
+					td_params *td_params)
 {
 	const struct kvm_cpuid_entry2 *entry;
 	int guest_pa;
@@ -2316,8 +2325,8 @@ static int setup_tdparams_eptp_controls(struct kvm_cpuid2 *cpuid,
 	return 0;
 }
 
-static int setup_tdparams_cpuids(struct kvm_cpuid2 *cpuid,
-				 struct td_params *td_params)
+static int setup_tdparams_cpuids(kvm_cpuid2 *cpuid,
+				 td_params *td_params)
 {
 	const struct tdx_sys_info_td_conf *td_conf = &tdx_sysinfo->td_conf;
 	const struct kvm_cpuid_entry2 *entry;
@@ -2370,8 +2379,8 @@ static int setup_tdparams_cpuids(struct kvm_cpuid2 *cpuid,
 	return 0;
 }
 
-static int setup_tdparams(struct kvm *kvm, struct td_params *td_params,
-			struct kvm_tdx_init_vm *init_vm)
+static int setup_tdparams(kvm *kvm, td_params *td_params,
+			kvm_tdx_init_vm *init_vm)
 {
 	const struct tdx_sys_info_td_conf *td_conf = &tdx_sysinfo->td_conf;
 	struct kvm_cpuid2 *cpuid = &init_vm->cpuid;
@@ -2414,15 +2423,20 @@ static int setup_tdparams(struct kvm *kvm, struct td_params *td_params,
 	return 0;
 }
 
-static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
+static int __tdx_td_init(kvm *kvm, td_params *td_params,
 			 u64 *seamcall_err)
 {
+	'free_hkid: {
+	'free_tdr: {
+	'free_tdcs: {
+	'free_packages: {
+	'teardown: {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	cpumask_var_t packages;
 	struct page **tdcs_pages = NULL;
 	struct page *tdr_page;
 	int ret, i;
-	u64 err, rcx;
+	err: u64, rcx;
 
 	*seamcall_err = 0;
 	ret = tdx_guest_keyid_alloc();
@@ -2432,13 +2446,13 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 	kvm_tdx->misc_cg = get_current_misc_cg();
 	ret = misc_cg_try_charge(MISC_CG_RES_TDX, kvm_tdx->misc_cg, 1);
 	if (ret)
-		goto free_hkid;
+		break 'free_hkid;
 
 	ret = -ENOMEM;
 
 	tdr_page = alloc_page(GFP_KERNEL_ACCOUNT);
 	if (!tdr_page)
-		goto free_hkid;
+		break 'free_hkid;
 
 	kvm_tdx->td.tdcs_nr_pages = tdx_sysinfo->td_ctrl.tdcs_base_size / PAGE_SIZE;
 	/* TDVPS = TDVPR(4K page) + TDCX(multiple 4K pages), -1 for TDVPR. */
@@ -2446,16 +2460,16 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 	tdcs_pages = kzalloc_objs(*kvm_tdx->td.tdcs_pages, kvm_tdx->td.tdcs_nr_pages,
 				  GFP_KERNEL_ACCOUNT);
 	if (!tdcs_pages)
-		goto free_tdr;
+		break 'free_tdr;
 
 	for (i = 0; i < kvm_tdx->td.tdcs_nr_pages; i++) {
 		tdcs_pages[i] = alloc_page(GFP_KERNEL_ACCOUNT);
 		if (!tdcs_pages[i])
-			goto free_tdcs;
+			break 'free_tdcs;
 	}
 
 	if (!zalloc_cpumask_var(&packages, GFP_KERNEL))
-		goto free_tdcs;
+		break 'free_tdcs;
 
 	cpus_read_lock();
 
@@ -2473,9 +2487,9 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 		 * Because it's hard for human operator to figure out the
 		 * reason, warn it.
 		 */
-#define MSG_ALLPKG	"All packages need to have online CPU to create TD. Online CPU and retry.\n"
+pub const MSG_ALLPKG: &core::ffi::CStr = c"All packages need to have online CPU to create TD. Online CPU and retry.\n";
 		pr_warn_ratelimited(MSG_ALLPKG);
-		goto free_packages;
+		break 'free_packages;
 	}
 
 	/*
@@ -2490,15 +2504,15 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 
 	if (err == TDX_RND_NO_ENTROPY) {
 		ret = -EAGAIN;
-		goto free_packages;
+		break 'free_packages;
 	}
 
 	if (TDX_BUG_ON(err, TDH_MNG_CREATE, kvm)) {
 		ret = -EIO;
-		goto free_packages;
+		break 'free_packages;
 	}
 
-	for_each_online_cpu(i) {
+	for_each_online_cpu!(i, {
 		int pkg = topology_physical_package_id(i);
 
 		if (cpumask_test_and_set_cpu(pkg, packages))
@@ -2518,12 +2532,12 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 				      kvm_tdx, true);
 		if (ret)
 			break;
-	}
+	});
 	cpus_read_unlock();
 	free_cpumask_var(packages);
 	if (ret) {
 		i = 0;
-		goto teardown;
+		break 'teardown;
 	}
 
 	kvm_tdx->td.tdcs_pages = tdcs_pages;
@@ -2532,11 +2546,11 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 		if (err == TDX_RND_NO_ENTROPY) {
 			/* Here it's hard to allow userspace to retry. */
 			ret = -EAGAIN;
-			goto teardown;
+			break 'teardown;
 		}
 		if (TDX_BUG_ON(err, TDH_MNG_ADDCX, kvm)) {
 			ret = -EIO;
-			goto teardown;
+			break 'teardown;
 		}
 	}
 
@@ -2550,10 +2564,10 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 		 */
 		*seamcall_err = err;
 		ret = -EINVAL;
-		goto teardown;
+		break 'teardown;
 	} else if (TDX_BUG_ON_1(err, TDH_MNG_INIT, rcx, kvm)) {
 		ret = -EIO;
-		goto teardown;
+		break 'teardown;
 	}
 
 	return 0;
@@ -2564,7 +2578,8 @@ static int __tdx_td_init(struct kvm *kvm, struct td_params *td_params,
 	 * Simply use the full teardown and destroy, which naturally play nice
 	 * with partial initialization.
 	 */
-teardown:
+	}
+	
 	/* Only free pages not yet added, so start at 'i' */
 	for (; i < kvm_tdx->td.tdcs_nr_pages; i++) {
 		if (tdcs_pages[i]) {
@@ -2579,31 +2594,31 @@ teardown:
 	tdx_reclaim_td_control_pages(kvm);
 
 	return ret;
-
-free_packages:
+	}
+	
 	cpus_read_unlock();
 	free_cpumask_var(packages);
-
-free_tdcs:
+	}
+	
 	for (i = 0; i < kvm_tdx->td.tdcs_nr_pages; i++) {
 		if (tdcs_pages[i])
 			__free_page(tdcs_pages[i]);
 	}
 	kfree(tdcs_pages);
 	kvm_tdx->td.tdcs_pages = NULL;
-
-free_tdr:
+	}
+	
 	if (tdr_page)
 		__free_page(tdr_page);
 	kvm_tdx->td.tdr_page = NULL;
-
-free_hkid:
+	}
+	
 	tdx_hkid_free(kvm_tdx);
 
 	return ret;
 }
 
-static u64 tdx_td_metadata_field_read(struct kvm_tdx *tdx, u64 field_id,
+static u64 tdx_td_metadata_field_read(kvm_tdx *tdx, field_id: u64,
 				      u64 *data)
 {
 	u64 err;
@@ -2616,13 +2631,14 @@ static u64 tdx_td_metadata_field_read(struct kvm_tdx *tdx, u64 field_id,
 #define TDX_MD_UNREADABLE_LEAF_MASK	GENMASK(30, 7)
 #define TDX_MD_UNREADABLE_SUBLEAF_MASK	GENMASK(31, 7)
 
-static int tdx_read_cpuid(struct kvm_vcpu *vcpu, u32 leaf, u32 sub_leaf,
-			  bool sub_leaf_set, int *entry_index,
-			  struct kvm_cpuid_entry2 *out)
+static int tdx_read_cpuid(kvm_vcpu *vcpu, leaf: u32, sub_leaf: u32,
+			  sub_leaf_set: bool, int *entry_index,
+			  kvm_cpuid_entry2 *out)
 {
+	'err_out: {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
 	u64 field_id = TD_MD_FIELD_ID_CPUID_VALUES;
-	u64 ebx_eax, edx_ecx;
+	ebx_eax: u64, edx_ecx;
 	u64 err = 0;
 
 	if (sub_leaf > 0b1111111)
@@ -2655,7 +2671,7 @@ static int tdx_read_cpuid(struct kvm_vcpu *vcpu, u32 leaf, u32 sub_leaf,
 
 	err = tdx_td_metadata_field_read(kvm_tdx, field_id, &ebx_eax);
 	if (err) //TODO check for specific errors
-		goto err_out;
+		break 'err_out;
 
 	out->eax = (u32) ebx_eax;
 	out->ebx = (u32) (ebx_eax >> 32);
@@ -2667,7 +2683,7 @@ static int tdx_read_cpuid(struct kvm_vcpu *vcpu, u32 leaf, u32 sub_leaf,
 	 * succeeded.
 	 */
 	if (WARN_ON_ONCE(err))
-		goto err_out;
+		break 'err_out;
 
 	out->ecx = (u32) edx_ecx;
 	out->edx = (u32) (edx_ecx >> 32);
@@ -2682,7 +2698,7 @@ static int tdx_read_cpuid(struct kvm_vcpu *vcpu, u32 leaf, u32 sub_leaf,
 	 */
 	if (leaf == 0x80000008) {
 		gpa_t gpa_bits = gfn_to_gpa(kvm_gfn_direct_bits(vcpu->kvm));
-		unsigned int g_maxpa = __ffs(gpa_bits) + 1;
+		core::ffi::c_uint g_maxpa = __ffs(gpa_bits) + 1;
 
 		out->eax = tdx_set_guest_phys_addr_bits(out->eax, g_maxpa);
 	}
@@ -2690,8 +2706,8 @@ static int tdx_read_cpuid(struct kvm_vcpu *vcpu, u32 leaf, u32 sub_leaf,
 	(*entry_index)++;
 
 	return 0;
-
-err_out:
+	}
+	
 	out->eax = 0;
 	out->ebx = 0;
 	out->ecx = 0;
@@ -2702,20 +2718,21 @@ err_out:
 
 typedef void *tdx_vm_state_guard_t;
 
-static tdx_vm_state_guard_t tdx_acquire_vm_state_locks(struct kvm *kvm)
+static tdx_vm_state_guard_t tdx_acquire_vm_state_locks(kvm *kvm)
 {
+	'out_err: {
 	int r;
 
 	mutex_lock(&kvm->lock);
 
 	if (kvm->created_vcpus != atomic_read(&kvm->online_vcpus)) {
 		r = -EBUSY;
-		goto out_err;
+		break 'out_err;
 	}
 
 	r = kvm_lock_all_vcpus(kvm);
 	if (r)
-		goto out_err;
+		break 'out_err;
 
 	/*
 	 * Note the unintuitive ordering!  vcpu->mutex must be taken outside
@@ -2723,13 +2740,13 @@ static tdx_vm_state_guard_t tdx_acquire_vm_state_locks(struct kvm *kvm)
 	 */
 	mutex_lock(&kvm->slots_lock);
 	return kvm;
-
-out_err:
+	}
+	
 	mutex_unlock(&kvm->lock);
 	return ERR_PTR(r);
 }
 
-static void tdx_release_vm_state_locks(struct kvm *kvm)
+static void tdx_release_vm_state_locks(kvm *kvm)
 {
 	mutex_unlock(&kvm->slots_lock);
 	kvm_unlock_all_vcpus(kvm);
@@ -2738,10 +2755,11 @@ static void tdx_release_vm_state_locks(struct kvm *kvm)
 
 DEFINE_CLASS(tdx_vm_state_guard, tdx_vm_state_guard_t,
 	     if (!IS_ERR(_T)) tdx_release_vm_state_locks(_T),
-	     tdx_acquire_vm_state_locks(kvm), struct kvm *kvm);
+	     tdx_acquire_vm_state_locks(kvm), kvm *kvm);
 
-static int tdx_td_init(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
+static int tdx_td_init(kvm *kvm, kvm_tdx_cmd *cmd)
 {
+	'out: {
 	struct kvm_tdx_init_vm __user *user_data = u64_to_user_ptr(cmd->data);
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 	struct kvm_tdx_init_vm *init_vm;
@@ -2749,8 +2767,8 @@ static int tdx_td_init(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
 	u32 nr_user_entries;
 	int ret;
 
-	BUILD_BUG_ON(sizeof(*init_vm) != 256 + sizeof_field(struct kvm_tdx_init_vm, cpuid));
-	BUILD_BUG_ON(sizeof(struct td_params) != 1024);
+	BUILD_BUG_ON(sizeof(*init_vm) != 256 + sizeof_field(kvm_tdx_init_vm, cpuid));
+	BUILD_BUG_ON(sizeof(td_params) != 1024);
 
 	if (kvm_tdx->state != TD_STATE_UNINITIALIZED)
 		return -EINVAL;
@@ -2771,7 +2789,7 @@ static int tdx_td_init(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
 
 	if (memchr_inv(init_vm->reserved, 0, sizeof(init_vm->reserved))) {
 		ret = -EINVAL;
-		goto out;
+		break 'out;
 	}
 
 	/*
@@ -2780,22 +2798,22 @@ static int tdx_td_init(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
 	 */
 	if (init_vm->cpuid.padding || init_vm->cpuid.nent != nr_user_entries) {
 		ret = -EINVAL;
-		goto out;
+		break 'out;
 	}
 
-	td_params = kzalloc_obj(struct td_params);
+	td_params = kzalloc_obj(td_params);
 	if (!td_params) {
 		ret = -ENOMEM;
-		goto out;
+		break 'out;
 	}
 
 	ret = setup_tdparams(kvm, td_params, init_vm);
 	if (ret)
-		goto out;
+		break 'out;
 
 	ret = __tdx_td_init(kvm, td_params, &cmd->hw_error);
 	if (ret)
-		goto out;
+		break 'out;
 
 	kvm_tdx->tsc_offset = td_tdcs_exec_read64(kvm_tdx, TD_TDCS_EXEC_TSC_OFFSET);
 	kvm_tdx->tsc_multiplier = td_tdcs_exec_read64(kvm_tdx, TD_TDCS_EXEC_TSC_MULTIPLIER);
@@ -2808,7 +2826,8 @@ static int tdx_td_init(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
 		kvm->arch.gfn_direct_bits = TDX_SHARED_BIT_PWL_4;
 
 	kvm_tdx->state = TD_STATE_INITIALIZED;
-out:
+	}
+	
 	/* kfree() accepts NULL. */
 	kfree(init_vm);
 	kfree(td_params);
@@ -2816,7 +2835,7 @@ out:
 	return ret;
 }
 
-void tdx_flush_tlb_current(struct kvm_vcpu *vcpu)
+void tdx_flush_tlb_current(kvm_vcpu *vcpu)
 {
 	/*
 	 * flush_tlb_current() is invoked when the first time for the vcpu to
@@ -2835,7 +2854,7 @@ void tdx_flush_tlb_current(struct kvm_vcpu *vcpu)
 	ept_sync_global();
 }
 
-void tdx_flush_tlb_all(struct kvm_vcpu *vcpu)
+void tdx_flush_tlb_all(kvm_vcpu *vcpu)
 {
 	/*
 	 * TDX has called tdx_track() in tdx_sept_remove_leaf_spte() to
@@ -2851,7 +2870,7 @@ void tdx_flush_tlb_all(struct kvm_vcpu *vcpu)
 	ept_sync_global();
 }
 
-static int tdx_td_finalize(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
+static int tdx_td_finalize(kvm *kvm, kvm_tdx_cmd *cmd)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
 
@@ -2871,7 +2890,7 @@ static int tdx_td_finalize(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
 	return 0;
 }
 
-static int tdx_get_cmd(void __user *argp, struct kvm_tdx_cmd *cmd)
+static int tdx_get_cmd(void __user *argp, kvm_tdx_cmd *cmd)
 {
 	if (copy_from_user(cmd, argp, sizeof(*cmd)))
 		return -EFAULT;
@@ -2886,7 +2905,7 @@ static int tdx_get_cmd(void __user *argp, struct kvm_tdx_cmd *cmd)
 	return 0;
 }
 
-int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
+int tdx_vm_ioctl(kvm *kvm, void __user *argp)
 {
 	struct kvm_tdx_cmd tdx_cmd;
 	int r;
@@ -2913,15 +2932,17 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
 		return -EINVAL;
 	}
 
-	if (copy_to_user(argp, &tdx_cmd, sizeof(struct kvm_tdx_cmd)))
+	if (copy_to_user(argp, &tdx_cmd, sizeof(kvm_tdx_cmd)))
 		return -EFAULT;
 
 	return r;
 }
 
 /* VMM can pass one 64bit auxiliary data to vcpu via RCX for guest BIOS. */
-static int tdx_td_vcpu_init(struct kvm_vcpu *vcpu, u64 vcpu_rcx)
+static int tdx_td_vcpu_init(kvm_vcpu *vcpu, vcpu_rcx: u64)
 {
+	'free_tdvpr: {
+	'free_tdcx: {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	struct page *page;
@@ -2944,14 +2965,14 @@ static int tdx_td_vcpu_init(struct kvm_vcpu *vcpu, u64 vcpu_rcx)
 				     GFP_KERNEL_ACCOUNT);
 	if (!tdx->vp.tdcx_pages) {
 		ret = -ENOMEM;
-		goto free_tdvpr;
+		break 'free_tdvpr;
 	}
 
 	for (i = 0; i < kvm_tdx->td.tdcx_nr_pages; i++) {
 		page = alloc_page(GFP_KERNEL_ACCOUNT);
 		if (!page) {
 			ret = -ENOMEM;
-			goto free_tdcx;
+			break 'free_tdcx;
 		}
 		tdx->vp.tdcx_pages[i] = page;
 	}
@@ -2959,7 +2980,7 @@ static int tdx_td_vcpu_init(struct kvm_vcpu *vcpu, u64 vcpu_rcx)
 	err = tdh_vp_create(&kvm_tdx->td, &tdx->vp);
 	if (TDX_BUG_ON(err, TDH_VP_CREATE, vcpu->kvm)) {
 		ret = -EIO;
-		goto free_tdcx;
+		break 'free_tdcx;
 	}
 
 	for (i = 0; i < kvm_tdx->td.tdcx_nr_pages; i++) {
@@ -2995,8 +3016,8 @@ static int tdx_td_vcpu_init(struct kvm_vcpu *vcpu, u64 vcpu_rcx)
 	vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
 
 	return 0;
-
-free_tdcx:
+	}
+	
 	for (i = 0; i < kvm_tdx->td.tdcx_nr_pages; i++) {
 		if (tdx->vp.tdcx_pages[i])
 			__free_page(tdx->vp.tdcx_pages[i]);
@@ -3004,8 +3025,8 @@ free_tdcx:
 	}
 	kfree(tdx->vp.tdcx_pages);
 	tdx->vp.tdcx_pages = NULL;
-
-free_tdvpr:
+	}
+	
 	if (tdx->vp.tdvpr_page)
 		__free_page(tdx->vp.tdvpr_page);
 	tdx->vp.tdvpr_page = NULL;
@@ -3015,8 +3036,8 @@ free_tdvpr:
 }
 
 /* Sometimes reads multipple subleafs. Return how many enties were written. */
-static int tdx_vcpu_get_cpuid_leaf(struct kvm_vcpu *vcpu, u32 leaf, int *entry_index,
-				   struct kvm_cpuid_entry2 *output_e)
+static int tdx_vcpu_get_cpuid_leaf(kvm_vcpu *vcpu, leaf: u32, int *entry_index,
+				   kvm_cpuid_entry2 *output_e)
 {
 	int sub_leaf = 0;
 	int ret;
@@ -3044,8 +3065,9 @@ static int tdx_vcpu_get_cpuid_leaf(struct kvm_vcpu *vcpu, u32 leaf, int *entry_i
 	return 0;
 }
 
-static int tdx_vcpu_get_cpuid(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
+static int tdx_vcpu_get_cpuid(kvm_vcpu *vcpu, kvm_tdx_cmd *cmd)
 {
+	'out: {
 	struct kvm_cpuid2 __user *output;
 	struct kvm_cpuid2 *td_cpuid;
 	int r = 0, i = 0, leaf;
@@ -3060,13 +3082,13 @@ static int tdx_vcpu_get_cpuid(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
 
 	if (copy_from_user(td_cpuid, output, sizeof(*output))) {
 		r = -EFAULT;
-		goto out;
+		break 'out;
 	}
 
 	/* Read max CPUID for normal range */
 	if (tdx_vcpu_get_cpuid_leaf(vcpu, 0, &i, &td_cpuid->entries[i])) {
 		r = -EIO;
-		goto out;
+		break 'out;
 	}
 	level = td_cpuid->entries[0].eax;
 
@@ -3076,7 +3098,7 @@ static int tdx_vcpu_get_cpuid(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
 	/* Read max CPUID for extended range */
 	if (tdx_vcpu_get_cpuid_leaf(vcpu, 0x80000000, &i, &td_cpuid->entries[i])) {
 		r = -EIO;
-		goto out;
+		break 'out;
 	}
 	level = td_cpuid->entries[i - 1].eax;
 
@@ -3089,23 +3111,23 @@ static int tdx_vcpu_get_cpuid(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
 
 	if (copy_to_user(output, td_cpuid, sizeof(*output))) {
 		r = -EFAULT;
-		goto out;
+		break 'out;
 	}
 
 	if (r == -E2BIG)
-		goto out;
+		break 'out;
 
 	if (copy_to_user(output->entries, td_cpuid->entries,
-			 td_cpuid->nent * sizeof(struct kvm_cpuid_entry2)))
+			 td_cpuid->nent * sizeof(kvm_cpuid_entry2)))
 		r = -EFAULT;
-
-out:
+	}
+	
 	kfree(td_cpuid);
 
 	return r;
 }
 
-static int tdx_vcpu_init(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
+static int tdx_vcpu_init(kvm_vcpu *vcpu, kvm_tdx_cmd *cmd)
 {
 	u64 apic_base;
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
@@ -3139,7 +3161,7 @@ static int tdx_vcpu_init(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
 	return 0;
 }
 
-void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+void tdx_vcpu_reset(kvm_vcpu *vcpu, init_event: bool)
 {
 	/*
 	 * Yell on INIT, as TDX doesn't support INIT, i.e. KVM should drop all
@@ -3157,12 +3179,12 @@ struct tdx_gmem_post_populate_arg {
 	__u32 flags;
 };
 
-static int tdx_gmem_post_populate(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
-				  struct page *src_page, void *_arg)
+static int tdx_gmem_post_populate(kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
+				  page *src_page, void *_arg)
 {
 	struct tdx_gmem_post_populate_arg *arg = _arg;
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-	u64 err, entry, level_state;
+	err: u64, entry, level_state;
 	gpa_t gpa = gfn_to_gpa(gfn);
 	int ret, i;
 
@@ -3192,7 +3214,7 @@ static int tdx_gmem_post_populate(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
 	return 0;
 }
 
-static int tdx_vcpu_init_mem_region(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *cmd)
+static int tdx_vcpu_init_mem_region(kvm_vcpu *vcpu, kvm_tdx_cmd *cmd)
 {
 	struct vcpu_tdx *tdx = to_tdx(vcpu);
 	struct kvm *kvm = vcpu->kvm;
@@ -3229,9 +3251,9 @@ static int tdx_vcpu_init_mem_region(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *c
 			break;
 		}
 
-		arg = (struct tdx_gmem_post_populate_arg) {
-			.vcpu = vcpu,
-			.flags = cmd->flags,
+		arg = (tdx_gmem_post_populate_arg) {
+			vcpu: vcpu,
+			flags: cmd->flags,
 		};
 		gmem_ret = kvm_gmem_populate(kvm, gpa_to_gfn(region.gpa),
 					     u64_to_user_ptr(region.source_addr),
@@ -3258,7 +3280,7 @@ static int tdx_vcpu_init_mem_region(struct kvm_vcpu *vcpu, struct kvm_tdx_cmd *c
 	return ret;
 }
 
-int tdx_vcpu_unlocked_ioctl(struct kvm_vcpu *vcpu, void __user *argp)
+int tdx_vcpu_unlocked_ioctl(kvm_vcpu *vcpu, void __user *argp)
 {
 	struct kvm *kvm = vcpu->kvm;
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
@@ -3295,7 +3317,7 @@ int tdx_vcpu_unlocked_ioctl(struct kvm_vcpu *vcpu, void __user *argp)
 	return r;
 }
 
-int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp)
+int tdx_vcpu_ioctl(kvm_vcpu *vcpu, void __user *argp)
 {
 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
 	struct kvm_tdx_cmd cmd;
@@ -3320,7 +3342,7 @@ int tdx_vcpu_ioctl(struct kvm_vcpu *vcpu, void __user *argp)
 	return ret;
 }
 
-int tdx_gmem_max_mapping_level(struct kvm *kvm, kvm_pfn_t pfn, bool is_private)
+int tdx_gmem_max_mapping_level(kvm *kvm, kvm_pfn_t pfn, is_private: bool)
 {
 	if (!is_private)
 		return 0;
@@ -3409,6 +3431,7 @@ static int __init __tdx_hardware_setup(void)
 
 int __init tdx_hardware_setup(void)
 {
+	'success_disable_tdx: {
 	int r, i;
 
 	/* tdx_disable_virtualization_cpu() uses associated_tdvcpus. */
@@ -3420,27 +3443,27 @@ int __init tdx_hardware_setup(void)
 
 	if (!enable_ept) {
 		pr_err("EPT is required for TDX\n");
-		goto success_disable_tdx;
+		break 'success_disable_tdx;
 	}
 
 	if (!tdp_mmu_enabled || !enable_mmio_caching || !enable_ept_ad_bits) {
 		pr_err("TDP MMU and MMIO caching and EPT A/D bit is required for TDX\n");
-		goto success_disable_tdx;
+		break 'success_disable_tdx;
 	}
 
 	if (!enable_apicv) {
 		pr_err("APICv is required for TDX\n");
-		goto success_disable_tdx;
+		break 'success_disable_tdx;
 	}
 
 	if (!cpu_feature_enabled(X86_FEATURE_OSXSAVE)) {
 		pr_err("tdx: OSXSAVE is required for TDX\n");
-		goto success_disable_tdx;
+		break 'success_disable_tdx;
 	}
 
 	if (!cpu_feature_enabled(X86_FEATURE_TDX_HOST_PLATFORM)) {
 		pr_err("TDX not supported by the host platform\n");
-		goto success_disable_tdx;
+		break 'success_disable_tdx;
 	}
 
 	r = __tdx_hardware_setup();
@@ -3456,21 +3479,21 @@ int __init tdx_hardware_setup(void)
 		 * failure scenario is a non-issue.
 		 */
 		if (r == -ENODEV)
-			goto success_disable_tdx;
+			break 'success_disable_tdx;
 
 		return r;
 	}
 
 	KVM_SANITY_CHECK_VM_STRUCT_SIZE(kvm_tdx);
 
-	vt_x86_ops.vm_size = max_t(unsigned int, vt_x86_ops.vm_size, sizeof(struct kvm_tdx));
+	vt_x86_ops.vm_size = max_t(core::ffi::c_uint, vt_x86_ops.vm_size, sizeof(kvm_tdx));
 
 	vt_x86_ops.set_external_spte = tdx_sept_set_private_spte;
 	vt_x86_ops.free_external_spt = tdx_sept_free_private_spt;
 	vt_x86_ops.protected_apic_has_interrupt = tdx_protected_apic_has_interrupt;
 	return 0;
-
-success_disable_tdx:
+	}
+	
 	enable_tdx = 0;
 	return 0;
 }

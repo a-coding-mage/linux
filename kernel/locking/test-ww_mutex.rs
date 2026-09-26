@@ -7,12 +7,12 @@ static mut WD_CLASS: ww_class = ww_class::ZERO;
 static mut WW_CLASS: ww_class = ww_class::ZERO;
 static mut WQ: *mut workqueue_struct = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_DEBUG_WW_MUTEX_SLOWPATH")]
+#[cfg(CONFIG_DEBUG_WW_MUTEX_SLOWPATH)]
 unsafe fn ww_acquire_init_noinject(a: *mut ww_acquire_ctx, b: *mut ww_class) {
     ww_acquire_init(a, b);
     (*a).deadlock_inject_countdown = !0u32;
 }
-#[cfg(not(feature = "CONFIG_DEBUG_WW_MUTEX_SLOWPATH"))]
+#[cfg(not(CONFIG_DEBUG_WW_MUTEX_SLOWPATH))]
 unsafe fn ww_acquire_init_noinject(a: *mut ww_acquire_ctx, b: *mut ww_class) { ww_acquire_init(a, b); }
 
 #[repr(C)]

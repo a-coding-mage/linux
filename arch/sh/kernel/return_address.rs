@@ -11,19 +11,19 @@ use core::ptr;
 
 // The C implementation is compiled conditionally by CONFIG_DWARF_UNWINDER.
 // This Rust translation uses the corresponding Cargo configuration feature.
-#[cfg(feature = "CONFIG_DWARF_UNWINDER")]
+#[cfg(CONFIG_DWARF_UNWINDER)]
 #[repr(C)]
 pub struct dwarf_frame {
     pub return_addr: usize,
 }
 
-#[cfg(feature = "CONFIG_DWARF_UNWINDER")]
+#[cfg(CONFIG_DWARF_UNWINDER)]
 unsafe extern "C" {
     fn dwarf_unwind_stack(ra: usize, frame: *mut dwarf_frame) -> *mut dwarf_frame;
     fn dwarf_free_frame(frame: *mut dwarf_frame);
 }
 
-#[cfg(feature = "CONFIG_DWARF_UNWINDER")]
+#[cfg(CONFIG_DWARF_UNWINDER)]
 pub unsafe fn return_address(depth: u32) -> *mut c_void {
     let mut frame: *mut dwarf_frame;
     let mut ra: usize;
@@ -64,7 +64,7 @@ pub unsafe fn return_address(depth: u32) -> *mut c_void {
     ra as *mut c_void
 }
 
-#[cfg(not(feature = "CONFIG_DWARF_UNWINDER"))]
+#[cfg(not(CONFIG_DWARF_UNWINDER))]
 pub unsafe fn return_address(_depth: u32) -> *mut c_void {
     ptr::null_mut()
 }

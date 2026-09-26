@@ -72,15 +72,15 @@ struct safexcel_ahash_req {
 #[inline]
 unsafe fn u64 safexcel_queued_len(*mut safexcel_ahash_reqreq)
 {
-	return req->len - req->processed;
+	return (*req).len - (*req).processed;
 }
 
 unsafe fn void safexcel_hash_token(*mut safexcel_command_desccdesc,
-				u32 input_length, u32 result_length,
-				bool cbcmac)
+				input_length: u32, result_length: u32,
+				cbcmac: bool)
 {
 	*mut safexcel_tokentoken =
-		(*mut safexcel_token)cdesc->control_data.token;
+		(*(*mut safexcel_token)cdesc).control_data.token;
 
 	token[0].opcode = EIP197_TOKEN_OPCODE_DIRECTION;
 	token[0].packet_length = input_length;
@@ -112,47 +112,47 @@ unsafe fn void safexcel_context_control(*mut safexcel_ahash_ctxctx,
 				     *mut safexcel_ahash_reqreq,
 				     *mut safexcel_command_desccdesc)
 {
-	*mut safexcel_crypto_privpriv = ctx->base.priv;
+	*mut safexcel_crypto_privpriv = (*ctx).base.r#priv;
 	u64 count = 0;
 
-	cdesc->control_data.control0 = ctx->alg;
-	cdesc->control_data.control1 = 0;
+	(*cdesc).control_data.control0 = (*ctx).alg;
+	(*cdesc).control_data.control1 = 0;
 
 	/*
 	 * Copy the input digest if needed, and setup the context
 	 * fields. Do this now as we need it to setup the first command
 	 * descriptor.
 	 */
-	if ((req->digest == CONTEXT_CONTROL_DIGEST_XCM)) {
-		if (req->xcbcmac)
-			core::ptr::copy_nonoverlapping(ctx->base.ctxr->data, &ctx->base.ipad, ctx->key_sz);
+	if (((*req).digest == CONTEXT_CONTROL_DIGEST_XCM)) {
+		if ((*req).xcbcmac)
+			core::ptr::copy_nonoverlapping((*(*ctx).base.ctxr).data, (*&ctx).base.ipad, (*ctx).key_sz);
 		else
-			core::ptr::copy_nonoverlapping(ctx->base.ctxr->data, req->state, req->state_sz);
+			core::ptr::copy_nonoverlapping((*(*ctx).base.ctxr).data, (*req).state, (*req).state_sz);
 
-		if (!req->finish && req->xcbcmac)
-			cdesc->control_data.control0 |=
+		if ((*!req).finish && (*req).xcbcmac)
+			(*cdesc).control_data.control0 |=
 				CONTEXT_CONTROL_DIGEST_XCM |
 				CONTEXT_CONTROL_TYPE_HASH_OUT  |
 				CONTEXT_CONTROL_NO_FINISH_HASH |
-				CONTEXT_CONTROL_SIZE(req->state_sz /
+				CONTEXT_CONTROL_SIZE((*req).state_sz /
 						     core::mem::size_of::<u32>());
 		else
-			cdesc->control_data.control0 |=
+			(*cdesc).control_data.control0 |=
 				CONTEXT_CONTROL_DIGEST_XCM |
 				CONTEXT_CONTROL_TYPE_HASH_OUT  |
-				CONTEXT_CONTROL_SIZE(req->state_sz /
+				CONTEXT_CONTROL_SIZE((*req).state_sz /
 						     core::mem::size_of::<u32>());
 		return;
-	} else if (!req->processed) {
+	} else if ((*!req).processed) {
 		/* First - and possibly only - block of basic hash only */
-		if (req->finish)
-			cdesc->control_data.control0 |= req->digest |
+		if ((*req).finish)
+			(*cdesc).control_data.control0 |= (*req).digest |
 				CONTEXT_CONTROL_TYPE_HASH_OUT |
 				CONTEXT_CONTROL_RESTART_HASH  |
 				/* ensure its not 0! */
 				CONTEXT_CONTROL_SIZE(1);
 		else
-			cdesc->control_data.control0 |= req->digest |
+			(*cdesc).control_data.control0 |= (*req).digest |
 				CONTEXT_CONTROL_TYPE_HASH_OUT  |
 				CONTEXT_CONTROL_RESTART_HASH   |
 				CONTEXT_CONTROL_NO_FINISH_HASH |
@@ -162,13 +162,13 @@ unsafe fn void safexcel_context_control(*mut safexcel_ahash_ctxctx,
 	}
 
 	/* Hash continuation or HMAC, setup (inner) digest from state */
-	core::ptr::copy_nonoverlapping(ctx->base.ctxr->data, req->state, req->state_sz);
+	core::ptr::copy_nonoverlapping((*(*ctx).base.ctxr).data, (*req).state, (*req).state_sz);
 
-	if (req->finish) {
+	if ((*req).finish) {
 		/* Compute digest count for hash/HMAC finish operations */
-		if ((req->digest == CONTEXT_CONTROL_DIGEST_PRECOMPUTED) ||
-		    req->hmac_zlen || (req->processed != req->block_sz)) {
-			count = req->processed / EIP197_COUNTER_BLOCK_SIZE;
+		if (((*req).digest == CONTEXT_CONTROL_DIGEST_PRECOMPUTED) ||
+		    (*req).hmac_zlen || ((*req).processed != (*req).block_sz)) {
+			count = (*req).processed / EIP197_COUNTER_BLOCK_SIZE;
 
 			/* This is a hardware limitation, as the
 			 * counter must fit into an u32. This represents
@@ -176,48 +176,48 @@ unsafe fn void safexcel_context_control(*mut safexcel_ahash_ctxctx,
 			 * shouldn't see this.
 			 */
 			if ((count & 0xffffffff00000000ULL)) {
-				dev_warn(priv->dev,
+				dev_warn((*priv).dev,
 					 "Input data is too big\n");
 				return;
 			}
 		}
 
-		if ((req->digest == CONTEXT_CONTROL_DIGEST_PRECOMPUTED) ||
+		if (((*req).digest == CONTEXT_CONTROL_DIGEST_PRECOMPUTED) ||
 		    /* Special case: zero length HMAC */
-		    req->hmac_zlen ||
+		    (*req).hmac_zlen ||
 		    /* PE HW < 4.4 cannot do HMAC continue, fake using hash */
-		    (req->processed != req->block_sz)) {
+		    ((*req).processed != (*req).block_sz)) {
 			/* Basic hash continue operation, need digest + cnt */
-			cdesc->control_data.control0 |=
-				CONTEXT_CONTROL_SIZE((req->state_sz >> 2) + 1) |
+			(*cdesc).control_data.control0 |=
+				CONTEXT_CONTROL_SIZE(((*req).state_sz >> 2) + 1) |
 				CONTEXT_CONTROL_TYPE_HASH_OUT |
 				CONTEXT_CONTROL_DIGEST_PRECOMPUTED;
 			/* For zero-len HMAC, don't finalize, already padded! */
-			if (req->hmac_zlen)
-				cdesc->control_data.control0 |=
+			if ((*req).hmac_zlen)
+				(*cdesc).control_data.control0 |=
 					CONTEXT_CONTROL_NO_FINISH_HASH;
-			cdesc->control_data.control1 |=
+			(*cdesc).control_data.control1 |=
 				CONTEXT_CONTROL_DIGEST_CNT;
-			ctx->base.ctxr->data[req->state_sz >> 2] =
+			(*(*ctx).base.ctxr).data[(*req).state_sz >> 2] =
 				cpu_to_le32(count);
-			req->digest = CONTEXT_CONTROL_DIGEST_PRECOMPUTED;
+			(*req).digest = CONTEXT_CONTROL_DIGEST_PRECOMPUTED;
 
 			/* Clear zero-length HMAC flag for next operation! */
-			req->hmac_zlen = false;
+			(*req).hmac_zlen = false;
 		} else { /* HMAC */
 			/* Need outer digest for HMAC finalization */
-			core::ptr::copy_nonoverlapping(ctx->base.ctxr->data + (req->state_sz >> 2),
-			       &ctx->base.opad, req->state_sz);
+			core::ptr::copy_nonoverlapping((*(*ctx).base.ctxr).data + ((*req).state_sz >> 2),
+			       (*&ctx).base.opad, (*req).state_sz);
 
 			/* Single pass HMAC - no digest count */
-			cdesc->control_data.control0 |=
-				CONTEXT_CONTROL_SIZE(req->state_sz >> 1) |
+			(*cdesc).control_data.control0 |=
+				CONTEXT_CONTROL_SIZE((*req).state_sz >> 1) |
 				CONTEXT_CONTROL_TYPE_HASH_OUT |
 				CONTEXT_CONTROL_DIGEST_HMAC;
 		}
 	} else { /* Hash continuation, do not finish yet */
-		cdesc->control_data.control0 |=
-			CONTEXT_CONTROL_SIZE(req->state_sz >> 2) |
+		(*cdesc).control_data.control0 |=
+			CONTEXT_CONTROL_SIZE((*req).state_sz >> 2) |
 			CONTEXT_CONTROL_DIGEST_PRECOMPUTED |
 			CONTEXT_CONTROL_TYPE_HASH_OUT |
 			CONTEXT_CONTROL_NO_FINISH_HASH;
@@ -227,7 +227,7 @@ unsafe fn void safexcel_context_control(*mut safexcel_ahash_ctxctx,
 unsafe fn i32 safexcel_ahash_enqueue(*mut ahash_requestareq);
 
 unsafe fn i32 safexcel_handle_req_result(*mut safexcel_crypto_privpriv,
-				      i32 ring,
+				      ring: i32,
 				      *mut crypto_async_requestasync,
 				      bool *should_complete, i32 *ret)
 {
@@ -240,9 +240,9 @@ unsafe fn i32 safexcel_handle_req_result(*mut safexcel_crypto_privpriv,
 
 	*ret = 0;
 
-	rdesc = safexcel_ring_next_rptr(priv, &priv->ring[ring].rdr);
+	rdesc = safexcel_ring_next_rptr(priv, (*&priv).ring[ring].rdr);
 	if (IS_ERR(rdesc)) {
-		dev_err(priv->dev,
+		dev_err((*priv).dev,
 			"hash: result: could not retrieve the result descriptor\n");
 		*ret = PTR_ERR(rdesc);
 	} else {
@@ -251,83 +251,88 @@ unsafe fn i32 safexcel_handle_req_result(*mut safexcel_crypto_privpriv,
 
 	safexcel_complete(priv, ring);
 
-	if (sreq->nents) {
-		dma_unmap_sg(priv->dev, areq->src,
-			     sg_nents_for_len(areq->src, areq->nbytes),
+	if ((*sreq).nents) {
+		dma_unmap_sg((*priv).dev, (*areq).src,
+			     sg_nents_for_len((*areq).src, (*areq).nbytes),
 			     0);
-		sreq->nents = 0;
+		(*sreq).nents = 0;
 	}
 
-	if (sreq->result_dma) {
-		dma_unmap_single(priv->dev, sreq->result_dma, sreq->digest_sz,
+	if ((*sreq).result_dma) {
+		dma_unmap_single((*priv).dev, (*sreq).result_dma, (*sreq).digest_sz,
 				 0);
-		sreq->result_dma = 0;
+		(*sreq).result_dma = 0;
 	}
 
-	if (sreq->cache_dma) {
-		dma_unmap_single(priv->dev, sreq->cache_dma, sreq->cache_sz,
+	if ((*sreq).cache_dma) {
+		dma_unmap_single((*priv).dev, (*sreq).cache_dma, (*sreq).cache_sz,
 				 0);
-		sreq->cache_dma = 0;
-		sreq->cache_sz = 0;
+		(*sreq).cache_dma = 0;
+		(*sreq).cache_sz = 0;
 	}
 
-	if (sreq->finish) {
-		if (sreq->hmac &&
-		    (sreq->digest != CONTEXT_CONTROL_DIGEST_HMAC)) {
+	if ((*sreq).finish) {
+		if ((*sreq).hmac &&
+		    ((*sreq).digest != CONTEXT_CONTROL_DIGEST_HMAC)) {
 			/* Faking HMAC using hash - need to do outer hash */
-			core::ptr::copy_nonoverlapping(sreq->cache, sreq->state,
+			core::ptr::copy_nonoverlapping((*sreq).cache, (*sreq).state,
 			       crypto_ahash_digestsize(ahash));
 
-			core::ptr::copy_nonoverlapping(sreq->state, &ctx->base.opad, sreq->digest_sz);
+			core::ptr::copy_nonoverlapping((*sreq).state, (*&ctx).base.opad, (*sreq).digest_sz);
 
-			sreq->len = sreq->block_sz +
+			(*sreq).len = (*sreq).block_sz +
 				    crypto_ahash_digestsize(ahash);
-			sreq->processed = sreq->block_sz;
-			sreq->hmac = 0;
+			(*sreq).processed = (*sreq).block_sz;
+			(*sreq).hmac = 0;
 
-			if (priv->flags & EIP197_TRC_CACHE)
-				ctx->base.needs_inv = true;
-			areq->nbytes = 0;
+			if ((*priv).flags & EIP197_TRC_CACHE)
+				(*ctx).base.needs_inv = true;
+			(*areq).nbytes = 0;
 			safexcel_ahash_enqueue(areq);
 
 			*should_complete = false; /* Not done yet */
 			return 1;
 		}
 
-		core::ptr::copy_nonoverlapping(areq->result, sreq->state,
+		core::ptr::copy_nonoverlapping((*areq).result, (*sreq).state,
 		       crypto_ahash_digestsize(ahash));
 	}
 
 	cache_len = safexcel_queued_len(sreq);
 	if (cache_len)
-		core::ptr::copy_nonoverlapping(sreq->cache, sreq->cache_next, cache_len);
+		core::ptr::copy_nonoverlapping((*sreq).cache, (*sreq).cache_next, cache_len);
 
 	*should_complete = true;
 
 	return 1;
 }
 
-unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
+unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, ring: i32,
 				   i32 *commands, i32 *results)
 {
+	'unmap_cache: {
+	'cdesc_rollback: {
+	'unmap_sg: {
+	'unmap_result: {
+	'send_command: {
 	*mut ahash_requestareq = ahash_request_cast(async);
 	*mut safexcel_ahash_reqreq = ahash_request_ctx_dma(areq);
 	*mut safexcel_ahash_ctxctx = crypto_ahash_ctx(crypto_ahash_reqtfm(areq));
-	*mut safexcel_crypto_privpriv = ctx->base.priv;
+	*mut safexcel_crypto_privpriv = (*ctx).base.r#priv;
 	*mut safexcel_command_desccdesc, *first_cdesc = core::ptr::null_mut();
 	*mut safexcel_result_descrdesc;
 	*mut scatterlistsg;
 	*mut safexcel_tokendmmy;
-	i32 i, extra = 0, n_cdesc = 0, ret = 0, cache_len, skip = 0;
-	u64 queued, len;
+	i: i32, extra = 0, n_cdesc = 0, ret = 0, cache_len, skip = 0;
+	queued: u64, len;
 
 	queued = safexcel_queued_len(req);
 	if (queued <= HASH_CACHE_SIZE)
 		cache_len = queued;
 	else
-		cache_len = queued - areq->nbytes;
+		cache_len = queued - (*areq).nbytes;
 
-	if (!req->finish && !req->last_req) {
+	if ((*!req).finish && (*!req).last_req) {
 		/* If this is not the last request and the queued data does not
 		 * fit into full cache blocks, cache it for the next send call.
 		 */
@@ -339,9 +344,9 @@ unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
 		if (!extra)
 			extra = HASH_CACHE_SIZE;
 
-		sg_pcopy_to_buffer(areq->src, sg_nents(areq->src),
-				   req->cache_next, extra,
-				   areq->nbytes - extra);
+		sg_pcopy_to_buffer((*areq).src, sg_nents((*areq).src),
+				   (*req).cache_next, extra,
+				   (*areq).nbytes - extra);
 
 		queued -= extra;
 
@@ -354,7 +359,7 @@ unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
 		extra = 0;
 	}
 
-	if ((req->xcbcmac && req->processed > AES_BLOCK_SIZE)) {
+	if (((*req).xcbcmac && (*req).processed > AES_BLOCK_SIZE)) {
 		if ((cache_len < AES_BLOCK_SIZE)) {
 			/*
 			 * Cache contains less than 1 full block, complete.
@@ -365,20 +370,20 @@ unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
 				u64 tmp = queued - cache_len;
 
 				skip = core::cmp::min(tmp, extra);
-				sg_pcopy_to_buffer(areq->src,
-					sg_nents(areq->src),
-					req->cache + cache_len,
+				sg_pcopy_to_buffer((*areq).src,
+					sg_nents((*areq).src),
+					(*req).cache + cache_len,
 					skip, 0);
 			}
 			extra -= skip;
-			core::ptr::write_bytes(req->cache + cache_len + skip, 0, extra);
-			if (!ctx->cbcmac && extra) {
+			core::ptr::write_bytes((*req).cache + cache_len + skip, 0, extra);
+			if ((*!ctx).cbcmac && extra) {
 				// 10- padding for XCBCMAC & CMAC
-				req->cache[cache_len + skip] = 0x80;
+				(*req).cache[cache_len + skip] = 0x80;
 				// HW will use K2 iso K3 - compensate!
 				for (i = 0; i < AES_BLOCK_SIZE / 4; i++) {
-					u32 *cache = (*mut core::ffi::c_void)req->cache;
-					u32 *ipad = ctx->base.ipad.word;
+					u32 *cache = (*(*mut core::ffi::c_void)req).cache;
+					u32 *ipad = (*ctx).base.ipad.word;
 					u32 x;
 
 					x = ipad[i] ^ ipad[i + 4];
@@ -390,45 +395,45 @@ unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
 		}
 
 		/* XCBC continue: XOR previous result into 1st word */
-		crypto_xor(req->cache, (*const u8)req->state, AES_BLOCK_SIZE);
+		crypto_xor((*req).cache, (*(*const u8)req).state, AES_BLOCK_SIZE);
 	}
 
 	len = queued;
 	/* Add a command descriptor for the cached data, if any */
 	if (cache_len) {
-		req->cache_dma = dma_map_single(priv->dev, req->cache,
+		(*req).cache_dma = dma_map_single((*priv).dev, (*req).cache,
 						cache_len, 0);
-		if (dma_mapping_error(priv->dev, req->cache_dma))
+		if (dma_mapping_error((*priv).dev, (*req).cache_dma))
 			return -EINVAL;
 
-		req->cache_sz = cache_len;
+		(*req).cache_sz = cache_len;
 		first_cdesc = safexcel_add_cdesc(priv, ring, 1,
 						 (cache_len == len),
-						 req->cache_dma, cache_len,
-						 len, ctx->base.ctxr_dma,
+						 (*req).cache_dma, cache_len,
+						 len, (*ctx).base.ctxr_dma,
 						 &dmmy);
 		if (IS_ERR(first_cdesc)) {
 			ret = PTR_ERR(first_cdesc);
-			goto unmap_cache;
+			break 'unmap_cache;
 		}
 		n_cdesc++;
 
 		queued -= cache_len;
 		if (!queued)
-			goto send_command;
+			break 'send_command;
 	}
 
 	/* Now handle the current ahash request buffer(s) */
-	req->nents = dma_map_sg(priv->dev, areq->src,
-				sg_nents_for_len(areq->src,
-						 areq->nbytes),
+	(*req).nents = dma_map_sg((*priv).dev, (*areq).src,
+				sg_nents_for_len((*areq).src,
+						 (*areq).nbytes),
 				0);
-	if (!req->nents) {
+	if ((*!req).nents) {
 		ret = -ENOMEM;
-		goto cdesc_rollback;
+		break 'cdesc_rollback;
 	}
 
-	for_each_sg(areq->src, sg, req->nents, i) {
+	for_each_sg!((*areq).src, sg, (*req).nents, i, {
 		i32 sglen = sg_dma_len(sg);
 
 		if ((sglen <= skip)) {
@@ -445,10 +450,10 @@ unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
 		cdesc = safexcel_add_cdesc(priv, ring, !n_cdesc,
 					   !(queued - sglen),
 					   sg_dma_address(sg) + skip, sglen,
-					   len, ctx->base.ctxr_dma, &dmmy);
+					   len, (*ctx).base.ctxr_dma, &dmmy);
 		if (IS_ERR(cdesc)) {
 			ret = PTR_ERR(cdesc);
-			goto unmap_sg;
+			break 'unmap_sg;
 		}
 
 		if (!n_cdesc)
@@ -459,64 +464,67 @@ unsafe fn i32 safexcel_ahash_send_req(*mut crypto_async_requestasync, i32 ring,
 		if (!queued)
 			break;
 		skip = 0;
+	});
 	}
-
-send_command:
+	
 	/* Setup the context options */
 	safexcel_context_control(ctx, req, first_cdesc);
 
 	/* Add the token */
-	safexcel_hash_token(first_cdesc, len, req->digest_sz, ctx->cbcmac);
+	safexcel_hash_token(first_cdesc, len, (*req).digest_sz, (*ctx).cbcmac);
 
-	req->result_dma = dma_map_single(priv->dev, req->state, req->digest_sz,
+	(*req).result_dma = dma_map_single((*priv).dev, (*req).state, (*req).digest_sz,
 					 0);
-	if (dma_mapping_error(priv->dev, req->result_dma)) {
+	if (dma_mapping_error((*priv).dev, (*req).result_dma)) {
 		ret = -EINVAL;
-		goto unmap_sg;
+		break 'unmap_sg;
 	}
 
 	/* Add a result descriptor */
-	rdesc = safexcel_add_rdesc(priv, ring, 1, 1, req->result_dma,
-				   req->digest_sz);
+	rdesc = safexcel_add_rdesc(priv, ring, 1, 1, (*req).result_dma,
+				   (*req).digest_sz);
 	if (IS_ERR(rdesc)) {
 		ret = PTR_ERR(rdesc);
-		goto unmap_result;
+		break 'unmap_result;
 	}
 
-	safexcel_rdr_req_set(priv, ring, rdesc, &areq->base);
+	safexcel_rdr_req_set(priv, ring, rdesc, (*&areq).base);
 
-	req->processed += len - extra;
+	(*req).processed += len - extra;
 
 	*commands = n_cdesc;
 	*results = 1;
 	return 0;
-
-unmap_result:
-	dma_unmap_single(priv->dev, req->result_dma, req->digest_sz,
-			 0);
-unmap_sg:
-	if (req->nents) {
-		dma_unmap_sg(priv->dev, areq->src,
-			     sg_nents_for_len(areq->src, areq->nbytes),
-			     0);
-		req->nents = 0;
 	}
-cdesc_rollback:
+	
+	dma_unmap_single((*priv).dev, (*req).result_dma, (*req).digest_sz,
+			 0);
+	}
+	
+	if ((*req).nents) {
+		dma_unmap_sg((*priv).dev, (*areq).src,
+			     sg_nents_for_len((*areq).src, (*areq).nbytes),
+			     0);
+		(*req).nents = 0;
+	}
+	}
+	
 	for (i = 0; i < n_cdesc; i++)
-		safexcel_ring_rollback_wptr(priv, &priv->ring[ring].cdr);
-unmap_cache:
-	if (req->cache_dma) {
-		dma_unmap_single(priv->dev, req->cache_dma, req->cache_sz,
+		safexcel_ring_rollback_wptr(priv, (*&priv).ring[ring].cdr);
+	}
+	
+	if ((*req).cache_dma) {
+		dma_unmap_single((*priv).dev, (*req).cache_dma, (*req).cache_sz,
 				 0);
-		req->cache_dma = 0;
-		req->cache_sz = 0;
+		(*req).cache_dma = 0;
+		(*req).cache_sz = 0;
 	}
 
 	return ret;
 }
 
 unsafe fn i32 safexcel_handle_inv_result(*mut safexcel_crypto_privpriv,
-				      i32 ring,
+				      ring: i32,
 				      *mut crypto_async_requestasync,
 				      bool *should_complete, i32 *ret)
 {
@@ -528,9 +536,9 @@ unsafe fn i32 safexcel_handle_inv_result(*mut safexcel_crypto_privpriv,
 
 	*ret = 0;
 
-	rdesc = safexcel_ring_next_rptr(priv, &priv->ring[ring].rdr);
+	rdesc = safexcel_ring_next_rptr(priv, (*&priv).ring[ring].rdr);
 	if (IS_ERR(rdesc)) {
-		dev_err(priv->dev,
+		dev_err((*priv).dev,
 			"hash: invalidate: could not retrieve the result descriptor\n");
 		*ret = PTR_ERR(rdesc);
 	} else {
@@ -539,33 +547,33 @@ unsafe fn i32 safexcel_handle_inv_result(*mut safexcel_crypto_privpriv,
 
 	safexcel_complete(priv, ring);
 
-	if (ctx->base.exit_inv) {
-		dma_pool_free(priv->context_pool, ctx->base.ctxr,
-			      ctx->base.ctxr_dma);
+	if ((*ctx).base.exit_inv) {
+		dma_pool_free((*priv).context_pool, (*ctx).base.ctxr,
+			      (*ctx).base.ctxr_dma);
 
 		*should_complete = true;
 		return 1;
 	}
 
 	ring = safexcel_select_ring(priv);
-	ctx->base.ring = ring;
+	(*ctx).base.ring = ring;
 
-	spin_lock_bh(&priv->ring[ring].queue_lock);
-	enq_ret = crypto_enqueue_request(&priv->ring[ring].queue, async);
-	spin_unlock_bh(&priv->ring[ring].queue_lock);
+	spin_lock_bh((*&priv).ring[ring].queue_lock);
+	enq_ret = crypto_enqueue_request((*&priv).ring[ring].queue, async);
+	spin_unlock_bh((*&priv).ring[ring].queue_lock);
 
 	if (enq_ret != -EINPROGRESS)
 		*ret = enq_ret;
 
-	queue_work(priv->ring[ring].workqueue,
-		   &priv->ring[ring].work_data.work);
+	queue_work((*priv).ring[ring].workqueue,
+		   (*&priv).ring[ring].work_data.work);
 
 	*should_complete = false;
 
 	return 1;
 }
 
-unsafe fn i32 safexcel_handle_result(*mut safexcel_crypto_privpriv, i32 ring,
+unsafe fn i32 safexcel_handle_result(*mut safexcel_crypto_privpriv, ring: i32,
 				  *mut crypto_async_requestasync,
 				  bool *should_complete, i32 *ret)
 {
@@ -573,10 +581,10 @@ unsafe fn i32 safexcel_handle_result(*mut safexcel_crypto_privpriv, i32 ring,
 	*mut safexcel_ahash_reqreq = ahash_request_ctx_dma(areq);
 	i32 err;
 
-	BUG_ON(!(priv->flags & EIP197_TRC_CACHE) && req->needs_inv);
+	BUG_ON(!((*priv).flags & EIP197_TRC_CACHE) && (*req).needs_inv);
 
-	if (req->needs_inv) {
-		req->needs_inv = false;
+	if ((*req).needs_inv) {
+		(*req).needs_inv = false;
 		err = safexcel_handle_inv_result(priv, ring, async,
 						 should_complete, ret);
 	} else {
@@ -588,14 +596,14 @@ unsafe fn i32 safexcel_handle_result(*mut safexcel_crypto_privpriv, i32 ring,
 }
 
 unsafe fn i32 safexcel_ahash_send_inv(*mut crypto_async_requestasync,
-				   i32 ring, i32 *commands, i32 *results)
+				   ring: i32, i32 *commands, i32 *results)
 {
 	*mut ahash_requestareq = ahash_request_cast(async);
 	*mut safexcel_ahash_ctxctx = crypto_ahash_ctx(crypto_ahash_reqtfm(areq));
 	i32 ret;
 
-	ret = safexcel_invalidate_cache(async, ctx->base.priv,
-					ctx->base.ctxr_dma, ring);
+	ret = safexcel_invalidate_cache(async, (*ctx).base.r#priv,
+					(*ctx).base.ctxr_dma, ring);
 	if ((ret))
 		return ret;
 
@@ -606,13 +614,13 @@ unsafe fn i32 safexcel_ahash_send_inv(*mut crypto_async_requestasync,
 }
 
 unsafe fn i32 safexcel_ahash_send(*mut crypto_async_requestasync,
-			       i32 ring, i32 *commands, i32 *results)
+			       ring: i32, i32 *commands, i32 *results)
 {
 	*mut ahash_requestareq = ahash_request_cast(async);
 	*mut safexcel_ahash_reqreq = ahash_request_ctx_dma(areq);
 	i32 ret;
 
-	if (req->needs_inv)
+	if ((*req).needs_inv)
 		ret = safexcel_ahash_send_inv(async, ring, commands, results);
 	else
 		ret = safexcel_ahash_send_req(async, ring, commands, results);
@@ -623,11 +631,11 @@ unsafe fn i32 safexcel_ahash_send(*mut crypto_async_requestasync,
 unsafe fn i32 safexcel_ahash_exit_inv(*mut crypto_tfmtfm)
 {
 	*mut safexcel_ahash_ctxctx = crypto_tfm_ctx(tfm);
-	*mut safexcel_crypto_privpriv = ctx->base.priv;
+	*mut safexcel_crypto_privpriv = (*ctx).base.r#priv;
 	EIP197_REQUEST_ON_STACK(req, ahash, EIP197_AHASH_REQ_SIZE);
 	*mut safexcel_ahash_reqrctx = ahash_request_ctx_dma(req);
 	DECLARE_CRYPTO_WAIT(result);
-	i32 ring = ctx->base.ring;
+	i32 ring = (*ctx).base.ring;
 	i32 err;
 
 	core::ptr::write_bytes(req, 0, EIP197_AHASH_REQ_SIZE);
@@ -638,21 +646,21 @@ unsafe fn i32 safexcel_ahash_exit_inv(*mut crypto_tfmtfm)
 				   crypto_req_done, &result);
 
 	ahash_request_set_tfm(req, __crypto_ahash_cast(tfm));
-	ctx = crypto_tfm_ctx(req->base.tfm);
-	ctx->base.exit_inv = true;
-	rctx->needs_inv = true;
+	ctx = crypto_tfm_ctx((*req).base.tfm);
+	(*ctx).base.exit_inv = true;
+	(*rctx).needs_inv = true;
 
-	spin_lock_bh(&priv->ring[ring].queue_lock);
-	crypto_enqueue_request(&priv->ring[ring].queue, &req->base);
-	spin_unlock_bh(&priv->ring[ring].queue_lock);
+	spin_lock_bh((*&priv).ring[ring].queue_lock);
+	crypto_enqueue_request((*&priv).ring[ring].queue, (*&req).base);
+	spin_unlock_bh((*&priv).ring[ring].queue_lock);
 
-	queue_work(priv->ring[ring].workqueue,
-		   &priv->ring[ring].work_data.work);
+	queue_work((*priv).ring[ring].workqueue,
+		   (*&priv).ring[ring].work_data.work);
 
 	err = crypto_wait_req(-EINPROGRESS, &result);
 
 	if (err) {
-		dev_warn(priv->dev, "hash: completion error (%d)\n", err);
+		dev_warn((*priv).dev, "hash: completion error (%d)\n", err);
 		return err;
 	}
 
@@ -676,8 +684,8 @@ unsafe fn i32 safexcel_ahash_cache(*mut ahash_requestareq)
 	 * In case there isn't enough bytes to proceed (less than a
 	 * block size), cache the data until we have enough.
 	 */
-	if (cache_len + areq->nbytes <= HASH_CACHE_SIZE) {
-		sg_pcopy_to_buffer(areq->src, sg_nents(areq->src),
+	if (cache_len + (*areq).nbytes <= HASH_CACHE_SIZE) {
+		sg_pcopy_to_buffer((*areq).src, sg_nents(areq->src),
 				   req->cache + cache_len,
 				   areq->nbytes, 0);
 		return 0;
@@ -691,8 +699,8 @@ unsafe fn i32 safexcel_ahash_enqueue(*mut ahash_requestareq)
 {
 	*mut safexcel_ahash_ctxctx = crypto_ahash_ctx(crypto_ahash_reqtfm(areq));
 	*mut safexcel_ahash_reqreq = ahash_request_ctx_dma(areq);
-	*mut safexcel_crypto_privpriv = ctx->base.priv;
-	i32 ret, ring;
+	*mut safexcel_crypto_privpriv = ctx->base.r#priv;
+	ret: i32, ring;
 
 	req->needs_inv = false;
 
@@ -879,7 +887,7 @@ unsafe fn i32 safexcel_ahash_finup(*mut ahash_requestareq)
 	return safexcel_ahash_final(areq);
 }
 
-unsafe fn i32 safexcel_ahash_export(*mut ahash_requestareq, *mut core::ffi::c_voidout)
+unsafe fn i32 safexcel_ahash_export(*mut ahash_requestareq, out: *mut core::ffi::c_void)
 {
 	*mut safexcel_ahash_reqreq = ahash_request_ctx_dma(areq);
 	*mut safexcel_ahash_export_stateexport = out;
@@ -921,15 +929,15 @@ unsafe fn i32 safexcel_ahash_cra_init(*mut crypto_tfmtfm)
 	*mut safexcel_ahash_ctxctx = crypto_tfm_ctx(tfm);
 	*mut safexcel_alg_templatetmpl =
 		container_of(__crypto_ahash_alg(tfm->__crt_alg),
-			     struct safexcel_alg_template, alg.ahash);
+			     safexcel_alg_template, alg.ahash);
 
-	ctx->base.priv = tmpl->priv;
+	ctx->base.r#priv = tmpl->priv;
 	ctx->base.send = safexcel_ahash_send;
 	ctx->base.handle_result = safexcel_handle_result;
 	ctx->fb_do_setkey = false;
 
 	crypto_ahash_set_reqsize_dma(__crypto_ahash_cast(tfm),
-				     core::mem::size_of::<struct safexcel_ahash_req>());
+				     core::mem::size_of::<safexcel_ahash_req>());
 	return 0;
 }
 
@@ -962,7 +970,7 @@ unsafe fn i32 safexcel_sha1_digest(*mut ahash_requestareq)
 unsafe fn void safexcel_ahash_cra_exit(*mut crypto_tfmtfm)
 {
 	*mut safexcel_ahash_ctxctx = crypto_tfm_ctx(tfm);
-	*mut safexcel_crypto_privpriv = ctx->base.priv;
+	*mut safexcel_crypto_privpriv = ctx->base.r#priv;
 	i32 ret;
 
 	/* context not allocated, skip invalidation */
@@ -980,31 +988,31 @@ unsafe fn void safexcel_ahash_cra_exit(*mut crypto_tfmtfm)
 }
 
 struct safexcel_alg_template safexcel_alg_sha1 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA1,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA1,
 	.alg.ahash = {
-		.init = safexcel_sha1_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_sha1_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA1_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha1",
-				.cra_driver_name = "safexcel-sha1",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha1_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_sha1_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA1_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha1",
+				cra_driver_name: "safexcel-sha1",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA1_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA1_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1044,12 +1052,12 @@ unsafe fn i32 safexcel_hmac_sha1_digest(*mut ahash_requestareq)
 }
 
 unsafe fn i32 safexcel_hmac_init_pad(*mut ahash_requestareq,
-				  u32 i32 blocksize, *const u8key,
-				  u32 i32 keylen, *mut u8ipad, *mut u8opad)
+				  u32 i32 blocksize, key: *const u8,
+				  u32 i32 keylen, ipad: *mut u8, opad: *mut u8)
 {
 	DECLARE_CRYPTO_WAIT(result);
 	struct scatterlist sg;
-	i32 ret, i;
+	ret: i32, i;
 	*mut u8keydup;
 
 	if (keylen <= blocksize) {
@@ -1088,7 +1096,7 @@ unsafe fn i32 safexcel_hmac_init_pad(*mut ahash_requestareq,
 }
 
 unsafe fn i32 safexcel_hmac_init_iv(*mut ahash_requestareq,
-				 u32 i32 blocksize, *mut u8pad, *mut core::ffi::c_voidstate)
+				 u32 i32 blocksize, pad: *mut u8, state: *mut core::ffi::c_void)
 {
 	*mut safexcel_ahash_reqreq;
 	DECLARE_CRYPTO_WAIT(result);
@@ -1114,10 +1122,13 @@ unsafe fn i32 safexcel_hmac_init_iv(*mut ahash_requestareq,
 	return ret ?: crypto_ahash_export(areq, state);
 }
 
-unsafe fn i32 __safexcel_hmac_setkey(const char *alg, *const u8key,
+unsafe fn i32 __safexcel_hmac_setkey(const char *alg, key: *const u8,
 				  u32 i32 keylen,
-				  *mut core::ffi::c_voidistate, *mut core::ffi::c_voidostate)
+				  istate: *mut core::ffi::c_void, ostate: *mut core::ffi::c_void)
 {
+	'free_ahash: {
+	'free_request: {
+	'free_ipad: {
 	*mut ahash_requestareq;
 	*mut crypto_ahashtfm;
 	u32 i32 blocksize;
@@ -1131,7 +1142,7 @@ unsafe fn i32 __safexcel_hmac_setkey(const char *alg, *const u8key,
 	areq = ahash_request_alloc(tfm, 0);
 	if (!areq) {
 		ret = -ENOMEM;
-		goto free_ahash;
+		break 'free_ahash;
 	}
 
 	crypto_ahash_clear_flags(tfm, ~0);
@@ -1140,32 +1151,34 @@ unsafe fn i32 __safexcel_hmac_setkey(const char *alg, *const u8key,
 	ipad = kcalloc(2, blocksize, 0);
 	if (!ipad) {
 		ret = -ENOMEM;
-		goto free_request;
+		break 'free_request;
 	}
 
 	opad = ipad + blocksize;
 
 	ret = safexcel_hmac_init_pad(areq, blocksize, key, keylen, ipad, opad);
 	if (ret)
-		goto free_ipad;
+		break 'free_ipad;
 
 	ret = safexcel_hmac_init_iv(areq, blocksize, ipad, istate);
 	if (ret)
-		goto free_ipad;
+		break 'free_ipad;
 
 	ret = safexcel_hmac_init_iv(areq, blocksize, opad, ostate);
-
-free_ipad:
+	}
+	
 	kfree(ipad);
-free_request:
+	}
+	
 	ahash_request_free(areq);
-free_ahash:
+	}
+	
 	crypto_free_ahash(tfm);
 
 	return ret;
 }
 
-pub unsafe fn safexcel_hmac_setkey(*mut safexcel_contextbase, *const u8key,
+pub unsafe fn safexcel_hmac_setkey(*mut safexcel_contextbase, key: *const u8,
 			 u32 i32 keylen, const char *alg,
 			 u32 i32 state_sz)
 {
@@ -1188,7 +1201,7 @@ pub unsafe fn safexcel_hmac_setkey(*mut safexcel_contextbase, *const u8key,
 	return 0;
 }
 
-unsafe fn i32 safexcel_hmac_alg_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_alg_setkey(*mut crypto_ahashtfm, key: *const u8,
 				    u32 i32 keylen, const char *alg,
 				    u32 i32 state_sz)
 {
@@ -1197,7 +1210,7 @@ unsafe fn i32 safexcel_hmac_alg_setkey(*mut crypto_ahashtfm, *const u8key,
 	return safexcel_hmac_setkey(&ctx->base, key, keylen, alg, state_sz);
 }
 
-unsafe fn i32 safexcel_hmac_sha1_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sha1_setkey(*mut crypto_ahashtfm, key: *const u8,
 				     u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-sha1",
@@ -1205,32 +1218,32 @@ unsafe fn i32 safexcel_hmac_sha1_setkey(*mut crypto_ahashtfm, *const u8key,
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha1 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA1,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA1,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha1_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_sha1_digest,
-		.setkey = safexcel_hmac_sha1_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA1_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha1)",
-				.cra_driver_name = "safexcel-hmac-sha1",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha1_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_sha1_digest,
+		setkey: safexcel_hmac_sha1_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA1_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha1)",
+				cra_driver_name: "safexcel-hmac-sha1",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA1_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA1_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1263,31 +1276,31 @@ unsafe fn i32 safexcel_sha256_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha256 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_256,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_256,
 	.alg.ahash = {
-		.init = safexcel_sha256_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_sha256_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA256_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha256",
-				.cra_driver_name = "safexcel-sha256",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha256_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_sha256_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA256_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha256",
+				cra_driver_name: "safexcel-sha256",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA256_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA256_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1320,37 +1333,37 @@ unsafe fn i32 safexcel_sha224_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha224 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_256,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_256,
 	.alg.ahash = {
-		.init = safexcel_sha224_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_sha224_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA224_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha224",
-				.cra_driver_name = "safexcel-sha224",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha224_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_sha224_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA224_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha224",
+				cra_driver_name: "safexcel-sha224",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA224_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA224_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_hmac_sha224_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sha224_setkey(*mut crypto_ahashtfm, key: *const u8,
 				       u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-sha224",
@@ -1391,38 +1404,38 @@ unsafe fn i32 safexcel_hmac_sha224_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha224 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_256,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_256,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha224_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_sha224_digest,
-		.setkey = safexcel_hmac_sha224_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA224_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha224)",
-				.cra_driver_name = "safexcel-hmac-sha224",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha224_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_sha224_digest,
+		setkey: safexcel_hmac_sha224_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA224_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha224)",
+				cra_driver_name: "safexcel-hmac-sha224",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA224_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA224_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_hmac_sha256_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sha256_setkey(*mut crypto_ahashtfm, key: *const u8,
 				     u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-sha256",
@@ -1463,32 +1476,32 @@ unsafe fn i32 safexcel_hmac_sha256_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha256 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_256,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_256,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha256_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_sha256_digest,
-		.setkey = safexcel_hmac_sha256_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA256_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha256)",
-				.cra_driver_name = "safexcel-hmac-sha256",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha256_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_sha256_digest,
+		setkey: safexcel_hmac_sha256_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA256_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha256)",
+				cra_driver_name: "safexcel-hmac-sha256",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA256_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA256_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1521,31 +1534,31 @@ unsafe fn i32 safexcel_sha512_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha512 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_512,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_512,
 	.alg.ahash = {
-		.init = safexcel_sha512_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_sha512_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA512_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha512",
-				.cra_driver_name = "safexcel-sha512",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha512_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_sha512_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA512_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha512",
+				cra_driver_name: "safexcel-sha512",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA512_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA512_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1578,37 +1591,37 @@ unsafe fn i32 safexcel_sha384_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha384 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_512,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_512,
 	.alg.ahash = {
-		.init = safexcel_sha384_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_sha384_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA384_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha384",
-				.cra_driver_name = "safexcel-sha384",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha384_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_sha384_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA384_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha384",
+				cra_driver_name: "safexcel-sha384",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA384_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA384_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_hmac_sha512_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sha512_setkey(*mut crypto_ahashtfm, key: *const u8,
 				       u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-sha512",
@@ -1649,38 +1662,38 @@ unsafe fn i32 safexcel_hmac_sha512_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha512 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_512,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_512,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha512_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_sha512_digest,
-		.setkey = safexcel_hmac_sha512_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA512_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha512)",
-				.cra_driver_name = "safexcel-hmac-sha512",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha512_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_sha512_digest,
+		setkey: safexcel_hmac_sha512_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA512_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha512)",
+				cra_driver_name: "safexcel-hmac-sha512",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA512_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA512_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_hmac_sha384_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sha384_setkey(*mut crypto_ahashtfm, key: *const u8,
 				       u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-sha384",
@@ -1721,32 +1734,32 @@ unsafe fn i32 safexcel_hmac_sha384_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha384 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA2_512,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA2_512,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha384_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_sha384_digest,
-		.setkey = safexcel_hmac_sha384_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SHA384_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha384)",
-				.cra_driver_name = "safexcel-hmac-sha384",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha384_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_sha384_digest,
+		setkey: safexcel_hmac_sha384_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SHA384_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha384)",
+				cra_driver_name: "safexcel-hmac-sha384",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SHA384_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA384_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1779,31 +1792,31 @@ unsafe fn i32 safexcel_md5_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_md5 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_MD5,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_MD5,
 	.alg.ahash = {
-		.init = safexcel_md5_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_md5_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = MD5_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "md5",
-				.cra_driver_name = "safexcel-md5",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_md5_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_md5_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: MD5_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "md5",
+				cra_driver_name: "safexcel-md5",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = MD5_HMAC_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: MD5_HMAC_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1833,7 +1846,7 @@ unsafe fn i32 safexcel_hmac_md5_init(*mut ahash_requestareq)
 	return 0;
 }
 
-unsafe fn i32 safexcel_hmac_md5_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_md5_setkey(*mut crypto_ahashtfm, key: *const u8,
 				     u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-md5",
@@ -1851,32 +1864,32 @@ unsafe fn i32 safexcel_hmac_md5_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_md5 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_MD5,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_MD5,
 	.alg.ahash = {
-		.init = safexcel_hmac_md5_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_md5_digest,
-		.setkey = safexcel_hmac_md5_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = MD5_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(md5)",
-				.cra_driver_name = "safexcel-hmac-md5",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_md5_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_md5_digest,
+		setkey: safexcel_hmac_md5_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: MD5_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(md5)",
+				cra_driver_name: "safexcel-hmac-md5",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = MD5_HMAC_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: MD5_HMAC_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -1904,12 +1917,12 @@ unsafe fn i32 safexcel_cbcmac_init(*mut ahash_requestareq)
 	return 0;
 }
 
-unsafe fn i32 safexcel_cbcmac_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_cbcmac_setkey(*mut crypto_ahashtfm, key: *const u8,
 				 u32 i32 len)
 {
 	*mut safexcel_ahash_ctxctx = crypto_tfm_ctx(crypto_ahash_tfm(tfm));
 	struct crypto_aes_ctx aes;
-	i32 ret, i;
+	ret: i32, i;
 
 	ret = aes_expandkey(&aes, key, len);
 	if (ret)
@@ -1941,43 +1954,43 @@ unsafe fn i32 safexcel_cbcmac_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_cbcmac = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = 0,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: 0,
 	.alg.ahash = {
-		.init = safexcel_cbcmac_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_cbcmac_digest,
-		.setkey = safexcel_cbcmac_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = AES_BLOCK_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "cbcmac(aes)",
-				.cra_driver_name = "safexcel-cbcmac-aes",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_cbcmac_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_cbcmac_digest,
+		setkey: safexcel_cbcmac_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: AES_BLOCK_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "cbcmac(aes)",
+				cra_driver_name: "safexcel-cbcmac-aes",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = AES_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: AES_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_xcbcmac_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_xcbcmac_setkey(*mut crypto_ahashtfm, key: *const u8,
 				 u32 i32 len)
 {
 	*mut safexcel_ahash_ctxctx = crypto_tfm_ctx(crypto_ahash_tfm(tfm));
 	u32 key_tmp[3 * AES_BLOCK_SIZE / core::mem::size_of::<u32>()];
-	i32 ret, i;
+	ret: i32, i;
 
 	ret = aes_prepareenckey(ctx->aes, key, len);
 	if (ret)
@@ -2024,45 +2037,45 @@ unsafe fn void safexcel_xcbcmac_cra_exit(*mut crypto_tfmtfm)
 }
 
 struct safexcel_alg_template safexcel_alg_xcbcmac = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = 0,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: 0,
 	.alg.ahash = {
-		.init = safexcel_cbcmac_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_cbcmac_digest,
-		.setkey = safexcel_xcbcmac_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = AES_BLOCK_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "xcbc(aes)",
-				.cra_driver_name = "safexcel-xcbc-aes",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_cbcmac_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_cbcmac_digest,
+		setkey: safexcel_xcbcmac_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: AES_BLOCK_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "xcbc(aes)",
+				cra_driver_name: "safexcel-xcbc-aes",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = AES_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_xcbcmac_cra_init,
-				.cra_exit = safexcel_xcbcmac_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: AES_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_xcbcmac_cra_init,
+				cra_exit: safexcel_xcbcmac_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_cmac_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_cmac_setkey(*mut crypto_ahashtfm, key: *const u8,
 				u32 i32 len)
 {
 	*mut safexcel_ahash_ctxctx = crypto_tfm_ctx(crypto_ahash_tfm(tfm));
 	u64 consts[4];
 	u64 _const[2];
-	u8 msb_mask, gfmask;
-	i32 ret, i;
+	msb_mask: u8, gfmask;
+	ret: i32, i;
 
 	/* precompute the CMAC key material */
 	ret = aes_prepareenckey(ctx->aes, key, len);
@@ -2111,32 +2124,32 @@ unsafe fn i32 safexcel_cmac_setkey(*mut crypto_ahashtfm, *const u8key,
 }
 
 struct safexcel_alg_template safexcel_alg_cmac = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = 0,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: 0,
 	.alg.ahash = {
-		.init = safexcel_cbcmac_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_cbcmac_digest,
-		.setkey = safexcel_cmac_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = AES_BLOCK_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "cmac(aes)",
-				.cra_driver_name = "safexcel-cmac-aes",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_cbcmac_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_cbcmac_digest,
+		setkey: safexcel_cmac_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: AES_BLOCK_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "cmac(aes)",
+				cra_driver_name: "safexcel-cmac-aes",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = AES_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_xcbcmac_cra_init,
-				.cra_exit = safexcel_xcbcmac_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: AES_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_xcbcmac_cra_init,
+				cra_exit: safexcel_xcbcmac_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2169,37 +2182,37 @@ unsafe fn i32 safexcel_sm3_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_sm3 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SM3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SM3,
 	.alg.ahash = {
-		.init = safexcel_sm3_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_sm3_digest,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SM3_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sm3",
-				.cra_driver_name = "safexcel-sm3",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sm3_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_sm3_digest,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SM3_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sm3",
+				cra_driver_name: "safexcel-sm3",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SM3_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SM3_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
 };
 
-unsafe fn i32 safexcel_hmac_sm3_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sm3_setkey(*mut crypto_ahashtfm, key: *const u8,
 				    u32 i32 keylen)
 {
 	return safexcel_hmac_alg_setkey(tfm, key, keylen, "safexcel-sm3",
@@ -2240,32 +2253,32 @@ unsafe fn i32 safexcel_hmac_sm3_digest(*mut ahash_requestareq)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sm3 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SM3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SM3,
 	.alg.ahash = {
-		.init = safexcel_hmac_sm3_init,
-		.update = safexcel_ahash_update,
-		.final = safexcel_ahash_final,
-		.finup = safexcel_ahash_finup,
-		.digest = safexcel_hmac_sm3_digest,
-		.setkey = safexcel_hmac_sm3_setkey,
-		.export = safexcel_ahash_export,
-		.import = safexcel_ahash_import,
-		.halg = {
-			.digestsize = SM3_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sm3)",
-				.cra_driver_name = "safexcel-hmac-sm3",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sm3_init,
+		update: safexcel_ahash_update,
+		final: safexcel_ahash_final,
+		finup: safexcel_ahash_finup,
+		digest: safexcel_hmac_sm3_digest,
+		setkey: safexcel_hmac_sm3_setkey,
+		export: safexcel_ahash_export,
+		import: safexcel_ahash_import,
+		halg: {
+			digestsize: SM3_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sm3)",
+				cra_driver_name: "safexcel-hmac-sm3",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_ALLOCATES_MEMORY |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY,
-				.cra_blocksize = SM3_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_ahash_cra_init,
-				.cra_exit = safexcel_ahash_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SM3_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_ahash_cra_init,
+				cra_exit: safexcel_ahash_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2381,7 +2394,7 @@ unsafe fn i32 safexcel_sha3_224_digest(*mut ahash_requestreq)
 	return safexcel_sha3_digest_fallback(req);
 }
 
-unsafe fn i32 safexcel_sha3_export(*mut ahash_requestreq, *mut core::ffi::c_voidout)
+unsafe fn i32 safexcel_sha3_export(*mut ahash_requestreq, out: *mut core::ffi::c_void)
 {
 	*mut crypto_ahashtfm = crypto_ahash_reqtfm(req);
 	*mut safexcel_ahash_ctxctx = crypto_ahash_ctx(tfm);
@@ -2420,8 +2433,8 @@ unsafe fn i32 safexcel_sha3_cra_init(*mut crypto_tfmtfm)
 	crypto_hash_alg_common(ahash)->statesize =
 		crypto_ahash_statesize(ctx->fback);
 	crypto_ahash_set_reqsize_dma(
-		ahash, max(core::mem::size_of::<struct safexcel_ahash_req>(),
-			   core::mem::size_of::<struct ahash_request>() +
+		ahash, max(core::mem::size_of::<safexcel_ahash_req>(),
+			   core::mem::size_of::<ahash_request>() +
 			   crypto_ahash_reqsize(ctx->fback)));
 	return 0;
 }
@@ -2435,31 +2448,31 @@ unsafe fn void safexcel_sha3_cra_exit(*mut crypto_tfmtfm)
 }
 
 struct safexcel_alg_template safexcel_alg_sha3_224 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_sha3_224_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_sha3_224_digest,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_224_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha3-224",
-				.cra_driver_name = "safexcel-sha3-224",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha3_224_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_sha3_224_digest,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_224_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha3-224",
+				cra_driver_name: "safexcel-sha3-224",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_224_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_sha3_cra_init,
-				.cra_exit = safexcel_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_224_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_sha3_cra_init,
+				cra_exit: safexcel_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2493,31 +2506,31 @@ unsafe fn i32 safexcel_sha3_256_digest(*mut ahash_requestreq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha3_256 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_sha3_256_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_sha3_256_digest,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_256_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha3-256",
-				.cra_driver_name = "safexcel-sha3-256",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha3_256_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_sha3_256_digest,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_256_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha3-256",
+				cra_driver_name: "safexcel-sha3-256",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_256_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_sha3_cra_init,
-				.cra_exit = safexcel_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_256_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_sha3_cra_init,
+				cra_exit: safexcel_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2551,31 +2564,31 @@ unsafe fn i32 safexcel_sha3_384_digest(*mut ahash_requestreq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha3_384 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_sha3_384_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_sha3_384_digest,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_384_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha3-384",
-				.cra_driver_name = "safexcel-sha3-384",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha3_384_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_sha3_384_digest,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_384_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha3-384",
+				cra_driver_name: "safexcel-sha3-384",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_384_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_sha3_cra_init,
-				.cra_exit = safexcel_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_384_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_sha3_cra_init,
+				cra_exit: safexcel_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2609,31 +2622,31 @@ unsafe fn i32 safexcel_sha3_512_digest(*mut ahash_requestreq)
 }
 
 struct safexcel_alg_template safexcel_alg_sha3_512 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_sha3_512_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_sha3_512_digest,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_512_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "sha3-512",
-				.cra_driver_name = "safexcel-sha3-512",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_sha3_512_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_sha3_512_digest,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_512_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "sha3-512",
+				cra_driver_name: "safexcel-sha3-512",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_512_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_sha3_cra_init,
-				.cra_exit = safexcel_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_512_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_sha3_cra_init,
+				cra_exit: safexcel_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2673,7 +2686,7 @@ unsafe fn void safexcel_hmac_sha3_cra_exit(*mut crypto_tfmtfm)
 	safexcel_ahash_cra_exit(tfm);
 }
 
-unsafe fn i32 safexcel_hmac_sha3_setkey(*mut crypto_ahashtfm, *const u8key,
+unsafe fn i32 safexcel_hmac_sha3_setkey(*mut crypto_ahashtfm, key: *const u8,
 				     u32 i32 keylen)
 {
 	*mut safexcel_ahash_ctxctx = crypto_ahash_ctx(tfm);
@@ -2771,32 +2784,32 @@ unsafe fn i32 safexcel_hmac_sha3_224_cra_init(*mut crypto_tfmtfm)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha3_224 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha3_224_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_hmac_sha3_224_digest,
-		.setkey = safexcel_hmac_sha3_setkey,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_224_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha3-224)",
-				.cra_driver_name = "safexcel-hmac-sha3-224",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha3_224_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_hmac_sha3_224_digest,
+		setkey: safexcel_hmac_sha3_setkey,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_224_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha3-224)",
+				cra_driver_name: "safexcel-hmac-sha3-224",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_224_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_hmac_sha3_224_cra_init,
-				.cra_exit = safexcel_hmac_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_224_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_hmac_sha3_224_cra_init,
+				cra_exit: safexcel_hmac_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2842,32 +2855,32 @@ unsafe fn i32 safexcel_hmac_sha3_256_cra_init(*mut crypto_tfmtfm)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha3_256 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha3_256_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_hmac_sha3_256_digest,
-		.setkey = safexcel_hmac_sha3_setkey,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_256_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha3-256)",
-				.cra_driver_name = "safexcel-hmac-sha3-256",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha3_256_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_hmac_sha3_256_digest,
+		setkey: safexcel_hmac_sha3_setkey,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_256_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha3-256)",
+				cra_driver_name: "safexcel-hmac-sha3-256",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_256_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_hmac_sha3_256_cra_init,
-				.cra_exit = safexcel_hmac_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_256_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_hmac_sha3_256_cra_init,
+				cra_exit: safexcel_hmac_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2913,32 +2926,32 @@ unsafe fn i32 safexcel_hmac_sha3_384_cra_init(*mut crypto_tfmtfm)
 }
 
 struct safexcel_alg_template safexcel_alg_hmac_sha3_384 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha3_384_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_hmac_sha3_384_digest,
-		.setkey = safexcel_hmac_sha3_setkey,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_384_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha3-384)",
-				.cra_driver_name = "safexcel-hmac-sha3-384",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha3_384_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_hmac_sha3_384_digest,
+		setkey: safexcel_hmac_sha3_setkey,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_384_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha3-384)",
+				cra_driver_name: "safexcel-hmac-sha3-384",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_384_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_hmac_sha3_384_cra_init,
-				.cra_exit = safexcel_hmac_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_384_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_hmac_sha3_384_cra_init,
+				cra_exit: safexcel_hmac_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},
@@ -2983,32 +2996,32 @@ unsafe fn i32 safexcel_hmac_sha3_512_cra_init(*mut crypto_tfmtfm)
 	return safexcel_hmac_sha3_cra_init(tfm, "sha3-512");
 }
 struct safexcel_alg_template safexcel_alg_hmac_sha3_512 = {
-	.type = SAFEXCEL_ALG_TYPE_AHASH,
-	.algo_mask = SAFEXCEL_ALG_SHA3,
+	type: SAFEXCEL_ALG_TYPE_AHASH,
+	algo_mask: SAFEXCEL_ALG_SHA3,
 	.alg.ahash = {
-		.init = safexcel_hmac_sha3_512_init,
-		.update = safexcel_sha3_update,
-		.final = safexcel_sha3_final,
-		.finup = safexcel_sha3_finup,
-		.digest = safexcel_hmac_sha3_512_digest,
-		.setkey = safexcel_hmac_sha3_setkey,
-		.export = safexcel_sha3_export,
-		.import = safexcel_sha3_import,
-		.halg = {
-			.digestsize = SHA3_512_DIGEST_SIZE,
-			.statesize = core::mem::size_of::<struct safexcel_ahash_export_state>(),
-			.base = {
-				.cra_name = "hmac(sha3-512)",
-				.cra_driver_name = "safexcel-hmac-sha3-512",
-				.cra_priority = SAFEXCEL_CRA_PRIORITY,
-				.cra_flags = CRYPTO_ALG_ASYNC |
+		init: safexcel_hmac_sha3_512_init,
+		update: safexcel_sha3_update,
+		final: safexcel_sha3_final,
+		finup: safexcel_sha3_finup,
+		digest: safexcel_hmac_sha3_512_digest,
+		setkey: safexcel_hmac_sha3_setkey,
+		export: safexcel_sha3_export,
+		import: safexcel_sha3_import,
+		halg: {
+			digestsize: SHA3_512_DIGEST_SIZE,
+			statesize: core::mem::size_of::<safexcel_ahash_export_state>(),
+			base: {
+				cra_name: "hmac(sha3-512)",
+				cra_driver_name: "safexcel-hmac-sha3-512",
+				cra_priority: SAFEXCEL_CRA_PRIORITY,
+				cra_flags: CRYPTO_ALG_ASYNC |
 					     CRYPTO_ALG_KERN_DRIVER_ONLY |
 					     CRYPTO_ALG_NEED_FALLBACK,
-				.cra_blocksize = SHA3_512_BLOCK_SIZE,
-				.cra_ctxsize = core::mem::size_of::<struct safexcel_ahash_ctx>(),
-				.cra_init = safexcel_hmac_sha3_512_cra_init,
-				.cra_exit = safexcel_hmac_sha3_cra_exit,
-				.cra_module = THIS_MODULE,
+				cra_blocksize: SHA3_512_BLOCK_SIZE,
+				cra_ctxsize: core::mem::size_of::<safexcel_ahash_ctx>(),
+				cra_init: safexcel_hmac_sha3_512_cra_init,
+				cra_exit: safexcel_hmac_sha3_cra_exit,
+				cra_module: THIS_MODULE,
 			},
 		},
 	},

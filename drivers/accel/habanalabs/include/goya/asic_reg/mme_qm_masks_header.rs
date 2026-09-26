@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0
-/************************************
-/*
-/* MME_QM_GLBL_CFG0 */
+/ ************************************
+/ *
+/ * MME_QM_GLBL_CFG0 */
 pub const MME_QM_GLBL_CFG0_PQF_EN_SHIFT: u32 = 0;
 pub const MME_QM_GLBL_CFG0_PQF_EN_MASK: u32 = 0x1;
 pub const MME_QM_GLBL_CFG0_CQF_EN_SHIFT: u32 = 1;

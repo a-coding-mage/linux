@@ -74,10 +74,10 @@ extern "C" {
     pub fn mpc83xx_setup_pci();
 
     #[cfg(not(CONFIG_PCI))]
-    pub const mpc83xx_setup_pci: Option<unsafe extern "C" fn()> = None;
 
     pub fn mpc83xx_declare_of_platform_devices() -> i32;
     pub fn mpc83xx_setup_arch();
 }
+pub const mpc83xx_setup_pci: Option<unsafe extern "C" fn()> = None;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

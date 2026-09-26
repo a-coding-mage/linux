@@ -9,7 +9,7 @@
 // Translated from C under the DEBUG build condition.
 // The CONFIG_SYSCTL condition is likewise preserved below.
 
-#[cfg(all(feature = "DEBUG", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(feature = "DEBUG", CONFIG_SYSCTL))]
 mod sysctl_impl {
     use core::ffi::{c_char, c_int, c_void};
 

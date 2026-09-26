@@ -157,12 +157,12 @@ unsafe fn afs_sillyrename(
 
     ret = afs_do_silly_rename(dvnode, vnode, dentry, sdentry, key);
     match ret {
-        0 => {
+        case if case == 0 => {
             /* The rename succeeded. */
             set_bit(AFS_VNODE_SILLY_DELETED, &mut (*vnode).flags);
             d_move(dentry, sdentry);
         }
-        -ERESTARTSYS => {
+        case if case == -ERESTARTSYS => {
             /* The result of the rename is unknown. Play it safe by forcing
              * a new lookup.
              */

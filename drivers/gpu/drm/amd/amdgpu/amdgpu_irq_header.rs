@@ -129,7 +129,7 @@ pub enum interrupt_node_id_per_aid {
     NODEID_MAX,
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut node_id_to_phys_map: [::core::ffi::c_int; NODEID_MAX as usize];
     pub fn amdgpu_irq_disable_all(adev: *mut amdgpu_device);
     pub fn amdgpu_irq_init(adev: *mut amdgpu_device) -> ::core::ffi::c_int;

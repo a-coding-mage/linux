@@ -176,20 +176,20 @@ fn CalculateMALLUseForStaticScreen(
 	bool UsesMALLForStaticScreen[]);
 
 fn dscceComputeDelay(
-	usize bpc,
+	bpc: usize,
 	f64 BPP,
-	usize sliceWidth,
-	usize numSlices,
-	usize pixelFormat,
+	sliceWidth: usize,
+	numSlices: usize,
+	pixelFormat: usize,
 	usize Output);
 
-fn dscComputeDelay(usize pixelFormat,
+fn dscComputeDelay(pixelFormat: usize,
 	usize Output);
 
 fn CalculatePrefetchSchedule(usize *scratch,
 	usize *p);
 
-fn RoundToDFSGranularity(f64 Clock, bool round_up, f64 VCOSpeed);
+fn RoundToDFSGranularity(f64 Clock, round_up: bool, f64 VCOSpeed);
 
 fn CalculateDCCConfiguration(
 	bool DCCEnabled,
@@ -199,7 +199,7 @@ fn CalculateDCCConfiguration(
 	usize SurfaceWidthChroma,
 	usize SurfaceHeightLuma,
 	usize SurfaceHeightChroma,
-	usize nomDETInKByte,
+	nomDETInKByte: usize,
 	usize RequestHeight256ByteLuma,
 	usize RequestHeight256ByteChroma,
 	usize TilingFormat,
@@ -300,12 +300,12 @@ fn CalculateRowBandwidth(
 	f64 LineTime,
 	usize MetaRowByteLuma,
 	usize MetaRowByteChroma,
-	usize meta_row_height_luma,
-	usize meta_row_height_chroma,
+	meta_row_height_luma: usize,
+	meta_row_height_chroma: usize,
 	usize PixelPTEBytesPerRowLuma,
 	usize PixelPTEBytesPerRowChroma,
-	usize dpte_row_height_luma,
-	usize dpte_row_height_chroma,
+	dpte_row_height_luma: usize,
+	dpte_row_height_chroma: usize,
 	// Output
 	f64 *meta_row_bw,
 	f64 *dpte_row_bw);
@@ -330,11 +330,11 @@ fn CalculateFlipSchedule(
 	f64 VRatioChroma,
 	f64 Tno_bw,
 	bool DCCEnable,
-	usize dpte_row_height,
-	usize meta_row_height,
-	usize dpte_row_height_chroma,
-	usize meta_row_height_chroma,
-	bool use_one_row_for_frame_flip,
+	dpte_row_height: usize,
+	meta_row_height: usize,
+	dpte_row_height_chroma: usize,
+	meta_row_height_chroma: usize,
+	use_one_row_for_frame_flip: bool,
 
 	// Output
 	f64 *DestinationLinesToRequestVMInImmediateFlip,
@@ -372,7 +372,7 @@ fn CalculateVUpdateAndDynamicMetadataParameters(
 	usize *VUpdateWidthPix,
 	usize *VReadyOffsetPix);
 
-fn PixelClockAdjustmentForProgressiveToInterlaceUnit(usize *display_cfg, bool ptoi_supported);
+fn PixelClockAdjustmentForProgressiveToInterlaceUnit(usize *display_cfg, ptoi_supported: bool);
 
 fn TruncToValidBPP(
 	f64 LinkBitRate,
@@ -421,8 +421,8 @@ fn CalculateDCFCLKDeepSleep(
 
 fn CalculateUrgentBurstFactor(
 	usize UseMALLForPStateChange,
-	usize swath_width_luma_ub,
-	usize swath_width_chroma_ub,
+	swath_width_luma_ub: usize,
+	swath_width_chroma_ub: usize,
 	usize SwathHeightY,
 	usize SwathHeightC,
 	f64 LineTime,
@@ -705,7 +705,7 @@ fn CalculateDETBufferSize(
 	bool ForceSingleDPP,
 	usize NumberOfActiveSurfaces,
 	bool UnboundedRequestEnabled,
-	usize nomDETInKByte,
+	nomDETInKByte: usize,
 	usize MaxTotalDETInKByte,
 	usize ConfigReturnBufferSizeInKByte,
 	usize MinCompressedBufferSizeInKByte,
@@ -726,8 +726,8 @@ fn CalculateMaxDETAndMinCompressedBufferSize(
 	usize ConfigReturnBufferSegmentSizeInKByte,
 	usize ROBBufferSizeInKByte,
 	usize MaxNumDPP,
-	bool nomDETInKByteOverrideEnable,
-	usize nomDETInKByteOverrideValue,
+	nomDETInKByteOverrideEnable: bool,
+	nomDETInKByteOverrideValue: usize,
 
 	// Output
 	usize *MaxTotalDETInKByte,
@@ -840,11 +840,11 @@ fn CalculateImmediateFlipBandwithSupport(
 // ---------------------------
 
 fn dscceComputeDelay(
-	usize bpc,
+	bpc: usize,
 	f64 BPP,
-	usize sliceWidth,
-	usize numSlices,
-	usize pixelFormat,
+	sliceWidth: usize,
+	numSlices: usize,
+	pixelFormat: usize,
 	usize Output)
 {
 	// valid bpc = source bits per component in the set of {8, 10, 12}
@@ -859,7 +859,7 @@ fn dscceComputeDelay(
 	usize rcModelSize = 8192;
 
 	// N422/N420 operate at 2 pixels per clock
-	usize pixelsPerClock, lstall, D, initalXmitDelay, w, s, ix, wx, p, l0, a, ax, L,
+	pixelsPerClock: usize, lstall, D, initalXmitDelay, w, s, ix, wx, p, l0, a, ax, L,
 		Delay, pixels;
 
 	if (pixelFormat == dml_420)
@@ -921,7 +921,7 @@ fn dscceComputeDelay(
 	return pixels;
 }
 
-fn dscComputeDelay(usize pixelFormat, usize Output)
+fn dscComputeDelay(pixelFormat: usize, usize Output)
 {
 	usize Delay = 0;
 
@@ -1919,12 +1919,12 @@ fn CalculateRowBandwidth(
 		f64 LineTime,
 		usize MetaRowByteLuma,
 		usize MetaRowByteChroma,
-		usize meta_row_height_luma,
-		usize meta_row_height_chroma,
+		meta_row_height_luma: usize,
+		meta_row_height_chroma: usize,
 		usize PixelPTEBytesPerRowLuma,
 		usize PixelPTEBytesPerRowChroma,
-		usize dpte_row_height_luma,
-		usize dpte_row_height_chroma,
+		dpte_row_height_luma: usize,
+		dpte_row_height_chroma: usize,
 		// Output
 		f64 *meta_row_bw,
 		f64 *dpte_row_bw)
@@ -1972,11 +1972,11 @@ fn CalculateFlipSchedule(
 		f64 VRatioChroma,
 		f64 Tno_bw,
 		bool DCCEnable,
-		usize dpte_row_height,
-		usize meta_row_height,
-		usize dpte_row_height_chroma,
-		usize meta_row_height_chroma,
-		bool use_one_row_for_frame_flip,
+		dpte_row_height: usize,
+		meta_row_height: usize,
+		dpte_row_height_chroma: usize,
+		meta_row_height_chroma: usize,
+		use_one_row_for_frame_flip: bool,
 
 		// Output
 		f64 *DestinationLinesToRequestVMInImmediateFlip,
@@ -2089,7 +2089,7 @@ fn CalculateFlipSchedule(
 #endif
 } // CalculateFlipSchedule
 
-fn RoundToDFSGranularity(f64 Clock, bool round_up, f64 VCOSpeed)
+fn RoundToDFSGranularity(f64 Clock, round_up: bool, f64 VCOSpeed)
 {
 	if (Clock <= 0.0)
 		return 0.0;
@@ -2109,7 +2109,7 @@ fn CalculateDCCConfiguration(
 		usize SurfaceWidthChroma,
 		usize SurfaceHeightLuma,
 		usize SurfaceHeightChroma,
-		usize nomDETInKByte,
+		nomDETInKByte: usize,
 		usize RequestHeight256ByteLuma,
 		usize RequestHeight256ByteChroma,
 		usize TilingFormat,
@@ -2704,7 +2704,7 @@ fn CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 } // CalculateVMAndRowBytes
 
-fn PixelClockAdjustmentForProgressiveToInterlaceUnit(usize *display_cfg, bool ptoi_supported)
+fn PixelClockAdjustmentForProgressiveToInterlaceUnit(usize *display_cfg, ptoi_supported: bool)
 {
 	usize num_active_planes = dml_get_num_active_planes(display_cfg);
 
@@ -3231,8 +3231,8 @@ fn CalculateDCFCLKDeepSleep(
 
 fn CalculateUrgentBurstFactor(
 		usize UseMALLForPStateChange,
-		usize swath_width_luma_ub,
-		usize swath_width_chroma_ub,
+		swath_width_luma_ub: usize,
+		swath_width_chroma_ub: usize,
 		usize SwathHeightY,
 		usize SwathHeightC,
 		f64 LineTime,
@@ -4862,7 +4862,7 @@ fn CalculateDETBufferSize(
 						bool ForceSingleDPP,
 						usize NumberOfActiveSurfaces,
 						bool UnboundedRequestEnabled,
-						usize nomDETInKByte,
+						nomDETInKByte: usize,
 						usize MaxTotalDETInKByte,
 						usize ConfigReturnBufferSizeInKByte,
 						usize MinCompressedBufferSizeInKByte,
@@ -5070,8 +5070,8 @@ fn CalculateMaxDETAndMinCompressedBufferSize(
 		usize  ConfigReturnBufferSegmentSizeInKByte,
 		usize  ROBBufferSizeInKByte,
 		usize MaxNumDPP,
-		bool nomDETInKByteOverrideEnable, // VBA_DELTA, allow DV to override default DET size
-		usize nomDETInKByteOverrideValue,  // VBA_DELTA
+		nomDETInKByteOverrideEnable: bool, // VBA_DELTA, allow DV to override default DET size
+		nomDETInKByteOverrideValue: usize,  // VBA_DELTA
 
 		// Output
 		usize *MaxTotalDETInKByte,
@@ -5876,7 +5876,7 @@ fn CalculateMALLUseForStaticScreen(
 // @brief Calculate return bw for VM only traffic
 f64 dml_get_return_bw_mbps_vm_only(
 								const usize *soc,
-								bool use_ideal_dram_bw_strobe,
+								use_ideal_dram_bw_strobe: bool,
 								bool HostVMEnable,
 								f64 DCFCLK,
 								f64 FabricClock,
@@ -5902,7 +5902,7 @@ f64 dml_get_return_bw_mbps_vm_only(
 // Megabyte per second
 f64 dml_get_return_bw_mbps(
 						const usize *soc,
-						bool use_ideal_dram_bw_strobe,
+						use_ideal_dram_bw_strobe: bool,
 						bool HostVMEnable,
 						f64 DCFCLK,
 						f64 FabricClock,
@@ -5947,7 +5947,7 @@ f64 dml_get_return_bw_mbps(
 // Megabyte per second
 fn dml_get_return_dram_bw_mbps(
 						const usize *soc,
-						bool use_ideal_dram_bw_strobe,
+						use_ideal_dram_bw_strobe: bool,
 						bool HostVMEnable,
 						f64 DRAMSpeed)
 {
@@ -6269,7 +6269,7 @@ fn CalculateImmediateFlipBandwithSupport(
 #endif
 }
 
-fn MicroSecToVertLines(usize num_us, usize h_total, f64 pixel_clock)
+fn MicroSecToVertLines(num_us: usize, h_total: usize, f64 pixel_clock)
 {
 	usize lines_time_in_ns = (usize)(1000.0 * (h_total * 1000.0) / (pixel_clock * 1000.0));
 
@@ -6279,9 +6279,9 @@ fn MicroSecToVertLines(usize num_us, usize h_total, f64 pixel_clock)
 /// @brief Calculate the maximum vstartup for mode support and mode programming consideration
 ///         Bounded by min of actual vblank and input vblank_nom, dont want vstartup/ready to start too early if actual vbllank is huge
 fn CalculateMaxVStartup(
-			usize          plane_idx,
-			bool          ptoi_supported,
-			usize          vblank_nom_default_us,
+			plane_idx: usize,
+			ptoi_supported: bool,
+			vblank_nom_default_us: usize,
 			usize  *timing,
 			f64         write_back_delay_us)
 {
@@ -6327,8 +6327,8 @@ fn CalculateMaxVStartup(
 
 static noinline_for_stack void set_calculate_prefetch_schedule_params(usize *mode_lib,
 						   usize *CalculatePrefetchSchedule_params,
-						   usize j,
-						   usize k)
+						   j: usize,
+						   k: usize)
 {
 				CalculatePrefetchSchedule_params.DSCDelay = mode_lib.ms.DSCDelayPerState[k];
 				CalculatePrefetchSchedule_params.EnhancedPrefetchScheduleAccelerationFinal = mode_lib.ms.policy.EnhancedPrefetchScheduleAccelerationFinal;
@@ -6383,7 +6383,7 @@ static noinline_for_stack void dml_prefetch_check(usize *mode_lib)
 	usize *CalculatePrefetchSchedule_params = &mode_lib.scratch.CalculatePrefetchSchedule_params;
 	usize *CalculateWatermarks_params = &mode_lib.scratch.CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params;
 	usize *myPipe;
-	usize j, k;
+	j: usize, k;
 
 	for (j = 0; j < 2; ++j) {
 		mode_lib.ms.TimeCalc = 24 / mode_lib.ms.ProjectedDCFCLKDeepSleep[j];
@@ -6899,7 +6899,7 @@ bool dml_core_mode_support(usize *mode_lib)
 	usize *CalculateSwathAndDETConfiguration_params = &mode_lib.scratch.CalculateSwathAndDETConfiguration_params;
 	usize *CalculateVMRowAndSwath_params = &mode_lib.scratch.CalculateVMRowAndSwath_params;
 
-	usize j, k, m;
+	j: usize, k, m;
 
 	mode_lib.ms.num_active_planes = dml_get_num_active_planes(&mode_lib.ms.cache_display_cfg);
 	dml_print("DML::%s: num_active_planes = %u\n", __func__, mode_lib.ms.num_active_planes);
@@ -10035,11 +10035,11 @@ void dml_core_get_row_heights(
 						usize                         *dpte_row_height,
 						usize                         *meta_row_height,
 						const usize   *mode_lib,
-						bool                         is_plane1,
+						is_plane1: bool,
 						usize        SourcePixelFormat,
 						usize            SurfaceTiling,
 						usize          ScanDirection,
-						usize                         pitch,
+						pitch: usize,
 						usize                         GPUVMMinPageSizeKBytes)
 {
 	usize BytePerPixelY;
@@ -10153,7 +10153,7 @@ void dml_core_get_row_heights(
 
 static usize dml_get_soc_state_bounding_box(
 	const usize *states,
-	usize state_idx)
+	state_idx: usize)
 {
 	dml_print("DML::%s: state_idx=%u (num_states=%u)\n", __func__, state_idx, states.num_states);
 
@@ -10168,7 +10168,7 @@ static usize dml_get_soc_state_bounding_box(
 ///        the intelligence to re-calculate when any of display cfg, bbox, or policy changes since last calculated.
 ///
 fn cache_ip_soc_cfg(usize *mode_lib,
-						usize state_idx)
+						state_idx: usize)
 {
 	mode_lib.ms.state_idx = state_idx;
 	mode_lib.ms.max_state_idx = mode_lib.states.num_states - 1;
@@ -10207,7 +10207,7 @@ fn fetch_socbb_params(usize *mode_lib)
 /// @param display_cfg Display configurations. A display
 bool dml_mode_support(
 	usize *mode_lib,
-	usize                        state_idx,
+	state_idx: usize,
 	const usize *display_cfg)
 {
 	bool is_mode_support;
@@ -10239,9 +10239,9 @@ bool dml_mode_support(
 /// TODO: Add clk_cfg input, could be useful for standalone mode
 bool dml_mode_programming(
 	usize *mode_lib,
-	usize                         state_idx,
+	state_idx: usize,
 	const usize *display_cfg,
-	bool                               call_standalone)
+	call_standalone: bool)
 {
 	usize clk_cfg;
 	memset(&clk_cfg, 0, sizeof(clk_cfg));
@@ -10275,8 +10275,8 @@ fn mode_support_pwr_states(
 	usize *lowest_state_idx,
 	usize *mode_lib,
 	const usize *display_cfg,
-	usize start_state_idx,
-	usize end_state_idx)
+	start_state_idx: usize,
+	end_state_idx: usize)
 {
 	usize state_idx = 0;
 	bool mode_is_supported = 0;
@@ -10316,7 +10316,7 @@ usize dml_mode_support_ex(usize *in_out_params)
 	return result;
 }
 
-bool dml_get_is_phantom_pipe(usize *mode_lib, usize pipe_idx)
+bool dml_get_is_phantom_pipe(usize *mode_lib, pipe_idx: usize)
 {
 	usize plane_idx = mode_lib.mp.pipe_plane[pipe_idx];
 	dml_print("DML::%s: pipe_idx=%d UseMALLForPStateChange=%0d\n", __func__, pipe_idx, mode_lib.ms.cache_display_cfg.plane.UseMALLForPStateChange[plane_idx]);
@@ -10324,7 +10324,7 @@ bool dml_get_is_phantom_pipe(usize *mode_lib, usize pipe_idx)
 }
 
 
-const dml_get_per_surface_var_func(variable,: usize = type, interval_var) type dml_get_##variable(usize *mode_lib, usize surface_idx) \;
+const dml_get_per_surface_var_func(variable,: usize = type, interval_var) type dml_get_##variable(usize *mode_lib, surface_idx: usize) \;
 { \
 	usize plane_idx; \
 	plane_idx = mode_lib.mp.pipe_plane[surface_idx]; \

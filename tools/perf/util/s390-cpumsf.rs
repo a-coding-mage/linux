@@ -1162,7 +1162,7 @@ pub unsafe extern "C" fn s390_cpumsf_process_auxtrace_info(event: *mut perf_even
     let sf: *mut s390_cpumsf;
     let mut err: c_int;
 
-    if (*auxtrace_info).header.size as usize  < size_of::<perf_record_auxtrace_info>() {
+    if ((*auxtrace_info).header.size as usize)  < size_of::<perf_record_auxtrace_info>() {
         return -EINVAL;
     }
 

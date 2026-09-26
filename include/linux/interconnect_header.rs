@@ -47,7 +47,7 @@ pub struct icc_bulk_data {
 
 // The C condition is IS_ENABLED(CONFIG_INTERCONNECT). Set the Rust feature
 // CONFIG_INTERCONNECT when the interconnect implementation is enabled.
-#[cfg(feature = "CONFIG_INTERCONNECT")]
+#[cfg(CONFIG_INTERCONNECT)]
 extern "C" {
     pub fn of_icc_get(dev: *mut device, name: *const core::ffi::c_char) -> *mut icc_path;
     pub fn devm_of_icc_get(dev: *mut device, name: *const core::ffi::c_char) -> *mut icc_path;
@@ -67,37 +67,37 @@ extern "C" {
     pub fn icc_bulk_disable(num_paths: i32, paths: *const icc_bulk_data);
 }
 
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn of_icc_get(_dev: *mut device, _name: *const core::ffi::c_char) -> *mut icc_path { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn devm_of_icc_get(_dev: *mut device, _name: *const core::ffi::c_char) -> *mut icc_path { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn of_icc_get_by_index(_dev: *mut device, _idx: i32) -> *mut icc_path { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn devm_of_icc_get_by_index(_dev: *mut device, _idx: i32) -> *mut icc_path { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_put(_path: *mut icc_path) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_enable(_path: *mut icc_path) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_disable(_path: *mut icc_path) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_set_bw(_path: *mut icc_path, _avg_bw: u32, _peak_bw: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_set_tag(_path: *mut icc_path, _tag: u32) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_get_name(_path: *mut icc_path) -> *const core::ffi::c_char { core::ptr::null() }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn of_icc_bulk_get(_dev: *mut device, _num_paths: i32, _paths: *mut icc_bulk_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn devm_of_icc_bulk_get(_dev: *mut device, _num_paths: i32, _paths: *mut icc_bulk_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_bulk_put(_num_paths: i32, _paths: *mut icc_bulk_data) {}
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_bulk_set_bw(_num_paths: i32, _paths: *const icc_bulk_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_bulk_enable(_num_paths: i32, _paths: *const icc_bulk_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_INTERCONNECT"))]
+#[cfg(not(CONFIG_INTERCONNECT))]
 pub unsafe fn icc_bulk_disable(_num_paths: i32, _paths: *const icc_bulk_data) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -66,14 +66,12 @@ unsafe extern "C" {
         process_id: i32,
         speedo_id: i32,
         speedo_value: i32,
-        max_freq: usize,
-    ) -> *const cvb_table;
+        max_freq: usize) -> *const cvb_table;
 
     pub fn tegra_cvb_remove_opp_table(
         dev: *mut device,
         table: *const cvb_table,
-        max_freq: usize,
-    );
+        max_freq: usize);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

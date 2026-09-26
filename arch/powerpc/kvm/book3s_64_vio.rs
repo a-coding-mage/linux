@@ -6,9 +6,9 @@
 
 unsafe fn kvmppc_find_table(kvm: *mut kvm, liobn: c_ulong) -> *mut kvmppc_spapr_tce_table {
     let mut stt: *mut kvmppc_spapr_tce_table = core::ptr::null_mut();
-    list_for_each_entry_lockless!(stt, &(*kvm).arch.spapr_tce_tables, list) {
+    list_for_each_entry_lockless!(stt, &(*kvm).arch.spapr_tce_tables, list, {
         if (*stt).liobn == liobn { return stt; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -39,18 +39,18 @@ pub unsafe fn kvm_spapr_tce_release_iommu_group(kvm: *mut kvm, grp: *mut iommu_g
     let mut stit: *mut kvmppc_spapr_tce_iommu_table;
     let mut tmp: *mut kvmppc_spapr_tce_iommu_table;
     rcu_read_lock();
-    list_for_each_entry_rcu!(stt, &(*kvm).arch.spapr_tce_tables, list) {
+    list_for_each_entry_rcu!(stt, &(*kvm).arch.spapr_tce_tables, list, {
         let table_group = iommu_group_get_iommudata(grp);
         if WARN_ON!(table_group.is_null()) { continue; }
-        list_for_each_entry_safe!(stit, tmp, &(*stt).iommu_tables, next) {
+        list_for_each_entry_safe!(stit, tmp, &(*stt).iommu_tables, next, {
             for i in 0..IOMMU_TABLE_GROUP_MAX_TABLES {
                 if (*table_group).tables[i] == (*stit).tbl {
                     kref_put(&mut (*stit).kref, Some(kvm_spapr_tce_liobn_put));
                 }
             }
-        }
+        });
         cond_resched_rcu();
-    }
+    });
     rcu_read_unlock();
 }
 
@@ -63,9 +63,9 @@ pub unsafe fn kvm_spapr_tce_attach_iommu_group(kvm: *mut kvm, tablefd: c_int, gr
     let f = CLASS_fd!(tablefd);
     if fd_empty!(f) { return -EBADF; }
     rcu_read_lock();
-    list_for_each_entry_rcu!(stt, &(*kvm).arch.spapr_tce_tables, list) {
+    list_for_each_entry_rcu!(stt, &(*kvm).arch.spapr_tce_tables, list, {
         if stt == (*fd_file!(f)).private_data as *mut _ { found = true; break; }
-    }
+    });
     rcu_read_unlock();
     if !found { return -EINVAL; }
     table_group = iommu_group_get_iommudata(grp);
@@ -81,13 +81,13 @@ pub unsafe fn kvm_spapr_tce_attach_iommu_group(kvm: *mut kvm, tablefd: c_int, gr
     }
     if tbl.is_null() { return -EINVAL; }
     rcu_read_lock();
-    list_for_each_entry_rcu!(stit, &(*stt).iommu_tables, next) {
+    list_for_each_entry_rcu!(stit, &(*stt).iommu_tables, next, {
         if tbl != (*stit).tbl { continue; }
         if !kref_get_unless_zero(&mut (*stit).kref) {
             iommu_tce_table_put(tbl); rcu_read_unlock(); return -ENOTTY;
         }
         rcu_read_unlock(); return 0;
-    }
+    });
     rcu_read_unlock();
     stit = kzalloc_obj!();
     if stit.is_null() { iommu_tce_table_put(tbl); return -ENOMEM; }
@@ -131,10 +131,10 @@ unsafe fn kvm_spapr_tce_release(_inode: *mut inode, filp: *mut file) -> c_int {
     let kvm = (*stt).kvm;
     mutex_lock(&mut (*kvm).lock); list_del_rcu(&mut (*stt).list); mutex_unlock(&mut (*kvm).lock);
     let mut stit: *mut kvmppc_spapr_tce_iommu_table; let mut tmp: *mut kvmppc_spapr_tce_iommu_table;
-    list_for_each_entry_safe!(stit, tmp, &(*stt).iommu_tables, next) {
+    list_for_each_entry_safe!(stit, tmp, &(*stt).iommu_tables, next, {
         WARN_ON!(!kref_read(&(*stit).kref));
         while !kref_put(&mut (*stit).kref, Some(kvm_spapr_tce_liobn_put)) {}
-    }
+    });
     account_locked_vm((*kvm).mm, kvmppc_stt_pages(kvmppc_tce_pages((*stt).size)), false);
     kvm_put_kvm(kvm); call_rcu(&mut (*stt).rcu, Some(release_spapr_tce_table)); 0
 }
@@ -151,7 +151,7 @@ pub unsafe fn kvm_vm_ioctl_create_spapr_tce(kvm: *mut kvm, args: *mut kvm_create
     (*stt).size = (*args).size; (*stt).kvm = kvm; mutex_init(&mut (*stt).alloc_lock); INIT_LIST_HEAD_RCU!(&mut (*stt).iommu_tables);
     mutex_lock(&mut (*kvm).lock); ret = 0;
     let mut siter: *mut kvmppc_spapr_tce_table;
-    list_for_each_entry!(siter, &(*kvm).arch.spapr_tce_tables, list) { if (*siter).liobn == (*args).liobn { ret = -EBUSY; break; } }
+    list_for_each_entry!(siter, &(*kvm).arch.spapr_tce_tables, list, { if (*siter).liobn == (*args).liobn { ret = -EBUSY; break; } });
     kvm_get_kvm(kvm); if ret == 0 { ret = anon_inode_getfd("kvm-spapr-tce", &kvm_spapr_tce_fops, stt as *mut _, O_RDWR | O_CLOEXEC); }
     if ret >= 0 { list_add_rcu(&mut (*stt).list, &mut (*kvm).arch.spapr_tce_tables); } else { kvm_put_kvm_no_destroy(kvm); }
     mutex_unlock(&mut (*kvm).lock); if ret < 0 { kfree(stt as *mut c_void); account_locked_vm(mm, kvmppc_stt_pages(npages), false); } ret
@@ -169,7 +169,7 @@ unsafe fn kvmppc_tce_validate(stt: *mut kvmppc_spapr_tce_table, tce: c_ulong) ->
     if iommu_tce_check_gpa((*stt).page_shift, gpa) != 0 { return H_TOO_HARD; }
     let mut ua = 0; if kvmppc_tce_to_ua((*stt).kvm, tce, &mut ua) != 0 { return H_TOO_HARD; }
     let mut stit: *mut kvmppc_spapr_tce_iommu_table; rcu_read_lock();
-    list_for_each_entry_rcu!(stit, &(*stt).iommu_tables, next) { let shift = (*(*stit).tbl).it_page_shift; let mem = mm_iommu_lookup((*(*stt).kvm).mm, ua, 1u64 << shift); let mut hpa = 0; if mem.is_null() || mm_iommu_ua_to_hpa(mem, ua, shift, &mut hpa) != 0 { rcu_read_unlock(); return H_TOO_HARD; } }
+    list_for_each_entry_rcu!(stit, &(*stt).iommu_tables, next, { let shift = (*(*stit).tbl).it_page_shift; let mem = mm_iommu_lookup((*(*stt).kvm).mm, ua, 1u64 << shift); let mut hpa = 0; if mem.is_null() || mm_iommu_ua_to_hpa(mem, ua, shift, &mut hpa) != 0 { rcu_read_unlock(); return H_TOO_HARD; } });
     rcu_read_unlock(); H_SUCCESS
 }
 

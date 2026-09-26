@@ -36,7 +36,7 @@ pub unsafe fn bit_spin_lock(bitnum: i32, addr: *mut usize) {
      */
     preempt_disable();
     // Equivalent of: #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
-    #[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK"))]
+    #[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
     while (unlikely(test_and_set_bit_lock(bitnum, addr))) {
         preempt_enable();
         loop {
@@ -58,7 +58,7 @@ pub unsafe fn bit_spin_lock(bitnum: i32, addr: *mut usize) {
 pub unsafe fn bit_spin_trylock(bitnum: i32, addr: *mut usize) -> i32 {
     preempt_disable();
     // Equivalent of: #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
-    #[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK"))]
+    #[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
     if unlikely(test_and_set_bit_lock(bitnum, addr)) {
         preempt_enable();
         return 0;
@@ -74,11 +74,11 @@ pub unsafe fn bit_spin_trylock(bitnum: i32, addr: *mut usize) -> i32 {
 #[inline(always)]
 pub unsafe fn bit_spin_unlock(bitnum: i32, addr: *mut usize) {
     // Equivalent of: #ifdef CONFIG_DEBUG_SPINLOCK
-    #[cfg(feature = "CONFIG_DEBUG_SPINLOCK")]
+    #[cfg(CONFIG_DEBUG_SPINLOCK)]
     bug_on(!test_bit(bitnum, addr));
     // #endif
     // Equivalent of: #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
-    #[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK"))]
+    #[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
     clear_bit_unlock(bitnum, addr);
     // #endif
     preempt_enable();
@@ -93,11 +93,11 @@ pub unsafe fn bit_spin_unlock(bitnum: i32, addr: *mut usize) {
 #[inline(always)]
 pub unsafe fn __bit_spin_unlock(bitnum: i32, addr: *mut usize) {
     // Equivalent of: #ifdef CONFIG_DEBUG_SPINLOCK
-    #[cfg(feature = "CONFIG_DEBUG_SPINLOCK")]
+    #[cfg(CONFIG_DEBUG_SPINLOCK)]
     bug_on(!test_bit(bitnum, addr));
     // #endif
     // Equivalent of: #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
-    #[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK"))]
+    #[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
     __clear_bit_unlock(bitnum, addr);
     // #endif
     preempt_enable();
@@ -110,22 +110,22 @@ pub unsafe fn __bit_spin_unlock(bitnum: i32, addr: *mut usize) {
 #[inline]
 pub unsafe fn bit_spin_is_locked(bitnum: i32, addr: *mut usize) -> i32 {
     // Equivalent of: #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
-    #[cfg(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK"))]
+    #[cfg(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK))]
     {
         return test_bit(bitnum, addr) as i32;
     }
     // #elif defined(CONFIG_PREEMPT_COUNT)
     #[cfg(all(
-        not(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK")),
-        feature = "CONFIG_PREEMPT_COUNT"
+        not(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK)),
+        CONFIG_PREEMPT_COUNT
     ))]
     {
         return preempt_count() as i32;
     }
     // #else
     #[cfg(all(
-        not(any(feature = "CONFIG_SMP", feature = "CONFIG_DEBUG_SPINLOCK")),
-        not(feature = "CONFIG_PREEMPT_COUNT")
+        not(any(CONFIG_SMP, CONFIG_DEBUG_SPINLOCK)),
+        not(CONFIG_PREEMPT_COUNT)
     ))]
     {
         return 1;

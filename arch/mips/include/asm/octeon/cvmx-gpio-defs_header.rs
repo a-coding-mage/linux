@@ -47,7 +47,7 @@ cvmx_gpio_union!(cvmx_gpio_clk_genx, cvmx_gpio_clk_genx_s);
 cvmx_gpio_union!(cvmx_gpio_clk_qlmx, cvmx_gpio_clk_qlmx_s, cvmx_gpio_clk_qlmx_cn61xx, cvmx_gpio_clk_qlmx_cn63xx);
 
 macro_rules! cvmx_gpio_simple { ($union:ident, $struct:ident, $comment:literal) => {
-    #[repr(C)] pub struct $struct { pub bits: u64 }
+    #[repr(C)] pub $struct $struct { pub bits: u64 }
     // $comment
     cvmx_gpio_union!($union, $struct);
 }; }

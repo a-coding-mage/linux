@@ -37,7 +37,7 @@ extern "C" {
     fn warn_on(condition: i32) -> i32;
 }
 
-#[cfg(feature = "CONFIG_FUNCTION_GRAPH_TRACER")]
+#[cfg(CONFIG_FUNCTION_GRAPH_TRACER)]
 pub unsafe fn prepare_ftrace_return(parent: *mut usize, self_addr: usize) {
     let old: usize;
     let faulted: i32;
@@ -74,7 +74,7 @@ pub unsafe fn prepare_ftrace_return(parent: *mut usize, self_addr: usize) {
     }
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 unsafe fn ftrace_modify_code(addr: usize, value: u32) -> i32 {
     /* The original inline asm performs the store with exception-table recovery. */
     core::ptr::write_volatile(addr as *mut u32, value);
@@ -89,21 +89,21 @@ unsafe fn ftrace_modify_code(addr: usize, value: u32) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 const MICROBLAZE_NOP: u32 = 0x80000000;
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 const MICROBLAZE_BRI: u32 = 0xb800000C;
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 static mut recorded: u32 = 0;
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 static mut imm: u32 = 0;
 
 /* USE_FTRACE_NOP is a build-time alternative retained in the source comments. */
-#[cfg(all(feature = "CONFIG_DYNAMIC_FTRACE", feature = "USE_FTRACE_NOP"))]
+#[cfg(all(CONFIG_DYNAMIC_FTRACE, feature = "USE_FTRACE_NOP"))]
 static mut bralid: u32 = 0;
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 pub unsafe fn ftrace_make_nop(_mod: *mut module, rec: *mut dyn_ftrace, _addr: usize) -> i32 {
     let mut ret = 0;
     if recorded == 0 {
@@ -127,7 +127,7 @@ pub unsafe fn ftrace_make_nop(_mod: *mut module, rec: *mut dyn_ftrace, _addr: us
     ret
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 pub unsafe fn ftrace_make_call(rec: *mut dyn_ftrace, _addr: usize) -> i32 {
     let mut ret = ftrace_modify_code((*rec).ip, imm);
     #[cfg(feature = "USE_FTRACE_NOP")]
@@ -137,7 +137,7 @@ pub unsafe fn ftrace_make_call(rec: *mut dyn_ftrace, _addr: usize) -> i32 {
     ret
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 pub unsafe fn ftrace_update_ftrace_func(func: ftrace_func_t) -> i32 {
     let ip = &ftrace_call as *const u8 as usize;
     let mut upper = func as usize as u32;
@@ -150,17 +150,17 @@ pub unsafe fn ftrace_update_ftrace_func(func: ftrace_func_t) -> i32 {
     ret
 }
 
-#[cfg(all(feature = "CONFIG_DYNAMIC_FTRACE", feature = "CONFIG_FUNCTION_GRAPH_TRACER"))]
+#[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_FUNCTION_GRAPH_TRACER))]
 static mut old_jump: u32 = 0;
 
-#[cfg(all(feature = "CONFIG_DYNAMIC_FTRACE", feature = "CONFIG_FUNCTION_GRAPH_TRACER"))]
+#[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_FUNCTION_GRAPH_TRACER))]
 pub unsafe fn ftrace_enable_ftrace_graph_caller() -> i32 {
     let ip = &ftrace_call_graph as *const u8 as usize;
     old_jump = core::ptr::read_volatile(ip as *const u32);
     ftrace_modify_code(ip, MICROBLAZE_NOP)
 }
 
-#[cfg(all(feature = "CONFIG_DYNAMIC_FTRACE", feature = "CONFIG_FUNCTION_GRAPH_TRACER"))]
+#[cfg(all(CONFIG_DYNAMIC_FTRACE, CONFIG_FUNCTION_GRAPH_TRACER))]
 pub unsafe fn ftrace_disable_ftrace_graph_caller() -> i32 {
     let ip = &ftrace_call_graph as *const u8 as usize;
     ftrace_modify_code(ip, old_jump)

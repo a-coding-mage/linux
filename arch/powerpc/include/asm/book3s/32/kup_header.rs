@@ -4,24 +4,24 @@
 // asm/bug.h, asm/book3s/32/mmu-hash.h, asm/mmu.h, asm/synch.h, linux/sched.h.
 // The following items are intentionally referenced from those dependencies.
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 pub const KUAP_NONE: usize = usize::MAX;
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn kuap_lock_one(addr: usize) {
     mtsr(mfsr(addr) | SR_KS, addr);
     isync(); // Context sync required after mtsr()
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn kuap_unlock_one(addr: usize) {
     mtsr(mfsr(addr) & !SR_KS, addr);
     isync(); // Context sync required after mtsr()
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn uaccess_begin_32s(addr: usize) {
     // ASM_MMU_FTR_IFSET("mfsrin; rlwinm; mtsrin; isync", "", MMU_FTR_KUAP)
@@ -29,7 +29,7 @@ pub unsafe fn uaccess_begin_32s(addr: usize) {
     let _ = addr;
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn uaccess_end_32s(addr: usize) {
     // ASM_MMU_FTR_IFSET("mfsrin; oris; mtsrin; isync", "", MMU_FTR_KUAP)
@@ -37,7 +37,7 @@ pub unsafe fn uaccess_end_32s(addr: usize) {
     let _ = addr;
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn __kuap_save_and_lock(regs: *mut pt_regs) {
     let kuap = (*current).thread.kuap;
@@ -51,11 +51,11 @@ pub unsafe fn __kuap_save_and_lock(regs: *mut pt_regs) {
     kuap_lock_one(kuap);
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn kuap_user_restore(_regs: *mut pt_regs) {}
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn __kuap_kernel_restore(regs: *mut pt_regs, kuap: usize) {
     if unlikely(kuap != KUAP_NONE) {
@@ -71,7 +71,7 @@ pub unsafe fn __kuap_kernel_restore(regs: *mut pt_regs, kuap: usize) {
     kuap_unlock_one((*regs).kuap);
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn __kuap_get_and_assert_locked() -> usize {
     let kuap = (*current).thread.kuap;
@@ -79,7 +79,7 @@ pub unsafe fn __kuap_get_and_assert_locked() -> usize {
     kuap
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn allow_user_access(to: *mut core::ffi::c_void, dir: usize) {
     BUILD_BUG_ON(!__builtin_constant_p(dir));
@@ -92,7 +92,7 @@ pub unsafe fn allow_user_access(to: *mut core::ffi::c_void, dir: usize) {
     uaccess_begin_32s(to as u32 as usize);
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn prevent_user_access(dir: usize) {
     let kuap = (*current).thread.kuap;
@@ -106,7 +106,7 @@ pub unsafe fn prevent_user_access(dir: usize) {
     uaccess_end_32s(kuap);
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn prevent_user_access_return() -> usize {
     let flags = (*current).thread.kuap;
@@ -118,7 +118,7 @@ pub unsafe fn prevent_user_access_return() -> usize {
     flags
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn restore_user_access(flags: usize) {
     if flags != KUAP_NONE {
@@ -127,7 +127,7 @@ pub unsafe fn restore_user_access(flags: usize) {
     }
 }
 
-#[cfg(feature = "CONFIG_PPC_KUAP")]
+#[cfg(CONFIG_PPC_KUAP)]
 #[inline(always)]
 pub unsafe fn __bad_kuap_fault(regs: *mut pt_regs, address: usize, is_write: bool) -> bool {
     let kuap = (*regs).kuap;

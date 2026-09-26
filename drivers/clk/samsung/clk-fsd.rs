@@ -318,7 +318,7 @@ static cmu_cmu_info: /* samsung_cmu_info */ = {
     nr_clk_regs: cmu_clk_regs.len(),
 ];
 
-static void __init fsd_clk_cmu_init(struct device_node *np)
+static void __init fsd_clk_cmu_init(device_node *np)
 {
 	samsung_cmu_register_one(np, &cmu_cmu_info);
 }
@@ -1431,7 +1431,7 @@ static imem_cmu_info: /* samsung_cmu_info */ = {
     nr_clk_regs: imem_clk_regs.len(),
 ];
 
-static void __init fsd_clk_imem_init(struct device_node *np)
+static void __init fsd_clk_imem_init(device_node *np)
 {
 	samsung_cmu_register_one(np, &imem_cmu_info);
 }
@@ -1766,13 +1766,13 @@ static cam_csi_cmu_info: /* samsung_cmu_info */ = {
  *
  * Configure clock hierarchy for clock domains of FSD platform
  */
-static int __init fsd_cmu_probe(struct platform_device *pdev)
+static int __init fsd_cmu_probe(platform_device *pdev)
 {
 	const struct samsung_cmu_info *info;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }

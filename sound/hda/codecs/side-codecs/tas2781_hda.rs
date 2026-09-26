@@ -250,7 +250,7 @@ pub unsafe extern "C" fn tas2781_save_calibration(hda: *mut tas2781_hda) -> i32 
     ];
     let efi_name: [*mut efi_char16_t; CALIBRATION_DATA_AREA_NUM] =
         [EFI_NAME_0.as_mut_ptr(), EFI_NAME_1.as_mut_ptr()];
-    let p: *mut tasdevice_priv = (*hda).priv;
+    let p: *mut tasdevice_priv = (*hda).r#priv;
     let cali_data: *mut calidata = &mut (*p).cali_data;
     let mut total_sz: c_ulong = 0;
     let mut attr: u32 = 0;
@@ -340,7 +340,7 @@ pub unsafe extern "C" fn tas2781_hda_remove(dev: *mut device, ops: *const compon
 
     pm_runtime_put_noidle((*tas_hda).dev);
 
-    tasdevice_remove((*tas_hda).priv);
+    tasdevice_remove((*tas_hda).r#priv);
 }
 // EXPORT_SYMBOL_NS_GPL(tas2781_hda_remove, "SND_HDA_SCODEC_TAS2781");
 

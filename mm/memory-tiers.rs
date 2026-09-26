@@ -51,9 +51,9 @@ unsafe fn to_memory_tier(device: *mut device) -> *mut memory_tier {
 unsafe fn get_memtier_nodemask(memtier: *mut memory_tier) -> nodemask_t {
     let mut nodes = NODE_MASK_NONE;
     let mut memtype: *mut memory_dev_type;
-    list_for_each_entry!(memtype, &mut (*memtier).memory_types, tier_sibling) {
+    list_for_each_entry!(memtype, &mut (*memtier).memory_types, tier_sibling, {
         nodes_or!(nodes, nodes, (*memtype).nodes);
-    }
+    });
     nodes
 }
 
@@ -103,8 +103,8 @@ pub unsafe fn init_node_memory_type(node: i32, memtype: *mut memory_dev_type) { 
 unsafe fn __init_node_memory_type(node: i32, memtype: *mut memory_dev_type) { if (*node_memory_types.as_mut_ptr().add(node as usize)).memtype.is_null() { (*node_memory_types.as_mut_ptr().add(node as usize)).memtype = memtype; } if (*node_memory_types.as_mut_ptr().add(node as usize)).memtype == memtype { if (*node_memory_types.as_mut_ptr().add(node as usize)).map_count == 0 { kref_get!(&mut (*memtype).kref); } (*node_memory_types.as_mut_ptr().add(node as usize)).map_count += 1; } }
 pub unsafe fn clear_node_memory_type(node: i32, memtype: *mut memory_dev_type) { mutex_lock(&mut memory_tier_lock); let m = node_memory_types.as_mut_ptr().add(node as usize); if (*m).memtype == memtype || memtype.is_null() { (*m).map_count -= 1; } if (*m).map_count == 0 { let old = (*m).memtype; (*m).memtype = core::ptr::null_mut(); put_memory_type(old); } mutex_unlock(&mut memory_tier_lock); }
 
-pub unsafe fn mt_find_alloc_memory_type(adist: i32, memory_types: *mut list_head) -> *mut memory_dev_type { let mut mtype: *mut memory_dev_type; list_for_each_entry!(mtype, memory_types, list) { if (*mtype).adistance == adist { return mtype; } } let mtype = alloc_memory_type(adist); if IS_ERR!(mtype) { return mtype; } list_add!(&mut (*mtype).list, memory_types); mtype }
-pub unsafe fn mt_put_memory_types(memory_types: *mut list_head) { let mut mtype: *mut memory_dev_type; let mut mtn: *mut memory_dev_type; list_for_each_entry_safe!(mtype, mtn, memory_types, list) { list_del!(&mut (*mtype).list); put_memory_type(mtype); } }
+pub unsafe fn mt_find_alloc_memory_type(adist: i32, memory_types: *mut list_head) -> *mut memory_dev_type { let mut mtype: *mut memory_dev_type; list_for_each_entry!(mtype, memory_types, list, { if (*mtype).adistance == adist { return mtype; } }); let mtype = alloc_memory_type(adist); if IS_ERR!(mtype) { return mtype; } list_add!(&mut (*mtype).list, memory_types); mtype }
+pub unsafe fn mt_put_memory_types(memory_types: *mut list_head) { let mut mtype: *mut memory_dev_type; let mut mtn: *mut memory_dev_type; list_for_each_entry_safe!(mtype, mtn, memory_types, list, { list_del!(&mut (*mtype).list); put_memory_type(mtype); }); }
 
 pub unsafe fn mt_set_default_dram_perf(_nid: i32, _perf: *mut access_coordinate, _source: *const core::ffi::c_char) -> i32 { if default_dram_perf_error { return -EIO; } 0 }
 pub unsafe fn mt_perf_to_adistance(_perf: *mut access_coordinate, _adist: *mut i32) -> i32 { if default_dram_perf_error { -EIO } else { -ENOENT } }

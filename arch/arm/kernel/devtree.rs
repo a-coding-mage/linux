@@ -7,18 +7,18 @@
 
 // Linux and architecture dependencies are supplied by the surrounding tree.
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     static mut __cpu_method_of_table: of_cpu_method;
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 static __cpu_method_of_table_sentinel: of_cpu_method = of_cpu_method {
     method: core::ptr::null(),
     ops: core::ptr::null(),
 };
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn set_smp_ops_by_method(node: *mut device_node) -> i32 {
     let mut method: *const core::ffi::c_char = core::ptr::null();
     let mut m: *mut of_cpu_method = core::ptr::addr_of_mut!(__cpu_method_of_table);
@@ -38,7 +38,7 @@ unsafe fn set_smp_ops_by_method(node: *mut device_node) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe fn set_smp_ops_by_method(_node: *mut device_node) -> i32 {
     1
 }

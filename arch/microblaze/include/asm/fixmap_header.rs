@@ -41,9 +41,9 @@ pub const FIXADDR_TOP: usize = (-(PAGE_SIZE as isize)) as usize;
 pub enum fixed_addresses {
     FIX_HOLE,
     /* CONFIG_HIGHMEM: reserved pte's for temporary kernel mappings. */
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     FIX_KMAP_BEGIN,
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     FIX_KMAP_END = FIX_KMAP_BEGIN as isize
         + (KM_MAX_IDX as isize * num_possible_cpus() as isize)
         - 1,

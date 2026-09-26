@@ -8,7 +8,7 @@ pub const __LSUI_PREAMBLE: &str = ".arch_extension lsui\n";
 
 // CONFIG_ARM64_LSUI selects the capability-aware implementation at build time.
 // The referenced functions and ARM64_HAS_LSUI are supplied externally.
-#[cfg(feature = "CONFIG_ARM64_LSUI")]
+#[cfg(CONFIG_ARM64_LSUI)]
 #[macro_export]
 macro_rules! __lsui_llsc_body {
     ($op:ident, $($args:expr),* $(,)?) => {{
@@ -20,7 +20,7 @@ macro_rules! __lsui_llsc_body {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_LSUI"))]
+#[cfg(not(CONFIG_ARM64_LSUI))]
 #[macro_export]
 macro_rules! __lsui_llsc_body {
     ($op:ident, $($args:expr),* $(,)?) => {{

@@ -148,8 +148,8 @@ unsafe fn imc_pmu_create(parent: *mut device_node, pmu_index: i32, domain: i32) 
 }
 
 // Kernel CPU/node iteration macros retain their original semantics in the containing kernel.
-unsafe fn disable_nest_pmu_counters() { /* cpus_read_lock(); for_each_node_with_cpus(nid) { ... } cpus_read_unlock(); */ }
-unsafe fn disable_core_pmu_counters() { /* cpus_read_lock(); for_each_online_cpu(cpu) { ... } cpus_read_unlock(); */ }
+unsafe fn disable_nest_pmu_counters() { /* cpus_read_lock(); for_each_node_with_cpus!(nid, { ... }); cpus_read_unlock(); */ }
+unsafe fn disable_core_pmu_counters() { /* cpus_read_lock(); for_each_online_cpu!(cpu, { ... }); cpus_read_unlock(); */ }
 
 #[no_mangle]
 pub unsafe extern "C" fn get_max_nest_dev() -> u32 {

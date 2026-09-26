@@ -24,7 +24,7 @@ extern "C" {
 
 #[inline(always)]
 pub unsafe fn hypfs_diag_fs_init() -> c_int {
-    if cfg!(feature = "CONFIG_S390_HYPFS_FS") {
+    if cfg!(CONFIG_S390_HYPFS_FS) {
         __hypfs_diag_fs_init()
     } else {
         0
@@ -33,7 +33,7 @@ pub unsafe fn hypfs_diag_fs_init() -> c_int {
 
 #[inline]
 pub unsafe fn hypfs_diag_fs_exit() {
-    if cfg!(feature = "CONFIG_S390_HYPFS_FS") {
+    if cfg!(CONFIG_S390_HYPFS_FS) {
         __hypfs_diag_fs_exit();
     }
 }

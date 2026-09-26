@@ -218,6 +218,8 @@ unsafe fn xfs_xmi_item_recover_intent(
     let mut ip1 = core::ptr::null_mut();
     let mut ip2 = core::ptr::null_mut();
     let mut error = xlog_recover_iget_handle(mp, (*xlf).xmi_inode1, (*xlf).xmi_igen1, &mut ip1);
+    'err_rele1: {
+    'err_rele2: {
     if error != 0 {
         XFS_CORRUPTION_ERROR(__func__(), XFS_ERRLEVEL_LOW, mp, xlf, core::mem::size_of_val(&*xlf));
         return ERR_PTR(error) as *mut xfs_exchmaps_intent;
@@ -225,7 +227,7 @@ unsafe fn xfs_xmi_item_recover_intent(
     error = xlog_recover_iget_handle(mp, (*xlf).xmi_inode2, (*xlf).xmi_igen2, &mut ip2);
     if error != 0 {
         XFS_CORRUPTION_ERROR(__func__(), XFS_ERRLEVEL_LOW, mp, xlf, core::mem::size_of_val(&*xlf));
-        goto!(err_rele1);
+        break 'err_rele1;
     }
     (*req).ip1 = ip1;
     (*req).ip2 = ip2;
@@ -237,16 +239,18 @@ unsafe fn xfs_xmi_item_recover_intent(
     error = xfs_exchmaps_estimate(req);
     xfs_exchrange_iunlock(ip1, ip2);
     if error != 0 {
-        goto!(err_rele2);
+        break 'err_rele2;
     }
     *ipp1 = ip1;
     *ipp2 = ip2;
     let xmi = xfs_exchmaps_init_intent(req);
     xfs_defer_add_item(dfp, &mut (*xmi).xmi_list);
     return xmi;
-err_rele2:
+    }
+    
     xfs_irele(ip2);
-err_rele1:
+    }
+    
     xfs_irele(ip1);
     (*req).ip2 = core::ptr::null_mut();
     (*req).ip1 = core::ptr::null_mut();
@@ -266,6 +270,9 @@ unsafe fn xfs_exchmaps_recover_work(
     let mut ip1 = core::ptr::null_mut();
     let mut ip2 = core::ptr::null_mut();
     let mut error = 0;
+    'err_rele: {
+    'err_unlock: {
+    'err_cancel: {
     if !xfs_xmi_validate(mp, xmi_lip) {
         XFS_CORRUPTION_ERROR(__func__(), XFS_ERRLEVEL_LOW, mp, &(*xmi_lip).xmi_format, core::mem::size_of_val(&(*xmi_lip).xmi_format));
         return -EFSCORRUPTED;
@@ -275,20 +282,23 @@ unsafe fn xfs_exchmaps_recover_work(
     trace_xfs_exchmaps_recover(mp, xmi);
     resv = xlog_recover_resv(&M_RES(mp).tr_write);
     error = xfs_trans_alloc(mp, &resv, req.resblks, 0, 0, &mut tp);
-    if error != 0 { goto!(err_rele); }
+    if error != 0 { break 'err_rele; }
     xfs_exchrange_ilock(tp, ip1, ip2);
     xfs_exchmaps_ensure_reflink(tp, xmi);
     xfs_exchmaps_upgrade_extent_counts(tp, xmi);
     error = xlog_recover_finish_intent(tp, dfp);
     if error == -EFSCORRUPTED { XFS_CORRUPTION_ERROR(__func__(), XFS_ERRLEVEL_LOW, mp, &(*xmi_lip).xmi_format, core::mem::size_of_val(&(*xmi_lip).xmi_format)); }
-    if error != 0 { goto!(err_cancel); }
+    if error != 0 { break 'err_cancel; }
     error = xfs_defer_ops_capture_and_commit(tp, capture_list);
-    goto!(err_unlock);
-err_cancel:
+    break 'err_unlock;
+    }
+    
     xfs_trans_cancel(tp);
-err_unlock:
+    }
+    
     xfs_exchrange_iunlock(ip1, ip2);
-err_rele:
+    }
+    
     xfs_irele(ip2);
     xfs_irele(ip1);
     error

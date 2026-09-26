@@ -14,7 +14,7 @@ extern "C" {
     pub static mut uaccess_flush_key: core::ffi::c_ulong;
 }
 
-#[cfg(feature = "CONFIG_PPC_PKEY")]
+#[cfg(CONFIG_PPC_PKEY)]
 extern "C" {
     pub static mut default_uamor: u64;
     pub static mut default_amr: u64;
@@ -70,7 +70,7 @@ pub unsafe fn __kuap_kernel_restore(regs: *const pt_regs, amr: u64) {
 #[inline(always)]
 pub unsafe fn __kuap_get_and_assert_locked() -> u64 {
     let amr = mfspr(SPRN_AMR);
-    #[cfg(feature = "CONFIG_PPC_KUAP_DEBUG")]
+    #[cfg(CONFIG_PPC_KUAP_DEBUG)]
     warn_on_once(amr != AMR_KUAP_BLOCKED);
     amr
 }

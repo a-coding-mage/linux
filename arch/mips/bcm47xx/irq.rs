@@ -79,7 +79,7 @@ pub unsafe extern "C" fn arch_init_irq() {
     // CONFIG_BCM47XX_BCMA is a build-time condition from the original source.
     // When enabled, the original code writes the BCMA MIPS74K interrupt mask
     // for core 5, then routes the timer interrupt to IRQ 7.
-    #[cfg(feature = "CONFIG_BCM47XX_BCMA")]
+    #[cfg(CONFIG_BCM47XX_BCMA)]
     {
         // External BCMA bus layout and register helpers are supplied elsewhere:
         // bcma_write32(bcm47xx_bus.bcma.bus.drv_mips.core,

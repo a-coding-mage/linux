@@ -24,7 +24,7 @@ pub const RUNTIME_INF: u64 = u64::MAX;
 
 #[inline] pub fn idle_policy(policy: i32) -> i32 { (policy == SCHED_IDLE) as i32 }
 #[inline] pub fn normal_policy(policy: i32) -> i32 {
-    #[cfg(feature = "CONFIG_SCHED_CLASS_EXT")] if policy == SCHED_EXT { return 1; }
+    #[cfg(CONFIG_SCHED_CLASS_EXT)] if policy == SCHED_EXT { return 1; }
     (policy == SCHED_NORMAL) as i32
 }
 #[inline] pub fn fair_policy(policy: i32) -> i32 { (normal_policy(policy) != 0 || policy == SCHED_BATCH) as i32 }
@@ -43,7 +43,7 @@ pub const RUNTIME_INF: u64 = u64::MAX;
 #[repr(C)] pub struct uclamp_bucket { pub value: c_ulong, pub tasks: c_ulong }
 #[repr(C)] pub struct uclamp_rq { pub value: c_uint, pub bucket: [uclamp_bucket; UCLAMP_BUCKETS as usize] }
 
-#[cfg(feature = "CONFIG_SCHED_CLASS_EXT")]
+#[cfg(CONFIG_SCHED_CLASS_EXT)]
 #[repr(C)] pub struct scx_rq { pub local_dsq: scx_dispatch_q, pub runnable_list: list_head, pub ddsp_deferred_locals: list_head, pub ops_qseq: c_ulong, pub remote_activate_enq_flags: u64, pub remote_activate_sch: *mut scx_sched, pub nr_running: u32, pub cpuperf_target: u32, pub in_select_cpu: bool, pub cpu_released: bool, pub flags: u32, pub nr_immed: u32, pub clock: u64, pub cpus_to_sync: cpumask_var_t, pub kick_sync_pending: bool, pub kick_sync: c_ulong, pub sched_pcpus_to_kick: list_head, pub deferred_reenq_lock: raw_spinlock_t, pub deferred_reenq_locals: list_head, pub deferred_reenq_users: list_head, pub deferred_bal_cb: balance_callback, pub kick_sync_bal_cb: balance_callback, pub deferred_irq_work: irq_work, pub kick_cpus_irq_work: irq_work }
 
 #[repr(C)] pub struct dl_rq { pub root: rb_root_cached, pub dl_nr_running: c_uint, pub earliest_dl: sched_dl_times, pub overloaded: bool, pub curr: *mut sched_dl_entity, pub pushable_dl_tasks_root: rb_root_cached, pub running_bw: u64, pub this_bw: u64, pub extra_bw: u64, pub max_bw: u64, pub bw_ratio: u64 }

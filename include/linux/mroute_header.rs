@@ -2,13 +2,13 @@
 
 /* Dependencies supplied by the surrounding kernel translation. */
 
-#[cfg(feature = "CONFIG_IP_MROUTE")]
+#[cfg(CONFIG_IP_MROUTE)]
 #[inline]
 pub fn ip_mroute_opt(opt: ::core::ffi::c_int) -> bool {
     opt >= MRT_BASE && opt <= MRT_MAX
 }
 
-#[cfg(feature = "CONFIG_IP_MROUTE")]
+#[cfg(CONFIG_IP_MROUTE)]
 extern "C" {
     pub fn ip_mroute_setsockopt(
         _: *mut sock,
@@ -41,7 +41,7 @@ extern "C" {
     ) -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ip_mroute_setsockopt(
     _: *mut sock,
@@ -52,7 +52,7 @@ pub fn ip_mroute_setsockopt(
     -ENOPROTOOPT
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ip_mroute_getsockopt(
     _: *mut sock,
@@ -63,7 +63,7 @@ pub fn ip_mroute_getsockopt(
     -ENOPROTOOPT
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ipmr_ioctl(
     _: *mut sock,
@@ -73,25 +73,25 @@ pub fn ipmr_ioctl(
     -ENOIOCTLCMD
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ip_mr_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ip_mroute_opt(_: ::core::ffi::c_int) -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ipmr_rule_default(_: *const fib_rule) -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_IP_MROUTE"))]
+#[cfg(not(CONFIG_IP_MROUTE))]
 #[inline]
 pub fn ipmr_sk_ioctl(
     _: *mut sock,

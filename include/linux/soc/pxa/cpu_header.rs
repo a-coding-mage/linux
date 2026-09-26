@@ -30,44 +30,44 @@ extern "C" {
     pub fn read_cpuid_id() -> u32;
 }
 
-#[cfg(feature = "CONFIG_PXA25x")]
+#[cfg(CONFIG_PXA25x)]
 pub fn __cpu_is_pxa210(id: u32) -> bool { (id & 0xf3f0) == 0x2120 }
-#[cfg(not(feature = "CONFIG_PXA25x"))]
+#[cfg(not(CONFIG_PXA25x))]
 pub fn __cpu_is_pxa210(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_PXA25x")]
+#[cfg(CONFIG_PXA25x)]
 pub fn __cpu_is_pxa250(id: u32) -> bool { (id & 0xf3ff) <= 0x2105 }
-#[cfg(not(feature = "CONFIG_PXA25x"))]
+#[cfg(not(CONFIG_PXA25x))]
 pub fn __cpu_is_pxa250(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_PXA25x")]
+#[cfg(CONFIG_PXA25x)]
 pub fn __cpu_is_pxa255(id: u32) -> bool { (id & 0xffff) == 0x2d06 }
-#[cfg(not(feature = "CONFIG_PXA25x"))]
+#[cfg(not(CONFIG_PXA25x))]
 pub fn __cpu_is_pxa255(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_PXA25x")]
+#[cfg(CONFIG_PXA25x)]
 pub fn __cpu_is_pxa25x(id: u32) -> bool { (id & 0xf300) == 0x2100 }
-#[cfg(not(feature = "CONFIG_PXA25x"))]
+#[cfg(not(CONFIG_PXA25x))]
 pub fn __cpu_is_pxa25x(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_PXA27x")]
+#[cfg(CONFIG_PXA27x)]
 pub fn __cpu_is_pxa27x(id: u32) -> bool { ((id >> 4) & 0xfff) == 0x411 }
-#[cfg(not(feature = "CONFIG_PXA27x"))]
+#[cfg(not(CONFIG_PXA27x))]
 pub fn __cpu_is_pxa27x(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_CPU_PXA300")]
+#[cfg(CONFIG_CPU_PXA300)]
 pub fn __cpu_is_pxa300(id: u32) -> bool { ((id >> 4) & 0xfff) == 0x688 }
-#[cfg(not(feature = "CONFIG_CPU_PXA300"))]
+#[cfg(not(CONFIG_CPU_PXA300))]
 pub fn __cpu_is_pxa300(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_CPU_PXA310")]
+#[cfg(CONFIG_CPU_PXA310)]
 pub fn __cpu_is_pxa310(id: u32) -> bool { ((id >> 4) & 0xfff) == 0x689 }
-#[cfg(not(feature = "CONFIG_CPU_PXA310"))]
+#[cfg(not(CONFIG_CPU_PXA310))]
 pub fn __cpu_is_pxa310(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_CPU_PXA320")]
+#[cfg(CONFIG_CPU_PXA320)]
 pub fn __cpu_is_pxa320(id: u32) -> bool { let id = (id >> 4) & 0xfff; id == 0x603 || id == 0x682 }
-#[cfg(not(feature = "CONFIG_CPU_PXA320"))]
+#[cfg(not(CONFIG_CPU_PXA320))]
 pub fn __cpu_is_pxa320(_id: u32) -> bool { false }
 
 pub unsafe fn cpu_is_pxa210() -> bool { __cpu_is_pxa210(read_cpuid_id()) }
@@ -80,14 +80,14 @@ pub unsafe fn cpu_is_pxa310() -> bool { __cpu_is_pxa310(read_cpuid_id()) }
 pub unsafe fn cpu_is_pxa320() -> bool { __cpu_is_pxa320(read_cpuid_id()) }
 
 /* CPUID Core Generation Bit; <= 0x2 for pxa21x/pxa25x/pxa26x/pxa27x. */
-#[cfg(any(feature = "CONFIG_PXA25x", feature = "CONFIG_PXA27x"))]
+#[cfg(any(CONFIG_PXA25x, CONFIG_PXA27x))]
 pub fn __cpu_is_pxa2xx(id: u32) -> bool { ((id >> 13) & 0x7) <= 0x2 }
-#[cfg(not(any(feature = "CONFIG_PXA25x", feature = "CONFIG_PXA27x")))]
+#[cfg(not(any(CONFIG_PXA25x, CONFIG_PXA27x)))]
 pub fn __cpu_is_pxa2xx(_id: u32) -> bool { false }
 
-#[cfg(feature = "CONFIG_PXA3xx")]
+#[cfg(CONFIG_PXA3xx)]
 pub fn __cpu_is_pxa3xx(id: u32) -> bool { __cpu_is_pxa300(id) || __cpu_is_pxa310(id) || __cpu_is_pxa320(id) }
-#[cfg(not(feature = "CONFIG_PXA3xx"))]
+#[cfg(not(CONFIG_PXA3xx))]
 pub fn __cpu_is_pxa3xx(_id: u32) -> bool { false }
 
 pub unsafe fn cpu_is_pxa2xx() -> bool { __cpu_is_pxa2xx(read_cpuid_id()) }

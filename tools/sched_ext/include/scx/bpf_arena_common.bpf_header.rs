@@ -128,7 +128,7 @@ macro_rules! __cond_break {
     ($expr:expr) => {{
         /*
          * C version uses asm volatile goto to branch to l_break and execute
-         * expr, then continues at l_continue. Rust has no direct equivalent
+         * $expr, then continues at l_continue. Rust has no direct equivalent
          * for this C macro form in a source-level header translation.
          */
         let _ = || {

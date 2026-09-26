@@ -85,22 +85,27 @@ unsafe fn clk_mt8188_apmixed_probe(pdev: *mut platform_device) -> c_int {
     let mut clk_data: *mut clk_hw_onecell_data;
     let node = (*pdev).dev.of_node;
     let mut r: c_int;
+    'free_apmixed_data: {
+    'unregister_plls: {
+    'unregister_gates: {
 
     clk_data = mtk_alloc_clk_data(CLK_APMIXED_NR_CLK);
     if clk_data.is_null() { return -ENOMEM; }
 
     r = mtk_clk_register_plls(&mut (*pdev).dev, PLLS.as_ptr(), PLLS.len(), clk_data);
-    if r != 0 { goto!(free_apmixed_data); }
+    if r != 0 { break 'free_apmixed_data; }
     r = mtk_clk_register_gates(&mut (*pdev).dev, node, APMIXED_CLKS.as_ptr(), APMIXED_CLKS.len(), clk_data);
-    if r != 0 { goto!(unregister_plls); }
+    if r != 0 { break 'unregister_plls; }
     r = of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
-    if r != 0 { goto!(unregister_gates); }
+    if r != 0 { break 'unregister_gates; }
     platform_set_drvdata(pdev, clk_data);
     return 0;
-
-    unregister_gates: mtk_clk_unregister_gates(APMIXED_CLKS.as_ptr(), APMIXED_CLKS.len(), clk_data);
-    unregister_plls: mtk_clk_unregister_plls(PLLS.as_ptr(), PLLS.len(), clk_data);
-    free_apmixed_data: mtk_free_clk_data(clk_data);
+    }
+    mtk_clk_unregister_gates(APMIXED_CLKS.as_ptr(), APMIXED_CLKS.len(), clk_data);
+    }
+    mtk_clk_unregister_plls(PLLS.as_ptr(), PLLS.len(), clk_data);
+    }
+    mtk_free_clk_data(clk_data);
     r
 }
 

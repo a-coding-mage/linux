@@ -42,12 +42,12 @@ const _: () = assert!(core::mem::align_of::<ucontext>() >= 8);
 pub const DUMMY_MAGIC: c_ulong = 0xb0d9ed01;
 
 /* CONFIG_IWMMXT is a kernel build-time condition. */
-#[cfg(feature = "CONFIG_IWMMXT")]
+#[cfg(CONFIG_IWMMXT)]
 pub const IWMMXT_MAGIC: c_ulong = 0x12ef842a;
-#[cfg(feature = "CONFIG_IWMMXT")]
+#[cfg(CONFIG_IWMMXT)]
 pub const IWMMXT_STORAGE_SIZE: usize = IWMMXT_SIZE as usize + 8;
 
-#[cfg(feature = "CONFIG_IWMMXT")]
+#[cfg(CONFIG_IWMMXT)]
 #[repr(C, align(8))]
 pub struct iwmmxt_sigframe {
     pub magic: c_ulong,
@@ -56,10 +56,10 @@ pub struct iwmmxt_sigframe {
 }
 
 /* CONFIG_VFP is a kernel build-time condition. */
-#[cfg(feature = "CONFIG_VFP")]
+#[cfg(CONFIG_VFP)]
 pub const VFP_MAGIC: c_ulong = 0x56465001;
 
-#[cfg(feature = "CONFIG_VFP")]
+#[cfg(CONFIG_VFP)]
 #[repr(C, align(8))]
 pub struct vfp_sigframe {
     pub magic: c_ulong,
@@ -72,7 +72,7 @@ pub struct vfp_sigframe {
  * 8 byte for magic and size, 264 byte for ufp, 12 bytes for ufp_exc,
  * 4 bytes padding.
  */
-#[cfg(feature = "CONFIG_VFP")]
+#[cfg(CONFIG_VFP)]
 pub const VFP_STORAGE_SIZE: usize = core::mem::size_of::<vfp_sigframe>();
 
 /*
@@ -82,9 +82,9 @@ pub const VFP_STORAGE_SIZE: usize = core::mem::size_of::<vfp_sigframe>();
  */
 #[repr(C, align(8))]
 pub struct aux_sigframe {
-    #[cfg(feature = "CONFIG_IWMMXT")]
+    #[cfg(CONFIG_IWMMXT)]
     pub iwmmxt: iwmmxt_sigframe,
-    #[cfg(feature = "CONFIG_VFP")]
+    #[cfg(CONFIG_VFP)]
     pub vfp: vfp_sigframe,
     /* Something that isn't a valid magic number for any coprocessor. */
     pub end_magic: c_ulong,

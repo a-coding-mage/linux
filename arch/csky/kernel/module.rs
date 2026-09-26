@@ -46,7 +46,7 @@ fn elf32_r_type(info: u32) -> u32 {
     info & 0xff
 }
 
-#[cfg(feature = "CONFIG_CPU_CK810")]
+#[cfg(CONFIG_CPU_CK810)]
 unsafe fn jsri_2_lrw_jsr(location: *mut u32) {
     let location_tmp = location as *mut u16;
 
@@ -64,7 +64,7 @@ unsafe fn jsri_2_lrw_jsr(location: *mut u32) {
     }
 }
 
-#[cfg(not(feature = "CONFIG_CPU_CK810"))]
+#[cfg(not(CONFIG_CPU_CK810))]
 #[inline]
 unsafe fn jsri_2_lrw_jsr(_location: *mut u32) {}
 

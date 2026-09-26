@@ -84,7 +84,7 @@ unsafe fn fnop_n(_f:*mut sh_fpu_soft_struct,_n:i32)->i32{-EINVAL}
 type FnN=unsafe fn(*mut sh_fpu_soft_struct,i32)->i32; type FnM=unsafe fn(*mut sh_fpu_soft_struct,*mut pt_regs,i32,i32)->i32;
 static FNXD:[FnN;16]=[fsts,flds,ffloat,ftrc,fneg,fabs,fsqrt,fsrra,fld0,fld1,fcnvsd,fcnvds,fnop_n,fnop_n,fipr,id_fxfd];
 static FNMX:[FnM;16]=[fadd,fsub,fmul,fdiv,fcmp_eq,fcmp_gt,fmov_idx_reg,fmov_reg_idx,fmov_mem_reg,fmov_inc_reg,fmov_reg_mem,fmov_reg_dec,fmov_reg_reg,id_fnxd,fmac,fnop_mn];
-unsafe fn id_fxfd(f:*mut sh_fpu_soft_struct,x:i32)->i32{match x&3{3=>fxchg(f,[fpscr!(f)&(1<<20),fpscr!(f)&(1<<19),fpscr!(f)&(1<<21),0][(x>>2)as usize]),1=>ftrv(f,x-1),_->fsca(f,x)};0}
+unsafe fn id_fxfd(f:*mut sh_fpu_soft_struct,x:i32)->i32{match x&3{3=>fxchg(f,[fpscr!(f)&(1<<20),fpscr!(f)&(1<<19),fpscr!(f)&(1<<21),0][(x>>2)as usize]),1=>ftrv(f,x-1),(*_).fsca(f,x)};0}
 unsafe fn id_fnxd(f:*mut sh_fpu_soft_struct,_r:*mut pt_regs,x:i32,n:i32)->i32{FNXD[x as usize](f,n)}
 unsafe fn id_fnmx(f:*mut sh_fpu_soft_struct,r:*mut pt_regs,code:u16)->i32{FNMX[((code&15)as usize)](f,r,((code>>4)&15)as i32,((code>>8)&15)as i32)}
 unsafe fn id_sys(f:*mut sh_fpu_soft_struct,regs:*mut pt_regs,code:u16)->i32{let n=((code>>8)&15)as i32;let reg=if code&16!=0{fpul!(f)as *mut u32}else{fpscr!(f)as *mut u32};match code&0xf0ff{0x005a|0x006a=>r!(regs,n)=*reg,0x405a|0x406a=>*reg=r!(regs,n),0x4052|0x4062=>{r!(regs,n)-=4;mwrite!(*reg,r!(regs,n));},0x4056|0x4066=>{mread!(*reg,r!(regs,n));r!(regs,n)+=4;},_= >return -EINVAL};0}

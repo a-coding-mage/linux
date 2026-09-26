@@ -167,14 +167,14 @@ pub const I2C_LOCK_ROOT_ADAPTER:u32=1<<0; pub const I2C_LOCK_SEGMENT:u32=1<<1;
 pub const I2C_CLASS_HWMON:u32=1<<0; pub const I2C_CLASS_DEPRECATED:u32=1<<8; pub const I2C_CLIENT_END:u16=0xfffe;
 
 extern "C" {
-    pub fn i2c_new_client_device(*mut i2c_adapter,*const i2c_board_info)->*mut i2c_client;
-    pub fn i2c_new_dummy_device(*mut i2c_adapter,u16)->*mut i2c_client;
-    pub fn i2c_unregister_device(*mut i2c_client);
-    pub fn i2c_register_driver(*mut module,*mut i2c_driver)->i32;
-    pub fn i2c_del_driver(*mut i2c_driver);
-    pub fn i2c_for_each_dev(*mut c_void,*mut c_void)->i32;
-    pub fn i2c_parse_fw_timings(*mut device,*mut i2c_timings,bool);
-    pub fn of_fwnode_handle(*mut device_node)->*mut fwnode_handle;
+    pub fn i2c_new_client_device(_: *mut i2c_adapter,_: *const i2c_board_info)->*mut i2c_client;
+    pub fn i2c_new_dummy_device(_: *mut i2c_adapter,_: u16)->*mut i2c_client;
+    pub fn i2c_unregister_device(_: *mut i2c_client);
+    pub fn i2c_register_driver(_: *mut module,_: *mut i2c_driver)->i32;
+    pub fn i2c_del_driver(_: *mut i2c_driver);
+    pub fn i2c_for_each_dev(_: *mut c_void,_: *mut c_void)->i32;
+    pub fn i2c_parse_fw_timings(_: *mut device,_: *mut i2c_timings,_: bool);
+    pub fn of_fwnode_handle(_: *mut device_node)->*mut fwnode_handle;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

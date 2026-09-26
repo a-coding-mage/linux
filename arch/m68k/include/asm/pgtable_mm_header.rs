@@ -102,7 +102,7 @@ pub const VMALLOC_START: usize = ((high_memory as usize + VMALLOC_OFFSET) & !(VM
 #[cfg(all(not(CONFIG_SUN3), not(CONFIG_COLDFIRE), not(CONFIG_VIRT)))]
 pub const VMALLOC_END: usize = KMAP_START;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn kernel_set_cachemode(addr: *mut core::ffi::c_void, size: usize, cmode: i32);
 }
 

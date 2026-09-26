@@ -28,7 +28,7 @@ macro_rules! do_div {
             if __upper != 0 {
                 core::arch::asm!(
                     "divul.l {base},{upper}:{low}",
-                    base = in(reg) __base,
+                    $base = in(reg) __base,
                     upper = inout(reg) __upper,
                     low = inout(reg) __n.n32[0],
                     options(nostack)
@@ -36,7 +36,7 @@ macro_rules! do_div {
             }
             core::arch::asm!(
                 "divu.l {base},{rem}:{low}",
-                base = in(reg) __base,
+                $base = in(reg) __base,
                 rem = lateout(reg) __rem,
                 upper = in(reg) __upper,
                 low = inout(reg) __n.n32[1],

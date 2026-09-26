@@ -47,8 +47,7 @@ unsafe extern "C" {
     pub fn xfs_dir2_leaf_to_block(
         args: *mut core::ffi::c_void,
         lbp: *mut core::ffi::c_void,
-        dbp: *mut core::ffi::c_void,
-    ) -> i32;
+        dbp: *mut core::ffi::c_void) -> i32;
     pub fn xfs_dir2_sf_to_block(args: *mut core::ffi::c_void) -> i32;
 }
 

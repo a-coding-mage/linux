@@ -22,7 +22,7 @@ pub struct ClkMapping {
 
 #[repr(C)]
 pub struct ClkOps {
-    #[cfg(feature = "CONFIG_SH_CLK_CPG_LEGACY")]
+    #[cfg(CONFIG_SH_CLK_CPG_LEGACY)]
     pub init: Option<unsafe extern "C" fn(*mut Clk)>,
     pub enable: Option<unsafe extern "C" fn(*mut Clk) -> CInt>,
     pub disable: Option<unsafe extern "C" fn(*mut Clk)>,

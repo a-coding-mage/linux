@@ -11,7 +11,7 @@ macro_rules! ADF_GEN6_TL_SL_UTIL_COUNTER {
 macro_rules! ADF_GEN6_TL_SL_EXEC_COUNTER {
     ($name:ident) => { ADF_TL_COUNTER!(concat!("exec_", stringify!($name)), ADF_TL_SIMPLE_COUNT, ADF_TL_SLICE_REG_OFF!($name, reg_tm_slice_exec_cnt, gen6)) };
 }
-macro_rules! SLICE_IDX { ($sl:ident) => { offset_of!(icp_qat_fw_init_admin_slice_cnt, $sl##_cnt) }; }
+macro_rules! SLICE_IDX { ($sl:tt) => { offset_of!(icp_qat_fw_init_admin_slice_cnt, ::kernel::macros::paste!([<$sl _cnt>])) }; }
 macro_rules! ADF_GEN6_TL_CMDQ_WAIT_COUNTER {
     ($name:ident) => { ADF_TL_COUNTER!(concat!("cmdq_wait_", stringify!($name)), ADF_TL_SIMPLE_COUNT, ADF_TL_CMDQ_REG_OFF!($name, reg_tm_cmdq_wait_cnt, gen6)) };
 }

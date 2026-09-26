@@ -49,8 +49,7 @@ unsafe extern "C" {
     fn ui_browser__show(
         browser: *mut ui_browser,
         title: *const c_char,
-        helpline: *const c_char,
-    ) -> c_int;
+        helpline: *const c_char) -> c_int;
     fn ui_browser__run(browser: *mut ui_browser, delay_secs: c_int) -> c_int;
     fn ui_browser__hide(browser: *mut ui_browser);
     fn ui_browser__argv_refresh(browser: *mut ui_browser) -> c_int;
@@ -69,8 +68,7 @@ unsafe extern "C" {
         c: c_int,
         dr: c_int,
         dc: c_int,
-        fill: c_int,
-    );
+        fill: c_int);
     fn SLsmg_write_nstring(str_: *const c_char, len: c_int);
     fn SLsmg_write_char(ch: c_int);
     fn SLsmg_refresh();

@@ -2,7 +2,7 @@
 
 // Faithful source-level translation record. External declarations and types are
 // supplied by the surrounding display-core Rust bindings.
-+// /*
+// /*
 //  * Copyright 2020 Advanced Micro Devices, Inc.
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,7 +60,7 @@
 // #include "dio/dcn10/dcn10_dio.h"
 // 
 // #define TO_DCN_DCCG(dccg)\
-// 	container_of(dccg, struct dcn_dccg, base)
+// 	container_of(dccg, dcn_dccg, base)
 // 
 // #define DC_LOGGER_INIT(logger)
 // 
@@ -76,7 +76,7 @@
 // #define FN(reg_name, field_name) \
 // 	hws->shifts->field_name, hws->masks->field_name
 // 
-// void dcn30_log_color_state(struct dc *dc,
+// void dcn30_log_color_state(dc *dc,
 // 			   struct dc_log_buffer_ctx *log_ctx)
 // {
 // 	(void)log_ctx;
@@ -244,9 +244,9 @@
 // 	bool result = true;
 // 	const struct pwl_params *blend_lut = NULL;
 // 
-// 	if (plane_state->cm.blend_func.type == TF_TYPE_HWPWL)
+// 	if (plane_state->cm.blend_func.r#type == TF_TYPE_HWPWL)
 // 		blend_lut = &plane_state->cm.blend_func.pwl;
-// 	else if (plane_state->cm.blend_func.type == TF_TYPE_DISTRIBUTED_POINTS) {
+// 	else if (plane_state->cm.blend_func.r#type == TF_TYPE_DISTRIBUTED_POINTS) {
 // 		result = cm3_helper_translate_curve_to_hw_format(plane_state->ctx,
 // 				&plane_state->cm.blend_func,
 // 				&dpp_base->regamma_params,
@@ -261,7 +261,7 @@
 // 	return result;
 // }
 // 
-// static bool dcn30_set_mpc_shaper_3dlut(struct dpp *dpp, struct mpc *mpc,
+// static bool dcn30_set_mpc_shaper_3dlut(dpp *dpp, mpc *mpc,
 // 				       int mpcc_id, const struct dc_stream_state *stream)
 // {
 // 	struct dc *dc = dpp->ctx->dc;
@@ -318,7 +318,7 @@
 // 	return result;
 // }
 // 
-// bool dcn30_set_input_transfer_func(struct dc *dc,
+// bool dcn30_set_input_transfer_func(dc *dc,
 // 				struct pipe_ctx *pipe_ctx,
 // 				const struct dc_plane_state *plane_state)
 // {
@@ -333,14 +333,14 @@
 // 
 // 	tf = TRANSFER_FUNCTION_UNITY;
 // 
-// 	if (plane_state->in_transfer_func.type == TF_TYPE_PREDEFINED)
+// 	if (plane_state->in_transfer_func.r#type == TF_TYPE_PREDEFINED)
 // 		tf = plane_state->in_transfer_func.tf;
 // 
 // 	dpp_base->funcs->dpp_set_pre_degam(dpp_base, tf);
 // 
-// 	if (plane_state->in_transfer_func.type == TF_TYPE_HWPWL)
+// 	if (plane_state->in_transfer_func.r#type == TF_TYPE_HWPWL)
 // 		params = &plane_state->in_transfer_func.pwl;
-// 	else if (plane_state->in_transfer_func.type == TF_TYPE_DISTRIBUTED_POINTS &&
+// 	else if (plane_state->in_transfer_func.r#type == TF_TYPE_DISTRIBUTED_POINTS &&
 // 		cm3_helper_translate_curve_to_hw_format(plane_state->ctx,
 // 							&plane_state->in_transfer_func,
 // 							&dpp_base->degamma_params, false))
@@ -359,7 +359,7 @@
 // 	return result;
 // }
 // 
-// void dcn30_program_gamut_remap(struct program_gamut_remap_params *params)
+// void dcn30_program_gamut_remap(program_gamut_remap_params *params)
 // {
 // 	struct dpp *dpp = params->dpp;
 // 	struct mpc *mpc = params->mpc;
@@ -400,7 +400,7 @@
 // 	mpc->funcs->set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
 // }
 // 
-// bool dcn30_set_output_transfer_func(struct set_output_transfer_func_params *otf_params)
+// bool dcn30_set_output_transfer_func(set_output_transfer_func_params *otf_params)
 // {
 // 	struct dpp *dpp = otf_params->dpp;
 // 	struct mpc *mpc = otf_params->mpc;
@@ -416,16 +416,16 @@
 // 		/*program rmu shaper and 3dlut in MPC*/
 // 		ret = dcn30_set_mpc_shaper_3dlut(dpp, mpc, mpcc_id, stream);
 // 		if (ret == false && mpc->funcs->set_output_gamma) {
-// 			if (stream->out_transfer_func.type == TF_TYPE_HWPWL)
+// 			if (stream->out_transfer_func.r#type == TF_TYPE_HWPWL)
 // 				params = &stream->out_transfer_func.pwl;
-// 			else if (stream->out_transfer_func.type ==
+// 			else if (stream->out_transfer_func.r#type ==
 // 					TF_TYPE_DISTRIBUTED_POINTS &&
 // 					cm3_helper_translate_curve_to_hw_format(stream->ctx,
 // 					&stream->out_transfer_func,
 // 					&mpc->blender_params, false))
 // 				params = &mpc->blender_params;
 // 			 /* there are no ROM LUTs in OUTGAM */
-// 			if (stream->out_transfer_func.type == TF_TYPE_PREDEFINED)
+// 			if (stream->out_transfer_func.r#type == TF_TYPE_PREDEFINED)
 // 				BREAK_TO_DEBUGGER();
 // 		}
 // 	}
@@ -651,7 +651,7 @@
 // 	}
 // }
 // 
-// void dcn30_init_hw(struct dc *dc)
+// void dcn30_init_hw(dc *dc)
 // {
 // 	struct abm **abms = dc->res_pool->multiple_abms;
 // 	struct dce_hwseq *hws = dc->hwseq;
@@ -843,7 +843,7 @@
 // 	dc->caps.dmub_caps.mclk_sw = dc->ctx->dmub_srv->dmub->feature_caps.fw_assisted_mclk_switch_ver;
 // }
 // 
-// void dcn30_set_avmute(struct pipe_ctx *pipe_ctx, bool enable)
+// void dcn30_set_avmute(pipe_ctx *pipe_ctx, bool enable)
 // {
 // 	if (pipe_ctx == NULL)
 // 		return;
@@ -874,7 +874,7 @@
 // 	}
 // }
 // 
-// void dcn30_update_info_frame(struct pipe_ctx *pipe_ctx)
+// void dcn30_update_info_frame(pipe_ctx *pipe_ctx)
 // {
 // 	bool is_hdmi_tmds;
 // 	bool is_dp;
@@ -913,7 +913,7 @@
 // 	}
 // }
 // 
-// void dcn30_program_dmdata_engine(struct pipe_ctx *pipe_ctx)
+// void dcn30_program_dmdata_engine(pipe_ctx *pipe_ctx)
 // {
 // 	struct dc_stream_state    *stream     = pipe_ctx->stream;
 // 	struct hubp               *hubp       = pipe_ctx->plane_res.hubp;
@@ -973,7 +973,7 @@
 // 	return status;
 // }
 // 
-// bool dcn30_apply_idle_power_optimizations(struct dc *dc, bool enable)
+// bool dcn30_apply_idle_power_optimizations(dc *dc, bool enable)
 // {
 // 	union dmub_rb_cmd cmd;
 // 	uint32_t tmr_delay = 0, tmr_scale = 0;
@@ -999,7 +999,7 @@
 // 			if (i == dc->current_state->stream_count) {
 // 				/* Enable no-memory-requests case */
 // 				memset(&cmd, 0, sizeof(cmd));
-// 				cmd.mall.header.type = DMUB_CMD__MALL;
+// 				cmd.mall.header.r#type = DMUB_CMD__MALL;
 // 				cmd.mall.header.sub_type = DMUB_CMD__MALL_ACTION_NO_DF_REQ;
 // 				cmd.mall.header.payload_bytes = sizeof(cmd.mall) - sizeof(cmd.mall.header);
 // 
@@ -1101,7 +1101,7 @@
 // 				/* Copy HW cursor */
 // 				if (cursor_cache_enable) {
 // 					memset(&cmd, 0, sizeof(cmd));
-// 					cmd.mall.header.type = DMUB_CMD__MALL;
+// 					cmd.mall.header.r#type = DMUB_CMD__MALL;
 // 					cmd.mall.header.sub_type = DMUB_CMD__MALL_ACTION_COPY_CURSOR;
 // 					cmd.mall.header.payload_bytes =
 // 							sizeof(cmd.mall) - sizeof(cmd.mall.header);
@@ -1138,7 +1138,7 @@
 // 
 // 				/* Enable MALL */
 // 				memset(&cmd, 0, sizeof(cmd));
-// 				cmd.mall.header.type = DMUB_CMD__MALL;
+// 				cmd.mall.header.r#type = DMUB_CMD__MALL;
 // 				cmd.mall.header.sub_type = DMUB_CMD__MALL_ACTION_ALLOW;
 // 				cmd.mall.header.payload_bytes = sizeof(cmd.mall) - sizeof(cmd.mall.header);
 // 				cmd.mall.tmr_delay = tmr_delay;
@@ -1157,7 +1157,7 @@
 // 
 // 	/* Disable MALL */
 // 	memset(&cmd, 0, sizeof(cmd));
-// 	cmd.mall.header.type = DMUB_CMD__MALL;
+// 	cmd.mall.header.r#type = DMUB_CMD__MALL;
 // 	cmd.mall.header.sub_type = DMUB_CMD__MALL_ACTION_DISALLOW;
 // 	cmd.mall.header.payload_bytes =
 // 		sizeof(cmd.mall) - sizeof(cmd.mall.header);
@@ -1167,7 +1167,7 @@
 // 	return true;
 // }
 // 
-// bool dcn30_does_plane_fit_in_mall(struct dc *dc,
+// bool dcn30_does_plane_fit_in_mall(dc *dc,
 // 		unsigned int pitch,
 // 		unsigned int height,
 // 		enum surface_pixel_format format,
@@ -1205,7 +1205,7 @@
 // 	return (surface_size + cursor_size) < mall_size;
 // }
 // 
-// void dcn30_hardware_release(struct dc *dc)
+// void dcn30_hardware_release(dc *dc)
 // {
 // 	bool subvp_in_use = false;
 // 	uint32_t i;
@@ -1252,7 +1252,7 @@
 // 			color_space, color_depth, solid_color, width, height, offset);
 // }
 // 
-// void dcn30_prepare_bandwidth(struct dc *dc,
+// void dcn30_prepare_bandwidth(dc *dc,
 // 	struct dc_state *context)
 // {
 // 	if (context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching && !dc->clk_mgr->clks.fw_based_mclk_switching) {

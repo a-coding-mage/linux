@@ -14,20 +14,20 @@ pub const TASK_SIZE_2PB: u64 = 0x0008_0000_0000_0000;
 pub const TASK_SIZE_4PB: u64 = 0x0010_0000_0000_0000;
 
 /* CONFIG_PPC_64K_PAGES selects the following values. */
-#[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+#[cfg(CONFIG_PPC_64K_PAGES)]
 pub const TASK_SIZE_USER64: u64 = TASK_SIZE_4PB;
-#[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+#[cfg(CONFIG_PPC_64K_PAGES)]
 pub const DEFAULT_MAP_WINDOW_USER64: u64 = TASK_SIZE_128TB;
-#[cfg(feature = "CONFIG_PPC_64K_PAGES")]
+#[cfg(CONFIG_PPC_64K_PAGES)]
 pub const TASK_CONTEXT_SIZE: u64 = TASK_SIZE_512TB;
 
-#[cfg(not(feature = "CONFIG_PPC_64K_PAGES"))]
+#[cfg(not(CONFIG_PPC_64K_PAGES))]
 pub const TASK_SIZE_USER64: u64 = TASK_SIZE_64TB;
-#[cfg(not(feature = "CONFIG_PPC_64K_PAGES"))]
+#[cfg(not(CONFIG_PPC_64K_PAGES))]
 pub const DEFAULT_MAP_WINDOW_USER64: u64 = TASK_SIZE_64TB;
 
 /* We do not need extended context ids for 4K page size. */
-#[cfg(not(feature = "CONFIG_PPC_64K_PAGES"))]
+#[cfg(not(CONFIG_PPC_64K_PAGES))]
 pub const TASK_CONTEXT_SIZE: u64 = TASK_SIZE_64TB;
 
 /* External symbols/macros supplied by the surrounding kernel translation. */
@@ -60,13 +60,13 @@ pub unsafe fn TASK_UNMAPPED_BASE() -> u64 {
 }
 
 /* Initial task size value for user applications. */
-#[cfg(feature = "CONFIG_PPC_BOOK3S_64")]
+#[cfg(CONFIG_PPC_BOOK3S_64)]
 #[inline]
 pub unsafe fn DEFAULT_MAP_WINDOW() -> u64 {
     if is_32bit_task() { TASK_SIZE_USER32 } else { DEFAULT_MAP_WINDOW_USER64 }
 }
 
-#[cfg(not(feature = "CONFIG_PPC_BOOK3S_64"))]
+#[cfg(not(CONFIG_PPC_BOOK3S_64))]
 #[inline]
 pub unsafe fn DEFAULT_MAP_WINDOW() -> u64 { TASK_SIZE() }
 

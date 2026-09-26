@@ -8,7 +8,7 @@ pub struct console_cmdline {
     pub user_specified: bool, /* Specified by command line vs. platform */
     pub options: *mut core::ffi::c_char, /* Options for the driver */
     // CONFIG_A11Y_BRAILLE_CONSOLE build-time condition.
-    #[cfg(feature = "CONFIG_A11Y_BRAILLE_CONSOLE")]
+    #[cfg(CONFIG_A11Y_BRAILLE_CONSOLE)]
     pub brl_options: *mut core::ffi::c_char, /* Options for braille driver */
 }
 

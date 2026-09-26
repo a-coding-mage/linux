@@ -128,12 +128,12 @@ external_c! {
 // 		return ret;
 // 	}
 // 
-// 	/* dynamic allocate irq to memif * /
+// 	/* dynamic allocate irq to memif */
 // 	if (memif->irq_usage < 0) {
 // 		int irq_id = mtk_dynamic_irq_acquire(afe);
 // 
 // 		if (irq_id != afe->irqs_size) {
-// 			/* link * /
+// 			/* link */
 // 			memif->irq_usage = irq_id;
 // 		} else {
 // 			dev_err(afe->dev, "%s() error: no more asys irq\n",
@@ -181,14 +181,14 @@ external_c! {
 // 	if (ret)
 // 		return ret;
 // 
-// 	/* channel merge configuration, enable control is in UL5_IN_MUX * /
+// 	/* channel merge configuration, enable control is in UL5_IN_MUX */
 // 	if (id == MT8186_MEMIF_VUL3) {
 // 		int update_cnt = 8;
 // 		unsigned int val = 0;
 // 		unsigned int mask = 0;
 // 		int fs_mode = mt8186_rate_transform(afe->dev, rate, id);
 // 
-// 		/* set rate, channel, update cnt, disable sgen * /
+// 		/* set rate, channel, update cnt, disable sgen */
 // 		val = fs_mode << CM1_FS_SELECT_SFT |
 // 			(channels - 1) << CHANNEL_MERGE0_CHNUM_SFT |
 // 			update_cnt << CHANNEL_MERGE0_UPDATE_CNT_SFT;
@@ -249,12 +249,12 @@ external_c! {
 // 		/*
 // 		 * for small latency record
 // 		 * ul memif need read some data before irq enable
-// 		 * /
+// 		 */
 // 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE &&
 // 		    ((runtime->period_size * 1000) / rate <= 10))
 // 			udelay(300);
 // 
-// 		/* set irq counter * /
+// 		/* set irq counter */
 // 		if (afe_priv->irq_cnt[id] > 0)
 // 			counter = afe_priv->irq_cnt[id];
 // 		else
@@ -265,7 +265,7 @@ external_c! {
 // 				   << irq_data->irq_cnt_shift,
 // 				   counter << irq_data->irq_cnt_shift);
 // 
-// 		/* set irq fs * /
+// 		/* set irq fs */
 // 		fs = afe->irq_fs(substream, runtime->rate);
 // 		if (fs < 0)
 // 			return -EINVAL;
@@ -275,7 +275,7 @@ external_c! {
 // 				   << irq_data->irq_fs_shift,
 // 				   fs << irq_data->irq_fs_shift);
 // 
-// 		/* enable interrupt * /
+// 		/* enable interrupt */
 // 		if (runtime->stop_threshold != ~(0U))
 // 			regmap_update_bits(afe->regmap,
 // 					   irq_data->irq_en_reg,
@@ -287,7 +287,7 @@ external_c! {
 // 		if (afe_priv->xrun_assert[id] > 0) {
 // 			if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
 // 				int avail = snd_pcm_capture_avail(runtime);
-// 				/* alsa can trigger stop/start when occur xrun * /
+// 				/* alsa can trigger stop/start when occur xrun */
 // 				if (avail >= runtime->buffer_size)
 // 					dev_dbg(afe->dev, "%s(), id %d, xrun assert\n",
 // 						__func__, id);
@@ -299,14 +299,14 @@ external_c! {
 // 			dev_err(afe->dev, "%s(), error, id %d, memif enable, ret %d\n",
 // 				__func__, id, ret);
 // 
-// 		/* disable interrupt * /
+// 		/* disable interrupt */
 // 		if (runtime->stop_threshold != ~(0U))
 // 			regmap_update_bits(afe->regmap,
 // 					   irq_data->irq_en_reg,
 // 					   1 << irq_data->irq_en_shift,
 // 					   0 << irq_data->irq_en_shift);
 // 
-// 		/* clear pending IRQ * /
+// 		/* clear pending IRQ */
 // 		regmap_write(afe->regmap, irq_data->irq_clr_reg,
 // 			     1 << irq_data->irq_clr_shift);
 // 		return ret;
@@ -372,13 +372,13 @@ external_c! {
 // 	if (ret)
 // 		return ret;
 // 
-// 	/* set irq counter * /
+// 	/* set irq counter */
 // 	regmap_update_bits(afe->regmap, irq_data->irq_cnt_reg,
 // 			   irq_data->irq_cnt_maskbit
 // 			   << irq_data->irq_cnt_shift,
 // 			   counter << irq_data->irq_cnt_shift);
 // 
-// 	/* set irq fs * /
+// 	/* set irq fs */
 // 	fs = afe->irq_fs(substream, runtime->rate);
 // 
 // 	if (fs < 0)
@@ -392,7 +392,7 @@ external_c! {
 // 	return 0;
 // }
 // 
-// /* FE DAIs * /
+// /* FE DAIs */
 // static const struct snd_soc_dai_ops mt8186_memif_dai_ops = {
 // 	.startup	= mt8186_fe_startup,
 // 	.shutdown	= mt8186_fe_shutdown,
@@ -418,7 +418,7 @@ external_c! {
 // 			 SNDRV_PCM_FMTBIT_S32_LE)
 // 
 // static struct snd_soc_dai_driver mt8186_memif_dai_driver[] = {
-// 	/* FE DAIs: memory intefaces to CPU * /
+// 	/* FE DAIs: memory intefaces to CPU */
 // 	{
 // 		.name = "DL1",
 // 		.id = MT8186_MEMIF_DL1,
@@ -625,7 +625,7 @@ external_c! {
 // 	}
 // };
 // 
-// /* kcontrol * /
+// /* kcontrol */
 // static int mt8186_irq_cnt1_get(struct snd_kcontrol *kcontrol,
 // 			       struct snd_ctl_elem_value *ucontrol)
 // {
@@ -765,7 +765,7 @@ external_c! {
 // 		       mt8186_record_xrun_assert_set),
 // };
 // 
-// /* dma widget & routes* /
+// /* dma widget & routes*/
 // static const struct snd_kcontrol_new memif_ul1_ch1_mix[] = {
 // 	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1 Switch", AFE_CONN21,
 // 				    I_ADDA_UL_CH1, 1, 0),
@@ -1316,7 +1316,7 @@ external_c! {
 // 				    I_SRC_2_OUT_CH2, 1, 0),
 // };
 // 
-// /* ADDA UL MUX * /
+// /* ADDA UL MUX */
 // enum {
 // 	UL5_IN_MUX_CM1 = 0,
 // 	UL5_IN_MUX_NORMAL,
@@ -1343,7 +1343,7 @@ external_c! {
 // 	SOC_DAPM_ENUM("UL5_IN_MUX Select", ul5_in_mux_map_enum);
 // 
 // static const struct snd_soc_dapm_widget mt8186_memif_widgets[] = {
-// 	/* inter-connections * /
+// 	/* inter-connections */
 // 	SND_SOC_DAPM_MIXER("UL1_CH1", SND_SOC_NOPM, 0, 0,
 // 			   memif_ul1_ch1_mix, ARRAY_SIZE(memif_ul1_ch1_mix)),
 // 	SND_SOC_DAPM_MIXER("UL1_CH2", SND_SOC_NOPM, 0, 0,
@@ -1392,7 +1392,7 @@ external_c! {
 // 
 // 	SND_SOC_DAPM_MIXER("HW_CM1", SND_SOC_NOPM, 0, 0, NULL, 0),
 // 
-// 	/* CM1 en* /
+// 	/* CM1 en*/
 // 	SND_SOC_DAPM_SUPPLY_S("CM1_EN", 0, AFE_CM1_CON,
 // 			      CHANNEL_MERGE0_EN_SFT, 0, NULL,
 // 			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
@@ -1457,7 +1457,7 @@ external_c! {
 // 	{"UL2", NULL, "UL2_CH1"},
 // 	{"UL2", NULL, "UL2_CH2"},
 // 
-// 	/* cannot connect FE to FE directly * /
+// 	/* cannot connect FE to FE directly */
 // 	{"UL2_CH1", "DL1_CH1 Switch", "Hostless_UL2 UL"},
 // 	{"UL2_CH2", "DL1_CH2 Switch", "Hostless_UL2 UL"},
 // 	{"UL2_CH1", "DL12_CH1 Switch", "Hostless_UL2 UL"},
@@ -2432,7 +2432,7 @@ external_c! {
 // };
 // 
 // static const int memif_irq_usage[MT8186_MEMIF_NUM] = {
-// 	/* TODO: verify each memif & irq * /
+// 	/* TODO: verify each memif & irq */
 // 	[MT8186_MEMIF_DL1] = MT8186_IRQ_0,
 // 	[MT8186_MEMIF_DL2] = MT8186_IRQ_1,
 // 	[MT8186_MEMIF_DL3] = MT8186_IRQ_2,
@@ -2454,11 +2454,11 @@ external_c! {
 // 
 // static bool mt8186_is_volatile_reg(struct device *dev, unsigned int reg)
 // {
-// 	/* these auto-gen reg has read-only bit, so put it as volatile * /
-// 	/* volatile reg cannot be cached, so cannot be set when power off * /
+// 	/* these auto-gen reg has read-only bit, so put it as volatile */
+// 	/* volatile reg cannot be cached, so cannot be set when power off */
 // 	switch (reg) {
-// 	case AUDIO_TOP_CON0:	/* reg bit controlled by CCF * /
-// 	case AUDIO_TOP_CON1:	/* reg bit controlled by CCF * /
+// 	case AUDIO_TOP_CON0:	/* reg bit controlled by CCF */
+// 	case AUDIO_TOP_CON1:	/* reg bit controlled by CCF */
 // 	case AUDIO_TOP_CON2:
 // 	case AUDIO_TOP_CON3:
 // 	case AFE_DAC_CON0:
@@ -2674,8 +2674,8 @@ external_c! {
 // 	case AFE_DOMAIN_SIDEBAND1_MON:
 // 	case AFE_DOMAIN_SIDEBAND2_MON:
 // 	case AFE_DOMAIN_SIDEBAND3_MON:
-// 	case AFE_APLL1_TUNER_CFG:	/* [20:31] is monitor * /
-// 	case AFE_APLL2_TUNER_CFG:	/* [20:31] is monitor * /
+// 	case AFE_APLL1_TUNER_CFG:	/* [20:31] is monitor */
+// 	case AFE_APLL2_TUNER_CFG:	/* [20:31] is monitor */
 // 		return true;
 // 	default:
 // 		return false;
@@ -2705,7 +2705,7 @@ external_c! {
 // 	int ret;
 // 	int i;
 // 
-// 	/* get irq that is sent to MCU * /
+// 	/* get irq that is sent to MCU */
 // 	ret = regmap_read(afe->regmap, AFE_IRQ_MCU_EN, &mcu_en);
 // 	if (ret) {
 // 		dev_err(afe->dev, "%s, get irq direction fail, ret %d", __func__, ret);
@@ -2713,7 +2713,7 @@ external_c! {
 // 	}
 // 
 // 	ret = regmap_read(afe->regmap, AFE_IRQ_MCU_STATUS, &status);
-// 	/* only care IRQ which is sent to MCU * /
+// 	/* only care IRQ which is sent to MCU */
 // 	status_mcu = status & mcu_en & AFE_IRQ_STATUS_BITS;
 // 
 // 	if (ret || status_mcu == 0) {
@@ -2739,7 +2739,7 @@ external_c! {
 // 	}
 // 
 // err_irq:
-// 	/* clear irq * /
+// 	/* clear irq */
 // 	regmap_write(afe->regmap, AFE_IRQ_MCU_CLR, status_mcu);
 // 
 // 	return IRQ_HANDLED;
@@ -2755,7 +2755,7 @@ external_c! {
 // 	if (!afe->regmap || afe_priv->pm_runtime_bypass_reg_ctl)
 // 		goto skip_regmap;
 // 
-// 	/* disable AFE * /
+// 	/* disable AFE */
 // 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, 0x1, 0x0);
 // 
 // 	ret = regmap_read_poll_timeout(afe->regmap,
@@ -2769,17 +2769,17 @@ external_c! {
 // 		return ret;
 // 	}
 // 
-// 	/* make sure all irq status are cleared * /
+// 	/* make sure all irq status are cleared */
 // 	regmap_write(afe->regmap, AFE_IRQ_MCU_CLR, 0xffffffff);
 // 	regmap_write(afe->regmap, AFE_IRQ_MCU_CLR, 0xffffffff);
 // 
-// 	/* reset sgen * /
+// 	/* reset sgen */
 // 	regmap_write(afe->regmap, AFE_SINEGEN_CON0, 0x0);
 // 	regmap_update_bits(afe->regmap, AFE_SINEGEN_CON2,
 // 			   INNER_LOOP_BACK_MODE_MASK_SFT,
 // 			   0x3f << INNER_LOOP_BACK_MODE_SFT);
 // 
-// 	/* cache only * /
+// 	/* cache only */
 // 	regcache_cache_only(afe->regmap, true);
 // 	regcache_mark_dirty(afe->regmap);
 // 
@@ -2810,18 +2810,18 @@ external_c! {
 // 	regcache_cache_only(afe->regmap, false);
 // 	regcache_sync(afe->regmap);
 // 
-// 	/* enable audio sys DCM for power saving * /
+// 	/* enable audio sys DCM for power saving */
 // 	regmap_update_bits(afe_priv->infracfg, PERI_BUS_DCM_CTRL, BIT(29), BIT(29));
 // 	regmap_update_bits(afe->regmap, AUDIO_TOP_CON0, BIT(29), BIT(29));
 // 
-// 	/* force cpu use 8_24 format when writing 32bit data * /
+// 	/* force cpu use 8_24 format when writing 32bit data */
 // 	regmap_update_bits(afe->regmap, AFE_MEMIF_CON0, CPU_HD_ALIGN_MASK_SFT, 0);
 // 
-// 	/* set all output port to 24bit * /
+// 	/* set all output port to 24bit */
 // 	regmap_write(afe->regmap, AFE_CONN_24BIT, 0xffffffff);
 // 	regmap_write(afe->regmap, AFE_CONN_24BIT_1, 0xffffffff);
 // 
-// 	/* enable AFE * /
+// 	/* enable AFE */
 // 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, AUDIO_AFE_ON_MASK_SFT, BIT(0));
 // 
 // skip_regmap:
@@ -2911,14 +2911,14 @@ external_c! {
 // 	if (IS_ERR(afe->base_addr))
 // 		return PTR_ERR(afe->base_addr);
 // 
-// 	/* init audio related clock * /
+// 	/* init audio related clock */
 // 	ret = mt8186_init_clock(afe);
 // 	if (ret) {
 // 		dev_err(dev, "init clock error, ret %d\n", ret);
 // 		return ret;
 // 	}
 // 
-// 	/* init memif * /
+// 	/* init memif */
 // 	afe->memif_32bit_supported = 0;
 // 	afe->memif_size = MT8186_MEMIF_NUM;
 // 	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif), GFP_KERNEL);
@@ -2931,9 +2931,9 @@ external_c! {
 // 		afe->memif[i].const_irq = 1;
 // 	}
 // 
-// 	mutex_init(&afe->irq_alloc_lock);	/* needed when dynamic irq * /
+// 	mutex_init(&afe->irq_alloc_lock);	/* needed when dynamic irq */
 // 
-// 	/* init irq * /
+// 	/* init irq */
 // 	afe->irqs_size = MT8186_IRQ_NUM;
 // 	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
 // 				 GFP_KERNEL);
@@ -2944,7 +2944,7 @@ external_c! {
 // 	for (i = 0; i < afe->irqs_size; i++)
 // 		afe->irqs[i].irq_data = &irq_data[i];
 // 
-// 	/* request irq * /
+// 	/* request irq */
 // 	irq_id = platform_get_irq(pdev, 0);
 // 	if (irq_id <= 0)
 // 		return dev_err_probe(dev, irq_id < 0 ? irq_id : -ENXIO,
@@ -2960,7 +2960,7 @@ external_c! {
 // 	if (ret < 0)
 // 		return dev_err_probe(dev, ret, "enable_irq_wake %d\n", irq_id);
 // 
-// 	/* init sub_dais * /
+// 	/* init sub_dais */
 // 	INIT_LIST_HEAD(&afe->sub_dais);
 // 
 // 	for (i = 0; i < ARRAY_SIZE(dai_register_cbs); i++) {
@@ -2969,12 +2969,12 @@ external_c! {
 // 			return dev_err_probe(dev, ret, "dai register i %d fail\n", i);
 // 	}
 // 
-// 	/* init dai_driver and component_driver * /
+// 	/* init dai_driver and component_driver */
 // 	ret = mtk_afe_combine_sub_dai(afe);
 // 	if (ret)
 // 		return dev_err_probe(dev, ret, "mtk_afe_combine_sub_dai fail\n");
 // 
-// 	/* reset controller to reset audio regs before regmap cache * /
+// 	/* reset controller to reset audio regs before regmap cache */
 // 	rstc = devm_reset_control_get_exclusive(dev, "audiosys");
 // 	if (IS_ERR(rstc))
 // 		return dev_err_probe(dev, PTR_ERR(rstc), "could not get audiosys reset\n");
@@ -2983,7 +2983,7 @@ external_c! {
 // 	if (ret)
 // 		return dev_err_probe(dev, ret, "failed to trigger audio reset\n");
 // 
-// 	/* enable clock for regcache get default value from hw * /
+// 	/* enable clock for regcache get default value from hw */
 // 	afe_priv->pm_runtime_bypass_reg_ctl = true;
 // 
 // 	ret = devm_pm_runtime_enable(dev);
@@ -3001,7 +3001,7 @@ external_c! {
 // 		goto err_pm_disable;
 // 	}
 // 
-// 	/* others * /
+// 	/* others */
 // 	afe->mtk_afe_hardware = &mt8186_afe_hardware;
 // 	afe->memif_fs = mt8186_memif_fs;
 // 	afe->irq_fs = mt8186_irq_fs;
@@ -3011,7 +3011,7 @@ external_c! {
 // 	afe->runtime_resume = mt8186_afe_runtime_resume;
 // 	afe->runtime_suspend = mt8186_afe_runtime_suspend;
 // 
-// 	/* register platform * /
+// 	/* register platform */
 // 	dev_dbg(dev, "%s(), devm_snd_soc_register_component\n", __func__);
 // 
 // 	ret = devm_snd_soc_register_component(dev,

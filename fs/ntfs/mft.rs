@@ -14,7 +14,7 @@
  * Copyright (c) 2001-2012 Anton Altaparmakov and Tuxera Inc.
  * Copyright (c) 2002 Richard Russon
  * Copyright (c) 2025 LG Electronics Co., Ltd.
- * /
+ */
 
 
 
@@ -25,7 +25,7 @@
  * attributes and apply generic checks to them.
  *
  * Returns 0 if the checks are successful. If not, return -EIO.
- * /
+ */
 int ntfs_mft_record_check(const struct ntfs_volume *vol, struct mft_record *m,
 		u64 mft_no)
 {
@@ -106,7 +106,7 @@ err_out:
  * Return: A pointer to the allocated and fixed-up mft record (@ni->mrec).
  * The return value needs to be checked with IS_ERR(). If it is true,
  * PTR_ERR() contains the negative error code.
- * /
+ */
 static inline struct mft_record *map_mft_record_folio(struct ntfs_inode *ni)
 {
 	loff_t i_size;
@@ -120,15 +120,15 @@ static inline struct mft_record *map_mft_record_folio(struct ntfs_inode *ni)
 	/*
 	 * The index into the page cache and the offset within the page cache
 	 * page of the wanted mft record.
-	 * /
+	 */
 	index = NTFS_MFT_NR_TO_PIDX(vol, ni->mft_no);
 	ofs = NTFS_MFT_NR_TO_POFS(vol, ni->mft_no);
 
 	i_size = i_size_read(mft_vi);
-	/* The maximum valid index into the page cache for $MFT's data. * /
+	/* The maximum valid index into the page cache for $MFT's data. */
 	end_index = i_size >> PAGE_SHIFT;
 
-	/* If the wanted index is out of bounds the mft record doesn't exist. * /
+	/* If the wanted index is out of bounds the mft record doesn't exist. */
 	if (unlikely(index >= end_index)) {
 		if (index > end_index || (i_size & ~PAGE_MASK) < ofs +
 				vol->mft_record_size) {
@@ -140,7 +140,7 @@ static inline struct mft_record *map_mft_record_folio(struct ntfs_inode *ni)
 		}
 	}
 
-	/* Read, map, and pin the folio. * /
+	/* Read, map, and pin the folio. */
 	folio = read_mapping_folio(mft_vi->i_mapping, index, NULL);
 	if (!IS_ERR(folio)) {
 		u8 *addr;
@@ -156,7 +156,7 @@ static inline struct mft_record *map_mft_record_folio(struct ntfs_inode *ni)
 		memcpy(ni->mrec, addr + ofs, vol->mft_record_size);
 		post_read_mst_fixup((struct ntfs_record *)ni->mrec, vol->mft_record_size);
 
-		/* Catch multi sector transfer fixup errors. * /
+		/* Catch multi sector transfer fixup errors. */
 		if (!ntfs_mft_record_check(vol, (struct mft_record *)ni->mrec, ni->mft_no)) {
 			kunmap_local(addr);
 			ni->folio = folio;
@@ -193,7 +193,7 @@ err_out:
  *
  * Return: A pointer to the mft record. You need to check the returned
  * pointer with IS_ERR().
- * /
+ */
 struct mft_record *map_mft_record(struct ntfs_inode *ni)
 {
 	struct mft_record *m;
@@ -203,7 +203,7 @@ struct mft_record *map_mft_record(struct ntfs_inode *ni)
 
 	ntfs_debug("Entering for mft_no 0x%llx.", ni->mft_no);
 
-	/* Make sure the ntfs inode doesn't go away. * /
+	/* Make sure the ntfs inode doesn't go away. */
 	atomic_inc(&ni->count);
 
 	if (ni->folio)
@@ -231,7 +231,7 @@ struct mft_record *map_mft_record(struct ntfs_inode *ni)
  *
  * NOTE: If caller has modified the mft record, it is imperative to set the mft
  * record dirty BEFORE calling unmap_mft_record().
- * /
+ */
 void unmap_mft_record(struct ntfs_inode *ni)
 {
 	struct folio *folio;
@@ -259,7 +259,7 @@ void unmap_mft_record(struct ntfs_inode *ni)
  *
  * On successful return, @ntfs_ino contains a pointer to the ntfs_inode
  * structure of the mapped extent inode.
- * /
+ */
 struct mft_record *map_extent_mft_record(struct ntfs_inode *base_ni, u64 mref,
 		struct ntfs_inode **ntfs_ino)
 {
@@ -273,13 +273,13 @@ struct mft_record *map_extent_mft_record(struct ntfs_inode *base_ni, u64 mref,
 
 	ntfs_debug("Mapping extent mft record 0x%llx (base mft record 0x%llx).",
 			mft_no, base_ni->mft_no);
-	/* Make sure the base ntfs inode doesn't go away. * /
+	/* Make sure the base ntfs inode doesn't go away. */
 	atomic_inc(&base_ni->count);
 	/*
 	 * Check if this extent inode has already been added to the base inode,
 	 * in which case just return it. If not found, add it to the base
 	 * inode before returning it.
-	 * /
+	 */
 retry:
 	mutex_lock(&base_ni->extent_lock);
 	if (base_ni->nr_extents > 0) {
@@ -288,7 +288,7 @@ retry:
 			if (mft_no != extent_nis[i]->mft_no)
 				continue;
 			ni = extent_nis[i];
-			/* Make sure the ntfs inode doesn't go away. * /
+			/* Make sure the ntfs inode doesn't go away. */
 			atomic_inc(&ni->count);
 			break;
 		}
@@ -296,12 +296,12 @@ retry:
 	if (likely(ni != NULL)) {
 		mutex_unlock(&base_ni->extent_lock);
 		atomic_dec(&base_ni->count);
-		/* We found the record; just have to map and return it. * /
+		/* We found the record; just have to map and return it. */
 		m = map_mft_record(ni);
-		/* map_mft_record() has incremented this on success. * /
+		/* map_mft_record() has incremented this on success. */
 		atomic_dec(&ni->count);
 		if (!IS_ERR(m)) {
-			/* Verify the sequence number. * /
+			/* Verify the sequence number. */
 			if (likely(le16_to_cpu(m->sequence_number) == seq_no)) {
 				ntfs_debug("Done 1.");
 				*ntfs_ino = ni;
@@ -320,7 +320,7 @@ map_err_out:
 	}
 	mutex_unlock(&base_ni->extent_lock);
 
-	/* Record wasn't there. Get a new ntfs inode and initialize it. * /
+	/* Record wasn't there. Get a new ntfs inode and initialize it. */
 	ni = ntfs_new_extent_inode(base_ni->vol->sb, mft_no);
 	if (unlikely(!ni)) {
 		atomic_dec(&base_ni->count);
@@ -330,14 +330,14 @@ map_err_out:
 	ni->seq_no = seq_no;
 	ni->nr_extents = -1;
 	ni->ext.base_ntfs_ino = base_ni;
-	/* Now map the record. * /
+	/* Now map the record. */
 	m = map_mft_record(ni);
 	if (IS_ERR(m)) {
 		atomic_dec(&base_ni->count);
 		ntfs_clear_extent_inode(ni);
 		goto map_err_out;
 	}
-	/* Verify the sequence number if it is present. * /
+	/* Verify the sequence number if it is present. */
 	if (seq_no && (le16_to_cpu(m->sequence_number) != seq_no)) {
 		ntfs_error(base_ni->vol->sb,
 				"Found stale extent mft reference! Corrupt filesystem. Run chkdsk.");
@@ -354,7 +354,7 @@ map_err_out:
 			goto retry;
 		}
 	}
-	/* Attach extent inode to base inode, reallocating memory if needed. * /
+	/* Attach extent inode to base inode, reallocating memory if needed. */
 	if (!(base_ni->nr_extents & 3)) {
 		struct ntfs_inode **tmp;
 		int new_size = (base_ni->nr_extents + 4) * sizeof(struct ntfs_inode *);
@@ -388,7 +388,7 @@ unm_nolock_err_out:
 	/*
 	 * If the extent inode was not attached to the base inode we need to
 	 * release it or we will leak memory.
-	 * /
+	 */
 	if (destroy_ni)
 		ntfs_clear_extent_inode(ni);
 	return m;
@@ -414,14 +414,14 @@ unm_nolock_err_out:
  * O_SYNC flag set.  Also, I_DIRTY_DATASYNC simply "feels" better than just
  * I_DIRTY_SYNC, since the file data has not actually hit the block device yet,
  * which is not what I_DIRTY_SYNC on its own would suggest.
- * /
+ */
 void __mark_mft_record_dirty(struct ntfs_inode *ni)
 {
 	struct ntfs_inode *base_ni;
 
 	ntfs_debug("Entering for inode 0x%llx.", ni->mft_no);
 	WARN_ON(NInoAttr(ni));
-	/* Determine the base vfs inode and mark it dirty, too. * /
+	/* Determine the base vfs inode and mark it dirty, too. */
 	if (likely(ni->nr_extents >= 0))
 		base_ni = ni;
 	else
@@ -436,7 +436,7 @@ void __mark_mft_record_dirty(struct ntfs_inode *ni)
  * submit_bio(). This prevents a race condition where umount could
  * evict the inode and release the folio while I/O is still in flight,
  * potentially causing data corruption or use-after-free.
- * /
+ */
 static void ntfs_bio_end_io(struct bio *bio)
 {
 	if (bio->bi_private)
@@ -457,7 +457,7 @@ static void ntfs_bio_end_io(struct bio *bio)
  * in the ntfs volume @vol.
  *
  * NOTE:  We always perform synchronous i/o.
- * /
+ */
 int ntfs_sync_mft_mirror(struct ntfs_volume *vol, const u64 mft_no,
 		struct mft_record *m)
 {
@@ -470,11 +470,11 @@ int ntfs_sync_mft_mirror(struct ntfs_volume *vol, const u64 mft_no,
 	ntfs_debug("Entering for inode 0x%llx.", mft_no);
 
 	if (unlikely(!vol->mftmirr_ino)) {
-		/* This could happen during umount... * /
+		/* This could happen during umount... */
 		err = -EIO;
 		goto err_out;
 	}
-	/* Get the page containing the mirror copy of the mft record @m. * /
+	/* Get the page containing the mirror copy of the mft record @m. */
 	folio = read_mapping_folio(vol->mftmirr_ino->i_mapping,
 			NTFS_MFT_NR_TO_PIDX(vol, mft_no), NULL);
 	if (IS_ERR(folio)) {
@@ -485,11 +485,11 @@ int ntfs_sync_mft_mirror(struct ntfs_volume *vol, const u64 mft_no,
 
 	folio_lock(folio);
 	folio_clear_uptodate(folio);
-	/* Offset of the mft mirror record inside the page. * /
+	/* Offset of the mft mirror record inside the page. */
 	folio_ofs = NTFS_MFT_NR_TO_POFS(vol, mft_no);
-	/* The address in the page of the mirror copy of the mft record @m. * /
+	/* The address in the page of the mirror copy of the mft record @m. */
 	kmirr = kmap_local_folio(folio, 0) + folio_ofs;
-	/* Copy the mst protected mft record to the mirror. * /
+	/* Copy the mst protected mft record to the mirror. */
 	memcpy(kmirr, m, vol->mft_record_size);
 	kunmap_local(kmirr);
 
@@ -515,7 +515,7 @@ int ntfs_sync_mft_mirror(struct ntfs_volume *vol, const u64 mft_no,
 	 * write error so a subsequent read_mapping_folio() does not refetch
 	 * the stale on-disk mirror and overwrite this copy.  The error is
 	 * propagated to the caller via @err.
-	 * /
+	 */
 	folio_mark_uptodate(folio);
 
 	folio_unlock(folio);
@@ -548,7 +548,7 @@ err_out:
  * On success, clean the mft record and return 0.
  * On error (specifically ENOMEM), we redirty the record so it can be retried.
  * For other errors, we mark the volume with errors.
- * /
+ */
 int write_mft_record_nolock(struct ntfs_inode *ni, struct mft_record *m, int sync)
 {
 	struct ntfs_volume *vol = ni->vol;
@@ -569,7 +569,7 @@ int write_mft_record_nolock(struct ntfs_inode *ni, struct mft_record *m, int syn
 	 * mark it as clean now so that it can be redirtied later on if needed.
 	 * There is no danger of races since the caller is holding the locks
 	 * for the mft record @m and the page it is in.
-	 * /
+	 */
 	if (!NInoTestClearDirty(ni))
 		goto done;
 
@@ -577,7 +577,7 @@ int write_mft_record_nolock(struct ntfs_inode *ni, struct mft_record *m, int syn
 	fixup_m = (struct mft_record *)(kaddr + ni->folio_ofs);
 	memcpy(fixup_m, m, vol->mft_record_size);
 
-	/* Apply the mst protection fixups. * /
+	/* Apply the mst protection fixups. */
 	err = pre_write_mst_fixup((struct ntfs_record *)fixup_m, vol->mft_record_size);
 	if (err) {
 		ntfs_error(vol->sb, "Failed to apply mst fixups!");
@@ -602,7 +602,7 @@ int write_mft_record_nolock(struct ntfs_inode *ni, struct mft_record *m, int syn
 			goto put_bio_out;
 		}
 
-		/* Synchronize the mft mirror now if not @sync. * /
+		/* Synchronize the mft mirror now if not @sync. */
 		if (!sync && ni->mft_no < vol->mftmirr_size) {
 			int sub_err = ntfs_sync_mft_mirror(vol, ni->mft_no,
 							   fixup_m);
@@ -626,7 +626,7 @@ int write_mft_record_nolock(struct ntfs_inode *ni, struct mft_record *m, int syn
 		i++;
 	}
 
-	/* If @sync, now synchronize the mft mirror. * /
+	/* If @sync, now synchronize the mft mirror. */
 	if (sync && ni->mft_no < vol->mftmirr_size) {
 		int sub_err = ntfs_sync_mft_mirror(vol, ni->mft_no, fixup_m);
 
@@ -635,7 +635,7 @@ int write_mft_record_nolock(struct ntfs_inode *ni, struct mft_record *m, int syn
 	}
 	kunmap_local(kaddr);
 	if (unlikely(err)) {
-		/* I/O error during writing.  This is really bad! * /
+		/* I/O error during writing.  This is really bad! */
 		ntfs_error(vol->sb,
 			"I/O error while writing mft record 0x%llx!  Marking base inode as bad.  You should unmount the volume and run chkdsk.",
 			ni->mft_no);
@@ -652,7 +652,7 @@ err_out:
 	 * happens. ->drop_inode() will still be invoked so all extent inodes
 	 * and other allocated memory will be freed. ENOMEM is retried by
 	 * redirtying the mft record below.
-	 * /
+	 */
 	if (err == -ENOMEM) {
 		ntfs_error(vol->sb,
 			"Not enough memory to write mft record. Redirtying so the write is retried later.");
@@ -674,7 +674,7 @@ static int ntfs_test_inode_wb(struct inode *vi, u64 ino, void *data)
 	 * Without this, ntfs_write_mst_block() could call iput_final()
 	 * , and ntfs_evict_big_inode() could try to unlink this inode
 	 * and the contex could be blocked infinitly in map_mft_record().
-	 * /
+	 */
 	if (NInoBeingDeleted(NTFS_I(vi))) {
 		na->state = NI_BeingDeleted;
 		return -1;
@@ -684,7 +684,7 @@ static int ntfs_test_inode_wb(struct inode *vi, u64 ino, void *data)
 	 * This condition can prevent ntfs_write_mst_block()
 	 * from applying/undo fixups while ntfs_create() being
 	 * called
-	 * /
+	 */
 	spin_lock(&vi->i_lock);
 	if (inode_state_read_once(vi) & I_CREATING) {
 		spin_unlock(&vi->i_lock);
@@ -744,7 +744,7 @@ static int ntfs_test_inode_wb(struct inode *vi, u64 ino, void *data)
  *
  * If the mft record is not a FILE record or it is a base mft record, we can
  * safely write it and return 'true'.
- * /
+ */
 static bool ntfs_may_write_mft_record(struct ntfs_volume *vol, const u64 mft_no,
 		const struct mft_record *m, struct ntfs_inode **locked_ni,
 		struct inode **ref_vi)
@@ -758,23 +758,23 @@ static bool ntfs_may_write_mft_record(struct ntfs_volume *vol, const u64 mft_no,
 	ntfs_debug("Entering for inode 0x%llx.", mft_no);
 	/*
 	 * Normally we do not return a locked inode so set @locked_ni to NULL.
-	 * /
+	 */
 	*locked_ni = NULL;
 	*ref_vi = NULL;
 
 	/*
 	 * Check if the inode corresponding to this mft record is in the VFS
 	 * inode cache and obtain a reference to it if it is.
-	 * /
+	 */
 	ntfs_debug("Looking for inode 0x%llx in icache.", mft_no);
 	na.mft_no = mft_no;
 	na.type = AT_UNUSED;
 	/*
 	 * Optimize inode 0, i.e. $MFT itself, since we have it in memory and
 	 * we get here for it rather often.
-	 * /
+	 */
 	if (!mft_no) {
-		/* Balance the below iput(). * /
+		/* Balance the below iput(). */
 		vi = igrab(mft_vi);
 		WARN_ON(vi != mft_vi);
 	} else {
@@ -782,18 +782,18 @@ static bool ntfs_may_write_mft_record(struct ntfs_volume *vol, const u64 mft_no,
 		 * Have to use find_inode_nowait() since ilookup5_nowait()
 		 * waits for inode with I_FREEING, which causes ntfs to deadlock
 		 * when inodes are unlinked concurrently
-		 * /
+		 */
 		vi = find_inode_nowait(sb, mft_no, ntfs_test_inode_wb, &na);
 		if (na.state == NI_BeingDeleted || na.state == NI_BeingCreated)
 			return false;
 	}
 	if (vi) {
 		ntfs_debug("Base inode 0x%llx is in icache.", mft_no);
-		/* The inode is in icache. * /
+		/* The inode is in icache. */
 		ni = NTFS_I(vi);
-		/* Take a reference to the ntfs inode. * /
+		/* Take a reference to the ntfs inode. */
 		atomic_inc(&ni->count);
-		/* If the inode is dirty, do not write this record. * /
+		/* If the inode is dirty, do not write this record. */
 		if (NInoDirty(ni)) {
 			ntfs_debug("Inode 0x%llx is dirty, do not write it.",
 					mft_no);
@@ -802,7 +802,7 @@ static bool ntfs_may_write_mft_record(struct ntfs_volume *vol, const u64 mft_no,
 			return false;
 		}
 		ntfs_debug("Inode 0x%llx is not dirty.", mft_no);
-		/* The inode is not dirty, try to take the mft record lock. * /
+		/* The inode is not dirty, try to take the mft record lock. */
 		if (unlikely(!mutex_trylock(&ni->mrec_lock))) {
 			ntfs_debug("Mft record 0x%llx is already locked, do not write it.", mft_no);
 			atomic_dec(&ni->count);
@@ -814,19 +814,19 @@ static bool ntfs_may_write_mft_record(struct ntfs_volume *vol, const u64 mft_no,
 		/*
 		 * The write has to occur while we hold the mft record lock so
 		 * return the locked ntfs inode.
-		 * /
+		 */
 		*locked_ni = ni;
 		return true;
 	}
 	ntfs_debug("Inode 0x%llx is not in icache.", mft_no);
-	/* The inode is not in icache. * /
-	/* Write the record if it is not a mft record (type "FILE"). * /
+	/* The inode is not in icache. */
+	/* Write the record if it is not a mft record (type "FILE"). */
 	if (!ntfs_is_mft_record(m->magic)) {
 		ntfs_debug("Mft record 0x%llx is not a FILE record, write it.",
 				mft_no);
 		return true;
 	}
-	/* Write the mft record if it is a base inode. * /
+	/* Write the mft record if it is a base inode. */
 	if (!m->base_mft_record) {
 		ntfs_debug("Mft record 0x%llx is a base record, write it.",
 				mft_no);
@@ -860,7 +860,7 @@ static const char *es = "  Leaving inconsistent metadata.  Unmount and run chkds
  * initialized mft bitmap.
  *
  * Locking: Caller must hold vol->mftbmp_lock for writing.
- * /
+ */
 static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vol,
 		struct ntfs_inode *base_ni)
 {
@@ -877,7 +877,7 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 	/*
 	 * Set the end of the pass making sure we do not overflow the mft
 	 * bitmap.
-	 * /
+	 */
 	read_lock_irqsave(&NTFS_I(vol->mft_ino)->size_lock, flags);
 	pass_end = NTFS_I(vol->mft_ino)->allocated_size >>
 			vol->mft_record_size_bits;
@@ -897,7 +897,7 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 	if (data_pos >= pass_end) {
 		data_pos = RESERVED_MFT_RECORDS;
 		pass = 2;
-		/* This happens on a freshly formatted volume. * /
+		/* This happens on a freshly formatted volume. */
 		if (data_pos >= pass_end)
 			return -ENOSPC;
 	}
@@ -910,9 +910,9 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 	pass_start = data_pos;
 	ntfs_debug("Starting bitmap search: pass %u, pass_start 0x%llx, pass_end 0x%llx, data_pos 0x%llx.",
 			pass, pass_start, pass_end, data_pos);
-	/* Loop until a free mft record is found. * /
+	/* Loop until a free mft record is found. */
 	for (; pass <= 2;) {
-		/* Cap size to pass_end. * /
+		/* Cap size to pass_end. */
 		ofs = data_pos >> 3;
 		folio_ofs = ofs & ~PAGE_MASK;
 		size = PAGE_SIZE - folio_ofs;
@@ -923,7 +923,7 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 		/*
 		 * If we are still within the active pass, search the next page
 		 * for a zero bit.
-		 * /
+		 */
 		if (size) {
 			folio = read_mapping_folio(mftbmp_mapping,
 					ofs >> PAGE_SHIFT, NULL);
@@ -943,7 +943,7 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 				 * If we're extending $MFT and running out of the first
 				 * mft record (base record) then give up searching since
 				 * no guarantee that the found record will be accessible.
-				 * /
+				 */
 				if (base_ni && base_ni->mft_no == FILE_MFT && bit > 400) {
 					folio_unlock(folio);
 					kunmap_local(buf);
@@ -982,16 +982,16 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 			/*
 			 * If the end of the pass has not been reached yet,
 			 * continue searching the mft bitmap for a zero bit.
-			 * /
+			 */
 			if (data_pos < pass_end)
 				continue;
 		}
-		/* Do the next pass. * /
+		/* Do the next pass. */
 		if (++pass == 2) {
 			/*
 			 * Starting the second pass, in which we scan the first
 			 * part of the zone which we omitted earlier.
-			 * /
+			 */
 			pass_end = pass_start;
 			data_pos = pass_start = RESERVED_MFT_RECORDS;
 			ntfs_debug("pass %i, pass_start 0x%llx, pass_end 0x%llx.",
@@ -1000,7 +1000,7 @@ static s64 ntfs_mft_bitmap_find_and_alloc_free_rec_nolock(struct ntfs_volume *vo
 				break;
 		}
 	}
-	/* No free mft records in currently initialized mft bitmap. * /
+	/* No free mft records in currently initialized mft bitmap. */
 	ntfs_debug("Done.  (No free mft records left in currently initialized mft bitmap.)");
 	return -ENOSPC;
 }
@@ -1050,7 +1050,7 @@ out:
  *	      writing and releases it before returning.
  *	    - This function takes vol->lcnbmp_lock for writing and releases it
  *	      before returning.
- * /
+ */
 static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 {
 	s64 lcn;
@@ -1079,7 +1079,7 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 	/*
 	 * Determine the last lcn of the mft bitmap.  The allocated size of the
 	 * mft bitmap cannot be zero so we are ok to do this.
-	 * /
+	 */
 	down_write(&mftbmp_ni->runlist.lock);
 	read_lock_irqsave(&mftbmp_ni->size_lock, flags);
 	ll = mftbmp_ni->allocated_size;
@@ -1103,7 +1103,7 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 	 * Attempt to get the cluster following the last allocated cluster by
 	 * hand as it may be in the MFT zone so the allocator would not give it
 	 * to us.
-	 * /
+	 */
 	ll = lcn >> 3;
 	folio = read_mapping_folio(vol->lcnbmp_ino->i_mapping,
 			ll >> PAGE_SHIFT, NULL);
@@ -1118,14 +1118,14 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 	b = (u8 *)kmap_local_folio(folio, 0) + (ll & ~PAGE_MASK);
 	tb = 1 << (lcn & 7ull);
 	if (*b != 0xff && !(*b & tb)) {
-		/* Next cluster is free, allocate it. * /
+		/* Next cluster is free, allocate it. */
 		*b |= tb;
 		folio_mark_dirty(folio);
 		folio_unlock(folio);
 		kunmap_local(b);
 		folio_put(folio);
 		up_write(&vol->lcnbmp_lock);
-		/* Update the mft bitmap runlist. * /
+		/* Update the mft bitmap runlist. */
 		rl->length++;
 		rl[1].vcn++;
 		status.added_cluster = 1;
@@ -1135,7 +1135,7 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 		kunmap_local(b);
 		folio_put(folio);
 		up_write(&vol->lcnbmp_lock);
-		/* Allocate a cluster from the DATA_ZONE. * /
+		/* Allocate a cluster from the DATA_ZONE. */
 		rl2 = ntfs_cluster_alloc(vol, rl[1].vcn, 1, lcn, DATA_ZONE,
 				true, false, false);
 		if (IS_ERR(rl2)) {
@@ -1160,14 +1160,14 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 		mftbmp_ni->runlist.count = new_rl_count;
 		status.added_run = 1;
 		ntfs_debug("Adding one run to mft bitmap.");
-		/* Find the last run in the new runlist. * /
+		/* Find the last run in the new runlist. */
 		for (; rl[1].length; rl++)
 			;
 	}
 	/*
 	 * Update the attribute record as well.  Note: @rl is the last
 	 * (non-terminator) runlist element of mft bitmap.
-	 * /
+	 */
 	mrec = map_mft_record(mft_ni);
 	if (IS_ERR(mrec)) {
 		ntfs_error(vol->sb, "Failed to map mft record.");
@@ -1192,14 +1192,14 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 	}
 	a = ctx->attr;
 	ll = le64_to_cpu(a->data.non_resident.lowest_vcn);
-	/* Search back for the previous last allocated cluster of mft bitmap. * /
+	/* Search back for the previous last allocated cluster of mft bitmap. */
 	for (rl2 = rl; rl2 > mftbmp_ni->runlist.rl; rl2--) {
 		if (ll >= rl2->vcn)
 			break;
 	}
 	WARN_ON(ll < rl2->vcn);
 	WARN_ON(ll >= rl2->vcn + rl2->length);
-	/* Get the size for the new mapping pairs array for this extent. * /
+	/* Get the size for the new mapping pairs array for this extent. */
 	mp_size = ntfs_get_size_for_mapping_pairs(vol, rl2, ll, -1, -1);
 	if (unlikely(mp_size <= 0)) {
 		ntfs_error(vol->sb,
@@ -1209,7 +1209,7 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 			ret = -EIO;
 		goto undo_alloc;
 	}
-	/* Expand the attribute record if necessary. * /
+	/* Expand the attribute record if necessary. */
 	old_alen = le32_to_cpu(a->length);
 	ret = ntfs_attr_record_resize(ctx->mrec, a, mp_size +
 			le16_to_cpu(a->data.non_resident.mapping_pairs_offset));
@@ -1222,7 +1222,7 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 		goto undo_alloc;
 	}
 	status.mp_rebuilt = 1;
-	/* Generate the mapping pairs array directly into the attr record. * /
+	/* Generate the mapping pairs array directly into the attr record. */
 	ret = ntfs_mapping_pairs_build(vol, (u8 *)a +
 			le16_to_cpu(a->data.non_resident.mapping_pairs_offset),
 			mp_size, rl2, ll, -1, NULL, NULL, NULL);
@@ -1231,17 +1231,17 @@ static int ntfs_mft_bitmap_extend_allocation_nolock(struct ntfs_volume *vol)
 			"Failed to build mapping pairs array for mft bitmap attribute.");
 		goto undo_alloc;
 	}
-	/* Update the highest_vcn. * /
+	/* Update the highest_vcn. */
 	a->data.non_resident.highest_vcn = cpu_to_le64(rl[1].vcn - 1);
 	/*
 	 * We now have extended the mft bitmap allocated_size by one cluster.
 	 * Reflect this in the struct ntfs_inode structure and the attribute record.
-	 * /
+	 */
 	if (a->data.non_resident.lowest_vcn) {
 		/*
 		 * We are not in the first attribute extent, switch to it, but
 		 * first ensure the changes will make it to disk later.
-		 * /
+		 */
 		mark_mft_record_dirty(ctx->ntfs_ino);
 extended_ok:
 		ntfs_attr_reinit_search_ctx(ctx);
@@ -1261,7 +1261,7 @@ extended_ok:
 	a->data.non_resident.allocated_size =
 			cpu_to_le64(mftbmp_ni->allocated_size);
 	write_unlock_irqrestore(&mftbmp_ni->size_lock, flags);
-	/* Ensure the changes make it to disk. * /
+	/* Ensure the changes make it to disk. */
 	mark_mft_record_dirty(ctx->ntfs_ino);
 	ntfs_attr_put_search_ctx(ctx);
 	unmap_mft_record(mft_ni);
@@ -1285,7 +1285,7 @@ restore_undo_alloc:
 		/*
 		 * The only thing that is now wrong is ->allocated_size of the
 		 * base attribute extent which chkdsk should be able to fix.
-		 * /
+		 */
 		NVolSetErrors(vol);
 		return ret;
 	}
@@ -1293,17 +1293,17 @@ restore_undo_alloc:
 	a->data.non_resident.highest_vcn = cpu_to_le64(rl[1].vcn - 2);
 undo_alloc:
 	if (status.added_cluster) {
-		/* Truncate the last run in the runlist by one cluster. * /
+		/* Truncate the last run in the runlist by one cluster. */
 		rl->length--;
 		rl[1].vcn--;
 	} else if (status.added_run) {
 		lcn = rl->lcn;
-		/* Remove the last run from the runlist. * /
+		/* Remove the last run from the runlist. */
 		rl->lcn = rl[1].lcn;
 		rl->length = 0;
 		mftbmp_ni->runlist.count--;
 	}
-	/* Deallocate the cluster. * /
+	/* Deallocate the cluster. */
 	down_write(&vol->lcnbmp_lock);
 	if (ntfs_bitmap_clear_bit(vol->lcnbmp_ino, lcn)) {
 		ntfs_error(vol->sb, "Failed to free allocated cluster.%s", es);
@@ -1350,7 +1350,7 @@ undo_alloc:
  * Return 0 on success and -error on error.
  *
  * Locking: Caller must hold vol->mftbmp_lock for writing.
- * /
+ */
 static int ntfs_mft_bitmap_extend_initialized_nolock(struct ntfs_volume *vol)
 {
 	s64 old_data_size, old_initialized_size;
@@ -1366,7 +1366,7 @@ static int ntfs_mft_bitmap_extend_initialized_nolock(struct ntfs_volume *vol)
 	mft_ni = NTFS_I(vol->mft_ino);
 	mftbmp_vi = vol->mftbmp_ino;
 	mftbmp_ni = NTFS_I(mftbmp_vi);
-	/* Get the attribute record. * /
+	/* Get the attribute record. */
 	mrec = map_mft_record(mft_ni);
 	if (IS_ERR(mrec)) {
 		ntfs_error(vol->sb, "Failed to map mft record.");
@@ -1395,7 +1395,7 @@ static int ntfs_mft_bitmap_extend_initialized_nolock(struct ntfs_volume *vol)
 	 * We can simply update the initialized_size before filling the space
 	 * with zeroes because the caller is holding the mft bitmap lock for
 	 * writing which ensures that no one else is trying to access the data.
-	 * /
+	 */
 	mftbmp_ni->initialized_size += 8;
 	a->data.non_resident.initialized_size =
 			cpu_to_le64(mftbmp_ni->initialized_size);
@@ -1405,11 +1405,11 @@ static int ntfs_mft_bitmap_extend_initialized_nolock(struct ntfs_volume *vol)
 				cpu_to_le64(mftbmp_ni->initialized_size);
 	}
 	write_unlock_irqrestore(&mftbmp_ni->size_lock, flags);
-	/* Ensure the changes make it to disk. * /
+	/* Ensure the changes make it to disk. */
 	mark_mft_record_dirty(ctx->ntfs_ino);
 	ntfs_attr_put_search_ctx(ctx);
 	unmap_mft_record(mft_ni);
-	/* Initialize the mft bitmap attribute value with zeroes. * /
+	/* Initialize the mft bitmap attribute value with zeroes. */
 	ret = ntfs_attr_set(mftbmp_ni, old_initialized_size, 8, 0);
 	if (likely(!ret)) {
 		ntfs_debug("Done.  (Wrote eight initialized bytes to mft bitmap.");
@@ -1417,7 +1417,7 @@ static int ntfs_mft_bitmap_extend_initialized_nolock(struct ntfs_volume *vol)
 		return 0;
 	}
 	ntfs_error(vol->sb, "Failed to write to mft bitmap.");
-	/* Try to recover from the error. * /
+	/* Try to recover from the error. */
 	mrec = map_mft_record(mft_ni);
 	if (IS_ERR(mrec)) {
 		ntfs_error(vol->sb, "Failed to map mft record.%s", es);
@@ -1460,7 +1460,7 @@ unm_err_out:
 			mftbmp_ni->allocated_size, i_size_read(mftbmp_vi),
 			mftbmp_ni->initialized_size);
 	read_unlock_irqrestore(&mftbmp_ni->size_lock, flags);
-#endif /* DEBUG * /
+#endif /* DEBUG */
 err_out:
 	return ret;
 }
@@ -1483,7 +1483,7 @@ err_out:
  *	      writing and releases it before returning.
  *	    - This function calls functions which take vol->lcnbmp_lock for
  *	      writing and release it before returning.
- * /
+ */
 static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 {
 	s64 lcn;
@@ -1506,7 +1506,7 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 	 * Determine the preferred allocation location, i.e. the last lcn of
 	 * the mft data attribute.  The allocated size of the mft data
 	 * attribute cannot be zero so we are ok to do this.
-	 * /
+	 */
 	down_write(&mft_ni->runlist.lock);
 	read_lock_irqsave(&mft_ni->size_lock, flags);
 	ll = mft_ni->allocated_size;
@@ -1525,15 +1525,15 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 	}
 	lcn = rl->lcn + rl->length;
 	ntfs_debug("Last lcn of mft data attribute is 0x%llx.", lcn);
-	/* Minimum allocation is one mft record worth of clusters. * /
+	/* Minimum allocation is one mft record worth of clusters. */
 	min_nr = NTFS_B_TO_CLU(vol, vol->mft_record_size);
 	if (!min_nr)
 		min_nr = 1;
-	/* Want to allocate 16 mft records worth of clusters. * /
+	/* Want to allocate 16 mft records worth of clusters. */
 	nr = vol->mft_record_size << 4 >> vol->cluster_size_bits;
 	if (!nr)
 		nr = min_nr;
-	/* Ensure we do not go above 2^32-1 mft records. * /
+	/* Ensure we do not go above 2^32-1 mft records. */
 	read_lock_irqsave(&mft_ni->size_lock, flags);
 	ll = mft_ni->allocated_size;
 	read_unlock_irqrestore(&mft_ni->size_lock, flags);
@@ -1557,7 +1557,7 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 	 * mft_ni->mrec_lock.
 	 * This is required for the lock order, vol->lcnbmp_lock =>
 	 * mft_ni->runlist.lock.
-	 * /
+	 */
 	up_write(&mft_ni->runlist.lock);
 
 	do {
@@ -1575,7 +1575,7 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 		 * There is not enough space to do the allocation, but there
 		 * might be enough space to do a minimal allocation so try that
 		 * before failing.
-		 * /
+		 */
 		nr = min_nr;
 		ntfs_debug("Retrying mft data allocation with minimal cluster count %lli.", nr);
 	} while (1);
@@ -1596,12 +1596,12 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 	mft_ni->runlist.rl = rl;
 	mft_ni->runlist.count = new_rl_count;
 	ntfs_debug("Allocated %lli clusters.", (long long)nr);
-	/* Find the last run in the new runlist. * /
+	/* Find the last run in the new runlist. */
 	for (; rl[1].length; rl++)
 		;
 	up_write(&mft_ni->runlist.lock);
 
-	/* Update the attribute record as well. * /
+	/* Update the attribute record as well. */
 	mrec = map_mft_record(mft_ni);
 	if (IS_ERR(mrec)) {
 		ntfs_error(vol->sb, "Failed to map mft record.");
@@ -1627,14 +1627,14 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 	ll = le64_to_cpu(a->data.non_resident.lowest_vcn);
 
 	down_write(&mft_ni->runlist.lock);
-	/* Search back for the previous last allocated cluster of mft bitmap. * /
+	/* Search back for the previous last allocated cluster of mft bitmap. */
 	for (rl2 = rl; rl2 > mft_ni->runlist.rl; rl2--) {
 		if (ll >= rl2->vcn)
 			break;
 	}
 	WARN_ON(ll < rl2->vcn);
 	WARN_ON(ll >= rl2->vcn + rl2->length);
-	/* Get the size for the new mapping pairs array for this extent. * /
+	/* Get the size for the new mapping pairs array for this extent. */
 	mp_size = ntfs_get_size_for_mapping_pairs(vol, rl2, ll, -1, -1);
 	if (unlikely(mp_size <= 0)) {
 		ntfs_error(vol->sb,
@@ -1647,7 +1647,7 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 	}
 	up_write(&mft_ni->runlist.lock);
 
-	/* Expand the attribute record if necessary. * /
+	/* Expand the attribute record if necessary. */
 	old_alen = le32_to_cpu(a->length);
 	ret = ntfs_attr_record_resize(ctx->mrec, a, mp_size +
 			le16_to_cpu(a->data.non_resident.mapping_pairs_offset));
@@ -1660,7 +1660,7 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 		goto undo_alloc;
 	}
 	mp_rebuilt = true;
-	/* Generate the mapping pairs array directly into the attr record. * /
+	/* Generate the mapping pairs array directly into the attr record. */
 	ret = ntfs_mapping_pairs_build(vol, (u8 *)a +
 			le16_to_cpu(a->data.non_resident.mapping_pairs_offset),
 			mp_size, rl2, ll, -1, NULL, NULL, NULL);
@@ -1668,19 +1668,19 @@ static int ntfs_mft_data_extend_allocation_nolock(struct ntfs_volume *vol)
 		ntfs_error(vol->sb, "Failed to build mapping pairs array of mft data attribute.");
 		goto undo_alloc;
 	}
-	/* Update the highest_vcn. * /
+	/* Update the highest_vcn. */
 	a->data.non_resident.highest_vcn = cpu_to_le64(rl[1].vcn - 1);
 	/*
 	 * We now have extended the mft data allocated_size by nr clusters.
 	 * Reflect this in the struct ntfs_inode structure and the attribute record.
 	 * @rl is the last (non-terminator) runlist element of mft data
 	 * attribute.
-	 * /
+	 */
 	if (a->data.non_resident.lowest_vcn) {
 		/*
 		 * We are not in the first attribute extent, switch to it, but
 		 * first ensure the changes will make it to disk later.
-		 * /
+		 */
 		mark_mft_record_dirty(ctx->ntfs_ino);
 extended_ok:
 		ntfs_attr_reinit_search_ctx(ctx);
@@ -1700,7 +1700,7 @@ extended_ok:
 	a->data.non_resident.allocated_size =
 			cpu_to_le64(mft_ni->allocated_size);
 	write_unlock_irqrestore(&mft_ni->size_lock, flags);
-	/* Ensure the changes make it to disk. * /
+	/* Ensure the changes make it to disk. */
 	mark_mft_record_dirty(ctx->ntfs_ino);
 	ntfs_attr_put_search_ctx(ctx);
 	unmap_mft_record(mft_ni);
@@ -1721,7 +1721,7 @@ restore_undo_alloc:
 		/*
 		 * The only thing that is now wrong is ->allocated_size of the
 		 * base attribute extent which chkdsk should be able to fix.
-		 * /
+		 */
 		NVolSetErrors(vol);
 		return ret;
 	}
@@ -1781,7 +1781,7 @@ undo_alloc:
  * record will be used on.
  *
  * Return 0 on success and -errno on error.
- * /
+ */
 static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_no,
 		struct mft_record *m)
 {
@@ -1793,9 +1793,9 @@ static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_n
 				(long long)mft_no);
 		return -ERANGE;
 	}
-	/* Start by clearing the whole mft record to gives us a clean slate. * /
+	/* Start by clearing the whole mft record to gives us a clean slate. */
 	memset(m, 0, vol->mft_record_size);
-	/* Aligned to 2-byte boundary. * /
+	/* Aligned to 2-byte boundary. */
 	if (vol->major_ver < 3 || (vol->major_ver == 3 && !vol->minor_ver))
 		m->usa_ofs = cpu_to_le16((sizeof(struct mft_record_old) + 1) & ~1);
 	else {
@@ -1803,7 +1803,7 @@ static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_n
 		/*
 		 * Set the NTFS 3.1+ specific fields while we know that the
 		 * volume version is 3.1+.
-		 * /
+		 */
 		m->reserved = 0;
 		m->mft_record_number = cpu_to_le32((u32)mft_no);
 	}
@@ -1816,7 +1816,7 @@ static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_n
 		ntfs_warning(vol->sb,
 			"Sector size is bigger than mft record size.  Setting usa_count to 1.  If chkdsk reports this as corruption");
 	}
-	/* Set the update sequence number to 1. * /
+	/* Set the update sequence number to 1. */
 	*(__le16 *)((u8 *)m + le16_to_cpu(m->usa_ofs)) = cpu_to_le16(1);
 	m->lsn = 0;
 	m->sequence_number = cpu_to_le16(1);
@@ -1824,7 +1824,7 @@ static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_n
 	/*
 	 * Place the attributes straight after the update sequence array,
 	 * aligned to 8-byte boundary.
-	 * /
+	 */
 	m->attrs_offset = cpu_to_le16((le16_to_cpu(m->usa_ofs) +
 			(le16_to_cpu(m->usa_count) << 1) + 7) & ~7);
 	m->flags = 0;
@@ -1832,12 +1832,12 @@ static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_n
 	 * Using attrs_offset plus eight bytes (for the termination attribute).
 	 * attrs_offset is already aligned to 8-byte boundary, so no need to
 	 * align again.
-	 * /
+	 */
 	m->bytes_in_use = cpu_to_le32(le16_to_cpu(m->attrs_offset) + 8);
 	m->bytes_allocated = cpu_to_le32(vol->mft_record_size);
 	m->base_mft_record = 0;
 	m->next_attr_instance = 0;
-	/* Add the termination attribute. * /
+	/* Add the termination attribute. */
 	a = (struct attr_record *)((u8 *)m + le16_to_cpu(m->attrs_offset));
 	a->type = AT_END;
 	a->length = 0;
@@ -1855,7 +1855,7 @@ static int ntfs_mft_record_layout(const struct ntfs_volume *vol, const s64 mft_n
  * used when extending the mft data attribute.
  *
  * Return 0 on success and -errno on error.
- * /
+ */
 static int ntfs_mft_record_format(const struct ntfs_volume *vol, const s64 mft_no)
 {
 	loff_t i_size;
@@ -1870,10 +1870,10 @@ static int ntfs_mft_record_format(const struct ntfs_volume *vol, const s64 mft_n
 	/*
 	 * The index into the page cache and the offset within the page cache
 	 * page of the wanted mft record.
-	 * /
+	 */
 	index = NTFS_MFT_NR_TO_PIDX(vol, mft_no);
 	ofs = NTFS_MFT_NR_TO_POFS(vol, mft_no);
-	/* The maximum valid index into the page cache for $MFT's data. * /
+	/* The maximum valid index into the page cache for $MFT's data. */
 	i_size = i_size_read(mft_vi);
 	end_index = i_size >> PAGE_SHIFT;
 	if (unlikely(index >= end_index)) {
@@ -1885,7 +1885,7 @@ static int ntfs_mft_record_format(const struct ntfs_volume *vol, const s64 mft_n
 		}
 	}
 
-	/* Read, map, and pin the folio containing the mft record. * /
+	/* Read, map, and pin the folio containing the mft record. */
 	folio = read_mapping_folio(mft_vi->i_mapping, index, NULL);
 	if (IS_ERR(folio)) {
 		ntfs_error(vol->sb, "Failed to map page containing mft record to format 0x%llx.",
@@ -1911,7 +1911,7 @@ static int ntfs_mft_record_format(const struct ntfs_volume *vol, const s64 mft_n
 	 * Make sure the mft record is written out to disk.  We could use
 	 * ilookup5() to check if an inode is in icache and so on but this is
 	 * unnecessary as ntfs_writepage() will write the dirty record anyway.
-	 * /
+	 */
 	ntfs_mft_mark_dirty(folio);
 	folio_unlock(folio);
 	kunmap_local(m);
@@ -2010,7 +2010,7 @@ static int ntfs_mft_record_format(const struct ntfs_volume *vol, const s64 mft_n
  * the other hand, handling the bitmap in this special way would make life
  * easier because otherwise there might be circular invocations of functions
  * when reading the bitmap.
- * /
+ */
 int ntfs_mft_record_alloc(struct ntfs_volume *vol, const int mode,
 			  struct ntfs_inode **ni, struct ntfs_inode *base_ni,
 			  struct mft_record **ni_mrec)
@@ -2032,7 +2032,7 @@ int ntfs_mft_record_alloc(struct ntfs_volume *vol, const int mode,
 	if (base_ni && *ni)
 		return -EINVAL;
 
-	/* @mode and @base_ni are mutually exclusive. * /
+	/* @mode and @base_ni are mutually exclusive. */
 	if (mode && base_ni)
 		return -EINVAL;
 
@@ -2078,7 +2078,7 @@ search_free_rec:
 	 * Note: We also have to make sure that the mft bitmap at least covers
 	 * the first 24 mft records as they are special and whilst they may not
 	 * be in use, we do not allocate from them.
-	 * /
+	 */
 	read_lock_irqsave(&mft_ni->size_lock, flags);
 	ll = mft_ni->initialized_size >> vol->mft_record_size_bits;
 	read_unlock_irqrestore(&mft_ni->size_lock, flags);
@@ -2100,7 +2100,7 @@ search_free_rec:
 	 * The mft bitmap needs to be expanded until it covers the first unused
 	 * mft record that we can allocate.
 	 * Note: The smallest mft record we allocate is mft record 24.
-	 * /
+	 */
 	bit = old_data_initialized << 3;
 	if (unlikely(bit >= (1ll << 32)))
 		goto max_err_out;
@@ -2111,7 +2111,7 @@ search_free_rec:
 			old_data_initialized);
 	read_unlock_irqrestore(&mftbmp_ni->size_lock, flags);
 	if (old_data_initialized + 8 > old_data_size) {
-		/* Need to extend bitmap by one more cluster. * /
+		/* Need to extend bitmap by one more cluster. */
 		ntfs_debug("mftbmp: initialized_size + 8 > allocated_size.");
 		err = ntfs_mft_bitmap_extend_allocation_nolock(vol);
 		if (err == -EAGAIN)
@@ -2129,13 +2129,13 @@ search_free_rec:
 				i_size_read(vol->mftbmp_ino),
 				mftbmp_ni->initialized_size);
 		read_unlock_irqrestore(&mftbmp_ni->size_lock, flags);
-#endif /* DEBUG * /
+#endif /* DEBUG */
 	}
 	/*
 	 * We now have sufficient allocated space, extend the initialized_size
 	 * as well as the data_size if necessary and fill the new space with
 	 * zeroes.
-	 * /
+	 */
 	err = ntfs_mft_bitmap_extend_initialized_nolock(vol);
 	if (unlikely(err)) {
 		if (!base_ni || base_ni->mft_no != FILE_MFT)
@@ -2149,10 +2149,10 @@ search_free_rec:
 			i_size_read(vol->mftbmp_ino),
 			mftbmp_ni->initialized_size);
 	read_unlock_irqrestore(&mftbmp_ni->size_lock, flags);
-#endif /* DEBUG * /
+#endif /* DEBUG */
 	ntfs_debug("Found free record (#3), bit 0x%llx.", (long long)bit);
 found_free_rec:
-	/* @bit is the found free mft record, allocate it in the mft bitmap. * /
+	/* @bit is the found free mft record, allocate it in the mft bitmap. */
 	ntfs_debug("At found_free_rec.");
 	err = ntfs_bitmap_set_bit(vol->mftbmp_ino, bit);
 	if (unlikely(err)) {
@@ -2170,7 +2170,7 @@ have_alloc_rec:
 	 * will impact decisions for mft bitmap and mft record allocation done
 	 * by a parallel allocation and if the lock is not maintained a
 	 * parallel allocation could allocate the same mft record as this one.
-	 * /
+	 */
 	ll = (bit + 1) << vol->mft_record_size_bits;
 	read_lock_irqsave(&mft_ni->size_lock, flags);
 	old_data_initialized = mft_ni->initialized_size;
@@ -2185,7 +2185,7 @@ have_alloc_rec:
 	 * attribute until it covers the allocated record.  The loop is only
 	 * actually traversed more than once when a freshly formatted volume is
 	 * first written to so it optimizes away nicely in the common case.
-	 * /
+	 */
 	if (!base_ni || base_ni->mft_no != FILE_MFT) {
 		read_lock_irqsave(&mft_ni->size_lock, flags);
 		ntfs_debug("Status of mft data before extension: allocated_size 0x%llx, data_size 0x%llx, initialized_size 0x%llx.",
@@ -2217,7 +2217,7 @@ have_alloc_rec:
 	 * Note: We only modify the struct ntfs_inode structure as that is all that is
 	 * needed by ntfs_mft_record_format().  We will update the attribute
 	 * record itself in one fell swoop later on.
-	 * /
+	 */
 	write_lock_irqsave(&mft_ni->size_lock, flags);
 	old_data_initialized = mft_ni->initialized_size;
 	old_data_size = vol->mft_ino->i_size;
@@ -2242,7 +2242,7 @@ have_alloc_rec:
 	}
 	write_unlock_irqrestore(&mft_ni->size_lock, flags);
 	record_formatted = true;
-	/* Update the mft data attribute record to reflect the new sizes. * /
+	/* Update the mft data attribute record to reflect the new sizes. */
 	m = map_mft_record(mft_ni);
 	if (IS_ERR(m)) {
 		ntfs_error(vol->sb, "Failed to map mft record.");
@@ -2271,7 +2271,7 @@ have_alloc_rec:
 	a->data.non_resident.data_size =
 			cpu_to_le64(i_size_read(vol->mft_ino));
 	read_unlock_irqrestore(&mft_ni->size_lock, flags);
-	/* Ensure the changes make it to disk. * /
+	/* Ensure the changes make it to disk. */
 	mark_mft_record_dirty(ctx->ntfs_ino);
 	ntfs_attr_put_search_ctx(ctx);
 	unmap_mft_record(mft_ni);
@@ -2291,16 +2291,16 @@ mft_rec_already_initialized:
 	 * this mft record is not referenced from anywhere yet and the fact
 	 * that it is allocated in the mft bitmap means that no-one will try to
 	 * allocate it either.
-	 * /
+	 */
 	if (!base_ni || base_ni->mft_no != FILE_MFT)
 		up_write(&vol->mftbmp_lock);
 	/*
 	 * We now have allocated and initialized the mft record.  Calculate the
 	 * index of and the offset within the page cache page the record is in.
-	 * /
+	 */
 	index = NTFS_MFT_NR_TO_PIDX(vol, bit);
 	ofs = NTFS_MFT_NR_TO_POFS(vol, bit);
-	/* Read, map, and pin the folio containing the mft record. * /
+	/* Read, map, and pin the folio containing the mft record. */
 	folio = read_mapping_folio(vol->mft_ino->i_mapping, index, NULL);
 	if (IS_ERR(folio)) {
 		ntfs_error(vol->sb, "Failed to map page containing allocated mft record 0x%llx.",
@@ -2311,9 +2311,9 @@ mft_rec_already_initialized:
 	folio_lock(folio);
 	folio_clear_uptodate(folio);
 	m = (struct mft_record *)((u8 *)kmap_local_folio(folio, 0) + ofs);
-	/* If we just formatted the mft record no need to do it again. * /
+	/* If we just formatted the mft record no need to do it again. */
 	if (!record_formatted) {
-		/* Sanity check that the mft record is really not in use. * /
+		/* Sanity check that the mft record is really not in use. */
 		if (ntfs_is_file_record(m->magic) &&
 				(m->flags & MFT_RECORD_IN_USE)) {
 			ntfs_warning(vol->sb,
@@ -2332,14 +2332,14 @@ mft_rec_already_initialized:
 		 * sequence number if it is not zero or -1 (0xffff).  This
 		 * means we do not need to care whether or not something went
 		 * wrong with the previous mft record.
-		 * /
+		 */
 		seq_no = m->sequence_number;
 		/*
 		 * The mft record still holds unvalidated, MST-protected on-disk
 		 * bytes, so m->usa_ofs is untrusted here.  Only preserve the old
 		 * update sequence number if that offset is in bounds; otherwise
 		 * leave usn zero so it is not restored below.
-		 * /
+		 */
 		if (!(le16_to_cpu(m->usa_ofs) & 1) &&
 		    le16_to_cpu(m->usa_ofs) + sizeof(usn) <= vol->mft_record_size)
 			usn = *(__le16 *)((u8 *)m + le16_to_cpu(m->usa_ofs));
@@ -2361,7 +2361,7 @@ mft_rec_already_initialized:
 			*(__le16 *)((u8 *)m + le16_to_cpu(m->usa_ofs)) = usn;
 		pre_write_mst_fixup((struct ntfs_record *)m, vol->mft_record_size);
 	}
-	/* Set the mft record itself in use. * /
+	/* Set the mft record itself in use. */
 	m->flags |= MFT_RECORD_IN_USE;
 	if (S_ISDIR(mode))
 		m->flags |= MFT_RECORD_IS_DIRECTORY;
@@ -2373,14 +2373,14 @@ mft_rec_already_initialized:
 		 * Setup the base mft record in the extent mft record.  This
 		 * completes initialization of the allocated extent mft record
 		 * and we can simply use it with map_extent_mft_record().
-		 * /
+		 */
 		m->base_mft_record = MK_LE_MREF(base_ni->mft_no,
 				base_ni->seq_no);
 		/*
 		 * Allocate an extent inode structure for the new mft record,
 		 * attach it to the base inode @base_ni and map, pin, and lock
 		 * its, i.e. the allocated, mft record.
-		 * /
+		 */
 		m_tmp = map_extent_mft_record(base_ni,
 					      MK_MREF(bit, le16_to_cpu(m->sequence_number)),
 					      ni);
@@ -2388,10 +2388,10 @@ mft_rec_already_initialized:
 			ntfs_error(vol->sb, "Failed to map allocated extent mft record 0x%llx.",
 					bit);
 			err = PTR_ERR(m_tmp);
-			/* Set the mft record itself not in use. * /
+			/* Set the mft record itself not in use. */
 			m->flags &= cpu_to_le16(
 					~le16_to_cpu(MFT_RECORD_IN_USE));
-			/* Make sure the mft record is written out to disk. * /
+			/* Make sure the mft record is written out to disk. */
 			ntfs_mft_mark_dirty(folio);
 			folio_unlock(folio);
 			kunmap_local(m);
@@ -2405,20 +2405,20 @@ mft_rec_already_initialized:
 		 * to do that anyway after finishing with the new extent mft
 		 * record (e.g. at a minimum a new attribute will be added to
 		 * the mft record.
-		 * /
+		 */
 		ntfs_mft_mark_dirty(folio);
 		folio_unlock(folio);
 		/*
 		 * Need to unmap the page since map_extent_mft_record() mapped
 		 * it as well so we have it mapped twice at the moment.
-		 * /
+		 */
 		kunmap_local(m);
 		folio_put(folio);
 	} else {
 		/*
 		 * Manually map, pin, and lock the mft record as we already
 		 * have its page mapped and it is very easy to do.
-		 * /
+		 */
 		(*ni)->seq_no = le16_to_cpu(m->sequence_number);
 		/*
 		 * Make sure the allocated mft record is written out to disk.
@@ -2429,7 +2429,7 @@ mft_rec_already_initialized:
 		 * that anyway after finishing with the new mft record (e.g. at
 		 * a minimum some new attributes will be added to the mft
 		 * record.
-		 * /
+		 */
 
 		(*ni)->mrec = kmemdup(m, vol->mft_record_size, GFP_NOFS);
 		if (!(*ni)->mrec) {
@@ -2446,7 +2446,7 @@ mft_rec_already_initialized:
 		(*ni)->folio = folio;
 		(*ni)->folio_ofs = ofs;
 		atomic_inc(&(*ni)->count);
-		/* Update the default mft allocation position. * /
+		/* Update the default mft allocation position. */
 		vol->mft_data_pos = bit + 1;
 	}
 	if (!base_ni || base_ni->mft_no != FILE_MFT)
@@ -2456,7 +2456,7 @@ mft_rec_already_initialized:
 	/*
 	 * Return the opened, allocated inode of the allocated mft record as
 	 * well as the mapped, pinned, and locked mft record.
-	 * /
+	 */
 	ntfs_debug("Returning opened, allocated %sinode 0x%llx.",
 			base_ni ? "extent " : "", bit);
 	(*ni)->mft_no = bit;
@@ -2506,7 +2506,7 @@ max_err_out:
  * cannot use the pointer @ni any more after this function returns success.
  *
  * On success return 0 and on error return -1 with errno set to the error code.
- * /
+ */
 int ntfs_mft_record_free(struct ntfs_volume *vol, struct ntfs_inode *ni)
 {
 	u64 mft_no;
@@ -2526,13 +2526,13 @@ int ntfs_mft_record_free(struct ntfs_volume *vol, struct ntfs_inode *ni)
 	if (IS_ERR(ni_mrec))
 		return -EIO;
 
-	/* Cache the mft reference for later. * /
+	/* Cache the mft reference for later. */
 	mft_no = ni->mft_no;
 
-	/* Mark the mft record as not in use. * /
+	/* Mark the mft record as not in use. */
 	ni_mrec->flags &= ~MFT_RECORD_IN_USE;
 
-	/* Increment the sequence number, skipping zero, if it is not zero. * /
+	/* Increment the sequence number, skipping zero, if it is not zero. */
 	old_seq_no = ni_mrec->sequence_number;
 	seq_no = le16_to_cpu(old_seq_no);
 	if (seq_no == 0xffff)
@@ -2553,7 +2553,7 @@ int ntfs_mft_record_free(struct ntfs_volume *vol, struct ntfs_inode *ni)
 	 * Set the ntfs inode dirty and write it out.  We do not need to worry
 	 * about the base inode here since whatever caused the extent mft
 	 * record to be freed is guaranteed to do it already.
-	 * /
+	 */
 	NInoSetDirty(ni);
 	err = write_mft_record(ni, ni_mrec, 0);
 	if (err)
@@ -2564,7 +2564,7 @@ int ntfs_mft_record_free(struct ntfs_volume *vol, struct ntfs_inode *ni)
 	else
 		base_ni = ni->ext.base_ntfs_ino;
 
-	/* Clear the bit in the $MFT/$BITMAP corresponding to this record. * /
+	/* Clear the bit in the $MFT/$BITMAP corresponding to this record. */
 	memalloc_flags = memalloc_nofs_save();
 	if (base_ni->mft_no != FILE_MFT)
 		down_write(&vol->mftbmp_lock);
@@ -2579,7 +2579,7 @@ int ntfs_mft_record_free(struct ntfs_volume *vol, struct ntfs_inode *ni)
 	ntfs_inc_free_mft_records(vol, 1);
 	return 0;
 
-	/* Rollback what we did... * /
+	/* Rollback what we did... */
 bitmap_rollback:
 	memalloc_flags = memalloc_nofs_save();
 	if (base_ni->mft_no != FILE_MFT)
@@ -2626,7 +2626,7 @@ static s64 lcn_from_index(struct ntfs_volume *vol, struct ntfs_inode *ni,
  * to the underlying block device.
  *
  * Return: 0 on success, or -errno on error.
- * /
+ */
 static int ntfs_write_mft_block(struct folio *folio, struct writeback_control *wbc)
 {
 	struct address_space *mapping = folio->mapping;
@@ -2658,9 +2658,9 @@ static int ntfs_write_mft_block(struct folio *folio, struct writeback_control *w
 		return -ENOMEM;
 	}
 
-	/* We have to zero every time due to mmap-at-end-of-file. * /
+	/* We have to zero every time due to mmap-at-end-of-file. */
 	if (folio->index >= (i_size >> folio_shift(folio)))
-		/* The page straddles i_size. * /
+		/* The page straddles i_size. */
 		folio_zero_segment(folio,
 				   offset_in_folio(folio, i_size),
 				   folio_size(folio));
@@ -2673,18 +2673,18 @@ static int ntfs_write_mft_block(struct folio *folio, struct writeback_control *w
 		return -EIO;
 	}
 
-	/* Map folio so we can access its contents. * /
+	/* Map folio so we can access its contents. */
 	kaddr = kmap_local_folio(folio, 0);
-	/* Clear the page uptodate flag whilst the mst fixups are applied. * /
+	/* Clear the page uptodate flag whilst the mst fixups are applied. */
 	folio_clear_uptodate(folio);
 
 	for (mft_ofs = 0; mft_ofs < PAGE_SIZE && vcn < end_vcn;
 	     mft_ofs += vol->mft_record_size) {
-		/* Get the mft record number. * /
+		/* Get the mft record number. */
 		mft_no = (((s64)folio->index << PAGE_SHIFT) + mft_ofs) >>
 			vol->mft_record_size_bits;
 		vcn = ntfs_mft_no_to_cluster(vol, mft_no);
-		/* Check whether to write this mft record. * /
+		/* Check whether to write this mft record. */
 		tni = NULL;
 		if (ntfs_may_write_mft_record(vol, mft_no,
 					(struct mft_record *)(kaddr + mft_ofs),
@@ -2697,7 +2697,7 @@ static int ntfs_write_mft_block(struct folio *folio, struct writeback_control *w
 			 * The record should be written.  If a locked ntfs
 			 * inode was returned, add it to the array of locked
 			 * ntfs inodes.
-			 * /
+			 */
 			if (tni)
 				locked_nis[nr_locked_nis++] = tni;
 			else if (ref_inos[nr_ref_inos])
@@ -2789,14 +2789,14 @@ unm_done:
 	folio_unlock(folio);
 	folio_end_writeback(folio);
 
-	/* Unlock any locked inodes. * /
+	/* Unlock any locked inodes. */
 	while (nr_locked_nis-- > 0) {
 		struct ntfs_inode *base_tni;
 
 		tni = locked_nis[nr_locked_nis];
 		mutex_unlock(&tni->mrec_lock);
 
-		/* Get the base inode. * /
+		/* Get the base inode. */
 		mutex_lock(&tni->extent_lock);
 		if (tni->nr_extents >= 0)
 			base_tni = tni;
@@ -2810,7 +2810,7 @@ unm_done:
 		iput(VFS_I(base_tni));
 	}
 
-	/* Dropping deferred references * /
+	/* Dropping deferred references */
 	while (nr_ref_inos-- > 0) {
 		if (ref_inos[nr_ref_inos])
 			iput(ref_inos[nr_ref_inos]);
@@ -2834,7 +2834,7 @@ unm_done:
  * $MFT inode.
  *
  * Returns 0 on success, or the first error encountered.
- * /
+ */
 int ntfs_mft_writepages(struct address_space *mapping,
 		struct writeback_control *wbc)
 {

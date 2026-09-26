@@ -6,7 +6,7 @@ pub const UEVENT_NUM_ENVP: usize = 64;
 pub const UEVENT_BUFFER_SIZE: usize = 2048;
 
 // CONFIG_UEVENT_HELPER controls this declaration in the original header.
-#[cfg(feature = "CONFIG_UEVENT_HELPER")]
+#[cfg(CONFIG_UEVENT_HELPER)]
 unsafe extern "C" {
     pub static mut uevent_helper: [core::ffi::c_char; UEVENT_HELPER_PATH_LEN];
 }
@@ -42,7 +42,7 @@ pub struct kobject {
     pub state_add_uevent_sent: u32,
     pub state_remove_uevent_sent: u32,
     pub uevent_suppress: u32,
-    #[cfg(feature = "CONFIG_DEBUG_KOBJECT_RELEASE")]
+    #[cfg(CONFIG_DEBUG_KOBJECT_RELEASE)]
     pub release: delayed_work,
 }
 

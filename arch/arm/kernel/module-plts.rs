@@ -6,14 +6,14 @@
 // Dependencies supplied by the kernel's ARM and module-loader interfaces are
 // intentionally referenced here rather than redefined.
 
-#[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+#[cfg(CONFIG_THUMB2_KERNEL)]
 const PLT_ENT_LDR: u32 = __opcode_to_mem_thumb32(0xf8dff000 | (PLT_ENT_STRIDE - 4));
-#[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+#[cfg(not(CONFIG_THUMB2_KERNEL))]
 const PLT_ENT_LDR: u32 = __opcode_to_mem_arm(0xe59ff000 | (PLT_ENT_STRIDE - 8));
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 static FIXED_PLTS: [u32; 2] = [FTRACE_ADDR, MCOUNT_ADDR];
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 static FIXED_PLTS: [u32; 0] = [];
 
 unsafe fn prealloc_fixed(pltsec: *mut mod_plt_sec, plt: *mut plt_entries) {
@@ -100,6 +100,6 @@ unsafe fn module_frob_arch_sections(ehdr: *mut Elf_Ehdr, sechdrs: *mut Elf_Shdr,
     0
 }
 
-unsafe fn in_module_plt(loc: usize) -> bool { let mod_ = __module_text_address(loc); !mod_.is_null() && (loc - (*mod_).arch.core.plt_ent as usize < (*mod_).arch.core.plt_count * PLT_ENT_SIZE || loc - (*mod_).arch.init.plt_ent as usize < (*mod_).arch.init.plt_count * PLT_ENT_SIZE) }
+unsafe fn in_module_plt(loc: usize) -> bool { let mod_ = __module_text_address(loc); !mod_.is_null() && (loc - ((*mod_).arch.core.plt_ent as usize) < (*mod_).arch.core.plt_count * PLT_ENT_SIZE || loc - ((*mod_).arch.init.plt_ent as usize) < (*mod_).arch.init.plt_count * PLT_ENT_SIZE) }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

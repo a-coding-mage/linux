@@ -28,7 +28,7 @@ pub struct revoke_entry { pub list: list_head, pub old_addr: block_t, pub index:
 pub struct sit_info {
  pub sit_base_addr: block_t, pub sit_blocks: block_t, pub written_valid_blocks: block_t,
  pub bitmap: *mut c_char, pub sit_bitmap: *mut c_char,
- #[cfg(feature="CONFIG_F2FS_CHECK_FS")] pub invalid_segmap: *mut c_ulong,
+ #[cfg(CONFIG_F2FS_CHECK_FS)] pub invalid_segmap: *mut c_ulong,
  pub bitmap_size: u32, pub tmp_map: *mut c_ulong, pub dirty_sentries_bitmap: *mut c_ulong,
  pub dirty_sentries: u32, pub sents_per_block: u32, pub sentry_lock: rw_semaphore,
  pub sentries: *mut seg_entry, pub sec_entries: *mut sec_entry, pub elapsed_time: u64,

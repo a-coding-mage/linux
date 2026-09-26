@@ -22,10 +22,10 @@
  */
 
 #[cfg(all(
-    feature = "CONFIG_CPU_PABRT_LEGACY",
+    CONFIG_CPU_PABRT_LEGACY,
     not(any(
-        feature = "CONFIG_CPU_PABRT_V6",
-        feature = "CONFIG_CPU_PABRT_V7"
+        CONFIG_CPU_PABRT_V6,
+        CONFIG_CPU_PABRT_V7
     ))
 ))]
 macro_rules! CPU_PABORT_HANDLER {
@@ -33,10 +33,10 @@ macro_rules! CPU_PABORT_HANDLER {
 }
 
 #[cfg(all(
-    feature = "CONFIG_CPU_PABRT_V6",
+    CONFIG_CPU_PABRT_V6,
     not(any(
-        feature = "CONFIG_CPU_PABRT_LEGACY",
-        feature = "CONFIG_CPU_PABRT_V7"
+        CONFIG_CPU_PABRT_LEGACY,
+        CONFIG_CPU_PABRT_V7
     ))
 ))]
 macro_rules! CPU_PABORT_HANDLER {
@@ -44,10 +44,10 @@ macro_rules! CPU_PABORT_HANDLER {
 }
 
 #[cfg(all(
-    feature = "CONFIG_CPU_PABRT_V7",
+    CONFIG_CPU_PABRT_V7,
     not(any(
-        feature = "CONFIG_CPU_PABRT_LEGACY",
-        feature = "CONFIG_CPU_PABRT_V6"
+        CONFIG_CPU_PABRT_LEGACY,
+        CONFIG_CPU_PABRT_V6
     ))
 ))]
 macro_rules! CPU_PABORT_HANDLER {
@@ -56,17 +56,17 @@ macro_rules! CPU_PABORT_HANDLER {
 
 /* Multiple configured prefetch-abort models select the multi-handler path. */
 #[cfg(any(
-    all(feature = "CONFIG_CPU_PABRT_LEGACY", feature = "CONFIG_CPU_PABRT_V6"),
-    all(feature = "CONFIG_CPU_PABRT_LEGACY", feature = "CONFIG_CPU_PABRT_V7"),
-    all(feature = "CONFIG_CPU_PABRT_V6", feature = "CONFIG_CPU_PABRT_V7")
+    all(CONFIG_CPU_PABRT_LEGACY, CONFIG_CPU_PABRT_V6),
+    all(CONFIG_CPU_PABRT_LEGACY, CONFIG_CPU_PABRT_V7),
+    all(CONFIG_CPU_PABRT_V6, CONFIG_CPU_PABRT_V7)
 ))]
 #[allow(non_upper_case_globals)]
 pub const MULTI_PABORT: usize = 1;
 
 #[cfg(not(any(
-    feature = "CONFIG_CPU_PABRT_LEGACY",
-    feature = "CONFIG_CPU_PABRT_V6",
-    feature = "CONFIG_CPU_PABRT_V7"
+    CONFIG_CPU_PABRT_LEGACY,
+    CONFIG_CPU_PABRT_V6,
+    CONFIG_CPU_PABRT_V7
 )))]
 compile_error!("Unknown prefetch abort handler type");
 

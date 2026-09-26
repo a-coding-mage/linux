@@ -88,7 +88,7 @@ pub const IPFT_FLTA_RP: u32 = 1; pub const IPFT_FLTA_IS: u32 = 2; pub const IPFT
 pub const IPFT_RPR: u32 = 0x18000; pub const IPFT_CTD: u32 = 1 << 17; pub const IPFT_HR: u32 = 0x3c0000;
 pub const IPFT_TIMECAPE: u32 = 1 << 22; pub const IPFT_RRT: u32 = 1 << 23; pub const IPFT_BL2F: u32 = 1 << 24; pub const IPFT_EVMEID: u32 = 0xf000_0000;
 
-#[cfg(feature = "CONFIG_NXP_NETC_LIB")]
+#[cfg(CONFIG_NXP_NETC_LIB)]
 extern "C" {
     pub fn ntmp_init_cbdr(cbdr: *mut netc_cbdr, dev: *mut device, regs: *const netc_cbdr_regs) -> i32;
     pub fn ntmp_free_cbdr(cbdr: *mut netc_cbdr);
@@ -118,20 +118,20 @@ extern "C" {
     pub fn ntmp_bpt_update_entry(user: *mut ntmp_user, entry_id: u32, cfge: *const bpt_cfge_data) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_init_cbdr(_: *mut netc_cbdr, _: *mut device, _: *const netc_cbdr_regs) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_free_cbdr(_: *mut netc_cbdr) {}
 
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_maft_add_entry(_: *mut ntmp_user, _: u32, _: *mut maft_entry_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_maft_query_entry(_: *mut ntmp_user, _: u32, _: *mut maft_entry_data) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_maft_delete_entry(_: *mut ntmp_user, _: u32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_rsst_update_entry(_: *mut ntmp_user, _: *const u32, _: i32) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_NXP_NETC_LIB"))]
+#[cfg(not(CONFIG_NXP_NETC_LIB))]
 #[inline] pub unsafe fn ntmp_rsst_query_entry(_: *mut ntmp_user, _: *mut u32, _: i32) -> i32 { 0 }
 
 // Kernel-provided opaque types and C integer aliases.

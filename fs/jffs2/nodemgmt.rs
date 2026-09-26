@@ -15,11 +15,12 @@ unsafe fn jffs2_rp_can_write(c: *mut jffs2_sb_info) -> i32 {
 unsafe fn jffs2_reserve_space(c: *mut jffs2_sb_info, mut minsize: u32, len: *mut u32, prio: i32, sumsize: u32) -> i32 {
     let mut ret = -EAGAIN;
     let blocksneeded = (*c).resv_blocks_write;
+    'out: {
     minsize = PAD!(minsize);
     jffs2_dbg!(1, "%s(): Requested 0x%x bytes\n", __func__(), minsize);
     mutex_lock(&mut (*c).alloc_sem); jffs2_dbg!(1, "%s(): alloc sem got\n", __func__());
     spin_lock(&mut (*c).erase_completion_lock);
-    if prio != ALLOC_DELETION && jffs2_rp_can_write(c) == 0 { ret = -ENOSPC; goto!(out); }
+    if prio != ALLOC_DELETION && jffs2_rp_can_write(c) == 0 { ret = -ENOSPC; break 'out; }
     while ret == -EAGAIN {
         while (*c).nr_free_blocks + (*c).nr_erasing_blocks < blocksneeded {
             let dirty = (*c).dirty_size + (*c).erasing_size - (*c).nr_erasing_blocks * (*c).sector_size + (*c).unchecked_size;
@@ -40,7 +41,8 @@ unsafe fn jffs2_reserve_space(c: *mut jffs2_sb_info, mut minsize: u32, len: *mut
         }
         ret = jffs2_do_reserve_space(c, minsize, len, sumsize);
     }
-out:
+    }
+    
     spin_unlock(&mut (*c).erase_completion_lock);
     if ret == 0 { ret = jffs2_prealloc_raw_node_refs(c, (*c).nextblock, 1); }
     if ret != 0 { mutex_unlock(&mut (*c).alloc_sem); } ret

@@ -27,9 +27,9 @@ pub unsafe fn ovs_vport_ops_register(ops: *mut VportOps) -> i32 {
     let mut err = -EEXIST;
     let mut o: *mut VportOps = core::ptr::null_mut();
     ovs_lock();
-    list_for_each_entry(&mut o, &mut VPORT_OPS_LIST, (*VportOps).list) {
+    list_for_each_entry!(&mut o, &mut VPORT_OPS_LIST, (*VportOps).list, {
         if (*ops).type_ == (*o).type_ { ovs_unlock(); return err; }
-    }
+    });
     list_add_tail(&mut (*ops).list, &mut VPORT_OPS_LIST);
     err = 0;
     ovs_unlock();
@@ -45,9 +45,9 @@ pub unsafe fn ovs_vport_ops_unregister(ops: *mut VportOps) {
 pub unsafe fn ovs_vport_locate(net: *const Net, name: *const i8) -> *mut Vport {
     let bucket = hash_bucket(net, name);
     let mut vport: *mut Vport = core::ptr::null_mut();
-    hlist_for_each_entry_rcu(&mut vport, bucket, (*Vport).hash_node, lockdep_ovsl_is_held()) {
+    hlist_for_each_entry_rcu!(&mut vport, bucket, (*Vport).hash_node, lockdep_ovsl_is_held(), {
         if strcmp(name, ovs_vport_name(vport)) == 0 && net_eq(ovs_dp_get_net((*vport).dp), net) { return vport; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -77,9 +77,9 @@ pub unsafe fn ovs_vport_free(vport: *mut Vport) {
 
 unsafe fn ovs_vport_lookup(parms: *const VportParms) -> *mut Vport {
     let mut ops: *mut VportOps = core::ptr::null_mut();
-    list_for_each_entry(&mut ops, &mut VPORT_OPS_LIST, (*VportOps).list) {
+    list_for_each_entry!(&mut ops, &mut VPORT_OPS_LIST, (*VportOps).list, {
         if (*ops).type_ == (*parms).type_ { return ops; }
-    }
+    });
     core::ptr::null_mut()
 }
 

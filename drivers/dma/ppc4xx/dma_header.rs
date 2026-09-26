@@ -55,25 +55,25 @@ pub const DMA_CUED_XOR_BASE: u32 = 0x10000000;
 pub const DMA_CUED_XOR_HB: u32 = 0x00000008;
 
 // CONFIG_440SP selects the corresponding hardware layout at build time.
-#[cfg(feature = "CONFIG_440SP")]
+#[cfg(CONFIG_440SP)]
 pub const DMA_CUED_MULT1_OFF: u32 = 0;
-#[cfg(feature = "CONFIG_440SP")]
+#[cfg(CONFIG_440SP)]
 pub const DMA_CUED_MULT2_OFF: u32 = 8;
-#[cfg(feature = "CONFIG_440SP")]
+#[cfg(CONFIG_440SP)]
 pub const DMA_CUED_MULT3_OFF: u32 = 16;
-#[cfg(feature = "CONFIG_440SP")]
+#[cfg(CONFIG_440SP)]
 pub const DMA_CUED_REGION_OFF: u32 = 24;
-#[cfg(feature = "CONFIG_440SP")]
+#[cfg(CONFIG_440SP)]
 pub const DMA_CUED_XOR_WIN_MSK: u32 = 0xFC000000;
-#[cfg(not(feature = "CONFIG_440SP"))]
+#[cfg(not(CONFIG_440SP))]
 pub const DMA_CUED_MULT1_OFF: u32 = 2;
-#[cfg(not(feature = "CONFIG_440SP"))]
+#[cfg(not(CONFIG_440SP))]
 pub const DMA_CUED_MULT2_OFF: u32 = 10;
-#[cfg(not(feature = "CONFIG_440SP"))]
+#[cfg(not(CONFIG_440SP))]
 pub const DMA_CUED_MULT3_OFF: u32 = 18;
-#[cfg(not(feature = "CONFIG_440SP"))]
+#[cfg(not(CONFIG_440SP))]
 pub const DMA_CUED_REGION_OFF: u32 = 26;
-#[cfg(not(feature = "CONFIG_440SP"))]
+#[cfg(not(CONFIG_440SP))]
 pub const DMA_CUED_XOR_WIN_MSK: u32 = 0xF0000000;
 
 pub const DMA_CUED_REGION_MSK: u32 = 0x3;

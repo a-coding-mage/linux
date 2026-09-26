@@ -5,7 +5,7 @@
  */
 
 /* C build-time condition: CONFIG_CPU_IDLE */
-#[cfg(feature = "CONFIG_CPU_IDLE")]
+#[cfg(CONFIG_CPU_IDLE)]
 extern "C" {
     pub fn imx5_cpuidle_init() -> ::core::ffi::c_int;
     pub fn imx6q_cpuidle_init() -> ::core::ffi::c_int;
@@ -14,31 +14,31 @@ extern "C" {
     pub fn imx7ulp_cpuidle_init() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE"))]
+#[cfg(not(CONFIG_CPU_IDLE))]
 #[inline]
 pub fn imx5_cpuidle_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE"))]
+#[cfg(not(CONFIG_CPU_IDLE))]
 #[inline]
 pub fn imx6q_cpuidle_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE"))]
+#[cfg(not(CONFIG_CPU_IDLE))]
 #[inline]
 pub fn imx6sl_cpuidle_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE"))]
+#[cfg(not(CONFIG_CPU_IDLE))]
 #[inline]
 pub fn imx6sx_cpuidle_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CPU_IDLE"))]
+#[cfg(not(CONFIG_CPU_IDLE))]
 #[inline]
 pub fn imx7ulp_cpuidle_init() -> ::core::ffi::c_int {
     0

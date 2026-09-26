@@ -22,7 +22,7 @@ pub struct mpic_timer {
 }
 
 // CONFIG_MPIC_TIMER
-#[cfg(feature = "CONFIG_MPIC_TIMER")]
+#[cfg(CONFIG_MPIC_TIMER)]
 extern "C" {
     pub fn mpic_request_timer(
         fn_: irq_handler_t,
@@ -35,7 +35,7 @@ extern "C" {
     pub fn mpic_free_timer(handle: *mut mpic_timer);
 }
 
-#[cfg(not(feature = "CONFIG_MPIC_TIMER"))]
+#[cfg(not(CONFIG_MPIC_TIMER))]
 pub unsafe fn mpic_request_timer(
     _fn: irq_handler_t,
     _dev: *mut core::ffi::c_void,
@@ -44,16 +44,16 @@ pub unsafe fn mpic_request_timer(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_MPIC_TIMER"))]
+#[cfg(not(CONFIG_MPIC_TIMER))]
 pub unsafe fn mpic_start_timer(_handle: *mut mpic_timer) {}
 
-#[cfg(not(feature = "CONFIG_MPIC_TIMER"))]
+#[cfg(not(CONFIG_MPIC_TIMER))]
 pub unsafe fn mpic_stop_timer(_handle: *mut mpic_timer) {}
 
-#[cfg(not(feature = "CONFIG_MPIC_TIMER"))]
+#[cfg(not(CONFIG_MPIC_TIMER))]
 pub unsafe fn mpic_get_remain_time(_handle: *mut mpic_timer, _time: *mut time64_t) {}
 
-#[cfg(not(feature = "CONFIG_MPIC_TIMER"))]
+#[cfg(not(CONFIG_MPIC_TIMER))]
 pub unsafe fn mpic_free_timer(_handle: *mut mpic_timer) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

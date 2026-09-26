@@ -66,7 +66,7 @@ extern "C" {
         recv_if: *mut batadv_hard_iface,
     ) -> ::core::ffi::c_int;
 
-    #[cfg(feature = "CONFIG_BATMAN_ADV_MCAST")]
+    #[cfg(CONFIG_BATMAN_ADV_MCAST)]
     pub fn batadv_recv_mcast_packet(
         skb: *mut sk_buff,
         recv_if: *mut batadv_hard_iface,
@@ -97,7 +97,7 @@ extern "C" {
     ) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_BATMAN_ADV_MCAST"))]
+#[cfg(not(CONFIG_BATMAN_ADV_MCAST))]
 #[inline]
 pub unsafe fn batadv_recv_mcast_packet(
     skb: *mut sk_buff,

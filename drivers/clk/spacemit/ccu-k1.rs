@@ -1023,7 +1023,7 @@ static of_k1_ccu_match: &[of_device_id] = &[
 };
 // MODULE_DEVICE_TABLE(of, of_k1_ccu_match);
 
-unsafe fn k1_ccu_probe(struct platform_device *pdev) -> i32
+unsafe fn k1_ccu_probe(platform_device *pdev) -> i32
 {
 	return spacemit_ccu_probe(pdev, "spacemit,k1-pll");
 }

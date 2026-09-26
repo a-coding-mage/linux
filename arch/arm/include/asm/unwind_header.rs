@@ -54,13 +54,13 @@ extern "C" {
     pub fn __aeabi_unwind_cpp_pr2();
 }
 
-#[cfg(feature = "CONFIG_ARM_UNWIND")]
+#[cfg(CONFIG_ARM_UNWIND)]
 #[macro_export]
 macro_rules! UNWIND {
     ($($code:tt)*) => { $($code)* };
 }
 
-#[cfg(not(feature = "CONFIG_ARM_UNWIND"))]
+#[cfg(not(CONFIG_ARM_UNWIND))]
 #[macro_export]
 macro_rules! UNWIND {
     ($($code:tt)*) => {};

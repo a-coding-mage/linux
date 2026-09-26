@@ -136,6 +136,7 @@ unsafe fn alloc_io_context(gfp_flags: gfp_t, node: int) -> *mut io_context {
 
 pub unsafe fn set_task_ioprio(task: *mut task_struct, ioprio: int) -> int {
     let cred = current_cred();
+    'out: {
     rcu_read_lock();
     let tcred = __task_cred(task);
     if !uid_eq((*tcred).uid, (*cred).euid) && !uid_eq((*tcred).uid, (*cred).uid) && !capable(CAP_SYS_NICE) {
@@ -151,13 +152,14 @@ pub unsafe fn set_task_ioprio(task: *mut task_struct, ioprio: int) -> int {
         if ioc.is_null() { return -ENOMEM; }
         task_lock(task);
         if (*task).flags & PF_EXITING != 0 {
-            kmem_cache_free(iocontext_cachep, ioc); goto out;
+            kmem_cache_free(iocontext_cachep, ioc); break 'out;
         }
         if !(*task).io_context.is_null() { kmem_cache_free(iocontext_cachep, ioc); }
         else { (*task).io_context = ioc; }
     }
     (*(*task).io_context).ioprio = ioprio;
-out:
+    }
+    
     task_unlock(task); 0
 }
 

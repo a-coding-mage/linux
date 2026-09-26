@@ -204,7 +204,7 @@ pub unsafe fn f2fs_update_iostat(sbi: *mut f2fs_sb_info, inode: *mut inode, type
     if type_ == APP_BUFFERED_IO || type_ == APP_DIRECT_IO { __f2fs_update_iostat(sbi, APP_WRITE_IO, io_bytes); }
     if type_ == APP_BUFFERED_READ_IO || type_ == APP_DIRECT_READ_IO { __f2fs_update_iostat(sbi, APP_READ_IO, io_bytes); }
     // CONFIG_F2FS_FS_COMPRESSION condition is preserved from the C source.
-    #[cfg(feature = "CONFIG_F2FS_FS_COMPRESSION")]
+    #[cfg(CONFIG_F2FS_FS_COMPRESSION)]
     if !inode.is_null() && f2fs_compressed_file(inode) {
         if type_ == APP_BUFFERED_IO { __f2fs_update_iostat(sbi, APP_BUFFERED_CDATA_IO, io_bytes); }
         if type_ == APP_BUFFERED_READ_IO { __f2fs_update_iostat(sbi, APP_BUFFERED_CDATA_READ_IO, io_bytes); }

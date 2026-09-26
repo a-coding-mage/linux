@@ -36,38 +36,38 @@ pub const AMDGPU_CAP_ATTR_MAX: u32 = (1u32 << AMDGPU_CAP_ATTR_BITS) - 1;
 /* Internal helper to build helpers for a given enum NAME. */
 #[macro_export]
 macro_rules! DECLARE_ATTR_CAP_CLASS_HELPERS {
-    ($name:ident) => {
-        pub const $name##_BITMAP_BITS: usize = $name##_COUNT * AMDGPU_CAP_ATTR_BITS;
+    ($name:tt) => {
+        pub const ::kernel::macros::paste!([<$name _BITMAP_BITS>]): usize = ::kernel::macros::paste!([<$name _COUNT>]) * AMDGPU_CAP_ATTR_BITS;
         #[repr(C)]
-        pub struct $name##_caps {
-            pub bmap: [usize; (($name##_BITMAP_BITS + usize::BITS as usize - 1)
+        pub struct ::kernel::macros::paste!([<$name _caps>]) {
+            pub bmap: [usize; ((::kernel::macros::paste!([<$name _BITMAP_BITS>]) + usize::BITS as usize - 1)
                                / usize::BITS as usize)],
         }
 
         #[inline]
-        pub const fn $name##_ATTR_START(cap: $name##_cap_id) -> usize {
+        pub const fn ::kernel::macros::paste!([<$name _ATTR_START>])(cap: ::kernel::macros::paste!([<$name _cap_id>])) -> usize {
             cap as usize * AMDGPU_CAP_ATTR_BITS
         }
 
         #[inline]
-        pub unsafe fn $name##_attr_init(c: *mut $name##_caps) {
+        pub unsafe fn ::kernel::macros::paste!([<$name _attr_init>])(c: *mut ::kernel::macros::paste!([<$name _caps>])) {
             if !c.is_null() {
                 (*c).bmap.fill(0);
             }
         }
 
         #[inline]
-        pub unsafe fn $name##_attr_set(
-            c: *mut $name##_caps,
-            cap: $name##_cap_id,
+        pub unsafe fn ::kernel::macros::paste!([<$name _attr_set>])(
+            c: *mut ::kernel::macros::paste!([<$name _caps>]),
+            cap: ::kernel::macros::paste!([<$name _cap_id>]),
             attr: amdgpu_cap_attr,
         ) -> i32 {
-            if c.is_null() || cap as usize >= $name##_COUNT
+            if c.is_null() || cap as usize >= ::kernel::macros::paste!([<$name _COUNT>])
                 || attr as u32 > AMDGPU_CAP_ATTR_MAX
             {
                 return -22; /* -EINVAL */
             }
-            let bit = $name##_ATTR_START(cap);
+            let bit = ::kernel::macros::paste!([<$name _ATTR_START>])(cap);
             let word = bit / usize::BITS as usize;
             let shift = bit % usize::BITS as usize;
             let mask = AMDGPU_CAP_ATTR_MAX as usize << shift;
@@ -76,15 +76,15 @@ macro_rules! DECLARE_ATTR_CAP_CLASS_HELPERS {
         }
 
         #[inline]
-        pub unsafe fn $name##_attr_get(
-            c: *const $name##_caps,
-            cap: $name##_cap_id,
+        pub unsafe fn ::kernel::macros::paste!([<$name _attr_get>])(
+            c: *const ::kernel::macros::paste!([<$name _caps>]),
+            cap: ::kernel::macros::paste!([<$name _cap_id>]),
             out: *mut amdgpu_cap_attr,
         ) -> i32 {
-            if c.is_null() || out.is_null() || cap as usize >= $name##_COUNT {
+            if c.is_null() || out.is_null() || cap as usize >= ::kernel::macros::paste!([<$name _COUNT>]) {
                 return -22; /* -EINVAL */
             }
-            let bit = $name##_ATTR_START(cap);
+            let bit = ::kernel::macros::paste!([<$name _ATTR_START>])(cap);
             let word = bit / usize::BITS as usize;
             let shift = bit % usize::BITS as usize;
             *out = core::mem::transmute::<u32, amdgpu_cap_attr>
@@ -93,19 +93,19 @@ macro_rules! DECLARE_ATTR_CAP_CLASS_HELPERS {
         }
 
         #[inline]
-        pub unsafe fn $name##_cap_is_ro(c: *const $name##_caps, id: $name##_cap_id) -> bool {
+        pub unsafe fn ::kernel::macros::paste!([<$name _cap_is_ro>])(c: *const ::kernel::macros::paste!([<$name _caps>]), id: ::kernel::macros::paste!([<$name _cap_id>])) -> bool {
             let mut a = amdgpu_cap_attr::AMDGPU_CAP_ATTR_INVALID;
-            $name##_attr_get(c, id, &mut a) == 0 && a == amdgpu_cap_attr::AMDGPU_CAP_ATTR_RO
+            ::kernel::macros::paste!([<$name _attr_get>])(c, id, &mut a) == 0 && a == amdgpu_cap_attr::AMDGPU_CAP_ATTR_RO
         }
         #[inline]
-        pub unsafe fn $name##_cap_is_wo(c: *const $name##_caps, id: $name##_cap_id) -> bool {
+        pub unsafe fn ::kernel::macros::paste!([<$name _cap_is_wo>])(c: *const ::kernel::macros::paste!([<$name _caps>]), id: ::kernel::macros::paste!([<$name _cap_id>])) -> bool {
             let mut a = amdgpu_cap_attr::AMDGPU_CAP_ATTR_INVALID;
-            $name##_attr_get(c, id, &mut a) == 0 && a == amdgpu_cap_attr::AMDGPU_CAP_ATTR_WO
+            ::kernel::macros::paste!([<$name _attr_get>])(c, id, &mut a) == 0 && a == amdgpu_cap_attr::AMDGPU_CAP_ATTR_WO
         }
         #[inline]
-        pub unsafe fn $name##_cap_is_rw(c: *const $name##_caps, id: $name##_cap_id) -> bool {
+        pub unsafe fn ::kernel::macros::paste!([<$name _cap_is_rw>])(c: *const ::kernel::macros::paste!([<$name _caps>]), id: ::kernel::macros::paste!([<$name _cap_id>])) -> bool {
             let mut a = amdgpu_cap_attr::AMDGPU_CAP_ATTR_INVALID;
-            $name##_attr_get(c, id, &mut a) == 0 && a == amdgpu_cap_attr::AMDGPU_CAP_ATTR_RW
+            ::kernel::macros::paste!([<$name _attr_get>])(c, id, &mut a) == 0 && a == amdgpu_cap_attr::AMDGPU_CAP_ATTR_RW
         }
     };
 }
@@ -117,10 +117,10 @@ macro_rules! _CAP_ENUM_ELEM { ($x:ident) => { $x, }; }
 /* Public macro: declare enum + helpers from an X-macro list. */
 #[macro_export]
 macro_rules! DECLARE_ATTR_CAP_CLASS {
-    ($name:ident, $list:ident) => {
+    ($name:tt, $list:ident) => {
         #[repr(usize)]
         #[derive(Copy, Clone, PartialEq, Eq)]
-        pub enum $name##_cap_id { $list!(_CAP_ENUM_ELEM) $name##_COUNT }
+        pub enum ::kernel::macros::paste!([<$name _cap_id>]) { $list!(_CAP_ENUM_ELEM) ::kernel::macros::paste!([<$name _COUNT>]) }
         DECLARE_ATTR_CAP_CLASS_HELPERS!($name);
     };
 }

@@ -296,7 +296,7 @@ pub unsafe extern "C" fn dump_task_sleepable(ctx: *mut bpf_iter__task) -> i32 {
     );
     if bpf_strncmp((&raw const big_str2).cast::<i8>(), 4, c"baba".as_ptr()) != 0
         || ret != 5000
-        || bpf_strncmp((&raw const big_str2).cast::<i8>().add(4996), 5, c"bab\0".as_ptr()) != 0
+        || bpf_strncmp((&raw const big_str2).cast::<i8>().add(4996), 5, c"bab".as_ptr()) != 0
     {
         bpf_seq_printf(seq, c"%s\n".as_ptr(), info.as_ptr());
         return 0;

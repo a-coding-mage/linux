@@ -10,9 +10,9 @@ unsafe extern "C" {
     pub fn acpi_osi_init() -> ::core::ffi::c_int;
     pub fn acpi_os_initialize1() -> acpi_status;
     pub fn acpi_scan_init();
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pub fn acpi_pci_root_init();
-    #[cfg(feature = "CONFIG_PCI")]
+    #[cfg(CONFIG_PCI)]
     pub fn acpi_pci_link_init();
     pub fn acpi_processor_init();
     pub fn acpi_platform_init();
@@ -21,26 +21,26 @@ unsafe extern "C" {
     pub fn acpi_gpe_apply_masked_gpes();
     pub fn acpi_container_init();
     pub fn acpi_memory_hotplug_init();
-    #[cfg(feature = "CONFIG_ACPI_HOTPLUG_IOAPIC")]
+    #[cfg(CONFIG_ACPI_HOTPLUG_IOAPIC)]
     pub fn pci_ioapic_remove(root: *mut acpi_pci_root);
-    #[cfg(feature = "CONFIG_ACPI_HOTPLUG_IOAPIC")]
+    #[cfg(CONFIG_ACPI_HOTPLUG_IOAPIC)]
     pub fn acpi_ioapic_remove(root: *mut acpi_pci_root) -> ::core::ffi::c_int;
-    #[cfg(feature = "CONFIG_ACPI_DOCK")]
+    #[cfg(CONFIG_ACPI_DOCK)]
     pub fn register_dock_dependent_device(adev: *mut acpi_device, dshandle: acpi_handle);
-    #[cfg(feature = "CONFIG_ACPI_DOCK")]
+    #[cfg(CONFIG_ACPI_DOCK)]
     pub fn dock_notify(adev: *mut acpi_device, event: u32) -> ::core::ffi::c_int;
-    #[cfg(feature = "CONFIG_ACPI_DOCK")]
+    #[cfg(CONFIG_ACPI_DOCK)]
     pub fn acpi_dock_add(adev: *mut acpi_device);
-    #[cfg(feature = "CONFIG_X86")]
+    #[cfg(CONFIG_X86)]
     pub fn acpi_cmos_rtc_init();
     pub fn acpi_rev_override_setup(str_: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
 
     pub fn acpi_sysfs_add_hotplug_profile(hotplug: *mut acpi_hotplug_profile, name: *const ::core::ffi::c_char);
     pub fn acpi_scan_add_handler_with_hotplug(handler: *mut acpi_scan_handler, hotplug_profile_name: *const ::core::ffi::c_char) -> ::core::ffi::c_int;
     pub fn acpi_scan_hotplug_enabled(hotplug: *mut acpi_hotplug_profile, val: bool);
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub static mut acpi_debugfs_dir: *mut dentry;
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub fn acpi_debugfs_init();
     pub fn acpi_lpss_init();
     pub fn acpi_apd_init();
@@ -84,15 +84,15 @@ unsafe extern "C" {
     pub fn acpi_wakeup_device_init() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline] pub unsafe fn acpi_pci_root_init() {}
-#[cfg(not(feature = "CONFIG_PCI"))]
+#[cfg(not(CONFIG_PCI))]
 #[inline] pub unsafe fn acpi_pci_link_init() {}
-#[cfg(not(feature = "CONFIG_ACPI_HOTPLUG_IOAPIC"))]
+#[cfg(not(CONFIG_ACPI_HOTPLUG_IOAPIC))]
 #[inline] pub unsafe fn pci_ioapic_remove(_: *mut acpi_pci_root) {}
-#[cfg(not(feature = "CONFIG_ACPI_HOTPLUG_IOAPIC"))]
+#[cfg(not(CONFIG_ACPI_HOTPLUG_IOAPIC))]
 #[inline] pub unsafe fn acpi_ioapic_remove(_: *mut acpi_pci_root) -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline] pub unsafe fn acpi_cmos_rtc_init() {}
 
 pub const ACPI_STA_DEFAULT: u32 = ACPI_STA_DEVICE_PRESENT | ACPI_STA_DEVICE_ENABLED | ACPI_STA_DEVICE_UI | ACPI_STA_DEVICE_FUNCTIONING;
@@ -117,9 +117,9 @@ pub type acpi_ec_query_func = Option<unsafe extern "C" fn(*mut ::core::ffi::c_vo
 
 unsafe extern "C" { pub static mut first_ec: *mut acpi_ec; }
 
-#[cfg(not(feature = "CONFIG_ARM64"))]
+#[cfg(not(CONFIG_ARM64))]
 #[inline] pub unsafe fn acpi_arch_thermal_cpufreq_pctg() -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline] pub unsafe fn force_storage_d3() -> bool { false }
 
 pub const ACPI_DT_NAMESPACE_HID: &[u8] = b"PRP0001\0";
@@ -152,54 +152,54 @@ unsafe extern "C" {
     pub fn acpi_extract_apple_properties(adev: *mut acpi_device);
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_init() {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_ecdt_probe() {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_dsdt_probe() {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_block_transactions() {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_unblock_transactions() {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_add_query_handler(_: *mut acpi_ec, _: u8, _: acpi_handle, _: acpi_ec_query_func, _: *mut ::core::ffi::c_void) -> ::core::ffi::c_int { -ENXIO }
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_remove_query_handler(_: *mut acpi_ec, _: u8) {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_register_opregions(_: *mut acpi_device) {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_flush_work() {}
-#[cfg(not(feature = "CONFIG_ACPI_EC"))]
+#[cfg(not(CONFIG_ACPI_EC))]
 #[inline] pub unsafe fn acpi_ec_dispatch_gpe() -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT"))]
+#[cfg(not(CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT))]
 #[inline] pub unsafe fn acpi_s2idle_wakeup() -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT"))]
+#[cfg(not(CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT))]
 #[inline] pub unsafe fn acpi_sleep_init() -> ::core::ffi::c_int { -ENXIO }
-#[cfg(not(feature = "CONFIG_ACPI_SLEEP"))]
+#[cfg(not(CONFIG_ACPI_SLEEP))]
 #[inline] pub unsafe fn acpi_sleep_proc_init() {}
-#[cfg(not(feature = "CONFIG_ACPI_SLEEP"))]
+#[cfg(not(CONFIG_ACPI_SLEEP))]
 #[inline] pub unsafe fn suspend_nvs_alloc() -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_ACPI_SLEEP"))]
+#[cfg(not(CONFIG_ACPI_SLEEP))]
 #[inline] pub unsafe fn suspend_nvs_free() {}
-#[cfg(not(feature = "CONFIG_ACPI_SLEEP"))]
+#[cfg(not(CONFIG_ACPI_SLEEP))]
 #[inline] pub unsafe fn suspend_nvs_save() -> ::core::ffi::c_int { 0 }
-#[cfg(not(feature = "CONFIG_ACPI_SLEEP"))]
+#[cfg(not(CONFIG_ACPI_SLEEP))]
 #[inline] pub unsafe fn suspend_nvs_restore() {}
-#[cfg(not(feature = "CONFIG_ACPI_WATCHDOG"))]
+#[cfg(not(CONFIG_ACPI_WATCHDOG))]
 #[inline] pub unsafe fn acpi_watchdog_init() {}
-#[cfg(not(feature = "CONFIG_ACPI_LPIT"))]
+#[cfg(not(CONFIG_ACPI_LPIT))]
 #[inline] pub unsafe fn acpi_init_lpit() {}
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline] pub unsafe fn acpi_extract_apple_properties(_: *mut acpi_device) {}
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline] pub unsafe fn acpi_graph_ignore_port(_: acpi_handle) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC"))]
+#[cfg(not(CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC))]
 #[inline] pub unsafe fn acpi_early_processor_control_setup() {}
-#[cfg(not(feature = "CONFIG_ACPI_PROCESSOR_CSTATE"))]
+#[cfg(not(CONFIG_ACPI_PROCESSOR_CSTATE))]
 #[inline] pub unsafe fn acpi_idle_rescan_dead_smt_siblings() {}
-#[cfg(not(feature = "CONFIG_X86"))]
+#[cfg(not(CONFIG_X86))]
 #[inline] pub unsafe fn acpi_proc_quirk_mwait_check() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -108,11 +108,11 @@ unsafe fn acpi_ec_write_io(
 }
 
 static acpi_ec_io_ops: file_operations = file_operations {
-    .owner = THIS_MODULE,
-    .open = simple_open,
-    .read = acpi_ec_read_io,
-    .write = acpi_ec_write_io,
-    .llseek = default_llseek,
+    owner: THIS_MODULE,
+    open: simple_open,
+    read: acpi_ec_read_io,
+    write: acpi_ec_write_io,
+    llseek: default_llseek,
 };
 
 unsafe fn acpi_ec_add_debugfs(ec: *mut acpi_ec, ec_device_count: c_uint) {

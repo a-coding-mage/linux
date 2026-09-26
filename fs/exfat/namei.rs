@@ -32,7 +32,7 @@ unsafe fn exfat_d_cmp(dentry: *const dentry, len: c_uint, str_: *const c_char, n
     let blen = exfat_striptail_len(len, str_, (*EXFAT_SB(sb)).options.keep_last_dots);
     if alen != blen { return 1; }
     let mut i = 0; let mut charlen: c_int; let (mut c1, mut c2): (wchar_t, wchar_t) = (0, 0);
-    while i < len as usize { charlen = ((*t).char2uni)((*name).name as *const u8).add(i), alen as usize-i, &mut c1); if charlen < 0 { return 1; } if charlen != ((*t).char2uni)(str_ as *const u8.add(i), blen as usize-i, &mut c2) { return 1; } if exfat_toupper(sb,c1) != exfat_toupper(sb,c2) { return 1; } i += charlen as usize; }
+    while i < len as usize { charlen = ((*t).char2uni)((*name).name as *const u8).add(i), alen as usize-i, &mut c1); if charlen < 0 { return 1; } if charlen != ((*t).char2uni)((str_ as *const u8).add(i), blen as usize-i, &mut c2) { return 1; } if exfat_toupper(sb,c1) != exfat_toupper(sb,c2) { return 1; } i += charlen as usize; }
     0
 }
 

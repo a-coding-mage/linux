@@ -119,11 +119,11 @@ pub unsafe fn dev_pm_qos_constraints_destroy(dev: *mut device) {
     __dev_pm_qos_hide_latency_limit(dev); __dev_pm_qos_hide_flags(dev);
     let qos = (*dev).power.qos; if qos.is_null() { mutex_unlock(&mut dev_pm_qos_mtx); mutex_unlock(&mut dev_pm_qos_sysfs_mtx); return; }
     let mut req: *mut dev_pm_qos_request; let mut tmp: *mut dev_pm_qos_request;
-    plist_for_each_entry_safe!(req, tmp, &mut (*qos).resume_latency.list, data.pnode) { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); }
-    plist_for_each_entry_safe!(req, tmp, &mut (*qos).latency_tolerance.list, data.pnode) { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); }
-    plist_for_each_entry_safe!(req, tmp, &mut (*qos).freq.min_freq.list, data.freq.pnode) { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_MIN_FREQUENCY_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); }
-    plist_for_each_entry_safe!(req, tmp, &mut (*qos).freq.max_freq.list, data.freq.pnode) { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_MAX_FREQUENCY_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); }
-    list_for_each_entry_safe!(req, tmp, &mut (*qos).flags.list, data.flr.node) { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); }
+    plist_for_each_entry_safe!(req, tmp, &mut (*qos).resume_latency.list, data.pnode, { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); });
+    plist_for_each_entry_safe!(req, tmp, &mut (*qos).latency_tolerance.list, data.pnode, { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); });
+    plist_for_each_entry_safe!(req, tmp, &mut (*qos).freq.min_freq.list, data.freq.pnode, { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_MIN_FREQUENCY_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); });
+    plist_for_each_entry_safe!(req, tmp, &mut (*qos).freq.max_freq.list, data.freq.pnode, { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_MAX_FREQUENCY_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); });
+    list_for_each_entry_safe!(req, tmp, &mut (*qos).flags.list, data.flr.node, { apply_constraint(req, PM_QOS_REMOVE_REQ, PM_QOS_DEFAULT_VALUE); memset(req as *mut c_void, 0, core::mem::size_of::<dev_pm_qos_request>()); });
     spin_lock_irq(&mut (*dev).power.lock); (*dev).power.qos = ERR_PTR(-ENODEV); spin_unlock_irq(&mut (*dev).power.lock); kfree((*qos).resume_latency.notifiers as *mut c_void); kfree(qos as *mut c_void); mutex_unlock(&mut dev_pm_qos_mtx); mutex_unlock(&mut dev_pm_qos_sysfs_mtx);
 }
 

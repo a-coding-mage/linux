@@ -34,7 +34,7 @@ pub struct hsu_dma_chip {
     pub hsu: *mut hsu_dma,
 }
 
-#[cfg(feature = "CONFIG_HSU_DMA")]
+#[cfg(CONFIG_HSU_DMA)]
 extern "C" {
     pub fn hsu_dma_get_status(
         chip: *mut hsu_dma_chip,
@@ -52,7 +52,7 @@ extern "C" {
 
 // When CONFIG_HSU_DMA is disabled, the C header supplies these inline
 // fallbacks instead of the external functions above.
-#[cfg(not(feature = "CONFIG_HSU_DMA"))]
+#[cfg(not(CONFIG_HSU_DMA))]
 #[inline]
 pub unsafe fn hsu_dma_get_status(
     _chip: *mut hsu_dma_chip,
@@ -62,7 +62,7 @@ pub unsafe fn hsu_dma_get_status(
     0
 }
 
-#[cfg(not(feature = "CONFIG_HSU_DMA"))]
+#[cfg(not(CONFIG_HSU_DMA))]
 #[inline]
 pub unsafe fn hsu_dma_do_irq(
     _chip: *mut hsu_dma_chip,
@@ -72,13 +72,13 @@ pub unsafe fn hsu_dma_do_irq(
     0
 }
 
-#[cfg(not(feature = "CONFIG_HSU_DMA"))]
+#[cfg(not(CONFIG_HSU_DMA))]
 #[inline]
 pub unsafe fn hsu_dma_probe(_chip: *mut hsu_dma_chip) -> ::core::ffi::c_int {
     -19 /* -ENODEV */
 }
 
-#[cfg(not(feature = "CONFIG_HSU_DMA"))]
+#[cfg(not(CONFIG_HSU_DMA))]
 #[inline]
 pub unsafe fn hsu_dma_remove(_chip: *mut hsu_dma_chip) -> ::core::ffi::c_int {
     0

@@ -145,12 +145,12 @@ extern "C" {
 #[inline] pub unsafe fn __vsock_in_bound_table(vsk: *mut vsock_sock) -> bool { !list_empty(&(*vsk).bound_table) }
 #[inline] pub unsafe fn __vsock_in_connected_table(vsk: *mut vsock_sock) -> bool { !list_empty(&(*vsk).connected_table) }
 
-#[cfg(feature = "CONFIG_BPF_SYSCALL")]
+#[cfg(CONFIG_BPF_SYSCALL)]
 extern "C" {
     pub fn vsock_bpf_update_proto(sk: *mut sock, psock: *mut sk_psock, restore: bool) -> c_int;
     pub fn vsock_bpf_build_proto();
 }
-#[cfg(not(feature = "CONFIG_BPF_SYSCALL"))]
+#[cfg(not(CONFIG_BPF_SYSCALL))]
 #[inline] pub unsafe fn vsock_bpf_build_proto() {}
 
 #[inline]

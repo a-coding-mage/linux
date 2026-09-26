@@ -86,15 +86,15 @@ macro_rules! DEFINE_EVENT_CONDITION {
 
 #[macro_export]
 macro_rules! DECLARE_TRACE {
-    ($name:ident, $proto:tt, $args:tt) => {
-        DEFINE_TRACE!($name##_tp, $proto, $args);
+    ($name:tt, $proto:tt, $args:tt) => {
+        DEFINE_TRACE!(::kernel::macros::paste!([<$name _tp>]), $proto, $args);
     };
 }
 
 #[macro_export]
 macro_rules! DECLARE_TRACE_CONDITION {
-    ($name:ident, $proto:tt, $args:tt, $cond:tt) => {
-        DEFINE_TRACE!($name##_tp, $proto, $args);
+    ($name:tt, $proto:tt, $args:tt, $cond:tt) => {
+        DEFINE_TRACE!(::kernel::macros::paste!([<$name _tp>]), $proto, $args);
     };
 }
 

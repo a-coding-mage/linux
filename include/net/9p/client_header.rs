@@ -91,7 +91,7 @@ pub struct p9_session_opts {
     pub afid: u32,
     pub cache: u32,
     pub ndentry_timeout_ms: u32,
-    #[cfg(feature = "CONFIG_9P_FSCACHE")]
+    #[cfg(CONFIG_9P_FSCACHE)]
     pub cachetag: *mut core::ffi::c_char,
     pub uname: *mut core::ffi::c_char,
     pub aname: *mut core::ffi::c_char,

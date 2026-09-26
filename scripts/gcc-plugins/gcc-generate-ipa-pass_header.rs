@@ -9,8 +9,7 @@
 
 #[macro_export]
 macro_rules! gcc_generate_ipa_pass {
-    (
-        $pass_name:ident,
+    ($pass_name:ident,
         $pass_data:ident,
         $pass_type:ident,
         $make_pass:ident,
@@ -31,7 +30,7 @@ macro_rules! gcc_generate_ipa_pass {
         $gate:expr,
         $execute:expr
     ) => {
-        static $pass_data: pass_data = pass_data {
+        static $pass_data: $pass_data = $pass_data {
             type_: IPA_PASS,
             name: stringify!($pass_name),
             optinfo_flags: OPTGROUP_NONE,
@@ -48,7 +47,7 @@ macro_rules! gcc_generate_ipa_pass {
         impl $pass_type {
             pub const fn new() -> Self { Self }
 
-            pub unsafe fn gate(&self, function: *mut function) -> bool {
+            pub unsafe fn $gate(&self, function: *mut function) -> bool {
                 ($gate)(function)
             }
 
@@ -56,7 +55,7 @@ macro_rules! gcc_generate_ipa_pass {
                 Box::into_raw(Box::new(Self::new())) as *mut opt_pass
             }
 
-            pub unsafe fn execute(&self, function: *mut function) -> ::core::ffi::c_uint {
+            pub unsafe fn $execute(&self, function: *mut function) -> ::core::ffi::c_uint {
                 ($execute)(function)
             }
         }

@@ -34,17 +34,17 @@ const HORZ_MAX_TAPS: usize = 12;
 const VERT_MAX_TAPS: usize = 12;
 
 // C macro: #define REG(reg)\
-	dwbc20->dwbc_regs->reg
+// 	(*(*dwbc20).dwbc_regs).reg
 
 // C macro: #define CTX \
-	dwbc20->base.ctx
+// 	(*dwbc20).base.ctx
 
 #undef FN
 // C macro: #define FN(reg_name, field_name) \
-	dwbc20->dwbc_shift->field_name, dwbc20->dwbc_mask->field_name
+// 	(*(*dwbc20).dwbc_shift).field_name, (*(*dwbc20).dwbc_mask).field_name
 
 // C macro: #define TO_DCN20_DWBC(dwbc_base) \
-	container_of(dwbc_base, Dcn20Dwbc, base)
+// 	container_of(dwbc_base, Dcn20Dwbc, base)
 
 
 static filter_3tap_16p_upscale: [u16; 27] = [
@@ -527,7 +527,7 @@ static filter_12tap_16p_183: [u16; 108] = [
 	0, 84, 16328, 16032, 416, 1944, 1944, 416, 16032, 16328, 84, 0,
 ];
 
-static fn wbscl_get_filter_3tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_3tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_3tap_16p_upscale;
@@ -539,7 +539,7 @@ static fn wbscl_get_filter_3tap_16p(Fixed31_32 ratio)
 		return filter_3tap_16p_183;
 }
 
-static fn wbscl_get_filter_4tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_4tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_4tap_16p_upscale;
@@ -551,7 +551,7 @@ static fn wbscl_get_filter_4tap_16p(Fixed31_32 ratio)
 		return filter_4tap_16p_183;
 }
 
-static fn wbscl_get_filter_5tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_5tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_5tap_16p_upscale;
@@ -563,7 +563,7 @@ static fn wbscl_get_filter_5tap_16p(Fixed31_32 ratio)
 		return filter_5tap_16p_183;
 }
 
-static fn wbscl_get_filter_6tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_6tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_6tap_16p_upscale;
@@ -575,7 +575,7 @@ static fn wbscl_get_filter_6tap_16p(Fixed31_32 ratio)
 		return filter_6tap_16p_183;
 }
 
-static fn wbscl_get_filter_7tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_7tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_7tap_16p_upscale;
@@ -587,7 +587,7 @@ static fn wbscl_get_filter_7tap_16p(Fixed31_32 ratio)
 		return filter_7tap_16p_183;
 }
 
-static fn wbscl_get_filter_8tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_8tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_8tap_16p_upscale;
@@ -599,7 +599,7 @@ static fn wbscl_get_filter_8tap_16p(Fixed31_32 ratio)
 		return filter_8tap_16p_183;
 }
 
-static fn wbscl_get_filter_9tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_9tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_9tap_16p_upscale;
@@ -610,7 +610,7 @@ static fn wbscl_get_filter_9tap_16p(Fixed31_32 ratio)
 	else
 		return filter_9tap_16p_183;
 }
-static fn wbscl_get_filter_10tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_10tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_10tap_16p_upscale;
@@ -622,7 +622,7 @@ static fn wbscl_get_filter_10tap_16p(Fixed31_32 ratio)
 		return filter_10tap_16p_183;
 }
 
-static fn wbscl_get_filter_11tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_11tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_11tap_16p_upscale;
@@ -634,7 +634,7 @@ static fn wbscl_get_filter_11tap_16p(Fixed31_32 ratio)
 		return filter_11tap_16p_183;
 }
 
-static fn wbscl_get_filter_12tap_16p(Fixed31_32 ratio)
+fn wbscl_get_filter_12tap_16p(Fixed31_32 ratio)
 {
 	if (ratio.value < dc_fixpt_one.value)
 		return filter_12tap_16p_upscale;
@@ -646,7 +646,7 @@ static fn wbscl_get_filter_12tap_16p(Fixed31_32 ratio)
 		return filter_12tap_16p_183;
 }
 
-static fn wbscl_get_filter_coeffs_16p(int taps, Fixed31_32 ratio)
+fn wbscl_get_filter_coeffs_16p(int taps, Fixed31_32 ratio)
 {
 	if (taps == 12)
 		return wbscl_get_filter_12tap_16p(ratio);
@@ -681,14 +681,14 @@ static fn wbscl_get_filter_coeffs_16p(int taps, Fixed31_32 ratio)
 
 static void wbscl_set_scaler_filter(
 	Dcn20Dwbc *dwbc20,
-	u32 taps,
+	taps: u32,
 	WbsclCoefFilterTypeSel filter_type,
 	*const u16 filter)
 {
 	const int tap_pairs = (taps + 1) / 2;
 	int phase;
 	int pair;
-	u16 odd_coef, even_coef;
+	odd_coef: u16, even_coef;
 
 	if (!filter)
 		return;
@@ -720,8 +720,8 @@ static void wbscl_set_scaler_filter(
 }
 
 bool dwb_program_horz_scalar(Dcn20Dwbc *dwbc20,
-		u32 src_width,
-		u32 dest_width,
+		src_width: u32,
+		dest_width: u32,
 		ScalingTaps num_taps)
 {
 	u32 h_ratio_luma = 1;
@@ -798,8 +798,8 @@ bool dwb_program_horz_scalar(Dcn20Dwbc *dwbc20,
 }
 
 bool dwb_program_vert_scalar(Dcn20Dwbc *dwbc20,
-		u32 src_height,
-		u32 dest_height,
+		src_height: u32,
+		dest_height: u32,
 		ScalingTaps num_taps,
 		DwbSubsamplePosition subsample_position)
 {

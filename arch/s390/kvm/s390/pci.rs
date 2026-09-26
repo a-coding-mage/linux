@@ -33,27 +33,33 @@ pub unsafe fn kvm_s390_pci_aen_exit() {
 unsafe fn zpci_setup_aipb(nisc: u8) -> i32 {
     let page: *mut page;
     let (mut size, mut rc): (i32, i32);
+    'free_aipb: {
+    'free_sbv: {
+    'free_gait: {
     zpci_aipb = kzalloc_obj::<zpci_sic_iib>();
     if zpci_aipb.is_null() { return -ENOMEM; }
     (*aift).sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC, core::ptr::null_mut());
-    if (*aift).sbv.is_null() { rc = -ENOMEM; goto!(free_aipb); }
+    if (*aift).sbv.is_null() { rc = -ENOMEM; break 'free_aipb; }
     zpci_aif_sbv = (*aift).sbv;
     size = get_order(PAGE_ALIGN(ZPCI_NR_DEVICES * core::mem::size_of::<zpci_gaite>()));
     page = alloc_pages(GFP_KERNEL | __GFP_ZERO, size);
-    if page.is_null() { rc = -ENOMEM; goto!(free_sbv); }
+    if page.is_null() { rc = -ENOMEM; break 'free_sbv; }
     (*aift).gait = page_to_virt(page) as *mut zpci_gaite;
     (*zpci_aipb).aipb.faisb = virt_to_phys((*aift).sbv.cast::<core::ffi::c_void>());
     (*zpci_aipb).aipb.gait = virt_to_phys((*aift).gait.cast::<core::ffi::c_void>());
     (*zpci_aipb).aipb.afi = nisc;
     (*zpci_aipb).aipb.faal = ZPCI_NR_DEVICES;
-    if zpci_set_irq_ctrl(SIC_SET_AENI_CONTROLS, 0, zpci_aipb) != 0 { rc = -EIO; goto!(free_gait); }
+    if zpci_set_irq_ctrl(SIC_SET_AENI_CONTROLS, 0, zpci_aipb) != 0 { rc = -EIO; break 'free_gait; }
     return 0;
-free_gait:
+    }
+    
     free_pages((*aift).gait as c_ulong, size);
-free_sbv:
+    }
+    
     airq_iv_release((*aift).sbv);
     zpci_aif_sbv = core::ptr::null_mut();
-free_aipb:
+    }
+    
     kfree(zpci_aipb);
     zpci_aipb = core::ptr::null_mut();
     rc
@@ -68,17 +74,21 @@ unsafe fn zpci_reset_aipb(nisc: u8) -> i32 {
 
 pub unsafe fn kvm_s390_pci_aen_init(nisc: u8) -> i32 {
     let mut rc = 0;
+    'unlock: {
+    'free_zdev: {
     if !(*aift).gait.is_null() || !(*aift).sbv.is_null() { return -EPERM; }
     mutex_lock(&(*aift).aift_lock);
     (*aift).kzdev = kzalloc_objs::<*mut kvm_zdev>(ZPCI_NR_DEVICES);
-    if (*aift).kzdev.is_null() { rc = -ENOMEM; goto!(unlock); }
+    if (*aift).kzdev.is_null() { rc = -ENOMEM; break 'unlock; }
     rc = if zpci_aipb.is_null() { zpci_setup_aipb(nisc) } else { zpci_reset_aipb(nisc) };
-    if rc != 0 { goto!(free_zdev); }
+    if rc != 0 { break 'free_zdev; }
     if __set_irq_noiib(SIC_IRQ_MODE_SINGLE, nisc) != 0 { rc = -EIO; kvm_s390_pci_aen_exit(); }
-    goto!(unlock);
-free_zdev:
+    break 'unlock;
+    }
+    
     kfree((*aift).kzdev);
-unlock:
+    }
+    
     mutex_unlock(&(*aift).aift_lock);
     rc
 }

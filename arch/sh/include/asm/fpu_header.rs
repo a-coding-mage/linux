@@ -6,19 +6,19 @@
 
 pub struct task_struct;
 
-#[cfg(feature = "CONFIG_SH_FPU")]
+#[cfg(CONFIG_SH_FPU)]
 #[inline]
 pub unsafe fn release_fpu(regs: *mut pt_regs) {
     (*regs).sr |= SR_FD;
 }
 
-#[cfg(feature = "CONFIG_SH_FPU")]
+#[cfg(CONFIG_SH_FPU)]
 #[inline]
 pub unsafe fn grab_fpu(regs: *mut pt_regs) {
     (*regs).sr &= !SR_FD;
 }
 
-#[cfg(feature = "CONFIG_SH_FPU")]
+#[cfg(CONFIG_SH_FPU)]
 extern "C" {
     pub fn save_fpu(__tsk: *mut task_struct);
     pub fn restore_fpu(__tsk: *mut task_struct);
@@ -26,27 +26,27 @@ extern "C" {
     pub fn __fpu_state_restore();
 }
 
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[inline]
 pub unsafe fn save_fpu(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[inline]
 pub unsafe fn restore_fpu(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[inline]
 pub unsafe fn release_fpu(_regs: *mut pt_regs) {}
 
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[inline]
 pub unsafe fn grab_fpu(_regs: *mut pt_regs) {}
 
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[inline]
 pub unsafe fn fpu_state_restore(_regs: *mut pt_regs) {}
 
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[inline]
 pub unsafe fn __fpu_state_restore(_regs: *mut pt_regs) {}
 

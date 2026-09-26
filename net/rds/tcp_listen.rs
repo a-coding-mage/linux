@@ -95,6 +95,7 @@ pub unsafe fn rds_tcp_accept_one(rtn: *mut rds_tcp_net) -> i32 {
     let mut new_sock: *mut socket = core::ptr::null_mut();
     let mut rs_tcp: *mut rds_tcp_connection = core::ptr::null_mut();
     let mut ret: i32;
+    'out: {
     if listen_sock.is_null() { return -ENETUNREACH; }
 
     mutex_lock(&mut (*rtn).rds_tcp_accept_lock);
@@ -136,10 +137,11 @@ pub unsafe fn rds_tcp_accept_one(rtn: *mut rds_tcp_net) -> i32 {
     if READ_ONCE((*sk).sk_state) == TCP_CLOSE_WAIT || READ_ONCE((*sk).sk_state) == TCP_LAST_ACK || READ_ONCE((*sk).sk_state) == TCP_CLOSE { rds_conn_path_drop(cp, 0); } else { queue_delayed_work((*cp).cp_wq, &mut (*cp).cp_recv_w, 0); }
     sock_put(sk); new_sock = core::ptr::null_mut(); ret = 0;
     if (*conn).c_npaths == 0 { rds_send_ping((*cp).cp_conn, (*cp).cp_index); }
-    goto out;
+    break 'out;
 rst_nsk:
     sock_no_linger((*new_sock).sk); kernel_sock_shutdown(new_sock, SHUT_RDWR); ret = 0;
-out:
+    }
+    
     if !rs_tcp.is_null() { mutex_unlock(&mut (*rs_tcp).t_conn_path_lock); }
     if !new_sock.is_null() { sock_release(new_sock); }
     mutex_unlock(&mut (*rtn).rds_tcp_accept_lock); return ret;

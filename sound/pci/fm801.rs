@@ -1103,7 +1103,7 @@ unsafe extern "C" fn snd_fm801_put_single(kcontrol: *mut snd_kcontrol, ucontrol:
     if invert != 0 {
         val = mask as c_ushort - val;
     }
-    snd_fm801_update_bits(chip, reg, (mask << shift) as c_ushort, (val as c_ulong << shift) as c_ushort)
+    snd_fm801_update_bits(chip, reg, (mask << shift) as c_ushort, ((val as c_ulong) << shift) as c_ushort)
 }
 
 unsafe extern "C" fn snd_fm801_info_double(kcontrol: *mut snd_kcontrol, uinfo: *mut snd_ctl_elem_info) -> c_int {
@@ -1145,7 +1145,7 @@ unsafe extern "C" fn snd_fm801_put_double(kcontrol: *mut snd_kcontrol, ucontrol:
         val1 = mask as c_ushort - val1;
         val2 = mask as c_ushort - val2;
     }
-    snd_fm801_update_bits(chip, reg, ((mask << shift_left) | (mask << shift_right)) as c_ushort, ((val1 as c_ulong << shift_left) | (val2 as c_ulong << shift_right)) as c_ushort)
+    snd_fm801_update_bits(chip, reg, ((mask << shift_left) | (mask << shift_right)) as c_ushort, (((val1 as c_ulong) << shift_left) | ((val2 as c_ulong) << shift_right)) as c_ushort)
 }
 
 unsafe extern "C" fn snd_fm801_info_mux(_kcontrol: *mut snd_kcontrol, uinfo: *mut snd_ctl_elem_info) -> c_int {

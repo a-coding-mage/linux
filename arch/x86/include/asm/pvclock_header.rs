@@ -75,13 +75,13 @@ pub struct pvclock_vsyscall_time_info {
 
 pub const PVTI_SIZE: usize = core::mem::size_of::<pvclock_vsyscall_time_info>();
 
-#[cfg(feature = "CONFIG_PARAVIRT_CLOCK")]
+#[cfg(CONFIG_PARAVIRT_CLOCK)]
 extern "C" {
     pub fn pvclock_set_pvti_cpu0_va(pvti: *mut pvclock_vsyscall_time_info);
     pub fn pvclock_get_pvti_cpu0_va() -> *mut pvclock_vsyscall_time_info;
 }
 
-#[cfg(not(feature = "CONFIG_PARAVIRT_CLOCK"))]
+#[cfg(not(CONFIG_PARAVIRT_CLOCK))]
 #[inline]
 pub fn pvclock_get_pvti_cpu0_va() -> *mut pvclock_vsyscall_time_info {
     core::ptr::null_mut()

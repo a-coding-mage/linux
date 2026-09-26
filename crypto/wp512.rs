@@ -26,14 +26,14 @@
 // #include <linux/string.h>
 // #include <linux/unaligned.h>
 
-#define WP512_DIGEST_SIZE 64
-#define WP384_DIGEST_SIZE 48
-#define WP256_DIGEST_SIZE 32
+pub const WP512_DIGEST_SIZE: u32 = 64;
+pub const WP384_DIGEST_SIZE: u32 = 48;
+pub const WP256_DIGEST_SIZE: u32 = 32;
 
-#define WP512_BLOCK_SIZE  64
-#define WP512_LENGTHBYTES 32
+pub const WP512_BLOCK_SIZE: u32 = 64;
+pub const WP512_LENGTHBYTES: u32 = 32;
 
-#define WHIRLPOOL_ROUNDS 10
+pub const WHIRLPOOL_ROUNDS: u32 = 10;
 
 struct wp512_ctx {
 	u8  bitLength[WP512_LENGTHBYTES];
@@ -776,7 +776,7 @@ static const u64 rc[WHIRLPOOL_ROUNDS] = {
  * The core Whirlpool transform.
  */
 
-static __no_kmsan_checks void wp512_process_buffer(struct wp512_ctx *wctx,
+static __no_kmsan_checks void wp512_process_buffer(wp512_ctx *wctx,
 						   const u8 *buffer) {
 	int i, r;
 	u64 K[8];        /* the round key */
@@ -787,14 +787,14 @@ static __no_kmsan_checks void wp512_process_buffer(struct wp512_ctx *wctx,
 	for (i = 0; i < 8; i++)
 		block[i] = get_unaligned_be64(buffer + i * 8);
 
-	state[0] = block[0] ^ (K[0] = wctx->hash[0]);
-	state[1] = block[1] ^ (K[1] = wctx->hash[1]);
-	state[2] = block[2] ^ (K[2] = wctx->hash[2]);
-	state[3] = block[3] ^ (K[3] = wctx->hash[3]);
-	state[4] = block[4] ^ (K[4] = wctx->hash[4]);
-	state[5] = block[5] ^ (K[5] = wctx->hash[5]);
-	state[6] = block[6] ^ (K[6] = wctx->hash[6]);
-	state[7] = block[7] ^ (K[7] = wctx->hash[7]);
+	state[0] = block[0] ^ (K[0] = (*wctx).hash[0]);
+	state[1] = block[1] ^ (K[1] = (*wctx).hash[1]);
+	state[2] = block[2] ^ (K[2] = (*wctx).hash[2]);
+	state[3] = block[3] ^ (K[3] = (*wctx).hash[3]);
+	state[4] = block[4] ^ (K[4] = (*wctx).hash[4]);
+	state[5] = block[5] ^ (K[5] = (*wctx).hash[5]);
+	state[6] = block[6] ^ (K[6] = (*wctx).hash[6]);
+	state[7] = block[7] ^ (K[7] = (*wctx).hash[7]);
 
 	for (r = 0; r < WHIRLPOOL_ROUNDS; r++) {
 
@@ -972,30 +972,30 @@ static __no_kmsan_checks void wp512_process_buffer(struct wp512_ctx *wctx,
 	/*
 	* apply the Miyaguchi-Preneel compression function:
 	*/
-	wctx->hash[0] ^= state[0] ^ block[0];
-	wctx->hash[1] ^= state[1] ^ block[1];
-	wctx->hash[2] ^= state[2] ^ block[2];
-	wctx->hash[3] ^= state[3] ^ block[3];
-	wctx->hash[4] ^= state[4] ^ block[4];
-	wctx->hash[5] ^= state[5] ^ block[5];
-	wctx->hash[6] ^= state[6] ^ block[6];
-	wctx->hash[7] ^= state[7] ^ block[7];
+	(*wctx).hash[0] ^= state[0] ^ block[0];
+	(*wctx).hash[1] ^= state[1] ^ block[1];
+	(*wctx).hash[2] ^= state[2] ^ block[2];
+	(*wctx).hash[3] ^= state[3] ^ block[3];
+	(*wctx).hash[4] ^= state[4] ^ block[4];
+	(*wctx).hash[5] ^= state[5] ^ block[5];
+	(*wctx).hash[6] ^= state[6] ^ block[6];
+	(*wctx).hash[7] ^= state[7] ^ block[7];
 
 }
 
-static int wp512_init(struct shash_desc *desc) {
+static int wp512_init(shash_desc *desc) {
 	struct wp512_ctx *wctx = shash_desc_ctx(desc);
 	int i;
 
-	memset(wctx->bitLength, 0, 32);
+	memset((*wctx).bitLength, 0, 32);
 	for (i = 0; i < 8; i++) {
-		wctx->hash[i] = 0L;
+		(*wctx).hash[i] = 0L;
 	}
 
 	return 0;
 }
 
-static void wp512_add_length(u8 *bitLength, u64 value)
+static void wp512_add_length(u8 *bitLength, value: u64)
 {
 	u32 carry;
 	int i;
@@ -1008,13 +1008,13 @@ static void wp512_add_length(u8 *bitLength, u64 value)
 	}
 }
 
-static int wp512_update(struct shash_desc *desc, const u8 *source,
-			 unsigned int len)
+static int wp512_update(shash_desc *desc, const u8 *source,
+			 len: core::ffi::c_uint)
 {
 	struct wp512_ctx *wctx = shash_desc_ctx(desc);
-	unsigned int remain = len % WP512_BLOCK_SIZE;
+	core::ffi::c_uint remain = len % WP512_BLOCK_SIZE;
 	u64 bits_len = (len - remain) * 8ull;
-	u8 *bitLength    = wctx->bitLength;
+	u8 *bitLength    = (*wctx).bitLength;
 
 	wp512_add_length(bitLength, bits_len);
 	do {
@@ -1026,12 +1026,12 @@ static int wp512_update(struct shash_desc *desc, const u8 *source,
 	return remain;
 }
 
-static int wp512_finup(struct shash_desc *desc, const u8 *src,
-		       unsigned int bufferPos, u8 *out)
+static int wp512_finup(shash_desc *desc, const u8 *src,
+		       bufferPos: core::ffi::c_uint, u8 *out)
 {
 	struct wp512_ctx *wctx = shash_desc_ctx(desc);
 	int i;
-	u8 *bitLength   = wctx->bitLength;
+	u8 *bitLength   = (*wctx).bitLength;
 	__be64 *digest  = (__be64 *)out;
 	u8 buffer[WP512_BLOCK_SIZE];
 
@@ -1054,13 +1054,13 @@ static int wp512_finup(struct shash_desc *desc, const u8 *src,
 	wp512_process_buffer(wctx, buffer);
 	memzero_explicit(buffer, sizeof(buffer));
 	for (i = 0; i < WP512_DIGEST_SIZE/8; i++)
-		digest[i] = cpu_to_be64(wctx->hash[i]);
+		digest[i] = cpu_to_be64((*wctx).hash[i]);
 
 	return 0;
 }
 
-static int wp384_finup(struct shash_desc *desc, const u8 *src,
-		       unsigned int len, u8 *out)
+static int wp384_finup(shash_desc *desc, const u8 *src,
+		       len: core::ffi::c_uint, u8 *out)
 {
 	u8 D[64];
 
@@ -1071,8 +1071,8 @@ static int wp384_finup(struct shash_desc *desc, const u8 *src,
 	return 0;
 }
 
-static int wp256_finup(struct shash_desc *desc, const u8 *src,
-		       unsigned int len, u8 *out)
+static int wp256_finup(shash_desc *desc, const u8 *src,
+		       len: core::ffi::c_uint, u8 *out)
 {
 	u8 D[64];
 
@@ -1084,43 +1084,43 @@ static int wp256_finup(struct shash_desc *desc, const u8 *src,
 }
 
 static struct shash_alg wp_algs[3] = { {
-	.digestsize	=	WP512_DIGEST_SIZE,
-	.init		=	wp512_init,
-	.update		=	wp512_update,
-	.finup		=	wp512_finup,
-	.descsize	=	sizeof(struct wp512_ctx),
-	.base		=	{
-		.cra_name	 =	"wp512",
-		.cra_driver_name =	"wp512-generic",
-		.cra_flags	 =	CRYPTO_AHASH_ALG_BLOCK_ONLY,
-		.cra_blocksize	 =	WP512_BLOCK_SIZE,
-		.cra_module	 =	THIS_MODULE,
+	digestsize: WP512_DIGEST_SIZE,
+	init: wp512_init,
+	update: wp512_update,
+	finup: wp512_finup,
+	descsize: sizeof(wp512_ctx),
+	base: {
+		cra_name: "wp512",
+		cra_driver_name: "wp512-generic",
+		cra_flags: CRYPTO_AHASH_ALG_BLOCK_ONLY,
+		cra_blocksize: WP512_BLOCK_SIZE,
+		cra_module: THIS_MODULE,
 	}
 }, {
-	.digestsize	=	WP384_DIGEST_SIZE,
-	.init		=	wp512_init,
-	.update		=	wp512_update,
-	.finup		=	wp384_finup,
-	.descsize	=	sizeof(struct wp512_ctx),
-	.base		=	{
-		.cra_name	 =	"wp384",
-		.cra_driver_name =	"wp384-generic",
-		.cra_flags	 =	CRYPTO_AHASH_ALG_BLOCK_ONLY,
-		.cra_blocksize	 =	WP512_BLOCK_SIZE,
-		.cra_module	 =	THIS_MODULE,
+	digestsize: WP384_DIGEST_SIZE,
+	init: wp512_init,
+	update: wp512_update,
+	finup: wp384_finup,
+	descsize: sizeof(wp512_ctx),
+	base: {
+		cra_name: "wp384",
+		cra_driver_name: "wp384-generic",
+		cra_flags: CRYPTO_AHASH_ALG_BLOCK_ONLY,
+		cra_blocksize: WP512_BLOCK_SIZE,
+		cra_module: THIS_MODULE,
 	}
 }, {
-	.digestsize	=	WP256_DIGEST_SIZE,
-	.init		=	wp512_init,
-	.update		=	wp512_update,
-	.finup		=	wp256_finup,
-	.descsize	=	sizeof(struct wp512_ctx),
-	.base		=	{
-		.cra_name	 =	"wp256",
-		.cra_driver_name =	"wp256-generic",
-		.cra_flags	 =	CRYPTO_AHASH_ALG_BLOCK_ONLY,
-		.cra_blocksize	 =	WP512_BLOCK_SIZE,
-		.cra_module	 =	THIS_MODULE,
+	digestsize: WP256_DIGEST_SIZE,
+	init: wp512_init,
+	update: wp512_update,
+	finup: wp256_finup,
+	descsize: sizeof(wp512_ctx),
+	base: {
+		cra_name: "wp256",
+		cra_driver_name: "wp256-generic",
+		cra_flags: CRYPTO_AHASH_ALG_BLOCK_ONLY,
+		cra_blocksize: WP512_BLOCK_SIZE,
+		cra_module: THIS_MODULE,
 	}
 } };
 

@@ -72,6 +72,8 @@ unsafe fn iopte_make_dummy(iommu: *mut iommu, iopte: *mut iopte_t) {
 pub unsafe fn iommu_table_init(iommu: *mut iommu, tsbsize: i32, dma_offset: u32,
                                dma_addr_mask: u32, numa_node: i32) -> i32 {
     let num_tsb_entries = tsbsize as usize / core::mem::size_of::<iopte_t>();
+    'out_free_map: {
+    'out_free_dummy_page: {
     spin_lock_init!(&mut (*iommu).lock);
     (*iommu).ctx_lowest_free = 1;
     (*iommu).tbl.table_map_base = dma_offset;
@@ -83,19 +85,21 @@ pub unsafe fn iommu_table_init(iommu: *mut iommu, tsbsize: i32, dma_offset: u32,
                         if tlb_type != hypervisor { Some(iommu_flushall) } else { None },
                         false, 1, false);
     let mut page = alloc_pages_node(numa_node, GFP_KERNEL, 0);
-    if page.is_null() { printk!(KERN_ERR, "IOMMU: Error, gfp(dummy_page) failed.\n"); goto!(out_free_map); }
+    if page.is_null() { printk!(KERN_ERR, "IOMMU: Error, gfp(dummy_page) failed.\n"); break 'out_free_map; }
     (*iommu).dummy_page = page_address(page) as usize;
     core::ptr::write_bytes((*iommu).dummy_page as *mut u8, 0, PAGE_SIZE);
     (*iommu).dummy_page_pa = __pa((*iommu).dummy_page);
     let order = get_order(tsbsize as usize);
     page = alloc_pages_node(numa_node, GFP_KERNEL, order);
-    if page.is_null() { printk!(KERN_ERR, "IOMMU: Error, gfp(tsb) failed.\n"); goto!(out_free_dummy_page); }
+    if page.is_null() { printk!(KERN_ERR, "IOMMU: Error, gfp(tsb) failed.\n"); break 'out_free_dummy_page; }
     (*iommu).page_table = page_address(page) as *mut iopte_t;
     for i in 0..num_tsb_entries { iopte_make_dummy(iommu, (*iommu).page_table.add(i)); }
     return 0;
-out_free_dummy_page:
+    }
+    
     free_page((*iommu).dummy_page); (*iommu).dummy_page = 0;
-out_free_map:
+    }
+    
     kfree((*iommu).tbl.map); (*iommu).tbl.map = core::ptr::null_mut(); -ENOMEM
 }
 

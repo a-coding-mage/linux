@@ -554,9 +554,9 @@ static charset2upper: [u8; 256] = [
 
 unsafe fn uni2char(uni: u32, out: *mut u8, boundlen: i32) -> i32
 {
-	const unsigned char *uni2charset;
-	unsigned char cl = uni & 0x00ff;
-	unsigned char ch = (uni & 0xff00) >> 8;
+	const core::ffi::c_uchar *uni2charset;
+	core::ffi::c_uchar cl = uni & 0x00ff;
+	core::ffi::c_uchar ch = (uni & 0xff00) >> 8;
 
 	if (boundlen <= 0)
 		return -ENAMETOOLONG;
@@ -578,11 +578,11 @@ unsafe fn char2uni(rawstring: *const u8, boundlen: i32, uni: *mut u32) -> i32
 }
 
 // struct nls_table table = [
-	.charset	= "macromanian",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "macromanian",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 ];
 
 unsafe fn init_nls_macromanian(void)

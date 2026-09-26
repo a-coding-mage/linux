@@ -76,6 +76,9 @@ unsafe fn scpi_cpufreq_init(policy: *mut cpufreq_policy) -> c_int {
     let cpu_dev: *mut device;
     let priv_: *mut ScpiData;
     let mut freq_table: *mut cpufreq_frequency_table = core::ptr::null_mut();
+    'out_free_opp: {
+    'out_free_priv: {
+    'out_free_cpufreq_table: {
 
     cpu_dev = get_cpu_device((*policy).cpu);
     if cpu_dev.is_null() {
@@ -105,19 +108,19 @@ unsafe fn scpi_cpufreq_init(policy: *mut cpufreq_policy) -> c_int {
     if ret <= 0 {
         dev_dbg!(cpu_dev, "OPP table is not ready, deferring probe\n");
         ret = -EPROBE_DEFER;
-        goto out_free_opp;
+        break 'out_free_opp;
     }
 
     priv_ = kzalloc_obj!(ScpiData);
     if priv_.is_null() {
         ret = -ENOMEM;
-        goto out_free_opp;
+        break 'out_free_opp;
     }
 
     ret = dev_pm_opp_init_cpufreq_table(cpu_dev, &mut freq_table);
     if ret != 0 {
         dev_err!(cpu_dev, "failed to init cpufreq table: %d\n", ret);
-        goto out_free_priv;
+        break 'out_free_priv;
     }
 
     (*priv_).cpu_dev = cpu_dev;
@@ -125,7 +128,7 @@ unsafe fn scpi_cpufreq_init(policy: *mut cpufreq_policy) -> c_int {
     if IS_ERR!((*priv_).clk) {
         dev_err!(cpu_dev, "%s: Failed to get clk for cpu: %d\n", __func__, (*cpu_dev).id);
         ret = PTR_ERR!((*priv_).clk);
-        goto out_free_cpufreq_table;
+        break 'out_free_cpufreq_table;
     }
 
     (*policy).driver_data = priv_ as *mut c_void;
@@ -139,12 +142,14 @@ unsafe fn scpi_cpufreq_init(policy: *mut cpufreq_policy) -> c_int {
     (*policy).cpuinfo.transition_latency = latency;
     (*policy).fast_switch_possible = false;
     return 0;
-
-out_free_cpufreq_table:
+    }
+    
     dev_pm_opp_free_cpufreq_table(cpu_dev, &mut freq_table);
-out_free_priv:
+    }
+    
     kfree(priv_ as *mut c_void);
-out_free_opp:
+    }
+    
     dev_pm_opp_remove_all_dynamic(cpu_dev);
     ret
 }

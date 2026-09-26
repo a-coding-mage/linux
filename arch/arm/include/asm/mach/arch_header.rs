@@ -11,20 +11,20 @@ pub struct tag;
 pub struct pt_regs;
 pub struct smp_operations;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! smp_ops {
     ($ops:expr) => { &($ops) };
 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! smp_ops {
     ($ops:expr) => { core::ptr::null::<smp_operations>() };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! smp_init_ops {
     ($ops:expr) => { &($ops) };
 }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! smp_init_ops {
     ($ops:expr) => { None::<unsafe extern "C" fn() -> bool> };
 }
@@ -36,7 +36,7 @@ pub struct machine_desc {
     pub atag_offset: core::ffi::c_ulong,
     pub dt_compat: *const *const core::ffi::c_char,
     pub nr_irqs: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_ZONE_DMA")]
+    #[cfg(CONFIG_ZONE_DMA)]
     pub dma_zone_size: phys_addr_t,
     pub video_start: core::ffi::c_uint,
     pub video_end: core::ffi::c_uint,

@@ -23,16 +23,16 @@ pub const SPECTRE_V2_METHOD_LOOP8: u32 =
 
 // CONFIG_GENERIC_CPU_VULNERABILITIES selects the external implementation;
 // otherwise the C header provides an empty static inline implementation.
-#[cfg(feature = "CONFIG_GENERIC_CPU_VULNERABILITIES")]
-pub unsafe extern "C" {
+#[cfg(CONFIG_GENERIC_CPU_VULNERABILITIES)]
+unsafe extern "C" {
     pub fn spectre_v2_update_state(state: u32, methods: u32);
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_CPU_VULNERABILITIES"))]
+#[cfg(not(CONFIG_GENERIC_CPU_VULNERABILITIES))]
 #[inline]
 pub fn spectre_v2_update_state(_state: u32, _methods: u32) {}
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn spectre_bhb_update_vectors(method: u32) -> i32;
 
     pub fn cpu_v7_ca8_ibe();

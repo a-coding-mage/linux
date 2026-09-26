@@ -103,19 +103,19 @@ pub unsafe fn swnode_gpio_count(fwnode: *const fwnode_handle, con_id: *const c_c
     if count != 0 { count } else { -ENOENT }
 }
 
-#[cfg(feature = "CONFIG_GPIO_SWNODE_UNDEFINED")]
+#[cfg(CONFIG_GPIO_SWNODE_UNDEFINED)]
 pub static swnode_gpio_undefined_local: software_node = software_node {
     name: b"swnode-gpio-undefined\0".as_ptr() as *const c_char,
 };
 
-#[cfg(feature = "CONFIG_GPIO_SWNODE_UNDEFINED")]
+#[cfg(CONFIG_GPIO_SWNODE_UNDEFINED)]
 unsafe fn swnode_gpio_init() -> c_int {
     let ret = software_node_register(&swnode_gpio_undefined);
     if ret < 0 { /* pr_err("failed to register swnode: %d\\n", ret) */ }
     ret
 }
 
-#[cfg(feature = "CONFIG_GPIO_SWNODE_UNDEFINED")]
+#[cfg(CONFIG_GPIO_SWNODE_UNDEFINED)]
 unsafe fn swnode_gpio_cleanup() {
     software_node_unregister(&swnode_gpio_undefined);
 }

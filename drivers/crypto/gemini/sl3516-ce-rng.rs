@@ -29,9 +29,9 @@ pub struct sl3516_ce_dev {
     pub dev: *mut device,
     pub base: *mut u8,
     pub trng: hwrng,
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_SL3516_DEBUG")]
+    #[cfg(CONFIG_CRYPTO_DEV_SL3516_DEBUG)]
     pub hwrng_stat_req: u64,
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_SL3516_DEBUG")]
+    #[cfg(CONFIG_CRYPTO_DEV_SL3516_DEBUG)]
     pub hwrng_stat_bytes: u64,
 }
 
@@ -57,7 +57,7 @@ unsafe extern "C" fn sl3516_ce_rng_read(
     let mut read: usize = 0;
     let err: i32;
 
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_SL3516_DEBUG")]
+    #[cfg(CONFIG_CRYPTO_DEV_SL3516_DEBUG)]
     {
         (*ce).hwrng_stat_req += 1;
         (*ce).hwrng_stat_bytes += max as u64;

@@ -94,7 +94,7 @@ pub unsafe fn object_is_on_stack(obj: *const core::ffi::c_void) -> core::ffi::c_
     let stack = task_stack_page(current);
     let obj = kasan_reset_tag(obj);
     ((obj as usize >= stack as usize)
-        && (obj as usize < (stack as usize).wrapping_add(THREAD_SIZE))) as core::ffi::c_int
+        && ((obj as usize) < (stack as usize).wrapping_add(THREAD_SIZE))) as core::ffi::c_int
 }
 
 extern "C" {

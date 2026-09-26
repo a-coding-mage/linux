@@ -678,11 +678,11 @@ static exynos5_subcmu_reg_dump exynos5250_disp_suspend_regs[] = {
 };
 
 static const exynos5_subcmu_info exynos5250_disp_subcmu = {
-	.gate_clks	= exynos5250_disp_gate_clks,
-	.nr_gate_clks	= ARRAY_SIZE(exynos5250_disp_gate_clks),
-	.suspend_regs	= exynos5250_disp_suspend_regs,
-	.nr_suspend_regs = ARRAY_SIZE(exynos5250_disp_suspend_regs),
-	.pd_name	= "DISP1",
+	gate_clks: exynos5250_disp_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(exynos5250_disp_gate_clks),
+	suspend_regs: exynos5250_disp_suspend_regs,
+	nr_suspend_regs: ARRAY_SIZE(exynos5250_disp_suspend_regs),
+	pd_name: "DISP1",
 };
 
 static const exynos5_subcmu_info *exynos5250_subcmus[] = {
@@ -788,7 +788,7 @@ static const of_device_id ext_clk_match[]  = {
 };
 // 
 /* register exynox5250 clocks */
-static void  exynos5250_clk_init(struct device_node *np)
+static void  exynos5250_clk_init(device_node *np)
 {
 	struct samsung_clk_provider *ctx;
 	u32 tmp;
@@ -803,7 +803,7 @@ static void  exynos5250_clk_init(struct device_node *np)
 	}
 
 	ctx = samsung_clk_init(core::ptr::null_mut(), reg_base, CLKS_NR);
-	hws = ctx->clk_data.hws;
+	hws = (*ctx).clk_data.hws;
 
 	samsung_clk_of_register_fixed_ext(ctx, exynos5250_fixed_rate_ext_clks,
 			ARRAY_SIZE(exynos5250_fixed_rate_ext_clks),

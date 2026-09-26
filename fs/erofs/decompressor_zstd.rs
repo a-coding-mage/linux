@@ -148,6 +148,7 @@ unsafe fn z_erofs_zstd_decompress(
     let stream: *mut zstd_dstream;
     let mut reason: *const i8;
     let mut zerr: i32;
+    'failed_zinit: {
 
     dctx.kin = kmap_local_page(*(*rq).in_page);
     reason = z_erofs_fixup_insize(rq, dctx.kin.add((*rq).pageofs_in),
@@ -156,7 +157,7 @@ unsafe fn z_erofs_zstd_decompress(
 
     strm = z_erofs_isolate_strms(false);
     stream = zstd_init_dstream(z_erofs_zstd_max_dictsize, (*strm).wksp, (*strm).wkspsz);
-    if stream.is_null() { reason = ERR_PTR(-ENOMEM); goto failed_zinit; }
+    if stream.is_null() { reason = ERR_PTR(-ENOMEM); break 'failed_zinit; }
 
     (*rq).fillgaps = true;
     in_buf.size = core::cmp::min((*rq).inputsize as u32, PAGE_SIZE - (*rq).pageofs_in);
@@ -182,7 +183,8 @@ unsafe fn z_erofs_zstd_decompress(
         if (*rq).outputsize + dctx.avail_out == 0 { break; }
     }
     if !dctx.kout.is_null() { kunmap_local(dctx.kout); }
-failed_zinit:
+    }
+    
     kunmap_local(dctx.kin);
     spin_lock(&mut Z_EROFS_ZSTD_LOCK);
     (*strm).next = z_erofs_zstd_head;

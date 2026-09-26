@@ -148,9 +148,9 @@ The remaining assembler macros, preserved verbatim as target-specific source:
 These macros contain the exact CSKY instructions from the source header.
 */
 
-#[cfg(feature = "CONFIG_PAGE_OFFSET_80000000")]
+#[cfg(CONFIG_PAGE_OFFSET_80000000)]
 pub const MSA_SET: (u8, u8) = (30, 15);
-#[cfg(feature = "CONFIG_PAGE_OFFSET_80000000")]
+#[cfg(CONFIG_PAGE_OFFSET_80000000)]
 pub const MSA_CLR: (u8, u8) = (31, 15);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -16,7 +16,7 @@ extern "C" {
     pub static migrate_reason_names: [*const c_char; MR_TYPES as usize];
 }
 
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 extern "C" {
     pub fn putback_movable_pages(l: *mut list_head);
     pub fn migrate_folio(mapping: *mut address_space, dst: *mut folio, src: *mut folio,
@@ -36,68 +36,68 @@ extern "C" {
     pub fn set_movable_ops(ops: *const movable_operations, type_: pagetype) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn putback_movable_pages(_l: *mut list_head) {}
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn migrate_pages(_l: *mut list_head, _new: new_folio_t, _free: free_folio_t,
                             _private: c_ulong, _mode: migrate_mode, _reason: migrate_reason,
                             _ret_succeeded: *mut c_uint) -> c_int { -ENOSYS }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn alloc_migration_target(_src: *mut folio, _private: c_ulong) -> *mut folio { core::ptr::null_mut() }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn isolate_movable_ops_page(_page: *mut page, _mode: isolate_mode_t) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn isolate_folio_to_list(_folio: *mut folio, _list: *mut list_head) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn migrate_huge_page_move_mapping(_mapping: *mut address_space, _dst: *mut folio,
                                              _src: *mut folio) -> c_int { -ENOSYS }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn set_movable_ops(_ops: *const movable_operations, _type: pagetype) -> c_int { -ENOSYS }
 
-#[cfg(not(feature = "CONFIG_MIGRATION"))]
+#[cfg(not(CONFIG_MIGRATION))]
 pub unsafe fn softleaf_entry_wait_on_locked(_entry: softleaf_t, ptl: *mut spinlock_t) {
     WARN_ON_ONCE(1);
     spin_unlock(ptl);
 }
 
-#[cfg(feature = "CONFIG_NUMA_BALANCING")]
+#[cfg(CONFIG_NUMA_BALANCING)]
 extern "C" {
     pub fn migrate_misplaced_folio_prepare(folio: *mut folio, vma: *mut vm_area_struct,
                                             node: c_int) -> c_int;
     pub fn migrate_misplaced_folio(folio: *mut folio, node: c_int) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_NUMA_BALANCING"))]
+#[cfg(not(CONFIG_NUMA_BALANCING))]
 pub unsafe fn migrate_misplaced_folio_prepare(_folio: *mut folio, _vma: *mut vm_area_struct,
                                               _node: c_int) -> c_int { -EAGAIN }
 
-#[cfg(not(feature = "CONFIG_NUMA_BALANCING"))]
+#[cfg(not(CONFIG_NUMA_BALANCING))]
 pub unsafe fn migrate_misplaced_folio(_folio: *mut folio, _node: c_int) -> c_int { -EAGAIN }
 
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub const MIGRATE_PFN_VALID: c_ulong = 1UL << 0;
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub const MIGRATE_PFN_MIGRATE: c_ulong = 1UL << 1;
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub const MIGRATE_PFN_WRITE: c_ulong = 1UL << 3;
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub const MIGRATE_PFN_COMPOUND: c_ulong = 1UL << 4;
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub const MIGRATE_PFN_SHIFT: c_uint = 6;
 
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub unsafe fn migrate_pfn_to_page(mpfn: c_ulong) -> *mut page {
     if (mpfn & MIGRATE_PFN_VALID) == 0 { return core::ptr::null_mut(); }
     pfn_to_page(mpfn >> MIGRATE_PFN_SHIFT)
 }
 
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 pub const fn migrate_pfn(pfn: c_ulong) -> c_ulong {
     (pfn << MIGRATE_PFN_SHIFT) | MIGRATE_PFN_VALID
 }
@@ -124,7 +124,7 @@ pub struct migrate_vma {
     pub fault_page: *mut page,
 }
 
-#[cfg(feature = "CONFIG_MIGRATION")]
+#[cfg(CONFIG_MIGRATION)]
 extern "C" {
     pub fn migrate_vma_setup(args: *mut migrate_vma) -> c_int;
     pub fn migrate_vma_pages(migrate: *mut migrate_vma);

@@ -16,12 +16,12 @@ pub struct rzv2m_usb3drd {
 
 // Equivalent to IS_ENABLED(CONFIG_USB_RZV2M_USB3DRD); map the kernel
 // configuration symbol to the Rust build configuration when integrating.
-#[cfg(feature = "CONFIG_USB_RZV2M_USB3DRD")]
+#[cfg(CONFIG_USB_RZV2M_USB3DRD)]
 unsafe extern "C" {
     pub fn rzv2m_usb3drd_reset(dev: *mut device, host: bool);
 }
 
-#[cfg(not(feature = "CONFIG_USB_RZV2M_USB3DRD"))]
+#[cfg(not(CONFIG_USB_RZV2M_USB3DRD))]
 #[inline]
 pub unsafe fn rzv2m_usb3drd_reset(_dev: *mut device, _host: bool) {}
 

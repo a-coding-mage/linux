@@ -85,18 +85,18 @@ pub unsafe fn omap_device_assert_hardreset(pdev:*mut platform_device,name:*const
 pub unsafe fn omap_device_deassert_hardreset(pdev:*mut platform_device,name:*const c_char)->c_int { let od=to_omap_device(pdev); let mut ret=0; for i in 0..(*od).hwmods_cnt as usize { ret=omap_hwmod_deassert_hardreset(*(*od).hwmods.add(i),name); if ret!=0 {break;} } ret }
 
 // CONFIG_PM / CONFIG_SUSPEND blocks are preserved as external-dependent kernel callbacks.
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn _od_runtime_suspend(dev: *mut device) -> c_int { let pdev=to_platform_device(dev); let ret=pm_generic_runtime_suspend(dev); if ret!=0 {ret} else {omap_device_idle(pdev)} }
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn _od_runtime_resume(dev: *mut device) -> c_int { let pdev=to_platform_device(dev); let ret=omap_device_enable(pdev); if ret!=0 {dev_err(dev,"use pm_runtime_put_sync_suspend() in driver?\n"); ret} else {pm_generic_runtime_resume(dev)} }
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn _od_fail_runtime_suspend(dev:*mut device)->c_int { dev_warn(dev,"%s: FIXME: missing hwmod/omap_dev info\n",c_str!("_od_fail_runtime_suspend")); -ENODEV }
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn _od_fail_runtime_resume(dev:*mut device)->c_int { dev_warn(dev,"%s: FIXME: missing hwmod/omap_dev info\n",c_str!("_od_fail_runtime_resume")); -ENODEV }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 unsafe fn _od_suspend_noirq(dev:*mut device)->c_int { let pdev=to_platform_device(dev); let od=to_omap_device(pdev); if (*od)._driver_status!=BUS_NOTIFY_BOUND_DRIVER{return 0;} let ret=pm_generic_suspend_noirq(dev); if ret==0 && !pm_runtime_status_suspended(dev) && pm_generic_runtime_suspend(dev)==0 {omap_device_idle(pdev); (*od).flags|=OMAP_DEVICE_SUSPENDED;} ret }
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 unsafe fn _od_resume_noirq(dev:*mut device)->c_int { let pdev=to_platform_device(dev); let od=to_omap_device(pdev); if (*od).flags&OMAP_DEVICE_SUSPENDED!=0 {(*od).flags&=!OMAP_DEVICE_SUSPENDED; omap_device_enable(pdev); pm_generic_runtime_resume(dev);} pm_generic_resume_noirq(dev) }
 
 unsafe fn _omap_device_notifier_call(_nb:*mut notifier_block,event:c_ulong,dev:*mut c_void)->c_int {

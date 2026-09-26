@@ -50,7 +50,7 @@ macro_rules! led_reg {
             }
         }
         #[repr(C)]
-        pub union $union { pub u64: u64, pub s: $bits }
+        pub $union $union { pub u64: u64, pub s: $bits }
     };
 }
 

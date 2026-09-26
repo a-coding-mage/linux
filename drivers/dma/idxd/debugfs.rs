@@ -42,7 +42,7 @@ unsafe fn dump_event_entry(
         (*entry).e.wq_idx_valid,
         (*entry).e.batch,
         (*entry).e.fault_rw,
-        (*entry).e.priv,
+        (*entry).e.r#priv,
         (*entry).e.error,
         (*entry).e.wq_idx,
         (*entry).e.operation,

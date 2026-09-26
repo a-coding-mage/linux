@@ -38,7 +38,7 @@ unsafe fn pcpu_free_pages(
 ) {
     let mut cpu: c_uint;
     let mut i: c_int;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         i = page_start;
         while i < page_end {
             let p = *pages.add(pcpu_page_idx(cpu, i) as usize);
@@ -47,7 +47,7 @@ unsafe fn pcpu_free_pages(
             }
             i += 1;
         }
-    }
+    });
 }
 
 unsafe fn pcpu_alloc_pages(
@@ -62,7 +62,7 @@ unsafe fn pcpu_alloc_pages(
     let mut i: c_int;
     gfp |= __GFP_HIGHMEM;
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         i = page_start;
         while i < page_end {
             let pagep = pages.add(pcpu_page_idx(cpu, i) as usize);
@@ -72,19 +72,19 @@ unsafe fn pcpu_alloc_pages(
                     i -= 1;
                     __free_page(*pages.add(pcpu_page_idx(cpu, i) as usize));
                 }
-                for_each_possible_cpu!(tcpu) {
+                for_each_possible_cpu!(tcpu, {
                     if tcpu == cpu { break; }
                     let mut j = page_start;
                     while j < page_end {
                         __free_page(*pages.add(pcpu_page_idx(tcpu, j) as usize));
                         j += 1;
                     }
-                }
+                });
                 return -ENOMEM;
             }
             i += 1;
         }
-    }
+    });
     0
 }
 
@@ -106,7 +106,7 @@ unsafe fn pcpu_unmap_pages(
     page_end: c_int,
 ) {
     let mut cpu: c_uint;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let mut i = page_start;
         while i < page_end {
             let p = pcpu_chunk_page(chunk, cpu, i);
@@ -115,7 +115,7 @@ unsafe fn pcpu_unmap_pages(
             i += 1;
         }
         __pcpu_unmap_pages(pcpu_chunk_addr(chunk, cpu, page_start), page_end - page_start);
-    }
+    });
 }
 
 unsafe fn pcpu_post_unmap_tlb_flush(chunk: *mut pcpu_chunk, page_start: c_int, page_end: c_int) {
@@ -148,7 +148,7 @@ unsafe fn pcpu_map_pages(
 ) -> c_int {
     let mut cpu: c_uint;
     let mut tcpu: c_uint;
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let err = __pcpu_map_pages(
             pcpu_chunk_addr(chunk, cpu, page_start),
             pages.add(pcpu_page_idx(cpu, page_start) as usize),
@@ -156,10 +156,10 @@ unsafe fn pcpu_map_pages(
             gfp,
         );
         if err < 0 {
-            for_each_possible_cpu!(tcpu) {
+            for_each_possible_cpu!(tcpu, {
                 __pcpu_unmap_pages(pcpu_chunk_addr(chunk, tcpu, page_start), page_end - page_start);
                 if tcpu == cpu { break; }
-            }
+            });
             pcpu_post_unmap_tlb_flush(chunk, page_start, page_end);
             return err;
         }
@@ -168,7 +168,7 @@ unsafe fn pcpu_map_pages(
             pcpu_set_page_chunk(*pages.add(pcpu_page_idx(cpu, i) as usize), chunk);
             i += 1;
         }
-    }
+    });
     0
 }
 

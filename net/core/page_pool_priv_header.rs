@@ -38,7 +38,7 @@ pub unsafe fn page_pool_set_dma_addr(page: *mut page, addr: dma_addr_t) -> bool 
 }
 
 // CONFIG_PAGE_POOL selects the externally provided implementations below.
-#[cfg(feature = "CONFIG_PAGE_POOL")]
+#[cfg(CONFIG_PAGE_POOL)]
 unsafe extern "C" {
     pub fn page_pool_set_pp_info(pool: *mut page_pool, netmem: netmem_ref);
     pub fn page_pool_clear_pp_info(netmem: netmem_ref);
@@ -48,15 +48,15 @@ unsafe extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_PAGE_POOL"))]
+#[cfg(not(CONFIG_PAGE_POOL))]
 #[inline]
 pub unsafe fn page_pool_set_pp_info(_pool: *mut page_pool, _netmem: netmem_ref) {}
 
-#[cfg(not(feature = "CONFIG_PAGE_POOL"))]
+#[cfg(not(CONFIG_PAGE_POOL))]
 #[inline]
 pub unsafe fn page_pool_clear_pp_info(_netmem: netmem_ref) {}
 
-#[cfg(not(feature = "CONFIG_PAGE_POOL"))]
+#[cfg(not(CONFIG_PAGE_POOL))]
 #[inline]
 pub unsafe fn page_pool_check_memory_provider(
     _dev: *mut net_device,

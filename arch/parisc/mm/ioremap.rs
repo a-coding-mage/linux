@@ -44,7 +44,7 @@ pub unsafe fn ioremap_prot(
     size: usize,
     prot: pgprot_t,
 ) -> *mut core::ffi::c_void {
-    #[cfg(feature = "CONFIG_EISA")]
+    #[cfg(CONFIG_EISA)]
     {
         let end = phys_addr.wrapping_add(size).wrapping_sub(1);
         /* Support EISA addresses */

@@ -61,7 +61,7 @@ pub type ipset_adtfn = Option<unsafe extern "C" fn(*mut ip_set, *mut c_void, *co
 #[repr(C)] pub struct ip_set_region { pub lock: spinlock_t, pub ext_size: usize, pub elements: u32 }
 #[repr(C)] pub struct ip_set_type { pub list: list_head, pub name: [c_char; IPSET_MAXNAMELEN], pub protocol: u8, pub dimension: u8, pub family: u8, pub revision_min: u8, pub revision_max: u8, pub create_flags: [u8; (IPSET_REVISION_MAX + 1) as usize], pub features: u16, pub create: Option<unsafe extern "C" fn(*mut net, *mut ip_set, *mut *mut nlattr, u32) -> c_int>, pub create_policy: [nla_policy; (IPSET_ATTR_CREATE_MAX + 1) as usize], pub adt_policy: [nla_policy; (IPSET_ADT_MAX + 1) as usize], pub me: *mut module }
 
-extern "C" { pub static ip_set_extensions: [ip_set_ext_type; IPSET_EXT_ID_MAX as usize]; pub fn ip_set_type_register(*mut ip_set_type) -> c_int; pub fn ip_set_type_unregister(*mut ip_set_type); }
+extern "C" { pub static ip_set_extensions: [ip_set_ext_type; IPSET_EXT_ID_MAX as usize]; pub fn ip_set_type_register(_: *mut ip_set_type) -> c_int; pub fn ip_set_type_unregister(_: *mut ip_set_type); }
 
 pub const IPSET_MAX_RANGE: u32 = 1 << 14;
 pub const IPSET_REVISION_MAX: u32 = 9;
@@ -76,7 +76,7 @@ pub const IPSET_MAX_TIMEOUT: u32 = (u32::MAX >> 1) / MSEC_PER_SEC;
 #[inline] pub unsafe fn ip_set_attr_netorder(tb: *mut *mut nlattr, ty: c_int) -> bool { !(*tb.add(ty as usize)).is_null() && ((*(*tb.add(ty as usize))).nla_type & NLA_F_NET_BYTEORDER) != 0 }
 #[inline] pub unsafe fn ip_set_optattr_netorder(tb: *mut *mut nlattr, ty: c_int) -> bool { (*tb.add(ty as usize)).is_null() || ((*(*tb.add(ty as usize))).nla_type & NLA_F_NET_BYTEORDER) != 0 }
 
-extern "C" { fn ip_set_get_ipaddr4(*mut nlattr, *mut __be32) -> c_int; fn ntohl(__be32) -> u32; fn time_is_before_jiffies(usize) -> bool; fn msecs_to_jiffies(u32) -> usize; static mut jiffies: usize; }
+extern "C" { fn ip_set_get_ipaddr4(_: *mut nlattr, _: *mut __be32) -> c_int; fn ntohl(_: __be32) -> u32; fn time_is_before_jiffies(_: usize) -> bool; fn msecs_to_jiffies(_: u32) -> usize; static mut jiffies: usize; }
 
 #[inline] pub unsafe fn ip_set_timeout_expired(t: *const usize) -> bool { *t != 0 && time_is_before_jiffies(*t) }
 #[inline] pub unsafe fn ip_set_timeout_set(timeout: *mut usize, value: u32) { if value == 0 { *timeout = 0; return; } let mut t = msecs_to_jiffies(value * MSEC_PER_SEC) + jiffies; if t == 0 { t -= 1; } *timeout = t; }

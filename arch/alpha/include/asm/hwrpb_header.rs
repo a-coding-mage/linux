@@ -109,7 +109,7 @@ pub struct hwrpb_struct {
 }
 
 // __KERNEL__ declarations and definitions
-pub unsafe extern "C" { pub static mut hwrpb: *mut hwrpb_struct; }
+unsafe extern "C" { pub static mut hwrpb: *mut hwrpb_struct; }
 
 #[inline]
 pub unsafe fn hwrpb_update_checksum(h: *mut hwrpb_struct) {

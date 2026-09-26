@@ -20,6 +20,9 @@ unsafe fn pkcs7_digest(
     let mut desc: *mut shash_desc;
     let desc_size: usize;
     let mut ret: c_int;
+    'cleanup: {
+    'error_no_desc: {
+    'error: {
 
     kenter(",%u,%s", (*sinfo).index, (*sinfo).sig.hash_algo);
 
@@ -56,13 +59,13 @@ unsafe fn pkcs7_digest(
     ret = -ENOMEM;
     (*sig).m = kmalloc(umax((*sinfo).authattrs_len, (*sig).m_size), GFP_KERNEL);
     if (*sig).m.is_null() {
-        goto!(error_no_desc);
+        break 'error_no_desc;
     }
     (*sig).m_free = true;
 
     desc = kzalloc(desc_size, GFP_KERNEL) as *mut shash_desc;
     if desc.is_null() {
-        goto!(error_no_desc);
+        break 'error_no_desc;
     }
 
     (*desc).tfm = tfm;
@@ -70,7 +73,7 @@ unsafe fn pkcs7_digest(
     /* Digest the message [RFC2315 9.3] */
     ret = crypto_shash_digest(desc, (*pkcs7).data, (*pkcs7).data_len, (*sig).m);
     if ret < 0 {
-        goto!(error);
+        break 'error;
     }
     pr_devel!("MsgDigest = [%*ph]\n", 8, (*sig).m);
 
@@ -82,19 +85,19 @@ unsafe fn pkcs7_digest(
         if (*sinfo).msgdigest.is_null() {
             pr_warn!("Sig %u: No messageDigest\n", (*sinfo).index);
             ret = -EKEYREJECTED;
-            goto!(error);
+            break 'error;
         }
 
         if (*sinfo).msgdigest_len != (*sig).m_size {
             pr_warn!("Sig %u: Invalid digest size (%u)\n", (*sinfo).index, (*sinfo).msgdigest_len);
             ret = -EBADMSG;
-            goto!(error);
+            break 'error;
         }
 
         if memcmp((*sig).m, (*sinfo).msgdigest, (*sinfo).msgdigest_len) != 0 {
             pr_warn!("Sig %u: Message digest doesn't match\n", (*sinfo).index);
             ret = -EKEYREJECTED;
-            goto!(error);
+            break 'error;
         }
 
         /* We then calculate anew, using the authenticated attributes
@@ -116,18 +119,21 @@ unsafe fn pkcs7_digest(
         } else {
             ret = crypto_shash_digest(desc, (*sig).m, (*sinfo).authattrs_len, (*sig).m);
             if ret < 0 {
-                goto!(error);
+                break 'error;
             }
         }
         pr_devel!("AADigest = [%*ph]\n", 8, (*sig).m);
     }
 
-    goto!(cleanup);
-error:
+    break 'cleanup;
+    }
+    
     kfree(desc as *mut c_void);
-error_no_desc:
+    }
+    
     crypto_free_shash(tfm);
-cleanup:
+    }
+    
     kleave!(" = %d", ret);
     ret
 }
@@ -186,6 +192,7 @@ unsafe fn pkcs7_find_key(pkcs7: *mut pkcs7_message, sinfo: *mut pkcs7_signed_inf
 unsafe fn pkcs7_verify_sig_chain(pkcs7: *mut pkcs7_message, sinfo: *mut pkcs7_signed_info) -> c_int {
     let mut x509 = (*sinfo).signer;
     let mut p;
+    'unsupported_sig_in_x509: {
     kenter!("");
     p = (*pkcs7).certs;
     while !p.is_null() { (*p).seen = false; p = (*p).next; }
@@ -203,7 +210,7 @@ unsafe fn pkcs7_verify_sig_chain(pkcs7: *mut pkcs7_message, sinfo: *mut pkcs7_si
         if !(*sig).auth_ids[0].is_null() { pr_debug!("- authkeyid.id %*phN\n", (*sig).auth_ids[0].len, (*sig).auth_ids[0].data); }
         if !(*sig).auth_ids[1].is_null() { pr_debug!("- authkeyid.skid %*phN\n", (*sig).auth_ids[1].len, (*sig).auth_ids[1].data); }
         if (*x509).self_signed {
-            if (*x509).unsupported_sig { goto!(unsupported_sig_in_x509); }
+            if (*x509).unsupported_sig { break 'unsupported_sig_in_x509; }
             (*x509).signer = x509; pr_debug!("- self-signed\n"); return 0;
         }
         let auth = if !(*sig).auth_ids[0].is_null() { (*sig).auth_ids[0] } else { (*sig).auth_ids[1] };
@@ -222,13 +229,14 @@ unsafe fn pkcs7_verify_sig_chain(pkcs7: *mut pkcs7_message, sinfo: *mut pkcs7_si
         }
         pr_debug!("- subject %s\n", (*p).subject);
         if (*p).seen { pr_warn!("Sig %u: X.509 chain contains loop\n", (*sinfo).index); return 0; }
-        let ret = public_key_verify_signature((*p).pub, (*x509).sig);
+        let ret = public_key_verify_signature((*p).r#pub, (*x509).sig);
         if ret < 0 { return ret; }
         (*x509).signer = p;
         if x509 == p { pr_debug!("- self-signed\n"); return 0; }
         x509 = p; might_sleep!();
     }
-unsupported_sig_in_x509:
+    }
+    
     0
 }
 
@@ -243,7 +251,7 @@ unsafe fn pkcs7_verify_one(pkcs7: *mut pkcs7_message, sinfo: *mut pkcs7_signed_i
        ((*sinfo).signing_time < (*sinfo).signer.valid_from || (*sinfo).signing_time > (*sinfo).signer.valid_to) {
         pr_warn!("Message signed outside of X.509 validity window\n"); return -EKEYREJECTED;
     }
-    let ret = public_key_verify_signature((*sinfo).signer.pub, (*sinfo).sig); if ret < 0 { return ret; }
+    let ret = public_key_verify_signature((*sinfo).signer.r#pub, (*sinfo).sig); if ret < 0 { return ret; }
     pr_devel!("Verified signature %u\n", (*sinfo).index);
     pkcs7_verify_sig_chain(pkcs7, sinfo)
 }

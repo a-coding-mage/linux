@@ -21,9 +21,9 @@ unsafe fn boot_info_is_compatible(bi: *const boot_infos_t) -> bool { (*bi).compa
 #[inline]
 unsafe fn boot_info_is_v2_compatible(bi: *const boot_infos_t) -> bool { (*bi).version >= 2 }
 
-#[cfg(feature = "CONFIG_BOOTX_TEXT")]
+#[cfg(CONFIG_BOOTX_TEXT)]
 unsafe extern "C" fn bootx_printf(_format: *const i8, ...) { /* C varargs formatter; supplied text backend is external. */ }
-#[cfg(not(feature = "CONFIG_BOOTX_TEXT"))]
+#[cfg(not(CONFIG_BOOTX_TEXT))]
 unsafe fn bootx_printf(_format: *const i8) {}
 
 unsafe fn bootx_early_getprop(base: usize, node: usize, prop: *const i8) -> *mut core::ffi::c_void {

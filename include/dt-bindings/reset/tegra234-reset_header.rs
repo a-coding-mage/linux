@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Copyright (c) 2018-2022, NVIDIA CORPORATION. All rights reserved. */
 
-/**
+
+/*
  * @file
  * @defgroup bpmp_reset_ids Reset ID's
  * @brief Identifiers for Resets controllable by firmware
@@ -9,7 +10,7 @@
  */
 pub const TEGRA234_RESET_ACTMON: u32 = 1;
 pub const TEGRA234_RESET_ADSP_ALL: u32 = 2;
-+pub const TEGRA234_RESET_DSI_CORE: u32 = 3;
+pub const TEGRA234_RESET_DSI_CORE: u32 = 3;
 pub const TEGRA234_RESET_CAN1: u32 = 4;
 pub const TEGRA234_RESET_CAN2: u32 = 5;
 pub const TEGRA234_RESET_DLA0: u32 = 6;
@@ -174,6 +175,6 @@ pub const TEGRA234_RESET_GBE_UPHY_PLL0: u32 = 171;
 pub const TEGRA234_RESET_GBE_UPHY_PLL1: u32 = 172;
 pub const TEGRA234_RESET_GBE_UPHY_PLL2: u32 = 173;
 
-/** @} */
+/* @} */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

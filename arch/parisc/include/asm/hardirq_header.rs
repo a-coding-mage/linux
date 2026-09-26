@@ -14,9 +14,9 @@ pub struct irq_cpustat_t {
     pub kernel_stack_usage: ::core::ffi::c_uint,
     pub irq_stack_usage: ::core::ffi::c_uint,
     // CONFIG_SMP is a build-time condition from the original header.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub irq_resched_count: ::core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub irq_call_count: ::core::ffi::c_uint,
     pub irq_unaligned_count: ::core::ffi::c_uint,
     pub irq_fpassist_count: ::core::ffi::c_uint,

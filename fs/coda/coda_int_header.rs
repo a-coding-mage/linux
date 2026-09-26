@@ -38,17 +38,17 @@ unsafe extern "C" {
 // When CONFIG_SYSCTL is enabled, these are supplied externally by the C
 // implementation. The alternate declarations below preserve the header's
 // empty inline implementations when it is disabled.
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" {
     pub fn coda_sysctl_init();
     pub fn coda_sysctl_clean();
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 #[inline]
 pub unsafe fn coda_sysctl_init() {}
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 #[inline]
 pub unsafe fn coda_sysctl_clean() {}
 

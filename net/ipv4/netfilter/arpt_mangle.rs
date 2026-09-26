@@ -110,14 +110,14 @@ unsafe extern "C" fn target(skb: *mut sk_buff, par: *const xt_action_param) -> u
     hln = (*arp).ar_hln as usize;
     /* We assume that pln and hln were checked in the match */
     if (*mangle).flags & ARPT_MANGLE_SDEV != 0 {
-        if ARPT_DEV_ADDR_LEN_MAX as usize < hln || arpptr.add(hln) > skb_tail_pointer(skb) {
+        if (ARPT_DEV_ADDR_LEN_MAX as usize) < hln || arpptr.add(hln) > skb_tail_pointer(skb) {
             return NF_DROP;
         }
         core::ptr::copy_nonoverlapping((*mangle).src_devaddr.as_ptr(), arpptr, hln);
     }
     arpptr = arpptr.add(hln);
     if (*mangle).flags & ARPT_MANGLE_SIP != 0 {
-        if ARPT_MANGLE_ADDR_LEN_MAX as usize < pln || arpptr.add(pln) > skb_tail_pointer(skb) {
+        if (ARPT_MANGLE_ADDR_LEN_MAX as usize) < pln || arpptr.add(pln) > skb_tail_pointer(skb) {
             return NF_DROP;
         }
         core::ptr::copy_nonoverlapping(&(*mangle).u_s.src_ip as *const u32 as *const u8, arpptr, pln);

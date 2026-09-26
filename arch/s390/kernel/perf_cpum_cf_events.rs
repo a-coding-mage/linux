@@ -937,7 +937,7 @@ static mut cpumcf_z17_pmu_event_attr: &[*mut attribute] = &[
 /* END: CPUM_CF COUNTER DEFINITIONS ===================================== */
 
 static mut cpumcf_pmu_events_group: attribute_group = attribute_group {
-	.name = "events",
+	name: "events",
 };
 
 pmu_format_attr!(event, "config:0-63");
@@ -948,8 +948,8 @@ static mut cpumcf_pmu_format_attr: &[*mut attribute] = &[
 };
 
 static mut cpumcf_pmu_format_group: attribute_group = attribute_group {
-	.name = "format",
-	.attrs = cpumcf_pmu_format_attr,
+	name: "format",
+	attrs: cpumcf_pmu_format_attr,
 };
 
 static cpumcf_pmu_attr_groups: &[*const attribute_group] = &[

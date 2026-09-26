@@ -167,14 +167,14 @@ pub unsafe fn kgdb_arch_handle_exception(
     let mut ptr: *mut i8;
 
     match *remcomInBuffer {
-        b'c' as i8 => {
+        case if case == b'c' as i8 => {
             ptr = remcomInBuffer.add(1);
             if kgdb_hex2long(&mut ptr, &mut addr) {
                 (*linux_regs).tpc = addr;
                 (*linux_regs).tnpc = addr.wrapping_add(4);
             }
         }
-        b'D' as i8 | b'k' as i8 => {}
+        case if case == b'D' as i8 || case == b'k' as i8 => {}
         _ => return -1,
     }
     if (*linux_regs).tpc == arch_kgdb_breakpoint as ::core::ffi::c_ulong {

@@ -3,7 +3,7 @@
 // Dependencies supplied by the surrounding EFI stub environment are intentionally
 // left as external symbols, matching the original C translation unit.
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 extern "C" {
     pub fn __memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void;
     pub fn __memmove(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, count: usize) -> *mut core::ffi::c_void;

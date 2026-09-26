@@ -19,13 +19,13 @@ pub struct rfcomm_dev {
 extern "C" {
     static mut rfcomm_tty_driver: *mut tty_driver;
     static mut rfcomm_dev_list: list_head;
-    fn rfcomm_dlc_lock(*mut rfcomm_dlc); fn rfcomm_dlc_unlock(*mut rfcomm_dlc);
-    fn rfcomm_dlc_put(*mut rfcomm_dlc); fn rfcomm_dlc_open(*mut rfcomm_dlc,*mut bdaddr_t,*mut bdaddr_t,u8)->i32;
-    fn rfcomm_dlc_close(*mut rfcomm_dlc,i32); fn rfcomm_dlc_throttle(*mut rfcomm_dlc); fn rfcomm_dlc_unthrottle(*mut rfcomm_dlc);
-    fn tty_port_tty_hangup(*mut tty_port,bool); fn tty_flip_buffer_push(*mut tty_port);
-    fn tty_insert_flip_string(*mut tty_port,*const u8,usize)->i32; fn kfree_skb(*mut sk_buff);
-    fn skb_queue_empty(*mut sk_buff_head)->bool; fn skb_queue_tail(*mut sk_buff_head,*mut sk_buff);
-    fn atomic_dec(*mut atomic_t); fn tty_port_tty_wakeup(*mut tty_port);
+    fn rfcomm_dlc_lock(_: *mut rfcomm_dlc); fn rfcomm_dlc_unlock(_: *mut rfcomm_dlc);
+    fn rfcomm_dlc_put(_: *mut rfcomm_dlc); fn rfcomm_dlc_open(_: *mut rfcomm_dlc,_: *mut bdaddr_t,_: *mut bdaddr_t,_: u8)->i32;
+    fn rfcomm_dlc_close(_: *mut rfcomm_dlc,_: i32); fn rfcomm_dlc_throttle(_: *mut rfcomm_dlc); fn rfcomm_dlc_unthrottle(_: *mut rfcomm_dlc);
+    fn tty_port_tty_hangup(_: *mut tty_port,_: bool); fn tty_flip_buffer_push(_: *mut tty_port);
+    fn tty_insert_flip_string(_: *mut tty_port,_: *const u8,_: usize)->i32; fn kfree_skb(_: *mut sk_buff);
+    fn skb_queue_empty(_: *mut sk_buff_head)->bool; fn skb_queue_tail(_: *mut sk_buff_head,_: *mut sk_buff);
+    fn atomic_dec(_: *mut atomic_t); fn tty_port_tty_wakeup(_: *mut tty_port);
 }
 
 #[repr(C)] pub struct tty_port { pub ops:*const tty_port_operations, pub count:i32, pub open_wait:wait_queue_head }
@@ -77,7 +77,7 @@ pub unsafe extern "C" fn rfcomm_wfree(_skb:*mut sk_buff) { }
 const EINVAL:i32=22; const TIOCM_DSR:u32=0x100; const TIOCM_CTS:u32=0x20; const TIOCM_RI:u32=0x80; const TIOCM_CD:u32=0x40;
 const RFCOMM_V24_RTC:u8=1; const RFCOMM_V24_RTR:u8=2; const RFCOMM_V24_IC:u8=4; const RFCOMM_V24_DV:u8=8;
 const BT_CONNECTED:i32=1; const BT_CLOSED:i32=0; const RFCOMM_MAX_DEV:u32=256;
-extern "C" { fn rfcomm_reparent_device(*mut rfcomm_dev); }
+extern "C" { fn rfcomm_reparent_device(_: *mut rfcomm_dev); }
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

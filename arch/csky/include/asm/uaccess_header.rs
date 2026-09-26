@@ -15,7 +15,7 @@ macro_rules! __put_user_asm_b {
         core::arch::asm!(
             "1: stb {x}, ({ptr},0)", "br 3f", "2: mov {err}, {ec}", "br 3f",
             ".section __ex_table, \"a\"", ".align 2", ".long 1b,2b", ".previous", "3:",
-            x = inout(reg) $x, ptr = inout(reg) $ptr, err = inout(reg) $err,
+            $x = inout(reg) $x, $ptr = inout(reg) $ptr, $err = inout(reg) $err,
             ec = inout(reg) (-EFAULT), options(raw)
         );
         let _ = &mut errcode;
@@ -28,7 +28,7 @@ macro_rules! __put_user_asm_h {
         core::arch::asm!(
             "1: sth {x}, ({ptr},0)", "br 3f", "2: mov {err}, {ec}", "br 3f",
             ".section __ex_table, \"a\"", ".align 2", ".long 1b,2b", ".previous", "3:",
-            x = inout(reg) $x, ptr = inout(reg) $ptr, err = inout(reg) $err,
+            $x = inout(reg) $x, $ptr = inout(reg) $ptr, $err = inout(reg) $err,
             ec = inout(reg) (-EFAULT), options(raw)
         );
         let _ = &mut errcode;
@@ -41,7 +41,7 @@ macro_rules! __put_user_asm_w {
         core::arch::asm!(
             "1: stw {x}, ({ptr},0)", "br 3f", "2: mov {err}, {ec}", "br 3f",
             ".section __ex_table,\"a\"", ".align 2", ".long 1b, 2b", ".previous", "3:",
-            x = inout(reg) $x, ptr = inout(reg) $ptr, err = inout(reg) $err,
+            $x = inout(reg) $x, $ptr = inout(reg) $ptr, $err = inout(reg) $err,
             ec = inout(reg) (-EFAULT), options(raw)
         );
         let _ = &mut errcode;
@@ -57,7 +57,7 @@ macro_rules! __put_user_asm_64 {
             "ldw {tmp}, ({x}, 4)", "2: stw {tmp}, ({ptr}, 4)", "br 4f",
             "3: mov {err}, {ec}", "br 4f", ".section __ex_table, \"a\"",
             ".align 2", ".long 1b, 3b", ".long 2b, 3b", ".previous", "4:",
-            x = inout(reg) $x, ptr = inout(reg) $ptr, err = inout(reg) $err,
+            $x = inout(reg) $x, $ptr = inout(reg) $ptr, $err = inout(reg) $err,
             tmp = inout(reg) tmp, ec = inout(reg) (-EFAULT), options(raw)
         );
         let _ = &mut errcode;
@@ -89,7 +89,7 @@ macro_rules! __get_user_asm_common {
         core::arch::asm!(concat!("1: ", $ins, " {x}, ({ptr}, 0)"), "br 3f",
             "2: mov {err}, {ec}", "movi {x}, 0", "br 3f",
             ".section __ex_table,\"a\"", ".align 2", ".long 1b, 2b", ".previous", "3:",
-            x = inout(reg) $x, ptr = in(reg) $ptr, err = inout(reg) $err,
+            $x = inout(reg) $x, $ptr = in(reg) $ptr, $err = inout(reg) $err,
             ec = inout(reg) (-EFAULT), options(raw));
         let _ = &mut errcode;
     }};
@@ -104,7 +104,7 @@ macro_rules! __get_user_asm_64 {
             "2: ldw {tmp}, ({ptr}, 4)", "stw {tmp}, ({x}, 4)", "br 4f",
             "3: mov {err}, {ec}", "br 4f", ".section __ex_table, \"a\"",
             ".align 2", ".long 1b, 3b", ".long 2b, 3b", ".previous", "4:",
-            x = inout(reg) $x, ptr = in(reg) $ptr, err = inout(reg) $err,
+            $x = inout(reg) $x, $ptr = in(reg) $ptr, $err = inout(reg) $err,
             tmp = inout(reg) tmp, ec = inout(reg) (-EFAULT), options(raw));
         let _ = &mut errcode;
     }};

@@ -92,7 +92,7 @@ unsafe fn __hyp_vgic_restore_state(vcpu: *mut kvm_vcpu) {
     }
 }
 
-#[cfg(feature = "CONFIG_HW_PERF_EVENTS")]
+#[cfg(CONFIG_HW_PERF_EVENTS)]
 unsafe fn __pmu_switch_to_guest(vcpu: *mut kvm_vcpu) -> bool {
     let pmu = &(*vcpu).arch.pmu.events;
     if pmu.events_host != 0 { write_sysreg(pmu.events_host, pmcntenclr_el0); }
@@ -100,16 +100,16 @@ unsafe fn __pmu_switch_to_guest(vcpu: *mut kvm_vcpu) -> bool {
     pmu.events_host != 0 || pmu.events_guest != 0
 }
 
-#[cfg(feature = "CONFIG_HW_PERF_EVENTS")]
+#[cfg(CONFIG_HW_PERF_EVENTS)]
 unsafe fn __pmu_switch_to_host(vcpu: *mut kvm_vcpu) {
     let pmu = &(*vcpu).arch.pmu.events;
     if pmu.events_guest != 0 { write_sysreg(pmu.events_guest, pmcntenclr_el0); }
     if pmu.events_host != 0 { write_sysreg(pmu.events_host, pmcntenset_el0); }
 }
 
-#[cfg(not(feature = "CONFIG_HW_PERF_EVENTS"))]
+#[cfg(not(CONFIG_HW_PERF_EVENTS))]
 unsafe fn __pmu_switch_to_guest(_vcpu: *mut kvm_vcpu) -> bool { false }
-#[cfg(not(feature = "CONFIG_HW_PERF_EVENTS"))]
+#[cfg(not(CONFIG_HW_PERF_EVENTS))]
 unsafe fn __pmu_switch_to_host(_vcpu: *mut kvm_vcpu) {}
 
 unsafe fn kvm_handle_pvm_sys64(vcpu: *mut kvm_vcpu, exit_code: *mut u64) -> bool {

@@ -121,7 +121,7 @@ extern "C" {
 }
 
 /* Preserves the CONFIG_V4L2_CCI_I2C build-time condition from the C header. */
-#[cfg(feature = "CONFIG_V4L2_CCI_I2C")]
+#[cfg(CONFIG_V4L2_CCI_I2C)]
 extern "C" {
     /** Create a regmap to use with cci_*() register access functions. */
     pub fn devm_cci_regmap_init_i2c(

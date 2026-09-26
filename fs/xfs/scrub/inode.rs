@@ -37,6 +37,9 @@ pub unsafe fn xchk_setup_inode(sc: *mut xfs_scrub) -> i32 {
     let mut pag: *mut xfs_perag;
     let agno = XFS_INO_TO_AGNO(mp, (*(*sc).sm).sm_ino);
     let mut error: i32;
+    'out_gone: {
+    'out_error: {
+    'out_cancel: {
     if xchk_need_intent_drain(sc) != 0 { xchk_fsgates_enable(sc, XCHK_FSGATES_DRAIN); }
     if (*(*sc).sm).sm_ino == 0 || (*(*sc).sm).sm_ino == I_INO(ip_in) {
         error = xchk_install_live_inode(sc, ip_in);
@@ -48,28 +51,31 @@ pub unsafe fn xchk_setup_inode(sc: *mut xfs_scrub) -> i32 {
     error = xchk_iget_safe(sc, (*(*sc).sm).sm_ino, &mut ip);
     if error == 0 { return xchk_install_handle_iscrub(sc, ip); }
     if error == -ENOENT { return error; }
-    if error != -EFSCORRUPTED && error != -EFSBADCRC && error != -EINVAL { goto out_error; }
+    if error != -EFSCORRUPTED && error != -EFSBADCRC && error != -EINVAL { break 'out_error; }
     error = xchk_trans_alloc(sc, 0);
-    if error != 0 { goto out_error; }
+    if error != 0 { break 'out_error; }
     error = xchk_iget_agi(sc, (*(*sc).sm).sm_ino, &mut agi_bp, &mut ip);
     if error == 0 { xchk_trans_cancel(sc); return xchk_install_handle_iscrub(sc, ip); }
-    if error == -ENOENT { goto out_gone; }
-    if error != -EFSCORRUPTED && error != -EFSBADCRC && error != -EINVAL { goto out_cancel; }
-    if agi_bp.is_null() { ASSERT(!agi_bp.is_null()); error = -ECANCELED; goto out_cancel; }
+    if error == -ENOENT { break 'out_gone; }
+    if error != -EFSCORRUPTED && error != -EFSBADCRC && error != -EINVAL { break 'out_cancel; }
+    if agi_bp.is_null() { ASSERT(!agi_bp.is_null()); error = -ECANCELED; break 'out_cancel; }
     pag = xfs_perag_get(mp, XFS_INO_TO_AGNO(mp, (*(*sc).sm).sm_ino));
-    if pag.is_null() { error = -EFSCORRUPTED; goto out_cancel; }
+    if pag.is_null() { error = -EFSCORRUPTED; break 'out_cancel; }
     error = xfs_imap(pag, (*sc).tp, (*(*sc).sm).sm_ino, &mut imap, XFS_IGET_UNTRUSTED);
     xfs_perag_put(pag);
-    if error == -EINVAL || error == -ENOENT { goto out_gone; }
-    if error != 0 { goto out_cancel; }
+    if error == -EINVAL || error == -ENOENT { break 'out_gone; }
+    if error != 0 { break 'out_cancel; }
     if xchk_could_repair(sc) { xrep_setup_inode(sc, &mut imap); }
     return 0;
-out_cancel:
+    }
+    
     xchk_trans_cancel(sc);
-out_error:
+    }
+    
     trace_xchk_op_error(sc, agno, XFS_INO_TO_AGBNO(mp, (*(*sc).sm).sm_ino), error, __return_address);
     return error;
-out_gone:
+    }
+    
     xchk_trans_cancel(sc);
     -ENOENT
 }

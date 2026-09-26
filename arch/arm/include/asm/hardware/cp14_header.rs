@@ -274,199 +274,199 @@ macro_rules! RCP14_DBGDEVID1 { () => { MRC14!(0, c7, c1, 7) }; }
 #[macro_export]
 macro_rules! RCP14_DBGDEVID { () => { MRC14!(0, c7, c2, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDTRTXint { ($val:expr) => { MCR14!(val, 0, c0, c5, 0) }; }
+macro_rules! WCP14_DBGDTRTXint { ($val:expr) => { MCR14!($val, 0, c0, c5, 0) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWFAR { ($val:expr) => { MCR14!(val, 0, c0, c6, 0) }; }
+macro_rules! WCP14_DBGWFAR { ($val:expr) => { MCR14!($val, 0, c0, c6, 0) }; }
 #[macro_export]
-macro_rules! WCP14_DBGVCR { ($val:expr) => { MCR14!(val, 0, c0, c7, 0) }; }
+macro_rules! WCP14_DBGVCR { ($val:expr) => { MCR14!($val, 0, c0, c7, 0) }; }
 #[macro_export]
-macro_rules! WCP14_DBGECR { ($val:expr) => { MCR14!(val, 0, c0, c9, 0) }; }
+macro_rules! WCP14_DBGECR { ($val:expr) => { MCR14!($val, 0, c0, c9, 0) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDSCCR { ($val:expr) => { MCR14!(val, 0, c0, c10, 0) }; }
+macro_rules! WCP14_DBGDSCCR { ($val:expr) => { MCR14!($val, 0, c0, c10, 0) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDSMCR { ($val:expr) => { MCR14!(val, 0, c0, c11, 0) }; }
+macro_rules! WCP14_DBGDSMCR { ($val:expr) => { MCR14!($val, 0, c0, c11, 0) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDTRRXext { ($val:expr) => { MCR14!(val, 0, c0, c0, 2) }; }
+macro_rules! WCP14_DBGDTRRXext { ($val:expr) => { MCR14!($val, 0, c0, c0, 2) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDSCRext { ($val:expr) => { MCR14!(val, 0, c0, c2, 2) }; }
+macro_rules! WCP14_DBGDSCRext { ($val:expr) => { MCR14!($val, 0, c0, c2, 2) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDTRTXext { ($val:expr) => { MCR14!(val, 0, c0, c3, 2) }; }
+macro_rules! WCP14_DBGDTRTXext { ($val:expr) => { MCR14!($val, 0, c0, c3, 2) }; }
 #[macro_export]
-macro_rules! WCP14_DBGDRCR { ($val:expr) => { MCR14!(val, 0, c0, c4, 2) }; }
+macro_rules! WCP14_DBGDRCR { ($val:expr) => { MCR14!($val, 0, c0, c4, 2) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR0 { ($val:expr) => { MCR14!(val, 0, c0, c0, 4) }; }
+macro_rules! WCP14_DBGBVR0 { ($val:expr) => { MCR14!($val, 0, c0, c0, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR1 { ($val:expr) => { MCR14!(val, 0, c0, c1, 4) }; }
+macro_rules! WCP14_DBGBVR1 { ($val:expr) => { MCR14!($val, 0, c0, c1, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR2 { ($val:expr) => { MCR14!(val, 0, c0, c2, 4) }; }
+macro_rules! WCP14_DBGBVR2 { ($val:expr) => { MCR14!($val, 0, c0, c2, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR3 { ($val:expr) => { MCR14!(val, 0, c0, c3, 4) }; }
+macro_rules! WCP14_DBGBVR3 { ($val:expr) => { MCR14!($val, 0, c0, c3, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR4 { ($val:expr) => { MCR14!(val, 0, c0, c4, 4) }; }
+macro_rules! WCP14_DBGBVR4 { ($val:expr) => { MCR14!($val, 0, c0, c4, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR5 { ($val:expr) => { MCR14!(val, 0, c0, c5, 4) }; }
+macro_rules! WCP14_DBGBVR5 { ($val:expr) => { MCR14!($val, 0, c0, c5, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR6 { ($val:expr) => { MCR14!(val, 0, c0, c6, 4) }; }
+macro_rules! WCP14_DBGBVR6 { ($val:expr) => { MCR14!($val, 0, c0, c6, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR7 { ($val:expr) => { MCR14!(val, 0, c0, c7, 4) }; }
+macro_rules! WCP14_DBGBVR7 { ($val:expr) => { MCR14!($val, 0, c0, c7, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR8 { ($val:expr) => { MCR14!(val, 0, c0, c8, 4) }; }
+macro_rules! WCP14_DBGBVR8 { ($val:expr) => { MCR14!($val, 0, c0, c8, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR9 { ($val:expr) => { MCR14!(val, 0, c0, c9, 4) }; }
+macro_rules! WCP14_DBGBVR9 { ($val:expr) => { MCR14!($val, 0, c0, c9, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR10 { ($val:expr) => { MCR14!(val, 0, c0, c10, 4) }; }
+macro_rules! WCP14_DBGBVR10 { ($val:expr) => { MCR14!($val, 0, c0, c10, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR11 { ($val:expr) => { MCR14!(val, 0, c0, c11, 4) }; }
+macro_rules! WCP14_DBGBVR11 { ($val:expr) => { MCR14!($val, 0, c0, c11, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR12 { ($val:expr) => { MCR14!(val, 0, c0, c12, 4) }; }
+macro_rules! WCP14_DBGBVR12 { ($val:expr) => { MCR14!($val, 0, c0, c12, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR13 { ($val:expr) => { MCR14!(val, 0, c0, c13, 4) }; }
+macro_rules! WCP14_DBGBVR13 { ($val:expr) => { MCR14!($val, 0, c0, c13, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR14 { ($val:expr) => { MCR14!(val, 0, c0, c14, 4) }; }
+macro_rules! WCP14_DBGBVR14 { ($val:expr) => { MCR14!($val, 0, c0, c14, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBVR15 { ($val:expr) => { MCR14!(val, 0, c0, c15, 4) }; }
+macro_rules! WCP14_DBGBVR15 { ($val:expr) => { MCR14!($val, 0, c0, c15, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR0 { ($val:expr) => { MCR14!(val, 0, c0, c0, 5) }; }
+macro_rules! WCP14_DBGBCR0 { ($val:expr) => { MCR14!($val, 0, c0, c0, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR1 { ($val:expr) => { MCR14!(val, 0, c0, c1, 5) }; }
+macro_rules! WCP14_DBGBCR1 { ($val:expr) => { MCR14!($val, 0, c0, c1, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR2 { ($val:expr) => { MCR14!(val, 0, c0, c2, 5) }; }
+macro_rules! WCP14_DBGBCR2 { ($val:expr) => { MCR14!($val, 0, c0, c2, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR3 { ($val:expr) => { MCR14!(val, 0, c0, c3, 5) }; }
+macro_rules! WCP14_DBGBCR3 { ($val:expr) => { MCR14!($val, 0, c0, c3, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR4 { ($val:expr) => { MCR14!(val, 0, c0, c4, 5) }; }
+macro_rules! WCP14_DBGBCR4 { ($val:expr) => { MCR14!($val, 0, c0, c4, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR5 { ($val:expr) => { MCR14!(val, 0, c0, c5, 5) }; }
+macro_rules! WCP14_DBGBCR5 { ($val:expr) => { MCR14!($val, 0, c0, c5, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR6 { ($val:expr) => { MCR14!(val, 0, c0, c6, 5) }; }
+macro_rules! WCP14_DBGBCR6 { ($val:expr) => { MCR14!($val, 0, c0, c6, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR7 { ($val:expr) => { MCR14!(val, 0, c0, c7, 5) }; }
+macro_rules! WCP14_DBGBCR7 { ($val:expr) => { MCR14!($val, 0, c0, c7, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR8 { ($val:expr) => { MCR14!(val, 0, c0, c8, 5) }; }
+macro_rules! WCP14_DBGBCR8 { ($val:expr) => { MCR14!($val, 0, c0, c8, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR9 { ($val:expr) => { MCR14!(val, 0, c0, c9, 5) }; }
+macro_rules! WCP14_DBGBCR9 { ($val:expr) => { MCR14!($val, 0, c0, c9, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR10 { ($val:expr) => { MCR14!(val, 0, c0, c10, 5) }; }
+macro_rules! WCP14_DBGBCR10 { ($val:expr) => { MCR14!($val, 0, c0, c10, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR11 { ($val:expr) => { MCR14!(val, 0, c0, c11, 5) }; }
+macro_rules! WCP14_DBGBCR11 { ($val:expr) => { MCR14!($val, 0, c0, c11, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR12 { ($val:expr) => { MCR14!(val, 0, c0, c12, 5) }; }
+macro_rules! WCP14_DBGBCR12 { ($val:expr) => { MCR14!($val, 0, c0, c12, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR13 { ($val:expr) => { MCR14!(val, 0, c0, c13, 5) }; }
+macro_rules! WCP14_DBGBCR13 { ($val:expr) => { MCR14!($val, 0, c0, c13, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR14 { ($val:expr) => { MCR14!(val, 0, c0, c14, 5) }; }
+macro_rules! WCP14_DBGBCR14 { ($val:expr) => { MCR14!($val, 0, c0, c14, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBCR15 { ($val:expr) => { MCR14!(val, 0, c0, c15, 5) }; }
+macro_rules! WCP14_DBGBCR15 { ($val:expr) => { MCR14!($val, 0, c0, c15, 5) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR0 { ($val:expr) => { MCR14!(val, 0, c0, c0, 6) }; }
+macro_rules! WCP14_DBGWVR0 { ($val:expr) => { MCR14!($val, 0, c0, c0, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR1 { ($val:expr) => { MCR14!(val, 0, c0, c1, 6) }; }
+macro_rules! WCP14_DBGWVR1 { ($val:expr) => { MCR14!($val, 0, c0, c1, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR2 { ($val:expr) => { MCR14!(val, 0, c0, c2, 6) }; }
+macro_rules! WCP14_DBGWVR2 { ($val:expr) => { MCR14!($val, 0, c0, c2, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR3 { ($val:expr) => { MCR14!(val, 0, c0, c3, 6) }; }
+macro_rules! WCP14_DBGWVR3 { ($val:expr) => { MCR14!($val, 0, c0, c3, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR4 { ($val:expr) => { MCR14!(val, 0, c0, c4, 6) }; }
+macro_rules! WCP14_DBGWVR4 { ($val:expr) => { MCR14!($val, 0, c0, c4, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR5 { ($val:expr) => { MCR14!(val, 0, c0, c5, 6) }; }
+macro_rules! WCP14_DBGWVR5 { ($val:expr) => { MCR14!($val, 0, c0, c5, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR6 { ($val:expr) => { MCR14!(val, 0, c0, c6, 6) }; }
+macro_rules! WCP14_DBGWVR6 { ($val:expr) => { MCR14!($val, 0, c0, c6, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR7 { ($val:expr) => { MCR14!(val, 0, c0, c7, 6) }; }
+macro_rules! WCP14_DBGWVR7 { ($val:expr) => { MCR14!($val, 0, c0, c7, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR8 { ($val:expr) => { MCR14!(val, 0, c0, c8, 6) }; }
+macro_rules! WCP14_DBGWVR8 { ($val:expr) => { MCR14!($val, 0, c0, c8, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR9 { ($val:expr) => { MCR14!(val, 0, c0, c9, 6) }; }
+macro_rules! WCP14_DBGWVR9 { ($val:expr) => { MCR14!($val, 0, c0, c9, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR10 { ($val:expr) => { MCR14!(val, 0, c0, c10, 6) }; }
+macro_rules! WCP14_DBGWVR10 { ($val:expr) => { MCR14!($val, 0, c0, c10, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR11 { ($val:expr) => { MCR14!(val, 0, c0, c11, 6) }; }
+macro_rules! WCP14_DBGWVR11 { ($val:expr) => { MCR14!($val, 0, c0, c11, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR12 { ($val:expr) => { MCR14!(val, 0, c0, c12, 6) }; }
+macro_rules! WCP14_DBGWVR12 { ($val:expr) => { MCR14!($val, 0, c0, c12, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR13 { ($val:expr) => { MCR14!(val, 0, c0, c13, 6) }; }
+macro_rules! WCP14_DBGWVR13 { ($val:expr) => { MCR14!($val, 0, c0, c13, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR14 { ($val:expr) => { MCR14!(val, 0, c0, c14, 6) }; }
+macro_rules! WCP14_DBGWVR14 { ($val:expr) => { MCR14!($val, 0, c0, c14, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWVR15 { ($val:expr) => { MCR14!(val, 0, c0, c15, 6) }; }
+macro_rules! WCP14_DBGWVR15 { ($val:expr) => { MCR14!($val, 0, c0, c15, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR0 { ($val:expr) => { MCR14!(val, 0, c0, c0, 7) }; }
+macro_rules! WCP14_DBGWCR0 { ($val:expr) => { MCR14!($val, 0, c0, c0, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR1 { ($val:expr) => { MCR14!(val, 0, c0, c1, 7) }; }
+macro_rules! WCP14_DBGWCR1 { ($val:expr) => { MCR14!($val, 0, c0, c1, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR2 { ($val:expr) => { MCR14!(val, 0, c0, c2, 7) }; }
+macro_rules! WCP14_DBGWCR2 { ($val:expr) => { MCR14!($val, 0, c0, c2, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR3 { ($val:expr) => { MCR14!(val, 0, c0, c3, 7) }; }
+macro_rules! WCP14_DBGWCR3 { ($val:expr) => { MCR14!($val, 0, c0, c3, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR4 { ($val:expr) => { MCR14!(val, 0, c0, c4, 7) }; }
+macro_rules! WCP14_DBGWCR4 { ($val:expr) => { MCR14!($val, 0, c0, c4, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR5 { ($val:expr) => { MCR14!(val, 0, c0, c5, 7) }; }
+macro_rules! WCP14_DBGWCR5 { ($val:expr) => { MCR14!($val, 0, c0, c5, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR6 { ($val:expr) => { MCR14!(val, 0, c0, c6, 7) }; }
+macro_rules! WCP14_DBGWCR6 { ($val:expr) => { MCR14!($val, 0, c0, c6, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR7 { ($val:expr) => { MCR14!(val, 0, c0, c7, 7) }; }
+macro_rules! WCP14_DBGWCR7 { ($val:expr) => { MCR14!($val, 0, c0, c7, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR8 { ($val:expr) => { MCR14!(val, 0, c0, c8, 7) }; }
+macro_rules! WCP14_DBGWCR8 { ($val:expr) => { MCR14!($val, 0, c0, c8, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR9 { ($val:expr) => { MCR14!(val, 0, c0, c9, 7) }; }
+macro_rules! WCP14_DBGWCR9 { ($val:expr) => { MCR14!($val, 0, c0, c9, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR10 { ($val:expr) => { MCR14!(val, 0, c0, c10, 7) }; }
+macro_rules! WCP14_DBGWCR10 { ($val:expr) => { MCR14!($val, 0, c0, c10, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR11 { ($val:expr) => { MCR14!(val, 0, c0, c11, 7) }; }
+macro_rules! WCP14_DBGWCR11 { ($val:expr) => { MCR14!($val, 0, c0, c11, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR12 { ($val:expr) => { MCR14!(val, 0, c0, c12, 7) }; }
+macro_rules! WCP14_DBGWCR12 { ($val:expr) => { MCR14!($val, 0, c0, c12, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR13 { ($val:expr) => { MCR14!(val, 0, c0, c13, 7) }; }
+macro_rules! WCP14_DBGWCR13 { ($val:expr) => { MCR14!($val, 0, c0, c13, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR14 { ($val:expr) => { MCR14!(val, 0, c0, c14, 7) }; }
+macro_rules! WCP14_DBGWCR14 { ($val:expr) => { MCR14!($val, 0, c0, c14, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGWCR15 { ($val:expr) => { MCR14!(val, 0, c0, c15, 7) }; }
+macro_rules! WCP14_DBGWCR15 { ($val:expr) => { MCR14!($val, 0, c0, c15, 7) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR0 { ($val:expr) => { MCR14!(val, 0, c1, c0, 1) }; }
+macro_rules! WCP14_DBGBXVR0 { ($val:expr) => { MCR14!($val, 0, c1, c0, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR1 { ($val:expr) => { MCR14!(val, 0, c1, c1, 1) }; }
+macro_rules! WCP14_DBGBXVR1 { ($val:expr) => { MCR14!($val, 0, c1, c1, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR2 { ($val:expr) => { MCR14!(val, 0, c1, c2, 1) }; }
+macro_rules! WCP14_DBGBXVR2 { ($val:expr) => { MCR14!($val, 0, c1, c2, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR3 { ($val:expr) => { MCR14!(val, 0, c1, c3, 1) }; }
+macro_rules! WCP14_DBGBXVR3 { ($val:expr) => { MCR14!($val, 0, c1, c3, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR4 { ($val:expr) => { MCR14!(val, 0, c1, c4, 1) }; }
+macro_rules! WCP14_DBGBXVR4 { ($val:expr) => { MCR14!($val, 0, c1, c4, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR5 { ($val:expr) => { MCR14!(val, 0, c1, c5, 1) }; }
+macro_rules! WCP14_DBGBXVR5 { ($val:expr) => { MCR14!($val, 0, c1, c5, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR6 { ($val:expr) => { MCR14!(val, 0, c1, c6, 1) }; }
+macro_rules! WCP14_DBGBXVR6 { ($val:expr) => { MCR14!($val, 0, c1, c6, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR7 { ($val:expr) => { MCR14!(val, 0, c1, c7, 1) }; }
+macro_rules! WCP14_DBGBXVR7 { ($val:expr) => { MCR14!($val, 0, c1, c7, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR8 { ($val:expr) => { MCR14!(val, 0, c1, c8, 1) }; }
+macro_rules! WCP14_DBGBXVR8 { ($val:expr) => { MCR14!($val, 0, c1, c8, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR9 { ($val:expr) => { MCR14!(val, 0, c1, c9, 1) }; }
+macro_rules! WCP14_DBGBXVR9 { ($val:expr) => { MCR14!($val, 0, c1, c9, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR10 { ($val:expr) => { MCR14!(val, 0, c1, c10, 1) }; }
+macro_rules! WCP14_DBGBXVR10 { ($val:expr) => { MCR14!($val, 0, c1, c10, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR11 { ($val:expr) => { MCR14!(val, 0, c1, c11, 1) }; }
+macro_rules! WCP14_DBGBXVR11 { ($val:expr) => { MCR14!($val, 0, c1, c11, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR12 { ($val:expr) => { MCR14!(val, 0, c1, c12, 1) }; }
+macro_rules! WCP14_DBGBXVR12 { ($val:expr) => { MCR14!($val, 0, c1, c12, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR13 { ($val:expr) => { MCR14!(val, 0, c1, c13, 1) }; }
+macro_rules! WCP14_DBGBXVR13 { ($val:expr) => { MCR14!($val, 0, c1, c13, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR14 { ($val:expr) => { MCR14!(val, 0, c1, c14, 1) }; }
+macro_rules! WCP14_DBGBXVR14 { ($val:expr) => { MCR14!($val, 0, c1, c14, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGBXVR15 { ($val:expr) => { MCR14!(val, 0, c1, c15, 1) }; }
+macro_rules! WCP14_DBGBXVR15 { ($val:expr) => { MCR14!($val, 0, c1, c15, 1) }; }
 #[macro_export]
-macro_rules! WCP14_DBGOSLAR { ($val:expr) => { MCR14!(val, 0, c1, c0, 4) }; }
+macro_rules! WCP14_DBGOSLAR { ($val:expr) => { MCR14!($val, 0, c1, c0, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGOSSRR { ($val:expr) => { MCR14!(val, 0, c1, c2, 4) }; }
+macro_rules! WCP14_DBGOSSRR { ($val:expr) => { MCR14!($val, 0, c1, c2, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGOSDLR { ($val:expr) => { MCR14!(val, 0, c1, c3, 4) }; }
+macro_rules! WCP14_DBGOSDLR { ($val:expr) => { MCR14!($val, 0, c1, c3, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGPRCR { ($val:expr) => { MCR14!(val, 0, c1, c4, 4) }; }
+macro_rules! WCP14_DBGPRCR { ($val:expr) => { MCR14!($val, 0, c1, c4, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGITCTRL { ($val:expr) => { MCR14!(val, 0, c7, c0, 4) }; }
+macro_rules! WCP14_DBGITCTRL { ($val:expr) => { MCR14!($val, 0, c7, c0, 4) }; }
 #[macro_export]
-macro_rules! WCP14_DBGCLAIMSET { ($val:expr) => { MCR14!(val, 0, c7, c8, 6) }; }
+macro_rules! WCP14_DBGCLAIMSET { ($val:expr) => { MCR14!($val, 0, c7, c8, 6) }; }
 #[macro_export]
-macro_rules! WCP14_DBGCLAIMCLR { ($val:expr) => { MCR14!(val, 0, c7, c9, 6) }; }
+macro_rules! WCP14_DBGCLAIMCLR { ($val:expr) => { MCR14!($val, 0, c7, c9, 6) }; }
 /*
  * ETM Registers
  *
@@ -766,244 +766,244 @@ macro_rules! RCP14_ETMCIDR2 { () => { MRC14!(1, c7, c14, 7) }; }
 #[macro_export]
 macro_rules! RCP14_ETMCIDR3 { () => { MRC14!(1, c7, c15, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCR { ($val:expr) => { MCR14!(val, 1, c0, c0, 0) }; }
+macro_rules! WCP14_ETMCR { ($val:expr) => { MCR14!($val, 1, c0, c0, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTRIGGER { ($val:expr) => { MCR14!(val, 1, c0, c2, 0) }; }
+macro_rules! WCP14_ETMTRIGGER { ($val:expr) => { MCR14!($val, 1, c0, c2, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMASICCR { ($val:expr) => { MCR14!(val, 1, c0, c3, 0) }; }
+macro_rules! WCP14_ETMASICCR { ($val:expr) => { MCR14!($val, 1, c0, c3, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSR { ($val:expr) => { MCR14!(val, 1, c0, c4, 0) }; }
+macro_rules! WCP14_ETMSR { ($val:expr) => { MCR14!($val, 1, c0, c4, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTSSCR { ($val:expr) => { MCR14!(val, 1, c0, c6, 0) }; }
+macro_rules! WCP14_ETMTSSCR { ($val:expr) => { MCR14!($val, 1, c0, c6, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTECR2 { ($val:expr) => { MCR14!(val, 1, c0, c7, 0) }; }
+macro_rules! WCP14_ETMTECR2 { ($val:expr) => { MCR14!($val, 1, c0, c7, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTEEVR { ($val:expr) => { MCR14!(val, 1, c0, c8, 0) }; }
+macro_rules! WCP14_ETMTEEVR { ($val:expr) => { MCR14!($val, 1, c0, c8, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTECR1 { ($val:expr) => { MCR14!(val, 1, c0, c9, 0) }; }
+macro_rules! WCP14_ETMTECR1 { ($val:expr) => { MCR14!($val, 1, c0, c9, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMFFRR { ($val:expr) => { MCR14!(val, 1, c0, c10, 0) }; }
+macro_rules! WCP14_ETMFFRR { ($val:expr) => { MCR14!($val, 1, c0, c10, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMFFLR { ($val:expr) => { MCR14!(val, 1, c0, c11, 0) }; }
+macro_rules! WCP14_ETMFFLR { ($val:expr) => { MCR14!($val, 1, c0, c11, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMVDEVR { ($val:expr) => { MCR14!(val, 1, c0, c12, 0) }; }
+macro_rules! WCP14_ETMVDEVR { ($val:expr) => { MCR14!($val, 1, c0, c12, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMVDCR1 { ($val:expr) => { MCR14!(val, 1, c0, c13, 0) }; }
+macro_rules! WCP14_ETMVDCR1 { ($val:expr) => { MCR14!($val, 1, c0, c13, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMVDCR2 { ($val:expr) => { MCR14!(val, 1, c0, c14, 0) }; }
+macro_rules! WCP14_ETMVDCR2 { ($val:expr) => { MCR14!($val, 1, c0, c14, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMVDCR3 { ($val:expr) => { MCR14!(val, 1, c0, c15, 0) }; }
+macro_rules! WCP14_ETMVDCR3 { ($val:expr) => { MCR14!($val, 1, c0, c15, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR0 { ($val:expr) => { MCR14!(val, 1, c0, c0, 1) }; }
+macro_rules! WCP14_ETMACVR0 { ($val:expr) => { MCR14!($val, 1, c0, c0, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR1 { ($val:expr) => { MCR14!(val, 1, c0, c1, 1) }; }
+macro_rules! WCP14_ETMACVR1 { ($val:expr) => { MCR14!($val, 1, c0, c1, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR2 { ($val:expr) => { MCR14!(val, 1, c0, c2, 1) }; }
+macro_rules! WCP14_ETMACVR2 { ($val:expr) => { MCR14!($val, 1, c0, c2, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR3 { ($val:expr) => { MCR14!(val, 1, c0, c3, 1) }; }
+macro_rules! WCP14_ETMACVR3 { ($val:expr) => { MCR14!($val, 1, c0, c3, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR4 { ($val:expr) => { MCR14!(val, 1, c0, c4, 1) }; }
+macro_rules! WCP14_ETMACVR4 { ($val:expr) => { MCR14!($val, 1, c0, c4, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR5 { ($val:expr) => { MCR14!(val, 1, c0, c5, 1) }; }
+macro_rules! WCP14_ETMACVR5 { ($val:expr) => { MCR14!($val, 1, c0, c5, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR6 { ($val:expr) => { MCR14!(val, 1, c0, c6, 1) }; }
+macro_rules! WCP14_ETMACVR6 { ($val:expr) => { MCR14!($val, 1, c0, c6, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR7 { ($val:expr) => { MCR14!(val, 1, c0, c7, 1) }; }
+macro_rules! WCP14_ETMACVR7 { ($val:expr) => { MCR14!($val, 1, c0, c7, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR8 { ($val:expr) => { MCR14!(val, 1, c0, c8, 1) }; }
+macro_rules! WCP14_ETMACVR8 { ($val:expr) => { MCR14!($val, 1, c0, c8, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR9 { ($val:expr) => { MCR14!(val, 1, c0, c9, 1) }; }
+macro_rules! WCP14_ETMACVR9 { ($val:expr) => { MCR14!($val, 1, c0, c9, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR10 { ($val:expr) => { MCR14!(val, 1, c0, c10, 1) }; }
+macro_rules! WCP14_ETMACVR10 { ($val:expr) => { MCR14!($val, 1, c0, c10, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR11 { ($val:expr) => { MCR14!(val, 1, c0, c11, 1) }; }
+macro_rules! WCP14_ETMACVR11 { ($val:expr) => { MCR14!($val, 1, c0, c11, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR12 { ($val:expr) => { MCR14!(val, 1, c0, c12, 1) }; }
+macro_rules! WCP14_ETMACVR12 { ($val:expr) => { MCR14!($val, 1, c0, c12, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR13 { ($val:expr) => { MCR14!(val, 1, c0, c13, 1) }; }
+macro_rules! WCP14_ETMACVR13 { ($val:expr) => { MCR14!($val, 1, c0, c13, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR14 { ($val:expr) => { MCR14!(val, 1, c0, c14, 1) }; }
+macro_rules! WCP14_ETMACVR14 { ($val:expr) => { MCR14!($val, 1, c0, c14, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACVR15 { ($val:expr) => { MCR14!(val, 1, c0, c15, 1) }; }
+macro_rules! WCP14_ETMACVR15 { ($val:expr) => { MCR14!($val, 1, c0, c15, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR0 { ($val:expr) => { MCR14!(val, 1, c0, c0, 2) }; }
+macro_rules! WCP14_ETMACTR0 { ($val:expr) => { MCR14!($val, 1, c0, c0, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR1 { ($val:expr) => { MCR14!(val, 1, c0, c1, 2) }; }
+macro_rules! WCP14_ETMACTR1 { ($val:expr) => { MCR14!($val, 1, c0, c1, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR2 { ($val:expr) => { MCR14!(val, 1, c0, c2, 2) }; }
+macro_rules! WCP14_ETMACTR2 { ($val:expr) => { MCR14!($val, 1, c0, c2, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR3 { ($val:expr) => { MCR14!(val, 1, c0, c3, 2) }; }
+macro_rules! WCP14_ETMACTR3 { ($val:expr) => { MCR14!($val, 1, c0, c3, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR4 { ($val:expr) => { MCR14!(val, 1, c0, c4, 2) }; }
+macro_rules! WCP14_ETMACTR4 { ($val:expr) => { MCR14!($val, 1, c0, c4, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR5 { ($val:expr) => { MCR14!(val, 1, c0, c5, 2) }; }
+macro_rules! WCP14_ETMACTR5 { ($val:expr) => { MCR14!($val, 1, c0, c5, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR6 { ($val:expr) => { MCR14!(val, 1, c0, c6, 2) }; }
+macro_rules! WCP14_ETMACTR6 { ($val:expr) => { MCR14!($val, 1, c0, c6, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR7 { ($val:expr) => { MCR14!(val, 1, c0, c7, 2) }; }
+macro_rules! WCP14_ETMACTR7 { ($val:expr) => { MCR14!($val, 1, c0, c7, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR8 { ($val:expr) => { MCR14!(val, 1, c0, c8, 2) }; }
+macro_rules! WCP14_ETMACTR8 { ($val:expr) => { MCR14!($val, 1, c0, c8, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR9 { ($val:expr) => { MCR14!(val, 1, c0, c9, 2) }; }
+macro_rules! WCP14_ETMACTR9 { ($val:expr) => { MCR14!($val, 1, c0, c9, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR10 { ($val:expr) => { MCR14!(val, 1, c0, c10, 2) }; }
+macro_rules! WCP14_ETMACTR10 { ($val:expr) => { MCR14!($val, 1, c0, c10, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR11 { ($val:expr) => { MCR14!(val, 1, c0, c11, 2) }; }
+macro_rules! WCP14_ETMACTR11 { ($val:expr) => { MCR14!($val, 1, c0, c11, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR12 { ($val:expr) => { MCR14!(val, 1, c0, c12, 2) }; }
+macro_rules! WCP14_ETMACTR12 { ($val:expr) => { MCR14!($val, 1, c0, c12, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR13 { ($val:expr) => { MCR14!(val, 1, c0, c13, 2) }; }
+macro_rules! WCP14_ETMACTR13 { ($val:expr) => { MCR14!($val, 1, c0, c13, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR14 { ($val:expr) => { MCR14!(val, 1, c0, c14, 2) }; }
+macro_rules! WCP14_ETMACTR14 { ($val:expr) => { MCR14!($val, 1, c0, c14, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMACTR15 { ($val:expr) => { MCR14!(val, 1, c0, c15, 2) }; }
+macro_rules! WCP14_ETMACTR15 { ($val:expr) => { MCR14!($val, 1, c0, c15, 2) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR0 { ($val:expr) => { MCR14!(val, 1, c0, c0, 3) }; }
+macro_rules! WCP14_ETMDCVR0 { ($val:expr) => { MCR14!($val, 1, c0, c0, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR2 { ($val:expr) => { MCR14!(val, 1, c0, c2, 3) }; }
+macro_rules! WCP14_ETMDCVR2 { ($val:expr) => { MCR14!($val, 1, c0, c2, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR4 { ($val:expr) => { MCR14!(val, 1, c0, c4, 3) }; }
+macro_rules! WCP14_ETMDCVR4 { ($val:expr) => { MCR14!($val, 1, c0, c4, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR6 { ($val:expr) => { MCR14!(val, 1, c0, c6, 3) }; }
+macro_rules! WCP14_ETMDCVR6 { ($val:expr) => { MCR14!($val, 1, c0, c6, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR8 { ($val:expr) => { MCR14!(val, 1, c0, c8, 3) }; }
+macro_rules! WCP14_ETMDCVR8 { ($val:expr) => { MCR14!($val, 1, c0, c8, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR10 { ($val:expr) => { MCR14!(val, 1, c0, c10, 3) }; }
+macro_rules! WCP14_ETMDCVR10 { ($val:expr) => { MCR14!($val, 1, c0, c10, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR12 { ($val:expr) => { MCR14!(val, 1, c0, c12, 3) }; }
+macro_rules! WCP14_ETMDCVR12 { ($val:expr) => { MCR14!($val, 1, c0, c12, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCVR14 { ($val:expr) => { MCR14!(val, 1, c0, c14, 3) }; }
+macro_rules! WCP14_ETMDCVR14 { ($val:expr) => { MCR14!($val, 1, c0, c14, 3) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR0 { ($val:expr) => { MCR14!(val, 1, c0, c0, 4) }; }
+macro_rules! WCP14_ETMDCMR0 { ($val:expr) => { MCR14!($val, 1, c0, c0, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR2 { ($val:expr) => { MCR14!(val, 1, c0, c2, 4) }; }
+macro_rules! WCP14_ETMDCMR2 { ($val:expr) => { MCR14!($val, 1, c0, c2, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR4 { ($val:expr) => { MCR14!(val, 1, c0, c4, 4) }; }
+macro_rules! WCP14_ETMDCMR4 { ($val:expr) => { MCR14!($val, 1, c0, c4, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR6 { ($val:expr) => { MCR14!(val, 1, c0, c6, 4) }; }
+macro_rules! WCP14_ETMDCMR6 { ($val:expr) => { MCR14!($val, 1, c0, c6, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR8 { ($val:expr) => { MCR14!(val, 1, c0, c8, 4) }; }
+macro_rules! WCP14_ETMDCMR8 { ($val:expr) => { MCR14!($val, 1, c0, c8, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR10 { ($val:expr) => { MCR14!(val, 1, c0, c10, 4) }; }
+macro_rules! WCP14_ETMDCMR10 { ($val:expr) => { MCR14!($val, 1, c0, c10, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR12 { ($val:expr) => { MCR14!(val, 1, c0, c12, 4) }; }
+macro_rules! WCP14_ETMDCMR12 { ($val:expr) => { MCR14!($val, 1, c0, c12, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMDCMR14 { ($val:expr) => { MCR14!(val, 1, c0, c14, 4) }; }
+macro_rules! WCP14_ETMDCMR14 { ($val:expr) => { MCR14!($val, 1, c0, c14, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDVR0 { ($val:expr) => { MCR14!(val, 1, c0, c0, 5) }; }
+macro_rules! WCP14_ETMCNTRLDVR0 { ($val:expr) => { MCR14!($val, 1, c0, c0, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDVR1 { ($val:expr) => { MCR14!(val, 1, c0, c1, 5) }; }
+macro_rules! WCP14_ETMCNTRLDVR1 { ($val:expr) => { MCR14!($val, 1, c0, c1, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDVR2 { ($val:expr) => { MCR14!(val, 1, c0, c2, 5) }; }
+macro_rules! WCP14_ETMCNTRLDVR2 { ($val:expr) => { MCR14!($val, 1, c0, c2, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDVR3 { ($val:expr) => { MCR14!(val, 1, c0, c3, 5) }; }
+macro_rules! WCP14_ETMCNTRLDVR3 { ($val:expr) => { MCR14!($val, 1, c0, c3, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTENR0 { ($val:expr) => { MCR14!(val, 1, c0, c4, 5) }; }
+macro_rules! WCP14_ETMCNTENR0 { ($val:expr) => { MCR14!($val, 1, c0, c4, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTENR1 { ($val:expr) => { MCR14!(val, 1, c0, c5, 5) }; }
+macro_rules! WCP14_ETMCNTENR1 { ($val:expr) => { MCR14!($val, 1, c0, c5, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTENR2 { ($val:expr) => { MCR14!(val, 1, c0, c6, 5) }; }
+macro_rules! WCP14_ETMCNTENR2 { ($val:expr) => { MCR14!($val, 1, c0, c6, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTENR3 { ($val:expr) => { MCR14!(val, 1, c0, c7, 5) }; }
+macro_rules! WCP14_ETMCNTENR3 { ($val:expr) => { MCR14!($val, 1, c0, c7, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDEVR0 { ($val:expr) => { MCR14!(val, 1, c0, c8, 5) }; }
+macro_rules! WCP14_ETMCNTRLDEVR0 { ($val:expr) => { MCR14!($val, 1, c0, c8, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDEVR1 { ($val:expr) => { MCR14!(val, 1, c0, c9, 5) }; }
+macro_rules! WCP14_ETMCNTRLDEVR1 { ($val:expr) => { MCR14!($val, 1, c0, c9, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDEVR2 { ($val:expr) => { MCR14!(val, 1, c0, c10, 5) }; }
+macro_rules! WCP14_ETMCNTRLDEVR2 { ($val:expr) => { MCR14!($val, 1, c0, c10, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTRLDEVR3 { ($val:expr) => { MCR14!(val, 1, c0, c11, 5) }; }
+macro_rules! WCP14_ETMCNTRLDEVR3 { ($val:expr) => { MCR14!($val, 1, c0, c11, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTVR0 { ($val:expr) => { MCR14!(val, 1, c0, c12, 5) }; }
+macro_rules! WCP14_ETMCNTVR0 { ($val:expr) => { MCR14!($val, 1, c0, c12, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTVR1 { ($val:expr) => { MCR14!(val, 1, c0, c13, 5) }; }
+macro_rules! WCP14_ETMCNTVR1 { ($val:expr) => { MCR14!($val, 1, c0, c13, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTVR2 { ($val:expr) => { MCR14!(val, 1, c0, c14, 5) }; }
+macro_rules! WCP14_ETMCNTVR2 { ($val:expr) => { MCR14!($val, 1, c0, c14, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCNTVR3 { ($val:expr) => { MCR14!(val, 1, c0, c15, 5) }; }
+macro_rules! WCP14_ETMCNTVR3 { ($val:expr) => { MCR14!($val, 1, c0, c15, 5) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQ12EVR { ($val:expr) => { MCR14!(val, 1, c0, c0, 6) }; }
+macro_rules! WCP14_ETMSQ12EVR { ($val:expr) => { MCR14!($val, 1, c0, c0, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQ21EVR { ($val:expr) => { MCR14!(val, 1, c0, c1, 6) }; }
+macro_rules! WCP14_ETMSQ21EVR { ($val:expr) => { MCR14!($val, 1, c0, c1, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQ23EVR { ($val:expr) => { MCR14!(val, 1, c0, c2, 6) }; }
+macro_rules! WCP14_ETMSQ23EVR { ($val:expr) => { MCR14!($val, 1, c0, c2, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQ31EVR { ($val:expr) => { MCR14!(val, 1, c0, c3, 6) }; }
+macro_rules! WCP14_ETMSQ31EVR { ($val:expr) => { MCR14!($val, 1, c0, c3, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQ32EVR { ($val:expr) => { MCR14!(val, 1, c0, c4, 6) }; }
+macro_rules! WCP14_ETMSQ32EVR { ($val:expr) => { MCR14!($val, 1, c0, c4, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQ13EVR { ($val:expr) => { MCR14!(val, 1, c0, c5, 6) }; }
+macro_rules! WCP14_ETMSQ13EVR { ($val:expr) => { MCR14!($val, 1, c0, c5, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMSQR { ($val:expr) => { MCR14!(val, 1, c0, c7, 6) }; }
+macro_rules! WCP14_ETMSQR { ($val:expr) => { MCR14!($val, 1, c0, c7, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMEXTOUTEVR0 { ($val:expr) => { MCR14!(val, 1, c0, c8, 6) }; }
+macro_rules! WCP14_ETMEXTOUTEVR0 { ($val:expr) => { MCR14!($val, 1, c0, c8, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMEXTOUTEVR1 { ($val:expr) => { MCR14!(val, 1, c0, c9, 6) }; }
+macro_rules! WCP14_ETMEXTOUTEVR1 { ($val:expr) => { MCR14!($val, 1, c0, c9, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMEXTOUTEVR2 { ($val:expr) => { MCR14!(val, 1, c0, c10, 6) }; }
+macro_rules! WCP14_ETMEXTOUTEVR2 { ($val:expr) => { MCR14!($val, 1, c0, c10, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMEXTOUTEVR3 { ($val:expr) => { MCR14!(val, 1, c0, c11, 6) }; }
+macro_rules! WCP14_ETMEXTOUTEVR3 { ($val:expr) => { MCR14!($val, 1, c0, c11, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCIDCVR0 { ($val:expr) => { MCR14!(val, 1, c0, c12, 6) }; }
+macro_rules! WCP14_ETMCIDCVR0 { ($val:expr) => { MCR14!($val, 1, c0, c12, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCIDCVR1 { ($val:expr) => { MCR14!(val, 1, c0, c13, 6) }; }
+macro_rules! WCP14_ETMCIDCVR1 { ($val:expr) => { MCR14!($val, 1, c0, c13, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCIDCVR2 { ($val:expr) => { MCR14!(val, 1, c0, c14, 6) }; }
+macro_rules! WCP14_ETMCIDCVR2 { ($val:expr) => { MCR14!($val, 1, c0, c14, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCIDCMR { ($val:expr) => { MCR14!(val, 1, c0, c15, 6) }; }
+macro_rules! WCP14_ETMCIDCMR { ($val:expr) => { MCR14!($val, 1, c0, c15, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC0 { ($val:expr) => { MCR14!(val, 1, c0, c0, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC0 { ($val:expr) => { MCR14!($val, 1, c0, c0, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC1 { ($val:expr) => { MCR14!(val, 1, c0, c1, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC1 { ($val:expr) => { MCR14!($val, 1, c0, c1, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC2 { ($val:expr) => { MCR14!(val, 1, c0, c2, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC2 { ($val:expr) => { MCR14!($val, 1, c0, c2, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC3 { ($val:expr) => { MCR14!(val, 1, c0, c3, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC3 { ($val:expr) => { MCR14!($val, 1, c0, c3, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC4 { ($val:expr) => { MCR14!(val, 1, c0, c4, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC4 { ($val:expr) => { MCR14!($val, 1, c0, c4, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC5 { ($val:expr) => { MCR14!(val, 1, c0, c5, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC5 { ($val:expr) => { MCR14!($val, 1, c0, c5, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC6 { ($val:expr) => { MCR14!(val, 1, c0, c6, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC6 { ($val:expr) => { MCR14!($val, 1, c0, c6, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIMPSPEC7 { ($val:expr) => { MCR14!(val, 1, c0, c7, 7) }; }
+macro_rules! WCP14_ETMIMPSPEC7 { ($val:expr) => { MCR14!($val, 1, c0, c7, 7) }; }
 /* Can be read only in ETMv3.4, ETMv3.5 */
 #[macro_export]
-macro_rules! WCP14_ETMSYNCFR { ($val:expr) => { MCR14!(val, 1, c0, c8, 7) }; }
+macro_rules! WCP14_ETMSYNCFR { ($val:expr) => { MCR14!($val, 1, c0, c8, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMEXTINSELR { ($val:expr) => { MCR14!(val, 1, c0, c11, 7) }; }
+macro_rules! WCP14_ETMEXTINSELR { ($val:expr) => { MCR14!($val, 1, c0, c11, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTESSEICR { ($val:expr) => { MCR14!(val, 1, c0, c12, 7) }; }
+macro_rules! WCP14_ETMTESSEICR { ($val:expr) => { MCR14!($val, 1, c0, c12, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMEIBCR { ($val:expr) => { MCR14!(val, 1, c0, c13, 7) }; }
+macro_rules! WCP14_ETMEIBCR { ($val:expr) => { MCR14!($val, 1, c0, c13, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTSEVR { ($val:expr) => { MCR14!(val, 1, c0, c14, 7) }; }
+macro_rules! WCP14_ETMTSEVR { ($val:expr) => { MCR14!($val, 1, c0, c14, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMAUXCR { ($val:expr) => { MCR14!(val, 1, c0, c15, 7) }; }
+macro_rules! WCP14_ETMAUXCR { ($val:expr) => { MCR14!($val, 1, c0, c15, 7) }; }
 #[macro_export]
-macro_rules! WCP14_ETMTRACEIDR { ($val:expr) => { MCR14!(val, 1, c1, c0, 0) }; }
+macro_rules! WCP14_ETMTRACEIDR { ($val:expr) => { MCR14!($val, 1, c1, c0, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMIDR2 { ($val:expr) => { MCR14!(val, 1, c1, c2, 0) }; }
+macro_rules! WCP14_ETMIDR2 { ($val:expr) => { MCR14!($val, 1, c1, c2, 0) }; }
 #[macro_export]
-macro_rules! WCP14_ETMVMIDCVR { ($val:expr) => { MCR14!(val, 1, c1, c0, 1) }; }
+macro_rules! WCP14_ETMVMIDCVR { ($val:expr) => { MCR14!($val, 1, c1, c0, 1) }; }
 #[macro_export]
-macro_rules! WCP14_ETMOSLAR { ($val:expr) => { MCR14!(val, 1, c1, c0, 4) }; }
+macro_rules! WCP14_ETMOSLAR { ($val:expr) => { MCR14!($val, 1, c1, c0, 4) }; }
 /* Not available in PFTv1.1 */
 #[macro_export]
-macro_rules! WCP14_ETMOSSRR { ($val:expr) => { MCR14!(val, 1, c1, c2, 4) }; }
+macro_rules! WCP14_ETMOSSRR { ($val:expr) => { MCR14!($val, 1, c1, c2, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMPDCR { ($val:expr) => { MCR14!(val, 1, c1, c4, 4) }; }
+macro_rules! WCP14_ETMPDCR { ($val:expr) => { MCR14!($val, 1, c1, c4, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMPDSR { ($val:expr) => { MCR14!(val, 1, c1, c5, 4) }; }
+macro_rules! WCP14_ETMPDSR { ($val:expr) => { MCR14!($val, 1, c1, c5, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMITCTRL { ($val:expr) => { MCR14!(val, 1, c7, c0, 4) }; }
+macro_rules! WCP14_ETMITCTRL { ($val:expr) => { MCR14!($val, 1, c7, c0, 4) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCLAIMSET { ($val:expr) => { MCR14!(val, 1, c7, c8, 6) }; }
+macro_rules! WCP14_ETMCLAIMSET { ($val:expr) => { MCR14!($val, 1, c7, c8, 6) }; }
 #[macro_export]
-macro_rules! WCP14_ETMCLAIMCLR { ($val:expr) => { MCR14!(val, 1, c7, c9, 6) }; }
+macro_rules! WCP14_ETMCLAIMCLR { ($val:expr) => { MCR14!($val, 1, c7, c9, 6) }; }
 /* Writes to this from CP14 interface are ignored */
 #[macro_export]
-macro_rules! WCP14_ETMLAR { ($val:expr) => { MCR14!(val, 1, c7, c12, 6) }; }
+macro_rules! WCP14_ETMLAR { ($val:expr) => { MCR14!($val, 1, c7, c12, 6) }; }
 
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

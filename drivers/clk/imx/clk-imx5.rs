@@ -128,7 +128,7 @@ static const char *ieee1588_sels[] = { "pll3_sw", "pll4_sw", "dummy" /* usbphy2_
 static mut clk: [*mut Clk; IMX5_CLK_END];
 static mut clk_data: ClkOnecellData;
 
-unsafe fn mx5_clocks_common_init(*mut core::ffi::c_voidccm_base)
+unsafe fn mx5_clocks_common_init(ccm_base: *mut core::ffi::c_void)
 {
 	clk[IMX5_CLK_DUMMY]		= imx_clk_fixed("dummy", 0);
 	clk[IMX5_CLK_CKIL]		= imx_obtain_fixed_clock("ckil", 0);
@@ -281,7 +281,7 @@ unsafe fn mx50_clocks_init(DeviceNode *np)
 {
 	*mut core::ffi::c_voidccm_base;
 	*mut core::ffi::c_voidpll_base;
-	unsigned long r;
+	core::ffi::c_ulong r;
 
 	pll_base = ioremap(MX53_DPLL1_BASE, SZ_16K);
 	warn_on!(!pll_base);
@@ -472,7 +472,7 @@ unsafe fn mx53_clocks_init(DeviceNode *np)
 {
 	*mut core::ffi::c_voidccm_base;
 	*mut core::ffi::c_voidpll_base;
-	unsigned long r;
+	core::ffi::c_ulong r;
 
 	pll_base = ioremap(MX53_DPLL1_BASE, SZ_16K);
 	warn_on!(!pll_base);

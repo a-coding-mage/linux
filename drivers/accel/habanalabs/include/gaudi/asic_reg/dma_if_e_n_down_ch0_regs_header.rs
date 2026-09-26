@@ -5,12 +5,11 @@
  *
  */
 
-/************************************
+/***********************************
  ** This is an auto-generated file **
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-pub const ASIC_REG_DMA_IF_E_N_DOWN_CH0_REGS_H_
 
 /*
  *****************************************
@@ -891,6 +890,5 @@ pub const mmDMA_IF_E_N_DOWN_CH0_NL_HBM_PC_SEL_1: u32 = 0x4E1CB4;
 pub const mmDMA_IF_E_N_DOWN_CH0_NL_HBM_PC_SEL_2: u32 = 0x4E1CB8;
 
 pub const mmDMA_IF_E_N_DOWN_CH0_NL_HBM_PC_SEL_3: u32 = 0x4E1CBC;
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

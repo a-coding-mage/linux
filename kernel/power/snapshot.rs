@@ -70,7 +70,7 @@ unsafe fn recycle_safe_page(p:*mut c_void){let l=p as *mut linked_page;(*l).next
 unsafe fn free_image_page(a:*mut c_void,c:c_int){if a.is_null(){return}let p=virt_to_page(a);swsusp_unset_page_forbidden(p);if c!=0{swsusp_unset_page_free(p)}__free_page(p)}
 unsafe fn free_list_of_pages(mut l:*mut linked_page,c:c_int){while !l.is_null(){let n=(*l).next;free_image_page(l as *mut c_void,c);l=n}}
 unsafe fn chain_init(c:*mut chain_allocator,g:gfp_t,s:c_int){(*c).chain=ptr::null_mut();(*c).used_space=LINKED_PAGE_DATA_SIZE as u32;(*c).gfp_mask=g;(*c).safe_needed=s}
-unsafe fn chain_alloc(c:*mut chain_allocator,n:ulong)->*mut c_void{if LINKED_PAGE_DATA_SIZE-(*c).used_space as ulong<n{let p=if (*c).safe_needed!=0{__get_safe_page((*c).gfp_mask)}else{get_image_page((*c).gfp_mask,PG_ANY)} as *mut linked_page;if p.is_null(){return ptr::null_mut()}(*p).next=(*c).chain;(*c).chain=p;(*c).used_space=0}let r=(*c).chain.cast::<u8>().add(mem::size_of::<*mut linked_page>()+(*c).used_space as usize) as *mut c_void;(*c).used_space+=n as u32;r}
+unsafe fn chain_alloc(c:*mut chain_allocator,n:ulong)->*mut c_void{if LINKED_PAGE_DATA_SIZE-((*c).used_space as ulong)<n{let p=if (*c).safe_needed!=0{__get_safe_page((*c).gfp_mask)}else{get_image_page((*c).gfp_mask,PG_ANY)} as *mut linked_page;if p.is_null(){return ptr::null_mut()}(*p).next=(*c).chain;(*c).chain=p;(*c).used_space=0}let r=(*c).chain.cast::<u8>().add(mem::size_of::<*mut linked_page>()+(*c).used_space as usize) as *mut c_void;(*c).used_space+=n as u32;r}
 
 unsafe fn memory_bm_position_reset(_: *mut memory_bitmap) {}
 unsafe fn memory_bm_create(b:*mut memory_bitmap,_:gfp_t,_:c_int)->c_int{list_init(&mut (*b).zones);(*b).p_list=ptr::null_mut();0}

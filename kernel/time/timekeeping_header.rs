@@ -25,9 +25,9 @@ extern "C" {
     pub fn timekeeping_suspend() -> i32;
     pub fn timekeeping_resume();
 
-    #[cfg(feature = "CONFIG_GENERIC_SCHED_CLOCK")]
+    #[cfg(CONFIG_GENERIC_SCHED_CLOCK)]
     pub fn sched_clock_suspend() -> i32;
-    #[cfg(feature = "CONFIG_GENERIC_SCHED_CLOCK")]
+    #[cfg(CONFIG_GENERIC_SCHED_CLOCK)]
     pub fn sched_clock_resume();
 
     pub fn update_process_times(user: i32);
@@ -35,13 +35,13 @@ extern "C" {
     pub fn update_wall_time();
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_SCHED_CLOCK"))]
+#[cfg(not(CONFIG_GENERIC_SCHED_CLOCK))]
 #[inline]
 pub fn sched_clock_suspend() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_SCHED_CLOCK"))]
+#[cfg(not(CONFIG_GENERIC_SCHED_CLOCK))]
 #[inline]
 pub fn sched_clock_resume() {}
 

@@ -43,8 +43,8 @@ macro_rules! __probe_user_internal {
             "proberi (%%sr{sr},{ptr}),{privilege},{error}",
             "cmpiclr,= 1,{error},{error}",
             "ldi {fault},{error}",
-            sr = const $sr, ptr = in(reg) $ptr, privilege = const PRIV_USER,
-            error = inout(reg) $error, fault = const -EFAULT,
+            $sr = const $sr, $ptr = in(reg) $ptr, privilege = const PRIV_USER,
+            $error = inout(reg) $error, fault = const -EFAULT,
         );
     }};
 }
@@ -65,7 +65,7 @@ macro_rules! __get_user_asm {
         core::arch::asm!(
             "1: {ldx} 0(%%sr{sr},{ptr})",
             "9:",
-            ldx = const $ldx, sr = const $sr, ptr = in(reg) $ptr,
+            $ldx = const $ldx, $sr = const $sr, $ptr = in(reg) $ptr,
             gu_val = lateout(reg) __gu_val,
             gu_err = inout(reg) __gu_err,
         );
@@ -115,8 +115,8 @@ macro_rules! __put_kernel_nofault {
 macro_rules! __put_user_asm {
     ($sr:expr, $stx:expr, $x:expr, $ptr:expr) => {{
         core::arch::asm!("1: {stx} {x},0(%%sr{sr},{ptr})", "9:",
-            stx = const $stx, x = in(reg) $x, sr = const $sr,
-            ptr = in(reg) $ptr, pu_err = inout(reg) __pu_err);
+            $stx = const $stx, $x = in(reg) $x, $sr = const $sr,
+            $ptr = in(reg) $ptr, pu_err = inout(reg) __pu_err);
     }};
 }
 

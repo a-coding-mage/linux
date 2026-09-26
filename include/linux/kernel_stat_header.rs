@@ -16,22 +16,22 @@ pub enum cpu_usage_stat {
     CPUTIME_STEAL,
     CPUTIME_GUEST,
     CPUTIME_GUEST_NICE,
-    #[cfg(feature = "CONFIG_SCHED_CORE")]
+    #[cfg(CONFIG_SCHED_CORE)]
     CPUTIME_FORCEIDLE,
     NR_STATS,
 }
 
 #[repr(C)]
 pub struct kernel_cpustat {
-    #[cfg(feature = "CONFIG_NO_HZ_COMMON")]
+    #[cfg(CONFIG_NO_HZ_COMMON)]
     pub idle_dyntick: bool,
-    #[cfg(feature = "CONFIG_NO_HZ_COMMON")]
+    #[cfg(CONFIG_NO_HZ_COMMON)]
     pub idle_elapse: bool,
-    #[cfg(feature = "CONFIG_NO_HZ_COMMON")]
+    #[cfg(CONFIG_NO_HZ_COMMON)]
     pub idle_sleeptime_seq: seqcount_t,
-    #[cfg(feature = "CONFIG_NO_HZ_COMMON")]
+    #[cfg(CONFIG_NO_HZ_COMMON)]
     pub idle_entrytime: u64,
-    #[cfg(feature = "CONFIG_NO_HZ_COMMON")]
+    #[cfg(CONFIG_NO_HZ_COMMON)]
     pub idle_stealtime: [u64; 2],
     pub cpustat: [u64; NR_STATS as usize],
 }
@@ -79,42 +79,42 @@ pub unsafe fn kstat_cpu_softirqs_sum(cpu: i32) -> u32 {
     sum
 }
 
-#[cfg(feature = "CONFIG_GENERIC_IRQ_STAT_SNAPSHOT")]
+#[cfg(CONFIG_GENERIC_IRQ_STAT_SNAPSHOT)]
 extern "C" {
     pub fn kstat_snapshot_irqs();
     pub fn kstat_get_irq_since_snapshot(irq: u32) -> u32;
 }
-#[cfg(not(feature = "CONFIG_GENERIC_IRQ_STAT_SNAPSHOT"))]
+#[cfg(not(CONFIG_GENERIC_IRQ_STAT_SNAPSHOT))]
 pub unsafe fn kstat_snapshot_irqs() {}
-#[cfg(not(feature = "CONFIG_GENERIC_IRQ_STAT_SNAPSHOT"))]
+#[cfg(not(CONFIG_GENERIC_IRQ_STAT_SNAPSHOT))]
 pub unsafe fn kstat_get_irq_since_snapshot(_irq: u32) -> u32 { 0 }
 
 pub unsafe fn kstat_cpu_irqs_sum(cpu: u32) -> ::core::ffi::c_ulong {
     kstat_cpu(cpu as i32).irqs_sum
 }
 
-#[cfg(all(feature = "CONFIG_NO_HZ_COMMON", feature = "CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE"))]
+#[cfg(all(CONFIG_NO_HZ_COMMON, CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE))]
 pub unsafe fn kcpustat_dyntick_start(_now: u64) {}
-#[cfg(all(feature = "CONFIG_NO_HZ_COMMON", feature = "CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE"))]
+#[cfg(all(CONFIG_NO_HZ_COMMON, CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE))]
 pub unsafe fn kcpustat_dyntick_stop(_now: u64) {}
-#[cfg(all(feature = "CONFIG_NO_HZ_COMMON", feature = "CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE"))]
+#[cfg(all(CONFIG_NO_HZ_COMMON, CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE))]
 pub unsafe fn kcpustat_irq_enter(_now: u64) {}
-#[cfg(all(feature = "CONFIG_NO_HZ_COMMON", feature = "CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE"))]
+#[cfg(all(CONFIG_NO_HZ_COMMON, CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE))]
 pub unsafe fn kcpustat_irq_exit(_now: u64) {}
-#[cfg(all(feature = "CONFIG_NO_HZ_COMMON", feature = "CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE"))]
+#[cfg(all(CONFIG_NO_HZ_COMMON, CONFIG_HAVE_VIRT_CPU_ACCOUNTING_IDLE))]
 pub unsafe fn kcpustat_idle_dyntick() -> bool { false }
 
-#[cfg(feature = "CONFIG_NO_HZ_COMMON")]
+#[cfg(CONFIG_NO_HZ_COMMON)]
 extern "C" {
     pub fn kcpustat_field_idle(cpu: i32) -> u64;
     pub fn kcpustat_field_iowait(cpu: i32) -> u64;
 }
 
-#[cfg(not(feature = "CONFIG_NO_HZ_COMMON"))]
+#[cfg(not(CONFIG_NO_HZ_COMMON))]
 pub unsafe fn kcpustat_field_idle(cpu: i32) -> u64 { kcpustat_cpu(cpu).cpustat[CPUTIME_IDLE as usize] }
-#[cfg(not(feature = "CONFIG_NO_HZ_COMMON"))]
+#[cfg(not(CONFIG_NO_HZ_COMMON))]
 pub unsafe fn kcpustat_field_iowait(cpu: i32) -> u64 { kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT as usize] }
-#[cfg(not(feature = "CONFIG_NO_HZ_COMMON"))]
+#[cfg(not(CONFIG_NO_HZ_COMMON))]
 pub unsafe fn kcpustat_idle_dyntick() -> bool { false }
 
 pub unsafe fn kcpustat_field_default(usage: cpu_usage_stat, cpu: i32) -> u64 {
@@ -129,24 +129,24 @@ pub unsafe fn kcpustat_cpu_fetch_default(dst: *mut kernel_cpustat, cpu: i32) {
     (*dst).cpustat[CPUTIME_IOWAIT as usize] = kcpustat_field_iowait(cpu);
 }
 
-#[cfg(feature = "CONFIG_VIRT_CPU_ACCOUNTING_GEN")]
+#[cfg(CONFIG_VIRT_CPU_ACCOUNTING_GEN)]
 extern "C" {
     pub fn kcpustat_field(usage: cpu_usage_stat, cpu: i32) -> u64;
     pub fn kcpustat_cpu_fetch(dst: *mut kernel_cpustat, cpu: i32);
 }
-#[cfg(not(feature = "CONFIG_VIRT_CPU_ACCOUNTING_GEN"))]
+#[cfg(not(CONFIG_VIRT_CPU_ACCOUNTING_GEN))]
 pub unsafe fn kcpustat_field(usage: cpu_usage_stat, cpu: i32) -> u64 { kcpustat_field_default(usage, cpu) }
-#[cfg(not(feature = "CONFIG_VIRT_CPU_ACCOUNTING_GEN"))]
+#[cfg(not(CONFIG_VIRT_CPU_ACCOUNTING_GEN))]
 pub unsafe fn kcpustat_cpu_fetch(dst: *mut kernel_cpustat, cpu: i32) { kcpustat_cpu_fetch_default(dst, cpu) }
 
-#[cfg(feature = "CONFIG_VIRT_CPU_ACCOUNTING_NATIVE")]
+#[cfg(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)]
 pub unsafe fn account_process_tick(tsk: *mut task_struct, _user: i32) {
     if !kcpustat_idle_dyntick() { vtime_flush(tsk); }
 }
-#[cfg(not(feature = "CONFIG_VIRT_CPU_ACCOUNTING_NATIVE"))]
+#[cfg(not(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE))]
 extern "C" { pub fn account_process_tick(tsk: *mut task_struct, user: i32); }
 
-#[cfg(feature = "CONFIG_SCHED_CORE")]
+#[cfg(CONFIG_SCHED_CORE)]
 extern "C" { pub fn __account_forceidle_time(tsk: *mut task_struct, delta: u64); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

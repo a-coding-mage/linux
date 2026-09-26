@@ -255,13 +255,13 @@ unsafe fn irq_gc_get_irq_data(gc: *mut IrqChipGeneric) -> *mut IrqData {
 }
 
 // CONFIG_PM: these callbacks are present when power management is enabled.
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn irq_gc_suspend(_data: *mut core::ffi::c_void) -> i32 { let mut gc = gc_list_first(); while !gc.is_null() { let ct = (*gc).chip_types; if let Some(f) = (*ct).chip.irq_suspend { let d = irq_gc_get_irq_data(gc); if !d.is_null() { f(d); } } if let Some(f) = (*gc).suspend { f(gc); } gc = gc_list_next(gc); } 0 }
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn irq_gc_resume(_data: *mut core::ffi::c_void) { let mut gc = gc_list_first(); while !gc.is_null() { let ct = (*gc).chip_types; if let Some(f) = (*gc).resume { f(gc); } if let Some(f) = (*ct).chip.irq_resume { let d = irq_gc_get_irq_data(gc); if !d.is_null() { f(d); } } gc = gc_list_next(gc); } }
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const IRQ_GC_SUSPEND: Option<unsafe extern "C" fn(*mut core::ffi::c_void) -> i32> = None;
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 const IRQ_GC_RESUME: Option<unsafe extern "C" fn(*mut core::ffi::c_void)> = None;
 
 unsafe fn irq_gc_shutdown(_data: *mut core::ffi::c_void) { let mut gc = gc_list_first(); while !gc.is_null() { let ct = (*gc).chip_types; if let Some(f) = (*ct).chip.irq_pm_shutdown { let d = irq_gc_get_irq_data(gc); if !d.is_null() { f(d); } } gc = gc_list_next(gc); } }

@@ -16,21 +16,21 @@ extern "C" {
     fn kunit_destroy_resource(_: *mut kunit, _: unsafe extern "C" fn(*mut kunit,*mut kunit_resource,*mut c_void)->bool, _: *mut c_void) -> bool;
     fn kunit_remove_resource(_: *mut kunit, _: *mut kunit_resource);
     fn kunit_cleanup(_: *mut kunit);
-    fn kunit_add_resource(_: *mut kunit,*mut c_void,*mut c_void,*mut kunit_resource,*mut c_void)->i32;
-    fn kunit_add_named_resource(_: *mut kunit,*mut c_void,*mut c_void,*mut kunit_resource,*const i8,*mut c_void)->i32;
-    fn kunit_find_named_resource(_: *mut kunit,*const i8)->*mut kunit_resource;
-    fn kunit_destroy_named_resource(_: *mut kunit,*const i8)->i32;
-    fn kunit_add_action(_: *mut kunit, unsafe extern "C" fn(*mut c_void), *mut c_void);
-    fn kunit_remove_action(_: *mut kunit, unsafe extern "C" fn(*mut c_void), *mut c_void);
-    fn kunit_release_action(_: *mut kunit, unsafe extern "C" fn(*mut c_void), *mut c_void);
-    fn kunit_set_failure(_: *mut kunit); fn kunit_mark_skipped(_: *mut kunit,*const i8,...);
-    fn kunit_get_current_test()->*mut kunit; fn kunit_fail_current_test(*const i8,...);
-    fn kunit_device_register(_: *mut kunit,*const i8)->*mut device;
-    fn kunit_device_unregister(_: *mut kunit,*mut device);
-    fn kunit_driver_create(_: *mut kunit,*const i8)->*mut device_driver;
-    fn kunit_device_register_with_driver(_: *mut kunit,*const i8,*mut device_driver)->*mut device;
-    fn devm_add_action(_: *mut device, unsafe extern "C" fn(*mut c_void), *mut c_void);
-    fn __kunit_activate_static_stub(_: *mut kunit,*mut c_void,*mut c_void);
+    fn kunit_add_resource(_: *mut kunit,_: *mut c_void,_: *mut c_void,_: *mut kunit_resource,_: *mut c_void)->i32;
+    fn kunit_add_named_resource(_: *mut kunit,_: *mut c_void,_: *mut c_void,_: *mut kunit_resource,_: *const i8,_: *mut c_void)->i32;
+    fn kunit_find_named_resource(_: *mut kunit,_: *const i8)->*mut kunit_resource;
+    fn kunit_destroy_named_resource(_: *mut kunit,_: *const i8)->i32;
+    fn kunit_add_action(_: *mut kunit, _: unsafe extern "C" fn(*mut c_void), _: *mut c_void);
+    fn kunit_remove_action(_: *mut kunit, _: unsafe extern "C" fn(*mut c_void), _: *mut c_void);
+    fn kunit_release_action(_: *mut kunit, _: unsafe extern "C" fn(*mut c_void), _: *mut c_void);
+    fn kunit_set_failure(_: *mut kunit); fn kunit_mark_skipped(_: *mut kunit,_: *const i8,...);
+    fn kunit_get_current_test()->*mut kunit; fn kunit_fail_current_test(_: *const i8,...);
+    fn kunit_device_register(_: *mut kunit,_: *const i8)->*mut device;
+    fn kunit_device_unregister(_: *mut kunit,_: *mut device);
+    fn kunit_driver_create(_: *mut kunit,_: *const i8)->*mut device_driver;
+    fn kunit_device_register_with_driver(_: *mut kunit,_: *const i8,_: *mut device_driver)->*mut device;
+    fn devm_add_action(_: *mut device, _: unsafe extern "C" fn(*mut c_void), _: *mut c_void);
+    fn __kunit_activate_static_stub(_: *mut kunit,_: *mut c_void,_: *mut c_void);
 }
 
 #[repr(C)] pub struct kunit_try_catch { _private: [u8; 0] }

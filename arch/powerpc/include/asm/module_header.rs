@@ -19,25 +19,25 @@ pub struct mod_arch_specific {
     #[cfg(target_arch = "powerpc64")]
     pub stub_count: core::ffi::c_uint, /* Number of stubs used */
 
-    #[cfg(all(target_arch = "powerpc64", feature = "CONFIG_PPC_KERNEL_PCREL"))]
+    #[cfg(all(target_arch = "powerpc64", CONFIG_PPC_KERNEL_PCREL))]
     pub got_section: core::ffi::c_uint, /* What section is the GOT? */
-    #[cfg(all(target_arch = "powerpc64", feature = "CONFIG_PPC_KERNEL_PCREL"))]
+    #[cfg(all(target_arch = "powerpc64", CONFIG_PPC_KERNEL_PCREL))]
     pub pcpu_section: core::ffi::c_uint, /* .data..percpu section */
     #[cfg(all(
         target_arch = "powerpc64",
-        not(feature = "CONFIG_PPC_KERNEL_PCREL")
+        not(CONFIG_PPC_KERNEL_PCREL)
     ))]
     pub toc_section: core::ffi::c_uint, /* What section is the TOC? */
     #[cfg(all(
         target_arch = "powerpc64",
-        not(feature = "CONFIG_PPC_KERNEL_PCREL")
+        not(CONFIG_PPC_KERNEL_PCREL)
     ))]
     pub toc_fixed: bool, /* Have we fixed up .TOC.? */
 
-    #[cfg(all(target_arch = "powerpc64", feature = "CONFIG_PPC64_ELF_ABI_V1"))]
+    #[cfg(all(target_arch = "powerpc64", CONFIG_PPC64_ELF_ABI_V1))]
     /* For module function descriptor dereference */
     pub start_opd: core::ffi::c_ulong,
-    #[cfg(all(target_arch = "powerpc64", feature = "CONFIG_PPC64_ELF_ABI_V1"))]
+    #[cfg(all(target_arch = "powerpc64", CONFIG_PPC64_ELF_ABI_V1))]
     pub end_opd: core::ffi::c_ulong,
 
     #[cfg(not(target_arch = "powerpc64"))]
@@ -46,23 +46,23 @@ pub struct mod_arch_specific {
     #[cfg(not(target_arch = "powerpc64"))]
     pub init_plt_section: core::ffi::c_uint,
 
-    #[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+    #[cfg(CONFIG_DYNAMIC_FTRACE)]
     pub tramp: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+    #[cfg(CONFIG_DYNAMIC_FTRACE)]
     pub tramp_regs: core::ffi::c_ulong,
     #[cfg(all(
-        feature = "CONFIG_DYNAMIC_FTRACE",
-        feature = "CONFIG_PPC_FTRACE_OUT_OF_LINE"
+        CONFIG_DYNAMIC_FTRACE,
+        CONFIG_PPC_FTRACE_OUT_OF_LINE
     ))]
     pub ool_stubs: *mut ftrace_ool_stub,
     #[cfg(all(
-        feature = "CONFIG_DYNAMIC_FTRACE",
-        feature = "CONFIG_PPC_FTRACE_OUT_OF_LINE"
+        CONFIG_DYNAMIC_FTRACE,
+        CONFIG_PPC_FTRACE_OUT_OF_LINE
     ))]
     pub ool_stub_count: core::ffi::c_uint,
     #[cfg(all(
-        feature = "CONFIG_DYNAMIC_FTRACE",
-        feature = "CONFIG_PPC_FTRACE_OUT_OF_LINE"
+        CONFIG_DYNAMIC_FTRACE,
+        CONFIG_PPC_FTRACE_OUT_OF_LINE
     ))]
     pub ool_stub_index: core::ffi::c_uint,
 }
@@ -70,7 +70,7 @@ pub struct mod_arch_specific {
 // The C asm directives create empty ELF sections for module_frob_arch_sections
 // to expand; they have no direct Rust equivalent.
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE")]
+#[cfg(CONFIG_DYNAMIC_FTRACE)]
 unsafe extern "C" {
     pub fn module_trampoline_target(
         modu: *mut module,
@@ -83,7 +83,7 @@ unsafe extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE))]
 #[inline]
 pub unsafe fn module_finalize_ftrace(
     _modu: *mut module,

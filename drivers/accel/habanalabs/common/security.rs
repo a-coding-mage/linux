@@ -136,10 +136,10 @@ unsafe fn hl_check_block_range_exclusion(hdev:*mut hl_device,cfg:*mut hl_skip_bl
 
 pub unsafe fn hl_iterate_special_blocks(hdev:*mut hl_device,ctx:*mut iterate_special_ctx)->i32 {
     let cfg=(*ctx).data as *mut hl_special_blocks_cfg; let skip=(*cfg).skip_blocks_cfg; let mut arr=(*hdev).asic_prop.special_blocks; if arr.is_null(){return -EINVAL;} let n=(*hdev).asic_prop.num_of_special_blocks;
-    for b in 0..n { let bi=arr.add(b as usize); if hl_check_block_type_exclusion(skip,(*bi).block_type){continue;} for major in 0..(*bi).major { let mut minor=0; while minor<(*bi).minor { let mut sub=0; while sub<(*bi).sub_minor { if !hl_check_block_range_exclusion(hdev,skip,bi,major,minor,sub) { let rc=((*ctx).fn)(hdev,b,major,minor,sub,(*ctx).data); if rc!=0{return rc;} } sub+=1; } minor+=1; } } } 0
+    for b in 0..n { let bi=arr.add(b as usize); if hl_check_block_type_exclusion(skip,(*bi).block_type){continue;} for major in 0..(*bi).major { let mut minor=0; while minor<(*bi).minor { let mut sub=0; while sub<(*bi).sub_minor { if !hl_check_block_range_exclusion(hdev,skip,bi,major,minor,sub) { let rc=((*ctx).r#fn)(hdev,b,major,minor,sub,(*ctx).data); if rc!=0{return rc;} } sub+=1; } minor+=1; } } } 0
 }
 
-pub unsafe fn hl_check_for_glbl_errors(hdev:*mut hl_device) { let mut cfg=hl_special_blocks_cfg{skip_blocks_cfg:&mut (*hdev).asic_prop.skip_special_blocks_cfg}; let mut ctx=iterate_special_ctx{fn:hl_read_glbl_errors,data:&mut cfg as *mut _ as *mut core::ffi::c_void}; let rc=hl_iterate_special_blocks(hdev,&mut ctx); if rc!=0 { dev_err_ratelimited((*hdev).dev,"Could not iterate special blocks, glbl error check failed\n"); } }
+pub unsafe fn hl_check_for_glbl_errors(hdev:*mut hl_device) { let mut cfg=hl_special_blocks_cfg{skip_blocks_cfg:&mut (*hdev).asic_prop.skip_special_blocks_cfg}; let mut ctx=iterate_special_ctx{r#fn:hl_read_glbl_errors,data:&mut cfg as *mut _ as *mut core::ffi::c_void}; let rc=hl_iterate_special_blocks(hdev,&mut ctx); if rc!=0 { dev_err_ratelimited((*hdev).dev,"Could not iterate special blocks, glbl error check failed\n"); } }
 unsafe fn hl_read_glbl_errors(_hdev:*mut hl_device,_b:u32,_a:u32,_m:u32,_s:u32,_d:*mut core::ffi::c_void)->i32 { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

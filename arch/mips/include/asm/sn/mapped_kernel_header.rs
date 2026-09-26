@@ -27,31 +27,31 @@ macro_rules! REP_BASE {
     () => { CAC_BASE };
 }
 
-#[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+#[cfg(CONFIG_MAPPED_KERNEL)]
 #[macro_export]
 macro_rules! MAPPED_ADDR_RO_TO_PHYS {
     ($x:expr) => { ($x - $crate::REP_BASE!()) };
 }
 
-#[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+#[cfg(CONFIG_MAPPED_KERNEL)]
 #[macro_export]
 macro_rules! MAPPED_ADDR_RW_TO_PHYS {
     ($x:expr) => { ($x - $crate::REP_BASE!() - 16_777_216) };
 }
 
-#[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+#[cfg(CONFIG_MAPPED_KERNEL)]
 #[macro_export]
 macro_rules! MAPPED_KERN_RO_PHYSBASE {
     ($n:expr) => { hub_data($n).kern_vars.kv_ro_baseaddr };
 }
 
-#[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+#[cfg(CONFIG_MAPPED_KERNEL)]
 #[macro_export]
 macro_rules! MAPPED_KERN_RW_PHYSBASE {
     ($n:expr) => { hub_data($n).kern_vars.kv_rw_baseaddr };
 }
 
-#[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+#[cfg(CONFIG_MAPPED_KERNEL)]
 #[macro_export]
 macro_rules! MAPPED_KERN_RO_TO_PHYS {
     ($x:expr) => {
@@ -60,7 +60,7 @@ macro_rules! MAPPED_KERN_RO_TO_PHYS {
     };
 }
 
-#[cfg(feature = "CONFIG_MAPPED_KERNEL")]
+#[cfg(CONFIG_MAPPED_KERNEL)]
 #[macro_export]
 macro_rules! MAPPED_KERN_RW_TO_PHYS {
     ($x:expr) => {
@@ -71,13 +71,13 @@ macro_rules! MAPPED_KERN_RW_TO_PHYS {
 
 // CONFIG_MAPPED_KERNEL is a build-time condition; these definitions apply
 // when that configuration is disabled.
-#[cfg(not(feature = "CONFIG_MAPPED_KERNEL"))]
+#[cfg(not(CONFIG_MAPPED_KERNEL))]
 #[macro_export]
 macro_rules! MAPPED_KERN_RO_TO_PHYS {
     ($x:expr) => { ($x - $crate::REP_BASE!()) };
 }
 
-#[cfg(not(feature = "CONFIG_MAPPED_KERNEL"))]
+#[cfg(not(CONFIG_MAPPED_KERNEL))]
 #[macro_export]
 macro_rules! MAPPED_KERN_RW_TO_PHYS {
     ($x:expr) => { ($x - $crate::REP_BASE!()) };

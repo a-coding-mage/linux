@@ -191,7 +191,7 @@ unsafe fn madt_entry_is_valid(entry: *mut acpi_subtable_header, end: usize) -> b
     let start = entry as usize;
     start < end && end - start >= core::mem::size_of::<acpi_subtable_header>() &&
         (*entry).length as usize >= core::mem::size_of::<acpi_subtable_header>() &&
-        (*entry).length as usize <= end - start
+        ((*entry).length as usize) <= end - start
 }
 
 #[cfg(CONFIG_ACPI_HOTPLUG_IOAPIC)]
@@ -209,7 +209,7 @@ unsafe fn get_ioapic_id(entry: *mut acpi_subtable_header, end: usize, gsi_base: 
 unsafe fn parse_madt_ioapic_entry(gsi_base: u32, phys_addr: *mut u64) -> i32 {
     let madt = get_madt_table();
     let mut apic_id = -1;
-    if madt.is_null() || (*madt).header.length as usize < core::mem::size_of::<acpi_table_madt>() { return apic_id; }
+    if madt.is_null() || ((*madt).header.length as usize) < core::mem::size_of::<acpi_table_madt>() { return apic_id; }
     let start = madt as usize;
     let end = start + (*madt).header.length as usize;
     let mut entry = start + core::mem::size_of::<acpi_table_madt>();

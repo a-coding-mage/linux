@@ -10,21 +10,21 @@ pub type compat_ipc_pid_t = u16;
 
 /* Declarations supplied by asm-generic/compat.h are external dependencies. */
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const COMPAT_UTS_MACHINE: &[u8] = if cfg!(feature = "__AARCH64EB__") {
     b"armv8b\0\0"
 } else {
     b"armv8l\0\0"
 };
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub type __compat_uid16_t = u16;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub type __compat_gid16_t = u16;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub type compat_nlink_t = i32;
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_stat {
     #[cfg(feature = "__AARCH64EB__")]
@@ -56,7 +56,7 @@ pub struct compat_stat {
     pub __unused4: [compat_ulong_t; 2],
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[repr(C)]
 pub struct compat_statfs {
     pub f_type: i32,
@@ -73,33 +73,33 @@ pub struct compat_statfs {
     pub f_spare: [i32; 4],
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[inline]
 pub unsafe fn compat_user_stack_pointer() -> _ {
     user_stack_pointer(task_pt_regs(current))
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const COMPAT_MINSIGSTKSZ: i32 = 2048;
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[inline]
 pub unsafe fn is_compat_task() -> i32 {
     test_thread_flag(TIF_32BIT)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 #[inline]
 pub unsafe fn is_compat_thread(thread: *mut thread_info) -> i32 {
     test_ti_thread_flag(thread, TIF_32BIT)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 extern "C" {
     pub fn compat_arm_syscall(regs: *mut pt_regs, scno: i32) -> i64;
 }
 
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 #[inline]
 pub unsafe fn is_compat_thread(thread: *mut thread_info) -> i32 {
     let _ = thread;

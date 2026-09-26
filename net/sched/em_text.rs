@@ -175,7 +175,7 @@ unsafe extern "C" fn em_text_change(
             flags |= TS_AUTOLOAD;
             continue;
         }
-        if ts_conf as isize < 0 {
+        if (ts_conf as isize) < 0 {
             return ts_conf as CInt;
         } else if flags & TS_AUTOLOAD != 0 {
             textsearch_destroy(ts_conf);

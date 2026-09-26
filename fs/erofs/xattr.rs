@@ -17,32 +17,34 @@ unsafe fn erofs_init_inode_xattrs(inode: *mut inode) -> i32 {
     let mut buf = __EROFS_BUF_INITIALIZER;
     let vi = EROFS_I(inode); let sb = (*inode).i_sb;
     let mut pos: erofs_off_t; let mut ret = 0i32;
+    'out_unlock: {
     if (*vi).xattr_isize == 0 { return -ENODATA; }
     if test_bit(EROFS_I_EA_INITED_BIT, &(*vi).flags) { smp_mb(); return 0; }
     if wait_on_bit_lock(&mut (*vi).flags, EROFS_I_BL_XATTR_BIT, TASK_KILLABLE) != 0 { return -ERESTARTSYS; }
-    if test_bit(EROFS_I_EA_INITED_BIT, &(*vi).flags) { goto out_unlock; }
+    if test_bit(EROFS_I_EA_INITED_BIT, &(*vi).flags) { break 'out_unlock; }
     if (*vi).xattr_isize == core::mem::size_of::<erofs_xattr_ibody_header>() as u32 {
-        erofs_err(sb, "xattr_isize %d of nid %llu is not supported yet", (*vi).xattr_isize, (*vi).nid); ret = -EOPNOTSUPP; goto out_unlock;
+        erofs_err(sb, "xattr_isize %d of nid %llu is not supported yet", (*vi).xattr_isize, (*vi).nid); ret = -EOPNOTSUPP; break 'out_unlock;
     } else if (*vi).xattr_isize < core::mem::size_of::<erofs_xattr_ibody_header>() as u32 {
-        erofs_err(sb, "bogus xattr ibody @ nid %llu", (*vi).nid); DBG_BUGON(1); ret = -EFSCORRUPTED; goto out_unlock;
+        erofs_err(sb, "bogus xattr ibody @ nid %llu", (*vi).nid); DBG_BUGON(1); ret = -EFSCORRUPTED; break 'out_unlock;
     }
     pos = erofs_iloc(inode) + (*vi).inode_isize as u64;
     let ih = erofs_read_metabuf(&mut buf, sb, pos, erofs_inode_in_metabox(inode));
-    if IS_ERR(ih) { ret = PTR_ERR(ih); goto out_unlock; }
+    if IS_ERR(ih) { ret = PTR_ERR(ih); break 'out_unlock; }
     (*vi).xattr_name_filter = le32_to_cpu((*ih).h_name_filter); (*vi).xattr_shared_count = (*ih).h_shared_count;
     if ((*vi).xattr_shared_count as u32) * core::mem::size_of::<u32>() as u32 > (*vi).xattr_isize - core::mem::size_of::<erofs_xattr_ibody_header>() as u32 {
-        erofs_err(sb, "invalid h_shared_count %u @ nid %llu", (*vi).xattr_shared_count, (*vi).nid); ret = -EFSCORRUPTED; goto out_unlock;
+        erofs_err(sb, "invalid h_shared_count %u @ nid %llu", (*vi).xattr_shared_count, (*vi).nid); ret = -EFSCORRUPTED; break 'out_unlock;
     }
     (*vi).xattr_shared_xattrs = kmalloc_objs::<u32>((*vi).xattr_shared_count);
-    if (*vi).xattr_shared_xattrs.is_null() { ret = -ENOMEM; goto out_unlock; }
+    if (*vi).xattr_shared_xattrs.is_null() { ret = -ENOMEM; break 'out_unlock; }
     pos += core::mem::size_of::<erofs_xattr_ibody_header>() as u64;
     for i in 0..(*vi).xattr_shared_count as usize {
         let p = erofs_bread(&mut buf, pos + (i * 4) as u64, true);
-        if IS_ERR(p) { kfree((*vi).xattr_shared_xattrs); (*vi).xattr_shared_xattrs = core::ptr::null_mut(); ret = PTR_ERR(p); goto out_unlock; }
+        if IS_ERR(p) { kfree((*vi).xattr_shared_xattrs); (*vi).xattr_shared_xattrs = core::ptr::null_mut(); ret = PTR_ERR(p); break 'out_unlock; }
         *(*vi).xattr_shared_xattrs.add(i) = le32_to_cpu(*(p as *mut u32));
     }
     smp_mb(); set_bit(EROFS_I_EA_INITED_BIT, &mut (*vi).flags);
-out_unlock:
+    }
+    
     erofs_put_metabuf(&mut buf); clear_and_wake_up_bit(EROFS_I_BL_XATTR_BIT, &mut (*vi).flags); ret
 }
 
@@ -69,7 +71,7 @@ unsafe fn erofs_getxattr_foreach(it: *mut erofs_xattr_iter) -> i32 {
     let sb=(*it).sb; let entry=*(*it).kaddr.cast::<erofs_xattr_entry>(); (*it).pos+=core::mem::size_of::<erofs_xattr_entry>() as u64; let value_sz=le16_to_cpu(entry.e_value_size) as u32;
     if entry.e_name_index as u32 & EROFS_XATTR_LONG_PREFIX != 0 { let sbi=EROFS_SB(sb); let pf=(*sbi).xattr_prefixes.add((entry.e_name_index as u32 & EROFS_XATTR_LONG_PREFIX_MASK) as usize); if pf>=(*sbi).xattr_prefixes.add((*sbi).xattr_prefix_count as usize)||(*it).index!=(*pf).prefix.as_ref().unwrap().base_index as i32||(*it).name.len as u32!=entry.e_name_len as u32+(*pf).infix_len{return -ENODATA;} if memcmp((*it).name.name.add((*pf).infix_len as usize),(*it).kaddr,0)!=0{return -ENODATA;} (*it).infix_len=(*pf).infix_len as i32; } else { if (*it).index!=entry.e_name_index as i32||(*it).name.len as u32!=entry.e_name_len as u32{return -ENODATA;} (*it).infix_len=0; }
     let mut processed=0u32; while processed<entry.e_name_len as u32 { (*it).kaddr=erofs_bread(&mut (*it).buf,(*it).pos,true); if IS_ERR((*it).kaddr){return PTR_ERR((*it).kaddr);} let slice=core::cmp::min((*sb).s_blocksize-erofs_blkoff(sb,(*it).pos),entry.e_name_len as u32-processed); if memcmp((*it).name.name.add((*it).infix_len as usize+processed as usize),(*it).kaddr,slice as usize)!=0{return -ENODATA;} (*it).pos+=slice as u64; processed+=slice; }
-    if (*it).buffer.is_null(){(*it).buffer_ofs=value_sz as i32;return 0;} if (*it).buffer_size as u32<value_sz{return -ERANGE;} erofs_xattr_copy_to_buffer(it,value_sz)
+    if (*it).buffer.is_null(){(*it).buffer_ofs=value_sz as i32;return 0;} if ((*it).buffer_size as u32)<value_sz{return -ERANGE;} erofs_xattr_copy_to_buffer(it,value_sz)
 }
 
 // Remaining iterator and exported wrapper logic follows the C control flow.
@@ -85,7 +87,7 @@ unsafe fn erofs_xattr_generic_get(handler:*const xattr_handler,_unused:*mut dent
 
 #[no_mangle] pub unsafe extern "C" fn erofs_xattr_prefixes_cleanup(sb:*mut super_block){let sbi=EROFS_SB(sb);if !(*sbi).xattr_prefixes.is_null(){for i in 0..(*sbi).xattr_prefix_count{kfree((*sbi).xattr_prefixes.add(i as usize).cast());}kfree((*sbi).xattr_prefixes.cast());(*sbi).xattr_prefixes=core::ptr::null_mut();}}
 
-#[cfg(feature="CONFIG_EROFS_FS_POSIX_ACL")]
+#[cfg(CONFIG_EROFS_FS_POSIX_ACL)]
 pub unsafe fn erofs_get_acl(inode:*mut inode,type_:i32,rcu:bool)->*mut posix_acl{if rcu{return ERR_PTR(-ECHILD);}let prefix=match type_{ACL_TYPE_ACCESS=>EROFS_XATTR_INDEX_POSIX_ACL_ACCESS,ACL_TYPE_DEFAULT=>EROFS_XATTR_INDEX_POSIX_ACL_DEFAULT,_=>return ERR_PTR(-EINVAL)};let mut rc=erofs_getxattr(inode,prefix as i32,b"\0".as_ptr() as *const i8,core::ptr::null_mut(),0);if rc==-ENODATA{return core::ptr::null_mut();}if rc<0{return ERR_PTR(rc);}let value=kmalloc(rc as usize,GFP_KERNEL);if value.is_null(){return ERR_PTR(-ENOMEM);}rc=erofs_getxattr(inode,prefix as i32,b"\0".as_ptr() as *const i8,value,rc as usize);let acl=if rc<0{ERR_PTR(rc)}else{posix_acl_from_xattr(&mut init_user_ns,value,rc)};kfree(value);acl}
 
 // The declarations below preserve the remaining file-local interfaces and are

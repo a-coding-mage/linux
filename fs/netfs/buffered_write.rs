@@ -158,7 +158,7 @@ pub unsafe fn netfs_page_mkwrite(vmf: *mut vm_fault, group: *mut netfs_group) ->
     if (*folio).mapping != mapping || folio_wait_writeback_killable(folio) < 0 { folio_unlock(folio); sb_end_pagefault((*inode).i_sb); return ret; }
     if !folio_test_uptodate(folio) { ret = VM_FAULT_SIGBUS; folio_unlock(folio); sb_end_pagefault((*inode).i_sb); return ret; }
     let old = netfs_folio_group(folio);
-    if !old.is_null() && old != group && old != NETFS_FOLIO_COPY_TO_CACHE { folio_unlock(folio); let e = filemap_fdatawrite_range(mapping, folio_pos(folio), folio_next_pos(folio)); ret = match e { 0 => VM_FAULT_RETRY, -ENOMEM => VM_FAULT_OOM, _ => VM_FAULT_SIGBUS }; sb_end_pagefault((*inode).i_sb); return ret; }
+    if !old.is_null() && old != group && old != NETFS_FOLIO_COPY_TO_CACHE { folio_unlock(folio); let e = filemap_fdatawrite_range(mapping, folio_pos(folio), folio_next_pos(folio)); ret = match e { case if case == 0 => VM_FAULT_RETRY, case if case == -ENOMEM => VM_FAULT_OOM, _ => VM_FAULT_SIGBUS }; sb_end_pagefault((*inode).i_sb); return ret; }
     trace_netfs_folio(folio, if folio_test_dirty(folio) { netfs_folio_trace_mkwrite_plus } else { netfs_folio_trace_mkwrite });
     let priv = folio_get_private(folio); if priv != group { if group.is_null() && priv == NETFS_FOLIO_COPY_TO_CACHE { folio_detach_private(folio); } else if !group.is_null() && priv == NETFS_FOLIO_COPY_TO_CACHE { folio_change_private(folio, netfs_get_group(group)); } else if !group.is_null() && priv.is_null() { folio_attach_private(folio, netfs_get_group(group)); } else { WARN_ON_ONCE(true); } }
     file_update_time(file); set_bit(NETFS_ICTX_MODIFIED_ATTR, &mut (*ctx).flags); if (*(*ctx).ops).post_modify.is_some() { ((*(*ctx).ops).post_modify.unwrap())(inode); }

@@ -65,12 +65,12 @@
 	pr_notice("enable_ino64 is deprecated and has no effect\n");	return 0;}
 
  const kernel_param_ops param_ops_enable_ino64 = {
-	.set = param_set_enable_ino64,
-	.get = param_get_bool,
+	set: param_set_enable_ino64,
+	get: param_get_bool,
 };
  i32 nfs_update_inode(inode *, nfs_fattr *);
  kmem_cache * nfs_inode_cachep;
-i32 nfs_wait_bit_killable(wait_bit_key *key, i32 mode)
+i32 nfs_wait_bit_killable(wait_bit_key *key, mode: i32)
 {
 	if (unlikely(nfs_current_task_exiting()))
 		return -EINTR;	schedule();	if (signal_pending_state(mode, current))
@@ -112,12 +112,12 @@ i32 nfs_sync_mapping(address_space *mapping)
 	return !time_in_range_open(jiffies, nfsi.read_cache_jiffies, nfsi.read_cache_jiffies + nfsi.attrtimeo);}
 
  bool nfs_check_cache_flags_invalid(inode *inode,
-					  usize flags)
+					  flags: usize)
 {
 	usize cache_validity = READ_ONCE(NFS_I(inode).cache_validity);
 	return (cache_validity & flags) != 0;}
 
-bool nfs_check_cache_invalid(inode *inode, usize flags)
+bool nfs_check_cache_invalid(inode *inode, flags: usize)
 {
 	if (nfs_check_cache_flags_invalid(inode, flags))
 		return true;	return nfs_attribute_cache_expired(inode);}
@@ -132,7 +132,7 @@ EXPORT_SYMBOL_GPL(nfs_check_cache_invalid);
 	return false;}
 #endif
 
-() nfs_set_cache_invalid(inode *inode, usize flags)
+() nfs_set_cache_invalid(inode *inode, flags: usize)
 {
 	nfs_inode *nfsi = NFS_I(inode);
 	if (nfs_have_delegated_attributes(inode)) {
@@ -242,8 +242,7 @@ nfs_init_locked(inode *inode, () *opaque)
 	if ((fattr.valid & NFS_ATTR_FATTR_V4_SECURITY_LABEL) && inode.i_security) {
 		error = security_inode_notifysecctx(inode, fattr.label.label,
 				fattr.label.len);		if (error)
-			printk(KERN_ERR "%s() %s %d "
-					"security_inode_notifysecctx() %d\n",
+			printk(c"\x013%s() %s %d security_inode_notifysecctx() %d\n".as_ptr(),
 					__func__,
 					(i8 *)fattr.label.label,
 					fattr.label.len, error);		nfs_clear_label_invalid(inode);	}
@@ -271,8 +270,8 @@ inode *
 nfs_ilookup(super_block *sb, nfs_fattr *fattr, nfs_fh *fh)
 {
 	nfs_find_desc desc = {
-		.fh	= fh,
-		.fattr	= fattr,
+		fh: fh,
+		fattr: fattr,
 	};	inode *inode;	u64 hash;
 	if (!(fattr.valid & NFS_ATTR_FATTR_FILEID) ||
 	    !(fattr.valid & NFS_ATTR_FATTR_TYPE))
@@ -295,18 +294,19 @@ nfs_ilookup(super_block *sb, nfs_fattr *fattr, nfs_fh *fh)
 inode *
 nfs_fhget(super_block *sb, nfs_fh *fh, nfs_fattr *fattr)
 {
+	'out_no_inode: {
 	nfs_find_desc desc = {
-		.fh	= fh,
-		.fattr	= fattr
+		fh: fh,
+		fattr: fattr
 	};	inode *inode = ERR_PTR(-ENOENT);	u64 fattr_supported = NFS_SB(sb).fattr_valid;	u64 hash;
 	nfs_attr_check_mountpoint(sb, fattr);
 	if (nfs_attr_use_mounted_on_fileid(fattr))
 		fattr.fileid = fattr.mounted_on_fileid;	else if ((fattr.valid & NFS_ATTR_FATTR_FILEID) == 0)
-		goto out_no_inode;	if ((fattr.valid & NFS_ATTR_FATTR_TYPE) == 0)
-		goto out_no_inode;
+		break 'out_no_inode;	if ((fattr.valid & NFS_ATTR_FATTR_TYPE) == 0)
+		break 'out_no_inode;
 	hash = fattr.fileid;
 	inode = iget5_locked(sb, hash, nfs_find_actor, nfs_init_locked, &desc);	if (inode == null) {
-		inode = ERR_PTR(-ENOMEM);		goto out_no_inode;	}
+		inode = ERR_PTR(-ENOMEM);		break 'out_no_inode;	}
 
 	if (inode_state_read_once(inode) & I_NEW) {
 		nfs_inode *nfsi = NFS_I(inode);		usize now = jiffies;
@@ -366,16 +366,19 @@ nfs_fhget(super_block *sb, nfs_fh *fh, nfs_fattr *fattr)
 		nfs_fscache_init_inode(inode);
 		unlock_new_inode(inode);	} else {
 		i32 err = nfs_refresh_inode(inode, fattr);		if (err < 0) {
-			iput(inode);			inode = ERR_PTR(err);			goto out_no_inode;		}
+			iput(inode);			inode = ERR_PTR(err);			break 'out_no_inode;		}
 	}
 	dprintk("NFS: nfs_fhget(%s/%Lu fh_crc=0x%08x ct=%d)\n",
 		inode.i_sb.s_id,
 		(u64)inode.i_ino,
 		nfs_display_fhandle_hash(fh),
 		icount_read_once(inode));
-out:
-	return inode;
-out_no_inode:
+    'out: loop {
+    return inode;
+        break;
+    }
+}
+	
 	dprintk("nfs_fhget: iget failed with error %ld\n", PTR_ERR(inode));	goto out;}
 EXPORT_SYMBOL_GPL(nfs_fhget);
  ()
@@ -599,8 +602,9 @@ EXPORT_SYMBOL_GPL(nfs_setattr_update_inode);
 		reply_mask |= STATX_CHANGE_COOKIE;	return reply_mask;}
 
 i32 nfs_getattr(mnt_idmap *idmap, const path *path,
-		kstat *stat, u32 request_mask, u32 query_flags)
+		kstat *stat, request_mask: u32, query_flags: u32)
 {
+	'out: {
 	inode *inode = d_inode(path.dentry);	nfs_server *server = NFS_SERVER(inode);	u64 fattr_valid = server.fattr_valid;	usize cache_validity;	i32 err = 0;	bool force_sync = query_flags & AT_STATX_FORCE_SYNC;	bool do_update = false;	bool readdirplus_enabled = nfs_getattr_readdirplus_enable(inode);
 	trace_nfs_getattr_enter(inode);
 	request_mask &= STATX_TYPE | STATX_MODE | STATX_NLINK | STATX_UID |
@@ -652,7 +656,7 @@ i32 nfs_getattr(mnt_idmap *idmap, const path *path,
 	if (do_update) {
 		if (readdirplus_enabled)
 			nfs_readdirplus_parent_cache_miss(path.dentry);		err = __nfs_revalidate_inode(server, inode);		if (err)
-			goto out;	} else if (readdirplus_enabled)
+			break 'out;	} else if (readdirplus_enabled)
 		nfs_readdirplus_parent_cache_hit(path.dentry);out_no_revalidate:
 	/* Only return attributes that were revalidated. */
 	stat.result_mask = nfs_get_valid_attrmask(inode) | request_mask;
@@ -670,7 +674,8 @@ i32 nfs_getattr(mnt_idmap *idmap, const path *path,
 	    S_ISREG(inode.i_mode)) {
 		stat.result_mask |= STATX_DIOALIGN | STATX_DIO_READ_ALIGN;		stat.dio_mem_align = 4; /* 4-byte alignment */
 		stat.dio_offset_align = PAGE_SIZE;		stat.dio_read_offset_align = stat.dio_offset_align;	}
-out:
+	}
+	
 	trace_nfs_getattr_exit(inode, err);	return err;}
 EXPORT_SYMBOL_GPL(nfs_getattr);
 i32 nfs_fileattr_get(dentry *dentry, file_kattr *fa)
@@ -688,10 +693,10 @@ EXPORT_SYMBOL_GPL(nfs_fileattr_get);
  nfs_lock_context *__nfs_find_lock_context(nfs_open_context *ctx)
 {
 	nfs_lock_context *pos;
-	list_for_each_entry_rcu(pos, &ctx.lock_context.list, list) {
+	list_for_each_entry_rcu!(pos, &ctx.lock_context.list, list, {
 		if (pos.lockowner != current.files)
 			continue;		if (refcount_inc_not_zero(&pos.count))
-			return pos;	}
+			return pos;	});
 	return null;}
 
 nfs_lock_context *nfs_get_lock_context(nfs_open_context *ctx)
@@ -722,7 +727,7 @@ EXPORT_SYMBOL_GPL(nfs_put_lock_context);
  * with close-to-open semantics and we have cached data that will
  * need to be revalidated on open.
  */
-() nfs_close_context(nfs_open_context *ctx, i32 is_sync)
+() nfs_close_context(nfs_open_context *ctx, is_sync: i32)
 {
 	nfs_inode *nfsi;	inode *inode;
 	if (!(ctx.mode & FMODE_WRITE))
@@ -751,7 +756,7 @@ nfs_open_context *get_nfs_open_context(nfs_open_context *ctx)
 	if (ctx != null && refcount_inc_not_zero(&ctx.lock_context.count))
 		return ctx;	return null;}
 EXPORT_SYMBOL_GPL(get_nfs_open_context);
- () __put_nfs_open_context(nfs_open_context *ctx, i32 is_sync)
+ () __put_nfs_open_context(nfs_open_context *ctx, is_sync: i32)
 {
 	inode *inode = d_inode(ctx.dentry);	super_block *sb = ctx.dentry.d_sb;
 	if (!refcount_dec_and_test(&ctx.lock_context.count))
@@ -791,12 +796,12 @@ EXPORT_SYMBOL_GPL(nfs_file_set_open_context);
 nfs_open_context *nfs_find_open_context(inode *inode, const cred *cred, fmode_t mode)
 {
 	nfs_inode *nfsi = NFS_I(inode);	nfs_open_context *pos, *ctx = null;
-	rcu_read_lock();	list_for_each_entry_rcu(pos, &nfsi.open_files, list) {
+	rcu_read_lock();	list_for_each_entry_rcu!(pos, &nfsi.open_files, list, {
 		if (cred != null && cred_fscmp(pos.cred, cred) != 0)
 			continue;		if ((pos.mode & (FMODE_READ|FMODE_WRITE)) != mode)
 			continue;		if (!test_bit(NFS_CONTEXT_FILE_OPEN, &pos.flags))
 			continue;		ctx = get_nfs_open_context(pos);		if (ctx)
-			break;	}
+			break;	});
 	rcu_read_unlock();	return ctx;}
 
 () nfs_file_clear_open_context(file *filp)
@@ -829,22 +834,23 @@ i32 nfs_open(inode *inode, file *filp)
 i32
 __nfs_revalidate_inode(nfs_server *server, inode *inode)
 {
+	'out: {
 	i32		 status = -ESTALE;	nfs_fattr *fattr = null;	nfs_inode *nfsi = NFS_I(inode);
 	dfprintk(PAGECACHE, "NFS: revalidating (%s/%Lu)\n",
 		inode.i_sb.s_id, (u64)inode.i_ino);
 	trace_nfs_revalidate_inode_enter(inode);
 	if (is_bad_inode(inode))
-		goto out;	if (NFS_STALE(inode))
-		goto out;
+		break 'out;	if (NFS_STALE(inode))
+		break 'out;
 	/* pNFS: Attributes aren't updated until we layoutcommit */
 	if (S_ISREG(inode.i_mode)) {
 		status = pnfs_sync_inode(inode, false);		if (status)
-			goto out;	} else if (nfs_have_directory_delegation(inode) &&
+			break 'out;	} else if (nfs_have_directory_delegation(inode) &&
 		   !(NFS_I(inode).cache_validity & NFS_INO_INVALID_ATTR)) {
-		status = 0;		goto out;	}
+		status = 0;		break 'out;	}
 
 	status = -ENOMEM;	fattr = nfs_alloc_fattr_with_label(NFS_SERVER(inode));	if (fattr == null)
-		goto out;
+		break 'out;
 	nfs_inc_stats(inode, NFSIOS_INODEREVALIDATE);
 	status = NFS_PROTO(inode).getattr(server, NFS_FH(inode), fattr, inode);	if (status != 0) {
 		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%s/%Lu) getattr failed, error=%d\n",
@@ -857,12 +863,12 @@ __nfs_revalidate_inode(nfs_server *server, inode *inode)
 			if (!S_ISDIR(inode.i_mode))
 				nfs_set_inode_stale(inode);			else
 				nfs_zap_caches(inode);		}
-		goto out;	}
+		break 'out;	}
 
 	status = nfs_refresh_inode(inode, fattr);	if (status) {
 		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%s/%Lu) refresh failed, error=%d\n",
 			 inode.i_sb.s_id,
-			 (u64)inode.i_ino, status);		goto out;	}
+			 (u64)inode.i_ino, status);		break 'out;	}
 
 	if (nfsi.cache_validity & NFS_INO_INVALID_ACL)
 		nfs_zap_acl_cache(inode);
@@ -870,7 +876,8 @@ __nfs_revalidate_inode(nfs_server *server, inode *inode)
 	dfprintk(PAGECACHE, "NFS: (%s/%Lu) revalidation complete\n",
 		inode.i_sb.s_id,
 		(u64)inode.i_ino);
-out:
+	}
+	
 	nfs_free_fattr(fattr);	trace_nfs_revalidate_inode_exit(inode, status);	return status;}
 
 i32 nfs_attribute_cache_expired(inode *inode)
@@ -885,7 +892,7 @@ i32 nfs_attribute_cache_expired(inode *inode)
  *
  * Updates inode attribute information by retrieving the data from the server.
  */
-i32 nfs_revalidate_inode(inode *inode, usize flags)
+i32 nfs_revalidate_inode(inode *inode, flags: usize)
 {
 	if (!nfs_check_cache_invalid(inode, flags))
 		return NFS_STALE(inode) ? -ESTALE : 0;	return __nfs_revalidate_inode(NFS_SERVER(inode), inode);}
@@ -1143,21 +1150,21 @@ EXPORT_SYMBOL_GPL(_nfs_display_fhandle_hash);
 {
 	u16 i;
 	if (fh == null || fh.size == 0) {
-		printk(KERN_DEFAULT "%s at %p is empty\n", caption, fh);		return;	}
+		printk(c"%s at %p is empty\n".as_ptr(), caption, fh);		return;	}
 
-	printk(KERN_DEFAULT "%s at %p is %u bytes, crc: 0x%08x:\n",
+	printk(c"%s at %p is %u bytes, crc: 0x%08x:\n".as_ptr(),
 	       caption, fh, fh.size, _nfs_display_fhandle_hash(fh));	for (i = 0; i < fh.size; i += 16) {
 		u32 *pos = (u32 *)&fh.data[i];
 		switch ((fh.size - i - 1) >> 2) {
 		case 0:
-			printk(KERN_DEFAULT " %08x\n",
+			printk(c" %08x\n".as_ptr(),
 				be32_to_cpup(pos));			break;		case 1:
-			printk(KERN_DEFAULT " %08x %08x\n",
+			printk(c" %08x %08x\n".as_ptr(),
 				be32_to_cpup(pos), be32_to_cpup(pos + 1));			break;		case 2:
-			printk(KERN_DEFAULT " %08x %08x %08x\n",
+			printk(c" %08x %08x %08x\n".as_ptr(),
 				be32_to_cpup(pos), be32_to_cpup(pos + 1),
 				be32_to_cpup(pos + 2));			break;		default:
-			printk(KERN_DEFAULT " %08x %08x %08x %08x\n",
+			printk(c" %08x %08x %08x %08x\n".as_ptr(),
 				be32_to_cpup(pos), be32_to_cpup(pos + 1),
 				be32_to_cpup(pos + 2), be32_to_cpup(pos + 3));		}
 	}
@@ -1276,9 +1283,9 @@ EXPORT_SYMBOL_GPL(_nfs_display_fhandle);#endif
 		return 1;	return 0;}
 
  () nfs_ooo_merge(nfs_inode *nfsi,
-			  u64 start, u64 end)
+			  start: u64, end: u64)
 {
-	i32 i, cnt;
+	i: i32, cnt;
 	if (nfsi.cache_validity & NFS_INO_DATA_INVAL_DEFER)
 		/* No point merging anything */
 		return;
@@ -1344,7 +1351,7 @@ i32 nfs_refresh_inode(inode *inode, nfs_fattr *fattr)
 	return status;}
 EXPORT_SYMBOL_GPL(nfs_refresh_inode);
  i32 nfs_post_op_update_inode_locked(inode *inode,
-		nfs_fattr *fattr, u32 invalid)
+		nfs_fattr *fattr, invalid: u32)
 {
 	if (S_ISDIR(inode.i_mode))
 		invalid |= NFS_INO_INVALID_DATA;	nfs_set_cache_invalid(inode, invalid);	if ((fattr.valid & NFS_ATTR_FATTR) == 0)
@@ -1386,6 +1393,7 @@ EXPORT_SYMBOL_GPL(nfs_post_op_update_inode);
  */
 i32 nfs_post_op_update_inode_force_wcc_locked(inode *inode, nfs_fattr *fattr)
 {
+	'out_noforce: {
 	i32 attr_cmp = nfs_inode_attrs_cmp(fattr, inode);	i32 status;
 	/* Don't do a WCC update if these attributes are already stale */
 	if (attr_cmp < 0)
@@ -1394,7 +1402,7 @@ i32 nfs_post_op_update_inode_force_wcc_locked(inode *inode, nfs_fattr *fattr)
 		nfs_ooo_record(NFS_I(inode), fattr);		fattr.valid &= ~(NFS_ATTR_FATTR_PRECHANGE
 				| NFS_ATTR_FATTR_PRESIZE
 				| NFS_ATTR_FATTR_PREMTIME
-				| NFS_ATTR_FATTR_PRECTIME);		goto out_noforce;	}
+				| NFS_ATTR_FATTR_PRECTIME);		break 'out_noforce;	}
 	if ((fattr.valid & NFS_ATTR_FATTR_CHANGE) != 0 &&
 			(fattr.valid & NFS_ATTR_FATTR_PRECHANGE) == 0) {
 		fattr.pre_change_attr = inode_peek_iversion_raw(inode);		fattr.valid |= NFS_ATTR_FATTR_PRECHANGE;	}
@@ -1407,7 +1415,8 @@ i32 nfs_post_op_update_inode_force_wcc_locked(inode *inode, nfs_fattr *fattr)
 	if ((fattr.valid & NFS_ATTR_FATTR_SIZE) != 0 &&
 			(fattr.valid & NFS_ATTR_FATTR_PRESIZE) == 0) {
 		fattr.pre_size = i_size_read(inode);		fattr.valid |= NFS_ATTR_FATTR_PRESIZE;	}
-out_noforce:
+	}
+	
 	status = nfs_post_op_update_inode_locked(inode, fattr,
 			NFS_INO_INVALID_CHANGE
 			| NFS_INO_INVALID_CTIME
@@ -1458,11 +1467,10 @@ EXPORT_SYMBOL_GPL(nfs_post_op_update_inode_force_wcc);
 		/* Is this perhaps the mounted-on fileid? */
 		if ((fattr.valid & NFS_ATTR_FATTR_MOUNTED_ON_FILEID) &&
 		    inode.i_ino == fattr.mounted_on_fileid)
-			return 0;		printk(KERN_ERR "NFS: server %s error: fileid changed\n"
-			"fsid %s: expected fileid 0x%Lx, got 0x%Lx\n",
+			return 0;		printk(c"\x013NFS: server %s error: fileid changed\nfsid %s: expected fileid 0x%Lx, got 0x%Lx\n".as_ptr(),
 			NFS_SERVER(inode).nfs_client.cl_hostname,
-			inode.i_sb.s_id, (long long)inode.i_ino,
-			(long long)fattr.fileid);		goto out_err;	}
+			inode.i_sb.s_id, (core::ffi::c_longlong)inode.i_ino,
+			(core::ffi::c_longlong)fattr.fileid);		goto out_err;	}
 
 	/*
 	 * Make sure the inode's type hasn't changed.
@@ -1471,7 +1479,7 @@ EXPORT_SYMBOL_GPL(nfs_post_op_update_inode_force_wcc);
 		/*
 		* Big trouble! The inode has become a different object.
 		*/
-		printk(KERN_DEBUG "NFS: %s: inode %llu mode changed, %07o to %07o\n",
+		printk(c"\x017NFS: %s: inode %llu mode changed, %07o to %07o\n".as_ptr(),
 				__func__, inode.i_ino, inode.i_mode, fattr.mode);		goto out_err;	}
 
 	/* Update the fsid? */
@@ -1716,15 +1724,17 @@ workqueue_struct *nfslocaliod_workqueue;workqueue_struct *nfsiod_workqueue;EXPOR
 u32 nfs_net_id;EXPORT_SYMBOL_GPL(nfs_net_id);
  i32 nfs_net_init(net *net)
 {
+	'err_proc_nfs: {
 	nfs_net *nn = net_generic(net, nfs_net_id);	i32 err;
 	nfs_clients_init(net);
 	if (!rpc_proc_register(net, &nn.rpcstats)) {
 		err = -ENOMEM;		goto err_proc_rpc;	}
 
 	err = nfs_fs_proc_net_init(net);	if (err)
-		goto err_proc_nfs;
+		break 'err_proc_nfs;
 	return 0;
-err_proc_nfs:
+	}
+	
 	rpc_proc_unregister(net, "nfs");err_proc_rpc:
 	nfs_clients_exit(net);	return err;}
 
@@ -1733,10 +1743,10 @@ err_proc_nfs:
 	rpc_proc_unregister(net, "nfs");	nfs_fs_proc_net_exit(net);	nfs_clients_exit(net);}
 
  pernet_operations nfs_net_ops = {
-	.init = nfs_net_init,
-	.exit = nfs_net_exit,
-	.id   = &nfs_net_id,
-	.size = sizeof(nfs_net),
+	init: nfs_net_init,
+	exit: nfs_net_exit,
+	id: &nfs_net_id,
+	size: sizeof(nfs_net),
 };
 #ifdef CONFIG_KEYS
  key *nfs_keyring;
@@ -1807,7 +1817,7 @@ err_proc_nfs:
 	nfs_destroy_directcache();	nfs_destroy_writepagecache();	nfs_destroy_readpagecache();	nfs_destroy_inodecache();	nfs_destroy_nfspagecache();	unregister_pernet_subsys(&nfs_net_ops);	unregister_nfs_fs();	nfs_fs_proc_exit();	nfsiod_stop();	nfs_sysfs_exit();	nfs_exit_keyring();}
 
 /* Not quite true; I just maintain it */
-MODULE_AUTHOR("Olaf Kirch <okir@monad.swb.de>");MODULE_DESCRIPTION("NFS client support");MODULE_LICENSE("GPL");module_param_cb(enable_ino64, &param_ops_enable_ino64, &enable_ino64, 0644);
+MODULE_AUTHOR("Olaf Kirch <okir@monad.swb.de>");MODULE_DESCRIPTION("NFS client support");MODULE_LICENSE("GPL");module_param_cb(enable_ino64, &param_ops_enable_ino64, &enable_ino64, 0o644);
 module_init(init_nfs_fs)
 module_exit(exit_nfs_fs)
 

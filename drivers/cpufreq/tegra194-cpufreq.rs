@@ -36,18 +36,18 @@ const TEGRA_CPUFREQ_TRANSITION_LATENCY: u32 = 300 * 1000;
 
 extern "C" {
     fn cpufreq_get_driver_data() -> *mut tegra194_cpufreq_data;
-    fn get_cpu_device(u32) -> *mut device; fn dev_pm_opp_find_freq_exact(*mut device,u64,bool)->*mut dev_pm_opp;
-    fn dev_pm_opp_set_opp(*mut device,*mut dev_pm_opp)->i32; fn dev_pm_opp_put(*mut dev_pm_opp);
-    fn smp_call_function_single(u32, unsafe extern "C" fn(*mut core::ffi::c_void), *mut core::ffi::c_void, bool)->i32;
-    fn readl(*mut core::ffi::c_void)->u32; fn writel(u64,*mut core::ffi::c_void); fn readq(*mut core::ffi::c_void)->u64;
-    fn on_each_cpu_mask(*mut core::ffi::c_void, unsafe extern "C" fn(*mut core::ffi::c_void), *mut core::ffi::c_void, bool);
-    fn tegra_bpmp_get(*mut device)->*mut tegra_bpmp; fn tegra_bpmp_put(*mut tegra_bpmp); fn tegra_bpmp_transfer(*mut tegra_bpmp,*mut tegra_bpmp_message)->i32;
-    fn alloc_workqueue(*const u8,u32,u32)->*mut workqueue_struct; fn destroy_workqueue(*mut workqueue_struct);
-    fn queue_work_on(u32,*mut workqueue_struct,*mut work_struct)->bool; fn flush_work(*mut work_struct);
-    fn cpufreq_register_driver(*mut cpufreq_driver)->i32; fn cpufreq_unregister_driver(*mut cpufreq_driver);
-    fn platform_set_drvdata(*mut platform_device,*mut tegra194_cpufreq_data);
-    fn devm_platform_ioremap_resource(*mut platform_device,u32)->*mut core::ffi::c_void;
-    fn read_cpuid_mpidr()->u64; fn pr_warn(*const u8,...); fn pr_debug(*const u8,...); fn pr_err(*const u8,...); fn pr_info(*const u8,...);
+    fn get_cpu_device(_: u32) -> *mut device; fn dev_pm_opp_find_freq_exact(_: *mut device,_: u64,_: bool)->*mut dev_pm_opp;
+    fn dev_pm_opp_set_opp(_: *mut device,_: *mut dev_pm_opp)->i32; fn dev_pm_opp_put(_: *mut dev_pm_opp);
+    fn smp_call_function_single(_: u32, _: unsafe extern "C" fn(*mut core::ffi::c_void), _: *mut core::ffi::c_void, _: bool)->i32;
+    fn readl(_: *mut core::ffi::c_void)->u32; fn writel(_: u64,_: *mut core::ffi::c_void); fn readq(_: *mut core::ffi::c_void)->u64;
+    fn on_each_cpu_mask(_: *mut core::ffi::c_void, _: unsafe extern "C" fn(*mut core::ffi::c_void), _: *mut core::ffi::c_void, _: bool);
+    fn tegra_bpmp_get(_: *mut device)->*mut tegra_bpmp; fn tegra_bpmp_put(_: *mut tegra_bpmp); fn tegra_bpmp_transfer(_: *mut tegra_bpmp,_: *mut tegra_bpmp_message)->i32;
+    fn alloc_workqueue(_: *const u8,_: u32,_: u32)->*mut workqueue_struct; fn destroy_workqueue(_: *mut workqueue_struct);
+    fn queue_work_on(_: u32,_: *mut workqueue_struct,_: *mut work_struct)->bool; fn flush_work(_: *mut work_struct);
+    fn cpufreq_register_driver(_: *mut cpufreq_driver)->i32; fn cpufreq_unregister_driver(_: *mut cpufreq_driver);
+    fn platform_set_drvdata(_: *mut platform_device,_: *mut tegra194_cpufreq_data);
+    fn devm_platform_ioremap_resource(_: *mut platform_device,_: u32)->*mut core::ffi::c_void;
+    fn read_cpuid_mpidr()->u64; fn pr_warn(_: *const u8,...); fn pr_debug(_: *const u8,...); fn pr_err(_: *const u8,...); fn pr_info(_: *const u8,...);
 }
 
 static mut read_counters_wq: *mut workqueue_struct = core::ptr::null_mut();

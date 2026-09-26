@@ -6,12 +6,12 @@
 // C header guard: __LINUX_OF_NET_H
 // Dependency: <linux/phy.h>
 
-#[cfg(all(feature = "CONFIG_OF", feature = "CONFIG_NET"))]
+#[cfg(all(CONFIG_OF, CONFIG_NET))]
 // Dependency: <linux/of.h>
 
 // Dependency types supplied by <linux/phy.h> and <linux/of.h>.
 
-#[cfg(all(feature = "CONFIG_OF", feature = "CONFIG_NET"))]
+#[cfg(all(CONFIG_OF, CONFIG_NET))]
 unsafe extern "C" {
     pub fn of_get_phy_mode(
         np: *mut device_node,
@@ -23,7 +23,7 @@ unsafe extern "C" {
     pub fn of_find_net_device_by_node(np: *mut device_node) -> *mut net_device;
 }
 
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_NET)))]
 pub unsafe fn of_get_phy_mode(
     _np: *mut device_node,
     _interface: *mut phy_interface_t,
@@ -31,22 +31,22 @@ pub unsafe fn of_get_phy_mode(
     -ENODEV
 }
 
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_NET)))]
 pub unsafe fn of_get_mac_address(_np: *mut device_node, _mac: *mut u8) -> i32 {
     -ENODEV
 }
 
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_NET)))]
 pub unsafe fn of_get_mac_address_nvmem(_np: *mut device_node, _mac: *mut u8) -> i32 {
     -ENODEV
 }
 
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_NET)))]
 pub unsafe fn of_get_ethdev_address(_np: *mut device_node, _dev: *mut net_device) -> i32 {
     -ENODEV
 }
 
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_NET)))]
 pub unsafe fn of_find_net_device_by_node(_np: *mut device_node) -> *mut net_device {
     core::ptr::null_mut()
 }

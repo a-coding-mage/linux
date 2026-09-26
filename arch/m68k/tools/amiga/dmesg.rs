@@ -69,14 +69,14 @@ pub unsafe extern "C" fn main(argc: i32, argv: *mut *mut i8) -> i32 {
         p = p.wrapping_add(4);
     }
     if found == 0 {
-        puts(c"Not found\0".as_ptr());
+        puts(c"Not found".as_ptr());
     } else {
-        printf(c"Found %ld bytes at 0x%08lx\n\0".as_ptr(), (*m).size, (*m).data.as_ptr());
-        puts(c">>>>>>>>>>>>>>>>>>>>\0".as_ptr());
+        printf(c"Found %ld bytes at 0x%08lx\n".as_ptr(), (*m).size, (*m).data.as_ptr());
+        puts(c">>>>>>>>>>>>>>>>>>>>".as_ptr());
         fflush(core::ptr::null_mut());
         write(1, (*m).data.as_ptr() as *const core::ffi::c_void, (*m).size as usize);
         fflush(core::ptr::null_mut());
-        puts(c"<<<<<<<<<<<<<<<<<<<<\0".as_ptr());
+        puts(c"<<<<<<<<<<<<<<<<<<<<".as_ptr());
     }
     0
 }

@@ -124,8 +124,8 @@ unsafe fn r7780rp_devices_setup() -> i32 {
 }
 device_initcall!(r7780rp_devices_setup);
 
-static unsafe fn ivdr_clk_enable(_clk: *mut clk) -> i32 { __raw_writew(__raw_readw(PA_IVDRCTL) | (1 << IVDR_CK_ON), PA_IVDRCTL); 0 }
-static unsafe fn ivdr_clk_disable(_clk: *mut clk) { __raw_writew(__raw_readw(PA_IVDRCTL) & !(1 << IVDR_CK_ON), PA_IVDRCTL); }
+unsafe fn ivdr_clk_enable(_clk: *mut clk) -> i32 { __raw_writew(__raw_readw(PA_IVDRCTL) | (1 << IVDR_CK_ON), PA_IVDRCTL); 0 }
+unsafe fn ivdr_clk_disable(_clk: *mut clk) { __raw_writew(__raw_readw(PA_IVDRCTL) & !(1 << IVDR_CK_ON), PA_IVDRCTL); }
 static mut ivdr_clk_ops: sh_clk_ops = sh_clk_ops { enable: Some(ivdr_clk_enable), disable: Some(ivdr_clk_disable), ..sh_clk_ops::default() };
 static mut ivdr_clk: clk = clk { ops: unsafe { &mut ivdr_clk_ops }, ..clk::default() };
 static mut r7780rp_clocks: [*mut clk; 1] = [unsafe { &mut ivdr_clk }];

@@ -2,46 +2,46 @@
 
 macro_rules! __repeat_10000_3 {
     ($f:ident, $x:tt) => {
-        $f!($x##0);
-        $f!($x##1);
-        $f!($x##2);
-        $f!($x##3);
-        $f!($x##4);
-        $f!($x##5);
-        $f!($x##6);
-        $f!($x##7);
-        $f!($x##8);
-        $f!($x##9);
+        $f!(::kernel::macros::paste!([<$x 0>]));
+        $f!(::kernel::macros::paste!([<$x 1>]));
+        $f!(::kernel::macros::paste!([<$x 2>]));
+        $f!(::kernel::macros::paste!([<$x 3>]));
+        $f!(::kernel::macros::paste!([<$x 4>]));
+        $f!(::kernel::macros::paste!([<$x 5>]));
+        $f!(::kernel::macros::paste!([<$x 6>]));
+        $f!(::kernel::macros::paste!([<$x 7>]));
+        $f!(::kernel::macros::paste!([<$x 8>]));
+        $f!(::kernel::macros::paste!([<$x 9>]));
     };
 }
 
 macro_rules! __repeat_10000_2 {
     ($f:ident, $x:tt) => {
-        __repeat_10000_3!($f, $x##0);
-        __repeat_10000_3!($f, $x##1);
-        __repeat_10000_3!($f, $x##2);
-        __repeat_10000_3!($f, $x##3);
-        __repeat_10000_3!($f, $x##4);
-        __repeat_10000_3!($f, $x##5);
-        __repeat_10000_3!($f, $x##6);
-        __repeat_10000_3!($f, $x##7);
-        __repeat_10000_3!($f, $x##8);
-        __repeat_10000_3!($f, $x##9);
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 0>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 1>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 2>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 3>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 4>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 5>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 6>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 7>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 8>]));
+        __repeat_10000_3!($f, ::kernel::macros::paste!([<$x 9>]));
     };
 }
 
 macro_rules! __repeat_10000_1 {
     ($f:ident, $x:tt) => {
-        __repeat_10000_2!($f, $x##0);
-        __repeat_10000_2!($f, $x##1);
-        __repeat_10000_2!($f, $x##2);
-        __repeat_10000_2!($f, $x##3);
-        __repeat_10000_2!($f, $x##4);
-        __repeat_10000_2!($f, $x##5);
-        __repeat_10000_2!($f, $x##6);
-        __repeat_10000_2!($f, $x##7);
-        __repeat_10000_2!($f, $x##8);
-        __repeat_10000_2!($f, $x##9);
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 0>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 1>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 2>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 3>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 4>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 5>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 6>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 7>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 8>]));
+        __repeat_10000_2!($f, ::kernel::macros::paste!([<$x 9>]));
     };
 }
 

@@ -57,7 +57,7 @@ pub struct hid_report {
 // struct list_head;
 // typedef spinlock_t;
 
-#[cfg(feature = "CONFIG_USB_HIDDEV")]
+#[cfg(CONFIG_USB_HIDDEV)]
 unsafe extern "C" {
     pub fn hiddev_connect(hid: *mut hid_device, force: ::core::ffi::c_uint) -> ::core::ffi::c_int;
     pub fn hiddev_disconnect(hid: *mut hid_device);
@@ -70,17 +70,17 @@ unsafe extern "C" {
     pub fn hiddev_report_event(hid: *mut hid_device, report: *mut hid_report);
 }
 
-#[cfg(not(feature = "CONFIG_USB_HIDDEV"))]
+#[cfg(not(CONFIG_USB_HIDDEV))]
 #[inline]
 pub unsafe fn hiddev_connect(_hid: *mut hid_device, _force: ::core::ffi::c_uint) -> ::core::ffi::c_int {
     -1
 }
 
-#[cfg(not(feature = "CONFIG_USB_HIDDEV"))]
+#[cfg(not(CONFIG_USB_HIDDEV))]
 #[inline]
 pub unsafe fn hiddev_disconnect(_hid: *mut hid_device) {}
 
-#[cfg(not(feature = "CONFIG_USB_HIDDEV"))]
+#[cfg(not(CONFIG_USB_HIDDEV))]
 #[inline]
 pub unsafe fn hiddev_hid_event(
     _hid: *mut hid_device,
@@ -90,7 +90,7 @@ pub unsafe fn hiddev_hid_event(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_USB_HIDDEV"))]
+#[cfg(not(CONFIG_USB_HIDDEV))]
 #[inline]
 pub unsafe fn hiddev_report_event(_hid: *mut hid_device, _report: *mut hid_report) {}
 

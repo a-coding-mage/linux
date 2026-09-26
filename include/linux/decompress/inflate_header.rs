@@ -5,7 +5,7 @@
 
 use core::ffi::{c_char, c_long, c_ulong, c_void};
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn gunzip(
         inbuf: *mut u8,
         len: c_long,

@@ -26,7 +26,7 @@
  ***********************license end**************************************/
 
 
-pub unsafe u64 CVMX_GMXX_HG2_CONTROL(u64 block_id)
+pub unsafe u64 CVMX_GMXX_HG2_CONTROL(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -35,7 +35,7 @@ pub unsafe u64 CVMX_GMXX_HG2_CONTROL(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000550u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_INF_MODE(u64 block_id)
+pub unsafe u64 CVMX_GMXX_INF_MODE(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -44,7 +44,7 @@ pub unsafe u64 CVMX_GMXX_INF_MODE(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x00011800080007F8u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_PRTX_CFG(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_PRTX_CFG(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -55,7 +55,7 @@ pub unsafe u64 CVMX_GMXX_PRTX_CFG(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000010u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM0(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM0(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -66,7 +66,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM0(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000180u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM1(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM1(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -77,7 +77,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM1(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000188u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM2(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM2(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -88,7 +88,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM2(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000190u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM3(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM3(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -99,7 +99,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM3(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000198u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM4(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM4(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -110,7 +110,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM4(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x00011800080001A0u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM5(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM5(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -121,7 +121,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM5(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x00011800080001A8u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM_EN(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM_EN(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -132,7 +132,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CAM_EN(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000108u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_ADR_CTL(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_ADR_CTL(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -143,7 +143,7 @@ pub unsafe u64 CVMX_GMXX_RXX_ADR_CTL(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000100u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_FRM_CTL(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_FRM_CTL(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -157,7 +157,7 @@ pub unsafe u64 CVMX_GMXX_RXX_FRM_CTL(u64 offset, u64 block_id)
 pub const fn CVMX_GMXX_RXX_FRM_MAX(offset: u64, block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x0001180008000030u64) + (((offset) & 3) + ((block_id) & 1) * 0x10000u64) * 2048 }
 pub const fn CVMX_GMXX_RXX_FRM_MIN(offset: u64, block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x0001180008000028u64) + (((offset) & 3) + ((block_id) & 1) * 0x10000u64) * 2048 }
 
-pub unsafe u64 CVMX_GMXX_RXX_INT_EN(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_INT_EN(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -168,7 +168,7 @@ pub unsafe u64 CVMX_GMXX_RXX_INT_EN(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000008u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_INT_REG(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_INT_REG(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -179,7 +179,7 @@ pub unsafe u64 CVMX_GMXX_RXX_INT_REG(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000000u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_RXX_JABBER(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_RXX_JABBER(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -192,7 +192,7 @@ pub unsafe u64 CVMX_GMXX_RXX_JABBER(u64 offset, u64 block_id)
 
 pub const fn CVMX_GMXX_RXX_RX_INBND(offset: u64, block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x0001180008000060u64) + (((offset) & 3) + ((block_id) & 1) * 0x10000u64) * 2048 }
 
-pub unsafe u64 CVMX_GMXX_RX_PRTS(u64 block_id)
+pub unsafe u64 CVMX_GMXX_RX_PRTS(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -201,7 +201,7 @@ pub unsafe u64 CVMX_GMXX_RX_PRTS(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000410u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_RX_XAUI_CTL(u64 block_id)
+pub unsafe u64 CVMX_GMXX_RX_XAUI_CTL(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -210,7 +210,7 @@ pub unsafe u64 CVMX_GMXX_RX_XAUI_CTL(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000530u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_SMACX(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_SMACX(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -221,7 +221,7 @@ pub unsafe u64 CVMX_GMXX_SMACX(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000230u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_TXX_BURST(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_TXX_BURST(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -233,7 +233,7 @@ pub unsafe u64 CVMX_GMXX_TXX_BURST(u64 offset, u64 block_id)
 }
 
 pub const fn CVMX_GMXX_TXX_CLK(offset: u64, block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x0001180008000208u64) + (((offset) & 3) + ((block_id) & 1) * 0x10000u64) * 2048 }
-pub unsafe u64 CVMX_GMXX_TXX_CTL(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_TXX_CTL(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -244,7 +244,7 @@ pub unsafe u64 CVMX_GMXX_TXX_CTL(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000270u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_TXX_PAUSE_PKT_INTERVAL(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_TXX_PAUSE_PKT_INTERVAL(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -255,7 +255,7 @@ pub unsafe u64 CVMX_GMXX_TXX_PAUSE_PKT_INTERVAL(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000248u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_TXX_PAUSE_PKT_TIME(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_TXX_PAUSE_PKT_TIME(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -266,7 +266,7 @@ pub unsafe u64 CVMX_GMXX_TXX_PAUSE_PKT_TIME(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000238u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_TXX_SLOT(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_TXX_SLOT(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -277,7 +277,7 @@ pub unsafe u64 CVMX_GMXX_TXX_SLOT(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000220u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_TXX_THRESH(u64 offset, u64 block_id)
+pub unsafe u64 CVMX_GMXX_TXX_THRESH(offset: u64, block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN31XX & OCTEON_FAMILY_MASK:
@@ -288,7 +288,7 @@ pub unsafe u64 CVMX_GMXX_TXX_THRESH(u64 offset, u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000210u64) + ((offset) + (block_id) * 0x10000u64) * 2048;
 }
 
-pub unsafe u64 CVMX_GMXX_TX_INT_EN(u64 block_id)
+pub unsafe u64 CVMX_GMXX_TX_INT_EN(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -297,7 +297,7 @@ pub unsafe u64 CVMX_GMXX_TX_INT_EN(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000508u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_TX_INT_REG(u64 block_id)
+pub unsafe u64 CVMX_GMXX_TX_INT_REG(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -306,7 +306,7 @@ pub unsafe u64 CVMX_GMXX_TX_INT_REG(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x0001180008000500u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_TX_OVR_BP(u64 block_id)
+pub unsafe u64 CVMX_GMXX_TX_OVR_BP(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -315,7 +315,7 @@ pub unsafe u64 CVMX_GMXX_TX_OVR_BP(u64 block_id)
 	return CVMX_ADD_IO_SEG(0x00011800080004C8u64) + (block_id) * 0x8000000u64;
 }
 
-pub unsafe u64 CVMX_GMXX_TX_PRTS(u64 block_id)
+pub unsafe u64 CVMX_GMXX_TX_PRTS(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -327,7 +327,7 @@ pub unsafe u64 CVMX_GMXX_TX_PRTS(u64 block_id)
 pub const fn CVMX_GMXX_TX_SPI_CTL(block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x00011800080004C0u64) + ((block_id) & 1) * 0x8000000u64 }
 pub const fn CVMX_GMXX_TX_SPI_MAX(block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x00011800080004B0u64) + ((block_id) & 1) * 0x8000000u64 }
 pub const fn CVMX_GMXX_TX_SPI_THRESH(block_id: u64) -> u64 { unsafe { CVMX_ADD_IO_SEG(0x00011800080004B8u64) + ((block_id) & 1) * 0x8000000u64 }
-pub unsafe u64 CVMX_GMXX_TX_XAUI_CTL(u64 block_id)
+pub unsafe u64 CVMX_GMXX_TX_XAUI_CTL(block_id: u64)
 {
 	// family-specific dispatch preserved from C source
 	// case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
@@ -369,9 +369,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 		pub reserved_3_3: u64,
 		pub p0mii: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub p0mii: u64,
 		pub reserved_3_3: u64,
@@ -387,9 +387,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 		pub reserved_3_63: u64,
 		pub p0mii: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub p0mii: u64,
 		pub reserved_3_63: u64,
@@ -398,9 +398,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 // #ifdef __BIG_ENDIAN_BITFIELD
 		pub reserved_2_63: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub reserved_2_63: u64,
 	pub cn31xx: u64,
@@ -412,9 +412,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 		pub mode: u64,
 		pub reserved_2_3: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub reserved_2_3: u64,
 		pub mode: u64,
@@ -430,9 +430,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 		pub mode: u64,
 		pub reserved_2_3: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub reserved_2_3: u64,
 		pub mode: u64,
@@ -450,9 +450,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 		pub mode: u64,
 		pub reserved_2_3: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub reserved_2_3: u64,
 		pub mode: u64,
@@ -470,9 +470,9 @@ unsafe extern "C" { pub fn __cvmx_interrupt_gmxx_enable(interface: i32); }
 		pub mode: u64,
 		pub reserved_2_3: u64,
 		pub en: u64,
-		pub type: u64,
+		pub r#type: u64,
 // #else
-		pub type: u64,
+		pub r#type: u64,
 		pub en: u64,
 		pub reserved_2_3: u64,
 		pub mode: u64,

@@ -65,7 +65,7 @@ pub struct rohm_dvs_config {
 }
 
 // Preserves the source condition: IS_ENABLED(CONFIG_REGULATOR_ROHM).
-#[cfg(feature = "CONFIG_REGULATOR_ROHM")]
+#[cfg(CONFIG_REGULATOR_ROHM)]
 extern "C" {
     pub fn rohm_regulator_set_dvs_levels(
         dvs: *const rohm_dvs_config,

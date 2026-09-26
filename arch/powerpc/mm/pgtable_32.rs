@@ -96,7 +96,7 @@ pub unsafe fn mapin_ram() {
     let mut end: phys_addr_t;
     let mut i: u64 = 0;
 
-    for_each_mem_range(&mut i, &mut base, &mut end) {
+    for_each_mem_range!(&mut i, &mut base, &mut end, {
         let top: phys_addr_t = min(end, total_lowmem);
 
         if base >= top {
@@ -104,7 +104,7 @@ pub unsafe fn mapin_ram() {
         }
         base = mmu_mapin_ram(base, top);
         __mapin_ram_chunk(base, top);
-    }
+    });
 }
 
 unsafe fn __mark_initmem_nx() -> c_int {

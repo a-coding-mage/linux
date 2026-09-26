@@ -143,12 +143,12 @@ pub unsafe fn cifs_get_dfs_tcon_super(tcon: *mut cifs_tcon) -> *mut super_block 
 pub unsafe fn cifs_put_tcp_super(sb: *mut super_block) { __cifs_put_super(sb); }
 
 // CONFIG_CIFS_DFS_UPCALL sections are retained as conditional dependency hooks.
-#[cfg(feature = "CONFIG_CIFS_DFS_UPCALL")]
+#[cfg(CONFIG_CIFS_DFS_UPCALL)]
 pub unsafe fn match_target_ip(server: *mut TCP_Server_Info, host: *const c_char, hostlen: usize, result: *mut bool) -> c_int { let mut ss = core::mem::zeroed(); cifs_dbg(FYI, "%s: hostname=%.*s\n", "match_target_ip", hostlen as c_int, host); *result = false; let rc = dns_resolve_name((*server).dns_dom, host, hostlen, &mut ss); if rc < 0 { return rc; } spin_lock(&mut (*server).srv_lock); *result = cifs_match_ipaddr(&(*server).dstaddr, &ss); spin_unlock(&mut (*server).srv_lock); 0 }
 
 pub unsafe fn cifs_wait_for_server_reconnect(server: *mut TCP_Server_Info, retry: bool) -> c_int { let mut timeout = 10; spin_lock(&mut (*server).srv_lock); if (*server).tcpStatus != CifsNeedReconnect { spin_unlock(&mut (*server).srv_lock); return 0; } timeout *= (*server).nr_targets; spin_unlock(&mut (*server).srv_lock); loop { let rc = wait_event_interruptible_timeout((*server).response_q, (*server).tcpStatus != CifsNeedReconnect, timeout * HZ); if rc < 0 { cifs_dbg(FYI, "%s: aborting reconnect due to received signal\n", "cifs_wait_for_server_reconnect"); return -ERESTARTSYS; } spin_lock(&mut (*server).srv_lock); if (*server).tcpStatus != CifsNeedReconnect { spin_unlock(&mut (*server).srv_lock); return 0; } spin_unlock(&mut (*server).srv_lock); if !retry { break; } } cifs_dbg(FYI, "%s: gave up waiting on reconnect\n", "cifs_wait_for_server_reconnect"); -EHOSTDOWN }
 
-#[cfg(feature = "CONFIG_CIFS_DFS_UPCALL")]
+#[cfg(CONFIG_CIFS_DFS_UPCALL)]
 pub unsafe fn cifs_update_super_prepath(sb: *mut cifs_sb_info, prefix: *mut c_char) -> c_int { kfree((*sb).prepath); (*sb).prepath = core::ptr::null_mut(); if !prefix.is_null() && *prefix != 0 { (*sb).prepath = cifs_sanitize_prepath(prefix, GFP_ATOMIC); if IS_ERR((*sb).prepath) { let rc = PTR_ERR((*sb).prepath); (*sb).prepath = core::ptr::null_mut(); return rc; } if !(*sb).prepath.is_null() { convert_delimiter((*sb).prepath, CIFS_DIR_SEP(sb)); } } atomic_or(CIFS_MOUNT_USE_PREFIX_PATH, &mut (*sb).mnt_cifs_flags); 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -35,17 +35,17 @@ pub enum ppc_dbell {
     PPC_DBELL_SERVER = 5,  /* doorbell on server */
 }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S")]
+#[cfg(CONFIG_PPC_BOOK3S)]
 pub const PPC_DBELL_MSGTYPE: ppc_dbell = ppc_dbell::PPC_DBELL_SERVER;
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S")]
+#[cfg(CONFIG_PPC_BOOK3S)]
 #[inline]
 pub unsafe fn _ppc_msgsnd(msg: u32) {
     // ASM_FTR_IFSET(PPC_MSGSND(msg), PPC_MSGSNDP(msg), CPU_FTR_HVMODE)
     core::arch::asm!("msgsnd {0}", in(reg) msg);
 }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S")]
+#[cfg(CONFIG_PPC_BOOK3S)]
 #[inline]
 pub unsafe fn ppc_msgsync() {
     // ASM_FTR_IFSET(PPC_MSGSYNC ; lwsync, "", CPU_FTR_HVMODE|CPU_FTR_ARCH_300)
@@ -53,30 +53,30 @@ pub unsafe fn ppc_msgsync() {
     core::arch::asm!("msgsync; lwsync");
 }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S")]
+#[cfg(CONFIG_PPC_BOOK3S)]
 #[inline]
 pub unsafe fn _ppc_msgclr(msg: u32) {
     // ASM_FTR_IFSET(PPC_MSGCLR(msg), PPC_MSGCLRP(msg), CPU_FTR_HVMODE)
     core::arch::asm!("msgclr {0}", in(reg) msg);
 }
 
-#[cfg(feature = "CONFIG_PPC_BOOK3S")]
+#[cfg(CONFIG_PPC_BOOK3S)]
 #[inline]
 pub unsafe fn ppc_msgclr(ty: ppc_dbell) {
     let msg = PPC_DBELL_TYPE(ty as u32);
     _ppc_msgclr(msg);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_BOOK3S"))]
+#[cfg(not(CONFIG_PPC_BOOK3S))]
 pub const PPC_DBELL_MSGTYPE: ppc_dbell = ppc_dbell::PPC_DBELL;
 
-#[cfg(not(feature = "CONFIG_PPC_BOOK3S"))]
+#[cfg(not(CONFIG_PPC_BOOK3S))]
 #[inline]
 pub unsafe fn _ppc_msgsnd(msg: u32) {
     core::arch::asm!("msgsnd {0}", in(reg) msg);
 }
 
-#[cfg(not(feature = "CONFIG_PPC_BOOK3S"))]
+#[cfg(not(CONFIG_PPC_BOOK3S))]
 #[inline]
 pub unsafe fn ppc_msgsync() {}
 
@@ -97,7 +97,7 @@ pub unsafe fn ppc_msgsnd(ty: ppc_dbell, flags: u32, tag: u32) {
     _ppc_msgsnd(msg);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn doorbell_global_ipi(cpu: i32) {
     let tag = get_hard_smp_processor_id(cpu);
@@ -107,7 +107,7 @@ pub unsafe fn doorbell_global_ipi(cpu: i32) {
     ppc_msgsnd(PPC_DBELL_MSGTYPE, 0, tag);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn doorbell_core_ipi(cpu: i32) {
     let tag = cpu_thread_in_core(cpu);
@@ -117,7 +117,7 @@ pub unsafe fn doorbell_core_ipi(cpu: i32) {
     ppc_msgsnd(PPC_DBELL_MSGTYPE, 0, tag);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn doorbell_try_core_ipi(cpu: i32) -> i32 {
     let this_cpu = get_cpu();

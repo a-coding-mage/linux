@@ -55,8 +55,8 @@ unsafe fn get_shadow_bug_type(info: *mut kasan_report_info) -> *const core::ffi:
 }
 
 unsafe fn get_wild_bug_type(info: *mut kasan_report_info) -> *const core::ffi::c_char {
-    if (*info).access_addr as usize <= PAGE_SIZE { b"null-ptr-deref\0".as_ptr() as _ }
-    else if (*info).access_addr as usize < TASK_SIZE { b"user-memory-access\0".as_ptr() as _ }
+    if ((*info).access_addr as usize) <= PAGE_SIZE { b"null-ptr-deref\0".as_ptr() as _ }
+    else if ((*info).access_addr as usize) < TASK_SIZE { b"user-memory-access\0".as_ptr() as _ }
     else { b"wild-memory-access\0".as_ptr() as _ }
 }
 

@@ -42,13 +42,13 @@ unsafe extern "C" {
 
 // For extable.c to search modules' exception tables.
 // The CONFIG_MODULES condition is preserved as a Rust cfg feature.
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe extern "C" {
     pub fn search_module_extables(addr: ::core::ffi::c_ulong)
         -> *const exception_table_entry;
 }
 
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[inline]
 pub unsafe fn search_module_extables(
     _addr: ::core::ffi::c_ulong,
@@ -56,13 +56,13 @@ pub unsafe fn search_module_extables(
     core::ptr::null()
 }
 
-#[cfg(feature = "CONFIG_BPF_JIT")]
+#[cfg(CONFIG_BPF_JIT)]
 unsafe extern "C" {
     pub fn search_bpf_extables(addr: ::core::ffi::c_ulong)
         -> *const exception_table_entry;
 }
 
-#[cfg(not(feature = "CONFIG_BPF_JIT"))]
+#[cfg(not(CONFIG_BPF_JIT))]
 #[inline]
 pub unsafe fn search_bpf_extables(
     _addr: ::core::ffi::c_ulong,

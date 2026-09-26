@@ -108,7 +108,7 @@ unsafe fn tcpoptstrip_tg4(skb: *mut sk_buff, par: *const xt_action_param) -> u32
 
 // Preserved conditional intent: this function and IPv6 registration exist
 // when CONFIG_IP6_NF_IPTABLES is enabled.
-#[cfg(feature = "CONFIG_IP6_NF_IPTABLES")]
+#[cfg(CONFIG_IP6_NF_IPTABLES)]
 unsafe fn tcpoptstrip_tg6(skb: *mut sk_buff, par: *const xt_action_param) -> u32 {
     let ipv6h = ipv6_hdr(skb);
     let mut nexthdr = (*ipv6h).nexthdr;

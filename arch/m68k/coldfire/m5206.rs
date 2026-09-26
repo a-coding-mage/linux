@@ -67,7 +67,7 @@ static mut m5206_clk_lookup: [clk_lookup; 7] = [
 
 unsafe extern "C" fn m5206_i2c_init() {
     // Build-time condition preserved from: IS_ENABLED(CONFIG_I2C_IMX)
-    #[cfg(feature = "CONFIG_I2C_IMX")]
+    #[cfg(CONFIG_I2C_IMX)]
     {
         mcf_write8(
             MCFSIM_ICR_AUTOVEC | MCFSIM_ICR_LEVEL5 | MCFSIM_ICR_PRI0,
@@ -79,7 +79,7 @@ unsafe extern "C" fn m5206_i2c_init() {
 
 pub unsafe extern "C" fn config_BSP(commandp: *mut c_char, size: c_int) {
     // Build-time condition preserved from: defined(CONFIG_NETtel)
-    #[cfg(feature = "CONFIG_NETtel")]
+    #[cfg(CONFIG_NETtel)]
     {
         /* Copy command line from FLASH to local buffer... */
         memcpy(

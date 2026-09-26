@@ -8,22 +8,22 @@
 
 pub const PTE_MASK: usize = PAGE_MASK;
 
-#[cfg(feature = "CONFIG_HUGETLB_PAGE_SIZE_64K")]
+#[cfg(CONFIG_HUGETLB_PAGE_SIZE_64K)]
 pub const HPAGE_SHIFT: usize = 16;
-#[cfg(feature = "CONFIG_HUGETLB_PAGE_SIZE_256K")]
+#[cfg(CONFIG_HUGETLB_PAGE_SIZE_256K)]
 pub const HPAGE_SHIFT: usize = 18;
-#[cfg(feature = "CONFIG_HUGETLB_PAGE_SIZE_1MB")]
+#[cfg(CONFIG_HUGETLB_PAGE_SIZE_1MB)]
 pub const HPAGE_SHIFT: usize = 20;
-#[cfg(feature = "CONFIG_HUGETLB_PAGE_SIZE_4MB")]
+#[cfg(CONFIG_HUGETLB_PAGE_SIZE_4MB)]
 pub const HPAGE_SHIFT: usize = 22;
-#[cfg(feature = "CONFIG_HUGETLB_PAGE_SIZE_64MB")]
+#[cfg(CONFIG_HUGETLB_PAGE_SIZE_64MB)]
 pub const HPAGE_SHIFT: usize = 26;
 
-#[cfg(feature = "CONFIG_HUGETLB_PAGE")]
+#[cfg(CONFIG_HUGETLB_PAGE)]
 pub const HPAGE_SIZE: usize = 1usize << HPAGE_SHIFT;
-#[cfg(feature = "CONFIG_HUGETLB_PAGE")]
+#[cfg(CONFIG_HUGETLB_PAGE)]
 pub const HPAGE_MASK: usize = !(HPAGE_SIZE - 1);
-#[cfg(feature = "CONFIG_HUGETLB_PAGE")]
+#[cfg(CONFIG_HUGETLB_PAGE)]
 pub const HUGETLB_PAGE_ORDER: usize = HPAGE_SHIFT - PAGE_SHIFT;
 
 extern "C" {
@@ -76,57 +76,57 @@ extern "C" {
 
 /* __HAVE_ARCH_COPY_USER_HIGHPAGE */
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[repr(C)]
 pub struct pte_t {
     pub pte_low: usize,
     pub pte_high: usize,
 }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[repr(C)]
 pub struct pte_t {
     pub pte_low: usize,
 }
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[repr(C)]
 pub struct pgprot_t {
     pub pgprot: u64,
 }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[repr(C)]
 pub struct pgprot_t {
     pub pgprot: usize,
 }
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[repr(C)]
 pub struct pgd_t {
     pub pgd: u64,
 }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[repr(C)]
 pub struct pgd_t {
     pub pgd: usize,
 }
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline]
 pub fn pte_val(x: pte_t) -> u64 {
     x.pte_low as u64 | ((x.pte_high as u64) << 32)
 }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline]
 pub fn pte_val(x: pte_t) -> usize {
     x.pte_low
 }
 
-#[cfg(feature = "CONFIG_X2TLB")]
+#[cfg(CONFIG_X2TLB)]
 #[inline]
 pub fn __pte(x: u64) -> pte_t {
     pte_t { pte_low: x as usize, pte_high: x >> 32 }
 }
-#[cfg(not(feature = "CONFIG_X2TLB"))]
+#[cfg(not(CONFIG_X2TLB))]
 #[inline]
 pub fn __pte(x: usize) -> pte_t {
     pte_t { pte_low: x }
@@ -159,24 +159,24 @@ pub const __MEMORY_SIZE: usize = CONFIG_MEMORY_SIZE;
  * PHYSICAL_OFFSET is the offset in physical memory where the base
  * of the kernel is loaded.
  */
-#[cfg(feature = "CONFIG_PHYSICAL_START")]
+#[cfg(CONFIG_PHYSICAL_START)]
 pub const PHYSICAL_OFFSET: usize = CONFIG_PHYSICAL_START - __MEMORY_START;
-#[cfg(not(feature = "CONFIG_PHYSICAL_START"))]
+#[cfg(not(CONFIG_PHYSICAL_START))]
 pub const PHYSICAL_OFFSET: usize = 0;
 
 /* PAGE_OFFSET is the virtual address of the start of kernel address space. */
 pub const PAGE_OFFSET: usize = CONFIG_PAGE_OFFSET;
 
-#[cfg(feature = "CONFIG_PMB")]
+#[cfg(CONFIG_PMB)]
 #[inline]
 pub const fn ___pa(x: usize) -> usize { x - PAGE_OFFSET + __MEMORY_START }
-#[cfg(feature = "CONFIG_PMB")]
+#[cfg(CONFIG_PMB)]
 #[inline]
 pub const fn ___va(x: usize) -> usize { x + PAGE_OFFSET - __MEMORY_START }
-#[cfg(not(feature = "CONFIG_PMB"))]
+#[cfg(not(CONFIG_PMB))]
 #[inline]
 pub const fn ___pa(x: usize) -> usize { x - PAGE_OFFSET }
-#[cfg(not(feature = "CONFIG_PMB"))]
+#[cfg(not(CONFIG_PMB))]
 #[inline]
 pub const fn ___va(x: usize) -> usize { x + PAGE_OFFSET }
 
@@ -185,21 +185,21 @@ pub fn __pa<T>(x: *const T) -> usize { ___pa(x as usize) }
 #[inline]
 pub fn __va(x: usize) -> *mut core::ffi::c_void { ___va(x) as *mut core::ffi::c_void }
 
-#[cfg(feature = "CONFIG_UNCACHED_MAPPING")]
-#[cfg(feature = "CONFIG_29BIT")]
+#[cfg(CONFIG_UNCACHED_MAPPING)]
+#[cfg(CONFIG_29BIT)]
 pub fn UNCAC_ADDR(addr: usize) -> usize { P2SEGADDR(addr) }
-#[cfg(feature = "CONFIG_UNCACHED_MAPPING")]
-#[cfg(feature = "CONFIG_29BIT")]
+#[cfg(CONFIG_UNCACHED_MAPPING)]
+#[cfg(CONFIG_29BIT)]
 pub fn CAC_ADDR(addr: usize) -> usize { P1SEGADDR(addr) }
-#[cfg(feature = "CONFIG_UNCACHED_MAPPING")]
-#[cfg(not(feature = "CONFIG_29BIT"))]
+#[cfg(CONFIG_UNCACHED_MAPPING)]
+#[cfg(not(CONFIG_29BIT))]
 pub fn UNCAC_ADDR(addr: usize) -> usize { addr - PAGE_OFFSET + uncached_start }
-#[cfg(feature = "CONFIG_UNCACHED_MAPPING")]
-#[cfg(not(feature = "CONFIG_29BIT"))]
+#[cfg(CONFIG_UNCACHED_MAPPING)]
+#[cfg(not(CONFIG_29BIT))]
 pub fn CAC_ADDR(addr: usize) -> usize { addr - uncached_start + PAGE_OFFSET }
-#[cfg(not(feature = "CONFIG_UNCACHED_MAPPING"))]
+#[cfg(not(CONFIG_UNCACHED_MAPPING))]
 pub const fn UNCAC_ADDR(addr: usize) -> usize { addr }
-#[cfg(not(feature = "CONFIG_UNCACHED_MAPPING"))]
+#[cfg(not(CONFIG_UNCACHED_MAPPING))]
 pub const fn CAC_ADDR(addr: usize) -> usize { addr }
 
 #[inline]

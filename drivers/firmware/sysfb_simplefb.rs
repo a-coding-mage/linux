@@ -74,6 +74,7 @@ pub unsafe fn sysfb_create_simplefb(
     let mut size: u64;
     let mut length: u32;
     let mut ret: i32;
+    'err_put_device: {
 
     /*
      * If the 64BIT_BASE capability is set, ext_lfb_base will contain the
@@ -128,22 +129,22 @@ pub unsafe fn sysfb_create_simplefb(
 
     ret = platform_device_add_resources(pd, &res, 1);
     if ret != 0 {
-        goto err_put_device;
+        break 'err_put_device;
     }
 
     ret = platform_device_add_data(pd, mode as *const _, core::mem::size_of::<simplefb_platform_data>());
     if ret != 0 {
-        goto err_put_device;
+        break 'err_put_device;
     }
 
     ret = platform_device_add(pd);
     if ret != 0 {
-        goto err_put_device;
+        break 'err_put_device;
     }
 
     return pd;
-
-err_put_device:
+    }
+    
     platform_device_put(pd);
     ERR_PTR(ret)
 }

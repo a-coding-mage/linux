@@ -371,7 +371,7 @@ unsafe fn CPU_ZERO(set: *mut cpu_set_t) {
 
 unsafe fn CPU_SET(cpu: usize, set: *mut cpu_set_t) {
     let bits_per_word = 8 * mem::size_of::<c_ulong>();
-    (*set).bits[cpu / bits_per_word] |= 1 as c_ulong << (cpu % bits_per_word);
+    (*set).bits[cpu / bits_per_word] |= (1 as c_ulong) << (cpu % bits_per_word);
 }
 
 fn barrier() {

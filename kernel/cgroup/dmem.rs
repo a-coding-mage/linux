@@ -116,14 +116,14 @@ unsafe fn reset_all_resource_limits(pool: *mut dmem_cgroup_pool_state) {
 unsafe extern "C" fn dmemcs_offline(css: *mut cgroup_subsys_state) {
     let cs = css_to_dmemcs(css); rcu_read_lock();
     let mut pool: *mut dmem_cgroup_pool_state = core::ptr::null_mut();
-    list_for_each_entry_rcu!(pool, &mut (*cs).pools, css_node) { reset_all_resource_limits(pool); }
+    list_for_each_entry_rcu!(pool, &mut (*cs).pools, css_node, { reset_all_resource_limits(pool); });
     rcu_read_unlock();
 }
 
 unsafe extern "C" fn dmemcs_free(css: *mut cgroup_subsys_state) {
     let cs = css_to_dmemcs(css); spin_lock(&mut dmemcg_lock);
     let mut pool: *mut dmem_cgroup_pool_state = core::ptr::null_mut(); let mut next = core::ptr::null_mut();
-    list_for_each_entry_safe!(pool, next, &mut (*cs).pools, css_node) { list_del(&mut (*pool).css_node); free_cg_pool(pool); }
+    list_for_each_entry_safe!(pool, next, &mut (*cs).pools, css_node, { list_del(&mut (*pool).css_node); free_cg_pool(pool); });
     spin_unlock(&mut dmemcg_lock); kfree(cs as *mut c_void);
 }
 
@@ -134,7 +134,7 @@ unsafe extern "C" fn dmemcs_alloc(_parent_css: *mut cgroup_subsys_state) -> *mut
 
 unsafe fn find_cg_pool_locked(cs: *mut dmemcg_state, region: *mut dmem_cgroup_region) -> *mut dmem_cgroup_pool_state {
     let mut pool: *mut dmem_cgroup_pool_state = core::ptr::null_mut();
-    list_for_each_entry_rcu!(pool, &mut (*cs).pools, css_node) { if (*pool).region == region { return pool; } }
+    list_for_each_entry_rcu!(pool, &mut (*cs).pools, css_node, { if (*pool).region == region { return pool; } });
     core::ptr::null_mut()
 }
 

@@ -179,7 +179,7 @@ pub const ASUS_EV_MAX_BRIGHTNESS: u32 = 3;
 
 // `IS_REACHABLE(CONFIG_ASUS_WMI)` is a kernel build-time condition and is
 // preserved here as a Rust feature condition.
-#[cfg(feature = "CONFIG_ASUS_WMI")]
+#[cfg(CONFIG_ASUS_WMI)]
 extern "C" {
     pub fn set_ally_mcu_hack(status: asus_ally_mcu_hack);
     pub fn set_ally_mcu_powersave(enabled: bool);
@@ -192,23 +192,23 @@ extern "C" {
     pub fn asus_wmi_custom_fan_curve_is_enabled() -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn set_ally_mcu_hack(_status: asus_ally_mcu_hack) {}
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn set_ally_mcu_powersave(_enabled: bool) {}
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_wmi_set_devstate(_dev_id: u32, _ctrl_param: u32, _retval: *mut u32) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_wmi_get_devstate_dsts(_dev_id: u32, _retval: *mut u32) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_wmi_evaluate_method(_method_id: u32, _arg0: u32, _arg1: u32, _retval: *mut u32) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_hid_register_listener(_bdev: *mut asus_hid_listener) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_hid_unregister_listener(_bdev: *mut asus_hid_listener) {}
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_hid_event(_event: asus_hid_event) -> i32 { -19 }
-#[cfg(not(feature = "CONFIG_ASUS_WMI"))]
+#[cfg(not(CONFIG_ASUS_WMI))]
 pub unsafe fn asus_wmi_custom_fan_curve_is_enabled() -> bool { false }
 
 

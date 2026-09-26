@@ -15,7 +15,7 @@ pub enum kvm_one_reg {}
 
 // CONFIG_FPU conditionally selects the real declarations versus no-op inline
 // implementations in the original header.
-#[cfg(feature = "CONFIG_FPU")]
+#[cfg(CONFIG_FPU)]
 extern "C" {
     pub fn __kvm_riscv_fp_f_save(context: *mut kvm_cpu_context);
     pub fn __kvm_riscv_fp_f_restore(context: *mut kvm_cpu_context);
@@ -29,11 +29,11 @@ extern "C" {
     pub fn kvm_riscv_vcpu_host_fp_restore(cntx: *mut kvm_cpu_context);
 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 #[inline]
 pub unsafe fn kvm_riscv_vcpu_fp_reset(_vcpu: *mut kvm_vcpu) {}
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 #[inline]
 pub unsafe fn kvm_riscv_vcpu_guest_fp_save(
     _cntx: *mut kvm_cpu_context,
@@ -41,7 +41,7 @@ pub unsafe fn kvm_riscv_vcpu_guest_fp_save(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 #[inline]
 pub unsafe fn kvm_riscv_vcpu_guest_fp_restore(
     _cntx: *mut kvm_cpu_context,
@@ -49,11 +49,11 @@ pub unsafe fn kvm_riscv_vcpu_guest_fp_restore(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 #[inline]
 pub unsafe fn kvm_riscv_vcpu_host_fp_save(_cntx: *mut kvm_cpu_context) {}
 
-#[cfg(not(feature = "CONFIG_FPU"))]
+#[cfg(not(CONFIG_FPU))]
 #[inline]
 pub unsafe fn kvm_riscv_vcpu_host_fp_restore(_cntx: *mut kvm_cpu_context) {}
 

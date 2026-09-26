@@ -86,23 +86,23 @@ unsafe extern "C" fn omap2430_clk_i2chs_find_idlest(
 /* Public data */
 
 pub static clkhwops_iclk: clk_hw_omap_ops = clk_hw_omap_ops {
-    .allow_idle: Some(omap2_clkt_iclk_allow_idle),
-    .deny_idle: Some(omap2_clkt_iclk_deny_idle),
+    allow_idle: Some(omap2_clkt_iclk_allow_idle),
+    deny_idle: Some(omap2_clkt_iclk_deny_idle),
     ..unsafe { core::mem::zeroed() }
 };
 
 pub static clkhwops_iclk_wait: clk_hw_omap_ops = clk_hw_omap_ops {
-    .allow_idle: Some(omap2_clkt_iclk_allow_idle),
-    .deny_idle: Some(omap2_clkt_iclk_deny_idle),
-    .find_idlest: Some(omap2_clk_dflt_find_idlest),
-    .find_companion: Some(omap2_clk_dflt_find_companion),
+    allow_idle: Some(omap2_clkt_iclk_allow_idle),
+    deny_idle: Some(omap2_clkt_iclk_deny_idle),
+    find_idlest: Some(omap2_clk_dflt_find_idlest),
+    find_companion: Some(omap2_clk_dflt_find_companion),
     ..unsafe { core::mem::zeroed() }
 };
 
 /* 2430 I2CHS has non-standard IDLEST register */
 pub static clkhwops_omap2430_i2chs_wait: clk_hw_omap_ops = clk_hw_omap_ops {
-    .find_idlest: Some(omap2430_clk_i2chs_find_idlest),
-    .find_companion: Some(omap2_clk_dflt_find_companion),
+    find_idlest: Some(omap2430_clk_i2chs_find_idlest),
+    find_companion: Some(omap2_clk_dflt_find_companion),
     ..unsafe { core::mem::zeroed() }
 };
 

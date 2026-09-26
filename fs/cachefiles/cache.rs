@@ -16,21 +16,25 @@ pub unsafe fn cachefiles_add_cache(cache: *mut cachefiles_cache) -> i32 {
     let mut root: *mut dentry;
     let mut saved_cred: *const cred;
     let mut ret: i32;
+    'error_getsec: {
+    'error_open_root: {
+    'error_unsupported: {
+    'error_add_cache: {
 
     _enter!("");
     cache_cookie = fscache_acquire_cache((*cache).tag);
     if IS_ERR!(cache_cookie) { return PTR_ERR!(cache_cookie); }
     ret = cachefiles_get_security_ID(cache);
-    if ret < 0 { goto!(error_getsec); }
+    if ret < 0 { break 'error_getsec; }
     cachefiles_begin_secure(cache, &mut saved_cred);
     ret = kern_path((*cache).rootdirname, LOOKUP_DIRECTORY, &mut path);
-    if ret < 0 { goto!(error_open_root); }
+    if ret < 0 { break 'error_open_root; }
     (*cache).mnt = path.mnt;
     root = path.dentry;
     ret = -EINVAL;
     if is_idmapped_mnt(path.mnt) {
         pr_warn!("File cache on idmapped mounts not supported");
-        goto!(error_unsupported);
+        break 'error_unsupported;
     }
     ret = -EOPNOTSUPP;
     if d_is_negative(root) || (*d_backing_inode(root)).i_op.lookup.is_none() ||
@@ -39,18 +43,18 @@ pub unsafe fn cachefiles_add_cache(cache: *mut cachefiles_cache) -> i32 {
        ((*d_backing_inode(root)).i_opflags & IOP_XATTR) == 0 ||
        (*(*root).d_sb).s_op.statfs.is_none() ||
        (*(*root).d_sb).s_op.sync_fs.is_none() || (*(*root).d_sb).s_blocksize > PAGE_SIZE {
-        goto!(error_unsupported);
+        break 'error_unsupported;
     }
     ret = -EROFS;
-    if sb_rdonly((*root).d_sb) { goto!(error_unsupported); }
+    if sb_rdonly((*root).d_sb) { break 'error_unsupported; }
     ret = cachefiles_determine_cache_security(cache, root, &mut saved_cred);
-    if ret < 0 { goto!(error_unsupported); }
+    if ret < 0 { break 'error_unsupported; }
     ret = vfs_statfs(&path, &mut stats);
-    if ret < 0 { goto!(error_unsupported); }
+    if ret < 0 { break 'error_unsupported; }
     ret = -ERANGE;
-    if stats.f_bsize <= 0 { goto!(error_unsupported); }
+    if stats.f_bsize <= 0 { break 'error_unsupported; }
     ret = -EOPNOTSUPP;
-    if stats.f_bsize > PAGE_SIZE { goto!(error_unsupported); }
+    if stats.f_bsize > PAGE_SIZE { break 'error_unsupported; }
     (*cache).bsize = stats.f_bsize;
     (*cache).bshift = ilog2(stats.f_bsize);
     _debug!("blksize {} (shift {})", (*cache).bsize, (*cache).bshift);
@@ -66,14 +70,14 @@ pub unsafe fn cachefiles_add_cache(cache: *mut cachefiles_cache) -> i32 {
     (*cache).brun = stats.f_blocks * (*cache).brun_percent;
     _debug!("limits {{{},{},{}}} blocks", (*cache).brun, (*cache).bcull, (*cache).bstop);
     cachedir = cachefiles_get_directory(cache, root, "cache".as_ptr() as *const i8, core::ptr::null_mut());
-    if IS_ERR!(cachedir) { ret = PTR_ERR!(cachedir); goto!(error_unsupported); }
+    if IS_ERR!(cachedir) { ret = PTR_ERR!(cachedir); break 'error_unsupported; }
     (*cache).store = cachedir;
     graveyard = cachefiles_get_directory(cache, root, "graveyard".as_ptr() as *const i8, core::ptr::null_mut());
-    if IS_ERR!(graveyard) { ret = PTR_ERR!(graveyard); goto!(error_unsupported); }
+    if IS_ERR!(graveyard) { ret = PTR_ERR!(graveyard); break 'error_unsupported; }
     (*cache).graveyard = graveyard;
     (*cache).cache = cache_cookie;
     ret = fscache_add_cache(cache_cookie, &cachefiles_cache_ops, cache);
-    if ret < 0 { goto!(error_add_cache); }
+    if ret < 0 { break 'error_add_cache; }
     set_bit!(CACHEFILES_READY, &mut (*cache).flags);
     dput(root);
     pr_info!("File cache on {} registered\n", (*cache_cookie).name);
@@ -81,16 +85,19 @@ pub unsafe fn cachefiles_add_cache(cache: *mut cachefiles_cache) -> i32 {
     cachefiles_end_secure(cache, saved_cred);
     _leave!(" = 0 [%px]", (*cache).cache);
     return 0;
-
-error_add_cache:
+    }
+    
     cachefiles_put_directory((*cache).graveyard); (*cache).graveyard = core::ptr::null_mut();
-error_unsupported:
+    }
+    
     cachefiles_put_directory((*cache).store); (*cache).store = core::ptr::null_mut();
     mntput((*cache).mnt); (*cache).mnt = core::ptr::null_mut(); dput(root);
-error_open_root:
+    }
+    
     cachefiles_end_secure(cache, saved_cred); put_cred((*cache).cache_cred);
     (*cache).cache_cred = core::ptr::null();
-error_getsec:
+    }
+    
     fscache_relinquish_cache(cache_cookie); (*cache).cache = core::ptr::null_mut();
     pr_err!("Failed to register: {}\n", ret); ret
 }

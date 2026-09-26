@@ -53,7 +53,7 @@ extern "C" {
     pub fn adf_response_handler(bank_addr: usize);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn adf_bank_debugfs_add(bank: *mut adf_etr_bank_data) -> i32;
     pub fn adf_bank_debugfs_rm(bank: *mut adf_etr_bank_data);
@@ -64,15 +64,15 @@ extern "C" {
     pub fn adf_ring_debugfs_rm(ring: *mut adf_etr_ring_data);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_bank_debugfs_add(_bank: *mut adf_etr_bank_data) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_bank_debugfs_rm(_bank: *mut adf_etr_bank_data) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_ring_debugfs_add(
     _ring: *mut adf_etr_ring_data,
     _name: *const core::ffi::c_char,
@@ -80,7 +80,7 @@ pub unsafe fn adf_ring_debugfs_add(
     0
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_ring_debugfs_rm(_ring: *mut adf_etr_ring_data) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

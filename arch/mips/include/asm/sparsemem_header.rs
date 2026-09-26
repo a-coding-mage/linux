@@ -11,10 +11,10 @@
  * Source condition:
  * defined(CONFIG_MIPS_HUGE_TLB_SUPPORT) && defined(CONFIG_PAGE_SIZE_64KB)
  */
-#[cfg(all(feature = "CONFIG_MIPS_HUGE_TLB_SUPPORT", feature = "CONFIG_PAGE_SIZE_64KB"))]
+#[cfg(all(CONFIG_MIPS_HUGE_TLB_SUPPORT, CONFIG_PAGE_SIZE_64KB))]
 pub const SECTION_SIZE_BITS: u32 = 29;
 
-#[cfg(not(all(feature = "CONFIG_MIPS_HUGE_TLB_SUPPORT", feature = "CONFIG_PAGE_SIZE_64KB")))]
+#[cfg(not(all(CONFIG_MIPS_HUGE_TLB_SUPPORT, CONFIG_PAGE_SIZE_64KB)))]
 pub const SECTION_SIZE_BITS: u32 = 28;
 
 pub const MAX_PHYSMEM_BITS: u32 = 48;

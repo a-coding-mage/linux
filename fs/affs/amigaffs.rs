@@ -84,12 +84,12 @@ pub unsafe fn affs_remove_hash(dir: *mut inode, rem_bh: *mut buffer_head) -> i32
 
 unsafe fn affs_fix_dcache(inode: *mut inode, entry_ino: u32) {
     spin_lock(&mut (*inode).i_lock);
-    for_each_alias!(dentry, inode) {
+    for_each_alias!(dentry, inode, {
         if entry_ino == (*dentry).d_fsdata as usize as u32 {
             (*dentry).d_fsdata = (*inode).i_ino as usize as *mut core::ffi::c_void;
             break;
         }
-    }
+    });
     spin_unlock(&mut (*inode).i_lock);
 }
 

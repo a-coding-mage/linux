@@ -60,7 +60,7 @@ pub enum fixed_addresses {
 #[cfg(CONFIG_IOREMAP_FIXED)]
 pub const FIX_N_IOREMAPS: usize = 32;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn __set_fixmap(idx: fixed_addresses, phys: ::core::ffi::c_ulong, flags: pgprot_t);
     pub fn __clear_fixmap(idx: fixed_addresses, flags: pgprot_t);
 }

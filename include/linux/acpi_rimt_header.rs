@@ -12,23 +12,23 @@ pub struct device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_ACPI_RIMT")]
+#[cfg(CONFIG_ACPI_RIMT)]
 unsafe extern "C" {
     pub fn rimt_iommu_register(dev: *mut device) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_RIMT"))]
+#[cfg(not(CONFIG_ACPI_RIMT))]
 #[inline]
 pub unsafe fn rimt_iommu_register(_dev: *mut device) -> i32 {
     -19 // ENODEV
 }
 
-#[cfg(all(feature = "CONFIG_IOMMU_API", feature = "CONFIG_ACPI_RIMT"))]
+#[cfg(all(CONFIG_IOMMU_API, CONFIG_ACPI_RIMT))]
 unsafe extern "C" {
     pub fn rimt_iommu_configure_id(dev: *mut device, id_in: *const u32) -> i32;
 }
 
-#[cfg(not(all(feature = "CONFIG_IOMMU_API", feature = "CONFIG_ACPI_RIMT")))]
+#[cfg(not(all(CONFIG_IOMMU_API, CONFIG_ACPI_RIMT)))]
 #[inline]
 pub unsafe fn rimt_iommu_configure_id(_dev: *mut device, _id_in: *const u32) -> i32 {
     -19 // ENODEV

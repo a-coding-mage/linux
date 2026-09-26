@@ -12,12 +12,12 @@
 // CONFIG_USBGECKO_UDBG is a build-time C configuration condition.  The
 // corresponding Rust configuration is represented here by the feature of
 // the same name.
-#[cfg(feature = "CONFIG_USBGECKO_UDBG")]
+#[cfg(CONFIG_USBGECKO_UDBG)]
 extern "C" {
     pub fn ug_udbg_init();
 }
 
-#[cfg(not(feature = "CONFIG_USBGECKO_UDBG"))]
+#[cfg(not(CONFIG_USBGECKO_UDBG))]
 #[inline]
 pub unsafe fn ug_udbg_init() {
 }

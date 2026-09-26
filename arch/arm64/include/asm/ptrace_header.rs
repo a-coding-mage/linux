@@ -49,9 +49,9 @@ pub const PSR_AA32_N_BIT: u32 = 0x80000000;
 pub const PSR_AA32_IT_MASK: u32 = 0x0600fc00;
 pub const PSR_AA32_GE_MASK: u32 = 0x000f0000;
 
-#[cfg(feature = "CONFIG_CPU_BIG_ENDIAN")]
+#[cfg(CONFIG_CPU_BIG_ENDIAN)]
 pub const PSR_AA32_ENDSTATE: u32 = PSR_AA32_E_BIT;
-#[cfg(not(feature = "CONFIG_CPU_BIG_ENDIAN"))]
+#[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
 pub const PSR_AA32_ENDSTATE: u32 = 0;
 
 pub const COMPAT_PSR_DIT_BIT: u64 = 0x00200000;

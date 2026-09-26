@@ -31,7 +31,7 @@ unsafe fn ip27_machine_restart(command: *mut core::ffi::c_char) -> ! {
     }
 
     // CONFIG_SMP conditional from the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     unsafe {
         smp_send_stop();
     }
@@ -48,7 +48,7 @@ unsafe fn ip27_machine_halt() -> ! {
     let mut i: i32;
 
     // CONFIG_SMP conditional from the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     {
         smp_send_stop();
     }

@@ -26,7 +26,7 @@ unsafe extern "C" {
 }
 
 /* Build-time condition corresponding to CONFIG_X86_CHECK_BIOS_CORRUPTION. */
-#[cfg(feature = "CONFIG_X86_CHECK_BIOS_CORRUPTION")]
+#[cfg(CONFIG_X86_CHECK_BIOS_CORRUPTION)]
 unsafe extern "C" {
     /*
      * This is obviously not a great place for this, but we want to be
@@ -36,11 +36,11 @@ unsafe extern "C" {
     pub fn start_periodic_check_for_corruption();
 }
 
-#[cfg(not(feature = "CONFIG_X86_CHECK_BIOS_CORRUPTION"))]
+#[cfg(not(CONFIG_X86_CHECK_BIOS_CORRUPTION))]
 #[inline]
 pub fn check_for_bios_corruption() {}
 
-#[cfg(not(feature = "CONFIG_X86_CHECK_BIOS_CORRUPTION"))]
+#[cfg(not(CONFIG_X86_CHECK_BIOS_CORRUPTION))]
 #[inline]
 pub fn start_periodic_check_for_corruption() {}
 

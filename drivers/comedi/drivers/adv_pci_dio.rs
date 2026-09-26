@@ -86,6 +86,6 @@ unsafe fn pci_dio_insn_bits_do_b(dev:*mut comedi_device,s:*mut comedi_subdevice,
 unsafe fn pci_dio_insn_bits_do_w(dev:*mut comedi_device,s:*mut comedi_subdevice,insn:*mut comedi_insn,data:*mut u32)->i32 { let p=(*dev).iobase+(*s).private as usize; if comedi_dio_update_state(s,data)!=0 {outw((*s).state as u16,p); if (*s).n_chan>16 {outw(((*s).state>>16) as u16,p+2);}} *data.add(1)=(*s).state; (*insn).n as i32 }
 
 // Constants and external types/functions below are provided by the comedi/kernel translation.
-extern "C" { fn comedi_dio_update_state(*mut comedi_subdevice,*mut u32)->i32; fn comedi_buf_write_samples(*mut comedi_subdevice,*const core::ffi::c_void,usize); fn comedi_handle_events(*mut comedi_device,*mut comedi_subdevice); fn spin_lock(*mut spinlock_t); fn spin_unlock(*mut spinlock_t); fn spin_lock_irqsave(*mut spinlock_t,*mut usize); fn spin_unlock_irqrestore(*mut spinlock_t,usize); }
+extern "C" { fn comedi_dio_update_state(_: *mut comedi_subdevice,_: *mut u32)->i32; fn comedi_buf_write_samples(_: *mut comedi_subdevice,_: *const core::ffi::c_void,_: usize); fn comedi_handle_events(_: *mut comedi_device,_: *mut comedi_subdevice); fn spin_lock(_: *mut spinlock_t); fn spin_unlock(_: *mut spinlock_t); fn spin_lock_irqsave(_: *mut spinlock_t,_: *mut usize); fn spin_unlock_irqrestore(_: *mut spinlock_t,_: usize); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

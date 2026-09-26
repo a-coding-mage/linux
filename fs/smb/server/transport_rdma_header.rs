@@ -20,7 +20,7 @@ pub struct ksmbd_transport {
 }
 
 // CONFIG_SMB_SERVER_SMBDIRECT selects the external implementations.
-#[cfg(feature = "CONFIG_SMB_SERVER_SMBDIRECT")]
+#[cfg(CONFIG_SMB_SERVER_SMBDIRECT)]
 unsafe extern "C" {
     pub fn ksmbd_rdma_init() -> i32;
     pub fn ksmbd_rdma_stop_listening();
@@ -30,33 +30,33 @@ unsafe extern "C" {
     pub fn get_smbd_max_read_write_size(kt: *mut ksmbd_transport) -> u32;
 }
 
-#[cfg(not(feature = "CONFIG_SMB_SERVER_SMBDIRECT"))]
+#[cfg(not(CONFIG_SMB_SERVER_SMBDIRECT))]
 #[inline]
 pub fn ksmbd_rdma_init() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SMB_SERVER_SMBDIRECT"))]
+#[cfg(not(CONFIG_SMB_SERVER_SMBDIRECT))]
 #[inline]
 pub fn ksmbd_rdma_stop_listening() {}
 
-#[cfg(not(feature = "CONFIG_SMB_SERVER_SMBDIRECT"))]
+#[cfg(not(CONFIG_SMB_SERVER_SMBDIRECT))]
 #[inline]
 pub fn ksmbd_rdma_enabled() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_SMB_SERVER_SMBDIRECT"))]
+#[cfg(not(CONFIG_SMB_SERVER_SMBDIRECT))]
 #[inline]
 pub fn ksmbd_rdma_capable_netdev(_netdev: *mut net_device) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_SMB_SERVER_SMBDIRECT"))]
+#[cfg(not(CONFIG_SMB_SERVER_SMBDIRECT))]
 #[inline]
 pub fn init_smbd_max_io_size(_sz: u32) {}
 
-#[cfg(not(feature = "CONFIG_SMB_SERVER_SMBDIRECT"))]
+#[cfg(not(CONFIG_SMB_SERVER_SMBDIRECT))]
 #[inline]
 pub fn get_smbd_max_read_write_size(_kt: *mut ksmbd_transport) -> u32 {
     0

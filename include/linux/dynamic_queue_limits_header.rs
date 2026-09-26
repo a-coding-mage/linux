@@ -126,7 +126,7 @@ pub unsafe fn dql_queue_stall(dql: *mut dql) {
     map = read_once(dql_hist_ent(dql, now_hi));
 
     /* Populate the history with an entry (bit) per queued */
-    let bit = 1 as c_ulong << (now % BITS_PER_LONG);
+    let bit = (1 as c_ulong) << (now % BITS_PER_LONG);
     if map & bit == 0 {
         write_once(dql_hist_ent(dql, now_hi), map | bit);
     }

@@ -22,10 +22,12 @@ pub unsafe fn unwind_user_word_size(regs: *mut pt_regs) -> i32 {
 #[macro_export]
 macro_rules! ARCH_INIT_USER_FP_FRAME {
     ($ws:expr) => {
-        .cfa_off = 2 * ($ws),
-        .ra_off = -1 * ($ws),
-        .fp_off = -2 * ($ws),
-        .use_fp = true,
+        unwind_user_frame {
+            cfa_off: 2 * ($ws) as s32,
+            ra_off: -1 * ($ws) as s32,
+            fp_off: -2 * ($ws) as s32,
+            use_fp: true,
+        }
     };
 }
 
@@ -33,10 +35,12 @@ macro_rules! ARCH_INIT_USER_FP_FRAME {
 #[macro_export]
 macro_rules! ARCH_INIT_USER_FP_ENTRY_FRAME {
     ($ws:expr) => {
-        .cfa_off = 1 * ($ws),
-        .ra_off = -1 * ($ws),
-        .fp_off = 0,
-        .use_fp = false,
+        unwind_user_frame {
+            cfa_off: 1 * ($ws) as s32,
+            ra_off: -1 * ($ws) as s32,
+            fp_off: 0,
+            use_fp: false,
+        }
     };
 }
 

@@ -6,12 +6,12 @@
 
 // The following declarations are enabled when CONFIG_NFS_LOCALIO is enabled.
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 pub struct nfs_client;
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 pub struct nfs_file_localio;
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 #[repr(C)]
 pub struct nfs_uuid_t {
     pub uuid: uuid_t,
@@ -29,7 +29,7 @@ pub struct nfs_uuid_t {
     pub files: list_head,
 }
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 extern "C" {
     pub fn nfs_uuid_init(uuid: *mut nfs_uuid_t);
     pub fn nfs_uuid_begin(uuid: *mut nfs_uuid_t) -> bool;
@@ -54,7 +54,7 @@ extern "C" {
     pub fn nfs_close_local_fh(nfl: *mut nfs_file_localio);
 }
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 #[repr(C)]
 pub struct nfsd_localio_operations {
     pub nfsd_net_try_get: Option<unsafe extern "C" fn(*mut net) -> bool>,
@@ -75,7 +75,7 @@ pub struct nfsd_localio_operations {
         Option<unsafe extern "C" fn(*mut nfsd_file, *mut u32, *mut u32, *mut u32)>,
 }
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 extern "C" {
     pub fn nfsd_localio_ops_init();
     pub static nfs_to: *const nfsd_localio_operations;
@@ -91,7 +91,7 @@ extern "C" {
     ) -> *mut nfsd_file;
 }
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 #[inline]
 pub unsafe fn nfs_to_nfsd_net_put(net: *mut net) {
     // Once reference to net (and associated nfsd_serv) is dropped, NFSD
@@ -104,7 +104,7 @@ pub unsafe fn nfs_to_nfsd_net_put(net: *mut net) {
     rcu_read_unlock();
 }
 
-#[cfg(feature = "CONFIG_NFS_LOCALIO")]
+#[cfg(CONFIG_NFS_LOCALIO)]
 #[inline]
 pub unsafe fn nfs_to_nfsd_file_put_local(localio: *mut *mut nfsd_file) {
     // Either *localio must be guaranteed to be non-NULL, or caller
@@ -122,17 +122,17 @@ pub unsafe fn nfs_to_nfsd_file_put_local(localio: *mut *mut nfsd_file) {
 }
 
 // CONFIG_NFS_LOCALIO disabled: these are no-op compatibility declarations.
-#[cfg(not(feature = "CONFIG_NFS_LOCALIO"))]
+#[cfg(not(CONFIG_NFS_LOCALIO))]
 pub struct nfs_file_localio;
 
-#[cfg(not(feature = "CONFIG_NFS_LOCALIO"))]
+#[cfg(not(CONFIG_NFS_LOCALIO))]
 #[inline]
 pub unsafe fn nfs_close_local_fh(_nfl: *mut nfs_file_localio) {}
 
-#[cfg(not(feature = "CONFIG_NFS_LOCALIO"))]
+#[cfg(not(CONFIG_NFS_LOCALIO))]
 pub struct nfs_client;
 
-#[cfg(not(feature = "CONFIG_NFS_LOCALIO"))]
+#[cfg(not(CONFIG_NFS_LOCALIO))]
 #[inline]
 pub unsafe fn nfs_localio_disable_client(_clp: *mut nfs_client) {}
 

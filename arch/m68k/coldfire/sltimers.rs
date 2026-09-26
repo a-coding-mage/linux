@@ -14,16 +14,16 @@
 
 // C dependencies supplied by the surrounding kernel translation unit.
 
-#[cfg(feature = "CONFIG_HIGHPROFILE")]
+#[cfg(CONFIG_HIGHPROFILE)]
 const PROFILEHZ: i32 = 1013;
 
-#[cfg(feature = "CONFIG_HIGHPROFILE")]
+#[cfg(CONFIG_HIGHPROFILE)]
 #[inline]
 unsafe fn pa(a: u32) -> u32 {
 	MCFSLT_TIMER1.wrapping_add(a)
 }
 
-#[cfg(feature = "CONFIG_HIGHPROFILE")]
+#[cfg(CONFIG_HIGHPROFILE)]
 pub unsafe extern "C" fn mcfslt_profile_tick(irq: i32, dummy: *mut core::ffi::c_void) -> irqreturn_t {
 	let _ = (irq, dummy);
 	/* Reset Slice Timer 1 */
@@ -34,7 +34,7 @@ pub unsafe extern "C" fn mcfslt_profile_tick(irq: i32, dummy: *mut core::ffi::c_
 	IRQ_HANDLED
 }
 
-#[cfg(feature = "CONFIG_HIGHPROFILE")]
+#[cfg(CONFIG_HIGHPROFILE)]
 pub unsafe fn mcfslt_profile_init() {
 	let mut ret: i32;
 
@@ -129,7 +129,7 @@ pub unsafe extern "C" fn hw_timer_init() {
 
 	clocksource_register_hz(&raw mut mcfslt_clk, MCF_BUSCLK);
 
-	#[cfg(feature = "CONFIG_HIGHPROFILE")]
+	#[cfg(CONFIG_HIGHPROFILE)]
 	mcfslt_profile_init();
 }
 

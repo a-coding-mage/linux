@@ -134,7 +134,7 @@ static mut clocksource_acpi_pm: clocksource = clocksource {
 };
 
 // The CONFIG_PCI section is retained conditionally by the original build.
-#[cfg(feature = "CONFIG_PCI")]
+#[cfg(CONFIG_PCI)]
 mod config_pci {
     use super::*;
 

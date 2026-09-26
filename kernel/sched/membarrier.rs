@@ -37,9 +37,9 @@ static mut membarrier_cpu_mutexes: PerCpu<mutex> = PerCpu::new();
 
 unsafe fn membarrier_init() -> i32 {
     let mut i: i32;
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         mutex_init(&mut per_cpu!(membarrier_cpu_mutexes, i));
-    }
+    });
     0
 }
 core_initcall!(membarrier_init);
@@ -87,13 +87,13 @@ unsafe fn membarrier_global_expedited() -> i32 {
     let _cpus = cpus_read_lock_guard();
     rcu_read_lock();
     let mut cpu: i32;
-    for_each_online_cpu!(cpu) {
+    for_each_online_cpu!(cpu, {
         if cpu == raw_smp_processor_id() { continue; }
         if (READ_ONCE!((*cpu_rq(cpu)).membarrier_state) & MEMBARRIER_STATE_GLOBAL_EXPEDITED) == 0 { continue; }
         let p = rcu_dereference((*cpu_rq(cpu)).curr);
         if (*p).mm.is_null() { continue; }
         __cpumask_set_cpu(cpu, &mut tmpmask);
-    }
+    });
     rcu_read_unlock();
     preempt_disable();
     smp_call_function_many(&tmpmask, ipi_mb, core::ptr::null_mut(), 1);
@@ -134,7 +134,7 @@ unsafe fn membarrier_private_expedited(flags: i32, cpu_id: i32) -> i32 {
         let _cpus = cpus_read_lock_guard();
         rcu_read_lock();
         let mut cpu: i32;
-        for_each_online_cpu!(cpu) { let p = rcu_dereference((*cpu_rq(cpu)).curr); if !p.is_null() && (*p).mm == mm { __cpumask_set_cpu(cpu, &mut tmpmask); } }
+        for_each_online_cpu!(cpu, { let p = rcu_dereference((*cpu_rq(cpu)).curr); if !p.is_null() && (*p).mm == mm { __cpumask_set_cpu(cpu, &mut tmpmask); } });
         rcu_read_unlock();
         if flags != MEMBARRIER_FLAG_SYNC_CORE { preempt_disable(); smp_call_function_many(&tmpmask, ipi_func, core::ptr::null_mut(), true); preempt_enable(); }
         else { on_each_cpu_mask(&tmpmask, ipi_func, core::ptr::null_mut(), true); }
@@ -151,7 +151,7 @@ unsafe fn sync_runqueues_membarrier_state(mm: *mut mm_struct) -> i32 {
     let _ipi = mutex_guard(&mut membarrier_ipi_mutex);
     cpus_read_lock(); rcu_read_lock();
     let mut cpu: i32;
-    for_each_online_cpu!(cpu) { let rq = cpu_rq(cpu); let p = rcu_dereference((*rq).curr); if !p.is_null() && (*p).mm == mm { __cpumask_set_cpu(cpu, &mut tmpmask); } }
+    for_each_online_cpu!(cpu, { let rq = cpu_rq(cpu); let p = rcu_dereference((*rq).curr); if !p.is_null() && (*p).mm == mm { __cpumask_set_cpu(cpu, &mut tmpmask); } });
     rcu_read_unlock(); on_each_cpu_mask(&tmpmask, ipi_sync_rq_state, mm as *mut _, true); free_cpumask_var(tmpmask); cpus_read_unlock(); 0
 }
 

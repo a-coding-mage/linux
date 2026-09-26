@@ -146,7 +146,7 @@ extern "C" {
     pub fn tpm_tis_remove(chip: *mut tpm_chip);
     pub fn tpm_tis_core_init(dev: *mut device, priv_: *mut tpm_tis_data, irq: c_int,
                              phy_ops: *const tpm_tis_phy_ops, acpi_dev_handle: acpi_handle) -> c_int;
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub fn tpm_tis_resume(dev: *mut device) -> c_int;
 }
 

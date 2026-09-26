@@ -14,16 +14,16 @@ pub mod kernel {
     macro_rules! __futex_atomic_op {
         ($insn:expr, $ret:ident, $oldval:ident, $uaddr:ident, $oparg:ident) => {{
             /* __ASM_SMP_MB
-             * 1: ldl_l oldval,0(uaddr)
-             *     <insn>
-             * 2: stl_c ret,0(uaddr)
-             *     beq ret,4f
-             *     mov $31,ret
+             * 1: ldl_l $oldval,0($uaddr)
+             *     <$insn>
+             * 2: stl_c $ret,0($uaddr)
+             *     beq $ret,4f
+             *     mov $31,$ret
              * 3: .subsection 2
              * 4: br 1b
              *     .previous
-             * EXC(1b,3b,$31,ret)
-             * EXC(2b,3b,$31,ret)
+             * EXC(1b,3b,$31,$ret)
+             * EXC(2b,3b,$31,$ret)
              * clobber: memory
              */
             let _ = ($insn, &mut $ret, &mut $oldval, $uaddr, $oparg);

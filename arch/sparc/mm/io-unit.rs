@@ -57,11 +57,11 @@ unsafe fn iounit_iommu_init(op: *mut platform_device) {
 unsafe fn iounit_init() -> c_int {
     extern "C" { fn sun4d_init_sbi_irq(); }
     let mut dp: *mut device_node = core::ptr::null_mut();
-    for_each_node_by_name!(dp, c"sbi") {
+    for_each_node_by_name!(dp, c"sbi", {
         let op = of_find_device_by_node(dp);
         iounit_iommu_init(op);
         of_propagate_archdata(op);
-    }
+    });
     sun4d_init_sbi_irq();
     0
 }
@@ -134,7 +134,7 @@ unsafe fn iounit_unmap_sg(dev: *mut device, sgl: *mut scatterlist, nents: c_int,
     spin_unlock_irqrestore(&mut (*iounit).lock, flags);
 }
 
-#[cfg(feature = "CONFIG_SBUS")]
+#[cfg(CONFIG_SBUS)]
 unsafe fn iounit_alloc(dev: *mut device, mut len: usize, dma_handle: *mut dma_addr_t, gfp: gfp_t, _attrs: ulong) -> *mut c_void {
     let iounit = (*dev).archdata.iommu; if len == 0 || len > 256 * 1024 { return core::ptr::null_mut(); }
     len = PAGE_ALIGN(len); let mut va = __get_free_pages(gfp | __GFP_ZERO, get_order(len)); if va == 0 { return core::ptr::null_mut(); }
@@ -143,7 +143,7 @@ unsafe fn iounit_alloc(dev: *mut device, mut len: usize, dma_handle: *mut dma_ad
     flush_cache_all(); flush_tlb_all(); addr = *dma_handle; addr as *mut c_void
 }
 
-#[cfg(feature = "CONFIG_SBUS")]
+#[cfg(CONFIG_SBUS)]
 unsafe fn iounit_free(_dev: *mut device, _size: usize, _cpu_addr: *mut c_void, _dma_addr: dma_addr_t, _attrs: ulong) {
     /* XXX Somebody please fill this in */
 }

@@ -163,7 +163,7 @@ pub const fn RPI_FIRMWARE_CLK_RATE_REQUEST(id: __le32) -> rpi_firmware_clk_rate_
 
 // CONFIG_RASPBERRYPI_FIRMWARE selects external declarations; the disabled
 // configuration is represented by the inline fallbacks below.
-#[cfg(feature = "CONFIG_RASPBERRYPI_FIRMWARE")]
+#[cfg(CONFIG_RASPBERRYPI_FIRMWARE)]
 extern "C" {
     pub fn rpi_firmware_property(fw: *mut rpi_firmware, tag: u32, data: *mut core::ffi::c_void, len: usize) -> i32;
     pub fn rpi_firmware_property_list(fw: *mut rpi_firmware, data: *mut core::ffi::c_void, tag_size: usize) -> i32;
@@ -174,19 +174,19 @@ extern "C" {
     pub fn devm_rpi_firmware_get(dev: *mut device, firmware_node: *mut device_node) -> *mut rpi_firmware;
 }
 
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn rpi_firmware_property(_: *mut rpi_firmware, _: u32, _: *mut core::ffi::c_void, _: usize) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn rpi_firmware_property_list(_: *mut rpi_firmware, _: *mut core::ffi::c_void, _: usize) -> i32 { -38 }
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn rpi_firmware_put(_: *mut rpi_firmware) {}
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn rpi_firmware_clk_get_max_rate(_: *mut rpi_firmware, _: u32) -> u32 { u32::MAX }
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn rpi_firmware_find_node() -> *mut device_node { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn rpi_firmware_get(_: *mut device_node) -> *mut rpi_firmware { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+#[cfg(not(CONFIG_RASPBERRYPI_FIRMWARE))]
 pub unsafe fn devm_rpi_firmware_get(_: *mut device, _: *mut device_node) -> *mut rpi_firmware { core::ptr::null_mut() }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

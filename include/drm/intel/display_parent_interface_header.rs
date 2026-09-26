@@ -41,13 +41,13 @@ pub struct intel_display_bo_interface {
     pub framebuffer_init: CFn<(*mut drm_gem_object, *mut drm_mode_fb_cmd2), core::ffi::c_int>,
     pub framebuffer_fini: CFn<(*mut drm_gem_object,), ()>,
     pub framebuffer_lookup: CFn<(*mut drm_device, *mut drm_file, *const drm_mode_fb_cmd2), *mut drm_gem_object>,
-    #[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+    #[cfg(CONFIG_DRM_FBDEV_EMULATION)]
     pub fbdev_create: CFn<(*mut drm_device, core::ffi::c_int), *mut drm_gem_object>,
-    #[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+    #[cfg(CONFIG_DRM_FBDEV_EMULATION)]
     pub fbdev_destroy: CFn<(*mut drm_gem_object,), ()>,
-    #[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+    #[cfg(CONFIG_DRM_FBDEV_EMULATION)]
     pub fbdev_fill_info: CFn<(*mut drm_gem_object, *mut fb_info, *mut i915_vma), core::ffi::c_int>,
-    #[cfg(feature = "CONFIG_DRM_FBDEV_EMULATION")]
+    #[cfg(CONFIG_DRM_FBDEV_EMULATION)]
     pub fbdev_pitch_align: CFn<(u32,), u32>,
 }
 

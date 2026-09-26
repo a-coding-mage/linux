@@ -9,17 +9,17 @@ pub struct hdac_bus {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SND_HDA_I915")]
+#[cfg(CONFIG_SND_HDA_I915)]
 unsafe extern "C" {
     pub fn snd_hdac_i915_set_bclk(bus: *mut hdac_bus);
     pub fn snd_hdac_i915_init(bus: *mut hdac_bus) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SND_HDA_I915"))]
+#[cfg(not(CONFIG_SND_HDA_I915))]
 #[inline]
 pub unsafe fn snd_hdac_i915_set_bclk(_bus: *mut hdac_bus) {}
 
-#[cfg(not(feature = "CONFIG_SND_HDA_I915"))]
+#[cfg(not(CONFIG_SND_HDA_I915))]
 #[inline]
 pub unsafe fn snd_hdac_i915_init(_bus: *mut hdac_bus) -> i32 {
     -19 // -ENODEV

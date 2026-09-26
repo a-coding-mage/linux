@@ -135,12 +135,12 @@ pub unsafe fn poll_state_synchronize_rcu(oldstate: usize) -> bool {
     oldstate == RCU_GET_STATE_COMPLETED || core::ptr::read_volatile(&rcu_ctrlblk.gp_seq) != oldstate
 }
 
-#[cfg(feature = "CONFIG_RCU_TORTURE_TEST")]
+#[cfg(CONFIG_RCU_TORTURE_TEST)]
 pub unsafe fn rcutorture_gather_gp_seqs() -> u64 {
     core::ptr::read_volatile(&rcu_ctrlblk.gp_seq) as u64 & 0xffffu64
 }
 
-#[cfg(feature = "CONFIG_RCU_TORTURE_TEST")]
+#[cfg(CONFIG_RCU_TORTURE_TEST)]
 pub unsafe fn rcutorture_format_gp_seqs(seqs: u64, cp: *mut u8, len: usize) {
     snprintf(cp, len, b"g%04llx\0".as_ptr(), seqs & 0xffffu64);
 }

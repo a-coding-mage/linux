@@ -20,7 +20,7 @@ static mut NF_PPTP_LOCK: SpinLock = SpinLock::new();
 #[no_mangle]
 pub static mut nf_nat_pptp_hook: *const nf_nat_pptp_hook = core::ptr::null();
 
-#[cfg(any(feature = "DEBUG", feature = "CONFIG_DYNAMIC_DEBUG"))]
+#[cfg(any(feature = "DEBUG", CONFIG_DYNAMIC_DEBUG))]
 static PPTP_MSG_NAME_ARRAY: [&[u8]; (PPTP_MSG_MAX + 1) as usize] = [
     b"UNKNOWN_MESSAGE\0", b"START_SESSION_REQUEST\0", b"START_SESSION_REPLY\0",
     b"STOP_SESSION_REQUEST\0", b"STOP_SESSION_REPLY\0", b"ECHO_REQUEST\0",
@@ -30,7 +30,7 @@ static PPTP_MSG_NAME_ARRAY: [&[u8]; (PPTP_MSG_MAX + 1) as usize] = [
     b"SET_LINK_INFO\0",
 ];
 
-#[cfg(any(feature = "DEBUG", feature = "CONFIG_DYNAMIC_DEBUG"))]
+#[cfg(any(feature = "DEBUG", CONFIG_DYNAMIC_DEBUG))]
 pub unsafe fn pptp_msg_name(msg: u16) -> *const u8 {
     if msg > PPTP_MSG_MAX { PPTP_MSG_NAME_ARRAY[0].as_ptr() } else { PPTP_MSG_NAME_ARRAY[msg as usize].as_ptr() }
 }

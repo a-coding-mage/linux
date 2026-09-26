@@ -21,13 +21,13 @@ pub struct vm_area_struct;
 
 // CONFIG_VDSO_DATASTORE selects the external implementation.  The fallback
 // is the original !CONFIG_VDSO_DATASTORE static inline definition.
-#[cfg(feature = "CONFIG_VDSO_DATASTORE")]
+#[cfg(CONFIG_VDSO_DATASTORE)]
 extern "C" {
     // Original declaration carries the kernel __init annotation.
     pub fn vdso_setup_data_pages();
 }
 
-#[cfg(not(feature = "CONFIG_VDSO_DATASTORE"))]
+#[cfg(not(CONFIG_VDSO_DATASTORE))]
 #[inline]
 pub fn vdso_setup_data_pages() {}
 

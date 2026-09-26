@@ -21,7 +21,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#define OSS_2_0_D_H
 
 pub const mmIH_VMID_0_LUT: u32 = 0xf50;
 pub const mmIH_VMID_1_LUT: u32 = 0xf51;

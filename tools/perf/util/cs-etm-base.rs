@@ -40,8 +40,7 @@ unsafe extern "C" {
     fn pr_err(format: *const c_char, ...) -> c_int;
     fn cs_etm__process_auxtrace_info_full(
         event: *mut perf_event,
-        session: *mut perf_session,
-    ) -> c_int;
+        session: *mut perf_session) -> c_int;
 }
 
 const EINVAL: c_int = 22;

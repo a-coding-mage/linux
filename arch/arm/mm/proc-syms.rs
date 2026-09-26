@@ -11,7 +11,7 @@
 #[cfg(not(feature = "MULTI_CPU"))]
 EXPORT_SYMBOL!(cpu_dcache_clean_area);
 
-#[cfg(all(not(feature = "MULTI_CPU"), feature = "CONFIG_MMU"))]
+#[cfg(all(not(feature = "MULTI_CPU"), CONFIG_MMU))]
 EXPORT_SYMBOL!(cpu_set_pte_ext);
 
 #[cfg(feature = "MULTI_CPU")]
@@ -35,13 +35,13 @@ EXPORT_SYMBOL!(__cpuc_flush_dcache_area);
 #[cfg(feature = "MULTI_CACHE")]
 EXPORT_SYMBOL!(cpu_cache);
 
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "MULTI_USER")))]
+#[cfg(all(CONFIG_MMU, not(feature = "MULTI_USER")))]
 EXPORT_SYMBOL!(__cpu_clear_user_highpage);
 
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "MULTI_USER")))]
+#[cfg(all(CONFIG_MMU, not(feature = "MULTI_USER")))]
 EXPORT_SYMBOL!(__cpu_copy_user_highpage);
 
-#[cfg(all(feature = "CONFIG_MMU", feature = "MULTI_USER"))]
+#[cfg(all(CONFIG_MMU, feature = "MULTI_USER"))]
 EXPORT_SYMBOL!(cpu_user);
 
 /*

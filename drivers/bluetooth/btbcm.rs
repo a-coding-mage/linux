@@ -20,7 +20,7 @@ const BDADDR_BCM4334B0: [u8; 6] = [0x00, 0x00, 0x00, 0xb0, 0x34, 0x43];
 const BDADDR_BCM4345C5: [u8; 6] = [0xac, 0x1f, 0x00, 0xc5, 0x45, 0x43];
 const BDADDR_BCM43341B: [u8; 6] = [0xac, 0x1f, 0x00, 0x1b, 0x34, 0x43];
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 unsafe fn btbcm_set_bdaddr_from_efi(hdev: *mut hci_dev) -> i32 {
     let mut efi_bdaddr: bdaddr_t = core::mem::zeroed();
     let mut bdaddr: bdaddr_t = core::mem::zeroed();
@@ -37,7 +37,7 @@ unsafe fn btbcm_set_bdaddr_from_efi(hdev: *mut hci_dev) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 unsafe fn btbcm_set_bdaddr_from_efi(_hdev: *mut hci_dev) -> i32 { -EOPNOTSUPP }
 
 pub unsafe fn btbcm_check_bdaddr(hdev: *mut hci_dev) -> i32 {
@@ -110,13 +110,13 @@ unsafe fn btbcm_read_usb_product(hdev: *mut hci_dev) -> *mut sk_buff { btbcm_rea
 static BCM_UART_SUBVER_TABLE: &[(u16, &str)] = &[(0x1111,"BCM4362A2"),(0x4103,"BCM4330B1"),(0x410d,"BCM4334B0"),(0x410e,"BCM43341B0"),(0x4204,"BCM2076B1"),(0x4406,"BCM4324B3"),(0x4606,"BCM4324B5"),(0x6109,"BCM4335C0"),(0x610c,"BCM4354"),(0x2122,"BCM4343A0"),(0x2209,"BCM43430A1"),(0x6119,"BCM4345C0"),(0x6606,"BCM4345C5"),(0x230f,"BCM4356A2"),(0x2310,"BCM4343A2"),(0x220e,"BCM20702A1"),(0x420d,"BCM4349B1"),(0x420e,"BCM4349B1"),(0x4217,"BCM4329B1"),(0x6106,"BCM4359C0"),(0x4106,"BCM4335A0"),(0x410c,"BCM43430B0"),(0x2119,"BCM4373A0")];
 static BCM_USB_SUBVER_TABLE: &[(u16, &str)] = &[(0x2105,"BCM20703A1"),(0x210b,"BCM43142A0"),(0x2112,"BCM4314A0"),(0x2118,"BCM20702A0"),(0x2126,"BCM4335A0"),(0x220e,"BCM20702A1"),(0x230f,"BCM4356A2"),(0x4106,"BCM4335B0"),(0x410e,"BCM20702B0"),(0x6109,"BCM4335C0"),(0x610c,"BCM4354"),(0x6607,"BCM4350C5")];
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe fn btbcm_get_board_name(dev: *mut device) -> *const core::ffi::c_char {
     let root = of_find_node_by_path(b"/\0".as_ptr() as _); if root.is_null() { return core::ptr::null(); }
     let mut tmp: *const core::ffi::c_char = core::ptr::null(); if of_property_read_string_index(root, b"compatible\0".as_ptr() as _, 0, &mut tmp) != 0 { return core::ptr::null(); }
     let board = devm_kstrdup(dev, tmp, GFP_KERNEL); if board.is_null() { return board; } strreplace(board, b'/'); board
 }
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 unsafe fn btbcm_get_board_name(_dev: *mut device) -> *const core::ffi::c_char { core::ptr::null() }
 
 // The remaining initialization/finalization logic follows the C control flow.

@@ -91,11 +91,11 @@ pub struct tsb_config {
 
 pub const MM_TSB_BASE: usize = 0;
 
-#[cfg(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE))]
 pub const MM_TSB_HUGE: usize = 1;
-#[cfg(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE"))]
+#[cfg(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE))]
 pub const MM_NUM_TSBS: usize = 2;
-#[cfg(not(any(feature = "CONFIG_HUGETLB_PAGE", feature = "CONFIG_TRANSPARENT_HUGEPAGE")))]
+#[cfg(not(any(CONFIG_HUGETLB_PAGE, CONFIG_TRANSPARENT_HUGEPAGE)))]
 pub const MM_NUM_TSBS: usize = 1;
 
 /* ADI tags are stored when a page is swapped out and the storage for

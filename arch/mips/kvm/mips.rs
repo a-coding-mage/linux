@@ -56,11 +56,12 @@ unsafe fn kvm_mips_comparecount_wakeup(timer: *mut hrtimer) -> hrtimer_restart {
 pub unsafe fn kvm_arch_vcpu_precreate(_k: *mut kvm, _id: c_uint) -> i32 { 0 }
 
 pub unsafe fn kvm_arch_vcpu_create(vcpu: *mut kvm_vcpu) -> i32 {
-    let mut err = (*kvm_mips_callbacks).vcpu_init(vcpu); if err != 0 { return err; }
+    let mut err = (*kvm_mips_callbacks).vcpu_init(vcpu);
+    'out: { if err != 0 { return err; }
     hrtimer_setup(&mut (*vcpu).arch.comparecount_timer, kvm_mips_comparecount_wakeup, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
     let size = if cpu_has_veic || cpu_has_vint { 0x200 + VECTORSPACING * 64 } else { 0x4000 };
-    let base = kzalloc(ALIGN(size, PAGE_SIZE), GFP_KERNEL); if base.is_null() { err=-ENOMEM; goto out; }
-    if !cpu_has_ebase_wg && virt_to_phys(base) >= 0x20000000 { err=-ENOMEM; kfree(base); goto out; }
+    let base = kzalloc(ALIGN(size, PAGE_SIZE), GFP_KERNEL); if base.is_null() { err=-ENOMEM; break 'out; }
+    if !cpu_has_ebase_wg && virt_to_phys(base) >= 0x20000000 { err=-ENOMEM; kfree(base); break 'out; }
     (*vcpu).arch.guest_ebase=base;
     let handler=(base as *mut u8).add(0x2000) as *mut core::ffi::c_void;
     let start=if cfg!(CONFIG_64BIT) {(base as *mut u8).add(0x80) as *mut _} else {base};
@@ -69,7 +70,8 @@ pub unsafe fn kvm_arch_vcpu_create(vcpu: *mut kvm_vcpu) -> i32 {
     let mut p=kvm_mips_build_exit(handler); (*vcpu).arch.vcpu_run=p; p=kvm_mips_build_vcpu_run(p);
     flush_icache_range(base as usize, base as usize + ALIGN(size,PAGE_SIZE)); (*vcpu).arch.last_sched_cpu=-1; (*vcpu).arch.last_exec_cpu=-1;
     err=(*kvm_mips_callbacks).vcpu_setup(vcpu); if err==0 { return 0; } kfree(base);
-out: (*kvm_mips_callbacks).vcpu_uninit(vcpu); err
+    }
+    (*kvm_mips_callbacks).vcpu_uninit(vcpu); err
 }
 pub unsafe fn kvm_arch_vcpu_destroy(v: *mut kvm_vcpu) { hrtimer_cancel(&mut (*v).arch.comparecount_timer); kvm_mips_dump_stats(v); kvm_mmu_free_memory_caches(v); kfree((*v).arch.guest_ebase); (*kvm_mips_callbacks).vcpu_uninit(v); }
 pub unsafe fn kvm_arch_vcpu_ioctl_set_guest_debug(_v:*mut kvm_vcpu,_d:*mut kvm_guest_debug)->i32{-ENOIOCTLCMD}

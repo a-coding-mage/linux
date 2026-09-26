@@ -101,11 +101,11 @@ extern "C" {
     pub fn host1x_driver_register_full(driver:*mut host1x_driver,owner:*mut module)->i32; pub fn host1x_driver_unregister(driver:*mut host1x_driver); pub fn host1x_device_init(device:*mut host1x_device)->i32; pub fn host1x_device_exit(device:*mut host1x_device)->i32; pub fn __host1x_client_init(client:*mut host1x_client,key:*mut lock_class_key); pub fn host1x_client_exit(client:*mut host1x_client); pub fn __host1x_client_register(client:*mut host1x_client)->i32; pub fn host1x_client_unregister(client:*mut host1x_client); pub fn host1x_client_suspend(client:*mut host1x_client)->i32; pub fn host1x_client_resume(client:*mut host1x_client)->i32;
 }
 
-#[cfg(feature = "CONFIG_IOMMU_API")]
+#[cfg(CONFIG_IOMMU_API)]
 extern "C" { pub fn host1x_memory_context_alloc(host1x:*mut host1x,dev:*mut device,pid:*mut pid)->*mut host1x_memory_context; pub fn host1x_memory_context_get(cd:*mut host1x_memory_context); pub fn host1x_memory_context_put(cd:*mut host1x_memory_context); }
-#[cfg(not(feature = "CONFIG_IOMMU_API"))]
+#[cfg(not(CONFIG_IOMMU_API))]
 pub unsafe fn host1x_memory_context_alloc(_: *mut host1x, _: *mut device, _: *mut pid) -> *mut host1x_memory_context { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_IOMMU_API"))] pub unsafe fn host1x_memory_context_get(_: *mut host1x_memory_context) {}
-#[cfg(not(feature = "CONFIG_IOMMU_API"))] pub unsafe fn host1x_memory_context_put(_: *mut host1x_memory_context) {}
+#[cfg(not(CONFIG_IOMMU_API))] pub unsafe fn host1x_memory_context_get(_: *mut host1x_memory_context) {}
+#[cfg(not(CONFIG_IOMMU_API))] pub unsafe fn host1x_memory_context_put(_: *mut host1x_memory_context) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

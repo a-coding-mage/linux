@@ -53,6 +53,7 @@ unsafe fn binderfs_binder_device_create(ref_inode: *mut inode, userp: *mut binde
     let mut inode: *mut inode = core::ptr::null_mut();
     let sb = (*ref_inode).i_sb;
     let info = (*sb).s_fs_info as *mut binderfs_info;
+    'err: {
     #[cfg(CONFIG_IPC_NS)] let use_reserve = (*info).ipc_ns == &mut init_ipc_ns;
     #[cfg(not(CONFIG_IPC_NS))] let use_reserve = true;
 
@@ -63,12 +64,12 @@ unsafe fn binderfs_binder_device_create(ref_inode: *mut inode, userp: *mut binde
     mutex_unlock(&mut binderfs_minors_mutex);
     ret = -ENOMEM;
     device = kzalloc_obj::<binder_device>();
-    if device.is_null() { goto!(err); }
+    if device.is_null() { break 'err; }
     (*req).name[BINDERFS_MAX_NAME as usize] = 0;
     ctx = rust_binder_new_context((*req).name.as_ptr());
-    if ctx.is_null() { goto!(err); }
+    if ctx.is_null() { break 'err; }
     inode = new_inode(sb);
-    if inode.is_null() { goto!(err); }
+    if inode.is_null() { break 'err; }
     (*inode).i_ino = (minor as u64) + INODE_OFFSET;
     simple_inode_init_ts(inode);
     init_special_inode(inode, S_IFCHR | 0o600, MKDEV(MAJOR(binderfs_dev), minor as u32));
@@ -76,12 +77,13 @@ unsafe fn binderfs_binder_device_create(ref_inode: *mut inode, userp: *mut binde
     (*inode).i_uid = (*info).root_uid; (*inode).i_gid = (*info).root_gid;
     (*req).major = MAJOR(binderfs_dev); (*req).minor = minor as u32;
     (*device).ctx = ctx; (*device).minor = minor;
-    if !userp.is_null() && copy_to_user(userp as *mut c_void, req as *const c_void, core::mem::size_of::<binderfs_device>()) != 0 { ret = -EFAULT; goto!(err); }
+    if !userp.is_null() && copy_to_user(userp as *mut c_void, req as *const c_void, core::mem::size_of::<binderfs_device>()) != 0 { ret = -EFAULT; break 'err; }
     root = (*sb).s_root; dentry = simple_start_creating(root, (*req).name.as_ptr());
-    if IS_ERR(dentry) { ret = PTR_ERR(dentry); goto!(err); }
+    if IS_ERR(dentry) { ret = PTR_ERR(dentry); break 'err; }
     (*inode).i_private = device as *mut c_void; d_make_persistent(dentry, inode);
     fsnotify_create((*root).d_inode, dentry); simple_done_creating(dentry); return 0;
-err:
+    }
+    
     kfree(device as *mut c_void); rust_binder_remove_context(ctx); mutex_lock(&mut binderfs_minors_mutex); (*info).device_count -= 1; ida_free(&mut binderfs_minors, minor); mutex_unlock(&mut binderfs_minors_mutex); iput(inode); ret
 }
 
@@ -105,7 +107,7 @@ unsafe extern "C" {
 
 pub unsafe fn init_rust_binderfs() -> c_int {
     let mut ret: c_int; let mut name = rust_binder_devices_param; let mut len: usize;
-    while { len = strcspn(name, c",\0".as_ptr()); len > 0 } { if len > BINDERFS_MAX_NAME as usize { return -E2BIG; } name = name.add(len); if *name == b',' as c_char { name = name.add(1); } }
+    while { len = strcspn(name, c",".as_ptr()); len > 0 } { if len > BINDERFS_MAX_NAME as usize { return -E2BIG; } name = name.add(len); if *name == b',' as c_char { name = name.add(1); } }
     ret = alloc_chrdev_region(&mut binderfs_dev, 0, BINDERFS_MAX_MINOR, c"rust_binder".as_ptr()); if ret != 0 { return ret; }
     ret = register_filesystem(&mut binder_fs_type); if ret != 0 { unregister_chrdev_region(binderfs_dev, BINDERFS_MAX_MINOR); return ret; } ret
 }

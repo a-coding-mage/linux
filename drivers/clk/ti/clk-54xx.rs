@@ -65,7 +65,7 @@ static omap5_aess_fclk_parents[]  = {
 };
 
 static omap_clkctrl_div_data omap5_aess_fclk_data  = {
-	.max_div = 2,
+	max_div: 2,
 };
 
 static omap_clkctrl_bit_data omap5_aess_bit_data[]  = {
@@ -391,7 +391,7 @@ static omap5_gpu_sys_clk_parents[]  = {
 };
 
 static omap_clkctrl_div_data omap5_gpu_sys_clk_data  = {
-	.max_div = 2,
+	max_div: 2,
 };
 
 static omap_clkctrl_bit_data omap5_gpu_core_bit_data[]  = {
@@ -418,7 +418,7 @@ static omap5_mmc1_fclk_parents[]  = {
 };
 
 static omap_clkctrl_div_data omap5_mmc1_fclk_data  = {
-	.max_div = 2,
+	max_div: 2,
 };
 
 static omap_clkctrl_bit_data omap5_mmc1_bit_data[]  = {
@@ -434,7 +434,7 @@ static omap5_mmc2_fclk_parents[]  = {
 };
 
 static omap_clkctrl_div_data omap5_mmc2_fclk_data  = {
-	.max_div = 2,
+	max_div: 2,
 };
 
 static omap_clkctrl_bit_data omap5_mmc2_bit_data[]  = {

@@ -249,7 +249,7 @@ macro_rules! fn_for_each_confined {
     ($label:expr, $profile:ident, $body:expr) => {
         {
             let mut result = 0;
-            // Iterate over confined profiles in label
+            // Iterate over confined profiles in $label
             result
         }
     };

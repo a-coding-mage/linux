@@ -25,7 +25,7 @@ unsafe extern "C" fn ignore_decompressor_param_debug_alternative(_s: *mut c_char
 
 unsafe fn kasan_early_init() {
     // CONFIG_KASAN
-    #[cfg(feature = "CONFIG_KASAN")]
+    #[cfg(CONFIG_KASAN)]
     {
         init_task.kasan_depth = 0;
         kasan_init_generic();
@@ -138,7 +138,7 @@ unsafe fn setup_lowcore_early() {
 
 unsafe fn save_vector_registers() {
     // CONFIG_CRASH_DUMP
-    #[cfg(feature = "CONFIG_CRASH_DUMP")]
+    #[cfg(CONFIG_CRASH_DUMP)]
     if cpu_has_vx() { save_vx_regs(boot_cpu_vector_save_area); }
 }
 

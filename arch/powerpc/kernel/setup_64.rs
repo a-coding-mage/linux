@@ -24,13 +24,13 @@ pub static mut ppc64_caches: ppc64_caches_struct = ppc64_caches_struct {
 #[cfg(all(CONFIG_PPC_BOOK3E_64, CONFIG_SMP))]
 pub unsafe fn setup_tlb_core_data() {
     BUILD_BUG_ON!(core::mem::offset_of!(tlb_core_data, lock) != 0);
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         let mut first = cpu_first_thread_sibling(cpu);
         if cpu_first_thread_sibling(boot_cpuid) == first { first = boot_cpuid; }
         (*paca_ptrs[cpu]).tcd_ptr = &mut (*paca_ptrs[first]).tcd;
         WARN_ONCE!(smt_enabled_at_boot >= 2 && book3e_htw_mode != PPC_HTW_E6500,
                    "%s: unsupported MMU configuration\n", __func__);
-    }
+    });
 }
 
 #[cfg(CONFIG_SMP)]
@@ -159,18 +159,18 @@ pub unsafe fn ppc64_bolted_size() -> u64 {
 
 unsafe fn alloc_stack(limit: u64, cpu: i32) -> *mut u8 { BUILD_BUG_ON!(STACK_INT_FRAME_SIZE % 16 != 0); let ptr = memblock_alloc_try_nid(THREAD_SIZE, THREAD_ALIGN, MEMBLOCK_LOW_LIMIT, limit, early_cpu_to_node(cpu)); if ptr.is_null() { panic!("cannot allocate stacks"); } ptr as *mut u8 }
 
-pub unsafe fn irqstack_early_init() { let limit = ppc64_bolted_size(); for_each_possible_cpu!(i) { softirq_ctx[i] = alloc_stack(limit, i); hardirq_ctx[i] = alloc_stack(limit, i); } }
+pub unsafe fn irqstack_early_init() { let limit = ppc64_bolted_size(); for_each_possible_cpu!(i, { softirq_ctx[i] = alloc_stack(limit, i); hardirq_ctx[i] = alloc_stack(limit, i); }); }
 
 #[cfg(CONFIG_PPC_BOOK3E_64)]
-pub unsafe fn exc_lvl_early_init() { for_each_possible_cpu!(i) { let sp = alloc_stack(u64::MAX, i); critirq_ctx[i] = sp; (*paca_ptrs[i]).crit_kstack = sp.add(THREAD_SIZE); let sp = alloc_stack(u64::MAX, i); dbgirq_ctx[i] = sp; (*paca_ptrs[i]).dbg_kstack = sp.add(THREAD_SIZE); let sp = alloc_stack(u64::MAX, i); mcheckirq_ctx[i] = sp; (*paca_ptrs[i]).mc_kstack = sp.add(THREAD_SIZE); } if cpu_has_feature(CPU_FTR_DEBUG_LVL_EXC) { patch_exception(0x040, exc_debug_debug_book3e); } }
+pub unsafe fn exc_lvl_early_init() { for_each_possible_cpu!(i, { let sp = alloc_stack(u64::MAX, i); critirq_ctx[i] = sp; (*paca_ptrs[i]).crit_kstack = sp.add(THREAD_SIZE); let sp = alloc_stack(u64::MAX, i); dbgirq_ctx[i] = sp; (*paca_ptrs[i]).dbg_kstack = sp.add(THREAD_SIZE); let sp = alloc_stack(u64::MAX, i); mcheckirq_ctx[i] = sp; (*paca_ptrs[i]).mc_kstack = sp.add(THREAD_SIZE); }); if cpu_has_feature(CPU_FTR_DEBUG_LVL_EXC) { patch_exception(0x040, exc_debug_debug_book3e); } }
 
-pub unsafe fn emergency_stack_init() { let mut limit = core::cmp::min(ppc64_bolted_size(), ppc64_rma_size); let mut mce_limit = limit; if firmware_has_feature(FW_FEATURE_LPAR) && mce_limit > SZ_4G { mce_limit = SZ_4G; } for_each_possible_cpu!(i) { (*paca_ptrs[i]).emergency_sp = alloc_stack(limit, i).add(THREAD_SIZE) as *mut _; #[cfg(CONFIG_PPC_BOOK3S_64)] { (*paca_ptrs[i]).nmi_emergency_sp = alloc_stack(limit, i).add(THREAD_SIZE) as *mut _; (*paca_ptrs[i]).mc_emergency_sp = alloc_stack(mce_limit, i).add(THREAD_SIZE) as *mut _; } } }
+pub unsafe fn emergency_stack_init() { let mut limit = core::cmp::min(ppc64_bolted_size(), ppc64_rma_size); let mut mce_limit = limit; if firmware_has_feature(FW_FEATURE_LPAR) && mce_limit > SZ_4G { mce_limit = SZ_4G; } for_each_possible_cpu!(i, { (*paca_ptrs[i]).emergency_sp = alloc_stack(limit, i).add(THREAD_SIZE) as *mut _; #[cfg(CONFIG_PPC_BOOK3S_64)] { (*paca_ptrs[i]).nmi_emergency_sp = alloc_stack(limit, i).add(THREAD_SIZE) as *mut _; (*paca_ptrs[i]).mc_emergency_sp = alloc_stack(mce_limit, i).add(THREAD_SIZE) as *mut _; } }); }
 
 #[cfg(CONFIG_SMP)]
 unsafe fn pcpu_cpu_distance(from: u32, to: u32) -> i32 { if early_cpu_to_node(from as i32) == early_cpu_to_node(to as i32) { LOCAL_DISTANCE } else { REMOTE_DISTANCE } }
 #[cfg(CONFIG_SMP)] unsafe fn pcpu_cpu_to_node(cpu: i32) -> i32 { early_cpu_to_node(cpu) }
 #[cfg(CONFIG_SMP)] pub static mut __per_cpu_offset: [u64; NR_CPUS] = [0; NR_CPUS];
-#[cfg(CONFIG_SMP)] pub unsafe fn setup_per_cpu_areas() { let dyn_size = PERCPU_MODULE_RESERVE + PERCPU_DYNAMIC_RESERVE; let atom_size; let mut rc = -EINVAL; if IS_ENABLED!(CONFIG_PPC_BOOK3E_64) || radix_enabled() { atom_size = if IS_ENABLED!(CONFIG_PPC_BOOK3E_64) { SZ_1M } else { PAGE_SIZE }; } else { atom_size = if mmu_linear_psize == MMU_PAGE_4K { PAGE_SIZE } else { SZ_1M }; } if pcpu_chosen_fc != PCPU_FC_PAGE { rc = pcpu_embed_first_chunk(0, dyn_size, atom_size, pcpu_cpu_distance, pcpu_cpu_to_node); if rc != 0 { pr_warn!(c"PERCPU: allocator failed (%d), falling back to page size\n".as_ptr(), rc); } } if rc < 0 { rc = pcpu_page_first_chunk(0, pcpu_cpu_to_node); } if rc < 0 { panic!("cannot initialize percpu area (err={})", rc); } static_key_enable(&mut __percpu_first_chunk_is_paged.key); let delta = pcpu_base_addr as u64 - __per_cpu_start as u64; for_each_possible_cpu!(cpu) { __per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu]; (*paca_ptrs[cpu]).data_offset = __per_cpu_offset[cpu]; } }
+#[cfg(CONFIG_SMP)] pub unsafe fn setup_per_cpu_areas() { let dyn_size = PERCPU_MODULE_RESERVE + PERCPU_DYNAMIC_RESERVE; let atom_size; let mut rc = -EINVAL; if IS_ENABLED!(CONFIG_PPC_BOOK3E_64) || radix_enabled() { atom_size = if IS_ENABLED!(CONFIG_PPC_BOOK3E_64) { SZ_1M } else { PAGE_SIZE }; } else { atom_size = if mmu_linear_psize == MMU_PAGE_4K { PAGE_SIZE } else { SZ_1M }; } if pcpu_chosen_fc != PCPU_FC_PAGE { rc = pcpu_embed_first_chunk(0, dyn_size, atom_size, pcpu_cpu_distance, pcpu_cpu_to_node); if rc != 0 { pr_warn!(c"PERCPU: allocator failed (%d), falling back to page size\n".as_ptr(), rc); } } if rc < 0 { rc = pcpu_page_first_chunk(0, pcpu_cpu_to_node); } if rc < 0 { panic!("cannot initialize percpu area (err={})", rc); } static_key_enable(&mut __percpu_first_chunk_is_paged.key); let delta = pcpu_base_addr as u64 - __per_cpu_start as u64; for_each_possible_cpu!(cpu, { __per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu]; (*paca_ptrs[cpu]).data_offset = __per_cpu_offset[cpu]; }); }
 
 #[cfg(CONFIG_MEMORY_HOTPLUG)] pub unsafe fn memory_block_size_bytes() -> u64 { if let Some(f) = ppc_md.memory_block_size { return f(); } MIN_MEMORY_BLOCK_SIZE }
 #[cfg(CONFIG_PPC_INDIRECT_PIO)] #[repr(C)] pub static mut ppc_pci_io: ppc_pci_io = ppc_pci_io::default();

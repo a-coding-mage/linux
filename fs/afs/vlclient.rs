@@ -139,7 +139,7 @@ unsafe fn afs_vl_get_capabilities(net: *mut afs_net, alist: *mut afs_addr_list, 
     let call = afs_alloc_flat_call(net, &afs_RXVLGetCapabilities, 4, 64); if call.is_null() { return ERR_PTR(-ENOMEM); }
     (*call).key = key; (*call).vlserver = afs_get_vlserver(server); (*call).server_index = server_index;
     (*call).peer = rxrpc_kernel_get_peer((*alist).addrs[addr_index as usize].peer); (*call).vl_probe = afs_get_addrlist(alist, afs_alist_trace_get_vlgetcaps);
-    (*call).probe_index = addr_index; (*call).service_id = (*server).service_id; (*call).upgrade = true; (*call).async = true; (*call).max_lifespan = AFS_PROBE_MAX_LIFESPAN;
+    (*call).probe_index = addr_index; (*call).service_id = (*server).service_id; (*call).upgrade = true; (*call).r#async = true; (*call).max_lifespan = AFS_PROBE_MAX_LIFESPAN;
     *(*call).request.cast::<u32>() = htonl(VLGETCAPABILITIES); trace_afs_make_vl_call(call); afs_make_call(call, GFP_KERNEL); call
 }
 

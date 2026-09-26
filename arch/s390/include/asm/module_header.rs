@@ -32,13 +32,13 @@ pub struct mod_arch_specific {
      * CONFIG_FUNCTION_TRACER conditional fields are represented with the
      * corresponding Rust configuration condition.
      */
-    #[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+    #[cfg(CONFIG_FUNCTION_TRACER)]
     /* Start of memory reserved for ftrace hotpatch trampolines. */
     pub trampolines_start: *mut ftrace_hotpatch_trampoline,
-    #[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+    #[cfg(CONFIG_FUNCTION_TRACER)]
     /* End of memory reserved for ftrace hotpatch trampolines. */
     pub trampolines_end: *mut ftrace_hotpatch_trampoline,
-    #[cfg(feature = "CONFIG_FUNCTION_TRACER")]
+    #[cfg(CONFIG_FUNCTION_TRACER)]
     /* Next unused ftrace hotpatch trampoline slot. */
     pub next_trampoline: *mut ftrace_hotpatch_trampoline,
 }

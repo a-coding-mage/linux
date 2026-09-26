@@ -27,7 +27,7 @@ pub unsafe fn cpu_last_level_cache_line_size() -> ::core::ffi::c_uint {
     boot_cpu_data.cache_leaves[(cache_present - 1) as usize].linesz
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn __flush_cache_all();
 }
 

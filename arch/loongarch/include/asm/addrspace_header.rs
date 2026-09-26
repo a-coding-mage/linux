@@ -21,26 +21,26 @@ extern "C" {
     pub static mut vm_map_base: usize;
 }
 
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const IO_BASE: u64 = CSR_DMW0_BASE;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const CACHE_BASE: u64 = CSR_DMW1_BASE;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const UNCACHE_BASE: u64 = CSR_DMW0_BASE;
 
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const WRITECOMBINE_BASE: u64 = CSR_DMW0_BASE;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const WRITECOMBINE_BASE: u64 = CSR_DMW2_BASE;
 
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const DMW_PABITS: u32 = 29;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const DMW_PABITS: u32 = 48;
 
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const TO_PHYS_MASK: u64 = (1u64 << DMW_PABITS) - 1;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const TO_PHYS_MASK: u64 = (1u64 << DMW_PABITS) - 1;
 
 /* Memory above this physical address will be considered highmem. */
@@ -54,28 +54,28 @@ pub const fn TO_UNCACHE(x: u64) -> u64 { UNCACHE_BASE | (x & TO_PHYS_MASK) }
 pub const PAGE_OFFSET: u64 = CACHE_BASE + PHYS_OFFSET as u64;
 pub const FIXADDR_TOP: u64 = 0xfffe0000u32 as i32 as i64 as u64;
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub const fn _CONST64_(x: u64) -> u64 { x }
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub const fn _CONST64_(x: u64) -> u64 { x }
 
 /* 32/64-bit LoongArch address spaces. */
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const UVRANGE: u32 = 0x00000000;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const KPRANGE0: u32 = 0x80000000;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const KPRANGE1: u32 = 0xa0000000;
-#[cfg(feature = "CONFIG_32BIT")]
+#[cfg(CONFIG_32BIT)]
 pub const KVRANGE: u32 = 0xc0000000;
 
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const XUVRANGE: u64 = 0x0000000000000000;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const XSPRANGE: u64 = 0x4000000000000000;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const XKPRANGE: u64 = 0x8000000000000000;
-#[cfg(not(feature = "CONFIG_32BIT"))]
+#[cfg(not(CONFIG_32BIT))]
 pub const XKVRANGE: u64 = 0xc000000000000000;
 
 /* Returns the physical address of a KPRANGEx / XKPRANGE address. */

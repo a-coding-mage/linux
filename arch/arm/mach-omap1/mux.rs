@@ -2,18 +2,18 @@
 // Rust translation of arch/arm/mach-omap1/mux.c.
 // External kernel types, macros, and functions are supplied by other modules.
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 static mut ARCH_MUX_CFG: omap_mux_cfg = omap_mux_cfg {
     pins: core::ptr::null_mut(), size: 0, cfg_reg: None,
 };
 
-#[cfg(any(feature = "CONFIG_ARCH_OMAP15XX", feature = "CONFIG_ARCH_OMAP16XX"))]
+#[cfg(any(CONFIG_ARCH_OMAP15XX, CONFIG_ARCH_OMAP16XX))]
 static mut OMAP1XXX_PINS: [pin_config; 0] = [];
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 static mut MUX_CFG_PTR: *mut omap_mux_cfg = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 unsafe fn omap1_cfg_reg(cfg: *const pin_config) -> i32 {
     let mut flags: core::ffi::c_ulong = 0;
     let mut reg_orig = 0u32;
@@ -65,14 +65,14 @@ unsafe fn omap1_cfg_reg(cfg: *const pin_config) -> i32 {
         omap_writel(pull, (*cfg).pull_reg);
         spin_unlock_irqrestore(&raw mut MUX_SPIN_LOCK, flags);
     }
-    #[cfg(feature = "CONFIG_OMAP_MUX_WARNINGS")]
+    #[cfg(CONFIG_OMAP_MUX_WARNINGS)]
     { if warn != 0 { printk(KERN_WARNING, c"MUX: initialized %s\\0", (*cfg).name); } }
-    #[cfg(feature = "CONFIG_OMAP_MUX_WARNINGS")]
+    #[cfg(CONFIG_OMAP_MUX_WARNINGS)]
     { if warn != 0 { return -ETXTBSY; } }
     0
 }
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 pub unsafe extern "C" fn omap_mux_register(cfg: *mut omap_mux_cfg) -> i32 {
     if cfg.is_null() || (*cfg).pins.is_null() || (*cfg).size == 0 || (*cfg).cfg_reg.is_none() {
         printk(KERN_ERR, c"Invalid pin table\\0"); return -EINVAL;
@@ -80,7 +80,7 @@ pub unsafe extern "C" fn omap_mux_register(cfg: *mut omap_mux_cfg) -> i32 {
     MUX_CFG_PTR = cfg; 0
 }
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 pub unsafe extern "C" fn omap_cfg_reg(index: core::ffi::c_ulong) -> i32 {
     if !cpu_class_is_omap1() { printk(KERN_ERR, c"mux: Broken omap_cfg_reg(%lu) entry\\0", index); WARN_ON(1); return -EINVAL; }
     if MUX_CFG_PTR.is_null() { printk(KERN_ERR, c"Pin mux table not initialized\\0"); return -ENODEV; }
@@ -88,7 +88,7 @@ pub unsafe extern "C" fn omap_cfg_reg(index: core::ffi::c_ulong) -> i32 {
     ((*MUX_CFG_PTR).cfg_reg.unwrap())((*MUX_CFG_PTR).pins.add(index as usize))
 }
 
-#[cfg(feature = "CONFIG_OMAP_MUX")]
+#[cfg(CONFIG_OMAP_MUX)]
 pub unsafe extern "C" fn omap1_mux_init() -> i32 {
     if cpu_is_omap15xx() || cpu_is_omap16xx() {
         ARCH_MUX_CFG.pins = OMAP1XXX_PINS.as_mut_ptr();

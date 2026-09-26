@@ -5,32 +5,32 @@ use core::ffi::c_char;
 use core::ptr;
 
 extern "C" {
-    type dentry; type file; type audit_buffer; type iattr; type inode; type mnt_idmap;
     type file_operations;
     static mut evm_initialized: u32;
     static mut integrity_dir: *mut dentry;
     static nop_mnt_idmap: mnt_idmap;
     static mut evm_config_xattrnames: list_head;
-    fn simple_read_from_buffer(*mut c_char, usize, *mut i64, *const c_char, usize) -> isize;
-    fn simple_setattr(*const mnt_idmap, *mut dentry, *mut iattr) -> i32;
-    fn inode_lock(*mut inode); fn inode_unlock(*mut inode);
-    fn mutex_lock_interruptible(*mut mutex) -> i32; fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex);
-    fn kmalloc(usize, u32) -> *mut core::ffi::c_void; fn kfree(*mut core::ffi::c_void);
-    fn strlen(*const c_char) -> usize; fn sprintf(*mut c_char, *const c_char, ...) -> i32;
-    fn strncmp(*const c_char, *const c_char, usize) -> i32; fn strcmp(*const c_char, *const c_char) -> i32;
-    fn snprintf(*mut c_char, usize, *const c_char, ...) -> i32;
-    fn memdup_user_nul(*const c_char, usize) -> *mut c_char;
+    fn simple_read_from_buffer(_: *mut c_char, _: usize, _: *mut i64, _: *const c_char, _: usize) -> isize;
+    fn simple_setattr(_: *const mnt_idmap, _: *mut dentry, _: *mut iattr) -> i32;
+    fn inode_lock(_: *mut inode); fn inode_unlock(_: *mut inode);
+    fn mutex_lock_interruptible(_: *mut mutex) -> i32; fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex);
+    fn kmalloc(_: usize, _: u32) -> *mut core::ffi::c_void; fn kfree(_: *mut core::ffi::c_void);
+    fn strlen(_: *const c_char) -> usize; fn sprintf(_: *mut c_char, _: *const c_char, ...) -> i32;
+    fn strncmp(_: *const c_char, _: *const c_char, _: usize) -> i32; fn strcmp(_: *const c_char, _: *const c_char) -> i32;
+    fn snprintf(_: *mut c_char, _: usize, _: *const c_char, ...) -> i32;
+    fn memdup_user_nul(_: *const c_char, _: usize) -> *mut c_char;
     fn audit_context() -> *mut core::ffi::c_void;
-    fn audit_log_start(*mut core::ffi::c_void, u32, u32) -> *mut audit_buffer;
-    fn audit_log_format(*mut audit_buffer, *const c_char, ...);
-    fn audit_log_untrustedstring(*mut audit_buffer, *const c_char); fn audit_log_end(*mut audit_buffer);
-    fn securityfs_create_dir(*const c_char, *mut dentry) -> *mut dentry;
-    fn securityfs_create_file(*const c_char, u32, *mut dentry, *mut core::ffi::c_void, *const file_operations) -> *mut dentry;
-    fn securityfs_create_symlink(*const c_char, *mut dentry, *const c_char, *mut core::ffi::c_void) -> *mut dentry;
-    fn securityfs_remove(*mut dentry); fn integrity_fs_init() -> i32; fn integrity_fs_fini(); fn evm_init_key() -> i32;
-    fn capable(u32) -> bool; fn kstrtouint_from_user(*const c_char, usize, u32, *mut u32) -> i32;
-    fn IS_ENABLED(u32) -> bool; fn IS_ERR(*const core::ffi::c_void) -> bool; fn PTR_ERR(*const core::ffi::c_void) -> i32;
+    fn audit_log_start(_: *mut core::ffi::c_void, _: u32, _: u32) -> *mut audit_buffer;
+    fn audit_log_format(_: *mut audit_buffer, _: *const c_char, ...);
+    fn audit_log_untrustedstring(_: *mut audit_buffer, _: *const c_char); fn audit_log_end(_: *mut audit_buffer);
+    fn securityfs_create_dir(_: *const c_char, _: *mut dentry) -> *mut dentry;
+    fn securityfs_create_file(_: *const c_char, _: u32, _: *mut dentry, _: *mut core::ffi::c_void, _: *const file_operations) -> *mut dentry;
+    fn securityfs_create_symlink(_: *const c_char, _: *mut dentry, _: *const c_char, _: *mut core::ffi::c_void) -> *mut dentry;
+    fn securityfs_remove(_: *mut dentry); fn integrity_fs_init() -> i32; fn integrity_fs_fini(); fn evm_init_key() -> i32;
+    fn capable(_: u32) -> bool; fn kstrtouint_from_user(_: *const c_char, _: usize, _: u32, _: *mut u32) -> i32;
+    fn IS_ENABLED(_: u32) -> bool; fn IS_ERR(_: *const core::ffi::c_void) -> bool; fn PTR_ERR(_: *const core::ffi::c_void) -> i32;
 }
+type dentry; type file; type audit_buffer; type iattr; type inode; type mnt_idmap;
 
 #[repr(C)] pub struct list_head { next: *mut list_head, prev: *mut list_head }
 #[repr(C)] pub struct mutex { _data: [u8; 0] }

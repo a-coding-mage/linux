@@ -34,7 +34,7 @@ pub const KDUMP_MIN_TCE_ENTRIES: usize = 2048;
  * CONFIG_CRASH_DUMP and CONFIG_NONSTATIC_KERNEL conditional declarations.
  * The external functions are provided by the surrounding kernel.
  */
-#[cfg(all(feature = "CONFIG_CRASH_DUMP", not(feature = "CONFIG_NONSTATIC_KERNEL")))]
+#[cfg(all(CONFIG_CRASH_DUMP, not(CONFIG_NONSTATIC_KERNEL)))]
 unsafe extern "C" {
     pub fn reserve_kdump_trampoline();
     pub fn setup_kdump_trampoline();
@@ -42,11 +42,11 @@ unsafe extern "C" {
 
 // !CRASH_DUMP || !NONSTATIC_KERNEL
 #[inline]
-#[cfg(not(all(feature = "CONFIG_CRASH_DUMP", not(feature = "CONFIG_NONSTATIC_KERNEL"))))]
+#[cfg(not(all(CONFIG_CRASH_DUMP, not(CONFIG_NONSTATIC_KERNEL))))]
 pub fn reserve_kdump_trampoline() {}
 
 #[inline]
-#[cfg(not(all(feature = "CONFIG_CRASH_DUMP", not(feature = "CONFIG_NONSTATIC_KERNEL"))))]
+#[cfg(not(all(CONFIG_CRASH_DUMP, not(CONFIG_NONSTATIC_KERNEL))))]
 pub fn setup_kdump_trampoline() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

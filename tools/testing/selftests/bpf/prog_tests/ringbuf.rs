@@ -44,15 +44,13 @@ unsafe extern "C" {
         prot: c_int,
         flags: c_int,
         fd: c_int,
-        offset: isize,
-    ) -> *mut c_void;
+        offset: isize) -> *mut c_void;
     fn munmap(addr: *mut c_void, length: usize) -> c_int;
     fn mremap(
         old_address: *mut c_void,
         old_size: usize,
         new_size: usize,
-        flags: c_int,
-    ) -> *mut c_void;
+        flags: c_int) -> *mut c_void;
     fn mprotect(addr: *mut c_void, len: usize, prot: c_int) -> c_int;
     fn usleep(usec: c_uint) -> c_int;
     fn pthread_create(

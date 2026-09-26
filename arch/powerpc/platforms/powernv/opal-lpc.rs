@@ -130,10 +130,10 @@ unsafe fn opal_lpc_init_debugfs() -> i32 {
 
 unsafe fn opal_lpc_init() {
     let mut np: *mut device_node = core::ptr::null_mut();
-    for_each_compatible_node(np, core::ptr::null_mut(), "ibm,power8-lpc") {
+    for_each_compatible_node!(np, core::ptr::null_mut(), "ibm,power8-lpc", {
         if !of_device_is_available(np) || !of_property_present(np, "primary") { continue; }
         opal_lpc_chip_id = of_get_ibm_chip_id(np); of_node_put(np); break;
-    }
+    });
     if opal_lpc_chip_id < 0 { return; }
     if of_property_present(np, "ranges") { pr_info!("OPAL: Found memory mapped LPC bus on chip {}\n", opal_lpc_chip_id); isa_bridge_init_non_pci(np); }
     else { pr_info!("OPAL: Found non-mapped LPC bus on chip {}\n", opal_lpc_chip_id); ppc_pci_io = opal_lpc_io; isa_io_special = true; }

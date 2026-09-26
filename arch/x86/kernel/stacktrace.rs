@@ -95,7 +95,7 @@ pub unsafe fn arch_stack_walk_reliable(consume_entry: stack_trace_consume_fn,
              * unreliable.
              */
             // CONFIG_FRAME_POINTER is a build-time configuration condition.
-            if cfg!(feature = "CONFIG_FRAME_POINTER") {
+            if cfg!(CONFIG_FRAME_POINTER) {
                 return -22;
             }
         }

@@ -90,9 +90,9 @@ pub unsafe fn smc_wr_tx_cq_handler(_ib_cq: *mut ib_cq, cq_context: *mut core::ff
 unsafe fn smc_wr_tx_get_free_slot_index(link: *mut smc_link, idx: *mut u32) -> i32 {
     *idx = (*link).wr_tx_cnt;
     if !smc_link_sendable(link) { return -ENOLINK; }
-    for_each_clear_bit(*idx, (*link).wr_tx_mask, (*link).wr_tx_cnt) {
+    for_each_clear_bit!(*idx, (*link).wr_tx_mask, (*link).wr_tx_cnt, {
         if test_and_set_bit(*idx, (*link).wr_tx_mask) == 0 { return 0; }
-    }
+    });
     *idx = (*link).wr_tx_cnt;
     -EBUSY
 }

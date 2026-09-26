@@ -32,11 +32,11 @@ pub const SVC_HANDSHAKE_TO: u32 = 5 * HZ;
 pub type rpc_fraghdr = u32; pub type ulong = usize;
 
 extern "C" {
-    fn svc_xprt_enqueue(*mut svc_xprt); fn svc_xprt_deferred_close(*mut svc_xprt); fn svc_xprt_received(*mut svc_xprt);
-    fn svc_xprt_get(*mut svc_xprt); fn svc_xprt_put(*mut svc_xprt); fn svc_xprt_is_dead(*mut svc_xprt) -> bool;
-    fn svc_sock_reclen(*mut svc_sock) -> usize; fn svc_sock_final_rec(*mut svc_sock) -> bool;
-    fn svc_tcp_sock_recvmsg(*mut svc_sock, *mut msghdr) -> isize; fn svc_sock_secure_port(*mut svc_rqst);
-    fn svc_tcp_restore_pages(*mut svc_sock, *mut svc_rqst) -> usize; fn svc_tcp_save_pages(*mut svc_sock, *mut svc_rqst);
+    fn svc_xprt_enqueue(_: *mut svc_xprt); fn svc_xprt_deferred_close(_: *mut svc_xprt); fn svc_xprt_received(_: *mut svc_xprt);
+    fn svc_xprt_get(_: *mut svc_xprt); fn svc_xprt_put(_: *mut svc_xprt); fn svc_xprt_is_dead(_: *mut svc_xprt) -> bool;
+    fn svc_sock_reclen(_: *mut svc_sock) -> usize; fn svc_sock_final_rec(_: *mut svc_sock) -> bool;
+    fn svc_tcp_sock_recvmsg(_: *mut svc_sock, _: *mut msghdr) -> isize; fn svc_sock_secure_port(_: *mut svc_rqst);
+    fn svc_tcp_restore_pages(_: *mut svc_sock, _: *mut svc_rqst) -> usize; fn svc_tcp_save_pages(_: *mut svc_sock, _: *mut svc_rqst);
 }
 
 unsafe extern "C" fn svc_sock_result_payload(_: *mut svc_rqst, _: u32, _: u32) -> c_int { 0 }
@@ -73,7 +73,7 @@ unsafe extern "C" fn svc_udp_kill_temp_xprt(_: *mut svc_xprt) {}
 unsafe extern "C" fn svc_tcp_kill_temp_xprt(xprt: *mut svc_xprt) { sock_no_linger(container_of(xprt).as_ref().unwrap().sk_sock); }
 
 // The remaining declarations retain the original externally visible interfaces.
-extern "C" { fn consume_skb(*mut c_void); fn sock_no_linger(*mut socket); fn clear_bit(c_int, *mut ulong); fn container_of(*mut svc_xprt) -> *mut svc_sock; fn xdr_zero() -> rpc_fraghdr; fn bug() -> !; }
+extern "C" { fn consume_skb(_: *mut c_void); fn sock_no_linger(_: *mut socket); fn clear_bit(_: c_int, _: *mut ulong); fn container_of(_: *mut svc_xprt) -> *mut svc_sock; fn xdr_zero() -> rpc_fraghdr; fn bug() -> !; }
 extern "C" { fn EAGAIN() -> c_int; }
 pub const PAGE_SIZE: usize = 4096; pub const HZ: u32 = 100; pub const RPCSVC_MAXPAYLOAD_UDP: usize = 65536; pub const RPCSVC_MAXPAYLOAD_TCP: usize = 65536; pub const XPT_DATA: c_int = 0; pub const EAGAIN: c_int = 11;
 
@@ -81,6 +81,6 @@ pub unsafe extern "C" fn svc_init_xprt_sock() { svc_reg_xprt_class(&mut svc_tcp_
 pub unsafe extern "C" fn svc_cleanup_xprt_sock() { svc_unreg_xprt_class(&mut svc_tcp_class); svc_unreg_xprt_class(&mut svc_udp_class); }
 static mut svc_tcp_class: svc_xprt_class = svc_xprt_class { _private: [] };
 static mut svc_udp_class: svc_xprt_class = svc_xprt_class { _private: [] };
-extern "C" { fn svc_reg_xprt_class(*mut svc_xprt_class); fn svc_unreg_xprt_class(*mut svc_xprt_class); }
+extern "C" { fn svc_reg_xprt_class(_: *mut svc_xprt_class); fn svc_unreg_xprt_class(_: *mut svc_xprt_class); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

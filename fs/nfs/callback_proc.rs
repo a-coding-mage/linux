@@ -44,7 +44,7 @@ pub unsafe extern "C" fn nfs4_callback_recall(argp: *mut core::ffi::c_void, _res
     res = htonl(NFS4ERR_BADHANDLE);
     let inode = nfs_delegation_find_inode((*cps).clp, &(*args).fh);
     if IS_ERR(inode) { if inode == ERR_PTR(-EAGAIN) { res = htonl(NFS4ERR_DELAY); } trace_nfs4_cb_recall((*cps).clp, &(*args).fh, core::ptr::null_mut(), &(*args).stateid, -ntohl(res)); return res; }
-    res = match nfs_async_inode_return_delegation(inode, &(*args).stateid) { 0 => 0, -ENOENT => htonl(NFS4ERR_BAD_STATEID), _ => htonl(NFS4ERR_RESOURCE) };
+    res = match nfs_async_inode_return_delegation(inode, &(*args).stateid) { case if case == 0 => 0, case if case == -ENOENT => htonl(NFS4ERR_BAD_STATEID), _ => htonl(NFS4ERR_RESOURCE) };
     trace_nfs4_cb_recall((*cps).clp, &(*args).fh, inode, &(*args).stateid, -ntohl(res));
     nfs_iput_and_deactive(inode); res
 }
@@ -105,7 +105,7 @@ unsafe fn initiate_file_draining(clp: *mut nfs_client, args: *mut cb_layoutrecal
     if test_bit(NFS_LAYOUT_BULK_RECALL, &(*lo).plh_flags) { spin_unlock(&(*ino).i_lock); pnfs_put_layout_hdr(lo); nfs_iput_and_deactive(ino); return NFS4ERR_DELAY; }
     pnfs_set_layout_stateid(lo, &(*args).cbl_stateid, core::ptr::null_mut(), true); let mut free_me_list = LIST_HEAD_INIT!();
     let stat = pnfs_mark_matching_lsegs_return(lo, &mut free_me_list, &(*args).cbl_range, be32_to_cpu((*args).cbl_stateid.seqid), (*args).cbl_layoutchanged);
-    let rv = match stat { 0 | -EBUSY => NFS4_OK, -ENOENT => { set_bit(NFS_LAYOUT_DRAIN, &(*lo).plh_flags); NFS4ERR_NOMATCHING_LAYOUT }, _ => NFS4ERR_NOMATCHING_LAYOUT };
+    let rv = match stat { case if case == 0 || case == -EBUSY => NFS4_OK, case if case == -ENOENT => { set_bit(NFS_LAYOUT_DRAIN, &(*lo).plh_flags); NFS4ERR_NOMATCHING_LAYOUT }, _ => NFS4ERR_NOMATCHING_LAYOUT };
     spin_unlock(&(*ino).i_lock); pnfs_free_lseg_list(&mut free_me_list); nfs_commit_inode(ino, 0); pnfs_put_layout_hdr(lo); nfs_iput_and_deactive(ino); trace_nfs4_cb_layoutrecall_file(clp, &(*args).cbl_fh, ino, &(*args).cbl_stateid, (*args).cbl_layoutchanged, -(rv as i32)); rv
 }
 

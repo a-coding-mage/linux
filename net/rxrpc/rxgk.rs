@@ -37,17 +37,18 @@ unsafe fn rxgk_describe_server_key(key: *const key, m: *mut seq_file) {
 
 unsafe fn rxgk_rekey(conn: *mut rxrpc_connection, specific: *const u16) -> *mut rxgk_context {
     let mut dead = core::ptr::null_mut(); let mut crank = false;
+    'bad_key: {
     mutex_lock!(&mut (*conn).security_lock);
     let current = (*conn).rxgk.key_number;
     let mask = (*conn).rxgk.keys.len() - 1;
-    let number = if specific.is_null() { current } else if *specific as u32 == current || *specific as u32 == current.wrapping_sub(1) { if *specific as u32 == current { current } else { current - 1 } } else if *specific as u32 == current.wrapping_add(1) { goto!(crank_window) } else { goto!(bad_key) };
+    let number = if specific.is_null() { current } else if *specific as u32 == current || *specific as u32 == current.wrapping_sub(1) { if *specific as u32 == current { current } else { current - 1 } } else if *specific as u32 == current.wrapping_add(1) { goto crank_window;} else { break 'bad_key;};
     let mut gk = (*conn).rxgk.keys[number as usize & mask];
-    if !gk.is_null() && (specific.is_null() && !test_bit!(RXGK_TK_NEEDS_REKEY, &mut (*gk).flags)) { goto!(grab) }
+    if !gk.is_null() && (specific.is_null() && !test_bit!(RXGK_TK_NEEDS_REKEY, &mut (*gk).flags)) { goto grab;}
     crank_window:
     trace_rxrpc_rxgk_rekey!(conn, current, if specific.is_null() { -1 } else { *specific as i32 });
-    if current == UINT_MAX { goto!(bad_key) }
+    if current == UINT_MAX { break 'bad_key;}
     if current + 1 == UINT_MAX { set_bit!(RXRPC_CONN_DONT_REUSE, &mut (*conn).flags); }
-    let number = current + 1; if WARN_ON!(!(*conn).rxgk.keys[number as usize & mask].is_null()) { goto!(bad_key) }
+    let number = current + 1; if WARN_ON!(!(*conn).rxgk.keys[number as usize & mask].is_null()) { break 'bad_key;}
     crank = true;
     generate_key:
     gk = (*conn).rxgk.keys[current as usize & mask];
@@ -58,7 +59,8 @@ unsafe fn rxgk_rekey(conn: *mut rxrpc_connection, specific: *const u16) -> *mut 
     (*conn).rxgk.keys[(*conn).rxgk.key_number as usize & mask] = gk;
     write_unlock!(&mut (*conn).security_use_lock);
     grab: refcount_inc!(&mut (*gk).usage); mutex_unlock!(&mut (*conn).security_lock); rxgk_put(dead); gk
-    bad_key: mutex_unlock!(&mut (*conn).security_lock); ERR_PTR!(-ESTALE)
+    }
+    mutex_unlock!(&mut (*conn).security_lock); ERR_PTR!(-ESTALE)
 }
 
 unsafe fn rxgk_get_key(conn: *mut rxrpc_connection, specific: *const u16) -> *mut rxgk_context {

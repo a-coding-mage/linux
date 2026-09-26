@@ -98,12 +98,12 @@ unsafe fn hfsplus_get_last_session(sb: *mut super_block, start: *mut u64, size: 
         let mut te = cdrom_tocentry { cdte_track: (*(*sb).s_fs_info).session as u8,
             cdte_format: CDROM_LBA, cdte_ctrl: 0, cdte_addr_lba: 0 };
         if cdrom_read_tocentry(cdi, &mut te) != 0 || te.cdte_ctrl & CDROM_DATA_TRACK != 4 { return -22; }
-        *start = te.cdte_addr_lba as u64 << 2;
+        *start = (te.cdte_addr_lba as u64) << 2;
     } else {
         let cdi = disk_to_cdi((*sb).s_bdev);
         if !cdi.is_null() {
             let mut ms = cdrom_multisession { addr_format: CDROM_LBA, xa_flag: 0, addr_lba: 0 };
-            if cdrom_multisession(cdi, &mut ms) == 0 && ms.xa_flag != 0 { *start = ms.addr_lba as u64 << 2; }
+            if cdrom_multisession(cdi, &mut ms) == 0 && ms.xa_flag != 0 { *start = (ms.addr_lba as u64) << 2; }
         }
     }
     0

@@ -33,13 +33,13 @@ extern "C" {
 pub type rpc_authflavor_t=u32;
 
 extern "C" {
-    fn register_filesystem(*mut c_void)->c_int; fn unregister_filesystem(*mut c_void);
+    fn register_filesystem(_: *mut c_void)->c_int; fn unregister_filesystem(_: *mut c_void);
     fn nfs_register_sysctl()->c_int; fn nfs_unregister_sysctl();
-    fn shrinker_alloc(c_ulong,*const c_char)->*mut shrinker; fn shrinker_register(*mut shrinker); fn shrinker_free(*mut shrinker);
-    fn nfs_access_cache_count(*mut shrinker,*mut c_void)->c_ulong; fn nfs_access_cache_scan(*mut shrinker,*mut c_void)->c_ulong;
-    fn nfs_alloc_inode(*mut super_block)->*mut inode; fn nfs_free_inode(*mut inode); fn nfs_write_inode(*mut inode,*mut writeback_control)->c_int; fn nfs_drop_inode(*mut inode)->c_int; fn nfs_evict_inode(*mut inode);
-    fn nfs_sb_active(*mut super_block)->bool; fn nfs_sb_deactive(*mut super_block); fn nfs_free_server(*mut nfs_server); fn nfs_get_root(*mut super_block,*mut fs_context)->c_int; fn nfs_probe_server(*mut nfs_server,*mut nfs_fh)->c_int;
-    fn nfs_fc2context(*mut fs_context)->*mut nfs_fs_context; fn nfs_mount(*mut c_void,u32,u32)->c_int; fn nfs_errorf(*mut fs_context,*const c_char,...); fn nfs_get_tree_common(*mut fs_context)->c_int;
+    fn shrinker_alloc(_: c_ulong,_: *const c_char)->*mut shrinker; fn shrinker_register(_: *mut shrinker); fn shrinker_free(_: *mut shrinker);
+    fn nfs_access_cache_count(_: *mut shrinker,_: *mut c_void)->c_ulong; fn nfs_access_cache_scan(_: *mut shrinker,_: *mut c_void)->c_ulong;
+    fn nfs_alloc_inode(_: *mut super_block)->*mut inode; fn nfs_free_inode(_: *mut inode); fn nfs_write_inode(_: *mut inode,_: *mut writeback_control)->c_int; fn nfs_drop_inode(_: *mut inode)->c_int; fn nfs_evict_inode(_: *mut inode);
+    fn nfs_sb_active(_: *mut super_block)->bool; fn nfs_sb_deactive(_: *mut super_block); fn nfs_free_server(_: *mut nfs_server); fn nfs_get_root(_: *mut super_block,_: *mut fs_context)->c_int; fn nfs_probe_server(_: *mut nfs_server,_: *mut nfs_fh)->c_int;
+    fn nfs_fc2context(_: *mut fs_context)->*mut nfs_fs_context; fn nfs_mount(_: *mut c_void,_: u32,_: u32)->c_int; fn nfs_errorf(_: *mut fs_context,_: *const c_char,...); fn nfs_get_tree_common(_: *mut fs_context)->c_int;
 }
 
 #[no_mangle] pub unsafe extern "C" fn nfs_statfs(_dentry:*mut dentry, buf:*mut kstatfs)->c_int { (*buf).f_type=0x6969; 0 }
@@ -51,12 +51,12 @@ extern "C" {
 
 #[no_mangle] pub static mut nfs_sops_translated: super_operations = super_operations { alloc_inode:Some(nfs_alloc_inode), free_inode:Some(nfs_free_inode), write_inode:Some(nfs_write_inode), drop_inode:Some(nfs_drop_inode), statfs:Some(nfs_statfs), evict_inode:Some(nfs_evict_inode), umount_begin:Some(nfs_umount_begin), show_options:Some(nfs_show_options), show_devname:Some(nfs_show_devname), show_path:Some(nfs_show_path), show_stats:Some(nfs_show_stats) };
 
-#[cfg(feature="CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 unsafe extern "C" fn register_nfs4_fs() -> c_int { register_filesystem(core::ptr::null_mut()) }
-#[cfg(not(feature="CONFIG_NFS_V4"))]
+#[cfg(not(CONFIG_NFS_V4))]
 unsafe extern "C" fn register_nfs4_fs() -> c_int { 0 }
-#[cfg(feature="CONFIG_NFS_V4")] unsafe extern "C" fn unregister_nfs4_fs(){ unregister_filesystem(core::ptr::null_mut()) }
-#[cfg(not(feature="CONFIG_NFS_V4"))] unsafe extern "C" fn unregister_nfs4_fs(){}
+#[cfg(CONFIG_NFS_V4)] unsafe extern "C" fn unregister_nfs4_fs(){ unregister_filesystem(core::ptr::null_mut()) }
+#[cfg(not(CONFIG_NFS_V4))] unsafe extern "C" fn unregister_nfs4_fs(){}
 
 static mut acl_shrinker:*mut shrinker=core::ptr::null_mut();
 #[no_mangle] pub unsafe extern "C" fn register_nfs_fs()->c_int {
@@ -75,16 +75,16 @@ static mut acl_shrinker:*mut shrinker=core::ptr::null_mut();
 #[no_mangle] pub unsafe extern "C" fn nfs_reconfigure(_fc:*mut fs_context)->c_int { 0 }
 #[no_mangle] pub unsafe extern "C" fn nfs_kill_super(_s:*mut super_block){}
 
-#[cfg(feature="CONFIG_NFS_V4")]
+#[cfg(CONFIG_NFS_V4)]
 #[no_mangle] pub static mut nfs_callback_set_tcpport:u32=0;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut nfs_callback_nr_threads:u16=0;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut nfs_idmap_cache_timeout:u32=600;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut nfs4_disable_idmapping:bool=true;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut max_session_slots:u16=0;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut max_session_cb_slots:u16=0;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut send_implementation_id:u16=1;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut nfs4_client_id_uniquifier:[c_char;64]=[0;64];
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut recover_lost_locks:bool=false;
-#[cfg(feature="CONFIG_NFS_V4")] #[no_mangle] pub static mut nfs_delay_retrans:i16=-1;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut nfs_callback_nr_threads:u16=0;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut nfs_idmap_cache_timeout:u32=600;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut nfs4_disable_idmapping:bool=true;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut max_session_slots:u16=0;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut max_session_cb_slots:u16=0;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut send_implementation_id:u16=1;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut nfs4_client_id_uniquifier:[c_char;64]=[0;64];
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut recover_lost_locks:bool=false;
+#[cfg(CONFIG_NFS_V4)] #[no_mangle] pub static mut nfs_delay_retrans:i16=-1;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

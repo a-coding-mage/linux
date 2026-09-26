@@ -61,9 +61,9 @@ pub const POSTED_INTR_NESTED_VECTOR: u32 = 0xf0;
 pub const MANAGED_IRQ_SHUTDOWN_VECTOR: u32 = 0xef;
 
 /* Preserved from #if IS_ENABLED(CONFIG_HYPERV). */
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 pub const HYPERV_REENLIGHTENMENT_VECTOR: u32 = 0xee;
-#[cfg(feature = "CONFIG_HYPERV")]
+#[cfg(CONFIG_HYPERV)]
 pub const HYPERV_STIMER0_VECTOR: u32 = 0xed;
 
 pub const LOCAL_TIMER_VECTOR: u32 = 0xec;
@@ -73,9 +73,9 @@ pub const POSTED_MSI_NOTIFICATION_VECTOR: u32 = 0xeb;
 pub const NR_VECTORS: u32 = 256;
 
 /* Preserved from CONFIG_X86_LOCAL_APIC conditional compilation. */
-#[cfg(feature = "CONFIG_X86_LOCAL_APIC")]
+#[cfg(CONFIG_X86_LOCAL_APIC)]
 pub const FIRST_SYSTEM_VECTOR: u32 = POSTED_MSI_NOTIFICATION_VECTOR;
-#[cfg(not(feature = "CONFIG_X86_LOCAL_APIC"))]
+#[cfg(not(CONFIG_X86_LOCAL_APIC))]
 pub const FIRST_SYSTEM_VECTOR: u32 = NR_VECTORS;
 
 pub const NR_EXTERNAL_VECTORS: u32 = FIRST_SYSTEM_VECTOR - FIRST_EXTERNAL_VECTOR;
@@ -88,17 +88,17 @@ pub const CPU_VECTOR_LIMIT: u32 = 64 * NR_CPUS;
 pub const IO_APIC_VECTOR_LIMIT: u32 = 32 * MAX_IO_APICS;
 
 /* Preserved from the source CONFIG_X86_IO_APIC/CONFIG_PCI_MSI conditionals. */
-#[cfg(all(feature = "CONFIG_X86_IO_APIC", feature = "CONFIG_PCI_MSI"))]
+#[cfg(all(CONFIG_X86_IO_APIC, CONFIG_PCI_MSI))]
 pub const NR_IRQS: u32 = if CPU_VECTOR_LIMIT > IO_APIC_VECTOR_LIMIT {
     NR_VECTORS + CPU_VECTOR_LIMIT
 } else {
     NR_VECTORS + IO_APIC_VECTOR_LIMIT
 };
-#[cfg(all(feature = "CONFIG_X86_IO_APIC", not(feature = "CONFIG_PCI_MSI")))]
+#[cfg(all(CONFIG_X86_IO_APIC, not(CONFIG_PCI_MSI)))]
 pub const NR_IRQS: u32 = NR_VECTORS + IO_APIC_VECTOR_LIMIT;
-#[cfg(all(not(feature = "CONFIG_X86_IO_APIC"), feature = "CONFIG_PCI_MSI"))]
+#[cfg(all(not(CONFIG_X86_IO_APIC), CONFIG_PCI_MSI))]
 pub const NR_IRQS: u32 = NR_VECTORS + CPU_VECTOR_LIMIT;
-#[cfg(all(not(feature = "CONFIG_X86_IO_APIC"), not(feature = "CONFIG_PCI_MSI")))]
+#[cfg(all(not(CONFIG_X86_IO_APIC), not(CONFIG_PCI_MSI)))]
 pub const NR_IRQS: u32 = NR_IRQS_LEGACY;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -93,9 +93,9 @@ pub struct dmcu_funcs {
     ) -> bool>,
     pub recv_edid_cea_ack: Option<unsafe extern "C" fn(dmcu: *mut dmcu, offset: *mut i32) -> bool>,
     // Preserved from #if defined(CONFIG_DRM_AMD_SECURE_DISPLAY).
-    #[cfg(feature = "CONFIG_DRM_AMD_SECURE_DISPLAY")]
+    #[cfg(CONFIG_DRM_AMD_SECURE_DISPLAY)]
     pub forward_crc_window: Option<unsafe extern "C" fn(dmcu: *mut dmcu, rect: *mut rect, mux_mapping: *mut otg_phy_mux)>,
-    #[cfg(feature = "CONFIG_DRM_AMD_SECURE_DISPLAY")]
+    #[cfg(CONFIG_DRM_AMD_SECURE_DISPLAY)]
     pub stop_crc_win_update: Option<unsafe extern "C" fn(dmcu: *mut dmcu, mux_mapping: *mut otg_phy_mux)>,
 }
 

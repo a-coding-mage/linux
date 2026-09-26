@@ -71,7 +71,7 @@ unsafe extern "C" fn tls_handshake_done(req: *mut handshake_req, status: i32, in
     ((*treq).th_consumer_done.unwrap())((*treq).th_consumer_data, status, (*treq).th_peerid[0]);
 }
 
-#[cfg(feature = "CONFIG_KEYS")]
+#[cfg(CONFIG_KEYS)]
 unsafe fn tls_handshake_private_keyring(treq: *mut TlsHandshakeReq) -> i32 {
     if (*treq).th_keyring == TLS_NO_KEYRING { return 0; }
     let process_keyring_ref = lookup_user_key(KEY_SPEC_PROCESS_KEYRING, KEY_LOOKUP_CREATE, KEY_NEED_WRITE);
@@ -84,7 +84,7 @@ unsafe fn tls_handshake_private_keyring(treq: *mut TlsHandshakeReq) -> i32 {
     ret
 }
 
-#[cfg(not(feature = "CONFIG_KEYS"))]
+#[cfg(not(CONFIG_KEYS))]
 unsafe fn tls_handshake_private_keyring(_treq: *mut TlsHandshakeReq) -> i32 { 0 }
 
 unsafe fn tls_handshake_put_peer_identity(msg: *mut sk_buff, treq: *mut TlsHandshakeReq) -> i32 {

@@ -46,11 +46,11 @@ use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
 #[repr(C)] pub struct trace_event_file { _private: [u8; 0] }
 pub type cpumask_var_t = *mut c_void;
 
-#[cfg(feature = "CONFIG_EVENT_TRACING")]
+#[cfg(CONFIG_EVENT_TRACING)]
 unsafe fn trace_boot_enable_events(tr: *mut trace_array, node: *mut xbc_node) {
     let _ = (tr, node);
 }
-#[cfg(not(feature = "CONFIG_EVENT_TRACING"))]
+#[cfg(not(CONFIG_EVENT_TRACING))]
 unsafe fn trace_boot_enable_events(_tr: *mut trace_array, _node: *mut xbc_node) {}
 
 unsafe fn trace_boot_set_instance_options(tr: *mut trace_array, node: *mut xbc_node) {

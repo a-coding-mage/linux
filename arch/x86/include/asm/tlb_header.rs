@@ -47,7 +47,7 @@ pub enum addr_stride {
 
 // CONFIG_BROADCAST_TLB_FLUSH controls whether the hardware instructions are
 // emitted; the disabled implementations are retained below.
-#[cfg(feature = "CONFIG_BROADCAST_TLB_FLUSH")]
+#[cfg(CONFIG_BROADCAST_TLB_FLUSH)]
 #[inline]
 pub unsafe fn __invlpgb(
     asid: usize,
@@ -70,7 +70,7 @@ pub unsafe fn __invlpgb(
     );
 }
 
-#[cfg(not(feature = "CONFIG_BROADCAST_TLB_FLUSH"))]
+#[cfg(not(CONFIG_BROADCAST_TLB_FLUSH))]
 #[inline]
 pub unsafe fn __invlpgb(
     _asid: usize, _pcid: usize, _addr: usize, _nr_pages: u16,
@@ -82,14 +82,14 @@ pub unsafe fn __invlpgb_all(asid: usize, pcid: usize, flags: u8) {
     __invlpgb(asid, pcid, 0, 1, addr_stride::PTE_STRIDE, flags);
 }
 
-#[cfg(feature = "CONFIG_BROADCAST_TLB_FLUSH")]
+#[cfg(CONFIG_BROADCAST_TLB_FLUSH)]
 #[inline]
 pub unsafe fn __tlbsync() {
     cant_migrate();
     core::arch::asm!(".byte 0x0f, 0x01, 0xff", options(nostack));
 }
 
-#[cfg(not(feature = "CONFIG_BROADCAST_TLB_FLUSH"))]
+#[cfg(not(CONFIG_BROADCAST_TLB_FLUSH))]
 #[inline]
 pub unsafe fn __tlbsync() {}
 

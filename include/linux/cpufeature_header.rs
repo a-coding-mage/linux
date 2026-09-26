@@ -15,13 +15,13 @@
  * supplied values; their defaults in the C header are "%s" and ELF_PLATFORM.
  */
 
-#[cfg(feature = "CONFIG_GENERIC_CPU_AUTOPROBE")]
+#[cfg(CONFIG_GENERIC_CPU_AUTOPROBE)]
 #[allow(unused_macros)]
 macro_rules! CPU_FEATURE_TYPEFMT {
     () => { "%s" };
 }
 
-#[cfg(feature = "CONFIG_GENERIC_CPU_AUTOPROBE")]
+#[cfg(CONFIG_GENERIC_CPU_AUTOPROBE)]
 #[allow(unused_macros)]
 macro_rules! CPU_FEATURE_TYPEVAL {
     () => { ELF_PLATFORM };
@@ -35,7 +35,7 @@ macro_rules! CPU_FEATURE_TYPEVAL {
  * module retains the C declaration's data and initialization behavior while
  * keeping the feature and initializer supplied by the caller.
  */
-#[cfg(feature = "CONFIG_GENERIC_CPU_AUTOPROBE")]
+#[cfg(CONFIG_GENERIC_CPU_AUTOPROBE)]
 #[macro_export]
 macro_rules! module_cpu_feature_match {
     ($x:ident, $initfunc:path) => {

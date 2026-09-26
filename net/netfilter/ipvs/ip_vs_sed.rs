@@ -52,6 +52,7 @@ unsafe fn ip_vs_sed_schedule(
     let mut least: *mut ip_vs_dest;
     let mut loh: i32;
     let mut doh: i32;
+    'nextstage: {
 
     ip_vs_dbg!(6, "{}(): Scheduling...\n", "ip_vs_sed_schedule");
 
@@ -74,7 +75,7 @@ unsafe fn ip_vs_sed_schedule(
         {
             least = dest;
             loh = ip_vs_sed_dest_overhead(least);
-            goto nextstage;
+            break 'nextstage;
         }
     });
     ip_vs_scheduler_err(svc, "no destination available");
@@ -83,7 +84,8 @@ unsafe fn ip_vs_sed_schedule(
     /*
      *    Find the destination with the least load.
      */
-nextstage:
+    }
+    
     list_for_each_entry_continue_rcu!(dest, &(*svc).destinations, n_list, {
         if ((*dest).flags & IP_VS_DEST_F_OVERLOAD) != 0 {
             continue;

@@ -11,18 +11,8 @@
 // asm/idmap.h, asm/cputype.h, and asm/suspend.h.
 
 extern "C" {
-    #[repr(C)]
-    pub struct McpmCpuSync { pub cpu: i32 }
-    #[repr(C)]
-    pub struct McpmSyncStruct {
-        pub cluster: i32,
-        pub inbound: i32,
-        pub cpus: [McpmCpuSync; MAX_CPUS_PER_CLUSTER as usize],
-    }
-    #[repr(C)]
-    pub struct SyncStruct {
-        pub clusters: [McpmSyncStruct; MAX_NR_CLUSTERS as usize],
-    }
+
+
 
     pub static mut mcpm_sync: SyncStruct;
     pub static mut mcpm_entry_vectors: [[u64; MAX_CPUS_PER_CLUSTER as usize]; MAX_NR_CLUSTERS as usize];
@@ -49,6 +39,18 @@ extern "C" {
     pub fn __pa_symbol<T>(ptr: *const T) -> u64;
     pub fn might_sleep();
 }
+    #[repr(C)]
+    pub struct SyncStruct {
+        pub clusters: [McpmSyncStruct; MAX_NR_CLUSTERS as usize],
+    }
+    #[repr(C)]
+    #[repr(C)]
+    pub struct McpmSyncStruct {
+        pub cluster: i32,
+        pub inbound: i32,
+        pub cpus: [McpmCpuSync; MAX_CPUS_PER_CLUSTER as usize],
+    }
+pub struct McpmCpuSync { pub cpu: i32 }
 
 // Build-time constants and kernel helpers are supplied by the surrounding ARM environment.
 extern "C" {

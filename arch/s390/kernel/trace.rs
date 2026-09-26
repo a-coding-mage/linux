@@ -27,7 +27,7 @@ pub unsafe fn trace_s390_diagnose_norecursion(diag_nr: core::ffi::c_int) {
     let depth: *mut core::ffi::c_uint = &raw mut DIAGNOSE_TRACE_DEPTH;
 
     /* Avoid lockdep recursion. */
-    if cfg!(feature = "CONFIG_LOCKDEP") {
+    if cfg!(CONFIG_LOCKDEP) {
         return;
     }
     local_irq_save(&mut flags as *mut core::ffi::c_ulong);

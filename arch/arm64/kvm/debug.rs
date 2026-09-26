@@ -137,8 +137,8 @@ pub unsafe fn kvm_debug_set_guest_ownership(vcpu: *mut kvm_vcpu) {
 }
 
 pub unsafe fn kvm_debug_handle_oslar(vcpu: *mut kvm_vcpu, val: u64) {
-    if val & OSLAR_EL1_OSLK != 0 { __vcpu_rmw_sys_reg(vcpu, OSLSR_EL1, |=, OSLSR_EL1_OSLK); }
-    else { __vcpu_rmw_sys_reg(vcpu, OSLSR_EL1, &=, !OSLSR_EL1_OSLK); }
+    if val & OSLAR_EL1_OSLK != 0 { __vcpu_rmw_sys_reg!(vcpu, OSLSR_EL1, |=, OSLSR_EL1_OSLK); }
+    else { __vcpu_rmw_sys_reg!(vcpu, OSLSR_EL1, &=, !OSLSR_EL1_OSLK); }
     preempt_disable();
     kvm_arch_vcpu_put(vcpu);
     kvm_arch_vcpu_load(vcpu, smp_processor_id());

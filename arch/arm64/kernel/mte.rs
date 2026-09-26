@@ -8,7 +8,7 @@
 
 static mut MTE_TCF_PREFERRED: u64 = 0;
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 static mut MTE_ASYNC_OR_ASYMM_MODE: bool = false;
 
 pub unsafe fn mte_sync_tags(mut pte: pte_t, nr_pages: u32) {
@@ -58,19 +58,19 @@ unsafe fn __mte_enable_kernel(mode: *const i8, tcf: usize) {
     pr_info_once("MTE: enabled in %s mode at EL1\n", mode);
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 pub unsafe fn mte_enable_kernel_sync() {
     WARN_ONCE(system_uses_mte_async_or_asymm_mode(), "MTE async mode enabled system wide!");
     __mte_enable_kernel(b"synchronous\0".as_ptr() as *const i8, SCTLR_EL1_TCF_SYNC);
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 pub unsafe fn mte_enable_kernel_async() {
     __mte_enable_kernel(b"asynchronous\0".as_ptr() as *const i8, SCTLR_EL1_TCF_ASYNC);
     if !system_uses_mte_async_or_asymm_mode() { static_branch_enable(&raw mut MTE_ASYNC_OR_ASYMM_MODE); }
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 pub unsafe fn mte_enable_kernel_asymm() {
     if cpus_have_cap(ARM64_MTE_ASYMM) {
         __mte_enable_kernel(b"asymmetric\0".as_ptr() as *const i8, SCTLR_EL1_TCF_ASYMM);
@@ -78,7 +78,7 @@ pub unsafe fn mte_enable_kernel_asymm() {
     } else { mte_enable_kernel_sync(); }
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 pub unsafe fn mte_enable_kernel_store_only() -> i32 {
     if !cpus_have_cap(ARM64_MTE_STORE_ONLY) { return -EINVAL; }
     sysreg_clear_set(sctlr_el1, SCTLR_EL1_TCSO_MASK, SYS_FIELD_PREP(SCTLR_EL1, TCSO, 1));
@@ -87,7 +87,7 @@ pub unsafe fn mte_enable_kernel_store_only() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 pub unsafe fn mte_check_tfsr_el1() {
     let tfsr_el1 = read_sysreg_s(SYS_TFSR_EL1);
     if unlikely(tfsr_el1 & SYS_TFSR_EL1_TF1 != 0) {
@@ -114,7 +114,7 @@ unsafe fn mte_update_gcr_excl(task: *mut task_struct) {
     write_sysreg_s((((*task).thread.mte_ctrl >> MTE_CTRL_GCR_USER_EXCL_SHIFT) & SYS_GCR_EL1_EXCL_MASK) | SYS_GCR_EL1_RRND, SYS_GCR_EL1);
 }
 
-#[cfg(feature = "CONFIG_KASAN_HW_TAGS")]
+#[cfg(CONFIG_KASAN_HW_TAGS)]
 pub unsafe fn kasan_hw_tags_enable(_alt: *mut alt_instr, _origptr: *mut __le32, updptr: *mut __le32, nr_inst: i32) {
     BUG_ON(nr_inst != 1);
     if kasan_hw_tags_enabled() { *updptr = cpu_to_le32(aarch64_insn_gen_nop()); }
@@ -218,12 +218,23 @@ unsafe fn register_mte_tcf_preferred_sysctl() -> i32 {
 }
 
 pub unsafe fn mte_probe_user_range(mut uaddr: *const i8, size: usize) -> usize {
-    let end = uaddr.add(size); let mut val: i8 = 0;
-    __raw_get_user(&mut val, uaddr, efault);
+    let end = uaddr.add(size);
+    let mut val: i8 = 0;
+
+    // `__raw_get_user(val, uaddr, efault)`: a faulting access reports how
+    // much of the range was left unprobed.
+    if __raw_get_user(&mut val, uaddr) != 0 {
+        return end.offset_from(uaddr) as usize;
+    }
     uaddr = PTR_ALIGN(uaddr, MTE_GRANULE_SIZE);
-    while uaddr < end { __raw_get_user(&mut val, uaddr, efault); uaddr = uaddr.add(MTE_GRANULE_SIZE); }
-    let _ = val; return 0;
-efault: end.offset_from(uaddr) as usize
+    while uaddr < end {
+        if __raw_get_user(&mut val, uaddr) != 0 {
+            return end.offset_from(uaddr) as usize;
+        }
+        uaddr = uaddr.add(MTE_GRANULE_SIZE);
+    }
+    let _ = val;
+    0
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -32,7 +32,7 @@ pub const VENDOR_ID_ASUS: u16 = 0x0b05;
 pub const VENDOR_ID_TRENDNET: u16 = 0x20f4;
 
 /* Preserved from the build-time condition IS_REACHABLE(CONFIG_USB_RTL8152). */
-#[cfg(feature = "CONFIG_USB_RTL8152")]
+#[cfg(CONFIG_USB_RTL8152)]
 extern "C" {
     pub fn rtl8152_get_version(intf: *mut usb_interface) -> u8;
 }

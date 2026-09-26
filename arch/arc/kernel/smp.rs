@@ -11,7 +11,7 @@
 
 // Linux and ARC headers provide the external types, constants, functions, and macros used below.
 
-#[cfg(not(feature = "CONFIG_ARC_HAS_LLSC"))]
+#[cfg(not(CONFIG_ARC_HAS_LLSC))]
 #[no_mangle]
 pub static mut smp_atomic_ops_lock: arch_spinlock_t = __ARCH_SPIN_LOCK_UNLOCKED;
 
@@ -74,13 +74,13 @@ pub unsafe fn smp_cpus_done(_max_cpus: u32) {}
 
 static mut wake_flag: core::cell::UnsafeCell<i32> = core::cell::UnsafeCell::new(0);
 
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 unsafe fn boot_read(f: *mut i32) -> i32 { *f }
-#[cfg(feature = "CONFIG_ISA_ARCOMPACT")]
+#[cfg(CONFIG_ISA_ARCOMPACT)]
 unsafe fn boot_write(f: *mut i32, v: i32) { *f = v; }
-#[cfg(not(feature = "CONFIG_ISA_ARCOMPACT"))]
+#[cfg(not(CONFIG_ISA_ARCOMPACT))]
 unsafe fn boot_read(f: *mut i32) -> i32 { arc_read_uncached_32(f) }
-#[cfg(not(feature = "CONFIG_ISA_ARCOMPACT"))]
+#[cfg(not(CONFIG_ISA_ARCOMPACT))]
 unsafe fn boot_write(f: *mut i32, v: i32) { arc_write_uncached_32(f, v); }
 
 unsafe fn arc_default_smp_cpu_kick(cpu: i32, _pc: c_ulong) {
@@ -163,7 +163,7 @@ unsafe fn ipi_send_msg_one(cpu: i32, msg: ipi_msg_type) {
 }
 
 unsafe fn ipi_send_msg(callmap: *const cpumask, msg: ipi_msg_type) {
-    for_each_cpu!(cpu, callmap) { ipi_send_msg_one(cpu, msg); }
+    for_each_cpu!(cpu, callmap, { ipi_send_msg_one(cpu, msg); });
 }
 
 #[no_mangle] pub unsafe fn arch_smp_send_reschedule(cpu: i32) { ipi_send_msg_one(cpu, ipi_msg_type::IPI_RESCHEDULE); }

@@ -10,16 +10,16 @@
 
 // External kernel dependencies supplied by the surrounding repository.
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
+#[cfg(CONFIG_FB_OMAP)]
 static mut OMAPFB_LCD_CONFIGURED: bool = false;
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
+#[cfg(CONFIG_FB_OMAP)]
 static mut OMAPFB_CONFIG: omapfb_platform_data = unsafe { core::mem::zeroed() };
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
-static mut OMAP_FB_DMA_MASK: u64 = !(0_u32 as u64);
+#[cfg(CONFIG_FB_OMAP)]
+static mut OMAP_FB_DMA_MASK: u64 = !(0u32 as u64);
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
+#[cfg(CONFIG_FB_OMAP)]
 static mut OMAP_FB_RESOURCES: [resource; 2] = [
     resource {
         name: b"irq\0".as_ptr() as *const i8,
@@ -33,7 +33,7 @@ static mut OMAP_FB_RESOURCES: [resource; 2] = [
     },
 ];
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
+#[cfg(CONFIG_FB_OMAP)]
 static mut OMAP_FB_DEVICE: platform_device = platform_device {
     name: b"omapfb\0".as_ptr() as *const i8,
     id: -1,
@@ -46,13 +46,13 @@ static mut OMAP_FB_DEVICE: platform_device = platform_device {
     resource: unsafe { &raw mut OMAP_FB_RESOURCES as *mut resource },
 };
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
+#[cfg(CONFIG_FB_OMAP)]
 pub unsafe fn omapfb_set_lcd_config(config: *const omap_lcd_config) {
     OMAPFB_CONFIG.lcd = *config;
     OMAPFB_LCD_CONFIGURED = true;
 }
 
-#[cfg(feature = "CONFIG_FB_OMAP")]
+#[cfg(CONFIG_FB_OMAP)]
 unsafe fn omap_init_fb() -> i32 {
     /*
      * If the board file has not set the lcd config with
@@ -67,7 +67,7 @@ unsafe fn omap_init_fb() -> i32 {
 
 // arch_initcall(omap_init_fb);
 
-#[cfg(not(feature = "CONFIG_FB_OMAP"))]
+#[cfg(not(CONFIG_FB_OMAP))]
 pub unsafe fn omapfb_set_lcd_config(_config: *const omap_lcd_config) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

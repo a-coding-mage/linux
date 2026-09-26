@@ -57,6 +57,10 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> i32 {
     let mut bar_nr: u32;
     let mut bar_mask: c_ulong;
     let mut ret: i32;
+    'out_err: {
+    'out_err_disable: {
+    'out_err_free_reg: {
+    'out_err_dev_stop: {
 
     match (*ent).device {
         PCI_DEVICE_ID_INTEL_QAT_C62X_VF => {}
@@ -85,7 +89,7 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> i32 {
 
     hw_data = kzalloc_node(core::mem::size_of::<adf_hw_device_data>(), GFP_KERNEL,
                            dev_to_node(&mut (*pdev).dev)) as *mut adf_hw_device_data;
-    if hw_data.is_null() { ret = -ENOMEM; goto out_err; }
+    if hw_data.is_null() { ret = -ENOMEM; break 'out_err; }
     (*accel_dev).hw_device = hw_data;
     adf_init_hw_data_c62xiov((*accel_dev).hw_device);
     (*hw_data).accel_mask = ((*hw_data).get_accel_mask)(hw_data);
@@ -93,18 +97,18 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> i32 {
     (*accel_pci_dev).sku = ((*hw_data).get_sku)(hw_data);
 
     ret = adf_cfg_dev_add(accel_dev);
-    if ret != 0 { goto out_err; }
-    if pci_enable_device(pdev) != 0 { ret = -EFAULT; goto out_err; }
+    if ret != 0 { break 'out_err; }
+    if pci_enable_device(pdev) != 0 { ret = -EFAULT; break 'out_err; }
     ret = dma_set_mask_and_coherent(&mut (*pdev).dev, DMA_BIT_MASK(48));
     if ret != 0 {
         dev_err(&mut (*pdev).dev, "No usable DMA configuration\n");
-        goto out_err_disable;
+        break 'out_err_disable;
     }
-    if pci_request_regions(pdev, ADF_C62XVF_DEVICE_NAME) != 0 { ret = -EFAULT; goto out_err_disable; }
+    if pci_request_regions(pdev, ADF_C62XVF_DEVICE_NAME) != 0 { ret = -EFAULT; break 'out_err_disable; }
 
     i = 0;
     bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
-    for_each_set_bit!(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2) {
+    for_each_set_bit!(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2, {
         let bar = &mut (*accel_pci_dev).pci_bars[i as usize];
         i += 1;
         bar.base_addr = pci_resource_start(pdev, bar_nr);
@@ -114,22 +118,25 @@ unsafe fn adf_probe(pdev: *mut pci_dev, ent: *const pci_device_id) -> i32 {
         if bar.virt_addr.is_null() {
             pci_err(pdev, "Failed to map BAR %d\n", bar_nr);
             ret = -EFAULT;
-            goto out_err_free_reg;
+            break 'out_err_free_reg;
         }
-    }
+    });
     init_completion(&mut (*accel_dev).vf.msg_received);
     adf_dbgfs_init(accel_dev);
     ret = adf_dev_up(accel_dev, false);
-    if ret != 0 { goto out_err_dev_stop; }
+    if ret != 0 { break 'out_err_dev_stop; }
     return ret;
-
-out_err_dev_stop:
+    }
+    
     adf_dev_down(accel_dev);
-out_err_free_reg:
+    }
+    
     pci_release_regions((*accel_pci_dev).pci_dev);
-out_err_disable:
+    }
+    
     pci_disable_device((*accel_pci_dev).pci_dev);
-out_err:
+    }
+    
     adf_cleanup_accel(accel_dev);
     kfree(accel_dev as *mut core::ffi::c_void);
     return ret;

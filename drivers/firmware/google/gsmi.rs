@@ -75,7 +75,7 @@ unsafe fn gsmi_exec(func: u8, sub: u8) -> i32 {
     // The three C inline-assembly handshake protocols are preserved here as
     // an external operation supplied by the kernel/architecture layer.
     let result: u16 = gsmi_arch_exec(cmd, gsmi_dev.smi_cmd, (*gsmi_dev.param_buf).address, gsmi_dev.handshake_type, spincount);
-    match result { GSMI_SUCCESS => 0, GSMI_VAR_NOT_FOUND => 1, GSMI_INVALID_PARAMETER => -22, GSMI_BUFFER_TOO_SMALL => -12, GSMI_UNSUPPORTED | GSMI_UNSUPPORTED2 => -38, GSMI_NOT_READY => -16, GSMI_DEVICE_ERROR => -14, GSMI_NOT_FOUND => -2, GSMI_LOG_FULL => -28, GSMI_HANDSHAKE_CF | GSMI_HANDSHAKE_SPIN as u16 | GSMI_HANDSHAKE_NONE as u16 => result as i32, _ => -6 }
+    match result { case if case == GSMI_SUCCESS => 0, case if case == GSMI_VAR_NOT_FOUND => 1, case if case == GSMI_INVALID_PARAMETER => -22, case if case == GSMI_BUFFER_TOO_SMALL => -12, case if case == GSMI_UNSUPPORTED || case == GSMI_UNSUPPORTED2 => -38, case if case == GSMI_NOT_READY => -16, case if case == GSMI_DEVICE_ERROR => -14, case if case == GSMI_NOT_FOUND => -2, case if case == GSMI_LOG_FULL => -28, case if case == GSMI_HANDSHAKE_CF || case == GSMI_HANDSHAKE_SPIN as u16 || case == GSMI_HANDSHAKE_NONE as u16 => result as i32, _ => -6 }
 }
 
 extern "C" { fn gsmi_arch_exec(cmd: u16, port: u16, param: u32, handshake: i32, spin: u32) -> u16; }

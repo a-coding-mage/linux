@@ -19,7 +19,7 @@ pub struct xt_statistic_priv {
 // MODULE_ALIAS("ipt_statistic");
 // MODULE_ALIAS("ip6t_statistic");
 
-static unsafe fn statistic_mt(
+unsafe fn statistic_mt(
     skb: *const sk_buff,
     par: *mut xt_action_param,
 ) -> bool {
@@ -58,7 +58,7 @@ static unsafe fn statistic_mt(
     ret
 }
 
-static unsafe fn statistic_mt_check(par: *const xt_mtchk_param) -> i32 {
+unsafe fn statistic_mt_check(par: *const xt_mtchk_param) -> i32 {
     let info: *mut xt_statistic_info = unsafe { (*par).matchinfo as *mut xt_statistic_info };
 
     unsafe {
@@ -78,7 +78,7 @@ static unsafe fn statistic_mt_check(par: *const xt_mtchk_param) -> i32 {
     0
 }
 
-static unsafe fn statistic_mt_destroy(par: *const xt_mtdtor_param) {
+unsafe fn statistic_mt_destroy(par: *const xt_mtdtor_param) {
     let info: *const xt_statistic_info = unsafe { (*par).matchinfo as *const xt_statistic_info };
     unsafe {
         kfree((*info).master as *mut core::ffi::c_void);

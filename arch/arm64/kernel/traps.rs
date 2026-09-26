@@ -84,13 +84,13 @@ pub unsafe fn arm64_notify_die(str_: *const i8, regs: *mut pt_regs, signo: i32, 
     if user_mode(regs) { WARN_ON(regs != current_pt_regs()); (*current).thread.fault_address = 0; (*current).thread.fault_code = err; arm64_force_sig_fault(signo, sicode, far, str_); } else { die(str_, regs, err as isize); }
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_get_it_state(regs: *mut pt_regs) -> u32 { let p = (*regs).pstate; ((p & PSTATE_IT_1_0_MASK) >> PSTATE_IT_1_0_SHIFT) | (((p & PSTATE_IT_7_2_MASK) >> PSTATE_IT_7_2_SHIFT) << 2) }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn compat_set_it_state(regs: *mut pt_regs, it: u32) { let x = ((it << PSTATE_IT_1_0_SHIFT) & PSTATE_IT_1_0_MASK) | (((it >> 2) << PSTATE_IT_7_2_SHIFT) & PSTATE_IT_7_2_MASK); (*regs).pstate = ((*regs).pstate & !PSR_AA32_IT_MASK) | x as usize; }
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn advance_itstate(regs: *mut pt_regs) { if (*regs).pstate & PSR_AA32_T_BIT == 0 || (*regs).pstate & PSR_AA32_IT_MASK == 0 { return; } let mut it = compat_get_it_state(regs); if it & 7 == 0 { it = 0; } else { it = (it & 0xe0) | ((it << 1) & 0x1f); } compat_set_it_state(regs, it); }
-#[cfg(not(feature = "CONFIG_COMPAT"))]
+#[cfg(not(CONFIG_COMPAT))]
 unsafe fn advance_itstate(_: *mut pt_regs) {}
 
 pub unsafe fn arm64_skip_faulting_instruction(regs: *mut pt_regs, size: usize) { (*regs).pc = (*regs).pc.wrapping_add(size); if user_mode(regs) { user_fastforward_single_step(current); } if compat_user_mode(regs) { advance_itstate(regs); } else { (*regs).pstate &= !PSR_BTYPE_MASK; } }
@@ -129,7 +129,7 @@ static esr_class_str: [&str; 64] = ["UNRECOGNIZED EC"; 64];
 pub unsafe fn esr_get_class_string(esr: usize) -> *const i8 { esr_class_str[ESR_ELx_EC(esr) as usize].as_ptr() as *const i8 }
 pub unsafe fn bad_el0_sync(regs: *mut pt_regs, _: i32, esr: usize) { let pc=instruction_pointer(regs); (*current).thread.fault_address=0; (*current).thread.fault_code=esr; arm64_force_sig_fault(SIGILL, ILL_ILLOPC, pc, c"Bad EL0 synchronous exception".as_ptr()); }
 pub unsafe fn do_serror(regs: *mut pt_regs, esr: usize) { if !arm64_is_ras_serror(esr) || arm64_is_fatal_ras_serror(regs, esr) { arm64_serror_panic(regs, esr); } }
-#[cfg(feature = "CONFIG_GENERIC_BUG")] pub unsafe fn is_valid_bugaddr(_: usize) -> i32 { 1 }
+#[cfg(CONFIG_GENERIC_BUG)] pub unsafe fn is_valid_bugaddr(_: usize) -> i32 { 1 }
 pub unsafe fn bug_brk_handler(regs: *mut pt_regs, esr: usize) -> i32 { match report_bug((*regs).pc, regs) { BUG_TRAP_TYPE_BUG => die(c"Oops - BUG".as_ptr(), regs, esr as isize), BUG_TRAP_TYPE_WARN => (), _ => return DBG_HOOK_ERROR }; arm64_skip_faulting_instruction(regs, AARCH64_INSN_SIZE); DBG_HOOK_HANDLED }
 pub unsafe fn reserved_fault_brk_handler(regs: *mut pt_regs, _: usize) -> i32 { pr_err("%s generated an invalid instruction at %pS!\n", c"Kernel text patching".as_ptr(), instruction_pointer(regs)); DBG_HOOK_ERROR }
 
@@ -145,20 +145,20 @@ pub unsafe fn panic_bad_stack(regs: *mut pt_regs, esr: usize, far: usize) -> ! {
 pub unsafe fn arm64_serror_panic(regs: *mut pt_regs, esr: usize) -> ! { add_taint(TAINT_MACHINE_CHECK, LOCKDEP_STILL_OK); console_verbose(); pr_crit!("SError Interrupt on CPU%d, code 0x%016lx -- %s\n", smp_processor_id(), esr, esr_get_class_string(esr)); if !regs.is_null() { __show_regs(regs); } nmi_panic(regs, c"Asynchronous SError Interrupt".as_ptr()); cpu_park_loop() }
 pub unsafe fn arm64_is_fatal_ras_serror(regs: *mut pt_regs, esr: usize) -> bool { match arm64_ras_serror_get_severity(esr) { ESR_ELx_AET_CE | ESR_ELx_AET_UEO => false, ESR_ELx_AET_UEU | ESR_ELx_AET_UER => true, _ => { arm64_serror_panic(regs, esr); } } }
 
-#[cfg(feature = "CONFIG_CFI")]
+#[cfg(CONFIG_CFI)]
 pub unsafe fn cfi_brk_handler(regs: *mut pt_regs, esr: usize) -> i32 {
     let mut target = pt_regs_read_reg(regs, FIELD_GET(CFI_BRK_IMM_TARGET, esr)); let ty = pt_regs_read_reg(regs, FIELD_GET(CFI_BRK_IMM_TYPE, esr)) as u32;
     match report_cfi_failure(regs, (*regs).pc, &mut target, ty) { BUG_TRAP_TYPE_BUG => die(c"Oops - CFI".as_ptr(), regs, esr as isize), BUG_TRAP_TYPE_WARN => (), _ => return DBG_HOOK_ERROR }
     arm64_skip_faulting_instruction(regs, AARCH64_INSN_SIZE); DBG_HOOK_HANDLED
 }
 
-#[cfg(feature = "CONFIG_KASAN_SW_TAGS")]
+#[cfg(CONFIG_KASAN_SW_TAGS)]
 pub unsafe fn kasan_brk_handler(regs: *mut pt_regs, esr: usize) -> i32 {
     let recover = esr & 0x20 != 0; let write = esr & 0x10 != 0; let size = 1usize << (esr & 0xf); let addr = (*regs).regs[0] as *mut _;
     kasan_report(addr, size, write, (*regs).pc); if !recover { die(c"Oops - KASAN".as_ptr(), regs, esr as isize); }
     arm64_skip_faulting_instruction(regs, AARCH64_INSN_SIZE); DBG_HOOK_HANDLED
 }
-#[cfg(feature = "CONFIG_UBSAN_TRAP")]
+#[cfg(CONFIG_UBSAN_TRAP)]
 pub unsafe fn ubsan_brk_handler(regs: *mut pt_regs, esr: usize) -> i32 { die(report_ubsan_failure(esr & UBSAN_BRK_MASK), regs, esr as isize); DBG_HOOK_HANDLED }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

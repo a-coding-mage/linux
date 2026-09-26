@@ -13,13 +13,13 @@
 // Translated from the C implementation; kernel and architecture dependencies
 // are supplied by the surrounding source tree.
 
-static const mpc5200_cdm_ids: [of_device_id; 3] = [
+static mpc5200_cdm_ids: [of_device_id; 3] = [
     of_device_id { compatible: c"fsl,mpc5200-cdm", ..unsafe { core::mem::zeroed() } },
     of_device_id { compatible: c"mpc5200-cdm", ..unsafe { core::mem::zeroed() } },
     unsafe { core::mem::zeroed() },
 ];
 
-static const mpc5200_gpio_ids: [of_device_id; 3] = [
+static mpc5200_gpio_ids: [of_device_id; 3] = [
     of_device_id { compatible: c"fsl,mpc5200-gpio", ..unsafe { core::mem::zeroed() } },
     of_device_id { compatible: c"mpc5200-gpio", ..unsafe { core::mem::zeroed() } },
     unsafe { core::mem::zeroed() },

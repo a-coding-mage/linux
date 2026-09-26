@@ -13,7 +13,7 @@ pub unsafe fn task_mem(m: *mut seq_file, mm: *mut mm_struct) {
     let mut size: c_ulong;
 
     mmap_read_lock(mm);
-    for_each_vma!(vmi, vma) {
+    for_each_vma!(vmi, vma, {
         bytes = bytes.wrapping_add(kobjsize(vma));
         region = (*vma).vm_region;
         if !region.is_null() {
@@ -31,7 +31,7 @@ pub unsafe fn task_mem(m: *mut seq_file, mm: *mut mm_struct) {
                 slack = (*region).vm_end.wrapping_sub((*vma).vm_end);
             }
         }
-    }
+    });
 
     if atomic_read(&(*mm).mm_count) > 1 {
         sbytes = sbytes.wrapping_add(kobjsize(mm));
@@ -67,9 +67,9 @@ pub unsafe fn task_vsize(mm: *mut mm_struct) -> c_ulong {
     let mut vma: *mut vm_area_struct;
     let mut vsize: c_ulong = 0;
     mmap_read_lock(mm);
-    for_each_vma!(vmi, vma) {
+    for_each_vma!(vmi, vma, {
         vsize = vsize.wrapping_add((*vma).vm_end.wrapping_sub((*vma).vm_start));
-    }
+    });
     mmap_read_unlock(mm);
     vsize
 }
@@ -80,14 +80,14 @@ pub unsafe fn task_statm(mm: *mut mm_struct, shared: *mut c_ulong, text: *mut c_
     let mut vma: *mut vm_area_struct;
     let mut size = kobjsize(mm);
     mmap_read_lock(mm);
-    for_each_vma!(vmi, vma) {
+    for_each_vma!(vmi, vma, {
         size = size.wrapping_add(kobjsize(vma));
         let region = (*vma).vm_region;
         if !region.is_null() {
             size = size.wrapping_add(kobjsize(region));
             size = size.wrapping_add((*region).vm_end.wrapping_sub((*region).vm_start));
         }
-    }
+    });
     *text = (PAGE_ALIGN!((*mm).end_code).wrapping_sub((*mm).start_code & PAGE_MASK!())) >> PAGE_SHIFT;
     *data = (PAGE_ALIGN!((*mm).start_stack).wrapping_sub((*mm).start_data & PAGE_MASK!())) >> PAGE_SHIFT;
     mmap_read_unlock(mm);

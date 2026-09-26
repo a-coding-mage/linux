@@ -6,7 +6,7 @@
 
 // ACPICA dependencies supplied by other translation units.
 
-static unsafe fn acpi_ex_convert_to_object_type_string(
+unsafe fn acpi_ex_convert_to_object_type_string(
     obj_desc: *mut acpi_operand_object,
     result_desc: *mut *mut acpi_operand_object,
 ) -> acpi_status {

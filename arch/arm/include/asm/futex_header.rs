@@ -3,7 +3,7 @@
 // The original include dependencies and __KERNEL__ build condition are supplied
 // by the surrounding kernel translation unit.
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! __futex_atomic_op {
     ($insn:expr, $ret:expr, $oldval:expr, $tmp:expr, $uaddr:expr, $oparg:expr) => {{
         let mut __ua_flags: u32;
@@ -28,9 +28,9 @@ macro_rules! __futex_atomic_op {
                 "4: mov {ret}, {fault}",
                 "b 3b",
                 ".popsection",
-                ret = inout(reg) $ret,
+                $ret = inout(reg) $ret,
                 old = inout(reg) $oldval,
-                tmp = inout(reg) $tmp,
+                $tmp = inout(reg) $tmp,
                 addr = in(reg) $uaddr,
                 in(reg) $oparg,
                 fault = const -EFAULT,
@@ -41,7 +41,7 @@ macro_rules! __futex_atomic_op {
     }};
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe fn futex_atomic_cmpxchg_inatomic(
     uval: *mut u32,
     uaddr: *mut u32,
@@ -81,7 +81,7 @@ pub unsafe fn futex_atomic_cmpxchg_inatomic(
 // !CONFIG_SMP uses preemption disabling and TUSER load/store instructions.
 // The corresponding inline-assembly macro is retained as a declaration-level
 // placeholder because TUSER is supplied by the ARM kernel dependencies.
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! __futex_atomic_op {
     ($insn:expr, $ret:expr, $oldval:expr, $tmp:expr, $uaddr:expr, $oparg:expr) => {{
         let __ua_flags = uaccess_save_and_enable();
@@ -90,7 +90,7 @@ macro_rules! __futex_atomic_op {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe fn futex_atomic_cmpxchg_inatomic(uval: *mut u32, uaddr: *mut u32, oldval: u32, newval: u32) -> i32 {
     let mut ret: i32 = 0;
     let mut val: u32;
@@ -109,7 +109,7 @@ pub unsafe fn arch_futex_atomic_op_inuser(op: i32, oparg: i32, oval: *mut i32, u
     let mut ret: i32;
     let mut tmp: i32 = 0;
     if !access_ok(uaddr, core::mem::size_of::<u32>()) { return -EFAULT; }
-    #[cfg(not(feature = "CONFIG_SMP"))] preempt_disable();
+    #[cfg(not(CONFIG_SMP))] preempt_disable();
     ret = match op {
         FUTEX_OP_SET => { __futex_atomic_op!("mov {ret}, {arg}", ret, oldval, tmp, uaddr, oparg); ret }
         FUTEX_OP_ADD => { __futex_atomic_op!("add {ret}, {old}, {arg}", ret, oldval, tmp, uaddr, oparg); ret }
@@ -118,7 +118,7 @@ pub unsafe fn arch_futex_atomic_op_inuser(op: i32, oparg: i32, oval: *mut i32, u
         FUTEX_OP_XOR => { __futex_atomic_op!("eor {ret}, {old}, {arg}", ret, oldval, tmp, uaddr, oparg); ret }
         _ => -ENOSYS,
     };
-    #[cfg(not(feature = "CONFIG_SMP"))] preempt_enable();
+    #[cfg(not(CONFIG_SMP))] preempt_enable();
     *oval = oldval;
     ret
 }

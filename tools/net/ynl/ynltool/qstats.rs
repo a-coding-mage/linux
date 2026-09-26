@@ -556,7 +556,7 @@ unsafe fn compute_stats(
     let mut variance: c_double = 0.0;
     let mut i: c_uint;
 
-    *min = !0_u64;
+    *min = !0u64;
     *max = 0;
 
     if count == 0 {

@@ -43,7 +43,7 @@ extern "C" {
 #[repr(C)] pub struct memory_type_mapping { pub mem_name: *const i8, pub mem_ptr: *mut u8, pub mem_size: u32, pub done_flag: u8 }
 #[repr(C)] pub struct btmrvl_sdio_card_reg { pub cfg:u8,pub host_int_mask:u8,pub host_intstatus:u8,pub card_status:u8,pub sq_read_base_addr_a0:u8,pub sq_read_base_addr_a1:u8,pub card_revision:u8,pub card_fw_status0:u8,pub card_fw_status1:u8,pub card_rx_len:u8,pub card_rx_unit:u8,pub io_port_0:u8,pub io_port_1:u8,pub io_port_2:u8,pub int_read_to_clear:bool,pub host_int_rsr:u8,pub card_misc_cfg:u8,pub fw_dump_ctrl:u8,pub fw_dump_start:u8,pub fw_dump_end:u8 }
 #[repr(C)] pub struct btmrvl_sdio_device { pub helper:*const i8,pub firmware:*const i8,pub reg:*const btmrvl_sdio_card_reg,pub support_pscan_win_report:bool,pub sd_blksz_fw_dl:u16,pub supports_fw_dump:bool }
-#[repr(C)] pub struct btmrvl_sdio_card { pub func:*mut sdio_func,pub helper:*const i8,pub firmware:*const i8,pub reg:*const btmrvl_sdio_card_reg,pub ioport:u32,pub rx_unit:u8,pub sd_blksz_fw_dl:u16,pub support_pscan_win_report:bool,pub supports_fw_dump:bool,pub priv:*mut btmrvl_private }
+#[repr(C)] pub struct btmrvl_sdio_card { pub func:*mut sdio_func,pub helper:*const i8,pub firmware:*const i8,pub reg:*const btmrvl_sdio_card_reg,pub ioport:u32,pub rx_unit:u8,pub sd_blksz_fw_dl:u16,pub support_pscan_win_report:bool,pub supports_fw_dump:bool,pub r#priv:*mut btmrvl_private }
 #[repr(C)] pub struct btmrvl_device { pub card:*mut btmrvl_sdio_card,pub hcidev:*mut hci_dev,pub tx_dnld_rdy:bool }
 #[repr(C)] pub struct btmrvl_private { pub btmrvl_dev:btmrvl_device,pub surprise_removed:bool }
 

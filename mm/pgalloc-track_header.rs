@@ -4,7 +4,7 @@
  * linux/pgtable.h. */
 
 /* CONFIG_MMU */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn p4d_alloc_track(
     mm: *mut mm_struct,
@@ -22,7 +22,7 @@ pub unsafe fn p4d_alloc_track(
     p4d_offset(pgd, address)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn pud_alloc_track(
     mm: *mut mm_struct,
@@ -40,7 +40,7 @@ pub unsafe fn pud_alloc_track(
     pud_offset(p4d, address)
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn pmd_alloc_track(
     mm: *mut mm_struct,

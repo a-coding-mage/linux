@@ -9,12 +9,12 @@
 /* Linux errno.h: ENODEV (No such device). */
 const ENODEV: i32 = 19;
 
-#[cfg(feature = "CONFIG_CACHE_UNIPHIER")]
+#[cfg(CONFIG_CACHE_UNIPHIER)]
 extern "C" {
     pub fn uniphier_cache_init() -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_CACHE_UNIPHIER"))]
+#[cfg(not(CONFIG_CACHE_UNIPHIER))]
 #[inline]
 pub fn uniphier_cache_init() -> i32 {
     -ENODEV

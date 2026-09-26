@@ -20,19 +20,19 @@ pub struct platform_device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_RESET_CONTROLLER")]
+#[cfg(CONFIG_RESET_CONTROLLER)]
 extern "C" {
     pub fn hisi_reset_init(pdev: *mut platform_device) -> *mut hisi_reset_controller;
     pub fn hisi_reset_exit(rstc: *mut hisi_reset_controller);
 }
 
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 #[inline]
 pub unsafe fn hisi_reset_init(_pdev: *mut platform_device) -> *mut hisi_reset_controller {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 #[inline]
 pub unsafe fn hisi_reset_exit(_rstc: *mut hisi_reset_controller) {}
 

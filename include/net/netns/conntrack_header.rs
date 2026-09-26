@@ -34,7 +34,7 @@ pub struct nf_tcp_net {
     pub tcp_max_retrans: u8,
     pub tcp_ignore_invalid_rst: u8,
     // Preserved from IS_ENABLED(CONFIG_NF_FLOW_TABLE).
-    #[cfg(feature = "CONFIG_NF_FLOW_TABLE")]
+    #[cfg(CONFIG_NF_FLOW_TABLE)]
     pub offload_timeout: ::core::ffi::c_uint,
 }
 
@@ -49,7 +49,7 @@ pub enum udp_conntrack {
 pub struct nf_udp_net {
     pub timeouts: [::core::ffi::c_uint; UDP_CT_MAX],
     // Preserved from IS_ENABLED(CONFIG_NF_FLOW_TABLE).
-    #[cfg(feature = "CONFIG_NF_FLOW_TABLE")]
+    #[cfg(CONFIG_NF_FLOW_TABLE)]
     pub offload_timeout: ::core::ffi::c_uint,
 }
 
@@ -59,14 +59,14 @@ pub struct nf_icmp_net {
 }
 
 // Preserved from CONFIG_NF_CT_PROTO_SCTP.
-#[cfg(feature = "CONFIG_NF_CT_PROTO_SCTP")]
+#[cfg(CONFIG_NF_CT_PROTO_SCTP)]
 #[repr(C)]
 pub struct nf_sctp_net {
     pub timeouts: [::core::ffi::c_uint; SCTP_CONNTRACK_MAX],
 }
 
 // Preserved from CONFIG_NF_CT_PROTO_GRE.
-#[cfg(feature = "CONFIG_NF_CT_PROTO_GRE")]
+#[cfg(CONFIG_NF_CT_PROTO_GRE)]
 #[repr(C)]
 pub enum gre_conntrack {
     GRE_CT_UNREPLIED,
@@ -75,7 +75,7 @@ pub enum gre_conntrack {
 }
 
 // Preserved from CONFIG_NF_CT_PROTO_GRE.
-#[cfg(feature = "CONFIG_NF_CT_PROTO_GRE")]
+#[cfg(CONFIG_NF_CT_PROTO_GRE)]
 #[repr(C)]
 pub struct nf_gre_net {
     pub keymap_list: *mut list_head,
@@ -90,17 +90,17 @@ pub struct nf_ip_net {
     pub icmp: nf_icmp_net,
     pub icmpv6: nf_icmp_net,
     // Preserved from CONFIG_NF_CT_PROTO_SCTP.
-    #[cfg(feature = "CONFIG_NF_CT_PROTO_SCTP")]
+    #[cfg(CONFIG_NF_CT_PROTO_SCTP)]
     pub sctp: nf_sctp_net,
     // Preserved from CONFIG_NF_CT_PROTO_GRE.
-    #[cfg(feature = "CONFIG_NF_CT_PROTO_GRE")]
+    #[cfg(CONFIG_NF_CT_PROTO_GRE)]
     pub gre: nf_gre_net,
 }
 
 #[repr(C)]
 pub struct netns_ct {
     // Preserved from CONFIG_NF_CONNTRACK_EVENTS.
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_EVENTS")]
+    #[cfg(CONFIG_NF_CONNTRACK_EVENTS)]
     pub ecache_dwork_pending: bool,
     pub sysctl_log_invalid: u8, // Log invalid packets
     pub sysctl_events: u8,
@@ -111,7 +111,7 @@ pub struct netns_ct {
     pub nf_conntrack_event_cb: *mut nf_ct_event_notifier,
     pub nf_ct_proto: nf_ip_net,
     // Preserved from CONFIG_NF_CONNTRACK_LABELS.
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_LABELS")]
+    #[cfg(CONFIG_NF_CONNTRACK_LABELS)]
     pub labels_used: atomic_t,
 }
 

@@ -7,9 +7,9 @@
 // C dependencies are supplied by the surrounding kernel translation unit.
 
 unsafe fn xt_addr_cmp(
-    a1: *const union nf_inet_addr,
-    m: *const union nf_inet_addr,
-    a2: *const union nf_inet_addr,
+    a1: *const nf_inet_addr,
+    m: *const nf_inet_addr,
+    a2: *const nf_inet_addr,
     family: u16,
 ) -> bool {
     match family {
@@ -20,13 +20,13 @@ unsafe fn xt_addr_cmp(
 }
 
 unsafe fn match_xfrm_state(
-    x: *const struct xfrm_state,
-    e: *const struct xt_policy_elem,
+    x: *const xfrm_state,
+    e: *const xt_policy_elem,
     family: u16,
 ) -> bool {
-    let match_addr = |enabled: bool, addr: *const union nf_inet_addr,
-                      mask: *const union nf_inet_addr,
-                      value: *const union nf_inet_addr, invert: bool| {
+    let match_addr = |enabled: bool, addr: *const nf_inet_addr,
+                      mask: *const nf_inet_addr,
+                      value: *const nf_inet_addr, invert: bool| {
         !enabled || (xt_addr_cmp(addr, mask, value, family) ^ invert)
     };
     let match_value = |enabled: bool, value: u32, expected: u32, invert: bool| {
@@ -47,8 +47,8 @@ unsafe fn match_xfrm_state(
 }
 
 unsafe fn match_policy_in(
-    skb: *const struct sk_buff,
-    info: *const struct xt_policy_info,
+    skb: *const sk_buff,
+    info: *const xt_policy_info,
     family: u16,
 ) -> i32 {
     let sp = skb_sec_path(skb);
@@ -70,8 +70,8 @@ unsafe fn match_policy_in(
 }
 
 unsafe fn match_policy_out(
-    skb: *const struct sk_buff,
-    info: *const struct xt_policy_info,
+    skb: *const sk_buff,
+    info: *const xt_policy_info,
     family: u16,
 ) -> i32 {
     let mut dst = skb_dst(skb);
@@ -85,14 +85,14 @@ unsafe fn match_policy_out(
         if match_xfrm_state((*dst).xfrm, e, family) {
             if strict == 0 { return 1; }
         } else if strict != 0 { return 0; }
-        dst = (*(dst as *const struct xfrm_dst)).child;
+        dst = (*(dst as *const xfrm_dst)).child;
         i += 1;
     }
     if strict != 0 && i == (*info).len as i32 { 1 } else { 0 }
 }
 
-unsafe extern "C" fn policy_mt(skb: *const struct sk_buff, par: *mut struct xt_action_param) -> bool {
-    let info = (*par).matchinfo as *const struct xt_policy_info;
+unsafe extern "C" fn policy_mt(skb: *const sk_buff, par: *mut xt_action_param) -> bool {
+    let info = (*par).matchinfo as *const xt_policy_info;
     let mut ret = if (*info).flags & XT_POLICY_MATCH_IN != 0 {
         match_policy_in(skb, info, xt_family(par))
     } else { match_policy_out(skb, info, xt_family(par)) };
@@ -101,8 +101,8 @@ unsafe extern "C" fn policy_mt(skb: *const struct sk_buff, par: *mut struct xt_a
     ret != 0
 }
 
-unsafe extern "C" fn policy_mt_check_hooks(par: *const struct xt_mtchk_param) -> i32 {
-    let info = (*par).matchinfo as *const struct xt_policy_info;
+unsafe extern "C" fn policy_mt_check_hooks(par: *const xt_mtchk_param) -> i32 {
+    let info = (*par).matchinfo as *const xt_policy_info;
     let mut errmsg: *const i8;
     if (*par).hook_mask & ((1 << NF_INET_PRE_ROUTING) | (1 << NF_INET_LOCAL_IN)) != 0
         && (*info).flags & XT_POLICY_MATCH_OUT != 0 {
@@ -115,8 +115,8 @@ unsafe extern "C" fn policy_mt_check_hooks(par: *const struct xt_mtchk_param) ->
     -EINVAL
 }
 
-unsafe extern "C" fn policy_mt_check(par: *const struct xt_mtchk_param) -> i32 {
-    let info = (*par).matchinfo as *const struct xt_policy_info;
+unsafe extern "C" fn policy_mt_check(par: *const xt_mtchk_param) -> i32 {
+    let info = (*par).matchinfo as *const xt_policy_info;
     let mut errmsg = b"neither incoming nor outgoing policy selected\0".as_ptr();
     if (*info).flags & (XT_POLICY_MATCH_IN | XT_POLICY_MATCH_OUT) == 0 {
         pr_info_ratelimited(b"%s\n\0".as_ptr(), errmsg); return -EINVAL;
@@ -130,9 +130,9 @@ unsafe extern "C" fn policy_mt_check(par: *const struct xt_mtchk_param) -> i32 {
 
 // The xt_match registrations and module init/exit hooks are retained as declarations
 // against the kernel's surrounding Rust bindings.
-static mut policy_mt_reg: [struct xt_match; 2] = [
-    struct xt_match { name: b"policy\0".as_ptr(), family: NFPROTO_IPV4, check_hooks: Some(policy_mt_check_hooks), checkentry: Some(policy_mt_check), r#match: Some(policy_mt), matchsize: core::mem::size_of::<struct xt_policy_info>(), me: THIS_MODULE },
-    struct xt_match { name: b"policy\0".as_ptr(), family: NFPROTO_IPV6, check_hooks: Some(policy_mt_check_hooks), checkentry: Some(policy_mt_check), r#match: Some(policy_mt), matchsize: core::mem::size_of::<struct xt_policy_info>(), me: THIS_MODULE },
+static mut policy_mt_reg: [xt_match; 2] = [
+    xt_match { name: b"policy\0".as_ptr(), family: NFPROTO_IPV4, check_hooks: Some(policy_mt_check_hooks), checkentry: Some(policy_mt_check), r#match: Some(policy_mt), matchsize: core::mem::size_of::<xt_policy_info>(), me: THIS_MODULE },
+    xt_match { name: b"policy\0".as_ptr(), family: NFPROTO_IPV6, check_hooks: Some(policy_mt_check_hooks), checkentry: Some(policy_mt_check), r#match: Some(policy_mt), matchsize: core::mem::size_of::<xt_policy_info>(), me: THIS_MODULE },
 ];
 
 unsafe extern "C" fn policy_mt_init() -> i32 {

@@ -73,21 +73,21 @@ pub const MCFQSPI_BASE: u32 = MCF_MBAR + 0x400;
 pub const MCFQSPI_SIZE: u32 = 0x40;
 
 // CONFIG_M5249 is a build-time condition; the alternatives preserve the C preprocessor branches.
-#[cfg(feature = "CONFIG_M5249")]
+#[cfg(CONFIG_M5249)]
 pub const MCFQSPI_CS0: i32 = 29;
-#[cfg(feature = "CONFIG_M5249")]
+#[cfg(CONFIG_M5249)]
 pub const MCFQSPI_CS1: i32 = 24;
-#[cfg(feature = "CONFIG_M5249")]
+#[cfg(CONFIG_M5249)]
 pub const MCFQSPI_CS2: i32 = 21;
-#[cfg(feature = "CONFIG_M5249")]
+#[cfg(CONFIG_M5249)]
 pub const MCFQSPI_CS3: i32 = 22;
-#[cfg(not(feature = "CONFIG_M5249"))]
+#[cfg(not(CONFIG_M5249))]
 pub const MCFQSPI_CS0: i32 = 15;
-#[cfg(not(feature = "CONFIG_M5249"))]
+#[cfg(not(CONFIG_M5249))]
 pub const MCFQSPI_CS1: i32 = 16;
-#[cfg(not(feature = "CONFIG_M5249"))]
+#[cfg(not(CONFIG_M5249))]
 pub const MCFQSPI_CS2: i32 = 24;
-#[cfg(not(feature = "CONFIG_M5249"))]
+#[cfg(not(CONFIG_M5249))]
 pub const MCFQSPI_CS3: i32 = 28;
 
 pub const MCFI2C_BASE0: u32 = MCF_MBAR + 0x280;
@@ -145,13 +145,13 @@ pub const MCFSIM2_IDECONFIG1: u32 = MCF_MBAR2 + 0x18c;
 pub const MCFSIM2_IDECONFIG2: u32 = MCF_MBAR2 + 0x190;
 pub const MCFGPIO_PIN_MAX: i32 = 64;
 
-#[cfg(feature = "CONFIG_M5249")]
+#[cfg(CONFIG_M5249)]
 pub const MCFGPIO_IRQ_MAX: i32 = -1;
-#[cfg(feature = "CONFIG_M5249")]
+#[cfg(CONFIG_M5249)]
 pub const MCFGPIO_IRQ_VECBASE: i32 = -1;
-#[cfg(not(feature = "CONFIG_M5249"))]
+#[cfg(not(CONFIG_M5249))]
 pub const MCFGPIO_IRQ_MAX: i32 = 7;
-#[cfg(not(feature = "CONFIG_M5249"))]
+#[cfg(not(CONFIG_M5249))]
 pub const MCFGPIO_IRQ_VECBASE: i32 = MCF_IRQ_GPIO0;
 
 // The __ASSEMBLER__ section defines the CONFIG_M5249C3-only m5249c3_setup

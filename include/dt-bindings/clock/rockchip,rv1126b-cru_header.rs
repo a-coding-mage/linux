@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
 /*
-/* pll clocks */
+/ * pll clocks */
 pub const PLL_GPLL: u32 = 0;
 pub const PLL_CPLL: u32 = 1;
 pub const PLL_AUPLL: u32 = 2;

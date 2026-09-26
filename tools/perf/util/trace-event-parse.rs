@@ -233,7 +233,7 @@ pub unsafe extern "C" fn raw_field_value(
 
     field = tep_find_any_field(event, name);
     if field.is_null() {
-        return 0_u64;
+        return 0u64;
     }
 
     tep_read_number_field(field, data, &mut val);

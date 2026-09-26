@@ -28,8 +28,7 @@ extern "C" {
         dst: *mut u8,
         src: *const u8,
         len: usize,
-        key: aes_encrypt_arg,
-    );
+        key: aes_encrypt_arg);
 
     /**
      * aes_ecb_decrypt() - Decrypt data using AES-ECB
@@ -51,8 +50,7 @@ extern "C" {
         dst: *mut u8,
         src: *const u8,
         len: usize,
-        key: *const struct aes_key,
-    );
+        key: *const aes_key);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -121,7 +121,7 @@ unsafe fn __set_task_frozen(p: *mut task_struct, _arg: *mut core::ffi::c_void) -
     }
 
     /* CONFIG_LOCKDEP is a build-time condition in the original source. */
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     {
         /* It's dangerous to freeze with locks held; there be dragons there. */
         if state & __TASK_FREEZABLE_UNSAFE == 0 {

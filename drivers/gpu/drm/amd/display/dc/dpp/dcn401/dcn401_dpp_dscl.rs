@@ -72,7 +72,7 @@ pub enum dscl_autocal_mode {
 	AUTOCAL_MODE_AUTOREPLICATE = 3
 };
 
-static fn dpp401_dscl_get_pixel_depth_val(enum lb_pixel_depth depth)
+fn dpp401_dscl_get_pixel_depth_val(lb_pixel_depth depth)
 {
 	if (depth == LB_PIXEL_DEPTH_30BPP)
 		return 0; /* 10 bpc */
@@ -88,7 +88,7 @@ static fn dpp401_dscl_get_pixel_depth_val(enum lb_pixel_depth depth)
 	}
 }
 
-static fn dpp401_dscl_is_video_format(enum dc_pixel_format format)
+fn dpp401_dscl_is_video_format(dc_pixel_format format)
 {
 	if (format >= PIXEL_FORMAT_VIDEO_BEGIN
 			&& format <= PIXEL_FORMAT_VIDEO_END)
@@ -97,7 +97,7 @@ static fn dpp401_dscl_is_video_format(enum dc_pixel_format format)
 		return false;
 }
 
-static fn dpp401_dscl_is_420_format(enum dc_pixel_format format)
+fn dpp401_dscl_is_420_format(dc_pixel_format format)
 {
 	if (format == PIXEL_FORMAT_420BPP8 ||
 			format == PIXEL_FORMAT_420BPP10)
@@ -109,7 +109,7 @@ static fn dpp401_dscl_is_420_format(enum dc_pixel_format format)
 enum dcn401_dscl_mode_sel dpp401_dscl_get_dscl_mode(
 		*mut dppdpp_base,
 		*const scaler_datadata,
-		bool dbg_always_scale)
+		dbg_always_scale: bool)
 {
 	const i64 one = dc_fixpt_one.value;
 
@@ -142,7 +142,7 @@ enum dcn401_dscl_mode_sel dpp401_dscl_get_dscl_mode(
 
 pub unsafe fn dpp401_power_on_dscl(
 	*mut dppdpp_base,
-	bool power_on)
+	power_on: bool)
 {
 	*mut dcn401_dppdpp = TO_DCN401_DPP(dpp_base);
 
@@ -168,10 +168,10 @@ pub unsafe fn dpp401_power_on_dscl(
 }
 
 
-static fn dpp401_dscl_set_lb(
+fn dpp401_dscl_set_lb(
 	*mut dcn401_dppdpp,
 	*const line_buffer_paramslb_params,
-	enum lb_memory_config mem_size_config)
+	lb_memory_config mem_size_config)
 {
 	u32 max_partitions = 63; /* Currently hardcoded on all ASICs before DCN 3.2 */
 
@@ -204,7 +204,7 @@ static fn dpp401_dscl_set_lb(
 		LB_MAX_PARTITIONS, max_partitions);
 }
 
-static fndpp401_dscl_get_filter_coeffs_64p(i32 taps, fixed31_32 ratio)
+static fndpp401_dscl_get_filter_coeffs_64p(taps: i32, fixed31_32 ratio)
 {
 	if (taps == 8)
 		return get_filter_8tap_64p(ratio);
@@ -229,16 +229,16 @@ static fndpp401_dscl_get_filter_coeffs_64p(i32 taps, fixed31_32 ratio)
 	}
 }
 
-static fn dpp401_dscl_set_scaler_filter(
+fn dpp401_dscl_set_scaler_filter(
 		*mut dcn401_dppdpp,
-		u32 taps,
-		enum dcn401_coef_filter_type_sel filter_type,
+		taps: u32,
+		dcn401_coef_filter_type_sel filter_type,
 		const u16 *filter)
 {
 	const i32 tap_pairs = (taps + 1) / 2;
 	i32 phase;
 	i32 pair;
-	u16 odd_coef, even_coef;
+	odd_coef: u16, even_coef;
 
 	REG_SET_3(SCL_COEF_RAM_TAP_SELECT, 0,
 		SCL_COEF_RAM_TAP_PAIR_IDX, 0,
@@ -270,8 +270,8 @@ static fn dpp401_dscl_set_scaler_filter(
 pub unsafe fn dpp401_dscl_set_scl_filter(
 		*mut dcn401_dppdpp,
 		*const scaler_datascl_data,
-		bool chroma_coef_mode,
-		bool force_coeffs_update)
+		chroma_coef_mode: bool,
+		force_coeffs_update: bool)
 {
 	bool h_2tap_hardcode_coef_en = false;
 	bool v_2tap_hardcode_coef_en = false;
@@ -377,7 +377,7 @@ pub unsafe fn dpp401_dscl_set_scl_filter(
 }
 
 // TODO: Fix defined but not used error
-//static fn dpp401_dscl_get_lb_depth_bpc(enum lb_pixel_depth depth)
+//static fn dpp401_dscl_get_lb_depth_bpc(lb_pixel_depth depth)
 //{
 //	if (depth == LB_PIXEL_DEPTH_30BPP)
 //		return 10;
@@ -453,7 +453,7 @@ pub unsafe fn dpp401_dscl_set_scl_filter(
 //
 //}
 
-static fn dpp401_dscl_is_lb_conf_valid(i32 ceil_vratio, i32 num_partitions, i32 vtaps)
+fn dpp401_dscl_is_lb_conf_valid(ceil_vratio: i32, num_partitions: i32, vtaps: i32)
 {
 	if (ceil_vratio > 2)
 		return vtaps <= (num_partitions - ceil_vratio + 2);
@@ -465,7 +465,7 @@ static fn dpp401_dscl_is_lb_conf_valid(i32 ceil_vratio, i32 num_partitions, i32 
 enum lb_memory_config dpp401_dscl_find_lb_memory_config(*mut dcn401_dppdpp,
 		*const scaler_datascl_data)
 {
-	i32 num_part_y, num_part_c;
+	num_part_y: i32, num_part_c;
 	i32 vtaps = scl_data.taps.v_taps;
 	i32 vtaps_c = scl_data.taps.v_taps_c;
 	i32 ceil_vratio = dc_fixpt_ceil(scl_data.ratios.vert);
@@ -513,7 +513,7 @@ enum lb_memory_config dpp401_dscl_find_lb_memory_config(*mut dcn401_dppdpp,
 }
 
 
-static fn dpp401_dscl_set_manual_ratio_init(
+fn dpp401_dscl_set_manual_ratio_init(
 		*mut dcn401_dppdpp, *const scaler_datadata)
 {
 	u32 init_frac = 0;
@@ -655,7 +655,7 @@ pub unsafe fn dpp401_dscl_set_recout(*mut dcn401_dppdpp,
  * This is the primary function to program vertical EASF registers
  *
  */
-static fn dpp401_dscl_program_easf_v(*mut dppdpp_base, *const scaler_datascl_data)
+fn dpp401_dscl_program_easf_v(*mut dppdpp_base, *const scaler_datascl_data)
 {
 	*mut dcn401_dppdpp = TO_DCN401_DPP(dpp_base);
 
@@ -770,7 +770,7 @@ static fn dpp401_dscl_program_easf_v(*mut dppdpp_base, *const scaler_datascl_dat
  * This is the primary function to program horizontal EASF registers
  *
  */
-static fn dpp401_dscl_program_easf_h(*mut dppdpp_base, *const scaler_datascl_data)
+fn dpp401_dscl_program_easf_h(*mut dppdpp_base, *const scaler_datascl_data)
 {
 	*mut dcn401_dppdpp = TO_DCN401_DPP(dpp_base);
 
@@ -949,7 +949,7 @@ pub unsafe fn dpp401_dscl_set_isharp_filter(
  */
 pub unsafe fn dpp401_dscl_program_isharp(*mut dppdpp_base,
 	*const scaler_datascl_data,
-	bool program_isharp_1dlut,
+	program_isharp_1dlut: bool,
 	bool *bs_coeffs_updated)
 {
 	*mut dcn401_dppdpp = TO_DCN401_DPP(dpp_base);
@@ -1101,7 +1101,7 @@ pub unsafe fn dpp401_dscl_set_scaler_manual_scale(*mut dppdpp_base,
 	dpp.scl_data = *scl_data;
 
 	if ((dpp.base.ctx.dc.config.use_spl) && (!dpp.base.ctx.dc.debug.disable_spl)) {
-		dscl_mode = (enum dcn401_dscl_mode_sel) scl_data.dscl_prog_data.dscl_mode;
+		dscl_mode = (dcn401_dscl_mode_sel) scl_data.dscl_prog_data.dscl_mode;
 		rect = (*mut rect)&scl_data.dscl_prog_data.recout;
 		mpc_width = scl_data.dscl_prog_data.mpc_size.width;
 		mpc_height = scl_data.dscl_prog_data.mpc_size.height;

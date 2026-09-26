@@ -29,11 +29,11 @@ pub struct netns_core {
     pub sysctl_bypass_prot_mem: u8,
 
     // CONFIG_PROC_FS
-    #[cfg(feature = "CONFIG_PROC_FS")]
+    #[cfg(CONFIG_PROC_FS)]
     pub prot_inuse: *mut prot_inuse,
 
     // IS_ENABLED(CONFIG_RPS) && IS_ENABLED(CONFIG_SYSCTL)
-    #[cfg(all(feature = "CONFIG_RPS", feature = "CONFIG_SYSCTL"))]
+    #[cfg(all(CONFIG_RPS, CONFIG_SYSCTL))]
     pub rps_default_mask: *mut cpumask,
 }
 

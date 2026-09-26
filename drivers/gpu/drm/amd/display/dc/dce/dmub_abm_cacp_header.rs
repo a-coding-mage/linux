@@ -2,7 +2,7 @@
 
 // Dependency supplied by dmub_cmd.h.
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dmub_cacp_init(
         abm: *mut crate::abm,
         src: *const core::ffi::c_char,

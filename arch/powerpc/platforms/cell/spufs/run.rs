@@ -98,7 +98,7 @@ unsafe fn spu_run_fini(ctx: *mut spu_context, npc: *mut u32, status: *mut u32) -
 }
 
 unsafe fn spu_handle_restartsys(_ctx: *mut spu_context, spu_ret: *mut i64, npc: *mut u32) -> i32 {
-    match *spu_ret { -ERESTARTSYS | -ERESTARTNOINTR => { *npc = (*npc).wrapping_sub(8); -ERESTARTSYS }, -ERESTARTNOHAND | -ERESTART_RESTARTBLOCK => { *spu_ret = -EINTR; -ERESTARTSYS }, _ => { printk(KERN_WARNING, "%s: unexpected return code %ld\n", "spu_handle_restartsys", *spu_ret); 0 } }
+    match *spu_ret { case if case == -ERESTARTSYS || case == -ERESTARTNOINTR => { *npc = (*npc).wrapping_sub(8); -ERESTARTSYS }, case if case == -ERESTARTNOHAND || case == -ERESTART_RESTARTBLOCK => { *spu_ret = -EINTR; -ERESTARTSYS }, _ => { printk(KERN_WARNING, "%s: unexpected return code %ld\n", "spu_handle_restartsys", *spu_ret); 0 } }
 }
 
 unsafe fn spu_process_callback(ctx: *mut spu_context) -> i32 {

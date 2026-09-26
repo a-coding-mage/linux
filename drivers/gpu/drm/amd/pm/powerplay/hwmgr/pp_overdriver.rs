@@ -1270,13 +1270,13 @@ fn pp_override_get_default_fuse_value(key: u64, result: *mut phm_fuses_default) 
     		(*result).key = (*list.add(i as usize)).key;
     		(*result).VFT2_m1 = (*list.add(i as usize)).VFT2_m1;
     		(*result).VFT2_m2 = (*list.add(i as usize)).VFT2_m2;
-    		result->VFT2_b  = list[i].VFT2_b;
+    		(*result).VFT2_b  = list[i].VFT2_b;
     		(*result).VFT1_m1 = (*list.add(i as usize)).VFT1_m1;
     		(*result).VFT1_m2 = (*list.add(i as usize)).VFT1_m2;
-    		result->VFT1_b  = list[i].VFT1_b;
+    		(*result).VFT1_b  = list[i].VFT1_b;
     		(*result).VFT0_m1 = (*list.add(i as usize)).VFT0_m1;
     		(*result).VFT0_m2 = (*list.add(i as usize)).VFT0_m2;
-    		result->VFT0_b  = list[i].VFT0_b;
+    		(*result).VFT0_b  = list[i].VFT0_b;
             return 0;
     	}
         }

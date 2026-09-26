@@ -57,8 +57,8 @@ extern "C" {
 pub const I10NM:u32=0; pub const SPR:u32=1; pub const GNR:u32=2; pub const RRL_SRC_LRE_SCRUB:u32=0; pub const RRL_SRC_LRE_DEMAND:u32=1; pub const RRL_SRC_FRE_DEMAND:u32=2; pub const RRL_SRC_FRE_SCRUB:u32=3;
 static mut i10nm_edac_list:*mut list_head=core::ptr::null_mut(); static mut res_cfg:*mut res_config=core::ptr::null_mut(); static mut retry_rd_err_log:i32=0; static mut decoding_via_mca:i32=0; static mut mem_cfg_2lm=false; static mut no_adxl=false;
 
-macro_rules! bitfield {($r:expr,$a:expr,$b:expr)=>{(($r >> $a) & ((1u64 << ($b-$a+1))-1)) as u32};}
-macro_rules! GET_BITFIELD {($r:expr,$a:expr,$b:expr)=>{bitfield!($r,$a,$b)}}
+macro_rules! bitfield {($r:expr,$a:expr,$b:expr) => {(($r >> $a) & ((1u64 << ($b-$a+1))-1)) as u32};}
+macro_rules! GET_BITFIELD {($r:expr,$a:expr,$b:expr) => {bitfield!($r,$a,$b)}}
 unsafe fn pci_get_dev_wrapper(dom:i32,bus:u32,dev:u32,fun:u32)->*mut pci_dev { let p=pci_get_domain_bus_and_slot(dom,bus,(dev<<3)|fun); if p.is_null(){return core::ptr::null_mut()} if pci_enable_device(p)<0 {pci_dev_put(p);return core::ptr::null_mut()} p }
 unsafe fn i10nm_mscod_is_ddrt(ms:u32)->bool { if (*res_cfg).r#type==I10NM { matches!(ms,0x0106|0x0107|0x0800|0x0804|0x0806..=0x0808|0x080a..=0x080e|0x0810|0x0811|0x0816|0x081e|0x081f) } else if (*res_cfg).r#type==SPR { matches!(ms,0x0800|0x0804|0x0806..=0x0808|0x080a..=0x080e|0x0810|0x0811|0x0816|0x081e|0x081f) } else {false} }
 unsafe extern "C" fn i10nm_mc_decode_available(m:*mut mce)->bool { if decoding_via_mca==0||mem_cfg_2lm{return false} let need=0x3; if ((*m).status & need)!=need{return false} let b=(*m).bank as u32; match (*res_cfg).r#type { I10NM=>if (0x06666000u32&(1<<b))==0{return false}, SPR=>if !(13..=20).contains(&b){return false}, GNR=>if !(13..=24).contains(&b){return false}, _=>return false}; !i10nm_mscod_is_ddrt(GET_BITFIELD!((*m).status,16,23)) }

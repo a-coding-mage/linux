@@ -252,8 +252,7 @@ unsafe extern "C" {
         len: usize,
         flags: c_int,
         dest_addr: *const sockaddr,
-        addrlen: u32,
-    ) -> isize;
+        addrlen: u32) -> isize;
     fn memcpy(dest: *mut c_void, src: *const c_void, n: usize) -> *mut c_void;
     fn memset(s: *mut c_void, c: c_int, n: usize) -> *mut c_void;
     fn system(command: *const c_char) -> c_int;

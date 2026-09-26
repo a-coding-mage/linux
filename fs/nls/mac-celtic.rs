@@ -572,7 +572,7 @@ static u8 charset2upper[256] = {
 	0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, 0xfe, /* 0xf8-0xff */
 };
 
-unsafe fn uni2char(u32 uni, u8 *out, int boundlen)
+unsafe fn uni2char(uni: u32, u8 *out, int boundlen)
 {
 	const u8 *uni2charset;
 	u8 cl = uni & 0x00ff;
@@ -598,11 +598,11 @@ unsafe fn char2uni(const u8 *rawstring, int boundlen, u32 *uni)
 }
 
 static mut table: nls_table = nls_table {
-	.charset = b"macceltic\0".as_ptr() as *const i8,
-	.uni2char = Some(uni2char),
-	.char2uni = Some(char2uni),
-	.charset2lower = charset2lower.as_ptr(),
-	.charset2upper = charset2upper.as_ptr(),
+	charset: b"macceltic\0".as_ptr() as *const i8,
+	uni2char: Some(uni2char),
+	char2uni: Some(char2uni),
+	charset2lower: charset2lower.as_ptr(),
+	charset2upper: charset2upper.as_ptr(),
 };
 
 unsafe fn init_nls_macceltic(void)

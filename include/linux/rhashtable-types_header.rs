@@ -101,7 +101,7 @@ pub struct rhashtable {
     pub mutex: mutex,
     pub lock: spinlock_t,
     pub nelems: atomic_t,
-    #[cfg(feature = "CONFIG_MEM_ALLOC_PROFILING")]
+    #[cfg(CONFIG_MEM_ALLOC_PROFILING)]
     pub alloc_tag: *mut alloc_tag,
 }
 

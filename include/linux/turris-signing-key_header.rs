@@ -16,7 +16,7 @@ pub struct key {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_KEYS")]
+#[cfg(CONFIG_KEYS)]
 #[repr(C)]
 pub struct turris_signing_key_subtype {
     pub key_size: u16,
@@ -36,7 +36,7 @@ pub struct turris_signing_key_subtype {
     >,
 }
 
-#[cfg(feature = "CONFIG_KEYS")]
+#[cfg(CONFIG_KEYS)]
 #[inline]
 pub unsafe fn turris_signing_key_get_dev(key: *const key) -> *mut device {
     // The definition of `struct key`, including payload.data, is provided by
@@ -46,7 +46,7 @@ pub unsafe fn turris_signing_key_get_dev(key: *const key) -> *mut device {
     core::ptr::null_mut()
 }
 
-#[cfg(feature = "CONFIG_KEYS")]
+#[cfg(CONFIG_KEYS)]
 unsafe extern "C" {
     pub fn devm_turris_signing_key_create(
         dev: *mut device,

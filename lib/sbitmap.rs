@@ -114,7 +114,7 @@ unsafe fn sbitmap_find_bit(sb: *mut sbitmap, shallow_depth: u32, mut index: u32,
     for _ in 0..(*sb).map_nr {
         let depth = __map_depth_with_shallow(sb, index as i32, shallow_depth);
         if depth != 0 { nr = sbitmap_find_bit_in_word((*sb).map.add(index as usize), depth, alloc_hint, wrap); }
-        if nr != -1 { return nr + (index as i32 << (*sb).shift); }
+        if nr != -1 { return nr + ((index as i32) << (*sb).shift); }
         alloc_hint = 0;
         index += 1;
         if index >= (*sb).map_nr { index = 0; }

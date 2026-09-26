@@ -4,9 +4,7 @@
  * Author: Yu Tu <yu.tu@amlogic.com>
  */
 
-// Translated from the C header; the original header guard is omitted.
 
-+
 pub const CLKID_RTC_32K_CLKIN: u32 = 0;
 pub const CLKID_RTC_32K_DIV: u32 = 1;
 pub const CLKID_RTC_32K_SEL: u32 = 2;
@@ -243,7 +241,5 @@ pub const CLKID_DEMOD_CORE: u32 = 232;
 pub const CLKID_ADC_EXTCLK_IN_SEL: u32 = 233;
 pub const CLKID_ADC_EXTCLK_IN_DIV: u32 = 234;
 pub const CLKID_ADC_EXTCLK_IN: u32 = 235;
-
-
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

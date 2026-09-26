@@ -10,7 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#define ASIC_REG_NIC0_QM0_REGS_H_
 
 /*
  *****************************************
@@ -1053,6 +1052,5 @@ pub const mmNIC0_QM0_PERF_CNT_IDLE_HI: u32 = 0x541AD6C;
 
 pub const mmNIC0_QM0_PERF_CNT_CFG: u32 = 0x541AD70;
 
-#endif /* ASIC_REG_NIC0_QM0_REGS_H_ */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

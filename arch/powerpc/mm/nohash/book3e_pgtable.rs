@@ -10,7 +10,7 @@
 // asm/text-patching.h, and mm/mmu_decl.h
 
 // CONFIG_SPARSEMEM_VMEMMAP
-#[cfg(feature = "CONFIG_SPARSEMEM_VMEMMAP")]
+#[cfg(CONFIG_SPARSEMEM_VMEMMAP)]
 pub unsafe fn vmemmap_create_mapping(
     start: c_ulong,
     page_size: c_ulong,
@@ -39,7 +39,7 @@ pub unsafe fn vmemmap_create_mapping(
 }
 
 // CONFIG_MEMORY_HOTPLUG
-#[cfg(feature = "CONFIG_MEMORY_HOTPLUG")]
+#[cfg(CONFIG_MEMORY_HOTPLUG)]
 pub unsafe fn vmemmap_remove_mapping(_start: c_ulong, _page_size: c_ulong) {}
 
 unsafe fn early_alloc_pgtable(size: c_ulong) -> *mut c_void {

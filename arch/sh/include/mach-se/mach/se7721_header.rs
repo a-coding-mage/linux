@@ -57,7 +57,7 @@ macro_rules! MRSHPC_IRQ0 {
     () => {{ unsafe { $crate::evt2irq(0x340) } }};
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn init_se7721_IRQ();
 }
 

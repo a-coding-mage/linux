@@ -9,9 +9,9 @@ pub const SPTE_TDP_AD_DISABLED: u64 = 1u64 << SPTE_TDP_AD_SHIFT;
 pub const SPTE_TDP_AD_WRPROT_ONLY: u64 = 2u64 << SPTE_TDP_AD_SHIFT;
 
 // CONFIG_DYNAMIC_PHYSICAL_MASK selects the dynamic physical mask in the C build.
-#[cfg(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK")]
+#[cfg(CONFIG_DYNAMIC_PHYSICAL_MASK)]
 pub const SPTE_BASE_ADDR_MASK: u64 = physical_mask & !(PAGE_SIZE as u64 - 1);
-#[cfg(not(feature = "CONFIG_DYNAMIC_PHYSICAL_MASK"))]
+#[cfg(not(CONFIG_DYNAMIC_PHYSICAL_MASK))]
 pub const SPTE_BASE_ADDR_MASK: u64 = ((1u64 << 52) - 1) & !(PAGE_SIZE as u64 - 1);
 
 pub const SPTE_LEVEL_BITS: u32 = 9;
@@ -38,9 +38,9 @@ pub const MMIO_SPTE_GEN_LOW_SHIFT: u32 = MMIO_SPTE_GEN_LOW_START;
 pub const MMIO_SPTE_GEN_HIGH_SHIFT: u32 = MMIO_SPTE_GEN_HIGH_START - MMIO_SPTE_GEN_LOW_BITS;
 pub const MMIO_SPTE_GEN_MASK: u64 = (1u64 << (MMIO_SPTE_GEN_LOW_BITS + MMIO_SPTE_GEN_HIGH_BITS)) - 1;
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 pub const SHADOW_NONPRESENT_VALUE: u64 = 1u64 << 63;
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 pub const SHADOW_NONPRESENT_VALUE: u64 = 0;
 pub const SHADOW_NONPRESENT_OR_RSVD_MASK_LEN: u32 = 5;
 pub const FROZEN_SPTE: u64 = SHADOW_NONPRESENT_VALUE | 0x1a0;

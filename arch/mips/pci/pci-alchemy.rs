@@ -78,7 +78,7 @@ unsafe fn config_access(access_type: u8, bus: *mut pci_bus, dev_fn: u32,
         *data = 0xffff_ffff; local_irq_restore(flags); return -1;
     }
     if (*bus).number == 0 { cfg_base = (1usize << device) << 11; }
-    else { cfg_base = 0x8000_0000 | ((*bus).number as usize << 16) | (device as usize << 11); }
+    else { cfg_base = 0x8000_0000 | (((*bus).number as usize) << 16) | ((device as usize) << 11); }
     offset = ((function as usize) << 8) | ((where_ as usize) & !3);
     offset |= cfg_base & !PAGE_MASK;
     cfg_base &= PAGE_MASK;

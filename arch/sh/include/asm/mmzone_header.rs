@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* The CONFIG_NUMA conditional is preserved as a Rust feature conditional. */
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe fn pfn_to_nid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
     let mut nid: ::core::ffi::c_int = 0;
 
@@ -15,7 +15,7 @@ pub unsafe fn pfn_to_nid(pfn: ::core::ffi::c_ulong) -> ::core::ffi::c_int {
     nid
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe fn pfn_to_pgdat(
     pfn: ::core::ffi::c_ulong,
 ) -> *mut pglist_data {
@@ -23,14 +23,14 @@ pub unsafe fn pfn_to_pgdat(
 }
 
 /* arch/sh/mm/numa.c */
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe extern "C" fn setup_bootmem_node(
     nid: ::core::ffi::c_int,
     start: ::core::ffi::c_ulong,
     end: ::core::ffi::c_ulong,
 );
 
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 pub unsafe fn setup_bootmem_node(
     _nid: ::core::ffi::c_int,
     _start: ::core::ffi::c_ulong,

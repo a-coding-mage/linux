@@ -10,7 +10,7 @@
 // The declarations below are selected by the C build when both
 // CONFIG_ENERGY_MODEL and CONFIG_NET are defined.
 
-#[cfg(all(feature = "CONFIG_ENERGY_MODEL", feature = "CONFIG_NET"))]
+#[cfg(all(CONFIG_ENERGY_MODEL, CONFIG_NET))]
 extern "C" {
     pub fn for_each_em_perf_domain(
         cb: Option<unsafe extern "C" fn(*mut em_perf_domain, *mut core::ffi::c_void) -> i32>,
@@ -29,7 +29,7 @@ pub struct em_perf_domain {
 }
 
 // Fallback definitions used when CONFIG_ENERGY_MODEL or CONFIG_NET is absent.
-#[cfg(not(all(feature = "CONFIG_ENERGY_MODEL", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_ENERGY_MODEL, CONFIG_NET)))]
 #[inline]
 pub unsafe fn for_each_em_perf_domain(
     _cb: Option<unsafe extern "C" fn(*mut em_perf_domain, *mut core::ffi::c_void) -> i32>,
@@ -38,21 +38,21 @@ pub unsafe fn for_each_em_perf_domain(
     -22 /* -EINVAL; supplied by the external errno definitions. */
 }
 
-#[cfg(not(all(feature = "CONFIG_ENERGY_MODEL", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_ENERGY_MODEL, CONFIG_NET)))]
 #[inline]
 pub unsafe fn em_perf_domain_get_by_id(_id: i32) -> *mut em_perf_domain {
     core::ptr::null_mut()
 }
 
-#[cfg(not(all(feature = "CONFIG_ENERGY_MODEL", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_ENERGY_MODEL, CONFIG_NET)))]
 #[inline]
 pub unsafe fn em_notify_pd_created(_pd: *const em_perf_domain) {}
 
-#[cfg(not(all(feature = "CONFIG_ENERGY_MODEL", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_ENERGY_MODEL, CONFIG_NET)))]
 #[inline]
 pub unsafe fn em_notify_pd_deleted(_pd: *const em_perf_domain) {}
 
-#[cfg(not(all(feature = "CONFIG_ENERGY_MODEL", feature = "CONFIG_NET")))]
+#[cfg(not(all(CONFIG_ENERGY_MODEL, CONFIG_NET)))]
 #[inline]
 pub unsafe fn em_notify_pd_updated(_pd: *const em_perf_domain) {}
 

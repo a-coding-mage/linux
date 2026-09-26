@@ -136,7 +136,7 @@ unsafe fn skeleton_fill_pix_format(skel: *mut Skeleton, pix: *mut v4l2_pix_forma
     }
     (*pix).bytesperline = (*pix).width * 2;
     (*pix).sizeimage = (*pix).bytesperline * (*pix).height;
-    (*pix).priv = 0;
+    (*pix).r#priv = 0;
 }
 
 unsafe extern "C" fn skeleton_try_fmt_vid_cap(file: *mut file, _priv: *mut c_void, f: *mut v4l2_format) -> c_int {

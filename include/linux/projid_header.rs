@@ -56,32 +56,32 @@ pub unsafe fn projid_valid(projid: kprojid_t) -> bool {
 }
 
 /* CONFIG_USER_NS selects the declaration-based implementation below. */
-#[cfg(feature = "CONFIG_USER_NS")]
+#[cfg(CONFIG_USER_NS)]
 unsafe extern "C" {
     pub fn make_kprojid(from: *mut user_namespace, projid: projid_t) -> kprojid_t;
     pub fn from_kprojid(to: *mut user_namespace, projid: kprojid_t) -> projid_t;
     pub fn from_kprojid_munged(to: *mut user_namespace, projid: kprojid_t) -> projid_t;
 }
 
-#[cfg(feature = "CONFIG_USER_NS")]
+#[cfg(CONFIG_USER_NS)]
 #[inline]
 pub unsafe fn kprojid_has_mapping(ns: *mut user_namespace, projid: kprojid_t) -> bool {
     from_kprojid(ns, projid) != u32::MAX
 }
 
-#[cfg(not(feature = "CONFIG_USER_NS"))]
+#[cfg(not(CONFIG_USER_NS))]
 #[inline]
 pub unsafe fn make_kprojid(_from: *mut user_namespace, projid: projid_t) -> kprojid_t {
     kprojidt_init(projid)
 }
 
-#[cfg(not(feature = "CONFIG_USER_NS"))]
+#[cfg(not(CONFIG_USER_NS))]
 #[inline]
 pub unsafe fn from_kprojid(_to: *mut user_namespace, kprojid: kprojid_t) -> projid_t {
     __kprojid_val(kprojid)
 }
 
-#[cfg(not(feature = "CONFIG_USER_NS"))]
+#[cfg(not(CONFIG_USER_NS))]
 #[inline]
 pub unsafe fn from_kprojid_munged(to: *mut user_namespace, kprojid: kprojid_t) -> projid_t {
     let mut projid = from_kprojid(to, kprojid);
@@ -91,7 +91,7 @@ pub unsafe fn from_kprojid_munged(to: *mut user_namespace, kprojid: kprojid_t) -
     projid
 }
 
-#[cfg(not(feature = "CONFIG_USER_NS"))]
+#[cfg(not(CONFIG_USER_NS))]
 #[inline]
 pub unsafe fn kprojid_has_mapping(_ns: *mut user_namespace, _projid: kprojid_t) -> bool {
     true

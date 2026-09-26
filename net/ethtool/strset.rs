@@ -71,14 +71,14 @@ unsafe fn strset_parse_request(req_base: *mut ethnl_req_info, info: *const genl_
     // nla_for_each_nested(attr, nest, rem)
     let mut attr: *mut nlattr = core::ptr::null_mut();
     let mut rem: libc::c_int = 0;
-    nla_for_each_nested!(attr, nest, rem) {
+    nla_for_each_nested!(attr, nest, rem, {
         let mut id: u32 = 0;
         if WARN_ONCE!(nla_type(attr) != ETHTOOL_A_STRINGSETS_STRINGSET, "unexpected attrtype %u in ETHTOOL_A_STRSET_STRINGSETS\n", nla_type(attr)) { return -EINVAL; }
         let ret = strset_get_id(attr, &mut id, extack);
         if ret < 0 { return ret; }
         if id >= ETH_SS_COUNT { NL_SET_ERR_MSG_ATTR!(extack, attr, "unknown string set id"); return -EOPNOTSUPP; }
         (*req_info).req_ids |= 1u32 << id;
-    }
+    });
     0
 }
 

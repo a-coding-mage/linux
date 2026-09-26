@@ -47,7 +47,7 @@ pub unsafe fn devlink_dpipe_match_put(skb: *mut sk_buff, m: *mut devlink_dpipe_m
 
 unsafe fn devlink_dpipe_matches_put(t: *mut devlink_dpipe_table, skb: *mut sk_buff) -> c_int {
     let a = nla_nest_start_noflag(skb, DEVLINK_ATTR_DPIPE_TABLE_MATCHES); if a.is_null() { return -EMSGSIZE; }
-    if ((*(*t).table_ops).matches_dump)((*t).priv, skb) != 0 { nla_nest_cancel(skb, a); return -EMSGSIZE; }
+    if ((*(*t).table_ops).matches_dump)((*t).r#priv, skb) != 0 { nla_nest_cancel(skb, a); return -EMSGSIZE; }
     nla_nest_end(skb, a); 0
 }
 
@@ -64,12 +64,12 @@ pub unsafe fn devlink_dpipe_action_put(skb: *mut sk_buff, action: *mut devlink_d
 
 unsafe fn devlink_dpipe_actions_put(t: *mut devlink_dpipe_table, skb: *mut sk_buff) -> c_int {
     let a = nla_nest_start_noflag(skb, DEVLINK_ATTR_DPIPE_TABLE_ACTIONS); if a.is_null() { return -EMSGSIZE; }
-    if ((*(*t).table_ops).actions_dump)((*t).priv, skb) != 0 { nla_nest_cancel(skb, a); return -EMSGSIZE; }
+    if ((*(*t).table_ops).actions_dump)((*t).r#priv, skb) != 0 { nla_nest_cancel(skb, a); return -EMSGSIZE; }
     nla_nest_end(skb, a); 0
 }
 
 unsafe fn devlink_dpipe_table_put(skb: *mut sk_buff, t: *mut devlink_dpipe_table) -> c_int {
-    let size = ((*(*t).table_ops).size_get)((*t).priv); let a = nla_nest_start_noflag(skb, DEVLINK_ATTR_DPIPE_TABLE); if a.is_null() { return -EMSGSIZE; }
+    let size = ((*(*t).table_ops).size_get)((*t).r#priv); let a = nla_nest_start_noflag(skb, DEVLINK_ATTR_DPIPE_TABLE); if a.is_null() { return -EMSGSIZE; }
     if nla_put_string(skb, DEVLINK_ATTR_DPIPE_TABLE_NAME, (*t).name) != 0 || devlink_nl_put_u64(skb, DEVLINK_ATTR_DPIPE_TABLE_SIZE, size) != 0 || nla_put_u8(skb, DEVLINK_ATTR_DPIPE_TABLE_COUNTERS_ENABLED, (*t).counters_enabled) != 0 { nla_nest_cancel(skb, a); return -EMSGSIZE; }
     if (*t).resource_valid && (devlink_nl_put_u64(skb, DEVLINK_ATTR_DPIPE_TABLE_RESOURCE_ID, (*t).resource_id) != 0 || devlink_nl_put_u64(skb, DEVLINK_ATTR_DPIPE_TABLE_RESOURCE_UNITS, (*t).resource_units) != 0) { nla_nest_cancel(skb, a); return -EMSGSIZE; }
     if devlink_dpipe_matches_put(t, skb) != 0 || devlink_dpipe_actions_put(t, skb) != 0 { nla_nest_cancel(skb, a); return -EMSGSIZE; }

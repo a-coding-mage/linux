@@ -24,7 +24,7 @@ pub static mut memory_start: c_ulong = 0;
 pub static mut memory_size: c_ulong = 0;
 pub static mut lowmem_size: c_ulong = 0;
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 unsafe fn highmem_init() {
     pr_debug!("%x\n", PKMAP_BASE as u32);
     map_page(PKMAP_BASE, 0, 0); /* XXX gross */
@@ -33,12 +33,12 @@ unsafe fn highmem_init() {
 
 #[no_mangle]
 pub unsafe extern "C" fn arch_zone_limits_init(max_zone_pfns: *mut c_ulong) {
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         *max_zone_pfns.add(ZONE_DMA as usize) = max_low_pfn;
         *max_zone_pfns.add(ZONE_HIGHMEM as usize) = max_pfn;
     }
-    #[cfg(not(feature = "CONFIG_HIGHMEM"))]
+    #[cfg(not(CONFIG_HIGHMEM))]
     {
         *max_zone_pfns.add(ZONE_DMA as usize) = max_pfn;
     }
@@ -52,7 +52,7 @@ unsafe fn paging_init() {
         idx += 1;
     }
 
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     highmem_init();
 }
 
@@ -121,7 +121,7 @@ pub unsafe extern "C" fn mmu_init() {
 
     if lowmem_size > CONFIG_LOWMEM_SIZE {
         lowmem_size = CONFIG_LOWMEM_SIZE;
-        #[cfg(not(feature = "CONFIG_HIGHMEM"))]
+        #[cfg(not(CONFIG_HIGHMEM))]
         { memory_size = lowmem_size; }
     }
 
@@ -130,7 +130,7 @@ pub unsafe extern "C" fn mmu_init() {
     ksize = PAGE_ALIGN((_end as u32).wrapping_sub(CONFIG_KERNEL_START as u32));
     memblock_reserve(kstart as c_ulong, ksize as c_ulong);
 
-    #[cfg(feature = "CONFIG_BLK_DEV_INITRD")]
+    #[cfg(CONFIG_BLK_DEV_INITRD)]
     if initrd_start != 0 {
         let size = initrd_end - initrd_start;
         memblock_reserve(__virt_to_phys(initrd_start), size);
@@ -139,9 +139,9 @@ pub unsafe extern "C" fn mmu_init() {
     mmu_init_hw();
     mapin_ram();
 
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     { ioremap_base = PKMAP_BASE; ioremap_bot = PKMAP_BASE; }
-    #[cfg(not(feature = "CONFIG_HIGHMEM"))]
+    #[cfg(not(CONFIG_HIGHMEM))]
     { ioremap_base = FIXADDR_START; ioremap_bot = FIXADDR_START; }
 
     mmu_context_init();

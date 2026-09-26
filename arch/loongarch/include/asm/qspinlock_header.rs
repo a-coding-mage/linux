@@ -4,10 +4,10 @@
 // Dependencies: <asm/kvm_para.h>, <asm/paravirt.h>
 
 // CONFIG_PARAVIRT condition from the original header.
-#[cfg(feature = "CONFIG_PARAVIRT")]
+#[cfg(CONFIG_PARAVIRT)]
 pub const virt_spin_lock_defined: bool = true;
 
-#[cfg(feature = "CONFIG_PARAVIRT")]
+#[cfg(CONFIG_PARAVIRT)]
 #[inline]
 pub unsafe fn virt_spin_lock(lock: *mut qspinlock) -> bool {
     let mut val: i32;
@@ -40,7 +40,7 @@ pub unsafe fn virt_spin_lock(lock: *mut qspinlock) -> bool {
  * With inline function, parameter cpu is parsed even though it is not used.
  * This may cause cache line thrashing across NUMA nodes.
  */
-#[cfg(feature = "CONFIG_PARAVIRT")]
+#[cfg(CONFIG_PARAVIRT)]
 #[macro_export]
 macro_rules! vcpu_is_preempted {
     ($cpu:expr) => {{

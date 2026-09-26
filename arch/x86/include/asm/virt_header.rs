@@ -5,7 +5,7 @@
 pub type CpuEmergencyVirtCb = unsafe extern "C" fn();
 
 // The following declarations are enabled when CONFIG_KVM_X86 is enabled.
-#[cfg(feature = "CONFIG_KVM_X86")]
+#[cfg(CONFIG_KVM_X86)]
 extern "C" {
     pub static mut virt_rebooting: bool;
 
@@ -21,11 +21,11 @@ extern "C" {
 }
 
 // Fallback declarations when CONFIG_KVM_X86 is disabled.
-#[cfg(not(feature = "CONFIG_KVM_X86"))]
+#[cfg(not(CONFIG_KVM_X86))]
 #[inline(always)]
 pub fn x86_virt_init() {}
 
-#[cfg(not(feature = "CONFIG_KVM_X86"))]
+#[cfg(not(CONFIG_KVM_X86))]
 #[inline]
 pub fn x86_virt_emergency_disable_virtualization_cpu() -> i32 {
     -ENOENT

@@ -18,7 +18,7 @@ pub enum device {}
 pub enum pinctrl {}
 
 // CONFIG_PINCTRL
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 pub enum pinctrl_state {}
 
 /**
@@ -29,25 +29,25 @@ pub enum pinctrl_state {}
  * @sleep_state: the state at suspend time, if found
  * @idle_state: the state at idle (runtime suspend) time, if found
  */
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 #[repr(C)]
 pub struct dev_pin_info {
     pub p: *mut pinctrl,
     pub default_state: *mut pinctrl_state,
     pub init_state: *mut pinctrl_state,
     // CONFIG_PM
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub sleep_state: *mut pinctrl_state,
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     pub idle_state: *mut pinctrl_state,
 }
 
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 unsafe extern "C" {
     pub fn pinctrl_init_done(dev: *mut device) -> i32;
 }
 
-#[cfg(feature = "CONFIG_PINCTRL")]
+#[cfg(CONFIG_PINCTRL)]
 #[inline]
 pub unsafe fn dev_pinctrl(dev: *mut device) -> *mut pinctrl {
     // The C implementation checks dev->pins. The containing device layout is
@@ -56,13 +56,13 @@ pub unsafe fn dev_pinctrl(dev: *mut device) -> *mut pinctrl {
 }
 
 // Stubs if we're not using pinctrl
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 #[inline]
 pub unsafe fn pinctrl_init_done(_dev: *mut device) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PINCTRL"))]
+#[cfg(not(CONFIG_PINCTRL))]
 #[inline]
 pub unsafe fn dev_pinctrl(_dev: *mut device) -> *mut pinctrl {
     core::ptr::null_mut()

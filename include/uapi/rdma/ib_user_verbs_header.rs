@@ -1021,7 +1021,7 @@ pub ib_uverbs_detach_mcast {
 
 #[repr(C)]
 pub ib_uverbs_flow_spec_hdr {
-	pub type: u32,
+	pub r#type: u32,
 	pub size: u16,
 	pub reserved: u16,
 	/* followed by flow_spec */
@@ -1042,7 +1042,7 @@ pub ib_uverbs_flow_spec_eth {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1067,7 +1067,7 @@ pub ib_uverbs_flow_spec_ipv4 {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1088,7 +1088,7 @@ pub ib_uverbs_flow_spec_tcp_udp {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1114,7 +1114,7 @@ pub ib_uverbs_flow_spec_ipv6 {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1129,7 +1129,7 @@ pub ib_uverbs_flow_spec_action_tag {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1144,7 +1144,7 @@ pub ib_uverbs_flow_spec_action_drop {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1157,7 +1157,7 @@ pub ib_uverbs_flow_spec_action_handle {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1172,7 +1172,7 @@ pub ib_uverbs_flow_spec_action_count {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1192,7 +1192,7 @@ pub ib_uverbs_flow_spec_tunnel {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1213,7 +1213,7 @@ pub ib_uverbs_flow_spec_esp {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1243,7 +1243,7 @@ pub ib_uverbs_flow_spec_gre {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1269,7 +1269,7 @@ pub ib_uverbs_flow_spec_mpls {
 pub AnonymousUnion {
 		pub hdr: ib_uverbs_flow_spec_hdr,
 		struct {
-			pub type: u32,
+			pub r#type: u32,
 			pub size: u16,
 			pub reserved: u16,
 		};
@@ -1280,7 +1280,7 @@ pub AnonymousUnion {
 
 #[repr(C)]
 pub ib_uverbs_flow_attr {
-	pub type: u32,
+	pub r#type: u32,
 	pub size: u16,
 	pub priority: u16,
 	pub num_of_specs: u8,

@@ -165,9 +165,9 @@ pub unsafe fn cpuset1_validate_change(cur: *mut cpuset, trial: *mut cpuset) -> i
     let mut css: *mut cgroup_subsys_state = core::ptr::null_mut();
     let mut c: *mut cpuset;
     let mut ret = -EBUSY;
-    cpuset_for_each_child!(c, css, cur) {
+    cpuset_for_each_child!(c, css, cur, {
         if !is_cpuset_subset(c, trial) { return ret; }
-    }
+    });
     ret = -EACCES;
     let par = parent_cs(cur);
     if !par.is_null() && !is_cpuset_subset(trial, par) { return ret; }
@@ -252,9 +252,9 @@ pub unsafe fn cpuset1_online_css(css: *mut cgroup_subsys_state) {
     if !test_bit(CGRP_CPUSET_CLONE_CHILDREN, (*css).cgroup.flags) { return; }
     rcu_read_lock();
     let mut tmp_cs: *mut cpuset; let mut pos_css: *mut cgroup_subsys_state = core::ptr::null_mut();
-    cpuset_for_each_child!(tmp_cs, pos_css, parent) {
+    cpuset_for_each_child!(tmp_cs, pos_css, parent, {
         if is_mem_exclusive(tmp_cs) || is_cpu_exclusive(tmp_cs) { rcu_read_unlock(); return; }
-    }
+    });
     rcu_read_unlock();
     cpuset_callback_lock_irq();
     (*cs).mems_allowed = (*parent).mems_allowed; (*cs).effective_mems = (*parent).mems_allowed;
@@ -269,10 +269,10 @@ unsafe fn update_domain_attr(dattr: *mut sched_domain_attr, c: *mut cpuset) {
 unsafe fn update_domain_attr_tree(dattr: *mut sched_domain_attr, root_cs: *mut cpuset) {
     rcu_read_lock();
     let mut cp: *mut cpuset; let mut pos_css: *mut cgroup_subsys_state = core::ptr::null_mut();
-    cpuset_for_each_descendant_pre!(cp, pos_css, root_cs) {
+    cpuset_for_each_descendant_pre!(cp, pos_css, root_cs, {
         if cpumask_empty((*cp).cpus_allowed) { pos_css = css_rightmost_descendant(pos_css); continue; }
         if is_sched_load_balance(cp) { update_domain_attr(dattr, cp); }
-    }
+    });
     rcu_read_unlock();
 }
 
@@ -297,12 +297,12 @@ pub unsafe fn cpuset1_generate_sched_domains(domains: *mut cpumask_var_t, attrib
     let mut csn = 0usize;
     rcu_read_lock();
     let mut cp: *mut cpuset; let mut pos_css: *mut cgroup_subsys_state = core::ptr::null_mut();
-    cpuset_for_each_descendant_pre!(cp, pos_css, &mut top_cpuset) {
+    cpuset_for_each_descendant_pre!(cp, pos_css, &mut top_cpuset, {
         if cp == &mut top_cpuset { continue; }
         if !cpumask_empty((*cp).cpus_allowed) && !(is_sched_load_balance(cp) && cpumask_intersects((*cp).cpus_allowed, housekeeping_cpumask(HK_TYPE_DOMAIN))) { continue; }
         if is_sched_load_balance(cp) && !cpumask_empty((*cp).effective_cpus) { *csa.add(csn) = cp; csn += 1; }
         pos_css = css_rightmost_descendant(pos_css);
-    }
+    });
     rcu_read_unlock();
     for i in 0..csn { uf_node_init(&mut (*csa.add(i)).node); }
     for i in 0..csn { for j in (i + 1)..csn { if cpusets_overlap(*csa.add(i), *csa.add(j)) { uf_union(&mut (*csa.add(i)).node, &mut (*csa.add(j)).node); } } }

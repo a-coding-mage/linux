@@ -3,12 +3,12 @@
 use core::ffi::c_int;
 
 // Corresponds to CONFIG_NVHE_EL2_TRACING.
-#[cfg(feature = "CONFIG_NVHE_EL2_TRACING")]
+#[cfg(CONFIG_NVHE_EL2_TRACING)]
 unsafe extern "C" {
     pub fn kvm_hyp_trace_init() -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_TRACING"))]
+#[cfg(not(CONFIG_NVHE_EL2_TRACING))]
 pub(crate) fn kvm_hyp_trace_init() -> c_int {
     0
 }

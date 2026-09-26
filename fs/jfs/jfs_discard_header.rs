@@ -10,7 +10,7 @@ pub struct fstrim_range;
 #[repr(C)]
 pub struct inode;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn jfs_issue_discard(ip: *mut inode, blkno: u64, nblocks: u64);
     pub fn jfs_ioc_trim(ip: *mut inode, range: *mut fstrim_range) -> i32;
 }

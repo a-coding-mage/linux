@@ -14,14 +14,14 @@ pub type MmCompactionIsolateMigratepages = MmCompactionIsolateTemplate;
 pub type MmCompactionIsolateFreepages = MmCompactionIsolateTemplate;
 pub type MmCompactionFastIsolateFreepages = MmCompactionIsolateTemplate;
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionMigratepages {
     pub nr_migrated: usize,
     pub nr_failed: usize,
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionBegin {
     pub zone_start: usize,
@@ -31,7 +31,7 @@ pub struct MmCompactionBegin {
     pub sync: bool,
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionEnd {
     pub zone_start: usize,
@@ -42,7 +42,7 @@ pub struct MmCompactionEnd {
     pub status: i32,
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionTryToCompactPages {
     pub order: i32,
@@ -50,7 +50,7 @@ pub struct MmCompactionTryToCompactPages {
     pub prio: i32,
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionSuitableTemplate {
     pub nid: i32,
@@ -63,7 +63,7 @@ pub struct MmCompactionSuitableTemplate {
 pub type MmCompactionFinished = MmCompactionSuitableTemplate;
 pub type MmCompactionSuitable = MmCompactionSuitableTemplate;
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionDeferTemplate {
     pub nid: i32,
@@ -79,13 +79,13 @@ pub type MmCompactionDeferred = MmCompactionDeferTemplate;
 pub type MmCompactionDeferCompaction = MmCompactionDeferTemplate;
 pub type MmCompactionDeferReset = MmCompactionDeferTemplate;
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct MmCompactionKcompactdSleep {
     pub nid: i32,
 }
 
-#[cfg(feature = "CONFIG_COMPACTION")]
+#[cfg(CONFIG_COMPACTION)]
 #[repr(C)]
 pub struct KcompactdWakeTemplate {
     pub nid: i32,

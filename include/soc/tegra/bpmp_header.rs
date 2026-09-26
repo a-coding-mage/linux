@@ -109,7 +109,7 @@ pub struct tegra_bpmp {
     pub num_clocks: u32,
     pub rstc: reset_controller_dev,
     pub genpd: genpd_onecell_data,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub debugfs_mirror: *mut dentry,
     pub suspended: bool,
 }

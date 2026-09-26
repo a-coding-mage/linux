@@ -8,7 +8,7 @@
 
 use core::ffi::c_ulong;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub static mut riscv_timebase: c_ulong;
 
     // C macro: #define udelay udelay

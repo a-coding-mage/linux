@@ -4,7 +4,7 @@
 // <linux/compiler.h>, and <linux/overflow.h>.
 
 macro_rules! BIT_MASK {
-    ($nr:expr) => { (1usize << (($nr) % BITS_PER_LONG)) };
+    ($nr:expr) => { (1 as ::core::ffi::c_ulong) << (($nr) % BITS_PER_LONG) };
 }
 
 macro_rules! BIT_WORD {
@@ -31,26 +31,35 @@ macro_rules! BITS_PER_TYPE {
  * GENMASK_ULL(39, 21) gives us the 64bit vector 0x000000ffffe00000.
  */
 
-// C build-time checks and type_max() are supplied by the corresponding
-// dependencies. These macros retain their source-level use and intent.
+/*
+ * Generate a mask for the specified type @t. Additional checks are made to
+ * guarantee the value returned fits in that type; the C header relies on
+ * -Wshift-count-overflow, Rust rejects overflowing shifts in const evaluation.
+ * For example, all these create build errors:
+ *
+ * - GENMASK(15, 20): wrong argument order
+ * - GENMASK(72, 15): doesn't fit unsigned long
+ * - GENMASK_U32(33, 15): doesn't fit in a u32
+ */
 macro_rules! GENMASK_INPUT_CHECK {
-    ($h:expr, $l:expr) => { BUILD_BUG_ON_ZERO(const_true(($l) > ($h))) };
-}
-
-macro_rules! GENMASK_TYPE {
-    ($t:ty, $h:expr, $l:expr) => {
-        (($t)(GENMASK_INPUT_CHECK!($h, $l)
-            + (type_max!($t) << ($l)
-                & type_max!($t) >> (BITS_PER_TYPE!($t) - 1 - ($h))))
+    ($h:expr, $l:expr) => {
+        const { assert!(!(($l) > ($h)), "GENMASK: wrong argument order") }
     };
 }
 
+macro_rules! GENMASK_TYPE {
+    ($t:ty, $h:expr, $l:expr) => {{
+        GENMASK_INPUT_CHECK!($h, $l);
+        (<$t>::MAX << ($l)) & (<$t>::MAX >> (<$t>::BITS - 1 - ($h) as u32))
+    }};
+}
+
 macro_rules! GENMASK {
-    ($h:expr, $l:expr) => { GENMASK_TYPE!(unsigned_long, $h, $l) };
+    ($h:expr, $l:expr) => { GENMASK_TYPE!(::core::ffi::c_ulong, $h, $l) };
 }
 
 macro_rules! GENMASK_ULL {
-    ($h:expr, $l:expr) => { GENMASK_TYPE!(unsigned_long_long, $h, $l) };
+    ($h:expr, $l:expr) => { GENMASK_TYPE!(::core::ffi::c_ulonglong, $h, $l) };
 }
 
 macro_rules! GENMASK_U8 {
@@ -73,13 +82,25 @@ macro_rules! GENMASK_U128 {
     ($h:expr, $l:expr) => { GENMASK_TYPE!(u128, $h, $l) };
 }
 
-/* Fixed-type variants of BIT(), with the same input checks as GENMASK_TYPE(). */
+/*
+ * Fixed-type variants of BIT(), with additional checks like GENMASK_TYPE(). The
+ * following examples generate build errors:
+ *
+ * - BIT_U8(8)
+ * - BIT_U32(-1)
+ * - BIT_U32(40)
+ */
 macro_rules! BIT_INPUT_CHECK {
-    ($type:ty, $nr:expr) => { BUILD_BUG_ON_ZERO(const_true(($nr) >= BITS_PER_TYPE!($type))) };
+    ($type:ty, $nr:expr) => {
+        const { assert!(!(($nr) as i128 >= BITS_PER_TYPE!($type) as i128) && ($nr) as i128 >= 0) }
+    };
 }
 
 macro_rules! BIT_TYPE {
-    ($type:ty, $nr:expr) => { (($type)(BIT_INPUT_CHECK!($type, $nr) + BIT_ULL!($nr))) };
+    ($type:ty, $nr:expr) => {{
+        BIT_INPUT_CHECK!($type, $nr);
+        (1 as $type) << ($nr)
+    }};
 }
 
 macro_rules! BIT_U8 {

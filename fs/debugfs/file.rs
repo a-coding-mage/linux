@@ -36,7 +36,7 @@ const DBGFS_GET_ALREADY:c_int=0; const DBGFS_GET_REGULAR:c_int=1; const DBGFS_GE
 const HAS_LSEEK:u32=1; const HAS_READ:u32=2; const HAS_WRITE:u32=4; const HAS_IOCTL:u32=8; const HAS_POLL:u32=16;
 const EINVAL:c_int=22; const ENOMEM:c_int=12; const EIO:c_int=5; const ENOENT:c_int=2; const EPERM:c_int=1; const ENXIO:c_int=6; const ESPIPE:loff_t=29; const ENOTTY:c_long=25; const E2BIG:c_int=7; const EFAULT:c_int=14;
 
-extern "C" { fn debugfs_create_file_unsafe(*const c_char,umode_t,*mut dentry,*mut c_void,*const file_operations)->*mut dentry; fn debugfs_create_file(*const c_char,umode_t,*mut dentry,*mut c_void,*const file_operations)->*mut dentry; fn simple_open(*mut inode,*mut file)->c_int; fn default_llseek(*mut file,loff_t,c_int)->loff_t; fn noop_llseek(*mut file,loff_t,c_int)->loff_t; fn simple_read_from_buffer(*mut c_char,usize,*mut loff_t,*const c_void,usize)->ssize_t; fn simple_write_to_buffer(*mut c_void,usize,*mut loff_t,*const c_char,usize)->ssize_t; }
+extern "C" { fn debugfs_create_file_unsafe(_: *const c_char,_: umode_t,_: *mut dentry,_: *mut c_void,_: *const file_operations)->*mut dentry; fn debugfs_create_file(_: *const c_char,_: umode_t,_: *mut dentry,_: *mut c_void,_: *const file_operations)->*mut dentry; fn simple_open(_: *mut inode,_: *mut file)->c_int; fn default_llseek(_: *mut file,_: loff_t,_: c_int)->loff_t; fn noop_llseek(_: *mut file,_: loff_t,_: c_int)->loff_t; fn simple_read_from_buffer(_: *mut c_char,_: usize,_: *mut loff_t,_: *const c_void,_: usize)->ssize_t; fn simple_write_to_buffer(_: *mut c_void,_: usize,_: *mut loff_t,_: *const c_char,_: usize)->ssize_t; }
 
 unsafe extern "C" fn default_read_file(_: *mut file, _: *mut c_char, _: usize, _: *mut loff_t)->ssize_t { 0 }
 unsafe extern "C" fn default_write_file(_: *mut file, _: *const c_char, count: usize, _: *mut loff_t)->ssize_t { count as ssize_t }
@@ -46,7 +46,7 @@ unsafe extern "C" fn default_write_file(_: *mut file, _: *const c_char, count: u
 pub unsafe fn debugfs_get_aux(file:*const file)->*mut c_void { (*((*F_DENTRY(file)).d_inode)).i_private }
 
 // The following declarations preserve the C implementation's externally supplied kernel operations.
-extern "C" { fn __debugfs_file_get(*mut dentry,c_int)->c_int; fn debugfs_file_get(*mut dentry)->c_int; fn debugfs_file_put(*mut dentry); fn debugfs_locked_down(*mut inode,*mut file,*const file_operations)->c_int; }
+extern "C" { fn __debugfs_file_get(_: *mut dentry,_: c_int)->c_int; fn debugfs_file_get(_: *mut dentry)->c_int; fn debugfs_file_put(_: *mut dentry); fn debugfs_locked_down(_: *mut inode,_: *mut file,_: *const file_operations)->c_int; }
 
 pub unsafe fn debugfs_enter_cancellation(file:*mut file,cancellation:*mut debugfs_cancellation){ let _= (file,cancellation); }
 pub unsafe fn debugfs_leave_cancellation(file:*mut file,cancellation:*mut debugfs_cancellation){ let _=(file,cancellation); }

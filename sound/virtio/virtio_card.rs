@@ -186,7 +186,7 @@ unsafe extern "C" fn virtsnd_event_dispatch(
 }
 
 unsafe extern "C" fn virtsnd_event_notify_cb(vqueue: *mut virtqueue) {
-    let snd = (*(*vqueue).vdev).priv as *mut virtio_snd;
+    let snd = (*(*vqueue).vdev).r#priv as *mut virtio_snd;
     let queue = virtsnd_event_queue(snd);
     let mut length: c_uint = 0;
 
@@ -461,7 +461,7 @@ unsafe extern "C" fn virtsnd_probe(vdev: *mut virtio_device) -> c_int {
     // INIT_LIST_HEAD(&snd->ctl_msgs);
     // INIT_LIST_HEAD(&snd->pcm_list);
 
-    (*vdev).priv = snd as *mut c_void;
+    (*vdev).r#priv = snd as *mut c_void;
 
     i = 0;
     while i < VIRTIO_SND_VQ_MAX as c_uint {
@@ -489,7 +489,7 @@ unsafe extern "C" fn virtsnd_probe(vdev: *mut virtio_device) -> c_int {
 }
 
 unsafe extern "C" fn virtsnd_remove(vdev: *mut virtio_device) {
-    let snd = (*vdev).priv as *mut virtio_snd;
+    let snd = (*vdev).r#priv as *mut virtio_snd;
     let mut i: c_uint = 0;
 
     virtsnd_disable_event_vq(snd);
@@ -515,9 +515,9 @@ unsafe extern "C" fn virtsnd_remove(vdev: *mut virtio_device) {
     kfree((*snd).event_msgs);
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn virtsnd_freeze(vdev: *mut virtio_device) -> c_int {
-    let snd = (*vdev).priv as *mut virtio_snd;
+    let snd = (*vdev).r#priv as *mut virtio_snd;
     let mut i: c_uint = 0;
 
     virtsnd_disable_event_vq(snd);
@@ -539,9 +539,9 @@ unsafe extern "C" fn virtsnd_freeze(vdev: *mut virtio_device) -> c_int {
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn virtsnd_restore(vdev: *mut virtio_device) -> c_int {
-    let snd = (*vdev).priv as *mut virtio_snd;
+    let snd = (*vdev).r#priv as *mut virtio_snd;
     let mut rc: c_int = 0;
 
     rc = virtsnd_find_vqs(snd);
@@ -584,9 +584,9 @@ pub struct VirtioDriver {
     pub validate: Option<unsafe extern "C" fn(*mut virtio_device) -> c_int>,
     pub probe: Option<unsafe extern "C" fn(*mut virtio_device) -> c_int>,
     pub remove: Option<unsafe extern "C" fn(*mut virtio_device)>,
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub freeze: Option<unsafe extern "C" fn(*mut virtio_device) -> c_int>,
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     pub restore: Option<unsafe extern "C" fn(*mut virtio_device) -> c_int>,
 }
 
@@ -598,9 +598,9 @@ pub static VIRTSND_DRIVER: VirtioDriver = VirtioDriver {
     validate: Some(virtsnd_validate),
     probe: Some(virtsnd_probe),
     remove: Some(virtsnd_remove),
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     freeze: Some(virtsnd_freeze),
-    #[cfg(feature = "CONFIG_PM_SLEEP")]
+    #[cfg(CONFIG_PM_SLEEP)]
     restore: Some(virtsnd_restore),
 };
 

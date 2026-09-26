@@ -112,7 +112,7 @@ pub struct secure_display_context {
 #[inline]
 pub fn amdgpu_dm_is_valid_crc_source(source: amdgpu_dm_pipe_crc_source) -> bool {
     (source as i32 > AMDGPU_DM_PIPE_CRC_SOURCE_NONE as i32)
-        && (source as i32 < AMDGPU_DM_PIPE_CRC_SOURCE_MAX as i32)
+        && ((source as i32) < AMDGPU_DM_PIPE_CRC_SOURCE_MAX as i32)
 }
 
 // amdgpu_dm_crc.c; CONFIG_DEBUG_FS controls these declarations.

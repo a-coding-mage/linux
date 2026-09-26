@@ -88,7 +88,7 @@ unsafe extern "C" fn autofs_dev_ioctl_fail(_: *mut file, s: *mut autofs_sb_info,
 unsafe extern "C" fn autofs_dev_ioctl(_: *mut file, command: u32, u: usize) -> isize { _autofs_dev_ioctl(command, u as *mut autofs_dev_ioctl) as isize }
 unsafe fn _autofs_dev_ioctl(command: u32, user: *mut autofs_dev_ioctl) -> i32 { let p = copy_dev_ioctl(user); if IS_ERR(p as *mut _) { return PTR_ERR(p as *mut _); } let e = validate_dev_ioctl(command as i32, p); if e != 0 { free_dev_ioctl(p); return e; } free_dev_ioctl(p); -ENOTTY }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe extern "C" fn autofs_dev_ioctl_compat(f: *mut file, c: u32, u: usize) -> isize { autofs_dev_ioctl(f, c, compat_ptr(u) as usize) }
 
 unsafe extern "C" fn autofs_dev_ioctl_init() -> i32 { misc_register(&mut _autofs_dev_ioctl_misc) }

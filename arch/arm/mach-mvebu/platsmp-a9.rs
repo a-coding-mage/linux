@@ -66,7 +66,7 @@ unsafe fn armada_38x_secondary_init(_cpu: core::ffi::c_uint) {
     mvebu_v7_pmsu_idle_exit();
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn armada_38x_cpu_die(_cpu: core::ffi::c_uint) {
     /*
      * CPU hotplug is implemented by putting offline CPUs into the
@@ -81,7 +81,7 @@ unsafe fn armada_38x_cpu_die(_cpu: core::ffi::c_uint) {
  * anything, because CPUs going offline can enter the deep idle state
  * by themselves, without any help from a still alive CPU.
  */
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe fn armada_38x_cpu_kill(_cpu: core::ffi::c_uint) -> core::ffi::c_int {
     1
 }
@@ -111,27 +111,27 @@ pub struct smp_operations {
     pub smp_boot_secondary:
         Option<unsafe fn(core::ffi::c_uint, *mut task_struct) -> core::ffi::c_int>,
     pub smp_secondary_init: Option<unsafe fn(core::ffi::c_uint)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_die: Option<unsafe fn(core::ffi::c_uint)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     pub cpu_kill: Option<unsafe fn(core::ffi::c_uint) -> core::ffi::c_int>,
 }
 
 static MVEBU_CORTEX_A9_SMP_OPS: smp_operations = smp_operations {
     smp_boot_secondary: Some(mvebu_cortex_a9_boot_secondary),
     smp_secondary_init: None,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: None,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: None,
 };
 
 static ARMADA_38X_SMP_OPS: smp_operations = smp_operations {
     smp_boot_secondary: Some(mvebu_cortex_a9_boot_secondary),
     smp_secondary_init: Some(armada_38x_secondary_init),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(armada_38x_cpu_die),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(armada_38x_cpu_kill),
 };
 

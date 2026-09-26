@@ -115,7 +115,7 @@ unsafe fn amd_pmu_set_msr(vcpu: *mut kvm_vcpu, msr_info: *mut msr_data) -> i32 {
 
 unsafe fn amd_pmu_refresh(vcpu: *mut kvm_vcpu) {
     let pmu = vcpu_to_pmu(vcpu);
-    let mut ebx: union cpuid_0x80000022_ebx = core::mem::zeroed();
+    let mut ebx: cpuid_0x80000022_ebx = core::mem::zeroed();
     (*pmu).version = 1;
     if guest_cpu_cap_has(vcpu, X86_FEATURE_PERFMON_V2) {
         (*pmu).version = 2;

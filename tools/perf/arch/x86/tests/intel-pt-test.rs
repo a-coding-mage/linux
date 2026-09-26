@@ -523,7 +523,7 @@ const fn bit(nr: c_uint) -> c_uint {
 }
 
 const fn genmask(h: c_uint, l: c_uint) -> c_uint {
-    (!0_u32 << l) & (!0_u32 >> (31 - h))
+    (!0u32 << l) & (!0u32 >> (31 - h))
 }
 
 #[repr(C)]

@@ -89,14 +89,14 @@ unsafe fn wireless_dev_seq_start(seq: *mut seq_file, pos: *mut loff_t) -> *mut c
     }
 
     off = 1;
-    for_each_netdev(net, dev) {
+    for_each_netdev!(net, dev, {
         if {
             off += 1;
             off - 1
         } == *pos {
             return dev as *mut core::ffi::c_void;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 

@@ -113,11 +113,11 @@ extern "C" {
     pub fn sun4d_handler_irq(pil: ::core::ffi::c_uint, regs: *mut pt_regs);
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 /* All SUN4D IPIs are sent on this IRQ, may be shared with hard IRQs */
 pub const SUN4D_IPI_IRQ: ::core::ffi::c_int = 13;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn sun4d_ipi_interrupt();
 }

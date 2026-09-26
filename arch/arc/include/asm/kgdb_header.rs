@@ -8,7 +8,7 @@
 /* C header guard: __ARC_KGDB_H__ */
 
 /* CONFIG_KGDB is a build-time condition from the original header. */
-#[cfg(feature = "CONFIG_KGDB")]
+#[cfg(CONFIG_KGDB)]
 /* Dependency supplied by the surrounding translated kernel sources:
  * #include <asm/ptrace.h>
  */
@@ -81,7 +81,7 @@ pub enum arc_linux_regnums {
 }
 
 /* The original non-CONFIG_KGDB branch defines kgdb_trap(regs) as empty. */
-#[cfg(not(feature = "CONFIG_KGDB"))]
+#[cfg(not(CONFIG_KGDB))]
 #[inline]
 pub fn kgdb_trap<T>(_regs: *mut T) {}
 

@@ -60,7 +60,7 @@ pub unsafe extern "C" fn rxrpc_alloc_connection(rxnet: *mut rxrpc_net, gfp: gfp_
 pub unsafe extern "C" fn rxrpc_find_client_connection_rcu(local: *mut rxrpc_local, srx: *mut sockaddr_rxrpc, skb: *mut sk_buff) -> *mut rxrpc_connection {
     let sp = rxrpc_skb(skb);
     let conn = idr_find(&mut (*local).conn_ids, (*sp).hdr.cid >> RXRPC_CIDSHIFT);
-    if conn.is_null() || refcount_read(&(*conn).ref) == 0 { return core::ptr::null_mut(); }
+    if conn.is_null() || refcount_read(&(*conn).r#ref) == 0 { return core::ptr::null_mut(); }
     if (*conn).proto.epoch != (*sp).hdr.epoch || (*conn).local != local { return core::ptr::null_mut(); }
     let peer = (*conn).peer;
     match (*srx).transport.family {
@@ -106,15 +106,15 @@ pub unsafe extern "C" fn rxrpc_queue_conn(conn: *mut rxrpc_connection, why: rxrp
 }
 
 pub unsafe extern "C" fn rxrpc_see_connection(conn: *mut rxrpc_connection, why: rxrpc_conn_trace) {
-    if !conn.is_null() { trace_rxrpc_conn((*conn).debug_id, refcount_read(&(*conn).ref), why); }
+    if !conn.is_null() { trace_rxrpc_conn((*conn).debug_id, refcount_read(&(*conn).r#ref), why); }
 }
 
-pub unsafe extern "C" fn rxrpc_get_connection(conn: *mut rxrpc_connection, why: rxrpc_conn_trace) -> *mut rxrpc_connection { let mut r=0; __refcount_inc(&mut (*conn).ref, &mut r); trace_rxrpc_conn((*conn).debug_id, r+1, why); conn }
-pub unsafe extern "C" fn rxrpc_get_connection_maybe(mut conn: *mut rxrpc_connection, why: rxrpc_conn_trace) -> *mut rxrpc_connection { if !conn.is_null() { let mut r=0; if __refcount_inc_not_zero(&mut (*conn).ref, &mut r) { trace_rxrpc_conn((*conn).debug_id, r+1, why); } else { conn=core::ptr::null_mut(); } } conn }
+pub unsafe extern "C" fn rxrpc_get_connection(conn: *mut rxrpc_connection, why: rxrpc_conn_trace) -> *mut rxrpc_connection { let mut r=0; __refcount_inc(&mut (*conn).r#ref, &mut r); trace_rxrpc_conn((*conn).debug_id, r+1, why); conn }
+pub unsafe extern "C" fn rxrpc_get_connection_maybe(mut conn: *mut rxrpc_connection, why: rxrpc_conn_trace) -> *mut rxrpc_connection { if !conn.is_null() { let mut r=0; if __refcount_inc_not_zero(&mut (*conn).r#ref, &mut r) { trace_rxrpc_conn((*conn).debug_id, r+1, why); } else { conn=core::ptr::null_mut(); } } conn }
 
-unsafe extern "C" fn rxrpc_rcu_free_connection(rcu: *mut rcu_head) { let conn=container_of!(rcu,rxrpc_connection,rcu); let rxnet=(*conn).rxnet; trace_rxrpc_conn((*conn).debug_id,refcount_read(&(*conn).ref),rxrpc_conn_free); kfree(conn); if atomic_dec_and_test(&mut (*rxnet).nr_conns) { wake_up_var(&mut (*rxnet).nr_conns); } }
+unsafe extern "C" fn rxrpc_rcu_free_connection(rcu: *mut rcu_head) { let conn=container_of!(rcu,rxrpc_connection,rcu); let rxnet=(*conn).rxnet; trace_rxrpc_conn((*conn).debug_id,refcount_read(&(*conn).r#ref),rxrpc_conn_free); kfree(conn); if atomic_dec_and_test(&mut (*rxnet).nr_conns) { wake_up_var(&mut (*rxnet).nr_conns); } }
 
-pub unsafe extern "C" fn rxrpc_put_connection(conn: *mut rxrpc_connection, why: rxrpc_conn_trace) { if conn.is_null(){return;} let id=(*conn).debug_id; let mut r=0; if __refcount_dec_and_test(&mut (*conn).ref,&mut r){ timer_delete(&mut (*conn).timer); cancel_work(&mut (*conn).processor); schedule_work(&mut (*conn).destructor); } trace_rxrpc_conn(id,r-1,why); }
+pub unsafe extern "C" fn rxrpc_put_connection(conn: *mut rxrpc_connection, why: rxrpc_conn_trace) { if conn.is_null(){return;} let id=(*conn).debug_id; let mut r=0; if __refcount_dec_and_test(&mut (*conn).r#ref,&mut r){ timer_delete(&mut (*conn).timer); cancel_work(&mut (*conn).processor); schedule_work(&mut (*conn).destructor); } trace_rxrpc_conn(id,r-1,why); }
 
 unsafe extern "C" fn rxrpc_clean_up_connection(work: *mut work_struct) {
     let conn = container_of!(work, rxrpc_connection, destructor);

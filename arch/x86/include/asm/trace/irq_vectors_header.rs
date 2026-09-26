@@ -12,9 +12,9 @@ pub mod x86_local_apic {
     }
 
     macro_rules! define_irq_vector_event {
-        ($name:ident) => {
-            pub const $name##_ENTRY: &str = concat!(stringify!($name), "_entry");
-            pub const $name##_EXIT: &str = concat!(stringify!($name), "_exit");
+        ($name:tt) => {
+            pub const ::kernel::macros::paste!([<$name _ENTRY>]): &str = concat!(stringify!($name), "_entry");
+            pub const ::kernel::macros::paste!([<$name _EXIT>]): &str = concat!(stringify!($name), "_exit");
         };
     }
 

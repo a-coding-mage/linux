@@ -161,8 +161,8 @@ pub unsafe fn tcp_ecn_clear_syn(sk: *mut sock, skb: *mut sk_buff) {
 }
 
 pub unsafe fn tcp_ecn_received_counters_payload(sk: *mut sock, skb: *const sk_buff) {
-    let th = skb->data as *const tcphdr;
-    tcp_ecn_received_counters(sk, skb, skb->len - ((*th).doff as u32) * 4);
+    let th = (*skb).data as *const tcphdr;
+    tcp_ecn_received_counters(sk, skb, (*skb).len - ((*th).doff as u32) * 4);
 }
 
 pub unsafe fn tcp_ecn_received_counters(sk: *mut sock, skb: *const sk_buff, len: u32) {

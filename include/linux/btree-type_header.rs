@@ -5,7 +5,7 @@
 
 #[macro_export]
 macro_rules! btree_type {
-    ($suffix:ident, $geo:expr, $keytype:ty, $bits:expr) => {
+    ($suffix:tt, $geo:expr, $keytype:ty, $bits:expr) => {
         #[repr(C)]
         pub struct btree_head_$suffix {
             pub h: btree_head,
@@ -99,7 +99,7 @@ macro_rules! btree_type {
             val
         }
 
-        pub type visitor_$suffix##_t = unsafe extern "C" fn(
+        pub type visitor_::kernel::macros::paste!([<$suffix _t>]) = unsafe extern "C" fn(
             elem: *mut core::ffi::c_void,
             opaque: libc::c_ulong,
             key: $keytype,
@@ -120,7 +120,7 @@ macro_rules! btree_type {
         pub unsafe fn btree_visitor_$suffix(
             head: *mut btree_head_$suffix,
             opaque: libc::c_ulong,
-            func2: visitor_$suffix##_t,
+            func2: visitor_::kernel::macros::paste!([<$suffix _t>]),
         ) -> usize {
             btree_visitor(&mut (*head).h, $geo, opaque, visitor_$suffix, func2)
         }
@@ -129,7 +129,7 @@ macro_rules! btree_type {
         pub unsafe fn btree_grim_visitor_$suffix(
             head: *mut btree_head_$suffix,
             opaque: libc::c_ulong,
-            func2: visitor_$suffix##_t,
+            func2: visitor_::kernel::macros::paste!([<$suffix _t>]),
         ) -> usize {
             btree_grim_visitor(&mut (*head).h, $geo, opaque, visitor_$suffix, func2)
         }

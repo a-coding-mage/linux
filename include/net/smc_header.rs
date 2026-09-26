@@ -100,7 +100,7 @@ pub struct smc_hs_ctrl {
  * callback when present; otherwise it evaluates to the initial value after
  * consuming tp.
  */
-#[cfg(feature = "CONFIG_SMC_HS_CTRL_BPF")]
+#[cfg(CONFIG_SMC_HS_CTRL_BPF)]
 #[macro_export]
 macro_rules! smc_call_hsbpf {
     ($init_val:expr, $tp:expr, $func:ident $(, $args:expr)*) => {{
@@ -113,7 +113,7 @@ macro_rules! smc_call_hsbpf {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_SMC_HS_CTRL_BPF"))]
+#[cfg(not(CONFIG_SMC_HS_CTRL_BPF))]
 #[macro_export]
 macro_rules! smc_call_hsbpf {
     ($init_val:expr, $tp:expr $(, $args:tt)*) => {{

@@ -37,7 +37,7 @@ pub unsafe fn trace_syscall_exit(regs: *mut pt_regs, ret: c_long) {
 }
 
 // CONFIG_AUDITSYSCALL conditionally includes this implementation in C.
-#[cfg(feature = "CONFIG_AUDITSYSCALL")]
+#[cfg(CONFIG_AUDITSYSCALL)]
 pub unsafe fn syscall_enter_audit(regs: *mut pt_regs) {
     let syscall: c_long = syscall_get_nr(current(), regs);
     let mut args: [c_ulong; 6] = [0; 6];

@@ -5,7 +5,7 @@
 pub static mut _debug_guardpage_minorder: ::core::ffi::c_uint = 0;
 
 pub static mut _debug_pagealloc_enabled_early: bool =
-    cfg!(feature = "CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT");
+    cfg!(CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT);
 
 // DEFINE_STATIC_KEY_FALSE(_debug_pagealloc_enabled);
 // DEFINE_STATIC_KEY_FALSE(_debug_guardpage_enabled);

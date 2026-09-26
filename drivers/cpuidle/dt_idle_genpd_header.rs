@@ -16,7 +16,7 @@ pub struct device {
 }
 
 // CONFIG_DT_IDLE_GENPD
-#[cfg(feature = "CONFIG_DT_IDLE_GENPD")]
+#[cfg(CONFIG_DT_IDLE_GENPD)]
 extern "C" {
     pub fn dt_idle_pd_free(pd: *mut generic_pm_domain);
 
@@ -34,11 +34,11 @@ extern "C" {
     pub fn dt_idle_detach_cpu(dev: *mut device);
 }
 
-#[cfg(not(feature = "CONFIG_DT_IDLE_GENPD"))]
+#[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
 pub unsafe fn dt_idle_pd_free(_pd: *mut generic_pm_domain) {}
 
-#[cfg(not(feature = "CONFIG_DT_IDLE_GENPD"))]
+#[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
 pub unsafe fn dt_idle_pd_alloc(
     _np: *mut device_node,
@@ -47,25 +47,25 @@ pub unsafe fn dt_idle_pd_alloc(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_DT_IDLE_GENPD"))]
+#[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
 pub unsafe fn dt_idle_pd_init_topology(_np: *mut device_node) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DT_IDLE_GENPD"))]
+#[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
 pub unsafe fn dt_idle_pd_remove_topology(_np: *mut device_node) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DT_IDLE_GENPD"))]
+#[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
 pub unsafe fn dt_idle_attach_cpu(_cpu: i32, _name: *const core::ffi::c_char) -> *mut device {
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_DT_IDLE_GENPD"))]
+#[cfg(not(CONFIG_DT_IDLE_GENPD))]
 #[inline]
 pub unsafe fn dt_idle_detach_cpu(_dev: *mut device) {}
 

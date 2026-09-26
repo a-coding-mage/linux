@@ -176,7 +176,7 @@ static XGENE_GPIO_OF_MATCH: [OfDeviceId; 2] = [
     OfDeviceId { compatible: core::ptr::null() },
 ];
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 static XGENE_GPIO_ACPI_MATCH: [AcpiDeviceId; 2] = [
     AcpiDeviceId { id: c"APMC0D14".as_ptr(), driver_data: 0 },
     AcpiDeviceId { id: core::ptr::null(), driver_data: 0 },

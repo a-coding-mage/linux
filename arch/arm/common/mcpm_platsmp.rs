@@ -47,11 +47,11 @@ unsafe fn mpidr_affinity_level(mpidr: u32, level: u32) -> u32 {
 struct smp_operations {
     smp_boot_secondary: Option<unsafe extern "C" fn(u32, *mut task_struct) -> i32>,
     smp_secondary_init: Option<unsafe extern "C" fn(u32)>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Option<unsafe extern "C" fn(u32) -> bool>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_can_disable: Option<unsafe extern "C" fn(u32) -> bool>,
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Option<unsafe extern "C" fn(u32)>,
 }
 
@@ -91,7 +91,7 @@ unsafe extern "C" fn mcpm_secondary_init(_cpu: u32) {
     mcpm_cpu_powered_up();
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn mcpm_cpu_kill(cpu: u32) -> bool {
     let (mut pcpu, mut pcluster): (u32, u32);
 
@@ -100,13 +100,13 @@ unsafe extern "C" fn mcpm_cpu_kill(cpu: u32) -> bool {
     mcpm_wait_for_cpu_powerdown(pcpu, pcluster) == 0
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn mcpm_cpu_can_disable(_cpu: u32) -> bool {
     /* We assume all CPUs may be shut down. */
     true
 }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" fn mcpm_cpu_die(_cpu: u32) {
     let mpidr: u32;
     let (pcpu, pcluster): (u32, u32);
@@ -121,11 +121,11 @@ unsafe extern "C" fn mcpm_cpu_die(_cpu: u32) {
 static mcpm_smp_ops: smp_operations = smp_operations {
     smp_boot_secondary: Some(mcpm_boot_secondary),
     smp_secondary_init: Some(mcpm_secondary_init),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_kill: Some(mcpm_cpu_kill),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_can_disable: Some(mcpm_cpu_can_disable),
-    #[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+    #[cfg(CONFIG_HOTPLUG_CPU)]
     cpu_die: Some(mcpm_cpu_die),
 };
 

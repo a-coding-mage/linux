@@ -100,7 +100,7 @@ pub struct virtio_device {
 }
 
 #[macro_export]
-macro_rules! dev_to_virtio { ($dev:expr) => { container_of_const!($dev, virtio_device, dev) }; }
+macro_rules! dev_to_virtio { ($dev:expr) => { container_of_const!($dev, virtio_device, $dev) }; }
 
 extern "C" {
     pub fn virtio_add_status(dev: *mut virtio_device, status: ::core::ffi::c_uint);

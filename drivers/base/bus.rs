@@ -37,19 +37,19 @@ pub type device_iter_t = unsafe extern "C" fn(*mut device, *mut c_void) -> c_int
 pub type device_match_t = unsafe extern "C" fn(*mut device, *const c_void) -> c_int;
 
 extern "C" {
-    fn subsys_get(*mut subsys_private) -> *mut subsys_private;
-    fn subsys_put(*mut subsys_private);
-    fn bus_find_device_by_name(*const bus_type, *mut device, *const c_char) -> *mut device;
-    fn get_device(*mut device) -> *mut device;
-    fn put_device(*mut device);
-    fn device_driver_detach(*mut device);
-    fn device_driver_attach(*mut device_driver, *mut device) -> c_int;
-    fn driver_match_device(*mut device_driver, *mut device) -> c_int;
-    fn klist_next(*mut klist_iter) -> *mut klist_node;
-    fn klist_prev(*mut klist_iter) -> *mut klist_node;
-    fn klist_iter_init_node(*mut klist, *mut klist_iter, *mut klist_node);
-    fn klist_iter_exit(*mut klist_iter);
-    fn fn_bus_rescan_devices_helper(*mut device, *mut c_void) -> c_int;
+    fn subsys_get(_: *mut subsys_private) -> *mut subsys_private;
+    fn subsys_put(_: *mut subsys_private);
+    fn bus_find_device_by_name(_: *const bus_type, _: *mut device, _: *const c_char) -> *mut device;
+    fn get_device(_: *mut device) -> *mut device;
+    fn put_device(_: *mut device);
+    fn device_driver_detach(_: *mut device);
+    fn device_driver_attach(_: *mut device_driver, _: *mut device) -> c_int;
+    fn driver_match_device(_: *mut device_driver, _: *mut device) -> c_int;
+    fn klist_next(_: *mut klist_iter) -> *mut klist_node;
+    fn klist_prev(_: *mut klist_iter) -> *mut klist_node;
+    fn klist_iter_init_node(_: *mut klist, _: *mut klist_iter, _: *mut klist_node);
+    fn klist_iter_exit(_: *mut klist_iter);
+    fn fn_bus_rescan_devices_helper(_: *mut device, _: *mut c_void) -> c_int;
 }
 
 // container_of, list traversal, sysfs, reference-counting, and logging
@@ -58,7 +58,7 @@ extern "C" {
     if bus.is_null() || bus_kset.is_null() { return core::ptr::null_mut(); }
     // The C implementation walks bus_kset->list under its spinlock and takes
     // a reference to the matching subsys_private.
-    extern "C" { fn __bus_to_subsys(*const bus_type) -> *mut subsys_private; }
+    extern "C" { fn __bus_to_subsys(_: *const bus_type) -> *mut subsys_private; }
     __bus_to_subsys(bus)
 }
 
@@ -76,7 +76,7 @@ extern "C" {
 pub unsafe extern "C" fn bus_create_file(bus: *const bus_type, attr: *mut c_void) -> c_int {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return -22; }
-    extern "C" { fn __bus_create_file(*mut subsys_private, *mut c_void) -> c_int; }
+    extern "C" { fn __bus_create_file(_: *mut subsys_private, _: *mut c_void) -> c_int; }
     let ret = __bus_create_file(sp, attr);
     subsys_put(sp);
     ret
@@ -85,7 +85,7 @@ pub unsafe extern "C" fn bus_create_file(bus: *const bus_type, attr: *mut c_void
 pub unsafe extern "C" fn bus_remove_file(bus: *const bus_type, attr: *mut c_void) {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return; }
-    extern "C" { fn __bus_remove_file(*mut subsys_private, *mut c_void); }
+    extern "C" { fn __bus_remove_file(_: *mut subsys_private, _: *mut c_void); }
     __bus_remove_file(sp, attr);
     subsys_put(sp);
 }
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn bus_for_each_dev(
 ) -> c_int {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return -22; }
-    extern "C" { fn __bus_for_each_dev(*mut subsys_private, *mut device, *mut c_void, device_iter_t) -> c_int; }
+    extern "C" { fn __bus_for_each_dev(_: *mut subsys_private, _: *mut device, _: *mut c_void, _: device_iter_t) -> c_int; }
     let ret = __bus_for_each_dev(sp, start, data, func);
     subsys_put(sp);
     ret
@@ -108,7 +108,7 @@ pub unsafe extern "C" fn bus_find_device(
 ) -> *mut device {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return core::ptr::null_mut(); }
-    extern "C" { fn __bus_find_device(*mut subsys_private, *mut device, *const c_void, device_match_t) -> *mut device; }
+    extern "C" { fn __bus_find_device(_: *mut subsys_private, _: *mut device, _: *const c_void, _: device_match_t) -> *mut device; }
     let ret = __bus_find_device(sp, start, data, func);
     subsys_put(sp);
     ret
@@ -120,7 +120,7 @@ pub unsafe extern "C" fn bus_find_device_reverse(
 ) -> *mut device {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return core::ptr::null_mut(); }
-    extern "C" { fn __bus_find_device_reverse(*mut subsys_private, *mut device, *const c_void, device_match_t) -> *mut device; }
+    extern "C" { fn __bus_find_device_reverse(_: *mut subsys_private, _: *mut device, _: *const c_void, _: device_match_t) -> *mut device; }
     let ret = __bus_find_device_reverse(sp, start, data, func);
     subsys_put(sp);
     ret
@@ -132,7 +132,7 @@ pub unsafe extern "C" fn bus_for_each_drv(
 ) -> c_int {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return -22; }
-    extern "C" { fn __bus_for_each_drv(*mut subsys_private, *mut device_driver, *mut c_void, unsafe extern "C" fn(*mut device_driver,*mut c_void)->c_int) -> c_int; }
+    extern "C" { fn __bus_for_each_drv(_: *mut subsys_private, _: *mut device_driver, _: *mut c_void, _: unsafe extern "C" fn(*mut device_driver,*mut c_void)->c_int) -> c_int; }
     let ret = __bus_for_each_drv(sp, start, data, func);
     subsys_put(sp);
     ret
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn bus_rescan_devices(bus: *const bus_type) -> c_int {
 }
 
 pub unsafe extern "C" fn device_reprobe(dev: *mut device) -> c_int {
-    extern "C" { fn __device_has_driver(*mut device) -> bool; }
+    extern "C" { fn __device_has_driver(_: *mut device) -> bool; }
     if __device_has_driver(dev) { device_driver_detach(dev); }
     fn_bus_rescan_devices_helper(dev, core::ptr::null_mut())
 }
@@ -156,7 +156,7 @@ pub unsafe extern "C" fn bus_is_registered(bus: *const bus_type) -> bool {
 pub unsafe extern "C" fn bus_get_dev_root(bus: *const bus_type) -> *mut device {
     let sp = bus_to_subsys(bus);
     if sp.is_null() { return core::ptr::null_mut(); }
-    extern "C" { fn __bus_get_dev_root(*mut subsys_private) -> *mut device; }
+    extern "C" { fn __bus_get_dev_root(_: *mut subsys_private) -> *mut device; }
     let dev = __bus_get_dev_root(sp);
     subsys_put(sp);
     dev

@@ -248,9 +248,9 @@ static charset2upper: [u8; 256] = [
 
 unsafe fn uni2char(uni: u16, out: *mut u8, boundlen: i32) -> i32
 {
-	const unsigned char *uni2charset;
-	unsigned char cl = uni & 0x00ff;
-	unsigned char ch = (uni & 0xff00) >> 8;
+	const core::ffi::c_uchar *uni2charset;
+	core::ffi::c_uchar cl = uni & 0x00ff;
+	core::ffi::c_uchar ch = (uni & 0xff00) >> 8;
 
 	if (boundlen <= 0)
 		return -(ENAMETOOLONG as i32);
@@ -272,11 +272,11 @@ unsafe fn char2uni(rawstring: *const u8, boundlen: i32, uni: *mut u16) -> i32
 }
 
 static mut table: nls_table = nls_table {
-	.charset	= "cp855",
-	.uni2char	= uni2char,
-	.char2uni	= char2uni,
-	.charset2lower	= charset2lower,
-	.charset2upper	= charset2upper,
+	charset: "cp855",
+	uni2char: uni2char,
+	char2uni: char2uni,
+	charset2lower: charset2lower,
+	charset2upper: charset2upper,
 };
 
 unsafe fn init_nls_cp855() -> i32

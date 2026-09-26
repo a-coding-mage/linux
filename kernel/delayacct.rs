@@ -7,14 +7,14 @@
 // Linux kernel dependencies supplied by other translation units.
 
 macro_rules! update_delay {
-    ($d:expr, $tsk:expr, $tmp:ident, $type:ident) => {{
-        $d.$type##_delay_max = $tsk.delays.$type##_delay_max;
-        $d.$type##_delay_min = $tsk.delays.$type##_delay_min;
-        $d.$type##_delay_max_ts.tv_sec = $tsk.delays.$type##_delay_max_ts.tv_sec;
-        $d.$type##_delay_max_ts.tv_nsec = $tsk.delays.$type##_delay_max_ts.tv_nsec;
-        $tmp = $d.$type##_delay_total + $tsk.delays.$type##_delay;
-        $d.$type##_delay_total = if $tmp < $d.$type##_delay_total { 0 } else { $tmp };
-        $d.$type##_count += $tsk.delays.$type##_count;
+    ($d:expr, $tsk:expr, $tmp:ident, $type:tt) => {{
+        $d.::kernel::macros::paste!([<$type _delay_max>]) = $tsk.delays.::kernel::macros::paste!([<$type _delay_max>]);
+        $d.::kernel::macros::paste!([<$type _delay_min>]) = $tsk.delays.::kernel::macros::paste!([<$type _delay_min>]);
+        $d.::kernel::macros::paste!([<$type _delay_max_ts>]).tv_sec = $tsk.delays.::kernel::macros::paste!([<$type _delay_max_ts>]).tv_sec;
+        $d.::kernel::macros::paste!([<$type _delay_max_ts>]).tv_nsec = $tsk.delays.::kernel::macros::paste!([<$type _delay_max_ts>]).tv_nsec;
+        $tmp = $d.::kernel::macros::paste!([<$type _delay_total>]) + $tsk.delays.::kernel::macros::paste!([<$type _delay>]);
+        $d.::kernel::macros::paste!([<$type _delay_total>]) = if $tmp < $d.::kernel::macros::paste!([<$type _delay_total>]) { 0 } else { $tmp };
+        $d.::kernel::macros::paste!([<$type _count>]) += $tsk.delays.::kernel::macros::paste!([<$type _count>]);
     }};
 }
 
@@ -90,7 +90,7 @@ unsafe fn delayacct_end(lock: *mut raw_spinlock_t, start: *mut u64, total: *mut 
         *total += ns as u64;
         *count += 1;
         if ns as u64 > *max { *max = ns as u64; ktime_get_real_ts64(ts); }
-        if *min == 0 || ns as u64 < *min { *min = ns as u64; }
+        if *min == 0 || (ns as u64) < *min { *min = ns as u64; }
         raw_spin_unlock_irqrestore(lock, flags);
     }
 }
@@ -159,7 +159,7 @@ pub unsafe fn __delayacct_irq(task: *mut task_struct, delta: u32) {
     let mut flags: unsigned_long = 0; raw_spin_lock_irqsave(&mut (*(*task).delays).lock, &mut flags);
     (*(*task).delays).irq_delay += delta as u64; (*(*task).delays).irq_count += 1;
     if delta as u64 > (*(*task).delays).irq_delay_max { (*(*task).delays).irq_delay_max = delta as u64; ktime_get_real_ts64(&mut (*(*task).delays).irq_delay_max_ts); }
-    if delta != 0 && ((*(*task).delays).irq_delay_min == 0 || delta as u64 < (*(*task).delays).irq_delay_min) { (*(*task).delays).irq_delay_min = delta as u64; }
+    if delta != 0 && ((*(*task).delays).irq_delay_min == 0 || (delta as u64) < (*(*task).delays).irq_delay_min) { (*(*task).delays).irq_delay_min = delta as u64; }
     raw_spin_unlock_irqrestore(&mut (*(*task).delays).lock, flags);
 }
 

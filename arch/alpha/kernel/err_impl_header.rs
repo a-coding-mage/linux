@@ -74,15 +74,15 @@ macro_rules! SUBPACKET_HANDLER_INIT {
  * provide Rust constants named <field>__S and <field>__M. */
 #[macro_export]
 macro_rules! EXTRACT {
-    ($u:expr, $f:ident) => {
-        (($u >> $f##__S) & $f##__M)
+    ($u:expr, $f:tt) => {
+        (($u >> ::kernel::macros::paste!([<$f __S>])) & ::kernel::macros::paste!([<$f __M>]))
     };
 }
 
 #[macro_export]
 macro_rules! GEN_MASK {
-    ($f:ident) => {
-        (($f##__M as u64) << $f##__S)
+    ($f:tt) => {
+        ((::kernel::macros::paste!([<$f __M>]) as u64) << ::kernel::macros::paste!([<$f __S>]))
     };
 }
 

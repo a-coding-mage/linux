@@ -12,7 +12,7 @@
 #[no_mangle]
 pub static mut asid_cache: ::core::ffi::c_ulong = ASID_USER_FIRST;
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 unsafe fn init_pmd(vaddr: ::core::ffi::c_ulong, mut n_pages: ::core::ffi::c_ulong) -> *mut pte_t {
     let mut pmd: *mut pmd_t = pmd_off_k(vaddr);
     let pte: *mut pte_t;
@@ -56,7 +56,7 @@ unsafe fn init_pmd(vaddr: ::core::ffi::c_ulong, mut n_pages: ::core::ffi::c_ulon
     pte
 }
 
-#[cfg(feature = "CONFIG_HIGHMEM")]
+#[cfg(CONFIG_HIGHMEM)]
 unsafe fn fixedrange_init() {
     BUILD_BUG_ON!(FIXADDR_START < TLBTEMP_BASE_1 + TLBTEMP_SIZE);
     init_pmd(FIXADDR_START, __end_of_fixed_addresses);
@@ -64,7 +64,7 @@ unsafe fn fixedrange_init() {
 
 pub unsafe fn paging_init() {
     // #ifdef CONFIG_HIGHMEM
-    #[cfg(feature = "CONFIG_HIGHMEM")]
+    #[cfg(CONFIG_HIGHMEM)]
     {
         fixedrange_init();
         pkmap_page_table = init_pmd(PKMAP_BASE, LAST_PKMAP);
@@ -110,7 +110,7 @@ pub unsafe fn init_kio() {
     #[cfg(all(
         feature = "XCHAL_HAVE_PTP_MMU",
         feature = "XCHAL_HAVE_SPANNING_WAY",
-        feature = "CONFIG_USE_OF"
+        CONFIG_USE_OF
     ))]
     {
         /*

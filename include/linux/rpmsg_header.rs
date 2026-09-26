@@ -114,7 +114,7 @@ pub unsafe fn cpu_to_rpmsg64(rpdev: *mut rpmsg_device, val: u64) -> __rpmsg64 {
 }
 
 // The C header selects these declarations when CONFIG_RPMSG is enabled.
-#[cfg(feature = "CONFIG_RPMSG")]
+#[cfg(CONFIG_RPMSG)]
 extern "C" {
     pub fn rpmsg_register_device_override(rpdev: *mut rpmsg_device, driver_override: *const core::ffi::c_char) -> i32;
     pub fn rpmsg_register_device(rpdev: *mut rpmsg_device) -> i32;
@@ -134,33 +134,33 @@ extern "C" {
 
 // When CONFIG_RPMSG is disabled, the C inline functions warn and return -ENXIO
 // (or NULL for rpmsg_create_ept); these stubs preserve that interface.
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_register_device_override(_: *mut rpmsg_device, _: *const core::ffi::c_char) -> i32 { -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_register_device(_: *mut rpmsg_device) -> i32 { -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_unregister_device(_: *mut device, _: *mut rpmsg_channel_info) -> i32 { WARN_ON(1); -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn __register_rpmsg_driver(_: *mut rpmsg_driver, _: *mut module) -> i32 { WARN_ON(1); -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn unregister_rpmsg_driver(_: *mut rpmsg_driver) { WARN_ON(1); }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_destroy_ept(_: *mut rpmsg_endpoint) { WARN_ON(1); }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_create_ept(_: *mut rpmsg_device, _: rpmsg_rx_cb_t, _: *mut core::ffi::c_void, _: rpmsg_channel_info) -> *mut rpmsg_endpoint { WARN_ON(1); core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_send(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32) -> i32 { WARN_ON(1); -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_sendto(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32, _: u32) -> i32 { WARN_ON(1); -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_trysend(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32) -> i32 { WARN_ON(1); -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_trysendto(_: *mut rpmsg_endpoint, _: *const core::ffi::c_void, _: i32, _: u32) -> i32 { WARN_ON(1); -ENXIO }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_poll(_: *mut rpmsg_endpoint, _: *mut file, _: *mut poll_table) -> __poll_t { WARN_ON(1); 0 }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_get_mtu(_: *mut rpmsg_endpoint) -> isize { WARN_ON(1); -ENXIO as isize }
-#[cfg(not(feature = "CONFIG_RPMSG"))]
+#[cfg(not(CONFIG_RPMSG))]
 pub unsafe fn rpmsg_set_flow_control(_: *mut rpmsg_endpoint, _: bool, _: u32) -> i32 { WARN_ON(1); -ENXIO }
 
 // register_rpmsg_driver(drv) expands to __register_rpmsg_driver(drv, THIS_MODULE).

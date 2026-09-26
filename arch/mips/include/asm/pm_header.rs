@@ -71,7 +71,7 @@
 /// remainder of the state can be restored, including EVA segmentation state.
 #[repr(C)]
 pub struct mips_static_suspend_state {
-    #[cfg(feature = "CONFIG_EVA")]
+    #[cfg(CONFIG_EVA)]
     pub segctl: [::core::ffi::c_ulong; 3],
     pub sp: ::core::ffi::c_ulong,
 }

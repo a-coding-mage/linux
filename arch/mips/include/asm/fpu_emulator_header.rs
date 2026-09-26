@@ -13,7 +13,7 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // left external, as in the original header.
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[repr(C)]
 pub struct mips_fpu_emulator_stats {
     pub emulated: ::core::ffi::c_ulong,
@@ -88,12 +88,12 @@ pub struct mips_fpu_emulator_stats {
     pub trunc_l_s: ::core::ffi::c_ulong, pub trunc_l_d: ::core::ffi::c_ulong,
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub static mut fpuemustats: mips_fpu_emulator_stats;
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[macro_export]
 macro_rules! MIPS_FPU_EMU_INC_STATS {
     ($m:ident) => {{
@@ -107,7 +107,7 @@ macro_rules! MIPS_FPU_EMU_INC_STATS {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[macro_export]
 macro_rules! MIPS_FPU_EMU_INC_STATS {
     ($m:ident) => {{}};

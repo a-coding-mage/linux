@@ -61,13 +61,25 @@ extern "C" {
     fn str_enabled_disabled(value: u32) -> *const c_char;
 }
 
-const N_DIV_RD: fn(u32) -> u32 = |src| src & 0x000001ff;
-const SC_N_DIV_RD: fn(u32) -> u32 = |src| src & 0x0000007f;
-const SC_OUTDIV2: fn(u32) -> u32 = |src| (src & 0x00000100) >> 8;
-const CLKR_RD: fn(u32) -> u32 = |src| (src & 0x07000000) >> 24;
-const CLKOD_RD: fn(u32) -> u32 = |src| (src & 0x00300000) >> 20;
+const fn N_DIV_RD(src: u32) -> u32 {
+    src & 0x000001ff
+}
+const fn SC_N_DIV_RD(src: u32) -> u32 {
+    src & 0x0000007f
+}
+const fn SC_OUTDIV2(src: u32) -> u32 {
+    (src & 0x00000100) >> 8
+}
+const fn CLKR_RD(src: u32) -> u32 {
+    (src & 0x07000000) >> 24
+}
+const fn CLKOD_RD(src: u32) -> u32 {
+    (src & 0x00300000) >> 20
+}
 const REGSPEC_RESET_F1_MASK: u32 = 0x00010000;
-const CLKF_RD: fn(u32) -> u32 = |src| src & 0x000001ff;
+const fn CLKF_RD(src: u32) -> u32 {
+    src & 0x000001ff
+}
 const XGENE_CLK_DRIVER_VER: &str = "0.1";
 
 static mut clk_lock: spinlock_t = spinlock_t { _private: [] };

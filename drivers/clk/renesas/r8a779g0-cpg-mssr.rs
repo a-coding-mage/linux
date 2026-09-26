@@ -286,21 +286,21 @@ unsafe fn r8a779g0_cpg_mssr_init(dev: *mut device) -> i32
 
 const r8a779g0_cpg_mssr_info: cpg_mssr_info = 
 	/* Core Clocks */
-    .core_clks = r8a779g0_core_clks,
-	.num_core_clks = r8a779g0_core_clks.len(),
-	.last_dt_core_clk = LAST_DT_CORE_CLK,
-	.num_total_core_clks = MOD_CLK_BASE,
+    core_clks: r8a779g0_core_clks,
+	num_core_clks: r8a779g0_core_clks.len(),
+	last_dt_core_clk: LAST_DT_CORE_CLK,
+	num_total_core_clks: MOD_CLK_BASE,
 
 	/* Module Clocks */
-	.mod_clks = r8a779g0_mod_clks,
-	.num_mod_clks = r8a779g0_mod_clks.len(),
-	.num_hw_mod_clks = 30 * 32,
+	mod_clks: r8a779g0_mod_clks,
+	num_mod_clks: r8a779g0_mod_clks.len(),
+	num_hw_mod_clks: 30 * 32,
 
 	/* Callbacks */
-	.init = r8a779g0_cpg_mssr_init,
-	.cpg_clk_register = rcar_gen4_cpg_clk_register,
+	init: r8a779g0_cpg_mssr_init,
+	cpg_clk_register: rcar_gen4_cpg_clk_register,
 
-	.reg_layout = CLK_REG_LAYOUT_RCAR_GEN4,
+	reg_layout: CLK_REG_LAYOUT_RCAR_GEN4,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

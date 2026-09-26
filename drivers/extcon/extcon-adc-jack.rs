@@ -150,7 +150,7 @@ unsafe extern "C" fn adc_jack_remove(pdev: *mut platform_device) {
     cancel_work_sync(&mut (*data).handler.work);
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn adc_jack_suspend(dev: *mut device) -> i32 {
     let data = dev_get_drvdata(dev);
     cancel_delayed_work_sync(&mut (*data).handler);
@@ -158,7 +158,7 @@ unsafe extern "C" fn adc_jack_suspend(dev: *mut device) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_PM_SLEEP")]
+#[cfg(CONFIG_PM_SLEEP)]
 unsafe extern "C" fn adc_jack_resume(dev: *mut device) -> i32 {
     let data = dev_get_drvdata(dev);
     if device_may_wakeup((*data).dev) { disable_irq_wake((*data).irq); }

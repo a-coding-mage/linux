@@ -179,7 +179,7 @@ pub unsafe fn tpm_read_log_acpi(chip: *mut tpm_chip) -> i32 {
             return -ENODEV;
         }
 
-        if (*tbl).header.length as usize < core::mem::size_of::<acpi_table_tpm2>() + core::mem::size_of::<acpi_tpm2_phy>() {
+        if ((*tbl).header.length as usize) < core::mem::size_of::<acpi_table_tpm2>() + core::mem::size_of::<acpi_tpm2_phy>() {
             acpi_put_table(tbl as *mut acpi_table_header);
             return -ENODEV;
         }

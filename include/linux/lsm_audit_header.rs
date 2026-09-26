@@ -122,7 +122,7 @@ pub union common_audit_data_lsm_data {
 
 /* C aliases: v4info expands to fam.v4, and v6info expands to fam.v6. */
 
-#[cfg(feature = "CONFIG_AUDIT")]
+#[cfg(CONFIG_AUDIT)]
 extern "C" {
     pub fn ipv4_skb_to_auditdata(skb: *mut sk_buff, ad: *mut common_audit_data, proto: *mut u8) -> ::core::ffi::c_int;
     /* IS_ENABLED(CONFIG_IPV6) conditional declaration. */
@@ -135,7 +135,7 @@ extern "C" {
     pub fn audit_log_lsm_data(ab: *mut audit_buffer, a: *const common_audit_data);
 }
 
-#[cfg(not(feature = "CONFIG_AUDIT"))]
+#[cfg(not(CONFIG_AUDIT))]
 pub unsafe fn common_lsm_audit(
     _a: *mut common_audit_data,
     _pre_audit: Option<unsafe extern "C" fn(*mut audit_buffer, *mut ::core::ffi::c_void)>,
@@ -143,7 +143,7 @@ pub unsafe fn common_lsm_audit(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_AUDIT"))]
+#[cfg(not(CONFIG_AUDIT))]
 pub unsafe fn audit_log_lsm_data(_ab: *mut audit_buffer, _a: *const common_audit_data) {
 }
 

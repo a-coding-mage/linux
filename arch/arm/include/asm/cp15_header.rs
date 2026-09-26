@@ -21,9 +21,9 @@ pub const CR_RR: usize = 1 << 14; /* Round Robin cache replacement */
 pub const CR_L4: usize = 1 << 15; /* LDR pc can set T bit */
 pub const CR_DT: usize = 1 << 16;
 // CONFIG_MMU selects CR_HA; otherwise CR_BR is provided.
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const CR_HA: usize = 1 << 17; /* Hardware management of Access Flag */
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const CR_BR: usize = 1 << 17; /* MPU Background region enable (PMSA) */
 pub const CR_IT: usize = 1 << 18;
 pub const CR_ST: usize = 1 << 19;
@@ -51,12 +51,12 @@ pub unsafe fn vectors_high() -> usize { get_cr() & CR_V }
 #[inline]
 pub const fn vectors_high() -> usize { 0 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 extern "C" {
     pub static mut cr_alignment: usize; /* defined in entry-armv.S */
 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 #[inline]
 pub unsafe fn get_cr() -> usize {
     let val: usize;
@@ -64,14 +64,14 @@ pub unsafe fn get_cr() -> usize {
     val
 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 #[inline]
 pub unsafe fn set_cr(val: usize) {
     core::arch::asm!("mcr p15, 0, {0}, c1, c0, 0 // set CR", in(reg) val, options(nomem, nostack));
     isb();
 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 #[inline]
 pub unsafe fn get_auxcr() -> u32 {
     let val: u32;
@@ -79,7 +79,7 @@ pub unsafe fn get_auxcr() -> u32 {
     val
 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 #[inline]
 pub unsafe fn set_auxcr(val: u32) {
     core::arch::asm!("mcr p15, 0, {0}, c1, c0, 1 // set AUXCR", in(reg) val, options(nomem, nostack));
@@ -90,7 +90,7 @@ pub const fn CPACC_FULL(n: usize) -> u32 { 3 << (n * 2) }
 pub const fn CPACC_SVC(n: usize) -> u32 { 1 << (n * 2) }
 pub const fn CPACC_DISABLE(_n: usize) -> u32 { 0 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 #[inline]
 pub unsafe fn get_copro_access() -> u32 {
     let val: u32;
@@ -98,17 +98,17 @@ pub unsafe fn get_copro_access() -> u32 {
     val
 }
 
-#[cfg(feature = "CONFIG_CPU_CP15")]
+#[cfg(CONFIG_CPU_CP15)]
 #[inline]
 pub unsafe fn set_copro_access(val: u32) {
     core::arch::asm!("mcr p15, 0, {0}, c1, c0, 2 // set copro access", in(reg) val, options(nomem, nostack));
     isb();
 }
 
-#[cfg(not(feature = "CONFIG_CPU_CP15"))]
+#[cfg(not(CONFIG_CPU_CP15))]
 pub const cr_alignment: usize = 0;
 
-#[cfg(not(feature = "CONFIG_CPU_CP15"))]
+#[cfg(not(CONFIG_CPU_CP15))]
 #[inline]
 pub const fn get_cr() -> usize { 0 }
 

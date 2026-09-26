@@ -114,7 +114,7 @@ pub unsafe fn dlmunlock(dlm: *mut dlm_ctxt, lksb: *mut dlm_lockstatus, mut flags
     let lock = (*lksb).lockid; let res = (*lock).lockres; dlm_lock_get(lock); dlm_lockres_get(res);
     loop {
         let is_master = ((*res).owner == (*dlm).node_num) as i32;
-        if flags & LKM_VALBLK != 0 && (*lock).ml.type != LKM_EXMODE { flags &= !LKM_VALBLK; }
+        if flags & LKM_VALBLK != 0 && (*lock).ml.r#type != LKM_EXMODE { flags &= !LKM_VALBLK; }
         let mut call_ast = 0; let status = if is_master != 0 { dlmunlock_master(dlm,res,lock,lksb,flags,&mut call_ast) } else { dlmunlock_remote(dlm,res,lock,lksb,flags,&mut call_ast) };
         if status == DLM_RECOVERING || status == DLM_MIGRATING || status == DLM_FORWARD || status == DLM_NOLOCKMGR { msleep(50); continue; }
         if call_ast != 0 { unlockast(data, status); }

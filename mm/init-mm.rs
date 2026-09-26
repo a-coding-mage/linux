@@ -44,10 +44,10 @@ pub enum mm_struct {}
 //     .page_table_lock = __SPIN_LOCK_UNLOCKED(init_mm.page_table_lock),
 //     .arg_lock = __SPIN_LOCK_UNLOCKED(init_mm.arg_lock),
 //     .mmlist = LIST_HEAD_INIT(init_mm.mmlist),
-//     #[cfg(feature = "CONFIG_PER_VMA_LOCK")]
+//     #[cfg(CONFIG_PER_VMA_LOCK)]
 //     .vma_writer_wait = __RCUWAIT_INITIALIZER(init_mm.vma_writer_wait),
 //     .mm_lock_seq = SEQCNT_ZERO(init_mm.mm_lock_seq),
-//     #[cfg(feature = "CONFIG_SCHED_MM_CID")]
+//     #[cfg(CONFIG_SCHED_MM_CID)]
 //     .mm_cid.lock = __RAW_SPIN_LOCK_UNLOCKED(init_mm.mm_cid.lock),
 //     .flexible_array = MM_STRUCT_FLEXIBLE_ARRAY_INIT,
 //     INIT_MM_CONTEXT(init_mm)

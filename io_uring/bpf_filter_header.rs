@@ -22,7 +22,7 @@ pub struct io_uring_bpf {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_IO_URING_BPF")]
+#[cfg(CONFIG_IO_URING_BPF)]
 extern "C" {
     pub fn __io_uring_run_bpf_filters(
         filters: *mut *mut io_bpf_filter,
@@ -42,7 +42,7 @@ extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_IO_URING_BPF")]
+#[cfg(CONFIG_IO_URING_BPF)]
 #[inline]
 pub unsafe fn io_uring_run_bpf_filters(
     filters: *mut *mut io_bpf_filter,
@@ -57,7 +57,7 @@ pub unsafe fn io_uring_run_bpf_filters(
 
 // CONFIG_IO_URING_BPF disabled: the following inline definitions are the
 // corresponding fallback declarations from the C header.
-#[cfg(not(feature = "CONFIG_IO_URING_BPF"))]
+#[cfg(not(CONFIG_IO_URING_BPF))]
 #[inline]
 pub unsafe fn io_register_bpf_filter(
     _res: *mut io_restriction,
@@ -66,7 +66,7 @@ pub unsafe fn io_register_bpf_filter(
     -22 // -EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_IO_URING_BPF"))]
+#[cfg(not(CONFIG_IO_URING_BPF))]
 #[inline]
 pub unsafe fn io_uring_run_bpf_filters(
     _filters: *mut *mut io_bpf_filter,
@@ -75,11 +75,11 @@ pub unsafe fn io_uring_run_bpf_filters(
     0
 }
 
-#[cfg(not(feature = "CONFIG_IO_URING_BPF"))]
+#[cfg(not(CONFIG_IO_URING_BPF))]
 #[inline]
 pub unsafe fn io_put_bpf_filters(_res: *mut io_restriction) {}
 
-#[cfg(not(feature = "CONFIG_IO_URING_BPF"))]
+#[cfg(not(CONFIG_IO_URING_BPF))]
 #[inline]
 pub unsafe fn io_bpf_filter_clone(
     _dst: *mut io_restriction,

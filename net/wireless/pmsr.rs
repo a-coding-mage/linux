@@ -68,7 +68,7 @@ unsafe fn pmsr_parse_peer(rdev: *mut cfg80211_registered_device, peer: *mut nlat
     if !req[NL80211_PMSR_REQ_ATTR_GET_AP_TSF as usize].is_null() { (*out).report_ap_tsf = true; }
     if (*out).report_ap_tsf && !(*rdev).wiphy.pmsr_capa.report_ap_tsf { NL_SET_ERR_MSG_ATTR((*info).extack, req[NL80211_PMSR_REQ_ATTR_GET_AP_TSF as usize], "reporting AP TSF is not supported"); return -EINVAL; }
     let mut have = false; let mut treq = core::ptr::null_mut(); let mut rem = 0;
-    nla_for_each_nested!(treq, req[NL80211_PMSR_REQ_ATTR_DATA as usize], rem) { if have { NL_SET_ERR_MSG_ATTR((*info).extack, treq, "multiple measurement types in request data"); return -EINVAL; } have = true; match nla_type(treq) { NL80211_PMSR_TYPE_FTM => err = pmsr_parse_ftm(rdev, treq, out, info), _ => { NL_SET_ERR_MSG_ATTR((*info).extack, treq, "unsupported measurement type"); err = -EINVAL; } } if err != 0 { return err; } }
+    nla_for_each_nested!(treq, req[NL80211_PMSR_REQ_ATTR_DATA as usize], rem, { if have { NL_SET_ERR_MSG_ATTR((*info).extack, treq, "multiple measurement types in request data"); return -EINVAL; } have = true; match nla_type(treq) { NL80211_PMSR_TYPE_FTM => err = pmsr_parse_ftm(rdev, treq, out, info), _ => { NL_SET_ERR_MSG_ATTR((*info).extack, treq, "unsupported measurement type"); err = -EINVAL; } } if err != 0 { return err; } });
     if !have { NL_SET_ERR_MSG_ATTR((*info).extack, req[NL80211_PMSR_REQ_ATTR_DATA as usize], "missing measurement type in request data"); return -EINVAL; } 0
 }
 

@@ -43,7 +43,7 @@ unsafe fn fail_task(_attr: *mut fault_attr, task: *mut task_struct) -> bool {
     in_task() && (*task).make_it_fail
 }
 
-#[cfg(feature = "CONFIG_FAULT_INJECTION_STACKTRACE_FILTER")]
+#[cfg(CONFIG_FAULT_INJECTION_STACKTRACE_FILTER)]
 unsafe fn fail_stacktrace(attr: *mut fault_attr) -> bool {
     let depth = (*attr).stacktrace_depth;
     let mut entries = [0usize; MAX_STACK_TRACE_DEPTH];
@@ -57,7 +57,7 @@ unsafe fn fail_stacktrace(attr: *mut fault_attr) -> bool {
     found
 }
 
-#[cfg(not(feature = "CONFIG_FAULT_INJECTION_STACKTRACE_FILTER"))]
+#[cfg(not(CONFIG_FAULT_INJECTION_STACKTRACE_FILTER))]
 unsafe fn fail_stacktrace(_attr: *mut fault_attr) -> bool { true }
 
 pub unsafe fn should_fail_ex(attr: *mut fault_attr, size: c_long, flags: c_int) -> bool {
@@ -97,7 +97,7 @@ unsafe fn should_fail_finish(attr: *mut fault_attr, flags: c_int) -> bool {
 
 pub unsafe fn should_fail(attr: *mut fault_attr, size: c_long) -> bool { should_fail_ex(attr, size, 0) }
 
-#[cfg(feature = "CONFIG_FAULT_INJECTION_DEBUG_FS")]
+#[cfg(CONFIG_FAULT_INJECTION_DEBUG_FS)]
 pub unsafe fn fault_create_debugfs_attr(name: *const c_char, parent: *mut dentry, attr: *mut fault_attr) -> *mut dentry {
     let mode = S_IFREG | S_IRUSR | S_IWUSR;
     let dir = debugfs_create_dir(name, parent);
@@ -113,48 +113,48 @@ pub unsafe fn fault_create_debugfs_attr(name: *const c_char, parent: *mut dentry
     dir
 }
 
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_uint_attr_show(val: u32, page: *mut c_char) -> isize { snprintf(page, PAGE_SIZE, b"%u\n\0".as_ptr() as _, val) }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_ulong_attr_show(val: c_ulong, page: *mut c_char) -> isize { snprintf(page, PAGE_SIZE, b"%lu\n\0".as_ptr() as _, val) }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_bool_attr_show(val: bool, page: *mut c_char) -> isize { snprintf(page, PAGE_SIZE, b"%u\n\0".as_ptr() as _, val as u32) }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_atomic_t_attr_show(val: atomic_t, page: *mut c_char) -> isize { snprintf(page, PAGE_SIZE, b"%d\n\0".as_ptr() as _, atomic_read(&val)) }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_uint_attr_store(val: *mut u32, page: *const c_char, count: usize) -> isize {
     let mut tmp = 0; let result = kstrtouint(page, 0, &mut tmp); if result < 0 { return result as isize; } *val = tmp; count as isize
 }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_ulong_attr_store(val: *mut c_ulong, page: *const c_char, count: usize) -> isize {
     let mut tmp = 0; let result = kstrtoul(page, 0, &mut tmp); if result < 0 { return result as isize; } *val = tmp; count as isize
 }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_bool_attr_store(val: *mut bool, page: *const c_char, count: usize) -> isize {
     let mut tmp = false; let result = kstrtobool(page, &mut tmp); if result < 0 { return result as isize; } *val = tmp; count as isize
 }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 unsafe fn fault_atomic_t_attr_store(val: *mut atomic_t, page: *const c_char, count: usize) -> isize {
     let mut tmp = 0; let result = kstrtoint(page, 0, &mut tmp); if result < 0 { return result as isize; } atomic_set(val, tmp); count as isize
 }
 
-#[cfg(feature = "CONFIG_FAULT_INJECTION_STACKTRACE_FILTER")]
+#[cfg(CONFIG_FAULT_INJECTION_STACKTRACE_FILTER)]
 unsafe fn fault_stacktrace_depth_show(item: *mut config_item, page: *mut c_char) -> isize {
     fault_ulong_attr_show((*to_fault_config(item)).attr.stacktrace_depth, page)
 }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_STACKTRACE_FILTER")]
+#[cfg(CONFIG_FAULT_INJECTION_STACKTRACE_FILTER)]
 unsafe fn fault_stacktrace_depth_store(item: *mut config_item, page: *const c_char, count: usize) -> isize {
     let mut tmp = 0; let result = kstrtoul(page, 0, &mut tmp); if result < 0 { return result as isize; }
     (*to_fault_config(item)).attr.stacktrace_depth = core::cmp::min(tmp, MAX_STACK_TRACE_DEPTH as c_ulong); count as isize
 }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_STACKTRACE_FILTER")]
+#[cfg(CONFIG_FAULT_INJECTION_STACKTRACE_FILTER)]
 unsafe fn fault_xul_attr_show(val: c_ulong, page: *mut c_char) -> isize {
     snprintf(page, PAGE_SIZE, if core::mem::size_of::<c_ulong>() == 4 { b"0x%08lx\n\0".as_ptr() } else { b"0x%016lx\n\0".as_ptr() } as _, val)
 }
-#[cfg(feature = "CONFIG_FAULT_INJECTION_STACKTRACE_FILTER")]
+#[cfg(CONFIG_FAULT_INJECTION_STACKTRACE_FILTER)]
 unsafe fn fault_xul_attr_store(val: *mut c_ulong, page: *const c_char, count: usize) -> isize { fault_ulong_attr_store(val, page, count) }
 
-#[cfg(feature = "CONFIG_FAULT_INJECTION_CONFIGFS")]
+#[cfg(CONFIG_FAULT_INJECTION_CONFIGFS)]
 pub unsafe fn fault_config_init(config: *mut fault_config, name: *const c_char) {
     prandom_init_once(&mut FAULT_RND_STATE as *mut _ as *mut c_void);
     config_group_init_type_name(&mut (*config).group, name, &fault_config_type);

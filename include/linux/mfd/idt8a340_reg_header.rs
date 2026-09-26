@@ -229,28 +229,28 @@ pub const SYS_DPLL_CTRL: u16 = 0xc800u16;
 
 pub const DPLL_PHASE_0: u16 = 0xc818u16;
 /* Signed 42-bit FFO in units of 2^(-53) */
-#define DPLL_WR_PHASE                     0x0000
-#define DPLL_PHASE_1                      0xc81c
-#define DPLL_PHASE_2                      0xc820
-#define DPLL_PHASE_3                      0xc824
-#define DPLL_PHASE_4                      0xc828
-#define DPLL_PHASE_5                      0xc82c
-#define DPLL_PHASE_6                      0xc830
-#define DPLL_PHASE_7                      0xc834
+pub const DPLL_WR_PHASE: u32 = 0x0000;
+pub const DPLL_PHASE_1: u32 = 0xc81c;
+pub const DPLL_PHASE_2: u32 = 0xc820;
+pub const DPLL_PHASE_3: u32 = 0xc824;
+pub const DPLL_PHASE_4: u32 = 0xc828;
+pub const DPLL_PHASE_5: u32 = 0xc82c;
+pub const DPLL_PHASE_6: u32 = 0xc830;
+pub const DPLL_PHASE_7: u32 = 0xc834;
 
-#define DPLL_FREQ_0                       0xc838
+pub const DPLL_FREQ_0: u32 = 0xc838;
 /* Signed 42-bit FFO in units of 2^(-53) */
-#define DPLL_WR_FREQ                      0x0000
-#define DPLL_FREQ_1                       0xc840
-#define DPLL_FREQ_2                       0xc848
-#define DPLL_FREQ_3                       0xc850
-#define DPLL_FREQ_4                       0xc858
-#define DPLL_FREQ_5                       0xc860
-#define DPLL_FREQ_6                       0xc868
-#define DPLL_FREQ_7                       0xc870
+pub const DPLL_WR_FREQ: u32 = 0x0000;
+pub const DPLL_FREQ_1: u32 = 0xc840;
+pub const DPLL_FREQ_2: u32 = 0xc848;
+pub const DPLL_FREQ_3: u32 = 0xc850;
+pub const DPLL_FREQ_4: u32 = 0xc858;
+pub const DPLL_FREQ_5: u32 = 0xc860;
+pub const DPLL_FREQ_6: u32 = 0xc868;
+pub const DPLL_FREQ_7: u32 = 0xc870;
 
-#define DPLL_PHASE_PULL_IN_0              0xc880
-#define PULL_IN_OFFSET                    0x0000 /* Signed 32 bit */
+pub const DPLL_PHASE_PULL_IN_0: u32 = 0xc880;
+pub const PULL_IN_OFFSET: u32 = 0x0000;  /* Signed 32 bit */
 pub const PULL_IN_SLOPE_LIMIT: u16 = 0x0004u16 /* Unsigned 24 bit */;
 pub const PULL_IN_CTRL: u16 = 0x0007u16;
 pub const DPLL_PHASE_PULL_IN_1: u16 = 0xc888u16;
@@ -302,369 +302,369 @@ pub const OUT_DIV_MUX: u16 = 0xca12u16;
 pub const OUTPUT_0: u16 = 0xca14u16;
 pub const OUTPUT_0_V520: u16 = 0xca20u16;
 /* FOD frequency output divider value */
-#define OUT_DIV                           0x0000
-#define OUT_DUTY_CYCLE_HIGH               0x0004
-#define OUT_CTRL_0                        0x0008
-#define OUT_CTRL_1                        0x0009
+pub const OUT_DIV: u32 = 0x0000;
+pub const OUT_DUTY_CYCLE_HIGH: u32 = 0x0004;
+pub const OUT_CTRL_0: u32 = 0x0008;
+pub const OUT_CTRL_1: u32 = 0x0009;
 /* Phase adjustment in FOD cycles */
-#define OUT_PHASE_ADJ                     0x000c
-#define OUTPUT_1                          0xca24
-#define OUTPUT_1_V520                     0xca30
-#define OUTPUT_2                          0xca34
-#define OUTPUT_2_V520                     0xca40
-#define OUTPUT_3                          0xca44
-#define OUTPUT_3_V520                     0xca50
-#define OUTPUT_4                          0xca54
-#define OUTPUT_4_V520                     0xca60
-#define OUTPUT_5                          0xca64
-#define OUTPUT_5_V520                     0xca80
-#define OUTPUT_6                          0xca80
-#define OUTPUT_6_V520                     0xca90
-#define OUTPUT_7                          0xca90
-#define OUTPUT_7_V520                     0xcaa0
-#define OUTPUT_8                          0xcaa0
-#define OUTPUT_8_V520                     0xcab0
-#define OUTPUT_9                          0xcab0
-#define OUTPUT_9_V520                     0xcac0
-#define OUTPUT_10                         0xcac0
-#define OUTPUT_10_V520                     0xcad0
-#define OUTPUT_11                         0xcad0
-#define OUTPUT_11_V520                    0xcae0
+pub const OUT_PHASE_ADJ: u32 = 0x000c;
+pub const OUTPUT_1: u32 = 0xca24;
+pub const OUTPUT_1_V520: u32 = 0xca30;
+pub const OUTPUT_2: u32 = 0xca34;
+pub const OUTPUT_2_V520: u32 = 0xca40;
+pub const OUTPUT_3: u32 = 0xca44;
+pub const OUTPUT_3_V520: u32 = 0xca50;
+pub const OUTPUT_4: u32 = 0xca54;
+pub const OUTPUT_4_V520: u32 = 0xca60;
+pub const OUTPUT_5: u32 = 0xca64;
+pub const OUTPUT_5_V520: u32 = 0xca80;
+pub const OUTPUT_6: u32 = 0xca80;
+pub const OUTPUT_6_V520: u32 = 0xca90;
+pub const OUTPUT_7: u32 = 0xca90;
+pub const OUTPUT_7_V520: u32 = 0xcaa0;
+pub const OUTPUT_8: u32 = 0xcaa0;
+pub const OUTPUT_8_V520: u32 = 0xcab0;
+pub const OUTPUT_9: u32 = 0xcab0;
+pub const OUTPUT_9_V520: u32 = 0xcac0;
+pub const OUTPUT_10: u32 = 0xcac0;
+pub const OUTPUT_10_V520: u32 = 0xcad0;
+pub const OUTPUT_11: u32 = 0xcad0;
+pub const OUTPUT_11_V520: u32 = 0xcae0;
 
-#define SERIAL                            0xcae0
-#define SERIAL_V520                       0xcaf0
+pub const SERIAL: u32 = 0xcae0;
+pub const SERIAL_V520: u32 = 0xcaf0;
 
-#define PWM_ENCODER_0                     0xcb00
-#define PWM_ENCODER_1                     0xcb08
-#define PWM_ENCODER_2                     0xcb10
-#define PWM_ENCODER_3                     0xcb18
-#define PWM_ENCODER_4                     0xcb20
-#define PWM_ENCODER_5                     0xcb28
-#define PWM_ENCODER_6                     0xcb30
-#define PWM_ENCODER_7                     0xcb38
-#define PWM_DECODER_0                     0xcb40
-#define PWM_DECODER_1                     0xcb48
-#define PWM_DECODER_1_V520                0xcb4a
-#define PWM_DECODER_2                     0xcb50
-#define PWM_DECODER_2_V520                0xcb54
-#define PWM_DECODER_3                     0xcb58
-#define PWM_DECODER_3_V520                0xcb5e
-#define PWM_DECODER_4                     0xcb60
-#define PWM_DECODER_4_V520                0xcb68
-#define PWM_DECODER_5                     0xcb68
-#define PWM_DECODER_5_V520                0xcb80
-#define PWM_DECODER_6                     0xcb70
-#define PWM_DECODER_6_V520                0xcb8a
-#define PWM_DECODER_7                     0xcb80
-#define PWM_DECODER_7_V520                0xcb94
-#define PWM_DECODER_8                     0xcb88
-#define PWM_DECODER_8_V520                0xcb9e
-#define PWM_DECODER_9                     0xcb90
-#define PWM_DECODER_9_V520                0xcba8
-#define PWM_DECODER_10                    0xcb98
-#define PWM_DECODER_10_V520               0xcbb2
-#define PWM_DECODER_11                    0xcba0
-#define PWM_DECODER_11_V520               0xcbbc
-#define PWM_DECODER_12                    0xcba8
-#define PWM_DECODER_12_V520               0xcbc6
-#define PWM_DECODER_13                    0xcbb0
-#define PWM_DECODER_13_V520               0xcbd0
-#define PWM_DECODER_14                    0xcbb8
-#define PWM_DECODER_14_V520               0xcbda
-#define PWM_DECODER_15                    0xcbc0
-#define PWM_DECODER_15_V520               0xcbe4
-#define PWM_USER_DATA                     0xcbc8
-#define PWM_USER_DATA_V520                0xcbf0
+pub const PWM_ENCODER_0: u32 = 0xcb00;
+pub const PWM_ENCODER_1: u32 = 0xcb08;
+pub const PWM_ENCODER_2: u32 = 0xcb10;
+pub const PWM_ENCODER_3: u32 = 0xcb18;
+pub const PWM_ENCODER_4: u32 = 0xcb20;
+pub const PWM_ENCODER_5: u32 = 0xcb28;
+pub const PWM_ENCODER_6: u32 = 0xcb30;
+pub const PWM_ENCODER_7: u32 = 0xcb38;
+pub const PWM_DECODER_0: u32 = 0xcb40;
+pub const PWM_DECODER_1: u32 = 0xcb48;
+pub const PWM_DECODER_1_V520: u32 = 0xcb4a;
+pub const PWM_DECODER_2: u32 = 0xcb50;
+pub const PWM_DECODER_2_V520: u32 = 0xcb54;
+pub const PWM_DECODER_3: u32 = 0xcb58;
+pub const PWM_DECODER_3_V520: u32 = 0xcb5e;
+pub const PWM_DECODER_4: u32 = 0xcb60;
+pub const PWM_DECODER_4_V520: u32 = 0xcb68;
+pub const PWM_DECODER_5: u32 = 0xcb68;
+pub const PWM_DECODER_5_V520: u32 = 0xcb80;
+pub const PWM_DECODER_6: u32 = 0xcb70;
+pub const PWM_DECODER_6_V520: u32 = 0xcb8a;
+pub const PWM_DECODER_7: u32 = 0xcb80;
+pub const PWM_DECODER_7_V520: u32 = 0xcb94;
+pub const PWM_DECODER_8: u32 = 0xcb88;
+pub const PWM_DECODER_8_V520: u32 = 0xcb9e;
+pub const PWM_DECODER_9: u32 = 0xcb90;
+pub const PWM_DECODER_9_V520: u32 = 0xcba8;
+pub const PWM_DECODER_10: u32 = 0xcb98;
+pub const PWM_DECODER_10_V520: u32 = 0xcbb2;
+pub const PWM_DECODER_11: u32 = 0xcba0;
+pub const PWM_DECODER_11_V520: u32 = 0xcbbc;
+pub const PWM_DECODER_12: u32 = 0xcba8;
+pub const PWM_DECODER_12_V520: u32 = 0xcbc6;
+pub const PWM_DECODER_13: u32 = 0xcbb0;
+pub const PWM_DECODER_13_V520: u32 = 0xcbd0;
+pub const PWM_DECODER_14: u32 = 0xcbb8;
+pub const PWM_DECODER_14_V520: u32 = 0xcbda;
+pub const PWM_DECODER_15: u32 = 0xcbc0;
+pub const PWM_DECODER_15_V520: u32 = 0xcbe4;
+pub const PWM_USER_DATA: u32 = 0xcbc8;
+pub const PWM_USER_DATA_V520: u32 = 0xcbf0;
 
-#define TOD_0                             0xcbcc
-#define TOD_0_V520                        0xcc00
+pub const TOD_0: u32 = 0xcbcc;
+pub const TOD_0_V520: u32 = 0xcc00;
 /* Enable TOD counter, output channel sync and even-PPS mode */
-#define TOD_CFG                           0x0000
-#define TOD_CFG_V520                      0x0001
-#define TOD_1                             0xcbce
-#define TOD_1_V520                        0xcc02
-#define TOD_2                             0xcbd0
-#define TOD_2_V520                        0xcc04
-#define TOD_3                             0xcbd2
-#define TOD_3_V520                        0xcc06
+pub const TOD_CFG: u32 = 0x0000;
+pub const TOD_CFG_V520: u32 = 0x0001;
+pub const TOD_1: u32 = 0xcbce;
+pub const TOD_1_V520: u32 = 0xcc02;
+pub const TOD_2: u32 = 0xcbd0;
+pub const TOD_2_V520: u32 = 0xcc04;
+pub const TOD_3: u32 = 0xcbd2;
+pub const TOD_3_V520: u32 = 0xcc06;
 
-#define TOD_WRITE_0                       0xcc00
-#define TOD_WRITE_0_V520                  0xcc10
+pub const TOD_WRITE_0: u32 = 0xcc00;
+pub const TOD_WRITE_0_V520: u32 = 0xcc10;
 /* 8-bit subns, 32-bit ns, 48-bit seconds */
-#define TOD_WRITE                         0x0000
+pub const TOD_WRITE: u32 = 0x0000;
 /* Counter increments after TOD write is completed */
-#define TOD_WRITE_COUNTER                 0x000c
+pub const TOD_WRITE_COUNTER: u32 = 0x000c;
 /* TOD write trigger configuration */
-#define TOD_WRITE_SELECT_CFG_0            0x000d
+pub const TOD_WRITE_SELECT_CFG_0: u32 = 0x000d;
 /* TOD write trigger selection */
-#define TOD_WRITE_CMD                     0x000f
-#define TOD_WRITE_1                       0xcc10
-#define TOD_WRITE_1_V520                  0xcc20
-#define TOD_WRITE_2                       0xcc20
-#define TOD_WRITE_2_V520                  0xcc30
-#define TOD_WRITE_3                       0xcc30
-#define TOD_WRITE_3_V520                  0xcc40
+pub const TOD_WRITE_CMD: u32 = 0x000f;
+pub const TOD_WRITE_1: u32 = 0xcc10;
+pub const TOD_WRITE_1_V520: u32 = 0xcc20;
+pub const TOD_WRITE_2: u32 = 0xcc20;
+pub const TOD_WRITE_2_V520: u32 = 0xcc30;
+pub const TOD_WRITE_3: u32 = 0xcc30;
+pub const TOD_WRITE_3_V520: u32 = 0xcc40;
 
-#define TOD_READ_PRIMARY_0                0xcc40
-#define TOD_READ_PRIMARY_0_V520           0xcc50
+pub const TOD_READ_PRIMARY_0: u32 = 0xcc40;
+pub const TOD_READ_PRIMARY_0_V520: u32 = 0xcc50;
 /* 8-bit subns, 32-bit ns, 48-bit seconds */
-#define TOD_READ_PRIMARY_BASE             0x0000
+pub const TOD_READ_PRIMARY_BASE: u32 = 0x0000;
 /* Counter increments after TOD write is completed */
-#define TOD_READ_PRIMARY_COUNTER          0x000b
+pub const TOD_READ_PRIMARY_COUNTER: u32 = 0x000b;
 /* Read trigger configuration */
-#define TOD_READ_PRIMARY_SEL_CFG_0        0x000c
+pub const TOD_READ_PRIMARY_SEL_CFG_0: u32 = 0x000c;
 /* Read trigger selection */
-#define TOD_READ_PRIMARY_CMD              0x000e
-#define TOD_READ_PRIMARY_CMD_V520         0x000f
-#define TOD_READ_PRIMARY_1                0xcc50
-#define TOD_READ_PRIMARY_1_V520           0xcc60
-#define TOD_READ_PRIMARY_2                0xcc60
-#define TOD_READ_PRIMARY_2_V520           0xcc80
-#define TOD_READ_PRIMARY_3                0xcc80
-#define TOD_READ_PRIMARY_3_V520           0xcc90
+pub const TOD_READ_PRIMARY_CMD: u32 = 0x000e;
+pub const TOD_READ_PRIMARY_CMD_V520: u32 = 0x000f;
+pub const TOD_READ_PRIMARY_1: u32 = 0xcc50;
+pub const TOD_READ_PRIMARY_1_V520: u32 = 0xcc60;
+pub const TOD_READ_PRIMARY_2: u32 = 0xcc60;
+pub const TOD_READ_PRIMARY_2_V520: u32 = 0xcc80;
+pub const TOD_READ_PRIMARY_3: u32 = 0xcc80;
+pub const TOD_READ_PRIMARY_3_V520: u32 = 0xcc90;
 
-#define TOD_READ_SECONDARY_0              0xcc90
-#define TOD_READ_SECONDARY_0_V520         0xcca0
+pub const TOD_READ_SECONDARY_0: u32 = 0xcc90;
+pub const TOD_READ_SECONDARY_0_V520: u32 = 0xcca0;
 /* 8-bit subns, 32-bit ns, 48-bit seconds */
-#define TOD_READ_SECONDARY_BASE           0x0000
+pub const TOD_READ_SECONDARY_BASE: u32 = 0x0000;
 /* Counter increments after TOD write is completed */
-#define TOD_READ_SECONDARY_COUNTER        0x000b
+pub const TOD_READ_SECONDARY_COUNTER: u32 = 0x000b;
 /* Read trigger configuration */
-#define TOD_READ_SECONDARY_SEL_CFG_0      0x000c
+pub const TOD_READ_SECONDARY_SEL_CFG_0: u32 = 0x000c;
 /* Read trigger selection */
-#define TOD_READ_SECONDARY_CMD            0x000e
-#define TOD_READ_SECONDARY_CMD_V520       0x000f
+pub const TOD_READ_SECONDARY_CMD: u32 = 0x000e;
+pub const TOD_READ_SECONDARY_CMD_V520: u32 = 0x000f;
 
-#define TOD_READ_SECONDARY_1              0xcca0
-#define TOD_READ_SECONDARY_1_V520         0xccb0
-#define TOD_READ_SECONDARY_2              0xccb0
-#define TOD_READ_SECONDARY_2_V520         0xccc0
-#define TOD_READ_SECONDARY_3              0xccc0
-#define TOD_READ_SECONDARY_3_V520         0xccd0
+pub const TOD_READ_SECONDARY_1: u32 = 0xcca0;
+pub const TOD_READ_SECONDARY_1_V520: u32 = 0xccb0;
+pub const TOD_READ_SECONDARY_2: u32 = 0xccb0;
+pub const TOD_READ_SECONDARY_2_V520: u32 = 0xccc0;
+pub const TOD_READ_SECONDARY_3: u32 = 0xccc0;
+pub const TOD_READ_SECONDARY_3_V520: u32 = 0xccd0;
 
-#define OUTPUT_TDC_CFG                    0xccd0
-#define OUTPUT_TDC_CFG_V520               0xcce0
-#define OUTPUT_TDC_0                      0xcd00
-#define OUTPUT_TDC_1                      0xcd08
-#define OUTPUT_TDC_2                      0xcd10
-#define OUTPUT_TDC_3                      0xcd18
-#define INPUT_TDC                         0xcd20
+pub const OUTPUT_TDC_CFG: u32 = 0xccd0;
+pub const OUTPUT_TDC_CFG_V520: u32 = 0xcce0;
+pub const OUTPUT_TDC_0: u32 = 0xcd00;
+pub const OUTPUT_TDC_1: u32 = 0xcd08;
+pub const OUTPUT_TDC_2: u32 = 0xcd10;
+pub const OUTPUT_TDC_3: u32 = 0xcd18;
+pub const INPUT_TDC: u32 = 0xcd20;
 
-#define SCRATCH                           0xcf50
-#define SCRATCH_V520                      0xcf4c
+pub const SCRATCH: u32 = 0xcf50;
+pub const SCRATCH_V520: u32 = 0xcf4c;
 
-#define EEPROM                            0xcf68
-#define EEPROM_V520                       0xcf64
+pub const EEPROM: u32 = 0xcf68;
+pub const EEPROM_V520: u32 = 0xcf64;
 
-#define OTP                               0xcf70
+pub const OTP: u32 = 0xcf70;
 
-#define BYTE                              0xcf80
+pub const BYTE: u32 = 0xcf80;
 
 /* Bit definitions for the MAJ_REL register */
-#define MAJOR_SHIFT                       (1)
-#define MAJOR_MASK                        (0x7f)
-#define PR_BUILD                          BIT(0)
+pub const MAJOR_SHIFT: u32 = 1;
+pub const MAJOR_MASK: u32 = 0x7f;
+pub const PR_BUILD: u32 = 1 << 0;
 
 /* Bit definitions for the USER_GPIO0_TO_7_STATUS register */
-#define GPIO0_LEVEL                       BIT(0)
-#define GPIO1_LEVEL                       BIT(1)
-#define GPIO2_LEVEL                       BIT(2)
-#define GPIO3_LEVEL                       BIT(3)
-#define GPIO4_LEVEL                       BIT(4)
-#define GPIO5_LEVEL                       BIT(5)
-#define GPIO6_LEVEL                       BIT(6)
-#define GPIO7_LEVEL                       BIT(7)
+pub const GPIO0_LEVEL: u32 = 1 << 0;
+pub const GPIO1_LEVEL: u32 = 1 << 1;
+pub const GPIO2_LEVEL: u32 = 1 << 2;
+pub const GPIO3_LEVEL: u32 = 1 << 3;
+pub const GPIO4_LEVEL: u32 = 1 << 4;
+pub const GPIO5_LEVEL: u32 = 1 << 5;
+pub const GPIO6_LEVEL: u32 = 1 << 6;
+pub const GPIO7_LEVEL: u32 = 1 << 7;
 
 /* Bit definitions for the USER_GPIO8_TO_15_STATUS register */
-#define GPIO8_LEVEL                       BIT(0)
-#define GPIO9_LEVEL                       BIT(1)
-#define GPIO10_LEVEL                      BIT(2)
-#define GPIO11_LEVEL                      BIT(3)
-#define GPIO12_LEVEL                      BIT(4)
-#define GPIO13_LEVEL                      BIT(5)
-#define GPIO14_LEVEL                      BIT(6)
-#define GPIO15_LEVEL                      BIT(7)
+pub const GPIO8_LEVEL: u32 = 1 << 0;
+pub const GPIO9_LEVEL: u32 = 1 << 1;
+pub const GPIO10_LEVEL: u32 = 1 << 2;
+pub const GPIO11_LEVEL: u32 = 1 << 3;
+pub const GPIO12_LEVEL: u32 = 1 << 4;
+pub const GPIO13_LEVEL: u32 = 1 << 5;
+pub const GPIO14_LEVEL: u32 = 1 << 6;
+pub const GPIO15_LEVEL: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO0_TO_7_OUT register */
-#define GPIO0_DRIVE_LEVEL                 BIT(0)
-#define GPIO1_DRIVE_LEVEL                 BIT(1)
-#define GPIO2_DRIVE_LEVEL                 BIT(2)
-#define GPIO3_DRIVE_LEVEL                 BIT(3)
-#define GPIO4_DRIVE_LEVEL                 BIT(4)
-#define GPIO5_DRIVE_LEVEL                 BIT(5)
-#define GPIO6_DRIVE_LEVEL                 BIT(6)
-#define GPIO7_DRIVE_LEVEL                 BIT(7)
+pub const GPIO0_DRIVE_LEVEL: u32 = 1 << 0;
+pub const GPIO1_DRIVE_LEVEL: u32 = 1 << 1;
+pub const GPIO2_DRIVE_LEVEL: u32 = 1 << 2;
+pub const GPIO3_DRIVE_LEVEL: u32 = 1 << 3;
+pub const GPIO4_DRIVE_LEVEL: u32 = 1 << 4;
+pub const GPIO5_DRIVE_LEVEL: u32 = 1 << 5;
+pub const GPIO6_DRIVE_LEVEL: u32 = 1 << 6;
+pub const GPIO7_DRIVE_LEVEL: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO8_TO_15_OUT register */
-#define GPIO8_DRIVE_LEVEL                 BIT(0)
-#define GPIO9_DRIVE_LEVEL                 BIT(1)
-#define GPIO10_DRIVE_LEVEL                BIT(2)
-#define GPIO11_DRIVE_LEVEL                BIT(3)
-#define GPIO12_DRIVE_LEVEL                BIT(4)
-#define GPIO13_DRIVE_LEVEL                BIT(5)
-#define GPIO14_DRIVE_LEVEL                BIT(6)
-#define GPIO15_DRIVE_LEVEL                BIT(7)
+pub const GPIO8_DRIVE_LEVEL: u32 = 1 << 0;
+pub const GPIO9_DRIVE_LEVEL: u32 = 1 << 1;
+pub const GPIO10_DRIVE_LEVEL: u32 = 1 << 2;
+pub const GPIO11_DRIVE_LEVEL: u32 = 1 << 3;
+pub const GPIO12_DRIVE_LEVEL: u32 = 1 << 4;
+pub const GPIO13_DRIVE_LEVEL: u32 = 1 << 5;
+pub const GPIO14_DRIVE_LEVEL: u32 = 1 << 6;
+pub const GPIO15_DRIVE_LEVEL: u32 = 1 << 7;
 
 /* Bit definitions for the DPLL_TOD_SYNC_CFG register */
-#define TOD_SYNC_SOURCE_SHIFT             (1)
-#define TOD_SYNC_SOURCE_MASK              (0x3)
-#define TOD_SYNC_EN                       BIT(0)
+pub const TOD_SYNC_SOURCE_SHIFT: u32 = 1;
+pub const TOD_SYNC_SOURCE_MASK: u32 = 0x3;
+pub const TOD_SYNC_EN: u32 = 1 << 0;
 
 /* Bit definitions for the DPLL_MODE register */
-#define WRITE_TIMER_MODE                  BIT(6)
-#define PLL_MODE_SHIFT                    (3)
-#define PLL_MODE_MASK                     (0x7)
-#define STATE_MODE_SHIFT                  (0)
-#define STATE_MODE_MASK                   (0x7)
+pub const WRITE_TIMER_MODE: u32 = 1 << 6;
+pub const PLL_MODE_SHIFT: u32 = 3;
+pub const PLL_MODE_MASK: u32 = 0x7;
+pub const STATE_MODE_SHIFT: u32 = 0;
+pub const STATE_MODE_MASK: u32 = 0x7;
 
 /* Bit definitions for the DPLL_MANU_REF_CFG register */
-#define MANUAL_REFERENCE_SHIFT            (0)
-#define MANUAL_REFERENCE_MASK             (0x1f)
+pub const MANUAL_REFERENCE_SHIFT: u32 = 0;
+pub const MANUAL_REFERENCE_MASK: u32 = 0x1f;
 
 /* Bit definitions for the GPIO_CFG_GBL register */
-#define SUPPLY_MODE_SHIFT                 (0)
-#define SUPPLY_MODE_MASK                  (0x3)
+pub const SUPPLY_MODE_SHIFT: u32 = 0;
+pub const SUPPLY_MODE_MASK: u32 = 0x3;
 
 /* Bit definitions for the GPIO_DCO_INC_DEC register */
-#define INCDEC_DPLL_INDEX_SHIFT           (0)
-#define INCDEC_DPLL_INDEX_MASK            (0x7)
+pub const INCDEC_DPLL_INDEX_SHIFT: u32 = 0;
+pub const INCDEC_DPLL_INDEX_MASK: u32 = 0x7;
 
 /* Bit definitions for the GPIO_OUT_CTRL_0 register */
-#define CTRL_OUT_0                        BIT(0)
-#define CTRL_OUT_1                        BIT(1)
-#define CTRL_OUT_2                        BIT(2)
-#define CTRL_OUT_3                        BIT(3)
-#define CTRL_OUT_4                        BIT(4)
-#define CTRL_OUT_5                        BIT(5)
-#define CTRL_OUT_6                        BIT(6)
-#define CTRL_OUT_7                        BIT(7)
+pub const CTRL_OUT_0: u32 = 1 << 0;
+pub const CTRL_OUT_1: u32 = 1 << 1;
+pub const CTRL_OUT_2: u32 = 1 << 2;
+pub const CTRL_OUT_3: u32 = 1 << 3;
+pub const CTRL_OUT_4: u32 = 1 << 4;
+pub const CTRL_OUT_5: u32 = 1 << 5;
+pub const CTRL_OUT_6: u32 = 1 << 6;
+pub const CTRL_OUT_7: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO_OUT_CTRL_1 register */
-#define CTRL_OUT_8                        BIT(0)
-#define CTRL_OUT_9                        BIT(1)
-#define CTRL_OUT_10                       BIT(2)
-#define CTRL_OUT_11                       BIT(3)
-#define CTRL_OUT_12                       BIT(4)
-#define CTRL_OUT_13                       BIT(5)
-#define CTRL_OUT_14                       BIT(6)
-#define CTRL_OUT_15                       BIT(7)
+pub const CTRL_OUT_8: u32 = 1 << 0;
+pub const CTRL_OUT_9: u32 = 1 << 1;
+pub const CTRL_OUT_10: u32 = 1 << 2;
+pub const CTRL_OUT_11: u32 = 1 << 3;
+pub const CTRL_OUT_12: u32 = 1 << 4;
+pub const CTRL_OUT_13: u32 = 1 << 5;
+pub const CTRL_OUT_14: u32 = 1 << 6;
+pub const CTRL_OUT_15: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO_TOD_TRIG register */
-#define TOD_TRIG_0                        BIT(0)
-#define TOD_TRIG_1                        BIT(1)
-#define TOD_TRIG_2                        BIT(2)
-#define TOD_TRIG_3                        BIT(3)
+pub const TOD_TRIG_0: u32 = 1 << 0;
+pub const TOD_TRIG_1: u32 = 1 << 1;
+pub const TOD_TRIG_2: u32 = 1 << 2;
+pub const TOD_TRIG_3: u32 = 1 << 3;
 
 /* Bit definitions for the GPIO_DPLL_INDICATOR register */
-#define IND_DPLL_INDEX_SHIFT              (0)
-#define IND_DPLL_INDEX_MASK               (0x7)
+pub const IND_DPLL_INDEX_SHIFT: u32 = 0;
+pub const IND_DPLL_INDEX_MASK: u32 = 0x7;
 
 /* Bit definitions for the GPIO_LOS_INDICATOR register */
-#define REFMON_INDEX_SHIFT                (0)
-#define REFMON_INDEX_MASK                 (0xf)
+pub const REFMON_INDEX_SHIFT: u32 = 0;
+pub const REFMON_INDEX_MASK: u32 = 0xf;
 /* Active level of LOS indicator, 0=low 1=high */
-#define ACTIVE_LEVEL                      BIT(4)
+pub const ACTIVE_LEVEL: u32 = 1 << 4;
 
 /* Bit definitions for the GPIO_REF_INPUT_DSQ_0 register */
-#define DSQ_INP_0                         BIT(0)
-#define DSQ_INP_1                         BIT(1)
-#define DSQ_INP_2                         BIT(2)
-#define DSQ_INP_3                         BIT(3)
-#define DSQ_INP_4                         BIT(4)
-#define DSQ_INP_5                         BIT(5)
-#define DSQ_INP_6                         BIT(6)
-#define DSQ_INP_7                         BIT(7)
+pub const DSQ_INP_0: u32 = 1 << 0;
+pub const DSQ_INP_1: u32 = 1 << 1;
+pub const DSQ_INP_2: u32 = 1 << 2;
+pub const DSQ_INP_3: u32 = 1 << 3;
+pub const DSQ_INP_4: u32 = 1 << 4;
+pub const DSQ_INP_5: u32 = 1 << 5;
+pub const DSQ_INP_6: u32 = 1 << 6;
+pub const DSQ_INP_7: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO_REF_INPUT_DSQ_1 register */
-#define DSQ_INP_8                         BIT(0)
-#define DSQ_INP_9                         BIT(1)
-#define DSQ_INP_10                        BIT(2)
-#define DSQ_INP_11                        BIT(3)
-#define DSQ_INP_12                        BIT(4)
-#define DSQ_INP_13                        BIT(5)
-#define DSQ_INP_14                        BIT(6)
-#define DSQ_INP_15                        BIT(7)
+pub const DSQ_INP_8: u32 = 1 << 0;
+pub const DSQ_INP_9: u32 = 1 << 1;
+pub const DSQ_INP_10: u32 = 1 << 2;
+pub const DSQ_INP_11: u32 = 1 << 3;
+pub const DSQ_INP_12: u32 = 1 << 4;
+pub const DSQ_INP_13: u32 = 1 << 5;
+pub const DSQ_INP_14: u32 = 1 << 6;
+pub const DSQ_INP_15: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO_REF_INPUT_DSQ_2 register */
-#define DSQ_DPLL_0                        BIT(0)
-#define DSQ_DPLL_1                        BIT(1)
-#define DSQ_DPLL_2                        BIT(2)
-#define DSQ_DPLL_3                        BIT(3)
-#define DSQ_DPLL_4                        BIT(4)
-#define DSQ_DPLL_5                        BIT(5)
-#define DSQ_DPLL_6                        BIT(6)
-#define DSQ_DPLL_7                        BIT(7)
+pub const DSQ_DPLL_0: u32 = 1 << 0;
+pub const DSQ_DPLL_1: u32 = 1 << 1;
+pub const DSQ_DPLL_2: u32 = 1 << 2;
+pub const DSQ_DPLL_3: u32 = 1 << 3;
+pub const DSQ_DPLL_4: u32 = 1 << 4;
+pub const DSQ_DPLL_5: u32 = 1 << 5;
+pub const DSQ_DPLL_6: u32 = 1 << 6;
+pub const DSQ_DPLL_7: u32 = 1 << 7;
 
 /* Bit definitions for the GPIO_REF_INPUT_DSQ_3 register */
-#define DSQ_DPLL_SYS                      BIT(0)
-#define GPIO_DSQ_LEVEL                    BIT(1)
+pub const DSQ_DPLL_SYS: u32 = 1 << 0;
+pub const GPIO_DSQ_LEVEL: u32 = 1 << 1;
 
 /* Bit definitions for the GPIO_TOD_NOTIFICATION_CFG register */
-#define DPLL_TOD_SHIFT                    (0)
-#define DPLL_TOD_MASK                     (0x3)
-#define TOD_READ_SECONDARY                BIT(2)
-#define GPIO_ASSERT_LEVEL                 BIT(3)
+pub const DPLL_TOD_SHIFT: u32 = 0;
+pub const DPLL_TOD_MASK: u32 = 0x3;
+pub const TOD_READ_SECONDARY: u32 = 1 << 2;
+pub const GPIO_ASSERT_LEVEL: u32 = 1 << 3;
 
 /* Bit definitions for the GPIO_CTRL register */
-#define GPIO_FUNCTION_EN                  BIT(0)
-#define GPIO_CMOS_OD_MODE                 BIT(1)
-#define GPIO_CONTROL_DIR                  BIT(2)
-#define GPIO_PU_PD_MODE                   BIT(3)
-#define GPIO_FUNCTION_SHIFT               (4)
-#define GPIO_FUNCTION_MASK                (0xf)
+pub const GPIO_FUNCTION_EN: u32 = 1 << 0;
+pub const GPIO_CMOS_OD_MODE: u32 = 1 << 1;
+pub const GPIO_CONTROL_DIR: u32 = 1 << 2;
+pub const GPIO_PU_PD_MODE: u32 = 1 << 3;
+pub const GPIO_FUNCTION_SHIFT: u32 = 4;
+pub const GPIO_FUNCTION_MASK: u32 = 0xf;
 
 /* Bit definitions for the OUT_CTRL_1 register */
-#define OUT_SYNC_DISABLE                  BIT(7)
-#define SQUELCH_VALUE                     BIT(6)
-#define SQUELCH_DISABLE                   BIT(5)
-#define PAD_VDDO_SHIFT                    (2)
-#define PAD_VDDO_MASK                     (0x7)
-#define PAD_CMOSDRV_SHIFT                 (0)
-#define PAD_CMOSDRV_MASK                  (0x3)
+pub const OUT_SYNC_DISABLE: u32 = 1 << 7;
+pub const SQUELCH_VALUE: u32 = 1 << 6;
+pub const SQUELCH_DISABLE: u32 = 1 << 5;
+pub const PAD_VDDO_SHIFT: u32 = 2;
+pub const PAD_VDDO_MASK: u32 = 0x7;
+pub const PAD_CMOSDRV_SHIFT: u32 = 0;
+pub const PAD_CMOSDRV_MASK: u32 = 0x3;
 
 /* Bit definitions for the TOD_CFG register */
-#define TOD_EVEN_PPS_MODE                 BIT(2)
-#define TOD_OUT_SYNC_ENABLE               BIT(1)
-#define TOD_ENABLE                        BIT(0)
+pub const TOD_EVEN_PPS_MODE: u32 = 1 << 2;
+pub const TOD_OUT_SYNC_ENABLE: u32 = 1 << 1;
+pub const TOD_ENABLE: u32 = 1 << 0;
 
 /* Bit definitions for the TOD_WRITE_SELECT_CFG_0 register */
-#define WR_PWM_DECODER_INDEX_SHIFT        (4)
-#define WR_PWM_DECODER_INDEX_MASK         (0xf)
-#define WR_REF_INDEX_SHIFT                (0)
-#define WR_REF_INDEX_MASK                 (0xf)
+pub const WR_PWM_DECODER_INDEX_SHIFT: u32 = 4;
+pub const WR_PWM_DECODER_INDEX_MASK: u32 = 0xf;
+pub const WR_REF_INDEX_SHIFT: u32 = 0;
+pub const WR_REF_INDEX_MASK: u32 = 0xf;
 
 /* Bit definitions for the TOD_WRITE_CMD register */
-#define TOD_WRITE_SELECTION_SHIFT         (0)
-#define TOD_WRITE_SELECTION_MASK          (0xf)
+pub const TOD_WRITE_SELECTION_SHIFT: u32 = 0;
+pub const TOD_WRITE_SELECTION_MASK: u32 = 0xf;
 /* 4.8.7 */
-#define TOD_WRITE_TYPE_SHIFT              (4)
-#define TOD_WRITE_TYPE_MASK               (0x3)
+pub const TOD_WRITE_TYPE_SHIFT: u32 = 4;
+pub const TOD_WRITE_TYPE_MASK: u32 = 0x3;
 
 /* Bit definitions for the TOD_READ_PRIMARY_SEL_CFG_0 register */
-#define RD_PWM_DECODER_INDEX_SHIFT        (4)
-#define RD_PWM_DECODER_INDEX_MASK         (0xf)
-#define RD_REF_INDEX_SHIFT                (0)
-#define RD_REF_INDEX_MASK                 (0xf)
+pub const RD_PWM_DECODER_INDEX_SHIFT: u32 = 4;
+pub const RD_PWM_DECODER_INDEX_MASK: u32 = 0xf;
+pub const RD_REF_INDEX_SHIFT: u32 = 0;
+pub const RD_REF_INDEX_MASK: u32 = 0xf;
 
 /* Bit definitions for the TOD_READ_PRIMARY_CMD register */
-#define TOD_READ_TRIGGER_MODE             BIT(4)
-#define TOD_READ_TRIGGER_SHIFT            (0)
-#define TOD_READ_TRIGGER_MASK             (0xf)
+pub const TOD_READ_TRIGGER_MODE: u32 = 1 << 4;
+pub const TOD_READ_TRIGGER_SHIFT: u32 = 0;
+pub const TOD_READ_TRIGGER_MASK: u32 = 0xf;
 
 /* Bit definitions for the DPLL_CTRL_COMBO_MASTER_CFG register */
-#define COMBO_MASTER_HOLD                 BIT(0)
+pub const COMBO_MASTER_HOLD: u32 = 1 << 0;
 
 /* Bit definitions for DPLL_SYS_STATUS register */
-#define DPLL_SYS_STATE_MASK               (0xf)
+pub const DPLL_SYS_STATE_MASK: u32 = 0xf;
 
 /* Bit definitions for SYS_APLL_STATUS register */
-#define SYS_APLL_LOSS_LOCK_LIVE_MASK       BIT(0)
-#define SYS_APLL_LOSS_LOCK_LIVE_LOCKED     0
-#define SYS_APLL_LOSS_LOCK_LIVE_UNLOCKED   1
+pub const SYS_APLL_LOSS_LOCK_LIVE_MASK: u32 = 1 << 0;
+pub const SYS_APLL_LOSS_LOCK_LIVE_LOCKED: u32 = 0;
+pub const SYS_APLL_LOSS_LOCK_LIVE_UNLOCKED: u32 = 1;
 
 /* Bit definitions for the DPLL0_STATUS register */
-#define DPLL_STATE_MASK                   (0xf)
-#define DPLL_STATE_SHIFT                  (0x0)
+pub const DPLL_STATE_MASK: u32 = 0xf;
+pub const DPLL_STATE_SHIFT: u32 = 0x0;
 
 /* Values of DPLL_N.DPLL_MODE.PLL_MODE */
 enum pll_mode {

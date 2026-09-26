@@ -8,7 +8,7 @@
  *    Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
  *               Martin Peschke <peschke@fh-brandenburg.de>
  */
-+
+
 // include: <linux/types.h>
 // include: <linux/export.h>
 // include: <asm/ebcdic.h>
@@ -392,6 +392,6 @@ pub static mut _ebc_toupper: [u8; 256] =
 	0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
 ];
 +
-+
+
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

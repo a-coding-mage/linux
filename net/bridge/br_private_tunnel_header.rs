@@ -46,7 +46,7 @@ extern "C" {
 }
 
 /* CONFIG_BRIDGE_VLAN_FILTERING is supplied by the build configuration. */
-#[cfg(feature = "CONFIG_BRIDGE_VLAN_FILTERING")]
+#[cfg(CONFIG_BRIDGE_VLAN_FILTERING)]
 extern "C" {
     pub fn vlan_tunnel_init(vg: *mut net_bridge_vlan_group) -> core::ffi::c_int;
     pub fn vlan_tunnel_deinit(vg: *mut net_bridge_vlan_group);
@@ -75,12 +75,12 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(not(CONFIG_BRIDGE_VLAN_FILTERING))]
 pub unsafe fn vlan_tunnel_init(_vg: *mut net_bridge_vlan_group) -> core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(not(CONFIG_BRIDGE_VLAN_FILTERING))]
 pub unsafe fn nbp_vlan_tunnel_info_delete(
     _port: *const net_bridge_port,
     _vid: u16,
@@ -88,7 +88,7 @@ pub unsafe fn nbp_vlan_tunnel_info_delete(
     0
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(not(CONFIG_BRIDGE_VLAN_FILTERING))]
 pub unsafe fn nbp_vlan_tunnel_info_add(
     _port: *const net_bridge_port,
     _vid: u16,
@@ -97,17 +97,17 @@ pub unsafe fn nbp_vlan_tunnel_info_add(
     0
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(not(CONFIG_BRIDGE_VLAN_FILTERING))]
 pub unsafe fn nbp_vlan_tunnel_info_flush(_port: *mut net_bridge_port) {}
 
-#[cfg(not(feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(not(CONFIG_BRIDGE_VLAN_FILTERING))]
 pub unsafe fn vlan_tunnel_info_del(
     _vg: *mut net_bridge_vlan_group,
     _vlan: *mut net_bridge_vlan,
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(not(CONFIG_BRIDGE_VLAN_FILTERING))]
 pub unsafe fn br_handle_ingress_vlan_tunnel(
     _skb: *mut sk_buff,
     _p: *mut net_bridge_port,

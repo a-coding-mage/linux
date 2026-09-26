@@ -30,19 +30,19 @@ extern "C" {
 
 #[repr(C)]
 pub struct inactive_task_frame {
-    #[cfg(feature = "CONFIG_X86_64")]
+    #[cfg(CONFIG_X86_64)]
     pub r15: c_ulong,
-    #[cfg(feature = "CONFIG_X86_64")]
+    #[cfg(CONFIG_X86_64)]
     pub r14: c_ulong,
-    #[cfg(feature = "CONFIG_X86_64")]
+    #[cfg(CONFIG_X86_64)]
     pub r13: c_ulong,
-    #[cfg(feature = "CONFIG_X86_64")]
+    #[cfg(CONFIG_X86_64)]
     pub r12: c_ulong,
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     pub flags: c_ulong,
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     pub si: c_ulong,
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     pub di: c_ulong,
     pub bx: c_ulong,
     /* These two fields form a stack frame header needed by get_frame_pointer(). */
@@ -63,7 +63,7 @@ macro_rules! switch_to {
     }};
 }
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub unsafe fn refresh_sysenter_cs(thread: *mut thread_struct) {
     /* Only happens when SEP is enabled, no need to test "SEP"arately: */
     if unlikely(this_cpu_read(cpu_tss_rw.x86_tss.ss1) == (*thread).sysenter_cs) {
@@ -77,11 +77,11 @@ pub unsafe fn refresh_sysenter_cs(thread: *mut thread_struct) {
 /* This is used when switching tasks or entering/exiting vm86 mode. */
 pub unsafe fn update_task_stack(task: *mut task_struct) {
     /* sp0 always points to the entry trampoline stack, which is constant: */
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     {
         this_cpu_write(cpu_tss_rw.x86_tss.sp1, (*task).thread.sp0);
     }
-    #[cfg(not(feature = "CONFIG_X86_32"))]
+    #[cfg(not(CONFIG_X86_32))]
     {
         if !cpu_feature_enabled(X86_FEATURE_FRED) && cpu_feature_enabled(X86_FEATURE_XENPV) {
             /* Xen PV enters the kernel on the thread stack. */
@@ -96,11 +96,11 @@ pub unsafe fn kthread_frame_init(
     arg: *mut core::ffi::c_void,
 ) {
     (*frame).bx = fun.map_or(0, |f| f as usize as c_ulong);
-    #[cfg(feature = "CONFIG_X86_32")]
+    #[cfg(CONFIG_X86_32)]
     {
         (*frame).di = arg as usize as c_ulong;
     }
-    #[cfg(not(feature = "CONFIG_X86_32"))]
+    #[cfg(not(CONFIG_X86_32))]
     {
         (*frame).r12 = arg as usize as c_ulong;
     }

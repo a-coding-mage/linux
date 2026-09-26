@@ -277,16 +277,16 @@ extern "C" {
     pub static read_idmap: [c_int; 0];
 }
 
-#[cfg(feature = "CONFIG_HAVE_IMA_KEXEC")]
+#[cfg(CONFIG_HAVE_IMA_KEXEC)]
 extern "C" {
     pub fn ima_load_kexec_buffer();
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_IMA_KEXEC"))]
+#[cfg(not(CONFIG_HAVE_IMA_KEXEC))]
 #[inline]
 pub fn ima_load_kexec_buffer() {}
 
-#[cfg(feature = "CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS")]
+#[cfg(CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS)]
 extern "C" {
     pub fn ima_post_key_create_or_update(
         keyring: *mut core::ffi::c_void,  // struct key
@@ -298,12 +298,12 @@ extern "C" {
     );
 }
 
-#[cfg(feature = "CONFIG_IMA_KEXEC")]
+#[cfg(CONFIG_IMA_KEXEC)]
 extern "C" {
     pub fn ima_measure_kexec_event(event_name: *const c_int);  // const char
 }
 
-#[cfg(not(feature = "CONFIG_IMA_KEXEC"))]
+#[cfg(not(CONFIG_IMA_KEXEC))]
 #[inline]
 pub fn ima_measure_kexec_event(_event_name: *const c_int) {}
 
@@ -452,7 +452,7 @@ extern "C" {
 // struct modsig is opaque
 pub enum Modsig {}
 
-#[cfg(feature = "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS")]
+#[cfg(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS)]
 #[repr(C)]
 pub struct ImaKeyEntry {
     pub list: core::ffi::c_void,               // struct list_head
@@ -461,7 +461,7 @@ pub struct ImaKeyEntry {
     pub keyring_name: *mut c_int,              // char
 }
 
-#[cfg(feature = "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS")]
+#[cfg(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS)]
 extern "C" {
     pub fn ima_init_key_queue();
     pub fn ima_should_queue_key() -> bool;
@@ -473,17 +473,17 @@ extern "C" {
     pub fn ima_process_queued_keys();
 }
 
-#[cfg(not(feature = "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS"))]
+#[cfg(not(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS))]
 #[inline]
 pub fn ima_init_key_queue() {}
 
-#[cfg(not(feature = "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS"))]
+#[cfg(not(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS))]
 #[inline]
 pub fn ima_should_queue_key() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS"))]
+#[cfg(not(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS))]
 #[inline]
 pub fn ima_queue_key(
     _keyring: *mut core::ffi::c_void,
@@ -493,7 +493,7 @@ pub fn ima_queue_key(
     false
 }
 
-#[cfg(not(feature = "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS"))]
+#[cfg(not(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS))]
 #[inline]
 pub fn ima_process_queued_keys() {}
 
@@ -608,7 +608,7 @@ pub const IMA_APPRAISE_FIRMWARE: u32 = 0x10;
 pub const IMA_APPRAISE_POLICY: u32 = 0x20;
 pub const IMA_APPRAISE_KEXEC: u32 = 0x40;
 
-#[cfg(feature = "CONFIG_IMA_APPRAISE")]
+#[cfg(CONFIG_IMA_APPRAISE)]
 extern "C" {
     pub fn ima_check_blacklist(
         iint: *mut ImaIintCache,
@@ -648,7 +648,7 @@ extern "C" {
     pub fn init_ima_appraise_lsm(lsmid: *const core::ffi::c_void);  // struct lsm_id
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_check_blacklist(
     _iint: *mut ImaIintCache,
@@ -658,7 +658,7 @@ pub fn ima_check_blacklist(
     0
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_appraise_measurement(
     _func: ImaHooks,
@@ -674,7 +674,7 @@ pub fn ima_appraise_measurement(
     -1
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_must_appraise(
     _idmap: *mut core::ffi::c_void,
@@ -685,11 +685,11 @@ pub fn ima_must_appraise(
     0
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_update_xattr(_iint: *mut ImaIintCache, _file: *mut core::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_get_cache_status(
     _iint: *mut ImaIintCache,
@@ -699,7 +699,7 @@ pub fn ima_get_cache_status(
     -1
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_get_hash_algo(
     _xattr_value: *const core::ffi::c_void,
@@ -708,7 +708,7 @@ pub fn ima_get_hash_algo(
     unsafe { ima_hash_algo }
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn ima_read_xattr(
     _dentry: *mut core::ffi::c_void,
@@ -718,11 +718,11 @@ pub fn ima_read_xattr(
     0
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE"))]
+#[cfg(not(CONFIG_IMA_APPRAISE))]
 #[inline]
 pub fn init_ima_appraise_lsm(_lsmid: *const core::ffi::c_void) {}
 
-#[cfg(feature = "CONFIG_IMA_APPRAISE_MODSIG")]
+#[cfg(CONFIG_IMA_APPRAISE_MODSIG)]
 extern "C" {
     pub fn ima_read_modsig(
         func: ImaHooks,
@@ -749,7 +749,7 @@ extern "C" {
     pub fn ima_free_modsig(modsig: *mut Modsig);
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE_MODSIG"))]
+#[cfg(not(CONFIG_IMA_APPRAISE_MODSIG))]
 #[inline]
 pub fn ima_read_modsig(
     _func: ImaHooks,
@@ -760,11 +760,11 @@ pub fn ima_read_modsig(
     -95  // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE_MODSIG"))]
+#[cfg(not(CONFIG_IMA_APPRAISE_MODSIG))]
 #[inline]
 pub fn ima_collect_modsig(_modsig: *mut Modsig, _buf: *const core::ffi::c_void, _size: i64) {}
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE_MODSIG"))]
+#[cfg(not(CONFIG_IMA_APPRAISE_MODSIG))]
 #[inline]
 pub fn ima_get_modsig_digest(
     _modsig: *const Modsig,
@@ -775,7 +775,7 @@ pub fn ima_get_modsig_digest(
     -95  // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE_MODSIG"))]
+#[cfg(not(CONFIG_IMA_APPRAISE_MODSIG))]
 #[inline]
 pub fn ima_get_raw_modsig(
     _modsig: *const Modsig,
@@ -785,17 +785,17 @@ pub fn ima_get_raw_modsig(
     -95  // -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_IMA_APPRAISE_MODSIG"))]
+#[cfg(not(CONFIG_IMA_APPRAISE_MODSIG))]
 #[inline]
 pub fn ima_free_modsig(_modsig: *mut Modsig) {}
 
 // LSM based policy rules
-#[cfg(feature = "CONFIG_IMA_LSM_RULES")]
+#[cfg(CONFIG_IMA_LSM_RULES)]
 pub use security_audit_rule_init as ima_filter_rule_init;
 pub use security_audit_rule_free as ima_filter_rule_free;
 pub use security_audit_rule_match as ima_filter_rule_match;
 
-#[cfg(not(feature = "CONFIG_IMA_LSM_RULES"))]
+#[cfg(not(CONFIG_IMA_LSM_RULES))]
 #[inline]
 pub fn ima_filter_rule_init(
     _field: u32,
@@ -807,11 +807,11 @@ pub fn ima_filter_rule_init(
     -22  // -EINVAL
 }
 
-#[cfg(not(feature = "CONFIG_IMA_LSM_RULES"))]
+#[cfg(not(CONFIG_IMA_LSM_RULES))]
 #[inline]
 pub fn ima_filter_rule_free(_lsmrule: *mut core::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_IMA_LSM_RULES"))]
+#[cfg(not(CONFIG_IMA_LSM_RULES))]
 #[inline]
 pub fn ima_filter_rule_match(
     _prop: *mut core::ffi::c_void,  // struct lsm_prop
@@ -823,7 +823,7 @@ pub fn ima_filter_rule_match(
 }
 
 // These functions are referenced but not defined in this header
-#[cfg(feature = "CONFIG_IMA_LSM_RULES")]
+#[cfg(CONFIG_IMA_LSM_RULES)]
 extern "C" {
     pub fn security_audit_rule_init(
         field: u32,
@@ -841,10 +841,10 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_IMA_READ_POLICY")]
+#[cfg(CONFIG_IMA_READ_POLICY)]
 pub const POLICY_FILE_FLAGS: u32 = 0o600;  // S_IWUSR | S_IRUSR
 
-#[cfg(not(feature = "CONFIG_IMA_READ_POLICY"))]
+#[cfg(not(CONFIG_IMA_READ_POLICY))]
 pub const POLICY_FILE_FLAGS: u32 = 0o200;  // S_IWUSR
 
 

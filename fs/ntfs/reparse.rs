@@ -17,7 +17,7 @@ pub const WOF_COMPRESSION_XPRESS16K: __le32 = cpu_to_le32(3);
 
 unsafe fn reparse_name_is_valid(size: usize, name_off: usize, len: u16) -> bool {
     if ((name_off | len as usize) & 1) != 0 { return false; }
-    name_off + len as usize <= size
+    name_off + (len as usize) <= size
 }
 
 unsafe fn ntfs_reparse_target_to_nls(vol: *mut ntfs_volume, uname: *const __le16, mut ulen: u16, target: *mut *mut c_char) -> c_int {
@@ -34,7 +34,7 @@ pub static mut reparse_index_name: [__le16; 3] = [cpu_to_le16(b'$' as u16), cpu_
 
 unsafe fn valid_reparse_buffer(ni: *mut ntfs_inode, a: *const reparse_point, size: usize, min: usize) -> bool {
     if ni.is_null() || a.is_null() || size < core::mem::size_of::<reparse_point>() { return false; }
-    if min != 0 && le16_to_cpu((*a).reparse_data_length) as usize < min { return false; }
+    if min != 0 && (le16_to_cpu((*a).reparse_data_length) as usize) < min { return false; }
     if (*a).reparse_tag == IO_REPARSE_TAG_RESERVED_ZERO { return false; }
     let mut expected = core::mem::size_of::<reparse_point>() + le16_to_cpu((*a).reparse_data_length) as usize;
     if ((*a).reparse_tag & IO_REPARSE_TAG_IS_MICROSOFT) == 0 { expected += core::mem::size_of::<guid>(); }
@@ -64,7 +64,7 @@ pub unsafe fn ntfs_parse_reparse(ni: *mut ntfs_inode, mode: *mut c_uint) -> c_in
         IO_REPARSE_TAG_MOUNT_POINT => { let d=(*a).reparse_data.as_ptr() as *const mount_point_reparse_data; let n=(d as *const u8).add(core::mem::offset_of!(mount_point_reparse_data,path_buffer)+le16_to_cpu((*d).substitute_name_offset) as usize) as *const __le16; err=ntfs_reparse_target_to_nls((*ni).vol,n,le16_to_cpu((*d).substitute_name_length),&mut (*ni).target); }
         IO_REPARSE_TAG_SYMLINK => { let d=(*a).reparse_data.as_ptr() as *const symlink_reparse_data; let n=(d as *const u8).add(core::mem::offset_of!(symlink_reparse_data,path_buffer)+le16_to_cpu((*d).substitute_name_offset) as usize) as *const __le16; err=ntfs_reparse_target_to_nls((*ni).vol,n,le16_to_cpu((*d).substitute_name_length),&mut (*ni).target); if err==0 { (*ni).reparse_flags=(*d).flags; } }
         IO_REPARSE_TAG_LX_SYMLINK => { let d=(*a).reparse_data.as_ptr() as *const WslLinkReparseData; let l=le16_to_cpu((*a).reparse_data_length) as usize-core::mem::size_of::<__le32>(); (*ni).target=kvzalloc(l+1,GFP_NOFS) as *mut c_char; if !(*ni).target.is_null() { core::ptr::copy_nonoverlapping((*d).link.as_ptr(),(*ni).target as *mut u8,l); *(*ni).target.add(l)=0; err=0; } }
-        IO_REPARSE_TAG_WOF => { NInoSetWofCompressed(ni); (*VFS_I(ni)).i_mode &= !0222; err=0; }
+        IO_REPARSE_TAG_WOF => { NInoSetWofCompressed(ni); (*VFS_I(ni)).i_mode &= !0o222; err=0; }
         _ => {}
     }
     if err==0 { *mode=ntfs_reparse_tag_mode((*a).reparse_tag); (*ni).reparse_tag=(*a).reparse_tag; } kvfree(a as *mut c_void); err

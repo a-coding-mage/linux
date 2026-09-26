@@ -6,7 +6,7 @@
 // The original declarations are assembler-only and are active only when
 // CONFIG_ARM64_MTE is enabled. They are preserved here as Rust macro items.
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 macro_rules! mte_switch_to_guest {
     ($g_ctxt:expr, $h_ctxt:expr, $reg1:expr) => {{
         // alternative_if_not ARM64_MTE
@@ -29,7 +29,7 @@ macro_rules! mte_switch_to_guest {
     }};
 }
 
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 macro_rules! mte_switch_to_hyp {
     ($g_ctxt:expr, $h_ctxt:expr, $reg1:expr) => {{
         // alternative_if_not ARM64_MTE
@@ -54,12 +54,12 @@ macro_rules! mte_switch_to_hyp {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 macro_rules! mte_switch_to_guest {
     ($g_ctxt:expr, $h_ctxt:expr, $reg1:expr) => {};
 }
 
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 macro_rules! mte_switch_to_hyp {
     ($g_ctxt:expr, $h_ctxt:expr, $reg1:expr) => {};
 }

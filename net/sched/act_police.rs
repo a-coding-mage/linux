@@ -22,6 +22,8 @@ unsafe fn tcf_police_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     let mut size: c_int;
     let bind = flags & TCA_ACT_FLAGS_BIND != 0;
     let mut tb: [*mut nlattr; TCA_POLICE_MAX as usize + 1] = [core::ptr::null_mut(); TCA_POLICE_MAX as usize + 1];
+    'release_idr: {
+    'failure: {
     let mut goto_ch: *mut tcf_chain = core::ptr::null_mut();
     let parm: *mut tc_police;
     let police: *mut tcf_police;
@@ -55,24 +57,24 @@ unsafe fn tcf_police_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
         spin_lock_init(&mut (*to_police(*a)).tcfp_lock);
     } else if flags & TCA_ACT_FLAGS_REPLACE == 0 { tcf_idr_release(*a, bind); return -EEXIST; }
     err = tcf_action_check_ctrlact((*parm).action, tp, &mut goto_ch, extack);
-    if err < 0 { goto release_idr; }
+    if err < 0 { break 'release_idr; }
     police = to_police(*a);
     if (*parm).rate.rate != 0 {
         err = -ENOMEM;
         r_tab = qdisc_get_rtab(&(*parm).rate, tb[TCA_POLICE_RATE as usize], core::ptr::null_mut());
-        if r_tab.is_null() { goto failure; }
+        if r_tab.is_null() { break 'failure; }
         if (*parm).peakrate.rate != 0 {
             p_tab = qdisc_get_rtab(&(*parm).peakrate, tb[TCA_POLICE_PEAKRATE as usize], core::ptr::null_mut());
-            if p_tab.is_null() { goto failure; }
+            if p_tab.is_null() { break 'failure; }
         }
     }
-    if !est.is_null() { err = gen_replace_estimator(&mut (*police).tcf_bstats, (*police).common.cpu_bstats, &mut (*police).tcf_rate_est, &mut (*police).tcf_lock, false, est); if err != 0 { goto failure; } }
-    else if !tb[TCA_POLICE_AVRATE as usize].is_null() && (ret == ACT_P_CREATED || !gen_estimator_active(&(*police).tcf_rate_est)) { err = -EINVAL; goto failure; }
-    if !tb[TCA_POLICE_RESULT as usize].is_null() { tcfp_result = nla_get_u32(tb[TCA_POLICE_RESULT as usize]) as c_int; if !tcf_action_valid(tcfp_result) || TC_ACT_EXT_CMP(tcfp_result, TC_ACT_GOTO_CHAIN) { err = -EINVAL; goto failure; } }
-    if (!tb[TCA_POLICE_PKTRATE64 as usize].is_null()) != (!tb[TCA_POLICE_PKTBURST64 as usize].is_null()) { err = -EINVAL; goto failure; }
-    if !tb[TCA_POLICE_PKTRATE64 as usize].is_null() && !r_tab.is_null() { err = -EINVAL; goto failure; }
+    if !est.is_null() { err = gen_replace_estimator(&mut (*police).tcf_bstats, (*police).common.cpu_bstats, &mut (*police).tcf_rate_est, &mut (*police).tcf_lock, false, est); if err != 0 { break 'failure; } }
+    else if !tb[TCA_POLICE_AVRATE as usize].is_null() && (ret == ACT_P_CREATED || !gen_estimator_active(&(*police).tcf_rate_est)) { err = -EINVAL; break 'failure; }
+    if !tb[TCA_POLICE_RESULT as usize].is_null() { tcfp_result = nla_get_u32(tb[TCA_POLICE_RESULT as usize]) as c_int; if !tcf_action_valid(tcfp_result) || TC_ACT_EXT_CMP(tcfp_result, TC_ACT_GOTO_CHAIN) { err = -EINVAL; break 'failure; } }
+    if (!tb[TCA_POLICE_PKTRATE64 as usize].is_null()) != (!tb[TCA_POLICE_PKTBURST64 as usize].is_null()) { err = -EINVAL; break 'failure; }
+    if !tb[TCA_POLICE_PKTRATE64 as usize].is_null() && !r_tab.is_null() { err = -EINVAL; break 'failure; }
     new = kzalloc_obj::<tcf_police_params>();
-    if new.is_null() { err = -ENOMEM; goto failure; }
+    if new.is_null() { err = -ENOMEM; break 'failure; }
     (*new).tcfp_result = tcfp_result as u32;
     (*new).tcfp_mtu = (*parm).mtu;
     if (*new).tcfp_mtu == 0 { (*new).tcfp_mtu = !0; if !r_tab.is_null() { (*new).tcfp_mtu = 255 << (*r_tab).rate.cell_log; } }
@@ -87,8 +89,10 @@ unsafe fn tcf_police_init(net: *mut net, nla: *mut nlattr, est: *mut nlattr,
     (*police).tcfp_t_c = ktime_get_ns(); (*police).tcfp_toks = (*new).tcfp_burst; if (*new).peak_present { (*police).tcfp_ptoks = (*new).tcfp_mtu_ptoks; }
     spin_unlock_bh(&mut (*police).tcfp_lock); goto_ch = tcf_action_set_ctrlact(*a, (*parm).action, goto_ch); new = rcu_replace_pointer(&mut (*police).params, new, lockdep_is_held(&(*police).tcf_lock)); spin_unlock_bh(&mut (*police).tcf_lock);
     if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); } if !new.is_null() { kfree_rcu(new, rcu); } return ret;
-failure: qdisc_put_rtab(p_tab); qdisc_put_rtab(r_tab); if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
-release_idr: tcf_idr_release(*a, bind); err
+    }
+    qdisc_put_rtab(p_tab); qdisc_put_rtab(r_tab); if !goto_ch.is_null() { tcf_chain_put_by_act(goto_ch); }
+    }
+    tcf_idr_release(*a, bind); err
 }
 
 unsafe fn tcf_police_mtu_check(skb: *mut sk_buff, limit: u32) -> bool {

@@ -41,8 +41,8 @@ static mut BR2684_DEVS: ListHead = LIST_HEAD!();
 unsafe fn br2684_find_dev(s: *const Br2684IfSpec) -> *mut NetDevice {
     let mut lh: *mut ListHead;
     match (*s).method {
-        BR2684_FIND_BYNUM => { list_for_each!(lh, &raw mut BR2684_DEVS) { let d=list_entry_brdev(lh); if (*brpriv(d)).number == (*s).spec.devnum { return d; } } },
-        BR2684_FIND_BYIFNAME => { list_for_each!(lh, &raw mut BR2684_DEVS) { let d=list_entry_brdev(lh); if strncmp((*d).name.as_ptr(), (*s).spec.ifname.as_ptr(), IFNAMSIZ) == 0 { return d; } } },
+        BR2684_FIND_BYNUM => { list_for_each!(lh, &raw mut BR2684_DEVS, { let d=list_entry_brdev(lh); if (*brpriv(d)).number == (*s).spec.devnum { return d; } }); },
+        BR2684_FIND_BYIFNAME => { list_for_each!(lh, &raw mut BR2684_DEVS, { let d=list_entry_brdev(lh); if strncmp((*d).name.as_ptr(), (*s).spec.ifname.as_ptr(), IFNAMSIZ) == 0 { return d; } }); },
         _ => {}
     } null_mut()
 }
@@ -50,7 +50,7 @@ unsafe fn br2684_find_dev(s: *const Br2684IfSpec) -> *mut NetDevice {
 unsafe extern "C" fn atm_dev_event(_this: *mut NotifierBlock, event: CULong, arg: *mut c_void) -> i32 {
     let atm_dev = arg as *mut AtmDev; let mut lh: *mut ListHead;
     pr_debug!("event={} dev={:p}\n", event, atm_dev); read_lock_irqsave!(&raw mut DEVS_LOCK);
-    list_for_each!(lh, &raw mut BR2684_DEVS) { let dev=list_entry_brdev(lh); let mut v: *mut Br2684Vcc; list_for_each_entry!(v, &(*brpriv(dev)).brvccs, brvccs) { let a=(*v).atmvcc; if !a.is_null() && (*a).dev==atm_dev { if (*(*a).dev).signal==ATM_PHY_SIG_LOST { netif_carrier_off(dev); } else { netif_carrier_on(dev); } } } }
+    list_for_each!(lh, &raw mut BR2684_DEVS, { let dev=list_entry_brdev(lh); let mut v: *mut Br2684Vcc; list_for_each_entry!(v, &(*brpriv(dev)).brvccs, brvccs, { let a=(*v).atmvcc; if !a.is_null() && (*a).dev==atm_dev { if (*(*a).dev).signal==ATM_PHY_SIG_LOST { netif_carrier_off(dev); } else { netif_carrier_on(dev); } } }); });
     read_unlock_irqrestore!(&raw mut DEVS_LOCK); NOTIFY_DONE
 }
 

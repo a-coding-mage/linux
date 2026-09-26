@@ -13,15 +13,15 @@
 
 macro_rules! INTERVAL_TREE_DEFINE {
     ($itstruct:ty, $itrb:ident, $ittype:ty, $itsubtree:ident,
-     $itstart:expr, $itlast:expr, $itstatic:ident, $itprefix:ident) => {
-        $itstatic fn $itprefix##_augment(node: *mut $itstruct) {
+     $itstart:expr, $itlast:expr, $itstatic:ident, $itprefix:tt) => {
+        $itstatic fn ::kernel::macros::paste!([<$itprefix _augment>])(node: *mut $itstruct) {
             /* RB_DECLARE_CALLBACKS_MAX(...): external augmented-rbtree callback. */
             unsafe {
                 let _ = node;
             }
         }
 
-        $itstatic unsafe fn $itprefix##_insert(
+        $itstatic unsafe fn ::kernel::macros::paste!([<$itprefix _insert>])(
             node: *mut $itstruct,
             root: *mut rb_root_cached,
         ) {
@@ -51,19 +51,19 @@ macro_rules! INTERVAL_TREE_DEFINE {
                 &mut (*node).$itrb,
                 root,
                 leftmost,
-                $itprefix##_augment,
+                ::kernel::macros::paste!([<$itprefix _augment>]),
             );
         }
 
-        $itstatic unsafe fn $itprefix##_remove(
+        $itstatic unsafe fn ::kernel::macros::paste!([<$itprefix _remove>])(
             node: *mut $itstruct,
             root: *mut rb_root_cached,
         ) {
-            rb_erase_augmented_cached(&mut (*node).$itrb, root, $itprefix##_augment);
+            rb_erase_augmented_cached(&mut (*node).$itrb, root, ::kernel::macros::paste!([<$itprefix _augment>]));
         }
 
         /* Iterate over intervals intersecting [start; last]. */
-        $itstatic unsafe fn $itprefix##_subtree_search(
+        $itstatic unsafe fn ::kernel::macros::paste!([<$itprefix _subtree_search>])(
             mut node: *mut $itstruct,
             start: $ittype,
             last: $ittype,
@@ -88,7 +88,7 @@ macro_rules! INTERVAL_TREE_DEFINE {
             }
         }
 
-        $itstatic unsafe fn $itprefix##_iter_first(
+        $itstatic unsafe fn ::kernel::macros::paste!([<$itprefix _iter_first>])(
             root: *mut rb_root_cached,
             start: $ittype,
             last: $ittype,
@@ -104,10 +104,10 @@ macro_rules! INTERVAL_TREE_DEFINE {
             if $itstart(leftmost) > last {
                 return core::ptr::null_mut();
             }
-            $itprefix##_subtree_search(node, start, last)
+            ::kernel::macros::paste!([<$itprefix _subtree_search>])(node, start, last)
         }
 
-        $itstatic unsafe fn $itprefix##_iter_next(
+        $itstatic unsafe fn ::kernel::macros::paste!([<$itprefix _iter_next>])(
             mut node: *mut $itstruct,
             start: $ittype,
             last: $ittype,
@@ -117,7 +117,7 @@ macro_rules! INTERVAL_TREE_DEFINE {
                 if !rb.is_null() {
                     let right: *mut $itstruct = rb_entry(rb);
                     if start <= (*right).$itsubtree {
-                        return $itprefix##_subtree_search(right, start, last);
+                        return ::kernel::macros::paste!([<$itprefix _subtree_search>])(right, start, last);
                     }
                 }
                 loop {

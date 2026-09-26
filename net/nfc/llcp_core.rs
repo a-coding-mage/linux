@@ -64,7 +64,7 @@ unsafe fn nfc_llcp_socket_release(local: *mut nfc_llcp_local, device: bool, err:
 
 unsafe fn nfc_llcp_local_get(local: *mut nfc_llcp_local) -> *mut nfc_llcp_local {
     if nfc_get_device((*local).dev.idx).is_null() { return core::ptr::null_mut(); }
-    kref_get(&mut (*local).ref); local
+    kref_get(&mut (*local).r#ref); local
 }
 unsafe fn local_cleanup(local: *mut nfc_llcp_local) {
     nfc_llcp_socket_release(local, false, ENXIO); timer_delete_sync(&mut (*local).link_timer); skb_queue_purge(&mut (*local).tx_queue);
@@ -74,7 +74,7 @@ unsafe fn local_cleanup(local: *mut nfc_llcp_local) {
 }
 unsafe fn local_release(ref_: *mut kref) { let local = container_of!(ref_, nfc_llcp_local, ref); local_cleanup(local); kfree(local); }
 pub unsafe fn nfc_llcp_local_put(local: *mut nfc_llcp_local) -> i32 {
-    if local.is_null() { return 0; } let dev = (*local).dev; let ret = kref_put(&mut (*local).ref, local_release); nfc_put_device(dev); ret
+    if local.is_null() { return 0; } let dev = (*local).dev; let ret = kref_put(&mut (*local).r#ref, local_release); nfc_put_device(dev); ret
 }
 
 unsafe fn nfc_llcp_sock_get(local: *mut nfc_llcp_local, ssap: u8, dsap: u8) -> *mut nfc_llcp_sock {

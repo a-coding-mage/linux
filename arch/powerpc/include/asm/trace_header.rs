@@ -27,32 +27,32 @@ pub const PPC64_INTERRUPT_EVENTS: &[&str] = &[
     "timer_interrupt_exit",
 ];
 
-#[cfg(feature = "CONFIG_PPC_DOORBELL")]
+#[cfg(CONFIG_PPC_DOORBELL)]
 pub const PPC64_DOORBELL_EVENTS: &[&str] = &["doorbell_entry", "doorbell_exit"];
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 extern "C" {
     pub fn hcall_tracepoint_regfunc() -> c_int;
     pub fn hcall_tracepoint_unregfunc();
 }
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 #[repr(C)]
 pub struct HcallEntryEvent {
     pub opcode: c_ulong,
 }
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 #[repr(C)]
 pub struct HcallExitEvent {
     pub opcode: c_ulong,
     pub retval: c_long,
 }
 
-#[cfg(feature = "CONFIG_PPC_PSERIES")]
+#[cfg(CONFIG_PPC_PSERIES)]
 pub const HCALL_TRACE_CONDITION: &str = "cpu_online(raw_smp_processor_id())";
 
-#[cfg(feature = "CONFIG_PPC_RTAS")]
+#[cfg(CONFIG_PPC_RTAS)]
 #[repr(C)]
 pub struct RtasInputEvent {
     pub nargs: u32,
@@ -60,7 +60,7 @@ pub struct RtasInputEvent {
     // are variable-sized trace record fields.
 }
 
-#[cfg(feature = "CONFIG_PPC_RTAS")]
+#[cfg(CONFIG_PPC_RTAS)]
 #[repr(C)]
 pub struct RtasOutputEvent {
     pub nr_other: u32,
@@ -68,7 +68,7 @@ pub struct RtasOutputEvent {
     // C __string(name, name) and dynamic other_outputs follow the fixed fields.
 }
 
-#[cfg(feature = "CONFIG_PPC_RTAS")]
+#[cfg(CONFIG_PPC_RTAS)]
 #[repr(C)]
 pub struct RtasParameterBlockEvent {
     pub token: u32,
@@ -77,29 +77,29 @@ pub struct RtasParameterBlockEvent {
     pub params: [u32; 16],
 }
 
-#[cfg(feature = "CONFIG_PPC_RTAS")]
+#[cfg(CONFIG_PPC_RTAS)]
 pub const RTAS_PARAMETER_BLOCK_EVENTS: &[&str] = &["rtas_ll_entry", "rtas_ll_exit"];
 
-#[cfg(feature = "CONFIG_PPC_POWERNV")]
+#[cfg(CONFIG_PPC_POWERNV)]
 extern "C" {
     pub fn opal_tracepoint_regfunc() -> c_int;
     pub fn opal_tracepoint_unregfunc();
 }
 
-#[cfg(feature = "CONFIG_PPC_POWERNV")]
+#[cfg(CONFIG_PPC_POWERNV)]
 #[repr(C)]
 pub struct OpalEntryEvent {
     pub opcode: c_ulong,
 }
 
-#[cfg(feature = "CONFIG_PPC_POWERNV")]
+#[cfg(CONFIG_PPC_POWERNV)]
 #[repr(C)]
 pub struct OpalExitEvent {
     pub opcode: c_ulong,
     pub retval: c_ulong,
 }
 
-#[cfg(feature = "CONFIG_PPC_64S_HASH_MMU")]
+#[cfg(CONFIG_PPC_64S_HASH_MMU)]
 #[repr(C)]
 pub struct HashFaultEvent {
     pub addr: c_ulong,

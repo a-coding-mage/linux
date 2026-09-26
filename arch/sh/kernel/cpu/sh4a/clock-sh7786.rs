@@ -45,9 +45,13 @@ static mut div4_table: clk_div4_table = clk_div4_table {
     div_mult_table: &mut div4_div_mult_table,
 };
 
-enum {
-    DIV4_I, DIV4_SH, DIV4_B, DIV4_DDR, DIV4_DU, DIV4_P, DIV4_NR,
-}
+pub const DIV4_I: i32 = 0;
+pub const DIV4_SH: i32 = DIV4_I + 1;
+pub const DIV4_B: i32 = DIV4_SH + 1;
+pub const DIV4_DDR: i32 = DIV4_B + 1;
+pub const DIV4_DU: i32 = DIV4_DDR + 1;
+pub const DIV4_P: i32 = DIV4_DU + 1;
+pub const DIV4_NR: i32 = DIV4_P + 1;
 
 macro_rules! DIV4 {
     ($bit:expr, $mask:expr, $flags:expr) => {
@@ -67,15 +71,36 @@ static mut div4_clks: [clk; DIV4_NR] = [
 const MSTPCR0: usize = 0xffc40030;
 const MSTPCR1: usize = 0xffc40034;
 
-enum {
-    MSTP029, MSTP028, MSTP027, MSTP026, MSTP025, MSTP024,
-    MSTP023, MSTP022, MSTP021, MSTP020, MSTP017, MSTP016,
-    MSTP015, MSTP014, MSTP011, MSTP010, MSTP009, MSTP008,
-    MSTP005, MSTP004, MSTP002,
-    MSTP112, MSTP110, MSTP109, MSTP108,
-    MSTP105, MSTP104, MSTP103, MSTP102,
-    MSTP_NR,
-}
+pub const MSTP029: i32 = 0;
+pub const MSTP028: i32 = MSTP029 + 1;
+pub const MSTP027: i32 = MSTP028 + 1;
+pub const MSTP026: i32 = MSTP027 + 1;
+pub const MSTP025: i32 = MSTP026 + 1;
+pub const MSTP024: i32 = MSTP025 + 1;
+pub const MSTP023: i32 = MSTP024 + 1;
+pub const MSTP022: i32 = MSTP023 + 1;
+pub const MSTP021: i32 = MSTP022 + 1;
+pub const MSTP020: i32 = MSTP021 + 1;
+pub const MSTP017: i32 = MSTP020 + 1;
+pub const MSTP016: i32 = MSTP017 + 1;
+pub const MSTP015: i32 = MSTP016 + 1;
+pub const MSTP014: i32 = MSTP015 + 1;
+pub const MSTP011: i32 = MSTP014 + 1;
+pub const MSTP010: i32 = MSTP011 + 1;
+pub const MSTP009: i32 = MSTP010 + 1;
+pub const MSTP008: i32 = MSTP009 + 1;
+pub const MSTP005: i32 = MSTP008 + 1;
+pub const MSTP004: i32 = MSTP005 + 1;
+pub const MSTP002: i32 = MSTP004 + 1;
+pub const MSTP112: i32 = MSTP002 + 1;
+pub const MSTP110: i32 = MSTP112 + 1;
+pub const MSTP109: i32 = MSTP110 + 1;
+pub const MSTP108: i32 = MSTP109 + 1;
+pub const MSTP105: i32 = MSTP108 + 1;
+pub const MSTP104: i32 = MSTP105 + 1;
+pub const MSTP103: i32 = MSTP104 + 1;
+pub const MSTP102: i32 = MSTP103 + 1;
+pub const MSTP_NR: i32 = MSTP102 + 1;
 
 static mut mstp_clks: [clk; MSTP_NR] = [
     [MSTP029] = SH_CLK_MSTP32(&mut div4_clks[DIV4_P], MSTPCR0, 29, 0),

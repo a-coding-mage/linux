@@ -7,17 +7,17 @@
 // Dependencies supplied by the surrounding ARM kernel translation.
 
 /// Return true if we are running on a SMP platform.
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub const fn is_smp() -> bool { false }
 
-#[cfg(all(feature = "CONFIG_SMP", feature = "CONFIG_SMP_ON_UP"))]
+#[cfg(all(CONFIG_SMP, CONFIG_SMP_ON_UP))]
 #[inline]
 pub unsafe fn is_smp() -> bool {
     smp_on_up != 0
 }
 
-#[cfg(all(feature = "CONFIG_SMP", not(feature = "CONFIG_SMP_ON_UP")))]
+#[cfg(all(CONFIG_SMP, not(CONFIG_SMP_ON_UP)))]
 #[inline]
 pub const fn is_smp() -> bool { true }
 
@@ -52,22 +52,22 @@ pub unsafe fn smp_cpuid_part(cpu: i32) -> u32 {
 }
 
 // All SMP configurations have the extended CPUID registers.
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 #[inline]
 pub const fn tlb_ops_need_broadcast() -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[inline]
 pub unsafe fn tlb_ops_need_broadcast() -> i32 {
     if !is_smp() { return 0; }
     (((read_cpuid_ext(CPUID_EXT_MMFR3) >> 12) & 0xf) < 2) as i32
 }
 
-#[cfg(any(not(feature = "CONFIG_SMP"), feature = "LINUX_ARM_ARCH_GE_7"))]
+#[cfg(any(not(CONFIG_SMP), feature = "LINUX_ARM_ARCH_GE_7"))]
 #[inline]
 pub const fn cache_ops_need_broadcast() -> i32 { 0 }
 
-#[cfg(all(feature = "CONFIG_SMP", not(feature = "LINUX_ARM_ARCH_GE_7")))]
+#[cfg(all(CONFIG_SMP, not(feature = "LINUX_ARM_ARCH_GE_7")))]
 #[inline]
 pub unsafe fn cache_ops_need_broadcast() -> i32 {
     if !is_smp() { return 0; }
@@ -99,10 +99,10 @@ pub struct mpidr_hash {
 #[inline]
 pub unsafe fn mpidr_hash_size() -> u32 { 1u32 << mpidr_hash.bits }
 
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 extern "C" { fn platform_can_hotplug_cpu(cpu: u32) -> i32; }
 
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 #[inline]
 pub const fn platform_can_hotplug_cpu(_cpu: u32) -> i32 { 0 }
 

@@ -66,7 +66,7 @@ fn comma_list(input: &[u8]) -> Result<Vec<&[u8]>, String> {
     let mut result = Vec::new();
     let mut begin = 0;
     let mut at = 0;
-    let mut depth = 0_usize;
+    let mut depth = 0usize;
     while at < input.len() {
         match input[at] {
             b'\'' | b'"' => {
@@ -177,7 +177,7 @@ pub(crate) fn generate(input: &[u8]) -> Result<String, String> {
     let mut at = 0;
     let mut expected = None;
     let mut count = 0;
-    let mut guards = 0_u8;
+    let mut guards = 0u8;
     let mut ended = false;
     let mut seen_owner = false;
     let mut seen_basic = false;

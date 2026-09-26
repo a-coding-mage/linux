@@ -832,6 +832,7 @@ unsafe fn davinci_mcasp_set_dai_fmt(cpu_dai: *mut core::ffi::c_void, fmt: u32) -
     let mut data_delay: u32;
     let mut fs_pol_rising: bool;
     let mut inv_fs = false;
+    'out: {
 
     if fmt == 0 {
         return 0;
@@ -870,7 +871,7 @@ unsafe fn davinci_mcasp_set_dai_fmt(cpu_dai: *mut core::ffi::c_void, fmt: u32) -
     },
     _ => {
         ret = -22;
-        goto out;
+        break 'out;
     }
     }
 
@@ -948,7 +949,7 @@ unsafe fn davinci_mcasp_set_dai_fmt(cpu_dai: *mut core::ffi::c_void, fmt: u32) -
     },
     _ => {
         ret = -22;
-        goto out;
+        break 'out;
     }
     }
 
@@ -975,7 +976,7 @@ unsafe fn davinci_mcasp_set_dai_fmt(cpu_dai: *mut core::ffi::c_void, fmt: u32) -
     },
     _ => {
         ret = -22;
-        goto out;
+        break 'out;
     }
     }
 
@@ -992,8 +993,8 @@ unsafe fn davinci_mcasp_set_dai_fmt(cpu_dai: *mut core::ffi::c_void, fmt: u32) -
     }
 
     (*mcasp).dai_fmt = fmt;
-
-    out:
+    }
+    
     pm_runtime_put((*mcasp).dev);
     ret
 }

@@ -5,7 +5,7 @@
  */
 
 /* CONFIG_RV_MON_SNEP */
-#[cfg(feature = "CONFIG_RV_MON_SNEP")]
+#[cfg(CONFIG_RV_MON_SNEP)]
 extern "C" {
     pub fn event_snep(
         state: *mut core::ffi::c_char,

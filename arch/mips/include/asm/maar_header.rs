@@ -13,7 +13,7 @@ extern "C" {
     fn write_c0_maari(value: u32);
     fn write_c0_maar(value: u64);
     fn back_to_back_c0_hazard();
-    #[cfg(feature = "CONFIG_XPA")]
+    #[cfg(CONFIG_XPA)]
     fn writex_c0_maar(value: u64);
 }
 
@@ -40,7 +40,7 @@ pub unsafe fn write_maar_pair(
     back_to_back_c0_hazard();
     write_c0_maar(((upper >> 4) & MIPS_MAAR_ADDR) | attrs as u64);
     back_to_back_c0_hazard();
-    #[cfg(feature = "CONFIG_XPA")]
+    #[cfg(CONFIG_XPA)]
     {
         upper >>= MIPS_MAARX_ADDR_SHIFT;
         writex_c0_maar(((upper >> 4) & MIPS_MAARX_ADDR) | MIPS_MAARX_VH);
@@ -52,7 +52,7 @@ pub unsafe fn write_maar_pair(
     back_to_back_c0_hazard();
     write_c0_maar((lower >> 4) | attrs as u64);
     back_to_back_c0_hazard();
-    #[cfg(feature = "CONFIG_XPA")]
+    #[cfg(CONFIG_XPA)]
     {
         lower >>= MIPS_MAARX_ADDR_SHIFT;
         writex_c0_maar(((lower >> 4) & MIPS_MAARX_ADDR) | MIPS_MAARX_VH);

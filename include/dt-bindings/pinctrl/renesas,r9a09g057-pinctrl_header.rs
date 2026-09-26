@@ -42,7 +42,7 @@ macro_rules! RZV2H_PORT_PINMUX {
 #[macro_export]
 macro_rules! RZV2H_GPIO {
     ($port:tt, $pin:expr) => {
-        RZV2H_GPIO!(@port $port, $pin)
+        RZV2H_GPIO!(@$port $port, $pin)
     };
     (@port 0, $pin:expr) => { RZG2L_GPIO!(RZV2H_P0, $pin) };
     (@port 1, $pin:expr) => { RZG2L_GPIO!(RZV2H_P1, $pin) };

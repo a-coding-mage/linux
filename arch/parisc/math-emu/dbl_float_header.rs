@@ -26,9 +26,9 @@ macro_rules! Dbl_clear_signexponent_set_hidden { ($v:expr) => { Deposit_dsignexp
 macro_rules! Dbl_clear_sign { ($v:expr) => {{ Dallp1!($v) &= !(1u32<<31); }}; }
 macro_rules! Dbl_clear_signexponent { ($v:expr) => {{ Dallp1!($v) &= Dmantissap1!(!0u32); }}; }
 
-macro_rules! Dbl_rightshift { ($a:expr,$b:expr,$n:expr) => {{ let n=$n; if n>=32 { Dallp2!($b)=Dallp1!($a)>>(n-32); Dallp1!($a)=0; } else if n>0 { Variable_shift_double!(Dallp1!($a),Dallp2!($b),n,Dallp2!($b)); Dallp1!($a)>>=n; } }}; }
-macro_rules! Dbl_rightshift_exponentmantissa { ($a:expr,$b:expr,$n:expr) => {{ let n=$n; if n>=32 { Dallp2!($b)=Dexponentmantissap1!($a)>>(n-32); Dallp1!($a)&=1u32<<31; } else if n>0 { Variable_shift_double!(Dexponentmantissap1!($a),Dallp2!($b),n,Dallp2!($b)); Deposit_dexponentmantissap1!($a,Dexponentmantissap1!($a)>>n); } }}; }
-macro_rules! Dbl_leftshift { ($a:expr,$b:expr,$n:expr) => {{ let n=$n; if n>=32 { Dallp1!($a)=Dallp2!($b)<<(n-32); Dallp2!($b)=0; } else if n>0 { Dallp1!($a)=(Dallp1!($a)<<n)|(Dallp2!($b)>>(32-n)); Dallp2!($b)<<=n; } }}; }
+macro_rules! Dbl_rightshift { ($a:expr,$b:expr,$n:expr) => {{ let $n=$n; if $n>=32 { Dallp2!($b)=Dallp1!($a)>>($n-32); Dallp1!($a)=0; } else if $n>0 { Variable_shift_double!(Dallp1!($a),Dallp2!($b),$n,Dallp2!($b)); Dallp1!($a)>>=$n; } }}; }
+macro_rules! Dbl_rightshift_exponentmantissa { ($a:expr,$b:expr,$n:expr) => {{ let $n=$n; if $n>=32 { Dallp2!($b)=Dexponentmantissap1!($a)>>($n-32); Dallp1!($a)&=1u32<<31; } else if $n>0 { Variable_shift_double!(Dexponentmantissap1!($a),Dallp2!($b),$n,Dallp2!($b)); Deposit_dexponentmantissap1!($a,Dexponentmantissap1!($a)>>$n); } }}; }
+macro_rules! Dbl_leftshift { ($a:expr,$b:expr,$n:expr) => {{ let $n=$n; if $n>=32 { Dallp1!($a)=Dallp2!($b)<<($n-32); Dallp2!($b)=0; } else if $n>0 { Dallp1!($a)=(Dallp1!($a)<<$n)|(Dallp2!($b)>>(32-$n)); Dallp2!($b)<<=$n; } }}; }
 macro_rules! Dbl_arithrightshiftby1 { ($a:expr,$b:expr) => {{ Shiftdouble!(Dallp1!($a),Dallp2!($b),1,Dallp2!($b)); Dallp1!($a)=(Dallp1!($a) as i32 >> 1) as u32; }}; }
 macro_rules! Dbl_signextendedsign { ($v:expr) => { Dsignedsign!($v) }; }
 macro_rules! Dbl_isone_hidden { ($v:expr) => { Is_dhidden!($v)!=0 }; }

@@ -9,9 +9,9 @@ pub unsafe fn dmub_srv_dcn42_regs_init(dmub: *mut dmub_srv, ctx: *mut dc_context
     macro_rules! dmub_sr { ($reg:ident) => { (*regs).offset.$reg = REG_OFFSET_EXP!($reg); }; }
     DMUB_DCN42_REGS!();
     DMCUB_INTERNAL_REGS!();
-    macro_rules! dmub_sf { ($reg:ident, $field:ident) => { (*regs).mask.$reg##__$field = FD_MASK!($reg, $field); }; }
+    macro_rules! dmub_sf { ($reg:tt, $field:ident) => { (*regs).mask.::kernel::macros::paste!([<$reg __>])$field = FD_MASK!($reg, $field); }; }
     DMUB_DCN42_FIELDS!();
-    macro_rules! dmub_sf_shift { ($reg:ident, $field:ident) => { (*regs).shift.$reg##__$field = FD_SHIFT!($reg, $field); }; }
+    macro_rules! dmub_sf_shift { ($reg:tt, $field:ident) => { (*regs).shift.::kernel::macros::paste!([<$reg __>])$field = FD_SHIFT!($reg, $field); }; }
     DMUB_DCN42_FIELDS!();
 }
 

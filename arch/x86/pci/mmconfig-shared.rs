@@ -38,18 +38,18 @@ unsafe fn free_all_mmcfg() {
     pci_mmcfg_arch_free();
     let mut cfg: *mut pci_mmcfg_region = core::ptr::null_mut();
     let mut tmp: *mut pci_mmcfg_region = core::ptr::null_mut();
-    list_for_each_entry_safe(&mut cfg, &mut tmp, &mut pci_mmcfg_list, list) {
+    list_for_each_entry_safe!(&mut cfg, &mut tmp, &mut pci_mmcfg_list, list, {
         pci_mmconfig_remove(cfg);
-    }
+    });
 }
 
 unsafe fn list_add_sorted(new: *mut pci_mmcfg_region) {
     let mut cfg: *mut pci_mmcfg_region = core::ptr::null_mut();
-    list_for_each_entry_rcu(&mut cfg, &pci_mmcfg_list, list) {
+    list_for_each_entry_rcu!(&mut cfg, &pci_mmcfg_list, list, {
         if (*cfg).segment > (*new).segment || ((*cfg).segment == (*new).segment && (*cfg).start_bus >= (*new).start_bus) {
             list_add_tail_rcu(&mut (*new).list, &mut (*cfg).list); return;
         }
-    }
+    });
     list_add_tail_rcu(&mut (*new).list, &mut pci_mmcfg_list);
 }
 
@@ -73,9 +73,9 @@ pub unsafe extern "C" fn pci_mmconfig_add(segment: i32, start: i32, end: i32, ad
 #[no_mangle]
 pub unsafe extern "C" fn pci_mmconfig_lookup(segment: i32, bus: i32) -> *mut pci_mmcfg_region {
     let mut cfg: *mut pci_mmcfg_region = core::ptr::null_mut();
-    list_for_each_entry_rcu(&mut cfg, &pci_mmcfg_list, list) {
+    list_for_each_entry_rcu!(&mut cfg, &pci_mmcfg_list, list, {
         if (*cfg).segment == segment && (*cfg).start_bus <= bus && bus <= (*cfg).end_bus { return cfg; }
-    } core::ptr::null_mut()
+    }); core::ptr::null_mut()
 }
 
 unsafe fn pci_mmcfg_e7520() -> *const u8 { let mut win=0u32; (*raw_pci_ops).read(0,0,PCI_DEVFN(0,0),0xce,2,&mut win); win &= 0xf000; if win==0 || win==0xf000{return core::ptr::null()}; if pci_mmconfig_add(0,0,255,(win as u64)<<16).is_null(){return core::ptr::null()}; b"Intel Corporation E7520 Memory Controller Hub\0".as_ptr() }

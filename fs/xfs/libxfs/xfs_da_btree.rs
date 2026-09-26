@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-+// Lossless Rust translation container for the isolated C implementation.
+// Lossless Rust translation container for the isolated C implementation.
 +pub const XFS_DA_BTREE_C_SOURCE: &str = r###"
 // SPDX-License-Identifier: GPL-2.0
 /*
@@ -85,7 +85,7 @@ struct kmem_cache	*xfs_da_state_cache;	/* anchor for dir/attr state */
  */
 struct xfs_da_state *
 xfs_da_state_alloc(
-	struct xfs_da_args	*args)
+	xfs_da_args	*args)
 {
 	struct xfs_da_state	*state;
 
@@ -124,16 +124,16 @@ xfs_da_state_free(xfs_da_state_t *state)
 
 void
 xfs_da_state_reset(
-	struct xfs_da_state	*state,
-	struct xfs_da_args	*args)
+	xfs_da_state	*state,
+	xfs_da_args	*args)
 {
 	xfs_da_state_kill_altpath(state);
-	memset(state, 0, sizeof(struct xfs_da_state));
+	memset(state, 0, sizeof(xfs_da_state));
 	state->args = args;
 	state->mp = state->args->dp->i_mount;
 }
 
-static inline int xfs_dabuf_nfsb(struct xfs_mount *mp, int whichfork)
+int xfs_dabuf_nfsb(xfs_mount *mp, int whichfork)
 {
 	if (whichfork == XFS_DATA_FORK)
 		return mp->m_dir_geo->fsbcount;
@@ -142,12 +142,12 @@ static inline int xfs_dabuf_nfsb(struct xfs_mount *mp, int whichfork)
 
 void
 xfs_da3_node_hdr_from_disk(
-	struct xfs_mount		*mp,
-	struct xfs_da3_icnode_hdr	*to,
-	struct xfs_da_intnode		*from)
+	xfs_mount		*mp,
+	xfs_da3_icnode_hdr	*to,
+	xfs_da_intnode		*from)
 {
 	if (xfs_has_crc(mp)) {
-		struct xfs_da3_intnode	*from3 = (struct xfs_da3_intnode *)from;
+		struct xfs_da3_intnode	*from3 = (xfs_da3_intnode *)from;
 
 		to->forw = be32_to_cpu(from3->hdr.info.hdr.forw);
 		to->back = be32_to_cpu(from3->hdr.info.hdr.back);
@@ -169,12 +169,12 @@ xfs_da3_node_hdr_from_disk(
 
 void
 xfs_da3_node_hdr_to_disk(
-	struct xfs_mount		*mp,
-	struct xfs_da_intnode		*to,
-	struct xfs_da3_icnode_hdr	*from)
+	xfs_mount		*mp,
+	xfs_da_intnode		*to,
+	xfs_da3_icnode_hdr	*from)
 {
 	if (xfs_has_crc(mp)) {
-		struct xfs_da3_intnode	*to3 = (struct xfs_da3_intnode *)to;
+		struct xfs_da3_intnode	*to3 = (xfs_da3_intnode *)to;
 
 		ASSERT(from->magic == XFS_DA3_NODE_MAGIC);
 		to3->hdr.info.hdr.forw = cpu_to_be32(from->forw);
@@ -199,8 +199,8 @@ xfs_da3_node_hdr_to_disk(
  */
 xfs_failaddr_t
 xfs_da3_blkinfo_verify(
-	struct xfs_buf		*bp,
-	struct xfs_da3_blkinfo	*hdr3)
+	xfs_buf		*bp,
+	xfs_da3_blkinfo	*hdr3)
 {
 	struct xfs_mount	*mp = bp->b_mount;
 	struct xfs_da_blkinfo	*hdr = &hdr3->hdr;
@@ -222,7 +222,7 @@ xfs_da3_blkinfo_verify(
 
 static xfs_failaddr_t
 xfs_da3_node_verify(
-	struct xfs_buf		*bp)
+	xfs_buf		*bp)
 {
 	struct xfs_mount	*mp = bp->b_mount;
 	struct xfs_da_intnode	*hdr = bp->b_addr;
@@ -257,7 +257,7 @@ xfs_da3_node_verify(
 
 xfs_failaddr_t
 xfs_da3_node_header_check(
-	struct xfs_buf		*bp,
+	xfs_buf		*bp,
 	xfs_ino_t		owner)
 {
 	struct xfs_mount	*mp = bp->b_mount;
@@ -277,7 +277,7 @@ xfs_da3_node_header_check(
 
 xfs_failaddr_t
 xfs_da3_header_check(
-	struct xfs_buf		*bp,
+	xfs_buf		*bp,
 	xfs_ino_t		owner)
 {
 	struct xfs_mount	*mp = bp->b_mount;
@@ -302,7 +302,7 @@ xfs_da3_header_check(
 
 static void
 xfs_da3_node_write_verify(
-	struct xfs_buf	*bp)
+	xfs_buf	*bp)
 {
 	struct xfs_mount	*mp = bp->b_mount;
 	struct xfs_buf_log_item	*bip = bp->b_log_item;
@@ -332,7 +332,7 @@ xfs_da3_node_write_verify(
  */
 static void
 xfs_da3_node_read_verify(
-	struct xfs_buf		*bp)
+	xfs_buf		*bp)
 {
 	struct xfs_da_blkinfo	*info = bp->b_addr;
 	xfs_failaddr_t		fa;
@@ -369,7 +369,7 @@ xfs_da3_node_read_verify(
 /* Verify the structure of a da3 block. */
 static xfs_failaddr_t
 xfs_da3_node_verify_struct(
-	struct xfs_buf		*bp)
+	xfs_buf		*bp)
 {
 	struct xfs_da_blkinfo	*info = bp->b_addr;
 
@@ -391,20 +391,20 @@ xfs_da3_node_verify_struct(
 }
 
 const struct xfs_buf_ops xfs_da3_node_buf_ops = {
-	.name = "xfs_da3_node",
-	.magic16 = { cpu_to_be16(XFS_DA_NODE_MAGIC),
+	name: "xfs_da3_node",
+	magic16: { cpu_to_be16(XFS_DA_NODE_MAGIC),
 		     cpu_to_be16(XFS_DA3_NODE_MAGIC) },
-	.verify_read = xfs_da3_node_read_verify,
-	.verify_write = xfs_da3_node_write_verify,
-	.verify_struct = xfs_da3_node_verify_struct,
+	verify_read: xfs_da3_node_read_verify,
+	verify_write: xfs_da3_node_write_verify,
+	verify_struct: xfs_da3_node_verify_struct,
 };
 
 static int
 xfs_da3_node_set_type(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
+	xfs_trans	*tp,
+	xfs_inode	*dp,
 	int			whichfork,
-	struct xfs_buf		*bp)
+	xfs_buf		*bp)
 {
 	struct xfs_da_blkinfo	*info = bp->b_addr;
 
@@ -432,10 +432,10 @@ xfs_da3_node_set_type(
 
 int
 xfs_da3_node_read(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
+	xfs_trans	*tp,
+	xfs_inode	*dp,
 	xfs_dablk_t		bno,
-	struct xfs_buf		**bpp,
+	xfs_buf		**bpp,
 	int			whichfork)
 {
 	int			error;
@@ -449,10 +449,10 @@ xfs_da3_node_read(
 
 int
 xfs_da3_node_read_mapped(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
+	xfs_trans	*tp,
+	xfs_inode	*dp,
 	xfs_daddr_t		mappedbno,
-	struct xfs_buf		**bpp,
+	xfs_buf		**bpp,
 	int			whichfork)
 {
 	struct xfs_mount	*mp = dp->i_mount;
@@ -482,8 +482,8 @@ xfs_da3_node_read_mapped(
  */
 void
 xfs_da_buf_copy(
-	struct xfs_buf *dst,
-	struct xfs_buf *src,
+	xfs_buf *dst,
+	xfs_buf *src,
 	size_t size)
 {
 	struct xfs_da3_blkinfo *da3 = dst->b_addr;
@@ -504,10 +504,10 @@ xfs_da_buf_copy(
  */
 int
 xfs_da3_node_create(
-	struct xfs_da_args	*args,
+	xfs_da_args	*args,
 	xfs_dablk_t		blkno,
 	int			level,
-	struct xfs_buf		**bpp,
+	xfs_buf		**bpp,
 	int			whichfork)
 {
 	struct xfs_da_intnode	*node;
@@ -531,7 +531,7 @@ xfs_da3_node_create(
 	if (xfs_has_crc(mp)) {
 		struct xfs_da3_node_hdr *hdr3 = bp->b_addr;
 
-		memset(hdr3, 0, sizeof(struct xfs_da3_node_hdr));
+		memset(hdr3, 0, sizeof(xfs_da3_node_hdr));
 		ichdr.magic = XFS_DA3_NODE_MAGIC;
 		hdr3->info.blkno = cpu_to_be64(xfs_buf_daddr(bp));
 		hdr3->info.owner = cpu_to_be64(args->owner);
@@ -555,7 +555,7 @@ xfs_da3_node_create(
  */
 int							/* error */
 xfs_da3_split(
-	struct xfs_da_state	*state)
+	xfs_da_state	*state)
 {
 	struct xfs_da_state_blk	*oldblk;
 	struct xfs_da_state_blk	*newblk;
@@ -723,9 +723,9 @@ out:
  */
 STATIC int						/* error */
 xfs_da3_root_split(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*blk1,
-	struct xfs_da_state_blk	*blk2)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*blk1,
+	xfs_da_state_blk	*blk2)
 {
 	struct xfs_da_intnode	*node;
 	struct xfs_da_intnode	*oldroot;
@@ -833,10 +833,10 @@ xfs_da3_root_split(
  */
 STATIC int						/* error */
 xfs_da3_node_split(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*oldblk,
-	struct xfs_da_state_blk	*newblk,
-	struct xfs_da_state_blk	*addblk,
+	xfs_da_state	*state,
+	xfs_da_state_blk	*oldblk,
+	xfs_da_state_blk	*newblk,
+	xfs_da_state_blk	*addblk,
 	int			treelevel,
 	int			*result)
 {
@@ -930,9 +930,9 @@ xfs_da3_node_split(
  */
 STATIC void
 xfs_da3_node_rebalance(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*blk1,
-	struct xfs_da_state_blk	*blk2)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*blk1,
+	xfs_da_state_blk	*blk2)
 {
 	struct xfs_da_intnode	*node1;
 	struct xfs_da_intnode	*node2;
@@ -1071,9 +1071,9 @@ xfs_da3_node_rebalance(
  */
 STATIC void
 xfs_da3_node_add(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*oldblk,
-	struct xfs_da_state_blk	*newblk)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*oldblk,
+	xfs_da_state_blk	*newblk)
 {
 	struct xfs_da_intnode	*node;
 	struct xfs_da3_icnode_hdr nodehdr;
@@ -1129,7 +1129,7 @@ xfs_da3_node_add(
  */
 int
 xfs_da3_join(
-	struct xfs_da_state	*state)
+	xfs_da_state	*state)
 {
 	struct xfs_da_state_blk	*drop_blk;
 	struct xfs_da_state_blk	*save_blk;
@@ -1212,7 +1212,7 @@ xfs_da3_join(
 
 #ifdef	DEBUG
 static void
-xfs_da_blkinfo_onlychild_validate(struct xfs_da_blkinfo *blkinfo, __u16 level)
+xfs_da_blkinfo_onlychild_validate(xfs_da_blkinfo *blkinfo, __u16 level)
 {
 	__be16	magic = blkinfo->magic;
 
@@ -1238,8 +1238,8 @@ xfs_da_blkinfo_onlychild_validate(struct xfs_da_blkinfo *blkinfo, __u16 level)
  */
 STATIC int
 xfs_da3_root_join(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*root_blk)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*root_blk)
 {
 	struct xfs_da_intnode	*oldroot;
 	struct xfs_da_args	*args;
@@ -1308,7 +1308,7 @@ xfs_da3_root_join(
  */
 STATIC int
 xfs_da3_node_toosmall(
-	struct xfs_da_state	*state,
+	xfs_da_state	*state,
 	int			*action)
 {
 	struct xfs_da_intnode	*node;
@@ -1438,8 +1438,8 @@ xfs_da3_node_toosmall(
  */
 STATIC uint
 xfs_da3_node_lasthash(
-	struct xfs_inode	*dp,
-	struct xfs_buf		*bp,
+	xfs_inode	*dp,
+	xfs_buf		*bp,
 	int			*count)
 {
 	struct xfs_da3_icnode_hdr nodehdr;
@@ -1458,8 +1458,8 @@ xfs_da3_node_lasthash(
  */
 void
 xfs_da3_fixhashpath(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_path *path)
+	xfs_da_state	*state,
+	xfs_da_state_path *path)
 {
 	struct xfs_da_state_blk	*blk;
 	struct xfs_da_intnode	*node;
@@ -1513,10 +1513,10 @@ xfs_da3_fixhashpath(
  */
 STATIC void
 __xfs_da3_node_remove(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
-	struct xfs_da_geometry  *geo,
-	struct xfs_da_state_blk *drop_blk)
+	xfs_trans	*tp,
+	xfs_inode	*dp,
+	xfs_da_geometry  *geo,
+	xfs_da_state_blk *drop_blk)
 {
 	struct xfs_da_intnode	*node;
 	struct xfs_da3_icnode_hdr nodehdr;
@@ -1561,8 +1561,8 @@ __xfs_da3_node_remove(
  */
 STATIC void
 xfs_da3_node_remove(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*drop_blk)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*drop_blk)
 {
 	trace_xfs_da_node_remove(state->args);
 
@@ -1575,14 +1575,14 @@ xfs_da3_node_remove(
  */
 void
 xfs_attr3_node_entry_remove(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
-	struct xfs_buf		*bp,
+	xfs_trans	*tp,
+	xfs_inode	*dp,
+	xfs_buf		*bp,
 	int			index)
 {
 	struct xfs_da_state_blk blk = {
-		.index		= index,
-		.bp		= bp,
+		index: index,
+		bp: bp,
 	};
 
 	__xfs_da3_node_remove(tp, dp, dp->i_mount->m_attr_geo, &blk);
@@ -1594,9 +1594,9 @@ xfs_attr3_node_entry_remove(
  */
 STATIC void
 xfs_da3_node_unbalance(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*drop_blk,
-	struct xfs_da_state_blk	*save_blk)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*drop_blk,
+	xfs_da_state_blk	*save_blk)
 {
 	struct xfs_da_intnode	*drop_node;
 	struct xfs_da_intnode	*save_node;
@@ -1678,7 +1678,7 @@ xfs_da3_node_unbalance(
  */
 int							/* error */
 xfs_da3_node_lookup_int(
-	struct xfs_da_state	*state,
+	xfs_da_state	*state,
 	int			*result)
 {
 	struct xfs_da_state_blk	*blk;
@@ -1696,7 +1696,7 @@ xfs_da3_node_lookup_int(
 	int			max;
 	int			error;
 	int			retval;
-	unsigned int		expected_level = 0;
+	core::ffi::c_uint		expected_level = 0;
 	uint16_t		magic;
 	struct xfs_inode	*dp = state->args->dp;
 
@@ -1895,9 +1895,9 @@ xfs_da3_node_lookup_int(
  */
 STATIC int
 xfs_da3_node_order(
-	struct xfs_inode *dp,
-	struct xfs_buf	*node1_bp,
-	struct xfs_buf	*node2_bp)
+	xfs_inode *dp,
+	xfs_buf	*node1_bp,
+	xfs_buf	*node2_bp)
 {
 	struct xfs_da_intnode	*node1;
 	struct xfs_da_intnode	*node2;
@@ -1927,9 +1927,9 @@ xfs_da3_node_order(
  */
 int							/* error */
 xfs_da3_blk_link(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*old_blk,
-	struct xfs_da_state_blk	*new_blk)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*old_blk,
+	xfs_da_state_blk	*new_blk)
 {
 	struct xfs_da_blkinfo	*old_info;
 	struct xfs_da_blkinfo	*new_info;
@@ -2035,9 +2035,9 @@ xfs_da3_blk_link(
  */
 STATIC int						/* error */
 xfs_da3_blk_unlink(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_blk	*drop_blk,
-	struct xfs_da_state_blk	*save_blk)
+	xfs_da_state	*state,
+	xfs_da_state_blk	*drop_blk,
+	xfs_da_state_blk	*save_blk)
 {
 	struct xfs_da_blkinfo	*drop_info;
 	struct xfs_da_blkinfo	*save_info;
@@ -2130,8 +2130,8 @@ xfs_da3_blk_unlink(
  */
 int							/* error */
 xfs_da3_path_shift(
-	struct xfs_da_state	*state,
-	struct xfs_da_state_path *path,
+	xfs_da_state	*state,
+	xfs_da_state_path *path,
 	int			forward,
 	int			release,
 	int			*result)
@@ -2314,8 +2314,8 @@ xfs_da_hashname(const uint8_t *name, int namelen)
 
 enum xfs_dacmp
 xfs_da_compname(
-	struct xfs_da_args *args,
-	const unsigned char *name,
+	xfs_da_args *args,
+	const core::ffi::c_uchar *name,
 	int		len)
 {
 	return (args->namelen == len && memcmp(args->name, name, len) == 0) ?
@@ -2324,7 +2324,7 @@ xfs_da_compname(
 
 int
 xfs_da_grow_inode_int(
-	struct xfs_da_args	*args,
+	xfs_da_args	*args,
 	xfs_fileoff_t		*bno,
 	int			count)
 {
@@ -2401,7 +2401,7 @@ out_free_map:
  */
 int
 xfs_da_grow_inode(
-	struct xfs_da_args	*args,
+	xfs_da_args	*args,
 	xfs_dablk_t		*new_blkno)
 {
 	xfs_fileoff_t		bno;
@@ -2426,9 +2426,9 @@ xfs_da_grow_inode(
  */
 STATIC int
 xfs_da3_swap_lastblock(
-	struct xfs_da_args	*args,
+	xfs_da_args	*args,
 	xfs_dablk_t		*dead_blknop,
-	struct xfs_buf		**dead_bufp)
+	xfs_buf		**dead_bufp)
 {
 	struct xfs_da_blkinfo	*dead_info;
 	struct xfs_da_blkinfo	*sib_info;
@@ -2682,9 +2682,9 @@ done:
  */
 int
 xfs_da_shrink_inode(
-	struct xfs_da_args	*args,
+	xfs_da_args	*args,
 	xfs_dablk_t		dead_blkno,
-	struct xfs_buf		*dead_buf)
+	xfs_buf		*dead_buf)
 {
 	struct xfs_inode	*dp;
 	int			done, error, w, count;
@@ -2720,11 +2720,11 @@ xfs_da_shrink_inode(
 
 static int
 xfs_dabuf_map(
-	struct xfs_inode	*dp,
+	xfs_inode	*dp,
 	xfs_dablk_t		bno,
-	unsigned int		flags,
+	flags: core::ffi::c_uint,
 	int			whichfork,
-	struct xfs_buf_map	**mapp,
+	xfs_buf_map	**mapp,
 	int			*nmaps)
 {
 	struct xfs_mount	*mp = dp->i_mount;
@@ -2749,7 +2749,7 @@ xfs_dabuf_map(
 	 * larger one that needs to be free by the caller.
 	 */
 	if (nirecs > 1) {
-		map = kcalloc(nirecs, sizeof(struct xfs_buf_map),
+		map = kcalloc(nirecs, sizeof(xfs_buf_map),
 			      GFP_KERNEL | __GFP_NOLOCKDEP | __GFP_NOFAIL);
 		*mapp = map;
 	}
@@ -2804,10 +2804,10 @@ invalid_mapping:
  */
 int
 xfs_da_get_buf(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
+	xfs_trans	*tp,
+	xfs_inode	*dp,
 	xfs_dablk_t		bno,
-	struct xfs_buf		**bpp,
+	xfs_buf		**bpp,
 	int			whichfork)
 {
 	struct xfs_mount	*mp = dp->i_mount;
@@ -2839,11 +2839,11 @@ out_free:
  */
 int
 xfs_da_read_buf(
-	struct xfs_trans	*tp,
-	struct xfs_inode	*dp,
+	xfs_trans	*tp,
+	xfs_inode	*dp,
 	xfs_dablk_t		bno,
-	unsigned int		flags,
-	struct xfs_buf		**bpp,
+	flags: core::ffi::c_uint,
+	xfs_buf		**bpp,
 	int			whichfork,
 	const struct xfs_buf_ops *ops)
 {
@@ -2888,9 +2888,9 @@ out_free:
  */
 int
 xfs_da_reada_buf(
-	struct xfs_inode	*dp,
+	xfs_inode	*dp,
 	xfs_dablk_t		bno,
-	unsigned int		flags,
+	flags: core::ffi::c_uint,
 	int			whichfork,
 	const struct xfs_buf_ops *ops)
 {

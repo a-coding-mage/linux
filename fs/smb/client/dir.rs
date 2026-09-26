@@ -109,9 +109,9 @@ unsafe fn __cifs_do_create(dir: *mut inode, direntry: *mut dentry, full_path: *c
 retry_open:
     if !(*tcon).cfids.is_null() && !(*direntry).d_parent.is_null() && (*server).dialect >= SMB30_PROT_ID {
         parent_cfid = core::ptr::null_mut(); spin_lock(&mut (*(*tcon).cfids).cfid_list_lock);
-        list_for_each_entry(parent_cfid, &(*(*tcon).cfids).entries, entry) {
+        list_for_each_entry!(parent_cfid, &(*(*tcon).cfids).entries, entry, {
             if (*parent_cfid).dentry == (*direntry).d_parent { if is_valid_cached_dir(parent_cfid) { lease_flags |= SMB2_LEASE_FLAG_PARENT_LEASE_KEY_SET_LE; memcpy((*fid).parent_lease_key.as_mut_ptr(), (*parent_cfid).fid.lease_key.as_ptr(), SMB2_LEASE_KEY_SIZE); (*parent_cfid).dirents.is_valid = false; (*parent_cfid).dirents.is_failed = true; } break; }
-        } spin_unlock(&mut (*(*tcon).cfids).cfid_list_lock);
+        }); spin_unlock(&mut (*(*tcon).cfids).cfid_list_lock);
     }
     let mut oparms = cifs_open_parms { tcon, cifs_sb, desired_access, create_options: cifs_create_options(cifs_sb, create_options), disposition, path: full_path, fid, lease_flags, mode };
     rc = ((*server).ops.open.unwrap())(xid, &mut oparms, oplock, buf);

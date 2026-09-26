@@ -114,9 +114,9 @@ unsafe fn cgrp_attach(tset: *mut cgroup_taskset) {
     let mut css: *mut cgroup_subsys_state = core::ptr::null_mut();
     let mut p: *mut task_struct = core::ptr::null_mut();
 
-    cgroup_taskset_for_each(tset, &mut p, &mut css) {
+    cgroup_taskset_for_each!(tset, &mut p, &mut css, {
         update_classid_task(p, (*css_cls_state(css)).classid);
-    }
+    });
 }
 
 unsafe fn read_classid(css: *mut cgroup_subsys_state, _cft: *mut cftype) -> u64 {

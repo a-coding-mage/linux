@@ -163,10 +163,10 @@ unsafe fn devlink_get_from_attrs_lock(net: *mut net, attrs: *mut *mut nlattr, de
             if devlink.is_null() { return ERR_PTR(-ENODEV); }
         } else {
             let mut found = core::ptr::null_mut();
-            devlinks_xa_for_each_registered_get(net, index, devlink) {
+            devlinks_xa_for_each_registered_get!(net, index, devlink, {
                 if strcmp(devlink_bus_name(devlink), busname) == 0 && strcmp(devlink_dev_name(devlink), devname) == 0 { found = devlink; break; }
                 devlink_put(devlink);
-            }
+            });
             if found.is_null() { return ERR_PTR(-ENODEV); }
             devlink = found;
         }

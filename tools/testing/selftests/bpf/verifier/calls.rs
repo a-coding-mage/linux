@@ -1,5 +1,5 @@
 // Source-level Rust translation of testing/selftests/bpf/verifier/calls.c.
-// The surrounding verifier harness supplies Test, constants, offset_of!, and
+// The surrounding verifier harness supplies Test, constants, offset_of!(), and
 // the BPF instruction-constructor macros/functions referenced below.
 
 pub static TESTS: &[Test] = &[

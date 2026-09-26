@@ -6,21 +6,21 @@
 pub const __ARCH_WANT_SYS_CLONE: bool = true;
 
 // CONFIG_COMPAT is a build-time configuration condition from the C header.
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_TRUNCATE64: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_FTRUNCATE64: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_FALLOCATE: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_PREAD64: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_PWRITE64: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_SYNC_FILE_RANGE: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_READAHEAD: bool = true;
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub const __ARCH_WANT_COMPAT_FADVISE64_64: bool = true;
 
 // Corresponds to: #if defined(__LP64__) && !defined(__SYSCALL_COMPAT)

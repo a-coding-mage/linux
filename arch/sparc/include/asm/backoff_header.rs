@@ -6,7 +6,7 @@
 
 pub const BACKOFF_LIMIT: u32 = 4 * 1024;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! BACKOFF_SETUP {
     ($reg:ident) => {
         // Original SPARC instruction: mov 1, $reg
@@ -14,26 +14,26 @@ macro_rules! BACKOFF_SETUP {
     };
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! BACKOFF_SETUP {
     ($reg:ident) => {};
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! BACKOFF_LABEL {
     ($spin_label:ident, $continue_label:ident) => {
         $spin_label
     };
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! BACKOFF_LABEL {
     ($spin_label:ident, $continue_label:ident) => {
         $continue_label
     };
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 macro_rules! BACKOFF_SPIN {
     ($reg:ident, $tmp:ident, $label:ident) => {{
         // Original SPARC sequence:
@@ -57,7 +57,7 @@ macro_rules! BACKOFF_SPIN {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 macro_rules! BACKOFF_SPIN {
     ($reg:ident, $tmp:ident, $label:ident) => {};
 }

@@ -53,20 +53,20 @@ extern "C" {
 #[repr(C)] pub struct omap_usb_config { pub register_dev: u32, pub register_host: u32, pub hmc_mode: u32, pub rwc: u32, pub pins: [u32; 3] }
 
 extern "C" {
-    fn omap1_set_vpp(); fn gpiochip_request_own_desc(*mut gpio_chip, u32, *const u8, u32, u32) -> *mut gpio_desc;
-    fn gpiochip_free_own_desc(*mut gpio_desc); fn tps65010_set_gpio_out_value(u32, u32);
-    fn tps65010_set_led(u32, u32); fn tps65010_set_low_pwr(u32); fn tps65010_config_vregs1(u32);
-    fn gpiod_add_lookup_table(*mut gpiod_lookup_table); fn platform_device_register(*mut platform_device) -> i32;
-    fn omap_readl(usize) -> u32; fn omap_writel(u32, usize); fn omap_cfg_reg(u32);
-    fn omap_cs3_phys() -> usize; fn pr_debug(*const u8, ...); fn pr_err(*const u8, ...);
-    fn gpiod_get(*mut device, *const u8, u32) -> *mut gpio_desc; fn gpiod_to_irq(*mut gpio_desc) -> i32;
-    fn irq_set_irq_type(i32, u32); fn platform_add_devices(*mut *mut platform_device, usize) -> i32;
-    fn omap1_usb_init(*mut omap_usb_config); fn omap_serial_init();
-    fn omap_register_i2c_bus(i32, i32, *mut i2c_board_info, usize) -> i32;
+    fn omap1_set_vpp(); fn gpiochip_request_own_desc(_: *mut gpio_chip, _: u32, _: *const u8, _: u32, _: u32) -> *mut gpio_desc;
+    fn gpiochip_free_own_desc(_: *mut gpio_desc); fn tps65010_set_gpio_out_value(_: u32, _: u32);
+    fn tps65010_set_led(_: u32, _: u32); fn tps65010_set_low_pwr(_: u32); fn tps65010_config_vregs1(_: u32);
+    fn gpiod_add_lookup_table(_: *mut gpiod_lookup_table); fn platform_device_register(_: *mut platform_device) -> i32;
+    fn omap_readl(_: usize) -> u32; fn omap_writel(_: u32, _: usize); fn omap_cfg_reg(_: u32);
+    fn omap_cs3_phys() -> usize; fn pr_debug(_: *const u8, ...); fn pr_err(_: *const u8, ...);
+    fn gpiod_get(_: *mut device, _: *const u8, _: u32) -> *mut gpio_desc; fn gpiod_to_irq(_: *mut gpio_desc) -> i32;
+    fn irq_set_irq_type(_: i32, _: u32); fn platform_add_devices(_: *mut *mut platform_device, _: usize) -> i32;
+    fn omap1_usb_init(_: *mut omap_usb_config); fn omap_serial_init();
+    fn omap_register_i2c_bus(_: i32, _: i32, _: *mut i2c_board_info, _: usize) -> i32;
 }
 
 unsafe extern "C" fn osk_tps_setup(client: *mut i2c_client, gc: *mut gpio_chip) -> i32 {
-    if !cfg!(feature = "CONFIG_TPS65010") { return -38; }
+    if !cfg!(CONFIG_TPS65010) { return -38; }
     let d = gpiochip_request_own_desc(gc, OSK_TPS_GPIO_USB_PWR_EN, b"n_vbus_en\0".as_ptr(), 1, 1);
     gpiochip_free_own_desc(d);
     tps65010_set_gpio_out_value(2, 1);

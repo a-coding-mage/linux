@@ -52,16 +52,16 @@ enum RpmiClkType { Discrete = 0, Linear = 1, TypeMaxIdx }
 #[repr(C)] struct RpmiSetConfigRx { status: u32 }
 
 extern "C" {
-    fn rpmi_mbox_init_send_with_response(*mut RpmiMboxMessage, u32, *const c_void, usize, *mut c_void, usize);
-    fn rpmi_mbox_send_message(*mut MboxChan, *mut RpmiMboxMessage) -> i32;
-    fn rpmi_mbox_get_msg_response(*mut RpmiMboxMessage) -> *mut c_void;
-    fn rpmi_mbox_init_get_attribute(*mut RpmiMboxMessage, u32);
-    fn rpmi_to_linux_error(u32) -> i32;
-    fn devm_kzalloc(*mut Device, usize, u32) -> *mut c_void;
-    fn devm_clk_hw_register(*mut Device, *mut ClkHw) -> i32;
-    fn clk_hw_set_rate_range(*mut ClkHw, u64, u64);
-    fn mbox_request_channel(*mut MboxClient, u32) -> *mut MboxChan;
-    fn mbox_free_channel(*mut MboxChan);
+    fn rpmi_mbox_init_send_with_response(_: *mut RpmiMboxMessage, _: u32, _: *const c_void, _: usize, _: *mut c_void, _: usize);
+    fn rpmi_mbox_send_message(_: *mut MboxChan, _: *mut RpmiMboxMessage) -> i32;
+    fn rpmi_mbox_get_msg_response(_: *mut RpmiMboxMessage) -> *mut c_void;
+    fn rpmi_mbox_init_get_attribute(_: *mut RpmiMboxMessage, _: u32);
+    fn rpmi_to_linux_error(_: u32) -> i32;
+    fn devm_kzalloc(_: *mut Device, _: usize, _: u32) -> *mut c_void;
+    fn devm_clk_hw_register(_: *mut Device, _: *mut ClkHw) -> i32;
+    fn clk_hw_set_rate_range(_: *mut ClkHw, _: u64, _: u64);
+    fn mbox_request_channel(_: *mut MboxClient, _: u32) -> *mut MboxChan;
+    fn mbox_free_channel(_: *mut MboxChan);
 }
 
 #[inline] unsafe fn rpmi_clkrate_u64(hi: u32, lo: u32) -> u64 { ((hi as u64) << 32) | lo as u64 }

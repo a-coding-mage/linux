@@ -141,7 +141,7 @@ unsafe fn find_lnx1_partitions(state: *mut parsed_partitions, geo: *mut hd_geome
         size = nr_sectors as loff_t;
         if size != geo_size {
             if info.is_null() { seq_buf_puts(&mut (*state).pp_buf, b"\n\0".as_ptr()); return 1; }
-            if strcmp((*info).type.as_ptr(), b"ECKD\0".as_ptr()) == 0 && geo_size < size { size = geo_size; }
+            if strcmp((*info).r#type.as_ptr(), b"ECKD\0".as_ptr()) == 0 && geo_size < size { size = geo_size; }
         }
     }
     let offset = labelsect + secperblk as sector_t;

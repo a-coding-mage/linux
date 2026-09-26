@@ -19,22 +19,25 @@ unsafe fn do_commit(c: *mut ubifs_info) -> i32 {
     let (mut err, mut new_ltail_lnum, mut old_ltail_lnum, mut i): (i32, i32, i32, i32) = (0, 0, 0, 0);
     let mut zroot: ubifs_zbranch = core::mem::zeroed();
     let mut lst: ubifs_lp_stats = core::mem::zeroed();
+    'out: {
+    'out_up: {
+    'out_cancel: {
     dbg_cmt!("start"); ubifs_assert(c, !(*c).ro_media && !(*c).ro_mount);
-    if (*c).ro_error { err = -EROFS; goto!(out_up); }
-    if nothing_to_commit(c) != 0 { up_write(&mut (*c).commit_sem); err = 0; goto!(out_cancel); }
-    while i < (*c).jhead_cnt { err = ubifs_wbuf_sync(&mut (*(*c).jheads.add(i as usize)).wbuf); if err != 0 { goto!(out_up); } i += 1; }
+    if (*c).ro_error { err = -EROFS; break 'out_up; }
+    if nothing_to_commit(c) != 0 { up_write(&mut (*c).commit_sem); err = 0; break 'out_cancel; }
+    while i < (*c).jhead_cnt { err = ubifs_wbuf_sync(&mut (*(*c).jheads.add(i as usize)).wbuf); if err != 0 { break 'out_up; } i += 1; }
     (*c).cmt_no = (*c).cmt_no.wrapping_add(1);
-    err = ubifs_gc_start_commit(c); if err != 0 { goto!(out_up); }
-    err = dbg_check_lprops(c); if err != 0 { goto!(out_up); }
-    err = ubifs_log_start_commit(c, &mut new_ltail_lnum); if err != 0 { goto!(out_up); }
-    err = ubifs_tnc_start_commit(c, &mut zroot); if err != 0 { goto!(out_up); }
-    err = ubifs_lpt_start_commit(c); if err != 0 { goto!(out_up); }
-    err = ubifs_orphan_start_commit(c); if err != 0 { goto!(out_up); }
+    err = ubifs_gc_start_commit(c); if err != 0 { break 'out_up; }
+    err = dbg_check_lprops(c); if err != 0 { break 'out_up; }
+    err = ubifs_log_start_commit(c, &mut new_ltail_lnum); if err != 0 { break 'out_up; }
+    err = ubifs_tnc_start_commit(c, &mut zroot); if err != 0 { break 'out_up; }
+    err = ubifs_lpt_start_commit(c); if err != 0 { break 'out_up; }
+    err = ubifs_orphan_start_commit(c); if err != 0 { break 'out_up; }
     ubifs_get_lp_stats(c, &mut lst); up_write(&mut (*c).commit_sem);
-    err = ubifs_tnc_end_commit(c); if err != 0 { goto!(out); }
-    err = ubifs_lpt_end_commit(c); if err != 0 { goto!(out); }
-    err = ubifs_orphan_end_commit(c); if err != 0 { goto!(out); }
-    err = dbg_check_old_index(c, &mut zroot); if err != 0 { goto!(out); }
+    err = ubifs_tnc_end_commit(c); if err != 0 { break 'out; }
+    err = ubifs_lpt_end_commit(c); if err != 0 { break 'out; }
+    err = ubifs_orphan_end_commit(c); if err != 0 { break 'out; }
+    err = dbg_check_old_index(c, &mut zroot); if err != 0 { break 'out; }
     (*c).mst_node.cmt_no = cpu_to_le64((*c).cmt_no); (*c).mst_node.log_lnum = cpu_to_le32(new_ltail_lnum);
     (*c).mst_node.root_lnum = cpu_to_le32(zroot.lnum); (*c).mst_node.root_offs = cpu_to_le32(zroot.offs); (*c).mst_node.root_len = cpu_to_le32(zroot.len);
     (*c).mst_node.ihead_lnum = cpu_to_le32((*c).ihead_lnum); (*c).mst_node.ihead_offs = cpu_to_le32((*c).ihead_offs); (*c).mst_node.index_size = cpu_to_le64((*c).bi.old_idx_sz);
@@ -42,13 +45,16 @@ unsafe fn do_commit(c: *mut ubifs_info) -> i32 {
     (*c).mst_node.ltab_lnum = cpu_to_le32((*c).ltab_lnum); (*c).mst_node.ltab_offs = cpu_to_le32((*c).ltab_offs); (*c).mst_node.lsave_lnum = cpu_to_le32((*c).lsave_lnum); (*c).mst_node.lsave_offs = cpu_to_le32((*c).lsave_offs); (*c).mst_node.lscan_lnum = cpu_to_le32((*c).lscan_lnum);
     (*c).mst_node.empty_lebs = cpu_to_le32(lst.empty_lebs); (*c).mst_node.idx_lebs = cpu_to_le32(lst.idx_lebs); (*c).mst_node.total_free = cpu_to_le64(lst.total_free); (*c).mst_node.total_dirty = cpu_to_le64(lst.total_dirty); (*c).mst_node.total_used = cpu_to_le64(lst.total_used); (*c).mst_node.total_dead = cpu_to_le64(lst.total_dead); (*c).mst_node.total_dark = cpu_to_le64(lst.total_dark);
     if (*c).no_orphs { (*c).mst_node.flags |= cpu_to_le32(UBIFS_MST_NO_ORPHS); } else { (*c).mst_node.flags &= !cpu_to_le32(UBIFS_MST_NO_ORPHS); }
-    old_ltail_lnum = (*c).ltail_lnum; err = ubifs_log_end_commit(c, new_ltail_lnum); if err != 0 { goto!(out); }
-    err = ubifs_log_post_commit(c, old_ltail_lnum); if err != 0 { goto!(out); }
-    err = ubifs_gc_end_commit(c); if err != 0 { goto!(out); }
-    err = ubifs_lpt_post_commit(c); if err != 0 { goto!(out); }
-out_cancel: spin_lock(&mut (*c).cs_lock); (*c).cmt_state = COMMIT_RESTING; wake_up(&mut (*c).cmt_wq); dbg_cmt!("commit end"); spin_unlock(&mut (*c).cs_lock); return 0;
-out_up: up_write(&mut (*c).commit_sem);
-out: ubifs_err(c, "commit failed, error %d", err); spin_lock(&mut (*c).cs_lock); (*c).cmt_state = COMMIT_BROKEN; wake_up(&mut (*c).cmt_wq); spin_unlock(&mut (*c).cs_lock); ubifs_ro_mode(c, err); err
+    old_ltail_lnum = (*c).ltail_lnum; err = ubifs_log_end_commit(c, new_ltail_lnum); if err != 0 { break 'out; }
+    err = ubifs_log_post_commit(c, old_ltail_lnum); if err != 0 { break 'out; }
+    err = ubifs_gc_end_commit(c); if err != 0 { break 'out; }
+    err = ubifs_lpt_post_commit(c); if err != 0 { break 'out; }
+    }
+    spin_lock(&mut (*c).cs_lock); (*c).cmt_state = COMMIT_RESTING; wake_up(&mut (*c).cmt_wq); dbg_cmt!("commit end"); spin_unlock(&mut (*c).cs_lock); return 0;
+    }
+    up_write(&mut (*c).commit_sem);
+    }
+    ubifs_err(c, "commit failed, error %d", err); spin_lock(&mut (*c).cs_lock); (*c).cmt_state = COMMIT_BROKEN; wake_up(&mut (*c).cmt_wq); spin_unlock(&mut (*c).cs_lock); ubifs_ro_mode(c, err); err
 }
 
 unsafe fn run_bg_commit(c: *mut ubifs_info) -> i32 {

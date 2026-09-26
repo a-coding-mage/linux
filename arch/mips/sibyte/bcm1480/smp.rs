@@ -102,7 +102,7 @@ unsafe fn bcm1480_smp_setup() {
             __cpu_logical_map[num] = i;
         }
     }
-    printk(KERN_INFO "Detected %i available secondary CPU(s)\n", num);
+    printk(c"\x016Detected %i available secondary CPU(s)\n".as_ptr(), num);
 }
 
 unsafe fn bcm1480_prepare_cpus(_max_cpus: u32) {}

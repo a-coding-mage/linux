@@ -36,7 +36,7 @@ unsafe fn flush_context(info: *mut asid_info) {
 
     bitmap_zero((*info).map, num_ctxt_asids(info));
 
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         asid = atomic64_xchg_relaxed(active_asid(info, i), 0);
         /*
          * If this CPU has already been through a
@@ -49,7 +49,7 @@ unsafe fn flush_context(info: *mut asid_info) {
         }
         set_bit(asid2idx(info, asid), (*info).map);
         *reserved_asid(info, i) = asid;
-    }
+    });
 
     /* Queue a TLB invalidation for each CPU to perform on next context-switch */
     cpumask_setall(&mut (*info).flush_pending);
@@ -68,12 +68,12 @@ unsafe fn check_update_reserved_asid(info: *mut asid_info, asid: u64, newasid: u
      * so could result in us missing the reserved ASID in a future
      * generation.
      */
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         if *reserved_asid(info, cpu) == asid {
             hit = true;
             *reserved_asid(info, cpu) = newasid;
         }
-    }
+    });
 
     hit
 }

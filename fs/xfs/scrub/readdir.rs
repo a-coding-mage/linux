@@ -158,7 +158,7 @@ pub unsafe fn xchk_dir_lookup(sc: *mut xfs_scrub, dp: *mut xfs_inode,
     let error = xfs_dir_lookup_args(&mut args); if error == 0 { *ino = args.inumber; } error
 }
 
-static unsafe fn xchk_dir_trylock_both(sc: *mut xfs_scrub, ip: *mut xfs_inode) -> c_uint {
+unsafe fn xchk_dir_trylock_both(sc: *mut xfs_scrub, ip: *mut xfs_inode) -> c_uint {
     if !xchk_ilock_nowait(sc, XFS_IOLOCK_EXCL) { return 0; }
     if !xfs_ilock_nowait(ip, XFS_IOLOCK_SHARED) { xchk_iunlock(sc, XFS_IOLOCK_EXCL); return 0; }
     xchk_ilock(sc, XFS_ILOCK_EXCL);

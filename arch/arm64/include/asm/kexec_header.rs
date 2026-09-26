@@ -74,7 +74,7 @@ pub unsafe fn crash_setup_regs(newregs: *mut pt_regs, oldregs: *mut pt_regs) {
 }
 
 /* These declarations are enabled when CONFIG_CRASH_DUMP and CONFIG_HIBERNATION are set. */
-#[cfg(all(feature = "CONFIG_CRASH_DUMP", feature = "CONFIG_HIBERNATION"))]
+#[cfg(all(CONFIG_CRASH_DUMP, CONFIG_HIBERNATION))]
 unsafe extern "C" {
     pub fn crash_is_nosave(pfn: c_ulong) -> bool;
     pub fn crash_prepare_suspend();
@@ -82,18 +82,18 @@ unsafe extern "C" {
     pub fn crash_free_reserved_phys_range(begin: c_ulong, end: c_ulong);
 }
 
-#[cfg(not(all(feature = "CONFIG_CRASH_DUMP", feature = "CONFIG_HIBERNATION")))]
+#[cfg(not(all(CONFIG_CRASH_DUMP, CONFIG_HIBERNATION)))]
 pub unsafe fn crash_is_nosave(_pfn: c_ulong) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_CRASH_DUMP", feature = "CONFIG_HIBERNATION")))]
+#[cfg(not(all(CONFIG_CRASH_DUMP, CONFIG_HIBERNATION)))]
 pub unsafe fn crash_prepare_suspend() {}
-#[cfg(not(all(feature = "CONFIG_CRASH_DUMP", feature = "CONFIG_HIBERNATION")))]
+#[cfg(not(all(CONFIG_CRASH_DUMP, CONFIG_HIBERNATION)))]
 pub unsafe fn crash_post_resume() {}
 
 #[repr(C)]
 pub struct kimage;
 
 /* Enabled when CONFIG_KEXEC_CORE is set. */
-#[cfg(feature = "CONFIG_KEXEC_CORE")]
+#[cfg(CONFIG_KEXEC_CORE)]
 unsafe extern "C" {
     pub fn cpu_soft_restart(el2_switch: c_ulong, entry: c_ulong, arg0: c_ulong,
                             arg1: c_ulong, arg2: c_ulong);
@@ -116,7 +116,7 @@ pub struct kimage_arch {
 }
 
 /* Enabled when CONFIG_KEXEC_FILE is set. */
-#[cfg(feature = "CONFIG_KEXEC_FILE")]
+#[cfg(CONFIG_KEXEC_FILE)]
 unsafe extern "C" {
     pub static kexec_image_ops: kexec_file_ops;
     pub fn arch_kimage_file_post_load_cleanup(image: *mut kimage) -> c_int;

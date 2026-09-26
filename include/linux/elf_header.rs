@@ -96,13 +96,13 @@ pub struct coredump_params {
 }
 
 // CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES controls whether these are local stubs or externals.
-#[cfg(not(feature = "CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES"))]
+#[cfg(not(CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES))]
 #[inline]
 pub fn elf_coredump_extra_notes_size() -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES"))]
+#[cfg(not(CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES))]
 #[inline]
 pub fn elf_coredump_extra_notes_write(_cprm: *mut coredump_params) -> i32 { 0 }
-#[cfg(feature = "CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES")]
+#[cfg(CONFIG_ARCH_HAVE_EXTRA_ELF_NOTES)]
 extern "C" {
     pub fn elf_coredump_extra_notes_size() -> i32;
     pub fn elf_coredump_extra_notes_write(cprm: *mut coredump_params) -> i32;
@@ -123,7 +123,7 @@ pub struct arch_elf_state {
 }
 
 // CONFIG_ARCH_USE_GNU_PROPERTY controls whether this parser is a local stub or external.
-#[cfg(not(feature = "CONFIG_ARCH_USE_GNU_PROPERTY"))]
+#[cfg(not(CONFIG_ARCH_USE_GNU_PROPERTY))]
 #[inline]
 pub fn arch_parse_elf_property(
     _type_: u32,
@@ -132,7 +132,7 @@ pub fn arch_parse_elf_property(
     _compat: bool,
     _arch: *mut arch_elf_state,
 ) -> i32 { 0 }
-#[cfg(feature = "CONFIG_ARCH_USE_GNU_PROPERTY")]
+#[cfg(CONFIG_ARCH_USE_GNU_PROPERTY)]
 extern "C" {
     pub fn arch_parse_elf_property(
         type_: u32,
@@ -144,7 +144,7 @@ extern "C" {
 }
 
 // CONFIG_ARCH_HAVE_ELF_PROT controls whether this is an external architecture hook.
-#[cfg(not(feature = "CONFIG_ARCH_HAVE_ELF_PROT"))]
+#[cfg(not(CONFIG_ARCH_HAVE_ELF_PROT))]
 #[inline]
 pub fn arch_elf_adjust_prot(
     prot: i32,
@@ -152,7 +152,7 @@ pub fn arch_elf_adjust_prot(
     _has_interp: bool,
     _is_interp: bool,
 ) -> i32 { prot }
-#[cfg(feature = "CONFIG_ARCH_HAVE_ELF_PROT")]
+#[cfg(CONFIG_ARCH_HAVE_ELF_PROT)]
 extern "C" {
     pub fn arch_elf_adjust_prot(
         prot: i32,

@@ -54,7 +54,7 @@ unsafe fn mergeable(a:*const runlist_element,b:*const runlist_element)->bool {
 
 unsafe fn append(mut d:*mut runlist_element, ds:isize, s:*mut runlist_element, ss:isize, loc:isize, out:*mut usize)->*mut runlist_element {
     let right=loc+1<ds && mergeable(s.offset(ss-1),d.offset(loc+1));
-    d=rl_realloc(d,ds,ds+ss-right as isize); if d as isize<0{return d}; *out=(ds+ss-right as isize) as usize;
+    d=rl_realloc(d,ds,ds+ss-right as isize); if (d as isize)<0{return d}; *out=(ds+ss-right as isize) as usize;
     if right {merge(s.offset(ss-1),d.offset(loc+1));}
     let marker=loc+ss+1; rl_mm(d,marker,loc+1+right as isize,ds-(loc+1+right as isize)); rl_mc(d,loc+1,s,0,ss);
     (*d.offset(loc)).length=(*d.offset(loc+1)).vcn-(*d.offset(loc)).vcn;
@@ -62,7 +62,7 @@ unsafe fn append(mut d:*mut runlist_element, ds:isize, s:*mut runlist_element, s
 }
 unsafe fn insert(mut d:*mut runlist_element,ds:isize,s:*mut runlist_element,ss:isize,loc:isize,out:*mut usize)->*mut runlist_element {
     let left=if loc==0{false}else{mergeable(d.offset(loc-1),s)}; let disc=if loc==0{(*s).vcn>0}else{let mut n=(*d.offset(loc-1)).length;if left{n+=(*s).length;}(*s).vcn>(*d.offset(loc-1)).vcn+n};
-    d=rl_realloc(d,ds,ds+ss-left as isize+disc as isize);if d as isize<0{return d};*out=(ds+ss-left as isize+disc as isize) as usize;if left{merge(d.offset(loc-1),s)}
+    d=rl_realloc(d,ds,ds+ss-left as isize+disc as isize);if (d as isize)<0{return d};*out=(ds+ss-left as isize+disc as isize) as usize;if left{merge(d.offset(loc-1),s)}
     let marker=loc+ss-left as isize+disc as isize;rl_mm(d,marker,loc,ds-loc);rl_mc(d,loc+disc as isize,s,left as isize,ss-left as isize);(*d.offset(marker)).vcn=(*d.offset(marker-1)).vcn+(*d.offset(marker-1)).length;
     if (*d.offset(marker)).lcn==LCN_HOLE||(*d.offset(marker)).lcn==LCN_RL_NOT_MAPPED||(*d.offset(marker)).lcn==LCN_DELALLOC{(*d.offset(marker)).length=(*d.offset(marker+1)).vcn-(*d.offset(marker)).vcn;}if disc{(*d.offset(loc)).vcn=if loc>0{(*d.offset(loc-1)).vcn+(*d.offset(loc-1)).length}else{0};(*d.offset(loc)).length=(*d.offset(loc+1)).vcn-(*d.offset(loc)).vcn;(*d.offset(loc)).lcn=LCN_RL_NOT_MAPPED;}kvfree(s as *mut _);d
 }

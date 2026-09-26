@@ -95,9 +95,9 @@ unsafe fn scx_pick_idle_cpu(allowed: *const Cpumask, node: i32, flags: u64) -> i
     pick_idle_cpu_from_online_nodes(allowed, node, flags)
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 unsafe fn pick_idle_cpu_from_online_nodes(allowed: *const Cpumask, _node: i32, _flags: u64) -> i32 { let _ = allowed; -16 }
-#[cfg(not(feature = "CONFIG_NUMA"))]
+#[cfg(not(CONFIG_NUMA))]
 unsafe fn pick_idle_cpu_from_online_nodes(_: *const Cpumask, _: i32, _: u64) -> i32 { -16 }
 
 unsafe fn llc_weight(_cpu: i32) -> u32 { 0 }

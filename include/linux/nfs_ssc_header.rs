@@ -49,7 +49,7 @@ extern "C" {
 }
 
 // Corresponds to CONFIG_NFSD_V4_2_INTER_SSC.
-#[cfg(feature = "CONFIG_NFSD_V4_2_INTER_SSC")]
+#[cfg(CONFIG_NFSD_V4_2_INTER_SSC)]
 pub unsafe fn nfs42_ssc_open(
     ss_mnt: *mut vfsmount,
     src_fh: *mut nfs_fh,
@@ -63,7 +63,7 @@ pub unsafe fn nfs42_ssc_open(
 }
 
 // Corresponds to CONFIG_NFSD_V4_2_INTER_SSC.
-#[cfg(feature = "CONFIG_NFSD_V4_2_INTER_SSC")]
+#[cfg(CONFIG_NFSD_V4_2_INTER_SSC)]
 pub unsafe fn nfs42_ssc_close(filep: *mut file) {
     if !nfs_ssc_client_tbl.ssc_nfs4_ops.is_null() {
         let ops = &*nfs_ssc_client_tbl.ssc_nfs4_ops;

@@ -103,7 +103,7 @@ fn main() {
                 exit(1);
             }
 
-            if lseek(fd, 0_i64, SEEK_SET) < 0 {
+            if lseek(fd, 0i64, SEEK_SET) < 0 {
                 fprintf(stderr, c"Failed to set pointer to beginning\n".as_ptr());
                 exit(1);
             }
@@ -132,7 +132,7 @@ fn main() {
             } else if ret == 0 {
                 printf(c"Poll Timeout\n".as_ptr());
             } else {
-                if lseek(fd, 0_i64, SEEK_SET) < 0 {
+                if lseek(fd, 0i64, SEEK_SET) < 0 {
                     fprintf(stderr, c"Failed to set pointer to beginning\n".as_ptr());
                     exit(1);
                 }

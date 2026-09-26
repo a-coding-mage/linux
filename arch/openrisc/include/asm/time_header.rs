@@ -15,10 +15,10 @@ extern "C" {
     pub fn openrisc_timer_set_next(delta: core::ffi::c_ulong);
 
     // Preserved from the CONFIG_SMP build-time condition in the C header.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn synchronise_count_master(cpu: core::ffi::c_int);
 
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     pub fn synchronise_count_slave(cpu: core::ffi::c_int);
 }
 

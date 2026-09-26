@@ -55,7 +55,7 @@ pub unsafe fn __siphash_unaligned(data: *const u8, len: usize, key: *const sipha
     v3^=b;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);v0^=b;v2^=0xff;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);(v0^v1)^(v2^v3)
 }
 
-macro_rules! sip_u { ($name:ident, ($($arg:ident),*), $len:expr, $body:block) => { pub unsafe fn $name($($arg: u64,)* key: *const siphash_key_t) -> u64 { let mut v0=SIPHASH_CONST_0;let mut v1=SIPHASH_CONST_1;let mut v2=SIPHASH_CONST_2;let mut v3=SIPHASH_CONST_3;let mut b=($len as u64)<<56;v3^=(*key).key[1];v2^=(*key).key[0];v1^=(*key).key[1];v0^=(*key).key[0]; $body v3^=b;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);v0^=b;v2^=0xff;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);(v0^v1)^(v2^v3) } }; }
+macro_rules! sip_u { ($name:ident, ($($arg:ident),*), $len:expr, $body:block) => { pub unsafe fn $(*name($($arg: u64,)* key: *const siphash_key_t)).u64 { let mut v0=SIPHASH_CONST_0;let mut v1=SIPHASH_CONST_1;let mut v2=SIPHASH_CONST_2;let mut v3=SIPHASH_CONST_3;let mut b=($len as u64)<<56;v3^=(*key).key[1];v2^=(*key).key[0];v1^=(*key).key[1];v0^=(*key).key[0]; $body v3^=b;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);v0^=b;v2^=0xff;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);(v0^v1)^(v2^v3) } }; }
 }
 sip_u!(siphash_1u64, (first), 8, { v3^=first;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);v0^=first; });
 sip_u!(siphash_2u64, (first,second), 16, { v3^=first;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);v0^=first;v3^=second;sipround!(v0,v1,v2,v3);sipround!(v0,v1,v2,v3);v0^=second; });

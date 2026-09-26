@@ -87,12 +87,12 @@ extern "C" {
     pub fn of_device_unregister(ofdev: *mut platform_device);
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 extern "C" {
     pub fn of_find_device_by_node(np: *mut device_node) -> *mut platform_device;
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_find_device_by_node(_np: *mut device_node) -> *mut platform_device {
     core::ptr::null_mut()
@@ -106,7 +106,7 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_OF_ADDRESS")]
+#[cfg(CONFIG_OF_ADDRESS)]
 extern "C" {
     /* Platform devices and busses creation */
     pub fn of_platform_device_create(
@@ -135,7 +135,7 @@ extern "C" {
     pub fn devm_of_platform_depopulate(dev: *mut device);
 }
 
-#[cfg(not(feature = "CONFIG_OF_ADDRESS"))]
+#[cfg(not(CONFIG_OF_ADDRESS))]
 mod without_config_of_address {
     use super::*;
 

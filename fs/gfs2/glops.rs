@@ -25,7 +25,7 @@ unsafe fn __gfs2_ail_flush(gl: *mut gfs2_glock, fsync: bool, mut nr_revokes: u32
     let b_state: c_ulong = (1 << BH_Dirty) | (1 << BH_Pinned) | (1 << BH_Lock);
     spin_lock(&mut (*sdp).sd_log_lock);
     spin_lock(&mut (*sdp).sd_ail_lock);
-    list_for_each_entry_safe_reverse!(bd, tmp, head, bd_ail_gl_list, gfs2_bufdata) {
+    list_for_each_entry_safe_reverse!(bd, tmp, head, bd_ail_gl_list, gfs2_bufdata, {
         if nr_revokes == 0 { break; }
         let bh = (*bd).bd_bh;
         if (*bh).b_state & b_state != 0 {
@@ -34,7 +34,7 @@ unsafe fn __gfs2_ail_flush(gl: *mut gfs2_glock, fsync: bool, mut nr_revokes: u32
         }
         gfs2_trans_add_revoke(sdp, bd);
         nr_revokes -= 1;
-    }
+    });
     GLOCK_BUG_ON!(gl, !fsync && atomic_read(&(*gl).gl_ail_count) != 0);
     spin_unlock(&mut (*sdp).sd_ail_lock);
     spin_unlock(&mut (*sdp).sd_log_lock);

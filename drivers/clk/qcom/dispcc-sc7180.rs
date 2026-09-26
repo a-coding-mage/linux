@@ -60,7 +60,7 @@ rcg!(DISP_CC_MDSS_PCLK0_CLK_SRC, 0x2098, 8, PARENT_MAP_5, PARENT_DATA_5, clk_pix
 rcg!(DISP_CC_MDSS_ROT_CLK_SRC, 0x20e0, 0, PARENT_MAP_3, PARENT_DATA_3, clk_rcg2_shared_ops, FTBL_MDP);
 rcg!(DISP_CC_MDSS_VSYNC_CLK_SRC, 0x20f8, 0, PARENT_MAP_0, PARENT_DATA_0, clk_rcg2_shared_ops, FTBL_AUX);
 
-macro_rules! branch { ($name:ident, $reg:expr, $halt:ident, $parent:ident, $flags:expr) => { static mut $name: clk_branch = clk_branch { halt_reg: $reg, halt_check: $halt, clkr: clk_regmap::branch($reg, stringify!($name), unsafe { &$parent.clkr.hw }, $flags, &clk_branch2_ops) }; }; }
+macro_rules! branch { ($name:ident, $reg:expr, $halt:ident, $parent:ident, $flags:expr) => { static mut $name: clk_branch = clk_branch { halt_reg: $reg, halt_check: $halt, clkr: clk_regmap::branch!($reg, stringify!($name), unsafe { &$parent.clkr.hw }, $flags, &clk_branch2_ops) }; }; }
 branch!(DISP_CC_MDSS_AHB_CLK, 0x2080, BRANCH_HALT, DISP_CC_MDSS_AHB_CLK_SRC, CLK_SET_RATE_PARENT);
 branch!(DISP_CC_MDSS_BYTE0_CLK, 0x2028, BRANCH_HALT, DISP_CC_MDSS_BYTE0_CLK_SRC, CLK_SET_RATE_PARENT);
 branch!(DISP_CC_MDSS_BYTE0_INTF_CLK, 0x202c, BRANCH_HALT, DISP_CC_MDSS_BYTE0_DIV_CLK_SRC, CLK_SET_RATE_PARENT);

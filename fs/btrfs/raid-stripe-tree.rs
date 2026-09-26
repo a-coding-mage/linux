@@ -119,7 +119,7 @@ pub unsafe fn btrfs_insert_one_raid_extent(trans: *mut btrfs_trans_handle, bioc:
 
 pub unsafe fn btrfs_insert_raid_extent(trans: *mut btrfs_trans_handle, ordered: *mut btrfs_ordered_extent) -> i32 {
     if !btrfs_fs_incompat((*trans).fs_info, RAID_STRIPE_TREE) { return 0; }
-    let mut bioc = (*ordered).bioc_list; list_for_each_entry!(bioc, &mut (*ordered).bioc_list, rst_ordered_entry) { let ret = btrfs_insert_one_raid_extent(trans, bioc); if ret != 0 { return ret; } }
+    let mut bioc = (*ordered).bioc_list; list_for_each_entry!(bioc, &mut (*ordered).bioc_list, rst_ordered_entry, { let ret = btrfs_insert_one_raid_extent(trans, bioc); if ret != 0 { return ret; } });
     while !list_empty(&(*ordered).bioc_list) { bioc = list_first_entry!(&(*ordered).bioc_list, btrfs_io_context, rst_ordered_entry); list_del(&mut (*bioc).rst_ordered_entry); btrfs_put_bioc(bioc); } 0
 }
 

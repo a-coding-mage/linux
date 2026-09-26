@@ -26,6 +26,9 @@
 
 unsafe fn kfd_init() -> i32 {
     let mut err: i32;
+    'err_ioctl: {
+    'err_topology: {
+    'err_create_wq: {
 
     /* Verify module parameters */
     if (sched_policy < KFD_SCHED_POLICY_HWS)
@@ -45,17 +48,17 @@ unsafe fn kfd_init() -> i32 {
 
     err = kfd_chardev_init();
     if err < 0 {
-        goto err_ioctl;
+        break 'err_ioctl;
     }
 
     err = kfd_topology_init();
     if err < 0 {
-        goto err_topology;
+        break 'err_topology;
     }
 
     err = kfd_process_create_wq();
     if err < 0 {
-        goto err_create_wq;
+        break 'err_create_wq;
     }
 
     /* Ignore the return value, so that we can continue
@@ -66,12 +69,14 @@ unsafe fn kfd_init() -> i32 {
     kfd_debugfs_init();
 
     return 0;
-
-err_create_wq:
+    }
+    
     kfd_topology_shutdown();
-err_topology:
+    }
+    
     kfd_chardev_exit();
-err_ioctl:
+    }
+    
     pr_err!("KFD is disabled due to module initialization failure\n");
     return err;
 }

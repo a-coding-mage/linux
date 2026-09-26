@@ -185,7 +185,7 @@ pub struct cvmx_pko_mem_debug11_cn50xx {
     pub len: u64, // C bitfield width: 1
     pub chk: u64, // C bitfield width: 1
     pub cnt: u64, // C bitfield width: 13
-    pub mod: u64, // C bitfield width: 3
+    pub r#mod: u64, // C bitfield width: 3
 }
 
 #[repr(C)]

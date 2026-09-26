@@ -81,7 +81,7 @@ unsafe fn roclk_disable(hw:*mut clk_hw){let r=container_of!(hw,pic32_ref_osc,hw)
 unsafe fn roclk_init(hw:*mut clk_hw)->i32{roclk_disable(hw);0}
 unsafe fn roclk_get_parent(hw:*mut clk_hw)->u8{let r=container_of!(hw,pic32_ref_osc,hw);let v=(readl((*r).ctrl_reg)>>REFO_SEL_SHIFT)&REFO_SEL_MASK;if !(*r).parent_map.is_null(){for i in 0..clk_hw_get_num_parents(hw){if *(*r).parent_map.add(i as usize)==v{return i as u8;}}}v as u8}
 unsafe fn roclk_calc_rate(parent:usize, div:u32, trim:u32)->usize{if trim!=0{((parent as u128)<<8)/(((div as u128)<<9)+trim as u128) as usize}else if div!=0{parent/(div as usize*2)}else{parent}}
-unsafe fn roclk_calc_div_trim(rate:usize,parent:usize,dp:*mut u32,tp:*mut u32){let (d,t)=if parent<=rate{(0,0)}else{let d=parent/(rate*2);let f=((parent as u128)<<8)/(rate as u128)-(d as u128<<9);(d.min(REFO_DIV_MASK as usize) as u32,(f as u32).min(REFO_TRIM_MAX))};if !dp.is_null(){*dp=d}if !tp.is_null(){*tp=t}}
+unsafe fn roclk_calc_div_trim(rate:usize,parent:usize,dp:*mut u32,tp:*mut u32){let (d,t)=if parent<=rate{(0,0)}else{let d=parent/(rate*2);let f=((parent as u128)<<8)/(rate as u128)-((d as u128)<<9);(d.min(REFO_DIV_MASK as usize) as u32,(f as u32).min(REFO_TRIM_MAX))};if !dp.is_null(){*dp=d}if !tp.is_null(){*tp=t}}
 unsafe fn roclk_recalc_rate(hw:*mut clk_hw,parent:usize)->usize{let r=container_of!(hw,pic32_ref_osc,hw);let d=(readl((*r).ctrl_reg)>>REFO_DIV_SHIFT)&REFO_DIV_MASK;let t=(readl((*r).ctrl_reg.add(REFO_TRIM_REG))>>REFO_TRIM_SHIFT)&REFO_TRIM_MASK;roclk_calc_rate(parent,d,t)}
 
 unsafe fn spll_odiv_to_divider(mut o:u32)->u32{o=o.clamp(PLL_ODIV_MIN,PLL_ODIV_MAX);1<<o}

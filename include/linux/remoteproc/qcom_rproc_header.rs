@@ -29,7 +29,7 @@ pub struct qcom_ssr_notify_data {
 }
 
 // CONFIG_QCOM_RPROC_COMMON build-time condition from the C header.
-#[cfg(feature = "CONFIG_QCOM_RPROC_COMMON")]
+#[cfg(CONFIG_QCOM_RPROC_COMMON)]
 unsafe extern "C" {
     pub fn qcom_register_ssr_notifier(
         name: *const core::ffi::c_char,
@@ -42,7 +42,7 @@ unsafe extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPROC_COMMON"))]
+#[cfg(not(CONFIG_QCOM_RPROC_COMMON))]
 pub unsafe fn qcom_register_ssr_notifier(
     _name: *const core::ffi::c_char,
     _nb: *mut notifier_block,
@@ -50,7 +50,7 @@ pub unsafe fn qcom_register_ssr_notifier(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_RPROC_COMMON"))]
+#[cfg(not(CONFIG_QCOM_RPROC_COMMON))]
 pub unsafe fn qcom_unregister_ssr_notifier(
     _notify: *mut core::ffi::c_void,
     _nb: *mut notifier_block,

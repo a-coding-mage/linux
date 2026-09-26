@@ -651,7 +651,7 @@ pub unsafe extern "C" fn xen_snd_front_evtchnl_pair_clear(evt_pair: *mut xen_snd
 
     // scoped_guard(mutex, &evt_pair->evt.ring_io_lock)
     (*evt_pair).evt.evt_id = 0;
-    (*evt_pair).evt.u.evt.page->in_cons = (*evt_pair).evt.u.evt.page->in_prod;
+    (*(*evt_pair).evt.u.evt.page).in_cons = (*(*evt_pair).evt.u.evt.page).in_prod;
     virt_wmb();
 }
 

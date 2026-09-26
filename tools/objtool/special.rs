@@ -186,9 +186,10 @@ unsafe fn get_alt_entry(
             .add(offset.wrapping_add((*entry).orig_len as c_ulong) as usize);
         (*alt).new_len = *((*(*sec).data).d_buf as *mut u8)
             .add(offset.wrapping_add((*entry).new_len as c_ulong) as usize);
-        (*alt).feature = *((*(*sec).data).d_buf as *mut u8)
+        (*alt).feature = (((*(*sec).data).d_buf as *mut u8)
             .add(offset.wrapping_add((*entry).feature as c_ulong) as usize)
-            as *mut u32);
+            as *const u32)
+            .read_unaligned();
     }
 
     orig_reloc = find_reloc_by_dest(elf, sec, offset.wrapping_add((*entry).orig as c_ulong));

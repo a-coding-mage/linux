@@ -5,7 +5,7 @@
 // Translated from spl_debug.h. The original CONFIG_* symbols are represented
 // by Cargo cfg flags; WARN_ON and kgdb_breakpoint are supplied externally.
 
-#[cfg(feature = "CONFIG_KGDB")]
+#[cfg(CONFIG_KGDB)]
 macro_rules! SPL_ASSERT_CRITICAL {
     ($expr:expr) => {{
         if WARN_ON(!($expr)) {
@@ -14,7 +14,7 @@ macro_rules! SPL_ASSERT_CRITICAL {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_KGDB"))]
+#[cfg(not(CONFIG_KGDB))]
 macro_rules! SPL_ASSERT_CRITICAL {
     ($expr:expr) => {{
         if WARN_ON(!($expr)) {
@@ -23,14 +23,14 @@ macro_rules! SPL_ASSERT_CRITICAL {
     }};
 }
 
-#[cfg(feature = "CONFIG_DEBUG_KERNEL_DC")]
+#[cfg(CONFIG_DEBUG_KERNEL_DC)]
 macro_rules! SPL_ASSERT {
     ($expr:expr) => {
         SPL_ASSERT_CRITICAL!($expr)
     };
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_KERNEL_DC"))]
+#[cfg(not(CONFIG_DEBUG_KERNEL_DC))]
 macro_rules! SPL_ASSERT {
     ($expr:expr) => {
         WARN_ON(!($expr))

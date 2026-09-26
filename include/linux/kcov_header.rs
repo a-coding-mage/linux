@@ -24,7 +24,7 @@ pub enum kcov_mode {
 pub const KCOV_IN_CTXSW: u32 = 1u32 << 30;
 
 #[cfg(CONFIG_KCOV)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn kcov_task_init(t: *mut task_struct);
     pub fn kcov_task_exit(t: *mut task_struct);
 }
@@ -45,7 +45,7 @@ macro_rules! kcov_finish_switch {
 
 /* See Documentation/dev-tools/kcov.rst for usage details. */
 #[cfg(CONFIG_KCOV)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn kcov_remote_start(handle: u64);
     pub fn kcov_remote_stop();
     pub fn kcov_common_handle() -> kcov_common_handle_id;
@@ -91,7 +91,7 @@ pub type kcov_u64 = usize;
 pub type kcov_u64 = u64;
 
 #[cfg(CONFIG_KCOV)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn __sanitizer_cov_trace_pc();
     pub fn __sanitizer_cov_trace_cmp1(arg1: u8, arg2: u8);
     pub fn __sanitizer_cov_trace_cmp2(arg1: u16, arg2: u16);

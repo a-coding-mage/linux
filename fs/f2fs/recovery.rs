@@ -12,9 +12,9 @@ pub unsafe fn f2fs_space_for_roll_forward(sbi: *mut f2fs_sb_info) -> bool {
 
 unsafe fn get_fsync_inode(head: *mut list_head, ino: nid_t) -> *mut fsync_inode_entry {
     let mut entry: *mut fsync_inode_entry = core::ptr::null_mut();
-    list_for_each_entry!(entry, head, list) {
+    list_for_each_entry!(entry, head, list, {
         if (*(*entry).inode).i_ino == ino { return entry; }
-    }
+    });
     core::ptr::null_mut()
 }
 

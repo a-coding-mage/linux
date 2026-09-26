@@ -83,17 +83,17 @@ pub unsafe fn memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void
     ____memcpy(dest, src, n)
 }
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 pub unsafe fn __memset(s: *mut core::ffi::c_void, c: i32, n: usize) -> *mut core::ffi::c_void {
     memset(s, c, n)
 }
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 pub unsafe fn __memmove(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void {
     memmove(dest, src, n)
 }
 
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 pub unsafe fn __memcpy(dest: *mut core::ffi::c_void, src: *const core::ffi::c_void, n: usize) -> *mut core::ffi::c_void {
     memcpy(dest, src, n)
 }

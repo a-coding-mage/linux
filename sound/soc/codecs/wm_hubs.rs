@@ -176,7 +176,7 @@ static void wait_for_dc_servo(struct snd_soc_component *component, unsigned int 
 
 	val = op | WM8993_DCS_ENA_CHAN_0 | WM8993_DCS_ENA_CHAN_1;
 
-	/* Trigger the command * /
+	/* Trigger the command */
 	snd_soc_component_write(component, WM8993_DC_SERVO_0, val);
 
 	dev_dbg(component->dev, "Waiting for DC servo...\n");
@@ -218,7 +218,7 @@ static bool wm_hubs_dac_hp_direct(struct snd_soc_component *component)
 {
 	int reg;
 
-	/* If we're going via the mixer we'll need to do additional checks * /
+	/* If we're going via the mixer we'll need to do additional checks */
 	reg = snd_soc_component_read(component, WM8993_OUTPUT_MIXER1);
 	if (!(reg & WM8993_DACL_TO_HPOUT1L)) {
 		if (reg & ~WM8993_DACL_TO_MIXOUTL) {
@@ -323,7 +323,7 @@ static int wm_hubs_read_dc_servo(struct snd_soc_component *component,
 
 	/* Different chips in the family support different readback
 	 * methods.
-	 * /
+	 */
 	switch (hubs->dcs_readback_mode) {
 	case 0:
 		*reg_l = snd_soc_component_read(component, WM8993_DC_SERVO_READBACK_1)
@@ -347,7 +347,7 @@ static int wm_hubs_read_dc_servo(struct snd_soc_component *component,
 
 /*
  * Startup calibration of the DC servo
- * /
+ */
 static void enable_dc_servo(struct snd_soc_component *component)
 {
 	struct wm_hubs_data *hubs = snd_soc_component_get_drvdata(component);
@@ -365,7 +365,7 @@ static void enable_dc_servo(struct snd_soc_component *component)
 	}
 
 	/* If we're using a digital only path and have a previously
-	 * callibrated DC servo offset stored then use that. * /
+	 * callibrated DC servo offset stored then use that. */
 	if (wm_hubs_dac_hp_direct(component) &&
 	    wm_hubs_dcs_cache_get(component, &cache)) {
 		dev_dbg(component->dev, "Using cached DCS offset %x for %d,%d\n",
@@ -378,7 +378,7 @@ static void enable_dc_servo(struct snd_soc_component *component)
 	}
 
 	if (hubs->series_startup) {
-		/* Set for 32 series updates * /
+		/* Set for 32 series updates */
 		snd_soc_component_update_bits(component, WM8993_DC_SERVO_1,
 				    WM8993_DCS_SERIES_NO_01_MASK,
 				    32 << WM8993_DCS_SERIES_NO_01_SHIFT);
@@ -396,20 +396,20 @@ static void enable_dc_servo(struct snd_soc_component *component)
 
 	dev_dbg(component->dev, "DCS input: %x %x\n", reg_l, reg_r);
 
-	/* Apply correction to DC servo result * /
+	/* Apply correction to DC servo result */
 	if (hubs->dcs_codes_l || hubs->dcs_codes_r) {
 		dev_dbg(component->dev,
 			"Applying %d/%d code DC servo correction\n",
 			hubs->dcs_codes_l, hubs->dcs_codes_r);
 
-		/* HPOUT1R * /
+		/* HPOUT1R */
 		offset = (s8)reg_r;
 		dev_dbg(component->dev, "DCS right %d->%d\n", offset,
 			offset + hubs->dcs_codes_r);
 		offset += hubs->dcs_codes_r;
 		dcs_cfg = (u8)offset << WM8993_DCS_DAC_WR_VAL_1_SHIFT;
 
-		/* HPOUT1L * /
+		/* HPOUT1L */
 		offset = (s8)reg_l;
 		dev_dbg(component->dev, "DCS left %d->%d\n", offset,
 			offset + hubs->dcs_codes_l);
@@ -418,7 +418,7 @@ static void enable_dc_servo(struct snd_soc_component *component)
 
 		dev_dbg(component->dev, "DCS result: %x\n", dcs_cfg);
 
-		/* Do it * /
+		/* Do it */
 		snd_soc_component_write(component, dcs_reg, dcs_cfg);
 		wait_for_dc_servo(component,
 				  WM8993_DCS_TRIG_DAC_WR_0 |
@@ -429,14 +429,14 @@ static void enable_dc_servo(struct snd_soc_component *component)
 	}
 
 	/* Save the callibrated offset if we're in class W mode and
-	 * therefore don't have any analogue signal mixed in. * /
+	 * therefore don't have any analogue signal mixed in. */
 	if (wm_hubs_dac_hp_direct(component))
 		wm_hubs_dcs_cache_set(component, dcs_cfg);
 }
 
 /*
  * Update the DC servo calibration on gain changes
- * /
+ */
 static int wm8993_put_dc_servo(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
@@ -447,11 +447,11 @@ static int wm8993_put_dc_servo(struct snd_kcontrol *kcontrol,
 	ret = snd_soc_put_volsw(kcontrol, ucontrol);
 
 	/* If we're applying an offset correction then updating the
-	 * callibration would be likely to introduce further offsets. * /
+	 * callibration would be likely to introduce further offsets. */
 	if (hubs->dcs_codes_l || hubs->dcs_codes_r || hubs->no_series_update)
 		return ret;
 
-	/* Only need to do this if the outputs are active * /
+	/* Only need to do this if the outputs are active */
 	if (snd_soc_component_read(component, WM8993_POWER_MANAGEMENT_1)
 	    & (WM8993_HPOUT1L_ENA | WM8993_HPOUT1R_ENA))
 		snd_soc_component_update_bits(component,
@@ -614,14 +614,14 @@ static int hp_supply_event(struct snd_soc_dapm_widget *w,
 		case 0:
 			break;
 		case 1:
-			/* Enable the headphone amp * /
+			/* Enable the headphone amp */
 			snd_soc_component_update_bits(component, WM8993_POWER_MANAGEMENT_1,
 					    WM8993_HPOUT1L_ENA |
 					    WM8993_HPOUT1R_ENA,
 					    WM8993_HPOUT1L_ENA |
 					    WM8993_HPOUT1R_ENA);
 
-			/* Enable the second stage * /
+			/* Enable the second stage */
 			snd_soc_component_update_bits(component, WM8993_ANALOGUE_HP_0,
 					    WM8993_HPOUT1L_DLY |
 					    WM8993_HPOUT1R_DLY,
@@ -1223,7 +1223,7 @@ int wm_hubs_add_analogue_controls(struct snd_soc_component *component)
 {
 	struct snd_soc_dapm_context *dapm = snd_soc_component_to_dapm(component);
 
-	/* Latch volume update bits & default ZC on * /
+	/* Latch volume update bits & default ZC on */
 	snd_soc_component_update_bits(component, WM8993_LEFT_LINE_INPUT_1_2_VOLUME,
 			    WM8993_IN1_VU, WM8993_IN1_VU);
 	snd_soc_component_update_bits(component, WM8993_RIGHT_LINE_INPUT_1_2_VOLUME,
@@ -1359,7 +1359,7 @@ void wm_hubs_vmid_ena(struct snd_soc_component *component)
 	if (hubs->lineout2_se)
 		val |= WM8993_LINEOUT2N_ENA | WM8993_LINEOUT2P_ENA;
 
-	/* Enable the line outputs while we power up * /
+	/* Enable the line outputs while we power up */
 	snd_soc_component_update_bits(component, WM8993_POWER_MANAGEMENT_3, val, val);
 }
 EXPORT_SYMBOL_GPL(wm_hubs_vmid_ena);
@@ -1372,13 +1372,13 @@ void wm_hubs_set_bias_level(struct snd_soc_component *component,
 
 	switch (level) {
 	case SND_SOC_BIAS_STANDBY:
-		/* Clamp the inputs to VMID while we ramp to charge caps * /
+		/* Clamp the inputs to VMID while we ramp to charge caps */
 		snd_soc_component_update_bits(component, WM8993_INPUTS_CLAMP_REG,
 				    WM8993_INPUTS_CLAMP, WM8993_INPUTS_CLAMP);
 		break;
 
 	case SND_SOC_BIAS_ON:
-		/* Turn off any unneeded single ended outputs * /
+		/* Turn off any unneeded single ended outputs */
 		val = 0;
 		mask = 0;
 
@@ -1403,7 +1403,7 @@ void wm_hubs_set_bias_level(struct snd_soc_component *component,
 		snd_soc_component_update_bits(component, WM8993_POWER_MANAGEMENT_3,
 				    mask, val);
 
-		/* Remove the input clamps * /
+		/* Remove the input clamps */
 		snd_soc_component_update_bits(component, WM8993_INPUTS_CLAMP_REG,
 				    WM8993_INPUTS_CLAMP, 0);
 		break;

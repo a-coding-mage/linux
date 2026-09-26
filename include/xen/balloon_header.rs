@@ -38,12 +38,12 @@ unsafe extern "C" {
 }
 
 /* CONFIG_XEN_BALLOON controls whether the external initializer is available. */
-#[cfg(feature = "CONFIG_XEN_BALLOON")]
+#[cfg(CONFIG_XEN_BALLOON)]
 unsafe extern "C" {
     pub fn xen_balloon_init();
 }
 
-#[cfg(not(feature = "CONFIG_XEN_BALLOON"))]
+#[cfg(not(CONFIG_XEN_BALLOON))]
 #[inline]
 pub fn xen_balloon_init() {}
 

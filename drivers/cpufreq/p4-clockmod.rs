@@ -89,9 +89,9 @@ static mut p4clockmod_table: [cpufreq_frequency_table; 10] = [
 
 unsafe fn cpufreq_p4_target(policy: *mut cpufreq_policy, index: u32) -> i32 {
     let mut i: i32 = 0;
-    for_each_cpu!(i, (*policy).cpus) {
+    for_each_cpu!(i, (*policy).cpus, {
         cpufreq_p4_setdc(i as u32, p4clockmod_table[index as usize].driver_data);
-    }
+    });
     0
 }
 

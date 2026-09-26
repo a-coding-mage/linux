@@ -84,37 +84,37 @@ static const mtk_fixed_factor top_fixed_divs[] = {
 	factor!(CLK_TOP_MSDCPLL_D8, "msdcpll_d8", "msdcpll_ck", 1, 8),
 ];
 
-static const axi_parents: &[&str] = &[
+static axi_parents: &[&str] = &[
 	"clk26m",
 	"syspll_d7",
 	"ulposc_axi_ck_mux",
 ];
 
-static const ulposc_axi_ck_mux_parents: &[&str] = &[
+static ulposc_axi_ck_mux_parents: &[&str] = &[
 	"syspll1_d4",
 	"ulposc_axi_ck_mux_pre",
 ];
 
-static const ulposc_axi_ck_mux_pre_parents: &[&str] = &[
+static ulposc_axi_ck_mux_pre_parents: &[&str] = &[
 	"ulposc_d2",
 	"ulposc_d3",
 ];
 
-static const ddrphycfg_parents: &[&str] = &[
+static ddrphycfg_parents: &[&str] = &[
 	"clk26m",
 	"syspll3_d2",
 	"syspll2_d4",
 	"syspll1_d8",
 ];
 
-static const mm_parents: &[&str] = &[
+static mm_parents: &[&str] = &[
 	"clk26m",
 	"imgpll_ck",
 	"univpll1_d2",
 	"syspll1_d2",
 ];
 
-static const pwm_parents: &[&str] = &[
+static pwm_parents: &[&str] = &[
 	"clk26m",
 	"univpll2_d4",
 	"ulposc_d2",
@@ -124,7 +124,7 @@ static const pwm_parents: &[&str] = &[
 	"ulposc_d4",
 ];
 
-static const vdec_parents: &[&str] = &[
+static vdec_parents: &[&str] = &[
 	"clk26m",
 	"vdecpll_ck",
 	"imgpll_ck",
@@ -134,56 +134,56 @@ static const vdec_parents: &[&str] = &[
 	"clk26m",
 ];
 
-static const venc_parents: &[&str] = &[
+static venc_parents: &[&str] = &[
 	"clk26m",
 	"codecpll_ck",
 	"syspll_d3",
 ];
 
-static const mfg_parents: &[&str] = &[
+static mfg_parents: &[&str] = &[
 	"clk26m",
 	"mfgpll_ck",
 	"syspll_d3",
 	"univpll_d3",
 ];
 
-static const camtg: &[&str] = &[
+static camtg: &[&str] = &[
 	"clk26m",
 	"univpll_d26",
 	"univpll2_d2",
 ];
 
-static const uart_parents: &[&str] = &[
+static uart_parents: &[&str] = &[
 	"clk26m",
 	"univpll2_d8",
 ];
 
-static const spi_parents: &[&str] = &[
+static spi_parents: &[&str] = &[
 	"clk26m",
 	"syspll3_d2",
 	"syspll2_d4",
 	"ulposc_spi_ck_mux",
 ];
 
-static const ulposc_spi_ck_mux_parents: &[&str] = &[
+static ulposc_spi_ck_mux_parents: &[&str] = &[
 	"ulposc_d2",
 	"ulposc_d3",
 ];
 
-static const usb20_parents: &[&str] = &[
+static usb20_parents: &[&str] = &[
 	"clk26m",
 	"univpll1_d8",
 	"syspll4_d2",
 ];
 
-static const msdc50_0_hclk_parents: &[&str] = &[
+static msdc50_0_hclk_parents: &[&str] = &[
 	"clk26m",
 	"syspll1_d2",
 	"syspll2_d2",
 	"syspll4_d2",
 ];
 
-static const msdc50_0_parents: &[&str] = &[
+static msdc50_0_parents: &[&str] = &[
 	"clk26m",
 	"msdcpll",
 	"syspll_d3",
@@ -195,7 +195,7 @@ static const msdc50_0_parents: &[&str] = &[
 	"univpll_d3",
 ];
 
-static const msdc30_1_parents: &[&str] = &[
+static msdc30_1_parents: &[&str] = &[
 	"clk26m",
 	"univpll2_d2",
 	"msdcpll_d2",
@@ -205,7 +205,7 @@ static const msdc30_1_parents: &[&str] = &[
 	"univpll_d7",
 ];
 
-static const msdc30_2_parents: &[&str] = &[
+static msdc30_2_parents: &[&str] = &[
 	"clk26m",
 	"univpll2_d8",
 	"syspll2_d8",
@@ -215,20 +215,20 @@ static const msdc30_2_parents: &[&str] = &[
 	"univpll_d26",
 ];
 
-static const audio_parents: &[&str] = &[
+static audio_parents: &[&str] = &[
 	"clk26m",
 	"syspll3_d4",
 	"syspll4_d4",
 	"syspll1_d16",
 ];
 
-static const aud_intbus_parents: &[&str] = &[
+static aud_intbus_parents: &[&str] = &[
 	"clk26m",
 	"syspll1_d4",
 	"syspll4_d2",
 ];
 
-static const pmicspi_parents: &[&str] = &[
+static pmicspi_parents: &[&str] = &[
 	"clk26m",
 	"univpll_d26",
 	"syspll3_d4",
@@ -238,27 +238,27 @@ static const pmicspi_parents: &[&str] = &[
 	"syspll2_d8",
 ];
 
-static const scp_parents: &[&str] = &[
+static scp_parents: &[&str] = &[
 	"clk26m",
 	"syspll_d3",
 	"ulposc_ck",
 	"univpll_d5",
 ];
 
-static const atb_parents: &[&str] = &[
+static atb_parents: &[&str] = &[
 	"clk26m",
 	"syspll1_d2",
 	"syspll_d5",
 ];
 
-static const mjc_parents: &[&str] = &[
+static mjc_parents: &[&str] = &[
 	"clk26m",
 	"imgpll_ck",
 	"univpll_d5",
 	"syspll1_d2",
 ];
 
-static const dpi0_parents: &[&str] = &[
+static dpi0_parents: &[&str] = &[
 	"clk26m",
 	"tvdpll_d2",
 	"tvdpll_d4",
@@ -268,48 +268,48 @@ static const dpi0_parents: &[&str] = &[
 	"clk26m",
 ];
 
-static const aud_1_parents: &[&str] = &[
+static aud_1_parents: &[&str] = &[
 	"clk26m",
 	"apll1_ck",
 ];
 
-static const aud_2_parents: &[&str] = &[
+static aud_2_parents: &[&str] = &[
 	"clk26m",
 	"apll2_ck",
 ];
 
-static const ssusb_top_sys_parents: &[&str] = &[
+static ssusb_top_sys_parents: &[&str] = &[
 	"clk26m",
 	"univpll3_d2",
 ];
 
-static const spm_parents: &[&str] = &[
+static spm_parents: &[&str] = &[
 	"clk26m",
 	"syspll1_d8",
 ];
 
-static const bsi_spi_parents: &[&str] = &[
+static bsi_spi_parents: &[&str] = &[
 	"clk26m",
 	"syspll_d3_d3",
 	"syspll1_d4",
 	"syspll_d7",
 ];
 
-static const audio_h_parents: &[&str] = &[
+static audio_h_parents: &[&str] = &[
 	"clk26m",
 	"apll2_ck",
 	"apll1_ck",
 	"univpll_d7",
 ];
 
-static const mfg_52m_parents: &[&str] = &[
+static mfg_52m_parents: &[&str] = &[
 	"clk26m",
 	"univpll2_d8",
 	"univpll2_d4",
 	"univpll2_d4",
 ];
 
-static const anc_md32_parents: &[&str] = &[
+static anc_md32_parents: &[&str] = &[
 	"clk26m",
 	"syspll1_d2",
 	"univpll_d5",
@@ -383,7 +383,7 @@ static int mtk_topckgen_init(PlatformDevice *pdev)
 {
 	ClkHwOnecellData *clk_data;
 	*mut core::ffi::c_void base;
-	DeviceNode *node = pdev->dev.of_node;
+	DeviceNode *node = (*pdev).dev.of_node;
 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(base))
@@ -396,7 +396,7 @@ static int mtk_topckgen_init(PlatformDevice *pdev)
 	mtk_clk_register_factors(top_fixed_divs, ARRAY_SIZE(top_fixed_divs),
 				 clk_data);
 
-	mtk_clk_register_composites(&pdev->dev, top_muxes,
+	mtk_clk_register_composites((*&pdev).dev, top_muxes,
 				    ARRAY_SIZE(top_muxes), base,
 				    &mt6797_clk_lock, clk_data);
 
@@ -404,21 +404,21 @@ static int mtk_topckgen_init(PlatformDevice *pdev)
 }
 
 static const mtk_gate_regs infra0_cg_regs = {
-	.set_ofs = 0x0080,
-	.clr_ofs = 0x0084,
-	.sta_ofs = 0x0090,
+	set_ofs: 0x0080,
+	clr_ofs: 0x0084,
+	sta_ofs: 0x0090,
 ];
 
 static const mtk_gate_regs infra1_cg_regs = {
-	.set_ofs = 0x0088,
-	.clr_ofs = 0x008c,
-	.sta_ofs = 0x0094,
+	set_ofs: 0x0088,
+	clr_ofs: 0x008c,
+	sta_ofs: 0x0094,
 ];
 
 static const mtk_gate_regs infra2_cg_regs = {
-	.set_ofs = 0x00a8,
-	.clr_ofs = 0x00ac,
-	.sta_ofs = 0x00b0,
+	set_ofs: 0x00a8,
+	clr_ofs: 0x00ac,
+	sta_ofs: 0x00b0,
 ];
 
 #define gate_icg0!(_id, _name, _parent, _shift)				\
@@ -551,7 +551,7 @@ static void mtk_infrasys_init_early(DeviceNode *node)
 			return;
 
 		for (i = 0; i < CLK_INFRA_NR; i++)
-			infra_clk_data->hws[i] = ERR_PTR(-EPROBE_DEFER);
+			(*infra_clk_data).hws[i] = ERR_PTR(-EPROBE_DEFER);
 	}
 
 	mtk_clk_register_factors(infra_fixed_divs, ARRAY_SIZE(infra_fixed_divs),
@@ -570,7 +570,7 @@ CLK_OF_DECLARE_DRIVER(mtk_infra, "mediatek,mt6797-infracfg",
 static int mtk_infrasys_init(PlatformDevice *pdev)
 {
 	int i;
-	DeviceNode *node = pdev->dev.of_node;
+	DeviceNode *node = (*pdev).dev.of_node;
 
 	if (!infra_clk_data) {
 		infra_clk_data = mtk_alloc_clk_data(CLK_INFRA_NR);
@@ -578,12 +578,12 @@ static int mtk_infrasys_init(PlatformDevice *pdev)
 			return Errno::ENOMEM;
 	} else {
 		for (i = 0; i < CLK_INFRA_NR; i++) {
-			if (infra_clk_data->hws[i] == ERR_PTR(-EPROBE_DEFER))
-				infra_clk_data->hws[i] = ERR_PTR(-ENOENT);
+			if ((*infra_clk_data).hws[i] == ERR_PTR(-EPROBE_DEFER))
+				(*infra_clk_data).hws[i] = ERR_PTR(-ENOENT);
 		}
 	}
 
-	mtk_clk_register_gates(&pdev->dev, node, infra_clks,
+	mtk_clk_register_gates((*&pdev).dev, node, infra_clks,
 			       ARRAY_SIZE(infra_clks), infra_clk_data);
 	mtk_clk_register_factors(infra_fixed_divs, ARRAY_SIZE(infra_fixed_divs),
 				 infra_clk_data);
@@ -594,26 +594,26 @@ static int mtk_infrasys_init(PlatformDevice *pdev)
 
 #define MT6797_PLL_FMAX		(3000UL * MHZ)
 
-#define CON0_MT6797_RST_BAR	BIT(24)
+pub const CON0_MT6797_RST_BAR: u32 = 1 << 24;
 
 #define PLL_B(_id, _name, _reg, _pwr_reg, _en_mask, _flags, _pcwbits,	\
 			_pd_reg, _pd_shift, _tuner_reg, _pcw_reg,	\
 			_pcw_shift, _div_table) {			\
-	.id = _id,						\
-	.name = _name,						\
-	.reg = _reg,						\
-	.pwr_reg = _pwr_reg,					\
-	.en_mask = _en_mask,					\
-	.flags = _flags,					\
-	.rst_bar_mask = CON0_MT6797_RST_BAR,			\
-	.fmax = MT6797_PLL_FMAX,				\
-	.pcwbits = _pcwbits,					\
-	.pd_reg = _pd_reg,					\
-	.pd_shift = _pd_shift,					\
-	.tuner_reg = _tuner_reg,				\
-	.pcw_reg = _pcw_reg,					\
-	.pcw_shift = _pcw_shift,				\
-	.div_table = _div_table,				\
+	id: _id,						\
+	name: _name,						\
+	reg: _reg,						\
+	pwr_reg: _pwr_reg,					\
+	en_mask: _en_mask,					\
+	flags: _flags,					\
+	rst_bar_mask: CON0_MT6797_RST_BAR,			\
+	fmax: MT6797_PLL_FMAX,				\
+	pcwbits: _pcwbits,					\
+	pd_reg: _pd_reg,					\
+	pd_shift: _pd_shift,					\
+	tuner_reg: _tuner_reg,				\
+	pcw_reg: _pcw_reg,					\
+	pcw_shift: _pcw_shift,				\
+	div_table: _div_table,				\
 }
 
 #define PLL(_id, _name, _reg, _pwr_reg, _en_mask, _flags, _pcwbits,	\
@@ -649,27 +649,27 @@ static const mtk_pll_data plls[] = {
 static int mtk_apmixedsys_init(PlatformDevice *pdev)
 {
 	ClkHwOnecellData *clk_data;
-	DeviceNode *node = pdev->dev.of_node;
+	DeviceNode *node = (*pdev).dev.of_node;
 
 	clk_data = mtk_alloc_clk_data(CLK_APMIXED_NR);
 	if (!clk_data)
 		return Errno::ENOMEM;
 
-	mtk_clk_register_plls(&pdev->dev, plls, ARRAY_SIZE(plls), clk_data);
+	mtk_clk_register_plls((*&pdev).dev, plls, ARRAY_SIZE(plls), clk_data);
 
 	return of_clk_add_hw_provider(node, of_clk_hw_onecell_get, clk_data);
 }
 
 static const of_device_id of_match_clk_mt6797[] = {
 	{
-		.compatible = "mediatek,mt6797-topckgen",
-		.data = mtk_topckgen_init,
+		compatible: "mediatek,mt6797-topckgen",
+		data: mtk_topckgen_init,
 	}, {
-		.compatible = "mediatek,mt6797-infracfg",
-		.data = mtk_infrasys_init,
+		compatible: "mediatek,mt6797-infracfg",
+		data: mtk_infrasys_init,
 	}, {
-		.compatible = "mediatek,mt6797-apmixedsys",
-		.data = mtk_apmixedsys_init,
+		compatible: "mediatek,mt6797-apmixedsys",
+		data: mtk_apmixedsys_init,
 	}, {
 		/* sentinel */
 	}
@@ -681,24 +681,24 @@ static int clk_mt6797_probe(PlatformDevice *pdev)
 	int (*clk_init)(PlatformDevice *);
 	int r;
 
-	clk_init = of_device_get_match_data(&pdev->dev);
+	clk_init = of_device_get_match_data((*&pdev).dev);
 	if (!clk_init)
 		return Errno::EINVAL;
 
 	r = clk_init(pdev);
 	if (r)
-		dev_err(&pdev->dev,
+		dev_err((*&pdev).dev,
 			"could not register clock provider: %s: %d\n",
-			pdev->name, r);
+			(*pdev).name, r);
 
 	return r;
 }
 
 static platform_driver clk_mt6797_drv = {
-	.probe = clk_mt6797_probe,
-	.driver = {
-		.name = "clk-mt6797",
-		.of_match_table = of_match_clk_mt6797,
+	probe: clk_mt6797_probe,
+	driver: {
+		name: "clk-mt6797",
+		of_match_table: of_match_clk_mt6797,
 	},
 ];
 

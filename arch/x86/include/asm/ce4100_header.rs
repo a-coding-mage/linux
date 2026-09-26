@@ -6,13 +6,13 @@ unsafe extern "C" {
 }
 
 // Build-time condition corresponding to CONFIG_SERIAL_8250.
-#[cfg(feature = "CONFIG_SERIAL_8250")]
+#[cfg(CONFIG_SERIAL_8250)]
 unsafe extern "C" {
     // The C declaration carries the __init annotation.
     pub fn sdv_serial_fixup();
 }
 
-#[cfg(not(feature = "CONFIG_SERIAL_8250"))]
+#[cfg(not(CONFIG_SERIAL_8250))]
 #[inline]
 fn sdv_serial_fixup() {}
 

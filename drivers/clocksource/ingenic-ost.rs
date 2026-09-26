@@ -183,8 +183,8 @@ pub struct dev_pm_ops {
 }
 
 static ingenic_ost_pm_ops: dev_pm_ops = dev_pm_ops {
-    .suspend_noirq: ingenic_ost_suspend,
-    .resume_noirq: ingenic_ost_resume,
+    suspend_noirq: ingenic_ost_suspend,
+    resume_noirq: ingenic_ost_resume,
 };
 
 static jz4725b_ost_soc_info: ingenic_ost_soc_info = ingenic_ost_soc_info {

@@ -31,8 +31,8 @@ pub unsafe fn ntfs_collate_names(name1: *const __le16, name1_len: u32, name2: *c
         let mut c1 = le16_to_cpu(*name1.add(cnt));
         let mut c2 = le16_to_cpu(*name2.add(cnt));
         if ic != 0 {
-            if c1 as u32 < upcase_len { c1 = le16_to_cpu(*upcase.add(c1 as usize)); }
-            if c2 as u32 < upcase_len { c2 = le16_to_cpu(*upcase.add(c2 as usize)); }
+            if (c1 as u32) < upcase_len { c1 = le16_to_cpu(*upcase.add(c1 as usize)); }
+            if (c2 as u32) < upcase_len { c2 = le16_to_cpu(*upcase.add(c2 as usize)); }
         }
         if c1 < 64 && (LEGAL_ANSI_CHAR_ARRAY[c1 as usize] & 8) != 0 { return err_val; }
         if c1 < c2 { return -1; }
@@ -59,9 +59,9 @@ pub unsafe fn ntfs_ucsncmp(s1: *const __le16, s2: *const __le16, n: usize) -> i3
 pub unsafe fn ntfs_ucsncasecmp(s1: *const __le16, s2: *const __le16, n: usize, upcase: *const __le16, upcase_size: u32) -> i32 {
     for i in 0..n {
         let mut c1 = le16_to_cpu(*s1.add(i));
-        if c1 as u32 < upcase_size { c1 = le16_to_cpu(*upcase.add(c1 as usize)); }
+        if (c1 as u32) < upcase_size { c1 = le16_to_cpu(*upcase.add(c1 as usize)); }
         let mut c2 = le16_to_cpu(*s2.add(i));
-        if c2 as u32 < upcase_size { c2 = le16_to_cpu(*upcase.add(c2 as usize)); }
+        if (c2 as u32) < upcase_size { c2 = le16_to_cpu(*upcase.add(c2 as usize)); }
         if c1 < c2 { return -1; }
         if c1 > c2 { return 1; }
         if c1 == 0 { break; }

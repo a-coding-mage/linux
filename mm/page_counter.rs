@@ -169,7 +169,7 @@ pub unsafe fn page_counter_memparse(
 }
 
 // Preserved from the source: compiled when CONFIG_MEMCG or CONFIG_CGROUP_DMEM is enabled.
-#[cfg(any(feature = "CONFIG_MEMCG", feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(any(CONFIG_MEMCG, CONFIG_CGROUP_DMEM))]
 unsafe fn effective_protection(
     usage: c_ulong,
     parent_usage: c_ulong,
@@ -198,7 +198,7 @@ unsafe fn effective_protection(
     ep
 }
 
-#[cfg(any(feature = "CONFIG_MEMCG", feature = "CONFIG_CGROUP_DMEM"))]
+#[cfg(any(CONFIG_MEMCG, CONFIG_CGROUP_DMEM))]
 pub unsafe fn page_counter_calculate_protection(
     root: *mut page_counter,
     counter: *mut page_counter,

@@ -369,15 +369,15 @@ static samsung_div_clock cmu_cmu_div_clks[]  = {
 };
 
 static samsung_cmu_info cmu_cmu_info  = {
-	.pll_clks		= cmu_cmu_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(cmu_cmu_pll_clks),
-	.mux_clks		= cmu_cmu_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_cmu_mux_clks),
-	.div_clks		= cmu_cmu_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cmu_cmu_div_clks),
-	.nr_clk_ids		= CMU_CMU_NR_CLK,
-	.clk_regs		= cmu_cmu_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_cmu_clk_regs),
+	pll_clks: cmu_cmu_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(cmu_cmu_pll_clks),
+	mux_clks: cmu_cmu_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_cmu_mux_clks),
+	div_clks: cmu_cmu_div_clks,
+	nr_div_clks: ARRAY_SIZE(cmu_cmu_div_clks),
+	nr_clk_ids: CMU_CMU_NR_CLK,
+	clk_regs: cmu_cmu_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_cmu_clk_regs),
 };
 
 /* Register Offset definitions for CMU_BUS (0x13410000) */
@@ -395,11 +395,11 @@ static samsung_mux_clock cmu_bus_mux_clks[]  = {
 };
 
 static samsung_cmu_info cmu_bus_info  = {
-	.mux_clks		= cmu_bus_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_bus_mux_clks),
-	.nr_clk_ids		= CMU_BUS_NR_CLK,
-	.clk_regs		= cmu_bus_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_bus_clk_regs),
+	mux_clks: cmu_bus_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_bus_mux_clks),
+	nr_clk_ids: CMU_BUS_NR_CLK,
+	clk_regs: cmu_bus_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_bus_clk_regs),
 };
 
 /* Register Offset definitions for CMU_CORE (0x12c10000) */
@@ -417,11 +417,11 @@ static samsung_mux_clock cmu_core_mux_clks[]  = {
 };
 
 static samsung_cmu_info cmu_core_info  = {
-	.mux_clks		= cmu_core_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_core_mux_clks),
-	.nr_clk_ids		= CMU_CORE_NR_CLK,
-	.clk_regs		= cmu_core_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_core_clk_regs),
+	mux_clks: cmu_core_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_core_mux_clks),
+	nr_clk_ids: CMU_CORE_NR_CLK,
+	clk_regs: cmu_core_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_core_clk_regs),
 };
 
 /* Register Offset definitions for CMU_CPUCL (0x12810000) */
@@ -557,19 +557,19 @@ static samsung_gate_clock cmu_cpucl_gate_clks[]  = {
 };
 
 static samsung_cmu_info cmu_cpucl_info  = {
-	.pll_clks		= cmu_cpucl_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(cmu_cpucl_pll_clks),
-	.fixed_factor_clks	= cpucl_ffactor_clks,
-	.nr_fixed_factor_clks	= ARRAY_SIZE(cpucl_ffactor_clks),
-	.mux_clks		= cmu_cpucl_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_cpucl_mux_clks),
-	.div_clks		= cmu_cpucl_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cmu_cpucl_div_clks),
-	.gate_clks              = cmu_cpucl_gate_clks,
-	.nr_gate_clks           = ARRAY_SIZE(cmu_cpucl_gate_clks),
-	.nr_clk_ids		= CMU_CPUCL_NR_CLK,
-	.clk_regs		= cmu_cpucl_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_cpucl_clk_regs),
+	pll_clks: cmu_cpucl_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(cmu_cpucl_pll_clks),
+	fixed_factor_clks: cpucl_ffactor_clks,
+	nr_fixed_factor_clks: ARRAY_SIZE(cpucl_ffactor_clks),
+	mux_clks: cmu_cpucl_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_cpucl_mux_clks),
+	div_clks: cmu_cpucl_div_clks,
+	nr_div_clks: ARRAY_SIZE(cmu_cpucl_div_clks),
+	gate_clks: cmu_cpucl_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cmu_cpucl_gate_clks),
+	nr_clk_ids: CMU_CPUCL_NR_CLK,
+	clk_regs: cmu_cpucl_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_cpucl_clk_regs),
 };
 
 /* Register Offset definitions for CMU_FSYS0 (0x14410000) */
@@ -745,15 +745,15 @@ static samsung_gate_clock cmu_fsys0_gate_clks[]  = {
 };
 
 static samsung_cmu_info cmu_fsys0_info  = {
-	.mux_clks		= cmu_fsys0_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_fsys0_mux_clks),
-	.div_clks		= cmu_fsys0_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cmu_fsys0_div_clks),
-	.gate_clks              = cmu_fsys0_gate_clks,
-	.nr_gate_clks           = ARRAY_SIZE(cmu_fsys0_gate_clks),
-	.nr_clk_ids		= CMU_FSYS0_NR_CLK,
-	.clk_regs		= cmu_fsys0_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_fsys0_clk_regs),
+	mux_clks: cmu_fsys0_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_fsys0_mux_clks),
+	div_clks: cmu_fsys0_div_clks,
+	nr_div_clks: ARRAY_SIZE(cmu_fsys0_div_clks),
+	gate_clks: cmu_fsys0_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cmu_fsys0_gate_clks),
+	nr_clk_ids: CMU_FSYS0_NR_CLK,
+	clk_regs: cmu_fsys0_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_fsys0_clk_regs),
 };
 
 /* Register Offset definitions for CMU_FSYS1 (0x14c10000) */
@@ -910,17 +910,17 @@ static samsung_gate_clock cmu_fsys1_gate_clks[]  = {
 };
 
 static samsung_cmu_info cmu_fsys1_info  = {
-	.pll_clks		= cmu_fsys1_pll_clks,
-	.nr_pll_clks		= ARRAY_SIZE(cmu_fsys1_pll_clks),
-	.mux_clks		= cmu_fsys1_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_fsys1_mux_clks),
-	.div_clks		= cmu_fsys1_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cmu_fsys1_div_clks),
-	.gate_clks              = cmu_fsys1_gate_clks,
-	.nr_gate_clks           = ARRAY_SIZE(cmu_fsys1_gate_clks),
-	.nr_clk_ids		= CMU_FSYS1_NR_CLK,
-	.clk_regs		= cmu_fsys1_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_fsys1_clk_regs),
+	pll_clks: cmu_fsys1_pll_clks,
+	nr_pll_clks: ARRAY_SIZE(cmu_fsys1_pll_clks),
+	mux_clks: cmu_fsys1_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_fsys1_mux_clks),
+	div_clks: cmu_fsys1_div_clks,
+	nr_div_clks: ARRAY_SIZE(cmu_fsys1_div_clks),
+	gate_clks: cmu_fsys1_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cmu_fsys1_gate_clks),
+	nr_clk_ids: CMU_FSYS1_NR_CLK,
+	clk_regs: cmu_fsys1_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_fsys1_clk_regs),
 };
 
 /* Register Offset definitions for CMU_IMEM (0x10010000) */
@@ -1021,18 +1021,18 @@ static samsung_gate_clock cmu_imem_gate_clks[]  = {
 };
 
 static samsung_cmu_info cmu_imem_info  = {
-	.fixed_factor_clks	= imem_ffactor_clks,
-	.nr_fixed_factor_clks	= ARRAY_SIZE(imem_ffactor_clks),
-	.mux_clks		= cmu_imem_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_imem_mux_clks),
-	.gate_clks              = cmu_imem_gate_clks,
-	.nr_gate_clks           = ARRAY_SIZE(cmu_imem_gate_clks),
-	.nr_clk_ids		= CMU_IMEM_NR_CLK,
-	.clk_regs		= cmu_imem_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_imem_clk_regs),
+	fixed_factor_clks: imem_ffactor_clks,
+	nr_fixed_factor_clks: ARRAY_SIZE(imem_ffactor_clks),
+	mux_clks: cmu_imem_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_imem_mux_clks),
+	gate_clks: cmu_imem_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cmu_imem_gate_clks),
+	nr_clk_ids: CMU_IMEM_NR_CLK,
+	clk_regs: cmu_imem_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_imem_clk_regs),
 };
 
-static void  artpec9_cmu_imem_init(struct device_node *np)
+static void  artpec9_cmu_imem_init(device_node *np)
 {
 	exynos_arm64_register_cmu(core::ptr::null(), np, &cmu_imem_info);
 }
@@ -1160,61 +1160,61 @@ static samsung_gate_clock cmu_peri_gate_clks[]  = {
 };
 
 static samsung_cmu_info cmu_peri_info  = {
-	.mux_clks		= cmu_peri_mux_clks,
-	.nr_mux_clks		= ARRAY_SIZE(cmu_peri_mux_clks),
-	.div_clks		= cmu_peri_div_clks,
-	.nr_div_clks		= ARRAY_SIZE(cmu_peri_div_clks),
-	.gate_clks              = cmu_peri_gate_clks,
-	.nr_gate_clks           = ARRAY_SIZE(cmu_peri_gate_clks),
-	.nr_clk_ids		= CMU_PERI_NR_CLK,
-	.clk_regs		= cmu_peri_clk_regs,
-	.nr_clk_regs		= ARRAY_SIZE(cmu_peri_clk_regs),
+	mux_clks: cmu_peri_mux_clks,
+	nr_mux_clks: ARRAY_SIZE(cmu_peri_mux_clks),
+	div_clks: cmu_peri_div_clks,
+	nr_div_clks: ARRAY_SIZE(cmu_peri_div_clks),
+	gate_clks: cmu_peri_gate_clks,
+	nr_gate_clks: ARRAY_SIZE(cmu_peri_gate_clks),
+	nr_clk_ids: CMU_PERI_NR_CLK,
+	clk_regs: cmu_peri_clk_regs,
+	nr_clk_regs: ARRAY_SIZE(cmu_peri_clk_regs),
 };
 
-static int  artpec9_cmu_probe(struct platform_device *pdev)
+static int  artpec9_cmu_probe(platform_device *pdev)
 {
 	const struct samsung_cmu_info *info;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }
 
 static of_device_id artpec9_cmu_of_match[] = {
 	{
-		.compatible = "axis,artpec9-cmu-cmu",
-		.data = &cmu_cmu_info,
+		compatible: "axis,artpec9-cmu-cmu",
+		data: &cmu_cmu_info,
 	}, {
-		.compatible = "axis,artpec9-cmu-bus",
-		.data = &cmu_bus_info,
+		compatible: "axis,artpec9-cmu-bus",
+		data: &cmu_bus_info,
 	}, {
-		.compatible = "axis,artpec9-cmu-core",
-		.data = &cmu_core_info,
+		compatible: "axis,artpec9-cmu-core",
+		data: &cmu_core_info,
 	}, {
-		.compatible = "axis,artpec9-cmu-cpucl",
-		.data = &cmu_cpucl_info,
+		compatible: "axis,artpec9-cmu-cpucl",
+		data: &cmu_cpucl_info,
 	}, {
-		.compatible = "axis,artpec9-cmu-fsys0",
-		.data = &cmu_fsys0_info,
+		compatible: "axis,artpec9-cmu-fsys0",
+		data: &cmu_fsys0_info,
 	}, {
-		.compatible = "axis,artpec9-cmu-fsys1",
-		.data = &cmu_fsys1_info,
+		compatible: "axis,artpec9-cmu-fsys1",
+		data: &cmu_fsys1_info,
 	}, {
-		.compatible = "axis,artpec9-cmu-peri",
-		.data = &cmu_peri_info,
+		compatible: "axis,artpec9-cmu-peri",
+		data: &cmu_peri_info,
 	}, {
 	},
 };
 
 static struct platform_driver artpec9_cmu_driver  = {
-	.driver = {
-		.name = "artpec9-cmu",
-		.of_match_table = artpec9_cmu_of_match,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "artpec9-cmu",
+		of_match_table: artpec9_cmu_of_match,
+		suppress_bind_attrs: true,
 	},
-	.probe = artpec9_cmu_probe,
+	probe: artpec9_cmu_probe,
 };
 
 static int  artpec9_cmu_init(void)

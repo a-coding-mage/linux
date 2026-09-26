@@ -173,7 +173,7 @@ macro_rules! in_range {
 #[macro_export]
 macro_rules! swap {
     ($a:expr, $b:expr) => {{
-        core::mem::swap(&mut $a, &mut $b);
+        core::mem::swap!(&mut $a, &mut $b);
     }};
 }
 

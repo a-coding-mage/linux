@@ -65,8 +65,7 @@ extern "C" {
         fd: i32,
         name_return: *mut u8,
         len: usize,
-        cred: *const cred,
-    ) -> i32;
+        cred: *const cred) -> i32;
     pub fn svc_init_xprt_sock();
     pub fn svc_cleanup_xprt_sock();
 }

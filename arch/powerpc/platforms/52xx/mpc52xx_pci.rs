@@ -80,7 +80,7 @@ static mut MPC52XX_PCI_OPS: PciOps = PciOps { read: mpc52xx_pci_read_config, wri
 unsafe extern "C" fn mpc52xx_pci_read_config(bus: *mut PciBus, devfn: u32, offset: i32, len: i32, val: *mut u32) -> i32 {
     extern "C" { fn pci_bus_to_host(bus: *mut PciBus) -> *mut PciController; fn out_be32(a: *mut u32, v: u32); fn in_le32(a: *const u8) -> u32; fn mb(); }
     let hose = pci_bus_to_host(bus);
-    out_be32((*hose).cfg_addr, (1u32 << 31) | ((*bus).number as u32 << 16) | (devfn << 8) | (offset as u32 & 0xfc)); mb();
+    out_be32((*hose).cfg_addr, (1u32 << 31) | (((*bus).number as u32) << 16) | (devfn << 8) | (offset as u32 & 0xfc)); mb();
     let mut value = in_le32((*hose).cfg_data);
     if len != 4 { value >>= ((offset & 3) << 3); value &= u32::MAX >> (32 - (len << 3)); }
     *val = value; out_be32((*hose).cfg_addr, 0); mb();
@@ -90,7 +90,7 @@ unsafe extern "C" fn mpc52xx_pci_read_config(bus: *mut PciBus, devfn: u32, offse
 #[allow(dead_code)]
 unsafe extern "C" fn mpc52xx_pci_write_config(bus: *mut PciBus, devfn: u32, offset: i32, len: i32, val: u32) -> i32 {
     extern "C" { fn pci_bus_to_host(bus: *mut PciBus) -> *mut PciController; fn out_be32(a: *mut u32, v: u32); fn out_le32(a: *mut u8, v: u32); fn in_le32(a: *const u8) -> u32; fn mb(); }
-    let hose = pci_bus_to_host(bus); out_be32((*hose).cfg_addr, (1u32 << 31) | ((*bus).number as u32 << 16) | (devfn << 8) | (offset as u32 & 0xfc)); mb();
+    let hose = pci_bus_to_host(bus); out_be32((*hose).cfg_addr, (1u32 << 31) | (((*bus).number as u32) << 16) | (devfn << 8) | (offset as u32 & 0xfc)); mb();
     let mut write_val = val;
     if len != 4 { let shift = ((offset & 3) << 3); let mask = u32::MAX >> (32 - (len << 3)); let old = in_le32((*hose).cfg_data); write_val = (old & !(mask << shift)) | ((val << shift) & (mask << shift)); }
     out_le32((*hose).cfg_data, write_val); mb(); out_be32((*hose).cfg_addr, 0); mb();

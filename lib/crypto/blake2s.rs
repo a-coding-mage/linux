@@ -11,7 +11,7 @@
 // blake2s_ctx, BLAKE2S_BLOCK_SIZE, BLAKE2S_IV0..BLAKE2S_IV7,
 // ror32, le32_to_cpu_array, cpu_to_le32_array, memzero_explicit.
 
-static const blake2s_sigma: [[u8; 16]; 10] = [
+static blake2s_sigma: [[u8; 16]; 10] = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     [14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3],
     [11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4],

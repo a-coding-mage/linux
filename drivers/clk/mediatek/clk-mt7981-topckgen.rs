@@ -10,9 +10,9 @@
 // linux/clk-provider.h, linux/platform_device.h, clk-mtk.h, clk-gate.h,
 // clk-mux.h, dt-bindings/clock/mediatek,mt7981-clk.h, and linux/clk.h.
 
-static DEFINE_SPINLOCK!(mt7981_clk_lock);
+DEFINE_SPINLOCK!(mt7981_clk_lock);
 
-static const top_divs: [mtk_fixed_factor; 74] = [
+static top_divs: [mtk_fixed_factor; 74] = [
     FACTOR!(CLK_TOP_CB_CKSQ_40M, "cb_cksq_40m", "clkxtal", 1, 1),
     FACTOR!(CLK_TOP_CB_M_416M, "cb_m_416m", "mpll", 1, 1),
     FACTOR!(CLK_TOP_CB_M_D2, "cb_m_d2", "mpll", 1, 2),

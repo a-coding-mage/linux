@@ -29,32 +29,32 @@
 
 pub const S_BCM1480_MC_INTLV0: u64 = 0;
 pub const M_BCM1480_MC_INTLV0: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_INTLV0);
-macro_rules! V_BCM1480_MC_INTLV0 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_INTLV0) }; }
-macro_rules! G_BCM1480_MC_INTLV0 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_INTLV0, M_BCM1480_MC_INTLV0) }; }
+macro_rules! V_BCM1480_MC_INTLV0 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_INTLV0) }; }
+macro_rules! G_BCM1480_MC_INTLV0 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_INTLV0, M_BCM1480_MC_INTLV0) }; }
 pub const V_BCM1480_MC_INTLV0_DEFAULT: u64 = V_BCM1480_MC_INTLV0(0);
 
 pub const S_BCM1480_MC_INTLV1: u64 = 8;
 pub const M_BCM1480_MC_INTLV1: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_INTLV1);
-macro_rules! V_BCM1480_MC_INTLV1 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_INTLV1) }; }
-macro_rules! G_BCM1480_MC_INTLV1 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_INTLV1, M_BCM1480_MC_INTLV1) }; }
+macro_rules! V_BCM1480_MC_INTLV1 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_INTLV1) }; }
+macro_rules! G_BCM1480_MC_INTLV1 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_INTLV1, M_BCM1480_MC_INTLV1) }; }
 pub const V_BCM1480_MC_INTLV1_DEFAULT: u64 = V_BCM1480_MC_INTLV1(0);
 
 pub const S_BCM1480_MC_INTLV2: u64 = 16;
 pub const M_BCM1480_MC_INTLV2: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_INTLV2);
-macro_rules! V_BCM1480_MC_INTLV2 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_INTLV2) }; }
-macro_rules! G_BCM1480_MC_INTLV2 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_INTLV2, M_BCM1480_MC_INTLV2) }; }
+macro_rules! V_BCM1480_MC_INTLV2 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_INTLV2) }; }
+macro_rules! G_BCM1480_MC_INTLV2 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_INTLV2, M_BCM1480_MC_INTLV2) }; }
 pub const V_BCM1480_MC_INTLV2_DEFAULT: u64 = V_BCM1480_MC_INTLV2(0);
 
 pub const S_BCM1480_MC_CS_MODE: u64 = 32;
 pub const M_BCM1480_MC_CS_MODE: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_CS_MODE);
-macro_rules! V_BCM1480_MC_CS_MODE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS_MODE) }; }
-macro_rules! G_BCM1480_MC_CS_MODE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS_MODE, M_BCM1480_MC_CS_MODE) }; }
+macro_rules! V_BCM1480_MC_CS_MODE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS_MODE) }; }
+macro_rules! G_BCM1480_MC_CS_MODE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS_MODE, M_BCM1480_MC_CS_MODE) }; }
 pub const V_BCM1480_MC_CS_MODE_DEFAULT: u64 = V_BCM1480_MC_CS_MODE(0);
 
 // continued definition: #define V_BCM1480_MC_CONFIG_DEFAULT	    (V_BCM1480_MC_INTLV0_DEFAULT  | \
-				     V_BCM1480_MC_INTLV1_DEFAULT  | \
-				     V_BCM1480_MC_INTLV2_DEFAULT  | \
-				     V_BCM1480_MC_CS_MODE_DEFAULT)
+// 				     V_BCM1480_MC_INTLV1_DEFAULT  | \
+// 				     V_BCM1480_MC_INTLV2_DEFAULT  | \
+// 				     V_BCM1480_MC_CS_MODE_DEFAULT)
 
 pub const K_BCM1480_MC_CS01_MODE: u64 = 0x03;
 pub const K_BCM1480_MC_CS02_MODE: u64 = 0x05;
@@ -70,23 +70,23 @@ pub const K_BCM1480_MC_CSFULL_MODE: u64 = 0xFF;
 
 pub const S_BCM1480_MC_CS0_START: u64 = 0;
 pub const M_BCM1480_MC_CS0_START: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS0_START);
-macro_rules! V_BCM1480_MC_CS0_START { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS0_START) }; }
-macro_rules! G_BCM1480_MC_CS0_START { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS0_START, M_BCM1480_MC_CS0_START) }; }
+macro_rules! V_BCM1480_MC_CS0_START { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS0_START) }; }
+macro_rules! G_BCM1480_MC_CS0_START { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS0_START, M_BCM1480_MC_CS0_START) }; }
 
 pub const S_BCM1480_MC_CS1_START: u64 = 16;
 pub const M_BCM1480_MC_CS1_START: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS1_START);
-macro_rules! V_BCM1480_MC_CS1_START { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS1_START) }; }
-macro_rules! G_BCM1480_MC_CS1_START { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS1_START, M_BCM1480_MC_CS1_START) }; }
+macro_rules! V_BCM1480_MC_CS1_START { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS1_START) }; }
+macro_rules! G_BCM1480_MC_CS1_START { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS1_START, M_BCM1480_MC_CS1_START) }; }
 
 pub const S_BCM1480_MC_CS2_START: u64 = 32;
 pub const M_BCM1480_MC_CS2_START: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS2_START);
-macro_rules! V_BCM1480_MC_CS2_START { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS2_START) }; }
-macro_rules! G_BCM1480_MC_CS2_START { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS2_START, M_BCM1480_MC_CS2_START) }; }
+macro_rules! V_BCM1480_MC_CS2_START { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS2_START) }; }
+macro_rules! G_BCM1480_MC_CS2_START { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS2_START, M_BCM1480_MC_CS2_START) }; }
 
 pub const S_BCM1480_MC_CS3_START: u64 = 48;
 pub const M_BCM1480_MC_CS3_START: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS3_START);
-macro_rules! V_BCM1480_MC_CS3_START { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS3_START) }; }
-macro_rules! G_BCM1480_MC_CS3_START { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS3_START, M_BCM1480_MC_CS3_START) }; }
+macro_rules! V_BCM1480_MC_CS3_START { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS3_START) }; }
+macro_rules! G_BCM1480_MC_CS3_START { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS3_START, M_BCM1480_MC_CS3_START) }; }
 
 /*
  * Chip Select End Address Register (Table 83)
@@ -94,23 +94,23 @@ macro_rules! G_BCM1480_MC_CS3_START { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480
 
 pub const S_BCM1480_MC_CS0_END: u64 = 0;
 pub const M_BCM1480_MC_CS0_END: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS0_END);
-macro_rules! V_BCM1480_MC_CS0_END { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS0_END) }; }
-macro_rules! G_BCM1480_MC_CS0_END { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS0_END, M_BCM1480_MC_CS0_END) }; }
+macro_rules! V_BCM1480_MC_CS0_END { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS0_END) }; }
+macro_rules! G_BCM1480_MC_CS0_END { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS0_END, M_BCM1480_MC_CS0_END) }; }
 
 pub const S_BCM1480_MC_CS1_END: u64 = 16;
 pub const M_BCM1480_MC_CS1_END: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS1_END);
-macro_rules! V_BCM1480_MC_CS1_END { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS1_END) }; }
-macro_rules! G_BCM1480_MC_CS1_END { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS1_END, M_BCM1480_MC_CS1_END) }; }
+macro_rules! V_BCM1480_MC_CS1_END { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS1_END) }; }
+macro_rules! G_BCM1480_MC_CS1_END { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS1_END, M_BCM1480_MC_CS1_END) }; }
 
 pub const S_BCM1480_MC_CS2_END: u64 = 32;
 pub const M_BCM1480_MC_CS2_END: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS2_END);
-macro_rules! V_BCM1480_MC_CS2_END { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS2_END) }; }
-macro_rules! G_BCM1480_MC_CS2_END { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS2_END, M_BCM1480_MC_CS2_END) }; }
+macro_rules! V_BCM1480_MC_CS2_END { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS2_END) }; }
+macro_rules! G_BCM1480_MC_CS2_END { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS2_END, M_BCM1480_MC_CS2_END) }; }
 
 pub const S_BCM1480_MC_CS3_END: u64 = 48;
 pub const M_BCM1480_MC_CS3_END: u64 = _SB_MAKEMASK(12, S_BCM1480_MC_CS3_END);
-macro_rules! V_BCM1480_MC_CS3_END { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS3_END) }; }
-macro_rules! G_BCM1480_MC_CS3_END { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS3_END, M_BCM1480_MC_CS3_END) }; }
+macro_rules! V_BCM1480_MC_CS3_END { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS3_END) }; }
+macro_rules! G_BCM1480_MC_CS3_END { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS3_END, M_BCM1480_MC_CS3_END) }; }
 
 /*
  * Row Address Bit Select Register 0 (Table 84)
@@ -118,43 +118,43 @@ macro_rules! G_BCM1480_MC_CS3_END { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_M
 
 pub const S_BCM1480_MC_ROW00: u64 = 0;
 pub const M_BCM1480_MC_ROW00: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW00);
-macro_rules! V_BCM1480_MC_ROW00 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW00) }; }
-macro_rules! G_BCM1480_MC_ROW00 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW00, M_BCM1480_MC_ROW00) }; }
+macro_rules! V_BCM1480_MC_ROW00 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW00) }; }
+macro_rules! G_BCM1480_MC_ROW00 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW00, M_BCM1480_MC_ROW00) }; }
 
 pub const S_BCM1480_MC_ROW01: u64 = 8;
 pub const M_BCM1480_MC_ROW01: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW01);
-macro_rules! V_BCM1480_MC_ROW01 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW01) }; }
-macro_rules! G_BCM1480_MC_ROW01 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW01, M_BCM1480_MC_ROW01) }; }
+macro_rules! V_BCM1480_MC_ROW01 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW01) }; }
+macro_rules! G_BCM1480_MC_ROW01 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW01, M_BCM1480_MC_ROW01) }; }
 
 pub const S_BCM1480_MC_ROW02: u64 = 16;
 pub const M_BCM1480_MC_ROW02: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW02);
-macro_rules! V_BCM1480_MC_ROW02 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW02) }; }
-macro_rules! G_BCM1480_MC_ROW02 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW02, M_BCM1480_MC_ROW02) }; }
+macro_rules! V_BCM1480_MC_ROW02 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW02) }; }
+macro_rules! G_BCM1480_MC_ROW02 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW02, M_BCM1480_MC_ROW02) }; }
 
 pub const S_BCM1480_MC_ROW03: u64 = 24;
 pub const M_BCM1480_MC_ROW03: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW03);
-macro_rules! V_BCM1480_MC_ROW03 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW03) }; }
-macro_rules! G_BCM1480_MC_ROW03 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW03, M_BCM1480_MC_ROW03) }; }
+macro_rules! V_BCM1480_MC_ROW03 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW03) }; }
+macro_rules! G_BCM1480_MC_ROW03 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW03, M_BCM1480_MC_ROW03) }; }
 
 pub const S_BCM1480_MC_ROW04: u64 = 32;
 pub const M_BCM1480_MC_ROW04: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW04);
-macro_rules! V_BCM1480_MC_ROW04 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW04) }; }
-macro_rules! G_BCM1480_MC_ROW04 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW04, M_BCM1480_MC_ROW04) }; }
+macro_rules! V_BCM1480_MC_ROW04 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW04) }; }
+macro_rules! G_BCM1480_MC_ROW04 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW04, M_BCM1480_MC_ROW04) }; }
 
 pub const S_BCM1480_MC_ROW05: u64 = 40;
 pub const M_BCM1480_MC_ROW05: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW05);
-macro_rules! V_BCM1480_MC_ROW05 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW05) }; }
-macro_rules! G_BCM1480_MC_ROW05 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW05, M_BCM1480_MC_ROW05) }; }
+macro_rules! V_BCM1480_MC_ROW05 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW05) }; }
+macro_rules! G_BCM1480_MC_ROW05 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW05, M_BCM1480_MC_ROW05) }; }
 
 pub const S_BCM1480_MC_ROW06: u64 = 48;
 pub const M_BCM1480_MC_ROW06: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW06);
-macro_rules! V_BCM1480_MC_ROW06 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW06) }; }
-macro_rules! G_BCM1480_MC_ROW06 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW06, M_BCM1480_MC_ROW06) }; }
+macro_rules! V_BCM1480_MC_ROW06 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW06) }; }
+macro_rules! G_BCM1480_MC_ROW06 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW06, M_BCM1480_MC_ROW06) }; }
 
 pub const S_BCM1480_MC_ROW07: u64 = 56;
 pub const M_BCM1480_MC_ROW07: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW07);
-macro_rules! V_BCM1480_MC_ROW07 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW07) }; }
-macro_rules! G_BCM1480_MC_ROW07 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW07, M_BCM1480_MC_ROW07) }; }
+macro_rules! V_BCM1480_MC_ROW07 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW07) }; }
+macro_rules! G_BCM1480_MC_ROW07 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW07, M_BCM1480_MC_ROW07) }; }
 
 /*
  * Row Address Bit Select Register 1 (Table 85)
@@ -162,38 +162,38 @@ macro_rules! G_BCM1480_MC_ROW07 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_
 
 pub const S_BCM1480_MC_ROW08: u64 = 0;
 pub const M_BCM1480_MC_ROW08: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW08);
-macro_rules! V_BCM1480_MC_ROW08 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW08) }; }
-macro_rules! G_BCM1480_MC_ROW08 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW08, M_BCM1480_MC_ROW08) }; }
+macro_rules! V_BCM1480_MC_ROW08 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW08) }; }
+macro_rules! G_BCM1480_MC_ROW08 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW08, M_BCM1480_MC_ROW08) }; }
 
 pub const S_BCM1480_MC_ROW09: u64 = 8;
 pub const M_BCM1480_MC_ROW09: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW09);
-macro_rules! V_BCM1480_MC_ROW09 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW09) }; }
-macro_rules! G_BCM1480_MC_ROW09 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW09, M_BCM1480_MC_ROW09) }; }
+macro_rules! V_BCM1480_MC_ROW09 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW09) }; }
+macro_rules! G_BCM1480_MC_ROW09 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW09, M_BCM1480_MC_ROW09) }; }
 
 pub const S_BCM1480_MC_ROW10: u64 = 16;
 pub const M_BCM1480_MC_ROW10: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW10);
-macro_rules! V_BCM1480_MC_ROW10 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW10) }; }
-macro_rules! G_BCM1480_MC_ROW10 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW10, M_BCM1480_MC_ROW10) }; }
+macro_rules! V_BCM1480_MC_ROW10 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW10) }; }
+macro_rules! G_BCM1480_MC_ROW10 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW10, M_BCM1480_MC_ROW10) }; }
 
 pub const S_BCM1480_MC_ROW11: u64 = 24;
 pub const M_BCM1480_MC_ROW11: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW11);
-macro_rules! V_BCM1480_MC_ROW11 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW11) }; }
-macro_rules! G_BCM1480_MC_ROW11 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW11, M_BCM1480_MC_ROW11) }; }
+macro_rules! V_BCM1480_MC_ROW11 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW11) }; }
+macro_rules! G_BCM1480_MC_ROW11 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW11, M_BCM1480_MC_ROW11) }; }
 
 pub const S_BCM1480_MC_ROW12: u64 = 32;
 pub const M_BCM1480_MC_ROW12: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW12);
-macro_rules! V_BCM1480_MC_ROW12 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW12) }; }
-macro_rules! G_BCM1480_MC_ROW12 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW12, M_BCM1480_MC_ROW12) }; }
+macro_rules! V_BCM1480_MC_ROW12 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW12) }; }
+macro_rules! G_BCM1480_MC_ROW12 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW12, M_BCM1480_MC_ROW12) }; }
 
 pub const S_BCM1480_MC_ROW13: u64 = 40;
 pub const M_BCM1480_MC_ROW13: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW13);
-macro_rules! V_BCM1480_MC_ROW13 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW13) }; }
-macro_rules! G_BCM1480_MC_ROW13 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW13, M_BCM1480_MC_ROW13) }; }
+macro_rules! V_BCM1480_MC_ROW13 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW13) }; }
+macro_rules! G_BCM1480_MC_ROW13 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW13, M_BCM1480_MC_ROW13) }; }
 
 pub const S_BCM1480_MC_ROW14: u64 = 48;
 pub const M_BCM1480_MC_ROW14: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ROW14);
-macro_rules! V_BCM1480_MC_ROW14 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ROW14) }; }
-macro_rules! G_BCM1480_MC_ROW14 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ROW14, M_BCM1480_MC_ROW14) }; }
+macro_rules! V_BCM1480_MC_ROW14 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ROW14) }; }
+macro_rules! G_BCM1480_MC_ROW14 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ROW14, M_BCM1480_MC_ROW14) }; }
 
 pub const K_BCM1480_MC_ROWX_BIT_SPACING: u64 = 8;
 
@@ -203,43 +203,43 @@ pub const K_BCM1480_MC_ROWX_BIT_SPACING: u64 = 8;
 
 pub const S_BCM1480_MC_COL00: u64 = 0;
 pub const M_BCM1480_MC_COL00: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL00);
-macro_rules! V_BCM1480_MC_COL00 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL00) }; }
-macro_rules! G_BCM1480_MC_COL00 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL00, M_BCM1480_MC_COL00) }; }
+macro_rules! V_BCM1480_MC_COL00 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL00) }; }
+macro_rules! G_BCM1480_MC_COL00 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL00, M_BCM1480_MC_COL00) }; }
 
 pub const S_BCM1480_MC_COL01: u64 = 8;
 pub const M_BCM1480_MC_COL01: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL01);
-macro_rules! V_BCM1480_MC_COL01 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL01) }; }
-macro_rules! G_BCM1480_MC_COL01 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL01, M_BCM1480_MC_COL01) }; }
+macro_rules! V_BCM1480_MC_COL01 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL01) }; }
+macro_rules! G_BCM1480_MC_COL01 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL01, M_BCM1480_MC_COL01) }; }
 
 pub const S_BCM1480_MC_COL02: u64 = 16;
 pub const M_BCM1480_MC_COL02: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL02);
-macro_rules! V_BCM1480_MC_COL02 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL02) }; }
-macro_rules! G_BCM1480_MC_COL02 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL02, M_BCM1480_MC_COL02) }; }
+macro_rules! V_BCM1480_MC_COL02 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL02) }; }
+macro_rules! G_BCM1480_MC_COL02 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL02, M_BCM1480_MC_COL02) }; }
 
 pub const S_BCM1480_MC_COL03: u64 = 24;
 pub const M_BCM1480_MC_COL03: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL03);
-macro_rules! V_BCM1480_MC_COL03 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL03) }; }
-macro_rules! G_BCM1480_MC_COL03 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL03, M_BCM1480_MC_COL03) }; }
+macro_rules! V_BCM1480_MC_COL03 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL03) }; }
+macro_rules! G_BCM1480_MC_COL03 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL03, M_BCM1480_MC_COL03) }; }
 
 pub const S_BCM1480_MC_COL04: u64 = 32;
 pub const M_BCM1480_MC_COL04: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL04);
-macro_rules! V_BCM1480_MC_COL04 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL04) }; }
-macro_rules! G_BCM1480_MC_COL04 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL04, M_BCM1480_MC_COL04) }; }
+macro_rules! V_BCM1480_MC_COL04 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL04) }; }
+macro_rules! G_BCM1480_MC_COL04 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL04, M_BCM1480_MC_COL04) }; }
 
 pub const S_BCM1480_MC_COL05: u64 = 40;
 pub const M_BCM1480_MC_COL05: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL05);
-macro_rules! V_BCM1480_MC_COL05 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL05) }; }
-macro_rules! G_BCM1480_MC_COL05 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL05, M_BCM1480_MC_COL05) }; }
+macro_rules! V_BCM1480_MC_COL05 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL05) }; }
+macro_rules! G_BCM1480_MC_COL05 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL05, M_BCM1480_MC_COL05) }; }
 
 pub const S_BCM1480_MC_COL06: u64 = 48;
 pub const M_BCM1480_MC_COL06: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL06);
-macro_rules! V_BCM1480_MC_COL06 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL06) }; }
-macro_rules! G_BCM1480_MC_COL06 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL06, M_BCM1480_MC_COL06) }; }
+macro_rules! V_BCM1480_MC_COL06 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL06) }; }
+macro_rules! G_BCM1480_MC_COL06 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL06, M_BCM1480_MC_COL06) }; }
 
 pub const S_BCM1480_MC_COL07: u64 = 56;
 pub const M_BCM1480_MC_COL07: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL07);
-macro_rules! V_BCM1480_MC_COL07 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL07) }; }
-macro_rules! G_BCM1480_MC_COL07 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL07, M_BCM1480_MC_COL07) }; }
+macro_rules! V_BCM1480_MC_COL07 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL07) }; }
+macro_rules! G_BCM1480_MC_COL07 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL07, M_BCM1480_MC_COL07) }; }
 
 /*
  * Column Address Bit Select Register 1 (Table 87)
@@ -247,35 +247,35 @@ macro_rules! G_BCM1480_MC_COL07 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_
 
 pub const S_BCM1480_MC_COL08: u64 = 0;
 pub const M_BCM1480_MC_COL08: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL08);
-macro_rules! V_BCM1480_MC_COL08 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL08) }; }
-macro_rules! G_BCM1480_MC_COL08 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL08, M_BCM1480_MC_COL08) }; }
+macro_rules! V_BCM1480_MC_COL08 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL08) }; }
+macro_rules! G_BCM1480_MC_COL08 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL08, M_BCM1480_MC_COL08) }; }
 
 pub const S_BCM1480_MC_COL09: u64 = 8;
 pub const M_BCM1480_MC_COL09: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL09);
-macro_rules! V_BCM1480_MC_COL09 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL09) }; }
-macro_rules! G_BCM1480_MC_COL09 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL09, M_BCM1480_MC_COL09) }; }
+macro_rules! V_BCM1480_MC_COL09 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL09) }; }
+macro_rules! G_BCM1480_MC_COL09 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL09, M_BCM1480_MC_COL09) }; }
 
 pub const S_BCM1480_MC_COL10: u64 = 16	 /* not a valid position, must be prog as 0 */;
 
 pub const S_BCM1480_MC_COL11: u64 = 24;
 pub const M_BCM1480_MC_COL11: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL11);
-macro_rules! V_BCM1480_MC_COL11 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL11) }; }
-macro_rules! G_BCM1480_MC_COL11 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL11, M_BCM1480_MC_COL11) }; }
+macro_rules! V_BCM1480_MC_COL11 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL11) }; }
+macro_rules! G_BCM1480_MC_COL11 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL11, M_BCM1480_MC_COL11) }; }
 
 pub const S_BCM1480_MC_COL12: u64 = 32;
 pub const M_BCM1480_MC_COL12: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL12);
-macro_rules! V_BCM1480_MC_COL12 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL12) }; }
-macro_rules! G_BCM1480_MC_COL12 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL12, M_BCM1480_MC_COL12) }; }
+macro_rules! V_BCM1480_MC_COL12 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL12) }; }
+macro_rules! G_BCM1480_MC_COL12 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL12, M_BCM1480_MC_COL12) }; }
 
 pub const S_BCM1480_MC_COL13: u64 = 40;
 pub const M_BCM1480_MC_COL13: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL13);
-macro_rules! V_BCM1480_MC_COL13 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL13) }; }
-macro_rules! G_BCM1480_MC_COL13 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL13, M_BCM1480_MC_COL13) }; }
+macro_rules! V_BCM1480_MC_COL13 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL13) }; }
+macro_rules! G_BCM1480_MC_COL13 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL13, M_BCM1480_MC_COL13) }; }
 
 pub const S_BCM1480_MC_COL14: u64 = 48;
 pub const M_BCM1480_MC_COL14: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_COL14);
-macro_rules! V_BCM1480_MC_COL14 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COL14) }; }
-macro_rules! G_BCM1480_MC_COL14 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COL14, M_BCM1480_MC_COL14) }; }
+macro_rules! V_BCM1480_MC_COL14 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COL14) }; }
+macro_rules! G_BCM1480_MC_COL14 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COL14, M_BCM1480_MC_COL14) }; }
 
 pub const K_BCM1480_MC_COLX_BIT_SPACING: u64 = 8;
 
@@ -285,18 +285,18 @@ pub const K_BCM1480_MC_COLX_BIT_SPACING: u64 = 8;
 
 pub const S_BCM1480_MC_CS01_BANK0: u64 = 0;
 pub const M_BCM1480_MC_CS01_BANK0: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CS01_BANK0);
-macro_rules! V_BCM1480_MC_CS01_BANK0 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS01_BANK0) }; }
-macro_rules! G_BCM1480_MC_CS01_BANK0 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS01_BANK0, M_BCM1480_MC_CS01_BANK0) }; }
+macro_rules! V_BCM1480_MC_CS01_BANK0 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS01_BANK0) }; }
+macro_rules! G_BCM1480_MC_CS01_BANK0 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS01_BANK0, M_BCM1480_MC_CS01_BANK0) }; }
 
 pub const S_BCM1480_MC_CS01_BANK1: u64 = 8;
 pub const M_BCM1480_MC_CS01_BANK1: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CS01_BANK1);
-macro_rules! V_BCM1480_MC_CS01_BANK1 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS01_BANK1) }; }
-macro_rules! G_BCM1480_MC_CS01_BANK1 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS01_BANK1, M_BCM1480_MC_CS01_BANK1) }; }
+macro_rules! V_BCM1480_MC_CS01_BANK1 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS01_BANK1) }; }
+macro_rules! G_BCM1480_MC_CS01_BANK1 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS01_BANK1, M_BCM1480_MC_CS01_BANK1) }; }
 
 pub const S_BCM1480_MC_CS01_BANK2: u64 = 16;
 pub const M_BCM1480_MC_CS01_BANK2: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CS01_BANK2);
-macro_rules! V_BCM1480_MC_CS01_BANK2 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS01_BANK2) }; }
-macro_rules! G_BCM1480_MC_CS01_BANK2 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS01_BANK2, M_BCM1480_MC_CS01_BANK2) }; }
+macro_rules! V_BCM1480_MC_CS01_BANK2 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS01_BANK2) }; }
+macro_rules! G_BCM1480_MC_CS01_BANK2 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS01_BANK2, M_BCM1480_MC_CS01_BANK2) }; }
 
 /*
  * CS2 and CS3 Bank Address Bit Select Register (Table 89)
@@ -304,18 +304,18 @@ macro_rules! G_BCM1480_MC_CS01_BANK2 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM148
 
 pub const S_BCM1480_MC_CS23_BANK0: u64 = 0;
 pub const M_BCM1480_MC_CS23_BANK0: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CS23_BANK0);
-macro_rules! V_BCM1480_MC_CS23_BANK0 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS23_BANK0) }; }
-macro_rules! G_BCM1480_MC_CS23_BANK0 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS23_BANK0, M_BCM1480_MC_CS23_BANK0) }; }
+macro_rules! V_BCM1480_MC_CS23_BANK0 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS23_BANK0) }; }
+macro_rules! G_BCM1480_MC_CS23_BANK0 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS23_BANK0, M_BCM1480_MC_CS23_BANK0) }; }
 
 pub const S_BCM1480_MC_CS23_BANK1: u64 = 8;
 pub const M_BCM1480_MC_CS23_BANK1: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CS23_BANK1);
-macro_rules! V_BCM1480_MC_CS23_BANK1 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS23_BANK1) }; }
-macro_rules! G_BCM1480_MC_CS23_BANK1 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS23_BANK1, M_BCM1480_MC_CS23_BANK1) }; }
+macro_rules! V_BCM1480_MC_CS23_BANK1 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS23_BANK1) }; }
+macro_rules! G_BCM1480_MC_CS23_BANK1 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS23_BANK1, M_BCM1480_MC_CS23_BANK1) }; }
 
 pub const S_BCM1480_MC_CS23_BANK2: u64 = 16;
 pub const M_BCM1480_MC_CS23_BANK2: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CS23_BANK2);
-macro_rules! V_BCM1480_MC_CS23_BANK2 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS23_BANK2) }; }
-macro_rules! G_BCM1480_MC_CS23_BANK2 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS23_BANK2, M_BCM1480_MC_CS23_BANK2) }; }
+macro_rules! V_BCM1480_MC_CS23_BANK2 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS23_BANK2) }; }
+macro_rules! G_BCM1480_MC_CS23_BANK2 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS23_BANK2, M_BCM1480_MC_CS23_BANK2) }; }
 
 pub const K_BCM1480_MC_CSXX_BANKX_BIT_SPACING: u64 = 8;
 
@@ -325,8 +325,8 @@ pub const K_BCM1480_MC_CSXX_BANKX_BIT_SPACING: u64 = 8;
 
 pub const S_BCM1480_MC_COMMAND: u64 = 0;
 pub const M_BCM1480_MC_COMMAND: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_COMMAND);
-macro_rules! V_BCM1480_MC_COMMAND { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_COMMAND) }; }
-macro_rules! G_BCM1480_MC_COMMAND { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_COMMAND, M_BCM1480_MC_COMMAND) }; }
+macro_rules! V_BCM1480_MC_COMMAND { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_COMMAND) }; }
+macro_rules! G_BCM1480_MC_COMMAND { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_COMMAND, M_BCM1480_MC_COMMAND) }; }
 
 pub const K_BCM1480_MC_COMMAND_EMRS: u64 = 0;
 pub const K_BCM1480_MC_COMMAND_MRS: u64 = 1;
@@ -371,8 +371,8 @@ pub const M_BCM1480_MC_CS6: u64 = _SB_MAKEMASK1(10);
 pub const M_BCM1480_MC_CS7: u64 = _SB_MAKEMASK1(11);
 
 pub const M_BCM1480_MC_CS: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_CS0);
-macro_rules! V_BCM1480_MC_CS { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CS0) }; }
-macro_rules! G_BCM1480_MC_CS { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CS0, M_BCM1480_MC_CS0) }; }
+macro_rules! V_BCM1480_MC_CS { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CS0) }; }
+macro_rules! G_BCM1480_MC_CS { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CS0, M_BCM1480_MC_CS0) }; }
 
 pub const M_BCM1480_MC_CMD_ACTIVE: u64 = _SB_MAKEMASK1(16);
 
@@ -382,20 +382,20 @@ pub const M_BCM1480_MC_CMD_ACTIVE: u64 = _SB_MAKEMASK1(16);
 
 pub const S_BCM1480_MC_EMODE: u64 = 0;
 pub const M_BCM1480_MC_EMODE: u64 = _SB_MAKEMASK(15, S_BCM1480_MC_EMODE);
-macro_rules! V_BCM1480_MC_EMODE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_EMODE) }; }
-macro_rules! G_BCM1480_MC_EMODE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_EMODE, M_BCM1480_MC_EMODE) }; }
+macro_rules! V_BCM1480_MC_EMODE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_EMODE) }; }
+macro_rules! G_BCM1480_MC_EMODE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_EMODE, M_BCM1480_MC_EMODE) }; }
 pub const V_BCM1480_MC_EMODE_DEFAULT: u64 = V_BCM1480_MC_EMODE(0);
 
 pub const S_BCM1480_MC_MODE: u64 = 16;
 pub const M_BCM1480_MC_MODE: u64 = _SB_MAKEMASK(15, S_BCM1480_MC_MODE);
-macro_rules! V_BCM1480_MC_MODE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_MODE) }; }
-macro_rules! G_BCM1480_MC_MODE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_MODE, M_BCM1480_MC_MODE) }; }
+macro_rules! V_BCM1480_MC_MODE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_MODE) }; }
+macro_rules! G_BCM1480_MC_MODE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_MODE, M_BCM1480_MC_MODE) }; }
 pub const V_BCM1480_MC_MODE_DEFAULT: u64 = V_BCM1480_MC_MODE(0);
 
 pub const S_BCM1480_MC_DRAM_TYPE: u64 = 32;
 pub const M_BCM1480_MC_DRAM_TYPE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DRAM_TYPE);
-macro_rules! V_BCM1480_MC_DRAM_TYPE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DRAM_TYPE) }; }
-macro_rules! G_BCM1480_MC_DRAM_TYPE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DRAM_TYPE, M_BCM1480_MC_DRAM_TYPE) }; }
+macro_rules! V_BCM1480_MC_DRAM_TYPE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DRAM_TYPE) }; }
+macro_rules! G_BCM1480_MC_DRAM_TYPE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DRAM_TYPE, M_BCM1480_MC_DRAM_TYPE) }; }
 
 pub const K_BCM1480_MC_DRAM_TYPE_JEDEC: u64 = 0;
 pub const K_BCM1480_MC_DRAM_TYPE_FCRAM: u64 = 1;
@@ -420,8 +420,8 @@ pub const M_BCM1480_MC_ECC_DISABLE: u64 = _SB_MAKEMASK1(39);
 
 pub const S_BCM1480_MC_PG_POLICY: u64 = 40;
 pub const M_BCM1480_MC_PG_POLICY: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_PG_POLICY);
-macro_rules! V_BCM1480_MC_PG_POLICY { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_PG_POLICY) }; }
-macro_rules! G_BCM1480_MC_PG_POLICY { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_PG_POLICY, M_BCM1480_MC_PG_POLICY) }; }
+macro_rules! V_BCM1480_MC_PG_POLICY { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_PG_POLICY) }; }
+macro_rules! G_BCM1480_MC_PG_POLICY { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_PG_POLICY, M_BCM1480_MC_PG_POLICY) }; }
 
 pub const K_BCM1480_MC_PG_POLICY_CLOSED: u64 = 0;
 pub const K_BCM1480_MC_PG_POLICY_CAS_TIME_CHK: u64 = 1;
@@ -435,7 +435,7 @@ pub const M_BCM1480_MC_ECC_COR_DIS: u64 = _SB_MAKEMASK1(43);
 // #endif
 
 // continued definition: #define V_BCM1480_MC_DRAMMODE_DEFAULT	V_BCM1480_MC_EMODE_DEFAULT | V_BCM1480_MC_MODE_DEFAULT | V_BCM1480_MC_DRAM_TYPE_JEDEC | \
-				V_BCM1480_MC_PG_POLICY(K_BCM1480_MC_PG_POLICY_CAS_TIME_CHK)
+// 				V_BCM1480_MC_PG_POLICY(K_BCM1480_MC_PG_POLICY_CAS_TIME_CHK)
 
 /*
  * Memory Clock Configuration Register (Table 92)
@@ -443,15 +443,15 @@ pub const M_BCM1480_MC_ECC_COR_DIS: u64 = _SB_MAKEMASK1(43);
 
 pub const S_BCM1480_MC_CLK_RATIO: u64 = 0;
 pub const M_BCM1480_MC_CLK_RATIO: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_CLK_RATIO);
-macro_rules! V_BCM1480_MC_CLK_RATIO { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CLK_RATIO) }; }
-macro_rules! G_BCM1480_MC_CLK_RATIO { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CLK_RATIO, M_BCM1480_MC_CLK_RATIO) }; }
+macro_rules! V_BCM1480_MC_CLK_RATIO { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CLK_RATIO) }; }
+macro_rules! G_BCM1480_MC_CLK_RATIO { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CLK_RATIO, M_BCM1480_MC_CLK_RATIO) }; }
 
 pub const V_BCM1480_MC_CLK_RATIO_DEFAULT: u64 = V_BCM1480_MC_CLK_RATIO(10);
 
 pub const S_BCM1480_MC_REF_RATE: u64 = 8;
 pub const M_BCM1480_MC_REF_RATE: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_REF_RATE);
-macro_rules! V_BCM1480_MC_REF_RATE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_REF_RATE) }; }
-macro_rules! G_BCM1480_MC_REF_RATE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_REF_RATE, M_BCM1480_MC_REF_RATE) }; }
+macro_rules! V_BCM1480_MC_REF_RATE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_REF_RATE) }; }
+macro_rules! G_BCM1480_MC_REF_RATE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_REF_RATE, M_BCM1480_MC_REF_RATE) }; }
 
 pub const K_BCM1480_MC_REF_RATE_100MHz: u64 = 0x31;
 pub const K_BCM1480_MC_REF_RATE_200MHz: u64 = 0x62;
@@ -508,19 +508,19 @@ pub const M_BCM1480_MC_CS_ODD_ODT_EN: u64 = _SB_MAKEMASK1(32);
 
 pub const S_BCM1480_MC_ODT0: u64 = 0;
 pub const M_BCM1480_MC_ODT0: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_ODT0);
-macro_rules! V_BCM1480_MC_ODT0 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ODT0) }; }
+macro_rules! V_BCM1480_MC_ODT0 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ODT0) }; }
 
 pub const S_BCM1480_MC_ODT2: u64 = 8;
 pub const M_BCM1480_MC_ODT2: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_ODT2);
-macro_rules! V_BCM1480_MC_ODT2 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ODT2) }; }
+macro_rules! V_BCM1480_MC_ODT2 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ODT2) }; }
 
 pub const S_BCM1480_MC_ODT4: u64 = 16;
 pub const M_BCM1480_MC_ODT4: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_ODT4);
-macro_rules! V_BCM1480_MC_ODT4 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ODT4) }; }
+macro_rules! V_BCM1480_MC_ODT4 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ODT4) }; }
 
 pub const S_BCM1480_MC_ODT6: u64 = 24;
 pub const M_BCM1480_MC_ODT6: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_ODT6);
-macro_rules! V_BCM1480_MC_ODT6 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ODT6) }; }
+macro_rules! V_BCM1480_MC_ODT6 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ODT6) }; }
 // #endif
 
 /*
@@ -529,69 +529,69 @@ macro_rules! V_BCM1480_MC_ODT6 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_
 
 pub const S_BCM1480_MC_ADDR_COARSE_ADJ: u64 = 0;
 pub const M_BCM1480_MC_ADDR_COARSE_ADJ: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_ADDR_COARSE_ADJ);
-macro_rules! V_BCM1480_MC_ADDR_COARSE_ADJ { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ADDR_COARSE_ADJ) }; }
-macro_rules! G_BCM1480_MC_ADDR_COARSE_ADJ { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ADDR_COARSE_ADJ, M_BCM1480_MC_ADDR_COARSE_ADJ) }; }
+macro_rules! V_BCM1480_MC_ADDR_COARSE_ADJ { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ADDR_COARSE_ADJ) }; }
+macro_rules! G_BCM1480_MC_ADDR_COARSE_ADJ { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ADDR_COARSE_ADJ, M_BCM1480_MC_ADDR_COARSE_ADJ) }; }
 pub const V_BCM1480_MC_ADDR_COARSE_ADJ_DEFAULT: u64 = V_BCM1480_MC_ADDR_COARSE_ADJ(0x0);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_ADDR_FREQ_RANGE: u64 = 8;
 pub const M_BCM1480_MC_ADDR_FREQ_RANGE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_ADDR_FREQ_RANGE);
-macro_rules! V_BCM1480_MC_ADDR_FREQ_RANGE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ADDR_FREQ_RANGE) }; }
-macro_rules! G_BCM1480_MC_ADDR_FREQ_RANGE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ADDR_FREQ_RANGE, M_BCM1480_MC_ADDR_FREQ_RANGE) }; }
+macro_rules! V_BCM1480_MC_ADDR_FREQ_RANGE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ADDR_FREQ_RANGE) }; }
+macro_rules! G_BCM1480_MC_ADDR_FREQ_RANGE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ADDR_FREQ_RANGE, M_BCM1480_MC_ADDR_FREQ_RANGE) }; }
 pub const V_BCM1480_MC_ADDR_FREQ_RANGE_DEFAULT: u64 = V_BCM1480_MC_ADDR_FREQ_RANGE(0x4);
 // #endif
 
 pub const S_BCM1480_MC_ADDR_FINE_ADJ: u64 = 8;
 pub const M_BCM1480_MC_ADDR_FINE_ADJ: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_ADDR_FINE_ADJ);
-macro_rules! V_BCM1480_MC_ADDR_FINE_ADJ { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ADDR_FINE_ADJ) }; }
-macro_rules! G_BCM1480_MC_ADDR_FINE_ADJ { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ADDR_FINE_ADJ, M_BCM1480_MC_ADDR_FINE_ADJ) }; }
+macro_rules! V_BCM1480_MC_ADDR_FINE_ADJ { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ADDR_FINE_ADJ) }; }
+macro_rules! G_BCM1480_MC_ADDR_FINE_ADJ { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ADDR_FINE_ADJ, M_BCM1480_MC_ADDR_FINE_ADJ) }; }
 pub const V_BCM1480_MC_ADDR_FINE_ADJ_DEFAULT: u64 = V_BCM1480_MC_ADDR_FINE_ADJ(0x8);
 
 pub const S_BCM1480_MC_DQI_COARSE_ADJ: u64 = 16;
 pub const M_BCM1480_MC_DQI_COARSE_ADJ: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_DQI_COARSE_ADJ);
-macro_rules! V_BCM1480_MC_DQI_COARSE_ADJ { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DQI_COARSE_ADJ) }; }
-macro_rules! G_BCM1480_MC_DQI_COARSE_ADJ { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DQI_COARSE_ADJ, M_BCM1480_MC_DQI_COARSE_ADJ) }; }
+macro_rules! V_BCM1480_MC_DQI_COARSE_ADJ { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DQI_COARSE_ADJ) }; }
+macro_rules! G_BCM1480_MC_DQI_COARSE_ADJ { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DQI_COARSE_ADJ, M_BCM1480_MC_DQI_COARSE_ADJ) }; }
 pub const V_BCM1480_MC_DQI_COARSE_ADJ_DEFAULT: u64 = V_BCM1480_MC_DQI_COARSE_ADJ(0x0);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_DQI_FREQ_RANGE: u64 = 24;
 pub const M_BCM1480_MC_DQI_FREQ_RANGE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DQI_FREQ_RANGE);
-macro_rules! V_BCM1480_MC_DQI_FREQ_RANGE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DQI_FREQ_RANGE) }; }
-macro_rules! G_BCM1480_MC_DQI_FREQ_RANGE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DQI_FREQ_RANGE, M_BCM1480_MC_DQI_FREQ_RANGE) }; }
+macro_rules! V_BCM1480_MC_DQI_FREQ_RANGE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DQI_FREQ_RANGE) }; }
+macro_rules! G_BCM1480_MC_DQI_FREQ_RANGE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DQI_FREQ_RANGE, M_BCM1480_MC_DQI_FREQ_RANGE) }; }
 pub const V_BCM1480_MC_DQI_FREQ_RANGE_DEFAULT: u64 = V_BCM1480_MC_DQI_FREQ_RANGE(0x4);
 // #endif
 
 pub const S_BCM1480_MC_DQI_FINE_ADJ: u64 = 24;
 pub const M_BCM1480_MC_DQI_FINE_ADJ: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DQI_FINE_ADJ);
-macro_rules! V_BCM1480_MC_DQI_FINE_ADJ { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DQI_FINE_ADJ) }; }
-macro_rules! G_BCM1480_MC_DQI_FINE_ADJ { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DQI_FINE_ADJ, M_BCM1480_MC_DQI_FINE_ADJ) }; }
+macro_rules! V_BCM1480_MC_DQI_FINE_ADJ { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DQI_FINE_ADJ) }; }
+macro_rules! G_BCM1480_MC_DQI_FINE_ADJ { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DQI_FINE_ADJ, M_BCM1480_MC_DQI_FINE_ADJ) }; }
 pub const V_BCM1480_MC_DQI_FINE_ADJ_DEFAULT: u64 = V_BCM1480_MC_DQI_FINE_ADJ(0x8);
 
 pub const S_BCM1480_MC_DQO_COARSE_ADJ: u64 = 32;
 pub const M_BCM1480_MC_DQO_COARSE_ADJ: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_DQO_COARSE_ADJ);
-macro_rules! V_BCM1480_MC_DQO_COARSE_ADJ { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DQO_COARSE_ADJ) }; }
-macro_rules! G_BCM1480_MC_DQO_COARSE_ADJ { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DQO_COARSE_ADJ, M_BCM1480_MC_DQO_COARSE_ADJ) }; }
+macro_rules! V_BCM1480_MC_DQO_COARSE_ADJ { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DQO_COARSE_ADJ) }; }
+macro_rules! G_BCM1480_MC_DQO_COARSE_ADJ { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DQO_COARSE_ADJ, M_BCM1480_MC_DQO_COARSE_ADJ) }; }
 pub const V_BCM1480_MC_DQO_COARSE_ADJ_DEFAULT: u64 = V_BCM1480_MC_DQO_COARSE_ADJ(0x0);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_DQO_FREQ_RANGE: u64 = 40;
 pub const M_BCM1480_MC_DQO_FREQ_RANGE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DQO_FREQ_RANGE);
-macro_rules! V_BCM1480_MC_DQO_FREQ_RANGE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DQO_FREQ_RANGE) }; }
-macro_rules! G_BCM1480_MC_DQO_FREQ_RANGE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DQO_FREQ_RANGE, M_BCM1480_MC_DQO_FREQ_RANGE) }; }
+macro_rules! V_BCM1480_MC_DQO_FREQ_RANGE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DQO_FREQ_RANGE) }; }
+macro_rules! G_BCM1480_MC_DQO_FREQ_RANGE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DQO_FREQ_RANGE, M_BCM1480_MC_DQO_FREQ_RANGE) }; }
 pub const V_BCM1480_MC_DQO_FREQ_RANGE_DEFAULT: u64 = V_BCM1480_MC_DQO_FREQ_RANGE(0x4);
 // #endif
 
 pub const S_BCM1480_MC_DQO_FINE_ADJ: u64 = 40;
 pub const M_BCM1480_MC_DQO_FINE_ADJ: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DQO_FINE_ADJ);
-macro_rules! V_BCM1480_MC_DQO_FINE_ADJ { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DQO_FINE_ADJ) }; }
-macro_rules! G_BCM1480_MC_DQO_FINE_ADJ { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DQO_FINE_ADJ, M_BCM1480_MC_DQO_FINE_ADJ) }; }
+macro_rules! V_BCM1480_MC_DQO_FINE_ADJ { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DQO_FINE_ADJ) }; }
+macro_rules! G_BCM1480_MC_DQO_FINE_ADJ { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DQO_FINE_ADJ, M_BCM1480_MC_DQO_FINE_ADJ) }; }
 pub const V_BCM1480_MC_DQO_FINE_ADJ_DEFAULT: u64 = V_BCM1480_MC_DQO_FINE_ADJ(0x8);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_DLL_PDSEL: u64 = 44;
 pub const M_BCM1480_MC_DLL_PDSEL: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_DLL_PDSEL);
-macro_rules! V_BCM1480_MC_DLL_PDSEL { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DLL_PDSEL) }; }
-macro_rules! G_BCM1480_MC_DLL_PDSEL { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DLL_PDSEL, M_BCM1480_MC_DLL_PDSEL) }; }
+macro_rules! V_BCM1480_MC_DLL_PDSEL { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DLL_PDSEL) }; }
+macro_rules! G_BCM1480_MC_DLL_PDSEL { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DLL_PDSEL, M_BCM1480_MC_DLL_PDSEL) }; }
 pub const V_BCM1480_MC_DLL_DEFAULT_PDSEL: u64 = V_BCM1480_MC_DLL_PDSEL(0x0);
 
 pub const M_BCM1480_MC_DLL_REGBYPASS: u64 = _SB_MAKEMASK1(46);
@@ -600,37 +600,37 @@ pub const M_BCM1480_MC_DQO_SHIFT: u64 = _SB_MAKEMASK1(47);
 
 pub const S_BCM1480_MC_DLL_DEFAULT: u64 = 48;
 pub const M_BCM1480_MC_DLL_DEFAULT: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_DLL_DEFAULT);
-macro_rules! V_BCM1480_MC_DLL_DEFAULT { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DLL_DEFAULT) }; }
-macro_rules! G_BCM1480_MC_DLL_DEFAULT { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DLL_DEFAULT, M_BCM1480_MC_DLL_DEFAULT) }; }
+macro_rules! V_BCM1480_MC_DLL_DEFAULT { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DLL_DEFAULT) }; }
+macro_rules! G_BCM1480_MC_DLL_DEFAULT { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DLL_DEFAULT, M_BCM1480_MC_DLL_DEFAULT) }; }
 pub const V_BCM1480_MC_DLL_DEFAULT_DEFAULT: u64 = V_BCM1480_MC_DLL_DEFAULT(0x10);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_DLL_REGCTRL: u64 = 54;
 pub const M_BCM1480_MC_DLL_REGCTRL: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_DLL_REGCTRL);
-macro_rules! V_BCM1480_MC_DLL_REGCTRL { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DLL_REGCTRL) }; }
-macro_rules! G_BCM1480_MC_DLL_REGCTRL { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DLL_REGCTRL, M_BCM1480_MC_DLL_REGCTRL) }; }
+macro_rules! V_BCM1480_MC_DLL_REGCTRL { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DLL_REGCTRL) }; }
+macro_rules! G_BCM1480_MC_DLL_REGCTRL { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DLL_REGCTRL, M_BCM1480_MC_DLL_REGCTRL) }; }
 pub const V_BCM1480_MC_DLL_DEFAULT_REGCTRL: u64 = V_BCM1480_MC_DLL_REGCTRL(0x0);
 // #endif
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_DLL_FREQ_RANGE: u64 = 56;
 pub const M_BCM1480_MC_DLL_FREQ_RANGE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DLL_FREQ_RANGE);
-macro_rules! V_BCM1480_MC_DLL_FREQ_RANGE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DLL_FREQ_RANGE) }; }
-macro_rules! G_BCM1480_MC_DLL_FREQ_RANGE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DLL_FREQ_RANGE, M_BCM1480_MC_DLL_FREQ_RANGE) }; }
+macro_rules! V_BCM1480_MC_DLL_FREQ_RANGE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DLL_FREQ_RANGE) }; }
+macro_rules! G_BCM1480_MC_DLL_FREQ_RANGE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DLL_FREQ_RANGE, M_BCM1480_MC_DLL_FREQ_RANGE) }; }
 pub const V_BCM1480_MC_DLL_FREQ_RANGE_DEFAULT: u64 = V_BCM1480_MC_DLL_FREQ_RANGE(0x4);
 // #endif
 
 pub const S_BCM1480_MC_DLL_STEP_SIZE: u64 = 56;
 pub const M_BCM1480_MC_DLL_STEP_SIZE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_DLL_STEP_SIZE);
-macro_rules! V_BCM1480_MC_DLL_STEP_SIZE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DLL_STEP_SIZE) }; }
-macro_rules! G_BCM1480_MC_DLL_STEP_SIZE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DLL_STEP_SIZE, M_BCM1480_MC_DLL_STEP_SIZE) }; }
+macro_rules! V_BCM1480_MC_DLL_STEP_SIZE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DLL_STEP_SIZE) }; }
+macro_rules! G_BCM1480_MC_DLL_STEP_SIZE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DLL_STEP_SIZE, M_BCM1480_MC_DLL_STEP_SIZE) }; }
 pub const V_BCM1480_MC_DLL_STEP_SIZE_DEFAULT: u64 = V_BCM1480_MC_DLL_STEP_SIZE(0x8);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_DLL_BGCTRL: u64 = 60;
 pub const M_BCM1480_MC_DLL_BGCTRL: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_DLL_BGCTRL);
-macro_rules! V_BCM1480_MC_DLL_BGCTRL { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_DLL_BGCTRL) }; }
-macro_rules! G_BCM1480_MC_DLL_BGCTRL { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_DLL_BGCTRL, M_BCM1480_MC_DLL_BGCTRL) }; }
+macro_rules! V_BCM1480_MC_DLL_BGCTRL { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_DLL_BGCTRL) }; }
+macro_rules! G_BCM1480_MC_DLL_BGCTRL { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_DLL_BGCTRL, M_BCM1480_MC_DLL_BGCTRL) }; }
 pub const V_BCM1480_MC_DLL_DEFAULT_BGCTRL: u64 = V_BCM1480_MC_DLL_BGCTRL(0x0);
 // #endif
 
@@ -642,36 +642,36 @@ pub const M_BCM1480_MC_DLL_BYPASS: u64 = _SB_MAKEMASK1(63);
 
 pub const S_BCM1480_MC_RTT_BYP_PULLDOWN: u64 = 0;
 pub const M_BCM1480_MC_RTT_BYP_PULLDOWN: u64 = _SB_MAKEMASK(3, S_BCM1480_MC_RTT_BYP_PULLDOWN);
-macro_rules! V_BCM1480_MC_RTT_BYP_PULLDOWN { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_RTT_BYP_PULLDOWN) }; }
-macro_rules! G_BCM1480_MC_RTT_BYP_PULLDOWN { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_RTT_BYP_PULLDOWN, M_BCM1480_MC_RTT_BYP_PULLDOWN) }; }
+macro_rules! V_BCM1480_MC_RTT_BYP_PULLDOWN { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_RTT_BYP_PULLDOWN) }; }
+macro_rules! G_BCM1480_MC_RTT_BYP_PULLDOWN { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_RTT_BYP_PULLDOWN, M_BCM1480_MC_RTT_BYP_PULLDOWN) }; }
 
 pub const S_BCM1480_MC_RTT_BYP_PULLUP: u64 = 6;
 pub const M_BCM1480_MC_RTT_BYP_PULLUP: u64 = _SB_MAKEMASK(3, S_BCM1480_MC_RTT_BYP_PULLUP);
-macro_rules! V_BCM1480_MC_RTT_BYP_PULLUP { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_RTT_BYP_PULLUP) }; }
-macro_rules! G_BCM1480_MC_RTT_BYP_PULLUP { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_RTT_BYP_PULLUP, M_BCM1480_MC_RTT_BYP_PULLUP) }; }
+macro_rules! V_BCM1480_MC_RTT_BYP_PULLUP { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_RTT_BYP_PULLUP) }; }
+macro_rules! G_BCM1480_MC_RTT_BYP_PULLUP { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_RTT_BYP_PULLUP, M_BCM1480_MC_RTT_BYP_PULLUP) }; }
 
 pub const M_BCM1480_MC_RTT_BYPASS: u64 = _SB_MAKEMASK1(8);
 pub const M_BCM1480_MC_RTT_COMP_MOV_AVG: u64 = _SB_MAKEMASK1(9);
 
 pub const S_BCM1480_MC_PVT_BYP_C1_PULLDOWN: u64 = 10;
 pub const M_BCM1480_MC_PVT_BYP_C1_PULLDOWN: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_PVT_BYP_C1_PULLDOWN);
-macro_rules! V_BCM1480_MC_PVT_BYP_C1_PULLDOWN { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_PVT_BYP_C1_PULLDOWN) }; }
-macro_rules! G_BCM1480_MC_PVT_BYP_C1_PULLDOWN { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_PVT_BYP_C1_PULLDOWN, M_BCM1480_MC_PVT_BYP_C1_PULLDOWN) }; }
+macro_rules! V_BCM1480_MC_PVT_BYP_C1_PULLDOWN { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_PVT_BYP_C1_PULLDOWN) }; }
+macro_rules! G_BCM1480_MC_PVT_BYP_C1_PULLDOWN { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_PVT_BYP_C1_PULLDOWN, M_BCM1480_MC_PVT_BYP_C1_PULLDOWN) }; }
 
 pub const S_BCM1480_MC_PVT_BYP_C1_PULLUP: u64 = 15;
 pub const M_BCM1480_MC_PVT_BYP_C1_PULLUP: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_PVT_BYP_C1_PULLUP);
-macro_rules! V_BCM1480_MC_PVT_BYP_C1_PULLUP { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_PVT_BYP_C1_PULLUP) }; }
-macro_rules! G_BCM1480_MC_PVT_BYP_C1_PULLUP { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_PVT_BYP_C1_PULLUP, M_BCM1480_MC_PVT_BYP_C1_PULLUP) }; }
+macro_rules! V_BCM1480_MC_PVT_BYP_C1_PULLUP { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_PVT_BYP_C1_PULLUP) }; }
+macro_rules! G_BCM1480_MC_PVT_BYP_C1_PULLUP { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_PVT_BYP_C1_PULLUP, M_BCM1480_MC_PVT_BYP_C1_PULLUP) }; }
 
 pub const S_BCM1480_MC_PVT_BYP_C2_PULLDOWN: u64 = 20;
 pub const M_BCM1480_MC_PVT_BYP_C2_PULLDOWN: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_PVT_BYP_C2_PULLDOWN);
-macro_rules! V_BCM1480_MC_PVT_BYP_C2_PULLDOWN { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_PVT_BYP_C2_PULLDOWN) }; }
-macro_rules! G_BCM1480_MC_PVT_BYP_C2_PULLDOWN { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_PVT_BYP_C2_PULLDOWN, M_BCM1480_MC_PVT_BYP_C2_PULLDOWN) }; }
+macro_rules! V_BCM1480_MC_PVT_BYP_C2_PULLDOWN { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_PVT_BYP_C2_PULLDOWN) }; }
+macro_rules! G_BCM1480_MC_PVT_BYP_C2_PULLDOWN { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_PVT_BYP_C2_PULLDOWN, M_BCM1480_MC_PVT_BYP_C2_PULLDOWN) }; }
 
 pub const S_BCM1480_MC_PVT_BYP_C2_PULLUP: u64 = 25;
 pub const M_BCM1480_MC_PVT_BYP_C2_PULLUP: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_PVT_BYP_C2_PULLUP);
-macro_rules! V_BCM1480_MC_PVT_BYP_C2_PULLUP { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_PVT_BYP_C2_PULLUP) }; }
-macro_rules! G_BCM1480_MC_PVT_BYP_C2_PULLUP { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_PVT_BYP_C2_PULLUP, M_BCM1480_MC_PVT_BYP_C2_PULLUP) }; }
+macro_rules! V_BCM1480_MC_PVT_BYP_C2_PULLUP { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_PVT_BYP_C2_PULLUP) }; }
+macro_rules! G_BCM1480_MC_PVT_BYP_C2_PULLUP { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_PVT_BYP_C2_PULLUP, M_BCM1480_MC_PVT_BYP_C2_PULLUP) }; }
 
 pub const M_BCM1480_MC_PVT_BYPASS: u64 = _SB_MAKEMASK1(30);
 pub const M_BCM1480_MC_PVT_COMP_MOV_AVG: u64 = _SB_MAKEMASK1(31);
@@ -706,15 +706,15 @@ pub const M_BCM1480_MC_ECC_INVERT: u64 = _SB_MAKEMASK(8, S_BCM1480_MC_ECC_INVERT
 
 pub const S_BCM1480_MC_tRCD: u64 = 0;
 pub const M_BCM1480_MC_tRCD: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tRCD);
-macro_rules! V_BCM1480_MC_tRCD { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRCD) }; }
-macro_rules! G_BCM1480_MC_tRCD { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRCD, M_BCM1480_MC_tRCD) }; }
+macro_rules! V_BCM1480_MC_tRCD { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRCD) }; }
+macro_rules! G_BCM1480_MC_tRCD { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRCD, M_BCM1480_MC_tRCD) }; }
 pub const K_BCM1480_MC_tRCD_DEFAULT: u64 = 3;
 pub const V_BCM1480_MC_tRCD_DEFAULT: u64 = V_BCM1480_MC_tRCD(K_BCM1480_MC_tRCD_DEFAULT);
 
 pub const S_BCM1480_MC_tCL: u64 = 4;
 pub const M_BCM1480_MC_tCL: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tCL);
-macro_rules! V_BCM1480_MC_tCL { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tCL) }; }
-macro_rules! G_BCM1480_MC_tCL { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tCL, M_BCM1480_MC_tCL) }; }
+macro_rules! V_BCM1480_MC_tCL { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tCL) }; }
+macro_rules! G_BCM1480_MC_tCL { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tCL, M_BCM1480_MC_tCL) }; }
 pub const K_BCM1480_MC_tCL_DEFAULT: u64 = 2;
 pub const V_BCM1480_MC_tCL_DEFAULT: u64 = V_BCM1480_MC_tCL(K_BCM1480_MC_tCL_DEFAULT);
 
@@ -722,99 +722,99 @@ pub const M_BCM1480_MC_tCrDh: u64 = _SB_MAKEMASK1(8);
 
 pub const S_BCM1480_MC_tWR: u64 = 9;
 pub const M_BCM1480_MC_tWR: u64 = _SB_MAKEMASK(3, S_BCM1480_MC_tWR);
-macro_rules! V_BCM1480_MC_tWR { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tWR) }; }
-macro_rules! G_BCM1480_MC_tWR { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tWR, M_BCM1480_MC_tWR) }; }
+macro_rules! V_BCM1480_MC_tWR { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tWR) }; }
+macro_rules! G_BCM1480_MC_tWR { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tWR, M_BCM1480_MC_tWR) }; }
 pub const K_BCM1480_MC_tWR_DEFAULT: u64 = 2;
 pub const V_BCM1480_MC_tWR_DEFAULT: u64 = V_BCM1480_MC_tWR(K_BCM1480_MC_tWR_DEFAULT);
 
 pub const S_BCM1480_MC_tCwD: u64 = 12;
 pub const M_BCM1480_MC_tCwD: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tCwD);
-macro_rules! V_BCM1480_MC_tCwD { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tCwD) }; }
-macro_rules! G_BCM1480_MC_tCwD { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tCwD, M_BCM1480_MC_tCwD) }; }
+macro_rules! V_BCM1480_MC_tCwD { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tCwD) }; }
+macro_rules! G_BCM1480_MC_tCwD { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tCwD, M_BCM1480_MC_tCwD) }; }
 pub const K_BCM1480_MC_tCwD_DEFAULT: u64 = 1;
 pub const V_BCM1480_MC_tCwD_DEFAULT: u64 = V_BCM1480_MC_tCwD(K_BCM1480_MC_tCwD_DEFAULT);
 
 pub const S_BCM1480_MC_tRP: u64 = 16;
 pub const M_BCM1480_MC_tRP: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tRP);
-macro_rules! V_BCM1480_MC_tRP { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRP) }; }
-macro_rules! G_BCM1480_MC_tRP { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRP, M_BCM1480_MC_tRP) }; }
+macro_rules! V_BCM1480_MC_tRP { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRP) }; }
+macro_rules! G_BCM1480_MC_tRP { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRP, M_BCM1480_MC_tRP) }; }
 pub const K_BCM1480_MC_tRP_DEFAULT: u64 = 4;
 pub const V_BCM1480_MC_tRP_DEFAULT: u64 = V_BCM1480_MC_tRP(K_BCM1480_MC_tRP_DEFAULT);
 
 pub const S_BCM1480_MC_tRRD: u64 = 20;
 pub const M_BCM1480_MC_tRRD: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tRRD);
-macro_rules! V_BCM1480_MC_tRRD { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRRD) }; }
-macro_rules! G_BCM1480_MC_tRRD { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRRD, M_BCM1480_MC_tRRD) }; }
+macro_rules! V_BCM1480_MC_tRRD { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRRD) }; }
+macro_rules! G_BCM1480_MC_tRRD { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRRD, M_BCM1480_MC_tRRD) }; }
 pub const K_BCM1480_MC_tRRD_DEFAULT: u64 = 2;
 pub const V_BCM1480_MC_tRRD_DEFAULT: u64 = V_BCM1480_MC_tRRD(K_BCM1480_MC_tRRD_DEFAULT);
 
 pub const S_BCM1480_MC_tRCw: u64 = 24;
 pub const M_BCM1480_MC_tRCw: u64 = _SB_MAKEMASK(5, S_BCM1480_MC_tRCw);
-macro_rules! V_BCM1480_MC_tRCw { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRCw) }; }
-macro_rules! G_BCM1480_MC_tRCw { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRCw, M_BCM1480_MC_tRCw) }; }
+macro_rules! V_BCM1480_MC_tRCw { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRCw) }; }
+macro_rules! G_BCM1480_MC_tRCw { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRCw, M_BCM1480_MC_tRCw) }; }
 pub const K_BCM1480_MC_tRCw_DEFAULT: u64 = 10;
 pub const V_BCM1480_MC_tRCw_DEFAULT: u64 = V_BCM1480_MC_tRCw(K_BCM1480_MC_tRCw_DEFAULT);
 
 pub const S_BCM1480_MC_tRCr: u64 = 32;
 pub const M_BCM1480_MC_tRCr: u64 = _SB_MAKEMASK(5, S_BCM1480_MC_tRCr);
-macro_rules! V_BCM1480_MC_tRCr { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRCr) }; }
-macro_rules! G_BCM1480_MC_tRCr { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRCr, M_BCM1480_MC_tRCr) }; }
+macro_rules! V_BCM1480_MC_tRCr { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRCr) }; }
+macro_rules! G_BCM1480_MC_tRCr { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRCr, M_BCM1480_MC_tRCr) }; }
 pub const K_BCM1480_MC_tRCr_DEFAULT: u64 = 9;
 pub const V_BCM1480_MC_tRCr_DEFAULT: u64 = V_BCM1480_MC_tRCr(K_BCM1480_MC_tRCr_DEFAULT);
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const S_BCM1480_MC_tFAW: u64 = 40;
 pub const M_BCM1480_MC_tFAW: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_tFAW);
-macro_rules! V_BCM1480_MC_tFAW { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tFAW) }; }
-macro_rules! G_BCM1480_MC_tFAW { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tFAW, M_BCM1480_MC_tFAW) }; }
+macro_rules! V_BCM1480_MC_tFAW { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tFAW) }; }
+macro_rules! G_BCM1480_MC_tFAW { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tFAW, M_BCM1480_MC_tFAW) }; }
 pub const K_BCM1480_MC_tFAW_DEFAULT: u64 = 0;
 pub const V_BCM1480_MC_tFAW_DEFAULT: u64 = V_BCM1480_MC_tFAW(K_BCM1480_MC_tFAW_DEFAULT);
 // #endif
 
 pub const S_BCM1480_MC_tRFC: u64 = 48;
 pub const M_BCM1480_MC_tRFC: u64 = _SB_MAKEMASK(7, S_BCM1480_MC_tRFC);
-macro_rules! V_BCM1480_MC_tRFC { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRFC) }; }
-macro_rules! G_BCM1480_MC_tRFC { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRFC, M_BCM1480_MC_tRFC) }; }
+macro_rules! V_BCM1480_MC_tRFC { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRFC) }; }
+macro_rules! G_BCM1480_MC_tRFC { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRFC, M_BCM1480_MC_tRFC) }; }
 pub const K_BCM1480_MC_tRFC_DEFAULT: u64 = 12;
 pub const V_BCM1480_MC_tRFC_DEFAULT: u64 = V_BCM1480_MC_tRFC(K_BCM1480_MC_tRFC_DEFAULT);
 
 pub const S_BCM1480_MC_tFIFO: u64 = 56;
 pub const M_BCM1480_MC_tFIFO: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_tFIFO);
-macro_rules! V_BCM1480_MC_tFIFO { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tFIFO) }; }
-macro_rules! G_BCM1480_MC_tFIFO { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tFIFO, M_BCM1480_MC_tFIFO) }; }
+macro_rules! V_BCM1480_MC_tFIFO { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tFIFO) }; }
+macro_rules! G_BCM1480_MC_tFIFO { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tFIFO, M_BCM1480_MC_tFIFO) }; }
 pub const K_BCM1480_MC_tFIFO_DEFAULT: u64 = 0;
 pub const V_BCM1480_MC_tFIFO_DEFAULT: u64 = V_BCM1480_MC_tFIFO(K_BCM1480_MC_tFIFO_DEFAULT);
 
 pub const S_BCM1480_MC_tW2R: u64 = 58;
 pub const M_BCM1480_MC_tW2R: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_tW2R);
-macro_rules! V_BCM1480_MC_tW2R { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tW2R) }; }
-macro_rules! G_BCM1480_MC_tW2R { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tW2R, M_BCM1480_MC_tW2R) }; }
+macro_rules! V_BCM1480_MC_tW2R { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tW2R) }; }
+macro_rules! G_BCM1480_MC_tW2R { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tW2R, M_BCM1480_MC_tW2R) }; }
 pub const K_BCM1480_MC_tW2R_DEFAULT: u64 = 1;
 pub const V_BCM1480_MC_tW2R_DEFAULT: u64 = V_BCM1480_MC_tW2R(K_BCM1480_MC_tW2R_DEFAULT);
 
 pub const S_BCM1480_MC_tR2W: u64 = 60;
 pub const M_BCM1480_MC_tR2W: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_tR2W);
-macro_rules! V_BCM1480_MC_tR2W { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tR2W) }; }
-macro_rules! G_BCM1480_MC_tR2W { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tR2W, M_BCM1480_MC_tR2W) }; }
+macro_rules! V_BCM1480_MC_tR2W { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tR2W) }; }
+macro_rules! G_BCM1480_MC_tR2W { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tR2W, M_BCM1480_MC_tR2W) }; }
 pub const K_BCM1480_MC_tR2W_DEFAULT: u64 = 0;
 pub const V_BCM1480_MC_tR2W_DEFAULT: u64 = V_BCM1480_MC_tR2W(K_BCM1480_MC_tR2W_DEFAULT);
 
 pub const M_BCM1480_MC_tR2R: u64 = _SB_MAKEMASK1(62);
 
 // continued definition: #define V_BCM1480_MC_TIMING_DEFAULT	    (M_BCM1480_MC_tR2R | \
-				     V_BCM1480_MC_tFIFO_DEFAULT | \
-				     V_BCM1480_MC_tR2W_DEFAULT | \
-				     V_BCM1480_MC_tW2R_DEFAULT | \
-				     V_BCM1480_MC_tRFC_DEFAULT | \
-				     V_BCM1480_MC_tRCr_DEFAULT | \
-				     V_BCM1480_MC_tRCw_DEFAULT | \
-				     V_BCM1480_MC_tRRD_DEFAULT | \
-				     V_BCM1480_MC_tRP_DEFAULT | \
-				     V_BCM1480_MC_tCwD_DEFAULT | \
-				     V_BCM1480_MC_tWR_DEFAULT | \
-				     M_BCM1480_MC_tCrDh | \
-				     V_BCM1480_MC_tCL_DEFAULT | \
-				     V_BCM1480_MC_tRCD_DEFAULT)
+// 				     V_BCM1480_MC_tFIFO_DEFAULT | \
+// 				     V_BCM1480_MC_tR2W_DEFAULT | \
+// 				     V_BCM1480_MC_tW2R_DEFAULT | \
+// 				     V_BCM1480_MC_tRFC_DEFAULT | \
+// 				     V_BCM1480_MC_tRCr_DEFAULT | \
+// 				     V_BCM1480_MC_tRCw_DEFAULT | \
+// 				     V_BCM1480_MC_tRRD_DEFAULT | \
+// 				     V_BCM1480_MC_tRP_DEFAULT | \
+// 				     V_BCM1480_MC_tCwD_DEFAULT | \
+// 				     V_BCM1480_MC_tWR_DEFAULT | \
+// 				     M_BCM1480_MC_tCrDh | \
+// 				     V_BCM1480_MC_tCL_DEFAULT | \
+// 				     V_BCM1480_MC_tRCD_DEFAULT)
 
 /*
  * SDRAM Timing Register 2
@@ -824,29 +824,29 @@ pub const M_BCM1480_MC_tR2R: u64 = _SB_MAKEMASK1(62);
 
 pub const S_BCM1480_MC_tAL: u64 = 0;
 pub const M_BCM1480_MC_tAL: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tAL);
-macro_rules! V_BCM1480_MC_tAL { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tAL) }; }
-macro_rules! G_BCM1480_MC_tAL { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tAL, M_BCM1480_MC_tAL) }; }
+macro_rules! V_BCM1480_MC_tAL { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tAL) }; }
+macro_rules! G_BCM1480_MC_tAL { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tAL, M_BCM1480_MC_tAL) }; }
 pub const K_BCM1480_MC_tAL_DEFAULT: u64 = 0;
 pub const V_BCM1480_MC_tAL_DEFAULT: u64 = V_BCM1480_MC_tAL(K_BCM1480_MC_tAL_DEFAULT);
 
 pub const S_BCM1480_MC_tRTP: u64 = 4;
 pub const M_BCM1480_MC_tRTP: u64 = _SB_MAKEMASK(3, S_BCM1480_MC_tRTP);
-macro_rules! V_BCM1480_MC_tRTP { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRTP) }; }
-macro_rules! G_BCM1480_MC_tRTP { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRTP, M_BCM1480_MC_tRTP) }; }
+macro_rules! V_BCM1480_MC_tRTP { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRTP) }; }
+macro_rules! G_BCM1480_MC_tRTP { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRTP, M_BCM1480_MC_tRTP) }; }
 pub const K_BCM1480_MC_tRTP_DEFAULT: u64 = 2;
 pub const V_BCM1480_MC_tRTP_DEFAULT: u64 = V_BCM1480_MC_tRTP(K_BCM1480_MC_tRTP_DEFAULT);
 
 pub const S_BCM1480_MC_tW2W: u64 = 8;
 pub const M_BCM1480_MC_tW2W: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_tW2W);
-macro_rules! V_BCM1480_MC_tW2W { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tW2W) }; }
-macro_rules! G_BCM1480_MC_tW2W { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tW2W, M_BCM1480_MC_tW2W) }; }
+macro_rules! V_BCM1480_MC_tW2W { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tW2W) }; }
+macro_rules! G_BCM1480_MC_tW2W { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tW2W, M_BCM1480_MC_tW2W) }; }
 pub const K_BCM1480_MC_tW2W_DEFAULT: u64 = 0;
 pub const V_BCM1480_MC_tW2W_DEFAULT: u64 = V_BCM1480_MC_tW2W(K_BCM1480_MC_tW2W_DEFAULT);
 
 pub const S_BCM1480_MC_tRAP: u64 = 12;
 pub const M_BCM1480_MC_tRAP: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_tRAP);
-macro_rules! V_BCM1480_MC_tRAP { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_tRAP) }; }
-macro_rules! G_BCM1480_MC_tRAP { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_tRAP, M_BCM1480_MC_tRAP) }; }
+macro_rules! V_BCM1480_MC_tRAP { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_tRAP) }; }
+macro_rules! G_BCM1480_MC_tRAP { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_tRAP, M_BCM1480_MC_tRAP) }; }
 pub const K_BCM1480_MC_tRAP_DEFAULT: u64 = 0;
 pub const V_BCM1480_MC_tRAP_DEFAULT: u64 = V_BCM1480_MC_tRAP(K_BCM1480_MC_tRAP_DEFAULT);
 
@@ -864,20 +864,20 @@ pub const V_BCM1480_MC_tRAP_DEFAULT: u64 = V_BCM1480_MC_tRAP(K_BCM1480_MC_tRAP_D
 
 pub const S_BCM1480_MC_BLK_SET_MARK: u64 = 8;
 pub const M_BCM1480_MC_BLK_SET_MARK: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_BLK_SET_MARK);
-macro_rules! V_BCM1480_MC_BLK_SET_MARK { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_BLK_SET_MARK) }; }
-macro_rules! G_BCM1480_MC_BLK_SET_MARK { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_BLK_SET_MARK, M_BCM1480_MC_BLK_SET_MARK) }; }
+macro_rules! V_BCM1480_MC_BLK_SET_MARK { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_BLK_SET_MARK) }; }
+macro_rules! G_BCM1480_MC_BLK_SET_MARK { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_BLK_SET_MARK, M_BCM1480_MC_BLK_SET_MARK) }; }
 
 pub const S_BCM1480_MC_BLK_CLR_MARK: u64 = 12;
 pub const M_BCM1480_MC_BLK_CLR_MARK: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_BLK_CLR_MARK);
-macro_rules! V_BCM1480_MC_BLK_CLR_MARK { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_BLK_CLR_MARK) }; }
-macro_rules! G_BCM1480_MC_BLK_CLR_MARK { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_BLK_CLR_MARK, M_BCM1480_MC_BLK_CLR_MARK) }; }
+macro_rules! V_BCM1480_MC_BLK_CLR_MARK { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_BLK_CLR_MARK) }; }
+macro_rules! G_BCM1480_MC_BLK_CLR_MARK { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_BLK_CLR_MARK, M_BCM1480_MC_BLK_CLR_MARK) }; }
 
 pub const M_BCM1480_MC_PKT_PRIORITY: u64 = _SB_MAKEMASK1(16);
 
 pub const S_BCM1480_MC_MAX_AGE: u64 = 20;
 pub const M_BCM1480_MC_MAX_AGE: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_MAX_AGE);
-macro_rules! V_BCM1480_MC_MAX_AGE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_MAX_AGE) }; }
-macro_rules! G_BCM1480_MC_MAX_AGE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_MAX_AGE, M_BCM1480_MC_MAX_AGE) }; }
+macro_rules! V_BCM1480_MC_MAX_AGE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_MAX_AGE) }; }
+macro_rules! G_BCM1480_MC_MAX_AGE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_MAX_AGE, M_BCM1480_MC_MAX_AGE) }; }
 
 pub const M_BCM1480_MC_BERR_DISABLE: u64 = _SB_MAKEMASK1(29);
 pub const M_BCM1480_MC_FORCE_SEQ: u64 = _SB_MAKEMASK1(30);
@@ -885,8 +885,8 @@ pub const M_BCM1480_MC_VGEN: u64 = _SB_MAKEMASK1(32);
 
 pub const S_BCM1480_MC_SLEW: u64 = 33;
 pub const M_BCM1480_MC_SLEW: u64 = _SB_MAKEMASK(2, S_BCM1480_MC_SLEW);
-macro_rules! V_BCM1480_MC_SLEW { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_SLEW) }; }
-macro_rules! G_BCM1480_MC_SLEW { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_SLEW, M_BCM1480_MC_SLEW) }; }
+macro_rules! V_BCM1480_MC_SLEW { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_SLEW) }; }
+macro_rules! G_BCM1480_MC_SLEW { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_SLEW, M_BCM1480_MC_SLEW) }; }
 
 pub const M_BCM1480_MC_SSTL_VOLTAGE: u64 = _SB_MAKEMASK1(35);
 
@@ -896,18 +896,18 @@ pub const M_BCM1480_MC_SSTL_VOLTAGE: u64 = _SB_MAKEMASK1(35);
 
 pub const S_BCM1480_MC_INTLV0: u64 = 0;
 pub const M_BCM1480_MC_INTLV0: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_INTLV0);
-macro_rules! V_BCM1480_MC_INTLV0 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_INTLV0) }; }
-macro_rules! G_BCM1480_MC_INTLV0 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_INTLV0, M_BCM1480_MC_INTLV0) }; }
+macro_rules! V_BCM1480_MC_INTLV0 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_INTLV0) }; }
+macro_rules! G_BCM1480_MC_INTLV0 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_INTLV0, M_BCM1480_MC_INTLV0) }; }
 
 pub const S_BCM1480_MC_INTLV1: u64 = 8;
 pub const M_BCM1480_MC_INTLV1: u64 = _SB_MAKEMASK(6, S_BCM1480_MC_INTLV1);
-macro_rules! V_BCM1480_MC_INTLV1 { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_INTLV1) }; }
-macro_rules! G_BCM1480_MC_INTLV1 { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_INTLV1, M_BCM1480_MC_INTLV1) }; }
+macro_rules! V_BCM1480_MC_INTLV1 { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_INTLV1) }; }
+macro_rules! G_BCM1480_MC_INTLV1 { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_INTLV1, M_BCM1480_MC_INTLV1) }; }
 
 pub const S_BCM1480_MC_INTLV_MODE: u64 = 16;
 pub const M_BCM1480_MC_INTLV_MODE: u64 = _SB_MAKEMASK(3, S_BCM1480_MC_INTLV_MODE);
-macro_rules! V_BCM1480_MC_INTLV_MODE { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_INTLV_MODE) }; }
-macro_rules! G_BCM1480_MC_INTLV_MODE { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_INTLV_MODE, M_BCM1480_MC_INTLV_MODE) }; }
+macro_rules! V_BCM1480_MC_INTLV_MODE { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_INTLV_MODE) }; }
+macro_rules! G_BCM1480_MC_INTLV_MODE { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_INTLV_MODE, M_BCM1480_MC_INTLV_MODE) }; }
 
 pub const K_BCM1480_MC_INTLV_MODE_NONE: u64 = 0x0;
 pub const K_BCM1480_MC_INTLV_MODE_01: u64 = 0x1;
@@ -927,8 +927,8 @@ pub const V_BCM1480_MC_INTLV_MODE_0123: u64 = V_BCM1480_MC_INTLV_MODE(K_BCM1480_
 
 pub const S_BCM1480_MC_ECC_ERR_ADDR: u64 = 0;
 pub const M_BCM1480_MC_ECC_ERR_ADDR: u64 = _SB_MAKEMASK(37, S_BCM1480_MC_ECC_ERR_ADDR);
-macro_rules! V_BCM1480_MC_ECC_ERR_ADDR { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ECC_ERR_ADDR) }; }
-macro_rules! G_BCM1480_MC_ECC_ERR_ADDR { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ECC_ERR_ADDR, M_BCM1480_MC_ECC_ERR_ADDR) }; }
+macro_rules! V_BCM1480_MC_ECC_ERR_ADDR { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ECC_ERR_ADDR) }; }
+macro_rules! G_BCM1480_MC_ECC_ERR_ADDR { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ECC_ERR_ADDR, M_BCM1480_MC_ECC_ERR_ADDR) }; }
 
 // Conditional compilation preserved from: #if SIBYTE_HDR_FEATURE(1480, PASS2)
 pub const M_BCM1480_MC_ECC_ERR_RMW: u64 = _SB_MAKEMASK1(60);
@@ -944,8 +944,8 @@ pub const M_BCM1480_MC_ECC_CERR_DET: u64 = _SB_MAKEMASK1(63);
 
 pub const S_BCM1480_MC_ECC_CORR_ADDR: u64 = 0;
 pub const M_BCM1480_MC_ECC_CORR_ADDR: u64 = _SB_MAKEMASK(37, S_BCM1480_MC_ECC_CORR_ADDR);
-macro_rules! V_BCM1480_MC_ECC_CORR_ADDR { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ECC_CORR_ADDR) }; }
-macro_rules! G_BCM1480_MC_ECC_CORR_ADDR { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ECC_CORR_ADDR, M_BCM1480_MC_ECC_CORR_ADDR) }; }
+macro_rules! V_BCM1480_MC_ECC_CORR_ADDR { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ECC_CORR_ADDR) }; }
+macro_rules! G_BCM1480_MC_ECC_CORR_ADDR { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ECC_CORR_ADDR, M_BCM1480_MC_ECC_CORR_ADDR) }; }
 
 /*
  * Global ECC Correction Register (Table 103)
@@ -953,8 +953,8 @@ macro_rules! G_BCM1480_MC_ECC_CORR_ADDR { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM
 
 pub const S_BCM1480_MC_ECC_CORRECT: u64 = 0;
 pub const M_BCM1480_MC_ECC_CORRECT: u64 = _SB_MAKEMASK(64, S_BCM1480_MC_ECC_CORRECT);
-macro_rules! V_BCM1480_MC_ECC_CORRECT { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_ECC_CORRECT) }; }
-macro_rules! G_BCM1480_MC_ECC_CORRECT { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_ECC_CORRECT, M_BCM1480_MC_ECC_CORRECT) }; }
+macro_rules! V_BCM1480_MC_ECC_CORRECT { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_ECC_CORRECT) }; }
+macro_rules! G_BCM1480_MC_ECC_CORRECT { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_ECC_CORRECT, M_BCM1480_MC_ECC_CORRECT) }; }
 
 /*
  * Global ECC Performance Counters Control Register (Table 104)
@@ -962,8 +962,8 @@ macro_rules! G_BCM1480_MC_ECC_CORRECT { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM14
 
 pub const S_BCM1480_MC_CHANNEL_SELECT: u64 = 0;
 pub const M_BCM1480_MC_CHANNEL_SELECT: u64 = _SB_MAKEMASK(4, S_BCM1480_MC_CHANNEL_SELECT);
-macro_rules! V_BCM1480_MC_CHANNEL_SELECT { ( $x:expr ) => { _SB_MAKEVALUE(x, S_BCM1480_MC_CHANNEL_SELECT) }; }
-macro_rules! G_BCM1480_MC_CHANNEL_SELECT { ( $x:expr ) => { _SB_GETVALUE(x, S_BCM1480_MC_CHANNEL_SELECT, M_BCM1480_MC_CHANNEL_SELECT) }; }
+macro_rules! V_BCM1480_MC_CHANNEL_SELECT { ($x:expr ) => { _SB_MAKEVALUE($x, S_BCM1480_MC_CHANNEL_SELECT) }; }
+macro_rules! G_BCM1480_MC_CHANNEL_SELECT { ($x:expr ) => { _SB_GETVALUE($x, S_BCM1480_MC_CHANNEL_SELECT, M_BCM1480_MC_CHANNEL_SELECT) }; }
 pub const K_BCM1480_MC_CHANNEL_SELECT_0: u64 = 0x1;
 pub const K_BCM1480_MC_CHANNEL_SELECT_1: u64 = 0x2;
 pub const K_BCM1480_MC_CHANNEL_SELECT_2: u64 = 0x4;

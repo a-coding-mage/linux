@@ -22,7 +22,7 @@ extern "C" {
 /* KCFI_REFERENCE(__memset) and KCFI_REFERENCE(__memmove). */
 
 /* Under !CONFIG_KMSAN, the architecture supplies these assembly routines. */
-#[cfg(all(feature = "__KERNEL__", not(feature = "CONFIG_KMSAN")))]
+#[cfg(all(feature = "__KERNEL__", not(CONFIG_KMSAN)))]
 #[inline]
 pub unsafe fn memset16(s: *mut u16, v: u16, n: usize) -> *mut c_void {
     let s0 = s;
@@ -30,7 +30,7 @@ pub unsafe fn memset16(s: *mut u16, v: u16, n: usize) -> *mut c_void {
     s0 as *mut c_void
 }
 
-#[cfg(all(feature = "__KERNEL__", not(feature = "CONFIG_KMSAN")))]
+#[cfg(all(feature = "__KERNEL__", not(CONFIG_KMSAN)))]
 #[inline]
 pub unsafe fn memset32(s: *mut u32, v: u32, n: usize) -> *mut c_void {
     let s0 = s;
@@ -38,7 +38,7 @@ pub unsafe fn memset32(s: *mut u32, v: u32, n: usize) -> *mut c_void {
     s0 as *mut c_void
 }
 
-#[cfg(all(feature = "__KERNEL__", not(feature = "CONFIG_KMSAN")))]
+#[cfg(all(feature = "__KERNEL__", not(CONFIG_KMSAN)))]
 #[inline]
 pub unsafe fn memset64(s: *mut u64, v: u64, n: usize) -> *mut c_void {
     let s0 = s;
@@ -52,7 +52,7 @@ extern "C" {
 }
 
 /* CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE provides the following interface. */
-#[cfg(all(feature = "__KERNEL__", feature = "CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE"))]
+#[cfg(all(feature = "__KERNEL__", CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE))]
 #[inline(always)]
 pub unsafe fn memcpy_flushcache(dst: *mut c_void, src: *const c_void, cnt: usize) {
     match cnt {

@@ -41,7 +41,7 @@ unsafe fn find_acceptable_alias(
     let mut toput: *mut dentry = core::ptr::null_mut();
     let mut dentry: *mut dentry;
     spin_lock(&mut (*inode).i_lock);
-    for_each_alias!(dentry, inode) {
+    for_each_alias!(dentry, inode, {
         if dget_alias_ilocked(dentry).is_null() { continue; }
         spin_unlock(&mut (*inode).i_lock);
         dput(toput);
@@ -51,7 +51,7 @@ unsafe fn find_acceptable_alias(
         }
         spin_lock(&mut (*inode).i_lock);
         toput = dentry;
-    }
+    });
     spin_unlock(&mut (*inode).i_lock);
     dput(toput);
     core::ptr::null_mut()
@@ -164,7 +164,7 @@ unsafe fn get_name(path: *const path, name: *mut i8, child: *mut dentry) -> i32 
 unsafe fn exportfs_encode_ino64_fid(inode: *mut inode, fid: *mut fid, max_len: *mut i32) -> i32 {
     if *max_len < FILEID_INO64_GEN_LEN { *max_len = FILEID_INO64_GEN_LEN; return FILEID_INVALID; }
     (*fid).i64.ino = (*inode).i_ino;
-    (*fid).i64.gen = (*inode).i_generation;
+    (*fid).i64.r#gen = (*inode).i_generation;
     *max_len = FILEID_INO64_GEN_LEN;
     FILEID_INO64_GEN
 }

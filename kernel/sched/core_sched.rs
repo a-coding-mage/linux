@@ -141,6 +141,8 @@ pub unsafe fn sched_core_share_pid(
     let mut p: *mut task_struct;
     let mut grp: *mut pid;
     let mut err: ::core::ffi::c_int = 0;
+    'out: {
+    'out_tasklist: {
 
     if !sched_smt_active() {
         return -ENODEV;
@@ -172,48 +174,48 @@ pub unsafe fn sched_core_share_pid(
     /* Check whether this process may modify the specified process. */
     if !ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS) {
         err = -EPERM;
-        goto out;
+        break 'out;
     }
 
     match cmd {
         PR_SCHED_CORE_GET => {
             if ty != PIDTYPE_PID || uaddr & 7 != 0 {
                 err = -EINVAL;
-                goto out;
+                break 'out;
             }
             cookie = sched_core_clone_cookie(task);
             if cookie != 0 {
                 ptr_to_hashval(cookie as *mut ::core::ffi::c_void, &mut id);
             }
             err = put_user(id, uaddr as *mut u64);
-            goto out;
+            break 'out;
         }
         PR_SCHED_CORE_CREATE => {
             cookie = sched_core_alloc_cookie();
             if cookie == 0 {
                 err = -ENOMEM;
-                goto out;
+                break 'out;
             }
         }
         PR_SCHED_CORE_SHARE_TO => cookie = sched_core_clone_cookie(current),
         PR_SCHED_CORE_SHARE_FROM => {
             if ty != PIDTYPE_PID {
                 err = -EINVAL;
-                goto out;
+                break 'out;
             }
             cookie = sched_core_clone_cookie(task);
             __sched_core_set(current, cookie);
-            goto out;
+            break 'out;
         }
         _ => {
             err = -EINVAL;
-            goto out;
+            break 'out;
         }
     }
 
     if ty == PIDTYPE_PID {
         __sched_core_set(task, cookie);
-        goto out;
+        break 'out;
     }
 
     read_lock(&tasklist_lock);
@@ -222,17 +224,18 @@ pub unsafe fn sched_core_share_pid(
     do_each_pid_thread!(grp, ty, p);
     if !ptrace_may_access(p, PTRACE_MODE_READ_REALCREDS) {
         err = -EPERM;
-        goto out_tasklist;
+        break 'out_tasklist;
     }
     while_each_pid_thread!(grp, ty, p);
 
     do_each_pid_thread!(grp, ty, p);
     __sched_core_set(p, cookie);
     while_each_pid_thread!(grp, ty, p);
-out_tasklist:
+    }
+    
     read_unlock(&tasklist_lock);
-
-out:
+    }
+    
     sched_core_put_cookie(cookie);
     put_task_struct(task);
     err

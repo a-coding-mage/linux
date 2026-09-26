@@ -59,7 +59,7 @@ pub unsafe fn fscache_wait_for_operation(
     }
 }
 
-static unsafe fn fscache_begin_operation(
+unsafe fn fscache_begin_operation(
     cres: *mut netfs_cache_resources,
     cookie: *mut fscache_cookie,
     want_state: fscache_want_state,
@@ -99,7 +99,7 @@ static unsafe fn fscache_begin_operation(
             _ => { spin_unlock!(&mut (*cookie).lock); break; }
         }
         spin_unlock!(&mut (*cookie).lock);
-        trace_fscache_access!((*cookie).debug_id, refcount_read!(&(*cookie).ref),
+        trace_fscache_access!((*cookie).debug_id, refcount_read!(&(*cookie).r#ref),
                               atomic_read!(&(*cookie).n_accesses), fscache_access_io_wait);
         timeo = wait_var_event_timeout!(&mut (*cookie).state,
                                         fscache_cookie_state(cookie) != state, 20 * HZ);
@@ -152,7 +152,7 @@ pub unsafe fn __fscache_clear_page_bits(mapping: *mut address_space, start: loff
     }
 }
 
-static unsafe fn fscache_wreq_done(priv_: *mut c_void, transferred_or_error: ssize_t) {
+unsafe fn fscache_wreq_done(priv_: *mut c_void, transferred_or_error: ssize_t) {
     let wreq = priv_ as *mut fscache_write_request;
     if (*wreq).using_pgpriv2 {
         fscache_clear_page_bits((*wreq).mapping, (*wreq).start, (*wreq).len, (*wreq).set_bits);

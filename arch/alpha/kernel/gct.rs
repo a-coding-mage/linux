@@ -15,7 +15,7 @@ pub unsafe fn gct6_find_nodes(
 
     /* First check the magic number.  */
     if (*node).magic != GCT_NODE_MAGIC {
-        printk(KERN_ERR "GCT Node MAGIC incorrect - GCT invalid\n");
+        printk(c"\x013GCT Node MAGIC incorrect - GCT invalid\n".as_ptr());
         return -EINVAL;
     }
 

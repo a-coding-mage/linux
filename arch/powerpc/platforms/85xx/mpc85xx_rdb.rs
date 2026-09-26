@@ -97,7 +97,7 @@ unsafe extern "C" fn mpc85xx_rdb_setup_arch() {
     mpc85xx_qe_par_io_init();
 
     // CONFIG_UCC_GETH || CONFIG_SERIAL_QE
-    #[cfg(any(feature = "CONFIG_UCC_GETH", feature = "CONFIG_SERIAL_QE"))]
+    #[cfg(any(CONFIG_UCC_GETH, CONFIG_SERIAL_QE))]
     {
         if machine_is(core::ptr::addr_of!(p1025_rdb) as *const c_void) {
             let np = of_find_node_by_name(core::ptr::null_mut(), b"global-utilities\0".as_ptr());

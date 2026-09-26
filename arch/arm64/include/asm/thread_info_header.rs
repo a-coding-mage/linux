@@ -16,14 +16,14 @@ pub struct task_struct;
 #[repr(C)]
 pub struct thread_info {
     pub flags: usize, /* low level flags */
-    #[cfg(feature = "CONFIG_ARM64_SW_TTBR0_PAN")]
+    #[cfg(CONFIG_ARM64_SW_TTBR0_PAN)]
     pub ttbr0: u64, /* saved TTBR0_EL1 */
     pub preempt: thread_info_preempt,
-    #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+    #[cfg(CONFIG_SHADOW_CALL_STACK)]
     pub scs_base: *mut core::ffi::c_void,
-    #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+    #[cfg(CONFIG_SHADOW_CALL_STACK)]
     pub scs_sp: *mut core::ffi::c_void,
-    #[cfg(feature = "CONFIG_ARM64_MPAM")]
+    #[cfg(CONFIG_ARM64_MPAM)]
     pub mpam_partid_pmg: u64,
     pub cpu: u32,
 }
@@ -36,13 +36,13 @@ pub union thread_info_preempt {
 
 #[repr(C)]
 pub struct thread_info_preempt_fields {
-    #[cfg(feature = "CONFIG_CPU_BIG_ENDIAN")]
+    #[cfg(CONFIG_CPU_BIG_ENDIAN)]
     pub need_resched: u32,
-    #[cfg(feature = "CONFIG_CPU_BIG_ENDIAN")]
+    #[cfg(CONFIG_CPU_BIG_ENDIAN)]
     pub count: u32,
-    #[cfg(not(feature = "CONFIG_CPU_BIG_ENDIAN"))]
+    #[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
     pub count: u32,
-    #[cfg(not(feature = "CONFIG_CPU_BIG_ENDIAN"))]
+    #[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
     pub need_resched: u32,
 }
 
@@ -115,9 +115,9 @@ pub const _TIF_SYSCALL_WORK: usize = _TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT |
 #[macro_export]
 macro_rules! INIT_SCS {
     () => {
-        #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+        #[cfg(CONFIG_SHADOW_CALL_STACK)]
         scs_base: init_shadow_call_stack,
-        #[cfg(feature = "CONFIG_SHADOW_CALL_STACK")]
+        #[cfg(CONFIG_SHADOW_CALL_STACK)]
         scs_sp: init_shadow_call_stack,
     };
 }

@@ -41,7 +41,7 @@
 unsafe fn do_calc_lpt_geom(ubifs_info *c)
 {
 	int i, n, bits, per_leb_wastage, max_pnode_cnt;
-	i64 sz, tot_wastage;
+	sz: i64, tot_wastage;
 
 	n = c.main_lebs + c.max_leb_cnt - c.leb_cnt;
 	max_pnode_cnt = DIV_ROUND_UP(n, UBIFS_LPT_FANOUT);
@@ -214,7 +214,7 @@ unsafe fn calc_dflt_lpt_geom(ubifs_info *c, int *main_lebs,
  * @val: value to pack
  * @nrbits: number of bits of value to pack (1-32)
  */
-unsafe fn pack_bits(let ubifs_info *c, u8 **addr, int *pos, u32 val, int nrbits)
+unsafe fn pack_bits(let ubifs_info *c, u8 **addr, int *pos, val: u32, int nrbits)
 {
 	u8 *p  = *addr;
 	int b = *pos;
@@ -332,7 +332,7 @@ u32 ubifs_unpack_bits(let ubifs_info *c, u8 **addr, int *pos, int nrbits)
  * @buf: buffer into which to pack
  * @pnode: pnode to pack
  */
-unsafe fn ubifs_pack_pnode(ubifs_info *c, *mut core::ffi::c_voidbuf,
+unsafe fn ubifs_pack_pnode(ubifs_info *c, buf: *mut core::ffi::c_void,
 		      ubifs_pnode *pnode)
 {
 	u8 *addr = buf + UBIFS_LPT_CRC_BYTES;
@@ -365,7 +365,7 @@ unsafe fn ubifs_pack_pnode(ubifs_info *c, *mut core::ffi::c_voidbuf,
  * @buf: buffer into which to pack
  * @nnode: nnode to pack
  */
-unsafe fn ubifs_pack_nnode(ubifs_info *c, *mut core::ffi::c_voidbuf,
+unsafe fn ubifs_pack_nnode(ubifs_info *c, buf: *mut core::ffi::c_void,
 		      ubifs_nnode *nnode)
 {
 	u8 *addr = buf + UBIFS_LPT_CRC_BYTES;
@@ -397,7 +397,7 @@ unsafe fn ubifs_pack_nnode(ubifs_info *c, *mut core::ffi::c_voidbuf,
  * @buf: buffer into which to pack
  * @ltab: LPT's own lprops table to pack
  */
-unsafe fn ubifs_pack_ltab(ubifs_info *c, *mut core::ffi::c_voidbuf,
+unsafe fn ubifs_pack_ltab(ubifs_info *c, buf: *mut core::ffi::c_void,
 		     ubifs_lpt_lprops *ltab)
 {
 	u8 *addr = buf + UBIFS_LPT_CRC_BYTES;
@@ -422,7 +422,7 @@ unsafe fn ubifs_pack_ltab(ubifs_info *c, *mut core::ffi::c_voidbuf,
  * @buf: buffer into which to pack
  * @lsave: LPT's save table to pack
  */
-unsafe fn ubifs_pack_lsave(ubifs_info *c, *mut core::ffi::c_voidbuf, int *lsave)
+unsafe fn ubifs_pack_lsave(ubifs_info *c, buf: *mut core::ffi::c_void, int *lsave)
 {
 	u8 *addr = buf + UBIFS_LPT_CRC_BYTES;
 	int i, pos = 0;
@@ -594,6 +594,7 @@ unsafe fn calc_pnode_num_from_parent(let ubifs_info *c,
 fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 			  int *lpt_lebs, int *big_lpt, u8 *hash)
 {
+	'out: {
 	int lnum, err = 0, node_sz, iopos, i, j, cnt, len, alen, row;
 	int blnum, boffs, bsz, bcnt;
 	ubifs_pnode *pnode = core::ptr::null_mut();
@@ -627,7 +628,7 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 			     core::mem::size_of::<ubifs_lpt_lprops>());
 	if !pnode || !nnode || !buf || !ltab || !lsave {
 		err = -ENOMEM;
-		goto out;
+		break 'out;
 	}
 
 	ubifs_assert(c, !c.ltab);
@@ -668,7 +669,7 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 	ubifs_pack_pnode(c, p, pnode);
 	err = ubifs_shash_update(c, desc, p, c.pnode_sz);
 	if (err)
-		goto out;
+		break 'out;
 
 	p += c.pnode_sz;
 	len = c.pnode_sz;
@@ -699,14 +700,14 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 			memset(p, 0xff, alen - len);
 			err = ubifs_leb_change(c, lnum++, buf, alen);
 			if (err)
-				goto out;
+				break 'out;
 			p = buf;
 			len = 0;
 		}
 		ubifs_pack_pnode(c, p, pnode);
 		err = ubifs_shash_update(c, desc, p, c.pnode_sz);
 		if (err)
-			goto out;
+			break 'out;
 
 		p += c.pnode_sz;
 		len += c.pnode_sz;
@@ -733,7 +734,7 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 				memset(p, 0xff, alen - len);
 				err = ubifs_leb_change(c, lnum++, buf, alen);
 				if (err)
-					goto out;
+					break 'out;
 				p = buf;
 				len = 0;
 			}
@@ -780,7 +781,7 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 			memset(p, 0xff, alen - len);
 			err = ubifs_leb_change(c, lnum++, buf, alen);
 			if (err)
-				goto out;
+				break 'out;
 			p = buf;
 			len = 0;
 		}
@@ -805,7 +806,7 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 		memset(p, 0xff, alen - len);
 		err = ubifs_leb_change(c, lnum++, buf, alen);
 		if (err)
-			goto out;
+			break 'out;
 		p = buf;
 		len = 0;
 	}
@@ -825,11 +826,11 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 	memset(p, 0xff, alen - len);
 	err = ubifs_leb_change(c, lnum, buf, alen);
 	if (err)
-		goto out;
+		break 'out;
 
 	err = ubifs_shash_final(c, desc, hash);
 	if (err)
-		goto out;
+		break 'out;
 
 	c.nhead_lnum = lnum;
 	c.nhead_offs = ALIGN(len, c.min_io_size);
@@ -852,7 +853,8 @@ fn ubifs_create_dflt_lpt(ubifs_info *c, int *main_lebs, int lpt_first,
 	dbg_lp("LPT ltab is at %d:%d", c.ltab_lnum, c.ltab_offs);
 	if (c.big_lpt)
 		dbg_lp("LPT lsave is at %d:%d", c.lsave_lnum, c.lsave_offs);
-out:
+	}
+	
 	c.ltab = core::ptr::null_mut();
 	kfree(desc);
 	kfree(lsave);
@@ -916,11 +918,11 @@ unsafe fn replace_cats(ubifs_info *c, ubifs_pnode *old_pnode,
  *
  * This function returns %0 on success and a negative error code on failure.
  */
-unsafe fn check_lpt_crc(let ubifs_info *c, *mut core::ffi::c_voidbuf, int len)
+unsafe fn check_lpt_crc(let ubifs_info *c, buf: *mut core::ffi::c_void, int len)
 {
 	int pos  = 0;
 	u8 *addr = buf;
-	u16 crc, calc_crc;
+	crc: u16, calc_crc;
 
 	crc = ubifs_unpack_bits(c, &addr, &pos, UBIFS_LPT_CRC_BITS);
 	calc_crc = crc16(-1, buf + UBIFS_LPT_CRC_BYTES,
@@ -966,7 +968,7 @@ unsafe fn check_lpt_type(const ubifs_info *c, u8 **addr,
  *
  * This function returns %0 on success and a negative error code on failure.
  */
-unsafe fn unpack_pnode(let ubifs_info *c, *mut core::ffi::c_voidbuf,
+unsafe fn unpack_pnode(let ubifs_info *c, buf: *mut core::ffi::c_void,
 			ubifs_pnode *pnode)
 {
 	u8 *addr  = buf + UBIFS_LPT_CRC_BYTES;
@@ -1003,7 +1005,7 @@ unsafe fn unpack_pnode(let ubifs_info *c, *mut core::ffi::c_voidbuf,
  *
  * This function returns %0 on success and a negative error code on failure.
  */
-fn ubifs_unpack_nnode(let ubifs_info *c, *mut core::ffi::c_voidbuf,
+fn ubifs_unpack_nnode(let ubifs_info *c, buf: *mut core::ffi::c_void,
 		       ubifs_nnode *nnode)
 {
 	u8 *addr  = buf + UBIFS_LPT_CRC_BYTES;
@@ -1036,7 +1038,7 @@ fn ubifs_unpack_nnode(let ubifs_info *c, *mut core::ffi::c_voidbuf,
  *
  * This function returns %0 on success and a negative error code on failure.
  */
-unsafe fn unpack_ltab(let ubifs_info *c, *mut core::ffi::c_voidbuf)
+unsafe fn unpack_ltab(let ubifs_info *c, buf: *mut core::ffi::c_void)
 {
 	u8 *addr  = buf + UBIFS_LPT_CRC_BYTES;
 	int i, pos = 0, err;
@@ -1068,7 +1070,7 @@ unsafe fn unpack_ltab(let ubifs_info *c, *mut core::ffi::c_voidbuf)
  *
  * This function returns %0 on success and a negative error code on failure.
  */
-unsafe fn unpack_lsave(let ubifs_info *c, *mut core::ffi::c_voidbuf)
+unsafe fn unpack_lsave(let ubifs_info *c, buf: *mut core::ffi::c_void)
 {
 	u8 *addr  = buf + UBIFS_LPT_CRC_BYTES;
 	int i, pos = 0, err;
@@ -1197,6 +1199,7 @@ unsafe fn set_pnode_lnum(const ubifs_info *c,
  */
 fn ubifs_read_nnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 {
+	'out: {
 	ubifs_nbranch *branch = core::ptr::null_mut();
 	ubifs_nnode *nnode = core::ptr::null_mut();
 	*mut core::ffi::c_voidbuf = c.lpt_nod_buf;
@@ -1213,7 +1216,7 @@ fn ubifs_read_nnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 	nnode = kzalloc_obj(ubifs_nnode, GFP_NOFS);
 	if !nnode {
 		err = -ENOMEM;
-		goto out;
+		break 'out;
 	}
 	if lnum == 0 {
 		/*
@@ -1227,14 +1230,14 @@ fn ubifs_read_nnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 	} else {
 		err = ubifs_leb_read(c, lnum, buf, offs, c.nnode_sz, 1);
 		if (err)
-			goto out;
+			break 'out;
 		err = ubifs_unpack_nnode(c, buf, nnode);
 		if (err)
-			goto out;
+			break 'out;
 	}
 	err = validate_nnode(c, nnode, parent, iip);
 	if (err)
-		goto out;
+		break 'out;
 	if (!c.big_lpt)
 		nnode.num = calc_nnode_num_from_parent(c, parent, iip);
 	if parent {
@@ -1247,8 +1250,8 @@ fn ubifs_read_nnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 	nnode.parent = parent;
 	nnode.iip = iip;
 	return 0;
-
-out:
+	}
+	
 	ubifs_err(c, "error %d reading nnode at %d:%d", err, lnum, offs);
 	dump_stack();
 	kfree(nnode);
@@ -1265,6 +1268,7 @@ out:
  */
 unsafe fn read_pnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 {
+	'out: {
 	ubifs_nbranch *branch;
 	ubifs_pnode *pnode = core::ptr::null_mut();
 	*mut core::ffi::c_voidbuf = c.lpt_nod_buf;
@@ -1296,14 +1300,14 @@ unsafe fn read_pnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 	} else {
 		err = ubifs_leb_read(c, lnum, buf, offs, c.pnode_sz, 1);
 		if (err)
-			goto out;
+			break 'out;
 		err = unpack_pnode(c, buf, pnode);
 		if (err)
-			goto out;
+			break 'out;
 	}
 	err = validate_pnode(c, pnode, parent, iip);
 	if (err)
-		goto out;
+		break 'out;
 	if (!c.big_lpt)
 		pnode.num = calc_pnode_num_from_parent(c, parent, iip);
 	branch.pnode = pnode;
@@ -1312,8 +1316,8 @@ unsafe fn read_pnode(ubifs_info *c, ubifs_nnode *parent, int iip)
 	set_pnode_lnum(c, pnode);
 	c.pnodes_have += 1;
 	return 0;
-
-out:
+	}
+	
 	ubifs_err(c, "error %d reading pnode at %d:%d", err, lnum, offs);
 	ubifs_dump_pnode(c, pnode, parent, iip);
 	dump_stack();
@@ -1330,6 +1334,7 @@ out:
  */
 unsafe fn read_ltab(ubifs_info *c)
 {
+	'out: {
 	int err;
 	*mut core::ffi::c_voidbuf;
 
@@ -1338,9 +1343,10 @@ unsafe fn read_ltab(ubifs_info *c)
 		return -ENOMEM;
 	err = ubifs_leb_read(c, c.ltab_lnum, buf, c.ltab_offs, c.ltab_sz, 1);
 	if (err)
-		goto out;
+		break 'out;
 	err = unpack_ltab(c, buf);
-out:
+	}
+	
 	vfree(buf);
 	return err;
 }
@@ -1353,6 +1359,7 @@ out:
  */
 unsafe fn read_lsave(ubifs_info *c)
 {
+	'out: {
 	int err, i;
 	*mut core::ffi::c_voidbuf;
 
@@ -1362,10 +1369,10 @@ unsafe fn read_lsave(ubifs_info *c)
 	err = ubifs_leb_read(c, c.lsave_lnum, buf, c.lsave_offs,
 			     c.lsave_sz, 1);
 	if (err)
-		goto out;
+		break 'out;
 	err = unpack_lsave(c, buf);
 	if (err)
-		goto out;
+		break 'out;
 	for (i = 0;  i < c.lsave_cnt;  i++) {
 		int lnum = c.lsave[i];
 		ubifs_lprops *lprops;
@@ -1379,10 +1386,11 @@ unsafe fn read_lsave(ubifs_info *c)
 		lprops = ubifs_lpt_lookup(c, lnum);
 		if (IS_ERR(lprops)) {
 			err = PTR_ERR(lprops);
-			goto out;
+			break 'out;
 		}
 	}
-out:
+	}
+	
 	vfree(buf);
 	return err;
 }
@@ -1647,6 +1655,7 @@ ubifs_lprops *ubifs_lpt_lookup_dirty(ubifs_info *c, int lnum)
  */
 fn ubifs_lpt_calc_hash(ubifs_info *c, u8 *hash)
 {
+	'out: {
 	ubifs_nnode *nnode, *nn;
 	ubifs_cnode *cnode;
 	shash_desc *desc;
@@ -1671,7 +1680,7 @@ fn ubifs_lpt_calc_hash(ubifs_info *c, u8 *hash)
 	buf = kmalloc(bufsiz, GFP_NOFS);
 	if !buf {
 		err = -ENOMEM;
-		goto out;
+		break 'out;
 	}
 
 	cnode = (ubifs_cnode *)c.nroot;
@@ -1690,7 +1699,7 @@ fn ubifs_lpt_calc_hash(ubifs_info *c, u8 *hash)
 				nnode = ubifs_get_nnode(c, nn, iip);
 				if (IS_ERR(nnode)) {
 					err = PTR_ERR(nnode);
-					goto out;
+					break 'out;
 				}
 
 				/* Go down */
@@ -1709,14 +1718,14 @@ fn ubifs_lpt_calc_hash(ubifs_info *c, u8 *hash)
 				pnode = ubifs_get_pnode(c, nn, i);
 				if (IS_ERR(pnode)) {
 					err = PTR_ERR(pnode);
-					goto out;
+					break 'out;
 				}
 
 				ubifs_pack_pnode(c, buf, pnode);
 				err = ubifs_shash_update(c, desc, buf,
 							 c.pnode_sz);
 				if (err)
-					goto out;
+					break 'out;
 			}
 		}
 		/* Go up and to the right */
@@ -1725,7 +1734,8 @@ fn ubifs_lpt_calc_hash(ubifs_info *c, u8 *hash)
 	}
 
 	err = ubifs_shash_final(c, desc, hash);
-out:
+	}
+	
 	kfree(desc);
 	kfree(buf);
 
@@ -1883,23 +1893,24 @@ unsafe fn lpt_init_wr(ubifs_info *c)
  */
 fn ubifs_lpt_init(ubifs_info *c, int rd, int wr)
 {
+	'out_err: {
 	int err;
 
 	if rd {
 		err = lpt_init_rd(c);
 		if (err)
-			goto out_err;
+			break 'out_err;
 	}
 
 	if wr {
 		err = lpt_init_wr(c);
 		if (err)
-			goto out_err;
+			break 'out_err;
 	}
 
 	return 0;
-
-out_err:
+	}
+	
 	if (wr)
 		ubifs_lpt_free(c, 1);
 	if (rd)
@@ -1913,7 +1924,7 @@ out_err:
  * @pnode: where to keep a pnode
  * @cnode: where to keep a cnode
  * @in_tree: is the node in the tree in memory
- * @ptr: union of node pointers
+ * @ptr: of node pointers
  * @ptr.nnode: pointer to the nnode (if it is an nnode) which may be here or in
  * the tree
  * @ptr.pnode: ditto for pnode
@@ -2072,8 +2083,9 @@ static ubifs_pnode *scan_get_pnode(ubifs_info *c,
  * This function returns %0 on success and a negative error code on failure.
  */
 fn ubifs_lpt_scan_nolock(ubifs_info *c, int start_lnum, int end_lnum,
-			  ubifs_lpt_scan_callback scan_cb, *mut core::ffi::c_voiddata)
+			  ubifs_lpt_scan_callback scan_cb, data: *mut core::ffi::c_void)
 {
+	'out: {
 	int err = 0, i, h, iip, shft;
 	ubifs_nnode *nnode;
 	ubifs_pnode *pnode;
@@ -2111,14 +2123,14 @@ again:
 		nnode = scan_get_nnode(c, path + h, nnode, iip);
 		if (IS_ERR(nnode)) {
 			err = PTR_ERR(nnode);
-			goto out;
+			break 'out;
 		}
 	}
 	iip = ((i >> shft) & (UBIFS_LPT_FANOUT - 1));
 	pnode = scan_get_pnode(c, path + h, nnode, iip);
 	if (IS_ERR(pnode)) {
 		err = PTR_ERR(pnode);
-		goto out;
+		break 'out;
 	}
 	iip = (i & (UBIFS_LPT_FANOUT - 1));
 
@@ -2130,7 +2142,7 @@ again:
 		ret = scan_cb(c, lprops, path[h].in_tree, data);
 		if ret < 0 {
 			err = ret;
-			goto out;
+			break 'out;
 		}
 		if ret & LPT_SCAN_ADD {
 			/* Add all the nodes in path to the tree in memory */
@@ -2143,7 +2155,7 @@ again:
 				nnode = kmemdup(&path[h].nnode, sz, GFP_NOFS);
 				if !nnode {
 					err = -ENOMEM;
-					goto out;
+					break 'out;
 				}
 				parent = nnode.parent;
 				parent.nbranch[nnode.iip].nnode = nnode;
@@ -2160,7 +2172,7 @@ again:
 				pnode = kmemdup(&path[h].pnode, sz, GFP_NOFS);
 				if !pnode {
 					err = -ENOMEM;
-					goto out;
+					break 'out;
 				}
 				parent = pnode.parent;
 				parent.nbranch[pnode.iip].pnode = pnode;
@@ -2172,10 +2184,10 @@ again:
 			err = dbg_check_lpt_nodes(c, (ubifs_cnode *)
 						  c.nroot, 0, 0);
 			if (err)
-				goto out;
+				break 'out;
 			err = dbg_check_cats(c);
 			if (err)
-				goto out;
+				break 'out;
 		}
 		if ret & LPT_SCAN_STOP {
 			err = 0;
@@ -2188,7 +2200,7 @@ again:
 			 * looking for
 			 */
 			err = -ENOSPC;
-			goto out;
+			break 'out;
 		}
 		if lnum + 1 >= c.leb_cnt {
 			/* Wrap-around to the beginning */
@@ -2218,18 +2230,19 @@ again:
 			nnode = scan_get_nnode(c, path + h, nnode, iip);
 			if (IS_ERR(nnode)) {
 				err = PTR_ERR(nnode);
-				goto out;
+				break 'out;
 			}
 			iip = 0;
 		}
 		pnode = scan_get_pnode(c, path + h, nnode, iip);
 		if (IS_ERR(pnode)) {
 			err = PTR_ERR(pnode);
-			goto out;
+			break 'out;
 		}
 		iip = 0;
 	}
-out:
+	}
+	
 	kfree(path);
 	return err;
 }

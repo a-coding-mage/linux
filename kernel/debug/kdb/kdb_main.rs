@@ -15,10 +15,10 @@ use core::{ffi::{c_char, c_int, c_uint, c_ulong, c_void}, ptr};
 pub type kdb_cmdflags_t = c_uint; pub type kdb_reason_t = c_int; pub type kdb_dbtrap_t = c_int; pub type u8 = u8; pub type u16 = u16; pub type u32 = u32; pub type u64 = u64;
 
 extern "C" {
-    fn security_locked_down(x: c_int) -> bool; fn kstrtoul(*const c_char,c_uint,*mut c_ulong)->c_int; fn kstrtou64(*const c_char,c_uint,*mut u64)->c_int; fn kstrtouint(*const c_char,c_uint,*mut c_uint)->c_int; fn kstrtoint(*const c_char,c_uint,*mut c_int)->c_int; fn kstrtol(*const c_char,c_uint,*mut i64)->c_int;
-    fn kdb_printf(*const c_char,...)->c_int; fn kdbgetsymval(*const c_char,*mut kdb_symtab_t)->c_int; fn kdbnearsym(c_ulong,*mut kdb_symtab_t)->c_int; fn kdb_symbol_print(c_ulong,*const kdb_symtab_t,c_int); fn kdb_parse(*const c_char)->c_int;
-    fn kmalloc(usize,c_uint)->*mut c_char; fn kfree_const(*const c_char); fn kfree(*mut c_void); fn emergency_restart()->!; fn cpu_relax(); fn show_regs(*mut pt_regs); fn instruction_pointer(*mut pt_regs)->c_ulong;
-    fn kdb_strdup(*const c_char,c_uint)->*mut c_char; fn kdb_strdup_dequote(*const c_char,c_uint)->*mut c_char; fn in_dbg_master()->bool; fn kdb_getstr(*mut c_char,c_int,*const c_char)->*mut c_char;
+    fn security_locked_down(x: c_int) -> bool; fn kstrtoul(_: *const c_char,_: c_uint,_: *mut c_ulong)->c_int; fn kstrtou64(_: *const c_char,_: c_uint,_: *mut u64)->c_int; fn kstrtouint(_: *const c_char,_: c_uint,_: *mut c_uint)->c_int; fn kstrtoint(_: *const c_char,_: c_uint,_: *mut c_int)->c_int; fn kstrtol(_: *const c_char,_: c_uint,_: *mut i64)->c_int;
+    fn kdb_printf(_: *const c_char,...)->c_int; fn kdbgetsymval(_: *const c_char,_: *mut kdb_symtab_t)->c_int; fn kdbnearsym(_: c_ulong,_: *mut kdb_symtab_t)->c_int; fn kdb_symbol_print(_: c_ulong,_: *const kdb_symtab_t,_: c_int); fn kdb_parse(_: *const c_char)->c_int;
+    fn kmalloc(_: usize,_: c_uint)->*mut c_char; fn kfree_const(_: *const c_char); fn kfree(_: *mut c_void); fn emergency_restart()->!; fn cpu_relax(); fn show_regs(_: *mut pt_regs); fn instruction_pointer(_: *mut pt_regs)->c_ulong;
+    fn kdb_strdup(_: *const c_char,_: c_uint)->*mut c_char; fn kdb_strdup_dequote(_: *const c_char,_: c_uint)->*mut c_char; fn in_dbg_master()->bool; fn kdb_getstr(_: *mut c_char,_: c_int,_: *const c_char)->*mut c_char;
 }
 
 pub const KDB_GREP_STRLEN: usize = 256;

@@ -32,8 +32,9 @@ extern "C" {
 
 const MAX_PROP_LEN: usize = 4096;
 const MAX_ADDR_CELLS: usize = 4;
-const MHZ: fn(u32) -> u32 = |x| (x.wrapping_add(500_000)) / 1_000_000;
-
+const fn MHZ(x: u32) -> u32 {
+    (x.wrapping_add(500_000)) / 1_000_000
+}
 pub unsafe fn dt_fixup_memory(start: u64, size: u64) {
     let root = finddevice(b"/\0".as_ptr() as *const c_char);
     let mut naddr: i32 = 0;

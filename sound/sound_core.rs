@@ -8,18 +8,18 @@
 
 // First, the common part.
 
-#[cfg(feature = "CONFIG_SOUND_OSS_CORE")]
+#[cfg(CONFIG_SOUND_OSS_CORE)]
 extern "C" {
     fn init_oss_soundcore() -> i32;
     fn cleanup_oss_soundcore();
 }
 
-#[cfg(not(feature = "CONFIG_SOUND_OSS_CORE"))]
+#[cfg(not(CONFIG_SOUND_OSS_CORE))]
 unsafe extern "C" fn init_oss_soundcore() -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SOUND_OSS_CORE"))]
+#[cfg(not(CONFIG_SOUND_OSS_CORE))]
 unsafe extern "C" fn cleanup_oss_soundcore() {}
 
 // MODULE_DESCRIPTION("Core sound module");
@@ -99,7 +99,7 @@ unsafe extern "C" fn cleanup_soundcore() {
 // subsys_initcall(init_soundcore);
 // module_exit(cleanup_soundcore);
 
-#[cfg(feature = "CONFIG_SOUND_OSS_CORE")]
+#[cfg(CONFIG_SOUND_OSS_CORE)]
 mod oss_core {
     use std::ffi::CStr;
     use std::ptr;

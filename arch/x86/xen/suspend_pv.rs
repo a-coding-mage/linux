@@ -79,7 +79,7 @@ pub unsafe fn xen_pv_post_suspend(suspend_cancelled: i32) {
             pfn_to_mfn((*xen_start_info).console.domU.mfn);
     } else {
         // CONFIG_SMP conditional from the C build configuration.
-        #[cfg(feature = "CONFIG_SMP")]
+        #[cfg(CONFIG_SMP)]
         {
             assert!(!xen_cpu_initialized_map.is_null());
             cpumask_copy(xen_cpu_initialized_map, cpu_online_mask);

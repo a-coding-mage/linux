@@ -19,7 +19,7 @@ pub unsafe fn arch_hugetlb_valid_size(size: usize) -> bool {
     }
 }
 
-#[cfg(all(target_pointer_width = "64", feature = "CONFIG_CONTIG_ALLOC"))]
+#[cfg(all(target_pointer_width = "64", CONFIG_CONTIG_ALLOC))]
 unsafe fn gigantic_pages_init() -> i32 {
     /* With compaction or CMA we can allocate gigantic pages at runtime */
     if boot_cpu_has(X86_FEATURE_GBPAGES) {

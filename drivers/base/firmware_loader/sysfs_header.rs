@@ -3,17 +3,17 @@
 // C dependencies: <linux/device.h> and "firmware.h".
 // MODULE_IMPORT_NS("FIRMWARE_LOADER_PRIVATE");
 
-#[cfg(feature = "CONFIG_FW_LOADER_SYSFS")]
+#[cfg(CONFIG_FW_LOADER_SYSFS)]
 extern "C" {
     pub static mut fw_fallback_config: firmware_fallback_config;
     pub static mut dev_attr_loading: device_attribute;
 }
 
-#[cfg(not(feature = "CONFIG_FW_LOADER_SYSFS"))]
+#[cfg(not(CONFIG_FW_LOADER_SYSFS))]
 #[inline]
 pub fn register_sysfs_loader() -> ::core::ffi::c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_FW_LOADER_SYSFS"))]
+#[cfg(not(CONFIG_FW_LOADER_SYSFS))]
 #[inline]
 pub fn unregister_sysfs_loader() {}
 
@@ -40,32 +40,32 @@ pub unsafe fn __fw_fallback_set_timeout(timeout: ::core::ffi::c_int) {
 }
 
 // CONFIG_FW_LOADER_SYSFS
-#[cfg(all(feature = "CONFIG_FW_LOADER_USER_HELPER", feature = "CONFIG_SYSCTL"))]
+#[cfg(all(CONFIG_FW_LOADER_USER_HELPER, CONFIG_SYSCTL))]
 extern "C" {
     pub fn register_sysfs_loader() -> ::core::ffi::c_int;
     pub fn unregister_sysfs_loader();
 }
 
-#[cfg(not(all(feature = "CONFIG_FW_LOADER_USER_HELPER", feature = "CONFIG_SYSCTL")))]
+#[cfg(not(all(CONFIG_FW_LOADER_USER_HELPER, CONFIG_SYSCTL)))]
 #[inline]
 pub fn register_firmware_config_sysctl() -> ::core::ffi::c_int { 0 }
 
-#[cfg(not(all(feature = "CONFIG_FW_LOADER_USER_HELPER", feature = "CONFIG_SYSCTL")))]
+#[cfg(not(all(CONFIG_FW_LOADER_USER_HELPER, CONFIG_SYSCTL)))]
 #[inline]
 pub fn unregister_firmware_config_sysctl() {}
 
 // CONFIG_FW_LOADER_USER_HELPER && CONFIG_SYSCTL
-#[cfg(feature = "CONFIG_FW_UPLOAD")]
+#[cfg(CONFIG_FW_UPLOAD)]
 extern "C" {
     pub fn register_firmware_config_sysctl() -> ::core::ffi::c_int;
     pub fn unregister_firmware_config_sysctl();
 }
 
-#[cfg(not(feature = "CONFIG_FW_UPLOAD"))]
+#[cfg(not(CONFIG_FW_UPLOAD))]
 #[inline]
 pub fn fw_upload_start(_fw_sysfs: *mut fw_sysfs) -> ::core::ffi::c_int { 0 }
 
-#[cfg(not(feature = "CONFIG_FW_UPLOAD"))]
+#[cfg(not(CONFIG_FW_UPLOAD))]
 #[inline]
 pub fn fw_upload_free(_fw_sysfs: *mut fw_sysfs) {}
 

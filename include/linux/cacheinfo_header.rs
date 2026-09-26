@@ -108,9 +108,9 @@ pub const fn use_arch_cache_info() -> bool { true }
 pub const fn use_arch_cache_info() -> bool { false }
 
 // Build-time configuration: CONFIG_ARCH_HAS_CPU_CACHE_ALIASING.
-#[cfg(not(feature = "CONFIG_ARCH_HAS_CPU_CACHE_ALIASING"))]
+#[cfg(not(CONFIG_ARCH_HAS_CPU_CACHE_ALIASING))]
 pub const fn cpu_dcache_is_aliasing() -> bool { false }
-#[cfg(not(feature = "CONFIG_ARCH_HAS_CPU_CACHE_ALIASING"))]
+#[cfg(not(CONFIG_ARCH_HAS_CPU_CACHE_ALIASING))]
 pub const fn cpu_icache_is_aliasing() -> bool { cpu_dcache_is_aliasing() }
 
 // External types and lock assertion supplied by other headers.

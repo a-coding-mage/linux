@@ -60,7 +60,7 @@ unsafe fn tipc_init_net(net: *mut net) -> i32 {
     spin_lock_init(&mut (*tn).node_list_lock);
 
     // CONFIG_TIPC_CRYPTO controls this build-time conditional section.
-    #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+    #[cfg(CONFIG_TIPC_CRYPTO)]
     {
         err = tipc_crypto_start(&mut (*tn).crypto_tx, net, core::ptr::null_mut());
         if err != 0 {
@@ -69,7 +69,7 @@ unsafe fn tipc_init_net(net: *mut net) -> i32 {
     }
     err = tipc_sk_rht_init(net);
     if err != 0 {
-        #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+        #[cfg(CONFIG_TIPC_CRYPTO)]
         tipc_crypto_stop(&mut (*tn).crypto_tx);
         return err;
     }
@@ -77,7 +77,7 @@ unsafe fn tipc_init_net(net: *mut net) -> i32 {
     err = tipc_nametbl_init(net);
     if err != 0 {
         tipc_sk_rht_destroy(net);
-        #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+        #[cfg(CONFIG_TIPC_CRYPTO)]
         tipc_crypto_stop(&mut (*tn).crypto_tx);
         return err;
     }
@@ -86,7 +86,7 @@ unsafe fn tipc_init_net(net: *mut net) -> i32 {
     if err != 0 {
         tipc_nametbl_stop(net);
         tipc_sk_rht_destroy(net);
-        #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+        #[cfg(CONFIG_TIPC_CRYPTO)]
         tipc_crypto_stop(&mut (*tn).crypto_tx);
         return err;
     }
@@ -95,7 +95,7 @@ unsafe fn tipc_init_net(net: *mut net) -> i32 {
     if err != 0 {
         tipc_nametbl_stop(net);
         tipc_sk_rht_destroy(net);
-        #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+        #[cfg(CONFIG_TIPC_CRYPTO)]
         tipc_crypto_stop(&mut (*tn).crypto_tx);
         return err;
     }
@@ -113,7 +113,7 @@ unsafe fn tipc_exit_net(net: *mut net) {
     tipc_bcast_stop(net);
     tipc_nametbl_stop(net);
     tipc_sk_rht_destroy(net);
-    #[cfg(feature = "CONFIG_TIPC_CRYPTO")]
+    #[cfg(CONFIG_TIPC_CRYPTO)]
     tipc_crypto_stop(&mut (*tipc_net(net)).crypto_tx);
     wait_var_event(&mut (*tn).wq_count, atomic_read(&(*tn).wq_count) == 0);
 }

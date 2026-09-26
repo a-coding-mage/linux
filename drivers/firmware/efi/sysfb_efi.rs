@@ -78,7 +78,7 @@ unsafe fn choose_value<T: Copy + PartialEq + From<u8>>(dmivalue: T, fwvalue: T, 
     if flags & field != 0 || fwvalue == T::from(0) { dmivalue } else { fwvalue }
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 pub unsafe fn efifb_set_system(si: *mut screen_info, id: *const dmi_system_id) -> i32 {
     let info = (*id).driver_data as *const EfifbDmiInfo;
     if (*info).base == 0 && (*info).height == 0 && (*info).width == 0 && (*info).stride == 0 { return 0; }
@@ -139,13 +139,13 @@ pub unsafe fn efifb_add_links(fwnode: *mut fwnode_handle) -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 pub unsafe fn sysfb_apply_efi_quirks(si: *mut screen_info) {
     if (*si).orig_video_isVGA != VIDEO_TYPE_EFI || (*si).capabilities & VIDEO_CAPABILITY_SKIP_QUIRKS == 0 { dmi_check_system(efifb_dmi_system_table.as_ptr()); }
     if (*si).orig_video_isVGA == VIDEO_TYPE_EFI { dmi_check_system(efifb_dmi_swap_width_height.as_ptr()); }
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 pub unsafe fn sysfb_set_efifb_fwnode(si: *const screen_info, pd: *mut platform_device) {
     if (*si).orig_video_isVGA == VIDEO_TYPE_EFI && IS_ENABLED_CONFIG_PCI { fwnode_init(&mut efifb_fwnode, &efifb_fwnode_ops); (*pd).dev.fwnode = &mut efifb_fwnode; }
 }

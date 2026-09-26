@@ -12,7 +12,7 @@ macro_rules! unsafe_atomic_op1 {
                 "1:",
                 "{insn}",
                 "2:",
-                insn = const $insn,
+                $insn = const $insn,
                 out(reg) oldval,
                 out(reg) ret,
                 inout(reg) $oparg => _,
@@ -43,9 +43,9 @@ macro_rules! unsafe_atomic_op2 {
                 oldval = inout("eax") oldval,
                 ret = lateout(reg) ret,
                 tem = lateout(reg) tem,
-                uaddr = in(reg) $uaddr,
+                $uaddr = in(reg) $uaddr,
                 in(reg) $oparg,
-                insn = const $insn,
+                $insn = const $insn,
             );
         }
         if ret != 0 {

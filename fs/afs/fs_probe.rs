@@ -91,9 +91,9 @@ pub unsafe fn afs_fileserver_probe_result(call: *mut afs_call) {
     WRITE_ONCE!((*addr).last_error, ret);
     spin_lock(&mut (*server).probe_lock);
     match ret {
-        0 => { (*estate).error = 0; }
-        -ECONNABORTED => { if !test_bit(AFS_ESTATE_RESPONDED, &(*estate).flags) { (*estate).abort_code = (*call).abort_code; (*estate).error = ret; } }
-        -ENOMEM | -ENONET => { clear_bit(index, &mut (*estate).responsive_set); set_bit(AFS_ESTATE_LOCAL_FAILURE, &mut (*estate).flags); trace_afs_io_error((*call).debug_id, ret, afs_io_error_fs_probe_fail); spin_unlock(&mut (*server).probe_lock); trace_afs_fs_probe(server, false, estate, index, (*call).error, (*call).abort_code, rtt_us); return afs_done_one_fs_probe((*call).net, server, estate); }
+        case if case == 0 => { (*estate).error = 0; }
+        case if case == -ECONNABORTED => { if !test_bit(AFS_ESTATE_RESPONDED, &(*estate).flags) { (*estate).abort_code = (*call).abort_code; (*estate).error = ret; } }
+        case if case == -ENOMEM || case == -ENONET => { clear_bit(index, &mut (*estate).responsive_set); set_bit(AFS_ESTATE_LOCAL_FAILURE, &mut (*estate).flags); trace_afs_io_error((*call).debug_id, ret, afs_io_error_fs_probe_fail); spin_unlock(&mut (*server).probe_lock); trace_afs_fs_probe(server, false, estate, index, (*call).error, (*call).abort_code, rtt_us); return afs_done_one_fs_probe((*call).net, server, estate); }
         _ => { clear_bit(index, &mut (*estate).responsive_set); set_bit(index, &mut (*estate).failed_set); if !test_bit(AFS_ESTATE_RESPONDED, &(*estate).flags) && ((*estate).error == 0 || (*estate).error == -ETIMEDOUT || (*estate).error == -ETIME) { (*estate).error = ret; } trace_afs_io_error((*call).debug_id, ret, afs_io_error_fs_probe_fail); spin_unlock(&mut (*server).probe_lock); trace_afs_fs_probe(server, false, estate, index, (*call).error, (*call).abort_code, rtt_us); return afs_done_one_fs_probe((*call).net, server, estate); }
     }
     clear_bit(index, &mut (*estate).failed_set);
@@ -122,7 +122,7 @@ pub unsafe fn afs_wait_for_fs_probes(op: *mut afs_operation, states: *mut afs_se
 pub unsafe fn afs_fs_probe_timer(timer: *mut timer_list) { let net=container_of!(timer,afs_net,fs_probe_timer); if !(*net).live || !queue_work(afs_wq,&mut (*net).fs_prober){afs_dec_servers_outstanding(net);} }
 pub unsafe fn afs_probe_fileserver(net: *mut afs_net, server: *mut afs_server) { write_seqlock(&mut (*net).fs_lock); if !list_empty(&(*server).probe_link){return afs_dispatch_fs_probe(net,server);} write_sequnlock(&mut (*net).fs_lock); }
 pub unsafe fn afs_fs_probe_dispatcher(work: *mut work_struct) { let net=container_of!(work,afs_net,fs_prober); if !(*net).live {afs_dec_servers_outstanding(net);return;} if list_empty(&(*net).fs_probe_fast)&&list_empty(&(*net).fs_probe_slow){afs_dec_servers_outstanding(net);return;} write_seqlock(&mut (*net).fs_lock); if !list_empty(&(*net).fs_probe_fast){let s=list_first_entry!(&(*net).fs_probe_fast,afs_server,probe_link); afs_dispatch_fs_probe(net,s);} else if !list_empty(&(*net).fs_probe_slow){let s=list_first_entry!(&(*net).fs_probe_slow,afs_server,probe_link); afs_dispatch_fs_probe(net,s);} else {write_sequnlock(&mut (*net).fs_lock);afs_dec_servers_outstanding(net);} }
-pub unsafe fn afs_wait_for_one_fs_probe(server:*mut afs_server,estate:*mut afs_endpoint_state,exclude:::core::ffi::c_ulong,is_intr:bool)->::core::ffi::c_int{let _=(server,estate,exclude,is_intr); -EDESTADDRREQ}
+pub unsafe fn afs_wait_for_one_fs_probe(server:*mut afs_server,estate:*mut afs_endpoint_state,exclude: ::core::ffi::c_ulong,is_intr:bool)->::core::ffi::c_int{let _=(server,estate,exclude,is_intr); -EDESTADDRREQ}
 pub unsafe fn afs_fs_probe_cleanup(net:*mut afs_net){if timer_delete_sync(&mut (*net).fs_probe_timer){afs_dec_servers_outstanding(net);}}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

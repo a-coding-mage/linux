@@ -31,11 +31,11 @@ extern "C" { fn hci_uart_external(); }
 
 /* External kernel APIs and constants are supplied by the surrounding translation unit. */
 extern "C" {
-    fn hci_register_dev(*mut hci_dev)->i32; fn hci_unregister_dev(*mut hci_dev)->i32; fn hci_alloc_dev()->*mut hci_dev; fn hci_free_dev(*mut hci_dev);
-    fn hci_get_drvdata(*mut hci_dev)->*mut hci_uart; fn hci_set_drvdata(*mut hci_dev,*mut hci_uart); fn hci_skb_pkt_type(*mut sk_buff)->i32;
-    fn kfree_skb(*mut sk_buff); fn skb_pull(*mut sk_buff,usize); fn __hci_cmd_sync(*mut hci_dev,u16,u8,*const c_void,u32)->*mut sk_buff;
-    fn tty_ldisc_flush(*mut tty_struct); fn tty_driver_flush_buffer(*mut tty_struct); fn tty_unthrottle(*mut tty_struct); fn tty_register_ldisc(*mut tty_ldisc_ops)->i32; fn tty_unregister_ldisc(*mut tty_ldisc_ops);
-    fn tty_set_termios(*mut tty_struct,*const ktermios); fn tty_termios_encode_baud_rate(*mut ktermios,u32,u32); fn serdev_device_set_flow_control(*mut serdev_device,bool); fn serdev_device_set_rts(*mut serdev_device,bool);
+    fn hci_register_dev(_: *mut hci_dev)->i32; fn hci_unregister_dev(_: *mut hci_dev)->i32; fn hci_alloc_dev()->*mut hci_dev; fn hci_free_dev(_: *mut hci_dev);
+    fn hci_get_drvdata(_: *mut hci_dev)->*mut hci_uart; fn hci_set_drvdata(_: *mut hci_dev,_: *mut hci_uart); fn hci_skb_pkt_type(_: *mut sk_buff)->i32;
+    fn kfree_skb(_: *mut sk_buff); fn skb_pull(_: *mut sk_buff,_: usize); fn __hci_cmd_sync(_: *mut hci_dev,_: u16,_: u8,_: *const c_void,_: u32)->*mut sk_buff;
+    fn tty_ldisc_flush(_: *mut tty_struct); fn tty_driver_flush_buffer(_: *mut tty_struct); fn tty_unthrottle(_: *mut tty_struct); fn tty_register_ldisc(_: *mut tty_ldisc_ops)->i32; fn tty_unregister_ldisc(_: *mut tty_ldisc_ops);
+    fn tty_set_termios(_: *mut tty_struct,_: *const ktermios); fn tty_termios_encode_baud_rate(_: *mut ktermios,_: u32,_: u32); fn serdev_device_set_flow_control(_: *mut serdev_device,_: bool); fn serdev_device_set_rts(_: *mut serdev_device,_: bool);
 }
 #[repr(C)] pub struct tty_ldisc_ops { pub owner:*mut c_void,pub num:i32,pub name:*const u8,pub open:Option<unsafe extern "C" fn(*mut tty_struct)->i32>,pub close:Option<unsafe extern "C" fn(*mut tty_struct)>,pub read:Option<unsafe extern "C" fn(*mut tty_struct,*mut file,*mut u8,usize,*mut *mut c_void,u64)->isize>,pub write:Option<unsafe extern "C" fn(*mut tty_struct,*mut file,*const u8,usize)->isize>,pub ioctl:Option<unsafe extern "C" fn(*mut tty_struct,u32,usize)->i32>,pub compat_ioctl:Option<unsafe extern "C" fn(*mut tty_struct,u32,usize)->i32>,pub receive_buf:Option<unsafe extern "C" fn(*mut tty_struct,*const u8,*const u8,usize)>,pub write_wakeup:Option<unsafe extern "C" fn(*mut tty_struct)> }
 

@@ -30,11 +30,11 @@ pub enum dmub_srv {}
 
 macro_rules! BASE { ($seg:ident) => { BASE_INNER!($seg) }; }
 macro_rules! REG_OFFSET { ($reg_name:ident) => { BASE!(mm$reg_name_BASE_IDX) + mm$reg_name }; }
-macro_rules! FD_SHIFT { ($reg_name:ident, $field:ident) => { $reg_name##__$field##__SHIFT }; }
-macro_rules! FD_MASK { ($reg_name:ident, $field:ident) => { $reg_name##__$field##_MASK }; }
+macro_rules! FD_SHIFT { ($reg_name:tt, $field:tt) => { ::kernel::macros::paste!([<$reg_name __>])::kernel::macros::paste!([<$field __SHIFT>]) }; }
+macro_rules! FD_MASK { ($reg_name:tt, $field:tt) => { ::kernel::macros::paste!([<$reg_name __>])::kernel::macros::paste!([<$field _MASK>]) }; }
 macro_rules! REG { ($reg:ident) => { REGS.offset.$reg }; }
 macro_rules! FD { ($reg_field:ident) => { (REGS.shift.$reg_field, REGS.mask.$reg_field) }; }
-macro_rules! FN { ($reg_name:ident, $field:ident) => { FD!($reg_name##__$field) }; }
+macro_rules! FN { ($reg_name:tt, $field:ident) => { FD!(::kernel::macros::paste!([<$reg_name __>])$field) }; }
 
 /* Register reads and writes. */
 

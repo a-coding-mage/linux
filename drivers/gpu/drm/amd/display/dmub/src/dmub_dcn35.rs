@@ -24,9 +24,9 @@ pub unsafe fn dmub_srv_dcn35_regs_init(dmub: *mut dmub_srv, ctx: *mut dc_context
     macro_rules! dmub_sr { ($reg:ident) => { (*regs).offset.$reg = REG_OFFSET_EXP!($reg); }; }
     DMUB_DCN35_REGS!();
     DMCUB_INTERNAL_REGS!();
-    macro_rules! dmub_sf { ($reg:ident, $field:ident) => { (*regs).mask.$reg##__$field = FD_MASK!($reg, $field); }; }
+    macro_rules! dmub_sf { ($reg:tt, $field:ident) => { (*regs).mask.::kernel::macros::paste!([<$reg __>])$field = FD_MASK!($reg, $field); }; }
     DMUB_DCN35_FIELDS!();
-    macro_rules! dmub_sf { ($reg:ident, $field:ident) => { (*regs).shift.$reg##__$field = FD_SHIFT!($reg, $field); }; }
+    macro_rules! dmub_sf { ($reg:tt, $field:ident) => { (*regs).shift.::kernel::macros::paste!([<$reg __>])$field = FD_SHIFT!($reg, $field); }; }
     DMUB_DCN35_FIELDS!();
 }
 
@@ -86,7 +86,7 @@ pub unsafe fn dmub_dcn35_backdoor_load_zfb_mode(dmub: *mut dmub_srv, cw0: *const
 // The remaining routines are direct register wrappers and diagnostic field copies.
 pub unsafe fn dmub_dcn35_setup_windows(dmub: *mut dmub_srv, cw2: *const dmub_window, cw3: *const dmub_window, cw4: *const dmub_window, cw5: *const dmub_window, cw6: *const dmub_window, region6: *const dmub_window) {
     let _ = cw2; let mut o = (*cw3).offset;
-    macro_rules! win { ($n:ident, $w:expr) => { REG_WRITE!(DMCUB_REGION3_$n##_OFFSET, o.u.low_part); REG_WRITE!(DMCUB_REGION3_$n##_OFFSET_HIGH, o.u.high_part); REG_WRITE!(DMCUB_REGION3_$n##_BASE_ADDRESS, (*$w).region.base); REG_SET_2!(DMCUB_REGION3_$n##_TOP_ADDRESS, 0, DMCUB_REGION3_$n##_TOP_ADDRESS, (*$w).region.top, DMCUB_REGION3_$n##_ENABLE, 1); }; }
+    macro_rules! win { ($n:tt, $w:expr) => { REG_WRITE!(DMCUB_REGION3_::kernel::macros::paste!([<$n _OFFSET>]), o.u.low_part); REG_WRITE!(DMCUB_REGION3_::kernel::macros::paste!([<$n _OFFSET_HIGH>]), o.u.high_part); REG_WRITE!(DMCUB_REGION3_::kernel::macros::paste!([<$n _BASE_ADDRESS>]), (*$w).region.base); REG_SET_2!(DMCUB_REGION3_::kernel::macros::paste!([<$n _TOP_ADDRESS>]), 0, DMCUB_REGION3_::kernel::macros::paste!([<$n _TOP_ADDRESS>]), (*$w).region.top, DMCUB_REGION3_::kernel::macros::paste!([<$n _ENABLE>]), 1); }; }
     win!(CW3, cw3); o = (*cw4).offset; win!(CW4, cw4); o = (*cw5).offset; win!(CW5, cw5); o = (*cw6).offset; win!(CW6, cw6);
     o = (*cw5).offset; REG_WRITE!(DMCUB_REGION5_OFFSET, o.u.low_part); REG_WRITE!(DMCUB_REGION5_OFFSET_HIGH, o.u.high_part); REG_SET_2!(DMCUB_REGION5_TOP_ADDRESS, 0, DMCUB_REGION5_TOP_ADDRESS, (*cw5).region.top - (*cw5).region.base - 1, DMCUB_REGION5_ENABLE, 1);
     o = (*region6).offset; REG_WRITE!(DMCUB_REGION6_OFFSET, o.u.low_part); REG_WRITE!(DMCUB_REGION6_OFFSET_HIGH, o.u.high_part); REG_SET_2!(DMCUB_REGION6_TOP_ADDRESS, 0, DMCUB_REGION6_TOP_ADDRESS, (*region6).region.top - (*region6).region.base - 1, DMCUB_REGION6_ENABLE, 1);

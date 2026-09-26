@@ -9,7 +9,7 @@
 #[repr(C)]
 pub struct lsm_prop_selinux {
     // Preserved from CONFIG_SECURITY_SELINUX.
-    #[cfg(feature = "CONFIG_SECURITY_SELINUX")]
+    #[cfg(CONFIG_SECURITY_SELINUX)]
     pub secid: u32,
 }
 

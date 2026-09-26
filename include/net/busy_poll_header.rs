@@ -14,30 +14,30 @@ pub fn napi_id_valid(napi_id: ::core::ffi::c_uint) -> bool {
 pub const BUSY_POLL_BUDGET: u16 = 8;
 
 // CONFIG_NET_RX_BUSY_POLL is a build-time configuration condition.
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 pub struct napi_struct {
     pub gro: gro_node,
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 extern "C" {
     pub static mut sysctl_net_busy_read: ::core::ffi::c_uint;
     pub static mut sysctl_net_busy_poll: ::core::ffi::c_uint;
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 #[inline]
 pub unsafe fn net_busy_loop_on() -> bool {
     core::ptr::read_volatile(&sysctl_net_busy_poll) != 0
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 #[inline]
 pub unsafe fn sk_can_busy_loop(sk: *const sock) -> bool {
     core::ptr::read_volatile(&(*sk).sk_ll_usec) != 0 && !signal_pending(current)
 }
 
-#[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+#[cfg(CONFIG_NET_RX_BUSY_POLL)]
 extern "C" {
     pub fn sk_busy_loop_end(p: *mut ::core::ffi::c_void, start_time: ::core::ffi::c_ulong) -> bool;
     pub fn napi_busy_loop(
@@ -58,25 +58,25 @@ extern "C" {
     pub fn napi_resume_irqs(napi_id: ::core::ffi::c_uint);
 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub fn net_busy_loop_on() -> ::core::ffi::c_ulong { 0 }
 
-#[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+#[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
 #[inline]
 pub unsafe fn sk_can_busy_loop(_sk: *mut sock) -> bool { false }
 
 #[inline]
 pub unsafe fn busy_loop_current_time() -> ::core::ffi::c_ulong {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     { (ktime_get_ns() >> 10) as ::core::ffi::c_ulong }
-    #[cfg(not(feature = "CONFIG_NET_RX_BUSY_POLL"))]
+    #[cfg(not(CONFIG_NET_RX_BUSY_POLL))]
     { 0 }
 }
 
 #[inline]
 pub unsafe fn busy_loop_timeout(start_time: ::core::ffi::c_ulong) -> bool {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     {
         let bp_usec = core::ptr::read_volatile(&sysctl_net_busy_poll) as ::core::ffi::c_ulong;
         if bp_usec != 0 {
@@ -90,7 +90,7 @@ pub unsafe fn busy_loop_timeout(start_time: ::core::ffi::c_ulong) -> bool {
 
 #[inline]
 pub unsafe fn sk_busy_loop_timeout(sk: *mut sock, start_time: ::core::ffi::c_ulong) -> bool {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     {
         let bp_usec = core::ptr::read_volatile(&(*sk).sk_ll_usec) as ::core::ffi::c_ulong;
         if bp_usec != 0 {
@@ -104,7 +104,7 @@ pub unsafe fn sk_busy_loop_timeout(sk: *mut sock, start_time: ::core::ffi::c_ulo
 
 #[inline]
 pub unsafe fn sk_busy_loop(sk: *mut sock, nonblock: ::core::ffi::c_int) {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     {
         let napi_id = core::ptr::read_volatile(&(*sk).sk_napi_id);
         if napi_id_valid(napi_id) {
@@ -118,7 +118,7 @@ pub unsafe fn sk_busy_loop(sk: *mut sock, nonblock: ::core::ffi::c_int) {
 
 #[inline]
 pub unsafe fn __skb_mark_napi_id(skb: *mut sk_buff, gro: *const gro_node) {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     if !napi_id_valid((*skb).napi_id) { (*skb).napi_id = (*gro).cached_napi_id; }
 }
 
@@ -127,27 +127,27 @@ pub unsafe fn skb_mark_napi_id(skb: *mut sk_buff, napi: *const napi_struct) { __
 
 #[inline]
 pub unsafe fn sk_mark_napi_id(sk: *mut sock, skb: *const sk_buff) {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     if core::ptr::read_volatile(&(*sk).sk_napi_id) != (*skb).napi_id { core::ptr::write_volatile(&mut (*sk).sk_napi_id, (*skb).napi_id); }
     sk_rx_queue_update(sk, skb);
 }
 
 #[inline]
 pub unsafe fn sk_mark_napi_id_set(sk: *mut sock, skb: *const sk_buff) {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     core::ptr::write_volatile(&mut (*sk).sk_napi_id, (*skb).napi_id);
     sk_rx_queue_set(sk, skb);
 }
 
 #[inline]
 pub unsafe fn __sk_mark_napi_id_once(sk: *mut sock, napi_id: ::core::ffi::c_uint) {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     if core::ptr::read_volatile(&(*sk).sk_napi_id) == 0 { core::ptr::write_volatile(&mut (*sk).sk_napi_id, napi_id); }
 }
 
 #[inline]
 pub unsafe fn sk_mark_napi_id_once(sk: *mut sock, skb: *const sk_buff) {
-    #[cfg(feature = "CONFIG_NET_RX_BUSY_POLL")]
+    #[cfg(CONFIG_NET_RX_BUSY_POLL)]
     __sk_mark_napi_id_once(sk, (*skb).napi_id);
 }
 

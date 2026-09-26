@@ -6,9 +6,9 @@
 
 // C includes are supplied by the surrounding kernel translation unit.
 
-static mut RISCV_V_IMPLICIT_UACC: bool = cfg!(feature = "CONFIG_RISCV_ISA_V_DEFAULT_ENABLE");
+static mut RISCV_V_IMPLICIT_UACC: bool = cfg!(CONFIG_RISCV_ISA_V_DEFAULT_ENABLE);
 static mut RISCV_V_USER_CACHEP: *mut kmem_cache = core::ptr::null_mut();
-#[cfg(feature = "CONFIG_RISCV_ISA_V_PREEMPTIVE")]
+#[cfg(CONFIG_RISCV_ISA_V_PREEMPTIVE)]
 static mut RISCV_V_KERNEL_CACHEP: *mut kmem_cache = core::ptr::null_mut();
 
 #[no_mangle]
@@ -43,7 +43,7 @@ pub unsafe fn riscv_v_setup_ctx_cache() {
     update_regset_vector_info(riscv_v_vsize);
     RISCV_V_USER_CACHEP = kmem_cache_create_usercopy(
         "riscv_vector_ctx", riscv_v_vsize, 16, SLAB_PANIC, 0, riscv_v_vsize, core::ptr::null_mut());
-    #[cfg(feature = "CONFIG_RISCV_ISA_V_PREEMPTIVE")]
+    #[cfg(CONFIG_RISCV_ISA_V_PREEMPTIVE)]
     { RISCV_V_KERNEL_CACHEP = kmem_cache_create("riscv_vector_kctx", riscv_v_vsize, 16, SLAB_PANIC, core::ptr::null_mut()); }
 }
 
@@ -76,13 +76,13 @@ unsafe fn riscv_v_thread_ctx_alloc(cache: *mut kmem_cache, ctx: *mut __riscv_v_e
 }
 
 pub unsafe fn riscv_v_thread_alloc(tsk: *mut task_struct) {
-    #[cfg(feature = "CONFIG_RISCV_ISA_V_PREEMPTIVE")]
+    #[cfg(CONFIG_RISCV_ISA_V_PREEMPTIVE)]
     { riscv_v_thread_ctx_alloc(RISCV_V_KERNEL_CACHEP, &mut (*tsk).thread.kernel_vstate); }
 }
 
 pub unsafe fn riscv_v_thread_free(tsk: *mut task_struct) {
     if !(*tsk).thread.vstate.datap.is_null() { kmem_cache_free(RISCV_V_USER_CACHEP, (*tsk).thread.vstate.datap); }
-    #[cfg(feature = "CONFIG_RISCV_ISA_V_PREEMPTIVE")]
+    #[cfg(CONFIG_RISCV_ISA_V_PREEMPTIVE)]
     if !(*tsk).thread.kernel_vstate.datap.is_null() { kmem_cache_free(RISCV_V_KERNEL_CACHEP, (*tsk).thread.kernel_vstate.datap); }
 }
 

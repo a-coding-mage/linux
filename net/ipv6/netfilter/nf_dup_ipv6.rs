@@ -58,7 +58,7 @@ pub unsafe fn nf_dup_ipv6(
     }
 
     // Preserved from IS_ENABLED(CONFIG_NF_CONNTRACK); enable when conntrack is configured.
-    #[cfg(feature = "CONFIG_NF_CONNTRACK")]
+    #[cfg(CONFIG_NF_CONNTRACK)]
     {
         nf_reset_ct(skb);
         nf_ct_set(skb, core::ptr::null_mut(), IP_CT_UNTRACKED);

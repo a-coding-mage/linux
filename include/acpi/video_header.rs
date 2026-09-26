@@ -58,7 +58,7 @@ pub enum acpi_backlight_type {
 }
 
 // Preserves the build-time CONFIG_ACPI_VIDEO condition from the C header.
-#[cfg(feature = "CONFIG_ACPI_VIDEO")]
+#[cfg(CONFIG_ACPI_VIDEO)]
 extern "C" {
     pub fn acpi_video_register() -> i32;
     pub fn acpi_video_unregister();
@@ -81,34 +81,34 @@ extern "C" {
     ) -> acpi_backlight_type;
 }
 
-#[cfg(feature = "CONFIG_ACPI_VIDEO")]
+#[cfg(CONFIG_ACPI_VIDEO)]
 #[inline]
 pub unsafe fn acpi_video_get_backlight_type() -> acpi_backlight_type {
     __acpi_video_get_backlight_type(false, core::ptr::null_mut())
 }
 
-#[cfg(feature = "CONFIG_ACPI_VIDEO")]
+#[cfg(CONFIG_ACPI_VIDEO)]
 #[inline]
 pub unsafe fn acpi_video_backlight_use_native() -> bool {
     __acpi_video_get_backlight_type(true, core::ptr::null_mut())
         == acpi_backlight_type::acpi_backlight_native
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_register() -> i32 {
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_unregister() {}
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_register_backlight() {}
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_get_edid(
     _device: *mut acpi_device,
@@ -119,25 +119,25 @@ pub fn acpi_video_get_edid(
     -ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_get_backlight_type() -> acpi_backlight_type {
     acpi_backlight_type::acpi_backlight_vendor
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_backlight_use_native() -> bool {
     true
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_handles_brightness_key_presses() -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_VIDEO"))]
+#[cfg(not(CONFIG_ACPI_VIDEO))]
 #[inline]
 pub fn acpi_video_get_levels(
     _device: *mut acpi_device,

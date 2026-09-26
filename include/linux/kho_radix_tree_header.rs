@@ -53,7 +53,7 @@ pub struct kho_radix_walk_cb {
     pub node: Option<unsafe extern "C" fn(phys: phys_addr_t, data: *mut libc::c_void) -> libc::c_int>,
 }
 
-#[cfg(feature = "CONFIG_KEXEC_HANDOVER")]
+#[cfg(CONFIG_KEXEC_HANDOVER)]
 extern "C" {
     pub fn kho_radix_add_key(tree: *mut kho_radix_tree, key: libc::c_ulong) -> libc::c_int;
     pub fn kho_radix_del_key(tree: *mut kho_radix_tree, key: libc::c_ulong);
@@ -69,15 +69,15 @@ extern "C" {
     pub fn kho_radix_destroy_tree(tree: *mut kho_radix_tree);
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_add_key(_tree: *mut kho_radix_tree, _key: libc::c_ulong) -> libc::c_int {
     -libc::EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_del_key(_tree: *mut kho_radix_tree, _key: libc::c_ulong) {}
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_walk_tree(
     _tree: *mut kho_radix_tree,
     _cb: *const kho_radix_walk_cb,
@@ -86,7 +86,7 @@ pub unsafe fn kho_radix_walk_tree(
     -libc::EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_init_tree(
     _tree: *mut kho_radix_tree,
     _root: *mut kho_radix_node,
@@ -94,7 +94,7 @@ pub unsafe fn kho_radix_init_tree(
     0
 }
 
-#[cfg(not(feature = "CONFIG_KEXEC_HANDOVER"))]
+#[cfg(not(CONFIG_KEXEC_HANDOVER))]
 pub unsafe fn kho_radix_destroy_tree(_tree: *mut kho_radix_tree) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

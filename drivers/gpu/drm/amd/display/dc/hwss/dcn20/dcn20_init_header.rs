@@ -28,7 +28,7 @@ pub struct dc {
     _private: [u8; 0],
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn dcn20_hw_sequencer_construct(dc: *mut dc);
 }
 

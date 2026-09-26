@@ -4,7 +4,7 @@
 
 const HFS_VALID_MODE_BITS: umode_t = S_IFREG | S_IFDIR | S_IRWXUGO;
 
-static unsafe fn hfs_read_folio(file: *mut file, folio: *mut folio) -> c_int {
+unsafe fn hfs_read_folio(file: *mut file, folio: *mut folio) -> c_int {
     block_read_full_folio(folio, hfs_get_block)
 }
 

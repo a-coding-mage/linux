@@ -19,7 +19,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#define _vcn_2_0_0_SH_MASK_HEADER
 
 
 // addressBlock: uvd0_mmsch_dec

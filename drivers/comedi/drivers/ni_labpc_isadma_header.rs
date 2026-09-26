@@ -18,7 +18,7 @@ pub struct comedi_subdevice {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_COMEDI_NI_LABPC_ISADMA")]
+#[cfg(CONFIG_COMEDI_NI_LABPC_ISADMA)]
 extern "C" {
     pub fn labpc_init_dma_chan(dev: *mut comedi_device, dma_chan: c_uint);
     pub fn labpc_free_dma_chan(dev: *mut comedi_device);
@@ -27,23 +27,23 @@ extern "C" {
     pub fn labpc_handle_dma_status(dev: *mut comedi_device);
 }
 
-#[cfg(not(feature = "CONFIG_COMEDI_NI_LABPC_ISADMA"))]
+#[cfg(not(CONFIG_COMEDI_NI_LABPC_ISADMA))]
 #[inline]
 pub unsafe fn labpc_init_dma_chan(_dev: *mut comedi_device, _dma_chan: c_uint) {}
 
-#[cfg(not(feature = "CONFIG_COMEDI_NI_LABPC_ISADMA"))]
+#[cfg(not(CONFIG_COMEDI_NI_LABPC_ISADMA))]
 #[inline]
 pub unsafe fn labpc_free_dma_chan(_dev: *mut comedi_device) {}
 
-#[cfg(not(feature = "CONFIG_COMEDI_NI_LABPC_ISADMA"))]
+#[cfg(not(CONFIG_COMEDI_NI_LABPC_ISADMA))]
 #[inline]
 pub unsafe fn labpc_setup_dma(_dev: *mut comedi_device, _s: *mut comedi_subdevice) {}
 
-#[cfg(not(feature = "CONFIG_COMEDI_NI_LABPC_ISADMA"))]
+#[cfg(not(CONFIG_COMEDI_NI_LABPC_ISADMA))]
 #[inline]
 pub unsafe fn labpc_drain_dma(_dev: *mut comedi_device) {}
 
-#[cfg(not(feature = "CONFIG_COMEDI_NI_LABPC_ISADMA"))]
+#[cfg(not(CONFIG_COMEDI_NI_LABPC_ISADMA))]
 #[inline]
 pub unsafe fn labpc_handle_dma_status(_dev: *mut comedi_device) {}
 

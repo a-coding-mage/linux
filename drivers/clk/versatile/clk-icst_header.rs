@@ -56,8 +56,7 @@ extern "C" {
         desc: *const clk_icst_desc,
         name: *const core::ffi::c_char,
         parent_name: *const core::ffi::c_char,
-        base: *mut core::ffi::c_void,
-    ) -> *mut clk;
+        base: *mut core::ffi::c_void) -> *mut clk;
 
     pub fn icst_clk_setup(
         dev: *mut device,
@@ -65,8 +64,7 @@ extern "C" {
         name: *const core::ffi::c_char,
         parent_name: *const core::ffi::c_char,
         map: *mut regmap,
-        ctype: icst_control_type,
-    ) -> *mut clk;
+        ctype: icst_control_type) -> *mut clk;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

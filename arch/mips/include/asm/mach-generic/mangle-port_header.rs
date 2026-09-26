@@ -33,7 +33,7 @@ macro_rules! __swizzle_addr_q {
  */
 
 /* CONFIG_SWAP_IO_SPACE build-time condition from the original header. */
-#[cfg(feature = "CONFIG_SWAP_IO_SPACE")]
+#[cfg(CONFIG_SWAP_IO_SPACE)]
 mod config_swap_io_space {
     macro_rules! ioswabb {
         ($a:expr, $x:expr) => { $x };
@@ -61,7 +61,7 @@ mod config_swap_io_space {
     }
 }
 
-#[cfg(not(feature = "CONFIG_SWAP_IO_SPACE"))]
+#[cfg(not(CONFIG_SWAP_IO_SPACE))]
 mod config_no_swap_io_space {
     macro_rules! ioswabb {
         ($a:expr, $x:expr) => { $x };

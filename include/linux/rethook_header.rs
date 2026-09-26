@@ -98,12 +98,12 @@ pub unsafe fn is_rethook_trampoline(addr: usize) -> bool {
     addr == dereference_symbol_descriptor(arch_rethook_trampoline as usize)
 }
 
-#[cfg(feature = "CONFIG_RETHOOK")]
+#[cfg(CONFIG_RETHOOK)]
 extern "C" {
     pub fn rethook_flush_task(tk: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_RETHOOK"))]
+#[cfg(not(CONFIG_RETHOOK))]
 #[inline]
 pub unsafe fn rethook_flush_task(_tsk: *mut task_struct) {
     // C equivalent: #define rethook_flush_task(tsk) do { } while (0)

@@ -41,7 +41,6 @@
 //  * OTHER DEALINGS IN THE SOFTWARE.
 //  *
 //  */
-pub const _athub_4_1_0_OFFSET_HEADER: u32 = ;
 
 
 

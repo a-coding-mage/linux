@@ -97,15 +97,15 @@ unsafe fn parse_gate_entry(n: *mut nlattr, entry: *mut tcfg_gate_entry, index: i
 
 unsafe fn release_entry_list(entries: *mut list_head) {
     let mut entry: *mut tcfg_gate_entry; let mut e: *mut tcfg_gate_entry;
-    list_for_each_entry_safe!(entry, e, entries, list) { list_del(&mut (*entry).list); kfree(entry as *mut core::ffi::c_void); }
+    list_for_each_entry_safe!(entry, e, entries, list, { list_del(&mut (*entry).list); kfree(entry as *mut core::ffi::c_void); });
 }
 
 unsafe fn tcf_gate_copy_entries(dst: *mut tcf_gate_params, src: *const tcf_gate_params, _extack: *mut netlink_ext_ack) -> i32 {
     let mut i = 0; let mut entry: *mut tcfg_gate_entry;
-    list_for_each_entry!(entry, &(*src).entries, list) {
+    list_for_each_entry!(entry, &(*src).entries, list, {
         let new = kzalloc::<tcfg_gate_entry>(GFP_ATOMIC); if new.is_null() { return -ENOMEM; }
         (*new) = (*entry).clone(); list_add_tail(&mut (*new).list, &mut (*dst).entries); i += 1;
-    } (*dst).num_entries = i; 0
+    }); (*dst).num_entries = i; 0
 }
 
 unsafe fn gate_timer_needs_cancel(basetime: u64, old_basetime: u64, tko: enum_tk_offsets, old_tko: enum_tk_offsets, clockid: i32, old_clockid: i32) -> bool { basetime != old_basetime || clockid != old_clockid || tko != old_tko }

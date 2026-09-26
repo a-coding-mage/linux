@@ -5,17 +5,13 @@
 
 // Kernel and local clock-controller dependencies are supplied by other files.
 
-enum {
-    DT_AHB_CLK,
-    DT_BI_TCXO,
-    DT_SLEEP_CLK,
-}
+pub const DT_AHB_CLK: i32 = 0;
+pub const DT_BI_TCXO: i32 = DT_AHB_CLK + 1;
+pub const DT_SLEEP_CLK: i32 = DT_BI_TCXO + 1;
 
-enum {
-    P_BI_TCXO,
-    P_EVA_CC_PLL0_OUT_MAIN,
-    P_SLEEP_CLK,
-}
+pub const P_BI_TCXO: i32 = 0;
+pub const P_EVA_CC_PLL0_OUT_MAIN: i32 = P_BI_TCXO + 1;
+pub const P_SLEEP_CLK: i32 = P_EVA_CC_PLL0_OUT_MAIN + 1;
 
 static taycan_eko_t_vco: [pll_vco; 1] = [
     pll_vco { min_freq: 249600000, max_freq: 2500000000, val: 0 },

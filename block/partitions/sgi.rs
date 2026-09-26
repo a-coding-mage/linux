@@ -9,9 +9,7 @@
 
 const SGI_LABEL_MAGIC: u32 = 0x0be5a941;
 
-enum {
-    LINUX_RAID_PARTITION = 0xfd, /* autodetect RAID partition */
-}
+pub const LINUX_RAID_PARTITION: i32 = 0xfd;
 
 #[repr(C)]
 pub struct sgi_volume {

@@ -83,12 +83,12 @@ extern "C" {
     );
 
     // Preserved build-time condition: CONFIG_DEBUG_FS.
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub fn amdgpu_sa_bo_dump_debug_info(
         sa_manager: *mut amdgpu_sa_manager,
         m: *mut seq_file,
     );
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub fn amdgpu_bo_print_info(
         id: i32,
         bo: *mut amdgpu_bo,

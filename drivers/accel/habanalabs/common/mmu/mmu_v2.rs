@@ -41,7 +41,7 @@ unsafe fn hl_mmu_v2_ctx_fini(ctx: *mut hl_ctx) {
         dev_err((*hdev).dev, "ctx %d is freed while it has pgts in use\n", (*ctx).asid);
     }
 
-    hash_for_each_safe((*ctx).mmu_shadow_hash, i, tmp, pgt_info, node) {
+    hash_for_each_safe!((*ctx).mmu_shadow_hash, i, tmp, pgt_info, node, {
         dev_err_ratelimited(
             (*hdev).dev,
             "pgt_info of addr 0x%llx of asid %d was not destroyed, num_ptes: %d\n",
@@ -50,7 +50,7 @@ unsafe fn hl_mmu_v2_ctx_fini(ctx: *mut hl_ctx) {
             (*pgt_info).num_of_ptes,
         );
         hl_mmu_dr_free_pgt_node(ctx, pgt_info);
-    }
+    });
 }
 
 unsafe fn hl_mmu_v2_unmap(ctx: *mut hl_ctx, virt_addr: u64, is_dram_addr: bool) -> i32 {

@@ -59,7 +59,7 @@ pub struct dev_pm_opp_data { pub turbo: bool, pub level: c_uint, pub freq: c_ulo
 #[repr(C)]
 pub struct dev_pm_opp_key { pub freq: c_ulong, pub level: c_uint, pub bw: u32 }
 
-#[cfg(feature = "CONFIG_PM_OPP")]
+#[cfg(CONFIG_PM_OPP)]
 extern "C" {
     pub fn dev_pm_opp_get_opp_table(dev: *mut device) -> *mut opp_table;
     pub fn dev_pm_opp_get_opp_table_ref(t: *mut opp_table) -> *mut opp_table;
@@ -115,25 +115,25 @@ extern "C" {
 }
 
 /* CONFIG_PM_OPP-disabled inline definitions retain the kernel's sentinel behavior. */
-#[cfg(not(feature = "CONFIG_PM_OPP"))]
+#[cfg(not(CONFIG_PM_OPP))]
 pub unsafe fn dev_pm_opp_get_opp_table(_dev: *mut device) -> *mut opp_table { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_PM_OPP"))]
+#[cfg(not(CONFIG_PM_OPP))]
 pub unsafe fn dev_pm_opp_get_opp_table_ref(t: *mut opp_table) -> *mut opp_table { t }
-#[cfg(not(feature = "CONFIG_PM_OPP"))]
+#[cfg(not(CONFIG_PM_OPP))]
 pub unsafe fn dev_pm_opp_put_opp_table(_t: *mut opp_table) {}
 
 /* The remaining disabled-configuration helpers return the C header's zero, NULL,
  * or error sentinels; external errno/error-pointer facilities are dependency-provided. */
 
-#[cfg(feature = "CONFIG_CPU_FREQ")]
+#[cfg(CONFIG_CPU_FREQ)]
 extern "C" { pub fn dev_pm_opp_init_cpufreq_table(dev: *mut device, table: *mut *mut cpufreq_frequency_table) -> c_int; pub fn dev_pm_opp_free_cpufreq_table(dev: *mut device, table: *mut *mut cpufreq_frequency_table); }
-#[cfg(not(feature = "CONFIG_CPU_FREQ"))]
+#[cfg(not(CONFIG_CPU_FREQ))]
 pub unsafe fn dev_pm_opp_init_cpufreq_table(_dev: *mut device, _table: *mut *mut cpufreq_frequency_table) -> c_int { -22 }
-#[cfg(not(feature = "CONFIG_CPU_FREQ"))]
+#[cfg(not(CONFIG_CPU_FREQ))]
 pub unsafe fn dev_pm_opp_free_cpufreq_table(_dev: *mut device, _table: *mut *mut cpufreq_frequency_table) {}
 
 /* CONFIG_OF declarations and fallback helpers. */
-#[cfg(all(feature = "CONFIG_PM_OPP", feature = "CONFIG_OF"))]
+#[cfg(all(CONFIG_PM_OPP, CONFIG_OF))]
 extern "C" {
     pub fn dev_pm_opp_of_add_table(dev: *mut device) -> c_int;
     pub fn dev_pm_opp_of_add_table_indexed(dev: *mut device, index: c_int) -> c_int;

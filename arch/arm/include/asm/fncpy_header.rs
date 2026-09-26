@@ -22,7 +22,7 @@ macro_rules! fncpy {
         let __dest_buf = $dest_buf;
         let __size = $size;
 
-        // BUG_ON((uintptr_t)(dest_buf) & (FNCPY_ALIGN - 1) ||
+        // BUG_ON((uintptr_t)($dest_buf) & (FNCPY_ALIGN - 1) ||
         //     (__funcp_address & !(uintptr_t)1 & (FNCPY_ALIGN - 1)));
         assert!(
             (__dest_buf as usize) & ($crate::FNCPY_ALIGN - 1) == 0

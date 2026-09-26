@@ -17,9 +17,9 @@ pub const L1_CACHE_SHIFT: usize = 4;
 pub const SMP_CACHE_BYTES: usize = L1_CACHE_BYTES;
 
 /* CONFIG_PA20 selects 128; otherwise this is 32. */
-#[cfg(feature = "CONFIG_PA20")]
+#[cfg(CONFIG_PA20)]
 pub const ARCH_DMA_MINALIGN: usize = 128;
-#[cfg(not(feature = "CONFIG_PA20"))]
+#[cfg(not(CONFIG_PA20))]
 pub const ARCH_DMA_MINALIGN: usize = 32;
 
 pub const ARCH_KMALLOC_MINALIGN: usize = 16; /* ldcw requires 16-byte alignment */

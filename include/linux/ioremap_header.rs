@@ -11,7 +11,7 @@
 //
 // When IOREMAP_START/IOREMAP_END are not supplied by the target build, the
 // corresponding VMALLOC_START/VMALLOC_END values are used.
-#[cfg(any(feature = "CONFIG_HAS_IOMEM", feature = "CONFIG_GENERIC_IOREMAP"))]
+#[cfg(any(CONFIG_HAS_IOMEM, CONFIG_GENERIC_IOREMAP))]
 pub unsafe fn is_ioremap_addr(x: *const core::ffi::c_void) -> bool {
     let addr = kasan_reset_tag(x) as usize;
 
@@ -25,13 +25,13 @@ unsafe extern "C" {
 
 // These names are supplied by the target kernel translation. IOREMAP_START
 // and IOREMAP_END default to VMALLOC_START and VMALLOC_END when absent.
-#[cfg(any(feature = "CONFIG_HAS_IOMEM", feature = "CONFIG_GENERIC_IOREMAP"))]
+#[cfg(any(CONFIG_HAS_IOMEM, CONFIG_GENERIC_IOREMAP))]
 unsafe extern "C" {
     static IOREMAP_START: usize;
     static IOREMAP_END: usize;
 }
 
-#[cfg(not(any(feature = "CONFIG_HAS_IOMEM", feature = "CONFIG_GENERIC_IOREMAP")))]
+#[cfg(not(any(CONFIG_HAS_IOMEM, CONFIG_GENERIC_IOREMAP)))]
 pub unsafe fn is_ioremap_addr(_x: *const core::ffi::c_void) -> bool {
     false
 }

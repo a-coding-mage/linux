@@ -4,9 +4,9 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // left external: fs.h, netfs.h and writeback.h.
 
-#[cfg(any(feature = "CONFIG_FSCACHE", feature = "CONFIG_FSCACHE_MODULE"))]
+#[cfg(any(CONFIG_FSCACHE, CONFIG_FSCACHE_MODULE))]
 pub const __fscache_available: i32 = 1;
-#[cfg(not(any(feature = "CONFIG_FSCACHE", feature = "CONFIG_FSCACHE_MODULE")))]
+#[cfg(not(any(CONFIG_FSCACHE, CONFIG_FSCACHE_MODULE)))]
 pub const __fscache_available: i32 = 0;
 
 #[repr(C)]

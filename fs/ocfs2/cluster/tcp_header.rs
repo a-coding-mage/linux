@@ -58,11 +58,10 @@ pub unsafe fn o2net_link_down(err: i32, sock: *mut socket) -> i32 {
         return 0;
     }
     match err {
-        /* ????????????????????????? */
-        -ERESTARTSYS | -EBADF |
-        /* When the server has died, an ICMP port unreachable
+        case if case == /* ????????????????????????? */
+        -ERESTARTSYS || case == -EBADF || case == /* When the server has died, an ICMP port unreachable
          * message prompts ECONNREFUSED. */
-        -ECONNREFUSED | -ENOTCONN | -ECONNRESET | -EPIPE => 1,
+        -ECONNREFUSED || case == -ENOTCONN || case == -ECONNRESET || case == -EPIPE => 1,
         _ => 0,
     }
 }
@@ -73,18 +72,15 @@ pub const O2NET_DRIVER_READY: i32 = 1;
 extern "C" {
     pub fn o2net_send_message(
         msg_type: u32, key: u32, data: *mut core::ffi::c_void, len: u32,
-        target_node: __u8, status: *mut i32,
-    ) -> i32;
+        target_node: __u8, status: *mut i32) -> i32;
     pub fn o2net_send_message_vec(
         msg_type: u32, key: u32, vec: *mut kvec, veclen: usize,
-        target_node: __u8, status: *mut i32,
-    ) -> i32;
+        target_node: __u8, status: *mut i32) -> i32;
 
     pub fn o2net_register_handler(
         msg_type: u32, key: u32, max_len: u32, func: o2net_msg_handler_func,
         data: *mut core::ffi::c_void, post_func: o2net_post_msg_handler_func,
-        unreg_list: *mut list_head,
-    ) -> i32;
+        unreg_list: *mut list_head) -> i32;
     pub fn o2net_unregister_handler_list(list: *mut list_head);
     pub fn o2net_unregister_and_flush_handler_list(list: *mut list_head);
 
@@ -107,7 +103,7 @@ pub enum o2net_send_tracking {}
 pub enum o2net_sock_container {}
 
 /* CONFIG_DEBUG_FS declarations are selected by the surrounding build configuration. */
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn o2net_debugfs_init();
     pub fn o2net_debugfs_exit();
@@ -117,17 +113,17 @@ extern "C" {
     pub fn o2net_debug_del_sc(sc: *mut o2net_sock_container);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn o2net_debugfs_init() {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn o2net_debugfs_exit() {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn o2net_debug_add_nst(_nst: *mut o2net_send_tracking) {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn o2net_debug_del_nst(_nst: *mut o2net_send_tracking) {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn o2net_debug_add_sc(_sc: *mut o2net_sock_container) {}
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn o2net_debug_del_sc(_sc: *mut o2net_sock_container) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

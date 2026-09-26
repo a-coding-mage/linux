@@ -197,7 +197,7 @@ macro_rules! OMAP_IRQ_BIT {
 }
 
 // C: defined only when CONFIG_FIQ is enabled.
-#[cfg(feature = "CONFIG_FIQ")]
+#[cfg(CONFIG_FIQ)]
 pub const FIQ_START: usize = 1024;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

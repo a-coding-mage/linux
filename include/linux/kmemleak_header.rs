@@ -9,7 +9,7 @@
 // C dependencies: linux/slab.h and linux/vmalloc.h.
 // CONFIG_DEBUG_KMEMLEAK is preserved as the Rust cfg feature of the same name.
 
-#[cfg(feature = "CONFIG_DEBUG_KMEMLEAK")]
+#[cfg(CONFIG_DEBUG_KMEMLEAK)]
 extern "C" {
     pub fn kmemleak_init();
     pub fn kmemleak_alloc(ptr: *const core::ffi::c_void, size: usize, min_count: i32, gfp: gfp_t);
@@ -30,7 +30,7 @@ extern "C" {
     pub fn kmemleak_ignore_phys(phys: phys_addr_t);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_KMEMLEAK")]
+#[cfg(CONFIG_DEBUG_KMEMLEAK)]
 #[inline]
 pub unsafe fn kmemleak_alloc_recursive(ptr: *const core::ffi::c_void, size: usize,
                                         min_count: i32, flags: slab_flags_t, gfp: gfp_t) {
@@ -39,7 +39,7 @@ pub unsafe fn kmemleak_alloc_recursive(ptr: *const core::ffi::c_void, size: usiz
     }
 }
 
-#[cfg(feature = "CONFIG_DEBUG_KMEMLEAK")]
+#[cfg(CONFIG_DEBUG_KMEMLEAK)]
 #[inline]
 pub unsafe fn kmemleak_free_recursive(ptr: *const core::ffi::c_void, flags: slab_flags_t) {
     if (flags & SLAB_NOLEAKTRACE) == 0 {
@@ -52,7 +52,7 @@ pub unsafe fn kmemleak_erase(ptr: *mut *mut core::ffi::c_void) {
     *ptr = core::ptr::null_mut();
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_KMEMLEAK"))]
+#[cfg(not(CONFIG_DEBUG_KMEMLEAK))]
 macro_rules! kmemleak_empty {
     ($name:ident ( $( $arg:ident : $ty:ty ),* $(,)? )) => {
         #[inline]
@@ -60,7 +60,7 @@ macro_rules! kmemleak_empty {
     };
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_KMEMLEAK"))]
+#[cfg(not(CONFIG_DEBUG_KMEMLEAK))]
 mod kmemleak_disabled {
     #[allow(unused_imports)]
     use super::*;

@@ -693,8 +693,7 @@ union u1 {\n\
 }
 
 macro_rules! cleanup {
-    (
-        $dump_buf_file:expr,
+    ($dump_buf_file:expr,
         $d:expr,
         $btf1:expr,
         $btf2:expr,

@@ -11,16 +11,16 @@ unsafe extern "C" {
 }
 
 /* CONFIG_HOTPLUG_CPU */
-#[cfg(feature = "CONFIG_HOTPLUG_CPU")]
+#[cfg(CONFIG_HOTPLUG_CPU)]
 unsafe extern "C" {
     pub fn sched_cpu_wait_empty(cpu: core::ffi::c_uint) -> core::ffi::c_int;
     pub fn sched_cpu_dying(cpu: core::ffi::c_uint) -> core::ffi::c_int;
 }
 
 /* When CONFIG_HOTPLUG_CPU is disabled, these C macros expand to NULL. */
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 pub const sched_cpu_wait_empty: Option<unsafe extern "C" fn(core::ffi::c_uint) -> core::ffi::c_int> = None;
-#[cfg(not(feature = "CONFIG_HOTPLUG_CPU"))]
+#[cfg(not(CONFIG_HOTPLUG_CPU))]
 pub const sched_cpu_dying: Option<unsafe extern "C" fn(core::ffi::c_uint) -> core::ffi::c_int> = None;
 
 #[inline]

@@ -136,14 +136,14 @@ pub unsafe extern "C" fn profile_pc(regs: *mut pt_regs) -> usize {
     let mut pc = instruction_pointer(regs);
     if (*regs).gr[0] & PSW_N != 0 { pc = pc.wrapping_sub(4); }
     // CONFIG_SMP conditional retained from the C source.
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     if in_lock_functions(pc) { pc = (*regs).gr[2]; }
     pc
 }
 
 // EXPORT_SYMBOL(profile_pc);
 
-#[cfg(feature = "CONFIG_RTC_DRV_GENERIC")]
+#[cfg(CONFIG_RTC_DRV_GENERIC)]
 unsafe extern "C" fn rtc_generic_get_time(_dev: *mut device, tm: *mut rtc_time) -> i32 {
     let mut tod_data: pdc_tod = core::mem::zeroed();
     core::ptr::write_bytes(tm, 0, 1);
@@ -152,7 +152,7 @@ unsafe extern "C" fn rtc_generic_get_time(_dev: *mut device, tm: *mut rtc_time) 
     0
 }
 
-#[cfg(feature = "CONFIG_RTC_DRV_GENERIC")]
+#[cfg(CONFIG_RTC_DRV_GENERIC)]
 unsafe extern "C" fn rtc_generic_set_time(_dev: *mut device, tm: *mut rtc_time) -> i32 {
     let secs = rtc_tm_to_time64(tm);
     let ret = pdc_tod_set(secs, 0);
@@ -164,13 +164,13 @@ unsafe extern "C" fn rtc_generic_set_time(_dev: *mut device, tm: *mut rtc_time) 
     0
 }
 
-#[cfg(feature = "CONFIG_RTC_DRV_GENERIC")]
+#[cfg(CONFIG_RTC_DRV_GENERIC)]
 static rtc_generic_ops: rtc_class_ops = rtc_class_ops {
     read_time: Some(rtc_generic_get_time),
     set_time: Some(rtc_generic_set_time),
 };
 
-#[cfg(feature = "CONFIG_RTC_DRV_GENERIC")]
+#[cfg(CONFIG_RTC_DRV_GENERIC)]
 unsafe extern "C" fn rtc_init() -> i32 {
     let pdev = platform_device_register_data(
         core::ptr::null_mut(), b"rtc-generic\0".as_ptr(), -1,

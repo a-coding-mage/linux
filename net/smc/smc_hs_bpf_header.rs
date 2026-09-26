@@ -30,12 +30,12 @@ pub struct smc_hs_ctrl {
 }
 
 /* CONFIG_SMC_HS_CTRL_BPF is a build-time kernel configuration condition. */
-#[cfg(feature = "CONFIG_SMC_HS_CTRL_BPF")]
+#[cfg(CONFIG_SMC_HS_CTRL_BPF)]
 extern "C" {
     pub fn bpf_smc_hs_ctrl_init() -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SMC_HS_CTRL_BPF"))]
+#[cfg(not(CONFIG_SMC_HS_CTRL_BPF))]
 #[inline]
 pub fn bpf_smc_hs_ctrl_init() -> c_int {
     0

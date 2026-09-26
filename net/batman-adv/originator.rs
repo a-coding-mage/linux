@@ -43,19 +43,19 @@ extern "C" {
     fn batadv_hash_set_lock_class(hash: *mut batadv_hashtable, key: *mut c_void);
     fn batadv_choose_orig(data: *const c_void, size: u32) -> usize;
     fn batadv_compare_eth(a: *const c_void, b: *const c_void) -> bool;
-    fn batadv_find_router(*mut batadv_priv,*mut batadv_orig_node,*mut batadv_hard_iface)->*mut batadv_neigh_node;
-    fn batadv_hardif_put(*mut batadv_hard_iface); fn batadv_orig_node_put(*mut batadv_orig_node);
-    fn batadv_neigh_node_put(*mut batadv_neigh_node); fn batadv_hardif_neigh_put(*mut batadv_hardif_neigh_node);
-    fn batadv_orig_ifinfo_put(*mut batadv_orig_ifinfo); fn batadv_neigh_ifinfo_put(*mut batadv_neigh_ifinfo);
-    fn batadv_orig_node_vlan_put(*mut batadv_orig_node_vlan);
-    fn batadv_update_route(*mut batadv_priv,*mut batadv_orig_node,*mut batadv_hard_iface,*mut batadv_neigh_node);
-    fn batadv_frag_purge_orig(*mut batadv_orig_node, *mut c_void); fn batadv_mcast_purge_orig(*mut batadv_orig_node);
-    fn batadv_gw_node_delete(*mut batadv_priv,*mut batadv_orig_node); fn batadv_gw_election(*mut batadv_priv);
-    fn batadv_tt_global_del_orig(*mut batadv_priv,*mut batadv_orig_node,i32,*const u8);
-    fn batadv_netlink_get_meshif(*mut netlink_callback)->*mut net_device;
-    fn batadv_netlink_get_hardif(*mut batadv_priv,*mut netlink_callback)->*mut batadv_hard_iface;
-    fn batadv_primary_if_get_selected(*mut batadv_priv)->*mut batadv_hard_iface;
-    fn dev_put(*mut net_device); fn batadv_has_timed_out(usize,usize)->bool;
+    fn batadv_find_router(_: *mut batadv_priv,_: *mut batadv_orig_node,_: *mut batadv_hard_iface)->*mut batadv_neigh_node;
+    fn batadv_hardif_put(_: *mut batadv_hard_iface); fn batadv_orig_node_put(_: *mut batadv_orig_node);
+    fn batadv_neigh_node_put(_: *mut batadv_neigh_node); fn batadv_hardif_neigh_put(_: *mut batadv_hardif_neigh_node);
+    fn batadv_orig_ifinfo_put(_: *mut batadv_orig_ifinfo); fn batadv_neigh_ifinfo_put(_: *mut batadv_neigh_ifinfo);
+    fn batadv_orig_node_vlan_put(_: *mut batadv_orig_node_vlan);
+    fn batadv_update_route(_: *mut batadv_priv,_: *mut batadv_orig_node,_: *mut batadv_hard_iface,_: *mut batadv_neigh_node);
+    fn batadv_frag_purge_orig(_: *mut batadv_orig_node, _: *mut c_void); fn batadv_mcast_purge_orig(_: *mut batadv_orig_node);
+    fn batadv_gw_node_delete(_: *mut batadv_priv,_: *mut batadv_orig_node); fn batadv_gw_election(_: *mut batadv_priv);
+    fn batadv_tt_global_del_orig(_: *mut batadv_priv,_: *mut batadv_orig_node,_: i32,_: *const u8);
+    fn batadv_netlink_get_meshif(_: *mut netlink_callback)->*mut net_device;
+    fn batadv_netlink_get_hardif(_: *mut batadv_priv,_: *mut netlink_callback)->*mut batadv_hard_iface;
+    fn batadv_primary_if_get_selected(_: *mut batadv_priv)->*mut batadv_hard_iface;
+    fn dev_put(_: *mut net_device); fn batadv_has_timed_out(_: usize,_: usize)->bool;
 }
 
 const BATADV_IF_DEFAULT: *mut batadv_hard_iface = core::ptr::null_mut();

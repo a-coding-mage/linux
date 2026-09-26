@@ -15,28 +15,28 @@ pub struct timespec64 {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub static mut timekeeping_mg_floor_swaps: c_ulong;
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 #[inline]
 pub unsafe fn timekeeping_inc_mg_floor_swaps() {
     // `this_cpu_inc` is a kernel-provided per-CPU primitive.
     this_cpu_inc!(timekeeping_mg_floor_swaps);
 }
 
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 extern "C" {
     pub fn tk_debug_account_sleep_time(t: *const timespec64);
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub fn tk_debug_account_sleep_time(_x: *const timespec64) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 #[inline]
 pub fn timekeeping_inc_mg_floor_swaps() {}
 
@@ -62,22 +62,22 @@ extern "C" {
     pub fn ktime_get_ntp_seconds(id: u32) -> isize;
 }
 
-#[cfg(feature = "CONFIG_GENERIC_GETTIMEOFDAY")]
+#[cfg(CONFIG_GENERIC_GETTIMEOFDAY)]
 extern "C" {
     pub fn update_vsyscall(tk: *mut timekeeper);
     pub fn update_vsyscall_tz();
     pub fn vdso_time_update_aux(tk: *mut timekeeper);
 }
 
-#[cfg(not(feature = "CONFIG_GENERIC_GETTIMEOFDAY"))]
+#[cfg(not(CONFIG_GENERIC_GETTIMEOFDAY))]
 #[inline]
 pub fn update_vsyscall(_tk: *mut timekeeper) {}
 
-#[cfg(not(feature = "CONFIG_GENERIC_GETTIMEOFDAY"))]
+#[cfg(not(CONFIG_GENERIC_GETTIMEOFDAY))]
 #[inline]
 pub fn update_vsyscall_tz() {}
 
-#[cfg(not(feature = "CONFIG_GENERIC_GETTIMEOFDAY"))]
+#[cfg(not(CONFIG_GENERIC_GETTIMEOFDAY))]
 #[inline]
 pub fn vdso_time_update_aux(_tk: *mut timekeeper) {}
 

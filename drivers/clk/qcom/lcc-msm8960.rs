@@ -10,7 +10,8 @@ static mut pll4: clk_pll = clk_pll {
     clkr: clk_regmap { hw: clk_hw_init { name: "pll4", parent_data: &mut pxo_parent_data, num_parents: 1, ops: &clk_pll_ops } },
 };
 
-enum { P_PXO, P_PLL4 }
+pub const P_PXO: i32 = 0;
+pub const P_PLL4: i32 = P_PXO + 1;
 
 static lcc_pxo_pll4_map: [parent_map; 2] = [parent_map { parent: P_PXO, val: 0 }, parent_map { parent: P_PLL4, val: 2 }];
 static mut lcc_pxo_pll4: [clk_parent_data; 2] = [
@@ -32,11 +33,11 @@ static clk_tbl_aif_osr_393: [freq_tbl; 13] = [
 ];
 
 // The following macro expansions preserve the five C clock-construction macros.
-macro_rules! CLK_AIF_OSR_SRC { ($p:ident,$ns:expr,$md:expr) => { static mut $p##_osr_src: clk_rcg = clk_rcg::new($ns,$md,stringify!($p),&lcc_pxo_pll4_map,&clk_tbl_aif_osr_393); }; }
-macro_rules! CLK_AIF_OSR_CLK { ($p:ident,$ns:expr,$hr:expr,$bit:expr) => { static mut $p##_osr_clk: clk_branch = clk_branch::new($hr,1,$ns,$bit,stringify!($p)); }; }
-macro_rules! CLK_AIF_OSR_DIV_CLK { ($p:ident,$ns:expr,$width:expr) => { static mut $p##_div_clk: clk_regmap_div = clk_regmap_div::new($ns,10,$width,stringify!($p)); }; }
-macro_rules! CLK_AIF_OSR_BIT_DIV_CLK { ($p:ident,$ns:expr,$hr:expr,$bit:expr) => { static mut $p##_bit_div_clk: clk_branch = clk_branch::new($hr,0,$ns,$bit,stringify!($p)); }; }
-macro_rules! CLK_AIF_OSR_BIT_CLK { ($p:ident,$ns:expr,$shift:expr) => { static mut $p##_bit_clk: clk_regmap_mux = clk_regmap_mux::new($ns,$shift,stringify!($p)); }; }
+macro_rules! CLK_AIF_OSR_SRC { ($p:tt,$ns:expr,$md:expr) => { static mut ::kernel::macros::paste!([<$p _osr_src>]): clk_rcg = clk_rcg::new($ns,$md,stringify!($p),&lcc_pxo_pll4_map,&clk_tbl_aif_osr_393); }; }
+macro_rules! CLK_AIF_OSR_CLK { ($p:tt,$ns:expr,$hr:expr,$bit:expr) => { static mut ::kernel::macros::paste!([<$p _osr_clk>]): clk_branch = clk_branch::new($hr,1,$ns,$bit,stringify!($p)); }; }
+macro_rules! CLK_AIF_OSR_DIV_CLK { ($p:tt,$ns:expr,$width:expr) => { static mut ::kernel::macros::paste!([<$p _div_clk>]): clk_regmap_div = clk_regmap_div::new($ns,10,$width,stringify!($p)); }; }
+macro_rules! CLK_AIF_OSR_BIT_DIV_CLK { ($p:tt,$ns:expr,$hr:expr,$bit:expr) => { static mut ::kernel::macros::paste!([<$p _bit_div_clk>]): clk_branch = clk_branch::new($hr,0,$ns,$bit,stringify!($p)); }; }
+macro_rules! CLK_AIF_OSR_BIT_CLK { ($p:tt,$ns:expr,$shift:expr) => { static mut ::kernel::macros::paste!([<$p _bit_clk>]): clk_regmap_mux = clk_regmap_mux::new($ns,$shift,stringify!($p)); }; }
 
 CLK_AIF_OSR_SRC!(mi2s,0x48,0x4c); CLK_AIF_OSR_CLK!(mi2s,0x48,0x50,17); CLK_AIF_OSR_DIV_CLK!(mi2s,0x48,4); CLK_AIF_OSR_BIT_DIV_CLK!(mi2s,0x48,0x50,15); CLK_AIF_OSR_BIT_CLK!(mi2s,0x48,14);
 

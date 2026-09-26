@@ -144,6 +144,6 @@ unsafe fn store<T>(a:*mut core::ffi::c_void,v:T){*(a as *mut T)=v}
 
 #[no_mangle] pub unsafe extern "C" fn ioport_map(port:usize,_nr:U32)->*mut core::ffi::c_void{(IOPORT_MAP_BASE|port) as *mut _}
 #[no_mangle] pub unsafe extern "C" fn ioport_unmap(a:*mut core::ffi::c_void){if !indirect_addr(a){iounmap(a)}}
-#[cfg(feature="CONFIG_PCI")] #[no_mangle] pub unsafe extern "C" fn pci_iounmap(_dev:*mut core::ffi::c_void,a:*mut core::ffi::c_void){if !indirect_addr(a){iounmap(a)}}
+#[cfg(CONFIG_PCI)] #[no_mangle] pub unsafe extern "C" fn pci_iounmap(_dev:*mut core::ffi::c_void,a:*mut core::ffi::c_void){if !indirect_addr(a){iounmap(a)}}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

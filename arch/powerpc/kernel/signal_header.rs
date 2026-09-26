@@ -6,7 +6,7 @@
 
 // C header dependencies and build-time configuration are supplied externally.
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn get_sigframe(ksig: *mut ksignal, tsk: *mut task_struct,
                         frame_size: usize, is_32: ::core::ffi::c_int) -> *mut ::core::ffi::c_void;
     pub fn handle_signal32(ksig: *mut ksignal, oldset: *mut sigset_t,
@@ -61,7 +61,7 @@ macro_rules! unsafe_get_user_sigset {
 }
 
 #[cfg(CONFIG_VSX)]
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn copy_vsx_to_user(to: *mut ::core::ffi::c_void, task: *mut task_struct) -> ::core::ffi::c_ulong;
     pub fn copy_ckvsx_to_user(to: *mut ::core::ffi::c_void, task: *mut task_struct) -> ::core::ffi::c_ulong;
     pub fn copy_vsx_from_user(task: *mut task_struct, from: *mut ::core::ffi::c_void) -> ::core::ffi::c_ulong;
@@ -85,11 +85,11 @@ macro_rules! unsafe_copy_fpr_from_user { ($task:expr, $from:expr, $label:ident) 
 #[inline] pub unsafe fn copy_fpr_from_user(_task: *mut task_struct, _from: *mut ::core::ffi::c_void) -> ::core::ffi::c_ulong { 0 }
 
 #[cfg(CONFIG_PPC64)]
-pub unsafe extern "C" { pub fn handle_rt_signal64(ksig: *mut ksignal, set: *mut sigset_t, tsk: *mut task_struct) -> ::core::ffi::c_int; }
+unsafe extern "C" { pub fn handle_rt_signal64(ksig: *mut ksignal, set: *mut sigset_t, tsk: *mut task_struct) -> ::core::ffi::c_int; }
 #[cfg(not(CONFIG_PPC64))]
 #[inline] pub unsafe fn handle_rt_signal64(_ksig: *mut ksignal, _set: *mut sigset_t, _tsk: *mut task_struct) -> ::core::ffi::c_int { -EFAULT }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn signal_fault(tsk: *mut task_struct, regs: *mut pt_regs,
                         where_: *const ::core::ffi::c_char,
                         ptr: *mut ::core::ffi::c_void);

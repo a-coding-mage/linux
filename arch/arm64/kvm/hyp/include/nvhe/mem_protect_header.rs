@@ -79,14 +79,14 @@ pub unsafe fn __load_host_stage2() {
     }
 }
 
-#[cfg(feature = "CONFIG_NVHE_EL2_DEBUG")]
+#[cfg(CONFIG_NVHE_EL2_DEBUG)]
 extern "C" {
     pub fn pkvm_ownership_selftest(base: *mut core::ffi::c_void);
     pub fn init_selftest_vm(virt: *mut core::ffi::c_void) -> *mut pkvm_hyp_vcpu;
     pub fn teardown_selftest_vm();
 }
 
-#[cfg(not(feature = "CONFIG_NVHE_EL2_DEBUG"))]
+#[cfg(not(CONFIG_NVHE_EL2_DEBUG))]
 #[inline]
 pub fn pkvm_ownership_selftest(_base: *mut core::ffi::c_void) {}
 

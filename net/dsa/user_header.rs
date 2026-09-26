@@ -64,7 +64,7 @@ pub struct dsa_user_priv {
     pub dp: *mut dsa_port,
 
     /* CONFIG_NET_POLL_CONTROLLER */
-    #[cfg(feature = "CONFIG_NET_POLL_CONTROLLER")]
+    #[cfg(CONFIG_NET_POLL_CONTROLLER)]
     pub netpoll: *mut netpoll,
 
     /* TC context */

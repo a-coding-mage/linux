@@ -118,8 +118,8 @@ fn rapid_namespace_creation_destruction() {
         spare2: 0,
         user_ns_id: 0,
     };
-    let mut ns_ids_before = [0_u64; 256];
-    let mut ns_ids_after = [0_u64; 256];
+    let mut ns_ids_before = [0u64; 256];
+    let mut ns_ids_after = [0u64; 256];
     let ret_before: SsizeT;
     let ret_after: SsizeT;
     let mut i: c_int;
@@ -187,9 +187,9 @@ fn many_concurrent_namespaces() {
         spare2: 0,
         user_ns_id: 0,
     };
-    let mut ns_ids_before = [0_u64; 512];
-    let mut ns_ids_during = [0_u64; 512];
-    let mut ns_ids_after = [0_u64; 512];
+    let mut ns_ids_before = [0u64; 512];
+    let mut ns_ids_during = [0u64; 512];
+    let mut ns_ids_after = [0u64; 512];
     let ret_before: SsizeT;
     let ret_during: SsizeT;
     let ret_after: SsizeT;
@@ -359,8 +359,8 @@ fn rapid_mixed_namespace_creation() {
         spare2: 0,
         user_ns_id: 0,
     };
-    let mut ns_ids_before = [0_u64; 512];
-    let mut ns_ids_after = [0_u64; 512];
+    let mut ns_ids_before = [0u64; 512];
+    let mut ns_ids_after = [0u64; 512];
     let ret_before: SsizeT;
     let ret_after: SsizeT;
     let mut i: c_int;
@@ -438,8 +438,8 @@ fn nested_namespace_stress() {
         spare2: 0,
         user_ns_id: 0,
     };
-    let mut ns_ids_before = [0_u64; 512];
-    let mut ns_ids_after = [0_u64; 512];
+    let mut ns_ids_before = [0u64; 512];
+    let mut ns_ids_after = [0u64; 512];
     let ret_before: SsizeT;
     let ret_after: SsizeT;
     let mut i: c_int;
@@ -531,7 +531,7 @@ fn listns_pagination_stress() {
     let num_children: c_int = 30;
     let mut i: c_int;
     let mut sv = [0 as c_int; 2];
-    let mut all_ns_ids = [0_u64; 512];
+    let mut all_ns_ids = [0u64; 512];
     let mut total_found: c_int = 0;
 
     assert_eq_c!(unsafe { socketpair(AF_UNIX, SOCK_STREAM, 0, sv.as_mut_ptr()) }, 0);
@@ -606,7 +606,7 @@ fn listns_pagination_stress() {
     /* Paginate through all namespaces using small batch sizes */
     req.ns_id = 0;
     loop {
-        let mut batch = [0_u64; 5]; /* Small batch size to force pagination */
+        let mut batch = [0u64; 5]; /* Small batch size to force pagination */
         let ret: SsizeT;
 
         unsafe {
@@ -732,8 +732,8 @@ fn concurrent_namespace_operations() {
         spare2: 0,
         user_ns_id: 0,
     };
-    let mut ns_ids_before = [0_u64; 512];
-    let mut ns_ids_after = [0_u64; 512];
+    let mut ns_ids_before = [0u64; 512];
+    let mut ns_ids_after = [0u64; 512];
     let ret_before: SsizeT;
     let ret_after: SsizeT;
     let mut pids = [0 as PidT; 20];
@@ -766,7 +766,7 @@ fn concurrent_namespace_operations() {
             iterations = 0;
             while iterations < 10 {
                 let userns_fd: c_int;
-                let mut temp_ns_ids = [0_u64; 100];
+                let mut temp_ns_ids = [0u64; 100];
                 let ret: SsizeT;
 
                 /* Create a user namespace */
@@ -835,8 +835,8 @@ fn namespace_churn() {
         spare2: 0,
         user_ns_id: 0,
     };
-    let mut ns_ids_before = [0_u64; 512];
-    let mut ns_ids_after = [0_u64; 512];
+    let mut ns_ids_before = [0u64; 512];
+    let mut ns_ids_after = [0u64; 512];
     let ret_before: SsizeT;
     let ret_after: SsizeT;
     let mut cycle: c_int;

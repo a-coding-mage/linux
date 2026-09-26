@@ -55,8 +55,8 @@ macro_rules! ___backtrack_faulted {
                 "__get_kernel_nofault_faulted_{0}:\n",
                 "mov $1, {faulted}",
                 "_end_{0}:",
-                faulted = out(reg) __faulted,
-                segv_continue = lateout(reg) $segv_continue,
+                $faulted = out(reg) __faulted,
+                $segv_continue = lateout(reg) $segv_continue,
                 options(nostack)
             );
         }

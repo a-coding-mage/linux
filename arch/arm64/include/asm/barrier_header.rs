@@ -26,9 +26,9 @@ macro_rules! nops { ($n:expr) => {{ unsafe { core::arch::asm!(concat!(".rept ", 
 #[macro_export] macro_rules! gsb_ack { () => {{ unsafe { core::arch::asm!("gsb_ack", options(nostack)); } }}; }
 #[macro_export] macro_rules! gsb_sys { () => {{ unsafe { core::arch::asm!("gsb_sys", options(nostack)); } }}; }
 
-#[cfg(feature = "CONFIG_ARM64_PSEUDO_NMI")]
+#[cfg(CONFIG_ARM64_PSEUDO_NMI)]
 #[macro_export] macro_rules! pmr_sync { () => {{ unsafe { core::arch::asm!("dsb sy", options(nostack)); } }}; }
-#[cfg(not(feature = "CONFIG_ARM64_PSEUDO_NMI"))]
+#[cfg(not(CONFIG_ARM64_PSEUDO_NMI))]
 #[macro_export] macro_rules! pmr_sync { () => {{}}; }
 
 #[macro_export] macro_rules! __mb { () => { $crate::dsb!(sy) }; }

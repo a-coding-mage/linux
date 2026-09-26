@@ -111,13 +111,13 @@ pub unsafe fn amdgpu_dm_psr_set_event(dm: *mut amdgpu_display_manager, stream: *
 }
 
 // The following accessors are compiled only when CONFIG_DRM_AMD_DC_KUNIT_TEST is enabled.
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub unsafe fn amdgpu_dm_psr_get_dc_feature_mask() -> u32 { amdgpu_dc_feature_mask }
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub unsafe fn amdgpu_dm_psr_set_dc_feature_mask(feature_mask: u32) { amdgpu_dc_feature_mask = feature_mask; }
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub unsafe fn amdgpu_dm_psr_get_dc_debug_mask() -> u32 { amdgpu_dc_debug_mask }
-#[cfg(feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST")]
+#[cfg(CONFIG_DRM_AMD_DC_KUNIT_TEST)]
 pub unsafe fn amdgpu_dm_psr_set_dc_debug_mask(debug_mask: u32) { amdgpu_dc_debug_mask = debug_mask; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

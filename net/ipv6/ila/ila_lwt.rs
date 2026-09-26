@@ -25,9 +25,10 @@ unsafe fn ila_output(net: *mut net, sk: *mut sock, skb: *mut sk_buff) -> c_int {
     let ilwt = ila_lwt_lwtunnel((*orig_dst).lwtstate);
     let mut dst: *mut dst_entry;
     let mut err: c_int = -EINVAL;
+    'drop: {
 
     if (*skb).protocol != htons(ETH_P_IPV6) {
-        goto_drop!(drop);
+        break 'drop;
     }
 
     if (*ilwt).lwt_output != 0 {
@@ -57,13 +58,13 @@ unsafe fn ila_output(net: *mut net, sk: *mut sock, skb: *mut sk_buff) -> c_int {
         if (*dst).error != 0 {
             err = -EHOSTUNREACH;
             dst_release(dst);
-            goto_drop!(drop);
+            break 'drop;
         }
 
         dst = xfrm_lookup(net, dst, flowi6_to_flowi(&mut fl6), core::ptr::null_mut(), 0);
         if IS_ERR(dst) {
             err = PTR_ERR(dst);
-            goto_drop!(drop);
+            break 'drop;
         }
 
         if (*ilwt).connected != 0 && (*orig_dst).lwtstate != (*dst).lwtstate {
@@ -76,8 +77,8 @@ unsafe fn ila_output(net: *mut net, sk: *mut sock, skb: *mut sk_buff) -> c_int {
     skb_dst_drop(skb);
     skb_dst_set(skb, dst);
     return dst_output(net, sk, skb);
-
-drop:
+    }
+    
     kfree_skb(skb);
     err
 }

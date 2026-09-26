@@ -216,14 +216,14 @@ macro_rules! Is_tbit_set { () => { Tbit!(Fpustatus_register!()) }; }
 macro_rules! Is_cbit_set { () => { Cbit!(Fpustatus_register!()) }; }
 macro_rules! Set_status_cbit { ($value:expr) => { Bitfield_deposit($value, 5, 1, Fpustatus_register!()) }; }
 
-macro_rules! Unordered { ($cond:expr) => { Unorderedbit($cond) }; }
-macro_rules! Equal { ($cond:expr) => { Equalbit($cond) }; }
-macro_rules! Lessthan { ($cond:expr) => { Lessthanbit($cond) }; }
-macro_rules! Greaterthan { ($cond:expr) => { Greaterthanbit($cond) }; }
-macro_rules! Exception { ($cond:expr) => { Exceptionbit($cond) }; }
-macro_rules! Ext_isone_sign { ($extent:expr) => { Extsign($extent) }; }
-macro_rules! Ext_isnotzero { ($extent:expr) => { Extall($extent) }; }
-macro_rules! Ext_isnotzero_lower { ($extent:expr) => { Extlow31($extent) }; }
+macro_rules! Unordered { ($cond:expr) => { Unorderedbit!($cond) }; }
+macro_rules! Equal { ($cond:expr) => { Equalbit!($cond) }; }
+macro_rules! Lessthan { ($cond:expr) => { Lessthanbit!($cond) }; }
+macro_rules! Greaterthan { ($cond:expr) => { Greaterthanbit!($cond) }; }
+macro_rules! Exception { ($cond:expr) => { Exceptionbit!($cond) }; }
+macro_rules! Ext_isone_sign { ($extent:expr) => { Extsign!($extent) }; }
+macro_rules! Ext_isnotzero { ($extent:expr) => { Extall!($extent) }; }
+macro_rules! Ext_isnotzero_lower { ($extent:expr) => { Extlow31!($extent) }; }
 macro_rules! Ext_leftshiftby1 { ($extent:expr) => { $extent <<= 1 }; }
 macro_rules! Ext_negate { ($extent:expr) => { $extent = 0i32.wrapping_sub($extent as i32) }; }
 macro_rules! Ext_setone_low { ($extent:expr) => { Bitfield_deposit(1, 31, 1, $extent) }; }

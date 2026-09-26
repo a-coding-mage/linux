@@ -142,7 +142,7 @@ pub unsafe fn arch_stack_walk_reliable(
          * Mark stacktraces with kretprobed functions on them
          * as unreliable.
          */
-        #[cfg(feature = "CONFIG_RETHOOK")]
+        #[cfg(CONFIG_RETHOOK)]
         if ip == arch_rethook_trampoline as c_ulong {
             return -EINVAL;
         }
@@ -157,18 +157,18 @@ pub unsafe fn arch_stack_walk_reliable(
     0
 }
 
-#[cfg(all(feature = "CONFIG_PPC_BOOK3S_64", feature = "CONFIG_NMI_IPI"))]
+#[cfg(all(CONFIG_PPC_BOOK3S_64, CONFIG_NMI_IPI))]
 unsafe fn handle_backtrace_ipi(regs: *mut pt_regs) {
     nmi_cpu_backtrace(regs);
 }
 
-#[cfg(all(feature = "CONFIG_PPC_BOOK3S_64", feature = "CONFIG_NMI_IPI"))]
+#[cfg(all(CONFIG_PPC_BOOK3S_64, CONFIG_NMI_IPI))]
 unsafe fn raise_backtrace_ipi(mask: *mut cpumask_t) {
     let mut p: *mut paca_struct;
     let mut cpu: c_uint;
     let mut delay_us: u64;
 
-    for_each_cpu!(cpu, mask) {
+    for_each_cpu!(cpu, mask, {
         if cpu == smp_processor_id() {
             handle_backtrace_ipi(core::ptr::null_mut());
             continue;
@@ -209,10 +209,10 @@ unsafe fn raise_backtrace_ipi(mask: *mut cpumask_t) {
 
         pr_warn!("Back trace of paca->saved_r1 (0x%016llx) (possibly stale):\n", (*p).saved_r1);
         show_stack((*p).__current, (*p).saved_r1 as *mut c_ulong, KERN_WARNING);
-    }
+    });
 }
 
-#[cfg(all(feature = "CONFIG_PPC_BOOK3S_64", feature = "CONFIG_NMI_IPI"))]
+#[cfg(all(CONFIG_PPC_BOOK3S_64, CONFIG_NMI_IPI))]
 pub unsafe fn arch_trigger_cpumask_backtrace(mask: *const cpumask_t, exclude_cpu: c_int) {
     nmi_trigger_cpumask_backtrace(mask, exclude_cpu, raise_backtrace_ipi);
 }

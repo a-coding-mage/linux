@@ -94,10 +94,10 @@ extern "C" {
     pub fn tipc_rcv(net: *mut net, skb: *mut sk_buff, b: *mut tipc_bearer);
     pub static mut eth_media_info: tipc_media;
     // Declared only when CONFIG_TIPC_MEDIA_IB is enabled.
-    #[cfg(feature = "CONFIG_TIPC_MEDIA_IB")]
+    #[cfg(CONFIG_TIPC_MEDIA_IB)]
     pub static mut ib_media_info: tipc_media;
     // Declared only when CONFIG_TIPC_MEDIA_UDP is enabled.
-    #[cfg(feature = "CONFIG_TIPC_MEDIA_UDP")]
+    #[cfg(CONFIG_TIPC_MEDIA_UDP)]
     pub static mut udp_media_info: tipc_media;
     pub fn tipc_nl_bearer_disable(skb: *mut sk_buff, info: *mut genl_info) -> i32;
     pub fn __tipc_nl_bearer_disable(skb: *mut sk_buff, info: *mut genl_info) -> i32;

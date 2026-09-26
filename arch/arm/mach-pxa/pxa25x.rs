@@ -16,22 +16,22 @@
 
 // C header dependencies are supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 const SLEEP_SAVE_PSTR: usize = 0;
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 const SLEEP_SAVE_COUNT: usize = 1;
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa25x_cpu_pm_save(sleep_save: *mut libc::c_ulong) {
     *sleep_save.add(SLEEP_SAVE_PSTR) = PSTR;
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa25x_cpu_pm_restore(sleep_save: *mut libc::c_ulong) {
     PSTR = *sleep_save.add(SLEEP_SAVE_PSTR);
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa25x_cpu_pm_enter(state: suspend_state_t) {
     // Clear reset status
     RCSR = RCSR_HWR | RCSR_WDR | RCSR_SMR | RCSR_GPR;
@@ -42,20 +42,20 @@ unsafe fn pxa25x_cpu_pm_enter(state: suspend_state_t) {
     }
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa25x_cpu_pm_prepare() -> libc::c_int {
     // set resume return address
     PSPR = __pa_symbol(cpu_resume);
     0
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa25x_cpu_pm_finish() {
     // ensure not to come back here if it wasn't intended
     PSPR = 0;
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 static mut PXA25X_CPU_PM_FNS: pxa_cpu_pm_fns = pxa_cpu_pm_fns {
     save_count: SLEEP_SAVE_COUNT,
     valid: Some(suspend_valid_only_mem),
@@ -66,12 +66,12 @@ static mut PXA25X_CPU_PM_FNS: pxa_cpu_pm_fns = pxa_cpu_pm_fns {
     finish: Some(pxa25x_cpu_pm_finish),
 };
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn pxa25x_init_pm() {
     pxa_cpu_pm_fns = &raw mut PXA25X_CPU_PM_FNS;
 }
 
-#[cfg(not(feature = "CONFIG_PM"))]
+#[cfg(not(CONFIG_PM))]
 #[inline]
 unsafe fn pxa25x_init_pm() {}
 

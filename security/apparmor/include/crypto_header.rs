@@ -18,7 +18,7 @@ extern "C" {
 }
 
 // When CONFIG_SECURITY_APPARMOR_HASH is enabled:
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR_HASH")]
+#[cfg(CONFIG_SECURITY_APPARMOR_HASH)]
 extern "C" {
     pub fn init_profile_hash() -> i32;
     pub fn aa_hash_size() -> u32;
@@ -32,13 +32,13 @@ extern "C" {
 }
 
 // When CONFIG_SECURITY_APPARMOR_HASH is disabled:
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_HASH"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_HASH))]
 #[inline]
 pub fn aa_calc_hash(_data: *mut c_void, _len: usize) -> *mut c_char {
     std::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_HASH"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_HASH))]
 #[inline]
 pub fn aa_calc_profile_hash(
     _profile: *mut aa_profile,
@@ -49,7 +49,7 @@ pub fn aa_calc_profile_hash(
     0
 }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_HASH"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_HASH))]
 #[inline]
 pub fn aa_hash_size() -> u32 {
     0

@@ -12,7 +12,7 @@ pub const PCIBIOS_MIN_MEM: i32 = 16;
 
 // Equivalent of: defined(CONFIG_PCI) && defined(CONFIG_NUMA)
 // This block is available when PCI and NUMA support are enabled.
-#[cfg(all(feature = "CONFIG_PCI", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_PCI, CONFIG_NUMA))]
 #[inline]
 pub unsafe fn pcibus_to_node(bus: *mut pci_bus) -> i32 {
     dev_to_node(&(*bus).dev)
@@ -20,7 +20,7 @@ pub unsafe fn pcibus_to_node(bus: *mut pci_bus) -> i32 {
 
 // Equivalent of the conditional cpumask_of_pcibus macro.  The referenced
 // types and functions are provided by the surrounding kernel bindings.
-#[cfg(all(feature = "CONFIG_PCI", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_PCI, CONFIG_NUMA))]
 #[macro_export]
 macro_rules! cpumask_of_pcibus {
     ($bus:expr) => {{

@@ -4,7 +4,7 @@
 #[repr(C)]
 pub union tcp_ao_addr {
     pub a4: in_addr,
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub a6: in6_addr,
 }
 
@@ -58,30 +58,30 @@ pub struct tcp_ao_info {
     pub refcnt: refcount_t, pub rcu: rcu_head,
 }
 
-#[cfg(feature = "CONFIG_TCP_MD5SIG")]
+#[cfg(CONFIG_TCP_MD5SIG)]
 extern "C" { pub static mut tcp_md5_needed: static_key_false_deferred; }
-#[cfg(feature = "CONFIG_TCP_MD5SIG")]
+#[cfg(CONFIG_TCP_MD5SIG)]
 #[inline] pub unsafe fn static_branch_tcp_md5() -> bool { static_branch_unlikely(&mut tcp_md5_needed.key) }
-#[cfg(not(feature = "CONFIG_TCP_MD5SIG"))]
+#[cfg(not(CONFIG_TCP_MD5SIG))]
 #[inline] pub const fn static_branch_tcp_md5() -> bool { false }
 
-#[cfg(feature = "CONFIG_TCP_AO")]
+#[cfg(CONFIG_TCP_AO)]
 extern "C" { pub static mut tcp_ao_needed: static_key_false_deferred; }
-#[cfg(feature = "CONFIG_TCP_AO")]
+#[cfg(CONFIG_TCP_AO)]
 #[inline] pub unsafe fn static_branch_tcp_ao() -> bool { static_branch_unlikely(&mut tcp_ao_needed.key) }
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub const fn static_branch_tcp_ao() -> bool { false }
 
-#[cfg(feature = "CONFIG_TCP_AO")]
+#[cfg(CONFIG_TCP_AO)]
 #[repr(C)] pub struct tcp4_ao_context { pub saddr: __be32, pub daddr: __be32, pub sport: __be16, pub dport: __be16, pub sisn: __be32, pub disn: __be32 }
-#[cfg(feature = "CONFIG_TCP_AO")]
+#[cfg(CONFIG_TCP_AO)]
 #[repr(C)] pub struct tcp6_ao_context { pub saddr: in6_addr, pub daddr: in6_addr, pub sport: __be16, pub dport: __be16, pub sisn: __be32, pub disn: __be32 }
 
-#[cfg(feature = "CONFIG_TCP_AO")]
+#[cfg(CONFIG_TCP_AO)]
 pub const TCP_AO_ESTABLISHED: u32 = TCPF_ESTABLISHED | TCPF_FIN_WAIT1 | TCPF_FIN_WAIT2 | TCPF_CLOSE_WAIT | TCPF_LAST_ACK | TCPF_CLOSING;
 
 /* External function declarations from CONFIG_TCP_AO. */
-#[cfg(feature = "CONFIG_TCP_AO")]
+#[cfg(CONFIG_TCP_AO)]
 extern "C" {
     pub fn tcp_ao_transmit_skb(sk: *mut sock, skb: *mut sk_buff, key: *mut tcp_ao_key, th: *mut tcphdr, hash_location: *mut u8);
     pub fn tcp_ao_mac_update(mac_ctx: *mut tcp_ao_mac_ctx, data: *const core::ffi::c_void, data_len: usize);
@@ -112,24 +112,24 @@ extern "C" {
     pub fn tcp_v6_parse_ao(sk: *mut sock, cmd: i32, optval: sockptr_t, optlen: i32) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub unsafe fn tcp_ao_transmit_skb(_: *mut sock, _: *mut sk_buff, _: *mut tcp_ao_key, _: *mut tcphdr, _: *mut u8) {}
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub const fn tcp_ao_ignore_icmp(_: *const sock, _: i32, _: i32, _: i32) -> bool { false }
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub fn tcp_ao_do_lookup(_: *const sock, _: i32, _: *const tcp_ao_addr, _: i32, _: i32, _: i32) -> *mut tcp_ao_key { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub const fn tcp_ao_get_mkts(_: *mut sock, _: sockptr_t, _: sockptr_t) -> i32 { -ENOPROTOOPT }
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub const fn tcp_ao_get_sock_info(_: *mut sock, _: sockptr_t, _: sockptr_t) -> i32 { -ENOPROTOOPT }
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub const fn tcp_ao_get_repair(_: *mut sock, _: sockptr_t, _: sockptr_t) -> i32 { -ENOPROTOOPT }
-#[cfg(not(feature = "CONFIG_TCP_AO"))]
+#[cfg(not(CONFIG_TCP_AO))]
 #[inline] pub const fn tcp_ao_set_repair(_: *mut sock, _: sockptr_t, _: u32) -> i32 { -ENOPROTOOPT }
 
-#[cfg(any(feature = "CONFIG_TCP_MD5SIG", feature = "CONFIG_TCP_AO"))]
+#[cfg(any(CONFIG_TCP_MD5SIG, CONFIG_TCP_AO))]
 extern "C" { pub fn tcp_do_parse_auth_options(th: *const tcphdr, md5_hash: *mut *const u8, ao_hash: *mut *const u8) -> i32; }
-#[cfg(not(any(feature = "CONFIG_TCP_MD5SIG", feature = "CONFIG_TCP_AO")))]
+#[cfg(not(any(CONFIG_TCP_MD5SIG, CONFIG_TCP_AO)))]
 pub unsafe fn tcp_do_parse_auth_options(_: *const tcphdr, md5_hash: *mut *const u8, ao_hash: *mut *const u8) -> i32 { *md5_hash = core::ptr::null(); *ao_hash = core::ptr::null(); 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -9,18 +9,18 @@
 
 // Dependency supplied by the surrounding translation unit: irq.h.
 
-#[cfg(feature = "CONFIG_IRQ_MIPS_CPU")]
+#[cfg(CONFIG_IRQ_MIPS_CPU)]
 pub const TXX9_IRQ_BASE: usize = MIPS_CPU_IRQ_BASE + 8;
 
 #[cfg(all(
-    not(feature = "CONFIG_IRQ_MIPS_CPU"),
-    feature = "CONFIG_I8259"
+    not(CONFIG_IRQ_MIPS_CPU),
+    CONFIG_I8259
 ))]
 pub const TXX9_IRQ_BASE: usize = I8259A_IRQ_BASE + 16;
 
 #[cfg(all(
-    not(feature = "CONFIG_IRQ_MIPS_CPU"),
-    not(feature = "CONFIG_I8259")
+    not(CONFIG_IRQ_MIPS_CPU),
+    not(CONFIG_I8259)
 ))]
 pub const TXX9_IRQ_BASE: usize = 0;
 

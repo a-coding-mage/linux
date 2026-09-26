@@ -80,7 +80,7 @@ pub unsafe fn pidfs_free_pid(pid: *mut pid) {
     else if llist_add(&mut (*attr).data.pidfs_llist, &mut pidfs_free_list) { schedule_work(&mut pidfs_free_work); }
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe fn pidfd_show_fdinfo(m: *mut seq_file, f: *mut file) {
     let pid = pidfd_pid(f); let mut ns: *mut pid_namespace = core::ptr::null_mut(); let mut nr: pid_t = -1;
     if pid_has_task(pid, PIDTYPE_PID) { ns = proc_pid_ns(file_inode((*m).file).sb); nr = pid_nr_ns(pid, ns); }
@@ -129,7 +129,7 @@ unsafe fn pidfd_ioctl(file: *mut file, cmd: c_uint, arg: c_ulong) -> c_long {
     up_read(&mut (*(*task).signal).exec_update_lock); result
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn pidfd_compat_ioctl(file: *mut file, mut cmd: c_uint, arg: c_ulong) -> c_long { if cmd == FS_IOC32_GETVERSION { cmd = FS_IOC_GETVERSION; } pidfd_ioctl(file, cmd, compat_ptr(arg) as c_ulong) }
 
 unsafe fn pidfs_file_release(inode: *mut inode, file: *mut file) -> c_int { if (*file).f_flags & PIDFD_AUTOKILL == 0 { return 0; } let task = pid_task((*inode).i_private as *mut pid, PIDTYPE_TGID); if task.is_null() { return 0; } if WARN_ON_ONCE((*task).flags & (PF_KTHREAD | PF_USER_WORKER) != 0) { return 0; } do_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_TGID); 0 }
@@ -138,7 +138,7 @@ pub unsafe fn pidfd_pid(file: *const file) -> *mut pid { if (*file).f_op != &pid
 
 pub unsafe fn pidfs_exit(tsk: *mut task_struct) { let pid = task_pid(tsk); let attr; spin_lock_irq(&mut (*pid).wait_pidfd.lock); attr = (*pid).attr; if attr.is_null() { (*pid).attr = PIDFS_PID_DEAD; spin_unlock_irq(&mut (*pid).wait_pidfd.lock); return; } spin_unlock_irq(&mut (*pid).wait_pidfd.lock); (*attr).data.anon.cgroupid = cgroup_id(task_dfl_cgroup(tsk)); (*attr).data.anon.exit_code = (*tsk).exit_code; smp_wmb(); set_bit(PIDFS_ATTR_BIT_EXIT as usize, &mut (*attr).data.anon.attr_mask); }
 
-#[cfg(feature = "CONFIG_COREDUMP")]
+#[cfg(CONFIG_COREDUMP)]
 pub unsafe fn pidfs_coredump(cprm: *const coredump_params) { let attr = READ_ONCE((*(*cprm).pid).attr); VFS_WARN_ON_ONCE(attr.is_null()); (*attr).data.anon.coredump_mask = pidfs_coredump_mask((*cprm).dumpable) | PIDFD_COREDUMPED; (*attr).data.anon.coredump_signal = (*(*cprm).siginfo).si_signo; (*attr).data.anon.coredump_code = (*(*cprm).siginfo).si_code; smp_wmb(); set_bit(PIDFS_ATTR_BIT_COREDUMP as usize, &mut (*attr).data.anon.attr_mask); }
 
 static mut pidfs_mnt: *mut vfsmount = core::ptr::null_mut();

@@ -5,6 +5,7 @@
 
 unsafe fn imu_v11_0_init_microcode(adev: *mut amdgpu_device) -> i32 {
     let mut ucode_prefix = [0i8; 30];
+    'out: {
     let mut err: i32;
     let imu_hdr: *const imu_firmware_header_v1_0;
     let mut info: *mut amdgpu_firmware_info = core::ptr::null_mut();
@@ -17,7 +18,7 @@ unsafe fn imu_v11_0_init_microcode(adev: *mut amdgpu_device) -> i32 {
         err = amdgpu_ucode_request(adev, &mut (*(*adev).gfx).imu_fw, AMDGPU_UCODE_REQUIRED,
             "amdgpu/%s_imu.bin", ucode_prefix.as_ptr());
     }
-    if err != 0 { goto_out!(out); }
+    if err != 0 { break 'out; }
     imu_hdr = (*(*adev).gfx).imu_fw.data as *const imu_firmware_header_v1_0;
     if (*adev).firmware.load_type == AMDGPU_FW_LOAD_PSP {
         info = &mut (*adev).firmware.ucode[AMDGPU_UCODE_ID_IMU_I];
@@ -27,7 +28,8 @@ unsafe fn imu_v11_0_init_microcode(adev: *mut amdgpu_device) -> i32 {
         (*info).ucode_id = AMDGPU_UCODE_ID_IMU_D; (*info).fw = (*adev).gfx.imu_fw;
         (*adev).firmware.fw_size += ALIGN(le32_to_cpu((*imu_hdr).imu_dram_ucode_size_bytes), PAGE_SIZE);
     } else { (*adev).gfx.imu_fw_version = le32_to_cpu((*imu_hdr).header.ucode_version); }
-out:
+    }
+    
     if err != 0 { dev_err!((*adev).dev, "gfx11: Failed to load firmware \"%s_imu.bin\"\n", ucode_prefix.as_ptr()); amdgpu_ucode_release(&mut (*(*adev).gfx).imu_fw); }
     err
 }

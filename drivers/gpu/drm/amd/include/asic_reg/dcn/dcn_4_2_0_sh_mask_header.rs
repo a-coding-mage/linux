@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 /* Copyright 2026 Advanced Micro Devices, Inc. */
 
-pub const _dcn_4_2_0_SH_MASK_HEADER: u32 = ;
 
 
 // addressBlock: dce_dc_hda_azcontroller_azdec

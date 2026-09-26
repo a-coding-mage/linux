@@ -103,6 +103,10 @@ static mut kirkwood_cpufreq_driver: cpufreq_driver = cpufreq_driver {
 unsafe fn kirkwood_cpufreq_probe(pdev: *mut platform_device) -> c_int {
     let np: *mut device_node;
     let mut err: c_int;
+    'out_node: {
+    'out_cpu: {
+    'out_ddr: {
+    'out_powersave: {
 
     priv_.dev = &mut (*pdev).dev;
 
@@ -121,13 +125,13 @@ unsafe fn kirkwood_cpufreq_probe(pdev: *mut platform_device) -> c_int {
     if IS_ERR(priv_.cpu_clk) {
         dev_err(priv_.dev, b"Unable to get cpuclk\n\0".as_ptr() as *const c_char);
         err = PTR_ERR(priv_.cpu_clk);
-        goto out_node;
+        break 'out_node;
     }
 
     err = clk_prepare_enable(priv_.cpu_clk);
     if err != 0 {
         dev_err(priv_.dev, b"Unable to prepare cpuclk\n\0".as_ptr() as *const c_char);
-        goto out_node;
+        break 'out_node;
     }
 
     kirkwood_freq_table[0].frequency = clk_get_rate(priv_.cpu_clk) / 1000;
@@ -136,13 +140,13 @@ unsafe fn kirkwood_cpufreq_probe(pdev: *mut platform_device) -> c_int {
     if IS_ERR(priv_.ddr_clk) {
         dev_err(priv_.dev, b"Unable to get ddrclk\n\0".as_ptr() as *const c_char);
         err = PTR_ERR(priv_.ddr_clk);
-        goto out_cpu;
+        break 'out_cpu;
     }
 
     err = clk_prepare_enable(priv_.ddr_clk);
     if err != 0 {
         dev_err(priv_.dev, b"Unable to prepare ddrclk\n\0".as_ptr() as *const c_char);
-        goto out_cpu;
+        break 'out_cpu;
     }
     kirkwood_freq_table[1].frequency = clk_get_rate(priv_.ddr_clk) / 1000;
 
@@ -150,30 +154,33 @@ unsafe fn kirkwood_cpufreq_probe(pdev: *mut platform_device) -> c_int {
     if IS_ERR(priv_.powersave_clk) {
         dev_err(priv_.dev, b"Unable to get powersave\n\0".as_ptr() as *const c_char);
         err = PTR_ERR(priv_.powersave_clk);
-        goto out_ddr;
+        break 'out_ddr;
     }
     err = clk_prepare_enable(priv_.powersave_clk);
     if err != 0 {
         dev_err(priv_.dev, b"Unable to prepare powersave clk\n\0".as_ptr() as *const c_char);
-        goto out_ddr;
+        break 'out_ddr;
     }
 
     err = cpufreq_register_driver(&mut kirkwood_cpufreq_driver);
     if err != 0 {
         dev_err(priv_.dev, b"Failed to register cpufreq driver\n\0".as_ptr() as *const c_char);
-        goto out_powersave;
+        break 'out_powersave;
     }
 
     of_node_put(np);
     return 0;
-
-out_powersave:
+    }
+    
     clk_disable_unprepare(priv_.powersave_clk);
-out_ddr:
+    }
+    
     clk_disable_unprepare(priv_.ddr_clk);
-out_cpu:
+    }
+    
     clk_disable_unprepare(priv_.cpu_clk);
-out_node:
+    }
+    
     of_node_put(np);
     err
 }

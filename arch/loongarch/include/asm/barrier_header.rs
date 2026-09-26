@@ -53,9 +53,9 @@ pub const OR_RW: i32 = 0b10100;
 #[inline(always)] pub unsafe fn __smp_wmb() { o_wsync(); }
 
 /* CONFIG_SMP controls whether the weak LL/SC barrier emits dbar 0x700. */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const __WEAK_LLSC_MB: &str = "\tdbar 0x700\n";
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const __WEAK_LLSC_MB: &str = "\t\n";
 
 /* Supplied by the generic barrier implementation. */

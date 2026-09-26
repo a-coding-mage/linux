@@ -115,25 +115,25 @@ macro_rules! elf_fdpic_plat_init {
 
 #[macro_export]
 macro_rules! set_personality {
-    ($ex:expr) => { $crate::set_personality($crate::PER_LINUX_32BIT | ($crate::current_personality() & !$crate::PER_MASK)) };
+    ($ex:expr) => { $crate::set_personality!($crate::PER_LINUX_32BIT | ($crate::current_personality() & !$crate::PER_MASK)) };
 }
 
-#[cfg(feature = "CONFIG_VSYSCALL")]
+#[cfg(CONFIG_VSYSCALL)]
 pub const ARCH_HAS_SETUP_ADDITIONAL_PAGES: bool = true;
 
-#[cfg(feature = "CONFIG_VSYSCALL")]
+#[cfg(CONFIG_VSYSCALL)]
 #[macro_export]
 macro_rules! vsyscall_aux_ent {
     () => { if $crate::vdso_enabled != 0 { $crate::new_aux_ent($crate::AT_SYSINFO_EHDR, $crate::VDSO_BASE); } else { $crate::new_aux_ent($crate::AT_IGNORE, 0); } };
 }
-#[cfg(not(feature = "CONFIG_VSYSCALL"))]
+#[cfg(not(CONFIG_VSYSCALL))]
 #[macro_export]
 macro_rules! vsyscall_aux_ent { () => { $crate::new_aux_ent($crate::AT_IGNORE, 0); }; }
 
-#[cfg(feature = "CONFIG_SH_FPU")]
+#[cfg(CONFIG_SH_FPU)]
 #[macro_export]
 macro_rules! fpu_aux_ent { () => { $crate::new_aux_ent($crate::AT_FPUCW, $crate::FPSCR_INIT); }; }
-#[cfg(not(feature = "CONFIG_SH_FPU"))]
+#[cfg(not(CONFIG_SH_FPU))]
 #[macro_export]
 macro_rules! fpu_aux_ent { () => { $crate::new_aux_ent($crate::AT_IGNORE, 0); }; }
 

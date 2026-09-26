@@ -24,9 +24,9 @@
 
 /* C includes and register-list macros are supplied by the surrounding build. */
 
-static const disp_clk_regs: clk_mgr_registers = clk_mgr_registers { CLK_COMMON_REG_LIST_DCE_BASE!() };
-static const disp_clk_shift: clk_mgr_shift = clk_mgr_shift { CLK_COMMON_MASK_SH_LIST_DCE_COMMON_BASE_SHIFT!() };
-static const disp_clk_mask: clk_mgr_mask = clk_mgr_mask { CLK_COMMON_MASK_SH_LIST_DCE_COMMON_BASE_MASK!() };
+static disp_clk_regs: clk_mgr_registers = clk_mgr_registers { CLK_COMMON_REG_LIST_DCE_BASE!() };
+static disp_clk_shift: clk_mgr_shift = clk_mgr_shift { CLK_COMMON_MASK_SH_LIST_DCE_COMMON_BASE_SHIFT!() };
+static disp_clk_mask: clk_mgr_mask = clk_mgr_mask { CLK_COMMON_MASK_SH_LIST_DCE_COMMON_BASE_MASK!() };
 
 unsafe fn determine_sclk_from_bounding_box(dc: *const dc, required_sclk: u32) -> u32 {
     if (*dc).sclk_lvls.num_levels == 0 {
@@ -69,7 +69,7 @@ pub unsafe fn dce110_fill_display_configs(
     context: *const dc_state,
     pp_display_cfg: *mut dm_pp_display_configuration,
 ) {
-    let dc = (*(*context).clk_mgr).ctx->dc;
+    let dc = (*(*(*context).clk_mgr).ctx).dc;
     let mut num_cfgs: i32 = 0;
     (*pp_display_cfg).avail_mclk_switch_time_us = dce110_get_min_vblank_time_us(context);
     (*pp_display_cfg).disp_clk_khz = (*(*dc).clk_mgr).clks.dispclk_khz;

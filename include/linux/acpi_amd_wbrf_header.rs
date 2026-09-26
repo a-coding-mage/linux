@@ -45,30 +45,28 @@ pub enum wbrf_notifier_actions {
 }
 
 /* CONFIG_AMD_WBRF is a build-time condition; select the corresponding API. */
-#[cfg(feature = "CONFIG_AMD_WBRF")]
+#[cfg(CONFIG_AMD_WBRF)]
 extern "C" {
     pub fn acpi_amd_wbrf_supported_producer(dev: *mut crate::device::device) -> bool;
     pub fn acpi_amd_wbrf_add_remove(
         dev: *mut crate::device::device,
         action: u8,
-        input: *mut wbrf_ranges_in_out,
-    ) -> i32;
+        input: *mut wbrf_ranges_in_out) -> i32;
     pub fn acpi_amd_wbrf_supported_consumer(dev: *mut crate::device::device) -> bool;
     pub fn amd_wbrf_retrieve_freq_band(
         dev: *mut crate::device::device,
-        output: *mut wbrf_ranges_in_out,
-    ) -> i32;
+        output: *mut wbrf_ranges_in_out) -> i32;
     pub fn amd_wbrf_register_notifier(nb: *mut crate::notifier::notifier_block) -> i32;
     pub fn amd_wbrf_unregister_notifier(nb: *mut crate::notifier::notifier_block) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_AMD_WBRF"))]
+#[cfg(not(CONFIG_AMD_WBRF))]
 #[inline]
 pub unsafe fn acpi_amd_wbrf_supported_consumer(_dev: *mut crate::device::device) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_AMD_WBRF"))]
+#[cfg(not(CONFIG_AMD_WBRF))]
 #[inline]
 pub unsafe fn acpi_amd_wbrf_add_remove(
     _dev: *mut crate::device::device,
@@ -78,13 +76,13 @@ pub unsafe fn acpi_amd_wbrf_add_remove(
     -crate::ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_AMD_WBRF"))]
+#[cfg(not(CONFIG_AMD_WBRF))]
 #[inline]
 pub unsafe fn acpi_amd_wbrf_supported_producer(_dev: *mut crate::device::device) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_AMD_WBRF"))]
+#[cfg(not(CONFIG_AMD_WBRF))]
 #[inline]
 pub unsafe fn amd_wbrf_retrieve_freq_band(
     _dev: *mut crate::device::device,
@@ -93,13 +91,13 @@ pub unsafe fn amd_wbrf_retrieve_freq_band(
     -crate::ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_AMD_WBRF"))]
+#[cfg(not(CONFIG_AMD_WBRF))]
 #[inline]
 pub unsafe fn amd_wbrf_register_notifier(_nb: *mut crate::notifier::notifier_block) -> i32 {
     -crate::ENODEV
 }
 
-#[cfg(not(feature = "CONFIG_AMD_WBRF"))]
+#[cfg(not(CONFIG_AMD_WBRF))]
 #[inline]
 pub unsafe fn amd_wbrf_unregister_notifier(_nb: *mut crate::notifier::notifier_block) -> i32 {
     -crate::ENODEV

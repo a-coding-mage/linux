@@ -115,12 +115,14 @@ unsafe fn exynos_arm64_enable_bus_clk(
 unsafe fn exynos_arm64_cmu_prepare_pm(dev: *mut device, cmu: *const samsung_cmu_info) -> i32 {
     let data = dev_get_drvdata(dev) as *mut exynos_arm64_cmu_data;
     let mut ret: i32;
+    'free_clk_save: {
+    'free_sysreg_save: {
     (*data).clk_save = samsung_clk_alloc_reg_dump((*cmu).clk_regs, (*cmu).nr_clk_regs);
     if (*data).clk_save.is_null() { return -12; }
     (*data).nr_clk_save = (*cmu).nr_clk_regs;
     if (*cmu).nr_sysreg_clk_regs != 0 {
         (*data).clk_sysreg_save = samsung_clk_alloc_reg_dump((*cmu).sysreg_clk_regs, (*cmu).nr_sysreg_clk_regs);
-        if (*data).clk_sysreg_save.is_null() { ret = -12; goto free_clk_save; }
+        if (*data).clk_sysreg_save.is_null() { ret = -12; break 'free_clk_save; }
         (*data).nr_clk_sysreg = (*cmu).nr_sysreg_clk_regs;
     }
     (*data).clk_suspend = (*cmu).suspend_regs;
@@ -128,20 +130,22 @@ unsafe fn exynos_arm64_cmu_prepare_pm(dev: *mut device, cmu: *const samsung_cmu_
     (*data).nr_pclks = of_clk_get_parent_count((*dev).of_node);
     if (*data).nr_pclks == 0 { return 0; }
     (*data).pclks = devm_kcalloc(dev, core::mem::size_of::<*mut clk>(), (*data).nr_pclks as usize, GFP_KERNEL);
-    if (*data).pclks.is_null() { ret = -12; goto free_sysreg_save; }
+    if (*data).pclks.is_null() { ret = -12; break 'free_sysreg_save; }
     for i in 0..(*data).nr_pclks {
         let clk = of_clk_get((*dev).of_node, i);
         if IS_ERR(clk) {
             let mut j = i;
             while j > 0 { j -= 1; clk_put(*(*data).pclks.add(j as usize)); }
-            ret = PTR_ERR(clk); goto free_sysreg_save;
+            ret = PTR_ERR(clk); break 'free_sysreg_save;
         }
         *(*data).pclks.add(i as usize) = clk;
     }
     return 0;
-free_sysreg_save:
+    }
+    
     kfree((*data).clk_sysreg_save as *mut core::ffi::c_void);
-free_clk_save:
+    }
+    
     kfree((*data).clk_save as *mut core::ffi::c_void);
     ret
 }

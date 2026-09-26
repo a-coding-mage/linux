@@ -103,13 +103,13 @@ static DECLARE_BITMAP(elf_hwcap, MAX_CPU_FEATURES) __read_mostly;
 
 // C preprocessor ifdef CONFIG_COMPAT
 // C preprocessor define COMPAT_ELF_HWCAP_DEFAULT	\
-				(COMPAT_HWCAP_HALF|COMPAT_HWCAP_THUMB|\
-				 COMPAT_HWCAP_FAST_MULT|COMPAT_HWCAP_EDSP|\
-				 COMPAT_HWCAP_TLS|COMPAT_HWCAP_IDIV|\
-				 COMPAT_HWCAP_LPAE)
-unsigned int compat_elf_hwcap __read_mostly = COMPAT_ELF_HWCAP_DEFAULT;
-unsigned int compat_elf_hwcap2 __read_mostly;
-unsigned int compat_elf_hwcap3 __read_mostly;
+// 				(COMPAT_HWCAP_HALF|COMPAT_HWCAP_THUMB|\
+// 				 COMPAT_HWCAP_FAST_MULT|COMPAT_HWCAP_EDSP|\
+// 				 COMPAT_HWCAP_TLS|COMPAT_HWCAP_IDIV|\
+// 				 COMPAT_HWCAP_LPAE)
+core::ffi::c_uint compat_elf_hwcap __read_mostly = COMPAT_ELF_HWCAP_DEFAULT;
+core::ffi::c_uint compat_elf_hwcap2 __read_mostly;
+core::ffi::c_uint compat_elf_hwcap3 __read_mostly;
 // C preprocessor endif
 
 DECLARE_BITMAP(system_cpucaps, ARM64_NCAPS);
@@ -155,19 +155,19 @@ void dump_cpu_features(void)
 }
 
 // C preprocessor define __ARM64_MAX_POSITIVE(reg, field)				\
-		((reg##_##field##_SIGNED ?				\
-		  BIT(reg##_##field##_WIDTH - 1) :			\
-		  BIT(reg##_##field##_WIDTH)) - 1)
+// 		((reg##_##field##_SIGNED ?				\
+// 		  BIT(reg##_##field##_WIDTH - 1) :			\
+// 		  BIT(reg##_##field##_WIDTH)) - 1)
 
 // C preprocessor define __ARM64_MIN_NEGATIVE(reg, field)  BIT(reg##_##field##_WIDTH - 1)
 
 // C preprocessor define __ARM64_CPUID_FIELDS(reg, field, min_value, max_value)		\
-		.sys_reg = SYS_##reg,					\
-		.field_pos = reg##_##field##_SHIFT,			\
-		.field_width = reg##_##field##_WIDTH,			\
-		.sign = reg##_##field##_SIGNED,				\
-		.min_field_value = min_value,				\
-		.max_field_value = max_value,
+// 		sys_reg: SYS_##reg,					\
+// 		field_pos: reg##_##field##_SHIFT,			\
+// 		field_width: reg##_##field##_WIDTH,			\
+// 		sign: reg##_##field##_SIGNED,				\
+// 		min_field_value: min_value,				\
+// 		max_field_value: max_value,
 
 /*
  * ARM64_CPUID_FIELDS() encodes a field with a range from min_value to
@@ -177,9 +177,9 @@ void dump_cpu_features(void)
  * will be limited to the positive half only.
  */
 // C preprocessor define ARM64_CPUID_FIELDS(reg, field, min_value)			\
-	__ARM64_CPUID_FIELDS(reg, field,				\
-			     SYS_FIELD_VALUE(reg, field, min_value),	\
-			     __ARM64_MAX_POSITIVE(reg, field))
+// 	__ARM64_CPUID_FIELDS(reg, field,				\
+// 			     SYS_FIELD_VALUE(reg, field, min_value),	\
+// 			     __ARM64_MAX_POSITIVE(reg, field))
 
 /*
  * ARM64_CPUID_FIELDS_NEG() encodes a field with a range from an
@@ -187,37 +187,37 @@ void dump_cpu_features(void)
  * matching a non-implemented property.
  */
 // C preprocessor define ARM64_CPUID_FIELDS_NEG(reg, field, max_value)			\
-	__ARM64_CPUID_FIELDS(reg, field,				\
-			     __ARM64_MIN_NEGATIVE(reg, field),		\
-			     SYS_FIELD_VALUE(reg, field, max_value))
+// 	__ARM64_CPUID_FIELDS(reg, field,				\
+// 			     __ARM64_MIN_NEGATIVE(reg, field),		\
+// 			     SYS_FIELD_VALUE(reg, field, max_value))
 
 // C preprocessor define __ARM64_FTR_BITS(SIGNED, VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL) \
-	{						\
-		.sign = SIGNED,				\
-		.visible = VISIBLE,			\
-		.strict = STRICT,			\
-		.type = TYPE,				\
-		.shift = SHIFT,				\
-		.width = WIDTH,				\
-		.safe_val = SAFE_VAL,			\
-	}
+// 	{						\
+// 		sign: SIGNED,				\
+// 		visible: VISIBLE,			\
+// 		strict: STRICT,			\
+// 		type: TYPE,				\
+// 		shift: SHIFT,				\
+// 		width: WIDTH,				\
+// 		safe_val: SAFE_VAL,			\
+// 	}
 
 /* Define a feature with unsigned values */
 // C preprocessor define ARM64_FTR_BITS(VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL) \
-	__ARM64_FTR_BITS(FTR_UNSIGNED, VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL)
+// 	__ARM64_FTR_BITS(FTR_UNSIGNED, VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL)
 
 /* Define a feature with a signed value */
 // C preprocessor define S_ARM64_FTR_BITS(VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL) \
-	__ARM64_FTR_BITS(FTR_SIGNED, VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL)
+// 	__ARM64_FTR_BITS(FTR_SIGNED, VISIBLE, STRICT, TYPE, SHIFT, WIDTH, SAFE_VAL)
 
 // C preprocessor define ARM64_FTR_END					\
-	{						\
-		.width = 0,				\
-	}
+// 	{						\
+// 		width: 0,				\
+// 	}
 
-static void cpu_enable_cnp(struct arm64_cpu_capabilities const *cap);
+static void cpu_enable_cnp(arm64_cpu_capabilities const *cap);
 
-static bool __system_matches_cap(unsigned int n);
+static bool __system_matches_cap(n: core::ffi::c_uint);
 
 /*
  * NOTE: Any changes to the visibility of features should be kept in
@@ -546,9 +546,9 @@ static const struct arm64_ftr_bits ftr_ctr[] = {
 static struct arm64_ftr_override __ro_after_init no_override = { };
 
 struct arm64_ftr_reg arm64_ftr_reg_ctrel0 = {
-	.name		= "SYS_CTR_EL0",
-	.ftr_bits	= ftr_ctr,
-	.override	= &no_override,
+	name: "SYS_CTR_EL0",
+	ftr_bits: ftr_ctr,
+	override: &no_override,
 };
 
 static const struct arm64_ftr_bits ftr_id_mmfr0[] = {
@@ -769,18 +769,18 @@ static const struct arm64_ftr_bits ftr_raz[] = {
 };
 
 // C preprocessor define __ARM64_FTR_REG_OVERRIDE(id_str, id, table, ovr) {	\
-		.sys_id = id,					\
-		.reg = 	&(struct arm64_ftr_reg){		\
-			.name = id_str,				\
-			.override = (ovr),			\
-			.ftr_bits = &((table)[0]),		\
-	}}
+// 		sys_id: id,					\
+// 		reg: &(arm64_ftr_reg){		\
+// 			name: id_str,				\
+// 			override: (ovr),			\
+// 			ftr_bits: &((table)[0]),		\
+// 	}}
 
 // C preprocessor define ARM64_FTR_REG_OVERRIDE(id, table, ovr)	\
-	__ARM64_FTR_REG_OVERRIDE(#id, id, table, ovr)
+// 	__ARM64_FTR_REG_OVERRIDE(#id, id, table, ovr)
 
 // C preprocessor define ARM64_FTR_REG(id, table)		\
-	__ARM64_FTR_REG_OVERRIDE(#id, id, table, &no_override)
+// 	__ARM64_FTR_REG_OVERRIDE(#id, id, table, &no_override)
 
 struct arm64_ftr_override __read_mostly id_aa64mmfr0_override;
 struct arm64_ftr_override __read_mostly id_aa64mmfr1_override;
@@ -878,7 +878,7 @@ static const struct __ftr_reg_entry {
 
 static int search_cmp_ftr_reg(const void *id, const void *regp)
 {
-	return (int)(unsigned long)id - (int)((const struct __ftr_reg_entry *)regp)->sys_id;
+	return (int)(core::ffi::c_ulong)id - (*(int)((const struct __ftr_reg_entry *)regp)).sys_id;
 }
 
 /*
@@ -891,17 +891,17 @@ static int search_cmp_ftr_reg(const void *id, const void *regp)
  *         - NULL on failure. It is upto the caller to decide
  *	     the impact of a failure.
  */
-static struct arm64_ftr_reg *get_arm64_ftr_reg_nowarn(u32 sys_id)
+static struct arm64_ftr_reg *get_arm64_ftr_reg_nowarn(sys_id: u32)
 {
 	const struct __ftr_reg_entry *ret;
 
-	ret = bsearch((const void *)(unsigned long)sys_id,
+	ret = bsearch((const void *)(core::ffi::c_ulong)sys_id,
 			arm64_ftr_regs,
 			ARRAY_SIZE(arm64_ftr_regs),
 			sizeof(arm64_ftr_regs[0]),
 			search_cmp_ftr_reg);
 	if (ret)
-		return ret->reg;
+		return (*ret).reg;
 	return NULL;
 }
 
@@ -912,7 +912,7 @@ static struct arm64_ftr_reg *get_arm64_ftr_reg_nowarn(u32 sys_id)
  * returns - Upon success,  matching ftr_reg entry for id.
  *         - NULL on failure but with an WARN_ON().
  */
-struct arm64_ftr_reg *get_arm64_ftr_reg(u32 sys_id)
+struct arm64_ftr_reg *get_arm64_ftr_reg(sys_id: u32)
 {
 	struct arm64_ftr_reg *reg;
 
@@ -932,7 +932,7 @@ static u64 arm64_ftr_set_value(const struct arm64_ftr_bits *ftrp, s64 reg,
 	u64 mask = arm64_ftr_mask(ftrp);
 
 	reg &= ~mask;
-	reg |= (ftr_val << ftrp->shift) & mask;
+	reg |= (ftr_val << (*ftrp).shift) & mask;
 	return reg;
 }
 
@@ -941,9 +941,9 @@ s64 arm64_ftr_safe_value(const struct arm64_ftr_bits *ftrp, s64 new,
 {
 	s64 ret = 0;
 
-	switch (ftrp->type) {
+	switch ((*ftrp).type) {
 	case FTR_EXACT:
-		ret = ftrp->safe_val;
+		ret = (*ftrp).safe_val;
 		break;
 	case FTR_LOWER_SAFE:
 		ret = min(new, cur);
@@ -964,25 +964,25 @@ s64 arm64_ftr_safe_value(const struct arm64_ftr_bits *ftrp, s64 new,
 
 static void __init sort_ftr_regs(void)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	for (i = 0; i < ARRAY_SIZE(arm64_ftr_regs); i++) {
 		const struct arm64_ftr_reg *ftr_reg = arm64_ftr_regs[i].reg;
-		const struct arm64_ftr_bits *ftr_bits = ftr_reg->ftr_bits;
-		unsigned int j = 0;
+		const struct arm64_ftr_bits *ftr_bits = (*ftr_reg).ftr_bits;
+		core::ffi::c_uint j = 0;
 
 		/*
 		 * Features here must be sorted in descending order with respect
 		 * to their shift values and should not overlap with each other.
 		 */
-		for (; ftr_bits->width != 0; ftr_bits++, j++) {
-			unsigned int width = ftr_reg->ftr_bits[j].width;
-			unsigned int shift = ftr_reg->ftr_bits[j].shift;
-			unsigned int prev_shift;
+		for (; (*ftr_bits).width != 0; ftr_bits++, j++) {
+			core::ffi::c_uint width = (*ftr_reg).ftr_bits[j].width;
+			core::ffi::c_uint shift = (*ftr_reg).ftr_bits[j].shift;
+			core::ffi::c_uint prev_shift;
 
 			WARN((shift  + width) > 64,
 				"%s has invalid feature at shift %d\n",
-				ftr_reg->name, shift);
+				(*ftr_reg).name, shift);
 
 			/*
 			 * Skip the first feature. There is nothing to
@@ -991,10 +991,10 @@ static void __init sort_ftr_regs(void)
 			if (j == 0)
 				continue;
 
-			prev_shift = ftr_reg->ftr_bits[j - 1].shift;
+			prev_shift = (*ftr_reg).ftr_bits[j - 1].shift;
 			WARN((shift + width) > prev_shift,
 				"%s has feature overlap at shift %d\n",
-				ftr_reg->name, shift);
+				(*ftr_reg).name, shift);
 		}
 
 		/*
@@ -1018,7 +1018,7 @@ static void __init sort_ftr_regs(void)
  * Any bits that are not covered by an arm64_ftr_bits entry are considered
  * RES0 for the system-wide value, and must strictly match.
  */
-static void init_cpu_ftr_reg(u32 sys_reg, u64 new)
+static void init_cpu_ftr_reg(sys_reg: u32, new: u64)
 {
 	u64 val = 0;
 	u64 strict_mask = ~0x0ULL;
@@ -1031,19 +1031,19 @@ static void init_cpu_ftr_reg(u32 sys_reg, u64 new)
 	if (!reg)
 		return;
 
-	for (ftrp = reg->ftr_bits; ftrp->width; ftrp++) {
+	for (ftrp = (*reg).ftr_bits; (*ftrp).width; ftrp++) {
 		u64 ftr_mask = arm64_ftr_mask(ftrp);
 		s64 ftr_new = arm64_ftr_value(ftrp, new);
-		s64 ftr_ovr = arm64_ftr_value(ftrp, reg->override->val);
+		s64 ftr_ovr = arm64_ftr_value(ftrp, (*(*reg).override).val);
 
-		if ((ftr_mask & reg->override->mask) == ftr_mask) {
+		if ((ftr_mask & (*(*reg).override).mask) == ftr_mask) {
 			s64 tmp = arm64_ftr_safe_value(ftrp, ftr_ovr, ftr_new);
 			char *str = NULL;
 
 			if (ftr_ovr != tmp) {
 				/* Unsafe, remove the override */
-				reg->override->mask &= ~ftr_mask;
-				reg->override->val &= ~ftr_mask;
+				(*(*reg).override).mask &= ~ftr_mask;
+				(*(*reg).override).val &= ~ftr_mask;
 				tmp = ftr_ovr;
 				str = "ignoring override";
 			} else if (ftr_new != tmp) {
@@ -1056,36 +1056,36 @@ static void init_cpu_ftr_reg(u32 sys_reg, u64 new)
 			}
 
 			pr_warn("%s[%d:%d]: %s to %llx\n",
-				reg->name,
-				ftrp->shift + ftrp->width - 1,
-				ftrp->shift, str,
-				tmp & (BIT(ftrp->width) - 1));
-		} else if ((ftr_mask & reg->override->val) == ftr_mask) {
-			reg->override->val &= ~ftr_mask;
+				(*reg).name,
+				(*ftrp).shift + (*ftrp).width - 1,
+				(*ftrp).shift, str,
+				tmp & (BIT((*ftrp).width) - 1));
+		} else if ((ftr_mask & (*(*reg).override).val) == ftr_mask) {
+			(*(*reg).override).val &= ~ftr_mask;
 			pr_warn("%s[%d:%d]: impossible override, ignored\n",
-				reg->name,
-				ftrp->shift + ftrp->width - 1,
-				ftrp->shift);
+				(*reg).name,
+				(*ftrp).shift + (*ftrp).width - 1,
+				(*ftrp).shift);
 		}
 
 		val = arm64_ftr_set_value(ftrp, val, ftr_new);
 
 		valid_mask |= ftr_mask;
-		if (!ftrp->strict)
+		if ((*!ftrp).strict)
 			strict_mask &= ~ftr_mask;
-		if (ftrp->visible)
+		if ((*ftrp).visible)
 			user_mask |= ftr_mask;
 		else
-			reg->user_val = arm64_ftr_set_value(ftrp,
-							    reg->user_val,
-							    ftrp->safe_val);
+			(*reg).user_val = arm64_ftr_set_value(ftrp,
+							    (*reg).user_val,
+							    (*ftrp).safe_val);
 	}
 
 	val &= valid_mask;
 
-	reg->sys_val = val;
-	reg->strict_mask = strict_mask;
-	reg->user_mask = user_mask;
+	(*reg).sys_val = val;
+	(*reg).strict_mask = strict_mask;
+	(*reg).user_mask = user_mask;
 }
 
 extern const struct arm64_cpu_capabilities arm64_errata[];
@@ -1094,15 +1094,15 @@ static const struct arm64_cpu_capabilities arm64_features[];
 static void __init
 init_cpucap_indirect_list_from_array(const struct arm64_cpu_capabilities *caps)
 {
-	for (; caps->matches; caps++) {
-		if (WARN(caps->capability >= ARM64_NCAPS,
-			"Invalid capability %d\n", caps->capability))
+	for (; (*caps).matches; caps++) {
+		if (WARN((*caps).capability >= ARM64_NCAPS,
+			"Invalid capability %d\n", (*caps).capability))
 			continue;
-		if (WARN(cpucap_ptrs[caps->capability],
+		if (WARN(cpucap_ptrs[(*caps).capability],
 			"Duplicate entry for capability %d\n",
-			caps->capability))
+			(*caps).capability))
 			continue;
-		cpucap_ptrs[caps->capability] = caps;
+		cpucap_ptrs[(*caps).capability] = caps;
 	}
 }
 
@@ -1114,29 +1114,29 @@ static void __init init_cpucap_indirect_list(void)
 
 static void __init setup_boot_cpu_capabilities(void);
 
-static void init_32bit_cpu_features(struct cpuinfo_32bit *info)
+static void init_32bit_cpu_features(cpuinfo_32bit *info)
 {
-	init_cpu_ftr_reg(SYS_ID_DFR0_EL1, info->reg_id_dfr0);
-	init_cpu_ftr_reg(SYS_ID_DFR1_EL1, info->reg_id_dfr1);
-	init_cpu_ftr_reg(SYS_ID_ISAR0_EL1, info->reg_id_isar0);
-	init_cpu_ftr_reg(SYS_ID_ISAR1_EL1, info->reg_id_isar1);
-	init_cpu_ftr_reg(SYS_ID_ISAR2_EL1, info->reg_id_isar2);
-	init_cpu_ftr_reg(SYS_ID_ISAR3_EL1, info->reg_id_isar3);
-	init_cpu_ftr_reg(SYS_ID_ISAR4_EL1, info->reg_id_isar4);
-	init_cpu_ftr_reg(SYS_ID_ISAR5_EL1, info->reg_id_isar5);
-	init_cpu_ftr_reg(SYS_ID_ISAR6_EL1, info->reg_id_isar6);
-	init_cpu_ftr_reg(SYS_ID_MMFR0_EL1, info->reg_id_mmfr0);
-	init_cpu_ftr_reg(SYS_ID_MMFR1_EL1, info->reg_id_mmfr1);
-	init_cpu_ftr_reg(SYS_ID_MMFR2_EL1, info->reg_id_mmfr2);
-	init_cpu_ftr_reg(SYS_ID_MMFR3_EL1, info->reg_id_mmfr3);
-	init_cpu_ftr_reg(SYS_ID_MMFR4_EL1, info->reg_id_mmfr4);
-	init_cpu_ftr_reg(SYS_ID_MMFR5_EL1, info->reg_id_mmfr5);
-	init_cpu_ftr_reg(SYS_ID_PFR0_EL1, info->reg_id_pfr0);
-	init_cpu_ftr_reg(SYS_ID_PFR1_EL1, info->reg_id_pfr1);
-	init_cpu_ftr_reg(SYS_ID_PFR2_EL1, info->reg_id_pfr2);
-	init_cpu_ftr_reg(SYS_MVFR0_EL1, info->reg_mvfr0);
-	init_cpu_ftr_reg(SYS_MVFR1_EL1, info->reg_mvfr1);
-	init_cpu_ftr_reg(SYS_MVFR2_EL1, info->reg_mvfr2);
+	init_cpu_ftr_reg(SYS_ID_DFR0_EL1, (*info).reg_id_dfr0);
+	init_cpu_ftr_reg(SYS_ID_DFR1_EL1, (*info).reg_id_dfr1);
+	init_cpu_ftr_reg(SYS_ID_ISAR0_EL1, (*info).reg_id_isar0);
+	init_cpu_ftr_reg(SYS_ID_ISAR1_EL1, (*info).reg_id_isar1);
+	init_cpu_ftr_reg(SYS_ID_ISAR2_EL1, (*info).reg_id_isar2);
+	init_cpu_ftr_reg(SYS_ID_ISAR3_EL1, (*info).reg_id_isar3);
+	init_cpu_ftr_reg(SYS_ID_ISAR4_EL1, (*info).reg_id_isar4);
+	init_cpu_ftr_reg(SYS_ID_ISAR5_EL1, (*info).reg_id_isar5);
+	init_cpu_ftr_reg(SYS_ID_ISAR6_EL1, (*info).reg_id_isar6);
+	init_cpu_ftr_reg(SYS_ID_MMFR0_EL1, (*info).reg_id_mmfr0);
+	init_cpu_ftr_reg(SYS_ID_MMFR1_EL1, (*info).reg_id_mmfr1);
+	init_cpu_ftr_reg(SYS_ID_MMFR2_EL1, (*info).reg_id_mmfr2);
+	init_cpu_ftr_reg(SYS_ID_MMFR3_EL1, (*info).reg_id_mmfr3);
+	init_cpu_ftr_reg(SYS_ID_MMFR4_EL1, (*info).reg_id_mmfr4);
+	init_cpu_ftr_reg(SYS_ID_MMFR5_EL1, (*info).reg_id_mmfr5);
+	init_cpu_ftr_reg(SYS_ID_PFR0_EL1, (*info).reg_id_pfr0);
+	init_cpu_ftr_reg(SYS_ID_PFR1_EL1, (*info).reg_id_pfr1);
+	init_cpu_ftr_reg(SYS_ID_PFR2_EL1, (*info).reg_id_pfr2);
+	init_cpu_ftr_reg(SYS_MVFR0_EL1, (*info).reg_mvfr0);
+	init_cpu_ftr_reg(SYS_MVFR1_EL1, (*info).reg_mvfr1);
+	init_cpu_ftr_reg(SYS_MVFR2_EL1, (*info).reg_mvfr2);
 }
 
 // C preprocessor ifdef CONFIG_ARM64_PSEUDO_NMI
@@ -1167,7 +1167,7 @@ static __init void detect_system_supports_pseudo_nmi(void)
 	of_node_put(np);
 }
 // C preprocessor else /* CONFIG_ARM64_PSEUDO_NMI */
-static inline void detect_system_supports_pseudo_nmi(void) { }
+void detect_system_supports_pseudo_nmi(void) { }
 // C preprocessor endif
 
 static bool detect_ftr_has_mpam(void)
@@ -1178,38 +1178,38 @@ static bool detect_ftr_has_mpam(void)
 	return id_aa64pfr0_mpam(pfr0) || id_aa64pfr1_mpamfrac(pfr1);
 }
 
-void __init init_cpu_features(struct cpuinfo_arm64 *info)
+void __init init_cpu_features(cpuinfo_arm64 *info)
 {
 	/* Before we start using the tables, make sure it is sorted */
 	sort_ftr_regs();
 
-	init_cpu_ftr_reg(SYS_CTR_EL0, info->reg_ctr);
-	init_cpu_ftr_reg(SYS_DCZID_EL0, info->reg_dczid);
-	init_cpu_ftr_reg(SYS_CNTFRQ_EL0, info->reg_cntfrq);
-	init_cpu_ftr_reg(SYS_ID_AA64DFR0_EL1, info->reg_id_aa64dfr0);
-	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, info->reg_id_aa64dfr1);
-	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, info->reg_id_aa64isar0);
-	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, info->reg_id_aa64isar1);
-	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, info->reg_id_aa64isar2);
-	init_cpu_ftr_reg(SYS_ID_AA64ISAR3_EL1, info->reg_id_aa64isar3);
-	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, info->reg_id_aa64mmfr0);
-	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, info->reg_id_aa64mmfr1);
-	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, info->reg_id_aa64mmfr2);
-	init_cpu_ftr_reg(SYS_ID_AA64MMFR3_EL1, info->reg_id_aa64mmfr3);
-	init_cpu_ftr_reg(SYS_ID_AA64MMFR4_EL1, info->reg_id_aa64mmfr4);
-	init_cpu_ftr_reg(SYS_ID_AA64PFR0_EL1, info->reg_id_aa64pfr0);
-	init_cpu_ftr_reg(SYS_ID_AA64PFR1_EL1, info->reg_id_aa64pfr1);
-	init_cpu_ftr_reg(SYS_ID_AA64PFR2_EL1, info->reg_id_aa64pfr2);
-	init_cpu_ftr_reg(SYS_ID_AA64ZFR0_EL1, info->reg_id_aa64zfr0);
-	init_cpu_ftr_reg(SYS_ID_AA64SMFR0_EL1, info->reg_id_aa64smfr0);
-	init_cpu_ftr_reg(SYS_ID_AA64FPFR0_EL1, info->reg_id_aa64fpfr0);
+	init_cpu_ftr_reg(SYS_CTR_EL0, (*info).reg_ctr);
+	init_cpu_ftr_reg(SYS_DCZID_EL0, (*info).reg_dczid);
+	init_cpu_ftr_reg(SYS_CNTFRQ_EL0, (*info).reg_cntfrq);
+	init_cpu_ftr_reg(SYS_ID_AA64DFR0_EL1, (*info).reg_id_aa64dfr0);
+	init_cpu_ftr_reg(SYS_ID_AA64DFR1_EL1, (*info).reg_id_aa64dfr1);
+	init_cpu_ftr_reg(SYS_ID_AA64ISAR0_EL1, (*info).reg_id_aa64isar0);
+	init_cpu_ftr_reg(SYS_ID_AA64ISAR1_EL1, (*info).reg_id_aa64isar1);
+	init_cpu_ftr_reg(SYS_ID_AA64ISAR2_EL1, (*info).reg_id_aa64isar2);
+	init_cpu_ftr_reg(SYS_ID_AA64ISAR3_EL1, (*info).reg_id_aa64isar3);
+	init_cpu_ftr_reg(SYS_ID_AA64MMFR0_EL1, (*info).reg_id_aa64mmfr0);
+	init_cpu_ftr_reg(SYS_ID_AA64MMFR1_EL1, (*info).reg_id_aa64mmfr1);
+	init_cpu_ftr_reg(SYS_ID_AA64MMFR2_EL1, (*info).reg_id_aa64mmfr2);
+	init_cpu_ftr_reg(SYS_ID_AA64MMFR3_EL1, (*info).reg_id_aa64mmfr3);
+	init_cpu_ftr_reg(SYS_ID_AA64MMFR4_EL1, (*info).reg_id_aa64mmfr4);
+	init_cpu_ftr_reg(SYS_ID_AA64PFR0_EL1, (*info).reg_id_aa64pfr0);
+	init_cpu_ftr_reg(SYS_ID_AA64PFR1_EL1, (*info).reg_id_aa64pfr1);
+	init_cpu_ftr_reg(SYS_ID_AA64PFR2_EL1, (*info).reg_id_aa64pfr2);
+	init_cpu_ftr_reg(SYS_ID_AA64ZFR0_EL1, (*info).reg_id_aa64zfr0);
+	init_cpu_ftr_reg(SYS_ID_AA64SMFR0_EL1, (*info).reg_id_aa64smfr0);
+	init_cpu_ftr_reg(SYS_ID_AA64FPFR0_EL1, (*info).reg_id_aa64fpfr0);
 
-	if (id_aa64pfr0_32bit_el0(info->reg_id_aa64pfr0))
-		init_32bit_cpu_features(&info->aarch32);
+	if (id_aa64pfr0_32bit_el0((*info).reg_id_aa64pfr0))
+		init_32bit_cpu_features((*&info).aarch32);
 
 	if (IS_ENABLED(CONFIG_ARM64_SVE) &&
 	    id_aa64pfr0_sve(read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1))) {
-		unsigned long cpacr = cpacr_save_enable_kernel_sve();
+		core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
 
 		vec_init_vq_map(ARM64_VEC_SVE);
 
@@ -1218,7 +1218,7 @@ void __init init_cpu_features(struct cpuinfo_arm64 *info)
 
 	if (IS_ENABLED(CONFIG_ARM64_SME) &&
 	    id_aa64pfr1_sme(read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1))) {
-		unsigned long cpacr = cpacr_save_enable_kernel_sme();
+		core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
 
 		vec_init_vq_map(ARM64_VEC_SME);
 
@@ -1226,32 +1226,32 @@ void __init init_cpu_features(struct cpuinfo_arm64 *info)
 	}
 
 	if (detect_ftr_has_mpam()) {
-		info->reg_mpamidr = read_cpuid(MPAMIDR_EL1);
-		init_cpu_ftr_reg(SYS_MPAMIDR_EL1, info->reg_mpamidr);
+		(*info).reg_mpamidr = read_cpuid(MPAMIDR_EL1);
+		init_cpu_ftr_reg(SYS_MPAMIDR_EL1, (*info).reg_mpamidr);
 	}
 
-	if (id_aa64pfr1_mte(info->reg_id_aa64pfr1))
-		init_cpu_ftr_reg(SYS_GMID_EL1, info->reg_gmid);
+	if (id_aa64pfr1_mte((*info).reg_id_aa64pfr1))
+		init_cpu_ftr_reg(SYS_GMID_EL1, (*info).reg_gmid);
 }
 
-static void update_cpu_ftr_reg(struct arm64_ftr_reg *reg, u64 new)
+static void update_cpu_ftr_reg(arm64_ftr_reg *reg, new: u64)
 {
 	const struct arm64_ftr_bits *ftrp;
 
-	for (ftrp = reg->ftr_bits; ftrp->width; ftrp++) {
-		s64 ftr_cur = arm64_ftr_value(ftrp, reg->sys_val);
+	for (ftrp = (*reg).ftr_bits; (*ftrp).width; ftrp++) {
+		s64 ftr_cur = arm64_ftr_value(ftrp, (*reg).sys_val);
 		s64 ftr_new = arm64_ftr_value(ftrp, new);
 
 		if (ftr_cur == ftr_new)
 			continue;
 		/* Find a safe value */
 		ftr_new = arm64_ftr_safe_value(ftrp, ftr_new, ftr_cur);
-		reg->sys_val = arm64_ftr_set_value(ftrp, reg->sys_val, ftr_new);
+		(*reg).sys_val = arm64_ftr_set_value(ftrp, (*reg).sys_val, ftr_new);
 	}
 
 }
 
-static int check_update_ftr_reg(u32 sys_id, int cpu, u64 val, u64 boot)
+static int check_update_ftr_reg(sys_id: u32, int cpu, val: u64, boot: u64)
 {
 	struct arm64_ftr_reg *regp = get_arm64_ftr_reg(sys_id);
 
@@ -1259,14 +1259,14 @@ static int check_update_ftr_reg(u32 sys_id, int cpu, u64 val, u64 boot)
 		return 0;
 
 	update_cpu_ftr_reg(regp, val);
-	if ((boot & regp->strict_mask) == (val & regp->strict_mask))
+	if ((boot & (*regp).strict_mask) == (val & (*regp).strict_mask))
 		return 0;
 	pr_warn("SANITY CHECK: Unexpected variation in %s. Boot CPU: %#016llx, CPU%d: %#016llx\n",
-			regp->name, boot, cpu, val);
+			(*regp).name, boot, cpu, val);
 	return 1;
 }
 
-static void relax_cpu_ftr_reg(u32 sys_id, int field)
+static void relax_cpu_ftr_reg(sys_id: u32, int field)
 {
 	const struct arm64_ftr_bits *ftrp;
 	struct arm64_ftr_reg *regp = get_arm64_ftr_reg(sys_id);
@@ -1274,35 +1274,35 @@ static void relax_cpu_ftr_reg(u32 sys_id, int field)
 	if (!regp)
 		return;
 
-	for (ftrp = regp->ftr_bits; ftrp->width; ftrp++) {
-		if (ftrp->shift == field) {
-			regp->strict_mask &= ~arm64_ftr_mask(ftrp);
+	for (ftrp = (*regp).ftr_bits; (*ftrp).width; ftrp++) {
+		if ((*ftrp).shift == field) {
+			(*regp).strict_mask &= ~arm64_ftr_mask(ftrp);
 			break;
 		}
 	}
 
 	/* Bogus field? */
-	WARN_ON(!ftrp->width);
+	WARN_ON((*!ftrp).width);
 }
 
-static void lazy_init_32bit_cpu_features(struct cpuinfo_arm64 *info,
-					 struct cpuinfo_arm64 *boot)
+static void lazy_init_32bit_cpu_features(cpuinfo_arm64 *info,
+					 cpuinfo_arm64 *boot)
 {
 	static bool boot_cpu_32bit_regs_overridden = false;
 
 	if (!allow_mismatched_32bit_el0 || boot_cpu_32bit_regs_overridden)
 		return;
 
-	if (id_aa64pfr0_32bit_el0(boot->reg_id_aa64pfr0))
+	if (id_aa64pfr0_32bit_el0((*boot).reg_id_aa64pfr0))
 		return;
 
-	boot->aarch32 = info->aarch32;
-	init_32bit_cpu_features(&boot->aarch32);
+	(*boot).aarch32 = (*info).aarch32;
+	init_32bit_cpu_features((*&boot).aarch32);
 	boot_cpu_32bit_regs_overridden = true;
 }
 
-static int update_32bit_cpu_features(int cpu, struct cpuinfo_32bit *info,
-				     struct cpuinfo_32bit *boot)
+static int update_32bit_cpu_features(int cpu, cpuinfo_32bit *info,
+				     cpuinfo_32bit *boot)
 {
 	int taint = 0;
 	u64 pfr0 = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
@@ -1321,23 +1321,23 @@ static int update_32bit_cpu_features(int cpu, struct cpuinfo_32bit *info,
 	}
 
 	taint |= check_update_ftr_reg(SYS_ID_DFR0_EL1, cpu,
-				      info->reg_id_dfr0, boot->reg_id_dfr0);
+				      (*info).reg_id_dfr0, (*boot).reg_id_dfr0);
 	taint |= check_update_ftr_reg(SYS_ID_DFR1_EL1, cpu,
-				      info->reg_id_dfr1, boot->reg_id_dfr1);
+				      (*info).reg_id_dfr1, (*boot).reg_id_dfr1);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR0_EL1, cpu,
-				      info->reg_id_isar0, boot->reg_id_isar0);
+				      (*info).reg_id_isar0, (*boot).reg_id_isar0);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR1_EL1, cpu,
-				      info->reg_id_isar1, boot->reg_id_isar1);
+				      (*info).reg_id_isar1, (*boot).reg_id_isar1);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR2_EL1, cpu,
-				      info->reg_id_isar2, boot->reg_id_isar2);
+				      (*info).reg_id_isar2, (*boot).reg_id_isar2);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR3_EL1, cpu,
-				      info->reg_id_isar3, boot->reg_id_isar3);
+				      (*info).reg_id_isar3, (*boot).reg_id_isar3);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR4_EL1, cpu,
-				      info->reg_id_isar4, boot->reg_id_isar4);
+				      (*info).reg_id_isar4, (*boot).reg_id_isar4);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR5_EL1, cpu,
-				      info->reg_id_isar5, boot->reg_id_isar5);
+				      (*info).reg_id_isar5, (*boot).reg_id_isar5);
 	taint |= check_update_ftr_reg(SYS_ID_ISAR6_EL1, cpu,
-				      info->reg_id_isar6, boot->reg_id_isar6);
+				      (*info).reg_id_isar6, (*boot).reg_id_isar6);
 
 	/*
 	 * Regardless of the value of the AuxReg field, the AIFSR, ADFSR, and
@@ -1345,29 +1345,29 @@ static int update_32bit_cpu_features(int cpu, struct cpuinfo_32bit *info,
 	 * be trapped for virtualization anyway.
 	 */
 	taint |= check_update_ftr_reg(SYS_ID_MMFR0_EL1, cpu,
-				      info->reg_id_mmfr0, boot->reg_id_mmfr0);
+				      (*info).reg_id_mmfr0, (*boot).reg_id_mmfr0);
 	taint |= check_update_ftr_reg(SYS_ID_MMFR1_EL1, cpu,
-				      info->reg_id_mmfr1, boot->reg_id_mmfr1);
+				      (*info).reg_id_mmfr1, (*boot).reg_id_mmfr1);
 	taint |= check_update_ftr_reg(SYS_ID_MMFR2_EL1, cpu,
-				      info->reg_id_mmfr2, boot->reg_id_mmfr2);
+				      (*info).reg_id_mmfr2, (*boot).reg_id_mmfr2);
 	taint |= check_update_ftr_reg(SYS_ID_MMFR3_EL1, cpu,
-				      info->reg_id_mmfr3, boot->reg_id_mmfr3);
+				      (*info).reg_id_mmfr3, (*boot).reg_id_mmfr3);
 	taint |= check_update_ftr_reg(SYS_ID_MMFR4_EL1, cpu,
-				      info->reg_id_mmfr4, boot->reg_id_mmfr4);
+				      (*info).reg_id_mmfr4, (*boot).reg_id_mmfr4);
 	taint |= check_update_ftr_reg(SYS_ID_MMFR5_EL1, cpu,
-				      info->reg_id_mmfr5, boot->reg_id_mmfr5);
+				      (*info).reg_id_mmfr5, (*boot).reg_id_mmfr5);
 	taint |= check_update_ftr_reg(SYS_ID_PFR0_EL1, cpu,
-				      info->reg_id_pfr0, boot->reg_id_pfr0);
+				      (*info).reg_id_pfr0, (*boot).reg_id_pfr0);
 	taint |= check_update_ftr_reg(SYS_ID_PFR1_EL1, cpu,
-				      info->reg_id_pfr1, boot->reg_id_pfr1);
+				      (*info).reg_id_pfr1, (*boot).reg_id_pfr1);
 	taint |= check_update_ftr_reg(SYS_ID_PFR2_EL1, cpu,
-				      info->reg_id_pfr2, boot->reg_id_pfr2);
+				      (*info).reg_id_pfr2, (*boot).reg_id_pfr2);
 	taint |= check_update_ftr_reg(SYS_MVFR0_EL1, cpu,
-				      info->reg_mvfr0, boot->reg_mvfr0);
+				      (*info).reg_mvfr0, (*boot).reg_mvfr0);
 	taint |= check_update_ftr_reg(SYS_MVFR1_EL1, cpu,
-				      info->reg_mvfr1, boot->reg_mvfr1);
+				      (*info).reg_mvfr1, (*boot).reg_mvfr1);
 	taint |= check_update_ftr_reg(SYS_MVFR2_EL1, cpu,
-				      info->reg_mvfr2, boot->reg_mvfr2);
+				      (*info).reg_mvfr2, (*boot).reg_mvfr2);
 
 	return taint;
 }
@@ -1378,8 +1378,8 @@ static int update_32bit_cpu_features(int cpu, struct cpuinfo_32bit *info,
  * aren't any insane variations from that of the boot CPU.
  */
 void update_cpu_features(int cpu,
-			 struct cpuinfo_arm64 *info,
-			 struct cpuinfo_arm64 *boot)
+			 cpuinfo_arm64 *info,
+			 cpuinfo_arm64 *boot)
 {
 	int taint = 0;
 
@@ -1389,7 +1389,7 @@ void update_cpu_features(int cpu,
 	 * *minLine.
 	 */
 	taint |= check_update_ftr_reg(SYS_CTR_EL0, cpu,
-				      info->reg_ctr, boot->reg_ctr);
+				      (*info).reg_ctr, (*boot).reg_ctr);
 
 	/*
 	 * Userspace may perform DC ZVA instructions. Mismatched block sizes
@@ -1397,11 +1397,11 @@ void update_cpu_features(int cpu,
 	 * process is preempted and migrated between CPUs.
 	 */
 	taint |= check_update_ftr_reg(SYS_DCZID_EL0, cpu,
-				      info->reg_dczid, boot->reg_dczid);
+				      (*info).reg_dczid, (*boot).reg_dczid);
 
 	/* If different, timekeeping will be broken (especially with KVM) */
 	taint |= check_update_ftr_reg(SYS_CNTFRQ_EL0, cpu,
-				      info->reg_cntfrq, boot->reg_cntfrq);
+				      (*info).reg_cntfrq, (*boot).reg_cntfrq);
 
 	/*
 	 * The kernel uses self-hosted debug features and expects CPUs to
@@ -1410,21 +1410,21 @@ void update_cpu_features(int cpu,
 	 * ID_AA64DFR1 is currently RES0.
 	 */
 	taint |= check_update_ftr_reg(SYS_ID_AA64DFR0_EL1, cpu,
-				      info->reg_id_aa64dfr0, boot->reg_id_aa64dfr0);
+				      (*info).reg_id_aa64dfr0, (*boot).reg_id_aa64dfr0);
 	taint |= check_update_ftr_reg(SYS_ID_AA64DFR1_EL1, cpu,
-				      info->reg_id_aa64dfr1, boot->reg_id_aa64dfr1);
+				      (*info).reg_id_aa64dfr1, (*boot).reg_id_aa64dfr1);
 	/*
 	 * Even in big.LITTLE, processors should be identical instruction-set
 	 * wise.
 	 */
 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR0_EL1, cpu,
-				      info->reg_id_aa64isar0, boot->reg_id_aa64isar0);
+				      (*info).reg_id_aa64isar0, (*boot).reg_id_aa64isar0);
 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR1_EL1, cpu,
-				      info->reg_id_aa64isar1, boot->reg_id_aa64isar1);
+				      (*info).reg_id_aa64isar1, (*boot).reg_id_aa64isar1);
 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR2_EL1, cpu,
-				      info->reg_id_aa64isar2, boot->reg_id_aa64isar2);
+				      (*info).reg_id_aa64isar2, (*boot).reg_id_aa64isar2);
 	taint |= check_update_ftr_reg(SYS_ID_AA64ISAR3_EL1, cpu,
-				      info->reg_id_aa64isar3, boot->reg_id_aa64isar3);
+				      (*info).reg_id_aa64isar3, (*boot).reg_id_aa64isar3);
 
 	/*
 	 * Differing PARange support is fine as long as all peripherals and
@@ -1432,37 +1432,37 @@ void update_cpu_features(int cpu,
 	 * Linux should not care about secure memory.
 	 */
 	taint |= check_update_ftr_reg(SYS_ID_AA64MMFR0_EL1, cpu,
-				      info->reg_id_aa64mmfr0, boot->reg_id_aa64mmfr0);
+				      (*info).reg_id_aa64mmfr0, (*boot).reg_id_aa64mmfr0);
 	taint |= check_update_ftr_reg(SYS_ID_AA64MMFR1_EL1, cpu,
-				      info->reg_id_aa64mmfr1, boot->reg_id_aa64mmfr1);
+				      (*info).reg_id_aa64mmfr1, (*boot).reg_id_aa64mmfr1);
 	taint |= check_update_ftr_reg(SYS_ID_AA64MMFR2_EL1, cpu,
-				      info->reg_id_aa64mmfr2, boot->reg_id_aa64mmfr2);
+				      (*info).reg_id_aa64mmfr2, (*boot).reg_id_aa64mmfr2);
 	taint |= check_update_ftr_reg(SYS_ID_AA64MMFR3_EL1, cpu,
-				      info->reg_id_aa64mmfr3, boot->reg_id_aa64mmfr3);
+				      (*info).reg_id_aa64mmfr3, (*boot).reg_id_aa64mmfr3);
 	taint |= check_update_ftr_reg(SYS_ID_AA64MMFR4_EL1, cpu,
-				      info->reg_id_aa64mmfr4, boot->reg_id_aa64mmfr4);
+				      (*info).reg_id_aa64mmfr4, (*boot).reg_id_aa64mmfr4);
 
 	taint |= check_update_ftr_reg(SYS_ID_AA64PFR0_EL1, cpu,
-				      info->reg_id_aa64pfr0, boot->reg_id_aa64pfr0);
+				      (*info).reg_id_aa64pfr0, (*boot).reg_id_aa64pfr0);
 	taint |= check_update_ftr_reg(SYS_ID_AA64PFR1_EL1, cpu,
-				      info->reg_id_aa64pfr1, boot->reg_id_aa64pfr1);
+				      (*info).reg_id_aa64pfr1, (*boot).reg_id_aa64pfr1);
 	taint |= check_update_ftr_reg(SYS_ID_AA64PFR2_EL1, cpu,
-				      info->reg_id_aa64pfr2, boot->reg_id_aa64pfr2);
+				      (*info).reg_id_aa64pfr2, (*boot).reg_id_aa64pfr2);
 
 	taint |= check_update_ftr_reg(SYS_ID_AA64ZFR0_EL1, cpu,
-				      info->reg_id_aa64zfr0, boot->reg_id_aa64zfr0);
+				      (*info).reg_id_aa64zfr0, (*boot).reg_id_aa64zfr0);
 
 	taint |= check_update_ftr_reg(SYS_ID_AA64SMFR0_EL1, cpu,
-				      info->reg_id_aa64smfr0, boot->reg_id_aa64smfr0);
+				      (*info).reg_id_aa64smfr0, (*boot).reg_id_aa64smfr0);
 
 	taint |= check_update_ftr_reg(SYS_ID_AA64FPFR0_EL1, cpu,
-				      info->reg_id_aa64fpfr0, boot->reg_id_aa64fpfr0);
+				      (*info).reg_id_aa64fpfr0, (*boot).reg_id_aa64fpfr0);
 
 	/* Probe vector lengths */
 	if (IS_ENABLED(CONFIG_ARM64_SVE) &&
 	    id_aa64pfr0_sve(read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1))) {
 		if (!system_capabilities_finalized()) {
-			unsigned long cpacr = cpacr_save_enable_kernel_sve();
+			core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
 
 			vec_update_vq_map(ARM64_VEC_SVE);
 
@@ -1472,7 +1472,7 @@ void update_cpu_features(int cpu,
 
 	if (IS_ENABLED(CONFIG_ARM64_SME) &&
 	    id_aa64pfr1_sme(read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1))) {
-		unsigned long cpacr = cpacr_save_enable_kernel_sme();
+		core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
 
 		/* Probe vector lengths */
 		if (!system_capabilities_finalized())
@@ -1482,9 +1482,9 @@ void update_cpu_features(int cpu,
 	}
 
 	if (detect_ftr_has_mpam()) {
-		info->reg_mpamidr = read_cpuid(MPAMIDR_EL1);
+		(*info).reg_mpamidr = read_cpuid(MPAMIDR_EL1);
 		taint |= check_update_ftr_reg(SYS_MPAMIDR_EL1, cpu,
-					info->reg_mpamidr, boot->reg_mpamidr);
+					(*info).reg_mpamidr, (*boot).reg_mpamidr);
 	}
 
 	/*
@@ -1493,9 +1493,9 @@ void update_cpu_features(int cpu,
 	 * value is the same on all CPUs.
 	 */
 	if (IS_ENABLED(CONFIG_ARM64_MTE) &&
-	    id_aa64pfr1_mte(info->reg_id_aa64pfr1)) {
+	    id_aa64pfr1_mte((*info).reg_id_aa64pfr1)) {
 		taint |= check_update_ftr_reg(SYS_GMID_EL1, cpu,
-					      info->reg_gmid, boot->reg_gmid);
+					      (*info).reg_gmid, boot->reg_gmid);
 	}
 
 	/*
@@ -1522,7 +1522,7 @@ void update_cpu_features(int cpu,
 	}
 }
 
-u64 read_sanitised_ftr_reg(u32 id)
+u64 read_sanitised_ftr_reg(id: u32)
 {
 	struct arm64_ftr_reg *regp = get_arm64_ftr_reg(id);
 
@@ -1533,13 +1533,13 @@ u64 read_sanitised_ftr_reg(u32 id)
 EXPORT_SYMBOL_GPL(read_sanitised_ftr_reg);
 
 // C preprocessor define read_sysreg_case(r)	\
-	case r:		val = read_sysreg_s(r); break;
+// 	case r:		val = read_sysreg_s(r); break;
 
 /*
  * __read_sysreg_by_encoding() - Used by a STARTING cpu before cpuinfo is populated.
  * Read the system register on the current CPU
  */
-u64 __read_sysreg_by_encoding(u32 sys_id)
+u64 __read_sysreg_by_encoding(sys_id: u32)
 {
 	struct arm64_ftr_reg *regp;
 	u64 val;
@@ -1612,7 +1612,7 @@ has_always(const struct arm64_cpu_capabilities *entry, int scope)
 }
 
 static bool
-feature_matches(u64 reg, const struct arm64_cpu_capabilities *entry)
+feature_matches(reg: u64, const struct arm64_cpu_capabilities *entry)
 {
 	int val, min, max;
 	u64 tmp;
@@ -1686,7 +1686,7 @@ const struct cpumask *system_32bit_el0_cpumask(void)
 	return cpu_possible_mask;
 }
 
-const struct cpumask *task_cpu_fallback_mask(struct task_struct *p)
+const struct cpumask *task_cpu_fallback_mask(task_struct *p)
 {
 	return __task_cpu_possible_mask(p, housekeeping_cpumask(HK_TYPE_DOMAIN));
 }
@@ -1698,8 +1698,8 @@ static int __init parse_32bit_el0_param(char *str)
 }
 early_param("allow_mismatched_32bit_el0", parse_32bit_el0_param);
 
-static ssize_t aarch32_el0_show(struct device *dev,
-				struct device_attribute *attr, char *buf)
+static ssize_t aarch32_el0_show(device *dev,
+				device_attribute *attr, char *buf)
 {
 	const struct cpumask *mask = system_32bit_el0_cpumask();
 
@@ -1907,18 +1907,18 @@ static bool has_nv1(const struct arm64_cpu_capabilities *entry, int scope)
 }
 
 // C preprocessor if defined(ID_AA64MMFR0_EL1_TGRAN_LPA2) && defined(ID_AA64MMFR0_EL1_TGRAN_2_SUPPORTED_LPA2)
-static bool has_lpa2_at_stage1(u64 mmfr0)
+static bool has_lpa2_at_stage1(mmfr0: u64)
 {
-	unsigned int tgran;
+	core::ffi::c_uint tgran;
 
 	tgran = cpuid_feature_extract_unsigned_field(mmfr0,
 					ID_AA64MMFR0_EL1_TGRAN_SHIFT);
 	return tgran == ID_AA64MMFR0_EL1_TGRAN_LPA2;
 }
 
-static bool has_lpa2_at_stage2(u64 mmfr0)
+static bool has_lpa2_at_stage2(mmfr0: u64)
 {
-	unsigned int tgran;
+	core::ffi::c_uint tgran;
 
 	tgran = cpuid_feature_extract_unsigned_field(mmfr0,
 					ID_AA64MMFR0_EL1_TGRAN_2_SHIFT);
@@ -1943,7 +1943,7 @@ static bool has_lpa2(const struct arm64_cpu_capabilities *entry, int scope)
 static bool has_pmuv3(const struct arm64_cpu_capabilities *entry, int scope)
 {
 	u64 dfr0 = read_sanitised_ftr_reg(SYS_ID_AA64DFR0_EL1);
-	unsigned int pmuver;
+	core::ffi::c_uint pmuver;
 
 	pmuver = cpuid_feature_extract_unsigned_field(dfr0,
 						      ID_AA64DFR0_EL1_PMUVer_SHIFT);
@@ -1952,7 +1952,7 @@ static bool has_pmuv3(const struct arm64_cpu_capabilities *entry, int scope)
 }
 // C preprocessor endif
 
-static void cpu_enable_kpti(struct arm64_cpu_capabilities const *cap)
+static void cpu_enable_kpti(arm64_cpu_capabilities const *cap)
 {
 	if (__this_cpu_read(this_cpu_vector) == vectors) {
 		const char *v = arm64_get_bp_hardening_vector(EL1_VECTOR_KPTI);
@@ -1978,7 +1978,7 @@ early_param("kpti", parse_kpti);
 // C preprocessor ifdef CONFIG_ARM64_HW_AFDBM
 static struct cpumask dbm_cpus __read_mostly;
 
-static inline void __cpu_enable_hw_dbm(void)
+void __cpu_enable_hw_dbm(void)
 {
 	u64 tcr = read_sysreg(tcr_el1) | TCR_EL1_HD;
 
@@ -2011,7 +2011,7 @@ static bool cpu_can_use_dbm(const struct arm64_cpu_capabilities *cap)
 	       !cpu_has_broken_dbm();
 }
 
-static void cpu_enable_hw_dbm(struct arm64_cpu_capabilities const *cap)
+static void cpu_enable_hw_dbm(arm64_cpu_capabilities const *cap)
 {
 	if (cpu_can_use_dbm(cap)) {
 		__cpu_enable_hw_dbm();
@@ -2058,7 +2058,7 @@ int get_cpu_with_amu_feat(void)
 	return cpumask_any(&amu_cpus);
 }
 
-static void cpu_amu_enable(struct arm64_cpu_capabilities const *cap)
+static void cpu_amu_enable(arm64_cpu_capabilities const *cap)
 {
 	if (has_cpuid_feature(cap, SCOPE_LOCAL_CPU)) {
 		cpumask_set_cpu(smp_processor_id(), &amu_cpus);
@@ -2255,19 +2255,19 @@ static bool has_generic_auth(const struct arm64_cpu_capabilities *entry,
 // C preprocessor endif /* CONFIG_ARM64_PTR_AUTH */
 
 // C preprocessor ifdef CONFIG_ARM64_E0PD
-static void cpu_enable_e0pd(struct arm64_cpu_capabilities const *cap)
+static void cpu_enable_e0pd(arm64_cpu_capabilities const *cap)
 {
 	if (this_cpu_has_cap(ARM64_HAS_E0PD))
 		sysreg_clear_set(tcr_el1, 0, TCR_EL1_E0PD1);
 }
 // C preprocessor endif /* CONFIG_ARM64_E0PD */
 
-static void cpu_enable_ls64(struct arm64_cpu_capabilities const *cap)
+static void cpu_enable_ls64(arm64_cpu_capabilities const *cap)
 {
 	sysreg_clear_set(sctlr_el1, SCTLR_EL1_EnALS, SCTLR_EL1_EnALS);
 }
 
-static void cpu_enable_ls64_v(struct arm64_cpu_capabilities const *cap)
+static void cpu_enable_ls64_v(arm64_cpu_capabilities const *cap)
 {
 	sysreg_clear_set(sctlr_el1, SCTLR_EL1_EnASR, 0);
 }
@@ -2384,7 +2384,7 @@ static void bti_enable(const struct arm64_cpu_capabilities *__unused)
 // C preprocessor endif /* CONFIG_ARM64_BTI */
 
 // C preprocessor ifdef CONFIG_ARM64_MTE
-static void cpu_enable_mte(struct arm64_cpu_capabilities const *cap)
+static void cpu_enable_mte(arm64_cpu_capabilities const *cap)
 {
 	static bool cleared_zero_page = false;
 
@@ -2538,132 +2538,132 @@ test_has_gicv5_legacy(const struct arm64_cpu_capabilities *entry, int scope)
 
 static const struct arm64_cpu_capabilities arm64_features[] = {
 	{
-		.capability = ARM64_ALWAYS_BOOT,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_always,
+		capability: ARM64_ALWAYS_BOOT,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_always,
 	},
 	{
-		.capability = ARM64_ALWAYS_SYSTEM,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_always,
+		capability: ARM64_ALWAYS_SYSTEM,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_always,
 	},
 	{
-		.desc = "GICv3 CPU interface",
-		.capability = ARM64_HAS_GICV3_CPUIF,
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.matches = has_useable_gicv3_cpuif,
+		desc: "GICv3 CPU interface",
+		capability: ARM64_HAS_GICV3_CPUIF,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		matches: has_useable_gicv3_cpuif,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, GIC, IMP)
 	},
 	{
-		.desc = "Enhanced Counter Virtualization",
-		.capability = ARM64_HAS_ECV,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Enhanced Counter Virtualization",
+		capability: ARM64_HAS_ECV,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR0_EL1, ECV, IMP)
 	},
 	{
-		.desc = "Enhanced Counter Virtualization (CNTPOFF)",
-		.capability = ARM64_HAS_ECV_CNTPOFF,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Enhanced Counter Virtualization (CNTPOFF)",
+		capability: ARM64_HAS_ECV_CNTPOFF,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR0_EL1, ECV, CNTPOFF)
 	},
 	{
-		.desc = "Privileged Access Never",
-		.capability = ARM64_HAS_PAN,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_pan,
+		desc: "Privileged Access Never",
+		capability: ARM64_HAS_PAN,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_pan,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, PAN, IMP)
 	},
 // C preprocessor ifdef CONFIG_ARM64_EPAN
 	{
-		.desc = "Enhanced Privileged Access Never",
-		.capability = ARM64_HAS_EPAN,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Enhanced Privileged Access Never",
+		capability: ARM64_HAS_EPAN,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, PAN, PAN3)
 	},
 // C preprocessor endif /* CONFIG_ARM64_EPAN */
 	{
-		.desc = "LSE atomic instructions",
-		.capability = ARM64_HAS_LSE_ATOMICS,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "LSE atomic instructions",
+		capability: ARM64_HAS_LSE_ATOMICS,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR0_EL1, ATOMIC, IMP)
 	},
 	{
-		.desc = "Virtualization Host Extensions",
-		.capability = ARM64_HAS_VIRT_HOST_EXTN,
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.matches = runs_at_el2,
-		.cpu_enable = cpu_copy_el2regs,
+		desc: "Virtualization Host Extensions",
+		capability: ARM64_HAS_VIRT_HOST_EXTN,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		matches: runs_at_el2,
+		cpu_enable: cpu_copy_el2regs,
 	},
 	{
-		.desc = "Nested Virtualization Support",
-		.capability = ARM64_HAS_NESTED_VIRT,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_nested_virt_support,
-		.match_list = (const struct arm64_cpu_capabilities []){
+		desc: "Nested Virtualization Support",
+		capability: ARM64_HAS_NESTED_VIRT,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_nested_virt_support,
+		match_list: (const struct arm64_cpu_capabilities []){
 			{
-				.matches = has_cpuid_feature,
+				matches: has_cpuid_feature,
 				ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, NV, NV2)
 			},
 			{
-				.matches = has_cpuid_feature,
+				matches: has_cpuid_feature,
 				ARM64_CPUID_FIELDS(ID_AA64MMFR4_EL1, NV_frac, NV2_ONLY)
 			},
 			{ /* Sentinel */ }
 		},
 	},
 	{
-		.desc = "FEAT_NV2p1",
-		.capability = ARM64_HAS_NV2P1,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "FEAT_NV2p1",
+		capability: ARM64_HAS_NV2P1,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR4_EL1, NV_frac, NV2P1)
 	},
 	{
-		.desc = "FEAT_NV3",
-		.capability = ARM64_HAS_NV3,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "FEAT_NV3",
+		capability: ARM64_HAS_NV3,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR4_EL1, NV_frac, NV3)
 	},
 	{
-		.capability = ARM64_HAS_32BIT_EL0_DO_NOT_USE,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_32bit_el0,
+		capability: ARM64_HAS_32BIT_EL0_DO_NOT_USE,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_32bit_el0,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, EL0, AARCH32)
 	},
 // C preprocessor ifdef CONFIG_KVM
 	{
-		.desc = "32-bit EL1 Support",
-		.capability = ARM64_HAS_32BIT_EL1,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "32-bit EL1 Support",
+		capability: ARM64_HAS_32BIT_EL1,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, EL1, AARCH32)
 	},
 	{
-		.desc = "Protected KVM",
-		.capability = ARM64_KVM_PROTECTED_MODE,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = is_kvm_protected_mode,
+		desc: "Protected KVM",
+		capability: ARM64_KVM_PROTECTED_MODE,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: is_kvm_protected_mode,
 	},
 	{
-		.desc = "HCRX_EL2 register",
-		.capability = ARM64_HAS_HCX,
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "HCRX_EL2 register",
+		capability: ARM64_HAS_HCX,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, HCX, IMP)
 	},
 // C preprocessor endif
 	{
-		.desc = "Kernel page table isolation (KPTI)",
-		.capability = ARM64_UNMAP_KERNEL_AT_EL0,
-		.type = ARM64_CPUCAP_BOOT_RESTRICTED_CPU_LOCAL_FEATURE,
-		.cpu_enable = cpu_enable_kpti,
-		.matches = unmap_kernel_at_el0,
+		desc: "Kernel page table isolation (KPTI)",
+		capability: ARM64_UNMAP_KERNEL_AT_EL0,
+		type: ARM64_CPUCAP_BOOT_RESTRICTED_CPU_LOCAL_FEATURE,
+		cpu_enable: cpu_enable_kpti,
+		matches: unmap_kernel_at_el0,
 		/*
 		 * The ID feature fields below are used to indicate that
 		 * the CPU doesn't need KPTI. See unmap_kernel_at_el0 for
@@ -2672,208 +2672,208 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, CSV3, IMP)
 	},
 	{
-		.capability = ARM64_HAS_FPSIMD,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_fpsimd,
+		capability: ARM64_HAS_FPSIMD,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_fpsimd,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, FP, IMP)
 	},
 // C preprocessor ifdef CONFIG_ARM64_PMEM
 	{
-		.desc = "Data cache clean to Point of Persistence",
-		.capability = ARM64_HAS_DCPOP,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Data cache clean to Point of Persistence",
+		capability: ARM64_HAS_DCPOP,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, DPB, IMP)
 	},
 	{
-		.desc = "Data cache clean to Point of Deep Persistence",
-		.capability = ARM64_HAS_DCPODP,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Data cache clean to Point of Deep Persistence",
+		capability: ARM64_HAS_DCPODP,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, DPB, DPB2)
 	},
 // C preprocessor endif
 // C preprocessor ifdef CONFIG_ARM64_SVE
 	{
-		.desc = "Scalable Vector Extension",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_SVE,
-		.cpu_enable = cpu_enable_sve,
-		.matches = has_cpuid_feature,
+		desc: "Scalable Vector Extension",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_SVE,
+		cpu_enable: cpu_enable_sve,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, SVE, IMP)
 	},
 // C preprocessor endif /* CONFIG_ARM64_SVE */
 // C preprocessor ifdef CONFIG_ARM64_RAS_EXTN
 	{
-		.desc = "RAS Extension Support",
-		.capability = ARM64_HAS_RAS_EXTN,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_clear_disr,
+		desc: "RAS Extension Support",
+		capability: ARM64_HAS_RAS_EXTN,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_clear_disr,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, RAS, IMP)
 	},
 	{
-		.desc = "RASv1p1 Extension Support",
-		.capability = ARM64_HAS_RASV1P1_EXTN,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_rasv1p1,
+		desc: "RASv1p1 Extension Support",
+		capability: ARM64_HAS_RASV1P1_EXTN,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_rasv1p1,
 	},
 // C preprocessor endif /* CONFIG_ARM64_RAS_EXTN */
 // C preprocessor ifdef CONFIG_ARM64_AMU_EXTN
 	{
-		.desc = "Activity Monitors Unit (AMU)",
-		.capability = ARM64_HAS_AMU_EXTN,
-		.type = ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
-		.matches = has_amu,
-		.cpu_enable = cpu_amu_enable,
-		.cpus = &amu_cpus,
+		desc: "Activity Monitors Unit (AMU)",
+		capability: ARM64_HAS_AMU_EXTN,
+		type: ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
+		matches: has_amu,
+		cpu_enable: cpu_amu_enable,
+		cpus: &amu_cpus,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, AMU, IMP)
 	},
 // C preprocessor endif /* CONFIG_ARM64_AMU_EXTN */
 	{
-		.desc = "Data cache clean to the PoU not required for I/D coherence",
-		.capability = ARM64_HAS_CACHE_IDC,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cache_idc,
-		.cpu_enable = cpu_emulate_effective_ctr,
+		desc: "Data cache clean to the PoU not required for I/D coherence",
+		capability: ARM64_HAS_CACHE_IDC,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cache_idc,
+		cpu_enable: cpu_emulate_effective_ctr,
 	},
 	{
-		.desc = "Instruction cache invalidation not required for I/D coherence",
-		.capability = ARM64_HAS_CACHE_DIC,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cache_dic,
+		desc: "Instruction cache invalidation not required for I/D coherence",
+		capability: ARM64_HAS_CACHE_DIC,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cache_dic,
 	},
 	{
-		.desc = "Stage-2 Force Write-Back",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_HAS_STAGE2_FWB,
-		.matches = has_cpuid_feature,
+		desc: "Stage-2 Force Write-Back",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_HAS_STAGE2_FWB,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, FWB, IMP)
 	},
 	{
-		.desc = "ARMv8.4 Translation Table Level",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_HAS_ARMv8_4_TTL,
-		.matches = has_cpuid_feature,
+		desc: "ARMv8.4 Translation Table Level",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_HAS_ARMv8_4_TTL,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, TTL, IMP)
 	},
 	{
-		.desc = "TLB range maintenance instructions",
-		.capability = ARM64_HAS_TLB_RANGE,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "TLB range maintenance instructions",
+		capability: ARM64_HAS_TLB_RANGE,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR0_EL1, TLB, RANGE)
 	},
 // C preprocessor ifdef CONFIG_ARM64_HW_AFDBM
 	{
-		.desc = "Hardware dirty bit management",
-		.type = ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
-		.capability = ARM64_HW_DBM,
-		.matches = has_hw_dbm,
-		.cpu_enable = cpu_enable_hw_dbm,
-		.cpus = &dbm_cpus,
+		desc: "Hardware dirty bit management",
+		type: ARM64_CPUCAP_WEAK_LOCAL_CPU_FEATURE,
+		capability: ARM64_HW_DBM,
+		matches: has_hw_dbm,
+		cpu_enable: cpu_enable_hw_dbm,
+		cpus: &dbm_cpus,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, HAFDBS, DBM)
 	},
 // C preprocessor endif
 // C preprocessor ifdef CONFIG_ARM64_HAFT
 	{
-		.desc = "Hardware managed Access Flag for Table Descriptors",
+		desc: "Hardware managed Access Flag for Table Descriptors",
 		/*
 		 * Contrary to the page/block access flag, the table access flag
 		 * cannot be emulated in software (no access fault will occur).
 		 * Therefore this should be used only if it's supported system
 		 * wide.
 		 */
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_HAFT,
-		.matches = has_cpuid_feature,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_HAFT,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, HAFDBS, HAFT)
 	},
 // C preprocessor endif
 	{
-		.desc = "CRC32 instructions",
-		.capability = ARM64_HAS_CRC32,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "CRC32 instructions",
+		capability: ARM64_HAS_CRC32,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR0_EL1, CRC32, IMP)
 	},
 	{
-		.desc = "Speculative Store Bypassing Safe (SSBS)",
-		.capability = ARM64_SSBS,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Speculative Store Bypassing Safe (SSBS)",
+		capability: ARM64_SSBS,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, SSBS, IMP)
 	},
 // C preprocessor ifdef CONFIG_ARM64_CNP
 	{
-		.desc = "Common not Private translations",
-		.capability = ARM64_HAS_CNP,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_useable_cnp,
-		.cpu_enable = cpu_enable_cnp,
+		desc: "Common not Private translations",
+		capability: ARM64_HAS_CNP,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_useable_cnp,
+		cpu_enable: cpu_enable_cnp,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, CnP, IMP)
 	},
 // C preprocessor endif
 	{
-		.desc = "Speculation barrier (SB)",
-		.capability = ARM64_HAS_SB,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Speculation barrier (SB)",
+		capability: ARM64_HAS_SB,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, SB, IMP)
 	},
 // C preprocessor ifdef CONFIG_ARM64_PTR_AUTH
 	{
-		.desc = "Address authentication (architected QARMA5 algorithm)",
-		.capability = ARM64_HAS_ADDRESS_AUTH_ARCH_QARMA5,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_address_auth_cpucap,
+		desc: "Address authentication (architected QARMA5 algorithm)",
+		capability: ARM64_HAS_ADDRESS_AUTH_ARCH_QARMA5,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_address_auth_cpucap,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, APA, PAuth)
 	},
 	{
-		.desc = "Address authentication (architected QARMA3 algorithm)",
-		.capability = ARM64_HAS_ADDRESS_AUTH_ARCH_QARMA3,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_address_auth_cpucap,
+		desc: "Address authentication (architected QARMA3 algorithm)",
+		capability: ARM64_HAS_ADDRESS_AUTH_ARCH_QARMA3,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_address_auth_cpucap,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR2_EL1, APA3, PAuth)
 	},
 	{
-		.desc = "Address authentication (IMP DEF algorithm)",
-		.capability = ARM64_HAS_ADDRESS_AUTH_IMP_DEF,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_address_auth_cpucap,
+		desc: "Address authentication (IMP DEF algorithm)",
+		capability: ARM64_HAS_ADDRESS_AUTH_IMP_DEF,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_address_auth_cpucap,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, API, PAuth)
 	},
 	{
-		.capability = ARM64_HAS_ADDRESS_AUTH,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_address_auth_metacap,
+		capability: ARM64_HAS_ADDRESS_AUTH,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_address_auth_metacap,
 	},
 	{
-		.desc = "Generic authentication (architected QARMA5 algorithm)",
-		.capability = ARM64_HAS_GENERIC_AUTH_ARCH_QARMA5,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Generic authentication (architected QARMA5 algorithm)",
+		capability: ARM64_HAS_GENERIC_AUTH_ARCH_QARMA5,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, GPA, IMP)
 	},
 	{
-		.desc = "Generic authentication (architected QARMA3 algorithm)",
-		.capability = ARM64_HAS_GENERIC_AUTH_ARCH_QARMA3,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Generic authentication (architected QARMA3 algorithm)",
+		capability: ARM64_HAS_GENERIC_AUTH_ARCH_QARMA3,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR2_EL1, GPA3, IMP)
 	},
 	{
-		.desc = "Generic authentication (IMP DEF algorithm)",
-		.capability = ARM64_HAS_GENERIC_AUTH_IMP_DEF,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Generic authentication (IMP DEF algorithm)",
+		capability: ARM64_HAS_GENERIC_AUTH_IMP_DEF,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, GPI, IMP)
 	},
 	{
-		.capability = ARM64_HAS_GENERIC_AUTH,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_generic_auth,
+		capability: ARM64_HAS_GENERIC_AUTH,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_generic_auth,
 	},
 // C preprocessor endif /* CONFIG_ARM64_PTR_AUTH */
 // C preprocessor ifdef CONFIG_ARM64_PSEUDO_NMI
@@ -2881,226 +2881,226 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 		/*
 		 * Depends on having GICv3
 		 */
-		.desc = "IRQ priority masking",
-		.capability = ARM64_HAS_GIC_PRIO_MASKING,
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.matches = can_use_gic_priorities,
+		desc: "IRQ priority masking",
+		capability: ARM64_HAS_GIC_PRIO_MASKING,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		matches: can_use_gic_priorities,
 	},
 	{
 		/*
 		 * Depends on ARM64_HAS_GIC_PRIO_MASKING
 		 */
-		.capability = ARM64_HAS_GIC_PRIO_RELAXED_SYNC,
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.matches = has_gic_prio_relaxed_sync,
+		capability: ARM64_HAS_GIC_PRIO_RELAXED_SYNC,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		matches: has_gic_prio_relaxed_sync,
 	},
 // C preprocessor endif
 	{
 		/*
 		 * Depends on having GICv3
 		 */
-		.desc = "ICV_DIR_EL1 trapping",
-		.capability = ARM64_HAS_ICH_HCR_EL2_TDIR,
-		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-		.matches = can_trap_icv_dir_el1,
+		desc: "ICV_DIR_EL1 trapping",
+		capability: ARM64_HAS_ICH_HCR_EL2_TDIR,
+		type: ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+		matches: can_trap_icv_dir_el1,
 	},
 // C preprocessor ifdef CONFIG_ARM64_E0PD
 	{
-		.desc = "E0PD",
-		.capability = ARM64_HAS_E0PD,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.cpu_enable = cpu_enable_e0pd,
-		.matches = has_cpuid_feature,
+		desc: "E0PD",
+		capability: ARM64_HAS_E0PD,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		cpu_enable: cpu_enable_e0pd,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, E0PD, IMP)
 	},
 // C preprocessor endif
 	{
-		.desc = "Random Number Generator",
-		.capability = ARM64_HAS_RNG,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Random Number Generator",
+		capability: ARM64_HAS_RNG,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR0_EL1, RNDR, IMP)
 	},
 // C preprocessor ifdef CONFIG_ARM64_BTI
 	{
-		.desc = "Branch Target Identification",
-		.capability = ARM64_BTI,
+		desc: "Branch Target Identification",
+		capability: ARM64_BTI,
 // C preprocessor ifdef CONFIG_ARM64_BTI_KERNEL
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
 // C preprocessor else
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
 // C preprocessor endif
-		.matches = has_cpuid_feature,
-		.cpu_enable = bti_enable,
+		matches: has_cpuid_feature,
+		cpu_enable: bti_enable,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, BT, IMP)
 	},
 // C preprocessor endif
 // C preprocessor ifdef CONFIG_ARM64_MTE
 	{
-		.desc = "Memory Tagging Extension",
-		.capability = ARM64_MTE,
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_mte,
+		desc: "Memory Tagging Extension",
+		capability: ARM64_MTE,
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_mte,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, MTE, MTE2)
 	},
 	{
-		.desc = "Asymmetric MTE Tag Check Fault",
-		.capability = ARM64_MTE_ASYMM,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Asymmetric MTE Tag Check Fault",
+		capability: ARM64_MTE_ASYMM,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, MTE, MTE3)
 	},
 	{
-		.desc = "FAR on MTE Tag Check Fault",
-		.capability = ARM64_MTE_FAR,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "FAR on MTE Tag Check Fault",
+		capability: ARM64_MTE_FAR,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR2_EL1, MTEFAR, IMP)
 	},
 	{
-		.desc = "Store Only MTE Tag Check",
-		.capability = ARM64_MTE_STORE_ONLY,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Store Only MTE Tag Check",
+		capability: ARM64_MTE_STORE_ONLY,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR2_EL1, MTESTOREONLY, IMP)
 	},
 // C preprocessor endif /* CONFIG_ARM64_MTE */
 	{
-		.desc = "RCpc load-acquire (LDAPR)",
-		.capability = ARM64_HAS_LDAPR,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "RCpc load-acquire (LDAPR)",
+		capability: ARM64_HAS_LDAPR,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, LRCPC, IMP)
 	},
 	{
-		.desc = "Fine Grained Traps",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_HAS_FGT,
-		.matches = has_cpuid_feature,
+		desc: "Fine Grained Traps",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_HAS_FGT,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR0_EL1, FGT, IMP)
 	},
 	{
-		.desc = "Fine Grained Traps 2",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_HAS_FGT2,
-		.matches = has_cpuid_feature,
+		desc: "Fine Grained Traps 2",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_HAS_FGT2,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR0_EL1, FGT, FGT2)
 	},
 // C preprocessor ifdef CONFIG_ARM64_SME
 	{
-		.desc = "Scalable Matrix Extension",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_SME,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_sme,
+		desc: "Scalable Matrix Extension",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_SME,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_sme,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, SME, IMP)
 	},
 	/* FA64 should be sorted after the base SME capability */
 	{
-		.desc = "FA64",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_SME_FA64,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_fa64,
+		desc: "FA64",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_SME_FA64,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_fa64,
 		ARM64_CPUID_FIELDS(ID_AA64SMFR0_EL1, FA64, IMP)
 	},
 	{
-		.desc = "SME2",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_SME2,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_sme2,
+		desc: "SME2",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_SME2,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_sme2,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, SME, SME2)
 	},
 // C preprocessor endif /* CONFIG_ARM64_SME */
 	{
-		.desc = "WFx with timeout",
-		.capability = ARM64_HAS_WFXT,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "WFx with timeout",
+		capability: ARM64_HAS_WFXT,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR2_EL1, WFxT, IMP)
 	},
 	{
-		.desc = "Trap EL0 IMPLEMENTATION DEFINED functionality",
-		.capability = ARM64_HAS_TIDCP1,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_trap_el0_impdef,
+		desc: "Trap EL0 IMPLEMENTATION DEFINED functionality",
+		capability: ARM64_HAS_TIDCP1,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_trap_el0_impdef,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, TIDCP1, IMP)
 	},
 	{
-		.desc = "Data independent timing control (DIT)",
-		.capability = ARM64_HAS_DIT,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_dit,
+		desc: "Data independent timing control (DIT)",
+		capability: ARM64_HAS_DIT,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_dit,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, DIT, IMP)
 	},
 	{
-		.desc = "Memory Copy and Memory Set instructions",
-		.capability = ARM64_HAS_MOPS,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_mops,
+		desc: "Memory Copy and Memory Set instructions",
+		capability: ARM64_HAS_MOPS,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_mops,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR2_EL1, MOPS, IMP)
 	},
 	{
-		.capability = ARM64_HAS_TCR2,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		capability: ARM64_HAS_TCR2,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR3_EL1, TCRX, IMP)
 	},
 	{
-		.desc = "Stage-1 Permission Indirection Extension (S1PIE)",
-		.capability = ARM64_HAS_S1PIE,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Stage-1 Permission Indirection Extension (S1PIE)",
+		capability: ARM64_HAS_S1PIE,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR3_EL1, S1PIE, IMP)
 	},
 	{
-		.desc = "VHE for hypervisor only",
-		.capability = ARM64_KVM_HVHE,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = hvhe_possible,
+		desc: "VHE for hypervisor only",
+		capability: ARM64_KVM_HVHE,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: hvhe_possible,
 	},
 	{
-		.desc = "Enhanced Virtualization Traps",
-		.capability = ARM64_HAS_EVT,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Enhanced Virtualization Traps",
+		capability: ARM64_HAS_EVT,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
 	},
 	{
-		.desc = "BBM Level 3",
-		.capability = ARM64_HAS_BBML3,
-		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-		.matches = has_bbml3,
+		desc: "BBM Level 3",
+		capability: ARM64_HAS_BBML3,
+		type: ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+		matches: has_bbml3,
 	},
 	{
-		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
-		.capability = ARM64_HAS_LPA2,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_lpa2,
+		desc: "52-bit Virtual Addressing for KVM (LPA2)",
+		capability: ARM64_HAS_LPA2,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_lpa2,
 	},
 	{
-		.desc = "FPMR",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_HAS_FPMR,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_fpmr,
+		desc: "FPMR",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_HAS_FPMR,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_fpmr,
 		ARM64_CPUID_FIELDS(ID_AA64PFR2_EL1, FPMR, IMP)
 	},
 // C preprocessor ifdef CONFIG_ARM64_VA_BITS_52
 	{
-		.capability = ARM64_HAS_VA52,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
+		capability: ARM64_HAS_VA52,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
 // C preprocessor ifdef CONFIG_ARM64_64K_PAGES
-		.desc = "52-bit Virtual Addressing (LVA)",
+		desc: "52-bit Virtual Addressing (LVA)",
 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, VARange, 52)
 // C preprocessor else
-		.desc = "52-bit Virtual Addressing (LPA2)",
+		desc: "52-bit Virtual Addressing (LPA2)",
 // C preprocessor ifdef CONFIG_ARM64_4K_PAGES
 		ARM64_CPUID_FIELDS(ID_AA64MMFR0_EL1, TGRAN4, 52_BIT)
 // C preprocessor else
@@ -3110,102 +3110,102 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 	},
 // C preprocessor endif
 	{
-		.desc = "Memory Partitioning And Monitoring",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_MPAM,
-		.matches = test_has_mpam,
-		.cpu_enable = cpu_enable_mpam,
+		desc: "Memory Partitioning And Monitoring",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_MPAM,
+		matches: test_has_mpam,
+		cpu_enable: cpu_enable_mpam,
 	},
 	{
-		.desc = "Memory Partitioning And Monitoring Virtualisation",
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.capability = ARM64_MPAM_HCR,
-		.matches = test_has_mpam_hcr,
+		desc: "Memory Partitioning And Monitoring Virtualisation",
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		capability: ARM64_MPAM_HCR,
+		matches: test_has_mpam_hcr,
 	},
 	{
-		.desc = "NV1",
-		.capability = ARM64_HAS_HCR_NV1,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_nv1,
+		desc: "NV1",
+		capability: ARM64_HAS_HCR_NV1,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_nv1,
 		ARM64_CPUID_FIELDS_NEG(ID_AA64MMFR4_EL1, E2H0, NI_NV1)
 	},
 // C preprocessor ifdef CONFIG_ARM64_POE
 	{
-		.desc = "Stage-1 Permission Overlay Extension (S1POE)",
-		.capability = ARM64_HAS_S1POE,
-		.type = ARM64_CPUCAP_BOOT_CPU_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_poe,
+		desc: "Stage-1 Permission Overlay Extension (S1POE)",
+		capability: ARM64_HAS_S1POE,
+		type: ARM64_CPUCAP_BOOT_CPU_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_poe,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR3_EL1, S1POE, IMP)
 	},
 // C preprocessor endif
 // C preprocessor ifdef CONFIG_ARM64_GCS
 	{
-		.desc = "Guarded Control Stack (GCS)",
-		.capability = ARM64_HAS_GCS,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.cpu_enable = cpu_enable_gcs,
-		.matches = has_cpuid_feature,
+		desc: "Guarded Control Stack (GCS)",
+		capability: ARM64_HAS_GCS,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		cpu_enable: cpu_enable_gcs,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR1_EL1, GCS, IMP)
 	},
 // C preprocessor endif
 // C preprocessor ifdef CONFIG_HW_PERF_EVENTS
 	{
-		.desc = "PMUv3",
-		.capability = ARM64_HAS_PMUV3,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_pmuv3,
+		desc: "PMUv3",
+		capability: ARM64_HAS_PMUV3,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_pmuv3,
 	},
 // C preprocessor endif
 	{
-		.desc = "SCTLR2",
-		.capability = ARM64_HAS_SCTLR2,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "SCTLR2",
+		capability: ARM64_HAS_SCTLR2,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR3_EL1, SCTLRX, IMP)
 	},
 	{
-		.desc = "GICv5 CPU interface",
-		.type = ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
-		.capability = ARM64_HAS_GICV5_CPUIF,
-		.matches = has_cpuid_feature,
+		desc: "GICv5 CPU interface",
+		type: ARM64_CPUCAP_STRICT_BOOT_CPU_FEATURE,
+		capability: ARM64_HAS_GICV5_CPUIF,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64PFR2_EL1, GCIE, IMP)
 	},
 	{
-		.desc = "GICv5 Legacy vCPU interface",
-		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-		.capability = ARM64_HAS_GICV5_LEGACY,
-		.matches = test_has_gicv5_legacy,
+		desc: "GICv5 Legacy vCPU interface",
+		type: ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+		capability: ARM64_HAS_GICV5_LEGACY,
+		matches: test_has_gicv5_legacy,
 	},
 	{
-		.desc = "XNX",
-		.capability = ARM64_HAS_XNX,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "XNX",
+		capability: ARM64_HAS_XNX,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64MMFR1_EL1, XNX, IMP)
 	},
 	{
-		.desc = "LS64",
-		.capability = ARM64_HAS_LS64,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_ls64,
+		desc: "LS64",
+		capability: ARM64_HAS_LS64,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_ls64,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, LS64, LS64)
 	},
 	{
-		.desc = "LS64_V",
-		.capability = ARM64_HAS_LS64_V,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
-		.cpu_enable = cpu_enable_ls64_v,
+		desc: "LS64_V",
+		capability: ARM64_HAS_LS64_V,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
+		cpu_enable: cpu_enable_ls64_v,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR1_EL1, LS64, LS64_V)
 	},
 // C preprocessor ifdef CONFIG_ARM64_LSUI
 	{
-		.desc = "Unprivileged Load Store Instructions (LSUI)",
-		.capability = ARM64_HAS_LSUI,
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-		.matches = has_cpuid_feature,
+		desc: "Unprivileged Load Store Instructions (LSUI)",
+		capability: ARM64_HAS_LSUI,
+		type: ARM64_CPUCAP_SYSTEM_FEATURE,
+		matches: has_cpuid_feature,
 		ARM64_CPUID_FIELDS(ID_AA64ISAR3_EL1, LSUI, IMP)
 	},
 // C preprocessor endif
@@ -3213,40 +3213,40 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 };
 
 // C preprocessor define HWCAP_CPUID_MATCH(reg, field, min_value)			\
-		.matches = has_user_cpuid_feature,			\
-		ARM64_CPUID_FIELDS(reg, field, min_value)
+// 		matches: has_user_cpuid_feature,			\
+// 		ARM64_CPUID_FIELDS(reg, field, min_value)
 
 // C preprocessor define __HWCAP_CAP(name, cap_type, cap)					\
-		.desc = name,							\
-		.type = ARM64_CPUCAP_SYSTEM_FEATURE,				\
-		.hwcap_type = cap_type,						\
-		.hwcap = cap,							\
-
+// 		desc: name,							\
+// 		type: ARM64_CPUCAP_SYSTEM_FEATURE,				\
+// 		hwcap_type: cap_type,						\
+// 		hwcap: cap,							\
+// 
 // C preprocessor define HWCAP_CAP(reg, field, min_value, cap_type, cap)		\
-	{									\
-		__HWCAP_CAP(#cap, cap_type, cap)				\
-		HWCAP_CPUID_MATCH(reg, field, min_value) 		\
-	}
+// 	{									\
+// 		__HWCAP_CAP(#cap, cap_type, cap)				\
+// 		HWCAP_CPUID_MATCH(reg, field, min_value) 		\
+// 	}
 
 // C preprocessor define HWCAP_MULTI_CAP(list, cap_type, cap)					\
-	{									\
-		__HWCAP_CAP(#cap, cap_type, cap)				\
-		.matches = cpucap_multi_entry_cap_matches,			\
-		.match_list = list,						\
-	}
+// 	{									\
+// 		__HWCAP_CAP(#cap, cap_type, cap)				\
+// 		matches: cpucap_multi_entry_cap_matches,			\
+// 		match_list: list,						\
+// 	}
 
 // C preprocessor define HWCAP_CAP_MATCH(match, cap_type, cap)					\
-	{									\
-		__HWCAP_CAP(#cap, cap_type, cap)				\
-		.matches = match,						\
-	}
+// 	{									\
+// 		__HWCAP_CAP(#cap, cap_type, cap)				\
+// 		matches: match,						\
+// 	}
 
 // C preprocessor define HWCAP_CAP_MATCH_ID(match, reg, field, min_value, cap_type, cap)		\
-	{									\
-		__HWCAP_CAP(#cap, cap_type, cap)				\
-		HWCAP_CPUID_MATCH(reg, field, min_value) 			\
-		.matches = match,						\
-	}
+// 	{									\
+// 		__HWCAP_CAP(#cap, cap_type, cap)				\
+// 		HWCAP_CPUID_MATCH(reg, field, min_value) 			\
+// 		matches: match,						\
+// 	}
 
 // C preprocessor ifdef CONFIG_ARM64_PTR_AUTH
 static const struct arm64_cpu_capabilities ptr_auth_hwcap_addr_matches[] = {
@@ -3530,7 +3530,7 @@ static void setup_elf_hwcaps(const struct arm64_cpu_capabilities *hwcaps)
 			cap_set_elf_hwcap(hwcaps);
 }
 
-static void update_cpu_capabilities(u16 scope_mask)
+static void update_cpu_capabilities(scope_mask: u16)
 {
 	int i;
 	const struct arm64_cpu_capabilities *caps;
@@ -3593,7 +3593,7 @@ static int cpu_enable_non_boot_scope_capabilities(void *__unused)
 	int i;
 	u16 non_boot_scope = SCOPE_ALL & ~SCOPE_BOOT_CPU;
 
-	for_each_available_cap(i) {
+	for_each_available_cap!(i, {
 		const struct arm64_cpu_capabilities *cap = cpucap_ptrs[i];
 
 		if (WARN_ON(!cap))
@@ -3604,7 +3604,7 @@ static int cpu_enable_non_boot_scope_capabilities(void *__unused)
 
 		if (cap->cpu_enable)
 			cap->cpu_enable(cap);
-	}
+	});
 	return 0;
 }
 
@@ -3612,7 +3612,7 @@ static int cpu_enable_non_boot_scope_capabilities(void *__unused)
  * Run through the enabled capabilities and enable() it on all active
  * CPUs
  */
-static void __init enable_cpu_capabilities(u16 scope_mask)
+static void __init enable_cpu_capabilities(scope_mask: u16)
 {
 	int i;
 	const struct arm64_cpu_capabilities *caps;
@@ -3656,10 +3656,10 @@ static void __init enable_cpu_capabilities(u16 scope_mask)
  * If the system has already detected a capability, take necessary
  * action on this CPU.
  */
-static void verify_local_cpu_caps(u16 scope_mask)
+static void verify_local_cpu_caps(scope_mask: u16)
 {
 	int i;
-	bool cpu_has_cap, system_has_cap;
+	cpu_has_cap: bool, system_has_cap;
 	const struct arm64_cpu_capabilities *caps;
 
 	scope_mask &= ARM64_CPUCAP_SCOPE_MASK;
@@ -3742,7 +3742,7 @@ static void verify_local_elf_hwcaps(void)
 
 static void verify_sve_features(void)
 {
-	unsigned long cpacr = cpacr_save_enable_kernel_sve();
+	core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sve();
 
 	if (vec_verify_vq_map(ARM64_VEC_SVE)) {
 		pr_crit("CPU%d: SVE: vector length support mismatch\n",
@@ -3755,7 +3755,7 @@ static void verify_sve_features(void)
 
 static void verify_sme_features(void)
 {
-	unsigned long cpacr = cpacr_save_enable_kernel_sme();
+	core::ffi::c_ulong cpacr = cpacr_save_enable_kernel_sme();
 
 	if (vec_verify_vq_map(ARM64_VEC_SME)) {
 		pr_crit("CPU%d: SME: vector length support mismatch\n",
@@ -3768,9 +3768,9 @@ static void verify_sme_features(void)
 
 static void verify_hyp_capabilities(void)
 {
-	u64 safe_mmfr1, mmfr0, mmfr1;
+	safe_mmfr1: u64, mmfr0, mmfr1;
 	int parange, ipa_max;
-	unsigned int safe_vmid_bits, vmid_bits;
+	safe_vmid_bits: core::ffi::c_uint, vmid_bits;
 
 	if (!IS_ENABLED(CONFIG_KVM))
 		return;
@@ -3801,7 +3801,7 @@ static void verify_mpam_capabilities(void)
 {
 	u64 cpu_idr = read_cpuid(ID_AA64PFR0_EL1);
 	u64 sys_idr = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
-	u16 cpu_partid_max, cpu_pmg_max, sys_partid_max, sys_pmg_max;
+	cpu_partid_max: u16, cpu_pmg_max, sys_partid_max, sys_pmg_max;
 
 	if (FIELD_GET(ID_AA64PFR0_EL1_MPAM_MASK, cpu_idr) !=
 	    FIELD_GET(ID_AA64PFR0_EL1_MPAM_MASK, sys_idr)) {
@@ -3878,7 +3878,7 @@ void check_local_cpu_capabilities(void)
 		verify_local_cpu_capabilities();
 }
 
-bool this_cpu_has_cap(unsigned int n)
+bool this_cpu_has_cap(n: core::ffi::c_uint)
 {
 	if (!WARN_ON(preemptible()) && n < ARM64_NCAPS) {
 		const struct arm64_cpu_capabilities *cap = cpucap_ptrs[n];
@@ -3896,7 +3896,7 @@ EXPORT_SYMBOL_GPL(this_cpu_has_cap);
  * - The system wide safe registers are set with all the SMP CPUs and,
  * - The SYSTEM_FEATURE system_cpucaps may not have been set.
  */
-static bool __maybe_unused __system_matches_cap(unsigned int n)
+static bool __maybe_unused __system_matches_cap(n: core::ffi::c_uint)
 {
 	if (n < ARM64_NCAPS) {
 		const struct arm64_cpu_capabilities *cap = cpucap_ptrs[n];
@@ -3907,18 +3907,18 @@ static bool __maybe_unused __system_matches_cap(unsigned int n)
 	return false;
 }
 
-void cpu_set_feature(unsigned int num)
+void cpu_set_feature(num: core::ffi::c_uint)
 {
 	set_bit(num, elf_hwcap);
 }
 
-bool cpu_have_feature(unsigned int num)
+bool cpu_have_feature(num: core::ffi::c_uint)
 {
 	return test_bit(num, elf_hwcap);
 }
 EXPORT_SYMBOL_GPL(cpu_have_feature);
 
-unsigned long cpu_get_elf_hwcap(void)
+core::ffi::c_ulong cpu_get_elf_hwcap(void)
 {
 	/*
 	 * We currently only populate the first 32 bits of AT_HWCAP. Please
@@ -3928,12 +3928,12 @@ unsigned long cpu_get_elf_hwcap(void)
 	return elf_hwcap[0];
 }
 
-unsigned long cpu_get_elf_hwcap2(void)
+core::ffi::c_ulong cpu_get_elf_hwcap2(void)
 {
 	return elf_hwcap[1];
 }
 
-unsigned long cpu_get_elf_hwcap3(void)
+core::ffi::c_ulong cpu_get_elf_hwcap3(void)
 {
 	return elf_hwcap[2];
 }
@@ -4044,7 +4044,7 @@ void __init setup_user_features(void)
 	minsigstksz_setup();
 }
 
-static int enable_mismatched_32bit_el0(unsigned int cpu)
+static int enable_mismatched_32bit_el0(cpu: core::ffi::c_uint)
 {
 	/*
 	 * The first 32-bit-capable CPU we detected and so can no longer
@@ -4103,7 +4103,7 @@ static int __init init_32bit_el0_mask(void)
 }
 subsys_initcall_sync(init_32bit_el0_mask);
 
-static void __maybe_unused cpu_enable_cnp(struct arm64_cpu_capabilities const *cap)
+static void __maybe_unused cpu_enable_cnp(arm64_cpu_capabilities const *cap)
 {
 	cpu_enable_swapper_cnp();
 }
@@ -4114,7 +4114,7 @@ static void __maybe_unused cpu_enable_cnp(struct arm64_cpu_capabilities const *c
  * See Table C5-6 System instruction encodings for System register accesses,
  * ARMv8 ARM(ARM DDI 0487A.f) for more details.
  */
-static inline bool __attribute_const__ is_emulated(u32 id)
+bool __attribute_const__ is_emulated(id: u32)
 {
 	return (sys_reg_Op0(id) == 0x3 &&
 		sys_reg_CRn(id) == 0x0 &&
@@ -4127,7 +4127,7 @@ static inline bool __attribute_const__ is_emulated(u32 id)
  * With CRm == 0, reg should be one of :
  * MIDR_EL1, MPIDR_EL1 or REVIDR_EL1.
  */
-static inline int emulate_id_reg(u32 id, u64 *valp)
+int emulate_id_reg(id: u32, u64 *valp)
 {
 	switch (id) {
 	case SYS_MIDR_EL1:
@@ -4147,7 +4147,7 @@ static inline int emulate_id_reg(u32 id, u64 *valp)
 	return 0;
 }
 
-static int emulate_sys_reg(u32 id, u64 *valp)
+static int emulate_sys_reg(id: u32, u64 *valp)
 {
 	struct arm64_ftr_reg *regp;
 
@@ -4169,7 +4169,7 @@ static int emulate_sys_reg(u32 id, u64 *valp)
 	return 0;
 }
 
-int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt)
+int do_emulate_mrs(pt_regs *regs, sys_reg: u32, rt: u32)
 {
 	int rc;
 	u64 val;
@@ -4182,9 +4182,9 @@ int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt)
 	return rc;
 }
 
-bool try_emulate_mrs(struct pt_regs *regs, u32 insn)
+bool try_emulate_mrs(pt_regs *regs, insn: u32)
 {
-	u32 sys_reg, rt;
+	sys_reg: u32, rt;
 
 	if (compat_user_mode(regs) || !aarch64_insn_is_mrs(insn))
 		return false;
@@ -4209,7 +4209,7 @@ enum mitigation_state arm64_get_meltdown_state(void)
 	return SPECTRE_VULNERABLE;
 }
 
-ssize_t cpu_show_meltdown(struct device *dev, struct device_attribute *attr,
+ssize_t cpu_show_meltdown(device *dev, device_attribute *attr,
 			  char *buf)
 {
 	switch (arm64_get_meltdown_state()) {

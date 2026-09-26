@@ -61,9 +61,9 @@ extern "C" {
     pub fn do_el1_gcs(regs: *mut pt_regs, esr: ::core::ffi::c_ulong);
 
     // CONFIG_HAVE_HW_BREAKPOINT controls these declarations in the C header.
-    #[cfg(feature = "CONFIG_HAVE_HW_BREAKPOINT")]
+    #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
     pub fn do_breakpoint(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
-    #[cfg(feature = "CONFIG_HAVE_HW_BREAKPOINT")]
+    #[cfg(CONFIG_HAVE_HW_BREAKPOINT)]
     pub fn do_watchpoint(addr: ::core::ffi::c_ulong, esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
 
     pub fn do_el0_softstep(esr: ::core::ffi::c_ulong, regs: *mut pt_regs);
@@ -90,11 +90,11 @@ extern "C" {
     pub fn panic_bad_stack(regs: *mut pt_regs, esr: ::core::ffi::c_ulong, far: ::core::ffi::c_ulong) -> !;
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_HW_BREAKPOINT"))]
+#[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 #[inline]
 pub unsafe fn do_breakpoint(_esr: ::core::ffi::c_ulong, _regs: *mut pt_regs) {}
 
-#[cfg(not(feature = "CONFIG_HAVE_HW_BREAKPOINT"))]
+#[cfg(not(CONFIG_HAVE_HW_BREAKPOINT))]
 #[inline]
 pub unsafe fn do_watchpoint(
     _addr: ::core::ffi::c_ulong,

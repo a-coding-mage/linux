@@ -77,7 +77,7 @@ unsafe extern "C" fn etf_enqueue_timesortedlist(nskb: *mut sk_buff, sch: *mut Qd
 
 unsafe extern "C" fn timesortedlist_drop(sch: *mut Qdisc, mut skb: *mut sk_buff, now: ktime_t) {
     let q = qdisc_priv::<etf_sched_data>(sch); let mut to_free = core::ptr::null_mut(); let mut tmp = core::ptr::null_mut();
-    skb_rbtree_walk_from_safe!(skb, tmp) { if ktime_after((*skb).tstamp, now) { break; } rb_erase_cached(&mut (*skb).rbnode, &mut (*q).head); (*skb).next = core::ptr::null_mut(); (*skb).prev = core::ptr::null_mut(); (*skb).dev = qdisc_dev(sch); report_sock_error(skb, ECANCELED as u32, SO_EE_CODE_TXTIME_MISSED); qdisc_qstats_backlog_dec(sch, skb); qdisc_drop(skb, sch, &mut to_free); qdisc_qstats_overlimit(sch); qdisc_qlen_dec(sch); }
+    skb_rbtree_walk_from_safe!(skb, tmp, { if ktime_after((*skb).tstamp, now) { break; } rb_erase_cached(&mut (*skb).rbnode, &mut (*q).head); (*skb).next = core::ptr::null_mut(); (*skb).prev = core::ptr::null_mut(); (*skb).dev = qdisc_dev(sch); report_sock_error(skb, ECANCELED as u32, SO_EE_CODE_TXTIME_MISSED); qdisc_qstats_backlog_dec(sch, skb); qdisc_drop(skb, sch, &mut to_free); qdisc_qstats_overlimit(sch); qdisc_qlen_dec(sch); });
     kfree_skb_list(to_free);
 }
 

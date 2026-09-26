@@ -556,12 +556,12 @@ pub union {
 #[repr(C)]
 pub struct kvm_coalesced_mmio_ring {
 	u32 pub first, pub last;
-	__DECLARE_FLEX_ARRAY(struct pub kvm_coalesced_mmio, coalesced_mmio);
+	__DECLARE_FLEX_ARRAY(pub kvm_coalesced_mmio, coalesced_mmio);
 }
 
 pub const KVM_COALESCED_MMIO_MAX: u64 = \;
-	((PAGE_SIZE - sizeof(struct kvm_coalesced_mmio_ring)) / \
-	 sizeof(struct kvm_coalesced_mmio))
+	((PAGE_SIZE - sizeof(kvm_coalesced_mmio_ring)) / \
+	 sizeof(kvm_coalesced_mmio))
 
 /* for KVM_TRANSLATE */
 #[repr(C)]
@@ -724,12 +724,12 @@ pub const KVM_S390_SIE_PAGE_OFFSET: u64 = 1;
 /*
  * On pub arm64, machine type can be used to request the physical
  * address size for the VM. Bits[7-0] are reserved for the guest
- * PA size shift (i.pub e, log2(PA_Size)). For backward pub compatibility,
+ * PA size shift (i.r#pub e, log2(PA_Size)). For backward pub compatibility,
  * value 0 implies the default IPA pub size, 40bits.
  */
 pub const KVM_VM_TYPE_ARM_IPA_SIZE_MASK: u64 = 0xffu64;
 // define KVM_VM_TYPE_ARM_IPA_SIZE(x)		\
-	((x) & KVM_VM_TYPE_ARM_IPA_SIZE_MASK)
+// 	((x) & KVM_VM_TYPE_ARM_IPA_SIZE_MASK)
 
 pub const KVM_VM_TYPE_ARM_PROTECTED: u64 = (1u64 << 31);
 pub const KVM_VM_TYPE_ARM_MASK: u64 = (KVM_VM_TYPE_ARM_IPA_SIZE_MASK | \;
@@ -740,7 +740,7 @@ pub const KVM_VM_TYPE_ARM_MASK: u64 = (KVM_VM_TYPE_ARM_IPA_SIZE_MASK | \;
  */
 pub const KVM_GET_API_VERSION: u64 = _IO(pub KVMIO,   0x00);
 pub const KVM_CREATE_VM: u64 = _IO(pub KVMIO,   0x01) /* returns a VM fd */;
-pub const KVM_GET_MSR_INDEX_LIST: u64 = _IOWR(pub KVMIO, 0x02, struct kvm_msr_list);
+pub const KVM_GET_MSR_INDEX_LIST: u64 = _IOWR(pub KVMIO, 0x02, kvm_msr_list);
 
 pub const KVM_S390_ENABLE_SIE: u64 = _IO(pub KVMIO,   0x06);
 /*
@@ -752,9 +752,9 @@ pub const KVM_CHECK_EXTENSION: u64 = _IO(pub KVMIO,   0x03);
  * Get size for mmap(vcpu_fd)
  */
 pub const KVM_GET_VCPU_MMAP_SIZE: u64 = _IO(pub KVMIO,   0x04) /* in bytes */;
-pub const KVM_GET_SUPPORTED_CPUID: u64 = _IOWR(pub KVMIO, 0x05, struct kvm_cpuid2);
-pub const KVM_GET_EMULATED_CPUID: u64 = _IOWR(pub KVMIO, 0x09, struct kvm_cpuid2);
-pub const KVM_GET_MSR_FEATURE_INDEX_LIST: u64 = _IOWR(pub KVMIO, 0x0a, struct kvm_msr_list);
+pub const KVM_GET_SUPPORTED_CPUID: u64 = _IOWR(pub KVMIO, 0x05, kvm_cpuid2);
+pub const KVM_GET_EMULATED_CPUID: u64 = _IOWR(pub KVMIO, 0x09, kvm_cpuid2);
+pub const KVM_GET_MSR_FEATURE_INDEX_LIST: u64 = _IOWR(pub KVMIO, 0x0a, kvm_msr_list);
 
 /*
  * Extension capability list.
@@ -1096,7 +1096,7 @@ pub union {
 pub struct kvm_irq_routing {
 	u32 pub nr;
 	u32 pub flags;
-	__DECLARE_FLEX_ARRAY(struct pub kvm_irq_routing_entry, entries);
+	__DECLARE_FLEX_ARRAY(pub kvm_irq_routing_entry, entries);
 }
 
 pub const KVM_IRQFD_FLAG_DEASSIGN: u64 = (1 << 0);
@@ -1177,7 +1177,7 @@ pub const KVM_REG_SIZE_SHIFT: u64 = 52;
 pub const KVM_REG_SIZE_MASK: u64 = 0x00f0000000000000ULL;
 
 // define KVM_REG_SIZE(id)		\
-	(1U << (((id) & KVM_REG_SIZE_MASK) >> KVM_REG_SIZE_SHIFT))
+// 	(1U << (((id) & KVM_REG_SIZE_MASK) >> KVM_REG_SIZE_SHIFT))
 
 pub const KVM_REG_SIZE_U8: u64 = 0x0000000000000000ULL;
 pub const KVM_REG_SIZE_U16: u64 = 0x0010000000000000ULL;
@@ -1310,7 +1310,7 @@ pub struct kvm_s390_keyop {
  * a vcpu fd.
  */
 pub const KVM_CREATE_VCPU: u64 = _IO(pub KVMIO,   0x41);
-pub const KVM_GET_DIRTY_LOG: u64 = _IOW(pub KVMIO,  0x42, struct kvm_dirty_log);
+pub const KVM_GET_DIRTY_LOG: u64 = _IOW(pub KVMIO,  0x42, kvm_dirty_log);
 pub const KVM_SET_NR_MMU_PAGES: u64 = _IO(pub KVMIO,   0x44);
 pub const KVM_GET_NR_MMU_PAGES: u64 = _IO(pub KVMIO,   0x45)  /* deprecated */;
 pub const KVM_SET_USER_MEMORY_REGION: u64 = _IOW(pub KVMIO, 0x46, \;
@@ -1321,172 +1321,172 @@ pub const KVM_SET_USER_MEMORY_REGION2: u64 = _IOW(pub KVMIO, 0x49, \;
 					 struct kvm_userspace_memory_region2)
 
 /* enable ucontrol for s390 */
-pub const KVM_S390_UCAS_MAP: u64 = _IOW(pub KVMIO, 0x50, struct kvm_s390_ucas_mapping);
-pub const KVM_S390_UCAS_UNMAP: u64 = _IOW(pub KVMIO, 0x51, struct kvm_s390_ucas_mapping);
+pub const KVM_S390_UCAS_MAP: u64 = _IOW(pub KVMIO, 0x50, kvm_s390_ucas_mapping);
+pub const KVM_S390_UCAS_UNMAP: u64 = _IOW(pub KVMIO, 0x51, kvm_s390_ucas_mapping);
 pub const KVM_S390_VCPU_FAULT: u64 = _IOW(pub KVMIO, 0x52, usize);
-pub const KVM_S390_KEYOP: u64 = _IOWR(pub KVMIO, 0x53, struct kvm_s390_keyop);
+pub const KVM_S390_KEYOP: u64 = _IOWR(pub KVMIO, 0x53, kvm_s390_keyop);
 
 /* Device model IOC */
 pub const KVM_CREATE_IRQCHIP: u64 = _IO(pub KVMIO,   0x60);
-pub const KVM_IRQ_LINE: u64 = _IOW(pub KVMIO,  0x61, struct kvm_irq_level);
-pub const KVM_GET_IRQCHIP: u64 = _IOWR(pub KVMIO, 0x62, struct kvm_irqchip);
-pub const KVM_SET_IRQCHIP: u64 = _IOR(pub KVMIO,  0x63, struct kvm_irqchip);
+pub const KVM_IRQ_LINE: u64 = _IOW(pub KVMIO,  0x61, kvm_irq_level);
+pub const KVM_GET_IRQCHIP: u64 = _IOWR(pub KVMIO, 0x62, kvm_irqchip);
+pub const KVM_SET_IRQCHIP: u64 = _IOR(pub KVMIO,  0x63, kvm_irqchip);
 pub const KVM_CREATE_PIT: u64 = _IO(pub KVMIO,   0x64);
-pub const KVM_GET_PIT: u64 = _IOWR(pub KVMIO, 0x65, struct kvm_pit_state);
-pub const KVM_SET_PIT: u64 = _IOR(pub KVMIO,  0x66, struct kvm_pit_state);
-pub const KVM_IRQ_LINE_STATUS: u64 = _IOWR(pub KVMIO, 0x67, struct kvm_irq_level);
+pub const KVM_GET_PIT: u64 = _IOWR(pub KVMIO, 0x65, kvm_pit_state);
+pub const KVM_SET_PIT: u64 = _IOR(pub KVMIO,  0x66, kvm_pit_state);
+pub const KVM_IRQ_LINE_STATUS: u64 = _IOWR(pub KVMIO, 0x67, kvm_irq_level);
 pub const KVM_REGISTER_COALESCED_MMIO: u64 = \;
-			_IOW(pub KVMIO,  0x67, struct kvm_coalesced_mmio_zone)
+			_IOW(pub KVMIO,  0x67, kvm_coalesced_mmio_zone)
 pub const KVM_UNREGISTER_COALESCED_MMIO: u64 = \;
-			_IOW(pub KVMIO,  0x68, struct kvm_coalesced_mmio_zone)
-pub const KVM_SET_GSI_ROUTING: u64 = _IOW(pub KVMIO,  0x6a, struct kvm_irq_routing);
+			_IOW(pub KVMIO,  0x68, kvm_coalesced_mmio_zone)
+pub const KVM_SET_GSI_ROUTING: u64 = _IOW(pub KVMIO,  0x6a, kvm_irq_routing);
 pub const KVM_REINJECT_CONTROL: u64 = _IO(pub KVMIO,   0x71);
-pub const KVM_IRQFD: u64 = _IOW(pub KVMIO,  0x76, struct kvm_irqfd);
-pub const KVM_CREATE_PIT2: u64 = _IOW(pub KVMIO,  0x77, struct kvm_pit_config);
+pub const KVM_IRQFD: u64 = _IOW(pub KVMIO,  0x76, kvm_irqfd);
+pub const KVM_CREATE_PIT2: u64 = _IOW(pub KVMIO,  0x77, kvm_pit_config);
 pub const KVM_SET_BOOT_CPU_ID: u64 = _IO(pub KVMIO,   0x78);
-pub const KVM_IOEVENTFD: u64 = _IOW(pub KVMIO,  0x79, struct kvm_ioeventfd);
-pub const KVM_XEN_HVM_CONFIG: u64 = _IOW(pub KVMIO,  0x7a, struct kvm_xen_hvm_config);
-pub const KVM_SET_CLOCK: u64 = _IOW(pub KVMIO,  0x7b, struct kvm_clock_data);
-pub const KVM_GET_CLOCK: u64 = _IOR(pub KVMIO,  0x7c, struct kvm_clock_data);
+pub const KVM_IOEVENTFD: u64 = _IOW(pub KVMIO,  0x79, kvm_ioeventfd);
+pub const KVM_XEN_HVM_CONFIG: u64 = _IOW(pub KVMIO,  0x7a, kvm_xen_hvm_config);
+pub const KVM_SET_CLOCK: u64 = _IOW(pub KVMIO,  0x7b, kvm_clock_data);
+pub const KVM_GET_CLOCK: u64 = _IOR(pub KVMIO,  0x7c, kvm_clock_data);
 /* Available with KVM_CAP_PIT_STATE2 */
-pub const KVM_GET_PIT2: u64 = _IOR(pub KVMIO,  0x9f, struct kvm_pit_state2);
-pub const KVM_SET_PIT2: u64 = _IOW(pub KVMIO,  0xa0, struct kvm_pit_state2);
+pub const KVM_GET_PIT2: u64 = _IOR(pub KVMIO,  0x9f, kvm_pit_state2);
+pub const KVM_SET_PIT2: u64 = _IOW(pub KVMIO,  0xa0, kvm_pit_state2);
 /* Available with KVM_CAP_PPC_GET_PVINFO */
-pub const KVM_PPC_GET_PVINFO: u64 = _IOW(pub KVMIO,  0xa1, struct kvm_ppc_pvinfo);
+pub const KVM_PPC_GET_PVINFO: u64 = _IOW(pub KVMIO,  0xa1, kvm_ppc_pvinfo);
 /* Available with KVM_CAP_TSC_CONTROL for a pub vCPU, or with
 *  KVM_CAP_VM_TSC_CONTROL to set defaults for a VM */
 pub const KVM_SET_TSC_KHZ: u64 = _IO(pub KVMIO,  0xa2);
 pub const KVM_GET_TSC_KHZ: u64 = _IO(pub KVMIO,  0xa3);
 /* Available with KVM_CAP_SIGNAL_MSI */
-pub const KVM_SIGNAL_MSI: u64 = _IOW(pub KVMIO,  0xa5, struct kvm_msi);
+pub const KVM_SIGNAL_MSI: u64 = _IOW(pub KVMIO,  0xa5, kvm_msi);
 /* Available with KVM_CAP_PPC_GET_SMMU_INFO */
-pub const KVM_PPC_GET_SMMU_INFO: u64 = _IOR(pub KVMIO,  0xa6, struct kvm_ppc_smmu_info);
+pub const KVM_PPC_GET_SMMU_INFO: u64 = _IOR(pub KVMIO,  0xa6, kvm_ppc_smmu_info);
 /* Available with KVM_CAP_PPC_ALLOC_HTAB */
 pub const KVM_PPC_ALLOCATE_HTAB: u64 = _IOWR(pub KVMIO, 0xa7, u32);
-pub const KVM_CREATE_SPAPR_TCE: u64 = _IOW(pub KVMIO,  0xa8, struct kvm_create_spapr_tce);
+pub const KVM_CREATE_SPAPR_TCE: u64 = _IOW(pub KVMIO,  0xa8, kvm_create_spapr_tce);
 pub const KVM_CREATE_SPAPR_TCE_64: u64 = _IOW(pub KVMIO,  0xa8, \;
 				       struct kvm_create_spapr_tce_64)
 /* Available with KVM_CAP_RMA */
-pub const KVM_ALLOCATE_RMA: u64 = _IOR(pub KVMIO,  0xa9, struct kvm_allocate_rma);
+pub const KVM_ALLOCATE_RMA: u64 = _IOR(pub KVMIO,  0xa9, kvm_allocate_rma);
 /* Available with KVM_CAP_PPC_HTAB_FD */
-pub const KVM_PPC_GET_HTAB_FD: u64 = _IOW(pub KVMIO,  0xaa, struct kvm_get_htab_fd);
+pub const KVM_PPC_GET_HTAB_FD: u64 = _IOW(pub KVMIO,  0xaa, kvm_get_htab_fd);
 /* Available with KVM_CAP_ARM_SET_DEVICE_ADDR */
-pub const KVM_ARM_SET_DEVICE_ADDR: u64 = _IOW(pub KVMIO,  0xab, struct kvm_arm_device_addr);
+pub const KVM_ARM_SET_DEVICE_ADDR: u64 = _IOW(pub KVMIO,  0xab, kvm_arm_device_addr);
 /* Available with KVM_CAP_PPC_RTAS */
-pub const KVM_PPC_RTAS_DEFINE_TOKEN: u64 = _IOW(pub KVMIO,  0xac, struct kvm_rtas_token_args);
+pub const KVM_PPC_RTAS_DEFINE_TOKEN: u64 = _IOW(pub KVMIO,  0xac, kvm_rtas_token_args);
 /* Available with KVM_CAP_SPAPR_RESIZE_HPT */
-pub const KVM_PPC_RESIZE_HPT_PREPARE: u64 = _IOR(pub KVMIO, 0xad, struct kvm_ppc_resize_hpt);
-pub const KVM_PPC_RESIZE_HPT_COMMIT: u64 = _IOR(pub KVMIO, 0xae, struct kvm_ppc_resize_hpt);
+pub const KVM_PPC_RESIZE_HPT_PREPARE: u64 = _IOR(pub KVMIO, 0xad, kvm_ppc_resize_hpt);
+pub const KVM_PPC_RESIZE_HPT_COMMIT: u64 = _IOR(pub KVMIO, 0xae, kvm_ppc_resize_hpt);
 /* Available with KVM_CAP_PPC_MMU_RADIX or KVM_CAP_PPC_MMU_HASH_V3 */
-pub const KVM_PPC_CONFIGURE_V3_MMU: u64 = _IOW(pub KVMIO,  0xaf, struct kvm_ppc_mmuv3_cfg);
+pub const KVM_PPC_CONFIGURE_V3_MMU: u64 = _IOW(pub KVMIO,  0xaf, kvm_ppc_mmuv3_cfg);
 /* Available with KVM_CAP_PPC_MMU_RADIX */
-pub const KVM_PPC_GET_RMMU_INFO: u64 = _IOW(pub KVMIO,  0xb0, struct kvm_ppc_rmmu_info);
+pub const KVM_PPC_GET_RMMU_INFO: u64 = _IOW(pub KVMIO,  0xb0, kvm_ppc_rmmu_info);
 /* Available with KVM_CAP_PPC_GET_CPU_CHAR */
-pub const KVM_PPC_GET_CPU_CHAR: u64 = _IOR(pub KVMIO,  0xb1, struct kvm_ppc_cpu_u8);
+pub const KVM_PPC_GET_CPU_CHAR: u64 = _IOR(pub KVMIO,  0xb1, kvm_ppc_cpu_u8);
 /* Available with KVM_CAP_PMU_EVENT_FILTER */
-pub const KVM_SET_PMU_EVENT_FILTER: u64 = _IOW(pub KVMIO,  0xb2, struct kvm_pmu_event_filter);
+pub const KVM_SET_PMU_EVENT_FILTER: u64 = _IOW(pub KVMIO,  0xb2, kvm_pmu_event_filter);
 pub const KVM_PPC_SVM_OFF: u64 = _IO(pub KVMIO,  0xb3);
-pub const KVM_ARM_MTE_COPY_TAGS: u64 = _IOR(pub KVMIO,  0xb4, struct kvm_arm_copy_mte_tags);
+pub const KVM_ARM_MTE_COPY_TAGS: u64 = _IOR(pub KVMIO,  0xb4, kvm_arm_copy_mte_tags);
 /* Available with KVM_CAP_COUNTER_OFFSET */
-pub const KVM_ARM_SET_COUNTER_OFFSET: u64 = _IOW(pub KVMIO,  0xb5, struct kvm_arm_counter_offset);
-pub const KVM_ARM_GET_REG_WRITABLE_MASKS: u64 = _IOR(pub KVMIO,  0xb6, struct reg_mask_range);
+pub const KVM_ARM_SET_COUNTER_OFFSET: u64 = _IOW(pub KVMIO,  0xb5, kvm_arm_counter_offset);
+pub const KVM_ARM_GET_REG_WRITABLE_MASKS: u64 = _IOR(pub KVMIO,  0xb6, reg_mask_range);
 /* Available with KVM_CAP_PPC_COMPAT_CAPS */
 pub const KVM_PPC_GET_COMPAT_CAPS: u64 = _IO(pub KVMIO,  0xb8);
 
 /* ioctl for vm fd */
-pub const KVM_CREATE_DEVICE: u64 = _IOWR(pub KVMIO,  0xe0, struct kvm_create_device);
+pub const KVM_CREATE_DEVICE: u64 = _IOWR(pub KVMIO,  0xe0, kvm_create_device);
 
 /* ioctls for fds returned by KVM_CREATE_DEVICE */
-pub const KVM_SET_DEVICE_ATTR: u64 = _IOW(pub KVMIO,  0xe1, struct kvm_device_attr);
-pub const KVM_GET_DEVICE_ATTR: u64 = _IOW(pub KVMIO,  0xe2, struct kvm_device_attr);
-pub const KVM_HAS_DEVICE_ATTR: u64 = _IOW(pub KVMIO,  0xe3, struct kvm_device_attr);
+pub const KVM_SET_DEVICE_ATTR: u64 = _IOW(pub KVMIO,  0xe1, kvm_device_attr);
+pub const KVM_GET_DEVICE_ATTR: u64 = _IOW(pub KVMIO,  0xe2, kvm_device_attr);
+pub const KVM_HAS_DEVICE_ATTR: u64 = _IOW(pub KVMIO,  0xe3, kvm_device_attr);
 
 /*
  * ioctls for vcpu fds
  */
 pub const KVM_RUN: u64 = _IO(pub KVMIO,   0x80);
-pub const KVM_GET_REGS: u64 = _IOR(pub KVMIO,  0x81, struct kvm_regs);
-pub const KVM_SET_REGS: u64 = _IOW(pub KVMIO,  0x82, struct kvm_regs);
-pub const KVM_GET_SREGS: u64 = _IOR(pub KVMIO,  0x83, struct kvm_sregs);
-pub const KVM_SET_SREGS: u64 = _IOW(pub KVMIO,  0x84, struct kvm_sregs);
-pub const KVM_TRANSLATE: u64 = _IOWR(pub KVMIO, 0x85, struct kvm_translation);
-pub const KVM_INTERRUPT: u64 = _IOW(pub KVMIO,  0x86, struct kvm_interrupt);
-pub const KVM_GET_MSRS: u64 = _IOWR(pub KVMIO, 0x88, struct kvm_msrs);
-pub const KVM_SET_MSRS: u64 = _IOW(pub KVMIO,  0x89, struct kvm_msrs);
-pub const KVM_SET_CPUID: u64 = _IOW(pub KVMIO,  0x8a, struct kvm_cpuid);
-pub const KVM_SET_SIGNAL_MASK: u64 = _IOW(pub KVMIO,  0x8b, struct kvm_signal_mask);
-pub const KVM_GET_FPU: u64 = _IOR(pub KVMIO,  0x8c, struct kvm_fpu);
-pub const KVM_SET_FPU: u64 = _IOW(pub KVMIO,  0x8d, struct kvm_fpu);
-pub const KVM_GET_LAPIC: u64 = _IOR(pub KVMIO,  0x8e, struct kvm_lapic_state);
-pub const KVM_SET_LAPIC: u64 = _IOW(pub KVMIO,  0x8f, struct kvm_lapic_state);
-pub const KVM_SET_CPUID2: u64 = _IOW(pub KVMIO,  0x90, struct kvm_cpuid2);
-pub const KVM_GET_CPUID2: u64 = _IOWR(pub KVMIO, 0x91, struct kvm_cpuid2);
+pub const KVM_GET_REGS: u64 = _IOR(pub KVMIO,  0x81, kvm_regs);
+pub const KVM_SET_REGS: u64 = _IOW(pub KVMIO,  0x82, kvm_regs);
+pub const KVM_GET_SREGS: u64 = _IOR(pub KVMIO,  0x83, kvm_sregs);
+pub const KVM_SET_SREGS: u64 = _IOW(pub KVMIO,  0x84, kvm_sregs);
+pub const KVM_TRANSLATE: u64 = _IOWR(pub KVMIO, 0x85, kvm_translation);
+pub const KVM_INTERRUPT: u64 = _IOW(pub KVMIO,  0x86, kvm_interrupt);
+pub const KVM_GET_MSRS: u64 = _IOWR(pub KVMIO, 0x88, kvm_msrs);
+pub const KVM_SET_MSRS: u64 = _IOW(pub KVMIO,  0x89, kvm_msrs);
+pub const KVM_SET_CPUID: u64 = _IOW(pub KVMIO,  0x8a, kvm_cpuid);
+pub const KVM_SET_SIGNAL_MASK: u64 = _IOW(pub KVMIO,  0x8b, kvm_signal_mask);
+pub const KVM_GET_FPU: u64 = _IOR(pub KVMIO,  0x8c, kvm_fpu);
+pub const KVM_SET_FPU: u64 = _IOW(pub KVMIO,  0x8d, kvm_fpu);
+pub const KVM_GET_LAPIC: u64 = _IOR(pub KVMIO,  0x8e, kvm_lapic_state);
+pub const KVM_SET_LAPIC: u64 = _IOW(pub KVMIO,  0x8f, kvm_lapic_state);
+pub const KVM_SET_CPUID2: u64 = _IOW(pub KVMIO,  0x90, kvm_cpuid2);
+pub const KVM_GET_CPUID2: u64 = _IOWR(pub KVMIO, 0x91, kvm_cpuid2);
 /* Available with KVM_CAP_VAPIC */
-pub const KVM_TPR_ACCESS_REPORTING: u64 = _IOWR(pub KVMIO, 0x92, struct kvm_tpr_access_ctl);
+pub const KVM_TPR_ACCESS_REPORTING: u64 = _IOWR(pub KVMIO, 0x92, kvm_tpr_access_ctl);
 /* Available with KVM_CAP_VAPIC */
-pub const KVM_SET_VAPIC_ADDR: u64 = _IOW(pub KVMIO,  0x93, struct kvm_vapic_addr);
+pub const KVM_SET_VAPIC_ADDR: u64 = _IOW(pub KVMIO,  0x93, kvm_vapic_addr);
 /* valid for virtual machine (for floating interrupt)_and_ vcpu */
-pub const KVM_S390_INTERRUPT: u64 = _IOW(pub KVMIO,  0x94, struct kvm_s390_interrupt);
+pub const KVM_S390_INTERRUPT: u64 = _IOW(pub KVMIO,  0x94, kvm_s390_interrupt);
 /* store status for s390 */
 pub const KVM_S390_STORE_STATUS_NOADDR: u64 = (-1ul);
 pub const KVM_S390_STORE_STATUS_PREFIXED: u64 = (-2ul);
 pub const KVM_S390_STORE_STATUS: u64 = _IOW(pub KVMIO,  0x95, usize);
 /* initial ipl psw for s390 */
-pub const KVM_S390_SET_INITIAL_PSW: u64 = _IOW(pub KVMIO,  0x96, struct kvm_s390_psw);
+pub const KVM_S390_SET_INITIAL_PSW: u64 = _IOW(pub KVMIO,  0x96, kvm_s390_psw);
 /* initial reset for s390 */
 pub const KVM_S390_INITIAL_RESET: u64 = _IO(pub KVMIO,   0x97);
-pub const KVM_GET_MP_STATE: u64 = _IOR(pub KVMIO,  0x98, struct kvm_mp_state);
-pub const KVM_SET_MP_STATE: u64 = _IOW(pub KVMIO,  0x99, struct kvm_mp_state);
+pub const KVM_GET_MP_STATE: u64 = _IOR(pub KVMIO,  0x98, kvm_mp_state);
+pub const KVM_SET_MP_STATE: u64 = _IOW(pub KVMIO,  0x99, kvm_mp_state);
 /* Available with KVM_CAP_USER_NMI */
 pub const KVM_NMI: u64 = _IO(pub KVMIO,   0x9a);
 /* Available with KVM_CAP_SET_GUEST_DEBUG */
-pub const KVM_SET_GUEST_DEBUG: u64 = _IOW(pub KVMIO,  0x9b, struct kvm_guest_debug);
+pub const KVM_SET_GUEST_DEBUG: u64 = _IOW(pub KVMIO,  0x9b, kvm_guest_debug);
 /* MCE for x86 */
 pub const KVM_X86_SETUP_MCE: u64 = _IOW(pub KVMIO,  0x9c, u64);
 pub const KVM_X86_GET_MCE_CAP_SUPPORTED: u64 = _IOR(pub KVMIO,  0x9d, u64);
-pub const KVM_X86_SET_MCE: u64 = _IOW(pub KVMIO,  0x9e, struct kvm_x86_mce);
+pub const KVM_X86_SET_MCE: u64 = _IOW(pub KVMIO,  0x9e, kvm_x86_mce);
 /* Available with KVM_CAP_VCPU_EVENTS */
-pub const KVM_GET_VCPU_EVENTS: u64 = _IOR(pub KVMIO,  0x9f, struct kvm_vcpu_events);
-pub const KVM_SET_VCPU_EVENTS: u64 = _IOW(pub KVMIO,  0xa0, struct kvm_vcpu_events);
+pub const KVM_GET_VCPU_EVENTS: u64 = _IOR(pub KVMIO,  0x9f, kvm_vcpu_events);
+pub const KVM_SET_VCPU_EVENTS: u64 = _IOW(pub KVMIO,  0xa0, kvm_vcpu_events);
 /* Available with KVM_CAP_DEBUGREGS */
-pub const KVM_GET_DEBUGREGS: u64 = _IOR(pub KVMIO,  0xa1, struct kvm_debugregs);
-pub const KVM_SET_DEBUGREGS: u64 = _IOW(pub KVMIO,  0xa2, struct kvm_debugregs);
+pub const KVM_GET_DEBUGREGS: u64 = _IOR(pub KVMIO,  0xa1, kvm_debugregs);
+pub const KVM_SET_DEBUGREGS: u64 = _IOW(pub KVMIO,  0xa2, kvm_debugregs);
 /*
  * vcpu version available with KVM_CAP_ENABLE_CAP
  * vm version available with KVM_CAP_ENABLE_CAP_VM
  */
-pub const KVM_ENABLE_CAP: u64 = _IOW(pub KVMIO,  0xa3, struct kvm_enable_cap);
+pub const KVM_ENABLE_CAP: u64 = _IOW(pub KVMIO,  0xa3, kvm_enable_cap);
 /* Available with KVM_CAP_XSAVE */
-pub const KVM_GET_XSAVE: u64 = _IOR(pub KVMIO,  0xa4, struct kvm_xsave);
-pub const KVM_SET_XSAVE: u64 = _IOW(pub KVMIO,  0xa5, struct kvm_xsave);
+pub const KVM_GET_XSAVE: u64 = _IOR(pub KVMIO,  0xa4, kvm_xsave);
+pub const KVM_SET_XSAVE: u64 = _IOW(pub KVMIO,  0xa5, kvm_xsave);
 /* Available with KVM_CAP_XCRS */
-pub const KVM_GET_XCRS: u64 = _IOR(pub KVMIO,  0xa6, struct kvm_xcrs);
-pub const KVM_SET_XCRS: u64 = _IOW(pub KVMIO,  0xa7, struct kvm_xcrs);
+pub const KVM_GET_XCRS: u64 = _IOR(pub KVMIO,  0xa6, kvm_xcrs);
+pub const KVM_SET_XCRS: u64 = _IOW(pub KVMIO,  0xa7, kvm_xcrs);
 /* Available with KVM_CAP_SW_TLB */
-pub const KVM_DIRTY_TLB: u64 = _IOW(pub KVMIO,  0xaa, struct kvm_dirty_tlb);
+pub const KVM_DIRTY_TLB: u64 = _IOW(pub KVMIO,  0xaa, kvm_dirty_tlb);
 /* Available with KVM_CAP_ONE_REG */
-pub const KVM_GET_ONE_REG: u64 = _IOW(pub KVMIO,  0xab, struct kvm_one_reg);
-pub const KVM_SET_ONE_REG: u64 = _IOW(pub KVMIO,  0xac, struct kvm_one_reg);
+pub const KVM_GET_ONE_REG: u64 = _IOW(pub KVMIO,  0xab, kvm_one_reg);
+pub const KVM_SET_ONE_REG: u64 = _IOW(pub KVMIO,  0xac, kvm_one_reg);
 /* VM is being stopped by host */
 pub const KVM_KVMCLOCK_CTRL: u64 = _IO(pub KVMIO,   0xad);
-pub const KVM_ARM_VCPU_INIT: u64 = _IOW(pub KVMIO,  0xae, struct kvm_vcpu_init);
-pub const KVM_ARM_PREFERRED_TARGET: u64 = _IOR(pub KVMIO,  0xaf, struct kvm_vcpu_init);
-pub const KVM_GET_REG_LIST: u64 = _IOWR(pub KVMIO, 0xb0, struct kvm_reg_list);
+pub const KVM_ARM_VCPU_INIT: u64 = _IOW(pub KVMIO,  0xae, kvm_vcpu_init);
+pub const KVM_ARM_PREFERRED_TARGET: u64 = _IOR(pub KVMIO,  0xaf, kvm_vcpu_init);
+pub const KVM_GET_REG_LIST: u64 = _IOWR(pub KVMIO, 0xb0, kvm_reg_list);
 /* Available with KVM_CAP_S390_MEM_OP */
-pub const KVM_S390_MEM_OP: u64 = _IOW(pub KVMIO,  0xb1, struct kvm_s390_mem_op);
+pub const KVM_S390_MEM_OP: u64 = _IOW(pub KVMIO,  0xb1, kvm_s390_mem_op);
 /* Available with KVM_CAP_S390_SKEYS */
-pub const KVM_S390_GET_SKEYS: u64 = _IOW(pub KVMIO, 0xb2, struct kvm_s390_skeys);
-pub const KVM_S390_SET_SKEYS: u64 = _IOW(pub KVMIO, 0xb3, struct kvm_s390_skeys);
+pub const KVM_S390_GET_SKEYS: u64 = _IOW(pub KVMIO, 0xb2, kvm_s390_skeys);
+pub const KVM_S390_SET_SKEYS: u64 = _IOW(pub KVMIO, 0xb3, kvm_s390_skeys);
 /* Available with KVM_CAP_S390_INJECT_IRQ */
-pub const KVM_S390_IRQ: u64 = _IOW(pub KVMIO,  0xb4, struct kvm_s390_irq);
+pub const KVM_S390_IRQ: u64 = _IOW(pub KVMIO,  0xb4, kvm_s390_irq);
 /* Available with KVM_CAP_S390_IRQ_STATE */
-pub const KVM_S390_SET_IRQ_STATE: u64 = _IOW(pub KVMIO, 0xb5, struct kvm_s390_irq_state);
-pub const KVM_S390_GET_IRQ_STATE: u64 = _IOW(pub KVMIO, 0xb6, struct kvm_s390_irq_state);
+pub const KVM_S390_SET_IRQ_STATE: u64 = _IOW(pub KVMIO, 0xb5, kvm_s390_irq_state);
+pub const KVM_S390_GET_IRQ_STATE: u64 = _IOW(pub KVMIO, 0xb6, kvm_s390_irq_state);
 /* Available with KVM_CAP_X86_SMM */
 pub const KVM_SMI: u64 = _IO(pub KVMIO,   0xb7);
 /* Available with KVM_CAP_S390_CMMA_MIGRATION */
-pub const KVM_S390_GET_CMMA_BITS: u64 = _IOWR(pub KVMIO, 0xb8, struct kvm_s390_cmma_log);
-pub const KVM_S390_SET_CMMA_BITS: u64 = _IOW(pub KVMIO, 0xb9, struct kvm_s390_cmma_log);
+pub const KVM_S390_GET_CMMA_BITS: u64 = _IOWR(pub KVMIO, 0xb8, kvm_s390_cmma_log);
+pub const KVM_S390_SET_CMMA_BITS: u64 = _IOW(pub KVMIO, 0xb9, kvm_s390_cmma_log);
 /* Memory Encryption Commands */
 pub const KVM_MEMORY_ENCRYPT_OP: u64 = _IOWR(pub KVMIO, 0xba, usize);
 
@@ -1496,21 +1496,21 @@ pub struct kvm_enc_region {
 	u64 pub size;
 }
 
-pub const KVM_MEMORY_ENCRYPT_REG_REGION: u64 = _IOR(pub KVMIO, 0xbb, struct kvm_enc_region);
-pub const KVM_MEMORY_ENCRYPT_UNREG_REGION: u64 = _IOR(pub KVMIO, 0xbc, struct kvm_enc_region);
+pub const KVM_MEMORY_ENCRYPT_REG_REGION: u64 = _IOR(pub KVMIO, 0xbb, kvm_enc_region);
+pub const KVM_MEMORY_ENCRYPT_UNREG_REGION: u64 = _IOR(pub KVMIO, 0xbc, kvm_enc_region);
 
 /* Available with KVM_CAP_HYPERV_EVENTFD */
-pub const KVM_HYPERV_EVENTFD: u64 = _IOW(pub KVMIO,  0xbd, struct kvm_hyperv_eventfd);
+pub const KVM_HYPERV_EVENTFD: u64 = _IOW(pub KVMIO,  0xbd, kvm_hyperv_eventfd);
 
 /* Available with KVM_CAP_NESTED_STATE */
-pub const KVM_GET_NESTED_STATE: u64 = _IOWR(pub KVMIO, 0xbe, struct kvm_nested_state);
-pub const KVM_SET_NESTED_STATE: u64 = _IOW(pub KVMIO,  0xbf, struct kvm_nested_state);
+pub const KVM_GET_NESTED_STATE: u64 = _IOWR(pub KVMIO, 0xbe, kvm_nested_state);
+pub const KVM_SET_NESTED_STATE: u64 = _IOW(pub KVMIO,  0xbf, kvm_nested_state);
 
 /* Available with KVM_CAP_MANUAL_DIRTY_LOG_PROTECT_2 */
-pub const KVM_CLEAR_DIRTY_LOG: u64 = _IOWR(pub KVMIO, 0xc0, struct kvm_clear_dirty_log);
+pub const KVM_CLEAR_DIRTY_LOG: u64 = _IOWR(pub KVMIO, 0xc0, kvm_clear_dirty_log);
 
 /* Available with KVM_CAP_HYPERV_CPUID (vcpu) / KVM_CAP_SYS_HYPERV_CPUID (system) */
-pub const KVM_GET_SUPPORTED_HV_CPUID: u64 = _IOWR(pub KVMIO, 0xc1, struct kvm_cpuid2);
+pub const KVM_GET_SUPPORTED_HV_CPUID: u64 = _IOWR(pub KVMIO, 0xc1, kvm_cpuid2);
 
 /* Available with KVM_CAP_ARM_SVE */
 pub const KVM_ARM_VCPU_FINALIZE: u64 = _IOW(pub KVMIO,  0xc2, int);
@@ -1520,27 +1520,27 @@ pub const KVM_S390_NORMAL_RESET: u64 = _IO(pub KVMIO,   0xc3);
 pub const KVM_S390_CLEAR_RESET: u64 = _IO(pub KVMIO,   0xc4);
 
 /* Available with KVM_CAP_S390_PROTECTED */
-pub const KVM_S390_PV_COMMAND: u64 = _IOWR(pub KVMIO, 0xc5, struct kvm_pv_cmd);
+pub const KVM_S390_PV_COMMAND: u64 = _IOWR(pub KVMIO, 0xc5, kvm_pv_cmd);
 
 /* Available with KVM_CAP_X86_MSR_FILTER */
-pub const KVM_X86_SET_MSR_FILTER: u64 = _IOW(pub KVMIO,  0xc6, struct kvm_msr_filter);
+pub const KVM_X86_SET_MSR_FILTER: u64 = _IOW(pub KVMIO,  0xc6, kvm_msr_filter);
 
 /* Available with KVM_CAP_DIRTY_LOG_RING */
 pub const KVM_RESET_DIRTY_RINGS: u64 = _IO(pub KVMIO, 0xc7);
 
 /* Per-VM Xen attributes */
-pub const KVM_XEN_HVM_GET_ATTR: u64 = _IOWR(pub KVMIO, 0xc8, struct kvm_xen_hvm_attr);
-pub const KVM_XEN_HVM_SET_ATTR: u64 = _IOW(pub KVMIO,  0xc9, struct kvm_xen_hvm_attr);
+pub const KVM_XEN_HVM_GET_ATTR: u64 = _IOWR(pub KVMIO, 0xc8, kvm_xen_hvm_attr);
+pub const KVM_XEN_HVM_SET_ATTR: u64 = _IOW(pub KVMIO,  0xc9, kvm_xen_hvm_attr);
 
 /* Per-vCPU Xen attributes */
-pub const KVM_XEN_VCPU_GET_ATTR: u64 = _IOWR(pub KVMIO, 0xca, struct kvm_xen_vcpu_attr);
-pub const KVM_XEN_VCPU_SET_ATTR: u64 = _IOW(pub KVMIO,  0xcb, struct kvm_xen_vcpu_attr);
+pub const KVM_XEN_VCPU_GET_ATTR: u64 = _IOWR(pub KVMIO, 0xca, kvm_xen_vcpu_attr);
+pub const KVM_XEN_VCPU_SET_ATTR: u64 = _IOW(pub KVMIO,  0xcb, kvm_xen_vcpu_attr);
 
 /* Available with KVM_CAP_XEN_HVM / KVM_XEN_HVM_CONFIG_EVTCHN_SEND */
-pub const KVM_XEN_HVM_EVTCHN_SEND: u64 = _IOW(pub KVMIO,  0xd0, struct kvm_irq_routing_xen_evtchn);
+pub const KVM_XEN_HVM_EVTCHN_SEND: u64 = _IOW(pub KVMIO,  0xd0, kvm_irq_routing_xen_evtchn);
 
-pub const KVM_GET_SREGS2: u64 = _IOR(pub KVMIO,  0xcc, struct kvm_sregs2);
-pub const KVM_SET_SREGS2: u64 = _IOW(pub KVMIO,  0xcd, struct kvm_sregs2);
+pub const KVM_GET_SREGS2: u64 = _IOR(pub KVMIO,  0xcc, kvm_sregs2);
+pub const KVM_SET_SREGS2: u64 = _IOW(pub KVMIO,  0xcd, kvm_sregs2);
 
 pub const KVM_DIRTY_LOG_MANUAL_PROTECT_ENABLE: u64 = (1 << 0);
 pub const KVM_DIRTY_LOG_INITIALLY_SET: u64 = (1 << 1);
@@ -1682,20 +1682,20 @@ pub struct kvm_stats_desc {
 pub const KVM_GET_STATS_FD: u64 = _IO(pub KVMIO,  0xce);
 
 /* Available with KVM_CAP_XSAVE2 */
-pub const KVM_GET_XSAVE2: u64 = _IOR(pub KVMIO,  0xcf, struct kvm_xsave);
+pub const KVM_GET_XSAVE2: u64 = _IOR(pub KVMIO,  0xcf, kvm_xsave);
 
 /* Available with KVM_CAP_S390_PROTECTED_DUMP */
-pub const KVM_S390_PV_CPU_COMMAND: u64 = _IOWR(pub KVMIO, 0xd0, struct kvm_pv_cmd);
+pub const KVM_S390_PV_CPU_COMMAND: u64 = _IOWR(pub KVMIO, 0xd0, kvm_pv_cmd);
 
 /* Available with KVM_CAP_X86_NOTIFY_VMEXIT */
 pub const KVM_X86_NOTIFY_VMEXIT_ENABLED: u64 = (1u64L << 0);
 pub const KVM_X86_NOTIFY_VMEXIT_USER: u64 = (1u64L << 1);
 
 /* Available with KVM_CAP_S390_ZPCI_OP */
-pub const KVM_S390_ZPCI_OP: u64 = _IOW(pub KVMIO,  0xd1, struct kvm_s390_zpci_op);
+pub const KVM_S390_ZPCI_OP: u64 = _IOW(pub KVMIO,  0xd1, kvm_s390_zpci_op);
 
 /* Available with KVM_CAP_MEMORY_ATTRIBUTES */
-pub const KVM_SET_MEMORY_ATTRIBUTES: u64 = _IOW(pub KVMIO,  0xd2, struct kvm_memory_attributes);
+pub const KVM_SET_MEMORY_ATTRIBUTES: u64 = _IOW(pub KVMIO,  0xd2, kvm_memory_attributes);
 
 #[repr(C)]
 pub struct kvm_memory_attributes {
@@ -1707,7 +1707,7 @@ pub struct kvm_memory_attributes {
 
 pub const KVM_MEMORY_ATTRIBUTE_PRIVATE: u64 = (1u64L << 3);
 
-pub const KVM_CREATE_GUEST_MEMFD: u64 = _IOWR(pub KVMIO,  0xd4, struct kvm_create_guest_memfd);
+pub const KVM_CREATE_GUEST_MEMFD: u64 = _IOWR(pub KVMIO,  0xd4, kvm_create_guest_memfd);
 pub const GUEST_MEMFD_FLAG_MMAP: u64 = (1u64L << 0);
 pub const GUEST_MEMFD_FLAG_INIT_SHARED: u64 = (1u64L << 1);
 
@@ -1718,7 +1718,7 @@ pub struct kvm_create_guest_memfd {
 	u64 reserved: [pub reserved; 6];
 }
 
-pub const KVM_PRE_FAULT_MEMORY: u64 = _IOWR(pub KVMIO, 0xd5, struct kvm_pre_fault_memory);
+pub const KVM_PRE_FAULT_MEMORY: u64 = _IOWR(pub KVMIO, 0xd5, kvm_pre_fault_memory);
 
 #[repr(C)]
 pub struct kvm_pre_fault_memory {

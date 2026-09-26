@@ -62,8 +62,8 @@ unsafe fn ccp_do_sha_update(req: *mut ahash_request, nbytes: c_uint, final_: c_u
     (*rctx).msg_bits += (*rctx).hash_cnt << 3;
     memset(&mut (*rctx).cmd as *mut _ as *mut c_void, 0, size_of_val(&(*rctx).cmd));
     INIT_LIST_HEAD(&mut (*rctx).cmd.entry); (*rctx).cmd.engine = CCP_ENGINE_SHA;
-    (*rctx).cmd.u.sha.type_ = (*rctx).type; (*rctx).cmd.u.sha.ctx = &mut (*rctx).ctx_sg;
-    (*rctx).cmd.u.sha.ctx_len = match (*rctx).type { CCP_SHA_TYPE_1 => SHA1_DIGEST_SIZE, CCP_SHA_TYPE_224 => SHA224_DIGEST_SIZE, CCP_SHA_TYPE_256 => SHA256_DIGEST_SIZE, CCP_SHA_TYPE_384 => SHA384_DIGEST_SIZE, CCP_SHA_TYPE_512 => SHA512_DIGEST_SIZE, _ => 0 };
+    (*rctx).cmd.u.sha.type_ = (*rctx).r#type; (*rctx).cmd.u.sha.ctx = &mut (*rctx).ctx_sg;
+    (*rctx).cmd.u.sha.ctx_len = match (*rctx).r#type { CCP_SHA_TYPE_1 => SHA1_DIGEST_SIZE, CCP_SHA_TYPE_224 => SHA224_DIGEST_SIZE, CCP_SHA_TYPE_256 => SHA256_DIGEST_SIZE, CCP_SHA_TYPE_384 => SHA384_DIGEST_SIZE, CCP_SHA_TYPE_512 => SHA512_DIGEST_SIZE, _ => 0 };
     (*rctx).cmd.u.sha.src = sg; (*rctx).cmd.u.sha.src_len = (*rctx).hash_cnt;
     (*rctx).cmd.u.sha.opad = if (*ctx).u.sha.key_len != 0 { &mut (*ctx).u.sha.opad_sg } else { ptr::null_mut() };
     (*rctx).cmd.u.sha.opad_len = if (*ctx).u.sha.key_len != 0 { (*ctx).u.sha.opad_count } else { 0 };

@@ -28,6 +28,7 @@ pub unsafe fn nfsd_setuser(
     let mut new: *mut cred;
     let mut i: i32;
     let flags: i32 = nfsexp_flags(cred, exp);
+    'oom: {
 
     /* discard any old override before preparing the new set */
     put_cred(revert_creds(get_cred(current_real_cred())));
@@ -46,7 +47,7 @@ pub unsafe fn nfsd_setuser(
         (*new).fsgid = (*exp).ex_anon_gid;
         gi = groups_alloc(0);
         if gi.is_null() {
-            goto oom;
+            break 'oom;
         }
     } else if (flags & NFSEXP_ROOTSQUASH) != 0 {
         if uid_eq((*new).fsuid, GLOBAL_ROOT_UID) {
@@ -58,7 +59,7 @@ pub unsafe fn nfsd_setuser(
 
         gi = groups_alloc((*rqgi).ngroups);
         if gi.is_null() {
-            goto oom;
+            break 'oom;
         }
 
         i = 0;
@@ -97,8 +98,8 @@ pub unsafe fn nfsd_setuser(
     }
     put_cred(override_creds(new));
     return 0;
-
-oom:
+    }
+    
     abort_creds(new);
     -ENOMEM
 }

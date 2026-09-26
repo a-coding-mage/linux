@@ -33,10 +33,10 @@ pub unsafe fn do_interrupt_handler(regs: *mut pt_regs, handler: unsafe extern "C
 extern "C" { pub static mut handle_arch_irq: unsafe extern "C" fn(*mut pt_regs); pub static mut handle_arch_fiq: unsafe extern "C" fn(*mut pt_regs); }
 pub unsafe fn __panic_unhandled(regs: *mut pt_regs, vector: *const u8, esr: u64) { irqentry_nmi_enter(regs); console_verbose(); pr_crit(vector, smp_processor_id(), esr, esr_get_class_string(esr)); __show_regs(regs); panic("Unhandled exception"); }
 
-#[cfg(feature = "CONFIG_ARM64_ERRATUM_1463225")]
+#[cfg(CONFIG_ARM64_ERRATUM_1463225)]
 pub unsafe fn cortex_a76_erratum_1463225_svc_handler() { if !unlikely(test_thread_flag(TIF_SINGLESTEP)) || !unlikely(this_cpu_has_cap(ARM64_WORKAROUND_1463225)) { return; } __this_cpu_write(__in_cortex_a76_erratum_1463225_wa, 1); let reg = read_sysreg(mdscr_el1); write_sysreg(reg | MDSCR_EL1_SS | MDSCR_EL1_KDE, mdscr_el1); asm!("msr daifclr, #8"); isb(); write_sysreg(reg, mdscr_el1); __this_cpu_write(__in_cortex_a76_erratum_1463225_wa, 0); }
-#[cfg(not(feature = "CONFIG_ARM64_ERRATUM_1463225"))] pub unsafe fn cortex_a76_erratum_1463225_svc_handler() {}
-pub unsafe fn cortex_a76_erratum_1463225_debug_handler(regs: *mut pt_regs) -> bool { #[cfg(feature="CONFIG_ARM64_ERRATUM_1463225")] { if !__this_cpu_read(__in_cortex_a76_erratum_1463225_wa) { return false; } (*regs).pstate |= PSR_D_BIT; return true; } #[cfg(not(feature="CONFIG_ARM64_ERRATUM_1463225"))] { let _ = regs; false } }
+#[cfg(not(CONFIG_ARM64_ERRATUM_1463225))] pub unsafe fn cortex_a76_erratum_1463225_svc_handler() {}
+pub unsafe fn cortex_a76_erratum_1463225_debug_handler(regs: *mut pt_regs) -> bool { #[cfg(CONFIG_ARM64_ERRATUM_1463225)] { if !__this_cpu_read(__in_cortex_a76_erratum_1463225_wa) { return false; } (*regs).pstate |= PSR_D_BIT; return true; } #[cfg(not(CONFIG_ARM64_ERRATUM_1463225))] { let _ = regs; false } }
 
 pub unsafe fn fpsimd_syscall_enter() { if system_supports_sme() { sme_smstop_sm(); } if !system_supports_sve() { return; } if test_thread_flag(TIF_SVE) { sve_flush_live(); } __this_cpu_write(fpsimd_last_state.to_save, FP_STATE_FPSIMD); }
 pub unsafe fn fpsimd_syscall_exit() { if system_supports_sve() { __this_cpu_write(fpsimd_last_state.to_save, FP_STATE_CURRENT); } }
@@ -85,19 +85,19 @@ pub unsafe extern "C" fn el0t_64_irq_handler(r:*mut pt_regs){el0_interrupt(r,han
 pub unsafe extern "C" fn el0t_64_error_handler(r:*mut pt_regs){let e=read_sysreg(esr_el1);arm64_enter_from_user_mode(r);local_daif_restore(DAIF_ERRCTX);let s=irqentry_nmi_enter(r);do_serror(r,e);irqentry_nmi_exit(r,s);local_daif_restore(DAIF_PROCCTX);arm64_exit_to_user_mode(r)}
 pub unsafe extern "C" fn handle_bad_stack(r:*mut pt_regs)->!{let e=read_sysreg(esr_el1);let f=read_sysreg(far_el1);irqentry_nmi_enter(r);panic_bad_stack(r,e,f)}
 
-#[cfg(feature="CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn el0_cp15(r:*mut pt_regs,e:u64){arm64_enter_from_user_mode(r);local_daif_restore(DAIF_PROCCTX);do_el0_cp15(e,r);arm64_exit_to_user_mode(r)}
-#[cfg(feature="CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn el0_svc_compat(r:*mut pt_regs){arm64_syscall_enter_from_user_mode(r);cortex_a76_erratum_1463225_svc_handler();local_daif_restore(DAIF_PROCCTX);do_el0_svc_compat(r);arm64_syscall_exit_to_user_mode(r)}
-#[cfg(feature="CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn el0_bkpt32(r:*mut pt_regs,e:u64){arm64_enter_from_user_mode(r);local_daif_restore(DAIF_PROCCTX);do_bkpt32(e,r);arm64_exit_to_user_mode(r)}
-#[cfg(feature="CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe extern "C" fn el0t_32_sync_handler(r:*mut pt_regs){let e=read_sysreg(esr_el1);match ESR_ELx_EC(e){ESR_ELx_EC_SVC32=>el0_svc_compat(r),ESR_ELx_EC_DABT_LOW=>el0_da(r,e),ESR_ELx_EC_IABT_LOW=>el0_ia(r,e),ESR_ELx_EC_FP_ASIMD=>el0_fpsimd_acc(r,e),ESR_ELx_EC_FP_EXC32=>el0_fpsimd_exc(r,e),ESR_ELx_EC_PC_ALIGN=>el0_pc(r,e),ESR_ELx_EC_UNKNOWN|ESR_ELx_EC_CP14_MR|ESR_ELx_EC_CP14_LS|ESR_ELx_EC_CP14_64=>el0_undef(r,e),ESR_ELx_EC_CP15_32|ESR_ELx_EC_CP15_64=>el0_cp15(r,e),ESR_ELx_EC_BREAKPT_LOW=>el0_breakpt(r,e),ESR_ELx_EC_SOFTSTP_LOW=>el0_softstp(r,e),ESR_ELx_EC_WATCHPT_LOW=>el0_watchpt(r,e),ESR_ELx_EC_BKPT32=>el0_bkpt32(r,e),_=>el0_inv(r,e)}}
-#[cfg(feature="CONFIG_COMPAT")] pub unsafe extern "C" fn el0t_32_irq_handler(r:*mut pt_regs){el0t_64_irq_handler(r)}
-#[cfg(feature="CONFIG_COMPAT")] pub unsafe extern "C" fn el0t_32_fiq_handler(r:*mut pt_regs){el0t_64_fiq_handler(r)}
-#[cfg(feature="CONFIG_COMPAT")] pub unsafe extern "C" fn el0t_32_error_handler(r:*mut pt_regs){el0t_64_error_handler(r)}
+#[cfg(CONFIG_COMPAT)] pub unsafe extern "C" fn el0t_32_irq_handler(r:*mut pt_regs){el0t_64_irq_handler(r)}
+#[cfg(CONFIG_COMPAT)] pub unsafe extern "C" fn el0t_32_fiq_handler(r:*mut pt_regs){el0t_64_fiq_handler(r)}
+#[cfg(CONFIG_COMPAT)] pub unsafe extern "C" fn el0t_32_error_handler(r:*mut pt_regs){el0t_64_error_handler(r)}
 
-#[cfg(feature="CONFIG_ARM_SDE_INTERFACE")]
+#[cfg(CONFIG_ARM_SDE_INTERFACE)]
 pub unsafe extern "C" fn __sdei_handler(r:*mut pt_regs,arg:*mut sdei_registered_event)->u64{if system_uses_hw_pan(){set_pstate_pan(1)}else if cpu_has_pan(){set_pstate_pan(0)}let s=irqentry_nmi_enter(r);let ret=do_sdei_event(r,arg);irqentry_nmi_exit(r,s);ret}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

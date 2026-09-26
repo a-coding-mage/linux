@@ -19,7 +19,7 @@ pub struct clk_omap_divider {
 
 #[macro_export]
 macro_rules! to_clk_omap_divider {
-    ($hw:expr) => { container_of!($hw, clk_omap_divider, hw) };
+    ($hw:expr) => { container_of!($hw, clk_omap_divider, $hw) };
 }
 
 #[repr(C)]
@@ -36,7 +36,7 @@ pub struct clk_omap_mux {
 
 #[macro_export]
 macro_rules! to_clk_omap_mux {
-    ($hw:expr) => { container_of!($hw, clk_omap_mux, hw) };
+    ($hw:expr) => { container_of!($hw, clk_omap_mux, $hw) };
 }
 
 #[repr(C)]

@@ -82,9 +82,9 @@ unsafe fn nlm_do_fopen(rqstp: *mut svc_rqst, file: *mut nlm_file, mode: c_int) -
             return nlm_granted;
         }
         dprintk!("lockd: open failed (errno %d)\\n", error);
-        match error {
-            -EWOULDBLOCK => { nlmerr = nlm__int__drop_reply; deferred = nlmerr; }
-            -ESTALE => nlmerr = nlm__int__stale_fh,
+        match -(error) {
+            EWOULDBLOCK => { nlmerr = nlm__int__drop_reply; deferred = nlmerr; }
+            ESTALE => nlmerr = nlm__int__stale_fh,
             _ => nlmerr = nlm__int__failed,
         }
         m += 1;
@@ -99,7 +99,7 @@ pub unsafe fn nlm_lookup_file(rqstp: *mut svc_rqst, result: *mut *mut nlm_file,
     let hash = file_hash(&mut (*lock).fh);
     nlm_debug_print_fh(c"nlm_lookup_file".as_ptr() as *mut c_char, &mut (*lock).fh);
     mutex_lock(&mut nlm_file_mutex);
-    hlist_for_each_entry!(file, nlm_files[hash as usize], f_list) {
+    hlist_for_each_entry!(file, nlm_files[hash as usize], f_list, {
         if nfs_compare_fh(&mut (*file).f_handle, &mut (*lock).fh) == 0 {
             mutex_lock(&mut (*file).f_mutex);
             let err = nlm_do_fopen(rqstp, file, mode);
@@ -108,7 +108,7 @@ pub unsafe fn nlm_lookup_file(rqstp: *mut svc_rqst, result: *mut *mut nlm_file,
             (*result) = file; (*file).f_count += 1;
             mutex_unlock(&mut nlm_file_mutex); return 0;
         }
-    }
+    });
     nlm_debug_print_fh(c"creating file for".as_ptr() as *mut c_char, &mut (*lock).fh);
     file = kzalloc_obj!(*file);
     if file.is_null() { mutex_unlock(&mut nlm_file_mutex); return nlm_lck_denied_nolocks; }
@@ -157,12 +157,12 @@ unsafe fn nlm_traverse_locks(host: *mut nlm_host, file: *mut nlm_file, match_fn:
     if flctx.is_null() || list_empty_careful(&mut (*flctx).flc_posix) { return 0; }
     loop {
         (*file).f_locks = 0; spin_lock(&mut (*flctx).flc_lock);
-        for_each_file_lock!(fl, (*flctx).flc_posix) {
+        for_each_file_lock!(fl, (*flctx).flc_posix, {
             if (*fl).fl_lmops != &nlmsvc_lock_operations { continue; }
             (*file).f_locks += 1;
             let lockhost = (*(fl as *mut nlm_lockowner)).host;
             if match_fn(lockhost as *mut _, host) { spin_unlock(&mut (*flctx).flc_lock); if nlm_unlock_files(file, fl) != 0 { return 1; } continue; }
-        }
+        });
         spin_unlock(&mut (*flctx).flc_lock); return 0;
     }
 }
@@ -178,7 +178,7 @@ unsafe fn nlm_inspect_file(host: *mut nlm_host, file: *mut nlm_file, match_fn: n
 unsafe fn nlm_file_inuse(file: *mut nlm_file) -> c_int {
     let inode = nlmsvc_file_inode(file); let flctx = locks_inode_context(inode);
     if (*file).f_count != 0 || !list_empty(&mut (*file).f_blocks) || (*file).f_shares != 0 { return 1; }
-    if !flctx.is_null() && !list_empty_careful(&mut (*flctx).flc_posix) { spin_lock(&mut (*flctx).flc_lock); for_each_file_lock!(fl, (*flctx).flc_posix) { if (*fl).fl_lmops == &nlmsvc_lock_operations { spin_unlock(&mut (*flctx).flc_lock); return 1; } } spin_unlock(&mut (*flctx).flc_lock); }
+    if !flctx.is_null() && !list_empty_careful(&mut (*flctx).flc_posix) { spin_lock(&mut (*flctx).flc_lock); for_each_file_lock!(fl, (*flctx).flc_posix, { if (*fl).fl_lmops == &nlmsvc_lock_operations { spin_unlock(&mut (*flctx).flc_lock); return 1; } }); spin_unlock(&mut (*flctx).flc_lock); }
     (*file).f_locks = 0; 0
 }
 

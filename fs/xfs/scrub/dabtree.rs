@@ -10,11 +10,11 @@
 pub unsafe fn xchk_da_process_error(ds: *mut xchk_da_btree, level: i32, error: *mut i32) -> bool {
     let sc = (*ds).sc;
     if *error == 0 { return true; }
-    match *error {
-        -EDEADLOCK | -ECHRNG => {
+    match -(*error) {
+        EDEADLOCK | ECHRNG => {
             trace_xchk_deadlock_retry((*sc).ip, (*sc).sm, *error);
         }
-        -EFSBADCRC | -EFSCORRUPTED | -EIO | -ENODATA => {
+        EFSBADCRC | EFSCORRUPTED | EIO | ENODATA => {
             (*(*sc).sm).sm_flags |= XFS_SCRUB_OFLAG_CORRUPT;
             *error = 0;
             trace_xchk_file_op_error(sc, (*ds).dargs.whichfork,

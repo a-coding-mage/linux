@@ -118,15 +118,13 @@ unsafe extern "C" {
         level: c_int,
         option_name: c_int,
         option_value: *mut c_void,
-        option_len: *mut socklen_t,
-    ) -> c_int;
+        option_len: *mut socklen_t) -> c_int;
     fn setsockopt(
         socket: c_int,
         level: c_int,
         option_name: c_int,
         option_value: *const c_void,
-        option_len: socklen_t,
-    ) -> c_int;
+        option_len: socklen_t) -> c_int;
     fn lseek(fd: c_int, offset: i64, whence: c_int) -> i64;
     fn read(fd: c_int, buf: *mut c_void, count: usize) -> ssize_t;
     fn sscanf(s: *const c_char, format: *const c_char, ...) -> c_int;
@@ -145,16 +143,14 @@ unsafe extern "C" {
         len: usize,
         flags: c_int,
         dest_addr: *const sockaddr,
-        addrlen: socklen_t,
-    ) -> ssize_t;
+        addrlen: socklen_t) -> ssize_t;
     fn epoll_create(size: c_int) -> c_int;
     fn epoll_ctl(epfd: c_int, op: c_int, fd: c_int, event: *mut epoll_event) -> c_int;
     fn epoll_wait(
         epfd: c_int,
         events: *mut epoll_event,
         maxevents: c_int,
-        timeout: c_int,
-    ) -> c_int;
+        timeout: c_int) -> c_int;
     fn accept(sockfd: c_int, addr: *mut sockaddr, addrlen: *mut socklen_t) -> c_int;
     fn recv(sockfd: c_int, buf: *mut c_void, len: usize, flags: c_int) -> ssize_t;
     fn close(fd: c_int) -> c_int;

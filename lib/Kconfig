@@ -8,6 +8,73 @@ config BINARY_PRINTF
 
 menu "Library routines"
 
+config RUST_EARLYCPIO
+	bool "Rust implementation of the early CPIO parser"
+	depends on RUST
+	default n
+	help
+	  Use the allocation-free Rust parser through the original built-in C
+	  interface, result layout and diagnostics. The original C provider
+	  remains the default, independently of HOST_TOOLS_LANG.
+
+config RUST_ARGV_SPLIT
+	bool "Rust implementation of argument-vector splitting"
+	depends on RUST
+	default n
+	help
+	  Use the Rust implementation of argv_split() and argv_free(), retaining
+	  the original C interfaces, snapshot and allocation ownership. The C
+	  provider remains the default, independently of HOST_TOOLS_LANG.
+
+	  Rebuild dependent modules after switching: native defining-object DWARF
+	  types can produce different version CRCs while retaining the C ABI.
+
+config RUST_ERRNAME
+	bool "Rust implementation of symbolic error names"
+	depends on RUST && SYMBOLIC_ERRNAME
+	default n
+	help
+	  Use the Rust errno-name tables and the original unrestricted errname()
+	  interface. Error numbers and aliases come from the target headers.
+	  Disable to retain the original C provider.
+
+	  Rebuild dependent modules after switching when using DWARF versions.
+
+config RUST_BITREV
+	bool "Rust implementation of the generic bit-reversal table"
+	depends on RUST && GENERIC_BITREVERSE
+	default n
+	help
+	  Use the Rust byte_rev_table with the original GPL export and bitrev
+	  module identity. Architecture-specific bit-reversal implementations
+	  remain selected by their original configuration dependencies.
+
+	  Rebuild dependent modules after switching when using DWARF versions.
+
+config RUST_UNION_FIND
+	bool "Rust implementation of union-find"
+	depends on RUST && UNION_FIND
+	default n
+	help
+	  Use the Rust union-by-rank and path-splitting implementation through
+	  the original built-in C interfaces. Nodes use the generated C layout
+	  and retain unsigned rank arithmetic. Disable to use the C provider.
+
+config RUST_SORT
+	bool "Rust implementation of array sorting"
+	depends on RUST
+	default n
+	help
+	  Use the complete Rust heapsort with the four original C interfaces,
+	  callback ordering, default or custom swaps, and native scheduler
+	  dispatch for the nonatomic interfaces. The C provider remains the
+	  default, independently of HOST_TOOLS_LANG.
+
+	  Rebuild modules after switching: native defining-object DWARF types
+	  can produce different version CRCs while retaining the original ABI.
+
+	  If unsure, say N.
+
 config RUST_BSEARCH
 	bool "Rust implementation of binary search"
 	depends on RUST

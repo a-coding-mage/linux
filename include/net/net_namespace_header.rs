@@ -19,7 +19,7 @@ pub struct net {
     pub cleanup_list: llist_node,
     pub ptype_all: list_head,
     pub ptype_specific: list_head,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     pub key_domain: *mut key_tag,
     pub user_ns: *mut user_namespace,
     pub ucounts: *mut ucounts,
@@ -30,7 +30,7 @@ pub struct net {
     pub dev_base_head: list_head,
     pub proc_net: *mut proc_dir_entry,
     pub proc_net_stat: *mut proc_dir_entry,
-    #[cfg(feature = "CONFIG_SYSCTL")]
+    #[cfg(CONFIG_SYSCTL)]
     pub sysctls: ctl_table_set,
     pub rtnl: *mut sock,
     pub genl_sock: *mut sock,
@@ -46,55 +46,55 @@ pub struct net {
     pub core: netns_core,
     pub mib: netns_mib,
     pub packet: netns_packet,
-    #[cfg(feature = "CONFIG_UNIX")]
+    #[cfg(CONFIG_UNIX)]
     pub unx: netns_unix,
     pub nexthop: netns_nexthop,
     pub ipv4: netns_ipv4,
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub ipv6: netns_ipv6,
-    #[cfg(feature = "CONFIG_IEEE802154_6LOWPAN")]
+    #[cfg(CONFIG_IEEE802154_6LOWPAN)]
     pub ieee802154_lowpan: netns_ieee802154_lowpan,
-    #[cfg(any(feature = "CONFIG_IP_SCTP", feature = "CONFIG_IP_SCTP_MODULE"))]
+    #[cfg(any(CONFIG_IP_SCTP, CONFIG_IP_SCTP_MODULE))]
     pub sctp: netns_sctp,
-    #[cfg(feature = "CONFIG_NETFILTER")]
+    #[cfg(CONFIG_NETFILTER)]
     pub nf: netns_nf,
-    #[cfg(any(feature = "CONFIG_NF_CONNTRACK", feature = "CONFIG_NF_CONNTRACK_MODULE"))]
+    #[cfg(any(CONFIG_NF_CONNTRACK, CONFIG_NF_CONNTRACK_MODULE))]
     pub ct: netns_ct,
-    #[cfg(any(feature = "CONFIG_NF_TABLES", feature = "CONFIG_NF_TABLES_MODULE"))]
+    #[cfg(any(CONFIG_NF_TABLES, CONFIG_NF_TABLES_MODULE))]
     pub nft: netns_nftables,
-    #[cfg(feature = "CONFIG_NF_FLOW_TABLE")]
+    #[cfg(CONFIG_NF_FLOW_TABLE)]
     pub ft: netns_ft,
-    #[cfg(feature = "CONFIG_WEXT_CORE")]
+    #[cfg(CONFIG_WEXT_CORE)]
     pub wext_nlevents: sk_buff_head,
     pub gen: *mut net_generic,
     pub bpf: netns_bpf,
-    #[cfg(feature = "CONFIG_XFRM")]
+    #[cfg(CONFIG_XFRM)]
     pub xfrm: netns_xfrm,
     pub net_cookie: u64,
-    #[cfg(feature = "CONFIG_IP_VS")]
+    #[cfg(CONFIG_IP_VS)]
     pub ipvs: *mut netns_ipvs,
-    #[cfg(feature = "CONFIG_MPLS")]
+    #[cfg(CONFIG_MPLS)]
     pub mpls: netns_mpls,
-    #[cfg(feature = "CONFIG_CAN")]
+    #[cfg(CONFIG_CAN)]
     pub can: netns_can,
-    #[cfg(feature = "CONFIG_XDP_SOCKETS")]
+    #[cfg(CONFIG_XDP_SOCKETS)]
     pub xdp: netns_xdp,
-    #[cfg(feature = "CONFIG_MCTP")]
+    #[cfg(CONFIG_MCTP)]
     pub mctp: netns_mctp,
-    #[cfg(feature = "CONFIG_CRYPTO_USER")]
+    #[cfg(CONFIG_CRYPTO_USER)]
     pub crypto_nlsk: *mut sock,
     pub diag_nlsk: *mut sock,
-    #[cfg(feature = "CONFIG_SMC")]
+    #[cfg(CONFIG_SMC)]
     pub smc: netns_smc,
-    #[cfg(feature = "CONFIG_DEBUG_NET_SMALL_RTNL")]
+    #[cfg(CONFIG_DEBUG_NET_SMALL_RTNL)]
     pub rtnl_mutex: mutex,
-    #[cfg(feature = "CONFIG_DEBUG_NET_SMALL_RTNL")]
+    #[cfg(CONFIG_DEBUG_NET_SMALL_RTNL)]
     pub rtnl_work: work_struct,
-    #[cfg(feature = "CONFIG_DEBUG_NET_SMALL_RTNL")]
+    #[cfg(CONFIG_DEBUG_NET_SMALL_RTNL)]
     pub dev_unreg_head: list_head,
-    #[cfg(feature = "CONFIG_DEBUG_NET_SMALL_RTNL")]
+    #[cfg(CONFIG_DEBUG_NET_SMALL_RTNL)]
     pub dev_unreg_lock: spinlock_t,
-    #[cfg(feature = "CONFIG_VSOCKETS")]
+    #[cfg(CONFIG_VSOCKETS)]
     pub vsock: netns_vsock,
 }
 

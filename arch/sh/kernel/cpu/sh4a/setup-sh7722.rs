@@ -30,7 +30,7 @@ static SH7722_DMAE_CHANNELS: [sh_dmae_channel; 6] = [
     sh_dmae_channel { offset: 0x50, dmars: 8, dmars_bit: 0 },
     sh_dmae_channel { offset: 0x60, dmars: 8, dmars_bit: 8 },
 ];
-static TS_SHIFT: [unsigned int; 3] = TS_SHIFT;
+static TS_SHIFT: [core::ffi::c_uint; 3] = TS_SHIFT;
 
 static mut DMA_PLATFORM_DATA: sh_dmae_pdata = sh_dmae_pdata {
     slave: &SH7722_DMAE_SLAVES, slave_num: ARRAY_SIZE(SH7722_DMAE_SLAVES),

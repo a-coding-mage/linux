@@ -57,12 +57,12 @@ unsafe fn debug_show_blocker(task: *mut task_struct, timeout: c_ulong) {
     if unlikely(owner == 0) { return; }
     let mut g: *mut task_struct = core::ptr::null_mut();
     let mut t: *mut task_struct = core::ptr::null_mut();
-    for_each_process_thread!(g, t) {
+    for_each_process_thread!(g, t, {
         if t as c_ulong != owner { continue; }
         sched_show_task(t);
         if !task_is_hung(t, timeout) { sched_show_task(t); }
         return;
-    }
+    });
 }
 #[cfg(not(CONFIG_DETECT_HUNG_TASK_BLOCKER))]
 unsafe fn debug_show_blocker(_task: *mut task_struct, _timeout: c_ulong) {}
@@ -95,11 +95,11 @@ unsafe fn check_hung_uninterruptible_tasks(timeout: c_ulong) {
     if test_taint(TAINT_DIE) || did_panic != 0 { return; }
     rcu_read_lock();
     let mut g: *mut task_struct = core::ptr::null_mut(); let mut t: *mut task_struct = core::ptr::null_mut();
-    for_each_process_thread!(g, t) {
+    for_each_process_thread!(g, t, {
         if max_count <= 0 { break; } max_count -= 1;
         if time_after(jiffies, last_break + HUNG_TASK_LOCK_BREAK) { if !rcu_lock_break(g, t) { break; } last_break = jiffies; }
         if task_is_hung(t, timeout) { atomic_long_inc(&raw mut SYSCTL_HUNG_TASK_DETECT_COUNT); this_round_count += 1; hung_task_info(t, timeout, this_round_count); }
-    }
+    });
     rcu_read_unlock(); if this_round_count == 0 { return; }
     if need_warning != 0 || hung_task_call_panic { si_mask |= SYS_INFO_LOCKS; if sysctl_hung_task_all_cpu_backtrace != 0 { si_mask |= SYS_INFO_ALL_BT; } }
     sys_info(si_mask); if hung_task_call_panic { panic!("hung_task: blocked tasks"); }

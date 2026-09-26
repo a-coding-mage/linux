@@ -50,7 +50,7 @@ macro_rules! flag_read { ($name:ident, $flag:ident) => {
         read_bool(file, $flag, user_buf as *mut c_void, count, ppos)
     }
 }; }
-macro_rules! show_attr { ($n:ident) => { #[allow(non_upper_case_globals)] static mut $n##_fops: *const file_operations = core::ptr::null(); }; }
+macro_rules! show_attr { ($n:tt) => { #[allow(non_upper_case_globals)] static mut ::kernel::macros::paste!([<$n _fops>]): *const file_operations = core::ptr::null(); }; }
 
 pub unsafe extern "C" fn features_show(f: *mut seq_file, _: *mut c_void) -> c_int { let hdev = (*f).private_ as *mut hci_dev; hci_dev_lock(hdev); /* seq_printf for each feature page and LE features */ hci_dev_unlock(hdev); 0 }
 pub unsafe extern "C" fn device_id_show(f: *mut seq_file, _: *mut c_void) -> c_int { let hdev=(*f).private_ as *mut hci_dev; hci_dev_lock(hdev); seq_printf(f, b"%4.4x:%4.4x:%4.4x:%4.4x\0".as_ptr() as *const c_char); hci_dev_unlock(hdev); 0 }

@@ -15,19 +15,19 @@ extern "C" {
         -> ::core::ffi::c_int;
     pub fn debug_locks_off() -> ::core::ffi::c_int;
 
-    #[cfg(feature = "CONFIG_DEBUG_LOCKING_API_SELFTESTS")]
+    #[cfg(CONFIG_DEBUG_LOCKING_API_SELFTESTS)]
     pub fn locking_selftest();
 
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     pub fn debug_show_all_locks();
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     pub fn debug_show_held_locks(task: *mut task_struct);
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     pub fn debug_check_no_locks_freed(
         from: *const ::core::ffi::c_void,
         len: ::core::ffi::c_ulong,
     );
-    #[cfg(feature = "CONFIG_LOCKDEP")]
+    #[cfg(CONFIG_LOCKDEP)]
     pub fn debug_check_no_locks_held();
 }
 
@@ -54,7 +54,7 @@ macro_rules! DEBUG_LOCKS_WARN_ON {
                 if debug_locks_off() != 0 && debug_locks_silent == 0 {
                     WARN(
                         1,
-                        concat!("DEBUG_LOCKS_WARN_ON(", stringify!($c), ")\0")
+                        concat!("DEBUG_LOCKS_WARN_ON!(", stringify!($c), ")\0")
                             .as_ptr() as *const ::core::ffi::c_char,
                     );
                 }
@@ -69,11 +69,11 @@ macro_rules! DEBUG_LOCKS_WARN_ON {
 #[macro_export]
 macro_rules! SMP_DEBUG_LOCKS_WARN_ON {
     ($c:expr) => {
-        #[cfg(feature = "CONFIG_SMP")]
+        #[cfg(CONFIG_SMP)]
         {
             DEBUG_LOCKS_WARN_ON!($c)
         }
-        #[cfg(not(feature = "CONFIG_SMP"))]
+        #[cfg(not(CONFIG_SMP))]
         {
             ()
         }
@@ -83,24 +83,24 @@ macro_rules! SMP_DEBUG_LOCKS_WARN_ON {
 #[macro_export]
 macro_rules! locking_selftest {
     () => {
-        #[cfg(feature = "CONFIG_DEBUG_LOCKING_API_SELFTESTS")]
+        #[cfg(CONFIG_DEBUG_LOCKING_API_SELFTESTS)]
         unsafe {
             locking_selftest();
         }
-        #[cfg(not(feature = "CONFIG_DEBUG_LOCKING_API_SELFTESTS"))]
+        #[cfg(not(CONFIG_DEBUG_LOCKING_API_SELFTESTS))]
         {}
     };
 }
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline(always)]
 pub unsafe fn debug_show_all_locks() {}
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline(always)]
 pub unsafe fn debug_show_held_locks(_task: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline(always)]
 pub unsafe fn debug_check_no_locks_freed(
     _from: *const ::core::ffi::c_void,
@@ -108,7 +108,7 @@ pub unsafe fn debug_check_no_locks_freed(
 ) {
 }
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline(always)]
 pub unsafe fn debug_check_no_locks_held() {}
 

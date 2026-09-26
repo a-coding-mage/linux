@@ -69,23 +69,23 @@ pub struct bpf_struct_ops {
 #[repr(C)] pub struct btf_kfunc_id_set { pub owner: *mut c_void, pub set: *const u32 }
 
 extern "C" {
-    fn btf_find_by_name_kind(*mut btf, *const u8, u32) -> i32;
-    fn btf_type_by_id(*mut btf, u32) -> *const btf_type;
-    fn bpf_tracing_btf_ctx_access(i32, i32, i32, *const bpf_prog, *mut bpf_insn_access_aux) -> bool;
-    fn base_type(u32) -> u32;
-    fn bpf_type_has_unsafe_modifiers(u32) -> bool;
-    fn bpf_log(*mut bpf_verifier_log, *const u8, ...);
-    fn __tcp_send_ack(*mut sock, u32, u32);
-    fn bpf_obj_name_cpy(*mut u8, *const u8, usize) -> i32;
-    fn tcp_register_congestion_control(*mut c_void) -> i32;
-    fn tcp_unregister_congestion_control(*mut c_void);
-    fn tcp_update_congestion_control(*mut c_void, *mut c_void) -> i32;
-    fn tcp_validate_congestion_control(*mut c_void) -> i32;
-    fn __btf_member_bit_offset(*const btf_type, *const btf_member) -> u32;
-    fn btf_type_member(*const btf_type) -> *const btf_member;
-    fn bpf_base_func_proto(i32, *const bpf_prog) -> *const bpf_func_proto;
-    fn register_btf_kfunc_id_set(i32, *const btf_kfunc_id_set) -> i32;
-    fn register_bpf_struct_ops(*mut bpf_struct_ops, *mut c_void) -> i32;
+    fn btf_find_by_name_kind(_: *mut btf, _: *const u8, _: u32) -> i32;
+    fn btf_type_by_id(_: *mut btf, _: u32) -> *const btf_type;
+    fn bpf_tracing_btf_ctx_access(_: i32, _: i32, _: i32, _: *const bpf_prog, _: *mut bpf_insn_access_aux) -> bool;
+    fn base_type(_: u32) -> u32;
+    fn bpf_type_has_unsafe_modifiers(_: u32) -> bool;
+    fn bpf_log(_: *mut bpf_verifier_log, _: *const u8, ...);
+    fn __tcp_send_ack(_: *mut sock, _: u32, _: u32);
+    fn bpf_obj_name_cpy(_: *mut u8, _: *const u8, _: usize) -> i32;
+    fn tcp_register_congestion_control(_: *mut c_void) -> i32;
+    fn tcp_unregister_congestion_control(_: *mut c_void);
+    fn tcp_update_congestion_control(_: *mut c_void, _: *mut c_void) -> i32;
+    fn tcp_validate_congestion_control(_: *mut c_void) -> i32;
+    fn __btf_member_bit_offset(_: *const btf_type, _: *const btf_member) -> u32;
+    fn btf_type_member(_: *const btf_type) -> *const btf_member;
+    fn bpf_base_func_proto(_: i32, _: *const bpf_prog) -> *const bpf_func_proto;
+    fn register_btf_kfunc_id_set(_: i32, _: *const btf_kfunc_id_set) -> i32;
+    fn register_bpf_struct_ops(_: *mut bpf_struct_ops, _: *mut c_void) -> i32;
     static mut bpf_sk_storage_get_proto: bpf_func_proto;
     static mut bpf_sk_storage_delete_proto: bpf_func_proto;
     static mut bpf_sk_setsockopt_nodelay_proto: bpf_func_proto;

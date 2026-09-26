@@ -86,7 +86,7 @@ pub unsafe fn tick_broadcast(mask:*const cpumask){smp_cross_call(mask,IPI_TIMER)
 
 unsafe fn ipi_should_be_nmi(ipi:i32)->bool { if !system_uses_irq_prio_masking(){return false;} matches!(ipi, IPI_CPU_STOP_NMI|IPI_CPU_BACKTRACE|IPI_KGDB_ROUNDUP) }
 unsafe fn smp_cross_call(target:*const cpumask, ipinr:i32){trace_ipi_raise(target,ipi_types[ipinr as usize]); arm64_send_ipi(target,ipinr)}
-unsafe fn arm64_send_ipi(mask:*const cpumask,nr:i32){ if !percpu_ipi_descs { __ipi_send_mask(get_ipi_desc(0,nr as usize),mask); } else { for_each_cpu!(cpu,mask){__ipi_send_single(get_ipi_desc(cpu,nr as usize),cpu);} } }
+unsafe fn arm64_send_ipi(mask:*const cpumask,nr:i32){ if !percpu_ipi_descs { __ipi_send_mask(get_ipi_desc(0,nr as usize),mask); } else { for_each_cpu!(cpu,mask, {__ipi_send_single(get_ipi_desc(cpu,nr as usize),cpu);}); } }
 
 pub unsafe fn panic_smp_self_stop()->!{arm64_nmi_cpu_stop(core::ptr::null_mut(),false)}
 pub unsafe fn arm64_nmi_cpu_stop(regs:*mut pt_regs,die_on_crash:bool)->!{let cpu=smp_processor_id();local_daif_mask();if crash_stop&&die_on_crash{__cpu_try_die(cpu as i32);}set_cpu_online(cpu,false);sdei_mask_local_cpu();cpu_park_loop()}

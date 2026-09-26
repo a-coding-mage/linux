@@ -22,7 +22,7 @@
 
 // Dependencies supplied by the surrounding DCE11 implementation.
 
-static unsafe fn dce110_timing_generator_v_enable_crtc(tg: *mut timing_generator) -> bool {
+unsafe fn dce110_timing_generator_v_enable_crtc(tg: *mut timing_generator) -> bool {
     let mut value: u32 = 0;
     set_reg_field_value(value, 0, CRTCV_MASTER_UPDATE_MODE, MASTER_UPDATE_MODE);
     dm_write_reg((*(*tg).ctx), mmCRTCV_MASTER_UPDATE_MODE, value);
@@ -34,7 +34,7 @@ static unsafe fn dce110_timing_generator_v_enable_crtc(tg: *mut timing_generator
     true
 }
 
-static unsafe fn dce110_timing_generator_v_disable_crtc(tg: *mut timing_generator) -> bool {
+unsafe fn dce110_timing_generator_v_disable_crtc(tg: *mut timing_generator) -> bool {
     let mut value = dm_read_reg((*(*tg).ctx), mmCRTCV_CONTROL);
     set_reg_field_value(value, 0, CRTCV_CONTROL, CRTC_DISABLE_POINT_CNTL);
     set_reg_field_value(value, 0, CRTCV_CONTROL, CRTC_MASTER_EN);
@@ -43,7 +43,7 @@ static unsafe fn dce110_timing_generator_v_disable_crtc(tg: *mut timing_generato
     true
 }
 
-static unsafe fn dce110_timing_generator_v_blank_crtc(tg: *mut timing_generator) {
+unsafe fn dce110_timing_generator_v_blank_crtc(tg: *mut timing_generator) {
     let addr = mmCRTCV_BLANK_CONTROL;
     let mut value = dm_read_reg((*(*tg).ctx), addr);
     set_reg_field_value(value, 1, CRTCV_BLANK_CONTROL, CRTC_BLANK_DATA_EN);
@@ -51,7 +51,7 @@ static unsafe fn dce110_timing_generator_v_blank_crtc(tg: *mut timing_generator)
     dm_write_reg((*(*tg).ctx), addr, value);
 }
 
-static unsafe fn dce110_timing_generator_v_unblank_crtc(tg: *mut timing_generator) {
+unsafe fn dce110_timing_generator_v_unblank_crtc(tg: *mut timing_generator) {
     let addr = mmCRTCV_BLANK_CONTROL;
     let mut value = dm_read_reg((*(*tg).ctx), addr);
     set_reg_field_value(value, 0, CRTCV_BLANK_CONTROL, CRTC_BLANK_DATA_EN);
@@ -59,12 +59,12 @@ static unsafe fn dce110_timing_generator_v_unblank_crtc(tg: *mut timing_generato
     dm_write_reg((*(*tg).ctx), addr, value);
 }
 
-static unsafe fn dce110_timing_generator_v_is_in_vertical_blank(tg: *mut timing_generator) -> bool {
+unsafe fn dce110_timing_generator_v_is_in_vertical_blank(tg: *mut timing_generator) -> bool {
     let value = dm_read_reg((*(*tg).ctx), mmCRTCV_STATUS);
     get_reg_field_value(value, CRTCV_STATUS, CRTC_V_BLANK) == 1
 }
 
-static unsafe fn dce110_timing_generator_v_is_counter_moving(tg: *mut timing_generator) -> bool {
+unsafe fn dce110_timing_generator_v_is_counter_moving(tg: *mut timing_generator) -> bool {
     let value = dm_read_reg((*(*tg).ctx), mmCRTCV_STATUS_POSITION);
     let h1 = get_reg_field_value(value, CRTCV_STATUS_POSITION, CRTC_HORZ_COUNT);
     let v1 = get_reg_field_value(value, CRTCV_STATUS_POSITION, CRTC_VERT_COUNT);
@@ -74,7 +74,7 @@ static unsafe fn dce110_timing_generator_v_is_counter_moving(tg: *mut timing_gen
     !(h1 == h2 && v1 == v2)
 }
 
-static unsafe fn dce110_timing_generator_v_wait_for_vblank(tg: *mut timing_generator) {
+unsafe fn dce110_timing_generator_v_wait_for_vblank(tg: *mut timing_generator) {
     while dce110_timing_generator_v_is_in_vertical_blank(tg) {
         if !dce110_timing_generator_v_is_counter_moving(tg) { break; }
     }
@@ -83,13 +83,13 @@ static unsafe fn dce110_timing_generator_v_wait_for_vblank(tg: *mut timing_gener
     }
 }
 
-static unsafe fn dce110_timing_generator_v_wait_for_vactive(tg: *mut timing_generator) {
+unsafe fn dce110_timing_generator_v_wait_for_vactive(tg: *mut timing_generator) {
     while dce110_timing_generator_v_is_in_vertical_blank(tg) {
         if !dce110_timing_generator_v_is_counter_moving(tg) { break; }
     }
 }
 
-static unsafe fn dce110_timing_generator_v_wait_for_state(tg: *mut timing_generator, state: crtc_state) {
+unsafe fn dce110_timing_generator_v_wait_for_state(tg: *mut timing_generator, state: crtc_state) {
     match state {
         CRTC_STATE_VBLANK => dce110_timing_generator_v_wait_for_vblank(tg),
         CRTC_STATE_VACTIVE => dce110_timing_generator_v_wait_for_vactive(tg),
@@ -97,7 +97,7 @@ static unsafe fn dce110_timing_generator_v_wait_for_state(tg: *mut timing_genera
     }
 }
 
-static unsafe fn dce110_timing_generator_v_program_blanking(tg: *mut timing_generator, timing: *const dc_crtc_timing) {
+unsafe fn dce110_timing_generator_v_program_blanking(tg: *mut timing_generator, timing: *const dc_crtc_timing) {
     let vsync_offset = (*timing).v_border_bottom + (*timing).v_front_porch;
     let v_sync_start = (*timing).v_addressable + vsync_offset;
     let hsync_offset = (*timing).h_border_right + (*timing).h_front_porch;
@@ -132,7 +132,7 @@ static unsafe fn dce110_timing_generator_v_program_blanking(tg: *mut timing_gene
     set_reg_field_value(value, (*timing).flags.INTERLACE, CRTCV_INTERLACE_CONTROL, CRTC_INTERLACE_ENABLE); dm_write_reg(ctx, addr, value);
 }
 
-static unsafe fn dce110_timing_generator_v_enable_advanced_request(tg: *mut timing_generator, enable: bool, timing: *const dc_crtc_timing) {
+unsafe fn dce110_timing_generator_v_enable_advanced_request(tg: *mut timing_generator, enable: bool, timing: *const dc_crtc_timing) {
     let addr = mmCRTCV_START_LINE_CONTROL;
     let mut value = dm_read_reg((*(*tg).ctx), addr);
     let position = if enable { if (*timing).v_sync_width + (*timing).v_front_porch <= 3 { 3 } else { 4 } } else { 2 };
@@ -142,16 +142,16 @@ static unsafe fn dce110_timing_generator_v_enable_advanced_request(tg: *mut timi
     dm_write_reg((*(*tg).ctx), addr, value);
 }
 
-static unsafe fn dce110_timing_generator_v_set_blank(tg: *mut timing_generator, enable_blanking: bool) {
+unsafe fn dce110_timing_generator_v_set_blank(tg: *mut timing_generator, enable_blanking: bool) {
     if enable_blanking { dce110_timing_generator_v_blank_crtc(tg); } else { dce110_timing_generator_v_unblank_crtc(tg); }
 }
 
-static unsafe fn dce110_timing_generator_v_program_timing(tg: *mut timing_generator, timing: *const dc_crtc_timing, vready_offset: i32, vstartup_start: i32, vupdate_offset: i32, vupdate_width: i32, pstate_keepout: i32, signal: signal_type, use_vbios: bool) {
+unsafe fn dce110_timing_generator_v_program_timing(tg: *mut timing_generator, timing: *const dc_crtc_timing, vready_offset: i32, vstartup_start: i32, vupdate_offset: i32, vupdate_width: i32, pstate_keepout: i32, signal: signal_type, use_vbios: bool) {
     let _ = (vready_offset, vstartup_start, vupdate_offset, vupdate_width, pstate_keepout, signal);
     if use_vbios { dce110_timing_generator_program_timing_generator(tg, timing); } else { dce110_timing_generator_v_program_blanking(tg, timing); }
 }
 
-static unsafe fn dce110_timing_generator_v_program_blank_color(tg: *mut timing_generator, black_color: *const tg_color) {
+unsafe fn dce110_timing_generator_v_program_blank_color(tg: *mut timing_generator, black_color: *const tg_color) {
     let addr = mmCRTCV_BLACK_COLOR; let mut value = dm_read_reg((*(*tg).ctx), addr);
     set_reg_field_value(value, (*black_color).color_b_cb, CRTCV_BLACK_COLOR, CRTC_BLACK_COLOR_B_CB);
     set_reg_field_value(value, (*black_color).color_g_y, CRTCV_BLACK_COLOR, CRTC_BLACK_COLOR_G_Y);
@@ -159,7 +159,7 @@ static unsafe fn dce110_timing_generator_v_program_blank_color(tg: *mut timing_g
     dm_write_reg((*(*tg).ctx), addr, value);
 }
 
-static unsafe fn dce110_timing_generator_v_set_overscan_color_black(tg: *mut timing_generator, color: *const tg_color) {
+unsafe fn dce110_timing_generator_v_set_overscan_color_black(tg: *mut timing_generator, color: *const tg_color) {
     let ctx = (*tg).ctx; let mut value = 0; let mut addr: u32;
     set_reg_field_value(value, (*color).color_b_cb, CRTC_OVERSCAN_COLOR, CRTC_OVERSCAN_COLOR_BLUE);
     set_reg_field_value(value, (*color).color_r_cr, CRTC_OVERSCAN_COLOR, CRTC_OVERSCAN_COLOR_RED);
@@ -169,7 +169,7 @@ static unsafe fn dce110_timing_generator_v_set_overscan_color_black(tg: *mut tim
     // TODO: program EXT registers once the LB DATA format is known.
 }
 
-static unsafe fn dce110_tg_v_program_blank_color(tg: *mut timing_generator, black_color: *const tg_color) {
+unsafe fn dce110_tg_v_program_blank_color(tg: *mut timing_generator, black_color: *const tg_color) {
     let addr = mmCRTCV_BLACK_COLOR; let mut value = dm_read_reg((*(*tg).ctx), addr);
     set_reg_field_value(value, (*black_color).color_b_cb, CRTCV_BLACK_COLOR, CRTC_BLACK_COLOR_B_CB);
     set_reg_field_value(value, (*black_color).color_g_y, CRTCV_BLACK_COLOR, CRTC_BLACK_COLOR_G_Y);
@@ -177,7 +177,7 @@ static unsafe fn dce110_tg_v_program_blank_color(tg: *mut timing_generator, blac
     dm_write_reg((*(*tg).ctx), addr, value); dm_write_reg((*(*tg).ctx), mmCRTCV_BLANK_DATA_COLOR, value);
 }
 
-static unsafe fn dce110_timing_generator_v_set_overscan_color(tg: *mut timing_generator, overscan_color: *const tg_color) {
+unsafe fn dce110_timing_generator_v_set_overscan_color(tg: *mut timing_generator, overscan_color: *const tg_color) {
     let ctx = (*tg).ctx; let mut value = 0;
     set_reg_field_value(value, (*overscan_color).color_b_cb, CRTCV_OVERSCAN_COLOR, CRTC_OVERSCAN_COLOR_BLUE);
     set_reg_field_value(value, (*overscan_color).color_g_y, CRTCV_OVERSCAN_COLOR, CRTC_OVERSCAN_COLOR_GREEN);
@@ -185,29 +185,29 @@ static unsafe fn dce110_timing_generator_v_set_overscan_color(tg: *mut timing_ge
     dm_write_reg(ctx, mmCRTCV_OVERSCAN_COLOR, value);
 }
 
-static unsafe fn dce110_timing_generator_v_set_colors(tg: *mut timing_generator, blank_color: *const tg_color, overscan_color: *const tg_color) {
+unsafe fn dce110_timing_generator_v_set_colors(tg: *mut timing_generator, blank_color: *const tg_color, overscan_color: *const tg_color) {
     if !blank_color.is_null() { dce110_tg_v_program_blank_color(tg, blank_color); }
     if !overscan_color.is_null() { dce110_timing_generator_v_set_overscan_color(tg, overscan_color); }
 }
 
-static unsafe fn dce110_timing_generator_v_set_early_control(tg: *mut timing_generator, early_cntl: u32) {
+unsafe fn dce110_timing_generator_v_set_early_control(tg: *mut timing_generator, early_cntl: u32) {
     let address = mmCRTC_CONTROL; let mut regval = dm_read_reg((*(*tg).ctx), address);
     set_reg_field_value(regval, early_cntl, CRTCV_CONTROL, CRTC_HBLANK_EARLY_CONTROL); dm_write_reg((*(*tg).ctx), address, regval);
 }
 
-static unsafe fn dce110_timing_generator_v_get_vblank_counter(tg: *mut timing_generator) -> u32 {
+unsafe fn dce110_timing_generator_v_get_vblank_counter(tg: *mut timing_generator) -> u32 {
     let value = dm_read_reg((*(*tg).ctx), mmCRTCV_STATUS_FRAME_COUNT);
     get_reg_field_value(value, CRTCV_STATUS_FRAME_COUNT, CRTC_FRAME_COUNT)
 }
 
-static unsafe fn dce110_timing_generator_v_did_triggered_reset_occur(tg: *mut timing_generator) -> bool {
+unsafe fn dce110_timing_generator_v_did_triggered_reset_occur(tg: *mut timing_generator) -> bool {
     let _ = tg; DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); false
 }
-static unsafe fn dce110_timing_generator_v_setup_global_swap_lock(tg: *mut timing_generator, gsl_params: *const dcp_gsl_params) { let _ = (tg, gsl_params); DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
-static unsafe fn dce110_timing_generator_v_enable_reset_trigger(tg: *mut timing_generator, source_tg_inst: i32) { let _ = (tg, source_tg_inst); DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
-static unsafe fn dce110_timing_generator_v_disable_reset_trigger(tg: *mut timing_generator) { let _ = tg; DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
-static unsafe fn dce110_timing_generator_v_tear_down_global_swap_lock(tg: *mut timing_generator) { let _ = tg; DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
-static unsafe fn dce110_timing_generator_v_disable_vga(tg: *mut timing_generator) { let _ = tg; }
+unsafe fn dce110_timing_generator_v_setup_global_swap_lock(tg: *mut timing_generator, gsl_params: *const dcp_gsl_params) { let _ = (tg, gsl_params); DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
+unsafe fn dce110_timing_generator_v_enable_reset_trigger(tg: *mut timing_generator, source_tg_inst: i32) { let _ = (tg, source_tg_inst); DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
+unsafe fn dce110_timing_generator_v_disable_reset_trigger(tg: *mut timing_generator) { let _ = tg; DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
+unsafe fn dce110_timing_generator_v_tear_down_global_swap_lock(tg: *mut timing_generator) { let _ = tg; DC_LOG_ERROR!("Timing Sync not supported on underlay pipe\n"); }
+unsafe fn dce110_timing_generator_v_disable_vga(tg: *mut timing_generator) { let _ = tg; }
 
 static dce110_tg_v_funcs: timing_generator_funcs = timing_generator_funcs {
     validate_timing: dce110_tg_validate_timing,

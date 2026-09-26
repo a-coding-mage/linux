@@ -4,21 +4,9 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-enum {
-    /* Ensure the pool is page-aligned. */
-    RTAS_WORK_AREA_ARENA_ALIGN = PAGE_SIZE,
-    /* Don't let a single allocation claim the whole arena. */
-    RTAS_WORK_AREA_ARENA_SZ = RTAS_WORK_AREA_MAX_ALLOC_SZ * 2,
-    /*
-     * The smallest known work area size is for ibm,get-vpd's
-     * location code argument, which is limited to 79 characters
-     * plus 1 nul terminator.
-     *
-     * PAPR+ 7.3.20 ibm,get-vpd RTAS Call
-     * PAPR+ 12.3.2.4 Converged Location Code Rules - Length Restrictions
-     */
-    RTAS_WORK_AREA_MIN_ALLOC_SZ = roundup_pow_of_two(80),
-}
+pub const RTAS_WORK_AREA_ARENA_ALIGN: i32 = PAGE_SIZE;
+pub const RTAS_WORK_AREA_ARENA_SZ: i32 = RTAS_WORK_AREA_MAX_ALLOC_SZ * 2;
+pub const RTAS_WORK_AREA_MIN_ALLOC_SZ: i32 = roundup_pow_of_two(80);
 
 struct RwaState {
     gen_pool: *mut gen_pool,

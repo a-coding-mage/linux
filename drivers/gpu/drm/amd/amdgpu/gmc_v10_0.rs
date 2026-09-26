@@ -27,18 +27,18 @@
 
 
 
-i32 gmc_v10_0_ecc_interrupt_state(struct amdgpu_device *adev,
-					 struct amdgpu_irq_src *src,
-					 u32 type,
-					 enum amdgpu_interrupt_state state)
+i32 gmc_v10_0_ecc_interrupt_state(amdgpu_device *adev,
+					 amdgpu_irq_src *src,
+					 r#type: u32,
+					 amdgpu_interrupt_state state)
 {
 	return 0;
 }
 
 i32
-gmc_v10_0_vm_fault_interrupt_state(struct amdgpu_device *adev,
-				   struct amdgpu_irq_src *src, u32 type,
-				   enum amdgpu_interrupt_state state)
+gmc_v10_0_vm_fault_interrupt_state(amdgpu_device *adev,
+				   amdgpu_irq_src *src, r#type: u32,
+				   amdgpu_interrupt_state state)
 {
 	switch (state) {
 	case AMDGPU_IRQ_STATE_DISABLE:
@@ -72,9 +72,9 @@ gmc_v10_0_vm_fault_interrupt_state(struct amdgpu_device *adev,
 	return 0;
 }
 
-i32 gmc_v10_0_process_interrupt(struct amdgpu_device *adev,
-				       struct amdgpu_irq_src *source,
-				       struct amdgpu_iv_entry *entry)
+i32 gmc_v10_0_process_interrupt(amdgpu_device *adev,
+				       amdgpu_irq_src *source,
+				       amdgpu_iv_entry *entry)
 {
 	u32 vmhub_index = entry.client_id == SOC15_IH_CLIENTID_VMC ?
 			       AMDGPU_MMHUB0(0) : AMDGPU_GFXHUB(0);
@@ -144,16 +144,16 @@ i32 gmc_v10_0_process_interrupt(struct amdgpu_device *adev,
 }
 
 let gmc_v10_0_irq_funcs: amdgpu_irq_src_funcs = {
-	.set = gmc_v10_0_vm_fault_interrupt_state,
-	.process = gmc_v10_0_process_interrupt,
+	set: gmc_v10_0_vm_fault_interrupt_state,
+	process: gmc_v10_0_process_interrupt,
 };
 
 let gmc_v10_0_ecc_funcs: amdgpu_irq_src_funcs = {
-	.set = gmc_v10_0_ecc_interrupt_state,
-	.process = amdgpu_umc_process_ecc_irq,
+	set: gmc_v10_0_ecc_interrupt_state,
+	process: amdgpu_umc_process_ecc_irq,
 };
 
-() gmc_v10_0_set_irq_funcs(struct amdgpu_device *adev)
+() gmc_v10_0_set_irq_funcs(amdgpu_device *adev)
 {
 	adev.gmc.vm_fault.num_types = 1;
 	adev.gmc.vm_fault.funcs = &gmc_v10_0_irq_funcs;
@@ -171,16 +171,16 @@ let gmc_v10_0_ecc_funcs: amdgpu_irq_src_funcs = {
  * @vmhub: vmhub type
  *
  */
-bool gmc_v10_0_use_invalidate_semaphore(struct amdgpu_device *adev,
-				       u32 vmhub)
+bool gmc_v10_0_use_invalidate_semaphore(amdgpu_device *adev,
+				       vmhub: u32)
 {
 	return ((vmhub == AMDGPU_MMHUB0(0)) &&
 		(!amdgpu_sriov_vf(adev)));
 }
 
 bool gmc_v10_0_get_atc_vmid_pasid_mapping_info(
-					struct amdgpu_device *adev,
-					u8 vmid, u16 *p_pasid)
+					amdgpu_device *adev,
+					vmid: u8, u16 *p_pasid)
 {
 	u32 value;
 
@@ -208,8 +208,8 @@ bool gmc_v10_0_get_atc_vmid_pasid_mapping_info(
  *
  * Flush the TLB for the requested page table.
  */
-() gmc_v10_0_flush_gpu_tlb(struct amdgpu_device *adev, u32 vmid,
-					u32 vmhub, u32 flush_type)
+() gmc_v10_0_flush_gpu_tlb(amdgpu_device *adev, vmid: u32,
+					vmhub: u32, flush_type: u32)
 {
 	bool use_semaphore = gmc_v10_0_use_invalidate_semaphore(adev, vmhub);
 	struct amdgpu_vmhub *hub = &adev.vmhub[vmhub];
@@ -217,7 +217,7 @@ bool gmc_v10_0_get_atc_vmid_pasid_mapping_info(
 	/* Use register 17 for GART */
 	const u32 eng = 17;
 	u8 hub_ip = 0;
-	u32 sem, req, ack;
+	sem: u32, req, ack;
 	u32 i;
 	u32 tmp;
 
@@ -305,12 +305,12 @@ bool gmc_v10_0_get_atc_vmid_pasid_mapping_info(
  *
  * Flush the TLB for the requested pasid.
  */
-() gmc_v10_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
-					  u16 pasid, u32 flush_type,
-					  bool all_hub, u32 inst)
+() gmc_v10_0_flush_gpu_tlb_pasid(amdgpu_device *adev,
+					  pasid: u16, flush_type: u32,
+					  all_hub: bool, inst: u32)
 {
 	u16 queried;
-	i32 vmid, i;
+	vmid: i32, i;
 
 	for (vmid = 1; vmid < AMDGPU_NUM_VMID; vmid++) {
 		bool valid;
@@ -332,8 +332,8 @@ bool gmc_v10_0_get_atc_vmid_pasid_mapping_info(
 	}
 }
 
-u64 gmc_v10_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
-					     u32 vmid, u64 pd_addr)
+u64 gmc_v10_0_emit_flush_gpu_tlb(amdgpu_ring *ring,
+					     vmid: u32, pd_addr: u64)
 {
 	bool use_semaphore = gmc_v10_0_use_invalidate_semaphore(ring.adev, ring.vm_hub);
 	struct amdgpu_vmhub *hub = &ring.adev.vmhub[ring.vm_hub];
@@ -380,8 +380,8 @@ u64 gmc_v10_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 	return pd_addr;
 }
 
-() gmc_v10_0_emit_pasid_mapping(struct amdgpu_ring *ring, u32 vmid,
-					 u32 pasid)
+() gmc_v10_0_emit_pasid_mapping(amdgpu_ring *ring, vmid: u32,
+					 pasid: u32)
 {
 	struct amdgpu_device *adev = ring.adev;
 	u32 reg;
@@ -427,7 +427,7 @@ u64 gmc_v10_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
  * 0 valid
  */
 
-() gmc_v10_0_get_vm_pde(struct amdgpu_device *adev, i32 level,
+() gmc_v10_0_get_vm_pde(amdgpu_device *adev, level: i32,
 				 u64 *addr, u64 *flags)
 {
 	if (!(*flags & AMDGPU_PDE_PTE) && !(*flags & AMDGPU_PTE_SYSTEM))
@@ -450,10 +450,10 @@ u64 gmc_v10_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 	}
 }
 
-() gmc_v10_0_get_vm_pte(struct amdgpu_device *adev,
-				 struct amdgpu_vm *vm,
-				 struct amdgpu_bo *bo,
-				 u32 vm_flags,
+() gmc_v10_0_get_vm_pte(amdgpu_device *adev,
+				 amdgpu_vm *vm,
+				 amdgpu_bo *bo,
+				 vm_flags: u32,
 				 u64 *flags)
 {
 	if (vm_flags & AMDGPU_VM_PAGE_EXECUTABLE)
@@ -497,7 +497,7 @@ u64 gmc_v10_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 		*flags = AMDGPU_PTE_MTYPE_NV10(*flags, MTYPE_UC);
 }
 
-u32 gmc_v10_0_get_vbios_fb_size(struct amdgpu_device *adev)
+u32 gmc_v10_0_get_vbios_fb_size(amdgpu_device *adev)
 {
 	u32 d1vga_control = RREG32_SOC15(DCE, 0, mmD1VGA_CONTROL);
 	u32 size;
@@ -520,22 +520,22 @@ u32 gmc_v10_0_get_vbios_fb_size(struct amdgpu_device *adev)
 }
 
 let gmc_v10_0_gmc_funcs: amdgpu_gmc_funcs = {
-	.flush_gpu_tlb = gmc_v10_0_flush_gpu_tlb,
-	.flush_gpu_tlb_pasid = gmc_v10_0_flush_gpu_tlb_pasid,
-	.emit_flush_gpu_tlb = gmc_v10_0_emit_flush_gpu_tlb,
-	.emit_pasid_mapping = gmc_v10_0_emit_pasid_mapping,
-	.get_vm_pde = gmc_v10_0_get_vm_pde,
-	.get_vm_pte = gmc_v10_0_get_vm_pte,
-	.get_vbios_fb_size = gmc_v10_0_get_vbios_fb_size,
+	flush_gpu_tlb: gmc_v10_0_flush_gpu_tlb,
+	flush_gpu_tlb_pasid: gmc_v10_0_flush_gpu_tlb_pasid,
+	emit_flush_gpu_tlb: gmc_v10_0_emit_flush_gpu_tlb,
+	emit_pasid_mapping: gmc_v10_0_emit_pasid_mapping,
+	get_vm_pde: gmc_v10_0_get_vm_pde,
+	get_vm_pte: gmc_v10_0_get_vm_pte,
+	get_vbios_fb_size: gmc_v10_0_get_vbios_fb_size,
 };
 
-() gmc_v10_0_set_gmc_funcs(struct amdgpu_device *adev)
+() gmc_v10_0_set_gmc_funcs(amdgpu_device *adev)
 {
 	if (adev.gmc.gmc_funcs == std::ptr::null_mut())
 		adev.gmc.gmc_funcs = &gmc_v10_0_gmc_funcs;
 }
 
-() gmc_v10_0_set_umc_funcs(struct amdgpu_device *adev)
+() gmc_v10_0_set_umc_funcs(amdgpu_device *adev)
 {
 	switch (amdgpu_ip_version(adev, UMC_HWIP, 0)) {
 	case IP_VERSION(8, 7, 0):
@@ -552,7 +552,7 @@ let gmc_v10_0_gmc_funcs: amdgpu_gmc_funcs = {
 	}
 }
 
-() gmc_v10_0_set_mmhub_funcs(struct amdgpu_device *adev)
+() gmc_v10_0_set_mmhub_funcs(amdgpu_device *adev)
 {
 	switch (amdgpu_ip_version(adev, MMHUB_HWIP, 0)) {
 	case IP_VERSION(2, 3, 0):
@@ -566,7 +566,7 @@ let gmc_v10_0_gmc_funcs: amdgpu_gmc_funcs = {
 	}
 }
 
-() gmc_v10_0_set_gfxhub_funcs(struct amdgpu_device *adev)
+() gmc_v10_0_set_gfxhub_funcs(amdgpu_device *adev)
 {
 	switch (amdgpu_ip_version(adev, GC_HWIP, 0)) {
 	case IP_VERSION(10, 3, 0):
@@ -586,7 +586,7 @@ let gmc_v10_0_gmc_funcs: amdgpu_gmc_funcs = {
 }
 
 
-i32 gmc_v10_0_early_init(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_early_init(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 
@@ -607,7 +607,7 @@ i32 gmc_v10_0_early_init(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-i32 gmc_v10_0_late_init(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_late_init(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 	i32 r;
@@ -619,8 +619,8 @@ i32 gmc_v10_0_late_init(struct amdgpu_ip_block *ip_block)
 	return amdgpu_irq_get(adev, &adev.gmc.vm_fault, 0);
 }
 
-() gmc_v10_0_vram_gtt_location(struct amdgpu_device *adev,
-					struct amdgpu_gmc *mc)
+() gmc_v10_0_vram_gtt_location(amdgpu_device *adev,
+					amdgpu_gmc *mc)
 {
 	u64 base = 0;
 
@@ -652,7 +652,7 @@ i32 gmc_v10_0_late_init(struct amdgpu_ip_block *ip_block)
  * vram and gart within the GPU's physical address space.
  * Returns 0 for success.
  */
-i32 gmc_v10_0_mc_init(struct amdgpu_device *adev)
+i32 gmc_v10_0_mc_init(amdgpu_device *adev)
 {
 	i32 r;
 
@@ -696,7 +696,7 @@ i32 gmc_v10_0_mc_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-i32 gmc_v10_0_gart_init(struct amdgpu_device *adev)
+i32 gmc_v10_0_gart_init(amdgpu_device *adev)
 {
 	i32 r;
 
@@ -717,9 +717,9 @@ i32 gmc_v10_0_gart_init(struct amdgpu_device *adev)
 	return amdgpu_gart_table_vram_alloc(adev);
 }
 
-i32 gmc_v10_0_sw_init(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_sw_init(amdgpu_ip_block *ip_block)
 {
-	i32 r, vram_width = 0, vram_type = 0, vram_vendor = 0;
+	r: i32, vram_width = 0, vram_type = 0, vram_vendor = 0;
 	struct amdgpu_device *adev = ip_block.adev;
 
 	adev.gfxhub.funcs.init(adev);
@@ -862,12 +862,12 @@ i32 gmc_v10_0_sw_init(struct amdgpu_ip_block *ip_block)
  *
  * Tears down the driver GART/VM setup (CIK).
  */
-() gmc_v10_0_gart_fini(struct amdgpu_device *adev)
+() gmc_v10_0_gart_fini(amdgpu_device *adev)
 {
 	amdgpu_gart_table_vram_free(adev);
 }
 
-i32 gmc_v10_0_sw_fini(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_sw_fini(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 
@@ -879,7 +879,7 @@ i32 gmc_v10_0_sw_fini(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-() gmc_v10_0_init_golden_registers(struct amdgpu_device *adev)
+() gmc_v10_0_init_golden_registers(amdgpu_device *adev)
 {
 }
 
@@ -888,7 +888,7 @@ i32 gmc_v10_0_sw_fini(struct amdgpu_ip_block *ip_block)
  *
  * @adev: amdgpu_device pointer
  */
-i32 gmc_v10_0_gart_enable(struct amdgpu_device *adev)
+i32 gmc_v10_0_gart_enable(amdgpu_device *adev)
 {
 	i32 r;
 	bool value;
@@ -926,12 +926,12 @@ i32 gmc_v10_0_gart_enable(struct amdgpu_device *adev)
 
 	drm_info(adev_to_drm(adev), "PCIE GART of %uM enabled (table at 0x%016llX).\n",
 		 (u32)(adev.gmc.gart_size >> 20),
-		 (unsigned long long)amdgpu_bo_gpu_offset(adev.gart.bo));
+		 (core::ffi::c_ulonglong)amdgpu_bo_gpu_offset(adev.gart.bo));
 
 	return 0;
 }
 
-i32 gmc_v10_0_hw_init(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_hw_init(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 	i32 r;
@@ -971,14 +971,14 @@ i32 gmc_v10_0_hw_init(struct amdgpu_ip_block *ip_block)
  *
  * This disables all VM page table.
  */
-() gmc_v10_0_gart_disable(struct amdgpu_device *adev)
+() gmc_v10_0_gart_disable(amdgpu_device *adev)
 {
 	if (!adev.in_s0ix)
 		adev.gfxhub.funcs.gart_disable(adev);
 	adev.mmhub.funcs.gart_disable(adev);
 }
 
-i32 gmc_v10_0_hw_fini(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_hw_fini(amdgpu_ip_block *ip_block)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 
@@ -999,14 +999,14 @@ i32 gmc_v10_0_hw_fini(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-i32 gmc_v10_0_suspend(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_suspend(amdgpu_ip_block *ip_block)
 {
 	gmc_v10_0_hw_fini(ip_block);
 
 	return 0;
 }
 
-i32 gmc_v10_0_resume(struct amdgpu_ip_block *ip_block)
+i32 gmc_v10_0_resume(amdgpu_ip_block *ip_block)
 {
 	i32 r;
 
@@ -1019,20 +1019,19 @@ i32 gmc_v10_0_resume(struct amdgpu_ip_block *ip_block)
 	return 0;
 }
 
-bool gmc_v10_0_is_idle(struct amdgpu_ip_block *ip_block)
+bool gmc_v10_0_is_idle(amdgpu_ip_block *ip_block)
 {
 	/* MC is always ready in GMC v10.*/
 	return true;
 }
 
-i32 gmc_v10_0_wait_for_idle(struct amdgpu_ip_block *ip_block)
-{
+i32 gmc_v10_0_wait_for_idle!(amdgpu_ip_block *ip_block, {
 	/* There is no need to wait for MC idle in GMC v10.*/
 	return 0;
-}
+});
 
-i32 gmc_v10_0_set_clockgating_state(struct amdgpu_ip_block *ip_block,
-					   enum amd_clockgating_state state)
+i32 gmc_v10_0_set_clockgating_state(amdgpu_ip_block *ip_block,
+					   amd_clockgating_state state)
 {
 	i32 r;
 	struct amdgpu_device *adev = ip_block.adev;
@@ -1058,7 +1057,7 @@ i32 gmc_v10_0_set_clockgating_state(struct amdgpu_ip_block *ip_block,
 		return athub_v2_0_set_clockgating(adev, state);
 }
 
-() gmc_v10_0_get_clockgating_state(struct amdgpu_ip_block *ip_block, u64 *flags)
+() gmc_v10_0_get_clockgating_state(amdgpu_ip_block *ip_block, u64 *flags)
 {
 	struct amdgpu_device *adev = ip_block.adev;
 
@@ -1074,35 +1073,35 @@ i32 gmc_v10_0_set_clockgating_state(struct amdgpu_ip_block *ip_block,
 		athub_v2_0_get_clockgating(adev, flags);
 }
 
-i32 gmc_v10_0_set_powergating_state(struct amdgpu_ip_block *ip_block,
-					   enum amd_powergating_state state)
+i32 gmc_v10_0_set_powergating_state(amdgpu_ip_block *ip_block,
+					   amd_powergating_state state)
 {
 	return 0;
 }
 
 let gmc_v10_0_ip_funcs: amd_ip_funcs = {
-	.name = "gmc_v10_0",
-	.early_init = gmc_v10_0_early_init,
-	.late_init = gmc_v10_0_late_init,
-	.sw_init = gmc_v10_0_sw_init,
-	.sw_fini = gmc_v10_0_sw_fini,
-	.hw_init = gmc_v10_0_hw_init,
-	.hw_fini = gmc_v10_0_hw_fini,
-	.suspend = gmc_v10_0_suspend,
-	.resume = gmc_v10_0_resume,
-	.is_idle = gmc_v10_0_is_idle,
-	.wait_for_idle = gmc_v10_0_wait_for_idle,
-	.set_clockgating_state = gmc_v10_0_set_clockgating_state,
-	.set_powergating_state = gmc_v10_0_set_powergating_state,
-	.get_clockgating_state = gmc_v10_0_get_clockgating_state,
+	name: "gmc_v10_0",
+	early_init: gmc_v10_0_early_init,
+	late_init: gmc_v10_0_late_init,
+	sw_init: gmc_v10_0_sw_init,
+	sw_fini: gmc_v10_0_sw_fini,
+	hw_init: gmc_v10_0_hw_init,
+	hw_fini: gmc_v10_0_hw_fini,
+	suspend: gmc_v10_0_suspend,
+	resume: gmc_v10_0_resume,
+	is_idle: gmc_v10_0_is_idle,
+	wait_for_idle: gmc_v10_0_wait_for_idle,
+	set_clockgating_state: gmc_v10_0_set_clockgating_state,
+	set_powergating_state: gmc_v10_0_set_powergating_state,
+	get_clockgating_state: gmc_v10_0_get_clockgating_state,
 };
 
 let gmc_v10_0_ip_block: amdgpu_ip_block_version = {
-	.type = AMD_IP_BLOCK_TYPE_GMC,
-	.major = 10,
-	.minor = 0,
-	.rev = 0,
-	.funcs = &gmc_v10_0_ip_funcs,
+	type: AMD_IP_BLOCK_TYPE_GMC,
+	major: 10,
+	minor: 0,
+	rev: 0,
+	funcs: &gmc_v10_0_ip_funcs,
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -553,7 +553,7 @@ static = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, /* 0xf8-0xff */
 };
 
-static int uni2char(u32 uni, u8 *out, int boundlen)
+static int uni2char(uni: u32, u8 *out, int boundlen)
 {
 	let uni2charset;
 	let cl: u8 = (uni & 0x00ff) as u8;

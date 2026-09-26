@@ -45,7 +45,7 @@ pub const typeExtended: u32 = 0x03;
 /*
  * This must be no more and no less than 12 bytes.
  */
-#[cfg(feature = "CONFIG_FPE_NWFPE_XP")]
+#[cfg(CONFIG_FPE_NWFPE_XP)]
 #[repr(C, packed(4))]
 pub union FPREG {
     pub fSingle: f32,
@@ -53,7 +53,7 @@ pub union FPREG {
     pub fExtended: floatx80,
 }
 
-#[cfg(not(feature = "CONFIG_FPE_NWFPE_XP"))]
+#[cfg(not(CONFIG_FPE_NWFPE_XP))]
 #[repr(C, packed(4))]
 pub union FPREG {
     pub fSingle: f32,

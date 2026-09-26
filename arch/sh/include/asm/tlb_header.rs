@@ -8,13 +8,13 @@
  */
 
 /* CONFIG_CPU_SH4 selects external implementations of these functions. */
-#[cfg(all(feature = "CONFIG_MMU", feature = "CONFIG_CPU_SH4"))]
+#[cfg(all(CONFIG_MMU, CONFIG_CPU_SH4))]
 unsafe extern "C" {
     pub fn tlb_wire_entry(vma: *mut vm_area_struct, addr: core::ffi::c_ulong, pte: pte_t);
     pub fn tlb_unwire_entry();
 }
 
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "CONFIG_CPU_SH4")))]
+#[cfg(all(CONFIG_MMU, not(CONFIG_CPU_SH4)))]
 pub unsafe fn tlb_wire_entry(
     _vma: *mut vm_area_struct,
     _addr: core::ffi::c_ulong,
@@ -23,12 +23,12 @@ pub unsafe fn tlb_wire_entry(
     BUG();
 }
 
-#[cfg(all(feature = "CONFIG_MMU", not(feature = "CONFIG_CPU_SH4")))]
+#[cfg(all(CONFIG_MMU, not(CONFIG_CPU_SH4)))]
 pub unsafe fn tlb_unwire_entry() {
     BUG();
 }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" {
     pub fn handle_tlbmiss(
         regs: *mut pt_regs,

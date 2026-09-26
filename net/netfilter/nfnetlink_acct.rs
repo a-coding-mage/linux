@@ -55,12 +55,12 @@ unsafe fn nfnl_acct_new(
     acct_name = nla_data(*tb.add(NFACCT_NAME as usize)) as *mut c_char;
     if strlen(acct_name) == 0 { return -EINVAL; }
 
-    list_for_each_entry!(nfacct, &mut (*nfnl_acct_net).nfnl_acct_list, head) {
+    list_for_each_entry!(nfacct, &mut (*nfnl_acct_net).nfnl_acct_list, head, {
         if strncmp((*nfacct).name.as_ptr(), acct_name, NFACCT_NAME_MAX) != 0 { continue; }
         if (*(*info).nlh).nlmsg_flags & NLM_F_EXCL != 0 { return -EEXIST; }
         matching = nfacct;
         break;
-    }
+    });
 
     if !matching.is_null() {
         if (*(*info).nlh).nlmsg_flags & NLM_F_REPLACE != 0 {
@@ -123,7 +123,7 @@ unsafe fn nfnl_acct_fill_info(skb: *mut sk_buff, portid: u32, seq: u32, type_: u
 
 // The remaining callbacks and exported helpers retain the C ABI and are declared
 // in terms of the kernel primitives supplied by the translated dependency set.
-pub unsafe fn nfnl_acct_find_get(net: *mut net, acct_name: *const c_char) -> *mut nf_acct { let n = nfnl_acct_pernet(net); let mut cur: *mut nf_acct; rcu_read_lock(); list_for_each_entry_rcu!(cur, &mut (*n).nfnl_acct_list, head) { if strncmp((*cur).name.as_ptr(), acct_name, NFACCT_NAME_MAX) == 0 && try_module_get(THIS_MODULE) && refcount_inc_not_zero(&mut (*cur).refcnt) { rcu_read_unlock(); return cur; } } rcu_read_unlock(); core::ptr::null_mut() }
+pub unsafe fn nfnl_acct_find_get(net: *mut net, acct_name: *const c_char) -> *mut nf_acct { let n = nfnl_acct_pernet(net); let mut cur: *mut nf_acct; rcu_read_lock(); list_for_each_entry_rcu!(cur, &mut (*n).nfnl_acct_list, head, { if strncmp((*cur).name.as_ptr(), acct_name, NFACCT_NAME_MAX) == 0 && try_module_get(THIS_MODULE) && refcount_inc_not_zero(&mut (*cur).refcnt) { rcu_read_unlock(); return cur; } }); rcu_read_unlock(); core::ptr::null_mut() }
 
 pub unsafe fn nfnl_acct_put(acct: *mut nf_acct) { if refcount_dec_and_test(&mut (*acct).refcnt) { kfree_rcu(acct, rcu_head); } module_put(THIS_MODULE); }
 pub unsafe fn nfnl_acct_update(skb: *const sk_buff, nfacct: *mut nf_acct) { atomic64_inc(&mut (*nfacct).pkts); atomic64_add((*skb).len as u64, &mut (*nfacct).bytes); }
@@ -147,7 +147,7 @@ pub unsafe fn nfnl_acct_overquota(net: *mut net, nfacct: *mut nf_acct) -> c_int 
 unsafe fn nfnl_acct_net_init(net: *mut net) -> c_int { INIT_LIST_HEAD(&mut (*nfnl_acct_pernet(net)).nfnl_acct_list); 0 }
 unsafe fn nfnl_acct_net_exit(net: *mut net) {
     let n = nfnl_acct_pernet(net); let mut cur: *mut nf_acct; let mut tmp: *mut nf_acct;
-    list_for_each_entry_safe!(cur, tmp, &mut (*n).nfnl_acct_list, head) { list_del_rcu(&mut (*cur).head); if refcount_dec_and_test(&mut (*cur).refcnt) { kfree_rcu(cur, rcu_head); } }
+    list_for_each_entry_safe!(cur, tmp, &mut (*n).nfnl_acct_list, head, { list_del_rcu(&mut (*cur).head); if refcount_dec_and_test(&mut (*cur).refcnt) { kfree_rcu(cur, rcu_head); } });
 }
 
 static mut nfnl_acct_ops: pernet_operations = pernet_operations { init: Some(nfnl_acct_net_init), exit: Some(nfnl_acct_net_exit), id: &mut nfnl_acct_net_id, size: core::mem::size_of::<nfnl_acct_net>() };

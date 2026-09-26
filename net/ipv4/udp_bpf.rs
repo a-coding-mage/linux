@@ -108,11 +108,9 @@ unsafe fn udp_bpf_recvmsg(sk: *mut sock, msg: *mut msghdr, len: usize, flags: i3
     ret
 }
 
-enum {
-    UDP_BPF_IPV4,
-    UDP_BPF_IPV6,
-    UDP_BPF_NUM_PROTS,
-}
+pub const UDP_BPF_IPV4: i32 = 0;
+pub const UDP_BPF_IPV6: i32 = UDP_BPF_IPV4 + 1;
+pub const UDP_BPF_NUM_PROTS: i32 = UDP_BPF_IPV6 + 1;
 
 static mut udpv6_prot_lock: spinlock_t = spinlock_t::new();
 static mut udp_bpf_prots: [proto; UDP_BPF_NUM_PROTS] = [proto::default(); UDP_BPF_NUM_PROTS];

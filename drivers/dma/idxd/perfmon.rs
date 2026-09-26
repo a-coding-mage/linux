@@ -54,13 +54,13 @@ unsafe fn perfmon_collect_events(idxd_pmu: *mut idxd_pmu, leader: *mut perf_even
     }
     if !do_grp { return n; }
 
-    for_each_sibling_event!(event, leader) {
+    for_each_sibling_event!(event, leader, {
         if !is_idxd_event(idxd_pmu, event) || (*event).state <= PERF_EVENT_STATE_OFF { continue; }
         if n >= max_count { return -EINVAL; }
         (*idxd_pmu).event_list[n as usize] = event;
         (*event).hw.idx = n;
         n += 1;
-    }
+    });
     n
 }
 
@@ -139,13 +139,13 @@ pub unsafe fn perfmon_counter_overflow(idxd: *mut idxd_device) {
     let mut max_loop = OVERFLOW_SIZE;
     while ovfstatus != 0 && max_loop != 0 {
         max_loop -= 1;
-        for_each_set_bit!(i, &mut ovfstatus, n_counters) {
+        for_each_set_bit!(i, &mut ovfstatus, n_counters, {
             let mut clear = 0;
             let event = (*idxd).idxd_pmu.event_list[i as usize];
             perfmon_pmu_event_update(event);
             set_bit(i, &mut clear);
             iowrite32(clear, OVFSTATUS_REG!(idxd));
-        }
+        });
         ovfstatus = ioread32(OVFSTATUS_REG!(idxd));
     }
     WARN_ON_ONCE!(ovfstatus != 0);

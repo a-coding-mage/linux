@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Dependencies supplied by the surrounding kernel translation unit.
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 extern "C" {
     static __START_KERNEL_map: usize;
     static phys_base: usize;
@@ -13,7 +13,7 @@ extern "C" {
     fn pfn_valid(x: usize) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 extern "C" {
     static PAGE_OFFSET: usize;
     static FIXADDR_START: usize;
@@ -25,7 +25,7 @@ extern "C" {
     fn slow_virt_to_phys(x: *const core::ffi::c_void) -> usize;
 }
 
-#[cfg(all(feature = "CONFIG_X86_64", feature = "CONFIG_DEBUG_VIRTUAL"))]
+#[cfg(all(CONFIG_X86_64, CONFIG_DEBUG_VIRTUAL))]
 #[no_mangle]
 pub unsafe extern "C" fn __phys_addr(mut x: usize) -> usize {
     let mut y = x.wrapping_sub(__START_KERNEL_map);
@@ -47,7 +47,7 @@ pub unsafe extern "C" fn __phys_addr(mut x: usize) -> usize {
     x
 }
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 #[no_mangle]
 pub unsafe extern "C" fn __virt_addr_valid(mut x: usize) -> bool {
     let y = x.wrapping_sub(__START_KERNEL_map);
@@ -71,7 +71,7 @@ pub unsafe extern "C" fn __virt_addr_valid(mut x: usize) -> bool {
     pfn_valid(x >> PAGE_SHIFT)
 }
 
-#[cfg(all(not(feature = "CONFIG_X86_64"), feature = "CONFIG_DEBUG_VIRTUAL"))]
+#[cfg(all(not(CONFIG_X86_64), CONFIG_DEBUG_VIRTUAL))]
 #[no_mangle]
 pub unsafe extern "C" fn __phys_addr(mut x: usize) -> usize {
     let phys_addr = x.wrapping_sub(PAGE_OFFSET);
@@ -90,7 +90,7 @@ pub unsafe extern "C" fn __phys_addr(mut x: usize) -> usize {
     phys_addr
 }
 
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 #[no_mangle]
 pub unsafe extern "C" fn __virt_addr_valid(x: usize) -> bool {
     if x < PAGE_OFFSET {

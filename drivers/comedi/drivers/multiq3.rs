@@ -158,7 +158,7 @@ unsafe extern "C" fn multiq3_attach(dev: *mut comedi_device, it: *mut comedi_dev
     let s = &mut *subs.add(4); s.type_ = COMEDI_SUBD_COUNTER; s.subdev_flags = SDF_READABLE | SDF_LSAMPL; s.n_chan = (*it).options[2] * 2; s.maxdata = 0x00ffffff; s.range_table = &range_unknown; s.insn_read = Some(multiq3_encoder_insn_read); s.insn_config = Some(multiq3_encoder_insn_config); if s.n_chan > MULTIQ3_MAX_ENC_CHANS { s.n_chan = MULTIQ3_MAX_ENC_CHANS; }
     for i in 0..s.n_chan { multiq3_encoder_reset(dev, i); } 0
 }
-extern "C" { fn comedi_check_request_region(*mut comedi_device,u32,u32,u32,u32,u32)->libc::c_int; fn comedi_alloc_subdevices(*mut comedi_device,u32)->libc::c_int; fn comedi_alloc_subdev_readback(*mut comedi_subdevice)->libc::c_int; }
+extern "C" { fn comedi_check_request_region(_: *mut comedi_device,_: u32,_: u32,_: u32,_: u32,_: u32)->libc::c_int; fn comedi_alloc_subdevices(_: *mut comedi_device,_: u32)->libc::c_int; fn comedi_alloc_subdev_readback(_: *mut comedi_subdevice)->libc::c_int; }
 extern "C" { static range_bipolar5: core::ffi::c_void; static range_digital: core::ffi::c_void; static range_unknown: core::ffi::c_void; }
 const COMEDI_SUBD_AI:u32=1; const COMEDI_SUBD_AO:u32=2; const COMEDI_SUBD_DI:u32=3; const COMEDI_SUBD_DO:u32=4; const COMEDI_SUBD_COUNTER:u32=5; const SDF_READABLE:u32=1; const SDF_WRITABLE:u32=2; const SDF_GROUND:u32=4; const SDF_LSAMPL:u32=8;
 

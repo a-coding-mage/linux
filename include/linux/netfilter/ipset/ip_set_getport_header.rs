@@ -12,7 +12,7 @@ extern "C" {
 }
 
 /* Preserved from IS_ENABLED(CONFIG_IP6_NF_IPTABLES). */
-#[cfg(feature = "CONFIG_IP6_NF_IPTABLES")]
+#[cfg(CONFIG_IP6_NF_IPTABLES)]
 extern "C" {
     pub fn ip_set_get_ip6_port(
         skb: *const sk_buff,
@@ -22,7 +22,7 @@ extern "C" {
     ) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_IP6_NF_IPTABLES"))]
+#[cfg(not(CONFIG_IP6_NF_IPTABLES))]
 #[inline]
 pub unsafe fn ip_set_get_ip6_port(
     _skb: *const sk_buff,

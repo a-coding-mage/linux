@@ -6,7 +6,7 @@
 pub static mut fail_prealloc: bool = false;
 pub static mut mmap_min_addr: c_ulong = CONFIG_DEFAULT_MMAP_MIN_ADDR;
 pub static mut dac_mmap_min_addr: c_ulong = CONFIG_DEFAULT_MMAP_MIN_ADDR;
-pub static mut stack_guard_gap: c_ulong = 256u64 as c_ulong << PAGE_SHIFT;
+pub static mut stack_guard_gap: c_ulong = (256u64 as c_ulong) << PAGE_SHIFT;
 
 pub static vma_dummy_vm_ops: vm_operations_struct = unsafe { core::mem::zeroed() };
 pub static mut dummy_anon_vma: anon_vma = unsafe { core::mem::zeroed() };

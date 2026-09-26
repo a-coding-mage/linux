@@ -10,7 +10,7 @@ macro_rules! cprcr {
         unsafe {
             core::arch::asm!(
                 concat!("cprcr {tmp}, ", $reg),
-                tmp = out(reg) tmp,
+                tmp = out($reg) tmp,
                 options(nostack)
             );
         }
@@ -25,7 +25,7 @@ macro_rules! cpwcr {
         unsafe {
             core::arch::asm!(
                 concat!("cpwcr {val}, ", $reg),
-                val = in(reg) ($val),
+                $val = in($reg) ($val),
                 options(nostack)
             );
         }

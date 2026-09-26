@@ -29,7 +29,7 @@ pub unsafe fn current_is_single_threaded() -> bool {
     ret = false;
     rcu_read_lock();
     'search: {
-        for_each_process!(p) {
+        for_each_process!(p, {
             if unlikely!((*p).flags & PF_KTHREAD != 0) {
                 continue;
             }
@@ -37,7 +37,7 @@ pub unsafe fn current_is_single_threaded() -> bool {
                 continue;
             }
 
-            for_each_thread!(p, t) {
+            for_each_thread!(p, t, {
                 if unlikely!((*t).mm == mm) {
                     break 'search;
                 }
@@ -50,8 +50,8 @@ pub unsafe fn current_is_single_threaded() -> bool {
                  * forked before exiting.
                  */
                 smp_rmb();
-            }
-        }
+            });
+        });
         ret = true;
     }
     rcu_read_unlock();

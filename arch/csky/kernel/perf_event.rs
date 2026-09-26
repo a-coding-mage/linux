@@ -63,10 +63,10 @@ macro_rules! counter_pair {
             let mut lo: u32;
             let mut hi: u32;
             loop {
-                tmp = cprgr($hi); lo = cprgr($lo); hi = cprgr($hi);
-                if hi == tmp { break; }
+                tmp = cprgr($hi); $lo = cprgr($lo); $hi = cprgr($hi);
+                if $hi == tmp { break; }
             }
-            ((hi as u64) << 32) | lo as u64
+            (($hi as u64) << 32) | $lo as u64
         }
         unsafe extern "C" fn $write(val: u64) {
             cpwgr($lo, val as u32); cpwgr($hi, (val >> 32) as u32);

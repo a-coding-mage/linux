@@ -31,7 +31,7 @@ pub struct clk {
     _private: [u8; 0],
 }
 
-#[cfg(all(feature = "CONFIG_OF", feature = "CONFIG_COMMON_CLK"))]
+#[cfg(all(CONFIG_OF, CONFIG_COMMON_CLK))]
 extern "C" {
     pub fn of_clk_get_hw(
         np: *mut device_node,
@@ -41,7 +41,7 @@ extern "C" {
 }
 
 /* !CONFIG_COMMON_CLK || !CONFIG_OF */
-#[cfg(not(all(feature = "CONFIG_OF", feature = "CONFIG_COMMON_CLK")))]
+#[cfg(not(all(CONFIG_OF, CONFIG_COMMON_CLK)))]
 #[inline]
 pub unsafe fn of_clk_get_hw(
     _np: *mut device_node,
@@ -55,7 +55,7 @@ extern "C" {
     pub fn clk_find_hw(dev_id: *const c_char, con_id: *const c_char) -> *mut clk_hw;
 }
 
-#[cfg(feature = "CONFIG_COMMON_CLK")]
+#[cfg(CONFIG_COMMON_CLK)]
 extern "C" {
     pub fn clk_hw_create_clk(
         dev: *mut device,
@@ -67,7 +67,7 @@ extern "C" {
 }
 
 /* All these casts to avoid ifdefs in clkdev... */
-#[cfg(not(feature = "CONFIG_COMMON_CLK"))]
+#[cfg(not(CONFIG_COMMON_CLK))]
 #[inline]
 pub unsafe fn clk_hw_create_clk(
     _dev: *mut device,
@@ -78,7 +78,7 @@ pub unsafe fn clk_hw_create_clk(
     hw as *mut clk
 }
 
-#[cfg(not(feature = "CONFIG_COMMON_CLK"))]
+#[cfg(not(CONFIG_COMMON_CLK))]
 #[inline]
 pub unsafe fn __clk_put(_clk: *mut clk) {}
 

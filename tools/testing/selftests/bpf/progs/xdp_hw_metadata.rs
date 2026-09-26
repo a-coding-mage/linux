@@ -41,15 +41,13 @@ extern "C" {
     fn bpf_xdp_metadata_rx_hash(
         ctx: *const xdp_md,
         hash: *mut __u32,
-        rss_type: *mut xdp_rss_hash_type,
-    ) -> i32;
+        rss_type: *mut xdp_rss_hash_type) -> i32;
 
     #[link_name = "bpf_xdp_metadata_rx_vlan_tag"]
     fn bpf_xdp_metadata_rx_vlan_tag(
         ctx: *const xdp_md,
         vlan_proto: *mut __be16,
-        vlan_tci: *mut __u16,
-    ) -> i32;
+        vlan_tci: *mut __u16) -> i32;
 
     fn bpf_xdp_adjust_meta(ctx: *mut xdp_md, delta: i32) -> i32;
     fn bpf_ktime_get_tai_ns() -> __u64;
@@ -77,23 +75,23 @@ pub unsafe extern "C" fn rx(ctx: *mut xdp_md) -> i32 {
     data_end = (*ctx).data_end as usize as *mut c_void;
     eth = data as *mut ethhdr;
 
-    if eth.add(1) as *mut c_void as usize < data_end as usize
+    if eth.add(1) as *mut (c_void as usize) < data_end as usize
         && ((*eth).h_proto == bpf_htons(ETH_P_8021AD as __u16)
             || (*eth).h_proto == bpf_htons(ETH_P_8021Q as __u16))
     {
         eth = (eth as *mut u8).add(size_of::<vlan_hdr>()) as *mut ethhdr;
     }
 
-    if eth.add(1) as *mut c_void as usize < data_end as usize
+    if eth.add(1) as *mut (c_void as usize) < data_end as usize
         && (*eth).h_proto == bpf_htons(ETH_P_8021Q as __u16)
     {
         eth = (eth as *mut u8).add(size_of::<vlan_hdr>()) as *mut ethhdr;
     }
 
-    if eth.add(1) as *mut c_void as usize < data_end as usize {
+    if eth.add(1) as *mut (c_void as usize) < data_end as usize {
         if (*eth).h_proto == bpf_htons(ETH_P_IP as __u16) {
             iph = eth.add(1) as *mut c_void as *mut iphdr;
-            if iph.add(1) as *mut c_void as usize < data_end as usize
+            if iph.add(1) as *mut (c_void as usize) < data_end as usize
                 && (*iph).protocol == IPPROTO_UDP as __u8
             {
                 udp = iph.add(1) as *mut c_void as *mut udphdr;
@@ -101,7 +99,7 @@ pub unsafe extern "C" fn rx(ctx: *mut xdp_md) -> i32 {
         }
         if (*eth).h_proto == bpf_htons(ETH_P_IPV6 as __u16) {
             ip6h = eth.add(1) as *mut c_void as *mut ipv6hdr;
-            if ip6h.add(1) as *mut c_void as usize < data_end as usize
+            if ip6h.add(1) as *mut (c_void as usize) < data_end as usize
                 && (*ip6h).nexthdr == IPPROTO_UDP as __u8
             {
                 udp = ip6h.add(1) as *mut c_void as *mut udphdr;

@@ -73,7 +73,7 @@ pub const DEVLINK_PARAM_MAX_ARRAY_SIZE: usize = 32;
 pub const DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK: u32 = 1u32 << 0;
 pub const DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT: u32 = 1u32 << 0;
 pub const DEVLINK_TRAP_METADATA_TYPE_F_FA_COOKIE: u32 = 1u32 << 1;
-pub const DEVLINK_F_RELOAD: c_ulong = 1 as c_ulong << 0;
+pub const DEVLINK_F_RELOAD: c_ulong = (1 as c_ulong) << 0;
 
 #[repr(C)]
 pub struct devlink_param_u64_array {

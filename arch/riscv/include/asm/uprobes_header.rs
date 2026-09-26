@@ -7,14 +7,14 @@ pub const MAX_UINSN_BYTES: usize = 8;
 
 // CONFIG_RISCV_ISA_C selects the 16-bit breakpoint instruction; otherwise
 // the 32-bit breakpoint instruction is selected.
-#[cfg(feature = "CONFIG_RISCV_ISA_C")]
+#[cfg(CONFIG_RISCV_ISA_C)]
 pub const UPROBE_SWBP_INSN: u32 = __BUG_INSN_16;
-#[cfg(feature = "CONFIG_RISCV_ISA_C")]
+#[cfg(CONFIG_RISCV_ISA_C)]
 pub const UPROBE_SWBP_INSN_SIZE: usize = 2;
 
-#[cfg(not(feature = "CONFIG_RISCV_ISA_C"))]
+#[cfg(not(CONFIG_RISCV_ISA_C))]
 pub const UPROBE_SWBP_INSN: u32 = __BUG_INSN_32;
-#[cfg(not(feature = "CONFIG_RISCV_ISA_C"))]
+#[cfg(not(CONFIG_RISCV_ISA_C))]
 pub const UPROBE_SWBP_INSN_SIZE: usize = 4;
 
 pub const UPROBE_XOL_SLOT_BYTES: usize = MAX_UINSN_BYTES;
@@ -52,19 +52,19 @@ pub struct pt_regs {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_UPROBES")]
+#[cfg(CONFIG_UPROBES)]
 unsafe extern "C" {
     pub fn uprobe_breakpoint_handler(regs: *mut pt_regs) -> bool;
     pub fn uprobe_single_step_handler(regs: *mut pt_regs) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 #[inline]
 pub unsafe fn uprobe_breakpoint_handler(_regs: *mut pt_regs) -> bool {
     false
 }
 
-#[cfg(not(feature = "CONFIG_UPROBES"))]
+#[cfg(not(CONFIG_UPROBES))]
 #[inline]
 pub unsafe fn uprobe_single_step_handler(_regs: *mut pt_regs) -> bool {
     false

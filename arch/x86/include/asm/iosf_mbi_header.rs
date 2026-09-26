@@ -49,7 +49,7 @@ pub const MBI_PMIC_BUS_ACCESS_BEGIN: i32 = 1;
 pub const MBI_PMIC_BUS_ACCESS_END: i32 = 2;
 
 /* CONFIG_IOSF_MBI is a build-time configuration condition. */
-#[cfg(feature = "CONFIG_IOSF_MBI")]
+#[cfg(CONFIG_IOSF_MBI)]
 extern "C" {
     pub fn iosf_mbi_available() -> bool;
     pub fn iosf_mbi_read(port: u8, opcode: u8, offset: u32, mdr: *mut u32) -> i32;
@@ -68,34 +68,34 @@ extern "C" {
     pub type notifier_block;
 }
 
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub fn iosf_mbi_available() -> bool { false }
 
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub unsafe fn iosf_mbi_read(_port: u8, _opcode: u8, _offset: u32, _mdr: *mut u32) -> i32 {
     -1
 }
 
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub fn iosf_mbi_write(_port: u8, _opcode: u8, _offset: u32, _mdr: u32) -> i32 { -1 }
 
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub fn iosf_mbi_modify(_port: u8, _opcode: u8, _offset: u32, _mdr: u32, _mask: u32) -> i32 { -1 }
 
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub fn iosf_mbi_punit_acquire() {}
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub fn iosf_mbi_punit_release() {}
 
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub unsafe fn iosf_mbi_register_pmic_bus_access_notifier(_nb: *mut notifier_block) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub unsafe fn iosf_mbi_unregister_pmic_bus_access_notifier(_nb: *mut notifier_block) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub unsafe fn iosf_mbi_unregister_pmic_bus_access_notifier_unlocked(_nb: *mut notifier_block) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub unsafe fn iosf_mbi_call_pmic_bus_access_notifier_chain(_val: usize, _v: *mut core::ffi::c_void) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_IOSF_MBI"))]
+#[cfg(not(CONFIG_IOSF_MBI))]
 pub fn iosf_mbi_assert_punit_acquired() {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

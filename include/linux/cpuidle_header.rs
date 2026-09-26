@@ -23,9 +23,9 @@ pub struct cpuidle_state_usage {
     pub above: u64,
     pub below: u64,
     pub rejected: u64,
-    #[cfg(feature = "CONFIG_SUSPEND")]
+    #[cfg(CONFIG_SUSPEND)]
     pub s2idle_usage: u64,
-    #[cfg(feature = "CONFIG_SUSPEND")]
+    #[cfg(CONFIG_SUSPEND)]
     pub s2idle_time: u64,
 }
 
@@ -69,9 +69,9 @@ pub struct cpuidle_device {
     pub kobj_driver: *mut cpuidle_driver_kobj,
     pub kobj_dev: *mut cpuidle_device_kobj,
     pub device_list: list_head,
-    #[cfg(feature = "CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED")]
+    #[cfg(CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED)]
     pub coupled_cpus: cpumask_t,
-    #[cfg(feature = "CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED")]
+    #[cfg(CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED)]
     pub coupled: *mut cpuidle_coupled,
 }
 

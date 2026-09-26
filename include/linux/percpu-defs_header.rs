@@ -134,8 +134,8 @@ extern "C" { pub fn __this_cpu_preempt_check(op: *const core::ffi::c_char); }
 
 // Size-dispatch helpers correspond to the C switch(sizeof(variable)) macros.
 // The architecture-specific suffixed operations are supplied by dependencies.
-#[macro_export] macro_rules! __pcpu_size_call_return { ($s:ident,$v:expr) => {{
-    match core::mem::size_of_val(&$v) { 1 => $s##1!($v), 2 => $s##2!($v), 4 => $s##4!($v), 8 => $s##8!($v), _ => unsafe { __bad_size_call_parameter(); core::mem::zeroed() } }
+#[macro_export] macro_rules! __pcpu_size_call_return { ($s:tt,$v:expr) => {{
+    match core::mem::size_of_val(&$v) { 1 => ::kernel::macros::paste!([<$s 1>])!($v), 2 => ::kernel::macros::paste!([<$s 2>])!($v), 4 => ::kernel::macros::paste!([<$s 4>])!($v), 8 => ::kernel::macros::paste!([<$s 8>])!($v), _ => unsafe { __bad_size_call_parameter(); core::mem::zeroed() } }
 }}; }
 #[macro_export] macro_rules! __pcpu_size_call { ($s:ident,$v:expr,$($a:expr),+) => {{
     match core::mem::size_of_val(&$v) { 1 => $s##1!($v,$($a),+), 2 => $s##2!($v,$($a),+), 4 => $s##4!($v,$($a),+), 8 => $s##8!($v,$($a),+), _ => unsafe { __bad_size_call_parameter(); } }

@@ -72,10 +72,10 @@ unsafe fn find_cpu_id_range(nthreads: u32, assigned_node: i32, cpu_mask: *mut cp
     BUG_ON(!cpumask_subset(cpu_present_mask, cpu_possible_mask));
     cpumask_xor(candidate_mask, cpu_possible_mask, cpu_present_mask);
     if assigned_node != NUMA_NO_NODE {
-        for_each_online_node!(node) {
+        for_each_online_node!(node, {
             if node == assigned_node { continue; }
             cpumask_andnot(candidate_mask, candidate_mask, NODE_RECORDED_IDS_MAP[node as usize]);
-        }
+        });
     }
     if cpumask_empty(candidate_mask) { free_cpumask_var(candidate_mask); return -ENOSPC; }
     while !cpumask_empty(*cpu_mask) {
@@ -102,7 +102,7 @@ unsafe fn pseries_add_processor(np: *mut device_node) -> i32 {
     if rc != 0 && nr_node_ids > 1 { node = NUMA_NO_NODE; rc = find_cpu_id_range(nthreads as u32, node, &mut cpu_mask); }
     if rc != 0 { pr_err!("Cannot add cpu; this system configuration supports {} logical cpus.\n", num_possible_cpus()); }
     else {
-        for_each_cpu!(cpu, cpu_mask) { BUG_ON(cpu_present(cpu)); set_cpu_present(cpu, true); set_hard_smp_processor_id(cpu, be32_to_cpu(*intserv)); intserv = intserv.add(1); }
+        for_each_cpu!(cpu, cpu_mask, { BUG_ON(cpu_present(cpu)); set_cpu_present(cpu, true); set_hard_smp_processor_id(cpu, be32_to_cpu(*intserv)); intserv = intserv.add(1); });
         cpumask_or(NODE_RECORDED_IDS_MAP[assigned_node as usize], NODE_RECORDED_IDS_MAP[assigned_node as usize], cpu_mask);
         if node == NUMA_NO_NODE { cpu = cpumask_first(cpu_mask); pr_warn!("Reusing free CPU ids {}-{} from another node\n", cpu, cpu + nthreads as u32 - 1); }
     }

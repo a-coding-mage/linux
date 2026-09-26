@@ -18,7 +18,7 @@ type s64 = std::primitive::i64; type c_int = i32;
 #[repr(C)] pub struct clk_rate_request { pub rate: usize, pub best_parent_rate: usize }
 #[repr(C)] pub struct clk_init_data { pub name: *const i8, pub ops: *const clk_ops, pub flags: u32, pub parent_names: *const *const i8, pub num_parents: u8 }
 #[repr(C)] pub struct clk_ops { pub recalc_rate: Option<unsafe extern "C" fn(*mut clk_hw, usize)->usize>, pub determine_rate: Option<unsafe extern "C" fn(*mut clk_hw,*mut clk_rate_request)->c_int>, pub set_rate: Option<unsafe extern "C" fn(*mut clk_hw,usize,usize)->c_int>, pub prepare: Option<unsafe extern "C" fn(*mut clk_hw)->c_int>, pub unprepare: Option<unsafe extern "C" fn(*mut clk_hw)>, pub is_enabled: Option<unsafe extern "C" fn(*mut clk_hw)->c_int> }
-extern "C" { fn regmap_bulk_read(*mut regmap,u32,*mut u8,usize)->c_int; fn regmap_bulk_write(*mut regmap,u32,*mut u8,usize)->c_int; fn regmap_read(*mut regmap,u32,*mut u32)->c_int; fn regmap_write_bits(*mut regmap,u32,u32,u32)->c_int; fn clk_get_rate(*mut clk)->usize; fn div64_u64(u64,u64)->u64; fn div64_u64_rem(u64,u64,*mut u64)->u64; fn pr_warn(*const i8,...); fn pr_debug(*const i8,...); fn dev_err(*mut device,*const i8,...); fn clk_hw_get_name(*mut clk_hw)->*const i8; }
+extern "C" { fn regmap_bulk_read(_: *mut regmap,_: u32,_: *mut u8,_: usize)->c_int; fn regmap_bulk_write(_: *mut regmap,_: u32,_: *mut u8,_: usize)->c_int; fn regmap_read(_: *mut regmap,_: u32,_: *mut u32)->c_int; fn regmap_write_bits(_: *mut regmap,_: u32,_: u32,_: u32)->c_int; fn clk_get_rate(_: *mut clk)->usize; fn div64_u64(_: u64,_: u64)->u64; fn div64_u64_rem(_: u64,_: u64,_: *mut u64)->u64; fn pr_warn(_: *const i8,...); fn pr_debug(_: *const i8,...); fn dev_err(_: *mut device,_: *const i8,...); fn clk_hw_get_name(_: *mut clk_hw)->*const i8; }
 
 const VC7_PAGE_ADDR:u32=0xfd; const VC7_PAGE_WINDOW:u32=256; const VC7_MAX_REG:u32=0x364;
 const VC7_NUM_BANKS:usize=7; const VC7_NUM_FOD:usize=3; const VC7_NUM_IOD:usize=4; const VC7_NUM_OUT:usize=12;
@@ -50,7 +50,7 @@ unsafe fn div128(hi:u64,lo:u64,den:u64,r:Option<&mut u64>)->u64 { if den==0||hi>
 
 unsafe fn calc_iod(rate:usize,parent:usize,d:&mut u32){*d=((parent+rate-1)/rate) as u32;*d=(*d).clamp(VC7_IOD_MIN_DIVISOR,VC7_IOD_MAX_DIVISOR);}
 unsafe fn fod1(rate:usize,parent:usize,di:&mut u32,df:&mut u64){let mut rem=0;*di=div64_u64_rem(parent as u64,rate as u64,&mut rem) as u32;*df=div64_u64(rem<<34,rate as u64);}
-unsafe fn fod1rate(parent:usize,di:u32,df:u64)->usize {if df==0{return div64_u64(parent as u64,di as u64) as usize;}let mut hi=0;let mut lo=0;mul128(parent as u64,1u64<<34,&mut hi,&mut lo);div128(hi,lo,(di as u64<<34)+df,None) as usize}
+unsafe fn fod1rate(parent:usize,di:u32,df:u64)->usize {if df==0{return div64_u64(parent as u64,di as u64) as usize;}let mut hi=0;let mut lo=0;mul128(parent as u64,1u64<<34,&mut hi,&mut lo);div128(hi,lo,((di as u64)<<34)+df,None) as usize}
 unsafe fn fod2rate(parent:usize,a:u32,b:u32,f:u64)->usize {let x=fod1rate(parent,a,f);if b<2{x}else{div64_u64((x>>1) as u64,b as u64) as usize}}
 unsafe fn calc_fod(rate:usize,parent:usize,a:&mut u32,b:&mut u32,f:&mut u64){fod1(rate,parent,a,f);let mut x=fod1rate(parent,*a,*f);*b=0;if x<VC7_FOD_1ST_STAGE_RATE_MIN{let mut allow=0;let mut best=2;let mut i=2;while i<=VC7_FOD_2ND_INT_MAX{fod1(rate*2*i as usize,parent,a,f);x=fod1rate(parent,*a,*f);if best==2&&x>VC7_FOD_1ST_STAGE_RATE_MIN{best=i;}if *a<324&&x>=VC7_FOD_1ST_STAGE_RATE_MIN&&(allow!=0||*f==0){*b=i;break;}if i>=VC7_FOD_2ND_INT_MAX||x>VC7_FOD_1ST_STAGE_RATE_MAX{allow=1;i=best;if best!=2{i-=1;}}i+=1;}}}
 

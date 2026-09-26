@@ -9,9 +9,9 @@
 unsafe fn __xchk_btree_process_error(sc: *mut xfs_scrub, cur: *mut xfs_btree_cur,
         level: c_int, error: *mut c_int, errflag: __u32, ret_ip: *mut c_void) -> bool {
     if *error == 0 { return true; }
-    match *error {
-        -EDEADLOCK | -ECHRNG => { trace_xchk_deadlock_retry((*sc).ip, (*sc).sm, *error); }
-        -EFSBADCRC | -EFSCORRUPTED | -EIO | -ENODATA => {
+    match -(*error) {
+        EDEADLOCK | ECHRNG => { trace_xchk_deadlock_retry((*sc).ip, (*sc).sm, *error); }
+        EFSBADCRC | EFSCORRUPTED | EIO | ENODATA => {
             (*(*sc).sm).sm_flags |= errflag;
             *error = 0;
             if (*(*cur).bc_ops).type_ == XFS_BTREE_TYPE_INODE { trace_xchk_ifork_btree_op_error(sc, cur, level, *error, ret_ip); }

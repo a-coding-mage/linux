@@ -72,10 +72,10 @@ unsafe fn socfpga_init_irq() {
     irqchip_init();
     socfpga_sysmgr_init();
     // Preserved build-time condition: IS_ENABLED(CONFIG_EDAC_ALTERA_L2C).
-    #[cfg(feature = "CONFIG_EDAC_ALTERA_L2C")]
+    #[cfg(CONFIG_EDAC_ALTERA_L2C)]
     socfpga_init_l2_ecc();
     // Preserved build-time condition: IS_ENABLED(CONFIG_EDAC_ALTERA_OCRAM).
-    #[cfg(feature = "CONFIG_EDAC_ALTERA_OCRAM")]
+    #[cfg(CONFIG_EDAC_ALTERA_OCRAM)]
     socfpga_init_ocram_ecc();
     socfpga_reset_init();
 }
@@ -84,10 +84,10 @@ unsafe fn socfpga_arria10_init_irq() {
     irqchip_init();
     socfpga_sysmgr_init();
     // Preserved build-time condition: IS_ENABLED(CONFIG_EDAC_ALTERA_L2C).
-    #[cfg(feature = "CONFIG_EDAC_ALTERA_L2C")]
+    #[cfg(CONFIG_EDAC_ALTERA_L2C)]
     socfpga_init_arria10_l2_ecc();
     // Preserved build-time condition: IS_ENABLED(CONFIG_EDAC_ALTERA_OCRAM).
-    #[cfg(feature = "CONFIG_EDAC_ALTERA_OCRAM")]
+    #[cfg(CONFIG_EDAC_ALTERA_OCRAM)]
     socfpga_init_arria10_ocram_ecc();
     socfpga_reset_init();
 }

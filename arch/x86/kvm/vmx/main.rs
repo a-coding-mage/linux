@@ -21,21 +21,21 @@ extern "C" {
     fn tdx_hardware_unsetup();
 }
 
-#[cfg(feature = "CONFIG_KVM_INTEL_TDX")]
+#[cfg(CONFIG_KVM_INTEL_TDX)]
 unsafe fn vt_disable_virtualization_cpu() {
     // TDX and VMX both need to be disabled when TDX is enabled.
     if enable_tdx { tdx_disable_virtualization_cpu(); }
     vmx_disable_virtualization_cpu();
 }
 
-#[cfg(feature = "CONFIG_KVM_INTEL_TDX")]
+#[cfg(CONFIG_KVM_INTEL_TDX)]
 unsafe fn vt_hardware_setup() -> i32 {
     let ret = vmx_hardware_setup();
     if ret != 0 { return ret; }
     if enable_tdx { tdx_hardware_setup() } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_KVM_INTEL_TDX")]
+#[cfg(CONFIG_KVM_INTEL_TDX)]
 unsafe fn vt_hardware_unsetup() {
     if enable_tdx { tdx_hardware_unsetup(); }
     vmx_hardware_unsetup();

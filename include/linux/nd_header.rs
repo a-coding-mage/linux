@@ -49,7 +49,7 @@ pub struct nvdimm_pmu {
 pub struct platform_device;
 
 // The CONFIG_PERF_EVENTS branch is selected by the build configuration.
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 extern "C" {
     pub fn nvdimm_events_sysfs_show(
         dev: *mut device,
@@ -61,12 +61,12 @@ extern "C" {
     pub fn unregister_nvdimm_pmu(nd_pmu: *mut nvdimm_pmu);
 }
 
-#[cfg(not(feature = "CONFIG_PERF_EVENTS"))]
+#[cfg(not(CONFIG_PERF_EVENTS))]
 pub unsafe fn register_nvdimm_pmu(_nvdimm: *mut nvdimm_pmu, _pdev: *mut platform_device) -> core::ffi::c_int {
     -ENXIO
 }
 
-#[cfg(not(feature = "CONFIG_PERF_EVENTS"))]
+#[cfg(not(CONFIG_PERF_EVENTS))]
 pub unsafe fn unregister_nvdimm_pmu(_nd_pmu: *mut nvdimm_pmu) {}
 
 #[repr(C)]

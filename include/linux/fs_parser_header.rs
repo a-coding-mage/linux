@@ -165,7 +165,7 @@ pub unsafe fn fs_parse(
 }
 
 /* CONFIG_VALIDATE_FS_PARSER selects the external validator. */
-#[cfg(feature = "CONFIG_VALIDATE_FS_PARSER")]
+#[cfg(CONFIG_VALIDATE_FS_PARSER)]
 unsafe extern "C" {
     pub fn fs_validate_description(
         name: *const c_char,
@@ -173,7 +173,7 @@ unsafe extern "C" {
     ) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_VALIDATE_FS_PARSER"))]
+#[cfg(not(CONFIG_VALIDATE_FS_PARSER))]
 pub unsafe fn fs_validate_description(
     _name: *const c_char,
     _desc: *const fs_parameter_spec,

@@ -21,7 +21,7 @@ pub struct nf_conn_timeout {
 #[inline]
 pub unsafe fn nf_ct_timeout_put(ct: *const nf_conn) {
     // CONFIG_NF_CONNTRACK_TIMEOUT is a build-time configuration condition.
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+    #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         let timeout_ext: *mut nf_conn_timeout;
         let timeout: *mut nf_ct_timeout;
@@ -42,7 +42,7 @@ pub unsafe fn nf_ct_timeout_put(ct: *const nf_conn) {
 pub unsafe fn nf_ct_timeout_data(
     t: *const nf_conn_timeout,
 ) -> *mut ::core::ffi::c_uint {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+    #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         let timeout: *mut nf_ct_timeout;
 
@@ -53,7 +53,7 @@ pub unsafe fn nf_ct_timeout_data(
 
         return (*timeout).data.as_mut_ptr() as *mut ::core::ffi::c_uint;
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_TIMEOUT"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_TIMEOUT))]
     {
         ::core::ptr::null_mut()
     }
@@ -61,11 +61,11 @@ pub unsafe fn nf_ct_timeout_data(
 
 #[inline]
 pub unsafe fn nf_ct_timeout_find(ct: *const nf_conn) -> *mut nf_conn_timeout {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+    #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         return nf_ct_ext_find(ct, NF_CT_EXT_TIMEOUT);
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_TIMEOUT"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_TIMEOUT))]
     {
         ::core::ptr::null_mut()
     }
@@ -77,7 +77,7 @@ pub unsafe fn nf_ct_timeout_ext_add(
     timeout: *mut nf_ct_timeout,
     gfp: gfp_t,
 ) -> *mut nf_conn_timeout {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+    #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         if timeout.is_null() {
             return ::core::ptr::null_mut();
@@ -95,7 +95,7 @@ pub unsafe fn nf_ct_timeout_ext_add(
         rcu_assign_pointer(&mut (*timeout_ext).timeout, timeout);
         return timeout_ext;
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_TIMEOUT"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_TIMEOUT))]
     {
         ::core::ptr::null_mut()
     }
@@ -104,7 +104,7 @@ pub unsafe fn nf_ct_timeout_ext_add(
 #[inline]
 pub unsafe fn nf_ct_timeout_lookup(ct: *const nf_conn) -> *mut ::core::ffi::c_uint {
     let mut timeouts: *mut ::core::ffi::c_uint = ::core::ptr::null_mut();
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+    #[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
     {
         let timeout_ext = nf_ct_timeout_find(ct);
         if !timeout_ext.is_null() && !rcu_access_pointer((*timeout_ext).timeout).is_null() {
@@ -114,7 +114,7 @@ pub unsafe fn nf_ct_timeout_lookup(ct: *const nf_conn) -> *mut ::core::ffi::c_ui
     timeouts
 }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+#[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
 extern "C" {
     pub fn nf_ct_untimeout(net: *mut net, timeout: *mut nf_ct_timeout);
     pub fn nf_ct_set_timeout(
@@ -127,7 +127,7 @@ extern "C" {
     pub fn nf_ct_destroy_timeout(ct: *mut nf_conn);
 }
 
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_TIMEOUT"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_TIMEOUT))]
 #[inline]
 pub unsafe fn nf_ct_set_timeout(
     _net: *mut net,
@@ -139,11 +139,11 @@ pub unsafe fn nf_ct_set_timeout(
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_NF_CONNTRACK_TIMEOUT"))]
+#[cfg(not(CONFIG_NF_CONNTRACK_TIMEOUT))]
 #[inline]
 pub unsafe fn nf_ct_destroy_timeout(_ct: *mut nf_conn) {}
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+#[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
 #[repr(C)]
 pub struct nf_ct_timeout_hooks {
     pub timeout_find_get:
@@ -151,7 +151,7 @@ pub struct nf_ct_timeout_hooks {
     pub timeout_put: Option<unsafe extern "C" fn(*mut nf_ct_timeout)>,
 }
 
-#[cfg(feature = "CONFIG_NF_CONNTRACK_TIMEOUT")]
+#[cfg(CONFIG_NF_CONNTRACK_TIMEOUT)]
 extern "C" {
     pub static mut nf_ct_timeout_hook: *const nf_ct_timeout_hooks;
 }

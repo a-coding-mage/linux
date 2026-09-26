@@ -1267,16 +1267,16 @@ mod tests {
 
     #[test]
     fn test_eq() {
-        let buf1 = 0_u64;
+        let buf1 = 0u64;
         let r1 = Ref::<_, u64>::from_bytes(buf1.as_bytes()).unwrap();
-        let buf2 = 0_u64;
+        let buf2 = 0u64;
         let r2 = Ref::<_, u64>::from_bytes(buf2.as_bytes()).unwrap();
         assert_eq!(r1, r2);
     }
 
     #[test]
     fn test_ne() {
-        let buf1 = 0_u64;
+        let buf1 = 0u64;
         let r1 = Ref::<_, u64>::from_bytes(buf1.as_bytes()).unwrap();
         let buf2 = 1_u64;
         let r2 = Ref::<_, u64>::from_bytes(buf2.as_bytes()).unwrap();
@@ -1285,7 +1285,7 @@ mod tests {
 
     #[test]
     fn test_ord() {
-        let buf1 = 0_u64;
+        let buf1 = 0u64;
         let r1 = Ref::<_, u64>::from_bytes(buf1.as_bytes()).unwrap();
         let buf2 = 1_u64;
         let r2 = Ref::<_, u64>::from_bytes(buf2.as_bytes()).unwrap();

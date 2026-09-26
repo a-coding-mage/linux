@@ -26,34 +26,30 @@
 // dependency: "gdsc.h"
 // dependency: "reset.h"
 
-enum {
-	DT_BI_TCXO,
-	DT_SLEEP_CLK,
-	DT_PCIE_0_PIPE,
-	DT_PCIE_1_PIPE,
-	DT_PCIE_1_PHY_AUX,
-	DT_UFS_PHY_RX_SYMBOL_0,
-	DT_UFS_PHY_RX_SYMBOL_1,
-	DT_UFS_PHY_TX_SYMBOL_0,
-	DT_USB3_PHY_WRAPPER_GCC_USB30_PIPE,
-};
+pub const DT_BI_TCXO: i32 = 0;
+pub const DT_SLEEP_CLK: i32 = DT_BI_TCXO + 1;
+pub const DT_PCIE_0_PIPE: i32 = DT_SLEEP_CLK + 1;
+pub const DT_PCIE_1_PIPE: i32 = DT_PCIE_0_PIPE + 1;
+pub const DT_PCIE_1_PHY_AUX: i32 = DT_PCIE_1_PIPE + 1;
+pub const DT_UFS_PHY_RX_SYMBOL_0: i32 = DT_PCIE_1_PHY_AUX + 1;
+pub const DT_UFS_PHY_RX_SYMBOL_1: i32 = DT_UFS_PHY_RX_SYMBOL_0 + 1;
+pub const DT_UFS_PHY_TX_SYMBOL_0: i32 = DT_UFS_PHY_RX_SYMBOL_1 + 1;
+pub const DT_USB3_PHY_WRAPPER_GCC_USB30_PIPE: i32 = DT_UFS_PHY_TX_SYMBOL_0 + 1;
 
-enum {
-	P_BI_TCXO,
-	P_GCC_GPLL0_OUT_EVEN,
-	P_GCC_GPLL0_OUT_MAIN,
-	P_GCC_GPLL4_OUT_MAIN,
-	P_GCC_GPLL7_OUT_MAIN,
-	P_GCC_GPLL9_OUT_MAIN,
-	P_PCIE_0_PIPE_CLK,
-	P_PCIE_1_PHY_AUX_CLK,
-	P_PCIE_1_PIPE_CLK,
-	P_SLEEP_CLK,
-	P_UFS_PHY_RX_SYMBOL_0_CLK,
-	P_UFS_PHY_RX_SYMBOL_1_CLK,
-	P_UFS_PHY_TX_SYMBOL_0_CLK,
-	P_USB3_PHY_WRAPPER_GCC_USB30_PIPE_CLK,
-};
+pub const P_BI_TCXO: i32 = 0;
+pub const P_GCC_GPLL0_OUT_EVEN: i32 = P_BI_TCXO + 1;
+pub const P_GCC_GPLL0_OUT_MAIN: i32 = P_GCC_GPLL0_OUT_EVEN + 1;
+pub const P_GCC_GPLL4_OUT_MAIN: i32 = P_GCC_GPLL0_OUT_MAIN + 1;
+pub const P_GCC_GPLL7_OUT_MAIN: i32 = P_GCC_GPLL4_OUT_MAIN + 1;
+pub const P_GCC_GPLL9_OUT_MAIN: i32 = P_GCC_GPLL7_OUT_MAIN + 1;
+pub const P_PCIE_0_PIPE_CLK: i32 = P_GCC_GPLL9_OUT_MAIN + 1;
+pub const P_PCIE_1_PHY_AUX_CLK: i32 = P_PCIE_0_PIPE_CLK + 1;
+pub const P_PCIE_1_PIPE_CLK: i32 = P_PCIE_1_PHY_AUX_CLK + 1;
+pub const P_SLEEP_CLK: i32 = P_PCIE_1_PIPE_CLK + 1;
+pub const P_UFS_PHY_RX_SYMBOL_0_CLK: i32 = P_SLEEP_CLK + 1;
+pub const P_UFS_PHY_RX_SYMBOL_1_CLK: i32 = P_UFS_PHY_RX_SYMBOL_0_CLK + 1;
+pub const P_UFS_PHY_TX_SYMBOL_0_CLK: i32 = P_UFS_PHY_RX_SYMBOL_1_CLK + 1;
+pub const P_USB3_PHY_WRAPPER_GCC_USB30_PIPE_CLK: i32 = P_UFS_PHY_TX_SYMBOL_0_CLK + 1;
 
 static mut gcc_gpll0: clk_alpha_pll = clk_alpha_pll {
     offset: 0x0,
@@ -1200,7 +1196,7 @@ static mut gcc_usb30_prim_mock_utmi_postdiv_clk_src: clk_regmap_div = clk_regmap
     reg: 0x3905c,
     shift: 0,
     width: 4,
-	.clkr.hw.init = &(struct clk_init_data) {
+	.clkr.hw.init = &(clk_init_data) {
     name: "gcc_usb30_prim_mock_utmi_postdiv_clk_src",
     parent_hws: (const struct clk_hw*[]) {
 			&gcc_usb30_prim_mock_utmi_clk_src.clkr.hw,
@@ -3338,7 +3334,7 @@ const static mut gcc_sm8550_match_table: [of_device_id; 0] = [
 };
 // MODULE_DEVICE_TABLE(of, gcc_sm8550_match_table);
 
-int gcc_sm8550_probe(struct platform_device *pdev)
+int gcc_sm8550_probe(platform_device *pdev)
 {
 	struct regmap *regmap;
 	int ret;
@@ -3367,7 +3363,7 @@ int gcc_sm8550_probe(struct platform_device *pdev)
 	/* Clear GDSC_SLEEP_ENA_VOTE to stop votes being auto-removed in sleep. */
 	regmap_write(regmap, 0x52024, 0x0);
 
-	return qcom_cc_really_probe(&pdev->dev, &gcc_sm8550_desc, regmap);
+	return qcom_cc_really_probe((*&pdev).dev, &gcc_sm8550_desc, regmap);
 }
 
 static mut gcc_sm8550_driver: platform_driver = platform_driver {

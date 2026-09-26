@@ -137,7 +137,7 @@ pub unsafe extern "C" fn bpf_qdisc_init_prologue(sch: *mut Qdisc, extack: *mut n
     qdisc_watchdog_init(&mut (*q).watchdog, sch);
     if (*sch).parent != TC_H_ROOT {
         let p = qdisc_lookup(dev, TC_H_MAJ((*sch).parent));
-        if !p.is_null() && ((*p).flags & TCQ_F_MQROOT) == 0 { NL_SET_ERR_MSG(extack, c"BPF qdisc only supported on root or mq\0".as_ptr()); return -EINVAL; }
+        if !p.is_null() && ((*p).flags & TCQ_F_MQROOT) == 0 { NL_SET_ERR_MSG(extack, c"BPF qdisc only supported on root or mq".as_ptr()); return -EINVAL; }
     }
     0
 }

@@ -14,7 +14,7 @@ const MODULE_VERS: &[u8] = b"0.6\0";
 // MODULE_DESCRIPTION("Ebtables: 802.1Q VLAN tag match");
 // MODULE_LICENSE("GPL");
 
-static unsafe fn ebt_vlan_mt(
+unsafe fn ebt_vlan_mt(
     skb: *const sk_buff,
     par: *mut xt_action_param,
 ) -> bool {
@@ -80,7 +80,7 @@ static unsafe fn ebt_vlan_mt(
     true
 }
 
-static unsafe fn ebt_vlan_mt_check(par: *const xt_mtchk_param) -> c_int {
+unsafe fn ebt_vlan_mt_check(par: *const xt_mtchk_param) -> c_int {
     let info: *mut ebt_vlan_info = (*par).matchinfo as *mut ebt_vlan_info;
     let e: *const ebt_entry = (*par).entryinfo;
 

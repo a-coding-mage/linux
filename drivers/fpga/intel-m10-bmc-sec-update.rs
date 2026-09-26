@@ -48,7 +48,7 @@ unsafe fn rsu_cancel(sec:*mut m10bmc_sec)->fw_upload_err { let map=(*(*(*sec).m1
 unsafe extern "C" fn m10bmc_sec_prepare(f:*mut fw_upload,_:*const u8,size:u32)->fw_upload_err {let s=(*f).dd_handle.cast::<m10bmc_sec>();(*s).cancel_request=false;let map=(*(*(*s).m10bmc).info).csr_map;if size==0||size>(*map).staging_size{return fw_upload_err::InvalidSize}if rsu_cancel(s)==fw_upload_err::Busy{return fw_upload_err::Busy}fw_upload_err::None}
 unsafe extern "C" fn m10bmc_sec_fw_write(f:*mut fw_upload,data:*const u8,off:u32,size:u32,written:*mut u32)->fw_upload_err {let s=(*f).dd_handle.cast::<m10bmc_sec>();if (*s).cancel_request{return rsu_cancel(s)}let n=core::cmp::min(WRITE_BLOCK_SIZE,size);if m10bmc_sec_write(s,data,off,n)!=0{return fw_upload_err::RwError}*written=n;fw_upload_err::None}
 unsafe extern "C" fn m10bmc_sec_poll_complete(f:*mut fw_upload)->fw_upload_err {let s=(*f).dd_handle.cast::<m10bmc_sec>();if (*s).cancel_request{return rsu_cancel(s)}let mut d=0;loop{let r=rsu_check_complete(s,&mut d);if r==0{return fw_upload_err::None}if r!=-11{return fw_upload_err::HwError}}}
-unsafe extern "C" fn m10bmc_sec_cleanup(f:*mut fw_upload){let s=(*f).dd_handle.cast::<m10bmc_sec>();let _=rsu_cancel(s)}
+unsafe extern "C" fn m10bmc_sec_cleanup(f:*mut fw_upload){let s=(*f).dd_handle.cast::<m10bmc_sec>();let _=rsu_cancel(s);}
 static M10BMC_OPS:fw_upload_ops=fw_upload_ops{prepare:Some(m10bmc_sec_prepare),write:Some(m10bmc_sec_fw_write),poll_complete:Some(m10bmc_sec_poll_complete),cancel:Some(m10bmc_sec_cancel),cleanup:Some(m10bmc_sec_cleanup)};
 static M10SEC_N3000_OPS:m10bmc_sec_ops=m10bmc_sec_ops{rsu_status:None};
 static M10SEC_N6000_OPS:m10bmc_sec_ops=m10bmc_sec_ops{rsu_status:None};

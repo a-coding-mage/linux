@@ -8,20 +8,23 @@
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
  *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
  * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
  * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
+
+
 
 // addressBlock: aid_osssys_osssysdec
 // base address: 0x4280
-
-// C preprocessor register definitions translated as Rust constants.
-+pub const _osssys_4_4_2_OFFSET_HEADER: u32 = ;
 pub const regIH_VMID_0_LUT: u32 = 0x0000;
 pub const regIH_VMID_0_LUT_BASE_IDX: u32 = 0;
 pub const regIH_VMID_1_LUT: u32 = 0x0001;
@@ -253,5 +256,6 @@ pub const regIH_INT_DROP_MATCH_MASK1_BASE_IDX: u32 = 0;
 pub const regIH_MMHUB_CNTL: u32 = 0x019e;
 pub const regIH_MMHUB_CNTL_BASE_IDX: u32 = 0;
 pub const regIH_REGISTER_LAST_PART1: u32 = 0x019f;
+pub const regIH_REGISTER_LAST_PART1_BASE_IDX: u32 = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

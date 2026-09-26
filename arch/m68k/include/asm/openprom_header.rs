@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Translated from openprom.h. */
 
-#[cfg(feature = "CONFIG_SUN3")]
+#[cfg(CONFIG_SUN3)]
 pub const KADB_DEBUGGER_BEGVM: u32 = 0x0fee0000;
-#[cfg(feature = "CONFIG_SUN3")]
+#[cfg(CONFIG_SUN3)]
 pub const LINUX_OPPROM_BEGVM: u32 = 0x0fef0000;
-#[cfg(feature = "CONFIG_SUN3")]
+#[cfg(CONFIG_SUN3)]
 pub const LINUX_OPPROM_ENDVM: u32 = 0x0ff10000;
-#[cfg(not(feature = "CONFIG_SUN3"))]
+#[cfg(not(CONFIG_SUN3))]
 pub const KADB_DEBUGGER_BEGVM: u32 = 0xffc00000;
-#[cfg(not(feature = "CONFIG_SUN3"))]
+#[cfg(not(CONFIG_SUN3))]
 pub const LINUX_OPPROM_BEGVM: u32 = 0xffd00000;
-#[cfg(not(feature = "CONFIG_SUN3"))]
+#[cfg(not(CONFIG_SUN3))]
 pub const LINUX_OPPROM_ENDVM: u32 = 0xfff00000;
-#[cfg(not(feature = "CONFIG_SUN3"))]
+#[cfg(not(CONFIG_SUN3))]
 pub const LINUX_OPPROM_MAGIC: u32 = 0x10010407;
 
 #[repr(C)]
@@ -76,7 +76,7 @@ pub struct linux_bootargs_v2 {
     pub fd_stdout: *mut i32,
 }
 
-#[cfg(any(feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X"))]
+#[cfg(any(CONFIG_SUN3, CONFIG_SUN3X))]
 #[repr(C)]
 pub struct linux_romvec {
     pub pv_initsp: *mut i8,
@@ -130,17 +130,17 @@ pub struct linux_romvec {
     pub pv_resetmap: *mut isize,
     pub pv_halt: Option<unsafe extern "C" fn()>,
     pub pv_memorybitmap: *mut u8,
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     pub pv_setctxt: Option<unsafe extern "C" fn(i32, *mut i8, i32)>,
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     pub pv_vector_cmd: Option<unsafe extern "C" fn()>,
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     pub dummy1z: i32,
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     pub dummy2z: i32,
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     pub dummy3z: i32,
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     pub dummy4z: i32,
 }
 
@@ -190,7 +190,7 @@ pub struct linux_prom_ranges {
 
 // The original file defines linux_romvec differently for SUN3/SUN3X versus other targets.
 // External opaque types referenced by the SUN3 layout are supplied by dependent headers.
-#[cfg(not(any(feature = "CONFIG_SUN3", feature = "CONFIG_SUN3X")))]
+#[cfg(not(any(CONFIG_SUN3, CONFIG_SUN3X)))]
 #[repr(C)]
 pub struct linux_romvec {
     pub pv_magic_cookie: u32,

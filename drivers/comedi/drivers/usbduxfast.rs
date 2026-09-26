@@ -40,17 +40,17 @@ const SENDINITEP6: i32 = 1;
 #[repr(C)] pub struct usbduxfast_private { pub urb:*mut urb, pub duxbuf:*mut u8, pub inbuf:*mut i8, pub ai_cmd_running:i16, pub ignore:i32, pub mut_:mutex }
 
 extern "C" {
-    fn comedi_to_usb_dev(*mut comedi_device)->*mut usb_device; fn comedi_to_usb_interface(*mut comedi_device)->*mut usb_interface;
-    fn usb_bulk_msg(*mut usb_device,usize,*mut c_void,i32,*mut i32,i32)->i32; fn usb_sndbulkpipe(*mut usb_device,u8)->usize; fn usb_rcvbulkpipe(*mut usb_device,u8)->usize;
-    fn usb_kill_urb(*mut urb); fn usb_submit_urb(*mut urb,u32)->i32; fn usb_fill_bulk_urb(*mut urb,*mut usb_device,usize,*mut i8,i32,Option<unsafe extern "C" fn(*mut urb)>,*mut comedi_device);
-    fn mutex_lock(*mut mutex); fn mutex_unlock(*mut mutex); fn mutex_init(*mut mutex); fn mutex_destroy(*mut mutex);
-    fn comedi_bytes_to_samples(*mut comedi_subdevice,i32)->u32; fn comedi_nsamples_left(*mut comedi_subdevice,u32)->u32; fn comedi_buf_write_samples(*mut comedi_subdevice,*mut c_void,u32);
-    fn comedi_event(*mut comedi_device,*mut comedi_subdevice); fn comedi_alloc_devpriv(*mut comedi_device,usize)->*mut usbduxfast_private; fn comedi_alloc_subdevices(*mut comedi_device,u32)->i32;
-    fn comedi_check_trigger_src(*mut u32,u32)->i32; fn comedi_check_trigger_is_unique(u32)->i32; fn comedi_check_trigger_arg_is(*mut u32,u32)->i32; fn comedi_check_trigger_arg_min(*mut u32,u32)->i32; fn comedi_check_trigger_arg_max(*mut u32,u32)->i32;
-    fn usb_set_intfdata(*mut usb_interface,*mut usbduxfast_private); fn usb_set_interface(*mut usb_device,u8,u8)->i32; fn usb_alloc_urb(i32,u32)->*mut urb; fn usb_free_urb(*mut urb);
-    fn comedi_load_firmware(*mut comedi_device,*mut usb_device,*const u8,Option<unsafe extern "C" fn(*mut comedi_device,*const u8,usize,usize)->i32>,usize)->i32;
-    fn comedi_usb_auto_config(*mut usb_interface,*mut c_void,usize)->i32; fn comedi_usb_auto_unconfig(*mut usb_interface);
-    fn kmalloc(usize,u32)->*mut u8; fn kmemdup(*const u8,usize,u32)->*mut u8; fn kfree(*mut c_void); fn usb_control_msg(usize,usize,u8,u8,u16,u16,*mut u8,usize,i32)->i32;
+    fn comedi_to_usb_dev(_: *mut comedi_device)->*mut usb_device; fn comedi_to_usb_interface(_: *mut comedi_device)->*mut usb_interface;
+    fn usb_bulk_msg(_: *mut usb_device,_: usize,_: *mut c_void,_: i32,_: *mut i32,_: i32)->i32; fn usb_sndbulkpipe(_: *mut usb_device,_: u8)->usize; fn usb_rcvbulkpipe(_: *mut usb_device,_: u8)->usize;
+    fn usb_kill_urb(_: *mut urb); fn usb_submit_urb(_: *mut urb,_: u32)->i32; fn usb_fill_bulk_urb(_: *mut urb,_: *mut usb_device,_: usize,_: *mut i8,_: i32,_: Option<unsafe extern "C" fn(*mut urb)>,_: *mut comedi_device);
+    fn mutex_lock(_: *mut mutex); fn mutex_unlock(_: *mut mutex); fn mutex_init(_: *mut mutex); fn mutex_destroy(_: *mut mutex);
+    fn comedi_bytes_to_samples(_: *mut comedi_subdevice,_: i32)->u32; fn comedi_nsamples_left(_: *mut comedi_subdevice,_: u32)->u32; fn comedi_buf_write_samples(_: *mut comedi_subdevice,_: *mut c_void,_: u32);
+    fn comedi_event(_: *mut comedi_device,_: *mut comedi_subdevice); fn comedi_alloc_devpriv(_: *mut comedi_device,_: usize)->*mut usbduxfast_private; fn comedi_alloc_subdevices(_: *mut comedi_device,_: u32)->i32;
+    fn comedi_check_trigger_src(_: *mut u32,_: u32)->i32; fn comedi_check_trigger_is_unique(_: u32)->i32; fn comedi_check_trigger_arg_is(_: *mut u32,_: u32)->i32; fn comedi_check_trigger_arg_min(_: *mut u32,_: u32)->i32; fn comedi_check_trigger_arg_max(_: *mut u32,_: u32)->i32;
+    fn usb_set_intfdata(_: *mut usb_interface,_: *mut usbduxfast_private); fn usb_set_interface(_: *mut usb_device,_: u8,_: u8)->i32; fn usb_alloc_urb(_: i32,_: u32)->*mut urb; fn usb_free_urb(_: *mut urb);
+    fn comedi_load_firmware(_: *mut comedi_device,_: *mut usb_device,_: *const u8,_: Option<unsafe extern "C" fn(*mut comedi_device,*const u8,usize,usize)->i32>,usize)->i32;
+    fn comedi_usb_auto_config(_: *mut usb_interface,_: *mut c_void,_: usize)->i32; fn comedi_usb_auto_unconfig(_: *mut usb_interface);
+    fn kmalloc(_: usize,_: u32)->*mut u8; fn kmemdup(_: *const u8,_: usize,_: u32)->*mut u8; fn kfree(_: *mut c_void); fn usb_control_msg(_: usize,_: usize,_: u8,_: u8,_: u16,_: u16,_: *mut u8,_: usize,_: i32)->i32;
 }
 
 #[inline] unsafe fn priv_(d:*mut comedi_device)->*mut usbduxfast_private { (*d).private }
@@ -74,7 +74,7 @@ unsafe extern "C" fn usbduxfast_ai_cmdtest(dev:*mut comedi_device,s:*mut comedi_
 unsafe extern "C" fn usbduxfast_ai_cmd(dev:*mut comedi_device,s:*mut comedi_subdevice)->i32 { let p=priv_(dev); let c=&(*(*s).async_).cmd; mutex_lock(&mut (*p).mut_); if (*p).ai_cmd_running!=0{mutex_unlock(&mut (*p).mut_);return -16} (*p).ignore=PACKETS_TO_IGNORE; let mut steps=(c.convert_arg*30/1000) as i64; let mut rng=255u8; let mut put=|i:i32,l:i64,o:u8,out:u8,log:u8|{usbduxfast_cmd_data(dev,i,l as u8,o,out,log)}; match c.chanlist_len {1=>{rng=if cr_range(*c.chanlist)>0{251}else{255}; put(0,if c.start_src==TRIG_EXT{1}else{1},if c.start_src==TRIG_EXT{1}else{0},rng,0); if steps<MIN_SAMPLING_PERIOD{if steps<=1{put(1,0x89,3,rng,255)}else{put(1,steps-1,2,rng,0);put(2,9,1,rng,255)}}else{steps-=1;put(1,steps/2,0,rng,0);put(2,steps-steps/2,0,rng,0);put(3,9,3,rng,255)}},2=>{rng=if cr_range(*c.chanlist)>0{251}else{255};put(0,1,2,rng,0);put(1, (steps-1)/2,0,0xfe&rng,0);put(2,steps-1-(steps-1)/2,0,rng,0);put(3,1,2,rng,0);put(4,(steps-2)/2,0,(0xfd)&rng,0);put(5,steps-2-(steps-2)/2,0,rng,0);put(6,1,0,rng,0)},3=>{put(0,steps/2,2,rng,0);put(1,steps-steps/2,0,0xfe,0);let x=steps-2;put(4,x/2,2,rng,0);put(5,x-x/2,0,0xfd&rng,0);put(6,1,0,rng,0)},16=>{rng=if cr_range(*c.chanlist)>0{251}else{255};put(0,if c.start_src==TRIG_EXT{1}else{255},if c.start_src==TRIG_EXT{1}else{0},0xfd&rng,0);put(1,1,2,rng,0);steps-=2;put(2,steps/2,0,0xfe&rng,0);put(3,steps-steps/2,0,rng,0);put(4,9,1,rng,255)},_=>{}} let mut ret=usbduxfast_send_cmd(dev,SENDADCOMMANDS); if ret>=0&&(c.start_src==TRIG_NOW||c.start_src==TRIG_EXT){(*p).ai_cmd_running=1;ret=usbduxfast_submit_urb(dev);if ret<0{(*p).ai_cmd_running=0}} mutex_unlock(&mut (*p).mut_);ret }
 
 // Single-conversion, firmware-upload, attach/detach, USB tables, and module metadata retain their C interfaces.
-extern "C" { fn usbduxfast_ai_insn_read(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->i32; fn usbduxfast_upload_firmware(*mut comedi_device,*const u8,usize,usize)->i32; fn usbduxfast_auto_attach(*mut comedi_device,usize)->i32; fn usbduxfast_detach(*mut comedi_device); }
+extern "C" { fn usbduxfast_ai_insn_read(_: *mut comedi_device,_: *mut comedi_subdevice,_: *mut comedi_insn,_: *mut u32)->i32; fn usbduxfast_upload_firmware(_: *mut comedi_device,_: *const u8,_: usize,_: usize)->i32; fn usbduxfast_auto_attach(_: *mut comedi_device,_: usize)->i32; fn usbduxfast_detach(_: *mut comedi_device); }
 #[no_mangle] pub static mut usbduxfast_driver: *mut c_void = ptr::null_mut();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -83,7 +83,7 @@ unsafe fn ets_offload_dump(sch: *mut Qdisc) -> i32 {
     qopt.stats.bstats = &mut (*sch).bstats; qopt.stats.qstats = &mut (*sch).qstats; qdisc_offload_dump_helper(sch, TC_SETUP_QDISC_ETS, &mut qopt)
 }
 
-unsafe fn ets_class_is_strict(q: *mut ets_sched, cl: *const ets_class) -> bool { cl.offset_from((*q).classes.as_ptr()) as u32 < (*q).nstrict }
+unsafe fn ets_class_is_strict(q: *mut ets_sched, cl: *const ets_class) -> bool { (cl.offset_from((*q).classes.as_ptr()) as u32) < (*q).nstrict }
 
 unsafe fn ets_class_change(sch: *mut Qdisc, _classid: u32, _parentid: u32, tca: *mut *mut nlattr, arg: *mut usize, extack: *mut netlink_ext_ack) -> i32 {
     let cl = ets_class_from_arg(sch, *arg); let q = qdisc_priv::<ets_sched>(sch); if cl.is_null() { NL_SET_ERR_MSG(extack, "Fine-grained class addition and removal is not supported"); return -EOPNOTSUPP; }

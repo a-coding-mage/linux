@@ -29,10 +29,10 @@ macro_rules! SNDRV_DEFAULT_ENABLE { ($n:expr) => {{ let mut a = [0i32; $n]; if $
 #[macro_export]
 macro_rules! SNDRV_DEFAULT_ENABLE_PNP { ($n:expr) => { [1i32; $n] }; }
 /* CONFIG_PNP selects SNDRV_DEFAULT_ENABLE_PNP; otherwise SNDRV_DEFAULT_ENABLE. */
-#[cfg(feature = "CONFIG_PNP")]
+#[cfg(CONFIG_PNP)]
 #[macro_export]
 macro_rules! SNDRV_DEFAULT_ENABLE_ISAPNP { ($n:expr) => { $crate::SNDRV_DEFAULT_ENABLE_PNP!($n) }; }
-#[cfg(not(feature = "CONFIG_PNP"))]
+#[cfg(not(CONFIG_PNP))]
 #[macro_export]
 macro_rules! SNDRV_DEFAULT_ENABLE_ISAPNP { ($n:expr) => { $crate::SNDRV_DEFAULT_ENABLE!($n) }; }
 #[macro_export]

@@ -44,24 +44,24 @@ extern "C" {
 unsafe fn find_static_vm_paddr(paddr: phys_addr_t, size: size_t, mtype: u32) -> *mut static_vm {
     let mut svm: *mut static_vm;
     let mut vm: *mut vm_struct;
-    list_for_each_entry!(svm, &mut static_vmlist, list) {
+    list_for_each_entry!(svm, &mut static_vmlist, list, {
         vm = &mut (*svm).vm;
         if ((*vm).flags & VM_ARM_STATIC_MAPPING) == 0 { continue; }
         if ((*vm).flags & VM_ARM_MTYPE_MASK) != VM_ARM_MTYPE(mtype) { continue; }
         if (*vm).phys_addr > paddr || paddr + size - 1 > (*vm).phys_addr + (*vm).size as u64 - 1 { continue; }
         return svm;
-    }
+    });
     core::ptr::null_mut()
 }
 
 pub unsafe extern "C" fn find_static_vm_vaddr(vaddr: *mut core::ffi::c_void) -> *mut static_vm {
     let mut svm: *mut static_vm;
     let mut vm: *mut vm_struct;
-    list_for_each_entry!(svm, &mut static_vmlist, list) {
+    list_for_each_entry!(svm, &mut static_vmlist, list, {
         vm = &mut (*svm).vm;
         if (*vm).addr > vaddr { break; }
         if (*vm).addr <= vaddr && ((*vm).addr as usize + (*vm).size > vaddr as usize) { return svm; }
-    }
+    });
     core::ptr::null_mut()
 }
 
@@ -70,9 +70,9 @@ pub unsafe extern "C" fn add_static_vm_early(svm: *mut static_vm) {
     let vm = &mut (*svm).vm;
     vm_area_add_early(vm);
     let vaddr = vm.addr;
-    list_for_each_entry!(curr_svm, &mut static_vmlist, list) {
+    list_for_each_entry!(curr_svm, &mut static_vmlist, list, {
         if (*(*curr_svm).vm).addr > vaddr { break; }
-    }
+    });
     list_add_tail!(&mut (*svm).list, &mut (*curr_svm).list);
 }
 

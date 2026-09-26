@@ -108,7 +108,7 @@ unsafe fn queued_spin_lock_mcs_queue(lock:*mut qspinlock,p:bool) { let qp=&mut q
     loop {spin_begin();let mut it=0;loop{let val=core::ptr::read_volatile(lock as *const u32);if val&_Q_LOCKED_VAL==0{break;}propagate_sleepy(node,val,p);let pre=yield_head_to_locked_owner(lock,val,p);if maybe_stealers{if pre{it+=if pv_spin_on_preempted_owner{0}else{1};}else{it+=1;}if it>=get_head_spins(p,false){set_mustq(lock);}}}spin_end();let old=trylock_clean_tail(lock,tail);if old&_Q_LOCKED_VAL!=0{continue;}if old&_Q_TAIL_CPU_MASK==tail{break;}let mut next=core::ptr::read_volatile(&node.next);while next.is_null(){spin_begin();next=core::ptr::read_volatile(&node.next);spin_end();}(*next).locked=1;break;}node.lock=core::ptr::null_mut();qp.count-=1;}
 
 #[no_mangle] pub unsafe extern "C" fn queued_spin_lock_slowpath(lock:*mut qspinlock){trace_contention_begin(lock,0);if is_shared_processor(){if !try_to_steal_lock(lock,true){queued_spin_lock_mcs_queue(lock,true);}}else if !try_to_steal_lock(lock,false){queued_spin_lock_mcs_queue(lock,false);}trace_contention_end(lock,0)}
-#[cfg(feature="CONFIG_PARAVIRT_SPINLOCKS")] pub unsafe extern "C" fn pv_spinlocks_init() {}
+#[cfg(CONFIG_PARAVIRT_SPINLOCKS)] pub unsafe extern "C" fn pv_spinlocks_init() {}
 
 // Debugfs accessors and file registration retain the source interface; connector types are external.
 macro_rules! knob { ($set:ident,$get:ident,$var:ident,$ty:ty) => { unsafe extern "C" fn $set(_data:*mut core::ffi::c_void,val:u64)->i32{$var=val as $ty;0} unsafe extern "C" fn $get(_data:*mut core::ffi::c_void,val:*mut u64)->i32{*val=$var as u64;0} }; }

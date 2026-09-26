@@ -17,19 +17,19 @@ pub static mut powerpc_firmware_features: core::ffi::c_ulong = 0;
 
 // EXPORT_SYMBOL_GPL(powerpc_firmware_features);
 
-#[cfg(any(feature = "CONFIG_PPC_PSERIES", feature = "CONFIG_KVM_GUEST"))]
+#[cfg(any(CONFIG_PPC_PSERIES, CONFIG_KVM_GUEST))]
 #[no_mangle]
 pub static mut kvm_guest: crate::StaticKeyFalse = unsafe { core::mem::zeroed() };
 
 // EXPORT_SYMBOL_GPL(kvm_guest);
 
-#[cfg(any(feature = "CONFIG_PPC_PSERIES", feature = "CONFIG_KVM_GUEST"))]
+#[cfg(any(CONFIG_PPC_PSERIES, CONFIG_KVM_GUEST))]
 #[repr(C)]
 pub struct DeviceNode {
     _private: [u8; 0],
 }
 
-#[cfg(any(feature = "CONFIG_PPC_PSERIES", feature = "CONFIG_KVM_GUEST"))]
+#[cfg(any(CONFIG_PPC_PSERIES, CONFIG_KVM_GUEST))]
 extern "C" {
     fn of_find_node_by_path(path: *const core::ffi::c_char) -> *mut DeviceNode;
     fn of_device_is_compatible(
@@ -40,7 +40,7 @@ extern "C" {
     fn static_branch_enable(key: *mut crate::StaticKeyFalse);
 }
 
-#[cfg(any(feature = "CONFIG_PPC_PSERIES", feature = "CONFIG_KVM_GUEST"))]
+#[cfg(any(CONFIG_PPC_PSERIES, CONFIG_KVM_GUEST))]
 #[no_mangle]
 pub unsafe extern "C" fn check_kvm_guest() -> core::ffi::c_int {
     let hyper_node: *mut DeviceNode;

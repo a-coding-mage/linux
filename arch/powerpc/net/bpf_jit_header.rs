@@ -3,9 +3,9 @@
 
 use core::ffi::c_void;
 
-#[cfg(feature = "CONFIG_PPC64_ELF_ABI_V1")]
+#[cfg(CONFIG_PPC64_ELF_ABI_V1)]
 pub const FUNCTION_DESCR_SIZE: usize = 24;
-#[cfg(not(feature = "CONFIG_PPC64_ELF_ABI_V1"))]
+#[cfg(not(CONFIG_PPC64_ELF_ABI_V1))]
 pub const FUNCTION_DESCR_SIZE: usize = 0;
 
 pub const SZL: usize = core::mem::size_of::<usize>();
@@ -64,7 +64,7 @@ macro_rules! PPC_LI32 {
     }};
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[macro_export]
 macro_rules! PPC_LI64 {
     ($image:expr, $ctx:expr, $d:expr, $i:expr) => {{
@@ -82,7 +82,7 @@ macro_rules! PPC_LI64 {
     }};
 }
 
-#[cfg(not(feature = "CONFIG_PPC64"))]
+#[cfg(not(CONFIG_PPC64))]
 #[macro_export] macro_rules! PPC_LI64 { ($($t:tt)*) => { compile_error!("PPC_LI64 requires CONFIG_PPC64") }; }
 #[macro_export] macro_rules! PPC_LI_ADDR { ($($t:tt)*) => { $crate::PPC_LI64!($($t)*) }; }
 #[macro_export] macro_rules! PPC64_LOAD_PACA { ($($t:tt)*) => {}; }
@@ -137,9 +137,9 @@ pub struct codegen_context {
 #[macro_export]
 macro_rules! bpf_to_ppc { ($ctx:expr, $r:expr) => { $ctx.b2p[$r as usize] }; }
 
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 pub const BPF_FIXUP_LEN: usize = 3;
-#[cfg(not(feature = "CONFIG_PPC32"))]
+#[cfg(not(CONFIG_PPC32))]
 pub const BPF_FIXUP_LEN: usize = 2;
 
 #[inline]

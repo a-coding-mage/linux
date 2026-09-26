@@ -411,7 +411,7 @@ unsafe fn toneport_init_leds(toneport: *mut UsbLine6Toneport) -> i32 {
         snprintf(
             led.name.as_mut_ptr() as *mut i8,
             64,
-            c"%s::%s\0".as_ptr() as *const i8,
+            c"%s::%s".as_ptr() as *const i8,
             dev_name(dev),
             TONEPORT_LED_COLORS[i as usize].as_ptr() as *const i8,
         );
@@ -551,7 +551,7 @@ unsafe fn toneport_init(line6: *mut UsbLine6, id: *const UsbDeviceId) -> i32 {
     snd_card_register((*line6).card)
 }
 
-#[cfg(feature = "CONFIG_PM")]
+#[cfg(CONFIG_PM)]
 unsafe fn toneport_reset_resume(interface: *mut UsbInterface) -> i32 {
     let mut err: i32;
 
@@ -695,17 +695,17 @@ pub static mut TONEPORT_DRIVER: UsbDriver = UsbDriver {
     name: b"toneport\0" as *const u8,
     probe: Some(toneport_probe),
     disconnect: Some(line6_disconnect),
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     suspend: Some(line6_suspend),
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     resume: Some(line6_resume),
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     reset_resume: Some(toneport_reset_resume),
-    #[cfg(not(feature = "CONFIG_PM"))]
+    #[cfg(not(CONFIG_PM))]
     suspend: None,
-    #[cfg(not(feature = "CONFIG_PM"))]
+    #[cfg(not(CONFIG_PM))]
     resume: None,
-    #[cfg(not(feature = "CONFIG_PM"))]
+    #[cfg(not(CONFIG_PM))]
     reset_resume: None,
     id_table: TONEPORT_ID_TABLE.as_ptr(),
 };
@@ -797,10 +797,10 @@ extern "C" {
 
     fn line6_disconnect(interface: *mut UsbInterface);
 
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     fn line6_suspend(interface: *mut UsbInterface, message: i32) -> i32;
 
-    #[cfg(feature = "CONFIG_PM")]
+    #[cfg(CONFIG_PM)]
     fn line6_resume(interface: *mut UsbInterface) -> i32;
 }
 

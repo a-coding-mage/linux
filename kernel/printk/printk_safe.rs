@@ -92,7 +92,7 @@ pub unsafe extern "C" fn is_printk_legacy_deferred() -> bool {
 pub unsafe extern "C" fn vprintk(fmt: *const c_char, args: va_list) -> c_int {
     // CONFIG_KGDB_KDB: allow printk() to pass to kdb but avoid recursion.
     // The conditional is retained as a build-time dependency boundary.
-    #[cfg(feature = "CONFIG_KGDB_KDB")]
+    #[cfg(CONFIG_KGDB_KDB)]
     {
         extern "C" {
             static mut kdb_trap_printk: bool;

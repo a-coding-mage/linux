@@ -9,7 +9,7 @@ pub struct drm_device {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_DRM_CLIENT")]
+#[cfg(CONFIG_DRM_CLIENT)]
 extern "C" {
     pub fn drm_client_dev_unregister(dev: *mut drm_device);
     pub fn drm_client_dev_hotplug(dev: *mut drm_device);
@@ -18,23 +18,23 @@ extern "C" {
     pub fn drm_client_dev_resume(dev: *mut drm_device);
 }
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT"))]
+#[cfg(not(CONFIG_DRM_CLIENT))]
 #[inline]
 pub unsafe fn drm_client_dev_unregister(_dev: *mut drm_device) {}
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT"))]
+#[cfg(not(CONFIG_DRM_CLIENT))]
 #[inline]
 pub unsafe fn drm_client_dev_hotplug(_dev: *mut drm_device) {}
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT"))]
+#[cfg(not(CONFIG_DRM_CLIENT))]
 #[inline]
 pub unsafe fn drm_client_dev_restore(_dev: *mut drm_device, _force: bool) {}
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT"))]
+#[cfg(not(CONFIG_DRM_CLIENT))]
 #[inline]
 pub unsafe fn drm_client_dev_suspend(_dev: *mut drm_device) {}
 
-#[cfg(not(feature = "CONFIG_DRM_CLIENT"))]
+#[cfg(not(CONFIG_DRM_CLIENT))]
 #[inline]
 pub unsafe fn drm_client_dev_resume(_dev: *mut drm_device) {}
 

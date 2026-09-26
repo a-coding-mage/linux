@@ -5,7 +5,6 @@
  * Copyright (c) 2018 Amlogic, Inc. All rights reserved.
  */
 
-#define __G12A_CLKC_H
 
 pub const CLKID_SYS_PLL: u32 = 0;
 pub const CLKID_FIXED_PLL: u32 = 1;

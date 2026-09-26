@@ -52,7 +52,7 @@ static imx_mmdc_dt_ids: [of_device_id; 3] = [
     of_device_id { compatible: "", data: core::ptr::null() },
 ];
 
-#[cfg(feature = "CONFIG_PERF_EVENTS")]
+#[cfg(CONFIG_PERF_EVENTS)]
 mod perf_events {
     use super::*;
 
@@ -197,7 +197,7 @@ mod perf_events {
     }
 }
 
-#[cfg(not(feature = "CONFIG_PERF_EVENTS"))]
+#[cfg(not(CONFIG_PERF_EVENTS))]
 // In the non-PERF_EVENTS build, imx_mmdc_remove is NULL and perf initialization returns 0.
 
 unsafe fn imx_mmdc_probe(pdev: *mut platform_device) -> i32 {

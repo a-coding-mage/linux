@@ -102,7 +102,7 @@ pub unsafe extern "C" fn rt_sigreturn() -> c_long {
 // CONFIG_X86_X32_ABI and CONFIG_COMPAT declarations and ABI layout assertions
 // are retained as external integration points supplied by the surrounding kernel.
 
-#[cfg(feature = "CONFIG_X86_X32_ABI")]
+#[cfg(CONFIG_X86_X32_ABI)]
 pub unsafe fn x32_copy_siginfo_to_user(to: *mut compat_siginfo, from: *const kernel_siginfo) -> c_int {
     let mut new: compat_siginfo = core::mem::zeroed();
     copy_siginfo_to_external32(&mut new, from);
@@ -110,12 +110,12 @@ pub unsafe fn x32_copy_siginfo_to_user(to: *mut compat_siginfo, from: *const ker
     if copy_to_user(to as *mut c_void, &new as *const _ as *const c_void, core::mem::size_of::<compat_siginfo>()) != 0 { -EFAULT } else { 0 }
 }
 
-#[cfg(feature = "CONFIG_X86_X32_ABI")]
+#[cfg(CONFIG_X86_X32_ABI)]
 pub unsafe fn copy_siginfo_to_user32(to: *mut compat_siginfo, from: *const kernel_siginfo) -> c_int {
     if in_x32_syscall() { x32_copy_siginfo_to_user(to, from) } else { __copy_siginfo_to_user32(to, from) }
 }
 
-#[cfg(feature = "CONFIG_X86_X32_ABI")]
+#[cfg(CONFIG_X86_X32_ABI)]
 pub unsafe fn x32_setup_rt_frame(ksig: *mut ksignal, regs: *mut pt_regs) -> c_int {
     let mut fp = core::ptr::null_mut();
     if (*ksig).ka.sa.sa_flags & SA_RESTORER == 0 { return -EFAULT; }
@@ -131,7 +131,7 @@ pub unsafe fn x32_setup_rt_frame(ksig: *mut ksignal, regs: *mut pt_regs) -> c_in
     loadsegment(ds, __USER_DS); loadsegment(es, __USER_DS); (*regs).cs = __USER_CS; (*regs).ss = __USER_DS; 0
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 pub unsafe fn sigaction_compat_abi(act: *mut k_sigaction, _oact: *mut k_sigaction) {
     if act.is_null() { return; }
     if in_ia32_syscall() { (*act).sa.sa_flags |= SA_IA32_ABI; }

@@ -11,17 +11,17 @@ pub unsafe fn name_to_int(qstr: *const qstr) -> c_uint {
     let mut n: c_uint = 0;
 
     if len > 1 && *name == b'0' as c_char {
-        return !0_u32 as c_uint;
+        return !0u32 as c_uint;
     }
 
     loop {
         let c = (*name as u8).wrapping_sub(b'0') as c_uint;
         name = name.add(1);
         if c > 9 {
-            return !0_u32 as c_uint;
+            return !0u32 as c_uint;
         }
-        if n >= (!0_u32 as c_uint).wrapping_sub(9) / 10 {
-            return !0_u32 as c_uint;
+        if n >= (!0u32 as c_uint).wrapping_sub(9) / 10 {
+            return !0u32 as c_uint;
         }
         n = n.wrapping_mul(10);
         n = n.wrapping_add(c);

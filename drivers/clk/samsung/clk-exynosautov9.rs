@@ -193,7 +193,7 @@ const CLK_CON_GAT_GATE_CLKCMU_PERIC1_BUS: usize = 0x20d0;
 const CLK_CON_GAT_GATE_CLKCMU_PERIC1_IP: usize = 0x20d4;
 const CLK_CON_GAT_GATE_CLKCMU_PERIS_BUS: usize = 0x20d8;
 
-static const unsigned long top_clk_regs[]  = {
+static core::ffi::c_ulong top_clk_regs[]  = {
 	PLL_LOCKTIME_PLL_SHARED0,
 	PLL_LOCKTIME_PLL_SHARED1,
 	PLL_LOCKTIME_PLL_SHARED2,
@@ -958,7 +958,7 @@ static const struct samsung_cmu_info top_cmu_info  = {
 	nr_clk_regs: top_clk_regs.len(),
 ];
 
-static void  exynosautov9_cmu_top_init(struct device_node *np)
+static void  exynosautov9_cmu_top_init(device_node *np)
 {
 	exynos_arm64_register_cmu(::core::ptr::null_mut(), np, &top_cmu_info);
 }
@@ -975,7 +975,7 @@ const CLK_CON_DIV_DIV_CLK_BUSMC_BUSP: usize = 0x1800;
 const CLK_CON_GAT_GOUT_BLK_BUSMC_UID_QE_PDMA0_IPCLKPORT_PCLK: usize = 0x2078;
 const CLK_CON_GAT_GOUT_BLK_BUSMC_UID_QE_SPDMA_IPCLKPORT_PCLK: usize = 0x2080;
 
-static const unsigned long busmc_clk_regs[]  = {
+static core::ffi::c_ulong busmc_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_BUSMC_BUS_USER,
 	CLK_CON_DIV_DIV_CLK_BUSMC_BUSP,
 	CLK_CON_GAT_GOUT_BLK_BUSMC_UID_QE_PDMA0_IPCLKPORT_PCLK,
@@ -1029,7 +1029,7 @@ const CLK_CON_GAT_CLK_BLK_CORE_UID_CCI_IPCLKPORT_CLK: usize = 0x2000;
 const CLK_CON_GAT_CLK_BLK_CORE_UID_CCI_IPCLKPORT_PCLK: usize = 0x2004;
 const CLK_CON_GAT_CLK_BLK_CORE_UID_CORE_CMU_CORE_IPCLKPORT_PCLK: usize = 0x2008;
 
-static const unsigned long core_clk_regs[]  = {
+static core::ffi::c_ulong core_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_CORE_BUS_USER,
 	CLK_CON_MUX_MUX_CORE_CMUREF,
 	CLK_CON_DIV_DIV_CLK_CORE_BUSP,
@@ -1090,7 +1090,7 @@ const CLK_CON_GAT_GOUT_BLK_DPUM_UID_SYSMMU_D1_DPUM_IPCLKPORT_CLK_S1: usize = 0x2
 const CLK_CON_GAT_GOUT_BLK_DPUM_UID_SYSMMU_D2_DPUM_IPCLKPORT_CLK_S1: usize = 0x208c;
 const CLK_CON_GAT_GOUT_BLK_DPUM_UID_SYSMMU_D3_DPUM_IPCLKPORT_CLK_S1: usize = 0x2094;
 
-static const unsigned long dpum_clk_regs[]  = {
+static core::ffi::c_ulong dpum_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_DPUM_BUS_USER,
 	CLK_CON_DIV_DIV_CLK_DPUM_BUSP,
 	CLK_CON_GAT_GOUT_BLK_DPUM_UID_DPUM_IPCLKPORT_ACLK_DECON,
@@ -1202,7 +1202,7 @@ const CLK_CON_GAT_GOUT_BLK_FSYS0_UID_PCIE_GEN3B_2L1_CLK: usize = 0x20e4;
 const CLK_CON_GAT_GOUT_BLK_FSYS0_UID_PCIE_GEN3B_4L_CLK: usize = 0x20e8;
 
 
-static const unsigned long fsys0_clk_regs[]  = {
+static core::ffi::c_ulong fsys0_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_FSYS0_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_FSYS0_PCIE_USER,
 	CLK_CON_GAT_CLK_BLK_FSYS0_UID_FSYS0_CMU_FSYS0_IPCLKPORT_PCLK,
@@ -1423,7 +1423,7 @@ const CLK_CON_GAT_GOUT_BLK_FSYS1_UID_US_D_USB2_1_IPCLKPORT_ACLK: usize = 0x2078;
 const CLK_CON_GAT_GOUT_BLK_FSYS1_UID_US_D_USB3_0_IPCLKPORT_ACLK: usize = 0x207c;
 const CLK_CON_GAT_GOUT_BLK_FSYS1_UID_US_D_USB3_1_IPCLKPORT_ACLK: usize = 0x2080;
 
-static const unsigned long fsys1_clk_regs[]  = {
+static core::ffi::c_ulong fsys1_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_FSYS1_BUS_USER,
 ];
 
@@ -1534,7 +1534,7 @@ const CLK_CON_GAT_GOUT_BLK_FSYS2_UID_UFS_EMBD0_IPCLKPORT_I_CLK_UNIPRO: usize = 0
 const CLK_CON_GAT_GOUT_BLK_FSYS2_UID_UFS_EMBD1_IPCLKPORT_I_ACLK: usize = 0x20a4;
 const CLK_CON_GAT_GOUT_BLK_FSYS2_UID_UFS_EMBD1_IPCLKPORT_I_CLK_UNIPRO: usize = 0x20a8;
 
-static const unsigned long fsys2_clk_regs[]  = {
+static core::ffi::c_ulong fsys2_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_FSYS2_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_FSYS2_UFS_EMBD_USER,
 	PLL_CON0_MUX_CLKCMU_FSYS2_ETHERNET_USER,
@@ -1634,7 +1634,7 @@ const CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_9: usize = 0x20
 const CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_10: usize = 0x204c;
 const CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_PCLK_11: usize = 0x2050;
 
-static const unsigned long peric0_clk_regs[]  = {
+static core::ffi::c_ulong peric0_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_PERIC0_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_PERIC0_IP_USER,
 	CLK_CON_MUX_MUX_CLK_PERIC0_USI00_USI,
@@ -1889,7 +1889,7 @@ const CLK_CON_GAT_GOUT_BLK_PERIC1_UID_PERIC1_TOP0_IPCLKPORT_PCLK_9: usize = 0x20
 const CLK_CON_GAT_GOUT_BLK_PERIC1_UID_PERIC1_TOP0_IPCLKPORT_PCLK_10: usize = 0x204c;
 const CLK_CON_GAT_GOUT_BLK_PERIC1_UID_PERIC1_TOP0_IPCLKPORT_PCLK_11: usize = 0x2050;
 
-static const unsigned long peric1_clk_regs[]  = {
+static core::ffi::c_ulong peric1_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_PERIC1_BUS_USER,
 	PLL_CON0_MUX_CLKCMU_PERIC1_IP_USER,
 	CLK_CON_MUX_MUX_CLK_PERIC1_USI06_USI,
@@ -2108,7 +2108,7 @@ const CLK_CON_GAT_GOUT_BLK_PERIS_UID_SYSREG_PERIS_IPCLKPORT_PCLK: usize = 0x2058
 const CLK_CON_GAT_GOUT_BLK_PERIS_UID_WDT_CLUSTER0_IPCLKPORT_PCLK: usize = 0x205c;
 const CLK_CON_GAT_GOUT_BLK_PERIS_UID_WDT_CLUSTER1_IPCLKPORT_PCLK: usize = 0x2060;
 
-static const unsigned long peris_clk_regs[]  = {
+static core::ffi::c_ulong peris_clk_regs[]  = {
 	PLL_CON0_MUX_CLKCMU_PERIS_BUS_USER,
 	CLK_CON_GAT_GOUT_BLK_PERIS_UID_SYSREG_PERIS_IPCLKPORT_PCLK,
 	CLK_CON_GAT_GOUT_BLK_PERIS_UID_WDT_CLUSTER0_IPCLKPORT_PCLK,
@@ -2147,13 +2147,13 @@ static const struct samsung_cmu_info peris_cmu_info  = {
 	clk_name: "dout_clkcmu_peris_bus",
 ];
 
-static int  exynosautov9_cmu_probe(struct platform_device *pdev)
+static int  exynosautov9_cmu_probe(platform_device *pdev)
 {
 	const struct samsung_cmu_info *info;
-	struct device *dev = &pdev->dev;
+	struct device *dev = (*&pdev).dev;
 
 	info = of_device_get_match_data(dev);
-	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 
 	return 0;
 }

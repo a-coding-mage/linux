@@ -43,7 +43,7 @@ vncr_tlb {
  * the guests. Running out of S2 MMUs only affects performance (we
  * will invalidate them more often).
  */
-#define S2_MMU_PER_VCPU		2
+pub const S2_MMU_PER_VCPU: u32 = 2;
 
 fn kvm_init_nested(kvm *kvm)
 {
@@ -71,7 +71,7 @@ i32 kvm_vcpu_init_nested(kvm_vcpu *vcpu)
 {
 	kvm *kvm = vcpu.kvm;
 	kvm_s2_mmu *tmp;
-	i32 num_mmus, ret = 0;
+	num_mmus: i32, ret = 0;
 
 	if (test_bit(KVM_ARM_VCPU_HAS_EL2_E2H0, kvm.arch.vcpu_features) &&
 	    !cpus_have_final_cap(ARM64_HAS_HCR_NV1))
@@ -142,12 +142,12 @@ s2_walk_info {
 	bool		ha;
 };
 
-fn u32 compute_fsc(i32 level, u32 fsc)
+fn u32 compute_fsc(level: i32, fsc: u32)
 {
 	return fsc | (level & 0x3);
 }
 
-fn i32 esr_s2_fault(kvm_vcpu *vcpu, i32 level, u32 fsc)
+fn i32 esr_s2_fault(kvm_vcpu *vcpu, level: i32, fsc: u32)
 {
 	u32 esr;
 
@@ -162,9 +162,9 @@ fn i32 get_ia_size(s2_walk_info *wi)
 }
 
 fn i32 check_base_s2_limits(kvm_vcpu *vcpu, s2_walk_info *wi,
-				i32 level, i32 input_size, i32 stride)
+				level: i32, input_size: i32, stride: i32)
 {
-	i32 start_size, pa_max;
+	start_size: i32, pa_max;
 
 	pa_max = kvm_get_pa_bits(vcpu.kvm);
 
@@ -197,7 +197,7 @@ fn i32 check_base_s2_limits(kvm_vcpu *vcpu, s2_walk_info *wi,
 }
 
 /* Check if output is within boundaries */
-fn i32 check_output_size(s2_walk_info *wi, u64 output)
+fn i32 check_output_size(s2_walk_info *wi, output: u64)
 {
 	unsigned i32 output_size = wi.max_oa_bits;
 
@@ -207,7 +207,7 @@ fn i32 check_output_size(s2_walk_info *wi, u64 output)
 	return 0;
 }
 
-fn i32 read_guest_s2_desc(kvm_vcpu *vcpu, u64 pa, u64 *desc,
+fn i32 read_guest_s2_desc(kvm_vcpu *vcpu, pa: u64, u64 *desc,
 			      s2_walk_info *wi)
 {
 	u64 val;
@@ -229,7 +229,7 @@ fn i32 read_guest_s2_desc(kvm_vcpu *vcpu, u64 pa, u64 *desc,
 	return 0;
 }
 
-fn i32 swap_guest_s2_desc(kvm_vcpu *vcpu, u64 pa, u64 old, u64 new,
+fn i32 swap_guest_s2_desc(kvm_vcpu *vcpu, pa: u64, old: u64, new: u64,
 			      s2_walk_info *wi)
 {
 	if (wi.be) {
@@ -250,13 +250,13 @@ fn i32 swap_guest_s2_desc(kvm_vcpu *vcpu, u64 pa, u64 old, u64 new,
  *
  * Must be called with the kvm.srcu read lock held
  */
-fn i32 walk_nested_s2_pgd(kvm_vcpu *vcpu, u64 ipa,
+fn i32 walk_nested_s2_pgd(kvm_vcpu *vcpu, ipa: u64,
 			      s2_walk_info *wi, kvm_s2_trans *out)
 {
-	i32 first_block_level, level, stride, input_size, base_lower_bound;
+	first_block_level: i32, level, stride, input_size, base_lower_bound;
 	u64 base_addr;
 	unsigned i32 addr_top, addr_bottom;
-	u64 desc, new_desc;  /* page table entry */
+	desc: u64, new_desc;  /* page table entry */
 	i32 ret;
 	u64 paddr;
 
@@ -394,7 +394,7 @@ fn i32 walk_nested_s2_pgd(kvm_vcpu *vcpu, u64 ipa,
 
 #define _has_tgran_2(__r, __sz)						\
 	({								\
-		u64 _s1, _s2, _mmfr0 = __r;				\
+		_s1: u64, _s2, _mmfr0 = __r;				\
 									\
 		_s2 = SYS_FIELD_GET(ID_AA64MMFR0_EL1,			\
 				    TGRAN##__sz##_2, _mmfr0);		\
@@ -408,7 +408,7 @@ fn i32 walk_nested_s2_pgd(kvm_vcpu *vcpu, u64 ipa,
 		  _s1 != ID_AA64MMFR0_EL1_TGRAN##__sz##_NI));		\
 	})
 
-fn fn has_tgran_2(u64 mmfr0, unsigned i32 shift)
+fn fn has_tgran_2(mmfr0: u64, unsigned i32 shift)
 {
 	switch (shift) {
 	case 12:
@@ -422,7 +422,7 @@ fn fn has_tgran_2(u64 mmfr0, unsigned i32 shift)
 	}
 }
 
-fn unsigned i32 fallback_tgran2_shift(u64 mmfr0)
+fn unsigned i32 fallback_tgran2_shift(mmfr0: u64)
 {
 	if (has_tgran_2(mmfr0, PAGE_SHIFT))
 		return PAGE_SHIFT;
@@ -436,7 +436,7 @@ fn unsigned i32 fallback_tgran2_shift(u64 mmfr0)
 		return PAGE_SHIFT;
 }
 
-fn unsigned i32 vtcr_to_tg0_pgshift(kvm *kvm, u64 vtcr)
+fn unsigned i32 vtcr_to_tg0_pgshift(kvm *kvm, vtcr: u64)
 {
 	u64 tg0 = FIELD_GET(VTCR_EL2_TG0_MASK, vtcr);
 	u64 mmfr0 = kvm_read_vm_id_reg(kvm, SYS_ID_AA64MMFR0_EL1);
@@ -467,13 +467,12 @@ fn unsigned i32 vtcr_to_tg0_pgshift(kvm *kvm, u64 vtcr)
 	return shift;
 }
 
-fn usize vtcr_to_tg0_pgsize(kvm *kvm, u64 vtcr)
+fn usize vtcr_to_tg0_pgsize(kvm *kvm, vtcr: u64)
 {
 	return BIT(vtcr_to_tg0_pgshift(kvm, vtcr));
 }
 
-fn fn setup_s2_walk(kvm_vcpu *vcpu, s2_walk_info *wi)
-{
+fn fn setup_s2_walk(kvm_vcpu *vcpu, s2_walk_info *wi) {
 	u64 vtcr = vcpu_read_sys_reg(vcpu, VTCR_EL2);
 
 	wi.baddr = vcpu_read_sys_reg(vcpu, VTTBR_EL2);
@@ -487,9 +486,8 @@ fn fn setup_s2_walk(kvm_vcpu *vcpu, s2_walk_info *wi)
 	wi.be = vcpu_read_sys_reg(vcpu, SCTLR_EL2) & SCTLR_ELx_EE;
 }
 
-i32 kvm_walk_nested_s2(kvm_vcpu *vcpu, u64 gipa,
-		       kvm_s2_trans *result)
-{
+i32 kvm_walk_nested_s2!(kvm_vcpu *vcpu, gipa: u64,
+		       kvm_s2_trans *result, {
 	s2_walk_info wi;
 	i32 ret;
 
@@ -505,9 +503,9 @@ i32 kvm_walk_nested_s2(kvm_vcpu *vcpu, u64 gipa,
 		result.esr |= (kvm_vcpu_get_esr(vcpu) & ~ESR_ELx_FSC);
 
 	return ret;
-}
+});
 
-fn unsigned i32 __ttl_to_size(u8 ttl)
+fn unsigned i32 __ttl_to_size(ttl: u8)
 {
 	i32 level = ttl & 3;
 	i32 gran = (ttl >> 2) & 3;
@@ -563,12 +561,12 @@ fn unsigned i32 __ttl_to_size(u8 ttl)
 	return max_size;
 }
 
-fn unsigned i32 ttl_to_size(u8 ttl)
+fn unsigned i32 ttl_to_size(ttl: u8)
 {
 	return __ttl_to_size(ttl) ?: SZ_1G;
 }
 
-fn u8 pgshift_level_to_ttl(u16 shift, s8 level)
+fn u8 pgshift_level_to_ttl(shift: u16, s8 level)
 {
 	u8 ttl;
 
@@ -604,12 +602,12 @@ fn u8 pgshift_level_to_ttl(u16 shift, s8 level)
  * granule size is extracted from the cached VTCR_EL2.TG0 while the level is
  * retrieved from first entry carrying the level as a tag.
  */
-fn u8 get_guest_mapping_ttl(kvm_s2_mmu *mmu, u64 addr)
+fn u8 get_guest_mapping_ttl(kvm_s2_mmu *mmu, addr: u64)
 {
 	usize tg0_size = vtcr_to_tg0_pgsize(kvm_s2_mmu_to_kvm(mmu), mmu.tlb_vtcr);
-	u64 tmp, sz = 0;
+	tmp: u64, sz = 0;
 	kvm_pte_t pte;
-	u8 ttl, level;
+	ttl: u8, level;
 
 	lockdep_assert_held_write(&kvm_s2_mmu_to_kvm(mmu).mmu_lock);
 
@@ -675,7 +673,7 @@ again:
 	return 0;
 }
 
-usize compute_tlb_inval_range(kvm_s2_mmu *mmu, u64 val)
+usize compute_tlb_inval_range(kvm_s2_mmu *mmu, val: u64)
 {
 	kvm *kvm = kvm_s2_mmu_to_kvm(mmu);
 	usize max_size;
@@ -734,7 +732,7 @@ usize compute_tlb_inval_range(kvm_s2_mmu *mmu, u64 val)
  * this particular VMID. This translates into applying the same invalidation
  * operation to all the contexts that are using this VMID. Moar phun!
  */
-fn kvm_s2_mmu_iterate_by_vmid(kvm *kvm, u16 vmid,
+fn kvm_s2_mmu_iterate_by_vmid(kvm *kvm, vmid: u16,
 				const union tlbi_info *info,
 				fn (*tlbi_callback)(kvm_s2_mmu *,
 						      const union tlbi_info *))
@@ -758,7 +756,7 @@ kvm_s2_mmu *lookup_s2_mmu(kvm_vcpu *vcpu)
 {
 	kvm *kvm = vcpu.kvm;
 	bool nested_stage2_enabled;
-	u64 vttbr, vtcr, hcr;
+	vttbr: u64, vtcr, hcr;
 
 	lockdep_assert_held_write(&kvm.mmu_lock);
 
@@ -805,6 +803,7 @@ kvm_s2_mmu *lookup_s2_mmu(kvm_vcpu *vcpu)
 
 fn kvm_s2_mmu *get_s2_mmu_nested(kvm_vcpu *vcpu)
 {
+	'out: {
 	kvm *kvm = vcpu.kvm;
 	kvm_s2_mmu *s2_mmu;
 	i32 i;
@@ -813,7 +812,7 @@ fn kvm_s2_mmu *get_s2_mmu_nested(kvm_vcpu *vcpu)
 
 	s2_mmu = lookup_s2_mmu(vcpu);
 	if (s2_mmu)
-		goto out;
+		break 'out;
 
 	/*
 	 * Make sure we don't always search from the same point, or we
@@ -852,8 +851,8 @@ fn kvm_s2_mmu *get_s2_mmu_nested(kvm_vcpu *vcpu)
 	s2_mmu.nested_stage2_enabled = vcpu_read_sys_reg(vcpu, HCR_EL2) & HCR_VM;
 
 	kvm_nested_s2_ptdump_create_debugfs(s2_mmu);
-
-out:
+	}
+	
 	atomic_inc(&s2_mmu.refcnt);
 
 	/*
@@ -983,7 +982,7 @@ i32 kvm_s2_handle_perm_fault(kvm_vcpu *vcpu, kvm_s2_trans *trans)
 	return forward_fault;
 }
 
-i32 kvm_inject_s2_fault(kvm_vcpu *vcpu, u64 esr_el2)
+i32 kvm_inject_s2_fault(kvm_vcpu *vcpu, esr_el2: u64)
 {
 	vcpu_write_sys_reg(vcpu, vcpu.arch.fault.far_el2, FAR_EL2);
 	vcpu_write_sys_reg(vcpu, vcpu.arch.fault.hpfar_el2, HPFAR_EL2);
@@ -991,7 +990,7 @@ i32 kvm_inject_s2_fault(kvm_vcpu *vcpu, u64 esr_el2)
 	return kvm_inject_nested_sync(vcpu, esr_el2);
 }
 
-fn get_asid_by_regime(kvm_vcpu *vcpu, enum trans_regime regime)
+fn get_asid_by_regime(kvm_vcpu *vcpu, trans_regime regime)
 {
 	enum vcpu_sysreg ttbr_elx;
 	u64 tcr;
@@ -1026,10 +1025,10 @@ fn fn invalidate_vncr(kvm *kvm, vncr_tlb *vt)
 	atomic_dec(&kvm.arch.vncr_tlb_count);
 }
 
-fn fn vncr_tlb_intersects(vncr_tlb *vt, u64 addr,
-				u64 scope_start, u64 scope_size)
+fn fn vncr_tlb_intersects(vncr_tlb *vt, addr: u64,
+				scope_start: u64, scope_size: u64)
 {
-	u64 tlb_size, tlb_start, tlb_end, scope_end;
+	tlb_size: u64, tlb_start, tlb_end, scope_end;
 
 	tlb_size = ttl_to_size(pgshift_level_to_ttl(vt.wi.pgshift, vt.wr.level));
 
@@ -1051,7 +1050,7 @@ fn fn vncr_tlb_intersects(vncr_tlb *vt, u64 addr,
 		if (((tlbp) = vcpup.arch.vncr_tlb) &&	\
 		    (tlbp).valid)
 
-fn fn kvm_invalidate_vncr_ipa(kvm *kvm, u64 start, u64 end)
+fn fn kvm_invalidate_vncr_ipa(kvm *kvm, start: u64, end: u64)
 {
 	kvm_vcpu *vcpu;
 	vncr_tlb *vt;
@@ -1074,12 +1073,10 @@ fn fn kvm_invalidate_vncr_ipa(kvm *kvm, u64 start, u64 end)
 }
 
 s1e2_tlbi_scope {
-	enum {
-		TLBI_ALL,
-		TLBI_VA,
-		TLBI_VAA,
-		TLBI_ASID,
-	} type;
+	pub const TLBI_ALL: i32 = 0;
+	pub const TLBI_VA: i32 = TLBI_ALL + 1;
+	pub const TLBI_VAA: i32 = TLBI_VA + 1;
+	pub const TLBI_ASID: i32 = TLBI_VAA + 1; type;
 
 	u16 asid;
 	u64 va;
@@ -1104,8 +1101,8 @@ fn fn invalidate_vncr_va(kvm *kvm,
 	kvm.mmu_invalidate_seq++;
 	smp_wmb();
 
-	kvm_for_each_vncr_tlb(i, vcpu, vt, kvm) {
-		switch (scope.type) {
+	kvm_for_each_vncr_tlb!(i, vcpu, vt, kvm, {
+		switch (scope.r#type) {
 		case TLBI_ALL:
 			break;
 
@@ -1128,12 +1125,12 @@ fn fn invalidate_vncr_va(kvm *kvm,
 		}
 
 		invalidate_vncr(kvm, vt);
-	}
+	});
 }
 
 #define tlbi_va_s1_to_va(v)	(u64)sign_extend64((v) << 12, 48)
 
-fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
+fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, inst: u32, val: u64,
 				  s1e2_tlbi_scope *scope)
 {
 	switch (inst) {
@@ -1149,7 +1146,7 @@ fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
 	case OP_TLBI_VMALLE1NXS:
 	case OP_TLBI_VMALLE1ISNXS:
 	case OP_TLBI_VMALLE1OSNXS:
-		scope.type = TLBI_ALL;
+		scope.r#type = TLBI_ALL;
 		break;
 	case OP_TLBI_VAE2:
 	case OP_TLBI_VAE2IS:
@@ -1175,7 +1172,7 @@ fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
 	case OP_TLBI_VALE1NXS:
 	case OP_TLBI_VALE1ISNXS:
 	case OP_TLBI_VALE1OSNXS:
-		scope.type = TLBI_VA;
+		scope.r#type = TLBI_VA;
 		scope.size = ttl_to_size(FIELD_GET(TLBI_TTL_MASK, val));
 		scope.va = tlbi_va_s1_to_va(val) & ~(scope.size - 1);
 		scope.asid = FIELD_GET(TLBIR_ASID_MASK, val);
@@ -1186,7 +1183,7 @@ fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
 	case OP_TLBI_ASIDE1NXS:
 	case OP_TLBI_ASIDE1ISNXS:
 	case OP_TLBI_ASIDE1OSNXS:
-		scope.type = TLBI_ASID;
+		scope.r#type = TLBI_ASID;
 		scope.asid = FIELD_GET(TLBIR_ASID_MASK, val);
 		break;
 	case OP_TLBI_VAAE1:
@@ -1201,7 +1198,7 @@ fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
 	case OP_TLBI_VAALE1NXS:
 	case OP_TLBI_VAALE1ISNXS:
 	case OP_TLBI_VAALE1OSNXS:
-		scope.type = TLBI_VAA;
+		scope.r#type = TLBI_VAA;
 		scope.size = ttl_to_size(FIELD_GET(TLBI_TTL_MASK, val));
 		scope.va = tlbi_va_s1_to_va(val) & ~(scope.size - 1);
 		break;
@@ -1229,7 +1226,7 @@ fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
 	case OP_TLBI_RVALE1NXS:
 	case OP_TLBI_RVALE1ISNXS:
 	case OP_TLBI_RVALE1OSNXS:
-		scope.type = TLBI_VA;
+		scope.r#type = TLBI_VA;
 		scope.va = decode_range_tlbi(val, &scope.size, &scope.asid);
 		break;
 	case OP_TLBI_RVAAE1:
@@ -1244,13 +1241,13 @@ fn fn compute_s1_tlbi_range(kvm_vcpu *vcpu, u32 inst, u64 val,
 	case OP_TLBI_RVAALE1NXS:
 	case OP_TLBI_RVAALE1ISNXS:
 	case OP_TLBI_RVAALE1OSNXS:
-		scope.type = TLBI_VAA;
+		scope.r#type = TLBI_VAA;
 		scope.va = decode_range_tlbi(val, &scope.size, core::ptr::null_mut());
 		break;
 	}
 }
 
-fn kvm_handle_s1e2_tlbi(kvm_vcpu *vcpu, u32 inst, u64 val)
+fn kvm_handle_s1e2_tlbi(kvm_vcpu *vcpu, inst: u32, val: u64)
 {
 	s1e2_tlbi_scope scope = {};
 
@@ -1279,7 +1276,7 @@ fn kvm_nested_s2_wp(kvm *kvm)
 	kvm_invalidate_vncr_ipa(kvm, 0, BIT(kvm.arch.mmu.pgt.ia_bits));
 }
 
-fn kvm_nested_s2_unmap(kvm *kvm, bool may_block)
+fn kvm_nested_s2_unmap(kvm *kvm, may_block: bool)
 {
 	i32 i;
 
@@ -1412,11 +1409,11 @@ fn fn read_vncr_el2(kvm_vcpu *vcpu)
 fn i32 kvm_translate_vncr(kvm_vcpu *vcpu, bool *is_gmem)
 {
 	kvm_memory_slot *memslot;
-	bool write_fault, writable;
+	write_fault: bool, writable;
 	usize mmu_seq;
 	vncr_tlb *vt;
 	page *page;
-	u64 va, pfn, gfn;
+	va: u64, pfn, gfn;
 	i32 ret;
 
 	vt = vcpu.arch.vncr_tlb;
@@ -1435,9 +1432,9 @@ fn i32 kvm_translate_vncr(kvm_vcpu *vcpu, bool *is_gmem)
 			invalidate_vncr(vcpu.kvm, vt);
 
 		vt.wi = (s1_walk_info) {
-			.regime	= TR_EL20,
-			.as_el0	= false,
-			.pan	= false,
+			regime: TR_EL20,
+			as_el0: false,
+			pan: false,
 		};
 		vt.wr = (s1_walk_result){};
 	}
@@ -1673,7 +1670,7 @@ fn fn kvm_map_l1_vncr(kvm_vcpu *vcpu)
  * This list should get updated as new features get added to the NV
  * support, and new extension to the architecture.
  */
-fn limit_nv_id_reg(kvm *kvm, u32 reg, u64 val)
+fn limit_nv_id_reg(kvm *kvm, reg: u32, val: u64)
 {
 	u64 orig_val = val;
 
@@ -1846,7 +1843,7 @@ fn limit_nv_id_reg(kvm *kvm, u32 reg, u64 val)
 }
 
 fn kvm_vcpu_apply_reg_masks(const kvm_vcpu *vcpu,
-			     enum vcpu_sysreg sr, u64 v)
+			     vcpu_sysreg sr, v: u64)
 {
 	resx resx;
 
@@ -1857,7 +1854,7 @@ fn kvm_vcpu_apply_reg_masks(const kvm_vcpu *vcpu,
 	return v;
 }
 
-#[inline(always)] fn fn set_sysreg_masks(kvm *kvm, i32 sr, resx resx)
+#[inline(always)] fn fn set_sysreg_masks(kvm *kvm, sr: i32, resx resx)
 {
 	BUILD_BUG_ON(!__builtin_constant_p(sr));
 	BUILD_BUG_ON(sr < __SANITISED_REG_START__);
@@ -1868,13 +1865,14 @@ fn kvm_vcpu_apply_reg_masks(const kvm_vcpu *vcpu,
 
 i32 kvm_init_nv_sysregs(kvm_vcpu *vcpu)
 {
+	'out: {
 	kvm *kvm = vcpu.kvm;
 	resx resx;
 
 	lockdep_assert_held(&kvm.arch.config_lock);
 
 	if (kvm.arch.sysreg_masks)
-		goto out;
+		break 'out;
 
 	kvm.arch.sysreg_masks = kzalloc_obj(*(kvm.arch.sysreg_masks),
 					     GFP_KERNEL_ACCOUNT);
@@ -2001,10 +1999,10 @@ i32 kvm_init_nv_sysregs(kvm_vcpu *vcpu)
 	resx.res0 = ZCR_ELx_RES0 | GENMASK_ULL(8, 4);
 	resx.res1 = ZCR_ELx_RES1;
 	set_sysreg_masks(kvm, ZCR_EL2, resx);
-
-out:
-	for (enum vcpu_sysreg sr = __SANITISED_REG_START__; sr < NR_SYS_REGS; sr++)
-		__vcpu_rmw_sys_reg(vcpu, sr, |=, 0);
+	}
+	
+	for (vcpu_sysreg sr = __SANITISED_REG_START__; sr < NR_SYS_REGS; sr++)
+		__vcpu_rmw_sys_reg!(vcpu, sr, |=, 0);
 
 	return 0;
 }

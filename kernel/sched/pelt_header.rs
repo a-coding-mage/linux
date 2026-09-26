@@ -11,32 +11,32 @@ extern "C" {
 }
 
 // Under CONFIG_SCHED_HW_PRESSURE, update_hw_load_avg is an external function.
-#[cfg(feature = "CONFIG_SCHED_HW_PRESSURE")]
+#[cfg(CONFIG_SCHED_HW_PRESSURE)]
 extern "C" {
     pub fn update_hw_load_avg(now: u64, rq: *mut rq, capacity: u64) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_SCHED_HW_PRESSURE"))]
+#[cfg(not(CONFIG_SCHED_HW_PRESSURE))]
 #[inline]
 pub unsafe fn update_hw_load_avg(_now: u64, _rq: *mut rq, _capacity: u64) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_SCHED_HW_PRESSURE")]
+#[cfg(CONFIG_SCHED_HW_PRESSURE)]
 #[inline]
 pub unsafe fn hw_load_avg(rq: *mut rq) -> u64 {
     core::ptr::read_volatile(&(*rq).avg_hw.load_avg)
 }
 
-#[cfg(not(feature = "CONFIG_SCHED_HW_PRESSURE"))]
+#[cfg(not(CONFIG_SCHED_HW_PRESSURE))]
 #[inline]
 pub unsafe fn hw_load_avg(_rq: *mut rq) -> u64 { 0 }
 
 // Under CONFIG_HAVE_SCHED_AVG_IRQ, update_irq_load_avg is an external function.
-#[cfg(feature = "CONFIG_HAVE_SCHED_AVG_IRQ")]
+#[cfg(CONFIG_HAVE_SCHED_AVG_IRQ)]
 extern "C" {
     pub fn update_irq_load_avg(rq: *mut rq, running: u64) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_HAVE_SCHED_AVG_IRQ"))]
+#[cfg(not(CONFIG_HAVE_SCHED_AVG_IRQ))]
 #[inline]
 pub unsafe fn update_irq_load_avg(_rq: *mut rq, _running: u64) -> i32 { 0 }
 
@@ -101,7 +101,7 @@ pub unsafe fn update_idle_rq_clock_pelt(rq: *mut rq) {
     _update_idle_rq_clock_pelt(rq);
 }
 
-#[cfg(feature = "CONFIG_CFS_BANDWIDTH")]
+#[cfg(CONFIG_CFS_BANDWIDTH)]
 #[inline]
 pub unsafe fn update_idle_cfs_rq_clock_pelt(cfs_rq: *mut cfs_rq) {
     let throttled = if unlikely((*cfs_rq).pelt_clock_throttled) {
@@ -112,7 +112,7 @@ pub unsafe fn update_idle_cfs_rq_clock_pelt(cfs_rq: *mut cfs_rq) {
     u64_u32_store(&mut (*cfs_rq).throttled_pelt_idle, throttled);
 }
 
-#[cfg(feature = "CONFIG_CFS_BANDWIDTH")]
+#[cfg(CONFIG_CFS_BANDWIDTH)]
 #[inline]
 pub unsafe fn cfs_rq_clock_pelt(cfs_rq: *mut cfs_rq) -> u64 {
     if unlikely((*cfs_rq).pelt_clock_throttled) {
@@ -121,11 +121,11 @@ pub unsafe fn cfs_rq_clock_pelt(cfs_rq: *mut cfs_rq) -> u64 {
     rq_clock_pelt(rq_of(cfs_rq)) - (*cfs_rq).throttled_clock_pelt_time
 }
 
-#[cfg(not(feature = "CONFIG_CFS_BANDWIDTH"))]
+#[cfg(not(CONFIG_CFS_BANDWIDTH))]
 #[inline]
 pub unsafe fn update_idle_cfs_rq_clock_pelt(_cfs_rq: *mut cfs_rq) {}
 
-#[cfg(not(feature = "CONFIG_CFS_BANDWIDTH"))]
+#[cfg(not(CONFIG_CFS_BANDWIDTH))]
 #[inline]
 pub unsafe fn cfs_rq_clock_pelt(cfs_rq: *mut cfs_rq) -> u64 {
     rq_clock_pelt(rq_of(cfs_rq))

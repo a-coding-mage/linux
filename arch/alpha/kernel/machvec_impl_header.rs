@@ -90,7 +90,7 @@ macro_rules! ALIAS_MV { ($x:ident) => {}; }
 macro_rules! __initmv { () => { __refdata }; }
 #[cfg(not(CONFIG_ALPHA_GENERIC))]
 macro_rules! ALIAS_MV { ($system:ident) => {
-    // C: asm(".global alpha_mv\nalpha_mv = " #system "_mv"); EXPORT_SYMBOL(alpha_mv);
+    // C: asm(".global alpha_mv\nalpha_mv = " #$system "_mv"); EXPORT_SYMBOL(alpha_mv);
 }; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

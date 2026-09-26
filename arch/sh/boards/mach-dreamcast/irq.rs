@@ -112,9 +112,9 @@ pub unsafe fn systemasic_irq_demux(mut irq: i32) -> i32 {
     let mut bit: u32;
 
     match irq {
-        13 + 16 => level = 0,
-        11 + 16 => level = 1,
-        9 + 16 => level = 2,
+        case if case == 13 + 16 => level = 0,
+        case if case == 11 + 16 => level = 1,
+        case if case == 9 + 16 => level = 2,
         _ => return irq,
     }
     emr = EMR_BASE + (level << 4) + (level << 2);

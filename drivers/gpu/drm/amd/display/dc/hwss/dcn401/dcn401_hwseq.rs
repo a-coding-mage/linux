@@ -45,58 +45,58 @@
 // define DC_LOGGER_INIT(logger)
 
 // define CTX \
-	hws->ctx
+// 	(*hws).ctx
 // define REG(reg)\
-	hws->regs->reg
+// 	(*(*hws).regs).reg
 // define DC_LOGGER \
-	dc->ctx->logger
+// 	(*(*dc).ctx).logger
 
 
 // undef FN
 // define FN(reg_name, field_name) \
-	hws->shifts->field_name, hws->masks->field_name
+// 	(*(*hws).shifts).field_name, (*(*hws).masks).field_name
 
-void dcn401_initialize_min_clocks(struct dc *dc)
+void dcn401_initialize_min_clocks(dc *dc)
 {
-	struct dc_clocks *clocks = &dc->current_state->bw_ctx.bw.dcn.clk;
+	struct dc_clocks *clocks = (*(*&dc).current_state).bw_ctx.bw.dcn.clk;
 
-	clocks->dcfclk_deep_sleep_khz = DCN3_2_DCFCLK_DS_INIT_KHZ;
-	clocks->dcfclk_khz = dc->clk_mgr->bw_params->clk_table.entries[0].dcfclk_mhz * 1000;
-	clocks->socclk_khz = dc->clk_mgr->bw_params->clk_table.entries[0].socclk_mhz * 1000;
-	clocks->dramclk_khz = dc->clk_mgr->bw_params->clk_table.entries[0].memclk_mhz * 1000;
-	clocks->dppclk_khz = dc->clk_mgr->bw_params->clk_table.entries[0].dppclk_mhz * 1000;
-	if (dc->debug.disable_boot_optimizations) {
-		clocks->dispclk_khz = dc->clk_mgr->bw_params->clk_table.entries[0].dispclk_mhz * 1000;
+	(*clocks).dcfclk_deep_sleep_khz = DCN3_2_DCFCLK_DS_INIT_KHZ;
+	(*clocks).dcfclk_khz = (*(*(*dc).clk_mgr).bw_params).clk_table.entries[0].dcfclk_mhz * 1000;
+	(*clocks).socclk_khz = (*(*(*dc).clk_mgr).bw_params).clk_table.entries[0].socclk_mhz * 1000;
+	(*clocks).dramclk_khz = (*(*(*dc).clk_mgr).bw_params).clk_table.entries[0].memclk_mhz * 1000;
+	(*clocks).dppclk_khz = (*(*(*dc).clk_mgr).bw_params).clk_table.entries[0].dppclk_mhz * 1000;
+	if ((*dc).debug.disable_boot_optimizations) {
+		(*clocks).dispclk_khz = (*(*(*dc).clk_mgr).bw_params).clk_table.entries[0].dispclk_mhz * 1000;
 	} else {
 		/* Even though DPG_EN = 1 for the connected display, it still requires the
 		 * correct timing so we cannot set DISPCLK to min freq or it could cause
 		 * audio corruption. Read current DISPCLK from DENTIST and request the same
 		 * freq to ensure that the timing is valid and unchanged.
 		 */
-		if (dc->clk_mgr->funcs->get_dispclk_from_dentist) {
-			clocks->dispclk_khz = dc->clk_mgr->funcs->get_dispclk_from_dentist(dc->clk_mgr);
+		if ((*(*(*dc).clk_mgr).funcs).get_dispclk_from_dentist) {
+			(*clocks).dispclk_khz = (*(*(*dc).clk_mgr).funcs).get_dispclk_from_dentist((*dc).clk_mgr);
 		} else {
-			clocks->dispclk_khz = dc->clk_mgr->boot_snapshot.dispclk * 1000;
+			(*clocks).dispclk_khz = (*(*dc).clk_mgr).boot_snapshot.dispclk * 1000;
 		}
 	}
-	clocks->ref_dtbclk_khz = dc->clk_mgr->bw_params->clk_table.entries[0].dtbclk_mhz * 1000;
-	clocks->fclk_p_state_change_support = true;
-	clocks->p_state_change_support = true;
+	(*clocks).ref_dtbclk_khz = (*(*(*dc).clk_mgr).bw_params).clk_table.entries[0].dtbclk_mhz * 1000;
+	(*clocks).fclk_p_state_change_support = true;
+	(*clocks).p_state_change_support = true;
 
-	dc->clk_mgr->funcs->update_clocks(
-			dc->clk_mgr,
-			dc->current_state,
+	(*(*(*dc).clk_mgr).funcs).update_clocks(
+			(*dc).clk_mgr,
+			(*dc).current_state,
 			true);
 }
 
-void dcn401_program_gamut_remap(struct program_gamut_remap_params *params)
+void dcn401_program_gamut_remap(program_gamut_remap_params *params)
 {
-	struct mpc *mpc = params->mpc;
-	int mpcc_id = params->mpcc_id;
-	const struct dc_stream_state *stream = params->stream;
-	const struct dc_plane_state *plane = params->plane;
-	bool is_top_pipe = params->is_top_pipe;
-	unsigned int i = 0;
+	struct mpc *mpc = (*params).mpc;
+	int mpcc_id = (*params).mpcc_id;
+	const struct dc_stream_state *stream = (*params).stream;
+	const struct dc_plane_state *plane = (*params).plane;
+	bool is_top_pipe = (*params).is_top_pipe;
+	core::ffi::c_uint i = 0;
 	struct mpc_grph_gamut_adjustment mpc_adjust;
 
 	// program MPCC_MCM_FIRST_GAMUT_REMAP
@@ -105,20 +105,20 @@ void dcn401_program_gamut_remap(struct program_gamut_remap_params *params)
 	mpc_adjust.mpcc_gamut_remap_block_id = MPCC_MCM_FIRST_GAMUT_REMAP;
 
 	if (plane &&
-		plane->gamut_remap_matrix.enable_remap == true) {
+		(*plane).gamut_remap_matrix.enable_remap == true) {
 		mpc_adjust.gamut_adjust_type = GRAPHICS_GAMUT_ADJUST_TYPE_SW;
 		for (i = 0; i < CSC_TEMPERATURE_MATRIX_SIZE; i++)
 			mpc_adjust.temperature_matrix[i] =
-			plane->gamut_remap_matrix.matrix[i];
+			(*plane).gamut_remap_matrix.matrix[i];
 	}
 
-	mpc->funcs->set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
+	(*(*mpc).funcs).set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
 
 	// program MPCC_MCM_SECOND_GAMUT_REMAP for Bypass / Disable for now
 	mpc_adjust.gamut_adjust_type = GRAPHICS_GAMUT_ADJUST_TYPE_BYPASS;
 	mpc_adjust.mpcc_gamut_remap_block_id = MPCC_MCM_SECOND_GAMUT_REMAP;
 
-	mpc->funcs->set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
+	(*(*mpc).funcs).set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
 
 	// program MPCC_OGAM_GAMUT_REMAP same as is currently used on DCN3x
 	memset(&mpc_adjust, 0, sizeof(mpc_adjust));
@@ -126,41 +126,41 @@ void dcn401_program_gamut_remap(struct program_gamut_remap_params *params)
 	mpc_adjust.mpcc_gamut_remap_block_id = MPCC_OGAM_GAMUT_REMAP;
 
 	if (is_top_pipe) {
-		if (stream->gamut_remap_matrix.enable_remap == true) {
+		if ((*stream).gamut_remap_matrix.enable_remap == true) {
 			mpc_adjust.gamut_adjust_type = GRAPHICS_GAMUT_ADJUST_TYPE_SW;
 			for (i = 0; i < CSC_TEMPERATURE_MATRIX_SIZE; i++)
 				mpc_adjust.temperature_matrix[i] =
-				stream->gamut_remap_matrix.matrix[i];
+				(*stream).gamut_remap_matrix.matrix[i];
 		}
 	}
 
-	mpc->funcs->set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
+	(*(*mpc).funcs).set_gamut_remap(mpc, mpcc_id, &mpc_adjust);
 }
 
-void dcn401_init_hw(struct dc *dc)
+void dcn401_init_hw(dc *dc)
 {
-	struct abm **abms = dc->res_pool->multiple_abms;
-	struct dce_hwseq *hws = dc->hwseq;
-	struct dc_bios *dcb = dc->ctx->dc_bios;
-	struct resource_pool *res_pool = dc->res_pool;
-	unsigned int i;
-	unsigned int edp_num;
+	struct abm **abms = (*(*dc).res_pool).multiple_abms;
+	struct dce_hwseq *hws = (*dc).hwseq;
+	struct dc_bios *dcb = (*(*dc).ctx).dc_bios;
+	struct resource_pool *res_pool = (*dc).res_pool;
+	core::ffi::c_uint i;
+	core::ffi::c_uint edp_num;
 	uint32_t backlight = MAX_BACKLIGHT_LEVEL;
 	uint32_t user_level = MAX_BACKLIGHT_LEVEL;
 	bool dchub_ref_freq_changed;
 	int current_dchub_ref_freq = 0;
 
-	if (dc->clk_mgr && dc->clk_mgr->funcs && dc->clk_mgr->funcs->init_clocks) {
-		dc->clk_mgr->funcs->init_clocks(dc->clk_mgr);
+	if ((*dc).clk_mgr && (*(*dc).clk_mgr).funcs && (*(*(*dc).clk_mgr).funcs).init_clocks) {
+		(*(*(*dc).clk_mgr).funcs).init_clocks((*dc).clk_mgr);
 
 		// mark dcmode limits present if any clock has distinct AC and DC values from SMU
-		dc->caps.dcmode_power_limits_present = dc->clk_mgr->funcs->is_dc_mode_present &&
-				dc->clk_mgr->funcs->is_dc_mode_present(dc->clk_mgr);
+		(*dc).caps.dcmode_power_limits_present = (*(*(*dc).clk_mgr).funcs).is_dc_mode_present &&
+				(*(*(*dc).clk_mgr).funcs).is_dc_mode_present((*dc).clk_mgr);
 	}
 
 	// Initialize the dccg
-	if (res_pool->dccg->funcs->dccg_init)
-		res_pool->dccg->funcs->dccg_init(res_pool->dccg);
+	if ((*(*(*res_pool).dccg).funcs).dccg_init)
+		(*(*(*res_pool).dccg).funcs).dccg_init((*res_pool).dccg);
 
 	// Disable DMUB Initialization until IPS state programming is finalized
 	//if (!dcb->funcs->is_accelerated_mode(dcb)) {
@@ -168,71 +168,71 @@ void dcn401_init_hw(struct dc *dc)
 	//}
 
 	// Set default OPTC memory power states
-	if (dc->debug.enable_mem_low_power.bits.optc) {
+	if ((*dc).debug.enable_mem_low_power.bits.optc) {
 		// Shutdown when unassigned and light sleep in VBLANK
 		REG_SET_2(ODM_MEM_PWR_CTRL3, 0, ODM_MEM_UNASSIGNED_PWR_MODE, 3, ODM_MEM_VBLANK_PWR_MODE, 1);
 	}
 
-	if (dc->debug.enable_mem_low_power.bits.vga) {
+	if ((*dc).debug.enable_mem_low_power.bits.vga) {
 		// Power down VGA memory
 		REG_UPDATE(MMHUBBUB_MEM_PWR_CNTL, VGA_MEM_PWR_FORCE, 1);
 	}
 
-	if (dc->ctx->dc_bios->fw_info_valid) {
-		res_pool->ref_clocks.xtalin_clock_inKhz =
-				dc->ctx->dc_bios->fw_info.pll_info.crystal_frequency;
+	if ((*(*(*dc).ctx).dc_bios).fw_info_valid) {
+		(*res_pool).ref_clocks.xtalin_clock_inKhz =
+				(*(*(*dc).ctx).dc_bios).fw_info.pll_info.crystal_frequency;
 
-		if (res_pool->hubbub) {
-			(res_pool->dccg->funcs->get_dccg_ref_freq)(res_pool->dccg,
-					dc->ctx->dc_bios->fw_info.pll_info.crystal_frequency,
-					&res_pool->ref_clocks.dccg_ref_clock_inKhz);
+		if ((*res_pool).hubbub) {
+			((*(*(*res_pool).dccg).funcs).get_dccg_ref_freq)((*res_pool).dccg,
+					(*(*(*dc).ctx).dc_bios).fw_info.pll_info.crystal_frequency,
+					(*&res_pool).ref_clocks.dccg_ref_clock_inKhz);
 
-			current_dchub_ref_freq = res_pool->ref_clocks.dchub_ref_clock_inKhz / 1000;
+			current_dchub_ref_freq = (*res_pool).ref_clocks.dchub_ref_clock_inKhz / 1000;
 
-			(res_pool->hubbub->funcs->get_dchub_ref_freq)(res_pool->hubbub,
-					res_pool->ref_clocks.dccg_ref_clock_inKhz,
-					&res_pool->ref_clocks.dchub_ref_clock_inKhz);
+			((*(*(*res_pool).hubbub).funcs).get_dchub_ref_freq)((*res_pool).hubbub,
+					(*res_pool).ref_clocks.dccg_ref_clock_inKhz,
+					(*&res_pool).ref_clocks.dchub_ref_clock_inKhz);
 		} else {
 			// Not all ASICs have DCCG sw component
-			res_pool->ref_clocks.dccg_ref_clock_inKhz =
-					res_pool->ref_clocks.xtalin_clock_inKhz;
-			res_pool->ref_clocks.dchub_ref_clock_inKhz =
-					res_pool->ref_clocks.xtalin_clock_inKhz;
+			(*res_pool).ref_clocks.dccg_ref_clock_inKhz =
+					(*res_pool).ref_clocks.xtalin_clock_inKhz;
+			(*res_pool).ref_clocks.dchub_ref_clock_inKhz =
+					(*res_pool).ref_clocks.xtalin_clock_inKhz;
 		}
 	} else
 		ASSERT_CRITICAL(false);
 
-	for (i = 0; i < dc->link_count; i++) {
+	for (i = 0; i < (*dc).link_count; i++) {
 		/* Power up AND update implementation according to the
 		 * required signal (which may be different from the
 		 * default signal on connector).
 		 */
-		struct dc_link *link = dc->links[i];
+		struct dc_link *link = (*dc).links[i];
 
-		if (link->ep_type != DISPLAY_ENDPOINT_PHY)
+		if ((*link).ep_type != DISPLAY_ENDPOINT_PHY)
 			continue;
 
-		link->link_enc->funcs->hw_init(link->link_enc);
+		(*(*(*link).link_enc).funcs).hw_init((*link).link_enc);
 
 		/* Check for enabled DIG to identify enabled display */
-		if (link->link_enc->funcs->is_dig_enabled &&
-			link->link_enc->funcs->is_dig_enabled(link->link_enc)) {
-			link->link_status.link_active = true;
-			link->phy_state.symclk_state = SYMCLK_ON_TX_ON;
-			if (link->link_enc->funcs->fec_is_active &&
-					link->link_enc->funcs->fec_is_active(link->link_enc))
-				link->fec_state = dc_link_fec_enabled;
+		if ((*(*(*link).link_enc).funcs).is_dig_enabled &&
+			(*(*(*link).link_enc).funcs).is_dig_enabled((*link).link_enc)) {
+			(*link).link_status.link_active = true;
+			(*link).phy_state.symclk_state = SYMCLK_ON_TX_ON;
+			if ((*(*(*link).link_enc).funcs).fec_is_active &&
+					(*(*(*link).link_enc).funcs).fec_is_active((*link).link_enc))
+				(*link).fec_state = dc_link_fec_enabled;
 		}
 	}
 
 	/* enable_power_gating_plane before dsc_pg_control because
 	 * FORCEON = 1 with hw default value on bootup, resume from s3
 	 */
-	if (hws->funcs.enable_power_gating_plane)
-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
+	if ((*hws).funcs.enable_power_gating_plane)
+		(*hws).funcs.enable_power_gating_plane((*dc).hwseq, true);
 
 	/* we want to turn off all dp displays before doing detection */
-	dc->link_srv->blank_all_dp_displays(dc);
+	(*(*dc).link_srv).blank_all_dp_displays(dc);
 
 	/* If taking control over from VBIOS, we may want to optimize our first
 	 * mode set, so we need to skip powering down pipes until we know which
@@ -240,18 +240,18 @@ void dcn401_init_hw(struct dc *dc)
 	 * Otherwise, if taking control is not possible, we need to power
 	 * everything down.
 	 */
-	if (dcb->funcs->is_accelerated_mode(dcb) || !dc->config.seamless_boot_edp_requested) {
+	if ((*(*dcb).funcs).is_accelerated_mode(dcb) || (*!dc).config.seamless_boot_edp_requested) {
 		/* Disable boot optimizations means power down everything including PHY, DIG,
 		 * and OTG (i.e. the boot is not optimized because we do a full power down).
 		 */
-		if (dc->hwss.enable_accelerated_mode && dc->debug.disable_boot_optimizations)
-			dc->hwss.enable_accelerated_mode(dc, dc->current_state);
+		if ((*dc).hwss.enable_accelerated_mode && (*dc).debug.disable_boot_optimizations)
+			(*dc).hwss.enable_accelerated_mode(dc, (*dc).current_state);
 		else
-			hws->funcs.init_pipes(dc, dc->current_state);
+			(*hws).funcs.init_pipes(dc, (*dc).current_state);
 
-		if (dc->res_pool->hubbub->funcs->allow_self_refresh_control)
-			dc->res_pool->hubbub->funcs->allow_self_refresh_control(dc->res_pool->hubbub,
-					!dc->res_pool->hubbub->ctx->dc->debug.disable_stutter);
+		if ((*(*(*(*dc).res_pool).hubbub).funcs).allow_self_refresh_control)
+			(*(*(*(*dc).res_pool).hubbub).funcs).allow_self_refresh_control((*(*dc).res_pool).hubbub,
+					(*(*(*(*(*!dc).res_pool).hubbub).ctx).dc).debug.disable_stutter);
 
 		dcn401_initialize_min_clocks(dc);
 
@@ -271,7 +271,7 @@ void dcn401_init_hw(struct dc *dc)
 	 * To avoid this, power down hardware on boot
 	 * if DIG is turned on and seamless boot not enabled
 	 */
-	if (!dc->config.seamless_boot_edp_requested) {
+	if ((*!dc).config.seamless_boot_edp_requested) {
 		struct dc_link *edp_links[MAX_NUM_EDP];
 		struct dc_link *edp_link;
 
@@ -279,21 +279,21 @@ void dcn401_init_hw(struct dc *dc)
 		if (edp_num) {
 			for (i = 0; i < edp_num; i++) {
 				edp_link = edp_links[i];
-				if (edp_link->link_enc->funcs->is_dig_enabled &&
-						edp_link->link_enc->funcs->is_dig_enabled(edp_link->link_enc) &&
-						dc->hwss.edp_backlight_control &&
-						hws->funcs.power_down &&
-						dc->hwss.edp_power_control) {
-					dc->hwss.edp_backlight_control(edp_link, false);
-					hws->funcs.power_down(dc);
-					dc->hwss.edp_power_control(edp_link, false);
+				if ((*(*(*edp_link).link_enc).funcs).is_dig_enabled &&
+						(*(*(*edp_link).link_enc).funcs).is_dig_enabled((*edp_link).link_enc) &&
+						(*dc).hwss.edp_backlight_control &&
+						(*hws).funcs.power_down &&
+						(*dc).hwss.edp_power_control) {
+					(*dc).hwss.edp_backlight_control(edp_link, false);
+					(*hws).funcs.power_down(dc);
+					(*dc).hwss.edp_power_control(edp_link, false);
 				}
 			}
 		} else {
-			for (i = 0; i < dc->link_count; i++) {
-				struct dc_link *link = dc->links[i];
+			for (i = 0; i < (*dc).link_count; i++) {
+				struct dc_link *link = (*dc).links[i];
 
-				if (link->ep_type != DISPLAY_ENDPOINT_PHY)
+				if ((*link).ep_type != DISPLAY_ENDPOINT_PHY)
 					continue;
 				if (link->link_enc->funcs->is_dig_enabled &&
 						link->link_enc->funcs->is_dig_enabled(link->link_enc) &&
@@ -409,7 +409,7 @@ void dcn401_init_hw(struct dc *dc)
 	}
 }
 
-void dcn401_trigger_3dlut_dma_load(struct pipe_ctx *pipe_ctx)
+void dcn401_trigger_3dlut_dma_load(pipe_ctx *pipe_ctx)
 {
 	const struct pipe_ctx *primary_dpp_pipe_ctx = resource_get_primary_dpp_pipe(pipe_ctx);
 	struct hubp *primary_hubp = primary_dpp_pipe_ctx ?
@@ -420,7 +420,7 @@ void dcn401_trigger_3dlut_dma_load(struct pipe_ctx *pipe_ctx)
 	}
 }
 
-bool dcn401_set_mcm_luts(struct pipe_ctx *pipe_ctx,
+bool dcn401_set_mcm_luts(pipe_ctx *pipe_ctx,
 				const struct dc_plane_state *plane_state)
 {
 	struct dc *dc = pipe_ctx->plane_res.hubp->ctx->dc;
@@ -460,9 +460,9 @@ bool dcn401_set_mcm_luts(struct pipe_ctx *pipe_ctx,
 	lut_enable = cm->flags.bits.blend_enable != 0u;
 	memset(&m_lut_params, 0, sizeof(m_lut_params));
 	if (lut_enable) {
-		if (cm->blend_func.type == TF_TYPE_HWPWL)
+		if (cm->blend_func.r#type == TF_TYPE_HWPWL)
 			m_lut_params.pwl = &cm->blend_func.pwl;
-		else if (cm->blend_func.type == TF_TYPE_DISTRIBUTED_POINTS) {
+		else if (cm->blend_func.r#type == TF_TYPE_DISTRIBUTED_POINTS) {
 			rval = cm3_helper_translate_curve_to_hw_format(plane_state->ctx,
 					&cm->blend_func,
 					&dpp_base->regamma_params,
@@ -486,9 +486,9 @@ bool dcn401_set_mcm_luts(struct pipe_ctx *pipe_ctx,
 	lut_enable = cm->flags.bits.shaper_enable != 0u;
 	if (lut_enable) {
 		memset(&m_lut_params, 0, sizeof(m_lut_params));
-		if (cm->shaper_func.type == TF_TYPE_HWPWL)
+		if (cm->shaper_func.r#type == TF_TYPE_HWPWL)
 			m_lut_params.pwl = &cm->shaper_func.pwl;
-		else if (cm->shaper_func.type == TF_TYPE_DISTRIBUTED_POINTS) {
+		else if (cm->shaper_func.r#type == TF_TYPE_DISTRIBUTED_POINTS) {
 			ASSERT(false);
 			rval = cm3_helper_translate_curve_to_hw_format(plane_state->ctx,
 					&cm->shaper_func,
@@ -608,7 +608,7 @@ bool dcn401_set_mcm_luts(struct pipe_ctx *pipe_ctx,
 	return result;
 }
 
-bool dcn401_set_output_transfer_func(struct set_output_transfer_func_params *otf_params)
+bool dcn401_set_output_transfer_func(set_output_transfer_func_params *otf_params)
 {
 	struct dpp *dpp = otf_params->dpp;
 	struct mpc *mpc = otf_params->mpc;
@@ -623,16 +623,16 @@ bool dcn401_set_output_transfer_func(struct set_output_transfer_func_params *otf
 		/*program shaper and 3dlut in MPC*/
 		ret = dcn32_set_mpc_shaper_3dlut(dpp, mpc, mpcc_id, stream);
 		if (ret == false && mpc->funcs->set_output_gamma) {
-			if (stream->out_transfer_func.type == TF_TYPE_HWPWL)
+			if (stream->out_transfer_func.r#type == TF_TYPE_HWPWL)
 				params = &stream->out_transfer_func.pwl;
-			else if (stream->out_transfer_func.type ==
+			else if (stream->out_transfer_func.r#type ==
 					TF_TYPE_DISTRIBUTED_POINTS &&
 					cm3_helper_translate_curve_to_hw_format(stream->ctx,
 					&stream->out_transfer_func,
 					&mpc->blender_params, false))
 				params = &mpc->blender_params;
 			/* there are no ROM LUTs in OUTGAM */
-			if (stream->out_transfer_func.type == TF_TYPE_PREDEFINED)
+			if (stream->out_transfer_func.r#type == TF_TYPE_PREDEFINED)
 				BREAK_TO_DEBUGGER();
 		}
 	}
@@ -643,8 +643,8 @@ bool dcn401_set_output_transfer_func(struct set_output_transfer_func_params *otf
 	return ret;
 }
 
-void dcn401_calculate_dccg_tmds_div_value(struct pipe_ctx *pipe_ctx,
-				unsigned int *tmds_div)
+void dcn401_calculate_dccg_tmds_div_value(pipe_ctx *pipe_ctx,
+				core::ffi::c_uint *tmds_div)
 {
 	struct dc_stream_state *stream = pipe_ctx->stream;
 
@@ -663,16 +663,16 @@ void dcn401_calculate_dccg_tmds_div_value(struct pipe_ctx *pipe_ctx,
 }
 
 static void enable_stream_timing_calc(
-		struct pipe_ctx *pipe_ctx,
-		struct dc_state *context,
-		struct dc *dc,
-		unsigned int *tmds_div,
+		pipe_ctx *pipe_ctx,
+		dc_state *context,
+		dc *dc,
+		core::ffi::c_uint *tmds_div,
 		int *opp_inst,
 		int *opp_cnt,
-		struct pipe_ctx *opp_heads[MAX_PIPES],
+		pipe_ctx *opp_heads[MAX_PIPES],
 		bool *manual_mode,
-		struct drr_params *params,
-		unsigned int *event_triggers)
+		drr_params *params,
+		core::ffi::c_uint *event_triggers)
 {
 	(void)dc;
 	struct dc_stream_state *stream = pipe_ctx->stream;
@@ -707,21 +707,21 @@ static void enable_stream_timing_calc(
 }
 
 enum dc_status dcn401_enable_stream_timing(
-		struct pipe_ctx *pipe_ctx,
-		struct dc_state *context,
-		struct dc *dc)
+		pipe_ctx *pipe_ctx,
+		dc_state *context,
+		dc *dc)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 	struct dc_stream_state *stream = pipe_ctx->stream;
 	struct drr_params params = {0};
-	unsigned int event_triggers = 0;
+	core::ffi::c_uint event_triggers = 0;
 	int opp_cnt = 1;
 	int opp_inst[MAX_PIPES] = {0};
 	struct pipe_ctx *opp_heads[MAX_PIPES] = {0};
 	struct dc_crtc_timing patched_crtc_timing = stream->timing;
 	bool manual_mode = false;
-	unsigned int tmds_div = PIXEL_RATE_DIV_NA;
-	unsigned int unused_div = PIXEL_RATE_DIV_NA;
+	core::ffi::c_uint tmds_div = PIXEL_RATE_DIV_NA;
+	core::ffi::c_uint unused_div = PIXEL_RATE_DIV_NA;
 	int odm_slice_width;
 	int last_odm_slice_width;
 	int i;
@@ -785,11 +785,11 @@ enum dc_status dcn401_enable_stream_timing(
 	pipe_ctx->stream_res.tg->funcs->program_timing(
 		pipe_ctx->stream_res.tg,
 		&patched_crtc_timing,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vready_offset_pixels,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vstartup_lines,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vready_offset_pixels,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vstartup_lines,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines,
 		pipe_ctx->stream->signal,
 		true);
 
@@ -844,7 +844,7 @@ enum dc_status dcn401_enable_stream_timing(
 	return DC_OK;
 }
 
-static enum phyd32clk_clock_source get_phyd32clk_src(struct dc_link *link)
+static enum phyd32clk_clock_source get_phyd32clk_src(dc_link *link)
 {
 	switch (link->link_enc->transmitter) {
 	case TRANSMITTER_UNIPHY_A:
@@ -863,10 +863,10 @@ static enum phyd32clk_clock_source get_phyd32clk_src(struct dc_link *link)
 }
 
 static void dcn401_enable_stream_calc(
-		struct pipe_ctx *pipe_ctx,
+		pipe_ctx *pipe_ctx,
 		int *dp_hpo_inst,
-		enum phyd32clk_clock_source *phyd32clk,
-		unsigned int *tmds_div,
+		phyd32clk_clock_source *phyd32clk,
+		core::ffi::c_uint *tmds_div,
 		uint32_t *early_control)
 {
 
@@ -900,7 +900,7 @@ static void dcn401_enable_stream_calc(
 
 }
 
-void dcn401_enable_stream(struct pipe_ctx *pipe_ctx)
+void dcn401_enable_stream(pipe_ctx *pipe_ctx)
 {
 	uint32_t early_control = 0;
 	struct timing_generator *tg = pipe_ctx->stream_res.tg;
@@ -910,8 +910,8 @@ void dcn401_enable_stream(struct pipe_ctx *pipe_ctx)
 	struct dccg *dccg = dc->res_pool->dccg;
 	enum phyd32clk_clock_source phyd32clk = PHYD32CLKA;
 	int dp_hpo_inst = 0;
-	unsigned int tmds_div = PIXEL_RATE_DIV_NA;
-	unsigned int unused_div = PIXEL_RATE_DIV_NA;
+	core::ffi::c_uint tmds_div = PIXEL_RATE_DIV_NA;
+	core::ffi::c_uint unused_div = PIXEL_RATE_DIV_NA;
 	struct link_encoder *link_enc = pipe_ctx->link_res.dio_link_enc;
 	struct stream_encoder *stream_enc = pipe_ctx->stream_res.stream_enc;
 
@@ -960,13 +960,12 @@ void dcn401_enable_stream(struct pipe_ctx *pipe_ctx)
 	tg->funcs->set_early_control(tg, early_control);
 }
 
-void dcn401_setup_hpo_hw_control(const struct dce_hwseq *hws, bool enable)
+void dcn401_setup_hpo_hw_control(const struct dce_hwseq *hws, enable: bool)
 {
 	REG_UPDATE(HPO_TOP_HW_CONTROL, HPO_IO_EN, enable);
 }
 
-void adjust_hotspot_between_slices_for_2x_magnify(uint32_t cursor_width, struct dc_cursor_position *pos_cpy)
-{
+void adjust_hotspot_between_slices_for_2x_magnify!(uint32_t cursor_width, dc_cursor_position *pos_cpy, {
 	if (cursor_width <= 128) {
 		pos_cpy->x_hotspot /= 2;
 		pos_cpy->x_hotspot += 1;
@@ -974,9 +973,9 @@ void adjust_hotspot_between_slices_for_2x_magnify(uint32_t cursor_width, struct 
 		pos_cpy->x_hotspot /= 2;
 		pos_cpy->x_hotspot += 2;
 	}
-}
+});
 
-static void disable_link_output_symclk_on_tx_off(struct dc_link *link, enum dp_link_encoding link_encoding)
+static void disable_link_output_symclk_on_tx_off(dc_link *link, dp_link_encoding link_encoding)
 {
 	struct dc *dc = link->ctx->dc;
 	struct pipe_ctx *pipe_ctx = NULL;
@@ -995,9 +994,9 @@ static void disable_link_output_symclk_on_tx_off(struct dc_link *link, enum dp_l
 	}
 }
 
-void dcn401_disable_link_output(struct dc_link *link,
+void dcn401_disable_link_output(dc_link *link,
 		const struct link_resource *link_res,
-		enum signal_type signal)
+		signal_type signal)
 {
 	struct dc *dc = link->ctx->dc;
 	const struct link_hwss *link_hwss = get_link_hwss(link, link_res);
@@ -1037,21 +1036,21 @@ void dcn401_disable_link_output(struct dc_link *link,
 	dc->link_srv->dp_trace_source_sequence(link, DPCD_SOURCE_SEQ_AFTER_DISABLE_LINK_PHY);
 }
 
-void dcn401_set_cursor_position(struct pipe_ctx *pipe_ctx)
+void dcn401_set_cursor_position(pipe_ctx *pipe_ctx)
 {
 	struct dc_cursor_position pos_cpy = pipe_ctx->stream->cursor_position;
 	struct hubp *hubp = pipe_ctx->plane_res.hubp;
 	struct dpp *dpp = pipe_ctx->plane_res.dpp;
 	struct dc_cursor_mi_param param = {
-		.pixel_clk_khz = pipe_ctx->stream->timing.pix_clk_100hz / 10,
-		.ref_clk_khz = pipe_ctx->stream->ctx->dc->res_pool->ref_clocks.dchub_ref_clock_inKhz,
-		.viewport = pipe_ctx->plane_res.scl_data.viewport,
-		.recout = pipe_ctx->plane_res.scl_data.recout,
-		.h_scale_ratio = pipe_ctx->plane_res.scl_data.ratios.horz,
-		.v_scale_ratio = pipe_ctx->plane_res.scl_data.ratios.vert,
-		.rotation = pipe_ctx->plane_state->rotation,
-		.mirror = pipe_ctx->plane_state->horizontal_mirror,
-		.stream = pipe_ctx->stream
+		pixel_clk_khz: pipe_ctx->stream->timing.pix_clk_100hz / 10,
+		ref_clk_khz: pipe_ctx->stream->ctx->dc->res_pool->ref_clocks.dchub_ref_clock_inKhz,
+		viewport: pipe_ctx->plane_res.scl_data.viewport,
+		recout: pipe_ctx->plane_res.scl_data.recout,
+		h_scale_ratio: pipe_ctx->plane_res.scl_data.ratios.horz,
+		v_scale_ratio: pipe_ctx->plane_res.scl_data.ratios.vert,
+		rotation: pipe_ctx->plane_state->rotation,
+		mirror: pipe_ctx->plane_state->horizontal_mirror,
+		stream: pipe_ctx->stream
 	};
 	struct rect odm_slice_src = { 0 };
 	bool odm_combine_on = (pipe_ctx->next_odm_pipe != NULL) ||
@@ -1211,8 +1210,7 @@ void dcn401_set_cursor_position(struct pipe_ctx *pipe_ctx)
 	dpp->funcs->set_cursor_position(dpp, &pos_cpy, &param, hubp->curs_attr.width, hubp->curs_attr.height);
 }
 
-static bool dcn401_check_no_memory_request_for_cab(struct dc *dc)
-{
+static bool dcn401_check_no_memory_request_for_cab!(dc *dc, {
 	int i;
 
 	/* First, check no-memory-request case */
@@ -1224,11 +1222,11 @@ static bool dcn401_check_no_memory_request_for_cab(struct dc *dc)
 	}
 
 	return true;
-}
+});
 
-static uint32_t dcn401_calculate_cab_allocation(struct dc *dc, struct dc_state *ctx)
+static uint32_t dcn401_calculate_cab_allocation(dc *dc, dc_state *ctx)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	uint32_t num_ways = 0;
 	uint32_t mall_ss_size_bytes = 0;
 
@@ -1257,7 +1255,7 @@ static uint32_t dcn401_calculate_cab_allocation(struct dc *dc, struct dc_state *
 	return num_ways;
 }
 
-bool dcn401_apply_idle_power_optimizations(struct dc *dc, bool enable)
+bool dcn401_apply_idle_power_optimizations(dc *dc, enable: bool)
 {
 	union dmub_rb_cmd cmd;
 	uint32_t ways;
@@ -1279,7 +1277,7 @@ bool dcn401_apply_idle_power_optimizations(struct dc *dc, bool enable)
 	}
 
 	memset(&cmd, 0, sizeof(cmd));
-	cmd.cab.header.type = DMUB_CMD__CAB_FOR_SS;
+	cmd.cab.header.r#type = DMUB_CMD__CAB_FOR_SS;
 	cmd.cab.header.payload_bytes = sizeof(cmd.cab) - sizeof(cmd.cab.header);
 
 	if (enable) {
@@ -1303,7 +1301,7 @@ bool dcn401_apply_idle_power_optimizations(struct dc *dc, bool enable)
 				for (j = 0; j < dc->current_state->stream_status[i].plane_count; j++) {
 					plane = dc->current_state->stream_status[i].plane_states[j];
 
-					if (plane->address.type == PLN_ADDR_TYPE_GRPH_STEREO ||
+					if (plane->address.r#type == PLN_ADDR_TYPE_GRPH_STEREO ||
 							plane->address.tmz_surface) {
 						mall_ss_unsupported = true;
 						break;
@@ -1332,9 +1330,8 @@ bool dcn401_apply_idle_power_optimizations(struct dc *dc, bool enable)
 	return true;
 }
 
-void dcn401_wait_for_dcc_meta_propagation(const struct dc *dc,
-		const struct pipe_ctx *top_pipe)
-{
+void dcn401_wait_for_dcc_meta_propagation!(const struct dc *dc,
+		const struct pipe_ctx *top_pipe, {
 	bool is_wait_needed = false;
 	const struct pipe_ctx *pipe_ctx = top_pipe;
 
@@ -1355,14 +1352,14 @@ void dcn401_wait_for_dcc_meta_propagation(const struct dc *dc,
 	if (is_wait_needed && dc->debug.dcc_meta_propagation_delay_us > 0) {
 		udelay(dc->debug.dcc_meta_propagation_delay_us);
 	}
-}
+});
 
-void dcn401_prepare_bandwidth(struct dc *dc,
-	struct dc_state *context)
+void dcn401_prepare_bandwidth(dc *dc,
+	dc_state *context)
 {
 	struct hubbub *hubbub = dc->res_pool->hubbub;
 	bool p_state_change_support = context->bw_ctx.bw.dcn.clk.p_state_change_support;
-	unsigned int compbuf_size = 0;
+	core::ffi::c_uint compbuf_size = 0;
 
 	/* Any transition into P-State support should disable MCLK switching first to avoid hangs */
 	if (p_state_change_support) {
@@ -1418,13 +1415,13 @@ void dcn401_prepare_bandwidth(struct dc *dc,
 	}
 }
 
-void dcn401_prepare_bandwidth_sequence(struct dc *dc,
-		struct dc_state *context,
-		struct block_sequence_state *seq_state)
+void dcn401_prepare_bandwidth_sequence(dc *dc,
+		dc_state *context,
+		block_sequence_state *seq_state)
 {
 	struct hubbub *hubbub = dc->res_pool->hubbub;
 	bool p_state_change_support = context->bw_ctx.bw.dcn.clk.p_state_change_support;
-	unsigned int compbuf_size = 0;
+	core::ffi::c_uint compbuf_size = 0;
 
 	/* Any transition into P-State support should disable MCLK switching first to avoid hangs */
 	if (p_state_change_support) {
@@ -1470,10 +1467,10 @@ void dcn401_prepare_bandwidth_sequence(struct dc *dc,
 }
 
 void dcn401_optimize_bandwidth(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	struct hubbub *hubbub = dc->res_pool->hubbub;
 
 	/* enable fams2 if needed */
@@ -1528,9 +1525,9 @@ void dcn401_optimize_bandwidth(
  * to how commit_planes_do_stream_update_sequence replaces
  * commit_planes_do_stream_update.
  */
-void dcn401_optimize_bandwidth_sequence(struct dc *dc,
-		struct dc_state *context,
-		struct block_sequence_state *seq_state)
+void dcn401_optimize_bandwidth_sequence(dc *dc,
+		dc_state *context,
+		block_sequence_state *seq_state)
 {
 	struct hubbub *hubbub = dc->res_pool->hubbub;
 
@@ -1566,9 +1563,9 @@ void dcn401_optimize_bandwidth_sequence(struct dc *dc,
 				dc->clk_mgr, context, true, seq_state);
 }
 
-void dcn401_dmub_hw_control_lock(struct dc *dc,
-		struct dc_state *context,
-		bool lock)
+void dcn401_dmub_hw_control_lock(dc *dc,
+		dc_state *context,
+		lock: bool)
 {
 	(void)context;
 	/* use always for now */
@@ -1587,7 +1584,7 @@ void dcn401_dmub_hw_control_lock(struct dc *dc,
 	dmub_hw_lock_mgr_inbox0_cmd(dc->ctx->dmub_srv, hw_lock_cmd);
 }
 
-void dcn401_dmub_hw_control_lock_fast(union block_sequence_params *params)
+void dcn401_dmub_hw_control_lock_fast(block_sequence_params *params)
 {
 	struct dc *dc = params->dmub_hw_control_lock_fast_params.dc;
 	bool lock = params->dmub_hw_control_lock_fast_params.lock;
@@ -1603,7 +1600,7 @@ void dcn401_dmub_hw_control_lock_fast(union block_sequence_params *params)
 	}
 }
 
-void dcn401_fams2_update_config(struct dc *dc, struct dc_state *context, bool enable)
+void dcn401_fams2_update_config(dc *dc, dc_state *context, enable: bool)
 {
 	bool fams2_info_required;
 	bool fams2_enabled;
@@ -1619,9 +1616,8 @@ void dcn401_fams2_update_config(struct dc *dc, struct dc_state *context, bool en
 	dc_dmub_srv_fams2_update_config(dc, context, enable && fams2_info_required);
 }
 
-static void update_dsc_for_odm_change(struct dc *dc, struct dc_state *context,
-		struct pipe_ctx *otg_master)
-{
+static void update_dsc_for_odm_change!(dc *dc, dc_state *context,
+		pipe_ctx *otg_master, {
 	int i;
 	struct pipe_ctx *old_pipe;
 	struct pipe_ctx *new_pipe;
@@ -1656,10 +1652,10 @@ static void update_dsc_for_odm_change(struct dc *dc, struct dc_state *context,
 						old_pipe->stream_res.dsc);
 		}
 	}
-}
+});
 
-void dcn401_update_odm(struct dc *dc, struct dc_state *context,
-		struct pipe_ctx *otg_master)
+void dcn401_update_odm(dc *dc, dc_state *context,
+		pipe_ctx *otg_master)
 {
 	struct pipe_ctx *opp_heads[MAX_PIPES];
 	int opp_inst[MAX_PIPES] = {0};
@@ -1703,9 +1699,8 @@ void dcn401_update_odm(struct dc *dc, struct dc_state *context,
 		dc->hwseq->funcs.blank_pixel_data(dc, otg_master, true);
 }
 
-static void dcn401_add_dsc_sequence_for_odm_change(struct dc *dc, struct dc_state *context,
-		struct pipe_ctx *otg_master, struct block_sequence_state *seq_state)
-{
+static void dcn401_add_dsc_sequence_for_odm_change!(dc *dc, dc_state *context,
+		pipe_ctx *otg_master, block_sequence_state *seq_state, {
 	struct pipe_ctx *old_pipe;
 	struct pipe_ctx *new_pipe;
 	struct pipe_ctx *old_opp_heads[MAX_PIPES];
@@ -1793,10 +1788,10 @@ static void dcn401_add_dsc_sequence_for_odm_change(struct dc *dc, struct dc_stat
 			}
 		}
 	}
-}
+});
 
-void dcn401_update_odm_sequence(struct dc *dc, struct dc_state *context,
-		struct pipe_ctx *otg_master, struct block_sequence_state *seq_state)
+void dcn401_update_odm_sequence(dc *dc, dc_state *context,
+		pipe_ctx *otg_master, block_sequence_state *seq_state)
 {
 	struct pipe_ctx *opp_heads[MAX_PIPES];
 	int opp_inst[MAX_PIPES] = {0};
@@ -1840,8 +1835,8 @@ void dcn401_update_odm_sequence(struct dc *dc, struct dc_state *context,
 	}
 }
 
-void dcn401_unblank_stream(struct pipe_ctx *pipe_ctx,
-		struct dc_link_settings *link_settings)
+void dcn401_unblank_stream(pipe_ctx *pipe_ctx,
+		dc_link_settings *link_settings)
 {
 	struct encoder_unblank_param params = {0};
 	struct dc_stream_state *stream = pipe_ctx->stream;
@@ -1873,7 +1868,7 @@ void dcn401_unblank_stream(struct pipe_ctx *pipe_ctx,
 		hws->funcs.edp_backlight_control(link, true);
 }
 
-void dcn401_hardware_release(struct dc *dc)
+void dcn401_hardware_release(dc *dc)
 {
 	if (!dc->debug.disable_force_pstate_allow_on_hw_release) {
 		if (dc->ctx->dmub_srv && dc->debug.fams2_config.bits.enable)
@@ -1903,8 +1898,7 @@ void dcn401_hardware_release(struct dc *dc)
 	}
 }
 
-void dcn401_wait_for_det_buffer_update_under_otg_master(struct dc *dc, struct dc_state *context, struct pipe_ctx *otg_master)
-{
+void dcn401_wait_for_det_buffer_update_under_otg_master!(dc *dc, dc_state *context, pipe_ctx *otg_master, {
 	struct pipe_ctx *opp_heads[MAX_PIPES];
 	struct pipe_ctx *dpp_pipes[MAX_PIPES];
 	struct hubbub *hubbub = dc->res_pool->hubbub;
@@ -1934,12 +1928,12 @@ void dcn401_wait_for_det_buffer_update_under_otg_master(struct dc *dc, struct dc
 				hubbub->funcs->wait_for_det_update(hubbub, opp_heads[slice_idx]->plane_res.hubp->inst);
 		}
 	}
-}
+});
 
-void dcn401_interdependent_update_lock(struct dc *dc,
-		struct dc_state *context, bool lock)
+void dcn401_interdependent_update_lock(dc *dc,
+		dc_state *context, lock: bool)
 {
-	unsigned int i = 0;
+	core::ffi::c_uint i = 0;
 	struct pipe_ctx *pipe = NULL;
 	struct timing_generator *tg = NULL;
 
@@ -1992,7 +1986,7 @@ void dcn401_interdependent_update_lock(struct dc *dc,
 	}
 }
 
-void dcn401_perform_3dlut_wa_unlock(struct pipe_ctx *pipe_ctx)
+void dcn401_perform_3dlut_wa_unlock(pipe_ctx *pipe_ctx)
 {
 	/* If 3DLUT FL is enabled and 3DLUT is in use, follow the workaround sequence for pipe unlock to make sure that
 	 * HUBP will properly fetch 3DLUT contents after unlock.
@@ -2041,8 +2035,8 @@ void dcn401_perform_3dlut_wa_unlock(struct pipe_ctx *pipe_ctx)
 	}
 }
 
-void dcn401_program_outstanding_updates(struct dc *dc,
-		struct dc_state *context)
+void dcn401_program_outstanding_updates(dc *dc,
+		dc_state *context)
 {
 	struct hubbub *hubbub = dc->res_pool->hubbub;
 
@@ -2051,11 +2045,10 @@ void dcn401_program_outstanding_updates(struct dc *dc,
 		hubbub->funcs->program_compbuf_segments(hubbub, context->bw_ctx.bw.dcn.arb_regs.compbuf_size, true);
 }
 
-void dcn401_reset_back_end_for_pipe(
-		struct dc *dc,
-		struct pipe_ctx *pipe_ctx,
-		struct dc_state *context)
-{
+void dcn401_reset_back_end_for_pipe!(
+		dc *dc,
+		pipe_ctx *pipe_ctx,
+		dc_state *context, {
 	(void)context;
 	struct dc_link *link = pipe_ctx->stream->link;
 	const struct link_hwss *link_hwss = get_link_hwss(link, &pipe_ctx->link_res);
@@ -2145,8 +2138,8 @@ void dcn401_reset_back_end_for_pipe(
 	pipe_ctx->prev_odm_pipe = NULL;
 	DC_LOG_DEBUG("Reset back end for pipe %d, tg:%d\n",
 					pipe_ctx->pipe_idx, pipe_ctx->stream_res.tg->inst);
-}
-static void dc_hwss_disable_otg_pwa(struct dc *dc)
+});
+static void dc_hwss_disable_otg_pwa(dc *dc)
 {
 	if (dc->debug.enable_otg_frame_sync_pwa) {
 		int i;
@@ -2164,8 +2157,8 @@ static void dc_hwss_disable_otg_pwa(struct dc *dc)
 }
 
 void dcn401_reset_hw_ctx_wrap(
-		struct dc *dc,
-		struct dc_state *context)
+		dc *dc,
+		dc_state *context)
 {
 	int i;
 	struct dce_hwseq *hws = dc->hwseq;
@@ -2197,10 +2190,9 @@ void dcn401_reset_hw_ctx_wrap(
 	}
 }
 
-static unsigned int dcn401_calculate_vready_offset_for_group(struct pipe_ctx *pipe)
-{
+static core::ffi::c_uint dcn401_calculate_vready_offset_for_group!(pipe_ctx *pipe, {
 	struct pipe_ctx *other_pipe;
-	unsigned int vready_offset = pipe->global_sync.dcn4x.vready_offset_pixels;
+	core::ffi::c_uint vready_offset = pipe->global_sync.dcn4x.vready_offset_pixels;
 
 	/* Always use the largest vready_offset of all connected pipes */
 	for (other_pipe = pipe->bottom_pipe; other_pipe != NULL; other_pipe = other_pipe->bottom_pipe) {
@@ -2221,21 +2213,21 @@ static unsigned int dcn401_calculate_vready_offset_for_group(struct pipe_ctx *pi
 	}
 
 	return vready_offset;
-}
+});
 
 static void dcn401_program_tg(
-	struct dc *dc,
-	struct pipe_ctx *pipe_ctx,
-	struct dc_state *context,
-	struct dce_hwseq *hws)
+	dc *dc,
+	pipe_ctx *pipe_ctx,
+	dc_state *context,
+	dce_hwseq *hws)
 {
 	pipe_ctx->stream_res.tg->funcs->program_global_sync(
 		pipe_ctx->stream_res.tg,
 		dcn401_calculate_vready_offset_for_group(pipe_ctx),
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vstartup_lines,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
-		(unsigned int)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines);
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vstartup_lines,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
+		(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines);
 
 	if (dc_state_get_pipe_subvp_type(context, pipe_ctx) != SUBVP_PHANTOM)
 		pipe_ctx->stream_res.tg->funcs->wait_for_state(pipe_ctx->stream_res.tg, CRTC_STATE_VACTIVE);
@@ -2248,9 +2240,9 @@ static void dcn401_program_tg(
 }
 
 void dcn401_program_pipe(
-	struct dc *dc,
-	struct pipe_ctx *pipe_ctx,
-	struct dc_state *context)
+	dc *dc,
+	pipe_ctx *pipe_ctx,
+	dc_state *context)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 
@@ -2377,10 +2369,10 @@ void dcn401_program_pipe(
  *
  */
 void dcn401_program_pipe_sequence(
-	struct dc *dc,
-	struct pipe_ctx *pipe_ctx,
-	struct dc_state *context,
-	struct block_sequence_state *seq_state)
+	dc *dc,
+	pipe_ctx *pipe_ctx,
+	dc_state *context,
+	block_sequence_state *seq_state)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 
@@ -2403,10 +2395,10 @@ void dcn401_program_pipe_sequence(
 		/* Step 1: Program global sync */
 		hwss_add_tg_program_global_sync(seq_state, pipe_ctx->stream_res.tg,
 			dcn401_calculate_vready_offset_for_group(pipe_ctx),
-			(unsigned int)pipe_ctx->global_sync.dcn4x.vstartup_lines,
-			(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
-			(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
-			(unsigned int)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines);
+			(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vstartup_lines,
+			(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
+			(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
+			(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines);
 
 		/* Step 2: Wait for VACTIVE state (if not phantom pipe) */
 		if (dc_state_get_pipe_subvp_type(context, pipe_ctx) != SUBVP_PHANTOM)
@@ -2509,7 +2501,7 @@ void dcn401_program_pipe_sequence(
 			pipe_ctx->stream_res.test_pattern_params.test_pattern,
 			pipe_ctx->stream_res.test_pattern_params.color_space,
 			pipe_ctx->stream_res.test_pattern_params.color_depth,
-			(struct tg_color){0},
+			(tg_color){0},
 			false,
 			pipe_ctx->stream_res.test_pattern_params.width,
 			pipe_ctx->stream_res.test_pattern_params.height,
@@ -2525,13 +2517,12 @@ void dcn401_program_pipe_sequence(
 	}
 }
 
-void dcn401_program_front_end_for_ctx(
-	struct dc *dc,
-	struct dc_state *context)
-{
-	unsigned int i;
-	unsigned int prev_hubp_count = 0;
-	unsigned int hubp_count = 0;
+void dcn401_program_front_end_for_ctx!(
+	dc *dc,
+	dc_state *context, {
+	core::ffi::c_uint i;
+	core::ffi::c_uint prev_hubp_count = 0;
+	core::ffi::c_uint hubp_count = 0;
 	struct dce_hwseq *hws = dc->hwseq;
 	struct pipe_ctx *pipe = NULL;
 
@@ -2696,17 +2687,17 @@ void dcn401_program_front_end_for_ctx(
 			pipe->plane_res.hubp->funcs->hubp_wait_pipe_read_start(pipe->plane_res.hubp);
 		}
 	}
-}
+});
 
 void dcn401_post_unlock_program_front_end(
-	struct dc *dc,
-	struct dc_state *context)
+	dc *dc,
+	dc_state *context)
 {
 	// Timeout for pipe enable
-	unsigned int timeout_us = 100000;
-	unsigned int polling_interval_us = 1;
+	core::ffi::c_uint timeout_us = 100000;
+	core::ffi::c_uint polling_interval_us = 1;
 	struct dce_hwseq *hwseq = dc->hwseq;
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	if (dc->debug.enable_block_sequence_programming) {
 		hwss_build_post_unlock_full_sequence(dc,
@@ -2741,7 +2732,7 @@ void dcn401_post_unlock_program_front_end(
 		if (pipe->plane_state && !pipe->top_pipe && pipe->update_flags.bits.enable &&
 			dc_state_get_pipe_subvp_type(context, pipe) != SUBVP_PHANTOM) {
 			struct hubp *hubp = pipe->plane_res.hubp;
-			unsigned int j = 0;
+			core::ffi::c_uint j = 0;
 
 			for (j = 0; j < timeout_us / polling_interval_us
 				&& hubp->funcs->hubp_is_flip_pending(hubp); j++)
@@ -2760,7 +2751,7 @@ void dcn401_post_unlock_program_front_end(
 		if (resource_is_pipe_type(old_pipe, OTG_MASTER) && resource_is_pipe_type(pipe, OTG_MASTER) &&
 			resource_get_odm_slice_count(old_pipe) < resource_get_odm_slice_count(pipe) &&
 			dc_state_get_pipe_subvp_type(context, pipe) != SUBVP_PHANTOM) {
-			unsigned int j = 0;
+			core::ffi::c_uint j = 0;
 			struct timing_generator *tg = pipe->stream_res.tg;
 
 			if (tg->funcs->get_optc_double_buffer_pending) {
@@ -2842,10 +2833,10 @@ void dcn401_post_unlock_program_front_end(
 }
 
 bool dcn401_update_bandwidth(
-	struct dc *dc,
-	struct dc_state *context)
+	dc *dc,
+	dc_state *context)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	struct dce_hwseq *hws = dc->hwseq;
 
 	/* recalculate DML parameters */
@@ -2868,10 +2859,10 @@ bool dcn401_update_bandwidth(
 			pipe_ctx->stream_res.tg->funcs->program_global_sync(
 				pipe_ctx->stream_res.tg,
 				dcn401_calculate_vready_offset_for_group(pipe_ctx),
-				(unsigned int)pipe_ctx->global_sync.dcn4x.vstartup_lines,
-				(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
-				(unsigned int)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
-				(unsigned int)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines);
+				(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vstartup_lines,
+				(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_offset_pixels,
+				(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.vupdate_vupdate_width_pixels,
+				(core::ffi::c_uint)pipe_ctx->global_sync.dcn4x.pstate_keepout_start_lines);
 
 			pipe_ctx->stream_res.tg->funcs->set_vtg_params(
 				pipe_ctx->stream_res.tg, &pipe_ctx->stream->timing, false);
@@ -2894,22 +2885,22 @@ bool dcn401_update_bandwidth(
 	return true;
 }
 
-void dcn401_detect_pipe_changes(struct dc_state *old_state,
-	struct dc_state *new_state,
-	struct pipe_ctx *old_pipe,
-	struct pipe_ctx *new_pipe)
+void dcn401_detect_pipe_changes(dc_state *old_state,
+	dc_state *new_state,
+	pipe_ctx *old_pipe,
+	pipe_ctx *new_pipe)
 {
 	bool old_is_phantom = dc_state_get_pipe_subvp_type(old_state, old_pipe) == SUBVP_PHANTOM;
 	bool new_is_phantom = dc_state_get_pipe_subvp_type(new_state, new_pipe) == SUBVP_PHANTOM;
 
-	unsigned int old_pipe_vready_offset_pixels = old_pipe->global_sync.dcn4x.vready_offset_pixels;
-	unsigned int new_pipe_vready_offset_pixels = new_pipe->global_sync.dcn4x.vready_offset_pixels;
-	unsigned int old_pipe_vstartup_lines = old_pipe->global_sync.dcn4x.vstartup_lines;
-	unsigned int new_pipe_vstartup_lines = new_pipe->global_sync.dcn4x.vstartup_lines;
-	unsigned int old_pipe_vupdate_offset_pixels = old_pipe->global_sync.dcn4x.vupdate_offset_pixels;
-	unsigned int new_pipe_vupdate_offset_pixels = new_pipe->global_sync.dcn4x.vupdate_offset_pixels;
-	unsigned int old_pipe_vupdate_width_pixels = old_pipe->global_sync.dcn4x.vupdate_vupdate_width_pixels;
-	unsigned int new_pipe_vupdate_width_pixels = new_pipe->global_sync.dcn4x.vupdate_vupdate_width_pixels;
+	core::ffi::c_uint old_pipe_vready_offset_pixels = old_pipe->global_sync.dcn4x.vready_offset_pixels;
+	core::ffi::c_uint new_pipe_vready_offset_pixels = new_pipe->global_sync.dcn4x.vready_offset_pixels;
+	core::ffi::c_uint old_pipe_vstartup_lines = old_pipe->global_sync.dcn4x.vstartup_lines;
+	core::ffi::c_uint new_pipe_vstartup_lines = new_pipe->global_sync.dcn4x.vstartup_lines;
+	core::ffi::c_uint old_pipe_vupdate_offset_pixels = old_pipe->global_sync.dcn4x.vupdate_offset_pixels;
+	core::ffi::c_uint new_pipe_vupdate_offset_pixels = new_pipe->global_sync.dcn4x.vupdate_offset_pixels;
+	core::ffi::c_uint old_pipe_vupdate_width_pixels = old_pipe->global_sync.dcn4x.vupdate_vupdate_width_pixels;
+	core::ffi::c_uint new_pipe_vupdate_width_pixels = new_pipe->global_sync.dcn4x.vupdate_vupdate_width_pixels;
 
 	new_pipe->update_flags.raw = 0;
 
@@ -2946,7 +2937,7 @@ void dcn401_detect_pipe_changes(struct dc_state *old_state,
 		new_pipe->update_flags.bits.scaler = 1;
 		new_pipe->update_flags.bits.viewport = 1;
 		new_pipe->update_flags.bits.det_size = 1;
-		if (new_pipe->stream->test_pattern.type != DP_TEST_PATTERN_VIDEO_MODE &&
+		if (new_pipe->stream->test_pattern.r#type != DP_TEST_PATTERN_VIDEO_MODE &&
 			new_pipe->stream_res.test_pattern_params.width != 0 &&
 			new_pipe->stream_res.test_pattern_params.height != 0)
 			new_pipe->update_flags.bits.test_pattern_changed = 1;
@@ -3020,12 +3011,12 @@ void dcn401_detect_pipe_changes(struct dc_state *old_state,
 		new_pipe->update_flags.bits.dppclk = 1;
 
 	/* Check for scl update */
-	if (memcmp(&old_pipe->plane_res.scl_data, &new_pipe->plane_res.scl_data, sizeof(struct scaler_data)))
+	if (memcmp(&old_pipe->plane_res.scl_data, &new_pipe->plane_res.scl_data, sizeof(scaler_data)))
 		new_pipe->update_flags.bits.scaler = 1;
 	/* Check for vp update */
-	if (memcmp(&old_pipe->plane_res.scl_data.viewport, &new_pipe->plane_res.scl_data.viewport, sizeof(struct rect))
+	if (memcmp(&old_pipe->plane_res.scl_data.viewport, &new_pipe->plane_res.scl_data.viewport, sizeof(rect))
 		|| memcmp(&old_pipe->plane_res.scl_data.viewport_c,
-			&new_pipe->plane_res.scl_data.viewport_c, sizeof(struct rect)))
+			&new_pipe->plane_res.scl_data.viewport_c, sizeof(rect)))
 		new_pipe->update_flags.bits.viewport = 1;
 
 	/* Detect dlg/ttu/rq updates */
@@ -3086,14 +3077,14 @@ void dcn401_detect_pipe_changes(struct dc_state *old_state,
 		new_pipe->update_flags.bits.unbounded_req = 1;
 
 	if (memcmp(&old_pipe->stream_res.test_pattern_params,
-		&new_pipe->stream_res.test_pattern_params, sizeof(struct test_pattern_params))) {
+		&new_pipe->stream_res.test_pattern_params, sizeof(test_pattern_params))) {
 		new_pipe->update_flags.bits.test_pattern_changed = 1;
 	}
 }
 
-void dcn401_plane_atomic_power_down(struct dc *dc,
-		struct dpp *dpp,
-		struct hubp *hubp)
+void dcn401_plane_atomic_power_down(dc *dc,
+		dpp *dpp,
+		hubp *hubp)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 	uint32_t org_ip_request_cntl = 0;
@@ -3125,7 +3116,7 @@ void dcn401_plane_atomic_power_down(struct dc *dc,
 		hws->funcs.dpp_root_clock_control(hws, dpp->inst, false);
 }
 
-void dcn401_update_cursor_offload_pipe(struct dc *dc, const struct pipe_ctx *pipe)
+void dcn401_update_cursor_offload_pipe(dc *dc, const struct pipe_ctx *pipe)
 {
 	volatile struct dmub_cursor_offload_v1 *cs = dc->ctx->dmub_srv->dmub->cursor_offload_v1;
 	const struct pipe_ctx *top_pipe = resource_get_otg_master(pipe);
@@ -3181,10 +3172,10 @@ void dcn401_update_cursor_offload_pipe(struct dc *dc, const struct pipe_ctx *pip
 	cs->offload_streams[stream_idx].payloads[payload_idx].pipe_mask |= (1u << pipe->pipe_idx);
 }
 
-void dcn401_plane_atomic_power_down_sequence(struct dc *dc,
-		struct dpp *dpp,
-		struct hubp *hubp,
-		struct block_sequence_state *seq_state)
+void dcn401_plane_atomic_power_down_sequence(dc *dc,
+		dpp *dpp,
+		hubp *hubp,
+		block_sequence_state *seq_state)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 	uint32_t org_ip_request_cntl = 0;
@@ -3219,10 +3210,10 @@ void dcn401_plane_atomic_power_down_sequence(struct dc *dc,
 }
 
 /* trigger HW to start disconnect plane from stream on the next vsync using block sequence */
-void dcn401_plane_atomic_disconnect_sequence(struct dc *dc,
-		struct dc_state *state,
-		struct pipe_ctx *pipe_ctx,
-		struct block_sequence_state *seq_state)
+void dcn401_plane_atomic_disconnect_sequence(dc *dc,
+		dc_state *state,
+		pipe_ctx *pipe_ctx,
+		block_sequence_state *seq_state)
 {
 	struct hubp *hubp = pipe_ctx->plane_res.hubp;
 	int dpp_id = pipe_ctx->plane_res.dpp->inst;
@@ -3261,10 +3252,10 @@ void dcn401_plane_atomic_disconnect_sequence(struct dc *dc,
 }
 
 void dcn401_blank_pixel_data_sequence(
-	struct dc *dc,
-	struct pipe_ctx *pipe_ctx,
-	bool blank,
-	struct block_sequence_state *seq_state)
+	dc *dc,
+	pipe_ctx *pipe_ctx,
+	blank: bool,
+	block_sequence_state *seq_state)
 {
 	struct tg_color black_color = {0};
 	struct stream_resource *stream_res = &pipe_ctx->stream_res;
@@ -3340,22 +3331,22 @@ void dcn401_blank_pixel_data_sequence(
 }
 
 void dcn401_program_all_writeback_pipes_in_tree_sequence(
-		struct dc *dc,
+		dc *dc,
 		const struct dc_stream_state *stream,
-		struct dc_state *context,
-		struct block_sequence_state *seq_state)
+		dc_state *context,
+		block_sequence_state *seq_state)
 {
 	struct dwbc *dwb;
-	unsigned int i_wb, i_pipe;
-	unsigned int num_dwb_cap = (unsigned int)dc->res_pool->res_cap->num_dwb;
+	i_wb: core::ffi::c_uint, i_pipe;
+	core::ffi::c_uint num_dwb_cap = (core::ffi::c_uint)dc->res_pool->res_cap->num_dwb;
 
-	if (!stream || (unsigned int)stream->num_wb_info > num_dwb_cap)
+	if (!stream || (core::ffi::c_uint)stream->num_wb_info > num_dwb_cap)
 		return;
 
 	/* For each writeback pipe */
 	for (i_wb = 0; i_wb < stream->num_wb_info; i_wb++) {
 		/* Get direct pointer to writeback info */
-		struct dc_writeback_info *wb_info = (struct dc_writeback_info *)&stream->writeback_info[i_wb];
+		struct dc_writeback_info *wb_info = (dc_writeback_info *)&stream->writeback_info[i_wb];
 		int mpcc_inst = -1;
 
 		if (wb_info->wb_enabled) {
@@ -3398,11 +3389,11 @@ void dcn401_program_all_writeback_pipes_in_tree_sequence(
 }
 
 void dcn401_enable_writeback_sequence(
-		struct dc *dc,
-		struct dc_writeback_info *wb_info,
-		struct dc_state *context,
+		dc *dc,
+		dc_writeback_info *wb_info,
+		dc_state *context,
 		int mpcc_inst,
-		struct block_sequence_state *seq_state)
+		block_sequence_state *seq_state)
 {
 	struct dwbc *dwb;
 	struct mcif_wb *mcif_wb;
@@ -3433,9 +3424,9 @@ void dcn401_enable_writeback_sequence(
 }
 
 void dcn401_disable_writeback_sequence(
-		struct dc *dc,
-		struct dc_writeback_info *wb_info,
-		struct block_sequence_state *seq_state)
+		dc *dc,
+		dc_writeback_info *wb_info,
+		block_sequence_state *seq_state)
 {
 	struct dwbc *dwb;
 	struct mcif_wb *mcif_wb;
@@ -3457,10 +3448,10 @@ void dcn401_disable_writeback_sequence(
 }
 
 void dcn401_update_writeback_sequence(
-		struct dc *dc,
-		struct dc_writeback_info *wb_info,
-		struct dc_state *context,
-		struct block_sequence_state *seq_state)
+		dc *dc,
+		dc_writeback_info *wb_info,
+		dc_state *context,
+		block_sequence_state *seq_state)
 {
 	(void)context;
 	struct dwbc *dwb;
@@ -3493,14 +3484,14 @@ static int find_free_gsl_group(const struct dc *dc)
 
 void dcn401_setup_gsl_group_as_lock_sequence(
 		const struct dc *dc,
-		struct pipe_ctx *pipe_ctx,
-		bool enable,
-		struct block_sequence_state *seq_state)
+		pipe_ctx *pipe_ctx,
+		enable: bool,
+		block_sequence_state *seq_state)
 {
 	struct gsl_params gsl;
 	int group_idx;
 
-	memset(&gsl, 0, sizeof(struct gsl_params));
+	memset(&gsl, 0, sizeof(gsl_params));
 
 	if (enable) {
 		/* return if group already assigned since GSL was set up
@@ -3565,10 +3556,10 @@ void dcn401_setup_gsl_group_as_lock_sequence(
 }
 
 void dcn401_disable_plane_sequence(
-		struct dc *dc,
-		struct dc_state *state,
-		struct pipe_ctx *pipe_ctx,
-		struct block_sequence_state *seq_state)
+		dc *dc,
+		dc_state *state,
+		pipe_ctx *pipe_ctx,
+		block_sequence_state *seq_state)
 {
 	bool is_phantom = dc_state_get_pipe_subvp_type(state, pipe_ctx) == SUBVP_PHANTOM;
 	struct timing_generator *tg = is_phantom ? pipe_ctx->stream_res.tg : NULL;
@@ -3619,9 +3610,9 @@ void dcn401_disable_plane_sequence(
 }
 
 void dcn401_post_unlock_reset_opp_sequence(
-		struct dc *dc,
-		struct pipe_ctx *opp_head,
-		struct block_sequence_state *seq_state)
+		dc *dc,
+		pipe_ctx *opp_head,
+		block_sequence_state *seq_state)
 {
 	struct display_stream_compressor *dsc = opp_head->stream_res.dsc;
 	struct dccg *dccg = dc->res_pool->dccg;
@@ -3656,7 +3647,7 @@ void dcn401_post_unlock_reset_opp_sequence(
 	}
 }
 
-void dcn401_dc_ip_request_cntl(struct dc *dc, bool enable)
+void dcn401_dc_ip_request_cntl(dc *dc, enable: bool)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 
@@ -3664,9 +3655,9 @@ void dcn401_dc_ip_request_cntl(struct dc *dc, bool enable)
 		REG_SET(DC_IP_REQUEST_CNTL, 0, IP_REQUEST_EN, enable ? 1 : 0);
 }
 
-void dcn401_enable_plane_sequence(struct dc *dc, struct pipe_ctx *pipe_ctx,
-				 struct dc_state *context,
-				 struct block_sequence_state *seq_state)
+void dcn401_enable_plane_sequence(dc *dc, pipe_ctx *pipe_ctx,
+				 dc_state *context,
+				 block_sequence_state *seq_state)
 {
 	(void)context;
 	struct dce_hwseq *hws = dc->hwseq;
@@ -3725,10 +3716,10 @@ void dcn401_enable_plane_sequence(struct dc *dc, struct pipe_ctx *pipe_ctx,
 	}
 }
 
-void dcn401_update_dchubp_dpp_sequence(struct dc *dc,
-				       struct pipe_ctx *pipe_ctx,
-				       struct dc_state *context,
-				       struct block_sequence_state *seq_state)
+void dcn401_update_dchubp_dpp_sequence(dc *dc,
+				       pipe_ctx *pipe_ctx,
+				       dc_state *context,
+				       block_sequence_state *seq_state)
 {
 	struct dce_hwseq *hws = dc->hwseq;
 	struct hubp *hubp = pipe_ctx->plane_res.hubp;
@@ -3909,9 +3900,9 @@ void dcn401_update_dchubp_dpp_sequence(struct dc *dc,
 		hwss_add_phantom_hubp_post_enable(seq_state, hubp);
 }
 
-void dcn401_update_mpcc_sequence(struct dc *dc,
-				struct pipe_ctx *pipe_ctx,
-				struct block_sequence_state *seq_state)
+void dcn401_update_mpcc_sequence(dc *dc,
+				pipe_ctx *pipe_ctx,
+				block_sequence_state *seq_state)
 {
 	struct hubp *hubp = pipe_ctx->plane_res.hubp;
 	struct mpcc_blnd_cfg blnd_cfg = {0};
@@ -3995,9 +3986,9 @@ void dcn401_update_mpcc_sequence(struct dc *dc,
 	hubp->mpcc_id = mpcc_id;
 }
 
-static struct hubp *get_hubp_by_inst(struct resource_pool *res_pool, int mpcc_inst)
+static struct hubp *get_hubp_by_inst(resource_pool *res_pool, int mpcc_inst)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	for (i = 0; i < res_pool->pipe_count; i++) {
 		if (res_pool->hubps[i]->inst == mpcc_inst)
@@ -4007,12 +3998,11 @@ static struct hubp *get_hubp_by_inst(struct resource_pool *res_pool, int mpcc_in
 	return NULL;
 }
 
-void dcn401_wait_for_mpcc_disconnect_sequence(
-		struct dc *dc,
-		struct resource_pool *res_pool,
-		struct pipe_ctx *pipe_ctx,
-		struct block_sequence_state *seq_state)
-{
+void dcn401_wait_for_mpcc_disconnect_sequence!(
+		dc *dc,
+		resource_pool *res_pool,
+		pipe_ctx *pipe_ctx,
+		block_sequence_state *seq_state, {
 	int mpcc_inst;
 
 	if (dc->debug.sanity_checks)
@@ -4037,10 +4027,10 @@ void dcn401_wait_for_mpcc_disconnect_sequence(
 
 	if (dc->debug.sanity_checks)
 		dc->hwseq->funcs.verify_allow_pstate_change_high_sequence(dc, seq_state);
-}
+});
 
-void dcn401_setup_vupdate_interrupt_sequence(struct dc *dc, struct pipe_ctx *pipe_ctx,
-		struct block_sequence_state *seq_state)
+void dcn401_setup_vupdate_interrupt_sequence(dc *dc, pipe_ctx *pipe_ctx,
+		block_sequence_state *seq_state)
 {
 	struct timing_generator *tg = pipe_ctx->stream_res.tg;
 	int start_line = dc->hwss.get_vupdate_offset_from_vsync(pipe_ctx);
@@ -4052,8 +4042,8 @@ void dcn401_setup_vupdate_interrupt_sequence(struct dc *dc, struct pipe_ctx *pip
 		hwss_add_tg_setup_vertical_interrupt2(seq_state, tg, start_line);
 }
 
-void dcn401_set_hdr_multiplier_sequence(struct pipe_ctx *pipe_ctx,
-		struct block_sequence_state *seq_state)
+void dcn401_set_hdr_multiplier_sequence(pipe_ctx *pipe_ctx,
+		block_sequence_state *seq_state)
 {
 	struct fixed31_32 multiplier = pipe_ctx->plane_state->hdr_mult;
 	uint32_t hw_mult = 0x1f000; // 1.0 default multiplier
@@ -4069,11 +4059,11 @@ void dcn401_set_hdr_multiplier_sequence(struct pipe_ctx *pipe_ctx,
 	hwss_add_dpp_set_hdr_multiplier(seq_state, pipe_ctx->plane_res.dpp, hw_mult);
 }
 
-void dcn401_program_mall_pipe_config_sequence(struct dc *dc, struct dc_state *context,
-		struct block_sequence_state *seq_state)
+void dcn401_program_mall_pipe_config_sequence(dc *dc, dc_state *context,
+		block_sequence_state *seq_state)
 {
-	unsigned int i;
-	unsigned int num_ways = dcn401_calculate_cab_allocation(dc, context);
+	core::ffi::c_uint i;
+	core::ffi::c_uint num_ways = dcn401_calculate_cab_allocation(dc, context);
 	bool cache_cursor = false;
 
 	// Don't force p-state disallow -- can't block dummy p-state
@@ -4112,7 +4102,7 @@ void dcn401_program_mall_pipe_config_sequence(struct dc *dc, struct dc_state *co
 				// MALL not supported with Stereo3D
 				uint32_t mall_sel = (num_ways <= dc->caps.cache_num_ways &&
 					pipe->stream->link->psr_settings.psr_version == DC_PSR_VERSION_UNSUPPORTED &&
-					pipe->plane_state->address.type != PLN_ADDR_TYPE_GRPH_STEREO &&
+					pipe->plane_state->address.r#type != PLN_ADDR_TYPE_GRPH_STEREO &&
 					!pipe->plane_state->address.tmz_surface) ? 2 : 0;
 				hwss_add_hubp_update_mall_sel(seq_state, hubp, mall_sel, cache_cursor);
 			}
@@ -4131,8 +4121,8 @@ void dcn401_program_mall_pipe_config_sequence(struct dc *dc, struct dc_state *co
 	}
 }
 
-void dcn401_verify_allow_pstate_change_high_sequence(struct dc *dc,
-		struct block_sequence_state *seq_state)
+void dcn401_verify_allow_pstate_change_high_sequence(dc *dc,
+		block_sequence_state *seq_state)
 {
 	struct hubbub *hubbub = dc->res_pool->hubbub;
 
@@ -4145,11 +4135,11 @@ void dcn401_verify_allow_pstate_change_high_sequence(struct dc *dc,
 	}
 }
 
-bool dcn401_hw_wa_force_recovery_sequence(struct dc *dc,
-		struct block_sequence_state *seq_state)
+bool dcn401_hw_wa_force_recovery_sequence(dc *dc,
+		block_sequence_state *seq_state)
 {
 	struct hubp *hubp;
-	unsigned int i;
+	core::ffi::c_uint i;
 
 	if (!dc->debug.recovery_enabled)
 		return false;

@@ -34,29 +34,29 @@ pub enum FixedAddresses {
     FixTextPoke0,
 
     /* CONFIG_KVM: one slot per CPU, mapping the guest's VNCR page at EL2. */
-    #[cfg(feature = "CONFIG_KVM")]
+    #[cfg(CONFIG_KVM)]
     FixVncrEnd,
-    #[cfg(feature = "CONFIG_KVM")]
+    #[cfg(CONFIG_KVM)]
     FixVncr = FixVncrEnd as usize + NR_CPUS,
 
     /* CONFIG_ACPI_APEI_GHES: used for GHES mapping from assorted contexts. */
-    #[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+    #[cfg(CONFIG_ACPI_APEI_GHES)]
     FixApeiGhesIrq,
-    #[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+    #[cfg(CONFIG_ACPI_APEI_GHES)]
     FixApeiGhesSea,
-    #[cfg(all(feature = "CONFIG_ACPI_APEI_GHES", feature = "CONFIG_ARM_SDE_INTERFACE"))]
+    #[cfg(all(CONFIG_ACPI_APEI_GHES, CONFIG_ARM_SDE_INTERFACE))]
     FixApeiGhesSdeiNormal,
-    #[cfg(all(feature = "CONFIG_ACPI_APEI_GHES", feature = "CONFIG_ARM_SDE_INTERFACE"))]
+    #[cfg(all(CONFIG_ACPI_APEI_GHES, CONFIG_ARM_SDE_INTERFACE))]
     FixApeiGhesSdeiCritical,
 
     /* CONFIG_UNMAP_KERNEL_AT_EL0 / CONFIG_RELOCATABLE. */
-    #[cfg(all(feature = "CONFIG_UNMAP_KERNEL_AT_EL0", feature = "CONFIG_RELOCATABLE"))]
+    #[cfg(all(CONFIG_UNMAP_KERNEL_AT_EL0, CONFIG_RELOCATABLE))]
     FixEntryTrampText4,
-    #[cfg(feature = "CONFIG_UNMAP_KERNEL_AT_EL0")]
+    #[cfg(CONFIG_UNMAP_KERNEL_AT_EL0)]
     FixEntryTrampText3,
-    #[cfg(feature = "CONFIG_UNMAP_KERNEL_AT_EL0")]
+    #[cfg(CONFIG_UNMAP_KERNEL_AT_EL0)]
     FixEntryTrampText2,
-    #[cfg(feature = "CONFIG_UNMAP_KERNEL_AT_EL0")]
+    #[cfg(CONFIG_UNMAP_KERNEL_AT_EL0)]
     FixEntryTrampText1,
 
     EndOfPermanentFixedAddresses,

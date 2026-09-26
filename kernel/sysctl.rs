@@ -47,7 +47,7 @@ extern "C" {
     fn static_key_disable(key: *mut static_key);
     fn mutex_lock(m: *mut c_void); fn mutex_unlock(m: *mut c_void);
     fn register_sysctl_init(name: *const i8, table: *const ctl_table);
-    fn proc_dointvec(*const ctl_table, i32, *mut c_void, *mut usize, *mut loff_t) -> i32;
+    fn proc_dointvec(_: *const ctl_table, _: i32, _: *mut c_void, _: *mut usize, _: *mut loff_t) -> i32;
 }
 
 const EINVAL: i32 = 22; const ERANGE: i32 = 34; const ENOMEM: i32 = 12;

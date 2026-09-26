@@ -39,25 +39,25 @@ pub use in_be32 as __raw_readl;
 #[inline] pub unsafe fn __raw_writel(value: u32, addr: usize) { out_be32(addr, value) }
 
 /* CONFIG_ATARI_ROM_ISA conditional declarations from the original header. */
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub unsafe fn rom_in_8(addr: usize) -> u8 { (core::ptr::read_volatile(addr as *const u16) >> 8) as u8 }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub unsafe fn rom_in_be16(addr: usize) -> u16 { core::ptr::read_volatile(addr as *const u16) }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub unsafe fn rom_in_le16(addr: usize) -> u16 { u16::from_le(core::ptr::read_volatile(addr as *const u16)) }
 
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub unsafe fn rom_out_8(addr: usize, value: u8) {
     let a = (addr as u32) | 0x10000;
     let _ = core::ptr::read_volatile((a.wrapping_add((value as u32) << 1)) as *const u8);
 }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub unsafe fn rom_out_be16(addr: usize, value: u16) {
     let a = addr as u32;
     let _ = core::ptr::read_volatile(((a & 0xffff0000).wrapping_add(((value & 0xff) as u32) << 1)) as *const u16);
     let _ = core::ptr::read_volatile(((a | 0x10000).wrapping_add(((value >> 8) as u32) << 1)) as *const u16);
 }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 pub unsafe fn rom_out_le16(addr: usize, value: u16) {
     let a = addr as u32;
     let _ = core::ptr::read_volatile(((a & 0xffff0000).wrapping_add(((value >> 8) as u32) << 1)) as *const u16);
@@ -74,17 +74,17 @@ pub unsafe fn rom_out_le16(addr: usize, value: u16) {
 #[inline] pub unsafe fn raw_insw_swapw(port: *const u16, buf: *mut u16, nr: usize) { for i in 0..nr { *buf.add(i) = in_be16(port as usize).rotate_left(8); } }
 #[inline] pub unsafe fn raw_outsw_swapw(port: *mut u16, buf: *const u16, nr: usize) { for i in 0..nr { out_be16(port as usize, (*buf.add(i)).rotate_left(8)); } }
 
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 #[inline] pub unsafe fn raw_rom_insb(port: *const u8, buf: *mut u8, len: usize) { for i in 0..len { *buf.add(i) = rom_in_8(port as usize); } }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 #[inline] pub unsafe fn raw_rom_outsb(port: *mut u8, buf: *const u8, len: usize) { for i in 0..len { rom_out_8(port as usize, *buf.add(i)); } }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 #[inline] pub unsafe fn raw_rom_insw(port: *const u16, buf: *mut u16, nr: usize) { for i in 0..nr { *buf.add(i) = rom_in_be16(port as usize); } }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 #[inline] pub unsafe fn raw_rom_outsw(port: *mut u16, buf: *const u16, nr: usize) { for i in 0..nr { rom_out_be16(port as usize, *buf.add(i)); } }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 #[inline] pub unsafe fn raw_rom_insw_swapw(port: *const u16, buf: *mut u16, nr: usize) { for i in 0..nr { *buf.add(i) = rom_in_le16(port as usize); } }
-#[cfg(feature = "CONFIG_ATARI_ROM_ISA")]
+#[cfg(CONFIG_ATARI_ROM_ISA)]
 #[inline] pub unsafe fn raw_rom_outsw_swapw(port: *mut u16, buf: *const u16, nr: usize) { for i in 0..nr { rom_out_le16(port as usize, *buf.add(i)); } }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

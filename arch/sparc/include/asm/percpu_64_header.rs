@@ -17,19 +17,19 @@ extern "C" {
 }
 
 /* CONFIG_SMP */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe fn __per_cpu_offset(__cpu: usize) -> c_ulong {
     /* Corresponds to: trap_block[__cpu].__per_cpu_base */
     crate::trap_block[__cpu].__per_cpu_base
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn per_cpu_offset(x: usize) -> c_ulong {
     __per_cpu_offset(x)
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 #[inline]
 pub unsafe fn __my_cpu_offset() -> c_ulong {
     __local_per_cpu_offset

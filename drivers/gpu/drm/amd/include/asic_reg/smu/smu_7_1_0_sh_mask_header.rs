@@ -5643,6 +5643,5 @@ pub const ROM_SW_DATA_63__ROM_SW_DATA__SHIFT: u32 = 0x0u32;
 pub const ROM_SW_DATA_64__ROM_SW_DATA_MASK: u32 = 0xffffffffu32;
 pub const ROM_SW_DATA_64__ROM_SW_DATA__SHIFT: u32 = 0x0u32;
 
-#endif /* SMU_7_1_0_SH_MASK_H */
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

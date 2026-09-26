@@ -25,7 +25,7 @@ extern "C" {
 #[inline(always)]
 pub unsafe fn kcsan_ignore_address(ptr: *const core::ffi::c_void) -> bool {
     // Build-time CONFIG_KCSAN_PERMISSIVE is represented by this condition.
-    if !cfg!(feature = "CONFIG_KCSAN_PERMISSIVE") {
+    if !cfg!(CONFIG_KCSAN_PERMISSIVE) {
         return false;
     }
 
@@ -45,7 +45,7 @@ pub unsafe fn kcsan_ignore_data_race(
     diff: u64,
 ) -> bool {
     // Build-time CONFIG_KCSAN_PERMISSIVE is represented by this condition.
-    if !cfg!(feature = "CONFIG_KCSAN_PERMISSIVE") {
+    if !cfg!(CONFIG_KCSAN_PERMISSIVE) {
         return false;
     }
 

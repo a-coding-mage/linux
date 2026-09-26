@@ -25,16 +25,16 @@
 
 
 // #define REG(reg) \
-	(xfm_dce->regs->reg)
+// 	((*(*xfm_dce).regs).reg)
 
 // #undef FN
 // #define FN(reg_name, field_name) \
-	xfm_dce->xfm_shift->field_name, xfm_dce->xfm_mask->field_name
+// 	(*(*xfm_dce).xfm_shift).field_name, (*(*xfm_dce).xfm_mask).field_name
 
 // #define CTX \
-	xfm_dce->base.ctx
+// 	(*xfm_dce).base.ctx
 // #define DC_LOGGER \
-	xfm_dce->base.ctx->logger
+// 	(*(*xfm_dce).base.ctx).logger
 
 // #define IDENTITY_RATIO(ratio) (dc_fixpt_u2d19(ratio) == (1 << 19))
 // #define GAMUT_MATRIX_SIZE 12
@@ -118,14 +118,14 @@ static const struct out_csc_color_matrix global_color_matrix[] = {
 };
 
 static bool setup_scaling_configuration(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const struct scaler_data *data)
 {
 	REG_SET(SCL_BYPASS_CONTROL, 0, SCL_BYPASS_MODE, 0);
 
-	if (data->taps.h_taps + data->taps.v_taps <= 2) {
+	if ((*data).taps.h_taps + (*data).taps.v_taps <= 2) {
 		/* Set bypass */
-		if (xfm_dce->xfm_mask->SCL_PSCL_EN != 0)
+		if ((*(*xfm_dce).xfm_mask).SCL_PSCL_EN != 0)
 			REG_UPDATE_2(SCL_MODE, SCL_MODE, 0, SCL_PSCL_EN, 0);
 		else
 			REG_UPDATE(SCL_MODE, SCL_MODE, 0);
@@ -133,15 +133,15 @@ static bool setup_scaling_configuration(
 	}
 
 	REG_SET_2(SCL_TAP_CONTROL, 0,
-			SCL_H_NUM_OF_TAPS, data->taps.h_taps - 1,
-			SCL_V_NUM_OF_TAPS, data->taps.v_taps - 1);
+			SCL_H_NUM_OF_TAPS, (*data).taps.h_taps - 1,
+			SCL_V_NUM_OF_TAPS, (*data).taps.v_taps - 1);
 
-	if (data->format <= PIXEL_FORMAT_GRPH_END)
+	if ((*data).format <= PIXEL_FORMAT_GRPH_END)
 		REG_UPDATE(SCL_MODE, SCL_MODE, 1);
 	else
 		REG_UPDATE(SCL_MODE, SCL_MODE, 2);
 
-	if (xfm_dce->xfm_mask->SCL_PSCL_EN != 0)
+	if ((*(*xfm_dce).xfm_mask).SCL_PSCL_EN != 0)
 		REG_UPDATE(SCL_MODE, SCL_PSCL_EN, 1);
 
 	/* 1 - Replace out of bound pixels with edge */
@@ -152,12 +152,12 @@ static bool setup_scaling_configuration(
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 static bool dce60_setup_scaling_configuration(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const struct scaler_data *data)
 {
 	REG_SET(SCL_BYPASS_CONTROL, 0, SCL_BYPASS_MODE, 0);
 
-	if (data->taps.h_taps + data->taps.v_taps <= 2) {
+	if ((*data).taps.h_taps + (*data).taps.v_taps <= 2) {
 		/* Disable scaler functionality */
 		REG_WRITE(SCL_SCALER_ENABLE, 0);
 
@@ -169,8 +169,8 @@ static bool dce60_setup_scaling_configuration(
 	}
 
 	REG_SET_2(SCL_TAP_CONTROL, 0,
-			SCL_H_NUM_OF_TAPS, data->taps.h_taps - 1,
-			SCL_V_NUM_OF_TAPS, data->taps.v_taps - 1);
+			SCL_H_NUM_OF_TAPS, (*data).taps.h_taps - 1,
+			SCL_V_NUM_OF_TAPS, (*data).taps.v_taps - 1);
 
 	REG_WRITE(SCL_SCALER_ENABLE, 1);
 
@@ -181,15 +181,15 @@ static bool dce60_setup_scaling_configuration(
 // #endif
 
 static void program_overscan(
-		struct dce_transform *xfm_dce,
+		dce_transform *xfm_dce,
 		const struct scaler_data *data)
 {
-	int overscan_right = data->h_active
-			- data->recout.x - data->recout.width;
-	int overscan_bottom = data->v_active
-			- data->recout.y - data->recout.height;
+	int overscan_right = (*data).h_active
+			- (*data).recout.x - (*data).recout.width;
+	int overscan_bottom = (*data).v_active
+			- (*data).recout.y - (*data).recout.height;
 
-	if (xfm_dce->base.ctx->dc->debug.visual_confirm != VISUAL_CONFIRM_DISABLE) {
+	if ((*(*(*xfm_dce).base.ctx).dc).debug.visual_confirm != VISUAL_CONFIRM_DISABLE) {
 		overscan_bottom += 2;
 		overscan_right += 2;
 	}
@@ -204,18 +204,18 @@ static void program_overscan(
 	}
 
 	REG_SET_2(EXT_OVERSCAN_LEFT_RIGHT, 0,
-			EXT_OVERSCAN_LEFT, data->recout.x,
+			EXT_OVERSCAN_LEFT, (*data).recout.x,
 			EXT_OVERSCAN_RIGHT, overscan_right);
 	REG_SET_2(EXT_OVERSCAN_TOP_BOTTOM, 0,
-			EXT_OVERSCAN_TOP, data->recout.y,
+			EXT_OVERSCAN_TOP, (*data).recout.y,
 			EXT_OVERSCAN_BOTTOM, overscan_bottom);
 }
 
 static void program_multi_taps_filter(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	int taps,
 	const uint16_t *coeffs,
-	enum ram_filter_type filter_type)
+	ram_filter_type filter_type)
 {
 	int phase, pair;
 	int array_idx = 0;
@@ -267,136 +267,136 @@ static void program_multi_taps_filter(
 }
 
 static void program_viewport(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const struct rect *view_port)
 {
 	REG_SET_2(VIEWPORT_START, 0,
-			VIEWPORT_X_START, view_port->x,
-			VIEWPORT_Y_START, view_port->y);
+			VIEWPORT_X_START, (*view_port).x,
+			VIEWPORT_Y_START, (*view_port).y);
 
 	REG_SET_2(VIEWPORT_SIZE, 0,
-			VIEWPORT_HEIGHT, view_port->height,
-			VIEWPORT_WIDTH, view_port->width);
+			VIEWPORT_HEIGHT, (*view_port).height,
+			VIEWPORT_WIDTH, (*view_port).width);
 
 	/* TODO: add stereo support */
 }
 
 static void calculate_inits(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const struct scaler_data *data,
-	struct scl_ratios_inits *inits)
+	scl_ratios_inits *inits)
 {
 	(void)xfm_dce;
 	struct fixed31_32 h_init;
 	struct fixed31_32 v_init;
 
-	inits->h_int_scale_ratio =
-		dc_fixpt_u2d19(data->ratios.horz) << 5;
-	inits->v_int_scale_ratio =
-		dc_fixpt_u2d19(data->ratios.vert) << 5;
+	(*inits).h_int_scale_ratio =
+		dc_fixpt_u2d19((*data).ratios.horz) << 5;
+	(*inits).v_int_scale_ratio =
+		dc_fixpt_u2d19((*data).ratios.vert) << 5;
 
 	h_init =
 		dc_fixpt_div_int(
 			dc_fixpt_add(
-				data->ratios.horz,
-				dc_fixpt_from_int(data->taps.h_taps + 1)),
+				(*data).ratios.horz,
+				dc_fixpt_from_int((*data).taps.h_taps + 1)),
 				2);
-	inits->h_init.integer = dc_fixpt_floor(h_init);
-	inits->h_init.fraction = dc_fixpt_u0d19(h_init) << 5;
+	(*inits).h_init.integer = dc_fixpt_floor(h_init);
+	(*inits).h_init.fraction = dc_fixpt_u0d19(h_init) << 5;
 
 	v_init =
 		dc_fixpt_div_int(
 			dc_fixpt_add(
-				data->ratios.vert,
-				dc_fixpt_from_int(data->taps.v_taps + 1)),
+				(*data).ratios.vert,
+				dc_fixpt_from_int((*data).taps.v_taps + 1)),
 				2);
-	inits->v_init.integer = dc_fixpt_floor(v_init);
-	inits->v_init.fraction = dc_fixpt_u0d19(v_init) << 5;
+	(*inits).v_init.integer = dc_fixpt_floor(v_init);
+	(*inits).v_init.fraction = dc_fixpt_u0d19(v_init) << 5;
 }
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 static void dce60_calculate_inits(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const struct scaler_data *data,
-	struct sclh_ratios_inits *inits)
+	sclh_ratios_inits *inits)
 {
 	struct fixed31_32 v_init;
 
-	inits->h_int_scale_ratio =
-		dc_fixpt_u2d19(data->ratios.horz) << 5;
-	inits->v_int_scale_ratio =
-		dc_fixpt_u2d19(data->ratios.vert) << 5;
+	(*inits).h_int_scale_ratio =
+		dc_fixpt_u2d19((*data).ratios.horz) << 5;
+	(*inits).v_int_scale_ratio =
+		dc_fixpt_u2d19((*data).ratios.vert) << 5;
 
 	/* DCE6 h_init_luma setting inspired by DCE110 */
-	inits->h_init_luma.integer = 1;
+	(*inits).h_init_luma.integer = 1;
 
 	/* DCE6 h_init_chroma setting inspired by DCE110 */
-	inits->h_init_chroma.integer = 1;
+	(*inits).h_init_chroma.integer = 1;
 
 	v_init =
 		dc_fixpt_div_int(
 			dc_fixpt_add(
-				data->ratios.vert,
-				dc_fixpt_from_int(data->taps.v_taps + 1)),
+				(*data).ratios.vert,
+				dc_fixpt_from_int((*data).taps.v_taps + 1)),
 				2);
-	inits->v_init.integer = dc_fixpt_floor(v_init);
-	inits->v_init.fraction = dc_fixpt_u0d19(v_init) << 5;
+	(*inits).v_init.integer = dc_fixpt_floor(v_init);
+	(*inits).v_init.fraction = dc_fixpt_u0d19(v_init) << 5;
 }
 // #endif
 
 static void program_scl_ratios_inits(
-	struct dce_transform *xfm_dce,
-	struct scl_ratios_inits *inits)
+	dce_transform *xfm_dce,
+	scl_ratios_inits *inits)
 {
 
 	REG_SET(SCL_HORZ_FILTER_SCALE_RATIO, 0,
-			SCL_H_SCALE_RATIO, inits->h_int_scale_ratio);
+			SCL_H_SCALE_RATIO, (*inits).h_int_scale_ratio);
 
 	REG_SET(SCL_VERT_FILTER_SCALE_RATIO, 0,
-			SCL_V_SCALE_RATIO, inits->v_int_scale_ratio);
+			SCL_V_SCALE_RATIO, (*inits).v_int_scale_ratio);
 
 	REG_SET_2(SCL_HORZ_FILTER_INIT, 0,
-			SCL_H_INIT_INT, inits->h_init.integer,
-			SCL_H_INIT_FRAC, inits->h_init.fraction);
+			SCL_H_INIT_INT, (*inits).h_init.integer,
+			SCL_H_INIT_FRAC, (*inits).h_init.fraction);
 
 	REG_SET_2(SCL_VERT_FILTER_INIT, 0,
-			SCL_V_INIT_INT, inits->v_init.integer,
-			SCL_V_INIT_FRAC, inits->v_init.fraction);
+			SCL_V_INIT_INT, (*inits).v_init.integer,
+			SCL_V_INIT_FRAC, (*inits).v_init.fraction);
 
 	REG_WRITE(SCL_AUTOMATIC_MODE_CONTROL, 0);
 }
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 static void dce60_program_scl_ratios_inits(
-	struct dce_transform *xfm_dce,
-	struct sclh_ratios_inits *inits)
+	dce_transform *xfm_dce,
+	sclh_ratios_inits *inits)
 {
 
 	REG_SET(SCL_HORZ_FILTER_SCALE_RATIO, 0,
-			SCL_H_SCALE_RATIO, inits->h_int_scale_ratio);
+			SCL_H_SCALE_RATIO, (*inits).h_int_scale_ratio);
 
 	REG_SET(SCL_VERT_FILTER_SCALE_RATIO, 0,
-			SCL_V_SCALE_RATIO, inits->v_int_scale_ratio);
+			SCL_V_SCALE_RATIO, (*inits).v_int_scale_ratio);
 
 	/* DCE6 has SCL_HORZ_FILTER_INIT_RGB_LUMA register */
 	REG_SET_2(SCL_HORZ_FILTER_INIT_RGB_LUMA, 0,
-			SCL_H_INIT_INT_RGB_Y, inits->h_init_luma.integer,
-			SCL_H_INIT_FRAC_RGB_Y, inits->h_init_luma.fraction);
+			SCL_H_INIT_INT_RGB_Y, (*inits).h_init_luma.integer,
+			SCL_H_INIT_FRAC_RGB_Y, (*inits).h_init_luma.fraction);
 
 	/* DCE6 has SCL_HORZ_FILTER_INIT_CHROMA register */
 	REG_SET_2(SCL_HORZ_FILTER_INIT_CHROMA, 0,
-			SCL_H_INIT_INT_CBCR, inits->h_init_chroma.integer,
-			SCL_H_INIT_FRAC_CBCR, inits->h_init_chroma.fraction);
+			SCL_H_INIT_INT_CBCR, (*inits).h_init_chroma.integer,
+			SCL_H_INIT_FRAC_CBCR, (*inits).h_init_chroma.fraction);
 
 	REG_SET_2(SCL_VERT_FILTER_INIT, 0,
-			SCL_V_INIT_INT, inits->v_init.integer,
-			SCL_V_INIT_FRAC, inits->v_init.fraction);
+			SCL_V_INIT_INT, (*inits).v_init.integer,
+			SCL_V_INIT_FRAC, (*inits).v_init.fraction);
 
 	REG_WRITE(SCL_AUTOMATIC_MODE_CONTROL, 0);
 }
 // #endif
 
-static const uint16_t *get_filter_coeffs_16p(int taps, struct fixed31_32 ratio)
+static const uint16_t *get_filter_coeffs_16p(int taps, fixed31_32 ratio)
 {
 	if (taps == 4)
 		return get_filter_4tap_16p(ratio);
@@ -414,7 +414,7 @@ static const uint16_t *get_filter_coeffs_16p(int taps, struct fixed31_32 ratio)
 }
 
 static void dce_transform_set_scaler(
-	struct transform *xfm,
+	transform *xfm,
 	const struct scaler_data *data)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
@@ -425,7 +425,7 @@ static void dce_transform_set_scaler(
 	/*Use all three pieces of memory always*/
 	REG_SET_2(LB_MEMORY_CTRL, 0,
 			LB_MEMORY_CONFIG, 0,
-			LB_MEMORY_SIZE, xfm_dce->lb_memory_size);
+			LB_MEMORY_SIZE, (*xfm_dce).lb_memory_size);
 
 	/* Clear SCL_F_SHARP_CONTROL value to 0 */
 	REG_WRITE(SCL_F_SHARP_CONTROL, 0);
@@ -444,59 +444,59 @@ static void dce_transform_set_scaler(
 
 		program_scl_ratios_inits(xfm_dce, &inits);
 
-		coeffs_v = get_filter_coeffs_16p(data->taps.v_taps, data->ratios.vert);
-		coeffs_h = get_filter_coeffs_16p(data->taps.h_taps, data->ratios.horz);
+		coeffs_v = get_filter_coeffs_16p((*data).taps.v_taps, (*data).ratios.vert);
+		coeffs_h = get_filter_coeffs_16p((*data).taps.h_taps, (*data).ratios.horz);
 
-		if (coeffs_v != xfm_dce->filter_v || coeffs_h != xfm_dce->filter_h) {
+		if (coeffs_v != (*xfm_dce).filter_v || coeffs_h != (*xfm_dce).filter_h) {
 			/* 4. Program vertical filters */
-			if (xfm_dce->filter_v == NULL)
+			if ((*xfm_dce).filter_v == NULL)
 				REG_SET(SCL_VERT_FILTER_CONTROL, 0,
 						SCL_V_2TAP_HARDCODE_COEF_EN, 0);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.v_taps,
+					(*data).taps.v_taps,
 					coeffs_v,
 					FILTER_TYPE_RGB_Y_VERTICAL);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.v_taps,
+					(*data).taps.v_taps,
 					coeffs_v,
 					FILTER_TYPE_ALPHA_VERTICAL);
 
 			/* 5. Program horizontal filters */
-			if (xfm_dce->filter_h == NULL)
+			if ((*xfm_dce).filter_h == NULL)
 				REG_SET(SCL_HORZ_FILTER_CONTROL, 0,
 						SCL_H_2TAP_HARDCODE_COEF_EN, 0);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.h_taps,
+					(*data).taps.h_taps,
 					coeffs_h,
 					FILTER_TYPE_RGB_Y_HORIZONTAL);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.h_taps,
+					(*data).taps.h_taps,
 					coeffs_h,
 					FILTER_TYPE_ALPHA_HORIZONTAL);
 
-			xfm_dce->filter_v = coeffs_v;
-			xfm_dce->filter_h = coeffs_h;
+			(*xfm_dce).filter_v = coeffs_v;
+			(*xfm_dce).filter_h = coeffs_h;
 			filter_updated = true;
 		}
 	}
 
 	/* 6. Program the viewport */
-	program_viewport(xfm_dce, &data->viewport);
+	program_viewport(xfm_dce, (*&data).viewport);
 
 	/* 7. Set bit to flip to new coefficient memory */
 	if (filter_updated)
 		REG_UPDATE(SCL_UPDATE, SCL_COEF_UPDATE_COMPLETE, 1);
 
-	REG_UPDATE(LB_DATA_FORMAT, ALPHA_EN, data->lb_params.alpha_en);
+	REG_UPDATE(LB_DATA_FORMAT, ALPHA_EN, (*data).lb_params.alpha_en);
 }
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 static void dce60_transform_set_scaler(
-	struct transform *xfm,
+	transform *xfm,
 	const struct scaler_data *data)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
@@ -508,7 +508,7 @@ static void dce60_transform_set_scaler(
 		DC_LB_MEMORY_CONFIG, 0);
 
 	REG_SET(DC_LB_MEM_SIZE, 0,
-		DC_LB_MEM_SIZE, xfm_dce->lb_memory_size);
+		DC_LB_MEM_SIZE, (*xfm_dce).lb_memory_size);
 
 	REG_WRITE(SCL_UPDATE, 0x00010000);
 
@@ -531,45 +531,45 @@ static void dce60_transform_set_scaler(
 		/* DCE6 has specific program_scl_ratios_inits() function */
 		dce60_program_scl_ratios_inits(xfm_dce, &inits);
 
-		coeffs_v = get_filter_coeffs_16p(data->taps.v_taps, data->ratios.vert);
-		coeffs_h = get_filter_coeffs_16p(data->taps.h_taps, data->ratios.horz);
+		coeffs_v = get_filter_coeffs_16p((*data).taps.v_taps, (*data).ratios.vert);
+		coeffs_h = get_filter_coeffs_16p((*data).taps.h_taps, (*data).ratios.horz);
 
-		if (coeffs_v != xfm_dce->filter_v || coeffs_h != xfm_dce->filter_h) {
+		if (coeffs_v != (*xfm_dce).filter_v || coeffs_h != (*xfm_dce).filter_h) {
 			/* 4. Program vertical filters */
-			if (xfm_dce->filter_v == NULL)
+			if ((*xfm_dce).filter_v == NULL)
 				REG_WRITE(SCL_VERT_FILTER_CONTROL, 0);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.v_taps,
+					(*data).taps.v_taps,
 					coeffs_v,
 					FILTER_TYPE_RGB_Y_VERTICAL);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.v_taps,
+					(*data).taps.v_taps,
 					coeffs_v,
 					FILTER_TYPE_ALPHA_VERTICAL);
 
 			/* 5. Program horizontal filters */
-			if (xfm_dce->filter_h == NULL)
+			if ((*xfm_dce).filter_h == NULL)
 				REG_WRITE(SCL_HORZ_FILTER_CONTROL, 0);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.h_taps,
+					(*data).taps.h_taps,
 					coeffs_h,
 					FILTER_TYPE_RGB_Y_HORIZONTAL);
 			program_multi_taps_filter(
 					xfm_dce,
-					data->taps.h_taps,
+					(*data).taps.h_taps,
 					coeffs_h,
 					FILTER_TYPE_ALPHA_HORIZONTAL);
 
-			xfm_dce->filter_v = coeffs_v;
-			xfm_dce->filter_h = coeffs_h;
+			(*xfm_dce).filter_v = coeffs_v;
+			(*xfm_dce).filter_h = coeffs_h;
 		}
 	}
 
 	/* 6. Program the viewport */
-	program_viewport(xfm_dce, &data->viewport);
+	program_viewport(xfm_dce, (*&data).viewport);
 
 	/* DCE6 has no SCL_COEF_UPDATE_COMPLETE bit to flip to new coefficient memory */
 
@@ -589,8 +589,8 @@ static void dce60_transform_set_scaler(
  *
  *******************************************************************************/
 static void set_clamp(
-	struct dce_transform *xfm_dce,
-	enum dc_color_depth depth)
+	dce_transform *xfm_dce,
+	dc_color_depth depth)
 {
 	int clamp_max = 0;
 
@@ -666,9 +666,9 @@ static void set_clamp(
 
  ******************************************************************************/
 static void set_round(
-	struct dce_transform *xfm_dce,
-	enum dcp_out_trunc_round_mode mode,
-	enum dcp_out_trunc_round_depth depth)
+	dce_transform *xfm_dce,
+	dcp_out_trunc_round_mode mode,
+	dcp_out_trunc_round_depth depth)
 {
 	int depth_bits = 0;
 	int mode_bit = 0;
@@ -734,13 +734,13 @@ static void set_round(
  ******************************************************************************/
 
 static void set_dither(
-	struct dce_transform *xfm_dce,
-	bool dither_enable,
-	enum dcp_spatial_dither_mode dither_mode,
-	enum dcp_spatial_dither_depth dither_depth,
-	bool frame_random_enable,
-	bool rgb_random_enable,
-	bool highpass_random_enable)
+	dce_transform *xfm_dce,
+	dither_enable: bool,
+	dcp_spatial_dither_mode dither_mode,
+	dcp_spatial_dither_depth dither_depth,
+	frame_random_enable: bool,
+	rgb_random_enable: bool,
+	highpass_random_enable: bool)
 {
 	int dither_depth_bits = 0;
 	int dither_mode_bits = 0;
@@ -796,8 +796,8 @@ static void set_dither(
  *
  ******************************************************************************/
 static void program_bit_depth_reduction(
-	struct dce_transform *xfm_dce,
-	enum dc_color_depth depth,
+	dce_transform *xfm_dce,
+	dc_color_depth depth,
 	const struct bit_depth_reduction_params *bit_depth_params)
 {
 	enum dcp_out_trunc_round_depth trunc_round_depth;
@@ -806,22 +806,22 @@ static void program_bit_depth_reduction(
 
 	ASSERT(depth <= COLOR_DEPTH_121212); /* Invalid clamp bit depth */
 
-	spatial_dither_enable = bit_depth_params->flags.SPATIAL_DITHER_ENABLED != 0;
+	spatial_dither_enable = (*bit_depth_params).flags.SPATIAL_DITHER_ENABLED != 0;
 	/* Default to 12 bit truncation without rounding */
 	trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_12BIT;
 	trunc_mode = DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE;
 
-	if (bit_depth_params->flags.TRUNCATE_ENABLED) {
+	if ((*bit_depth_params).flags.TRUNCATE_ENABLED) {
 		/* Don't enable dithering if truncation is enabled */
 		spatial_dither_enable = false;
-		trunc_mode = bit_depth_params->flags.TRUNCATE_MODE ?
+		trunc_mode = (*bit_depth_params).flags.TRUNCATE_MODE ?
 			     DCP_OUT_TRUNC_ROUND_MODE_ROUND :
 			     DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE;
 
-		if (bit_depth_params->flags.TRUNCATE_DEPTH == 0 ||
-		    bit_depth_params->flags.TRUNCATE_DEPTH == 1)
+		if ((*bit_depth_params).flags.TRUNCATE_DEPTH == 0 ||
+		    (*bit_depth_params).flags.TRUNCATE_DEPTH == 1)
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_8BIT;
-		else if (bit_depth_params->flags.TRUNCATE_DEPTH == 2)
+		else if ((*bit_depth_params).flags.TRUNCATE_DEPTH == 2)
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_10BIT;
 		else {
 			/*
@@ -839,9 +839,9 @@ static void program_bit_depth_reduction(
 		   spatial_dither_enable,
 		   DCP_SPATIAL_DITHER_MODE_A_AA_A,
 		   DCP_SPATIAL_DITHER_DEPTH_30BPP,
-		   bit_depth_params->flags.FRAME_RANDOM != 0,
-		   bit_depth_params->flags.RGB_RANDOM != 0,
-		   bit_depth_params->flags.HIGHPASS_RANDOM != 0);
+		   (*bit_depth_params).flags.FRAME_RANDOM != 0,
+		   (*bit_depth_params).flags.RGB_RANDOM != 0,
+		   (*bit_depth_params).flags.HIGHPASS_RANDOM != 0);
 }
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
@@ -856,8 +856,8 @@ static void program_bit_depth_reduction(
  *
  ******************************************************************************/
 static void dce60_program_bit_depth_reduction(
-	struct dce_transform *xfm_dce,
-	enum dc_color_depth depth,
+	dce_transform *xfm_dce,
+	dc_color_depth depth,
 	const struct bit_depth_reduction_params *bit_depth_params)
 {
 	enum dcp_out_trunc_round_depth trunc_round_depth;
@@ -866,22 +866,22 @@ static void dce60_program_bit_depth_reduction(
 
 	ASSERT(depth <= COLOR_DEPTH_121212); /* Invalid clamp bit depth */
 
-	spatial_dither_enable = bit_depth_params->flags.SPATIAL_DITHER_ENABLED;
+	spatial_dither_enable = (*bit_depth_params).flags.SPATIAL_DITHER_ENABLED;
 	/* Default to 12 bit truncation without rounding */
 	trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_12BIT;
 	trunc_mode = DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE;
 
-	if (bit_depth_params->flags.TRUNCATE_ENABLED) {
+	if ((*bit_depth_params).flags.TRUNCATE_ENABLED) {
 		/* Don't enable dithering if truncation is enabled */
 		spatial_dither_enable = false;
-		trunc_mode = bit_depth_params->flags.TRUNCATE_MODE ?
+		trunc_mode = (*bit_depth_params).flags.TRUNCATE_MODE ?
 			     DCP_OUT_TRUNC_ROUND_MODE_ROUND :
 			     DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE;
 
-		if (bit_depth_params->flags.TRUNCATE_DEPTH == 0 ||
-		    bit_depth_params->flags.TRUNCATE_DEPTH == 1)
+		if ((*bit_depth_params).flags.TRUNCATE_DEPTH == 0 ||
+		    (*bit_depth_params).flags.TRUNCATE_DEPTH == 1)
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_8BIT;
-		else if (bit_depth_params->flags.TRUNCATE_DEPTH == 2)
+		else if ((*bit_depth_params).flags.TRUNCATE_DEPTH == 2)
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_10BIT;
 		else {
 			/*
@@ -899,15 +899,15 @@ static void dce60_program_bit_depth_reduction(
 		   spatial_dither_enable,
 		   DCP_SPATIAL_DITHER_MODE_A_AA_A,
 		   DCP_SPATIAL_DITHER_DEPTH_30BPP,
-		   bit_depth_params->flags.FRAME_RANDOM,
-		   bit_depth_params->flags.RGB_RANDOM,
-		   bit_depth_params->flags.HIGHPASS_RANDOM);
+		   (*bit_depth_params).flags.FRAME_RANDOM,
+		   (*bit_depth_params).flags.RGB_RANDOM,
+		   (*bit_depth_params).flags.HIGHPASS_RANDOM);
 }
 // #endif
 
 static int dce_transform_get_max_num_of_supported_lines(
-	struct dce_transform *xfm_dce,
-	enum lb_pixel_depth depth,
+	dce_transform *xfm_dce,
+	lb_pixel_depth depth,
 	int pixel_width)
 {
 	int pixels_per_entries = 0;
@@ -920,19 +920,19 @@ static int dce_transform_get_max_num_of_supported_lines(
 	 * across multiple entries. */
 	switch (depth) {
 	case LB_PIXEL_DEPTH_18BPP:
-		pixels_per_entries = xfm_dce->lb_bits_per_entry / 18;
+		pixels_per_entries = (*xfm_dce).lb_bits_per_entry / 18;
 		break;
 
 	case LB_PIXEL_DEPTH_24BPP:
-		pixels_per_entries = xfm_dce->lb_bits_per_entry / 24;
+		pixels_per_entries = (*xfm_dce).lb_bits_per_entry / 24;
 		break;
 
 	case LB_PIXEL_DEPTH_30BPP:
-		pixels_per_entries = xfm_dce->lb_bits_per_entry / 30;
+		pixels_per_entries = (*xfm_dce).lb_bits_per_entry / 30;
 		break;
 
 	case LB_PIXEL_DEPTH_36BPP:
-		pixels_per_entries = xfm_dce->lb_bits_per_entry / 36;
+		pixels_per_entries = (*xfm_dce).lb_bits_per_entry / 36;
 		break;
 
 	default:
@@ -946,14 +946,14 @@ static int dce_transform_get_max_num_of_supported_lines(
 
 	max_pixels_supports =
 			pixels_per_entries *
-			xfm_dce->lb_memory_size;
+			(*xfm_dce).lb_memory_size;
 
 	return (max_pixels_supports / pixel_width);
 }
 
 static void set_denormalization(
-	struct dce_transform *xfm_dce,
-	enum dc_color_depth depth)
+	dce_transform *xfm_dce,
+	dc_color_depth depth)
 {
 	int denorm_mode = 0;
 
@@ -986,8 +986,8 @@ static void set_denormalization(
 }
 
 static void dce_transform_set_pixel_storage_depth(
-	struct transform *xfm,
-	enum lb_pixel_depth depth,
+	transform *xfm,
+	lb_pixel_depth depth,
 	const struct bit_depth_reduction_params *bit_depth_params)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
@@ -1030,7 +1030,7 @@ static void dce_transform_set_pixel_storage_depth(
 			PIXEL_DEPTH, pixel_depth,
 			PIXEL_EXPAN_MODE, expan_mode);
 
-	if (!(xfm_dce->lb_pixel_depth_supported & depth)) {
+	if (!((*xfm_dce).lb_pixel_depth_supported & depth)) {
 		/*we should use unsupported capabilities
 		 *  unless it is required by w/a*/
 		DC_LOG_DC("%s: Capability not supported", __func__);
@@ -1039,8 +1039,8 @@ static void dce_transform_set_pixel_storage_depth(
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 static void dce60_transform_set_pixel_storage_depth(
-	struct transform *xfm,
-	enum lb_pixel_depth depth,
+	transform *xfm,
+	lb_pixel_depth depth,
 	const struct bit_depth_reduction_params *bit_depth_params)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
@@ -1070,7 +1070,7 @@ static void dce60_transform_set_pixel_storage_depth(
 
 	/* DATA_FORMAT in DCE6 does not have PIXEL_DEPTH and PIXEL_EXPAN_MODE masks */
 
-	if (!(xfm_dce->lb_pixel_depth_supported & depth)) {
+	if (!((*xfm_dce).lb_pixel_depth_supported & depth)) {
 		/*we should use unsupported capabilities
 		 *  unless it is required by w/a*/
 		DC_LOG_WARNING("%s: Capability not supported",
@@ -1080,7 +1080,7 @@ static void dce60_transform_set_pixel_storage_depth(
 // #endif
 
 static void program_gamut_remap(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const uint16_t *reg_val)
 {
 	if (reg_val) {
@@ -1125,13 +1125,13 @@ static void program_gamut_remap(
  *****************************************************************************
  */
 static void dce_transform_set_gamut_remap(
-	struct transform *xfm,
+	transform *xfm,
 	const struct xfm_grph_csc_adjustment *adjust)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 	int i = 0;
 
-	if (adjust->gamut_adjust_type != GRAPHICS_GAMUT_ADJUST_TYPE_SW)
+	if ((*adjust).gamut_adjust_type != GRAPHICS_GAMUT_ADJUST_TYPE_SW)
 		/* Bypass if type is bypass or hw */
 		program_gamut_remap(xfm_dce, NULL);
 	else {
@@ -1139,7 +1139,7 @@ static void dce_transform_set_gamut_remap(
 		uint16_t arr_reg_val[GAMUT_MATRIX_SIZE];
 
 		for (i = 0; i < GAMUT_MATRIX_SIZE; i++)
-			arr_matrix[i] = adjust->temperature_matrix[i];
+			arr_matrix[i] = (*adjust).temperature_matrix[i];
 
 		convert_float_matrix(arr_reg_val, arr_matrix,
 			CM_GAMUT_REMAP_COEF_FORMAT_S2_13, GAMUT_MATRIX_SIZE);
@@ -1148,7 +1148,7 @@ static void dce_transform_set_gamut_remap(
 	}
 }
 
-static uint32_t decide_taps(struct fixed31_32 ratio, uint32_t in_taps, bool chroma)
+static uint32_t decide_taps(fixed31_32 ratio, uint32_t in_taps, chroma: bool)
 {
 	uint32_t taps;
 
@@ -1171,25 +1171,25 @@ static uint32_t decide_taps(struct fixed31_32 ratio, uint32_t in_taps, bool chro
 
 
 bool dce_transform_get_optimal_number_of_taps(
-	struct transform *xfm,
-	struct scaler_data *scl_data,
+	transform *xfm,
+	scaler_data *scl_data,
 	const struct scaling_taps *in_taps)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
-	int pixel_width = scl_data->viewport.width;
+	int pixel_width = (*scl_data).viewport.width;
 	uint32_t max_num_of_lines;
 
-	if (xfm_dce->prescaler_on &&
-			(scl_data->viewport.width > scl_data->recout.width))
-		pixel_width = scl_data->recout.width;
+	if ((*xfm_dce).prescaler_on &&
+			((*scl_data).viewport.width > (*scl_data).recout.width))
+		pixel_width = (*scl_data).recout.width;
 
 	max_num_of_lines = (uint32_t)dce_transform_get_max_num_of_supported_lines(
 		xfm_dce,
-		scl_data->lb_params.depth,
+		(*scl_data).lb_params.depth,
 		pixel_width);
 
 	/* Fail if in_taps are impossible */
-	if (in_taps->v_taps >= max_num_of_lines)
+	if ((*in_taps).v_taps >= max_num_of_lines)
 		return false;
 
 	/*
@@ -1201,30 +1201,30 @@ bool dce_transform_get_optimal_number_of_taps(
 	 *
 	 * Ignore input chroma taps. Decide based on non-chroma
 	 */
-	scl_data->taps.h_taps = decide_taps(scl_data->ratios.horz, in_taps->h_taps, false);
-	scl_data->taps.v_taps = decide_taps(scl_data->ratios.vert, in_taps->v_taps, false);
-	scl_data->taps.h_taps_c = decide_taps(scl_data->ratios.horz_c, in_taps->h_taps, true);
-	scl_data->taps.v_taps_c = decide_taps(scl_data->ratios.vert_c, in_taps->v_taps, true);
+	(*scl_data).taps.h_taps = decide_taps((*scl_data).ratios.horz, (*in_taps).h_taps, false);
+	(*scl_data).taps.v_taps = decide_taps((*scl_data).ratios.vert, (*in_taps).v_taps, false);
+	(*scl_data).taps.h_taps_c = decide_taps((*scl_data).ratios.horz_c, (*in_taps).h_taps, true);
+	(*scl_data).taps.v_taps_c = decide_taps((*scl_data).ratios.vert_c, (*in_taps).v_taps, true);
 
-	if (!IDENTITY_RATIO(scl_data->ratios.vert)) {
+	if (!IDENTITY_RATIO((*scl_data).ratios.vert)) {
 		/* reduce v_taps if needed but ensure we have at least two */
-		if (in_taps->v_taps == 0
-				&& max_num_of_lines <= scl_data->taps.v_taps
-				&& scl_data->taps.v_taps > 1) {
-			scl_data->taps.v_taps = max_num_of_lines - 1;
+		if ((*in_taps).v_taps == 0
+				&& max_num_of_lines <= (*scl_data).taps.v_taps
+				&& (*scl_data).taps.v_taps > 1) {
+			(*scl_data).taps.v_taps = max_num_of_lines - 1;
 		}
 
-		if (scl_data->taps.v_taps <= 1)
+		if ((*scl_data).taps.v_taps <= 1)
 			return false;
 	}
 
-	if (!IDENTITY_RATIO(scl_data->ratios.vert_c)) {
+	if (!IDENTITY_RATIO((*scl_data).ratios.vert_c)) {
 		/* reduce chroma v_taps if needed but ensure we have at least two */
-		if (max_num_of_lines <= scl_data->taps.v_taps_c && scl_data->taps.v_taps_c > 1) {
-			scl_data->taps.v_taps_c = max_num_of_lines - 1;
+		if (max_num_of_lines <= (*scl_data).taps.v_taps_c && (*scl_data).taps.v_taps_c > 1) {
+			(*scl_data).taps.v_taps_c = max_num_of_lines - 1;
 		}
 
-		if (scl_data->taps.v_taps_c <= 1)
+		if ((*scl_data).taps.v_taps_c <= 1)
 			return false;
 	}
 
@@ -1232,57 +1232,57 @@ bool dce_transform_get_optimal_number_of_taps(
 	return true;
 }
 
-static void dce_transform_reset(struct transform *xfm)
+static void dce_transform_reset(transform *xfm)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 
-	xfm_dce->filter_h = NULL;
-	xfm_dce->filter_v = NULL;
+	(*xfm_dce).filter_h = NULL;
+	(*xfm_dce).filter_v = NULL;
 }
 
 static void program_color_matrix(
-	struct dce_transform *xfm_dce,
+	dce_transform *xfm_dce,
 	const struct out_csc_color_matrix *tbl_entry,
-	enum grph_color_adjust_option options)
+	grph_color_adjust_option options)
 {
 	(void)options;
 	{
 		REG_SET_2(OUTPUT_CSC_C11_C12, 0,
-			OUTPUT_CSC_C11, tbl_entry->regval[0],
-			OUTPUT_CSC_C12, tbl_entry->regval[1]);
+			OUTPUT_CSC_C11, (*tbl_entry).regval[0],
+			OUTPUT_CSC_C12, (*tbl_entry).regval[1]);
 	}
 	{
 		REG_SET_2(OUTPUT_CSC_C13_C14, 0,
-			OUTPUT_CSC_C11, tbl_entry->regval[2],
-			OUTPUT_CSC_C12, tbl_entry->regval[3]);
+			OUTPUT_CSC_C11, (*tbl_entry).regval[2],
+			OUTPUT_CSC_C12, (*tbl_entry).regval[3]);
 	}
 	{
 		REG_SET_2(OUTPUT_CSC_C21_C22, 0,
-			OUTPUT_CSC_C11, tbl_entry->regval[4],
-			OUTPUT_CSC_C12, tbl_entry->regval[5]);
+			OUTPUT_CSC_C11, (*tbl_entry).regval[4],
+			OUTPUT_CSC_C12, (*tbl_entry).regval[5]);
 	}
 	{
 		REG_SET_2(OUTPUT_CSC_C23_C24, 0,
-			OUTPUT_CSC_C11, tbl_entry->regval[6],
-			OUTPUT_CSC_C12, tbl_entry->regval[7]);
+			OUTPUT_CSC_C11, (*tbl_entry).regval[6],
+			OUTPUT_CSC_C12, (*tbl_entry).regval[7]);
 	}
 	{
 		REG_SET_2(OUTPUT_CSC_C31_C32, 0,
-			OUTPUT_CSC_C11, tbl_entry->regval[8],
-			OUTPUT_CSC_C12, tbl_entry->regval[9]);
+			OUTPUT_CSC_C11, (*tbl_entry).regval[8],
+			OUTPUT_CSC_C12, (*tbl_entry).regval[9]);
 	}
 	{
 		REG_SET_2(OUTPUT_CSC_C33_C34, 0,
-			OUTPUT_CSC_C11, tbl_entry->regval[10],
-			OUTPUT_CSC_C12, tbl_entry->regval[11]);
+			OUTPUT_CSC_C11, (*tbl_entry).regval[10],
+			OUTPUT_CSC_C12, (*tbl_entry).regval[11]);
 	}
 }
 
 static bool configure_graphics_mode(
-	struct dce_transform *xfm_dce,
-	enum csc_color_mode config,
-	enum graphics_csc_adjust_type csc_adjust_type,
-	enum dc_color_space color_space)
+	dce_transform *xfm_dce,
+	csc_color_mode config,
+	graphics_csc_adjust_type csc_adjust_type,
+	dc_color_space color_space)
 {
 	REG_SET(OUTPUT_CSC_CONTROL, 0,
 		OUTPUT_CSC_GRPH_MODE, 0);
@@ -1357,7 +1357,7 @@ static bool configure_graphics_mode(
 }
 
 void dce110_opp_set_csc_adjustment(
-	struct transform *xfm,
+	transform *xfm,
 	const struct out_csc_color_matrix *tbl_entry)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
@@ -1369,18 +1369,18 @@ void dce110_opp_set_csc_adjustment(
 
 	/*  We did everything ,now program DxOUTPUT_CSC_CONTROL */
 	configure_graphics_mode(xfm_dce, config, GRAPHICS_CSC_ADJUST_TYPE_SW,
-			tbl_entry->color_space);
+			(*tbl_entry).color_space);
 }
 
 void dce110_opp_set_csc_default(
-	struct transform *xfm,
+	transform *xfm,
 	const struct default_adjustment *default_adjust)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 	enum csc_color_mode config =
 			CSC_COLOR_MODE_GRAPHICS_PREDEFINED;
 
-	if (default_adjust->force_hw_default == false) {
+	if ((*default_adjust).force_hw_default == false) {
 		const struct out_csc_color_matrix *elm;
 		/* currently parameter not in use */
 		enum grph_color_adjust_option option =
@@ -1396,7 +1396,7 @@ void dce110_opp_set_csc_default(
 
 		for (i = 0; i < ARRAY_SIZE(global_color_matrix); ++i) {
 			elm = &global_color_matrix[i];
-			if (elm->color_space != default_adjust->out_color_space)
+			if ((*elm).color_space != (*default_adjust).out_color_space)
 				continue;
 			/* program the matrix with default values from this
 			 * file */
@@ -1412,18 +1412,18 @@ void dce110_opp_set_csc_default(
 	 * matrix */
 
 	configure_graphics_mode(xfm_dce, config,
-		default_adjust->csc_adjust_type,
-		default_adjust->out_color_space);
+		(*default_adjust).csc_adjust_type,
+		(*default_adjust).out_color_space);
 }
 
-static void program_pwl(struct dce_transform *xfm_dce,
+static void program_pwl(dce_transform *xfm_dce,
 			const struct pwl_params *params)
 {
 	uint32_t retval;
 	uint8_t max_tries = 10;
 	uint8_t counter = 0;
 	uint32_t i = 0;
-	const struct pwl_result_data *rgb = params->rgb_resulted;
+	const struct pwl_result_data *rgb = (*params).rgb_resulted;
 
 	/* Power on LUT memory */
 	if (REG(DCFE_MEM_PWR_CTRL))
@@ -1466,14 +1466,14 @@ static void program_pwl(struct dce_transform *xfm_dce,
 	REG_WRITE(REGAMMA_LUT_INDEX, 0);
 
 	/* Program REGAMMA_LUT_DATA */
-	while (i != params->hw_points_num) {
+	while (i != (*params).hw_points_num) {
 
-		REG_WRITE(REGAMMA_LUT_DATA, rgb->red_reg);
-		REG_WRITE(REGAMMA_LUT_DATA, rgb->green_reg);
-		REG_WRITE(REGAMMA_LUT_DATA, rgb->blue_reg);
-		REG_WRITE(REGAMMA_LUT_DATA, rgb->delta_red_reg);
-		REG_WRITE(REGAMMA_LUT_DATA, rgb->delta_green_reg);
-		REG_WRITE(REGAMMA_LUT_DATA, rgb->delta_blue_reg);
+		REG_WRITE(REGAMMA_LUT_DATA, (*rgb).red_reg);
+		REG_WRITE(REGAMMA_LUT_DATA, (*rgb).green_reg);
+		REG_WRITE(REGAMMA_LUT_DATA, (*rgb).blue_reg);
+		REG_WRITE(REGAMMA_LUT_DATA, (*rgb).delta_red_reg);
+		REG_WRITE(REGAMMA_LUT_DATA, (*rgb).delta_green_reg);
+		REG_WRITE(REGAMMA_LUT_DATA, (*rgb).delta_blue_reg);
 
 		++rgb;
 		++i;
@@ -1488,26 +1488,26 @@ static void program_pwl(struct dce_transform *xfm_dce,
 			   REGAMMA_LUT_LIGHT_SLEEP_DIS, 0);
 }
 
-static void regamma_config_regions_and_segments(struct dce_transform *xfm_dce,
+static void regamma_config_regions_and_segments(dce_transform *xfm_dce,
 						const struct pwl_params *params)
 {
 	const struct gamma_curve *curve;
 
 	REG_SET_2(REGAMMA_CNTLA_START_CNTL, 0,
-		  REGAMMA_CNTLA_EXP_REGION_START, params->arr_points[0].custom_float_x,
+		  REGAMMA_CNTLA_EXP_REGION_START, (*params).arr_points[0].custom_float_x,
 		  REGAMMA_CNTLA_EXP_REGION_START_SEGMENT, 0);
 
 	REG_SET(REGAMMA_CNTLA_SLOPE_CNTL, 0,
-		REGAMMA_CNTLA_EXP_REGION_LINEAR_SLOPE, params->arr_points[0].custom_float_slope);
+		REGAMMA_CNTLA_EXP_REGION_LINEAR_SLOPE, (*params).arr_points[0].custom_float_slope);
 
 	REG_SET(REGAMMA_CNTLA_END_CNTL1, 0,
-		REGAMMA_CNTLA_EXP_REGION_END, params->arr_points[1].custom_float_x);
+		REGAMMA_CNTLA_EXP_REGION_END, (*params).arr_points[1].custom_float_x);
 
 	REG_SET_2(REGAMMA_CNTLA_END_CNTL2, 0,
-		  REGAMMA_CNTLA_EXP_REGION_END_BASE, params->arr_points[1].custom_float_y,
-		  REGAMMA_CNTLA_EXP_REGION_END_SLOPE, params->arr_points[1].custom_float_slope);
+		  REGAMMA_CNTLA_EXP_REGION_END_BASE, (*params).arr_points[1].custom_float_y,
+		  REGAMMA_CNTLA_EXP_REGION_END_SLOPE, (*params).arr_points[1].custom_float_slope);
 
-	curve = params->arr_curve_points;
+	curve = (*params).arr_curve_points;
 
 	REG_SET_4(REGAMMA_CNTLA_REGION_0_1, 0,
 		  REGAMMA_CNTLA_EXP_REGION0_LUT_OFFSET, curve[0].offset,
@@ -1567,7 +1567,7 @@ static void regamma_config_regions_and_segments(struct dce_transform *xfm_dce,
 
 
 
-void dce110_opp_program_regamma_pwl(struct transform *xfm,
+void dce110_opp_program_regamma_pwl(transform *xfm,
 				    const struct pwl_params *params)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
@@ -1579,8 +1579,8 @@ void dce110_opp_program_regamma_pwl(struct transform *xfm,
 	program_pwl(xfm_dce, params);
 }
 
-void dce110_opp_power_on_regamma_lut(struct transform *xfm,
-				     bool power_on)
+void dce110_opp_power_on_regamma_lut(transform *xfm,
+				     power_on: bool)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 
@@ -1595,8 +1595,8 @@ void dce110_opp_power_on_regamma_lut(struct transform *xfm,
 
 }
 
-void dce110_opp_set_regamma_mode(struct transform *xfm,
-				 enum opp_regamma mode)
+void dce110_opp_set_regamma_mode(transform *xfm,
+				 opp_regamma mode)
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 
@@ -1605,30 +1605,30 @@ void dce110_opp_set_regamma_mode(struct transform *xfm,
 }
 
 static const struct transform_funcs dce_transform_funcs = {
-	.transform_reset = dce_transform_reset,
-	.transform_set_scaler = dce_transform_set_scaler,
-	.transform_set_gamut_remap = dce_transform_set_gamut_remap,
-	.opp_set_csc_adjustment = dce110_opp_set_csc_adjustment,
-	.opp_set_csc_default = dce110_opp_set_csc_default,
-	.opp_power_on_regamma_lut = dce110_opp_power_on_regamma_lut,
-	.opp_program_regamma_pwl = dce110_opp_program_regamma_pwl,
-	.opp_set_regamma_mode = dce110_opp_set_regamma_mode,
-	.transform_set_pixel_storage_depth = dce_transform_set_pixel_storage_depth,
-	.transform_get_optimal_number_of_taps = dce_transform_get_optimal_number_of_taps
+	transform_reset: dce_transform_reset,
+	transform_set_scaler: dce_transform_set_scaler,
+	transform_set_gamut_remap: dce_transform_set_gamut_remap,
+	opp_set_csc_adjustment: dce110_opp_set_csc_adjustment,
+	opp_set_csc_default: dce110_opp_set_csc_default,
+	opp_power_on_regamma_lut: dce110_opp_power_on_regamma_lut,
+	opp_program_regamma_pwl: dce110_opp_program_regamma_pwl,
+	opp_set_regamma_mode: dce110_opp_set_regamma_mode,
+	transform_set_pixel_storage_depth: dce_transform_set_pixel_storage_depth,
+	transform_get_optimal_number_of_taps: dce_transform_get_optimal_number_of_taps
 };
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 static const struct transform_funcs dce60_transform_funcs = {
-	.transform_reset = dce_transform_reset,
-	.transform_set_scaler = dce60_transform_set_scaler,
-	.transform_set_gamut_remap = dce_transform_set_gamut_remap,
-	.opp_set_csc_adjustment = dce110_opp_set_csc_adjustment,
-	.opp_set_csc_default = dce110_opp_set_csc_default,
-	.opp_power_on_regamma_lut = dce110_opp_power_on_regamma_lut,
-	.opp_program_regamma_pwl = dce110_opp_program_regamma_pwl,
-	.opp_set_regamma_mode = dce110_opp_set_regamma_mode,
-	.transform_set_pixel_storage_depth = dce60_transform_set_pixel_storage_depth,
-	.transform_get_optimal_number_of_taps = dce_transform_get_optimal_number_of_taps
+	transform_reset: dce_transform_reset,
+	transform_set_scaler: dce60_transform_set_scaler,
+	transform_set_gamut_remap: dce_transform_set_gamut_remap,
+	opp_set_csc_adjustment: dce110_opp_set_csc_adjustment,
+	opp_set_csc_default: dce110_opp_set_csc_default,
+	opp_power_on_regamma_lut: dce110_opp_power_on_regamma_lut,
+	opp_program_regamma_pwl: dce110_opp_program_regamma_pwl,
+	opp_set_regamma_mode: dce110_opp_set_regamma_mode,
+	transform_set_pixel_storage_depth: dce60_transform_set_pixel_storage_depth,
+	transform_get_optimal_number_of_taps: dce_transform_get_optimal_number_of_taps
 };
 // #endif
 
@@ -1637,17 +1637,17 @@ static const struct transform_funcs dce60_transform_funcs = {
 /*****************************************/
 
 void dce_transform_construct(
-	struct dce_transform *xfm_dce,
-	struct dc_context *ctx,
+	dce_transform *xfm_dce,
+	dc_context *ctx,
 	uint32_t inst,
 	const struct dce_transform_registers *regs,
 	const struct dce_transform_shift *xfm_shift,
 	const struct dce_transform_mask *xfm_mask)
 {
-	xfm_dce->base.ctx = ctx;
+	(*xfm_dce).base.ctx = ctx;
 
-	xfm_dce->base.inst = inst;
-	xfm_dce->base.funcs = &dce_transform_funcs;
+	(*xfm_dce).base.inst = inst;
+	(*xfm_dce).base.funcs = &dce_transform_funcs;
 
 	xfm_dce->regs = regs;
 	xfm_dce->xfm_shift = xfm_shift;
@@ -1666,8 +1666,8 @@ void dce_transform_construct(
 
 // #if defined(CONFIG_DRM_AMD_DC_SI)
 void dce60_transform_construct(
-	struct dce_transform *xfm_dce,
-	struct dc_context *ctx,
+	dce_transform *xfm_dce,
+	dc_context *ctx,
 	uint32_t inst,
 	const struct dce_transform_registers *regs,
 	const struct dce_transform_shift *xfm_shift,

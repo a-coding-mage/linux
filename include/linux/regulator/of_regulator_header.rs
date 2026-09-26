@@ -37,7 +37,7 @@ pub struct of_regulator_match {
     pub desc: *const regulator_desc,
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 extern "C" {
     pub fn of_get_regulator_init_data(
         dev: *mut device,
@@ -53,7 +53,7 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_get_regulator_init_data(
     _dev: *mut device,
@@ -63,7 +63,7 @@ pub unsafe fn of_get_regulator_init_data(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_OF"))]
+#[cfg(not(CONFIG_OF))]
 #[inline]
 pub unsafe fn of_regulator_match(
     _dev: *mut device,

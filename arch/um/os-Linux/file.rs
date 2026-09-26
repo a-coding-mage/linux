@@ -16,18 +16,18 @@ use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_ulonglong};
 type c_short=i16;
 
 extern "C" {
-    fn fstat64(c_int,*mut stat64)->c_int; fn stat64(*const c_char,*mut stat64)->c_int;
-    fn access(*const c_char,c_int)->c_int; fn ioctl(c_int,c_ulong,...)->c_int;
-    fn fchmod(c_int,c_uint)->c_int; fn open64(*const c_char,c_int,...)->c_int; fn close(c_int)->c_int;
-    fn fcntl(c_int,c_int,...)->c_int; fn socket(c_int,c_int,c_int)->c_int; fn connect(c_int,*const c_void,u32)->c_int;
-    fn dup(c_int)->c_int; fn lseek64(c_int,u64,c_int)->u64; fn read(c_int,*mut c_void,usize)->isize; fn write(c_int,*const c_void,usize)->isize;
-    fn pread(c_int,*mut c_void,usize,u64)->isize; fn pwrite(c_int,*const c_void,usize,u64)->isize; fn fdatasync(c_int)->c_int;
-    fn shutdown(c_int,c_int)->c_int; fn recvmsg(c_int,*mut msghdr,c_int)->isize; fn sendmsg(c_int,*const msghdr,c_int)->c_int;
-    fn socketpair(c_int,c_int,c_int,*mut c_int)->c_int; fn accept(c_int,*mut c_void,*mut u32)->c_int; fn bind(c_int,*const c_void,u32)->c_int;
-    fn fflush(*mut c_void)->c_int; fn fallocate(c_int,c_int,u64,i64)->c_int; fn eventfd(c_uint,c_int)->c_int;
-    fn poll(*mut pollfd,usize,c_int)->c_int; fn mmap(*mut c_void,usize,c_int,c_int,c_int,i64)->*mut c_void; fn mremap(*mut c_void,usize,usize,c_int,...)->*mut c_void;
-    fn __errno_location()->*mut c_int; fn os_getpid()->c_int; fn printk(*const c_char,...)->c_int;
-    fn of_read(openflags)->openflags; fn of_write(openflags)->openflags;
+    fn fstat64(_: c_int,_: *mut stat64)->c_int; fn stat64(_: *const c_char,_: *mut stat64)->c_int;
+    fn access(_: *const c_char,_: c_int)->c_int; fn ioctl(_: c_int,_: c_ulong,...)->c_int;
+    fn fchmod(_: c_int,_: c_uint)->c_int; fn open64(_: *const c_char,_: c_int,...)->c_int; fn close(_: c_int)->c_int;
+    fn fcntl(_: c_int,_: c_int,...)->c_int; fn socket(_: c_int,_: c_int,_: c_int)->c_int; fn connect(_: c_int,_: *const c_void,_: u32)->c_int;
+    fn dup(_: c_int)->c_int; fn lseek64(_: c_int,_: u64,_: c_int)->u64; fn read(_: c_int,_: *mut c_void,_: usize)->isize; fn write(_: c_int,_: *const c_void,_: usize)->isize;
+    fn pread(_: c_int,_: *mut c_void,_: usize,_: u64)->isize; fn pwrite(_: c_int,_: *const c_void,_: usize,_: u64)->isize; fn fdatasync(_: c_int)->c_int;
+    fn shutdown(_: c_int,_: c_int)->c_int; fn recvmsg(_: c_int,_: *mut msghdr,_: c_int)->isize; fn sendmsg(_: c_int,_: *const msghdr,_: c_int)->c_int;
+    fn socketpair(_: c_int,_: c_int,_: c_int,_: *mut c_int)->c_int; fn accept(_: c_int,_: *mut c_void,_: *mut u32)->c_int; fn bind(_: c_int,_: *const c_void,_: u32)->c_int;
+    fn fflush(_: *mut c_void)->c_int; fn fallocate(_: c_int,_: c_int,_: u64,_: i64)->c_int; fn eventfd(_: c_uint,_: c_int)->c_int;
+    fn poll(_: *mut pollfd,_: usize,_: c_int)->c_int; fn mmap(_: *mut c_void,_: usize,_: c_int,_: c_int,_: c_int,_: i64)->*mut c_void; fn mremap(_: *mut c_void,_: usize,_: usize,_: c_int,...)->*mut c_void;
+    fn __errno_location()->*mut c_int; fn os_getpid()->c_int; fn printk(_: *const c_char,...)->c_int;
+    fn of_read(_: openflags)->openflags; fn of_write(_: openflags)->openflags;
 }
 unsafe fn errno()->c_int { *__errno_location() }
 unsafe fn copy_stat(d:&mut uml_stat,s:&stat64){ *d=uml_stat{ust_dev:s.st_dev,ust_ino:s.st_ino,ust_mode:s.st_mode,ust_nlink:s.st_nlink,ust_uid:s.st_uid,ust_gid:s.st_gid,ust_size:s.st_size,ust_blksize:s.st_blksize,ust_blocks:s.st_blocks,ust_atime:s.st_atime,ust_mtime:s.st_mtime,ust_ctime:s.st_ctime}; }

@@ -16,13 +16,13 @@ extern "C" {
     fn prom_getint(node: Phandle, property: *const c_char) -> i32;
     fn local_irq_save(flags: *mut usize);
     fn local_irq_restore(flags: usize);
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     fn smp_capture();
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     fn smp_release();
-    #[cfg(feature = "CONFIG_SUN_LDOMS")]
+    #[cfg(CONFIG_SUN_LDOMS)]
     fn ldom_reboot(command: *const c_char);
-    #[cfg(feature = "CONFIG_SUN_LDOMS")]
+    #[cfg(CONFIG_SUN_LDOMS)]
     fn ldom_power_off();
 
     static mut prom_mmu_ihandle_cache: i32;
@@ -32,7 +32,7 @@ extern "C" {
     static prom_callmethod_name: *const c_char;
     static prom_map_name: *const c_char;
     static prom_unmap_name: *const c_char;
-    #[cfg(feature = "CONFIG_SUN_LDOMS")]
+    #[cfg(CONFIG_SUN_LDOMS)]
     static mut ldom_domaining_enabled: bool;
 }
 
@@ -57,7 +57,7 @@ pub unsafe extern "C" fn prom_sun4v_guest_soft_state() {
 
 #[no_mangle]
 pub unsafe extern "C" fn prom_reboot(bcommand: *const c_char) {
-    #[cfg(feature = "CONFIG_SUN_LDOMS")]
+    #[cfg(CONFIG_SUN_LDOMS)]
     if ldom_domaining_enabled { ldom_reboot(bcommand); }
     let mut args = [b"boot\0".as_ptr() as usize, 1, 0, bcommand as usize];
     p1275_cmd_direct(args.as_mut_ptr());
@@ -75,17 +75,17 @@ pub unsafe extern "C" fn prom_cmdline() {
     let mut args = [b"enter\0".as_ptr() as usize, 0, 0];
     let mut flags = 0usize;
     local_irq_save(&mut flags);
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     smp_capture();
     p1275_cmd_direct(args.as_mut_ptr());
-    #[cfg(feature = "CONFIG_SMP")]
+    #[cfg(CONFIG_SMP)]
     smp_release();
     local_irq_restore(flags);
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn prom_halt() -> ! {
-    #[cfg(feature = "CONFIG_SUN_LDOMS")]
+    #[cfg(CONFIG_SUN_LDOMS)]
     if ldom_domaining_enabled { ldom_power_off(); }
     loop {
         let mut args = [b"exit\0".as_ptr() as usize, 0, 0];
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn prom_halt() -> ! {
 
 #[no_mangle]
 pub unsafe extern "C" fn prom_halt_power_off() {
-    #[cfg(feature = "CONFIG_SUN_LDOMS")]
+    #[cfg(CONFIG_SUN_LDOMS)]
     if ldom_domaining_enabled { ldom_power_off(); }
     let mut args = [b"SUNW,power-off\0".as_ptr() as usize, 0, 0];
     p1275_cmd_direct(args.as_mut_ptr());
@@ -156,17 +156,17 @@ pub unsafe extern "C" fn prom_sleepself(){let mut a=[b"SUNW,sleep-self\0".as_ptr
 pub unsafe extern "C" fn prom_sleepsystem()->i32{let mut a=[b"SUNW,sleep-system\0".as_ptr() as usize,0,1,usize::MAX];p1275_cmd_direct(a.as_mut_ptr());a[3] as i32}
 pub unsafe extern "C" fn prom_wakeupsystem()->i32{let mut a=[b"SUNW,wakeup-system\0".as_ptr() as usize,0,1,usize::MAX];p1275_cmd_direct(a.as_mut_ptr());a[3] as i32}
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn prom_startcpu(n:i32,pc:usize,arg:usize){let mut a=[b"SUNW,start-cpu\0".as_ptr() as usize,3,0,n as u32 as usize,pc,arg];p1275_cmd_direct(a.as_mut_ptr());}
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn prom_startcpu_cpuid(n:i32,pc:usize,arg:usize){let mut a=[b"SUNW,start-cpu-by-cpuid\0".as_ptr() as usize,3,0,n as u32 as usize,pc,arg];p1275_cmd_direct(a.as_mut_ptr());}
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn prom_stopcpu_cpuid(n:i32){let mut a=[b"SUNW,stop-cpu-by-cpuid\0".as_ptr() as usize,1,0,n as u32 as usize];p1275_cmd_direct(a.as_mut_ptr());}
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn prom_stopself(){let mut a=[b"SUNW,stop-self\0".as_ptr() as usize,0,0];p1275_cmd_direct(a.as_mut_ptr());}
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn prom_idleself(){let mut a=[b"SUNW,idle-self\0".as_ptr() as usize,0,0];p1275_cmd_direct(a.as_mut_ptr());}
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn prom_resumecpu(n:i32){let mut a=[b"SUNW,resume-cpu\0".as_ptr() as usize,1,0,n as u32 as usize];p1275_cmd_direct(a.as_mut_ptr());}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

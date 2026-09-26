@@ -87,6 +87,12 @@ unsafe fn sun4i_ve_clk_setup(node: *mut device_node) {
     let mut clk_name: *const c_char = (*node).name;
     let mut reg: *mut core::ffi::c_void;
     let mut err: c_int;
+    'err_unmap: {
+    'err_free_div: {
+    'err_free_gate: {
+    'err_unregister_clk: {
+    'err_del_provider: {
+    'err_free_reset: {
 
     reg = of_io_request_and_map(node, 0, of_node_full_name(node));
     if IS_ERR!(reg) {
@@ -95,12 +101,12 @@ unsafe fn sun4i_ve_clk_setup(node: *mut device_node) {
 
     div = kzalloc_obj!(clk_divider);
     if div.is_null() {
-        goto!(err_unmap);
+        break 'err_unmap;
     }
 
     gate = kzalloc_obj!(clk_gate);
     if gate.is_null() {
-        goto!(err_free_div);
+        break 'err_free_div;
     }
 
     of_property_read_string(node, c"clock-output-names", &mut clk_name);
@@ -123,17 +129,17 @@ unsafe fn sun4i_ve_clk_setup(node: *mut device_node) {
         CLK_SET_RATE_PARENT,
     );
     if IS_ERR!(clk) {
-        goto!(err_free_gate);
+        break 'err_free_gate;
     }
 
     err = of_clk_add_provider(node, of_clk_src_simple_get, clk);
     if err != 0 {
-        goto!(err_unregister_clk);
+        break 'err_unregister_clk;
     }
 
     reset_data = kzalloc_obj!(ve_reset_data);
     if reset_data.is_null() {
-        goto!(err_del_provider);
+        break 'err_del_provider;
     }
 
     (*reset_data).reg = reg;
@@ -145,22 +151,27 @@ unsafe fn sun4i_ve_clk_setup(node: *mut device_node) {
     (*reset_data).rcdev.of_reset_n_cells = 0;
     err = reset_controller_register(&mut (*reset_data).rcdev);
     if err != 0 {
-        goto!(err_free_reset);
+        break 'err_free_reset;
     }
 
     return;
-
-err_free_reset:
+    }
+    
     kfree(reset_data);
-err_del_provider:
+    }
+    
     of_clk_del_provider(node);
-err_unregister_clk:
+    }
+    
     clk_unregister(clk);
-err_free_gate:
+    }
+    
     kfree(gate);
-err_free_div:
+    }
+    
     kfree(div);
-err_unmap:
+    }
+    
     iounmap(reg);
 }
 

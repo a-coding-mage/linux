@@ -31,7 +31,7 @@ pub struct typec_switch_desc {
     pub drvdata: *mut c_void,
 }
 
-#[cfg(feature = "CONFIG_TYPEC")]
+#[cfg(CONFIG_TYPEC)]
 extern "C" {
     pub fn fwnode_typec_switch_get(fwnode: *mut fwnode_handle) -> *mut typec_switch;
     pub fn typec_switch_put(sw: *mut typec_switch);
@@ -45,19 +45,19 @@ extern "C" {
     pub fn typec_switch_get_drvdata(sw: *mut typec_switch_dev) -> *mut c_void;
 }
 
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn fwnode_typec_switch_get(_fwnode: *mut fwnode_handle) -> *mut typec_switch { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_switch_put(_sw: *mut typec_switch) {}
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_switch_set(_sw: *mut typec_switch, _orientation: typec_orientation) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_switch_register(_parent: *mut device, _desc: *const typec_switch_desc) -> *mut typec_switch_dev { (-95isize) as *mut typec_switch_dev }
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_switch_unregister(_sw: *mut typec_switch_dev) {}
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_switch_set_drvdata(_sw: *mut typec_switch_dev, _data: *mut c_void) {}
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_switch_get_drvdata(_sw: *mut typec_switch_dev) -> *mut c_void { (-95isize) as *mut c_void }
 
 pub unsafe fn typec_switch_get(dev: *mut device) -> *mut typec_switch {
@@ -84,7 +84,7 @@ pub struct typec_mux_desc {
     pub drvdata: *mut c_void,
 }
 
-#[cfg(feature = "CONFIG_TYPEC")]
+#[cfg(CONFIG_TYPEC)]
 extern "C" {
     pub fn fwnode_typec_mux_get(fwnode: *mut fwnode_handle) -> *mut typec_mux;
     pub fn typec_mux_put(mux: *mut typec_mux);
@@ -95,19 +95,19 @@ extern "C" {
     pub fn typec_mux_get_drvdata(mux: *mut typec_mux_dev) -> *mut c_void;
 }
 
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn fwnode_typec_mux_get(_fwnode: *mut fwnode_handle) -> *mut typec_mux { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_mux_put(_mux: *mut typec_mux) {}
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_mux_set(_mux: *mut typec_mux, _state: *mut typec_mux_state) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_mux_register(_parent: *mut device, _desc: *const typec_mux_desc) -> *mut typec_mux_dev { (-95isize) as *mut typec_mux_dev }
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_mux_unregister(_mux: *mut typec_mux_dev) {}
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_mux_set_drvdata(_mux: *mut typec_mux_dev, _data: *mut c_void) {}
-#[cfg(not(feature = "CONFIG_TYPEC"))]
+#[cfg(not(CONFIG_TYPEC))]
 pub unsafe fn typec_mux_get_drvdata(_mux: *mut typec_mux_dev) -> *mut c_void { (-95isize) as *mut c_void }
 
 pub unsafe fn typec_mux_get(dev: *mut device) -> *mut typec_mux {

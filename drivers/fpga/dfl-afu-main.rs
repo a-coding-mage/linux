@@ -44,16 +44,16 @@ extern "C" {
     fn readq_poll_timeout(_: *mut u8, _: *mut u64, _: u64, _: u64, _: u64) -> c_int;
     fn mutex_lock(_: *mut c_void); fn mutex_unlock(_: *mut c_void);
     fn dfl_fpga_fdata_get_private(_: *mut dfl_feature_dev_data)->*mut dfl_afu;
-    fn dfl_fpga_fdata_set_private(_: *mut dfl_feature_dev_data,*mut dfl_afu);
-    fn afu_mmio_region_add(_: *mut dfl_feature_dev_data,u32,u64,u64,u32)->c_int;
+    fn dfl_fpga_fdata_set_private(_: *mut dfl_feature_dev_data,_: *mut dfl_afu);
+    fn afu_mmio_region_add(_: *mut dfl_feature_dev_data,_: u32,_: u64,_: u64,_: u32)->c_int;
     fn afu_mmio_region_init(_: *mut dfl_feature_dev_data); fn afu_mmio_region_destroy(_: *mut dfl_feature_dev_data);
-    fn afu_mmio_region_get_by_index(_: *mut dfl_feature_dev_data,u32,*mut dfl_afu_mmio_region)->c_long;
-    fn afu_mmio_region_get_by_offset(_: *mut dfl_feature_dev_data,u64,u64,*mut dfl_afu_mmio_region)->c_long;
+    fn afu_mmio_region_get_by_index(_: *mut dfl_feature_dev_data,_: u32,_: *mut dfl_afu_mmio_region)->c_long;
+    fn afu_mmio_region_get_by_offset(_: *mut dfl_feature_dev_data,_: u64,_: u64,_: *mut dfl_afu_mmio_region)->c_long;
     fn afu_dma_region_init(_: *mut dfl_feature_dev_data); fn afu_dma_region_destroy(_: *mut dfl_feature_dev_data);
-    fn afu_dma_map_region(_: *mut dfl_feature_dev_data,u64,u64,*mut u64)->c_long; fn afu_dma_unmap_region(_: *mut dfl_feature_dev_data,u64)->c_long;
-    fn dfl_feature_dev_use_begin(_: *mut dfl_feature_dev_data,bool)->c_int; fn dfl_feature_dev_use_end(_: *mut dfl_feature_dev_data); fn dfl_feature_dev_use_count(_: *mut dfl_feature_dev_data)->u32;
-    fn dfl_feature_ioctl_get_num_irqs(_: *mut platform_device,*mut dfl_feature,usize)->c_long; fn dfl_feature_ioctl_set_irq(_: *mut platform_device,*mut dfl_feature,usize)->c_long;
-    fn dfl_get_feature_by_id(_: *mut dfl_feature_dev_data,u64)->*mut dfl_feature;
+    fn afu_dma_map_region(_: *mut dfl_feature_dev_data,_: u64,_: u64,_: *mut u64)->c_long; fn afu_dma_unmap_region(_: *mut dfl_feature_dev_data,_: u64)->c_long;
+    fn dfl_feature_dev_use_begin(_: *mut dfl_feature_dev_data,_: bool)->c_int; fn dfl_feature_dev_use_end(_: *mut dfl_feature_dev_data); fn dfl_feature_dev_use_count(_: *mut dfl_feature_dev_data)->u32;
+    fn dfl_feature_ioctl_get_num_irqs(_: *mut platform_device,_: *mut dfl_feature,_: usize)->c_long; fn dfl_feature_ioctl_set_irq(_: *mut platform_device,_: *mut dfl_feature,_: usize)->c_long;
+    fn dfl_get_feature_by_id(_: *mut dfl_feature_dev_data,_: u64)->*mut dfl_feature;
     fn dfl_fpga_port_ops_add(_: *mut dfl_fpga_port_ops); fn dfl_fpga_port_ops_del(_: *mut dfl_fpga_port_ops);
     fn platform_driver_register(_: *mut platform_driver)->c_int; fn platform_driver_unregister(_: *mut platform_driver);
 }

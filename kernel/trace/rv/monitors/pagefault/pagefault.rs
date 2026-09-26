@@ -148,7 +148,7 @@ unsafe extern "C" fn unregister_pagefault() {
 // MODULE_DESCRIPTION("pagefault: Monitor that RT tasks do not raise page faults");
 
 // Preserves the source condition: IS_ENABLED(CONFIG_RV_MONITORS_KUNIT_TEST).
-#[cfg(feature = "CONFIG_RV_MONITORS_KUNIT_TEST")]
+#[cfg(CONFIG_RV_MONITORS_KUNIT_TEST)]
 pub mod kunit {
     use super::*;
 

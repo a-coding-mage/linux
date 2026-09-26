@@ -81,8 +81,8 @@ macro_rules! STK_REG {
 }
 
 macro_rules! _GLOBAL {
-    ($A:ident) => {
-        FUNC_START!(test_ ## $A)
+    ($A:tt) => {
+        FUNC_START!(::kernel::macros::paste!([<test_ $A>]))
     };
 }
 
@@ -176,14 +176,14 @@ macro_rules! DCBT_SETUP_STREAMS {
         clrldi $scratch, $scratch, 32;
         /* setup read stream 0 */
         dcbt 0, $from, 0b01000;
-        /* addr from */
+        /* addr $from */
         dcbt 0, $from_parms, 0b01010;
-        /* length and depth from */
+        /* length and depth $from */
         /* setup write stream 1 */
         dcbtst 0, $to, 0b01000;
-        /* addr to */
+        /* addr $to */
         dcbtst 0, $to_parms, 0b01010;
-        /* length and depth to */
+        /* length and depth $to */
         eieio;
         dcbt 0, $scratch, 0b01010;
         /* all streams GO */

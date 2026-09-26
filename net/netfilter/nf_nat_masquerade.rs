@@ -126,7 +126,7 @@ unsafe extern "C" fn masq_inet_event(_: *mut notifier_block, event: u64, ptr: *m
 static mut masq_dev_notifier: notifier_block = notifier_block { notifier_call: Some(masq_device_event) };
 static mut masq_inet_notifier: notifier_block = notifier_block { notifier_call: Some(masq_inet_event) };
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 #[no_mangle]
 pub unsafe extern "C" fn nf_nat_masquerade_ipv6(skb: *mut sk_buff, range: *const nf_nat_range2, out: *const net_device) -> u32 {
     let mut ctinfo = core::mem::zeroed::<ip_conntrack_info>();
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn nf_nat_masquerade_ipv6(skb: *mut sk_buff, range: *const
     nf_nat_setup_info(ct, &mut newrange, NF_NAT_MANIP_SRC)
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 unsafe extern "C" fn masq_inet6_event(_: *mut notifier_block, event: u64, ptr: *mut core::ffi::c_void) -> i32 {
     if event != NETDEV_DOWN { return NOTIFY_DONE; }
     let ifa = ptr as *mut inet6_ifaddr;
@@ -154,12 +154,12 @@ unsafe extern "C" fn masq_inet6_event(_: *mut notifier_block, event: u64, ptr: *
     NOTIFY_DONE
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 static mut masq_inet6_notifier: notifier_block = notifier_block { notifier_call: Some(masq_inet6_event) };
 
 unsafe extern "C" fn nf_nat_masquerade_ipv6_register_notifier() -> i32 {
-    #[cfg(feature = "CONFIG_IPV6")] { return register_inet6addr_notifier(&mut masq_inet6_notifier); }
-    #[cfg(not(feature = "CONFIG_IPV6"))] { 0 }
+    #[cfg(CONFIG_IPV6)] { return register_inet6addr_notifier(&mut masq_inet6_notifier); }
+    #[cfg(not(CONFIG_IPV6))] { 0 }
 }
 
 #[no_mangle]
@@ -185,7 +185,7 @@ pub unsafe extern "C" fn nf_nat_masquerade_inet_unregister_notifiers() {
     if masq_refcnt > 0 { mutex_unlock(&mut masq_mutex); return; }
     unregister_netdevice_notifier(&mut masq_dev_notifier);
     unregister_inetaddr_notifier(&mut masq_inet_notifier);
-    #[cfg(feature = "CONFIG_IPV6")] unregister_inet6addr_notifier(&mut masq_inet6_notifier);
+    #[cfg(CONFIG_IPV6)] unregister_inet6addr_notifier(&mut masq_inet6_notifier);
     mutex_unlock(&mut masq_mutex);
 }
 

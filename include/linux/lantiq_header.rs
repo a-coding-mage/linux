@@ -6,10 +6,10 @@
  */
 // Under CONFIG_LANTIQ, declarations from <lantiq_soc.h> are supplied externally.
 
-#[cfg(not(feature = "CONFIG_LANTIQ"))]
+#[cfg(not(CONFIG_LANTIQ))]
 pub const LTQ_EARLY_ASC: i32 = 0;
 
-#[cfg(not(feature = "CONFIG_LANTIQ"))]
+#[cfg(not(CONFIG_LANTIQ))]
 #[macro_export]
 macro_rules! CPHYSADDR {
     ($a:expr) => {
@@ -17,11 +17,11 @@ macro_rules! CPHYSADDR {
     };
 }
 
-#[cfg(not(feature = "CONFIG_LANTIQ"))]
+#[cfg(not(CONFIG_LANTIQ))]
 #[allow(non_camel_case_types)]
 pub struct clk;
 
-#[cfg(not(feature = "CONFIG_LANTIQ"))]
+#[cfg(not(CONFIG_LANTIQ))]
 #[inline]
 pub fn clk_get_fpi() -> *mut clk {
     core::ptr::null_mut()

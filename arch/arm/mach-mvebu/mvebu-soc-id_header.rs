@@ -37,12 +37,12 @@ pub const ARMADA_38x_Z1_REV: u32 = 0x0;
 pub const ARMADA_38x_A0_REV: u32 = 0x4;
 
 /* CONFIG_ARCH_MVEBU build-time condition from the original header. */
-#[cfg(feature = "CONFIG_ARCH_MVEBU")]
+#[cfg(CONFIG_ARCH_MVEBU)]
 extern "C" {
     pub fn mvebu_get_soc_id(dev: *mut u32, rev: *mut u32) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ARCH_MVEBU"))]
+#[cfg(not(CONFIG_ARCH_MVEBU))]
 pub fn mvebu_get_soc_id(_dev: *mut u32, _rev: *mut u32) -> i32 {
     -1
 }

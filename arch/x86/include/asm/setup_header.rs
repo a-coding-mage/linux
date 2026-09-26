@@ -14,11 +14,11 @@ pub const OLD_CL_ADDRESS: usize = 0x020; /* Relative to real mode data */
 pub const NEW_CL_POINTER: usize = 0x228; /* Relative to real mode data */
 
 /* Interrupt control for vSMPowered x86_64 systems. */
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 extern "C" {
     pub fn vsmp_init();
 }
-#[cfg(not(feature = "CONFIG_X86_64"))]
+#[cfg(not(CONFIG_X86_64))]
 #[inline]
 pub fn vsmp_init() {}
 
@@ -45,20 +45,20 @@ extern "C" {
 }
 
 /* CONFIG_X86_INTEL_MID: declare x86_intel_mid_early_setup; otherwise an empty inline. */
-#[cfg(feature = "CONFIG_X86_INTEL_MID")]
+#[cfg(CONFIG_X86_INTEL_MID)]
 extern "C" {
     pub fn x86_intel_mid_early_setup();
 }
-#[cfg(not(feature = "CONFIG_X86_INTEL_MID"))]
+#[cfg(not(CONFIG_X86_INTEL_MID))]
 #[inline]
 pub fn x86_intel_mid_early_setup() {}
 
 /* CONFIG_X86_INTEL_CE: declare x86_ce4100_early_setup; otherwise an empty inline. */
-#[cfg(feature = "CONFIG_X86_INTEL_CE")]
+#[cfg(CONFIG_X86_INTEL_CE)]
 extern "C" {
     pub fn x86_ce4100_early_setup();
 }
-#[cfg(not(feature = "CONFIG_X86_INTEL_CE"))]
+#[cfg(not(CONFIG_X86_INTEL_CE))]
 #[inline]
 pub fn x86_ce4100_early_setup() {}
 
@@ -75,13 +75,13 @@ extern "C" {
 #[inline]
 pub unsafe fn kaslr_enabled() -> bool {
     /* IS_ENABLED(CONFIG_RANDOMIZE_MEMORY) && !!(boot_params.hdr.loadflags & KASLR_FLAG) */
-    cfg!(feature = "CONFIG_RANDOMIZE_MEMORY")
+    cfg!(CONFIG_RANDOMIZE_MEMORY)
         && ((boot_params.hdr.loadflags & KASLR_FLAG) != 0)
 }
 
 #[inline]
 pub unsafe fn kaslr_memory_enabled() -> bool {
-    kaslr_enabled() && !cfg!(feature = "CONFIG_KASAN")
+    kaslr_enabled() && !cfg!(CONFIG_KASAN)
 }
 
 #[inline]
@@ -106,11 +106,11 @@ extern "C" {
     pub fn x86_64_start_reservations(real_mode_data: *mut ::core::ffi::c_char) -> !;
 }
 
-#[cfg(feature = "CONFIG_CMDLINE_BOOL")]
+#[cfg(CONFIG_CMDLINE_BOOL)]
 extern "C" {
     pub static mut builtin_cmdline_added: bool;
 }
-#[cfg(not(feature = "CONFIG_CMDLINE_BOOL"))]
+#[cfg(not(CONFIG_CMDLINE_BOOL))]
 pub const builtin_cmdline_added: bool = false;
 
 

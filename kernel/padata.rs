@@ -90,10 +90,10 @@ unsafe fn padata_works_free(works: *mut list_head) {
     spin_lock_bh(&mut padata_works_lock);
     let mut cur: *mut padata_work = core::ptr::null_mut();
     let mut next: *mut padata_work = core::ptr::null_mut();
-    list_for_each_entry_safe(&mut cur, &mut next, works, pw_list) {
+    list_for_each_entry_safe!(&mut cur, &mut next, works, pw_list, {
         list_del(&mut (*cur).pw_list);
         padata_work_free(cur);
-    }
+    });
     spin_unlock_bh(&mut padata_works_lock);
 }
 
@@ -151,7 +151,7 @@ pub unsafe fn padata_do_multithreaded(job: *mut padata_mt_job) {
     let mut nworks = core::cmp::max((*job).size / core::cmp::max((*job).min_chunk, (*job).align), 1); nworks = core::cmp::min(nworks, (*job).max_threads);
     if nworks == 1 { ((*job).thread_fn)((*job).start, (*job).start + (*job).size, (*job).fn_arg); return; }
     let mut ps: padata_mt_job_state = core::mem::zeroed(); let mut works: list_head = core::mem::zeroed(); spin_lock_init(&mut ps.lock); init_completion(&mut ps.completion); ps.job = job; ps.nworks = padata_work_alloc_mt(nworks as i32, &mut ps as _, &mut works); ps.nworks_fini = 0; ps.chunk_size = core::cmp::max(core::cmp::max((*job).size / (ps.nworks as ulong * LOAD_BALANCE_FACTOR), (*job).min_chunk), 1); ps.chunk_size = roundup(ps.chunk_size, (*job).align);
-    let mut pw: *mut padata_work = core::ptr::null_mut(); list_for_each_entry(&mut pw, &mut works, pw_list) { queue_work(system_dfl_wq, &mut (*pw).pw_work); }
+    let mut pw: *mut padata_work = core::ptr::null_mut(); list_for_each_entry!(&mut pw, &mut works, pw_list, { queue_work(system_dfl_wq, &mut (*pw).pw_work); });
     let mut my_work: padata_work = core::mem::zeroed(); padata_work_init(&mut my_work, padata_mt_helper, &mut ps as _, PADATA_WORK_ONSTACK); padata_mt_helper(&mut my_work.pw_work); wait_for_completion(&mut ps.completion); destroy_work_on_stack(&mut my_work.pw_work); padata_works_free(&mut works);
 }
 

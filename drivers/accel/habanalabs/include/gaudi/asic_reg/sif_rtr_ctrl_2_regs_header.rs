@@ -10,8 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#ifndef ASIC_REG_SIF_RTR_CTRL_2_REGS_H_
-#define ASIC_REG_SIF_RTR_CTRL_2_REGS_H_
 
 /*
  *****************************************

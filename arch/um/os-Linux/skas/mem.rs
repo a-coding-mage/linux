@@ -168,7 +168,7 @@ unsafe fn syscall_stub_get_previous(mm_idp: *mut mm_id, syscall_type: libc::c_in
 unsafe fn get_stub_fd(mm_idp: *mut mm_id, fd: libc::c_int) -> libc::c_int {
     if !using_seccomp { return fd; }
     if (*mm_idp).syscall_data_len < 0 { return 0; }
-    if (*mm_idp).syscall_data_len as usize < (*mm_idp).syscall_data.len() {
+    if ((*mm_idp).syscall_data_len as usize) < (*mm_idp).syscall_data.len() {
         for i in 0..(*mm_idp).syscall_fd_num as usize {
             if (*mm_idp).syscall_fd_map[i] == fd { return i as libc::c_int; }
         }

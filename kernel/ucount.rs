@@ -100,11 +100,11 @@ unsafe fn find_ucounts(ns: *mut user_namespace, uid: kuid_t, hashent: *mut hlist
     let mut ucount: *mut ucounts;
     let mut pos: *mut hlist_nulls_node;
     guard_rcu!();
-    hlist_nulls_for_each_entry_rcu!(ucount, pos, hashent, node) {
+    hlist_nulls_for_each_entry_rcu!(ucount, pos, hashent, node, {
         if uid_eq((*ucount).uid, uid) && (*ucount).ns == ns && rcuref_get(&mut (*ucount).count) {
             return ucount;
         }
-    }
+    });
     core::ptr::null_mut()
 }
 

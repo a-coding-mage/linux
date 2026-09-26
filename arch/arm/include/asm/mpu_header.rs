@@ -34,9 +34,9 @@ pub const PMSAv7_RGN_SHARED_CACHEABLE: u32 = PMSAv7_RGN_CACHEABLE | PMSAv7_ACR_S
 pub const PMSAv7_RGN_STRONGLY_ORDERED: u32 = 0;
 
 /* Main region should only be shared for SMP */
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const PMSAv7_RGN_NORMAL: u32 = PMSAv7_RGN_CACHEABLE | PMSAv7_ACR_SHARED;
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const PMSAv7_RGN_NORMAL: u32 = PMSAv7_RGN_CACHEABLE;
 
 /* Access permission bits of ACR (only define those that we use) */
@@ -48,25 +48,28 @@ pub const PMSAv7_AP_PL1RW_PL0NA: u32 = 0x1 << 8;
 pub const PMSAv8_BAR_XN: u32 = 1;
 
 pub const PMSAv8_LAR_EN: u32 = 1;
-pub const PMSAv8_LAR_IDX: const fn(u32) -> u32 = |n| (n & 0x7) << 1;
+pub const fn PMSAv8_LAR_IDX(n: u32) -> u32 {
+    (n & 0x7) << 1
+}
 
 pub const PMSAv8_AP_PL1RW_PL0NA: u32 = 0 << 1;
 pub const PMSAv8_AP_PL1RW_PL0RW: u32 = 1 << 1;
 pub const PMSAv8_AP_PL1RO_PL0RO: u32 = 3 << 1;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub const PMSAv8_RGN_SHARED: u32 = 3 << 3; // inner sharable
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const PMSAv8_RGN_SHARED: u32 = 0 << 3;
 
 pub const PMSAv8_RGN_DEVICE_nGnRnE: u32 = 0;
 pub const PMSAv8_RGN_NORMAL: u32 = 1;
 
-pub const PMSAv8_MAIR: const fn(u32, u32) -> u32 = |attr, mt| attr << (mt * 8);
-
-#[cfg(feature = "CONFIG_CPU_V7M")]
+pub const fn PMSAv8_MAIR(attr: u32, mt: u32) -> u32 {
+    attr << (mt * 8)
+}
+#[cfg(CONFIG_CPU_V7M)]
 pub const PMSAv8_MINALIGN: u32 = 32;
-#[cfg(not(feature = "CONFIG_CPU_V7M"))]
+#[cfg(not(CONFIG_CPU_V7M))]
 pub const PMSAv8_MINALIGN: u32 = 64;
 
 /* For minimal static MPU region configurations */
@@ -121,7 +124,7 @@ extern "C" {
     pub static mut mpu_rgn_info: mpu_rgn_info;
 }
 
-#[cfg(feature = "CONFIG_ARM_MPU")]
+#[cfg(CONFIG_ARM_MPU)]
 extern "C" {
     pub fn pmsav7_adjust_lowmem_bounds();
     pub fn pmsav8_adjust_lowmem_bounds();
@@ -129,16 +132,16 @@ extern "C" {
     pub fn pmsav8_setup();
 }
 
-#[cfg(not(feature = "CONFIG_ARM_MPU"))]
+#[cfg(not(CONFIG_ARM_MPU))]
 #[inline]
 pub fn pmsav7_adjust_lowmem_bounds() {}
-#[cfg(not(feature = "CONFIG_ARM_MPU"))]
+#[cfg(not(CONFIG_ARM_MPU))]
 #[inline]
 pub fn pmsav8_adjust_lowmem_bounds() {}
-#[cfg(not(feature = "CONFIG_ARM_MPU"))]
+#[cfg(not(CONFIG_ARM_MPU))]
 #[inline]
 pub fn pmsav7_setup() {}
-#[cfg(not(feature = "CONFIG_ARM_MPU"))]
+#[cfg(not(CONFIG_ARM_MPU))]
 #[inline]
 pub fn pmsav8_setup() {}
 

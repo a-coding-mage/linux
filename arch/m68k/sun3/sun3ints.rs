@@ -25,7 +25,7 @@ extern "C" {
         dev_id: *mut core::ffi::c_void,
     ) -> i32;
     fn pr_err(format: *const core::ffi::c_char, ...);
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     fn intersil_clear();
 }
 
@@ -75,11 +75,11 @@ unsafe extern "C" fn sun3_int7(irq: i32, _dev_id: *mut core::ffi::c_void) -> irq
 unsafe extern "C" fn sun3_int5(irq: i32, _dev_id: *mut core::ffi::c_void) -> irqreturn_t {
     let mut flags: u64 = 0;
     local_irq_save(&mut flags);
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     intersil_clear();
     sun3_disable_irq(5);
     sun3_enable_irq(5);
-    #[cfg(feature = "CONFIG_SUN3")]
+    #[cfg(CONFIG_SUN3)]
     intersil_clear();
     legacy_timer_tick(1);
     let cnt = kstat_irqs_cpu(irq, 0);

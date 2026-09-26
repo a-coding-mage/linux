@@ -8,20 +8,20 @@ pub const COMPAT_OFF_T_MAX: u32 = 0x7fff_ffff;
 /* The C header selects argument order according to CONFIG_CPU_BIG_ENDIAN. */
 #[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
 macro_rules! compat_arg_u64 {
-    ($name:ident) => { u32 $name##_lo, u32 $name##_hi };
+    ($name:tt) => { u32 ::kernel::macros::paste!([<$name _lo>]), u32 ::kernel::macros::paste!([<$name _hi>]) };
 }
 #[cfg(CONFIG_CPU_BIG_ENDIAN)]
 macro_rules! compat_arg_u64 {
-    ($name:ident) => { u32 $name##_hi, u32 $name##_lo };
+    ($name:tt) => { u32 ::kernel::macros::paste!([<$name _hi>]), u32 ::kernel::macros::paste!([<$name _lo>]) };
 }
 
 #[cfg(not(CONFIG_CPU_BIG_ENDIAN))]
 macro_rules! compat_arg_u64_dual {
-    ($name:ident) => { u32, $name##_lo, u32, $name##_hi };
+    ($name:tt) => { u32, ::kernel::macros::paste!([<$name _lo>]), u32, ::kernel::macros::paste!([<$name _hi>]) };
 }
 #[cfg(CONFIG_CPU_BIG_ENDIAN)]
 macro_rules! compat_arg_u64_dual {
-    ($name:ident) => { u32, $name##_hi, u32, $name##_lo };
+    ($name:tt) => { u32, ::kernel::macros::paste!([<$name _hi>]), u32, ::kernel::macros::paste!([<$name _lo>]) };
 }
 
 macro_rules! compat_arg_u64_glue {

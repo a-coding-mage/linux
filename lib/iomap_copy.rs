@@ -75,7 +75,7 @@ pub unsafe extern "C" fn __ioread32_copy(to: *mut c_void, from: *const c_void, c
 #[no_mangle]
 pub unsafe extern "C" fn __iowrite64_copy(to: *mut c_void, from: *const c_void, count: usize) {
     // CONFIG_64BIT selects the 64-bit implementation in the original build.
-    #[cfg(feature = "CONFIG_64BIT")]
+    #[cfg(CONFIG_64BIT)]
     {
         let mut dst = to as *mut u64;
         let mut src = from as *const u64;
@@ -88,7 +88,7 @@ pub unsafe extern "C" fn __iowrite64_copy(to: *mut c_void, from: *const c_void, 
         }
     }
 
-    #[cfg(not(feature = "CONFIG_64BIT"))]
+    #[cfg(not(CONFIG_64BIT))]
     {
         __iowrite32_copy(to, from, count.wrapping_mul(2));
     }

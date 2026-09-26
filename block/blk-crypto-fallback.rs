@@ -118,9 +118,9 @@ unsafe extern "C" fn blk_crypto_fallback_encrypt_endio(enc_bio: *mut Bio) {
     let mut i: c_uint = 0;
     let mut bv: BioVec;
 
-    bio_for_each_bvec_all!(bv, enc_bio, i) {
+    bio_for_each_bvec_all!(bv, enc_bio, i, {
         *pages.add(i as usize) = bv.bv_page;
-    }
+    });
     i = mempool_free_bulk(BLK_CRYPTO_BOUNCE_PAGE_POOL, pages as *mut *mut c_void,
                           (*enc_bio).bi_vcnt);
     if i < (*enc_bio).bi_vcnt {

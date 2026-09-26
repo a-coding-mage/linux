@@ -73,7 +73,7 @@ unsafe fn kyber_resize_domain(kqd: *mut kyber_queue_data, d: usize, mut depth: u
 
 unsafe extern "C" fn kyber_timer_fn(t: *mut timer_list) {
     let kqd = timer_container_of(t, kyber_queue_data, timer); let mut bad = false;
-    for_each_possible_cpu!(cpu) { let cl = per_cpu_ptr((*kqd).cpu_latency, cpu); for d in 0..KYBER_OTHER { flush_latency_buckets(kqd, cl, d, KYBER_TOTAL_LATENCY); flush_latency_buckets(kqd, cl, d, KYBER_IO_LATENCY); } }
+    for_each_possible_cpu!(cpu, { let cl = per_cpu_ptr((*kqd).cpu_latency, cpu); for d in 0..KYBER_OTHER { flush_latency_buckets(kqd, cl, d, KYBER_TOTAL_LATENCY); flush_latency_buckets(kqd, cl, d, KYBER_IO_LATENCY); } });
     for d in 0..KYBER_OTHER { if calculate_percentile(kqd, d, KYBER_IO_LATENCY, 90) >= KYBER_GOOD_BUCKETS as c_int { bad = true; } }
     for d in 0..KYBER_OTHER {
         let mut p99 = calculate_percentile(kqd, d, KYBER_TOTAL_LATENCY, 99);

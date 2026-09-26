@@ -82,9 +82,9 @@ pub struct dpll_pin_ops {
     pub freq_supported: *mut dpll_pin_frequency, pub phase_range: dpll_pin_phase_adjust_range, pub phase_gran: u32,
 }
 
-#[cfg(feature = "CONFIG_DPLL_REFCNT_TRACKER")]
+#[cfg(CONFIG_DPLL_REFCNT_TRACKER)]
 pub type dpll_tracker = *mut ref_tracker;
-#[cfg(not(feature = "CONFIG_DPLL_REFCNT_TRACKER"))]
+#[cfg(not(CONFIG_DPLL_REFCNT_TRACKER))]
 #[repr(C)] pub struct dpll_tracker;
 
 pub const DPLL_DEVICE_CREATED: u32 = 1;
@@ -97,7 +97,7 @@ pub const DPLL_PIN_CHANGED: u32 = 6;
 #[repr(C)] pub struct dpll_device_notifier_info { pub dpll: *mut dpll_device, pub id: u32, pub idx: u32, pub clock_id: u64, pub type_: dpll_type }
 #[repr(C)] pub struct dpll_pin_notifier_info { pub pin: *mut dpll_pin, pub id: u32, pub idx: u32, pub clock_id: u64, pub fwnode: *const fwnode_handle, pub prop: *const dpll_pin_properties, pub src_clock_id: u64 }
 
-#[cfg(feature = "CONFIG_DPLL")]
+#[cfg(CONFIG_DPLL)]
 extern "C" {
     pub fn dpll_netdev_pin_set(dev: *mut net_device, dpll_pin: *mut dpll_pin);
     pub fn dpll_netdev_pin_clear(dev: *mut net_device);
@@ -105,15 +105,15 @@ extern "C" {
     pub fn dpll_netdev_add_pin_handle(msg: *mut sk_buff, dev: *const net_device) -> i32;
     pub fn fwnode_dpll_pin_find(fwnode: *mut fwnode_handle, tracker: *mut dpll_tracker) -> *mut dpll_pin;
 }
-#[cfg(not(feature = "CONFIG_DPLL"))]
+#[cfg(not(CONFIG_DPLL))]
 pub unsafe fn dpll_netdev_pin_set(_dev: *mut net_device, _dpll_pin: *mut dpll_pin) {}
-#[cfg(not(feature = "CONFIG_DPLL"))]
+#[cfg(not(CONFIG_DPLL))]
 pub unsafe fn dpll_netdev_pin_clear(_dev: *mut net_device) {}
-#[cfg(not(feature = "CONFIG_DPLL"))]
+#[cfg(not(CONFIG_DPLL))]
 pub const fn dpll_netdev_pin_handle_size() -> usize { 0 }
-#[cfg(not(feature = "CONFIG_DPLL"))]
+#[cfg(not(CONFIG_DPLL))]
 pub unsafe fn dpll_netdev_add_pin_handle(_msg: *mut sk_buff, _dev: *const net_device) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_DPLL"))]
+#[cfg(not(CONFIG_DPLL))]
 pub unsafe fn fwnode_dpll_pin_find(_fwnode: *mut fwnode_handle, _tracker: *mut dpll_tracker) -> *mut dpll_pin { core::ptr::null_mut() }
 
 extern "C" {

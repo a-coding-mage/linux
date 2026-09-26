@@ -5,26 +5,26 @@
 
 #[repr(C)]
 pub struct io_async_msghdr {
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub vec: iou_vec,
 
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub namelen: ::std::os::raw::c_int,
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub fast_iov: iovec,
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub controllen: __kernel_size_t,
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub payloadlen: __kernel_size_t,
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub uaddr: *mut sockaddr,
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub msg: msghdr,
-    #[cfg(feature = "CONFIG_NET")]
+    #[cfg(CONFIG_NET)]
     pub addr: sockaddr_storage,
 }
 
-#[cfg(feature = "CONFIG_NET")]
+#[cfg(CONFIG_NET)]
 extern "C" {
     pub fn io_shutdown_prep(req: *mut io_kiocb, sqe: *const io_uring_sqe) -> ::std::os::raw::c_int;
     pub fn io_shutdown(req: *mut io_kiocb, issue_flags: ::std::os::raw::c_uint) -> ::std::os::raw::c_int;
@@ -65,13 +65,13 @@ extern "C" {
     pub fn io_netmsg_cache_free(entry: *const ::std::ffi::c_void);
 }
 
-#[cfg(not(feature = "CONFIG_NET"))]
+#[cfg(not(CONFIG_NET))]
 pub unsafe fn io_netmsg_cache_free(_entry: *const ::std::ffi::c_void) {}
 
-#[cfg(not(feature = "CONFIG_NET"))]
+#[cfg(not(CONFIG_NET))]
 pub unsafe fn io_socket_bpf_populate(_bctx: *mut io_uring_bpf_ctx, _req: *mut io_kiocb) {}
 
-#[cfg(not(feature = "CONFIG_NET"))]
+#[cfg(not(CONFIG_NET))]
 pub unsafe fn io_connect_bpf_populate(_bctx: *mut io_uring_bpf_ctx, _req: *mut io_kiocb) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

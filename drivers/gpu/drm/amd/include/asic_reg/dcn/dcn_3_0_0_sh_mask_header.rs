@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-#define _dcn_3_0_0_SH_MASK_HEADER
 
 
 // addressBlock: dce_dc_mmhubbub_vga_dispdec

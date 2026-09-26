@@ -5,7 +5,7 @@
 // statistics interface below; otherwise the inline no-op implementations are
 // used.
 
-#[cfg(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS")]
+#[cfg(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS)]
 extern "C" {
     pub fn iaa_crypto_debugfs_init() -> ::core::ffi::c_int;
     pub fn iaa_crypto_debugfs_cleanup();
@@ -26,65 +26,65 @@ extern "C" {
     pub fn update_wq_decomp_bytes(idxd_wq: *mut idxd_wq, n: ::core::ffi::c_int);
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn iaa_crypto_debugfs_init() -> ::core::ffi::c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn iaa_crypto_debugfs_cleanup() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_total_comp_calls() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_total_comp_bytes_out(_n: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_total_decomp_calls() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_total_sw_comp_calls() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_total_sw_decomp_calls() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_total_decomp_bytes_in(_n: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_completion_einval_errs() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_completion_timeout_errs() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_completion_comp_buf_overflow_errs() {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_wq_comp_calls(_idxd_wq: *mut idxd_wq) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_wq_comp_bytes(_idxd_wq: *mut idxd_wq, _n: ::core::ffi::c_int) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_wq_decomp_calls(_idxd_wq: *mut idxd_wq) {}
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_IAA_CRYPTO_STATS))]
 #[inline]
 pub fn update_wq_decomp_bytes(_idxd_wq: *mut idxd_wq, _n: ::core::ffi::c_int) {}
 

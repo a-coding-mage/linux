@@ -92,10 +92,10 @@ extern "C" { fn libc_strlen(s:*const i8)->usize; }
 extern "C" { pub fn pr_warn(fmt:*const i8,...); }
 
 #[macro_export] macro_rules! ceph_encode_need { ($p:expr,$end:expr,$n:expr,$bad:tt) => { if !unsafe{$crate::ceph_has_room($p,$end,$n)} { break $bad; } }; }
-#[macro_export] macro_rules! ceph_encode_64_safe { ($p:expr,$end:expr,$v:expr,$bad:tt)=>{{ceph_encode_need!($p,$end,8,$bad);unsafe{ceph_encode_64($p,$v)}}}; }
-#[macro_export] macro_rules! ceph_encode_32_safe { ($p:expr,$end:expr,$v:expr,$bad:tt)=>{{ceph_encode_need!($p,$end,4,$bad);unsafe{ceph_encode_32($p,$v)}}}; }
-#[macro_export] macro_rules! ceph_encode_16_safe { ($p:expr,$end:expr,$v:expr,$bad:tt)=>{{ceph_encode_need!($p,$end,2,$bad);unsafe{ceph_encode_16($p,$v)}}}; }
-#[macro_export] macro_rules! ceph_encode_8_safe { ($p:expr,$end:expr,$v:expr,$bad:tt)=>{{ceph_encode_need!($p,$end,1,$bad);unsafe{ceph_encode_8($p,$v)}}}; }
-#[macro_export] macro_rules! ceph_encode_copy_safe { ($p:expr,$end:expr,$pv:expr,$n:expr,$bad:tt)=>{{ceph_encode_need!($p,$end,$n,$bad);unsafe{ceph_encode_copy($p,$pv,$n)}}}; }
+#[macro_export] macro_rules! ceph_encode_64_safe { ($p:expr,$end:expr,$v:expr,$bad:tt) => {{ceph_encode_need!($p,$end,8,$bad);unsafe{ceph_encode_64($p,$v)}}}; }
+#[macro_export] macro_rules! ceph_encode_32_safe { ($p:expr,$end:expr,$v:expr,$bad:tt) => {{ceph_encode_need!($p,$end,4,$bad);unsafe{ceph_encode_32($p,$v)}}}; }
+#[macro_export] macro_rules! ceph_encode_16_safe { ($p:expr,$end:expr,$v:expr,$bad:tt) => {{ceph_encode_need!($p,$end,2,$bad);unsafe{ceph_encode_16($p,$v)}}}; }
+#[macro_export] macro_rules! ceph_encode_8_safe { ($p:expr,$end:expr,$v:expr,$bad:tt) => {{ceph_encode_need!($p,$end,1,$bad);unsafe{ceph_encode_8($p,$v)}}}; }
+#[macro_export] macro_rules! ceph_encode_copy_safe { ($p:expr,$end:expr,$pv:expr,$n:expr,$bad:tt) => {{ceph_encode_need!($p,$end,$n,$bad);unsafe{ceph_encode_copy($p,$pv,$n)}}}; }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

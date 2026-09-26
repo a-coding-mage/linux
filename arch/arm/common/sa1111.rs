@@ -28,7 +28,7 @@ const IRQ_MSRXINT: u32 = 19; const IRQ_MSTXINT: u32 = 18;
 #[repr(C)] pub struct sa1111 { pub dev: *mut device, pub clk: *mut clk, pub phys: usize,
     pub irq: i32, pub irq_base: i32, pub lock: spinlock_t, pub base: *mut u8,
     pub pdata: *mut sa1111_platform_data, pub irqdomain: *mut irq_domain, pub gc: gpio_chip,
-    #[cfg(feature="CONFIG_PM")] pub saved_state: *mut c_void }
+    #[cfg(CONFIG_PM)] pub saved_state: *mut c_void }
 #[repr(C)] pub struct sa1111_dev_info { pub offset: usize, pub skpcr_mask: u32, pub dma: bool,
     pub devid: u32, pub hwirq: [u32; 6] }
 

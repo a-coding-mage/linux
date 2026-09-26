@@ -71,9 +71,9 @@ extern "C" {
     static mut nfct_h323_nat_hook: *const nfct_h323_nat_hooks;
     static mut h323_buffer: *mut u8;
 
-    fn DecodeMultimediaSystemControlMessage(*mut u8, c_int, *mut MultimediaSystemControlMessage) -> c_int;
-    fn DecodeQ931(*mut u8, c_int, *mut Q931) -> c_int;
-    fn DecodeRasMessage(*mut u8, c_int, *mut RasMessage) -> c_int;
+    fn DecodeMultimediaSystemControlMessage(_: *mut u8, _: c_int, _: *mut MultimediaSystemControlMessage) -> c_int;
+    fn DecodeQ931(_: *mut u8, _: c_int, _: *mut Q931) -> c_int;
+    fn DecodeRasMessage(_: *mut u8, _: c_int, _: *mut RasMessage) -> c_int;
 }
 
 // The following declarations preserve the C implementation's externally visible

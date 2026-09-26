@@ -109,23 +109,23 @@ unsafe fn aldebaran_mode2_perform_reset(reset_ctl: *mut amdgpu_reset_control, re
     if list.is_null() { return -EINVAL; }
     if amdgpu_ip_version(adev, MP1_HWIP, 0) == IP_VERSION(13, 0, 2) && (*reset_context).hive.is_null() { return -EINVAL; }
     let mut tmp_adev: *mut amdgpu_device = core::ptr::null_mut();
-    list_for_each_entry!(tmp_adev, list, reset_list) {
+    list_for_each_entry!(tmp_adev, list, reset_list, {
         mutex_lock(&mut (*(*tmp_adev).reset_cntl).reset_lock);
         (*(*tmp_adev).reset_cntl).active_reset = AMD_RESET_METHOD_MODE2;
-    }
+    });
     let mut r = 0;
-    list_for_each_entry!(tmp_adev, list, reset_list) {
+    list_for_each_entry!(tmp_adev, list, reset_list, {
         if (*tmp_adev).gmc.xgmi.num_physical_nodes > 1 {
             if !queue_work(system_dfl_wq, &mut (*(*tmp_adev).reset_cntl).reset_work) { r = -EALREADY; }
         } else { r = aldebaran_mode2_reset(tmp_adev); }
         if r != 0 { break; }
-    }
+    });
     if r == 0 {
-        list_for_each_entry!(tmp_adev, list, reset_list) {
+        list_for_each_entry!(tmp_adev, list, reset_list, {
             if (*tmp_adev).gmc.xgmi.num_physical_nodes > 1 { flush_work(&mut (*(*tmp_adev).reset_cntl).reset_work); r = (*tmp_adev).asic_reset_res; if r != 0 { break; } }
-        }
+        });
     }
-    list_for_each_entry!(tmp_adev, list, reset_list) { mutex_unlock(&mut (*(*tmp_adev).reset_cntl).reset_lock); (*(*tmp_adev).reset_cntl).active_reset = AMD_RESET_METHOD_NONE; }
+    list_for_each_entry!(tmp_adev, list, reset_list, { mutex_unlock(&mut (*(*tmp_adev).reset_cntl).reset_lock); (*(*tmp_adev).reset_cntl).active_reset = AMD_RESET_METHOD_NONE; });
     r
 }
 
@@ -154,7 +154,7 @@ unsafe fn aldebaran_mode2_restore_ip(adev: *mut amdgpu_device) -> i32 {
 unsafe fn aldebaran_mode2_restore_hwcontext(reset_ctl: *mut amdgpu_reset_control, reset_context: *mut amdgpu_reset_context) -> i32 {
     let list = (*reset_context).reset_device_list; if list.is_null() { return -EINVAL; }
     let mut tmp: *mut amdgpu_device = core::ptr::null_mut(); let mut r = 0;
-    list_for_each_entry!(tmp, list, reset_list) { amdgpu_set_init_level(tmp, AMDGPU_INIT_LEVEL_RESET_RECOVERY); amdgpu_ras_clear_err_state(tmp); r = aldebaran_mode2_restore_ip(tmp); if r != 0 { break; } amdgpu_register_gpu_instance(tmp); amdgpu_ras_resume(tmp); amdgpu_set_init_level(tmp, AMDGPU_INIT_LEVEL_DEFAULT); amdgpu_irq_gpu_reset_resume_helper(tmp); r = amdgpu_ib_ring_tests(tmp); if r != 0 { r = -EAGAIN; (*tmp).asic_reset_res = r; break; } }
+    list_for_each_entry!(tmp, list, reset_list, { amdgpu_set_init_level(tmp, AMDGPU_INIT_LEVEL_RESET_RECOVERY); amdgpu_ras_clear_err_state(tmp); r = aldebaran_mode2_restore_ip(tmp); if r != 0 { break; } amdgpu_register_gpu_instance(tmp); amdgpu_ras_resume(tmp); amdgpu_set_init_level(tmp, AMDGPU_INIT_LEVEL_DEFAULT); amdgpu_irq_gpu_reset_resume_helper(tmp); r = amdgpu_ib_ring_tests(tmp); if r != 0 { r = -EAGAIN; (*tmp).asic_reset_res = r; break; } });
     r
 }
 

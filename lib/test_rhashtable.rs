@@ -40,22 +40,22 @@ pub struct thread_data { pub entries: u32, pub id: i32, pub task: *mut task_stru
 }
 
 extern "C" {
-    fn jhash(*const core::ffi::c_void,u32,u32)->u32;
-    fn rhashtable_insert_fast(*mut rhashtable,*mut rhash_head,rhashtable_params)->i32;
-    fn rhashtable_lookup_fast(*mut rhashtable,*const test_obj_val,rhashtable_params)->*mut test_obj;
-    fn rhashtable_remove_fast(*mut rhashtable,*mut rhash_head,rhashtable_params)->i32;
-    fn rhashtable_init(*mut rhashtable,*const rhashtable_params)->i32; fn rhashtable_destroy(*mut rhashtable);
-    fn rhashtable_walk_enter(*mut rhashtable,*mut rhashtable_iter); fn rhashtable_walk_start(*mut rhashtable_iter);
-    fn rhashtable_walk_next(*mut rhashtable_iter)->*mut rhash_head; fn rhashtable_walk_stop(*mut rhashtable_iter); fn rhashtable_walk_exit(*mut rhashtable_iter);
-    fn rhltable_init(*mut rhltable,*const rhashtable_params)->i32; fn rhltable_destroy(*mut rhltable);
-    fn rhltable_insert(*mut rhltable,*mut rhlist_head,rhashtable_params)->i32; fn rhltable_remove(*mut rhltable,*mut rhlist_head,rhashtable_params)->i32;
-    fn rhltable_lookup(*mut rhltable,*const test_obj_val,rhashtable_params)->*mut rhlist_head;
-    fn rhashtable_insert_slow(*mut rhashtable,*const core::ffi::c_void,*mut rhash_head)->*mut core::ffi::c_void;
-    fn rhashtable_next_key(*mut rhashtable,*const test_obj_val)->*mut test_obj;
-    fn ktime_get_ns()->i64; fn get_random_u32()->u32; fn get_random_u32_below(u32)->u32;
+    fn jhash(_: *const core::ffi::c_void,_: u32,_: u32)->u32;
+    fn rhashtable_insert_fast(_: *mut rhashtable,_: *mut rhash_head,_: rhashtable_params)->i32;
+    fn rhashtable_lookup_fast(_: *mut rhashtable,_: *const test_obj_val,_: rhashtable_params)->*mut test_obj;
+    fn rhashtable_remove_fast(_: *mut rhashtable,_: *mut rhash_head,_: rhashtable_params)->i32;
+    fn rhashtable_init(_: *mut rhashtable,_: *const rhashtable_params)->i32; fn rhashtable_destroy(_: *mut rhashtable);
+    fn rhashtable_walk_enter(_: *mut rhashtable,_: *mut rhashtable_iter); fn rhashtable_walk_start(_: *mut rhashtable_iter);
+    fn rhashtable_walk_next(_: *mut rhashtable_iter)->*mut rhash_head; fn rhashtable_walk_stop(_: *mut rhashtable_iter); fn rhashtable_walk_exit(_: *mut rhashtable_iter);
+    fn rhltable_init(_: *mut rhltable,_: *const rhashtable_params)->i32; fn rhltable_destroy(_: *mut rhltable);
+    fn rhltable_insert(_: *mut rhltable,_: *mut rhlist_head,_: rhashtable_params)->i32; fn rhltable_remove(_: *mut rhltable,_: *mut rhlist_head,_: rhashtable_params)->i32;
+    fn rhltable_lookup(_: *mut rhltable,_: *const test_obj_val,_: rhashtable_params)->*mut rhlist_head;
+    fn rhashtable_insert_slow(_: *mut rhashtable,_: *const core::ffi::c_void,_: *mut rhash_head)->*mut core::ffi::c_void;
+    fn rhashtable_next_key(_: *mut rhashtable,_: *const test_obj_val)->*mut test_obj;
+    fn ktime_get_ns()->i64; fn get_random_u32()->u32; fn get_random_u32_below(_: u32)->u32;
     fn cond_resched(); fn cond_resched_rcu(); fn rcu_read_lock(); fn rcu_read_unlock();
-    fn vzalloc(usize)->*mut core::ffi::c_void; fn vfree(*mut core::ffi::c_void); fn kcalloc(usize,usize,u32)->*mut core::ffi::c_void; fn kfree(*mut core::ffi::c_void);
-    fn memcmp(*const core::ffi::c_void,*const core::ffi::c_void,usize)->i32;
+    fn vzalloc(_: usize)->*mut core::ffi::c_void; fn vfree(_: *mut core::ffi::c_void); fn kcalloc(_: usize,_: usize,_: u32)->*mut core::ffi::c_void; fn kfree(_: *mut core::ffi::c_void);
+    fn memcmp(_: *const core::ffi::c_void,_: *const core::ffi::c_void,_: usize)->i32;
 }
 
 static mut ht: rhashtable = unsafe { core::mem::zeroed() };

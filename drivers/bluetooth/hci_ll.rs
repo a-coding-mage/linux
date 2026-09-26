@@ -148,7 +148,7 @@ static ll_recv_pkts: [h4_recv_pkt; 7] = [
 ];
 
 // The serial-device firmware setup portion is retained under its source build condition.
-#[cfg(feature = "CONFIG_SERIAL_DEV_BUS")]
+#[cfg(CONFIG_SERIAL_DEV_BUS)]
 unsafe fn ll_setup(hu: *mut hci_uart) -> i32 {
     // Firmware parsing, address programming, GPIO reset, clock/baud setup, and
     // serdev probing follow the Linux implementation and use the external
@@ -162,12 +162,12 @@ unsafe fn ll_setup(hu: *mut hci_uart) -> i32 {
     err = download_firmware(lldev); if err != 0 { return err; } 0
 }
 
-#[cfg(feature = "CONFIG_SERIAL_DEV_BUS")]
+#[cfg(CONFIG_SERIAL_DEV_BUS)]
 unsafe fn ll_set_bdaddr(hdev: *mut hci_dev, bdaddr: *const bdaddr_t) -> i32 { let mut swapped = core::mem::zeroed(); baswap(&mut swapped, bdaddr); let skb = __hci_cmd_sync(hdev, HCI_VS_WRITE_BD_ADDR, core::mem::size_of::<bdaddr_t>() as u8, &swapped as *const _ as *const _, HCI_INIT_TIMEOUT); if !IS_ERR(skb) { kfree_skb(skb); } PTR_ERR_OR_ZERO(skb) }
-#[cfg(feature = "CONFIG_SERIAL_DEV_BUS")]
+#[cfg(CONFIG_SERIAL_DEV_BUS)]
 unsafe fn download_firmware(_lldev: *mut LlDevice) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_SERIAL_DEV_BUS")]
+#[cfg(CONFIG_SERIAL_DEV_BUS)]
 unsafe fn hci_ti_probe(serdev: *mut serdev_device) -> i32 {
     let lldev = devm_kzalloc((*serdev).dev, core::mem::size_of::<LlDevice>(), GFP_KERNEL) as *mut LlDevice;
     if lldev.is_null() { return -ENOMEM; }
@@ -181,16 +181,16 @@ unsafe fn hci_ti_probe(serdev: *mut serdev_device) -> i32 {
     hci_uart_register_device(hu, &llp)
 }
 
-#[cfg(feature = "CONFIG_SERIAL_DEV_BUS")]
+#[cfg(CONFIG_SERIAL_DEV_BUS)]
 unsafe fn hci_ti_remove(serdev: *mut serdev_device) { let lldev = serdev_device_get_drvdata(serdev) as *mut LlDevice; hci_uart_unregister_device(&mut (*lldev).hu); }
 
-#[cfg(feature = "CONFIG_SERIAL_DEV_BUS")]
+#[cfg(CONFIG_SERIAL_DEV_BUS)]
 static mut hci_ti_drv: serdev_device_driver = serdev_device_driver { driver: driver { name: b"hci-ti\0".as_ptr() as *const _, of_match_table: core::ptr::null() }, probe: Some(hci_ti_probe), remove: Some(hci_ti_remove) };
 
-#[cfg(not(feature = "CONFIG_SERIAL_DEV_BUS"))]
+#[cfg(not(CONFIG_SERIAL_DEV_BUS))]
 static mut hci_ti_drv: serdev_device_driver = serdev_device_driver { driver: driver { name: core::ptr::null(), of_match_table: core::ptr::null() }, probe: None, remove: None };
 
-#[cfg(not(feature = "CONFIG_SERIAL_DEV_BUS"))]
+#[cfg(not(CONFIG_SERIAL_DEV_BUS))]
 const ll_setup: Option<unsafe fn(*mut hci_uart) -> i32> = None;
 
 static mut llp: hci_uart_proto = hci_uart_proto { id: HCI_UART_LL, name: b"LL\0".as_ptr() as *const _, setup: None, open: Some(ll_open), close: Some(ll_close), recv: Some(ll_recv), enqueue: Some(ll_enqueue), dequeue: Some(ll_dequeue), flush: Some(ll_flush) };

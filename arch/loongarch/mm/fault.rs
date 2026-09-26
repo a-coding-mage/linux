@@ -68,10 +68,10 @@ unsafe fn do_sigsegv(regs: *mut pt_regs, write: libc::c_ulong, address: libc::c_
     if show_unhandled_signals != 0 && unhandled_signal(current, SIGSEGV) != 0 && __ratelimit(&mut ratelimit_state) != 0 {
         pr_info!("do_page_fault(): sending SIGSEGV to %s for invalid %s %0*lx\n", (*current).comm, if write != 0 { "write access to" } else { "read access from" }, field, address);
         pr_info!("era = %0*lx in", field, (*regs).csr_era as libc::c_ulong);
-        print_vma_addr(KERN_CONT " ", (*regs).csr_era);
+        print_vma_addr(c"\x01c ".as_ptr(), (*regs).csr_era);
         pr_cont!("\n");
         pr_info!("ra  = %0*lx in", field, (*regs).regs[1] as libc::c_ulong);
-        print_vma_addr(KERN_CONT " ", (*regs).regs[1]);
+        print_vma_addr(c"\x01c ".as_ptr(), (*regs).regs[1]);
         pr_cont!("\n");
     }
     force_sig_fault(SIGSEGV, si_code, address as *mut core::ffi::c_void);
@@ -90,15 +90,15 @@ unsafe fn __do_page_fault(regs: *mut pt_regs, write: libc::c_ulong, address: lib
     if faulthandler_disabled() != 0 || mm.is_null() { do_sigsegv(regs, write, address, si_code); return; }
     if user_mode(regs) != 0 { flags |= FAULT_FLAG_USER; }
     perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
-    if flags & FAULT_FLAG_USER == 0 { goto_lock_mmap!(lock_mmap); }
+    if flags & FAULT_FLAG_USER == 0 { goto lock_mmap; }
     vma = lock_vma_under_rcu(mm, address);
-    if vma.is_null() { goto_lock_mmap!(lock_mmap); }
+    if vma.is_null() { goto lock_mmap; }
     if write != 0 { flags |= FAULT_FLAG_WRITE; if (*vma).vm_flags & VM_WRITE == 0 { vma_end_read(vma); si_code = SEGV_ACCERR; count_vm_vma_lock_event(VMA_LOCK_SUCCESS); goto_bad_area_nosemaphore!(); } }
     else if ((*vma).vm_flags & VM_EXEC == 0) && address == exception_era(regs) { vma_end_read(vma); si_code = SEGV_ACCERR; count_vm_vma_lock_event(VMA_LOCK_SUCCESS); goto_bad_area_nosemaphore!(); }
     else if (*vma).vm_flags & (VM_READ | VM_WRITE) == 0 && address != exception_era(regs) { vma_end_read(vma); si_code = SEGV_ACCERR; count_vm_vma_lock_event(VMA_LOCK_SUCCESS); goto_bad_area_nosemaphore!(); }
     fault = handle_mm_fault(vma, address, flags | FAULT_FLAG_VMA_LOCK, regs);
     if fault & (VM_FAULT_RETRY | VM_FAULT_COMPLETED) == 0 { vma_end_read(vma); }
-    if fault & VM_FAULT_RETRY == 0 { count_vm_vma_lock_event(VMA_LOCK_SUCCESS); goto_done!(fault); }
+    if fault & VM_FAULT_RETRY == 0 { count_vm_vma_lock_event(VMA_LOCK_SUCCESS); goto fault; }
     count_vm_vma_lock_event(VMA_LOCK_RETRY);
     if fault & VM_FAULT_MAJOR != 0 { flags |= FAULT_FLAG_TRIED; }
     if fault_signal_pending(fault, regs) != 0 { if user_mode(regs) == 0 { no_context(regs, write, address); } return; }
@@ -114,7 +114,7 @@ unsafe fn __do_page_fault(regs: *mut pt_regs, write: libc::c_ulong, address: lib
     fault = handle_mm_fault(vma, address, flags, regs);
     if fault_signal_pending(fault, regs) != 0 { if user_mode(regs) == 0 { no_context(regs, write, address); } return; }
     if fault & VM_FAULT_COMPLETED != 0 { return; }
-    if fault & VM_FAULT_RETRY != 0 { flags |= FAULT_FLAG_TRIED; goto_retry!(fault); }
+    if fault & VM_FAULT_RETRY != 0 { flags |= FAULT_FLAG_TRIED; goto fault; }
     mmap_read_unlock(mm);
     if fault & VM_FAULT_ERROR != 0 { if fault & VM_FAULT_OOM != 0 { do_out_of_memory(regs, write, address); return; } else if fault & VM_FAULT_SIGSEGV != 0 { do_sigsegv(regs, write, address, si_code); return; } else if fault & (VM_FAULT_SIGBUS | VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE) != 0 { do_sigbus(regs, write, address, si_code); return; } BUG!(); }
 }

@@ -36,11 +36,11 @@ extern "C" {
     fn pstore_register(_: *mut pstore_info)->c_int;
     fn kmsg_dump_register(_: *mut kmsg_dumper)->c_int;
     fn kmsg_dump_rewind(_: *mut kmsg_dump_iter);
-    fn kmsg_dump_get_buffer(_: *mut kmsg_dump_iter,bool,*mut c_char,usize,*mut usize)->bool;
-    fn zlib_deflate_init2(_: *mut z_stream_s,c_int,c_int,c_int,c_int,c_int)->c_int;
-    fn zlib_deflate(_: *mut z_stream_s,c_int)->c_int;
+    fn kmsg_dump_get_buffer(_: *mut kmsg_dump_iter,_: bool,_: *mut c_char,_: usize,_: *mut usize)->bool;
+    fn zlib_deflate_init2(_: *mut z_stream_s,_: c_int,_: c_int,_: c_int,_: c_int,_: c_int)->c_int;
+    fn zlib_deflate(_: *mut z_stream_s,_: c_int)->c_int;
     fn zlib_deflate_end(_: *mut z_stream_s)->c_int;
-    fn zlib_deflate_workspacesize(c_int,c_int)->usize;
+    fn zlib_deflate_workspacesize(_: c_int,_: c_int)->usize;
     fn printk(_: *const c_char,...);
 }
 #[repr(C)] pub struct ppc_md_struct { pub nvram_write:Option<unsafe extern "C" fn(*mut c_char,usize,*mut i64)->c_int>, pub nvram_read:Option<unsafe extern "C" fn(*mut c_char,usize,*mut i64)->c_int>, pub nvram_size:Option<unsafe extern "C" fn()->c_int> }

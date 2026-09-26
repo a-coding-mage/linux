@@ -29,20 +29,20 @@ type u32 = std::ffi::c_uint;
 
 extern "C" {
     fn printk(...); fn pr_crit(...); fn pr_debug(...); fn panic(...); fn dump_stack();
-    fn user_mode(*mut pt_regs)->c_int; fn user_space(*mut pt_regs)->c_int; fn show_regs_print_info(*const c_char);
-    fn print_tainted()->*const c_char; fn mfctl(c_int)->c_ulong; fn task_cpu(*mut task_struct)->c_int;
-    fn parisc_show_stack(*mut task_struct,*mut pt_regs,*const c_char); fn unwind_once(*mut unwind_frame_info)->c_int;
-    fn __kernel_text_address(c_ulong)->c_int; fn unwind_frame_init_task(*mut unwind_frame_info,*mut task_struct,*mut pt_regs);
-    fn bust_spinlocks(c_int); fn oops_enter(); fn oops_exit(); fn pdc_emergency_unlock(); fn local_irq_enable(); fn local_irq_disable();
-    fn make_task_dead(c_int); fn force_sig_fault(c_int,c_int,*mut core::ffi::c_void); fn report_bug(c_ulong,*mut pt_regs)->c_int;
-    fn parisc_kprobe_break_handler(*mut pt_regs); fn parisc_kprobe_ss_handler(*mut pt_regs); fn kgdb_handle_exception(c_int,c_int,c_int,*mut pt_regs);
-    fn smp_processor_id()->c_int; fn pdc_chassis_send_status(c_int); fn flush_cache_all(); fn flush_tlb_all(); fn handle_nadtlb_fault(*mut pt_regs)->c_int;
-    fn check_unaligned(*mut pt_regs)->c_int; fn handle_unaligned(*mut pt_regs); fn handle_fpe(*mut pt_regs); fn __inc_irq_stat(c_int);
-    fn perf_sw_event(c_int,c_int,*mut pt_regs,c_int); fn mmap_read_lock(*mut mm_struct); fn mmap_read_unlock(*mut mm_struct);
-    fn find_vma(*mut mm_struct,c_ulong)->*mut vm_area_struct; fn fixup_exception(*mut pt_regs)->c_int; fn faulthandler_disabled()->c_int;
-    fn kfence_handle_page_fault(c_ulong,c_int,*mut pt_regs)->c_int; fn parisc_acctyp(c_int,c_ulong)->c_ulong; fn do_page_fault(*mut pt_regs,c_int,c_ulong,c_ulong);
-    fn notify_die(c_int,*mut c_char,*mut pt_regs,c_int,c_int,c_int)->c_int; fn set_eiem(c_ulong); fn spin_lock(*mut c_void); fn spin_unlock(*mut c_void);
-    fn pdc_soft_power_button(c_int); fn irqs_disabled_flags(c_ulong)->c_int; fn pdc_instr(*mut u32)->c_int; fn __pa(c_ulong)->u32;
+    fn user_mode(_: *mut pt_regs)->c_int; fn user_space(_: *mut pt_regs)->c_int; fn show_regs_print_info(_: *const c_char);
+    fn print_tainted()->*const c_char; fn mfctl(_: c_int)->c_ulong; fn task_cpu(_: *mut task_struct)->c_int;
+    fn parisc_show_stack(_: *mut task_struct,_: *mut pt_regs,_: *const c_char); fn unwind_once(_: *mut unwind_frame_info)->c_int;
+    fn __kernel_text_address(_: c_ulong)->c_int; fn unwind_frame_init_task(_: *mut unwind_frame_info,_: *mut task_struct,_: *mut pt_regs);
+    fn bust_spinlocks(_: c_int); fn oops_enter(); fn oops_exit(); fn pdc_emergency_unlock(); fn local_irq_enable(); fn local_irq_disable();
+    fn make_task_dead(_: c_int); fn force_sig_fault(_: c_int,_: c_int,_: *mut core::ffi::c_void); fn report_bug(_: c_ulong,_: *mut pt_regs)->c_int;
+    fn parisc_kprobe_break_handler(_: *mut pt_regs); fn parisc_kprobe_ss_handler(_: *mut pt_regs); fn kgdb_handle_exception(_: c_int,_: c_int,_: c_int,_: *mut pt_regs);
+    fn smp_processor_id()->c_int; fn pdc_chassis_send_status(_: c_int); fn flush_cache_all(); fn flush_tlb_all(); fn handle_nadtlb_fault(_: *mut pt_regs)->c_int;
+    fn check_unaligned(_: *mut pt_regs)->c_int; fn handle_unaligned(_: *mut pt_regs); fn handle_fpe(_: *mut pt_regs); fn __inc_irq_stat(_: c_int);
+    fn perf_sw_event(_: c_int,_: c_int,_: *mut pt_regs,_: c_int); fn mmap_read_lock(_: *mut mm_struct); fn mmap_read_unlock(_: *mut mm_struct);
+    fn find_vma(_: *mut mm_struct,_: c_ulong)->*mut vm_area_struct; fn fixup_exception(_: *mut pt_regs)->c_int; fn faulthandler_disabled()->c_int;
+    fn kfence_handle_page_fault(_: c_ulong,_: c_int,_: *mut pt_regs)->c_int; fn parisc_acctyp(_: c_int,_: c_ulong)->c_ulong; fn do_page_fault(_: *mut pt_regs,_: c_int,_: c_ulong,_: c_ulong);
+    fn notify_die(_: c_int,_: *mut c_char,_: *mut pt_regs,_: c_int,_: c_int,_: c_int)->c_int; fn set_eiem(_: c_ulong); fn spin_lock(_: *mut c_void); fn spin_unlock(_: *mut c_void);
+    fn pdc_soft_power_button(_: c_int); fn irqs_disabled_flags(_: c_ulong)->c_int; fn pdc_instr(_: *mut u32)->c_int; fn __pa(_: c_ulong)->u32;
     static mut current: *mut task_struct; static mut show_unhandled_signals:c_int; static mut panic_on_oops:c_int; static mut kgdb_single_step:c_int; static mut irq_fpassist_count:c_int;
 }
 type c_void = core::ffi::c_void;

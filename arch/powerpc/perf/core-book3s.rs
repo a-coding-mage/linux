@@ -43,43 +43,43 @@ static mut CPU_HW_EVENTS: CpuHwEvents = unsafe { core::mem::zeroed() };
 static mut ppmu: *mut power_pmu = core::ptr::null_mut();
 static mut freeze_events_kernel: u32 = MMCR0_FCS;
 
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 const MMCR0_FCHV: u32 = 0;
 
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 #[inline]
 unsafe fn perf_ip_adjust(_regs: *mut pt_regs) -> usize { 0 }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 #[inline]
 unsafe fn perf_get_data_addr(_event: *mut perf_event, _regs: *mut pt_regs, _addrp: *mut u64) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 #[inline]
 unsafe fn perf_get_misc_flags(_regs: *mut pt_regs) -> u32 { 0 }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 #[inline]
 unsafe fn perf_read_regs(regs: *mut pt_regs) { (*regs).result = 0; }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 #[inline]
 unsafe fn siar_valid(_regs: *mut pt_regs) -> i32 { 1 }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn is_ebb_event(_event: *mut perf_event) -> bool { false }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn ebb_event_check(_event: *mut perf_event) -> i32 { 0 }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn ebb_event_add(_event: *mut perf_event) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn ebb_switch_out(_mmcr0: usize) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn ebb_switch_in(_ebb: bool, cpuhw: *mut CpuHwEvents) -> usize { (*cpuhw).mmcr.mmcr0 }
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn power_pmu_bhrb_enable(_event: *mut perf_event) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn power_pmu_bhrb_disable(_event: *mut perf_event) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn power_pmu_sched_task(_pmu_ctx: *mut perf_event_pmu_context, _task: *mut task_struct, _sched_in: bool) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn power_pmu_bhrb_read(_event: *mut perf_event, _cpuhw: *mut CpuHwEvents) {}
-#[cfg(feature = "CONFIG_PPC32")]
+#[cfg(CONFIG_PPC32)]
 unsafe fn pmao_restore_workaround(_ebb: bool) {}
 
 pub unsafe fn is_sier_available() -> bool {
@@ -94,7 +94,7 @@ unsafe fn regs_use_siar(regs: *mut pt_regs) -> bool {
     TRAP(regs) == INTERRUPT_PERFMON && (*regs).result != 0
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 #[inline]
 unsafe fn perf_ip_adjust(regs: *mut pt_regs) -> usize {
     let mmcra = (*regs).dsisr;
@@ -105,7 +105,7 @@ unsafe fn perf_ip_adjust(regs: *mut pt_regs) -> usize {
     0
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn perf_get_data_addr(event: *mut perf_event, regs: *mut pt_regs, addrp: *mut u64) {
     let mmcra = (*regs).dsisr;
     let sdar_valid = if ((*ppmu).flags & PPMU_HAS_SIER) != 0 { ((*regs).dar & SIER_SDAR_VALID) != 0 } else {
@@ -118,26 +118,26 @@ unsafe fn perf_get_data_addr(event: *mut perf_event, regs: *mut pt_regs, addrp: 
     if is_kernel_addr(mfspr(SPRN_SDAR)) && (*event).attr.exclude_kernel { *addrp = 0; }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn regs_sihv(regs: *mut pt_regs) -> bool {
     let sihv = if ((*ppmu).flags & PPMU_ALT_SIPR) != 0 { POWER6_MMCRA_SIHV } else { MMCRA_SIHV };
     if ((*ppmu).flags & PPMU_HAS_SIER) != 0 { ((*regs).dar & SIER_SIHV) != 0 } else { ((*regs).dsisr & sihv) != 0 }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn regs_sipr(regs: *mut pt_regs) -> bool {
     let sipr = if ((*ppmu).flags & PPMU_ALT_SIPR) != 0 { POWER6_MMCRA_SIPR } else { MMCRA_SIPR };
     if ((*ppmu).flags & PPMU_HAS_SIER) != 0 { ((*regs).dar & SIER_SIPR) != 0 } else { ((*regs).dsisr & sipr) != 0 }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn perf_flags_from_msr(regs: *mut pt_regs) -> u32 {
     if user_mode(regs) { return PERF_RECORD_MISC_USER; }
     if ((*regs).msr & MSR_HV) != 0 && freeze_events_kernel != MMCR0_FCHV { return PERF_RECORD_MISC_HYPERVISOR; }
     PERF_RECORD_MISC_KERNEL
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn perf_get_misc_flags(regs: *mut pt_regs) -> u32 {
     if !regs_use_siar(regs) { return perf_flags_from_msr(regs); }
     if ((*ppmu).flags & PPMU_NO_SIPR) != 0 {
@@ -152,7 +152,7 @@ unsafe fn perf_get_misc_flags(regs: *mut pt_regs) -> u32 {
     PERF_RECORD_MISC_KERNEL
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn perf_read_regs(regs: *mut pt_regs) {
     let mmcra = mfspr(SPRN_MMCRA); let marked = mmcra & MMCRA_SAMPLE_ENABLE;
     (*regs).dsisr = mmcra;
@@ -163,7 +163,7 @@ unsafe fn perf_read_regs(regs: *mut pt_regs) {
     (*regs).result = use_siar;
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn siar_valid(regs: *mut pt_regs) -> i32 {
     let mmcra = (*regs).dsisr; if (mmcra & MMCRA_SAMPLE_ENABLE) != 0 {
         if ((*ppmu).flags & PPMU_P10_DD1) != 0 { return 1; }
@@ -172,10 +172,10 @@ unsafe fn siar_valid(regs: *mut pt_regs) -> i32 {
     } 1
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn power_pmu_bhrb_reset() { core::arch::asm!("" /* PPC_CLRBHRB */); }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn power_pmu_bhrb_enable(event: *mut perf_event) {
     let cpuhw = &mut CPU_HW_EVENTS;
     if (*ppmu).bhrb_nr == 0 { return; }
@@ -183,19 +183,19 @@ unsafe fn power_pmu_bhrb_enable(event: *mut perf_event) {
     cpuhw.bhrb_users += 1; perf_sched_cb_inc((*event).pmu);
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn power_pmu_bhrb_disable(event: *mut perf_event) {
     let cpuhw = &mut CPU_HW_EVENTS; if (*ppmu).bhrb_nr == 0 { return; }
     WARN_ON_ONCE(cpuhw.bhrb_users == 0); cpuhw.bhrb_users -= 1; perf_sched_cb_dec((*event).pmu);
     if cpuhw.disabled == 0 && cpuhw.bhrb_users == 0 { cpuhw.bhrb_context = core::ptr::null_mut(); }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn power_pmu_sched_task(_pmu_ctx: *mut perf_event_pmu_context, _task: *mut task_struct, sched_in: bool) {
     if (*ppmu).bhrb_nr != 0 && sched_in { power_pmu_bhrb_reset(); }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn power_pmu_bhrb_to(addr: u64) -> u64 {
     let mut instr: u32 = 0;
     if is_kernel_addr(addr) { if copy_from_kernel_nofault(&mut instr, addr as *mut _, core::mem::size_of::<u32>()) != 0 { return 0; } }
@@ -203,7 +203,7 @@ unsafe fn power_pmu_bhrb_to(addr: u64) -> u64 {
     let target = branch_target(&instr); if target == 0 || (instr & BRANCH_ABSOLUTE) != 0 { target } else { target.wrapping_sub((&instr as *const _ as usize) as u64).wrapping_add(addr) }
 }
 
-#[cfg(feature = "CONFIG_PPC64")]
+#[cfg(CONFIG_PPC64)]
 unsafe fn power_pmu_bhrb_read(_event: *mut perf_event, cpuhw: *mut CpuHwEvents) {
     let mut r_index = 0; let mut u_index = 0;
     while r_index < (*ppmu).bhrb_nr {
@@ -258,8 +258,8 @@ unsafe fn pmao_restore_workaround(ebb: bool) {
 pub unsafe fn power_pmu_wants_prompt_pmi() -> bool { !ppmu.is_null() && CPU_HW_EVENTS.n_events != 0 }
 
 unsafe fn perf_event_interrupt(_regs: *mut pt_regs);
-unsafe fn read_pmc(idx: i32) -> usize { match idx { 1 => mfspr(SPRN_PMC1), 2 => mfspr(SPRN_PMC2), 3 => mfspr(SPRN_PMC3), 4 => mfspr(SPRN_PMC4), 5 => mfspr(SPRN_PMC5), 6 => mfspr(SPRN_PMC6), #[cfg(feature="CONFIG_PPC64")] 7 => mfspr(SPRN_PMC7), #[cfg(feature="CONFIG_PPC64")] 8 => mfspr(SPRN_PMC8), _ => { printk!("oops trying to read PMC%d\n", idx); 0 } } }
-unsafe fn write_pmc(idx: i32, val: usize) { match idx { 1 => mtspr(SPRN_PMC1,val), 2 => mtspr(SPRN_PMC2,val), 3 => mtspr(SPRN_PMC3,val), 4 => mtspr(SPRN_PMC4,val), 5 => mtspr(SPRN_PMC5,val), 6 => mtspr(SPRN_PMC6,val), #[cfg(feature="CONFIG_PPC64")] 7 => mtspr(SPRN_PMC7,val), #[cfg(feature="CONFIG_PPC64")] 8 => mtspr(SPRN_PMC8,val), _ => printk!("oops trying to write PMC%d\n", idx) } }
+unsafe fn read_pmc(idx: i32) -> usize { match idx { 1 => mfspr(SPRN_PMC1), 2 => mfspr(SPRN_PMC2), 3 => mfspr(SPRN_PMC3), 4 => mfspr(SPRN_PMC4), 5 => mfspr(SPRN_PMC5), 6 => mfspr(SPRN_PMC6), #[cfg(CONFIG_PPC64)] 7 => mfspr(SPRN_PMC7), #[cfg(CONFIG_PPC64)] 8 => mfspr(SPRN_PMC8), _ => { printk!("oops trying to read PMC%d\n", idx); 0 } } }
+unsafe fn write_pmc(idx: i32, val: usize) { match idx { 1 => mtspr(SPRN_PMC1,val), 2 => mtspr(SPRN_PMC2,val), 3 => mtspr(SPRN_PMC3,val), 4 => mtspr(SPRN_PMC4,val), 5 => mtspr(SPRN_PMC5,val), 6 => mtspr(SPRN_PMC6,val), #[cfg(CONFIG_PPC64)] 7 => mtspr(SPRN_PMC7,val), #[cfg(CONFIG_PPC64)] 8 => mtspr(SPRN_PMC8,val), _ => printk!("oops trying to write PMC%d\n", idx) } }
 unsafe fn any_pmc_overflown(cpuhw: *mut CpuHwEvents) -> i32 { for i in 0..(*cpuhw).n_events { let idx = (*(*cpuhw).event[i as usize]).hw.idx; if idx != 0 && (read_pmc(idx) as isize) < 0 { return idx; } } 0 }
 
 pub unsafe fn perf_event_print_debug() {
@@ -270,7 +270,7 @@ pub unsafe fn perf_event_print_debug() {
     pr_info!("PMC1:  %08x PMC2: %08x PMC3: %08x PMC4: %08x\n", pmcs[0],pmcs[1],pmcs[2],pmcs[3]); if (*ppmu).n_counter > 4 { pr_info!("PMC5:  %08x PMC6: %08x PMC7: %08x PMC8: %08x\n",pmcs[4],pmcs[5],pmcs[6],pmcs[7]); }
     pr_info!("MMCR0: %016lx MMCR1: %016lx MMCRA: %016lx\n",mfspr(SPRN_MMCR0),mfspr(SPRN_MMCR1),mfspr(SPRN_MMCRA));
     let mut sdar = 0; let mut sier = 0;
-    #[cfg(feature="CONFIG_PPC64")] { sdar=mfspr(SPRN_SDAR); if ((*ppmu).flags & PPMU_HAS_SIER)!=0 { sier=mfspr(SPRN_SIER); } if ((*ppmu).flags & PPMU_ARCH_207S)!=0 { pr_info!("MMCR2: %016lx EBBHR: %016lx\n",mfspr(SPRN_MMCR2),mfspr(SPRN_EBBHR)); pr_info!("EBBRR: %016lx BESCR: %016lx\n",mfspr(SPRN_EBBRR),mfspr(SPRN_BESCR)); } if ((*ppmu).flags & PPMU_ARCH_31)!=0 { pr_info!("MMCR3: %016lx SIER2: %016lx SIER3: %016lx\n",mfspr(SPRN_MMCR3),mfspr(SPRN_SIER2),mfspr(SPRN_SIER3)); } }
+    #[cfg(CONFIG_PPC64)] { sdar=mfspr(SPRN_SDAR); if ((*ppmu).flags & PPMU_HAS_SIER)!=0 { sier=mfspr(SPRN_SIER); } if ((*ppmu).flags & PPMU_ARCH_207S)!=0 { pr_info!("MMCR2: %016lx EBBHR: %016lx\n",mfspr(SPRN_MMCR2),mfspr(SPRN_EBBHR)); pr_info!("EBBRR: %016lx BESCR: %016lx\n",mfspr(SPRN_EBBRR),mfspr(SPRN_BESCR)); } if ((*ppmu).flags & PPMU_ARCH_31)!=0 { pr_info!("MMCR3: %016lx SIER2: %016lx SIER3: %016lx\n",mfspr(SPRN_MMCR3),mfspr(SPRN_SIER2),mfspr(SPRN_SIER3)); } }
     pr_info!("SIAR:  %016lx SDAR:  %016lx SIER:  %016lx\n",mfspr(SPRN_SIAR),sdar,sier); local_irq_restore(flags);
 }
 

@@ -89,16 +89,16 @@ unsafe fn _deny_autoidle(clk: *mut clk_ti_autoidle) {
 
 unsafe fn _clk_generic_allow_autoidle_all() {
     let mut c: *mut clk_ti_autoidle = core::ptr::null_mut();
-    list_for_each_entry(&mut c, &raw mut autoidle_clks, node) {
+    list_for_each_entry!(&mut c, &raw mut autoidle_clks, node, {
         _allow_autoidle(c);
-    }
+    });
 }
 
 unsafe fn _clk_generic_deny_autoidle_all() {
     let mut c: *mut clk_ti_autoidle = core::ptr::null_mut();
-    list_for_each_entry(&mut c, &raw mut autoidle_clks, node) {
+    list_for_each_entry!(&mut c, &raw mut autoidle_clks, node, {
         _deny_autoidle(c);
-    }
+    });
 }
 
 pub unsafe fn of_ti_clk_autoidle_setup(node: *mut device_node) -> i32 {

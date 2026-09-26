@@ -97,6 +97,9 @@ static davinci_pm_ops: platform_suspend_ops = platform_suspend_ops {
 
 pub unsafe fn davinci_pm_init() -> i32 {
     let mut ret: i32;
+    'no_ddrpll_mem: {
+    'no_ddrpsc_mem: {
+    'no_sram_mem: {
 
     ret = davinci_cfg_reg(DA850_RTC_ALARM);
     if ret != 0 {
@@ -114,20 +117,20 @@ pub unsafe fn davinci_pm_init() -> i32 {
     pm_config.ddrpll_reg_base = ioremap(DA850_PLL1_BASE, SZ_4K);
     if pm_config.ddrpll_reg_base.is_null() {
         ret = -ENOMEM;
-        goto no_ddrpll_mem;
+        break 'no_ddrpll_mem;
     }
 
     pm_config.ddrpsc_reg_base = ioremap(DA8XX_PSC1_BASE, SZ_4K);
     if pm_config.ddrpsc_reg_base.is_null() {
         ret = -ENOMEM;
-        goto no_ddrpsc_mem;
+        break 'no_ddrpsc_mem;
     }
 
     davinci_sram_suspend = sram_alloc(davinci_cpu_suspend_sz, core::ptr::null_mut());
     if davinci_sram_suspend.is_none() {
         pr_err!("PM: cannot allocate SRAM memory\n");
         ret = -ENOMEM;
-        goto no_sram_mem;
+        break 'no_sram_mem;
     }
 
     davinci_sram_push(
@@ -139,12 +142,14 @@ pub unsafe fn davinci_pm_init() -> i32 {
     suspend_set_ops(&davinci_pm_ops);
 
     return 0;
-
-no_sram_mem:
+    }
+    
     iounmap(pm_config.ddrpsc_reg_base);
-no_ddrpsc_mem:
+    }
+    
     iounmap(pm_config.ddrpll_reg_base);
-no_ddrpll_mem:
+    }
+    
     iounmap(pm_config.cpupll_reg_base);
     ret
 }

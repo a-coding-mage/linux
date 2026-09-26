@@ -48,7 +48,7 @@ unsafe fn hsr_handle_frame(pskb: *mut *mut sk_buff) -> rx_handler_result_t {
     protocol = (*eth_hdr(skb)).h_proto;
 
     if ((*(*port).dev).features & NETIF_F_HW_HSR_TAG_RM) == 0
-        && (*port).type != HSR_PT_INTERLINK
+        && (*port).r#type != HSR_PT_INTERLINK
         && (*(*hsr).proto_ops).invalid_dan_ingress_frame.is_some()
         && !(*(*hsr).proto_ops).invalid_dan_ingress_frame.unwrap()(protocol)
     {
@@ -72,7 +72,7 @@ unsafe fn hsr_handle_frame(pskb: *mut *mut sk_buff) -> rx_handler_result_t {
     /* Only the frames received over the interlink port will assign a
      * sequence number and require synchronisation vs other sender.
      */
-    if (*port).type == HSR_PT_INTERLINK {
+    if (*port).r#type == HSR_PT_INTERLINK {
         spin_lock_bh(&mut (*hsr).seqnr_lock);
         hsr_forward_skb(skb, port);
         spin_unlock_bh(&mut (*hsr).seqnr_lock);
@@ -177,7 +177,7 @@ pub unsafe fn hsr_add_port(hsr: *mut hsr_priv, dev: *mut net_device, type_: hsr_
     if port.is_null() { return -ENOMEM; }
     (*port).hsr = hsr;
     (*port).dev = dev;
-    (*port).type = type_;
+    (*port).r#type = type_;
     ether_addr_copy((*port).original_macaddress.as_mut_ptr(), (*dev).dev_addr);
     list_add_tail_rcu(&mut (*port).port_list, &mut (*hsr).ports);
     if type_ != HSR_PT_MASTER {
@@ -199,11 +199,11 @@ pub unsafe fn hsr_del_port(port: *mut hsr_port) {
         dev_set_mtu((*master).dev, hsr_get_max_mtu(hsr));
         netdev_rx_handler_unregister((*port).dev);
         if !(*hsr).fwd_offloaded { dev_set_promiscuity((*port).dev, -1); }
-        if (*port).type == HSR_PT_SLAVE_A || (*port).type == HSR_PT_SLAVE_B {
+        if (*port).r#type == HSR_PT_SLAVE_A || (*port).r#type == HSR_PT_SLAVE_B {
             vlan_vids_del_by_dev((*port).dev, (*master).dev);
         }
         netdev_upper_dev_unlink((*port).dev, (*master).dev);
-        if (*hsr).prot_version == PRP_V1 && (*port).type == HSR_PT_SLAVE_B {
+        if (*hsr).prot_version == PRP_V1 && (*port).r#type == HSR_PT_SLAVE_B {
             eth_hw_addr_set((*port).dev, (*port).original_macaddress.as_ptr());
             call_netdevice_notifiers(NETDEV_CHANGEADDR, (*port).dev);
         }

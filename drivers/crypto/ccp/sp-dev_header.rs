@@ -149,7 +149,7 @@ extern "C" {
 
 // CONFIG_CRYPTO_DEV_SP_CCP and CONFIG_CRYPTO_DEV_SP_PSP are build-time
 // conditions from the original header and are preserved by these cfg gates.
-#[cfg(feature = "CONFIG_CRYPTO_DEV_SP_CCP")]
+#[cfg(CONFIG_CRYPTO_DEV_SP_CCP)]
 extern "C" {
     pub fn ccp_dev_init(sp: *mut sp_device) -> ::std::os::raw::c_int;
     pub fn ccp_dev_destroy(sp: *mut sp_device);
@@ -157,16 +157,16 @@ extern "C" {
     pub fn ccp_dev_resume(sp: *mut sp_device);
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 pub unsafe fn ccp_dev_init(_sp: *mut sp_device) -> ::std::os::raw::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 pub unsafe fn ccp_dev_destroy(_sp: *mut sp_device) {}
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 pub unsafe fn ccp_dev_suspend(_sp: *mut sp_device) {}
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_CCP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_CCP))]
 pub unsafe fn ccp_dev_resume(_sp: *mut sp_device) {}
 
-#[cfg(feature = "CONFIG_CRYPTO_DEV_SP_PSP")]
+#[cfg(CONFIG_CRYPTO_DEV_SP_PSP)]
 extern "C" {
     pub fn psp_dev_init(sp: *mut sp_device) -> ::std::os::raw::c_int;
     pub fn psp_pci_init();
@@ -175,15 +175,15 @@ extern "C" {
     pub fn psp_restore(sp: *mut sp_device) -> ::std::os::raw::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_PSP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_PSP))]
 pub unsafe fn psp_dev_init(_sp: *mut sp_device) -> ::std::os::raw::c_int { 0 }
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_PSP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_PSP))]
 pub unsafe fn psp_pci_init() {}
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_PSP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_PSP))]
 pub unsafe fn psp_dev_destroy(_sp: *mut sp_device) {}
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_PSP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_PSP))]
 pub unsafe fn psp_pci_exit() {}
-#[cfg(not(feature = "CONFIG_CRYPTO_DEV_SP_PSP"))]
+#[cfg(not(CONFIG_CRYPTO_DEV_SP_PSP))]
 pub unsafe fn psp_restore(_sp: *mut sp_device) -> ::std::os::raw::c_int { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

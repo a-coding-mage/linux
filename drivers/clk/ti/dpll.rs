@@ -86,7 +86,7 @@ unsafe fn of_ti_dpll_setup(node:*mut device_node,ops:*const clk_ops,ddt:*const d
 
 // Device-tree registration wrappers and their complete source data templates.
 // CLK_OF_DECLARE entries are represented by the surrounding platform's linker integration.
-macro_rules! dpll_setup { ($name:ident,$ops:ident,$dd:expr) => { unsafe fn $name(n:*mut device_node){let dd=$dd; of_ti_dpll_setup(n,&$ops,&dd)} }; }
+macro_rules! dpll_setup { ($name:ident,$ops:ident,$dd:expr) => { unsafe fn $name(n:*mut device_node){let $dd=$dd; of_ti_dpll_setup(n,&$ops,&$dd)} }; }
 dpll_setup!(of_ti_omap4_dpll_setup,dpll_ck_ops,dpll_data{idlest_mask:1,enable_mask:7,autoidle_mask:7,mult_mask:0x7ff<<8,div1_mask:0x7f,max_multiplier:2047,max_divider:128,min_divider:1,modes:(1<<DPLL_LOW_POWER_BYPASS)|(1<<DPLL_LOCKED),..unsafe{core::mem::zeroed()}});
 dpll_setup!(of_ti_omap4_core_dpll_setup,dpll_core_ck_ops,dpll_data{idlest_mask:1,enable_mask:7,autoidle_mask:7,mult_mask:0x7ff<<8,div1_mask:0x7f,max_multiplier:2047,max_divider:128,min_divider:1,modes:(1<<DPLL_LOW_POWER_BYPASS)|(1<<DPLL_LOCKED),..unsafe{core::mem::zeroed()}});
 dpll_setup!(of_ti_omap2_core_dpll_setup,omap2_dpll_core_ck_ops,dpll_data{enable_mask:3,mult_mask:0x3ff<<12,div1_mask:0xf<<8,max_divider:16,min_divider:1,..unsafe{core::mem::zeroed()}});

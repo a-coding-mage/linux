@@ -7,7 +7,7 @@
 
 // External kernel dependencies supplied by other translation units.
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 extern "C" {
     pub fn ppc_expand_key_128(out: *mut u32, in_key: *const u8);
     pub fn ppc_expand_key_192(out: *mut u32, in_key: *const u8);
@@ -17,21 +17,21 @@ extern "C" {
     pub fn ppc_decrypt_aes(out: *mut u8, input: *const u8, key_dec: *const u32, rounds: u32);
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn spe_begin() {
     // disable preemption and save users SPE registers if required
     preempt_disable();
     enable_kernel_spe();
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn spe_end() {
     disable_kernel_spe();
     // reenable preemption
     preempt_enable();
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn aes_preparekey_arch(
     k: *mut aes_enckey_arch,
     inv_k: *mut aes_invkey_arch,
@@ -56,7 +56,7 @@ unsafe fn aes_preparekey_arch(
     }
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn aes_encrypt_arch(
     key: *const aes_enckey,
     out: *mut u8,
@@ -67,7 +67,7 @@ unsafe fn aes_encrypt_arch(
     spe_end();
 }
 
-#[cfg(feature = "CONFIG_SPE")]
+#[cfg(CONFIG_SPE)]
 unsafe fn aes_decrypt_arch(
     key: *const aes_key,
     out: *mut u8,
@@ -78,7 +78,7 @@ unsafe fn aes_decrypt_arch(
     spe_end();
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn is_vsx_format(key: *const p8_aes_key) -> bool {
     (*key).nrounds != 0
 }
@@ -95,7 +95,7 @@ unsafe fn is_vsx_format(key: *const p8_aes_key) -> bool {
  * Fortunately, this conversion should only be needed in extremely rare cases,
  * possibly not at all in practice.  It's just included for full correctness.
  */
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn rndkey_from_vsx(out: *mut u32, input: *const u32, apply_inv_mix: bool) {
     let be = IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
     let mut k0 = swab32(*input.add(0));
@@ -115,7 +115,7 @@ unsafe fn rndkey_from_vsx(out: *mut u32, input: *const u32, apply_inv_mix: bool)
     *out.add(3) = if be { k3 } else { k0 };
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn aes_preparekey_arch(
     k: *mut aes_enckey_arch,
     inv_k: *mut aes_invkey_arch,
@@ -156,7 +156,7 @@ unsafe fn aes_preparekey_arch(
     }
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn aes_encrypt_arch(key: *const aes_enckey, out: *mut u8, input: *const u8) {
     if static_branch_likely(&have_vec_crypto)
         && likely(is_vsx_format(&(*key).k.p8) && may_use_simd())
@@ -182,7 +182,7 @@ unsafe fn aes_encrypt_arch(key: *const aes_enckey, out: *mut u8, input: *const u
     }
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn aes_decrypt_arch(key: *const aes_key, out: *mut u8, input: *const u8) {
     if static_branch_likely(&have_vec_crypto)
         && likely(is_vsx_format(&(*key).inv_k.p8) && may_use_simd())
@@ -210,7 +210,7 @@ unsafe fn aes_decrypt_arch(key: *const aes_key, out: *mut u8, input: *const u8) 
     }
 }
 
-#[cfg(not(feature = "CONFIG_SPE"))]
+#[cfg(not(CONFIG_SPE))]
 unsafe fn aes_mod_init_arch() {
     if cpu_has_feature(CPU_FTR_ARCH_207S)
         && (cur_cpu_spec.cpu_user_features2 & PPC_FEATURE2_VEC_CRYPTO) != 0

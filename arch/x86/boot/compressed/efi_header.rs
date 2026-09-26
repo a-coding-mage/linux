@@ -135,18 +135,18 @@ pub unsafe fn efi_guidcmp(left: efi_guid_t, right: efi_guid_t) -> i32 {
 }
 
 /* CONFIG_EFI and CONFIG_EFI_SOFT_RESERVE are build-time conditions. */
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 unsafe extern "C" {
     fn __efi_soft_reserve_enabled() -> bool;
 }
 
-#[cfg(feature = "CONFIG_EFI")]
+#[cfg(CONFIG_EFI)]
 #[inline]
 pub unsafe fn efi_soft_reserve_enabled() -> bool {
-    cfg!(feature = "CONFIG_EFI_SOFT_RESERVE") && __efi_soft_reserve_enabled()
+    cfg!(CONFIG_EFI_SOFT_RESERVE) && __efi_soft_reserve_enabled()
 }
 
-#[cfg(not(feature = "CONFIG_EFI"))]
+#[cfg(not(CONFIG_EFI))]
 #[inline]
 pub fn efi_soft_reserve_enabled() -> bool {
     false

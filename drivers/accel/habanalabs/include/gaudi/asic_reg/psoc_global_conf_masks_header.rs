@@ -10,7 +10,6 @@
  **       DO NOT EDIT BELOW        **
  ************************************/
 
-#define ASIC_REG_PSOC_GLOBAL_CONF_MASKS_H_
 
 /*
  *****************************************

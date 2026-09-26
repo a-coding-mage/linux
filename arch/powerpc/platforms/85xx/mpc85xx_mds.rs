@@ -101,7 +101,7 @@ unsafe fn mpc85xx_mds_reset_ucc_phys() {
         setbits8(bcsr_regs.add(8), BCSR8_UEM_MARVELL_RST);
         setbits8(bcsr_regs.add(7), BCSR7_UCC12_GETHnRST);
         clrbits8(bcsr_regs.add(8), BCSR8_UEM_MARVELL_RST);
-        for_each_compatible_node(np, "network", "ucc_geth") {
+        for_each_compatible_node!(np, "network", "ucc_geth", {
             let prop = of_get_property(np, "cell-index", core::ptr::null_mut());
             if prop.is_null() { continue; }
             let ucc_num = *(prop as *const u32) - 1;
@@ -110,7 +110,7 @@ unsafe fn mpc85xx_mds_reset_ucc_phys() {
             if strcmp("rtbi", prop as *const i8) == 0 {
                 clrsetbits_8(bcsr_regs.add(7 + ucc_num as usize), BCSR_UCC_RGMII, BCSR_UCC_RTBI);
             }
-        }
+        });
     } else if machine_is(p1021_mds) {
         const BCSR11_ENET_MICRST: u8 = 0x1 << 5;
         clrbits8(bcsr_regs.add(11), BCSR11_ENET_MICRST);

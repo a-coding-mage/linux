@@ -2,7 +2,7 @@
 // C header guard: __LINUX_SPINLOCK_RT_H
 // This header is intended to be included from spinlock.h (__LINUX_INSIDE_SPINLOCK_H).
 
-#[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+#[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
 extern "C" {
     pub fn __rt_spin_lock_init(
         lock: *mut spinlock_t,
@@ -12,7 +12,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_LOCK_ALLOC"))]
+#[cfg(not(CONFIG_DEBUG_LOCK_ALLOC))]
 #[inline]
 pub unsafe fn __rt_spin_lock_init(
     _lock: *mut spinlock_t,
@@ -65,26 +65,26 @@ pub unsafe fn spin_lock(lock: *mut spinlock_t) {
     rt_spin_lock(lock);
 }
 
-#[cfg(feature = "CONFIG_LOCKDEP")]
+#[cfg(CONFIG_LOCKDEP)]
 #[inline]
 pub unsafe fn __spin_lock_nested(lock: *mut spinlock_t, subclass: ::std::os::raw::c_int) {
     rt_spin_lock_nested(lock, subclass);
 }
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline]
 pub unsafe fn __spin_lock_nested(lock: *mut spinlock_t, subclass: ::std::os::raw::c_int) {
     let _ = subclass;
     spin_lock(lock);
 }
 
-#[cfg(feature = "CONFIG_LOCKDEP")]
+#[cfg(CONFIG_LOCKDEP)]
 #[inline]
 pub unsafe fn __spin_lock_nest_lock(lock: *mut spinlock_t, nest_lock: *mut lockdep_map) {
     rt_spin_lock_nest_lock(lock, nest_lock);
 }
 
-#[cfg(not(feature = "CONFIG_LOCKDEP"))]
+#[cfg(not(CONFIG_LOCKDEP))]
 #[inline]
 pub unsafe fn __spin_lock_nest_lock(lock: *mut spinlock_t, subclass: ::std::os::raw::c_int) {
     let _ = subclass;

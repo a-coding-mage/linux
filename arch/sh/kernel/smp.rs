@@ -132,36 +132,36 @@ pub unsafe extern "C" fn arch_send_call_function_single_ipi(cpu: c_int) { ((*mp_
 
 pub unsafe extern "C" fn smp_message_recv(msg: c_uint) { match msg as c_int { SMP_MSG_FUNCTION => generic_smp_call_function_interrupt(), SMP_MSG_RESCHEDULE => scheduler_ipi(), SMP_MSG_FUNCTION_SINGLE => generic_smp_call_function_single_interrupt(), SMP_MSG_TIMER => ipi_timer(), _ => printk(b"unknown IPI\n\0".as_ptr() as *const c_char) } }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 #[repr(C)] pub struct flush_tlb_data { pub vma: *mut vm_area_struct, pub addr1: c_ulong, pub addr2: c_ulong }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn flush_tlb_all() { on_each_cpu(flush_tlb_all_ipi, core::ptr::null_mut(), 1); }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" fn flush_tlb_all_ipi(_info: *mut c_void) { local_flush_tlb_all(); }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" fn flush_tlb_mm_ipi(mm: *mut c_void) { local_flush_tlb_mm(mm as *mut mm_struct); }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn flush_tlb_mm(mm: *mut mm_struct) { preempt_disable(); if atomic_read(&(*mm).mm_users) != 1 || (*current).mm != mm { smp_call_function(flush_tlb_mm_ipi, mm as *mut c_void, 1); } local_flush_tlb_mm(mm); preempt_enable(); }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" fn flush_tlb_range_ipi(info: *mut c_void) { let fd = &*(info as *mut flush_tlb_data); local_flush_tlb_range(fd.vma, fd.addr1, fd.addr2); }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn flush_tlb_range(vma: *mut vm_area_struct, start: c_ulong, end: c_ulong) { let mut fd = flush_tlb_data { vma, addr1: start, addr2: end }; preempt_disable(); smp_call_function(flush_tlb_range_ipi, &mut fd as *mut _ as *mut c_void, 1); local_flush_tlb_range(vma, start, end); preempt_enable(); }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" fn flush_tlb_kernel_range_ipi(info: *mut c_void) { let fd = &*(info as *mut flush_tlb_data); local_flush_tlb_kernel_range(fd.addr1, fd.addr2); }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn flush_tlb_kernel_range(start: c_ulong, end: c_ulong) { let mut fd = flush_tlb_data { vma: core::ptr::null_mut(), addr1: start, addr2: end }; on_each_cpu(flush_tlb_kernel_range_ipi, &mut fd as *mut _ as *mut c_void, 1); }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" fn flush_tlb_page_ipi(info: *mut c_void) { let fd = &*(info as *mut flush_tlb_data); local_flush_tlb_page(fd.vma, fd.addr1); }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn flush_tlb_page(vma: *mut vm_area_struct, page: c_ulong) { let mut fd = flush_tlb_data { vma, addr1: page, addr2: 0 }; preempt_disable(); smp_call_function(flush_tlb_page_ipi, &mut fd as *mut _ as *mut c_void, 1); local_flush_tlb_page(vma, page); preempt_enable(); }
 
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 unsafe extern "C" fn flush_tlb_one_ipi(info: *mut c_void) { let fd = &*(info as *mut flush_tlb_data); local_flush_tlb_one(fd.addr1, fd.addr2); }
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub unsafe extern "C" fn flush_tlb_one(asid: c_ulong, vaddr: c_ulong) { let mut fd = flush_tlb_data { vma: core::ptr::null_mut(), addr1: asid, addr2: vaddr }; smp_call_function(flush_tlb_one_ipi, &mut fd as *mut _ as *mut c_void, 1); local_flush_tlb_one(asid, vaddr); }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

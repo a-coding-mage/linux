@@ -11,19 +11,19 @@
  * The C preprocessor conditions are represented here by Cargo cfg features.
  */
 
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS")))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS")))]
 pub const HAS_KERNEL_IBT: u32 = 1;
-#[cfg(not(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"))))]
+#[cfg(not(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"))))]
 pub const HAS_KERNEL_IBT: u32 = 0;
 
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"), feature = "CONFIG_X86_64"))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"), CONFIG_X86_64))]
 pub const ASM_ENDBR: &str = "endbr64\n\t";
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"), not(feature = "CONFIG_X86_64")))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"), not(CONFIG_X86_64)))]
 pub const ASM_ENDBR: &str = "endbr32\n\t";
-#[cfg(not(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"))))]
+#[cfg(not(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"))))]
 pub const ASM_ENDBR: &str = "";
 
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS")))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS")))]
 #[inline(always)]
 pub const unsafe fn gen_endbr() -> u32 {
     let mut endbr: u32;
@@ -38,14 +38,14 @@ pub const unsafe fn gen_endbr() -> u32 {
     endbr
 }
 
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS")))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS")))]
 #[inline(always)]
 pub const fn gen_endbr_poison() -> u32 {
     /* 4 byte NOP that is unique to former ENDBR sites and carries UDB. */
     0xd6401f0f /* nopl -42(%rax) */
 }
 
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS")))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS")))]
 #[inline]
 pub unsafe fn __is_endbr(val: u32) -> bool {
     if val == gen_endbr_poison() {
@@ -55,22 +55,22 @@ pub unsafe fn __is_endbr(val: u32) -> bool {
     val == gen_endbr()
 }
 
-#[cfg(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS")))]
+#[cfg(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS")))]
 extern "C" {
     pub fn is_endbr(val: *mut u32) -> bool;
     pub fn ibt_save(disable: bool) -> u64;
     pub fn ibt_restore(save: u64);
 }
 
-#[cfg(not(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"))))]
+#[cfg(not(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"))))]
 #[inline]
 pub unsafe fn is_endbr(_val: *mut u32) -> bool { false }
 
-#[cfg(not(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"))))]
+#[cfg(not(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"))))]
 #[inline]
 pub unsafe fn ibt_save(_disable: bool) -> u64 { 0 }
 
-#[cfg(not(all(feature = "CONFIG_X86_KERNEL_IBT", not(feature = "__DISABLE_EXPORTS"))))]
+#[cfg(not(all(CONFIG_X86_KERNEL_IBT, not(feature = "__DISABLE_EXPORTS"))))]
 #[inline]
 pub unsafe fn ibt_restore(_save: u64) {}
 

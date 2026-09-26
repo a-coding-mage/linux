@@ -150,7 +150,7 @@ macro_rules! DECLARE_CUSTOM_EVENT_CLASS_STAGE7 {
 
 #[macro_export]
 macro_rules! DEFINE_CUSTOM_EVENT_STAGE7 {
-    ($template:ident, $call:ident, $proto:tt, $args:tt) => {
+    ($template:ident, $call:tt, $proto:tt, $args:tt) => {
         static mut custom_event_$call: trace_event_call = trace_event_call {
             name: stringify!($call),
             class: &custom_event_class_$template,
@@ -158,7 +158,7 @@ macro_rules! DEFINE_CUSTOM_EVENT_STAGE7 {
             print_fmt: custom_print_fmt_$template,
             flags: TRACE_EVENT_FL_CUSTOM,
         };
-        unsafe fn trace_custom_event_$call##_update(tp: *mut tracepoint) -> i32 {
+        unsafe fn trace_custom_event_::kernel::macros::paste!([<$call _update>])(tp: *mut tracepoint) -> i32 {
             if !(*tp).name.is_null() && strcmp((*tp).name, stringify!($call)) == 0 {
                 (*(&mut custom_event_$call)).tp = tp;
                 (*(&mut custom_event_$call)).flags = TRACE_EVENT_FL_TRACEPOINT;

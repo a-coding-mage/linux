@@ -179,7 +179,7 @@ pub unsafe fn __ioremap(mut physaddr: c_ulong, mut size: c_ulong, cacheflag: c_i
 /* Unmap an ioremap()ed region again */
 pub unsafe fn iounmap(addr: *mut c_void) {
     #[cfg(CONFIG_AMIGA)]
-    if MACH_IS_AMIGA && addr as c_ulong >= 0x40000000 && addr as c_ulong < 0x60000000 { return; }
+    if MACH_IS_AMIGA && addr as c_ulong >= 0x40000000 && (addr as c_ulong) < 0x60000000 { return; }
     #[cfg(CONFIG_VIRT)]
     if MACH_IS_VIRT && addr as c_ulong >= 0xff000000 { return; }
     #[cfg(CONFIG_COLDFIRE)]

@@ -79,18 +79,18 @@ unsafe fn kmsan_init_shadow() {
     let mut loop_: u64;
     let mut nid: i32;
 
-    for_each_reserved_mem_range!(loop_, p_start, p_end) {
+    for_each_reserved_mem_range!(loop_, p_start, p_end, {
         kmsan_record_future_shadow_range(phys_to_virt(p_start), phys_to_virt(p_end));
-    }
+    });
     /* Allocate shadow for .data */
     kmsan_record_future_shadow_range(_sdata, _edata);
 
-    for_each_online_node!(nid) {
+    for_each_online_node!(nid, {
         kmsan_record_future_shadow_range(
             NODE_DATA(nid),
             (NODE_DATA(nid) as *mut i8).add(nd_size) as *mut core::ffi::c_void,
         );
-    }
+    });
 
     for i in 0..future_index {
         kmsan_init_alloc_meta_for_range(

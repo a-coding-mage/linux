@@ -69,16 +69,16 @@ unsafe fn test_find_delalloc(sectorsize: u32, nodesize: u32) -> c_int {
     let total_dirty = 2 * max_bytes;
     let mut ret = -EINVAL;
     test_msg(cstr!("running find delalloc tests"));
-    if IS_ERR(root) { test_std_err(TEST_ALLOC_ROOT); ret = PTR_ERR(root); goto!(out); }
+    if IS_ERR(root) { test_std_err(TEST_ALLOC_ROOT); ret = PTR_ERR(root); goto out; }
     inode = btrfs_new_test_inode();
-    if inode.is_null() { test_std_err(TEST_ALLOC_INODE); ret = -ENOMEM; goto!(out); }
+    if inode.is_null() { test_std_err(TEST_ALLOC_INODE); ret = -ENOMEM; goto out; }
     tmp = &mut BTRFS_I(inode).io_tree;
     BTRFS_I(inode).root = root;
     btrfs_extent_io_tree_init(null_mut(), tmp, IO_TREE_SELFTEST);
     let mut index: pgoff_t = 0;
     while index < total_dirty >> PAGE_SHIFT {
         let page = find_or_create_page((*inode).i_mapping, index, GFP_KERNEL);
-        if page.is_null() { test_err(cstr!("failed to allocate test page")); ret = -ENOMEM; goto!(out); }
+        if page.is_null() { test_err(cstr!("failed to allocate test page")); ret = -ENOMEM; goto out; }
         SetPageDirty(page);
         if index != 0 { unlock_page(page); } else { get_page(page); locked_page = page; }
         index += 1;
@@ -86,33 +86,33 @@ unsafe fn test_find_delalloc(sectorsize: u32, nodesize: u32) -> c_int {
     btrfs_set_extent_bit(tmp, 0, sectorsize as u64 - 1, EXTENT_DELALLOC, null_mut());
     let mut start = 0u64; let mut end = PAGE_SIZE as u64 - 1;
     let mut found = find_lock_delalloc_range(inode, page_folio(locked_page), &mut start, &mut end);
-    if !found || start != 0 || end != sectorsize as u64 - 1 { test_err(cstr!("delalloc range mismatch")); goto!(out_bits); }
+    if !found || start != 0 || end != sectorsize as u64 - 1 { test_err(cstr!("delalloc range mismatch")); goto out_bits; }
     btrfs_unlock_extent(tmp, start, end, null_mut()); unlock_page(locked_page); put_page(locked_page); locked_page = null_mut();
     let test_start = SZ_64M;
     locked_page = find_lock_page((*inode).i_mapping, test_start >> PAGE_SHIFT);
-    if locked_page.is_null() { test_err(cstr!("couldn't find the locked page")); goto!(out_bits); }
+    if locked_page.is_null() { test_err(cstr!("couldn't find the locked page")); goto out_bits; }
     btrfs_set_extent_bit(tmp, sectorsize as u64, max_bytes - 1, EXTENT_DELALLOC, null_mut());
     start = test_start; end = start + PAGE_SIZE as u64 - 1;
     found = find_lock_delalloc_range(inode, page_folio(locked_page), &mut start, &mut end);
-    if !found || start != test_start || end != max_bytes - 1 || process_page_range(inode, start, end, PROCESS_TEST_LOCKED | PROCESS_UNLOCK) != 0 { test_err(cstr!("delalloc locked-page test failed")); goto!(out_bits); }
+    if !found || start != test_start || end != max_bytes - 1 || process_page_range(inode, start, end, PROCESS_TEST_LOCKED | PROCESS_UNLOCK) != 0 { test_err(cstr!("delalloc locked-page test failed")); goto out_bits; }
     btrfs_unlock_extent(tmp, start, end, null_mut()); put_page(locked_page); locked_page = null_mut();
     let test_start = max_bytes + sectorsize as u64;
     locked_page = find_lock_page((*inode).i_mapping, test_start >> PAGE_SHIFT);
-    if locked_page.is_null() { goto!(out_bits); }
+    if locked_page.is_null() { goto out_bits; }
     start = test_start; end = start + PAGE_SIZE as u64 - 1;
     found = find_lock_delalloc_range(inode, page_folio(locked_page), &mut start, &mut end);
-    if found { test_err(cstr!("found range when we shouldn't have")); goto!(out_bits); }
+    if found { test_err(cstr!("found range when we shouldn't have")); goto out_bits; }
     btrfs_set_extent_bit(tmp, max_bytes, total_dirty - 1, EXTENT_DELALLOC, null_mut());
     start = test_start; end = start + PAGE_SIZE as u64 - 1;
     found = find_lock_delalloc_range(inode, page_folio(locked_page), &mut start, &mut end);
-    if !found || start != test_start || end != total_dirty - 1 || process_page_range(inode, start, end, PROCESS_TEST_LOCKED | PROCESS_UNLOCK) != 0 { goto!(out_bits); }
+    if !found || start != test_start || end != total_dirty - 1 || process_page_range(inode, start, end, PROCESS_TEST_LOCKED | PROCESS_UNLOCK) != 0 { goto out_bits; }
     btrfs_unlock_extent(tmp, start, end, null_mut());
     let page = find_get_page((*inode).i_mapping, (max_bytes + SZ_1M) >> PAGE_SHIFT);
-    if page.is_null() { goto!(out_bits); } ClearPageDirty(page); put_page(page);
+    if page.is_null() { goto out_bits; } ClearPageDirty(page); put_page(page);
     lock_page(locked_page); start = test_start; end = start + PAGE_SIZE as u64 - 1;
     found = find_lock_delalloc_range(inode, page_folio(locked_page), &mut start, &mut end);
-    if !found || (start != test_start && end != test_start + PAGE_SIZE as u64 - 1) { goto!(out_bits); }
-    if process_page_range(inode, start, end, PROCESS_TEST_LOCKED | PROCESS_UNLOCK) != 0 { goto!(out_bits); }
+    if !found || (start != test_start && end != test_start + PAGE_SIZE as u64 - 1) { goto out_bits; }
+    if process_page_range(inode, start, end, PROCESS_TEST_LOCKED | PROCESS_UNLOCK) != 0 { goto out_bits; }
     ret = 0;
 out_bits:
     if ret != 0 { dump_extent_io_tree(tmp); }

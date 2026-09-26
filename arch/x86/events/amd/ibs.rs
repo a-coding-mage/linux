@@ -127,9 +127,9 @@ unsafe fn validate_group(event: *mut perf_event) -> c_int {
     if (*event).group_leader == event { return 0; }
     if (*event).group_leader.as_ref().unwrap().pmu == (*event).pmu { return -EINVAL; }
     let mut sibling: *mut perf_event = core::ptr::null_mut();
-    for_each_sibling_event!(sibling, (*event).group_leader) {
+    for_each_sibling_event!(sibling, (*event).group_leader, {
         if (*sibling).pmu == (*event).pmu { return -EINVAL; }
-    }
+    });
     0
 }
 

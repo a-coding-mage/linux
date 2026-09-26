@@ -76,10 +76,10 @@ unsafe fn sync_print_obj(s: *mut seq_file, obj: *mut sync_timeline) {
     seq_printf(s, b"%s: %d\n\0".as_ptr() as *const c_char, (*obj).name, (*obj).value);
 
     spin_lock(&mut (*obj).lock); /* Caller already disabled IRQ. */
-    list_for_each(pos, &mut (*obj).pt_list) {
+    list_for_each!(pos, &mut (*obj).pt_list, {
         let pt: *mut sync_pt = container_of(pos, sync_pt, link);
         sync_print_fence(s, &mut (*pt).base, false);
-    }
+    });
     spin_unlock(&mut (*obj).lock);
 }
 
@@ -92,13 +92,13 @@ unsafe extern "C" fn sync_info_debugfs_show(
     seq_puts(s, b"objs:\n--------------\n\0".as_ptr() as *const c_char);
 
     spin_lock_irq(&mut sync_timeline_list_lock);
-    list_for_each(pos, &mut sync_timeline_list_head) {
+    list_for_each!(pos, &mut sync_timeline_list_head, {
         let obj: *mut sync_timeline =
             container_of(pos, sync_timeline, sync_timeline_list);
 
         sync_print_obj(s, obj);
         seq_putc(s, b'\n' as c_int);
-    }
+    });
     spin_unlock_irq(&mut sync_timeline_list_lock);
 
     seq_puts(s, b"fences:\n--------------\n\0".as_ptr() as *const c_char);

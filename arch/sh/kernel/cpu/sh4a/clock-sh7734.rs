@@ -10,7 +10,7 @@
 
 // Linux and architecture headers provide the clock types, macros, and functions used below.
 
-static mut extal_clk: struct clk = struct clk {
+static mut extal_clk: clk = clk {
     rate: 33333333,
 };
 
@@ -18,7 +18,7 @@ const MODEMR: usize = 0xFFCC0020;
 const MODEMR_MASK: u32 = 0x6;
 const MODEMR_533MHZ: u32 = 0x2;
 
-unsafe fn pll_recalc(clk: *mut struct clk) -> c_ulong {
+unsafe fn pll_recalc(clk: *mut clk) -> c_ulong {
     let mut mode: c_int = 12;
     let r: u32 = __raw_readl(MODEMR);
 
@@ -29,17 +29,17 @@ unsafe fn pll_recalc(clk: *mut struct clk) -> c_ulong {
     (*(*clk).parent).rate * mode as c_ulong
 }
 
-static mut pll_clk_ops: struct sh_clk_ops = struct sh_clk_ops {
+static mut pll_clk_ops: sh_clk_ops = sh_clk_ops {
     recalc: Some(pll_recalc),
 };
 
-static mut pll_clk: struct clk = struct clk {
+static mut pll_clk: clk = clk {
     ops: &raw mut pll_clk_ops,
     parent: &raw mut extal_clk,
     flags: CLK_ENABLE_ON_INIT,
 };
 
-static mut main_clks: [*mut struct clk; 2] = [
+static mut main_clks: [*mut clk; 2] = [
     &raw mut extal_clk,
     &raw mut pll_clk,
 ];
@@ -47,20 +47,24 @@ static mut main_clks: [*mut struct clk; 2] = [
 static mut multipliers: [c_int; 13] = [1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 static mut divisors: [c_int; 12] = [1, 3, 2, 3, 4, 6, 8, 9, 12, 16, 18, 24];
 
-static mut div4_div_mult_table: struct clk_div_mult_table = struct clk_div_mult_table {
+static mut div4_div_mult_table: clk_div_mult_table = clk_div_mult_table {
     divisors: &raw mut divisors,
     nr_divisors: ARRAY_SIZE(divisors),
     multipliers: &raw mut multipliers,
     nr_multipliers: ARRAY_SIZE(multipliers),
 };
 
-static mut div4_table: struct clk_div4_table = struct clk_div4_table {
+static mut div4_table: clk_div4_table = clk_div4_table {
     div_mult_table: &raw mut div4_div_mult_table,
 };
 
-enum {
-    DIV4_I, DIV4_S, DIV4_B, DIV4_M, DIV4_S1, DIV4_P, DIV4_NR
-}
+pub const DIV4_I: i32 = 0;
+pub const DIV4_S: i32 = DIV4_I + 1;
+pub const DIV4_B: i32 = DIV4_S + 1;
+pub const DIV4_M: i32 = DIV4_B + 1;
+pub const DIV4_S1: i32 = DIV4_M + 1;
+pub const DIV4_P: i32 = DIV4_S1 + 1;
+pub const DIV4_NR: i32 = DIV4_P + 1;
 
 macro_rules! DIV4 {
     ($reg:expr, $bit:expr, $mask:expr, $flags:expr) => {
@@ -68,7 +72,7 @@ macro_rules! DIV4 {
     };
 }
 
-static mut div4_clks: [struct clk; DIV4_NR] = [
+static mut div4_clks: [clk; DIV4_NR] = [
     [DIV4_I] = DIV4!(FRQMR1, 28, 0x0003, CLK_ENABLE_ON_INIT),
     [DIV4_S] = DIV4!(FRQMR1, 20, 0x000C, CLK_ENABLE_ON_INIT),
     [DIV4_B] = DIV4!(FRQMR1, 16, 0x0140, CLK_ENABLE_ON_INIT),
@@ -81,48 +85,56 @@ const MSTPCR0: usize = 0xFFC80030;
 const MSTPCR1: usize = 0xFFC80034;
 const MSTPCR3: usize = 0xFFC8003C;
 
-enum {
-    MSTP030, MSTP029, /* IIC */
-    MSTP026, MSTP025, MSTP024, /* SCIF */
-    MSTP023,
-    MSTP022, MSTP021,
-    MSTP019, /* HSCIF */
-    MSTP016, MSTP015, MSTP014, /* TMU / TIMER */
-    MSTP012, MSTP011, MSTP010, MSTP009, MSTP008, /* SSI */
-    MSTP007, /* HSPI */
-    MSTP115, /* ADMAC */
-    MSTP114, /* GETHER */
-    MSTP111, /* DMAC */
-    MSTP109, /* VIDEOIN1 */
-    MSTP108, /* VIDEOIN0 */
-    MSTP107, /* RGPVBG */
-    MSTP106, /* 2DG */
-    MSTP103, /* VIEW */
-    MSTP100, /* USB */
-    MSTP331, /* MMC */
-    MSTP330, /* MIMLB */
-    MSTP323, /* SDHI0 */
-    MSTP322, /* SDHI1 */
-    MSTP321, /* SDHI2 */
-    MSTP320, /* RQSPI */
-    MSTP319, /* SRC0 */
-    MSTP318, /* SRC1 */
-    MSTP317, /* RSPI */
-    MSTP316, /* RCAN0 */
-    MSTP315, /* RCAN1 */
-    MSTP314, /* FLTCL */
-    MSTP313, /* ADC */
-    MSTP312, /* MTU */
-    MSTP304, /* IE-BUS */
-    MSTP303, /* RTC */
-    MSTP302, /* HIF */
-    MSTP301, /* STIF0 */
-    MSTP300, /* STIF1 */
-    MSTP_NR
-}
+pub const MSTP030: i32 = 0;
+pub const MSTP029: i32 = MSTP030 + 1;
+pub const MSTP026: i32 = MSTP029 + 1;
+pub const MSTP025: i32 = MSTP026 + 1;
+pub const MSTP024: i32 = MSTP025 + 1;
+pub const MSTP023: i32 = MSTP024 + 1;
+pub const MSTP022: i32 = MSTP023 + 1;
+pub const MSTP021: i32 = MSTP022 + 1;
+pub const MSTP019: i32 = MSTP021 + 1;
+pub const MSTP016: i32 = MSTP019 + 1;
+pub const MSTP015: i32 = MSTP016 + 1;
+pub const MSTP014: i32 = MSTP015 + 1;
+pub const MSTP012: i32 = MSTP014 + 1;
+pub const MSTP011: i32 = MSTP012 + 1;
+pub const MSTP010: i32 = MSTP011 + 1;
+pub const MSTP009: i32 = MSTP010 + 1;
+pub const MSTP008: i32 = MSTP009 + 1;
+pub const MSTP007: i32 = MSTP008 + 1;
+pub const MSTP115: i32 = MSTP007 + 1;
+pub const MSTP114: i32 = MSTP115 + 1;
+pub const MSTP111: i32 = MSTP114 + 1;
+pub const MSTP109: i32 = MSTP111 + 1;
+pub const MSTP108: i32 = MSTP109 + 1;
+pub const MSTP107: i32 = MSTP108 + 1;
+pub const MSTP106: i32 = MSTP107 + 1;
+pub const MSTP103: i32 = MSTP106 + 1;
+pub const MSTP100: i32 = MSTP103 + 1;
+pub const MSTP331: i32 = MSTP100 + 1;
+pub const MSTP330: i32 = MSTP331 + 1;
+pub const MSTP323: i32 = MSTP330 + 1;
+pub const MSTP322: i32 = MSTP323 + 1;
+pub const MSTP321: i32 = MSTP322 + 1;
+pub const MSTP320: i32 = MSTP321 + 1;
+pub const MSTP319: i32 = MSTP320 + 1;
+pub const MSTP318: i32 = MSTP319 + 1;
+pub const MSTP317: i32 = MSTP318 + 1;
+pub const MSTP316: i32 = MSTP317 + 1;
+pub const MSTP315: i32 = MSTP316 + 1;
+pub const MSTP314: i32 = MSTP315 + 1;
+pub const MSTP313: i32 = MSTP314 + 1;
+pub const MSTP312: i32 = MSTP313 + 1;
+pub const MSTP304: i32 = MSTP312 + 1;
+pub const MSTP303: i32 = MSTP304 + 1;
+pub const MSTP302: i32 = MSTP303 + 1;
+pub const MSTP301: i32 = MSTP302 + 1;
+pub const MSTP300: i32 = MSTP301 + 1;
+pub const MSTP_NR: i32 = MSTP300 + 1;
 
 // The following table is a literal translation of the C SH_CLK_MSTP32 initializers.
-static mut mstp_clks: [struct clk; MSTP_NR] = [
+static mut mstp_clks: [clk; MSTP_NR] = [
     [MSTP030] = SH_CLK_MSTP32!(&raw mut div4_clks[DIV4_P], MSTPCR0, 30, 0),
     [MSTP029] = SH_CLK_MSTP32!(&raw mut div4_clks[DIV4_P], MSTPCR0, 29, 0),
     [MSTP026] = SH_CLK_MSTP32!(&raw mut div4_clks[DIV4_P], MSTPCR0, 26, 0),
@@ -172,7 +184,7 @@ static mut mstp_clks: [struct clk; MSTP_NR] = [
 ];
 
 // Lookup declarations are retained through the corresponding external macros.
-static mut lookups: [struct clk_lookup; 49] = [
+static mut lookups: [clk_lookup; 49] = [
     CLKDEV_CON_ID!("extal", &raw mut extal_clk),
     CLKDEV_CON_ID!("pll_clk", &raw mut pll_clk),
     CLKDEV_CON_ID!("cpu_clk", &raw mut div4_clks[DIV4_I]),

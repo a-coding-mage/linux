@@ -77,7 +77,7 @@ pub unsafe extern "C" fn syscall_arg__scnprintf_mode_t(
     macro_rules! p_mode {
         ($name:ident, $value:expr) => {{
             let value: c_int = $value;
-            if (mode & value) == value {
+            if (mode & $value) == $value {
                 printed += scnprintf(
                     bf.offset(printed as isize),
                     size.wrapping_sub(printed as usize),
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn syscall_arg__scnprintf_mode_t(
                     },
                     concat!(stringify!($name), "\0").as_ptr() as *const c_char,
                 );
-                mode &= !value;
+                mode &= !$value;
             }
         }};
     }

@@ -134,7 +134,7 @@ pub unsafe fn red_calc_qavg(p: *const red_parms, v: *const red_vars, backlog: u3
     if red_is_idling(v) == 0 { red_calc_qavg_no_idle_time(p, v, backlog) } else { red_calc_qavg_from_idle_time(p, v) }
 }
 #[inline] pub unsafe fn red_random(p: *const red_parms) -> u32 { reciprocal_divide(get_random_u32(), (*p).max_P_reciprocal) }
-#[inline] pub unsafe fn red_mark_probability(p: *const red_parms, v: *const red_vars, qavg: usize) -> i32 { (!(((qavg - (*p).qth_min as usize) >> (*p).Wlog) * (*v).qcount as usize < (*v).qR as usize)) as i32 }
+#[inline] pub unsafe fn red_mark_probability(p: *const red_parms, v: *const red_vars, qavg: usize) -> i32 { (!(((qavg - (*p).qth_min as usize) >> (*p).Wlog) * ((*v).qcount as usize) < (*v).qR as usize)) as i32 }
 
 pub const RED_BELOW_MIN_THRESH: i32 = 0;
 pub const RED_BETWEEN_TRESH: i32 = 1;

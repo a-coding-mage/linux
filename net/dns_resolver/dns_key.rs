@@ -20,6 +20,7 @@ unsafe fn dns_resolver_preparse(prep: *mut key_preparsed_payload) -> i32 {
     let data = (*prep).data;
     let mut end: *const i8;
     let mut opt: *const i8;
+    'store_result: {
 
     if datalen <= 1 || data.is_null() { return -EINVAL; }
 
@@ -32,7 +33,7 @@ unsafe fn dns_resolver_preparse(prep: *mut key_preparsed_payload) -> i32 {
             if (*prep).expiry == TIME64_MAX { (*prep).expiry = ktime_get_real_seconds() + 1; }
         }
         result_len = datalen as isize;
-        goto store_result;
+        break 'store_result;
     }
 
     if *data.add(datalen - 1) != 0 { return -EINVAL; }
@@ -74,8 +75,8 @@ unsafe fn dns_resolver_preparse(prep: *mut key_preparsed_payload) -> i32 {
     }
 
     if !(*prep).payload.data[dns_key_error].is_null() { return 0; }
-
-store_result:
+    }
+    
     (*prep).quotalen = result_len as usize;
     upayload = kmalloc_flex(result_len as usize);
     if upayload.is_null() { return -ENOMEM; }

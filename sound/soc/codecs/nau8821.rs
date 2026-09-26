@@ -1060,7 +1060,7 @@ unsafe fn nau8821_fll_apply(nau8821: *mut nau8821, fll_param: *mut nau8821_fll) 
     /* FLL pre-scaler */
     regmap_update_bits(regmap, NAU8821_R07_FLL4,
         NAU8821_HIGHBW_EN | NAU8821_FLL_REF_DIV_MASK,
-        NAU8821_HIGHBW_EN | ((*fll_param).clk_ref_div as c_uint << NAU8821_FLL_REF_DIV_SFT));
+        NAU8821_HIGHBW_EN | (((*fll_param).clk_ref_div as c_uint) << NAU8821_FLL_REF_DIV_SFT));
     /* select divided VCO input */
     regmap_update_bits(regmap, NAU8821_R08_FLL5, NAU8821_FLL_CLK_SW_MASK, NAU8821_FLL_CLK_SW_REF);
     /* Disable free-running mode */

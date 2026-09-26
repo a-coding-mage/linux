@@ -4,7 +4,6 @@
  * Translated from the source header; register constants retain their C names and values.
  */
 
-pub const SMU_8_0_D_H: u32 = ;
 pub const ixTHM_TCON_CSR_CONFIG: u32 = 0xd82014a4;
 pub const ixTHM_TCON_CSR_DATA: u32 = 0xd82014a8;
 pub const ixTHM_TCON_HTC: u32 = 0xd8200c64;

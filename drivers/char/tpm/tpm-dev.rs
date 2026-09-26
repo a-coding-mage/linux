@@ -81,12 +81,12 @@ unsafe fn tpm_release(_inode: *mut inode, file: *mut file) -> ::core::ffi::c_int
 }
 
 pub static tpm_fops: file_operations = file_operations {
-    .owner = THIS_MODULE,
-    .open = Some(tpm_open),
-    .read = Some(tpm_common_read),
-    .write = Some(tpm_common_write),
-    .poll = Some(tpm_common_poll),
-    .release = Some(tpm_release),
+    owner: THIS_MODULE,
+    open: Some(tpm_open),
+    read: Some(tpm_common_read),
+    write: Some(tpm_common_write),
+    poll: Some(tpm_common_poll),
+    release: Some(tpm_release),
 };
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -131,7 +131,7 @@ unsafe fn __putnum(mut value: usize, base: usize, mut mindig: i32) {
 #[no_mangle] pub unsafe extern "C" fn __puthex(value: usize) { __putnum(value, 16, (core::mem::size_of::<usize>() * 2) as i32); }
 #[no_mangle] pub unsafe extern "C" fn __putdec(value: usize) { __putnum(value, 10, 1); }
 
-#[cfg(feature = "CONFIG_X86_NEED_RELOCS")]
+#[cfg(CONFIG_X86_NEED_RELOCS)]
 unsafe fn handle_relocations(output: *mut u8, output_len: usize, virt_addr: usize) {
     let mut reloc = output.add(output_len - 4).cast::<i32>();
     let min_addr = output as usize;
@@ -153,7 +153,7 @@ unsafe fn handle_relocations(output: *mut u8, output_len: usize, virt_addr: usiz
         *extended.cast::<u64>() = (*extended.cast::<u64>()).wrapping_add(delta as u64); reloc = reloc.sub(1);
     }
 }
-#[cfg(not(feature = "CONFIG_X86_NEED_RELOCS"))]
+#[cfg(not(CONFIG_X86_NEED_RELOCS))]
 unsafe fn handle_relocations(_output: *mut u8, _output_len: usize, _virt_addr: usize) {}
 
 const KASLR_FLAG: u8 = 0x20;

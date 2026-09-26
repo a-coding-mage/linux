@@ -5,7 +5,7 @@
 pub struct FregsOffset { pub name: *const core::ffi::c_char, pub offset: i32 }
 
 // CONFIG_DYNAMIC_FTRACE_WITH_ARGS
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 static FREGS_OFFSETS: [FregsOffset; 14] = [
     FregsOffset { name: b"x0\0".as_ptr() as _, offset: 0 }, FregsOffset { name: b"x1\0".as_ptr() as _, offset: 8 },
     FregsOffset { name: b"x2\0".as_ptr() as _, offset: 16 }, FregsOffset { name: b"x3\0".as_ptr() as _, offset: 24 },
@@ -16,7 +16,7 @@ static FREGS_OFFSETS: [FregsOffset; 14] = [
     FregsOffset { name: b"sp\0".as_ptr() as _, offset: 0 }, FregsOffset { name: b"pc\0".as_ptr() as _, offset: 0 },
 ];
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 pub unsafe fn ftrace_regs_query_register_offset(_name: *const core::ffi::c_char) -> i32 {
     // The offsets are offsetof(__arch_ftrace_regs, field); supplied by the architecture layout.
     for roff in FREGS_OFFSETS.iter() {
@@ -27,14 +27,14 @@ pub unsafe fn ftrace_regs_query_register_offset(_name: *const core::ffi::c_char)
 
 pub unsafe fn ftrace_call_adjust(mut addr: usize) -> usize {
     // CONFIG_DYNAMIC_FTRACE_WITH_ARGS disabled: return addr unchanged.
-    if !cfg!(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS") { return addr; }
-    if !cfg!(feature = "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS") { return addr + AARCH64_INSN_SIZE; }
+    if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_ARGS) { return addr; }
+    if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS) { return addr + AARCH64_INSN_SIZE; }
     if addr % core::mem::size_of::<usize>() != 0 {
         warn_ratelimit(1, "Misaligned patch-site %pS\n", (addr + 8) as *const core::ffi::c_void);
         return 0;
     }
     addr += 2 * AARCH64_INSN_SIZE;
-    if cfg!(feature = "CONFIG_ARM64_BTI_KERNEL") {
+    if cfg!(CONFIG_ARM64_BTI_KERNEL) {
         let insn = u32::from_le(*(addr as *const u32));
         if aarch64_insn_is_bti(insn) { addr += AARCH64_INSN_SIZE; }
         else if insn != aarch64_insn_gen_nop() { warn_ratelimit(1, "unexpected insn in patch-site %pS: 0x%08x\n", addr as *const core::ffi::c_void, insn); }
@@ -43,8 +43,8 @@ pub unsafe fn ftrace_call_adjust(mut addr: usize) -> usize {
 }
 
 pub unsafe fn arch_ftrace_get_symaddr(fentry_ip: usize) -> usize {
-    if !cfg!(feature = "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS") { return fentry_ip - AARCH64_INSN_SIZE; }
-    if !cfg!(feature = "CONFIG_ARM64_BTI_KERNEL") { return fentry_ip - AARCH64_INSN_SIZE; }
+    if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS) { return fentry_ip - AARCH64_INSN_SIZE; }
+    if !cfg!(CONFIG_ARM64_BTI_KERNEL) { return fentry_ip - AARCH64_INSN_SIZE; }
     let insn: u32;
     if (fentry_ip & !PAGE_MASK) < AARCH64_INSN_SIZE * 2 {
         let mut value = 0u32;
@@ -65,7 +65,7 @@ unsafe fn ftrace_modify_code(pc: usize, old: u32, new: u32, validate: bool) -> i
 }
 
 pub unsafe fn ftrace_update_ftrace_func(func: usize) -> i32 {
-    if cfg!(feature = "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS") { return 0; }
+    if cfg!(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS) { return 0; }
     let pc = ftrace_call as usize;
     let new = aarch64_insn_gen_branch_imm(pc, func, AARCH64_INSN_BRANCH_LINK);
     ftrace_modify_code(pc, 0, new, false)
@@ -81,30 +81,30 @@ unsafe fn ftrace_find_callable_addr(rec: *mut dyn_ftrace, _mod: *mut module, add
     let pc = (*rec).ip;
     if *addr != FTRACE_ADDR && !reachable_by_bl(*addr, pc) { *addr = FTRACE_ADDR; }
     if reachable_by_bl(*addr, pc) { return true; }
-    if !cfg!(feature = "CONFIG_MODULES") { return false; }
+    if !cfg!(CONFIG_MODULES) { return false; }
     let plt = get_ftrace_plt(_mod, pc); if plt.is_null() { return false; }
     *addr = plt as usize; true
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS)]
 unsafe fn ftrace_rec_set_ops(rec: *const dyn_ftrace, ops: *const ftrace_ops) -> i32 {
     let literal = (unsafe { (*rec).ip } - 12) & !7;
     aarch64_insn_write_literal_u64(literal as *mut _, ops as usize)
 }
-#[cfg(not(feature = "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS"))]
+#[cfg(not(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS))]
 unsafe fn ftrace_rec_set_ops(_: *const dyn_ftrace, _: *const ftrace_ops) -> i32 { 0 }
 unsafe fn ftrace_rec_set_nop_ops(rec: *mut dyn_ftrace) -> i32 { ftrace_rec_set_ops(rec, &ftrace_nop_ops) }
 unsafe fn ftrace_rec_update_ops(rec: *mut dyn_ftrace) -> i32 { ftrace_rec_set_ops(rec, arm64_rec_get_ops(rec)) }
 unsafe fn arm64_rec_get_ops(_: *mut dyn_ftrace) -> *const ftrace_ops { &ftrace_list_ops }
 
-#[cfg(any(feature = "CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS", feature = "CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS"))]
+#[cfg(any(CONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS, CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS))]
 pub unsafe fn ftrace_modify_call(rec: *mut dyn_ftrace, mut old_addr: usize, mut addr: usize) -> i32 {
     let pc = (*rec).ip; let ret = ftrace_rec_update_ops(rec); if ret != 0 { return ret; }
     if !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut old_addr) || !ftrace_find_callable_addr(rec, core::ptr::null_mut(), &mut addr) { return -libc::EINVAL; }
     ftrace_modify_code(pc, aarch64_insn_gen_branch_imm(pc, old_addr, AARCH64_INSN_BRANCH_LINK), aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK), true)
 }
 
-#[cfg(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS")]
+#[cfg(CONFIG_DYNAMIC_FTRACE_WITH_ARGS)]
 pub unsafe fn ftrace_init_nop(_: *mut module, rec: *mut dyn_ftrace) -> i32 {
     let pc = (*rec).ip - AARCH64_INSN_SIZE; let ret = ftrace_rec_set_nop_ops(rec); if ret != 0 { return ret; }
     ftrace_modify_code(pc, aarch64_insn_gen_nop(), aarch64_insn_gen_move_reg(AARCH64_INSN_REG_9, AARCH64_INSN_REG_LR, AARCH64_INSN_VARIANT_64BIT), true)
@@ -120,7 +120,7 @@ pub unsafe fn ftrace_make_call(rec: *mut dyn_ftrace, mut addr: usize) -> i32 {
 pub unsafe fn ftrace_make_nop(mod_: *mut module, rec: *mut dyn_ftrace, mut addr: usize) -> i32 {
     let pc = (*rec).ip; let new = aarch64_insn_gen_nop();
     let ret = ftrace_rec_set_nop_ops(rec); if ret != 0 { return ret; }
-    if !cfg!(feature = "CONFIG_DYNAMIC_FTRACE_WITH_ARGS") && !mod_.is_null() { return aarch64_insn_patch_text_nosync(pc as *mut _, new); }
+    if !cfg!(CONFIG_DYNAMIC_FTRACE_WITH_ARGS) && !mod_.is_null() { return aarch64_insn_patch_text_nosync(pc as *mut _, new); }
     if !ftrace_find_callable_addr(rec, mod_, &mut addr) { return -libc::EINVAL; }
     ftrace_modify_code(pc, aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK), new, true)
 }

@@ -20,8 +20,8 @@ macro_rules! mtspr {
         unsafe {
             core::arch::asm!(
                 "l.mtspr r0, {val}, {spr}",
-                spr = const $spr,
-                val = in(reg) $val,
+                $spr = const $spr,
+                $val = in(reg) $val,
                 options(nostack)
             );
         }
@@ -34,9 +34,9 @@ macro_rules! mtspr_off {
         unsafe {
             core::arch::asm!(
                 "l.mtspr {off}, {val}, {spr}",
-                off = in(reg) $off,
-                val = in(reg) $val,
-                spr = const $spr,
+                $off = in(reg) $off,
+                $val = in(reg) $val,
+                $spr = const $spr,
                 options(nostack)
             );
         }

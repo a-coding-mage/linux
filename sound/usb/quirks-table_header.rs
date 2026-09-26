@@ -178,22 +178,21 @@ macro_rules! USB_DEVICE_VER {
 // Yamaha device macros
 macro_rules! YAMAHA_DEVICE {
     ($id:expr, $name:expr) => {
-        // { USB_DEVICE(0x0499, $id), QUIRK_DRIVER_INFO { ... } }
+        // { USB_DEVICE!(0x0499, $id), QUIRK_DRIVER_INFO { ... } }
         (0x0499u16, $id, $name, QUIRK_ANY_INTERFACE)
     };
 }
 
 macro_rules! YAMAHA_INTERFACE {
     ($id:expr, $intf:expr, $name:expr) => {
-        // { USB_DEVICE_VENDOR_SPEC(0x0499, $id), QUIRK_DRIVER_INFO { ... } }
+        // { USB_DEVICE_VENDOR_SPEC!(0x0499, $id), QUIRK_DRIVER_INFO { ... } }
         (0x0499u16, $id, $intf, $name)
     };
 }
 
 // Arturia AF16Rig macros
 macro_rules! QUIRK_AF16RIG {
-    (
-        $channels:expr, $iface:expr, $low_rate:expr, $high_rate:expr,
+    ($channels:expr, $iface:expr, $low_rate:expr, $high_rate:expr,
         $pack_size:expr, $clock:expr, $ep_idx:expr, $ep:expr
     ) => {
         (
@@ -281,10 +280,10 @@ extern "C" {
     static UAC_VERSION_2: u32;
 
     // Struct types (declared for reference)
-    pub struct snd_usb_audio_quirk;
-    pub struct audioformat;
-    pub struct snd_usb_midi_endpoint_info;
 }
+pub struct snd_usb_audio_quirk;
+pub struct audioformat;
+pub struct snd_usb_midi_endpoint_info;
 
 // Here we go... the quirk table definition begins:
 // The actual quirk table entries from the C source would be represented

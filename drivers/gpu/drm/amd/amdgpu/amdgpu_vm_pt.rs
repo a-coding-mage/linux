@@ -163,7 +163,7 @@ pub unsafe fn amdgpu_vm_pt_free_list(_adev: *mut amdgpu_device, params: *mut amd
     if list_empty(&(*params).tlb_flush_waitlist) { return; }
     WARN_ON((*params).unlocked);
     let mut entry = core::ptr::null_mut(); let mut next = core::ptr::null_mut();
-    list_for_each_entry_safe!(entry, next, &mut (*params).tlb_flush_waitlist, vm_status) { amdgpu_vm_pt_free(entry); }
+    list_for_each_entry_safe!(entry, next, &mut (*params).tlb_flush_waitlist, vm_status, { amdgpu_vm_pt_free(entry); });
 }
 
 pub unsafe fn amdgpu_vm_pt_free_root(adev: *mut amdgpu_device, vm: *mut amdgpu_vm) {

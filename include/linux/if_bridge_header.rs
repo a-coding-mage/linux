@@ -14,14 +14,14 @@ pub struct br_ip {
 #[repr(C)]
 pub union br_ip_src {
     pub ip4: __be32,
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub ip6: in6_addr,
 }
 
 #[repr(C)]
 pub union br_ip_dst {
     pub ip4: __be32,
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     pub ip6: in6_addr,
     pub mac_addr: [u8; ETH_ALEN],
 }
@@ -98,7 +98,7 @@ extern "C" {
     pub fn br_ioctl_call(net: *mut net, cmd: c_uint, uarg: *mut c_void) -> c_int;
 }
 
-#[cfg(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING"))]
+#[cfg(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING))]
 extern "C" {
     pub fn br_multicast_list_adjacent(dev: *mut net_device, br_ip_list: *mut list_head) -> c_int;
     pub fn br_multicast_has_querier_anywhere(dev: *mut net_device, proto: c_int) -> bool;
@@ -108,20 +108,20 @@ extern "C" {
     pub fn br_multicast_router(dev: *const net_device) -> bool;
 }
 
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING)))]
 pub unsafe fn br_multicast_list_adjacent(_: *mut net_device, _: *mut list_head) -> c_int { 0 }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING)))]
 pub unsafe fn br_multicast_has_querier_anywhere(_: *mut net_device, _: c_int) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING)))]
 pub unsafe fn br_multicast_has_querier_adjacent(_: *mut net_device, _: c_int) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING)))]
 pub unsafe fn br_multicast_has_router_adjacent(_: *mut net_device, _: c_int) -> bool { true }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING)))]
 pub unsafe fn br_multicast_enabled(_: *const net_device) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_IGMP_SNOOPING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_IGMP_SNOOPING)))]
 pub unsafe fn br_multicast_router(_: *const net_device) -> bool { false }
 
-#[cfg(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING"))]
+#[cfg(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING))]
 extern "C" {
     pub fn br_vlan_enabled(dev: *const net_device) -> bool;
     pub fn br_vlan_get_pvid(dev: *const net_device, p_pvid: *mut u16) -> c_int;
@@ -134,26 +134,26 @@ extern "C" {
     pub fn br_mst_get_state(dev: *const net_device, msti: u16, state: *mut u8) -> c_int;
 }
 
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_vlan_enabled(_: *const net_device) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_vlan_get_pvid(_: *const net_device, _: *mut u16) -> c_int { -EINVAL }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_vlan_get_pvid_rcu(_: *const net_device, _: *mut u16) -> c_int { -EINVAL }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_vlan_get_proto(_: *const net_device, _: *mut u16) -> c_int { -EINVAL }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_vlan_get_info(_: *const net_device, _: u16, _: *mut bridge_vlan_info) -> c_int { -EINVAL }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_vlan_get_info_rcu(_: *const net_device, _: u16, _: *mut bridge_vlan_info) -> c_int { -EINVAL }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_mst_enabled(_: *const net_device) -> bool { false }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_mst_get_info(_: *const net_device, _: u16, _: *mut c_ulong) -> c_int { -EINVAL }
-#[cfg(not(all(feature = "CONFIG_BRIDGE", feature = "CONFIG_BRIDGE_VLAN_FILTERING")))]
+#[cfg(not(all(CONFIG_BRIDGE, CONFIG_BRIDGE_VLAN_FILTERING)))]
 pub unsafe fn br_mst_get_state(_: *const net_device, _: u16, _: *mut u8) -> c_int { -EINVAL }
 
-#[cfg(feature = "CONFIG_BRIDGE")]
+#[cfg(CONFIG_BRIDGE)]
 extern "C" {
     pub fn br_fdb_find_port(br_dev: *const net_device, addr: *const u8, vid: __u16) -> *mut net_device;
     pub fn br_fdb_clear_offload(dev: *const net_device, vid: u16);
@@ -162,15 +162,15 @@ extern "C" {
     pub fn br_get_ageing_time(br_dev: *const net_device) -> clock_t;
 }
 
-#[cfg(not(feature = "CONFIG_BRIDGE"))]
+#[cfg(not(CONFIG_BRIDGE))]
 pub unsafe fn br_fdb_find_port(_: *const net_device, _: *const u8, _: __u16) -> *mut net_device { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_BRIDGE"))]
+#[cfg(not(CONFIG_BRIDGE))]
 pub unsafe fn br_fdb_clear_offload(_: *const net_device, _: u16) {}
-#[cfg(not(feature = "CONFIG_BRIDGE"))]
+#[cfg(not(CONFIG_BRIDGE))]
 pub unsafe fn br_port_flag_is_set(_: *const net_device, _: c_ulong) -> bool { false }
-#[cfg(not(feature = "CONFIG_BRIDGE"))]
+#[cfg(not(CONFIG_BRIDGE))]
 pub unsafe fn br_port_get_stp_state(_: *const net_device) -> u8 { BR_STATE_DISABLED }
-#[cfg(not(feature = "CONFIG_BRIDGE"))]
+#[cfg(not(CONFIG_BRIDGE))]
 pub unsafe fn br_get_ageing_time(_: *const net_device) -> clock_t { 0 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

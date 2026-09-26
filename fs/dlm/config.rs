@@ -64,7 +64,7 @@ unsafe fn cluster_cluster_name_show(_item: *mut config_item, _buf: *mut i8) -> i
 unsafe fn cluster_cluster_name_store(_item: *mut config_item, _buf: *const i8, len: usize) -> isize { len as isize }
 unsafe fn cluster_set(_info_field: *mut u32, _check_cb: Option<unsafe fn(u32) -> i32>, _buf: *const i8, len: usize) -> isize { len as isize }
 unsafe fn dlm_check_zero_and_dlm_running(x: u32) -> i32 { if x == 0 { -22 } else if dlm_lowcomms_is_running() { -16 } else { 0 } }
-unsafe fn dlm_check_protocol_and_dlm_running(x: u32) -> i32 { if x > 1 { -22 } else if x == 1 && !cfg!(feature = "CONFIG_IP_SCTP") { -95 } else if dlm_lowcomms_is_running() { -16 } else { 0 } }
+unsafe fn dlm_check_protocol_and_dlm_running(x: u32) -> i32 { if x > 1 { -22 } else if x == 1 && !cfg!(CONFIG_IP_SCTP) { -95 } else if dlm_lowcomms_is_running() { -16 } else { 0 } }
 unsafe fn dlm_check_zero(x: u32) -> i32 { if x == 0 { -22 } else { 0 } }
 unsafe fn dlm_check_buffer_size(x: u32) -> i32 { if x < DLM_MAX_SOCKET_BUFSIZE { -22 } else { 0 } }
 

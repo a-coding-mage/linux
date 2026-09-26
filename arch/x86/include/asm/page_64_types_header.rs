@@ -3,9 +3,9 @@
 /* The C header includes <asm/kaslr.h> for non-assembler builds. */
 
 /* CONFIG_KASAN controls this value at build time in the original source. */
-#[cfg(feature = "CONFIG_KASAN")]
+#[cfg(CONFIG_KASAN)]
 pub const KASAN_STACK_ORDER: usize = 1;
-#[cfg(not(feature = "CONFIG_KASAN"))]
+#[cfg(not(CONFIG_KASAN))]
 pub const KASAN_STACK_ORDER: usize = 0;
 
 pub const THREAD_SIZE_ORDER: usize = 2 + KASAN_STACK_ORDER;
@@ -112,9 +112,9 @@ macro_rules! STACK_TOP_MAX {
  * If KASLR is disabled we can shrink it to 0.5 GiB and increase the size
  * of the modules area to 1.5 GiB.
  */
-#[cfg(feature = "CONFIG_RANDOMIZE_BASE")]
+#[cfg(CONFIG_RANDOMIZE_BASE)]
 pub const KERNEL_IMAGE_SIZE: usize = 1024 * 1024 * 1024;
-#[cfg(not(feature = "CONFIG_RANDOMIZE_BASE"))]
+#[cfg(not(CONFIG_RANDOMIZE_BASE))]
 pub const KERNEL_IMAGE_SIZE: usize = 512 * 1024 * 1024;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

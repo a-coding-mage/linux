@@ -75,10 +75,10 @@ unsafe fn brd_insert_page(brd: *mut brd_device, sector: sector_t, opf: blk_opf_t
 unsafe fn brd_free_pages(brd: *mut brd_device) {
     let mut page: *mut page;
     let mut idx: pgoff_t;
-    xa_for_each(&mut (*brd).brd_pages, idx, page) {
+    xa_for_each!(&mut (*brd).brd_pages, idx, page, {
         put_page(page);
         cond_resched();
-    }
+    });
     xa_destroy(&mut (*brd).brd_pages);
 }
 
@@ -158,9 +158,9 @@ static mut brd_debugfs_dir: *mut dentry = core::ptr::null_mut();
 unsafe fn brd_find_or_alloc_device(i: i32) -> *mut brd_device {
     let mut brd: *mut brd_device;
     mutex_lock(&mut brd_devices_mutex);
-    list_for_each_entry!(brd, &mut brd_devices, brd_list) {
+    list_for_each_entry!(brd, &mut brd_devices, brd_list, {
         if (*brd).brd_number == i { mutex_unlock(&mut brd_devices_mutex); return ERR_PTR(-EEXIST); }
-    }
+    });
     brd = kzalloc_obj::<brd_device>();
     if brd.is_null() { mutex_unlock(&mut brd_devices_mutex); return ERR_PTR(-ENOMEM); }
     (*brd).brd_number = i;
@@ -199,10 +199,10 @@ unsafe fn brd_probe(dev: dev_t) { brd_alloc(MINOR(dev) / max_part); }
 unsafe fn brd_cleanup() {
     debugfs_remove_recursive(brd_debugfs_dir);
     let mut brd: *mut brd_device; let mut next: *mut brd_device;
-    list_for_each_entry_safe!(brd, next, &mut brd_devices, brd_list) {
+    list_for_each_entry_safe!(brd, next, &mut brd_devices, brd_list, {
         del_gendisk((*brd).brd_disk); put_disk((*brd).brd_disk);
         brd_free_pages(brd); brd_free_device(brd);
-    }
+    });
 }
 
 unsafe fn brd_check_and_reset_par() {

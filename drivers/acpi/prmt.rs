@@ -75,14 +75,14 @@ unsafe fn efi_pa_va_lookup(_guid: *mut EfiGuid, pa: u64) -> u64 {
     let page = pa & PAGE_MASK;
     let mut md: *mut EfiMemoryDesc;
 
-    for_each_efi_memory_desc!(md) {
+    for_each_efi_memory_desc!(md, {
         if ((*md).attribute & EFI_MEMORY_RUNTIME) != 0
             && (*md).phys_addr < pa
             && pa < (*md).phys_addr + PAGE_SIZE * (*md).num_pages
         {
             return pa_offset + (*md).virt_addr + page - (*md).phys_addr;
         }
-    }
+    });
     0
 }
 
@@ -140,14 +140,14 @@ const GET_HANDLER: u8 = 1;
 
 unsafe fn find_guid_info(guid: *const Guid, mode: u8) -> *mut core::ffi::c_void {
     let mut cur_module: *mut PrmModuleInfo;
-    list_for_each_entry!(cur_module, PRM_MODULE_LIST, module_list) {
+    list_for_each_entry!(cur_module, PRM_MODULE_LIST, module_list, {
         for i in 0..(*cur_module).handler_count as usize {
             let cur_handler = (*cur_module).handlers.as_mut_ptr().add(i);
             if guid_equal(guid, &(*cur_handler).guid) {
                 return if mode == GET_MODULE { cur_module as *mut _ } else { cur_handler as *mut _ };
             }
         }
-    }
+    });
     core::ptr::null_mut()
 }
 

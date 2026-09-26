@@ -4,7 +4,7 @@
 
 // CONFIG_BUG is a build-time condition from the original header.  The Rust
 // equivalent is retained here as a feature gate.
-#[cfg(feature = "CONFIG_BUG")]
+#[cfg(CONFIG_BUG)]
 mod config_bug {
     // Dependency intent: asm/pal.h supplies PAL_bugchk.
 

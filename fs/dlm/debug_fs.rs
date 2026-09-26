@@ -59,10 +59,10 @@ unsafe fn print_format1(res: *mut dlm_rsb, s: *mut seq_file) {
     }
     root_list = (!list_empty(&(*res).res_root_list)) as i32; recover_list = (!list_empty(&(*res).res_recover_list)) as i32;
     if root_list != 0 || recover_list != 0 { seq_printf(s, b"Recovery: root %d recover %d flags %lx count %d\n\0".as_ptr(), root_list, recover_list, (*res).res_flags, (*res).res_recover_locks_count); }
-    seq_puts(s, b"Granted Queue\n\0".as_ptr()); list_for_each_entry(lkb, &(*res).res_grantqueue, lkb_statequeue) { print_format1_lock(s, lkb, res); if seq_has_overflowed(s) { break; } }
-    seq_puts(s, b"Conversion Queue\n\0".as_ptr()); list_for_each_entry(lkb, &(*res).res_convertqueue, lkb_statequeue) { print_format1_lock(s, lkb, res); if seq_has_overflowed(s) { break; } }
-    seq_puts(s, b"Waiting Queue\n\0".as_ptr()); list_for_each_entry(lkb, &(*res).res_waitqueue, lkb_statequeue) { print_format1_lock(s, lkb, res); if seq_has_overflowed(s) { break; } }
-    if !list_empty(&(*res).res_lookup) { seq_puts(s, b"Lookup Queue\n\0".as_ptr()); list_for_each_entry(lkb, &(*res).res_lookup, lkb_rsb_lookup) { seq_printf(s, b"%08x %s\0".as_ptr(), (*lkb).lkb_id, print_lockmode((*lkb).lkb_rqmode)); if (*lkb).lkb_wait_type != 0 { seq_printf(s, b" wait_type: %d\0".as_ptr(), (*lkb).lkb_wait_type); } seq_putc(s, b'\n' as i32); if seq_has_overflowed(s) { break; } } }
+    seq_puts(s, b"Granted Queue\n\0".as_ptr()); list_for_each_entry!(lkb, &(*res).res_grantqueue, lkb_statequeue, { print_format1_lock(s, lkb, res); if seq_has_overflowed(s) { break; } });
+    seq_puts(s, b"Conversion Queue\n\0".as_ptr()); list_for_each_entry!(lkb, &(*res).res_convertqueue, lkb_statequeue, { print_format1_lock(s, lkb, res); if seq_has_overflowed(s) { break; } });
+    seq_puts(s, b"Waiting Queue\n\0".as_ptr()); list_for_each_entry!(lkb, &(*res).res_waitqueue, lkb_statequeue, { print_format1_lock(s, lkb, res); if seq_has_overflowed(s) { break; } });
+    if !list_empty(&(*res).res_lookup) { seq_puts(s, b"Lookup Queue\n\0".as_ptr()); list_for_each_entry!(lkb, &(*res).res_lookup, lkb_rsb_lookup, { seq_printf(s, b"%08x %s\0".as_ptr(), (*lkb).lkb_id, print_lockmode((*lkb).lkb_rqmode)); if (*lkb).lkb_wait_type != 0 { seq_printf(s, b" wait_type: %d\0".as_ptr(), (*lkb).lkb_wait_type); } seq_putc(s, b'\n' as i32); if seq_has_overflowed(s) { break; } }); }
     unlock_rsb(res);
 }
 

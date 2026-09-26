@@ -19,7 +19,7 @@ unsafe extern "C" {
     );
 }
 
-static unsafe fn ghash_blocks_arch(
+unsafe fn ghash_blocks_arch(
     acc: *mut polyval_elem,
     key: *const ghash_key,
     mut data: *const u8,
@@ -54,7 +54,7 @@ static unsafe fn ghash_blocks_arch(
     }
 }
 
-static unsafe fn gf128hash_mod_init_arch() {
+unsafe fn gf128hash_mod_init_arch() {
     if elf_hwcap & HWCAP_NEON != 0 {
         unsafe { static_branch_enable(&mut have_neon) };
     }

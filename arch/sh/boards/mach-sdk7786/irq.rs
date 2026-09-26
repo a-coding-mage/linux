@@ -9,20 +9,18 @@
 // Dependencies supplied by the surrounding kernel port:
 // linux/irq.h, mach/fpga.h, and mach/irq.h
 
-enum {
-    ATA_IRQ_BIT = 1,
-    SPI_BUSY_BIT = 2,
-    LIRQ5_BIT = 3,
-    LIRQ6_BIT = 4,
-    LIRQ7_BIT = 5,
-    LIRQ8_BIT = 6,
-    KEY_IRQ_BIT = 7,
-    PEN_IRQ_BIT = 8,
-    ETH_IRQ_BIT = 9,
-    RTC_ALARM_BIT = 10,
-    CRYSTAL_FAIL_BIT = 12,
-    ETH_PME_BIT = 14,
-}
+pub const ATA_IRQ_BIT: i32 = 1;
+pub const SPI_BUSY_BIT: i32 = 2;
+pub const LIRQ5_BIT: i32 = 3;
+pub const LIRQ6_BIT: i32 = 4;
+pub const LIRQ7_BIT: i32 = 5;
+pub const LIRQ8_BIT: i32 = 6;
+pub const KEY_IRQ_BIT: i32 = 7;
+pub const PEN_IRQ_BIT: i32 = 8;
+pub const ETH_IRQ_BIT: i32 = 9;
+pub const RTC_ALARM_BIT: i32 = 10;
+pub const CRYSTAL_FAIL_BIT: i32 = 12;
+pub const ETH_PME_BIT: i32 = 14;
 
 extern "C" {
     fn fpga_write_reg(value: u32, reg: u32);

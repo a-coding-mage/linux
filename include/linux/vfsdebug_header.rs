@@ -42,7 +42,7 @@ macro_rules! VFS_WARN {
 macro_rules! VFS_BUG_ON_INODE {
     ($cond:expr, $inode:expr) => {{
         if ($cond) {
-            let __reason = concat!("VFS_BUG_ON_INODE(", stringify!($cond), ")");
+            let __reason = concat!("VFS_BUG_ON_INODE!(", stringify!($cond), ")");
             unsafe {
                 dump_inode($inode, concat!(__reason, "\0").as_ptr() as *const ::core::ffi::c_char);
             }
@@ -56,7 +56,7 @@ macro_rules! VFS_WARN_ON_INODE {
     ($cond:expr, $inode:expr) => {{
         let __ret_warn: i32 = if $cond { 1 } else { 0 };
         if __ret_warn != 0 {
-            let __reason = concat!("VFS_WARN_ON_INODE(", stringify!($cond), ")");
+            let __reason = concat!("VFS_WARN_ON_INODE!(", stringify!($cond), ")");
             unsafe {
                 dump_inode($inode, concat!(__reason, "\0").as_ptr() as *const ::core::ffi::c_char);
             }

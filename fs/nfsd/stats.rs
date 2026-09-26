@@ -57,7 +57,7 @@ unsafe fn nfsd_show(seq: *mut seq_file, _v: *mut core::ffi::c_void) -> i32 {
     svc_seq_show(seq, &mut (*nn).nfsd_svcstats);
 
     // C conditional: CONFIG_NFSD_V4
-    #[cfg(feature = "CONFIG_NFSD_V4")]
+    #[cfg(CONFIG_NFSD_V4)]
     {
         /* Show count for individual nfsv4 operations */
         /* Writing operation numbers 0 1 2 also for maintaining uniformity */

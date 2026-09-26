@@ -171,7 +171,7 @@ unsafe fn sable_lynx_init_pci() { common_init_pci(); }
 // The alpha_machine_vector definition and machine-vector registration are
 // supplied by the architecture headers; preserve the original configuration
 // gated Sable-Gamma vector fields here for the dependent build environment.
-#[cfg(any(feature = "CONFIG_ALPHA_GENERIC", feature = "CONFIG_ALPHA_SABLE"))]
+#[cfg(any(CONFIG_ALPHA_GENERIC, CONFIG_ALPHA_SABLE))]
 #[no_mangle]
 pub static mut sable_gamma_mv: alpha_machine_vector = alpha_machine_vector;
 

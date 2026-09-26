@@ -186,19 +186,19 @@ static samsung_pll_clock topc_pll_clks[]  = {
 };
 
 static samsung_cmu_info topc_cmu_info  = {
-	.pll_clks		= topc_pll_clks,
-	.nr_pll_clks		= array_size!(topc_pll_clks),
-	.mux_clks		= topc_mux_clks,
-	.nr_mux_clks		= array_size!(topc_mux_clks),
-	.div_clks		= topc_div_clks,
-	.nr_div_clks		= array_size!(topc_div_clks),
-	.gate_clks		= topc_gate_clks,
-	.nr_gate_clks		= array_size!(topc_gate_clks),
-	.fixed_factor_clks	= topc_fixed_factor_clks,
-	.nr_fixed_factor_clks	= array_size!(topc_fixed_factor_clks),
-	.nr_clk_ids		= TOPC_NR_CLK,
-	.clk_regs		= topc_clk_regs,
-	.nr_clk_regs		= array_size!(topc_clk_regs),
+	pll_clks: topc_pll_clks,
+	nr_pll_clks: array_size!(topc_pll_clks),
+	mux_clks: topc_mux_clks,
+	nr_mux_clks: array_size!(topc_mux_clks),
+	div_clks: topc_div_clks,
+	nr_div_clks: array_size!(topc_div_clks),
+	gate_clks: topc_gate_clks,
+	nr_gate_clks: array_size!(topc_gate_clks),
+	fixed_factor_clks: topc_fixed_factor_clks,
+	nr_fixed_factor_clks: array_size!(topc_fixed_factor_clks),
+	nr_clk_ids: TOPC_NR_CLK,
+	clk_regs: topc_clk_regs,
+	nr_clk_regs: array_size!(topc_clk_regs),
 };
 
 static void exynos7_clk_topc_init(DeviceNode *np)
@@ -380,17 +380,17 @@ static samsung_fixed_factor_clock top0_fixed_factor_clks[]  = {
 };
 
 static samsung_cmu_info top0_cmu_info  = {
-	.mux_clks		= top0_mux_clks,
-	.nr_mux_clks		= array_size!(top0_mux_clks),
-	.div_clks		= top0_div_clks,
-	.nr_div_clks		= array_size!(top0_div_clks),
-	.gate_clks		= top0_gate_clks,
-	.nr_gate_clks		= array_size!(top0_gate_clks),
-	.fixed_factor_clks	= top0_fixed_factor_clks,
-	.nr_fixed_factor_clks	= array_size!(top0_fixed_factor_clks),
-	.nr_clk_ids		= TOP0_NR_CLK,
-	.clk_regs		= top0_clk_regs,
-	.nr_clk_regs		= array_size!(top0_clk_regs),
+	mux_clks: top0_mux_clks,
+	nr_mux_clks: array_size!(top0_mux_clks),
+	div_clks: top0_div_clks,
+	nr_div_clks: array_size!(top0_div_clks),
+	gate_clks: top0_gate_clks,
+	nr_gate_clks: array_size!(top0_gate_clks),
+	fixed_factor_clks: top0_fixed_factor_clks,
+	nr_fixed_factor_clks: array_size!(top0_fixed_factor_clks),
+	nr_clk_ids: TOP0_NR_CLK,
+	clk_regs: top0_clk_regs,
+	nr_clk_regs: array_size!(top0_clk_regs),
 };
 
 static void exynos7_clk_top0_init(DeviceNode *np)
@@ -562,17 +562,17 @@ static samsung_fixed_factor_clock top1_fixed_factor_clks[]  = {
 };
 
 static samsung_cmu_info top1_cmu_info  = {
-	.mux_clks		= top1_mux_clks,
-	.nr_mux_clks		= array_size!(top1_mux_clks),
-	.div_clks		= top1_div_clks,
-	.nr_div_clks		= array_size!(top1_div_clks),
-	.gate_clks		= top1_gate_clks,
-	.nr_gate_clks		= array_size!(top1_gate_clks),
-	.fixed_factor_clks	= top1_fixed_factor_clks,
-	.nr_fixed_factor_clks	= array_size!(top1_fixed_factor_clks),
-	.nr_clk_ids		= TOP1_NR_CLK,
-	.clk_regs		= top1_clk_regs,
-	.nr_clk_regs		= array_size!(top1_clk_regs),
+	mux_clks: top1_mux_clks,
+	nr_mux_clks: array_size!(top1_mux_clks),
+	div_clks: top1_div_clks,
+	nr_div_clks: array_size!(top1_div_clks),
+	gate_clks: top1_gate_clks,
+	nr_gate_clks: array_size!(top1_gate_clks),
+	fixed_factor_clks: top1_fixed_factor_clks,
+	nr_fixed_factor_clks: array_size!(top1_fixed_factor_clks),
+	nr_clk_ids: TOP1_NR_CLK,
+	clk_regs: top1_clk_regs,
+	nr_clk_regs: array_size!(top1_clk_regs),
 };
 
 static void exynos7_clk_top1_init(DeviceNode *np)
@@ -611,13 +611,13 @@ static samsung_gate_clock ccore_gate_clks[]  = {
 };
 
 static samsung_cmu_info ccore_cmu_info  = {
-	.mux_clks		= ccore_mux_clks,
-	.nr_mux_clks		= array_size!(ccore_mux_clks),
-	.gate_clks		= ccore_gate_clks,
-	.nr_gate_clks		= array_size!(ccore_gate_clks),
-	.nr_clk_ids		= CCORE_NR_CLK,
-	.clk_regs		= ccore_clk_regs,
-	.nr_clk_regs		= array_size!(ccore_clk_regs),
+	mux_clks: ccore_mux_clks,
+	nr_mux_clks: array_size!(ccore_mux_clks),
+	gate_clks: ccore_gate_clks,
+	nr_gate_clks: array_size!(ccore_gate_clks),
+	nr_clk_ids: CCORE_NR_CLK,
+	clk_regs: ccore_clk_regs,
+	nr_clk_regs: array_size!(ccore_clk_regs),
 };
 
 static void exynos7_clk_ccore_init(DeviceNode *np)
@@ -678,13 +678,13 @@ static samsung_gate_clock peric0_gate_clks[]  = {
 };
 
 static samsung_cmu_info peric0_cmu_info  = {
-	.mux_clks		= peric0_mux_clks,
-	.nr_mux_clks		= array_size!(peric0_mux_clks),
-	.gate_clks		= peric0_gate_clks,
-	.nr_gate_clks		= array_size!(peric0_gate_clks),
-	.nr_clk_ids		= PERIC0_NR_CLK,
-	.clk_regs		= peric0_clk_regs,
-	.nr_clk_regs		= array_size!(peric0_clk_regs),
+	mux_clks: peric0_mux_clks,
+	nr_mux_clks: array_size!(peric0_mux_clks),
+	gate_clks: peric0_gate_clks,
+	nr_gate_clks: array_size!(peric0_gate_clks),
+	nr_clk_ids: PERIC0_NR_CLK,
+	clk_regs: peric0_clk_regs,
+	nr_clk_regs: array_size!(peric0_clk_regs),
 };
 
 static void exynos7_clk_peric0_init(DeviceNode *np)
@@ -802,13 +802,13 @@ static samsung_gate_clock peric1_gate_clks[]  = {
 };
 
 static samsung_cmu_info peric1_cmu_info  = {
-	.mux_clks		= peric1_mux_clks,
-	.nr_mux_clks		= array_size!(peric1_mux_clks),
-	.gate_clks		= peric1_gate_clks,
-	.nr_gate_clks		= array_size!(peric1_gate_clks),
-	.nr_clk_ids		= PERIC1_NR_CLK,
-	.clk_regs		= peric1_clk_regs,
-	.nr_clk_regs		= array_size!(peric1_clk_regs),
+	mux_clks: peric1_mux_clks,
+	nr_mux_clks: array_size!(peric1_mux_clks),
+	gate_clks: peric1_gate_clks,
+	nr_gate_clks: array_size!(peric1_gate_clks),
+	nr_clk_ids: PERIC1_NR_CLK,
+	clk_regs: peric1_clk_regs,
+	nr_clk_regs: array_size!(peric1_clk_regs),
 };
 
 static void exynos7_clk_peric1_init(DeviceNode *np)
@@ -857,13 +857,13 @@ static samsung_gate_clock peris_gate_clks[]  = {
 };
 
 static samsung_cmu_info peris_cmu_info  = {
-	.mux_clks		= peris_mux_clks,
-	.nr_mux_clks		= array_size!(peris_mux_clks),
-	.gate_clks		= peris_gate_clks,
-	.nr_gate_clks		= array_size!(peris_gate_clks),
-	.nr_clk_ids		= PERIS_NR_CLK,
-	.clk_regs		= peris_clk_regs,
-	.nr_clk_regs		= array_size!(peris_clk_regs),
+	mux_clks: peris_mux_clks,
+	nr_mux_clks: array_size!(peris_mux_clks),
+	gate_clks: peris_gate_clks,
+	nr_gate_clks: array_size!(peris_gate_clks),
+	nr_clk_ids: PERIS_NR_CLK,
+	clk_regs: peris_clk_regs,
+	nr_clk_regs: array_size!(peris_clk_regs),
 };
 
 static void exynos7_clk_peris_init(DeviceNode *np)
@@ -965,15 +965,15 @@ static samsung_gate_clock fsys0_gate_clks[]  = {
 };
 
 static samsung_cmu_info fsys0_cmu_info  = {
-	.fixed_clks		= fixed_rate_clks_fsys0,
-	.nr_fixed_clks		= array_size!(fixed_rate_clks_fsys0),
-	.mux_clks		= fsys0_mux_clks,
-	.nr_mux_clks		= array_size!(fsys0_mux_clks),
-	.gate_clks		= fsys0_gate_clks,
-	.nr_gate_clks		= array_size!(fsys0_gate_clks),
-	.nr_clk_ids		= FSYS0_NR_CLK,
-	.clk_regs		= fsys0_clk_regs,
-	.nr_clk_regs		= array_size!(fsys0_clk_regs),
+	fixed_clks: fixed_rate_clks_fsys0,
+	nr_fixed_clks: array_size!(fixed_rate_clks_fsys0),
+	mux_clks: fsys0_mux_clks,
+	nr_mux_clks: array_size!(fsys0_mux_clks),
+	gate_clks: fsys0_gate_clks,
+	nr_gate_clks: array_size!(fsys0_gate_clks),
+	nr_clk_ids: FSYS0_NR_CLK,
+	clk_regs: fsys0_clk_regs,
+	nr_clk_regs: array_size!(fsys0_clk_regs),
 };
 
 static void exynos7_clk_fsys0_init(DeviceNode *np)
@@ -1094,17 +1094,17 @@ static samsung_gate_clock fsys1_gate_clks[]  = {
 };
 
 static samsung_cmu_info fsys1_cmu_info  = {
-	.fixed_clks		= fixed_rate_clks_fsys1,
-	.nr_fixed_clks		= array_size!(fixed_rate_clks_fsys1),
-	.mux_clks		= fsys1_mux_clks,
-	.nr_mux_clks		= array_size!(fsys1_mux_clks),
-	.div_clks		= fsys1_div_clks,
-	.nr_div_clks		= array_size!(fsys1_div_clks),
-	.gate_clks		= fsys1_gate_clks,
-	.nr_gate_clks		= array_size!(fsys1_gate_clks),
-	.nr_clk_ids		= FSYS1_NR_CLK,
-	.clk_regs		= fsys1_clk_regs,
-	.nr_clk_regs		= array_size!(fsys1_clk_regs),
+	fixed_clks: fixed_rate_clks_fsys1,
+	nr_fixed_clks: array_size!(fixed_rate_clks_fsys1),
+	mux_clks: fsys1_mux_clks,
+	nr_mux_clks: array_size!(fsys1_mux_clks),
+	div_clks: fsys1_div_clks,
+	nr_div_clks: array_size!(fsys1_div_clks),
+	gate_clks: fsys1_gate_clks,
+	nr_gate_clks: array_size!(fsys1_gate_clks),
+	nr_clk_ids: FSYS1_NR_CLK,
+	clk_regs: fsys1_clk_regs,
+	nr_clk_regs: array_size!(fsys1_clk_regs),
 };
 
 static void exynos7_clk_fsys1_init(DeviceNode *np)
@@ -1209,15 +1209,15 @@ static samsung_gate_clock mscl_gate_clks[]  = {
 };
 
 static samsung_cmu_info mscl_cmu_info  = {
-	.mux_clks		= mscl_mux_clks,
-	.nr_mux_clks		= array_size!(mscl_mux_clks),
-	.div_clks		= mscl_div_clks,
-	.nr_div_clks		= array_size!(mscl_div_clks),
-	.gate_clks		= mscl_gate_clks,
-	.nr_gate_clks		= array_size!(mscl_gate_clks),
-	.nr_clk_ids		= MSCL_NR_CLK,
-	.clk_regs		= mscl_clk_regs,
-	.nr_clk_regs		= array_size!(mscl_clk_regs),
+	mux_clks: mscl_mux_clks,
+	nr_mux_clks: array_size!(mscl_mux_clks),
+	div_clks: mscl_div_clks,
+	nr_div_clks: array_size!(mscl_div_clks),
+	gate_clks: mscl_gate_clks,
+	nr_gate_clks: array_size!(mscl_gate_clks),
+	nr_clk_ids: MSCL_NR_CLK,
+	clk_regs: mscl_clk_regs,
+	nr_clk_regs: array_size!(mscl_clk_regs),
 };
 
 static void exynos7_clk_mscl_init(DeviceNode *np)
@@ -1298,15 +1298,15 @@ static samsung_gate_clock aud_gate_clks[]  = {
 };
 
 static samsung_cmu_info aud_cmu_info  = {
-	.mux_clks		= aud_mux_clks,
-	.nr_mux_clks		= array_size!(aud_mux_clks),
-	.div_clks		= aud_div_clks,
-	.nr_div_clks		= array_size!(aud_div_clks),
-	.gate_clks		= aud_gate_clks,
-	.nr_gate_clks		= array_size!(aud_gate_clks),
-	.nr_clk_ids		= AUD_NR_CLK,
-	.clk_regs		= aud_clk_regs,
-	.nr_clk_regs		= array_size!(aud_clk_regs),
+	mux_clks: aud_mux_clks,
+	nr_mux_clks: array_size!(aud_mux_clks),
+	div_clks: aud_div_clks,
+	nr_div_clks: array_size!(aud_div_clks),
+	gate_clks: aud_gate_clks,
+	nr_gate_clks: array_size!(aud_gate_clks),
+	nr_clk_ids: AUD_NR_CLK,
+	clk_regs: aud_clk_regs,
+	nr_clk_regs: array_size!(aud_clk_regs),
 };
 
 static void exynos7_clk_aud_init(DeviceNode *np)

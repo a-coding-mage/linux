@@ -22,7 +22,7 @@ pub struct macio_dev {
 }
 
 /* CONFIG_PMAC_MEDIABAY selects the external implementations below. */
-#[cfg(feature = "CONFIG_PMAC_MEDIABAY")]
+#[cfg(CONFIG_PMAC_MEDIABAY)]
 extern "C" {
     /* Check the content type of the bay, returns MB_NO if the bay is still
      * transitionning
@@ -37,17 +37,17 @@ extern "C" {
 }
 
 /* When CONFIG_PMAC_MEDIABAY is not enabled, preserve the C inline fallbacks. */
-#[cfg(not(feature = "CONFIG_PMAC_MEDIABAY"))]
+#[cfg(not(CONFIG_PMAC_MEDIABAY))]
 #[inline]
 pub unsafe fn check_media_bay(_bay: *mut macio_dev) -> ::core::ffi::c_int {
     MB_NO
 }
 
-#[cfg(not(feature = "CONFIG_PMAC_MEDIABAY"))]
+#[cfg(not(CONFIG_PMAC_MEDIABAY))]
 #[inline]
 pub unsafe fn lock_media_bay(_bay: *mut macio_dev) {}
 
-#[cfg(not(feature = "CONFIG_PMAC_MEDIABAY"))]
+#[cfg(not(CONFIG_PMAC_MEDIABAY))]
 #[inline]
 pub unsafe fn unlock_media_bay(_bay: *mut macio_dev) {}
 

@@ -35,15 +35,15 @@ unsafe fn tcp_diag_md5sig_fill(info: *mut tcp_diag_md5sig, key: *const tcp_md5si
 unsafe fn tcp_diag_put_md5sig(skb: *mut sk_buff, md5sig: *const tcp_md5sig_info) -> i32 {
     let mut count = 0;
     let mut key: *mut tcp_md5sig_key;
-    hlist_for_each_entry_rcu!(key, &(*md5sig).head, node) { count += 1; }
+    hlist_for_each_entry_rcu!(key, &(*md5sig).head, node, { count += 1; });
     if count == 0 { return 0; }
     let attr = nla_reserve(skb, INET_DIAG_MD5SIG, count * core::mem::size_of::<tcp_diag_md5sig>());
     if attr.is_null() { return -EMSGSIZE; }
     let mut info = nla_data(attr) as *mut tcp_diag_md5sig;
     core::ptr::write_bytes(info, 0, count as usize);
-    hlist_for_each_entry_rcu!(key, &(*md5sig).head, node) {
+    hlist_for_each_entry_rcu!(key, &(*md5sig).head, node, {
         tcp_diag_md5sig_fill(info, key); info = info.add(1); count -= 1; if count == 0 { break; }
-    }
+    });
     0
 }
 
@@ -75,7 +75,7 @@ unsafe fn tcp_diag_get_aux_size(sk: *mut sock, net_admin: bool) -> usize {
     #[cfg(CONFIG_TCP_MD5SIG)]
     if net_admin && sk_fullsock(sk) {
         rcu_read_lock(); let md5sig = rcu_dereference((*tcp_sk(sk)).md5sig_info); let mut count = 0;
-        if !md5sig.is_null() { let mut key: *mut tcp_md5sig_key; hlist_for_each_entry_rcu!(key, &(*md5sig).head, node) { count += 1; } }
+        if !md5sig.is_null() { let mut key: *mut tcp_md5sig_key; hlist_for_each_entry_rcu!(key, &(*md5sig).head, node, { count += 1; }); }
         rcu_read_unlock(); size += nla_total_size(count * core::mem::size_of::<tcp_diag_md5sig>());
     }
     if sk_fullsock(sk) { let ops = (*icsk).icsk_ulp_ops; if !ops.is_null() { size += nla_total_size(0) + nla_total_size(TCP_ULP_NAME_MAX); if let Some(f) = (*ops).get_info_size { size += f(sk, net_admin); } } }

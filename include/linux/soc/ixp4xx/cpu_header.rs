@@ -66,37 +66,37 @@ pub struct regmap {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_ARCH_IXP4XX")]
+#[cfg(CONFIG_ARCH_IXP4XX)]
 extern "C" {
     pub fn read_cpuid_id() -> u32;
     pub fn regmap_read(rmap: *mut regmap, reg: u32, val: *mut u32) -> i32;
 }
 
-#[cfg(feature = "CONFIG_ARCH_IXP4XX")]
+#[cfg(CONFIG_ARCH_IXP4XX)]
 #[inline]
 pub unsafe fn cpu_is_ixp42x_rev_a0() -> bool {
     (read_cpuid_id() & (IXP42X_PROCESSOR_ID_MASK | 0xF)) == IXP42X_PROCESSOR_ID_VALUE
 }
 
-#[cfg(feature = "CONFIG_ARCH_IXP4XX")]
+#[cfg(CONFIG_ARCH_IXP4XX)]
 #[inline]
 pub unsafe fn cpu_is_ixp42x() -> bool {
     (read_cpuid_id() & IXP42X_PROCESSOR_ID_MASK) == IXP42X_PROCESSOR_ID_VALUE
 }
 
-#[cfg(feature = "CONFIG_ARCH_IXP4XX")]
+#[cfg(CONFIG_ARCH_IXP4XX)]
 #[inline]
 pub unsafe fn cpu_is_ixp43x() -> bool {
     (read_cpuid_id() & IXP43X_PROCESSOR_ID_MASK) == IXP43X_PROCESSOR_ID_VALUE
 }
 
-#[cfg(feature = "CONFIG_ARCH_IXP4XX")]
+#[cfg(CONFIG_ARCH_IXP4XX)]
 #[inline]
 pub unsafe fn cpu_is_ixp46x() -> bool {
     (read_cpuid_id() & IXP46X_PROCESSOR_ID_MASK) == IXP46X_PROCESSOR_ID_VALUE
 }
 
-#[cfg(feature = "CONFIG_ARCH_IXP4XX")]
+#[cfg(CONFIG_ARCH_IXP4XX)]
 #[inline]
 pub unsafe fn cpu_ixp4xx_features(rmap: *mut regmap) -> u32 {
     let mut val: u32 = 0;
@@ -115,23 +115,23 @@ pub unsafe fn cpu_ixp4xx_features(rmap: *mut regmap) -> u32 {
     val & IXP46X_FEATURE_MASK
 }
 
-#[cfg(not(feature = "CONFIG_ARCH_IXP4XX"))]
+#[cfg(not(CONFIG_ARCH_IXP4XX))]
 #[inline]
 pub const fn cpu_is_ixp42x_rev_a0() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ARCH_IXP4XX"))]
+#[cfg(not(CONFIG_ARCH_IXP4XX))]
 #[inline]
 pub const fn cpu_is_ixp42x() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ARCH_IXP4XX"))]
+#[cfg(not(CONFIG_ARCH_IXP4XX))]
 #[inline]
 pub const fn cpu_is_ixp43x() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ARCH_IXP4XX"))]
+#[cfg(not(CONFIG_ARCH_IXP4XX))]
 #[inline]
 pub const fn cpu_is_ixp46x() -> u32 { 0 }
 
-#[cfg(not(feature = "CONFIG_ARCH_IXP4XX"))]
+#[cfg(not(CONFIG_ARCH_IXP4XX))]
 #[inline]
 pub unsafe fn cpu_ixp4xx_features(_rmap: *mut regmap) -> u32 { 0 }
 

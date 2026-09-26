@@ -23,7 +23,7 @@ pub unsafe extern "C" fn get_system_type() -> *const core::ffi::c_char {
     c"MIPS Malta".as_ptr()
 }
 
-#[cfg(feature = "CONFIG_BLK_DEV_FD")]
+#[cfg(CONFIG_BLK_DEV_FD)]
 unsafe fn fd_activate() {
     /*
      * Activate Floppy Controller in the SMSC FDC37M817 Super I/O
@@ -104,7 +104,7 @@ unsafe fn pci_clock_check() {
     }
 }
 
-#[cfg(all(feature = "CONFIG_VT", feature = "CONFIG_VGA_CONSOLE"))]
+#[cfg(all(CONFIG_VT, CONFIG_VGA_CONSOLE))]
 unsafe fn screen_info_setup() {
     static mut SI: ScreenInfo = ScreenInfo {
         orig_x: 0, orig_y: 25, ext_mem_k: 0, orig_video_page: 0,
@@ -133,7 +133,7 @@ pub unsafe extern "C" fn plat_mem_setup() {
     let fdt = malta_dt_shim(plat_get_fdt());
     __dt_setup_arch(fdt);
 
-    if cfg!(feature = "CONFIG_EVA") {
+    if cfg!(CONFIG_EVA) {
         // EVA has already been configured in mach-malta/kernel-init.h
         pr_info!("Enhanced Virtual Addressing (EVA) activated\n");
     }
@@ -155,10 +155,10 @@ pub unsafe extern "C" fn plat_mem_setup() {
     plat_setup_iocoherency();
     pci_clock_check();
 
-    #[cfg(feature = "CONFIG_BLK_DEV_FD")]
+    #[cfg(CONFIG_BLK_DEV_FD)]
     fd_activate();
 
-    #[cfg(all(feature = "CONFIG_VT", feature = "CONFIG_VGA_CONSOLE"))]
+    #[cfg(all(CONFIG_VT, CONFIG_VGA_CONSOLE))]
     screen_info_setup();
 }
 

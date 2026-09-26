@@ -2,17 +2,17 @@
 
 // C dependencies supplied by other headers are intentionally referenced here.
 
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub type sigframe_ia32 = sigframe;
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub type rt_sigframe_ia32 = rt_sigframe;
-#[cfg(feature = "CONFIG_X86_32")]
+#[cfg(CONFIG_X86_32)]
 pub type ucontext_ia32 = ucontext;
 
-#[cfg(all(not(feature = "CONFIG_X86_32"), feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(all(not(CONFIG_X86_32), CONFIG_IA32_EMULATION))]
 // C: #include <asm/ia32.h>
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 #[repr(C)]
 pub struct sigframe_ia32 {
     pub pretcode: u32,
@@ -32,23 +32,23 @@ pub struct sigframe_ia32 {
     /* fp state follows here */
 }
 
-#[cfg(any(feature = "CONFIG_X86_32", feature = "CONFIG_IA32_EMULATION"))]
+#[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
 #[repr(C)]
 pub struct rt_sigframe_ia32 {
     pub pretcode: u32,
     pub sig: i32,
     pub pinfo: u32,
     pub puc: u32,
-    #[cfg(feature = "CONFIG_IA32_EMULATION")]
+    #[cfg(CONFIG_IA32_EMULATION)]
     pub info: compat_siginfo_t,
-    #[cfg(not(feature = "CONFIG_IA32_EMULATION"))]
+    #[cfg(not(CONFIG_IA32_EMULATION))]
     pub info: siginfo,
     pub uc: ucontext_ia32,
     pub retcode: [core::ffi::c_char; 8],
     /* fp state follows here */
 }
 
-#[cfg(feature = "CONFIG_X86_64")]
+#[cfg(CONFIG_X86_64)]
 #[repr(C)]
 pub struct rt_sigframe {
     pub pretcode: *mut core::ffi::c_char,
@@ -57,7 +57,7 @@ pub struct rt_sigframe {
     /* fp state follows here */
 }
 
-#[cfg(all(feature = "CONFIG_X86_64", feature = "CONFIG_X86_X32_ABI"))]
+#[cfg(all(CONFIG_X86_64, CONFIG_X86_X32_ABI))]
 #[repr(C)]
 pub struct ucontext_x32 {
     pub uc_flags: u32,
@@ -68,7 +68,7 @@ pub struct ucontext_x32 {
     pub uc_sigmask: compat_sigset_t, // mask last for extensibility
 }
 
-#[cfg(all(feature = "CONFIG_X86_64", feature = "CONFIG_X86_X32_ABI"))]
+#[cfg(all(CONFIG_X86_64, CONFIG_X86_X32_ABI))]
 #[repr(C)]
 pub struct rt_sigframe_x32 {
     pub pretcode: u64,

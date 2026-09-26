@@ -7,13 +7,11 @@
 
 // Linux kernel dependencies supplied by the surrounding translation unit.
 
-enum {
-    PI_DRAM_REG = 0,
-    PI_CART_REG,
-    PI_READ_REG,
-    PI_WRITE_REG,
-    PI_STATUS_REG,
-}
+pub const PI_DRAM_REG: i32 = 0;
+pub const PI_CART_REG: i32 = PI_DRAM_REG + 1;
+pub const PI_READ_REG: i32 = PI_CART_REG + 1;
+pub const PI_WRITE_REG: i32 = PI_READ_REG + 1;
+pub const PI_STATUS_REG: i32 = PI_WRITE_REG + 1;
 
 const PI_STATUS_DMA_BUSY: u32 = 1 << 0;
 const PI_STATUS_IO_BUSY: u32 = 1 << 1;
@@ -117,6 +115,8 @@ unsafe fn n64cart_probe(pdev: *mut platform_device) -> i32 {
     };
     let mut disk: *mut gendisk;
     let mut err: i32 = -ENOMEM;
+    'out: {
+    'out_cleanup_disk: {
 
     if start == 0 || size == 0 {
         pr_err!("start or size not specified\n");
@@ -136,7 +136,7 @@ unsafe fn n64cart_probe(pdev: *mut platform_device) -> i32 {
     disk = blk_alloc_disk(&lim, NUMA_NO_NODE);
     if IS_ERR(disk) {
         err = PTR_ERR(disk);
-        goto out;
+        break 'out;
     }
 
     (*disk).first_minor = 0;
@@ -150,16 +150,17 @@ unsafe fn n64cart_probe(pdev: *mut platform_device) -> i32 {
 
     err = add_disk(disk);
     if err != 0 {
-        goto out_cleanup_disk;
+        break 'out_cleanup_disk;
     }
 
     pr_info!("n64cart: %u kb disk\n", size / 1024);
 
     return 0;
-
-out_cleanup_disk:
+    }
+    
     put_disk(disk);
-out:
+    }
+    
     err
 }
 

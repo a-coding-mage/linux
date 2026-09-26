@@ -526,7 +526,7 @@ pub const WM8350_NUM_IRQ_REGS: u32 = 7;
 /*
  * WM8350 internal interrupts
  */
-+
+
 
 // External dependencies supplied by other translation units.
 #[repr(C)]

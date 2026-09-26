@@ -10,9 +10,9 @@
 // Dependency declarations and build-time definitions are supplied by ieee754dp.
 
 pub unsafe fn ieee754dp_div(
-    mut x: union ieee754dp,
-    mut y: union ieee754dp,
-) -> union ieee754dp {
+    mut x: ieee754dp,
+    mut y: ieee754dp,
+) -> ieee754dp {
     let mut rm: u64;
     let mut re: i32;
     let mut bm: u64;
@@ -29,69 +29,47 @@ pub unsafe fn ieee754dp_div(
     FLUSHYDP!();
 
     match CLPAIR!(xc, yc) {
-        CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN)
-        | CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_SNAN)
-        | CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_SNAN)
-        | CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_SNAN)
-        | CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_SNAN) => return ieee754dp_nanxcpt(y),
+        case if case == CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN) || case == CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_SNAN) || case == CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_SNAN) || case == CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_SNAN) || case == CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_SNAN) => return ieee754dp_nanxcpt(y),
 
-        CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN)
-        | CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN)
-        | CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_ZERO)
-        | CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_NORM)
-        | CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_DNORM)
-        | CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_INF) => return ieee754dp_nanxcpt(x),
+        case if case == CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN) || case == CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN) || case == CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_ZERO) || case == CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_NORM) || case == CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_DNORM) || case == CLPAIR!(IEEE754_CLASS_SNAN, IEEE754_CLASS_INF) => return ieee754dp_nanxcpt(x),
 
-        CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_QNAN)
-        | CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_QNAN)
-        | CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_QNAN)
-        | CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_QNAN) => return y,
+        case if case == CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_QNAN) || case == CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_QNAN) || case == CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_QNAN) || case == CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_QNAN) => return y,
 
-        CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_QNAN)
-        | CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_ZERO)
-        | CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_NORM)
-        | CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_DNORM)
-        | CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_INF) => return x,
+        case if case == CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_QNAN) || case == CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_ZERO) || case == CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_NORM) || case == CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_DNORM) || case == CLPAIR!(IEEE754_CLASS_QNAN, IEEE754_CLASS_INF) => return x,
 
-        /* Infinity handling */
+        case if case == /* Infinity handling */
         CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_INF) => {
             ieee754_setcx(IEEE754_INVALID_OPERATION);
             return ieee754dp_indef();
         }
-        CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_INF)
-        | CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_INF)
-        | CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_INF) => return ieee754dp_zero(xs ^ ys),
+        case if case == CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_INF) || case == CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_INF) || case == CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_INF) => return ieee754dp_zero(xs ^ ys),
 
-        CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_ZERO)
-        | CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_NORM)
-        | CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_DNORM) => return ieee754dp_inf(xs ^ ys),
+        case if case == CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_ZERO) || case == CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_NORM) || case == CLPAIR!(IEEE754_CLASS_INF, IEEE754_CLASS_DNORM) => return ieee754dp_inf(xs ^ ys),
 
-        /* Zero handling */
+        case if case == /* Zero handling */
         CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_ZERO) => {
             ieee754_setcx(IEEE754_INVALID_OPERATION);
             return ieee754dp_indef();
         }
-        CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_ZERO)
-        | CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_ZERO) => {
+        case if case == CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_ZERO) || case == CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_ZERO) => {
             ieee754_setcx(IEEE754_ZERO_DIVIDE);
             return ieee754dp_inf(xs ^ ys);
         }
-        CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_NORM)
-        | CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_DNORM) => {
+        case if case == CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_NORM) || case == CLPAIR!(IEEE754_CLASS_ZERO, IEEE754_CLASS_DNORM) => {
             return ieee754dp_zero(if xs == ys { 0 } else { 1 });
         }
 
-        CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_DNORM) => {
+        case if case == CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_DNORM) => {
             DPDNORMX!();
             DPDNORMY!();
         }
-        CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_DNORM) => {
+        case if case == CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_DNORM) => {
             DPDNORMY!();
         }
-        CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_NORM) => {
+        case if case == CLPAIR!(IEEE754_CLASS_DNORM, IEEE754_CLASS_NORM) => {
             DPDNORMX!();
         }
-        CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_NORM) => {}
+        case if case == CLPAIR!(IEEE754_CLASS_NORM, IEEE754_CLASS_NORM) => {}
         _ => unreachable!(),
     }
 

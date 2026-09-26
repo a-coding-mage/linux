@@ -17,12 +17,12 @@ pub struct irq_domain {
 
 #[repr(C)]
 pub struct plat_smp_ops_type {
-    pub init_per_cpu: Option<unsafe extern "C" fn(unsigned int)>,
+    pub init_per_cpu: Option<unsafe extern "C" fn(core::ffi::c_uint)>,
 }
 
 #[repr(C)]
 pub struct machine_desc_type {
-    pub init_per_cpu: Option<unsafe extern "C" fn(unsigned int)>,
+    pub init_per_cpu: Option<unsafe extern "C" fn(core::ffi::c_uint)>,
 }
 
 unsafe extern "C" {

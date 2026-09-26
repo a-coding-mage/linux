@@ -16,36 +16,32 @@
 // external dependency: "reset.h"
 
 #[repr(C)]
-enum {
-	DT_IFACE,
-	DT_BI_TCXO,
-	DT_BI_TCXO_AO,
-	DT_SLEEP_CLK,
-};
+pub const DT_IFACE: i32 = 0;
+pub const DT_BI_TCXO: i32 = DT_IFACE + 1;
+pub const DT_BI_TCXO_AO: i32 = DT_BI_TCXO + 1;
+pub const DT_SLEEP_CLK: i32 = DT_BI_TCXO_AO + 1;
 
 #[repr(C)]
-enum {
-	P_BI_TCXO,
-	P_BI_TCXO_AO,
-	P_CAM_CC_PLL0_OUT_EVEN,
-	P_CAM_CC_PLL0_OUT_MAIN,
-	P_CAM_CC_PLL0_OUT_ODD,
-	P_CAM_CC_PLL1_OUT_EVEN,
-	P_CAM_CC_PLL2_OUT_EVEN,
-	P_CAM_CC_PLL2_OUT_MAIN,
-	P_CAM_CC_PLL3_OUT_EVEN,
-	P_CAM_CC_PLL4_OUT_EVEN,
-	P_CAM_CC_PLL5_OUT_EVEN,
-	P_CAM_CC_PLL6_OUT_EVEN,
-	P_CAM_CC_PLL7_OUT_EVEN,
-	P_CAM_CC_PLL8_OUT_EVEN,
-	P_CAM_CC_PLL9_OUT_EVEN,
-	P_CAM_CC_PLL9_OUT_ODD,
-	P_CAM_CC_PLL10_OUT_EVEN,
-	P_CAM_CC_PLL11_OUT_EVEN,
-	P_CAM_CC_PLL12_OUT_EVEN,
-	P_SLEEP_CLK,
-};
+pub const P_BI_TCXO: i32 = 0;
+pub const P_BI_TCXO_AO: i32 = P_BI_TCXO + 1;
+pub const P_CAM_CC_PLL0_OUT_EVEN: i32 = P_BI_TCXO_AO + 1;
+pub const P_CAM_CC_PLL0_OUT_MAIN: i32 = P_CAM_CC_PLL0_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL0_OUT_ODD: i32 = P_CAM_CC_PLL0_OUT_MAIN + 1;
+pub const P_CAM_CC_PLL1_OUT_EVEN: i32 = P_CAM_CC_PLL0_OUT_ODD + 1;
+pub const P_CAM_CC_PLL2_OUT_EVEN: i32 = P_CAM_CC_PLL1_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL2_OUT_MAIN: i32 = P_CAM_CC_PLL2_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL3_OUT_EVEN: i32 = P_CAM_CC_PLL2_OUT_MAIN + 1;
+pub const P_CAM_CC_PLL4_OUT_EVEN: i32 = P_CAM_CC_PLL3_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL5_OUT_EVEN: i32 = P_CAM_CC_PLL4_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL6_OUT_EVEN: i32 = P_CAM_CC_PLL5_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL7_OUT_EVEN: i32 = P_CAM_CC_PLL6_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL8_OUT_EVEN: i32 = P_CAM_CC_PLL7_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL9_OUT_EVEN: i32 = P_CAM_CC_PLL8_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL9_OUT_ODD: i32 = P_CAM_CC_PLL9_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL10_OUT_EVEN: i32 = P_CAM_CC_PLL9_OUT_ODD + 1;
+pub const P_CAM_CC_PLL11_OUT_EVEN: i32 = P_CAM_CC_PLL10_OUT_EVEN + 1;
+pub const P_CAM_CC_PLL12_OUT_EVEN: i32 = P_CAM_CC_PLL11_OUT_EVEN + 1;
+pub const P_SLEEP_CLK: i32 = P_CAM_CC_PLL12_OUT_EVEN + 1;
 
 const pll_vco lucid_ole_vco[] = {
 	{ 249600000, 2300000000, 0 },
@@ -56,33 +52,33 @@ const pll_vco rivian_ole_vco[] = {
 };
 
 const alpha_pll_config cam_cc_pll0_config = {
-	.l = 0x3e,
-	.alpha = 0x8000,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00008400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x3e,
+	alpha: 0x8000,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00008400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll0 = {
-	.offset = 0x0,
-	.config = &cam_cc_pll0_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x0,
+	config: &cam_cc_pll0_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll0",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll0",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -93,17 +89,17 @@ const clk_div_table post_div_table_cam_cc_pll0_out_even[] = {
 };
 
 clk_rcg2 cam_cc_ipe_nps_clk_src = {
-	.cmd_rcgr = 0x103cc,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_9,
-	.freq_tbl = ftbl_cam_cc_ipe_nps_clk_src,
+	cmd_rcgr: 0x103cc,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_9,
+	freq_tbl: ftbl_cam_cc_ipe_nps_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ipe_nps_clk_src",
-		.parent_data = cam_cc_parent_data_9,
-		.num_parents = array_size!(cam_cc_parent_data_9),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ipe_nps_clk_src",
+		parent_data: cam_cc_parent_data_9,
+		num_parents: array_size!(cam_cc_parent_data_9),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -117,17 +113,17 @@ const freq_tbl ftbl_cam_cc_jpeg_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_jpeg_clk_src = {
-	.cmd_rcgr = 0x13674,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_jpeg_clk_src,
+	cmd_rcgr: 0x13674,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_jpeg_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_jpeg_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_jpeg_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -139,122 +135,122 @@ const freq_tbl ftbl_cam_cc_mclk0_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_mclk0_clk_src = {
-	.cmd_rcgr = 0x15000,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x15000,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk0_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk0_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk1_clk_src = {
-	.cmd_rcgr = 0x15130,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x15130,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk1_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk1_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk2_clk_src = {
-	.cmd_rcgr = 0x15260,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x15260,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk2_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk2_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk3_clk_src = {
-	.cmd_rcgr = 0x15390,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x15390,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk3_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk3_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk4_clk_src = {
-	.cmd_rcgr = 0x154c0,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x154c0,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk4_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk4_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk5_clk_src = {
-	.cmd_rcgr = 0x155f0,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x155f0,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk5_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk5_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk6_clk_src = {
-	.cmd_rcgr = 0x15720,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x15720,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk6_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk6_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_mclk7_clk_src = {
-	.cmd_rcgr = 0x15850,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_1,
-	.freq_tbl = ftbl_cam_cc_mclk0_clk_src,
+	cmd_rcgr: 0x15850,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_1,
+	freq_tbl: ftbl_cam_cc_mclk0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_mclk7_clk_src",
-		.parent_data = cam_cc_parent_data_1,
-		.num_parents = array_size!(cam_cc_parent_data_1),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_mclk7_clk_src",
+		parent_data: cam_cc_parent_data_1,
+		num_parents: array_size!(cam_cc_parent_data_1),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -267,17 +263,17 @@ const freq_tbl ftbl_cam_cc_qdss_debug_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_qdss_debug_clk_src = {
-	.cmd_rcgr = 0x13f24,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_qdss_debug_clk_src,
+	cmd_rcgr: 0x13f24,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_qdss_debug_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_qdss_debug_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_qdss_debug_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -290,17 +286,17 @@ const freq_tbl ftbl_cam_cc_sfe_0_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_sfe_0_clk_src = {
-	.cmd_rcgr = 0x13294,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_10,
-	.freq_tbl = ftbl_cam_cc_sfe_0_clk_src,
+	cmd_rcgr: 0x13294,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_10,
+	freq_tbl: ftbl_cam_cc_sfe_0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_sfe_0_clk_src",
-		.parent_data = cam_cc_parent_data_10,
-		.num_parents = array_size!(cam_cc_parent_data_10),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_sfe_0_clk_src",
+		parent_data: cam_cc_parent_data_10,
+		num_parents: array_size!(cam_cc_parent_data_10),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -313,17 +309,17 @@ const freq_tbl ftbl_cam_cc_sfe_1_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_sfe_1_clk_src = {
-	.cmd_rcgr = 0x133f4,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_11,
-	.freq_tbl = ftbl_cam_cc_sfe_1_clk_src,
+	cmd_rcgr: 0x133f4,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_11,
+	freq_tbl: ftbl_cam_cc_sfe_1_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_sfe_1_clk_src",
-		.parent_data = cam_cc_parent_data_11,
-		.num_parents = array_size!(cam_cc_parent_data_11),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_sfe_1_clk_src",
+		parent_data: cam_cc_parent_data_11,
+		num_parents: array_size!(cam_cc_parent_data_11),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -333,17 +329,17 @@ const freq_tbl ftbl_cam_cc_sleep_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_sleep_clk_src = {
-	.cmd_rcgr = 0x141a0,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_12,
-	.freq_tbl = ftbl_cam_cc_sleep_clk_src,
+	cmd_rcgr: 0x141a0,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_12,
+	freq_tbl: ftbl_cam_cc_sleep_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_sleep_clk_src",
-		.parent_data = cam_cc_parent_data_12,
-		.num_parents = array_size!(cam_cc_parent_data_12),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_sleep_clk_src",
+		parent_data: cam_cc_parent_data_12,
+		num_parents: array_size!(cam_cc_parent_data_12),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -354,17 +350,17 @@ const freq_tbl ftbl_cam_cc_slow_ahb_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_slow_ahb_clk_src = {
-	.cmd_rcgr = 0x10148,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_slow_ahb_clk_src,
+	cmd_rcgr: 0x10148,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_slow_ahb_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_slow_ahb_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_slow_ahb_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -374,376 +370,376 @@ const freq_tbl ftbl_cam_cc_xo_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_xo_clk_src = {
-	.cmd_rcgr = 0x14070,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_13_ao,
-	.freq_tbl = ftbl_cam_cc_xo_clk_src,
+	cmd_rcgr: 0x14070,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_13_ao,
+	freq_tbl: ftbl_cam_cc_xo_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_xo_clk_src",
-		.parent_data = cam_cc_parent_data_13_ao,
-		.num_parents = array_size!(cam_cc_parent_data_13_ao),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_xo_clk_src",
+		parent_data: cam_cc_parent_data_13_ao,
+		num_parents: array_size!(cam_cc_parent_data_13_ao),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_branch cam_cc_bps_ahb_clk = {
-	.halt_reg = 0x10274,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10274,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10274,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10274,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_bps_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_bps_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ipe_pps_fast_ahb_clk = {
-	.halt_reg = 0x10524,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10524,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10524,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10524,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ipe_pps_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ipe_pps_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_jpeg_1_clk = {
-	.halt_reg = 0x137ac,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x137ac,
-		.enable_mask = bit!(0),
+	halt_reg: 0x137ac,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x137ac,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_jpeg_1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_jpeg_1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_jpeg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_jpeg_clk = {
-	.halt_reg = 0x137a0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x137a0,
-		.enable_mask = bit!(0),
+	halt_reg: 0x137a0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x137a0,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_jpeg_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_jpeg_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_jpeg_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk0_clk = {
-	.halt_reg = 0x1512c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1512c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1512c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1512c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk1_clk = {
-	.halt_reg = 0x1525c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1525c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1525c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1525c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk1_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk2_clk = {
-	.halt_reg = 0x1538c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1538c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1538c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1538c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk2_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk2_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk2_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk3_clk = {
-	.halt_reg = 0x154bc,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x154bc,
-		.enable_mask = bit!(0),
+	halt_reg: 0x154bc,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x154bc,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk3_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk3_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk3_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk4_clk = {
-	.halt_reg = 0x155ec,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x155ec,
-		.enable_mask = bit!(0),
+	halt_reg: 0x155ec,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x155ec,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk4_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk4_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk4_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk5_clk = {
-	.halt_reg = 0x1571c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1571c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1571c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1571c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk5_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk5_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk5_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk6_clk = {
-	.halt_reg = 0x1584c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1584c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1584c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1584c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk6_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk6_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk6_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_mclk7_clk = {
-	.halt_reg = 0x1597c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1597c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1597c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1597c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_mclk7_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_mclk7_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_mclk7_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_qdss_debug_clk = {
-	.halt_reg = 0x14050,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x14050,
-		.enable_mask = bit!(0),
+	halt_reg: 0x14050,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x14050,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_qdss_debug_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_qdss_debug_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_qdss_debug_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_qdss_debug_xo_clk = {
-	.halt_reg = 0x14054,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x14054,
-		.enable_mask = bit!(0),
+	halt_reg: 0x14054,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x14054,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_qdss_debug_xo_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_qdss_debug_xo_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_xo_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_sbi_clk = {
-	.halt_reg = 0x10540,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10540,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10540,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10540,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_sbi_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_sbi_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_sbi_fast_ahb_clk = {
-	.halt_reg = 0x10550,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10550,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10550,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10550,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_sbi_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_sbi_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_sfe_0_clk = {
-	.halt_reg = 0x133c0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x133c0,
-		.enable_mask = bit!(0),
+	halt_reg: 0x133c0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x133c0,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_sfe_0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_sfe_0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_sfe_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_sfe_0_fast_ahb_clk = {
-	.halt_reg = 0x133d8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x133d8,
-		.enable_mask = bit!(0),
+	halt_reg: 0x133d8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x133d8,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_sfe_0_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_sfe_0_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_sfe_1_clk = {
-	.halt_reg = 0x13520,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13520,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13520,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13520,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_sfe_1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_sfe_1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_sfe_1_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_sfe_1_fast_ahb_clk = {
-	.halt_reg = 0x13538,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13538,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13538,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13538,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_sfe_1_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_sfe_1_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
@@ -751,119 +747,119 @@ clk_branch cam_cc_sfe_1_fast_ahb_clk = {
 gdsc cam_cc_titan_top_gdsc;
 
 gdsc cam_cc_bps_gdsc = {
-	.gdscr = 0x10004,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_bps_gdsc",
+	gdscr: 0x10004,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_bps_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_ife_0_gdsc = {
-	.gdscr = 0x11004,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_ife_0_gdsc",
+	gdscr: 0x11004,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_ife_0_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_ife_1_gdsc = {
-	.gdscr = 0x12004,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_ife_1_gdsc",
+	gdscr: 0x12004,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_ife_1_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_ife_2_gdsc = {
-	.gdscr = 0x12294,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_ife_2_gdsc",
+	gdscr: 0x12294,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_ife_2_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_ipe_0_gdsc = {
-	.gdscr = 0x103b8,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_ipe_0_gdsc",
+	gdscr: 0x103b8,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_ipe_0_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_sbi_gdsc = {
-	.gdscr = 0x1052c,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_sbi_gdsc",
+	gdscr: 0x1052c,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_sbi_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_sfe_0_gdsc = {
-	.gdscr = 0x13280,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_sfe_0_gdsc",
+	gdscr: 0x13280,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_sfe_0_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_sfe_1_gdsc = {
-	.gdscr = 0x133e0,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_sfe_1_gdsc",
+	gdscr: 0x133e0,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_sfe_1_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &cam_cc_titan_top_gdsc.pd,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	parent: &cam_cc_titan_top_gdsc.pd,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 gdsc cam_cc_titan_top_gdsc = {
-	.gdscr = 0x14058,
-	.en_rest_wait_val = 0x2,
-	.en_few_wait_val = 0x2,
-	.clk_dis_wait_val = 0xf,
-	.pd = {
-		.name = "cam_cc_titan_top_gdsc",
+	gdscr: 0x14058,
+	en_rest_wait_val: 0x2,
+	en_few_wait_val: 0x2,
+	clk_dis_wait_val: 0xf,
+	pd: {
+		name: "cam_cc_titan_top_gdsc",
 	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+	pwrsts: PWRSTS_OFF_ON,
+	flags: POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
 };
 
 clk_regmap *cam_cc_sm8550_clocks[] = {
@@ -1067,30 +1063,30 @@ const u32 cam_cc_sm8550_critical_cbcrs[] = {
 };
 
 const regmap_config cam_cc_sm8550_regmap_config = {
-	.reg_bits = 32,
-	.reg_stride = 4,
-	.val_bits = 32,
-	.max_register = 0x16320,
-	.fast_io = true,
+	reg_bits: 32,
+	reg_stride: 4,
+	val_bits: 32,
+	max_register: 0x16320,
+	fast_io: true,
 };
 
 const qcom_cc_driver_data cam_cc_sm8550_driver_data = {
-	.alpha_plls = cam_cc_sm8550_plls,
-	.num_alpha_plls = array_size!(cam_cc_sm8550_plls),
-	.clk_cbcrs = cam_cc_sm8550_critical_cbcrs,
-	.num_clk_cbcrs = array_size!(cam_cc_sm8550_critical_cbcrs),
+	alpha_plls: cam_cc_sm8550_plls,
+	num_alpha_plls: array_size!(cam_cc_sm8550_plls),
+	clk_cbcrs: cam_cc_sm8550_critical_cbcrs,
+	num_clk_cbcrs: array_size!(cam_cc_sm8550_critical_cbcrs),
 };
 
 const qcom_cc_desc cam_cc_sm8550_desc = {
-	.config = &cam_cc_sm8550_regmap_config,
-	.clks = cam_cc_sm8550_clocks,
-	.num_clks = array_size!(cam_cc_sm8550_clocks),
-	.resets = cam_cc_sm8550_resets,
-	.num_resets = array_size!(cam_cc_sm8550_resets),
-	.gdscs = cam_cc_sm8550_gdscs,
-	.num_gdscs = array_size!(cam_cc_sm8550_gdscs),
-	.use_rpm = true,
-	.driver_data = &cam_cc_sm8550_driver_data,
+	config: &cam_cc_sm8550_regmap_config,
+	clks: cam_cc_sm8550_clocks,
+	num_clks: array_size!(cam_cc_sm8550_clocks),
+	resets: cam_cc_sm8550_resets,
+	num_resets: array_size!(cam_cc_sm8550_resets),
+	gdscs: cam_cc_sm8550_gdscs,
+	num_gdscs: array_size!(cam_cc_sm8550_gdscs),
+	use_rpm: true,
+	driver_data: &cam_cc_sm8550_driver_data,
 };
 
 const of_device_id cam_cc_sm8550_match_table[] = {
@@ -1105,10 +1101,10 @@ int cam_cc_sm8550_probe(platform_device *pdev)
 }
 
 platform_driver cam_cc_sm8550_driver = {
-	.probe = cam_cc_sm8550_probe,
-	.driver = {
-		.name = "cam_cc-sm8550",
-		.of_match_table = cam_cc_sm8550_match_table,
+	probe: cam_cc_sm8550_probe,
+	driver: {
+		name: "cam_cc-sm8550",
+		of_match_table: cam_cc_sm8550_match_table,
 	},
 };
 
@@ -1121,1134 +1117,1134 @@ MODULE_LICENSE("GPL");
 };
 
 clk_branch cam_cc_bps_clk = {
-	.halt_reg = 0x103a4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x103a4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x103a4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x103a4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_bps_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_bps_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_bps_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_bps_fast_ahb_clk = {
-	.halt_reg = 0x10144,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10144,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10144,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10144,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_bps_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_bps_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_camnoc_axi_clk = {
-	.halt_reg = 0x13f0c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13f0c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13f0c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13f0c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_camnoc_axi_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_camnoc_axi_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_camnoc_axi_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_camnoc_dcd_xo_clk = {
-	.halt_reg = 0x13f18,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13f18,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13f18,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13f18,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_camnoc_dcd_xo_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_camnoc_dcd_xo_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_xo_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_camnoc_xo_clk = {
-	.halt_reg = 0x13f1c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13f1c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13f1c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13f1c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_camnoc_xo_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_camnoc_xo_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_xo_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cci_0_clk = {
-	.halt_reg = 0x13a2c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13a2c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13a2c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13a2c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cci_0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cci_0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cci_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cci_1_clk = {
-	.halt_reg = 0x13b5c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13b5c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13b5c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13b5c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cci_1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cci_1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cci_1_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cci_2_clk = {
-	.halt_reg = 0x13c8c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13c8c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13c8c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13c8c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cci_2_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cci_2_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cci_2_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_core_ahb_clk = {
-	.halt_reg = 0x1406c,
-	.halt_check = BRANCH_HALT_DELAY,
-	.clkr = {
-		.enable_reg = 0x1406c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1406c,
+	halt_check: BRANCH_HALT_DELAY,
+	clkr: {
+		enable_reg: 0x1406c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_core_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_core_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_ahb_clk = {
-	.halt_reg = 0x13c90,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13c90,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13c90,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13c90,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_bps_clk = {
-	.halt_reg = 0x103b0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x103b0,
-		.enable_mask = bit!(0),
+	halt_reg: 0x103b0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x103b0,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_bps_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_bps_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_bps_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_cre_clk = {
-	.halt_reg = 0x1366c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1366c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1366c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1366c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_cre_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_cre_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cre_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_fast_ahb_clk = {
-	.halt_reg = 0x13c9c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13c9c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13c9c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13c9c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_ife_0_clk = {
-	.halt_reg = 0x11150,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x11150,
-		.enable_mask = bit!(0),
+	halt_reg: 0x11150,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x11150,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_ife_0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_ife_0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_ife_1_clk = {
-	.halt_reg = 0x12150,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x12150,
-		.enable_mask = bit!(0),
+	halt_reg: 0x12150,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x12150,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_ife_1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_ife_1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_1_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_ife_2_clk = {
-	.halt_reg = 0x123e0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x123e0,
-		.enable_mask = bit!(0),
+	halt_reg: 0x123e0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x123e0,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_ife_2_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_ife_2_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_2_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_ife_lite_clk = {
-	.halt_reg = 0x13138,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13138,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13138,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13138,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_ife_lite_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_ife_lite_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_lite_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_ipe_nps_clk = {
-	.halt_reg = 0x10504,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10504,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10504,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10504,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_ipe_nps_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_ipe_nps_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ipe_nps_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_sbi_clk = {
-	.halt_reg = 0x1054c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1054c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1054c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1054c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_sbi_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_sbi_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_sfe_0_clk = {
-	.halt_reg = 0x133cc,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x133cc,
-		.enable_mask = bit!(0),
+	halt_reg: 0x133cc,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x133cc,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_sfe_0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_sfe_0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_sfe_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cpas_sfe_1_clk = {
-	.halt_reg = 0x1352c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1352c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1352c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1352c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cpas_sfe_1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cpas_sfe_1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_sfe_1_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cre_ahb_clk = {
-	.halt_reg = 0x13670,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13670,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13670,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13670,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cre_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cre_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_cre_clk = {
-.halt_reg = 0x13668,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13668,
-		.enable_mask = bit!(0),
+halt_reg: 0x13668,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13668,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_cre_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_cre_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cre_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi0phytimer_clk = {
-	.halt_reg = 0x15aac,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15aac,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15aac,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15aac,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi0phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi0phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi0phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi1phytimer_clk = {
-	.halt_reg = 0x15be4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15be4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15be4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15be4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi1phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi1phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi1phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi2phytimer_clk = {
-	.halt_reg = 0x15d18,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15d18,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15d18,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15d18,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi2phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi2phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi2phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi3phytimer_clk = {
-	.halt_reg = 0x15e4c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15e4c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15e4c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15e4c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi3phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi3phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi3phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi4phytimer_clk = {
-	.halt_reg = 0x15f80,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15f80,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15f80,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15f80,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi4phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi4phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi4phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi5phytimer_clk = {
-	.halt_reg = 0x160b4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x160b4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x160b4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x160b4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi5phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi5phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi5phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi6phytimer_clk = {
-	.halt_reg = 0x161e8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x161e8,
-		.enable_mask = bit!(0),
+	halt_reg: 0x161e8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x161e8,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi6phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi6phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi6phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csi7phytimer_clk = {
-	.halt_reg = 0x1631c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1631c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1631c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1631c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csi7phytimer_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csi7phytimer_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csi7phytimer_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csid_clk = {
-	.halt_reg = 0x13dd4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13dd4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13dd4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13dd4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csid_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csid_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_csid_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csid_csiphy_rx_clk = {
-	.halt_reg = 0x15ab4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15ab4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15ab4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15ab4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csid_csiphy_rx_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csid_csiphy_rx_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy0_clk = {
-	.halt_reg = 0x15ab0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15ab0,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15ab0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15ab0,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy1_clk = {
-	.halt_reg = 0x15be8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15be8,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15be8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15be8,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy2_clk = {
-	.halt_reg = 0x15d1c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15d1c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15d1c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15d1c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy2_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy2_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy3_clk = {
-	.halt_reg = 0x15e50,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15e50,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15e50,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15e50,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy3_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy3_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy4_clk = {
-	.halt_reg = 0x15f84,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x15f84,
-		.enable_mask = bit!(0),
+	halt_reg: 0x15f84,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x15f84,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy4_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy4_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy5_clk = {
-	.halt_reg = 0x160b8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x160b8,
-		.enable_mask = bit!(0),
+	halt_reg: 0x160b8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x160b8,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy5_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy5_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy6_clk = {
-	.halt_reg = 0x161ec,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x161ec,
-		.enable_mask = bit!(0),
+	halt_reg: 0x161ec,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x161ec,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy6_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy6_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_csiphy7_clk = {
-	.halt_reg = 0x16320,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x16320,
-		.enable_mask = bit!(0),
+	halt_reg: 0x16320,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x16320,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_csiphy7_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_csiphy7_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_drv_ahb_clk = {
-	.halt_reg = 0x142d8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x142d8,
-		.enable_mask = bit!(0),
+	halt_reg: 0x142d8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x142d8,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_drv_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_drv_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_drv_xo_clk = {
-	.halt_reg = 0x142d4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x142d4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x142d4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x142d4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_drv_xo_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_drv_xo_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_xo_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_icp_ahb_clk = {
-	.halt_reg = 0x138fc,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x138fc,
-		.enable_mask = bit!(0),
+	halt_reg: 0x138fc,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x138fc,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_icp_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_icp_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_icp_clk = {
-	.halt_reg = 0x138f0,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x138f0,
-		.enable_mask = bit!(0),
+	halt_reg: 0x138f0,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x138f0,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_icp_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_icp_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_icp_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_0_clk = {
-	.halt_reg = 0x11144,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x11144,
-		.enable_mask = bit!(0),
+	halt_reg: 0x11144,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x11144,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_0_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_0_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_0_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_0_dsp_clk = {
-	.halt_reg = 0x11280,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x11280,
-		.enable_mask = bit!(0),
+	halt_reg: 0x11280,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x11280,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_0_dsp_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_0_dsp_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_0_dsp_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_0_fast_ahb_clk = {
-	.halt_reg = 0x1128c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1128c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1128c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1128c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_0_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_0_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_1_clk = {
-	.halt_reg = 0x12144,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x12144,
-		.enable_mask = bit!(0),
+	halt_reg: 0x12144,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x12144,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_1_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_1_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_1_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_1_dsp_clk = {
-	.halt_reg = 0x12280,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x12280,
-		.enable_mask = bit!(0),
+	halt_reg: 0x12280,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x12280,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_1_dsp_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_1_dsp_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_1_dsp_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_1_fast_ahb_clk = {
-	.halt_reg = 0x1228c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1228c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1228c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1228c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_1_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_1_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_2_clk = {
-	.halt_reg = 0x123d4,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x123d4,
-		.enable_mask = bit!(0),
+	halt_reg: 0x123d4,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x123d4,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_2_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_2_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_2_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_2_dsp_clk = {
-	.halt_reg = 0x12510,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x12510,
-		.enable_mask = bit!(0),
+	halt_reg: 0x12510,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x12510,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_2_dsp_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_2_dsp_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_2_dsp_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_2_fast_ahb_clk = {
-	.halt_reg = 0x1251c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1251c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1251c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1251c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_2_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_2_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_lite_ahb_clk = {
-	.halt_reg = 0x13278,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13278,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13278,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13278,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_lite_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_lite_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_lite_clk = {
-	.halt_reg = 0x1312c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1312c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1312c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1312c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_lite_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_lite_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_lite_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_lite_cphy_rx_clk = {
-	.halt_reg = 0x13274,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13274,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13274,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13274,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_lite_cphy_rx_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_lite_cphy_rx_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_cphy_rx_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ife_lite_csid_clk = {
-	.halt_reg = 0x13268,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x13268,
-		.enable_mask = bit!(0),
+	halt_reg: 0x13268,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x13268,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ife_lite_csid_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ife_lite_csid_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ife_lite_csid_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ipe_nps_ahb_clk = {
-	.halt_reg = 0x1051c,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x1051c,
-		.enable_mask = bit!(0),
+	halt_reg: 0x1051c,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x1051c,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ipe_nps_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ipe_nps_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_slow_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ipe_nps_clk = {
-	.halt_reg = 0x104f8,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x104f8,
-		.enable_mask = bit!(0),
+	halt_reg: 0x104f8,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x104f8,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ipe_nps_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ipe_nps_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ipe_nps_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ipe_nps_fast_ahb_clk = {
-	.halt_reg = 0x10520,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10520,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10520,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10520,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ipe_nps_fast_ahb_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ipe_nps_fast_ahb_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_fast_ahb_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 		},
 	},
 };
 
 clk_branch cam_cc_ipe_pps_clk = {
-	.halt_reg = 0x10508,
-	.halt_check = BRANCH_HALT,
-	.clkr = {
-		.enable_reg = 0x10508,
-		.enable_mask = bit!(0),
+	halt_reg: 0x10508,
+	halt_check: BRANCH_HALT,
+	clkr: {
+		enable_reg: 0x10508,
+		enable_mask: bit!(0),
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_ipe_pps_clk",
-			.parent_hws = (const clk_hw*[]) {
+			name: "cam_cc_ipe_pps_clk",
+			parent_hws: (const clk_hw*[]) {
 				&cam_cc_ipe_nps_clk_src.clkr.hw,
 			},
-			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT,
-			.ops = &clk_branch2_ops,
+			num_parents: 1,
+			flags: CLK_SET_RATE_PARENT,
+			ops: &clk_branch2_ops,
 };
 
 clk_alpha_pll_postdiv cam_cc_pll0_out_even = {
-	.offset = 0x0,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll0_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll0_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x0,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll0_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll0_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll0_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll0_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll0.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
@@ -2258,51 +2254,51 @@ const clk_div_table post_div_table_cam_cc_pll0_out_odd[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll0_out_odd = {
-	.offset = 0x0,
-	.post_div_shift = 14,
-	.post_div_table = post_div_table_cam_cc_pll0_out_odd,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll0_out_odd),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x0,
+	post_div_shift: 14,
+	post_div_table: post_div_table_cam_cc_pll0_out_odd,
+	num_post_div: array_size!(post_div_table_cam_cc_pll0_out_odd),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll0_out_odd",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll0_out_odd",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll0.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll1_config = {
-	.l = 0x2f,
-	.alpha = 0x6555,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x2f,
+	alpha: 0x6555,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll1 = {
-	.offset = 0x1000,
-	.config = &cam_cc_pll1_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x1000,
+	config: &cam_cc_pll1_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll1",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll1",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -2313,79 +2309,79 @@ const clk_div_table post_div_table_cam_cc_pll1_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll1_out_even = {
-	.offset = 0x1000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll1_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll1_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x1000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll1_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll1_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll1_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll1_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll1.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll2_config = {
-	.l = 0x32,
-	.alpha = 0x0,
-	.config_ctl_val = 0x10000030,
-	.config_ctl_hi_val = 0x80890263,
-	.config_ctl_hi1_val = 0x00000217,
-	.user_ctl_val = 0x00000000,
-	.user_ctl_hi_val = 0x00100000,
+	l: 0x32,
+	alpha: 0x0,
+	config_ctl_val: 0x10000030,
+	config_ctl_hi_val: 0x80890263,
+	config_ctl_hi1_val: 0x00000217,
+	user_ctl_val: 0x00000000,
+	user_ctl_hi_val: 0x00100000,
 };
 
 clk_alpha_pll cam_cc_pll2 = {
-	.offset = 0x2000,
-	.config = &cam_cc_pll2_config,
-	.vco_table = rivian_ole_vco,
-	.num_vco = array_size!(rivian_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_RIVIAN_EVO],
-	.clkr = {
+	offset: 0x2000,
+	config: &cam_cc_pll2_config,
+	vco_table: rivian_ole_vco,
+	num_vco: array_size!(rivian_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_RIVIAN_EVO],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll2",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll2",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_rivian_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_rivian_evo_ops,
 		},
 	},
 };
 
 const alpha_pll_config cam_cc_pll3_config = {
-	.l = 0x30,
-.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll12 = {
-	.offset = 0xc000,
-	.config = &cam_cc_pll12_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0xc000,
+	config: &cam_cc_pll12_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll12",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll12",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -2396,20 +2392,20 @@ const clk_div_table post_div_table_cam_cc_pll12_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll12_out_even = {
-	.offset = 0xc000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll12_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll12_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0xc000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll12_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll12_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll12_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll12_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll12.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
@@ -2569,17 +2565,17 @@ const freq_tbl ftbl_cam_cc_bps_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_bps_clk_src = {
-	.cmd_rcgr = 0x10278,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_2,
-	.freq_tbl = ftbl_cam_cc_bps_clk_src,
+	cmd_rcgr: 0x10278,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_2,
+	freq_tbl: ftbl_cam_cc_bps_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_bps_clk_src",
-		.parent_data = cam_cc_parent_data_2,
-		.num_parents = array_size!(cam_cc_parent_data_2),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_bps_clk_src",
+		parent_data: cam_cc_parent_data_2,
+		num_parents: array_size!(cam_cc_parent_data_2),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2591,17 +2587,17 @@ const freq_tbl ftbl_cam_cc_camnoc_axi_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_camnoc_axi_clk_src = {
-	.cmd_rcgr = 0x13de0,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_camnoc_axi_clk_src,
+	cmd_rcgr: 0x13de0,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_camnoc_axi_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_camnoc_axi_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_camnoc_axi_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2612,47 +2608,47 @@ const freq_tbl ftbl_cam_cc_cci_0_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_cci_0_clk_src = {
-	.cmd_rcgr = 0x13900,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_cci_0_clk_src,
+	cmd_rcgr: 0x13900,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_cci_0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_cci_0_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_cci_0_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_cci_1_clk_src = {
-	.cmd_rcgr = 0x13a30,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_cci_0_clk_src,
+	cmd_rcgr: 0x13a30,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_cci_0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_cci_1_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_cci_1_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_cci_2_clk_src = {
-	.cmd_rcgr = 0x13b60,
-	.mnd_width = 8,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_cci_0_clk_src,
+	cmd_rcgr: 0x13b60,
+	mnd_width: 8,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_cci_0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_cci_2_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_cci_2_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2664,17 +2660,17 @@ const freq_tbl ftbl_cam_cc_cphy_rx_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_cphy_rx_clk_src = {
-	.cmd_rcgr = 0x11290,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_cphy_rx_clk_src,
+	cmd_rcgr: 0x11290,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_cphy_rx_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_cphy_rx_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_cphy_rx_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2687,17 +2683,17 @@ const freq_tbl ftbl_cam_cc_cre_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_cre_clk_src = {
-	.cmd_rcgr = 0x1353c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_cre_clk_src,
+	cmd_rcgr: 0x1353c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_cre_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_cre_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_cre_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2708,62 +2704,62 @@ const freq_tbl ftbl_cam_cc_csi0phytimer_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_csi0phytimer_clk_src = {
-	.cmd_rcgr = 0x15980,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x15980,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi0phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi0phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_csi1phytimer_clk_src = {
-	.cmd_rcgr = 0x15ab8,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x15ab8,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi1phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi1phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_csi2phytimer_clk_src = {
-	.cmd_rcgr = 0x15bec,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x15bec,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi2phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi2phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_csi3phytimer_clk_src = {
-	.cmd_rcgr = 0x15d20,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x15d20,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi3phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi3phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2774,62 +2770,62 @@ const freq_tbl ftbl_cam_cc_csi4phytimer_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_csi4phytimer_clk_src = {
-	.cmd_rcgr = 0x15e54,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi4phytimer_clk_src,
+	cmd_rcgr: 0x15e54,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi4phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi4phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi4phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_csi5phytimer_clk_src = {
-	.cmd_rcgr = 0x15f88,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x15f88,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi5phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi5phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_csi6phytimer_clk_src = {
-	.cmd_rcgr = 0x160bc,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x160bc,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi6phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi6phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_csi7phytimer_clk_src = {
-	.cmd_rcgr = 0x161f0,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csi0phytimer_clk_src,
+	cmd_rcgr: 0x161f0,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csi0phytimer_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csi7phytimer_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csi7phytimer_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2840,17 +2836,17 @@ const freq_tbl ftbl_cam_cc_csid_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_csid_clk_src = {
-	.cmd_rcgr = 0x13ca8,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csid_clk_src,
+	cmd_rcgr: 0x13ca8,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csid_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_csid_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_csid_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2862,17 +2858,17 @@ const freq_tbl ftbl_cam_cc_fast_ahb_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_fast_ahb_clk_src = {
-	.cmd_rcgr = 0x10018,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_fast_ahb_clk_src,
+	cmd_rcgr: 0x10018,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_fast_ahb_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_fast_ahb_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_fast_ahb_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2885,17 +2881,17 @@ const freq_tbl ftbl_cam_cc_icp_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_icp_clk_src = {
-	.cmd_rcgr = 0x137c4,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_icp_clk_src,
+	cmd_rcgr: 0x137c4,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_icp_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_icp_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_icp_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2909,17 +2905,17 @@ const freq_tbl ftbl_cam_cc_ife_0_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_ife_0_clk_src = {
-	.cmd_rcgr = 0x11018,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_3,
-	.freq_tbl = ftbl_cam_cc_ife_0_clk_src,
+	cmd_rcgr: 0x11018,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_3,
+	freq_tbl: ftbl_cam_cc_ife_0_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_0_clk_src",
-		.parent_data = cam_cc_parent_data_3,
-		.num_parents = array_size!(cam_cc_parent_data_3),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_0_clk_src",
+		parent_data: cam_cc_parent_data_3,
+		num_parents: array_size!(cam_cc_parent_data_3),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2932,17 +2928,17 @@ const freq_tbl ftbl_cam_cc_ife_0_dsp_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_ife_0_dsp_clk_src = {
-	.cmd_rcgr = 0x11154,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_4,
-	.freq_tbl = ftbl_cam_cc_ife_0_dsp_clk_src,
+	cmd_rcgr: 0x11154,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_4,
+	freq_tbl: ftbl_cam_cc_ife_0_dsp_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_0_dsp_clk_src",
-		.parent_data = cam_cc_parent_data_4,
-		.num_parents = array_size!(cam_cc_parent_data_4),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_0_dsp_clk_src",
+		parent_data: cam_cc_parent_data_4,
+		num_parents: array_size!(cam_cc_parent_data_4),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2956,17 +2952,17 @@ const freq_tbl ftbl_cam_cc_ife_1_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_ife_1_clk_src = {
-	.cmd_rcgr = 0x12018,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_5,
-	.freq_tbl = ftbl_cam_cc_ife_1_clk_src,
+	cmd_rcgr: 0x12018,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_5,
+	freq_tbl: ftbl_cam_cc_ife_1_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_1_clk_src",
-		.parent_data = cam_cc_parent_data_5,
-		.num_parents = array_size!(cam_cc_parent_data_5),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_1_clk_src",
+		parent_data: cam_cc_parent_data_5,
+		num_parents: array_size!(cam_cc_parent_data_5),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -2979,17 +2975,17 @@ const freq_tbl ftbl_cam_cc_ife_1_dsp_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_ife_1_dsp_clk_src = {
-	.cmd_rcgr = 0x12154,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_6,
-	.freq_tbl = ftbl_cam_cc_ife_1_dsp_clk_src,
+	cmd_rcgr: 0x12154,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_6,
+	freq_tbl: ftbl_cam_cc_ife_1_dsp_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_1_dsp_clk_src",
-		.parent_data = cam_cc_parent_data_6,
-		.num_parents = array_size!(cam_cc_parent_data_6),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_1_dsp_clk_src",
+		parent_data: cam_cc_parent_data_6,
+		num_parents: array_size!(cam_cc_parent_data_6),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -3002,17 +2998,17 @@ const freq_tbl ftbl_cam_cc_ife_2_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_ife_2_clk_src = {
-	.cmd_rcgr = 0x122a8,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_7,
-	.freq_tbl = ftbl_cam_cc_ife_2_clk_src,
+	cmd_rcgr: 0x122a8,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_7,
+	freq_tbl: ftbl_cam_cc_ife_2_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_2_clk_src",
-		.parent_data = cam_cc_parent_data_7,
-		.num_parents = array_size!(cam_cc_parent_data_7),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_2_clk_src",
+		parent_data: cam_cc_parent_data_7,
+		num_parents: array_size!(cam_cc_parent_data_7),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -3025,47 +3021,47 @@ const freq_tbl ftbl_cam_cc_ife_2_dsp_clk_src[] = {
 };
 
 clk_rcg2 cam_cc_ife_2_dsp_clk_src = {
-	.cmd_rcgr = 0x123e4,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_8,
-	.freq_tbl = ftbl_cam_cc_ife_2_dsp_clk_src,
+	cmd_rcgr: 0x123e4,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_8,
+	freq_tbl: ftbl_cam_cc_ife_2_dsp_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_2_dsp_clk_src",
-		.parent_data = cam_cc_parent_data_8,
-		.num_parents = array_size!(cam_cc_parent_data_8),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_2_dsp_clk_src",
+		parent_data: cam_cc_parent_data_8,
+		num_parents: array_size!(cam_cc_parent_data_8),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_ife_lite_clk_src = {
-	.cmd_rcgr = 0x13000,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csid_clk_src,
+	cmd_rcgr: 0x13000,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csid_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_lite_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_lite_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
 clk_rcg2 cam_cc_ife_lite_csid_clk_src = {
-	.cmd_rcgr = 0x1313c,
-	.mnd_width = 0,
-	.hid_width = 5,
-	.parent_map = cam_cc_parent_map_0,
-	.freq_tbl = ftbl_cam_cc_csid_clk_src,
+	cmd_rcgr: 0x1313c,
+	mnd_width: 0,
+	hid_width: 5,
+	parent_map: cam_cc_parent_map_0,
+	freq_tbl: ftbl_cam_cc_csid_clk_src,
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_ife_lite_csid_clk_src",
-		.parent_data = cam_cc_parent_data_0,
-		.num_parents = array_size!(cam_cc_parent_data_0),
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_rcg2_shared_ops,
+		name: "cam_cc_ife_lite_csid_clk_src",
+		parent_data: cam_cc_parent_data_0,
+		num_parents: array_size!(cam_cc_parent_data_0),
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_rcg2_shared_ops,
 	},
 };
 
@@ -3075,31 +3071,31 @@ const freq_tbl ftbl_cam_cc_ipe_nps_clk_src[] = {
 	F(675000000, P_CAM_CC_PLL1_OUT_EVEN, 1, 0, 0),
 	F(825000000, P_CAM_CC_PLL1_OUT_EVEN, 1, 0, 0),
 	{ }
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll3 = {
-	.offset = 0x3000,
-	.config = &cam_cc_pll3_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x3000,
+	config: &cam_cc_pll3_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll3",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll3",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3110,51 +3106,51 @@ const clk_div_table post_div_table_cam_cc_pll3_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll3_out_even = {
-	.offset = 0x3000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll3_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll3_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x3000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll3_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll3_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll3_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll3_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll3.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll4_config = {
-	.l = 0x30,
-	.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+	alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll4 = {
-	.offset = 0x4000,
-	.config = &cam_cc_pll4_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x4000,
+	config: &cam_cc_pll4_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll4",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll4",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3165,51 +3161,51 @@ const clk_div_table post_div_table_cam_cc_pll4_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll4_out_even = {
-	.offset = 0x4000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll4_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll4_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x4000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll4_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll4_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll4_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll4_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll4.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll5_config = {
-	.l = 0x30,
-	.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+	alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll5 = {
-	.offset = 0x5000,
-	.config = &cam_cc_pll5_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x5000,
+	config: &cam_cc_pll5_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll5",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll5",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3220,51 +3216,51 @@ const clk_div_table post_div_table_cam_cc_pll5_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll5_out_even = {
-	.offset = 0x5000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll5_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll5_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x5000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll5_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll5_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll5_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll5_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll5.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll6_config = {
-	.l = 0x30,
-	.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+	alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll6 = {
-	.offset = 0x6000,
-	.config = &cam_cc_pll6_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x6000,
+	config: &cam_cc_pll6_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll6",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll6",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3275,51 +3271,51 @@ const clk_div_table post_div_table_cam_cc_pll6_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll6_out_even = {
-	.offset = 0x6000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll6_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll6_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x6000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll6_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll6_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll6_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll6_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll6.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll7_config = {
-	.l = 0x30,
-	.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+	alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll7 = {
-	.offset = 0x7000,
-	.config = &cam_cc_pll7_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x7000,
+	config: &cam_cc_pll7_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll7",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll7",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3330,51 +3326,51 @@ const clk_div_table post_div_table_cam_cc_pll7_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll7_out_even = {
-	.offset = 0x7000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll7_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll7_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x7000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll7_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll7_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll7_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll7_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll7.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll8_config = {
-	.l = 0x14,
-	.alpha = 0xd555,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x14,
+	alpha: 0xd555,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll8 = {
-	.offset = 0x8000,
-	.config = &cam_cc_pll8_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x8000,
+	config: &cam_cc_pll8_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll8",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll8",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3385,51 +3381,51 @@ const clk_div_table post_div_table_cam_cc_pll8_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll8_out_even = {
-	.offset = 0x8000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll8_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll8_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x8000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll8_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll8_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll8_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll8_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll8.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll9_config = {
-	.l = 0x32,
-	.alpha = 0x0,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x32,
+	alpha: 0x0,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll9 = {
-	.offset = 0x9000,
-	.config = &cam_cc_pll9_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0x9000,
+	config: &cam_cc_pll9_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll9",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll9",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3440,51 +3436,51 @@ const clk_div_table post_div_table_cam_cc_pll9_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll9_out_even = {
-	.offset = 0x9000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll9_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll9_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0x9000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll9_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll9_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll9_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll9_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll9.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll10_config = {
-	.l = 0x30,
-	.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+	alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll10 = {
-	.offset = 0xa000,
-	.config = &cam_cc_pll10_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0xa000,
+	config: &cam_cc_pll10_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll10",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll10",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3495,51 +3491,51 @@ const clk_div_table post_div_table_cam_cc_pll10_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll10_out_even = {
-	.offset = 0xa000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll10_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll10_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0xa000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll10_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll10_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll10_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll10_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll10.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll11_config = {
-	.l = 0x30,
-	.alpha = 0x8aaa,
-	.config_ctl_val = 0x20485699,
-	.config_ctl_hi_val = 0x00182261,
-	.config_ctl_hi1_val = 0x82aa299c,
-	.test_ctl_val = 0x00000000,
-	.test_ctl_hi_val = 0x00000003,
-	.test_ctl_hi1_val = 0x00009000,
-	.test_ctl_hi2_val = 0x00000034,
-	.user_ctl_val = 0x00000400,
-	.user_ctl_hi_val = 0x00000005,
+	l: 0x30,
+	alpha: 0x8aaa,
+	config_ctl_val: 0x20485699,
+	config_ctl_hi_val: 0x00182261,
+	config_ctl_hi1_val: 0x82aa299c,
+	test_ctl_val: 0x00000000,
+	test_ctl_hi_val: 0x00000003,
+	test_ctl_hi1_val: 0x00009000,
+	test_ctl_hi2_val: 0x00000034,
+	user_ctl_val: 0x00000400,
+	user_ctl_hi_val: 0x00000005,
 };
 
 clk_alpha_pll cam_cc_pll11 = {
-	.offset = 0xb000,
-	.config = &cam_cc_pll11_config,
-	.vco_table = lucid_ole_vco,
-	.num_vco = array_size!(lucid_ole_vco),
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
-	.clkr = {
+	offset: 0xb000,
+	config: &cam_cc_pll11_config,
+	vco_table: lucid_ole_vco,
+	num_vco: array_size!(lucid_ole_vco),
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	clkr: {
 		.hw.init = &(const clk_init_data) {
-			.name = "cam_cc_pll11",
-			.parent_data = &(const clk_parent_data) {
-				.index = DT_BI_TCXO,
+			name: "cam_cc_pll11",
+			parent_data: &(const clk_parent_data) {
+				index: DT_BI_TCXO,
 			},
-			.num_parents = 1,
-			.ops = &clk_alpha_pll_lucid_evo_ops,
+			num_parents: 1,
+			ops: &clk_alpha_pll_lucid_evo_ops,
 		},
 	},
 };
@@ -3550,24 +3546,24 @@ const clk_div_table post_div_table_cam_cc_pll11_out_even[] = {
 };
 
 clk_alpha_pll_postdiv cam_cc_pll11_out_even = {
-	.offset = 0xb000,
-	.post_div_shift = 10,
-	.post_div_table = post_div_table_cam_cc_pll11_out_even,
-	.num_post_div = array_size!(post_div_table_cam_cc_pll11_out_even),
-	.width = 4,
-	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
+	offset: 0xb000,
+	post_div_shift: 10,
+	post_div_table: post_div_table_cam_cc_pll11_out_even,
+	num_post_div: array_size!(post_div_table_cam_cc_pll11_out_even),
+	width: 4,
+	regs: clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_LUCID_OLE],
 	.clkr.hw.init = &(const clk_init_data) {
-		.name = "cam_cc_pll11_out_even",
-		.parent_hws = (const clk_hw*[]) {
+		name: "cam_cc_pll11_out_even",
+		parent_hws: (const clk_hw*[]) {
 			&cam_cc_pll11.clkr.hw,
 		},
-		.num_parents = 1,
-		.flags = CLK_SET_RATE_PARENT,
-		.ops = &clk_alpha_pll_postdiv_lucid_ole_ops,
+		num_parents: 1,
+		flags: CLK_SET_RATE_PARENT,
+		ops: &clk_alpha_pll_postdiv_lucid_ole_ops,
 	},
 };
 
 const alpha_pll_config cam_cc_pll12_config = {
-	.l = 0x30,
+	l: 0x30,
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

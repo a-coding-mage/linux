@@ -18,7 +18,7 @@ const HIGH_RES_NSEC: i64 = 1;
 #[inline(always)]
 unsafe fn hrtimer_base_is_online(base: *const hrtimer_cpu_base) -> bool {
     // CONFIG_HOTPLUG_CPU is a build-time kernel condition.
-    if !cfg!(feature = "CONFIG_HOTPLUG_CPU") { true } else { (*base).online }
+    if !cfg!(CONFIG_HOTPLUG_CPU) { true } else { (*base).online }
 }
 
 #[repr(C)]

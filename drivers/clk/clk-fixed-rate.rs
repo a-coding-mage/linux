@@ -228,7 +228,7 @@ pub unsafe extern "C" fn clk_hw_unregister_fixed_rate(hw: *mut clk_hw) {
 }
 
 /* CONFIG_OF-dependent declarations and definitions are preserved below. */
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe fn _of_fixed_clk_setup(node: *mut device_node) -> *mut clk_hw {
     let mut clk_name = (*node).name;
     let mut rate: u32 = 0;
@@ -249,19 +249,19 @@ unsafe fn _of_fixed_clk_setup(node: *mut device_node) -> *mut clk_hw {
     hw
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 pub unsafe extern "C" fn of_fixed_clk_setup(node: *mut device_node) {
     _of_fixed_clk_setup(node);
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe fn of_fixed_clk_remove(pdev: *mut platform_device) {
     let hw = platform_get_drvdata(pdev);
     of_clk_del_provider((*pdev).dev.of_node);
     clk_hw_unregister_fixed_rate(hw);
 }
 
-#[cfg(feature = "CONFIG_OF")]
+#[cfg(CONFIG_OF)]
 unsafe fn of_fixed_clk_probe(pdev: *mut platform_device) -> c_int {
     let hw = _of_fixed_clk_setup((*pdev).dev.of_node);
     if hw.is_null() { return -1; }

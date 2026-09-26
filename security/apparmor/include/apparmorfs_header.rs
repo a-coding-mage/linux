@@ -269,7 +269,7 @@ extern "C" {
     ) -> c_int;
 }
 
-#[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
+#[cfg(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY)]
 extern "C" {
     pub fn __aa_fs_remove_rawdata(rawdata: *mut aa_loaddata);
 
@@ -280,22 +280,22 @@ extern "C" {
     pub fn __aa_create_rawdata_symlink_dents(profile: *mut aa_profile) -> c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub fn __aa_fs_remove_rawdata(_rawdata: *mut aa_loaddata) {
     // empty stub
 }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub fn __aa_fs_create_rawdata(_ns: *mut aa_ns, _rawdata: *mut aa_loaddata) -> c_int {
     0
 }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub fn __aa_remove_rawdata_symlink_dents(_profile: *mut aa_profile) {
     // empty stub
 }
 
-#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+#[cfg(not(CONFIG_SECURITY_APPARMOR_EXPORT_BINARY))]
 pub fn __aa_create_rawdata_symlink_dents(_profile: *mut aa_profile) -> c_int {
     0
 }

@@ -40,7 +40,7 @@ unsafe fn sha1_blocks(
     nblocks: usize,
 ) {
     // CONFIG_KERNEL_MODE_NEON is a build-time condition from the C source.
-    if cfg!(feature = "CONFIG_KERNEL_MODE_NEON")
+    if cfg!(CONFIG_KERNEL_MODE_NEON)
         && static_branch_likely(&raw mut have_neon)
         && may_use_simd()
     {
@@ -56,7 +56,7 @@ unsafe fn sha1_blocks(
 }
 
 // CONFIG_KERNEL_MODE_NEON is a build-time condition from the C source.
-#[cfg(feature = "CONFIG_KERNEL_MODE_NEON")]
+#[cfg(CONFIG_KERNEL_MODE_NEON)]
 unsafe fn sha1_mod_init_arch() {
     extern "C" {
         static elf_hwcap: usize;

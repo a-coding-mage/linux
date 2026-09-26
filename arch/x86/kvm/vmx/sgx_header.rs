@@ -3,7 +3,7 @@
 // Dependencies supplied by the surrounding translation unit:
 // linux/kvm_host.h, capabilities.h, and vmx_ops.h.
 
-#[cfg(feature = "CONFIG_X86_SGX_KVM")]
+#[cfg(CONFIG_X86_SGX_KVM)]
 extern "C" {
     pub static mut enable_sgx: bool;
 
@@ -15,18 +15,18 @@ extern "C" {
     pub fn vmx_write_encls_bitmap(vcpu: *mut kvm_vcpu, vmcs12: *mut vmcs12);
 }
 
-#[cfg(not(feature = "CONFIG_X86_SGX_KVM"))]
+#[cfg(not(CONFIG_X86_SGX_KVM))]
 pub const enable_sgx: bool = false;
 
-#[cfg(not(feature = "CONFIG_X86_SGX_KVM"))]
+#[cfg(not(CONFIG_X86_SGX_KVM))]
 #[inline]
 pub unsafe fn setup_default_sgx_lepubkeyhash() {}
 
-#[cfg(not(feature = "CONFIG_X86_SGX_KVM"))]
+#[cfg(not(CONFIG_X86_SGX_KVM))]
 #[inline]
 pub unsafe fn vcpu_setup_sgx_lepubkeyhash(_vcpu: *mut kvm_vcpu) {}
 
-#[cfg(not(feature = "CONFIG_X86_SGX_KVM"))]
+#[cfg(not(CONFIG_X86_SGX_KVM))]
 #[inline]
 pub unsafe fn vmx_write_encls_bitmap(vcpu: *mut kvm_vcpu, vmcs12: *mut vmcs12) {
     // Nothing to do if hardware doesn't support SGX

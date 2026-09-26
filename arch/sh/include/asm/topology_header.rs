@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 /* CONFIG_NUMA conditional declarations and macros. */
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 macro_rules! cpu_to_node {
     ($cpu:expr) => {{
         let _ = $cpu;
@@ -9,7 +9,7 @@ macro_rules! cpu_to_node {
     }};
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 macro_rules! cpumask_of_node {
     ($node:expr) => {{
         let _ = $node;
@@ -17,7 +17,7 @@ macro_rules! cpumask_of_node {
     }};
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 macro_rules! pcibus_to_node {
     ($bus:expr) => {{
         let _ = $bus;
@@ -25,7 +25,7 @@ macro_rules! pcibus_to_node {
     }};
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 macro_rules! cpumask_of_pcibus {
     ($bus:expr) => {{
         if pcibus_to_node!($bus) == -1 {
@@ -40,7 +40,7 @@ macro_rules! mc_capable {
     () => { 1 };
 }
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn cpu_coregroup_mask(cpu: core::ffi::c_int) -> *const cpumask;
     pub static mut cpu_core_map: [cpumask_t; NR_CPUS];
 }

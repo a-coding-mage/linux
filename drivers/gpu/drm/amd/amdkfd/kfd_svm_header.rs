@@ -19,10 +19,10 @@
  */
 
 // C conditional: IS_ENABLED(CONFIG_HSA_AMD_SVM)
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 pub const SVM_RANGE_VRAM_DOMAIN: usize = 1usize << 0;
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[inline]
 pub unsafe fn SVM_ADEV_PGMAP_OWNER<T>(adev: *mut T) -> *mut core::ffi::c_void {
     // The C expression selects adev->hive when non-null; the field is supplied
@@ -30,7 +30,7 @@ pub unsafe fn SVM_ADEV_PGMAP_OWNER<T>(adev: *mut T) -> *mut core::ffi::c_void {
     adev as *mut core::ffi::c_void
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[repr(C)]
 pub struct svm_range_bo {
     pub bo: amdgpu_bo,
@@ -43,7 +43,7 @@ pub struct svm_range_bo {
     pub node: *mut kfd_node,
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum svm_work_list_ops {
@@ -55,14 +55,14 @@ pub enum svm_work_list_ops {
     SVM_OP_ADD_RANGE_AND_MAP,
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[repr(C)]
 pub struct svm_work_list_item {
     pub op: svm_work_list_ops,
     pub mm: *mut mm_struct,
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[repr(C)]
 pub struct svm_range {
     pub svms: *mut svm_range_list,
@@ -100,28 +100,28 @@ pub struct svm_range {
     pub queue_refcount: atomic_t,
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[inline]
 pub unsafe fn svm_range_lock(prange: *mut svm_range) {
     mutex_lock(&mut (*prange).lock);
     (*prange).saved_flags = memalloc_noreclaim_save();
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[inline]
 pub unsafe fn svm_range_unlock(prange: *mut svm_range) {
     memalloc_noreclaim_restore((*prange).saved_flags);
     mutex_unlock(&mut (*prange).lock);
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 #[inline]
 pub unsafe fn svm_range_bo_ref(svm_bo: *mut svm_range_bo) -> *mut svm_range_bo {
     if !svm_bo.is_null() { kref_get(&mut (*svm_bo).kref); }
     svm_bo
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 extern "C" {
     pub fn svm_range_list_init(p: *mut kfd_process) -> i32;
     pub fn svm_range_list_fini(p: *mut kfd_process);
@@ -148,33 +148,33 @@ extern "C" {
     pub fn svm_range_switch_xnack_reserve_mem(p: *mut kfd_process, xnack_enabled: bool) -> i32;
 }
 
-#[cfg(feature = "CONFIG_HSA_AMD_SVM")]
+#[cfg(CONFIG_HSA_AMD_SVM)]
 pub const KFD_IS_SVM_API_SUPPORTED: bool = true; // C macro depends on adev fields
 
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 pub struct kfd_process;
 
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn svm_range_list_init(_: *mut kfd_process) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn svm_range_list_fini(_: *mut kfd_process) {}
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn svm_range_restore_pages(_: *mut amdgpu_device, _: u32, _: u32, _: u32, _: u64, _: u64, _: bool) -> i32 { -14 }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn svm_range_bo_destroy(_: *mut ttm_buffer_object) {}
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn svm_range_evict_svm_bo(_: *mut amdgpu_bo) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub unsafe fn svm_range_get_info(_: *mut kfd_process, n: *mut u32, s: *mut u64) { *n = 0; *s = 0; }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn kfd_criu_checkpoint_svm(_: *mut kfd_process, _: *mut u8, _: *mut u64) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn kfd_criu_restore_svm(_: *mut kfd_process, _: *mut u8, _: *mut u64, _: u64) -> i32 { -22 }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn kfd_criu_resume_svm(_: *mut kfd_process) -> i32 { 0 }
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 #[inline] pub fn svm_range_set_max_pages(_: *mut amdgpu_device) {}
-#[cfg(not(feature = "CONFIG_HSA_AMD_SVM"))]
+#[cfg(not(CONFIG_HSA_AMD_SVM))]
 pub const KFD_IS_SVM_API_SUPPORTED: bool = false;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

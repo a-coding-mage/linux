@@ -17,7 +17,7 @@ unsafe fn tcf_pedit_keys_ex_parse(nla: *mut nlattr, mut n: u8,
     let mut k = keys_ex;
     let mut ka: *const nlattr;
     let mut rem: i32 = 0;
-    nla_for_each_nested!(ka, nla, rem) {
+    nla_for_each_nested!(ka, nla, rem, {
         let mut tb: [*mut nlattr; TCA_PEDIT_KEY_EX_MAX as usize + 1] = [core::ptr::null_mut(); TCA_PEDIT_KEY_EX_MAX as usize + 1];
         if n == 0 { NL_SET_ERR_MSG_MOD!(extack, "Can't parse more extended keys than requested"); goto_err!(keys_ex, -EINVAL); }
         n -= 1;
@@ -30,7 +30,7 @@ unsafe fn tcf_pedit_keys_ex_parse(nla: *mut nlattr, mut n: u8,
         (*k).htype = nla_get_u16(tb[TCA_PEDIT_KEY_EX_HTYPE as usize]);
         (*k).cmd = nla_get_u16(tb[TCA_PEDIT_KEY_EX_CMD as usize]);
         k = k.add(1);
-    }
+    });
     if n != 0 { NL_SET_ERR_MSG_MOD!(extack, "Not enough extended keys to parse"); goto_err!(keys_ex, -EINVAL); }
     keys_ex
 }

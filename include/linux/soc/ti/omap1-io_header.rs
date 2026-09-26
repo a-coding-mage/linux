@@ -5,7 +5,7 @@
  * Rust translation of the non-assembler declarations and definitions.
  */
 
-#[cfg(feature = "CONFIG_ARCH_OMAP1")]
+#[cfg(CONFIG_ARCH_OMAP1)]
 extern "C" {
     /* NOTE: Please use ioremap + __raw_read/write where possible instead of these */
     pub fn omap_readb(pa: u32) -> u8;
@@ -16,22 +16,22 @@ extern "C" {
     pub fn omap_writel(v: u32, pa: u32);
 }
 
-#[cfg(feature = "CONFIG_COMPILE_TEST")]
+#[cfg(CONFIG_COMPILE_TEST)]
 #[inline]
 pub fn omap_readb(_pa: u32) -> u8 { 0 }
-#[cfg(feature = "CONFIG_COMPILE_TEST")]
+#[cfg(CONFIG_COMPILE_TEST)]
 #[inline]
 pub fn omap_readw(_pa: u32) -> u16 { 0 }
-#[cfg(feature = "CONFIG_COMPILE_TEST")]
+#[cfg(CONFIG_COMPILE_TEST)]
 #[inline]
 pub fn omap_readl(_pa: u32) -> u32 { 0 }
-#[cfg(feature = "CONFIG_COMPILE_TEST")]
+#[cfg(CONFIG_COMPILE_TEST)]
 #[inline]
 pub fn omap_writeb(_v: u8, _pa: u32) {}
-#[cfg(feature = "CONFIG_COMPILE_TEST")]
+#[cfg(CONFIG_COMPILE_TEST)]
 #[inline]
 pub fn omap_writew(_v: u16, _pa: u32) {}
-#[cfg(feature = "CONFIG_COMPILE_TEST")]
+#[cfg(CONFIG_COMPILE_TEST)]
 #[inline]
 pub fn omap_writel(_v: u32, _pa: u32) {}
 

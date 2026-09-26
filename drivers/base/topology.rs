@@ -13,8 +13,8 @@
 // the surrounding kernel crate.
 
 macro_rules! define_id_show_func {
-    ($name:ident, $fmt:expr, $topology:ident) => {
-        unsafe fn $name##_show(
+    ($name:tt, $fmt:expr, $topology:ident) => {
+        unsafe fn ::kernel::macros::paste!([<$name _show>])(
             dev: *mut device,
             attr: *mut device_attribute,
             buf: *mut c_char,
@@ -25,8 +25,8 @@ macro_rules! define_id_show_func {
 }
 
 macro_rules! define_siblings_read_func {
-    ($name:ident, $topology:ident) => {
-        unsafe fn $name##_read(
+    ($name:tt, $topology:ident) => {
+        unsafe fn ::kernel::macros::paste!([<$name _read>])(
             file: *mut file,
             kobj: *mut kobject,
             attr: *const bin_attribute,
@@ -46,7 +46,7 @@ macro_rules! define_siblings_read_func {
             n
         }
 
-        unsafe fn $name##_list_read(
+        unsafe fn ::kernel::macros::paste!([<$name _list_read>])(
             file: *mut file,
             kobj: *mut kobject,
             attr: *const bin_attribute,

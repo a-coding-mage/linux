@@ -28,12 +28,12 @@ extern "C" {
     pub fn dump_machine_table();
 }
 
-#[cfg(feature = "CONFIG_ATAGS_PROC")]
+#[cfg(CONFIG_ATAGS_PROC)]
 extern "C" {
     pub fn save_atags(tags: *const Tag);
 }
 
-#[cfg(not(feature = "CONFIG_ATAGS_PROC"))]
+#[cfg(not(CONFIG_ATAGS_PROC))]
 #[inline]
 pub unsafe fn save_atags(_tags: *const Tag) {}
 
@@ -61,7 +61,7 @@ extern "C" {
     pub fn setup_dma_zone(desc: *const MachineDesc);
 }
 
-#[cfg(feature = "CONFIG_VGA_CONSOLE")]
+#[cfg(CONFIG_VGA_CONSOLE)]
 extern "C" {
     pub static mut vgacon_screen_info: ScreenInfo;
 }

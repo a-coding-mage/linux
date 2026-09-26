@@ -2,9 +2,9 @@
 /* Rust translation of arch/arm/probes/kprobes/test-core.h. */
 
 pub const VERBOSE: u32 = 0;
-#[cfg(feature = "CONFIG_THUMB2_KERNEL")]
+#[cfg(CONFIG_THUMB2_KERNEL)]
 pub const NORMAL_ISA: &str = "16";
-#[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))]
+#[cfg(not(CONFIG_THUMB2_KERNEL))]
 pub const NORMAL_ISA: &str = "32";
 
 pub const TEST_FLAG_NO_ITBLOCK: u32 = 1 << 0;
@@ -37,9 +37,9 @@ extern "C" {
     pub fn __kprobes_test_case_start();
     pub fn __kprobes_test_case_end_16();
     pub fn __kprobes_test_case_end_32();
-    #[cfg(feature = "CONFIG_THUMB2_KERNEL")] pub fn kprobe_thumb16_test_cases();
-    #[cfg(feature = "CONFIG_THUMB2_KERNEL")] pub fn kprobe_thumb32_test_cases();
-    #[cfg(not(feature = "CONFIG_THUMB2_KERNEL"))] pub fn kprobe_arm_test_cases();
+    #[cfg(CONFIG_THUMB2_KERNEL)] pub fn kprobe_thumb16_test_cases();
+    #[cfg(CONFIG_THUMB2_KERNEL)] pub fn kprobe_thumb32_test_cases();
+    #[cfg(not(CONFIG_THUMB2_KERNEL))] pub fn kprobe_arm_test_cases();
 }
 
 /* The original macros construct ARM/Thumb inline assembly. These macros retain

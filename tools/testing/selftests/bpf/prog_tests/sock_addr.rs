@@ -360,8 +360,8 @@ static mut kern_ops_sock_sendmsg: sock_ops = sock_ops { connect_to_addr: kernel_
 static mut kern_ops_kernel_sendmsg: sock_ops = sock_ops { connect_to_addr: kernel_connect_to_addr, start_server: kernel_start_server, socket: kernel_init_sock, bind: kernel_bind, getsockname: kernel_getsockname, getpeername: kernel_getpeername, sendmsg: kernel_sendmsg, close: kernel_close_sock };
 
 macro_rules! BPF_SKEL_FUNCS_RAW {
-    ($skel_name:ident, $prog_name:ident, $open:path, $load:path, $destroy:path) => {
-        unsafe extern "C" fn $prog_name##_load_raw(cgroup_fd: c_int, attach_type: bpf_attach_type, expect_reject: bool_) -> *mut c_void {
+    ($skel_name:ident, $prog_name:tt, $open:path, $load:path, $destroy:path) => {
+        unsafe extern "C" fn ::kernel::macros::paste!([<$prog_name _load_raw>])(cgroup_fd: c_int, attach_type: bpf_attach_type, expect_reject: bool_) -> *mut c_void {
             let skel = $open();
             let mut prog_fd: c_int = -1;
             if !ASSERT_OK_PTR!(skel, b"skel_open\0".as_ptr() as *const c_char) { return ptr::null_mut(); }
@@ -379,7 +379,7 @@ macro_rules! BPF_SKEL_FUNCS_RAW {
             $destroy(skel);
             ptr::null_mut()
         }
-        unsafe extern "C" fn $prog_name##_destroy_raw(progfd: *mut c_void) { let _ = progfd; /* No-op. *_load_raw does all cleanup. */ }
+        unsafe extern "C" fn ::kernel::macros::paste!([<$prog_name _destroy_raw>])(progfd: *mut c_void) { let _ = progfd; /* No-op. *_load_raw does all cleanup. */ }
     };
 }
 

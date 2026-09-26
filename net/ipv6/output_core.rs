@@ -66,7 +66,7 @@ pub unsafe fn ip6_find_1stfragopt(skb: *mut sk_buff, nexthdr: *mut *mut u8) -> i
             NEXTHDR_ROUTING => found_rhdr = 1,
             NEXTHDR_DEST => {
                 // CONFIG_IPV6_MIP6 conditional retained from the C source.
-                #[cfg(feature = "CONFIG_IPV6_MIP6")]
+                #[cfg(CONFIG_IPV6_MIP6)]
                 if ipv6_find_tlv(skb, offset, IPV6_TLV_HAO) >= 0 {
                     continue;
                 }

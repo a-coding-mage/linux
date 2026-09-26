@@ -3,6 +3,8 @@
 """Boot an x86-64 or ARM64 kernel with a Rust-generated initramfs."""
 
 import argparse
+import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -20,6 +22,202 @@ ROOT = Path(__file__).resolve().parents[2]
 MARKER = b"LUPOS_RUST_BUILD_BOOT_OK"
 FAILSLAB_MARKER = b"LUPOS_FAILSLAB_SETUP_OK"
 FAILSLAB_CONFIG = ("FAULT_INJECTION", "FAILSLAB", "FAULT_INJECTION_DEBUG_FS", "DEBUG_FS", "SYSFS")
+CPUSET_CONFIG = ("SMP", "SCHED_SMT", "CGROUPS", "CPUSETS", "CPUSETS_V1", "PROC_PID_CPUSET",
+                 "HOTPLUG_CPU", "PROC_FS", "SYSFS", "BINFMT_ELF")
+CPUSET_APPLETS = ("awk", "cat", "grep", "head", "id", "mkdir", "mount", "rmdir", "sleep")
+CPUSET_MARKERS = (
+    b"LUPOS_CPUSET_V1_SETUP_OK cpus=0-1 mems=0 overlap=0-1 root_load_balance=0",
+    b"LUPOS_CPUSET_V1_BASE_OK",
+    b"LUPOS_CPUSET_V1_HOTPLUG_OK",
+    b"LUPOS_CPUSET_V1_CLEANUP_OK cpu1=online",
+)
+
+
+def cpuset_interpreter(data, arch):
+    """Validate the actual target ELF and return its bounded PT_INTERP."""
+    machine = {"x86_64": 62, "aarch64": 183}.get(arch)
+    if machine is None or len(data) < 64 or data[:6] != b"\x7fELF\x02\x01" or struct.unpack_from("<H", data, 18)[0] != machine:
+        raise ValueError("cpuset userspace requires actual " + arch + " ELF files")
+    if struct.unpack_from("<H", data, 16)[0] not in (2, 3):
+        raise ValueError("cpuset userspace must be executable/shared ELF files")
+    offset = struct.unpack_from("<Q", data, 32)[0]
+    stride, count = struct.unpack_from("<HH", data, 54)
+    if stride < 56 or offset > len(data) or count > (len(data) - offset) // stride:
+        raise ValueError("truncated cpuset userspace program headers")
+    interpreter = None
+    for index in range(count):
+        kind, _, start, _, _, size, _, _ = struct.unpack_from("<IIQQQQQQ", data, offset + index * stride)
+        if start > len(data) or size > len(data) - start:
+            raise ValueError("truncated cpuset userspace segment")
+        if kind == 3:
+            value = data[start:start + size]
+            if interpreter is not None or not value.endswith(b"\0") or b"\0" in value[:-1]:
+                raise ValueError("invalid cpuset userspace interpreter")
+            interpreter = value[:-1].decode("ascii")
+            if not interpreter.startswith("/") or any(c.isspace() for c in interpreter) or ".." in Path(interpreter).parts:
+                raise ValueError("invalid cpuset userspace interpreter path")
+    return interpreter
+
+
+def cpuset_root_runtime(root, arch, add):
+    """Resolve a supplied target root without executing any of its binaries."""
+    root = Path(root).resolve(strict=True)
+    if not root.is_dir():
+        raise ValueError("cpuset userspace root is not a directory")
+
+    def resolve(guest):
+        choices = [guest]
+        if guest.split('/')[1] in ('bin', 'sbin', 'lib', 'lib64'):
+            choices.append('/usr' + guest)
+        for name in choices:
+            path = root / name.lstrip('/')
+            if path.exists():
+                path = path.resolve(strict=True)
+                if not path.is_relative_to(root):
+                    raise ValueError("cpuset userspace path escapes supplied root: " + guest)
+                if path.is_file():
+                    return path
+        raise FileNotFoundError("cpuset userspace root lacks " + guest)
+
+    multiarch = {'x86_64': 'x86_64-linux-gnu', 'aarch64': 'aarch64-linux-gnu'}[arch]
+    search = ('/lib/' + multiarch, '/usr/lib/' + multiarch,
+              '/lib64', '/usr/lib64', '/lib', '/usr/lib')
+    queue = []
+    static_box = None
+    for guest in ('/bin/bash', '/bin/busybox'):
+        path = resolve(guest)
+        data = add(guest, path)
+        interpreter = cpuset_interpreter(data, arch)
+        if guest.endswith('/busybox') and interpreter is not None:
+            raise ValueError("cpuset-v1 selftests require a static BusyBox")
+        if guest.endswith('/busybox'):
+            static_box = path
+        queue.append((path, data))
+        if interpreter:
+            loader = resolve(interpreter)
+            queue.append((loader, add(interpreter, loader)))
+    inspected, staged = set(), set()
+    while queue:
+        path, data = queue.pop(0)
+        if path in inspected:
+            continue
+        inspected.add(path)
+        result = subprocess.run(['readelf', '--wide', '--dynamic', str(path)], check=True,
+                                capture_output=True, timeout=10, env={**os.environ, 'LC_ALL': 'C'})
+        if result.stderr or path.read_bytes() != data:
+            raise ValueError("cpuset userspace ELF changed or has invalid dynamic metadata: " + str(path))
+        for line in result.stdout.decode().splitlines():
+            if '(NEEDED)' not in line:
+                continue
+            if path == static_box:
+                raise ValueError("cpuset-v1 selftests require a static BusyBox")
+            match = re.fullmatch(r'\s*0x[0-9a-f]+\s+\(NEEDED\)\s+Shared library: \[([^\]]+)\]\s*', line)
+            if not match or not re.fullmatch(r'[A-Za-z0-9_+.-]+', match[1]) or match[1] in ('.', '..'):
+                raise ValueError("invalid cpuset userspace DT_NEEDED entry: " + line)
+            soname = match[1]
+            if soname in staged:
+                continue
+            for directory in search:
+                try:
+                    dependency = resolve(directory + '/' + soname)
+                    break
+                except FileNotFoundError:
+                    pass
+            else:
+                raise ValueError("unresolved cpuset userspace dependency: " + soname)
+            staged.add(soname)
+            queue.append((dependency, add('/cpuset-runtime/' + soname, dependency)))
+
+
+def cpuset_userspace(arch, bash=Path("/bin/bash"), busybox=Path("/usr/bin/busybox"), userspace_root=None):
+    """Verify target userspace before output writes; execute only native defaults."""
+    if arch not in ('x86_64', 'aarch64'):
+        raise ValueError("unsupported cpuset userspace architecture: " + arch)
+    if userspace_root is None and (arch != "x86_64" or os.uname().machine not in ("x86_64", "amd64")):
+        raise ValueError("cpuset-v1 selftests require --cpuset-userspace-root without a native x86-64 host and guest")
+    files = []
+
+    def add(guest, path):
+        path = Path(path).resolve(strict=True)
+        data = path.read_bytes()
+        cpuset_interpreter(data, arch)
+        files.append((guest, path, data))
+        return data
+
+    if userspace_root is not None:
+        cpuset_root_runtime(userspace_root, arch, add)
+        interpreter = None
+    else:
+        shell = add("/bin/bash", bash)
+        interpreter = cpuset_interpreter(shell, arch)
+        box = add("/bin/busybox", busybox)
+        if cpuset_interpreter(box, arch) is not None:
+            raise ValueError("cpuset-v1 selftests require a static BusyBox")
+        applets = subprocess.run([str(busybox), "--list"], check=True, capture_output=True, timeout=10).stdout.splitlines()
+        if not set(name.encode() for name in CPUSET_APPLETS) <= set(applets):
+            raise ValueError("BusyBox lacks a required cpuset-v1 applet")
+        version = subprocess.run([str(bash), "--version"], check=True, capture_output=True, timeout=10).stdout
+        if not version.startswith(b"GNU bash, version "):
+            raise ValueError("cpuset-v1 selftests require GNU Bash")
+    if interpreter:
+        add(interpreter, interpreter)
+        result = subprocess.run(["ldd", str(bash)], check=True, capture_output=True, timeout=10,
+                                env={**os.environ, "LC_ALL": "C"})
+        if result.stderr or b"not found" in result.stdout:
+            raise ValueError("Bash has unresolved runtime dependencies")
+        for line in result.stdout.decode().splitlines():
+            match = re.fullmatch(r"\s*(\S+) => (/\S+) \(0x[0-9a-f]+\)\s*", line)
+            if match:
+                soname, path = match.groups()
+                if "/" in soname or soname in (".", ".."):
+                    raise ValueError("invalid Bash runtime soname")
+                add("/cpuset-runtime/" + soname, path)
+            elif not re.fullmatch(r"\s*(?:linux-vdso\.so\.\d+|/\S+) \(0x[0-9a-f]+\)\s*", line):
+                raise ValueError("unrecognized Bash runtime dependency: " + line)
+    for name in ("test_cpuset_v1_base.sh", "test_cpuset_v1_hp.sh"):
+        path = ROOT / "tools/testing/selftests/cgroup" / name
+        data = path.read_bytes()
+        if not data.startswith(b"#!/bin/bash\n"):
+            raise ValueError("unexpected original cpuset-v1 script interpreter")
+        files.append(("/cpuset-tests/" + name, path, data))
+    if len({guest for guest, _, _ in files}) != len(files):
+        raise ValueError("duplicate cpuset userspace destination")
+    return files
+
+
+def cpuset_manifest(work, files):
+    """Stage exactly the verified bytes, recording sources and content hashes."""
+    folder = work / "cpuset-inputs"
+    folder.mkdir(exist_ok=True)
+    directories = {"/bin", "/etc", "/cpuset-runtime", "/cpuset-tests"}
+    for guest, _, _ in files:
+        directories.update(str(parent) for parent in Path(guest).parents if str(parent) != "/")
+    entries = ''.join(f"dir {directory} 0755 0 0\n" for directory in sorted(directories, key=lambda x: (x.count('/'), x)))
+    provenance = []
+    for index, (guest, source, data) in enumerate(files):
+        output = folder / str(index)
+        output.write_bytes(data)
+        entries += f"file {guest} {output} 0755 0 0\n"
+        provenance.append(dict(guest=guest, source=str(source), sha256=hashlib.sha256(data).hexdigest()))
+    for name in CPUSET_APPLETS:
+        entries += f"slink /bin/{name} /bin/busybox 0777 0 0\n"
+    entries += "nod /dev/null 0666 0 0 c 1 3\nslink /etc/mtab /proc/mounts 0777 0 0\n"
+    setup = folder / "setup"
+    setup.write_bytes(b"cpuset-v1\n")
+    entries += f"file /cpuset-v1-setup {setup} 0600 0 0\n"
+    (folder / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
+    return entries
+
+
+def verify_cpuset_events(console, requested):
+    """Reject absent, skipped, duplicate, malformed and late selftest records."""
+    events = []
+    for line in normalize_console_transport(console).splitlines():
+        line = re.sub(rb"^\[\s*\d+\.\d+\]\s*", b"", line.strip(), count=1)
+        if b"LUPOS_CPUSET_" in line or MARKER in line:
+            events.append(line)
+    if events != [*(CPUSET_MARKERS if requested else ()), MARKER]:
+        raise ValueError("guest did not complete original cpuset-v1 tests and cleanup in order")
 
 
 def architecture(arch):
@@ -47,11 +245,12 @@ def init_command(compiler, arch, output):
     return command
 
 
-def qemu_command(qemu, arch, kernel, archive, data=None):
+def qemu_command(qemu, arch, kernel, archive, data=None, cpuset=False):
     """Keep the emulated machine, kernel console and guest target consistent."""
     _, _, machine, console = architecture(arch)
     command = shlex.split(qemu or "qemu-system-" + arch) + machine + [
-        "-accel", "tcg", "-m", "256M", "-smp", "2",
+        "-accel", "tcg", "-m", "256M", "-smp",
+        "2,sockets=1,cores=2,threads=1" if cpuset else "2",
         "-display", "none", "-serial", "stdio", "-monitor", "none",
         "-nic", "none", "-no-reboot", "-kernel", str(kernel),
         "-initrd", str(archive),
@@ -165,7 +364,15 @@ def main():
                         help="module that signature enforcement must reject inside the VM (repeatable)")
     parser.add_argument("--prepare-failslab", action="store_true",
                         help="prepare scoped FAILSLAB controls inside the isolated VM before module loading")
+    parser.add_argument("--cpuset-v1-selftests", action="store_true",
+                        help="run unchanged legacy cpuset base/hotplug selftests inside the guest")
+    parser.add_argument("--cpuset-userspace-root", type=Path,
+                        help="explicit target root containing Bash, static BusyBox and their ELF dependencies")
+    parser.add_argument("--extra-initramfs-manifest", type=Path,
+                        help="append fixture entries in gen_init_cpio manifest syntax")
     args = parser.parse_args()
+    if args.cpuset_userspace_root is not None and not args.cpuset_v1_selftests:
+        parser.error("--cpuset-userspace-root requires --cpuset-v1-selftests")
     build = args.build.resolve()
     work = build / "rust-boot-test"
     image, _, _, _ = architecture(args.arch)
@@ -188,6 +395,10 @@ def main():
         required.append("CONFIG_MODULE_SIG_FORCE=y")
     if args.prepare_failslab:
         required.extend("CONFIG_" + name + "=y" for name in FAILSLAB_CONFIG)
+    if args.cpuset_v1_selftests:
+        if args.arch != "x86_64" and args.cpuset_userspace_root is None:
+            parser.error("cpuset-v1 selftests require --cpuset-userspace-root for ARM userspace")
+        required.extend("CONFIG_" + name + "=y" for name in CPUSET_CONFIG)
     for setting in required:
         if setting not in configuration:
             parser.error(f"the requested boot checks require {setting}")
@@ -198,6 +409,14 @@ def main():
             parser.error("the initramfs manifest requires module paths without whitespace")
     if any(character.isspace() for character in str(work)):
         parser.error("the initramfs manifest requires an output path without whitespace")
+    extra_entries = ""
+    if args.extra_initramfs_manifest is not None:
+        try:
+            extra_entries = args.extra_initramfs_manifest.read_text()
+        except (OSError, UnicodeError) as error:
+            parser.error(str(error))
+        if extra_entries and not extra_entries.endswith("\n"):
+            extra_entries += "\n"
     reload_names = []
     if args.reload_modules:
         try:
@@ -206,6 +425,12 @@ def main():
             parser.error(str(error))
         if len(set(reload_names)) != len(reload_names):
             parser.error("reload module names must be distinct")
+    userspace = None
+    if args.cpuset_v1_selftests:
+        try:
+            userspace = cpuset_userspace(args.arch, userspace_root=args.cpuset_userspace_root)
+        except (OSError, ValueError, struct.error, subprocess.SubprocessError) as error:
+            parser.error(str(error))
     work.mkdir(parents=True, exist_ok=True)
 
     init = work / "init"
@@ -226,6 +451,8 @@ def main():
         f"file /init {init} 0755 0 0\n"
         f"file /fixture {fixture} 0640 123 456 /hardlink\n"
         "slink /symlink /fixture 0777 0 0\n")
+    if userspace is not None:
+        entries += cpuset_manifest(work, userspace)
     if args.module:
         entries += f"file /test-module.ko {args.module.resolve()} 0600 0 0\n"
     guest_paths = []
@@ -245,12 +472,14 @@ def main():
         entries += f"file /reload-plan {plan} 0600 0 0\n"
     for index, module in enumerate(args.reject_module):
         entries += f"file /reject-module.{index} {module.resolve()} 0600 0 0\n"
+    entries += extra_entries
     manifest.write_text(entries)
     archive = work / "initramfs.cpio"
     subprocess.run([str(generator), "-t", "0", "-c", "-o", str(archive),
                     str(manifest)], check=True)
 
-    command = qemu_command(args.qemu, args.arch, kernel, archive, args.qemu_data)
+    command = qemu_command(args.qemu, args.arch, kernel, archive, args.qemu_data,
+                           cpuset=args.cpuset_v1_selftests)
     log_path = work / "console.log"
     deadline = time.monotonic() + args.timeout
     found = False
@@ -292,9 +521,12 @@ def main():
                              module=args.module is not None, rejected=len(args.reject_module),
                              reload=args.reload_modules)
         verify_failslab_setup(log_path.read_bytes(), args.prepare_failslab)
+        verify_cpuset_events(log_path.read_bytes(), args.cpuset_v1_selftests)
     except ValueError as error:
         raise SystemExit(f"{error}; console output: {log_path}") from error
     print(f"Kernel boot and Rust-generated initramfs checks passed; console: {log_path}")
+    if args.cpuset_v1_selftests:
+        print("Original cpuset-v1 base/hotplug tests and restored CPU/hierarchy state passed.")
     if args.prepare_failslab:
         print("Scoped FAILSLAB controls verified inside the VM before module loading.")
     if args.module:

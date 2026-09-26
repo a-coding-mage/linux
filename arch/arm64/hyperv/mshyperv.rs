@@ -22,7 +22,7 @@ pub unsafe fn hv_get_hypervisor_version(info: *mut hv_hypervisor_version_info) -
     0
 }
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 unsafe fn hyperv_detect_via_acpi() -> bool {
     if acpi_disabled {
         return false;
@@ -49,7 +49,7 @@ unsafe fn hyperv_detect_via_acpi() -> bool {
     ) == 0
 }
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 unsafe fn hyperv_detect_via_acpi() -> bool {
     false
 }

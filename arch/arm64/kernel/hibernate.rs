@@ -101,13 +101,13 @@ unsafe fn create_safe_exec_page(src_start: *mut core::ffi::c_void, length: usize
 
 // CONFIG_ARM64_MTE supplies the implementation below; the other build variant
 // uses the no-op definitions, preserving the original conditional compilation.
-#[cfg(feature = "CONFIG_ARM64_MTE")]
+#[cfg(CONFIG_ARM64_MTE)]
 mod mte {
     use super::*;
     pub unsafe fn swsusp_mte_save_tags() -> c_int { 0 }
     pub unsafe fn swsusp_mte_restore_tags() {}
 }
-#[cfg(not(feature = "CONFIG_ARM64_MTE"))]
+#[cfg(not(CONFIG_ARM64_MTE))]
 mod mte {
     use super::*;
     pub unsafe fn swsusp_mte_save_tags() -> c_int { 0 }

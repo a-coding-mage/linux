@@ -3,7 +3,7 @@
 // The following items are present only when CONFIG_MMIOWB is enabled in the
 // source build. The corresponding Rust build configuration is external to
 // this header.
-#[cfg(feature = "CONFIG_MMIOWB")]
+#[cfg(CONFIG_MMIOWB)]
 #[macro_export]
 macro_rules! arch_mmiowb_state {
     () => {
@@ -11,7 +11,7 @@ macro_rules! arch_mmiowb_state {
     };
 }
 
-#[cfg(feature = "CONFIG_MMIOWB")]
+#[cfg(CONFIG_MMIOWB)]
 #[macro_export]
 macro_rules! mmiowb {
     () => {

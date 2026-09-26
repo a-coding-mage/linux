@@ -33,7 +33,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C:  *                   Creative Labs, Inc.
 // C:  *
 // C:  *  Routines for control of EMU10K1 chips / mixer routines
-// C:  * /
+// C:  */
 // C: 
 // C: #include <linux/time.h>
 // C: #include <linux/init.h>
@@ -47,7 +47,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 
 // C: #define AC97_ID_STAC9758	0x83847658
 // C: 
-// C: static const DECLARE_TLV_DB_SCALE(snd_audigy_db_scale2, -10350, 50, 1); /* WM8775 gain scale * /
+// C: static const DECLARE_TLV_DB_SCALE(snd_audigy_db_scale2, -10350, 50, 1); /* WM8775 gain scale */
 // C: 
 // C: 
 // C: static int add_ctls(struct snd_emu10k1 *emu, const struct snd_kcontrol_new *tpl,
@@ -80,7 +80,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 // C: 	unsigned int idx = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
 // C: 
-// C: 	/* Limit: emu->spdif_bits * /
+// C: 	/* Limit: emu->spdif_bits */
 // C: 	if (idx >= 3)
 // C: 		return -EINVAL;
 // C: 	ucontrol->value.iec958.status[0] = (emu->spdif_bits[idx] >> 0) & 0xff;
@@ -118,7 +118,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 
 // C: /*
 // C:  * List of data sources available for each destination
-// C:  * /
+// C:  */
 // C: 
 // C: #define DSP_TEXTS \
 // C: 	"DSP 0", "DSP 1", "DSP 2", "DSP 3", "DSP 4", "DSP 5", "DSP 6", "DSP 7", \
@@ -164,7 +164,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	EMU_SRC_ALICE_EMU32B+0xe, \
 // C: 	EMU_SRC_ALICE_EMU32B+0xf
 // C: 
-// C: /* 1010 rev1 * /
+// C: /* 1010 rev1 */
 // C: 
 // C: #define EMU1010_COMMON_TEXTS \
 // C: 	"Silence", \
@@ -194,7 +194,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: };
 // C: static_assert(ARRAY_SIZE(emu1010_src_regs) == ARRAY_SIZE(emu1010_src_texts));
 // C: 
-// C: /* 1010 rev2 * /
+// C: /* 1010 rev2 */
 // C: 
 // C: #define EMU1010b_COMMON_TEXTS \
 // C: 	"Silence", \
@@ -226,7 +226,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: };
 // C: static_assert(ARRAY_SIZE(emu1010b_src_regs) == ARRAY_SIZE(emu1010b_src_texts));
 // C: 
-// C: /* 1616(m) cardbus * /
+// C: /* 1616(m) cardbus */
 // C: 
 // C: #define EMU1616_COMMON_TEXTS \
 // C: 	"Silence", \
@@ -252,7 +252,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: };
 // C: static_assert(ARRAY_SIZE(emu1616_src_regs) == ARRAY_SIZE(emu1616_src_texts));
 // C: 
-// C: /* 0404 rev1 & rev2 * /
+// C: /* 0404 rev1 & rev2 */
 // C: 
 // C: #define EMU0404_COMMON_TEXTS \
 // C: 	"Silence", \
@@ -275,12 +275,12 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: /*
 // C:  * Data destinations - physical EMU outputs.
 // C:  * Each destination has an enum mixer control to choose a data source
-// C:  * /
+// C:  */
 // C: 
 // C: #define LR_CTLS(base) LR_PS(base, " Playback Enum")
 // C: #define ADAT_CTLS(pfx) ADAT_PS(pfx, " Playback Enum")
 // C: 
-// C: /* 1010 rev1 * /
+// C: /* 1010 rev1 */
 // C: 
 // C: static const char * const emu1010_output_texts[] = {
 // C: 	LR_CTLS("Dock DAC1"),
@@ -322,7 +322,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: };
 // C: static_assert(ARRAY_SIZE(emu1010_output_dflt) == ARRAY_SIZE(emu1010_output_dst));
 // C: 
-// C: /* 1010 rev2 * /
+// C: /* 1010 rev2 */
 // C: 
 // C: static const char * const snd_emu1010b_output_texts[] = {
 // C: 	LR_CTLS("Dock DAC1"),
@@ -361,7 +361,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	EMU_SRC_ALICE_EMU32A+4, EMU_SRC_ALICE_EMU32A+5, EMU_SRC_ALICE_EMU32A+6, EMU_SRC_ALICE_EMU32A+7,
 // C: };
 // C: 
-// C: /* 1616(m) cardbus * /
+// C: /* 1616(m) cardbus */
 // C: 
 // C: static const char * const snd_emu1616_output_texts[] = {
 // C: 	LR_CTLS("Dock DAC1"),
@@ -394,7 +394,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: };
 // C: static_assert(ARRAY_SIZE(emu1616_output_dflt) == ARRAY_SIZE(emu1616_output_dst));
 // C: 
-// C: /* 0404 rev1 & rev2 * /
+// C: /* 0404 rev1 & rev2 */
 // C: 
 // C: static const char * const snd_emu0404_output_texts[] = {
 // C: 	LR_CTLS("DAC"),
@@ -418,7 +418,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C:  * Data destinations - FPGA outputs going to Alice2 (Audigy) for
 // C:  *   capture (EMU32 + I2S links)
 // C:  * Each destination has an enum mixer control to choose a data source
-// C:  * /
+// C:  */
 // C: 
 // C: static const char * const emu1010_input_texts[] = {
 // C: 	"DSP 0 Capture Enum",
@@ -437,7 +437,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	"DSP D Capture Enum",
 // C: 	"DSP E Capture Enum",
 // C: 	"DSP F Capture Enum",
-// C: 	/* These exist only on rev1 EMU1010 cards. * /
+// C: 	/* These exist only on rev1 EMU1010 cards. */
 // C: 	"DSP 10 Capture Enum",
 // C: 	"DSP 11 Capture Enum",
 // C: 	"DSP 12 Capture Enum",
@@ -464,7 +464,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	EMU_DST_ALICE2_EMU32_D,
 // C: 	EMU_DST_ALICE2_EMU32_E,
 // C: 	EMU_DST_ALICE2_EMU32_F,
-// C: 	/* These exist only on rev1 EMU1010 cards. * /
+// C: 	/* These exist only on rev1 EMU1010 cards. */
 // C: 	EMU_DST_ALICE_I2S0_LEFT,
 // C: 	EMU_DST_ALICE_I2S0_RIGHT,
 // C: 	EMU_DST_ALICE_I2S1_LEFT,
@@ -485,7 +485,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	EMU_SRC_DOCK_ADC2_RIGHT1,
 // C: 	/* Pavel Hofman - setting defaults for all capture channels.
 // C: 	 * Defaults only, users will set their own values anyways, let's
-// C: 	 * just copy/paste. * /
+// C: 	 * just copy/paste. */
 // C: 	EMU_SRC_DOCK_MIC_A1,
 // C: 	EMU_SRC_DOCK_MIC_B1,
 // C: 	EMU_SRC_HAMOA_ADC_LEFT1,
@@ -538,7 +538,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 
 // C: static const struct snd_emu1010_routing_info emu1010_routing_info[] = {
 // C: 	{
-// C: 		/* rev1 1010 * /
+// C: 		/* rev1 1010 */
 // C: 		.src_regs = emu1010_src_regs,
 // C: 		.src_texts = emu1010_src_texts,
 // C: 		.n_srcs = ARRAY_SIZE(emu1010_src_texts),
@@ -553,7 +553,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		.n_ins = ARRAY_SIZE(emu1010_input_dst),
 // C: 	},
 // C: 	{
-// C: 		/* rev2 1010 * /
+// C: 		/* rev2 1010 */
 // C: 		.src_regs = emu1010b_src_regs,
 // C: 		.src_texts = emu1010b_src_texts,
 // C: 		.n_srcs = ARRAY_SIZE(emu1010b_src_texts),
@@ -568,7 +568,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		.n_ins = ARRAY_SIZE(emu1010_input_dst) - 6,
 // C: 	},
 // C: 	{
-// C: 		/* 1616(m) cardbus * /
+// C: 		/* 1616(m) cardbus */
 // C: 		.src_regs = emu1616_src_regs,
 // C: 		.src_texts = emu1616_src_texts,
 // C: 		.n_srcs = ARRAY_SIZE(emu1616_src_texts),
@@ -583,7 +583,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		.n_ins = ARRAY_SIZE(emu1010_input_dst) - 6,
 // C: 	},
 // C: 	{
-// C: 		/* 0404 * /
+// C: 		/* 0404 */
 // C: 		.src_regs = emu0404_src_regs,
 // C: 		.src_texts = emu0404_src_texts,
 // C: 		.n_srcs = ARRAY_SIZE(emu0404_src_texts),
@@ -883,28 +883,28 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 
 // C: static const struct snd_emu1010_pads_info emu1010_pads_info[] = {
 // C: 	{
-// C: 		/* rev1 1010 * /
+// C: 		/* rev1 1010 */
 // C: 		.adc_ctls = snd_emu1010_adc_pads,
 // C: 		.n_adc_ctls = ARRAY_SIZE(snd_emu1010_adc_pads),
 // C: 		.dac_ctls = snd_emu1010_dac_pads,
 // C: 		.n_dac_ctls = ARRAY_SIZE(snd_emu1010_dac_pads),
 // C: 	},
 // C: 	{
-// C: 		/* rev2 1010 * /
+// C: 		/* rev2 1010 */
 // C: 		.adc_ctls = snd_emu1010_adc_pads,
 // C: 		.n_adc_ctls = ARRAY_SIZE(snd_emu1010_adc_pads) - 1,
 // C: 		.dac_ctls = snd_emu1010_dac_pads,
 // C: 		.n_dac_ctls = ARRAY_SIZE(snd_emu1010_dac_pads) - 1,
 // C: 	},
 // C: 	{
-// C: 		/* 1616(m) cardbus * /
+// C: 		/* 1616(m) cardbus */
 // C: 		.adc_ctls = snd_emu1010_adc_pads + 1,
 // C: 		.n_adc_ctls = ARRAY_SIZE(snd_emu1010_adc_pads) - 2,
 // C: 		.dac_ctls = snd_emu1010_dac_pads + 1,
 // C: 		.n_dac_ctls = ARRAY_SIZE(snd_emu1010_dac_pads) - 2,
 // C: 	},
 // C: 	{
-// C: 		/* 0404 * /
+// C: 		/* 0404 */
 // C: 		.adc_ctls = NULL,
 // C: 		.n_adc_ctls = 0,
 // C: 		.dac_ctls = NULL,
@@ -1110,7 +1110,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	int change = 0;
 // C: 
 // C: 	val = ucontrol->value.enumerated.item[0];
-// C: 	/* Limit: uinfo->value.enumerated.items = 2; * /
+// C: 	/* Limit: uinfo->value.enumerated.items = 2; */
 // C: 	if (val >= 2)
 // C: 		return -EINVAL;
 // C: 	change = (emu->emu1010.optical_out != val);
@@ -1161,7 +1161,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	int change = 0;
 // C: 
 // C: 	val = ucontrol->value.enumerated.item[0];
-// C: 	/* Limit: uinfo->value.enumerated.items = 2; * /
+// C: 	/* Limit: uinfo->value.enumerated.items = 2; */
 // C: 	if (val >= 2)
 // C: 		return -EINVAL;
 // C: 	change = (emu->emu1010.optical_in != val);
@@ -1220,15 +1220,15 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	/* If the capture source has changed,
 // C: 	 * update the capture volume from the cached value
 // C: 	 * for the particular source.
-// C: 	 * /
+// C: 	 */
 // C: 	source_id = ucontrol->value.enumerated.item[0];
-// C: 	/* Limit: uinfo->value.enumerated.items = 2; * /
-// C: 	/*        emu->i2c_capture_volume * /
+// C: 	/* Limit: uinfo->value.enumerated.items = 2; */
+// C: 	/*        emu->i2c_capture_volume */
 // C: 	if (source_id >= 2)
 // C: 		return -EINVAL;
 // C: 	change = (emu->i2c_capture_source != source_id);
 // C: 	if (change) {
-// C: 		snd_emu10k1_i2c_write(emu, ADC_MUX, 0); /* Mute input * /
+// C: 		snd_emu10k1_i2c_write(emu, ADC_MUX, 0); /* Mute input */
 // C: 		scoped_guard(spinlock_irq, &emu->emu_lock) {
 // C: 			gpio = inw(emu->port + A_IOCFG);
 // C: 			if (source_id == 0)
@@ -1237,17 +1237,17 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 				outw(gpio & ~0x4, emu->port + A_IOCFG);
 // C: 		}
 // C: 
-// C: 		ngain = emu->i2c_capture_volume[source_id][0]; /* Left * /
-// C: 		ogain = emu->i2c_capture_volume[emu->i2c_capture_source][0]; /* Left * /
+// C: 		ngain = emu->i2c_capture_volume[source_id][0]; /* Left */
+// C: 		ogain = emu->i2c_capture_volume[emu->i2c_capture_source][0]; /* Left */
 // C: 		if (ngain != ogain)
 // C: 			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCL, ((ngain) & 0xff));
-// C: 		ngain = emu->i2c_capture_volume[source_id][1]; /* Right * /
-// C: 		ogain = emu->i2c_capture_volume[emu->i2c_capture_source][1]; /* Right * /
+// C: 		ngain = emu->i2c_capture_volume[source_id][1]; /* Right */
+// C: 		ogain = emu->i2c_capture_volume[emu->i2c_capture_source][1]; /* Right */
 // C: 		if (ngain != ogain)
 // C: 			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCR, ((ngain) & 0xff));
 // C: 
 // C: 		source = 1 << (source_id + 2);
-// C: 		snd_emu10k1_i2c_write(emu, ADC_MUX, source); /* Set source * /
+// C: 		snd_emu10k1_i2c_write(emu, ADC_MUX, source); /* Set source */
 // C: 		emu->i2c_capture_source = source_id;
 // C: 	}
 // C:         return change;
@@ -1279,8 +1279,8 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	unsigned int source_id;
 // C: 
 // C: 	source_id = kcontrol->private_value;
-// C: 	/* Limit: emu->i2c_capture_volume * /
-// C:         /*        capture_source: uinfo->value.enumerated.items = 2 * /
+// C: 	/* Limit: emu->i2c_capture_volume */
+// C:         /*        capture_source: uinfo->value.enumerated.items = 2 */
 // C: 	if (source_id >= 2)
 // C: 		return -EINVAL;
 // C: 
@@ -1299,8 +1299,8 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	int change = 0;
 // C: 
 // C: 	source_id = kcontrol->private_value;
-// C: 	/* Limit: emu->i2c_capture_volume * /
-// C:         /*        capture_source: uinfo->value.enumerated.items = 2 * /
+// C: 	/* Limit: emu->i2c_capture_volume */
+// C:         /*        capture_source: uinfo->value.enumerated.items = 2 */
 // C: 	if (source_id >= 2)
 // C: 		return -EINVAL;
 // C: 	ngain0 = ucontrol->value.integer.value[0];
@@ -1309,14 +1309,14 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		return -EINVAL;
 // C: 	if (ngain1 > 0xff)
 // C: 		return -EINVAL;
-// C: 	ogain = emu->i2c_capture_volume[source_id][0]; /* Left * /
+// C: 	ogain = emu->i2c_capture_volume[source_id][0]; /* Left */
 // C: 	if (ogain != ngain0) {
 // C: 		if (emu->i2c_capture_source == source_id)
 // C: 			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCL, ngain0);
 // C: 		emu->i2c_capture_volume[source_id][0] = ngain0;
 // C: 		change = 1;
 // C: 	}
-// C: 	ogain = emu->i2c_capture_volume[source_id][1]; /* Right * /
+// C: 	ogain = emu->i2c_capture_volume[source_id][1]; /* Right */
 // C: 	if (ogain != ngain1) {
 // C: 		if (emu->i2c_capture_source == source_id)
 // C: 			snd_emu10k1_i2c_write(emu, ADC_ATTEN_ADCR, ngain1);
@@ -1426,7 +1426,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	int change;
 // C: 	unsigned int val;
 // C: 
-// C: 	/* Limit: emu->spdif_bits * /
+// C: 	/* Limit: emu->spdif_bits */
 // C: 	if (idx >= 3)
 // C: 		return -EINVAL;
 // C: 	val = (ucontrol->value.iec958.status[0] << 0) |
@@ -1487,7 +1487,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	}
 // C: }
 // C: 
-// C: /* PCM stream controls * /
+// C: /* PCM stream controls */
 // C: 
 // C: static int snd_emu10k1_send_routing_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 // C: {
@@ -1687,7 +1687,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	.put =          snd_emu10k1_attn_put
 // C: };
 // C: 
-// C: /* Mutichannel PCM stream controls * /
+// C: /* Mutichannel PCM stream controls */
 // C: 
 // C: static int snd_emu10k1_efx_send_routing_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 // C: {
@@ -1901,7 +1901,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		sw = !sw;
 // C: 	guard(spinlock_irq)(&emu->emu_lock);
 // C: 	if ( emu->card_capabilities->i2c_adc) {
-// C: 		/* Do nothing for Audigy 2 ZS Notebook * /
+// C: 		/* Do nothing for Audigy 2 ZS Notebook */
 // C: 	} else if (emu->audigy) {
 // C: 		reg = inw(emu->port + A_IOCFG);
 // C: 		val = sw ? A_IOCFG_GPOUT0 : 0;
@@ -1941,7 +1941,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	.put =		snd_emu10k1_shared_spdif_put
 // C: };
 // C: 
-// C: /* workaround for too low volume on Audigy due to 16bit/24bit conversion * /
+// C: /* workaround for too low volume on Audigy due to 16bit/24bit conversion */
 // C: 
 // C: #define snd_audigy_capture_boost_info	snd_ctl_boolean_mono_info
 // C: 
@@ -1951,7 +1951,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 // C: 	unsigned int val;
 // C: 
-// C: 	/* FIXME: better to use a cached version * /
+// C: 	/* FIXME: better to use a cached version */
 // C: 	val = snd_ac97_read(emu->ac97, AC97_REC_GAIN);
 // C: 	ucontrol->value.integer.value[0] = !!val;
 // C: 	return 0;
@@ -1981,7 +1981,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 
 // C: 
 // C: /*
-// C:  * /
+// C:  */
 // C: static void snd_emu10k1_mixer_free_ac97(struct snd_ac97 *ac97)
 // C: {
 // C: 	struct snd_emu10k1 *emu = ac97->private_data;
@@ -1989,7 +1989,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: }
 // C: 
 // C: /*
-// C:  * /
+// C:  */
 // C: static int remove_ctl(struct snd_card *card, const char *name)
 // C: {
 // C: 	struct snd_ctl_elem_id id;
@@ -2017,7 +2017,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	struct snd_card *card = emu->card;
 // C: 	const char * const *c;
 // C: 	static const char * const emu10k1_remove_ctls[] = {
-// C: 		/* no AC97 mono, surround, center/lfe * /
+// C: 		/* no AC97 mono, surround, center/lfe */
 // C: 		"Master Mono Playback Switch",
 // C: 		"Master Mono Playback Volume",
 // C: 		"PCM Out Path & Mute",
@@ -2037,16 +2037,16 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		NULL
 // C: 	};
 // C: 	static const char * const audigy_remove_ctls[] = {
-// C: 		/* Master/PCM controls on ac97 of Audigy has no effect * /
+// C: 		/* Master/PCM controls on ac97 of Audigy has no effect */
 // C: 		/* On the Audigy2 the AC97 playback is piped into
-// C: 		 * the Philips ADC for 24bit capture * /
+// C: 		 * the Philips ADC for 24bit capture */
 // C: 		"PCM Playback Switch",
 // C: 		"PCM Playback Volume",
 // C: 		"Master Playback Switch",
 // C: 		"Master Playback Volume",
 // C: 		"PCM Out Path & Mute",
 // C: 		"Mono Output Select",
-// C: 		/* remove unused AC97 capture controls * /
+// C: 		/* remove unused AC97 capture controls */
 // C: 		"Capture Source",
 // C: 		"Capture Switch",
 // C: 		"Capture Volume",
@@ -2064,9 +2064,9 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		NULL
 // C: 	};
 // C: 	static const char * const audigy_rename_ctls[] = {
-// C: 		/* use conventional names * /
+// C: 		/* use conventional names */
 // C: 		"Wave Playback Volume", "PCM Playback Volume",
-// C: 		/* "Wave Capture Volume", "PCM Capture Volume", * /
+// C: 		/* "Wave Capture Volume", "PCM Capture Volume", */
 // C: 		"Wave Master Playback Volume", "Master Playback Volume",
 // C: 		"AMic Playback Volume", "Mic Playback Volume",
 // C: 		"Master Mono Playback Switch", "Phone Output Playback Switch",
@@ -2084,7 +2084,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	};
 // C: 	static const char * const audigy_remove_ctls_i2c_adc[] = {
 // C: 		/* On the Audigy2 ZS Notebook
-// C: 		 * Capture via WM8775  * /
+// C: 		 * Capture via WM8775  */
 // C: 		"Mic Capture Volume",
 // C: 		"Analog Mix Capture Volume",
 // C: 		"Aux Capture Volume",
@@ -2093,7 +2093,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	};
 // C: 	static const char * const audigy_remove_ctls_1361t_adc[] = {
 // C: 		/* On the Audigy2 the AC97 playback is piped into
-// C: 		 * the Philips ADC for 24bit capture * /
+// C: 		 * the Philips ADC for 24bit capture */
 // C: 		"PCM Playback Switch",
 // C: 		"PCM Playback Volume",
 // C: 		"Capture Source",
@@ -2143,7 +2143,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		err = snd_ac97_bus(emu->card, 0, &ops, NULL, &pbus);
 // C: 		if (err < 0)
 // C: 			return err;
-// C: 		pbus->no_vra = 1; /* we don't need VRA * /
+// C: 		pbus->no_vra = 1; /* we don't need VRA */
 // C: 		
 // C: 		memset(&ac97, 0, sizeof(ac97));
 // C: 		ac97.private_data = emu;
@@ -2158,14 +2158,14 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 			dev_info(emu->card->dev,
 // C: 				 "Proceeding without ac97 mixers...\n");
 // C: 			snd_device_free(emu->card, pbus);
-// C: 			goto no_ac97; /* FIXME: get rid of ugly gotos.. * /
+// C: 			goto no_ac97; /* FIXME: get rid of ugly gotos.. */
 // C: 		}
 // C: 		if (emu->audigy) {
-// C: 			/* set master volume to 0 dB * /
+// C: 			/* set master volume to 0 dB */
 // C: 			snd_ac97_write_cache(emu->ac97, AC97_MASTER, 0x0000);
-// C: 			/* set capture source to mic * /
+// C: 			/* set capture source to mic */
 // C: 			snd_ac97_write_cache(emu->ac97, AC97_REC_SEL, 0x0000);
-// C: 			/* set mono output (TAD) to mic * /
+// C: 			/* set mono output (TAD) to mic */
 // C: 			snd_ac97_update_bits(emu->ac97, AC97_GENERAL_PURPOSE,
 // C: 				0x0200, 0x0200);
 // C: 			if (emu->card_capabilities->adc_1361t)
@@ -2177,7 +2177,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 			 * Credits for cards based on STAC9758:
 // C: 			 *   James Courtier-Dutton <James@superbug.demon.co.uk>
 // C: 			 *   Voluspa <voluspa@comhem.se>
-// C: 			 * /
+// C: 			 */
 // C: 			if (emu->ac97->id == AC97_ID_STAC9758) {
 // C: 				emu->rear_ac97 = 1;
 // C: 				snd_emu10k1_ptr_write(emu, AC97SLOT, 0, AC97SLOT_CNTR|AC97SLOT_LFE|AC97SLOT_REAR_LEFT|AC97SLOT_REAR_RIGHT);
@@ -2185,7 +2185,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 				remove_ctl(card,"Front Playback Volume");
 // C: 				remove_ctl(card,"Front Playback Switch");
 // C: 			}
-// C: 			/* remove unused AC97 controls * /
+// C: 			/* remove unused AC97 controls */
 // C: 			snd_ac97_write_cache(emu->ac97, AC97_SURROUND_MASTER, 0x0202);
 // C: 			snd_ac97_write_cache(emu->ac97, AC97_CENTER_LFE_MASTER, 0x0202);
 // C: 			c = emu10k1_remove_ctls;
@@ -2218,13 +2218,13 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	for (; *c; c += 2)
 // C: 		rename_ctl(card, c[0], c[1]);
 // C: 
-// C: 	if (emu->card_capabilities->subsystem == 0x80401102) { /* SB Live! Platinum CT4760P * /
+// C: 	if (emu->card_capabilities->subsystem == 0x80401102) { /* SB Live! Platinum CT4760P */
 // C: 		remove_ctl(card, "Center Playback Volume");
 // C: 		remove_ctl(card, "LFE Playback Volume");
 // C: 		remove_ctl(card, "Wave Center Playback Volume");
 // C: 		remove_ctl(card, "Wave LFE Playback Volume");
 // C: 	}
-// C: 	if (emu->card_capabilities->subsystem == 0x20071102) {  /* Audigy 4 Pro * /
+// C: 	if (emu->card_capabilities->subsystem == 0x20071102) {  /* Audigy 4 Pro */
 // C: 		rename_ctl(card, "Line2 Capture Volume", "Line1/Mic Capture Volume");
 // C: 		rename_ctl(card, "Analog Mix Capture Volume", "Line2 Capture Volume");
 // C: 		rename_ctl(card, "Aux2 Capture Volume", "Line3 Capture Volume");
@@ -2277,7 +2277,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		return err;
 // C: 
 // C: 	if (!emu->card_capabilities->ecard && !emu->card_capabilities->emu_model) {
-// C: 		/* sb live! and audigy * /
+// C: 		/* sb live! and audigy */
 // C: 		kctl = snd_ctl_new1(&snd_emu10k1_spdif_mask_control, emu);
 // C: 		if (!kctl)
 // C: 			return -ENOMEM;
@@ -2297,7 +2297,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 	}
 // C: 
 // C: 	if (emu->card_capabilities->emu_model) {
-// C: 		;  /* Disable the snd_audigy_spdif_shared_spdif * /
+// C: 		;  /* Disable the snd_audigy_spdif_shared_spdif */
 // C: 	} else if (emu->audigy) {
 // C: 		kctl = snd_ctl_new1(&snd_audigy_shared_spdif, emu);
 // C: 		if (!kctl)
@@ -2314,7 +2314,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 			return err;
 // C: #endif
 // C: 	} else if (! emu->card_capabilities->ecard) {
-// C: 		/* sb live! * /
+// C: 		/* sb live! */
 // C: 		kctl = snd_ctl_new1(&snd_emu10k1_shared_spdif, emu);
 // C: 		if (!kctl)
 // C: 			return -ENOMEM;
@@ -2322,7 +2322,7 @@ const AC97_ID_STAC9758: c_uint = 0x83847658;
 // C: 		if (err)
 // C: 			return err;
 // C: 	}
-// C: 	if (emu->card_capabilities->ca0151_chip) { /* P16V * /
+// C: 	if (emu->card_capabilities->ca0151_chip) { /* P16V */
 // C: 		err = snd_p16v_mixer(emu);
 // C: 		if (err)
 // C: 			return err;

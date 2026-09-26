@@ -52,25 +52,29 @@ unsafe fn ip_expire(t: *mut timer_list) {
     let qp = container_of!(frag, ipq, q);
     let net = (*(*qp).q.fqdir).net;
     let mut refs = 1;
+    'out_rcu_unlock: {
+    'out: {
     rcu_read_lock(); spin_lock(&mut (*qp).q.lock);
-    if (*qp).q.flags & INET_FRAG_COMPLETE != 0 { goto!(out); }
+    if (*qp).q.flags & INET_FRAG_COMPLETE != 0 { break 'out; }
     (*qp).q.flags |= INET_FRAG_DROP;
     inet_frag_kill(&mut (*qp).q, &mut refs);
-    if READ_ONCE!((*(*qp).q.fqdir).dead) { inet_frag_queue_flush(&mut (*qp).q, 0); goto!(out); }
+    if READ_ONCE!((*(*qp).q.fqdir).dead) { inet_frag_queue_flush(&mut (*qp).q, 0); break 'out; }
     __IP_INC_STATS(net, IPSTATS_MIB_REASMFAILS); __IP_INC_STATS(net, IPSTATS_MIB_REASMTIMEOUT);
-    if (*qp).q.flags & INET_FRAG_FIRST_IN == 0 { goto!(out); }
+    if (*qp).q.flags & INET_FRAG_FIRST_IN == 0 { break 'out; }
     head = inet_frag_pull_head(&mut (*qp).q);
-    if head.is_null() { goto!(out); }
+    if head.is_null() { break 'out; }
     (*head).dev = dev_get_by_index_rcu(net, (*qp).iif);
-    if (*head).dev.is_null() { goto!(out); }
+    if (*head).dev.is_null() { break 'out; }
     let iph = ip_hdr(head);
     reason = ip_route_input_noref(head, (*iph).daddr, (*iph).saddr, ip4h_dscp(iph), (*head).dev);
-    if reason != 0 { goto!(out); }
+    if reason != 0 { break 'out; }
     reason = SKB_DROP_REASON_FRAG_REASM_TIMEOUT;
-    if frag_expire_skip_icmp((*qp).q.key.v4.user) && (*skb_rtable(head)).rt_type != RTN_LOCAL { goto!(out); }
-    spin_unlock(&mut (*qp).q.lock); icmp_send(head, ICMP_TIME_EXCEEDED, ICMP_EXC_FRAGTIME, 0); goto!(out_rcu_unlock);
-    out: { spin_unlock(&mut (*qp).q.lock); }
-    out_rcu_unlock: { rcu_read_unlock(); kfree_skb_reason(head, reason); inet_frag_putn(&mut (*qp).q, refs); }
+    if frag_expire_skip_icmp((*qp).q.key.v4.user) && (*skb_rtable(head)).rt_type != RTN_LOCAL { break 'out; }
+    spin_unlock(&mut (*qp).q.lock); icmp_send(head, ICMP_TIME_EXCEEDED, ICMP_EXC_FRAGTIME, 0); break 'out_rcu_unlock;
+    }
+    { spin_unlock(&mut (*qp).q.lock); }
+    }
+    { rcu_read_unlock(); kfree_skb_reason(head, reason); inet_frag_putn(&mut (*qp).q, refs); }
 }
 
 unsafe fn ip_find(net: *mut net, iph: *mut iphdr, user: u32, vif: i32) -> *mut ipq {

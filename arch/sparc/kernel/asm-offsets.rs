@@ -25,7 +25,7 @@ unsafe fn sparc32_foo() -> i32 {
 #[cfg(not(target_pointer_width = "32"))]
 #[allow(dead_code)]
 unsafe fn sparc64_foo() -> i32 {
-    #[cfg(feature = "CONFIG_HIBERNATION")]
+    #[cfg(CONFIG_HIBERNATION)]
     {
         BLANK!();
         OFFSET!(SC_REG_FP, saved_context, fp);

@@ -25,21 +25,21 @@
  */
 
 // The original declarations are enabled when CONFIG_MACH_AMS_DELTA is defined.
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_KEYBRD_DATA: i32 = 0;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_KEYBRD_CLK: i32 = 1;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_MODEM_IRQ: i32 = 2;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_HOOK_SWITCH: i32 = 4;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_SCARD_NOFF: i32 = 6;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_SCARD_IO: i32 = 7;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_CONFIG: i32 = 11;
-#[cfg(feature = "CONFIG_MACH_AMS_DELTA")]
+#[cfg(CONFIG_MACH_AMS_DELTA)]
 pub const AMS_DELTA_GPIO_PIN_NAND_RB: i32 = 12;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

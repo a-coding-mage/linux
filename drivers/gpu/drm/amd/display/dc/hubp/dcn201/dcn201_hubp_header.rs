@@ -136,8 +136,7 @@ extern "C" {
         inst: u32,
         hubp_regs: *const dcn201_hubp_registers,
         hubp_shift: *const dcn201_hubp_shift,
-        hubp_mask: *const dcn201_hubp_mask,
-    ) -> bool;
+        hubp_mask: *const dcn201_hubp_mask) -> bool;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

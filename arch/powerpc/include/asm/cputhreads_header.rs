@@ -13,7 +13,7 @@
  * directly.
  */
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub static mut threads_per_core: core::ffi::c_int;
     pub static mut threads_per_subcore: core::ffi::c_int;
@@ -21,13 +21,13 @@ extern "C" {
     pub static mut threads_core_mask: cpumask_t;
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const threads_per_core: core::ffi::c_int = 1;
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const threads_per_subcore: core::ffi::c_int = 1;
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const threads_shift: core::ffi::c_int = 0;
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub const has_big_cores: core::ffi::c_int = 0;
 
 /* Non-SMP builds use (*get_cpu_mask(0)) for threads_core_mask. */
@@ -52,19 +52,19 @@ pub unsafe fn cpu_nr_cores() -> core::ffi::c_int {
     nr_cpu_ids >> threads_shift
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 extern "C" {
     pub fn cpu_core_index_of_thread(cpu: core::ffi::c_int) -> core::ffi::c_int;
     pub fn cpu_first_thread_of_core(core: core::ffi::c_int) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub const fn cpu_core_index_of_thread(cpu: core::ffi::c_int) -> core::ffi::c_int {
     cpu
 }
 
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 #[inline]
 pub const fn cpu_first_thread_of_core(core: core::ffi::c_int) -> core::ffi::c_int {
     core
@@ -125,7 +125,7 @@ pub unsafe fn cpu_tlb_thread_sibling_step() -> core::ffi::c_int {
 
 #[inline]
 pub unsafe fn get_tensr() -> u32 {
-    #[cfg(feature = "CONFIG_BOOKE")]
+    #[cfg(CONFIG_BOOKE)]
     if cpu_has_feature(CPU_FTR_SMT) {
         return mfspr(SPRN_TENSR);
     }

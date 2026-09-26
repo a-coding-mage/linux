@@ -88,12 +88,12 @@ sctp_state_decls!(
 
 /* The remaining header declarations retain the C ABI and exact parameter order. */
 extern "C" {
-    pub fn sctp_sm_lookup_event(*mut net, sctp_event_type, sctp_state, sctp_subtype) -> *const sctp_sm_table_entry;
-    pub fn sctp_make_temp_asoc(*const sctp_endpoint, *mut sctp_chunk, gfp_t) -> *mut sctp_association;
-    pub fn sctp_do_sm(*mut net, sctp_event_type, sctp_subtype, sctp_state, *mut sctp_endpoint, *mut sctp_association, *mut core::ffi::c_void, gfp_t) -> core::ffi::c_int;
-    pub fn sctp_ootb_pkt_free(*mut sctp_packet);
-    pub fn sctp_generate_tag(*const sctp_endpoint) -> __u32;
-    pub fn sctp_generate_tsn(*const sctp_endpoint) -> __u32;
+    pub fn sctp_sm_lookup_event(_: *mut net, _: sctp_event_type, _: sctp_state, _: sctp_subtype) -> *const sctp_sm_table_entry;
+    pub fn sctp_make_temp_asoc(_: *const sctp_endpoint, _: *mut sctp_chunk, _: gfp_t) -> *mut sctp_association;
+    pub fn sctp_do_sm(_: *mut net, _: sctp_event_type, _: sctp_subtype, _: sctp_state, _: *mut sctp_endpoint, _: *mut sctp_association, _: *mut core::ffi::c_void, _: gfp_t) -> core::ffi::c_int;
+    pub fn sctp_ootb_pkt_free(_: *mut sctp_packet);
+    pub fn sctp_generate_tag(_: *const sctp_endpoint) -> __u32;
+    pub fn sctp_generate_tsn(_: *const sctp_endpoint) -> __u32;
     pub static mut sctp_timer_events: *mut sctp_timer_event_t;
 }
 

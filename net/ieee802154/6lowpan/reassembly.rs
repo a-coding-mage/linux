@@ -174,23 +174,23 @@ pub unsafe fn lowpan_net_frag_exit() {
 // CONFIG_SYSCTL: the following declarations correspond to the kernel's
 // per-network sysctl registration hooks.  Their concrete ctl_table types and
 // registration functions are supplied by the surrounding kernel bindings.
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe fn lowpan_frags_ns_sysctl_register(net: *mut net) -> i32 {
     let lowpan = net_ieee802154_lowpan(net);
     (*lowpan).sysctl.frags_hdr = register_net_sysctl(net, "net/ieee802154/6lowpan", core::ptr::null_mut());
     if (*lowpan).sysctl.frags_hdr.is_null() { -ENOMEM } else { 0 }
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 unsafe fn lowpan_frags_ns_sysctl_register(_net: *mut net) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe fn lowpan_frags_ns_sysctl_unregister(net: *mut net) {
     let lowpan = net_ieee802154_lowpan(net);
     unregister_net_sysctl_table((*lowpan).sysctl.frags_hdr);
 }
 
-#[cfg(not(feature = "CONFIG_SYSCTL"))]
+#[cfg(not(CONFIG_SYSCTL))]
 unsafe fn lowpan_frags_ns_sysctl_unregister(_net: *mut net) {}
 
 unsafe fn lowpan_frags_init_net(net: *mut net) -> i32 {

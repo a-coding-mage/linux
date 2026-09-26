@@ -65,12 +65,12 @@ unsafe fn kb_wait() {
     }
 }
 
-#[cfg(feature = "CONFIG_KVM_X86")]
+#[cfg(CONFIG_KVM_X86)]
 unsafe fn emergency_reboot_disable_virtualization() {
     local_irq_disable();
     if !x86_virt_emergency_disable_virtualization_cpu() { nmi_shootdown_cpus_on_restart(); }
 }
-#[cfg(not(feature = "CONFIG_KVM_X86"))]
+#[cfg(not(CONFIG_KVM_X86))]
 unsafe fn emergency_reboot_disable_virtualization() {}
 
 #[no_mangle]
@@ -130,7 +130,7 @@ unsafe extern "C" fn native_machine_power_off() { if kernel_can_power_off() { if
 
 #[no_mangle] pub static mut crashing_cpu: i32 = -1;
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe extern "C" fn crash_nmi_callback(val: u32, regs: *mut pt_regs) -> i32 {
     let cpu = raw_smp_processor_id();
     if cpu == crashing_cpu { return NMI_HANDLED; }
@@ -143,7 +143,7 @@ unsafe extern "C" fn crash_nmi_callback(val: u32, regs: *mut pt_regs) -> i32 {
     loop { cpu_relax(); }
 }
 
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 pub unsafe extern "C" fn nmi_shootdown_cpus(callback: nmi_shootdown_cb) {
     local_irq_disable();
     if WARN_ON_ONCE(crash_ipi_issued) { return; }
@@ -154,11 +154,11 @@ pub unsafe extern "C" fn nmi_shootdown_cpus(callback: nmi_shootdown_cb) {
     let mut msecs = 1000;
     while atomic_read(&waiting_for_crash_ipi) > 0 && msecs != 0 { mdelay(1); msecs -= 1; }
 }
-#[cfg(feature = "CONFIG_SMP")]
+#[cfg(CONFIG_SMP)]
 unsafe fn nmi_shootdown_cpus_on_restart() { if crash_ipi_issued == 0 { nmi_shootdown_cpus(None); } }
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 pub unsafe extern "C" fn nmi_shootdown_cpus(_callback: nmi_shootdown_cb) {}
-#[cfg(not(feature = "CONFIG_SMP"))]
+#[cfg(not(CONFIG_SMP))]
 unsafe fn nmi_shootdown_cpus_on_restart() {}
 
 pub unsafe extern "C" fn run_crash_ipi_callback(regs: *mut pt_regs) { if crash_ipi_issued != 0 { crash_nmi_callback(0, regs); } }

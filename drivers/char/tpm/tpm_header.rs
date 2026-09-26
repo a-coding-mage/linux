@@ -111,20 +111,20 @@ pub unsafe fn tpm_msleep(delay_msec: u32) {
     );
 }
 
-#[cfg(not(feature = "CONFIG_ACPI"))]
+#[cfg(not(CONFIG_ACPI))]
 #[inline]
 pub unsafe fn tpm_add_ppi(_chip: *mut tpm_chip) {}
 
-#[cfg(feature = "CONFIG_ACPI")]
+#[cfg(CONFIG_ACPI)]
 extern "C" {
     pub fn tpm_add_ppi(chip: *mut tpm_chip);
 }
 
-#[cfg(not(feature = "CONFIG_TCG_TPM2_HMAC"))]
+#[cfg(not(CONFIG_TCG_TPM2_HMAC))]
 #[inline]
 pub unsafe fn tpm2_sessions_init(_chip: *mut tpm_chip) -> i32 { 0 }
 
-#[cfg(feature = "CONFIG_TCG_TPM2_HMAC")]
+#[cfg(CONFIG_TCG_TPM2_HMAC)]
 extern "C" {
     pub fn tpm2_sessions_init(chip: *mut tpm_chip) -> i32;
 }

@@ -29,9 +29,9 @@ extern "C" {
 }
 
 // CONFIG_ARM_IMX6Q_CPUFREQ is a build-time configuration condition.
-#[cfg(feature = "CONFIG_ARM_IMX6Q_CPUFREQ")]
+#[cfg(CONFIG_ARM_IMX6Q_CPUFREQ)]
 const CONFIG_ARM_IMX6Q_CPUFREQ: bool = true;
-#[cfg(not(feature = "CONFIG_ARM_IMX6Q_CPUFREQ"))]
+#[cfg(not(CONFIG_ARM_IMX6Q_CPUFREQ))]
 const CONFIG_ARM_IMX6Q_CPUFREQ: bool = false;
 
 unsafe extern "C" fn imx6sx_init_machine() {

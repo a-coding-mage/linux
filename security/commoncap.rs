@@ -226,8 +226,7 @@ extern "C" {
         cred: *const cred,
         target_ns: *mut user_namespace,
         cred_ns: *const user_namespace,
-        cap: i32,
-    ) -> i32;
+        cap: i32) -> i32;
 
     pub fn cap_raised(cap: kernel_cap_t, cap_bit: i32) -> bool;
 
@@ -290,8 +289,7 @@ extern "C" {
     pub fn make_vfsuid(
         idmap: *mut mnt_idmap,
         fs_ns: *mut user_namespace,
-        kuid: kuid_t,
-    ) -> vfsuid_t;
+        kuid: kuid_t) -> vfsuid_t;
 
     pub fn from_kuid(ns: *mut user_namespace, kuid: kuid_t) -> u32;
 
@@ -305,14 +303,12 @@ extern "C" {
         inode: *mut inode,
         name: *const u8,
         value: *mut u8,
-        size: usize,
-    ) -> i32;
+        size: usize) -> i32;
 
     pub fn __vfs_removexattr(
         idmap: *mut mnt_idmap,
         dentry: *mut dentry,
-        name: *const u8,
-    ) -> i32;
+        name: *const u8) -> i32;
 
     pub fn vfs_getxattr_alloc(
         idmap: *mut mnt_idmap,
@@ -320,8 +316,7 @@ extern "C" {
         name: *const u8,
         buf: *mut *mut u8,
         buf_size: usize,
-        gfp: u32,
-    ) -> i32;
+        gfp: u32) -> i32;
 
     pub fn le32_to_cpu(value: u32) -> u32;
 
@@ -346,8 +341,7 @@ extern "C" {
         target_ns: *mut user_namespace,
         cred_ns: *const user_namespace,
         cap: i32,
-        ret: i32,
-    );
+        ret: i32);
 
     pub fn ptracer_capable(task: *const task_struct, ns: *mut user_namespace) -> bool;
 
@@ -364,20 +358,17 @@ extern "C" {
     pub fn audit_log_bprm_fcaps(
         bprm: *const linux_binprm,
         new: *const cred,
-        old: *const cred,
-    ) -> i32;
+        old: *const cred) -> i32;
 
     pub fn capable_wrt_inode_uidgid(
         idmap: *mut mnt_idmap,
         inode: *mut inode,
-        cap: i32,
-    ) -> bool;
+        cap: i32) -> bool;
 
     pub fn get_vfs_caps_from_disk(
         idmap: *mut mnt_idmap,
         dentry: *const dentry,
-        cpu_caps: *mut cpu_vfs_cap_data,
-    ) -> i32;
+        cpu_caps: *mut cpu_vfs_cap_data) -> i32;
 
     pub static mut init_user_ns: user_namespace;
     pub static mut nop_mnt_idmap: mnt_idmap;

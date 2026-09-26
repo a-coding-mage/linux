@@ -153,7 +153,7 @@ unsafe fn sgx_get_unmapped_area(file: *mut File, addr: usize, len: usize, pgoff:
     mm_get_unmapped_area(file, addr, len, pgoff, flags)
 }
 
-#[cfg(feature = "CONFIG_COMPAT")]
+#[cfg(CONFIG_COMPAT)]
 unsafe fn sgx_compat_ioctl(filep: *mut File, cmd: u32, arg: usize) -> i64 { sgx_ioctl(filep, cmd, arg) }
 
 #[no_mangle]

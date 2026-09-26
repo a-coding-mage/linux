@@ -68,26 +68,23 @@ struct tl1_traplog {
 	u64 tl;
 };
 
-void dump_tl1_traplog(struct tl1_traplog *p)
+void dump_tl1_traplog(tl1_traplog *p)
 {
-	i32 i, limit;
+	i: i32, limit;
 
-	printk(KERN_EMERG "TRAPLOG: Error at trap level 0x%lx, "
-	       "dumping track stack.\n", p->tl);
+	printk(c"\x010TRAPLOG: Error at trap level 0x%lx, dumping track stack.\n".as_ptr(), (*p).tl);
 
 	limit = (tlb_type == hypervisor) ? 2 : 4;
 	for /* C loop */ i = 0.. i < limit /*  i++ */ {
-		printk(KERN_EMERG
-		       "TRAPLOG: Trap level %d TSTATE[%016lx] TPC[%016lx] "
-		       "TNPC[%016lx] TT[%lx]\n",
+		printk(c"\x010TRAPLOG: Trap level %d TSTATE[%016lx] TPC[%016lx] TNPC[%016lx] TT[%lx]\n".as_ptr(),
 		       i + 1,
-		       p->trapstack[i].tstate, p->trapstack[i].tpc,
-		       p->trapstack[i].tnpc, p->trapstack[i].tt);
-		printk("TRAPLOG: TPC<%pS>\n", (*mut core::ffi::c_void) p->trapstack[i].tpc);
+		       (*p).trapstack[i].tstate, (*p).trapstack[i].tpc,
+		       (*p).trapstack[i].tnpc, (*p).trapstack[i].tt);
+		printk("TRAPLOG: TPC<%pS>\n", (*mut core::ffi::c_void) (*p).trapstack[i].tpc);
 	}
 }
 
-void bad_trap(struct pt_regs *regs, i64 lvl)
+void bad_trap(pt_regs *regs, lvl: i64)
 {
 	[i8; 36];
 
@@ -100,32 +97,32 @@ if lvl < 0x100 {
 	}
 
 	lvl -= 0x100;
-	if regs->tstate & TSTATE_PRIV {
+	if (*regs).tstate & TSTATE_PRIV {
 		sprintf(buffer, "Kernel bad sw trap %lx", lvl);
 		die_if_kernel(buffer, regs);
 	}
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
 	force_sig_fault_trapno(SIGILL, ILL_ILLTRP,
-			       (void __user *)regs->tpc, lvl);
+			       (*(void __user *)regs).tpc, lvl);
 }
 
-void bad_trap_tl1(struct pt_regs *regs, i64 lvl)
+void bad_trap_tl1(pt_regs *regs, lvl: i64)
 {
 	[i8; 36];
 	
 	if (notify_die(DIE_TRAP_TL1, "bad trap tl1", regs,
 		       0, lvl, SIGTRAP) == NOTIFY_STOP)
 		return;
-dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+dump_tl1_traplog((tl1_traplog *)(regs + 1));
 
 	sprintf (buffer, "Bad trap %lx at tl>0", lvl);
 	die_if_kernel (buffer, regs);
 }
 // conditional: CONFIG_DEBUG_BUGVERBOSE
-void do_BUG(*const i8 *file, i32 line)
+void do_BUG(*const i8 *file, line: i32)
 {
 	bust_spinlocks(1);
 	printk("kernel BUG at %s:%d!\n", file, line);
@@ -135,7 +132,7 @@ EXPORT_SYMBOL(do_BUG);
 static DEFINE_SPINLOCK(dimm_handler_lock);
 static dimm_printer_t dimm_handler;
 
-i32 sprintf_dimm(i32 synd_code, u64 paddr, *mut i8buf, i32 buflen)
+i32 sprintf_dimm(synd_code: i32, paddr: u64, buf: *mut i8, buflen: i32)
 {
 	u64 flags;
 	i32 ret = -ENODEV;
@@ -182,38 +179,40 @@ void unregister_dimm_printer(dimm_printer_t func)
 }
 EXPORT_SYMBOL_GPL(unregister_dimm_printer);
 
-void spitfire_insn_access_exception(struct pt_regs *regs, u64 sfsr, u64 sfar)
+void spitfire_insn_access_exception(pt_regs *regs, sfsr: u64, sfar: u64)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "instruction access exception", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
-	if regs->tstate & TSTATE_PRIV {
+	if (*regs).tstate & TSTATE_PRIV {
 		printk("spitfire_insn_access_exception: SFSR[%016lx] "
 		       "SFAR[%016lx], going.\n", sfsr, sfar);
 		die_if_kernel("Iax", regs);
 	}
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
-	force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *)regs->tpc);
-out:
+	force_sig_fault(SIGSEGV, SEGV_MAPERR, (*(void __user *)regs).tpc);
+	}
+	
 	exception_exit(prev_state);
 }
 
-void spitfire_insn_access_exception_tl1(struct pt_regs *regs, u64 sfsr, u64 sfar)
+void spitfire_insn_access_exception_tl1(pt_regs *regs, sfsr: u64, sfar: u64)
 {
 	if (notify_die(DIE_TRAP_TL1, "instruction access exception tl1", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
 		return;
-dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	spitfire_insn_access_exception(regs, sfsr, sfar);
 }
 
-void sun4v_insn_access_exception(struct pt_regs *regs, u64 addr, u64 type_ctx)
+void sun4v_insn_access_exception(pt_regs *regs, addr: u64, type_ctx: u64)
 {
 	u16 type = (type_ctx >> 16);
 	u16 ctx  = (type_ctx & 0xffff);
@@ -221,7 +220,7 @@ void sun4v_insn_access_exception(struct pt_regs *regs, u64 addr, u64 type_ctx)
 	if (notify_die(DIE_TRAP, "instruction access exception", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
 		return;
-if regs->tstate & TSTATE_PRIV {
+if (*regs).tstate & TSTATE_PRIV {
 		printk("sun4v_insn_access_exception: ADDR[%016lx] "
 		       "CTX[%04x] TYPE[%04x], going.\n",
 		       addr, ctx, type);
@@ -229,27 +228,27 @@ if regs->tstate & TSTATE_PRIV {
 	}
 
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
 	force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *) addr);
 }
 
-void sun4v_insn_access_exception_tl1(struct pt_regs *regs, u64 addr, u64 type_ctx)
+void sun4v_insn_access_exception_tl1(pt_regs *regs, addr: u64, type_ctx: u64)
 {
 	if (notify_die(DIE_TRAP_TL1, "instruction access exception tl1", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
 		return;
-dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	sun4v_insn_access_exception(regs, addr, type_ctx);
 }
 
-bool is_no_fault_exception(struct pt_regs *regs)
+bool is_no_fault_exception(pt_regs *regs)
 {
 	u8 asi;
 	u32 insn;
 
-	if (get_user(insn, (u32 __user *)regs->tpc) == -EFAULT)
+	if (get_user(insn, (*(u32 __user *)regs).tpc) == -EFAULT)
 		return false;
 
 	/*
@@ -266,7 +265,7 @@ bool is_no_fault_exception(struct pt_regs *regs)
 	 */
 	if ((insn & 0xc0800000) == 0xc0800000) {    /* op=3, op3[4]=1   */
 		if insn & 0x2000		    /* immediate offset */
-			asi = (regs->tstate >> 24); /* saved %asi       */
+			asi = ((*regs).tstate >> 24); /* saved %asi       */
 		else
 			asi = (insn >> 5);	    /* immediate asi    */
 		if ((asi & 0xf6) == ASI_PNF) {
@@ -282,29 +281,30 @@ bool is_no_fault_exception(struct pt_regs *regs)
 	return false;
 }
 
-void spitfire_data_access_exception(struct pt_regs *regs, u64 sfsr, u64 sfar)
+void spitfire_data_access_exception(pt_regs *regs, sfsr: u64, sfar: u64)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "data access exception", regs,
 		       0, 0x30, SIGTRAP) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
-	if regs->tstate & TSTATE_PRIV {
+	if (*regs).tstate & TSTATE_PRIV {
 		/* Test if this comes from uaccess places. */
 		const struct exception_table_entry *entry;
 
-		entry = search_exception_tables(regs->tpc);
+		entry = search_exception_tables((*regs).tpc);
 		if entry {
 			/* Ouch, somebody is trying VM hole tricks on us... */
 // conditional: DEBUG_EXCEPTIONS
-			printk("Exception: PC<%016lx> faddr<UNKNOWN>\n", regs->tpc);
+			printk("Exception: PC<%016lx> faddr<UNKNOWN>\n", (*regs).tpc);
 			printk("EX_TABLE: insn<%016lx> fixup<%016lx>\n",
-			       regs->tpc, entry->fixup);
+			       (*regs).tpc, (*entry).fixup);
 // end conditional
-			regs->tpc = entry->fixup;
-			regs->tnpc = regs->tpc + 4;
-			goto out;
+			(*regs).tpc = (*entry).fixup;
+			(*regs).tnpc = (*regs).tpc + 4;
+			break 'out;
 		}
 		/* Shit... */
 		printk("spitfire_data_access_exception: SFSR[%016lx] "
@@ -315,20 +315,21 @@ void spitfire_data_access_exception(struct pt_regs *regs, u64 sfsr, u64 sfar)
 	if (is_no_fault_exception(regs))
 		return;
 force_sig_fault(SIGSEGV, SEGV_MAPERR, (void __user *)sfar);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
-void spitfire_data_access_exception_tl1(struct pt_regs *regs, u64 sfsr, u64 sfar)
+void spitfire_data_access_exception_tl1(pt_regs *regs, sfsr: u64, sfar: u64)
 {
 	if (notify_die(DIE_TRAP_TL1, "data access exception tl1", regs,
 		       0, 0x30, SIGTRAP) == NOTIFY_STOP)
 		return;
-dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	spitfire_data_access_exception(regs, sfsr, sfar);
 }
 
-void sun4v_data_access_exception(struct pt_regs *regs, u64 addr, u64 type_ctx)
+void sun4v_data_access_exception(pt_regs *regs, addr: u64, type_ctx: u64)
 {
 	u16 type = (type_ctx >> 16);
 	u16 ctx  = (type_ctx & 0xffff);
@@ -336,20 +337,20 @@ void sun4v_data_access_exception(struct pt_regs *regs, u64 addr, u64 type_ctx)
 	if (notify_die(DIE_TRAP, "data access exception", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
 		return;
-if regs->tstate & TSTATE_PRIV {
+if (*regs).tstate & TSTATE_PRIV {
 		/* Test if this comes from uaccess places. */
 		const struct exception_table_entry *entry;
 
-		entry = search_exception_tables(regs->tpc);
+		entry = search_exception_tables((*regs).tpc);
 		if entry {
 			/* Ouch, somebody is trying VM hole tricks on us... */
 // conditional: DEBUG_EXCEPTIONS
-			printk("Exception: PC<%016lx> faddr<UNKNOWN>\n", regs->tpc);
+			printk("Exception: PC<%016lx> faddr<UNKNOWN>\n", (*regs).tpc);
 			printk("EX_TABLE: insn<%016lx> fixup<%016lx>\n",
-			       regs->tpc, entry->fixup);
+			       (*regs).tpc, (*entry).fixup);
 // end conditional
-			regs->tpc = entry->fixup;
-			regs->tnpc = regs->tpc + 4;
+			(*regs).tpc = (*entry).fixup;
+			(*regs).tnpc = (*regs).tpc + 4;
 			return;
 }
 		printk("sun4v_data_access_exception: ADDR[%016lx] "
@@ -359,8 +360,8 @@ if regs->tstate & TSTATE_PRIV {
 	}
 
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
 	if (is_no_fault_exception(regs))
 		return;
@@ -386,12 +387,12 @@ if regs->tstate & TSTATE_PRIV {
 	}
 }
 
-void sun4v_data_access_exception_tl1(struct pt_regs *regs, u64 addr, u64 type_ctx)
+void sun4v_data_access_exception_tl1(pt_regs *regs, addr: u64, type_ctx: u64)
 {
 	if (notify_die(DIE_TRAP_TL1, "data access exception tl1", regs,
 		       0, 0x8, SIGTRAP) == NOTIFY_STOP)
 		return;
-dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	sun4v_data_access_exception(regs, addr, type_ctx);
 }
 // conditional: CONFIG_PCI
@@ -469,7 +470,7 @@ void spitfire_enable_estate_errors(void)
 
 *mut i8syndrome_unknown = "<Unknown>";
 
-void spitfire_log_udb_syndrome(u64 afar, u64 udbh, u64 udbl, u64 bit)
+void spitfire_log_udb_syndrome(afar: u64, udbh: u64, udbl: u64, bit: u64)
 {
 	u16 scode;
 	[i8; 64], *p;
@@ -480,8 +481,7 @@ void spitfire_log_udb_syndrome(u64 afar, u64 udbh, u64 udbl, u64 bit)
 			p = syndrome_unknown;
 		else
 			p = memmod_str;
-		printk(KERN_WARNING "CPU[%d]: UDBL Syndrome[%x] "
-		       "Memory Module \"%s\"\n",
+		printk(c"\x014CPU[%d]: UDBL Syndrome[%x] Memory Module \"%s\"\n".as_ptr(),
 		       smp_processor_id(), scode, p);
 	}
 
@@ -491,18 +491,16 @@ void spitfire_log_udb_syndrome(u64 afar, u64 udbh, u64 udbl, u64 bit)
 			p = syndrome_unknown;
 		else
 			p = memmod_str;
-		printk(KERN_WARNING "CPU[%d]: UDBH Syndrome[%x] "
-		       "Memory Module \"%s\"\n",
+		printk(c"\x014CPU[%d]: UDBH Syndrome[%x] Memory Module \"%s\"\n".as_ptr(),
 		       smp_processor_id(), scode, p);
 	}
 
 }
 
-void spitfire_cee_log(u64 afsr, u64 afar, u64 udbh, u64 udbl, i32 tl1, struct pt_regs *regs)
+void spitfire_cee_log(afsr: u64, afar: u64, udbh: u64, udbl: u64, tl1: i32, pt_regs *regs)
 {
 
-	printk(KERN_WARNING "CPU[%d]: Correctable ECC Error "
-	       "AFSR[%lx] AFAR[%016lx] UDBL[%lx] UDBH[%lx] TL>1[%d]\n",
+	printk(c"\x014CPU[%d]: Correctable ECC Error AFSR[%lx] AFAR[%016lx] UDBL[%lx] UDBH[%lx] TL>1[%d]\n".as_ptr(),
 	       smp_processor_id(), afsr, afar, udbl, udbh, tl1);
 
 	spitfire_log_udb_syndrome(afar, udbh, udbl, UDBE_CE);
@@ -519,10 +517,9 @@ void spitfire_cee_log(u64 afsr, u64 afar, u64 udbh, u64 udbl, i32 tl1, struct pt
 	spitfire_enable_estate_errors();
 }
 
-void spitfire_ue_log(u64 afsr, u64 afar, u64 udbh, u64 udbl, u64 tt, i32 tl1, struct pt_regs *regs)
+void spitfire_ue_log(afsr: u64, afar: u64, udbh: u64, udbl: u64, tt: u64, tl1: i32, pt_regs *regs)
 {
-	printk(KERN_WARNING "CPU[%d]: Uncorrectable Error AFSR[%lx] "
-	       "AFAR[%lx] UDBL[%lx] UDBH[%ld] TT[%lx] TL>1[%d]\n",
+	printk(c"\x014CPU[%d]: Uncorrectable Error AFSR[%lx] AFAR[%lx] UDBL[%lx] UDBH[%ld] TT[%lx] TL>1[%d]\n".as_ptr(),
 	       smp_processor_id(), afsr, afar, udbl, udbh, tt, tl1);
 
 	/* XXX add more human friendly logging of the error status
@@ -537,9 +534,9 @@ void spitfire_ue_log(u64 afsr, u64 afar, u64 udbh, u64 udbl, u64 tt, i32 tl1, st
 	notify_die(DIE_TRAP, "Uncorrectable Error", regs,
 		   0, tt, SIGTRAP);
 
-	if regs->tstate & TSTATE_PRIV {
+	if (*regs).tstate & TSTATE_PRIV {
 		if tl1
-			dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+			dump_tl1_traplog((tl1_traplog *)(regs + 1));
 		die_if_kernel("UE", regs);
 	}
 
@@ -552,15 +549,15 @@ void spitfire_ue_log(u64 afsr, u64 afar, u64 udbh, u64 udbl, u64 tt, i32 tl1, st
 	spitfire_enable_estate_errors();
 
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
 	force_sig_fault(SIGBUS, BUS_OBJERR, (*mut core::ffi::c_void)0);
 }
 
-void spitfire_access_error(struct pt_regs *regs, u64 status_encoded, u64 afar)
+void spitfire_access_error(pt_regs *regs, status_encoded: u64, afar: u64)
 {
-	u64 afsr, tt, udbh, udbl;
+	afsr: u64, tt, udbh, udbl;
 	i32 tl1;
 
 	afsr = (status_encoded & SFSTAT_AFSR_MASK) >> SFSTAT_AFSR_SHIFT;
@@ -575,7 +572,7 @@ void spitfire_access_error(struct pt_regs *regs, u64 status_encoded, u64 afar)
 		spitfire_enable_estate_errors();
 
 		pci_poke_faulted = 1;
-		regs->tnpc = regs->tpc + 4;
+		(*regs).tnpc = (*regs).tpc + 4;
 		return;
 }
 // end conditional
@@ -809,7 +806,7 @@ u64 cheetah_afsr_errors;
 
 struct cheetah_err_info *cheetah_error_log;
 
-#[inline] unsafe fn struct cheetah_err_info *cheetah_get_error_log(u64 afsr)
+#[inline] unsafe fn struct cheetah_err_info *cheetah_get_error_log(afsr: u64)
 {
 	struct cheetah_err_info *p;
 	i32 cpu = smp_processor_id();
@@ -838,8 +835,8 @@ extern u32 cheetah_deferred_trap_vector[], cheetah_deferred_trap_vector_tl1[];
 
 void __init cheetah_ecache_flush_init(void)
 {
-	u64 largest_size, smallest_linesize, order, ver;
-	i32 i, sz;
+	largest_size: u64, smallest_linesize, order, ver;
+	i: i32, sz;
 
 	/* Scan all cpu device tree nodes, note two values:
 	 * 1) largest E-cache size
@@ -883,12 +880,12 @@ void __init cheetah_ecache_flush_init(void)
 	}
 
 	/* Now allocate error trap reporting scoreboard. */
-	sz = NR_CPUS * (2 * sizeof(struct cheetah_err_info));
+	sz = NR_CPUS * (2 * sizeof(cheetah_err_info));
 	for /* C loop */ order = 0.. order < NR_PAGE_ORDERS /*  order++ */ {
 		if ((PAGE_SIZE << order) >= sz)
 			break;
 	}
-	cheetah_error_log = (struct cheetah_err_info *)
+	cheetah_error_log = (cheetah_err_info *)
 		__get_free_pages(GFP_KERNEL, order);
 	if !cheetah_error_log {
 		prom_printf("cheetah_ecache_flush_init: Failed to allocate "
@@ -948,7 +945,7 @@ void cheetah_flush_ecache(void)
 			       "i" (ASI_PHYS_USE_EC), "r" (flush_linesize));
 }
 
-void cheetah_flush_ecache_line(u64 physaddr)
+void cheetah_flush_ecache_line(physaddr: u64)
 {
 	u64 alias;
 
@@ -971,7 +968,7 @@ void cheetah_flush_ecache_line(u64 physaddr)
  */
 void __cheetah_flush_icache(void)
 {
-	u32 icache_size, icache_line_size;
+	icache_size: u32, icache_line_size;
 	u64 addr;
 
 	icache_size = local_cpu_data().icache_size;
@@ -1011,7 +1008,7 @@ void cheetah_flush_icache(void)
 
 void cheetah_flush_dcache(void)
 {
-	u32 dcache_size, dcache_line_size;
+	dcache_size: u32, dcache_line_size;
 	u64 addr;
 
 	dcache_size = local_cpu_data().dcache_size;
@@ -1032,7 +1029,7 @@ void cheetah_flush_dcache(void)
  */
 void cheetah_plus_zap_dcache_parity(void)
 {
-	u32 dcache_size, dcache_line_size;
+	dcache_size: u32, dcache_line_size;
 	u64 addr;
 
 	dcache_size = local_cpu_data().dcache_size;
@@ -1062,27 +1059,27 @@ void cheetah_plus_zap_dcache_parity(void)
  * something palatable to the memory controller driver get_unumber
  * routine.
  */
-#define MT0	137
-#define MT1	138
-#define MT2	139
-#define NONE	254
-#define MTC0	140
-#define MTC1	141
-#define MTC2	142
-#define MTC3	143
-#define C0	128
-#define C1	129
-#define C2	130
-#define C3	131
-#define C4	132
-#define C5	133
-#define C6	134
-#define C7	135
-#define C8	136
-#define M2	144
-#define M3	145
-#define M4	146
-#define M	147
+pub const MT0: u32 = 137;
+pub const MT1: u32 = 138;
+pub const MT2: u32 = 139;
+pub const NONE: u32 = 254;
+pub const MTC0: u32 = 140;
+pub const MTC1: u32 = 141;
+pub const MTC2: u32 = 142;
+pub const MTC3: u32 = 143;
+pub const C0: u32 = 128;
+pub const C1: u32 = 129;
+pub const C2: u32 = 130;
+pub const C3: u32 = 131;
+pub const C4: u32 = 132;
+pub const C5: u32 = 133;
+pub const C6: u32 = 134;
+pub const C7: u32 = 135;
+pub const C8: u32 = 136;
+pub const M2: u32 = 144;
+pub const M3: u32 = 145;
+pub const M4: u32 = 146;
+pub const M: u32 = 147;
 u8 cheetah_ecc_syntab[] = {
 /*00*/NONE, C0, C1, M2, C2, M2, M3, 47, C3, M2, M2, 53, M2, 41, 29, M,
 /*01*/C4, M, M, 50, M2, 38, 25, M2, M2, 33, 24, M2, 11, M, M2, 16,
@@ -1129,7 +1126,7 @@ u8 cheetah_mtag_syntab[] = {
 };
 
 /* Return the highest priority error conditon mentioned. */
-#[inline] unsafe fn u64 cheetah_get_hipri(u64 afsr)
+#[inline] unsafe fn u64 cheetah_get_hipri(afsr: u64)
 {
 	u64 tmp = 0;
 	i32 i;
@@ -1152,8 +1149,8 @@ u8 cheetah_mtag_syntab[] = {
 	return "???";
 }
 
-void cheetah_log_errors(struct pt_regs *regs, struct cheetah_err_info *info,
-			       u64 afsr, u64 afar, i32 recoverable)
+void cheetah_log_errors(pt_regs *regs, cheetah_err_info *info,
+			       afsr: u64, afar: u64, recoverable: i32)
 {
 	u64 hipri;
 	[i8; 256];
@@ -1164,10 +1161,10 @@ void cheetah_log_errors(struct pt_regs *regs, struct cheetah_err_info *info,
 	       (afsr & CHAFSR_TL1) ? 1 : 0);
 	printk("%s" "ERROR(%d): TPC[%lx] TNPC[%lx] O7[%lx] TSTATE[%lx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       regs->tpc, regs->tnpc, regs->u_regs[UREG_I7], regs->tstate);
+	       (*regs).tpc, (*regs).tnpc, (*regs).u_regs[UREG_I7], (*regs).tstate);
 	printk("%s" "ERROR(%d): ",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id());
-	printk("TPC<%pS>\n", (*mut core::ffi::c_void) regs->tpc);
+	printk("TPC<%pS>\n", (*mut core::ffi::c_void) (*regs).tpc);
 	printk("%s" "ERROR(%d): M_SYND(%lx),  E_SYND(%lx)%s%s\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
 	       (afsr & CHAFSR_M_SYNDROME) >> CHAFSR_M_SYNDROME_SHIFT,
@@ -1214,46 +1211,46 @@ void cheetah_log_errors(struct pt_regs *regs, struct cheetah_err_info *info,
 	/* Now dump the cache snapshots. */
 	printk("%s" "ERROR(%d): D-cache idx[%x] tag[%016llx] utag[%016llx] stag[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       (i32) info->dcache_index,
-	       info->dcache_tag,
-	       info->dcache_utag,
-	       info->dcache_stag);
+	       (i32) (*info).dcache_index,
+	       (*info).dcache_tag,
+	       (*info).dcache_utag,
+	       (*info).dcache_stag);
 	printk("%s" "ERROR(%d): D-cache data0[%016llx] data1[%016llx] data2[%016llx] data3[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       info->dcache_data[0],
-	       info->dcache_data[1],
-	       info->dcache_data[2],
-	       info->dcache_data[3]);
+	       (*info).dcache_data[0],
+	       (*info).dcache_data[1],
+	       (*info).dcache_data[2],
+	       (*info).dcache_data[3]);
 	printk("%s" "ERROR(%d): I-cache idx[%x] tag[%016llx] utag[%016llx] stag[%016llx] "
 	       "u[%016llx] l[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       (i32) info->icache_index,
-	       info->icache_tag,
-	       info->icache_utag,
-	       info->icache_stag,
-	       info->icache_upper,
-	       info->icache_lower);
+	       (i32) (*info).icache_index,
+	       (*info).icache_tag,
+	       (*info).icache_utag,
+	       (*info).icache_stag,
+	       (*info).icache_upper,
+	       (*info).icache_lower);
 	printk("%s" "ERROR(%d): I-cache INSN0[%016llx] INSN1[%016llx] INSN2[%016llx] INSN3[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       info->icache_data[0],
-	       info->icache_data[1],
-	       info->icache_data[2],
-	       info->icache_data[3]);
+	       (*info).icache_data[0],
+	       (*info).icache_data[1],
+	       (*info).icache_data[2],
+	       (*info).icache_data[3]);
 	printk("%s" "ERROR(%d): I-cache INSN4[%016llx] INSN5[%016llx] INSN6[%016llx] INSN7[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       info->icache_data[4],
-	       info->icache_data[5],
-	       info->icache_data[6],
-	       info->icache_data[7]);
+	       (*info).icache_data[4],
+	       (*info).icache_data[5],
+	       (*info).icache_data[6],
+	       (*info).icache_data[7]);
 	printk("%s" "ERROR(%d): E-cache idx[%x] tag[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       (i32) info->ecache_index, info->ecache_tag);
+	       (i32) (*info).ecache_index, (*info).ecache_tag);
 	printk("%s" "ERROR(%d): E-cache data0[%016llx] data1[%016llx] data2[%016llx] data3[%016llx]\n",
 	       (recoverable ? KERN_WARNING : KERN_CRIT), smp_processor_id(),
-	       info->ecache_data[0],
-	       info->ecache_data[1],
-	       info->ecache_data[2],
-	       info->ecache_data[3]);
+	       (*info).ecache_data[0],
+	       (*info).ecache_data[1],
+	       (*info).ecache_data[2],
+	       (*info).ecache_data[3]);
 
 	afsr = (afsr & ~hipri) & cheetah_afsr_errors;
 	while afsr != 0UL {
@@ -1267,12 +1264,12 @@ void cheetah_log_errors(struct pt_regs *regs, struct cheetah_err_info *info,
 	}
 
 	if !recoverable
-		printk(KERN_CRIT "ERROR: This condition is not recoverable.\n");
+		printk(c"\x012ERROR: This condition is not recoverable.\n".as_ptr());
 }
 
-i32 cheetah_recheck_errors(struct cheetah_err_info *logp)
+i32 cheetah_recheck_errors(cheetah_err_info *logp)
 {
-	u64 afsr, afar;
+	afsr: u64, afar;
 	i32 ret = 0;
 
 	__asm__ __volatile__("ldxa [%%g0] %1, %0\n\t"
@@ -1283,8 +1280,8 @@ i32 cheetah_recheck_errors(struct cheetah_err_info *logp)
 			__asm__ __volatile__("ldxa [%%g0] %1, %0\n\t"
 					     : "=r" (afar)
 					     : "i" (ASI_AFAR));
-			logp->afsr = afsr;
-			logp->afar = afar;
+			(*logp).afsr = afsr;
+			(*logp).afar = afar;
 		}
 		ret = 1;
 	}
@@ -1295,7 +1292,7 @@ i32 cheetah_recheck_errors(struct cheetah_err_info *logp)
 	return ret;
 }
 
-void cheetah_fecc_handler(struct pt_regs *regs, u64 afsr, u64 afar)
+void cheetah_fecc_handler(pt_regs *regs, afsr: u64, afar: u64)
 {
 	struct cheetah_err_info local_snapshot, *p;
 	i32 recoverable;
@@ -1308,7 +1305,7 @@ void cheetah_fecc_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 		prom_printf("ERROR: Early Fast-ECC error afsr[%016lx] afar[%016lx]\n",
 			    afsr, afar);
 		prom_printf("ERROR: CPU(%d) TPC[%016lx] TNPC[%016lx] TSTATE[%016lx]\n",
-			    smp_processor_id(), regs->tpc, regs->tnpc, regs->tstate);
+			    smp_processor_id(), (*regs).tpc, (*regs).tnpc, (*regs).tstate);
 		prom_halt();
 	}
 
@@ -1322,10 +1319,10 @@ void cheetah_fecc_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 	 * Else, it matches and we mark the afsr in the non-local
 	 * copy as invalid so we may log new error traps there.
 	 */
-	if p->afsr != afsr || p->afar != afar
+	if (*p).afsr != afsr || (*p).afar != afar
 		local_snapshot.afsr = CHAFSR_INVALID;
 	else
-		p->afsr = CHAFSR_INVALID;
+		(*p).afsr = CHAFSR_INVALID;
 
 	cheetah_flush_icache();
 	cheetah_flush_dcache();
@@ -1385,10 +1382,10 @@ void cheetah_fecc_handler(struct pt_regs *regs, u64 afsr, u64 afar)
  * the E-cache.  Recheck error reporting registers to see if the
  * problem is intermittent.
  */
-i32 cheetah_fix_ce(u64 physaddr)
+i32 cheetah_fix_ce(physaddr: u64)
 {
 	u64 orig_estate;
-	u64 alias1, alias2;
+	alias1: u64, alias2;
 	i32 ret;
 
 	/* Make sure correctable error traps are disabled. */
@@ -1446,7 +1443,7 @@ i32 cheetah_fix_ce(u64 physaddr)
 }
 
 /* Return non-zero if PADDR is a valid physical memory address. */
-i32 cheetah_check_main_memory(u64 paddr)
+i32 cheetah_check_main_memory(paddr: u64)
 {
 	u64 vaddr = PAGE_OFFSET + paddr;
 
@@ -1456,17 +1453,17 @@ i32 cheetah_check_main_memory(u64 paddr)
 	return kern_addr_valid(vaddr);
 }
 
-void cheetah_cee_handler(struct pt_regs *regs, u64 afsr, u64 afar)
+void cheetah_cee_handler(pt_regs *regs, afsr: u64, afar: u64)
 {
 	struct cheetah_err_info local_snapshot, *p;
-	i32 recoverable, is_memory;
+	recoverable: i32, is_memory;
 
 	p = cheetah_get_error_log(afsr);
 	if !p {
 		prom_printf("ERROR: Early CEE error afsr[%016lx] afar[%016lx]\n",
 			    afsr, afar);
 		prom_printf("ERROR: CPU(%d) TPC[%016lx] TNPC[%016lx] TSTATE[%016lx]\n",
-			    smp_processor_id(), regs->tpc, regs->tnpc, regs->tstate);
+			    smp_processor_id(), (*regs).tpc, (*regs).tnpc, (*regs).tstate);
 		prom_halt();
 	}
 
@@ -1480,10 +1477,10 @@ void cheetah_cee_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 	 * Else, it matches and we mark the afsr in the non-local
 	 * copy as invalid so we may log new error traps there.
 	 */
-	if p->afsr != afsr || p->afar != afar
+	if (*p).afsr != afsr || (*p).afar != afar
 		local_snapshot.afsr = CHAFSR_INVALID;
 	else
-		p->afsr = CHAFSR_INVALID;
+		(*p).afsr = CHAFSR_INVALID;
 
 	is_memory = cheetah_check_main_memory(afar);
 
@@ -1495,7 +1492,7 @@ void cheetah_cee_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 	}
 
 	{
-		i32 flush_all, flush_line;
+		flush_all: i32, flush_line;
 
 		flush_all = flush_line = 0;
 		if ((afsr & CHAFSR_EDC) != 0UL) {
@@ -1556,10 +1553,10 @@ void cheetah_cee_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 		panic("Irrecoverable Correctable-ECC error trap.\n");
 }
 
-void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
+void cheetah_deferred_handler(pt_regs *regs, afsr: u64, afar: u64)
 {
 	struct cheetah_err_info local_snapshot, *p;
-	i32 recoverable, is_memory;
+	recoverable: i32, is_memory;
 // conditional: CONFIG_PCI
 	/* Check for the special PCI poke sequence. */
 	if (pci_poke_in_progress && pci_poke_cpu == smp_processor_id()) {
@@ -1589,8 +1586,8 @@ void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 		(void) cheetah_recheck_errors(core::ptr::null_mut());
 
 		pci_poke_faulted = 1;
-		regs->tpc += 4;
-		regs->tnpc = regs->tpc + 4;
+		(*regs).tpc += 4;
+		(*regs).tnpc = (*regs).tpc + 4;
 		return;
 }
 // end conditional
@@ -1599,7 +1596,7 @@ void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 		prom_printf("ERROR: Early deferred error afsr[%016lx] afar[%016lx]\n",
 			    afsr, afar);
 		prom_printf("ERROR: CPU(%d) TPC[%016lx] TNPC[%016lx] TSTATE[%016lx]\n",
-			    smp_processor_id(), regs->tpc, regs->tnpc, regs->tstate);
+			    smp_processor_id(), (*regs).tpc, (*regs).tnpc, (*regs).tstate);
 		prom_halt();
 	}
 
@@ -1613,15 +1610,15 @@ void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 	 * Else, it matches and we mark the afsr in the non-local
 	 * copy as invalid so we may log new error traps there.
 	 */
-	if p->afsr != afsr || p->afar != afar
+	if (*p).afsr != afsr || (*p).afar != afar
 		local_snapshot.afsr = CHAFSR_INVALID;
 	else
-		p->afsr = CHAFSR_INVALID;
+		(*p).afsr = CHAFSR_INVALID;
 
 	is_memory = cheetah_check_main_memory(afar);
 
 	{
-		i32 flush_all, flush_line;
+		flush_all: i32, flush_line;
 
 		flush_all = flush_line = 0;
 		if ((afsr & CHAFSR_EDU) != 0UL) {
@@ -1702,13 +1699,13 @@ void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 	 * to try and continue.
 	 */
 	if recoverable && is_memory {
-		if ((regs->tstate & TSTATE_PRIV) == 0UL) {
+		if (((*regs).tstate & TSTATE_PRIV) == 0UL) {
 			/* OK, usermode access. */
 			recoverable = 1;
 		} else {
 			const struct exception_table_entry *entry;
 
-			entry = search_exception_tables(regs->tpc);
+			entry = search_exception_tables((*regs).tpc);
 			if entry {
 				/* OK, kernel access to userspace. */
 				recoverable = 1;
@@ -1728,8 +1725,8 @@ void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
 				 * recoverable condition.
 				 */
 				if recoverable {
-					regs->tpc = entry->fixup;
-					regs->tnpc = regs->tpc + 4;
+					(*regs).tpc = (*entry).fixup;
+					(*regs).tnpc = (*regs).tpc + 4;
 				}
 			}
 		}
@@ -1749,7 +1746,7 @@ void cheetah_deferred_handler(struct pt_regs *regs, u64 afsr, u64 afar)
  * The hardware has disabled both the I-cache and D-cache in
  * the %dcr register.  
  */
-void cheetah_plus_parity_error(i32 type, struct pt_regs *regs)
+void cheetah_plus_parity_error(r#type: i32, pt_regs *regs)
 {
 	if type & 0x1
 		__cheetah_flush_icache();
@@ -1768,19 +1765,19 @@ void cheetah_plus_parity_error(i32 type, struct pt_regs *regs)
 			     : "g1");
 
 	if type & 0x2 {
-		printk(KERN_EMERG "CPU[%d]: Cheetah+ %c-cache parity error at TPC[%016lx]\n",
+		printk(c"\x010CPU[%d]: Cheetah+ %c-cache parity error at TPC[%016lx]\n".as_ptr(),
 		       smp_processor_id(),
 		       (type & 0x1) ? 'I' : 'D',
-		       regs->tpc);
-		printk(KERN_EMERG "TPC<%pS>\n", (*mut core::ffi::c_void) regs->tpc);
+		       (*regs).tpc);
+		printk(c"\x010TPC<%pS>\n".as_ptr(), (*mut core::ffi::c_void) (*regs).tpc);
 		panic("Irrecoverable Cheetah+ parity error.");
 	}
 
-	printk(KERN_WARNING "CPU[%d]: Cheetah+ %c-cache parity error at TPC[%016lx]\n",
+	printk(c"\x014CPU[%d]: Cheetah+ %c-cache parity error at TPC[%016lx]\n".as_ptr(),
 	       smp_processor_id(),
 	       (type & 0x1) ? 'I' : 'D',
-	       regs->tpc);
-	printk(KERN_WARNING "TPC<%pS>\n", (*mut core::ffi::c_void) regs->tpc);
+	       (*regs).tpc);
+	printk(c"\x014TPC<%pS>\n".as_ptr(), (*mut core::ffi::c_void) (*regs).tpc);
 }
 
 #[repr(C)]
@@ -1795,39 +1792,39 @@ struct sun4v_error_entry {
 
 	/* Error type */
 /*0x13*/u8		err_type;
-#define SUN4V_ERR_TYPE_UNDEFINED	0
-#define SUN4V_ERR_TYPE_UNCORRECTED_RES	1
-#define SUN4V_ERR_TYPE_PRECISE_NONRES	2
-#define SUN4V_ERR_TYPE_DEFERRED_NONRES	3
-#define SUN4V_ERR_TYPE_SHUTDOWN_RQST	4
-#define SUN4V_ERR_TYPE_DUMP_CORE	5
-#define SUN4V_ERR_TYPE_SP_STATE_CHANGE	6
-#define SUN4V_ERR_TYPE_NUM		7
+pub const SUN4V_ERR_TYPE_UNDEFINED: u32 = 0;
+pub const SUN4V_ERR_TYPE_UNCORRECTED_RES: u32 = 1;
+pub const SUN4V_ERR_TYPE_PRECISE_NONRES: u32 = 2;
+pub const SUN4V_ERR_TYPE_DEFERRED_NONRES: u32 = 3;
+pub const SUN4V_ERR_TYPE_SHUTDOWN_RQST: u32 = 4;
+pub const SUN4V_ERR_TYPE_DUMP_CORE: u32 = 5;
+pub const SUN4V_ERR_TYPE_SP_STATE_CHANGE: u32 = 6;
+pub const SUN4V_ERR_TYPE_NUM: u32 = 7;
 
 	/* Error attributes */
 /*0x14*/u32		err_attrs;
-#define SUN4V_ERR_ATTRS_PROCESSOR	0x00000001
-#define SUN4V_ERR_ATTRS_MEMORY		0x00000002
-#define SUN4V_ERR_ATTRS_PIO		0x00000004
-#define SUN4V_ERR_ATTRS_INT_REGISTERS	0x00000008
-#define SUN4V_ERR_ATTRS_FPU_REGISTERS	0x00000010
-#define SUN4V_ERR_ATTRS_SHUTDOWN_RQST	0x00000020
-#define SUN4V_ERR_ATTRS_ASR		0x00000040
-#define SUN4V_ERR_ATTRS_ASI		0x00000080
-#define SUN4V_ERR_ATTRS_PRIV_REG	0x00000100
-#define SUN4V_ERR_ATTRS_SPSTATE_MSK	0x00000600
-#define SUN4V_ERR_ATTRS_MCD		0x00000800
-#define SUN4V_ERR_ATTRS_SPSTATE_SHFT	9
-#define SUN4V_ERR_ATTRS_MODE_MSK	0x03000000
-#define SUN4V_ERR_ATTRS_MODE_SHFT	24
-#define SUN4V_ERR_ATTRS_RES_QUEUE_FULL	0x80000000
+pub const SUN4V_ERR_ATTRS_PROCESSOR: u32 = 0x00000001;
+pub const SUN4V_ERR_ATTRS_MEMORY: u32 = 0x00000002;
+pub const SUN4V_ERR_ATTRS_PIO: u32 = 0x00000004;
+pub const SUN4V_ERR_ATTRS_INT_REGISTERS: u32 = 0x00000008;
+pub const SUN4V_ERR_ATTRS_FPU_REGISTERS: u32 = 0x00000010;
+pub const SUN4V_ERR_ATTRS_SHUTDOWN_RQST: u32 = 0x00000020;
+pub const SUN4V_ERR_ATTRS_ASR: u32 = 0x00000040;
+pub const SUN4V_ERR_ATTRS_ASI: u32 = 0x00000080;
+pub const SUN4V_ERR_ATTRS_PRIV_REG: u32 = 0x00000100;
+pub const SUN4V_ERR_ATTRS_SPSTATE_MSK: u32 = 0x00000600;
+pub const SUN4V_ERR_ATTRS_MCD: u32 = 0x00000800;
+pub const SUN4V_ERR_ATTRS_SPSTATE_SHFT: u32 = 9;
+pub const SUN4V_ERR_ATTRS_MODE_MSK: u32 = 0x03000000;
+pub const SUN4V_ERR_ATTRS_MODE_SHFT: u32 = 24;
+pub const SUN4V_ERR_ATTRS_RES_QUEUE_FULL: u32 = 0x80000000;
 
-#define SUN4V_ERR_SPSTATE_FAULTED	0
-#define SUN4V_ERR_SPSTATE_AVAILABLE	1
-#define SUN4V_ERR_SPSTATE_NOT_PRESENT	2
+pub const SUN4V_ERR_SPSTATE_FAULTED: u32 = 0;
+pub const SUN4V_ERR_SPSTATE_AVAILABLE: u32 = 1;
+pub const SUN4V_ERR_SPSTATE_NOT_PRESENT: u32 = 2;
 
-#define SUN4V_ERR_MODE_USER		1
-#define SUN4V_ERR_MODE_PRIV		2
+pub const SUN4V_ERR_MODE_USER: u32 = 1;
+pub const SUN4V_ERR_MODE_PRIV: u32 = 2;
 
 	/* Real address of the memory region or PIO transaction */
 /*0x18*/u64		err_raddr;
@@ -1848,7 +1845,7 @@ struct sun4v_error_entry {
 
 	/* Value of the ASR register number */
 /*0x2a*/u16		err_asr;
-#define SUN4V_ERR_ASR_VALID		0x8000
+pub const SUN4V_ERR_ASR_VALID: u32 = 0x8000;
 
 /*0x2c*/u32		reserved_3;
 /*0x30*/u64		reserved_4;
@@ -1876,7 +1873,7 @@ static atomic_t sun4v_nonresum_oflow_cnt = ATOMIC_INIT(0);
 	return "unknown";
 }
 
-void sun4v_emit_err_attr_strings(u32 attrs)
+void sun4v_emit_err_attr_strings(attrs: u32)
 {
 	*const i8 *attr_names[] = {
 		"processor",
@@ -1901,7 +1898,7 @@ void sun4v_emit_err_attr_strings(u32 attrs)
 		"priv",
 		"mode-reserved1",
 	};
-	u32 sp_state, mode;
+	sp_state: u32, mode;
 	i32 i;
 
 	for /* C loop */ i = 0.. i < ARRAY_SIZE(attr_names) /*  i++ */ {
@@ -1931,14 +1928,14 @@ void sun4v_emit_err_attr_strings(u32 attrs)
  * are using physical addresses with bypass ASIs anyways, so what we
  * report here is exactly what we want.
  */
-void sun4v_report_real_raddr(*const i8 *pfx, struct pt_regs *regs)
+void sun4v_report_real_raddr(*const i8 *pfx, pt_regs *regs)
 {
 	u32 insn;
 	u64 addr;
 
-	if (!(regs->tstate & TSTATE_PRIV))
+	if (!((*regs).tstate & TSTATE_PRIV))
 		return;
-insn = *(u32 *) regs->tpc;
+insn = *(u32 *) (*regs).tpc;
 
 	addr = compute_effective_address(regs, insn, 0);
 
@@ -1946,8 +1943,8 @@ insn = *(u32 *) regs->tpc;
 	       pfx, addr);
 }
 
-void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
-			    i32 cpu, *const i8 *pfx, atomic_t *ocnt)
+void sun4v_log_error(pt_regs *regs, sun4v_error_entry *ent,
+			    cpu: i32, *const i8 *pfx, atomic_t *ocnt)
 {
 	u64 *raw_ptr = (u64 *) ent;
 	u32 attrs;
@@ -1955,7 +1952,7 @@ void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
 
 	printk("%s: Reporting on cpu %d\n", pfx, cpu);
 	printk("%s: TPC [0x%016lx] <%pS>\n",
-	       pfx, regs->tpc, (*mut core::ffi::c_void) regs->tpc);
+	       pfx, (*regs).tpc, (*mut core::ffi::c_void) (*regs).tpc);
 
 	printk("%s: RAW [%016llx:%016llx:%016llx:%016llx\n",
 	       pfx, raw_ptr[0], raw_ptr[1], raw_ptr[2], raw_ptr[3]);
@@ -1963,11 +1960,11 @@ void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
 	       pfx, raw_ptr[4], raw_ptr[5], raw_ptr[6], raw_ptr[7]);
 
 	printk("%s: handle [0x%016llx] stick [0x%016llx]\n",
-	       pfx, ent->err_handle, ent->err_stick);
+	       pfx, (*ent).err_handle, (*ent).err_stick);
 
-	printk("%s: type [%s]\n", pfx, sun4v_err_type_to_str(ent->err_type));
+	printk("%s: type [%s]\n", pfx, sun4v_err_type_to_str((*ent).err_type));
 
-	attrs = ent->err_attrs;
+	attrs = (*ent).err_attrs;
 	printk("%s: attrs [0x%08x] < ", pfx, attrs);
 	sun4v_emit_err_attr_strings(attrs);
 	pr_cont(">\n");
@@ -1978,30 +1975,30 @@ void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
 	if (attrs & (SUN4V_ERR_ATTRS_MEMORY |
 		     SUN4V_ERR_ATTRS_PIO |
 		     SUN4V_ERR_ATTRS_ASI)) {
-		printk("%s: raddr [0x%016llx]\n", pfx, ent->err_raddr);
+		printk("%s: raddr [0x%016llx]\n", pfx, (*ent).err_raddr);
 
-		if (ent->err_raddr == ~(u64)0)
+		if ((*ent).err_raddr == ~(u64)0)
 			sun4v_report_real_raddr(pfx, regs);
 	}
 
 	if (attrs & (SUN4V_ERR_ATTRS_MEMORY | SUN4V_ERR_ATTRS_ASI))
-		printk("%s: size [0x%x]\n", pfx, ent->err_size);
+		printk("%s: size [0x%x]\n", pfx, (*ent).err_size);
 
 	if (attrs & (SUN4V_ERR_ATTRS_PROCESSOR |
 		     SUN4V_ERR_ATTRS_INT_REGISTERS |
 		     SUN4V_ERR_ATTRS_FPU_REGISTERS |
 		     SUN4V_ERR_ATTRS_PRIV_REG))
-		printk("%s: cpu[%u]\n", pfx, ent->err_cpu);
+		printk("%s: cpu[%u]\n", pfx, (*ent).err_cpu);
 
 	if attrs & SUN4V_ERR_ATTRS_ASI
-		printk("%s: asi [0x%02x]\n", pfx, ent->err_asi);
+		printk("%s: asi [0x%02x]\n", pfx, (*ent).err_asi);
 
 	if ((attrs & (SUN4V_ERR_ATTRS_INT_REGISTERS |
 		      SUN4V_ERR_ATTRS_FPU_REGISTERS |
 		      SUN4V_ERR_ATTRS_PRIV_REG)) &&
-	    (ent->err_asr & SUN4V_ERR_ASR_VALID) != 0)
+	    ((*ent).err_asr & SUN4V_ERR_ASR_VALID) != 0)
 		printk("%s: reg [0x%04x]\n",
-		       pfx, ent->err_asr & ~SUN4V_ERR_ASR_VALID);
+		       pfx, (*ent).err_asr & ~SUN4V_ERR_ASR_VALID);
 
 	show_regs(regs);
 
@@ -2016,12 +2013,12 @@ void sun4v_log_error(struct pt_regs *regs, struct sun4v_error_entry *ent,
 /* Handle memory corruption detected error which is vectored in
  * through resumable error trap.
  */
-void do_mcd_err(struct pt_regs *regs, struct sun4v_error_entry ent)
+void do_mcd_err(pt_regs *regs, sun4v_error_entry ent)
 {
 	if (notify_die(DIE_TRAP, "MCD error", regs, 0, 0x34,
 		       SIGSEGV) == NOTIFY_STOP)
 		return;
-if regs->tstate & TSTATE_PRIV {
+if (*regs).tstate & TSTATE_PRIV {
 		/* MCD exception could happen because the task was
 		 * running a system call with MCD enabled and passed a
 		 * non-versioned pointer or pointer with bad version
@@ -2034,17 +2031,17 @@ if regs->tstate & TSTATE_PRIV {
 		 */
 		const struct exception_table_entry *entry;
 
-		entry = search_exception_tables(regs->tpc);
+		entry = search_exception_tables((*regs).tpc);
 		if entry {
 			/* Looks like a bad syscall parameter */
 // conditional: DEBUG_EXCEPTIONS
 			pr_emerg("Exception: PC<%016lx> faddr<UNKNOWN>\n",
-				 regs->tpc);
+				 (*regs).tpc);
 			pr_emerg("EX_TABLE: insn<%016lx> fixup<%016lx>\n",
-				 ent.err_raddr, entry->fixup);
+				 ent.err_raddr, (*entry).fixup);
 // end conditional
-			regs->tpc = entry->fixup;
-			regs->tnpc = regs->tpc + 4;
+			(*regs).tpc = (*entry).fixup;
+			(*regs).tnpc = (*regs).tpc + 4;
 			return;
 }
 	}
@@ -2058,8 +2055,9 @@ if regs->tstate & TSTATE_PRIV {
 /* We run with %pil set to PIL_NORMAL_MAX and PSTATE_IE enabled in %pstate.
  * Log the event and clear the first word of the entry.
  */
-void sun4v_resum_error(struct pt_regs *regs, u64 offset)
+void sun4v_resum_error(pt_regs *regs, offset: u64)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 	struct sun4v_error_entry *ent, local_copy;
 	struct trap_per_cpu *tb;
@@ -2069,13 +2067,13 @@ void sun4v_resum_error(struct pt_regs *regs, u64 offset)
 	cpu = get_cpu();
 
 	tb = &trap_block[cpu];
-	paddr = tb->resum_kernel_buf_pa + offset;
+	paddr = (*tb).resum_kernel_buf_pa + offset;
 	ent = __va(paddr);
 
-	memcpy(&local_copy, ent, sizeof(struct sun4v_error_entry));
+	memcpy(&local_copy, ent, sizeof(sun4v_error_entry));
 
 	/* We have a local copy now, so release the entry.  */
-	ent->err_handle = 0;
+	(*ent).err_handle = 0;
 	wmb();
 
 	put_cpu();
@@ -2089,7 +2087,7 @@ void sun4v_resum_error(struct pt_regs *regs, u64 offset)
 		pr_info("Shutdown request, %u seconds...\n",
 			local_copy.err_secs);
 		orderly_poweroff(true);
-		goto out;
+		break 'out;
 	}
 
 	/* If this is a memory corruption detected error vectored in
@@ -2101,9 +2099,10 @@ void sun4v_resum_error(struct pt_regs *regs, u64 offset)
 }
 
 	sun4v_log_error(regs, &local_copy, cpu,
-			KERN_ERR "RESUMABLE ERROR",
+			c"\x013RESUMABLE ERROR".as_ptr(),
 			&sun4v_resum_oflow_cnt);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
@@ -2111,7 +2110,7 @@ out:
  * to retake locks this cpu already holds or causing more errors. So
  * just bump a counter, and we'll report these counter bumps above.
  */
-void sun4v_resum_overflow(struct pt_regs *regs)
+void sun4v_resum_overflow(pt_regs *regs)
 {
 	atomic_inc(&sun4v_resum_oflow_cnt);
 }
@@ -2119,11 +2118,11 @@ void sun4v_resum_overflow(struct pt_regs *regs)
 /* Given a set of registers, get the virtual addressi that was being accessed
  * by the faulting instructions at tpc.
  */
-u64 sun4v_get_vaddr(struct pt_regs *regs)
+u64 sun4v_get_vaddr(pt_regs *regs)
 {
 	u32 insn;
 
-	if (!copy_from_user(&insn, (void __user *)regs->tpc, 4)) {
+	if (!copy_from_user(&insn, (*(void __user *)regs).tpc, 4)) {
 		return compute_effective_address(regs, insn,
 						 (insn >> 25) & 0x1f);
 	}
@@ -2133,19 +2132,19 @@ u64 sun4v_get_vaddr(struct pt_regs *regs)
 /* Attempt to handle non-resumable errors generated from userspace.
  * Returns true if the signal was handled, false otherwise.
  */
-bool sun4v_nonresum_error_user_handled(struct pt_regs *regs,
-					      struct sun4v_error_entry *ent)
+bool sun4v_nonresum_error_user_handled(pt_regs *regs,
+					      sun4v_error_entry *ent)
 {
-	u32 attrs = ent->err_attrs;
+	u32 attrs = (*ent).err_attrs;
 
 	if attrs & SUN4V_ERR_ATTRS_MEMORY {
-		u64 addr = ent->err_raddr;
+		u64 addr = (*ent).err_raddr;
 
 		if (addr == ~(u64)0) {
 			/* This seems highly unlikely to ever occur */
 			pr_emerg("SUN4V NON-RECOVERABLE ERROR: Memory error detected in unknown location!\n");
 		} else {
-			u64 page_cnt = DIV_ROUND_UP(ent->err_size,
+			u64 page_cnt = DIV_ROUND_UP((*ent).err_size,
 							      PAGE_SIZE);
 
 			/* Break the unfortunate news. */
@@ -2177,7 +2176,7 @@ bool sun4v_nonresum_error_user_handled(struct pt_regs *regs,
 /* We run with %pil set to PIL_NORMAL_MAX and PSTATE_IE enabled in %pstate.
  * Log the event, clear the first word of the entry, and die.
  */
-void sun4v_nonresum_error(struct pt_regs *regs, u64 offset)
+void sun4v_nonresum_error(pt_regs *regs, offset: u64)
 {
 	struct sun4v_error_entry *ent, local_copy;
 	struct trap_per_cpu *tb;
@@ -2187,18 +2186,18 @@ void sun4v_nonresum_error(struct pt_regs *regs, u64 offset)
 	cpu = get_cpu();
 
 	tb = &trap_block[cpu];
-	paddr = tb->nonresum_kernel_buf_pa + offset;
+	paddr = (*tb).nonresum_kernel_buf_pa + offset;
 	ent = __va(paddr);
 
-	memcpy(&local_copy, ent, sizeof(struct sun4v_error_entry));
+	memcpy(&local_copy, ent, sizeof(sun4v_error_entry));
 
 	/* We have a local copy now, so release the entry.  */
-	ent->err_handle = 0;
+	(*ent).err_handle = 0;
 	wmb();
 
 	put_cpu();
 
-	if (!(regs->tstate & TSTATE_PRIV) &&
+	if (!((*regs).tstate & TSTATE_PRIV) &&
 	    sun4v_nonresum_error_user_handled(regs, &local_copy)) {
 		/* DON'T PANIC: This userspace error was handled. */
 		return;
@@ -2207,13 +2206,13 @@ void sun4v_nonresum_error(struct pt_regs *regs, u64 offset)
 	/* Check for the special PCI poke sequence. */
 	if pci_poke_in_progress && pci_poke_cpu == cpu {
 		pci_poke_faulted = 1;
-		regs->tpc += 4;
-		regs->tnpc = regs->tpc + 4;
+		(*regs).tpc += 4;
+		(*regs).tnpc = (*regs).tpc + 4;
 		return;
 }
 // end conditional
 	sun4v_log_error(regs, &local_copy, cpu,
-			KERN_EMERG "NON-RESUMABLE ERROR",
+			c"\x010NON-RESUMABLE ERROR".as_ptr(),
 			&sun4v_nonresum_oflow_cnt);
 
 	panic("Non-resumable error.");
@@ -2223,7 +2222,7 @@ void sun4v_nonresum_error(struct pt_regs *regs, u64 offset)
  * to retake locks this cpu already holds or causing more errors. So
  * just bump a counter, and we'll report these counter bumps above.
  */
-void sun4v_nonresum_overflow(struct pt_regs *regs)
+void sun4v_nonresum_overflow(pt_regs *regs)
 {
 	/* XXX Actually even this can make not that much sense.  Perhaps
 	 * XXX we should just pull the plug and panic directly from here?
@@ -2231,7 +2230,7 @@ void sun4v_nonresum_overflow(struct pt_regs *regs)
 	atomic_inc(&sun4v_nonresum_oflow_cnt);
 }
 
-void sun4v_tlb_error(struct pt_regs *regs)
+void sun4v_tlb_error(pt_regs *regs)
 {
 	die_if_kernel("TLB/TSB error", regs);
 }
@@ -2241,18 +2240,17 @@ u64 sun4v_err_itlb_ctx;
 u64 sun4v_err_itlb_pte;
 u64 sun4v_err_itlb_error;
 
-void sun4v_itlb_error_report(struct pt_regs *regs, i32 tl)
+void sun4v_itlb_error_report(pt_regs *regs, tl: i32)
 {
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 
-	printk(KERN_EMERG "SUN4V-ITLB: Error at TPC[%lx], tl %d\n",
-	       regs->tpc, tl);
-	printk(KERN_EMERG "SUN4V-ITLB: TPC<%pS>\n", (*mut core::ffi::c_void) regs->tpc);
-	printk(KERN_EMERG "SUN4V-ITLB: O7[%lx]\n", regs->u_regs[UREG_I7]);
-	printk(KERN_EMERG "SUN4V-ITLB: O7<%pS>\n",
-	       (*mut core::ffi::c_void) regs->u_regs[UREG_I7]);
-	printk(KERN_EMERG "SUN4V-ITLB: vaddr[%lx] ctx[%lx] "
-	       "pte[%lx] error[%lx]\n",
+	printk(c"\x010SUN4V-ITLB: Error at TPC[%lx], tl %d\n".as_ptr(),
+	       (*regs).tpc, tl);
+	printk(c"\x010SUN4V-ITLB: TPC<%pS>\n".as_ptr(), (*mut core::ffi::c_void) (*regs).tpc);
+	printk(c"\x010SUN4V-ITLB: O7[%lx]\n".as_ptr(), (*regs).u_regs[UREG_I7]);
+	printk(c"\x010SUN4V-ITLB: O7<%pS>\n".as_ptr(),
+	       (*mut core::ffi::c_void) (*regs).u_regs[UREG_I7]);
+	printk(c"\x010SUN4V-ITLB: vaddr[%lx] ctx[%lx] pte[%lx] error[%lx]\n".as_ptr(),
 	       sun4v_err_itlb_vaddr, sun4v_err_itlb_ctx,
 	       sun4v_err_itlb_pte, sun4v_err_itlb_error);
 
@@ -2264,48 +2262,47 @@ u64 sun4v_err_dtlb_ctx;
 u64 sun4v_err_dtlb_pte;
 u64 sun4v_err_dtlb_error;
 
-void sun4v_dtlb_error_report(struct pt_regs *regs, i32 tl)
+void sun4v_dtlb_error_report(pt_regs *regs, tl: i32)
 {
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 
-	printk(KERN_EMERG "SUN4V-DTLB: Error at TPC[%lx], tl %d\n",
-	       regs->tpc, tl);
-	printk(KERN_EMERG "SUN4V-DTLB: TPC<%pS>\n", (*mut core::ffi::c_void) regs->tpc);
-	printk(KERN_EMERG "SUN4V-DTLB: O7[%lx]\n", regs->u_regs[UREG_I7]);
-	printk(KERN_EMERG "SUN4V-DTLB: O7<%pS>\n",
-	       (*mut core::ffi::c_void) regs->u_regs[UREG_I7]);
-	printk(KERN_EMERG "SUN4V-DTLB: vaddr[%lx] ctx[%lx] "
-	       "pte[%lx] error[%lx]\n",
+	printk(c"\x010SUN4V-DTLB: Error at TPC[%lx], tl %d\n".as_ptr(),
+	       (*regs).tpc, tl);
+	printk(c"\x010SUN4V-DTLB: TPC<%pS>\n".as_ptr(), (*mut core::ffi::c_void) (*regs).tpc);
+	printk(c"\x010SUN4V-DTLB: O7[%lx]\n".as_ptr(), (*regs).u_regs[UREG_I7]);
+	printk(c"\x010SUN4V-DTLB: O7<%pS>\n".as_ptr(),
+	       (*mut core::ffi::c_void) (*regs).u_regs[UREG_I7]);
+	printk(c"\x010SUN4V-DTLB: vaddr[%lx] ctx[%lx] pte[%lx] error[%lx]\n".as_ptr(),
 	       sun4v_err_dtlb_vaddr, sun4v_err_dtlb_ctx,
 	       sun4v_err_dtlb_pte, sun4v_err_dtlb_error);
 
 	sun4v_tlb_error(regs);
 }
 
-void hypervisor_tlbop_error(u64 err, u64 op)
+void hypervisor_tlbop_error(err: u64, op: u64)
 {
-	printk(KERN_CRIT "SUN4V: TLB hv call error %lu for op %lu\n",
+	printk(c"\x012SUN4V: TLB hv call error %lu for op %lu\n".as_ptr(),
 	       err, op);
 }
 
-void hypervisor_tlbop_error_xcall(u64 err, u64 op)
+void hypervisor_tlbop_error_xcall(err: u64, op: u64)
 {
-	printk(KERN_CRIT "SUN4V: XCALL TLB hv call error %lu for op %lu\n",
+	printk(c"\x012SUN4V: XCALL TLB hv call error %lu for op %lu\n".as_ptr(),
 	       err, op);
 }
 
-void do_fpe_common(struct pt_regs *regs)
+void do_fpe_common(pt_regs *regs)
 {
-	if regs->tstate & TSTATE_PRIV {
-		regs->tpc = regs->tnpc;
-		regs->tnpc += 4;
+	if (*regs).tstate & TSTATE_PRIV {
+		(*regs).tpc = (*regs).tnpc;
+		(*regs).tnpc += 4;
 	} else {
-		u64 fsr = current_thread_info()->xfsr[0];
+		u64 fsr = (*current_thread_info()).xfsr[0];
 		i32 code;
 
 		if (test_thread_flag(TIF_32BIT)) {
-			regs->tpc &= 0xffffffff;
-			regs->tnpc &= 0xffffffff;
+			(*regs).tpc &= 0xffffffff;
+			(*regs).tnpc &= 0xffffffff;
 		}
 		code = FPE_FLTUNK;
 		if ((fsr & 0x1c000) == (1 << 14)) {
@@ -2320,81 +2317,89 @@ void do_fpe_common(struct pt_regs *regs)
 			else if fsr & 0x01
 				code = FPE_FLTRES;
 		}
-		force_sig_fault(SIGFPE, code, (void __user *)regs->tpc);
+		force_sig_fault(SIGFPE, code, (*(void __user *)regs).tpc);
 	}
 }
 
-void do_fpieee(struct pt_regs *regs)
+void do_fpieee(pt_regs *regs)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "fpu exception ieee", regs,
 		       0, 0x24, SIGFPE) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
 	do_fpe_common(regs);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
-void do_fpother(struct pt_regs *regs)
+void do_fpother(pt_regs *regs)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 	struct fpustate *f = FPUSTATE;
 	i32 ret = 0;
 
 	if (notify_die(DIE_TRAP, "fpu exception other", regs,
 		       0, 0x25, SIGFPE) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
-	switch ((current_thread_info()->xfsr[0] & 0x1c000)) {
+	switch (((*current_thread_info()).xfsr[0] & 0x1c000)) {
 	case (2 << 14): /* unfinished_FPop */
 	case (3 << 14): /* unimplemented_FPop */
 		ret = do_mathemu(regs, f, false);
 		break;
 	}
 	if ret
-		goto out;
+		break 'out;
 	do_fpe_common(regs);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
-void do_tof(struct pt_regs *regs)
+void do_tof(pt_regs *regs)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "tagged arithmetic overflow", regs,
 		       0, 0x26, SIGEMT) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
-	if regs->tstate & TSTATE_PRIV
+	if (*regs).tstate & TSTATE_PRIV
 		die_if_kernel("Penguin overflow trap from kernel mode", regs);
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
-	force_sig_fault(SIGEMT, EMT_TAGOVF, (void __user *)regs->tpc);
-out:
+	force_sig_fault(SIGEMT, EMT_TAGOVF, (*(void __user *)regs).tpc);
+	}
+	
 	exception_exit(prev_state);
 }
 
-void do_div0(struct pt_regs *regs)
+void do_div0(pt_regs *regs)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "integer division by zero", regs,
 		       0, 0x28, SIGFPE) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
-	if regs->tstate & TSTATE_PRIV
+	if (*regs).tstate & TSTATE_PRIV
 		die_if_kernel("TL0: Kernel divide by zero.", regs);
 	if (test_thread_flag(TIF_32BIT)) {
-		regs->tpc &= 0xffffffff;
-		regs->tnpc &= 0xffffffff;
+		(*regs).tpc &= 0xffffffff;
+		(*regs).tnpc &= 0xffffffff;
 	}
-	force_sig_fault(SIGFPE, FPE_INTDIV, (void __user *)regs->tpc);
-out:
+	force_sig_fault(SIGFPE, FPE_INTDIV, (*(void __user *)regs).tpc);
+	}
+	
 	exception_exit(prev_state);
 }
 
@@ -2425,9 +2430,9 @@ printk("Instruction DUMP:");
 	printk("\n");
 }
 
-void show_stack(struct task_struct *tsk, u64 *_ksp, *const i8 *loglvl)
+void show_stack(task_struct *tsk, u64 *_ksp, *const i8 *loglvl)
 {
-	u64 fp, ksp;
+	fp: u64, ksp;
 	struct thread_info *tp;
 	i32 count = 0;
 // conditional: CONFIG_FUNCTION_GRAPH_TRACER
@@ -2441,7 +2446,7 @@ void show_stack(struct task_struct *tsk, u64 *_ksp, *const i8 *loglvl)
 		if tsk == current
 			asm("mov %%fp, %0" : "=r" (ksp));
 		else
-			ksp = tp->ksp;
+			ksp = (*tp).ksp;
 	}
 	if (tp == current_thread_info())
 		flushw_all();
@@ -2456,17 +2461,17 @@ void show_stack(struct task_struct *tsk, u64 *_ksp, *const i8 *loglvl)
 
 		if (!kstack_valid(tp, fp))
 			break;
-		sf = (struct sparc_stackf *) fp;
-		regs = (struct pt_regs *) (sf + 1);
+		sf = (sparc_stackf *) fp;
+		regs = (pt_regs *) (sf + 1);
 
 		if (kstack_is_trap_frame(tp, regs)) {
-			if (!(regs->tstate & TSTATE_PRIV))
+			if (!((*regs).tstate & TSTATE_PRIV))
 				break;
-			pc = regs->tpc;
-			fp = regs->u_regs[UREG_I6] + STACK_BIAS;
+			pc = (*regs).tpc;
+			fp = (*regs).u_regs[UREG_I6] + STACK_BIAS;
 		} else {
-			pc = sf->callers_pc;
-			fp = (u64)sf->fp + STACK_BIAS;
+			pc = (*sf).callers_pc;
+			fp = (*(u64)sf).fp + STACK_BIAS;
 		}
 
 		print_ip_sym(loglvl, pc);
@@ -2475,7 +2480,7 @@ void show_stack(struct task_struct *tsk, u64 *_ksp, *const i8 *loglvl)
 			struct ftrace_ret_stack *ret_stack;
 			ret_stack = ftrace_graph_get_ret_stack(tsk, graph);
 			if ret_stack {
-				pc = ret_stack->ret;
+				pc = (*ret_stack).ret;
 				print_ip_sym(loglvl, pc);
 				graph++;
 			}
@@ -2484,17 +2489,17 @@ void show_stack(struct task_struct *tsk, u64 *_ksp, *const i8 *loglvl)
 	} while ++count < 16;
 }
 
-#[inline] unsafe fn struct reg_window *kernel_stack_up(struct reg_window *rw)
+#[inline] unsafe fn struct reg_window *kernel_stack_up(reg_window *rw)
 {
-	u64 fp = rw->ins[6];
+	u64 fp = (*rw).ins[6];
 
 	if !fp
 		return core::ptr::null_mut();
 
-	return (struct reg_window *) (fp + STACK_BIAS);
+	return (reg_window *) (fp + STACK_BIAS);
 }
 
-void __noreturn die_if_kernel(*mut i8str, struct pt_regs *regs)
+void __noreturn die_if_kernel(str: *mut i8, pt_regs *regs)
 {
 	i32 die_counter;
 	i32 count = 0;
@@ -2506,15 +2511,15 @@ void __noreturn die_if_kernel(*mut i8str, struct pt_regs *regs)
 "              /_| \\__/ |_\\\n"
 "                 \\__U_/\n");
 
-	printk("%s(%d): %s [#%d]\n", current->comm, task_pid_nr(current), str, ++die_counter);
+	printk("%s(%d): %s [#%d]\n", (*current).comm, task_pid_nr(current), str, ++die_counter);
 	notify_die(DIE_OOPS, str, regs, 0, 255, SIGSEGV);
 	__asm__ __volatile__("flushw");
 	show_regs(regs);
 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
-	if regs->tstate & TSTATE_PRIV {
+	if (*regs).tstate & TSTATE_PRIV {
 		struct thread_info *tp = current_thread_info();
-		struct reg_window *rw = (struct reg_window *)
-			(regs->u_regs[UREG_FP] + STACK_BIAS);
+		struct reg_window *rw = (reg_window *)
+			((*regs).u_regs[UREG_FP] + STACK_BIAS);
 
 		/* Stop the back trace when we hit userland or we
 		 * find some badly aligned kernel stack.
@@ -2522,38 +2527,39 @@ void __noreturn die_if_kernel(*mut i8str, struct pt_regs *regs)
 		while (rw &&
 		       count++ < 30 &&
 		       kstack_valid(tp, (u64) rw)) {
-			printk("Caller[%016lx]: %pS\n", rw->ins[7],
-			       (*mut core::ffi::c_void) rw->ins[7]);
+			printk("Caller[%016lx]: %pS\n", (*rw).ins[7],
+			       (*mut core::ffi::c_void) (*rw).ins[7]);
 
 			rw = kernel_stack_up(rw);
 		}
-		instruction_dump ((u32 *) regs->tpc);
+		instruction_dump ((u32 *) (*regs).tpc);
 	} else {
 		if (test_thread_flag(TIF_32BIT)) {
-			regs->tpc &= 0xffffffff;
-			regs->tnpc &= 0xffffffff;
+			(*regs).tpc &= 0xffffffff;
+			(*regs).tnpc &= 0xffffffff;
 		}
-		user_instruction_dump ((u32 __user *) regs->tpc);
+		user_instruction_dump ((u32 __user *) (*regs).tpc);
 	}
 	if panic_on_oops
 		panic("Fatal exception");
-	make_task_dead((regs->tstate & TSTATE_PRIV)? SIGKILL : SIGSEGV);
+	make_task_dead(((*regs).tstate & TSTATE_PRIV)? SIGKILL : SIGSEGV);
 }
 EXPORT_SYMBOL(die_if_kernel);
 
-#define VIS_OPCODE_MASK	((0x3 << 30) | (0x3f << 19))
-#define VIS_OPCODE_VAL	((0x2 << 30) | (0x36 << 19))
+pub const VIS_OPCODE_MASK: u32 = (0x3 << 30) | (0x3f << 19);
+pub const VIS_OPCODE_VAL: u32 = (0x2 << 30) | (0x36 << 19);
 
-void do_illegal_instruction(struct pt_regs *regs)
+void do_illegal_instruction(pt_regs *regs)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
-	u64 pc = regs->tpc;
-	u64 tstate = regs->tstate;
+	u64 pc = (*regs).tpc;
+	u64 tstate = (*regs).tstate;
 	u32 insn;
 
 	if (notify_die(DIE_TRAP, "illegal instruction", regs,
 		       0, 0x10, SIGILL) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
 	if tstate & TSTATE_PRIV
 		die_if_kernel("Kernel illegal instruction", regs);
@@ -2562,14 +2568,14 @@ void do_illegal_instruction(struct pt_regs *regs)
 	if (get_user(insn, (u32 __user *) pc) != -EFAULT) {
 		if ((insn & 0xc1ffc000) == 0x81700000) /* POPC */ {
 			if (handle_popc(insn, regs))
-				goto out;
+				break 'out;
 		} else if ((insn & 0xc1580000) == 0xc1100000) /* LDQ/STQ */ {
 			if (handle_ldf_stq(insn, regs))
-				goto out;
+				break 'out;
 		} else if tlb_type == hypervisor {
 			if ((insn & VIS_OPCODE_MASK) == VIS_OPCODE_VAL) {
 				if (!vis_emul(regs, insn))
-					goto out;
+					break 'out;
 			} else {
 				struct fpustate *f = FPUSTATE;
 
@@ -2579,41 +2585,44 @@ void do_illegal_instruction(struct pt_regs *regs)
 				 * Trap in the %fsr to unimplemented_FPop.
 				 */
 				if (do_mathemu(regs, f, true))
-					goto out;
+					break 'out;
 			}
 		}
 	}
 	force_sig_fault(SIGILL, ILL_ILLOPC, (void __user *)pc);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
-void mem_address_unaligned(struct pt_regs *regs, u64 sfar, u64 sfsr)
+void mem_address_unaligned(pt_regs *regs, sfar: u64, sfsr: u64)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "memory address unaligned", regs,
 		       0, 0x34, SIGSEGV) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
-	if regs->tstate & TSTATE_PRIV {
-		kernel_unaligned_trap(regs, *((u32 *)regs->tpc));
-		goto out;
+	if (*regs).tstate & TSTATE_PRIV {
+		kernel_unaligned_trap(regs, *((*(u32 *)regs).tpc));
+		break 'out;
 	}
 	if (is_no_fault_exception(regs))
 		return;
 force_sig_fault(SIGBUS, BUS_ADRALN, (void __user *)sfar);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
-void sun4v_do_mna(struct pt_regs *regs, u64 addr, u64 type_ctx)
+void sun4v_do_mna(pt_regs *regs, addr: u64, type_ctx: u64)
 {
 	if (notify_die(DIE_TRAP, "memory address unaligned", regs,
 		       0, 0x34, SIGSEGV) == NOTIFY_STOP)
 		return;
-if regs->tstate & TSTATE_PRIV {
-		kernel_unaligned_trap(regs, *((u32 *)regs->tpc));
+if (*regs).tstate & TSTATE_PRIV {
+		kernel_unaligned_trap(regs, *((*(u32 *)regs).tpc));
 		return;
 }
 	if (is_no_fault_exception(regs))
@@ -2628,13 +2637,13 @@ force_sig_fault(SIGBUS, BUS_ADRALN, (void __user *) addr);
  * precise exception. Tag mismatch on a store to memory will result in
  * precise exception if MCDPER or PMCDPER is set to 1.
  */
-void sun4v_mem_corrupt_detect_precise(struct pt_regs *regs, u64 addr,
-				      u64 context)
+void sun4v_mem_corrupt_detect_precise(pt_regs *regs, addr: u64,
+				      context: u64)
 {
 	if (notify_die(DIE_TRAP, "memory corruption precise exception", regs,
 		       0, 0x8, SIGSEGV) == NOTIFY_STOP)
 		return;
-if regs->tstate & TSTATE_PRIV {
+if (*regs).tstate & TSTATE_PRIV {
 		/* MCD exception could happen because the task was running
 		 * a system call with MCD enabled and passed a non-versioned
 		 * pointer or pointer with bad version tag to  the system
@@ -2642,16 +2651,16 @@ if regs->tstate & TSTATE_PRIV {
 		 */
 		const struct exception_table_entry *entry;
 
-		entry = search_exception_tables(regs->tpc);
+		entry = search_exception_tables((*regs).tpc);
 		if entry {
 			/* Looks like a bad syscall parameter */
 // conditional: DEBUG_EXCEPTIONS
 			pr_emerg("Exception: PC<%016lx> faddr<UNKNOWN>\n",
-				 regs->tpc);
+				 (*regs).tpc);
 			pr_emerg("EX_TABLE: insn<%016lx> fixup<%016lx>\n",
-				 regs->tpc, entry->fixup);
+				 (*regs).tpc, (*entry).fixup);
 // end conditional
-			regs->tpc = entry->fixup;
+			(*regs).tpc = entry->fixup;
 			regs->tnpc = regs->tpc + 4;
 			return;
 }
@@ -2667,118 +2676,120 @@ if regs->tstate & TSTATE_PRIV {
 	force_sig_fault(SIGSEGV, SEGV_ADIPERR, (void __user *)addr);
 }
 
-void do_privop(struct pt_regs *regs)
+void do_privop(pt_regs *regs)
 {
+	'out: {
 	enum ctx_state prev_state = exception_enter();
 
 	if (notify_die(DIE_TRAP, "privileged operation", regs,
 		       0, 0x11, SIGILL) == NOTIFY_STOP)
-		goto out;
+		break 'out;
 
 	if (test_thread_flag(TIF_32BIT)) {
 		regs->tpc &= 0xffffffff;
 		regs->tnpc &= 0xffffffff;
 	}
 	force_sig_fault(SIGILL, ILL_PRVOPC, (void __user *)regs->tpc);
-out:
+	}
+	
 	exception_exit(prev_state);
 }
 
-void do_privact(struct pt_regs *regs)
+void do_privact(pt_regs *regs)
 {
 	do_privop(regs);
 }
 
 /* Trap level 1 stuff or other traps we should never see... */
-void do_cee(struct pt_regs *regs)
+void do_cee(pt_regs *regs)
 {
 	exception_enter();
 	die_if_kernel("TL0: Cache Error Exception", regs);
 }
 
-void do_div0_tl1(struct pt_regs *regs)
+void do_div0_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: DIV0 Exception", regs);
 }
 
-void do_fpieee_tl1(struct pt_regs *regs)
+void do_fpieee_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: FPU IEEE Exception", regs);
 }
 
-void do_fpother_tl1(struct pt_regs *regs)
+void do_fpother_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: FPU Other Exception", regs);
 }
 
-void do_ill_tl1(struct pt_regs *regs)
+void do_ill_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Illegal Instruction Exception", regs);
 }
 
-void do_irq_tl1(struct pt_regs *regs)
+void do_irq_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: IRQ Exception", regs);
 }
 
-void do_lddfmna_tl1(struct pt_regs *regs)
+void do_lddfmna_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: LDDF Exception", regs);
 }
 
-void do_stdfmna_tl1(struct pt_regs *regs)
+void do_stdfmna_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: STDF Exception", regs);
 }
 
-void do_paw(struct pt_regs *regs)
+void do_paw(pt_regs *regs)
 {
 	exception_enter();
 	die_if_kernel("TL0: Phys Watchpoint Exception", regs);
 }
 
-void do_paw_tl1(struct pt_regs *regs)
+void do_paw_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Phys Watchpoint Exception", regs);
 }
 
-void do_vaw(struct pt_regs *regs)
+void do_vaw(pt_regs *regs)
 {
 	exception_enter();
 	die_if_kernel("TL0: Virt Watchpoint Exception", regs);
 }
 
-void do_vaw_tl1(struct pt_regs *regs)
+void do_vaw_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Virt Watchpoint Exception", regs);
 }
 
-void do_tof_tl1(struct pt_regs *regs)
+void do_tof_tl1(pt_regs *regs)
 {
 	exception_enter();
-	dump_tl1_traplog((struct tl1_traplog *)(regs + 1));
+	dump_tl1_traplog((tl1_traplog *)(regs + 1));
 	die_if_kernel("TL1: Tag Overflow Exception", regs);
 }
 
-void do_getpsr(struct pt_regs *regs)
+void do_getpsr(pt_regs *regs)
 {
 	regs->u_regs[UREG_I0] = tstate_to_psr(regs->tstate);
 	regs->tpc   = regs->tnpc;
@@ -2796,7 +2807,7 @@ EXPORT_SYMBOL(trap_block);
 /* This can get invoked before sched_init() so play it super safe
  * and use hard_smp_processor_id().
  */
-void notrace init_cur_cpu_trap(struct thread_info *t)
+void notrace init_cur_cpu_trap(thread_info *t)
 {
 	i32 cpu = hard_smp_processor_id();
 	struct trap_per_cpu *p = &trap_block[cpu];
@@ -2813,82 +2824,82 @@ extern void tsb_config_offsets_are_bolixed_dave(void);
 void __init trap_init(void)
 {
 	/* Compile time sanity check. */
-	BUILD_BUG_ON(TI_TASK != offsetof(struct thread_info, task) ||
-		     TI_FLAGS != offsetof(struct thread_info, flags) ||
-		     TI_CPU != offsetof(struct thread_info, cpu) ||
-		     TI_FPSAVED != offsetof(struct thread_info, fpsaved) ||
-		     TI_KSP != offsetof(struct thread_info, ksp) ||
-		     TI_FAULT_ADDR != offsetof(struct thread_info,
+	BUILD_BUG_ON(TI_TASK != offsetof(thread_info, task) ||
+		     TI_FLAGS != offsetof(thread_info, flags) ||
+		     TI_CPU != offsetof(thread_info, cpu) ||
+		     TI_FPSAVED != offsetof(thread_info, fpsaved) ||
+		     TI_KSP != offsetof(thread_info, ksp) ||
+		     TI_FAULT_ADDR != offsetof(thread_info,
 					       fault_address) ||
-		     TI_KREGS != offsetof(struct thread_info, kregs) ||
-		     TI_UTRAPS != offsetof(struct thread_info, utraps) ||
-		     TI_REG_WINDOW != offsetof(struct thread_info,
+		     TI_KREGS != offsetof(thread_info, kregs) ||
+		     TI_UTRAPS != offsetof(thread_info, utraps) ||
+		     TI_REG_WINDOW != offsetof(thread_info,
 					       reg_window) ||
-		     TI_RWIN_SPTRS != offsetof(struct thread_info,
+		     TI_RWIN_SPTRS != offsetof(thread_info,
 					       rwbuf_stkptrs) ||
-		     TI_GSR != offsetof(struct thread_info, gsr) ||
-		     TI_XFSR != offsetof(struct thread_info, xfsr) ||
-		     TI_PRE_COUNT != offsetof(struct thread_info,
+		     TI_GSR != offsetof(thread_info, gsr) ||
+		     TI_XFSR != offsetof(thread_info, xfsr) ||
+		     TI_PRE_COUNT != offsetof(thread_info,
 					      preempt_count) ||
-		     TI_NEW_CHILD != offsetof(struct thread_info, new_child) ||
-		     TI_KUNA_REGS != offsetof(struct thread_info,
+		     TI_NEW_CHILD != offsetof(thread_info, new_child) ||
+		     TI_KUNA_REGS != offsetof(thread_info,
 					      kern_una_regs) ||
-		     TI_KUNA_INSN != offsetof(struct thread_info,
+		     TI_KUNA_INSN != offsetof(thread_info,
 					      kern_una_insn) ||
-		     TI_FPREGS != offsetof(struct thread_info, fpregs) ||
+		     TI_FPREGS != offsetof(thread_info, fpregs) ||
 		     (TI_FPREGS & (64 - 1)));
 
-	BUILD_BUG_ON(TRAP_PER_CPU_THREAD != offsetof(struct trap_per_cpu,
+	BUILD_BUG_ON(TRAP_PER_CPU_THREAD != offsetof(trap_per_cpu,
 						     thread) ||
 		     (TRAP_PER_CPU_PGD_PADDR !=
-		      offsetof(struct trap_per_cpu, pgd_paddr)) ||
+		      offsetof(trap_per_cpu, pgd_paddr)) ||
 		     (TRAP_PER_CPU_CPU_MONDO_PA !=
-		      offsetof(struct trap_per_cpu, cpu_mondo_pa)) ||
+		      offsetof(trap_per_cpu, cpu_mondo_pa)) ||
 		     (TRAP_PER_CPU_DEV_MONDO_PA !=
-		      offsetof(struct trap_per_cpu, dev_mondo_pa)) ||
+		      offsetof(trap_per_cpu, dev_mondo_pa)) ||
 		     (TRAP_PER_CPU_RESUM_MONDO_PA !=
-		      offsetof(struct trap_per_cpu, resum_mondo_pa)) ||
+		      offsetof(trap_per_cpu, resum_mondo_pa)) ||
 		     (TRAP_PER_CPU_RESUM_KBUF_PA !=
-		      offsetof(struct trap_per_cpu, resum_kernel_buf_pa)) ||
+		      offsetof(trap_per_cpu, resum_kernel_buf_pa)) ||
 		     (TRAP_PER_CPU_NONRESUM_MONDO_PA !=
-		      offsetof(struct trap_per_cpu, nonresum_mondo_pa)) ||
+		      offsetof(trap_per_cpu, nonresum_mondo_pa)) ||
 		     (TRAP_PER_CPU_NONRESUM_KBUF_PA !=
-		      offsetof(struct trap_per_cpu, nonresum_kernel_buf_pa)) ||
+		      offsetof(trap_per_cpu, nonresum_kernel_buf_pa)) ||
 		     (TRAP_PER_CPU_FAULT_INFO !=
-		      offsetof(struct trap_per_cpu, fault_info)) ||
+		      offsetof(trap_per_cpu, fault_info)) ||
 		     (TRAP_PER_CPU_CPU_MONDO_BLOCK_PA !=
-		      offsetof(struct trap_per_cpu, cpu_mondo_block_pa)) ||
+		      offsetof(trap_per_cpu, cpu_mondo_block_pa)) ||
 		     (TRAP_PER_CPU_CPU_LIST_PA !=
-		      offsetof(struct trap_per_cpu, cpu_list_pa)) ||
+		      offsetof(trap_per_cpu, cpu_list_pa)) ||
 		     (TRAP_PER_CPU_TSB_HUGE !=
-		      offsetof(struct trap_per_cpu, tsb_huge)) ||
+		      offsetof(trap_per_cpu, tsb_huge)) ||
 		     (TRAP_PER_CPU_TSB_HUGE_TEMP !=
-		      offsetof(struct trap_per_cpu, tsb_huge_temp)) ||
+		      offsetof(trap_per_cpu, tsb_huge_temp)) ||
 		     (TRAP_PER_CPU_IRQ_WORKLIST_PA !=
-		      offsetof(struct trap_per_cpu, irq_worklist_pa)) ||
+		      offsetof(trap_per_cpu, irq_worklist_pa)) ||
 		     (TRAP_PER_CPU_CPU_MONDO_QMASK !=
-		      offsetof(struct trap_per_cpu, cpu_mondo_qmask)) ||
+		      offsetof(trap_per_cpu, cpu_mondo_qmask)) ||
 		     (TRAP_PER_CPU_DEV_MONDO_QMASK !=
-		      offsetof(struct trap_per_cpu, dev_mondo_qmask)) ||
+		      offsetof(trap_per_cpu, dev_mondo_qmask)) ||
 		     (TRAP_PER_CPU_RESUM_QMASK !=
-		      offsetof(struct trap_per_cpu, resum_qmask)) ||
+		      offsetof(trap_per_cpu, resum_qmask)) ||
 		     (TRAP_PER_CPU_NONRESUM_QMASK !=
-		      offsetof(struct trap_per_cpu, nonresum_qmask)) ||
+		      offsetof(trap_per_cpu, nonresum_qmask)) ||
 		     (TRAP_PER_CPU_PER_CPU_BASE !=
-		      offsetof(struct trap_per_cpu, __per_cpu_base)));
+		      offsetof(trap_per_cpu, __per_cpu_base)));
 
 	BUILD_BUG_ON((TSB_CONFIG_TSB !=
-		      offsetof(struct tsb_config, tsb)) ||
+		      offsetof(tsb_config, tsb)) ||
 		     (TSB_CONFIG_RSS_LIMIT !=
-		      offsetof(struct tsb_config, tsb_rss_limit)) ||
+		      offsetof(tsb_config, tsb_rss_limit)) ||
 		     (TSB_CONFIG_NENTRIES !=
-		      offsetof(struct tsb_config, tsb_nentries)) ||
+		      offsetof(tsb_config, tsb_nentries)) ||
 		     (TSB_CONFIG_REG_VAL !=
-		      offsetof(struct tsb_config, tsb_reg_val)) ||
+		      offsetof(tsb_config, tsb_reg_val)) ||
 		     (TSB_CONFIG_MAP_VADDR !=
-		      offsetof(struct tsb_config, tsb_map_vaddr)) ||
+		      offsetof(tsb_config, tsb_map_vaddr)) ||
 		     (TSB_CONFIG_MAP_PTE !=
-		      offsetof(struct tsb_config, tsb_map_pte)));
+		      offsetof(tsb_config, tsb_map_pte)));
 
 	/* Attach to the address space of init_task.  On SMP we
 	 * do this in smp.c:smp_callin for other cpus.

@@ -9,13 +9,13 @@
 
 pub const NO_IRQ: i32 = -1;
 
-#[cfg(feature = "CONFIG_GSC")]
+#[cfg(CONFIG_GSC)]
 pub const GSC_IRQ_BASE: i32 = 16;
-#[cfg(feature = "CONFIG_GSC")]
+#[cfg(CONFIG_GSC)]
 pub const GSC_IRQ_MAX: i32 = 63;
-#[cfg(feature = "CONFIG_GSC")]
+#[cfg(CONFIG_GSC)]
 pub const CPU_IRQ_BASE: i32 = 64;
-#[cfg(not(feature = "CONFIG_GSC"))]
+#[cfg(not(CONFIG_GSC))]
 pub const CPU_IRQ_BASE: i32 = 16;
 
 pub const TIMER_IRQ: i32 = CPU_IRQ_BASE + 0;

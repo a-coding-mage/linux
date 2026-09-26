@@ -11,8 +11,8 @@ macro_rules! pr_fmt {
 }
 
 // CONFIG_CEPH_LIB_PRETTYDEBUG selects the corresponding branch at build time.
-#[cfg(feature = "CONFIG_CEPH_LIB_PRETTYDEBUG")]
-#[cfg(any(feature = "DEBUG", feature = "CONFIG_DYNAMIC_DEBUG"))]
+#[cfg(CONFIG_CEPH_LIB_PRETTYDEBUG)]
+#[cfg(any(feature = "DEBUG", CONFIG_DYNAMIC_DEBUG))]
 #[macro_export]
 macro_rules! dout {
     ($fmt:expr $(, $arg:expr)*) => {
@@ -27,8 +27,8 @@ macro_rules! dout {
     };
 }
 
-#[cfg(feature = "CONFIG_CEPH_LIB_PRETTYDEBUG")]
-#[cfg(any(feature = "DEBUG", feature = "CONFIG_DYNAMIC_DEBUG"))]
+#[cfg(CONFIG_CEPH_LIB_PRETTYDEBUG)]
+#[cfg(any(feature = "DEBUG", CONFIG_DYNAMIC_DEBUG))]
 #[macro_export]
 macro_rules! doutc {
     ($client:expr, $fmt:expr $(, $arg:expr)*) => {
@@ -46,8 +46,8 @@ macro_rules! doutc {
 }
 
 // Faux printk calls retain compiler-warning behavior when debug output is disabled.
-#[cfg(feature = "CONFIG_CEPH_LIB_PRETTYDEBUG")]
-#[cfg(not(any(feature = "DEBUG", feature = "CONFIG_DYNAMIC_DEBUG")))]
+#[cfg(CONFIG_CEPH_LIB_PRETTYDEBUG)]
+#[cfg(not(any(feature = "DEBUG", CONFIG_DYNAMIC_DEBUG)))]
 #[macro_export]
 macro_rules! dout {
     ($fmt:expr $(, $arg:expr)*) => {
@@ -55,8 +55,8 @@ macro_rules! dout {
     };
 }
 
-#[cfg(feature = "CONFIG_CEPH_LIB_PRETTYDEBUG")]
-#[cfg(not(any(feature = "DEBUG", feature = "CONFIG_DYNAMIC_DEBUG")))]
+#[cfg(CONFIG_CEPH_LIB_PRETTYDEBUG)]
+#[cfg(not(any(feature = "DEBUG", CONFIG_DYNAMIC_DEBUG)))]
 #[macro_export]
 macro_rules! doutc {
     ($client:expr, $fmt:expr $(, $arg:expr)*) => {
@@ -66,7 +66,7 @@ macro_rules! doutc {
 }
 
 // Otherwise, simply wrap pr_debug.
-#[cfg(not(feature = "CONFIG_CEPH_LIB_PRETTYDEBUG"))]
+#[cfg(not(CONFIG_CEPH_LIB_PRETTYDEBUG))]
 #[macro_export]
 macro_rules! dout {
     ($fmt:expr $(, $arg:expr)*) => {
@@ -74,7 +74,7 @@ macro_rules! dout {
     };
 }
 
-#[cfg(not(feature = "CONFIG_CEPH_LIB_PRETTYDEBUG"))]
+#[cfg(not(CONFIG_CEPH_LIB_PRETTYDEBUG))]
 #[macro_export]
 macro_rules! doutc {
     ($client:expr, $fmt:expr $(, $arg:expr)*) => {

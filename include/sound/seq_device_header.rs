@@ -27,7 +27,7 @@ pub struct snd_seq_device {
 #[macro_export]
 macro_rules! to_seq_dev {
     ($dev:expr) => {
-        container_of!($dev, $crate::snd_seq_device, dev)
+        container_of!($dev, $crate::snd_seq_device, $dev)
     };
 }
 
@@ -64,12 +64,12 @@ macro_rules! to_seq_drv {
 }
 
 /* prototypes */
-#[cfg(feature = "CONFIG_MODULES")]
+#[cfg(CONFIG_MODULES)]
 unsafe extern "C" {
     pub fn snd_seq_device_load_drivers();
 }
 
-#[cfg(not(feature = "CONFIG_MODULES"))]
+#[cfg(not(CONFIG_MODULES))]
 #[macro_export]
 macro_rules! snd_seq_device_load_drivers {
     () => {};

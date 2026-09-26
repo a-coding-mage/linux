@@ -161,7 +161,7 @@ pub const PSE_BUDGET_EVAL_STRAT_STATIC: u32 = 1 << 1;
 pub const PSE_BUDGET_EVAL_STRAT_DYNAMIC: u32 = 1 << 2;
 
 // CONFIG_PSE_CONTROLLER conditional declarations and fallback inline definitions.
-#[cfg(feature = "CONFIG_PSE_CONTROLLER")]
+#[cfg(CONFIG_PSE_CONTROLLER)]
 extern "C" {
     pub fn pse_controller_register(pcdev: *mut pse_controller_dev) -> i32;
     pub fn pse_controller_unregister(pcdev: *mut pse_controller_dev);
@@ -177,21 +177,21 @@ extern "C" {
     pub fn pse_has_c33(psec: *mut pse_control) -> bool;
 }
 
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn of_pse_control_get(_node: *mut device_node, _phydev: *mut phy_device) -> *mut pse_control { core::ptr::invalid_mut::<pse_control>(-2isize as usize) }
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_control_put(_psec: *mut pse_control) {}
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_ethtool_get_status(_psec: *mut pse_control, _extack: *mut netlink_ext_ack, _status: *mut ethtool_pse_control_status) -> i32 { -95 }
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_ethtool_set_config(_psec: *mut pse_control, _extack: *mut netlink_ext_ack, _config: *const pse_control_config) -> i32 { -95 }
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_ethtool_set_pw_limit(_psec: *mut pse_control, _extack: *mut netlink_ext_ack, _pw_limit: u32) -> i32 { -95 }
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_ethtool_set_prio(_psec: *mut pse_control, _extack: *mut netlink_ext_ack, _prio: u32) -> i32 { -95 }
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_has_podl(_psec: *mut pse_control) -> bool { false }
-#[cfg(not(feature = "CONFIG_PSE_CONTROLLER"))]
+#[cfg(not(CONFIG_PSE_CONTROLLER))]
 pub unsafe fn pse_has_c33(_psec: *mut pse_control) -> bool { false }
 
 use core::ffi::c_ulong;

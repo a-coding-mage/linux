@@ -39,7 +39,7 @@ pub const fn SIMPLE_IETF_DSCP_TO_IEEE8021Q_TT(dscp: u8) -> u8 {
 }
 
 // Corresponds to IS_ENABLED(CONFIG_NET_IEEE8021Q_HELPERS).
-#[cfg(feature = "CONFIG_NET_IEEE8021Q_HELPERS")]
+#[cfg(CONFIG_NET_IEEE8021Q_HELPERS)]
 extern "C" {
     pub fn ietf_dscp_to_ieee8021q_tt(dscp: u8) -> i32;
     pub fn ieee8021q_tt_to_tc(
@@ -48,14 +48,14 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_NET_IEEE8021Q_HELPERS"))]
+#[cfg(not(CONFIG_NET_IEEE8021Q_HELPERS))]
 #[inline]
 pub fn ietf_dscp_to_ieee8021q_tt(dscp: u8) -> i32 {
     let _ = dscp;
     -EOPNOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_NET_IEEE8021Q_HELPERS"))]
+#[cfg(not(CONFIG_NET_IEEE8021Q_HELPERS))]
 #[inline]
 pub fn ieee8021q_tt_to_tc(
     tt: ieee8021q_traffic_type,

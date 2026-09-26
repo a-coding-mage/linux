@@ -140,10 +140,10 @@ unsafe extern "C" fn clk_divider_restore_context(hw: *mut clk_hw) {
 }
 
 pub static tegra_clk_frac_div_ops: clk_ops = clk_ops {
-    .recalc_rate = Some(clk_frac_div_recalc_rate),
-    .set_rate = Some(clk_frac_div_set_rate),
-    .determine_rate = Some(clk_frac_div_determine_rate),
-    .restore_context = Some(clk_divider_restore_context),
+    recalc_rate: Some(clk_frac_div_recalc_rate),
+    set_rate: Some(clk_frac_div_set_rate),
+    determine_rate: Some(clk_frac_div_determine_rate),
+    restore_context: Some(clk_divider_restore_context),
 };
 
 pub unsafe extern "C" fn tegra_clk_register_divider(

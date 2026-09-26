@@ -4,14 +4,14 @@
 // Kernel headers and local headers from core.c provide the following types,
 // constants, helpers, atomics, list operations, and configuration predicates.
 
-static mut KCSAN_EARLY_ENABLE: bool = cfg!(feature = "CONFIG_KCSAN_EARLY_ENABLE");
+static mut KCSAN_EARLY_ENABLE: bool = cfg!(CONFIG_KCSAN_EARLY_ENABLE);
 pub static mut KCSAN_UDELAY_TASK: u32 = 0;
 pub static mut KCSAN_UDELAY_INTERRUPT: u32 = 0;
 static mut KCSAN_SKIP_WATCH: i64 = 0;
-static mut KCSAN_INTERRUPT_WATCHER: bool = cfg!(feature = "CONFIG_KCSAN_INTERRUPT_WATCHER");
-#[cfg(feature = "CONFIG_KCSAN_WEAK_MEMORY")]
+static mut KCSAN_INTERRUPT_WATCHER: bool = cfg!(CONFIG_KCSAN_INTERRUPT_WATCHER);
+#[cfg(CONFIG_KCSAN_WEAK_MEMORY)]
 static mut KCSAN_WEAK_MEMORY: bool = true;
-#[cfg(not(feature = "CONFIG_KCSAN_WEAK_MEMORY"))]
+#[cfg(not(CONFIG_KCSAN_WEAK_MEMORY))]
 const KCSAN_WEAK_MEMORY: bool = false;
 pub static mut KCSAN_ENABLED: bool = false;
 

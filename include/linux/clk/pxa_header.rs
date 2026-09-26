@@ -11,7 +11,7 @@ extern "C" {
     ) -> core::ffi::c_int;
 }
 
-#[cfg(feature = "CONFIG_PXA3xx")]
+#[cfg(CONFIG_PXA3xx)]
 extern "C" {
     pub fn pxa3xx_get_clk_frequency_khz(clock: core::ffi::c_int) -> core::ffi::c_uint;
     pub fn pxa3xx_clk_update_accr(
@@ -22,13 +22,13 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_PXA3xx"))]
+#[cfg(not(CONFIG_PXA3xx))]
 #[inline]
 pub fn pxa3xx_get_clk_frequency_khz(_x: core::ffi::c_int) -> core::ffi::c_uint {
     0
 }
 
-#[cfg(not(feature = "CONFIG_PXA3xx"))]
+#[cfg(not(CONFIG_PXA3xx))]
 #[inline]
 pub fn pxa3xx_clk_update_accr(
     _disable: u32,

@@ -137,11 +137,11 @@ unsafe fn xfs_trim_datadev_extents(mp: *mut xfs_mount, start: xfs_daddr_t, end: 
 }
 
 // CONFIG_XFS_RT implementation is preserved below in its original control-flow shape.
-#[cfg(feature = "CONFIG_XFS_RT")]
+#[cfg(CONFIG_XFS_RT)]
 // The CONFIG_XFS_RT declarations and routines are translated in the
 // surrounding XFS realtime implementation; their external symbols are used
 // here exactly as in the C conditional build.
-#[cfg(not(feature = "CONFIG_XFS_RT"))]
+#[cfg(not(CONFIG_XFS_RT))]
 unsafe fn xfs_trim_rtdev_extents(_: *mut xfs_mount, _: xfs_daddr_t, _: xfs_daddr_t, _: xfs_daddr_t) -> i32 { -EOPNOTSUPP }
 
 pub unsafe fn xfs_ioc_trim(mp: *mut xfs_mount, urange: *mut fstrim_range) -> i32 {

@@ -66,8 +66,8 @@ pub const RV_REG_T5:u8=30; pub const RV_REG_T6:u8=31;
 #[inline] pub fn rv_j_insn(i:u32,rd:u8,op:u8)->u32{let x=(i&0x80000)|((i&0x3ff)<<9)|((i&0x400)>>2)|((i&0x7f800)>>11);(x<<12)|((rd as u32)<<7)|op as u32}
 #[inline] pub fn rv_amo_insn(f:u8,aq:u8,rl:u8,rs2:u8,rs1:u8,f3:u8,rd:u8,op:u8)->u32{rv_r_insn((f<<2)|(aq<<1)|rl,rs2,rs1,f3,rd,op)}
 
-macro_rules! rfun { ($n:ident,$f:expr,$f3:expr,$op:expr)=>{#[inline] pub fn $n(rd:u8,rs1:u8,rs2:u8)->u32{rv_r_insn($f,rs2,rs1,$f3,rd,$op)}} }
-macro_rules! ifun { ($n:ident,$f3:expr,$op:expr)=>{#[inline] pub fn $n(rd:u8,rs1:u8,i:u16)->u32{rv_i_insn(i,rs1,$f3,rd,$op)}} }
+macro_rules! rfun { ($n:ident,$f:expr,$f3:expr,$op:expr) => {#[inline] pub fn $n(rd:u8,rs1:u8,rs2:u8)->u32{rv_r_insn($f,rs2,rs1,$f3,rd,$op)}} }
+macro_rules! ifun { ($n:ident,$f3:expr,$op:expr) => {#[inline] pub fn $n(rd:u8,rs1:u8,i:u16)->u32{rv_i_insn(i,rs1,$f3,rd,$op)}} }
 ifun!(rv_addi,0,0x13); ifun!(rv_andi,7,0x13); ifun!(rv_ori,6,0x13); ifun!(rv_xori,4,0x13); ifun!(rv_slli,1,0x13); ifun!(rv_srli,5,0x13);
 #[inline] pub fn rv_srai(rd:u8,rs:u8,i:u16)->u32{rv_i_insn(0x400|i,rs,5,rd,0x13)}
 rfun!(rv_add,0,0,0x33); rfun!(rv_sub,0x20,0,0x33); rfun!(rv_sltu,0,3,0x33); rfun!(rv_and,0,7,0x33); rfun!(rv_or,0,6,0x33); rfun!(rv_xor,0,4,0x33); rfun!(rv_sll,0,1,0x33); rfun!(rv_srl,0,5,0x33); rfun!(rv_sra,0x20,5,0x33); rfun!(rv_mul,1,0,0x33); rfun!(rv_mulhu,1,3,0x33); rfun!(rv_div,1,4,0x33); rfun!(rv_divu,1,5,0x33); rfun!(rv_rem,1,6,0x33); rfun!(rv_remu,1,7,0x33);

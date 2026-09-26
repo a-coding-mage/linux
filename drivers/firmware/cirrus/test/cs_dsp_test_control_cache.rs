@@ -6,9 +6,9 @@
 //                    Cirrus Logic International Semiconductor Ltd.
 
 
-unsafe fn _put_device_wrapper(arg: *mut struct device *) { put_device(arg); }
-unsafe fn _cs_dsp_stop_wrapper(arg: *mut struct cs_dsp *) { cs_dsp_stop(arg); }
-unsafe fn _cs_dsp_remove_wrapper(arg: *mut struct cs_dsp *) { cs_dsp_remove(arg); }
+unsafe fn _put_device_wrapper(arg: *mut device *) { put_device(arg); }
+unsafe fn _cs_dsp_stop_wrapper(arg: *mut cs_dsp *) { cs_dsp_stop(arg); }
+unsafe fn _cs_dsp_remove_wrapper(arg: *mut cs_dsp *) { cs_dsp_remove(arg); }
 
 struct cs_dsp_test_local {
 	*mut cs_dsp_mock_xm_header xm_header;
@@ -27,60 +27,60 @@ struct cs_dsp_ctl_cache_test_param {
 
 const struct cs_dsp_mock_alg_def cs_dsp_ctl_cache_test_algs[] = {
 	{
-		.id = 0xfafa,
-		.ver = 0x100000,
-		.xm_base_words = 60,
-		.xm_size_words = 1000,
-		.ym_base_words = 0,
-		.ym_size_words = 1000,
-		.zm_base_words = 0,
-		.zm_size_words = 1000,
+		id: 0xfafa,
+		ver: 0x100000,
+		xm_base_words: 60,
+		xm_size_words: 1000,
+		ym_base_words: 0,
+		ym_size_words: 1000,
+		zm_base_words: 0,
+		zm_size_words: 1000,
 	},
 	{
-		.id = 0xb,
-		.ver = 0x100001,
-		.xm_base_words = 1060,
-		.xm_size_words = 1000,
-		.ym_base_words = 1000,
-		.ym_size_words = 1000,
-		.zm_base_words = 1000,
-		.zm_size_words = 1000,
+		id: 0xb,
+		ver: 0x100001,
+		xm_base_words: 1060,
+		xm_size_words: 1000,
+		ym_base_words: 1000,
+		ym_size_words: 1000,
+		zm_base_words: 1000,
+		zm_size_words: 1000,
 	},
 	{
-		.id = 0x9f1234,
-		.ver = 0x100500,
-		.xm_base_words = 2060,
-		.xm_size_words = 32,
-		.ym_base_words = 2000,
-		.ym_size_words = 32,
-		.zm_base_words = 2000,
-		.zm_size_words = 32,
+		id: 0x9f1234,
+		ver: 0x100500,
+		xm_base_words: 2060,
+		xm_size_words: 32,
+		ym_base_words: 2000,
+		ym_size_words: 32,
+		zm_base_words: 2000,
+		zm_size_words: 32,
 	},
 	{
-		.id = 0xff00ff,
-		.ver = 0x300113,
-		.xm_base_words = 2100,
-		.xm_size_words = 32,
-		.ym_base_words = 2032,
-		.ym_size_words = 32,
-		.zm_base_words = 2032,
-		.zm_size_words = 32,
+		id: 0xff00ff,
+		ver: 0x300113,
+		xm_base_words: 2100,
+		xm_size_words: 32,
+		ym_base_words: 2032,
+		ym_size_words: 32,
+		zm_base_words: 2032,
+		zm_size_words: 32,
 	},
 };
 
 const struct cs_dsp_mock_coeff_def mock_coeff_template = {
-	.shortname = "Dummy Coeff",
-	.type = WMFW_CTL_TYPE_BYTES,
-	.mem_type = WMFW_ADSP2_YM,
-	.flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
-	.length_bytes = 4,
+	shortname: "Dummy Coeff",
+	type: WMFW_CTL_TYPE_BYTES,
+	mem_type: WMFW_ADSP2_YM,
+	flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	length_bytes: 4,
 };
 
 static const i8 * const cs_dsp_ctl_cache_test_fw_names[] = {
 	"misc", "mbc/vss", "haps",
 };
 
-unsafe fn _find_alg_entry(*mut kunit test, u32 alg_id)
+unsafe fn _find_alg_entry(*mut kunit test, alg_id: u32)
 {
 	i32 i;
 
@@ -94,7 +94,7 @@ unsafe fn _find_alg_entry(*mut kunit test, u32 alg_id)
 	return i;
 }
 
-unsafe fn _get_alg_mem_base_words(*mut kunit test, i32 alg_index, i32 mem_type)
+unsafe fn _get_alg_mem_base_words(*mut kunit test, alg_index: i32, mem_type: i32)
 {
 	switch (mem_type) {
 	case WMFW_ADSP2_XM:
@@ -111,18 +111,18 @@ unsafe fn _get_alg_mem_base_words(*mut kunit test, i32 alg_index, i32 mem_type)
 
 *mut cs_dsp_mock_wmfw_builder _create_dummy_wmfw(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
 	*mut cs_dsp_mock_wmfw_builder builder;
 
-	builder = cs_dsp_mock_wmfw_init(priv, local->wmfw_version);
+	builder = cs_dsp_mock_wmfw_init(priv, (*local).wmfw_version);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, builder);
 
 	/* Init an XM header */
 	cs_dsp_mock_wmfw_add_data_block(builder,
 					WMFW_ADSP2_XM, 0,
-					local->xm_header->blob_data,
-					local->xm_header->blob_size_bytes);
+					(*(*local).xm_header).blob_data,
+					(*(*local).xm_header).blob_size_bytes);
 
 	return builder;
 }
@@ -134,11 +134,11 @@ unsafe fn _get_alg_mem_base_words(*mut kunit test, i32 alg_index, i32 mem_type)
  */
 unsafe fn cs_dsp_ctl_v2_cache_alloc(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
-	*mut cs_dsp dsp = priv->dsp;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	u32 reg, alg_base_words, alg_size_bytes;
+	reg: u32, alg_base_words, alg_size_bytes;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	i8 [ctl_name; 4];
@@ -153,9 +153,9 @@ unsafe fn cs_dsp_ctl_v2_cache_alloc(*mut kunit test)
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 	reg = cs_dsp_mock_base_addr_for_mem(priv, WMFW_ADSP2_YM);
 	reg += alg_base_words *	cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, alg_size_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, alg_size_bytes);
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      [cs_dsp_ctl_cache_test_algs; 0].id,
 					      "dummyalg", std::ptr::null_mut());
 
@@ -165,20 +165,20 @@ unsafe fn cs_dsp_ctl_v2_cache_alloc(*mut kunit test)
 	num_ctls = 0;
 	for (def.length_bytes = 4; def.length_bytes <= 64; def.length_bytes += 4) {
 		snprintf(ctl_name, (ctl_name.len()), "%x", def.length_bytes);
-		cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+		cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 		num_ctls += 1;
 		def.offset_dsp_words += def.length_bytes / 4;
 	}
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
-	KUNIT_EXPECT_EQ(test, list_count_nodes(&dsp->ctl_list), num_ctls);
+	KUNIT_EXPECT_EQ(test, list_count_nodes((*&dsp).ctl_list), num_ctls);
 
 	/* Check that the block allocated for the cache is large enough */
-	list_for_each_entry(ctl, &dsp->ctl_list, list)
-		KUNIT_EXPECT_GE(test, ksize(ctl->cache), ctl->len);
+	list_for_each_entry(ctl, (*&dsp).ctl_list, list)
+		KUNIT_EXPECT_GE(test, ksize((*ctl).cache), (*ctl).len);
 }
 
 /*
@@ -187,47 +187,47 @@ unsafe fn cs_dsp_ctl_v2_cache_alloc(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init(*mut kunit test)
 {
-	const *mut cs_dsp_ctl_cache_test_param param = test->param_value;
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
-	*mut cs_dsp dsp = priv->dsp;
+	const *mut cs_dsp_ctl_cache_test_param param = (*test).param_value;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	i32 alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
 
-	reg_vals = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
-	readback = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create some DSP data to be read into the control cache */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	get_random_bytes(reg_vals, param->len_bytes);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	get_random_bytes(reg_vals, (*param).len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_cache_test_algs[alg_idx].id,
 					      "dummyalg", std::ptr::null_mut());
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/*
@@ -235,9 +235,9 @@ unsafe fn cs_dsp_ctl_cache_init(*mut kunit test)
 	 * so should be readable through the control.
 	 */
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, (*param).len_bytes),
 			0);
-	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, param->len_bytes);
+	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, (*param).len_bytes);
 }
 
 /*
@@ -246,49 +246,49 @@ unsafe fn cs_dsp_ctl_cache_init(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init_write_only(*mut kunit test)
 {
-	const *mut cs_dsp_ctl_cache_test_param param = test->param_value;
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
-	*mut cs_dsp dsp = priv->dsp;
+	const *mut cs_dsp_ctl_cache_test_param param = (*test).param_value;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	i32 alg_idx = _find_alg_entry(test, param->alg_id);
+	i32 alg_idx = _find_alg_entry(test, (*param).alg_id);
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *readback, *zeros;
 
-	zeros = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	zeros = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, zeros);
 
-	readback = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create a non-volatile write-only control */
-	def.flags = param->flags & ~WMFW_CTL_FLAG_VOLATILE;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags & ~WMFW_CTL_FLAG_VOLATILE;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_cache_test_algs[alg_idx].id,
 					      "dummyalg", std::ptr::null_mut());
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/*
 	 * The control cache should have been zero-filled so should be
 	 * readable through the control.
 	 */
-	get_random_bytes(readback, param->len_bytes);
+	get_random_bytes(readback, (*param).len_bytes);
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, (*param).len_bytes),
 			0);
-	KUNIT_EXPECT_MEMEQ(test, readback, zeros, param->len_bytes);
+	KUNIT_EXPECT_MEMEQ(test, readback, zeros, (*param).len_bytes);
 }
 
 /*
@@ -300,11 +300,11 @@ unsafe fn cs_dsp_ctl_cache_init_write_only(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init_multiple_fw_same_controls(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp dsp = priv->dsp;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	*mut cs_dsp_mock_wmfw_builder [builder; 3];
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl walkctl, *[ctl; 3];
 	*mut firmware wmfw;
 	u32 *[reg_vals; 3], *readback;
@@ -345,7 +345,7 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fw_same_controls(*mut kunit test)
 			cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
 
 		get_random_bytes(reg_vals[i], def.length_bytes);
-		regmap_raw_write(dsp->regmap, reg, reg_vals[i], def.length_bytes);
+		regmap_raw_write((*dsp).regmap, reg, reg_vals[i], def.length_bytes);
 		wmfw = cs_dsp_mock_wmfw_get_firmware(builder[i]);
 		KUNIT_ASSERT_EQ(test,
 				cs_dsp_power_up(dsp, wmfw,
@@ -359,7 +359,7 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fw_same_controls(*mut kunit test)
 	}
 
 	/* There should now be 3 controls */
-	KUNIT_ASSERT_EQ(test, list_count_nodes(&dsp->ctl_list), 3);
+	KUNIT_ASSERT_EQ(test, list_count_nodes((*&dsp).ctl_list), 3);
 
 	/*
 	 * There's no requirement for the control list to be in any
@@ -368,14 +368,14 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fw_same_controls(*mut kunit test)
 	for (i = 0; i < (ctl.len()); i += 1)
 		ctl[i] = std::ptr::null_mut();
 
-	list_for_each_entry(walkctl, &dsp->ctl_list, list) {
-		if (strcmp(walkctl->fw_name, [cs_dsp_ctl_cache_test_fw_names; 0]) == 0)
+	list_for_each_entry!(walkctl, (*&dsp).ctl_list, list, {
+		if (strcmp((*walkctl).fw_name, [cs_dsp_ctl_cache_test_fw_names; 0]) == 0)
 			[ctl; 0] = walkctl;
-		else if (strcmp(walkctl->fw_name, [cs_dsp_ctl_cache_test_fw_names; 1]) == 0)
+		else if (strcmp((*walkctl).fw_name, [cs_dsp_ctl_cache_test_fw_names; 1]) == 0)
 			[ctl; 1] = walkctl;
-		else if (strcmp(walkctl->fw_name, [cs_dsp_ctl_cache_test_fw_names; 2]) == 0)
+		else if (strcmp((*walkctl).fw_name, [cs_dsp_ctl_cache_test_fw_names; 2]) == 0)
 			[ctl; 2] = walkctl;
-	}
+	});
 
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 0]);
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 1]);
@@ -409,11 +409,11 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fw_same_controls(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init_multiple_fwalgid_same_controls(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp dsp = priv->dsp;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	*mut cs_dsp_mock_wmfw_builder [builder; 3];
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl walkctl, *[ctl; 3];
 	*mut firmware wmfw;
 	u32 *[reg_vals; 3], *readback;
@@ -454,7 +454,7 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fwalgid_same_controls(*mut kunit test)
 			cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
 
 		get_random_bytes(reg_vals[i], def.length_bytes);
-		regmap_raw_write(dsp->regmap, reg, reg_vals[i], def.length_bytes);
+		regmap_raw_write((*dsp).regmap, reg, reg_vals[i], def.length_bytes);
 		wmfw = cs_dsp_mock_wmfw_get_firmware(builder[i]);
 		KUNIT_ASSERT_EQ(test,
 				cs_dsp_power_up(dsp, wmfw,
@@ -468,7 +468,7 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fwalgid_same_controls(*mut kunit test)
 	}
 
 	/* There should now be 3 controls */
-	KUNIT_ASSERT_EQ(test, list_count_nodes(&dsp->ctl_list), 3);
+	KUNIT_ASSERT_EQ(test, list_count_nodes((*&dsp).ctl_list), 3);
 
 	/*
 	 * There's no requirement for the control list to be in any
@@ -477,14 +477,14 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fwalgid_same_controls(*mut kunit test)
 	for (i = 0; i < (ctl.len()); i += 1)
 		ctl[i] = std::ptr::null_mut();
 
-	list_for_each_entry(walkctl, &dsp->ctl_list, list) {
-		if ([cs_dsp_ctl_cache_test_algs; 0].id == walkctl->alg_region.alg)
+	list_for_each_entry!(walkctl, (*&dsp).ctl_list, list, {
+		if ([cs_dsp_ctl_cache_test_algs; 0].id == (*walkctl).alg_region.alg)
 			[ctl; 0] = walkctl;
-		else if ([cs_dsp_ctl_cache_test_algs; 1].id == walkctl->alg_region.alg)
+		else if ([cs_dsp_ctl_cache_test_algs; 1].id == (*walkctl).alg_region.alg)
 			[ctl; 1] = walkctl;
-		else if ([cs_dsp_ctl_cache_test_algs; 2].id == walkctl->alg_region.alg)
+		else if ([cs_dsp_ctl_cache_test_algs; 2].id == (*walkctl).alg_region.alg)
 			[ctl; 2] = walkctl;
-	}
+	});
 
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 0]);
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 1]);
@@ -517,11 +517,11 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_fwalgid_same_controls(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init_multiple_mems(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp dsp = priv->dsp;
-	*mut cs_dsp_test_local local = priv->local;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp dsp = (*priv).dsp;
+	*mut cs_dsp_test_local local = (*priv).local;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl walkctl, *[ctl; 3];
 	*mut firmware wmfw;
 	u32 *[reg_vals; 3], *readback;
@@ -538,54 +538,54 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_mems(*mut kunit test)
 	readback = kunit_kzalloc(test, def.length_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      [cs_dsp_ctl_cache_test_algs; 0].id,
 					      "dummyalg", std::ptr::null_mut());
 
 	/* Create controls identical except for memory region */
 	def.mem_type = WMFW_ADSP2_YM;
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 
 	def.mem_type = WMFW_ADSP2_XM;
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 
 	if (cs_dsp_mock_has_zm(priv)) {
 		def.mem_type = WMFW_ADSP2_ZM;
-		cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+		cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 	}
 
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Create random content in the registers backing each control */
 	alg_base_words = _get_alg_mem_base_words(test, 0, WMFW_ADSP2_YM);
 	reg = cs_dsp_mock_base_addr_for_mem(priv, WMFW_ADSP2_YM);
 	reg += (alg_base_words + def.offset_dsp_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, [reg_vals; 0], def.length_bytes);
+	regmap_raw_write((*dsp).regmap, reg, [reg_vals; 0], def.length_bytes);
 
 	alg_base_words = _get_alg_mem_base_words(test, 0, WMFW_ADSP2_XM);
 	reg = cs_dsp_mock_base_addr_for_mem(priv, WMFW_ADSP2_XM);
 	reg += (alg_base_words + def.offset_dsp_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	regmap_raw_write(dsp->regmap, reg, [reg_vals; 1], def.length_bytes);
+	regmap_raw_write((*dsp).regmap, reg, [reg_vals; 1], def.length_bytes);
 
 	if (cs_dsp_mock_has_zm(priv)) {
 		alg_base_words = _get_alg_mem_base_words(test, 0, WMFW_ADSP2_ZM);
 		reg = cs_dsp_mock_base_addr_for_mem(priv, WMFW_ADSP2_ZM);
 		reg += (alg_base_words + def.offset_dsp_words) *
 			cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-		regmap_raw_write(dsp->regmap, reg, [reg_vals; 2], def.length_bytes);
+		regmap_raw_write((*dsp).regmap, reg, [reg_vals; 2], def.length_bytes);
 	}
 
 	/* Download, run, stop and power-down the firmware */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 	KUNIT_ASSERT_EQ(test, cs_dsp_run(dsp), 0);
 	cs_dsp_stop(dsp);
 	cs_dsp_power_down(dsp);
 
 	/* There should now be 2 or 3 controls */
-	KUNIT_ASSERT_EQ(test, list_count_nodes(&dsp->ctl_list),
+	KUNIT_ASSERT_EQ(test, list_count_nodes((*&dsp).ctl_list),
 			cs_dsp_mock_has_zm(priv) ? 3 : 2);
 
 	/*
@@ -595,14 +595,14 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_mems(*mut kunit test)
 	for (i = 0; i < (ctl.len()); i += 1)
 		ctl[i] = std::ptr::null_mut();
 
-	list_for_each_entry(walkctl, &dsp->ctl_list, list) {
-		if (walkctl->alg_region.type == WMFW_ADSP2_YM)
+	list_for_each_entry!(walkctl, (*&dsp).ctl_list, list, {
+		if ((*walkctl).alg_region.r#type == WMFW_ADSP2_YM)
 			[ctl; 0] = walkctl;
-		if (walkctl->alg_region.type == WMFW_ADSP2_XM)
+		if ((*walkctl).alg_region.r#type == WMFW_ADSP2_XM)
 			[ctl; 1] = walkctl;
-		if (walkctl->alg_region.type == WMFW_ADSP2_ZM)
+		if ((*walkctl).alg_region.r#type == WMFW_ADSP2_ZM)
 			[ctl; 2] = walkctl;
-	}
+	});
 
 
 	/*
@@ -638,11 +638,11 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_mems(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init_multiple_algs(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp dsp = priv->dsp;
-	*mut cs_dsp_test_local local = priv->local;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp dsp = (*priv).dsp;
+	*mut cs_dsp_test_local local = (*priv).local;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl walkctl, *[ctl; 3];
 	*mut firmware wmfw;
 	u32 *[reg_vals; 3], *readback;
@@ -662,11 +662,11 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_algs(*mut kunit test)
 
 	/* Create controls identical except for algorithm */
 	for (i = 0; i < (reg_vals.len()); i += 1) {
-		cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+		cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 						      cs_dsp_ctl_cache_test_algs[i].id,
 						      "dummyalg", std::ptr::null_mut());
-		cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-		cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+		cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+		cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 	}
 
 	/* Create random content in the registers backing each control */
@@ -675,18 +675,18 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_algs(*mut kunit test)
 		reg = cs_dsp_mock_base_addr_for_mem(priv, def.mem_type);
 		reg += (alg_base_words + def.offset_dsp_words) *
 			cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-		regmap_raw_write(dsp->regmap, reg, reg_vals[i], def.length_bytes);
+		regmap_raw_write((*dsp).regmap, reg, reg_vals[i], def.length_bytes);
 	}
 
 	/* Download, run, stop and power-down the firmware */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 	KUNIT_ASSERT_EQ(test, cs_dsp_run(dsp), 0);
 	cs_dsp_stop(dsp);
 	cs_dsp_power_down(dsp);
 
 	/* There should now be 3 controls */
-	KUNIT_ASSERT_EQ(test, list_count_nodes(&dsp->ctl_list), 3);
+	KUNIT_ASSERT_EQ(test, list_count_nodes((*&dsp).ctl_list), 3);
 
 	/*
 	 * There's no requirement for the control list to be in any
@@ -695,14 +695,14 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_algs(*mut kunit test)
 	for (i = 0; i < (ctl.len()); i += 1)
 		ctl[i] = std::ptr::null_mut();
 
-	list_for_each_entry(walkctl, &dsp->ctl_list, list) {
-		if (walkctl->alg_region.alg == [cs_dsp_ctl_cache_test_algs; 0].id)
+	list_for_each_entry!(walkctl, (*&dsp).ctl_list, list, {
+		if ((*walkctl).alg_region.alg == [cs_dsp_ctl_cache_test_algs; 0].id)
 			[ctl; 0] = walkctl;
-		if (walkctl->alg_region.alg == [cs_dsp_ctl_cache_test_algs; 1].id)
+		if ((*walkctl).alg_region.alg == [cs_dsp_ctl_cache_test_algs; 1].id)
 			[ctl; 1] = walkctl;
-		if (walkctl->alg_region.alg == [cs_dsp_ctl_cache_test_algs; 2].id)
+		if ((*walkctl).alg_region.alg == [cs_dsp_ctl_cache_test_algs; 2].id)
 			[ctl; 2] = walkctl;
-	}
+	});
 
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 0]);
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 1]);
@@ -739,11 +739,11 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_algs(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_init_multiple_offsets(*mut kunit test)
 {
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp dsp = priv->dsp;
-	*mut cs_dsp_test_local local = priv->local;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp dsp = (*priv).dsp;
+	*mut cs_dsp_test_local local = (*priv).local;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	u32 reg, alg_base_words, alg_base_reg;
+	reg: u32, alg_base_words, alg_base_reg;
 	*mut cs_dsp_coeff_ctl walkctl, *[ctl; 3];
 	*mut firmware wmfw;
 	u32 *[reg_vals; 3], *readback;
@@ -761,24 +761,24 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_offsets(*mut kunit test)
 	readback = kunit_kzalloc(test, def.length_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      [cs_dsp_ctl_cache_test_algs; 0].id,
 					      "dummyalg", std::ptr::null_mut());
 
 	/* Create controls identical except for offset */
 	def.offset_dsp_words = 0;
 	def.shortname = "CtlA";
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 
 	def.offset_dsp_words = 5;
 	def.shortname = "CtlB";
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 
 	def.offset_dsp_words = 8;
 	def.shortname = "CtlC";
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
 
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Create random content in the registers backing each control */
 	alg_base_words = _get_alg_mem_base_words(test, 0, def.mem_type);
@@ -786,21 +786,21 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_offsets(*mut kunit test)
 	alg_base_reg += alg_base_words * cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
 
 	reg = alg_base_reg;
-	regmap_raw_write(dsp->regmap, reg, [reg_vals; 0], def.length_bytes);
+	regmap_raw_write((*dsp).regmap, reg, [reg_vals; 0], def.length_bytes);
 	reg = alg_base_reg + (5 * cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv));
-	regmap_raw_write(dsp->regmap, reg, [reg_vals; 1], def.length_bytes);
+	regmap_raw_write((*dsp).regmap, reg, [reg_vals; 1], def.length_bytes);
 	reg = alg_base_reg + (8 * cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv));
-	regmap_raw_write(dsp->regmap, reg, [reg_vals; 2], def.length_bytes);
+	regmap_raw_write((*dsp).regmap, reg, [reg_vals; 2], def.length_bytes);
 
 	/* Download, run, stop and power-down the firmware */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 	KUNIT_ASSERT_EQ(test, cs_dsp_run(dsp), 0);
 	cs_dsp_stop(dsp);
 	cs_dsp_power_down(dsp);
 
 	/* There should now be 3 controls */
-	KUNIT_ASSERT_EQ(test, list_count_nodes(&dsp->ctl_list), 3);
+	KUNIT_ASSERT_EQ(test, list_count_nodes((*&dsp).ctl_list), 3);
 
 	/*
 	 * There's no requirement for the control list to be in any
@@ -809,14 +809,14 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_offsets(*mut kunit test)
 	for (i = 0; i < (ctl.len()); i += 1)
 		ctl[i] = std::ptr::null_mut();
 
-	list_for_each_entry(walkctl, &dsp->ctl_list, list) {
-		if (walkctl->offset == 0)
+	list_for_each_entry!(walkctl, (*&dsp).ctl_list, list, {
+		if ((*walkctl).offset == 0)
 			[ctl; 0] = walkctl;
-		if (walkctl->offset == 5)
+		if ((*walkctl).offset == 5)
 			[ctl; 1] = walkctl;
-		if (walkctl->offset == 8)
+		if ((*walkctl).offset == 8)
 			[ctl; 2] = walkctl;
-	}
+	});
 
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 0]);
 	KUNIT_ASSERT_NOT_NULL(test, [ctl; 1]);
@@ -849,59 +849,59 @@ unsafe fn cs_dsp_ctl_cache_init_multiple_offsets(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_read_not_started(*mut kunit test)
 {
-	const *mut cs_dsp_ctl_cache_test_param param = test->param_value;
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
-	*mut cs_dsp dsp = priv->dsp;
+	const *mut cs_dsp_ctl_cache_test_param param = (*test).param_value;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	i32 alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
 
-	reg_vals = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
-	readback = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create some DSP data to be read into the control cache */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	get_random_bytes(reg_vals, param->len_bytes);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	get_random_bytes(reg_vals, (*param).len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_cache_test_algs[alg_idx].id,
 					      "dummyalg", std::ptr::null_mut());
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Power-up DSP but don't start firmware */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Drop expected writes and the regmap cache should be clean */
 	cs_dsp_mock_xm_header_drop_from_regmap_cache(priv);
-	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
+	cs_dsp_mock_regmap_drop_bytes(priv, reg, (*param).len_bytes);
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Control should readback the data from the control cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, (*param).len_bytes),
 			0);
-	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, param->len_bytes);
+	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, (*param).len_bytes);
 }
 
 /*
@@ -910,45 +910,45 @@ unsafe fn cs_dsp_ctl_cache_read_not_started(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_read_stopped(*mut kunit test)
 {
-	const *mut cs_dsp_ctl_cache_test_param param = test->param_value;
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
-	*mut cs_dsp dsp = priv->dsp;
+	const *mut cs_dsp_ctl_cache_test_param param = (*test).param_value;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	i32 alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
 
-	reg_vals = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
-	readback = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create some DSP data to be read into the control cache */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	get_random_bytes(reg_vals, param->len_bytes);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	get_random_bytes(reg_vals, (*param).len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_cache_test_algs[alg_idx].id,
 					      "dummyalg", std::ptr::null_mut());
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Power-up DSP */
-	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
+	wmfw = cs_dsp_mock_wmfw_get_firmware((*(*priv).local).wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Start and stop the firmware */
@@ -957,16 +957,16 @@ unsafe fn cs_dsp_ctl_cache_read_stopped(*mut kunit test)
 
 	/* Drop expected writes and the regmap cache should be clean */
 	cs_dsp_mock_xm_header_drop_from_regmap_cache(priv);
-	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
+	cs_dsp_mock_regmap_drop_bytes(priv, reg, (*param).len_bytes);
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Control should readback the data from the control cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null((*&dsp).ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
-			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
+			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, (*param).len_bytes),
 			0);
-	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, param->len_bytes);
+	KUNIT_EXPECT_MEMEQ(test, readback, reg_vals, (*param).len_bytes);
 }
 
 /*
@@ -976,42 +976,42 @@ unsafe fn cs_dsp_ctl_cache_read_stopped(*mut kunit test)
  */
 unsafe fn cs_dsp_ctl_cache_read_powered_down(*mut kunit test)
 {
-	const *mut cs_dsp_ctl_cache_test_param param = test->param_value;
-	*mut cs_dsp_test priv = test->priv;
-	*mut cs_dsp_test_local local = priv->local;
-	*mut cs_dsp dsp = priv->dsp;
+	const *mut cs_dsp_ctl_cache_test_param param = (*test).param_value;
+	*mut cs_dsp_test priv = (*test).priv;
+	*mut cs_dsp_test_local local = (*priv).local;
+	*mut cs_dsp dsp = (*priv).dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
-	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	i32 alg_idx = _find_alg_entry(test, (*param).alg_id);
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
 
-	reg_vals = kunit_kmalloc(test, param->len_bytes, GFP_KERNEL);
+	reg_vals = kunit_kmalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, reg_vals);
 
-	readback = kunit_kzalloc(test, param->len_bytes, GFP_KERNEL);
+	readback = kunit_kzalloc(test, (*param).len_bytes, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, readback);
 
 	/* Create some DSP data to be read into the control cache */
-	alg_base_words = _get_alg_mem_base_words(test, alg_idx, param->mem_type);
-	reg = cs_dsp_mock_base_addr_for_mem(priv, param->mem_type);
-	reg += (alg_base_words + param->offs_words) *
+	alg_base_words = _get_alg_mem_base_words(test, alg_idx, (*param).mem_type);
+	reg = cs_dsp_mock_base_addr_for_mem(priv, (*param).mem_type);
+	reg += (alg_base_words + (*param).offs_words) *
 		cs_dsp_mock_reg_addr_inc_per_unpacked_word(priv);
-	get_random_bytes(reg_vals, param->len_bytes);
-	regmap_raw_write(dsp->regmap, reg, reg_vals, param->len_bytes);
+	get_random_bytes(reg_vals, (*param).len_bytes);
+	regmap_raw_write((*dsp).regmap, reg, reg_vals, (*param).len_bytes);
 
 	/* Create control pointing to this data */
-	def.flags = param->flags;
-	def.mem_type = param->mem_type;
-	def.offset_dsp_words = param->offs_words;
-	def.length_bytes = param->len_bytes;
+	def.flags = (*param).flags;
+	def.mem_type = (*param).mem_type;
+	def.offset_dsp_words = (*param).offs_words;
+	def.length_bytes = (*param).len_bytes;
 
-	cs_dsp_mock_wmfw_start_alg_info_block(local->wmfw_builder,
+	cs_dsp_mock_wmfw_start_alg_info_block((*local).wmfw_builder,
 					      cs_dsp_ctl_cache_test_algs[alg_idx].id,
 					      "dummyalg", std::ptr::null_mut());
-	cs_dsp_mock_wmfw_add_coeff_desc(local->wmfw_builder, &def);
-	cs_dsp_mock_wmfw_end_alg_info_block(local->wmfw_builder);
+	cs_dsp_mock_wmfw_add_coeff_desc((*local).wmfw_builder, &def);
+	cs_dsp_mock_wmfw_end_alg_info_block((*local).wmfw_builder);
 
 	/* Power-up DSP then power-down */
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
@@ -1024,7 +1024,7 @@ unsafe fn cs_dsp_ctl_cache_read_powered_down(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Control should readback the data from the control cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
 			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
@@ -1045,7 +1045,7 @@ unsafe fn cs_dsp_ctl_cache_read_stopped_powered_down(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1091,7 +1091,7 @@ unsafe fn cs_dsp_ctl_cache_read_stopped_powered_down(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Control should readback the data from the control cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
 			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
@@ -1113,7 +1113,7 @@ unsafe fn cs_dsp_ctl_cache_read_not_current_loaded_fw(*mut kunit test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	*mut cs_dsp_mock_wmfw_builder builder2 = _create_dummy_wmfw(test);
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1159,7 +1159,7 @@ unsafe fn cs_dsp_ctl_cache_read_not_current_loaded_fw(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Control should readback the data from the control cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
 			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
@@ -1181,7 +1181,7 @@ unsafe fn cs_dsp_ctl_cache_read_not_current_running_fw(*mut kunit test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	*mut cs_dsp_mock_wmfw_builder builder2 = _create_dummy_wmfw(test);
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1229,7 +1229,7 @@ unsafe fn cs_dsp_ctl_cache_read_not_current_running_fw(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Control should readback the data from the control cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
 			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
@@ -1250,7 +1250,7 @@ unsafe fn cs_dsp_ctl_cache_read_running(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *init_reg_vals, *new_reg_vals, *readback;
@@ -1304,7 +1304,7 @@ unsafe fn cs_dsp_ctl_cache_read_running(*mut kunit test)
 	cs_dsp_mock_regmap_drop_bytes(priv, reg, param->len_bytes);
 
 	/* Control should readback the origin data from its cache */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
 			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
@@ -1336,7 +1336,7 @@ unsafe fn cs_dsp_ctl_cache_read_running_zero_flags(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *init_reg_vals, *new_reg_vals, *readback;
@@ -1382,7 +1382,7 @@ unsafe fn cs_dsp_ctl_cache_read_running_zero_flags(*mut kunit test)
 	regmap_raw_write(dsp->regmap, reg, new_reg_vals, param->len_bytes);
 
 	/* Control should readback the new data from the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 	KUNIT_EXPECT_EQ(test,
 			cs_dsp_coeff_lock_and_read_ctrl(ctl, 0, readback, param->len_bytes),
@@ -1416,7 +1416,7 @@ unsafe fn cs_dsp_ctl_cache_writethrough(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1450,7 +1450,7 @@ unsafe fn cs_dsp_ctl_cache_writethrough(*mut kunit test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1479,7 +1479,7 @@ unsafe fn cs_dsp_ctl_cache_writethrough_unchanged(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1513,7 +1513,7 @@ unsafe fn cs_dsp_ctl_cache_writethrough_unchanged(*mut kunit test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Start the firmware and add an action to stop it during cleanup */
@@ -1555,7 +1555,7 @@ unsafe fn cs_dsp_ctl_cache_write_unchanged_not_started(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1589,7 +1589,7 @@ unsafe fn cs_dsp_ctl_cache_write_unchanged_not_started(*mut kunit test)
 	wmfw = cs_dsp_mock_wmfw_get_firmware(priv->local->wmfw_builder);
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/*
@@ -1627,7 +1627,7 @@ unsafe fn cs_dsp_ctl_cache_write_not_started(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1667,7 +1667,7 @@ unsafe fn cs_dsp_ctl_cache_write_not_started(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Write new data to the control, it should not be written to the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(reg_vals, param->len_bytes);
@@ -1698,7 +1698,7 @@ unsafe fn cs_dsp_ctl_cache_write_stopped(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1742,7 +1742,7 @@ unsafe fn cs_dsp_ctl_cache_write_stopped(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Write new data to the control, it should not be written to the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(reg_vals, param->len_bytes);
@@ -1773,7 +1773,7 @@ unsafe fn cs_dsp_ctl_cache_write_powered_down(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1814,7 +1814,7 @@ unsafe fn cs_dsp_ctl_cache_write_powered_down(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Write new data to the control, it should not be written to the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(reg_vals, param->len_bytes);
@@ -1845,7 +1845,7 @@ unsafe fn cs_dsp_ctl_cache_write_stopped_powered_down(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1890,7 +1890,7 @@ unsafe fn cs_dsp_ctl_cache_write_stopped_powered_down(*mut kunit test)
 	KUNIT_EXPECT_FALSE(test, cs_dsp_mock_regmap_is_dirty(priv, true));
 
 	/* Write new data to the control, it should not be written to the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(reg_vals, param->len_bytes);
@@ -1921,7 +1921,7 @@ unsafe fn cs_dsp_ctl_cache_write_not_current_loaded_fw(*mut kunit test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	*mut cs_dsp_mock_wmfw_builder builder2 = _create_dummy_wmfw(test);
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -1956,7 +1956,7 @@ unsafe fn cs_dsp_ctl_cache_write_not_current_loaded_fw(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Get the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Power-down DSP then power-up with a different firmware */
@@ -2005,7 +2005,7 @@ unsafe fn cs_dsp_ctl_cache_write_not_current_running_fw(*mut kunit test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	*mut cs_dsp_mock_wmfw_builder builder2 = _create_dummy_wmfw(test);
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -2041,7 +2041,7 @@ unsafe fn cs_dsp_ctl_cache_write_not_current_running_fw(*mut kunit test)
 	cs_dsp_power_down(dsp);
 
 	/* Get the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Power-up with a different firmware and run it */
@@ -2091,7 +2091,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_before_run(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -2126,7 +2126,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_before_run(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Write new data to the control, it should not be written to the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(reg_vals, param->len_bytes);
@@ -2164,7 +2164,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_while_running(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *init_vals, *ctl_vals, *readback;
@@ -2204,7 +2204,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_while_running(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, kunit_add_action_or_reset(test, _cs_dsp_stop_wrapper, dsp), 0);
 
 	/* Write new data to the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(ctl_vals, param->len_bytes);
@@ -2245,7 +2245,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_after_stop(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -2284,7 +2284,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_after_stop(*mut kunit test)
 	cs_dsp_stop(dsp);
 
 	/* Write new data to the control, it should not be written to the registers */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(reg_vals, param->len_bytes);
@@ -2324,7 +2324,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_not_current_fw(*mut kunit test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
 	*mut cs_dsp_mock_wmfw_builder builder2 = _create_dummy_wmfw(test);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *reg_vals, *readback;
@@ -2359,7 +2359,7 @@ unsafe fn cs_dsp_ctl_cache_sync_write_not_current_fw(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Get the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	/* Power-down DSP then power-up with a different firmware */
@@ -2408,7 +2408,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_every_run(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *init_vals, *readback, *ctl_vals;
@@ -2446,7 +2446,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_every_run(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Write new data to the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(ctl_vals, param->len_bytes);
@@ -2491,7 +2491,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_after_fw_reload(*mut kunit test)
 	*mut cs_dsp dsp = priv->dsp;
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *init_vals, *readback, *ctl_vals;
@@ -2529,7 +2529,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_after_fw_reload(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Write new data to the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(ctl_vals, param->len_bytes);
@@ -2582,7 +2582,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_after_fw_swap(*mut kunit test)
 	struct cs_dsp_mock_coeff_def def = mock_coeff_template;
 	i32 alg_idx = _find_alg_entry(test, param->alg_id);
 	*mut cs_dsp_mock_wmfw_builder builder2 = _create_dummy_wmfw(test);
-	u32 reg, alg_base_words;
+	reg: u32, alg_base_words;
 	*mut cs_dsp_coeff_ctl ctl;
 	*mut firmware wmfw;
 	u32 *init_vals, *readback, *ctl_vals;
@@ -2620,7 +2620,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_after_fw_swap(*mut kunit test)
 	KUNIT_ASSERT_EQ(test, cs_dsp_power_up(dsp, wmfw, "mock_fw", std::ptr::null_mut(), std::ptr::null_mut(), "misc"), 0);
 
 	/* Write new data to the control */
-	ctl = list_first_entry_or_null(&dsp->ctl_list, struct cs_dsp_coeff_ctl, list);
+	ctl = list_first_entry_or_null(&dsp->ctl_list, cs_dsp_coeff_ctl, list);
 	KUNIT_ASSERT_NOT_NULL(test, ctl);
 
 	get_random_bytes(ctl_vals, param->len_bytes);
@@ -2669,7 +2669,7 @@ unsafe fn cs_dsp_ctl_cache_sync_reapply_after_fw_swap(*mut kunit test)
 }
 
 unsafe fn cs_dsp_ctl_cache_test_common_init(*mut kunit test, *mut cs_dsp dsp,
-					     i32 wmfw_version)
+					     wmfw_version: i32)
 {
 	*mut cs_dsp_test priv;
 	*mut cs_dsp_test_local local;
@@ -2680,7 +2680,7 @@ unsafe fn cs_dsp_ctl_cache_test_common_init(*mut kunit test, *mut cs_dsp dsp,
 	if (!priv)
 		return -ENOMEM;
 
-	local = kunit_kzalloc(test, std::mem::size_of::<struct cs_dsp_test_local>(), GFP_KERNEL);
+	local = kunit_kzalloc(test, std::mem::size_of::<cs_dsp_test_local>(), GFP_KERNEL);
 	if (!local)
 		return -ENOMEM;
 
@@ -2764,7 +2764,7 @@ unsafe fn cs_dsp_ctl_cache_test_halo_init(*mut kunit test)
 	return cs_dsp_ctl_cache_test_common_init(test, dsp, 3);
 }
 
-unsafe fn cs_dsp_ctl_cache_test_adsp2_32bit_init(*mut kunit test, i32 wmfw_ver)
+unsafe fn cs_dsp_ctl_cache_test_adsp2_32bit_init(*mut kunit test, wmfw_ver: i32)
 {
 	*mut cs_dsp dsp;
 
@@ -2793,7 +2793,7 @@ unsafe fn cs_dsp_ctl_cache_test_adsp2_32bit_wmfw2_init(*mut kunit test)
 	return cs_dsp_ctl_cache_test_adsp2_32bit_init(test, 2);
 }
 
-unsafe fn cs_dsp_ctl_cache_test_adsp2_16bit_init(*mut kunit test, i32 wmfw_ver)
+unsafe fn cs_dsp_ctl_cache_test_adsp2_16bit_init(*mut kunit test, wmfw_ver: i32)
 {
 	*mut cs_dsp dsp;
 
@@ -2888,19 +2888,19 @@ KUNIT_ARRAY_PARAM(all_pop_varying_alg, all_pop_varying_alg_cases,
  */
 const struct cs_dsp_ctl_cache_test_param all_pop_nonvol_readable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0
+	  flags: 0
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 KUNIT_ARRAY_PARAM(all_pop_nonvol_readable_flags,
@@ -2913,16 +2913,16 @@ KUNIT_ARRAY_PARAM(all_pop_nonvol_readable_flags,
  */
 const struct cs_dsp_ctl_cache_test_param all_pop_nonvol_readable_nonzero_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 KUNIT_ARRAY_PARAM(all_pop_nonvol_readable_nonzero_flags,
@@ -2935,19 +2935,19 @@ KUNIT_ARRAY_PARAM(all_pop_nonvol_readable_nonzero_flags,
  */
 const struct cs_dsp_ctl_cache_test_param all_pop_nonvol_writeable_flags_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = 0
+	  flags: 0
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_READABLE | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 KUNIT_ARRAY_PARAM(all_pop_nonvol_writeable_flags,
@@ -2960,16 +2960,16 @@ KUNIT_ARRAY_PARAM(all_pop_nonvol_writeable_flags,
  */
 const struct cs_dsp_ctl_cache_test_param all_pop_nonvol_write_only_length_cases[] = {
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 512,
-	  .flags = WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 4,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 	{ .alg_id = 0xfafa,   .mem_type = WMFW_ADSP2_YM, .offs_words = 1, .len_bytes = 512,
-	  .flags = WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
+	  flags: WMFW_CTL_FLAG_SYS | WMFW_CTL_FLAG_WRITEABLE,
 	},
 };
 KUNIT_ARRAY_PARAM(all_pop_nonvol_write_only_length,
@@ -3235,37 +3235,37 @@ struct kunit_case cs_dsp_ctl_cache_test_cases_v3[] = {
 };
 
 struct kunit_suite cs_dsp_ctl_cache_test_halo = {
-	.name = "cs_dsp_ctl_cache_wmfwV3_halo",
-	.init = cs_dsp_ctl_cache_test_halo_init,
-	.test_cases = cs_dsp_ctl_cache_test_cases_v3,
+	name: "cs_dsp_ctl_cache_wmfwV3_halo",
+	init: cs_dsp_ctl_cache_test_halo_init,
+	test_cases: cs_dsp_ctl_cache_test_cases_v3,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 struct kunit_suite cs_dsp_ctl_cache_test_adsp2_32bit_wmfw1 = {
-	.name = "cs_dsp_ctl_cache_wmfwV1_adsp2_32bit",
-	.init = cs_dsp_ctl_cache_test_adsp2_32bit_wmfw1_init,
-	.test_cases = cs_dsp_ctl_cache_test_cases_v1,
+	name: "cs_dsp_ctl_cache_wmfwV1_adsp2_32bit",
+	init: cs_dsp_ctl_cache_test_adsp2_32bit_wmfw1_init,
+	test_cases: cs_dsp_ctl_cache_test_cases_v1,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 struct kunit_suite cs_dsp_ctl_cache_test_adsp2_32bit_wmfw2 = {
-	.name = "cs_dsp_ctl_cache_wmfwV2_adsp2_32bit",
-	.init = cs_dsp_ctl_cache_test_adsp2_32bit_wmfw2_init,
-	.test_cases = cs_dsp_ctl_cache_test_cases_v2,
+	name: "cs_dsp_ctl_cache_wmfwV2_adsp2_32bit",
+	init: cs_dsp_ctl_cache_test_adsp2_32bit_wmfw2_init,
+	test_cases: cs_dsp_ctl_cache_test_cases_v2,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 struct kunit_suite cs_dsp_ctl_cache_test_adsp2_16bit_wmfw1 = {
-	.name = "cs_dsp_ctl_cache_wmfwV1_adsp2_16bit",
-	.init = cs_dsp_ctl_cache_test_adsp2_16bit_wmfw1_init,
-	.test_cases = cs_dsp_ctl_cache_test_cases_v1,
+	name: "cs_dsp_ctl_cache_wmfwV1_adsp2_16bit",
+	init: cs_dsp_ctl_cache_test_adsp2_16bit_wmfw1_init,
+	test_cases: cs_dsp_ctl_cache_test_cases_v1,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 
 struct kunit_suite cs_dsp_ctl_cache_test_adsp2_16bit_wmfw2 = {
-	.name = "cs_dsp_ctl_cache_wmfwV2_adsp2_16bit",
-	.init = cs_dsp_ctl_cache_test_adsp2_16bit_wmfw2_init,
-	.test_cases = cs_dsp_ctl_cache_test_cases_v2,
+	name: "cs_dsp_ctl_cache_wmfwV2_adsp2_16bit",
+	init: cs_dsp_ctl_cache_test_adsp2_16bit_wmfw2_init,
+	test_cases: cs_dsp_ctl_cache_test_cases_v2,
 	.attr.speed = KUNIT_SPEED_SLOW,
 };
 

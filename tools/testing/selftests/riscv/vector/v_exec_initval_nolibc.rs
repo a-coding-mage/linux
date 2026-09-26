@@ -34,7 +34,7 @@ macro_rules! check_vector_register {
                         ", 8"
                     ),
                     ".option pop",
-                    value = out(reg) $value,
+                    $value = out(reg) $value,
                     options(nostack, preserves_flags),
                 );
             }

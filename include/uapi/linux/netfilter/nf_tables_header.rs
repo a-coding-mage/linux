@@ -73,40 +73,40 @@ pub mod nft_verdicts {
 /**
  * enum nf_tables_msg_types - nf_tables netlink message types
  *
- * @NFT_MSG_NEWTABLE: create a new table (enum nft_table_attributes)
- * @NFT_MSG_GETTABLE: get a table (enum nft_table_attributes)
- * @NFT_MSG_DELTABLE: delete a table (enum nft_table_attributes)
- * @NFT_MSG_NEWCHAIN: create a new chain (enum nft_chain_attributes)
- * @NFT_MSG_GETCHAIN: get a chain (enum nft_chain_attributes)
- * @NFT_MSG_DELCHAIN: delete a chain (enum nft_chain_attributes)
- * @NFT_MSG_NEWRULE: create a new rule (enum nft_rule_attributes)
- * @NFT_MSG_GETRULE: get a rule (enum nft_rule_attributes)
- * @NFT_MSG_DELRULE: delete a rule (enum nft_rule_attributes)
- * @NFT_MSG_NEWSET: create a new set (enum nft_set_attributes)
- * @NFT_MSG_GETSET: get a set (enum nft_set_attributes)
- * @NFT_MSG_DELSET: delete a set (enum nft_set_attributes)
- * @NFT_MSG_NEWSETELEM: create a new set element (enum nft_set_elem_attributes)
- * @NFT_MSG_GETSETELEM: get a set element (enum nft_set_elem_attributes)
- * @NFT_MSG_DELSETELEM: delete a set element (enum nft_set_elem_attributes)
- * @NFT_MSG_NEWGEN: announce a new generation, only for events (enum nft_gen_attributes)
- * @NFT_MSG_GETGEN: get the rule-set generation (enum nft_gen_attributes)
- * @NFT_MSG_TRACE: trace event (enum nft_trace_attributes)
- * @NFT_MSG_NEWOBJ: create a stateful object (enum nft_obj_attributes)
- * @NFT_MSG_GETOBJ: get a stateful object (enum nft_obj_attributes)
- * @NFT_MSG_DELOBJ: delete a stateful object (enum nft_obj_attributes)
- * @NFT_MSG_GETOBJ_RESET: get and reset a stateful object (enum nft_obj_attributes)
- * @NFT_MSG_NEWFLOWTABLE: add new flow table (enum nft_flowtable_attributes)
- * @NFT_MSG_GETFLOWTABLE: get flow table (enum nft_flowtable_attributes)
- * @NFT_MSG_DELFLOWTABLE: delete flow table (enum nft_flowtable_attributes)
- * @NFT_MSG_GETRULE_RESET: get rules and reset stateful expressions (enum nft_obj_attributes)
- * @NFT_MSG_DESTROYTABLE: destroy a table (enum nft_table_attributes)
- * @NFT_MSG_DESTROYCHAIN: destroy a chain (enum nft_chain_attributes)
- * @NFT_MSG_DESTROYRULE: destroy a rule (enum nft_rule_attributes)
- * @NFT_MSG_DESTROYSET: destroy a set (enum nft_set_attributes)
- * @NFT_MSG_DESTROYSETELEM: destroy a set element (enum nft_set_elem_attributes)
- * @NFT_MSG_DESTROYOBJ: destroy a stateful object (enum nft_object_attributes)
- * @NFT_MSG_DESTROYFLOWTABLE: destroy flow table (enum nft_flowtable_attributes)
- * @NFT_MSG_GETSETELEM_RESET: get set elements and reset attached stateful expressions (enum nft_set_elem_attributes)
+ * @NFT_MSG_NEWTABLE: create a new table (nft_table_attributes)
+ * @NFT_MSG_GETTABLE: get a table (nft_table_attributes)
+ * @NFT_MSG_DELTABLE: delete a table (nft_table_attributes)
+ * @NFT_MSG_NEWCHAIN: create a new chain (nft_chain_attributes)
+ * @NFT_MSG_GETCHAIN: get a chain (nft_chain_attributes)
+ * @NFT_MSG_DELCHAIN: delete a chain (nft_chain_attributes)
+ * @NFT_MSG_NEWRULE: create a new rule (nft_rule_attributes)
+ * @NFT_MSG_GETRULE: get a rule (nft_rule_attributes)
+ * @NFT_MSG_DELRULE: delete a rule (nft_rule_attributes)
+ * @NFT_MSG_NEWSET: create a new set (nft_set_attributes)
+ * @NFT_MSG_GETSET: get a set (nft_set_attributes)
+ * @NFT_MSG_DELSET: delete a set (nft_set_attributes)
+ * @NFT_MSG_NEWSETELEM: create a new set element (nft_set_elem_attributes)
+ * @NFT_MSG_GETSETELEM: get a set element (nft_set_elem_attributes)
+ * @NFT_MSG_DELSETELEM: delete a set element (nft_set_elem_attributes)
+ * @NFT_MSG_NEWGEN: announce a new generation, only for events (nft_gen_attributes)
+ * @NFT_MSG_GETGEN: get the rule-set generation (nft_gen_attributes)
+ * @NFT_MSG_TRACE: trace event (nft_trace_attributes)
+ * @NFT_MSG_NEWOBJ: create a stateful object (nft_obj_attributes)
+ * @NFT_MSG_GETOBJ: get a stateful object (nft_obj_attributes)
+ * @NFT_MSG_DELOBJ: delete a stateful object (nft_obj_attributes)
+ * @NFT_MSG_GETOBJ_RESET: get and reset a stateful object (nft_obj_attributes)
+ * @NFT_MSG_NEWFLOWTABLE: add new flow table (nft_flowtable_attributes)
+ * @NFT_MSG_GETFLOWTABLE: get flow table (nft_flowtable_attributes)
+ * @NFT_MSG_DELFLOWTABLE: delete flow table (nft_flowtable_attributes)
+ * @NFT_MSG_GETRULE_RESET: get rules and reset stateful expressions (nft_obj_attributes)
+ * @NFT_MSG_DESTROYTABLE: destroy a table (nft_table_attributes)
+ * @NFT_MSG_DESTROYCHAIN: destroy a chain (nft_chain_attributes)
+ * @NFT_MSG_DESTROYRULE: destroy a rule (nft_rule_attributes)
+ * @NFT_MSG_DESTROYSET: destroy a set (nft_set_attributes)
+ * @NFT_MSG_DESTROYSETELEM: destroy a set element (nft_set_elem_attributes)
+ * @NFT_MSG_DESTROYOBJ: destroy a stateful object (nft_object_attributes)
+ * @NFT_MSG_DESTROYFLOWTABLE: destroy flow table (nft_flowtable_attributes)
+ * @NFT_MSG_GETSETELEM_RESET: get set elements and reset attached stateful expressions (nft_set_elem_attributes)
  */
 pub mod nf_tables_msg_types {
     pub const NFT_MSG_NEWTABLE: _ = 0;
@@ -525,7 +525,7 @@ pub const NFT_DATA_VALUE_MAXLEN: _ = 64;
 /**
  * enum nft_verdict_attributes - nf_tables verdict netlink attributes
  *
- * @NFTA_VERDICT_CODE: nf_tables verdict (NLA_U32: enum nft_verdicts)
+ * @NFTA_VERDICT_CODE: nf_tables verdict (NLA_U32: nft_verdicts)
  * @NFTA_VERDICT_CHAIN: jump target chain name (NLA_STRING)
  * @NFTA_VERDICT_CHAIN_ID: jump target chain ID (NLA_U32)
  */
@@ -646,7 +646,7 @@ pub mod nft_byteorder_ops {
  *
  * @NFTA_BYTEORDER_SREG: source register (NLA_U32: nft_registers)
  * @NFTA_BYTEORDER_DREG: destination register (NLA_U32: nft_registers)
- * @NFTA_BYTEORDER_OP: operator (NLA_U32: enum nft_byteorder_ops)
+ * @NFTA_BYTEORDER_OP: operator (NLA_U32: nft_byteorder_ops)
  * @NFTA_BYTEORDER_LEN: length of the data (NLA_U32)
  * @NFTA_BYTEORDER_SIZE: data size in bytes (NLA_U32: 2 or 4)
  */
@@ -736,7 +736,7 @@ pub mod nft_lookup_flags {
  * @NFTA_LOOKUP_SREG: source register of the data to look for (NLA_U32: nft_registers)
  * @NFTA_LOOKUP_DREG: destination register (NLA_U32: nft_registers)
  * @NFTA_LOOKUP_SET_ID: uniquely identifies a set in a transaction (NLA_U32)
- * @NFTA_LOOKUP_FLAGS: flags (NLA_U32: enum nft_lookup_flags)
+ * @NFTA_LOOKUP_FLAGS: flags (NLA_U32: nft_lookup_flags)
  */
 pub mod nft_lookup_attributes {
     pub const NFTA_LOOKUP_UNSPEC: _ = 0;
@@ -1129,7 +1129,7 @@ pub const NFT_SOCKET_MAX: _ = (__NFT_SOCKET_MAX - 1);
  * enum nft_ct_keys - nf_tables ct expression keys
  *
  * @NFT_CT_STATE: conntrack state (bitmask of enum ip_conntrack_info)
- * @NFT_CT_DIRECTION: conntrack direction (enum ip_conntrack_dir)
+ * @NFT_CT_DIRECTION: conntrack direction (ip_conntrack_dir)
  * @NFT_CT_STATUS: conntrack status (bitmask of enum ip_conntrack_status)
  * @NFT_CT_MARK: conntrack mark value
  * @NFT_CT_SECMARK: conntrack secmark value
@@ -1226,8 +1226,8 @@ pub mod nft_limit_flags {
  * @NFTA_LIMIT_RATE: refill rate (NLA_U64)
  * @NFTA_LIMIT_UNIT: refill unit (NLA_U64)
  * @NFTA_LIMIT_BURST: burst (NLA_U32)
- * @NFTA_LIMIT_TYPE: type of limit (NLA_U32: enum nft_limit_type)
- * @NFTA_LIMIT_FLAGS: flags (NLA_U32: enum nft_limit_flags)
+ * @NFTA_LIMIT_TYPE: type of limit (NLA_U32: nft_limit_type)
+ * @NFTA_LIMIT_FLAGS: flags (NLA_U32: nft_limit_flags)
  */
 pub mod nft_limit_attributes {
     pub const NFTA_LIMIT_UNSPEC: _ = 0;
@@ -1249,7 +1249,7 @@ pub mod nft_connlimit_flags {
  * enum nft_connlimit_attributes - nf_tables connlimit expression netlink attributes
  *
  * @NFTA_CONNLIMIT_COUNT: number of connections (NLA_U32)
- * @NFTA_CONNLIMIT_FLAGS: flags (NLA_U32: enum nft_connlimit_flags)
+ * @NFTA_CONNLIMIT_FLAGS: flags (NLA_U32: nft_connlimit_flags)
  */
 pub mod nft_connlimit_attributes {
     pub const NFTA_CONNLIMIT_UNSPEC: _ = 0;
@@ -1545,7 +1545,7 @@ pub const NFTA_DUP_MAX: _ = (__NFTA_DUP_MAX - 1);
  *
  * @NFTA_FWD_SREG_DEV: source register of output interface (NLA_U32: nft_register)
  * @NFTA_FWD_SREG_ADDR: source register of destination address (NLA_U32: nft_register)
- * @NFTA_FWD_NFPROTO: layer 3 family of source register address (NLA_U32: enum nfproto)
+ * @NFTA_FWD_NFPROTO: layer 3 family of source register address (NLA_U32: nfproto)
  */
 pub mod nft_fwd_attributes {
     pub const NFTA_FWD_UNSPEC: _ = 0;
@@ -1801,7 +1801,7 @@ pub const NFTA_DEVICE_MAX: _ = (__NFTA_DEVICE_MAX - 1);
  * enum nft_xfrm_attributes - nf_tables xfrm expr netlink attributes
  *
  * @NFTA_XFRM_DREG: destination register (NLA_U32)
- * @NFTA_XFRM_KEY: enum nft_xfrm_keys (NLA_U32)
+ * @NFTA_XFRM_KEY: nft_xfrm_keys (NLA_U32)
  * @NFTA_XFRM_DIR: direction (NLA_U8)
  * @NFTA_XFRM_SPNUM: index in secpath array (NLA_U32)
  */

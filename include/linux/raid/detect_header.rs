@@ -5,12 +5,12 @@ extern "C" {
     pub fn md_autodetect_dev(dev: dev_t);
 }
 
-#[cfg(feature = "CONFIG_BLK_DEV_MD")]
+#[cfg(CONFIG_BLK_DEV_MD)]
 extern "C" {
     pub fn md_run_setup();
 }
 
-#[cfg(not(feature = "CONFIG_BLK_DEV_MD"))]
+#[cfg(not(CONFIG_BLK_DEV_MD))]
 #[inline]
 pub fn md_run_setup() {
 }

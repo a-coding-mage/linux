@@ -64,25 +64,25 @@ pub struct comedi_subdevice {
 pub const COMEDI_CB_ERROR_MASK:u32 = 16|32; pub const COMEDI_CB_CANCEL_MASK:u32 = 2|16|32;
 
 extern "C" {
-    pub fn comedi_event(*mut comedi_device,*mut comedi_subdevice); pub fn comedi_dev_get_from_minor(u32)->*mut comedi_device; pub fn comedi_dev_put(*mut comedi_device)->bool;
-    pub fn comedi_is_subdevice_running(*mut comedi_subdevice)->bool; pub fn comedi_get_is_subdevice_running(*mut comedi_subdevice)->bool; pub fn comedi_put_is_subdevice_running(*mut comedi_subdevice);
-    pub fn comedi_alloc_spriv(*mut comedi_subdevice,usize)->*mut core::ffi::c_void; pub fn comedi_set_spriv_auto_free(*mut comedi_subdevice);
-    pub fn comedi_check_chanlist(*mut comedi_subdevice,i32,*mut u32)->i32; pub fn comedi_set_hw_dev(*mut comedi_device,*mut device)->i32;
-    pub fn comedi_buf_write_alloc(*mut comedi_subdevice,u32)->u32; pub fn comedi_buf_write_free(*mut comedi_subdevice,u32)->u32; pub fn comedi_buf_read_n_available(*mut comedi_subdevice)->u32;
-    pub fn comedi_buf_read_alloc(*mut comedi_subdevice,u32)->u32; pub fn comedi_buf_read_free(*mut comedi_subdevice,u32)->u32;
-    pub fn comedi_buf_write_samples(*mut comedi_subdevice,*const core::ffi::c_void,u32)->u32; pub fn comedi_buf_read_samples(*mut comedi_subdevice,*mut core::ffi::c_void,u32)->u32;
-    pub fn comedi_driver_register(*mut comedi_driver)->i32; pub fn comedi_driver_unregister(*mut comedi_driver);
-    pub fn comedi_timeout(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,usize)->i32>,usize)->i32;
-    pub fn comedi_handle_events(*mut comedi_device,*mut comedi_subdevice)->u32;
-    pub fn comedi_dio_insn_config(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32,u32)->i32;
-    pub fn comedi_dio_update_state(*mut comedi_subdevice,*mut u32)->u32; pub fn comedi_bytes_per_scan_cmd(*mut comedi_subdevice,*mut comedi_cmd)->u32;
-    pub fn comedi_bytes_per_scan(*mut comedi_subdevice)->u32; pub fn comedi_nscans_left(*mut comedi_subdevice,u32)->u32; pub fn comedi_nsamples_left(*mut comedi_subdevice,u32)->u32;
-    pub fn comedi_inc_scan_progress(*mut comedi_subdevice,u32); pub fn comedi_alloc_devpriv(*mut comedi_device,usize)->*mut core::ffi::c_void;
-    pub fn comedi_alloc_subdevices(*mut comedi_device,i32)->i32; pub fn comedi_alloc_subdev_readback(*mut comedi_subdevice)->i32;
-    pub fn comedi_readback_insn_read(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,*mut u32)->i32;
-    pub fn comedi_load_firmware(*mut comedi_device,*mut device,*const i8,Option<unsafe extern "C" fn(*mut comedi_device,*const u8,usize,usize)->i32>,usize)->i32;
-    pub fn __comedi_check_request_region(*mut comedi_device,usize,usize,usize,usize,usize)->i32; pub fn comedi_check_request_region(*mut comedi_device,usize,usize,usize,usize,usize)->i32;
-    pub fn comedi_legacy_detach(*mut comedi_device); pub fn comedi_auto_config(*mut device,*mut comedi_driver,usize)->i32; pub fn comedi_auto_unconfig(*mut device);
+    pub fn comedi_event(_: *mut comedi_device,_: *mut comedi_subdevice); pub fn comedi_dev_get_from_minor(_: u32)->*mut comedi_device; pub fn comedi_dev_put(_: *mut comedi_device)->bool;
+    pub fn comedi_is_subdevice_running(_: *mut comedi_subdevice)->bool; pub fn comedi_get_is_subdevice_running(_: *mut comedi_subdevice)->bool; pub fn comedi_put_is_subdevice_running(_: *mut comedi_subdevice);
+    pub fn comedi_alloc_spriv(_: *mut comedi_subdevice,_: usize)->*mut core::ffi::c_void; pub fn comedi_set_spriv_auto_free(_: *mut comedi_subdevice);
+    pub fn comedi_check_chanlist(_: *mut comedi_subdevice,_: i32,_: *mut u32)->i32; pub fn comedi_set_hw_dev(_: *mut comedi_device,_: *mut device)->i32;
+    pub fn comedi_buf_write_alloc(_: *mut comedi_subdevice,_: u32)->u32; pub fn comedi_buf_write_free(_: *mut comedi_subdevice,_: u32)->u32; pub fn comedi_buf_read_n_available(_: *mut comedi_subdevice)->u32;
+    pub fn comedi_buf_read_alloc(_: *mut comedi_subdevice,_: u32)->u32; pub fn comedi_buf_read_free(_: *mut comedi_subdevice,_: u32)->u32;
+    pub fn comedi_buf_write_samples(_: *mut comedi_subdevice,_: *const core::ffi::c_void,_: u32)->u32; pub fn comedi_buf_read_samples(_: *mut comedi_subdevice,_: *mut core::ffi::c_void,_: u32)->u32;
+    pub fn comedi_driver_register(_: *mut comedi_driver)->i32; pub fn comedi_driver_unregister(_: *mut comedi_driver);
+    pub fn comedi_timeout(_: *mut comedi_device,_: *mut comedi_subdevice,_: *mut comedi_insn,_: Option<unsafe extern "C" fn(*mut comedi_device,*mut comedi_subdevice,*mut comedi_insn,usize)->i32>,usize)->i32;
+    pub fn comedi_handle_events(_: *mut comedi_device,_: *mut comedi_subdevice)->u32;
+    pub fn comedi_dio_insn_config(_: *mut comedi_device,_: *mut comedi_subdevice,_: *mut comedi_insn,_: *mut u32,_: u32)->i32;
+    pub fn comedi_dio_update_state(_: *mut comedi_subdevice,_: *mut u32)->u32; pub fn comedi_bytes_per_scan_cmd(_: *mut comedi_subdevice,_: *mut comedi_cmd)->u32;
+    pub fn comedi_bytes_per_scan(_: *mut comedi_subdevice)->u32; pub fn comedi_nscans_left(_: *mut comedi_subdevice,_: u32)->u32; pub fn comedi_nsamples_left(_: *mut comedi_subdevice,_: u32)->u32;
+    pub fn comedi_inc_scan_progress(_: *mut comedi_subdevice,_: u32); pub fn comedi_alloc_devpriv(_: *mut comedi_device,_: usize)->*mut core::ffi::c_void;
+    pub fn comedi_alloc_subdevices(_: *mut comedi_device,_: i32)->i32; pub fn comedi_alloc_subdev_readback(_: *mut comedi_subdevice)->i32;
+    pub fn comedi_readback_insn_read(_: *mut comedi_device,_: *mut comedi_subdevice,_: *mut comedi_insn,_: *mut u32)->i32;
+    pub fn comedi_load_firmware(_: *mut comedi_device,_: *mut device,_: *const i8,_: Option<unsafe extern "C" fn(*mut comedi_device,*const u8,usize,usize)->i32>,usize)->i32;
+    pub fn __comedi_check_request_region(_: *mut comedi_device,_: usize,_: usize,_: usize,_: usize,_: usize)->i32; pub fn comedi_check_request_region(_: *mut comedi_device,_: usize,_: usize,_: usize,_: usize,_: usize)->i32;
+    pub fn comedi_legacy_detach(_: *mut comedi_device); pub fn comedi_auto_config(_: *mut device,_: *mut comedi_driver,_: usize)->i32; pub fn comedi_auto_unconfig(_: *mut device);
 }
 
 #[inline] pub unsafe fn comedi_range_is_bipolar(s:*mut comedi_subdevice,r:usize)->bool { (*(*s).range_table).range[r].min < 0 }

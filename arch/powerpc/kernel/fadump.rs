@@ -56,14 +56,14 @@ extern "C" {
 }
 #[repr(C)] pub struct elf_phdr { pub p_type:u32,p_flags:u32,p_offset:u64,p_vaddr:u64,p_paddr:u64,p_filesz:u64,p_memsz:u64,p_align:u64 }
 #[repr(C)] pub struct elfhdr { pub e_ident:[u8;16],pub e_type:u16,pub e_machine:u16,pub e_version:u32,pub e_entry:u64,pub e_phoff:u64,pub e_shoff:u64,pub e_flags:u32,pub e_ehsize:u16,pub e_phentsize:u16,pub e_phnum:u16,pub e_shentsize:u16,pub e_shnum:u16,pub e_shstrndx:u16 }
-extern "C" { fn __va(x:u64)->*mut c_void; fn __pa(x:*const c_void)->u64; fn memblock_phys_mem_size()->u64; fn memblock_end_of_DRAM()->u64; fn memblock_reserve(u64,u64)->c_int; fn paddr_vmcoreinfo_note()->u64; fn virt_to_phys(*const c_void)->u64; fn fadump_get_boot_mem_regions()->c_int; }
+extern "C" { fn __va(x:u64)->*mut c_void; fn __pa(x:*const c_void)->u64; fn memblock_phys_mem_size()->u64; fn memblock_end_of_DRAM()->u64; fn memblock_reserve(_: u64,_: u64)->c_int; fn paddr_vmcoreinfo_note()->u64; fn virt_to_phys(_: *const c_void)->u64; fn fadump_get_boot_mem_regions()->c_int; }
 
 pub unsafe fn is_fadump_memory_area(addr:u64,size:u64)->c_int { if fw_dump.dump_registered==0||size==0{return 0}; let s=fw_dump.reserve_dump_area_start; let e=s+fw_dump.reserve_dump_area_size; if addr+size>s&&addr<=e {1} else {(addr<=fw_dump.boot_mem_top) as c_int} }
 pub unsafe fn should_fadump_crash()->c_int {(fw_dump.dump_registered!=0&&fw_dump.fadumphdr_addr!=0) as c_int}
 pub unsafe fn is_fadump_active()->c_int {fw_dump.dump_active}
 
 pub unsafe fn fadump_calculate_reserve_size()->u64 { let mut base=0; let mut size=0; let r=parse_crashkernel(core::ptr::null(),memblock_phys_mem_size(),&mut size,&mut base); if r==0&&size>0 {fw_dump.reserve_bootvar=size; return size} if fw_dump.reserve_bootvar!=0{return fw_dump.reserve_bootvar} size=memblock_phys_mem_size()/20; size &= !0x0fffffff; let min=fw_dump.ops.as_ref().unwrap().fadump_get_bootmem_min.unwrap()(); if size>min{size}else{min} }
-extern "C" { fn parse_crashkernel(*const c_char,u64,*mut u64,*mut u64)->c_int; }
+extern "C" { fn parse_crashkernel(_: *const c_char,_: u64,_: *mut u64,_: *mut u64)->c_int; }
 pub unsafe fn get_fadump_area_size()->u64 { let mut s=fw_dump.cpu_state_data_size+fw_dump.hpte_region_size; s=(s+4095)&!4095; s+=fw_dump.boot_memory_size+core::mem::size_of::<fadump_crash_info_header>() as u64; if let Some(f)=(*fw_dump.ops).fadump_get_metadata_size{s+=f()} s }
 
 pub unsafe fn fadump_reserve_mem()->c_int { if fw_dump.fadump_enabled==0{return 0} if fw_dump.fadump_supported==0 {return 0} if fw_dump.dump_active {fadump_reserve_crash_area(fw_dump.boot_mem_top)} else {fw_dump.boot_memory_size=fadump_calculate_reserve_size(); if fadump_get_boot_mem_regions()==0{return 0}; fw_dump.reserve_dump_area_start=fw_dump.boot_mem_top; fw_dump.reserve_dump_area_size=get_fadump_area_size(); if memblock_reserve(fw_dump.reserve_dump_area_start,fw_dump.reserve_dump_area_size)!=0{return 0} } 1 }
@@ -77,6 +77,6 @@ pub unsafe fn early_init_dt_scan_fw_dump(_node:usize,_uname:*const c_char,_depth
 pub unsafe fn fadump_cleanup(){if !fw_dump.ops.is_null(){if let Some(f)=(*fw_dump.ops).fadump_cleanup{f(&mut fw_dump)}}}
 
 unsafe fn fadump_reserve_crash_area_impl(base:u64){let mut i=0;let mut s=0;let mut e=0;while next_mem_range(i,&mut s,&mut e)!=0{i+=1;if e<base{continue}if s<base{s=base}fadump_reserve_range(s,e-s)}}
-extern "C" {fn next_mem_range(u64,*mut u64,*mut u64)->c_int;fn fadump_reserve_range(u64,u64);}
+extern "C" {fn next_mem_range(_: u64,_: *mut u64,_: *mut u64)->c_int;fn fadump_reserve_range(_: u64,_: u64);}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

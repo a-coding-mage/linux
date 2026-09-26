@@ -109,9 +109,9 @@ static mut PALMTE_SPI_INFO: [SpiBoardInfo; 1] = [SpiBoardInfo {
 }];
 
 // CONFIG_MMC_OMAP conditionally supplies the MMC implementation.
-#[cfg(feature = "CONFIG_MMC_OMAP")]
+#[cfg(CONFIG_MMC_OMAP)]
 unsafe fn palmte_mmc_init() { omap1_init_mmc(PALMTE_MMC_CONFIG.as_mut_ptr(), OMAP15XX_NR_MMC); }
-#[cfg(not(feature = "CONFIG_MMC_OMAP"))]
+#[cfg(not(CONFIG_MMC_OMAP))]
 unsafe fn palmte_mmc_init() {}
 
 static mut PALMTE_MMC_CONFIG: [*mut OmapMmcPlatformData; OMAP15XX_NR_MMC] = [core::ptr::null_mut(); OMAP15XX_NR_MMC];

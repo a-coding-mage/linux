@@ -82,7 +82,7 @@ unsafe extern "C" {
 }
 
 // Corresponds to: #if IS_ENABLED(CONFIG_DRM_AMD_DC_KUNIT_TEST)
-#[cfg(any(CONFIG_DRM_AMD_DC_KUNIT_TEST, feature = "CONFIG_DRM_AMD_DC_KUNIT_TEST"))]
+#[cfg(any(CONFIG_DRM_AMD_DC_KUNIT_TEST, CONFIG_DRM_AMD_DC_KUNIT_TEST))]
 unsafe extern "C" {
     pub fn amdgpu_dm_plane_add_modifier(mods: *mut *mut u64, size: *mut u64, cap: *mut u64, mod_: u64);
     pub fn amdgpu_dm_plane_fill_gfx9_tiling_info_from_device(adev: *const amdgpu_device, tiling_info: *mut dc_tiling_info);

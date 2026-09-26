@@ -7,7 +7,7 @@
 /*
  * Copyright (C) 2024-2025 Amlogic, Inc. All rights reserved.
  * Author: Jian Hu <jian.hu@amlogic.com>
- * /
+ */
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -170,7 +170,7 @@ static struct clk_regmap t7_rtc = {
 		/*
 		 * xtal is also on parent input #3 but that it is not useful to CCF since
 		 * the same parent is available with parent input #0
-		 * /
+		 */
 		.parent_data = (const struct clk_parent_data []) {
 			{ .fw_name = "xtal", },
 			{ .hw = &t7_rtc_dualdiv.hw },
@@ -719,7 +719,7 @@ static struct clk_regmap t7_mali = {
 /*
  * parent index 2, 3, 4, 5, 6 not connect any clock signal,
  * the last parent connect external PAD
- * /
+ */
 static u32 t7_eth_rmii_parents_val_table[] = { 0, 1, 7 };
 static const struct clk_parent_data t7_eth_rmii_parents[] = {
 	{ .fw_name = "fdiv2", },
@@ -1009,7 +1009,7 @@ static T7_SYS_PCLK(sys_sar_adc,		SYS_CLK_EN0_REG2, 28,	0);
  * After clock is disabled, The GIC cannot work properly. At present, the driver
  * used by our GIC is the public driver in kernel, and there is no management
  * clock in the driver.
- * /
+ */
 static T7_SYS_PCLK(sys_gic,		SYS_CLK_EN0_REG2, 30,	CLK_IS_CRITICAL);
 static T7_SYS_PCLK(sys_ts_gpu,		SYS_CLK_EN0_REG2, 31,	0);
 static T7_SYS_PCLK(sys_ts_nna,		SYS_CLK_EN0_REG3, 0,	0);
@@ -1023,7 +1023,7 @@ static T7_SYS_PCLK(sys_pwm_ab,		SYS_CLK_EN0_REG3, 7,	0);
 static T7_SYS_PCLK(sys_pwm_cd,		SYS_CLK_EN0_REG3, 8,	0);
 static T7_SYS_PCLK(sys_pwm_ef,		SYS_CLK_EN0_REG3, 9,	0);
 
-/* Array of all clocks registered by this provider * /
+/* Array of all clocks registered by this provider */
 static struct clk_hw *t7_peripherals_hw_clks[] = {
 	[CLKID_RTC_DUALDIV_IN]		= &t7_rtc_dualdiv_in.hw,
 	[CLKID_RTC_DUALDIV_DIV]		= &t7_rtc_dualdiv_div.hw,

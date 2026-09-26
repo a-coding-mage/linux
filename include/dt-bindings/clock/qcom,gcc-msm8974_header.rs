@@ -3,8 +3,7 @@
  * Copyright (c) 2013, The Linux Foundation. All rights reserved.
  */
 
-// Translated from qcom,gcc-msm8974.h. Header guards and preprocessor directives omitted.
-+//  SPDX-License-Identifier: GPL-2.0-only 
+
 pub const GPLL0: u32 = 0;
 pub const GPLL0_VOTE: u32 = 1;
 pub const CONFIG_NOC_CLK_SRC: u32 = 2;
@@ -311,8 +310,8 @@ pub const GPLL4: u32 = 302;
 pub const GPLL4_VOTE: u32 = 303;
 pub const GCC_SDCC1_CDCCAL_SLEEP_CLK: u32 = 304;
 pub const GCC_SDCC1_CDCCAL_FF_CLK: u32 = 305;
-//  gdscs 
-pub const USB_HS_HSIC_GDSC: u32 = 0;
 
+/* gdscs */
+pub const USB_HS_HSIC_GDSC: u32 = 0;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

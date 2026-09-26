@@ -26,7 +26,7 @@ pub static mut smp_cpu_mtid: u32 = 0;
 static mut smp_max_threads: u32 = u32::MAX;
 pub static mut cpu_setup_mask: cpumask_t = cpumask_t::empty();
 
-#[cfg(feature = "CONFIG_CRASH_DUMP")]
+#[cfg(CONFIG_CRASH_DUMP)]
 static mut boot_cpu_vector_save_area: [__vector128; __NUM_VXRS] = [__vector128::zero(); __NUM_VXRS];
 
 extern "C" {
@@ -50,7 +50,7 @@ unsafe fn pcpu_stopped(p: *mut pcpu) -> c_int { let mut status = 0u32; if __pcpu
 unsafe fn pcpu_running(p: *mut pcpu) -> c_int { if __pcpu_sigp((*p).address, SIGP_SENSE_RUNNING, 0, core::ptr::null_mut()) != SIGP_CC_STATUS_STORED { 1 } else { 0 } }
 
 unsafe fn pcpu_find_address(mask: *const cpumask_t, address: u16) -> *mut pcpu {
-    let mut cpu = 0; for_each_cpu!(cpu, mask) { if per_cpu!(pcpu_devices, cpu).address == address { return per_cpu_ptr!(&mut pcpu_devices, cpu); } } core::ptr::null_mut()
+    let mut cpu = 0; for_each_cpu!(cpu, mask, { if per_cpu!(pcpu_devices, cpu).address == address { return per_cpu_ptr!(&mut pcpu_devices, cpu); } }); core::ptr::null_mut()
 }
 
 unsafe fn pcpu_ec_call(p: *mut pcpu, bit: c_int) { if test_and_set_bit(bit, &mut (*p).ec_mask) != 0 { return; } (*p).ec_clk = get_tod_clock_fast(); pcpu_sigp_retry(p, SIGP_EXTERNAL_CALL, 0); }

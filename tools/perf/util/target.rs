@@ -72,7 +72,7 @@ unsafe extern "C" {
 macro_rules! BUG_ON {
     ($cond:expr) => {
         if $cond {
-            panic!("BUG_ON({})", stringify!($cond));
+            panic!("BUG_ON!({})", stringify!($cond));
         }
     };
 }

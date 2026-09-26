@@ -21,7 +21,7 @@ enum dcn401_clk_src_array_id {
  */
 
 /* DCN */
-macro_rules! BASE_INNER(seg) ctx->dcn_reg_offsets[seg]
+macro_rules! BASE_INNER(seg) (*ctx).dcn_reg_offsets[seg]
 macro_rules! BASE(seg) BASE_INNER(seg)
 macro_rules! SR(reg_name)                                       \
 	REG_STRUCT.reg_name = BASE(reg##reg_name##_BASE_IDX) + \
@@ -56,13 +56,13 @@ macro_rules! SRI_ARR_ALPHABET(reg_name, block, index, id)                       
 	REG_STRUCT[index].reg_name = BASE(reg##block##id##_##reg_name##_BASE_IDX) + \
 								 reg##block##id##_##reg_name
 macro_rules! SRI2(reg_name, block, id)                \
-	.reg_name = BASE(reg##reg_name##_BASE_IDX) + \
+	reg_name: BASE(reg##reg_name##_BASE_IDX) + \
 				reg##reg_name
 macro_rules! SRI2_ARR(reg_name, block, id)                          \
 	REG_STRUCT[id].reg_name = BASE(reg##reg_name##_BASE_IDX) + \
 							  reg##reg_name
 macro_rules! SRIR(var_name, reg_name, block, id)                    \
-	.var_name = BASE(reg##block##id##_##reg_name##_BASE_IDX) + \
+	var_name: BASE(reg##block##id##_##reg_name##_BASE_IDX) + \
 				reg##block##id##_##reg_name
 macro_rules! SRII(reg_name, block, id)                                            \
 	REG_STRUCT.reg_name[id] = BASE(reg##block##id##_##reg_name##_BASE_IDX) + \
@@ -82,13 +82,13 @@ macro_rules! DCCG_SRII(reg_name, block, id)                                     
 		BASE(reg##block##id##_##reg_name##_BASE_IDX) + \
 										reg##block##id##_##reg_name
 macro_rules! SF_DWB2(reg_name, block, id, field_name, post_fix) \
-	.field_name = reg_name##__##field_name##post_fix
+	field_name: reg_name##__##field_name##post_fix
 macro_rules! VUPDATE_SRII(reg_name, block, id)                                    \
 	REG_STRUCT.reg_name[id] = BASE(reg##reg_name##_##block##id##_BASE_IDX) + \
 							  reg##reg_name##_##block##id
 
 /* NBIO */
-macro_rules! NBIO_BASE_INNER(seg) ctx->nbio_reg_offsets[seg]
+macro_rules! NBIO_BASE_INNER(seg) (*ctx).nbio_reg_offsets[seg]
 macro_rules! NBIO_BASE(seg) \
 	NBIO_BASE_INNER(seg)
 macro_rules! NBIO_SR(reg_name)                                               \
@@ -99,7 +99,7 @@ macro_rules! NBIO_SR_ARR(reg_name, id)                                          
 							  regBIF_BX0_##reg_name
 macro_rules! CTX ctx
 macro_rules! REG(reg_name) \
-	(ctx->dcn_reg_offsets[reg##reg_name##_BASE_IDX] + reg##reg_name)
+	((*ctx).dcn_reg_offsets[reg##reg_name##_BASE_IDX] + reg##reg_name)
 
 static struct bios_registers bios_regs;
 macro_rules! bios_regs_init()     \
@@ -549,138 +549,138 @@ static const struct dcn20_vmid_mask vmid_masks = {
 	DCN20_VMID_MASK_SH_LIST(_MASK)};
 
 static const struct resource_caps res_cap_dcn42 = {
-	.num_timing_generator = 4,
-	.num_opp = 4,
-	.num_dpp = 4,
-	.num_video_plane = 4,
-	.num_audio = 5,
-	.num_stream_encoder = 5,
-	.num_dig_link_enc = 5,
-	.num_usb4_dpia = 6,
-	.num_hpo_frl = 1,
-	.num_hpo_dp_stream_encoder = 4,
-	.num_hpo_dp_link_encoder = 4,
-	.num_pll = 5,
-	.num_dwb = 1,
-	.num_ddc = 5,
-	.num_vmid = 16,
-	.num_mpc_3dlut = 2,
-	.num_dsc = 4,
-	.num_rmcm = 2,
+	num_timing_generator: 4,
+	num_opp: 4,
+	num_dpp: 4,
+	num_video_plane: 4,
+	num_audio: 5,
+	num_stream_encoder: 5,
+	num_dig_link_enc: 5,
+	num_usb4_dpia: 6,
+	num_hpo_frl: 1,
+	num_hpo_dp_stream_encoder: 4,
+	num_hpo_dp_link_encoder: 4,
+	num_pll: 5,
+	num_dwb: 1,
+	num_ddc: 5,
+	num_vmid: 16,
+	num_mpc_3dlut: 2,
+	num_dsc: 4,
+	num_rmcm: 2,
 };
 
 static const struct dc_plane_cap plane_cap = {
-	.type = DC_PLANE_TYPE_DCN_UNIVERSAL,
-	.per_pixel_alpha = true,
+	type: DC_PLANE_TYPE_DCN_UNIVERSAL,
+	per_pixel_alpha: true,
 
-	.pixel_format_support = {
-		.argb8888 = true,
-		.nv12 = true,
-		.fp16 = true,
-		.p010 = true,
-		.ayuv = false,
+	pixel_format_support: {
+		argb8888: true,
+		nv12: true,
+		fp16: true,
+		p010: true,
+		ayuv: false,
 	},
 
-	.max_upscale_factor = {.argb8888 = 16000, .nv12 = 16000, .fp16 = 16000},
+	max_upscale_factor: {.argb8888 = 16000, .nv12 = 16000, .fp16 = 16000},
 
 	// 6:1 downscaling ratio: 1000/6 = 166.666
-	.max_downscale_factor = {.argb8888 = 167, .nv12 = 167, .fp16 = 167},
+	max_downscale_factor: {.argb8888 = 167, .nv12 = 167, .fp16 = 167},
 
-	.min_width = 64,
-	.min_height = 64};
+	min_width: 64,
+	min_height: 64};
 
 static const struct dc_debug_options debug_defaults_drv = {
-	.limit_ffe = 3,
-	.disable_dmcu = true,
-	.force_abm_enable = false,
-	.clock_trace = true,
-	.disable_pplib_clock_request = false,
-	.ignore_pg = false,
-	.disable_dpp_power_gate = false,
-	.disable_hubp_power_gate = false,
-	.disable_optc_power_gate = true,
-	.disable_dsc_power_gate = false,
-	.disable_dio_power_gate = true,
-	.disable_hpo_power_gate = true,
-	.pipe_split_policy = MPC_SPLIT_AVOID,
-	.force_single_disp_pipe_split = false,
-	.disable_dcc = DCC_ENABLE,
-	.vsr_support = true,
-	.performance_trace = false,
-	.max_downscale_src_width = 4096, /*up to 4K for APU*/
-	.disable_pplib_wm_range = false,
-	.scl_reset_length10 = true,
-	.sanity_checks = false,
-	.underflow_assert_delay_us = 0xFFFFFFFF,
-	.dwb_fi_phase = -1, // -1 = disable,
-	.dmub_command_table = true,
-	.pstate_enabled = true,
-	.enable_mem_low_power = {
-		.bits = {
-			.vga = false,
-			.i2c = true,
-			.dscl = true,
-			.cm = true,
-			.mpc = true,
-			.optc = true,
-			.vpg = true,
+	limit_ffe: 3,
+	disable_dmcu: true,
+	force_abm_enable: false,
+	clock_trace: true,
+	disable_pplib_clock_request: false,
+	ignore_pg: false,
+	disable_dpp_power_gate: false,
+	disable_hubp_power_gate: false,
+	disable_optc_power_gate: true,
+	disable_dsc_power_gate: false,
+	disable_dio_power_gate: true,
+	disable_hpo_power_gate: true,
+	pipe_split_policy: MPC_SPLIT_AVOID,
+	force_single_disp_pipe_split: false,
+	disable_dcc: DCC_ENABLE,
+	vsr_support: true,
+	performance_trace: false,
+	max_downscale_src_width: 4096, /*up to 4K for APU*/
+	disable_pplib_wm_range: false,
+	scl_reset_length10: true,
+	sanity_checks: false,
+	underflow_assert_delay_us: 0xFFFFFFFF,
+	dwb_fi_phase: -1, // -1 = disable,
+	dmub_command_table: true,
+	pstate_enabled: true,
+	enable_mem_low_power: {
+		bits: {
+			vga: false,
+			i2c: true,
+			dscl: true,
+			cm: true,
+			mpc: true,
+			optc: true,
+			vpg: true,
 		}},
-	.root_clock_optimization = {
-		.bits = {
-			.dpp = true,
-			.dsc = true,/*dscclk and dsc pg*/
-			.hdmistream = true,
-			.hdmichar = true,
-			.dpstream = true,
-			.symclk32_se = true,
-			.symclk32_le = true,
-			.symclk_fe = true,
-			.physymclk = false,
-			.dpiasymclk = true,
+	root_clock_optimization: {
+		bits: {
+			dpp: true,
+			dsc: true,/*dscclk and dsc pg*/
+			hdmistream: true,
+			hdmichar: true,
+			dpstream: true,
+			symclk32_se: true,
+			symclk32_le: true,
+			symclk_fe: true,
+			physymclk: false,
+			dpiasymclk: true,
 		}
 	},
-	.seamless_boot_odm_combine = DML_FAIL_SOURCE_PIXEL_FORMAT,
-	.enable_z9_disable_interface = true, /* Allow support for the PMFW interface for disable Z9*/
-	.minimum_z8_residency_time = 1, /* Always allow when other conditions are met */
-	.support_eDP1_5 = true,
-	.use_max_lb = true,
-	.force_disable_subvp = false,
-	.exit_idle_opt_for_cursor_updates = true,
-	.using_dml2 = true,
-	.using_dml21 = true,
-	.enable_single_display_2to1_odm_policy = true,
+	seamless_boot_odm_combine: DML_FAIL_SOURCE_PIXEL_FORMAT,
+	enable_z9_disable_interface: true, /* Allow support for the PMFW interface for disable Z9*/
+	minimum_z8_residency_time: 1, /* Always allow when other conditions are met */
+	support_eDP1_5: true,
+	use_max_lb: true,
+	force_disable_subvp: false,
+	exit_idle_opt_for_cursor_updates: true,
+	using_dml2: true,
+	using_dml21: true,
+	enable_single_display_2to1_odm_policy: true,
 
 	// must match enable_single_display_2to1_odm_policy to support dynamic ODM transitions
-	.enable_double_buffered_dsc_pg_support = true,
-	.enable_dp_dig_pixel_rate_div_policy = 1,
-	.allow_sw_cursor_fallback = false,
-	.psp_disabled_wa = true,
-	.alloc_extra_way_for_cursor = true,
-	.min_prefetch_in_strobe_ns = 60000, // 60us
-	.disable_unbounded_requesting = false,
-	.dcc_meta_propagation_delay_us = 10,
-	.disable_timeout = true,
-	.min_disp_clk_khz = 50000,
-	.static_screen_wait_frames = 2,
-	.disable_z10 = false,
-	.disable_stutter_for_wm_program = true,
-	.min_deep_sleep_dcfclk_khz = 8000,
-	.replay_skip_crtc_disabled = true,
-	.psr_skip_crtc_disable = true,
-	.force_odm2to1_for_edp_pixclk_mhz = 0, // disable the policy for now
-	.iommu_mismatch_temp_wka = 0x7,
+	enable_double_buffered_dsc_pg_support: true,
+	enable_dp_dig_pixel_rate_div_policy: 1,
+	allow_sw_cursor_fallback: false,
+	psp_disabled_wa: true,
+	alloc_extra_way_for_cursor: true,
+	min_prefetch_in_strobe_ns: 60000, // 60us
+	disable_unbounded_requesting: false,
+	dcc_meta_propagation_delay_us: 10,
+	disable_timeout: true,
+	min_disp_clk_khz: 50000,
+	static_screen_wait_frames: 2,
+	disable_z10: false,
+	disable_stutter_for_wm_program: true,
+	min_deep_sleep_dcfclk_khz: 8000,
+	replay_skip_crtc_disabled: true,
+	psr_skip_crtc_disable: true,
+	force_odm2to1_for_edp_pixclk_mhz: 0, // disable the policy for now
+	iommu_mismatch_temp_wka: 0x7,
 };
 
 static const struct dc_check_config config_defaults = {
-	.enable_legacy_fast_update = false,
+	enable_legacy_fast_update: false,
 };
 
 static struct dce_aux *dcn42_aux_engine_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t inst)
 {
 	struct aux_engine_dce110 *aux_engine =
-		kzalloc(sizeof(struct aux_engine_dce110), GFP_KERNEL);
+		kzalloc(sizeof(aux_engine_dce110), GFP_KERNEL);
 
 	if (!aux_engine)
 		return std::ptr::null_mut();
@@ -698,9 +698,9 @@ macro_rules! REG_STRUCT aux_engine_regs
 								&aux_engine_regs[inst],
 								&aux_mask,
 								&aux_shift,
-								ctx->dc->caps.extended_aux_timeout_support);
+								(*(*ctx).dc).caps.extended_aux_timeout_support);
 
-	return &aux_engine->base;
+	return (*&aux_engine).base;
 }
 macro_rules! i2c_inst_regs_init(id) \
 	I2C_HW_ENGINE_COMMON_REG_LIST_DCN30_RI(id)
@@ -735,17 +735,17 @@ static const enum engine_id dpia_to_preferred_enc_id_table[] = {
 		ENGINE_ID_DIGE
 };
 
-static enum engine_id dcn42_get_preferred_eng_id_dpia(unsigned int dpia_index)
+static enum engine_id dcn42_get_preferred_eng_id_dpia(dpia_index: core::ffi::c_uint)
 {
 	return dpia_to_preferred_enc_id_table[dpia_index];
 }
 
 static struct dce_i2c_hw *dcn42_i2c_hw_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t inst)
 {
 	struct dce_i2c_hw *dce_i2c_hw =
-		kzalloc(sizeof(struct dce_i2c_hw), GFP_KERNEL);
+		kzalloc(sizeof(dce_i2c_hw), GFP_KERNEL);
 
 	if (!dce_i2c_hw)
 		return std::ptr::null_mut();
@@ -764,21 +764,21 @@ macro_rules! REG_STRUCT i2c_hw_regs
 }
 
 static struct clock_source *dcn42_clock_source_create(
-	struct dc_context *ctx,
-	struct dc_bios *bios,
-	enum clock_source_id id,
+	dc_context *ctx,
+	dc_bios *bios,
+	clock_source_id id,
 	const struct dce110_clk_src_regs *regs,
-	bool dp_clk_src)
+	dp_clk_src: bool)
 {
 	struct dce110_clk_src *clk_src =
-		kzalloc(sizeof(struct dce110_clk_src), GFP_KERNEL);
+		kzalloc(sizeof(dce110_clk_src), GFP_KERNEL);
 
 	if (!clk_src)
 		return std::ptr::null_mut();
 
 	if (dcn401_clk_src_construct(clk_src, ctx, bios, id, regs, &cs_shift, &cs_mask)) {
-		clk_src->base.dp_clk_src = dp_clk_src;
-		return &clk_src->base;
+		(*clk_src).base.dp_clk_src = dp_clk_src;
+		return (*&clk_src).base;
 	}
 
 	kfree(clk_src);
@@ -786,11 +786,11 @@ static struct clock_source *dcn42_clock_source_create(
 	return std::ptr::null_mut();
 }
 
-static struct hubbub *dcn42_hubbub_create(struct dc_context *ctx)
+static struct hubbub *dcn42_hubbub_create(dc_context *ctx)
 {
 	int i;
 
-	struct dcn20_hubbub *hubbub3 = kzalloc(sizeof(struct dcn20_hubbub),
+	struct dcn20_hubbub *hubbub3 = kzalloc(sizeof(dcn20_hubbub),
 					  GFP_KERNEL);
 
 	if (!hubbub3)
@@ -827,24 +827,24 @@ macro_rules! REG_STRUCT vmid_regs
 					   8,
 					   DCN42_CRB_SIZE_KB);
 	for (i = 0; i < res_cap_dcn42.num_vmid; i++) {
-		struct dcn20_vmid *vmid = &hubbub3->vmid[i];
+		struct dcn20_vmid *vmid = (*&hubbub3).vmid[i];
 
-		vmid->ctx = ctx;
+		(*vmid).ctx = ctx;
 
-		vmid->regs = &vmid_regs[i];
-		vmid->shifts = &vmid_shifts;
-		vmid->masks = &vmid_masks;
+		(*vmid).regs = &vmid_regs[i];
+		(*vmid).shifts = &vmid_shifts;
+		(*vmid).masks = &vmid_masks;
 	}
 
-	return &hubbub3->base;
+	return (*&hubbub3).base;
 }
 
 static struct hubp *dcn42_hubp_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t inst)
 {
 	struct dcn20_hubp *hubp2 =
-		kzalloc(sizeof(struct dcn20_hubp), GFP_KERNEL);
+		kzalloc(sizeof(dcn20_hubp), GFP_KERNEL);
 
 	if (!hubp2)
 		return std::ptr::null_mut();
@@ -858,35 +858,35 @@ macro_rules! REG_STRUCT hubp_regs
 
 	if (hubp42_construct(hubp2, ctx, inst,
 						 &hubp_regs[inst], &hubp_shift, &hubp_mask))
-		return &hubp2->base;
+		return (*&hubp2).base;
 
 	BREAK_TO_DEBUGGER();
 	kfree(hubp2);
 	return std::ptr::null_mut();
 }
 static const struct dc_panel_config dcn42_panel_config_defaults = {
-	.psr = {
-		.disable_psr = false,
-		.disallow_psrsu = false,
-		.disallow_replay = false,
+	psr: {
+		disable_psr: false,
+		disallow_psrsu: false,
+		disallow_replay: false,
 	},
-	.ilr = {
-		.optimize_edp_link_rate = true,
+	ilr: {
+		optimize_edp_link_rate: true,
 	},
 };
 
-static void dcn42_dpp_destroy(struct dpp **dpp)
+static void dcn42_dpp_destroy(dpp **dpp)
 {
 	kfree(TO_DCN42_DPP(*dpp));
 	*dpp = std::ptr::null_mut();
 }
 
 static struct dpp *dcn42_dpp_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t inst)
 {
 	struct dcn42_dpp *dpp42 =
-		kzalloc(sizeof(struct dcn42_dpp), GFP_KERNEL);
+		kzalloc(sizeof(dcn42_dpp), GFP_KERNEL);
 
 	if (!dpp42)
 		return std::ptr::null_mut();
@@ -900,7 +900,7 @@ macro_rules! REG_STRUCT dpp_regs
 
 	if (dpp42_construct(dpp42, ctx, inst,
 						&dpp_regs[inst], &tf_shift, &tf_mask))
-		return &dpp42->base;
+		return (*&dpp42).base;
 
 	BREAK_TO_DEBUGGER();
 	kfree(dpp42);
@@ -908,11 +908,11 @@ macro_rules! REG_STRUCT dpp_regs
 }
 
 static struct mpc *dcn42_mpc_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	int num_mpcc,
 	int num_rmu)
 {
-	struct dcn42_mpc *mpc401 = kzalloc(sizeof(struct dcn42_mpc),
+	struct dcn42_mpc *mpc401 = kzalloc(sizeof(dcn42_mpc),
 										GFP_KERNEL);
 
 	if (!mpc401)
@@ -929,14 +929,14 @@ macro_rules! REG_STRUCT mpc_regs
 						 num_mpcc,
 						 num_rmu);
 
-	return &mpc401->base;
+	return (*&mpc401).base;
 }
 
 static struct output_pixel_processor *dcn42_opp_create(
-	struct dc_context *ctx, uint32_t inst)
+	dc_context *ctx, uint32_t inst)
 {
 	struct dcn20_opp *opp4 =
-		kzalloc(sizeof(struct dcn20_opp), GFP_KERNEL);
+		kzalloc(sizeof(dcn20_opp), GFP_KERNEL);
 
 	if (!opp4) {
 		BREAK_TO_DEBUGGER();
@@ -951,15 +951,15 @@ macro_rules! REG_STRUCT opp_regs
 		opp_regs_init(3);
 	dcn20_opp_construct(opp4, ctx, inst,
 						&opp_regs[inst], &opp_shift, &opp_mask);
-	return &opp4->base;
+	return (*&opp4).base;
 }
 
 static struct timing_generator *dcn42_timing_generator_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t instance)
 {
 	struct optc *tgn10 =
-		kzalloc(sizeof(struct optc), GFP_KERNEL);
+		kzalloc(sizeof(optc), GFP_KERNEL);
 
 	if (!tgn10)
 		return std::ptr::null_mut();
@@ -969,37 +969,37 @@ macro_rules! REG_STRUCT optc_regs
 		optc_regs_init(1),
 		optc_regs_init(2),
 		optc_regs_init(3);
-	tgn10->base.inst = instance;
-	tgn10->base.ctx = ctx;
+	(*tgn10).base.inst = instance;
+	(*tgn10).base.ctx = ctx;
 
-	tgn10->tg_regs = &optc_regs[instance];
-	tgn10->tg_shift = &optc_shift;
-	tgn10->tg_mask = &optc_mask;
+	(*tgn10).tg_regs = &optc_regs[instance];
+	(*tgn10).tg_shift = &optc_shift;
+	(*tgn10).tg_mask = &optc_mask;
 
 	dcn42_timing_generator_init(tgn10);
 
-	return &tgn10->base;
+	return (*&tgn10).base;
 }
 
 static const struct encoder_feature_support link_enc_feature = {
-	.max_hdmi_deep_color = COLOR_DEPTH_121212,
-	.max_hdmi_pixel_clock = 600000,
-	.hdmi_ycbcr420_supported = true,
-	.dp_ycbcr420_supported = true,
-	.fec_supported = true,
+	max_hdmi_deep_color: COLOR_DEPTH_121212,
+	max_hdmi_pixel_clock: 600000,
+	hdmi_ycbcr420_supported: true,
+	dp_ycbcr420_supported: true,
+	fec_supported: true,
 	.flags.bits.IS_HBR2_CAPABLE = true,
 	.flags.bits.IS_HBR3_CAPABLE = true,
 	.flags.bits.IS_TPS3_CAPABLE = true,
 	.flags.bits.IS_TPS4_CAPABLE = true};
 
 static struct link_encoder *dcn42_link_encoder_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	const struct encoder_init_data *enc_init_data)
 {
 	struct dcn20_link_encoder *enc20 =
-		kzalloc(sizeof(struct dcn20_link_encoder), GFP_KERNEL);
+		kzalloc(sizeof(dcn20_link_encoder), GFP_KERNEL);
 
-	if (!enc20 || enc_init_data->hpd_source >= ARRAY_SIZE(link_enc_hpd_regs))
+	if (!enc20 || (*enc_init_data).hpd_source >= ARRAY_SIZE(link_enc_hpd_regs))
 		return std::ptr::null_mut();
 
 #undef REG_STRUCT
@@ -1027,24 +1027,24 @@ macro_rules! REG_STRUCT link_enc_regs
 	dcn42_link_encoder_construct(enc20,
 								  enc_init_data,
 								  &link_enc_feature,
-								  &link_enc_regs[enc_init_data->transmitter],
-								  &link_enc_aux_regs[enc_init_data->channel - 1],
-								  &link_enc_hpd_regs[enc_init_data->hpd_source],
+								  &link_enc_regs[(*enc_init_data).transmitter],
+								  &link_enc_aux_regs[(*enc_init_data).channel - 1],
+								  &link_enc_hpd_regs[(*enc_init_data).hpd_source],
 								  &le_shift,
 								  &le_mask);
-	return &enc20->enc10.base;
+	return (*&enc20).enc10.base;
 }
 
 static void read_dce_straps(
-	struct dc_context *ctx,
-	struct resource_straps *straps)
+	dc_context *ctx,
+	resource_straps *straps)
 {
 	generic_reg_get(ctx, regDC_PINSTRAPS + BASE(regDC_PINSTRAPS_BASE_IDX),
-		FN(DC_PINSTRAPS, DC_PINSTRAPS_AUDIO), &straps->dc_pinstraps_audio);
+		FN(DC_PINSTRAPS, DC_PINSTRAPS_AUDIO), (*&straps).dc_pinstraps_audio);
 }
 
 static struct audio *dcn42_create_audio(
-	struct dc_context *ctx, unsigned int inst)
+	dc_context *ctx, inst: core::ffi::c_uint)
 {
 
 #undef REG_STRUCT
@@ -1060,10 +1060,10 @@ macro_rules! REG_STRUCT audio_regs
 }
 
 static struct vpg *dcn42_vpg_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t inst)
 {
-	struct dcn31_vpg *vpg4 = kzalloc(sizeof(struct dcn31_vpg), GFP_KERNEL);
+	struct dcn31_vpg *vpg4 = kzalloc(sizeof(dcn31_vpg), GFP_KERNEL);
 
 	if (!vpg4)
 		return std::ptr::null_mut();
@@ -1085,14 +1085,14 @@ macro_rules! REG_STRUCT vpg_regs
 					&vpg_shift,
 					&vpg_mask);
 
-	return &vpg4->base;
+	return (*&vpg4).base;
 }
 
 static struct apg *dcn42_apg_create(
-	struct dc_context *ctx,
+	dc_context *ctx,
 	uint32_t inst)
 {
-	struct dcn31_apg *apg31 = kzalloc(sizeof(struct dcn31_apg), GFP_KERNEL);
+	struct dcn31_apg *apg31 = kzalloc(sizeof(dcn31_apg), GFP_KERNEL);
 
 	if (!apg31)
 		return std::ptr::null_mut();
@@ -1115,12 +1115,12 @@ macro_rules! REG_STRUCT apg_regs
 					&apg_shift,
 					&apg_mask);
 
-	return &apg31->base;
+	return (*&apg31).base;
 }
 
 static struct stream_encoder *dcn42_stream_encoder_create(
-	enum engine_id eng_id,
-	struct dc_context *ctx)
+	engine_id eng_id,
+	dc_context *ctx)
 {
 	struct dcn10_stream_encoder *enc1;
 	struct vpg *vpg;
@@ -1136,7 +1136,7 @@ static struct stream_encoder *dcn42_stream_encoder_create(
 	} else
 		return std::ptr::null_mut();
 
-	enc1 = kzalloc(sizeof(struct dcn10_stream_encoder), GFP_KERNEL);
+	enc1 = kzalloc(sizeof(dcn10_stream_encoder), GFP_KERNEL);
 	vpg = dcn42_vpg_create(ctx, vpg_inst);
 	apg = dcn42_apg_create(ctx, apg_inst);
 
@@ -1154,16 +1154,16 @@ macro_rules! REG_STRUCT stream_enc_regs
 		stream_enc_regs_init(3),
 		stream_enc_regs_init(4);
 
-	dcn42_dio_stream_encoder_construct(enc1, ctx, ctx->dc_bios,
+	dcn42_dio_stream_encoder_construct(enc1, ctx, (*ctx).dc_bios,
 									eng_id, vpg, apg,
 									&stream_enc_regs[eng_id],
 									&se_shift, &se_mask);
-	return &enc1->base;
+	return (*&enc1).base;
 }
 
 static struct hpo_frl_stream_encoder *dcn42_hpo_frl_stream_encoder_create(
-	enum engine_id eng_id,
-	struct dc_context *ctx)
+	engine_id eng_id,
+	dc_context *ctx)
 {
 	struct dcn42_hpo_frl_stream_encoder *hpo_enc42;
 	struct vpg *vpg;
@@ -1186,7 +1186,7 @@ macro_rules! REG_STRUCT hpo_frl_stream_enc_regs
 		return std::ptr::null_mut();
 
 	/* allocate HPO stream encoder and create VPG sub-block */
-	hpo_enc42 = kzalloc(sizeof(struct dcn42_hpo_frl_stream_encoder), GFP_KERNEL);
+	hpo_enc42 = kzalloc(sizeof(dcn42_hpo_frl_stream_encoder), GFP_KERNEL);
 	vpg = dcn42_vpg_create(ctx, vpg_inst);
 	apg = dcn42_apg_create(ctx, apg_inst);
 
@@ -1197,17 +1197,17 @@ macro_rules! REG_STRUCT hpo_frl_stream_enc_regs
 		return std::ptr::null_mut();
 	}
 
-	dcn42_hpo_frl_stream_encoder_construct(hpo_enc42, ctx, ctx->dc_bios,
+	dcn42_hpo_frl_stream_encoder_construct(hpo_enc42, ctx, (*ctx).dc_bios,
 			eng_id, vpg, apg,
 			&hpo_frl_stream_enc_regs[eng_id - ENGINE_ID_HPO_0],
 			&hpo_se_shift, &hpo_se_mask);
 
-	return &hpo_enc42->base;
+	return (*&hpo_enc42).base;
 }
 
 static struct hpo_frl_link_encoder *dcn42_hpo_frl_link_encoder_create(
-	enum engine_id eng_id,
-	struct dc_context *ctx)
+	engine_id eng_id,
+	dc_context *ctx)
 {
 	struct dcn30_hpo_frl_link_encoder *hpo_link_enc;
 
@@ -1218,7 +1218,7 @@ macro_rules! REG_STRUCT hpo_frl_link_enc_regs
 	hpo_frl_link_encoder_reg_list(0);
 
 	/* allocate HPO link encoder */
-	hpo_link_enc = kzalloc(sizeof(struct dcn30_hpo_frl_link_encoder), GFP_KERNEL);
+	hpo_link_enc = kzalloc(sizeof(dcn30_hpo_frl_link_encoder), GFP_KERNEL);
 	if (!hpo_link_enc)
 		return std::ptr::null_mut(); /* out of memory */
 
@@ -1226,12 +1226,12 @@ macro_rules! REG_STRUCT hpo_frl_link_enc_regs
 			&hpo_frl_link_enc_regs[eng_id - ENGINE_ID_HPO_0],
 			&hpo_le_shift, &hpo_le_mask);
 
-	return &hpo_link_enc->base;
+	return (*&hpo_link_enc).base;
 }
 
 static struct hpo_dp_stream_encoder *dcn42_hpo_dp_stream_encoder_create(
-	enum engine_id eng_id,
-	struct dc_context *ctx)
+	engine_id eng_id,
+	dc_context *ctx)
 {
 	struct dcn31_hpo_dp_stream_encoder *hpo_dp_enc31;
 	struct vpg *vpg;
@@ -1260,7 +1260,7 @@ static struct hpo_dp_stream_encoder *dcn42_hpo_dp_stream_encoder_create(
 	apg_inst = hpo_dp_inst + 5;
 
 	/* allocate HPO stream encoder and create VPG sub-block */
-	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_stream_encoder), GFP_KERNEL);
+	hpo_dp_enc31 = kzalloc(sizeof(dcn31_hpo_dp_stream_encoder), GFP_KERNEL);
 	vpg = dcn42_vpg_create(ctx, vpg_inst);
 	apg = dcn42_apg_create(ctx, apg_inst);
 
@@ -1278,22 +1278,22 @@ macro_rules! REG_STRUCT hpo_dp_stream_enc_regs
 		hpo_dp_stream_encoder_reg_init(2),
 		hpo_dp_stream_encoder_reg_init(3);
 
-	dcn31_hpo_dp_stream_encoder_construct(hpo_dp_enc31, ctx, ctx->dc_bios,
+	dcn31_hpo_dp_stream_encoder_construct(hpo_dp_enc31, ctx, (*ctx).dc_bios,
 				hpo_dp_inst, eng_id, vpg, apg,
 				&hpo_dp_stream_enc_regs[hpo_dp_inst],
 				&hpo_dp_se_shift, &hpo_dp_se_mask);
 
-	return &hpo_dp_enc31->base;
+	return (*&hpo_dp_enc31).base;
 }
 
 static struct hpo_dp_link_encoder *dcn42_hpo_dp_link_encoder_create(
 	uint8_t inst,
-	struct dc_context *ctx)
+	dc_context *ctx)
 {
 	struct dcn31_hpo_dp_link_encoder *hpo_dp_enc31;
 
 	/* allocate HPO link encoder */
-	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_link_encoder), GFP_KERNEL);
+	hpo_dp_enc31 = kzalloc(sizeof(dcn31_hpo_dp_link_encoder), GFP_KERNEL);
 	if (!hpo_dp_enc31)
 		return std::ptr::null_mut(); /* out of memory */
 
@@ -1308,233 +1308,233 @@ macro_rules! REG_STRUCT hpo_dp_link_enc_regs
 				&hpo_dp_link_enc_regs[inst],
 				&hpo_dp_le_shift, &hpo_dp_le_mask);
 
-	return &hpo_dp_enc31->base;
+	return (*&hpo_dp_enc31).base;
 }
 
 static struct dce_hwseq *dcn42_hwseq_create(
-	struct dc_context *ctx)
+	dc_context *ctx)
 {
-	struct dce_hwseq *hws = kzalloc(sizeof(struct dce_hwseq), GFP_KERNEL);
+	struct dce_hwseq *hws = kzalloc(sizeof(dce_hwseq), GFP_KERNEL);
 
 #undef REG_STRUCT
 macro_rules! REG_STRUCT hwseq_reg
 	hwseq_reg_init();
 
 	if (hws) {
-		hws->ctx = ctx;
-		hws->regs = &hwseq_reg;
-		hws->shifts = &hwseq_shift;
-		hws->masks = &hwseq_mask;
+		(*hws).ctx = ctx;
+		(*hws).regs = &hwseq_reg;
+		(*hws).shifts = &hwseq_shift;
+		(*hws).masks = &hwseq_mask;
 	}
 
 	return hws;
 }
 
 static const struct resource_create_funcs res_create_funcs = {
-	.read_dce_straps = read_dce_straps,
-	.create_audio = dcn42_create_audio,
-	.create_stream_encoder = dcn42_stream_encoder_create,
-	.create_hpo_frl_stream_encoder = dcn42_hpo_frl_stream_encoder_create,
-	.create_hpo_dp_stream_encoder = dcn42_hpo_dp_stream_encoder_create,
-	.create_hpo_dp_link_encoder = dcn42_hpo_dp_link_encoder_create,
-	.create_hwseq = dcn42_hwseq_create,
+	read_dce_straps: read_dce_straps,
+	create_audio: dcn42_create_audio,
+	create_stream_encoder: dcn42_stream_encoder_create,
+	create_hpo_frl_stream_encoder: dcn42_hpo_frl_stream_encoder_create,
+	create_hpo_dp_stream_encoder: dcn42_hpo_dp_stream_encoder_create,
+	create_hpo_dp_link_encoder: dcn42_hpo_dp_link_encoder_create,
+	create_hwseq: dcn42_hwseq_create,
 };
 
-static void dcn42_dsc_destroy(struct display_stream_compressor **dsc)
+static void dcn42_dsc_destroy(display_stream_compressor **dsc)
 {
-	kfree(container_of(*dsc, struct dcn401_dsc, base));
+	kfree(container_of(*dsc, dcn401_dsc, base));
 	*dsc = std::ptr::null_mut();
 }
 
-static void dcn42_resource_destruct(struct dcn42_resource_pool *pool)
+static void dcn42_resource_destruct(dcn42_resource_pool *pool)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 
-	for (i = 0; i < pool->base.stream_enc_count; i++) {
-		if (pool->base.stream_enc[i] != std::ptr::null_mut()) {
-			if (pool->base.stream_enc[i]->vpg != std::ptr::null_mut()) {
-				kfree(DCN31_VPG_FROM_VPG(pool->base.stream_enc[i]->vpg));
-				pool->base.stream_enc[i]->vpg = std::ptr::null_mut();
+	for (i = 0; i < (*pool).base.stream_enc_count; i++) {
+		if ((*pool).base.stream_enc[i] != std::ptr::null_mut()) {
+			if ((*(*pool).base.stream_enc[i]).vpg != std::ptr::null_mut()) {
+				kfree(DCN31_VPG_FROM_VPG((*(*pool).base.stream_enc[i]).vpg));
+				(*(*pool).base.stream_enc[i]).vpg = std::ptr::null_mut();
 			}
-			if (pool->base.stream_enc[i]->apg != std::ptr::null_mut()) {
-				kfree(DCN31_APG_FROM_APG(pool->base.stream_enc[i]->apg));
-				pool->base.stream_enc[i]->apg = std::ptr::null_mut();
+			if ((*(*pool).base.stream_enc[i]).apg != std::ptr::null_mut()) {
+				kfree(DCN31_APG_FROM_APG((*(*pool).base.stream_enc[i]).apg));
+				(*(*pool).base.stream_enc[i]).apg = std::ptr::null_mut();
 			}
-			kfree(DCN10STRENC_FROM_STRENC(pool->base.stream_enc[i]));
-			pool->base.stream_enc[i] = std::ptr::null_mut();
+			kfree(DCN10STRENC_FROM_STRENC((*pool).base.stream_enc[i]));
+			(*pool).base.stream_enc[i] = std::ptr::null_mut();
 		}
 	}
 
-	for (i = 0; i < pool->base.hpo_frl_stream_enc_count; i++) {
-		if (pool->base.hpo_frl_stream_enc[i] != std::ptr::null_mut()) {
-			if (pool->base.hpo_frl_stream_enc[i]->vpg != std::ptr::null_mut()) {
-				kfree(DCN31_VPG_FROM_VPG(pool->base.hpo_frl_stream_enc[i]->vpg));
-				pool->base.hpo_frl_stream_enc[i]->vpg = std::ptr::null_mut();
+	for (i = 0; i < (*pool).base.hpo_frl_stream_enc_count; i++) {
+		if ((*pool).base.hpo_frl_stream_enc[i] != std::ptr::null_mut()) {
+			if ((*(*pool).base.hpo_frl_stream_enc[i]).vpg != std::ptr::null_mut()) {
+				kfree(DCN31_VPG_FROM_VPG((*(*pool).base.hpo_frl_stream_enc[i]).vpg));
+				(*(*pool).base.hpo_frl_stream_enc[i]).vpg = std::ptr::null_mut();
 			}
-			if (pool->base.hpo_frl_stream_enc[i]->apg != std::ptr::null_mut()) {
-				kfree(DCN31_APG_FROM_APG(pool->base.hpo_frl_stream_enc[i]->apg));
-				pool->base.hpo_frl_stream_enc[i]->apg = std::ptr::null_mut();
+			if ((*(*pool).base.hpo_frl_stream_enc[i]).apg != std::ptr::null_mut()) {
+				kfree(DCN31_APG_FROM_APG((*(*pool).base.hpo_frl_stream_enc[i]).apg));
+				(*(*pool).base.hpo_frl_stream_enc[i]).apg = std::ptr::null_mut();
 			}
-			kfree(DCN401_HPO_FRL_STRENC_FROM_HPO_FRL_STRENC(pool->base.hpo_frl_stream_enc[i]));
-			pool->base.hpo_frl_stream_enc[i] = std::ptr::null_mut();
+			kfree(DCN401_HPO_FRL_STRENC_FROM_HPO_FRL_STRENC((*pool).base.hpo_frl_stream_enc[i]));
+			(*pool).base.hpo_frl_stream_enc[i] = std::ptr::null_mut();
 		}
 	}
 
-	for (i = 0; i < pool->base.hpo_dp_stream_enc_count; i++) {
-		if (pool->base.hpo_dp_stream_enc[i] != std::ptr::null_mut()) {
-			if (pool->base.hpo_dp_stream_enc[i]->vpg != std::ptr::null_mut()) {
-				kfree(DCN31_VPG_FROM_VPG(pool->base.hpo_dp_stream_enc[i]->vpg));
-				pool->base.hpo_dp_stream_enc[i]->vpg = std::ptr::null_mut();
+	for (i = 0; i < (*pool).base.hpo_dp_stream_enc_count; i++) {
+		if ((*pool).base.hpo_dp_stream_enc[i] != std::ptr::null_mut()) {
+			if ((*(*pool).base.hpo_dp_stream_enc[i]).vpg != std::ptr::null_mut()) {
+				kfree(DCN31_VPG_FROM_VPG((*(*pool).base.hpo_dp_stream_enc[i]).vpg));
+				(*(*pool).base.hpo_dp_stream_enc[i]).vpg = std::ptr::null_mut();
 			}
-			if (pool->base.hpo_dp_stream_enc[i]->apg != std::ptr::null_mut()) {
-				kfree(DCN31_APG_FROM_APG(pool->base.hpo_dp_stream_enc[i]->apg));
-				pool->base.hpo_dp_stream_enc[i]->apg = std::ptr::null_mut();
+			if ((*(*pool).base.hpo_dp_stream_enc[i]).apg != std::ptr::null_mut()) {
+				kfree(DCN31_APG_FROM_APG((*(*pool).base.hpo_dp_stream_enc[i]).apg));
+				(*(*pool).base.hpo_dp_stream_enc[i]).apg = std::ptr::null_mut();
 			}
-			kfree(DCN3_1_HPO_DP_STREAM_ENC_FROM_HPO_STREAM_ENC(pool->base.hpo_dp_stream_enc[i]));
-			pool->base.hpo_dp_stream_enc[i] = std::ptr::null_mut();
+			kfree(DCN3_1_HPO_DP_STREAM_ENC_FROM_HPO_STREAM_ENC((*pool).base.hpo_dp_stream_enc[i]));
+			(*pool).base.hpo_dp_stream_enc[i] = std::ptr::null_mut();
 		}
 	}
 
-	for (i = 0; i < pool->base.hpo_dp_link_enc_count; i++) {
-		if (pool->base.hpo_dp_link_enc[i] != std::ptr::null_mut()) {
-			kfree(DCN3_1_HPO_DP_LINK_ENC_FROM_HPO_LINK_ENC(pool->base.hpo_dp_link_enc[i]));
-			pool->base.hpo_dp_link_enc[i] = std::ptr::null_mut();
+	for (i = 0; i < (*pool).base.hpo_dp_link_enc_count; i++) {
+		if ((*pool).base.hpo_dp_link_enc[i] != std::ptr::null_mut()) {
+			kfree(DCN3_1_HPO_DP_LINK_ENC_FROM_HPO_LINK_ENC((*pool).base.hpo_dp_link_enc[i]));
+			(*pool).base.hpo_dp_link_enc[i] = std::ptr::null_mut();
 		}
 	}
 
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_dsc; i++) {
-		if (pool->base.dscs[i] != std::ptr::null_mut())
-			dcn42_dsc_destroy(&pool->base.dscs[i]);
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_dsc; i++) {
+		if ((*pool).base.dscs[i] != std::ptr::null_mut())
+			dcn42_dsc_destroy((*&pool).base.dscs[i]);
 	}
 
-	if (pool->base.mpc != std::ptr::null_mut()) {
-		kfree(TO_DCN20_MPC(pool->base.mpc));
-		pool->base.mpc = std::ptr::null_mut();
+	if ((*pool).base.mpc != std::ptr::null_mut()) {
+		kfree(TO_DCN20_MPC((*pool).base.mpc));
+		(*pool).base.mpc = std::ptr::null_mut();
 	}
-	if (pool->base.hubbub != std::ptr::null_mut()) {
-		kfree(TO_DCN20_HUBBUB(pool->base.hubbub));
-		pool->base.hubbub = std::ptr::null_mut();
+	if ((*pool).base.hubbub != std::ptr::null_mut()) {
+		kfree(TO_DCN20_HUBBUB((*pool).base.hubbub));
+		(*pool).base.hubbub = std::ptr::null_mut();
 	}
-	for (i = 0; i < pool->base.pipe_count; i++) {
-		if (pool->base.dpps[i] != std::ptr::null_mut())
-			dcn42_dpp_destroy(&pool->base.dpps[i]);
+	for (i = 0; i < (*pool).base.pipe_count; i++) {
+		if ((*pool).base.dpps[i] != std::ptr::null_mut())
+			dcn42_dpp_destroy((*&pool).base.dpps[i]);
 
-		if (pool->base.ipps[i] != std::ptr::null_mut())
-			pool->base.ipps[i]->funcs->ipp_destroy(&pool->base.ipps[i]);
+		if ((*pool).base.ipps[i] != std::ptr::null_mut())
+			(*(*(*pool).base.ipps[i]).funcs).ipp_destroy((*&pool).base.ipps[i]);
 
-		if (pool->base.hubps[i] != std::ptr::null_mut()) {
-			kfree(TO_DCN20_HUBP(pool->base.hubps[i]));
-			pool->base.hubps[i] = std::ptr::null_mut();
+		if ((*pool).base.hubps[i] != std::ptr::null_mut()) {
+			kfree(TO_DCN20_HUBP((*pool).base.hubps[i]));
+			(*pool).base.hubps[i] = std::ptr::null_mut();
 		}
 
-		if (pool->base.irqs != std::ptr::null_mut())
-			dal_irq_service_destroy(&pool->base.irqs);
+		if ((*pool).base.irqs != std::ptr::null_mut())
+			dal_irq_service_destroy((*&pool).base.irqs);
 	}
 
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_ddc; i++) {
-		if (pool->base.engines[i] != std::ptr::null_mut())
-			dce110_engine_destroy(&pool->base.engines[i]);
-		if (pool->base.hw_i2cs[i] != std::ptr::null_mut()) {
-			kfree(pool->base.hw_i2cs[i]);
-			pool->base.hw_i2cs[i] = std::ptr::null_mut();
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_ddc; i++) {
+		if ((*pool).base.engines[i] != std::ptr::null_mut())
+			dce110_engine_destroy((*&pool).base.engines[i]);
+		if ((*pool).base.hw_i2cs[i] != std::ptr::null_mut()) {
+			kfree((*pool).base.hw_i2cs[i]);
+			(*pool).base.hw_i2cs[i] = std::ptr::null_mut();
 		}
-		if (pool->base.sw_i2cs[i] != std::ptr::null_mut()) {
-			kfree(pool->base.sw_i2cs[i]);
-			pool->base.sw_i2cs[i] = std::ptr::null_mut();
-		}
-	}
-
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_opp; i++) {
-		if (pool->base.opps[i] != std::ptr::null_mut())
-			pool->base.opps[i]->funcs->opp_destroy(&pool->base.opps[i]);
-	}
-
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_timing_generator; i++) {
-		if (pool->base.timing_generators[i] != std::ptr::null_mut()) {
-			kfree(DCN10TG_FROM_TG(pool->base.timing_generators[i]));
-			pool->base.timing_generators[i] = std::ptr::null_mut();
+		if ((*pool).base.sw_i2cs[i] != std::ptr::null_mut()) {
+			kfree((*pool).base.sw_i2cs[i]);
+			(*pool).base.sw_i2cs[i] = std::ptr::null_mut();
 		}
 	}
 
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_dwb; i++) {
-		if (pool->base.dwbc[i] != std::ptr::null_mut()) {
-			kfree(TO_DCN30_DWBC(pool->base.dwbc[i]));
-			pool->base.dwbc[i] = std::ptr::null_mut();
-		}
-		if (pool->base.mcif_wb[i] != std::ptr::null_mut()) {
-			kfree(TO_DCN30_MMHUBBUB(pool->base.mcif_wb[i]));
-			pool->base.mcif_wb[i] = std::ptr::null_mut();
-		}
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_opp; i++) {
+		if ((*pool).base.opps[i] != std::ptr::null_mut())
+			(*(*(*pool).base.opps[i]).funcs).opp_destroy((*&pool).base.opps[i]);
 	}
 
-	for (i = 0; i < pool->base.audio_count; i++) {
-		if (pool->base.audios[i])
-			dce_aud_destroy(&pool->base.audios[i]);
-	}
-
-	for (i = 0; i < pool->base.clk_src_count; i++) {
-		if (pool->base.clock_sources[i] != std::ptr::null_mut()) {
-			dcn20_clock_source_destroy(&pool->base.clock_sources[i]);
-			pool->base.clock_sources[i] = std::ptr::null_mut();
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_timing_generator; i++) {
+		if ((*pool).base.timing_generators[i] != std::ptr::null_mut()) {
+			kfree(DCN10TG_FROM_TG((*pool).base.timing_generators[i]));
+			(*pool).base.timing_generators[i] = std::ptr::null_mut();
 		}
 	}
 
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_mpc_3dlut; i++) {
-		if (pool->base.mpc_lut[i] != std::ptr::null_mut()) {
-			dc_3dlut_func_release(pool->base.mpc_lut[i]);
-			pool->base.mpc_lut[i] = std::ptr::null_mut();
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_dwb; i++) {
+		if ((*pool).base.dwbc[i] != std::ptr::null_mut()) {
+			kfree(TO_DCN30_DWBC((*pool).base.dwbc[i]));
+			(*pool).base.dwbc[i] = std::ptr::null_mut();
 		}
-		if (pool->base.mpc_shaper[i] != std::ptr::null_mut()) {
-			dc_transfer_func_release(pool->base.mpc_shaper[i]);
-			pool->base.mpc_shaper[i] = std::ptr::null_mut();
+		if ((*pool).base.mcif_wb[i] != std::ptr::null_mut()) {
+			kfree(TO_DCN30_MMHUBBUB((*pool).base.mcif_wb[i]));
+			(*pool).base.mcif_wb[i] = std::ptr::null_mut();
 		}
 	}
 
-	if (pool->base.dp_clock_source != std::ptr::null_mut()) {
-		dcn20_clock_source_destroy(&pool->base.dp_clock_source);
-		pool->base.dp_clock_source = std::ptr::null_mut();
+	for (i = 0; i < (*pool).base.audio_count; i++) {
+		if ((*pool).base.audios[i])
+			dce_aud_destroy((*&pool).base.audios[i]);
 	}
 
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_timing_generator; i++) {
-		if (pool->base.multiple_abms[i] != std::ptr::null_mut())
-			dce_abm_destroy(&pool->base.multiple_abms[i]);
+	for (i = 0; i < (*pool).base.clk_src_count; i++) {
+		if ((*pool).base.clock_sources[i] != std::ptr::null_mut()) {
+			dcn20_clock_source_destroy((*&pool).base.clock_sources[i]);
+			(*pool).base.clock_sources[i] = std::ptr::null_mut();
+		}
 	}
 
-	if (pool->base.psr != std::ptr::null_mut())
-		dmub_psr_destroy(&pool->base.psr);
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_mpc_3dlut; i++) {
+		if ((*pool).base.mpc_lut[i] != std::ptr::null_mut()) {
+			dc_3dlut_func_release((*pool).base.mpc_lut[i]);
+			(*pool).base.mpc_lut[i] = std::ptr::null_mut();
+		}
+		if ((*pool).base.mpc_shaper[i] != std::ptr::null_mut()) {
+			dc_transfer_func_release((*pool).base.mpc_shaper[i]);
+			(*pool).base.mpc_shaper[i] = std::ptr::null_mut();
+		}
+	}
 
-	if (pool->base.pg_cntl != std::ptr::null_mut())
-		dcn_pg_cntl_destroy(&pool->base.pg_cntl);
+	if ((*pool).base.dp_clock_source != std::ptr::null_mut()) {
+		dcn20_clock_source_destroy((*&pool).base.dp_clock_source);
+		(*pool).base.dp_clock_source = std::ptr::null_mut();
+	}
 
-	if (pool->base.replay != std::ptr::null_mut())
-		dmub_replay_destroy(&pool->base.replay);
+	for (i = 0; i < (*(*(core::ffi::c_uint)pool).base.res_cap).num_timing_generator; i++) {
+		if ((*pool).base.multiple_abms[i] != std::ptr::null_mut())
+			dce_abm_destroy((*&pool).base.multiple_abms[i]);
+	}
 
-	if (pool->base.dccg != std::ptr::null_mut())
-		dcn_dccg_destroy(&pool->base.dccg);
+	if ((*pool).base.psr != std::ptr::null_mut())
+		dmub_psr_destroy((*&pool).base.psr);
 
-	if (pool->base.oem_device != std::ptr::null_mut()) {
-		struct dc *dc = pool->base.oem_device->ctx->dc;
+	if ((*pool).base.pg_cntl != std::ptr::null_mut())
+		dcn_pg_cntl_destroy((*&pool).base.pg_cntl);
 
-		dc->link_srv->destroy_ddc_service(&pool->base.oem_device);
+	if ((*pool).base.replay != std::ptr::null_mut())
+		dmub_replay_destroy((*&pool).base.replay);
+
+	if ((*pool).base.dccg != std::ptr::null_mut())
+		dcn_dccg_destroy((*&pool).base.dccg);
+
+	if ((*pool).base.oem_device != std::ptr::null_mut()) {
+		struct dc *dc = (*(*(*pool).base.oem_device).ctx).dc;
+
+		(*(*dc).link_srv).destroy_ddc_service((*&pool).base.oem_device);
 	}
 }
 
-static void dcn42_build_pipe_pix_clk_params(struct pipe_ctx *pipe_ctx)
+static void dcn42_build_pipe_pix_clk_params(pipe_ctx *pipe_ctx)
 {
-	const struct dc_stream_state *stream = pipe_ctx->stream;
-	struct dc_link *link = stream->link;
-	struct link_encoder *link_enc = pipe_ctx->link_res.dio_link_enc;
-	struct pixel_clk_params *pixel_clk_params = &pipe_ctx->stream_res.pix_clk_params;
+	const struct dc_stream_state *stream = (*pipe_ctx).stream;
+	struct dc_link *link = (*stream).link;
+	struct link_encoder *link_enc = (*pipe_ctx).link_res.dio_link_enc;
+	struct pixel_clk_params *pixel_clk_params = (*&pipe_ctx).stream_res.pix_clk_params;
 
-	pixel_clk_params->requested_pix_clk_100hz = stream->timing.pix_clk_100hz;
+	(*pixel_clk_params).requested_pix_clk_100hz = (*stream).timing.pix_clk_100hz;
 
-	if (pipe_ctx->dsc_padding_params.dsc_hactive_padding != 0)
-		pixel_clk_params->requested_pix_clk_100hz = pipe_ctx->dsc_padding_params.dsc_pix_clk_100hz;
+	if ((*pipe_ctx).dsc_padding_params.dsc_hactive_padding != 0)
+		(*pixel_clk_params).requested_pix_clk_100hz = (*pipe_ctx).dsc_padding_params.dsc_pix_clk_100hz;
 
-	if (!pipe_ctx->stream->ctx->dc->config.unify_link_enc_assignment)
+	if ((*(*(*(*!pipe_ctx).stream).ctx).dc).config.unify_link_enc_assignment)
 		link_enc = link_enc_cfg_get_link_enc(link);
 	if (link_enc)
-		pixel_clk_params->encoder_object_id = link_enc->id;
+		(*pixel_clk_params).encoder_object_id = link_enc->id;
 
 	pixel_clk_params->signal_type = pipe_ctx->stream->signal;
 	pixel_clk_params->controller_id = pipe_ctx->stream_res.tg->inst + 1;
@@ -1582,13 +1582,13 @@ static void dcn42_build_pipe_pix_clk_params(struct pipe_ctx *pipe_ctx)
 	}
 }
 
-static bool dcn42_dwbc_create(struct dc_context *ctx, struct resource_pool *pool)
+static bool dcn42_dwbc_create(dc_context *ctx, resource_pool *pool)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	uint32_t dwb_count = pool->res_cap->num_dwb;
 
 	for (i = 0; i < dwb_count; i++) {
-		struct dcn30_dwbc *dwbc42 = kzalloc(sizeof(struct dcn30_dwbc),
+		struct dcn30_dwbc *dwbc42 = kzalloc(sizeof(dcn30_dwbc),
 											GFP_KERNEL);
 
 		if (!dwbc42) {
@@ -1611,21 +1611,21 @@ macro_rules! REG_STRUCT dwbc401_regs
 	return true;
 }
 
-static void dcn42_mmhubbub_init(struct dcn30_mmhubbub *mcif_wb30,
-								struct dc_context *ctx)
+static void dcn42_mmhubbub_init(dcn30_mmhubbub *mcif_wb30,
+								dc_context *ctx)
 {
 	dcn42_mmhubbub_set_fgcg(
 		mcif_wb30,
 		ctx->dc->debug.enable_fine_grain_clock_gating.bits.mmhubbub);
 }
 
-static bool dcn42_mmhubbub_create(struct dc_context *ctx, struct resource_pool *pool)
+static bool dcn42_mmhubbub_create(dc_context *ctx, resource_pool *pool)
 {
-	unsigned int i;
+	core::ffi::c_uint i;
 	uint32_t pipe_count = pool->res_cap->num_dwb;
 
 	for (i = 0; i < pipe_count; i++) {
-		struct dcn30_mmhubbub *mcif_wb30 = kzalloc(sizeof(struct dcn30_mmhubbub),
+		struct dcn30_mmhubbub *mcif_wb30 = kzalloc(sizeof(dcn30_mmhubbub),
 												   GFP_KERNEL);
 
 		if (!mcif_wb30) {
@@ -1651,10 +1651,10 @@ macro_rules! REG_STRUCT mcif_wb401_regs
 }
 
 static struct display_stream_compressor *dcn42_dsc_create(
-	struct dc_context *ctx, uint32_t inst)
+	dc_context *ctx, uint32_t inst)
 {
 	struct dcn401_dsc *dsc =
-		kzalloc(sizeof(struct dcn401_dsc), GFP_KERNEL);
+		kzalloc(sizeof(dcn401_dsc), GFP_KERNEL);
 
 	if (!dsc) {
 		BREAK_TO_DEBUGGER();
@@ -1676,7 +1676,7 @@ macro_rules! REG_STRUCT dsc_regs
 	return &dsc->base;
 }
 
-static void dcn42_destroy_resource_pool(struct resource_pool **pool)
+static void dcn42_destroy_resource_pool(resource_pool **pool)
 {
 	struct dcn42_resource_pool *dcn42_pool = TO_DCN42_RES_POOL(*pool);
 
@@ -1686,9 +1686,9 @@ static void dcn42_destroy_resource_pool(struct resource_pool **pool)
 }
 
 static struct dc_cap_funcs cap_funcs = {
-	.get_dcc_compression_cap = dcn20_get_dcc_compression_cap};
+	get_dcc_compression_cap: dcn20_get_dcc_compression_cap};
 
-static void dcn42_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_params)
+static void dcn42_update_bw_bounding_box_fpu(dc *dc, clk_bw_params *bw_params)
 {
 	(void)bw_params;
 	dc_assert_fp_enabled();
@@ -1697,15 +1697,15 @@ static void dcn42_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params
 		dml2_reinit(dc, &dc->dml2_options, &dc->current_state->bw_ctx.dml2);
 }
 
-static void dcn42_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params)
+static void dcn42_update_bw_bounding_box(dc *dc, clk_bw_params *bw_params)
 {
 	DC_FP_START();
 	dcn42_update_bw_bounding_box_fpu(dc, bw_params);
 	DC_FP_END();
 }
-enum dc_status dcn42_validate_bandwidth(struct dc *dc,
-							  struct dc_state *context,
-							  enum dc_validate_mode validate_mode)
+enum dc_status dcn42_validate_bandwidth(dc *dc,
+							  dc_state *context,
+							  dc_validate_mode validate_mode)
 {
 	bool out = false;
 
@@ -1728,8 +1728,8 @@ enum dc_status dcn42_validate_bandwidth(struct dc *dc,
 
 	return out ? DC_OK : DC_FAIL_BANDWIDTH_VALIDATE;
 }
-void dcn42_prepare_mcache_programming(struct dc *dc,
-									  struct dc_state *context)
+void dcn42_prepare_mcache_programming(dc *dc,
+									  dc_state *context)
 {
 	if (dc->debug.using_dml21) {
 		DC_FP_START();
@@ -1744,14 +1744,14 @@ void dcn42_prepare_mcache_programming(struct dc *dc,
  * resource_funcs.link_enc_create_minimal
  */
 static struct link_encoder *dcn42_link_enc_create_minimal(
-		struct dc_context *ctx, enum engine_id eng_id)
+		dc_context *ctx, engine_id eng_id)
 {
 	struct dcn20_link_encoder *enc20;
 
-	if ((unsigned int)(eng_id - ENGINE_ID_DIGA) >= ctx->dc->res_pool->res_cap->num_dig_link_enc)
+	if ((core::ffi::c_uint)(eng_id - ENGINE_ID_DIGA) >= ctx->dc->res_pool->res_cap->num_dig_link_enc)
 		return std::ptr::null_mut();
 
-	enc20 = kzalloc(sizeof(struct dcn20_link_encoder), GFP_KERNEL);
+	enc20 = kzalloc(sizeof(dcn20_link_encoder), GFP_KERNEL);
 	if (!enc20)
 		return std::ptr::null_mut();
 
@@ -1766,12 +1766,12 @@ static struct link_encoder *dcn42_link_enc_create_minimal(
 
 	return &enc20->enc10.base;
 }
-static void dcn42_get_panel_config_defaults(struct dc_panel_config *panel_config)
+static void dcn42_get_panel_config_defaults(dc_panel_config *panel_config)
 {
 	*panel_config = dcn42_panel_config_defaults;
 }
-static unsigned int dcn42_get_max_hw_cursor_size(const struct dc *dc,
-			struct dc_state *state,
+static core::ffi::c_uint dcn42_get_max_hw_cursor_size(const struct dc *dc,
+			dc_state *state,
 			const struct dc_stream_state *stream)
 {
 	(void)state;
@@ -1779,41 +1779,41 @@ static unsigned int dcn42_get_max_hw_cursor_size(const struct dc *dc,
 	return dc->caps.max_cursor_size;
 }
 static struct resource_funcs dcn42_res_pool_funcs = {
-	.destroy = dcn42_destroy_resource_pool,
-	.link_enc_create = dcn42_link_encoder_create,
-	.link_enc_create_minimal = dcn42_link_enc_create_minimal,
-	.link_encs_assign = link_enc_cfg_link_encs_assign,
-	.link_enc_unassign = link_enc_cfg_link_enc_unassign,
-	.hpo_frl_link_enc_create = dcn42_hpo_frl_link_encoder_create,
-	.panel_cntl_create = dcn32_panel_cntl_create,
-	.validate_bandwidth = dcn42_validate_bandwidth,
-	.calculate_wm_and_dlg = std::ptr::null_mut(),
-	.populate_dml_pipes = std::ptr::null_mut(),
-	.acquire_free_pipe_as_secondary_dpp_pipe = dcn32_acquire_free_pipe_as_secondary_dpp_pipe,
-	.acquire_free_pipe_as_secondary_opp_head = dcn32_acquire_free_pipe_as_secondary_opp_head,
-	.release_pipe = dcn20_release_pipe,
-	.add_stream_to_ctx = dcn30_add_stream_to_ctx,
-	.add_dsc_to_stream_resource = dcn20_add_dsc_to_stream_resource,
-	.remove_stream_from_ctx = dcn20_remove_stream_from_ctx,
-	.populate_dml_writeback_from_context = dcn30_populate_dml_writeback_from_context,
-	.set_mcif_arb_params = dcn30_set_mcif_arb_params,
-	.find_first_free_match_stream_enc_for_link = dcn10_find_first_free_match_stream_enc_for_link,
-	.acquire_post_bldn_3dlut = dcn32_acquire_post_bldn_3dlut,
-	.release_post_bldn_3dlut = dcn32_release_post_bldn_3dlut,
-	.update_bw_bounding_box = dcn42_update_bw_bounding_box,
-	.patch_unknown_plane_state = dcn35_patch_unknown_plane_state,
-	.get_panel_config_defaults = dcn42_get_panel_config_defaults,
-	.get_preferred_eng_id_dpia = dcn42_get_preferred_eng_id_dpia,
-	.update_soc_for_wm_a = dcn30_update_soc_for_wm_a,
-	.prepare_mcache_programming = dcn42_prepare_mcache_programming,
-	.build_pipe_pix_clk_params = dcn42_build_pipe_pix_clk_params,
-	.get_power_profile = dcn401_get_power_profile,
-	.get_vstartup_for_pipe = dcn401_get_vstartup_for_pipe,
-	.get_max_hw_cursor_size = dcn42_get_max_hw_cursor_size,
-	.get_default_tiling_info = dcn10_get_default_tiling_info
+	destroy: dcn42_destroy_resource_pool,
+	link_enc_create: dcn42_link_encoder_create,
+	link_enc_create_minimal: dcn42_link_enc_create_minimal,
+	link_encs_assign: link_enc_cfg_link_encs_assign,
+	link_enc_unassign: link_enc_cfg_link_enc_unassign,
+	hpo_frl_link_enc_create: dcn42_hpo_frl_link_encoder_create,
+	panel_cntl_create: dcn32_panel_cntl_create,
+	validate_bandwidth: dcn42_validate_bandwidth,
+	calculate_wm_and_dlg: std::ptr::null_mut(),
+	populate_dml_pipes: std::ptr::null_mut(),
+	acquire_free_pipe_as_secondary_dpp_pipe: dcn32_acquire_free_pipe_as_secondary_dpp_pipe,
+	acquire_free_pipe_as_secondary_opp_head: dcn32_acquire_free_pipe_as_secondary_opp_head,
+	release_pipe: dcn20_release_pipe,
+	add_stream_to_ctx: dcn30_add_stream_to_ctx,
+	add_dsc_to_stream_resource: dcn20_add_dsc_to_stream_resource,
+	remove_stream_from_ctx: dcn20_remove_stream_from_ctx,
+	populate_dml_writeback_from_context: dcn30_populate_dml_writeback_from_context,
+	set_mcif_arb_params: dcn30_set_mcif_arb_params,
+	find_first_free_match_stream_enc_for_link: dcn10_find_first_free_match_stream_enc_for_link,
+	acquire_post_bldn_3dlut: dcn32_acquire_post_bldn_3dlut,
+	release_post_bldn_3dlut: dcn32_release_post_bldn_3dlut,
+	update_bw_bounding_box: dcn42_update_bw_bounding_box,
+	patch_unknown_plane_state: dcn35_patch_unknown_plane_state,
+	get_panel_config_defaults: dcn42_get_panel_config_defaults,
+	get_preferred_eng_id_dpia: dcn42_get_preferred_eng_id_dpia,
+	update_soc_for_wm_a: dcn30_update_soc_for_wm_a,
+	prepare_mcache_programming: dcn42_prepare_mcache_programming,
+	build_pipe_pix_clk_params: dcn42_build_pipe_pix_clk_params,
+	get_power_profile: dcn401_get_power_profile,
+	get_vstartup_for_pipe: dcn401_get_vstartup_for_pipe,
+	get_max_hw_cursor_size: dcn42_get_max_hw_cursor_size,
+	get_default_tiling_info: dcn10_get_default_tiling_info
 };
 
-static uint32_t read_pipe_fuses(struct dc_context *ctx)
+static uint32_t read_pipe_fuses(dc_context *ctx)
 {
 	uint32_t value = REG_READ(CC_DC_PIPE_DIS);
 
@@ -1826,10 +1826,11 @@ static uint32_t read_pipe_fuses(struct dc_context *ctx)
 
 static bool dcn42_resource_construct(
 	uint8_t num_virtual_links,
-	struct dc *dc,
-	struct dcn42_resource_pool *pool)
+	dc *dc,
+	dcn42_resource_pool *pool)
 {
-	unsigned int i, j;
+	'create_fail: {
+	i: core::ffi::c_uint, j;
 	struct dc_context *ctx = dc->ctx;
 	struct irq_service_init_data init_data;
 	uint32_t pipe_fuses;
@@ -1865,7 +1866,7 @@ macro_rules! REG_STRUCT dccg_regs
 	num_pipes = pool->base.res_cap->num_dpp;
 	pipe_fuses = read_pipe_fuses(ctx);
 
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_dpp; i++)
+	for (i = 0; i < (core::ffi::c_uint)pool->base.res_cap->num_dpp; i++)
 		if (pipe_fuses & 1 << i)
 			num_pipes--;
 
@@ -1880,7 +1881,7 @@ macro_rules! REG_STRUCT dccg_regs
 	/*************************************************
 	 *  Resource + asic cap harcoding                *
 	 *************************************************/
-	pool->base.underlay_pipe_index = (unsigned int)NO_UNDERLAY_PIPE;
+	pool->base.underlay_pipe_index = (core::ffi::c_uint)NO_UNDERLAY_PIPE;
 	pool->base.timing_generator_count = pool->base.res_cap->num_timing_generator;
 	pool->base.pipe_count = num_pipes;
 	pool->base.mpcc_count = num_pipes;
@@ -2080,7 +2081,7 @@ macro_rules! REG_STRUCT dccg_regs
 		if (pool->base.clock_sources[i] == std::ptr::null_mut()) {
 			dm_error("DC: failed to create clock sources!\n");
 			BREAK_TO_DEBUGGER();
-			goto create_fail;
+			break 'create_fail;
 		}
 	}
 
@@ -2089,7 +2090,7 @@ macro_rules! REG_STRUCT dccg_regs
 	if (pool->base.dccg == std::ptr::null_mut()) {
 		dm_error("DC: failed to create dccg!\n");
 		BREAK_TO_DEBUGGER();
-		goto create_fail;
+		break 'create_fail;
 	}
 
 #undef REG_STRUCT
@@ -2100,24 +2101,24 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	if (pool->base.pg_cntl == std::ptr::null_mut()) {
 		dm_error("DC: failed to create power gate control!\n");
 		BREAK_TO_DEBUGGER();
-		goto create_fail;
+		break 'create_fail;
 	}
 	/* IRQ Service */
 	init_data.ctx = dc->ctx;
 	pool->base.irqs = dal_irq_service_dcn42_create(&init_data);
 	if (!pool->base.irqs)
-		goto create_fail;
+		break 'create_fail;
 
 	/* HUBBUB */
 	pool->base.hubbub = dcn42_hubbub_create(ctx);
 	if (pool->base.hubbub == std::ptr::null_mut()) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create hubbub!\n");
-		goto create_fail;
+		break 'create_fail;
 	}
 
 	/* HUBPs, DPPs, OPPs, TGs, ABMs */
-	for (i = 0, j = 0; i < (unsigned int)pool->base.res_cap->num_timing_generator; i++) {
+	for (i = 0, j = 0; i < (core::ffi::c_uint)pool->base.res_cap->num_timing_generator; i++) {
 		/* if pipe is disabled, skip instance of HW pipe,
 		 * i.e, skip ASIC register instance
 		 */
@@ -2129,7 +2130,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 			BREAK_TO_DEBUGGER();
 			dm_error(
 				"DC: failed to create hubps!\n");
-			goto create_fail;
+			break 'create_fail;
 		}
 
 		pool->base.dpps[j] = dcn42_dpp_create(ctx, i);
@@ -2137,7 +2138,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 			BREAK_TO_DEBUGGER();
 			dm_error(
 				"DC: failed to create dpps!\n");
-			goto create_fail;
+			break 'create_fail;
 		}
 
 		pool->base.opps[j] = dcn42_opp_create(ctx, i);
@@ -2145,7 +2146,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 			BREAK_TO_DEBUGGER();
 			dm_error(
 				"DC: failed to create output pixel processor!\n");
-			goto create_fail;
+			break 'create_fail;
 		}
 
 		pool->base.timing_generators[j] = dcn42_timing_generator_create(
@@ -2153,7 +2154,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 		if (pool->base.timing_generators[j] == std::ptr::null_mut()) {
 			BREAK_TO_DEBUGGER();
 			dm_error("DC: failed to create tg!\n");
-			goto create_fail;
+			break 'create_fail;
 		}
 
 		pool->base.multiple_abms[j] = dmub_abm_create(ctx,
@@ -2163,7 +2164,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 		if (pool->base.multiple_abms[j] == std::ptr::null_mut()) {
 			dm_error("DC: failed to create abm for pipe %u!\n", i);
 			BREAK_TO_DEBUGGER();
-			goto create_fail;
+			break 'create_fail;
 		}
 
 		/* index for resource pool arrays for next valid pipe */
@@ -2175,7 +2176,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	if (pool->base.psr == std::ptr::null_mut()) {
 		dm_error("DC: failed to create psr obj!\n");
 		BREAK_TO_DEBUGGER();
-		goto create_fail;
+		break 'create_fail;
 	}
 
 	/* Replay */
@@ -2183,7 +2184,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	if (pool->base.replay == std::ptr::null_mut()) {
 		dm_error("DC: failed to create replay obj!\n");
 		BREAK_TO_DEBUGGER();
-		goto create_fail;
+		break 'create_fail;
 	}
 
 	/* MPCCs */
@@ -2192,16 +2193,16 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	if (pool->base.mpc == std::ptr::null_mut()) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create mpc!\n");
-		goto create_fail;
+		break 'create_fail;
 	}
 
 	/* DSCs */
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_dsc; i++) {
+	for (i = 0; i < (core::ffi::c_uint)pool->base.res_cap->num_dsc; i++) {
 		pool->base.dscs[i] = dcn42_dsc_create(ctx, i);
 		if (pool->base.dscs[i] == std::ptr::null_mut()) {
 			BREAK_TO_DEBUGGER();
 			dm_error("DC: failed to create display stream compressor %u!\n", i);
-			goto create_fail;
+			break 'create_fail;
 		}
 	}
 
@@ -2209,32 +2210,32 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	if (!dcn42_dwbc_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create dwbc!\n");
-		goto create_fail;
+		break 'create_fail;
 	}
 
 	/* MMHUBBUB */
 	if (!dcn42_mmhubbub_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create mcif_wb!\n");
-		goto create_fail;
+		break 'create_fail;
 	}
 
 	/* AUX and I2C */
-	for (i = 0; i < (unsigned int)pool->base.res_cap->num_ddc; i++) {
+	for (i = 0; i < (core::ffi::c_uint)pool->base.res_cap->num_ddc; i++) {
 		pool->base.engines[i] = dcn42_aux_engine_create(ctx, i);
 
 		if (pool->base.engines[i] == std::ptr::null_mut()) {
 			BREAK_TO_DEBUGGER();
 			dm_error(
 				"DC:failed to create aux engine!!\n");
-			goto create_fail;
+			break 'create_fail;
 		}
 		pool->base.hw_i2cs[i] = dcn42_i2c_hw_create(ctx, i);
 		if (pool->base.hw_i2cs[i] == std::ptr::null_mut()) {
 			BREAK_TO_DEBUGGER();
 			dm_error(
 				"DC:failed to create hw i2c!!\n");
-			goto create_fail;
+			break 'create_fail;
 		}
 		pool->base.sw_i2cs[i] = std::ptr::null_mut();
 	}
@@ -2246,7 +2247,7 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	/* Audio, HWSeq, Stream Encoders including HPO and virtual, MPC 3D LUTs */
 	if (!resource_construct(num_virtual_links, dc, &pool->base,
 							&res_create_funcs))
-		goto create_fail;
+		break 'create_fail;
 
 	/* HW Sequencer init functions and Plane caps */
 	dcn42_hw_sequencer_init_functions(dc);
@@ -2290,8 +2291,8 @@ macro_rules! REG_STRUCT pg_cntl_regs
 	dc->caps.scl_caps.sharpener_support = true;
 
 	return true;
-
-create_fail:
+	}
+	
 
 	dcn42_resource_destruct(pool);
 
@@ -2299,10 +2300,10 @@ create_fail:
 }
 struct resource_pool *dcn42_create_resource_pool(
 	const struct dc_init_data *init_data,
-	struct dc *dc)
+	dc *dc)
 {
 	struct dcn42_resource_pool *pool =
-		kzalloc(sizeof(struct dcn401_resource_pool), GFP_KERNEL);
+		kzalloc(sizeof(dcn401_resource_pool), GFP_KERNEL);
 
 	if (!pool)
 		return std::ptr::null_mut();

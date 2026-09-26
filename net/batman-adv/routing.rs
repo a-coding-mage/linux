@@ -32,20 +32,20 @@ use core::ffi::c_void;
 #[repr(C)] pub enum batadv_subtype { BATADV_P_DATA = 0 }
 
 extern "C" {
-    fn batadv_orig_ifinfo_get(*mut batadv_orig_node,*mut batadv_hard_iface)->*mut batadv_orig_ifinfo; fn batadv_orig_ifinfo_put(*mut batadv_orig_ifinfo);
-    fn batadv_orig_router_get(*mut batadv_orig_node,*mut batadv_hard_iface)->*mut batadv_neigh_node; fn batadv_neigh_node_put(*mut batadv_neigh_node);
-    fn batadv_primary_if_get_selected(*mut batadv_priv)->*mut batadv_hard_iface; fn batadv_hardif_put(*mut batadv_hard_iface);
-    fn batadv_orig_hash_find(*mut batadv_priv,*const u8)->*mut batadv_orig_node; fn batadv_orig_node_put(*mut batadv_orig_node);
-    fn batadv_send_skb_to_orig(*mut sk_buff,*mut batadv_orig_node,*mut batadv_hard_iface)->i32; fn batadv_tp_meter_recv(*mut batadv_priv,*mut sk_buff);
-    fn batadv_is_my_mac(*mut batadv_priv,*const u8)->bool; fn batadv_is_my_client(*mut batadv_priv,*const u8,u16)->bool;
-    fn batadv_tvlv_containers_process(*mut batadv_priv,u8,*mut c_void,*mut sk_buff,*mut u8,u16)->i32; fn batadv_interface_rx(*mut c_void,*mut sk_buff,i32,*mut batadv_orig_node);
-    fn batadv_bla_is_backbone_gw(*mut sk_buff,*mut batadv_orig_node,i32)->bool; fn batadv_dat_snoop_incoming_arp_request(*mut batadv_priv,*mut sk_buff,i32)->bool; fn batadv_dat_snoop_incoming_arp_reply(*mut batadv_priv,*mut sk_buff,i32)->bool; fn batadv_dat_snoop_incoming_dhcp_ack(*mut batadv_priv,*mut sk_buff,i32);
-    fn batadv_frag_skb_fwd(*mut sk_buff,*mut batadv_hard_iface,*mut batadv_orig_node,*mut i32)->bool; fn batadv_frag_skb_buffer(*mut *mut sk_buff,*mut batadv_orig_node)->bool;
-    fn batadv_forw_bcast_packet(*mut batadv_priv,*mut sk_buff,i32,bool)->i32; fn batadv_bla_check_bcast_duplist(*mut batadv_priv,*mut sk_buff)->bool; fn batadv_batman_skb_recv(*mut sk_buff,*mut net_device,*mut c_void,*mut c_void);
-    fn batadv_transtable_search(*mut batadv_priv,*mut c_void,*const u8,u16)->*mut batadv_orig_node; fn batadv_tt_local_client_is_roaming(*mut batadv_priv,*const u8,u16)->bool; fn batadv_compare_eth(*const u8,*const u8)->bool;
-    fn batadv_get_vid(*mut sk_buff,i32)->u16; fn batadv_seq_before(u8,u8)->i32; fn batadv_has_timed_out(usize,u32)->bool; fn batadv_bit_get_packet(*mut batadv_priv,*mut u8,i32,i32)->bool; fn batadv_test_bit(*mut u8,u32,u32)->bool;
-    fn batadv_inc_counter(*mut batadv_priv,i32); fn batadv_add_counter(*mut batadv_priv,i32,usize); fn batadv_dat_inc_counter(*mut batadv_priv,batadv_subtype); fn kfree_skb(*mut sk_buff);
-    fn pskb_may_pull(*mut sk_buff,i32)->bool; fn skb_cow(*mut sk_buff,usize)->i32; fn skb_linearize(*mut sk_buff)->i32; fn skb_set_priority(*mut sk_buff,i32); fn skb_postpull_rcsum(*mut sk_buff,*mut c_void,usize); fn skb_postpush_rcsum(*mut sk_buff,*mut c_void,usize);
+    fn batadv_orig_ifinfo_get(_: *mut batadv_orig_node,_: *mut batadv_hard_iface)->*mut batadv_orig_ifinfo; fn batadv_orig_ifinfo_put(_: *mut batadv_orig_ifinfo);
+    fn batadv_orig_router_get(_: *mut batadv_orig_node,_: *mut batadv_hard_iface)->*mut batadv_neigh_node; fn batadv_neigh_node_put(_: *mut batadv_neigh_node);
+    fn batadv_primary_if_get_selected(_: *mut batadv_priv)->*mut batadv_hard_iface; fn batadv_hardif_put(_: *mut batadv_hard_iface);
+    fn batadv_orig_hash_find(_: *mut batadv_priv,_: *const u8)->*mut batadv_orig_node; fn batadv_orig_node_put(_: *mut batadv_orig_node);
+    fn batadv_send_skb_to_orig(_: *mut sk_buff,_: *mut batadv_orig_node,_: *mut batadv_hard_iface)->i32; fn batadv_tp_meter_recv(_: *mut batadv_priv,_: *mut sk_buff);
+    fn batadv_is_my_mac(_: *mut batadv_priv,_: *const u8)->bool; fn batadv_is_my_client(_: *mut batadv_priv,_: *const u8,_: u16)->bool;
+    fn batadv_tvlv_containers_process(_: *mut batadv_priv,_: u8,_: *mut c_void,_: *mut sk_buff,_: *mut u8,_: u16)->i32; fn batadv_interface_rx(_: *mut c_void,_: *mut sk_buff,_: i32,_: *mut batadv_orig_node);
+    fn batadv_bla_is_backbone_gw(_: *mut sk_buff,_: *mut batadv_orig_node,_: i32)->bool; fn batadv_dat_snoop_incoming_arp_request(_: *mut batadv_priv,_: *mut sk_buff,_: i32)->bool; fn batadv_dat_snoop_incoming_arp_reply(_: *mut batadv_priv,_: *mut sk_buff,_: i32)->bool; fn batadv_dat_snoop_incoming_dhcp_ack(_: *mut batadv_priv,_: *mut sk_buff,_: i32);
+    fn batadv_frag_skb_fwd(_: *mut sk_buff,_: *mut batadv_hard_iface,_: *mut batadv_orig_node,_: *mut i32)->bool; fn batadv_frag_skb_buffer(_: *mut *mut sk_buff,_: *mut batadv_orig_node)->bool;
+    fn batadv_forw_bcast_packet(_: *mut batadv_priv,_: *mut sk_buff,_: i32,_: bool)->i32; fn batadv_bla_check_bcast_duplist(_: *mut batadv_priv,_: *mut sk_buff)->bool; fn batadv_batman_skb_recv(_: *mut sk_buff,_: *mut net_device,_: *mut c_void,_: *mut c_void);
+    fn batadv_transtable_search(_: *mut batadv_priv,_: *mut c_void,_: *const u8,_: u16)->*mut batadv_orig_node; fn batadv_tt_local_client_is_roaming(_: *mut batadv_priv,_: *const u8,_: u16)->bool; fn batadv_compare_eth(_: *const u8,_: *const u8)->bool;
+    fn batadv_get_vid(_: *mut sk_buff,_: i32)->u16; fn batadv_seq_before(_: u8,_: u8)->i32; fn batadv_has_timed_out(_: usize,_: u32)->bool; fn batadv_bit_get_packet(_: *mut batadv_priv,_: *mut u8,_: i32,_: i32)->bool; fn batadv_test_bit(_: *mut u8,_: u32,_: u32)->bool;
+    fn batadv_inc_counter(_: *mut batadv_priv,_: i32); fn batadv_add_counter(_: *mut batadv_priv,_: i32,_: usize); fn batadv_dat_inc_counter(_: *mut batadv_priv,_: batadv_subtype); fn kfree_skb(_: *mut sk_buff);
+    fn pskb_may_pull(_: *mut sk_buff,_: i32)->bool; fn skb_cow(_: *mut sk_buff,_: usize)->i32; fn skb_linearize(_: *mut sk_buff)->i32; fn skb_set_priority(_: *mut sk_buff,_: i32); fn skb_postpull_rcsum(_: *mut sk_buff,_: *mut c_void,_: usize); fn skb_postpush_rcsum(_: *mut sk_buff,_: *mut c_void,_: usize);
 }
 
 const BATADV_TTL:u8=50; const BATADV_ECHO_REQUEST:u8=1; const BATADV_ECHO_REPLY:u8=2; const BATADV_TP:u8=3; const BATADV_TTL_EXCEEDED:u8=4; const BATADV_UNICAST_4ADDR:u8=0; const BATADV_UNICAST:u8=1; const BATADV_UNICAST_TVLV:u8=2; const BATADV_MCAST:u8=3; const NET_RX_SUCCESS:i32=0; const NET_RX_DROP:i32=1; const NET_XMIT_SUCCESS:i32=0; const NETDEV_TX_BUSY:i32=1; const ETH_HLEN:usize=14;
@@ -78,7 +78,7 @@ pub unsafe fn batadv_update_route(_p:*mut batadv_priv,_o:*mut batadv_orig_node,_
 pub unsafe fn batadv_find_router(_p:*mut batadv_priv,o:*mut batadv_orig_node,i:*mut batadv_hard_iface)->*mut batadv_neigh_node { if o.is_null(){core::ptr::null_mut()}else{batadv_orig_router_get(o,i)} }
 pub unsafe fn batadv_recv_icmp_packet(skb:*mut sk_buff,recv:*mut batadv_hard_iface)->i32 { let p=netdev_priv((*recv).mesh_iface); let h=(*skb).data as *mut batadv_icmp_header; if !pskb_may_pull(skb,core::mem::size_of::<batadv_icmp_header>() as i32){kfree_skb(skb);return NET_RX_DROP;} if batadv_is_my_mac(p,(*h).dst.as_ptr()){kfree_skb(skb);return NET_RX_SUCCESS;} if (*h).ttl<2{kfree_skb(skb);return NET_RX_DROP;} let o=batadv_orig_hash_find(p,(*h).dst.as_ptr()); if o.is_null(){kfree_skb(skb);return NET_RX_DROP;} (*h).ttl-=1; let r=batadv_send_skb_to_orig(skb,o,recv); batadv_orig_node_put(o); if r==NET_XMIT_SUCCESS{NET_RX_SUCCESS}else{NET_RX_DROP} }
 
-#[cfg(feature="CONFIG_BATMAN_ADV_MCAST")]
+#[cfg(CONFIG_BATMAN_ADV_MCAST)]
 pub unsafe fn batadv_recv_mcast_packet(skb:*mut sk_buff,recv:*mut batadv_hard_iface)->i32 { let p=netdev_priv((*recv).mesh_iface); let h=core::mem::size_of::<batadv_mcast_packet>() as i32; if !batadv_check_management_packet(skb,recv,h)||!batadv_skb_decrement_ttl(skb){kfree_skb(skb);return NET_RX_DROP;} let r=batadv_tvlv_containers_process(p,BATADV_MCAST,core::ptr::null_mut(),skb,(*skb).data.add(h as usize),0); if r<0{kfree_skb(skb);} r }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

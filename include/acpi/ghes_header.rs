@@ -50,7 +50,7 @@ pub const GHES_SEV_CORRECTED: ::core::ffi::c_uint = 0x1;
 pub const GHES_SEV_RECOVERABLE: ::core::ffi::c_uint = 0x2;
 pub const GHES_SEV_PANIC: ::core::ffi::c_uint = 0x3;
 
-#[cfg(feature = "CONFIG_ACPI_APEI_GHES")]
+#[cfg(CONFIG_ACPI_APEI_GHES)]
 extern "C" {
     pub fn ghes_register_vendor_record_notifier(nb: *mut notifier_block) -> ::core::ffi::c_int;
     pub fn ghes_unregister_vendor_record_notifier(nb: *mut notifier_block);
@@ -62,13 +62,13 @@ extern "C" {
     pub fn ghes_estatus_pool_region_free(addr: ::core::ffi::c_ulong, size: u32);
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_APEI_GHES"))]
+#[cfg(not(CONFIG_ACPI_APEI_GHES))]
 #[inline]
 pub unsafe fn ghes_get_devices() -> *mut list_head {
     ::core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_APEI_GHES"))]
+#[cfg(not(CONFIG_ACPI_APEI_GHES))]
 #[inline]
 pub unsafe fn ghes_estatus_pool_region_free(_addr: ::core::ffi::c_ulong, _size: u32) {}
 
@@ -114,12 +114,12 @@ pub unsafe fn acpi_hest_get_next(gdata: *mut acpi_hest_generic_data) -> *mut ::c
     (gdata as *mut u8).add(acpi_hest_get_record_size(gdata)) as *mut ::core::ffi::c_void
 }
 
-#[cfg(feature = "CONFIG_ACPI_APEI_SEA")]
+#[cfg(CONFIG_ACPI_APEI_SEA)]
 extern "C" {
     pub fn ghes_notify_sea() -> ::core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_APEI_SEA"))]
+#[cfg(not(CONFIG_ACPI_APEI_SEA))]
 #[inline]
 pub unsafe fn ghes_notify_sea() -> ::core::ffi::c_int {
     -2 /* -ENOENT */

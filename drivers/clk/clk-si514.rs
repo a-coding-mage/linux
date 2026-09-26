@@ -124,7 +124,7 @@ unsafe fn si514_calc_muldiv(settings: *mut clk_si514_muldiv, frequency: u64) -> 
 }
 
 unsafe fn si514_calc_rate(settings: *mut clk_si514_muldiv) -> u64 {
-    let m = (*settings).m_frac as u64 | ((*settings).m_int as u64 << 29);
+    let m = (*settings).m_frac as u64 | (((*settings).m_int as u64) << 29);
     let d = (*settings).hs_div as u64 * (1u64 << (*settings).ls_div_bits);
     (((m * FXO as u64) + FXO as u64 / 2) >> 29) / d
 }

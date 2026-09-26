@@ -70,8 +70,7 @@ pub struct tegra_soc_bytes {
 /* Utility structures for using mixer control of type snd_soc_bytes */
 #[macro_export]
 macro_rules! TEGRA_SOC_BYTES_EXT {
-    (
-        $xname:expr,
+    ($xname:expr,
         $xbase:expr,
         $xregs:expr,
         $xshift:expr,

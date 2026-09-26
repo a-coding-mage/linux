@@ -15,16 +15,16 @@
 // Dependencies supplied by the surrounding kernel translation are intentionally
 // left as external symbols.
 
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 const CLKDVDR_PXCKEN: u32 = 0x8000_0000;
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 const CLKDVDR_PXCKINV: u32 = 0x1000_0000;
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 const CLKDVDR_PXCKDLY: u32 = 0x0600_0000;
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 const CLKDVDR_PXCLK_MASK: u32 = 0x00ff_0000;
 
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 unsafe fn p1022rdk_set_pixel_clock(pixclock: u32) {
     let mut guts_np: *mut device_node = core::ptr::null_mut();
     let guts: *mut ccsr_guts;
@@ -77,7 +77,7 @@ unsafe fn p1022rdk_set_pixel_clock(pixclock: u32) {
     iounmap(guts as *mut core::ffi::c_void);
 }
 
-#[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+#[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
 unsafe fn p1022rdk_valid_monitor_port(_port: fsl_diu_monitor_port) -> fsl_diu_monitor_port {
     FSL_DIU_PORT_DVI
 }
@@ -103,7 +103,7 @@ unsafe fn p1022_rdk_setup_arch() {
         ppc_md.progress.unwrap()(b"p1022_rdk_setup_arch()\0".as_ptr() as *const i8, 0);
     }
 
-    #[cfg(any(feature = "CONFIG_FB_FSL_DIU", feature = "CONFIG_FB_FSL_DIU_MODULE"))]
+    #[cfg(any(CONFIG_FB_FSL_DIU, CONFIG_FB_FSL_DIU_MODULE))]
     {
         diu_ops.set_pixel_clock = Some(p1022rdk_set_pixel_clock);
         diu_ops.valid_monitor_port = Some(p1022rdk_valid_monitor_port);

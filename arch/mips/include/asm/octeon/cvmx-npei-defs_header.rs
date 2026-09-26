@@ -159,7 +159,7 @@ pub const CVMX_NPEI_WIN_WR_MASK: u64 = 0x0000000000000230;
 #[repr(C)]
 pub union cvmx_npei_bar1_indexx {
     pub u32: u32,
-	struct cvmx_npei_bar1_indexx_s {
+	cvmx_npei_bar1_indexx_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_18_31: u32,
         pub addr_idx: u32,
@@ -179,7 +179,7 @@ pub union cvmx_npei_bar1_indexx {
 #[repr(C)]
 pub union cvmx_npei_bist_status {
     pub u64: u64,
-	struct cvmx_npei_bist_status_s {
+	cvmx_npei_bist_status_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub pkt_rdf: u64,
         pub reserved_60_62: u64,
@@ -282,7 +282,7 @@ pub union cvmx_npei_bist_status {
         pub pkt_rdf: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_bist_status_cn52xx {
+	cvmx_npei_bist_status_cn52xx {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub pkt_rdf: u64,
         pub reserved_60_62: u64,
@@ -403,7 +403,7 @@ pub union cvmx_npei_bist_status {
         pub pkt_rdf: u64,
 // header guard omitted
     pub cn52xx: cvmx_npei_bist_status_cn52xx,
-	struct cvmx_npei_bist_status_cn52xxp1 {
+	cvmx_npei_bist_status_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_46_63: u64,
         pub d0_mem0: u64,
@@ -502,7 +502,7 @@ pub union cvmx_npei_bist_status {
         pub reserved_46_63: u64,
 // header guard omitted
     pub cn52xxp1: cvmx_npei_bist_status_cn52xxp1,
-	struct cvmx_npei_bist_status_cn56xxp1 {
+	cvmx_npei_bist_status_cn56xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_58_63: u64,
         pub pcsr_int: u64,
@@ -630,7 +630,7 @@ pub union cvmx_npei_bist_status {
 #[repr(C)]
 pub union cvmx_npei_bist_status2 {
     pub u64: u64,
-	struct cvmx_npei_bist_status2_s {
+	cvmx_npei_bist_status2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_14_63: u64,
         pub prd_tag: u64,
@@ -670,7 +670,7 @@ pub union cvmx_npei_bist_status2 {
 #[repr(C)]
 pub union cvmx_npei_ctl_port0 {
     pub u64: u64,
-	struct cvmx_npei_ctl_port0_s {
+	cvmx_npei_ctl_port0_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_21_63: u64,
         pub waitl_com: u64,
@@ -714,7 +714,7 @@ pub union cvmx_npei_ctl_port0 {
 #[repr(C)]
 pub union cvmx_npei_ctl_port1 {
     pub u64: u64,
-	struct cvmx_npei_ctl_port1_s {
+	cvmx_npei_ctl_port1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_21_63: u64,
         pub waitl_com: u64,
@@ -758,7 +758,7 @@ pub union cvmx_npei_ctl_port1 {
 #[repr(C)]
 pub union cvmx_npei_ctl_status {
     pub u64: u64,
-	struct cvmx_npei_ctl_status_s {
+	cvmx_npei_ctl_status_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_44_63: u64,
         pub p1_ntags: u64,
@@ -783,7 +783,7 @@ pub union cvmx_npei_ctl_status {
         pub reserved_44_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_ctl_status_cn52xxp1 {
+	cvmx_npei_ctl_status_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_44_63: u64,
         pub p1_ntags: u64,
@@ -808,7 +808,7 @@ pub union cvmx_npei_ctl_status {
         pub reserved_44_63: u64,
 // header guard omitted
     pub cn52xxp1: cvmx_npei_bist_status_cn52xxp1,
-	struct cvmx_npei_ctl_status_cn56xxp1 {
+	cvmx_npei_ctl_status_cn56xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_15_63: u64,
         pub lnk_rst: u64,
@@ -830,7 +830,7 @@ pub union cvmx_npei_ctl_status {
 #[repr(C)]
 pub union cvmx_npei_ctl_status2 {
     pub u64: u64,
-	struct cvmx_npei_ctl_status2_s {
+	cvmx_npei_ctl_status2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_16_63: u64,
         pub mps: u64,
@@ -862,7 +862,7 @@ pub union cvmx_npei_ctl_status2 {
 #[repr(C)]
 pub union cvmx_npei_data_out_cnt {
     pub u64: u64,
-	struct cvmx_npei_data_out_cnt_s {
+	cvmx_npei_data_out_cnt_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_44_63: u64,
         pub p1_ucnt: u64,
@@ -882,7 +882,7 @@ pub union cvmx_npei_data_out_cnt {
 #[repr(C)]
 pub union cvmx_npei_dbg_data {
     pub u64: u64,
-	struct cvmx_npei_dbg_data_s {
+	cvmx_npei_dbg_data_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_28_63: u64,
         pub qlm0_rev_lanes: u64,
@@ -901,7 +901,7 @@ pub union cvmx_npei_dbg_data {
         pub reserved_28_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_dbg_data_cn52xx {
+	cvmx_npei_dbg_data_cn52xx {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_29_63: u64,
         pub qlm0_link_width: u64,
@@ -922,7 +922,7 @@ pub union cvmx_npei_dbg_data {
         pub reserved_29_63: u64,
 // header guard omitted
     pub cn52xx: cvmx_npei_bist_status_cn52xx,
-	struct cvmx_npei_dbg_data_cn56xx {
+	cvmx_npei_dbg_data_cn56xx {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_29_63: u64,
         pub qlm2_rev_lanes: u64,
@@ -948,7 +948,7 @@ pub union cvmx_npei_dbg_data {
 #[repr(C)]
 pub union cvmx_npei_dbg_select {
     pub u64: u64,
-	struct cvmx_npei_dbg_select_s {
+	cvmx_npei_dbg_select_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_16_63: u64,
         pub dbg_sel: u64,
@@ -962,7 +962,7 @@ pub union cvmx_npei_dbg_select {
 #[repr(C)]
 pub union cvmx_npei_dmax_counts {
     pub u64: u64,
-	struct cvmx_npei_dmax_counts_s {
+	cvmx_npei_dmax_counts_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_39_63: u64,
         pub fcnt: u64,
@@ -978,7 +978,7 @@ pub union cvmx_npei_dmax_counts {
 #[repr(C)]
 pub union cvmx_npei_dmax_dbell {
     pub u32: u32,
-	struct cvmx_npei_dmax_dbell_s {
+	cvmx_npei_dmax_dbell_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_16_31: u32,
         pub dbell: u32,
@@ -992,7 +992,7 @@ pub union cvmx_npei_dmax_dbell {
 #[repr(C)]
 pub union cvmx_npei_dmax_ibuff_saddr {
     pub u64: u64,
-	struct cvmx_npei_dmax_ibuff_saddr_s {
+	cvmx_npei_dmax_ibuff_saddr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_37_63: u64,
         pub idle: u64,
@@ -1005,7 +1005,7 @@ pub union cvmx_npei_dmax_ibuff_saddr {
         pub reserved_37_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_dmax_ibuff_saddr_cn52xxp1 {
+	cvmx_npei_dmax_ibuff_saddr_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_36_63: u64,
         pub saddr: u64,
@@ -1021,7 +1021,7 @@ pub union cvmx_npei_dmax_ibuff_saddr {
 #[repr(C)]
 pub union cvmx_npei_dmax_naddr {
     pub u64: u64,
-	struct cvmx_npei_dmax_naddr_s {
+	cvmx_npei_dmax_naddr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_36_63: u64,
         pub addr: u64,
@@ -1035,7 +1035,7 @@ pub union cvmx_npei_dmax_naddr {
 #[repr(C)]
 pub union cvmx_npei_dma0_int_level {
     pub u64: u64,
-	struct cvmx_npei_dma0_int_level_s {
+	cvmx_npei_dma0_int_level_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub time: u64,
         pub cnt: u64,
@@ -1049,7 +1049,7 @@ pub union cvmx_npei_dma0_int_level {
 #[repr(C)]
 pub union cvmx_npei_dma1_int_level {
     pub u64: u64,
-	struct cvmx_npei_dma1_int_level_s {
+	cvmx_npei_dma1_int_level_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub time: u64,
         pub cnt: u64,
@@ -1063,7 +1063,7 @@ pub union cvmx_npei_dma1_int_level {
 #[repr(C)]
 pub union cvmx_npei_dma_cnts {
     pub u64: u64,
-	struct cvmx_npei_dma_cnts_s {
+	cvmx_npei_dma_cnts_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub dma1: u64,
         pub dma0: u64,
@@ -1077,7 +1077,7 @@ pub union cvmx_npei_dma_cnts {
 #[repr(C)]
 pub union cvmx_npei_dma_control {
     pub u64: u64,
-	struct cvmx_npei_dma_control_s {
+	cvmx_npei_dma_control_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_40_63: u64,
         pub p_32b_m: u64,
@@ -1116,7 +1116,7 @@ pub union cvmx_npei_dma_control {
         pub reserved_40_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_dma_control_cn52xxp1 {
+	cvmx_npei_dma_control_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_38_63: u64,
         pub dma3_enb: u64,
@@ -1151,7 +1151,7 @@ pub union cvmx_npei_dma_control {
         pub reserved_38_63: u64,
 // header guard omitted
     pub cn52xxp1: cvmx_npei_bist_status_cn52xxp1,
-	struct cvmx_npei_dma_control_cn56xxp1 {
+	cvmx_npei_dma_control_cn56xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_39_63: u64,
         pub dma4_enb: u64,
@@ -1193,7 +1193,7 @@ pub union cvmx_npei_dma_control {
 #[repr(C)]
 pub union cvmx_npei_dma_pcie_req_num {
     pub u64: u64,
-	struct cvmx_npei_dma_pcie_req_num_s {
+	cvmx_npei_dma_pcie_req_num_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub dma_arb: u64,
         pub reserved_53_62: u64,
@@ -1233,7 +1233,7 @@ pub union cvmx_npei_dma_pcie_req_num {
 #[repr(C)]
 pub union cvmx_npei_dma_state1 {
     pub u64: u64,
-	struct cvmx_npei_dma_state1_s {
+	cvmx_npei_dma_state1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_40_63: u64,
         pub d4_dwe: u64,
@@ -1255,7 +1255,7 @@ pub union cvmx_npei_dma_state1 {
 #[repr(C)]
 pub union cvmx_npei_dma_state1_p1 {
     pub u64: u64,
-	struct cvmx_npei_dma_state1_p1_s {
+	cvmx_npei_dma_state1_p1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_60_63: u64,
         pub d0_difst: u64,
@@ -1282,7 +1282,7 @@ pub union cvmx_npei_dma_state1_p1 {
         pub reserved_60_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_dma_state1_p1_cn52xxp1 {
+	cvmx_npei_dma_state1_p1_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_60_63: u64,
         pub d0_difst: u64,
@@ -1314,7 +1314,7 @@ pub union cvmx_npei_dma_state1_p1 {
 #[repr(C)]
 pub union cvmx_npei_dma_state2 {
     pub u64: u64,
-	struct cvmx_npei_dma_state2_s {
+	cvmx_npei_dma_state2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_28_63: u64,
         pub ndwe: u64,
@@ -1336,7 +1336,7 @@ pub union cvmx_npei_dma_state2 {
 #[repr(C)]
 pub union cvmx_npei_dma_state2_p1 {
     pub u64: u64,
-	struct cvmx_npei_dma_state2_p1_s {
+	cvmx_npei_dma_state2_p1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_45_63: u64,
         pub d0_dffst: u64,
@@ -1353,7 +1353,7 @@ pub union cvmx_npei_dma_state2_p1 {
         pub reserved_45_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_dma_state2_p1_cn52xxp1 {
+	cvmx_npei_dma_state2_p1_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_45_63: u64,
         pub d0_dffst: u64,
@@ -1375,7 +1375,7 @@ pub union cvmx_npei_dma_state2_p1 {
 #[repr(C)]
 pub union cvmx_npei_dma_state3_p1 {
     pub u64: u64,
-	struct cvmx_npei_dma_state3_p1_s {
+	cvmx_npei_dma_state3_p1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_60_63: u64,
         pub d0_drest: u64,
@@ -1395,7 +1395,7 @@ pub union cvmx_npei_dma_state3_p1 {
 #[repr(C)]
 pub union cvmx_npei_dma_state4_p1 {
     pub u64: u64,
-	struct cvmx_npei_dma_state4_p1_s {
+	cvmx_npei_dma_state4_p1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_52_63: u64,
         pub d0_dwest: u64,
@@ -1415,7 +1415,7 @@ pub union cvmx_npei_dma_state4_p1 {
 #[repr(C)]
 pub union cvmx_npei_dma_state5_p1 {
     pub u64: u64,
-	struct cvmx_npei_dma_state5_p1_s {
+	cvmx_npei_dma_state5_p1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_28_63: u64,
         pub d4_drest: u64,
@@ -1431,7 +1431,7 @@ pub union cvmx_npei_dma_state5_p1 {
 #[repr(C)]
 pub union cvmx_npei_int_a_enb {
     pub u64: u64,
-	struct cvmx_npei_int_a_enb_s {
+	cvmx_npei_int_a_enb_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_10_63: u64,
         pub pout_err: u64,
@@ -1458,7 +1458,7 @@ pub union cvmx_npei_int_a_enb {
         pub reserved_10_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_int_a_enb_cn52xxp1 {
+	cvmx_npei_int_a_enb_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_2_63: u64,
         pub dma1_cpl: u64,
@@ -1474,7 +1474,7 @@ pub union cvmx_npei_int_a_enb {
 #[repr(C)]
 pub union cvmx_npei_int_a_enb2 {
     pub u64: u64,
-	struct cvmx_npei_int_a_enb2_s {
+	cvmx_npei_int_a_enb2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_10_63: u64,
         pub pout_err: u64,
@@ -1501,7 +1501,7 @@ pub union cvmx_npei_int_a_enb2 {
         pub reserved_10_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_int_a_enb2_cn52xxp1 {
+	cvmx_npei_int_a_enb2_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_2_63: u64,
         pub dma1_cpl: u64,
@@ -1517,7 +1517,7 @@ pub union cvmx_npei_int_a_enb2 {
 #[repr(C)]
 pub union cvmx_npei_int_a_sum {
     pub u64: u64,
-	struct cvmx_npei_int_a_sum_s {
+	cvmx_npei_int_a_sum_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_10_63: u64,
         pub pout_err: u64,
@@ -1544,7 +1544,7 @@ pub union cvmx_npei_int_a_sum {
         pub reserved_10_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_int_a_sum_cn52xxp1 {
+	cvmx_npei_int_a_sum_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_2_63: u64,
         pub dma1_cpl: u64,
@@ -1560,7 +1560,7 @@ pub union cvmx_npei_int_a_sum {
 #[repr(C)]
 pub union cvmx_npei_int_enb {
     pub u64: u64,
-	struct cvmx_npei_int_enb_s {
+	cvmx_npei_int_enb_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_62_62: u64,
@@ -1693,7 +1693,7 @@ pub union cvmx_npei_int_enb {
         pub mio_inta: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_int_enb_cn52xxp1 {
+	cvmx_npei_int_enb_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_62_62: u64,
@@ -1826,7 +1826,7 @@ pub union cvmx_npei_int_enb {
         pub mio_inta: u64,
 // header guard omitted
     pub cn52xxp1: cvmx_npei_bist_status_cn52xxp1,
-	struct cvmx_npei_int_enb_cn56xxp1 {
+	cvmx_npei_int_enb_cn56xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_61_62: u64,
@@ -1962,7 +1962,7 @@ pub union cvmx_npei_int_enb {
 #[repr(C)]
 pub union cvmx_npei_int_enb2 {
     pub u64: u64,
-	struct cvmx_npei_int_enb2_s {
+	cvmx_npei_int_enb2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_62_63: u64,
         pub int_a: u64,
@@ -2093,7 +2093,7 @@ pub union cvmx_npei_int_enb2 {
         pub reserved_62_63: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_int_enb2_cn52xxp1 {
+	cvmx_npei_int_enb2_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_62_63: u64,
         pub int_a: u64,
@@ -2224,7 +2224,7 @@ pub union cvmx_npei_int_enb2 {
         pub reserved_62_63: u64,
 // header guard omitted
     pub cn52xxp1: cvmx_npei_bist_status_cn52xxp1,
-	struct cvmx_npei_int_enb2_cn56xxp1 {
+	cvmx_npei_int_enb2_cn56xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_61_63: u64,
         pub c1_ldwn: u64,
@@ -2358,7 +2358,7 @@ pub union cvmx_npei_int_enb2 {
 #[repr(C)]
 pub union cvmx_npei_int_info {
     pub u64: u64,
-	struct cvmx_npei_int_info_s {
+	cvmx_npei_int_info_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_12_63: u64,
         pub pidbof: u64,
@@ -2374,7 +2374,7 @@ pub union cvmx_npei_int_info {
 #[repr(C)]
 pub union cvmx_npei_int_sum {
     pub u64: u64,
-	struct cvmx_npei_int_sum_s {
+	cvmx_npei_int_sum_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_62_62: u64,
@@ -2507,7 +2507,7 @@ pub union cvmx_npei_int_sum {
         pub mio_inta: u64,
 // header guard omitted
     pub s: cvmx_npei_bar1_indexx_s,
-	struct cvmx_npei_int_sum_cn52xxp1 {
+	cvmx_npei_int_sum_cn52xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_62_62: u64,
@@ -2634,7 +2634,7 @@ pub union cvmx_npei_int_sum {
         pub mio_inta: u64,
 // header guard omitted
     pub cn52xxp1: cvmx_npei_bist_status_cn52xxp1,
-	struct cvmx_npei_int_sum_cn56xxp1 {
+	cvmx_npei_int_sum_cn56xxp1 {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_61_62: u64,
@@ -2764,7 +2764,7 @@ pub union cvmx_npei_int_sum {
 #[repr(C)]
 pub union cvmx_npei_int_sum2 {
     pub u64: u64,
-	struct cvmx_npei_int_sum2_s {
+	cvmx_npei_int_sum2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub mio_inta: u64,
         pub reserved_62_62: u64,
@@ -2896,7 +2896,7 @@ pub union cvmx_npei_int_sum2 {
 #[repr(C)]
 pub union cvmx_npei_last_win_rdata0 {
     pub u64: u64,
-	struct cvmx_npei_last_win_rdata0_s {
+	cvmx_npei_last_win_rdata0_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub data: u64,
 // #else (bitfield order is target-dependent)
@@ -2908,7 +2908,7 @@ pub union cvmx_npei_last_win_rdata0 {
 #[repr(C)]
 pub union cvmx_npei_last_win_rdata1 {
     pub u64: u64,
-	struct cvmx_npei_last_win_rdata1_s {
+	cvmx_npei_last_win_rdata1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub data: u64,
 // #else (bitfield order is target-dependent)
@@ -2920,7 +2920,7 @@ pub union cvmx_npei_last_win_rdata1 {
 #[repr(C)]
 pub union cvmx_npei_mem_access_ctl {
     pub u64: u64,
-	struct cvmx_npei_mem_access_ctl_s {
+	cvmx_npei_mem_access_ctl_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_14_63: u64,
         pub max_word: u64,
@@ -2936,7 +2936,7 @@ pub union cvmx_npei_mem_access_ctl {
 #[repr(C)]
 pub union cvmx_npei_mem_access_subidx {
     pub u64: u64,
-	struct cvmx_npei_mem_access_subidx_s {
+	cvmx_npei_mem_access_subidx_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_42_63: u64,
         pub zero: u64,
@@ -2968,7 +2968,7 @@ pub union cvmx_npei_mem_access_subidx {
 #[repr(C)]
 pub union cvmx_npei_msi_enb0 {
     pub u64: u64,
-	struct cvmx_npei_msi_enb0_s {
+	cvmx_npei_msi_enb0_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub enb: u64,
 // #else (bitfield order is target-dependent)
@@ -2980,7 +2980,7 @@ pub union cvmx_npei_msi_enb0 {
 #[repr(C)]
 pub union cvmx_npei_msi_enb1 {
     pub u64: u64,
-	struct cvmx_npei_msi_enb1_s {
+	cvmx_npei_msi_enb1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub enb: u64,
 // #else (bitfield order is target-dependent)
@@ -2992,7 +2992,7 @@ pub union cvmx_npei_msi_enb1 {
 #[repr(C)]
 pub union cvmx_npei_msi_enb2 {
     pub u64: u64,
-	struct cvmx_npei_msi_enb2_s {
+	cvmx_npei_msi_enb2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub enb: u64,
 // #else (bitfield order is target-dependent)
@@ -3004,7 +3004,7 @@ pub union cvmx_npei_msi_enb2 {
 #[repr(C)]
 pub union cvmx_npei_msi_enb3 {
     pub u64: u64,
-	struct cvmx_npei_msi_enb3_s {
+	cvmx_npei_msi_enb3_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub enb: u64,
 // #else (bitfield order is target-dependent)
@@ -3016,7 +3016,7 @@ pub union cvmx_npei_msi_enb3 {
 #[repr(C)]
 pub union cvmx_npei_msi_rcv0 {
     pub u64: u64,
-	struct cvmx_npei_msi_rcv0_s {
+	cvmx_npei_msi_rcv0_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub intr: u64,
 // #else (bitfield order is target-dependent)
@@ -3028,7 +3028,7 @@ pub union cvmx_npei_msi_rcv0 {
 #[repr(C)]
 pub union cvmx_npei_msi_rcv1 {
     pub u64: u64,
-	struct cvmx_npei_msi_rcv1_s {
+	cvmx_npei_msi_rcv1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub intr: u64,
 // #else (bitfield order is target-dependent)
@@ -3040,7 +3040,7 @@ pub union cvmx_npei_msi_rcv1 {
 #[repr(C)]
 pub union cvmx_npei_msi_rcv2 {
     pub u64: u64,
-	struct cvmx_npei_msi_rcv2_s {
+	cvmx_npei_msi_rcv2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub intr: u64,
 // #else (bitfield order is target-dependent)
@@ -3052,7 +3052,7 @@ pub union cvmx_npei_msi_rcv2 {
 #[repr(C)]
 pub union cvmx_npei_msi_rcv3 {
     pub u64: u64,
-	struct cvmx_npei_msi_rcv3_s {
+	cvmx_npei_msi_rcv3_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub intr: u64,
 // #else (bitfield order is target-dependent)
@@ -3064,7 +3064,7 @@ pub union cvmx_npei_msi_rcv3 {
 #[repr(C)]
 pub union cvmx_npei_msi_rd_map {
     pub u64: u64,
-	struct cvmx_npei_msi_rd_map_s {
+	cvmx_npei_msi_rd_map_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_16_63: u64,
         pub rd_int: u64,
@@ -3080,7 +3080,7 @@ pub union cvmx_npei_msi_rd_map {
 #[repr(C)]
 pub union cvmx_npei_msi_w1c_enb0 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1c_enb0_s {
+	cvmx_npei_msi_w1c_enb0_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub clr: u64,
 // #else (bitfield order is target-dependent)
@@ -3092,7 +3092,7 @@ pub union cvmx_npei_msi_w1c_enb0 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1c_enb1 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1c_enb1_s {
+	cvmx_npei_msi_w1c_enb1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub clr: u64,
 // #else (bitfield order is target-dependent)
@@ -3104,7 +3104,7 @@ pub union cvmx_npei_msi_w1c_enb1 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1c_enb2 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1c_enb2_s {
+	cvmx_npei_msi_w1c_enb2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub clr: u64,
 // #else (bitfield order is target-dependent)
@@ -3116,7 +3116,7 @@ pub union cvmx_npei_msi_w1c_enb2 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1c_enb3 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1c_enb3_s {
+	cvmx_npei_msi_w1c_enb3_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub clr: u64,
 // #else (bitfield order is target-dependent)
@@ -3128,7 +3128,7 @@ pub union cvmx_npei_msi_w1c_enb3 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1s_enb0 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1s_enb0_s {
+	cvmx_npei_msi_w1s_enb0_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub set: u64,
 // #else (bitfield order is target-dependent)
@@ -3140,7 +3140,7 @@ pub union cvmx_npei_msi_w1s_enb0 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1s_enb1 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1s_enb1_s {
+	cvmx_npei_msi_w1s_enb1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub set: u64,
 // #else (bitfield order is target-dependent)
@@ -3152,7 +3152,7 @@ pub union cvmx_npei_msi_w1s_enb1 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1s_enb2 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1s_enb2_s {
+	cvmx_npei_msi_w1s_enb2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub set: u64,
 // #else (bitfield order is target-dependent)
@@ -3164,7 +3164,7 @@ pub union cvmx_npei_msi_w1s_enb2 {
 #[repr(C)]
 pub union cvmx_npei_msi_w1s_enb3 {
     pub u64: u64,
-	struct cvmx_npei_msi_w1s_enb3_s {
+	cvmx_npei_msi_w1s_enb3_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub set: u64,
 // #else (bitfield order is target-dependent)
@@ -3176,7 +3176,7 @@ pub union cvmx_npei_msi_w1s_enb3 {
 #[repr(C)]
 pub union cvmx_npei_msi_wr_map {
     pub u64: u64,
-	struct cvmx_npei_msi_wr_map_s {
+	cvmx_npei_msi_wr_map_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_16_63: u64,
         pub ciu_int: u64,
@@ -3192,7 +3192,7 @@ pub union cvmx_npei_msi_wr_map {
 #[repr(C)]
 pub union cvmx_npei_pcie_credit_cnt {
     pub u64: u64,
-	struct cvmx_npei_pcie_credit_cnt_s {
+	cvmx_npei_pcie_credit_cnt_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_48_63: u64,
         pub p1_ccnt: u64,
@@ -3216,7 +3216,7 @@ pub union cvmx_npei_pcie_credit_cnt {
 #[repr(C)]
 pub union cvmx_npei_pcie_msi_rcv {
     pub u64: u64,
-	struct cvmx_npei_pcie_msi_rcv_s {
+	cvmx_npei_pcie_msi_rcv_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_8_63: u64,
         pub intr: u64,
@@ -3230,7 +3230,7 @@ pub union cvmx_npei_pcie_msi_rcv {
 #[repr(C)]
 pub union cvmx_npei_pcie_msi_rcv_b1 {
     pub u64: u64,
-	struct cvmx_npei_pcie_msi_rcv_b1_s {
+	cvmx_npei_pcie_msi_rcv_b1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_16_63: u64,
         pub intr: u64,
@@ -3246,7 +3246,7 @@ pub union cvmx_npei_pcie_msi_rcv_b1 {
 #[repr(C)]
 pub union cvmx_npei_pcie_msi_rcv_b2 {
     pub u64: u64,
-	struct cvmx_npei_pcie_msi_rcv_b2_s {
+	cvmx_npei_pcie_msi_rcv_b2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_24_63: u64,
         pub intr: u64,
@@ -3262,7 +3262,7 @@ pub union cvmx_npei_pcie_msi_rcv_b2 {
 #[repr(C)]
 pub union cvmx_npei_pcie_msi_rcv_b3 {
     pub u64: u64,
-	struct cvmx_npei_pcie_msi_rcv_b3_s {
+	cvmx_npei_pcie_msi_rcv_b3_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub intr: u64,
@@ -3278,7 +3278,7 @@ pub union cvmx_npei_pcie_msi_rcv_b3 {
 #[repr(C)]
 pub union cvmx_npei_pktx_cnts {
     pub u64: u64,
-	struct cvmx_npei_pktx_cnts_s {
+	cvmx_npei_pktx_cnts_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_54_63: u64,
         pub timer: u64,
@@ -3294,7 +3294,7 @@ pub union cvmx_npei_pktx_cnts {
 #[repr(C)]
 pub union cvmx_npei_pktx_in_bp {
     pub u64: u64,
-	struct cvmx_npei_pktx_in_bp_s {
+	cvmx_npei_pktx_in_bp_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub wmark: u64,
         pub cnt: u64,
@@ -3308,7 +3308,7 @@ pub union cvmx_npei_pktx_in_bp {
 #[repr(C)]
 pub union cvmx_npei_pktx_instr_baddr {
     pub u64: u64,
-	struct cvmx_npei_pktx_instr_baddr_s {
+	cvmx_npei_pktx_instr_baddr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub addr: u64,
         pub reserved_0_2: u64,
@@ -3322,7 +3322,7 @@ pub union cvmx_npei_pktx_instr_baddr {
 #[repr(C)]
 pub union cvmx_npei_pktx_instr_baoff_dbell {
     pub u64: u64,
-	struct cvmx_npei_pktx_instr_baoff_dbell_s {
+	cvmx_npei_pktx_instr_baoff_dbell_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub aoff: u64,
         pub dbell: u64,
@@ -3336,7 +3336,7 @@ pub union cvmx_npei_pktx_instr_baoff_dbell {
 #[repr(C)]
 pub union cvmx_npei_pktx_instr_fifo_rsize {
     pub u64: u64,
-	struct cvmx_npei_pktx_instr_fifo_rsize_s {
+	cvmx_npei_pktx_instr_fifo_rsize_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub max: u64,
         pub rrp: u64,
@@ -3356,7 +3356,7 @@ pub union cvmx_npei_pktx_instr_fifo_rsize {
 #[repr(C)]
 pub union cvmx_npei_pktx_instr_header {
     pub u64: u64,
-	struct cvmx_npei_pktx_instr_header_s {
+	cvmx_npei_pktx_instr_header_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_44_63: u64,
         pub pbp: u64,
@@ -3392,7 +3392,7 @@ pub union cvmx_npei_pktx_instr_header {
 #[repr(C)]
 pub union cvmx_npei_pktx_slist_baddr {
     pub u64: u64,
-	struct cvmx_npei_pktx_slist_baddr_s {
+	cvmx_npei_pktx_slist_baddr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub addr: u64,
         pub reserved_0_3: u64,
@@ -3406,7 +3406,7 @@ pub union cvmx_npei_pktx_slist_baddr {
 #[repr(C)]
 pub union cvmx_npei_pktx_slist_baoff_dbell {
     pub u64: u64,
-	struct cvmx_npei_pktx_slist_baoff_dbell_s {
+	cvmx_npei_pktx_slist_baoff_dbell_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub aoff: u64,
         pub dbell: u64,
@@ -3420,7 +3420,7 @@ pub union cvmx_npei_pktx_slist_baoff_dbell {
 #[repr(C)]
 pub union cvmx_npei_pktx_slist_fifo_rsize {
     pub u64: u64,
-	struct cvmx_npei_pktx_slist_fifo_rsize_s {
+	cvmx_npei_pktx_slist_fifo_rsize_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub rsize: u64,
@@ -3434,7 +3434,7 @@ pub union cvmx_npei_pktx_slist_fifo_rsize {
 #[repr(C)]
 pub union cvmx_npei_pkt_cnt_int {
     pub u64: u64,
-	struct cvmx_npei_pkt_cnt_int_s {
+	cvmx_npei_pkt_cnt_int_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub port: u64,
@@ -3448,7 +3448,7 @@ pub union cvmx_npei_pkt_cnt_int {
 #[repr(C)]
 pub union cvmx_npei_pkt_cnt_int_enb {
     pub u64: u64,
-	struct cvmx_npei_pkt_cnt_int_enb_s {
+	cvmx_npei_pkt_cnt_int_enb_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub port: u64,
@@ -3462,7 +3462,7 @@ pub union cvmx_npei_pkt_cnt_int_enb {
 #[repr(C)]
 pub union cvmx_npei_pkt_data_out_es {
     pub u64: u64,
-	struct cvmx_npei_pkt_data_out_es_s {
+	cvmx_npei_pkt_data_out_es_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub es: u64,
 // #else (bitfield order is target-dependent)
@@ -3474,7 +3474,7 @@ pub union cvmx_npei_pkt_data_out_es {
 #[repr(C)]
 pub union cvmx_npei_pkt_data_out_ns {
     pub u64: u64,
-	struct cvmx_npei_pkt_data_out_ns_s {
+	cvmx_npei_pkt_data_out_ns_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub nsr: u64,
@@ -3488,7 +3488,7 @@ pub union cvmx_npei_pkt_data_out_ns {
 #[repr(C)]
 pub union cvmx_npei_pkt_data_out_ror {
     pub u64: u64,
-	struct cvmx_npei_pkt_data_out_ror_s {
+	cvmx_npei_pkt_data_out_ror_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub ror: u64,
@@ -3502,7 +3502,7 @@ pub union cvmx_npei_pkt_data_out_ror {
 #[repr(C)]
 pub union cvmx_npei_pkt_dpaddr {
     pub u64: u64,
-	struct cvmx_npei_pkt_dpaddr_s {
+	cvmx_npei_pkt_dpaddr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub dptr: u64,
@@ -3516,7 +3516,7 @@ pub union cvmx_npei_pkt_dpaddr {
 #[repr(C)]
 pub union cvmx_npei_pkt_in_bp {
     pub u64: u64,
-	struct cvmx_npei_pkt_in_bp_s {
+	cvmx_npei_pkt_in_bp_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub bp: u64,
@@ -3530,7 +3530,7 @@ pub union cvmx_npei_pkt_in_bp {
 #[repr(C)]
 pub union cvmx_npei_pkt_in_donex_cnts {
     pub u64: u64,
-	struct cvmx_npei_pkt_in_donex_cnts_s {
+	cvmx_npei_pkt_in_donex_cnts_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub cnt: u64,
@@ -3544,7 +3544,7 @@ pub union cvmx_npei_pkt_in_donex_cnts {
 #[repr(C)]
 pub union cvmx_npei_pkt_in_instr_counts {
     pub u64: u64,
-	struct cvmx_npei_pkt_in_instr_counts_s {
+	cvmx_npei_pkt_in_instr_counts_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub wr_cnt: u64,
         pub rd_cnt: u64,
@@ -3558,7 +3558,7 @@ pub union cvmx_npei_pkt_in_instr_counts {
 #[repr(C)]
 pub union cvmx_npei_pkt_in_pcie_port {
     pub u64: u64,
-	struct cvmx_npei_pkt_in_pcie_port_s {
+	cvmx_npei_pkt_in_pcie_port_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub pp: u64,
 // #else (bitfield order is target-dependent)
@@ -3570,7 +3570,7 @@ pub union cvmx_npei_pkt_in_pcie_port {
 #[repr(C)]
 pub union cvmx_npei_pkt_input_control {
     pub u64: u64,
-	struct cvmx_npei_pkt_input_control_s {
+	cvmx_npei_pkt_input_control_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_23_63: u64,
         pub pkt_rr: u64,
@@ -3600,7 +3600,7 @@ pub union cvmx_npei_pkt_input_control {
 #[repr(C)]
 pub union cvmx_npei_pkt_instr_enb {
     pub u64: u64,
-	struct cvmx_npei_pkt_instr_enb_s {
+	cvmx_npei_pkt_instr_enb_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub enb: u64,
@@ -3614,7 +3614,7 @@ pub union cvmx_npei_pkt_instr_enb {
 #[repr(C)]
 pub union cvmx_npei_pkt_instr_rd_size {
     pub u64: u64,
-	struct cvmx_npei_pkt_instr_rd_size_s {
+	cvmx_npei_pkt_instr_rd_size_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub rdsize: u64,
 // #else (bitfield order is target-dependent)
@@ -3626,7 +3626,7 @@ pub union cvmx_npei_pkt_instr_rd_size {
 #[repr(C)]
 pub union cvmx_npei_pkt_instr_size {
     pub u64: u64,
-	struct cvmx_npei_pkt_instr_size_s {
+	cvmx_npei_pkt_instr_size_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub is_64b: u64,
@@ -3640,7 +3640,7 @@ pub union cvmx_npei_pkt_instr_size {
 #[repr(C)]
 pub union cvmx_npei_pkt_int_levels {
     pub u64: u64,
-	struct cvmx_npei_pkt_int_levels_s {
+	cvmx_npei_pkt_int_levels_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_54_63: u64,
         pub time: u64,
@@ -3656,7 +3656,7 @@ pub union cvmx_npei_pkt_int_levels {
 #[repr(C)]
 pub union cvmx_npei_pkt_iptr {
     pub u64: u64,
-	struct cvmx_npei_pkt_iptr_s {
+	cvmx_npei_pkt_iptr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub iptr: u64,
@@ -3670,7 +3670,7 @@ pub union cvmx_npei_pkt_iptr {
 #[repr(C)]
 pub union cvmx_npei_pkt_out_bmode {
     pub u64: u64,
-	struct cvmx_npei_pkt_out_bmode_s {
+	cvmx_npei_pkt_out_bmode_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub bmode: u64,
@@ -3684,7 +3684,7 @@ pub union cvmx_npei_pkt_out_bmode {
 #[repr(C)]
 pub union cvmx_npei_pkt_out_enb {
     pub u64: u64,
-	struct cvmx_npei_pkt_out_enb_s {
+	cvmx_npei_pkt_out_enb_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub enb: u64,
@@ -3698,7 +3698,7 @@ pub union cvmx_npei_pkt_out_enb {
 #[repr(C)]
 pub union cvmx_npei_pkt_output_wmark {
     pub u64: u64,
-	struct cvmx_npei_pkt_output_wmark_s {
+	cvmx_npei_pkt_output_wmark_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub wmark: u64,
@@ -3712,7 +3712,7 @@ pub union cvmx_npei_pkt_output_wmark {
 #[repr(C)]
 pub union cvmx_npei_pkt_pcie_port {
     pub u64: u64,
-	struct cvmx_npei_pkt_pcie_port_s {
+	cvmx_npei_pkt_pcie_port_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub pp: u64,
 // #else (bitfield order is target-dependent)
@@ -3724,7 +3724,7 @@ pub union cvmx_npei_pkt_pcie_port {
 #[repr(C)]
 pub union cvmx_npei_pkt_port_in_rst {
     pub u64: u64,
-	struct cvmx_npei_pkt_port_in_rst_s {
+	cvmx_npei_pkt_port_in_rst_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub in_rst: u64,
         pub out_rst: u64,
@@ -3738,7 +3738,7 @@ pub union cvmx_npei_pkt_port_in_rst {
 #[repr(C)]
 pub union cvmx_npei_pkt_slist_es {
     pub u64: u64,
-	struct cvmx_npei_pkt_slist_es_s {
+	cvmx_npei_pkt_slist_es_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub es: u64,
 // #else (bitfield order is target-dependent)
@@ -3750,7 +3750,7 @@ pub union cvmx_npei_pkt_slist_es {
 #[repr(C)]
 pub union cvmx_npei_pkt_slist_id_size {
     pub u64: u64,
-	struct cvmx_npei_pkt_slist_id_size_s {
+	cvmx_npei_pkt_slist_id_size_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_23_63: u64,
         pub isize: u64,
@@ -3766,7 +3766,7 @@ pub union cvmx_npei_pkt_slist_id_size {
 #[repr(C)]
 pub union cvmx_npei_pkt_slist_ns {
     pub u64: u64,
-	struct cvmx_npei_pkt_slist_ns_s {
+	cvmx_npei_pkt_slist_ns_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub nsr: u64,
@@ -3780,7 +3780,7 @@ pub union cvmx_npei_pkt_slist_ns {
 #[repr(C)]
 pub union cvmx_npei_pkt_slist_ror {
     pub u64: u64,
-	struct cvmx_npei_pkt_slist_ror_s {
+	cvmx_npei_pkt_slist_ror_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub ror: u64,
@@ -3794,7 +3794,7 @@ pub union cvmx_npei_pkt_slist_ror {
 #[repr(C)]
 pub union cvmx_npei_pkt_time_int {
     pub u64: u64,
-	struct cvmx_npei_pkt_time_int_s {
+	cvmx_npei_pkt_time_int_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub port: u64,
@@ -3808,7 +3808,7 @@ pub union cvmx_npei_pkt_time_int {
 #[repr(C)]
 pub union cvmx_npei_pkt_time_int_enb {
     pub u64: u64,
-	struct cvmx_npei_pkt_time_int_enb_s {
+	cvmx_npei_pkt_time_int_enb_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub port: u64,
@@ -3822,7 +3822,7 @@ pub union cvmx_npei_pkt_time_int_enb {
 #[repr(C)]
 pub union cvmx_npei_rsl_int_blocks {
     pub u64: u64,
-	struct cvmx_npei_rsl_int_blocks_s {
+	cvmx_npei_rsl_int_blocks_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_31_63: u64,
         pub iob: u64,
@@ -3890,7 +3890,7 @@ pub union cvmx_npei_rsl_int_blocks {
 #[repr(C)]
 pub union cvmx_npei_scratch_1 {
     pub u64: u64,
-	struct cvmx_npei_scratch_1_s {
+	cvmx_npei_scratch_1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub data: u64,
 // #else (bitfield order is target-dependent)
@@ -3902,7 +3902,7 @@ pub union cvmx_npei_scratch_1 {
 #[repr(C)]
 pub union cvmx_npei_state1 {
     pub u64: u64,
-	struct cvmx_npei_state1_s {
+	cvmx_npei_state1_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub cpl1: u64,
         pub cpl0: u64,
@@ -3920,7 +3920,7 @@ pub union cvmx_npei_state1 {
 #[repr(C)]
 pub union cvmx_npei_state2 {
     pub u64: u64,
-	struct cvmx_npei_state2_s {
+	cvmx_npei_state2_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_48_63: u64,
         pub npei: u64,
@@ -3944,7 +3944,7 @@ pub union cvmx_npei_state2 {
 #[repr(C)]
 pub union cvmx_npei_state3 {
     pub u64: u64,
-	struct cvmx_npei_state3_s {
+	cvmx_npei_state3_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_56_63: u64,
         pub psm1: u64,
@@ -3964,7 +3964,7 @@ pub union cvmx_npei_state3 {
 #[repr(C)]
 pub union cvmx_npei_win_rd_addr {
     pub u64: u64,
-	struct cvmx_npei_win_rd_addr_s {
+	cvmx_npei_win_rd_addr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_51_63: u64,
         pub ld_cmd: u64,
@@ -3982,7 +3982,7 @@ pub union cvmx_npei_win_rd_addr {
 #[repr(C)]
 pub union cvmx_npei_win_rd_data {
     pub u64: u64,
-	struct cvmx_npei_win_rd_data_s {
+	cvmx_npei_win_rd_data_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub rd_data: u64,
 // #else (bitfield order is target-dependent)
@@ -3994,7 +3994,7 @@ pub union cvmx_npei_win_rd_data {
 #[repr(C)]
 pub union cvmx_npei_win_wr_addr {
     pub u64: u64,
-	struct cvmx_npei_win_wr_addr_s {
+	cvmx_npei_win_wr_addr_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_49_63: u64,
         pub iobit: u64,
@@ -4012,7 +4012,7 @@ pub union cvmx_npei_win_wr_addr {
 #[repr(C)]
 pub union cvmx_npei_win_wr_data {
     pub u64: u64,
-	struct cvmx_npei_win_wr_data_s {
+	cvmx_npei_win_wr_data_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub wr_data: u64,
 // #else (bitfield order is target-dependent)
@@ -4024,7 +4024,7 @@ pub union cvmx_npei_win_wr_data {
 #[repr(C)]
 pub union cvmx_npei_win_wr_mask {
     pub u64: u64,
-	struct cvmx_npei_win_wr_mask_s {
+	cvmx_npei_win_wr_mask_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_8_63: u64,
         pub wr_mask: u64,
@@ -4038,7 +4038,7 @@ pub union cvmx_npei_win_wr_mask {
 #[repr(C)]
 pub union cvmx_npei_window_ctl {
     pub u64: u64,
-	struct cvmx_npei_window_ctl_s {
+	cvmx_npei_window_ctl_s {
 // #ifdef __BIG_ENDIAN_BITFIELD
         pub reserved_32_63: u64,
         pub time: u64,

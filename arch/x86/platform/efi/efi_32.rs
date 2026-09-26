@@ -133,13 +133,13 @@ pub unsafe fn efi_runtime_update_mappings() {
         let mut md: *mut efi_memory_desc_t;
 
         /* Make EFI runtime service code area executable */
-        for_each_efi_memory_desc!(md) {
+        for_each_efi_memory_desc!(md, {
             if (*md).type_ != EFI_RUNTIME_SERVICES_CODE {
                 continue;
             }
 
             set_memory_x((*md).virt_addr as usize, (*md).num_pages);
-        }
+        });
     }
 }
 

@@ -22,7 +22,6 @@
  */
 
 // Build-time include guard: GFX_7_2_SH_MASK_H
-#define GFX_7_2_SH_MASK_H
 
 pub const CB_BLEND_RED__BLEND_RED_MASK: u32 = 0xffffffffu32;
 pub const CB_BLEND_RED__BLEND_RED__SHIFT: u32 = 0x0u32;

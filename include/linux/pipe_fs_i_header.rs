@@ -7,7 +7,7 @@ pub const PIPE_BUF_FLAG_GIFT: u32 = 0x04;
 pub const PIPE_BUF_FLAG_PACKET: u32 = 0x08;
 pub const PIPE_BUF_FLAG_CAN_MERGE: u32 = 0x10;
 pub const PIPE_BUF_FLAG_WHOLE: u32 = 0x20;
-#[cfg(feature = "CONFIG_WATCH_QUEUE")]
+#[cfg(CONFIG_WATCH_QUEUE)]
 pub const PIPE_BUF_FLAG_LOSS: u32 = 0x40;
 
 pub const PIPE_PREALLOC_MAX: usize = 8;
@@ -31,9 +31,9 @@ pub struct pipe_buffer {
     pub private: core::ffi::c_ulong,
 }
 
-#[cfg(feature = "CONFIG_64BIT")]
+#[cfg(CONFIG_64BIT)]
 pub type pipe_index_t = core::ffi::c_uint;
-#[cfg(not(feature = "CONFIG_64BIT"))]
+#[cfg(not(CONFIG_64BIT))]
 pub type pipe_index_t = core::ffi::c_ushort;
 
 #[repr(C)]
@@ -69,14 +69,14 @@ pub struct pipe_inode_info {
     pub r_counter: core::ffi::c_uint,
     pub w_counter: core::ffi::c_uint,
     pub pseudo_edgetrigger: bool,
-    #[cfg(feature = "CONFIG_WATCH_QUEUE")]
+    #[cfg(CONFIG_WATCH_QUEUE)]
     pub note_loss: bool,
     pub prealloc: anon_pipe_prealloc,
     pub fasync_readers: *mut fasync_struct,
     pub fasync_writers: *mut fasync_struct,
     pub bufs: *mut pipe_buffer,
     pub user: *mut user_struct,
-    #[cfg(feature = "CONFIG_WATCH_QUEUE")]
+    #[cfg(CONFIG_WATCH_QUEUE)]
     pub watch_queue: *mut watch_queue,
 }
 
@@ -90,9 +90,9 @@ pub struct pipe_buf_operations {
 
 #[inline]
 pub unsafe fn pipe_has_watch_queue(pipe: *const pipe_inode_info) -> bool {
-    #[cfg(feature = "CONFIG_WATCH_QUEUE")]
+    #[cfg(CONFIG_WATCH_QUEUE)]
     { !(*pipe).watch_queue.is_null() }
-    #[cfg(not(feature = "CONFIG_WATCH_QUEUE"))]
+    #[cfg(not(CONFIG_WATCH_QUEUE))]
     { false }
 }
 

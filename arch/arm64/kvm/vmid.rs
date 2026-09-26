@@ -39,7 +39,7 @@ unsafe fn flush_context() {
 
     bitmap_zero(vmid_map, num_user_vmids());
 
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         vmid = atomic64_xchg_relaxed(per_cpu_ptr(&mut active_vmids, cpu), 0);
 
         /* Preserve reserved VMID */
@@ -48,7 +48,7 @@ unsafe fn flush_context() {
         }
         __set_bit(vmid2idx(vmid), vmid_map);
         per_cpu_write(&mut reserved_vmids, cpu, vmid);
-    }
+    });
 
     /*
      * Unlike ASID allocator, we expect less frequent rollover in
@@ -69,12 +69,12 @@ unsafe fn check_update_reserved_vmid(vmid: u64, newvmid: u64) -> bool {
      * and update to use newvmid (i.e. the same VMID in the current
      * generation).
      */
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         if per_cpu_read(&reserved_vmids, cpu) == vmid {
             hit = true;
             per_cpu_write(&mut reserved_vmids, cpu, newvmid);
         }
-    }
+    });
     hit
 }
 

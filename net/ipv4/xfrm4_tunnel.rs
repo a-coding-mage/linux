@@ -132,7 +132,7 @@ static XFRM_TUNNEL_HANDLER: xfrm_tunnel = xfrm_tunnel {
 };
 
 // Preserved from #if IS_ENABLED(CONFIG_IPV6).
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 static XFRM64_TUNNEL_HANDLER: xfrm_tunnel = xfrm_tunnel {
     handler: Some(xfrm_tunnel_rcv),
     err_handler: Some(xfrm_tunnel_err),
@@ -152,7 +152,7 @@ unsafe extern "C" fn ipip_init() -> c_int {
     }
 
     // Preserved from #if IS_ENABLED(CONFIG_IPV6).
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     if xfrm4_tunnel_register(&XFRM64_TUNNEL_HANDLER, AF_INET6) != 0 {
         pr_info(c"%s: can't add xfrm handler for AF_INET6\n".as_ptr(), c"ipip_init".as_ptr());
         xfrm4_tunnel_deregister(&XFRM_TUNNEL_HANDLER, AF_INET);
@@ -164,7 +164,7 @@ unsafe extern "C" fn ipip_init() -> c_int {
 
 unsafe extern "C" fn ipip_fini() {
     // Preserved from #if IS_ENABLED(CONFIG_IPV6).
-    #[cfg(feature = "CONFIG_IPV6")]
+    #[cfg(CONFIG_IPV6)]
     if xfrm4_tunnel_deregister(&XFRM64_TUNNEL_HANDLER, AF_INET6) != 0 {
         pr_info(c"%s: can't remove xfrm handler for AF_INET6\n".as_ptr(), c"ipip_fini".as_ptr());
     }

@@ -62,25 +62,25 @@ static mut m527x_clk_lookup: [ClkLookup; 13] = [
 unsafe fn m527x_qspi_init() {
     // CONFIG_SPI_COLDFIRE_QSPI and CONFIG_M5271/CONFIG_M5275 are build-time
     // conditions from the C source and are intentionally preserved here.
-    #[cfg(feature = "CONFIG_M5271")]
+    #[cfg(CONFIG_M5271)]
     {
         mcf_write8(0x1f, MCFGPIO_PAR_QSPI);
         let mut par = mcf_read16(MCFGPIO_PAR_TIMER);
         par &= 0x3f3f;
         mcf_write16(par, MCFGPIO_PAR_TIMER);
     }
-    #[cfg(feature = "CONFIG_M5275")]
+    #[cfg(CONFIG_M5275)]
     mcf_write16(0x003e, MCFGPIO_PAR_QSPI);
 }
 
 unsafe fn m527x_i2c_init() {
-    #[cfg(feature = "CONFIG_M5271")]
+    #[cfg(CONFIG_M5271)]
     {
         let mut par = mcf_read8(MCFGPIO_PAR_FECI2C);
         par |= 0x0f;
         mcf_write8(par, MCFGPIO_PAR_FECI2C);
     }
-    #[cfg(feature = "CONFIG_M5275")]
+    #[cfg(CONFIG_M5275)]
     {
         let mut par = mcf_read16(MCFGPIO_PAR_FECI2C);
         par |= 0x0f;
@@ -97,12 +97,12 @@ unsafe fn m527x_uarts_init() {
 
 unsafe fn m527x_fec_init() {
     /* Set multi-function pins to ethernet mode for fec0 */
-    #[cfg(feature = "CONFIG_M5271")]
+    #[cfg(CONFIG_M5271)]
     {
         let v = mcf_read8(MCFGPIO_PAR_FECI2C);
         mcf_write8(v | 0xf0, MCFGPIO_PAR_FECI2C);
     }
-    #[cfg(not(feature = "CONFIG_M5271"))]
+    #[cfg(not(CONFIG_M5271))]
     {
         let mut par = mcf_read16(MCFGPIO_PAR_FECI2C);
         mcf_write16(par | 0xf00, MCFGPIO_PAR_FECI2C);

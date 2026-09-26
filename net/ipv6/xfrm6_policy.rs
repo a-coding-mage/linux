@@ -69,7 +69,7 @@ unsafe fn xfrm6_get_saddr(
     err = ipv6_dev_get_saddr(
         dev_net(dev),
         dev,
-        &(*params).daddr->in6,
+        (*&(*params).daddr).in6,
         0,
         &mut (*saddr).in6,
     );

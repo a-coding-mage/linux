@@ -8,7 +8,7 @@
 // Dependency supplied by the translated taskstats header and kernel types:
 // `user_namespace`, `pid_namespace`, `taskstats`, and `task_struct`.
 
-#[cfg(feature = "CONFIG_TASKSTATS")]
+#[cfg(CONFIG_TASKSTATS)]
 extern "C" {
     pub fn bacct_add_tsk(
         user_ns: *mut user_namespace,
@@ -18,7 +18,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_TASKSTATS"))]
+#[cfg(not(CONFIG_TASKSTATS))]
 #[inline]
 pub unsafe fn bacct_add_tsk(
     _user_ns: *mut user_namespace,
@@ -28,7 +28,7 @@ pub unsafe fn bacct_add_tsk(
 ) {
 }
 
-#[cfg(feature = "CONFIG_TASK_XACCT")]
+#[cfg(CONFIG_TASK_XACCT)]
 extern "C" {
     pub fn xacct_add_tsk(stats: *mut taskstats, p: *mut task_struct);
     pub fn acct_update_integrals(tsk: *mut task_struct);
@@ -36,19 +36,19 @@ extern "C" {
     pub fn acct_clear_integrals(tsk: *mut task_struct);
 }
 
-#[cfg(not(feature = "CONFIG_TASK_XACCT"))]
+#[cfg(not(CONFIG_TASK_XACCT))]
 #[inline]
 pub unsafe fn xacct_add_tsk(_stats: *mut taskstats, _p: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_TASK_XACCT"))]
+#[cfg(not(CONFIG_TASK_XACCT))]
 #[inline]
 pub unsafe fn acct_update_integrals(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_TASK_XACCT"))]
+#[cfg(not(CONFIG_TASK_XACCT))]
 #[inline]
 pub unsafe fn acct_account_cputime(_tsk: *mut task_struct) {}
 
-#[cfg(not(feature = "CONFIG_TASK_XACCT"))]
+#[cfg(not(CONFIG_TASK_XACCT))]
 #[inline]
 pub unsafe fn acct_clear_integrals(_tsk: *mut task_struct) {}
 

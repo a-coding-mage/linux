@@ -40,7 +40,7 @@ pub unsafe fn omap2xxx_clk_get_core_rate() -> c_ulong {
     core_clk as c_ulong
 }
 
-static unsafe fn omap2_dpllcore_round_rate(target_rate: c_ulong) -> i64 {
+unsafe fn omap2_dpllcore_round_rate(target_rate: c_ulong) -> i64 {
     let high: u32;
     let low: u32;
     let core_clk_src: u32;

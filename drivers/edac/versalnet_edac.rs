@@ -93,11 +93,11 @@ const ECCR1_ERR_STATUS: usize = 8; const ECCR1_ADDR_LO: usize = 9; const ECCR1_A
 
 extern "C" {
     fn get_random_u32() -> u32;
-    fn cdx_mcdi_rpc(*mut cdx_mcdi,u32,*mut u8,usize,*mut u8,usize,*mut usize)->i32;
-    fn cdx_mcdi_init(*mut cdx_mcdi)->i32; fn cdx_mcdi_finish(*mut cdx_mcdi);
-    fn rpmsg_send(*mut rpmsg_endpoint,*const c_void,usize)->i32;
-    fn cdx_mcdi_process_cmd(*mut cdx_mcdi,*mut cdx_dword,i32);
-    fn edac_mc_handle_error(u32,*mut mem_ctl_info,u32,u64,u64,u64,u32,u32,i32,*const u8,*const u8);
+    fn cdx_mcdi_rpc(_: *mut cdx_mcdi,_: u32,_: *mut u8,_: usize,_: *mut u8,_: usize,_: *mut usize)->i32;
+    fn cdx_mcdi_init(_: *mut cdx_mcdi)->i32; fn cdx_mcdi_finish(_: *mut cdx_mcdi);
+    fn rpmsg_send(_: *mut rpmsg_endpoint,_: *const c_void,_: usize)->i32;
+    fn cdx_mcdi_process_cmd(_: *mut cdx_mcdi,_: *mut cdx_dword,_: i32);
+    fn edac_mc_handle_error(_: u32,_: *mut mem_ctl_info,_: u32,_: u64,_: u64,_: u64,_: u32,_: u32,_: i32,_: *const u8,_: *const u8);
 }
 
 #[inline] fn field_get(mask: u32, v: u32) -> u32 { (v & mask) >> mask.trailing_zeros() }

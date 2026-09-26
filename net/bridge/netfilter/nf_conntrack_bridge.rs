@@ -36,10 +36,10 @@ unsafe fn nf_br_ip_fragment(
         let mut frag: *mut sk_buff;
         if first_len - hlen > mtu { goto_blackhole(skb); return 0; }
         if unsafe { skb_cloned(skb) || skb_headroom(skb) < ll_rs } { goto_slow_path(skb); }
-        unsafe { skb_walk_frags(skb, frag) {
+        unsafe { skb_walk_frags!(skb, frag, {
             if (*frag).len > mtu { goto_blackhole(skb); return 0; }
             if skb_shared(frag) || skb_headroom(frag) < hlen + ll_rs { goto_slow_path(skb); }
-        }}
+        });}
         unsafe { ip_fraglist_init(skb, iph, hlen, &mut iter); }
         loop {
             if !iter.frag { unsafe { ip_fraglist_prepare(skb, &mut iter); } }

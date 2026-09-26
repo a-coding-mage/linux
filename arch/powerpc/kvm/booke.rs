@@ -40,10 +40,10 @@ pub struct kvm_vcpu { pub arch: kvm_arch, pub run: *mut kvm_run, pub kvm: *mut k
 #[repr(C)] pub struct kvmppc_pte { pub eaddr:u64,pub raddr:u64,pub vpage:u64,pub may_read:bool,pub may_write:bool,pub may_execute:bool }
 
 extern "C" {
-    fn kvmppc_get_gpr(*mut kvm_vcpu, i32)->u64; fn kvmppc_set_gpr(*mut kvm_vcpu,i32,u64);
-    fn kvmppc_set_msr(*mut kvm_vcpu,u32); fn kvmppc_mmu_msr_notify(*mut kvm_vcpu,u32);
-    fn kvmppc_get_srr0(*mut kvm_vcpu)->u64; fn kvmppc_get_srr1(*mut kvm_vcpu)->u64;
-    fn kvmppc_core_vcpu_translate(*mut kvm_vcpu,*mut kvm_translation)->i32;
+    fn kvmppc_get_gpr(_: *mut kvm_vcpu, _: i32)->u64; fn kvmppc_set_gpr(_: *mut kvm_vcpu,_: i32,_: u64);
+    fn kvmppc_set_msr(_: *mut kvm_vcpu,_: u32); fn kvmppc_mmu_msr_notify(_: *mut kvm_vcpu,_: u32);
+    fn kvmppc_get_srr0(_: *mut kvm_vcpu)->u64; fn kvmppc_get_srr1(_: *mut kvm_vcpu)->u64;
+    fn kvmppc_core_vcpu_translate(_: *mut kvm_vcpu,_: *mut kvm_translation)->i32;
 }
 
 // Interrupt priority values, MSR bits, KVM constants, and architecture helpers

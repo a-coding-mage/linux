@@ -126,13 +126,13 @@ unsafe fn __io_napi_remove_stale(ctx: *mut io_ring_ctx) {
      * 2. kfree_rcu() delays the memory freeing until the next quiescent
      *    state
      */
-    list_for_each_entry!(e, &mut (*ctx).napi_list, list) {
+    list_for_each_entry!(e, &mut (*ctx).napi_list, list, {
         if time_after(jiffies, READ_ONCE!((*e).timeout)) {
             list_del_rcu!(&mut (*e).list);
             hash_del_rcu!(&mut (*e).node);
             kfree_rcu!(e, rcu);
         }
-    }
+    });
 }
 
 #[cfg(CONFIG_NET_RX_BUSY_POLL)]
@@ -178,10 +178,10 @@ unsafe fn static_tracking_do_busy_loop(
 ) -> bool {
     let mut e: *mut io_napi_entry;
     // never report stale entries
-    list_for_each_entry_rcu!(e, &mut (*ctx).napi_list, list) {
+    list_for_each_entry_rcu!(e, &mut (*ctx).napi_list, list, {
         napi_busy_loop_rcu((*e).napi_id, loop_end, loop_end_arg,
             (*ctx).napi_prefer_busy_poll, BUSY_POLL_BUDGET);
-    }
+    });
     false
 }
 
@@ -194,13 +194,13 @@ unsafe fn dynamic_tracking_do_busy_loop(
     let mut e: *mut io_napi_entry;
     let mut is_stale = false;
 
-    list_for_each_entry_rcu!(e, &mut (*ctx).napi_list, list) {
+    list_for_each_entry_rcu!(e, &mut (*ctx).napi_list, list, {
         napi_busy_loop_rcu((*e).napi_id, loop_end, loop_end_arg,
             (*ctx).napi_prefer_busy_poll, BUSY_POLL_BUDGET);
         if time_after(jiffies, READ_ONCE!((*e).timeout)) {
             is_stale = true;
         }
-    }
+    });
     is_stale
 }
 
@@ -259,10 +259,10 @@ pub unsafe fn io_napi_init(ctx: *mut io_ring_ctx) {
 pub unsafe fn io_napi_free(ctx: *mut io_ring_ctx) {
     let mut e: *mut io_napi_entry;
     guard!(spinlock, &mut (*ctx).napi_lock);
-    list_for_each_entry!(e, &mut (*ctx).napi_list, list) {
+    list_for_each_entry!(e, &mut (*ctx).napi_list, list, {
         hash_del_rcu!(&mut (*e).node);
         kfree_rcu!(e, rcu);
-    }
+    });
     INIT_LIST_HEAD_RCU!(&mut (*ctx).napi_list);
 }
 

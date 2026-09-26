@@ -20,7 +20,7 @@ pub struct mmp_clk_reset_unit {
 }
 
 // The source is conditionally compiled by CONFIG_RESET_CONTROLLER.
-#[cfg(feature = "CONFIG_RESET_CONTROLLER")]
+#[cfg(CONFIG_RESET_CONTROLLER)]
 extern "C" {
     pub fn mmp_clk_reset_register(
         np: *mut device_node,
@@ -29,7 +29,7 @@ extern "C" {
     );
 }
 
-#[cfg(not(feature = "CONFIG_RESET_CONTROLLER"))]
+#[cfg(not(CONFIG_RESET_CONTROLLER))]
 #[inline]
 pub unsafe fn mmp_clk_reset_register(
     _np: *mut device_node,

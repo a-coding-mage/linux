@@ -17,18 +17,18 @@ pub const ALLOC_NO_WATERMARKS: u32 = 0x04; /* don't check watermarks at all */
 pub const ALLOC_WMARK_MASK: u32 = ALLOC_NO_WATERMARKS - 1;
 
 /* Only MMU archs have async oom victim reclaim - aka oom_reaper. */
-#[cfg(feature = "CONFIG_MMU")]
+#[cfg(CONFIG_MMU)]
 pub const ALLOC_OOM: u32 = 0x08;
-#[cfg(not(feature = "CONFIG_MMU"))]
+#[cfg(not(CONFIG_MMU))]
 pub const ALLOC_OOM: u32 = ALLOC_NO_WATERMARKS;
 
 pub const ALLOC_NON_BLOCK: u32 = 0x10; /* Caller cannot block. */
 pub const ALLOC_MIN_RESERVE: u32 = 0x20; /* __GFP_HIGH set. */
 pub const ALLOC_CPUSET: u32 = 0x40; /* check for correct cpuset */
 pub const ALLOC_CMA: u32 = 0x80; /* allow allocations from CMA areas */
-#[cfg(feature = "CONFIG_ZONE_DMA32")]
+#[cfg(CONFIG_ZONE_DMA32)]
 pub const ALLOC_NOFRAGMENT: u32 = 0x100; /* avoid mixing pageblock types */
-#[cfg(not(feature = "CONFIG_ZONE_DMA32"))]
+#[cfg(not(CONFIG_ZONE_DMA32))]
 pub const ALLOC_NOFRAGMENT: u32 = 0x0;
 pub const ALLOC_HIGHATOMIC: u32 = 0x200; /* Allows access to MIGRATE_HIGHATOMIC */
 pub const ALLOC_NOLOCK: u32 = 0x400; /* Only use spin_trylock in allocation path */

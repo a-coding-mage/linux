@@ -66,19 +66,19 @@ pub struct iio_dev_opaque {
     pub clock_id: clockid_t,
     pub chrdev: cdev,
     pub flags: core::ffi::c_ulong,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub debugfs_dentry: *mut dentry,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub cached_reg_addr: core::ffi::c_uint,
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub read_buf: [core::ffi::c_char; 20],
-    #[cfg(feature = "CONFIG_DEBUG_FS")]
+    #[cfg(CONFIG_DEBUG_FS)]
     pub read_buf_len: core::ffi::c_uint,
 }
 
 macro_rules! to_iio_dev_opaque {
     ($indio_dev:expr) => {
-        container_of!($indio_dev, iio_dev_opaque, indio_dev)
+        container_of!($indio_dev, iio_dev_opaque, $indio_dev)
     };
 }
 

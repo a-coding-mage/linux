@@ -88,8 +88,8 @@ unsafe fn regmap_sccb_write(context: *mut core::ffi::c_void, reg: u32, val: u32)
 }
 
 static regmap_sccb_bus: regmap_bus = regmap_bus {
-    .reg_write: Some(regmap_sccb_write),
-    .reg_read: Some(regmap_sccb_read),
+    reg_write: Some(regmap_sccb_write),
+    reg_read: Some(regmap_sccb_read),
 };
 
 unsafe fn regmap_get_sccb_bus(

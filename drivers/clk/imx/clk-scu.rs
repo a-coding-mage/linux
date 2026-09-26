@@ -174,7 +174,7 @@ pub unsafe fn __imx_clk_scu(dev: *mut device, name: *const c_char, parents: *con
 pub unsafe fn imx_scu_of_clk_src_get(clkspec: *mut of_phandle_args, data: *mut c_void) -> *mut clk_hw {
     let rsrc = (*clkspec).args[0] as usize; let idx = (*clkspec).args[1] as u8; let scu_clks = data as *mut list_head;
     let mut pos: *mut imx_scu_clk_node = core::ptr::null_mut();
-    list_for_each_entry!(pos, scu_clks.add(rsrc), node) { if (*pos).clk_type == idx { return (*pos).hw; } }
+    list_for_each_entry!(pos, scu_clks.add(rsrc), node, { if (*pos).clk_type == idx { return (*pos).hw; } });
     ERR_PTR(-ENODEV)
 }
 
@@ -192,7 +192,7 @@ pub unsafe fn imx_clk_scu_alloc_dev(name: *const c_char, parents: *const *const 
     if ret != 0 { platform_device_put(pdev); return ERR_PTR(ret); } core::ptr::null_mut()
 }
 
-pub unsafe fn imx_clk_scu_unregister() { for i in 0..IMX_SC_R_LAST as usize { let mut clk: *mut imx_scu_clk_node = core::ptr::null_mut(); let mut n: *mut imx_scu_clk_node = core::ptr::null_mut(); list_for_each_entry_safe!(clk, n, &mut imx_scu_clks[i], node) { clk_hw_unregister((*clk).hw); kfree(clk); } } }
+pub unsafe fn imx_clk_scu_unregister() { for i in 0..IMX_SC_R_LAST as usize { let mut clk: *mut imx_scu_clk_node = core::ptr::null_mut(); let mut n: *mut imx_scu_clk_node = core::ptr::null_mut(); list_for_each_entry_safe!(clk, n, &mut imx_scu_clks[i], node, { clk_hw_unregister((*clk).hw); kfree(clk); }); } }
 
 unsafe fn imx_clk_is_resource_owned(rsrc: u32) -> bool { if rsrc == IMX_SC_R_A53 || rsrc == IMX_SC_R_A72 || rsrc == IMX_SC_R_A35 { true } else { imx_sc_rm_is_resource_owned(ccm_ipc_handle, rsrc) } }
 

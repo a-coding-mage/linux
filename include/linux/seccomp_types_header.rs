@@ -3,7 +3,7 @@
 // Dependency supplied by the Linux types translation: `atomic_t`.
 
 // Corresponds to CONFIG_SECCOMP.
-#[cfg(feature = "CONFIG_SECCOMP")]
+#[cfg(CONFIG_SECCOMP)]
 pub struct seccomp_filter;
 
 /**
@@ -18,7 +18,7 @@ pub struct seccomp_filter;
  *          @filter must only be accessed from the context of current as there
  *          is no read locking.
  */
-#[cfg(feature = "CONFIG_SECCOMP")]
+#[cfg(CONFIG_SECCOMP)]
 #[repr(C)]
 pub struct seccomp {
     pub mode: ::core::ffi::c_int,
@@ -27,11 +27,11 @@ pub struct seccomp {
 }
 
 // Corresponds to the CONFIG_SECCOMP-disabled branch.
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 #[repr(C)]
 pub struct seccomp {}
 
-#[cfg(not(feature = "CONFIG_SECCOMP"))]
+#[cfg(not(CONFIG_SECCOMP))]
 #[repr(C)]
 pub struct seccomp_filter {}
 

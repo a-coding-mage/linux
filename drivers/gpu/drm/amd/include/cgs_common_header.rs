@@ -79,9 +79,9 @@ pub type cgs_read_ind_register_t = unsafe extern "C" fn(*mut cgs_device, cgs_ind
 pub type cgs_write_ind_register_t = unsafe extern "C" fn(*mut cgs_device, cgs_ind_reg, c_uint, u32);
 
 #[macro_export]
-macro_rules! CGS_REG_FIELD_SHIFT { ($reg:ident, $field:ident) => { $reg::__##$field##__SHIFT }; }
+macro_rules! CGS_REG_FIELD_SHIFT { ($reg:ident, $field:tt) => { $reg::::kernel::macros::paste!([<__ $field>])##__SHIFT }; }
 #[macro_export]
-macro_rules! CGS_REG_FIELD_MASK { ($reg:ident, $field:ident) => { $reg::__##$field##_MASK }; }
+macro_rules! CGS_REG_FIELD_MASK { ($reg:ident, $field:tt) => { $reg::::kernel::macros::paste!([<__ $field>])##_MASK }; }
 
 #[macro_export]
 macro_rules! CGS_REG_SET_FIELD {

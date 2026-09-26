@@ -93,9 +93,9 @@ pub unsafe fn __get_random_u32_below(ceil: u32) -> u32 {
     let mut rand = get_random_u32();
     if ceil == 0 { return rand; }
     let mut mult = (ceil as u64) * (rand as u64);
-    if mult as u32 < ceil {
+    if (mult as u32) < ceil {
         let bound = ceil.wrapping_neg() % ceil;
-        while mult as u32 < bound { rand = get_random_u32(); mult = (ceil as u64) * rand as u64; }
+        while (mult as u32) < bound { rand = get_random_u32(); mult = (ceil as u64) * rand as u64; }
     }
     (mult >> 32) as u32
 }

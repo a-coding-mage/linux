@@ -22,15 +22,15 @@
  * Authors: AMD
  */
 
-static const dc_fixpt_two_pi: fixed31_32 = fixed31_32 { value: 26986075409i64 };
-static const dc_fixpt_ln2: fixed31_32 = fixed31_32 { value: 2977044471i64 };
-static const dc_fixpt_ln2_div_2: fixed31_32 = fixed31_32 { value: 1488522236i64 };
+static dc_fixpt_two_pi: fixed31_32 = fixed31_32 { value: 26986075409i64 };
+static dc_fixpt_ln2: fixed31_32 = fixed31_32 { value: 2977044471i64 };
+static dc_fixpt_ln2_div_2: fixed31_32 = fixed31_32 { value: 1488522236i64 };
 
-static inline fn abs_i64(arg: i64) -> u64 {
+inline fn abs_i64(arg: i64) -> u64 {
     if arg > 0 { arg as u64 } else { (-arg) as u64 }
 }
 
-static inline fn complete_integer_division_u64(dividend: u64, divisor: u64, remainder: *mut u64) -> u64 {
+inline fn complete_integer_division_u64(dividend: u64, divisor: u64, remainder: *mut u64) -> u64 {
     unsafe { div64_u64_rem(dividend, divisor, remainder) }
 }
 
@@ -144,7 +144,7 @@ fn dc_fixpt_log(arg: fixed31_32) -> fixed31_32 {
     } res
 }
 
-static inline fn ux_dy(value: i64, integer_bits: u32, fractional_bits: u32) -> u32 {
+inline fn ux_dy(value: i64, integer_bits: u32, fractional_bits: u32) -> u32 {
     let mut result = (1u32 << integer_bits) - 1;
     let mut fractional_part = FRACTIONAL_PART_MASK & value as u64;
     result &= GET_INTEGER_PART(value as u64) as u32;
@@ -153,7 +153,7 @@ static inline fn ux_dy(value: i64, integer_bits: u32, fractional_bits: u32) -> u
     result | fractional_part as u32
 }
 
-static inline fn clamp_ux_dy(value: i64, integer_bits: u32, fractional_bits: u32, min_clamp: u32) -> u32 {
+inline fn clamp_ux_dy(value: i64, integer_bits: u32, fractional_bits: u32, min_clamp: u32) -> u32 {
     let truncated_val = ux_dy(value, integer_bits, fractional_bits);
     if value >= (1i64 << (integer_bits + FIXED31_32_BITS_PER_FRACTIONAL_PART)) { (1u32 << (integer_bits + fractional_bits)) - 1 }
     else if truncated_val > min_clamp { truncated_val } else { min_clamp }

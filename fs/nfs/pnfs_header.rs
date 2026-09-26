@@ -72,6 +72,6 @@ extern "C" {
 #[inline] pub unsafe fn pnfs_is_range_intersecting(start1:u64,end1:u64,start2:u64,end2:u64)->bool { (end1==u64::MAX||start2<end1)&&(end2==u64::MAX||start1<end2) }
 #[inline] pub unsafe fn pnfs_lseg_range_intersecting(l1:*const pnfs_layout_range,l2:*const pnfs_layout_range)->bool { let a=pnfs_end_offset((*l1).offset,(*l1).length); let b=pnfs_end_offset((*l2).offset,(*l2).length); pnfs_is_range_intersecting((*l1).offset,a,(*l2).offset,b) }
 
-#[cfg(not(feature="CONFIG_NFS_V4_2"))] #[inline] pub unsafe fn pnfs_report_layoutstat(_inode:*mut inode,_gfp:gfp_t)->i32 {0}
+#[cfg(not(CONFIG_NFS_V4_2))] #[inline] pub unsafe fn pnfs_report_layoutstat(_inode:*mut inode,_gfp:gfp_t)->i32 {0}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

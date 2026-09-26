@@ -21,7 +21,7 @@
 // #include <net/ip.h>
 // #include <net/ip6_checksum.h>
 
-static unsafe fn udp_csum_check(
+unsafe fn udp_csum_check(
     af: i32,
     skb: *mut sk_buff,
     pp: *mut ip_vs_protocol,

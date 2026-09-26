@@ -47,28 +47,28 @@ pub const BPF_LOAD_ACQ: u32 = 0x100;
 pub const BPF_STORE_REL: u32 = 0x110;
 
 /* enum bpf_cond_pseudo_jmp */
-pub const BPF_MAY_GOTO: u32 = (0) as u32;
+pub const BPF_MAY_GOTO: u32 = 0;
 
 /* enum anonymous */
-pub const BPF_REG_0: u32 = (0) as u32;
-pub const BPF_REG_1: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_2: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_3: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_4: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_5: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_6: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_7: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_8: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_9: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_REG_10: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const __MAX_BPF_REG: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const BPF_REG_0: u32 = 0;
+pub const BPF_REG_1: u32 = BPF_REG_0 + 1;
+pub const BPF_REG_2: u32 = BPF_REG_1 + 1;
+pub const BPF_REG_3: u32 = BPF_REG_2 + 1;
+pub const BPF_REG_4: u32 = BPF_REG_3 + 1;
+pub const BPF_REG_5: u32 = BPF_REG_4 + 1;
+pub const BPF_REG_6: u32 = BPF_REG_5 + 1;
+pub const BPF_REG_7: u32 = BPF_REG_6 + 1;
+pub const BPF_REG_8: u32 = BPF_REG_7 + 1;
+pub const BPF_REG_9: u32 = BPF_REG_8 + 1;
+pub const BPF_REG_10: u32 = BPF_REG_9 + 1;
+pub const __MAX_BPF_REG: u32 = BPF_REG_10 + 1;
 
 /* enum bpf_cgroup_iter_order */
-pub const BPF_CGROUP_ITER_ORDER_UNSPEC: u32 = (0) as u32;
-pub const BPF_CGROUP_ITER_SELF_ONLY: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_CGROUP_ITER_DESCENDANTS_PRE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_CGROUP_ITER_DESCENDANTS_POST: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_CGROUP_ITER_ANCESTORS_UP: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const BPF_CGROUP_ITER_ORDER_UNSPEC: u32 = 0;
+pub const BPF_CGROUP_ITER_SELF_ONLY: u32 = BPF_CGROUP_ITER_ORDER_UNSPEC + 1;
+pub const BPF_CGROUP_ITER_DESCENDANTS_PRE: u32 = BPF_CGROUP_ITER_SELF_ONLY + 1;
+pub const BPF_CGROUP_ITER_DESCENDANTS_POST: u32 = BPF_CGROUP_ITER_DESCENDANTS_PRE + 1;
+pub const BPF_CGROUP_ITER_ANCESTORS_UP: u32 = BPF_CGROUP_ITER_DESCENDANTS_POST + 1;
 
 /* enum bpf_cmd */
 pub const BPF_MAP_CREATE: u32 = 0;
@@ -82,36 +82,36 @@ pub const BPF_OBJ_GET: u32 = 7;
 pub const BPF_PROG_ATTACH: u32 = 8;
 pub const BPF_PROG_DETACH: u32 = 9;
 pub const BPF_PROG_TEST_RUN: u32 = 10;
-pub const BPF_PROG_RUN: u32 = (BPF_PROG_TEST_RUN) as u32;
-pub const BPF_PROG_GET_NEXT_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_GET_NEXT_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_PROG_GET_FD_BY_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_GET_FD_BY_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_OBJ_GET_INFO_BY_FD: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_PROG_QUERY: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_RAW_TRACEPOINT_OPEN: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_BTF_LOAD: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_BTF_GET_FD_BY_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TASK_FD_QUERY: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_LOOKUP_AND_DELETE_ELEM: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_FREEZE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_BTF_GET_NEXT_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_LOOKUP_BATCH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_LOOKUP_AND_DELETE_BATCH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_UPDATE_BATCH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_DELETE_BATCH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_LINK_CREATE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_LINK_UPDATE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_LINK_GET_FD_BY_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_LINK_GET_NEXT_ID: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_ENABLE_STATS: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_ITER_CREATE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_LINK_DETACH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_PROG_BIND_MAP: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TOKEN_CREATE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_PROG_STREAM_READ_BY_FD: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_PROG_ASSOC_STRUCT_OPS: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const __MAX_BPF_CMD: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const BPF_PROG_RUN: u32 = BPF_PROG_TEST_RUN;
+pub const BPF_PROG_GET_NEXT_ID: u32 = BPF_PROG_RUN + 1;
+pub const BPF_MAP_GET_NEXT_ID: u32 = BPF_PROG_GET_NEXT_ID + 1;
+pub const BPF_PROG_GET_FD_BY_ID: u32 = BPF_MAP_GET_NEXT_ID + 1;
+pub const BPF_MAP_GET_FD_BY_ID: u32 = BPF_PROG_GET_FD_BY_ID + 1;
+pub const BPF_OBJ_GET_INFO_BY_FD: u32 = BPF_MAP_GET_FD_BY_ID + 1;
+pub const BPF_PROG_QUERY: u32 = BPF_OBJ_GET_INFO_BY_FD + 1;
+pub const BPF_RAW_TRACEPOINT_OPEN: u32 = BPF_PROG_QUERY + 1;
+pub const BPF_BTF_LOAD: u32 = BPF_RAW_TRACEPOINT_OPEN + 1;
+pub const BPF_BTF_GET_FD_BY_ID: u32 = BPF_BTF_LOAD + 1;
+pub const BPF_TASK_FD_QUERY: u32 = BPF_BTF_GET_FD_BY_ID + 1;
+pub const BPF_MAP_LOOKUP_AND_DELETE_ELEM: u32 = BPF_TASK_FD_QUERY + 1;
+pub const BPF_MAP_FREEZE: u32 = BPF_MAP_LOOKUP_AND_DELETE_ELEM + 1;
+pub const BPF_BTF_GET_NEXT_ID: u32 = BPF_MAP_FREEZE + 1;
+pub const BPF_MAP_LOOKUP_BATCH: u32 = BPF_BTF_GET_NEXT_ID + 1;
+pub const BPF_MAP_LOOKUP_AND_DELETE_BATCH: u32 = BPF_MAP_LOOKUP_BATCH + 1;
+pub const BPF_MAP_UPDATE_BATCH: u32 = BPF_MAP_LOOKUP_AND_DELETE_BATCH + 1;
+pub const BPF_MAP_DELETE_BATCH: u32 = BPF_MAP_UPDATE_BATCH + 1;
+pub const BPF_LINK_CREATE: u32 = BPF_MAP_DELETE_BATCH + 1;
+pub const BPF_LINK_UPDATE: u32 = BPF_LINK_CREATE + 1;
+pub const BPF_LINK_GET_FD_BY_ID: u32 = BPF_LINK_UPDATE + 1;
+pub const BPF_LINK_GET_NEXT_ID: u32 = BPF_LINK_GET_FD_BY_ID + 1;
+pub const BPF_ENABLE_STATS: u32 = BPF_LINK_GET_NEXT_ID + 1;
+pub const BPF_ITER_CREATE: u32 = BPF_ENABLE_STATS + 1;
+pub const BPF_LINK_DETACH: u32 = BPF_ITER_CREATE + 1;
+pub const BPF_PROG_BIND_MAP: u32 = BPF_LINK_DETACH + 1;
+pub const BPF_TOKEN_CREATE: u32 = BPF_PROG_BIND_MAP + 1;
+pub const BPF_PROG_STREAM_READ_BY_FD: u32 = BPF_TOKEN_CREATE + 1;
+pub const BPF_PROG_ASSOC_STRUCT_OPS: u32 = BPF_PROG_STREAM_READ_BY_FD + 1;
+pub const __MAX_BPF_CMD: u32 = BPF_PROG_ASSOC_STRUCT_OPS + 1;
 pub const BPF_COMMON_ATTRS: u32 = (1 << 16) as u32;
 
 /* enum bpf_map_type */
@@ -135,25 +135,25 @@ pub const BPF_MAP_TYPE_CPUMAP: u32 = 16;
 pub const BPF_MAP_TYPE_XSKMAP: u32 = 17;
 pub const BPF_MAP_TYPE_SOCKHASH: u32 = 18;
 pub const BPF_MAP_TYPE_CGROUP_STORAGE_DEPRECATED: u32 = 19;
-pub const BPF_MAP_TYPE_CGROUP_STORAGE: u32 = (BPF_MAP_TYPE_CGROUP_STORAGE_DEPRECATED) as u32;
-pub const BPF_MAP_TYPE_REUSEPORT_SOCKARRAY: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE_DEPRECATED: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE: u32 = (BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE_DEPRECATED) as u32;
-pub const BPF_MAP_TYPE_QUEUE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_STACK: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_SK_STORAGE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_DEVMAP_HASH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_STRUCT_OPS: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_RINGBUF: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_INODE_STORAGE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_TASK_STORAGE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_BLOOM_FILTER: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_USER_RINGBUF: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_CGRP_STORAGE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_ARENA: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_INSN_ARRAY: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_MAP_TYPE_RHASH: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const __MAX_BPF_MAP_TYPE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const BPF_MAP_TYPE_CGROUP_STORAGE: u32 = BPF_MAP_TYPE_CGROUP_STORAGE_DEPRECATED;
+pub const BPF_MAP_TYPE_REUSEPORT_SOCKARRAY: u32 = BPF_MAP_TYPE_CGROUP_STORAGE + 1;
+pub const BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE_DEPRECATED: u32 = BPF_MAP_TYPE_REUSEPORT_SOCKARRAY + 1;
+pub const BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE: u32 = BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE_DEPRECATED;
+pub const BPF_MAP_TYPE_QUEUE: u32 = BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE + 1;
+pub const BPF_MAP_TYPE_STACK: u32 = BPF_MAP_TYPE_QUEUE + 1;
+pub const BPF_MAP_TYPE_SK_STORAGE: u32 = BPF_MAP_TYPE_STACK + 1;
+pub const BPF_MAP_TYPE_DEVMAP_HASH: u32 = BPF_MAP_TYPE_SK_STORAGE + 1;
+pub const BPF_MAP_TYPE_STRUCT_OPS: u32 = BPF_MAP_TYPE_DEVMAP_HASH + 1;
+pub const BPF_MAP_TYPE_RINGBUF: u32 = BPF_MAP_TYPE_STRUCT_OPS + 1;
+pub const BPF_MAP_TYPE_INODE_STORAGE: u32 = BPF_MAP_TYPE_RINGBUF + 1;
+pub const BPF_MAP_TYPE_TASK_STORAGE: u32 = BPF_MAP_TYPE_INODE_STORAGE + 1;
+pub const BPF_MAP_TYPE_BLOOM_FILTER: u32 = BPF_MAP_TYPE_TASK_STORAGE + 1;
+pub const BPF_MAP_TYPE_USER_RINGBUF: u32 = BPF_MAP_TYPE_BLOOM_FILTER + 1;
+pub const BPF_MAP_TYPE_CGRP_STORAGE: u32 = BPF_MAP_TYPE_USER_RINGBUF + 1;
+pub const BPF_MAP_TYPE_ARENA: u32 = BPF_MAP_TYPE_CGRP_STORAGE + 1;
+pub const BPF_MAP_TYPE_INSN_ARRAY: u32 = BPF_MAP_TYPE_ARENA + 1;
+pub const BPF_MAP_TYPE_RHASH: u32 = BPF_MAP_TYPE_INSN_ARRAY + 1;
+pub const __MAX_BPF_MAP_TYPE: u32 = BPF_MAP_TYPE_RHASH + 1;
 
 /* enum bpf_prog_type */
 pub const BPF_PROG_TYPE_UNSPEC: u32 = 0;
@@ -257,32 +257,32 @@ pub const BPF_TRACE_FSESSION_MULTI: u32 = 61;
 pub const __MAX_BPF_ATTACH_TYPE: u32 = 62;
 
 /* enum bpf_link_type */
-pub const BPF_LINK_TYPE_UNSPEC: u32 = (0) as u32;
-pub const BPF_LINK_TYPE_RAW_TRACEPOINT: u32 = (1) as u32;
-pub const BPF_LINK_TYPE_TRACING: u32 = (2) as u32;
-pub const BPF_LINK_TYPE_CGROUP: u32 = (3) as u32;
-pub const BPF_LINK_TYPE_ITER: u32 = (4) as u32;
-pub const BPF_LINK_TYPE_NETNS: u32 = (5) as u32;
-pub const BPF_LINK_TYPE_XDP: u32 = (6) as u32;
-pub const BPF_LINK_TYPE_PERF_EVENT: u32 = (7) as u32;
-pub const BPF_LINK_TYPE_KPROBE_MULTI: u32 = (8) as u32;
-pub const BPF_LINK_TYPE_STRUCT_OPS: u32 = (9) as u32;
-pub const BPF_LINK_TYPE_NETFILTER: u32 = (10) as u32;
-pub const BPF_LINK_TYPE_TCX: u32 = (11) as u32;
-pub const BPF_LINK_TYPE_UPROBE_MULTI: u32 = (12) as u32;
-pub const BPF_LINK_TYPE_NETKIT: u32 = (13) as u32;
-pub const BPF_LINK_TYPE_SOCKMAP: u32 = (14) as u32;
-pub const BPF_LINK_TYPE_TRACING_MULTI: u32 = (15) as u32;
-pub const __MAX_BPF_LINK_TYPE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const BPF_LINK_TYPE_UNSPEC: u32 = 0;
+pub const BPF_LINK_TYPE_RAW_TRACEPOINT: u32 = 1;
+pub const BPF_LINK_TYPE_TRACING: u32 = 2;
+pub const BPF_LINK_TYPE_CGROUP: u32 = 3;
+pub const BPF_LINK_TYPE_ITER: u32 = 4;
+pub const BPF_LINK_TYPE_NETNS: u32 = 5;
+pub const BPF_LINK_TYPE_XDP: u32 = 6;
+pub const BPF_LINK_TYPE_PERF_EVENT: u32 = 7;
+pub const BPF_LINK_TYPE_KPROBE_MULTI: u32 = 8;
+pub const BPF_LINK_TYPE_STRUCT_OPS: u32 = 9;
+pub const BPF_LINK_TYPE_NETFILTER: u32 = 10;
+pub const BPF_LINK_TYPE_TCX: u32 = 11;
+pub const BPF_LINK_TYPE_UPROBE_MULTI: u32 = 12;
+pub const BPF_LINK_TYPE_NETKIT: u32 = 13;
+pub const BPF_LINK_TYPE_SOCKMAP: u32 = 14;
+pub const BPF_LINK_TYPE_TRACING_MULTI: u32 = 15;
+pub const __MAX_BPF_LINK_TYPE: u32 = BPF_LINK_TYPE_TRACING_MULTI + 1;
 
 /* enum bpf_perf_event_type */
-pub const BPF_PERF_EVENT_UNSPEC: u32 = (0) as u32;
-pub const BPF_PERF_EVENT_UPROBE: u32 = (1) as u32;
-pub const BPF_PERF_EVENT_URETPROBE: u32 = (2) as u32;
-pub const BPF_PERF_EVENT_KPROBE: u32 = (3) as u32;
-pub const BPF_PERF_EVENT_KRETPROBE: u32 = (4) as u32;
-pub const BPF_PERF_EVENT_TRACEPOINT: u32 = (5) as u32;
-pub const BPF_PERF_EVENT_EVENT: u32 = (6) as u32;
+pub const BPF_PERF_EVENT_UNSPEC: u32 = 0;
+pub const BPF_PERF_EVENT_UPROBE: u32 = 1;
+pub const BPF_PERF_EVENT_URETPROBE: u32 = 2;
+pub const BPF_PERF_EVENT_KPROBE: u32 = 3;
+pub const BPF_PERF_EVENT_KRETPROBE: u32 = 4;
+pub const BPF_PERF_EVENT_TRACEPOINT: u32 = 5;
+pub const BPF_PERF_EVENT_EVENT: u32 = 6;
 
 /* enum anonymous */
 pub const BPF_F_KPROBE_MULTI_RETURN: u32 = ((1u32 << 0)) as u32;
@@ -292,14 +292,14 @@ pub const BPF_F_UPROBE_MULTI_RETURN: u32 = ((1u32 << 0)) as u32;
 pub const BPF_F_UPROBE_MULTI_PATH_FD: u32 = ((1u32 << 1)) as u32;
 
 /* enum bpf_addr_space_cast */
-pub const BPF_ADDR_SPACE_CAST: u32 = (1) as u32;
+pub const BPF_ADDR_SPACE_CAST: u32 = 1;
 
 /* enum anonymous */
-pub const BPF_ANY: u32 = (0) as u32;
-pub const BPF_NOEXIST: u32 = (1) as u32;
-pub const BPF_EXIST: u32 = (2) as u32;
-pub const BPF_F_LOCK: u32 = (4) as u32;
-pub const BPF_F_CPU: u32 = (8) as u32;
+pub const BPF_ANY: u32 = 0;
+pub const BPF_NOEXIST: u32 = 1;
+pub const BPF_EXIST: u32 = 2;
+pub const BPF_F_LOCK: u32 = 4;
+pub const BPF_F_CPU: u32 = 8;
 
 /* enum anonymous */
 pub const BPF_F_NO_PREALLOC: u32 = ((1u32 << 0)) as u32;
@@ -321,15 +321,15 @@ pub const BPF_F_NO_USER_CONV: u32 = ((1u32 << 18)) as u32;
 pub const BPF_F_RB_OVERWRITE: u32 = ((1u32 << 19)) as u32;
 
 /* enum bpf_stats_type */
-pub const BPF_STATS_RUN_TIME: u32 = (0) as u32;
+pub const BPF_STATS_RUN_TIME: u32 = 0;
 
 /* enum bpf_stack_build_id_status */
-pub const BPF_STACK_BUILD_ID_EMPTY: u32 = (0) as u32;
-pub const BPF_STACK_BUILD_ID_VALID: u32 = (1) as u32;
+pub const BPF_STACK_BUILD_ID_EMPTY: u32 = 0;
+pub const BPF_STACK_BUILD_ID_VALID: u32 = 1;
 
 /* enum anonymous */
-pub const BPF_STREAM_STDOUT: u32 = (1) as u32;
-pub const BPF_STREAM_STDERR: u32 = (2) as u32;
+pub const BPF_STREAM_STDOUT: u32 = 1;
+pub const BPF_STREAM_STDERR: u32 = 2;
 
 /* enum bpf_func_id */
 
@@ -338,7 +338,7 @@ pub const BPF_F_RECOMPUTE_CSUM: u32 = ((1ULL << 0)) as u32;
 pub const BPF_F_INVALIDATE_HASH: u32 = ((1ULL << 1)) as u32;
 
 /* enum anonymous */
-pub const BPF_F_HDR_FIELD_MASK: u32 = (0xfULL) as u32;
+pub const BPF_F_HDR_FIELD_MASK: u32 = 0xfULL;
 
 /* enum anonymous */
 pub const BPF_F_PSEUDO_HDR: u32 = ((1ULL << 4)) as u32;
@@ -350,7 +350,7 @@ pub const BPF_F_IPV6: u32 = ((1ULL << 7)) as u32;
 pub const BPF_F_TUNINFO_IPV6: u32 = ((1ULL << 0)) as u32;
 
 /* enum anonymous */
-pub const BPF_F_SKIP_FIELD_MASK: u32 = (0xffULL) as u32;
+pub const BPF_F_SKIP_FIELD_MASK: u32 = 0xffULL;
 pub const BPF_F_USER_STACK: u32 = ((1ULL << 8)) as u32;
 pub const BPF_F_FAST_STACK_CMP: u32 = ((1ULL << 9)) as u32;
 pub const BPF_F_REUSE_STACKID: u32 = ((1ULL << 10)) as u32;
@@ -366,8 +366,8 @@ pub const BPF_F_NO_TUNNEL_KEY: u32 = ((1ULL << 4)) as u32;
 pub const BPF_F_TUNINFO_FLAGS: u32 = ((1ULL << 4)) as u32;
 
 /* enum anonymous */
-pub const BPF_F_INDEX_MASK: u32 = (0xffffffffULL) as u32;
-pub const BPF_F_CURRENT_CPU: u32 = (BPF_F_INDEX_MASK) as u32;
+pub const BPF_F_INDEX_MASK: u32 = 0xffffffffULL;
+pub const BPF_F_CURRENT_CPU: u32 = BPF_F_INDEX_MASK;
 pub const BPF_F_CTXLEN_MASK: u32 = ((0xfffffULL << 32)) as u32;
 
 /* enum anonymous */
@@ -395,15 +395,15 @@ pub const BPF_F_ADJ_ROOM_DECAP_IPXIP4: u32 = ((1ULL << 11)) as u32;
 pub const BPF_F_ADJ_ROOM_DECAP_IPXIP6: u32 = ((1ULL << 12)) as u32;
 
 /* enum anonymous */
-pub const BPF_ADJ_ROOM_ENCAP_L2_MASK: u32 = (0xff) as u32;
-pub const BPF_ADJ_ROOM_ENCAP_L2_SHIFT: u32 = (56) as u32;
+pub const BPF_ADJ_ROOM_ENCAP_L2_MASK: u32 = 0xff;
+pub const BPF_ADJ_ROOM_ENCAP_L2_SHIFT: u32 = 56;
 
 /* enum anonymous */
 pub const BPF_F_SYSCTL_BASE_NAME: u32 = ((1ULL << 0)) as u32;
 
 /* enum anonymous */
 pub const BPF_LOCAL_STORAGE_GET_F_CREATE: u32 = ((1ULL << 0)) as u32;
-pub const BPF_SK_STORAGE_GET_F_CREATE: u32 = (BPF_LOCAL_STORAGE_GET_F_CREATE) as u32;
+pub const BPF_SK_STORAGE_GET_F_CREATE: u32 = BPF_LOCAL_STORAGE_GET_F_CREATE;
 
 /* enum anonymous */
 pub const BPF_F_GET_BRANCH_RECORDS_SIZE: u32 = ((1ULL << 0)) as u32;
@@ -413,16 +413,16 @@ pub const BPF_RB_NO_WAKEUP: u32 = ((1ULL << 0)) as u32;
 pub const BPF_RB_FORCE_WAKEUP: u32 = ((1ULL << 1)) as u32;
 
 /* enum anonymous */
-pub const BPF_RB_AVAIL_DATA: u32 = (0) as u32;
-pub const BPF_RB_RING_SIZE: u32 = (1) as u32;
-pub const BPF_RB_CONS_POS: u32 = (2) as u32;
-pub const BPF_RB_PROD_POS: u32 = (3) as u32;
-pub const BPF_RB_OVERWRITE_POS: u32 = (4) as u32;
+pub const BPF_RB_AVAIL_DATA: u32 = 0;
+pub const BPF_RB_RING_SIZE: u32 = 1;
+pub const BPF_RB_CONS_POS: u32 = 2;
+pub const BPF_RB_PROD_POS: u32 = 3;
+pub const BPF_RB_OVERWRITE_POS: u32 = 4;
 
 /* enum anonymous */
 pub const BPF_RINGBUF_BUSY_BIT: u32 = ((1u32 << 31)) as u32;
 pub const BPF_RINGBUF_DISCARD_BIT: u32 = ((1u32 << 30)) as u32;
-pub const BPF_RINGBUF_HDR_SZ: u32 = (8) as u32;
+pub const BPF_RINGBUF_HDR_SZ: u32 = 8;
 
 /* enum anonymous */
 pub const BPF_SK_LOOKUP_F_REPLACE: u32 = ((1ULL << 0)) as u32;
@@ -451,33 +451,33 @@ pub const BPF_F_BROADCAST: u32 = ((1ULL << 3)) as u32;
 pub const BPF_F_EXCLUDE_INGRESS: u32 = ((1ULL << 4)) as u32;
 
 /* enum anonymous */
-pub const BPF_SKB_TSTAMP_UNSPEC: u32 = (0) as u32;
-pub const BPF_SKB_TSTAMP_DELIVERY_MONO: u32 = (1) as u32;
-pub const BPF_SKB_CLOCK_REALTIME: u32 = (0) as u32;
-pub const BPF_SKB_CLOCK_MONOTONIC: u32 = (1) as u32;
-pub const BPF_SKB_CLOCK_TAI: u32 = (2) as u32;
+pub const BPF_SKB_TSTAMP_UNSPEC: u32 = 0;
+pub const BPF_SKB_TSTAMP_DELIVERY_MONO: u32 = 1;
+pub const BPF_SKB_CLOCK_REALTIME: u32 = 0;
+pub const BPF_SKB_CLOCK_MONOTONIC: u32 = 1;
+pub const BPF_SKB_CLOCK_TAI: u32 = 2;
 
 /* enum bpf_ret_code */
-pub const BPF_OK: u32 = (0) as u32;
-pub const BPF_DROP: u32 = (2) as u32;
-pub const BPF_REDIRECT: u32 = (7) as u32;
+pub const BPF_OK: u32 = 0;
+pub const BPF_DROP: u32 = 2;
+pub const BPF_REDIRECT: u32 = 7;
 
 /* enum tcx_action_base */
 pub const TCX_NEXT: u32 = (-1) as u32;
-pub const TCX_PASS: u32 = (0) as u32;
-pub const TCX_DROP: u32 = (2) as u32;
-pub const TCX_REDIRECT: u32 = (7) as u32;
+pub const TCX_PASS: u32 = 0;
+pub const TCX_DROP: u32 = 2;
+pub const TCX_REDIRECT: u32 = 7;
 
 /* enum xdp_action */
-pub const XDP_ABORTED: u32 = (0) as u32;
-pub const XDP_DROP: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const XDP_PASS: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const XDP_TX: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const XDP_REDIRECT: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const XDP_ABORTED: u32 = 0;
+pub const XDP_DROP: u32 = XDP_ABORTED + 1;
+pub const XDP_PASS: u32 = XDP_DROP + 1;
+pub const XDP_TX: u32 = XDP_PASS + 1;
+pub const XDP_REDIRECT: u32 = XDP_TX + 1;
 
 /* enum sk_action */
-pub const SK_DROP: u32 = (0) as u32;
-pub const SK_PASS: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const SK_DROP: u32 = 0;
+pub const SK_PASS: u32 = SK_DROP + 1;
 
 /* enum anonymous */
 pub const BPF_SOCK_OPS_RTO_CB_FLAG: u32 = ((1<<0)) as u32;
@@ -487,7 +487,7 @@ pub const BPF_SOCK_OPS_RTT_CB_FLAG: u32 = ((1<<3)) as u32;
 pub const BPF_SOCK_OPS_PARSE_ALL_HDR_OPT_CB_FLAG: u32 = ((1<<4)) as u32;
 pub const BPF_SOCK_OPS_PARSE_UNKNOWN_HDR_OPT_CB_FLAG: u32 = ((1<<5)) as u32;
 pub const BPF_SOCK_OPS_WRITE_HDR_OPT_CB_FLAG: u32 = ((1<<6)) as u32;
-pub const BPF_SOCK_OPS_ALL_CB_FLAGS: u32 = (0x7F) as u32;
+pub const BPF_SOCK_OPS_ALL_CB_FLAGS: u32 = 0x7F;
 
 /* enum anonymous */
 pub const SK_BPF_CB_TX_TIMESTAMPING: u32 = (1<<0) as u32;
@@ -506,47 +506,47 @@ pub const BPF_SOCK_OPS_RTO_CB: u32 = 8;
 pub const BPF_SOCK_OPS_RETRANS_CB: u32 = 9;
 pub const BPF_SOCK_OPS_STATE_CB: u32 = 10;
 pub const BPF_SOCK_OPS_TCP_LISTEN_CB: u32 = 11;
-pub const BPF_SOCK_OPS_PARSE_HDR_OPT_CB: u32 = 12;
-pub const BPF_SOCK_OPS_HDR_OPT_LEN_CB: u32 = 13;
+pub const BPF_SOCK_OPS_PARSE_HDR_OPT_CB: u32 = 13;
+pub const BPF_SOCK_OPS_HDR_OPT_LEN_CB: u32 = 14;
 pub const ACK: u32 = 14;
 pub const ACK: u32 = 15;
-pub const BPF_SOCK_OPS_TSTAMP_SND_SW_CB: u32 = 16;
-pub const BPF_SOCK_OPS_TSTAMP_SND_HW_CB: u32 = 17;
-pub const BPF_SOCK_OPS_TSTAMP_ACK_CB: u32 = 18;
-pub const BPF_SOCK_OPS_TSTAMP_SENDMSG_CB: u32 = 19;
+pub const BPF_SOCK_OPS_TSTAMP_SND_SW_CB: u32 = 17;
+pub const BPF_SOCK_OPS_TSTAMP_SND_HW_CB: u32 = 18;
+pub const BPF_SOCK_OPS_TSTAMP_ACK_CB: u32 = 19;
+pub const BPF_SOCK_OPS_TSTAMP_SENDMSG_CB: u32 = 20;
 
 /* enum anonymous */
-pub const BPF_TCP_ESTABLISHED: u32 = (1) as u32;
-pub const BPF_TCP_SYN_SENT: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_SYN_RECV: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_FIN_WAIT1: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_FIN_WAIT2: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_TIME_WAIT: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_CLOSE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_CLOSE_WAIT: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_LAST_ACK: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_LISTEN: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_CLOSING: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_NEW_SYN_RECV: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_BOUND_INACTIVE: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
-pub const BPF_TCP_MAX_STATES: u32 = 0; /* C enum auto value follows previous explicit expression; see preserved source below. */
+pub const BPF_TCP_ESTABLISHED: u32 = 1;
+pub const BPF_TCP_SYN_SENT: u32 = BPF_TCP_ESTABLISHED + 1;
+pub const BPF_TCP_SYN_RECV: u32 = BPF_TCP_SYN_SENT + 1;
+pub const BPF_TCP_FIN_WAIT1: u32 = BPF_TCP_SYN_RECV + 1;
+pub const BPF_TCP_FIN_WAIT2: u32 = BPF_TCP_FIN_WAIT1 + 1;
+pub const BPF_TCP_TIME_WAIT: u32 = BPF_TCP_FIN_WAIT2 + 1;
+pub const BPF_TCP_CLOSE: u32 = BPF_TCP_TIME_WAIT + 1;
+pub const BPF_TCP_CLOSE_WAIT: u32 = BPF_TCP_CLOSE + 1;
+pub const BPF_TCP_LAST_ACK: u32 = BPF_TCP_CLOSE_WAIT + 1;
+pub const BPF_TCP_LISTEN: u32 = BPF_TCP_LAST_ACK + 1;
+pub const BPF_TCP_CLOSING: u32 = BPF_TCP_LISTEN + 1;
+pub const BPF_TCP_NEW_SYN_RECV: u32 = BPF_TCP_CLOSING + 1;
+pub const BPF_TCP_BOUND_INACTIVE: u32 = BPF_TCP_NEW_SYN_RECV + 1;
+pub const BPF_TCP_MAX_STATES: u32 = BPF_TCP_BOUND_INACTIVE + 1;
 
 /* enum anonymous */
-pub const TCP_BPF_IW: u32 = (1001) as u32;
-pub const TCP_BPF_SNDCWND_CLAMP: u32 = (1002) as u32;
-pub const TCP_BPF_DELACK_MAX: u32 = (1003) as u32;
-pub const TCP_BPF_RTO_MIN: u32 = (1004) as u32;
-pub const TCP_BPF_SYN_IP: u32 = (1006) as u32;
-pub const TCP_BPF_SYN_MAC: u32 = (1007) as u32;
-pub const SK_BPF_CB_FLAGS: u32 = (1009) as u32;
-pub const SK_BPF_BYPASS_PROT_MEM: u32 = (1010) as u32;
+pub const TCP_BPF_IW: u32 = 1001;
+pub const TCP_BPF_SNDCWND_CLAMP: u32 = 1002;
+pub const TCP_BPF_DELACK_MAX: u32 = 1003;
+pub const TCP_BPF_RTO_MIN: u32 = 1004;
+pub const TCP_BPF_SYN_IP: u32 = 1006;
+pub const TCP_BPF_SYN_MAC: u32 = 1007;
+pub const SK_BPF_CB_FLAGS: u32 = 1009;
+pub const SK_BPF_BYPASS_PROT_MEM: u32 = 1010;
 
 /* enum anonymous */
 pub const BPF_LOAD_HDR_OPT_TCP_SYN: u32 = ((1ULL << 0)) as u32;
 
 /* enum anonymous */
-pub const BPF_WRITE_HDR_TCP_CURRENT_MSS: u32 = (1) as u32;
-pub const BPF_WRITE_HDR_TCP_SYNACK_COOKIE: u32 = (2) as u32;
+pub const BPF_WRITE_HDR_TCP_CURRENT_MSS: u32 = 1;
+pub const BPF_WRITE_HDR_TCP_SYNACK_COOKIE: u32 = 2;
 
 /* enum anonymous */
 pub const BPF_DEVCG_ACC_MKNOD: u32 = ((1ULL << 0)) as u32;
@@ -608,18 +608,18 @@ pub const BTF_F_PTR_RAW: u32 = ((1ULL << 2)) as u32;
 pub const BTF_F_ZERO: u32 = ((1ULL << 3)) as u32;
 
 /* enum bpf_core_relo_kind */
-pub const BPF_CORE_FIELD_BYTE_OFFSET: u32 = (0) as u32;
-pub const BPF_CORE_FIELD_BYTE_SIZE: u32 = (1) as u32;
-pub const BPF_CORE_FIELD_EXISTS: u32 = (2) as u32;
-pub const BPF_CORE_FIELD_SIGNED: u32 = (3) as u32;
-pub const BPF_CORE_FIELD_RSHIFT_U64: u32 = (5) as u32;
-pub const BPF_CORE_TYPE_ID_LOCAL: u32 = (6) as u32;
-pub const BPF_CORE_TYPE_ID_TARGET: u32 = (7) as u32;
-pub const BPF_CORE_TYPE_EXISTS: u32 = (8) as u32;
-pub const BPF_CORE_TYPE_SIZE: u32 = (9) as u32;
-pub const BPF_CORE_ENUMVAL_EXISTS: u32 = (10) as u32;
-pub const BPF_CORE_ENUMVAL_VALUE: u32 = (11) as u32;
-pub const BPF_CORE_TYPE_MATCHES: u32 = (12) as u32;
+pub const BPF_CORE_FIELD_BYTE_OFFSET: u32 = 0;
+pub const BPF_CORE_FIELD_BYTE_SIZE: u32 = 1;
+pub const BPF_CORE_FIELD_EXISTS: u32 = 2;
+pub const BPF_CORE_FIELD_SIGNED: u32 = 3;
+pub const BPF_CORE_FIELD_RSHIFT_U64: u32 = 5;
+pub const BPF_CORE_TYPE_ID_LOCAL: u32 = 6;
+pub const BPF_CORE_TYPE_ID_TARGET: u32 = 7;
+pub const BPF_CORE_TYPE_EXISTS: u32 = 8;
+pub const BPF_CORE_TYPE_SIZE: u32 = 9;
+pub const BPF_CORE_ENUMVAL_EXISTS: u32 = 10;
+pub const BPF_CORE_ENUMVAL_VALUE: u32 = 11;
+pub const BPF_CORE_TYPE_MATCHES: u32 = 12;
 
 /* enum anonymous */
 pub const BPF_F_TIMER_ABS: u32 = ((1ULL << 0)) as u32;

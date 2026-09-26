@@ -30,7 +30,7 @@ unsafe extern "C" fn nobp_setup_early(str_: *mut core::ffi::c_char) -> i32 {
          */
         nobp = 1;
         // IS_ENABLED(CONFIG_EXPOLINE)
-        #[cfg(feature = "CONFIG_EXPOLINE")]
+        #[cfg(CONFIG_EXPOLINE)]
         {
             nospec_disable = 1;
         }
@@ -67,7 +67,7 @@ unsafe extern "C" fn nospec_report() -> i32 {
 // arch_initcall(nospec_report);
 
 // CONFIG_EXPOLINE conditional section from the original source.
-#[cfg(feature = "CONFIG_EXPOLINE")]
+#[cfg(CONFIG_EXPOLINE)]
 mod expoline {
     use super::*;
 

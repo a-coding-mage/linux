@@ -16,7 +16,6 @@
  * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.
  */
 
-pub const OSS_3_0_SH_MASK_H: u32 = ;
 pub const IH_VMID_0_LUT__PASID_MASK: u32 = 0xffff;
 pub const IH_VMID_0_LUT__PASID__SHIFT: u32 = 0x0;
 pub const IH_VMID_1_LUT__PASID_MASK: u32 = 0xffff;

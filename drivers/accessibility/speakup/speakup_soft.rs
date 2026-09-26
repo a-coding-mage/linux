@@ -189,16 +189,16 @@ unsafe fn softsynth_adjust(_synth: *mut spk_synth, var: *mut st_var_header) -> i
 }
 
 // module_param_named and MODULE_* metadata are supplied by the kernel build environment.
-module_param_named!(start, synth_soft.startup, short, 0444);
-module_param_named!(direct, vars[DIRECT_ID].u.n.default_val, int, 0444);
-module_param_named!(rate, vars[RATE_ID].u.n.default_val, int, 0444);
-module_param_named!(pitch, vars[PITCH_ID].u.n.default_val, int, 0444);
-module_param_named!(inflection, vars[INFLECTION_ID].u.n.default_val, int, 0444);
-module_param_named!(vol, vars[VOL_ID].u.n.default_val, int, 0444);
-module_param_named!(tone, vars[TONE_ID].u.n.default_val, int, 0444);
-module_param_named!(punct, vars[PUNCT_ID].u.n.default_val, int, 0444);
-module_param_named!(voice, vars[VOICE_ID].u.n.default_val, int, 0444);
-module_param_named!(frequency, vars[FREQUENCY_ID].u.n.default_val, int, 0444);
+module_param_named!(start, synth_soft.startup, short, 0o444);
+module_param_named!(direct, vars[DIRECT_ID].u.n.default_val, int, 0o444);
+module_param_named!(rate, vars[RATE_ID].u.n.default_val, int, 0o444);
+module_param_named!(pitch, vars[PITCH_ID].u.n.default_val, int, 0o444);
+module_param_named!(inflection, vars[INFLECTION_ID].u.n.default_val, int, 0o444);
+module_param_named!(vol, vars[VOL_ID].u.n.default_val, int, 0o444);
+module_param_named!(tone, vars[TONE_ID].u.n.default_val, int, 0o444);
+module_param_named!(punct, vars[PUNCT_ID].u.n.default_val, int, 0o444);
+module_param_named!(voice, vars[VOICE_ID].u.n.default_val, int, 0o444);
+module_param_named!(frequency, vars[FREQUENCY_ID].u.n.default_val, int, 0o444);
 MODULE_PARM_DESC!(start, "Start the synthesizer once it is loaded.");
 MODULE_PARM_DESC!(direct, "Set the direct variable on load.");
 MODULE_PARM_DESC!(rate, "Sets the rate of the synthesizer.");

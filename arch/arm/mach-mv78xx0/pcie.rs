@@ -140,7 +140,7 @@ unsafe extern "C" fn mv78xx0_pcie_scan_bus(nr: i32, bridge: *mut PciHostBridge) 
 unsafe extern "C" fn mv78xx0_pcie_map_irq(dev: *const PciDev, _slot: u8, _pin: u8) -> i32 {
     let sys = (*(*dev).bus).sysdata;
     let pp = (*sys).private_data as *mut PciePort;
-    IRQ_MV78XX0_PCIE_00 + ((*pp).maj as i32 << 2) + (*pp).min as i32
+    IRQ_MV78XX0_PCIE_00 + (((*pp).maj as i32) << 2) + (*pp).min as i32
 }
 
 static mut MV78XX0_PCI: HwPci = HwPci { nr_controllers: 8, preinit: Some(mv78xx0_pcie_preinit), setup: Some(mv78xx0_pcie_setup), scan: Some(mv78xx0_pcie_scan_bus), map_irq: Some(mv78xx0_pcie_map_irq) };

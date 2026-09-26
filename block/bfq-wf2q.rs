@@ -27,7 +27,7 @@ extern "C" {
 
 // The complete implementation follows, with Linux kernel declarations and
 // helper macros supplied by the surrounding integration.
-+// // SPDX-License-Identifier: GPL-2.0-or-later
+// // SPDX-License-Identifier: GPL-2.0-or-later
 // /*
 //  * Hierarchical Budget Worst-case Fair Weighted Fair Queueing
 //  * (B-WF2Q+): hierarchical scheduling algorithm by which the BFQ I/O
@@ -49,14 +49,14 @@ extern "C" {
 // 	return (s64)(a - b) > 0;
 // }
 // 
-// static struct bfq_entity *bfq_root_active_entity(struct rb_root *tree)
+// static struct bfq_entity *bfq_root_active_entity(rb_root *tree)
 // {
 // 	struct rb_node *node = tree->rb_node;
 // 
-// 	return rb_entry(node, struct bfq_entity, rb_node);
+// 	return rb_entry(node, bfq_entity, rb_node);
 // }
 // 
-// static unsigned int bfq_class_idx(struct bfq_entity *entity)
+// static unsigned int bfq_class_idx(bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
 // 
@@ -64,16 +64,16 @@ extern "C" {
 // 		BFQ_DEFAULT_GRP_CLASS - 1;
 // }
 // 
-// unsigned int bfq_tot_busy_queues(struct bfq_data *bfqd)
+// unsigned int bfq_tot_busy_queues(bfq_data *bfqd)
 // {
 // 	return bfqd->busy_queues[0] + bfqd->busy_queues[1] +
 // 		bfqd->busy_queues[2];
 // }
 // 
-// static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
+// static struct bfq_entity *bfq_lookup_next_entity(bfq_sched_data *sd,
 // 						 bool expiration);
 // 
-// static bool bfq_update_parent_budget(struct bfq_entity *next_in_service);
+// static bool bfq_update_parent_budget(bfq_entity *next_in_service);
 // 
 // /**
 //  * bfq_update_next_in_service - update sd->next_in_service
@@ -100,7 +100,7 @@ extern "C" {
 //  * entity->parent may become the next_in_service for its parent
 //  * entity.
 //  */
-// static bool bfq_update_next_in_service(struct bfq_sched_data *sd,
+// static bool bfq_update_next_in_service(bfq_sched_data *sd,
 // 				       struct bfq_entity *new_entity,
 // 				       bool expiration)
 // {
@@ -175,7 +175,7 @@ extern "C" {
 //  * Returns true if this budget changes may let next_in_service->parent
 //  * become the next_in_service entity for its parent entity.
 //  */
-// static bool bfq_update_parent_budget(struct bfq_entity *next_in_service)
+// static bool bfq_update_parent_budget(bfq_entity *next_in_service)
 // {
 // 	struct bfq_entity *bfqg_entity;
 // 	struct bfq_group *bfqg;
@@ -184,7 +184,7 @@ extern "C" {
 // 
 // 	group_sd = next_in_service->sched_data;
 // 
-// 	bfqg = container_of(group_sd, struct bfq_group, sched_data);
+// 	bfqg = container_of(group_sd, bfq_group, sched_data);
 // 	/*
 // 	 * bfq_group's my_entity field is not NULL only if the group
 // 	 * is not the root group. We must not touch the root entity
@@ -220,14 +220,14 @@ extern "C" {
 //  * only one active child. And only if this condition holds, then this
 //  * function returns true for a non-queue entity.
 //  */
-// static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+// static bool bfq_no_longer_next_in_service(bfq_entity *entity)
 // {
 // 	struct bfq_group *bfqg;
 // 
 // 	if (bfq_entity_to_bfqq(entity))
 // 		return true;
 // 
-// 	bfqg = container_of(entity, struct bfq_group, entity);
+// 	bfqg = container_of(entity, bfq_group, entity);
 // 
 // 	/*
 // 	 * The field active_entities does not always contain the
@@ -247,19 +247,19 @@ extern "C" {
 // 	return false;
 // }
 // 
-// static void bfq_inc_active_entities(struct bfq_entity *entity)
+// static void bfq_inc_active_entities(bfq_entity *entity)
 // {
 // 	struct bfq_sched_data *sd = entity->sched_data;
-// 	struct bfq_group *bfqg = container_of(sd, struct bfq_group, sched_data);
+// 	struct bfq_group *bfqg = container_of(sd, bfq_group, sched_data);
 // 
 // 	if (bfqg != bfqg->bfqd->root_group)
 // 		bfqg->active_entities++;
 // }
 // 
-// static void bfq_dec_active_entities(struct bfq_entity *entity)
+// static void bfq_dec_active_entities(bfq_entity *entity)
 // {
 // 	struct bfq_sched_data *sd = entity->sched_data;
-// 	struct bfq_group *bfqg = container_of(sd, struct bfq_group, sched_data);
+// 	struct bfq_group *bfqg = container_of(sd, bfq_group, sched_data);
 // 
 // 	if (bfqg != bfqg->bfqd->root_group)
 // 		bfqg->active_entities--;
@@ -267,21 +267,21 @@ extern "C" {
 // 
 // #else /* CONFIG_BFQ_GROUP_IOSCHED */
 // 
-// static bool bfq_update_parent_budget(struct bfq_entity *next_in_service)
+// static bool bfq_update_parent_budget(bfq_entity *next_in_service)
 // {
 // 	return false;
 // }
 // 
-// static bool bfq_no_longer_next_in_service(struct bfq_entity *entity)
+// static bool bfq_no_longer_next_in_service(bfq_entity *entity)
 // {
 // 	return true;
 // }
 // 
-// static void bfq_inc_active_entities(struct bfq_entity *entity)
+// static void bfq_inc_active_entities(bfq_entity *entity)
 // {
 // }
 // 
-// static void bfq_dec_active_entities(struct bfq_entity *entity)
+// static void bfq_dec_active_entities(bfq_entity *entity)
 // {
 // }
 // 
@@ -296,12 +296,12 @@ extern "C" {
 //  */
 // #define WFQ_SERVICE_SHIFT	22
 // 
-// struct bfq_queue *bfq_entity_to_bfqq(struct bfq_entity *entity)
+// struct bfq_queue *bfq_entity_to_bfqq(bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = NULL;
 // 
 // 	if (!entity->my_sched_data)
-// 		bfqq = container_of(entity, struct bfq_queue, entity);
+// 		bfqq = container_of(entity, bfq_queue, entity);
 // 
 // 	return bfqq;
 // }
@@ -322,7 +322,7 @@ extern "C" {
 //  * @entity: the entity to act upon.
 //  * @service: the service to be charged to the entity.
 //  */
-// static void bfq_calc_finish(struct bfq_entity *entity, unsigned long service)
+// static void bfq_calc_finish(bfq_entity *entity, unsigned long service)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
 // 
@@ -349,12 +349,12 @@ extern "C" {
 //  * conversion mechanism because, e.g., in the tree walking functions,
 //  * the check for a %NULL value would be redundant.
 //  */
-// struct bfq_entity *bfq_entity_of(struct rb_node *node)
+// struct bfq_entity *bfq_entity_of(rb_node *node)
 // {
 // 	struct bfq_entity *entity = NULL;
 // 
 // 	if (node)
-// 		entity = rb_entry(node, struct bfq_entity, rb_node);
+// 		entity = rb_entry(node, bfq_entity, rb_node);
 // 
 // 	return entity;
 // }
@@ -364,7 +364,7 @@ extern "C" {
 //  * @root: the tree root.
 //  * @entity: the entity to remove.
 //  */
-// static void bfq_extract(struct rb_root *root, struct bfq_entity *entity)
+// static void bfq_extract(rb_root *root, bfq_entity *entity)
 // {
 // 	entity->tree = NULL;
 // 	rb_erase(&entity->rb_node, root);
@@ -375,7 +375,7 @@ extern "C" {
 //  * @st: the service tree of the owning @entity.
 //  * @entity: the entity being removed.
 //  */
-// static void bfq_idle_extract(struct bfq_service_tree *st,
+// static void bfq_idle_extract(bfq_service_tree *st,
 // 			     struct bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
@@ -405,7 +405,7 @@ extern "C" {
 //  * This is used for the idle and the active tree, since they are both
 //  * ordered by finish time.
 //  */
-// static void bfq_insert(struct rb_root *root, struct bfq_entity *entity)
+// static void bfq_insert(rb_root *root, bfq_entity *entity)
 // {
 // 	struct bfq_entity *entry;
 // 	struct rb_node **node = &root->rb_node;
@@ -413,7 +413,7 @@ extern "C" {
 // 
 // 	while (*node) {
 // 		parent = *node;
-// 		entry = rb_entry(parent, struct bfq_entity, rb_node);
+// 		entry = rb_entry(parent, bfq_entity, rb_node);
 // 
 // 		if (bfq_gt(entry->finish, entity->finish))
 // 			node = &parent->rb_left;
@@ -437,12 +437,12 @@ extern "C" {
 //  * that the subtree rooted at @node (which may be its left or its right
 //  * child) has a valid min_start value.
 //  */
-// static void bfq_update_min(struct bfq_entity *entity, struct rb_node *node)
+// static void bfq_update_min(bfq_entity *entity, rb_node *node)
 // {
 // 	struct bfq_entity *child;
 // 
 // 	if (node) {
-// 		child = rb_entry(node, struct bfq_entity, rb_node);
+// 		child = rb_entry(node, bfq_entity, rb_node);
 // 		if (bfq_gt(entity->min_start, child->min_start))
 // 			entity->min_start = child->min_start;
 // 	}
@@ -456,9 +456,9 @@ extern "C" {
 //  * this function updates its min_start value.  The left and right subtrees
 //  * are assumed to hold a correct min_start value.
 //  */
-// static void bfq_update_active_node(struct rb_node *node)
+// static void bfq_update_active_node(rb_node *node)
 // {
-// 	struct bfq_entity *entity = rb_entry(node, struct bfq_entity, rb_node);
+// 	struct bfq_entity *entity = rb_entry(node, bfq_entity, rb_node);
 // 
 // 	entity->min_start = entity->start;
 // 	bfq_update_min(entity, node->rb_right);
@@ -475,7 +475,7 @@ extern "C" {
 //  * changed in the path to the root.  The only nodes that may have changed
 //  * are the ones in the path or their siblings.
 //  */
-// static void bfq_update_active_tree(struct rb_node *node)
+// static void bfq_update_active_tree(rb_node *node)
 // {
 // 	struct rb_node *parent;
 // 
@@ -506,7 +506,7 @@ extern "C" {
 //  * its children (and the node itself), so it's possible to search for
 //  * the eligible node with the lowest finish time in logarithmic time.
 //  */
-// static void bfq_active_insert(struct bfq_service_tree *st,
+// static void bfq_active_insert(bfq_service_tree *st,
 // 			      struct bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
@@ -550,7 +550,7 @@ extern "C" {
 // 		     IOPRIO_NR_LEVELS - weight / BFQ_WEIGHT_CONVERSION_COEFF);
 // }
 // 
-// static void bfq_get_entity(struct bfq_entity *entity)
+// static void bfq_get_entity(bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
 // 
@@ -570,7 +570,7 @@ extern "C" {
 //  * the following modifications to the tree can touch.  If @node is the
 //  * last node in the tree return %NULL.
 //  */
-// static struct rb_node *bfq_find_deepest(struct rb_node *node)
+// static struct rb_node *bfq_find_deepest(rb_node *node)
 // {
 // 	struct rb_node *deepest;
 // 
@@ -596,7 +596,7 @@ extern "C" {
 //  * @st: the service_tree containing the tree.
 //  * @entity: the entity being removed.
 //  */
-// static void bfq_active_extract(struct bfq_service_tree *st,
+// static void bfq_active_extract(bfq_service_tree *st,
 // 			       struct bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
@@ -618,7 +618,7 @@ extern "C" {
 //  * @st: the service tree containing the tree.
 //  * @entity: the entity to insert.
 //  */
-// static void bfq_idle_insert(struct bfq_service_tree *st,
+// static void bfq_idle_insert(bfq_service_tree *st,
 // 			    struct bfq_entity *entity)
 // {
 // 	struct bfq_queue *bfqq = bfq_entity_to_bfqq(entity);
@@ -651,7 +651,7 @@ extern "C" {
 //  * will take care of putting the reference when the queue finally
 //  * stops being served.
 //  */
-// static void bfq_forget_entity(struct bfq_service_tree *st,
+// static void bfq_forget_entity(bfq_service_tree *st,
 // 			      struct bfq_entity *entity,
 // 			      bool is_in_service)
 // {
@@ -668,7 +668,7 @@ extern "C" {
 //  * @st: service tree for the entity.
 //  * @entity: the entity being released.
 //  */
-// void bfq_put_idle_entity(struct bfq_service_tree *st, struct bfq_entity *entity)
+// void bfq_put_idle_entity(bfq_service_tree *st, bfq_entity *entity)
 // {
 // 	bfq_idle_extract(st, entity);
 // 	bfq_forget_entity(st, entity,
@@ -682,7 +682,7 @@ extern "C" {
 //  * To preserve the global O(log N) complexity we only remove one entry here;
 //  * as the idle tree will not grow indefinitely this can be done safely.
 //  */
-// static void bfq_forget_idle(struct bfq_service_tree *st)
+// static void bfq_forget_idle(bfq_service_tree *st)
 // {
 // 	struct bfq_entity *first_idle = st->first_idle;
 // 	struct bfq_entity *last_idle = st->last_idle;
@@ -700,7 +700,7 @@ extern "C" {
 // 		bfq_put_idle_entity(st, first_idle);
 // }
 // 
-// struct bfq_service_tree *bfq_entity_service_tree(struct bfq_entity *entity)
+// struct bfq_service_tree *bfq_entity_service_tree(bfq_entity *entity)
 // {
 // 	struct bfq_sched_data *sched_data = entity->sched_data;
 // 	unsigned int idx = bfq_class_idx(entity);
@@ -727,7 +727,7 @@ extern "C" {
 //  * entity may happen to be on some tree.
 //  */
 // struct bfq_service_tree *
-// __bfq_entity_update_weight_prio(struct bfq_service_tree *old_st,
+// __bfq_entity_update_weight_prio(bfq_service_tree *old_st,
 // 				struct bfq_entity *entity,
 // 				bool update_class_too)
 // {
@@ -813,7 +813,7 @@ extern "C" {
 //  * are synchronized every time a new bfqq is selected for service.  By now,
 //  * we keep it to better check consistency.
 //  */
-// void bfq_bfqq_served(struct bfq_queue *bfqq, int served)
+// void bfq_bfqq_served(bfq_queue *bfqq, int served)
 // {
 // 	struct bfq_entity *entity = &bfqq->entity;
 // 	struct bfq_service_tree *st;
@@ -863,7 +863,7 @@ extern "C" {
 //  * correlated with the duration of the service slot. This is
 //  * especially true for short service slots.
 //  */
-// void bfq_bfqq_charge_time(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+// void bfq_bfqq_charge_time(bfq_data *bfqd, bfq_queue *bfqq,
 // 			  unsigned long time_ms)
 // {
 // 	struct bfq_entity *entity = &bfqq->entity;
@@ -881,7 +881,7 @@ extern "C" {
 // 			max_t(int, 0, tot_serv_to_charge - entity->service));
 // }
 // 
-// static void bfq_update_fin_time_enqueue(struct bfq_entity *entity,
+// static void bfq_update_fin_time_enqueue(bfq_entity *entity,
 // 					struct bfq_service_tree *st,
 // 					bool backshifted)
 // {
@@ -953,7 +953,7 @@ extern "C" {
 //  * inserts entity into its active tree, after possibly extracting it
 //  * from its idle tree.
 //  */
-// static void __bfq_activate_entity(struct bfq_entity *entity,
+// static void __bfq_activate_entity(bfq_entity *entity,
 // 				  bool non_blocking_wait_rq)
 // {
 // 	struct bfq_service_tree *st = bfq_entity_service_tree(entity);
@@ -1012,7 +1012,7 @@ extern "C" {
 //  * entity back into its active tree (in the new, right position for
 //  * the new values of the timestamps).
 //  */
-// static void __bfq_requeue_entity(struct bfq_entity *entity)
+// static void __bfq_requeue_entity(bfq_entity *entity)
 // {
 // 	struct bfq_sched_data *sd = entity->sched_data;
 // 	struct bfq_service_tree *st = bfq_entity_service_tree(entity);
@@ -1078,7 +1078,7 @@ extern "C" {
 // 	bfq_update_fin_time_enqueue(entity, st, false);
 // }
 // 
-// static void __bfq_activate_requeue_entity(struct bfq_entity *entity,
+// static void __bfq_activate_requeue_entity(bfq_entity *entity,
 // 					  bool non_blocking_wait_rq)
 // {
 // 	struct bfq_service_tree *st = bfq_entity_service_tree(entity);
@@ -1112,7 +1112,7 @@ extern "C" {
 //  * @expiration: true if this function is being invoked in the expiration path
 //  *             of the in-service queue
 //  */
-// static void bfq_activate_requeue_entity(struct bfq_entity *entity,
+// static void bfq_activate_requeue_entity(bfq_entity *entity,
 // 					bool non_blocking_wait_rq,
 // 					bool requeue, bool expiration)
 // {
@@ -1134,7 +1134,7 @@ extern "C" {
 //  * If necessary and allowed, puts entity into the idle tree. NOTE:
 //  * entity may be on no tree if in service.
 //  */
-// bool __bfq_deactivate_entity(struct bfq_entity *entity, bool ins_into_idle_tree)
+// bool __bfq_deactivate_entity(bfq_entity *entity, bool ins_into_idle_tree)
 // {
 // 	struct bfq_sched_data *sd = entity->sched_data;
 // 	struct bfq_service_tree *st;
@@ -1187,7 +1187,7 @@ extern "C" {
 //  * @expiration: true if this function is being invoked in the expiration path
 //  *             of the in-service queue
 //  */
-// static void bfq_deactivate_entity(struct bfq_entity *entity,
+// static void bfq_deactivate_entity(bfq_entity *entity,
 // 				  bool ins_into_idle_tree,
 // 				  bool expiration)
 // {
@@ -1292,7 +1292,7 @@ extern "C" {
 //  *
 //  * Assumes that st is not empty.
 //  */
-// static u64 bfq_calc_vtime_jump(struct bfq_service_tree *st)
+// static u64 bfq_calc_vtime_jump(bfq_service_tree *st)
 // {
 // 	struct bfq_entity *root_entity = bfq_root_active_entity(&st->active);
 // 
@@ -1302,7 +1302,7 @@ extern "C" {
 // 	return st->vtime;
 // }
 // 
-// static void bfq_update_vtime(struct bfq_service_tree *st, u64 new_value)
+// static void bfq_update_vtime(bfq_service_tree *st, u64 new_value)
 // {
 // 	if (new_value > st->vtime) {
 // 		st->vtime = new_value;
@@ -1322,14 +1322,14 @@ extern "C" {
 //  * the right is followed only if a) the left subtree contains no eligible
 //  * entities and b) no eligible entity has been found yet.
 //  */
-// static struct bfq_entity *bfq_first_active_entity(struct bfq_service_tree *st,
+// static struct bfq_entity *bfq_first_active_entity(bfq_service_tree *st,
 // 						  u64 vtime)
 // {
 // 	struct bfq_entity *entry, *first = NULL;
 // 	struct rb_node *node = st->active.rb_node;
 // 
 // 	while (node) {
-// 		entry = rb_entry(node, struct bfq_entity, rb_node);
+// 		entry = rb_entry(node, bfq_entity, rb_node);
 // left:
 // 		if (!bfq_gt(entry->start, vtime))
 // 			first = entry;
@@ -1375,7 +1375,7 @@ extern "C" {
 //  * 3) is idle.
 //  */
 // static struct bfq_entity *
-// __bfq_lookup_next_entity(struct bfq_service_tree *st, bool in_service)
+// __bfq_lookup_next_entity(bfq_service_tree *st, bool in_service)
 // {
 // 	struct bfq_entity *entity;
 // 	u64 new_vtime;
@@ -1416,7 +1416,7 @@ extern "C" {
 //  * for sd, and we need to know what is the new next entity to serve
 //  * after this change.
 //  */
-// static struct bfq_entity *bfq_lookup_next_entity(struct bfq_sched_data *sd,
+// static struct bfq_entity *bfq_lookup_next_entity(bfq_sched_data *sd,
 // 						 bool expiration)
 // {
 // 	struct bfq_service_tree *st = sd->service_tree;
@@ -1470,7 +1470,7 @@ extern "C" {
 // 	return entity;
 // }
 // 
-// bool next_queue_may_preempt(struct bfq_data *bfqd)
+// bool next_queue_may_preempt(bfq_data *bfqd)
 // {
 // 	struct bfq_sched_data *sd = &bfqd->root_group->sched_data;
 // 
@@ -1480,7 +1480,7 @@ extern "C" {
 // /*
 //  * Get next queue for service.
 //  */
-// struct bfq_queue *bfq_get_next_queue(struct bfq_data *bfqd)
+// struct bfq_queue *bfq_get_next_queue(bfq_data *bfqd)
 // {
 // 	struct bfq_entity *entity = NULL;
 // 	struct bfq_sched_data *sd;
@@ -1573,7 +1573,7 @@ extern "C" {
 // }
 // 
 // /* returns true if the in-service queue gets freed */
-// bool __bfq_bfqd_reset_in_service(struct bfq_data *bfqd)
+// bool __bfq_bfqd_reset_in_service(bfq_data *bfqd)
 // {
 // 	struct bfq_queue *in_serv_bfqq = bfqd->in_service_queue;
 // 	struct bfq_entity *in_serv_entity = &in_serv_bfqq->entity;
@@ -1613,7 +1613,7 @@ extern "C" {
 // 	return false;
 // }
 // 
-// void bfq_deactivate_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+// void bfq_deactivate_bfqq(bfq_data *bfqd, bfq_queue *bfqq,
 // 			 bool ins_into_idle_tree, bool expiration)
 // {
 // 	struct bfq_entity *entity = &bfqq->entity;
@@ -1621,7 +1621,7 @@ extern "C" {
 // 	bfq_deactivate_entity(entity, ins_into_idle_tree, expiration);
 // }
 // 
-// void bfq_activate_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq)
+// void bfq_activate_bfqq(bfq_data *bfqd, bfq_queue *bfqq)
 // {
 // 	struct bfq_entity *entity = &bfqq->entity;
 // 
@@ -1630,7 +1630,7 @@ extern "C" {
 // 	bfq_clear_bfqq_non_blocking_wait_rq(bfqq);
 // }
 // 
-// void bfq_requeue_bfqq(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+// void bfq_requeue_bfqq(bfq_data *bfqd, bfq_queue *bfqq,
 // 		      bool expiration)
 // {
 // 	struct bfq_entity *entity = &bfqq->entity;
@@ -1639,7 +1639,7 @@ extern "C" {
 // 				    bfqq == bfqd->in_service_queue, expiration);
 // }
 // 
-// void bfq_add_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
+// void bfq_add_bfqq_in_groups_with_pending_reqs(bfq_queue *bfqq)
 // {
 // #ifdef CONFIG_BFQ_GROUP_IOSCHED
 // 	struct bfq_entity *entity = &bfqq->entity;
@@ -1652,7 +1652,7 @@ extern "C" {
 // #endif
 // }
 // 
-// void bfq_del_bfqq_in_groups_with_pending_reqs(struct bfq_queue *bfqq)
+// void bfq_del_bfqq_in_groups_with_pending_reqs(bfq_queue *bfqq)
 // {
 // #ifdef CONFIG_BFQ_GROUP_IOSCHED
 // 	struct bfq_entity *entity = &bfqq->entity;
@@ -1670,7 +1670,7 @@ extern "C" {
 //  * the service tree. As a special case, it can be invoked during an
 //  * expiration.
 //  */
-// void bfq_del_bfqq_busy(struct bfq_queue *bfqq, bool expiration)
+// void bfq_del_bfqq_busy(bfq_queue *bfqq, bool expiration)
 // {
 // 	struct bfq_data *bfqd = bfqq->bfqd;
 // 
@@ -1700,7 +1700,7 @@ extern "C" {
 // /*
 //  * Called when an inactive queue receives a new request.
 //  */
-// void bfq_add_bfqq_busy(struct bfq_queue *bfqq)
+// void bfq_add_bfqq_busy(bfq_queue *bfqq)
 // {
 // 	struct bfq_data *bfqd = bfqq->bfqd;
 // 

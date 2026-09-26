@@ -38,14 +38,14 @@ extern "C" {
 }
 
 // The CONFIG_PROC_FS build-time condition is preserved here as a Rust cfg.
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe extern "C" fn execdomains_proc_show(m: *mut SeqFile, _v: *mut c_void) -> i32 {
     static TEXT: &[u8] = b"0-0\tLinux           \t[kernel]\n\0";
     seq_puts(m, TEXT.as_ptr());
     0
 }
 
-#[cfg(feature = "CONFIG_PROC_FS")]
+#[cfg(CONFIG_PROC_FS)]
 unsafe extern "C" fn proc_execdomains_init() -> i32 {
     static NAME: &[u8] = b"execdomains\0";
     proc_create_single(NAME.as_ptr(), 0, core::ptr::null_mut(), execdomains_proc_show);

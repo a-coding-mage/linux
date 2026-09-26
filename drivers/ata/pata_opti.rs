@@ -20,13 +20,11 @@
 const DRV_NAME: &str = "pata_opti";
 const DRV_VERSION: &str = "0.2.9";
 
-enum {
-    READ_REG = 0,   // index of Read cycle timing register
-    WRITE_REG = 1,  // index of Write cycle timing register
-    CNTRL_REG = 3,  // index of Control register
-    STRAP_REG = 5,  // index of Strap register
-    MISC_REG = 6,   // index of Miscellaneous register
-}
+pub const READ_REG: i32 = 0;
+pub const WRITE_REG: i32 = 1;
+pub const CNTRL_REG: i32 = 3;
+pub const STRAP_REG: i32 = 5;
+pub const MISC_REG: i32 = 6;
 
 /**
  * opti_pre_reset - probe begin

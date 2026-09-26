@@ -6,11 +6,11 @@ extern "C" {
     pub fn map_smb2_to_linux_error(buf: *mut core::ffi::c_char, log_err: bool) -> core::ffi::c_int;
     pub fn smb2_init_maperror() -> core::ffi::c_int;
 
-    #[cfg(feature = "CONFIG_SMB_KUNIT_TESTS")]
+    #[cfg(CONFIG_SMB_KUNIT_TESTS)]
     pub fn smb2_get_err_map_test(smb2_status: u32) -> *const status_to_posix_error;
-    #[cfg(feature = "CONFIG_SMB_KUNIT_TESTS")]
+    #[cfg(CONFIG_SMB_KUNIT_TESTS)]
     pub static mut smb2_error_map_table_test: *const status_to_posix_error;
-    #[cfg(feature = "CONFIG_SMB_KUNIT_TESTS")]
+    #[cfg(CONFIG_SMB_KUNIT_TESTS)]
     pub static mut smb2_error_map_num: u32;
 
     pub fn smb2_check_message(buf: *mut core::ffi::c_char, pdu_len: u32, len: u32, server: *mut TCP_Server_Info) -> core::ffi::c_int;

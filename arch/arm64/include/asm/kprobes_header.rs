@@ -10,22 +10,22 @@
 
 // The following declarations are conditional on the C build-time condition
 // CONFIG_KPROBES.
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const __ARCH_WANT_KPROBES_INSN_SLOT: bool = true;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const MAX_INSN_SIZE: usize = 2;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[inline(always)]
 pub unsafe fn flush_insn_slot<T>(_p: *mut T) {
     // C macro body is empty.
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 pub const kretprobe_blacklist_size: usize = 0;
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct prev_kprobe {
     pub kp: *mut kprobe,
@@ -38,7 +38,7 @@ pub struct prev_kprobe {
 }
 
 // per-cpu kprobe control block
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 #[repr(C)]
 pub struct kprobe_ctlblk {
     pub kprobe_status: core::ffi::c_uint,
@@ -46,7 +46,7 @@ pub struct kprobe_ctlblk {
     pub prev_kprobe: prev_kprobe,
 }
 
-#[cfg(feature = "CONFIG_KPROBES")]
+#[cfg(CONFIG_KPROBES)]
 unsafe extern "C" {
     pub fn arch_remove_kprobe(kp: *mut kprobe);
     pub fn kprobe_fault_handler(regs: *mut pt_regs, fsr: core::ffi::c_uint) -> core::ffi::c_int;

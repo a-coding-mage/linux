@@ -5,7 +5,7 @@
 // linux/spinlock_types.h, linux/types.h
 
 // C build condition: !CONFIG_PREEMPT_RT
-#[cfg(not(feature = "CONFIG_PREEMPT_RT"))]
+#[cfg(not(CONFIG_PREEMPT_RT))]
 pub struct mutex {
     /*
      * Simple, straightforward mutexes with strict semantics:
@@ -39,28 +39,28 @@ pub struct mutex {
     pub wait_lock: raw_spinlock_t,
 
     // C build condition: CONFIG_MUTEX_SPIN_ON_OWNER
-    #[cfg(feature = "CONFIG_MUTEX_SPIN_ON_OWNER")]
+    #[cfg(CONFIG_MUTEX_SPIN_ON_OWNER)]
     pub osq: optimistic_spin_queue, // Spinner MCS lock
 
     // *first_waiter is guarded by &wait_lock in the C declaration.
     pub first_waiter: *mut mutex_waiter,
 
     // C build condition: CONFIG_DEBUG_MUTEXES
-    #[cfg(feature = "CONFIG_DEBUG_MUTEXES")]
+    #[cfg(CONFIG_DEBUG_MUTEXES)]
     pub magic: *mut core::ffi::c_void,
 
     // C build condition: CONFIG_DEBUG_LOCK_ALLOC
-    #[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+    #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub dep_map: lockdep_map,
 }
 
 // C build condition: CONFIG_PREEMPT_RT
-#[cfg(feature = "CONFIG_PREEMPT_RT")]
+#[cfg(CONFIG_PREEMPT_RT)]
 pub struct mutex {
     pub rtmutex: rt_mutex_base,
 
     // C build condition: CONFIG_DEBUG_LOCK_ALLOC
-    #[cfg(feature = "CONFIG_DEBUG_LOCK_ALLOC")]
+    #[cfg(CONFIG_DEBUG_LOCK_ALLOC)]
     pub dep_map: lockdep_map,
 }
 

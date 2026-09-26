@@ -50,7 +50,7 @@ unsafe fn m54xx_uarts_init() {
 
 unsafe fn m54xx_i2c_init() {
     // #if IS_ENABLED(CONFIG_I2C_IMX)
-    #[cfg(feature = "CONFIG_I2C_IMX")]
+    #[cfg(CONFIG_I2C_IMX)]
     {
         let mut r: u32;
 

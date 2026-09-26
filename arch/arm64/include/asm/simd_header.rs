@@ -5,7 +5,7 @@
 
 /* C header dependencies are supplied by other translated units. */
 
-#[cfg(feature = "CONFIG_KERNEL_MODE_NEON")]
+#[cfg(CONFIG_KERNEL_MODE_NEON)]
 extern "C" {
     fn system_capabilities_finalized() -> bool;
     fn system_supports_fpsimd() -> bool;
@@ -14,7 +14,7 @@ extern "C" {
     fn warn_on(condition: bool) -> bool;
 }
 
-#[cfg(feature = "CONFIG_KERNEL_MODE_NEON")]
+#[cfg(CONFIG_KERNEL_MODE_NEON)]
 /*
  * may_use_simd - whether it is allowable at this time to issue SIMD
  *                instructions or access the SIMD register file
@@ -34,7 +34,7 @@ pub unsafe fn may_use_simd() -> bool {
         && !in_nmi()
 }
 
-#[cfg(not(feature = "CONFIG_KERNEL_MODE_NEON"))]
+#[cfg(not(CONFIG_KERNEL_MODE_NEON))]
 #[inline]
 pub fn may_use_simd() -> bool {
     false

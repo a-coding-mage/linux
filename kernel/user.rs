@@ -12,7 +12,7 @@
 // C dependencies supplied by the surrounding kernel translation.
 
 #[cfg(any())]
-pub static mut init_binfmt_misc: struct binfmt_misc = struct binfmt_misc {
+pub static mut init_binfmt_misc: binfmt_misc = binfmt_misc {
     entries: HLIST_HEAD_INIT,
     enabled: true,
     entries_lock: __SPIN_LOCK_UNLOCKED,
@@ -23,7 +23,7 @@ pub static mut init_binfmt_misc: struct binfmt_misc = struct binfmt_misc {
  * and 1 for... ?
  */
 #[no_mangle]
-pub static mut init_user_ns: struct user_namespace = struct user_namespace {
+pub static mut init_user_ns: user_namespace = user_namespace {
     ns: NS_COMMON_INIT,
     uid_map: {
         let mut value = Default::default();
@@ -46,17 +46,17 @@ pub static mut init_user_ns: struct user_namespace = struct user_namespace {
     owner: GLOBAL_ROOT_UID,
     group: GLOBAL_ROOT_GID,
     flags: USERNS_INIT_FLAGS,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     keyring_name_list: LIST_HEAD_INIT,
-    #[cfg(feature = "CONFIG_KEYS")]
+    #[cfg(CONFIG_KEYS)]
     keyring_sem: __RWSEM_INITIALIZER,
     #[cfg(any())]
     binfmt_misc: unsafe { &mut init_binfmt_misc },
 };
 
-#[cfg(feature = "CONFIG_BASE_SMALL")]
+#[cfg(CONFIG_BASE_SMALL)]
 const UIDHASH_BITS: usize = 3;
-#[cfg(not(feature = "CONFIG_BASE_SMALL"))]
+#[cfg(not(CONFIG_BASE_SMALL))]
 const UIDHASH_BITS: usize = 7;
 const UIDHASH_SZ: usize = 1usize << UIDHASH_BITS;
 const UIDHASH_MASK: usize = UIDHASH_SZ - 1;
@@ -99,16 +99,16 @@ unsafe fn uid_hash_find(uid: kuid_t, hashent: *mut hlist_head) -> *mut user_stru
 }
 
 unsafe fn user_epoll_alloc(up: *mut user_struct) -> i32 {
-    #[cfg(feature = "CONFIG_EPOLL")]
+    #[cfg(CONFIG_EPOLL)]
     { return percpu_counter_init(&mut (*up).epoll_watches, 0, GFP_KERNEL); }
-    #[cfg(not(feature = "CONFIG_EPOLL"))]
+    #[cfg(not(CONFIG_EPOLL))]
     { let _ = up; 0 }
 }
 
 unsafe fn user_epoll_free(up: *mut user_struct) {
-    #[cfg(feature = "CONFIG_EPOLL")]
+    #[cfg(CONFIG_EPOLL)]
     { percpu_counter_destroy(&mut (*up).epoll_watches); }
-    #[cfg(not(feature = "CONFIG_EPOLL"))]
+    #[cfg(not(CONFIG_EPOLL))]
     { let _ = up; }
 }
 

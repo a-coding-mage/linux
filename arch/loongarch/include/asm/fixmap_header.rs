@@ -28,7 +28,7 @@ pub const FIXADDR_SIZE: usize = (__end_of_fixed_addresses as usize) << PAGE_SHIF
 pub const FIXADDR_START: usize = (FIXADDR_TOP as usize) - FIXADDR_SIZE;
 pub const FIXMAP_PAGE_IO: pgprot_t = PAGE_KERNEL_SUC;
 
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn __set_fixmap(idx: fixed_addresses, phys: phys_addr_t, flags: pgprot_t);
 }
 
@@ -37,7 +37,7 @@ pub unsafe extern "C" {
 /*
  * Called from pagetable_init()
  */
-pub unsafe extern "C" {
+unsafe extern "C" {
     pub fn fixrange_init(start: c_ulong, end: c_ulong, pgd_base: *mut pgd_t);
 }
 

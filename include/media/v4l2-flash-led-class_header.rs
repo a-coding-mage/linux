@@ -62,7 +62,7 @@ pub unsafe fn v4l2_ctrl_to_v4l2_flash(c: *mut v4l2_ctrl) -> *mut v4l2_flash {
 }
 
 // When CONFIG_V4L2_FLASH_LED_CLASS is enabled, these are external functions.
-#[cfg(feature = "CONFIG_V4L2_FLASH_LED_CLASS")]
+#[cfg(CONFIG_V4L2_FLASH_LED_CLASS)]
 extern "C" {
     pub fn v4l2_flash_init(
         dev: *mut device,
@@ -81,7 +81,7 @@ extern "C" {
 }
 
 // Fallback definitions when CONFIG_V4L2_FLASH_LED_CLASS is disabled.
-#[cfg(not(feature = "CONFIG_V4L2_FLASH_LED_CLASS"))]
+#[cfg(not(CONFIG_V4L2_FLASH_LED_CLASS))]
 pub unsafe fn v4l2_flash_init(
     _dev: *mut device,
     _fwn: *mut fwnode_handle,
@@ -92,7 +92,7 @@ pub unsafe fn v4l2_flash_init(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_V4L2_FLASH_LED_CLASS"))]
+#[cfg(not(CONFIG_V4L2_FLASH_LED_CLASS))]
 pub unsafe fn v4l2_flash_indicator_init(
     _dev: *mut device,
     _fwn: *mut fwnode_handle,
@@ -102,7 +102,7 @@ pub unsafe fn v4l2_flash_indicator_init(
     core::ptr::null_mut()
 }
 
-#[cfg(not(feature = "CONFIG_V4L2_FLASH_LED_CLASS"))]
+#[cfg(not(CONFIG_V4L2_FLASH_LED_CLASS))]
 pub unsafe fn v4l2_flash_release(_v4l2_flash: *mut v4l2_flash) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

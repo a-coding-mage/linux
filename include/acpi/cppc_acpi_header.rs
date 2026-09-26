@@ -165,7 +165,7 @@ pub struct cppc_cpudata {
     pub shared_cpu_map: cpumask_var_t,
 }
 
-#[cfg(feature = "CONFIG_ACPI_CPPC_LIB")]
+#[cfg(CONFIG_ACPI_CPPC_LIB)]
 extern "C" {
     pub fn cppc_get_desired_perf(cpunum: i32, desired_perf: *mut u64) -> i32;
     pub fn cppc_get_nominal_perf(cpunum: i32, nominal_perf: *mut u64) -> i32;
@@ -203,63 +203,63 @@ extern "C" {
     pub fn amd_detect_prefcore(detected: *mut bool) -> i32;
 }
 
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_desired_perf(_: i32, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_nominal_perf(_: i32, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_highest_perf(_: i32, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_perf_ctrs(_: i32, _: *mut cppc_perf_fb_ctrs) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_perf(_: i32, _: *mut cppc_perf_ctrls) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_perf(_: i32, _: *mut cppc_perf_ctrls) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_enable(_: i32, _: bool) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_perf_caps(_: i32, _: *mut cppc_perf_caps) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_perf_ctrs_in_pcc_cpu(_: core::ffi::c_uint) -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_perf_ctrs_in_pcc() -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn acpi_cpc_valid() -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_allow_fast_switch(_: *const cpumask) -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_transition_latency(_: i32) -> i32 { -ENODATA }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cpc_ffh_supported() -> bool { false }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cpc_read_ffh(_: i32, _: *mut cpc_reg, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cpc_read_ffh_fb_ctrs(_: i32, _: *mut cpc_reg, _: *mut u64, _: *mut cpc_reg, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cpc_write_ffh(_: i32, _: *mut cpc_reg, _: u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_epp_perf(_: i32, _: *mut cppc_perf_ctrls, _: bool) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_epp_perf(_: i32, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_epp(_: i32, _: u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_auto_act_window(_: i32, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_auto_act_window(_: i32, _: u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_auto_sel(_: i32, _: *mut bool) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_auto_sel(_: i32, _: bool) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_get_perf_limited(_: i32, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn cppc_set_perf_limited(_: i32, _: u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn amd_get_highest_perf(_: core::ffi::c_uint, _: *mut u32) -> i32 { -ENODEV }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn amd_get_boost_ratio_numerator(_: core::ffi::c_uint, _: *mut u64) -> i32 { -EOPNOTSUPP }
-#[cfg(not(feature = "CONFIG_ACPI_CPPC_LIB"))]
+#[cfg(not(CONFIG_ACPI_CPPC_LIB))]
 pub unsafe fn amd_detect_prefcore(_: *mut bool) -> i32 { -ENODEV }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

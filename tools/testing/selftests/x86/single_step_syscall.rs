@@ -37,8 +37,7 @@ unsafe extern "C" {
     fn sethandler(
         sig: c_int,
         handler: unsafe extern "C" fn(c_int, *mut libc::siginfo_t, *mut c_void),
-        flags: c_int,
-    );
+        flags: c_int);
     fn clearhandler(sig: c_int);
     fn sigsetjmp(env: libc::sigjmp_buf, savesigs: c_int) -> c_int;
     fn siglongjmp(env: libc::sigjmp_buf, val: c_int) -> !;

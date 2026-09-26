@@ -2,15 +2,15 @@
 
 // C dependencies supplied by the surrounding kernel translation.
 
-static DEFINE_PER_CPU_PAGE_ALIGNED!(struct entry_stack_page, entry_stack_storage);
+DEFINE_PER_CPU_PAGE_ALIGNED!(entry_stack_page, entry_stack_storage);
 
 #[cfg(target_arch = "x86_64")]
-static DEFINE_PER_CPU_PAGE_ALIGNED!(struct exception_stacks, exception_stacks);
+DEFINE_PER_CPU_PAGE_ALIGNED!(exception_stacks, exception_stacks);
 #[cfg(target_arch = "x86_64")]
-DEFINE_PER_CPU!(struct cea_exception_stacks *, cea_exception_stacks);
+DEFINE_PER_CPU!(cea_exception_stacks *, cea_exception_stacks);
 
 #[cfg(target_arch = "x86_64")]
-static DEFINE_PER_CPU_READ_MOSTLY!(unsigned long, _cea_offset);
+DEFINE_PER_CPU_READ_MOSTLY!(core::ffi::c_ulong, _cea_offset);
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
@@ -26,40 +26,40 @@ unsafe fn init_cea_offsets() {
     let mut j: c_uint;
 
     if !kaslr_enabled() {
-        for_each_possible_cpu!(i) {
+        for_each_possible_cpu!(i, {
             per_cpu!(_cea_offset, i) = i;
-        }
+        });
         return;
     }
 
     max_cea = (CPU_ENTRY_AREA_MAP_SIZE - PAGE_SIZE) / CPU_ENTRY_AREA_SIZE;
 
     /* O(sodding terrible) */
-    for_each_possible_cpu!(i) {
+    for_each_possible_cpu!(i, {
         let mut cea: c_uint;
 
         loop {
             cea = get_random_u32_below(max_cea);
 
-            for_each_possible_cpu!(j) {
+            for_each_possible_cpu!(j, {
                 if cea_offset(j) == cea {
                     continue;
                 }
                 if i == j {
                     break;
                 }
-            }
+            });
 
             // C's goto `again` retries the random selection when a collision
             // is found; the surrounding kernel macro supplies that state.
             per_cpu!(_cea_offset, i) = cea;
             break;
         }
-    }
+    });
 }
 
 #[cfg(not(target_arch = "x86_64"))]
-DECLARE_PER_CPU_PAGE_ALIGNED!(struct doublefault_stack, doublefault_stack);
+DECLARE_PER_CPU_PAGE_ALIGNED!(doublefault_stack, doublefault_stack);
 
 #[cfg(not(target_arch = "x86_64"))]
 #[inline(always)]
@@ -73,11 +73,11 @@ unsafe fn init_cea_offsets() {}
 
 /* Is called from entry code, so must be noinstr */
 #[noinstr]
-unsafe fn get_cpu_entry_area(cpu: c_int) -> *mut struct cpu_entry_area {
+unsafe fn get_cpu_entry_area(cpu: c_int) -> *mut cpu_entry_area {
     let va: c_ulong = CPU_ENTRY_AREA_PER_CPU + cea_offset(cpu as c_uint) * CPU_ENTRY_AREA_SIZE;
-    BUILD_BUG_ON!(core::mem::size_of::<struct cpu_entry_area>() % PAGE_SIZE != 0);
+    BUILD_BUG_ON!(core::mem::size_of::<cpu_entry_area>() % PAGE_SIZE != 0);
 
-    va as *mut struct cpu_entry_area
+    va as *mut cpu_entry_area
 }
 EXPORT_SYMBOL!(get_cpu_entry_area);
 
@@ -122,8 +122,8 @@ unsafe fn percpu_setup_debug_store(cpu: c_uint) {
         }
 
         cea = core::ptr::addr_of_mut!((*get_cpu_entry_area(cpu as c_int)).cpu_debug_store) as *mut c_void;
-        npages = core::mem::size_of::<struct debug_store>() as c_uint / PAGE_SIZE;
-        BUILD_BUG_ON!(core::mem::size_of::<struct debug_store>() % PAGE_SIZE != 0);
+        npages = core::mem::size_of::<debug_store>() as c_uint / PAGE_SIZE;
+        BUILD_BUG_ON!(core::mem::size_of::<debug_store>() % PAGE_SIZE != 0);
         cea_map_percpu_pages(cea, core::ptr::addr_of_mut!(per_cpu!(cpu_debug_store, cpu)) as *mut c_void,
                              npages as c_int, PAGE_KERNEL);
 
@@ -132,7 +132,7 @@ unsafe fn percpu_setup_debug_store(cpu: c_uint) {
          * Force the population of PMDs for not yet allocated per cpu
          * memory like debug store buffers.
          */
-        npages = core::mem::size_of::<struct debug_store_buffers>() as c_uint / PAGE_SIZE;
+        npages = core::mem::size_of::<debug_store_buffers>() as c_uint / PAGE_SIZE;
         while npages != 0 {
             cea_set_pte(cea, 0, PAGE_NONE);
             npages -= 1;
@@ -155,10 +155,10 @@ unsafe fn percpu_setup_exception_stacks(cpu: c_uint) {
      * by guard pages so each stack must be mapped separately. DB2 is
      * not mapped; it just exists to catch triple nesting of #DB.
      */
-    macro_rules! cea_map_stack { ($name:ident) => {
-        npages = core::mem::size_of::<struct $name##_stack>() as c_uint / PAGE_SIZE;
-        cea_map_percpu_pages(core::ptr::addr_of_mut!((*cea).estacks.$name##_stack) as *mut c_void,
-                             core::ptr::addr_of_mut!((*estacks).$name##_stack) as *mut c_void,
+    macro_rules! cea_map_stack { ($name:tt) => {
+        npages = core::mem::size_of::<struct ::kernel::macros::paste!([<$name _stack>])>() as c_uint / PAGE_SIZE;
+        cea_map_percpu_pages(core::ptr::addr_of_mut!((*cea).estacks.::kernel::macros::paste!([<$name _stack>])) as *mut c_void,
+                             core::ptr::addr_of_mut!((*estacks).::kernel::macros::paste!([<$name _stack>])) as *mut c_void,
                              npages as c_int, PAGE_KERNEL);
     } }
     cea_map_stack!(DF);
@@ -211,19 +211,19 @@ unsafe fn setup_cpu_entry_area(cpu: c_uint) {
      * There are also a lot of errata involving the TSS spanning a page
      * boundary.  Assert that we're not doing that.
      */
-    BUILD_BUG_ON!((offset_of!(struct tss_struct, x86_tss) ^ offsetofend!(struct tss_struct, x86_tss)) & PAGE_MASK);
-    BUILD_BUG_ON!(core::mem::size_of::<struct tss_struct>() % PAGE_SIZE != 0);
+    BUILD_BUG_ON!((offset_of!(tss_struct, x86_tss) ^ offsetofend!(tss_struct, x86_tss)) & PAGE_MASK);
+    BUILD_BUG_ON!(core::mem::size_of::<tss_struct>() % PAGE_SIZE != 0);
     /*
      * VMX changes the host TR limit to 0x67 after a VM exit. This is
      * okay, since 0x67 covers the size of struct x86_hw_tss. Make sure
      * that this is correct.
      */
-    BUILD_BUG_ON!(offset_of!(struct tss_struct, x86_tss) != 0);
-    BUILD_BUG_ON!(core::mem::size_of::<struct x86_hw_tss>() != 0x68);
+    BUILD_BUG_ON!(offset_of!(tss_struct, x86_tss) != 0);
+    BUILD_BUG_ON!(core::mem::size_of::<x86_hw_tss>() != 0x68);
 
     cea_map_percpu_pages(core::ptr::addr_of_mut!((*cea).tss) as *mut c_void,
                          per_cpu_ptr(&cpu_tss_rw, cpu),
-                         (core::mem::size_of::<struct tss_struct>() / PAGE_SIZE) as c_int,
+                         (core::mem::size_of::<tss_struct>() / PAGE_SIZE) as c_int,
                          tss_prot);
 
     #[cfg(not(target_arch = "x86_64"))]
@@ -260,9 +260,9 @@ unsafe fn setup_cpu_entry_areas() {
 
     init_cea_offsets();
     setup_cpu_entry_area_ptes();
-    for_each_possible_cpu!(cpu) {
+    for_each_possible_cpu!(cpu, {
         setup_cpu_entry_area(cpu);
-    }
+    });
 
     /*
      * This is the last essential update to swapper_pgdir which needs

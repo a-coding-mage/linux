@@ -34,6 +34,8 @@ pub unsafe extern "C" fn sun8i_ce_trng_read(
     let cet: *mut ce_task;
     let mut common: u32;
     let d: *mut core::ffi::c_void;
+    'err_dst: {
+    'err_pm: {
 
     // round the data length to a multiple of 32
     todo = (max as u32).wrapping_add(32);
@@ -54,12 +56,12 @@ pub unsafe extern "C" fn sun8i_ce_trng_read(
     if dma_mapping_error((*ce).dev, dma_dst) {
         dev_err((*ce).dev, "Cannot DMA MAP DST\n");
         err = -EFAULT;
-        goto err_dst;
+        break 'err_dst;
     }
 
     err = pm_runtime_resume_and_get((*ce).dev);
     if err < 0 {
-        goto err_pm;
+        break 'err_pm;
     }
 
     mutex_lock(&mut (*ce).rnglock);
@@ -89,15 +91,16 @@ pub unsafe extern "C" fn sun8i_ce_trng_read(
     mutex_unlock(&mut (*ce).rnglock);
 
     pm_runtime_put((*ce).dev);
-
-err_pm:
+    }
+    
     dma_unmap_single((*ce).dev, dma_dst, todo as usize, DMA_FROM_DEVICE);
 
     if err == 0 {
         core::ptr::copy_nonoverlapping(d as *const u8, data as *mut u8, max);
         err = max as i32;
     }
-err_dst:
+    }
+    
     kfree_sensitive(d);
     err as isize
 }

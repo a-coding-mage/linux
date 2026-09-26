@@ -17,8 +17,8 @@ macro_rules! ALIGN_DOWN {
 
 macro_rules! IS_ALIGNED {
     ($x:expr, $a:expr) => {{
-        let x = $x;
-        ((x) & (($a as _) - 1)) == 0
+        let $x = $x;
+        (($x) & (($a as _) - 1)) == 0
     }};
 }
 

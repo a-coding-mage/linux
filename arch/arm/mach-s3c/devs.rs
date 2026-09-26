@@ -46,7 +46,7 @@ macro_rules! hsmmc_device {
             dev: device { dma_mask: &SAMSUNG_DEVICE_DMA_MASK, coherent_dma_mask: DMA_BIT_MASK(32), platform_data: &$pd, ..device::default() },
         };
         #[cfg(concat_id(CONFIG_S3C_DEV_HSMMC, $n))]
-        pub unsafe fn $set(pd: *mut s3c_sdhci_platdata) { s3c_sdhci_set_platdata(pd, &mut $pd); }
+        pub unsafe fn $set(pd: *mut s3c_sdhci_platdata) { s3c_sdhci_set_platdata($pd, &mut $pd); }
     };
 }
 

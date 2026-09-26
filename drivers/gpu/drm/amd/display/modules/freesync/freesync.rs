@@ -53,26 +53,28 @@ struct core_freesync {
 };
 
 #define MOD_FREESYNC_TO_CORE(mod_freesync)\
-		container_of(mod_freesync, struct core_freesync, public)
+		container_of(mod_freesync, core_freesync, public)
 
 *mut mod_freesyncmod_freesync_create(*mut dcdc)
 {
+	'fail_alloc_context: {
+	'fail_construct: {
 	*mut core_freesynccore_freesync =
-			kzalloc_obj(struct core_freesync);
+			kzalloc_obj(core_freesync);
 
 	if (core_freesync == core::ptr::null_mut())
-		goto fail_alloc_context;
+		break 'fail_alloc_context;
 
 	if (dc == core::ptr::null_mut())
-		goto fail_construct;
+		break 'fail_construct;
 
 	core_freesync.dc = dc;
 	return &core_freesync.public;
-
-fail_construct:
+	}
+	
 	kfree(core_freesync);
-
-fail_alloc_context:
+	}
+	
 	return core::ptr::null_mut();
 }
 
@@ -87,7 +89,7 @@ pub unsafe fn mod_freesync_destroy(*mut mod_freesyncmod_freesync)
 }
 
 fn calc_duration_in_us_from_refresh_in_uhz(
-		u32 refresh_in_uhz)
+		refresh_in_uhz: u32)
 {
 	u32 duration_in_us =
 			((u32)(div64_u64((1000000000ULL * 1000),
@@ -96,7 +98,7 @@ fn calc_duration_in_us_from_refresh_in_uhz(
 }
 
 fn calc_duration_in_us_from_v_total( *const dc_stream_statestream, *const mod_vrr_paramsin_vrr,
-		u32 v_total)
+		v_total: u32)
 {
 	(void)in_vrr;
 	u32 duration_in_us =
@@ -109,9 +111,9 @@ fn calc_duration_in_us_from_v_total( *const dc_stream_statestream, *const mod_vr
 
 fn calc_max_hardware_v_total(*const dc_stream_statestream)
 {
-	u32 max_hw_v_total = stream.ctx->dc.caps.max_v_total;
+	u32 max_hw_v_total = (*stream.ctx).dc.caps.max_v_total;
 
-	if (stream.ctx->dc.caps.vtotal_limited_by_fp2) {
+	if ((*stream.ctx).dc.caps.vtotal_limited_by_fp2) {
 		max_hw_v_total -= stream.timing.v_front_porch + 1;
 	}
 
@@ -119,7 +121,7 @@ fn calc_max_hardware_v_total(*const dc_stream_statestream)
 }
 
 pub unsafe fn mod_freesync_calc_v_total_from_refresh( *const dc_stream_statestream,
-		u32 refresh_in_uhz)
+		refresh_in_uhz: u32)
 {
 	u32 v_total;
 	u32 frame_duration_in_ns;
@@ -163,7 +165,7 @@ pub unsafe fn mod_freesync_calc_v_total_from_refresh( *const dc_stream_statestre
 }
 
 fn calc_v_total_from_duration( *const dc_stream_statestream, *const mod_vrr_paramsvrr,
-		u32 duration_in_us)
+		duration_in_us: u32)
 {
 	u32 v_total = 0;
 
@@ -197,8 +199,7 @@ fn calc_v_total_from_duration( *const dc_stream_statestream, *const mod_vrr_para
 
 fn update_v_total_for_static_ramp(
 		*mut core_freesynccore_freesync, *const dc_stream_statestream,
-		*mut mod_vrr_paramsin_out_vrr)
-{
+		*mut mod_vrr_paramsin_out_vrr) {
 	(void)core_freesync;
 	u32 v_total = 0;
 	u32 current_duration_in_us =
@@ -276,7 +277,7 @@ fn update_v_total_for_static_ramp(
 }
 
 fn apply_below_the_range(*mut core_freesynccore_freesync, *const dc_stream_statestream,
-		u32 last_render_time_in_us,
+		last_render_time_in_us: u32,
 		*mut mod_vrr_paramsin_out_vrr)
 {
 	(void)core_freesync;
@@ -431,7 +432,7 @@ fn apply_below_the_range(*mut core_freesynccore_freesync, *const dc_stream_state
 }
 
 fn apply_fixed_refresh(*mut core_freesynccore_freesync, *const dc_stream_statestream,
-		u32 last_render_time_in_us,
+		last_render_time_in_us: u32,
 		*mut mod_vrr_paramsin_out_vrr)
 {
 	(void)core_freesync;
@@ -493,7 +494,7 @@ fn apply_fixed_refresh(*mut core_freesynccore_freesync, *const dc_stream_statest
 }
 
 fn determine_flip_interval_workaround_req(*mut mod_vrr_paramsin_vrr,
-		u32 curr_time_stamp_in_us)
+		curr_time_stamp_in_us: u32)
 {
 	in_vrr.flip_interval.vsync_to_flip_in_us = curr_time_stamp_in_us -
 			in_vrr.flip_interval.v_update_timestamp_in_us;
@@ -529,8 +530,8 @@ fn determine_flip_interval_workaround_req(*mut mod_vrr_paramsin_vrr,
 
 fn vrr_settings_require_update(*mut core_freesynccore_freesync,
 		*mut mod_freesync_configin_config,
-		u32 min_refresh_in_uhz,
-		u32 max_refresh_in_uhz,
+		min_refresh_in_uhz: u32,
+		max_refresh_in_uhz: u32,
 		*mut mod_vrr_paramsin_vrr)
 {
 	(void)core_freesync;
@@ -551,7 +552,7 @@ fn vrr_settings_require_update(*mut core_freesynccore_freesync,
 
 fn build_vrr_infopacket_data_v1(*const mod_vrr_paramsvrr,
 		*mut dc_info_packetinfopacket,
-		bool freesync_on_desktop)
+		freesync_on_desktop: bool)
 {
 	/* PB1 = 0x1A (24bit AMD IEEE OUI (0x00001A) - Byte 0) */
 	infopacket.sb[1] = 0x1A;
@@ -605,7 +606,7 @@ fn build_vrr_infopacket_data_v1(*const mod_vrr_paramsvrr,
 
 fn build_vrr_infopacket_data_v3(*const mod_vrr_paramsvrr,
 		*mut dc_info_packetinfopacket,
-		bool freesync_on_desktop)
+		freesync_on_desktop: bool)
 {
 	u32 min_refresh;
 	u32 max_refresh;
@@ -672,7 +673,7 @@ fn build_vrr_infopacket_data_v3(*const mod_vrr_paramsvrr,
 	infopacket.sb[16] = (vrr.state == VRR_STATE_ACTIVE_FIXED) ? 1 : 0;
 }
 
-fn build_vrr_infopacket_fs2_data(enum color_transfer_func app_tf,
+fn build_vrr_infopacket_fs2_data(color_transfer_func app_tf,
 		*mut dc_info_packetinfopacket)
 {
 	if (app_tf != TRANSFER_FUNC_UNKNOWN) {
@@ -688,7 +689,7 @@ fn build_vrr_infopacket_fs2_data(enum color_transfer_func app_tf,
 	}
 }
 
-fn build_vrr_infopacket_header_v1(enum signal_type signal,
+fn build_vrr_infopacket_header_v1(signal_type signal,
 		*mut dc_info_packetinfopacket,
 		u32 *payload_size)
 {
@@ -737,7 +738,7 @@ fn build_vrr_infopacket_header_v1(enum signal_type signal,
 	}
 }
 
-fn build_vrr_infopacket_header_v2(enum signal_type signal,
+fn build_vrr_infopacket_header_v2(signal_type signal,
 		*mut dc_info_packetinfopacket,
 		u32 *payload_size)
 {
@@ -785,7 +786,7 @@ fn build_vrr_infopacket_header_v2(enum signal_type signal,
 	}
 }
 
-fn build_vrr_infopacket_header_v3(enum signal_type signal,
+fn build_vrr_infopacket_header_v3(signal_type signal,
 		*mut dc_info_packetinfopacket,
 		u32 *payload_size)
 {
@@ -858,9 +859,9 @@ fn build_vrr_infopacket_checksum(u32 *payload_size,
 	infopacket.valid = true;
 }
 
-fn build_vrr_infopacket_v1(enum signal_type signal, *const mod_vrr_paramsvrr,
+fn build_vrr_infopacket_v1(signal_type signal, *const mod_vrr_paramsvrr,
 		*mut dc_info_packetinfopacket,
-		bool freesync_on_desktop)
+		freesync_on_desktop: bool)
 {
 	/* SPD info packet for FreeSync */
 	u32 payload_size = 0;
@@ -872,10 +873,10 @@ fn build_vrr_infopacket_v1(enum signal_type signal, *const mod_vrr_paramsvrr,
 	infopacket.valid = true;
 }
 
-fn build_vrr_infopacket_v2(enum signal_type signal, *const mod_vrr_paramsvrr,
-		enum color_transfer_func app_tf,
+fn build_vrr_infopacket_v2(signal_type signal, *const mod_vrr_paramsvrr,
+		color_transfer_func app_tf,
 		*mut dc_info_packetinfopacket,
-		bool freesync_on_desktop)
+		freesync_on_desktop: bool)
 {
 	u32 payload_size = 0;
 
@@ -889,10 +890,10 @@ fn build_vrr_infopacket_v2(enum signal_type signal, *const mod_vrr_paramsvrr,
 	infopacket.valid = true;
 }
 
-fn build_vrr_infopacket_v3(enum signal_type signal, *const mod_vrr_paramsvrr,
-		enum color_transfer_func app_tf,
+fn build_vrr_infopacket_v3(signal_type signal, *const mod_vrr_paramsvrr,
+		color_transfer_func app_tf,
 		*mut dc_info_packetinfopacket,
-		bool freesync_on_desktop)
+		freesync_on_desktop: bool)
 {
 	u32 payload_size = 0;
 
@@ -906,7 +907,7 @@ fn build_vrr_infopacket_v3(enum signal_type signal, *const mod_vrr_paramsvrr,
 	infopacket.valid = true;
 }
 
-fn build_vrr_infopacket_sdp_v1_3(enum vrr_packet_type packet_type,
+fn build_vrr_infopacket_sdp_v1_3(vrr_packet_type packet_type,
 										*mut dc_info_packetinfopacket)
 {
 	u8 idx = 0, size = 0;
@@ -925,10 +926,10 @@ fn build_vrr_infopacket_sdp_v1_3(enum vrr_packet_type packet_type,
 }
 
 pub unsafe fn mod_freesync_build_vrr_infopacket(*mut mod_freesyncmod_freesync, *const dc_stream_statestream, *const mod_vrr_paramsvrr,
-		enum vrr_packet_type packet_type,
-		enum color_transfer_func app_tf,
+		vrr_packet_type packet_type,
+		color_transfer_func app_tf,
 		*mut dc_info_packetinfopacket,
-		bool pack_sdp_v1_3)
+		pack_sdp_v1_3: bool)
 {
 	(void)mod_freesync;
 	/* SPD info packet for FreeSync
@@ -980,9 +981,9 @@ pub unsafe fn mod_freesync_build_vrr_params(*mut mod_freesyncmod_freesync, *cons
 	nominal_field_rate_in_uhz =
 			mod_freesync_calc_nominal_field_rate(stream);
 
-	if (stream.ctx->dc.caps.max_v_total != 0 && stream.timing.h_total != 0) {
+	if ((*stream.ctx).dc.caps.max_v_total != 0 && stream.timing.h_total != 0) {
 		min_hardware_refresh_in_uhz = div64_u64((stream.timing.pix_clk_100hz * 100000000ULL),
-			(stream.timing.h_total * (long long)calc_max_hardware_v_total(stream)));
+			(stream.timing.h_total * (core::ffi::c_longlong)calc_max_hardware_v_total(stream)));
 	}
 	/* Limit minimum refresh rate to what can be supported by hardware */
 	min_refresh_in_uhz = min_hardware_refresh_in_uhz > in_config.min_refresh_in_uhz ?
@@ -1115,7 +1116,7 @@ pub unsafe fn mod_freesync_build_vrr_params(*mut mod_freesyncmod_freesync, *cons
 }
 
 pub unsafe fn mod_freesync_handle_preflip(*mut mod_freesyncmod_freesync, *const dc_plane_stateplane, *const dc_stream_statestream,
-		u32 curr_time_stamp_in_us,
+		curr_time_stamp_in_us: u32,
 		*mut mod_vrr_paramsin_out_vrr)
 {
 	*mut core_freesynccore_freesync = core::ptr::null_mut();
@@ -1165,9 +1166,9 @@ pub unsafe fn mod_freesync_handle_v_update(*mut mod_freesyncmod_freesync, *const
 	if (in_out_vrr.supported == false)
 		return;
 
-	cur_tick = dm_get_timestamp(core_freesync.dc->ctx);
+	cur_tick = dm_get_timestamp((*core_freesync.dc).ctx);
 	cur_timestamp_in_us = (u32)
-			div_u64(dm_get_elapse_time_in_ns(core_freesync.dc->ctx, cur_tick, 0), 1000);
+			div_u64(dm_get_elapse_time_in_ns((*core_freesync.dc).ctx, cur_tick, 0), 1000);
 
 	in_out_vrr.flip_interval.vsyncs_between_flip++;
 	in_out_vrr.flip_interval.v_update_timestamp_in_us = cur_timestamp_in_us;

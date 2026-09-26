@@ -19,7 +19,7 @@ pub unsafe fn pci_stc_flushflag_set(stc: *const strbuf) -> bool {
     (*(*stc).strbuf_flushflag) != 0u64
 }
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 #[repr(C)]
 pub struct sparc64_msiq_ops {
     pub get_head: Option<unsafe extern "C" fn(*mut pci_pbm_info, c_ulong, *mut c_ulong) -> c_int>,
@@ -32,12 +32,12 @@ pub struct sparc64_msiq_ops {
     pub msiq_build_irq: Option<unsafe extern "C" fn(*mut pci_pbm_info, c_ulong, c_ulong) -> c_int>,
 }
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 extern "C" {
     pub fn sparc64_pbm_msi_init(pbm: *mut pci_pbm_info, ops: *const sparc64_msiq_ops);
 }
 
-#[cfg(feature = "CONFIG_PCI_MSI")]
+#[cfg(CONFIG_PCI_MSI)]
 #[repr(C)]
 pub struct sparc64_msiq_cookie {
     pub pbm: *mut pci_pbm_info,
@@ -74,45 +74,45 @@ pub struct pci_pbm_info {
     pub pci_csr: c_ulong,
     pub is_66mhz_capable: c_int,
     pub all_devs_66mhz: c_int,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msiq_num: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msiq_ent_count: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msiq_first: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msiq_first_devino: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msiq_rotor: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msiq_irq_cookies: *mut sparc64_msiq_cookie,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_num: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_first: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_data_mask: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msix_data_width: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi32_start: u64,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi64_start: u64,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi32_len: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi64_len: u32,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_queues: *mut c_void,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_bitmap: *mut c_ulong,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_irq_table: *mut c_uint,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub setup_msi_irq: Option<unsafe extern "C" fn(*mut c_uint, *mut pci_dev, *mut msi_desc) -> c_int>,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub teardown_msi_irq: Option<unsafe extern "C" fn(c_uint, *mut pci_dev)>,
-    #[cfg(feature = "CONFIG_PCI_MSI")]
+    #[cfg(CONFIG_PCI_MSI)]
     pub msi_ops: *const sparc64_msiq_ops,
     pub stc: strbuf,
     pub iommu: *mut iommu,

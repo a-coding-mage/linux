@@ -58,7 +58,7 @@ pub struct ip6_srh_t {
     pub flags: u8,
     pub tag: u16,
 
-    /* Flexible array member in C: struct ip6_addr_t segments[0]; */
+    /* Flexible array member in C: ip6_addr_t segments[0]; */
 }
 
 #[repr(C, packed)]
@@ -66,7 +66,7 @@ pub struct sr6_tlv_t {
     pub type_: u8,
     pub len: u8,
 
-    /* Flexible array member in C: unsigned char value[0]; */
+    /* Flexible array member in C: core::ffi::c_uchar value[0]; */
 }
 
 unsafe extern "C" {
@@ -75,8 +75,7 @@ unsafe extern "C" {
         skb: *mut __sk_buff,
         offset: u32,
         from: *mut c_void,
-        len: u32,
-    ) -> i32;
+        len: u32) -> i32;
     fn bpf_skb_load_bytes(skb: *mut __sk_buff, offset: u32, to: *mut c_void, len: u32) -> i32;
     fn bpf_lwt_seg6_action(skb: *mut __sk_buff, action: u32, param: *mut c_void, len: u32) -> i32;
 }

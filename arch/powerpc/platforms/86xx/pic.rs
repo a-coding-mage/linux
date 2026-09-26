@@ -5,7 +5,7 @@
 
 // Dependencies supplied by the surrounding kernel translation.
 
-#[cfg(feature = "CONFIG_PPC_I8259")]
+#[cfg(CONFIG_PPC_I8259)]
 unsafe extern "C" {
     fn irq_desc_get_chip(desc: *mut irq_desc) -> *mut irq_chip;
     fn i8259_irq() -> u32;
@@ -21,25 +21,25 @@ unsafe extern "C" {
     ) -> bool;
 }
 
-#[cfg(feature = "CONFIG_PPC_I8259")]
+#[cfg(CONFIG_PPC_I8259)]
 #[repr(C)]
 pub struct irq_desc {
     pub irq_data: irq_data,
 }
 
-#[cfg(feature = "CONFIG_PPC_I8259")]
+#[cfg(CONFIG_PPC_I8259)]
 #[repr(C)]
 pub struct irq_data {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_PPC_I8259")]
+#[cfg(CONFIG_PPC_I8259)]
 #[repr(C)]
 pub struct irq_chip {
     pub irq_eoi: Option<unsafe extern "C" fn(data: *mut irq_data)>,
 }
 
-#[cfg(feature = "CONFIG_PPC_I8259")]
+#[cfg(CONFIG_PPC_I8259)]
 #[repr(C)]
 pub struct device_node {
     _private: [u8; 0],
@@ -66,7 +66,7 @@ pub struct mpic {
 const MPIC_BIG_ENDIAN: u32 = 1 << 0;
 const MPIC_SINGLE_DEST_CPU: u32 = 1 << 1;
 
-#[cfg(feature = "CONFIG_PPC_I8259")]
+#[cfg(CONFIG_PPC_I8259)]
 unsafe extern "C" fn mpc86xx_8259_cascade(desc: *mut irq_desc) {
     let chip = irq_desc_get_chip(desc);
     let cascade_irq = i8259_irq();
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn mpc86xx_init_irq() {
     mpic_init(mpic);
 
     // CONFIG_PPC_I8259 is a build-time condition in the original source.
-    #[cfg(feature = "CONFIG_PPC_I8259")]
+    #[cfg(CONFIG_PPC_I8259)]
     {
         let mut cascade_node: *mut device_node = core::ptr::null_mut();
         let mut cascade_irq: i32;

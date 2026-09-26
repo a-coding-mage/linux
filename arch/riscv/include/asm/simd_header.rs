@@ -8,7 +8,7 @@
 // linux/compiler.h, linux/irqflags.h, linux/percpu.h, linux/preempt.h,
 // linux/types.h, linux/thread_info.h, and asm/vector.h.
 
-#[cfg(feature = "CONFIG_RISCV_ISA_V")]
+#[cfg(CONFIG_RISCV_ISA_V)]
 extern "C" {
     fn in_hardirq() -> bool;
     fn in_nmi() -> bool;
@@ -16,7 +16,7 @@ extern "C" {
     static RISCV_KERNEL_MODE_V: u64;
 }
 
-#[cfg(feature = "CONFIG_RISCV_ISA_V")]
+#[cfg(CONFIG_RISCV_ISA_V)]
 #[inline]
 pub unsafe fn may_use_simd() -> bool {
     /*
@@ -36,7 +36,7 @@ pub unsafe fn may_use_simd() -> bool {
     (riscv_v_flags() & RISCV_KERNEL_MODE_V) == 0
 }
 
-#[cfg(not(feature = "CONFIG_RISCV_ISA_V"))]
+#[cfg(not(CONFIG_RISCV_ISA_V))]
 #[inline]
 pub fn may_use_simd() -> bool {
     false

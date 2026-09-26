@@ -105,8 +105,8 @@ pub struct AaTagsStructHdrs {
 }
 
 extern "C" {
-    pub struct AaStrTable;
 }
+pub struct AaStrTable;
 
 #[repr(C)]
 pub struct AaTagsStruct {
@@ -116,12 +116,12 @@ pub struct AaTagsStruct {
 }
 
 extern "C" {
-    pub struct AaDfa;
-    pub struct AaPerms;
-    pub struct Kref;
 
-    pub type AaStateT = u32;
 }
+pub struct AaDfa;
+pub struct AaPerms;
+pub struct Kref;
+pub type AaStateT = u32;
 
 // struct aa_policydb - match engine for a policy
 // @count: refcount for the pdb
@@ -211,14 +211,14 @@ pub struct AaData {
 }
 
 extern "C" {
-    pub struct RhashHead;
 }
+pub struct RhashHead;
 
 extern "C" {
-    pub struct AaCaps;
-    pub struct AaRlimit;
-    pub struct AaSecmark;
 }
+pub struct AaCaps;
+pub struct AaRlimit;
+pub struct AaSecmark;
 
 /// struct aa_ruleset - data covering mediation rules
 /// @list: list the rule is on
@@ -260,12 +260,12 @@ pub struct AaAttachment {
 }
 
 extern "C" {
-    pub struct AaPolicy;
-    pub struct AaLabel;
-    pub struct AaLoaddata;
-    pub struct Dentry;
-    pub struct AaProxy;
 }
+pub struct AaPolicy;
+pub struct AaLabel;
+pub struct AaLoaddata;
+pub struct Dentry;
+pub struct AaProxy;
 
 /// struct aa_profile - basic confinement data
 /// @base - base components of the profile (name, refcount, lists, lock ...)
@@ -383,8 +383,8 @@ extern "C" {
 }
 
 extern "C" {
-    pub struct ListHead;
 }
+pub struct ListHead;
 
 #[inline]
 pub fn profile_unconfined(x: *const AaProfile) -> bool {

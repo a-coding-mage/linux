@@ -40,13 +40,13 @@ pub struct xfbtree {
     pub minrecs: [u32; 2],
 }
 
-#[cfg(feature = "CONFIG_XFS_BTREE_IN_MEM")]
+#[cfg(CONFIG_XFS_BTREE_IN_MEM)]
 #[inline]
 pub unsafe fn xfbtree_verify_bno(xfbt: *mut xfbtree, bno: xfbno_t) -> bool {
     xmbuf_verify_daddr((*xfbt).target, xfbno_to_daddr(bno))
 }
 
-#[cfg(feature = "CONFIG_XFS_BTREE_IN_MEM")]
+#[cfg(CONFIG_XFS_BTREE_IN_MEM)]
 extern "C" {
     pub fn xfbtree_set_root(
         cur: *mut xfs_btree_cur,
@@ -80,7 +80,7 @@ extern "C" {
     pub fn xfbtree_trans_cancel(xfbt: *mut xfbtree, tp: *mut xfs_trans);
 }
 
-#[cfg(not(feature = "CONFIG_XFS_BTREE_IN_MEM"))]
+#[cfg(not(CONFIG_XFS_BTREE_IN_MEM))]
 #[macro_export]
 macro_rules! xfbtree_verify_bno {
     ($($arg:tt)*) => { false };

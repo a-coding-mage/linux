@@ -94,22 +94,22 @@ pub unsafe extern "C" fn prcmu_copy_gic_settings() -> i32 {
     0
 }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 unsafe extern "C" fn ux500_suspend_enter(_state: suspend_state_t) -> i32 { cpu_do_idle(); 0 }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 unsafe extern "C" fn ux500_suspend_valid(state: suspend_state_t) -> i32 {
     (state == PM_SUSPEND_MEM || state == PM_SUSPEND_STANDBY) as i32
 }
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 static ux500_suspend_ops: platform_suspend_ops = platform_suspend_ops {
     enter: Some(ux500_suspend_enter), valid: Some(ux500_suspend_valid),
 };
 
-#[cfg(feature = "CONFIG_SUSPEND")]
+#[cfg(CONFIG_SUSPEND)]
 const UX500_SUSPEND_OPS: *const platform_suspend_ops = &ux500_suspend_ops;
-#[cfg(not(feature = "CONFIG_SUSPEND"))]
+#[cfg(not(CONFIG_SUSPEND))]
 const UX500_SUSPEND_OPS: *const platform_suspend_ops = core::ptr::null();
 
 pub unsafe extern "C" fn ux500_pm_init(phy_base: u32, size: u32) {

@@ -112,8 +112,8 @@ unsafe fn sun4m_init_timers() {
     let mut len = 0; let addr = of_get_property(dp, "address", &mut len); of_node_put(dp); if addr.is_null() { printk(KERN_ERR, "sun4m_init_timers: No 'address' prop.\n"); return; }
     let num_cpu_timers = (len / core::mem::size_of::<u32>() as i32) - 1; for i in 0..num_cpu_timers { timers_percpu[i as usize] = (*addr.add(i as usize)) as usize as *mut sun4m_timer_percpu; } timers_global = (*addr.add(num_cpu_timers as usize)) as usize as *mut sun4m_timer_global;
     sbus_writel(0, &mut (*timers_global).timer_config);
-    #[cfg(feature = "CONFIG_SMP")] { sparc_config.cs_period = SBUS_CLOCK_RATE * 2; sparc_config.features |= FEAT_L14_ONESHOT; }
-    #[cfg(not(feature = "CONFIG_SMP"))] { sparc_config.cs_period = SBUS_CLOCK_RATE / HZ; sparc_config.features |= FEAT_L10_CLOCKEVENT; }
+    #[cfg(CONFIG_SMP)] { sparc_config.cs_period = SBUS_CLOCK_RATE * 2; sparc_config.features |= FEAT_L14_ONESHOT; }
+    #[cfg(not(CONFIG_SMP))] { sparc_config.cs_period = SBUS_CLOCK_RATE / HZ; sparc_config.features |= FEAT_L10_CLOCKEVENT; }
     sparc_config.features |= FEAT_L10_CLOCKSOURCE; sbus_writel(timer_value(sparc_config.cs_period), &mut (*timers_global).l10_limit); master_l10_counter = &mut (*timers_global).l10_count;
     let irq = sun4m_build_device_irq(core::ptr::null_mut(), SUN4M_TIMER_IRQ); let err = request_irq(irq, timer_interrupt, IRQF_TIMER, "timer", core::ptr::null_mut()); if err != 0 { printk(KERN_ERR, "sun4m_init_timers: Register IRQ error %d.\n", err); return; }
     for i in 0..num_cpu_timers { sbus_writel(0, &mut (*timers_percpu[i as usize]).l14_limit); } if num_cpu_timers == 4 { sbus_writel(SUN4M_INT_E14, &mut (*sun4m_irq_global).mask_set); }

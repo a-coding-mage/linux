@@ -132,12 +132,12 @@ pub const DLM_SBF_DEMOTED_BIT: u32=0; pub const __DLM_SBF_MIN_BIT: u32=0; pub co
 #[inline] pub unsafe fn dlm_no_directory(ls: *mut dlm_ls) -> i32 { test_bit(LSFL_NODIR as usize, &(*ls).ls_flags) }
 
 extern "C" { pub static mut dlm_wq: *mut workqueue_struct; pub fn dlm_plock_init() -> i32; pub fn dlm_plock_exit(); }
-#[cfg(feature = "CONFIG_DLM_DEBUG")] extern "C" { pub fn dlm_register_debugfs(); pub fn dlm_unregister_debugfs(); pub fn dlm_create_debug_file(ls: *mut dlm_ls); pub fn dlm_delete_debug_file(ls: *mut dlm_ls); pub fn dlm_create_debug_comms_file(nodeid: i32, data: *mut core::ffi::c_void) -> *mut core::ffi::c_void; pub fn dlm_delete_debug_comms_file(ctx: *mut core::ffi::c_void); }
-#[cfg(not(feature = "CONFIG_DLM_DEBUG"))] #[inline] pub unsafe fn dlm_register_debugfs() {}
-#[cfg(not(feature = "CONFIG_DLM_DEBUG"))] #[inline] pub unsafe fn dlm_unregister_debugfs() {}
-#[cfg(not(feature = "CONFIG_DLM_DEBUG"))] #[inline] pub unsafe fn dlm_create_debug_file(_: *mut dlm_ls) {}
-#[cfg(not(feature = "CONFIG_DLM_DEBUG"))] #[inline] pub unsafe fn dlm_delete_debug_file(_: *mut dlm_ls) {}
-#[cfg(not(feature = "CONFIG_DLM_DEBUG"))] #[inline] pub unsafe fn dlm_create_debug_comms_file(_: i32, _: *mut core::ffi::c_void) -> *mut core::ffi::c_void { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_DLM_DEBUG"))] #[inline] pub unsafe fn dlm_delete_debug_comms_file(_: *mut core::ffi::c_void) {}
+#[cfg(CONFIG_DLM_DEBUG)] extern "C" { pub fn dlm_register_debugfs(); pub fn dlm_unregister_debugfs(); pub fn dlm_create_debug_file(ls: *mut dlm_ls); pub fn dlm_delete_debug_file(ls: *mut dlm_ls); pub fn dlm_create_debug_comms_file(nodeid: i32, data: *mut core::ffi::c_void) -> *mut core::ffi::c_void; pub fn dlm_delete_debug_comms_file(ctx: *mut core::ffi::c_void); }
+#[cfg(not(CONFIG_DLM_DEBUG))] #[inline] pub unsafe fn dlm_register_debugfs() {}
+#[cfg(not(CONFIG_DLM_DEBUG))] #[inline] pub unsafe fn dlm_unregister_debugfs() {}
+#[cfg(not(CONFIG_DLM_DEBUG))] #[inline] pub unsafe fn dlm_create_debug_file(_: *mut dlm_ls) {}
+#[cfg(not(CONFIG_DLM_DEBUG))] #[inline] pub unsafe fn dlm_delete_debug_file(_: *mut dlm_ls) {}
+#[cfg(not(CONFIG_DLM_DEBUG))] #[inline] pub unsafe fn dlm_create_debug_comms_file(_: i32, _: *mut core::ffi::c_void) -> *mut core::ffi::c_void { core::ptr::null_mut() }
+#[cfg(not(CONFIG_DLM_DEBUG))] #[inline] pub unsafe fn dlm_delete_debug_comms_file(_: *mut core::ffi::c_void) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

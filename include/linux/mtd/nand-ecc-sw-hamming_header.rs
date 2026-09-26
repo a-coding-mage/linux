@@ -20,7 +20,7 @@ pub struct nand_ecc_sw_hamming_conf {
 }
 
 // Equivalent build-time condition for IS_ENABLED(CONFIG_MTD_NAND_ECC_SW_HAMMING).
-#[cfg(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING")]
+#[cfg(CONFIG_MTD_NAND_ECC_SW_HAMMING)]
 extern "C" {
     pub fn nand_ecc_sw_hamming_init_ctx(nand: *mut nand_device) -> ::core::ffi::c_int;
     pub fn nand_ecc_sw_hamming_cleanup_ctx(nand: *mut nand_device);
@@ -51,17 +51,17 @@ extern "C" {
 }
 
 // !CONFIG_MTD_NAND_ECC_SW_HAMMING: these inline definitions return -ENOTSUPP.
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_HAMMING))]
 #[inline]
 pub unsafe fn nand_ecc_sw_hamming_init_ctx(_nand: *mut nand_device) -> ::core::ffi::c_int {
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_HAMMING))]
 #[inline]
 pub unsafe fn nand_ecc_sw_hamming_cleanup_ctx(_nand: *mut nand_device) {}
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_HAMMING))]
 #[inline]
 pub unsafe fn ecc_sw_hamming_calculate(
     _buf: *const u8,
@@ -72,7 +72,7 @@ pub unsafe fn ecc_sw_hamming_calculate(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_HAMMING))]
 #[inline]
 pub unsafe fn nand_ecc_sw_hamming_calculate(
     _nand: *mut nand_device,
@@ -82,7 +82,7 @@ pub unsafe fn nand_ecc_sw_hamming_calculate(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_HAMMING))]
 #[inline]
 pub unsafe fn ecc_sw_hamming_correct(
     _buf: *mut u8,
@@ -94,7 +94,7 @@ pub unsafe fn ecc_sw_hamming_correct(
     -ENOTSUPP
 }
 
-#[cfg(not(feature = "CONFIG_MTD_NAND_ECC_SW_HAMMING"))]
+#[cfg(not(CONFIG_MTD_NAND_ECC_SW_HAMMING))]
 #[inline]
 pub unsafe fn nand_ecc_sw_hamming_correct(
     _nand: *mut nand_device,

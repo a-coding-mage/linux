@@ -31,8 +31,8 @@ pub unsafe fn dmub_srv_dcn36_regs_init(
      * each entry using the active DMUB_SR definition.
      */
     macro_rules! DMUB_SR {
-        ($reg:ident) => {
-            (*regs).offset.$reg = BASE($reg##_BASE_IDX) + $reg;
+        ($reg:tt) => {
+            (*regs).offset.$reg = BASE(::kernel::macros::paste!([<$reg _BASE_IDX>])) + $reg;
         };
     }
     DMUB_DCN35_REGS!();
@@ -40,16 +40,16 @@ pub unsafe fn dmub_srv_dcn36_regs_init(
 
     /* #define DMUB_SF(reg, field) REG_STRUCT->mask.reg##__##field = FD_MASK(reg, field); */
     macro_rules! DMUB_SF_MASK {
-        ($reg:ident, $field:ident) => {
-            (*regs).mask.$reg##__##$field = FD_MASK($reg, $field);
+        ($reg:tt, $field:ident) => {
+            (*regs).mask.::kernel::macros::paste!([<$reg __>])##$field = FD_MASK($reg, $field);
         };
     }
     DMUB_DCN35_FIELDS!();
 
     /* #define DMUB_SF(reg, field) REG_STRUCT->shift.reg##__##field = FD_SHIFT(reg, field); */
     macro_rules! DMUB_SF_SHIFT {
-        ($reg:ident, $field:ident) => {
-            (*regs).shift.$reg##__##$field = FD_SHIFT($reg, $field);
+        ($reg:tt, $field:ident) => {
+            (*regs).shift.::kernel::macros::paste!([<$reg __>])##$field = FD_SHIFT($reg, $field);
         };
     }
     DMUB_DCN35_FIELDS!();

@@ -115,16 +115,16 @@ pub unsafe fn ndisc_late_cleanup() { extern_late_cleanup() }
 pub unsafe fn ndisc_cleanup() { extern_cleanup() }
 
 unsafe extern "C" {
-    fn extern_fill_addr_option(*mut sk_buff, i32, *const c_void, i32, i32);
-    fn extern_parse_options(*const net_device, *mut u8, i32, *mut ndisc_options) -> *mut ndisc_options;
-    fn extern_mc_map(*const in6_addr, *mut i8, *mut net_device, i32) -> i32;
-    fn extern_send_skb(*mut sk_buff, *const in6_addr, *const in6_addr);
-    fn extern_send_na(*mut net_device, *const in6_addr, *const in6_addr, bool, bool, bool, bool);
-    fn extern_ns_create(*mut net_device, *const in6_addr, *const in6_addr, u64) -> *mut sk_buff;
-    fn extern_send_ns(*mut net_device, *const in6_addr, *const in6_addr, *const in6_addr, u64);
-    fn extern_send_rs(*mut net_device, *const in6_addr, *const in6_addr);
-    fn extern_update(*const net_device, *mut neighbour, *const u8, u8, u32, u8, *mut ndisc_options);
-    fn extern_rcv(*mut sk_buff) -> i32;
+    fn extern_fill_addr_option(_: *mut sk_buff, _: i32, _: *const c_void, _: i32, _: i32);
+    fn extern_parse_options(_: *const net_device, _: *mut u8, _: i32, _: *mut ndisc_options) -> *mut ndisc_options;
+    fn extern_mc_map(_: *const in6_addr, _: *mut i8, _: *mut net_device, _: i32) -> i32;
+    fn extern_send_skb(_: *mut sk_buff, _: *const in6_addr, _: *const in6_addr);
+    fn extern_send_na(_: *mut net_device, _: *const in6_addr, _: *const in6_addr, _: bool, _: bool, _: bool, _: bool);
+    fn extern_ns_create(_: *mut net_device, _: *const in6_addr, _: *const in6_addr, _: u64) -> *mut sk_buff;
+    fn extern_send_ns(_: *mut net_device, _: *const in6_addr, _: *const in6_addr, _: *const in6_addr, _: u64);
+    fn extern_send_rs(_: *mut net_device, _: *const in6_addr, _: *const in6_addr);
+    fn extern_update(_: *const net_device, _: *mut neighbour, _: *const u8, _: u8, _: u32, _: u8, _: *mut ndisc_options);
+    fn extern_rcv(_: *mut sk_buff) -> i32;
     fn extern_init() -> i32;
     fn extern_late_init() -> i32;
     fn extern_late_cleanup();

@@ -83,11 +83,11 @@ unsafe fn resctrl_find_free_rmid(closid: u32) -> *mut RmidEntry {
         return if RMID_LIMBO_COUNT != 0 { ERR_PTR(-EBUSY) } else { ERR_PTR(-ENOSPC) };
     }
     let mut itr: *mut RmidEntry;
-    list_for_each_entry!(itr, RMID_FREE_LRU, list) {
+    list_for_each_entry!(itr, RMID_FREE_LRU, list, {
         let itr_idx = resctrl_arch_rmid_idx_encode((*itr).closid, (*itr).rmid);
         let cmp_idx = resctrl_arch_rmid_idx_encode(closid, (*itr).rmid);
         if itr_idx == cmp_idx { return itr; }
-    }
+    });
     ERR_PTR(-ENOSPC)
 }
 
@@ -122,11 +122,11 @@ unsafe fn add_rmid_to_limbo(entry: *mut RmidEntry) {
     lockdep_assert_cpus_held();
     (*entry).busy = 0;
     let mut d: *mut RdtL3MonDomain;
-    list_for_each_entry_rcu!(d, (*r).mon_domains, hdr.list, lockdep_is_cpus_held()) {
+    list_for_each_entry_rcu!(d, (*r).mon_domains, hdr.list, lockdep_is_cpus_held(), {
         if !has_busy_rmid(d) { cqm_setup_limbo_handler(d, CQM_LIMBOCHECK_INTERVAL, RESCTRL_PICK_ANY_CPU); }
         set_bit(idx, (*d).rmid_busy_llc);
         (*entry).busy += 1;
-    }
+    });
     RMID_LIMBO_COUNT += 1;
     if IS_ENABLED_CONFIG_RESCTRL_RMID_DEPENDS_ON_CLOSID { *CLOSID_NUM_DIRTY_RMID.add((*entry).closid as usize) += 1; }
 }

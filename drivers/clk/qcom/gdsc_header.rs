@@ -94,7 +94,7 @@ pub struct gdsc_desc {
 }
 
 /* CONFIG_QCOM_GDSC conditional declarations. */
-#[cfg(feature = "CONFIG_QCOM_GDSC")]
+#[cfg(CONFIG_QCOM_GDSC)]
 extern "C" {
     pub fn gdsc_register(
         desc: *mut gdsc_desc,
@@ -106,7 +106,7 @@ extern "C" {
     pub fn gdsc_gx_disable(domain: *mut generic_pm_domain) -> core::ffi::c_int;
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_GDSC"))]
+#[cfg(not(CONFIG_QCOM_GDSC))]
 pub unsafe fn gdsc_register(
     _desc: *mut gdsc_desc,
     _rcdev: *mut reset_controller_dev,
@@ -115,7 +115,7 @@ pub unsafe fn gdsc_register(
     -38
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_GDSC"))]
+#[cfg(not(CONFIG_QCOM_GDSC))]
 pub unsafe fn gdsc_unregister(_desc: *mut gdsc_desc) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

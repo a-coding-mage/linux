@@ -35,7 +35,7 @@ pub unsafe fn find_asymmetric_key(keyring: *mut key, id_0: *const asymmetric_key
     let mut r = keyring_search(make_key_ref(keyring, 1), &key_type_asymmetric, req as *const i8, true);
     if IS_ERR(r) { pr_debug("Request for key '%s' err %ld\n", req, PTR_ERR(r)); }
     kfree(req as *mut c_void);
-    if IS_ERR(r) { return match PTR_ERR(r) { -EACCES | -ENOTDIR | -EAGAIN => ERR_PTR(-ENOKEY), _ => ERR_CAST(r) }; }
+    if IS_ERR(r) { return match PTR_ERR(r) { case if case == -EACCES || case == -ENOTDIR || case == -EAGAIN => ERR_PTR(-ENOKEY), _ => ERR_CAST(r) }; }
     let k=key_ref_to_ptr(r);
     if !id_0.is_null() && !id_1.is_null() { let kids=asymmetric_key_ids(k); if (*kids).id[1].is_null() || !asymmetric_key_id_same(id_1, (*kids).id[1]) { key_put(k); return ERR_PTR(-EKEYREJECTED); } }
     pr_devel("<==find_asymmetric_key() = 0 [%x]\n", key_serial(k)); k
@@ -63,13 +63,13 @@ unsafe fn asymmetric_key_cmp_name(key:*const key,md:*const key_match_data)->bool
 
 // The remaining key-type callbacks preserve the kernel implementation's callback wiring and ownership behavior.
 extern "C" {
-    fn asymmetric_key_match_preparse(*mut key_match_data)->i32;
-    fn asymmetric_key_match_free(*mut key_match_data);
-    fn asymmetric_key_preparse(*mut key_preparsed_payload)->i32;
-    fn asymmetric_key_free_preparse(*mut key_preparsed_payload);
-    fn asymmetric_key_destroy(*mut key);
-    fn asymmetric_key_describe(*const key,*mut seq_file);
-    fn asymmetric_lookup_restriction(*const i8)->*mut key_restriction;
+    fn asymmetric_key_match_preparse(_: *mut key_match_data)->i32;
+    fn asymmetric_key_match_free(_: *mut key_match_data);
+    fn asymmetric_key_preparse(_: *mut key_preparsed_payload)->i32;
+    fn asymmetric_key_free_preparse(_: *mut key_preparsed_payload);
+    fn asymmetric_key_destroy(_: *mut key);
+    fn asymmetric_key_describe(_: *const key,_: *mut seq_file);
+    fn asymmetric_lookup_restriction(_: *const i8)->*mut key_restriction;
     pub static mut key_type_asymmetric: key_type;
 }
 

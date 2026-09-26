@@ -250,7 +250,7 @@ pub unsafe fn dp_handle_hpd_rx_irq(link: *mut dc_link, out_hpd_irq_dpcd_data: *m
         }
     }
     if (*link).dpcd_caps.usb4_dp_tun_info.dp_tun_cap.bits.dp_tunneling && hpd_irq_dpcd_data.bytes.link_service_irq_esi0.bits.DP_LINK_TUNNELING_IRQ { dp_handle_tunneling_irq(link); }
-    if (*link).type == dc_connection_sst_branch && hpd_irq_dpcd_data.bytes.sink_cnt.bits.SINK_COUNT != (*link).dpcd_sink_count { status = true; }
+    if (*link).r#type == dc_connection_sst_branch && hpd_irq_dpcd_data.bytes.sink_cnt.bits.SINK_COUNT != (*link).dpcd_sink_count { status = true; }
     if replay_re_enable_needed { let mut allow_active = true; edp_set_replay_allow_active(link, &mut allow_active, true, false, core::ptr::null_mut()); }
     status
 }

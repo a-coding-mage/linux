@@ -63,7 +63,7 @@ pub unsafe fn x86_match_cpu(mut match_: *const x86_cpu_id) -> *const x86_cpu_id 
             m = m.add(1);
             continue;
         }
-        if (*m).type != X86_CPU_TYPE_ANY && (*c).topo.cpu_type != (*m).type {
+        if (*m).r#type != X86_CPU_TYPE_ANY && (*c).topo.cpu_type != (*m).r#type {
             m = m.add(1);
             continue;
         }

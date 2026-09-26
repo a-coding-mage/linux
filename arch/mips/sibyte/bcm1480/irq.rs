@@ -141,8 +141,7 @@ unsafe fn dispatch_ip2() {
 pub unsafe extern "C" fn plat_irq_dispatch() {
     let pending = read_c0_cause() & read_c0_status();
     if pending & CAUSEF_IP4 != 0 { do_IRQ(K_BCM1480_INT_TIMER_0 + smp_processor_id()); }
-    #[cfg(CONFIG_SMP)]
-    else if pending & CAUSEF_IP3 != 0 { bcm1480_mailbox_interrupt(); }
+    else if cfg!(CONFIG_SMP) && (pending & CAUSEF_IP3 != 0) { bcm1480_mailbox_interrupt(); }
     else if pending & CAUSEF_IP2 != 0 { dispatch_ip2(); }
 }
 

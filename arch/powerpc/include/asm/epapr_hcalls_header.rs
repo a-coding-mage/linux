@@ -28,9 +28,9 @@ extern "C" {
     pub static mut epapr_hypercall_start: [u32; 0];
 }
 
-#[cfg(feature = "CONFIG_EPAPR_PARAVIRT")]
+#[cfg(CONFIG_EPAPR_PARAVIRT)]
 pub unsafe extern "C" fn epapr_paravirt_early_init() -> i32;
-#[cfg(not(feature = "CONFIG_EPAPR_PARAVIRT"))]
+#[cfg(not(CONFIG_EPAPR_PARAVIRT))]
 pub fn epapr_paravirt_early_init() -> i32 { 0 }
 
 #[inline]
@@ -72,13 +72,13 @@ pub unsafe fn ev_byte_channel_receive(handle: u32, count: *mut u32, buffer: *mut
 }
 #[inline] pub unsafe fn ev_byte_channel_poll(handle: u32, rx_count: *mut u32, tx_count: *mut u32) -> u32 { let mut r4:usize; let mut r5:usize; let mut r11=EV_HCALL_TOKEN(EV_BYTE_CHANNEL_POLL) as usize; let mut r3=handle as usize; core::arch::asm!("bl epapr_hypercall_start", inout("r11") r11, inout("r3") r3, lateout("r4") r4, lateout("r5") r5, options(nostack)); *rx_count=r4 as u32; *tx_count=r5 as u32; r3 as u32 }
 
-#[cfg(feature = "CONFIG_EPAPR_PARAVIRT")]
+#[cfg(CONFIG_EPAPR_PARAVIRT)]
 pub unsafe fn epapr_hypercall(in_: *const usize, out: *mut usize, nr: usize) -> isize {
     let mut r3=*in_; let mut r4=*in_.add(1); let mut r5=*in_.add(2); let mut r6=*in_.add(3); let mut r7=*in_.add(4); let mut r8=*in_.add(5); let mut r9=*in_.add(6); let mut r10=*in_.add(7); let mut r11=nr; let mut r0:usize; let mut r12:usize;
     core::arch::asm!("bl epapr_hypercall_start", lateout("r0") r0, inout("r3") r3, inout("r4") r4, inout("r5") r5, inout("r6") r6, inout("r7") r7, inout("r8") r8, inout("r9") r9, inout("r10") r10, inout("r11") r11, lateout("r12") r12, options(nostack));
     *out.add(0)=r4; *out.add(1)=r5; *out.add(2)=r6; *out.add(3)=r7; *out.add(4)=r8; *out.add(5)=r9; *out.add(6)=r10; *out.add(7)=r11; r3 as isize
 }
-#[cfg(not(feature = "CONFIG_EPAPR_PARAVIRT"))]
+#[cfg(not(CONFIG_EPAPR_PARAVIRT))]
 pub unsafe fn epapr_hypercall(_in: *const usize, _out: *mut usize, _nr: usize) -> isize { EV_UNIMPLEMENTED as isize }
 
 #[inline] pub unsafe fn epapr_hypercall0_1(nr:u32,r2:*mut usize)->isize { let i=[0usize;8]; let mut o=[0usize;8]; let r=epapr_hypercall(i.as_ptr(),o.as_mut_ptr(),nr as usize); *r2=o[0]; r }

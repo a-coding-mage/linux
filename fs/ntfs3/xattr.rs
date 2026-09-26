@@ -74,10 +74,10 @@ unsafe fn ntfs_read_ea(ni: *mut ntfs_inode, ea: *mut *mut EA_FULL,
     while off < size {
         let ef = add2ptr(ea_p, off as usize) as *const EA_FULL;
         let bytes = size - off;
-        if bytes < size_of::<u32>() as u32 || bytes as usize < offsetof::<EA_FULL>("name") { kfree(ea_p); ntfs_set_state(sbi, NTFS_DIRTY_DIRTY); return err; }
+        if bytes < size_of::<u32>() as u32 || (bytes as usize) < offsetof::<EA_FULL>("name") { kfree(ea_p); ntfs_set_state(sbi, NTFS_DIRTY_DIRTY); return err; }
         let need = offsetof::<EA_FULL>("name") + 1 + (*ef).name_len as usize + le16_to_cpu((*ef).elength) as usize;
         let ea_size = if (*ef).size != 0 { le32_to_cpu((*ef).size) } else { align(need, 4) as u32 };
-        if ea_size > bytes || ((*ef).size != 0 && ea_size as usize < need) { kfree(ea_p); ntfs_set_state(sbi, NTFS_DIRTY_DIRTY); return err; }
+        if ea_size > bytes || ((*ef).size != 0 && (ea_size as usize) < need) { kfree(ea_p); ntfs_set_state(sbi, NTFS_DIRTY_DIRTY); return err; }
         off += ea_size;
     }
     *ea = ea_p as *mut EA_FULL; 0
@@ -88,7 +88,7 @@ unsafe fn ntfs_list_ea(ni: *mut ntfs_inode, buffer: *mut c_char, bytes_per_buffe
     let err = ntfs_read_ea(ni, &mut all, 0, &mut info); if err != 0 { return err as isize; }
     if info.is_null() || all.is_null() { return 0; }
     let size = le32_to_cpu((*info).size); let mut off = 0u32; let mut ret = 0usize;
-    while off + size_of::<EA_FULL>() as u32 < size {
+    while off + size_of::<EA_FULL>(() as u32) < size {
         let ea = add2ptr(all, off as usize) as *const EA_FULL; let n = (*ea).name_len as usize; let es = unpacked_ea_size(ea);
         if n == 0 { break; }
         if n > es { ntfs_set_state((*ni).mi.sbi, NTFS_DIRTY_ERROR); kfree(all as *mut c_void); return -EINVAL; }

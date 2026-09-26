@@ -111,7 +111,7 @@ pub unsafe fn huge_ptep_get(_mm: *mut mm_struct, _addr: usize, ptep: *mut pte_t)
 #[cfg(not(feature = "__HAVE_ARCH_GIGANTIC_PAGE_RUNTIME_SUPPORTED"))]
 pub fn gigantic_page_runtime_supported() -> bool {
     // Equivalent build-time condition for IS_ENABLED(CONFIG_ARCH_HAS_GIGANTIC_PAGE).
-    cfg!(feature = "CONFIG_ARCH_HAS_GIGANTIC_PAGE")
+    cfg!(CONFIG_ARCH_HAS_GIGANTIC_PAGE)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

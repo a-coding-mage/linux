@@ -130,7 +130,7 @@ unsafe extern "C" {
     pub fn kdb_getchar() -> core::ffi::c_char;
     pub fn kdb_getstr(buf: *mut core::ffi::c_char, size: usize, prompt: *const core::ffi::c_char) -> *mut core::ffi::c_char;
     pub fn kdb_gdb_state_pass(buf: *mut core::ffi::c_char);
-    #[cfg(feature = "CONFIG_KDB_KEYBOARD")]
+    #[cfg(CONFIG_KDB_KEYBOARD)]
     pub fn kdb_kbd_cleanup_state();
 }
 
@@ -176,7 +176,7 @@ pub const KDB_SP_NEWLINE: u32 = 0x0020;
 pub const KDB_SP_DEFAULT: u32 = KDB_SP_VALUE | KDB_SP_PAREN;
 
 /* The remaining declarations are enabled by CONFIG_KGDB_KDB in the C header. */
-#[cfg(feature = "CONFIG_KGDB_KDB")]
+#[cfg(CONFIG_KGDB_KDB)]
 unsafe extern "C" {
     pub static mut kdb_breakpoints: [kdb_bp_t; KDB_MAXBPT];
     pub static mut kdb_grepping_flag: i32;

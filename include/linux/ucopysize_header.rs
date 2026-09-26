@@ -3,7 +3,7 @@
 
 /* C header dependency: <linux/bug.h>. */
 
-#[cfg(feature = "CONFIG_HARDENED_USERCOPY")]
+#[cfg(CONFIG_HARDENED_USERCOPY)]
 mod hardened_usercopy {
     /* C header dependency: <linux/jump_label.h>. */
     unsafe extern "C" {
@@ -24,14 +24,14 @@ mod hardened_usercopy {
         /* __builtin_constant_p(n) and static_branch_maybe(...) are build-time
          * kernel facilities; preserve their conditional intent here. */
         if !cfg!(feature = "constant_n")
-            && cfg!(feature = "CONFIG_HARDENED_USERCOPY_DEFAULT_ON")
+            && cfg!(CONFIG_HARDENED_USERCOPY_DEFAULT_ON)
         {
             unsafe { __check_object_size(ptr, n, to_user) };
         }
     }
 }
 
-#[cfg(not(feature = "CONFIG_HARDENED_USERCOPY"))]
+#[cfg(not(CONFIG_HARDENED_USERCOPY))]
 #[inline]
 pub unsafe fn check_object_size(_ptr: *const core::ffi::c_void,
                                _n: core::ffi::c_ulong,
@@ -47,7 +47,7 @@ unsafe extern "C" {
 #[inline]
 pub unsafe fn copy_overflow(size: core::ffi::c_int, count: core::ffi::c_ulong) {
     /* IS_ENABLED(CONFIG_BUG) is a kernel build-time configuration test. */
-    if cfg!(feature = "CONFIG_BUG") {
+    if cfg!(CONFIG_BUG) {
         unsafe { __copy_overflow(size, count) };
     }
 }

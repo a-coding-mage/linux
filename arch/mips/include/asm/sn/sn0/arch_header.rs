@@ -42,10 +42,10 @@ pub const NASID_MASK_BYTES: usize = (MAX_NASIDS + 7) / 8;
  * The C source selects the value at build time using
  * CONFIG_SGI_SN_N_MODE; the Rust cfg feature preserves that condition.
  */
-#[cfg(feature = "CONFIG_SGI_SN_N_MODE")]
+#[cfg(CONFIG_SGI_SN_N_MODE)]
 pub const MAX_MEM_SLOTS: usize = 16; /* max slots per node */
 
-#[cfg(not(feature = "CONFIG_SGI_SN_N_MODE"))]
+#[cfg(not(CONFIG_SGI_SN_N_MODE))]
 pub const MAX_MEM_SLOTS: usize = 32; /* max slots per node */
 
 pub const SLOT_SHIFT: usize = 27;

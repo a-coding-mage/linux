@@ -56,8 +56,8 @@ unsafe fn mpc42_update_blending(
 /* RMCM Shaper functions */
 unsafe fn mpc42_power_on_rmcm_shaper_3dlut(
 	mpc *mpc,
-	u32 mpcc_id,
-	bool power_on)
+	mpcc_id: u32,
+	power_on: bool)
 {
 	u32 power_status_shaper = 2;
 	u32 power_status_3dlut  = 2;
@@ -87,8 +87,8 @@ unsafe fn mpc42_power_on_rmcm_shaper_3dlut(
 
 unsafe fn mpc42_configure_rmcm_shaper_lut(
 	mpc *mpc,
-	bool is_ram_a,
-	u32 mpcc_id)
+	is_ram_a: bool,
+	mpcc_id: u32)
 {
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
 
@@ -108,7 +108,7 @@ unsafe fn mpc42_configure_rmcm_shaper_lut(
 unsafe fn mpc42_program_rmcm_shaper_luta_settings(
 	mpc *mpc,
 	const pwl_params *params,
-	u32 mpcc_id)
+	mpcc_id: u32)
 {
 	const gamma_curve *curve;
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
@@ -260,7 +260,7 @@ unsafe fn mpc42_program_rmcm_shaper_luta_settings(
 unsafe fn mpc42_program_rmcm_shaper_lutb_settings(
 	mpc *mpc,
 	const pwl_params *params,
-	u32 mpcc_id)
+	mpcc_id: u32)
 {
 	const gamma_curve *curve;
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
@@ -411,12 +411,12 @@ unsafe fn mpc42_program_rmcm_shaper_lutb_settings(
 unsafe fn mpc42_program_rmcm_shaper_lut(
 	mpc *mpc,
 	const pwl_result_data *rgb,
-	u32 num,
-	u32 mpcc_id)
+	num: u32,
+	mpcc_id: u32)
 {
-	u32 i, red, green, blue;
-	u32  red_delta, green_delta, blue_delta;
-	u32  red_value, green_value, blue_value;
+	i: u32, red, green, blue;
+	red_delta: u32, green_delta, blue_delta;
+	red_value: u32, green_value, blue_value;
 
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
 
@@ -440,11 +440,11 @@ unsafe fn mpc42_program_rmcm_shaper_lut(
 	}
 }
 
-unsafe fn mpc42_enable_3dlut_fl(mpc *mpc, bool enable, int mpcc_id)
+unsafe fn mpc42_enable_3dlut_fl(mpc *mpc, enable: bool, int mpcc_id)
 {
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
 
-	//if enabled cho0se mpc 0, else: off (default value)
+	//if enabled cho0se mpc 0, r#else: off (default value)
 	reg_update!(MPC_RMCM_CNTL[mpcc_id], MPC_RMCM_CNTL, enable ? 0 : 0xF); //0xF is not connected
 
 	reg_update!(MPC_RMCM_3DLUT_READ_WRITE_CONTROL[mpcc_id], MPC_RMCM_3DLUT_WRITE_EN_MASK, 0);
@@ -462,7 +462,7 @@ unsafe fn mpc42_update_3dlut_fast_load_select(mpc *mpc, int mpcc_id, int hubp_id
 }
 
 unsafe fn mpc42_populate_rmcm_lut(mpc *mpc, const mcm_lut_params params,
-	bool lut_bank_a, int mpcc_id)
+	lut_bank_a: bool, int mpcc_id)
 {
 	const dc_lut_mode next_mode = lut_bank_a ? LUT_RAM_A : LUT_RAM_B;
 	const pwl_params *lut_shaper = params.pwl;
@@ -486,7 +486,7 @@ unsafe fn mpc42_populate_rmcm_lut(mpc *mpc, const mcm_lut_params params,
 }
 
 unsafe fn mpc42_program_rmcm_lut_read_write_control(mpc *mpc, const MCM_LUT_ID id,
-	bool lut_bank_a, bool enabled, int mpcc_id)
+	lut_bank_a: bool, enabled: bool, int mpcc_id)
 {
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
 
@@ -517,8 +517,8 @@ unsafe fn mpc42_program_rmcm_lut_read_write_control(mpc *mpc, const MCM_LUT_ID i
 }
 
 unsafe fn mpc42_program_lut_mode(mpc *mpc,
-	bool enable,
-	bool lut_bank_a,
+	enable: bool,
+	lut_bank_a: bool,
 	int mpcc_id)
 {
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
@@ -559,7 +559,7 @@ unsafe fn mpc42_program_rmcm_3dlut_size(mpc *mpc,
 			MPC_RMCM_3DLUT_SIZE, width);
 }
 
-unsafe fn mpc42_program_rmcm_3dlut_fast_load_bias_scale(mpc *mpc, u16 bias, u16 scale, int mpcc_id)
+unsafe fn mpc42_program_rmcm_3dlut_fast_load_bias_scale(mpc *mpc, bias: u16, scale: u16, int mpcc_id)
 {
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
 
@@ -576,7 +576,7 @@ unsafe fn mpc42_program_rmcm_3dlut_fast_load_bias_scale(mpc *mpc, u16 bias, u16 
 		MPC_RMCM_3DLUT_OUT_SCALE_B, scale);
 }
 
-unsafe fn mpc42_program_rmcm_bit_depth(mpc *mpc, u16 bit_depth, int mpcc_id)
+unsafe fn mpc42_program_rmcm_bit_depth(mpc *mpc, bit_depth: u16, int mpcc_id)
 {
 	dcn42_mpc *mpc42 = TO_DCN42_MPC(mpc);
 
@@ -644,7 +644,7 @@ unsafe fn mpc42_set_fl_config(
 		MPC_RMCM_3DLUT_FL_SEL, cfg.hubp_index);
 
 	//ENABLE
-	//if enabled pick mpc 0, else: off (0xF)
+	//if enabled pick mpc 0, r#else: off (0xF)
 	//in future we'll select specific MPC
 	reg_update!(MPC_RMCM_CNTL[mpcc_id], MPC_RMCM_CNTL, cfg.enabled ? 0 : 0xF);
 }
@@ -730,52 +730,52 @@ unsafe fn mpc42_read_mpcc_state(
 }
 
 static const mpc_funcs dcn42_mpc_funcs = {
-	.read_mpcc_state = mpc42_read_mpcc_state,
-	.insert_plane = mpc1_insert_plane,
-	.remove_mpcc = mpc1_remove_mpcc,
-	.mpc_init = mpc32_mpc_init,
-	.mpc_init_single_inst = mpc3_mpc_init_single_inst,
-	.update_blending = mpc42_update_blending,
-	.cursor_lock = mpc1_cursor_lock,
-	.get_mpcc_for_dpp = mpc1_get_mpcc_for_dpp,
-	.wait_for_idle = mpc2_assert_idle_mpcc,
-	.assert_mpcc_idle_before_connect = mpc2_assert_mpcc_idle_before_connect,
-	.init_mpcc_list_from_hw = mpc1_init_mpcc_list_from_hw,
-	.set_denorm =  mpc3_set_denorm,
-	.set_denorm_clamp = mpc3_set_denorm_clamp,
-	.set_output_csc = mpc3_set_output_csc,
-	.set_ocsc_default = mpc3_set_ocsc_default,
-	.set_output_gamma = mpc3_set_output_gamma,
-	.set_dwb_mux = mpc3_set_dwb_mux,
-	.disable_dwb_mux = mpc3_disable_dwb_mux,
-	.is_dwb_idle = mpc3_is_dwb_idle,
-	.set_gamut_remap = mpc401_set_gamut_remap,
-	.program_shaper = mpc32_program_shaper,
-	.program_3dlut = mpc32_program_3dlut,
-	.program_1dlut = mpc32_program_post1dlut,
-	.power_on_mpc_mem_pwr = mpc3_power_on_ogam_lut,
-	.get_mpc_out_mux = mpc1_get_mpc_out_mux,
-	.mpc_read_reg_state = mpc3_read_reg_state,
-	.set_bg_color = mpc1_set_bg_color,
-	.set_movable_cm_location = mpc401_set_movable_cm_location,
-	.update_3dlut_fast_load_select = mpc401_update_3dlut_fast_load_select,
-	.get_3dlut_fast_load_status = mpc401_get_3dlut_fast_load_status,
-	.populate_lut = mpc401_populate_lut,
-	.program_lut_read_write_control = mpc401_program_lut_read_write_control,
-	.program_lut_mode = mpc401_program_lut_mode,
-	.get_lut_mode = mpc401_get_lut_mode,
-	.rmcm = {
-		.enable_3dlut_fl = mpc42_enable_3dlut_fl,
-		.update_3dlut_fast_load_select = mpc42_update_3dlut_fast_load_select,
-		.program_lut_read_write_control = mpc42_program_rmcm_lut_read_write_control,
-		.program_lut_mode = mpc42_program_lut_mode,
-		.program_3dlut_size = mpc42_program_rmcm_3dlut_size,
-		.program_bias_scale = mpc42_program_rmcm_3dlut_fast_load_bias_scale,
-		.program_bit_depth = mpc42_program_rmcm_bit_depth,
-		.power_on_shaper_3dlut = mpc42_power_on_rmcm_shaper_3dlut,
-		.populate_lut = mpc42_populate_rmcm_lut,
-		.fl_3dlut_configure = mpc42_set_fl_config,
-		.get_3dlut_mode = mpc42_get_rmcm_3dlut_mode,
+	read_mpcc_state: mpc42_read_mpcc_state,
+	insert_plane: mpc1_insert_plane,
+	remove_mpcc: mpc1_remove_mpcc,
+	mpc_init: mpc32_mpc_init,
+	mpc_init_single_inst: mpc3_mpc_init_single_inst,
+	update_blending: mpc42_update_blending,
+	cursor_lock: mpc1_cursor_lock,
+	get_mpcc_for_dpp: mpc1_get_mpcc_for_dpp,
+	wait_for_idle: mpc2_assert_idle_mpcc,
+	assert_mpcc_idle_before_connect: mpc2_assert_mpcc_idle_before_connect,
+	init_mpcc_list_from_hw: mpc1_init_mpcc_list_from_hw,
+	set_denorm: mpc3_set_denorm,
+	set_denorm_clamp: mpc3_set_denorm_clamp,
+	set_output_csc: mpc3_set_output_csc,
+	set_ocsc_default: mpc3_set_ocsc_default,
+	set_output_gamma: mpc3_set_output_gamma,
+	set_dwb_mux: mpc3_set_dwb_mux,
+	disable_dwb_mux: mpc3_disable_dwb_mux,
+	is_dwb_idle: mpc3_is_dwb_idle,
+	set_gamut_remap: mpc401_set_gamut_remap,
+	program_shaper: mpc32_program_shaper,
+	program_3dlut: mpc32_program_3dlut,
+	program_1dlut: mpc32_program_post1dlut,
+	power_on_mpc_mem_pwr: mpc3_power_on_ogam_lut,
+	get_mpc_out_mux: mpc1_get_mpc_out_mux,
+	mpc_read_reg_state: mpc3_read_reg_state,
+	set_bg_color: mpc1_set_bg_color,
+	set_movable_cm_location: mpc401_set_movable_cm_location,
+	update_3dlut_fast_load_select: mpc401_update_3dlut_fast_load_select,
+	get_3dlut_fast_load_status: mpc401_get_3dlut_fast_load_status,
+	populate_lut: mpc401_populate_lut,
+	program_lut_read_write_control: mpc401_program_lut_read_write_control,
+	program_lut_mode: mpc401_program_lut_mode,
+	get_lut_mode: mpc401_get_lut_mode,
+	rmcm: {
+		enable_3dlut_fl: mpc42_enable_3dlut_fl,
+		update_3dlut_fast_load_select: mpc42_update_3dlut_fast_load_select,
+		program_lut_read_write_control: mpc42_program_rmcm_lut_read_write_control,
+		program_lut_mode: mpc42_program_lut_mode,
+		program_3dlut_size: mpc42_program_rmcm_3dlut_size,
+		program_bias_scale: mpc42_program_rmcm_3dlut_fast_load_bias_scale,
+		program_bit_depth: mpc42_program_rmcm_bit_depth,
+		power_on_shaper_3dlut: mpc42_power_on_rmcm_shaper_3dlut,
+		populate_lut: mpc42_populate_rmcm_lut,
+		fl_3dlut_configure: mpc42_set_fl_config,
+		get_3dlut_mode: mpc42_get_rmcm_3dlut_mode,
 	},
 };
 

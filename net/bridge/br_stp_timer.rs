@@ -15,7 +15,7 @@ unsafe fn br_is_designated_for_some_port(br: *const net_bridge) -> libc::c_int {
     let mut p: *mut net_bridge_port;
 
     // Equivalent of list_for_each_entry(p, &br->port_list, list).
-    list_for_each_entry!(p, &(*br).port_list, list) {
+    list_for_each_entry!(p, &(*br).port_list, list, {
         if (*p).state != BR_STATE_DISABLED
             && libc::memcmp(
                 &(*p).designated_bridge as *const _ as *const libc::c_void,
@@ -25,7 +25,7 @@ unsafe fn br_is_designated_for_some_port(br: *const net_bridge) -> libc::c_int {
         {
             return 1;
         }
-    }
+    });
 
     0
 }
@@ -53,6 +53,7 @@ unsafe fn br_message_age_timer_expired(t: *mut timer_list) {
     let br: *mut net_bridge = (*p).br;
     let id: *const bridge_id = &(*p).designated_bridge;
     let mut was_root: libc::c_int;
+    'unlock: {
 
     if (*p).state == BR_STATE_DISABLED {
         return;
@@ -75,7 +76,7 @@ unsafe fn br_message_age_timer_expired(t: *mut timer_list) {
      */
     spin_lock(&mut (*br).lock);
     if (*p).state == BR_STATE_DISABLED {
-        goto_unlock!(unlock);
+        break 'unlock;
     }
     was_root = br_is_root_bridge(br);
 
@@ -85,7 +86,8 @@ unsafe fn br_message_age_timer_expired(t: *mut timer_list) {
     if br_is_root_bridge(br) != 0 && was_root == 0 {
         br_become_root_bridge(br);
     }
-unlock:
+    }
+    
     spin_unlock(&mut (*br).lock);
 }
 

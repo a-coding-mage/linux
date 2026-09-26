@@ -46,7 +46,7 @@ extern "C" {
 const NUMA_NO_NODE: i32 = -1;
 pub static mut movable_gigantic_pages: i32 = 0;
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn proc_hugetlb_doulongvec_minmax(
     table: *const ctl_table,
     write: i32,
@@ -60,7 +60,7 @@ unsafe extern "C" fn proc_hugetlb_doulongvec_minmax(
     proc_doulongvec_minmax(&dup_table, write, buffer, length, ppos)
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn hugetlb_sysctl_handler_common(
     obey_mempolicy: bool,
     table: *const ctl_table,
@@ -88,7 +88,7 @@ unsafe extern "C" fn hugetlb_sysctl_handler_common(
     ret
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn hugetlb_sysctl_handler(
     table: *const ctl_table, write: i32, buffer: *mut c_void,
     length: *mut usize, ppos: *mut i64,
@@ -96,7 +96,7 @@ unsafe extern "C" fn hugetlb_sysctl_handler(
     hugetlb_sysctl_handler_common(false, table, write, buffer, length, ppos)
 }
 
-#[cfg(all(feature = "CONFIG_SYSCTL", feature = "CONFIG_NUMA"))]
+#[cfg(all(CONFIG_SYSCTL, CONFIG_NUMA))]
 unsafe extern "C" fn hugetlb_mempolicy_sysctl_handler(
     table: *const ctl_table, write: i32, buffer: *mut c_void,
     length: *mut usize, ppos: *mut i64,
@@ -104,7 +104,7 @@ unsafe extern "C" fn hugetlb_mempolicy_sysctl_handler(
     hugetlb_sysctl_handler_common(true, table, write, buffer, length, ppos)
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 unsafe extern "C" fn hugetlb_overcommit_handler(
     table: *const ctl_table, write: i32, buffer: *mut c_void,
     length: *mut usize, ppos: *mut i64,
@@ -132,17 +132,17 @@ unsafe extern "C" fn hugetlb_overcommit_handler(
     ret
 }
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 static hugetlb_table: &[ctl_table] = &[
     ctl_table { procname: b"nr_hugepages\0".as_ptr().cast(), data: core::ptr::null_mut(), maxlen: size_of::<c_ulong>(), mode: 0o644, proc_handler: Some(hugetlb_sysctl_handler) },
-    #[cfg(feature = "CONFIG_NUMA")]
+    #[cfg(CONFIG_NUMA)]
     ctl_table { procname: b"nr_hugepages_mempolicy\0".as_ptr().cast(), data: core::ptr::null_mut(), maxlen: size_of::<c_ulong>(), mode: 0o644, proc_handler: Some(hugetlb_mempolicy_sysctl_handler) },
     ctl_table { procname: b"hugetlb_shm_group\0".as_ptr().cast(), data: unsafe { &raw mut sysctl_hugetlb_shm_group }.cast(), maxlen: size_of::<gid_t>(), mode: 0o644, proc_handler: Some(proc_dointvec) },
     ctl_table { procname: b"nr_overcommit_hugepages\0".as_ptr().cast(), data: core::ptr::null_mut(), maxlen: size_of::<c_ulong>(), mode: 0o644, proc_handler: Some(hugetlb_overcommit_handler) },
     ctl_table { procname: b"movable_gigantic_pages\0".as_ptr().cast(), data: unsafe { &raw mut movable_gigantic_pages }.cast(), maxlen: size_of::<i32>(), mode: 0o644, proc_handler: Some(proc_dointvec) },
 ];
 
-#[cfg(feature = "CONFIG_SYSCTL")]
+#[cfg(CONFIG_SYSCTL)]
 pub unsafe extern "C" fn hugetlb_sysctl_init() {
     register_sysctl_init(b"vm\0".as_ptr().cast(), hugetlb_table.as_ptr());
 }

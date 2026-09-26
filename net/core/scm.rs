@@ -67,7 +67,7 @@ unsafe fn scm_replace_pid(scm: *mut scm_cookie, pid: *mut pid) -> i32 {
 pub unsafe fn __scm_send(sock: *mut socket, msg: *mut msghdr, p: *mut scm_cookie) -> i32 {
     let ops = read_once((*sock).ops);
     let mut cmsg = ptr::null_mut(); let mut err;
-    for_each_cmsghdr!(cmsg, msg) {
+    for_each_cmsghdr!(cmsg, msg, {
         err = -EINVAL;
         if !cmsg_ok(msg, cmsg) { scm_destroy(p); return err; }
         if (*cmsg).cmsg_level != SOL_SOCKET { continue; }
@@ -88,7 +88,7 @@ pub unsafe fn __scm_send(sock: *mut socket, msg: *mut msghdr, p: *mut scm_cookie
             }
             _ => { scm_destroy(p); return err; }
         }
-    }
+    });
     if !(*p).fp.is_null() && (*(*p).fp).count == 0 { kfree((*p).fp); (*p).fp = ptr::null_mut(); }
     0
 }

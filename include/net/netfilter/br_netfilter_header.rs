@@ -107,7 +107,7 @@ pub unsafe fn bridge_parent_rtable(dev: *const net_device) -> *mut rtable {
     }
 }
 
-#[cfg(feature = "CONFIG_IPV6")]
+#[cfg(CONFIG_IPV6)]
 unsafe extern "C" {
     pub fn br_validate_ipv6(net: *mut net, skb: *mut sk_buff) -> i32;
     pub fn br_nf_pre_routing_ipv6(
@@ -117,13 +117,13 @@ unsafe extern "C" {
     ) -> u32;
 }
 
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 #[inline]
 pub unsafe fn br_validate_ipv6(_net: *mut net, _skb: *mut sk_buff) -> i32 {
     -1
 }
 
-#[cfg(not(feature = "CONFIG_IPV6"))]
+#[cfg(not(CONFIG_IPV6))]
 #[inline]
 pub unsafe fn br_nf_pre_routing_ipv6(
     _priv: *mut c_void,

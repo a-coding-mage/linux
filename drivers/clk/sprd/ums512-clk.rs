@@ -78,7 +78,7 @@ pub static struct sprd_clk_common *ums512_pmu_gate_clks[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_pmu_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_26M_AUD]		= &clk_26m_aud.hw,
 		[CLK_13M]		= &clk_13m.hw,
 		[CLK_6M5]		= &clk_6m5.hw,
@@ -101,13 +101,13 @@ pub static struct clk_hw_onecell_data ums512_pmu_gate_hws = {
 		[CLK_MPLL1_GATE]	= &mpll1_gate.common.hw,
 		[CLK_MPLL2_GATE]	= &mpll2_gate.common.hw,
 	},
-	.num = CLK_PMU_GATE_NUM,
+	num: CLK_PMU_GATE_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_pmu_gate_desc = {
-	.clk_clks	= ums512_pmu_gate_clks,
-	.num_clk_clks	= ARRAY_SIZE(ums512_pmu_gate_clks),
-	.hw_clks        = &ums512_pmu_gate_hws,
+	clk_clks: ums512_pmu_gate_clks,
+	num_clk_clks: ARRAY_SIZE(ums512_pmu_gate_clks),
+	hw_clks: &ums512_pmu_gate_hws,
 };
 
 /* pll clock at g0 */
@@ -139,17 +139,17 @@ pub static struct sprd_clk_common *ums512_g0_pll_clks[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_g0_pll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_DPLL0]		= &dpll0.common.hw,
 		[CLK_DPLL0_58M31]	= &dpll0_58m31.hw,
 	},
-	.num	= CLK_ANLG_PHY_G0_NUM,
+	num: CLK_ANLG_PHY_G0_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_g0_pll_desc = {
-	.clk_clks	= ums512_g0_pll_clks,
-	.num_clk_clks	= ARRAY_SIZE(ums512_g0_pll_clks),
-	.hw_clks	= &ums512_g0_pll_hws,
+	clk_clks: ums512_g0_pll_clks,
+	num_clk_clks: ARRAY_SIZE(ums512_g0_pll_clks),
+	hw_clks: &ums512_g0_pll_hws,
 };
 
 /* pll clock at g2 */
@@ -182,17 +182,17 @@ pub static struct sprd_clk_common *ums512_g2_pll_clks[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_g2_pll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MPLL1]		= &mpll1.common.hw,
 		[CLK_MPLL1_63M38]	= &mpll1_63m38.hw,
 	},
-	.num	= CLK_ANLG_PHY_G2_NUM,
+	num: CLK_ANLG_PHY_G2_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_g2_pll_desc = {
-	.clk_clks	= ums512_g2_pll_clks,
-	.num_clk_clks	= ARRAY_SIZE(ums512_g2_pll_clks),
-	.hw_clks	= &ums512_g2_pll_hws,
+	clk_clks: ums512_g2_pll_clks,
+	num_clk_clks: ARRAY_SIZE(ums512_g2_pll_clks),
+	hw_clks: &ums512_g2_pll_hws,
 };
 
 /* pll at g3 */
@@ -258,7 +258,7 @@ pub static struct sprd_clk_common *ums512_g3_pll_clks[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_g3_pll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_RPLL]		= &rpll.common.hw,
 		[CLK_AUDIO_GATE]	= &audio_gate.common.hw,
 		[CLK_MPLL0]		= &mpll0.common.hw,
@@ -266,13 +266,13 @@ pub static struct clk_hw_onecell_data ums512_g3_pll_hws = {
 		[CLK_MPLL2]		= &mpll2.common.hw,
 		[CLK_MPLL2_47M13]	= &mpll2_47m13.hw,
 	},
-	.num	= CLK_ANLG_PHY_G3_NUM,
+	num: CLK_ANLG_PHY_G3_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_g3_pll_desc = {
-	.clk_clks	= ums512_g3_pll_clks,
-	.num_clk_clks	= ARRAY_SIZE(ums512_g3_pll_clks),
-	.hw_clks	= &ums512_g3_pll_hws,
+	clk_clks: ums512_g3_pll_clks,
+	num_clk_clks: ARRAY_SIZE(ums512_g3_pll_clks),
+	hw_clks: &ums512_g3_pll_hws,
 };
 
 /* pll clock at gc */
@@ -357,7 +357,7 @@ pub static struct sprd_clk_common *ums512_gc_pll_clks[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_gc_pll_hws = {
-	.hws	= {
+	hws: {
 		[CLK_TWPLL]		= &twpll.common.hw,
 		[CLK_TWPLL_768M]	= &twpll_768m.hw,
 		[CLK_TWPLL_384M]	= &twpll_384m.hw,
@@ -392,13 +392,13 @@ pub static struct clk_hw_onecell_data ums512_gc_pll_hws = {
 		[CLK_CPPLL]		= &cppll.common.hw,
 		[CLK_CPPLL_39M32]	= &cppll_39m32.hw,
 	},
-	.num	= CLK_ANLG_PHY_GC_NUM,
+	num: CLK_ANLG_PHY_GC_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_gc_pll_desc = {
-	.clk_clks	= ums512_gc_pll_clks,
-	.num_clk_clks	= ARRAY_SIZE(ums512_gc_pll_clks),
-	.hw_clks	= &ums512_gc_pll_hws,
+	clk_clks: ums512_gc_pll_clks,
+	num_clk_clks: ARRAY_SIZE(ums512_gc_pll_clks),
+	hw_clks: &ums512_gc_pll_hws,
 };
 
 /* ap ahb gates */
@@ -435,7 +435,7 @@ pub static struct sprd_clk_common *ums512_apahb_gate[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_apahb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_DSI_EB]		= &dsi_eb.common.hw,
 		[CLK_DISPC_EB]		= &dispc_eb.common.hw,
 		[CLK_VSP_EB]		= &vsp_eb.common.hw,
@@ -446,13 +446,13 @@ pub static struct clk_hw_onecell_data ums512_apahb_gate_hws = {
 		[CLK_AHB_CKG_EB]	= &ahb_ckg_eb.common.hw,
 		[CLK_BM_CLK_EB]		= &bm_clk_eb.common.hw,
 	},
-	.num	= CLK_AP_AHB_GATE_NUM,
+	num: CLK_AP_AHB_GATE_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_apahb_gate_desc = {
-	.clk_clks	= ums512_apahb_gate,
-	.num_clk_clks	= ARRAY_SIZE(ums512_apahb_gate),
-	.hw_clks	= &ums512_apahb_gate_hws,
+	clk_clks: ums512_apahb_gate,
+	num_clk_clks: ARRAY_SIZE(ums512_apahb_gate),
+	hw_clks: &ums512_apahb_gate_hws,
 };
 
 /* ap clks */
@@ -656,7 +656,7 @@ pub static struct sprd_clk_common *ums512_ap_clks[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_ap_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_AP_APB]		= &ap_apb_clk.common.hw,
 		[CLK_IPI]		= &ipi_clk.common.hw,
 		[CLK_AP_UART0]		= &ap_uart0_clk.common.hw,
@@ -688,13 +688,13 @@ pub static struct clk_hw_onecell_data ums512_ap_clk_hws = {
 		[CLK_VDSP]		= &vdsp_clk.common.hw,
 		[CLK_VDSP_M]		= &vdsp_m_clk.common.hw,
 	},
-	.num	= CLK_AP_CLK_NUM,
+	num: CLK_AP_CLK_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_ap_clk_desc = {
-	.clk_clks	= ums512_ap_clks,
-	.num_clk_clks	= ARRAY_SIZE(ums512_ap_clks),
-	.hw_clks	= &ums512_ap_clk_hws,
+	clk_clks: ums512_ap_clks,
+	num_clk_clks: ARRAY_SIZE(ums512_ap_clks),
+	hw_clks: &ums512_ap_clk_hws,
 };
 
 /* aon apb clks */
@@ -1073,7 +1073,7 @@ pub static struct sprd_clk_common *ums512_aon_apb[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_aon_apb_hws = {
-	.hws	= {
+	hws: {
 		[CLK_AON_APB]		= &aon_apb_clk.common.hw,
 		[CLK_ADI]		= &adi_clk.common.hw,
 		[CLK_AUX0]		= &aux0_clk.common.hw,
@@ -1120,13 +1120,13 @@ pub static struct clk_hw_onecell_data ums512_aon_apb_hws = {
 		[CLK_USB]		= &usb_clk.common.hw,
 		[CLK_26M_PMU]		= &pmu_26m_clk.common.hw,
 	},
-	.num	= CLK_AON_APB_NUM,
+	num: CLK_AON_APB_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_aon_apb_desc = {
-	.clk_clks	= ums512_aon_apb,
-	.num_clk_clks	= ARRAY_SIZE(ums512_aon_apb),
-	.hw_clks	= &ums512_aon_apb_hws,
+	clk_clks: ums512_aon_apb,
+	num_clk_clks: ARRAY_SIZE(ums512_aon_apb),
+	hw_clks: &ums512_aon_apb_hws,
 };
 
 /* aon apb gates */
@@ -1436,7 +1436,7 @@ pub static struct sprd_clk_common *ums512_aon_gate[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_aon_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_RC100M_CAL_EB]	= &rc100m_cal_eb.common.hw,
 		[CLK_DJTAG_TCK_EB]	= &djtag_tck_eb.common.hw,
 		[CLK_DJTAG_EB]		= &djtag_eb.common.hw,
@@ -1538,13 +1538,13 @@ pub static struct clk_hw_onecell_data ums512_aon_gate_hws = {
 		[CLK_DEBUG_TS_EN]	= &debug_ts_en.common.hw,
 		[CLK_ACCESS_AUD_EN]	= &access_aud_en.common.hw,
 	},
-	.num	= CLK_AON_APB_GATE_NUM,
+	num: CLK_AON_APB_GATE_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_aon_gate_desc = {
-	.clk_clks	= ums512_aon_gate,
-	.num_clk_clks	= ARRAY_SIZE(ums512_aon_gate),
-	.hw_clks	= &ums512_aon_gate_hws,
+	clk_clks: ums512_aon_gate,
+	num_clk_clks: ARRAY_SIZE(ums512_aon_gate),
+	hw_clks: &ums512_aon_gate_hws,
 };
 
 /* audcp apb gates */
@@ -1574,19 +1574,19 @@ pub static struct sprd_clk_common *ums512_audcpapb_gate[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_audcpapb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_AUDCP_WDG_EB]	= &audcp_wdg_eb.common.hw,
 		[CLK_AUDCP_RTC_WDG_EB]	= &audcp_rtc_wdg_eb.common.hw,
 		[CLK_AUDCP_TMR0_EB]	= &audcp_tmr0_eb.common.hw,
 		[CLK_AUDCP_TMR1_EB]	= &audcp_tmr1_eb.common.hw,
 	},
-	.num	= CLK_AUDCP_APB_GATE_NUM,
+	num: CLK_AUDCP_APB_GATE_NUM,
 };
 
 pub static const struct sprd_clk_desc ums512_audcpapb_gate_desc = {
-	.clk_clks	= ums512_audcpapb_gate,
-	.num_clk_clks	= ARRAY_SIZE(ums512_audcpapb_gate),
-	.hw_clks	= &ums512_audcpapb_gate_hws,
+	clk_clks: ums512_audcpapb_gate,
+	num_clk_clks: ARRAY_SIZE(ums512_audcpapb_gate),
+	hw_clks: &ums512_audcpapb_gate_hws,
 };
 
 /* audcp ahb gates */
@@ -1672,7 +1672,7 @@ pub static struct sprd_clk_common *ums512_audcpahb_gate[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_audcpahb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_AUDCP_IIS0_EB]		= &audcp_iis0_eb.common.hw,
 		[CLK_AUDCP_IIS1_EB]		= &audcp_iis1_eb.common.hw,
 		[CLK_AUDCP_IIS2_EB]		= &audcp_iis2_eb.common.hw,
@@ -1692,13 +1692,13 @@ pub static struct clk_hw_onecell_data ums512_audcpahb_gate_hws = {
 		[CLK_AUDCP_TMR_26M_EB]		= &audcp_tmr_26m_eb.common.hw,
 		[CLK_AUDCP_DVFS_ASHB_EB]	= &audcp_dvfs_ashb_eb.common.hw,
 	},
-	.num	= CLK_AUDCP_AHB_GATE_NUM,
+	num: CLK_AUDCP_AHB_GATE_NUM,
 };
 
 pub static const struct sprd_clk_desc ums512_audcpahb_gate_desc = {
-	.clk_clks	= ums512_audcpahb_gate,
-	.num_clk_clks	= ARRAY_SIZE(ums512_audcpahb_gate),
-	.hw_clks	= &ums512_audcpahb_gate_hws,
+	clk_clks: ums512_audcpahb_gate,
+	num_clk_clks: ARRAY_SIZE(ums512_audcpahb_gate),
+	hw_clks: &ums512_audcpahb_gate_hws,
 };
 
 /* gpu clocks */
@@ -1740,7 +1740,7 @@ pub static struct sprd_clk_common *ums512_gpu_clk[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_gpu_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_GPU_CORE_EB]	= &gpu_core_gate.common.hw,
 		[CLK_GPU_CORE]		= &gpu_core_clk.common.hw,
 		[CLK_GPU_MEM_EB]	= &gpu_mem_gate.common.hw,
@@ -1748,13 +1748,13 @@ pub static struct clk_hw_onecell_data ums512_gpu_clk_hws = {
 		[CLK_GPU_SYS_EB]	= &gpu_sys_gate.common.hw,
 		[CLK_GPU_SYS]		= &gpu_sys_clk.common.hw,
 	},
-	.num	= CLK_GPU_CLK_NUM,
+	num: CLK_GPU_CLK_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_gpu_clk_desc = {
-	.clk_clks	= ums512_gpu_clk,
-	.num_clk_clks	= ARRAY_SIZE(ums512_gpu_clk),
-	.hw_clks	= &ums512_gpu_clk_hws,
+	clk_clks: ums512_gpu_clk,
+	num_clk_clks: ARRAY_SIZE(ums512_gpu_clk),
+	hw_clks: &ums512_gpu_clk_hws,
 };
 
 /* mm clocks */
@@ -1876,7 +1876,7 @@ pub static struct sprd_clk_common *ums512_mm_clk[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_mm_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MM_AHB]	= &mm_ahb_clk.common.hw,
 		[CLK_MM_MTX]	= &mm_mtx_clk.common.hw,
 		[CLK_SENSOR0]	= &sensor0_clk.common.hw,
@@ -1892,13 +1892,13 @@ pub static struct clk_hw_onecell_data ums512_mm_clk_hws = {
 		[CLK_MIPI_CSI1] = &mipi_csi1.common.hw,
 		[CLK_MIPI_CSI2] = &mipi_csi2.common.hw,
 	},
-	.num	= CLK_MM_CLK_NUM,
+	num: CLK_MM_CLK_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_mm_clk_desc = {
-	.clk_clks	= ums512_mm_clk,
-	.num_clk_clks	= ARRAY_SIZE(ums512_mm_clk),
-	.hw_clks	= &ums512_mm_clk_hws,
+	clk_clks: ums512_mm_clk,
+	num_clk_clks: ARRAY_SIZE(ums512_mm_clk),
+	hw_clks: &ums512_mm_clk_hws,
 };
 
 /* mm gate clocks */
@@ -1968,7 +1968,7 @@ pub static struct sprd_clk_common *ums512_mm_gate_clk[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_mm_gate_clk_hws = {
-	.hws	= {
+	hws: {
 		[CLK_MM_CPP_EB]		= &mm_cpp_eb.common.hw,
 		[CLK_MM_JPG_EB]		= &mm_jpg_eb.common.hw,
 		[CLK_MM_DCAM_EB]	= &mm_dcam_eb.common.hw,
@@ -1990,13 +1990,13 @@ pub static struct clk_hw_onecell_data ums512_mm_gate_clk_hws = {
 		[CLK_ISP_AXI_EB]	= &mm_isp_axi_en.common.hw,
 		[CLK_MM_CPHY_EB]	= &mm_cphy_en.common.hw,
 	},
-	.num	= CLK_MM_GATE_CLK_NUM,
+	num: CLK_MM_GATE_CLK_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_mm_gate_clk_desc = {
-	.clk_clks	= ums512_mm_gate_clk,
-	.num_clk_clks	= ARRAY_SIZE(ums512_mm_gate_clk),
-	.hw_clks	= &ums512_mm_gate_clk_hws,
+	clk_clks: ums512_mm_gate_clk,
+	num_clk_clks: ARRAY_SIZE(ums512_mm_gate_clk),
+	hw_clks: &ums512_mm_gate_clk_hws,
 };
 
 /* ap apb gates */
@@ -2096,7 +2096,7 @@ pub static struct sprd_clk_common *ums512_apapb_gate[] = {
 };
 
 pub static struct clk_hw_onecell_data ums512_apapb_gate_hws = {
-	.hws	= {
+	hws: {
 		[CLK_SIM0_EB]		= &sim0_eb.common.hw,
 		[CLK_IIS0_EB]		= &iis0_eb.common.hw,
 		[CLK_IIS1_EB]		= &iis1_eb.common.hw,
@@ -2128,56 +2128,56 @@ pub static struct clk_hw_onecell_data ums512_apapb_gate_hws = {
 		[CLK_SDIO2_32K_EB]	= &sdio2_32k_eb.common.hw,
 		[CLK_EMMC_32K_EB]	= &emmc_32k_eb.common.hw,
 	},
-	.num	= CLK_AP_APB_GATE_NUM,
+	num: CLK_AP_APB_GATE_NUM,
 };
 
 pub static struct sprd_clk_desc ums512_apapb_gate_desc = {
-	.clk_clks	= ums512_apapb_gate,
-	.num_clk_clks	= ARRAY_SIZE(ums512_apapb_gate),
-	.hw_clks	= &ums512_apapb_gate_hws,
+	clk_clks: ums512_apapb_gate,
+	num_clk_clks: ARRAY_SIZE(ums512_apapb_gate),
+	hw_clks: &ums512_apapb_gate_hws,
 };
 
 pub static const struct of_device_id sprd_ums512_clk_ids[] = {
 	{ .compatible = "sprd,ums512-pmu-gate",		/* 0x327e0000 */
-	  .data = &ums512_pmu_gate_desc },
+	  data: &ums512_pmu_gate_desc },
 	{ .compatible = "sprd,ums512-g0-pll",		/* 0x32390000 */
-	  .data = &ums512_g0_pll_desc },
+	  data: &ums512_g0_pll_desc },
 	{ .compatible = "sprd,ums512-g2-pll",		/* 0x323b0000 */
-	  .data = &ums512_g2_pll_desc },
+	  data: &ums512_g2_pll_desc },
 	{ .compatible = "sprd,ums512-g3-pll",		/* 0x323c0000 */
-	  .data = &ums512_g3_pll_desc },
+	  data: &ums512_g3_pll_desc },
 	{ .compatible = "sprd,ums512-gc-pll",		/* 0x323e0000 */
-	  .data = &ums512_gc_pll_desc },
+	  data: &ums512_gc_pll_desc },
 	{ .compatible = "sprd,ums512-apahb-gate",	/* 0x20100000 */
-	  .data = &ums512_apahb_gate_desc },
+	  data: &ums512_apahb_gate_desc },
 	{ .compatible = "sprd,ums512-ap-clk",		/* 0x20200000 */
-	  .data = &ums512_ap_clk_desc },
+	  data: &ums512_ap_clk_desc },
 	{ .compatible = "sprd,ums512-aonapb-clk",	/* 0x32080200 */
-	  .data = &ums512_aon_apb_desc },
+	  data: &ums512_aon_apb_desc },
 	{ .compatible = "sprd,ums512-aon-gate",		/* 0x327d0000 */
-	  .data = &ums512_aon_gate_desc },
+	  data: &ums512_aon_gate_desc },
 	{ .compatible = "sprd,ums512-audcpapb-gate",	/* 0x3350d000 */
-	  .data = &ums512_audcpapb_gate_desc },
+	  data: &ums512_audcpapb_gate_desc },
 	{ .compatible = "sprd,ums512-audcpahb-gate",	/* 0x335e0000 */
-	  .data = &ums512_audcpahb_gate_desc },
+	  data: &ums512_audcpahb_gate_desc },
 	{ .compatible = "sprd,ums512-gpu-clk",		/* 0x60100000 */
-	  .data = &ums512_gpu_clk_desc },
+	  data: &ums512_gpu_clk_desc },
 	{ .compatible = "sprd,ums512-mm-clk",		/* 0x62100000 */
-	  .data = &ums512_mm_clk_desc },
+	  data: &ums512_mm_clk_desc },
 	{ .compatible = "sprd,ums512-mm-gate-clk",	/* 0x62200000 */
-	  .data = &ums512_mm_gate_clk_desc },
+	  data: &ums512_mm_gate_clk_desc },
 	{ .compatible = "sprd,ums512-apapb-gate",	/* 0x71000000 */
-	  .data = &ums512_apapb_gate_desc },
+	  data: &ums512_apapb_gate_desc },
 	{ }
 };
 // MODULE_DEVICE_TABLE(of, sprd_ums512_clk_ids);
 
-pub static int ums512_clk_probe(struct platform_device *pdev)
+pub static int ums512_clk_probe(platform_device *pdev)
 {
 	const struct sprd_clk_desc *desc;
 	int ret;
 
-	desc = device_get_match_data(&pdev->dev);
+	desc = device_get_match_data((*&pdev).dev);
 	if (!desc)
 		return -ENODEV;
 
@@ -2185,14 +2185,14 @@ pub static int ums512_clk_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	return sprd_clk_probe(&pdev->dev, desc->hw_clks);
+	return sprd_clk_probe((*&pdev).dev, (*desc).hw_clks);
 }
 
 pub static struct platform_driver ums512_clk_driver = {
-	.probe	= ums512_clk_probe,
-	.driver	= {
-		.name	= "ums512-clk",
-		.of_match_table	= sprd_ums512_clk_ids,
+	probe: ums512_clk_probe,
+	driver: {
+		name: "ums512-clk",
+		of_match_table: sprd_ums512_clk_ids,
 	},
 };
 // module_platform_driver(ums512_clk_driver);

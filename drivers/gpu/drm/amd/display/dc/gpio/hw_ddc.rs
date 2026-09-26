@@ -59,7 +59,7 @@ unsafe fn set_config(ptr: *mut hw_gpio_pin, config_data: *const gpio_config_data
                     REG_SET_2(gpio.MASK_reg, regval, DC_GPIO_DDC1DATA_PD_EN, 1,
                         DC_GPIO_DDC1CLK_PD_EN, 1);
                 }
-                if (*config_data).type == GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE { msleep(3); }
+                if (*config_data).r#type == GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE { msleep(3); }
             }
         } else {
             let mut sda_pd_dis = 0;
@@ -68,24 +68,24 @@ unsafe fn set_config(ptr: *mut hw_gpio_pin, config_data: *const gpio_config_data
                 DC_GPIO_SCL_PD_DIS, &mut scl_pd_dis);
             if sda_pd_dis != 0 {
                 REG_SET(gpio.MASK_reg, regval, DC_GPIO_SDA_PD_DIS, 0);
-                if (*config_data).type == GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE { msleep(3); }
+                if (*config_data).r#type == GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE { msleep(3); }
             }
             if scl_pd_dis == 0 {
                 REG_SET(gpio.MASK_reg, regval, DC_GPIO_SCL_PD_DIS, 1);
-                if (*config_data).type == GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE { msleep(3); }
+                if (*config_data).r#type == GPIO_CONFIG_TYPE_I2C_AUX_DUAL_MODE { msleep(3); }
             }
         }
         if aux_pad_mode != 0 {
             if (*config_data).config.ddc.data_en_bit_present || (*config_data).config.ddc.clock_en_bit_present { msleep(2); }
             REG_UPDATE(gpio.MASK_reg, AUX_PAD1_MODE, 0);
         }
-        if (*ddc).regs->dc_gpio_aux_ctrl_5 != 0 { REG_UPDATE(dc_gpio_aux_ctrl_5, DDC_PAD_I2CMODE, 1); }
-        if (*ddc).regs->phy_aux_cntl != 0 { REG_UPDATE(phy_aux_cntl, AUX_PAD_RXSEL, 1); }
+        if (*(*ddc).regs).dc_gpio_aux_ctrl_5 != 0 { REG_UPDATE(dc_gpio_aux_ctrl_5, DDC_PAD_I2CMODE, 1); }
+        if (*(*ddc).regs).phy_aux_cntl != 0 { REG_UPDATE(phy_aux_cntl, AUX_PAD_RXSEL, 1); }
         GPIO_RESULT_OK
     },
     GPIO_DDC_CONFIG_TYPE_MODE_AUX => {
         if aux_pad_mode == 0 { REG_SET(gpio.MASK_reg, regval, AUX_PAD1_MODE, 1); }
-        if (*ddc).regs->dc_gpio_aux_ctrl_5 != 0 { REG_UPDATE(dc_gpio_aux_ctrl_5, DDC_PAD_I2CMODE, 0); }
+        if (*(*ddc).regs).dc_gpio_aux_ctrl_5 != 0 { REG_UPDATE(dc_gpio_aux_ctrl_5, DDC_PAD_I2CMODE, 0); }
         GPIO_RESULT_OK
     },
     GPIO_DDC_CONFIG_TYPE_POLL_FOR_CONNECT => {

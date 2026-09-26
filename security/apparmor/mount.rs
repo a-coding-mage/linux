@@ -189,15 +189,13 @@ extern "C" {
         buffer: *mut u8,
         name: *mut *const u8,
         info: *mut *const u8,
-        disconnected: bool,
-    ) -> i32;
+        disconnected: bool) -> i32;
     fn aa_audit_perm_error(
         label: *const aa_label,
         op: u32,
         error: i32,
         ad: *mut apparmor_audit_data,
-        audit_cb: unsafe extern "C" fn(*mut audit_buffer, *mut c_void),
-    ) -> i32;
+        audit_cb: unsafe extern "C" fn(*mut audit_buffer, *mut c_void)) -> i32;
     fn aa_get_buffer(sync: bool) -> *mut u8;
     fn aa_put_buffer(buffer: *mut u8);
     fn aa_check_perms(
@@ -205,8 +203,7 @@ extern "C" {
         perms: *const aa_perms,
         op: u32,
         ad: *mut apparmor_audit_data,
-        audit_cb: unsafe extern "C" fn(*mut audit_buffer, *mut c_void),
-    ) -> i32;
+        audit_cb: unsafe extern "C" fn(*mut audit_buffer, *mut c_void)) -> i32;
     fn aa_apply_modes_to_perms(profile: *const aa_profile, perms: *mut aa_perms);
     fn AA_BUG(cond: bool);
     fn RULE_MEDIATES(rules: *const aa_ruleset, class: usize) -> bool;
@@ -225,14 +222,12 @@ extern "C" {
     fn fn_for_each(
         label: *const aa_label,
         profile: *mut *mut aa_profile,
-        expr: i32,
-    ) -> i32;
+        expr: i32) -> i32;
     fn fn_label_build(
         label: *const aa_label,
         profile: *mut *mut aa_profile,
         gfp: i32,
-        expr: *mut aa_label,
-    ) -> *mut aa_label;
+        expr: *mut aa_label) -> *mut aa_label;
     fn our_mnt(mnt: *const vfsmount) -> bool;
 }
 

@@ -7,7 +7,7 @@
 
 /* Dependencies supplied by the surrounding Linux Rust translation. */
 
-#[cfg(feature = "CONFIG_OF_MDIO")]
+#[cfg(CONFIG_OF_MDIO)]
 extern "C" {
     pub fn of_mdiobus_child_is_phy(child: *mut device_node) -> bool;
     pub fn __of_mdiobus_register(
@@ -47,13 +47,13 @@ extern "C" {
     ) -> i32;
 }
 
-#[cfg(feature = "CONFIG_OF_MDIO")]
+#[cfg(CONFIG_OF_MDIO)]
 #[inline]
 pub unsafe fn of_mdiobus_register(mdio: *mut mii_bus, np: *mut device_node) -> i32 {
     __of_mdiobus_register(mdio, np, THIS_MODULE)
 }
 
-#[cfg(feature = "CONFIG_OF_MDIO")]
+#[cfg(CONFIG_OF_MDIO)]
 #[inline]
 pub unsafe fn devm_of_mdiobus_register(
     dev: *mut device,
@@ -63,7 +63,7 @@ pub unsafe fn devm_of_mdiobus_register(
     __devm_of_mdiobus_register(dev, mdio, np, THIS_MODULE)
 }
 
-#[cfg(feature = "CONFIG_OF_MDIO")]
+#[cfg(CONFIG_OF_MDIO)]
 #[inline]
 pub unsafe fn of_mdio_parse_addr(dev: *mut device, np: *const device_node) -> i32 {
     let mut addr: u32 = 0;
@@ -88,18 +88,18 @@ pub unsafe fn of_mdio_parse_addr(dev: *mut device, np: *const device_node) -> i3
 }
 
 /* CONFIG_OF_MDIO disabled: provide the non-DT fallbacks. */
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_mdiobus_child_is_phy(_child: *mut device_node) -> bool { false }
 
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_mdiobus_register(mdio: *mut mii_bus, _np: *mut device_node) -> i32 {
     /* Fall back to the non-DT function to register a bus. */
     mdiobus_register(mdio)
 }
 
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn devm_of_mdiobus_register(
     dev: *mut device,
@@ -107,41 +107,41 @@ pub unsafe fn devm_of_mdiobus_register(
     _np: *mut device_node,
 ) -> i32 { devm_mdiobus_register(dev, mdio) }
 
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_mdio_find_device(_np: *mut device_node) -> *mut mdio_device { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_phy_find_device(_phy_np: *mut device_node) -> *mut phy_device { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_phy_connect(
     _dev: *mut net_device, _phy_np: *mut device_node,
     _hndlr: Option<unsafe extern "C" fn(*mut net_device)>,
     _flags: u32, _iface: phy_interface_t,
 ) -> *mut phy_device { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_phy_get_and_connect(
     _dev: *mut net_device, _np: *mut device_node,
     _hndlr: Option<unsafe extern "C" fn(*mut net_device)>,
 ) -> *mut phy_device { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_mdio_find_bus(_mdio_np: *mut device_node) -> *mut mii_bus { core::ptr::null_mut() }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_mdio_parse_addr(_dev: *mut device, _np: *const device_node) -> i32 { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_phy_register_fixed_link(_np: *mut device_node) -> i32 { -ENOSYS }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_phy_deregister_fixed_link(_np: *mut device_node) {}
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_phy_is_fixed_link(_np: *mut device_node) -> bool { false }
-#[cfg(not(feature = "CONFIG_OF_MDIO"))]
+#[cfg(not(CONFIG_OF_MDIO))]
 #[inline]
 pub unsafe fn of_mdiobus_phy_device_register(
     _mdio: *mut mii_bus, _phy: *mut phy_device,

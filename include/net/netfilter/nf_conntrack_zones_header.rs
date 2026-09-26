@@ -5,11 +5,11 @@
 // net/netfilter/nf_conntrack.h
 
 pub unsafe fn nf_ct_zone(ct: *const nf_conn) -> *const nf_conntrack_zone {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+    #[cfg(CONFIG_NF_CONNTRACK_ZONES)]
     {
         &(*ct).zone
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_ZONES"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_ZONES))]
     {
         &nf_ct_zone_dflt
     }
@@ -33,7 +33,7 @@ pub unsafe fn nf_ct_zone_tmpl(
     skb: *const sk_buff,
     tmp: *mut nf_conntrack_zone,
 ) -> *const nf_conntrack_zone {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+    #[cfg(CONFIG_NF_CONNTRACK_ZONES)]
     {
         if tmpl.is_null() {
             return &nf_ct_zone_dflt;
@@ -50,7 +50,7 @@ pub unsafe fn nf_ct_zone_add(
     ct: *mut nf_conn,
     zone: *const nf_conntrack_zone,
 ) {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+    #[cfg(CONFIG_NF_CONNTRACK_ZONES)]
     {
         (*ct).zone = *zone;
     }
@@ -67,7 +67,7 @@ pub unsafe fn nf_ct_zone_id(
     zone: *const nf_conntrack_zone,
     dir: ip_conntrack_dir,
 ) -> u16 {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+    #[cfg(CONFIG_NF_CONNTRACK_ZONES)]
     {
         return if nf_ct_zone_matches_dir(zone, dir) {
             (*zone).id
@@ -75,7 +75,7 @@ pub unsafe fn nf_ct_zone_id(
             NF_CT_DEFAULT_ZONE_ID
         };
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_ZONES"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_ZONES))]
     {
         NF_CT_DEFAULT_ZONE_ID
     }
@@ -86,11 +86,11 @@ pub unsafe fn nf_ct_zone_equal(
     b: *const nf_conntrack_zone,
     dir: ip_conntrack_dir,
 ) -> bool {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+    #[cfg(CONFIG_NF_CONNTRACK_ZONES)]
     {
         return nf_ct_zone_id(nf_ct_zone(a), dir) == nf_ct_zone_id(b, dir);
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_ZONES"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_ZONES))]
     {
         true
     }
@@ -100,11 +100,11 @@ pub unsafe fn nf_ct_zone_equal_any(
     a: *const nf_conn,
     b: *const nf_conntrack_zone,
 ) -> bool {
-    #[cfg(feature = "CONFIG_NF_CONNTRACK_ZONES")]
+    #[cfg(CONFIG_NF_CONNTRACK_ZONES)]
     {
         return (*nf_ct_zone(a)).id == (*b).id;
     }
-    #[cfg(not(feature = "CONFIG_NF_CONNTRACK_ZONES"))]
+    #[cfg(not(CONFIG_NF_CONNTRACK_ZONES))]
     {
         true
     }

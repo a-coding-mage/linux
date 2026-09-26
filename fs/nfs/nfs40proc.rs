@@ -64,8 +64,8 @@ unsafe fn nfs4_renew_done(task: *mut rpc_task, calldata: *mut core::ffi::c_void)
     let timestamp = data.timestamp;
     trace_nfs4_renew_async(clp, (*task).tk_status);
     match (*task).tk_status {
-        0 => {}
-        -NFS4ERR_LEASE_MOVED => nfs4_schedule_lease_moved_recovery(clp),
+        case if case == 0 => {}
+        case if case == -NFS4ERR_LEASE_MOVED => nfs4_schedule_lease_moved_recovery(clp),
         _ => {
             if test_bit(NFS_CS_RENEWD, &(*clp).cl_res_state) == 0 { return; }
             if (*task).tk_status != NFS4ERR_CB_PATH_DOWN {
@@ -155,9 +155,9 @@ unsafe fn nfs4_release_lockowner_done(task: *mut rpc_task, calldata: *mut core::
     let server = data.server;
     nfs40_sequence_done(task, &mut data.res.seq_res);
     match (*task).tk_status {
-        0 => renew_lease(server, data.timestamp),
-        -NFS4ERR_STALE_CLIENTID | -NFS4ERR_EXPIRED => nfs4_schedule_lease_recovery((*server).nfs_client),
-        -NFS4ERR_LEASE_MOVED | -NFS4ERR_DELAY => {
+        case if case == 0 => renew_lease(server, data.timestamp),
+        case if case == -NFS4ERR_STALE_CLIENTID || case == -NFS4ERR_EXPIRED => nfs4_schedule_lease_recovery((*server).nfs_client),
+        case if case == -NFS4ERR_LEASE_MOVED || case == -NFS4ERR_DELAY => {
             if nfs4_async_handle_error(task, server, core::ptr::null_mut(), core::ptr::null_mut()) == -EAGAIN {
                 rpc_restart_call_prepare(task);
             }

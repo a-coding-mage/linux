@@ -115,13 +115,13 @@ pub unsafe fn bitmap_find_next_zero_area_off(map:*mut usize,size:u64,mut start:u
     size
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe fn bitmap_onto(dst:*mut usize,orig:*const usize,relmap:*const usize,bits:u32){
     if dst==orig{return;} bitmap_zero(dst,bits); let mut m=0u32;
     for n in 0..bits { if test_bit(n,relmap) { if test_bit(m,orig){set_bit(n,dst);} m+=1; } }
 }
 
-#[cfg(feature = "CONFIG_NUMA")]
+#[cfg(CONFIG_NUMA)]
 pub unsafe fn bitmap_fold(dst:*mut usize,orig:*const usize,sz:u32,nbits:u32){
     if dst==orig{return;} bitmap_zero(dst,nbits); for oldbit in 0..nbits { if test_bit(oldbit,orig){set_bit(oldbit%sz,dst);} }
 }

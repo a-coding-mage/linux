@@ -140,7 +140,7 @@ unsafe fn virtbt_tx_done(vq: *mut virtqueue) {
 }
 
 unsafe fn virtbt_rx_done(vq: *mut virtqueue) {
-    let vbt = (*vq).vdev->priv_ as *mut VirtioBluetooth;
+    let vbt = (*(*vq).vdev).priv_ as *mut VirtioBluetooth;
     schedule_work(&mut (*vbt).rx);
 }
 
@@ -163,7 +163,7 @@ unsafe fn virtbt_remove(vdev: *mut virtio_device) {
     let vbt = (*vdev).priv_ as *mut VirtioBluetooth;
     hci_unregister_dev((*vbt).hdev); virtio_reset_device(vdev);
     virtbt_close_vdev(vbt); hci_free_dev((*vbt).hdev);
-    (*vbt).hdev = core::ptr::null_mut(); (*vdev).config->del_vqs(vdev); kfree(vbt as *mut _);
+    (*vbt).hdev = core::ptr::null_mut(); (*(*vdev).config).del_vqs(vdev); kfree(vbt as *mut _);
 }
 
 // MODULE_DEVICE_TABLE, module_virtio_driver, and MODULE_* metadata are kernel build

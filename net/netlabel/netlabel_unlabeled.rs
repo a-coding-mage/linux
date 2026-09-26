@@ -32,14 +32,14 @@ extern "C" {
     static mut netlabel_mgmt_protocount: u32;
     static mut init_net: net;
     static mut netlabel_unlabel_acceptflg: u8;
-    fn netlbl_af4list_add(*mut netlbl_af4list,*mut list_head)->i32;
-    fn netlbl_af6list_add(*mut netlbl_af6list,*mut list_head)->i32;
-    fn netlbl_af4list_remove(u32,u32,*mut list_head)->*mut netlbl_af4list;
-    fn netlbl_af6list_remove(*const in6_addr,*const in6_addr,*mut list_head)->*mut netlbl_af6list;
-    fn netlbl_af4list_search(u32,*mut list_head)->*mut netlbl_af4list;
-    fn netlbl_af6list_search(*const in6_addr,*mut list_head)->*mut netlbl_af6list;
-    fn netlbl_unlabel_acceptflg_set(u8,*mut netlbl_audit);
-    fn genl_register_family(*mut genl_family)->i32;
+    fn netlbl_af4list_add(_: *mut netlbl_af4list,_: *mut list_head)->i32;
+    fn netlbl_af6list_add(_: *mut netlbl_af6list,_: *mut list_head)->i32;
+    fn netlbl_af4list_remove(_: u32,_: u32,_: *mut list_head)->*mut netlbl_af4list;
+    fn netlbl_af6list_remove(_: *const in6_addr,_: *const in6_addr,_: *mut list_head)->*mut netlbl_af6list;
+    fn netlbl_af4list_search(_: u32,_: *mut list_head)->*mut netlbl_af4list;
+    fn netlbl_af6list_search(_: *const in6_addr,_: *mut list_head)->*mut netlbl_af6list;
+    fn netlbl_unlabel_acceptflg_set(_: u8,_: *mut netlbl_audit);
+    fn genl_register_family(_: *mut genl_family)->i32;
 }
 
 static mut netlbl_unlhsh: *mut netlbl_unlhsh_tbl = core::ptr::null_mut();

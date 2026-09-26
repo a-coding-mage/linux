@@ -5,7 +5,6 @@
  * Copyright (c) 2017 Microsemi Corporation
  */
 
-pub const _MSCC_OCELOT_ANA_H_: u32 = ;
 
 pub const ANA_ANAGEFIL_B_DOM_EN: u32 = BIT!(22);
 pub const ANA_ANAGEFIL_B_DOM_VAL: u32 = BIT!(21);

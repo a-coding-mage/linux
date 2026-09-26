@@ -40,7 +40,7 @@ pub unsafe fn io_uring_cmd_to_pdu<T>(cmd: *mut io_uring_cmd) -> *mut T {
     (*cmd).pdu.as_mut_ptr() as *mut T
 }
 
-#[cfg(feature = "CONFIG_IO_URING")]
+#[cfg(CONFIG_IO_URING)]
 extern "C" {
     pub fn io_uring_cmd_import_fixed(
         ubuf: u64, len: libc::c_ulong, rw: libc::c_int,

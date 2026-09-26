@@ -53,12 +53,12 @@ pub struct adf_heartbeat_dbgfs {
     pub sent: *mut dentry,
     pub failed: *mut dentry,
     /* CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION */
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION")]
+    #[cfg(CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION)]
     pub inject_error: *mut dentry,
 }
 
 /* CONFIG_DEBUG_FS */
-#[cfg(feature = "CONFIG_DEBUG_FS")]
+#[cfg(CONFIG_DEBUG_FS)]
 unsafe extern "C" {
     pub fn adf_heartbeat_init(accel_dev: *mut adf_accel_dev) -> i32;
     pub fn adf_heartbeat_start(accel_dev: *mut adf_accel_dev) -> i32;
@@ -80,32 +80,32 @@ unsafe extern "C" {
     pub fn adf_heartbeat_check_ctrs(accel_dev: *mut adf_accel_dev);
 
     /* CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION */
-    #[cfg(feature = "CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION")]
+    #[cfg(CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION)]
     pub fn adf_heartbeat_inject_error(accel_dev: *mut adf_accel_dev) -> i32;
 }
 
 #[cfg(all(
-    feature = "CONFIG_DEBUG_FS",
-    not(feature = "CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION")
+    CONFIG_DEBUG_FS,
+    not(CONFIG_CRYPTO_DEV_QAT_ERROR_INJECTION)
 ))]
 pub unsafe fn adf_heartbeat_inject_error(_accel_dev: *mut adf_accel_dev) -> i32 {
     -EPERM
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_heartbeat_init(_accel_dev: *mut adf_accel_dev) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_heartbeat_start(_accel_dev: *mut adf_accel_dev) -> i32 {
     0
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_heartbeat_shutdown(_accel_dev: *mut adf_accel_dev) {}
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_heartbeat_save_cfg_param(
     _accel_dev: *mut adf_accel_dev,
     _timer_ms: u32,
@@ -113,7 +113,7 @@ pub unsafe fn adf_heartbeat_save_cfg_param(
     0
 }
 
-#[cfg(not(feature = "CONFIG_DEBUG_FS"))]
+#[cfg(not(CONFIG_DEBUG_FS))]
 pub unsafe fn adf_heartbeat_check_ctrs(_accel_dev: *mut adf_accel_dev) {}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

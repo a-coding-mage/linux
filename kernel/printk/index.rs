@@ -7,36 +7,32 @@
 // referenced here rather than reimplemented in this translation unit.
 
 extern "C" {
-    static mut __start_printk_index: *mut *mut pi_entry;
-    static mut __stop_printk_index: *mut *mut pi_entry;
+    static __start_printk_index: [*mut pi_entry; 0];
+    static __stop_printk_index: [*mut pi_entry; 0];
 }
 
 /* The base dir for module formats, typically debugfs/printk/index/ */
 static mut dfs_index: *mut dentry = core::ptr::null_mut();
 
 unsafe fn pi_get_entry(mod_: *const module, pos: loff_t) -> *mut pi_entry {
-    let entries: *mut *mut pi_entry;
-    let nr_entries: usize;
-
-    // CONFIG_MODULES is a build-time condition in the C source.
     #[cfg(CONFIG_MODULES)]
-    if !mod_.is_null() {
-        entries = (*((mod_) as *mut module)).printk_index_start;
-        nr_entries = (*((mod_) as *mut module)).printk_index_size as usize;
-    } else
-    #[cfg(CONFIG_MODULES)]
-    {
-        /* vmlinux, comes from linker symbols */
-        entries = __start_printk_index;
-        nr_entries = __stop_printk_index.offset_from(__start_printk_index) as usize;
-    }
-
+    let from_module = if mod_.is_null() {
+        None
+    } else {
+        Some(((*mod_).printk_index_start, (*mod_).printk_index_size as usize))
+    };
     #[cfg(not(CONFIG_MODULES))]
-    {
+    let from_module: Option<(*mut *mut pi_entry, usize)> = None;
+
+    let (entries, nr_entries) = match from_module {
+        Some(table) => table,
         /* vmlinux, comes from linker symbols */
-        entries = __start_printk_index;
-        nr_entries = __stop_printk_index.offset_from(__start_printk_index) as usize;
-    }
+        None => {
+            let start = core::ptr::addr_of!(__start_printk_index) as *mut *mut pi_entry;
+            let stop = core::ptr::addr_of!(__stop_printk_index) as *mut *mut pi_entry;
+            (start, stop.offset_from(start) as usize)
+        }
+    };
 
     if pos >= nr_entries as loff_t {
         return core::ptr::null_mut();

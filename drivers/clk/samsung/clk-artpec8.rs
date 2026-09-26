@@ -25,75 +25,75 @@
 #define CMU_PERI_NR_CLK				(CLK_GOUT_PERI_DMA4DSIM_IPCLKPORT_CLK_AXI_CLK + 1)
 
 /* Register Offset definitions for CMU_CMU (0x12400000) */
-#define PLL_LOCKTIME_PLL_AUDIO				0x0000
-#define PLL_LOCKTIME_PLL_SHARED0			0x0004
-#define PLL_LOCKTIME_PLL_SHARED1			0x0008
-#define PLL_CON0_PLL_AUDIO				0x0100
-#define PLL_CON0_PLL_SHARED0				0x0120
-#define PLL_CON0_PLL_SHARED1				0x0140
-#define CLK_CON_MUX_CLKCMU_2D				0x1000
-#define CLK_CON_MUX_CLKCMU_3D				0x1004
-#define CLK_CON_MUX_CLKCMU_BUS				0x1008
-#define CLK_CON_MUX_CLKCMU_BUS_DLP			0x100c
-#define CLK_CON_MUX_CLKCMU_CDC_CORE			0x1010
-#define CLK_CON_MUX_CLKCMU_FSYS_SCAN0			0x1014
-#define CLK_CON_MUX_CLKCMU_FSYS_SCAN1			0x1018
-#define CLK_CON_MUX_CLKCMU_IMEM_JPEG			0x101c
-#define CLK_CON_MUX_CLKCMU_PERI_DISP			0x1020
-#define CLK_CON_MUX_CLKCMU_CORE_BUS			0x1024
-#define CLK_CON_MUX_CLKCMU_CORE_DLP			0x1028
-#define CLK_CON_MUX_CLKCMU_CPUCL_SWITCH			0x1030
-#define CLK_CON_MUX_CLKCMU_DLP_CORE			0x1034
-#define CLK_CON_MUX_CLKCMU_FSYS_BUS			0x1038
-#define CLK_CON_MUX_CLKCMU_FSYS_IP			0x103c
-#define CLK_CON_MUX_CLKCMU_IMEM_ACLK			0x1054
-#define CLK_CON_MUX_CLKCMU_MIF_BUSP			0x1080
-#define CLK_CON_MUX_CLKCMU_MIF_SWITCH			0x1084
-#define CLK_CON_MUX_CLKCMU_PERI_IP			0x1088
-#define CLK_CON_MUX_CLKCMU_RSP_CORE			0x108c
-#define CLK_CON_MUX_CLKCMU_TRFM_CORE			0x1090
-#define CLK_CON_MUX_CLKCMU_VCA_ACE			0x1094
-#define CLK_CON_MUX_CLKCMU_VCA_OD			0x1098
-#define CLK_CON_MUX_CLKCMU_VIO_CORE			0x109c
-#define CLK_CON_MUX_CLKCMU_VIP0_CORE			0x10a0
-#define CLK_CON_MUX_CLKCMU_VIP1_CORE			0x10a4
-#define CLK_CON_MUX_CLKCMU_VPP_CORE			0x10a8
+pub const PLL_LOCKTIME_PLL_AUDIO: u32 = 0x0000;
+pub const PLL_LOCKTIME_PLL_SHARED0: u32 = 0x0004;
+pub const PLL_LOCKTIME_PLL_SHARED1: u32 = 0x0008;
+pub const PLL_CON0_PLL_AUDIO: u32 = 0x0100;
+pub const PLL_CON0_PLL_SHARED0: u32 = 0x0120;
+pub const PLL_CON0_PLL_SHARED1: u32 = 0x0140;
+pub const CLK_CON_MUX_CLKCMU_2D: u32 = 0x1000;
+pub const CLK_CON_MUX_CLKCMU_3D: u32 = 0x1004;
+pub const CLK_CON_MUX_CLKCMU_BUS: u32 = 0x1008;
+pub const CLK_CON_MUX_CLKCMU_BUS_DLP: u32 = 0x100c;
+pub const CLK_CON_MUX_CLKCMU_CDC_CORE: u32 = 0x1010;
+pub const CLK_CON_MUX_CLKCMU_FSYS_SCAN0: u32 = 0x1014;
+pub const CLK_CON_MUX_CLKCMU_FSYS_SCAN1: u32 = 0x1018;
+pub const CLK_CON_MUX_CLKCMU_IMEM_JPEG: u32 = 0x101c;
+pub const CLK_CON_MUX_CLKCMU_PERI_DISP: u32 = 0x1020;
+pub const CLK_CON_MUX_CLKCMU_CORE_BUS: u32 = 0x1024;
+pub const CLK_CON_MUX_CLKCMU_CORE_DLP: u32 = 0x1028;
+pub const CLK_CON_MUX_CLKCMU_CPUCL_SWITCH: u32 = 0x1030;
+pub const CLK_CON_MUX_CLKCMU_DLP_CORE: u32 = 0x1034;
+pub const CLK_CON_MUX_CLKCMU_FSYS_BUS: u32 = 0x1038;
+pub const CLK_CON_MUX_CLKCMU_FSYS_IP: u32 = 0x103c;
+pub const CLK_CON_MUX_CLKCMU_IMEM_ACLK: u32 = 0x1054;
+pub const CLK_CON_MUX_CLKCMU_MIF_BUSP: u32 = 0x1080;
+pub const CLK_CON_MUX_CLKCMU_MIF_SWITCH: u32 = 0x1084;
+pub const CLK_CON_MUX_CLKCMU_PERI_IP: u32 = 0x1088;
+pub const CLK_CON_MUX_CLKCMU_RSP_CORE: u32 = 0x108c;
+pub const CLK_CON_MUX_CLKCMU_TRFM_CORE: u32 = 0x1090;
+pub const CLK_CON_MUX_CLKCMU_VCA_ACE: u32 = 0x1094;
+pub const CLK_CON_MUX_CLKCMU_VCA_OD: u32 = 0x1098;
+pub const CLK_CON_MUX_CLKCMU_VIO_CORE: u32 = 0x109c;
+pub const CLK_CON_MUX_CLKCMU_VIP0_CORE: u32 = 0x10a0;
+pub const CLK_CON_MUX_CLKCMU_VIP1_CORE: u32 = 0x10a4;
+pub const CLK_CON_MUX_CLKCMU_VPP_CORE: u32 = 0x10a8;
 
-#define CLK_CON_DIV_CLKCMU_BUS				0x1800
-#define CLK_CON_DIV_CLKCMU_BUS_DLP			0x1804
-#define CLK_CON_DIV_CLKCMU_CDC_CORE			0x1808
-#define CLK_CON_DIV_CLKCMU_FSYS_SCAN0			0x180c
-#define CLK_CON_DIV_CLKCMU_FSYS_SCAN1			0x1810
-#define CLK_CON_DIV_CLKCMU_IMEM_JPEG			0x1814
-#define CLK_CON_DIV_CLKCMU_MIF_SWITCH			0x1818
-#define CLK_CON_DIV_CLKCMU_CORE_DLP			0x181c
-#define CLK_CON_DIV_CLKCMU_CORE_MAIN			0x1820
-#define CLK_CON_DIV_CLKCMU_PERI_DISP			0x1824
-#define CLK_CON_DIV_CLKCMU_CPUCL_SWITCH			0x1828
-#define CLK_CON_DIV_CLKCMU_DLP_CORE			0x182c
-#define CLK_CON_DIV_CLKCMU_FSYS_BUS			0x1830
-#define CLK_CON_DIV_CLKCMU_FSYS_IP			0x1834
-#define CLK_CON_DIV_CLKCMU_VIO_AUDIO			0x1838
-#define CLK_CON_DIV_CLKCMU_GPU_2D			0x1848
-#define CLK_CON_DIV_CLKCMU_GPU_3D			0x184c
-#define CLK_CON_DIV_CLKCMU_IMEM_ACLK			0x1854
-#define CLK_CON_DIV_CLKCMU_MIF_BUSP			0x1884
-#define CLK_CON_DIV_CLKCMU_PERI_AUDIO			0x1890
-#define CLK_CON_DIV_CLKCMU_PERI_IP			0x1894
-#define CLK_CON_DIV_CLKCMU_RSP_CORE			0x1898
-#define CLK_CON_DIV_CLKCMU_TRFM_CORE			0x189c
-#define CLK_CON_DIV_CLKCMU_VCA_ACE			0x18a0
-#define CLK_CON_DIV_CLKCMU_VCA_OD			0x18a4
-#define CLK_CON_DIV_CLKCMU_VIO_CORE			0x18ac
-#define CLK_CON_DIV_CLKCMU_VIP0_CORE			0x18b0
-#define CLK_CON_DIV_CLKCMU_VIP1_CORE			0x18b4
-#define CLK_CON_DIV_CLKCMU_VPP_CORE			0x18b8
-#define CLK_CON_DIV_PLL_SHARED0_DIV2			0x18bc
-#define CLK_CON_DIV_PLL_SHARED0_DIV3			0x18c0
-#define CLK_CON_DIV_PLL_SHARED0_DIV4			0x18c4
-#define CLK_CON_DIV_PLL_SHARED1_DIV2			0x18c8
-#define CLK_CON_DIV_PLL_SHARED1_DIV3			0x18cc
-#define CLK_CON_DIV_PLL_SHARED1_DIV4			0x18d0
+pub const CLK_CON_DIV_CLKCMU_BUS: u32 = 0x1800;
+pub const CLK_CON_DIV_CLKCMU_BUS_DLP: u32 = 0x1804;
+pub const CLK_CON_DIV_CLKCMU_CDC_CORE: u32 = 0x1808;
+pub const CLK_CON_DIV_CLKCMU_FSYS_SCAN0: u32 = 0x180c;
+pub const CLK_CON_DIV_CLKCMU_FSYS_SCAN1: u32 = 0x1810;
+pub const CLK_CON_DIV_CLKCMU_IMEM_JPEG: u32 = 0x1814;
+pub const CLK_CON_DIV_CLKCMU_MIF_SWITCH: u32 = 0x1818;
+pub const CLK_CON_DIV_CLKCMU_CORE_DLP: u32 = 0x181c;
+pub const CLK_CON_DIV_CLKCMU_CORE_MAIN: u32 = 0x1820;
+pub const CLK_CON_DIV_CLKCMU_PERI_DISP: u32 = 0x1824;
+pub const CLK_CON_DIV_CLKCMU_CPUCL_SWITCH: u32 = 0x1828;
+pub const CLK_CON_DIV_CLKCMU_DLP_CORE: u32 = 0x182c;
+pub const CLK_CON_DIV_CLKCMU_FSYS_BUS: u32 = 0x1830;
+pub const CLK_CON_DIV_CLKCMU_FSYS_IP: u32 = 0x1834;
+pub const CLK_CON_DIV_CLKCMU_VIO_AUDIO: u32 = 0x1838;
+pub const CLK_CON_DIV_CLKCMU_GPU_2D: u32 = 0x1848;
+pub const CLK_CON_DIV_CLKCMU_GPU_3D: u32 = 0x184c;
+pub const CLK_CON_DIV_CLKCMU_IMEM_ACLK: u32 = 0x1854;
+pub const CLK_CON_DIV_CLKCMU_MIF_BUSP: u32 = 0x1884;
+pub const CLK_CON_DIV_CLKCMU_PERI_AUDIO: u32 = 0x1890;
+pub const CLK_CON_DIV_CLKCMU_PERI_IP: u32 = 0x1894;
+pub const CLK_CON_DIV_CLKCMU_RSP_CORE: u32 = 0x1898;
+pub const CLK_CON_DIV_CLKCMU_TRFM_CORE: u32 = 0x189c;
+pub const CLK_CON_DIV_CLKCMU_VCA_ACE: u32 = 0x18a0;
+pub const CLK_CON_DIV_CLKCMU_VCA_OD: u32 = 0x18a4;
+pub const CLK_CON_DIV_CLKCMU_VIO_CORE: u32 = 0x18ac;
+pub const CLK_CON_DIV_CLKCMU_VIP0_CORE: u32 = 0x18b0;
+pub const CLK_CON_DIV_CLKCMU_VIP1_CORE: u32 = 0x18b4;
+pub const CLK_CON_DIV_CLKCMU_VPP_CORE: u32 = 0x18b8;
+pub const CLK_CON_DIV_PLL_SHARED0_DIV2: u32 = 0x18bc;
+pub const CLK_CON_DIV_PLL_SHARED0_DIV3: u32 = 0x18c0;
+pub const CLK_CON_DIV_PLL_SHARED0_DIV4: u32 = 0x18c4;
+pub const CLK_CON_DIV_PLL_SHARED1_DIV2: u32 = 0x18c8;
+pub const CLK_CON_DIV_PLL_SHARED1_DIV3: u32 = 0x18cc;
+pub const CLK_CON_DIV_PLL_SHARED1_DIV4: u32 = 0x18d0;
 
 pub static u64 cmu_cmu_clk_regs[]  = {
 	PLL_LOCKTIME_PLL_AUDIO,
@@ -325,22 +325,22 @@ pub pub static samsung_div_clock cmu_cmu_div_clks[]  = {
 	      "mout_clkcmu_vpp_core", CLK_CON_DIV_CLKCMU_VPP_CORE, 0, 4, CLK_SET_RATE_PARENT, 0),
 };
 pub pub static samsung_cmu_info cmu_cmu_info  = {
-	.pll_clks = cmu_cmu_pll_clks,
-	.nr_pll_clks = cmu_cmu_pll_clks.len(),
-	.fixed_factor_clks = cmu_fixed_factor_clks,
-	.nr_fixed_factor_clks = cmu_fixed_factor_clks.len(),
-	.mux_clks = cmu_cmu_mux_clks,
-	.nr_mux_clks = cmu_cmu_mux_clks.len(),
-	.div_clks = cmu_cmu_div_clks,
-	.nr_div_clks = cmu_cmu_div_clks.len(),
-	.nr_clk_ids = CMU_CMU_NR_CLK,
-	.clk_regs = cmu_cmu_clk_regs,
-	.nr_clk_regs = cmu_cmu_clk_regs.len(),
+	pll_clks: cmu_cmu_pll_clks,
+	nr_pll_clks: cmu_cmu_pll_clks.len(),
+	fixed_factor_clks: cmu_fixed_factor_clks,
+	nr_fixed_factor_clks: cmu_fixed_factor_clks.len(),
+	mux_clks: cmu_cmu_mux_clks,
+	nr_mux_clks: cmu_cmu_mux_clks.len(),
+	div_clks: cmu_cmu_div_clks,
+	nr_div_clks: cmu_cmu_div_clks.len(),
+	nr_clk_ids: CMU_CMU_NR_CLK,
+	clk_regs: cmu_cmu_clk_regs,
+	nr_clk_regs: cmu_cmu_clk_regs.len(),
 };
 /* Register Offset definitions for CMU_BUS (0x12c10000) */
-#define PLL_CON0_MUX_CLK_BUS_ACLK_USER			0x0100
-#define PLL_CON0_MUX_CLK_BUS_DLP_USER			0x0120
-#define CLK_CON_DIV_CLK_BUS_PCLK			0x1800
+pub const PLL_CON0_MUX_CLK_BUS_ACLK_USER: u32 = 0x0100;
+pub const PLL_CON0_MUX_CLK_BUS_DLP_USER: u32 = 0x0120;
+pub const CLK_CON_DIV_CLK_BUS_PCLK: u32 = 0x1800;
 
 pub static u64 cmu_bus_clk_regs[]  = {
 	PLL_CON0_MUX_CLK_BUS_ACLK_USER,
@@ -359,18 +359,18 @@ pub pub static samsung_div_clock cmu_bus_div_clks[]  = {
 	    CLK_CON_DIV_CLK_BUS_PCLK, 0, 4),
 };
 pub pub static samsung_cmu_info cmu_bus_info  = {
-	.mux_clks = cmu_bus_mux_clks,
-	.nr_mux_clks = cmu_bus_mux_clks.len(),
-	.div_clks = cmu_bus_div_clks,
-	.nr_div_clks = cmu_bus_div_clks.len(),
-	.nr_clk_ids = CMU_BUS_NR_CLK,
-	.clk_regs = cmu_bus_clk_regs,
-	.nr_clk_regs = cmu_bus_clk_regs.len(),
+	mux_clks: cmu_bus_mux_clks,
+	nr_mux_clks: cmu_bus_mux_clks.len(),
+	div_clks: cmu_bus_div_clks,
+	nr_div_clks: cmu_bus_div_clks.len(),
+	nr_clk_ids: CMU_BUS_NR_CLK,
+	clk_regs: cmu_bus_clk_regs,
+	nr_clk_regs: cmu_bus_clk_regs.len(),
 };
 /* Register Offset definitions for CMU_CORE (0x12410000) */
-#define PLL_CON0_MUX_CLK_CORE_ACLK_USER			0x0100
-#define PLL_CON0_MUX_CLK_CORE_DLP_USER			0x0120
-#define CLK_CON_DIV_CLK_CORE_PCLK			0x1800
+pub const PLL_CON0_MUX_CLK_CORE_ACLK_USER: u32 = 0x0100;
+pub const PLL_CON0_MUX_CLK_CORE_DLP_USER: u32 = 0x0120;
+pub const CLK_CON_DIV_CLK_CORE_PCLK: u32 = 0x1800;
 
 pub static u64 cmu_core_clk_regs[]  = {
 	PLL_CON0_MUX_CLK_CORE_ACLK_USER,
@@ -389,30 +389,30 @@ pub pub static samsung_div_clock cmu_core_div_clks[]  = {
 	    "mout_clk_core_aclk_user", CLK_CON_DIV_CLK_CORE_PCLK, 0, 4),
 };
 pub pub static samsung_cmu_info cmu_core_info  = {
-	.mux_clks = cmu_core_mux_clks,
-	.nr_mux_clks = cmu_core_mux_clks.len(),
-	.div_clks = cmu_core_div_clks,
-	.nr_div_clks = cmu_core_div_clks.len(),
-	.nr_clk_ids = CMU_CORE_NR_CLK,
-	.clk_regs = cmu_core_clk_regs,
-	.nr_clk_regs = cmu_core_clk_regs.len(),
+	mux_clks: cmu_core_mux_clks,
+	nr_mux_clks: cmu_core_mux_clks.len(),
+	div_clks: cmu_core_div_clks,
+	nr_div_clks: cmu_core_div_clks.len(),
+	nr_clk_ids: CMU_CORE_NR_CLK,
+	clk_regs: cmu_core_clk_regs,
+	nr_clk_regs: cmu_core_clk_regs.len(),
 };
 /* Register Offset definitions for CMU_CPUCL (0x11410000) */
-#define PLL_LOCKTIME_PLL_CPUCL				0x0000
-#define PLL_CON0_MUX_CLKCMU_CPUCL_SWITCH_USER		0x0120
-#define PLL_CON0_PLL_CPUCL				0x0140
-#define CLK_CON_MUX_CLK_CPUCL_PLL			0x1000
-#define CLK_CON_DIV_CLK_CLUSTER_ACLK			0x1800
-#define CLK_CON_DIV_CLK_CLUSTER_CNTCLK			0x1804
-#define CLK_CON_DIV_CLK_CLUSTER_PCLKDBG			0x1808
-#define CLK_CON_DIV_CLK_CPUCL_CMUREF			0x180c
-#define CLK_CON_DIV_CLK_CPUCL_PCLK			0x1814
-#define CLK_CON_DIV_CLK_CLUSTER_ATCLK			0x1818
-#define CLK_CON_DIV_CLK_CPUCL_DBG			0x181c
-#define CLK_CON_DIV_CLK_CPUCL_PCLKDBG			0x1820
-#define CLK_CON_GAT_CLK_CLUSTER_CPU			0x2008
-#define CLK_CON_GAT_CLK_CPUCL_SHORTSTOP			0x200c
-#define CLK_CON_DMYQCH_CON_CSSYS_QCH			0x3008
+pub const PLL_LOCKTIME_PLL_CPUCL: u32 = 0x0000;
+pub const PLL_CON0_MUX_CLKCMU_CPUCL_SWITCH_USER: u32 = 0x0120;
+pub const PLL_CON0_PLL_CPUCL: u32 = 0x0140;
+pub const CLK_CON_MUX_CLK_CPUCL_PLL: u32 = 0x1000;
+pub const CLK_CON_DIV_CLK_CLUSTER_ACLK: u32 = 0x1800;
+pub const CLK_CON_DIV_CLK_CLUSTER_CNTCLK: u32 = 0x1804;
+pub const CLK_CON_DIV_CLK_CLUSTER_PCLKDBG: u32 = 0x1808;
+pub const CLK_CON_DIV_CLK_CPUCL_CMUREF: u32 = 0x180c;
+pub const CLK_CON_DIV_CLK_CPUCL_PCLK: u32 = 0x1814;
+pub const CLK_CON_DIV_CLK_CLUSTER_ATCLK: u32 = 0x1818;
+pub const CLK_CON_DIV_CLK_CPUCL_DBG: u32 = 0x181c;
+pub const CLK_CON_DIV_CLK_CPUCL_PCLKDBG: u32 = 0x1820;
+pub const CLK_CON_GAT_CLK_CLUSTER_CPU: u32 = 0x2008;
+pub const CLK_CON_GAT_CLK_CPUCL_SHORTSTOP: u32 = 0x200c;
+pub const CLK_CON_DMYQCH_CON_CSSYS_QCH: u32 = 0x3008;
 
 pub static u64 cmu_cpucl_clk_regs[]  = {
 	PLL_LOCKTIME_PLL_CPUCL,
@@ -481,66 +481,66 @@ pub pub static samsung_gate_clock cmu_cpucl_gate_clks[]  = {
 	     CLK_SET_RATE_PARENT | CLK_IS_CRITICAL, 0),
 };
 pub pub static samsung_cmu_info cmu_cpucl_info  = {
-	.pll_clks = cmu_cpucl_pll_clks,
-	.nr_pll_clks = cmu_cpucl_pll_clks.len(),
-	.fixed_factor_clks = cpucl_ffactor_clks,
-	.nr_fixed_factor_clks = cpucl_ffactor_clks.len(),
-	.mux_clks = cmu_cpucl_mux_clks,
-	.nr_mux_clks = cmu_cpucl_mux_clks.len(),
-	.div_clks = cmu_cpucl_div_clks,
-	.nr_div_clks = cmu_cpucl_div_clks.len(),
-	.gate_clks = cmu_cpucl_gate_clks,
-	.nr_gate_clks = cmu_cpucl_gate_clks.len(),
-	.nr_clk_ids = CMU_CPUCL_NR_CLK,
-	.clk_regs = cmu_cpucl_clk_regs,
-	.nr_clk_regs = cmu_cpucl_clk_regs.len(),
+	pll_clks: cmu_cpucl_pll_clks,
+	nr_pll_clks: cmu_cpucl_pll_clks.len(),
+	fixed_factor_clks: cpucl_ffactor_clks,
+	nr_fixed_factor_clks: cpucl_ffactor_clks.len(),
+	mux_clks: cmu_cpucl_mux_clks,
+	nr_mux_clks: cmu_cpucl_mux_clks.len(),
+	div_clks: cmu_cpucl_div_clks,
+	nr_div_clks: cmu_cpucl_div_clks.len(),
+	gate_clks: cmu_cpucl_gate_clks,
+	nr_gate_clks: cmu_cpucl_gate_clks.len(),
+	nr_clk_ids: CMU_CPUCL_NR_CLK,
+	clk_regs: cmu_cpucl_clk_regs,
+	nr_clk_regs: cmu_cpucl_clk_regs.len(),
 };
 /* Register Offset definitions for CMU_FSYS (0x16c10000) */
-#define PLL_LOCKTIME_PLL_FSYS				0x0004
-#define PLL_CON0_MUX_CLK_FSYS_BUS_USER			0x0120
-#define PLL_CON0_MUX_CLK_FSYS_MMC_USER			0x0140
-#define PLL_CON0_MUX_CLK_FSYS_SCAN0_USER		0x0160
-#define PLL_CON0_MUX_CLK_FSYS_SCAN1_USER		0x0180
-#define PLL_CON0_PLL_FSYS				0x01c0
-#define CLK_CON_DIV_CLK_FSYS_ADC			0x1804
-#define CLK_CON_DIV_CLK_FSYS_BUS300			0x1808
-#define CLK_CON_DIV_CLK_FSYS_BUS_QSPI			0x180c
-#define CLK_CON_DIV_CLK_FSYS_EQOS_25			0x1810
-#define CLK_CON_DIV_CLK_FSYS_EQOS_2P5			0x1814
-#define CLK_CON_DIV_CLK_FSYS_EQOS_500			0x1818
-#define CLK_CON_DIV_CLK_FSYS_EQOS_INT125		0x181c
-#define CLK_CON_DIV_CLK_FSYS_MMC_CARD0			0x1820
-#define CLK_CON_DIV_CLK_FSYS_MMC_CARD1			0x1824
-#define CLK_CON_DIV_CLK_FSYS_OTP_MEM			0x1828
-#define CLK_CON_DIV_CLK_FSYS_PCIE_PHY_REFCLK_SYSPLL	0x182c
-#define CLK_CON_DIV_CLK_FSYS_QSPI			0x1830
-#define CLK_CON_DIV_CLK_FSYS_SCLK_UART			0x1834
-#define CLK_CON_DIV_CLK_FSYS_SFMC_NAND			0x1838
-#define CLK_CON_DIV_SCAN_CLK_FSYS_125			0x183c
-#define CLK_CON_DIV_SCAN_CLK_FSYS_MMC			0x1840
-#define CLK_CON_DIV_SCAN_CLK_FSYS_PCIE_PIPE		0x1844
-#define CLK_CON_FSYS_I2C0_IPCLKPORT_I_PCLK		0x2044
-#define CLK_CON_FSYS_I2C1_IPCLKPORT_I_PCLK		0x2048
-#define CLK_CON_FSYS_UART0_IPCLKPORT_I_PCLK		0x204c
-#define CLK_CON_FSYS_UART0_IPCLKPORT_I_SCLK_UART	0x2050
-#define CLK_CON_MMC0_IPCLKPORT_I_ACLK			0x2070
-#define CLK_CON_MMC1_IPCLKPORT_I_ACLK			0x2078
-#define CLK_CON_DWC_PCIE_CTL_INST_0_DBI_ACLK_UG		0x208c
-#define CLK_CON_DWC_PCIE_CTL_INST_0_MSTR_ACLK_UG	0x2090
-#define CLK_CON_DWC_PCIE_CTL_INST_0_SLV_ACLK_UG		0x2094
-#define CLK_CON_PWM_IPCLKPORT_I_PCLK_S0			0x20a0
-#define CLK_CON_USB20DRD_IPCLKPORT_ACLK_PHYCTRL_20	0x20bc
-#define CLK_CON_USB20DRD_IPCLKPORT_BUS_CLK_EARLY	0x20c0
-#define CLK_CON_XHB_AHBBR_IPCLKPORT_CLK			0x20c4
-#define CLK_CON_XHB_USB_IPCLKPORT_CLK			0x20cc
-#define CLK_CON_BUS_P_FSYS_IPCLKPORT_QSPICLK		0x201c
-#define CLK_CON_DMYQCH_CON_EQOS_TOP_QCH			0x3008
-#define CLK_CON_DMYQCH_CON_MMC0_QCH			0x300c
-#define CLK_CON_DMYQCH_CON_MMC1_QCH			0x3010
-#define CLK_CON_DMYQCH_CON_PCIE_TOP_QCH			0x3018
-#define CLK_CON_DMYQCH_CON_PCIE_TOP_QCH_REF		0x301c
-#define CLK_CON_DMYQCH_CON_QSPI_QCH			0x3020
-#define CLK_CON_DMYQCH_CON_SFMC_QCH			0x3024
+pub const PLL_LOCKTIME_PLL_FSYS: u32 = 0x0004;
+pub const PLL_CON0_MUX_CLK_FSYS_BUS_USER: u32 = 0x0120;
+pub const PLL_CON0_MUX_CLK_FSYS_MMC_USER: u32 = 0x0140;
+pub const PLL_CON0_MUX_CLK_FSYS_SCAN0_USER: u32 = 0x0160;
+pub const PLL_CON0_MUX_CLK_FSYS_SCAN1_USER: u32 = 0x0180;
+pub const PLL_CON0_PLL_FSYS: u32 = 0x01c0;
+pub const CLK_CON_DIV_CLK_FSYS_ADC: u32 = 0x1804;
+pub const CLK_CON_DIV_CLK_FSYS_BUS300: u32 = 0x1808;
+pub const CLK_CON_DIV_CLK_FSYS_BUS_QSPI: u32 = 0x180c;
+pub const CLK_CON_DIV_CLK_FSYS_EQOS_25: u32 = 0x1810;
+pub const CLK_CON_DIV_CLK_FSYS_EQOS_2P5: u32 = 0x1814;
+pub const CLK_CON_DIV_CLK_FSYS_EQOS_500: u32 = 0x1818;
+pub const CLK_CON_DIV_CLK_FSYS_EQOS_INT125: u32 = 0x181c;
+pub const CLK_CON_DIV_CLK_FSYS_MMC_CARD0: u32 = 0x1820;
+pub const CLK_CON_DIV_CLK_FSYS_MMC_CARD1: u32 = 0x1824;
+pub const CLK_CON_DIV_CLK_FSYS_OTP_MEM: u32 = 0x1828;
+pub const CLK_CON_DIV_CLK_FSYS_PCIE_PHY_REFCLK_SYSPLL: u32 = 0x182c;
+pub const CLK_CON_DIV_CLK_FSYS_QSPI: u32 = 0x1830;
+pub const CLK_CON_DIV_CLK_FSYS_SCLK_UART: u32 = 0x1834;
+pub const CLK_CON_DIV_CLK_FSYS_SFMC_NAND: u32 = 0x1838;
+pub const CLK_CON_DIV_SCAN_CLK_FSYS_125: u32 = 0x183c;
+pub const CLK_CON_DIV_SCAN_CLK_FSYS_MMC: u32 = 0x1840;
+pub const CLK_CON_DIV_SCAN_CLK_FSYS_PCIE_PIPE: u32 = 0x1844;
+pub const CLK_CON_FSYS_I2C0_IPCLKPORT_I_PCLK: u32 = 0x2044;
+pub const CLK_CON_FSYS_I2C1_IPCLKPORT_I_PCLK: u32 = 0x2048;
+pub const CLK_CON_FSYS_UART0_IPCLKPORT_I_PCLK: u32 = 0x204c;
+pub const CLK_CON_FSYS_UART0_IPCLKPORT_I_SCLK_UART: u32 = 0x2050;
+pub const CLK_CON_MMC0_IPCLKPORT_I_ACLK: u32 = 0x2070;
+pub const CLK_CON_MMC1_IPCLKPORT_I_ACLK: u32 = 0x2078;
+pub const CLK_CON_DWC_PCIE_CTL_INST_0_DBI_ACLK_UG: u32 = 0x208c;
+pub const CLK_CON_DWC_PCIE_CTL_INST_0_MSTR_ACLK_UG: u32 = 0x2090;
+pub const CLK_CON_DWC_PCIE_CTL_INST_0_SLV_ACLK_UG: u32 = 0x2094;
+pub const CLK_CON_PWM_IPCLKPORT_I_PCLK_S0: u32 = 0x20a0;
+pub const CLK_CON_USB20DRD_IPCLKPORT_ACLK_PHYCTRL_20: u32 = 0x20bc;
+pub const CLK_CON_USB20DRD_IPCLKPORT_BUS_CLK_EARLY: u32 = 0x20c0;
+pub const CLK_CON_XHB_AHBBR_IPCLKPORT_CLK: u32 = 0x20c4;
+pub const CLK_CON_XHB_USB_IPCLKPORT_CLK: u32 = 0x20cc;
+pub const CLK_CON_BUS_P_FSYS_IPCLKPORT_QSPICLK: u32 = 0x201c;
+pub const CLK_CON_DMYQCH_CON_EQOS_TOP_QCH: u32 = 0x3008;
+pub const CLK_CON_DMYQCH_CON_MMC0_QCH: u32 = 0x300c;
+pub const CLK_CON_DMYQCH_CON_MMC1_QCH: u32 = 0x3010;
+pub const CLK_CON_DMYQCH_CON_PCIE_TOP_QCH: u32 = 0x3018;
+pub const CLK_CON_DMYQCH_CON_PCIE_TOP_QCH_REF: u32 = 0x301c;
+pub const CLK_CON_DMYQCH_CON_QSPI_QCH: u32 = 0x3020;
+pub const CLK_CON_DMYQCH_CON_SFMC_QCH: u32 = 0x3024;
 
 pub static u64 cmu_fsys_clk_regs[]  = {
 	PLL_LOCKTIME_PLL_FSYS,
@@ -702,25 +702,25 @@ pub pub static samsung_gate_clock cmu_fsys_gate_clks[]  = {
 	     CLK_CON_BUS_P_FSYS_IPCLKPORT_QSPICLK, 21, CLK_SET_RATE_PARENT | CLK_IS_CRITICAL, 0),
 };
 pub pub static samsung_cmu_info cmu_fsys_info  = {
-	.pll_clks = cmu_fsys_pll_clks,
-	.nr_pll_clks = cmu_fsys_pll_clks.len(),
-	.mux_clks = cmu_fsys_mux_clks,
-	.nr_mux_clks = cmu_fsys_mux_clks.len(),
-	.div_clks = cmu_fsys_div_clks,
-	.nr_div_clks = cmu_fsys_div_clks.len(),
-	.gate_clks = cmu_fsys_gate_clks,
-	.nr_gate_clks = cmu_fsys_gate_clks.len(),
-	.nr_clk_ids = CMU_FSYS_NR_CLK,
-	.clk_regs = cmu_fsys_clk_regs,
-	.nr_clk_regs = cmu_fsys_clk_regs.len(),
+	pll_clks: cmu_fsys_pll_clks,
+	nr_pll_clks: cmu_fsys_pll_clks.len(),
+	mux_clks: cmu_fsys_mux_clks,
+	nr_mux_clks: cmu_fsys_mux_clks.len(),
+	div_clks: cmu_fsys_div_clks,
+	nr_div_clks: cmu_fsys_div_clks.len(),
+	gate_clks: cmu_fsys_gate_clks,
+	nr_gate_clks: cmu_fsys_gate_clks.len(),
+	nr_clk_ids: CMU_FSYS_NR_CLK,
+	clk_regs: cmu_fsys_clk_regs,
+	nr_clk_regs: cmu_fsys_clk_regs.len(),
 };
 /* Register Offset definitions for CMU_IMEM (0x10010000) */
-#define PLL_CON0_MUX_CLK_IMEM_ACLK_USER			0x0100
-#define PLL_CON0_MUX_CLK_IMEM_JPEG_USER			0x0120
-#define CLK_CON_MUX_CLK_IMEM_GIC_CA53			0x1000
-#define CLK_CON_MUX_CLK_IMEM_GIC_CA5			0x1008
-#define CLK_CON_MCT_IPCLKPORT_PCLK			0x2038
-#define CLK_CON_SFRIF_TMU_IMEM_IPCLKPORT_PCLK		0x2044
+pub const PLL_CON0_MUX_CLK_IMEM_ACLK_USER: u32 = 0x0100;
+pub const PLL_CON0_MUX_CLK_IMEM_JPEG_USER: u32 = 0x0120;
+pub const CLK_CON_MUX_CLK_IMEM_GIC_CA53: u32 = 0x1000;
+pub const CLK_CON_MUX_CLK_IMEM_GIC_CA5: u32 = 0x1008;
+pub const CLK_CON_MCT_IPCLKPORT_PCLK: u32 = 0x2038;
+pub const CLK_CON_SFRIF_TMU_IMEM_IPCLKPORT_PCLK: u32 = 0x2044;
 
 pub static u64 cmu_imem_clk_regs[]  = {
 	PLL_CON0_MUX_CLK_IMEM_ACLK_USER,
@@ -748,13 +748,13 @@ pub pub static samsung_gate_clock cmu_imem_gate_clks[]  = {
 	     CLK_CON_SFRIF_TMU_IMEM_IPCLKPORT_PCLK, 21, CLK_SET_RATE_PARENT | CLK_IS_CRITICAL, 0),
 };
 pub pub static samsung_cmu_info cmu_imem_info  = {
-	.mux_clks = cmu_imem_mux_clks,
-	.nr_mux_clks = cmu_imem_mux_clks.len(),
-	.gate_clks = cmu_imem_gate_clks,
-	.nr_gate_clks = cmu_imem_gate_clks.len(),
-	.nr_clk_ids = CMU_IMEM_NR_CLK,
-	.clk_regs = cmu_imem_clk_regs,
-	.nr_clk_regs = cmu_imem_clk_regs.len(),
+	mux_clks: cmu_imem_mux_clks,
+	nr_mux_clks: cmu_imem_mux_clks.len(),
+	gate_clks: cmu_imem_gate_clks,
+	nr_gate_clks: cmu_imem_gate_clks.len(),
+	nr_clk_ids: CMU_IMEM_NR_CLK,
+	clk_regs: cmu_imem_clk_regs,
+	nr_clk_regs: cmu_imem_clk_regs.len(),
 };
 static void  artpec8_clk_cmu_imem_init(DeviceNode *np)
 {
@@ -762,31 +762,31 @@ static void  artpec8_clk_cmu_imem_init(DeviceNode *np)
 
 CLK_OF_DECLARE(artpec8_clk_cmu_imem, "axis,artpec8-cmu-imem", artpec8_clk_cmu_imem_init);
 /* Register Offset definitions for CMU_PERI (0x16410000) */
-#define PLL_CON0_MUX_CLK_PERI_AUDIO_USER		0x0100
-#define PLL_CON0_MUX_CLK_PERI_DISP_USER			0x0120
-#define PLL_CON0_MUX_CLK_PERI_IP_USER			0x0140
-#define CLK_CON_MUX_CLK_PERI_I2S0			0x1000
-#define CLK_CON_MUX_CLK_PERI_I2S1			0x1004
-#define CLK_CON_DIV_CLK_PERI_DSIM			0x1800
-#define CLK_CON_DIV_CLK_PERI_I2S0			0x1804
-#define CLK_CON_DIV_CLK_PERI_I2S1			0x1808
-#define CLK_CON_DIV_CLK_PERI_PCLK			0x180c
-#define CLK_CON_DIV_CLK_PERI_SPI			0x1810
-#define CLK_CON_DIV_CLK_PERI_UART1			0x1814
-#define CLK_CON_DIV_CLK_PERI_UART2			0x1818
-#define CLK_CON_APB_ASYNC_DSIM_IPCLKPORT_PCLKS		0x2004
-#define CLK_CON_PERI_I2C2_IPCLKPORT_I_PCLK		0x2030
-#define CLK_CON_PERI_I2C3_IPCLKPORT_I_PCLK		0x2034
-#define CLK_CON_PERI_SPI0_IPCLKPORT_I_PCLK		0x2048
-#define CLK_CON_PERI_SPI0_IPCLKPORT_I_SCLK_SPI		0x204c
-#define CLK_CON_PERI_UART1_IPCLKPORT_I_PCLK		0x2050
-#define CLK_CON_PERI_UART1_IPCLKPORT_I_SCLK_UART	0x2054
-#define CLK_CON_PERI_UART2_IPCLKPORT_I_PCLK		0x2058
-#define CLK_CON_PERI_UART2_IPCLKPORT_I_SCLK_UART	0x205c
-#define CLK_CON_DMYQCH_CON_AUDIO_OUT_QCH		0x3000
-#define CLK_CON_DMYQCH_CON_DMA4DSIM_QCH			0x3004
-#define CLK_CON_DMYQCH_CON_PERI_I2SSC0_QCH		0x3008
-#define CLK_CON_DMYQCH_CON_PERI_I2SSC1_QCH		0x300c
+pub const PLL_CON0_MUX_CLK_PERI_AUDIO_USER: u32 = 0x0100;
+pub const PLL_CON0_MUX_CLK_PERI_DISP_USER: u32 = 0x0120;
+pub const PLL_CON0_MUX_CLK_PERI_IP_USER: u32 = 0x0140;
+pub const CLK_CON_MUX_CLK_PERI_I2S0: u32 = 0x1000;
+pub const CLK_CON_MUX_CLK_PERI_I2S1: u32 = 0x1004;
+pub const CLK_CON_DIV_CLK_PERI_DSIM: u32 = 0x1800;
+pub const CLK_CON_DIV_CLK_PERI_I2S0: u32 = 0x1804;
+pub const CLK_CON_DIV_CLK_PERI_I2S1: u32 = 0x1808;
+pub const CLK_CON_DIV_CLK_PERI_PCLK: u32 = 0x180c;
+pub const CLK_CON_DIV_CLK_PERI_SPI: u32 = 0x1810;
+pub const CLK_CON_DIV_CLK_PERI_UART1: u32 = 0x1814;
+pub const CLK_CON_DIV_CLK_PERI_UART2: u32 = 0x1818;
+pub const CLK_CON_APB_ASYNC_DSIM_IPCLKPORT_PCLKS: u32 = 0x2004;
+pub const CLK_CON_PERI_I2C2_IPCLKPORT_I_PCLK: u32 = 0x2030;
+pub const CLK_CON_PERI_I2C3_IPCLKPORT_I_PCLK: u32 = 0x2034;
+pub const CLK_CON_PERI_SPI0_IPCLKPORT_I_PCLK: u32 = 0x2048;
+pub const CLK_CON_PERI_SPI0_IPCLKPORT_I_SCLK_SPI: u32 = 0x204c;
+pub const CLK_CON_PERI_UART1_IPCLKPORT_I_PCLK: u32 = 0x2050;
+pub const CLK_CON_PERI_UART1_IPCLKPORT_I_SCLK_UART: u32 = 0x2054;
+pub const CLK_CON_PERI_UART2_IPCLKPORT_I_PCLK: u32 = 0x2058;
+pub const CLK_CON_PERI_UART2_IPCLKPORT_I_SCLK_UART: u32 = 0x205c;
+pub const CLK_CON_DMYQCH_CON_AUDIO_OUT_QCH: u32 = 0x3000;
+pub const CLK_CON_DMYQCH_CON_DMA4DSIM_QCH: u32 = 0x3004;
+pub const CLK_CON_DMYQCH_CON_PERI_I2SSC0_QCH: u32 = 0x3008;
+pub const CLK_CON_DMYQCH_CON_PERI_I2SSC1_QCH: u32 = 0x300c;
 
 pub static u64 cmu_peri_clk_regs[]  = {
 	PLL_CON0_MUX_CLK_PERI_AUDIO_USER,
@@ -885,17 +885,17 @@ pub pub static samsung_gate_clock cmu_peri_gate_clks[]  = {
 	     CLK_CON_PERI_UART2_IPCLKPORT_I_PCLK, 21, CLK_SET_RATE_PARENT | CLK_IS_CRITICAL, 0),
 };
 pub pub static samsung_cmu_info cmu_peri_info  = {
-	.mux_clks = cmu_peri_mux_clks,
-	.nr_mux_clks = cmu_peri_mux_clks.len(),
-	.div_clks = cmu_peri_div_clks,
-	.nr_div_clks = cmu_peri_div_clks.len(),
-	.gate_clks = cmu_peri_gate_clks,
-	.nr_gate_clks = cmu_peri_gate_clks.len(),
-	.fixed_clks = peri_fixed_clks,
-	.nr_fixed_clks = peri_fixed_clks.len(),
-	.nr_clk_ids = CMU_PERI_NR_CLK,
-	.clk_regs = cmu_peri_clk_regs,
-	.nr_clk_regs = cmu_peri_clk_regs.len(),
+	mux_clks: cmu_peri_mux_clks,
+	nr_mux_clks: cmu_peri_mux_clks.len(),
+	div_clks: cmu_peri_div_clks,
+	nr_div_clks: cmu_peri_div_clks.len(),
+	gate_clks: cmu_peri_gate_clks,
+	nr_gate_clks: cmu_peri_gate_clks.len(),
+	fixed_clks: peri_fixed_clks,
+	nr_fixed_clks: peri_fixed_clks.len(),
+	nr_clk_ids: CMU_PERI_NR_CLK,
+	clk_regs: cmu_peri_clk_regs,
+	nr_clk_regs: cmu_peri_clk_regs.len(),
 };
 /**
  * artpec8_cmu_probe - Probe function for ARTPEC platform clocks
@@ -905,39 +905,39 @@ pub pub static samsung_cmu_info cmu_peri_info  = {
  */
 static i32  artpec8_cmu_probe(PlatformDevice *pdev)
 {
-	const SamsungOpaque *info;	Device *dev = &pdev->dev;
-	info = of_device_get_match_data(dev);	exynos_arm64_register_cmu(dev, dev->of_node, info);
+	const SamsungOpaque *info;	Device *dev = (*&pdev).dev;
+	info = of_device_get_match_data(dev);	exynos_arm64_register_cmu(dev, (*dev).of_node, info);
 	return 0;}
 
 pub pub static of_device_id artpec8_cmu_of_match[] = {
 	{
-		.compatible = "axis,artpec8-cmu-cmu",
-		.data = &cmu_cmu_info,
+		compatible: "axis,artpec8-cmu-cmu",
+		data: &cmu_cmu_info,
 	}, {
-		.compatible = "axis,artpec8-cmu-bus",
-		.data = &cmu_bus_info,
+		compatible: "axis,artpec8-cmu-bus",
+		data: &cmu_bus_info,
 	}, {
-		.compatible = "axis,artpec8-cmu-core",
-		.data = &cmu_core_info,
+		compatible: "axis,artpec8-cmu-core",
+		data: &cmu_core_info,
 	}, {
-		.compatible = "axis,artpec8-cmu-cpucl",
-		.data = &cmu_cpucl_info,
+		compatible: "axis,artpec8-cmu-cpucl",
+		data: &cmu_cpucl_info,
 	}, {
-		.compatible = "axis,artpec8-cmu-fsys",
-		.data = &cmu_fsys_info,
+		compatible: "axis,artpec8-cmu-fsys",
+		data: &cmu_fsys_info,
 	}, {
-		.compatible = "axis,artpec8-cmu-peri",
-		.data = &cmu_peri_info,
+		compatible: "axis,artpec8-cmu-peri",
+		data: &cmu_peri_info,
 	}, {
 	},
 };
 pub static platform_driver artpec8_cmu_driver  = {
-	.driver = {
-		.name = "artpec8-cmu",
-		.of_match_table = artpec8_cmu_of_match,
-		.suppress_bind_attrs = true,
+	driver: {
+		name: "artpec8-cmu",
+		of_match_table: artpec8_cmu_of_match,
+		suppress_bind_attrs: true,
 	},
-	.probe = artpec8_cmu_probe,
+	probe: artpec8_cmu_probe,
 };
 static i32  artpec8_cmu_init(void)
 {

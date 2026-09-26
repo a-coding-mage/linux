@@ -112,22 +112,22 @@ pub const DRM_XE_VM_GET_PROPERTY: _ = 0x0f;
 
 /* Must be kept compact -- no holes */
 
-pub const DRM_IOCTL_XE_DEVICE_QUERY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_DEVICE_QUERY, struct drm_xe_device_query);
-pub const DRM_IOCTL_XE_GEM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_CREATE, struct drm_xe_gem_create);
-pub const DRM_IOCTL_XE_GEM_MMAP_OFFSET: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_MMAP_OFFSET, struct drm_xe_gem_mmap_offset);
-pub const DRM_IOCTL_XE_VM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_CREATE, struct drm_xe_vm_create);
-pub const DRM_IOCTL_XE_VM_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_DESTROY, struct drm_xe_vm_destroy);
-pub const DRM_IOCTL_XE_VM_BIND: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_BIND, struct drm_xe_vm_bind);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_CREATE, struct drm_xe_exec_queue_create);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_DESTROY, struct drm_xe_exec_queue_destroy);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_GET_PROPERTY, struct drm_xe_exec_queue_get_property);
-pub const DRM_IOCTL_XE_EXEC: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC, struct drm_xe_exec);
-pub const DRM_IOCTL_XE_WAIT_USER_FENCE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_WAIT_USER_FENCE, struct drm_xe_wait_user_fence);
-pub const DRM_IOCTL_XE_OBSERVATION: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_OBSERVATION, struct drm_xe_observation_param);
-pub const DRM_IOCTL_XE_MADVISE: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_MADVISE, struct drm_xe_madvise);
-pub const DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_QUERY_MEM_RANGE_ATTRS, struct drm_xe_vm_query_mem_range_attr);
-pub const DRM_IOCTL_XE_EXEC_QUEUE_SET_PROPERTY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_SET_PROPERTY, struct drm_xe_exec_queue_set_property);
-pub const DRM_IOCTL_XE_VM_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_GET_PROPERTY, struct drm_xe_vm_get_property);
+pub const DRM_IOCTL_XE_DEVICE_QUERY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_DEVICE_QUERY, drm_xe_device_query);
+pub const DRM_IOCTL_XE_GEM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_CREATE, drm_xe_gem_create);
+pub const DRM_IOCTL_XE_GEM_MMAP_OFFSET: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_MMAP_OFFSET, drm_xe_gem_mmap_offset);
+pub const DRM_IOCTL_XE_VM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_CREATE, drm_xe_vm_create);
+pub const DRM_IOCTL_XE_VM_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_DESTROY, drm_xe_vm_destroy);
+pub const DRM_IOCTL_XE_VM_BIND: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_BIND, drm_xe_vm_bind);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_CREATE, drm_xe_exec_queue_create);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_DESTROY, drm_xe_exec_queue_destroy);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_GET_PROPERTY, drm_xe_exec_queue_get_property);
+pub const DRM_IOCTL_XE_EXEC: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC, drm_xe_exec);
+pub const DRM_IOCTL_XE_WAIT_USER_FENCE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_WAIT_USER_FENCE, drm_xe_wait_user_fence);
+pub const DRM_IOCTL_XE_OBSERVATION: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_OBSERVATION, drm_xe_observation_param);
+pub const DRM_IOCTL_XE_MADVISE: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_MADVISE, drm_xe_madvise);
+pub const DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_QUERY_MEM_RANGE_ATTRS, drm_xe_vm_query_mem_range_attr);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_SET_PROPERTY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_SET_PROPERTY, drm_xe_exec_queue_set_property);
+pub const DRM_IOCTL_XE_VM_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_GET_PROPERTY, drm_xe_vm_get_property);
 
 /**
  * DOC: Xe IOCTL Extensions
@@ -1773,9 +1773,9 @@ pub enum drm_xe_observation_op {
 pub struct drm_xe_observation_param {
 	/** @extensions: Pointer to the first extension struct, if any */
 extensions: u64,
-	/** @observation_type: observation stream type, of &enum drm_xe_observation_type */
+	/** @observation_type: observation stream type, of &drm_xe_observation_type */
 observation_type: u64,
-	/** @observation_op: observation stream op, of &enum drm_xe_observation_op */
+	/** @observation_op: observation stream op, of &drm_xe_observation_op */
 observation_op: u64,
 	/** @param: Pointer to actual stream params */
 param: u64,
@@ -1837,7 +1837,7 @@ extensions: u64,
 	/** @oa_unit_id: OA unit ID */
 oa_unit_id: u32,
 
-	/** @oa_unit_type: OA unit type of &enum drm_xe_oa_unit_type */
+	/** @oa_unit_type: OA unit type of &drm_xe_oa_unit_type */
 oa_unit_type: u32,
 
 	/** @capabilities: OA capabilities bit-mask */
@@ -1932,7 +1932,7 @@ pub enum drm_xe_oa_format_type {
  * enum drm_xe_oa_property_id - OA stream property IDs
  *
  * Stream params are specified as a chain of &drm_xe_ext_set_property
- * structs, with property values from &enum drm_xe_oa_property_id and
+ * structs, with property values from &drm_xe_oa_property_id and
  * &drm_xe_user_extension base.name set to %DRM_XE_OA_EXTENSION_SET_PROPERTY.
  * The param field in &drm_xe_observation_param points to the first
  * &drm_xe_ext_set_property struct.
@@ -1968,7 +1968,7 @@ pub const DRM_XE_OA_EXTENSION_SET_PROPERTY: _ = 0;
 	DRM_XE_OA_PROPERTY_OA_FORMAT,
 	/*
 	 * OA_FORMAT's are specified the same way as in PRM/Bspec 52198/60942,
-	 * in terms of the following quantities: a. &enum drm_xe_oa_format_type
+	 * in terms of the following quantities: a. &drm_xe_oa_format_type
 	 * b. Counter select c. Counter size and d. BC report. Also refer to the
 	 * oa_formats array in drivers/gpu/drm/xe/xe_oa.c.
 	 */

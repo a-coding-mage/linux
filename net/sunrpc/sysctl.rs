@@ -21,10 +21,10 @@ pub static mut nfsd_debug: u32 = 0;
 pub static mut nlm_debug: u32 = 0;
 
 // Preserves: #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 static mut sunrpc_table_header: *mut ctl_table_header = core::ptr::null_mut();
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 unsafe fn proc_do_xprt(
     _table: *const ctl_table,
     write: i32,
@@ -50,7 +50,7 @@ unsafe fn proc_do_xprt(
     0
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 unsafe fn proc_dodebug(
     table: *const ctl_table,
     write: i32,
@@ -111,14 +111,14 @@ unsafe fn proc_dodebug(
     0
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 unsafe fn goto_done(lenp: &mut usize, ppos: &mut loff_t, left: usize) {
     *lenp -= left;
     *ppos += *lenp as loff_t;
 }
 
 // The following declarations are supplied by other translated kernel files.
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 extern "C" {
     static init_net: net;
     fn svc_print_xprts(buf: *mut i8, size: usize) -> isize;
@@ -132,7 +132,7 @@ extern "C" {
     fn c_str_eq(a: *const i8, b: *const i8) -> bool;
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 #[repr(C)]
 struct ctl_table {
     procname: *const i8,
@@ -142,19 +142,19 @@ struct ctl_table {
     proc_handler: Option<unsafe fn(*const ctl_table, i32, *mut core::ffi::c_void, *mut usize, *mut loff_t) -> i32>,
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 #[repr(C)]
 struct ctl_table_header {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 #[repr(C)]
 struct net {
     _private: [u8; 0],
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 static mut debug_table: [ctl_table; 5] = [
     ctl_table { procname: b"rpc_debug\0".as_ptr() as *const i8, data: core::ptr::addr_of_mut!(rpc_debug) as *mut _, maxlen: core::mem::size_of::<i32>(), mode: 0o644, proc_handler: Some(proc_dodebug) },
     ctl_table { procname: b"nfs_debug\0".as_ptr() as *const i8, data: core::ptr::addr_of_mut!(nfs_debug) as *mut _, maxlen: core::mem::size_of::<i32>(), mode: 0o644, proc_handler: Some(proc_dodebug) },
@@ -163,14 +163,14 @@ static mut debug_table: [ctl_table; 5] = [
     ctl_table { procname: b"transports\0".as_ptr() as *const i8, data: core::ptr::null_mut(), maxlen: 256, mode: 0o444, proc_handler: Some(proc_do_xprt) },
 ];
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 pub unsafe fn rpc_register_sysctl() {
     if sunrpc_table_header.is_null() {
         sunrpc_table_header = register_sysctl(b"sunrpc\0".as_ptr() as *const i8, debug_table.as_mut_ptr());
     }
 }
 
-#[cfg(feature = "CONFIG_SUNRPC_DEBUG")]
+#[cfg(CONFIG_SUNRPC_DEBUG)]
 pub unsafe fn rpc_unregister_sysctl() {
     if !sunrpc_table_header.is_null() {
         unregister_sysctl_table(sunrpc_table_header);

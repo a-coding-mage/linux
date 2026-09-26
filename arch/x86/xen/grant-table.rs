@@ -175,7 +175,7 @@ pub unsafe fn arch_gnttab_init(nr_shared: libc::c_ulong, nr_status: libc::c_ulon
 }
 
 // The following block corresponds to CONFIG_XEN_PVH.
-#[cfg(feature = "CONFIG_XEN_PVH")]
+#[cfg(CONFIG_XEN_PVH)]
 unsafe fn xen_pvh_gnttab_setup() -> libc::c_int {
     if !xen_pvh_domain() {
         return -ENODEV;

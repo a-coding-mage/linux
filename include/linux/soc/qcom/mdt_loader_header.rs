@@ -22,7 +22,7 @@ pub struct qcom_pas_context {
 }
 
 /* IS_ENABLED(CONFIG_QCOM_MDT_LOADER) selects the declaration branch at build time. */
-#[cfg(feature = "CONFIG_QCOM_MDT_LOADER")]
+#[cfg(CONFIG_QCOM_MDT_LOADER)]
 extern "C" {
     pub fn qcom_mdt_get_size(fw: *const firmware) -> isize;
 
@@ -63,12 +63,12 @@ extern "C" {
 }
 
 /* !IS_ENABLED(CONFIG_QCOM_MDT_LOADER): the kernel's ENODEV error value. */
-#[cfg(not(feature = "CONFIG_QCOM_MDT_LOADER"))]
+#[cfg(not(CONFIG_QCOM_MDT_LOADER))]
 pub unsafe fn qcom_mdt_get_size(_fw: *const firmware) -> isize {
     -19
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_MDT_LOADER"))]
+#[cfg(not(CONFIG_QCOM_MDT_LOADER))]
 pub unsafe fn qcom_mdt_load(
     _dev: *mut device,
     _fw: *const firmware,
@@ -82,7 +82,7 @@ pub unsafe fn qcom_mdt_load(
     -19
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_MDT_LOADER"))]
+#[cfg(not(CONFIG_QCOM_MDT_LOADER))]
 pub unsafe fn qcom_mdt_pas_load(
     _ctx: *mut qcom_pas_context,
     _fw: *const firmware,
@@ -92,7 +92,7 @@ pub unsafe fn qcom_mdt_pas_load(
     -19
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_MDT_LOADER"))]
+#[cfg(not(CONFIG_QCOM_MDT_LOADER))]
 pub unsafe fn qcom_mdt_load_no_init(
     _dev: *mut device,
     _fw: *const firmware,
@@ -105,7 +105,7 @@ pub unsafe fn qcom_mdt_load_no_init(
     -19
 }
 
-#[cfg(not(feature = "CONFIG_QCOM_MDT_LOADER"))]
+#[cfg(not(CONFIG_QCOM_MDT_LOADER))]
 pub unsafe fn qcom_mdt_read_metadata(
     _fw: *const firmware,
     _data_len: *mut usize,
